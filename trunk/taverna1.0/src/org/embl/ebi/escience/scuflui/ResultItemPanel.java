@@ -132,9 +132,14 @@ public class ResultItemPanel extends JPanel {
 								String oldData=(String)dataThing.getDataObject();
 								String newData=((javax.swing.text.JTextComponent)component).getText();
 							  if (!oldData.equals(newData)){
-												theDataThing.setDataObject(new String(newData));
-												node.setUserObject(theDataThing.getDataObject());
+								     		dataThing.setDataObject(new String(newData));
+												node.setUserObject(dataThing.getDataObject());
 												structureTree.update(structureTree.getGraphics());
+								if ( theDataThing.getDataObject() instanceof java.util.List){
+																System.out.println("HOHOHO!");
+
+															 Object dt=((java.util.List)theDataThing.getDataObject()).set(structureTree.getSelectionPath().getPathCount(),dataThing.getDataObject());
+												}else theDataThing.setDataObject(new String(newData));
 								}
 						}
 						else {
