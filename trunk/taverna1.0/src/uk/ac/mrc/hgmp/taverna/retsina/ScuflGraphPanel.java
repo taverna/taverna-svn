@@ -4,7 +4,7 @@ import com.jgraph.JGraph;
 import com.jgraph.event.GraphSelectionEvent;
 import com.jgraph.event.GraphSelectionListener;
 import com.jgraph.graph.*;
-import com.jgraph.graph.Port; // ambiguous with: org.embl.ebi.escience.scufl.Port 
+import com.jgraph.graph.Port; // ambiguous with: org.embl.ebi.escience.scufl.Port
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
@@ -15,6 +15,8 @@ import javax.swing.event.UndoableEditEvent;
 import org.embl.ebi.escience.scufl.ScuflModel;
 import org.embl.ebi.escience.scufl.ScuflModelEventPrinter;
 import org.embl.ebi.escience.scufl.SoaplabProcessor;
+import org.embl.ebi.escience.scufl.ProcessorCreationException;
+import org.embl.ebi.escience.scufl.DuplicateProcessorNameException;
 
 // Utility Imports
 import java.util.ArrayList;
@@ -34,8 +36,6 @@ import java.lang.Object;
 import java.lang.String;
 import java.lang.System;
 
-
-
 public class ScuflGraphPanel extends JPanel
        implements GraphSelectionListener, KeyListener 
 {
@@ -52,7 +52,7 @@ public class ScuflGraphPanel extends JPanel
     // Actions which Change State
     protected Action undo, redo, remove, group,	ungroup, tofront, toback, cut, copy, paste;
 
-    // ScuflModel instance 
+    // ScuflModel instance represented in this panel
     private org.embl.ebi.escience.scufl.ScuflModel scuflModel;
 
     // Main Method
@@ -66,12 +66,12 @@ public class ScuflGraphPanel extends JPanel
     }
     
     /**
-     * A single Scufl editor panel. The delegate
-     * argument is required so that the panel
-     * can invoke the createProcessor method of
-     * some other class when it requires to create
-     * a new processor node in the graph representation.
-     */
+    * A single Scufl editor panel. The delegate
+    * argument is required so that the panel
+    * can invoke the createProcessor method of
+    * some other class when it requires to create
+    * a new processor node in the graph representation.
+    */
     public ScuflGraphPanel(IScuflNodeCreator delegate) 
     {
 	
@@ -85,15 +85,16 @@ public class ScuflGraphPanel extends JPanel
 	graph = new ScuflGraph(new ScuflGraphModel());
 	graph.setMarqueeHandler(new ScuflMarqueeHandler());
 
-	undoManager = new GraphUndoManager() {
+	undoManager = new GraphUndoManager() 
+        {
 		/**
 		 * A custom edit handler that updates the toolbar buttons
 		 */
-		public void undoableEditHappened(UndoableEditEvent e) {
-		    super.undoableEditHappened(e);
-		    updateHistoryButtons();
-		}
-	    };
+	   public void undoableEditHappened(UndoableEditEvent e) {
+	     super.undoableEditHappened(e);
+	     updateHistoryButtons();
+	   }
+        };
 	
 	// Register UndoManager with the Model
 	graph.getModel().addUndoableEditListener(undoManager);
@@ -112,18 +113,27 @@ public class ScuflGraphPanel extends JPanel
     }
 
 
-    public void insertCell(Point point, String name) {
+    public void insertCell(Point point, String group, String name) {
 
         // Attempt to create a new SoaplabProcessor
         try
         {
           scuflModel.addProcessor(new SoaplabProcessor(scuflModel,
                        "my_processor",
-                       "http://industry.ebi.ac.uk/soap/soaplab/nucleic_gene_finding::"+name));
-        } catch(Exception pce)
+                       "http://industry.ebi.ac.uk/soap/soaplab/"+group+"::"+name));
+        } catch(ProcessorCreationException pce)
+        {
+          System.out.println("ProcessorCreationException addProcessor exception thrown");
+        }
+        catch(DuplicateProcessorNameException dpne)
+        {
+          System.out.println("DuplicateProcessorNameException addProcessor exception thrown");
+        }
+        catch(Exception exp)
         {
           System.out.println("addProcessor exception thrown");
         }
+
 
         System.out.println("Finished test : SoaplabProcessorCreation");
         graph.insertCell(point,name);

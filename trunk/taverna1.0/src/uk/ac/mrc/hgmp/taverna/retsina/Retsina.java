@@ -14,7 +14,7 @@ import java.lang.Exception;
 import java.lang.String;
 import java.lang.System;
 
-
+import org.emboss.jemboss.JembossJarUtil;
 
 /**
 *
@@ -31,7 +31,7 @@ public class Retsina extends JApplet
 
     JFrame frame = new JFrame("Retsina");
     frame.getContentPane().add(retsinaPane);
-    frame.setSize(520, 450);
+    frame.setSize(820, 650);
     frame.show();
   }
     

@@ -21,11 +21,11 @@ import java.lang.String;
 import java.lang.System;
 
 
-
 public class ProgramSelectionPanel extends JPanel 
 {
  
   private ScuflGraphPanel graphPanel;
+  private ProgList progs;
 
   public ProgramSelectionPanel(String wossname,
                                ScuflGraphPanel graphPanel)
@@ -35,7 +35,7 @@ public class ProgramSelectionPanel extends JPanel
     this.graphPanel = graphPanel;
 
     JMenuBar progMenuBar = new JMenuBar();
-    ProgList progs = new ProgList(wossname,null,progMenuBar);
+    progs = new ProgList(wossname,null,progMenuBar);
     int npG = progs.getNumPrimaryGroups();
     final int numProgs = progs.getNumProgs();
     final String allAcd[] = progs.getProgsList();
@@ -97,7 +97,7 @@ public class ProgramSelectionPanel extends JPanel
 
     add(progMenuBar,BorderLayout.NORTH);
     add(alphaPane,BorderLayout.CENTER);
-    createProgramMenuListener(progs,allAcd,numProgs);
+    createProgramMenuListener(allAcd,numProgs);
     createProgramListListener(progList,allAcd);
     createTextEntryListener(progList,allAcd,alphaTextPaneEntry);
   }
@@ -109,9 +109,11 @@ public class ProgramSelectionPanel extends JPanel
     {
       public void actionPerformed(ActionEvent e)
       {
-        int index = progList.getSelectedIndex();
-        System.out.println(allAcd[index]);
-        graphPanel.insertCell(new Point(0,0),allAcd[index]);
+        int index  = progList.getSelectedIndex();
+        String app = allAcd[index];
+        String group = progs.getProgramGroup(app).toLowerCase().replace(':','_').replace(' ','_');
+//      System.out.println(allAcd[index]+" GROUP:: "+group);
+        graphPanel.insertCell(new Point(0,0),group,app);
       }
     });
   }
@@ -127,14 +129,16 @@ public class ProgramSelectionPanel extends JPanel
         JList source = (JList)e.getSource();
         source.setSelectionBackground(Color.cyan);
         int index = source.getSelectedIndex();
-        System.out.println(allAcd[index]);
-        graphPanel.insertCell(new Point(0,0),allAcd[index]);
+
+        String app = allAcd[index];
+        String group = progs.getProgramGroup(app).toLowerCase().replace(':','_').replace(' ','_');
+        graphPanel.insertCell(new Point(0,0),group,app);
       }
     };
     progList.addMouseListener(mouseListener);
   }
  
-  private void createProgramMenuListener(ProgList progs, final String allAcd[],
+  private void createProgramMenuListener(final String allAcd[],
                                          final int numProgs)
   {
     JMenuItem mi[] = new JMenuItem[numProgs];
@@ -156,7 +160,12 @@ public class ProgramSelectionPanel extends JPanel
           {
             if(p.equalsIgnoreCase(allAcd[k]))
             {
-              graphPanel.insertCell(new Point(0,0),allAcd[k]);
+              String app = allAcd[k];
+              String group = 
+                 progs.getProgramGroup(app).toLowerCase().replace(':','_').replace(' ','_');
+
+               
+              graphPanel.insertCell(new Point(0,0),group,app);
               System.out.println();
               break;
             }
