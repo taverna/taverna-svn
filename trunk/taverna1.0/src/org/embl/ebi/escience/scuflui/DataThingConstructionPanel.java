@@ -86,7 +86,7 @@ import org.jdom.output.XMLOutputter;
  * COMMENT DataThingConstructionPanel
  * 
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover </a>
- * @version $Revision: 1.24 $
+ * @version $Revision: 1.25 $
  */
 public abstract class DataThingConstructionPanel extends JPanel implements ScuflUIComponent, ScuflModelEventListener
 {
@@ -902,8 +902,6 @@ public abstract class DataThingConstructionPanel extends JPanel implements Scufl
 		}
 	}
 
-	public static UserContext userContext = new UserContext();
-	
 	static JFileChooser fileChooser = new JFileChooser();
 	static BaclavaDataService store = null;
 
