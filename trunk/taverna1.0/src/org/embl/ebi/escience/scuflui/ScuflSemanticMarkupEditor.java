@@ -11,6 +11,7 @@ import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.*;
+import java.awt.*;
 import javax.swing.border.Border;
 import org.embl.ebi.escience.scufl.*;
 import javax.swing.tree.*;
@@ -55,6 +56,24 @@ public class ScuflSemanticMarkupEditor extends JPanel implements ScuflUIComponen
 								 "Pick from ontology"));
 	ontologyPanel.setPreferredSize(new Dimension(400,400));
 	final JTree ontologyTree = new JTree(RDFSParser.rootNode);
+	ontologyTree.setCellRenderer(new DefaultTreeCellRenderer() {
+		public Component getTreeCellRendererComponent(JTree tree,
+							      Object value,
+							      boolean sel,
+							      boolean expanded,
+							      boolean leaf,
+							      int row,
+							      boolean hasFocus) {
+		    super.getTreeCellRendererComponent(tree, value, sel,
+						       expanded, leaf, row,
+						       hasFocus);
+		    Object userObject = ((DefaultMutableTreeNode)value).getUserObject();
+		    if (userObject instanceof RDFSClassHolder) {
+			setIcon(ScuflIcons.classIcon);
+		    }
+		    return this;
+		} 
+	    });
 	JScrollPane ontologyTreeDisplayPane = new JScrollPane(ontologyTree);
 	ontologyPanel.add(ontologyTreeDisplayPane, BorderLayout.CENTER);
 	final JTextField selectedOntologyNode = new JTextField(theMetadata.getSemanticType());

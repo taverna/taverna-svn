@@ -84,7 +84,7 @@ public class RDFSParser {
 		}
 	    }
 	    // Recursively generate the tree
-	    rootNode.add(generateTree(classToChildList, "root:"+ontologyName));
+	    rootNode.add(generateTree(classToChildList, "root:"+ontologyName, false));
 	    
 	}
 	catch (Exception ex) {
@@ -93,12 +93,18 @@ public class RDFSParser {
 	}
     }
     
-    private static DefaultMutableTreeNode generateTree(Map classToChildList, String className) {
-	DefaultMutableTreeNode theNode = new DefaultMutableTreeNode(new RDFSClassHolder(className));
+    private static DefaultMutableTreeNode generateTree(Map classToChildList, String className, boolean generateHolder) {
+	DefaultMutableTreeNode theNode = null;
+	if (generateHolder) {
+	    theNode = new DefaultMutableTreeNode(new RDFSClassHolder(className));
+	}
+	else {
+	    theNode = new DefaultMutableTreeNode(className);
+	}
 	ArrayList children = (ArrayList)classToChildList.get(className);
 	for (Iterator i = children.iterator(); i.hasNext(); ) {
 	    String childClassName = (String)i.next();
-	    theNode.add(generateTree(classToChildList, childClassName));
+	    theNode.add(generateTree(classToChildList, childClassName, true));
 	}
 	return theNode;
     }
