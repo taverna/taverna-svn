@@ -5,15 +5,34 @@
  */
 package org.embl.ebi.escience.scuflui;
 
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import javax.swing.*;
-import java.awt.event.*;
-import javax.swing.event.*;
-import java.util.*;
-import org.embl.ebi.escience.scufl.*;
-import java.awt.*;
-import javax.swing.border.*;
-import org.jdom.*;
-import org.jdom.output.*;
+import javax.swing.border.Border;
+import org.embl.ebi.escience.scufl.Port;
+import org.embl.ebi.escience.scufl.ScuflModel;
+import org.embl.ebi.escience.scufl.ScuflModelEvent;
+import org.embl.ebi.escience.scufl.ScuflModelEventListener;
+
+// Utility Imports
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+
+// JDOM Imports
+import org.jdom.CDATA;
+import org.jdom.Document;
+import org.jdom.Element;
+import org.jdom.output.XMLOutputter;
+
+import org.embl.ebi.escience.scuflui.ScuflIcons;
+import org.embl.ebi.escience.scuflui.ScuflUIComponent;
+import java.lang.String;
+import java.lang.System;
+
+
 
 /**
  * A JPanel subclass that contains the appropriate input fields

@@ -238,6 +238,9 @@ public class ScuflContextMenuFactory {
 		else if (gp[i] instanceof TalismanProcessor) {
 		    gpi.setIcon(ScuflIcons.talismanIcon);
 		}
+		else if (gp[i] instanceof WorkflowProcessor) {
+		    gpi.setIcon(ScuflIcons.workflowIcon);
+		}
 		block.add(gpi);
 		final Processor controller = gp[i];
 		final Processor target = processor;

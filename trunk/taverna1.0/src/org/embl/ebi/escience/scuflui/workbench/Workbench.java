@@ -17,10 +17,10 @@ import org.embl.ebi.escience.scufl.parser.XScuflParser;
 import org.embl.ebi.escience.scufl.view.DotView;
 import org.embl.ebi.escience.scufl.view.XScuflView;
 import org.embl.ebi.escience.scuflui.DotTextArea;
+import org.embl.ebi.escience.scuflui.EnactorLaunchPanel;
 import org.embl.ebi.escience.scuflui.ScuflDiagram;
 import org.embl.ebi.escience.scuflui.ScuflModelExplorer;
 import org.embl.ebi.escience.scuflui.XScuflTextArea;
-import org.embl.ebi.escience.scuflui.EnactorLaunchPanel;
 
 // IO Imports
 import java.io.File;
@@ -32,6 +32,7 @@ import java.net.URL;
 
 import org.embl.ebi.escience.scuflui.workbench.GenericUIComponentFrame;
 import org.embl.ebi.escience.scuflui.workbench.ScavengerTree;
+import org.embl.ebi.escience.scuflui.workbench.SplashScreen;
 import java.lang.Class;
 import java.lang.ClassNotFoundException;
 import java.lang.Exception;

@@ -16,6 +16,7 @@ import org.embl.ebi.escience.scufl.Processor;
 import org.embl.ebi.escience.scufl.SoaplabProcessor;
 import org.embl.ebi.escience.scufl.TalismanProcessor;
 import org.embl.ebi.escience.scufl.WSDLBasedProcessor;
+import org.embl.ebi.escience.scufl.WorkflowProcessor;
 
 // Utility Imports
 import java.util.ArrayList;
@@ -76,6 +77,9 @@ public class ScuflProcessorInfo extends JDialog {
 	}
 	else if (theProcessor instanceof TalismanProcessor) {
 	    addRow("TScript URL",((TalismanProcessor)theProcessor).getTScriptURL());
+	}
+	else if (theProcessor instanceof WorkflowProcessor) {
+	    addRow("XScufl URL",((WorkflowProcessor)theProcessor).getDefinitionURL());
 	}
 	Object[][] tableData = new Object[propertyValues.size()][2];
 	for (int i = 0; i < propertyValues.size(); i++) {

@@ -121,6 +121,19 @@ public class XScuflView implements ScuflModelEventListener, java.io.Serializable
 	    catch (ClassCastException cce) {
 		//
 	    }
+	    // Catch WorkflowProcessor
+	    try {
+		WorkflowProcessor wp = (WorkflowProcessor)processors[i];
+		Element spec = new Element("workflow",scuflNS());
+		Element definition = new Element("xscufllocation",scuflNS());
+		spec.addContent(definition);
+		definition.setText(wp.getDefinitionURL());
+		processor.addContent(spec);
+		root.addContent(processor);
+	    }
+	    catch (ClassCastException cce) {
+		//
+	    }
 	    // Catch WSDLBasedProcessor
 	    try {
 		WSDLBasedProcessor wsdlp = (WSDLBasedProcessor)processors[i];

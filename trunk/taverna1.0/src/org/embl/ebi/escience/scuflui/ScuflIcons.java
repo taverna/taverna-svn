@@ -18,9 +18,7 @@ import java.lang.ClassNotFoundException;
  */
 public class ScuflIcons {
 
-    public static ImageIcon wsdlIcon, soaplabIcon, talismanIcon, inputIcon, outputIcon, inputPortIcon, outputPortIcon, dataLinkIcon, constraintIcon, deleteIcon, zoomIcon;
-    public static ImageIcon wsdlFactoryIcon, soaplabFactoryIcon, talismanFactoryIcon;
-    public static ImageIcon webIcon, openIcon, runIcon, refreshIcon;
+    public static ImageIcon wsdlIcon, soaplabIcon, talismanIcon, inputIcon, outputIcon, inputPortIcon, outputPortIcon, dataLinkIcon, constraintIcon, deleteIcon, zoomIcon, wsdlFactoryIcon, soaplabFactoryIcon, talismanFactoryIcon, webIcon, openIcon, runIcon, refreshIcon, workflowIcon, workflowFactoryIcon;
 
     static {
 	// Load the image files found in this package into the class.
@@ -29,9 +27,11 @@ public class ScuflIcons {
 	    wsdlIcon = new ImageIcon(c.getResource("wsdl.gif"));
 	    talismanIcon = new ImageIcon(c.getResource("talisman.gif"));
 	    soaplabIcon = new ImageIcon(c.getResource("soaplab.gif"));
+	    workflowIcon = new ImageIcon(c.getResource("workflow.gif"));
 	    wsdlFactoryIcon = wsdlIcon;
 	    talismanFactoryIcon = talismanIcon;
 	    soaplabFactoryIcon = soaplabIcon;
+	    workflowFactoryIcon = workflowIcon;
 	    inputPortIcon = new ImageIcon(c.getResource("inputport.gif"));
 	    outputPortIcon = new ImageIcon(c.getResource("outputport.gif"));
 	    dataLinkIcon = new ImageIcon(c.getResource("datalink.gif"));

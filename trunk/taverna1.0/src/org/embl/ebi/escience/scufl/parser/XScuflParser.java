@@ -448,6 +448,17 @@ class ProcessorLoaderThread extends Thread {
 		p.setDescription(description);
 		model.addProcessor(p);
 	    }
+
+	    // Handle nested workflow
+	    Element workflowProcessor = processorNode.getChild("workflow",namespace);
+	    if (workflowProcessor != null && !foundSpec) {
+		foundSpec = true;
+		String definitionURL = workflowProcessor.getChild("xscufllocation",namespace).getTextTrim();
+		Processor p = new WorkflowProcessor(model, name, definitionURL);
+		p.setLogLevel(log);
+		p.setDescription(description);
+		model.addProcessor(p);
+	    }
 	    
 	    // If no specifier has been found then throw an exception
 	    if (!foundSpec) {

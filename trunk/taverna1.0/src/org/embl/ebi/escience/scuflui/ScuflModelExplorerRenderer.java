@@ -47,6 +47,9 @@ public class ScuflModelExplorerRenderer extends DefaultTreeCellRenderer {
 	    else if (userObject instanceof SoaplabProcessor) {
 		setIcon(ScuflIcons.soaplabIcon);
 	    }
+	    else if (userObject instanceof WorkflowProcessor) {
+		setIcon(ScuflIcons.workflowIcon);
+	    }
 	}
 	else if (userObject instanceof ConcurrencyConstraint) {
 	    setIcon(ScuflIcons.constraintIcon);

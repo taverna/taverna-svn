@@ -151,8 +151,12 @@ public class DotView implements ScuflModelEventListener, java.io.Serializable {
 		dot.append("  fillcolor = \"darkolivegreen3\",\n");
 	    }
 	    // Or if a TalismanProcessor
-	    if (p instanceof TalismanProcessor) {
+	    else if (p instanceof TalismanProcessor) {
 		dot.append("  fillcolor = \"plum2\",\n");
+	    }
+	    // Or if a WorkflowProcessor
+	    else if (p instanceof WorkflowProcessor) {
+		dot.append("  fillcolor = \"orange\",\n");
 	    }
 	    
 	    // Create the label...

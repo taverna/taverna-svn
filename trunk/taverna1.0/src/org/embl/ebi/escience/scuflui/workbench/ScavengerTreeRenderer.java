@@ -15,6 +15,7 @@ import org.embl.ebi.escience.scuflui.workbench.ProcessorFactory;
 import org.embl.ebi.escience.scuflui.workbench.SoaplabProcessorFactory;
 import org.embl.ebi.escience.scuflui.workbench.TalismanProcessorFactory;
 import org.embl.ebi.escience.scuflui.workbench.WSDLBasedProcessorFactory;
+import org.embl.ebi.escience.scuflui.workbench.WorkflowProcessorFactory;
 import java.lang.Object;
 
 
@@ -50,6 +51,9 @@ public class ScavengerTreeRenderer extends ScuflModelExplorerRenderer {
 	    }
 	    else if (userObject instanceof TalismanProcessorFactory) {
 		setIcon(ScuflIcons.talismanFactoryIcon);
+	    }
+	    else if (userObject instanceof WorkflowProcessorFactory) {
+		setIcon(ScuflIcons.workflowFactoryIcon);
 	    }
 	}
 	return this;

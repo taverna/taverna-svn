@@ -9,7 +9,6 @@ package org.embl.ebi.escience.scufl;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.regex.Pattern;
 
 import org.embl.ebi.escience.scufl.DuplicatePortNameException;
 import org.embl.ebi.escience.scufl.InternalSinkPortHolder;
