@@ -88,11 +88,11 @@ public class AttributePageEditor extends JPanel {
 			FieldAttribute fa = (FieldAttribute)attribute;
 			String key = fa.getField()+fa.getKey()+fa.getTableConstraint();
 			JCheckBox cb = (JCheckBox)checkBoxLocations.get(key);
-			System.out.println(attribute+" added with key "+key);
+			//System.out.println(attribute+" added with key "+key);
 			if (cb != null &&
 			    cb.isSelected() == false) {
 			    cb.setSelected(true);
-			    System.out.println("  Checkbox selected");
+			    //System.out.println("  Checkbox selected");
 			}
 		    }
 		}
@@ -101,11 +101,11 @@ public class AttributePageEditor extends JPanel {
 			FieldAttribute fa = (FieldAttribute)attribute;
 			String key = fa.getField()+fa.getKey()+fa.getTableConstraint();
 			JCheckBox cb = (JCheckBox)checkBoxLocations.get(key);
-			System.out.println(attribute+" removed with key "+key);
+			//System.out.println(attribute+" removed with key "+key);
 			if (cb != null &&
 			    cb.isSelected() == true) {
 			    cb.setSelected(false);
-			    System.out.println("  Checkbox deselected");
+			    //System.out.println("  Checkbox deselected");
 			}
 		    }
 		}

@@ -117,7 +117,7 @@ public class BiomartProcessor extends Processor {
 		if (ports.indexOf(sequencePort) < ports.size()-1) {
 		    ports.remove(sequencePort);
 		    ports.add(sequencePort);
-		    fireModelEvent(new MinorScuflModelEvent(this, "Shifted sequence output to end of port list"));
+		    fireModelEvent(new ScuflModelEvent(this, "Shifted sequence output to end of port list"));
 		}
 	    }
 	    catch (UnknownPortException upe) {
