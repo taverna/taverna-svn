@@ -20,7 +20,7 @@ import org.embl.ebi.escience.baclava.factory.DataThingFactory;
  * Last edited by $Author: phidias $
  * 
  * @author Mark
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class DataThingAdapter {
     
@@ -56,11 +56,11 @@ public class DataThingAdapter {
     	if (val == null){
     		return null;
     	}
-    	/*ArrayList list = (ArrayList)val.getDataObject();
+    	ArrayList list = (ArrayList)val.getDataObject();
     	String[] vals = new String[list.size()];
-    	vals = (String[])list.toArray(vals);
-    	*/
-    	return (String[])val.getDataObject();
+    	return (String[])list.toArray(vals);
+    	
+    	//return (String[])val.getDataObject();
     	
     }
     
@@ -98,7 +98,7 @@ public class DataThingAdapter {
         }
         String strVal = (String)val.getDataObject();
         
-        return Boolean.getBoolean(strVal);
+        return Boolean.valueOf(strVal).booleanValue();
     }
     
     /**
