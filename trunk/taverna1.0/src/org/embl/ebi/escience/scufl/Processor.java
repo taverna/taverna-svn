@@ -6,28 +6,14 @@
 package org.embl.ebi.escience.scufl;
 
 // Utility Imports
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 import java.util.regex.Pattern;
-import java.awt.datatransfer.*;
-import java.io.*;
-
-import org.embl.ebi.escience.scufl.AlternateProcessor;
-import org.embl.ebi.escience.scufl.DataConstraint;
-import org.embl.ebi.escience.scufl.DuplicateProcessorNameException;
-import org.embl.ebi.escience.scufl.InputPort;
-import org.embl.ebi.escience.scufl.OutputPort;
-import org.embl.ebi.escience.scufl.Port;
-import org.embl.ebi.escience.scufl.ProcessorCreationException;
-import org.embl.ebi.escience.scufl.ScuflModel;
-import org.embl.ebi.escience.scufl.ScuflModelEvent;
-import org.embl.ebi.escience.scufl.UnknownPortException;
-import java.lang.ClassCastException;
-import java.lang.String;
-import java.util.Map;
 
 
 
@@ -173,11 +159,12 @@ public abstract class Processor implements Serializable {
 	    if (name.equals("")) {
 		return;
 	    }
-	    if (Pattern.matches("\\w++",name) == false) {
+	    if (Pattern.matches("\\w++",newName) == false) {
 		return;
 	    }
-	    this.name = newName;
-	    fireModelEvent(new ScuflModelEvent(this, "Processor renamed to '"+name+"'"));
+	    String oldName = name;
+	    name = newName;
+	    fireModelEvent(new ScuflModelRenameEvent(this, oldName, newName));
 	}
     }
 

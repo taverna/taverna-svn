@@ -7,7 +7,7 @@ package org.embl.ebi.escience.scufl;
  * COMMENT 
  * 
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover</a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class ScuflModelAddEvent extends ScuflModelEvent
 {
@@ -21,17 +21,6 @@ public class ScuflModelAddEvent extends ScuflModelEvent
 	{
 		super(source, "Added " + getClassName(addedObject) + " " + addedObject);
 		this.addedObject = addedObject;
-	}
-	
-	private static String getClassName(Object addedObject)
-	{
-		String name = addedObject.getClass().getName();
-		int index = name.lastIndexOf('.');
-		if(index != -1)
-		{
-			name = name.substring(index+1);
-		}
-		return name;
 	}
 	
 	/**
