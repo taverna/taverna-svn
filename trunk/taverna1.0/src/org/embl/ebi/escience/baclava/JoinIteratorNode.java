@@ -79,6 +79,13 @@ public class JoinIteratorNode extends DefaultMutableTreeNode implements Resumabl
     }
     
     /**
+     * Return the current location
+     */
+    public int[] getCurrentLocation() {
+	return iterator.getCurrentLocation();
+    }
+
+    /**
      * Reset the underlying JoinIterator
      */
     public void reset() {

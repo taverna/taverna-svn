@@ -8,6 +8,7 @@ package org.embl.ebi.escience.baclava;
 // Utility Imports
 import java.util.Iterator;
 import java.util.NoSuchElementException;
+import java.util.*;
 
 import org.embl.ebi.escience.baclava.BaclavaIterator;
 import java.lang.Object;
@@ -64,6 +65,46 @@ public class LockStepIterator implements ResumableIterator {
 	}
     }
     
+     /**
+      * Get the current location by finding the longest current position
+      * array from all the child iterators and returning it. This is because
+      * otherwise if we take the approach that the join iterator uses we end
+      * up with holes in the resultant collection structure caused by the
+      * redundant information.
+      */
+    public int[] getCurrentLocation() {
+	ResumableIterator[] iterators = iterators();
+	int longestIteratorLength = -1;
+	int longestIteratorIndex = 0;
+	for (int i = 0; i < iterators.length; i++) {
+	    if (iterators[i].getCurrentLocation().length > longestIteratorLength) {
+		longestIteratorLength = iterators[i].getCurrentLocation().length;
+		longestIteratorIndex = i;
+	    }
+	}
+	return iterators[longestIteratorIndex].getCurrentLocation();
+    }
+    /** 
+     * Consume a List of int[] and return an int[] formed from
+     * the concatenation of all contains arrays
+     */
+    private int[] concatArrays(List listOfArrays) {
+	// Find the array target sizes
+	int totalSize = 0;
+	for (Iterator i = listOfArrays.iterator(); i.hasNext();) {
+	    totalSize += ((int[])i.next()).length;
+	}
+	int[] output = new int[totalSize];
+	int currentIndex = 0;
+	for (Iterator i = listOfArrays.iterator(); i.hasNext();) {
+	    int[] source = (int[])i.next();
+	    for (int j = 0; j < source.length; j++) {
+		output[currentIndex++] = source[j];
+	    }
+	}
+	return output;
+    }
+
     /**
      * If the iterator isn't empty then all the iterators
      * contained within it are the same length, can therefore

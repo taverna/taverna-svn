@@ -94,4 +94,11 @@ public class BaclavaIteratorNode extends DefaultMutableTreeNode implements Resum
 	return false;
     }
     
+    /**
+     * Return the current position within this iterator
+     */
+    public int[] getCurrentLocation() {
+	return iterator.getCurrentLocation();
+    }
+
 }

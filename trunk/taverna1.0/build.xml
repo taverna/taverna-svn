@@ -464,7 +464,7 @@
 	</target>
 	<!-- Test the data thing iterator system -->
 	<target name="test.iterator" depends="java">
-		<java classname="org.embl.ebi.escience.baclava.IteratorNodeTest" fork="no">
+		<java classname="org.embl.ebi.escience.baclava.IteratorNodeTests" fork="no">
 			<classpath refid="compile-classpath"/>
 		</java>
 	</target>	

@@ -8,6 +8,8 @@ package org.embl.ebi.escience.baclava;
 // Utility Imports
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.NoSuchElementException;
 
 import java.lang.Object;
@@ -26,13 +28,32 @@ import java.lang.UnsupportedOperationException;
 public class BaclavaIterator implements ResumableIterator {
 
     private Collection underlyingCollection = null;
+    private List indexList = new ArrayList();
+    private Iterator indexIterator = indexList.iterator();
     private Iterator internalIterator = null;
-
+    private int[] currentLocation = null;
+    
     public BaclavaIterator(Collection c) {
 	this.underlyingCollection = c;
 	this.internalIterator = c.iterator();
     }
     
+    public BaclavaIterator(Collection c, List indexList) {
+	this(c);
+	this.indexList = indexList;
+	this.indexIterator = indexList.iterator();
+    }
+
+    public int[] getCurrentLocation() {
+	if (currentLocation == null || indexList.isEmpty()) {
+	    // No location information available
+	    return new int[0];
+	}
+	else {
+	    return currentLocation;
+	}
+    }
+
     public synchronized boolean hasNext() {
 	if (underlyingCollection.isEmpty()) {
 	    return false;
@@ -42,6 +63,10 @@ public class BaclavaIterator implements ResumableIterator {
 
     public synchronized Object next() 
 	throws NoSuchElementException {
+	if (indexIterator.hasNext()) {
+	    // Increment the current index
+	    currentLocation = (int[])indexIterator.next();
+	}
 	return this.internalIterator.next();
     }
     
@@ -52,6 +77,7 @@ public class BaclavaIterator implements ResumableIterator {
     
     public synchronized void reset() {
 	this.internalIterator = underlyingCollection.iterator();
+	this.indexIterator = indexList.iterator();
     }
 
     public int size() {

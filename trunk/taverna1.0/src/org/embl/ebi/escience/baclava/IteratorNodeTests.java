@@ -36,32 +36,35 @@ public class IteratorNodeTests {
 	    
 	    // First test the basic iterator
 	    System.out.println("\nBasic iterator node test");
-	    printIterator(new BaclavaIteratorNode(new BaclavaIterator(colours), "Colour"));
+	    DataThing coloursThing = new DataThing(colours);
+	    DataThing animalsThing = new DataThing(animals);
+	    DataThing shapesThing = new DataThing(shapes);
+	    printIterator(new BaclavaIteratorNode(coloursThing.iterator("''"), "Colour"));
 	    
 	    
 	    // Now test a cross product
 	    System.out.println("\nCross product test (colour*shape)");
 	    MutableTreeNode t = new JoinIteratorNode();
-	    t.insert(new BaclavaIteratorNode(new BaclavaIterator(colours), "Colour"),0);
-	    t.insert(new BaclavaIteratorNode(new BaclavaIterator(shapes), "Shape"),0);
-	    printIterator((Iterator)t);
+	    t.insert(new BaclavaIteratorNode(coloursThing.iterator("''"), "Colour"),0);
+	    t.insert(new BaclavaIteratorNode(shapesThing.iterator("''"), "Shape"),0);
+	    printIterator((ResumableIterator)t);
 	    System.out.println("\nAdding another iterator to that lot (colour*animal*shape)");
-	    t.insert(new BaclavaIteratorNode(new BaclavaIterator(animals), "Animal"),0);
-	    printIterator((Iterator)t);
+	    t.insert(new BaclavaIteratorNode(animalsThing.iterator("''"), "Animal"),0);
+	    printIterator((ResumableIterator)t);
 	    
 	    // And a straight dot product
 	    System.out.println("\nDot product test (colour.animal)");
 	    t = new LockStepIteratorNode();
-	    t.insert(new BaclavaIteratorNode(new BaclavaIterator(colours), "Colour"),0);
-	    t.insert(new BaclavaIteratorNode(new BaclavaIterator(animals), "Animal"),0);
-	    printIterator((Iterator)t);
+	    t.insert(new BaclavaIteratorNode(coloursThing.iterator("''"), "Colour"),0);
+	    t.insert(new BaclavaIteratorNode(animalsThing.iterator("''"), "Animal"),0);
+	    printIterator((ResumableIterator)t);
 
 	    // And now the cross product of a dot and a normal iterator
 	    System.out.println("\nCombined ((colour.animal)*shape)");
 	    MutableTreeNode t2 = new JoinIteratorNode();
 	    t2.insert(t,0);
-	    t2.insert(new BaclavaIteratorNode(new BaclavaIterator(shapes), "Shape"),0);
-	    printIterator((Iterator)t2);
+	    t2.insert(new BaclavaIteratorNode(shapesThing.iterator("''"), "Shape"),0);
+	    printIterator((ResumableIterator)t2);
 
 	}
 	catch (Exception ex) {
@@ -69,10 +72,33 @@ public class IteratorNodeTests {
 	}
     }
 
-    private static void printIterator(Iterator i) {
+    private static void printIterator(ResumableIterator i) {
 	System.out.println("Iterator is of class "+i.getClass().toString().split("\\.")[5]+", "+((ResumableIterator)i).size()+" elements, "+((TreeNode)i).getChildCount()+" children.");
 	while (i.hasNext()) {
-	    System.out.println(i.next());
+	    // Explode the map and print a new map containing the data objects without
+	    // the datathing wrapping
+	    Map display = new HashMap();
+	    Map current = (Map)i.next();
+	    for (Iterator k = current.keySet().iterator(); k.hasNext();) {
+		Object key = k.next();
+		if (current.get(key) instanceof DataThing) {
+		    DataThing thing = (DataThing)current.get(key);
+		    display.put(key, thing.getDataObject());
+		}
+		else {
+		    display.put(key, current.get(key));
+		}
+	    }
+	    int[] location = i.getCurrentLocation();
+	    StringBuffer sb = new StringBuffer("[");
+	    for (int j = 0; j < location.length; j++) {
+		if (j!=0) {
+		    sb.append(",");
+		}
+		sb.append(""+location[j]);
+	    }
+	    sb.append("]");
+	    System.out.println(display + " at location " + sb.toString());
 	}
     }
     

@@ -484,7 +484,8 @@ public class DataThing {
 	    // of all the items into a new collection, iterate over this list building
 	    // the DataThing objects and return the iterator over that list (and breathe...)
 	    List targetList = new ArrayList();
-	    drill(iterationDepth, targetList, (Collection)theDataObject);
+	    List indexList = new ArrayList();
+	    drill(iterationDepth, targetList, indexList, new int[0], (Collection)theDataObject);
 	    // Now iterate over the target list creating new DataThing objects from it
 	    List dataThingList = new ArrayList();
 	    for (Iterator i = targetList.iterator(); i.hasNext(); ) {
@@ -494,7 +495,7 @@ public class DataThing {
 		newThing.lsid.putAll(this.lsid);
 		dataThingList.add(newThing);
 	    }
-	    return new BaclavaIterator(dataThingList);
+	    return new BaclavaIterator(dataThingList, indexList);
 	}
 	else {
 	    throw new IntrospectionException("Incompatible types for iterator, cannot extract "+type+" from "+getSyntacticType());
@@ -507,21 +508,36 @@ public class DataThing {
      * this makes the underlying assumption that the collection contains either collections
      * or objects, but never a mix of both.
      */
-    private void drill(int iterationDepth, List targetList, Collection theDataObject) {
+    private void drill(int iterationDepth, List targetList, List indexList, int[] currentIndex, Collection theDataObject) {
 	if (iterationDepth == 1) {
 	    // Collecting items
+	    int localIndex = 0;
 	    for (Iterator i = theDataObject.iterator(); i.hasNext(); ) {
 		targetList.add(i.next());
+		indexList.add(append(currentIndex, localIndex++));
 	    }
 	}
 	else {
 	    // Iterating further down
+	    int localIndex = 0;
 	    for (Iterator i = theDataObject.iterator(); i.hasNext(); ) {
 		Collection theCollection = (Collection)i.next();
-		drill(iterationDepth-1, targetList, theCollection);
+		drill(iterationDepth-1, targetList, indexList, append(currentIndex, localIndex++), theCollection);
 	    }
 	}
     }
+    /**
+     * Utility class, append an int onto an int array and return the new array
+     */
+    private int[] append(int[] list, int head) {
+	int[] newlist = new int[list.length+1];
+	for (int i = 0; i<list.length; i++) {
+	    newlist[i] = list[i];
+	}
+	newlist[list.length] = head;
+	return newlist;
+    }
+
 
     public String toString()
     {

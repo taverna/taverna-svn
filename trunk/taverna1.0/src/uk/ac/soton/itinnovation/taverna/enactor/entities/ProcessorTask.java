@@ -25,8 +25,8 @@
 //      Dependencies        :
 //
 //      Last commit info    :   $Author: mereden $
-//                              $Date: 2004-06-03 15:18:26 $
-//                              $Revision: 1.49 $
+//                              $Date: 2004-06-07 11:01:33 $
+//                              $Revision: 1.50 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 package uk.ac.soton.itinnovation.taverna.enactor.entities;
@@ -519,6 +519,7 @@ public class ProcessorTask extends AbstractTask {
 	int totalIterations = rootNode.size();
 	while (rootNode.hasNext()) {
 	    Map inputSet = (Map)rootNode.next();
+	    int[] currentLocation = rootNode.getCurrentLocation();
 	    eventList.add(new InvokingWithIteration(++currentIteration, totalIterations));
 	    Map singleResultMap = execute(inputSet);
 	    // Iterate over the outputs
@@ -531,7 +532,8 @@ public class ProcessorTask extends AbstractTask {
 		// data flow causing a null pointer exception if no such data flow existed.
 		if (outputMap.containsKey(outputName)) {
 		    List targetList = ((List)((DataThing)outputMap.get(outputName)).getDataObject());
-		    targetList.add(dataObject);
+		    //targetList.add(dataObject);
+		    insertObjectInto(dataObject, targetList, currentLocation);
 		}
 		/// fix ends
 	    }
@@ -539,6 +541,41 @@ public class ProcessorTask extends AbstractTask {
 	return outputMap;
     }
 
+    /**
+     * A private method to insert an object into a root list at the position specified
+     * by an array of integer indices as returned from the ResumableIterator getCurrentLocation
+     * method. This method must be called with at least one element in the position array,
+     * but I'm fairly sure that this is implied by the calling context anyway.
+     */
+    private void insertObjectInto(Object o, List l, int[] position) {
+	List currentList = l;
+	// Walk over the index array to find the enclosing collection
+	for (int i = 0; i<position.length-1; i++) {
+	    int index = position[i];
+	    if (index < currentList.size()) {
+		currentList = (List)currentList.get(index);
+	    }
+	    else {
+		// How many lists are needed to pad this?
+		int numberShort = (index - currentList.size())+1;
+		for (int j = 0; j < numberShort; j++) {
+		    currentList.add(new ArrayList());
+		}
+		currentList = (List)currentList.get(index);
+	    }
+	}
+	// The leaf index is the last in the position array
+	int objectIndex = position[position.length-1];
+	// Check whether it's safe to just insert this item at the
+	// given position
+	try {
+	    currentList.add(objectIndex, o);
+	}
+	catch (IndexOutOfBoundsException ioobe) {
+	    // Just add onto the end
+	    currentList.add(o);
+	}
+    }
 
     
     //protected static final String PROVENANCE_NAMESPACE = "http://www.it-innovation.soton.ac.uk/taverna/workflow/enactor/provenance";

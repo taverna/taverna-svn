@@ -20,4 +20,6 @@ public interface ResumableIterator extends Iterator {
     
     public int size();
 
+    public int[] getCurrentLocation();
+
 }

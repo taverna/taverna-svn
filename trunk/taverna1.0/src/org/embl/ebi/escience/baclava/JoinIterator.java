@@ -8,6 +8,7 @@ package org.embl.ebi.escience.baclava;
 // Utility Imports
 import java.util.Iterator;
 import java.util.NoSuchElementException;
+import java.util.*;
 
 import org.embl.ebi.escience.baclava.BaclavaIterator;
 import java.lang.Object;
@@ -63,6 +64,39 @@ public class JoinIterator implements ResumableIterator {
 	// doesn't apply then we can't create the join.
     }
     
+    /**
+     * Get the current location by appending all the current location
+     * arrays of all child iterators
+     */
+    public int[] getCurrentLocation() {
+	ResumableIterator[] iterators = iterators();
+	ArrayList temp = new ArrayList();
+	for (int i = 0; i < iterators.length; i++) {
+	    temp.add(iterators[i].getCurrentLocation());
+	}
+	return concatArrays(temp);
+    }
+    /** 
+     * Consume a List of int[] and return an int[] formed from
+     * the concatenation of all contains arrays
+     */
+    private int[] concatArrays(List listOfArrays) {
+	// Find the array target sizes
+	int totalSize = 0;
+	for (Iterator i = listOfArrays.iterator(); i.hasNext();) {
+	    totalSize += ((int[])i.next()).length;
+	}
+	int[] output = new int[totalSize];
+	int currentIndex = 0;
+	for (Iterator i = listOfArrays.iterator(); i.hasNext();) {
+	    int[] source = (int[])i.next();
+	    for (int j = 0; j < source.length; j++) {
+		output[currentIndex++] = source[j];
+	    }
+	}
+	return output;
+    }
+
     ResumableIterator[] iterators() {
 	return this.iteratorsArray;
     }

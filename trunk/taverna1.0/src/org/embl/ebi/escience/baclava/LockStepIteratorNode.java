@@ -118,4 +118,11 @@ public class LockStepIteratorNode extends DefaultMutableTreeNode implements Resu
 	return true;
     }
 
+    /**
+     * Get the current location
+     */
+    public int[] getCurrentLocation() {
+	return iterator.getCurrentLocation();
+    }
+
 }
