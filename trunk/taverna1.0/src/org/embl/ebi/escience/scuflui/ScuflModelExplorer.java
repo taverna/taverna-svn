@@ -5,7 +5,6 @@
  */
 package org.embl.ebi.escience.scuflui;
 
-import javax.swing.JDesktopPane;
 import javax.swing.JTree;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
@@ -43,19 +42,13 @@ public class ScuflModelExplorer extends JTree
     // The tree model that contains the root element
     private DefaultTreeModel theTreeModel = null;
 
-    // If not null, this is the JDesktopPane that contains
-    // (indirectly) this explorer, and should be used to
-    // pop up new windows such as the properties panel
-    public JDesktopPane pane = null;
-
     /**
      * Default constructor, creates a new ScuflModelExplorer that
      * is not bound to any ScuflModel instance. Use the attachToModel
      * method to actually show data in this component.
      */
-    public ScuflModelExplorer(JDesktopPane pane) {
+    public ScuflModelExplorer() {
 	super();
-	this.pane = pane;
 	this.root = new DefaultMutableTreeNode("No Scufl Model!");
 	DefaultTreeModel model = (DefaultTreeModel)this.getModel();
 	model.setRoot(this.root);

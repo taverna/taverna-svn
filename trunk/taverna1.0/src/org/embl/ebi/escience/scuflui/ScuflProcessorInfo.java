@@ -6,6 +6,7 @@
 package org.embl.ebi.escience.scuflui;
 
 import java.awt.BorderLayout;
+import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -25,12 +26,12 @@ import java.lang.String;
 
 
 /**
- * A JComponent that shows information about a specific
+ * A JDialog that shows information about a specific
  * Processor object in the model, allowing editing of
  * description and logging level.
  * @author Tom Oinn
  */
-public class ScuflProcessorInfo extends JPanel {
+public class ScuflProcessorInfo extends JDialog {
     
     /**
      * The various log levels currently supported by the enactor
@@ -52,11 +53,14 @@ public class ScuflProcessorInfo extends JPanel {
      */
     public ScuflProcessorInfo(Processor p) {
 	
-	super();
+	super((JFrame)null,"Processor information for "+p.getName(),true);
 	
+	// Prevent the user closing the window using the close box
+	setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
+
 	final Processor theProcessor = p;
 
-	setLayout(new BorderLayout()); 
+	getContentPane().setLayout(new BorderLayout()); 
 
 	// Make a JTable with the processor information in
 	String[] columnNames = {"Property","Value"};
@@ -102,11 +106,20 @@ public class ScuflProcessorInfo extends JPanel {
 	final JTextArea description = new JTextArea(theProcessor.getDescription());
 	description.setEditable(true);
 	// Create a JButton to update the description text
-	final JButton updateDescription = new JButton("Update description");
+	final JButton updateDescription = new JButton("Update description and close");
 	updateDescription.addActionListener(new ActionListener() {
 		public void actionPerformed(ActionEvent ae) {
 		    // Write the description text to the processor
 		    theProcessor.setDescription(description.getText());
+		    ScuflProcessorInfo.this.setVisible(false);
+		}
+		
+	    });
+	// Create a JButton to cancel the update
+	final JButton cancelUpdate = new JButton("Cancel");
+	cancelUpdate.addActionListener(new ActionListener() {
+		public void actionPerformed(ActionEvent ae) {
+		    ScuflProcessorInfo.this.setVisible(false);
 		}
 	    });
 	
@@ -120,12 +133,16 @@ public class ScuflProcessorInfo extends JPanel {
 							   "Description");
 	dp.setBorder(dpBorder);
 
-	add(dp, BorderLayout.NORTH);
-	add(updateDescription, BorderLayout.WEST);
-	add(provenanceLevel, BorderLayout.EAST);
-	add(infoTablePane, BorderLayout.SOUTH);
-	//pack();
-    }
+	Container contentPane = getContentPane();
+
+	contentPane.add(dp, BorderLayout.NORTH);
+	contentPane.add(updateDescription, BorderLayout.WEST);
+	contentPane.add(provenanceLevel, BorderLayout.CENTER);
+	contentPane.add(cancelUpdate, BorderLayout.EAST);
+	contentPane.add(infoTablePane, BorderLayout.SOUTH);
+	pack();
+	setVisible(true);
+	    }
     
     private void addRow(String key, String value) {
 	this.propertyNames.add(key);

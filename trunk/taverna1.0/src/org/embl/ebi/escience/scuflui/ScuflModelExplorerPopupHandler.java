@@ -13,11 +13,11 @@ import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 import javax.swing.tree.DefaultMutableTreeNode;
 import org.embl.ebi.escience.scufl.Processor;
-import org.embl.ebi.escience.scuflui.workbench.ProcessorInfoFrame;
 
 import org.embl.ebi.escience.scuflui.NoContextMenuFoundException;
 import org.embl.ebi.escience.scuflui.ScuflContextMenuFactory;
 import org.embl.ebi.escience.scuflui.ScuflModelExplorer;
+import org.embl.ebi.escience.scuflui.ScuflProcessorInfo;
 import java.lang.Object;
 
 
@@ -73,10 +73,7 @@ public class ScuflModelExplorerPopupHandler extends MouseAdapter {
 		    JMenuItem properties = new JMenuItem("Properties...");
 		    properties.addActionListener(new ActionListener() {
 			    public void actionPerformed(ActionEvent a) {
-				ProcessorInfoFrame pif = new ProcessorInfoFrame(theProcessor);
-				ScuflModelExplorerPopupHandler.this.explorer.pane.add(pif);
-				pif.moveToFront();
-				pif.setLocation(theMouseEvent.getX(), theMouseEvent.getY());
+				ScuflProcessorInfo spi = new ScuflProcessorInfo(theProcessor);
 			    }
 			});
 		    theMenu.add(properties);

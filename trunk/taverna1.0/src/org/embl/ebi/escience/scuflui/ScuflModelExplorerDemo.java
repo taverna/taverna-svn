@@ -36,7 +36,7 @@ import java.lang.System;
  */
 public class ScuflModelExplorerDemo extends JFrame {
     
-    ScuflModelExplorer explorer = new ScuflModelExplorer(null);
+    ScuflModelExplorer explorer = new ScuflModelExplorer();
     
     ScuflModel model = new ScuflModel();
 
