@@ -25,8 +25,8 @@
 //      Dependencies        :
 //
 //      Last commit info    :   $Author: mereden $
-//                              $Date: 2003-09-30 17:11:18 $
-//                              $Revision: 1.23 $
+//                              $Date: 2003-10-09 12:19:32 $
+//                              $Revision: 1.24 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 
@@ -35,6 +35,7 @@ package uk.ac.soton.itinnovation.taverna.enactor.broker;
 import org.apache.log4j.Logger;
 import org.embl.ebi.escience.scufl.ScuflModel;
 import org.embl.ebi.escience.scufl.parser.XScuflFormatException;
+import org.embl.ebi.escience.scufl.view.XScuflView;
 import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.broker.FlowBroker;
 import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.broker.FlowReceipt;
 import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.broker.WorkflowCommandException;
@@ -50,12 +51,14 @@ import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.serviceprovidermana
 import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.serviceprovidermanager.ServiceProviderManager;
 import uk.ac.soton.itinnovation.taverna.enactor.dispatcher.TavernaDispatcher;
 
-// IO Imports
+// Utility Imports
+import java.util.Map;
 
-// JDOM Imports
-import java.util.*;
-import org.embl.ebi.escience.scufl.view.*;
-import java.net.*;
+// Network Imports
+import java.net.MalformedURLException;
+
+
+
 
 /**
  * A flowbroker designed to allow submission of workflows from

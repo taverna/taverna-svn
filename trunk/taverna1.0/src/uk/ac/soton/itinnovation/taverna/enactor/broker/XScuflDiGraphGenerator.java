@@ -25,14 +25,15 @@
 //      Dependencies        :
 //
 //      Last commit info    :   $Author: mereden $
-//                              $Date: 2003-09-30 17:11:18 $
-//                              $Revision: 1.26 $
+//                              $Date: 2003-10-09 12:19:32 $
+//                              $Revision: 1.27 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 
 package uk.ac.soton.itinnovation.taverna.enactor.broker;
 
 import org.apache.log4j.Logger;
+import org.embl.ebi.escience.baclava.DataThing;
 import org.embl.ebi.escience.scufl.ConcurrencyConstraint;
 import org.embl.ebi.escience.scufl.DataConstraint;
 import org.embl.ebi.escience.scufl.Port;
@@ -49,9 +50,8 @@ import uk.ac.soton.itinnovation.taverna.enactor.entities.TavernaTaskFactory;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.*;
+import java.util.Map;
 
-import org.embl.ebi.escience.baclava.*;
 
 
 

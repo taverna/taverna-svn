@@ -5,8 +5,14 @@
  */
 package org.embl.ebi.escience.baclava.factory;
 
-import java.util.*;
-import org.embl.ebi.escience.baclava.*;
+import org.embl.ebi.escience.baclava.DataThing;
+
+// Utility Imports
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Vector;
+
+
 
 
 /**

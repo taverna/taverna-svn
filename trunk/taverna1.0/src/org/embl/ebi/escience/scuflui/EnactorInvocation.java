@@ -9,8 +9,8 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Font;
 import javax.swing.*;
+import org.embl.ebi.escience.baclava.DataThing;
 import org.embl.ebi.escience.scufl.ScuflModel;
-import org.embl.ebi.escience.baclava.*;
 import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.broker.FlowBroker;
 import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.broker.FlowBrokerFactory;
 import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.broker.FlowReceipt;
@@ -18,14 +18,15 @@ import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.broker.InvalidFlowB
 import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.broker.WorkflowCommandException;
 import uk.ac.soton.itinnovation.taverna.enactor.TavernaWorkflowEnactor;
 import uk.ac.soton.itinnovation.taverna.enactor.broker.TavernaBinaryWorkflowSubmission;
-import uk.ac.soton.itinnovation.taverna.enactor.broker.*;
-
+import uk.ac.soton.itinnovation.taverna.enactor.broker.TavernaFlowBroker;
+import uk.ac.soton.itinnovation.taverna.enactor.broker.TavernaFlowReceipt;
 
 // Utility Imports
 import java.util.Enumeration;
+import java.util.Iterator;
+import java.util.Map;
 import java.util.Properties;
 import java.util.ResourceBundle;
-import java.util.*;
 
 
 

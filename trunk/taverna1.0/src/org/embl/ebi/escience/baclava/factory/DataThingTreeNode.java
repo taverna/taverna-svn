@@ -9,6 +9,8 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import org.embl.ebi.escience.baclava.DataThing;
 
 
+
+
 /**
 * A subclass of the DefaultMutableTreeNode with
 * a reference back to the DataThing that the node

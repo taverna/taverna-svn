@@ -24,17 +24,11 @@ public class WSDLXMLHandler implements XMLHandler {
 	WSDLBasedProcessor wsdlp = (WSDLBasedProcessor)p;
 	Element spec = new Element("arbitrarywsdl",XScufl.XScuflNS);
 	Element wsdl = new Element("wsdl",XScufl.XScuflNS);
-	Element port = new Element("porttype",XScufl.XScuflNS);
 	Element operation = new Element("operation",XScufl.XScuflNS);
-	Element style = new Element("style",XScufl.XScuflNS);
 	wsdl.setText(wsdlp.getWSDLLocation());
-	//port.setText(wsdlp.getPortTypeName());
 	operation.setText(wsdlp.getOperationName());
-	//style.setText(wsdlp.getOperationStyle());
 	spec.addContent(wsdl);
-	spec.addContent(port);
 	spec.addContent(operation);
-	spec.addContent(style);
 	return spec;
     }
     
@@ -44,13 +38,7 @@ public class WSDLXMLHandler implements XMLHandler {
 	       XScuflFormatException {
 	Element wsdlProcessor = processorNode.getChild("arbitrarywsdl",XScufl.XScuflNS);
 	String wsdlLocation = wsdlProcessor.getChild("wsdl",XScufl.XScuflNS).getTextTrim();
-	String portTypeName = wsdlProcessor.getChild("porttype",XScufl.XScuflNS).getTextTrim();
 	String operationName = wsdlProcessor.getChild("operation",XScufl.XScuflNS).getTextTrim();
-	String operationStyle = "rpc";
-	Element styleElement = wsdlProcessor.getChild("style",XScufl.XScuflNS);
-	if (styleElement != null) {
-	    operationStyle = styleElement.getTextTrim();
-	}
 	return new WSDLBasedProcessor(model, name, wsdlLocation, operationName);
     }
 

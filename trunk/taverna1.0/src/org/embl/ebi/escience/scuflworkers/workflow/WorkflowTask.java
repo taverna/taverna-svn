@@ -25,17 +25,16 @@
 //      Dependencies        :
 //
 //      Last commit info    :   $Author: mereden $
-//                              $Date: 2003-09-30 17:11:18 $
-//                              $Revision: 1.1 $
+//                              $Date: 2003-10-09 12:19:32 $
+//                              $Revision: 1.2 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 
 package org.embl.ebi.escience.scuflworkers.workflow;
 
-import uk.ac.soton.itinnovation.taverna.enactor.entities.ProcessorTask;
-import uk.ac.soton.itinnovation.taverna.enactor.entities.TaskExecutionException;
 import org.apache.log4j.Logger;
 import org.embl.ebi.escience.scufl.Processor;
+import org.embl.ebi.escience.scufl.ScuflModel;
 import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.broker.FlowBroker;
 import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.broker.FlowBrokerFactory;
 import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.broker.FlowCallback;
@@ -43,7 +42,8 @@ import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.broker.FlowMessage;
 import uk.ac.soton.itinnovation.taverna.enactor.broker.LogLevel;
 import uk.ac.soton.itinnovation.taverna.enactor.broker.TavernaBinaryWorkflowSubmission;
 import uk.ac.soton.itinnovation.taverna.enactor.broker.TavernaFlowReceipt;
-import org.embl.ebi.escience.scufl.*;
+import uk.ac.soton.itinnovation.taverna.enactor.entities.ProcessorTask;
+import uk.ac.soton.itinnovation.taverna.enactor.entities.TaskExecutionException;
 
 // Utility Imports
 import java.util.HashMap;

@@ -5,50 +5,20 @@
  */
 package org.embl.ebi.escience.scuflworkers.wsdl;
 
-import javax.wsdl.*;
-import javax.wsdl.extensions.*;
-import javax.wsdl.extensions.soap.*;
-import javax.xml.namespace.*;
-import javax.wsdl.factory.WSDLFactory;
-import javax.wsdl.xml.WSDLReader;
-import org.embl.ebi.escience.scufl.*;
-//import org.embl.ebi.escience.scufl.Port; // ambiguous with: javax.wsdl.Port 
-
-// Utility Imports
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-
-// Network Imports
-import java.net.MalformedURLException;
-import java.net.URL;
-import org.apache.axis.Constants;
-import org.apache.axis.encoding.ser.SimpleDeserializer;
-import org.apache.axis.wsdl.gen.Parser;
-import org.apache.axis.wsdl.symbolTable.BaseType;
-import org.apache.axis.wsdl.symbolTable.BindingEntry;
-import org.apache.axis.wsdl.symbolTable.Parameter;
-import org.apache.axis.wsdl.symbolTable.Parameters;
-import org.apache.axis.wsdl.symbolTable.ServiceEntry;
-import org.apache.axis.wsdl.symbolTable.SymTabEntry;
-import org.apache.axis.wsdl.symbolTable.SymbolTable;
-import org.apache.axis.wsdl.symbolTable.TypeEntry;
-
 import javax.wsdl.Binding;
 import javax.wsdl.Operation;
-import javax.wsdl.Port;
-import javax.wsdl.Service;
+import javax.wsdl.Port; // ambiguous with: org.embl.ebi.escience.scufl.Port 
+import javax.wsdl.Service; // ambiguous with: javax.xml.rpc.Service 
 import javax.wsdl.extensions.soap.SOAPAddress;
 import javax.xml.namespace.QName;
 import javax.xml.rpc.Call;
-import javax.xml.rpc.encoding.Deserializer;
-import javax.xml.rpc.encoding.DeserializerFactory;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Vector;
+import org.apache.axis.wsdl.gen.Parser;
+import org.apache.axis.wsdl.symbolTable.*;
+import org.embl.ebi.escience.scufl.*;
+
+// Utility Imports
+import java.util.*;
+
 
 
 

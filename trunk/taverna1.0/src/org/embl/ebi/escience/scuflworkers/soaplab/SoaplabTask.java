@@ -25,33 +25,35 @@
 //      Dependencies        :
 //
 //      Last commit info    :   $Author: mereden $
-//                              $Date: 2003-10-01 09:03:44 $
-//                              $Revision: 1.2 $
+//                              $Date: 2003-10-09 12:19:32 $
+//                              $Revision: 1.3 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 
 package org.embl.ebi.escience.scuflworkers.soaplab;
 
-import uk.ac.soton.itinnovation.taverna.enactor.entities.ProcessorTask;
-import uk.ac.soton.itinnovation.taverna.enactor.entities.TaskExecutionException;
 import javax.xml.namespace.QName;
 import org.apache.axis.client.Call;
 import org.apache.axis.client.Service;
 import org.apache.log4j.Logger;
+import org.embl.ebi.escience.baclava.DataThing;
+import org.embl.ebi.escience.baclava.factory.DataThingFactory;
 import org.embl.ebi.escience.scufl.Processor;
-import uk.ac.soton.itinnovation.mygrid.workflow.enactor.io.Output;
 import uk.ac.soton.itinnovation.taverna.enactor.broker.LogLevel;
+import uk.ac.soton.itinnovation.taverna.enactor.entities.ProcessorTask;
+import uk.ac.soton.itinnovation.taverna.enactor.entities.TaskExecutionException;
 
 // Utility Imports
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.Map;
 import java.util.List;
-import org.embl.ebi.escience.baclava.*;
-import org.embl.ebi.escience.baclava.factory.*;
+import java.util.Map;
 
 // Network Imports
 import java.net.URL;
+
+
+
 
 public class SoaplabTask extends ProcessorTask{
 

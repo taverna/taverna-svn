@@ -5,14 +5,16 @@
  */
 package org.embl.ebi.escience.baclava.factory;
 
-import java.util.*;
-import org.jdom.*;
-import javax.swing.*;
-import java.awt.*;
-import java.awt.image.*;
-import javax.swing.tree.*;
-import org.embl.ebi.escience.baclava.*;
-import org.embl.ebi.escience.scufl.*;
+import javax.swing.tree.TreeCellRenderer;
+import org.embl.ebi.escience.baclava.DataThing;
+
+// Utility Imports
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.Set;
+
+
+
 
 /**
  * Presents a tree view of a DataThing, walking

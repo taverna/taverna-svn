@@ -26,20 +26,25 @@
 //      Dependencies        :
 //
 //      Last commit info    :   $Author: mereden $
-//                              $Date: 2003-10-02 10:15:40 $
-//                              $Revision: 1.16 $
+//                              $Date: 2003-10-09 12:19:32 $
+//                              $Revision: 1.17 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 
 package uk.ac.soton.itinnovation.taverna.enactor.entities;
 
 import org.apache.log4j.Logger;
+import org.embl.ebi.escience.baclava.DataThing;
+import org.embl.ebi.escience.scufl.InputPort;
+import org.embl.ebi.escience.scufl.Port;
+import org.embl.ebi.escience.scufl.SemanticMarkup;
 import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.entities.graph.GraphNode;
 import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.eventservice.TaskStateMessage;
 import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.serviceprovidermanager.ServiceSelectionCriteria;
-import org.embl.ebi.escience.baclava.*;
-import org.embl.ebi.escience.scufl.*;
-import java.util.*;
+
+// Utility Imports
+import java.util.ArrayList;
+import java.util.List;
 
 
 

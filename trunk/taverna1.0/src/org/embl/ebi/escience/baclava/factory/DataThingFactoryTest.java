@@ -5,9 +5,15 @@
  */
 package org.embl.ebi.escience.baclava.factory;
 
-import org.jdom.*;
-import org.jdom.output.*;
-import org.embl.ebi.escience.baclava.*;
+import org.embl.ebi.escience.baclava.DataThing;
+
+// JDOM Imports
+import org.jdom.Document;
+import org.jdom.Element;
+import org.jdom.output.XMLOutputter;
+
+
+
 
 /**
  * Test the creation and type display of the various supported

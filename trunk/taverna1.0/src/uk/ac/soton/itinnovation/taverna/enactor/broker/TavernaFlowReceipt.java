@@ -25,14 +25,17 @@
 //      Dependencies        :
 //
 //      Last commit info    :   $Author: mereden $
-//                              $Date: 2003-10-02 16:54:25 $
-//                              $Revision: 1.20 $
+//                              $Date: 2003-10-09 12:19:32 $
+//                              $Revision: 1.21 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 
 package uk.ac.soton.itinnovation.taverna.enactor.broker;
 
 import org.apache.log4j.Logger;
+import org.embl.ebi.escience.baclava.DataThing;
+import org.embl.ebi.escience.baclava.factory.DataThingXMLFactory;
+import org.embl.ebi.escience.scufl.Processor;
 import uk.ac.soton.itinnovation.mygrid.workflow.enactor.broker.WSFlowReceipt;
 import uk.ac.soton.itinnovation.mygrid.workflow.enactor.broker.WorkflowSubmitInvalidException;
 import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.broker.FlowCallback;
@@ -49,20 +52,18 @@ import uk.ac.soton.itinnovation.taverna.enactor.entities.ProcessorTask;
 
 // Utility Imports
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 // JDOM Imports
 import org.jdom.Document;
 import org.jdom.Element;
+import org.jdom.Namespace;
 import org.jdom.Text;
 import org.jdom.output.XMLOutputter;
-import org.jdom.Namespace;
-import java.util.*;
 
-import org.embl.ebi.escience.scufl.*;
-import org.embl.ebi.escience.baclava.*;
-import org.embl.ebi.escience.baclava.factory.*;
 
 
 

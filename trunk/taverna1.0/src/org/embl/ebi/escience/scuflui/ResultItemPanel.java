@@ -5,16 +5,27 @@
  */
 package org.embl.ebi.escience.scuflui;
 
-import org.embl.ebi.escience.baclava.*;
-import org.embl.ebi.escience.baclava.factory.*;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import javax.swing.*;
-import javax.swing.tree.*;
-import javax.swing.event.*;
-import java.awt.*;
-import java.awt.event.*;
-import java.util.*;
+import javax.swing.event.TreeSelectionEvent;
+import javax.swing.event.TreeSelectionListener;
+import org.embl.ebi.escience.baclava.DataThing;
+import org.embl.ebi.escience.baclava.factory.DataThingTreeFactory;
+import org.embl.ebi.escience.baclava.factory.DataThingTreeNode;
+import org.embl.ebi.escience.scuflui.workbench.Workbench;
+
+// IO Imports
 import java.io.*;
-import org.embl.ebi.escience.scuflui.workbench.*;
+
+
+
 
 /**
  * A JPanel to represent a single result DataThing

@@ -8,8 +8,6 @@ package org.embl.ebi.escience.scuflui.workbench;
 import javax.swing.JComponent;
 import javax.swing.JInternalFrame;
 import javax.swing.JScrollPane;
-import javax.swing.JPanel;
-import java.awt.Dimension;
 import javax.swing.event.InternalFrameAdapter;
 import javax.swing.event.InternalFrameEvent;
 import org.embl.ebi.escience.scufl.ScuflModel;

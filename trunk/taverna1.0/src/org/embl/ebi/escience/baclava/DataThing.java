@@ -5,11 +5,22 @@
  */
 package org.embl.ebi.escience.baclava;
 
-import java.util.*;
-import org.jdom.*;
-import org.embl.ebi.escience.baclava.factory.*;
-import org.embl.ebi.escience.scufl.*;
-import javax.swing.*;
+import javax.swing.ImageIcon;
+import org.embl.ebi.escience.baclava.factory.DataThingXMLFactory;
+import org.embl.ebi.escience.scufl.SemanticMarkup;
+
+// Utility Imports
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
+
+// JDOM Imports
+import org.jdom.Element;
+
+
+
 
 /**
  * A simple wrapper around an arbitrary Collection

@@ -5,19 +5,19 @@
  */
 package org.embl.ebi.escience.scuflworkers.wsdl;
 
+import com.ibm.wsdl.extensions.soap.SOAPBindingImpl;
 import javax.swing.tree.DefaultMutableTreeNode;
+import javax.wsdl.Binding;
 import javax.wsdl.Definition;
 import javax.wsdl.Operation;
 import javax.wsdl.PortType;
-import javax.wsdl.*;
-import javax.wsdl.extensions.soap.*;
-import javax.wsdl.extensions.*;
 import javax.wsdl.WSDLException;
+import javax.wsdl.extensions.ExtensibilityElement;
+import javax.wsdl.extensions.soap.SOAPBinding;
 import javax.wsdl.factory.WSDLFactory;
 import javax.wsdl.xml.WSDLReader;
 import org.embl.ebi.escience.scuflui.workbench.Scavenger;
 import org.embl.ebi.escience.scuflui.workbench.ScavengerCreationException;
-import com.ibm.wsdl.extensions.soap.*;
 
 // Utility Imports
 import java.util.Iterator;

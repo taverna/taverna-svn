@@ -5,7 +5,6 @@
  */
 package org.embl.ebi.escience.baclava;
 
-
 /**
  * Specifies the methods required for a plugin handler
  * class to serialize and deserialize objects to and

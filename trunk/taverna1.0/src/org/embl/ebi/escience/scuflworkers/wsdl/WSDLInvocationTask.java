@@ -25,33 +25,31 @@
 //      Dependencies        :
 //
 //      Last commit info    :   $Author: mereden $
-//                              $Date: 2003-10-09 12:02:05 $
-//                              $Revision: 1.4 $
+//                              $Date: 2003-10-09 12:19:32 $
+//                              $Revision: 1.5 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 
 package org.embl.ebi.escience.scuflworkers.wsdl;
 
-import uk.ac.soton.itinnovation.taverna.enactor.entities.ProcessorTask;
-import uk.ac.soton.itinnovation.taverna.enactor.entities.TaskExecutionException;
-import org.apache.log4j.Logger;
-import org.embl.ebi.escience.scufl.Processor;
-import uk.ac.soton.itinnovation.taverna.enactor.broker.LogLevel;
-import org.embl.ebi.escience.scufl.*;
-import org.embl.ebi.escience.baclava.*;
-import org.embl.ebi.escience.baclava.factory.*;
-import javax.xml.namespace.QName;
 import org.apache.axis.client.Call;
 import org.apache.axis.client.Service;
+import org.apache.log4j.Logger;
+import org.embl.ebi.escience.baclava.DataThing;
+import org.embl.ebi.escience.baclava.factory.DataThingFactory;
+import org.embl.ebi.escience.scufl.Processor;
+import uk.ac.soton.itinnovation.taverna.enactor.broker.LogLevel;
+import uk.ac.soton.itinnovation.taverna.enactor.entities.ProcessorTask;
+import uk.ac.soton.itinnovation.taverna.enactor.entities.TaskExecutionException;
+
 // Utility Imports
 import java.util.HashMap;
-import java.util.*;
+import java.util.List;
+import java.util.Map;
+import java.util.Vector;
 
 // JDOM Imports
 import org.jdom.Element;
-
-// Network Imports
-import java.net.*;
 
 
 

@@ -5,10 +5,22 @@
  */
 package org.embl.ebi.escience.baclava.factory;
 
+import org.embl.ebi.escience.baclava.Base64;
+import org.embl.ebi.escience.baclava.DataThing;
+import org.embl.ebi.escience.baclava.NoMetadataFoundException;
+import org.embl.ebi.escience.scufl.SemanticMarkup;
+import org.embl.ebi.escience.scufl.XScufl;
+
+// Utility Imports
 import java.util.*;
-import org.jdom.*;
-import org.embl.ebi.escience.baclava.*;
-import org.embl.ebi.escience.scufl.*;
+
+// JDOM Imports
+import org.jdom.Document;
+import org.jdom.Element;
+import org.jdom.Namespace;
+
+
+
 
 /**
  * Performs the creation of XML elements from DataThing
