@@ -25,8 +25,8 @@
 //      Dependencies        :
 //
 //      Last commit info    :   $Author: dmarvin $
-//                              $Date: 2003-06-05 14:20:05 $
-//                              $Revision: 1.8 $
+//                              $Date: 2003-06-05 14:36:23 $
+//                              $Revision: 1.9 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 package uk.ac.soton.itinnovation.taverna.enactor.entities;
@@ -55,18 +55,35 @@ public abstract class ProcessorTask extends TavernaTask{
     protected Processor proc = null;
     protected LogLevel logLevel = null;	
     private Logger logger = Logger.getLogger(ProcessorTask.class);
+		private String userID;
+		private String userCtx;
     
     
     /**
      * Default Constructor
      * @param id
      */
-    public ProcessorTask(String id,Processor p,LogLevel l) {
+    public ProcessorTask(String id,Processor p,LogLevel l,String userID, String userCtx) {
         super(id);
-	proc = p;
-	this.logLevel = new LogLevel(l.getLevel());
+				proc = p;
+				this.logLevel = new LogLevel(l.getLevel());
+				this.userID = userID;
+				this.userCtx = userCtx;
     }
     
+		/**
+		 * Retrieve the user identifier for the parent workflow
+		 */
+		 protected String getUserID() {
+			 return userID;
+		 }
+
+		/**
+		 * Retrieve the user context for the parent workflow
+		 */
+		 protected String getUserNamespaceContext() {
+			 return userCtx;
+		 }
 
     /**
      * Undertakes any special cancel processing required by Processor tasks
@@ -194,9 +211,9 @@ public abstract class ProcessorTask extends TavernaTask{
 						}
 						catch (Exception e) {
 							// TODO - Return a fault code
-							return new TaskStateMessage(getParentFlow.getID(), getID(), TaskStateMessage.FAILED,"Unable to obtain part data");
 							logger.error(e);
-						}
+							return new TaskStateMessage(getParentFlow().getID(), getID(), TaskStateMessage.FAILED,"Unable to obtain part data");
+							}
 					}
 					// Now have an array populated with the appropriate data.
 					// TODO - Create the Part object and put it into the appropriate output port task
@@ -205,7 +222,7 @@ public abstract class ProcessorTask extends TavernaTask{
 					pt.setData(thePart);
 				}
 	    }
-			return new TaskStateMessage(getParentFlow.getID(), getID(), TaskStateMessage.COMPLETE,"Task completed successfully");
+			return new TaskStateMessage(getParentFlow().getID(), getID(), TaskStateMessage.COMPLETE,"Task completed successfully");
 	    
 
 	    //return result;

@@ -25,8 +25,8 @@
 //      Dependencies        :
 //
 //      Last commit info    :   $Author: dmarvin $
-//                              $Date: 2003-06-04 10:10:59 $
-//                              $Revision: 1.11 $
+//                              $Date: 2003-06-05 14:36:23 $
+//                              $Revision: 1.12 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 
@@ -52,6 +52,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
+import java.util.HashMap;
 
 // Network Imports
 import java.net.URL;
@@ -77,13 +78,15 @@ public class SoaplabTask extends ProcessorTask{
 	private String report = null;
 	private String detailedStatus = null;
 
-	public SoaplabTask(String id,Processor proc,LogLevel l) {
-		super(id,proc,l);		
+	public SoaplabTask(String id,Processor proc,LogLevel l, String userID, String userCtx) {
+		super(id,proc,l,userID,userCtx);		
 	}
 	
-	protected uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.eventservice.TaskStateMessage execute() {
+	protected java.util.Map execute(java.util.Map inputMap) throws TaskExecutionException {
 		try{
+			HashMap outMap = null;
 			startTime = new TimePoint();
+			/*
 			//grab the input map
 			Map inputMap = new HashMap();
 			GraphNode[] inputs = getParents();
@@ -101,6 +104,7 @@ public class SoaplabTask extends ProcessorTask{
 				
 					
 			}
+			*/
 			// Invoke the web service...
 			Call call = (Call) new Service().createCall();
 			URL soaplabWSDLURL = ((SoaplabProcessor) proc).getEndpoint();
@@ -133,6 +137,40 @@ public class SoaplabTask extends ProcessorTask{
 			
 			outputForLog = new Output();
 
+			//ideally would want to check the correctness of the output within an iteration step
+			//have to convert the types of the output map into part types
+			outMap = new HashMap(keys.length);
+			for(int j=0;j<keys.length;j++) {					
+						
+							String type = null;
+							if(values[j] instanceof Boolean)
+								type = "boolean";
+							else if(values[j] instanceof String)
+								type = "string";
+							else if(values[j] instanceof Float)
+								type = "float";
+							else if(values[j] instanceof Integer)
+								type = "int";
+							else if(values[j] instanceof java.math.BigInteger)
+								type = "integer";
+							else if(values[j] instanceof Double)
+								type = "double";
+							else if(values[j] instanceof byte[])
+								type = "byte[]";
+							else if(values[j] instanceof String[])
+								type = "string[]";
+							else if(values[j] instanceof byte[][])
+								type = "byte[][]";
+							else if(values[j] instanceof Element)
+								type = "org.w3c.dom.Element";
+							else
+								throw new TaskExecutionException("Task failed since could not handle return type");
+							Part part = new Part(-1,keys[j],type,values[j]);
+							outMap.put(keys[j],part);
+							//pT.setData(part);
+							//outputForLog.addPart(part);												
+					}
+			/*
 			GraphNode[] outputs = getChildren();
 			boolean foundAllOutput = true;
 			boolean foundOutputItem = true;
@@ -179,16 +217,16 @@ public class SoaplabTask extends ProcessorTask{
 					}
 				}
 				
-			}
+				
+			}*/
 			endTime = new TimePoint();
 			
 			//success
-			return new TaskStateMessage(getParentFlow().getID(), getID(), TaskStateMessage.COMPLETE, "Task finished successfully");
+			return outMap;
 		}
 		catch(Exception ex) {
 			logger.error("Error invoking soaplab service for task " +getID() ,ex);
-			
-			return new TaskStateMessage(getParentFlow().getID(),getID(),TaskStateMessage.FAILED,"Task " + getID() + " failed due to problem invoking soaplab service");
+			throw new TaskExecutionException("Task " + getID() + " failed due to problem invoking soaplab service");			
 		}
 	}
 

@@ -25,8 +25,8 @@
 //      Dependencies        :
 //
 //      Last commit info    :   $Author: dmarvin $
-//                              $Date: 2003-06-04 10:14:39 $
-//                              $Revision: 1.11 $
+//                              $Date: 2003-06-05 14:36:23 $
+//                              $Revision: 1.12 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 
@@ -50,6 +50,8 @@ import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.entities.TimePoint;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.HashMap;
 
 // JDOM Imports
 import org.jdom.Element;
@@ -71,16 +73,17 @@ public class WSDLInvocationTask extends ProcessorTask implements InvocationDescr
 	private Input inputForLog = null;
 	private Output outputForLog = null;
 
-	public WSDLInvocationTask(String id,Processor proc,LogLevel l) {
-		super(id,proc,l);
+	public WSDLInvocationTask(String id,Processor proc,LogLevel l, String userID, String userCtx) {
+		super(id,proc,l,userID,userCtx);
 	}
 	
-	public uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.eventservice.TaskStateMessage execute() {
+	public java.util.Map execute(java.util.Map inputMap) throws TaskExecutionException {
 		try{
 			startTime =  new TimePoint();
 			//want to siffle through the input ports and get input parts  
-			GraphNode[] inputs = getParents();
+			//GraphNode[] inputs = getParents();
 			//want to create suitable input parts
+			/*
 			Input input = new Input();			
 			if(logLevel.getLevel()>=LogLevel.HIGH)
 				inputForLog = input;
@@ -91,6 +94,16 @@ public class WSDLInvocationTask extends ProcessorTask implements InvocationDescr
 				//actually want to set data in jobs as it becomes available, so don't block, check if data available every so often
 			    input.addPart(pT.getData());
 			    }					
+			}
+			*/
+			Input input = new Input();
+			if(logLevel.getLevel()>=LogLevel.HIGH)
+				inputForLog = input;
+			Iterator iterator = inputMap.keySet().iterator();
+			while(iterator.hasNext()) {
+				//they should all be PortTasks
+				PortTask pT = (PortTask) iterator.next();
+				input.addPart(pT.getData());
 			}
 
 			WSDLServiceInvocation serviceInvocation = new WSDLServiceInvocation(this,input,WSDLServiceInvocation.OPERATION_TYPE_REQUEST_RESPONSE);
@@ -113,34 +126,36 @@ public class WSDLInvocationTask extends ProcessorTask implements InvocationDescr
             //group together the output parts and write to child partchecks
             Output output = serviceInvocation.getServiceOutput();
             if(logLevel.getLevel()>=LogLevel.HIGH) 
-				outputForLog = output;
-			List outputParts = output.getPartList();
-			
-            Iterator iterator = outputParts.iterator();
+							outputForLog = output;
+						List outputParts = output.getPartList();
+						Map outputMap = new HashMap();
+            iterator = outputParts.iterator();
             while (iterator.hasNext()) {
-		//match with child part by name and set the part value
-		
-                Part part = (Part) iterator.next();
-                String partName = part.getName();
-                Iterator iter2 = outParts.iterator();
-
-                while (iter2.hasNext()) {
-		     Part prt = (Part) iter2.next();
-
-                    if (prt.getName().equals(partName)) {
-			prt.setValue(part.getValue());
-                        prt.setType(part.getType());
-                        prt.setID(part.getID());
-                    }
-                }
-            }
+							//match with child part by name and set the part value
+	            /*
+							Part part = (Part) iterator.next();
+              String partName = part.getName();
+              Iterator iter2 = outParts.iterator();
+              while (iter2.hasNext()) {
+					     Part prt = (Part) iter2.next();
+               if (prt.getName().equals(partName)) {
+									prt.setValue(part.getValue());
+                  prt.setType(part.getType());
+                  prt.setID(part.getID());
+               }
+							 */
+							 Part part = (Part) iterator.next();
+							 String partName = part.getName();
+							 outputMap.put(partName,part.getValue());
+             }
+          
 			endTime = new TimePoint();
 			//success
-			return new TaskStateMessage(getParentFlow().getID(), getID(), TaskStateMessage.COMPLETE, "Task finished successfully");
+			return outputMap;
 		}
 		catch(Exception ex) {
 			logger.error("Error invoking soaplab service for task " +getID() ,ex);
-			return new TaskStateMessage(getParentFlow().getID(),getID(),TaskStateMessage.FAILED,"Task " + getID() + " failed due to problem invoking soaplab service");
+			throw new TaskExecutionException("Task " + getID() + " failed due to problem invoking soaplab service");
 		}
 	}
 
