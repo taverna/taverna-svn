@@ -56,8 +56,7 @@ public class DataThing {
     // interesting type this list is checked and the first match
     // returned.
     private static String[] interestingTypes = new String[]{"text/html","text/xml","text/rtf","text/x-graphviz",
-						   "text/plain","image/png","image/jpeg",
-						   "image/gif"};
+						   "image/png","image/jpeg","image/gif","application/zip","text/plain"};
     
     static {
 	// Interrogate the system properties and instantiate
@@ -602,6 +601,9 @@ public class DataThing {
 	}
 	else if (syntacticType.matches(".*x-graphviz.*")) {
 	    defaultExtension = ".dot.text";
+	}
+	else if (syntacticType.matches(".*application/zip.*")) {
+	    defaultExtension = ".zip";
 	}
 	File writtenFile = DataThing.writeObjectToFileSystem(destination, name, theDataObject, defaultExtension);
 
