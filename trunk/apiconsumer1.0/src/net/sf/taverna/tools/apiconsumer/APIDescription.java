@@ -65,6 +65,22 @@ public class APIDescription {
     }
 
     /**
+     * Add a pair of ClassDoc / ConstructorDoc to expose
+     */
+    public void add(ClassDoc cd, ConstructorDoc md) {
+	// Does the map contain this classdoc yet?
+	Set methods = (Set)classes.get(cd);
+	if (methods != null) {
+	    methods.add(md);
+	}
+	else {
+	    methods = new HashSet();
+	    methods.add(md);
+	    classes.put(cd, methods);
+	}
+    }
+
+    /**
      * Get the number of methods from a particular ClassDoc that
      * this description contains for UI hints
      */
@@ -93,10 +109,24 @@ public class APIDescription {
     }
 
     /**
+     * Remove a ConstructorDoc
+     */
+    public void remove(ClassDoc cd, ConstructorDoc md) {
+	Set methods = (Set)classes.get(cd);
+	if (methods != null) {
+	    methods.remove(md);
+	    // If the methods array is now empty remove it
+	    if (methods.isEmpty()) {
+		classes.remove(cd);
+	    }
+	}
+    }
+
+    /**
      * Is the specified ClassDoc / MethodDoc pair in the
      * description?
      */
-    public boolean contains(ClassDoc cd, MethodDoc md) {
+    public boolean contains(ClassDoc cd, ExecutableMemberDoc md) {
 	Set methods = (Set)classes.get(cd);
 	if (methods == null ||
 	    methods.contains(md) == false) {
@@ -131,25 +161,57 @@ public class APIDescription {
 		classElement.addContent(methodListElement);
 		classElement.setAttribute("name",cd.qualifiedName());
 		for (Iterator j = methods.iterator(); j.hasNext(); ) {
-		    MethodDoc md = (MethodDoc)j.next();
-		    Element methodElement = new Element("Method");
-		    methodElement.setAttribute("name",md.name());
-		    methodElement.setAttribute("type",nameFor(md.returnType()));
-		    methodElement.setAttribute("dimension",dimensionOf(md.returnType()));
-		    Element methodDescription = new Element("Description");
-		    methodDescription.setText(md.commentText());
-		    methodElement.addContent(methodDescription);
-		    // Add parameters
-		    Parameter[] params = md.parameters();
-		    for (int k = 0; k < params.length; k++) {
-			Parameter p = params[k];
-			Element parameterElement = new Element("Parameter");
-			parameterElement.setAttribute("name",p.name());
-			parameterElement.setAttribute("type",nameFor(p.type()));
-			parameterElement.setAttribute("dimension",dimensionOf(p.type()));
-			methodElement.addContent(parameterElement);
+		    Object o = j.next();
+		    if (o instanceof MethodDoc) {
+			MethodDoc md = (MethodDoc)o;
+			Element methodElement = new Element("Method");
+			if (md.isStatic()) {
+			    methodElement.setAttribute("static","true");
+			}
+			if (md.isConstructor()) {
+			    methodElement.setAttribute("constructor","true");
+			}
+			methodElement.setAttribute("name",md.name());
+			methodElement.setAttribute("type",nameFor(md.returnType()));
+			methodElement.setAttribute("dimension",dimensionOf(md.returnType()));
+			Element methodDescription = new Element("Description");
+			methodDescription.setText(md.commentText());
+			methodElement.addContent(methodDescription);
+			// Add parameters
+			Parameter[] params = md.parameters();
+			for (int k = 0; k < params.length; k++) {
+			    Parameter p = params[k];
+			    Element parameterElement = new Element("Parameter");
+			    parameterElement.setAttribute("name",p.name());
+			    parameterElement.setAttribute("type",nameFor(p.type()));
+			    parameterElement.setAttribute("dimension",dimensionOf(p.type()));
+			    methodElement.addContent(parameterElement);
+			}
+			methodListElement.addContent(methodElement);
 		    }
-		    methodListElement.addContent(methodElement);
+		    else if (o instanceof ConstructorDoc) {
+			ConstructorDoc md = (ConstructorDoc)o;
+			Element methodElement = new Element("Method");
+			methodElement.setAttribute("constructor","true");
+			methodElement.setAttribute("name",md.name());
+			methodElement.setAttribute("type",nameFor(cd));
+			methodElement.setAttribute("dimension","0");
+			Element methodDescription = new Element("Description");
+			methodDescription.setText(md.commentText());
+			methodElement.addContent(methodDescription);
+			// Add parameters
+			Parameter[] params = md.parameters();
+			for (int k = 0; k < params.length; k++) {
+			    Parameter p = params[k];
+			    Element parameterElement = new Element("Parameter");
+			    parameterElement.setAttribute("name",p.name());
+			    parameterElement.setAttribute("type",nameFor(p.type()));
+			    parameterElement.setAttribute("dimension",dimensionOf(p.type()));
+			    methodElement.addContent(parameterElement);
+			}
+			methodListElement.addContent(methodElement);
+
+		    }
 		}
 		classListElement.addContent(classElement);
 	    }

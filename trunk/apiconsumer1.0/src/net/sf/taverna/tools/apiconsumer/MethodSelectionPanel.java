@@ -65,8 +65,10 @@ public class MethodSelectionPanel extends JPanel {
 	int rows = 0;
 	int column = 0;
 	List methods = getNonStaticMethods();
-	boxes = new JCheckBox[methods.size()];
+	List staticMethods = getStaticMethods();
+	boxes = new JCheckBox[methods.size()+staticMethods.size()+getConstructors().size()];
 	int j = 0;
+
 	JPanel boxPanel = new JPanel();
 	for (Iterator i = methods.iterator(); i.hasNext();) {
 	    JCheckBox cb = createCheckBox((MethodDoc)i.next());
@@ -87,6 +89,52 @@ public class MethodSelectionPanel extends JPanel {
 	boxPanel.setLayout(new GridLayout(rows, 3));
 	boxPanel.setMaximumSize(new Dimension(6000,15*rows));
 	boxPanel.setOpaque(false);
+
+	JPanel staticPanel = new JPanel();
+	column = 0;
+	rows = 0;
+	for (Iterator i = staticMethods.iterator(); i.hasNext();) {
+	    JCheckBox cb = createCheckBox((MethodDoc)i.next());
+	    boxes[j++] = cb;
+	    staticPanel.add(cb);
+	    column++;
+	    if (column == 3) {
+		column = 0;
+		rows++;
+	    }
+	}
+	if (column > 0) {
+	    rows++;
+	    for (int i = column; i < 3; i++) {
+		staticPanel.add(new JLabel());
+	    }
+	}
+	staticPanel.setLayout(new GridLayout(rows, 3));
+	staticPanel.setMaximumSize(new Dimension(6000,15*rows));
+	staticPanel.setOpaque(false);
+
+	JPanel constructorPanel = new JPanel();
+	column = 0;
+	rows = 0;
+	for (Iterator i = getConstructors().iterator(); i.hasNext();) {
+	    JCheckBox cb = createCheckBox((ConstructorDoc)i.next());
+	    boxes[j++] = cb;
+	    constructorPanel.add(cb);
+	    column++;
+	    if (column == 3) {
+		column = 0;
+		rows++;
+	    }
+	}
+	if (column > 0) {
+	    rows++;
+	    for (int i = column; i < 3; i++) {
+		constructorPanel.add(new JLabel());
+	    }
+	}
+	constructorPanel.setLayout(new GridLayout(rows, 3));
+	constructorPanel.setMaximumSize(new Dimension(6000,15*rows));
+	constructorPanel.setOpaque(false);
 
 	JPanel buttonPanel = new JPanel();
 	buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.LINE_AXIS));
@@ -124,11 +172,34 @@ public class MethodSelectionPanel extends JPanel {
 	headingPanel.add(Box.createHorizontalGlue());
 	headingPanel.setMaximumSize(new Dimension(6000,20));
 	headingPanel.setOpaque(false);
+	
+	JPanel headingPanel2 = new JPanel();
+	headingPanel2.setLayout(new BoxLayout(headingPanel2, BoxLayout.LINE_AXIS));
+	headingPanel2.add(new JLabel("Static methods :"));
+	headingPanel2.add(Box.createHorizontalGlue());
+	headingPanel2.setMaximumSize(new Dimension(6000,20));
+	headingPanel2.setOpaque(false);
+
+	JPanel headingPanel3 = new JPanel();
+	headingPanel3.setLayout(new BoxLayout(headingPanel3, BoxLayout.LINE_AXIS));
+	headingPanel3.add(new JLabel("Constructors :"));
+	headingPanel3.add(Box.createHorizontalGlue());
+	headingPanel3.setMaximumSize(new Dimension(6000,20));
+	headingPanel3.setOpaque(false);
+	
 
 	add(Box.createRigidArea(new Dimension(5,5)));
 	add(headingPanel);
 	add(Box.createRigidArea(new Dimension(5,5)));
 	add(boxPanel);
+	add(Box.createRigidArea(new Dimension(5,5)));
+	add(headingPanel2);
+	add(Box.createRigidArea(new Dimension(5,5)));
+	add(staticPanel);
+	add(Box.createRigidArea(new Dimension(5,5)));
+	add(headingPanel3);
+	add(Box.createRigidArea(new Dimension(5,5)));
+	add(constructorPanel);
 	add(Box.createRigidArea(new Dimension(5,5)));
 	add(buttonPanel);
 	    
@@ -174,6 +245,42 @@ public class MethodSelectionPanel extends JPanel {
     }
 
     /**
+     * Create a JCheckBox bound to the specified ConstructorDoc
+     */
+    private JCheckBox createCheckBox(ConstructorDoc constructor) {
+	final ConstructorDoc theConstructor = constructor;
+	// Create the string representing the constructor
+	StringBuffer sb = new StringBuffer();
+	sb.append("<html><body>(");
+	Parameter[] params = theConstructor.parameters();
+	for (int j = 0; j < params.length; j++) {
+	    Parameter param = params[j];
+	    sb.append("<font color=\"green\">"+param.type().typeName()+param.type().dimension()+"</font> <font color=\"purple\">"+param.name()+"</font>");
+	    if (j < params.length-1) {
+		sb.append(", ");
+	    }
+	}
+	sb.append(")</html></body>");
+	JCheckBox cb = new JCheckBox(sb.toString());
+	cb.setSelected(description.contains(classdoc, theConstructor));
+	cb.setContentAreaFilled(false);
+	cb.setMaximumSize(new Dimension(200,15));
+	cb.setPreferredSize(new Dimension(200,15));
+	cb.addItemListener(new ItemListener() {
+		public void itemStateChanged(ItemEvent e) {
+		    if (e.getStateChange() == ItemEvent.SELECTED) {
+			description.add(classdoc, theConstructor);
+			MethodSelectionPanel.this.tree.repaint();
+		    }
+		    else {
+			description.remove(classdoc, theConstructor);
+			MethodSelectionPanel.this.tree.repaint();
+		    }
+		}
+	    });
+	return cb;
+    }
+    /**
      * Return a List containing all MethodDoc objects
      * corresponding to public non static methods
      */
@@ -185,6 +292,36 @@ public class MethodSelectionPanel extends JPanel {
 	    if (method.isPublic() &&
 		method.isStatic() == false) {
 		result.add(method);
+	    }
+	}
+	return result;
+    }
+
+    /**
+     * As above but only return the static methods
+     */
+    private List getStaticMethods() {
+	List result = new ArrayList();
+	MethodDoc[] methods = classdoc.methods();
+	for (int i = 0; i < methods.length; i++) {
+	    MethodDoc method = methods[i];
+	    if (method.isPublic() &&
+		method.isStatic()) {
+		result.add(method);
+	    }
+	}
+	return result;
+    }
+
+    /** 
+     * Fetch constructors (public only)
+     */
+    private List getConstructors() {
+	List result = new ArrayList();
+	ConstructorDoc[] constructors = classdoc.constructors();
+	for (int i = 0; i < constructors.length; i++) {
+	    if (constructors[i].isPublic()) {
+		result.add(constructors[i]);
 	    }
 	}
 	return result;
