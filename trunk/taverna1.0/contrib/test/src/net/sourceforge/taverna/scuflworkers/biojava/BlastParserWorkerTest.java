@@ -1,6 +1,7 @@
 package net.sourceforge.taverna.scuflworkers.biojava;
 
 import java.util.HashMap;
+import java.util.Map;
 
 import junit.framework.TestCase;
 import net.sourceforge.taverna.baclava.DataThingAdapter;
@@ -11,7 +12,7 @@ import net.sourceforge.taverna.baclava.DataThingAdapter;
  * Last edited by $Author: phidias $
  * 
  * @author Mark
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public class BlastParserWorkerTest extends TestCase {
 
@@ -20,15 +21,16 @@ public class BlastParserWorkerTest extends TestCase {
         DataThingAdapter inAdapter = new DataThingAdapter(inputMap);
         inAdapter.putString("fileUrl","C:/Documents and Settings/Mark/My Documents/projects/taverna/contrib/test/src/etc/blast.txt");
         
-        HashMap outputMap = new HashMap();
-        DataThingAdapter outAdapter = new DataThingAdapter(outputMap);
+       
+        
         
         BlastParserWorker worker = new BlastParserWorker();
-        outputMap = (HashMap)worker.execute(inputMap);
+        Map outputMap = (HashMap)worker.execute(inputMap);
+        DataThingAdapter outAdapter = new DataThingAdapter(outputMap);
         
         String results = outAdapter.getString("blastresults");
         assertNotNull("The results were null",results);
-        System.out.println(results);
+        System.out.println("\n\nresults: \n"+results);
     }
 
 }
