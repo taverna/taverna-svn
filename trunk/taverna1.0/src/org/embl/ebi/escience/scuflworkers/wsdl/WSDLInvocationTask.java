@@ -12,7 +12,8 @@ import org.embl.ebi.escience.baclava.DataThing;
 import org.embl.ebi.escience.baclava.factory.DataThingFactory;
 import org.embl.ebi.escience.scufl.Processor;
 import org.embl.ebi.escience.scuflworkers.ProcessorTaskWorker;
-import uk.ac.soton.itinnovation.taverna.enactor.entities.TaskExecutionException;import uk.ac.soton.itinnovation.taverna.enactor.entities.ProcessorTask;
+import uk.ac.soton.itinnovation.taverna.enactor.entities.TaskExecutionException;
+import uk.ac.soton.itinnovation.taverna.enactor.entities.ProcessorTask;
 
 import org.apache.axis.utils.*;
 
@@ -30,6 +31,15 @@ import java.lang.RuntimeException;
 import java.lang.String;
 import java.lang.System;
 
+import org.apache.wsif.WSIFException;
+import org.apache.wsif.WSIFMessage;
+import org.apache.wsif.WSIFOperation;
+import org.apache.wsif.WSIFPort;
+import org.apache.wsif.WSIFService;
+import org.apache.wsif.WSIFServiceFactory;
+import org.apache.wsif.providers.soap.apacheaxis.WSIFDynamicProvider_ApacheAxis;
+import org.apache.wsif.util.WSIFPluggableProviders;
+import org.apache.wsif.util.WSIFUtils;
 
 
 /**
@@ -40,109 +50,60 @@ public class WSDLInvocationTask implements ProcessorTaskWorker {
     
     private static Logger logger = Logger.getLogger(WSDLInvocationTask.class);
     private static final int INVOCATION_TIMEOUT = 0;
-    private static Service service = new org.apache.axis.client.Service();
-    private Processor proc;
-
-    private Call getCall() {
-	synchronized (service) {
-	    try {
-		return (Call) service.createCall();
-	    }
-	    catch (Exception ex) {
-		throw new RuntimeException(ex);
-	    }
-	}
-    }
+    //private static Service service = new org.apache.axis.client.Service();
+    private WSDLBasedProcessor processor;
     
     public WSDLInvocationTask(Processor p) {
-	this.proc = p;
+	this.processor = (WSDLBasedProcessor)p;
     }
     
     public Map execute(Map inputMap, ProcessorTask parentTask) throws TaskExecutionException {
 	try {
-	    WSDLBasedProcessor p = (WSDLBasedProcessor)proc;
-	    Vector outNames = p.outNames;
-	    synchronized (p.call) {
-		Call call = (org.apache.axis.client.Call)p.call;
-		Object[] args = new Object[p.getInputPorts().length];
-		for (int i = 0; i < args.length; i++) {
-		    DataThing theData = (DataThing)inputMap.get(p.getInputPorts()[i].getName());
-		    Object theDataObject = theData.getDataObject();
-		    // Check for the case of List of String and convert to a String[]
-		    if (theDataObject instanceof List) {
-			if (((List)theDataObject).isEmpty()) {
-			    theDataObject = new String[0];
-			}
-			else {
-			    Object firstItem = ((List)theDataObject).get(0);
-			    if (firstItem instanceof String) {
-				theDataObject = ((List)theDataObject).toArray(new String[0]);
-			    }
-			}
-		    }
-		    args[i] = theDataObject;
-		    if (args[i] == null) {
-			throw new TaskExecutionException("Null argument not allowed, check preceeding processors!");
-		    }
-		    System.out.println("Data thing for port "+p.getInputPorts()[i].getName());
-		    System.out.println(theData.getDataObject());
+	    // Obtain an instance of the WSIFOperation from the parent processor
+	    WSIFOperation operation = processor.getWSIFOperation();
+	    WSIFMessage input = operation.createInputMessage();
+	    WSIFMessage output = operation.createOutputMessage();
+	    WSIFMessage fault = operation.createFaultMessage();
+	    // Iterate over the inputs...
+	    for (int i = 0; i < processor.inNames.length; i++) {
+		Object value = null;
+		Class c = processor.inTypes[i];
+		String argName = processor.inNames[i];
+		DataThing inputObject = (DataThing)inputMap.get(argName);
+		if (inputObject == null) {
+		    throw new TaskExecutionException("Input to web service '"+argName+"' was defined but not provided.");
 		}
-		call.setTimeout(new Integer(0));
-		
-		Object[] parsedArgs = new Object[args.length];
-		for (int i = 0; i < parsedArgs.length; i++) {
-		    if (args[i] instanceof String) {
-			try {
-			    parsedArgs[i] = new Integer((String)args[i]);
-			}
-			catch (NumberFormatException nfe) {
-			    try {
-				parsedArgs[i] = new Float((String)args[i]);
-			    }
-			    catch (NumberFormatException nfe2) {
-				
-				if (((String)args[i]).equalsIgnoreCase("false")) {
-				    parsedArgs[i] = Boolean.FALSE;
-				}
-				else if (((String)args[i]).equalsIgnoreCase("true")) {
-				    parsedArgs[i] = Boolean.TRUE;
-				}
-				else {
-				    parsedArgs[i] = args[i];
-				}
-				
-				
-			    }
-			}
+		// If the datathing contains a string and the service wants something else...
+		if (inputObject.getDataObject() instanceof String) {
+		    String argString = (String)inputObject.getDataObject();
+		    if (c.equals(Double.TYPE)) {
+			value = new Double(argString);
 		    }
-		    else {
-			parsedArgs[i] = args[i];
+		    else if (c.equals(Float.TYPE)) {
+			value = new Float(argString);
+		    }
+		    else if (c.equals(Integer.TYPE)) {
+			value = new Integer(argString);
+		    }
+		    else if (c.equals(Boolean.TYPE)) {
+			value = new Boolean(argString);
 		    }
 		}
-		
-		Object ret = call.invoke(parsedArgs);
-		Map outputs = call.getOutputParams();
-		HashMap map = new HashMap();
-		for (int pos = 0; pos < p.outNames.size(); ++pos) {
-		    String name = (String)outNames.get(pos);
-		    Object value = outputs.get(name);
-		    if ((value == null) && (pos == 0)) {
-			if (ret instanceof org.w3c.dom.Element) {
-			    // Convert to string of xml
-			    ret = XMLUtils.ElementToString((org.w3c.dom.Element)ret);
-			}
-			map.put(name, DataThingFactory.bake(ret));
-		    }
-		    else {
-			if (value instanceof org.w3c.dom.Element) {
-			    // Convert to string of xml
-			    value = XMLUtils.ElementToString((org.w3c.dom.Element)value);
-			}
-			map.put(name, DataThingFactory.bake(value));
-		    }
+		if (value == null) {
+		    value = inputObject.getDataObject();
 		}
-		return map;
+		input.setObjectPart(processor.inNames[i], value);
 	    }
+	    
+	    operation.executeRequestResponseOperation(input, output, fault);
+	    
+	    Map resultMap = new HashMap();
+	    for (int i = 0; i < processor.outNames.length; i++) {
+		String outputName = processor.outNames[i];
+		resultMap.put(outputName, new DataThing(output.getObjectPart(outputName)));
+	    }
+	    
+	    return resultMap;
 	}
 	catch (Exception ex) {
 	    ex.printStackTrace();

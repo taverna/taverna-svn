@@ -5,29 +5,28 @@
  */
 package org.embl.ebi.escience.scuflworkers.wsdl;
 
-import javax.wsdl.Binding;
 import javax.wsdl.Operation;
-import javax.wsdl.Port; // ambiguous with: org.embl.ebi.escience.scufl.Port 
-import javax.wsdl.Service; // ambiguous with: javax.xml.rpc.Service 
-import javax.wsdl.extensions.soap.SOAPAddress;
+import javax.wsdl.Service;
 import javax.xml.namespace.QName;
-import javax.xml.rpc.Call;
-import org.apache.axis.wsdl.gen.Parser;
-import org.apache.axis.wsdl.symbolTable.*;
 import org.embl.ebi.escience.scufl.*;
 import java.net.*;
-// Utility Imports
-import java.util.*;
-import org.apache.axis.encoding.ser.ElementSerializerFactory;
-import org.apache.axis.encoding.ser.ElementDeserializerFactory;
-import org.apache.axis.encoding.ser.ElementDeserializer;
-import java.lang.Class;
-import java.lang.Exception;
-import java.lang.Object;
-import java.lang.RuntimeException;
-import java.lang.String;
-import java.lang.Thread;
 
+import java.util.*;
+import org.apache.wsif.providers.soap.apacheaxis.WSIFPort_ApacheAxis;
+import javax.wsdl.Definition;
+import javax.wsdl.Input;
+import javax.wsdl.Output;
+import javax.wsdl.Part;
+import javax.wsdl.PortType;
+
+import org.apache.wsif.WSIFException;
+import org.apache.wsif.WSIFOperation;
+import org.apache.wsif.WSIFPort;
+import org.apache.wsif.WSIFService;
+import org.apache.wsif.WSIFServiceFactory;
+import org.apache.wsif.providers.soap.apacheaxis.WSIFDynamicProvider_ApacheAxis;
+import org.apache.wsif.util.WSIFPluggableProviders;
+import org.apache.wsif.util.WSIFUtils;
 
 /**
  * A processor based on an operation defined within 
@@ -40,126 +39,107 @@ import java.lang.Thread;
 
 public class WSDLBasedProcessor extends Processor implements java.io.Serializable {
 
-    // Fields used by the configuration operations
-    // Output types and names
-    Vector outNames = new Vector();
-    Vector outTypes = new Vector();
-
-    // Input types and names
-    Vector inNames = new Vector();
-    Vector inTypes = new Vector();
-
-    // WSDL Parser
-    Parser wsdlParser = null;
-
-    // Call object to invoke this processor
-    Call call = null;
+    WSIFPort port = null;
+    String operationName = null;
+    String inputName = null;
+    String outputName = null;
+    String wsdlLocation = null;
+    String[] inNames, outNames;
+    Class[] inTypes, outTypes;
     
-    private String wsdlLocation = null;
-
-    /**
-     * Get the WSDL location for this processor
-     */
-    public String getWSDLLocation() {
-	return this.wsdlLocation;
-    }
-
-
-    /**
-     * Get the target endpoint for this processor
-     */
-    public String getResourceHost() {
-	String fullEndpoint = call.getTargetEndpointAddress();
-	try {
-	    URL endpointURL = new URL(fullEndpoint);
-	    return endpointURL.getHost();
-	}
-	catch (MalformedURLException mue) {
-	    return "Unknown!";
-	}
-    }
-    
-
-    private String operationName = null;
-
-    /**
-     * Get the operation name for this processor
-     */
-    public String getOperationName() {
-	return this.operationName;
-    }
-
-
     /**
      * Construct a new processor from the given WSDL definition
      * and operation name, delegates to superclass then instantiates
      * ports based on WSDL inspection.
      */
-    public WSDLBasedProcessor(ScuflModel model, String name, String wsdlLocation, String operationName)
+    public WSDLBasedProcessor(ScuflModel model, String procName, String wsdlLocation, String operationName)
 	throws ProcessorCreationException,
 	       DuplicateProcessorNameException {
-	super(model, name);
-	this.wsdlLocation = wsdlLocation;
-	this.operationName = operationName;
-	// Load the WSDL document
+	super(model, procName);
 	try {
-	    wsdlParser = new Parser();
-	    int retryCount = 3;
-	    int retryDelay = 1000;
-	    boolean loaded = false;
-	    while (retryCount > 0 && !loaded) {
-		try {
-		    wsdlParser.run(wsdlLocation);
-		    loaded = true;
+	    this.wsdlLocation = wsdlLocation;
+	    this.operationName = operationName;
+	    
+	    // Configure to use axis then read the WSDL
+	    WSIFPluggableProviders.overrideDefaultProvider("http://schemas.xmlsoap.org/wsdl/soap/",
+							   new WSIFDynamicProvider_ApacheAxis());
+	    Definition def = WSIFUtils.readWSDL(null, wsdlLocation);
+	    
+	    // Select the default service
+	    Service service = WSIFUtils.selectService(def, null, null);
+	    
+	    // Select the default port type
+	    PortType portType = WSIFUtils.selectPortType(def, null, null);
+	    WSIFServiceFactory factory = WSIFServiceFactory.newInstance();
+	    WSIFService dpf = factory.getService(def, service, portType);
+	    
+	    // Select the default port
+	    port = dpf.getPort();
+	    
+	    // Get the input and output names
+	    String inputName = null;
+	    String outputName = null;
+	    List operationList = portType.getOperations();
+	    boolean found = false;
+	    Operation op = null;
+	    for (Iterator i = operationList.iterator(); i.hasNext();) {
+		Operation opTemp = (Operation)i.next();
+		String name = opTemp.getName();
+		if (!name.equals(operationName)) {
+		    continue;
 		}
-		catch (Exception ex2) {
-		    retryCount--;
-		    if (retryCount > 0) {
-			Thread.sleep(retryDelay);
-		    }
-		    else {
-			throw ex2;
-		    }
+		if (found) {
+		    throw new RuntimeException("Operation "+name+" is overloaded, confused now.");
+		}
+		op = opTemp;
+		found = true;
+		Input opInput = op.getInput();
+		inputName = (opInput.getName() == null) ? null : opInput.getName();
+		Output opOutput = op.getOutput();
+		outputName = (opOutput.getName() == null) ? null : opOutput.getName();
+	    }
+	    if (!found) {
+		throw new RuntimeException("Unable to locate the named operation");
+	    }
+	    
+	    inNames = new String[0];
+	    inTypes = new Class[0];
+	    Input opInput = op.getInput();
+	    if (opInput != null) {
+		List parts = opInput.getMessage().getOrderedParts(null);
+		unWrapIfWrappedDocLit(parts, op.getName(), def);
+		int count = parts.size();
+		inNames = new String[count];
+		inTypes = new Class[count];
+		retrieveSignature(parts, inNames, inTypes);
+		// Build input ports from these definitions
+		for (int i = 0; i < count; i++) {
+		    InputPort inputPort = new InputPort(this, inNames[i]);
+		    inputPort.setSyntacticType(translateJavaType(inTypes[i]));
+		    addPort(inputPort);
+		}
+	    } 
+	    
+	    outNames = new String[0];
+	    outTypes = new Class[0];
+	    Output opOutput = op.getOutput();
+	    if (opOutput != null) {
+		List parts = opOutput.getMessage().getOrderedParts(null);
+		unWrapIfWrappedDocLit(parts, op.getName()+"Response", def);
+		int count = parts.size();
+		outNames = new String[count];
+		outTypes = new Class[count];
+		retrieveSignature(parts, outNames, outTypes);
+		// Build output ports from definitions
+		for (int i = 0; i < count; i++) {
+		    OutputPort outputPort = new OutputPort(this, outNames[i]);
+		    outputPort.setSyntacticType(translateJavaType(outTypes[i]));
+		    addPort(outputPort);
 		}
 	    }
+	    
 	}
-	catch (Exception ex) {
-	    ProcessorCreationException pce = new ProcessorCreationException("Unable to load wsdl at "+wsdlLocation);
-	    pce.initCause(ex);
-	    pce.printStackTrace();
-	    throw pce;
-	}
-
-	// Set up input and output vectors and create the Call object
-	configureFor(operationName);
-
-	// Build ports from the input and output vectors
-	try {
-	    for (int i = 0; i < outNames.size(); i++) {
-		String outName = (String)outNames.get(i);
-		OutputPort outputPort = new OutputPort(this, outName);
-		// Check whether there's a base type (which we can handle) or not...
-		if (((Parameter)outTypes.get(i)).getType().isBaseType() ||
-		    ((Parameter)outTypes.get(i)).getType().getQName().getLocalPart().startsWith("ArrayOf")) {
-		    outputPort.setSyntacticType(xsdTypeToInternalType(((Parameter)outTypes.get(i)).getType().getQName().getLocalPart()));
-		}
-		else {
-		    // Register the serializer for the element
-		    ((org.apache.axis.client.Call)call).registerTypeMapping(org.w3c.dom.Element.class, 
-									    ((Parameter)outTypes.get(i)).getType().getQName(),
-									    new ElementSerializerFactory(),
-									    new ElementDeserializerFactory());
-		    outputPort.setSyntacticType("'text/xml'");
-		}
-		addPort(outputPort);
-	    }
-	    for (int i = 0; i < inNames.size(); i++) {
-		String inName = (String)inNames.get(i);
-		InputPort inputPort = new InputPort(this, inName);
-		inputPort.setSyntacticType(xsdTypeToInternalType(((Parameter)inTypes.get(i)).getType().getQName().getLocalPart()));
-		addPort(inputPort);
-	    }
-	}
+	
 	catch (DuplicatePortNameException dpne) {
 	    ProcessorCreationException pce = new ProcessorCreationException("Duplicate port names!");
 	    pce.initCause(dpne);
@@ -170,106 +150,22 @@ public class WSDLBasedProcessor extends Processor implements java.io.Serializabl
 	    pce.initCause(portce);
 	    throw pce;
 	}
-    }
-    
-
-    /**
-     * Load information from the WSDL parser to populate the input and 
-     * output vectors and create the Call object
-     */
-    private void configureFor(String operationName) 
-	throws ProcessorCreationException {
-	try {
-	    String portName = null;
-	    Service service = ((ServiceEntry)getSymTabEntry(null, ServiceEntry.class)).getService();
-	    Port port = selectPort(service.getPorts(), portName);
-	    portName = port.getName();
-	    Binding binding = port.getBinding();
-	    org.apache.axis.client.Service dpf = new org.apache.axis.client.Service(wsdlParser, service.getQName());
-	    this.call = dpf.createCall(QName.valueOf(portName), QName.valueOf(operationName));
-	    ((org.apache.axis.client.Call)this.call).setProperty(ElementDeserializer.DESERIALIZE_CURRENT_ELEMENT, Boolean.TRUE);
-	    SymbolTable symbolTable = wsdlParser.getSymbolTable();
-	    BindingEntry bEntry = symbolTable.getBindingEntry(binding.getQName());
-
-	    // Iterate over the binding entry searching for the operation
-	    // specified in the argument to the invokeMethod call.
-	    Operation operation = null;
-	    Parameters parameters = null;
-	    for (Iterator i = bEntry.getParameters().keySet().iterator(); i.hasNext(); ) {
-		Operation o = (Operation) i.next();
-		if (o.getName().equals(operationName)) {
-		    operation = o;
-		    parameters = (Parameters) bEntry.getParameters().get(o);
-		    // Populate the input and output descriptions
-		    for (int j = 0; j < parameters.list.size(); j++) {
-			Parameter p = (Parameter) parameters.list.get(j);
-			if (p.getMode() == 1) { 	  // IN
-			    inNames.add(p.getQName().getLocalPart());
-			    inTypes.add(p);
-			} else if (p.getMode() == 2) {	  // OUT
-			    outNames.add(p.getQName().getLocalPart());
-			    outTypes.add(p);
-			} else if (p.getMode() == 3) {	  // INOUT
-			    inNames.add(p.getQName().getLocalPart());
-			    inTypes.add(p);
-			    outNames.add(p.getQName().getLocalPart());
-			    outTypes.add(p);
-			}
-		    }
-		    // Set output type
-		    if (parameters.returnParam != null) {
-			// Get the QName for the return Type
-			QName returnType = org.apache.axis.wsdl.toJava.Utils.getXSIType(parameters.returnParam);
-			QName returnQName = parameters.returnParam.getQName();
-			outNames.add(returnQName.getLocalPart());
-			outTypes.add((Parameter)parameters.returnParam);
-		    }
-		    // Break out of the loop	
-		    break;
-		}
-	    }
-	    // Complain if we couldn't find the operation or its parameters for some reason
-	    if ((operation == null) || (parameters == null)) {
-		throw new RuntimeException(operationName + " was not found.");
-	    }
-
-	}
-	catch (Exception e) {
-	    e.printStackTrace();
-	    ProcessorCreationException pce = new ProcessorCreationException("Problem initialising from wsdl at "+wsdlLocation);
-	    pce.initCause(e);
+	catch (Exception ex) {
+	    ProcessorCreationException pce = new ProcessorCreationException("Unable to load wsdl at " +
+									    wsdlLocation);
+	    pce.initCause(ex);
+	    pce.printStackTrace();
 	    throw pce;
 	}
-
     }
 
 
     /**
-     * Convert an XSD type into a Baclava type string
+     * Build a single use WSIFOperation object. This should only be used
+     * for a single invocation of the target service!
      */
-    public String xsdTypeToInternalType(String xsdType) {
-	// System.out.println("Type conversion requested for "+xsdType);
-	// Can cope with String types and nested strings
-	if (xsdType.startsWith("ArrayOf_")) {
-	    return ("l("+xsdTypeToInternalType(xsdType.replaceFirst("ArrayOf_",""))+")");
-	}
-	else if (xsdType.startsWith("ArrayOf")) {
-	    return ("l("+xsdTypeToInternalType(xsdType.replaceFirst("ArrayOf",""))+")");
-	}
-	else if (xsdType.equalsIgnoreCase("base64")) {
-	    return "'application/octet-stream'";
-	}
-	else {
-	    return "'text/plain'";
-	    /**
-	       if (xsdType.equalsIgnoreCase("string")) {
-	       return "'text/plain'";
-	       }
-	       else {
-	       return "'text/x-xsd-unknown-type-"+xsdType+"'";
-	       }
-	    */
-	}
+    WSIFOperation getWSIFOperation() throws WSIFException {
+	return port.createOperation(operationName, inputName, outputName);
     }
     
 
@@ -283,58 +179,101 @@ public class WSDLBasedProcessor extends Processor implements java.io.Serializabl
 	return props;
     } 
 
-
+    
     /**
-     * Method getSymTabEntry
-     * Search the symbol table for an entry with the specified
-     * class and optionally QName. If the QName is not specified
-     * then examine all entries.
+     * Get the WSDL location for this processor
      */
-    public SymTabEntry getSymTabEntry(QName qname, Class cls) {
-	HashMap map = wsdlParser.getSymbolTable().getHashMap();
-	Iterator iterator = map.entrySet().iterator();
-	while (iterator.hasNext()) {
-	    Map.Entry entry = (Map.Entry) iterator.next();
-	    QName key = (QName) entry.getKey();
-	    Vector v = (Vector) entry.getValue();
-	    if ((qname == null) || qname.equals(qname)) {
-		for (int i = 0; i < v.size(); ++i) {
-		    SymTabEntry symTabEntry = (SymTabEntry) v.elementAt(i);
-		    if (cls.isInstance(symTabEntry)) {
-			return symTabEntry;
-		    }
-		}
-	    }
-	}
-	return null;
+    public String getWSDLLocation() {
+	return this.wsdlLocation;
     }
 
 
     /**
-     * Given a map of ports, iterate across it until either
-     * a port matching the portName parameter is found or until
-     * any port is found with a SOAPAddress extensibility element.
-     * Return null if no such port can be located.
+     * Get the target endpoint for this processor
      */
-    public Port selectPort(Map ports, String portName) throws Exception {
-	Iterator valueIterator = ports.keySet().iterator();
-	while (valueIterator.hasNext()) {
-	    String name = (String) valueIterator.next();
-	    if ((portName == null) || (portName.length() == 0)) {
-		Port port = (Port) ports.get(name);
-		List list = port.getExtensibilityElements();
-		for (int i = 0; (list != null) && (i < list.size()); i++) {
-		    Object obj = list.get(i);
-		    if (obj instanceof SOAPAddress) {
-			return port;
-		    }
-		}
-	    } else if ((name != null) && name.equals(portName)) {
-		return (Port) ports.get(name);
-	    }
+    public String getResourceHost() {
+	if (port instanceof WSIFPort_ApacheAxis) {
+	    URL endpoint = ((WSIFPort_ApacheAxis)port).getEndPoint();
+	    return endpoint.getHost();
 	}
-	return null;
+	else {
+	    return "Unknown";
+	}
+    }
+    
+    String getTargetEndpoint() {
+	if (port instanceof WSIFPort_ApacheAxis) {
+	    return ((WSIFPort_ApacheAxis)port).getEndPoint().toString();
+	}
+	else {
+	    return "Unknown";
+	}
     }
 
+    /**
+     * Get the operation name for this processor
+     */
+    public String getOperationName() {
+	return this.operationName;
+    }
+
+    private static void retrieveSignature(List parts, String[] names, Class[] types) {
+        // get parts in correct order
+        for (int i = 0; i < names.length; ++i) {
+            Part part = (Part) parts.get(i);
+            names[i] = part.getName();
+            QName partType = part.getTypeName();
+            if (partType == null) {
+		partType = part.getElementName();
+            }
+            if (partType == null) {
+                throw new RuntimeException("part " + names[i] + " must have type name declared");
+            }
+            // only limited number of types is supported
+            // cheerfully ignoring schema namespace ...
+            String s = partType.getLocalPart();
+            if ("string".equals(s)) {
+                types[i] = String.class;
+	    } else if ("arrayof_xsd_string".equalsIgnoreCase(s) ||
+		       "arrayofstring".equalsIgnoreCase(s)) {
+		types[i] = String[].class;
+            } else if ("double".equals(s)) {
+                types[i] = Integer.TYPE;
+            } else if ("float".equals(s)) {
+                types[i] = Float.TYPE;
+            } else if ("int".equals(s)) {
+                types[i] = Integer.TYPE;
+            } else if ("boolean".equals(s)) {
+                types[i] = Boolean.TYPE;
+            } else {
+                throw new RuntimeException("part type " + partType + " not supported in this sample");
+            }
+        }
+    }
+    
+    /**
+     * Unwraps the top level part if this a wrapped DocLit message.
+     */
+    private static void unWrapIfWrappedDocLit(List parts, String operationName, Definition def) throws WSIFException {
+	Part p = WSIFUtils.getWrappedDocLiteralPart(parts, operationName);
+	if (p != null) {
+	    List unWrappedParts = WSIFUtils.unWrapPart(p, def);
+	    parts.remove(p);
+	    parts.addAll(unWrappedParts);
+	}
+    }  
+    
+    /** 
+     * Translate a java type into a taverna type string
+     */
+    private static String translateJavaType(Class type) {
+	if (type.equals(String[].class)) {
+	    return ("l('text/plain')");
+	}
+	else {
+	    return ("'text/plain'");
+	}
+    }
+        
 }
 

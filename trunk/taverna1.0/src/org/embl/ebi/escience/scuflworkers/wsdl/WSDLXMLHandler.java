@@ -12,10 +12,7 @@ import org.embl.ebi.escience.scuflworkers.XMLHandler;
 // JDOM Imports
 import org.jdom.Element;
 
-import org.embl.ebi.escience.scuflworkers.wsdl.WSDLBasedProcessor;
-import org.embl.ebi.escience.scuflworkers.wsdl.WSDLBasedProcessorFactory;
 
-import java.lang.String;
 
 
 
