@@ -22,7 +22,7 @@ import org.jgraph.graph.GraphModel;
 
 /**
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover </a>
- * @version $Revision: 1.6 $
+ * @version $Revision: 1.7 $
  */
 public class PositionLayout extends ModelSpanningTree
 {
@@ -511,6 +511,7 @@ public class PositionLayout extends ModelSpanningTree
 			return ((VirtualNode) node).getBounds();
 		}
 		CellView view = mapper.getMapping(node, false);
+		assert view != null: node;
 		return view.getBounds();
 	}
 

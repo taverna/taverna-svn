@@ -13,7 +13,7 @@ import java.util.TreeSet;
 
 /**
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover </a>
- * @version $Revision: 1.6 $
+ * @version $Revision: 1.7 $
  */
 public abstract class GraphSpanningTree
 {
@@ -394,17 +394,17 @@ public abstract class GraphSpanningTree
 					System.err.println(this + ": Would remove tree edge " + edge + " here!");
 					// TODO removeTreeEdge(edge);					
 				}
-				// else
-				{
-					if (sourceRow < sourceMaxRow)
-					{
+//				// else
+//				{
+//					if (sourceRow < sourceMaxRow)
+//					{
 						moveNodes(sourceSet, (targetRow - minimumEdgeLength) - sourceRow);
-					}
-					else
-					{
-						moveNodes(targetSet, (sourceRow + minimumEdgeLength) - targetRow);
-					}
-				}
+//					}
+//					else
+//					{
+//						moveNodes(targetSet, (sourceRow + minimumEdgeLength) - targetRow);
+//					}
+//				}
 			}
 		}
 		// assert getRank(target) - getRank(source) ==

@@ -13,6 +13,7 @@ import java.util.TreeSet;
 
 import org.jgraph.event.GraphModelEvent;
 import org.jgraph.graph.CellMapper;
+import org.jgraph.graph.CellView;
 import org.jgraph.graph.DefaultGraphModel;
 import org.jgraph.graph.GraphConstants;
 import org.jgraph.graph.GraphModel;
@@ -22,18 +23,20 @@ import org.jgraph.graph.GraphModel;
  * graph to be able to update as the graph changes.
  * 
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover </a>
- * @version $Revision: 1.7 $
+ * @version $Revision: 1.8 $
  */
 public class RowLayout extends ModelSpanningTree
 {
 	PositionLayout positionLayout;
 	List rows = new ArrayList();
+	CellMapper mapper;
 
 	/**
 	 */
 	public RowLayout(GraphModel model, CellMapper mapper)
 	{
 		super(model);
+		this.mapper = mapper;
 		positionLayout = new PositionLayout(model, mapper);
 	}
 
@@ -231,6 +234,8 @@ public class RowLayout extends ModelSpanningTree
 			}
 		}
 		GraphConstants.setPoints(attributes, nodeChain);
+		CellView view = mapper.getMapping(edge, false);
+		view.refresh(model, mapper, false);		
 	}
 
 	/*
