@@ -25,8 +25,8 @@
 //      Dependencies        :
 //
 //      Last commit info    :   $Author: mereden $
-//                              $Date: 2003-06-09 11:13:02 $
-//                              $Revision: 1.16 $
+//                              $Date: 2003-06-11 16:00:34 $
+//                              $Revision: 1.17 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 
@@ -90,131 +90,139 @@ public class TavernaFlowBroker implements FlowBroker {
         Flow flow = null;
         DiGraph dGrph = null;
         String inputData = null;
-		String userID = null;
-		String userCtx = null;
-		Input input = null;
-		LogLevel modelLogLevel = null;
-		String originalFlowDefn = null;
+	String userID = null;
+	String userCtx = null;
+	Input input = null;
+	LogLevel modelLogLevel = null;
+	String originalFlowDefn = null;
         try {
             //for Taverna the passed object is a holder for the XScufl represention of the workflow and other important bits???
             ScuflModel model = null;
-
+	    
             if (o instanceof TavernaStringifiedWorkflowSubmission) {
                 TavernaStringifiedWorkflowSubmission submit = (TavernaStringifiedWorkflowSubmission) o;
                 String workflowDefn = submit.getXScuflDefinition();
-				originalFlowDefn = workflowDefn;
-				inputData = submit.getInputData();
+		originalFlowDefn = workflowDefn;
+		inputData = submit.getInputData();
                 userID = submit.getUserID();
                 userCtx = submit.getUserNamespaceCxt();
                 try {
                     
-									byte[] scuflSpecB = workflowDefn.getBytes();
-                  ByteArrayInputStream stream = new ByteArrayInputStream(scuflSpecB);
-									//convert to Document object
-									SAXBuilder sb = new SAXBuilder();
-									Document doc = sb.build(stream);
-														//obtain a scuflmodel
-									model = new ScuflModel();
-									//model.addListener(new ScuflModelEventPrinter(null)); 
-									System.out.println("About to try to populate ScuflModel");
-									XScuflParser.populate(doc,model,null);
-									logger.debug("Loaded ScuflModel from xml file");
-									modelLogLevel = new LogLevel(model.getLogLevel());
-									//create input stream for input data
-									byte[] inputBytes = inputData.getBytes();
-									ByteArrayInputStream inputStream = new ByteArrayInputStream(inputBytes);
-
-									input = new Input(inputStream);
-					
-								} catch(org.embl.ebi.escience.scufl.parser.XScuflFormatException ex) {
-									logger.error(ex);
-									throw new WorkflowCommandException(ex.getMessage());
-								} catch(org.embl.ebi.escience.scufl.MalformedNameException ex) {
-									logger.error(ex);
-									throw new WorkflowCommandException(ex.getMessage());
-								} catch(org.embl.ebi.escience.scufl.DuplicateProcessorNameException ex) {
-									logger.error(ex);
-									throw new WorkflowCommandException(ex.getMessage());
-								} catch(org.embl.ebi.escience.scufl.DataConstraintCreationException ex) {
-									logger.error(ex);
-									throw new WorkflowCommandException(ex.getMessage());
-								} catch(org.embl.ebi.escience.scufl.UnknownPortException ex) {
-									logger.error(ex);
-									throw new WorkflowCommandException(ex.getMessage());
-								} catch(org.embl.ebi.escience.scufl.UnknownProcessorException ex) {
-									logger.error(ex);
-									throw new WorkflowCommandException(ex.getMessage());				
-								} catch (org.embl.ebi.escience.scufl.ProcessorCreationException ex) {
-														logger.error(ex);
-									throw new WorkflowCommandException(ex.getMessage());
-								}
+		    byte[] scuflSpecB = workflowDefn.getBytes();
+		    ByteArrayInputStream stream = new ByteArrayInputStream(scuflSpecB);
+		    //convert to Document object
+		    SAXBuilder sb = new SAXBuilder();
+		    Document doc = sb.build(stream);
+		    //obtain a scuflmodel
+		    model = new ScuflModel();
+		    //model.addListener(new ScuflModelEventPrinter(null)); 
+		    System.out.println("About to try to populate ScuflModel");
+		    XScuflParser.populate(doc,model,null);
+		    logger.debug("Loaded ScuflModel from xml file");
+		    modelLogLevel = new LogLevel(model.getLogLevel());
+		    //create input stream for input data
+		    byte[] inputBytes = inputData.getBytes();
+		    ByteArrayInputStream inputStream = new ByteArrayInputStream(inputBytes);
+		    
+		    input = new Input(inputStream);
+		    
+		} catch(org.embl.ebi.escience.scufl.parser.XScuflFormatException ex) {
+		    logger.error(ex);
+		    throw new WorkflowCommandException(ex.getMessage());
+		} catch(org.embl.ebi.escience.scufl.MalformedNameException ex) {
+		    logger.error(ex);
+		    throw new WorkflowCommandException(ex.getMessage());
+		} catch(org.embl.ebi.escience.scufl.DuplicateProcessorNameException ex) {
+		    logger.error(ex);
+		    throw new WorkflowCommandException(ex.getMessage());
+		} catch(org.embl.ebi.escience.scufl.DataConstraintCreationException ex) {
+		    logger.error(ex);
+		    throw new WorkflowCommandException(ex.getMessage());
+		} catch(org.embl.ebi.escience.scufl.UnknownPortException ex) {
+		    logger.error(ex);
+		    throw new WorkflowCommandException(ex.getMessage());
+		} catch(org.embl.ebi.escience.scufl.UnknownProcessorException ex) {
+		    logger.error(ex);
+		    throw new WorkflowCommandException(ex.getMessage());				
+		} catch (org.embl.ebi.escience.scufl.ProcessorCreationException ex) {
+		    logger.error(ex);
+		    throw new WorkflowCommandException(ex.getMessage());
+		}
                 if (model == null)
                     throw new WorkflowCommandException("Unable to obtain model representing the XScufl definition");
-
-								if(model.getProcessors().length==0)
-										throw new WorkflowCommandException("Could not resolve any processors from the submitted workflow, please check the workflow definition is correct");
-						} else if(o instanceof TavernaBinaryWorkflowSubmission) {
-								TavernaBinaryWorkflowSubmission submit = (TavernaBinaryWorkflowSubmission) o;
-								model = submit.getScuflModel();
-								input = submit.getInputData();
-								userID = submit.getUserID();
-								userCtx = submit.getUserNamespaceCxt();
-								//**TODO** originalFlowDefn = model.getXScuflDefnAsString();
-						} else
-                throw new WorkflowCommandException("Sorry unsupported format for submitted flow");
-
+		
+		if(model.getProcessors().length==0)
+		    throw new WorkflowCommandException("Could not resolve any processors from the submitted workflow, please check the workflow definition is correct");
+	    } 
+	    else if (o instanceof TavernaBinaryWorkflowSubmission) {
+		TavernaBinaryWorkflowSubmission submit = (TavernaBinaryWorkflowSubmission) o;
+		model = submit.getScuflModel();
+		input = submit.getInputData();
+		userID = submit.getUserID();
+		userCtx = submit.getUserNamespaceCxt();
+		originalFlowDefn = "";
+		System.out.println("Binary submission...");
+		System.out.println(model.toString());
+		System.out.println(input.toString());
+		System.out.println(userID.toString());
+		System.out.println(userCtx.toString());
+		//**TODO** originalFlowDefn = model.getXScuflDefnAsString();
+	    } 
+	    else {
+		throw new WorkflowCommandException("Sorry unsupported format for submitted flow");
+	    }
             
             StringBuffer buf = new StringBuffer("Taverna:Workflow:");
-
+	    
             buf.append(model.toString());
             buf.append(":");
-						buf.append(userID);
-						buf.append(":");
-            try {
+	    buf.append(userID);
+	    buf.append(":");
+	    try {
                 dGrph = XScuflDiGraphGenerator.build(buf.toString(), model, input, userID, userCtx);
             } catch (XScuflFormatException ex) {
                 logger.error(ex);
-								throw new WorkflowCommandException(ex.getMessage());
+		throw new WorkflowCommandException(ex.getMessage());
             }
             //register the dataflow
             //FlowRegistry registry = new TransientRegistry();
             registry = FlowRegistry.getInstance();
             flow = registry.createFlow(buf.toString(), dGrph);
-
+	    
             //Get the no reservation service provider manager
             ServiceProviderManager spm = new NoReservationSPManager();
             //schedule associated digraph
             Scheduler scheduler = new NoReservationScheduler(spm);
-
+	    
             scheduler.addDiGraph(dGrph);
             scheduler.reschedule();
-
+	    
             //add the handler as a listener on the tasks as well and set the dispatcher for each task.
             Task[] tasks = flow.getTasks();
-
+	    
             for (int i = 0; i < tasks.length; i++) {
                 //better approach would allow plug-in by using config to do dynamic class loading.
                 Dispatcher dispatcher = new TavernaDispatcher();
-
+		
                 tasks[i].setDispatcher(dispatcher);
-			}
+	    }
             //update the flow for this
             flow.update();
             TavernaFlowReceipt receipt = new TavernaFlowReceipt(flow,originalFlowDefn,input,userID,modelLogLevel);
-
+	    
             flow.addListener(receipt);
-
+	    
             FlowCommandHandler commandHandler = FlowCommandHandler.getInstance();
-
+	    
             //create flowcommandevent and fire it
             commandHandler.put(new FlowCommandEvent("New flow submitted with ID: " + flow.getID(), flow, FlowCommandEvent.FLOW_SUBMIT));
             boolean notifyConfigSetting = false;
-
+	    
             //return a suitable receipt
             return receipt;
-
+	    
         } catch (WorkflowSubmitInvalidException ex) {
-						logger.error(ex);
+	    logger.error(ex);
             throw new WorkflowCommandException(ex.getMessage());
         } catch (WorkflowCommandException ex) {
             if (registry != null) {
