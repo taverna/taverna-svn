@@ -373,6 +373,14 @@ public class ProcessorHelper {
 	    }
 	    
 	}
+	if (loadedProcessor != null) {
+	    // Add the annotation templates
+	    List l = processorNode.getChildren("template", XScufl.XScuflNS);
+	    for (i = l.iterator(); i.hasNext();) {
+		loadedProcessor.addAnnotationTemplate(new AnnotationTemplate((Element)i.next()));
+	    }
+	    
+	}
 	return loadedProcessor;
     }
 }

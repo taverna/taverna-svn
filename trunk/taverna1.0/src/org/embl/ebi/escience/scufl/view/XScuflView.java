@@ -113,6 +113,11 @@ public class XScuflView implements ScuflModelEventListener, java.io.Serializable
 	    }
 	    Element spec = ProcessorHelper.elementForProcessor(processors[i]);
 	    processor.addContent(spec);
+	    // Do the templates
+	    AnnotationTemplate[] templates = processors[i].getAnnotationTemplates();
+	    for (int j = 0; j < templates.length; j++) {
+		processor.addContent(templates[j].getElement());
+	    }
 	    // Do the alternates
 	    AlternateProcessor[] ap = processors[i].getAlternatesArray();
 	    for (int j = 0; j < ap.length; j++) {

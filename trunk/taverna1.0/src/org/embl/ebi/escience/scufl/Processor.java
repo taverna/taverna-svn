@@ -49,6 +49,36 @@ public abstract class Processor implements Serializable, Transferable {
 	new DataFlavor(Processor.class, "Procesor");
     static DataFlavor[] flavors = { FLAVOR };
     Processor parentProcessor = null;
+    protected List templates = new ArrayList();
+    
+    /**
+     * Return an array containing all annotation templates
+     * for this processor
+     */
+    public AnnotationTemplate[] getAnnotationTemplates() {
+	return (AnnotationTemplate[])templates.toArray(new AnnotationTemplate[0]);
+    }
+    
+    /**
+     * Add an annotation template to this processor
+     */
+    public void addAnnotationTemplate(AnnotationTemplate theTemplate) {
+	if (this.templates.contains(theTemplate)==false) {
+	    this.templates.add(theTemplate);
+	    fireModelEvent(new MinorScuflModelEvent(this, "Template added"));
+	}
+    }
+
+    /**
+     * Remove an annotation template from this processor
+     */
+    public void removeAnnotationTemplate(AnnotationTemplate theTemplate) {
+	if (this.templates.contains(theTemplate)) {
+	    this.templates.remove(theTemplate);
+	    fireModelEvent(new MinorScuflModelEvent(this, "Template removed"));
+	}
+    }
+    
     /**
      * Implements transferable interface
      */
