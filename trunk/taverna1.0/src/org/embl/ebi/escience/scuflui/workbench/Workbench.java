@@ -179,7 +179,7 @@ public class Workbench extends JFrame {
 	try {
 	    UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 	} catch (Exception e) { }
-	
+
 	Workbench.workbench = this;
 	int inset = 50;
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
@@ -220,7 +220,7 @@ public class Workbench extends JFrame {
 	    bgLabel.setBounds(0,0,background.getIconWidth(), background.getIconHeight());
 	    desktop.add(bgLabel, new Integer(Integer.MIN_VALUE));
 	}
-	    
+
 	// Add a filedrop listener to allow users to drag
 	// workflow definition in (cheers to Robert Harder!)
 	// http://iharder.sourceforge.net/
@@ -264,32 +264,7 @@ public class Workbench extends JFrame {
 	// Menu to handle opening XScufl files, clearing the model and saving
 	JMenu fileMenu = new JMenu("File");
 	JMenuItem openScufl = new JMenuItem("Import XScufl Definition", importIcon);
-	openScufl.addActionListener(new ActionListener() {
-		public void actionPerformed(ActionEvent e) {
-		    // Load an XScufl definition here
-            Preferences prefs = Preferences.userNodeForPackage(
-                    Workbench.class);
-            String curDir = prefs.get(
-                    "currentDir",
-                    System.getProperty("user.home"));
-            fc.setCurrentDirectory(new File(curDir));
-		    int returnVal = fc.showOpenDialog(Workbench.this);
-		    if (returnVal == JFileChooser.APPROVE_OPTION) {
-                prefs.put("currentDir",
-                          fc.getCurrentDirectory().toString());
-			File file = fc.getSelectedFile();
-			try {
-			    XScuflParser.populate(file.toURL().openStream(), Workbench.this.model, null);
-			}
-			catch (Exception ex) {
-			    JOptionPane.showMessageDialog(null,
-							  "Problem opening XScufl from file : \n"+ex.getMessage(),
-							  "Exception!",
-							  JOptionPane.ERROR_MESSAGE);
-			}
-		    }
-		}
-	    });
+	openScufl.addActionListener(new ImportScuflListener());
 	fileMenu.add(openScufl);
 	// Load from web
 	JMenuItem openScuflURL = new JMenuItem("Import XScufl Definition from web",openurlIcon);
@@ -564,7 +539,7 @@ public class Workbench extends JFrame {
 	windowMenu.add(thingBuilder);
 	/**
 	   windowMenu.addSeparator();
-	   
+
 	   JMenuItem retsinaView = new JMenuItem("EMBOSS Flow Builder (test)");
 	   retsinaView.addActionListener(new ActionListener() {
 	   public void actionPerformed(ActionEvent e) {
@@ -582,5 +557,42 @@ public class Workbench extends JFrame {
 	return menuBar;
 
     }
+
+  private class ImportScuflListener
+          implements ActionListener
+  {
+    public void actionPerformed(ActionEvent e)
+    {
+      // Load an XScufl definition here
+      Preferences prefs = Preferences.userNodeForPackage(Workbench.class);
+      String curDir = prefs.get("currentDir",
+                                System.getProperty("user.home"));
+      fc.setCurrentDirectory(new File(curDir));
+      int returnVal = fc.showOpenDialog(Workbench.this);
+      if (returnVal == JFileChooser.APPROVE_OPTION) {
+        prefs.put("currentDir",
+                  fc.getCurrentDirectory().toString());
+        final File file = fc.getSelectedFile();
+        // mrp Refactored to do the heavy-lifting in a new thread
+        new Thread(new Runnable() {
+          public void run()
+          {
+            try {
+              // todo: does the update need running in the AWT thread?
+              // perhaps this thread should be spawned in populate?
+              XScuflParser.populate(file.toURL().openStream(),
+                                    Workbench.this.model, null);
+            } catch (Exception ex) {
+              JOptionPane.showMessageDialog(null,
+                                            "Problem opening XScufl from file : \n" +
+                                            ex.getMessage(),
+                                            "Exception!",
+                                            JOptionPane.ERROR_MESSAGE);
+            }
+          }
+        }).start();
+      }
+    }
+  }
 
 }
