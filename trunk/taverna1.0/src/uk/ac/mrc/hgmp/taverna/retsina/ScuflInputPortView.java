@@ -47,11 +47,11 @@ public class ScuflInputPortView extends PortView {
     public Rectangle getBounds() 
     {
       Rectangle bounds = new Rectangle(super.getLocation(null));
-      int width = getWidth((String)((ScuflInputPort)cell).getUserObject());
-      int height = getHeight();
+      int width = getParameterWidth((String)((ScuflInputPort)cell).getUserObject());
+      int height = getParameterHeight();
       bounds.x = bounds.x - width;
       bounds.y = bounds.y - height/2;
-      bounds.width = width*2;
+      bounds.width = width;
       bounds.height = height;
       return bounds;
       
@@ -64,7 +64,8 @@ public class ScuflInputPortView extends PortView {
     public Point getLocation(EdgeView e)
     {
       Point p = super.getLocation(null);
-      p.x -= getWidth((String)((ScuflInputPort)cell).getUserObject());
+      p.x -= getParameterWidth((String)((ScuflInputPort)cell).getUserObject());
+      p.y += getParameterHeight();
       return p;
     }
 
@@ -73,7 +74,7 @@ public class ScuflInputPortView extends PortView {
         return renderer;
     }
 
-    public static int getWidth(String name)
+    public static int getParameterWidth(String name)
     {
       JLabel c = new JLabel(); 
       FontMetrics fm = c.getFontMetrics(font);
@@ -81,11 +82,11 @@ public class ScuflInputPortView extends PortView {
       return width+inputPortIcon.getIconWidth();
     }
 
-    public int getHeight()
+    public int getParameterHeight()
     {
       JLabel c = new JLabel();
       FontMetrics fm = c.getFontMetrics(font);
-      return fm.getHeight()+8;
+      return fm.getHeight();
     }
     
     public class ScuflInputPortRenderer extends PortRenderer 

@@ -286,109 +286,61 @@ public class Retsina extends JApplet
    {
      try
      {
-       String wsflDefn = graph.getXScufl();
-       String input = graph.getDataSet().getDataSetString();
-       System.out.println(input);
-       TavernaStringifiedWorkflowSubmission submit = new TavernaStringifiedWorkflowSubmission(wsflDefn,input,"TestTavernaFlowBroker","http://www.it-innovation.soton.ac.uk/users");
-       FlowBroker broker = FlowBrokerFactory.createFlowBroker("uk.ac.soton.itinnovation.taverna.enactor.broker.TavernaFlowBroker");
-       TavernaFlowReceipt receipt = (TavernaFlowReceipt) broker.submitFlow(submit);
-     }
-     catch(InvalidFlowBrokerRequestException invalid){}
-     catch(WorkflowCommandException wfException){} 
+       TavernaFlowReceipt receipt = null;
+       try
+       {
+//       BufferedInputStream workflowspec = new BufferedInputStream(new FileInputStream("./scufl_test.xml"));
+//       StringWriter sWriter = new StringWriter();
+//       while(workflowspec.available()>0) 
+//         sWriter.write(workflowspec.read());
+//       String scuflDefn = sWriter.toString();
 
-  
-//   try{
-//     BufferedInputStream workflowspec = new BufferedInputStream(new FileInputStream("src/uk/ac/soton/itinnovation/taverna/enactor/broker/test/XScufl_example.xml"));
-//     BufferedInputStream inData = new BufferedInputStream(new FileInputStream("src/uk/ac/soton/itinnovation/taverna/enactor/broker/test/input.xml"));
+         String scuflDefn = graph.getXScufl();
+         String input = graph.getDataSet().getDataSetString();
+         System.out.println(input);
+         TavernaStringifiedWorkflowSubmission submit = 
+                    new TavernaStringifiedWorkflowSubmission(
+                               scuflDefn,input,
+                               "TestTavernaFlowBroker",
+                               "http://www.it-innovation.soton.ac.uk/users");
 
-//     StringWriter sWriter = new StringWriter();
-//     while(workflowspec.available()>0) {
-//       sWriter.write(workflowspec.read());
-//     }
-//     String wsflDefn = sWriter.toString();
-//     wsflDefn = graph.getXScufl();
+         FlowBroker broker = FlowBrokerFactory.createFlowBroker(
+                               "uk.ac.soton.itinnovation.taverna.enactor.broker.TavernaFlowBroker");
+         receipt = (TavernaFlowReceipt) broker.submitFlow(submit);
+       }
+       catch(InvalidFlowBrokerRequestException invalid){}
+       catch(WorkflowCommandException wfException){} 
 
-//     sWriter = new StringWriter();
-//     while(inData.available()>0) {
-//       sWriter.write(inData.read());
-//     }
-//     String input = sWriter.toString();
-
-//     TavernaStringifiedWorkflowSubmission submit = new TavernaStringifiedWorkflowSubmission(wsflDefn,input,
-//                   "TestTavernaFlowBroker","http://www.it-innovation.soton.ac.uk/users");
-
-//     TavernaWorkflowSubmission submit = new TavernaWorkflowSubmission(wsflDefn,input,
-//                   "TestTavernaFlowBroker","http://www.it-innovation.soton.ac.uk/users");
-
-       System.out.println(" **************** HERE ****************");
-//     System.out.println("\n\n"+input);
-//     TavernaStringifiedWorkflowSubmission submit = new TavernaStringifiedWorkflowSubmission(wsflDefn,input,"TestTavernaFlowBroker","http://www.it-innovation.soton.ac.uk/users");
-
-//     FlowBroker broker = FlowBrokerFactory.createFlowBroker("uk.ac.soton.itinnovation.taverna.enactor.broker.TavernaFlowBroker");
-//     TavernaFlowReceipt receipt = (TavernaFlowReceipt) broker.submitFlow(submit);
        //poll for status every 500ms
-//     boolean stop = false;
-//     String status ="UNKNOWN";
-//     while(!stop) {
-//       //retrieve the status
-//       status = receipt.getStatusString();
-//       if(status.equals("COMPLETE") || status.equals("FAILED"))
-//         stop = true;
-//       try {
-//         Thread.sleep(500);
-//       }
-//       catch(InterruptedException ex) {
-//       }
-//     }
-//     if(status.equals("FAILED"))
-//         System.out.println("Error message: " + receipt.getErrorMessage());
-//     System.out.println("Emboss Workflow has finished with status: " + status); 
-//      }
-//      catch(Exception ex) {
-//              ex.printStackTrace();
-//      }
-//   try
-//   {
-       // As per:
-       // uk.ac.soton.itinnovation.taverna.enactor.broker.test.TestTavernaFlowBroker
-//     String xscufl = graph.getXScufl();
-//     System.out.println(xscufl);
-
-     
-//     BufferedInputStream inData = new BufferedInputStream(new FileInputStream("src/uk/ac/soton/itinnovation/taverna/enactor/broker/test/input.xml"));
-
-//     StringWriter sWriter = new StringWriter();
-//     while(inData.available()>0) 
-//       sWriter.write(inData.read());
-//    
-//     String inputData = sWriter.toString();
-//     TavernaWorkflowSubmission submit = new TavernaWorkflowSubmission(
-//                      xscufl,inputData,"TestTavernaFlowBroker",
-//                      "http://www.it-innovation.soton.ac.uk/users");
-//                      "http://www.hgmp.mrc.ac.uk/users");
-//     FlowBroker broker = FlowBrokerFactory.createFlowBroker(
-//              "uk.ac.soton.itinnovation.taverna.enactor.broker.TavernaFlowBroker");
-//     TavernaFlowReceipt receipt = (TavernaFlowReceipt)broker.submitFlow(submit);
-
-//     //poll for status every 500ms
-//     boolean stop = false;
-//     String status ="UNKNOWN";
-//     while(!stop) {
+       boolean stop = false;
+       String status ="UNKNOWN";
+       while(!stop) 
+       {
          //retrieve the status
-//       status = receipt.getStatusString();
-//       if(status.equals("COMPLETE") || status.equals("FAILED"))
-//         stop = true;
-//       try {
-//         Thread.sleep(500);
-//       }
-//       catch(InterruptedException ex) {
-//       }
-//     }
-//   }
-//   catch(Exception ex) 
-//   {
-//     ex.printStackTrace();
-//   }   
+         status = receipt.getStatusString();
+         if(status.equals("COMPLETE") || status.equals("FAILED"))
+           stop = true;
+         try 
+         {
+           Thread.sleep(500);
+         }
+         catch(InterruptedException ex)
+         {
+
+         }
+       }
+     
+       if(status.equals("FAILED"))
+             System.out.println("Error message: " + receipt.getErrorMessage());
+       System.out.println("Emboss Workflow has finished with status: " + status);
+       System.out.println("Output:\n\n" + receipt.getOutputString());
+
+     }
+     catch(Exception ex) 
+     {
+       ex.printStackTrace();
+     }
+  
    }
 
 }

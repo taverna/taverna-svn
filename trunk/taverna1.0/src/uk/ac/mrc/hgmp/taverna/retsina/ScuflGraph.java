@@ -108,22 +108,35 @@ public class ScuflGraph extends JGraph
 
               System.out.println(lab+" = "+s);
               if( s != null )
-                dataSet.addData(lab,"String",s);
+                dataSet.addData(lab,"string",s);
 
               // add input port & data constraint
               try
               {
-                Processor sourceProcessor = scuflModel.getWorkflowSourceProcessor();
-                OutputPort output = new OutputPort(sourceProcessor,lab);
-                sourceProcessor.addPort(output);
- 
                 Processor sinkProcessor = scuflModel.getWorkflowSinkProcessor();
-                ScuflInputPort sip = (ScuflInputPort)cell;
-                org.embl.ebi.escience.scufl.InputPort input = (org.embl.ebi.escience.scufl.InputPort)sip.getScuflPort();
-                System.out.println("NAME "+input.toString());
+                Processor sourceProcessor = scuflModel.getWorkflowSourceProcessor();
 
-//              InputPort input = new InputPort(sinkProcessor,((Port)cell).toString());
-                sinkProcessor.addPort(input);
+                org.embl.ebi.escience.scufl.InputPort input = null;
+                OutputPort output = null;
+                if( cell instanceof ScuflInputPort)         // source
+                {
+                  ScuflInputPort sip = (ScuflInputPort)cell;
+                  input = (org.embl.ebi.escience.scufl.InputPort)sip.getScuflPort();
+                  sinkProcessor.addPort(input);
+
+                  output = new OutputPort(sourceProcessor,lab);
+                  sourceProcessor.addPort(output);
+                }
+                else if ( cell instanceof ScuflOutputPort)  // sink
+                {
+                  ScuflOutputPort sip = (ScuflOutputPort)cell;
+                  output = (org.embl.ebi.escience.scufl.OutputPort)sip.getScuflPort();
+                  sourceProcessor.addPort(output);
+
+                  input = new InputPort(sinkProcessor,lab);
+                  sinkProcessor.addPort(input);
+                }
+
                 DataConstraint dc = new DataConstraint(scuflModel, output, input);
                 scuflModel.addDataConstraint(dc);
               }
