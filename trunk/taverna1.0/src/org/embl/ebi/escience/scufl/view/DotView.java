@@ -103,11 +103,41 @@ public class DotView implements ScuflModelEventListener {
 	dot.append("  color=\"black\"                \n");
 	dot.append(" ];\n\n");
 
+	// Get the external ports, render these as special links
+	// and edges to show them in the generated diagram
+	Port[] externalPorts = model.getExternalPorts();
+	for (int i=0; i<externalPorts.length; i++) {
+	    // Create the new node in the graph for this external port
+	    Port thePort = externalPorts[i];
+	    Processor theProcessor = thePort.getProcessor();
+	    String nodeName = "external"+theProcessor.getName()+thePort.getName();
+	    dot.append(" "+nodeName+" [\n");
+	    dot.append("  shape=\"doublecircle\",\n");
+	    dot.append("  fillcolor=\"skyblue\",\n");
+	    if (thePort instanceof InputPort) {
+		dot.append("  label=\"Input\";\n");
+	    }
+	    else {
+		dot.append("  label=\"Output\";\n");
+	    }
+	    dot.append(" ]\n");
+	    // Create an edge to the named port, direction depends on the type
+	    // of the port, whether input or output
+	    if (thePort instanceof InputPort) {
+		dot.append(" "+nodeName+"->"+theProcessor.getName()+":"+thePort.getName()+";\n");
+	    }
+	    else {
+		dot.append(" "+theProcessor.getName()+":"+thePort.getName()+"->"+nodeName+";\n");
+	    }
+	}
+	
+
 	// For each processor, create a named node
 	// Currently creates oval blobs per node,
 	// as and when I can get the dot manual to 
 	// load I will modify this to use record types
 	// and to thereby show the port names.
+	// - this is now done (tmo, 17th April 2003)
 	Processor[] processors = model.getProcessors();
 	for (int i=0; i<processors.length; i++) {
 	    Processor p = processors[i];

@@ -34,7 +34,8 @@ public class DotViewTest {
 	ScuflModel model = new ScuflModel();
 	DotView view = new DotView(model);
 	ClassLoader loader = Thread.currentThread().getContextClassLoader();
-	URL location = loader.getResource("org/embl/ebi/escience/scufl/parser/test/XScufl_example.xml");
+	//URL location = loader.getResource("org/embl/ebi/escience/scufl/parser/test/XScufl_example.xml");
+	URL location = loader.getResource("uk/ac/soton/itinnovation/taverna/enactor/broker/test/XScufl_example.xml");
 	System.out.println("Loading definition from : "+location.toString());
 	XScuflParser.populate(location.openStream(), model, null);
 	System.out.println(view.getDot());

@@ -16,7 +16,9 @@
 		
 	<!-- Show the splash screen -->
 	<target name="splash">
+<!--
 		<splash showduration="0" imageurl="http://mygrid.man.ac.uk/images/mygridlogowhite.gif"/>
+-->
 	</target>
 		
 	<!-- Path used during compilation -->
