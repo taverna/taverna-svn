@@ -93,7 +93,28 @@ public class DataConstraint implements java.io.Serializable {
      * Return a string representation of the data link
      */
     public String getName() {
-	return this.source.getProcessor().getName()+":"+this.source.getName()+"'->'"+this.sink.getProcessor().getName()+":"+this.sink.getName();
+	String from = "";
+	String to = "";
+	if (this.source.getProcessor() == model.getWorkflowSourceProcessor()) {
+	    from = this.source.getName();
+	}
+	else {
+	    from = this.source.getProcessor().getName()+":"+this.source.getName();
+	}
+	if (this.sink.getProcessor() == model.getWorkflowSinkProcessor()) {
+	    to = this.sink.getName();
+	}
+	else {
+	    to = this.sink.getProcessor().getName()+":"+this.sink.getName();
+	}
+	return from+"->"+to;
+    }
+
+    /**
+     * Return the name as the toString() method
+     */
+    public String toString() {
+	return this.getName();
     }
 
 }

@@ -236,4 +236,11 @@ public abstract class Processor implements java.io.Serializable {
 	this.model.fireModelEvent(event);
     }
 
+    /**
+     * Return the processor's name in the toString()
+     */
+    public String toString() {
+	return this.getName();
+    }
+
 }

@@ -136,35 +136,42 @@ public abstract class Port implements java.io.Serializable {
 	return this.name;
     }
 
-	/**
-	 * Add a name to the list of aliases used to reference 
-	 * this port.
-	 */
-	public void addAlias(String name) {
-		if(aliases==null)
-			aliases = new ArrayList();
-		aliases.add(name);
-		//Note at present no way to remove name, can't see
-		//any need for it at moment - would introduce 
-		//synchronization issues anyway. - djm 29/04/2003.
+    /**
+     * Return the name as the toString() implementation
+     */
+    public String toString() {
+	return this.getName();
+    }
+
+    /**
+     * Add a name to the list of aliases used to reference 
+     * this port.
+     */
+    public void addAlias(String name) {
+	if(aliases==null)
+	    aliases = new ArrayList();
+	aliases.add(name);
+	//Note at present no way to remove name, can't see
+	//any need for it at moment - would introduce 
+	//synchronization issues anyway. - djm 29/04/2003.
+    }
+    
+    /**
+     * Checks to see if supplied name is an alias for the port
+     */
+    public boolean isAlias(String name) {
+	if(aliases!=null){
+	    Iterator i = aliases.iterator();
+	    while(i.hasNext()) {
+		String n = (String) i.next();
+		if(n.equals(name))
+		    return true;
+	    }
 	}
-
-	/**
-	 * Checks to see if supplied name is an alias for the port
-	 */
-	public boolean isAlias(String name) {
-		if(aliases!=null){
-			Iterator i = aliases.iterator();
-			while(i.hasNext()) {
-				String n = (String) i.next();
-				if(n.equals(name))
-					return true;
-			}
-		}
-		return false;
-	}	
-
-	/**
+	return false;
+    }	
+    
+    /**
      * Handle model events
      */
     void fireModelEvent(ScuflModelEvent event) {
