@@ -223,6 +223,7 @@ public class XScuflParser {
 	        String wsdlLocation = wsdlProcessor.getChild("wsdl",namespace).getTextTrim();
 		String portTypeName = wsdlProcessor.getChild("porttype",namespace).getTextTrim();
 		String operationName = wsdlProcessor.getChild("operation",namespace).getTextTrim();
+		//throw new XScuflFormatException(wsdlLocation+","+portTypeName+","+operationName);
 		model.addProcessor(new WSDLBasedProcessor(model, name, wsdlLocation, portTypeName, operationName));
 	    }
 

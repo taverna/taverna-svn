@@ -134,6 +134,7 @@ public class WSDLBasedProcessor extends Processor implements java.io.Serializabl
 	    try {
 		Port newInputPort = new InputPort(this, part.getName());
 		newInputPort.setSyntacticType(part.getTypeName().getLocalPart());
+		this.addPort(newInputPort);
 	    }
 	    catch (DuplicatePortNameException dpne) {
 		throw new ProcessorCreationException("Attempted to create a duplicate input port '"+part.getName()+"'.");
@@ -152,6 +153,7 @@ public class WSDLBasedProcessor extends Processor implements java.io.Serializabl
 	    try {
 		Port newOutputPort = new OutputPort(this, part.getName());
 		newOutputPort.setSyntacticType(part.getTypeName().getLocalPart());
+		this.addPort(newOutputPort);
 	    }
 	    catch (DuplicatePortNameException dpne) {
 		throw new ProcessorCreationException("Attempted to create a duplicate output port '"+part.getName()+"'.");

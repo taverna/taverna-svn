@@ -41,6 +41,7 @@ public class XScufl2Dot {
 	    ScuflModel model = new ScuflModel();
 	    // Register a dot view with it
 	    DotView view = new DotView(model);
+	    //model.addListener(new ScuflModelEventPrinter(null));
 	    // Decide how much information to show
 	    view.setPortDisplay(portPolicy);
 	    File inputFile = new File(filename);

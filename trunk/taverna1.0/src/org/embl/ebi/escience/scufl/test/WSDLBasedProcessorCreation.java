@@ -25,9 +25,9 @@ public class WSDLBasedProcessorCreation {
 	// Attempt to create a new WSDLBasedProcessor
 	model.addProcessor(new WSDLBasedProcessor(model,
 						  "my_processor",
-						  "http://www.tinetics.com/webservices/whois.cfc?WSDL",
-						  "whois",
-						  "whois"));
+						  "http://xml.nig.ac.jp/wsdl/Blast.wsdl",
+						  "Blast",
+						  "search"));
 	XScuflView view = new XScuflView(model);
 	System.out.println(view.getXMLText());
 	System.out.println("Finished test : WSDLBasedProcessorCreation");
