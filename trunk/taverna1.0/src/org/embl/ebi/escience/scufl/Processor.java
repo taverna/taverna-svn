@@ -120,6 +120,42 @@ public abstract class Processor implements Serializable {
     }
 
     /**
+     * Return the default number of workers for an instance of this
+     * processor type
+     */
+    public int getDefaultWorkers() {
+	return 1;
+    }
+
+    /**
+     * The number of threads that this processor will use when
+     * running on an implicit iteration run
+     */
+    private int workerThreads = getDefaultWorkers();
+
+    /**
+     * Return the number of workers for this instance
+     */
+    public final int getWorkers() {
+	return this.workerThreads;
+    }
+
+    /**
+     * Set the number of workers
+     */
+    public final void setWorkers(int workers) {
+	if (workers < 1) {
+	    workers = 1;
+	}
+	if (workers > getMaximumWorkers()) {
+	    this.workerThreads = getMaximumWorkers();
+	}
+	else {
+	    this.workerThreads = workers;
+	}
+    }
+
+    /**
      * Set the name, providing that names doesn't exist within the
      * current workflow that this processor is bound to. If it does
      * then do nothing

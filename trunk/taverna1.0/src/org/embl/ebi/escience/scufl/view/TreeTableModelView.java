@@ -19,11 +19,12 @@ import org.embl.ebi.escience.treetable.*;
  */
 public class TreeTableModelView extends TreeModelView implements TreeTableModel {
 
-    private static String[] columnNames = {"Workflow object", "Retries", "Delay", "Backoff", "Critical"};
+    private static String[] columnNames = {"Workflow object", "Retries", "Delay", "Backoff", "Threads", "Critical"};
     private static Class[] columnClasses = { TreeTableModel.class,
 					     Integer.class,
 					     Integer.class,
 					     Double.class,
+					     Integer.class,
                                              Boolean.class};
     public int getColumnCount() {
 	return columnNames.length;
@@ -64,10 +65,14 @@ public class TreeTableModelView extends TreeModelView implements TreeTableModel 
 	    if (p != null) {
 		return new Double(p.getBackoff());
 	    }
-        case 4:
+        case 5:
             if (p != null) {
                 return new Boolean(p.getCritical());
             }
+	case 4:
+	    if (p != null) {
+		return new Integer(p.getWorkers());
+	    }
         }
 	return null;
     }
@@ -135,10 +140,14 @@ public class TreeTableModelView extends TreeModelView implements TreeTableModel 
 		Double backoff = (Double)value;
 		p.setBackoff(backoff.doubleValue());
 		return;
-            case 4:
+            case 5:
                 p.setCritical(((Boolean) value).booleanValue());
                 return;
-            }
+	    case 4:
+		Integer threads = (Integer)value;
+		p.setWorkers(threads.intValue());
+	    }
+	    
 	}
 	else if (node.getUserObject() instanceof Port) {
 	    Port thePort = (Port)node.getUserObject();

@@ -224,7 +224,9 @@ public class XScuflParser {
 	    if (usePrefix) {
 		name = prefix+"_"+name;
 	    }
-	    threadList.add(new ProcessorLoaderThread(model, processorNode, name, namespace, holder));
+	    String workerName = processorNode.getAttributeValue("workers");
+	    threadList.add(new ProcessorLoaderThread(model, processorNode, name, 
+						     namespace, holder, workerName));
 	    // End iterator over processors
 	}
 	// Wait on all the threads in the threadList
@@ -410,12 +412,14 @@ class ProcessorLoaderThread extends Thread {
     private String name;
     private Namespace namespace;
     private ExceptionHolder holder;
-    protected ProcessorLoaderThread(ScuflModel model, Element processorNode, String name, Namespace namespace, ExceptionHolder holder) {
+    String workerThreads;
+    protected ProcessorLoaderThread(ScuflModel model, Element processorNode, String name, Namespace namespace, ExceptionHolder holder, String workersString) {
 	this.model = model;
 	this.namespace = namespace;
 	this.processorNode = processorNode;
 	this.name = name;
 	this.holder = holder;
+	this.workerThreads = workersString;
 	this.start();
     }
     public void run() {
@@ -435,6 +439,13 @@ class ProcessorLoaderThread extends Thread {
 						" for processor node '"+name+"'");
 	    }
 	    theProcessor.setLogLevel(log);
+	    
+	    // Set number of worker threads if defined.
+	    if (workerThreads != null) {
+		int workers = Integer.parseInt(workerThreads);
+		theProcessor.setWorkers(workers);
+	    }
+	    
 	    // Get the description if present
 	    String description = "";
 	    Element de = processorNode.getChild("description",namespace);

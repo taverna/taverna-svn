@@ -77,6 +77,14 @@ public class SeqhoundProcessor extends Processor {
 	}
     }
 
+    public int getDefaultWorkers() {
+	return 5;
+    }
+
+    public int getMaximumWorkers() {
+	return 50;
+    }
+
     public SeqhoundProcessor(ScuflModel theModel, 
 			     String processorName, 
 			     String methodName,
@@ -99,6 +107,8 @@ public class SeqhoundProcessor extends Processor {
 	this.config.setProperty("cgi", path);
 	this.config.setProperty("jseqremcgi", jseqremPath);
 	
+	this.setWorkers(getDefaultWorkers());
+
 	this.seqhound = new SeqHoundForTaverna(this.config);
 	try {
 	    // System.out.println("Attempting to create a seqhound proxy instance");
