@@ -126,7 +126,7 @@ public class Workbench extends JFrame {
 	try {
 	    URL ontologyURL;
 	    if (System.getProperty("taverna.ontology.location")!=null) {
-		ontologyURL = new URL("taverna.ontology.location");
+		ontologyURL = new URL(System.getProperty("taverna.ontology.location"));
 	    }
 	    else {
 		ontologyURL = ClassLoader.getSystemResource("org/embl/ebi/escience/scufl/semantics/mygrid-reasoned-small.rdfs");
