@@ -24,7 +24,7 @@ import org.embl.ebi.escience.scuflworkers.ProcessorHelper;
  * A panel for display the ResultTable. It also has a 
  * 
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover</a>
- * @version $Revision: 1.5 $
+ * @version $Revision: 1.6 $
  */
 public class ResultTablePanel extends JPanel implements ResultTable.TableSelectionListener
 {
@@ -68,7 +68,6 @@ public class ResultTablePanel extends JPanel implements ResultTable.TableSelecti
 	 */
 	public void valueChanged(ResultTable table, ResultThing thing)
 	{
-		System.out.println("Cell: " + resultTable.getSelectedColumn() + "," + resultTable.getSelectedRow());
 		if(thing != null)
 		{
 			JPanel panel = new JPanel();

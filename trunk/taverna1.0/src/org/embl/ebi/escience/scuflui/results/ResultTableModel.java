@@ -30,7 +30,7 @@ import org.jdom.input.SAXBuilder;
 
 /**
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover</a>
- * @version $Revision: 1.7 $
+ * @version $Revision: 1.8 $
  */
 public class ResultTableModel implements TableModel
 {
@@ -173,7 +173,7 @@ public class ResultTableModel implements TableModel
 			}
 			catch (Exception e)
 			{
-				e.printStackTrace();
+				// Don't throw error here. 
 			}
 		}
 		else
@@ -186,7 +186,7 @@ public class ResultTableModel implements TableModel
 			}
 			catch (Exception e)
 			{
-				e.printStackTrace();
+				// Don't throw error here.
 			}
 		}
 		ResultSource source = new ResultSource(link.getSource(), thing);
@@ -319,7 +319,6 @@ public class ResultTableModel implements TableModel
 		SAXBuilder builder = new SAXBuilder();
 		Document doc = builder.build(new StringReader(provenanceXML));
 		Element root = doc.getRootElement();
-		System.out.println(root.getName());
 		HashMap provenance = new HashMap();
 		for (int index = 0; index < root.getChildren().size(); index++)
 		{
@@ -368,7 +367,6 @@ public class ResultTableModel implements TableModel
 			int row = 0;
 			for (int index = columns.length - 1; index > 0; index--)
 			{
-				System.out.println("Getting data for " + columns[index]);
 				row = columns[index].fillColumn(row);
 			}
 			rowCount = row;

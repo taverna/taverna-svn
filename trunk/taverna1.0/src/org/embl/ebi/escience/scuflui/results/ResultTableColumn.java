@@ -12,7 +12,7 @@ import org.embl.ebi.escience.baclava.DataThing;
 
 /**
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover</a>
- * @version $Revision: 1.5 $
+ * @version $Revision: 1.6 $
  */
 public class ResultTableColumn extends ResultTableCellCollection
 {
@@ -27,7 +27,6 @@ public class ResultTableColumn extends ResultTableCellCollection
 	 */
 	public void addSource(ResultSource source)
 	{
-		System.out.println("Adding source: " + source);
 		sources.add(source);
 	}
 
@@ -118,7 +117,6 @@ public class ResultTableColumn extends ResultTableCellCollection
 			{
 				ResultTableCell cell = getCell(startRow - 1);
 				extendCell(cell, 1);
-				System.out.println("Extended cell " + cell.startRow + "-" + cell.endRow);
 				return cell;
 			}
 		}
