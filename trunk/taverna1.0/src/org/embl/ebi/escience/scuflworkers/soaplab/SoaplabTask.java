@@ -25,8 +25,8 @@
 //      Dependencies        :
 //
 //      Last commit info    :   $Author: mereden $
-//                              $Date: 2003-10-13 16:43:23 $
-//                              $Revision: 1.4 $
+//                              $Date: 2003-10-31 15:51:08 $
+//                              $Revision: 1.5 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 
@@ -125,7 +125,9 @@ public class SoaplabTask extends ProcessorTask{
 	catch(Exception ex) {
 	    ex.printStackTrace();
 	    logger.error("Error invoking soaplab service for task " +getID() ,ex);
-	    throw new TaskExecutionException("Task " + getID() + " failed due to problem invoking soaplab service");			
+	    TaskExecutionException tee = new TaskExecutionException("Task " + getID() + " failed due to problem invoking soaplab service");
+	    tee.initCause(ex);
+	    throw tee;
 	}
 	
     }
