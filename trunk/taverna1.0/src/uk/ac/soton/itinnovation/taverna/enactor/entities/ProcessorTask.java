@@ -25,8 +25,8 @@
 //      Dependencies        :
 //
 //      Last commit info    :   $Author: dmarvin $
-//                              $Date: 2003-06-06 09:47:47 $
-//                              $Revision: 1.11 $
+//                              $Date: 2003-06-06 16:45:09 $
+//                              $Revision: 1.12 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 package uk.ac.soton.itinnovation.taverna.enactor.entities;
@@ -37,6 +37,7 @@ import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.serviceprovidermana
 import uk.ac.soton.itinnovation.taverna.enactor.broker.LogLevel;
 import uk.ac.soton.itinnovation.mygrid.workflow.enactor.io.*;
 import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.entities.graph.*;
+import org.embl.ebi.escience.scufl.Port;
 import java.util.*;
 
 
@@ -167,8 +168,29 @@ public abstract class ProcessorTask extends TavernaTask{
 	    // are without attempting to do any iteration at all
 	    for (Iterator i = inputInfoMap.keySet().iterator(); i.hasNext(); ) {
 				PartInfo pi = (PartInfo)inputInfoMap.get(i.next());
-				is.addSinglePart(pi.getPart());
-				System.out.println("Second time: "+ pi.toString());
+				int dim = pi.getDimension();
+				if(dim==0)
+					is.addSinglePart(pi.getPart());
+				else if (dim>0){
+					//at present only support single dimension String Arrays
+					//if this is a String Array and the associated input is a String 
+					//(distinguished by port syntactic type)
+					//then want to iterate 
+					Part part = pi.getPart();
+					Port port = proc.locatePort(part.getName());
+					if(part.getType().equals("string[]") && port.getSyntacticType().equals("string")) {
+						String[] strings = (String[]) part.getTypedValue();
+						Part[] prts = new Part[strings.length];
+						for(int x=0;x<strings.length;x++) {
+							Part prt = new Part(-1,part.getName(),"string",strings[x]);
+							System.out.println("Type of element:" + strings[x].getClass());
+							prts[x] = prt;
+							}
+							is.addOrthogonalArray(prts);
+					}
+				}
+				else 
+					return new TaskStateMessage(getParentFlow().getID(), getID(), TaskStateMessage.FAILED,"Unsupported array type needed");
 	    }
 	    
 	    List inputList = is.getCurrentState();

@@ -24,9 +24,9 @@
 //      Created for Project :   MYGRID
 //      Dependencies        :
 //
-//      Last commit info    :   $Author: mereden $
-//                              $Date: 2003-06-06 11:07:08 $
-//                              $Revision: 1.6 $
+//      Last commit info    :   $Author: dmarvin $
+//                              $Date: 2003-06-06 16:44:24 $
+//                              $Revision: 1.7 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 
@@ -51,10 +51,11 @@ import uk.ac.soton.itinnovation.mygrid.workflow.enactor.io.User;
 import uk.ac.soton.itinnovation.mygrid.workflow.enactor.specification.WorkflowSpecParseException;
 import uk.ac.soton.itinnovation.mygrid.workflow.enactor.specification.WorkflowValidationException;
 import uk.ac.soton.itinnovation.taverna.enactor.broker.TavernaFlowReceipt;
-import uk.ac.soton.itinnovation.taverna.enactor.broker.TavernaWorkflowSubmission;
+import uk.ac.soton.itinnovation.taverna.enactor.broker.TavernaStringifiedWorkflowSubmission;
 import uk.ac.soton.itinnovation.mygrid.workflow.enactor.io.*;
 import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.broker.WorkflowCommandException;
 import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.broker.InvalidFlowBrokerRequestException;
+
 
 // Utility Imports
 import java.util.ArrayList;
@@ -111,6 +112,7 @@ public class TavernaWorkflowEnactor extends WorkflowEnactor implements FlowCallb
         m_log.debug("isValid returned: " + val);
         return errorLog.toString();
     }
+
     
     /**
      * Submit a workflow from strings containing the workflow definition, data input
@@ -176,8 +178,8 @@ public class TavernaWorkflowEnactor extends WorkflowEnactor implements FlowCallb
 	//submit the flow
 	String input = sWriter.toString();
 	
-	TavernaWorkflowSubmission submit = 
-	    new TavernaWorkflowSubmission(workflowDefn, input, userObj.getID(), userObj.getContext());
+	TavernaStringifiedWorkflowSubmission submit = 
+	    new TavernaStringifiedWorkflowSubmission(workflowDefn, input, userObj.getID(), userObj.getContext());
 	
 	// Can throw uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.broker.InvalidFlowBrokerRequestException
 	FlowBroker broker = 
@@ -209,14 +211,7 @@ public class TavernaWorkflowEnactor extends WorkflowEnactor implements FlowCallb
 	
 	return workflowID;
 	
-	//} 
-	//catch (Exception ex) {
-	//if (m_log != null) {
-	//    m_log.warn(ex);
-	//}
-	//ex.printStackTrace();
-	//throw ex;
-	//}
+	
     }
     
     /*

@@ -25,8 +25,8 @@
 //      Dependencies        :
 //
 //      Last commit info    :   $Author: dmarvin $
-//                              $Date: 2003-06-06 09:47:47 $
-//                              $Revision: 1.13 $
+//                              $Date: 2003-06-06 16:45:09 $
+//                              $Revision: 1.14 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 
@@ -79,79 +79,6 @@ public class WSDLInvocationTask extends ProcessorTask implements InvocationDescr
 	
 	public java.util.Map execute(java.util.Map inputMap) throws TaskExecutionException {
 		
-		/*try{
-			startTime =  new TimePoint();
-			//want to siffle through the input ports and get input parts  
-			//GraphNode[] inputs = getParents();
-			//want to create suitable input parts
-			
-			Input input = new Input();
-			if(logLevel.getLevel()>=LogLevel.HIGH)
-				inputForLog = input;
-			Iterator iterator = inputMap.keySet().iterator();
-			while(iterator.hasNext()) {
-				input.addPart((Part) inputMap.get(iterator.next()));
-			}
-
-			WSDLServiceInvocation serviceInvocation = new WSDLServiceInvocation(this,input,WSDLServiceInvocation.OPERATION_TYPE_REQUEST_RESPONSE);
-			//have to configure invocation for the output parts
-			List outParts = new ArrayList();
-			GraphNode[] children = getChildren();
-			for (int i = 0; i < children.length; i++) {
-				if (children[i] instanceof PortTask) {
-					PortTask pT = (PortTask) children[i];
-					Port pt = pT.getScuflPort();
-					Part prt = new Part(-1,pt.getName(),null,null);	//not worried that type and value unknown at present since will be filled in by invocation api
-					pT.setData(prt);
-					outParts.add(prt);
-          }
-			}
-			serviceInvocation.setResponseMessageParts(outParts);
-
-			//execute the call
-            serviceInvocation.executeOperation();
-            //group together the output parts and write to child partchecks
-            Output output = serviceInvocation.getServiceOutput();
-
-            if(logLevel.getLevel()>=LogLevel.HIGH) 
-							outputForLog = output;
-						List outputParts = output.getPartList();
-						
-						System.out.println("Number of output items: " + outputParts.size());
-						Map outputMap = new HashMap();
-            iterator = outputParts.iterator();
-            while (iterator.hasNext()) {
-							//match with child part by name and set the part value
-	            
-							Part part = (Part) iterator.next();
-              String partName = part.getName();
-              System.out.println("--- part name: " + partName);
-							System.out.println("--- part apparent type: " + part.getType());
-							System.out.println("--- part type: " + part.getTypedValue().getClass());
-							Iterator iter2 = outParts.iterator();
-              while (iter2.hasNext()) {
-					     Part prt = (Part) iter2.next();
-               							 
-							 if (prt.getName().equals(partName)) {
-									prt.setValue(part.getTypedValue());
-                  prt.setType(part.getType());
-                  prt.setID(part.getID());
-               }
-							 outputMap.put(partName,prt);				 
-								
-             }
-						}
-          
-			endTime = new TimePoint();
-			//success
-			return outputMap;
-		}
-		catch(Exception ex) {
-			ex.printStackTrace();
-			logger.error("Error invoking soaplab service for task " +getID() ,ex);
-			throw new TaskExecutionException("Task " + getID() + " failed due to problem invoking soaplab service");
-		}
-		*/
 		try{
 			startTime =  new TimePoint();
 			//want to siffle through the input ports and get input parts  
@@ -205,20 +132,7 @@ public class WSDLInvocationTask extends ProcessorTask implements InvocationDescr
 							System.out.println("--- part apparent type: " + part.getType());
 							System.out.println("--- part type: " + part.getTypedValue().getClass());
 							outputMap.put(partName,part);
-							/*
-							Iterator iter2 = outParts.iterator();
-              while (iter2.hasNext()) {
-					     Part prt = (Part) iter2.next();
-               							 
-							 if (prt.getName().equals(partName)) {
-									prt.setValue(part.getTypedValue());
-                  prt.setType(part.getType());
-                  prt.setID(part.getID());
-               }
-							 outputMap.put(partName,prt);				 
-								
-             }
-						 */
+							
 						}
           
 			endTime = new TimePoint();
@@ -228,7 +142,7 @@ public class WSDLInvocationTask extends ProcessorTask implements InvocationDescr
 		catch(Exception ex) {
 			ex.printStackTrace();
 			logger.error("Error invoking soaplab service for task " +getID() ,ex);
-			throw new TaskExecutionException("Task " + getID() + " failed due to problem invoking soaplab service");
+			throw new TaskExecutionException("Task " + getID() + " failed due to problem invoking WSDL-based service");
 		}
 
 	}
@@ -316,6 +230,11 @@ public class WSDLInvocationTask extends ProcessorTask implements InvocationDescr
 			if(endTime!=null) {
 				Element eT = new Element("endTime",PROVENANCE_NAMESPACE);
 				eT.addContent(new Text(endTime.getString()));
+				e.addContent(eT);
+			}
+			if(getClientMessage()!=null) {
+				Element eT = new Element("executionMessage",PROVENANCE_NAMESPACE);
+				eT.addContent(new Text(getClientMessage()));
 				e.addContent(eT);
 			}
 			
