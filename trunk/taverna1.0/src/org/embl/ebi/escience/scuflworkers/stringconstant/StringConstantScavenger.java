@@ -22,9 +22,9 @@ public class StringConstantScavenger extends Scavenger {
      * should is the constant value that any thus created will carry.
      * tscript could be fetched.
      */
-    public StringConstantScavenger(String value)
+    public StringConstantScavenger()
 	throws ScavengerCreationException {
-	super(new StringConstantProcessorFactory(value));
+	super(new StringConstantProcessorFactory("edit me!"));
     }
 }
 	

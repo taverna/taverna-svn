@@ -11,12 +11,15 @@ import org.embl.ebi.escience.scufl.Processor;
 import org.embl.ebi.escience.scufl.ProcessorCreationException;
 import org.embl.ebi.escience.scufl.ScuflModel;
 import org.embl.ebi.escience.scufl.parser.XScuflFormatException;
+import org.embl.ebi.escience.scuflui.workbench.Scavenger;
 
 // Utility Imports
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Set;
+import java.util.HashSet;
 import java.util.Properties;
 
 // JDOM Imports
@@ -61,6 +64,7 @@ public class ProcessorHelper {
     static Map xmlHandlerForTagName = new HashMap();
     static Map tagNameForScavenger = new HashMap();
     static Map editorForTagName = new HashMap();
+    static Set simpleScavengers = new HashSet();
 
     static ImageIcon unknownProcessorIcon;
 
@@ -139,7 +143,13 @@ public class ProcessorHelper {
 		    // Get the set of scavenger creating classes
 		    String scavengerClassName = keyElements[2];
 		    String scavengerTagName = value;
-		    tagNameForScavenger.put(scavengerClassName, scavengerTagName);
+		    Object o = Class.forName(scavengerClassName).newInstance();
+		    if (o instanceof ScavengerHelper) {
+			tagNameForScavenger.put(scavengerClassName, scavengerTagName);
+		    }
+		    else if (o instanceof Scavenger) {
+			simpleScavengers.add(o);
+		    }
 		}
 	    }
 	}
@@ -149,6 +159,15 @@ public class ProcessorHelper {
 	    // Don't exit, as this hides the stack trace etc!
 	    // System.exit(1);
 	}
+    }
+    
+    /**
+     * Return the set of instances of simple (null constructor)
+     * scavengers; these are added automatically to all service
+     * selection panels on creation.
+     */
+    public static Set getSimpleScavengerSet() {
+	return simpleScavengers;
     }
 
     /**

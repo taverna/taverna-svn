@@ -20,12 +20,15 @@ import org.embl.ebi.escience.scuflworkers.talisman.TalismanProcessor;
 import org.embl.ebi.escience.scuflworkers.talisman.TalismanScavenger;
 import org.embl.ebi.escience.scuflworkers.wsdl.WSDLBasedProcessor;
 import org.embl.ebi.escience.scuflworkers.wsdl.WSDLBasedScavenger;
+import org.embl.ebi.escience.scuflworkers.ProcessorHelper;
+import org.embl.ebi.escience.scuflui.workbench.Scavenger;
 
 // Utility Imports
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Set;
 
 
 
@@ -86,6 +89,20 @@ public class ScavengerTree extends JTree
 	ScavengerTreeRenderer renderer = new ScavengerTreeRenderer();
 	this.setCellRenderer(renderer);
 	this.addMouseListener(new ScavengerTreePopupHandler(this));
+	// Add the simple scavengers, should such exist
+	Set simpleScavengers = ProcessorHelper.getSimpleScavengerSet();
+	if (simpleScavengers.isEmpty() == false) {
+	    DefaultMutableTreeNode t = new DefaultMutableTreeNode("Internal Services");
+	    this.treeModel.insertNodeInto(t, 
+					  (MutableTreeNode)this.treeModel.getRoot(),
+					  this.treeModel.getChildCount(this.treeModel.getRoot()));
+	    for (Iterator i = simpleScavengers.iterator(); i.hasNext(); ) {
+		Scavenger s = (Scavenger)i.next();
+		this.treeModel.insertNodeInto(s,t,this.treeModel.getChildCount(t));
+	    }
+	}	
+	TreePath path = new TreePath(this.root);
+	expandPath(path);
     }
 
     /**
