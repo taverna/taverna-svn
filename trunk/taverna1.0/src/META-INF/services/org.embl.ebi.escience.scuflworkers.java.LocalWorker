@@ -24,3 +24,5 @@ org.embl.ebi.escience.scuflworkers.biomoby.CreateMobyData = moby:Create moby dat
 org.embl.ebi.escience.scuflworkers.biomoby.ExtractMobyData = moby:Parse moby data
 org.embl.ebi.escience.scuflworkers.java.EncodeBase64 = base64:Encode byte[] to base64
 org.embl.ebi.escience.scuflworkers.java.DecodeBase64 = base64:Decode base64 to byte[]
+org.embl.ebi.escience.scuflworkers.java.EchoList = list:Echo list
+org.embl.ebi.escience.scuflworkers.java.FlattenList = list:Flatten l(l()) to l()
