@@ -8,11 +8,17 @@
 	<!-- These directories are pretty standard, you probably     -->
 	<!-- don't want to change them                               -->
 	<property name="src.dir" value="./src"/>
+    <property name="test.src.dir" value="./test"/>
+    <property name="reports.tests" value="./reports"/>
 	<property name="build.dir" value="./build"/>
 	<property name="build.src" value="${build.dir}/src"/>
 	<property name="build.classes" value="${build.dir}/classes"/>
+    <property name="build.test.src" value="${build.dir}/test_src"/>
+    <property name="build.test.classes" value="${build.dir}/test_classes"/>
 	<property name="build.javadocs" value="${build.dir}/api"/>
 	<property name="build.compiler" value="modern"/>
+    <property name="build.test.src" value="${build.dir}/test_src"/>
+    <property name="build.test.classes" value="${build.dir}/test_classes"/>
 
 	<!-- Show the splash screen -->
 	<target name="splash"><!--
@@ -46,6 +52,27 @@
 		<!-- ...and the workbench config file -->
 		<pathelement path="./workbench/conf"/>
 	</path>
+
+    <path id="test-classpath">
+        <!-- Jar files used when testing the project -->
+        <!-- Jar files used when running the project go here -->
+        <fileset dir="./lib">
+            <include name="*.jar"/>
+        </fileset>
+        <!-- Also include our own source tree -->
+        <pathelement path="${build.classes}"/>
+        <pathelement path="${build.src}"/>
+        <!-- ...and the workbench config file -->
+        <pathelement path="./workbench/conf"/>
+        <!-- ...and the test classes -->
+        <pathelement path="${build.test.classes}"/>
+    </path>
+
+    <!-- Check the current system classpath for JUnit -->
+    <available classpath="${java.class.path}"
+        classname="junit.framework.TestCase"
+        property="junit.present"/>
+
 
 	<!--
 	<taskdef name="ajc" classname="org.aspectj.tools.ant.taskdefs.Ajc">
@@ -114,6 +141,7 @@
 	<!-- Trivial setup -->
 	<target name="prepare" depends="splash">
 		<mkdir dir="${build.dir}"/>
+        <mkdir dir="${reports.tests}"/>
 	</target>
 
 	<!-- Build jar file and javadocs -->
@@ -161,6 +189,17 @@
 		</copy>
 	</target>
 
+    <!-- Prepare the test source tree for compilation -->
+    <target name="prepare-test-src" depends="prepare">
+        <mkdir dir="${build.test.src}"/>
+        <mkdir dir="${build.test.classes}"/>
+        <copy todir="${build.test.src}" filtering="on">
+            <fileset dir="${test.src.dir}">
+                <exclude name="**/CVS/**"/>
+            </fileset>
+        </copy>
+    </target>
+
 	<!-- Compile the source files -->
 	<target name="java" depends="prepare-src">
 		<!-- Run javac to turn .java files into .class -->
@@ -189,6 +228,45 @@
 		<jar destfile="${build.dir}/${ant.project.name}-${project.version}.jar" basedir="${build.classes}" update="no"/>
 	</target>
 
+    <!-- Build tests -->
+    <target name="javac-tests" depends="prepare-test-src">
+        <!-- Run javac to turn .java files into .class -->
+        <javac
+            debug="on"
+            srcdir="${build.test.src}"
+            destdir="${build.test.classes}"
+            source="1.4">
+            <classpath refid="compile-classpath"/>
+        </javac>
+        <!-- Copy over any configuration files that you might have -->
+        <copy todir="${build.classes}" filtering="on">
+            <fileset dir="${test.src.dir}">
+                <exclude name="**/CVS/**"/>
+                <exclude name="**/*.java"/>
+            </fileset>
+        </copy>
+    </target>
+
+    <target name="run-tests" depends="jar,javac-tests">
+        <property name="test.subtree" value="**"/>
+
+        <echo message="JUnit present:           ${junit.present}"/>
+        <echo message="Running tests:           ${test.subtree}"/>
+
+        <junit maxmemory="128m" printsummary="yes" haltonfailure="no" reloading="no">
+            <formatter type="plain" usefile="true"/>
+            <classpath refid="test-classpath"/>
+            <!-- The junit task doesn't support 'if' so we test for JUnit here -->
+            <batchtest fork="no" todir="${reports.tests}" if="junit.present">
+                <fileset dir="${build.test.classes}">
+                    <include name="${test.subtree}/*Test.class"/>
+                    <include name="${test.subtree}/*TestSuite.class"/>
+                    <exclude name="**/Abstract*Test.class"/>
+                </fileset>
+            </batchtest>
+        </junit>
+    </target>
+
 	<!-- Create a jar of the enactor extension classes for inclusion in a deployed enactor -->
 	<target name="enactor.ext.jar" depends="java">
 		<jar destfile="${build.dir}/tavernaenactor-${project.version}.jar" update="no">
@@ -207,9 +285,9 @@
 			 sourcepath="${build.src}"
 			 doctitle="&lt;h1>${ant.project.name} Java API Documentation&lt;/h1>"
 			 packagenames="*"
-			 source="1.4"
-			 linksource="yes"
-			 breakiterator="yes"
+             linksource="yes"
+             breakiterator="yes"
+             source="1.4"
 			 version="true">
 			<classpath refid="compile-classpath"/>
 		</javadoc>
@@ -358,15 +436,15 @@
 	</target>
 	<!-- Test the data thing iterator system -->
 	<target name="test.iterator" depends="java">
-		<java classname="org.embl.ebi.escience.baclava.IteratorNodeTests" fork="no">
+		<java classname="org.embl.ebi.escience.baclava.IteratorNodeTest" fork="no">
 			<classpath refid="compile-classpath"/>
 		</java>
 	</target>
-	
+
 	<!-- Test the data thing iterator system -->
 	<target name="test.store" depends="java">
 		<java classname="org.embl.ebi.escience.baclava.store.test.JDBCStoreTest" fork="no">
-			<classpath refid="run-classpath"/>	
+			<classpath refid="run-classpath"/>
 		</java>
 	</target>
 
