@@ -32,12 +32,12 @@ public class SoaplabScavengerHelper implements ScavengerHelper {
 	return new ActionListener() {
 		public void actionPerformed(ActionEvent ae) {
 		    final String baseURL = (String)JOptionPane.showInputDialog(null,
-									 "Base location for your soaplab installation?",
-									 "Soaplab location",
-									 JOptionPane.QUESTION_MESSAGE,
-									 null,
-									 null,
-									 "http://industry.ebi.ac.uk/soap/soaplab/");
+									       "Base location for your soaplab installation?",
+									       "Soaplab location",
+									       JOptionPane.QUESTION_MESSAGE,
+									       null,
+									       null,
+									       "http://industry.ebi.ac.uk/soap/soaplab/");
 		    if (baseURL!=null) {
 			new Thread() {
 			    public void run() {

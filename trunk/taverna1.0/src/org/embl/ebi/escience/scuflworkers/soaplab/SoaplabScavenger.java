@@ -26,7 +26,9 @@ import java.lang.String;
  * @author Tom Oinn
  */
 public class SoaplabScavenger extends Scavenger {
-    
+    	   
+    boolean foundAnInstallation = false;
+
     /**
      * Create a new Soaplab scavenger, the base parameter should
      * be the base URL of the Soaplab service, i.e. if your
@@ -38,7 +40,6 @@ public class SoaplabScavenger extends Scavenger {
 	super("Soaplab @ "+(base.endsWith("/")?base:base+"/"));
 	// Get the categories for this installation
 	try {
-	    boolean foundAnInstallation = false;
 	    if (!base.endsWith("/")) {
 		base = base + "/";
 		// throw new RuntimeException("The url for soaplab should look like http://foo/bar/, see the faq for more information");
