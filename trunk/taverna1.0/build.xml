@@ -108,6 +108,22 @@
 				</fileset>
 			</classpath>
 		</java>
-        </target> 
+    </target> 
+
+	<!-- Test the editor -->
+	<target name="testretsina" depends="jar">
+	        <java classname="org.embl.ebi.escience.taverna.retsina.Retsina" fork="yes">
+				<arg value="http://industry.ebi.ac.uk/soap/soaplab/AnalysisFactory"/>
+		    <classpath>
+			    <fileset dir="./lib">
+			        <include name="*.jar"/>
+		        </fileset>
+				<fileset dir="./build">
+		        	<include name="*.jar"/>
+				</fileset>
+			</classpath>
+		</java>
+	</target> 
+
 
 </project>
