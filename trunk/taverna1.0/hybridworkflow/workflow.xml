@@ -4,17 +4,35 @@
   <!-- Test the constraint definition -->
   <s:coordination name="testcoordination">
     <s:condition>
-      <s:target>compare</s:target>
+      <s:target>restrict_normal</s:target>
       <s:state>COMPLETED</s:state>
     </s:condition>
     <s:action>
-      <s:target>restrict_normal</s:target>
+      <s:target>compare</s:target>
       <s:statechange>
         <s:from>SCHEDULED</s:from>
-        <s:to>RUNNING</s:from>
+        <s:to>RUNNING</s:to>
       </s:statechange>
     </s:action>
   </s:coordination>
+
+  <!-- Run BLAST at DDBJ -->
+  <s:processor name="blast">
+    <s:arbitrarywsdl>
+      <s:wsdl>http://xml.nig.ac.jp/wsdl/Blast.wsdl</s:wsdl>
+      <s:porttype>Blast</s:porttype>
+      <s:operation>search</s:operation>
+    </s:arbitrarywsdl>
+  </s:processor>
+  
+  <s:external name="program">blast:program</s:external>
+  <s:external name="blastoutput">blast:Result</s:external>
+  <s:external name="blastdb">blast:database</s:external>
+  <s:link>
+    <s:input>blast:query</s:input>
+    <s:output>create_mutant_sequence:originalsequence</s:output>
+  </s:link>
+  
 
   <!-- Compare two restrict outputs -->
   <s:processor name="compare">

@@ -18,6 +18,30 @@ digraph scufl_graph {
   color="black"                
  ];
 
+ externalblastdatabase [
+  shape="diamond",
+  width="0",
+  height="0",
+  fillcolor="skyblue",
+  label="in"
+ ]
+ externalblastdatabase->blast:database;
+ externalblastprogram [
+  shape="diamond",
+  width="0",
+  height="0",
+  fillcolor="skyblue",
+  label="in"
+ ]
+ externalblastprogram->blast:program;
+ externalblastresult [
+  shape="diamond",
+  width="0",
+  height="0",
+  fillcolor="skyblue",
+  label="out"
+ ]
+ blast:result->externalblastresult;
  externalcompareoutput [
   shape="diamond",
   width="0",
@@ -42,20 +66,26 @@ digraph scufl_graph {
   label="in"
  ]
  externalcreate_mutant_sequencesnplist->create_mutant_sequence:snplist;
+ blast [ 
+  fillcolor = "darkolivegreen3",
+  label = "blast"
+ ];
  compare [ 
   fillcolor = "plum2",
   label = "compare"
- ];              
+ ];
  restrict_normal [ 
   label = "restrict_normal"
- ];              
+ ];
  restrict_mutant [ 
   label = "restrict_mutant"
- ];              
+ ];
  create_mutant_sequence [ 
   fillcolor = "plum2",
   label = "create_mutant_sequence"
- ];              
+ ];
+ create_mutant_sequence->blast [ 
+  label = "String" ];
  restrict_normal->compare [ 
   label = "String" ];
  restrict_mutant->compare [ 
@@ -64,4 +94,26 @@ digraph scufl_graph {
   label = "String" ];
  create_mutant_sequence->restrict_mutant [ 
   label = "String" ];
+ constrainttestcoordination [
+  shape="rectangle",
+  fillcolor="white",
+  height="0",
+  width="0",
+  color="gray",
+  label="coordination"
+ ]
+ restrict_normal->constrainttestcoordination [
+  arrowhead="none",
+  arrowtail="dot",
+  color="gray",
+  fontcolor="brown",
+  label="Completed"
+ ]
+ constrainttestcoordination->compare [
+  arrowhead="odot",
+  arrowtail="none",
+  color="gray",
+  fontcolor="darkgreen",
+  label="from:Scheduled\nto:Running"
+ ];
 }
