@@ -26,6 +26,10 @@ public class IterationStrategy {
     
     StrategyModel strategyModel = null;
     
+    public TreeModel getTreeModel() {
+	return this.strategyModel;
+    }
+
     /**
      * Create a new IterationStrategy with the default
      * iteration strategy for the supplied processor
@@ -144,30 +148,7 @@ public class IterationStrategy {
     }
     
 }
-/**
- * Represents a dot product iterator combination
- */
-class DotNode extends DefaultMutableTreeNode {
-    public DotNode() {
-	super();
-    }
-}
-/**
- * Represents a cross product iterator combination
- */
-class CrossNode extends DefaultMutableTreeNode {
-    public CrossNode() {
-	super();
-    }
-}
-/**
- * Represents a named leaf iterator
- */
-class LeafNode extends DefaultMutableTreeNode {
-    public LeafNode(String name) {
-	super(name);
-    }
-}
+
 class StrategyModel extends DefaultTreeModel {
     public StrategyModel() {
 	this(new CrossNode());
@@ -182,25 +163,27 @@ class StrategyModel extends DefaultTreeModel {
 		    //
 		}
 		public void treeNodesRemoved(TreeModelEvent e) {
-		    // If a node is removed, all children that are
-		    // instances of BaclavaIterator should be re-attached
-		    // to the root node to prevent them getting lost
-		    DefaultMutableTreeNode n = (DefaultMutableTreeNode)(e.getTreePath().getLastPathComponent());
-		    if (n instanceof LeafNode == false) {
-			Enumeration en = (n.depthFirstEnumeration());
-			Set nodesToRescue = new HashSet();
-			while (en.hasMoreElements()) {
-			    DefaultMutableTreeNode m = (DefaultMutableTreeNode)en.nextElement();
-			    if (m instanceof LeafNode) {
-				nodesToRescue.add(m);
-			    }
-			}
-			for (Iterator i = nodesToRescue.iterator(); i.hasNext();) {
-			    DefaultMutableTreeNode m = (DefaultMutableTreeNode)i.next();
-			    StrategyModel.this.removeNodeFromParent(m);
-			    StrategyModel.this.insertNodeInto(m,(MutableTreeNode)StrategyModel.this.getRoot(),0);
-			}
-		    }
+		    /**
+		     // If a node is removed, all children that are
+		     // instances of BaclavaIterator should be re-attached
+		     // to the root node to prevent them getting lost
+		     DefaultMutableTreeNode n = (DefaultMutableTreeNode)(e.getTreePath().getLastPathComponent());
+		     if (n instanceof LeafNode == false) {
+		     Enumeration en = (n.depthFirstEnumeration());
+		     Set nodesToRescue = new HashSet();
+		     while (en.hasMoreElements()) {
+		     DefaultMutableTreeNode m = (DefaultMutableTreeNode)en.nextElement();
+		     if (m instanceof LeafNode) {
+		     nodesToRescue.add(m);
+		     }
+		     }
+		     for (Iterator i = nodesToRescue.iterator(); i.hasNext();) {
+		     DefaultMutableTreeNode m = (DefaultMutableTreeNode)i.next();
+		     StrategyModel.this.removeNodeFromParent(m);
+		     StrategyModel.this.insertNodeInto(m,(MutableTreeNode)StrategyModel.this.getRoot(),0);
+		     }
+		     }
+		    */
 		}
 		public void treeStructureChanged(TreeModelEvent e) {
 		    //
