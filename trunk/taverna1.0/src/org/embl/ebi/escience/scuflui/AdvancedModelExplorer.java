@@ -20,7 +20,7 @@ import org.embl.ebi.escience.scufl.*;
  * sensitive options appearing in a properties tab.
  * @author Tom Oinn
  */
-public class AdvancedModelExplorer extends JTabbedPane 
+public class AdvancedModelExplorer extends JPanel 
     implements ScuflUIComponent {
     
     private ScuflModelTreeTable explorer;
@@ -30,9 +30,11 @@ public class AdvancedModelExplorer extends JTabbedPane
 
     public AdvancedModelExplorer() {
 	
+	setLayout(new BorderLayout());
+
 	// Create a tabbed layout and put the 
 	// explorer component in the first tab
-	tabs = this;
+	tabs = new JTabbedPane();
 	explorer = new ScuflModelTreeTable();
 	JScrollPane explorerPane = new JScrollPane(explorer);
 	explorerPane.setPreferredSize(new Dimension(0,0));
@@ -42,9 +44,11 @@ public class AdvancedModelExplorer extends JTabbedPane
 	// Create the properties panel but disable it
 	// and don't populate it for now
 	propertiesPanel = new JPanel();
-	add("Object properties", propertiesPanel);
-	setEnabledAt(1, false);
+	tabs.add("Object properties", propertiesPanel);
+	tabs.setEnabledAt(1, false);
 	
+	add(tabs, BorderLayout.CENTER);
+
 	// Bind a list selection listener to the explorer
 	explorer.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
 		public void valueChanged(ListSelectionEvent e) {
@@ -76,7 +80,7 @@ public class AdvancedModelExplorer extends JTabbedPane
     private void updateTab() {
 	if (selectedObject == null || selectedObject instanceof Processor == false) {
 	    // Not a processor, don't show the info for now
-	    setEnabledAt(1, false);
+	    tabs.setEnabledAt(1, false);
 	}
 	else {
 	    // Clear the properties panel and regenerate it
@@ -208,7 +212,7 @@ public class AdvancedModelExplorer extends JTabbedPane
 		iterationConfigPanel.add(pane);
 	    }
 	    
-	    setEnabledAt(1, true);
+	    tabs.setEnabledAt(1, true);
 	}
     }
 

@@ -5,7 +5,9 @@
  */
 package org.embl.ebi.escience.scuflui;
 
-import javax.swing.JTree;
+import javax.swing.*;
+import javax.swing.tree.*;
+import java.awt.event.*;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeNode;
@@ -21,6 +23,8 @@ import java.awt.datatransfer.*;
 import org.embl.ebi.escience.scuflui.dnd.*;
 import org.jdom.*;
 import org.embl.ebi.escience.scuflworkers.*;
+import javax.swing.event.*;
+import java.util.EventObject;
 
 // Utility Imports
 import java.util.Enumeration;
@@ -65,6 +69,7 @@ public class ScuflModelTreeTable extends JTreeTable
 	    TableColumn c = columnModel.getColumn(i);
 	    c.setMaxWidth(100);
 	}
+	setDefaultEditor(TreeTableModel.class, new ScuflModelTreeTableCellEditor());
 	// Attach the popup menu generator to the tree
 	this.addMouseListener(new ScuflModelExplorerPopupHandler(this));
 	// Show lines in the tree diagram
@@ -75,6 +80,82 @@ public class ScuflModelTreeTable extends JTreeTable
 	this.setDragEnabled(true);
     }
     
+    /**
+     * The editor class is aware that the processor nodes should be edited by
+     * using the getName method rather than toString to fetch their initial
+     * value
+     */
+    public class ScuflModelTreeTableCellEditor extends DefaultCellEditor {
+
+	public ScuflModelTreeTableCellEditor() {
+	    super(new TreeTableTextField());
+	}
+	
+	public Component getTableCellEditorComponent(JTable table,
+						     Object value,
+						     boolean isSelected,
+						     int r, int c) {
+	    Component component = super.getTableCellEditorComponent
+		(table, value, isSelected, r, c);
+	    JTree t = getTree();
+	    boolean rv = t.isRootVisible();
+	    int offsetRow = rv ? r : r - 1;
+	    Rectangle bounds = t.getRowBounds(offsetRow);
+	    int offset = bounds.x;
+	    TreeCellRenderer tcr = t.getCellRenderer();
+	    if (tcr instanceof DefaultTreeCellRenderer) {
+		Object node = t.getPathForRow(offsetRow).
+		    getLastPathComponent();
+		boolean isExpanded = t.isExpanded(t.getPathForRow(offsetRow));
+		boolean isLeaf = t.getModel().isLeaf(node);
+		Component renderer = tcr.getTreeCellRendererComponent(t,
+								      node,
+								      true,
+								      isExpanded,
+								      isLeaf,
+								      offsetRow,
+								      true);
+		Icon icon = ((JLabel)renderer).getIcon();
+		//if (t.getModel().isLeaf(node))
+		//   icon = ((DefaultTreeCellRenderer)tcr).getLeafIcon();
+		//else if (tree.isExpanded(offsetRow))
+		//    icon = ((DefaultTreeCellRenderer)tcr).getOpenIcon();
+		//else
+		//    icon = ((DefaultTreeCellRenderer)tcr).getClosedIcon();
+		if (icon != null) {
+		    offset += ((DefaultTreeCellRenderer)tcr).getIconTextGap() +
+			icon.getIconWidth();
+		}
+		Object uo = ((DefaultMutableTreeNode)node).getUserObject();
+		if (uo instanceof Processor) {
+		    String currentName = ((Processor)uo).getName();
+		    ((TreeTableTextField)getComponent()).setText(currentName);
+		}
+	    }
+	    ((TreeTableTextField)getComponent()).offset = offset;
+	    return component;
+	}
+	
+	/**
+	 * This is overridden to forward the event to the tree. This will
+	 * return true if the click count >= 3, or the event is null.
+	 */
+	public boolean isCellEditable(EventObject e) {
+	    // Edit on double click rather than the default triple
+	    if (e instanceof MouseEvent) {
+		MouseEvent me = (MouseEvent)e;
+		if (me.getClickCount() >= 2) {
+		    return true;
+		}
+	    }
+	    if (e == null) {
+		return true;
+	    }
+	    return false;
+	}
+
+    }
+
     public void drop(DropTargetDropEvent e) {
 	try {
 	    DataFlavor f = SpecFragmentTransferable.factorySpecFragmentFlavor;

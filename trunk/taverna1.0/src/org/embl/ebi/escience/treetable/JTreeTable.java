@@ -400,7 +400,7 @@ public class JTreeTable extends JTable {
      * is to override the <code>reshape</code> method, and to ALWAYS
      * make the x location be <code>offset</code>.
      */
-    static class TreeTableTextField extends JTextField {
+    public static class TreeTableTextField extends JTextField {
 	public int offset;
 
 	public void reshape(int x, int y, int w, int h) {
