@@ -23,7 +23,6 @@ import java.awt.geom.Rectangle2D;
 import java.io.StringReader;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -31,8 +30,6 @@ import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JPopupMenu;
-import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.TreeNode;
 
 import org.embl.ebi.escience.scufl.InputPort;
 import org.embl.ebi.escience.scufl.Port;
@@ -55,12 +52,13 @@ import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.input.SAXBuilder;
 import org.jgraph.JGraph;
-import org.jgraph.graph.CellMapper;
-import org.jgraph.graph.CellView;
-import org.jgraph.graph.EdgeView;
+import org.jgraph.event.GraphModelEvent;
+import org.jgraph.event.GraphModelListener;
+import org.jgraph.graph.DefaultCellViewFactory;
 import org.jgraph.graph.GraphConstants;
-import org.jgraph.graph.GraphModel;
+import org.jgraph.graph.GraphLayoutCache;
 import org.jgraph.graph.VertexView;
+import org.jgraph.plaf.basic.BasicGraphUI;
 
 /**
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover </a>
@@ -101,73 +99,7 @@ public class WorkflowEditor extends JGraph implements ScuflUIComponent
 		}
 	}
 
-	/*
-	 * @see org.jgraph.JGraph#createVertexView(org.jgraph.JGraph,
-	 *      org.jgraph.graph.CellMapper, java.lang.Object)
-	 */
-	protected VertexView createVertexView(JGraph graph, CellMapper mapper, Object cell)
-	{
-		return new VertexView(cell, graph, mapper)
-		{
-			/*
-			 * @see org.jgraph.graph.AbstractCellView#updateGroupBounds()
-			 */
-			protected void updateGroupBounds()
-			{
-				// Note: Prevent infinite recursion by removing
-				// child edges that point to their parent.
-				CellView[] childViews = getChildViews();
-				LinkedList result = new LinkedList();
-				for (int i = 0; i < childViews.length; i++)
-				{
-					if (includeInGroupBounds(childViews[i]))
-					{
-						result.add(childViews[i]);
-					}
-				}
-				childViews = new CellView[result.size()];
-				result.toArray(childViews);
-				Rectangle2D r = getBounds(childViews);
-				Insets insets = GraphConstants.getBorder(getAllAttributes()).getBorderInsets(
-						new JLabel());
-				r.setFrame(r.getX() - insets.left, r.getY() - insets.top, r.getWidth()
-						+ insets.left + insets.right, r.getHeight() + insets.top + insets.bottom);
-				groupBounds = r;
-			}
-
-			private boolean includeInGroupBounds(CellView view)
-			{
-				if (view instanceof EdgeView)
-				{
-					GraphModel model = graph.getModel();
-					EdgeView edgeView = (EdgeView) view;
-					if (edgeView.getCell() instanceof DefaultMutableTreeNode)
-					{
-						DefaultMutableTreeNode edge = (DefaultMutableTreeNode) edgeView.getCell();
-						if (model.getSource(edge) instanceof TreeNode)
-						{
-							TreeNode source = (TreeNode) model.getSource(edge);
-							if (((DefaultMutableTreeNode) source.getParent())
-									.isNodeDescendant(edge))
-							{
-								return false;
-							}
-						}
-						if (model.getTarget(edge) instanceof TreeNode)
-						{
-							TreeNode target = (TreeNode) model.getTarget(edge);
-							if (((DefaultMutableTreeNode) target.getParent())
-									.isNodeDescendant(edge))
-							{
-								return false;
-							}
-						}
-					}
-				}
-				return true;
-			}
-		};
-	}
+	LayoutManager layoutManager;
 
 	/*
 	 * (non-Javadoc)
@@ -176,11 +108,55 @@ public class WorkflowEditor extends JGraph implements ScuflUIComponent
 	 */
 	public void attachToModel(final ScuflModel model)
 	{
-		setModel(new ScuflGraphModel());
-		setGraphLayoutCache(new LayoutManager(this));
+		ScuflGraphModel graphModel = new ScuflGraphModel();
+		setModel(graphModel);
+		GraphLayoutCache layoutCache = getGraphLayoutCache();
+		layoutManager = new LayoutManager(graphModel, layoutCache);
+		layoutCache.setAutoSizeOnValueChange(true);
+		layoutCache.setSelectLocalInsertedCells(false);
+		layoutCache.setSelectsAllInsertedCells(false);
+		layoutCache.setFactory(new DefaultCellViewFactory()
+		{
+			/*
+			 * @see org.jgraph.JGraph#createVertexView(org.jgraph.JGraph,
+			 *      org.jgraph.graph.CellMapper, java.lang.Object)
+			 */
+			protected VertexView createVertexView(Object cell)
+			{
+				return new VertexView(cell)
+				{
+					/*
+					 * @see org.jgraph.graph.AbstractCellView#updateGroupBounds()
+					 */
+					protected void updateGroupBounds()
+					{
+						Rectangle2D r = getBounds(getChildViews());
+						Insets insets = GraphConstants.getBorder(getAllAttributes())
+								.getBorderInsets(new JLabel());
+						r.setFrame(r.getX() - insets.left, r.getY() - insets.top, r.getWidth()
+								+ insets.left + insets.right, r.getHeight() + insets.top
+								+ insets.bottom);
+						groupBounds = r;
+					}
+				};
+			}
+		});
+		setUI(new BasicGraphUI()
+		{
+			protected GraphModelListener createGraphModelListener()
+			{
+				return new GraphModelHandler()
+				{
+					public void graphChanged(GraphModelEvent e)
+					{
+						super.graphChanged(e);
+						layoutManager.layout(e.getChange());
+					}
+				};
+			}
+		});
 		setMarqueeHandler(new MarqueeHandler());
 		setAntiAliased(true);
-		setAutoSizeOnValueChange(true);
 		setBendable(true);
 		setMoveable(false);
 		setSizeable(false);
@@ -370,7 +346,7 @@ public class WorkflowEditor extends JGraph implements ScuflUIComponent
 				}
 			}
 		});
-		((ScuflGraphModel) getModel()).attachToModel(model);
+		graphModel.attachToModel(model);
 	}
 
 	/*

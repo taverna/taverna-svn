@@ -51,7 +51,7 @@ import org.jgraph.graph.ParentMap;
 /**
  * 
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover </a>
- * @version $Revision: 1.10 $
+ * @version $Revision: 1.11 $
  */
 public class ScuflGraphModel implements GraphModel, GraphModelListener, ScuflUIComponent
 {
@@ -236,7 +236,6 @@ public class ScuflGraphModel implements GraphModel, GraphModelListener, ScuflUIC
 				GraphConstants.setOpaque(map, true);
 				GraphConstants.setBorder(map, new TitledBorder(new DottyBorder(Color.GRAY),
 						"Workflow Inputs"));
-				GraphConstants.setGroupBorder(map, 5);
 				GraphConstants.setEditable(map, false);
 			}
 			else if (processor == model.getWorkflowSinkProcessor())
@@ -245,7 +244,6 @@ public class ScuflGraphModel implements GraphModel, GraphModelListener, ScuflUIC
 				GraphConstants.setOpaque(map, true);
 				GraphConstants.setBorder(map, new TitledBorder(new DottyBorder(Color.GRAY),
 						"Workflow Outputs"));
-				GraphConstants.setGroupBorder(map, 5);
 				GraphConstants.setEditable(map, false);
 			}
 			else

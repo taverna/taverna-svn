@@ -9,17 +9,17 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.jgraph.graph.CellMapper;
 import org.jgraph.graph.CellView;
 import org.jgraph.graph.DefaultGraphModel;
 import org.jgraph.graph.GraphConstants;
-import org.jgraph.graph.GraphLayoutCache;
 import org.jgraph.graph.GraphModel;
 
 /**
  * COMMENT
  * 
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover </a>
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public class GraphRows
 {
@@ -30,16 +30,16 @@ public class GraphRows
 	private static int GRAPH_EDGE = 10;
 
 	private GraphModel model;
-	private GraphLayoutCache layout;
+	private CellMapper mapper;
 	private List rows = new ArrayList();
 
 	/**
 	 * @param model
 	 */
-	public GraphRows(GraphModel model, GraphLayoutCache layout)
+	public GraphRows(GraphModel model, CellMapper mapper)
 	{
 		this.model = model;
-		this.layout = layout;
+		this.mapper = mapper;
 	}
 
 	/**
@@ -254,13 +254,13 @@ public class GraphRows
 				if (x != bounds.getX() || y != bounds.getY())
 				{
 					bounds.setRect(x, y, bounds.getWidth(), bounds.getHeight());
-					CellView view = layout.getMapping(node, false);
+					CellView view = mapper.getMapping(node, false);					
 					view.update();
 					// TODO Easier way of updating edges?
 					Iterator edges = DefaultGraphModel.getEdges(model, new Object[] { node }).iterator();
 					while(edges.hasNext())
 					{
-						CellView edgeView = layout.getMapping(edges.next(), false);
+						CellView edgeView = mapper.getMapping(edges.next(), false);
 						edgeView.update();
 					}
 				}

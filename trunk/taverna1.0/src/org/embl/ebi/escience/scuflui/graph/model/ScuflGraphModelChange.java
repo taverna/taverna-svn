@@ -29,7 +29,7 @@ import org.jgraph.graph.ParentMap;
 
 /**
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover </a>
- * @version $Revision: 1.6 $
+ * @version $Revision: 1.7 $
  */
 public class ScuflGraphModelChange implements GraphModelChange,
 		GraphModelEvent.ExecutableGraphChange
@@ -283,12 +283,14 @@ public class ScuflGraphModelChange implements GraphModelChange,
 		model.roots = newRoots;
 		model.updateAttributes(attributes);
 
-		Iterator insertIterator = added.iterator();
+		changed.addAll(added);
+		
+		Iterator addedIterator = added.iterator();
 		ConnectionSet cs = new ConnectionSet();
-		while (insertIterator.hasNext())
+		while (addedIterator.hasNext())
 		{
-			Object insertedObject = insertIterator.next();
-			attributes.put(insertedObject, model.addNode(insertedObject, cs));
+			Object addedObject = addedIterator.next();
+			attributes.put(addedObject, model.addNode(addedObject, cs));
 		}
 
 		Iterator removeIterator = removed.iterator();
