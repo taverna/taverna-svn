@@ -341,8 +341,17 @@ public class WSDLBasedProcessor extends Processor implements java.io.Serializabl
             if ("string".equals(s)) {
                 types[i] = String.class;
 	    } else if ("arrayof_xsd_string".equalsIgnoreCase(s) ||
-		       "arrayofstring".equalsIgnoreCase(s)) {
+		       "arrayofstring".equalsIgnoreCase(s) ||
+		       "arrayof_soapenc_string".equalsIgnoreCase(s)) {
 		types[i] = String[].class;
+		try {
+		    dpf.mapType(partType, String[].class);
+		    dpf.mapType(new QName(partType.getNamespaceURI(), getOperationName()+"Response"),
+				String[].class);
+		}
+		catch (WSIFException wsife) {
+		    wsife.printStackTrace();
+		}
             } else if ("double".equals(s)) {
                 types[i] = Integer.TYPE;
             } else if ("float".equals(s)) {
