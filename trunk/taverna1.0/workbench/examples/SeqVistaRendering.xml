@@ -12,7 +12,7 @@
   </s:processor>
   <s:processor name="seqret">
     <s:description>Reads and writes (returns) sequences</s:description>
-    <s:soaplabwsdl>http://industry.ebi.ac.uk/soap/soaplab/edit::seqret</s:soaplabwsdl>
+    <s:soaplabwsdl>http://www.ebi.ac.uk/soaplab/services/edit::seqret</s:soaplabwsdl>
   </s:processor>
   <s:link source="String_Constant:value" sink="seqret:sequence_usa" />
   <s:link source="seqret:outseq" sink="seq" />

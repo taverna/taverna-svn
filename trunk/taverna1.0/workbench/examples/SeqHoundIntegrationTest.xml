@@ -127,11 +127,11 @@
   </s:processor>
   <s:processor name="RunDot">
     <s:description>Draw directed graphs as hierarchies</s:description>
-    <s:soaplabwsdl>http://industry.ebi.ac.uk/soap/soaplab/graphics::dot</s:soaplabwsdl>
+    <s:soaplabwsdl>http://www.ebi.ac.uk/soaplab/services/graphics::dot</s:soaplabwsdl>
   </s:processor>
   <s:processor name="FormatSequence">
     <s:description>Reads and writes (returns) sequences</s:description>
-    <s:soaplabwsdl>http://industry.ebi.ac.uk/soap/soaplab/edit::seqret</s:soaplabwsdl>
+    <s:soaplabwsdl>http://www.ebi.ac.uk/soaplab/services/edit::seqret</s:soaplabwsdl>
   </s:processor>
   <s:processor name="FetchOntoGlyph">
     <s:workflow>

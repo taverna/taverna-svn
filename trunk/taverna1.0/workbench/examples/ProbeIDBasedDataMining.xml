@@ -48,7 +48,7 @@
   </s:processor>
   <s:processor name="Pepstats">
     <s:description>Protein statistics</s:description>
-    <s:soaplabwsdl>http://industry.ebi.ac.uk/soap/soaplab/protein_composition::pepstats</s:soaplabwsdl>
+    <s:soaplabwsdl>http://www.ebi.ac.uk/soaplab/services/protein_composition::pepstats</s:soaplabwsdl>
   </s:processor>
   <s:processor name="GetEmblRecord">
     <s:arbitrarywsdl>

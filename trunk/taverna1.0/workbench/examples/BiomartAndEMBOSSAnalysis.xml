@@ -4,86 +4,98 @@
 
 As an enhancement to show the Jmol rendering in action this also fetches the PDB identifiers (where present) and the corresponding coordinate flat files from the RCSB, presenting the structures to the user in an interactive form via the Jmol plugin.</s:workflowdescription>
   <s:processor name="GetUniqueHomolog">
-    <s:beanshell>
-      <s:scriptvalue>List HSOut = new ArrayList();
-List RatOut = new ArrayList();
-List MouseOut = new ArrayList();
+    <s:beanshell name="AddSuffix">The array of png images returned from the plot processor<s:scriptvalue name="AddPrefixToID">fasta"http://www.mygrid.org.uk/ontology#domain_concept
+      
+        
+        "
+        
+          "
+  
+      
+        "
+  &amp;
+  
+        
+        
+        
+        "
+        chemical/x-pdb
+      
+        "text/plain
+          
+    "text/html
+        "
+      
+      hsapiens_gene_ensembl&amp;
+  </s:scriptvalue>
+  <s:beanshellinputlist s:syntactictype="l('text/plain')" name="pdbFlatFile" xmlns:biomart="http://org.embl.ebi.escience/xscufl-biomart/0.1alpha" name="PDBIDs" />
+<s:beanshellinput field="gene_stable_id" key="gene_id_key" constraint="main" uniquename="gene_stable_id" field="homol_stable_id_v" key="gene_id_key" constraint="hsapiens_gene_ensembl__homologs_mmusculus__dm" uniquename="mouse_ensembl_id" />
+        </s:beanshellinput>
 
-Map hsToMouse = new HashMap();
-Iterator j = MouseGeneIDs.iterator();
-for (Iterator i = HSGeneIDs.iterator(); i.hasNext();) {
-  String id = (String)i.next();
-  hsToMouse.put(id, j.next());
-}
-Map hsToRat = new HashMap();
-j = RatGeneIDs.iterator();
-for (Iterator i = HSGeneIDs.iterator(); i.hasNext();) {
-  String id = (String)i.next();
-  hsToRat.put(id, j.next());
-}
 
-// Build the unique outputs
-for (Iterator i = hsToRat.keySet().iterator(); i.hasNext();) {
-  String hsID = (String)i.next();
-  String ratID = (String)hsToRat.get(hsID);
-  // Remove version number
-  // ratID = (ratID.split("."))[0];
-  String mouseID = (String)hsToMouse.get(hsID);
-  // Remove version number
-  //mouseId = (mouseID.split("."))[0];
-  if (ratID != null &amp;&amp; mouseID != null) {
-    HSOut.add(hsID);
-    RatOut.add(ratID.split("\\.")[0]);
-    MouseOut.add(mouseID.split("\\.")[0]);
-  }
-}</s:scriptvalue>
-      <s:beanshellinputlist>
-        <s:beanshellinput s:syntactictype="l('text/plain')">HSGeneIDs</s:beanshellinput>
-        <s:beanshellinput s:syntactictype="l('text/plain')">MouseGeneIDs</s:beanshellinput>
-        <s:beanshellinput s:syntactictype="l('text/plain')">RatGeneIDs</s:beanshellinput>
-      </s:beanshellinputlist>
-      <s:beanshelloutputlist>
-        <s:beanshelloutput s:syntactictype="l('text/plain')">HSOut</s:beanshelloutput>
-        <s:beanshelloutput s:syntactictype="l('text/plain')">RatOut</s:beanshelloutput>
-        <s:beanshelloutput s:syntactictype="l('text/plain')">MouseOut</s:beanshelloutput>
-      </s:beanshelloutputlist>
-    </s:beanshell>
+<s:beanshellinput s:syntactictype="l('text/plain')" field="chr_name" constraint="main" key="gene_id_key" qualifier="=" value="22" field="disease_gene_bool" constraint="main" key="gene_id_key" qualifier=" is not null" />
+      </s:beanshellinput>
+              <s:beanshellinput s:syntactictype="l('text/plain')" name="FlattenImageList">text/html</s:beanshellinput>
+  </s:beanshellinputlist>
+  <s:beanshelloutputlist name="FetchPDBFlatFile" workers="10" s:syntactictype="l('text/plain')" name="GetKnownStructures">
+      <s:beanshelloutput>
+      &gt;
+      Human\n"
+          
+      "
+        &gt;
+          "
+          "
+        &gt;
+        "Reads and writes (returns) sequences</s:beanshelloutput>"
+  
+    <s:beanshelloutput version="0.2" log="0" lsid="urn:lsid:www.mygrid.org.uk:operation:E51AE8IPB73" author="Tom Oinn" title="Fetch PDB flatfile from RCSB server" s:syntactictype="l('text/plain')" s:syntactictype="'text/plain'">Multiple alignment program - interface to ClustalW program</s:beanshelloutput>
+  <s:beanshelloutput name="RCSBSuffix" s:syntactictype="l(l('text/plain'))" source="GetUniqueHomolog:HSOut" sink="GetHSGenes:gene_stable_id_filter" source="GetUniqueHomolog:RatOut" sink="RNorIDs" />&amp;
+      
+  
+  image/png
+  
+  
+        application/octet-stream
+  </s:beanshelloutput>
+  </s:beanshelloutputlist>
+        </s:beanshell>
   </s:processor>
-  <s:processor name="FlattenImageList">
+  <s:processor>
     <s:local>org.embl.ebi.escience.scuflworkers.java.FlattenList</s:local>
   </s:processor>
-  <s:processor name="FetchPDBFlatFile" workers="10">
+  <s:processor>
     <s:description>Given an identifier such as '1crn' fetches the PDB format flatfile from the RCSB</s:description>
     <s:workflow>
-      <s:scufl version="0.2" log="0">
-        <s:workflowdescription lsid="urn:lsid:www.mygrid.org.uk:operation:E51AE8IPB73" author="Tom Oinn" title="Fetch PDB flatfile from RCSB server">Given an identifier such as '1crn' fetches the PDB format flatfile from the RCSB</s:workflowdescription>
-        <s:processor name="RCSBSuffix">
+      <s:scufl>
+        <s:workflowdescription>Given an identifier such as '1crn' fetches the PDB format flatfile from the RCSB</s:workflowdescription>
+        <s:processor>
           <s:stringconstant>&amp;compression=None</s:stringconstant>
         </s:processor>
-        <s:processor name="AddSuffix">
+        <s:processor>
           <s:local>org.embl.ebi.escience.scuflworkers.java.StringConcat</s:local>
         </s:processor>
-        <s:processor name="RCSBPrefix">
-          <s:stringconstant>http://www.rcsb.org/pdb/cgi/export.cgi/1CRN.pdb?format=PDB&amp;pdbId=</s:stringconstant>
+        <s:processor>
+          <s:stringconstant>http://www.rcsb.org/pdb/cgi/export.cgi/1CRN.pdb?format=PD♂瀀搀戀䤀搀㴀</s:stringconstant>
         </s:processor>
-        <s:processor name="FetchPage">
+        <s:processor>
           <s:local>org.embl.ebi.escience.scuflworkers.java.WebPageFetcher</s:local>
         </s:processor>
-        <s:processor name="AddPrefixToID">
+        <s:processor>
           <s:local>org.embl.ebi.escience.scuflworkers.java.StringConcat</s:local>
         </s:processor>
-        <s:link source="RCSBPrefix:value" sink="AddPrefixToID:string1" />
-        <s:link source="pdbID" sink="AddPrefixToID:string2" />
-        <s:link source="AddPrefixToID:output" sink="AddSuffix:string1" />
-        <s:link source="RCSBSuffix:value" sink="AddSuffix:string2" />
-        <s:link source="AddSuffix:output" sink="FetchPage:url" />
-        <s:link source="FetchPage:contents" sink="pdbFlatFile" />
-        <s:source name="pdbID">
+        <s:link>
+        <s:link>
+        <s:link>
+        <s:link>
+        <s:link>
+        <s:link>
+        <s:source>
           <s:metadata>
             <s:description>PDB identifier such as '1crn'</s:description>
           </s:metadata>
         </s:source>
-        <s:sink name="pdbFlatFile">
+        <s:sink>
           <s:metadata>
             <s:mimeTypes>
               <s:mimeType>chemical/x-pdb</s:mimeType>
@@ -95,7 +107,7 @@ for (Iterator i = hsToRat.keySet().iterator(); i.hasNext();) {
       </s:scufl>
     </s:workflow>
   </s:processor>
-  <s:processor name="GetGeneIDStructureMapping">
+  <s:processor>
     <s:beanshell>
       <s:scriptvalue>Map geneIDToStructureSet = new HashMap();
 Iterator j = StructureIDList.iterator();
@@ -121,157 +133,157 @@ for (Iterator i = geneIDToStructureSet.keySet().iterator(); i.hasNext();) {
   StructureIDs.add(sl);
 }</s:scriptvalue>
       <s:beanshellinputlist>
-        <s:beanshellinput s:syntactictype="l('text/plain')">StructureIDList</s:beanshellinput>
-        <s:beanshellinput s:syntactictype="l('text/plain')">GeneIDList</s:beanshellinput>
+        <s:beanshellinput>StructureIDList</s:beanshellinput>
+        <s:beanshellinput>GeneIDList</s:beanshellinput>
       </s:beanshellinputlist>
       <s:beanshelloutputlist>
-        <s:beanshelloutput s:syntactictype="l('text/plain')">GeneIDs</s:beanshelloutput>
-        <s:beanshelloutput s:syntactictype="l(l('text/plain'))">StructureIDs</s:beanshelloutput>
+        <s:beanshelloutput>GeneIDs</s:beanshelloutput>
+        <s:beanshelloutput>StructureIDs</s:beanshelloutput>
       </s:beanshelloutputlist>
     </s:beanshell>
     <s:iterationstrategy>
-      <i:dot xmlns:i="http://org.embl.ebi.escience/xscufliteration/0.1beta10">
-        <i:iterator name="GeneIDList" />
-        <i:iterator name="StructureIDList" />
+      <i:dot>
+        <i:iterator>
+        <i:iterator>
       </i:dot>
     </s:iterationstrategy>
   </s:processor>
-  <s:processor name="GetRatGenes">
+  <s:processor>
     <s:biomart>
-      <biomart:biomartconfig xmlns:biomart="http://org.embl.ebi.escience/xscufl-biomart/0.1alpha" dbtype="mysql" dbdriver="com.mysql.jdbc.Driver" dbhost="martdb.ebi.ac.uk" dbport="3306" dbinstance="ensembl_mart_22_1" dbuser="anonymous" />
-      <biomart:biomartds xmlns:biomart="http://org.embl.ebi.escience/xscufl-biomart/0.1alpha">rnorvegicus_gene_ensembl</biomart:biomartds>
-      <biomart:query xmlns:biomart="http://org.embl.ebi.escience/xscufl-biomart/0.1alpha">
+      <biomart:biomartconfig>
+      <biomart:biomartds>rnorvegicus_gene_ensembl</biomart:biomartds>
+      <biomart:query>
         <biomart:filters>
-          <biomart:idlistfilter field="gene_stable_id" constraint="main" key="gene_id_key">
-            <biomart:idlistitem id="test" />
+          <biomart:idlistfilter>
+            <biomart:idlistitem>
           </biomart:idlistfilter>
         </biomart:filters>
-        <biomart:sequence type="8" fiveprime="200" threeprime="0" />
+        <biomart:sequence>
       </biomart:query>
     </s:biomart>
   </s:processor>
-  <s:processor name="GetMouseGenes">
+  <s:processor>
     <s:biomart>
-      <biomart:biomartconfig xmlns:biomart="http://org.embl.ebi.escience/xscufl-biomart/0.1alpha" dbtype="mysql" dbdriver="com.mysql.jdbc.Driver" dbhost="martdb.ebi.ac.uk" dbport="3306" dbinstance="ensembl_mart_22_1" dbuser="anonymous" />
-      <biomart:biomartds xmlns:biomart="http://org.embl.ebi.escience/xscufl-biomart/0.1alpha">mmusculus_gene_ensembl</biomart:biomartds>
-      <biomart:query xmlns:biomart="http://org.embl.ebi.escience/xscufl-biomart/0.1alpha">
+      <biomart:biomartconfig>
+      <biomart:biomartds>mmusculus_gene_ensembl</biomart:biomartds>
+      <biomart:query>
         <biomart:filters>
-          <biomart:idlistfilter field="gene_stable_id" constraint="main" key="gene_id_key">
-            <biomart:idlistitem id="test" />
+          <biomart:idlistfilter>
+            <biomart:idlistitem>
           </biomart:idlistfilter>
         </biomart:filters>
-        <biomart:sequence type="8" fiveprime="200" threeprime="0" />
+        <biomart:sequence>
       </biomart:query>
     </s:biomart>
   </s:processor>
-  <s:processor name="GetHSGenes">
+  <s:processor>
     <s:biomart>
-      <biomart:biomartconfig xmlns:biomart="http://org.embl.ebi.escience/xscufl-biomart/0.1alpha" dbtype="mysql" dbdriver="com.mysql.jdbc.Driver" dbhost="martdb.ebi.ac.uk" dbport="3306" dbinstance="ensembl_mart_22_1" dbuser="anonymous" />
-      <biomart:biomartds xmlns:biomart="http://org.embl.ebi.escience/xscufl-biomart/0.1alpha">hsapiens_gene_ensembl</biomart:biomartds>
-      <biomart:query xmlns:biomart="http://org.embl.ebi.escience/xscufl-biomart/0.1alpha">
+      <biomart:biomartconfig>
+      <biomart:biomartds>hsapiens_gene_ensembl</biomart:biomartds>
+      <biomart:query>
         <biomart:filters>
-          <biomart:idlistfilter field="gene_stable_id" constraint="main" key="gene_id_key">
-            <biomart:idlistitem id="sample" />
+          <biomart:idlistfilter>
+            <biomart:idlistitem>
           </biomart:idlistfilter>
         </biomart:filters>
-        <biomart:sequence type="8" fiveprime="200" threeprime="0" />
+        <biomart:sequence>
       </biomart:query>
     </s:biomart>
   </s:processor>
-  <s:processor name="CreateFasta">
+  <s:processor>
     <s:beanshell>
-      <s:scriptvalue>fasta = "&gt;Human\n"+hsSeq+"\n&gt;Mouse\n"+mmSeq+"\n&gt;Rat\n"+rnSeq;</s:scriptvalue>
+      <s:scriptvalue>fasta = 㸢䠀甀洀愀渀尀渀∀⬀栀猀匀攀焀⬀∀尀渀㸀䴀漀甀猀攀尀渀∀⬀洀洀匀攀焀⬀∀尀渀㸀刀愀琀尀渀∀⬀爀渀匀攀焀㬀</s:scriptvalue>
       <s:beanshellinputlist>
-        <s:beanshellinput s:syntactictype="'text/plain'">hsSeq</s:beanshellinput>
-        <s:beanshellinput s:syntactictype="'text/plain'">mmSeq</s:beanshellinput>
-        <s:beanshellinput s:syntactictype="'text/plain'">rnSeq</s:beanshellinput>
+        <s:beanshellinput>hsSeq</s:beanshellinput>
+        <s:beanshellinput>mmSeq</s:beanshellinput>
+        <s:beanshellinput>rnSeq</s:beanshellinput>
       </s:beanshellinputlist>
       <s:beanshelloutputlist>
-        <s:beanshelloutput s:syntactictype="'text/plain'">fasta</s:beanshelloutput>
+        <s:beanshelloutput>fasta</s:beanshelloutput>
       </s:beanshelloutputlist>
     </s:beanshell>
     <s:iterationstrategy>
-      <i:dot xmlns:i="http://org.embl.ebi.escience/xscufliteration/0.1beta10">
-        <i:iterator name="rnSeq" />
-        <i:iterator name="mmSeq" />
-        <i:iterator name="hsSeq" />
+      <i:dot>
+        <i:iterator>
+        <i:iterator>
+        <i:iterator>
       </i:dot>
     </s:iterationstrategy>
   </s:processor>
-  <s:processor name="GetDiseaseGeneIDs">
+  <s:processor>
     <s:biomart>
-      <biomart:biomartconfig xmlns:biomart="http://org.embl.ebi.escience/xscufl-biomart/0.1alpha" dbtype="mysql" dbdriver="com.mysql.jdbc.Driver" dbhost="martdb.ebi.ac.uk" dbport="3306" dbinstance="ensembl_mart_22_1" dbuser="anonymous" />
-      <biomart:biomartds xmlns:biomart="http://org.embl.ebi.escience/xscufl-biomart/0.1alpha">hsapiens_gene_ensembl</biomart:biomartds>
-      <biomart:query xmlns:biomart="http://org.embl.ebi.escience/xscufl-biomart/0.1alpha">
+      <biomart:biomartconfig>
+      <biomart:biomartds>hsapiens_gene_ensembl</biomart:biomartds>
+      <biomart:query>
         <biomart:attributes>
-          <biomart:fieldattribute field="gene_stable_id" key="gene_id_key" constraint="main" uniquename="gene_stable_id" />
-          <biomart:fieldattribute field="homol_stable_id_v" key="gene_id_key" constraint="hsapiens_gene_ensembl__homologs_rnorvegicus__dm" uniquename="rat_ensembl_id" />
-          <biomart:fieldattribute field="homol_stable_id_v" key="gene_id_key" constraint="hsapiens_gene_ensembl__homologs_mmusculus__dm" uniquename="mouse_ensembl_id" />
+          <biomart:fieldattribute>
+          <biomart:fieldattribute>
+          <biomart:fieldattribute>
         </biomart:attributes>
         <biomart:filters>
-          <biomart:basicfilter field="chr_name" constraint="main" key="gene_id_key" qualifier="=" value="22" />
-          <biomart:booleanfilter field="mmusculus_homolog_bool" constraint="main" key="gene_id_key" qualifier=" is not null" />
-          <biomart:booleanfilter field="rnorvegicus_homolog_bool" constraint="main" key="gene_id_key" qualifier=" is not null" />
-          <biomart:booleanfilter field="disease_gene_bool" constraint="main" key="gene_id_key" qualifier=" is not null" />
+          <biomart:basicfilter>
+          <biomart:booleanfilter>
+          <biomart:booleanfilter>
+          <biomart:booleanfilter>
         </biomart:filters>
       </biomart:query>
     </s:biomart>
   </s:processor>
-  <s:processor name="GetKnownStructures">
+  <s:processor>
     <s:biomart>
-      <biomart:biomartconfig xmlns:biomart="http://org.embl.ebi.escience/xscufl-biomart/0.1alpha" dbtype="mysql" dbdriver="com.mysql.jdbc.Driver" dbhost="martdb.ebi.ac.uk" dbport="3306" dbinstance="ensembl_mart_22_1" dbuser="anonymous" />
-      <biomart:biomartds xmlns:biomart="http://org.embl.ebi.escience/xscufl-biomart/0.1alpha">hsapiens_gene_ensembl</biomart:biomartds>
-      <biomart:query xmlns:biomart="http://org.embl.ebi.escience/xscufl-biomart/0.1alpha">
+      <biomart:biomartconfig>
+      <biomart:biomartds>hsapiens_gene_ensembl</biomart:biomartds>
+      <biomart:query>
         <biomart:attributes>
-          <biomart:fieldattribute field="display_id_list" key="transcript_id_key" constraint="hsapiens_gene_ensembl__xref_pdb__dm" uniquename="pdb" />
-          <biomart:fieldattribute field="gene_stable_id" key="gene_id_key" constraint="main" uniquename="gene_stable_id" />
+          <biomart:fieldattribute>
+          <biomart:fieldattribute>
         </biomart:attributes>
         <biomart:filters>
-          <biomart:booleanfilter field="pdb_bool" constraint="main" key="gene_id_key" qualifier=" is not null" />
-          <biomart:idlistfilter field="gene_stable_id" constraint="main" key="gene_id_key">
-            <biomart:idlistitem id="foo" />
+          <biomart:booleanfilter>
+          <biomart:idlistfilter>
+            <biomart:idlistitem>
           </biomart:idlistfilter>
         </biomart:filters>
       </biomart:query>
     </s:biomart>
   </s:processor>
-  <s:processor name="seqret" workers="5">
+  <s:processor>
     <s:description>Reads and writes (returns) sequences</s:description>
-    <s:soaplabwsdl>http://industry.ebi.ac.uk/soap/soaplab/edit::seqret</s:soaplabwsdl>
+    <s:soaplabwsdl>http://www.ebi.ac.uk/soaplab/services/edit::seqret</s:soaplabwsdl>
   </s:processor>
-  <s:processor name="plot" workers="5">
+  <s:processor>
     <s:description>Displays aligned sequences, with colouring and boxing</s:description>
-    <s:soaplabwsdl>http://industry.ebi.ac.uk/soap/soaplab/alignment_multiple::prettyplot</s:soaplabwsdl>
+    <s:soaplabwsdl>http://www.ebi.ac.uk/soaplab/services/alignment_multiple::prettyplot</s:soaplabwsdl>
   </s:processor>
-  <s:processor name="emma" workers="5">
+  <s:processor>
     <s:description>Multiple alignment program - interface to ClustalW program</s:description>
-    <s:soaplabwsdl>http://industry.ebi.ac.uk/soap/soaplab/alignment_multiple::emma</s:soaplabwsdl>
+    <s:soaplabwsdl>http://www.ebi.ac.uk/soaplab/services/alignment_multiple::emma</s:soaplabwsdl>
   </s:processor>
-  <s:link source="GetDiseaseGeneIDs:gene_stable_id" sink="GetUniqueHomolog:HSGeneIDs" />
-  <s:link source="GetDiseaseGeneIDs:rat_ensembl_id" sink="GetUniqueHomolog:RatGeneIDs" />
-  <s:link source="GetDiseaseGeneIDs:mouse_ensembl_id" sink="GetUniqueHomolog:MouseGeneIDs" />
-  <s:link source="GetUniqueHomolog:HSOut" sink="GetHSGenes:gene_stable_id_filter" />
-  <s:link source="GetUniqueHomolog:MouseOut" sink="GetMouseGenes:gene_stable_id_filter" />
-  <s:link source="GetUniqueHomolog:RatOut" sink="GetRatGenes:gene_stable_id_filter" />
-  <s:link source="GetRatGenes:sequenceexport" sink="CreateFasta:rnSeq" />
-  <s:link source="GetMouseGenes:sequenceexport" sink="CreateFasta:mmSeq" />
-  <s:link source="GetHSGenes:sequenceexport" sink="CreateFasta:hsSeq" />
-  <s:link source="emma:outseq" sink="plot:sequences_direct_data" />
-  <s:link source="CreateFasta:fasta" sink="seqret:sequence_direct_data" />
-  <s:link source="seqret:outseq" sink="emma:sequence_direct_data" />
-  <s:link source="plot:Graphics_in_PNG" sink="FlattenImageList:inputlist" />
-  <s:link source="FlattenImageList:outputlist" sink="outputPlot" />
-  <s:link source="GetUniqueHomolog:HSOut" sink="HSapIDs" />
-  <s:link source="GetUniqueHomolog:RatOut" sink="RNorIDs" />
-  <s:link source="GetUniqueHomolog:MouseOut" sink="MMusIDs" />
-  <s:link source="GetUniqueHomolog:HSOut" sink="GetKnownStructures:gene_stable_id_filter" />
-  <s:link source="FetchPDBFlatFile:pdbFlatFile" sink="Structures" />
-  <s:link source="GetKnownStructures:gene_stable_id" sink="GetGeneIDStructureMapping:GeneIDList" />
-  <s:link source="GetKnownStructures:pdb" sink="GetGeneIDStructureMapping:StructureIDList" />
-  <s:link source="GetGeneIDStructureMapping:StructureIDs" sink="FetchPDBFlatFile:pdbID" />
-  <s:link source="GetGeneIDStructureMapping:GeneIDs" sink="IDsWithPDB" />
-  <s:link source="GetGeneIDStructureMapping:StructureIDs" sink="PDBIDs" />
-  <s:sink name="outputPlot">
+  <s:link>
+  <s:link>
+  <s:link>
+  <s:link>
+  <s:link>
+  <s:link>
+  <s:link>
+  <s:link>
+  <s:link>
+  <s:link>
+  <s:link>
+  <s:link>
+  <s:link>
+  <s:link>
+  <s:link>
+  <s:link>
+  <s:link>
+  <s:link>
+  <s:link>
+  <s:link>
+  <s:link>
+  <s:link>
+  <s:link>
+  <s:link>
+  <s:sink>
     <s:metadata>
       <s:mimeTypes>
         <s:mimeType>image/png</s:mimeType>
@@ -281,11 +293,11 @@ for (Iterator i = geneIDToStructureSet.keySet().iterator(); i.hasNext();) {
       <s:semanticType>http://www.mygrid.org.uk/ontology#domain_concept</s:semanticType>
     </s:metadata>
   </s:sink>
-  <s:sink name="HSapIDs" />
-  <s:sink name="MMusIDs" />
-  <s:sink name="RNorIDs" />
-  <s:sink name="IDsWithPDB" />
-  <s:sink name="Structures">
+  <s:sink>
+  <s:sink>
+  <s:sink>
+  <s:sink>
+  <s:sink>
     <s:metadata>
       <s:mimeTypes>
         <s:mimeType>chemical/x-pdb</s:mimeType>
@@ -294,7 +306,5 @@ for (Iterator i = geneIDToStructureSet.keySet().iterator(); i.hasNext();) {
       </s:mimeTypes>
     </s:metadata>
   </s:sink>
-  <s:sink name="PDBIDs" />
+  <s:sink>
 </s:scufl>
-
-

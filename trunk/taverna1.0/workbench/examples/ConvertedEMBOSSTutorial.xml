@@ -24,35 +24,35 @@
   </s:processor>
   <s:processor name="prophet">
     <s:description>Gapped alignment for profiles</s:description>
-    <s:soaplabwsdl>http://industry.ebi.ac.uk/soap/soaplab/nucleic_profiles::prophet</s:soaplabwsdl>
+    <s:soaplabwsdl>http://www.ebi.ac.uk/soaplab/services/nucleic_profiles::prophet</s:soaplabwsdl>
   </s:processor>
   <s:processor name="prophecy">
     <s:description>Creates matrices/profiles from multiple alignments</s:description>
-    <s:soaplabwsdl>http://industry.ebi.ac.uk/soap/soaplab/nucleic_profiles::prophecy</s:soaplabwsdl>
+    <s:soaplabwsdl>http://www.ebi.ac.uk/soaplab/services/nucleic_profiles::prophecy</s:soaplabwsdl>
   </s:processor>
   <s:processor name="tmap">
     <s:description>Displays membrane spanning regions</s:description>
-    <s:soaplabwsdl>http://industry.ebi.ac.uk/soap/soaplab/protein_2d_structure::tmap</s:soaplabwsdl>
+    <s:soaplabwsdl>http://www.ebi.ac.uk/soaplab/services/protein_2d_structure::tmap</s:soaplabwsdl>
   </s:processor>
   <s:processor name="seqret1">
     <s:description>Reads and writes (returns) sequences</s:description>
-    <s:soaplabwsdl>http://industry.ebi.ac.uk/soap/soaplab/edit::seqret</s:soaplabwsdl>
+    <s:soaplabwsdl>http://www.ebi.ac.uk/soaplab/services/edit::seqret</s:soaplabwsdl>
   </s:processor>
   <s:processor name="transeq">
     <s:description>Translate nucleic acid sequences</s:description>
-    <s:soaplabwsdl>http://industry.ebi.ac.uk/soap/soaplab/nucleic_translation::transeq</s:soaplabwsdl>
+    <s:soaplabwsdl>http://www.ebi.ac.uk/soaplab/services/nucleic_translation::transeq</s:soaplabwsdl>
   </s:processor>
   <s:processor name="formatSequences">
     <s:description>Reads and writes (returns) sequences</s:description>
-    <s:soaplabwsdl>http://industry.ebi.ac.uk/soap/soaplab/edit::seqret</s:soaplabwsdl>
+    <s:soaplabwsdl>http://www.ebi.ac.uk/soaplab/services/edit::seqret</s:soaplabwsdl>
   </s:processor>
   <s:processor name="emma">
     <s:description>Multiple alignment program - interface to ClustalW program</s:description>
-    <s:soaplabwsdl>http://industry.ebi.ac.uk/soap/soaplab/alignment_multiple::emma</s:soaplabwsdl>
+    <s:soaplabwsdl>http://www.ebi.ac.uk/soaplab/services/alignment_multiple::emma</s:soaplabwsdl>
   </s:processor>
   <s:processor name="plot">
     <s:description>Displays aligned sequences, with colouring and boxing</s:description>
-    <s:soaplabwsdl>http://industry.ebi.ac.uk/soap/soaplab/alignment_multiple::prettyplot</s:soaplabwsdl>
+    <s:soaplabwsdl>http://www.ebi.ac.uk/soaplab/services/alignment_multiple::prettyplot</s:soaplabwsdl>
   </s:processor>
   <s:link source="sequenceid:value" sink="seqret1:sequence_usa" />
   <s:link source="seqret1:outseq" sink="emma:sequence_direct_data" />
