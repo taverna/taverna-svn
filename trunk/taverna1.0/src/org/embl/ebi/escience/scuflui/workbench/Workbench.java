@@ -43,9 +43,18 @@ public class Workbench extends JFrame {
     public static void main(String[] args) {
 	Workbench workbench = new Workbench();
 	// Add instances of all the components just for fun
-	workbench.desktop.add(new XScuflFrame(workbench.model));
-	workbench.desktop.add(new DiagramFrame(workbench.model));
-	workbench.desktop.add(new ExplorerFrame(workbench.model));
+	XScuflFrame xscufl = new XScuflFrame(workbench.model);
+	xscufl.setSize(600,300);
+	xscufl.setLocation(50,50);
+	workbench.desktop.add(xscufl);
+	DiagramFrame diagram = new DiagramFrame(workbench.model);
+	diagram.setSize(300,300);
+	diagram.setLocation(50,400);
+	workbench.desktop.add(diagram);
+	ExplorerFrame explorer = new ExplorerFrame(workbench.model);
+	explorer.setSize(300,300);
+	explorer.setLocation(400,400);
+	workbench.desktop.add(explorer);
 
 	workbench.setVisible(true);
     }
