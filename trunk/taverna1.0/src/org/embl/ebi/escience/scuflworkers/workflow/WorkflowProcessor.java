@@ -109,32 +109,89 @@ public class WorkflowProcessor extends Processor implements java.io.Serializable
 	this.theModel.addListener(new ScuflModelEventListener() {
 		public void receiveModelEvent(ScuflModelEvent event) {
 		    WorkflowProcessor.this.definitionURL = null;
+		    try {
+			if (buildPorts() == false) {
+			    // Only throw a new event up if nothing has changed in the port
+			    // list, if something has been changed then the parent workflow
+			    // will already have been kicked by the port creation or destruction
+			    fireModelEvent(new MinorScuflModelEvent(WorkflowProcessor.this, 
+								    "Underlying workflow changed"));
+			}
+		    }
+		    catch (PortCreationException pce) {
+			//
+		    }
+		    catch (DuplicatePortNameException dpne) {
+			//
+		    }
 		}
 	    });
     }
-
+    
     /**
-     * Inspect the current workflow model and create any ports required
+     * Inspect the current workflow model and create any ports required, returns
+     * true if anything was changed, false otherwise.
      */
-    private void buildPorts() throws PortCreationException, DuplicatePortNameException {
+    private boolean buildPorts() throws PortCreationException, DuplicatePortNameException {
+	boolean changed = false;
 	// Iterate over the workflow sinks to get the output ports
 	Port[] outputs = this.theModel.getWorkflowSinkPorts();
 	for (int i = 0; i < outputs.length; i++) {
-	    // Create a new output port
-	    Port newPort = new OutputPort(this, outputs[i].getName());
-	    newPort.setSyntacticType(outputs[i].getSyntacticType());
-	    //newPort.setSemanticType(outputs[i].getSemanticType());
-	    this.addPort(newPort);
+	    // Create a new output port if it doesn't already exist
+	    try {
+		locatePort(outputs[i].getName());
+	    }
+	    catch (UnknownPortException upe) {
+		Port newPort = new OutputPort(this, outputs[i].getName());
+		newPort.setSyntacticType(outputs[i].getSyntacticType());
+		//newPort.setSemanticType(outputs[i].getSemanticType());
+		this.addPort(newPort);
+		changed = true;
+	    }
 	}
 	// Iterate over workflow sources to get the input ports
 	Port[] inputs = this.theModel.getWorkflowSourcePorts();
 	for (int i = 0; i < inputs.length; i++) {
-	    // Create a new input port
-	    Port newPort = new InputPort(this, inputs[i].getName());
-	    newPort.setSyntacticType(inputs[i].getSyntacticType());
-	    //newPort.setSemanticType(inputs[i].getSemanticType());
-	    this.addPort(newPort);
+	    // Create a new input port if it doesn't already exist
+	    try {
+		locatePort(inputs[i].getName());
+	    }
+	    catch (UnknownPortException upe) {
+		Port newPort = new InputPort(this, inputs[i].getName());
+		newPort.setSyntacticType(inputs[i].getSyntacticType());
+		//newPort.setSemanticType(inputs[i].getSemanticType());
+		this.addPort(newPort);
+		changed = true;
+	    }
 	}
+	// Now check to see if there were any ports we previously had but that
+	// have since been removed. As we definitely added any ports that we didn't
+	// already have this should be easy.
+	Port[] ourInputPorts = getInputPorts();
+	for (int i = 0; i < ourInputPorts.length; i++) {
+	    // Try to find this in the nested model
+	    String portName = ourInputPorts[i].getName();
+	    try {
+		this.theModel.getWorkflowSourceProcessor().locatePort(portName);
+	    }
+	    catch (UnknownPortException upe) {
+		removePort(ourInputPorts[i]);
+		changed = true;
+	    }
+	}
+	Port[] ourOutputPorts = getOutputPorts();
+	for (int i = 0; i < ourOutputPorts.length; i++) {
+	    // Try to find this in the nested model
+	    String portName = ourOutputPorts[i].getName();
+	    try {
+		this.theModel.getWorkflowSinkProcessor().locatePort(portName);
+	    }
+	    catch (UnknownPortException upe) {
+		removePort(ourOutputPorts[i]);
+		changed = true;
+	    }
+	}
+	return changed;
     }
 
     public ScuflModel getInternalModel() {

@@ -35,7 +35,7 @@ public class AdvancedModelExplorer extends JPanel
     private JPanel propertiesPanel;
     private Object selectedObject = null;
 
-    private JButton loadWorkflow, loadFromWeb, saveWorkflow, resetWorkflow;
+    private JButton loadWorkflow, loadFromWeb, saveWorkflow, resetWorkflow, createNested;
     final JFileChooser fc = new JFileChooser();
     public AdvancedModelExplorer() {
 	
@@ -80,6 +80,8 @@ public class AdvancedModelExplorer extends JPanel
 	saveWorkflow.setPreferredSize(new Dimension(25,25));
 	resetWorkflow = new JButton(Workbench.deleteIcon);
 	resetWorkflow.setPreferredSize(new Dimension(25,25));
+	createNested = new JButton(ScuflIcons.windowExplorer);
+	createNested.setPreferredSize(new Dimension(25,25));
 	
 	toolbar.add(new JLabel(" Load "));
 	toolbar.add(loadWorkflow);
@@ -91,6 +93,10 @@ public class AdvancedModelExplorer extends JPanel
 	toolbar.add(new JLabel("Save "));
 	toolbar.add(saveWorkflow);
 	
+	toolbar.addSeparator();
+	toolbar.add(new JLabel("New subworkflow"));
+	toolbar.add(createNested);
+
 	toolbar.add(Box.createHorizontalGlue());
 	
 	toolbar.add(new JLabel("Reset "));
@@ -99,6 +105,28 @@ public class AdvancedModelExplorer extends JPanel
 	// Add the toolbar to the top of the panel
 	workflowPanel.add(toolbar, BorderLayout.PAGE_START);
 	
+	// Add actionlistener to 'create new nested workflow' button
+	createNested.addActionListener(new ActionListener() {
+		public void actionPerformed(ActionEvent ae) {
+		    ScuflModel targetModel = explorer.model;
+		    if (targetModel != null) {
+			try {
+			    String name = targetModel.getValidProcessorName("NestedWorkflow");
+			    Processor p = new org.embl.ebi.escience.scuflworkers.workflow.WorkflowProcessor(targetModel,
+													    name);
+			    targetModel.addProcessor(p);
+			}
+			catch (Exception ex) {
+			    JOptionPane.showMessageDialog(AdvancedModelExplorer.this,
+							  "Unable to create blank subworkflow : \n" +
+							  ex.getMessage(),
+							  "Error",
+							  JOptionPane.ERROR_MESSAGE);
+			}
+		    }
+		}
+	    });
+
 	// Add actionlistener to the load from file button
 	loadWorkflow.addActionListener(new ActionListener() {
 		public void actionPerformed(ActionEvent ae) {
