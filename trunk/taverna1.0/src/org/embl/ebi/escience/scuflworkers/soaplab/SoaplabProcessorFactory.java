@@ -45,6 +45,13 @@ public class SoaplabProcessorFactory implements ProcessorFactory {
     }
     
     /**
+     * Return the endpoint
+     */
+    public String getEndpoint() {
+	return this.endpoint;
+    }
+
+    /**
      * Create a new SoaplabProcessor and add it to the model
      */
     public Processor createProcessor(String name, ScuflModel model)
