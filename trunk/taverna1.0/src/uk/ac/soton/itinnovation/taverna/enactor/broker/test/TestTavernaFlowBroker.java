@@ -29,8 +29,8 @@ public class TestTavernaFlowBroker extends TestCase {
   protected void setUp() {
 		/** TODO put in proxy settings here **/
 		/*
-		System.setProperty("http.proxyHost","<proxy-host>");
-		System.setProperty("http.proxyPort","<proxy-port>");
+		System.setProperty("http.proxyHost","www.cache.soton.ac.uk");
+		System.setProperty("http.proxyPort","3128");
 		*/
 	}
 

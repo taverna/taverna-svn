@@ -25,8 +25,8 @@
 //      Dependencies        :
 //
 //      Last commit info    :   $Author: dmarvin $
-//                              $Date: 2003-06-08 18:36:04 $
-//                              $Revision: 1.16 $
+//                              $Date: 2003-06-09 07:28:23 $
+//                              $Revision: 1.17 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 
@@ -80,7 +80,7 @@ public class WSDLInvocationTask extends ProcessorTask implements InvocationDescr
 	public java.util.Map execute(java.util.Map inputMap) throws TaskExecutionException {
 		
 		try{
-			startTime =  new TimePoint();
+			
 			//want to siffle through the input ports and get input parts  
 			//GraphNode[] inputs = getParents();
 			//want to create suitable input parts

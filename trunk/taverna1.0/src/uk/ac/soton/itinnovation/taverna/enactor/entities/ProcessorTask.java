@@ -25,8 +25,8 @@
 //      Dependencies        :
 //
 //      Last commit info    :   $Author: dmarvin $
-//                              $Date: 2003-06-08 18:36:05 $
-//                              $Revision: 1.13 $
+//                              $Date: 2003-06-09 07:28:23 $
+//                              $Revision: 1.14 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 package uk.ac.soton.itinnovation.taverna.enactor.entities;
@@ -122,7 +122,7 @@ public abstract class ProcessorTask extends TavernaTask{
      */
     public uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.eventservice.TaskStateMessage doTask() {
 	try {
-	    System.out.println("Commencing ProcessorTask");
+	    
 		uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.eventservice.TaskStateMessage result;
 	    startTime =  new TimePoint();
 		//do any pre-processing here
@@ -174,7 +174,7 @@ public abstract class ProcessorTask extends TavernaTask{
 					//if this is a String Array and the associated input is a String 
 					//(distinguished by port syntactic type)
 					//then want to iterate
-					System.out.println("Dimension is greater that zero, going to iterate");
+					
 					Part part = pi.getPart();
 					Port port = proc.locatePort(part.getName());
 					if(part.getType().equals("string[]") && port.getSyntacticType().equals("string")) {

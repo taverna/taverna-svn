@@ -26,8 +26,8 @@
 //      Dependencies        :
 //
 //      Last commit info    :   $Author: dmarvin $
-//                              $Date: 2003-06-06 09:47:47 $
-//                              $Revision: 1.7 $
+//                              $Date: 2003-06-09 07:28:23 $
+//                              $Revision: 1.8 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 
@@ -133,7 +133,7 @@ public class PortTask extends TavernaTask{
 	public TaskStateMessage doTask() {
 		TaskStateMessage msg = null;
 		try{
-		
+			
 			//don't do anything, later versions may have persistence writing to do
 			//set data on child porttasks too
 		    if(dataPacket==null) {

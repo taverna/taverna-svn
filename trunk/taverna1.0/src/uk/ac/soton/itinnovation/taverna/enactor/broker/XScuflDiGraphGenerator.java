@@ -25,8 +25,8 @@
 //      Dependencies        :
 //
 //      Last commit info    :   $Author: dmarvin $
-//                              $Date: 2003-06-08 18:35:54 $
-//                              $Revision: 1.18 $
+//                              $Date: 2003-06-09 07:28:04 $
+//                              $Revision: 1.19 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 
@@ -186,8 +186,6 @@ public class XScuflDiGraphGenerator {
 			    controllerTask.addChild(controlledTask);
 			    controlledTask.addParent(controllerTask);
 			}
-			
-			
 			
 			//set input and output nodes
 			List partList = input.getPartList();

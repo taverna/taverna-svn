@@ -25,8 +25,8 @@
 //      Dependencies        :
 //
 //      Last commit info    :   $Author: dmarvin $
-//                              $Date: 2003-06-08 18:35:55 $
-//                              $Revision: 1.9 $
+//                              $Date: 2003-06-09 07:28:05 $
+//                              $Revision: 1.10 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 
@@ -102,6 +102,7 @@ public class TavernaFlowReceipt extends WSFlowReceipt {
      */
     public void processFlowEvent(FlowEvent flowEvent) {        
 		try	{
+			
 			//construct the task summary
             Task[] tasks = flow.getTasks();
 
@@ -122,11 +123,10 @@ public class TavernaFlowReceipt extends WSFlowReceipt {
             }
             String message = "Workflow active";
             boolean report = false;
-
-            if (flow.getStatus() == FlowStates.FAILED) {
+			if (flow.getStatus() == FlowStates.FAILED) {
                 //find a failed task, should only be one, but otherwise deal with one error at a time.
                 message = "Unknown error.";
-                for (int i = 0; i < tasks.length; i++) {
+				for (int i = 0; i < tasks.length; i++) {
                     if (tasks[i].getCurrentState() == TaskState.FAILED)
                         message = "Reason for failure: " + tasks[i].getClientMessage();
                 }
@@ -134,7 +134,7 @@ public class TavernaFlowReceipt extends WSFlowReceipt {
             }
             if (flow.getStatus() == FlowStates.COMPLETE) {
                 message = "Dataflow completed successfully";
-                report = true;
+				report = true;
             }
             if (report) {
                 //not interested in other events here
@@ -150,7 +150,8 @@ public class TavernaFlowReceipt extends WSFlowReceipt {
 		}
 		catch (Exception ex){
 			//log the exception
-            logger.error(ex);
+			ex.printStackTrace();
+			logger.error(ex);
 		}
   } 
 

@@ -2,7 +2,7 @@
 <s:scufl xmlns:s="http://org.embl.ebi.escience/xscufl/0.1alpha" log="3" version="0.1">
 	<s:processor name="subworkflow" log="3">
 		<s:workflow>
-			<s:xscufllocation>http://localhost:8080/examples/XScufl_example.xml</s:xscufllocation>
+			<s:xscufllocation>file:src/uk/ac/soton/itinnovation/taverna/enactor/broker/test/XScufl_example.xml</s:xscufllocation>
 		</s:workflow>	
 	</s:processor>
 	<s:link>
@@ -28,7 +28,7 @@
 	
 	<s:link>
 		<s:input>outfile</s:input>
-		<s:output>subworkflow:outfile2</s:output>
+		<s:output>subworkflow:outfile</s:output>
 	</s:link>
 	<s:link>
 		<s:input>outfile2</s:input>
