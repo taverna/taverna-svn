@@ -158,11 +158,12 @@ public class ScavengerTreePopupHandler extends MouseAdapter {
 		    JMenuItem addWSDL = new JMenuItem("Add new WSDL scavenger...", ScuflIcons.wsdlIcon);
 		    JMenuItem addTalisman = new JMenuItem("Add new Talisman scavenger...", ScuflIcons.talismanIcon);
 		    JMenuItem addWorkflow = new JMenuItem("Add new Workflow scavenger...", ScuflIcons.workflowIcon);
-		    JMenuItem addWeb = new JMenuItem("Collect Workflows from web...", ScuflIcons.webIcon);
+		    JMenuItem addWeb = new JMenuItem("Collect scavengers from web...", ScuflIcons.webIcon);
 		    menu.add(addSoaplab);
 		    menu.add(addWSDL);
 		    menu.add(addTalisman);
 		    menu.add(addWorkflow);
+		    menu.addSeparator();
 		    menu.add(addWeb);
 		    addSoaplab.addActionListener(new ActionListener() {
 			    public void actionPerformed(ActionEvent ae) {
@@ -274,7 +275,6 @@ public class ScavengerTreePopupHandler extends MouseAdapter {
 				}	
 			    }
 			});
-		    menu.addSeparator();
 		    JMenuItem collect = new JMenuItem("Collect scavengers from model", Workbench.importIcon);
 		    menu.add(collect);
 		    collect.addActionListener(new ActionListener() {
