@@ -44,12 +44,15 @@ public class TermSet {
     static {
 	try {
 	    fb = new DefaultFactoryBag();
-	    DefaultFactoryBag.configure(ClassLoader.getSystemResource("uk/ac/ebi/ego/examples/sample-config.xml"),fb);
+	    ClassLoader cl = TermSet.class.getClassLoader();
+	    DefaultFactoryBag.configure(cl.getResource("uk/ac/ebi/ego/examples/sample-config.xml"),fb);
 	    gtf = (GoTermFactory)fb.getFactory(uk.ac.ebi.ego.GoTerm.class.getName());
 	}
 	catch (Exception e) {
 	    e.printStackTrace();
-	    System.exit(1);
+	    RuntimeException re = new RuntimeException("Unable to initialize ingo");
+	    re.initCause(e);
+	    throw re;
 	}
     }
     
