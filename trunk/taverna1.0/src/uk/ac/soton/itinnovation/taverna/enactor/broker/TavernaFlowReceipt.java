@@ -25,8 +25,8 @@
 //      Dependencies        :
 //
 //      Last commit info    :   $Author: dmarvin $
-//                              $Date: 2003-06-09 16:22:40 $
-//                              $Revision: 1.12 $
+//                              $Date: 2003-06-09 16:48:59 $
+//                              $Revision: 1.13 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 
@@ -365,12 +365,12 @@ public class TavernaFlowReceipt extends WSFlowReceipt {
 		prov.addContent(processors);
 		//add in input and output data
 		Element workflowInput = new Element("workflowInput",PROVENANCE_NAMESPACE);
-		workflowInput.addContent(input.toString());
+		workflowInput.addContent(input.toXMLElement());
 		prov.addContent(workflowInput);
 		Output output = getOutput();
 		if(output!=null) {
 			Element workflowOutput = new Element("workflowOutput",PROVENANCE_NAMESPACE);
-			workflowOutput.addContent(output.toString());
+			workflowOutput.addContent(output.toXMLElement());
 			prov.addContent(workflowOutput);
 		}		
 		return prov;

@@ -24,9 +24,9 @@
 //      Created for Project :   MYGRID
 //      Dependencies        :
 //
-//      Last commit info    :   $Author: mereden $
-//                              $Date: 2003-06-09 11:13:01 $
-//                              $Revision: 1.9 $
+//      Last commit info    :   $Author: dmarvin $
+//                              $Date: 2003-06-09 16:48:51 $
+//                              $Revision: 1.10 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 
@@ -451,12 +451,14 @@ public class TavernaWorkflowEnactor extends WorkflowEnactor implements FlowCallb
     }
 
     public void notifyListeners(String id) {
-        Iterator iterator = listeners.iterator();
-	while (iterator.hasNext()) {
-            iWorkflowExecutionListener listener = (iWorkflowExecutionListener) iterator.next();
-	    if (listener.getWorkflowInstanceID().equals(id))
-                listener.notifyWorkflowExecutionFinalised();
-        }
+        if(listeners!=null) {
+			Iterator iterator = listeners.iterator();
+			while (iterator.hasNext()) {
+				iWorkflowExecutionListener listener = (iWorkflowExecutionListener) iterator.next();
+				if (listener.getWorkflowInstanceID().equals(id))
+					listener.notifyWorkflowExecutionFinalised();
+			}
+		}
     }
 
     public synchronized boolean isValid(String workflow, StringBuffer errorLog) {

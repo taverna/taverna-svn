@@ -24,9 +24,9 @@
 //      Created for Project :   MYGRID
 //      Dependencies        :
 //
-//      Last commit info    :   $Author: mereden $
-//                              $Date: 2003-06-09 11:13:03 $
-//                              $Revision: 1.15 $
+//      Last commit info    :   $Author: dmarvin $
+//                              $Date: 2003-06-09 16:49:00 $
+//                              $Revision: 1.16 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 
@@ -227,7 +227,7 @@ public class SoaplabTask extends ProcessorTask{
 			if(inputForLog!=null)
 				e.addContent(inputForLog.toXMLElement());
 			if(outputForLog!=null)
-			e.addContent(outputForLog.toXMLElement());
+				e.addContent(outputForLog.toXMLElement());
 		}		
 		return e;
 	}
