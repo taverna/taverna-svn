@@ -141,6 +141,14 @@ public class WorkflowProcessor extends Processor implements java.io.Serializable
 	       DuplicateProcessorNameException {
 	super(model, name);
 	this.theModel = new ScuflModel();
+	try {
+	    if (model != null) {
+		this.theModel.setOffline(model.isOffline());
+	    }
+	}
+	catch (SetOnlineException soe) {
+	    //
+	}
 	createListener();
     }
 
