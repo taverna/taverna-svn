@@ -255,9 +255,16 @@ public class SemanticMarkup {
 	    boolean addedMIME = false;
 	    for (Iterator i = this.mimeTypeList.iterator(); i.hasNext(); ) {
 		Element typeElement = new Element("mimeType",XScufl.XScuflNS);
-		typeElement.setText((String)i.next());
+		String mimeType = (String)i.next();
+		typeElement.setText(mimeType);
 		mimeTypeList.addContent(typeElement);
-		addedMIME = true;
+		if (mimeType.equalsIgnoreCase("text/plain") == false &&
+		    mimeType.equalsIgnoreCase("application/octet-stream") == false) {
+		    // Only set that we've added mime types if there are additional
+		    // types that could not be inferred from other information in
+		    // the model
+		    addedMIME = true;
+		}
 	    }
 	    if (addedMIME) {
 		topElement.addContent(mimeTypeList);

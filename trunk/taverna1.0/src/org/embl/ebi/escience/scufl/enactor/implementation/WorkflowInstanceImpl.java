@@ -25,8 +25,8 @@
 //      Dependencies        :
 //
 //      Last commit info    :   $Author: mereden $
-//                              $Date: 2004-07-07 11:03:37 $
-//                              $Revision: 1.3 $
+//                              $Date: 2004-07-08 13:25:03 $
+//                              $Revision: 1.4 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 package org.embl.ebi.escience.scufl.enactor.implementation;
@@ -38,6 +38,8 @@ import org.embl.ebi.escience.scufl.Processor;
 import org.embl.ebi.escience.scufl.provenance.process.ProcessEvent;
 import org.embl.ebi.escience.scufl.enactor.*;
 import uk.ac.soton.itinnovation.freefluo.main.Engine;
+import uk.ac.soton.itinnovation.freefluo.main.EngineImpl;
+
 import org.embl.ebi.escience.scufl.UnknownProcessorException;
 
 import uk.ac.soton.itinnovation.taverna.enactor.entities.PortTask;
@@ -83,11 +85,12 @@ import java.lang.StringBuffer;
 public class WorkflowInstanceImpl implements WorkflowInstance {    
     private Logger logger = Logger.getLogger(getClass());
    
-    private Engine engine;
+    private EngineImpl engine;
     private String workflowInstanceId;
     private Map input;
     private WorkflowState state;
     private HashSet stateListeners = new HashSet();
+    private UserContext context = null;
     
     /**
      * Constructor for this concrete instance of a flow receipt
@@ -96,8 +99,18 @@ public class WorkflowInstanceImpl implements WorkflowInstance {
      * @exception WorkflowSubmitInvalidException thrown by the superclass
      */
     public WorkflowInstanceImpl(Engine engine, String workflowInstanceId) {
-	      this.engine = engine;
+	this.engine = (EngineImpl)engine;
         this.workflowInstanceId = workflowInstanceId;
+	try {
+	    uk.ac.soton.itinnovation.freefluo.main.WorkflowInstance internalInstance = this.engine.getWorkflowInstance(workflowInstanceId);
+	    this.context = internalInstance.getUserContext();
+	}
+	catch (UnknownWorkflowInstanceException e) { 
+	    String errorMsg = "Error starting to run workflow instance with id " + workflowInstanceId; 
+	    String msg = errorMsg + ".  The workflow engine didn't recognise the workflow instance id.";
+            logger.warn(msg);
+            throw new IllegalStateException(msg);
+        }
     }
 
     public void setInputs(Map inputMap) {
@@ -288,9 +301,6 @@ public class WorkflowInstanceImpl implements WorkflowInstance {
     }
 
     public UserContext getUserContext() {
-	/**
-	 * TODO - get the user context information back out of the engine somehow!
-	 */
-	return null;
+	return this.context;
     }
 }
