@@ -31,7 +31,7 @@ import org.biomoby.shared.*;
  * processor implementation will contact Biomoby registry in order to
  * find the list of extant ports at creation time. <p>
  *
- * @version $Id: BiomobyProcessor.java,v 1.3 2004-04-06 10:59:18 mereden Exp $
+ * @version $Id: BiomobyProcessor.java,v 1.4 2004-04-06 11:22:12 mereden Exp $
  * @author Martin Senger
  */
 public class BiomobyProcessor extends Processor implements java.io.Serializable {
@@ -57,7 +57,6 @@ public class BiomobyProcessor extends Processor implements java.io.Serializable 
 	this.mobyEndpoint = mobyEndpoint;
 	this.serviceName = serviceName;
 	this.authorityName = authorityName;
-	
 	// Find the service endpoint (by calling Moby registry)
 	try {
 	    worker = new CentralImpl (mobyEndpoint);
@@ -96,6 +95,14 @@ public class BiomobyProcessor extends Processor implements java.io.Serializable 
 	return props;
     }
 
+    /**
+     * Get the moby central endpoint used to locate this
+     * processor
+     */
+    public String getMobyEndpoint() {
+	return this.mobyEndpoint;
+    }
+    
     /**
      * Set the endpoint for this biomoby processor
      */
@@ -167,7 +174,8 @@ public class BiomobyProcessor extends Processor implements java.io.Serializable 
     }
 
     /**
-     * Get the URL for this endpoint
+     * Get the URL for this endpoint. This is the service
+     * endpoint NOT the BioMoby registry one!
      */
     public URL getEndpoint() {
 	return this.endpoint;
