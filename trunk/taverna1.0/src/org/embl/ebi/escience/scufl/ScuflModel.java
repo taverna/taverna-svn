@@ -5,8 +5,22 @@
  */
 package org.embl.ebi.escience.scufl;
 
+// Utility Imports
 import java.util.ArrayList;
 import java.util.Iterator;
+
+import org.embl.ebi.escience.scufl.ConcurrencyConstraint;
+import org.embl.ebi.escience.scufl.DataConstraint;
+import org.embl.ebi.escience.scufl.MalformedNameException;
+import org.embl.ebi.escience.scufl.Port;
+import org.embl.ebi.escience.scufl.Processor;
+import org.embl.ebi.escience.scufl.ScuflModelEvent;
+import org.embl.ebi.escience.scufl.ScuflModelEventListener;
+import org.embl.ebi.escience.scufl.UnknownPortException;
+import org.embl.ebi.escience.scufl.UnknownProcessorException;
+import java.lang.String;
+
+
 
 /**
  * Represents a single scufl workflow model

@@ -1,10 +1,15 @@
 package org.embl.ebi.escience.taverna.retsina;
 
-import com.jgraph.*;
-import org.embl.ebi.escience.taverna.*;
+import java.awt.BorderLayout;
+import java.awt.Container;
 import javax.swing.*;
-import javax.swing.event.*;
-import java.awt.*;
+
+import org.embl.ebi.escience.taverna.retsina.ScuflGraphPanel;
+import java.lang.Exception;
+import java.lang.String;
+import java.lang.System;
+
+
 
 /**
  * This is the top level container for the Retsina graph 

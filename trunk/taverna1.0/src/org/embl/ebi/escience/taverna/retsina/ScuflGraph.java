@@ -2,7 +2,14 @@ package org.embl.ebi.escience.taverna.retsina;
 
 import com.jgraph.JGraph;
 import com.jgraph.graph.*;
-import java.awt.event.*;
+import java.awt.event.MouseEvent;
+
+import org.embl.ebi.escience.taverna.retsina.ScuflInputPortView;
+import org.embl.ebi.escience.taverna.retsina.ScuflOutputPort;
+import org.embl.ebi.escience.taverna.retsina.ScuflOutputPortView;
+import java.lang.ClassCastException;
+
+
 
 /**
  * Defines a Graph that uses the Shift-Button (Instead of the Right

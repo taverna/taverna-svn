@@ -5,11 +5,15 @@
  */
 package org.embl.ebi.escience.taverna;
 
-import org.apache.axis.client.*;
 import javax.xml.namespace.QName;
-import org.apache.axis.AxisFault;
-import java.util.*;
-import java.io.*;
+import org.apache.axis.client.Call;
+import org.apache.axis.client.Service;
+
+import java.lang.Exception;
+import java.lang.Object;
+import java.lang.RuntimeException;
+import java.lang.String;
+
 
 
 /**

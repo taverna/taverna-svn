@@ -5,7 +5,15 @@
  */
 package org.embl.ebi.escience.scufl.test;
 
-import org.embl.ebi.escience.scufl.*;
+import org.embl.ebi.escience.scufl.ScuflModel;
+import org.embl.ebi.escience.scufl.ScuflModelEventPrinter;
+import org.embl.ebi.escience.scufl.SoaplabProcessor;
+
+import java.lang.Exception;
+import java.lang.String;
+import java.lang.System;
+
+
 
 /**
  * Tests the creation of SoaplabProcessor nodes

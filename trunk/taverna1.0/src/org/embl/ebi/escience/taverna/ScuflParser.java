@@ -5,10 +5,22 @@
  */
 package org.embl.ebi.escience.taverna;
 
-import java.io.*;
-import org.jdom.*;
-import org.jdom.output.*;
-import java.net.*;
+// JDOM Imports
+import org.jdom.Document;
+import org.jdom.Element;
+import org.jdom.Namespace;
+import org.jdom.output.XMLOutputter;
+
+// Network Imports
+import java.net.URL;
+
+import java.lang.Exception;
+import java.lang.RuntimeException;
+import java.lang.String;
+import java.lang.StringBuffer;
+import java.lang.System;
+
+
 
 /**
  * A set of methods to parse the human readable

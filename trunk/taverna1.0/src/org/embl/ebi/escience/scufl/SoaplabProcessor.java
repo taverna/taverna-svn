@@ -5,14 +5,32 @@
  */
 package org.embl.ebi.escience.scufl;
 
-import java.net.URL;
-import java.net.MalformedURLException;
-import java.util.Map;
-import java.util.Iterator;
-
-import org.apache.axis.client.*;
 import javax.xml.namespace.QName;
-import org.apache.axis.AxisFault;
+import org.apache.axis.client.Call;
+import org.apache.axis.client.Service;
+
+// Utility Imports
+import java.util.Iterator;
+import java.util.Map;
+
+// Network Imports
+import java.net.MalformedURLException;
+import java.net.URL;
+
+import org.embl.ebi.escience.scufl.DuplicatePortNameException;
+import org.embl.ebi.escience.scufl.DuplicateProcessorNameException;
+import org.embl.ebi.escience.scufl.InputPort;
+import org.embl.ebi.escience.scufl.OutputPort;
+import org.embl.ebi.escience.scufl.Port;
+import org.embl.ebi.escience.scufl.PortCreationException;
+import org.embl.ebi.escience.scufl.Processor;
+import org.embl.ebi.escience.scufl.ProcessorCreationException;
+import org.embl.ebi.escience.scufl.ScuflModel;
+import org.embl.ebi.escience.scufl.ScuflModelEvent;
+import java.lang.Object;
+import java.lang.String;
+
+
 
 /**
  * A processor based on a Soaplab service. Currently

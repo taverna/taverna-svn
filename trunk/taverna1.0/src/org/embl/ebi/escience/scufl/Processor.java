@@ -5,8 +5,22 @@
  */
 package org.embl.ebi.escience.scufl;
 
+// Utility Imports
 import java.util.ArrayList;
 import java.util.Iterator;
+
+import org.embl.ebi.escience.scufl.DuplicateProcessorNameException;
+import org.embl.ebi.escience.scufl.InputPort;
+import org.embl.ebi.escience.scufl.OutputPort;
+import org.embl.ebi.escience.scufl.Port;
+import org.embl.ebi.escience.scufl.ProcessorCreationException;
+import org.embl.ebi.escience.scufl.ScuflModel;
+import org.embl.ebi.escience.scufl.ScuflModelEvent;
+import org.embl.ebi.escience.scufl.UnknownPortException;
+import java.lang.ClassCastException;
+import java.lang.String;
+
+
 
 /**
  * An abstract superclass of the various processor subtypes

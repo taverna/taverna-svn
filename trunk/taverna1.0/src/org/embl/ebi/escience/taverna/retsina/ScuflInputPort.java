@@ -1,7 +1,11 @@
 package org.embl.ebi.escience.taverna.retsina;
 
-import com.jgraph.graph.DefaultPort;
 import com.jgraph.graph.Port;
+
+import org.embl.ebi.escience.taverna.retsina.ScuflPort;
+import java.lang.Object;
+
+
 
 public class ScuflInputPort extends ScuflPort {
 

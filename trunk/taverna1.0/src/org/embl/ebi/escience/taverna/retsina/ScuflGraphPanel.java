@@ -1,19 +1,36 @@
 package org.embl.ebi.escience.taverna.retsina;
 
-import java.awt.*;
-import java.awt.event.*;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.Hashtable;
-import java.util.Map;
-
-import javax.swing.*;
-import javax.swing.event.UndoableEditEvent;
-
 import com.jgraph.JGraph;
 import com.jgraph.event.GraphSelectionEvent;
 import com.jgraph.event.GraphSelectionListener;
 import com.jgraph.graph.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+import java.awt.event.MouseEvent;
+import javax.swing.*;
+import javax.swing.event.UndoableEditEvent;
+
+// Utility Imports
+import java.util.ArrayList;
+import java.util.Hashtable;
+import java.util.Map;
+
+// Network Imports
+import java.net.URL;
+
+import org.embl.ebi.escience.taverna.retsina.IScuflNodeCreator;
+import org.embl.ebi.escience.taverna.retsina.ScuflGraph;
+import org.embl.ebi.escience.taverna.retsina.ScuflGraphCell;
+import org.embl.ebi.escience.taverna.retsina.ScuflModel;
+import java.lang.Exception;
+import java.lang.Integer;
+import java.lang.Object;
+import java.lang.String;
+import java.lang.System;
+
+
 
 public class ScuflGraphPanel extends JPanel implements GraphSelectionListener, KeyListener {
     
