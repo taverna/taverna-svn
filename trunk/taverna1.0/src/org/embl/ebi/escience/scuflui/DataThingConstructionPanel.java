@@ -89,7 +89,7 @@ import org.jdom.output.XMLOutputter;
  * COMMENT DataThingConstructionPanel
  * 
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover </a>
- * @version $Revision: 1.15 $
+ * @version $Revision: 1.16 $
  */
 public class DataThingConstructionPanel extends JPanel implements ScuflUIComponent, ScuflModelEventListener
 {
@@ -337,7 +337,7 @@ public class DataThingConstructionPanel extends JPanel implements ScuflUICompone
 				editor.setEditable(false);
 				editor.setToolTipText("Input Document");
 				JScrollPane scrollPane = new JScrollPane(editor);
-				scrollPane.setPreferredSize(new Dimension(0,0));
+				scrollPane.setPreferredSize(new Dimension(0, 0));
 				JToolBar toolbar = new JToolBar();
 				JButton loadInputDocButton = new JButton("Load Input Doc", ScuflIcons.openIcon);
 				JButton saveInputDocButton = new JButton("Save Input Doc", new ImageIcon(ClassLoader
@@ -350,10 +350,10 @@ public class DataThingConstructionPanel extends JPanel implements ScuflUICompone
 				saveInputDocButton.addActionListener(saveInputDocAction);
 
 				toolbar.setFloatable(false);
-				toolbar.setRollover(true);				
+				toolbar.setRollover(true);
 				toolbar.add(loadInputDocButton);
 				toolbar.add(saveInputDocButton);
-			
+
 				panel.add(scrollPane, BorderLayout.CENTER);
 				panel.add(toolbar, BorderLayout.NORTH);
 			}
@@ -386,17 +386,17 @@ public class DataThingConstructionPanel extends JPanel implements ScuflUICompone
 	private class InputListNode extends DefaultMutableTreeNode implements PanelTreeNode, DataThingNode
 	{
 		private DataThing thing;
-		
+
 		public InputListNode(Object stuff)
 		{
 			super(stuff);
 		}
-		
+
 		public InputListNode(DataThing thing)
 		{
 			this.thing = thing;
 		}
-		
+
 		/*
 		 * (non-Javadoc)
 		 * 
@@ -405,14 +405,14 @@ public class DataThingConstructionPanel extends JPanel implements ScuflUICompone
 		public JComponent getPanel()
 		{
 			getDataThing();
-			if(thing != null)
+			if (thing != null)
 			{
 				RendererRegistry registry = RendererRegistry.instance();
 				RendererSPI renderer = registry.getRenderer(thing);
 				try
 				{
 					JScrollPane scrollPane = new JScrollPane(renderer.getComponent(registry, thing));
-					scrollPane.setPreferredSize(new Dimension(0,0));
+					scrollPane.setPreferredSize(new Dimension(0, 0));
 					return scrollPane;
 				}
 				catch (RendererException e)
@@ -420,7 +420,7 @@ public class DataThingConstructionPanel extends JPanel implements ScuflUICompone
 					e.printStackTrace();
 				}
 			}
-			
+
 			return null;
 		}
 
@@ -436,10 +436,10 @@ public class DataThingConstructionPanel extends JPanel implements ScuflUICompone
 			JMenuItem createListItem = new JMenuItem("New List", ScuflIcons.newListIcon);
 			createListItem.addActionListener(newListAction);
 			JMenuItem removeItem = new JMenuItem("Remove", ScuflIcons.deleteIcon);
-			removeItem.addActionListener(removeAction);			
+			removeItem.addActionListener(removeAction);
 
 			menu.add(createItem);
-			menu.add(createListItem);			
+			menu.add(createListItem);
 			menu.add(removeItem);
 		}
 
@@ -468,14 +468,14 @@ public class DataThingConstructionPanel extends JPanel implements ScuflUICompone
 			{
 				result.copyMetadataFrom((DataThing) dataThingList.get(inputList.get(index)));
 			}
-			if(thing != null)
+			if (thing != null)
 			{
 				result.copyMetadataFrom(thing);
 			}
 			thing = result;
 			return thing;
 		}
-		
+
 		public void setDataThing(DataThing thing)
 		{
 			if (thing != null)
@@ -494,7 +494,7 @@ public class DataThingConstructionPanel extends JPanel implements ScuflUICompone
 						if (next instanceof DataThing)
 						{
 							DataThing childThing = (DataThing) next;
-							addDataThing(childThing);							
+							addDataThing(childThing);
 						}
 					}
 				}
@@ -506,10 +506,10 @@ public class DataThingConstructionPanel extends JPanel implements ScuflUICompone
 				this.thing = thing;
 			}
 		}
-		
+
 		public void addDataThing(DataThing thing)
 		{
-			if(thing.getDataObject() instanceof Collection)
+			if (thing.getDataObject() instanceof Collection)
 			{
 				InputListNode child = new InputListNode(thing);
 				add(child);
@@ -517,8 +517,8 @@ public class DataThingConstructionPanel extends JPanel implements ScuflUICompone
 			else
 			{
 				InputDataThingNode child = new InputDataThingNode(thing);
-				add(child);				
-			}			
+				add(child);
+			}
 		}
 	}
 
@@ -550,13 +550,15 @@ public class DataThingConstructionPanel extends JPanel implements ScuflUICompone
 				JPanel descriptionPanel = new JPanel();
 				StringBuffer sb = new StringBuffer();
 				sb.append("<html><h2>Workflow Input : " + port.getName() + "</h2>");
-				sb.append("<table border=\"1\"><tr><td bgcolor=\"#ddeeff\" colspan=\"2\"><b>Input Metadata</b></td></tr><tr><td bgcolor=\"#ddeeff\"><b>Semantic type</b></td><td>\n");
-				if (port.getMetadata().getSemanticType() != null && 
-				    port.getMetadata().getSemanticType() != "") {
-				    sb.append(port.getMetadata().getSemanticType());
+				sb
+						.append("<table border=\"1\"><tr><td bgcolor=\"#ddeeff\" colspan=\"2\"><b>Input Metadata</b></td></tr><tr><td bgcolor=\"#ddeeff\"><b>Semantic type</b></td><td>\n");
+				if (port.getMetadata().getSemanticType() != null && port.getMetadata().getSemanticType() != "")
+				{
+					sb.append(port.getMetadata().getSemanticType());
 				}
-				else {
-				    sb.append("<font color=\"#666666\"><i>not specified</i></font>");
+				else
+				{
+					sb.append("<font color=\"#666666\"><i>not specified</i></font>");
 				}
 				sb.append("</td></tr>\n");
 				sb.append("<tr><td bgcolor=\"#ddeeff\"><b>Syntactic type</b></td><td>");
@@ -564,21 +566,23 @@ public class DataThingConstructionPanel extends JPanel implements ScuflUICompone
 				sb.append("</td></tr>\n");
 				sb.append("<tr><td bgcolor=\"#ddeeff\"colspan=\"2\"><b>Description</b></td></tr>\n");
 				sb.append("<tr><td colspan=\"2\">");
-				if (port.getMetadata().getDescription() != null && 
-				    port.getMetadata().getDescription() != "") {
-				    sb.append(port.getMetadata().getDescription());
+				if (port.getMetadata().getDescription() != null && port.getMetadata().getDescription() != "")
+				{
+					sb.append(port.getMetadata().getDescription());
 				}
-				else {
-				    sb.append("<font color=\"#666666\"><i>no description</i></font>");
+				else
+				{
+					sb.append("<font color=\"#666666\"><i>no description</i></font>");
 				}
 				sb.append("</td></tr></table>");
-				sb.append("<h2>Instructions</h2><p>To input data into this workflow you must first create either a single item or a list. Having done this you can select the item from the tree to the left of this panel and either enter the data manually, upload from a file on your local machine or load from a location on the internet. When all workflow inputs have been populated as required you can click the 'run workflow' button to run the workflow on these inputs.</p>");
+				sb
+						.append("<h2>Instructions</h2><p>To input data into this workflow you must first create either a single item or a list. Having done this you can select the item from the tree to the left of this panel and either enter the data manually, upload from a file on your local machine or load from a location on the internet. When all workflow inputs have been populated as required you can click the 'run workflow' button to run the workflow on these inputs.</p>");
 				sb.append("</html>");
 				JEditorPane portDetails = new JEditorPane("text/html", sb.toString());
 				portDetails.setEditable(false);
 				JScrollPane scrollPane = new JScrollPane(portDetails);
-				scrollPane.setPreferredSize(new Dimension(0,0));
-				
+				scrollPane.setPreferredSize(new Dimension(0, 0));
+
 				descriptionPanel.setLayout(new BoxLayout(descriptionPanel, BoxLayout.Y_AXIS));
 				descriptionPanel.add(scrollPane);
 				portPanel.add(descriptionPanel, BorderLayout.CENTER);
@@ -694,7 +698,7 @@ public class DataThingConstructionPanel extends JPanel implements ScuflUICompone
 							"Exception!", JOptionPane.ERROR_MESSAGE);
 				}
 			}
-		};		
+		};
 
 		public InputDataThingNode(Object inputValue)
 		{
@@ -745,19 +749,19 @@ public class DataThingConstructionPanel extends JPanel implements ScuflUICompone
 					loadButton.addActionListener(loadFileAction);
 					loadURLButton.addActionListener(loadURLAction);
 					toolbar.setFloatable(false);
-					toolbar.setRollover(true);					
+					toolbar.setRollover(true);
 					toolbar.add(loadButton);
 					toolbar.add(loadURLButton);
-					if(store != null)
+					if (store != null)
 					{
 						JButton loadLSIDButton = new JButton("Load LSID");
 						loadLSIDButton.addActionListener(loadLSIDAction);
 						toolbar.add(loadLSIDButton);
 					}
-					
+
 					JScrollPane scrollPane = new JScrollPane(editor);
-					scrollPane.setPreferredSize(new Dimension(0,0));
-					
+					scrollPane.setPreferredSize(new Dimension(0, 0));
+
 					panel = new JPanel(new BorderLayout());
 					panel.add(scrollPane, BorderLayout.CENTER);
 					panel.add(toolbar, BorderLayout.NORTH);
@@ -770,7 +774,7 @@ public class DataThingConstructionPanel extends JPanel implements ScuflUICompone
 					try
 					{
 						panel = new JScrollPane(renderer.getComponent(registry, thing));
-						panel.setPreferredSize(new Dimension(0,0));
+						panel.setPreferredSize(new Dimension(0, 0));
 					}
 					catch (RendererException e)
 					{
@@ -797,7 +801,7 @@ public class DataThingConstructionPanel extends JPanel implements ScuflUICompone
 			setUserObject(thing.getDataObject());
 			panel = null;
 		}
-		
+
 		/*
 		 * @see java.lang.Object#toString()
 		 */
@@ -820,7 +824,7 @@ public class DataThingConstructionPanel extends JPanel implements ScuflUICompone
 			menu.add(removeItem);
 			menu.add(loadFileItem);
 			menu.add(loadURLItem);
-			if(store != null)
+			if (store != null)
 			{
 				JMenuItem loadLSIDItem = new JMenuItem("Load Input from LSID");
 				loadLSIDItem.addActionListener(loadLSIDAction);
@@ -848,7 +852,7 @@ public class DataThingConstructionPanel extends JPanel implements ScuflUICompone
 				setIcon(ScuflIcons.inputValueIcon);
 				InputDataThingNode thingNode = (InputDataThingNode) value;
 				Object userObject = thingNode.getUserObject();
-				String summaryText = "bleh";				
+				String summaryText = "bleh";
 				if (userObject instanceof String)
 				{
 					summaryText = (String) userObject;
@@ -903,13 +907,13 @@ public class DataThingConstructionPanel extends JPanel implements ScuflUICompone
 		public void actionPerformed(ActionEvent e)
 		{
 			DefaultMutableTreeNode parent = (DefaultMutableTreeNode) portTree.getSelectionPath().getLastPathComponent();
-			if(parent instanceof InputDataThingNode)
+			if (parent instanceof InputDataThingNode)
 			{
-				parent = (DefaultMutableTreeNode)parent.getParent();
+				parent = (DefaultMutableTreeNode) parent.getParent();
 			}
 			InputDataThingNode newNode = new InputDataThingNode("Some input data goes here");
 			parent.add(newNode);
-			treeModel.nodeStructureChanged(parent);	
+			treeModel.nodeStructureChanged(parent);
 			portTree.setSelectionPath(new TreePath(newNode.getPath()));
 		}
 	};
@@ -918,14 +922,14 @@ public class DataThingConstructionPanel extends JPanel implements ScuflUICompone
 		public void actionPerformed(ActionEvent e)
 		{
 			DefaultMutableTreeNode parent = (DefaultMutableTreeNode) portTree.getSelectionPath().getLastPathComponent();
-			if(parent instanceof InputDataThingNode)
+			if (parent instanceof InputDataThingNode)
 			{
-				parent = (DefaultMutableTreeNode)parent.getParent();
-			}			
+				parent = (DefaultMutableTreeNode) parent.getParent();
+			}
 			InputListNode newNode = new InputListNode(null);
 			parent.add(newNode);
 			treeModel.nodeStructureChanged(parent);
-			portTree.setSelectionPath(new TreePath(newNode.getPath()));			
+			portTree.setSelectionPath(new TreePath(newNode.getPath()));
 		}
 	};
 	ActionListener removeAction = new ActionListener()
@@ -936,7 +940,7 @@ public class DataThingConstructionPanel extends JPanel implements ScuflUICompone
 			DefaultMutableTreeNode parent = (DefaultMutableTreeNode) node.getParent();
 			DefaultMutableTreeNode previousNode = node.getPreviousNode();
 			parent.remove(node);
-			treeModel.nodeStructureChanged(parent);	
+			treeModel.nodeStructureChanged(parent);
 			portTree.setSelectionPath(new TreePath(previousNode.getPath()));
 		}
 	};
@@ -949,11 +953,12 @@ public class DataThingConstructionPanel extends JPanel implements ScuflUICompone
 			if (returnVal == JFileChooser.APPROVE_OPTION)
 			{
 				File[] files = fileChooser.getSelectedFiles();
-				DefaultMutableTreeNode parent = (DefaultMutableTreeNode) portTree.getSelectionPath().getLastPathComponent();
-				if(parent instanceof InputDataThingNode)
+				DefaultMutableTreeNode parent = (DefaultMutableTreeNode) portTree.getSelectionPath()
+						.getLastPathComponent();
+				if (parent instanceof InputDataThingNode)
 				{
-					parent = (DefaultMutableTreeNode)parent.getParent();
-				}	
+					parent = (DefaultMutableTreeNode) parent.getParent();
+				}
 				InputDataThingNode newNode = null;
 				for (int index = 0; index < files.length; index++)
 				{
@@ -976,15 +981,15 @@ public class DataThingConstructionPanel extends JPanel implements ScuflUICompone
 					}
 				}
 				treeModel.nodeStructureChanged(parent);
-				if(newNode != null)
+				if (newNode != null)
 				{
 					portTree.setSelectionPath(new TreePath(newNode.getPath()));
 				}
 			}
 			fileChooser.setMultiSelectionEnabled(false);
 		}
-	};	
-	
+	};
+
 	static
 	{
 		String storageClassName = System.getProperty("taverna.datastore.class");
@@ -1058,43 +1063,54 @@ public class DataThingConstructionPanel extends JPanel implements ScuflUICompone
 					else if (node instanceof InputPortNode)
 					{
 						loadInputsButton.setEnabled(true);
-						newInputButton.setEnabled(canAddInputs((InputListNode)node));
-						newListButton.setEnabled(canAddLists((InputListNode)node));
+						newInputButton.setEnabled(canAddInputs((InputListNode) node));
+						newListButton.setEnabled(canAddLists((InputListNode) node));
 						removeButton.setEnabled(false);
 					}
-					else if(node instanceof InputListNode)
+					else if (node instanceof InputListNode)
 					{
-						InputListNode listNode = (InputListNode)node;
 						loadInputsButton.setEnabled(true);
-						newInputButton.setEnabled(canAddInputs(listNode));
 						removeButton.setEnabled(true);
 
-						InputListNode parent = (InputListNode)listNode.getParent();
-						if(canAddLists(listNode) && parent != null)
+						InputListNode parent = (InputListNode) ((InputListNode) node).getParent();
+						if (parent != null)
 						{
-							InputListNode firstList = (InputListNode)parent.getFirstChild();
-							newListButton.setEnabled(canAddLists(firstList));
+							boolean canAddList = true;
+							boolean canAddInput = true;
+							for(int index = 0; index < parent.getChildCount(); index++)
+							{
+								InputListNode aListNode = (InputListNode) parent.getChildAt(index);
+								if(aListNode.getChildCount() > 0)
+								{
+									canAddList = aListNode.getFirstChild() instanceof InputListNode;
+									canAddInput = !canAddList;
+									break;									
+								}
+							}
+							newListButton.setEnabled(canAddList);
+							newInputButton.setEnabled(canAddInput);	
 						}
 						else
 						{
+							newInputButton.setEnabled(false);
 							newListButton.setEnabled(false);
 						}
 					}
-					else if(node instanceof InputDataThingNode)
+					else if (node instanceof InputDataThingNode)
 					{
-						InputDataThingNode thingNode = (InputDataThingNode)node;
-						InputListNode parent = (InputListNode)thingNode.getParent();
-						if(parent == null)
+						InputDataThingNode thingNode = (InputDataThingNode) node;
+						InputListNode parent = (InputListNode) thingNode.getParent();
+						if (parent == null)
 						{
 							newInputButton.setEnabled(false);
-							newListButton.setEnabled(false);							
+							newListButton.setEnabled(false);
 						}
 						else
 						{
 							newInputButton.setEnabled(canAddInputs(parent));
-							newListButton.setEnabled(canAddLists(parent));							
+							newListButton.setEnabled(canAddLists(parent));
 						}
-						loadInputsButton.setEnabled(true);						
+						loadInputsButton.setEnabled(true);
 						removeButton.setEnabled(true);
 					}
 				}
@@ -1104,37 +1120,37 @@ public class DataThingConstructionPanel extends JPanel implements ScuflUICompone
 					{
 						splitter.remove(splitter.getRightComponent());
 					}
-					loadInputsButton.setEnabled(false);					
+					loadInputsButton.setEnabled(false);
 					newInputButton.setEnabled(false);
 					newListButton.setEnabled(false);
 					removeButton.setEnabled(false);
 				}
 				splitter.validate();
 			}
-			
+
 			private boolean canAddLists(InputListNode node)
 			{
-				if(node.getChildCount() > 0)
+				if (node.getChildCount() > 0)
 				{
-					if(node.getFirstChild() instanceof InputDataThingNode)
+					if (node.getFirstChild() instanceof InputDataThingNode)
 					{
 						return false;
 					}
 				}
 				return true;
 			}
-			
+
 			private boolean canAddInputs(InputListNode node)
 			{
-				if(node.getChildCount() > 0)
+				if (node.getChildCount() > 0)
 				{
-					if(node.getFirstChild() instanceof InputListNode)
+					if (node.getFirstChild() instanceof InputListNode)
 					{
 						return false;
 					}
 				}
 				return true;
-			}			
+			}
 		});
 		portTree.addMouseListener(new MouseAdapter()
 		{
@@ -1170,12 +1186,12 @@ public class DataThingConstructionPanel extends JPanel implements ScuflUICompone
 		});
 		new TreeTransferHandler(portTree);
 		buttonPanel.add(runButton);
-		
+
 		JScrollPane scrollPane = new JScrollPane(portTree);
-		
+
 		splitter.setContinuousLayout(false);
 		splitter.setLeftComponent(scrollPane);
-		splitter.setPreferredSize(new Dimension(0,0));
+		splitter.setPreferredSize(new Dimension(0, 0));
 
 		JToolBar toolbar = new JToolBar();
 		loadInputsButton = new JButton("Load Inputs", ScuflIcons.openIcon);
@@ -1192,7 +1208,7 @@ public class DataThingConstructionPanel extends JPanel implements ScuflUICompone
 		removeButton.addActionListener(removeAction);
 
 		toolbar.setFloatable(false);
-		toolbar.setRollover(true);		
+		toolbar.setRollover(true);
 		toolbar.add(loadInputsButton);
 		toolbar.add(newInputButton);
 		toolbar.add(newListButton);
