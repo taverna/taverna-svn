@@ -42,6 +42,11 @@ public class WorkflowXMLHandler implements XMLHandler {
 	return spec;
     }
 
+    public ProcessorFactory getFactory(Element specElement) {
+	String definitionURL = specElement.getChild("xscufllocation",XScufl.XScuflNS).getTextTrim();
+	return new WorkflowProcessorFactory(definitionURL);
+    }
+
     public Processor loadProcessorFromXML(Element processorNode, ScuflModel model, String name)
 	throws ProcessorCreationException, 
 	       DuplicateProcessorNameException, 

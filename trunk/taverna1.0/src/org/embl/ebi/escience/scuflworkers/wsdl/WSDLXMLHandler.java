@@ -45,6 +45,12 @@ public class WSDLXMLHandler implements XMLHandler {
 	return new WSDLBasedProcessor(model, name, wsdlLocation, operationName);
     }
 
+    public ProcessorFactory getFactory(Element specElement) {
+	String wsdlLocation = specElement.getChild("wsdl",XScufl.XScuflNS).getTextTrim();
+	String operationName = specElement.getChild("operation",XScufl.XScuflNS).getTextTrim();
+	return new WSDLBasedProcessorFactory(wsdlLocation, operationName);
+    }
+
     private Element getElement(String wsdlLocation, String operationName) {
 	Element spec = new Element("arbitrarywsdl",XScufl.XScuflNS);
 	Element wsdl = new Element("wsdl",XScufl.XScuflNS);

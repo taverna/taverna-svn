@@ -39,6 +39,12 @@ public interface XMLHandler {
     public Element elementForFactory(ProcessorFactory pf);
 
     /**
+     * Create a new factory that will produces processors of the
+     * supplied spec when it's invoked
+     */
+    public ProcessorFactory getFactory(Element specElement);
+
+    /**
      * Create a new processor from the given chunk of XML
      */
      public Processor loadProcessorFromXML(Element processorNode, ScuflModel model, String name)

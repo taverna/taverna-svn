@@ -41,7 +41,12 @@ public class TalismanXMLHandler implements XMLHandler {
 	return spec;	
     }
 
+    public ProcessorFactory getFactory(Element specElement) {
+	String tscriptURL = specElement.getChild("tscript",XScufl.XScuflNS).getTextTrim();
+	return new TalismanProcessorFactory(tscriptURL);
+    }
     
+
     public Processor loadProcessorFromXML(Element processorNode, ScuflModel model, String name)
 	throws ProcessorCreationException, 
 	       DuplicateProcessorNameException, 

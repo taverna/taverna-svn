@@ -39,6 +39,11 @@ public class SoaplabXMLHandler implements XMLHandler {
 	spec.setText(slpf.getEndpoint());
 	return spec;
     }
+
+    public ProcessorFactory getFactory(Element specElement) {
+	String endpoint = specElement.getTextTrim();
+	return new SoaplabProcessorFactory(endpoint);
+    }
    
     public Processor loadProcessorFromXML(Element processorNode, ScuflModel model, String name)
 	throws ProcessorCreationException, 

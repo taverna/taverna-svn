@@ -41,6 +41,15 @@ public class LocalServiceXMLHandler implements XMLHandler {
 	return spec;
     }
     
+    public ProcessorFactory getFactory(Element specElement) {
+	String workerClass = specElement.getTextTrim();
+	// Use the class leaf name as the descriptive name, as we don't
+	// have anything better
+	String[] parts = workerClass.split("\\.");
+	String descriptiveName = parts[parts.length-1];
+	return new LocalServiceProcessorFactory(workerClass, descriptiveName);
+    }
+    
     public Processor loadProcessorFromXML(Element processorNode, ScuflModel model, String name)
 	throws ProcessorCreationException, 
 	       DuplicateProcessorNameException, 

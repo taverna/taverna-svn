@@ -38,6 +38,15 @@ public class SoaplabProcessorFactory extends ProcessorFactory {
     }
     
     /**
+     * Create a new factory with a single application endpoint parameter
+     */
+    public SoaplabProcessorFactory(String completeEndpoint) {
+	this.endpoint = completeEndpoint;
+	String[] split = applicationname.split(":");
+	this.applicationname = split[split.length - 1];
+    }
+
+    /**
      * Return the application name as the toString result
      */
     public String toString() {

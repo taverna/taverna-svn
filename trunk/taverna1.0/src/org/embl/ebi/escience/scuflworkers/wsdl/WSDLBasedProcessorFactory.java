@@ -25,25 +25,19 @@ import org.embl.ebi.escience.scufl.XScufl;
  */
 public class WSDLBasedProcessorFactory extends ProcessorFactory {
 
-    String wsdlLocation, portTypeName, operationName, operationStyle, targetEndpoint;
+    String wsdlLocation, operationName;
 
     /**
      * Create a new factory with the specified wsdl location,
      * port type name and operation name
      */
-    public WSDLBasedProcessorFactory(String wsdlLocation, String portTypeName, String operationName, String operationStyle) {
+    public WSDLBasedProcessorFactory(String wsdlLocation, String operationName) {
 	this.wsdlLocation = wsdlLocation;
-	this.portTypeName = portTypeName;
 	this.operationName = operationName;
-	this.operationStyle = operationStyle;
     }
 
     public String getWSDLLocation() {
 	return this.wsdlLocation;
-    }
-
-    public String getPortTypeName() {
-	return this.portTypeName;
     }
 
     public String getOperationName() {
@@ -92,7 +86,7 @@ public class WSDLBasedProcessorFactory extends ProcessorFactory {
      * Return a description of the factory
      */
     public String getProcessorDescription() {
-	return "A WSDL based processor using the wsdl document at '"+wsdlLocation+"', port type '"+portTypeName+"' and operation name '"+operationName+"'";
+	return "A WSDL based processor using the wsdl document at '"+wsdlLocation+"' with operation name '"+operationName+"'";
     }
 
     /**

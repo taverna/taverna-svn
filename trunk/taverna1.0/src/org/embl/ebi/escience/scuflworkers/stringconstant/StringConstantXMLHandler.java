@@ -33,6 +33,10 @@ public class StringConstantXMLHandler implements XMLHandler {
 	return new Element("stringconstant",XScufl.XScuflNS);
     }
 
+    public ProcessorFactory getFactory(Element specElement) {
+	return new StringConstantProcessorFactory(specElement.getText());
+    }
+    
     public Processor loadProcessorFromXML(Element processorNode, ScuflModel model, String name)
 	throws ProcessorCreationException, 
 	       DuplicateProcessorNameException, 

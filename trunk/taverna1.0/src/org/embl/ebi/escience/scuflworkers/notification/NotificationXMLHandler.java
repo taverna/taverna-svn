@@ -32,6 +32,10 @@ public class NotificationXMLHandler implements XMLHandler {
         return element;
     } 
 
+    public ProcessorFactory getFactory(Element specElement) {
+	return new NotificationProcessorFactory();
+    }
+
     public Processor loadProcessorFromXML(Element processorNode, ScuflModel model, String name)
 	        throws ProcessorCreationException, 
 	               DuplicateProcessorNameException, 

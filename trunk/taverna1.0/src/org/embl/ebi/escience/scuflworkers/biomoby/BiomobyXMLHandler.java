@@ -23,7 +23,7 @@ import java.lang.String;
 /**
  * Handles XML store and load for the biomoby processor. <p>
  *
- * @version $Id: BiomobyXMLHandler.java,v 1.3 2004-05-01 19:49:07 mereden Exp $
+ * @version $Id: BiomobyXMLHandler.java,v 1.4 2004-05-01 22:30:36 mereden Exp $
  * @author Martin Senger
  */
 public class BiomobyXMLHandler implements XMLHandler {
@@ -64,6 +64,18 @@ public class BiomobyXMLHandler implements XMLHandler {
 	spec.addContent (authorityNameElement);
 	
 	return spec;
+    }
+    
+    public ProcessorFactory getFactory(Element specElement) {
+	Element mobyEndpointElement = specElement.getChild (MOBY_ENDPOINT, XScufl.XScuflNS);
+	String mobyEndpoint = mobyEndpointElement.getTextTrim();
+
+	Element serviceNameElement = specElement.getChild (SERVICE_NAME, XScufl.XScuflNS);
+	String serviceName = serviceNameElement.getTextTrim();
+
+	Element authorityNameElement = specElement.getChild (AUTHORITY_NAME, XScufl.XScuflNS);
+	String authorityName = authorityNameElement.getTextTrim();
+	return new BiomobyProcessorFactory(mobyEndpoint, authorityName, serviceName);
     }
     
     public Processor loadProcessorFromXML (Element processorNode,

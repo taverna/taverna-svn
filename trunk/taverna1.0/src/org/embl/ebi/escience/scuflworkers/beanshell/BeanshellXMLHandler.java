@@ -53,6 +53,10 @@ public class BeanshellXMLHandler implements XMLHandler {
 	return new Element("beanshell",XScufl.XScuflNS);
     }
 
+    public ProcessorFactory getFactory(Element specElement) {
+	return new BeanshellProcessorFactory();
+    }
+
     public Processor loadProcessorFromXML(Element processorNode, ScuflModel model, String name)
 	throws ProcessorCreationException, 
 	       DuplicateProcessorNameException, 

@@ -32,6 +32,9 @@ public class RDFGeneratorXMLHandler implements XMLHandler {
 	return spec;
     }
 	
+    public ProcessorFactory getFactory(Element specElement) {
+	return new RDFGeneratorProcessorFactory();
+    }
     
     public Processor loadProcessorFromXML(Element processorNode, ScuflModel model, String name)
 	throws ProcessorCreationException, 

@@ -315,6 +315,22 @@ public class ProcessorHelper {
     }
 
     /**
+     * Return a factory capable of producing the supplied spec of processor. The element
+     * passed in is the 'spec element' refered to in the language reference. Returns null
+     * is there is no matching factory implementation bound to this spec element
+     */
+    public static ProcessorFactory loadFactoryFromXML(Element specNode) {
+	String tagName = specNode.getName();
+	XMLHandler xh = (XMLHandler)xmlHandlerForTagName.get(tagName);
+	if (xh == null) {
+	    return null;
+	}
+	else {
+	    return xh.getFactory(specNode);
+	}
+    }
+
+    /**
      * Spit back a processor given a chunk of xml, the element passed in being the 'processor' tag
      * return null if we can't handle it
      */

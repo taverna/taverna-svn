@@ -93,7 +93,7 @@ public class WSDLBasedScavenger extends Scavenger {
 		    for (Iterator i = operationList.iterator(); i.hasNext(); ) {
 			Operation op = (Operation)i.next();
 			String operationName = op.getName();
-			WSDLBasedProcessorFactory wpf = new WSDLBasedProcessorFactory(wsdlLocation, portTypeName, operationName, sb.getStyle());
+			WSDLBasedProcessorFactory wpf = new WSDLBasedProcessorFactory(wsdlLocation, operationName);
 			DefaultMutableTreeNode operationNode = new DefaultMutableTreeNode(wpf);
 			portTypeNode.add(operationNode);
 		    }
