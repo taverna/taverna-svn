@@ -24,12 +24,6 @@ import org.jdom.JDOMException;
 import org.jdom.Namespace;
 import org.jdom.input.SAXBuilder;
 
-import org.embl.ebi.escience.scufl.parser.XScuflFormatException;
-import java.lang.Exception;
-import java.lang.Integer;
-import java.lang.InterruptedException;
-import java.lang.String;
-import java.lang.Thread;
 
 
 

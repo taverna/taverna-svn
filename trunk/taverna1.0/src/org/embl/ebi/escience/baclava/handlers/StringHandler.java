@@ -10,7 +10,6 @@ import org.embl.ebi.escience.baclava.XMLHandler;
 // JDOM Imports
 import org.jdom.Element;
 
-import java.lang.Object;
 
 
 

@@ -11,8 +11,6 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeCellRenderer;
 import org.embl.ebi.escience.scufl.*;
 
-import org.embl.ebi.escience.scuflui.ScuflIcons;
-import java.lang.Object;
 
 
 

@@ -25,8 +25,8 @@
 //      Dependencies        :
 //
 //      Last commit info    :   $Author: mereden $
-//                              $Date: 2003-09-26 12:22:15 $
-//                              $Revision: 1.17 $
+//                              $Date: 2003-09-29 09:46:50 $
+//                              $Revision: 1.18 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 
@@ -63,10 +63,6 @@ import org.jdom.Element;
 import org.jdom.Text;
 import org.jdom.output.XMLOutputter;
 
-import uk.ac.soton.itinnovation.taverna.enactor.broker.LogLevel;
-import java.lang.Exception;
-import java.lang.String;
-import java.lang.StringBuffer;
 
 
 

@@ -15,10 +15,6 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import org.emboss.jemboss.gui.startup.ProgList;
 
-import uk.ac.mrc.hgmp.taverna.retsina.ProgramJList;
-import uk.ac.mrc.hgmp.taverna.retsina.ScuflGraphPanel;
-import java.lang.String;
-import java.lang.System;
 
 
 

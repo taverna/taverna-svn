@@ -30,12 +30,6 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 
-import org.embl.ebi.escience.scuflui.workbench.Scavenger;
-import org.embl.ebi.escience.scuflui.workbench.ScavengerCreationException;
-import java.lang.Exception;
-import java.lang.String;
-import java.lang.System;
-import java.lang.Thread;
 
 
 

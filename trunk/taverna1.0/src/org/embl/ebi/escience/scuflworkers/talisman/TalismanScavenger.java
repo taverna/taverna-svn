@@ -9,8 +9,6 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import org.embl.ebi.escience.scuflui.workbench.Scavenger;
 import org.embl.ebi.escience.scuflui.workbench.ScavengerCreationException;
 
-import org.embl.ebi.escience.scuflworkers.talisman.TalismanProcessorFactory;
-import java.lang.String;
 
 
 

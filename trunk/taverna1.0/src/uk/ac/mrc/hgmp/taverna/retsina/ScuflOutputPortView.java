@@ -13,9 +13,6 @@ import javax.swing.JLabel;
 // Network Imports
 import java.net.URL;
 
-import uk.ac.mrc.hgmp.taverna.retsina.ScuflOutputPort;
-import java.lang.Object;
-import java.lang.String;
 
 
 

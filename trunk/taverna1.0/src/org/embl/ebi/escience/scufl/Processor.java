@@ -12,17 +12,6 @@ import java.util.Iterator;
 import java.util.Properties;
 import java.util.regex.Pattern;
 
-import org.embl.ebi.escience.scufl.DataConstraint;
-import org.embl.ebi.escience.scufl.DuplicateProcessorNameException;
-import org.embl.ebi.escience.scufl.InputPort;
-import org.embl.ebi.escience.scufl.OutputPort;
-import org.embl.ebi.escience.scufl.Port;
-import org.embl.ebi.escience.scufl.ProcessorCreationException;
-import org.embl.ebi.escience.scufl.ScuflModel;
-import org.embl.ebi.escience.scufl.ScuflModelEvent;
-import org.embl.ebi.escience.scufl.UnknownPortException;
-import java.lang.ClassCastException;
-import java.lang.String;
 
 
 

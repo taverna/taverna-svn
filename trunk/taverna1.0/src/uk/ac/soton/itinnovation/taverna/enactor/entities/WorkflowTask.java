@@ -25,8 +25,8 @@
 //      Dependencies        :
 //
 //      Last commit info    :   $Author: mereden $
-//                              $Date: 2003-09-26 12:22:15 $
-//                              $Revision: 1.6 $
+//                              $Date: 2003-09-29 09:46:50 $
+//                              $Revision: 1.7 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 
@@ -56,13 +56,6 @@ import java.util.Map;
 import org.jdom.Element;
 import org.jdom.Text;
 
-import uk.ac.soton.itinnovation.taverna.enactor.entities.ProcessorTask;
-import uk.ac.soton.itinnovation.taverna.enactor.entities.TaskExecutionException;
-import java.lang.Exception;
-import java.lang.InterruptedException;
-import java.lang.NullPointerException;
-import java.lang.String;
-import java.lang.Thread;
 
 
 

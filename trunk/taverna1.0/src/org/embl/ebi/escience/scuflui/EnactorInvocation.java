@@ -24,13 +24,6 @@ import java.util.Enumeration;
 import java.util.Properties;
 import java.util.ResourceBundle;
 
-import org.embl.ebi.escience.scuflui.EnactorStatusTableModel;
-import org.embl.ebi.escience.scuflui.ScuflUIComponent;
-import java.lang.Exception;
-import java.lang.InterruptedException;
-import java.lang.String;
-import java.lang.System;
-import java.lang.Thread;
 
 
 
@@ -182,7 +175,10 @@ public class EnactorInvocation extends JPanel implements ScuflUIComponent {
 	this.instanceID = this.flowReceipt.getID();
 	
 	// Create the UI
+	// Create a tabbed pane for the status, results and provenance panels.
+	JTabbedPane tabs = new JTabbedPane();
 	setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
+	add(tabs);
 	final JPanel processorListPanel = new JPanel();
 	processorListPanel.setLayout(new BoxLayout(processorListPanel, BoxLayout.PAGE_AXIS));
 	processorListPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(),
@@ -195,7 +191,7 @@ public class EnactorInvocation extends JPanel implements ScuflUIComponent {
 	processorListPanel.add(scrollPane);
 	//processorListPanel.pack();
 	//processorListPanel.setPreferredSize(new Dimension(500,150));
-	add(processorListPanel);
+	tabs.add(processorListPanel,"Status");
 
 	// Create a text area to show the results
 	JPanel resultsPanel = new JPanel();
@@ -207,7 +203,7 @@ public class EnactorInvocation extends JPanel implements ScuflUIComponent {
 	resultsScrollPane.setPreferredSize(new Dimension(100,100));
 	resultsPanel.add(resultsScrollPane, BorderLayout.CENTER);
 
-	add(resultsPanel);
+	tabs.add(resultsPanel,"Results");
 
 	// Create a text area to show the provenance
 	JPanel provenancePanel = new JPanel();
@@ -218,7 +214,7 @@ public class EnactorInvocation extends JPanel implements ScuflUIComponent {
 	JScrollPane provenanceScrollPane = new JScrollPane(provenanceText);
 	provenanceScrollPane.setPreferredSize(new Dimension(100,100));
 	provenancePanel.add(provenanceScrollPane, BorderLayout.CENTER);
-	add(provenancePanel);
+	tabs.add(provenancePanel,"Provenance");
 
 	//pack();
 	//setSize(new Dimension(600,300));

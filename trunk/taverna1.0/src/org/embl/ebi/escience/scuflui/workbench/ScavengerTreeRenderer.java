@@ -13,9 +13,6 @@ import org.embl.ebi.escience.scuflui.ScuflModelExplorerRenderer;
 import org.embl.ebi.escience.scuflworkers.ProcessorFactory;
 import org.embl.ebi.escience.scuflworkers.ProcessorHelper;
 
-import java.lang.Class;
-import java.lang.Object;
-import java.lang.String;
 
 
 

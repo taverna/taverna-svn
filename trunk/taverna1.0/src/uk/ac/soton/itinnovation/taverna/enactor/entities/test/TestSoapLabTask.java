@@ -19,10 +19,6 @@ import uk.ac.soton.itinnovation.taverna.enactor.entities.TavernaTaskFactory;
 import org.jdom.Element;
 import org.jdom.output.XMLOutputter;
 
-import java.lang.Exception;
-import java.lang.Integer;
-import java.lang.String;
-import java.lang.System;
 
 
 

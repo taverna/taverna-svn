@@ -25,8 +25,8 @@
 //      Dependencies        :
 //
 //      Last commit info    :   $Author: mereden $
-//                              $Date: 2003-09-26 12:22:15 $
-//                              $Revision: 1.21 $
+//                              $Date: 2003-09-29 09:46:50 $
+//                              $Revision: 1.22 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 
@@ -61,17 +61,6 @@ import java.io.ByteArrayInputStream;
 import org.jdom.Document;
 import org.jdom.input.SAXBuilder;
 
-import uk.ac.soton.itinnovation.taverna.enactor.broker.LogLevel;
-import uk.ac.soton.itinnovation.taverna.enactor.broker.TavernaBinaryWorkflowSubmission;
-import uk.ac.soton.itinnovation.taverna.enactor.broker.TavernaFlowReceipt;
-import uk.ac.soton.itinnovation.taverna.enactor.broker.TavernaStringifiedWorkflowSubmission;
-import uk.ac.soton.itinnovation.taverna.enactor.broker.XScuflDiGraphGenerator;
-import java.lang.Exception;
-import java.lang.IllegalArgumentException;
-import java.lang.Object;
-import java.lang.String;
-import java.lang.StringBuffer;
-import java.lang.System;
 
 
 

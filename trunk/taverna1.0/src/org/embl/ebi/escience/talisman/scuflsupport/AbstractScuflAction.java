@@ -10,8 +10,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.embl.ebi.escience.scufl.ScuflModel;
 import org.embl.ebi.escience.talisman.*;
 
-import org.embl.ebi.escience.talisman.scuflsupport.ScuflModelBean;
-import java.lang.ClassCastException;
 
 
 

@@ -14,7 +14,6 @@ import uk.ac.soton.itinnovation.taverna.enactor.entities.TaskExecutionException;
 // Utility Imports
 import java.util.HashMap;
 
-import java.lang.String;
 
 
 

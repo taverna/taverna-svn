@@ -12,9 +12,6 @@ import org.embl.ebi.escience.scuflui.workbench.GenericUIComponentFrame;
 import org.embl.ebi.escience.scuflui.workbench.Workbench;
 import org.embl.ebi.escience.scuflworkers.ProcessorEditor;
 
-import org.embl.ebi.escience.scuflworkers.beanshell.BeanshellConfigPanel;
-import org.embl.ebi.escience.scuflworkers.beanshell.BeanshellProcessor;
-import java.lang.String;
 
 
 

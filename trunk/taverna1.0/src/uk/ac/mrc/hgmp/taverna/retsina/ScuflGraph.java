@@ -36,18 +36,6 @@ import java.util.List; // ambiguous with: java.awt.List
 import java.util.Map;
 import java.util.Vector;
 
-import uk.ac.mrc.hgmp.taverna.retsina.DataSet;
-import uk.ac.mrc.hgmp.taverna.retsina.ProgNode;
-import uk.ac.mrc.hgmp.taverna.retsina.ScuflGraphCell;
-import uk.ac.mrc.hgmp.taverna.retsina.ScuflInputPort;
-import uk.ac.mrc.hgmp.taverna.retsina.ScuflInputPortView;
-import uk.ac.mrc.hgmp.taverna.retsina.ScuflOutputPort;
-import uk.ac.mrc.hgmp.taverna.retsina.ScuflOutputPortView;
-import uk.ac.mrc.hgmp.taverna.retsina.ScuflPort;
-import java.lang.Exception;
-import java.lang.Object;
-import java.lang.String;
-import java.lang.System;
 
 
 

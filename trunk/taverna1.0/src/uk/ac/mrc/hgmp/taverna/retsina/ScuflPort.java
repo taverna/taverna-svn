@@ -3,7 +3,6 @@ package uk.ac.mrc.hgmp.taverna.retsina;
 import com.jgraph.graph.DefaultPort;
 import com.jgraph.graph.Port;
 
-import java.lang.Object;
 
 
 

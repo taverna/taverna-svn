@@ -12,8 +12,6 @@ import org.embl.ebi.escience.scuflui.workbench.ScavengerCreationException;
 import org.embl.ebi.escience.scuflui.workbench.ScavengerTree;
 import org.embl.ebi.escience.scuflworkers.ScavengerHelper;
 
-import org.embl.ebi.escience.scuflworkers.workflow.WorkflowScavenger;
-import java.lang.String;
 
 
 

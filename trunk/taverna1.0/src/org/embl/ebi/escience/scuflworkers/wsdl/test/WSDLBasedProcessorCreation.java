@@ -10,9 +10,6 @@ import org.embl.ebi.escience.scufl.ScuflModelEventPrinter;
 import org.embl.ebi.escience.scufl.view.XScuflView;
 import org.embl.ebi.escience.scuflworkers.wsdl.WSDLBasedProcessor;
 
-import java.lang.Exception;
-import java.lang.String;
-import java.lang.System;
 
 
 

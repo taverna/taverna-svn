@@ -25,13 +25,6 @@ import org.jdom.Element;
 // Network Imports
 import java.net.URL;
 
-import org.embl.ebi.escience.scuflworkers.ProcessorEditor;
-import org.embl.ebi.escience.scuflworkers.XMLHandler;
-import java.lang.Class;
-import java.lang.ClassLoader;
-import java.lang.Exception;
-import java.lang.String;
-import java.lang.System;
 
 
 

@@ -8,8 +8,6 @@ package org.embl.ebi.escience.baclava.collections;
 // Utility Imports
 import java.util.Collection;
 
-import org.embl.ebi.escience.baclava.collections.SECollection;
-import java.lang.Object;
 
 
 

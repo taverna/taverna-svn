@@ -3,7 +3,6 @@ package uk.ac.mrc.hgmp.taverna.retsina;
 import com.jgraph.graph.DefaultGraphModel;
 import com.jgraph.graph.Edge;
 
-import java.lang.Object;
 
 
 

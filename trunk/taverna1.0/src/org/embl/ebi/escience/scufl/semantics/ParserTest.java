@@ -14,10 +14,6 @@ import javax.swing.JTree;
 // Network Imports
 import java.net.URL;
 
-import org.embl.ebi.escience.scufl.semantics.RDFSParser;
-import java.lang.Exception;
-import java.lang.String;
-import java.lang.System;
 
 
 

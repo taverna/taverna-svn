@@ -17,9 +17,6 @@ import uk.ac.soton.itinnovation.taverna.enactor.entities.TaskExecutionException;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.embl.ebi.escience.scuflworkers.stringconstant.StringConstantProcessor;
-import java.lang.Exception;
-import java.lang.String;
 
 
 

@@ -12,9 +12,6 @@ import java.util.LinkedList;
 import java.util.List; // ambiguous with: java.awt.List 
 import java.util.Map;
 
-import uk.ac.mrc.hgmp.taverna.retsina.ScuflInputPort;
-import uk.ac.mrc.hgmp.taverna.retsina.ScuflOutputPort;
-import java.lang.Object;
 
 
 

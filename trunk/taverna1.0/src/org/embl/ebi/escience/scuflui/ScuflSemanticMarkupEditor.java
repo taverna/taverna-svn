@@ -20,17 +20,11 @@ import org.embl.ebi.escience.scufl.ScuflModel;
 import org.embl.ebi.escience.scufl.SemanticMarkup;
 import org.embl.ebi.escience.scufl.semantics.RDFSClassHolder;
 import org.embl.ebi.escience.scufl.semantics.RDFSParser;
-import java.awt.event.*;
 import java.awt.*;
 import javax.swing.tree.*;
 import java.util.*;
 
 
-import org.embl.ebi.escience.scuflui.ScuflIcons;
-import org.embl.ebi.escience.scuflui.ScuflUIComponent;
-import java.lang.ClassCastException;
-import java.lang.Object;
-import java.lang.String;
 
 
 

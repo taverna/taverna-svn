@@ -10,8 +10,6 @@ import java.util.Iterator;
 // JDOM Imports
 import org.jdom.Element;
 
-import org.embl.ebi.escience.scuflworkers.beanshell.BeanshellProcessor;
-import java.lang.String;
 
 
 
