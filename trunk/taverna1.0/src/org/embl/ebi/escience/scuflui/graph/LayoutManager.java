@@ -23,7 +23,7 @@ import org.jgraph.graph.GraphModel;
  * graph to be able to update as the graph changes.
  * 
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover </a>
- * @version $Revision: 1.5 $
+ * @version $Revision: 1.6 $
  */
 public class LayoutManager
 {
@@ -66,6 +66,7 @@ public class LayoutManager
 	private static final String CUT_EDGE = "cut edge";
 	private static final String CUT_TIME_STAMP = "cut time stamp";
 
+	private String treeChanged;
 	GraphRows rows;
 	GraphModel model;
 
@@ -144,88 +145,58 @@ public class LayoutManager
 			}
 		}
 
-		while (!edges.isEmpty())
+		List nonTreeEdges = treeBuild(edges);		
+		// All nodes in tree, now optimise
+		treeOptimise(nonTreeEdges);
+		rows.calculateBounds();
+	}
+
+	/**
+	 * @param nonTreeEdges
+	 */
+	private void treeOptimise(List nonTreeEdges)
+	{
+		while(!nonTreeEdges.isEmpty())
 		{
-			Object edge = edges.remove(0);
-			if (!isTreeEdge(edge))
+			Object edge = nonTreeEdges.remove(0);
+			Object source = GraphUtilities.getSourceNode(model, edge);
+			Object target = GraphUtilities.getTargetNode(model, edge);
+			int edgeLength = rows.getRow(target) - rows.getRow(source);
+			if (edgeLength < 1)
 			{
-				// System.err.println(edge);
-				Object source = GraphUtilities.getSourceNode(model, edge);
-				Object target = GraphUtilities.getTargetNode(model, edge);
-				Set sourceTreeSet = getTreeSet(source);
-				Set targetTreeSet = getTreeSet(target);
-				if (sourceTreeSet != targetTreeSet)
+				treeAddEdge(source, target, edge);
+				//System.err.println("New tree edge! Existing edges may be broken");
+			}
+			else if (edgeLength >= 1)
+			{
+				// Decide if this non-tree edge should be replaced
+				// by a tree edge in order to make the graph optimal
+				Iterator path = getPath(source, target).iterator();
+				int lowestCut = Integer.MAX_VALUE;
+				Object cutEdge = null;
+				while (path.hasNext())
 				{
-					if (sourceTreeSet == null)
+					Object pathEdge = path.next();
+					int cut = getCutValue(pathEdge, treeChanged);
+					if (cut < lowestCut)
 					{
-						treeAddEdge(target, source, edge);
+						lowestCut = cut;
+						cutEdge = pathEdge;
 					}
-					else if (targetTreeSet == null)
-					{
-						treeAddEdge(source, target, edge);
-					}
-					else
-					{
-						if (sourceTreeSet.size() > targetTreeSet.size())
-						{
-							treeAddEdge(source, target, edge);
-						}
-						else
-						{
-							treeAddEdge(target, source, edge);
-						}
-					}
+				}
+				if (lowestCut < 0)
+				{
+					treeRemoveEdge(cutEdge, edge);
+	 				treeChanged = ""+ new Date().getTime();				
 				}
 				else
 				{
-					if (sourceTreeSet == null)
-					{
-						treeAddEdge(source, target, edge);
-						// Add any tight edges on source as well as target
-						treeAddChildren(source);
-					}
-					else
-					{
-						int edgeLength = rows.getRow(target) - rows.getRow(source);
-						if (edgeLength < 1)
-						{
-							treeAddEdge(source, target, edge);
-							//System.err.println("New tree edge! Existing edges may be broken");
-						}
-						else if (edgeLength > 1)
-						{
-							// Decide if this non-tree edge should be replaced
-							// by a tree edge in order to make the graph optimal
-							Iterator path = getPath(source, target).iterator();
-							int lowestCut = Integer.MAX_VALUE;
-							Object cutEdge = null;
-							String timeStamp = new Date().toString();
-							while (path.hasNext())
-							{
-								Object pathEdge = path.next();
-								int cut = getCutValue(pathEdge, timeStamp);
-								if (cut < lowestCut)
-								{
-									lowestCut = cut;
-									cutEdge = pathEdge;
-								}
-							}
-//							if (lowestCut < 0)
-//							{
-//								treeRemoveEdge(cutEdge, edge);
-//							}
-//							else
-//							{
-//								// Non-tree edge, so add as virtual node chain.
-								rows.addEdge(edge);
-//							}
-						}
-					}
+					// Non-tree edge, so add as virtual node chain.
+					rows.addEdge(edge);
 				}
 			}
+			
 		}
-		
-		rows.calculateBounds();
 	}
 
 	private int getCutValue(Object cutEdge, String timeStamp)
@@ -247,7 +218,7 @@ public class LayoutManager
 			direction = 1;
 		}
 
-		String text = "";
+		//String text = "";
 
 		Iterator edges = DefaultGraphModel.getEdges(model, new Object[] { child }).iterator();
 		int cutValue = 0;
@@ -257,7 +228,7 @@ public class LayoutManager
 			if (edge == cutEdge)
 			{
 				cutValue += 1;
-				text += 1 + " ";
+				//text += 1 + " ";
 			}
 			else
 			{
@@ -265,18 +236,18 @@ public class LayoutManager
 				{
 					int value = getCutValue(edge, timeStamp);
 					cutValue += value;
-					text += value + "[" + edge + "] ";
+					//text += value + "[" + edge + "] ";
 				}
 
 				if (child == GraphUtilities.getTargetNode(model, edge))
 				{
 					cutValue += direction;
-					text += direction + " ";
+					//text += direction + " ";
 				}
 				else
 				{
 					cutValue -= direction;
-					text += -direction + " ";
+					//text += -direction + " ";
 				}
 			}
 		}
@@ -567,7 +538,12 @@ public class LayoutManager
 
 	private void treeRemoveEdge(Object edge, Object replacement)
 	{
-		//System.err.println("Remove tree edge " + edge);
+//		String text = "Remove tree edge " + edge;
+//		if(replacement != null)
+//		{
+//			text = text + ", & replace with " + replacement;
+//		}		
+//		System.err.println(text);
 		Object parent = treeGetParent(edge);
 		Object tailParent = GraphUtilities.getNeighbour(model, parent, edge);
 		if (!model.contains(tailParent))
@@ -667,5 +643,59 @@ public class LayoutManager
 			}
 		}
 		attributes.put(EDGE_PARENT, parent);
+	}
+	
+	private List treeBuild(List edges)
+	{
+		List nonTreeEdges = new ArrayList();
+		while (!edges.isEmpty())
+		{
+			Object edge = edges.remove(0);
+			if (!isTreeEdge(edge))
+			{
+				// System.err.println(edge);
+				Object source = GraphUtilities.getSourceNode(model, edge);
+				Object target = GraphUtilities.getTargetNode(model, edge);
+				Set sourceTreeSet = getTreeSet(source);
+				Set targetTreeSet = getTreeSet(target);
+				if (sourceTreeSet != targetTreeSet)
+				{
+					if (sourceTreeSet == null)
+					{
+						treeAddEdge(target, source, edge);
+					}
+					else if (targetTreeSet == null)
+					{
+						treeAddEdge(source, target, edge);
+					}
+					else
+					{
+						if (sourceTreeSet.size() > targetTreeSet.size())
+						{
+							treeAddEdge(source, target, edge);
+						}
+						else
+						{
+							treeAddEdge(target, source, edge);
+						}
+					}
+				}
+				else
+				{
+					if (sourceTreeSet == null)
+					{
+						treeAddEdge(source, target, edge);
+						// Add any tight edges on source as well as target
+						treeAddChildren(source);
+					}
+					else
+					{
+						nonTreeEdges.add(edge);
+					}
+				}
+			}
+		}
+		treeChanged = "" + new Date().getTime();
+		return nonTreeEdges;
 	}
 }

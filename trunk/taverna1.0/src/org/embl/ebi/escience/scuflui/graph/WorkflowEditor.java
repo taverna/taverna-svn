@@ -68,7 +68,7 @@ import org.jgraph.plaf.basic.BasicGraphUI;
  */
 public class WorkflowEditor extends JGraph implements ScuflUIComponent
 {
-    private class StartLinkAction extends ScuflModelAction
+	private class StartLinkAction extends ScuflModelAction
 	{
 		private Port port;
 
@@ -141,66 +141,84 @@ public class WorkflowEditor extends JGraph implements ScuflUIComponent
 								+ insets.bottom);
 						groupBounds = r;
 					}
-				    
+
 				};
 			}
 		});
-		VertexView.renderer = new VertexRenderer() {
-			// Change to non 1 value to show only part of the progress bar and leave
+		VertexView.renderer = new VertexRenderer()
+		{
+			// Change to non 1 value to show only part of the progress bar and
+			// leave
 			// the remaining space coloured by processor type.
 			int progressBarDivide = 1;
 			int progress = -2;
 			Color background2 = Color.WHITE;
 			Color background3 = Color.WHITE;
-			public void paint(Graphics g) {
-			    setOpaque(false);
-			    Graphics2D g2d = (Graphics2D)g;
-			    Paint oldPaint = g2d.getPaint();
-			    
-			    g2d.setPaint(new GradientPaint(0,0, getBackground(), getWidth(), getHeight(), 
-							   org.embl.ebi.escience.scuflui.ShadedLabel.halfShade(getBackground())));
-			    g2d.fillRect(0,0,getWidth(),getHeight());
-			    
-			    if (progress >-1 && progress < 101) {
-				// progress is integer 0-100 where 0 is started, 100 completed
-				int newWidth = ((getWidth()*progress) / 100);
-				int remainingWidth = getWidth()-newWidth;
-				g2d.setPaint(new GradientPaint(0,0,background3, getWidth(), getHeight(), org.embl.ebi.escience.scuflui.ShadedLabel.halfShade(background3)));
-				g2d.fillRect(0,0,newWidth,getHeight()/progressBarDivide);
-				g2d.setPaint(new GradientPaint(0,0,background2, getWidth(), getHeight(), org.embl.ebi.escience.scuflui.ShadedLabel.halfShade(background2)));
-				g2d.fillRect(newWidth, 0, remainingWidth, getHeight()/progressBarDivide);
-			    }
-			    else if (progress == -1) {
-				g2d.setPaint(new GradientPaint(0,0,background3, getWidth(), getHeight(), org.embl.ebi.escience.scuflui.ShadedLabel.halfShade(background3)));
-				g2d.fillRect(0,0,getWidth(),getHeight()/progressBarDivide);
-			    }
-			    g2d.setPaint(oldPaint);
-			    super.paint(g);
+
+			public void paint(Graphics g)
+			{
+				setOpaque(false);
+				Graphics2D g2d = (Graphics2D) g;
+				Paint oldPaint = g2d.getPaint();
+
+				g2d.setPaint(new GradientPaint(0, 0, getBackground(), getWidth(), getHeight(),
+						org.embl.ebi.escience.scuflui.ShadedLabel.halfShade(getBackground())));
+				g2d.fillRect(0, 0, getWidth(), getHeight());
+
+				if (progress > -1 && progress < 101)
+				{
+					// progress is integer 0-100 where 0 is started, 100
+					// completed
+					int newWidth = ((getWidth() * progress) / 100);
+					int remainingWidth = getWidth() - newWidth;
+					g2d.setPaint(new GradientPaint(0, 0, background3, getWidth(), getHeight(),
+							org.embl.ebi.escience.scuflui.ShadedLabel.halfShade(background3)));
+					g2d.fillRect(0, 0, newWidth, getHeight() / progressBarDivide);
+					g2d.setPaint(new GradientPaint(0, 0, background2, getWidth(), getHeight(),
+							org.embl.ebi.escience.scuflui.ShadedLabel.halfShade(background2)));
+					g2d.fillRect(newWidth, 0, remainingWidth, getHeight() / progressBarDivide);
+				}
+				else if (progress == -1)
+				{
+					g2d.setPaint(new GradientPaint(0, 0, background3, getWidth(), getHeight(),
+							org.embl.ebi.escience.scuflui.ShadedLabel.halfShade(background3)));
+					g2d.fillRect(0, 0, getWidth(), getHeight() / progressBarDivide);
+				}
+				g2d.setPaint(oldPaint);
+				super.paint(g);
 			}
-			protected void installAttributes(CellView view) {
-			    super.installAttributes(view);
-			    Map map = view.getAllAttributes();
-			    if (map.containsKey("progress")) {
-				String progressStringValue = (String)map.get("progress");
-				progress = Integer.parseInt(progressStringValue);
-			    }
-			    else {
-				progress = -2;
-			    }
-			    if (map.containsKey("statuscolour1")) {
-				background3 = (Color)map.get("statuscolour1");
-			    }
-			    else {
-				background3 = Color.WHITE;
-			    }
-			    if (map.containsKey("statuscolour2")) {
-				background2 = (Color)map.get("statuscolour2");
-			    }
-			    else {
-				background2 = Color.WHITE;
-			    }
+
+			protected void installAttributes(CellView view)
+			{
+				super.installAttributes(view);
+				Map map = view.getAllAttributes();
+				if (map.containsKey("progress"))
+				{
+					String progressStringValue = (String) map.get("progress");
+					progress = Integer.parseInt(progressStringValue);
+				}
+				else
+				{
+					progress = -2;
+				}
+				if (map.containsKey("statuscolour1"))
+				{
+					background3 = (Color) map.get("statuscolour1");
+				}
+				else
+				{
+					background3 = Color.WHITE;
+				}
+				if (map.containsKey("statuscolour2"))
+				{
+					background2 = (Color) map.get("statuscolour2");
+				}
+				else
+				{
+					background2 = Color.WHITE;
+				}
 			}
-		    };
+		};
 		setUI(new BasicGraphUI()
 		{
 			protected GraphModelListener createGraphModelListener()
@@ -454,48 +472,58 @@ public class WorkflowEditor extends JGraph implements ScuflUIComponent
 					List childElementList = processorElement.getChildren();
 					if (childElementList.isEmpty() == false)
 					{
-					    Element firstChildElement = (Element) childElementList.get(0);
-					    Color statusColour = getStatusColour(firstChildElement.getName());
-					    Color existing = GraphConstants.getBackground(attributes);
-					    boolean iterating = (firstChildElement.getName().equalsIgnoreCase("invokingwithiteration"));
-					    if (statusColour != existing || iterating)
+						Element firstChildElement = (Element) childElementList.get(0);
+						Color statusColour = getStatusColour(firstChildElement.getName());
+						Color existing = GraphConstants.getBackground(attributes);
+						boolean iterating = (firstChildElement.getName()
+								.equalsIgnoreCase("invokingwithiteration"));
+						if (statusColour != existing || iterating)
 						{
-						    if (!iterating) {
-							Map newColour = new HashMap();
-							// Insert progress cancellation - should fix partial colour bars after iterations
-							newColour.put("progress","-1");
-							newColour.put("statuscolour1",statusColour);
-							//GraphConstants.setBackground(newColour, statusColour);
-							changes.put(processor, newColour);
-						    }
-						    else {
-							int iterationNumber = Integer.parseInt(firstChildElement.getAttributeValue("IterationNumber"));
-							int iterationTotal = Integer.parseInt(firstChildElement.getAttributeValue("IterationTotal"));
-							int progress = (100*iterationNumber)/iterationTotal;
-							System.out.println("Progress : "+progress);
-							Map newStuff = new HashMap();
-							newStuff.put("progress",progress+"");
-							newStuff.put("statuscolour1",GraphColours.getColour("gold", Color.GREEN));
-							newStuff.put("statuscolour2",GraphColours.getColour("medium purple", Color.MAGENTA));
-							//GraphConstants.setBackground(newStuff,GraphColours.getColour("gold", Color.GREEN));
-							changes.put(processor, newStuff);
-						    }
+							if (!iterating)
+							{
+								Map newColour = new HashMap();
+								// Insert progress cancellation - should fix
+								// partial colour bars after iterations
+								newColour.put("progress", "-1");
+								newColour.put("statuscolour1", statusColour);
+								// GraphConstants.setBackground(newColour,
+								// statusColour);
+								changes.put(processor, newColour);
+							}
+							else
+							{
+								int iterationNumber = Integer.parseInt(firstChildElement
+										.getAttributeValue("IterationNumber"));
+								int iterationTotal = Integer.parseInt(firstChildElement
+										.getAttributeValue("IterationTotal"));
+								int progress = (100 * iterationNumber) / iterationTotal;
+								System.out.println("Progress : " + progress);
+								Map newStuff = new HashMap();
+								newStuff.put("progress", progress + "");
+								newStuff.put("statuscolour1", GraphColours.getColour("gold",
+										Color.GREEN));
+								newStuff.put("statuscolour2", GraphColours.getColour(
+										"medium purple", Color.MAGENTA));
+								// GraphConstants.setBackground(newStuff,GraphColours.getColour("gold",
+								// Color.GREEN));
+								changes.put(processor, newStuff);
+							}
 						}
 					}
 				}
 			}
 			if (!changes.isEmpty())
-			    {
+			{
 				graphModel.edit(changes, null, null, null);
-			    }
+			}
 		}
 		catch (Exception e)
-		    {
+		{
 			// TODO Handle exceptions
 			e.printStackTrace();
-		    }
+		}
 	}
-    
+
 	private Color getStatusColour(String status)
 	{
 		if (status.equals("ProcessComplete"))

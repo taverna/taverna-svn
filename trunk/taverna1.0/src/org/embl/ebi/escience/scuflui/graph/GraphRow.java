@@ -20,7 +20,7 @@ import org.jgraph.graph.GraphModel;
  * COMMENT
  * 
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover </a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class GraphRow
 {
@@ -72,37 +72,37 @@ public class GraphRow
 				Object node = iterator.next();
 				if (model.isEdge(node))
 				{
-					Map attributes = model.getAttributes(node);
-					if (attributes != null)
-					{
-						int lineMid = y + 10;
-						x += X_SEPARATION + 5;
-						List points = GraphConstants.getPoints(attributes);
-						Point2D point = new Point2D.Double(x, lineMid);
-						for (int index = 1; index < points.size(); index++)
-						{
-							Point2D existingPoint = (Point2D) points.get(index);
-							if (index == points.size() - 1)
-							{
-								points.add(index, point);
-								break;
-							}
-							else if (existingPoint.getY() == lineMid)
-							{
-								points.set(index, point);
-								break;
-							}
-							else if (existingPoint.getY() > lineMid)
-							{
-								points.add(index, point);
-								break;
-							}
-						}
-						x += X_SEPARATION + 5;
-						GraphConstants.setPoints(attributes, points);
-						CellView view = mapper.getMapping(node, false);
-						view.refresh(model, mapper, false);
-					}
+//					Map attributes = model.getAttributes(node);
+//					if (attributes != null)
+//					{
+//						int lineMid = y + 10;
+//						x += X_SEPARATION + 5;
+//						List points = GraphConstants.getPoints(attributes);
+//						Point2D point = new Point2D.Double(x, lineMid);
+//						for (int index = 1; index < points.size(); index++)
+//						{
+//							Point2D existingPoint = (Point2D) points.get(index);
+//							if (index == points.size() - 1)
+//							{
+//								points.add(index, point);
+//								break;
+//							}
+//							else if (existingPoint.getY() == lineMid)
+//							{
+//								points.set(index, point);
+//								break;
+//							}
+//							else if (existingPoint.getY() > lineMid)
+//							{
+//								points.add(index, point);
+//								break;
+//							}
+//						}
+//						x += X_SEPARATION + 5;
+//						GraphConstants.setPoints(attributes, points);
+//						CellView view = mapper.getMapping(node, false);
+//						view.refresh(model, mapper, false);
+//					}
 				}
 				else
 				{
