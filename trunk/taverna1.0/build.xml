@@ -126,6 +126,12 @@
 		    <fileset dir="workbench"/>
 		</copy>
 		<!-- Copy the required libraries into the lib subdirectory of the workbench -->
+		<copy todir="${workbench.dir}/resources">
+                        <fileset dir="./resources"/>
+                </copy>
+                <copy todir="${workbench.dir}/images">
+                        <fileset dir="./images"/>
+                </copy>
 		<copy todir="${workbench.dir}/lib">
 			<!-- List of libraries needeed by the workbench -->
 			<fileset dir="./lib" includesfile="./workbenchlibs.text"/>
