@@ -142,12 +142,13 @@
 	<!-- Clean the build -->
 	<target name="clean">
 		<delete dir="${build.dir}"/>
+		<delete dir="${reports.tests}"/>
 	</target>
 
 	<!-- Trivial setup -->
 	<target name="prepare" depends="fetchjars">
 		<mkdir dir="${build.dir}"/>
-        <mkdir dir="${reports.tests}"/>
+		<mkdir dir="${reports.tests}"/>
 	</target>
 
 	<!-- Build the workbench binary distribution -->
