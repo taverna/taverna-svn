@@ -36,7 +36,7 @@ public class ScuflModelExplorerDemo extends JFrame {
     ScuflModel model = new ScuflModel();
 
     public ScuflModelExplorerDemo() {
-	super("Scufl Model Explorer");
+	super("Scufl Model Explorer Demo Application");
 	JScrollPane view = new JScrollPane(explorer);
 	getContentPane().add(view);
     }
@@ -57,21 +57,27 @@ public class ScuflModelExplorerDemo extends JFrame {
 	File inputFile = new File(filename);
 	XScuflParser.populate(inputFile.toURL().openStream(), frame.model, null);
 	frame.explorer.attachToModel(frame.model);
-	frame.pack();
-	frame.setVisible(true);
 	TreeNode root = (TreeNode)(frame.explorer).getModel().getRoot();
 	// Traverse tree from root
         frame.expandAll(frame.explorer, new TreePath(root), true);
+	frame.pack();
+	frame.setVisible(true);
     }
     private void expandAll(JTree tree, TreePath parent, boolean expand) {
         // Traverse children
+	// Ignores nodes who's userObject is a Processor type to
+	// avoid overloading the UI with nodes at startup.
         TreeNode node = (TreeNode)parent.getLastPathComponent();
-        if (node.getChildCount() >= 0) {
+        if (node.getChildCount() >= 0 && (((DefaultMutableTreeNode)node).getUserObject() instanceof Processor == false)) {
             for (Enumeration e=node.children(); e.hasMoreElements(); ) {
                 TreeNode n = (TreeNode)e.nextElement();
                 TreePath path = parent.pathByAddingChild(n);
-                expandAll(tree, path, expand);
-            }
+		if (((DefaultMutableTreeNode)n).getUserObject() instanceof Processor) {
+		}
+		else {
+		    expandAll(tree, path, expand);
+		}
+	    }
         }
 	// Expansion or collapse must be done bottom-up
         if (expand) {

@@ -128,6 +128,7 @@
 				<include name="**/*.html"/>
 				<include name="**/*.xml"/>
 				<include name="**/*.text"/>
+				<include name="**/*.gif"/>
 			</fileset>
 		</copy>
 		<!-- Use aspectj to prepare the source files -->

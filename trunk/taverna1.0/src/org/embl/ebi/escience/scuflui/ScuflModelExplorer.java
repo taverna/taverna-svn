@@ -93,6 +93,23 @@ public class ScuflModelExplorer extends JTree implements ScuflModelEventListener
 		    // Set the root node to saying that there is a model.
 		    this.root.setUserObject("Scufl Model");
 
+		    // Create a new node for workflow inputs
+		    DefaultMutableTreeNode inputs = new DefaultMutableTreeNode("Workflow inputs");
+		    this.root.add(inputs);
+		    Port[] inputPorts = model.getWorkflowSourcePorts();
+		    for (int i = 0; i < inputPorts.length; i++) {
+			DefaultMutableTreeNode inode = new DefaultMutableTreeNode(inputPorts[i]);
+			inputs.add(inode);
+		    }
+		     // Create a new node for workflow outputs
+		    DefaultMutableTreeNode outputs = new DefaultMutableTreeNode("Workflow outputs");
+		    this.root.add(outputs);
+		    Port[] outputPorts = model.getWorkflowSinkPorts();
+		    for (int i = 0; i < outputPorts.length; i++) {
+			DefaultMutableTreeNode onode = new DefaultMutableTreeNode(outputPorts[i]);
+			outputs.add(onode);
+		    }
+
 		    // Create a new node for processors.
 		    DefaultMutableTreeNode processors = new DefaultMutableTreeNode("Processors");
 		    this.root.add(processors);
@@ -141,6 +158,25 @@ public class ScuflModelExplorer extends JTree implements ScuflModelEventListener
 }
 class ScuflModelExplorerRenderer extends DefaultTreeCellRenderer {
     
+    static ImageIcon wsdlicon, soaplabicon, talismanicon, inputicon, outputicon, inputporticon, outputporticon, datalinkicon;
+
+    static {
+	try {
+	    Class c = Class.forName("org.embl.ebi.escience.scuflui.ScuflModelExplorerRenderer");
+	    wsdlicon = new ImageIcon(c.getResource("wsdl.gif"));
+	    talismanicon = new ImageIcon(c.getResource("talisman.gif"));
+	    soaplabicon = new ImageIcon(c.getResource("soaplab.gif"));
+	    inputporticon = new ImageIcon(c.getResource("inputport.gif"));
+	    outputporticon = new ImageIcon(c.getResource("outputport.gif"));
+	    datalinkicon = new ImageIcon(c.getResource("datalink.gif"));
+	    inputicon = new ImageIcon(c.getResource("input.gif"));
+	    outputicon = new ImageIcon(c.getResource("output.gif"));
+	}
+	catch (ClassNotFoundException cnfe) {
+	    //
+	}
+    }
+
     public ScuflModelExplorerRenderer() {
 	super();
     }
@@ -158,25 +194,39 @@ class ScuflModelExplorerRenderer extends DefaultTreeCellRenderer {
 	Object userObject = ((DefaultMutableTreeNode)value).getUserObject();
 	if (userObject instanceof Processor) {
 	    if (userObject instanceof WSDLBasedProcessor) {
-		setText("<html><font color=\"#00aa00\">[WSDL]:"+((Processor)userObject).getName()+"</font></html>");
+		setIcon(wsdlicon);
 	    }
 	    else if (userObject instanceof TalismanProcessor) {
-		setText("<html><font color=\"#aa00aa\">[Talisman]:"+((Processor)userObject).getName()+"</font></html>");
+		setIcon(talismanicon);
 	    }
 	    else if (userObject instanceof SoaplabProcessor) {
-		setText("<html><font color=\"#aaaa00\">[Soaplab]:"+((Processor)userObject).getName()+"</font></html>");
+		setIcon(soaplabicon);
 	    }
 	}
 	else if (userObject instanceof Port) {
-	    if (userObject instanceof InputPort) {
-		setText("<html><font color=\"#aa0000\">"+((Port)userObject).getName()+"</font></html>");
+	    Port thePort = (Port)userObject;
+	    Processor theProcessor = thePort.getProcessor();
+	    ScuflModel model = theProcessor.getModel();
+	    if (theProcessor == model.getWorkflowSourceProcessor()) {
+		// Workflow source port
+		setIcon(inputicon);
 	    }
-	    else if (userObject instanceof OutputPort) {
-		setText("<html><font color=\"#0000aa\">"+((Port)userObject).getName()+"</font></html>");
+	    else if (theProcessor == model.getWorkflowSinkProcessor()) {
+		// Workflow sink port
+		setIcon(outputicon);
+	    }
+	    else {
+		// Normal port
+		if (thePort instanceof InputPort) {
+		    setIcon(inputporticon);
+		}
+		else if (thePort instanceof OutputPort) {
+		    setIcon(outputporticon);
+		}
 	    }
 	}
 	else if (userObject instanceof DataConstraint) {
-	    setText("<html><font color=\"#666666\">"+((DataConstraint)userObject).getName()+"</font></html>");
+	    setIcon(datalinkicon);
 	}
 
 	return this;
