@@ -38,16 +38,21 @@ public class StringSetUnion implements LocalWorker {
     }
     
     public Map execute(Map inputs) throws TaskExecutionException {
-	Set results = new HashSet();
-	Collection list1 = (Collection)((DataThing)inputs.get("list1")).getDataObject();
-	Collection list2 = (Collection)((DataThing)inputs.get("list2")).getDataObject();
-	results.addAll(list1);
-	results.addAll(list2);
-	List resultList = new ArrayList();
-	resultList.addAll(results);
-	Map outputs = new HashMap();
-	outputs.put("union",new DataThing(resultList));
-	return outputs;
+	try {
+	    Set results = new HashSet();
+	    Collection list1 = (Collection)((DataThing)inputs.get("list1")).getDataObject();
+	    Collection list2 = (Collection)((DataThing)inputs.get("list2")).getDataObject();
+	    results.addAll(list1);
+	    results.addAll(list2);
+	    List resultList = new ArrayList();
+	    resultList.addAll(results);
+	    Map outputs = new HashMap();
+	    outputs.put("union",new DataThing(resultList));
+	    return outputs;
+	}
+	catch (NullPointerException npe) {
+	    throw new TaskExecutionException("Must specify both input lists!");
+	}
     }
 
 }
