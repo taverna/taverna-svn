@@ -25,8 +25,8 @@
 //      Dependencies        :
 //
 //      Last commit info    :   $Author: mereden $
-//                              $Date: 2004-11-04 15:29:07 $
-//                              $Revision: 1.64 $
+//                              $Date: 2004-11-04 15:50:59 $
+//                              $Revision: 1.65 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 package uk.ac.soton.itinnovation.taverna.enactor.entities;
@@ -849,7 +849,7 @@ public class ProcessorTask extends AbstractTask {
 		//System.out.println("Target list has object ID "+targetList.hashCode());
 		//targetList.add(dataObject);
 		// Store the result into the appropriate output collection
-		//insertObjectInto(dataObject, targetList, currentLocation, targetThing);
+		insertObjectInto(dataObject, targetList, currentLocation, targetThing);
 		// Copy metadata from the original output into the new one, preserve LSID hopefully!
 		targetThing.copyMetadataFrom(outputValue);
 		// Get the LSID of the original output item
