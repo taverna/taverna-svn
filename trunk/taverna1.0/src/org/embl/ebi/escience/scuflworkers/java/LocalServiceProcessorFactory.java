@@ -45,11 +45,14 @@ public class LocalServiceProcessorFactory implements ProcessorFactory {
     /**
      * Create a new processor and add to the model
      */
-    public void createProcessor(String name, ScuflModel model)
+    public Processor createProcessor(String name, ScuflModel model)
 	throws ProcessorCreationException,
 	       DuplicateProcessorNameException {
 	Processor theProcessor = new LocalServiceProcessor(model, name, this.className);
-	model.addProcessor(theProcessor);
+	if (model!=null) {
+	    model.addProcessor(theProcessor);
+	}
+	return theProcessor;
     }
 
     /**

@@ -1,14 +1,28 @@
 package org.embl.ebi.escience.scuflui.renderers;
 
-import javax.swing.*;
-import javax.imageio.stream.ImageInputStream;
+import java.awt.Dimension;
+import java.awt.Font;
 import javax.imageio.ImageIO;
 import javax.imageio.ImageReader;
-import java.io.OutputStream;
-import java.io.InputStream;
-import java.io.IOException;
+import javax.imageio.stream.ImageInputStream;
+import javax.swing.*;
+
+// Utility Imports
 import java.util.Iterator;
-import java.awt.*;
+
+// IO Imports
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+
+import org.embl.ebi.escience.scuflui.renderers.MimeTypeRendererSPI;
+import java.lang.ClassLoader;
+import java.lang.Object;
+import java.lang.Process;
+import java.lang.Runtime;
+import java.lang.String;
+
+
 
 /**
  *

@@ -7,44 +7,30 @@ package org.embl.ebi.escience.scuflworkers.java;
 
 import org.apache.log4j.Logger;
 import org.embl.ebi.escience.scufl.Processor;
-import uk.ac.soton.itinnovation.taverna.enactor.broker.LogLevel;
-import uk.ac.soton.itinnovation.taverna.enactor.entities.ProcessorTask;
+import org.embl.ebi.escience.scuflworkers.ProcessorTaskWorker;
 import uk.ac.soton.itinnovation.taverna.enactor.entities.TaskExecutionException;
 
 // Utility Imports
 import java.util.Map;
 
-// JDOM Imports
-import org.jdom.Element;
-
 import org.embl.ebi.escience.scuflworkers.java.LocalServiceProcessor;
-import java.lang.String;
-
-
-
 /**
  * A task to invoke a LocalServiceProcessor
  * @author Tom Oinn
  */
-public class LocalServiceTask extends ProcessorTask {
+public class LocalServiceTask implements ProcessorTaskWorker {
     
     private static Logger logger = Logger.getLogger(LocalServiceTask.class);
     private static final int INVOCATION_TIMEOUT = 0;
+    private Processor proc;
     
-    public LocalServiceTask(String id,Processor proc,LogLevel l,String userID, String userCtx) {
-	super(id,proc,l,userID,userCtx);
+    public LocalServiceTask(Processor p) {
+	this.proc = p;
     }
-    
-    protected Map execute(Map inputMap) throws TaskExecutionException {
+
+    public Map execute(Map inputMap) throws TaskExecutionException {
 	LocalServiceProcessor theProcessor = (LocalServiceProcessor)proc;
 	return theProcessor.getWorker().execute(inputMap);
     }
     
-    public void cleanUpConcreteTask() {
-    }
-    
-    public Element getProvenance() {
-	return new Element("local",PROVENANCE_NAMESPACE);
-    }
-
 }

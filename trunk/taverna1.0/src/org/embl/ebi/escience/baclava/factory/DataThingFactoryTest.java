@@ -5,7 +5,8 @@
  */
 package org.embl.ebi.escience.baclava.factory;
 
-import org.embl.ebi.escience.baclava.*;
+import org.embl.ebi.escience.baclava.BaclavaIterator;
+import org.embl.ebi.escience.baclava.DataThing;
 
 // JDOM Imports
 import org.jdom.Document;

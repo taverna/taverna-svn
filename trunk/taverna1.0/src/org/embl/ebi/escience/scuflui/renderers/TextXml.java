@@ -1,8 +1,20 @@
 package org.embl.ebi.escience.scuflui.renderers;
 
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
+import javax.swing.JComponent;
+import javax.swing.JScrollPane;
+import javax.swing.JSplitPane;
 import org.embl.ebi.escience.scuflui.XMLTree;
 
-import javax.swing.*;
+import org.embl.ebi.escience.scuflui.renderers.MimeTypeRendererSPI;
+import org.embl.ebi.escience.scuflui.renderers.Text;
+import java.lang.ClassLoader;
+import java.lang.Exception;
+import java.lang.Object;
+import java.lang.String;
+
+
 
 /**
  *

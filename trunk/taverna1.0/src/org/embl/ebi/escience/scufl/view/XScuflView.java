@@ -8,6 +8,9 @@ package org.embl.ebi.escience.scufl.view;
 import org.embl.ebi.escience.scufl.*;
 import org.embl.ebi.escience.scuflworkers.ProcessorHelper;
 
+// Utility Imports
+import java.util.Iterator;
+
 // JDOM Imports
 import org.jdom.Document;
 import org.jdom.Element;
@@ -110,6 +113,33 @@ public class XScuflView implements ScuflModelEventListener, java.io.Serializable
 	    }
 	    Element spec = ProcessorHelper.elementForProcessor(processors[i]);
 	    processor.addContent(spec);
+	    // Do the alternates
+	    AlternateProcessor[] ap = processors[i].getAlternatesArray();
+	    for (int j = 0; j < ap.length; j++) {
+		Element alternateElement = new Element("alternate",XScufl.XScuflNS);
+		Processor alternateProcessor = ap[j].getProcessor();
+		// Populate the processor spec part of the alternate
+		alternateElement.addContent(ProcessorHelper.elementForProcessor(alternateProcessor));
+		// Populate the output mapping part
+		for (Iterator ii = ap[j].getOutputMapping().keySet().iterator(); ii.hasNext();) {
+		    String key = (String)ii.next();
+		    String value = (String)ap[j].getOutputMapping().get(key);
+		    Element mappingElement = new Element("outputmap",XScufl.XScuflNS);
+		    mappingElement.setAttribute("key",key);
+		    mappingElement.setAttribute("value",value);
+		    alternateElement.addContent(mappingElement);
+		}
+		// .. and the input mapping
+		for (Iterator ii = ap[j].getInputMapping().keySet().iterator(); ii.hasNext();) {
+		    String key = (String)ii.next();
+		    String value = (String)ap[j].getInputMapping().get(key);
+		    Element mappingElement = new Element("inputmap",XScufl.XScuflNS);
+		    mappingElement.setAttribute("key",key);
+		    mappingElement.setAttribute("value",value);
+		    alternateElement.addContent(mappingElement);
+		}
+		processor.addContent(alternateElement);
+	    }
 	    root.addContent(processor);
 	}
 	

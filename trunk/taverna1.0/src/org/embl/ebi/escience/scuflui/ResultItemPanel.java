@@ -18,19 +18,21 @@ import javax.swing.event.TreeSelectionListener;
 import org.embl.ebi.escience.baclava.DataThing;
 import org.embl.ebi.escience.baclava.factory.DataThingTreeFactory;
 import org.embl.ebi.escience.baclava.factory.DataThingTreeNode;
-import org.embl.ebi.escience.scuflui.workbench.Workbench;
-
-// rendere SPI
-import org.embl.ebi.escience.scuflui.renderers.MimeTypeRendererSPI;
 import org.embl.ebi.escience.scuflui.renderers.MimeTypeRendererRegistry;
+import org.embl.ebi.escience.scuflui.renderers.MimeTypeRendererSPI;
+import org.embl.ebi.escience.scuflui.workbench.Workbench;
 
 // Utility Imports
 import java.util.Collection;
 import java.util.Iterator;
 
-
 // IO Imports
 import java.io.*;
+
+import java.lang.Object;
+import java.lang.String;
+
+
 
 /**
  * A JPanel to represent a single result DataThing

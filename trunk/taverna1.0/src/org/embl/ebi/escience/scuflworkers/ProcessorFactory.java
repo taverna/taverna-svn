@@ -5,6 +5,7 @@
  */
 package org.embl.ebi.escience.scuflworkers;
 import org.embl.ebi.escience.scufl.DuplicateProcessorNameException;
+import org.embl.ebi.escience.scufl.Processor;
 import org.embl.ebi.escience.scufl.ProcessorCreationException;
 import org.embl.ebi.escience.scufl.ScuflModel;
 
@@ -31,7 +32,7 @@ public interface ProcessorFactory {
      * Instantiate a new processor with the given
      * name and add it to the specified ScuflModel
      */
-    public void createProcessor(String name, ScuflModel model)
+    public Processor createProcessor(String name, ScuflModel model)
 	throws ProcessorCreationException,
 	       DuplicateProcessorNameException;
 

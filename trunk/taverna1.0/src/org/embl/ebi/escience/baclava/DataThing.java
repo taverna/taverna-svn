@@ -18,7 +18,9 @@ import java.util.*;
 import org.jdom.Element;
 
 import org.embl.ebi.escience.baclava.BaclavaIterator;
+import org.embl.ebi.escience.baclava.LSIDProvider;
 import org.embl.ebi.escience.baclava.NoMetadataFoundException;
+import java.lang.ArrayIndexOutOfBoundsException;
 import java.lang.ClassLoader;
 import java.lang.Object;
 import java.lang.RuntimeException;

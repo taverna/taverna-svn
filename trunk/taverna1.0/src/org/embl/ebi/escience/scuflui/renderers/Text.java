@@ -1,7 +1,17 @@
 package org.embl.ebi.escience.scuflui.renderers;
 
-import javax.swing.*;
-import java.awt.*;
+import java.awt.Font;
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
+import javax.swing.JComponent;
+import javax.swing.JTextArea;
+
+import org.embl.ebi.escience.scuflui.renderers.MimeTypeRendererSPI;
+import java.lang.ClassLoader;
+import java.lang.Object;
+import java.lang.String;
+
+
 
 /**
  *

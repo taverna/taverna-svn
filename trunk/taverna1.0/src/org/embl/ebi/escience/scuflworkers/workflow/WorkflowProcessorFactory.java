@@ -51,11 +51,14 @@ public class WorkflowProcessorFactory implements ProcessorFactory {
     /**
      * Build a new WorkflowProcessor and add it to the model
      */
-    public void createProcessor(String name, ScuflModel model) 
+    public Processor createProcessor(String name, ScuflModel model) 
 	throws ProcessorCreationException,
 	       DuplicateProcessorNameException {
 	Processor theProcessor = new WorkflowProcessor(model, name, this.definitionURL);
-	model.addProcessor(theProcessor);
+	if (model!=null) {
+	    model.addProcessor(theProcessor);
+	}
+	return theProcessor;
     }
 
     /**

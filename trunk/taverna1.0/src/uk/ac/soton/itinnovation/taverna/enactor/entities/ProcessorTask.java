@@ -25,8 +25,8 @@
 //      Dependencies        :
 //
 //      Last commit info    :   $Author: mereden $
-//                              $Date: 2004-02-03 12:57:14 $
-//                              $Revision: 1.29 $
+//                              $Date: 2004-02-04 11:21:21 $
+//                              $Revision: 1.30 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 package uk.ac.soton.itinnovation.taverna.enactor.entities;
@@ -38,6 +38,8 @@ import org.embl.ebi.escience.baclava.DataThing;
 import org.embl.ebi.escience.baclava.JoinIterator;
 import org.embl.ebi.escience.scufl.Processor;
 import org.embl.ebi.escience.scufl.provenance.process.*;
+import org.embl.ebi.escience.scuflworkers.ProcessorHelper;
+import org.embl.ebi.escience.scuflworkers.ProcessorTaskWorker;
 import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.entities.TimePoint;
 import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.eventservice.TaskStateMessage;
 import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.serviceprovidermanager.ServiceSelectionCriteria;
@@ -71,7 +73,7 @@ import java.lang.String;
 /**
  * The superclass of all actual task implementations
  */
-public abstract class ProcessorTask extends TavernaTask{
+public class ProcessorTask extends TavernaTask{
     
     //protected static final String PROVENANCE_NAMESPACE = "http://www.it-innovation.soton.ac.uk/taverna/workflow/enactor/provenance";
     protected static final Namespace PROVENANCE_NAMESPACE = TavernaFlowReceipt.provNS;
@@ -142,7 +144,9 @@ public abstract class ProcessorTask extends TavernaTask{
      * Retrieve provenance information for this task, concrete tasks should
      * overide this method and provide this information as an XML JDOM element
      */
-    public abstract Element getProvenance();
+    public Element getProvenance() {
+	return new Element("NotImplementedHere",PROVENANCE_NAMESPACE);
+    }
     
     /**
      * Wrapper method to enable pre and post processing for actual service invocations
@@ -274,12 +278,14 @@ public abstract class ProcessorTask extends TavernaTask{
 					TaskStateMessage.COMPLETE,"Task completed successfully");
 	}
 	catch (TaskExecutionException ex) {
+	    eventList.add(new ServiceFailure());
 	    endTime = new TimePoint();
 	    faultCausingException = ex;
 	    logger.error(ex);
 	    return new TaskStateMessage(getParentFlow().getID(),getID(), TaskStateMessage.FAILED,ex.getMessage());
 	}
 	catch (Exception ex){
+	    eventList.add(new ServiceFailure());
 	    endTime = new TimePoint();
 	    faultCausingException = ex;
 	    logger.error(ex);
@@ -318,11 +324,18 @@ public abstract class ProcessorTask extends TavernaTask{
 	return faultElement;
     }
     
+    public void cleanUpConcreteTask() {
+	//
+    }
+
     /**
      * Method that actually undertakes a service action. Should be implemented by concrete processors.
      * @return output map containing String->DataThing named pairs, with the key
      * being the name of the output port.
      */
-    protected abstract Map execute(Map inputMap) throws TaskExecutionException;
+    protected Map execute(Map inputMap) throws TaskExecutionException {
+	ProcessorTaskWorker worker = ProcessorHelper.getTaskWorker(proc);
+	return worker.execute(inputMap);
+    }
 
 }

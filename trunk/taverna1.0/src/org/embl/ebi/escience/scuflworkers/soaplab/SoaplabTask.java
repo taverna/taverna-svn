@@ -25,8 +25,8 @@
 //      Dependencies        :
 //
 //      Last commit info    :   $Author: mereden $
-//                              $Date: 2004-01-27 13:00:18 $
-//                              $Revision: 1.6 $
+//                              $Date: 2004-02-04 11:21:21 $
+//                              $Revision: 1.7 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 
@@ -39,8 +39,7 @@ import org.apache.log4j.Logger;
 import org.embl.ebi.escience.baclava.DataThing;
 import org.embl.ebi.escience.baclava.factory.DataThingFactory;
 import org.embl.ebi.escience.scufl.Processor;
-import uk.ac.soton.itinnovation.taverna.enactor.broker.LogLevel;
-import uk.ac.soton.itinnovation.taverna.enactor.entities.ProcessorTask;
+import org.embl.ebi.escience.scuflworkers.ProcessorTaskWorker;
 import uk.ac.soton.itinnovation.taverna.enactor.entities.TaskExecutionException;
 
 // Utility Imports
@@ -60,16 +59,17 @@ import java.lang.String;
 
 
 
-public class SoaplabTask extends ProcessorTask{
+public class SoaplabTask implements ProcessorTaskWorker {
 
     private static Logger logger = Logger.getLogger(SoaplabTask.class);
     private static final int INVOCATION_TIMEOUT = 0;
+    private Processor proc;
     
-    public SoaplabTask(String id,Processor proc,LogLevel l, String userID, String userCtx) {
-	super(id,proc,l,userID,userCtx);		
+    public SoaplabTask(Processor p) {
+	this.proc = p;
     }
     
-    protected Map execute(Map inputMap) throws TaskExecutionException {
+    public Map execute(Map inputMap) throws TaskExecutionException {
 	
 	try{
 	    
@@ -129,25 +129,12 @@ public class SoaplabTask extends ProcessorTask{
 	
 	catch(Exception ex) {
 	    ex.printStackTrace();
-	    logger.error("Error invoking soaplab service for task " +getID() ,ex);
-	    TaskExecutionException tee = new TaskExecutionException("Task " + getID() + " failed due to problem invoking soaplab service");
+	    logger.error("Error invoking soaplab service for soaplab", ex);
+	    TaskExecutionException tee = new TaskExecutionException("Task failed due to problem invoking soaplab service");
 	    tee.initCause(ex);
 	    throw tee;
 	}
 	
     }
     
-    public void cleanUpConcreteTask() {
-	//nothing at mo, but should call destroy on job if job id available
-	//inputForLog = null;
-    }
-    
-    /**
-     * Retrieve provenance information for this task, concrete tasks should
-     * overide this method and provide this information as an XML JDOM element
-     */
-    public org.jdom.Element getProvenance() {
-	org.jdom.Element e = new org.jdom.Element("SOAPLabInvocation",PROVENANCE_NAMESPACE);
-	return e;
-    }
 }

@@ -9,9 +9,11 @@ package org.embl.ebi.escience.scufl;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Properties;
 import java.util.regex.Pattern;
 
+import org.embl.ebi.escience.scufl.AlternateProcessor;
 import org.embl.ebi.escience.scufl.DataConstraint;
 import org.embl.ebi.escience.scufl.DuplicateProcessorNameException;
 import org.embl.ebi.escience.scufl.InputPort;
@@ -36,6 +38,76 @@ public abstract class Processor implements java.io.Serializable {
     private String description = "";
     protected ArrayList ports = new ArrayList();
     private ScuflModel model = null;
+    protected int timeout = 0;
+    protected int retries = 0;
+    protected double backoff = 0.0;
+    protected List alternates = new ArrayList();
+    
+    /**
+     * Return the list of AlternateProcessor holders
+     * for this primary processor implementation.
+     */
+    public AlternateProcessor[] getAlternatesArray() {
+	return (AlternateProcessor[])alternates.toArray(new AlternateProcessor[0]);
+    }
+
+    /**
+     * Return the alternates list object to allow
+     * addition or reordering of alternate processors
+     */
+    public List getAlternatesList() {
+	return this.alternates;
+    }
+
+    /**
+     * Return the time in milliseconds after which
+     * an instance of this processor should be regarded
+     * as having failed with a timeout. If this value
+     * is set to zero then no timeout applies.
+     */
+    public int getTimeout() {
+	return this.timeout;
+    }
+
+    /**
+     * Set the timeout parameter
+     */
+    public void setTimeout(int timeout) {
+	this.timeout = timeout;
+    }
+
+    /**
+     * Return the number of retries after the initial
+     * invocation attempt. If set to zero then retry
+     * behaviour is disabled.
+     */
+    public int getRetries() {
+	return this.retries;
+    }
+
+    /**
+     * Set the number of retries
+     */
+    public void setRetries(int retries) {
+	this.retries = retries;
+    }
+
+    /**
+     * Return the factor by which the timeout value
+     * will be multiplied for each retry after the
+     * first. This allows for exponential backoff
+     * from failing service instances.
+     */
+    public double getBackoff() {
+	return this.backoff;
+    }
+
+    /**
+     * Set the backoff factor
+     */
+    public void setBackoff(double backoff) {
+	this.backoff = backoff;
+    }
 
     /**
      * The log level for this processor
@@ -91,9 +163,10 @@ public abstract class Processor implements java.io.Serializable {
 	throws ProcessorCreationException,
 	       DuplicateProcessorNameException {
 	// Check for nulls
-	if (model == null) {
-	    throw new ProcessorCreationException("Cannot create a processor with the model as null");
-	}
+	//
+	//if (model == null) {
+	//    throw new ProcessorCreationException("Cannot create a processor with the model as null");
+	//}
 	if (name == null) {
 	    throw new ProcessorCreationException("Cannot create a processor with a null name");
 	}
@@ -105,12 +178,14 @@ public abstract class Processor implements java.io.Serializable {
 						 "names must match [a-zA-Z_0-9].");
 	}
 	// Check for duplicate names
-	Processor[] existing_processors = model.getProcessors();
-	for (int i = 0; i<existing_processors.length; i++) {
-	    Processor processor = existing_processors[i];
-	    if (processor.getName().equalsIgnoreCase(name)) {
-		throw new DuplicateProcessorNameException("Cannot create a processor with name '"+
-							  name+"', because this name is already used in the model.");
+	if (model!=null) {
+	    Processor[] existing_processors = model.getProcessors();
+	    for (int i = 0; i<existing_processors.length; i++) {
+		Processor processor = existing_processors[i];
+		if (processor.getName().equalsIgnoreCase(name)) {
+		    throw new DuplicateProcessorNameException("Cannot create a processor with name '"+
+							      name+"', because this name is already used in the model.");
+		}
 	    }
 	}
 	this.model = model;
@@ -289,7 +364,9 @@ public abstract class Processor implements java.io.Serializable {
 	for (int i = 0; i < dc.length; i++) {
 	    if (dc[i].getSource() == the_port ||
 		dc[i].getSink() == the_port) {
-		model.destroyDataConstraint(dc[i]);
+		if (model!=null) {
+		    model.destroyDataConstraint(dc[i]);
+		}
 	    }
 	}
 	fireModelEvent(new ScuflModelEvent(this, "Removed a port"));
@@ -307,7 +384,9 @@ public abstract class Processor implements java.io.Serializable {
      * Fire a change event back to the model
      */
     protected void fireModelEvent(ScuflModelEvent event) {
-	this.model.fireModelEvent(event);
+	if (this.model!=null) {
+	    this.model.fireModelEvent(event);
+	}
     }
 
     /**

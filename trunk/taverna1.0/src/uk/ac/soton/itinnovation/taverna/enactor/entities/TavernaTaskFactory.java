@@ -25,28 +25,19 @@
 //      Dependencies        :
 //
 //      Last commit info    :   $Author: mereden $
-//                              $Date: 2004-01-27 12:57:53 $
-//                              $Revision: 1.17 $
+//                              $Date: 2004-02-04 11:21:21 $
+//                              $Revision: 1.18 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 
 package uk.ac.soton.itinnovation.taverna.enactor.entities;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 import org.apache.log4j.Logger;
 import org.embl.ebi.escience.scufl.Processor;
-import org.embl.ebi.escience.scuflworkers.ProcessorHelper;
 import uk.ac.soton.itinnovation.taverna.enactor.broker.LogLevel;
 
 import uk.ac.soton.itinnovation.taverna.enactor.entities.ProcessorTask;
 import uk.ac.soton.itinnovation.taverna.enactor.entities.UnsupportedTavernaProcessorException;
-import java.lang.Class;
-import java.lang.Exception;
-import java.lang.IllegalAccessException;
-import java.lang.IllegalArgumentException;
-import java.lang.InstantiationException;
-import java.lang.Object;
 import java.lang.String;
 
 
@@ -57,49 +48,60 @@ import java.lang.String;
  */
 public class TavernaTaskFactory {
 
-	private static Logger logger = Logger.getLogger(TavernaTaskFactory.class);
-
+    private static Logger logger = Logger.getLogger(TavernaTaskFactory.class);
+    
     /**
-     * Retrieves a concrete instance of a taverna task 
-	 *
-     * @param String identifier for the required application
+     * Retrieve a concrete Task instance. In the newer version (4.2.04) this
+     * actually always returns the ProcessorTask itself, the burden of handling
+     * the plugin framework has been shifted off to the ProcessorTask to allow
+     * rescheduling during a task invocation in the case of alternate processors.
      */
     public static ProcessorTask getConcreteTavernaTask(String id,Processor processor,LogLevel l,String userID,String userCtx) throws UnsupportedTavernaProcessorException {
-    ProcessorTask pTask = null;
-		String taskClassName = ProcessorHelper.getTaskClassName(processor);
-		if (taskClassName == null) {
-		    logger.error("Don't know how to deal with processor with name '" + processor.getName() + "'");
-		    throw new UnsupportedTavernaProcessorException("Don't know how to deal with processor with name '" + processor.getName() + "'");
-		}
-		try {
-				Class processorDefn = null;
-				Class[] argsClass = new Class[] {String.class,Processor.class,LogLevel.class,String.class,String.class};
-				Object[] args = new Object[] {id,processor,l,userID,userCtx};
-				Constructor argsConstructor;
-				processorDefn = Class.forName(taskClassName);
-				argsConstructor = processorDefn.getConstructor(argsClass);
-				pTask = (ProcessorTask) argsConstructor.newInstance(args);
-			} catch (InstantiationException e) {
-				logger.error("Can't instantiate task for processor with identifier '" + processor.getName(),e);
-				throw new UnsupportedTavernaProcessorException("Couldn't load implementation for processor with identifier '" + processor.getName() + "'");
-			} catch (IllegalAccessException e) {
-				logger.error("Not allowed to instantiate processor with identifier '" + processor.getName(),e);
-				throw new UnsupportedTavernaProcessorException("Couldn't load implementation for processor with identifier '" + processor.getName() + "'");
-			} catch (IllegalArgumentException e) {
-				logger.error("Inappropriate arguments pass to custom task for processor with identifier '" + processor.getName()+ "'",e);
-				throw new UnsupportedTavernaProcessorException("Couldn't load implementation for processor with identifier '" + processor.getName() + "'");
-			} catch (InvocationTargetException e) {
-				logger.error("Unable to invoke constructor of custom task for processor with identifier '" + processor.getName() + "'",e);
-				throw new UnsupportedTavernaProcessorException("Couldn't load implementation for processor with identifier '" + processor.getName() + "'");
-			} catch (Exception e) {
-							logger.error("Don't know how to deal with processor with identifier '" + processor.getName() + "'",e);
-				throw new UnsupportedTavernaProcessorException("Couldn't load implementation for processor with identifier '" + processor.getName() + "'");
-			}
-		if(pTask==null) {
-			logger.error("Don't know how to deal with processor with identifier '" + processor.getName() + "'");
-			throw new UnsupportedTavernaProcessorException("Couldn't load implementation for processor with identifier '" + processor.getName() + "'");
-		}
-		return pTask;
-  }
-
+	return new ProcessorTask(id, processor, l, userID, userCtx);
+    }
+    
+    /**
+     * Retrieves a concrete instance of a taverna task 
+     *
+     * @param String identifier for the required application
+     
+     public static ProcessorTask getConcreteTavernaTask(String id,Processor processor,LogLevel l,String userID,String userCtx) throws UnsupportedTavernaProcessorException {
+     ProcessorTask pTask = null;
+     String taskClassName = ProcessorHelper.getTaskClassName(processor);
+     if (taskClassName == null) {
+     logger.error("Don't know how to deal with processor with name '" + processor.getName() + "'");
+     throw new UnsupportedTavernaProcessorException("Don't know how to deal with processor with name '" + processor.getName() + "'");
+     }
+     try {
+     Class processorDefn = null;
+     Class[] argsClass = new Class[] {String.class,Processor.class,LogLevel.class,String.class,String.class};
+     Object[] args = new Object[] {id,processor,l,userID,userCtx};
+     Constructor argsConstructor;
+     processorDefn = Class.forName(taskClassName);
+     argsConstructor = processorDefn.getConstructor(argsClass);
+     pTask = (ProcessorTask) argsConstructor.newInstance(args);
+     } catch (InstantiationException e) {
+     logger.error("Can't instantiate task for processor with identifier '" + processor.getName(),e);
+     throw new UnsupportedTavernaProcessorException("Couldn't load implementation for processor with identifier '" + processor.getName() + "'");
+     } catch (IllegalAccessException e) {
+     logger.error("Not allowed to instantiate processor with identifier '" + processor.getName(),e);
+     throw new UnsupportedTavernaProcessorException("Couldn't load implementation for processor with identifier '" + processor.getName() + "'");
+     } catch (IllegalArgumentException e) {
+     logger.error("Inappropriate arguments pass to custom task for processor with identifier '" + processor.getName()+ "'",e);
+     throw new UnsupportedTavernaProcessorException("Couldn't load implementation for processor with identifier '" + processor.getName() + "'");
+     } catch (InvocationTargetException e) {
+     logger.error("Unable to invoke constructor of custom task for processor with identifier '" + processor.getName() + "'",e);
+     throw new UnsupportedTavernaProcessorException("Couldn't load implementation for processor with identifier '" + processor.getName() + "'");
+     } catch (Exception e) {
+     logger.error("Don't know how to deal with processor with identifier '" + processor.getName() + "'",e);
+     throw new UnsupportedTavernaProcessorException("Couldn't load implementation for processor with identifier '" + processor.getName() + "'");
+     }
+     if(pTask==null) {
+     logger.error("Don't know how to deal with processor with identifier '" + processor.getName() + "'");
+     throw new UnsupportedTavernaProcessorException("Couldn't load implementation for processor with identifier '" + processor.getName() + "'");
+     }
+     return pTask;
+     }
+    */
+    
 }

@@ -1,6 +1,12 @@
 package org.embl.ebi.escience.scuflui.renderers;
 
-import javax.swing.*;
+import javax.swing.Icon;
+import javax.swing.JComponent;
+
+import java.lang.Object;
+import java.lang.String;
+
+
 
 /**
  * SPI for rendering data by mime type.

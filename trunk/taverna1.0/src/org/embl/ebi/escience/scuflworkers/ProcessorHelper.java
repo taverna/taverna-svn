@@ -5,11 +5,9 @@
  */
 package org.embl.ebi.escience.scuflworkers;
 
+import java.lang.reflect.Constructor;
 import javax.swing.ImageIcon;
-import org.embl.ebi.escience.scufl.DuplicateProcessorNameException;
-import org.embl.ebi.escience.scufl.Processor;
-import org.embl.ebi.escience.scufl.ProcessorCreationException;
-import org.embl.ebi.escience.scufl.ScuflModel;
+import org.embl.ebi.escience.scufl.*;
 import org.embl.ebi.escience.scufl.parser.XScuflFormatException;
 import org.embl.ebi.escience.scuflui.workbench.Scavenger;
 
@@ -23,6 +21,7 @@ import org.jdom.Element;
 import java.net.URL;
 
 import org.embl.ebi.escience.scuflworkers.ProcessorEditor;
+import org.embl.ebi.escience.scuflworkers.ProcessorTaskWorker;
 import org.embl.ebi.escience.scuflworkers.ScavengerHelper;
 import org.embl.ebi.escience.scuflworkers.XMLHandler;
 import java.lang.Class;
@@ -198,6 +197,31 @@ public class ProcessorHelper {
     }
 
     /**
+     * Given a processor instance, return a concrete task worker
+     * for that instance.
+     * @return a ProcessorTaskWorker implementation or null
+     * if none can be found.
+     */
+    public static ProcessorTaskWorker getTaskWorker(Processor p) {
+	String taskClassName = getTaskClassName(p);
+	if (taskClassName != null) {
+	    // Assume there is a constructor that takes a single processor
+	    // as its argument
+	    try {
+		Class[] constructorClasses = new Class[] {Processor.class};
+		Class taskClass = Class.forName(taskClassName);
+		Constructor taskConstructor = taskClass.getConstructor(constructorClasses);
+		ProcessorTaskWorker taskWorker = (ProcessorTaskWorker)taskConstructor.newInstance(new Object[]{p});
+		return taskWorker;
+	    }
+	    catch (Exception ex) {
+		ex.printStackTrace();
+	    }
+	}
+	return null;
+    }
+
+    /**
      * Given a class name, return the tag name used by this helper
      * class as an index for the other categories such as icons.
      */
@@ -287,13 +311,46 @@ public class ProcessorHelper {
     public static Processor loadProcessorFromXML(Element processorNode, ScuflModel model, String name)
 	throws ProcessorCreationException, DuplicateProcessorNameException, XScuflFormatException {
 	// Get the first available handler for this processor and use it to load
-	for (Iterator i = processorNode.getChildren().iterator(); i.hasNext(); ) {
+	Processor loadedProcessor = null;
+	Iterator i = processorNode.getChildren().iterator();
+	for (; i.hasNext() && loadedProcessor==null; ) {
 	    String elementName = ((Element)i.next()).getName();
 	    XMLHandler xh = (XMLHandler)xmlHandlerForTagName.get(elementName);
 	    if (xh != null) {
-		return xh.loadProcessorFromXML(processorNode, model, name);
+		loadedProcessor = xh.loadProcessorFromXML(processorNode, model, name);
 	    }
 	}
-	return null;
+	int alternateCount = 1;
+	if (loadedProcessor!=null) {
+	    // Iterate over all alternate definitions and load them into the
+	    // processor as appropriate
+	    List l = processorNode.getChildren("alternate",XScufl.XScuflNS);
+	    for (i = l.iterator(); i.hasNext(); ) {
+		Element alternateElement = (Element)i.next();
+		Processor alternateProcessor = loadProcessorFromXML(alternateElement, null, "alternate"+alternateCount++);
+		AlternateProcessor ap = new AlternateProcessor(alternateProcessor);
+		// Sort out the input mapping
+		List inputMapping = alternateElement.getChildren("inputmap",XScufl.XScuflNS);
+		for (Iterator j = inputMapping.iterator(); j.hasNext();) {
+		    Element inputMapItem = (Element)j.next();
+		    String key = inputMapItem.getAttributeValue("key");
+		    String value = inputMapItem.getAttributeValue("value");
+		    ap.getInputMapping().put(key, value);
+		}
+		// ..and the output mapping. See the javadoc
+		// for the AlternateProcessor class for more
+		// details about the mapping functionality.
+		List outputMapping = alternateElement.getChildren("outputmap",XScufl.XScuflNS);
+		for (Iterator j = outputMapping.iterator(); j.hasNext();) {
+		    Element outputMapItem = (Element)j.next();
+		    String key = outputMapItem.getAttributeValue("key");
+		    String value = outputMapItem.getAttributeValue("value");
+		    ap.getOutputMapping().put(key, value);
+		}
+		loadedProcessor.getAlternatesList().add(ap);
+	    }
+	    
+	}
+	return loadedProcessor;
     }
 }

@@ -25,8 +25,8 @@
 //      Dependencies        :
 //
 //      Last commit info    :   $Author: mereden $
-//                              $Date: 2004-01-27 13:00:30 $
-//                              $Revision: 1.3 $
+//                              $Date: 2004-02-04 11:21:21 $
+//                              $Revision: 1.4 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 
@@ -35,22 +35,18 @@ package org.embl.ebi.escience.scuflworkers.workflow;
 import org.apache.log4j.Logger;
 import org.embl.ebi.escience.scufl.Processor;
 import org.embl.ebi.escience.scufl.ScuflModel;
+import org.embl.ebi.escience.scuflworkers.ProcessorTaskWorker;
 import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.broker.FlowBroker;
 import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.broker.FlowBrokerFactory;
 import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.broker.FlowCallback;
 import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.broker.FlowMessage;
-import uk.ac.soton.itinnovation.taverna.enactor.broker.LogLevel;
 import uk.ac.soton.itinnovation.taverna.enactor.broker.TavernaBinaryWorkflowSubmission;
 import uk.ac.soton.itinnovation.taverna.enactor.broker.TavernaFlowReceipt;
-import uk.ac.soton.itinnovation.taverna.enactor.entities.ProcessorTask;
 import uk.ac.soton.itinnovation.taverna.enactor.entities.TaskExecutionException;
 
 // Utility Imports
 import java.util.HashMap;
 import java.util.Map;
-
-// JDOM Imports
-import org.jdom.Element;
 
 import org.embl.ebi.escience.scuflworkers.workflow.WorkflowProcessor;
 import java.lang.Exception;
@@ -61,7 +57,7 @@ import java.lang.Thread;
 
 
 
-public class WorkflowTask extends ProcessorTask {
+public class WorkflowTask implements ProcessorTaskWorker {
 
     private static Logger logger = Logger.getLogger(WorkflowTask.class);
     private static final int INVOCATION_TIMEOUT = 0;
@@ -70,9 +66,10 @@ public class WorkflowTask extends ProcessorTask {
     private TavernaFlowReceipt receipt = null;
     private FlowBroker broker = null;
     private int flowState = FlowMessage.NEW;
+    private Processor proc;
 
-    public WorkflowTask(String id,Processor proc,LogLevel l,String userID, String userCtx) {
-	super(id,proc,l,userID,userCtx);
+    public WorkflowTask(Processor p) {
+	this.proc = p;
     }
     
     /**
@@ -82,8 +79,10 @@ public class WorkflowTask extends ProcessorTask {
     public Map execute(Map inputMap) throws TaskExecutionException {
 	WorkflowProcessor theProcessor = (WorkflowProcessor)proc;
 	ScuflModel theNestedModel = theProcessor.getInternalModel();
-	String userID = getUserID();
-	String userContext = getUserNamespaceContext();
+	//String userID = getUserID();
+	//String userContext = getUserNamespaceContext();
+	String userID = "";
+	String userContext = "";
 	// The inputMap is already in the form we need for a submission
 	TavernaBinaryWorkflowSubmission theSubmission = new TavernaBinaryWorkflowSubmission(theNestedModel,
 											    inputMap,
@@ -137,13 +136,13 @@ public class WorkflowTask extends ProcessorTask {
 	    return receipt.getOutput();
 	}
 	else if (flowState == FlowMessage.FAILED) {
-	    throw new TaskExecutionException("Nested workflow failed in task "+getID()+", error message was : "+receipt.getErrorMessage());
+	    throw new TaskExecutionException("Nested workflow failed in task, error message was : "+receipt.getErrorMessage());
 	}
 	else if (flowState == FlowMessage.CANCELLED) {
 	    return new HashMap();
 	}
 	else {
-	    throw new TaskExecutionException("Unknown flow state in task "+getID()+", failing.");
+	    throw new TaskExecutionException("Unknown flow state in task, failing.");
 	}
     }
     
@@ -160,15 +159,6 @@ public class WorkflowTask extends ProcessorTask {
 	catch(Exception ex) {
 	    //we tried
 	}
-    }
-    
-    /**
-     * Retrieve provenance information for this task, concrete tasks should
-     * overide this method and provide this information as an XML JDOM element
-     */
-    public org.jdom.Element getProvenance() {
-	Element e = new Element("Workflow",PROVENANCE_NAMESPACE);
-	return e;
     }
     
     /**

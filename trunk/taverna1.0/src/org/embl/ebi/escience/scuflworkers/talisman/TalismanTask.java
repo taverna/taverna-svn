@@ -8,9 +8,8 @@ package org.embl.ebi.escience.scuflworkers.talisman;
 import org.apache.log4j.Logger;
 import org.embl.ebi.escience.baclava.DataThing;
 import org.embl.ebi.escience.scufl.Processor;
+import org.embl.ebi.escience.scuflworkers.ProcessorTaskWorker;
 import org.embl.ebi.escience.talisman.tservice.TeaTray;
-import uk.ac.soton.itinnovation.taverna.enactor.broker.LogLevel;
-import uk.ac.soton.itinnovation.taverna.enactor.entities.ProcessorTask;
 import uk.ac.soton.itinnovation.taverna.enactor.entities.TaskExecutionException;
 
 // Utility Imports
@@ -31,15 +30,16 @@ import java.lang.String;
  * A task to invoke a TalismanProcessor
  * @author Tom Oinn
  */
-public class TalismanTask extends ProcessorTask {
+public class TalismanTask implements ProcessorTaskWorker {
     private static Logger logger = Logger.getLogger(TalismanTask.class);
     private static final int INVOCATION_TIMEOUT = 0;
-    
-    public TalismanTask(String id,Processor proc,LogLevel l,String userID, String userCtx) {
-			super(id,proc,l,userID,userCtx);
+    private Processor proc;
+        
+    public TalismanTask(Processor p) {
+	this.proc = p;
     }
     
-    protected java.util.Map execute(java.util.Map workflowInputMap) throws TaskExecutionException {
+    public Map execute(java.util.Map workflowInputMap) throws TaskExecutionException {
 	try{
 	   
 	    TalismanProcessor theProcessor = (TalismanProcessor)proc;
@@ -119,40 +119,9 @@ public class TalismanTask extends ProcessorTask {
 	    return outMap;
 	}
 	catch(Exception ex) {
-	    logger.error("Error invoking talisman for task " +getID() ,ex);
-	    throw new TaskExecutionException("Task " + getID() + " failed due to problem invoking talisman");
+	    logger.error("Error invoking talisman" ,ex);
+	    throw new TaskExecutionException("Task failed due to problem invoking talisman");
 	}	
     }
     
-    public void cleanUpConcreteTask() {
-	//nothing at mo, but should call destroy on job if job id available
-	// In this context, this means calling a release session method, but I haven't
-	// implemented this in the t-service anyway so I can't at the moment.
-	// tmo.
-    }
-
-	/**
-	 * Retrieve provenance information for this task, concrete tasks should
-	 * overide this method and provide this information as an XML JDOM element
-	 */
-	public org.jdom.Element getProvenance() {
-		org.jdom.Element e = new org.jdom.Element("TalismanTriggerInvocation");
-		if(logLevel.getLevel()>=LogLevel.LOW) {
-			org.jdom.Element status = new org.jdom.Element("status",PROVENANCE_NAMESPACE);
-			status.addContent(new org.jdom.Text(getStateString()));
-			e.addContent(status);
-			//add start and end time
-			if(startTime!=null) {
-				org.jdom.Element sT = new org.jdom.Element("startTime",PROVENANCE_NAMESPACE);
-				sT.addContent(new org.jdom.Text(startTime.getString()));
-				e.addContent(sT);
-			}
-			if(endTime!=null) {
-				org.jdom.Element eT = new org.jdom.Element("endTime",PROVENANCE_NAMESPACE);
-				eT.addContent(new org.jdom.Text(endTime.getString()));
-				e.addContent(eT);
-			}						
-		}
-		return e;
-	}
 }

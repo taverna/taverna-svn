@@ -40,11 +40,14 @@ public class BeanshellProcessorFactory implements ProcessorFactory {
     /**
      * Create a new BeanshellProcessor and add it to the model
      */
-    public void createProcessor(String name, ScuflModel model)
+    public Processor createProcessor(String name, ScuflModel model)
 	throws ProcessorCreationException,
 	       DuplicateProcessorNameException {
 	Processor theProcessor = new BeanshellProcessor(model, name, "", new String[0], new String[0]);
-	model.addProcessor(theProcessor);
+	if (model!=null) {
+	    model.addProcessor(theProcessor);
+	}	
+	return theProcessor;
     }
     
     /**

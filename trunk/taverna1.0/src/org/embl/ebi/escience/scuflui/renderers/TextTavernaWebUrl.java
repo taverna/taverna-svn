@@ -1,8 +1,22 @@
 package org.embl.ebi.escience.scuflui.renderers;
 
-import javax.swing.*;
+import java.awt.Font;
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
+import javax.swing.JComponent;
+import javax.swing.JEditorPane;
+import javax.swing.JTextArea;
+
+// Network Imports
 import java.net.URL;
-import java.awt.*;
+
+import org.embl.ebi.escience.scuflui.renderers.MimeTypeRendererSPI;
+import java.lang.ClassLoader;
+import java.lang.Exception;
+import java.lang.Object;
+import java.lang.String;
+
+
 
 /**
  *

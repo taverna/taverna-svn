@@ -11,8 +11,7 @@ import org.apache.log4j.Logger;
 import org.embl.ebi.escience.baclava.DataThing;
 import org.embl.ebi.escience.baclava.factory.DataThingFactory;
 import org.embl.ebi.escience.scufl.Processor;
-import uk.ac.soton.itinnovation.taverna.enactor.broker.LogLevel;
-import uk.ac.soton.itinnovation.taverna.enactor.entities.ProcessorTask;
+import org.embl.ebi.escience.scuflworkers.ProcessorTaskWorker;
 import uk.ac.soton.itinnovation.taverna.enactor.entities.TaskExecutionException;
 
 // Utility Imports
@@ -20,9 +19,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Vector;
-
-// JDOM Imports
-import org.jdom.Element;
 
 import org.embl.ebi.escience.scuflworkers.wsdl.WSDLBasedProcessor;
 import java.lang.Exception;
@@ -38,11 +34,12 @@ import java.lang.System;
  * The task required to invoke an arbitrary web service.
  * @author Tom Oinn
  */
-public class WSDLInvocationTask extends ProcessorTask  {
+public class WSDLInvocationTask implements ProcessorTaskWorker {
     
     private static Logger logger = Logger.getLogger(WSDLInvocationTask.class);
     private static final int INVOCATION_TIMEOUT = 0;
     private static Service service = new org.apache.axis.client.Service();
+    private Processor proc;
 
     private Call getCall() {
 	synchronized (service) {
@@ -54,9 +51,9 @@ public class WSDLInvocationTask extends ProcessorTask  {
 	    }
 	}
     }
-
-    public WSDLInvocationTask(String id,Processor proc,LogLevel l, String userID, String userCtx) {
-	super(id,proc,l,userID,userCtx);
+    
+    public WSDLInvocationTask(Processor p) {
+	this.proc = p;
     }
     
     public Map execute(Map inputMap) throws TaskExecutionException {
@@ -114,16 +111,4 @@ public class WSDLInvocationTask extends ProcessorTask  {
 	}
     }
   
-    public void cleanUpConcreteTask() {
-	//
-    }
-    
-    private Element provenanceElement = new Element("WSDLInvocation",PROVENANCE_NAMESPACE);
-    /**
-     * Retrieve provenance information for this task, concrete tasks should
-     * overide this method and provide this information as an XML JDOM element
-     */
-    public Element getProvenance() {
-	return provenanceElement;
-    }
 }
