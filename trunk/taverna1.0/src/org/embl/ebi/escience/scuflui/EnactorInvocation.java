@@ -147,6 +147,7 @@ public class EnactorInvocation extends JPanel implements ScuflUIComponent {
       DataThing resultValue = (DataThing)resultMap.get(resultName);
       this.individualResults.add(resultName, new ResultItemPanel(resultValue));
     }
+    this.tabs.setSelectedComponent(individualResults);
   }
 
   // todo: this should be the same level of access as showResults()
