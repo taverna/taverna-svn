@@ -38,6 +38,7 @@ import org.embl.ebi.escience.scufl.enactor.EnactorProxy;
 import org.embl.ebi.escience.scufl.enactor.UserContext;
 import org.embl.ebi.escience.scufl.enactor.WorkflowInstance;
 import org.embl.ebi.escience.scufl.enactor.WorkflowSubmissionException;
+import org.embl.ebi.escience.scuflui.results.ResultTablePanel;
 
 import uk.ac.soton.itinnovation.freefluo.main.InvalidInputException;
 
@@ -203,6 +204,11 @@ public class EnactorInvocation extends JPanel implements ScuflUIComponent {
 	}
     }
 
+    public void showResultTable()
+    {
+	    this.tabs.add("Result Table", new JScrollPane(new ResultTablePanel(theModel, workflowInstance)));    	
+    }
+    
     /**
      * Show the detailed enactor progress report as a tree
      */
@@ -453,12 +459,14 @@ class EnactorInvocationStatusThread extends Thread {
 			running = false;
 			// Set the results display in the display panel
 			theEnactorInvocation.showResults();
+			theEnactorInvocation.showResultTable();			
 			theEnactorInvocation.showProvenance();
 			theEnactorInvocation.showProgressReport();
       // theEnactorInvocation.saveResults(); - commented out as it's anoying MRP
 		    }
 		}
 		catch ( Exception e ) {
+			e.printStackTrace();
 		    // System.out.println(e.getMessage());
 		    // Status message not available I guess
 		}
