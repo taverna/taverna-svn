@@ -117,6 +117,7 @@ public class WorkflowProcessor extends Processor implements java.io.Serializable
 		//
 	    }
 	    XScuflParser.populate(doc, theModel, null);
+	    setDescription(theModel.getDescription().getText());
 	    buildPorts();
 	    createListener();
 	}

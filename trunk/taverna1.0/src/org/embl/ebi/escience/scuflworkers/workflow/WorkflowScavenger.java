@@ -33,7 +33,8 @@ public class WorkflowScavenger extends Scavenger {
     public WorkflowScavenger(String definitionURL)
 	throws ScavengerCreationException {
 	super(new WorkflowProcessorFactory(definitionURL));
-	
+	// Get a reference back to the processor factory
+	ProcessorFactory rootPF = (ProcessorFactory)getUserObject();
 	//WorkflowProcessorFactory wpf = new WorkflowProcessorFactory(definitionURL);
 	//DefaultMutableTreeNode factoryNode = new DefaultMutableTreeNode(wpf);
 	
@@ -44,6 +45,7 @@ public class WorkflowScavenger extends Scavenger {
 	    model.setOffline(true);
 	    XScuflParser.populate(new URL(definitionURL).openStream(),
 				  model, null);
+	    rootPF.setDescription(model.getDescription().getText());
 	}
 	catch (Exception ex) {
 	    ex.printStackTrace();
@@ -59,6 +61,14 @@ public class WorkflowScavenger extends Scavenger {
 		pf.setName(processors[i].getName());
 		if (processors[i].getDescription().equals("") == false) {
 		    pf.setDescription(processors[i].getDescription());
+		}
+		else {
+		    if (processors[i] instanceof WorkflowProcessor) {
+			// Nested workflow with no description, explicitly set it to say
+			// this otherwise a 'fetch descriptions' will attempt to load it
+			// in online mode, this could well fail.
+			pf.setDescription("<font color=\"red\">No description supplied for nested workflow</font>");
+		    }
 		}
 		/**
 		   if (pf instanceof WorkflowProcessorFactory) {
