@@ -10,6 +10,7 @@ import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeNode;
 import org.embl.ebi.escience.scuflworkers.talisman.TalismanProcessorFactory;
 import org.embl.ebi.escience.scuflworkers.workflow.WorkflowProcessorFactory;
+import org.embl.ebi.escience.scuflworkers.wsdl.WSDLBasedScavenger;
 
 // Utility Imports
 import java.util.StringTokenizer;
@@ -91,16 +92,27 @@ public class WebScavenger extends Scavenger {
 	SAXBuilder sb = new SAXBuilder(false);
 	for (int i = 0; i < allURLs.length; i++) {
 	    try {
-		// If this is an XScufl url then add a new WorkflowProcessorFactory to the node
-		Document doc = sb.build(new InputStreamReader(new URL(allURLs[i]).openStream()));
-		Element root = doc.getRootElement();
-		if (root.getName().equals("scufl")) {
-		    WorkflowProcessorFactory wpf = new WorkflowProcessorFactory(allURLs[i]);
-		    add(new DefaultMutableTreeNode(wpf));
+		// If the URL ends in 'wsdl' then try to parse it as a wsdl document
+		if (allURLs[i].toLowerCase().endsWith("wsdl")) {
+		    try {
+			add(new WSDLBasedScavenger(allURLs[i]));
+		    }
+		    catch (ScavengerCreationException sce) {
+			//
+		    }			   
 		}
-		else if (root.getName().equals("tscript")) {
-		    TalismanProcessorFactory tpf = new TalismanProcessorFactory(allURLs[i]);
-		    add(new DefaultMutableTreeNode(tpf));
+		else {
+		    // If this is an XScufl url then add a new WorkflowProcessorFactory to the node
+		    Document doc = sb.build(new InputStreamReader(new URL(allURLs[i]).openStream()));
+		    Element root = doc.getRootElement();
+		    if (root.getName().equals("scufl")) {
+			WorkflowProcessorFactory wpf = new WorkflowProcessorFactory(allURLs[i]);
+			add(new DefaultMutableTreeNode(wpf));
+		    }
+		    else if (root.getName().equals("tscript")) {
+			TalismanProcessorFactory tpf = new TalismanProcessorFactory(allURLs[i]);
+			add(new DefaultMutableTreeNode(tpf));
+		    }
 		}
 	    }
 	    catch (Exception e) {
@@ -259,16 +271,18 @@ public class WebScavenger extends Scavenger {
 			    //System.out.println("Not searching "+strLink+", doesn't start with "+initialURL);
 			}
 			// If the link ends with .txt or .xml then we don't want to search any more
-			if (strLink.toLowerCase().endsWith(".xml") || strLink.toLowerCase().endsWith(".txt")) {
+			if (strLink.toLowerCase().endsWith(".xml") || 
+			    strLink.toLowerCase().endsWith(".txt") ||
+			    strLink.toLowerCase().endsWith("wsdl")) {
 			    validURLToSearch = false;
 			}
 			try {
 			    // try opening the URL
-			    URLConnection urlLinkConnection = urlLink.openConnection();
-			    urlLinkConnection.setAllowUserInteraction(false);
-			    InputStream linkStream = urlLink.openStream();
-			    String strType = urlLinkConnection.guessContentTypeFromStream(linkStream);
-			    linkStream.close();
+			    //URLConnection urlLinkConnection = urlLink.openConnection();
+			    //urlLinkConnection.setAllowUserInteraction(false);
+			    //InputStream linkStream = urlLink.openStream();
+			    //String strType = urlLinkConnection.guessContentTypeFromStream(linkStream);
+			    //linkStream.close();
 			    // if another page, add to the end of search list
 			    //System.out.println(strType);
 			    // check to see if this URL has already been 
@@ -284,7 +298,7 @@ public class WebScavenger extends Scavenger {
 			    
 			    // if the proper type, add it to the results list
 			    // unless we have already seen it
-			    if (strLink.indexOf(".xml")>-1) {
+			    if (strLink.indexOf(".xml")>-1 || strLink.indexOf("wsdl")>-1) {
 				if (vectorMatches.contains(strLink) == false) {
 				    listMatches.add(strLink);
 				    vectorMatches.addElement(strLink);
@@ -292,7 +306,7 @@ public class WebScavenger extends Scavenger {
 				}
 			    }
 			} 
-			catch (IOException e) {
+			catch (Exception e) {
 			    continue;
 			}
 		    }
