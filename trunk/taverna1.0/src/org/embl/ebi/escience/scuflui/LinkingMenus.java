@@ -97,39 +97,40 @@ public class LinkingMenus {
 	for (int i = 0; i < processors.length; i++) {
 	    ImageIcon icon = null;
 	    icon = org.embl.ebi.escience.scuflworkers.ProcessorHelper.getPreferredIcon(processors[i]);
-	    /**
-	       if (processors[i] instanceof SoaplabProcessor) {
-	       icon = ScuflIcons.soaplabIcon;
-	       }
-	       else if (processors[i] instanceof WSDLBasedProcessor) {
-	       icon = ScuflIcons.wsdlIcon;
-	       }
-	       else if (processors[i] instanceof TalismanProcessor) {
-	       icon = ScuflIcons.talismanIcon;
-	       }
-	       else if (processors[i] instanceof WorkflowProcessor) {
-	       icon = ScuflIcons.workflowIcon;
-	       }
-	    */
 	    JMenu processorMenu = new JMenu(processors[i].getName());
 	    processorMenu.setIcon(icon);
 	    theMenu.add(processorMenu);
 	    // Get all the input ports for this processor
 	    InputPort[] inputs = processors[i].getInputPorts();
-	    for (int j = 0; j < inputs.length; j++) {
-		final Port toPort = inputs[j];
-		final JMenuItem ip = new JMenuItem(inputs[j].getName(), ScuflIcons.inputPortIcon);
-		processorMenu.add(ip);
-		ip.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent ae) {
-			    try {
-				model.addDataConstraint(new DataConstraint(model, fromPort, toPort));
+	    int offset = 0;
+	    int menuSize = 15;
+	    JMenu currentMenu = processorMenu;
+	    boolean finished = false;
+	    while (!finished) {
+		if (inputs.length > menuSize) {
+		    currentMenu = new JMenu("Inputs "+(offset+1)+" to "+((offset + menuSize > inputs.length)?inputs.length:offset+menuSize)); 
+		    processorMenu.add(currentMenu);
+		}
+		for (int j = offset; (j < inputs.length) && 
+			 (j < offset + menuSize); j++) {
+		    final Port toPort = inputs[j];
+		    final JMenuItem ip = new JMenuItem(inputs[j].getName(), ScuflIcons.inputPortIcon);
+		    currentMenu.add(ip);
+		    ip.addActionListener(new ActionListener() {
+			    public void actionPerformed(ActionEvent ae) {
+				try {
+				    model.addDataConstraint(new DataConstraint(model, fromPort, toPort));
+				}
+				catch (DataConstraintCreationException dcce) {
+				    //
+				}
 			    }
-			    catch (DataConstraintCreationException dcce) {
-				//
-			    }
-			}
-		    });
+			});
+		}
+		offset += menuSize;
+		if (offset >= inputs.length) {
+		    finished = true;
+		}
 	    }
 	}
 	return theMenu;
