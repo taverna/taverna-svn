@@ -143,14 +143,14 @@ public class AlternateProcessor implements Serializable, Transferable {
 	for (Iterator i = inputMapping.keySet().iterator(); i.hasNext(); ) {
 	    String key = (String)i.next();
 	    String value = (String)inputMapping.get(key);
-	    if (value != null || value.equalsIgnoreCase(alternatePort)) {
+	    if (value != null && value.equalsIgnoreCase(alternatePort)) {
 		return key;
 	    }
 	}
 	for (Iterator i = outputMapping.keySet().iterator(); i.hasNext(); ) {
 	    String key = (String)i.next();
 	    String value = (String)outputMapping.get(key);
-	    if (value != null || value.equalsIgnoreCase(alternatePort)) {
+	    if (value != null && value.equalsIgnoreCase(alternatePort)) {
 		return key;
 	    }
 	}

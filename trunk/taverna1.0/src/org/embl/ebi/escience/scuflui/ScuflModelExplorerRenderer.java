@@ -66,6 +66,18 @@ public class ScuflModelExplorerRenderer extends DefaultTreeCellRenderer {
 		else if (thePort instanceof OutputPort) {
 		    setIcon(ScuflIcons.outputPortIcon);
 		}
+		// Check whether the port is part of an alternate processor
+		if (model == null) {
+		    // Fetch the alternate processor itself
+		    DefaultMutableTreeNode node = (DefaultMutableTreeNode)value;
+		    DefaultMutableTreeNode alternateProcessorNode = (DefaultMutableTreeNode)node.getParent();
+		    AlternateProcessor theAlternate = (AlternateProcessor)alternateProcessorNode.getUserObject();
+		    String originalPortName = theAlternate.getPortTranslation(thePort.getName());
+		    if (originalPortName == null) {
+			originalPortName = "<NO MAPPING>";
+		    }
+		    setText(thePort.getName()+" == "+originalPortName);
+		}
 	    }
 	}
 	else if (userObject instanceof DataConstraint) {
