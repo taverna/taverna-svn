@@ -18,6 +18,42 @@ import org.embl.ebi.escience.scuflworkers.biomart.BiomartProcessor;
  */
 public class WorkflowSummaryAsHTML {
     
+    public static String STYLE;
+    public static String STYLE_NOBG;
+
+    static {
+	StringBuffer sb = new StringBuffer();
+	sb.append("<style type=\"text/css\">");
+	sb.append("body {\n");
+	sb.append("  background-color: #eeeeee;\n");
+	sb.append("font-family: Helvetica, Arial, sans-serif;\n");
+	sb.append("font-size: 12pt;\n");
+	//sb.append("text-align: justify;\n");
+	sb.append("}\n");
+	sb.append("blockquote {\n");
+	sb.append("  padding: 5px;\n");
+	sb.append("  background-color: #ffffff;\n");
+	sb.append("  border-width: 1px; border-style: solid; border-color: #aaaaaa;\n");
+	sb.append("}\n");
+	sb.append("</style>");
+	STYLE = sb.toString();
+	sb = new StringBuffer();
+	sb.append("<style type=\"text/css\">");
+	sb.append("body {\n");
+	//sb.append("  background-color: #eeeeee;\n");
+	sb.append("font-family: Helvetica, Arial, sans-serif;\n");
+	sb.append("font-size: 12pt;\n");
+	//sb.append("text-align: justify;\n");
+	sb.append("}\n");
+	sb.append("blockquote {\n");
+	sb.append("  padding: 5px;\n");
+	sb.append("  background-color: #ffffff;\n");
+	sb.append("  border-width: 1px; border-style: solid; border-color: #aaaaaa;\n");
+	sb.append("}\n");
+	sb.append("</style>");
+	STYLE_NOBG = sb.toString();
+    }
+
     public static String getSummary(ScuflModel model) {
 	Processor[] processors = model.getProcessors();
 	Map resources = new HashMap();
@@ -32,18 +68,9 @@ public class WorkflowSummaryAsHTML {
 	    }
 	}
 	StringBuffer sb = new StringBuffer();
-	sb.append("<html><head><STYLE TYPE=\"text/css\">");
-	sb.append("body {\n");
-	sb.append("  background-color: #eeeeee;\n");
-	sb.append("font-family: Helvetica, Arial, sans-serif;\n");
-	sb.append("font-size: 12pt;\n");
-	sb.append("}\n");
-	sb.append("blockquote {\n");
-	sb.append("  padding: 5px;\n");
-	sb.append("  background-color: #ffffff;\n");
-	sb.append("  border-width: 1px; border-style: solid; border-color: #aaaaaa;\n");
-	sb.append("}\n");
-	sb.append("</STYLE></head><body>");
+	sb.append("<html><head>");
+	sb.append(WorkflowSummaryAsHTML.STYLE);
+	sb.append("</head><body>");
 	sb.append("<h2>Workflow information</h2>");
 	
 	String author = model.getDescription().getAuthor();
