@@ -22,11 +22,15 @@ import org.embl.ebi.escience.baclava.factory.DataThingTreeFactory;
 import org.embl.ebi.escience.baclava.factory.DataThingTreeNode;
 import org.embl.ebi.escience.scuflui.workbench.Workbench;
 import java.util.Collection;
+import java.awt.image.BufferedImage;
+import javax.imageio.ImageIO;
+import javax.imageio.ImageReader;
+import javax.imageio.stream.ImageInputStream;
+import java.util.Iterator;
 
 // IO Imports
 import java.io.*;
 import java.net.*;
-
 
 
 
@@ -81,6 +85,35 @@ public class ResultItemPanel extends JPanel {
 					splitPane.setRightComponent(new JScrollPane(jep));
 				    }
 				    catch (Exception ex) {
+					JTextArea theTextArea = new JTextArea();
+					theTextArea.setText((String)userObject);
+					theTextArea.setFont(new Font("Monospaced",Font.PLAIN,12));
+					splitPane.setRightComponent(new JScrollPane(theTextArea));
+				    }
+				}
+				// Handle graphviz dot file format, see comments at 
+				// http://www.research.att.com/lists/graphviz-interest/msg01013.html
+				// for discussion of mime types
+				else if (mimeTypes.matches(".*text/x-graphviz.*")) {
+				    try {
+					String dotText = (String)userObject;
+					Process dotProcess = Runtime.getRuntime().exec("dot -Tpng");
+					OutputStream out = dotProcess.getOutputStream();
+					out.write(dotText.getBytes());
+					InputStream in = dotProcess.getInputStream();
+					ImageInputStream iis = ImageIO.createImageInputStream(in);
+					String suffix = "png";
+					Iterator readers = ImageIO.getImageReadersBySuffix( suffix );
+					ImageReader imageReader = (ImageReader)readers.next();
+					imageReader.setInput(iis, false);
+					ImageIcon theImage = new ImageIcon(imageReader.read(0));
+					JPanel theImagePanel = new JPanel();
+					theImagePanel.add(new JLabel(theImage));
+					theImagePanel.add(new JLabel(theImage));
+					theImagePanel.setPreferredSize(new Dimension(theImage.getIconWidth(), theImage.getIconHeight()));
+					splitPane.setRightComponent(new JScrollPane(theImagePanel));
+				    }
+				    catch (IOException ioe) {
 					JTextArea theTextArea = new JTextArea();
 					theTextArea.setText((String)userObject);
 					theTextArea.setFont(new Font("Monospaced",Font.PLAIN,12));

@@ -20,7 +20,6 @@ public class StringConstantScavenger extends Scavenger {
     /**
      * Create a new String Constant scavenger, the single parameter
      * should is the constant value that any thus created will carry.
-     * tscript could be fetched.
      */
     public StringConstantScavenger()
 	throws ScavengerCreationException {

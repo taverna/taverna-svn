@@ -168,22 +168,27 @@ public class DataThing {
 		}
 	    }
 	    catch (NoMetadataFoundException nmfe) {
-		StringBuffer sb = new StringBuffer();
-		if (getMetadata().getMIMETypeList().isEmpty() == false) {
-		    for (Iterator i = getMetadata().getMIMETypeList().iterator(); i.hasNext(); ) {
-			sb.append(","+(String)i.next());
-		    }
-		}
-		String specifiedMIMETypes = sb.toString();
-		// Make a 'best guess' at the appropriate type
+		StringBuffer sb = new StringBuffer();		
+		// Try to annotate with mime types based on data object type
 		if (o instanceof String) {
-		    return "'text/plain"+specifiedMIMETypes+"'";
+		    getMetadata().addMIMEType("text/plain");
 		}
 		else if (o instanceof byte[]) {
-		    return "'application/octet-stream"+specifiedMIMETypes+"'";
-		}	    
-		// Fallback, return special unknown type thing
-		return ("'application/X-UNKNOWN-JAVA-TYPE-"+o.getClass().getName()+specifiedMIMETypes+"'");
+		    getMetadata().addMIMEType("application/octet-stream");
+		}
+		else {
+		    getMetadata().addMIMEType("application/X-UNKNOWN-JAVA-TYPE-"+o.getClass().getName());
+		}
+		for (Iterator i = getMetadata().getMIMETypeList().iterator(); i.hasNext(); ) {
+		    sb.append((String)i.next());
+		    if (i.hasNext()) {
+			sb.append(",");
+		    }
+		}
+		
+		// Try to annotate with mime types based on data object type
+		String specifiedMIMETypes = sb.toString();
+		return ("'"+specifiedMIMETypes+"'");
 	    }
 	    
 	}

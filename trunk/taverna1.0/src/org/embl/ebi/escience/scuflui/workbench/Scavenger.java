@@ -15,7 +15,7 @@ import javax.swing.tree.DefaultMutableTreeNode;
  * different types of processor
  * @author Tom Oinn
  */
-public abstract class Scavenger extends DefaultMutableTreeNode {
+public class Scavenger extends DefaultMutableTreeNode {
 
     public Scavenger(Object userObject) {
 	super(userObject);

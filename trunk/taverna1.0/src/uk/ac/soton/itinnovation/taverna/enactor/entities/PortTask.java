@@ -26,8 +26,8 @@
 //      Dependencies        :
 //
 //      Last commit info    :   $Author: mereden $
-//                              $Date: 2003-10-31 15:55:13 $
-//                              $Revision: 1.19 $
+//                              $Date: 2003-11-17 18:00:11 $
+//                              $Revision: 1.20 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 
@@ -115,15 +115,16 @@ public class PortTask extends TavernaTask {
 	String dataSyntaxType = newDataThing.getSyntacticType();
 	// If, for example, we have a 'text/plain' being put into a l('text/plain') then
 	// we can reasonably create a new container with just the single element in
-	if (portSyntaxType != dataSyntaxType) {
-	    String portSetType = portSyntaxType.split("\\'")[0];
-	    String dataSetType = dataSyntaxType.split("\\'")[0];
-	    System.out.println("Set types are "+portSetType+" and "+dataSetType);
-	    // Get the number of 'l(' elements
-	    int portDimension = (portSetType.length())/2;
-	    int dataDimension = (dataSetType.length())/2;
-	    int encapsulationDifference = portDimension - dataDimension;
-	    System.out.println("Think this is a difference of "+encapsulationDifference+" ("+portDimension+"-"+dataDimension+")");
+	//if (portSyntaxType != dataSyntaxType) {
+	String portSetType = portSyntaxType.split("\\'")[0];
+	String dataSetType = dataSyntaxType.split("\\'")[0];
+	//System.out.println("Set types are "+portSetType+" and "+dataSetType);
+	// Get the number of 'l(' elements
+	int portDimension = (portSetType.length())/2;
+	int dataDimension = (dataSetType.length())/2;
+	int encapsulationDifference = portDimension - dataDimension;
+	//System.out.println("Think this is a difference of "+encapsulationDifference+" ("+portDimension+"-"+dataDimension+")");
+	if (encapsulationDifference > 0) {  
 	    Object theDataObject = newDataThing.getDataObject();
 	    while (encapsulationDifference > 0) {
 		encapsulationDifference--;
@@ -145,10 +146,11 @@ public class PortTask extends TavernaTask {
 	SemanticMarkup portMarkup = getScuflPort().getMetadata();
 	String[] portMIMETypes = portMarkup.getMIMETypes();
 	for (int i = 0; i < portMIMETypes.length; i++) {
-	    theDataThing.getMetadata().addMIMEType(portMIMETypes[i]);
+	    System.out.println("Adding mime type "+portMIMETypes[i]+" to "+((Object)theDataThing).toString());
+	    this.theDataThing.getMetadata().addMIMEType(portMIMETypes[i]);
 	}
 	// Copy any semantic markup into the markup object as well
-	theDataThing.getMetadata().setSemanticType(portMarkup.getSemanticType());
+	this.theDataThing.getMetadata().setSemanticType(portMarkup.getSemanticType());
     }
     
     /**
