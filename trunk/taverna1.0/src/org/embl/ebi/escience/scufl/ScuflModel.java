@@ -504,12 +504,11 @@ public class ScuflModel
 	    // Got a reference to an internal port
 	    Port port = null;
 	    String port_name = parts[0];
-	    try {
-		// Look for a source port
-		return this.sources.locatePort(port_name);
-	    }
-	    catch (UnknownPortException upe) {
+	    if (isInputPort) {
 		return this.sinks.locatePort(port_name);
+	    }
+	    else {
+		return this.sources.locatePort(port_name);
 	    }
 	}
 	throw new MalformedNameException("Couldn't resolve port name '"+port_specifier+"'.");
