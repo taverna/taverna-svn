@@ -31,7 +31,7 @@ public class PollingPropertiesEditor implements ProcessorEditor {
 	final SoaplabProcessor sp = (SoaplabProcessor)theProcessor;
 	return new ActionListener() {
 		public void actionPerformed(ActionEvent ae) {
-		    UIUtils.createFrame(sp.getModel(), new PollingPropertiesPanel(sp), 100, 100, 270, 115);
+		    UIUtils.createFrame(sp.getModel(), new PollingPropertiesPanel(sp), 100, 100, 280, 125);
 		}
 	    };
     }
@@ -45,13 +45,17 @@ public class PollingPropertiesEditor implements ProcessorEditor {
 	public PollingPropertiesPanel(SoaplabProcessor sp) {
 	    processor = sp;
 	    setOpaque(false);
-	    setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
+	    setLayout(new BorderLayout());
 	    col = GraphColours.getColour(ProcessorHelper.getPreferredColour(processor),Color.WHITE);
 	    col2 = ShadedLabel.halfShade(col);
 	    JPanel buttonPanel = new JPanel();
 	    buttonPanel.setLayout(new GridLayout(3,4));
 	    buttonPanel.setOpaque(false);
-	    add(buttonPanel);
+	    add(buttonPanel, BorderLayout.CENTER);
+	    add(Box.createRigidArea(new Dimension(5,5)), BorderLayout.NORTH);
+	    add(Box.createRigidArea(new Dimension(5,5)), BorderLayout.EAST);
+	    add(Box.createRigidArea(new Dimension(5,5)), BorderLayout.WEST);
+	    add(Box.createRigidArea(new Dimension(5,5)), BorderLayout.SOUTH);
 	    final JCheckBox isPolling = new JCheckBox("Polling? ",processor.isPollingDefined());
 	    JButton okayButton = new JButton("Apply");
 	    okayButton.setOpaque(false);
