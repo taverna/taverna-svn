@@ -21,6 +21,7 @@ import com.ibm.lsid.*;
 import org.jdom.*;
 import org.jdom.input.*;
 import org.jdom.output.*;
+import java.io.*;
 
 /**
  * Makes a test call to the LSID authority located on 
@@ -41,12 +42,24 @@ public class TestClient implements WSDLConstants {
 	    System.out.println("No data available");
 	}
 	else {
-	    SAXBuilder sb = new SAXBuilder();
-	    Document result = sb.build(resolver.getData(dataport));
-	    XMLOutputter xo = new XMLOutputter();
-	    xo.setNewlines(true);
-	    xo.setIndent("  ");
-	    System.out.println(xo.outputString(result));
+	    if (lsid.getNamespace().equals("datathing")) {
+		SAXBuilder sb = new SAXBuilder();
+		Document result = sb.build(resolver.getData(dataport));
+		XMLOutputter xo = new XMLOutputter();
+		xo.setNewlines(true);
+		xo.setIndent("  ");
+		System.out.println("Result is in XML format : ");
+		System.out.println(xo.outputString(result));
+	    }
+	    else if (lsid.getNamespace().equals("raw")) {
+		InputStream is = resolver.getData(dataport);
+		byte[] buffer = new byte[256];
+		while (true) {
+		    int bytesRead = is.read(buffer);
+		    if (bytesRead == -1) break;
+		    System.out.write(buffer, 0, bytesRead);
+		}
+	    }
 	}
     }
 

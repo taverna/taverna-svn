@@ -65,15 +65,39 @@ public class TavernaLSIDService extends SimpleResolutionService {
 	LSID theLSID = request.getLsid();
 	String theLSIDString = theLSID.getLsid();
 	System.out.println("Request for LSID : "+theLSIDString);
+	
+	String[] parts = theLSIDString.split(":");
+	String namespace = parts[3];
+	String theDataThingLSIDString = theLSIDString;
+	if (namespace.equals("datathing") == false) {
+	    // Construct a new LSID with the namespace replaced by 'datathing'
+	    theDataThingLSIDString = parts[0]+":"+parts[1]+":"+parts[2]+":datathing:"+parts[4];
+	    if (parts.length == 6) {
+		// has version
+		theDataThingLSIDString = theDataThingLSIDString + ":" + parts[5];
+	    }
+	}
+	
 	try {
-	    DataThing theThing = theDataService.fetchDataThing(theLSIDString);
-	    
-	    Document doc = new Document(DataThingXMLFactory.getElement(theThing));
-	    XMLOutputter xo = new XMLOutputter();
-	    xo.setIndent("  ");
-	    xo.setNewlines(true);
-	    String xmlRepresentation = xo.outputString(doc);
-	    return new ByteArrayInputStream(xmlRepresentation.getBytes());
+	    DataThing theThing = theDataService.fetchDataThing(theDataThingLSIDString);
+	    if (namespace.equals("datathing")) {
+		Document doc = new Document(DataThingXMLFactory.getElement(theThing));
+		XMLOutputter xo = new XMLOutputter();
+		xo.setIndent("  ");
+		xo.setNewlines(true);
+		String xmlRepresentation = xo.outputString(doc);
+		return new ByteArrayInputStream(xmlRepresentation.getBytes());
+	    }
+	    else if (namespace.equals("raw")) {
+		Object o = theThing.getDataObject();
+		if (o instanceof String) {
+		    return new ByteArrayInputStream(((String)o).getBytes());
+		}
+		else if (o instanceof byte[]) {
+		    return new ByteArrayInputStream((byte[])o);
+		}
+	    }
+	    throw new NoSuchLSIDException();
 	}
 	catch (NoSuchLSIDException lsle) {
 	    lsle.printStackTrace();

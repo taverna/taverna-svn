@@ -81,10 +81,11 @@ public class JDBCBaclavaDataService implements BaclavaDataService {
 	    Statement st = con.createStatement();
 	    st.executeUpdate("CREATE TABLE IF NOT EXISTS datathings (id INT UNSIGNED NOT NULL AUTO_INCREMENT,"+
 			     "                         thing TEXT NOT NULL,"+
-			     "                         PRIMARY KEY(id));");
-	    st.executeUpdate("CREATE TABLE IF NOT EXISTS lsids (lsid CHAR(200) NOT NULL UNIQUE,"+
+			     "                         PRIMARY KEY(id)) TYPE = InnoDB;");
+	    st.executeUpdate("CREATE TABLE IF NOT EXISTS lsid2datathings (lsid CHAR(200) NOT NULL UNIQUE,"+
 			     "                    id INT UNSIGNED NOT NULL REFERENCES datathings(id),"+
-			     "                    PRIMARY KEY(lsid));");
+			     "                    reftype ENUM(\"datathing\",\"collection\",\"leaf\"),"+
+			     "                    PRIMARY KEY(lsid)) TYPE = InnoDB;");
 	}
 	catch (Exception ex) {
 	    ex.printStackTrace();
@@ -113,7 +114,7 @@ public class JDBCBaclavaDataService implements BaclavaDataService {
 	    con = getConnectionObject();
 	    Statement st = con.createStatement();
 	    st.executeUpdate("DROP TABLE IF EXISTS datathings");
-	    st.executeUpdate("DROP TABLE IF EXISTS lsids");
+	    st.executeUpdate("DROP TABLE IF EXISTS lsid2datathings");
 	}
 	catch (Exception ex) {
 	    ex.printStackTrace();
@@ -137,24 +138,56 @@ public class JDBCBaclavaDataService implements BaclavaDataService {
 	xo.setNewlines(true);
 	String xmlRepresentation = xo.outputString(doc);
 	// Find all the LSIDs that this document contains
-	String[] lsids = theDataThing.getAllLSIDs();
+	Map lsidMap = theDataThing.getLSIDMap();
 	// Obtain a connection
 	Connection con = getConnectionObject();
 	try {
 	    synchronized(writeLockObject) {
+		boolean addedAtLeastOneMapping = false;
 		PreparedStatement st = con.prepareStatement("INSERT INTO datathings (thing) VALUES (?)");
 		st.setString(1,xmlRepresentation);
 		st.executeUpdate();	    
 		st.close();
 		//System.out.println("Stored string : \n"+xmlRepresentation);
-		PreparedStatement st2 = con.prepareStatement("INSERT INTO lsids (lsid, id) VALUES (?,LAST_INSERT_ID())");
-		for (int i = 0; i < lsids.length; i++) {
-		    st2.setString(1, lsids[i]);
-		    st2.executeUpdate();
+		PreparedStatement st2 = con.prepareStatement("INSERT INTO lsid2datathings (lsid, id, reftype) VALUES (?,LAST_INSERT_ID(),?)");
+		for (Iterator i = lsidMap.keySet().iterator(); i.hasNext();) {
+		    Object o = i.next();
+		    String type = null;
+		    if (o instanceof DataThing) {
+			type = "datathing";
+		    }
+		    else if (o instanceof Collection) {
+			type = "collection";
+		    }
+		    else {
+			type = "leaf";
+		    }
+		    st2.setString(1,(String)lsidMap.get(o));
+		    st2.setString(2,type);
+		    try {
+			st2.executeUpdate();
+			addedAtLeastOneMapping = true;
+		    }
+		    catch (SQLException sqle) {
+			// Can cause an exception if the LSID is already
+			// asigned to a concrete object, in this case
+			// because the constraint is violated we can either
+			// do nothing (silent == true) or throw an exception
+			if (!silent) {
+			    DuplicateLSIDException dle = new DuplicateLSIDException();
+			    dle.initCause(sqle);
+			    throw dle;
+			}
+		    }
 		    //System.out.println("Stored LSID mapping for LSID = "+lsids[i]);
 		}
 		st2.close();
-		con.commit();
+		if (addedAtLeastOneMapping) {
+		    con.commit();
+		}
+		else {
+		    con.rollback();
+		}
 	    }
 	}
 	catch (Exception ex) {
@@ -164,6 +197,9 @@ public class JDBCBaclavaDataService implements BaclavaDataService {
 	    }
 	    catch (SQLException sqle) {
 		sqle.printStackTrace();
+	    }
+	    if (ex instanceof DuplicateLSIDException) {
+		throw (DuplicateLSIDException)ex;
 	    }
 	}
 	finally {
@@ -180,7 +216,7 @@ public class JDBCBaclavaDataService implements BaclavaDataService {
 	Connection con = null;
 	try {
 	    con = getConnectionObject();
-	    PreparedStatement p = con.prepareStatement("SELECT t.thing FROM datathings t, lsids l WHERE t.id=l.id AND l.lsid=?");
+	    PreparedStatement p = con.prepareStatement("SELECT t.thing FROM datathings t, lsid2datathings l WHERE t.id=l.id AND l.lsid=?");
 	    p.setString(1, LSID);
 	    ResultSet rs = p.executeQuery();
 	    String thingAsXML = null;
@@ -229,14 +265,38 @@ public class JDBCBaclavaDataService implements BaclavaDataService {
     /**
      * Does the given LSID exist in a concrete form?
      */
-    public boolean hasData(String LSID) {
-	Connection con = null;
+    public boolean hasData(String suppliedLSID) {
+	String[] parts = suppliedLSID.split(":");
+	String namespace = parts[3];
+	String LSID = suppliedLSID;
+	if (namespace.equals("datathing") == false) {
+	    // Construct a new LSID with the namespace replaced by 'datathing'
+	    LSID = parts[0]+":"+parts[1]+":"+parts[2]+":datathing:"+parts[4];
+	    if (parts.length == 6) {
+		// has version
+		LSID = LSID + ":" + parts[5];
+	    }
+	}
+    	Connection con = null;
 	try {
 	    con = getConnectionObject();
-	    PreparedStatement p = con.prepareStatement("SELECT id FROM lsids WHERE lsid=?");
+	    PreparedStatement p = con.prepareStatement("SELECT id, reftype FROM lsid2datathings WHERE lsid=?");
 	    p.setString(1,LSID);
 	    ResultSet rs = p.executeQuery();
-	    return rs.first();
+	    boolean hasReference = rs.first();
+	    if (hasReference == false) {
+		return false;
+	    }
+	    // If the namespace was datathing then return true, this is enough
+	    if (namespace.equals("datathing")) {
+		return true;
+	    }
+	    else if (namespace.equals("raw")) {
+		if (rs.getString("reftype").equals("leaf")) {
+		    return true;
+		}
+	    }
+	    return false;
 	}
 	catch (Exception ex) {
 	    //

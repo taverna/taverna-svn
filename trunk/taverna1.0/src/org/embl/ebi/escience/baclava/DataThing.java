@@ -89,6 +89,13 @@ public class DataThing {
     }
 
     /**
+     * Get the LSID map object->LSID
+     */
+    public Map getLSIDMap() {
+	return this.lsid;
+    }
+
+    /**
      * Populate all unassigned LSID values using the
      * system default LSID provider
      */

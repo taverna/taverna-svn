@@ -190,7 +190,12 @@
 	<!-- Test the lsid authority running on localhost:8080/authority -->
 	<target name="test.client" depends="jar">
 		<java classname="org.embl.ebi.escience.ouzo.testclient.TestClient" fork="yes">
-			<arg line="urn:lsid:net.sf.taverna:temporaryID:0"/>
+			<arg line="urn:lsid:net.sf.taverna:raw:194"/>
+			<sysproperty key="LSID_CLIENT_HOME" value="."/>
+			<classpath refid="run-classpath"/>
+		</java>
+		<java classname="org.embl.ebi.escience.ouzo.testclient.TestClient" fork="yes">
+			<arg line="urn:lsid:net.sf.taverna:datathing:194"/>
 			<sysproperty key="LSID_CLIENT_HOME" value="."/>
 			<classpath refid="run-classpath"/>
 		</java>

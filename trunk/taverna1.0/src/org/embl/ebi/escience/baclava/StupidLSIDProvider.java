@@ -14,7 +14,7 @@ package org.embl.ebi.escience.baclava;
  */
 public class StupidLSIDProvider implements LSIDProvider {
     
-    static String baseString = "urn:lsid:net.sf.taverna:temporaryID:";
+    static String baseString = "urn:lsid:net.sf.taverna:datathing:";
     static int count = 0;
     
     /**
