@@ -10,20 +10,18 @@ import org.embl.ebi.escience.scuflworkers.*;
 import org.jdom.*;
 
 /**
- * Event corresponding to a processor instance being created
- * by the enactor's scheduling mechanism.
+ * Event corresponding to an alternate processor instance 
+ * being created by the enactor's scheduling mechanism.
  * @author Tom Oinn
  */
-public class ProcessScheduled extends ProcessEvent {
-    
-    private Processor processor;
-    
+public class AlternateProcessScheduled extends ProcessScheduled {
+        
     /**
      * Create a new event with no information about the
      * processor being scheduled. Should use ProcessScheduled(Processor)
      * by preference.
      */
-    public ProcessScheduled() {
+    public AlternateProcessScheduled() {
 	super();
     }
     
@@ -31,19 +29,8 @@ public class ProcessScheduled extends ProcessEvent {
      * Create a new event corresponding to the scheduling
      * of the specified processor
      */
-    public ProcessScheduled(Processor p) {
-	super();
-	this.processor = p;
-    }
-    
-    /**
-     * Return an Element with the processor spec
-     * attached, if present.
-     */
-    public Element eventElement() {
-	Element e = super.eventTopLevelElement();
-	e.addContent(ProcessorHelper.elementForProcessor(processor));
-	return e;
+    public AlternateProcessScheduled(Processor p) {
+	super(p);
     }
         
 }

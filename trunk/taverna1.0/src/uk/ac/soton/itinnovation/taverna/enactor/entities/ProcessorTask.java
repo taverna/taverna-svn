@@ -25,8 +25,8 @@
 //      Dependencies        :
 //
 //      Last commit info    :   $Author: mereden $
-//                              $Date: 2004-02-04 16:36:10 $
-//                              $Revision: 1.31 $
+//                              $Date: 2004-02-05 14:20:25 $
+//                              $Revision: 1.32 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 package uk.ac.soton.itinnovation.taverna.enactor.entities;
@@ -91,7 +91,7 @@ public class ProcessorTask extends TavernaTask{
 	activeProcessor = theProcessor;
 	activeInputMapping = null;
 	activeOutputMapping = null;
-	eventList.add(new ProcessScheduled());
+	eventList.add(new ProcessScheduled(theProcessor));
     }
     
     /**
@@ -107,7 +107,7 @@ public class ProcessorTask extends TavernaTask{
 	    String value = (String)theAlternate.getOutputMapping().get(key);
 	    activeOutputMapping.put(value,key);
 	}
-	eventList.add(new ProcessScheduled());
+	eventList.add(new AlternateProcessScheduled(activeProcessor));
     }
     
     /**
