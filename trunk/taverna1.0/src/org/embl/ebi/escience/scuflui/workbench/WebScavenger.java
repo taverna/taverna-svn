@@ -258,6 +258,10 @@ public class WebScavenger extends Scavenger {
 			    validURLToSearch=false;
 			    //System.out.println("Not searching "+strLink+", doesn't start with "+initialURL);
 			}
+			// If the link ends with .txt or .xml then we don't want to search any more
+			if (strLink.toLowerCase().endsWith(".xml") || strLink.toLowerCase().endsWith(".txt")) {
+			    validURLToSearch = false;
+			}
 			try {
 			    // try opening the URL
 			    URLConnection urlLinkConnection = urlLink.openConnection();
