@@ -6,6 +6,7 @@
 package org.embl.ebi.escience.scufl.enactor;
 
 import org.embl.ebi.escience.scufl.UnknownProcessorException;
+import org.embl.ebi.escience.scufl.ScuflModel;
 
 import uk.ac.soton.itinnovation.freefluo.main.InvalidInputException;
 
@@ -144,6 +145,10 @@ public interface WorkflowInstance {
      */
     public void destroy();
 
-    
+    /**
+     * Get the workflow model (may be offline mode!) for this workflow
+     * instance
+     */
+    public ScuflModel getWorkflowModel();
     
 }
