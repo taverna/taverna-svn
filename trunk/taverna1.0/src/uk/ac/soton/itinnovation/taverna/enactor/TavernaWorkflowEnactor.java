@@ -24,9 +24,9 @@
 //      Created for Project :   MYGRID
 //      Dependencies        :
 //
-//      Last commit info    :   $Author: mereden $
-//                              $Date: 2003-04-25 14:57:06 $
-//                              $Revision: 1.2 $
+//      Last commit info    :   $Author: dmarvin $
+//                              $Date: 2003-05-01 12:11:50 $
+//                              $Revision: 1.3 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 
@@ -139,7 +139,7 @@ public class TavernaWorkflowEnactor extends WorkflowEnactor implements FlowCallb
             while (wfbais.available() > 0) {
                 sWriter.write(wfbais.read());
             }
-            String wsflDefn = sWriter.toString();
+            String workflowDefn = sWriter.toString();
 
             sWriter = new StringWriter();
             while (indbais.available() > 0) {
@@ -153,7 +153,7 @@ public class TavernaWorkflowEnactor extends WorkflowEnactor implements FlowCallb
             //submit the flow
             String input = sWriter.toString();
             
-			TavernaWorkflowSubmission submit = new TavernaWorkflowSubmission(wsflDefn, input, userObj.getID(), userObj.getContext());
+			TavernaWorkflowSubmission submit = new TavernaWorkflowSubmission(workflowDefn, input, userObj.getID(), userObj.getContext());
 			FlowBroker broker = FlowBrokerFactory.createFlowBroker("uk.ac.soton.itinnovation.taverna.enactor.broker.TavernaFlowBroker");
 			TavernaFlowReceipt receipt = (TavernaFlowReceipt) broker.submitFlow(submit);
 			String workflowID = receipt.getID();

@@ -5,6 +5,10 @@
  */
 package org.embl.ebi.escience.scufl;
 
+import java.util.Iterator;
+import java.util.List;
+import java.util.ArrayList;
+
 /**
  * An abstract superclass of all processor ports
  * @author Tom Oinn
@@ -16,6 +20,7 @@ public abstract class Port implements java.io.Serializable {
     private boolean isExternal = false;
     private String syntacticType = "";
     private String semanticType = "";
+	private List aliases = null;
 
     /**
      * Create a new port (obviously you can't actually construct this 
@@ -119,8 +124,36 @@ public abstract class Port implements java.io.Serializable {
     public String getName() {
 	return this.name;
     }
-    
-    /**
+
+	/**
+	 * Add a name to the list of aliases used to reference 
+	 * this port.
+	 */
+	public void addAlias(String name) {
+		if(aliases==null)
+			aliases = new ArrayList();
+		aliases.add(name);
+		//Note at present no way to remove name, can't see
+		//any need for it at moment - would introduce 
+		//synchronization issues anyway. - djm 29/04/2003.
+	}
+
+	/**
+	 * Checks to see if supplied name is an alias for the port
+	 */
+	public boolean isAlias(String name) {
+		if(aliases!=null){
+			Iterator i = aliases.iterator();
+			while(i.hasNext()) {
+				String n = (String) i.next();
+				if(n.equals(name))
+					return true;
+			}
+		}
+		return false;
+	}	
+
+	/**
      * Handle model events
      */
     void fireModelEvent(ScuflModelEvent event) {

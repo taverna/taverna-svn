@@ -24,9 +24,9 @@
 //      Created for Project :   MYGRID
 //      Dependencies        :
 //
-//      Last commit info    :   $Author: mereden $
-//                              $Date: 2003-04-27 21:26:03 $
-//                              $Revision: 1.6 $
+//      Last commit info    :   $Author: dmarvin $
+//                              $Date: 2003-05-01 12:11:44 $
+//                              $Revision: 1.7 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 
@@ -94,7 +94,9 @@ public class XScuflDiGraphGenerator {
 			for(int i=0;i<processors.length;i++){
 			    Processor theProcessor = processors[i];
 			    String id = flowID + ":Processor:" + theProcessor.getName();
+			    /*
 			    String serviceID = null;
+			    //note serviceID serves only to 
 			    if (theProcessor instanceof SoaplabProcessor) {
 				// A soaplab service is defined by the URL of its soaplab endpoint
 				serviceID = ((SoaplabProcessor)theProcessor).getEndpoint().toExternalForm();
@@ -103,13 +105,17 @@ public class XScuflDiGraphGenerator {
 				// A talisman service is defined by the URL of the script file
 				serviceID = ((TalismanProcessor)theProcessor).getTScriptURLObject().toExternalForm();
 			    }
+			    else if (theProcessor instanceof WSDLInvocationTask) {
+				// A general wsdl service defined by its wsdl, note that wsdl should provide the service endpoint 
+				serviceID = ((WSDLInvocationTask)theProcessor).get
 			    else {
 				throw new XScuflInvalidException("Processor '"+theProcessor.getName()+"' "+
 								 "cannot be understood by this version of the "+
 								 "Taverna enactor.");
 			    }
+			    */
 			    // Create the actual task to do the work of this processor.
-			    ProcessorTask serviceTask = TavernaTaskFactory.getConcreteTavernaTask(id,serviceID,theProcessor);
+			    ProcessorTask serviceTask = TavernaTaskFactory.getConcreteTavernaTask(id,theProcessor);
 			    addToListIfNotThere(tasks,serviceTask);
 			    processorTasks.add(serviceTask);
 			    
@@ -119,6 +125,10 @@ public class XScuflDiGraphGenerator {
 			    // Specifically, _only_ the necessary ones? - it seems to only create
 			    // port tasks for ports in the processor that are bound or external, 
 			    // which makes sense I guess. tmo@ebi.ac.uk, 27th april 2003
+				// this is initially the situation, it is unclear how to deal with unbound ports - the situation where
+				// processors may only need part of the inputs before kicking off. This requires further investigation
+				// and will in all likelihood lead to changes in the algorithm adopted here, but for now this is enough.
+				// I think I will actually double the number of 
 			}
 
 			//dataconstraints associate nodes based on linking ports between processors
@@ -203,14 +213,11 @@ public class XScuflDiGraphGenerator {
 				while(it.hasNext()) {
 					Part part = (Part) it.next();
 					String partName = part.getName();
-					StringTokenizer tokenizer = new StringTokenizer(partName,":");
-					String processorID = tokenizer.nextToken();
-					String prtName = tokenizer.nextToken();
-					if(processorID.equals(parentProc)&&prtName.equals(portName)) {						
-						pT.setData(new Part(-1,prtName,part.getType(),part.getValue()));
+					String qualifiedName = parentProc + ":" + portName;
+					if(qualifiedName.equals(partName) || port.isAlias(partName)) {						
+					    pT.setData(new Part(-1,portName,part.getType(),part.getValue()));
 					}
-				}
-				
+				}				
 			}
 
 			iterator = flowExtOutPorts.iterator();

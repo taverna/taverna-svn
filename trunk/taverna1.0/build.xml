@@ -281,5 +281,11 @@
                 </java>
         </target>
 
-	
+	<!-- Run arbitrary unit test -->
+	<target name="runtestunit" depends="jar">
+		<java classname="junit.textui.TestRunner" fork="true">
+			<arg value="${class}"/>
+			<classpath refid="compile-classpath"/>
+		</java>
+	</target>
 </project>

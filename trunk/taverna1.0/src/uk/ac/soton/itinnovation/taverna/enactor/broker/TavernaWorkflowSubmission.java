@@ -24,9 +24,9 @@
 //      Created for Project :   MYGRID
 //      Dependencies        :
 //
-//      Last commit info    :   $Author: mereden $
-//                              $Date: 2003-04-25 14:57:08 $
-//                              $Revision: 1.4 $
+//      Last commit info    :   $Author: dmarvin $
+//                              $Date: 2003-05-01 12:11:44 $
+//                              $Revision: 1.5 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 package uk.ac.soton.itinnovation.taverna.enactor.broker;
@@ -41,7 +41,7 @@ public class TavernaWorkflowSubmission {
 
     /**
      * Constructor used when no email notification is necessary.
-     * @param wsflSpec
+     * @param xscuflSpec
      * @param inputData
      * @param userID
      * @param userNamespaceCxt

@@ -24,9 +24,9 @@
 //      Created for Project :   MYGRID
 //      Dependencies        :
 //
-//      Last commit info    :   $Author: mereden $
-//                              $Date: 2003-04-27 21:26:03 $
-//                              $Revision: 1.6 $
+//      Last commit info    :   $Author: dmarvin $
+//                              $Date: 2003-05-01 12:11:50 $
+//                              $Revision: 1.7 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 
@@ -62,26 +62,23 @@ public class TavernaTaskFactory {
 	 *
      * @param String identifier for the required application
      */
-    public static ProcessorTask getConcreteTavernaTask(String id,String taskID,Processor processor) throws UnsupportedTavernaProcessorException {
+    public static ProcessorTask getConcreteTavernaTask(String id,Processor processor) throws UnsupportedTavernaProcessorException {
         ProcessorTask pTask = null;
-		//obtain the class of this taskID, this could be shifted to configuration later
+		
 		String taskClassName = null;
 
-		// next section was : 
-		//   if (taskID.startsWith("http://industry.ebi.ac.uk/soap/soaplab/"))
-		// which will only succeed on EBI soaplab installations - in this case
-		// the taskID is derived from the external form of the soaplab endpoint
-		// url.
-		// tmo@ebi.ac.uk, 27th april 2003
 		if (processor instanceof SoaplabProcessor) {
 		    taskClassName = "uk.ac.soton.itinnovation.taverna.enactor.entities.SoaplabTask";
 		}
 		else if (processor instanceof TalismanProcessor) {
 		    taskClassName = "uk.ac.soton.itinnovation.taverna.enactor.entities.TalismanTask";
 		}
+		else if (processor instanceof WSDLBasedProcessor) {
+		    taskClassName = "uk.ac.soton.itinnovation.taverna.enactor.entities.WSDLInvocationTask";
+		}
 		else {
-		    logger.error("Don't know how to deal with processor with name '" + taskID + "'");
-		    throw new UnsupportedTavernaProcessorException("Don't know how to deal with processor with name '" + taskID + "'");
+		    logger.error("Don't know how to deal with processor with name '" + processor.getName() + "'");
+		    throw new UnsupportedTavernaProcessorException("Don't know how to deal with processor with name '" + processor.getName() + "'");
 		}
 		try {
             		Class processorDefn = null;
@@ -92,24 +89,24 @@ public class TavernaTaskFactory {
 			argsConstructor = processorDefn.getConstructor(argsClass);
 			pTask = (ProcessorTask) argsConstructor.newInstance(args);
 		} catch (InstantiationException e) {
-			logger.error("Can't instantiate task for processor with soaplab wsdl '" + taskID + "'",e);
-			throw new UnsupportedTavernaProcessorException("Couldn't load implementation for processor with soaplab wsdl '" + taskID + "'");
+			logger.error("Can't instantiate task for processor with identifier '" + processor.getName(),e);
+			throw new UnsupportedTavernaProcessorException("Couldn't load implementation for processor with identifier '" + processor.getName() + "'");
 		} catch (IllegalAccessException e) {
-			logger.error("Not allowed to instantiate processor with soaplab wsdl '" + taskID + "'",e);
-			throw new UnsupportedTavernaProcessorException("Couldn't load implementation for processor with soaplab wsdl '" + taskID + "'");
+			logger.error("Not allowed to instantiate processor with identifier '" + processor.getName(),e);
+			throw new UnsupportedTavernaProcessorException("Couldn't load implementation for processor with identifier '" + processor.getName() + "'");
 		} catch (IllegalArgumentException e) {
-			logger.error("Inappropriate arguments pass to customt task for processor with soaplab wsdl '" + taskID + "'",e);
-			throw new UnsupportedTavernaProcessorException("Couldn't load implementation for processor with soaplab wsdl '" + taskID + "'");
+			logger.error("Inappropriate arguments pass to custom task for processor with identifier '" + processor.getName()+ "'",e);
+			throw new UnsupportedTavernaProcessorException("Couldn't load implementation for processor with identifier '" + processor.getName() + "'");
 		} catch (InvocationTargetException e) {
-			logger.error("Unable to invoke constructor of custom task for processor with soaplab wsdl '" + taskID + "'",e);
-			throw new UnsupportedTavernaProcessorException("Couldn't load implementation for processor with soaplab wsdl '" + taskID + "'");
+			logger.error("Unable to invoke constructor of custom task for processor with identifier '" + processor.getName() + "'",e);
+			throw new UnsupportedTavernaProcessorException("Couldn't load implementation for processor with identifier '" + processor.getName() + "'");
 		} catch (Exception e) {
-            logger.error("Don't know how to deal with processor with soaplab wsdl '" + taskID + "'",e);
-			throw new UnsupportedTavernaProcessorException("Couldn't load implementation for processor with soaplab wsdl '" + taskID + "'");
+            logger.error("Don't know how to deal with processor with identifier '" + processor.getName() + "'",e);
+			throw new UnsupportedTavernaProcessorException("Couldn't load implementation for processor with identifier '" + processor.getName() + "'");
         }
 		if(pTask==null) {
-			logger.error("Don't know how to deal with processor with soaplab wsdl '" + taskID + "'");
-			throw new UnsupportedTavernaProcessorException("Couldn't load implementation for processor with soaplab wsdl '" + taskID + "'");
+			logger.error("Don't know how to deal with processor with identifier '" + processor.getName() + "'");
+			throw new UnsupportedTavernaProcessorException("Couldn't load implementation for processor with identifier '" + processor.getName() + "'");
 		}
 		return pTask;
     }

@@ -43,6 +43,8 @@ public class WSDLBasedProcessor extends Processor implements java.io.Serializabl
     private String wsdlLocationString = null;
     private String operationString = null;
     private String portTypeString = null;
+	private String requestMessageName = null;
+	private String responseMessageName = null;
 
     public String getWSDLLocation() {
 	return this.wsdlLocationString;
@@ -53,6 +55,12 @@ public class WSDLBasedProcessor extends Processor implements java.io.Serializabl
     public String getPortTypeName() {
 	return this.portTypeString;
     }
+	public String getRequestMessageName() {
+	return this.requestMessageName;
+	}
+	public String getResponseMessageName() {
+	return this.responseMessageName;
+	}
 
     /**
      * Construct a new processor from the given WSDL definition
@@ -118,6 +126,7 @@ public class WSDLBasedProcessor extends Processor implements java.io.Serializabl
 
 	// Do the inputs first...
 	Message inputMessage = theOperation.getInput().getMessage();
+	requestMessageName = inputMessage.getQName().getLocalPart();
 	// Iterate over the message parts, creating appropriate Port implementations
 	System.out.println("Input ports...");
 	for (Iterator i = inputMessage.getParts().values().iterator(); i.hasNext(); ) {
@@ -135,6 +144,7 @@ public class WSDLBasedProcessor extends Processor implements java.io.Serializabl
 	}
 	// Then do the outputs
 	Message outputMessage = theOperation.getOutput().getMessage();
+	responseMessageName = outputMessage.getQName().getLocalPart();
 	// Iterate over the output parts, creating appropriate Port implementations
 	System.out.println("Output ports...");
 	for (Iterator i = outputMessage.getParts().values().iterator(); i.hasNext(); ) {
