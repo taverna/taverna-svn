@@ -31,10 +31,11 @@ body {
   for more details.</p>
 <h2>Contents</h2>
 <ol>
-  <li> <a href="#1">Web button support for service or workflow load</a></li>
+  <li><a href="#1">Web button support for service or workflow load</a></li>
   <li><a href="#2">Collection of processor prototypes from a workflow definition</a></li>
   <li><a href="#3">Graphical workflow progress display</a></li>
   <li><a href="#4">Show annotations on processors and data links</a></li>
+  <li><a href="#5">Wizard for DataThing construction</a></li>
 </ol>
 <h2><a name="1"></a>1 Web button support for service or workflow load</h2>
 <h3>Background and aim</h3>
@@ -183,5 +184,33 @@ body {
 <h3>Time required</h3>
 <p>A Java expert should be able to implement this in a day or two at most, novices 
   in a couple of weeks with some help in places.</p>
+<h2><a name="5"></a>5 Wizard for DataThing construction</h2>
+<h3>Background and aim</h3>
+<p>The result browser allows users to explore and visualize the contents of a 
+  DataThing object, there is, however, no corresponding mechanism for them to 
+  construct one. It would be obviously useful for users to be able to enter lists 
+  as parameters for workflows, and to import data from other formats such as Excel 
+  and simpler ones such as CSV (Comma Seperated Value) and TSV (Tab Seperated 
+  Value). This would be coded as a graphical 'wizard' style component to walk 
+  a naive user through the process of entering and describing their data.</p>
+<h3>Requirements</h3>
+<p>To code a graphical wizard, you will need a pretty solid knowledge of Java 
+  Swing programming. In addition, the baclava package contains the various classes 
+  to do with manipulating and constructing DataThing objects so you'd need to 
+  be able to understand and use all the code in there. Some of this code is quite 
+  complex, so a reasonable level of familiarity with Java is probably required. 
+  The Apache POI project would be a reasonable thing to familiarize yourself with 
+  as well if you want to be able to access files in MS' document interchange format 
+  such as Excel.</p>
+<p>In addition to the technical requirements, you should also solicit the opinions 
+  of our users to find out how they would most like to enter their data. A graphical 
+  wizard is an exercise in human computer interaction, the human part of this 
+  is important!</p>
+<h3>Time required</h3>
+<p>Probably a couple of weeks, but this depends on how many features you want 
+  to include. A basic wizard with no import functionality would be the base case, 
+  the import functions may take more or less time depending on how sophisticated 
+  you make them. You may require a week or more to get user requirements before 
+  coding. </p>
 </body>
 </html>
