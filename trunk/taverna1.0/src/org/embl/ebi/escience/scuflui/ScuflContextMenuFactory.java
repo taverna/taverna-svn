@@ -23,6 +23,10 @@ import org.embl.ebi.escience.scuflui.LinkingMenus;
 import org.embl.ebi.escience.scuflui.NoContextMenuFoundException;
 import org.embl.ebi.escience.scuflui.ScuflIcons;
 import org.embl.ebi.escience.scuflui.ScuflSemanticMarkupEditor;
+import org.embl.ebi.escience.scuflui.actions.AddInputAction;
+import org.embl.ebi.escience.scuflui.actions.AddOutputAction;
+import org.embl.ebi.escience.scuflui.actions.RemoveAction;
+
 import java.lang.Exception;
 import java.lang.Object;
 import java.lang.String;
@@ -61,8 +65,10 @@ public class ScuflContextMenuFactory {
 	else if (theObject instanceof Port) {
 	    // Check whether the port parent node is an AlternateProcessor
 	    // in which case we display the mapping options
+	    final Port thePort = (Port)theObject;		
+		if(theNode != null)
+		{
 	    DefaultMutableTreeNode parent = (DefaultMutableTreeNode)theNode.getParent();
-	    final Port thePort = (Port)theObject;
 	    if (parent.getUserObject() instanceof AlternateProcessor) {
 		final AlternateProcessor ap = (AlternateProcessor)parent.getUserObject();
 		JPopupMenu theMenu = new JPopupMenu();
@@ -101,6 +107,7 @@ public class ScuflContextMenuFactory {
 		return theMenu;
 		
 	    }
+		}
 	    // Is the port a workflow source?
 	    //Port thePort = (Port)theObject;
 	    if (thePort instanceof OutputPort) {
@@ -122,14 +129,7 @@ public class ScuflContextMenuFactory {
 			});
 		    theMenu.add(edit);
 		    theMenu.addSeparator();
-		    
-		    JMenuItem delete = new JMenuItem("Remove from model", ScuflIcons.deleteIcon);
-		    delete.addActionListener(new ActionListener() {
-			    public void actionPerformed(ActionEvent ae) {
-				sinkPort.getProcessor().removePort(sinkPort);
-			    }
-			});
-		    theMenu.add(delete);
+		    theMenu.add(new RemoveAction(model, sinkPort));
 		    return theMenu;
 		}
 	    }
@@ -142,120 +142,43 @@ public class ScuflContextMenuFactory {
 	    return getConcurrencyConstraintMenu((ConcurrencyConstraint)theObject, model);
 	}
 	else if (theObject instanceof String) {
-	    String choice = (String)theObject;
-	    if (choice.equals("Workflow inputs")) {
-		// Show menu to create a new workflow source
-		JPopupMenu theMenu = new JPopupMenu();
-		theMenu.add(new ShadedLabel("Workflow inputs",ShadedLabel.TAVERNA_GREEN));
-		theMenu.addSeparator();
-		JMenuItem createInput = new JMenuItem("Create new input...",ScuflIcons.inputIcon);
-		theMenu.add(createInput);
-		final ScuflModel theModel = model;
-		createInput.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent ae) {
-			    String name = (String)JOptionPane.showInputDialog(null,
-									  "Name for the new workflow input?",
-									  "Name required",
-									  JOptionPane.QUESTION_MESSAGE,
-									  null,
-									  null,
-									  "");
-			    if (name != null) {
-				try {
-				    theModel.getWorkflowSourceProcessor().addPort(new OutputPort(theModel.getWorkflowSourceProcessor(), name));
-				    theModel.forceUpdate();
-				}
-				catch (PortCreationException pce) {
-				    JOptionPane.showMessageDialog(null,
-								  "Port creation exception : \n"+pce.getMessage(),
-								  "Exception!",
-								  JOptionPane.ERROR_MESSAGE);
-				}
-				catch (DuplicatePortNameException dpne) {
-				    JOptionPane.showMessageDialog(null,
-							      "Duplicate name : \n"+dpne.getMessage(),
-								  "Exception!",
-								  JOptionPane.ERROR_MESSAGE);
-				}
-			    }
+			String choice = (String) theObject;
+			if (choice.equals("Workflow inputs"))
+			{
+				// Show menu to create a new workflow source
+				JPopupMenu theMenu = new JPopupMenu();
+				theMenu.add(new ShadedLabel("Workflow inputs", ShadedLabel.TAVERNA_GREEN));
+				theMenu.addSeparator();
+				theMenu.add(new AddInputAction(model));
+				return theMenu;
 			}
-			
-		    });
-		return theMenu;
-	    }
-	    else if (choice.equals("Workflow outputs")) {
-		// Show menu to create a new workflow sink
-		JPopupMenu theMenu = new JPopupMenu();
-		theMenu.add(new ShadedLabel("Workflow outputs", ShadedLabel.TAVERNA_GREEN));
-		theMenu.addSeparator();
-		JMenuItem createOutput = new JMenuItem("Create new output...",ScuflIcons.outputIcon);
-		theMenu.add(createOutput);
-		final ScuflModel theModel = model;
-		createOutput.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent ae) {
-			    String name = (String)JOptionPane.showInputDialog(null,
-									      "Name for the new workflow output?",
-									      "Name required",
-									      JOptionPane.QUESTION_MESSAGE,
-									      null,
-									      null,
-									      "");
-			    if (name != null) {
-				try {
-				    theModel.getWorkflowSinkProcessor().addPort(new InputPort(theModel.getWorkflowSinkProcessor(), name));				
-				    theModel.forceUpdate();
-				}
-				catch (PortCreationException pce) {
-				    JOptionPane.showMessageDialog(null,
-								  "Port creation exception : \n"+pce.getMessage(),
-								  "Exception!",
-								  JOptionPane.ERROR_MESSAGE);
-				}
-				catch (DuplicatePortNameException dpne) {
-				    JOptionPane.showMessageDialog(null,
-								  "Duplicate name : \n"+dpne.getMessage(),
-								  "Exception!",
-								  JOptionPane.ERROR_MESSAGE);
-				}
-			    }
+			else if (choice.equals("Workflow outputs"))
+			{
+				// Show menu to create a new workflow sink
+				JPopupMenu theMenu = new JPopupMenu();
+				theMenu.add(new ShadedLabel("Workflow outputs", ShadedLabel.TAVERNA_GREEN));
+				theMenu.addSeparator();
+				theMenu.add(new AddOutputAction(model));
+				return theMenu;
 			}
-		    });
-		return theMenu;
-	    }
-	}
+		}
 	
 	throw new NoContextMenuFoundException("Didn't know how to create a context menu for a "+theObject.getClass().toString());
     }
 
     private static JPopupMenu getDataConstraintMenu(DataConstraint dc, ScuflModel model) {
-	final DataConstraint theConstraint = dc;
-	final ScuflModel theModel = model;
 	JPopupMenu theMenu = new JPopupMenu();
-	theMenu.add(new ShadedLabel("Link : "+theConstraint.getName(), ShadedLabel.TAVERNA_GREEN));
+	theMenu.add(new ShadedLabel("Link : "+dc.getName(), ShadedLabel.TAVERNA_GREEN));
 	theMenu.addSeparator();
-	JMenuItem delete = new JMenuItem("Remove from model", ScuflIcons.deleteIcon);
-	delete.addActionListener(new ActionListener() {
-		public void actionPerformed(ActionEvent a) {
-		    theModel.destroyDataConstraint(theConstraint);
-		}
-	    });
-	theMenu.add(delete);
+	theMenu.add(new RemoveAction(model, dc));
 	return theMenu;
     }
 
     private static JPopupMenu getConcurrencyConstraintMenu(ConcurrencyConstraint cc, ScuflModel model) {
-	final ConcurrencyConstraint theConstraint = cc;
-	final ScuflModel theModel = model;
 	JPopupMenu theMenu = new JPopupMenu();
-	theMenu.add(new ShadedLabel("Coordination : "+theConstraint.getName(), ShadedLabel.TAVERNA_GREEN));
+	theMenu.add(new ShadedLabel("Coordination : "+cc.getName(), ShadedLabel.TAVERNA_GREEN));
 	theMenu.addSeparator();
-	JMenuItem delete = new JMenuItem("Remove from model", ScuflIcons.deleteIcon);
-	delete.addActionListener(new ActionListener() {
-		public void actionPerformed(ActionEvent a) {
-		    theModel.destroyConcurrencyConstraint(theConstraint);
-		}
-	    });
-	theMenu.add(delete);
+	theMenu.add(new RemoveAction(model, cc));
 	return theMenu;
     }
 
@@ -264,14 +187,7 @@ public class ScuflContextMenuFactory {
 	JPopupMenu theMenu = new JPopupMenu();
 	theMenu.add(new ShadedLabel("Processor : "+theProcessor.getName(), ShadedLabel.TAVERNA_GREEN));
 	theMenu.addSeparator();
-	JMenuItem delete = new JMenuItem("Remove from model", ScuflIcons.deleteIcon);
-	delete.addActionListener(new ActionListener() {
-		public void actionPerformed(ActionEvent a) {
-		    theProcessor.getModel().destroyProcessor(theProcessor);
-		}
-	    });
-	// Provide a submenu to create a coordination constraint
-	theMenu.add(delete);
+	theMenu.add(new RemoveAction(processor.getModel(), processor));
 	// Check whether we have an appropriate editor available....
 	String tagName = ProcessorHelper.getTagNameForClassName(theProcessor.getClass().getName());
 	ProcessorEditor pe = ProcessorHelper.getEditorForTagName(tagName);
