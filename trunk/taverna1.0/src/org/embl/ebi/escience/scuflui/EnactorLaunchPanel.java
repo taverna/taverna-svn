@@ -20,8 +20,6 @@ import org.embl.ebi.escience.scufl.ScuflModelEvent;
 import org.embl.ebi.escience.scufl.ScuflModelEventListener;
 import org.embl.ebi.escience.scufl.enactor.EnactorProxy;
 import org.embl.ebi.escience.scufl.enactor.implementation.FreefluoEnactorProxy;
-import org.embl.ebi.escience.scuflui.workbench.GenericUIComponentFrame;
-import org.embl.ebi.escience.scuflui.workbench.Workbench;
 
 // Utility Imports
 import java.util.HashMap;
@@ -109,17 +107,24 @@ public class EnactorLaunchPanel extends JPanel
 		    Map inputObject = EnactorLaunchPanel.this.getDataThingMap();
 		    System.out.println("Created the Input object.."+inputObject.toString());
 		    try {
-			if (Workbench.workbench != null) {
-			    GenericUIComponentFrame thing = new GenericUIComponentFrame(Workbench.workbench.model,
-											new EnactorInvocation(defaultEnactor,
-													      EnactorLaunchPanel.this.model,
-													      inputObject
-													      ));
-			    thing.setSize(600,400);
-			    thing.setLocation(100,100);
-			    Workbench.workbench.desktop.add(thing);
-			    thing.moveToFront();
-			}
+			UIUtils.createFrame(EnactorLaunchPanel.this.model, new EnactorInvocation(FreefluoEnactorProxy.getInstance(), 
+									    EnactorLaunchPanel.this.model,
+									    inputObject),
+					    100, 100, 600, 400);
+			/**
+			   if (Workbench.workbench != null) {
+			   
+			   GenericUIComponentFrame thing = new GenericUIComponentFrame(EnactorLaunchPanel.this.model,
+			   new EnactorInvocation(defaultEnactor,
+			   EnactorLaunchPanel.this.model,
+			   inputObject
+			   ));
+			   thing.setSize(600,400);
+			   thing.setLocation(100,100);
+			   Workbench.workbench.desktop.add(thing);
+			   thing.moveToFront();
+			   }
+			*/
 		    }
 		    catch (Exception e) {
 			e.printStackTrace();

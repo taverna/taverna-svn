@@ -12,6 +12,9 @@ import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import javax.swing.*;
+import javax.swing.event.InternalFrameAdapter;
+import javax.swing.event.InternalFrameEvent;
+
 import java.util.*;
 import org.embl.ebi.escience.scufl.ScuflModel;
 import org.embl.ebi.escience.scufl.enactor.implementation.*;
@@ -41,7 +44,7 @@ import java.io.PrintWriter;
 import java.net.URL;
 
 import org.embl.ebi.escience.scuflui.workbench.FileDrop;
-import org.embl.ebi.escience.scuflui.workbench.GenericUIComponentFrame;
+//import org.embl.ebi.escience.scuflui.workbench.GenericUIComponentFrame;
 import org.embl.ebi.escience.scuflui.workbench.ScavengerTree;
 import org.embl.ebi.escience.scuflui.workbench.ScrollableDesktopPane;
 import org.embl.ebi.escience.scuflui.workbench.SplashScreen;
@@ -138,8 +141,42 @@ public class Workbench extends JFrame {
 	    ex.printStackTrace();
 	}
 	
-	Workbench workbench = new Workbench();
-	
+	final Workbench workbench = new Workbench();
+	// Create a new implementation of the FrameCreator interface to create windows in the desktop
+	// Only do this if the property 'taverna.workbench.useinternalframes' is defined
+	if (System.getProperty("taverna.workbench.useinternalframes") != null) {
+	    UIUtils.DEFAULT_FRAME_CREATOR = new UIUtils.FrameCreator() {
+		    public void createFrame(ScuflModel targetModel, ScuflUIComponent targetComponent, int posX, int posY, int sizeX, int sizeY) {
+			GenericUIComponentFrame thing = new GenericUIComponentFrame(targetModel, targetComponent);
+			thing.setSize(sizeX, sizeY);
+			thing.setLocation(posX, posY);
+			workbench.desktop.add(thing);
+			thing.moveToFront();
+			thing.setVisible(true);
+		    }
+		    class GenericUIComponentFrame extends JInternalFrame { 
+			ScuflUIComponent component;
+			public GenericUIComponentFrame(ScuflModel model, ScuflUIComponent component) {
+			    super(component.getName(), true, true, true, true);
+			    this.component = component;
+			    JScrollPane pane = new JScrollPane((JComponent)component);
+			    if (component.getIcon() != null) {
+				setFrameIcon(component.getIcon());
+			    }
+			    getContentPane().add(pane);
+			    //pane.getViewport().setBackground(Color.WHITE);
+			    // Bind to the specified model
+			    component.attachToModel(model);
+			    // Unbind on window close
+			    addInternalFrameListener(new InternalFrameAdapter() {
+				    public void internalFrameClosing(InternalFrameEvent e) {
+					GenericUIComponentFrame.this.component.detachFromModel();
+				    }
+				});
+			}
+		    };
+		};
+	}
 	// Treat any command line arguments as files to import into the workbench
 	for (int i = 0; i < args.length; i++) {
 	    try {
@@ -150,24 +187,30 @@ public class Workbench extends JFrame {
 		System.out.println(e.getMessage());
 	    }
 	}
-
-	GenericUIComponentFrame diagram = new GenericUIComponentFrame(workbench.model,
-								      new ScuflDiagramPanel());
-	diagram.setSize(500,400);
-	diagram.setLocation(20,440);
-	workbench.desktop.add(diagram);
-	GenericUIComponentFrame explorer = new GenericUIComponentFrame(workbench.model,
-								       new AdvancedModelExplorer());
-	explorer.setSize(500,300);
-	explorer.setLocation(20,120);
-	workbench.desktop.add(explorer);
-
-	GenericUIComponentFrame scavenger = new GenericUIComponentFrame(workbench.model,
-									new ScavengerTreePanel());
-	scavenger.setSize(300,720);
-	scavenger.setLocation(540,120);
-	workbench.desktop.add(scavenger);
-
+       
+	UIUtils.createFrame(workbench.model, new ScuflDiagramPanel(), 20, 440, 500, 400);
+	/**
+	   GenericUIComponentFrame diagram = new GenericUIComponentFrame(workbench.model,
+	   new ScuflDiagramPanel());
+	   diagram.setSize(500,400);
+	   diagram.setLocation(20,440);
+	   workbench.desktop.add(diagram);
+	*/
+	UIUtils.createFrame(workbench.model, new AdvancedModelExplorer(), 20, 120, 500, 300);
+	UIUtils.createFrame(workbench.model, new ScavengerTreePanel(), 540, 120, 300, 720);
+	/**
+	   GenericUIComponentFrame explorer = new GenericUIComponentFrame(workbench.model,
+	   new AdvancedModelExplorer());
+	   explorer.setSize(500,300);
+	   explorer.setLocation(20,120);
+	   workbench.desktop.add(explorer);
+	   
+	   GenericUIComponentFrame scavenger = new GenericUIComponentFrame(workbench.model,
+	   new ScavengerTreePanel());
+	   scavenger.setSize(300,720);
+	   scavenger.setLocation(540,120);
+	   workbench.desktop.add(scavenger);
+	*/
 	workbench.setVisible(true);
     }
 
@@ -294,10 +337,11 @@ public class Workbench extends JFrame {
 			public void actionPerformed(ActionEvent ae) {
 			    try {
 				ScuflUIComponent thing = (ScuflUIComponent)itemClass.newInstance();
-				GenericUIComponentFrame frame = new GenericUIComponentFrame(Workbench.this.model, thing);
-				frame.setSize(400,400);
-				Workbench.this.desktop.add(frame);
-				frame.moveToFront();
+				UIUtils.createFrame(Workbench.this.model, thing, 100, 100, 400, 400);
+				//GenericUIComponentFrame frame = new GenericUIComponentFrame(Workbench.this.model, thing);
+				//frame.setSize(400,400);
+				//Workbench.this.desktop.add(frame);
+				//frame.moveToFront();
 			    }
 			    catch (InstantiationException ie) {
 				//
@@ -324,15 +368,21 @@ public class Workbench extends JFrame {
 			DataThingConstructionPanel thing = new DataThingConstructionPanel() {
 				public void launchEnactorDisplay(Map inputObject) {
 				    try {
-					GenericUIComponentFrame thing = 
-					    new GenericUIComponentFrame(theModel,
-									new EnactorInvocation(FreefluoEnactorProxy.getInstance(), 
-											      theModel,
-											      inputObject));
-					thing.setSize(600, 400);
-					thing.setLocation(100, 100);
-					Workbench.workbench.desktop.add(thing);
-					thing.moveToFront();
+					UIUtils.createFrame(theModel, new EnactorInvocation(FreefluoEnactorProxy.getInstance(), 
+											    theModel,
+											    inputObject),
+							    100, 100, 600, 400);
+					/**
+					   GenericUIComponentFrame thing = 
+					   new GenericUIComponentFrame(theModel,
+					   new EnactorInvocation(FreefluoEnactorProxy.getInstance(), 
+					   theModel,
+					   inputObject));
+					   thing.setSize(600, 400);
+					   thing.setLocation(100, 100);
+					   Workbench.workbench.desktop.add(thing);
+					   thing.moveToFront();
+					*/
 				    }
 				    catch (WorkflowSubmissionException wse) {
 					JOptionPane.showMessageDialog(null,
@@ -342,21 +392,28 @@ public class Workbench extends JFrame {
 				    }
 				}
 			    };
-			GenericUIComponentFrame frame = new GenericUIComponentFrame(Workbench.this.model, thing);
-			Workbench.this.desktop.add(frame);
-			frame.moveToFront();
+			
+			//GenericUIComponentFrame frame = new GenericUIComponentFrame(Workbench.this.model, thing);
+			//Workbench.this.desktop.add(frame);
+			//frame.moveToFront();
 		    }
 		    else {
 			try {
 			    // No inputs so launch the enactor directly
-			    GenericUIComponentFrame frame = new GenericUIComponentFrame(theModel,
-											new EnactorInvocation(new FreefluoEnactorProxy(),
-													      theModel,
-													      new HashMap()));
-			    frame.setSize(600,400);
-			    frame.setLocation(100,100);
-			    Workbench.this.desktop.add(frame);
-			    frame.moveToFront();
+			    UIUtils.createFrame(theModel, new EnactorInvocation(FreefluoEnactorProxy.getInstance(), 
+										theModel,
+										new HashMap()),
+						100, 100, 600, 400);
+			    /**
+			       GenericUIComponentFrame frame = new GenericUIComponentFrame(theModel,
+			       new EnactorInvocation(new FreefluoEnactorProxy(),
+			       theModel,
+			       new HashMap()));
+			       frame.setSize(600,400);
+			       frame.setLocation(100,100);
+			       Workbench.this.desktop.add(frame);
+			       frame.moveToFront();
+			    */
 			}
 			catch (Exception ex) {
 			    ex.printStackTrace();

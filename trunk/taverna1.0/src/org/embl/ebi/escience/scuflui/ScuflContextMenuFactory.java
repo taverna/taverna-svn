@@ -14,8 +14,8 @@ import javax.swing.JPopupMenu;
 import javax.swing.tree.*;
 import java.util.*;
 import org.embl.ebi.escience.scufl.*;
-import org.embl.ebi.escience.scuflui.workbench.GenericUIComponentFrame;
-import org.embl.ebi.escience.scuflui.workbench.Workbench;
+//import org.embl.ebi.escience.scuflui.workbench.GenericUIComponentFrame;
+//import org.embl.ebi.escience.scuflui.workbench.Workbench;
 import org.embl.ebi.escience.scuflworkers.ProcessorEditor;
 import org.embl.ebi.escience.scuflworkers.ProcessorHelper;
 
@@ -46,8 +46,9 @@ public class ScuflContextMenuFactory {
      * can return sensible things if the object is a string appropriate
      * to some node in the tree, i.e. 'Processors'
      */
-    public static JPopupMenu getMenuForObject(DefaultMutableTreeNode theNode, Object theObject, ScuflModel model) 
+    public static JPopupMenu getMenuForObject(DefaultMutableTreeNode theNode, Object theObject, ScuflModel methodSigModel) 
 	throws NoContextMenuFoundException {
+	final ScuflModel model = methodSigModel;
 	if (theObject == null) {
 	    throw new NoContextMenuFoundException("Supplied user object was null, giving up.");
 	}
@@ -120,15 +121,17 @@ public class ScuflContextMenuFactory {
 		    JMenuItem edit = new JMenuItem("Edit metadata...", ScuflIcons.editIcon);
 		    edit.addActionListener(new ActionListener() {
 			    public void actionPerformed(ActionEvent ae) {
-				// Show the configuration panel here.
-				if (Workbench.workbench != null) {
-				    GenericUIComponentFrame thing = new GenericUIComponentFrame(Workbench.workbench.model,
-												new ScuflSemanticMarkupEditor(sinkPort.getMetadata()));
-				    thing.setSize(400,600);
-				    thing.setLocation(100,100);
-				    Workbench.workbench.desktop.add(thing);
-				    thing.moveToFront();
-				}
+				UIUtils.createFrame(model, new ScuflSemanticMarkupEditor(sinkPort.getMetadata()), 100, 100, 400, 600);
+				/**
+				   if (Workbench.workbench != null) {
+				   GenericUIComponentFrame thing = new GenericUIComponentFrame(Workbench.workbench.model,
+				   new ScuflSemanticMarkupEditor(sinkPort.getMetadata()));
+				   thing.setSize(400,600);
+				   thing.setLocation(100,100);
+				   Workbench.workbench.desktop.add(thing);
+				   thing.moveToFront();
+				   }
+				*/
 			    }
 			});
 		    theMenu.add(edit);

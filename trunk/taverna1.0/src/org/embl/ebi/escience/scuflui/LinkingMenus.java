@@ -12,8 +12,8 @@ import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 import org.embl.ebi.escience.scufl.*;
-import org.embl.ebi.escience.scuflui.workbench.GenericUIComponentFrame;
-import org.embl.ebi.escience.scuflui.workbench.Workbench;
+//import org.embl.ebi.escience.scuflui.workbench.GenericUIComponentFrame;
+//import org.embl.ebi.escience.scuflui.workbench.Workbench;
 
 import org.embl.ebi.escience.scuflui.ScuflIcons;
 import org.embl.ebi.escience.scuflui.ScuflSemanticMarkupEditor;
@@ -47,15 +47,17 @@ public class LinkingMenus {
 	    JMenuItem edit = new JMenuItem("Edit metadata...", ScuflIcons.editIcon);
 	    edit.addActionListener(new ActionListener() {
 		    public void actionPerformed(ActionEvent ae) {
-			// Show the configuration panel here.
-			if (Workbench.workbench != null) {
-			    GenericUIComponentFrame thing = new GenericUIComponentFrame(Workbench.workbench.model,
-											new ScuflSemanticMarkupEditor(fromPort.getMetadata()));
-			    thing.setSize(400,600);
-			    thing.setLocation(100,100);
-			    Workbench.workbench.desktop.add(thing);
-			    thing.moveToFront();
-			}
+			UIUtils.createFrame(model, new ScuflSemanticMarkupEditor(fromPort.getMetadata()), 100, 100, 400, 600);
+			/**
+			   if (Workbench.workbench != null) {
+			   GenericUIComponentFrame thing = new GenericUIComponentFrame(Workbench.workbench.model,
+			   new ScuflSemanticMarkupEditor(fromPort.getMetadata()));
+			   thing.setSize(400,600);
+			   thing.setLocation(100,100);
+			   Workbench.workbench.desktop.add(thing);
+			   thing.moveToFront();
+			   }
+			*/
 		    }
 		});
 	    theMenu.add(edit);
