@@ -14,7 +14,7 @@ import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
 import javax.swing.*;
-import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.*;
 import org.embl.ebi.escience.scufl.DuplicateProcessorNameException;
 import org.embl.ebi.escience.scufl.ProcessorCreationException;
 import org.embl.ebi.escience.scufl.parser.XScuflParser;
@@ -78,7 +78,7 @@ public class ScavengerTreePopupHandler extends MouseAdapter {
      * option to the user
      */
     void doEvent(MouseEvent e) {
-	DefaultMutableTreeNode node = (DefaultMutableTreeNode)(scavenger.getPathForLocation(e.getX(), e.getY()).getLastPathComponent());
+	final DefaultMutableTreeNode node = (DefaultMutableTreeNode)(scavenger.getPathForLocation(e.getX(), e.getY()).getLastPathComponent());
 	Object scuflObject = node.getUserObject();
 	if (scuflObject != null) {
 	    
@@ -252,6 +252,25 @@ public class ScavengerTreePopupHandler extends MouseAdapter {
 			});
 		    
 		    menu.show(scavenger, e.getX(), e.getY());
+		}
+		else {
+		    // Wasn't the 'available processors' link, so give the option to remove it
+		    if (choice.equals("Internal Services")==false && choice.equals("Local Java widgets")==false) {
+			JPopupMenu menu = new JPopupMenu();
+			JMenuItem remove = new JMenuItem("Remove from tree", ScuflIcons.deleteIcon);
+			final String scavengerName = choice;
+			remove.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent ae) {
+				    DefaultTreeModel treeModel = (DefaultTreeModel)ScavengerTreePopupHandler.this.scavenger.treeModel;
+				    MutableTreeNode treeNode = node;
+				    treeModel.removeNodeFromParent(treeNode);
+				    // Also remove the name from the scavenger list
+				    ScavengerTreePopupHandler.this.scavenger.scavengerList.remove(scavengerName);
+				}
+			    });
+			menu.add(remove);
+			menu.show(scavenger, e.getX(), e.getY());
+		    }
 		}
 	    }
 	}

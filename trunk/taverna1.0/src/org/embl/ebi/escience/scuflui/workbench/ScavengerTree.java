@@ -104,7 +104,18 @@ public class ScavengerTree extends JTree
 		Scavenger s = (Scavenger)i.next();
 		this.treeModel.insertNodeInto(s,t,this.treeModel.getChildCount(t));
 	    }
-	}	
+	}
+	// Add the default soaplab installation if this is defined
+	try {
+	    String soaplabDefaultURL = System.getProperty("taverna.defaultsoaplab");
+	    if (soaplabDefaultURL!=null) {
+		addScavenger(new SoaplabScavenger(soaplabDefaultURL));
+	    }
+	}
+	catch (Exception e) {
+	    //
+	}
+
 	TreePath path = new TreePath(this.root);
 	expandPath(path);
     }
