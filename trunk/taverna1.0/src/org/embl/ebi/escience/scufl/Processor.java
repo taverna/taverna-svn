@@ -245,6 +245,26 @@ public abstract class Processor implements java.io.Serializable {
     }
 
     /**
+     * Remove a port from a processor (only really applicable 
+     * to the workflow source and sink ports, so be careful
+     * when you're using it)
+     */
+    public void removePort(Port the_port) {
+	this.ports.remove(the_port);
+	// Iterate over all the data constraints, removing any that have
+	// this port as a source or a sink
+	DataConstraint[] dc = model.getDataConstraints();
+	for (int i = 0; i < dc.length; i++) {
+	    if (dc[i].getSource() == the_port ||
+		dc[i].getSink() == the_port) {
+		model.destroyDataConstraint(dc[i]);
+	    }
+	}
+	fireModelEvent(new ScuflModelEvent(this, "Removed a port"));
+	
+    }
+
+    /**
      * Get the parent model
      */
     public ScuflModel getModel() {

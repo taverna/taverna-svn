@@ -72,6 +72,17 @@ public class Workbench extends JFrame {
      */
     public static void main(String[] args) {
 	Workbench workbench = new Workbench();
+	// Treat any command line arguments as files to import into the workbench
+	for (int i = 0; i < args.length; i++) {
+	    try {
+		File inputFile = new File(args[i]);
+		XScuflParser.populate(inputFile.toURL().openStream(), workbench.model, null);
+	    }
+	    catch (Exception e) {
+		System.out.println(e.getMessage());
+	    }
+	}
+
 	// Add instances of all the components just for fun
 	GenericUIComponentFrame xscufl = new GenericUIComponentFrame(workbench.model, 
 								     new XScuflTextArea());

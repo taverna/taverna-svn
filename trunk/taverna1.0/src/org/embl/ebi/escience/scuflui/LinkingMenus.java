@@ -31,6 +31,17 @@ public class LinkingMenus {
 	final Port fromPort = sourcePort;
 	final ScuflModel model = sourcePort.getProcessor().getModel();
 	JPopupMenu theMenu = new JPopupMenu("Possible targets");
+	// Is this a workflow source? If so give the option to delete it
+	if (fromPort.getProcessor() == model.getWorkflowSourceProcessor()) {
+	    JMenuItem delete = new JMenuItem("Remove from model",ScuflContextMenuFactory.deleteIcon);
+	    delete.addActionListener(new ActionListener() {
+		    public void actionPerformed(ActionEvent ae) {
+			fromPort.getProcessor().removePort(fromPort);
+		    }
+		});
+	    theMenu.add(delete);
+	    theMenu.addSeparator();
+	}
 	JMenuItem title = new JMenuItem("Link '"+sourcePort.getName()+"' to....");
 	title.setEnabled(false);
 	theMenu.add(title);

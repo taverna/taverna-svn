@@ -315,6 +315,7 @@
 	<!-- Run the workbench -->
 	<target name="tools.workbench">
 		<java classname="org.embl.ebi.escience.scuflui.workbench.Workbench" fork="yes">
+		        <arg value="${file}"/>
 		   	<classpath refid="compile-classpath"/>
 		</java>
 	</target>
