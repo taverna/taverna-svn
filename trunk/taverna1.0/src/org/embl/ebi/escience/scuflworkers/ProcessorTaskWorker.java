@@ -6,6 +6,7 @@
 package org.embl.ebi.escience.scuflworkers;
 
 import uk.ac.soton.itinnovation.taverna.enactor.entities.TaskExecutionException;
+import uk.ac.soton.itinnovation.taverna.enactor.entities.ProcessorTask;
 
 // Utility Imports
 import java.util.Map;
@@ -25,6 +26,6 @@ public interface ProcessorTaskWorker {
      * @exception TaskExecutionException thrown if an error
      * occurs during task invocation
      */
-    public Map execute(Map inputMap) throws TaskExecutionException;
+    public Map execute(Map inputMap, ProcessorTask parentTask) throws TaskExecutionException;
     
 }

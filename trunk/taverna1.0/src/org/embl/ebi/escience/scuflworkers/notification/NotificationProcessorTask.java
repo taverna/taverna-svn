@@ -21,6 +21,7 @@ import java.util.Iterator;
 import java.io.StringReader;
 import java.lang.reflect.Method;
 import org.embl.ebi.escience.baclava.DataThing;
+import uk.ac.soton.itinnovation.taverna.enactor.entities.ProcessorTask;
 
 /**
  *
@@ -51,7 +52,7 @@ public class NotificationProcessorTask implements ProcessorTaskWorker {
 
     }
 
-    public Map execute(Map inputMap) throws TaskExecutionException {
+    public Map execute(Map inputMap, ProcessorTask parentTask) throws TaskExecutionException {
         try{
             Set set = inputMap.keySet();
             for(Iterator itr = set.iterator(); itr.hasNext();){
@@ -151,6 +152,6 @@ public class NotificationProcessorTask implements ProcessorTaskWorker {
         org.w3c.dom.Document doc = docBuilder.parse(messageFile);
         Map inputMap = new HashMap();
         inputMap.put("Portname:publishMessage", new DataThing(doc));
-        new NotificationProcessorTask().execute(inputMap);
+        new NotificationProcessorTask().execute(inputMap, null);
     }
 }

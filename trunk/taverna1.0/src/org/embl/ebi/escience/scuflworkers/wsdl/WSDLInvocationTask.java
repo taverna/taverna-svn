@@ -12,7 +12,8 @@ import org.embl.ebi.escience.baclava.DataThing;
 import org.embl.ebi.escience.baclava.factory.DataThingFactory;
 import org.embl.ebi.escience.scufl.Processor;
 import org.embl.ebi.escience.scuflworkers.ProcessorTaskWorker;
-import uk.ac.soton.itinnovation.taverna.enactor.entities.TaskExecutionException;
+import uk.ac.soton.itinnovation.taverna.enactor.entities.TaskExecutionException;import uk.ac.soton.itinnovation.taverna.enactor.entities.ProcessorTask;
+
 import org.apache.axis.utils.*;
 
 // Utility Imports
@@ -57,7 +58,7 @@ public class WSDLInvocationTask implements ProcessorTaskWorker {
 	this.proc = p;
     }
     
-    public Map execute(Map inputMap) throws TaskExecutionException {
+    public Map execute(Map inputMap, ProcessorTask parentTask) throws TaskExecutionException {
 	try {
 	    WSDLBasedProcessor p = (WSDLBasedProcessor)proc;
 	    Vector outNames = p.outNames;

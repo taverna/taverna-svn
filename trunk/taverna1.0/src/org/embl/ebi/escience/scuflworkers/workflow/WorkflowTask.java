@@ -25,8 +25,8 @@
 //      Dependencies        :
 //
 //      Last commit info    :   $Author: mereden $
-//                              $Date: 2004-07-09 18:37:26 $
-//                              $Revision: 1.8 $
+//                              $Date: 2004-07-10 13:14:07 $
+//                              $Revision: 1.9 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 
@@ -47,6 +47,7 @@ import org.embl.ebi.escience.scufl.enactor.WorkflowSubmissionException;
 import org.embl.ebi.escience.scuflworkers.ProcessorTaskWorker;
 
 import uk.ac.soton.itinnovation.taverna.enactor.entities.TaskExecutionException;
+import uk.ac.soton.itinnovation.taverna.enactor.entities.ProcessorTask;
 
 import uk.ac.soton.itinnovation.freefluo.event.WorkflowStateListener;
 import uk.ac.soton.itinnovation.freefluo.event.WorkflowStateChangedEvent;
@@ -84,7 +85,7 @@ public class WorkflowTask implements ProcessorTaskWorker {
      * Invoke a nested workflow, the input map being a map of string port names
      * to DataThing objects containing the current values.
      */
-    public Map execute(Map inputMap) throws TaskExecutionException {
+    public Map execute(Map inputMap, ProcessorTask parentTask) throws TaskExecutionException {
 	WorkflowProcessor theProcessor = (WorkflowProcessor) proc;
 	ScuflModel theNestedModel = theProcessor.getInternalModel();
 	

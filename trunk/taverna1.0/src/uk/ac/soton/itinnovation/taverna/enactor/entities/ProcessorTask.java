@@ -25,8 +25,8 @@
 //      Dependencies        :
 //
 //      Last commit info    :   $Author: mereden $
-//                              $Date: 2004-07-09 18:37:30 $
-//                              $Revision: 1.54 $
+//                              $Date: 2004-07-10 13:14:07 $
+//                              $Revision: 1.55 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 package uk.ac.soton.itinnovation.taverna.enactor.entities;
@@ -376,7 +376,7 @@ public class ProcessorTask extends AbstractTask {
     private Map runAndGenerateTemplates(ProcessorTaskWorker worker, Map inputMap) 
 	throws TaskExecutionException {
 	// Populate all LSIDs in the output map
-	Map outputMap = worker.execute(inputMap);
+	Map outputMap = worker.execute(inputMap, this);
 	fillAllLSIDs(outputMap);
 	AnnotationTemplate[] templates = activeProcessor.getAnnotationTemplates();	    
 	AnnotationTemplate[] defaultTemplates = activeProcessor.defaultAnnotationTemplates();
@@ -778,9 +778,9 @@ public class ProcessorTask extends AbstractTask {
      * @return output map containing String->DataThing named pairs, with the key
      * being the name of the output port.
      */
-    private Map execute(Map inputMap) throws TaskExecutionException {
-	ProcessorTaskWorker worker = ProcessorHelper.getTaskWorker(proc);
-	return worker.execute(inputMap);
-    }
+    //private Map execute(Map inputMap) throws TaskExecutionException {
+    //ProcessorTaskWorker worker = ProcessorHelper.getTaskWorker(proc);
+    //return worker.execute(inputMap);
+    //}
 
 }

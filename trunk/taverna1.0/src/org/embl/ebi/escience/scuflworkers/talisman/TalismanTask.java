@@ -10,7 +10,8 @@ import org.embl.ebi.escience.baclava.DataThing;
 import org.embl.ebi.escience.scufl.Processor;
 import org.embl.ebi.escience.scuflworkers.ProcessorTaskWorker;
 import org.embl.ebi.escience.talisman.tservice.TeaTray;
-import uk.ac.soton.itinnovation.taverna.enactor.entities.TaskExecutionException;
+import uk.ac.soton.itinnovation.taverna.enactor.entities.TaskExecutionException;import uk.ac.soton.itinnovation.taverna.enactor.entities.ProcessorTask;
+
 
 // Utility Imports
 import java.util.HashMap;
@@ -39,7 +40,7 @@ public class TalismanTask implements ProcessorTaskWorker {
 	this.proc = p;
     }
     
-    public Map execute(java.util.Map workflowInputMap) throws TaskExecutionException {
+    public Map execute(java.util.Map workflowInputMap, ProcessorTask parentTask) throws TaskExecutionException {
 	try{
 	   
 	    TalismanProcessor theProcessor = (TalismanProcessor)proc;

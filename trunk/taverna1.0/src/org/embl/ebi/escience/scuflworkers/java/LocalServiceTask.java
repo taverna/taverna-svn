@@ -8,7 +8,8 @@ package org.embl.ebi.escience.scuflworkers.java;
 import org.apache.log4j.Logger;
 import org.embl.ebi.escience.scufl.Processor;
 import org.embl.ebi.escience.scuflworkers.ProcessorTaskWorker;
-import uk.ac.soton.itinnovation.taverna.enactor.entities.TaskExecutionException;
+import uk.ac.soton.itinnovation.taverna.enactor.entities.TaskExecutionException;import uk.ac.soton.itinnovation.taverna.enactor.entities.ProcessorTask;
+
 
 // Utility Imports
 import java.util.Map;
@@ -28,7 +29,7 @@ public class LocalServiceTask implements ProcessorTaskWorker {
 	this.proc = p;
     }
 
-    public Map execute(Map inputMap) throws TaskExecutionException {
+    public Map execute(Map inputMap, ProcessorTask parentTask) throws TaskExecutionException {
 	LocalServiceProcessor theProcessor = (LocalServiceProcessor)proc;
 	return theProcessor.getWorker().execute(inputMap);
     }
