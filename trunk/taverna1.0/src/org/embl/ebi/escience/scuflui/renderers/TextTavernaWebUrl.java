@@ -31,6 +31,11 @@ public class TextTavernaWebUrl
                 userObject instanceof String;
     }
 
+    public boolean isTerminal()
+    {
+        return true;
+    }
+
     public JComponent getComponent(MimeTypeRendererRegistry renderers,
                                    DataThing dataThing)
     {

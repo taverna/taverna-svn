@@ -37,7 +37,7 @@ public class FacetsTable
         GBC.insets = new Insets(1,1,1,1);
     }
 
-    // todo: There is no sensible incremental model editing - need sadding
+    // todo: There is no sensible incremental model editing - needs adding
     // todo: The 'table' isn't very clearly drawn, and columns aren't the
     //    right size - add borders, scrollability etc.
 
@@ -45,6 +45,8 @@ public class FacetsTable
     private DataThing dataThing;
     private FacetFinderRegistry finders;
     private MimeTypeRendererRegistry renderers;
+
+    private DataThing exampleThing;
     private List exampleRow;
 
     public FacetsTable()
@@ -134,6 +136,7 @@ public class FacetsTable
         // this is bruit force - we will probably want to optimize this for
         // incremental changes to the model
         removeAll();
+        exampleThing = null;
         exampleRow = null;
 
         if(dataThing != null) {
@@ -186,6 +189,10 @@ public class FacetsTable
             ex = new ArrayList();
         }
 
+        if(exampleThing == null) {
+            exampleThing = dataThing;
+        }
+
         for(Iterator i = columns.iterator(); i.hasNext(); ) {
             Column col = (Column) i.next();
             DataThing dataObj = col.getFinder().getFacet(dataThing, col.getColID());
@@ -195,28 +202,36 @@ public class FacetsTable
             }
 
             if(dataObj != null) {
+                JComponent cmp = null;
                 MimeTypeRendererSPI renderer = col.getRenderer();
                 if(renderer != null) {
-                    JComponent cmp = renderer.getComponent(renderers, dataObj);
-                    if (cmp != null) {
-                        add(cmp, gbc);
-                    } else {
-                        renderer = null;
+                    try {
+                        cmp = renderer.getComponent(renderers, dataObj);
+                    } catch (Exception e) {
+                        LOG.error("Problem creating component from renderer",
+                                  e);
                     }
                 }
 
-                if(renderer == null) {
+                if(cmp == null) {
                     for(Iterator ri = renderers.getRenderers(dataObj).iterator();
-                        ri != null && ri.hasNext(); )
+                        cmp == null && ri.hasNext(); )
                     {
                         renderer = (MimeTypeRendererSPI) ri.next();
-                        JComponent cmp = renderer.getComponent(renderers, dataObj);
-                        if (cmp != null) {
-                            add(cmp, gbc);
-                            ri = null;
+                        try {
+                            cmp = renderer.getComponent(renderers, dataObj);
+                        } catch (Exception e) {
+                            LOG.error("Problem creating component from renderer",
+                                      e);
                         }
                     }
                 }
+
+                if(cmp == null) {
+                    cmp = new JLabel("No Renderer");
+                }
+
+                add(cmp, gbc);
             }
             gbc.gridx++;
         }
@@ -346,7 +361,7 @@ public class FacetsTable
         private void process(MouseEvent e)
         {
             if(e.isPopupTrigger()) {
-                JPopupMenu popup = new JPopupMenu("Edit Column");
+                JPopupMenu popup = new JPopupMenu("Edit Column " + col.getName());
 
                 JMenuItem changeName = new JMenuItem(new RenameColumn());
                 popup.add(changeName);
@@ -371,7 +386,7 @@ public class FacetsTable
 
         private void populateAdd(JMenu add)
         {
-            for (Iterator i = finders.getFinders(dataThing).iterator();
+            for (Iterator i = finders.getFinders(exampleThing).iterator();
                  i.hasNext();) {
                 final FacetFinderSPI spi = (FacetFinderSPI) i.next();
                 DataThing current = getCurrent();
@@ -382,7 +397,8 @@ public class FacetsTable
                   final FacetFinderSPI.ColumnID column
                           = (FacetFinderSPI.ColumnID) pi.next();
                     if (column != null) {
-                        JMenuItem item = new JMenuItem(new AbstractAction(column.getName())
+                        JMenuItem item = new JMenuItem(
+                                new AbstractAction(column.getName())
                         {
                             public void actionPerformed(ActionEvent e)
                             {
@@ -444,7 +460,7 @@ public class FacetsTable
 
             public void actionPerformed(ActionEvent e)
             {
-                DataThing current = getCurrent();
+                DataThing current = exampleThing;
                 Component editor = col.getColID().getCustomiser(current);
                 if(editor == null) {
                     LOG.info("No editor for " + col.getColID());
@@ -459,32 +475,12 @@ public class FacetsTable
                 {
                     owner = owner.getParent();
                 }
-                final JDialog dialog;
-                if(owner instanceof Frame) {
-                    dialog = new JDialog((Frame) owner, "Edit column", true);
-                } else if(owner instanceof Dialog) {
-                    dialog = new JDialog((Dialog) owner, "Edit column", true);
-                } else {
-                    dialog = new JDialog((Frame) null, "Edit column", false);
-                }
 
-                dialog.getContentPane().setLayout(new GridBagLayout());
-                GridBagConstraints gbc = new GridBagConstraints();
-                gbc.gridx = 0;
-                gbc.gridy = 0;
-                dialog.getContentPane().add(editor, gbc);
-
-                JButton close = new JButton(new AbstractAction("ok") {
-                    public void actionPerformed(ActionEvent e)
-                    {
-                        dialog.setVisible(false);
-                    }
-                });
-                gbc.gridy = 1;
-                gbc.anchor = gbc.EAST;
-                dialog.getContentPane().add(close, gbc);
-
-                dialog.setVisible(true);
+                JOptionPane.showMessageDialog(
+                        FacetsTable.this,
+                        editor,
+                        "Configure " + col.getName(),
+                        JOptionPane.DEFAULT_OPTION);
                 resizeAndValidate();
             }
         }

@@ -29,6 +29,11 @@ public class Image
                 userObject instanceof byte[];
     }
 
+    public boolean isTerminal()
+    {
+        return true;
+    }
+
     public JComponent getComponent(MimeTypeRendererRegistry renderers,
                                    DataThing dataThing)
     {

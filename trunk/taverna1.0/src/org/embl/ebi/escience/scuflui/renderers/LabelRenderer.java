@@ -31,6 +31,11 @@ public class LabelRenderer
         return false;
     }
 
+    public boolean isTerminal()
+    {
+        return true;
+    }
+
     public JComponent getComponent(MimeTypeRendererRegistry renderers,
                                    DataThing dataThing)
     {

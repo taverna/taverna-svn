@@ -86,7 +86,21 @@ public interface FacetFinderSPI
 
     public static interface ColumnID
     {
+        /**
+         * Get a component able to customise this column, given a hint object,
+         * or null if the column is not customisable.
+         *
+         * @param dataThing  an example DataThing this column will act upon
+         * @return  a Component suitable for editing this column
+         */
         public Component getCustomiser(DataThing dataThing);
+
+        /**
+         * Get a human readable name for this column.
+         * This may change as column properties change.
+         *
+         * @return  a name
+         */
         public String getName();
     }
 }

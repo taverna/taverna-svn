@@ -42,7 +42,7 @@ public class ToString
 
     public ColumnID newColumn(DataThing dataThing)
     {
-        return COL_ID;
+        return null;
     }
 
     public boolean hasColumn(ColumnID colID)

@@ -2,6 +2,7 @@ package org.embl.ebi.escience.scuflui.facets;
 
 import org.embl.ebi.escience.baclava.DataThing;
 import org.embl.ebi.escience.baclava.factory.DataThingFactory;
+import org.apache.log4j.Logger;
 
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;
@@ -21,10 +22,13 @@ import java.awt.*;
 public class RegexScanner
         implements FacetFinderSPI
 {
+    private static final Logger LOG = Logger.getLogger(RegexScanner.class);
+
     private static final DataThing EMPTY_STRING = DataThingFactory.bake("");
 
     public boolean canMakeFacets(DataThing dataThing)
     {
+        LOG.info(getName() + ": canMakeFacets: " + dataThing);
         return dataThing.getDataObject() instanceof CharSequence;
     }
 
@@ -92,6 +96,12 @@ public class RegexScanner
     public static class Scanner
             implements ColumnID
     {
+        static
+        {
+            PropertyEditorManager.registerEditor(
+                    Scanner.class, PropertySheet.Editor.class);
+        }
+
         private Pattern pattern;
         private int group;
         private boolean joinValues;
@@ -187,10 +197,14 @@ public class RegexScanner
 
         public Component getCustomiser(DataThing dataThing)
         {
-            Object dataObject = dataThing.getDataObject();
             PropertyEditor editor = PropertyEditorManager.findEditor(
-                    dataObject.getClass());
-            return editor.getCustomEditor();
+                    Scanner.class);
+            if(editor != null) {
+                editor.setValue(this);
+                return editor.getCustomEditor();
+            } else {
+                return null;
+            }
         }
 
         public String getName()

@@ -42,6 +42,16 @@ import javax.swing.JComponent;
  */
 public interface MimeTypeRendererSPI {
     /**
+     * Discover if this is a terminal renderer.
+     * A renderer is terminal if it renders the given DataThing. It is not
+     * terminal if it first calculates some property of that DataThing that
+     * may potentially lead to some other non-terminal Renderer being used.
+     *
+     * @return  true if this is a terminal renderer, false otherwise
+     */
+    public boolean isTerminal();
+
+    /**
      * Return true if this SPI can handle the given object with the given mime
      * type, false otherwise.
      *
