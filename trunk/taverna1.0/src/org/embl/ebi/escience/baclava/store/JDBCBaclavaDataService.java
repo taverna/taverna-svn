@@ -25,7 +25,8 @@ public class JDBCBaclavaDataService implements BaclavaDataService {
     
     private List availableConnections, activeConnections;
     
-    private Object connectionSetLockObject;
+    private Object connectionSetLockObject = new Object();
+    private Object writeLockObject = new Object();
 
     private int maxConnections = 5;
     
@@ -66,7 +67,6 @@ public class JDBCBaclavaDataService implements BaclavaDataService {
 	}
 	availableConnections = new ArrayList();
 	activeConnections = new ArrayList();
-	connectionSetLockObject = new Object();
 	createTables();
     }
     
@@ -141,19 +141,21 @@ public class JDBCBaclavaDataService implements BaclavaDataService {
 	// Obtain a connection
 	Connection con = getConnectionObject();
 	try {
-	    PreparedStatement st = con.prepareStatement("INSERT INTO datathings (thing) VALUES (?)");
-	    st.setString(1,xmlRepresentation);
-	    st.executeUpdate();	    
-	    st.close();
-	    //System.out.println("Stored string : \n"+xmlRepresentation);
-	    PreparedStatement st2 = con.prepareStatement("INSERT INTO lsids (lsid, id) VALUES (?,LAST_INSERT_ID())");
-	    for (int i = 0; i < lsids.length; i++) {
-		st2.setString(1, lsids[i]);
-		st2.executeUpdate();
-		//System.out.println("Stored LSID mapping for LSID = "+lsids[i]);
+	    synchronized(writeLockObject) {
+		PreparedStatement st = con.prepareStatement("INSERT INTO datathings (thing) VALUES (?)");
+		st.setString(1,xmlRepresentation);
+		st.executeUpdate();	    
+		st.close();
+		//System.out.println("Stored string : \n"+xmlRepresentation);
+		PreparedStatement st2 = con.prepareStatement("INSERT INTO lsids (lsid, id) VALUES (?,LAST_INSERT_ID())");
+		for (int i = 0; i < lsids.length; i++) {
+		    st2.setString(1, lsids[i]);
+		    st2.executeUpdate();
+		    //System.out.println("Stored LSID mapping for LSID = "+lsids[i]);
+		}
+		st2.close();
+		con.commit();
 	    }
-	    st2.close();
-	    con.commit();
 	}
 	catch (Exception ex) {
 	    ex.printStackTrace();
@@ -182,35 +184,33 @@ public class JDBCBaclavaDataService implements BaclavaDataService {
 	    p.setString(1, LSID);
 	    ResultSet rs = p.executeQuery();
 	    String thingAsXML = null;
-	    while (rs.next()) {
+	    if (rs.first() ==true) {
 		thingAsXML = rs.getString("thing");
 	    }
-	    if (thingAsXML == null) {
+	    else {
 		throw new NoSuchLSIDException();
 	    }
+	    // Parse the XML and get the DataThing that was
+	    // originally submitted, although we may have
+	    // to split this down to actually get the desired
+	    // LSID value out
+	    //System.out.println("Found a data thing as XML : \n\n"+thingAsXML);
+	    SAXBuilder builder = new SAXBuilder(false);
+	    Document doc = builder.build(new StringReader(thingAsXML));
+	    DataThing theThing = new DataThing(doc.getRootElement());
+	    //System.out.println(theThing);
+	    // Was the LSID for the dataThing itself?
+	    //System.out.println("LSID to find is "+LSID);
+	    Object o = theThing.getDataObjectWithLSID(LSID);
+	    if (o == null) {
+		throw new NoSuchLSIDException();
+	    }
+	    if (o == theThing) {
+		return theThing;
+	    }
 	    else {
-		// Parse the XML and get the DataThing that was
-		// originally submitted, although we may have
-		// to split this down to actually get the desired
-		// LSID value out
-		//System.out.println("Found a data thing as XML : \n\n"+thingAsXML);
-		SAXBuilder builder = new SAXBuilder(false);
-		Document doc = builder.build(new StringReader(thingAsXML));
-		DataThing theThing = new DataThing(doc.getRootElement());
-		//System.out.println(theThing);
-		// Was the LSID for the dataThing itself?
-		//System.out.println("LSID to find is "+LSID);
-		Object o = theThing.getDataObjectWithLSID(LSID);
-		if (o == null) {
-		    throw new NoSuchLSIDException();
-		}
-		if (o == theThing) {
-		    return theThing;
-		}
-		else {
-		    // Have to split the thing down and return the subthing
-		    return theThing.extractChild(o);
-		}
+		// Have to split the thing down and return the subthing
+		return theThing.extractChild(o);
 	    }
 	}
 	catch (SQLException sqle) {
@@ -223,6 +223,37 @@ public class JDBCBaclavaDataService implements BaclavaDataService {
 	    releaseConnection(con);
 	}
 	throw new NoSuchLSIDException();
+    }
+
+    
+    /**
+     * Does the given LSID exist in a concrete form?
+     */
+    public boolean hasData(String LSID) {
+	Connection con = null;
+	try {
+	    con = getConnectionObject();
+	    PreparedStatement p = con.prepareStatement("SELECT id FROM lsids WHERE lsid=?");
+	    p.setString(1,LSID);
+	    ResultSet rs = p.executeQuery();
+	    return rs.first();
+	}
+	catch (Exception ex) {
+	    //
+	}
+	finally {
+	    releaseConnection(con);
+	}
+	return false;
+    }
+
+    
+    /**
+     * Does the given LSID have associated metadata?
+     * Always returns false at present.
+     */
+    public boolean hasMetadata(String LSID) {
+	return false;
     }
 
 

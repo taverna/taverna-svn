@@ -116,7 +116,7 @@ public class TavernaLSIDService extends SimpleResolutionService {
      * implementer may assume that the LSID is valid 
      */
     public boolean hasData(LSIDRequestContext request) {
-	return true;
+	return theDataService.hasData(request.getLsid().getLsid());
     }
 
     
@@ -125,7 +125,7 @@ public class TavernaLSIDService extends SimpleResolutionService {
      * implementer may assume that the LSID is valid 
      */
     public boolean hasMetadata(LSIDRequestContext request) {
-	return false;
+	return theDataService.hasMetadata(request.getLsid().getLsid());
     }
     
 

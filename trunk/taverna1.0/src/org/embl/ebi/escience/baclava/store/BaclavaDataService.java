@@ -67,4 +67,17 @@ public interface BaclavaDataService {
     public DataThing fetchDataThing(String LSID) 
 	throws NoSuchLSIDException;
     
+    /**
+     * Whether the given LSID is resolvable to a
+     * concrete data object
+     */
+    public boolean hasData(String LSID);
+    
+    /**
+     * Whether the given LSID is resolvable to a
+     * metadata reference
+     */
+    public boolean hasMetadata(String LSID);
+    
+
 }

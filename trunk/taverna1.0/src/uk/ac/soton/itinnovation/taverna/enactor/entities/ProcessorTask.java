@@ -25,8 +25,8 @@
 //      Dependencies        :
 //
 //      Last commit info    :   $Author: mereden $
-//                              $Date: 2004-03-02 17:59:46 $
-//                              $Revision: 1.37 $
+//                              $Date: 2004-03-03 11:02:45 $
+//                              $Revision: 1.38 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 package uk.ac.soton.itinnovation.taverna.enactor.entities;
@@ -55,6 +55,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.HashSet;
 
 // IO Imports
 import java.io.PrintWriter;
@@ -208,6 +210,7 @@ public class ProcessorTask extends TavernaTask{
 	else {
 	    outputMap = invokeWithoutIteration(inputMap);
 	}
+	Set alreadyStoredThings = new HashSet();
 	// Iterate over the children, pushing data into the port tasks
 	// as appropriate.
 	for (int i = 0; i < getChildren().length; i++) {
@@ -221,7 +224,11 @@ public class ProcessorTask extends TavernaTask{
 		    // push the datathing into it
 		    if (ProcessorTask.STORE != null) {
 			try {
-			    STORE.storeDataThing(resultDataThing,true);
+			    // Avoid duplicates
+			    if (alreadyStoredThings.contains(resultDataThing)==false) {
+				STORE.storeDataThing(resultDataThing,true);
+				alreadyStoredThings.add(resultDataThing);
+			    }
 			}
 			catch (DuplicateLSIDException dple) {
 			    //
