@@ -95,7 +95,7 @@ public class NotificationProcessorTask implements ProcessorTaskWorker {
         org.w3c.dom.Document doc = docBuilder.newDocument();
         org.w3c.dom.Element element = doc.createElement("message");
         element.appendChild(doc.createTextNode(strValue));
-        doc.getDocumentElement().appendChild(element);
+        doc.appendChild(element);
         return doc;
     }
     
