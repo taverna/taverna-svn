@@ -231,6 +231,7 @@ public abstract class Processor implements java.io.Serializable {
 	return (InputPort[])(temp.toArray(new InputPort[0]));
     }
     
+    
     /**
      * Get an array containing only output ports
      */

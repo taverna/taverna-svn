@@ -25,8 +25,8 @@
 //      Dependencies        :
 //
 //      Last commit info    :   $Author: mereden $
-//                              $Date: 2003-10-02 10:15:40 $
-//                              $Revision: 1.2 $
+//                              $Date: 2003-10-02 16:54:25 $
+//                              $Revision: 1.3 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 
@@ -60,7 +60,19 @@ public class WSDLInvocationTask extends ProcessorTask  {
     
     private static Logger logger = Logger.getLogger(WSDLInvocationTask.class);
     private static final int INVOCATION_TIMEOUT = 0;
-    
+    private static Service service = new org.apache.axis.client.Service();
+
+    private Call getCall() {
+	synchronized (service) {
+	    try {
+		return (Call) service.createCall();
+	    }
+	    catch (Exception ex) {
+		throw new RuntimeException(ex);
+	    }
+	}
+    }
+
     public WSDLInvocationTask(String id,Processor proc,LogLevel l, String userID, String userCtx) {
 	super(id,proc,l,userID,userCtx);
     }
@@ -69,7 +81,8 @@ public class WSDLInvocationTask extends ProcessorTask  {
 	try {
 	    WSDLBasedProcessor p = (WSDLBasedProcessor)proc;
 	    Map results = new HashMap();
-	    Call call = (Call) new Service().createCall();
+	    Service service = new Service();
+	    Call call = getCall();
 	    try {
 		call.setTargetEndpointAddress(new URL(p.getTargetEndpoint()));
 	    }
@@ -94,6 +107,9 @@ public class WSDLInvocationTask extends ProcessorTask  {
 		    }
 		}
 		args[i] = theDataObject;
+		if (args[i] == null) {
+		    throw new TaskExecutionException("Null argument not allowed, check preceeding processors!");
+		}
 		System.out.println("Data thing for port "+p.getInputPorts()[i].getName());
 		System.out.println(theData.getDataObject());
 	    }
@@ -113,7 +129,10 @@ public class WSDLInvocationTask extends ProcessorTask  {
 	}
 	catch (Exception ex) {
 	    ex.printStackTrace();
-	    throw new TaskExecutionException("Error occured during invocation "+ex.getMessage());
+	    TaskExecutionException te = new TaskExecutionException("Error occured during invocation "+
+								   ex.getMessage());
+	    te.initCause(ex);
+	    throw te;
 	}
     }
     
@@ -121,12 +140,12 @@ public class WSDLInvocationTask extends ProcessorTask  {
 	//
     }
     
+    private Element provenanceElement = new Element("WSDLInvocation",PROVENANCE_NAMESPACE);
     /**
      * Retrieve provenance information for this task, concrete tasks should
      * overide this method and provide this information as an XML JDOM element
      */
     public Element getProvenance() {
-	Element e = new Element("WSDLInvocation",PROVENANCE_NAMESPACE);
-	return e;
+	return provenanceElement;
     }
 }

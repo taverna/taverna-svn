@@ -25,8 +25,8 @@
 //      Dependencies        :
 //
 //      Last commit info    :   $Author: mereden $
-//                              $Date: 2003-09-30 17:11:18 $
-//                              $Revision: 1.19 $
+//                              $Date: 2003-10-02 16:54:25 $
+//                              $Revision: 1.20 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 
@@ -57,8 +57,10 @@ import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.Text;
 import org.jdom.output.XMLOutputter;
+import org.jdom.Namespace;
 import java.util.*;
 
+import org.embl.ebi.escience.scufl.*;
 import org.embl.ebi.escience.baclava.*;
 import org.embl.ebi.escience.baclava.factory.*;
 
@@ -70,13 +72,15 @@ import org.embl.ebi.escience.baclava.factory.*;
 public class TavernaFlowReceipt extends WSFlowReceipt {
     
     private static final String REPORT_NAMESPACE = "http://www.it-innovation.soton.ac.uk/taverna/workflow/enactor/progress";
-    private static final String PROVENANCE_NAMESPACE = "http://www.it-innovation.soton.ac.uk/taverna/workflow/enactor/provenance";
+    
+    public static Namespace provNS = Namespace.getNamespace("p","http://org.embl.ebi.escience/xscuflprovenance/0.1alpha");
     
     private Logger logger = Logger.getLogger(getClass());
     private String userID = null;
     private LogLevel modelLogLevel;
     private String flowDefnString;
     private Map input;
+    private Flow flow;
     
     /**
      * Constructor for this concrete instance of a flow receipt
@@ -93,7 +97,8 @@ public class TavernaFlowReceipt extends WSFlowReceipt {
 			      String userID,
 			      LogLevel modelLogLevel) 
 	throws  WorkflowSubmitInvalidException  {
-        super(flow);   
+        super(flow);
+	this.flow = flow;
 	this.userID = userID;
 	this.modelLogLevel = modelLogLevel;
 	this.flowDefnString = flowDefnString;
@@ -294,13 +299,54 @@ public class TavernaFlowReceipt extends WSFlowReceipt {
     }
     
     public String getProvenanceXMLString() {
-	return "No...";
+	XMLOutputter xo = new XMLOutputter();
+	xo.setIndent(" ");
+	xo.setNewlines(true);
+	xo.setTextNormalize(false);
+	return xo.outputString(getProvenanceXML());
     }
-	    
-
-    public org.jdom.Element getProvenanceXML() {
-	//get the end provenance task or return empty string
-	Element prov = new Element("workflowProvenance",PROVENANCE_NAMESPACE);
+    
+    
+    public Element getProvenanceXML() {
+	// Top level provenance element
+	Element prov = new Element("workflowProvenance", provNS);
+	prov.setAttribute("id",flow.getID());
+	prov.setAttribute("user",userID);
+	prov.setAttribute("status",translateFlowState(flow.getStatus()));
+	
+	Element processorList = new Element("processorList", provNS);
+	prov.addContent(processorList);
+	Task[] tasks = flow.getTasks();
+	for (int i = 0; i < tasks.length; i++) {
+	    if (tasks[i] instanceof ProcessorTask) {
+		ProcessorTask theProcessorTask = (ProcessorTask)tasks[i];
+		Processor theProcessor = theProcessorTask.getProcessor();
+		Element processor = new Element("processor", provNS);
+		processor.setAttribute("name",theProcessor.getName());
+		processor.setAttribute("status",translateStateString(tasks[i].getStateString()));
+		if (theProcessorTask.getStartTime() != null) {
+		    processor.setAttribute("starttime",theProcessorTask.getStartTime().getShortString());
+		}
+		else {
+		    processor.setAttribute("starttime","NOT STARTED");
+		}
+		if (theProcessorTask.getEndTime() != null) {
+		    processor.setAttribute("endtime",theProcessorTask.getEndTime().getShortString());
+		}
+		else {
+		    processor.setAttribute("endtime","NOT ENDED");
+		}
+		Element faultElement = theProcessorTask.getFaultElement();
+		if (faultElement != null) {
+		    processor.addContent(faultElement);
+		}
+		Element invocationDetail = new Element("invocationDetail", provNS);
+		invocationDetail.addContent(theProcessorTask.getProvenance());
+		processor.addContent(invocationDetail);
+					    
+		processorList.addContent(processor);
+	    }
+	}
 	
 	return prov;
     }

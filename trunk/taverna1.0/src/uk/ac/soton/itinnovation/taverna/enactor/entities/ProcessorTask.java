@@ -25,8 +25,8 @@
 //      Dependencies        :
 //
 //      Last commit info    :   $Author: mereden $
-//                              $Date: 2003-09-30 17:11:18 $
-//                              $Revision: 1.22 $
+//                              $Date: 2003-10-02 16:54:25 $
+//                              $Revision: 1.23 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 package uk.ac.soton.itinnovation.taverna.enactor.entities;
@@ -36,7 +36,7 @@ import org.embl.ebi.escience.scufl.Processor;
 import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.entities.TimePoint;
 import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.eventservice.TaskStateMessage;
 import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.serviceprovidermanager.ServiceSelectionCriteria;
-import uk.ac.soton.itinnovation.taverna.enactor.broker.LogLevel;
+import uk.ac.soton.itinnovation.taverna.enactor.broker.*;
 
 // Utility Imports
 import java.util.HashMap;
@@ -44,6 +44,9 @@ import java.util.Map;
 
 // JDOM Imports
 import org.jdom.Element;
+import org.jdom.Namespace;
+
+import java.io.*;
 
 import org.embl.ebi.escience.baclava.*;
 
@@ -53,7 +56,8 @@ import org.embl.ebi.escience.baclava.*;
  */
 public abstract class ProcessorTask extends TavernaTask{
     
-    protected static final String PROVENANCE_NAMESPACE = "http://www.it-innovation.soton.ac.uk/taverna/workflow/enactor/provenance";
+    //protected static final String PROVENANCE_NAMESPACE = "http://www.it-innovation.soton.ac.uk/taverna/workflow/enactor/provenance";
+    protected static final Namespace PROVENANCE_NAMESPACE = TavernaFlowReceipt.provNS;
     protected Processor proc = null;
     protected LogLevel logLevel = null;	
     private Logger logger = Logger.getLogger(ProcessorTask.class);
@@ -110,10 +114,7 @@ public abstract class ProcessorTask extends TavernaTask{
      * Retrieve provenance information for this task, concrete tasks should
      * overide this method and provide this information as an XML JDOM element
      */
-    public org.jdom.Element getProvenance() {
-	return new Element("processorExecution");
-    }
-    
+    public abstract Element getProvenance();
     
     /**
      * Wrapper method to enable pre and post processing for actual service invocations
@@ -165,11 +166,13 @@ public abstract class ProcessorTask extends TavernaTask{
 	}
 	catch (TaskExecutionException ex) {
 	    endTime = new TimePoint();
+	    faultCausingException = ex;
 	    logger.error(ex);
 	    return new TaskStateMessage(getParentFlow().getID(),getID(), TaskStateMessage.FAILED,ex.getMessage());
 	}
 	catch (Exception ex){
 	    endTime = new TimePoint();
+	    faultCausingException = ex;
 	    logger.error(ex);
 	    return new TaskStateMessage(getParentFlow().getID(), 
 					getID(), 
@@ -178,6 +181,33 @@ public abstract class ProcessorTask extends TavernaTask{
 	}	
     }
     
+    private Exception faultCausingException = null;
+    /**
+     * If the processor invocation throws an exception causing it
+     * to fail, this class will populate an XML element with as much
+     * information as possible about the exception that was thrown.
+     */
+    public Element getFaultElement() {
+	if (faultCausingException == null) {
+	    return null;
+	}
+	Element faultElement = new Element("failureDescription",PROVENANCE_NAMESPACE);
+	String faultClass = faultCausingException.getClass().getName();
+	String faultMessage = faultCausingException.getMessage();
+	StringWriter sw = new StringWriter();
+	faultCausingException.printStackTrace(new PrintWriter(sw));
+	String stackTrace = sw.toString();
+	Element faultClassElement = new Element("exceptionClass", PROVENANCE_NAMESPACE);
+	faultClassElement.setText(faultClass);
+	faultElement.addContent(faultClassElement);
+	Element faultMessageElement = new Element("exceptionMessage", PROVENANCE_NAMESPACE);
+	faultMessageElement.setText(faultMessage);
+	faultElement.addContent(faultMessageElement);
+	Element faultTraceElement = new Element("exceptionTrace", PROVENANCE_NAMESPACE);
+	faultTraceElement.setText(stackTrace);
+	faultElement.addContent(faultTraceElement);
+	return faultElement;
+    }
     
     /**
      * Method that actually undertakes a service action. Should be implemented by concrete processors.

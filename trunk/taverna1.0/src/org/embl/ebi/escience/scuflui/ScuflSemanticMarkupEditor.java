@@ -44,6 +44,7 @@ public class ScuflSemanticMarkupEditor extends JPanel implements ScuflUIComponen
     public ScuflSemanticMarkupEditor(SemanticMarkup m) {
 	
 	super(new BorderLayout());
+	setPreferredSize(new Dimension(100,100));
 	setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
 	//super((JFrame)null,"Semantic metadata markup editor",true);
 	

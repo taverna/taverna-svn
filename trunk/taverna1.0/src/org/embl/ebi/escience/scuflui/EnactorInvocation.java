@@ -7,6 +7,7 @@ package org.embl.ebi.escience.scuflui;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.awt.Font;
 import javax.swing.*;
 import org.embl.ebi.escience.scufl.ScuflModel;
 import org.embl.ebi.escience.baclava.*;
@@ -70,6 +71,7 @@ public class EnactorInvocation extends JPanel implements ScuflUIComponent {
     private FlowReceipt flowReceipt = null;
     private JTextArea resultsText = null;
     private JTextArea provenanceText = null;
+    private JPanel provenancePanel = null;
     private JTabbedPane individualResults = new JTabbedPane();
     private JPanel resultsPanel = null;
     private JTabbedPane tabs = null;
@@ -108,6 +110,9 @@ public class EnactorInvocation extends JPanel implements ScuflUIComponent {
 	    this.tabs.add("Results",individualResults);
 	    this.tabs.add("Results as XML",resultsPanel);
 	    this.resultsText.setText(results);
+	    this.resultsText.setFont(new Font("Monospaced",Font.PLAIN,12));
+	    this.resultsText.setLineWrap(true);
+	    this.resultsText.setWrapStyleWord(true);
 	    // Get the output map and create new result detail panes
 	    Map resultMap = ((TavernaFlowReceipt)(this.flowReceipt)).getOutput();
 	    for (Iterator i = resultMap.keySet().iterator(); i.hasNext(); ) {
@@ -128,7 +133,11 @@ public class EnactorInvocation extends JPanel implements ScuflUIComponent {
 	String provenance = "";
 	try {
 	    provenance = ((TavernaFlowReceipt)(this.flowReceipt)).getProvenanceXMLString();
+	    this.provenanceText.setFont(new Font("Monospaced",Font.PLAIN,12));
+	    this.provenanceText.setLineWrap(true);
+	    this.provenanceText.setWrapStyleWord(true);
 	    this.provenanceText.setText(provenance);
+	    this.tabs.add("Provenance as XML", provenancePanel);
 	}
 	catch (Exception ex) {
 	    this.provenanceText.setText("No provenance available : "+ex.toString());
@@ -157,6 +166,7 @@ public class EnactorInvocation extends JPanel implements ScuflUIComponent {
 	throws InvalidFlowBrokerRequestException, 
 	       WorkflowCommandException {
 	super(new BorderLayout());
+	setPreferredSize(new Dimension(100,100));
 	//super((JFrame)null,"Enactor invocation run", false);
 	// Non modal dialog box
 	
@@ -224,7 +234,7 @@ public class EnactorInvocation extends JPanel implements ScuflUIComponent {
 	//tabs.add(resultsPanel,"Results");
 
 	// Create a text area to show the provenance
-	JPanel provenancePanel = new JPanel();
+	provenancePanel = new JPanel();
 	provenancePanel.setLayout(new BorderLayout());
 	provenancePanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(),
 								   "Workflow provenance"));
@@ -232,7 +242,7 @@ public class EnactorInvocation extends JPanel implements ScuflUIComponent {
 	JScrollPane provenanceScrollPane = new JScrollPane(provenanceText);
 	provenanceScrollPane.setPreferredSize(new Dimension(100,100));
 	provenancePanel.add(provenanceScrollPane, BorderLayout.CENTER);
-	tabs.add(provenancePanel,"Provenance");
+	//tabs.add(provenancePanel,"Provenance");
 
 	//individualResults = new JTabbedPane();
 	//tabs.add(individualResults, "Detail");

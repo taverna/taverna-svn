@@ -13,6 +13,7 @@ import uk.ac.soton.itinnovation.taverna.enactor.entities.TaskExecutionException;
 
 // Utility Imports
 import java.util.HashMap;
+import org.jdom.Element;
 
 
 
@@ -48,5 +49,9 @@ public class RDFGeneratorTask extends ProcessorTask {
     
     public void cleanUpConcreteTask() {
     }
-    
+ 
+    public Element getProvenance() {
+	return new Element("rdfgenerator",PROVENANCE_NAMESPACE);
+    }
+   
 }

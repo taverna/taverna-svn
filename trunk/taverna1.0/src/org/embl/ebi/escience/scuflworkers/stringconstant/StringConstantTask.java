@@ -14,6 +14,7 @@ import uk.ac.soton.itinnovation.taverna.enactor.entities.TaskExecutionException;
 // Utility Imports
 import java.util.HashMap;
 import java.util.Map;
+import org.jdom.Element;
 
 
 
@@ -47,6 +48,10 @@ public class StringConstantTask extends ProcessorTask {
     }
     
     public void cleanUpConcreteTask() {
+    }
+
+    public Element getProvenance() {
+	return new Element("stringconstant",PROVENANCE_NAMESPACE);
     }
 
 }

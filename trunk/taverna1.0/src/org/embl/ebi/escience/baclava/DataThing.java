@@ -47,6 +47,9 @@ public class DataThing {
      * this but it does no harm so why not?
      */
     public DataThing(Object o) {
+	if (o == null) {
+	    throw new RuntimeException("Attempt to create a null data object, definitely not allowed!");
+	}
 	theDataObject = o;
 	myMarkup = new SemanticMarkup(this);
     }
