@@ -115,6 +115,30 @@ public class AlternateProcessor implements Serializable, Transferable {
     public void setOriginalProcessor(Processor p) {
 	this.original = p;
 	this.alternate.parentProcessor = p;
+	// If there are ports that are the same name on the 
+	// original and this processor, and these are not
+	// already defined in the mapping section, then create
+	// simple identity mappings.
+	Port[] ports = this.original.getPorts();
+	for (int i = 0; i < ports.length; i++) {
+	    // Check for an existing mapping
+	    if ((inputMapping.get(ports[i].getName())==null && ports[i] instanceof InputPort) ||
+		(outputMapping.get(ports[i].getName())==null && ports[i] instanceof OutputPort)) {
+		// Does the alternate have a named port with the same name?
+		try {
+		    Port targetPort = this.alternate.locatePort(ports[i].getName());
+		    if (targetPort instanceof InputPort && ports[i] instanceof InputPort) {
+			inputMapping.put(targetPort.getName(), targetPort.getName());
+		    }
+		    else if (targetPort instanceof OutputPort && ports[i] instanceof OutputPort) {
+			outputMapping.put(targetPort.getName(), targetPort.getName());
+		    }
+		}
+		catch (UnknownPortException upe) {
+		    //
+		}
+	    }
+	}
     }
 
     /**
