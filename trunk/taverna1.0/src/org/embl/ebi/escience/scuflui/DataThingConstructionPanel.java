@@ -88,7 +88,7 @@ import org.jdom.output.XMLOutputter;
  * COMMENT DataThingConstructionPanel
  * 
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover </a>
- * @version $Revision: 1.8 $
+ * @version $Revision: 1.9 $
  */
 public class DataThingConstructionPanel extends JPanel implements ScuflUIComponent, ScuflModelEventListener
 {
@@ -497,7 +497,7 @@ public class DataThingConstructionPanel extends JPanel implements ScuflUICompone
 				return ((InputDataThingNode) getFirstChild()).getDataThing();
 			}
 			ArrayList inputList = new ArrayList();
-			HashMap dataThingList = new HashMap();			
+			HashMap dataThingList = new HashMap();
 			for (int index = 0; index < getChildCount(); index++)
 			{
 				InputDataThingNode inputNode = (InputDataThingNode) getChildAt(index);
@@ -506,9 +506,9 @@ public class DataThingConstructionPanel extends JPanel implements ScuflUICompone
 			}
 			DataThing result = DataThingFactory.bake(inputList);
 			// HACK Ugly ugly hack. Oh well.
-			for(int index = 0; index < inputList.size(); index++)
+			for (int index = 0; index < inputList.size(); index++)
 			{
-				result.copyMetadataFrom((DataThing)dataThingList.get(inputList.get(index)));
+				result.copyMetadataFrom((DataThing) dataThingList.get(inputList.get(index)));
 			}
 			return result;
 		}
@@ -799,7 +799,7 @@ public class DataThingConstructionPanel extends JPanel implements ScuflUICompone
 			{
 				setIcon(ScuflIcons.inputIcon);
 			}
-			if (value instanceof InputDataThingNode)
+			else if (value instanceof InputDataThingNode)
 			{
 				InputDataThingNode thingNode = (InputDataThingNode) value;
 				Object userObject = thingNode.getUserObject();
@@ -828,6 +828,14 @@ public class DataThingConstructionPanel extends JPanel implements ScuflUICompone
 					type = thingNode.thing.getMetadata().getFirstMIMEType();
 				}
 				setText("<html><font color=\"#666666\">" + type + "</font><br>" + summaryText + "</html>");
+			}
+			else if (expanded)
+			{
+				setIcon(ScuflIcons.folderOpenIcon);
+			}
+			else
+			{
+				setIcon(ScuflIcons.folderClosedIcon);
 			}
 			return this;
 		}
