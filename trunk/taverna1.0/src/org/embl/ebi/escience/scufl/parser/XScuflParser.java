@@ -240,6 +240,19 @@ public class XScuflParser {
 	    // End iterator over data constraints
 	}
 
+	// Iterate over external port declarations
+	List externalPorts = root.getChildren("external",namespace);
+	for (Iterator i = externalPorts.iterator(); i.hasNext(); ) {
+	    Element external = (Element)i.next();
+	    // Should be in the form 'processor:port'
+	    String specifier = external.getTextTrim();
+	    if (usePrefix) {
+		specifier = prefix+"_"+specifier;
+	    }
+	    Port thePort = model.locatePort(specifier);
+	    thePort.setExternal(true);
+	}
+
 
 	// Build concurrency constraints (not yet implemented)
 	
