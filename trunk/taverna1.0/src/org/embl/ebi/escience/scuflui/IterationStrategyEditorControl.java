@@ -134,6 +134,7 @@ public class IterationStrategyEditorControl extends JPanel {
 			    model.nodeStructureChanged(parent);
 		    }
 		    tree.setSelectionPath(new TreePath(newNode.getPath()));
+		    tree.setAllNodesExpanded();		    
 		}
 	    });
 	
