@@ -30,7 +30,7 @@ public class AssigningServiceClient implements LSIDProvider {
     String targetAuthority = null;
     String serviceEndpoint = null;
     LSIDAssigner assigner = null;
-    private String wfdefinitionNS, wfinstanceNS, datathingNS;
+    private String wfdefinitionNS, wfinstanceNS, datathingLeafNS, datathingCollectionNS;
     private Map perNamespaceAssigners = new HashMap();
 
     /**
@@ -62,7 +62,8 @@ public class AssigningServiceClient implements LSIDProvider {
 	    // Populate the target namespaces from the system properties
 	    wfdefinitionNS = System.getProperty("taverna.lsid.asclient.ns.wfdefinition","WorkflowDefinition");
 	    wfinstanceNS = System.getProperty("taverna.lsid.asclient.ns.wfinstance","WorkflowInstance");
-	    datathingNS = System.getProperty("taverna.lsid.asclient.ns.datathing","DataThing");
+	    datathingLeafNS = System.getProperty("taverna.lsid.asclient.ns.datathingleaf","DataThing");
+	    datathingCollectionNS = System.getProperty("taverna.lsid.asclient.ns.datathingcollection","DataThing");
 	    
 	    // Create a new assigner
 	    this.assigner = new LSIDAssigner(new SOAPLocation(serviceEndpoint));
@@ -89,10 +90,16 @@ public class AssigningServiceClient implements LSIDProvider {
 			log.debug("Assigning service can assign workflow instance LSIDs using namespace "+
 				  namespace+" in "+authority);
 		    }
-		    else if (namespace.equals(datathingNS)) {
-			perNamespaceAssigners.put(LSIDProvider.DATATHING,
+		    else if (namespace.equals(datathingLeafNS)) {
+			perNamespaceAssigners.put(LSIDProvider.DATATHINGLEAF,
 						  new LSIDInfo(namespace, authority, assigner));
-			log.debug("Assigning service can assign datathing LSIDs using namespace "+
+			log.debug("Assigning service can assign datathing leaf LSIDs using namespace "+
+				  namespace+" in "+authority);
+		    }
+		    else if (namespace.equals(datathingCollectionNS)) {
+			perNamespaceAssigners.put(LSIDProvider.DATATHINGCOLLECTION,
+						  new LSIDInfo(namespace, authority, assigner));
+			log.debug("Assigning service can assign datathing collection LSIDs using namespace "+
 				  namespace+" in "+authority);
 		    }
 		}

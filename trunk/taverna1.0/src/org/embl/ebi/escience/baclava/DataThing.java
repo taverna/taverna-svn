@@ -137,7 +137,12 @@ public class DataThing {
     private void doInternalLSIDFill(Object o, LSIDProvider provider) {
 	String lsidValue = (String)(lsid.get(o));
 	if (lsidValue == null || lsidValue.equals("")) {
-	    lsid.put(o, provider.getID(LSIDProvider.DATATHING));
+	    if (o instanceof Collection) {
+		lsid.put(o, provider.getID(LSIDProvider.DATATHINGLEAF));
+	    }
+	    else {
+		lsid.put(o, provider.getID(LSIDProvider.DATATHINGCOLLECTION));
+	    }
 	}
 	if (o instanceof Collection) {
 	    Iterator i = ((Collection)o).iterator();

@@ -15,7 +15,8 @@ public interface LSIDProvider {
     
     public static final NamespaceEnumeration WFDEFINITION = new NamespaceEnumeration();
     public static final NamespaceEnumeration WFINSTANCE = new NamespaceEnumeration();
-    public static final NamespaceEnumeration DATATHING = new NamespaceEnumeration();
+    public static final NamespaceEnumeration DATATHINGLEAF = new NamespaceEnumeration();
+    public static final NamespaceEnumeration DATATHINGCOLLECTION = new NamespaceEnumeration();
     
     /**
      * Return a unique identifier to be used as an LSID
