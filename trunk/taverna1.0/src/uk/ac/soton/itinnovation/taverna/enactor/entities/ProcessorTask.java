@@ -25,8 +25,8 @@
 //      Dependencies        :
 //
 //      Last commit info    :   $Author: dmarvin $
-//                              $Date: 2003-05-20 17:23:15 $
-//                              $Revision: 1.3 $
+//                              $Date: 2003-05-21 12:29:29 $
+//                              $Revision: 1.4 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 package uk.ac.soton.itinnovation.taverna.enactor.entities;
@@ -44,7 +44,7 @@ import org.jdom.Element;
 
 
 public abstract class ProcessorTask extends TavernaTask{
-
+	protected static final String PROVENANCE_NAMESPACE = "http://www.it-innovation.soton.ac.uk/taverna/workflow/enactor/provenance";
     protected Processor proc = null;
 	protected LogLevel logLevel = null;	
 	

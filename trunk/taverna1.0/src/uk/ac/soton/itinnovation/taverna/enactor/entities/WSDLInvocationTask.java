@@ -25,8 +25,8 @@
 //      Dependencies        :
 //
 //      Last commit info    :   $Author: dmarvin $
-//                              $Date: 2003-05-20 17:23:16 $
-//                              $Revision: 1.5 $
+//                              $Date: 2003-05-21 12:29:29 $
+//                              $Revision: 1.6 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 
@@ -211,29 +211,29 @@ public class WSDLInvocationTask extends ProcessorTask implements InvocationDescr
 	 * overide this method and provide this information as an XML JDOM element
 	 */
 	public org.jdom.Element getProvenance() {
-		Element e = new Element("WSDLInvocation");
+		Element e = new Element("WSDLInvocation",PROVENANCE_NAMESPACE);
 		if(logLevel.getLevel()>=LogLevel.LOW) {
-			org.jdom.Element status = new org.jdom.Element("status");
+			org.jdom.Element status = new org.jdom.Element("status",PROVENANCE_NAMESPACE);
 			status.addContent(new org.jdom.Text(getStateString()));
 			e.addContent(status);
 			//add the wsdl service invoked
 			String wsdlURL = getSelectedServiceWSDLURL().toExternalForm();
 			if(wsdlURL!=null) {
-				Element uri = new Element("WSDLURI");
+				Element uri = new Element("WSDLURI",PROVENANCE_NAMESPACE);
 				uri.addContent(new Text(wsdlURL));
 				e.addContent(uri);
 			}
 			//add the portType
 			String portType = getPortType();
 			if(portType!=null) {
-				Element pT = new Element("PortType");
+				Element pT = new Element("PortType",PROVENANCE_NAMESPACE);
 				pT.addContent(new Text(portType));
 				e.addContent(pT);
 			}
 			//add the operation
 			String operation = getOperation();
 			if(operation!=null) {
-				Element op = new Element("Operation");
+				Element op = new Element("Operation",PROVENANCE_NAMESPACE);
 				op.addContent(new Text(operation));
 				e.addContent(op);
 			}
@@ -242,12 +242,12 @@ public class WSDLInvocationTask extends ProcessorTask implements InvocationDescr
 		if(logLevel.getLevel()>=LogLevel.NORMAL) {
 			//add start and end time
 			if(startTime!=null) {
-				Element sT = new Element("startTime");
+				Element sT = new Element("startTime",PROVENANCE_NAMESPACE);
 				sT.addContent(new Text(startTime.getString()));
 				e.addContent(sT);
 			}
 			if(endTime!=null) {
-				Element eT = new Element("endTime");
+				Element eT = new Element("endTime",PROVENANCE_NAMESPACE);
 				eT.addContent(new Text(endTime.getString()));
 				e.addContent(eT);
 			}

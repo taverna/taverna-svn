@@ -25,8 +25,8 @@
 //      Dependencies        :
 //
 //      Last commit info    :   $Author: dmarvin $
-//                              $Date: 2003-05-20 17:23:16 $
-//                              $Revision: 1.12 $
+//                              $Date: 2003-05-21 12:29:24 $
+//                              $Revision: 1.13 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 
@@ -203,7 +203,21 @@ public class XScuflDiGraphGenerator {
 				}		
 								
 			}
+			
+			//processors can have no inputs and / or no outputs
+			//and therefore are inputs or outputs to the graph
+			iterator = processorTasks.iterator();
+			while(iterator.hasNext()) {
+				ProcessorTask p = (ProcessorTask) iterator.next();
+				if(p.getNumberOfParents()==0)
+					//it has no inputs and therefore is an input node for the graph
+					graph.addInputNode(p);
+				if(p.getNumberOfChildren()==0)
+					//it has no outputs and therefore is an output node for the graph
+					graph.addOutputNode(p);
 
+			}
+			
 			iterator = flowExtOutPorts.iterator();
 			while(iterator.hasNext()) {
 				PortTask pT = (PortTask) iterator.next();
@@ -227,7 +241,8 @@ public class XScuflDiGraphGenerator {
 				throw new XScuflInvalidException("Not all the processor nodes are accessible from input nodes");		
 		}		
 		catch(Exception ex) {
-			//fix this!!!
+			logger.error(ex);
+			throw new XScuflInvalidException("Unrecognised error occured whilst generating workflow, please consult the logs");
 		}
 		return graph;
 		
@@ -309,9 +324,11 @@ public class XScuflDiGraphGenerator {
         } catch (Exception ex) {
             if (ex instanceof XScuflInvalidException)
                 throw (XScuflInvalidException) ex;
-            else
+            else {
+				ex.printStackTrace();
                 throw new XScuflInvalidException("The workflow is incomplete since some processors are not accessible when navigating from the start of the workflow, please check links");
-        }			
+			}
+		}			
     }
 	
     private static boolean checkDescendents(GraphNode gnode, String id) {
@@ -322,7 +339,8 @@ public class XScuflDiGraphGenerator {
             for (int i = 0; i < children.length; i++) {
 					
                 if (children[i].getID().equals(id)) {
-                    return true;
+                    System.out.println("Found match: " + id);
+					return true;
                 } else if (checkDescendents(children[i], id)) {
                     return true;
                 }

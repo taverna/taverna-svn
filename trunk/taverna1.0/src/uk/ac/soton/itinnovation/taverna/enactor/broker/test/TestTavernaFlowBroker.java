@@ -41,13 +41,13 @@ public class TestTavernaFlowBroker extends TestCase {
        while(workflowspec.available()>0) {
          sWriter.write(workflowspec.read());
        }
-       String wsflDefn = sWriter.toString();
+       String scuflDefn = sWriter.toString();
        sWriter = new StringWriter();
        while(inData.available()>0) {
          sWriter.write(inData.read());
        }
        String input = sWriter.toString();
-       TavernaWorkflowSubmission submit = new TavernaWorkflowSubmission(wsflDefn,input,"TestTavernaFlowBroker","http://www.it-innovation.soton.ac.uk/users");
+       TavernaWorkflowSubmission submit = new TavernaWorkflowSubmission(scuflDefn,input,"TestTavernaFlowBroker","http://www.it-innovation.soton.ac.uk/users");
        FlowBroker broker = FlowBrokerFactory.createFlowBroker("uk.ac.soton.itinnovation.taverna.enactor.broker.TavernaFlowBroker");
        TavernaFlowReceipt receipt = (TavernaFlowReceipt) broker.submitFlow(submit);
        //poll for status every 500ms

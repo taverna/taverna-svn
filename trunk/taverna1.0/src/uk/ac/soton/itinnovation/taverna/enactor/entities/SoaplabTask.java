@@ -25,8 +25,8 @@
 //      Dependencies        :
 //
 //      Last commit info    :   $Author: dmarvin $
-//                              $Date: 2003-05-20 17:23:15 $
-//                              $Revision: 1.5 $
+//                              $Date: 2003-05-21 12:29:29 $
+//                              $Revision: 1.6 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 
@@ -197,14 +197,14 @@ public class SoaplabTask extends ProcessorTask{
 	 * overide this method and provide this information as an XML JDOM element
 	 */
 	public org.jdom.Element getProvenance() {
-		org.jdom.Element e = new org.jdom.Element("SOAPLabInvocation");
+		org.jdom.Element e = new org.jdom.Element("SOAPLabInvocation",PROVENANCE_NAMESPACE);
 		if(logLevel.getLevel()>=LogLevel.LOW) {
-			org.jdom.Element status = new org.jdom.Element("status");
+			org.jdom.Element status = new org.jdom.Element("status",PROVENANCE_NAMESPACE);
 			status.addContent(new org.jdom.Text(getStateString()));
 			e.addContent(status);
 			//add the wsdl service invoked
 			if(soaplabWSDL!=null) {
-				org.jdom.Element uri = new org.jdom.Element("WSDLURI");
+				org.jdom.Element uri = new org.jdom.Element("WSDLURI",PROVENANCE_NAMESPACE);
 				uri.addContent(new org.jdom.Text(soaplabWSDL));
 				e.addContent(uri);
 			}			
@@ -213,17 +213,17 @@ public class SoaplabTask extends ProcessorTask{
 		if(logLevel.getLevel()>=LogLevel.NORMAL) {
 			//add start and end time
 			if(startTime!=null) {
-				org.jdom.Element sT = new org.jdom.Element("startTime");
+				org.jdom.Element sT = new org.jdom.Element("startTime",PROVENANCE_NAMESPACE);
 				sT.addContent(new org.jdom.Text(startTime.getString()));
 				e.addContent(sT);
 			}
 			if(endTime!=null) {
-				org.jdom.Element eT = new org.jdom.Element("endTime");
+				org.jdom.Element eT = new org.jdom.Element("endTime",PROVENANCE_NAMESPACE);
 				eT.addContent(new org.jdom.Text(endTime.getString()));
 				e.addContent(eT);
 			}
 			if(report!=null) {
-				org.jdom.Element rep = new org.jdom.Element("soaplabReport");
+				org.jdom.Element rep = new org.jdom.Element("soaplabReport",PROVENANCE_NAMESPACE);
 				rep.addContent(new org.jdom.CDATA(report));
 				e.addContent(rep);
 			}			
@@ -233,7 +233,7 @@ public class SoaplabTask extends ProcessorTask{
 			//add the input and output data
 			//required retrieving of it
 			if(detailedStatus!=null) {
-				org.jdom.Element stat = new org.jdom.Element("soaplabDetailedStatus");
+				org.jdom.Element stat = new org.jdom.Element("soaplabDetailedStatus",PROVENANCE_NAMESPACE);
 				stat.addContent(new org.jdom.CDATA(detailedStatus));
 				e.addContent(stat);
 			}
