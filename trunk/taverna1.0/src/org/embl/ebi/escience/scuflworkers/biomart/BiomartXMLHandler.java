@@ -170,6 +170,16 @@ public class BiomartXMLHandler implements XMLHandler {
 		}
 	    }
 	}
+
+	// Do sequence attribute
+	SequenceDescription sd = q.getSequenceDescription();
+	if (sd != null) {
+	    Element sequenceElement = new Element("sequence", NAMESPACE);
+	    sequenceElement.setAttribute("type",sd.getType()+"");
+	    sequenceElement.setAttribute("fiveprime",sd.getLeftFlank()+"");
+	    sequenceElement.setAttribute("threeprime",sd.getRightFlank()+"");
+	    e.addContent(sequenceElement);
+	}
 	return e;
     }
 
@@ -180,6 +190,21 @@ public class BiomartXMLHandler implements XMLHandler {
 	// Create new query object
 	Query q = new Query();
 	
+	// Get sequence
+	Element sequenceElement = e.getChild("sequence", NAMESPACE);
+	if (sequenceElement != null) {
+	    int sType = new Integer(sequenceElement.getAttributeValue("type")).intValue();
+	    int fiveprime = new Integer(sequenceElement.getAttributeValue("fiveprime")).intValue();
+	    int threeprime = new Integer(sequenceElement.getAttributeValue("threeprime")).intValue();
+	    try {
+		q.setSequenceDescription(new SequenceDescription(sType, fiveprime, threeprime));
+	    }
+	    catch (InvalidQueryException iqe) {
+		iqe.printStackTrace();
+		q.setSequenceDescription(null);
+	    }
+	}
+
 	// Get attributes
 	Element attributesElement = e.getChild("attributes", NAMESPACE);
 	if (attributesElement != null) {

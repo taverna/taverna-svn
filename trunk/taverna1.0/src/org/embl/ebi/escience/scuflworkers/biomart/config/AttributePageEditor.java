@@ -237,7 +237,7 @@ class SequenceGroupEditor extends JPanel {
 class SequenceEditor extends JPanel {
 
     Query query;
-    JComboBox geneTranscriptSelect = new JComboBox(new String[]{
+    final JComboBox geneTranscriptSelect = new JComboBox(new String[]{
 	"None","Transcripts / Proteins","Genes"});
     JComboBox sequenceOptionsSelect = new JComboBox();
     final JTextArea fiveFlankLength = new JTextArea("1000");
@@ -264,28 +264,72 @@ class SequenceEditor extends JPanel {
 						  "Coding  equence only",
 						  "Peptide"};
     
-    // Image names for each option type
-    String[] imageNames = new String[]{"gene_schematic_gene_only.gif",
-				       "gene_schematic_gene_5_3.gif",
-				       "gene_schematic_gene_5.gif",
-				       "gene_schematic_gene_3.gif",
-				       "gene_schematic_extent_5_only.gif",
-				       "gene_schematic_extent_3_only.gif",
-				       "gene_schematic_exons.gif",
-				       "gene_schematic_exons_5_3.gif",
-				       "gene_schematic_exons_5.gif",
-				       "gene_schematic_exons_3.gif",
-				       "gene_schematic_upstream_utr.gif",
-				       "gene_schematic_upstream_utr_5.gif",
-				       "gene_schematic_downstream_utr.gif",
-				       "gene_schematic_downstream_utr_3.gif",
-				       "gene_schematic_cdna.gif",
-				       "gene_schematic_coding.gif",
-				       "gene_schematic_coding_translation.gif"};
+    // Image names for each option type within the transcript selection
+    String[] transcriptImageNames = new String[]{"gene_schematic_gene_only.gif",
+						 "gene_schematic_gene_5_3.gif",
+						 "gene_schematic_gene_5.gif",
+						 "gene_schematic_gene_3.gif",
+						 "gene_schematic_5_only.gif",
+						 "gene_schematic_3_only.gif",
+						 "gene_schematic_exons.gif",
+						 "gene_schematic_exons_5_3.gif",
+						 "gene_schematic_exons_5.gif",
+						 "gene_schematic_exons_3.gif",
+						 "gene_schematic_upstream_utr.gif",
+						 "gene_schematic_upstream_utr_5.gif",
+						 "gene_schematic_downstream_utr.gif",
+						 "gene_schematic_downstream_utr_3.gif",
+						 "gene_schematic_cdna.gif",
+						 "gene_schematic_coding.gif",
+						 "gene_schematic_coding.gif"};
+    // Image names for each option type within the gene selection
+    String[] geneImageNames = new String[]{"gene_schematic_extent_gene_only.gif",
+					   "gene_schematic_extent_gene_5_3.gif",
+					   "gene_schematic_extent_gene_5.gif",
+					   "gene_schematic_extent_gene_3.gif",
+					   "gene_schematic_extent_5_only.gif",
+					   "gene_schematic_extent_3_only.gif",
+					   "gene_schematic_extent_exons.gif",
+					   "gene_schematic_extent_exons_5_3.gif",
+					   "gene_schematic_extent_exons_5.gif",
+					   "gene_schematic_extent_exons_3.gif"};
+
+
     
+    // Whether to enable the flank length extension inputs
+    // given an option index
     boolean[] has3Flank = new boolean[]{false,true,false,true,false,true,false,true,false,true,false,false,false,true,false,false,false};
     boolean[] has5Flank = new boolean[]{false,true,true,false,true,false,false,true,true,false,false,true,false,false,false,false,false};
     
+    int[] geneTypes = new int[]{SequenceDescription.GENEEXONINTRON,
+				SequenceDescription.GENEEXONINTRON,
+				SequenceDescription.GENEEXONINTRON,
+				SequenceDescription.GENEEXONINTRON,
+				SequenceDescription.GENEFLANKS,
+				SequenceDescription.GENEFLANKS,
+				SequenceDescription.GENEEXONS,
+				SequenceDescription.GENEEXONS,
+				SequenceDescription.GENEEXONS,
+				SequenceDescription.GENEEXONS};
+    int[] transcriptTypes = new int[]{SequenceDescription.TRANSCRIPTEXONINTRON,
+				      SequenceDescription.TRANSCRIPTEXONINTRON,
+				      SequenceDescription.TRANSCRIPTEXONINTRON,
+				      SequenceDescription.TRANSCRIPTEXONINTRON,
+				      SequenceDescription.TRANSCRIPTFLANKS,
+				      SequenceDescription.TRANSCRIPTFLANKS,
+				      SequenceDescription.TRANSCRIPTEXONS,
+				      SequenceDescription.TRANSCRIPTEXONS,
+				      SequenceDescription.TRANSCRIPTEXONS,
+				      SequenceDescription.TRANSCRIPTEXONS,
+				      SequenceDescription.UPSTREAMUTR,
+				      SequenceDescription.UPSTREAMUTR,
+				      SequenceDescription.DOWNSTREAMUTR,
+				      SequenceDescription.DOWNSTREAMUTR,
+				      SequenceDescription.TRANSCRIPTCDNA,
+				      SequenceDescription.TRANSCRIPTCODING,
+				      SequenceDescription.TRANSCRIPTPEPTIDE};
+				
+
     // Construct the entire list of options available when the 
     // transcripts / proteins option is selected from the combobox
     String[] transcriptOptions;
@@ -391,7 +435,17 @@ class SequenceEditor extends JPanel {
 		    JComboBox source = (JComboBox)ae.getSource();
 		    int index = source.getSelectedIndex();
 		    if (source.isEnabled() && index > -1) {
-			String imageURL = "org/embl/ebi/escience/scuflworkers/biomart/config/glyphs/"+imageNames[index];
+			String imageURL = null;
+			if (geneTranscriptSelect.getSelectedIndex() == 1) {
+			    // Transcripts
+			    imageURL = "org/embl/ebi/escience/scuflworkers/biomart/config/glyphs/"+transcriptImageNames[index];
+			}
+			else {
+			    // Genes
+			    imageURL = "org/embl/ebi/escience/scuflworkers/biomart/config/glyphs/"+
+				geneImageNames[index];
+			}
+				
 			internalImage.removeAll();
 			internalImage.add(new JLabel(new ImageIcon(Thread.currentThread().getContextClassLoader().getResource(imageURL))),
 					  BorderLayout.CENTER);
@@ -408,11 +462,89 @@ class SequenceEditor extends JPanel {
 	internalImage.setMinimumSize(new Dimension(250,70));
 	imagePanel.setMaximumSize(new Dimension(600,95));
 	add(imagePanel);
+	updateUIPanel();
     }
     
     // Called when the query needs to be updated from the UI
     void updateQuery() {
+	SequenceDescription sd = query.getSequenceDescription();
+	SequenceDescription newDesc = getSequenceDescription();
+	if (sd == null && newDesc == null) {
+	    return;
+	}
+	if (sd == null ||
+	    sd.equals(newDesc) == false) {
+	    query.setSequenceDescription(newDesc);
+	}
+    }
+    
+    SequenceDescription getSequenceDescription() {
+	if (geneTranscriptSelect.getSelectedIndex() > 0 &&
+	    sequenceOptionsSelect.getSelectedIndex() > -1) {
+	    int sdType = (geneTranscriptSelect.getSelectedIndex() == 1 ? 
+			  transcriptTypes[sequenceOptionsSelect.getSelectedIndex()] : 
+			  geneTypes[sequenceOptionsSelect.getSelectedIndex()]);
+	    int fiveFlankLengthValue = (fiveFlankLength.isEnabled() ?
+					new Integer(fiveFlankLength.getText()).intValue() :
+					0);
+	    int threeFlankLengthValue = (threeFlankLength.isEnabled() ?
+					 new Integer(threeFlankLength.getText()).intValue() :
+					 0);
+	    try {
+		return new SequenceDescription(sdType,
+					       fiveFlankLengthValue,
+					       threeFlankLengthValue);
+	    }
+	    catch (InvalidQueryException iqe) {
+		iqe.printStackTrace();
+		return null;
+	    }
+	}
+	else {
+	    return null;
+	}
+    }
 
+    // Called when the ui needs to be updated from the query
+    void updateUIPanel() {
+	SequenceDescription sd = query.getSequenceDescription();
+	if (sd == null) {
+	    // No query
+	    geneTranscriptSelect.setSelectedIndex(0);
+	}
+	else {
+	    // Are we looking at genes or transcripts?
+	    int sType = sd.getType();
+	    boolean genes = (sType == SequenceDescription.GENEEXONINTRON ||
+			     sType == SequenceDescription.GENEFLANKS ||
+			     sType == SequenceDescription.GENEEXONS);
+	    int fiveFlankValue = sd.getLeftFlank();
+	    int threeFlankValue = sd.getRightFlank();
+	    boolean hasFiveFlank = (fiveFlankValue > 0);
+	    boolean hasThreeFlank = (threeFlankValue > 0);
+	    if (genes) {
+		geneTranscriptSelect.setSelectedIndex(2);
+		for (int i = 0; i < geneTypes.length; i++) {
+		    if (geneTypes[i] == sType &&
+			has5Flank[i] == hasFiveFlank &&
+			has3Flank[i] == hasThreeFlank) {
+			sequenceOptionsSelect.setSelectedIndex(i);
+			break;
+		    }
+		}
+	    }
+	    else {
+		geneTranscriptSelect.setSelectedIndex(1);
+		for (int i = 0; i < transcriptTypes.length; i++) {
+		    if (transcriptTypes[i] == sType &&
+			has5Flank[i] == hasFiveFlank &&
+			has3Flank[i] == hasThreeFlank) {
+			sequenceOptionsSelect.setSelectedIndex(i);
+			break;
+		    }
+		}
+	    }
+	}
     }
 
 }
