@@ -23,7 +23,7 @@ import java.lang.UnsupportedOperationException;
  * iteration mechanism within the enactor.
  * @author Tom Oinn
  */
-public class BaclavaIterator implements Iterator {
+public class BaclavaIterator implements ResumableIterator {
 
     private Collection underlyingCollection = null;
     private Iterator internalIterator = null;

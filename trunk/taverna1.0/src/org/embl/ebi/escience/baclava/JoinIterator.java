@@ -20,13 +20,17 @@ import java.lang.UnsupportedOperationException;
  * join of a set of BaclavaIterator instances.
  * @author Tom Oinn
  */
-public class JoinIterator implements Iterator {
+public class JoinIterator implements ResumableIterator {
     
-    private boolean emptyIterator = false;
-    private BaclavaIterator[] iterators;
+    private boolean isEmptyIterator = false;
+    private ResumableIterator[] iteratorsArray;
     private boolean nextState;
     private Object[] currentState;
-    private boolean initialized;
+    private boolean initialized = false;
+
+    public JoinIterator() {
+	this.iteratorsArray = new ResumableIterator[0];
+    }
 
     /**
      * The iterator is constructed with an
@@ -36,8 +40,8 @@ public class JoinIterator implements Iterator {
      * where the iterator at position 0 in the
      * array is regarded as the outermost one
      */
-    public JoinIterator(BaclavaIterator[] b) {
-	this.iterators = b;
+    public JoinIterator(ResumableIterator[] b) {
+	this.iteratorsArray = b;
 	// Check that we haven't been passed a load
 	// of empty iterators!
 	nextState = true;
@@ -49,7 +53,7 @@ public class JoinIterator implements Iterator {
 	    // have at least one element in
 	    for (int i = 0; i < b.length; i++) {
 		if (b[i].hasNext() == false) {
-		    emptyIterator = true;
+		    isEmptyIterator = true;
 		}
 	    }
 	}
@@ -57,20 +61,25 @@ public class JoinIterator implements Iterator {
 	// one iterator in the array and every iterator present
 	// has at least one item in. This is mandatory, if this 
 	// doesn't apply then we can't create the join.
-	
-	initialized = false;
     }
     
+    ResumableIterator[] iterators() {
+	return this.iteratorsArray;
+    }
+    boolean emptyIterator() {
+	return this.isEmptyIterator;
+    }
+
     /**
      * The join has next if any iterator within it has a next
      * value of true
      */
     public synchronized boolean hasNext() {
-	if (emptyIterator) {
+	if (emptyIterator()) {
 	    return false;
 	}
-	for (int i = 0; i < iterators.length; i++) {
-	    if (iterators[i].hasNext()) {
+	for (int i = 0; i < iterators().length; i++) {
+	    if (iterators()[i].hasNext()) {
 		return true;
 	    }
 	}
@@ -93,32 +102,32 @@ public class JoinIterator implements Iterator {
 	throws NoSuchElementException {
 	if (initialized == false) {
 	    // Create the initial state of the iterator
-	    currentState = new Object[iterators.length];
-	    for (int i = 0; i < iterators.length; i++) {
-		currentState[i] = iterators[i].next();
+	    currentState = new Object[iterators().length];
+	    for (int i = 0; i < iterators().length; i++) {
+		currentState[i] = iterators()[i].next();
 	    }
 	    initialized = true;
 	    return currentState;
 	}
 	// Try to roll over the nth element, where n starts at the rightmost
 	// iterator...
-	int iteratorNumber = iterators.length-1;
+	int iteratorNumber = iterators().length-1;
 	boolean doneRolling = false;
 	// While we haven't finished rolling over the iterators and
 	// there are still more to be rolled....
 	while (!doneRolling && iteratorNumber >= 0) {
 	    // If the current iterator has elements left in it then extract the next one
 	    // and put it into the result set.
-	    if (iterators[iteratorNumber].hasNext()) {
-		currentState[iteratorNumber] = iterators[iteratorNumber].next();
+	    if (iterators()[iteratorNumber].hasNext()) {
+		currentState[iteratorNumber] = iterators()[iteratorNumber].next();
 		doneRolling = true;
 	    }
 	    else {
 		// Reset the current iterator and move onto the next most significant one
 		// If this was the last iterator then the iterator number will now be -1
 		// and the loop will exit.
-		iterators[iteratorNumber].reset();
-		currentState[iteratorNumber] = iterators[iteratorNumber].next();
+		iterators()[iteratorNumber].reset();
+		currentState[iteratorNumber] = iterators()[iteratorNumber].next();
 		iteratorNumber--;
 	    }
 	}
@@ -134,11 +143,21 @@ public class JoinIterator implements Iterator {
      */
     public int size() {
 	int size = 1;
-	for (int i = 0; i < iterators.length; i++) {
-	    size = size * iterators[i].size();
+	for (int i = 0; i < iterators().length; i++) {
+	    size = size * iterators()[i].size();
 	}
 	return size;
     }
     
+
+    /**
+     * Reset the join iterator to its starting state
+     */
+    public void reset() {
+	for (int i = 0; i < iterators().length; i++) {
+	    iterators()[i].reset();
+	}
+	initialized = false;
+    }
     
 }
