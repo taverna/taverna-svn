@@ -74,6 +74,7 @@ public class Workbench extends JFrame {
      * in internal frames and waits for the user to load a model from file
      */
     public static void main(String[] args) {
+	new SplashScreen(6000);
 	Workbench workbench = new Workbench();
 	// Treat any command line arguments as files to import into the workbench
 	for (int i = 0; i < args.length; i++) {

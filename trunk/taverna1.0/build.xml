@@ -127,6 +127,7 @@
 				<include name="**/*.xml"/>
 				<include name="**/*.text"/>
 				<include name="**/*.gif"/>
+				<include name="**/*.png"/>
 			</fileset>
 		</copy>
 		<!-- Use aspectj to prepare the source files -->
@@ -159,6 +160,7 @@
 				<include name="**/*.html"/>
 				<include name="**/*.text"/>
 				<include name="**/*.gif"/>
+				<include name="**/*.png"/>
 			</fileset>
 		</copy>
 		<!-- Run the RMI Compiler on anything that looks like a remote class -->

@@ -24,9 +24,9 @@
 //      Created for Project :   MYGRID
 //      Dependencies        :
 //
-//      Last commit info    :   $Author: dmarvin $
-//                              $Date: 2003-05-27 07:07:48 $
-//                              $Revision: 1.15 $
+//      Last commit info    :   $Author: mereden $
+//                              $Date: 2003-05-30 14:48:43 $
+//                              $Revision: 1.16 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 
@@ -38,6 +38,7 @@ import org.embl.ebi.escience.scufl.DataConstraint;
 import org.embl.ebi.escience.scufl.Port;
 import org.embl.ebi.escience.scufl.Processor;
 import org.embl.ebi.escience.scufl.ScuflModel;
+import org.embl.ebi.escience.scufl.parser.XScuflFormatException;
 import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.entities.graph.DiGraph;
 import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.entities.graph.GraphNode;
 import uk.ac.soton.itinnovation.mygrid.workflow.enactor.io.Input;
@@ -51,7 +52,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import org.embl.ebi.escience.scufl.parser.XScuflFormatException;
 import uk.ac.soton.itinnovation.taverna.enactor.broker.LogLevel;
 import java.lang.Exception;
 import java.lang.String;
