@@ -408,6 +408,9 @@ public class JDBCBaclavaDataService implements BaclavaDataService, LSIDProvider 
 	    pool.returnConnection(con);
 	    jde.printStackTrace();
 	}
+	catch (IOException ioe) {
+	    //
+	}
 	finally {
 	    //
 	}

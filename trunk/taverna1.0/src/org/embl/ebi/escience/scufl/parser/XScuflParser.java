@@ -16,6 +16,7 @@ import java.util.List;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.StringReader;
+import java.io.IOException;
 
 // JDOM Imports
 import org.jdom.Document;
@@ -86,7 +87,9 @@ public class XScuflParser {
 	catch (JDOMException jde) {
 	    throw new XScuflFormatException("Unable to load XScufl file, error : "+jde.getMessage());
 	}
-	
+	catch (IOException ioe) {
+	    throw new XScuflFormatException("Unable to load XScufl file, error : "+ioe.getMessage());
+	}
     }
 
     /**
@@ -137,6 +140,9 @@ public class XScuflParser {
 	}
 	catch (JDOMException jde) {
 	    throw new XScuflFormatException("Unable to load XScufl file, error : "+jde.getMessage());
+	}
+	catch (IOException ioe) {
+	    throw new XScuflFormatException("Unable to load XScufl file, error : "+ioe.getMessage());
 	}
 	populate(document, model, prefix);
 	

@@ -16,6 +16,7 @@ import java.util.List;
 
 // IO Imports
 import java.io.StringReader;
+import java.io.IOException;
 
 // JDOM Imports
 import org.jdom.Attribute;
@@ -128,6 +129,11 @@ public class EnactorStatusTableModel extends AbstractTableModel {
 	    // Failure, probably not a valid progress report
 	    throw new InvalidStatusReportException("Unable to handle the status report, error was : "+
 						   jde.getMessage());
+	}
+	catch (IOException ioe) {
+	    // Cannot create the document from the reader
+	     throw new InvalidStatusReportException("Unable to handle the status report, error was : "+
+						   ioe.getMessage());
 	}
 	if (workflowID == null) {
 	    throw new InvalidStatusReportException("Workflow ID was null, exiting.");

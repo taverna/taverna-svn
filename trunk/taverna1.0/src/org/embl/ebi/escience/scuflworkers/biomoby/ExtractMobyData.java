@@ -58,6 +58,9 @@ public class ExtractMobyData implements LocalWorker {
 	catch (JDOMException jde) {
 	    throw new TaskExecutionException("Unable to parse biomoby data, check the XML! "+jde.getMessage());
 	}
+	catch (IOException ioe) {
+	    throw new TaskExecutionException("Unable to parse biomoby data, check the XML! "+ioe.getMessage());
+	}
 	// Now find the simple moby data
 	Element mobyDataElement;
 	try {
