@@ -102,6 +102,20 @@ public class SemanticMarkup {
     }
     
     /**
+     * Get the MIME types as a single string with
+     * new lines seperating the types
+     */
+    public String getDisplayTypeList() {
+	StringBuffer sb = new StringBuffer();
+	synchronized(this.mimeTypeList) {
+	    for (Iterator i = mimeTypeList.iterator(); i.hasNext(); ) {
+		sb.append((String)i.next()+"\n");
+	    }
+	}
+	return sb.toString();
+    }
+
+    /**
      * Clear the array of MIME types
      */
     public void clearMIMETypes() {

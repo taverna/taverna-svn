@@ -44,11 +44,16 @@ public class ScuflSemanticMarkupEditor extends JPanel implements ScuflUIComponen
 	setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
 	//super((JFrame)null,"Semantic metadata markup editor",true);
 	
+	JTabbedPane tabbedPane = new JTabbedPane();
+	add(tabbedPane);
+
+
 	theMetadata = m;
 
 	JPanel ontologyPanel = new JPanel(new BorderLayout());
 	ontologyPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(),
 								 "Pick from ontology"));
+	ontologyPanel.setPreferredSize(new Dimension(400,400));
 	final JTree ontologyTree = new JTree(RDFSParser.rootNode);
 	JScrollPane ontologyTreeDisplayPane = new JScrollPane(ontologyTree);
 	ontologyPanel.add(ontologyTreeDisplayPane, BorderLayout.CENTER);
@@ -80,10 +85,65 @@ public class ScuflSemanticMarkupEditor extends JPanel implements ScuflUIComponen
 		    theMetadata.setSemanticType(selectedOntologyNode.getText());
 		}
 	    });
+	tabbedPane.addTab("Ontology",ontologyPanel);
 
+	// Free text description
+	JPanel descriptionPanel = new JPanel(new BorderLayout());
+	descriptionPanel.setPreferredSize(new Dimension(400,400));
+	descriptionPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(),
+							      "Edit Description"));
+	final JTextArea descriptionText = new JTextArea(theMetadata.getDescription());
+	JScrollPane descriptionPane = new JScrollPane(descriptionText);
+	descriptionPanel.add(descriptionPane, BorderLayout.CENTER);
+	JButton descriptionUpdateButton = new JButton("Update");
+	descriptionUpdateButton.addActionListener(new ActionListener() {
+		public void actionPerformed(ActionEvent ae) {
+		    theMetadata.setDescription(descriptionText.getText());
+		}
+	    });
+	descriptionPanel.add(descriptionUpdateButton, BorderLayout.SOUTH);
+	tabbedPane.addTab("Description",descriptionPanel);
 
+	// A panel to show the MIME mappings...
+	JPanel topLevelMimePanel = new JPanel(new BorderLayout());
+	JPanel mimePanel = new JPanel(new BorderLayout());
+	topLevelMimePanel.add(mimePanel, BorderLayout.CENTER);
+	mimePanel.setPreferredSize(new Dimension(400,400));
+	mimePanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(),
+							      "Current MIME Types"));
+	JPanel mimeEditPanel = new JPanel(new BorderLayout());
+	mimeEditPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(),
+							      "Enter new MIME Type and hit return"));
+	topLevelMimePanel.add(mimeEditPanel, BorderLayout.SOUTH);
+	
+	final JList mimeTypeList = new JList(theMetadata.getMIMETypes());
+	JScrollPane mimeListPane = new JScrollPane(mimeTypeList);
+	mimePanel.add(mimeListPane, BorderLayout.CENTER);
+	final JTextField mimeEntryField = new JTextField();
+	mimeEditPanel.add(mimeEntryField, BorderLayout.NORTH);
+	JButton clearMimeTypes = new JButton(ScuflIcons.deleteIcon);
+	clearMimeTypes.setPreferredSize(new Dimension(32,32));
+	clearMimeTypes.addActionListener(new ActionListener() {
+		public void actionPerformed(ActionEvent ae) {
+		    // Clear the list and the metadata container
+		    theMetadata.clearMIMETypes();
+		    mimeTypeList.setModel(new DefaultListModel());
+		}
+	    });
+	mimeEntryField.addActionListener(new ActionListener() {
+		public void actionPerformed(ActionEvent ae) {
+		    // Add a new MIME type
+		    theMetadata.addMIMEType(mimeEntryField.getText());
+		    mimeTypeList.setModel(new DefaultListModel());
+		    String[] types = theMetadata.getMIMETypes();
+		    for (int i = 0; i < types.length; i++) {
+			((DefaultListModel)mimeTypeList.getModel()).add(i, types[i]);
+		    }
+		}
+	    });
+	mimeEditPanel.add(clearMimeTypes, BorderLayout.EAST);
+	tabbedPane.addTab("MIME Types",topLevelMimePanel);
 
-	add(ontologyPanel);
 	show();
     }
     
