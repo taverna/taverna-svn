@@ -109,15 +109,19 @@ public class SeqhoundProcessor extends Processor {
 	
 	this.setWorkers(getDefaultWorkers());
 
-	this.seqhound = new SeqHoundForTaverna(this.config);
-	try {
-	    // System.out.println("Attempting to create a seqhound proxy instance");
-	    this.seqhound.SHoundInit(true, "Taverna");
-	    // System.out.println("Done");
-	}
-	catch (java.io.IOException ioe) {
-	    throw new ProcessorCreationException("Unable to contact the seqhound server!");
-	}
+	/**
+	   //Deferred evaluation and creation of the SeqHoundForTaverna object until
+	   //first used.
+	   this.seqhound = new SeqHoundForTaverna(this.config);
+	   try {
+	   // System.out.println("Attempting to create a seqhound proxy instance");
+	   this.seqhound.SHoundInit(true, "Taverna");
+	   // System.out.println("Done");
+	   }
+	   catch (java.io.IOException ioe) {
+	   throw new ProcessorCreationException("Unable to contact the seqhound server!");
+	   }
+	*/
 	String description = (String)descriptions.get(methodName);
 	if (description != null) {
 	    setDescription(description);
@@ -217,4 +221,12 @@ public class SeqhoundProcessor extends Processor {
     public String getResourceHost() {
 	return this.server;
     }
+
+    synchronized void initSeqhound() throws java.io.IOException {
+	if (this.seqhound == null) {
+	    this.seqhound = new SeqHoundForTaverna(this.config);
+	    this.seqhound.SHoundInit(true, "Taverna");
+	}
+    }
+
 }

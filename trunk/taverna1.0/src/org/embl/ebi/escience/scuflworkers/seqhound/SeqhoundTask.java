@@ -25,7 +25,12 @@ public class SeqhoundTask implements ProcessorTaskWorker {
 
     public Map execute(Map inputMap, ProcessorTask parentTask)
 	throws TaskExecutionException {
-	
+	try {
+	    this.processor.initSeqhound();
+	}
+	catch (java.io.IOException ioe) {
+	    throw new TaskExecutionException("Unable to contact SeqHound server : "+ioe);
+	}
 	// Create an array of arguments to the method call
 	Object[] inputArray = new Object[inputMap.size()];
 	InputPort[] inputs = processor.getInputPorts();
