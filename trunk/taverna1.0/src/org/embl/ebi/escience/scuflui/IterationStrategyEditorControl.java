@@ -23,7 +23,7 @@ public class IterationStrategyEditorControl extends JPanel {
     
     private IterationStrategy strategy;
     private IterationStrategyEditor tree;
-    private JButton addCross, addDot, normalize, remove;
+    private JButton addCross, addDot, normalize, remove, change;
     private MutableTreeNode selectedNode = null;
 
     /**
@@ -47,25 +47,28 @@ public class IterationStrategyEditorControl extends JPanel {
 	remove = new JButton("Remove node", ScuflIcons.deleteIcon);
 	remove.setHorizontalAlignment(SwingConstants.LEFT);
 
+	change = new JButton("Switch to...", IterationStrategyEditor.joinIteratorIcon);
+	change.setHorizontalAlignment(SwingConstants.LEFT);	
+	
 	// Set the default enabled state to off on all buttons other than the normalize
 	// one.
 	remove.setEnabled(false);
 	addCross.setEnabled(false);
 	addDot.setEnabled(false);
+	change.setEnabled(false);
 	
 	// Create a layout with the tree on the right and the buttons in a grid layout
 	// on the left
-	JPanel buttonPanel = new JPanel() {
-		public Dimension getMaximumSize() {
-		    return new Dimension(99999,40);
-		}
-	    };
-	buttonPanel.setLayout(new GridLayout(2,2));
-	buttonPanel.add(normalize);
-	buttonPanel.add(remove);
-	buttonPanel.add(addCross);
-	buttonPanel.add(addDot);
-	//buttonPanel.setAlignmentX(LEFT_ALIGNMENT);
+	JToolBar toolbar = new JToolBar();
+	toolbar.setFloatable(false);
+	toolbar.setRollover(true);
+    //toolbar.setLayout(new GridLayout(2,2));
+	toolbar.add(normalize);
+	toolbar.add(addCross);
+    toolbar.add(addDot);
+    toolbar.add(remove);
+    toolbar.add(change);    
+	toolbar.setAlignmentX(LEFT_ALIGNMENT);
 	
 	// Normalize the tree when the button is pressed
 	normalize.addActionListener(new ActionListener() {
@@ -98,6 +101,42 @@ public class IterationStrategyEditorControl extends JPanel {
 		}
 	    });
 
+	// Add a cross product node as a child of the selected node
+	change.addActionListener(new ActionListener() {
+		public void actionPerformed(ActionEvent e) {
+			DefaultMutableTreeNode newNode;
+			if(selectedNode instanceof CrossNode)
+			{
+				newNode = new DotNode(); 
+			}
+		    else
+		    {
+		    	newNode = new CrossNode();
+		    }
+			
+			while(selectedNode.getChildCount() > 0)
+			{
+				newNode.add((MutableTreeNode)selectedNode.getChildAt(0));
+			}
+			
+		    DefaultTreeModel model = (DefaultTreeModel)IterationStrategyEditorControl.this.tree.getModel();
+		    if(selectedNode.getParent() == null)
+		    {
+		    	model.setRoot(newNode);
+		    	model.nodeStructureChanged(newNode);
+		    }
+		    else
+		    {
+		    	DefaultMutableTreeNode parent = (DefaultMutableTreeNode)selectedNode.getParent();
+		    	int index = parent.getIndex(selectedNode);
+		    	parent.remove(index);
+		    	parent.insert(newNode, index);
+			    model.nodeStructureChanged(parent);
+		    }
+		    tree.setSelectionPath(new TreePath(newNode.getPath()));
+		}
+	    });
+	
 	// Remove the selected node, moving any descendant leaf nodes
 	// to the root to prevent them getting lost
 	remove.addActionListener(new ActionListener() {
@@ -129,6 +168,7 @@ public class IterationStrategyEditorControl extends JPanel {
 		    IterationStrategyEditorControl.this.remove.setEnabled(false);
 		    IterationStrategyEditorControl.this.addCross.setEnabled(false);
 		    IterationStrategyEditorControl.this.addDot.setEnabled(false);
+		    IterationStrategyEditorControl.this.change.setEnabled(false);		    
 		}
 	    });
 
@@ -145,19 +185,31 @@ public class IterationStrategyEditorControl extends JPanel {
 			else {
 			    IterationStrategyEditorControl.this.remove.setEnabled(true);
 			}
+			if(selectedObject instanceof CrossNode)
+			{
+				IterationStrategyEditorControl.this.change.setText("Change to Dot Product");
+				IterationStrategyEditorControl.this.change.setIcon(IterationStrategyEditor.lockStepIteratorIcon);
+			}
+			else
+			{
+				IterationStrategyEditorControl.this.change.setText("Change to Cross Product");
+				IterationStrategyEditorControl.this.change.setIcon(IterationStrategyEditor.joinIteratorIcon);		
+			}
 			IterationStrategyEditorControl.this.addCross.setEnabled(true);
 			IterationStrategyEditorControl.this.addDot.setEnabled(true);
+			IterationStrategyEditorControl.this.change.setEnabled(true);
 		    }
 		    else {
 			IterationStrategyEditorControl.this.remove.setEnabled(false);
 			IterationStrategyEditorControl.this.addCross.setEnabled(false);
 			IterationStrategyEditorControl.this.addDot.setEnabled(false);
+			IterationStrategyEditorControl.this.change.setEnabled(false);			
 		    }
 		}
 	    });
 	
 	// Add components to the control panel
-	add(buttonPanel);
+	add(toolbar);
 	JScrollPane treePane = new JScrollPane(tree);
 	treePane.setPreferredSize(new Dimension(0,0));
 	add(treePane);
