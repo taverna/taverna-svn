@@ -298,7 +298,11 @@ public class ProcessorHelper {
 	if (tagName != null) {
 	    XMLHandler xh = (XMLHandler)xmlHandlerForTagName.get(tagName);
 	    if (xh != null) {
-		return xh.elementForProcessor(p);
+		Element result = xh.elementForProcessor(p);
+		result.setAttribute("maxretries",Integer.toString(p.getRetries()));
+		result.setAttribute("retrydelay",Integer.toString(p.getRetryDelay()));
+		result.setAttribute("retrybackoff",Double.toString(p.getBackoff()));				    
+		return result;
 	    }
 	}
 	return null;
@@ -314,12 +318,30 @@ public class ProcessorHelper {
 	Processor loadedProcessor = null;
 	Iterator i = processorNode.getChildren().iterator();
 	for (; i.hasNext() && loadedProcessor==null; ) {
-	    String elementName = ((Element)i.next()).getName();
+	    Element candidateElement = (Element)i.next();
+	    String elementName = candidateElement.getName();
 	    XMLHandler xh = (XMLHandler)xmlHandlerForTagName.get(elementName);
 	    if (xh != null) {
 		loadedProcessor = xh.loadProcessorFromXML(processorNode, model, name);
+		// Loaded the processor, now configure from the inner spec element
+		// for retry policy.
+		String maxRetryString = candidateElement.getAttributeValue("maxretries");
+		if (maxRetryString != null) {
+		    loadedProcessor.setRetries(Integer.parseInt(maxRetryString));
+		}
+		String retryDelayString = candidateElement.getAttributeValue("retrydelay");
+		if (retryDelayString != null) {
+		    loadedProcessor.setRetryDelay(Integer.parseInt(retryDelayString));
+		}
+		String retryBackoffString = candidateElement.getAttributeValue("retrybackoff");
+		if (retryBackoffString != null) {
+		    loadedProcessor.setBackoff(Double.parseDouble(retryBackoffString));
+		}
 	    }
 	}
+	// Appended to the name so the alternate processor have at least
+	// a local name. Doesn't really matter, just better than leaving
+	// them blank.
 	int alternateCount = 1;
 	if (loadedProcessor!=null) {
 	    // Iterate over all alternate definitions and load them into the

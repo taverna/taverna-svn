@@ -12,15 +12,6 @@ package org.embl.ebi.escience.scufl.provenance.process;
  */
 public class Invoking extends ProcessEvent {
     
-    private String retryCount = "0";
-    private String timeout = "0";
-    
-    public String getRetryCount() {
-	return retryCount;
-    }
-
-    public String getTimeout() {
-	return timeout;
-    }
+    //
     
 }

@@ -25,8 +25,8 @@
 //      Dependencies        :
 //
 //      Last commit info    :   $Author: mereden $
-//                              $Date: 2004-02-05 14:20:25 $
-//                              $Revision: 1.32 $
+//                              $Date: 2004-02-05 15:35:55 $
+//                              $Revision: 1.33 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 package uk.ac.soton.itinnovation.taverna.enactor.entities;
@@ -210,7 +210,7 @@ public class ProcessorTask extends TavernaTask{
 	
 	if (activeInputMapping == null) {
 	    // If no input mapping is defined then we just invoke directly
-	    output = worker.execute(inputMap);	
+	    output = doInvocationWithRetryLogic(worker, inputMap);	
 	}
 	else {
 	    // Otherwise have to remap the input map
@@ -225,14 +225,7 @@ public class ProcessorTask extends TavernaTask{
 		System.out.println("Mapping input name '"+originalInputName+"' to processor port '"+targetInputName+"'");
 		taskInput.put(targetInputName, inputItem);
 	    }
-	    System.out.println("Invoking...");
-	    try {
-		output = worker.execute(taskInput);
-	    }
-	    catch (Exception ex) {
-		ex.printStackTrace();
-	    }
-	    System.out.println("Done invoking");
+	    output = doInvocationWithRetryLogic(worker, taskInput);
 	}
 	
 	// Now do the same for the output mapping
@@ -254,6 +247,47 @@ public class ProcessorTask extends TavernaTask{
 	    }
 	    return taskOutput;
 	}
+    }
+    
+    /**
+     * Actually call the service instance, handles the retry logic.
+     */
+    private Map doInvocationWithRetryLogic(ProcessorTaskWorker worker, Map inputMap) throws TaskExecutionException {
+	try {
+	    // If the first invocation works then great, return it.
+	    return worker.execute(inputMap);
+	}
+	catch (TaskExecutionException tee) {
+	    eventList.add(new ServiceError(tee));
+	    // First invocation has failed, see if there are retries.
+	    int maxRetries = activeProcessor.getRetries();
+	    if (maxRetries == 0) {
+		// No retries, rethrow the task execution exception.
+		throw tee;
+	    }
+	    // Retries available, so loop, sleeping first (we've already
+	    // done one invocation so the first thing to do is to wait.
+	    int baseTimeout = activeProcessor.getRetryDelay();
+	    double backoff = activeProcessor.getBackoff();
+	    for (int i = 0; i < maxRetries; i++) {
+		int waitTime = (int)((double)baseTimeout * Math.pow(backoff,(double)i));
+		try {
+		    eventList.add(new WaitingToRetry(waitTime, i+1, maxRetries));
+		    Thread.sleep(waitTime);
+		    return worker.execute(inputMap);
+		}
+		catch (InterruptedException ie) {
+		    TaskExecutionException t = new TaskExecutionException("Interrupted during wait to retry");
+		    t.initCause(ie);
+		    eventList.add(new ServiceError(t));
+		    throw t;
+		}
+		catch (TaskExecutionException t) {
+		    eventList.add(new ServiceError(t));
+		}
+	    }
+	}
+	throw new TaskExecutionException("No retries remaining");
     }
 
     /**

@@ -1,20 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <s:scufl xmlns:s="http://org.embl.ebi.escience/xscufl/0.1alpha" version="0.1" log="0">
-  <s:processor name="failingthing">
-    <s:description>This processor always produces an error. We're working on the code to allow it to be substituted at runtime by an alternate, in which case this workflow would proceed as normal.</s:description>
-    <s:local>org.embl.ebi.escience.scuflworkers.java.TestAlwaysFailingProcessor</s:local>
-	<s:alternate>
-		<s:local>org.embl.ebi.escience.scuflworkers.java.StringConcat</s:local>
-		<s:inputmap key="foo" value="string1"/>
-		<s:inputmap key="bar" value="string2"/>
-		<s:outputmap key="urgle" value="output"/>
-	</s:alternate>
-  </s:processor>
   <s:processor name="string1">
-    <s:stringconstant>Hello </s:stringconstant>
+    <s:stringconstant maxretries="0" retrydelay="0" retrybackoff="0.0">Hello</s:stringconstant>
   </s:processor>
   <s:processor name="string2">
-    <s:stringconstant>world</s:stringconstant>
+    <s:stringconstant maxretries="0" retrydelay="0" retrybackoff="0.0">world</s:stringconstant>
+  </s:processor>
+  <s:processor name="failingthing">
+    <s:description>This processor always produces an error. We're working on the code to allow it to be substituted at runtime by an alternate, in which case this workflow would proceed as normal.</s:description>
+    <s:local maxretries="2" retrydelay="1000" retrybackoff="2.0">org.embl.ebi.escience.scuflworkers.java.TestAlwaysFailingProcessor</s:local>
+    <s:alternate>
+      <s:local maxretries="0" retrydelay="0" retrybackoff="0.0">org.embl.ebi.escience.scuflworkers.java.StringConcat</s:local>
+      <s:outputmap key="urgle" value="output" />
+      <s:inputmap key="foo" value="string1" />
+      <s:inputmap key="bar" value="string2" />
+    </s:alternate>
   </s:processor>
   <s:link>
     <s:input>failingthing:foo</s:input>

@@ -40,7 +40,8 @@ public abstract class Processor implements java.io.Serializable {
     private ScuflModel model = null;
     protected int timeout = 0;
     protected int retries = 0;
-    protected double backoff = 0.0;
+    protected int retryDelay = 0;
+    protected double backoff = 1.0;
     protected List alternates = new ArrayList();
     
     /**
@@ -90,6 +91,22 @@ public abstract class Processor implements java.io.Serializable {
      */
     public void setRetries(int retries) {
 	this.retries = retries;
+    }
+
+    /**
+     * Get the number of milliseconds to wait before
+     * first retrying an invocation of the task
+     * this processor represents.
+     */
+    public int getRetryDelay() {
+	return this.retryDelay;
+    }
+
+    /**
+     * Set the retry delay
+     */
+    public void setRetryDelay(int delay) {
+	this.retryDelay = delay;
     }
 
     /**

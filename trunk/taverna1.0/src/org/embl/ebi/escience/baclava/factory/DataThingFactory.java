@@ -81,7 +81,7 @@ public class DataThingFactory {
 	Object[] list = ((List)theList).toArray();
 	if (list.length == 0) {
 	    // Return an empty data thing
-	    return new DataThing(null);
+	    return new DataThing(new ArrayList());
 	}
 	if (!(list[0] instanceof List)) {
 	    // If not a list of lists then just return the
