@@ -26,8 +26,8 @@
 //      Dependencies        :
 //
 //      Last commit info    :   $Author: matskan $
-//                              $Date: 2005-02-09 13:22:45 $
-//                              $Revision: 1.33 $
+//                              $Date: 2005-03-02 15:33:37 $
+//                              $Revision: 1.34 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 
@@ -317,6 +317,8 @@ public class PortTask extends AbstractTask {
 				((ProcessorTask)tasks[0]).taskPaused();
 			}
     }
+
+    protected synchronized void taskComplete() {}
 
     /**
      * Add cancel event to the event list.
