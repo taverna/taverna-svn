@@ -31,6 +31,12 @@ import java.util.Iterator;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+import org.embl.ebi.escience.scuflui.ScuflIcons;
+import org.embl.ebi.escience.scuflui.ScuflUIComponent;
+import java.lang.Exception;
+import java.lang.Process;
+import java.lang.Runtime;
+import java.lang.String;
 
 
 

@@ -10,22 +10,27 @@ import org.embl.ebi.escience.scufl.DuplicateProcessorNameException;
 import org.embl.ebi.escience.scufl.Processor;
 import org.embl.ebi.escience.scufl.ProcessorCreationException;
 import org.embl.ebi.escience.scufl.ScuflModel;
-import org.embl.ebi.escience.scufl.XScufl;
 import org.embl.ebi.escience.scufl.parser.XScuflFormatException;
-import org.embl.ebi.escience.scuflui.ScuflIcons;
-import org.embl.ebi.escience.scuflworkers.soaplab.SoaplabProcessor;
-import org.embl.ebi.escience.scuflworkers.talisman.TalismanProcessor;
-import org.embl.ebi.escience.scuflworkers.workflow.WorkflowProcessor;
-import org.embl.ebi.escience.scuflworkers.wsdl.WSDLBasedProcessor;
+import org.embl.ebi.escience.scuflworkers.XMLHandler;
+
+// Utility Imports
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Properties;
 
 // JDOM Imports
 import org.jdom.Element;
-import org.jdom.Namespace;
 
 // Network Imports
-import java.net.MalformedURLException;
 import java.net.URL;
 
+import java.lang.Class;
+import java.lang.ClassLoader;
+import java.lang.Exception;
+import java.lang.String;
+import java.lang.System;
 
 
 
@@ -36,89 +41,116 @@ import java.net.URL;
  */
 public class ProcessorHelper {
 
+    static Map coloursForTagName = new HashMap();
+    static Map tagNameForClassName = new HashMap();
+    static Map classNameForTagName = new HashMap();
+    static Map iconForTagName = new HashMap();
+    static Map taskClassForTagName = new HashMap();
+    static Map xmlHandlerForTagName = new HashMap();
+
+    static {
+	try {
+	    // Load up the values from any taverna.properties files located
+	    // by the class resource loader.
+	    Enumeration en = ClassLoader.getSystemResources("taverna.properties");
+	    Properties tavernaProperties = new Properties();
+	    while (en.hasMoreElements()) {
+		URL resourceURL = (URL)en.nextElement();
+		System.out.println("Loading resources from : "+resourceURL.toString());
+		tavernaProperties.load(resourceURL.openStream());
+	    }
+	    // Should now have a populated properties list, set up the various
+	    // static Map objects for the colours etc.
+	    // Iterate over all property keys
+	    for (Iterator i = tavernaProperties.keySet().iterator(); i.hasNext(); ) {
+		String key = (String)i.next();
+		String value = tavernaProperties.getProperty(key);
+		System.out.println(key+" == "+value);
+		String[] keyElements = key.split("\\.");
+		// Detect the processor keys
+		if (keyElements[1].equals("processor")) {
+		    String tagName = keyElements[2];
+		    // If this is the class name...
+		    if (keyElements[3].equals("class")) {
+			// Store the class name <-> tag name mappings
+			tagNameForClassName.put(value,tagName);
+			classNameForTagName.put(tagName,value);
+		    }
+		    else if (keyElements[3].equals("colour")) {
+			// Configure default display colour for i.e. dot
+			coloursForTagName.put(tagName,value);
+		    }
+		    else if (keyElements[3].equals("icon")) {
+			// Fetch resource icon...
+			iconForTagName.put(tagName,new ImageIcon(ClassLoader.getSystemResource(value)));
+		    }
+		    else if (keyElements[3].equals("taskclass")) {
+			// Configure the taverna task for the enactor to run this type of processor
+			taskClassForTagName.put(tagName, value);
+		    }
+		    else if (keyElements[3].equals("xml")) {
+			// Configure and instantiate the XML handler for this type of processor
+			String handlerClassName = value;
+			// Create an instance of the handler
+			Class handlerClass = Class.forName(handlerClassName);
+			XMLHandler xh = (XMLHandler)handlerClass.newInstance();
+			xmlHandlerForTagName.put(tagName, xh);
+		    }
+		    
+		}
+	    }
+	}
+	catch (Exception e) {
+	    System.out.println("Error during initialisation for taverna properties! : "+e.getMessage());
+	    e.printStackTrace();
+	    //System.exit(1);
+	}
+    }
+
+    public static String getTaskClassName(Processor p) {
+	String className = p.getClass().getName();
+	String tagName = (String)tagNameForClassName.get(className);
+	if (tagName != null) {
+	    String taskClassName = (String)taskClassForTagName.get(tagName);
+	    if (taskClassName != null) {
+		return taskClassName;
+	    }
+	}
+	return null;
+    }
+
     public static String getPreferredColour(Processor p) {
-	if (p instanceof WSDLBasedProcessor) {
-	    return "darkolivegreen3";
+	String className = p.getClass().getName();
+	String tagName = (String)tagNameForClassName.get(className);
+	if (tagName != null) {
+	    String colour = (String)coloursForTagName.get(tagName);
+	    if (colour != null) {
+		return colour;
+	    }
 	}
-	else if (p instanceof TalismanProcessor) {
-	    return "plum2";
-	}
-	else if (p instanceof WorkflowProcessor) {
-	    return "orange";
-	}
-	return "lightgoldenrodyellow";
+	return "white";
     }
 
     public static ImageIcon getPreferredIcon(Processor p) {
-	if (p instanceof WorkflowProcessor) {
-	    return ScuflIcons.workflowIcon;
-	}
-	else if (p instanceof WSDLBasedProcessor) {
-	    return ScuflIcons.wsdlIcon;
-	}
-	else if (p instanceof TalismanProcessor) {
-	    return ScuflIcons.talismanIcon;
-	}
-	else if (p instanceof SoaplabProcessor) {
-	    return ScuflIcons.soaplabIcon;
+	String className = p.getClass().getName();
+	String tagName = (String)tagNameForClassName.get(className);
+	if (tagName != null) {
+	    ImageIcon icon = (ImageIcon)iconForTagName.get(tagName);
+	    if (icon != null) {
+		return icon;
+	    }
 	}
 	return null;
     }
 
     public static Element elementForProcessor(Processor p) {
-	// Catch Soaplab processors - this should be more
-	// extensible! Will do for now however...
-	try {
-	    SoaplabProcessor slp = (SoaplabProcessor)p;
-	    // No exception therefore we have a soaplab processor
-	    Element spec = new Element("soaplabwsdl",scuflNS());
-	    spec.setText(slp.getEndpoint().toString());
-	    return spec;
-	}
-	catch (ClassCastException cce) {
-	    //
-	}
-	// Catch WorkflowProcessor
-	try {
-	    WorkflowProcessor wp = (WorkflowProcessor)p;
-	    Element spec = new Element("workflow",scuflNS());
-	    Element definition = new Element("xscufllocation",scuflNS());
-	    spec.addContent(definition);
-	    definition.setText(wp.getDefinitionURL());
-	    return spec;
-	}
-	catch (ClassCastException cce) {
-	    //
-	}
-	// Catch WSDLBasedProcessor
-	try {
-	    WSDLBasedProcessor wsdlp = (WSDLBasedProcessor)p;
-	    Element spec = new Element("arbitrarywsdl",scuflNS());
-	    Element wsdl = new Element("wsdl",scuflNS());
-	    Element port = new Element("porttype",scuflNS());
-	    Element operation = new Element("operation",scuflNS());
-	    wsdl.setText(wsdlp.getWSDLLocation());
-	    port.setText(wsdlp.getPortTypeName());
-	    operation.setText(wsdlp.getOperationName());
-	    spec.addContent(wsdl);
-	    spec.addContent(port);
-	    spec.addContent(operation);
-	    return spec;
-	}
-	catch (ClassCastException cce) {
-	    //
-	}
-	// Catch TalismanProcessor
-	try {
-	    TalismanProcessor tp = (TalismanProcessor)p;
-	    Element spec = new Element("talisman",scuflNS());
-	    Element tscript = new Element("tscript",scuflNS());
-	    tscript.setText(tp.getTScriptURL());
-	    spec.addContent(tscript);
-	    return spec;
-	}
-	catch (ClassCastException cce) { 
-	    //
+	String className = p.getClass().getName();
+	String tagName = (String)tagNameForClassName.get(className);
+	if (tagName != null) {
+	    XMLHandler xh = (XMLHandler)xmlHandlerForTagName.get(tagName);
+	    if (xh != null) {
+		return xh.elementForProcessor(p);
+	    }
 	}
 	return null;
     }
@@ -128,54 +160,13 @@ public class ProcessorHelper {
      * return null if we can't handle it
      */
     public static Processor loadProcessorFromXML(Element processorNode, ScuflModel model, String name)
-	throws ProcessorCreationException,
-	       DuplicateProcessorNameException,
-	       XScuflFormatException {
-	// Handle soaplab
-	Element soaplab = processorNode.getChild("soaplabwsdl",scuflNS());
-	if (soaplab != null) {
-	    // Get the textual endpoint
-	    String endpoint = soaplab.getTextTrim();
-	    // Check the URL for validity
-	    try {
-		URL endpointURL = new URL(endpoint);
-	    }
-	    catch (MalformedURLException mue) {
-		throw new XScuflFormatException("The url specified for the soaplab endpoint for '"+name+"' was invalid : "+mue);
-	    }
-	    return new SoaplabProcessor(model, name, endpoint);
+	throws ProcessorCreationException, DuplicateProcessorNameException, XScuflFormatException {
+	// Get the element name of the first child
+	String tagName = ((Element)(processorNode.getChildren().get(0))).getName();
+	XMLHandler xh = (XMLHandler)xmlHandlerForTagName.get(tagName);
+	if (xh != null) {
+	    return xh.loadProcessorFromXML(processorNode, model, name);
 	}
-	
-	Element wsdlProcessor = processorNode.getChild("arbitrarywsdl",scuflNS());
-	if (wsdlProcessor != null) {
-	    String wsdlLocation = wsdlProcessor.getChild("wsdl",scuflNS()).getTextTrim();
-	    String portTypeName = wsdlProcessor.getChild("porttype",scuflNS()).getTextTrim();
-	    String operationName = wsdlProcessor.getChild("operation",scuflNS()).getTextTrim();
-	    return new WSDLBasedProcessor(model, name, wsdlLocation, portTypeName, operationName);
-	}
-	
-	Element talismanProcessor = processorNode.getChild("talisman",scuflNS());
-	if (talismanProcessor != null) {
-	    String tscriptURL = talismanProcessor.getChild("tscript",scuflNS()).getTextTrim();
-	    return new TalismanProcessor(model, name, tscriptURL);
-	}
-	
-	Element workflowProcessor = processorNode.getChild("workflow",scuflNS());
-	if (workflowProcessor != null) {
-	    String definitionURL = workflowProcessor.getChild("xscufllocation",scuflNS()).getTextTrim();
-	    return new WorkflowProcessor(model, name, definitionURL);
-	}
-	
-
 	return null;
-    }
-    
-
-    /**
-     * The namespace for the generated nodes,
-     * references the scufl.XScufl class
-     */
-    private static Namespace scuflNS() {
-	return XScufl.XScuflNS;
     }
 }

@@ -24,6 +24,12 @@ import java.util.Enumeration;
 import java.util.Properties;
 import java.util.ResourceBundle;
 
+import org.embl.ebi.escience.scuflui.EnactorStatusTableModel;
+import java.lang.Exception;
+import java.lang.InterruptedException;
+import java.lang.String;
+import java.lang.System;
+import java.lang.Thread;
 
 
 

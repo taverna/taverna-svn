@@ -25,8 +25,8 @@
 //      Dependencies        :
 //
 //      Last commit info    :   $Author: mereden $
-//                              $Date: 2003-09-08 12:17:42 $
-//                              $Revision: 1.12 $
+//                              $Date: 2003-09-11 15:52:34 $
+//                              $Revision: 1.13 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 
@@ -36,12 +36,18 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import org.apache.log4j.Logger;
 import org.embl.ebi.escience.scufl.Processor;
-import org.embl.ebi.escience.scuflworkers.soaplab.SoaplabProcessor;
-import org.embl.ebi.escience.scuflworkers.talisman.TalismanProcessor;
-import org.embl.ebi.escience.scuflworkers.workflow.WorkflowProcessor;
-import org.embl.ebi.escience.scuflworkers.wsdl.WSDLBasedProcessor;
+import org.embl.ebi.escience.scuflworkers.ProcessorHelper;
 import uk.ac.soton.itinnovation.taverna.enactor.broker.LogLevel;
 
+import uk.ac.soton.itinnovation.taverna.enactor.entities.ProcessorTask;
+import uk.ac.soton.itinnovation.taverna.enactor.entities.UnsupportedTavernaProcessorException;
+import java.lang.Class;
+import java.lang.Exception;
+import java.lang.IllegalAccessException;
+import java.lang.IllegalArgumentException;
+import java.lang.InstantiationException;
+import java.lang.Object;
+import java.lang.String;
 
 
 
@@ -60,21 +66,8 @@ public class TavernaTaskFactory {
      */
     public static ProcessorTask getConcreteTavernaTask(String id,Processor processor,LogLevel l,String userID,String userCtx) throws UnsupportedTavernaProcessorException {
     ProcessorTask pTask = null;
-		String taskClassName = null;
-
-		if (processor instanceof SoaplabProcessor) {
-		    taskClassName = "uk.ac.soton.itinnovation.taverna.enactor.entities.SoaplabTask";
-		}
-		else if (processor instanceof TalismanProcessor) {
-		    taskClassName = "uk.ac.soton.itinnovation.taverna.enactor.entities.TalismanTask";
-		}
-		else if (processor instanceof WSDLBasedProcessor) {
-		    taskClassName = "uk.ac.soton.itinnovation.taverna.enactor.entities.WSDLInvocationTask";
-		}
-		else if (processor instanceof WorkflowProcessor) {
-				taskClassName = "uk.ac.soton.itinnovation.taverna.enactor.entities.WorkflowTask";
-		}
-		else {
+		String taskClassName = ProcessorHelper.getTaskClassName(processor);
+		if (taskClassName == null) {
 		    logger.error("Don't know how to deal with processor with name '" + processor.getName() + "'");
 		    throw new UnsupportedTavernaProcessorException("Don't know how to deal with processor with name '" + processor.getName() + "'");
 		}

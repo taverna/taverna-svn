@@ -26,6 +26,13 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 
+import org.embl.ebi.escience.scuflui.workbench.Scavenger;
+import org.embl.ebi.escience.scuflui.workbench.ScavengerCreationException;
+import org.embl.ebi.escience.scuflui.workbench.TalismanProcessorFactory;
+import org.embl.ebi.escience.scuflui.workbench.WorkflowProcessorFactory;
+import java.lang.Exception;
+import java.lang.String;
+import java.lang.System;
 
 
 

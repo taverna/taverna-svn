@@ -25,8 +25,8 @@
 //      Dependencies        :
 //
 //      Last commit info    :   $Author: mereden $
-//                              $Date: 2003-09-08 12:17:42 $
-//                              $Revision: 1.17 $
+//                              $Date: 2003-09-11 15:52:34 $
+//                              $Revision: 1.18 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 
@@ -53,6 +53,15 @@ import java.util.Set;
 // Network Imports
 import java.net.URL;
 
+import uk.ac.soton.itinnovation.taverna.enactor.entities.ProcessorTask;
+import uk.ac.soton.itinnovation.taverna.enactor.entities.TaskExecutionException;
+import java.lang.Boolean;
+import java.lang.Double;
+import java.lang.Exception;
+import java.lang.Float;
+import java.lang.Integer;
+import java.lang.Object;
+import java.lang.String;
 
 
 

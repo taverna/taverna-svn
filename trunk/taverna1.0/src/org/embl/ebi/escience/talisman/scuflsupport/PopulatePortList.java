@@ -12,6 +12,8 @@ import org.embl.ebi.escience.scufl.Processor;
 import org.embl.ebi.escience.scufl.UnknownProcessorException;
 import org.embl.ebi.escience.talisman.*;
 
+import org.embl.ebi.escience.talisman.scuflsupport.AbstractScuflAction;
+import java.lang.String;
 
 
 

@@ -35,6 +35,15 @@ import java.io.PrintWriter;
 // Network Imports
 import java.net.URL;
 
+import org.embl.ebi.escience.scuflui.workbench.GenericUIComponentFrame;
+import org.embl.ebi.escience.scuflui.workbench.ScavengerTree;
+import org.embl.ebi.escience.scuflui.workbench.SplashScreen;
+import java.lang.Class;
+import java.lang.ClassNotFoundException;
+import java.lang.Exception;
+import java.lang.RuntimeException;
+import java.lang.String;
+import java.lang.System;
 
 
 
