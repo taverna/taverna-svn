@@ -12,7 +12,9 @@ import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import javax.swing.*;
+import java.util.*;
 import org.embl.ebi.escience.scufl.ScuflModel;
+import org.embl.ebi.escience.scufl.enactor.implementation.*;
 import org.embl.ebi.escience.scufl.parser.XScuflParser;
 import org.embl.ebi.escience.scufl.semantics.RDFSParser;
 import org.embl.ebi.escience.scufl.view.DotView;
@@ -529,11 +531,31 @@ public class Workbench extends JFrame {
 	JMenuItem thingBuilder = new JMenuItem("Run workflow");
 	thingBuilder.addActionListener(new ActionListener() {
 		public void actionPerformed(ActionEvent e) {
-		    // Show a workflow input panel
-		    DataThingConstructionPanel thing = new DataThingConstructionPanel();
-		    GenericUIComponentFrame frame = new GenericUIComponentFrame(Workbench.this.model, thing);
-		    Workbench.this.desktop.add(frame);
-		    frame.moveToFront();
+		    // Show a workflow input panel if there are workflow inputs, otherwise
+		    // construct a new enactor invocation and run immediately
+		    ScuflModel theModel = Workbench.this.model;
+		    if (theModel.getWorkflowSourcePorts().length != 0) {
+			DataThingConstructionPanel thing = new DataThingConstructionPanel();
+			GenericUIComponentFrame frame = new GenericUIComponentFrame(Workbench.this.model, thing);
+			Workbench.this.desktop.add(frame);
+			frame.moveToFront();
+		    }
+		    else {
+			try {
+			    // No inputs so launch the enactor directly
+			    GenericUIComponentFrame frame = new GenericUIComponentFrame(theModel,
+											new EnactorInvocation(new FreefluoEnactorProxy(),
+													      theModel,
+													      new HashMap()));
+			    frame.setSize(600,400);
+			    frame.setLocation(100,100);
+			    Workbench.this.desktop.add(frame);
+			    frame.moveToFront();
+			}
+			catch (Exception ex) {
+			    ex.printStackTrace();
+			}
+		    }
 		}
 	    });
 	windowMenu.addSeparator();
