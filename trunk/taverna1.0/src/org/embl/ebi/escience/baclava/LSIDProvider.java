@@ -13,10 +13,19 @@ package org.embl.ebi.escience.baclava;
  */
 public interface LSIDProvider {
     
+    public static final NamespaceEnumeration WFDEFINITION = new NamespaceEnumeration();
+    public static final NamespaceEnumeration WFINSTANCE = new NamespaceEnumeration();
+    public static final NamespaceEnumeration DATATHING = new NamespaceEnumeration();
+    
     /**
      * Return a unique identifier to be used as an LSID
      * or similar
      */
-    public String getID(String namespace);
+    public String getID(LSIDProvider.NamespaceEnumeration namespace);
+
+    class NamespaceEnumeration {
+    //
+    }
 
 }
+

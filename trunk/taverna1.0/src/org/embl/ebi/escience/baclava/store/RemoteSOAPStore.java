@@ -123,7 +123,8 @@ public class RemoteSOAPStore implements BaclavaDataService, LSIDProvider {
 	}
     }
 
-    public String getID(String namespace) {
+    public String getID(LSIDProvider.NamespaceEnumeration namespaceObject) {
+	String namespace = namespaceObject.toString();
 	// Does the map already contain an ID for that
 	// namespace?
 	String ID = (String)idMap.get(namespace);

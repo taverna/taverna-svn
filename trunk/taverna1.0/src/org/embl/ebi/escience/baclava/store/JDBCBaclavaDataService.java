@@ -162,7 +162,8 @@ public class JDBCBaclavaDataService implements BaclavaDataService, LSIDProvider 
     /**
      * Implement LSIDProvider
      */
-    public String getID(String namespace) {
+    public String getID(LSIDProvider.NamespaceEnumeration namespaceObject) {
+	String namespace = namespaceObject.toString();
 	String prefix = "urn:lsid:"+defaultAuthority+":"+namespace+":";
 	// Fetch the next value from the counter
 	Connection con = pool.borrowConnection();
