@@ -25,8 +25,8 @@
 //      Dependencies        :
 //
 //      Last commit info    :   $Author: dmarvin $
-//                              $Date: 2003-06-05 14:36:23 $
-//                              $Revision: 1.12 $
+//                              $Date: 2003-06-06 09:47:47 $
+//                              $Revision: 1.13 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 
@@ -86,12 +86,13 @@ public class SoaplabTask extends ProcessorTask{
 		try{
 			HashMap outMap = null;
 			startTime = new TimePoint();
-			/*
+			
 			//grab the input map
-			Map inputMap = new HashMap();
-			GraphNode[] inputs = getParents();
+			//Map inputMap = new HashMap();
+			//GraphNode[] inputs = getParents();
 			if(logLevel.getLevel()>=LogLevel.HIGH)
 				inputForLog = new Input();
+			/*
 			for(int i=0;i<inputs.length;i++) {
 				PortTask pT = (PortTask) inputs[i];				
 				//for now going to wait for all data inputs to be available, this must change for the special requirements for taverna.
@@ -101,10 +102,14 @@ public class SoaplabTask extends ProcessorTask{
 					inputForLog.addPart(p);
 				Element e = (Element) p.getValue();
 				inputMap.put(p.getName(),e.getFirstChild().getNodeValue());
-				
-					
+			}*/
+			Map soaplabInputMap = new HashMap();
+			for (Iterator i = inputMap.keySet().iterator(); i.hasNext() ; ){
+					Part p = (Part)(inputMap.get(i.next()));
+					soaplabInputMap.put(p.getName(), p.getTypedValue());
 			}
-			*/
+				
+			
 			// Invoke the web service...
 			Call call = (Call) new Service().createCall();
 			URL soaplabWSDLURL = ((SoaplabProcessor) proc).getEndpoint();
@@ -112,7 +117,7 @@ public class SoaplabTask extends ProcessorTask{
 			call.setTargetEndpointAddress(soaplabWSDLURL);
 			call.setOperationName(new QName("runAndWaitFor"));
 			//call.setReturnType(new QName("apachesoap:Map"));
-			HashMap outputMap = new HashMap((Map)call.invoke(new Object[] { inputMap }));
+			HashMap outputMap = new HashMap((Map)call.invoke(new Object[] { soaplabInputMap }));
 			//could also get some log info from service for the provenance using the describe method on the service
 
 			//convert map content to array to speed things up a bit
@@ -225,6 +230,7 @@ public class SoaplabTask extends ProcessorTask{
 			return outMap;
 		}
 		catch(Exception ex) {
+			ex.printStackTrace();
 			logger.error("Error invoking soaplab service for task " +getID() ,ex);
 			throw new TaskExecutionException("Task " + getID() + " failed due to problem invoking soaplab service");			
 		}

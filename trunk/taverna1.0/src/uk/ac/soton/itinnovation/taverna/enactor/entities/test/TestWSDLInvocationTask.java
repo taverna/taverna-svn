@@ -30,6 +30,8 @@ public class TestWSDLInvocationTask extends TestCase {
   }
 
   protected void setUp() {
+		System.setProperty("http.proxyHost","wwwcache.cs.nott.ac.uk");
+		System.setProperty("http.proxyPort","3128");
   }
 
   protected void tearDown() {
@@ -52,7 +54,7 @@ public class TestWSDLInvocationTask extends TestCase {
 		String id = "testTask";
 		//get the output ports 
 		DiGraph d = new DiGraph("testDigraph");
-		ProcessorTask serviceTask = TavernaTaskFactory.getConcreteTavernaTask(id,describe,new LogLevel(LogLevel.HIGH));
+		ProcessorTask serviceTask = TavernaTaskFactory.getConcreteTavernaTask(id,describe,new LogLevel(LogLevel.HIGH),"me","them");
 		GraphNode[] nodes = new GraphNode[1];
 		nodes[0] = serviceTask;
 		d.setNodeList(nodes);

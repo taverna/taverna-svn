@@ -26,12 +26,12 @@
 //
 //      Last commit info    :   $Author: dmarvin $
 //                              $Date: 2003-06-06 09:47:46 $
-//                              $Revision: 1.6 $
+//                              $Revision: 1.1 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 package uk.ac.soton.itinnovation.taverna.enactor.broker;
 
-public class TavernaWorkflowSubmission {
+public class TavernaStringifiedWorkflowSubmission {
 
     private String scuflSpec;
     private String inputData;
@@ -46,7 +46,7 @@ public class TavernaWorkflowSubmission {
      * @param userID
      * @param userNamespaceCxt
      */
-    public TavernaWorkflowSubmission(String scuflSpec,
+    public TavernaStringifiedWorkflowSubmission(String scuflSpec,
         String inputData,
         String userID,
         String userNamespaceCxt) {

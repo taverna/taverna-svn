@@ -24,9 +24,9 @@
 //      Created for Project :   MYGRID
 //      Dependencies        :
 //
-//      Last commit info    :   $Author: mereden $
-//                              $Date: 2003-05-23 12:36:00 $
-//                              $Revision: 1.7 $
+//      Last commit info    :   $Author: dmarvin $
+//                              $Date: 2003-06-06 09:47:46 $
+//                              $Revision: 1.8 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 
@@ -146,7 +146,7 @@ public class TavernaFlowReceipt extends WSFlowReceipt {
 			//log the exception
             logger.error(ex);
 		}
-    }   
+  }   
 
 	public String getStatusString() {
 
@@ -266,13 +266,13 @@ public class TavernaFlowReceipt extends WSFlowReceipt {
     }
 
 	public String getOutputString() {
+		return getOutput().toXML();
+	}
+
+	public Output getOutput() {
 		Output output = new Output();
-		try	{
-		
-			//get the output nodes and generate single output composed of all node parts
-			
+		try{
 			GraphNode[] outNodes = flow.getDiGraph().getOutputNodes();
-			
 			int count = 0;
 			for(int i=0;i<outNodes.length;i++) {
 				PortTask pT = (PortTask) outNodes[i];
@@ -280,20 +280,18 @@ public class TavernaFlowReceipt extends WSFlowReceipt {
 					output.addPart(new Part(count + 1,"UNKNOWN","UNKNOWN","NO_DATA"));
 				}
 				else {
-						output.addPart(pT.getData());
+					output.addPart(pT.getData());
 				}
-				
-			
 			}
-			return output.toXML();
+			return output;
 		}
 		catch(Exception ex) {
-			return output.toXML();
+			return output;
 		}
 	}
 
-	public String getProvenanceXMLString() {
-		String ret = null;
+	public org.jdom.Element getProvenanceXML() {
+		
 		//get the end provenance task or return empty string
 		Element prov = new Element("workflowProvenance",PROVENANCE_NAMESPACE);
 		//populate with flow level information
@@ -332,7 +330,13 @@ public class TavernaFlowReceipt extends WSFlowReceipt {
 			prov.addContent(endTime);
 		}
 		prov.addContent(processors);
+		return prov;
+	}
 
+
+	public String getProvenanceXMLString() {
+		String ret = null;
+		org.jdom.Element prov = getProvenanceXML();
 		XMLOutputter xmlout = new XMLOutputter();
 		xmlout.setIndent(" ");
 		xmlout.setNewlines(true);
@@ -342,7 +346,7 @@ public class TavernaFlowReceipt extends WSFlowReceipt {
 		//put in processor provenance
 		if(ret==null) {
 			prov = new Element("workflowProvenance",PROVENANCE_NAMESPACE);
-			id = new Element("workflowID",PROVENANCE_NAMESPACE);
+			Element id = new Element("workflowID",PROVENANCE_NAMESPACE);
 			id.addContent(new Text(flow.getID()));
 			prov.addContent(id);
 			return (xmlout.outputString(prov));

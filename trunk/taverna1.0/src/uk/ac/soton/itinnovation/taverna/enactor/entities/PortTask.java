@@ -26,8 +26,8 @@
 //      Dependencies        :
 //
 //      Last commit info    :   $Author: dmarvin $
-//                              $Date: 2003-05-07 20:15:56 $
-//                              $Revision: 1.6 $
+//                              $Date: 2003-06-06 09:47:47 $
+//                              $Revision: 1.7 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 
@@ -111,8 +111,7 @@ public class PortTask extends TavernaTask{
 	 * @param data holder for data
 	 */
 	public synchronized void setData(Part p) {
-		dataPacket = p;
-				
+		dataPacket = p;				
 	}
 
 	/**
@@ -138,7 +137,7 @@ public class PortTask extends TavernaTask{
 			//don't do anything, later versions may have persistence writing to do
 			//set data on child porttasks too
 		    if(dataPacket==null) {
-			msg = new TaskStateMessage(getParentFlow().getID(), getID(), TaskStateMessage.FAILED,"No data for port " + port.getName() + ",please check its links");
+					msg = new TaskStateMessage(getParentFlow().getID(), getID(), TaskStateMessage.FAILED,"No data for port " + port.getName() + ",please check its links");
 		    }	else {
 				GraphNode[] chds = getChildren();
 				for(int i=0;i<chds.length;i++) {
@@ -146,7 +145,7 @@ public class PortTask extends TavernaTask{
 						PortTask pT = (PortTask) chds[i];
 						String portName = pT.getScuflPort().getName();
 						//want the part for this portname 
-						Part part = new Part(-1,portName,dataPacket.getType(),dataPacket.getValue());
+						Part part = new Part(-1,portName,dataPacket.getType(),dataPacket.getTypedValue());
 						pT.setData(part);
 					}
 				}

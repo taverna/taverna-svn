@@ -20,21 +20,24 @@
 // Foundation Inc, 59 Temple Place, Suite 330, Boston MA 02111-1307 USA.
 //
 //      Created By          :   Darren Marvin
-//      Created Date        :   2002/08/07
+//      Created Date        :   2003/06/04
 //      Created for Project :   MYGRID
 //      Dependencies        :
 //
 //      Last commit info    :   $Author: dmarvin $
 //                              $Date: 2003-06-06 09:47:46 $
-//                              $Revision: 1.6 $
+//                              $Revision: 1.1 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 package uk.ac.soton.itinnovation.taverna.enactor.broker;
 
-public class TavernaWorkflowSubmission {
+import org.embl.ebi.escience.scufl.ScuflModel;
+import uk.ac.soton.itinnovation.mygrid.workflow.enactor.io.Input;
 
-    private String scuflSpec;
-    private String inputData;
+public class TavernaBinaryWorkflowSubmission {
+
+    private ScuflModel scuflModel;
+    private Input inputData;
     private String userID;
     private String userNamespaceCxt;
     private String notificationEmailAddress;
@@ -46,29 +49,29 @@ public class TavernaWorkflowSubmission {
      * @param userID
      * @param userNamespaceCxt
      */
-    public TavernaWorkflowSubmission(String scuflSpec,
-        String inputData,
+    public TavernaBinaryWorkflowSubmission(ScuflModel scuflModel,
+        Input inputData,
         String userID,
         String userNamespaceCxt) {
-        this.scuflSpec = scuflSpec;
+        this.scuflModel = scuflModel;
         this.inputData = inputData;
         this.userID = userID;
         this.userNamespaceCxt = userNamespaceCxt;
     }
 
     /**
-     * Retrieve the workflowSpec for the submission
+     * Retrieve the scuflModel for the submission
      * @return workflow spec
      */
-    public String getXScuflDefinition() {
-        return scuflSpec;
+    public ScuflModel getScuflModel() {
+        return scuflModel;
     }
 
     /**
      * Retrieve the input data for the submission
      * @return input data
      */
-    public String getInputData() {
+    public Input getInputData() {
         return inputData;
     }
 

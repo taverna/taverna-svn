@@ -25,8 +25,8 @@
 //      Dependencies        :
 //
 //      Last commit info    :   $Author: dmarvin $
-//                              $Date: 2003-06-05 14:36:23 $
-//                              $Revision: 1.12 $
+//                              $Date: 2003-06-06 09:47:47 $
+//                              $Revision: 1.13 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 
@@ -78,32 +78,19 @@ public class WSDLInvocationTask extends ProcessorTask implements InvocationDescr
 	}
 	
 	public java.util.Map execute(java.util.Map inputMap) throws TaskExecutionException {
-		try{
+		
+		/*try{
 			startTime =  new TimePoint();
 			//want to siffle through the input ports and get input parts  
 			//GraphNode[] inputs = getParents();
 			//want to create suitable input parts
-			/*
-			Input input = new Input();			
-			if(logLevel.getLevel()>=LogLevel.HIGH)
-				inputForLog = input;
-			for(int i=0;i<inputs.length;i++) {
-			    if(inputs[i] instanceof PortTask){
-			    PortTask pT = (PortTask) inputs[i];				
-				//for now going to wait for all data inputs to be available, this must change for the special requirements for taverna.
-				//actually want to set data in jobs as it becomes available, so don't block, check if data available every so often
-			    input.addPart(pT.getData());
-			    }					
-			}
-			*/
+			
 			Input input = new Input();
 			if(logLevel.getLevel()>=LogLevel.HIGH)
 				inputForLog = input;
 			Iterator iterator = inputMap.keySet().iterator();
 			while(iterator.hasNext()) {
-				//they should all be PortTasks
-				PortTask pT = (PortTask) iterator.next();
-				input.addPart(pT.getData());
+				input.addPart((Part) inputMap.get(iterator.next()));
 			}
 
 			WSDLServiceInvocation serviceInvocation = new WSDLServiceInvocation(this,input,WSDLServiceInvocation.OPERATION_TYPE_REQUEST_RESPONSE);
@@ -117,7 +104,7 @@ public class WSDLInvocationTask extends ProcessorTask implements InvocationDescr
 					Part prt = new Part(-1,pt.getName(),null,null);	//not worried that type and value unknown at present since will be filled in by invocation api
 					pT.setData(prt);
 					outParts.add(prt);
-                }
+          }
 			}
 			serviceInvocation.setResponseMessageParts(outParts);
 
@@ -125,38 +112,125 @@ public class WSDLInvocationTask extends ProcessorTask implements InvocationDescr
             serviceInvocation.executeOperation();
             //group together the output parts and write to child partchecks
             Output output = serviceInvocation.getServiceOutput();
+
             if(logLevel.getLevel()>=LogLevel.HIGH) 
 							outputForLog = output;
 						List outputParts = output.getPartList();
+						
+						System.out.println("Number of output items: " + outputParts.size());
 						Map outputMap = new HashMap();
             iterator = outputParts.iterator();
             while (iterator.hasNext()) {
 							//match with child part by name and set the part value
-	            /*
+	            
 							Part part = (Part) iterator.next();
               String partName = part.getName();
-              Iterator iter2 = outParts.iterator();
+              System.out.println("--- part name: " + partName);
+							System.out.println("--- part apparent type: " + part.getType());
+							System.out.println("--- part type: " + part.getTypedValue().getClass());
+							Iterator iter2 = outParts.iterator();
               while (iter2.hasNext()) {
 					     Part prt = (Part) iter2.next();
-               if (prt.getName().equals(partName)) {
-									prt.setValue(part.getValue());
+               							 
+							 if (prt.getName().equals(partName)) {
+									prt.setValue(part.getTypedValue());
                   prt.setType(part.getType());
                   prt.setID(part.getID());
                }
-							 */
-							 Part part = (Part) iterator.next();
-							 String partName = part.getName();
-							 outputMap.put(partName,part.getValue());
+							 outputMap.put(partName,prt);				 
+								
              }
+						}
           
 			endTime = new TimePoint();
 			//success
 			return outputMap;
 		}
 		catch(Exception ex) {
+			ex.printStackTrace();
 			logger.error("Error invoking soaplab service for task " +getID() ,ex);
 			throw new TaskExecutionException("Task " + getID() + " failed due to problem invoking soaplab service");
 		}
+		*/
+		try{
+			startTime =  new TimePoint();
+			//want to siffle through the input ports and get input parts  
+			//GraphNode[] inputs = getParents();
+			//want to create suitable input parts
+			
+			Input input = new Input();
+			if(logLevel.getLevel()>=LogLevel.HIGH)
+				inputForLog = input;
+			Iterator iterator = inputMap.keySet().iterator();
+			while(iterator.hasNext()) {
+				input.addPart((Part) inputMap.get(iterator.next()));
+			}
+
+			WSDLServiceInvocation serviceInvocation = new WSDLServiceInvocation(this,input,WSDLServiceInvocation.OPERATION_TYPE_REQUEST_RESPONSE);
+			//have to configure invocation for the output parts
+			
+			
+				List outParts = new ArrayList();
+			GraphNode[] children = getChildren();
+			for (int i = 0; i < children.length; i++) {
+				if (children[i] instanceof PortTask) {
+					PortTask pT = (PortTask) children[i];
+					Port pt = pT.getScuflPort();
+					Part prt = new Part(-1,pt.getName(),"org.w3c.dom.Element",null);	//not worried that type and value unknown at present since will be filled in by invocation api
+					pT.setData(prt);
+					outParts.add(prt);
+          }
+			}
+			
+			serviceInvocation.setResponseMessageParts(outParts);
+
+			//execute the call
+            serviceInvocation.executeOperation();
+            //group together the output parts and write to child partchecks
+            Output output = serviceInvocation.getServiceOutput();
+
+            if(logLevel.getLevel()>=LogLevel.HIGH) 
+							outputForLog = output;
+						List outputParts = output.getPartList();
+						
+						System.out.println("Number of output items: " + outputParts.size());
+						Map outputMap = new HashMap();
+            iterator = outputParts.iterator();
+            while (iterator.hasNext()) {
+							//match with child part by name and set the part value
+	            
+							Part part = (Part) iterator.next();
+              String partName = part.getName();
+              System.out.println("--- part name: " + partName);
+							System.out.println("--- part apparent type: " + part.getType());
+							System.out.println("--- part type: " + part.getTypedValue().getClass());
+							outputMap.put(partName,part);
+							/*
+							Iterator iter2 = outParts.iterator();
+              while (iter2.hasNext()) {
+					     Part prt = (Part) iter2.next();
+               							 
+							 if (prt.getName().equals(partName)) {
+									prt.setValue(part.getTypedValue());
+                  prt.setType(part.getType());
+                  prt.setID(part.getID());
+               }
+							 outputMap.put(partName,prt);				 
+								
+             }
+						 */
+						}
+          
+			endTime = new TimePoint();
+			//success
+			return outputMap;
+		}
+		catch(Exception ex) {
+			ex.printStackTrace();
+			logger.error("Error invoking soaplab service for task " +getID() ,ex);
+			throw new TaskExecutionException("Task " + getID() + " failed due to problem invoking soaplab service");
+		}
+
 	}
 
 	public void cleanUpConcreteTask() {

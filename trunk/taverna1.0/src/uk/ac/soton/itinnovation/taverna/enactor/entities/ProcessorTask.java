@@ -25,8 +25,8 @@
 //      Dependencies        :
 //
 //      Last commit info    :   $Author: dmarvin $
-//                              $Date: 2003-06-05 16:25:06 $
-//                              $Revision: 1.10 $
+//                              $Date: 2003-06-06 09:47:47 $
+//                              $Revision: 1.11 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 package uk.ac.soton.itinnovation.taverna.enactor.entities;
@@ -134,8 +134,10 @@ public abstract class ProcessorTask extends TavernaTask{
 				String name = p.getName();
 		    Object value = p.getTypedValue();
 		    System.out.println("PortTask Part name: " + name);
-				System.out.println("PortTask Part type: "+ p.getType());				
+				System.out.println("PortTask Part type: "+ p.getType());
+				System.out.println("PortTask Part actualType: " + p.getTypedValue().getClass());
 				PartInfo pi = new PartInfo(p);
+				System.out.println("First time: "+ pi.toString());
 		    inputInfoMap.put(name, pi);
 		}
 	    }
@@ -166,7 +168,7 @@ public abstract class ProcessorTask extends TavernaTask{
 	    for (Iterator i = inputInfoMap.keySet().iterator(); i.hasNext(); ) {
 				PartInfo pi = (PartInfo)inputInfoMap.get(i.next());
 				is.addSinglePart(pi.getPart());
-				System.out.println(pi.toString());
+				System.out.println("Second time: "+ pi.toString());
 	    }
 	    
 	    List inputList = is.getCurrentState();
@@ -375,25 +377,25 @@ class PartInfo {
      * Create a new PartInfo object about the specified Part
      */
     public PartInfo(Part thePart) throws DataParseException, JDOMException {
-	List dimensionSizeList = new ArrayList();
-	this.thePart = thePart;
-	
-	// Get the underlying dimensionality of the input type by
-	// counting the number of times we can get an array type
-	// out of it.
-	this.dimension = 0;
-	Object value = thePart.getTypedValue();
-	while (value.getClass().isArray()) {
-	    this.dimension++;
-	    dimensionSizeList.add(new Integer(((Object[])value).length));
-	    value = ((Object[])value)[0];
-	}
-	this.underlyingType = value.getClass();
-	this.dimensionSizes = new int[dimensionSizeList.size()];
-	for (int i = 0; i < dimensionSizeList.size(); i++ ) {
-	    Integer integer = (Integer)dimensionSizeList.get(i);
-	    this.dimensionSizes[i] = integer.intValue();
-	}
+			List dimensionSizeList = new ArrayList();
+			this.thePart = thePart;
+			
+			// Get the underlying dimensionality of the input type by
+			// counting the number of times we can get an array type
+			// out of it.
+			this.dimension = 0;
+			Object value = thePart.getTypedValue();
+			while (value.getClass().isArray()) {
+					this.dimension++;
+					dimensionSizeList.add(new Integer(((Object[])value).length));
+					value = ((Object[])value)[0];
+			}
+			this.underlyingType = value.getClass();
+			this.dimensionSizes = new int[dimensionSizeList.size()];
+			for (int i = 0; i < dimensionSizeList.size(); i++ ) {
+					Integer integer = (Integer)dimensionSizeList.get(i);
+					this.dimensionSizes[i] = integer.intValue();
+			}
 	    
     }
     

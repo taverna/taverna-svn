@@ -67,9 +67,10 @@ public class TalismanTask extends ProcessorTask {
 	    */
 	    Map inputMap = new HashMap();
 	    for (Iterator i = workflowInputMap.keySet().iterator(); i.hasNext(); ) {
-		String partName = (String)(i.next());
-		Part thePart = (Part)workflowInputMap.get(partName);
-		inputMap.put(thePart.getName(), thePart.getTypedValue());
+			String partName = (String)(i.next());
+			Part thePart = (Part)workflowInputMap.get(partName);
+			//System.out.println("Part name: "+ thePart.getName() + ", part type: " + thePart.getType());
+			inputMap.put(thePart.getName(), thePart.getTypedValue());
 	    }
 	    // Get a map of the output ports, keys are port names, values are
 	    // PortTask instances, used when we have named output and need to

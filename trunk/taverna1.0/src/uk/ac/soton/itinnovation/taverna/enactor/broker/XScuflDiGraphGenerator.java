@@ -24,9 +24,9 @@
 //      Created for Project :   MYGRID
 //      Dependencies        :
 //
-//      Last commit info    :   $Author: mereden $
-//                              $Date: 2003-05-30 14:48:43 $
-//                              $Revision: 1.16 $
+//      Last commit info    :   $Author: dmarvin $
+//                              $Date: 2003-06-06 09:47:46 $
+//                              $Revision: 1.17 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 
@@ -79,7 +79,7 @@ public class XScuflDiGraphGenerator {
 	 * @param user identifier
      * @return Workflow Enactor DiGraph
      */
-    public static DiGraph build(String flowID, ScuflModel model, Input input, String userID) throws XScuflFormatException, java.net.MalformedURLException {
+    public static DiGraph build(String flowID, ScuflModel model, Input input, String userID, String userCxt) throws XScuflFormatException, java.net.MalformedURLException {
         DiGraph graph = new DiGraph(model.toString());
 		try{
 						
@@ -111,7 +111,7 @@ public class XScuflDiGraphGenerator {
 				LogLevel logLevel = new LogLevel(theProcessor.getLogLevel());
 			    
 			    // Create the actual task to do the work of this processor.
-			    ProcessorTask serviceTask = TavernaTaskFactory.getConcreteTavernaTask(id,theProcessor,logLevel);
+			    ProcessorTask serviceTask = TavernaTaskFactory.getConcreteTavernaTask(id,theProcessor,logLevel,userID,userCxt);
 			    addToListIfNotThere(tasks,serviceTask);
 			    processorTasks.add(serviceTask);
 			    
@@ -201,7 +201,7 @@ public class XScuflDiGraphGenerator {
 				    Part part = (Part) it.next();
 				    String partName = part.getName();
 				    if(partName.equals(pT.getScuflPort().getName()))
-				       pT.setData(new Part(-1,pT.getScuflPort().getName(),part.getType(),part.getValue()));
+				       pT.setData(new Part(-1,pT.getScuflPort().getName(),part.getType(),part.getTypedValue()));
 				}		
 								
 			}
