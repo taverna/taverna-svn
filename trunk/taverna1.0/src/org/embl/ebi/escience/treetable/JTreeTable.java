@@ -39,6 +39,7 @@ import java.util.EventObject;
  *
  * @author Philip Milne
  * @author Scott Violet
+ * @author Tom Oinn
  */
 public class JTreeTable extends JTable {
     /** A subclass of JTree. */

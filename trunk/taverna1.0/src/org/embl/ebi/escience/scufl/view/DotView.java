@@ -292,13 +292,19 @@ public class DotView implements ScuflModelEventListener, java.io.Serializable {
 	Port[] sources = model.getWorkflowSourceProcessor().getPorts();
 	dot.append(" subgraph cluster_sources {\n");
 	dot.append("  style=\"dotted\"\n");
-	dot.append("  label=\"Overall workflow inputs\"\n");
-	dot.append("  fontname=\"Courier\"\n");
-	dot.append("  fontsize=\"10\"\n");
+	dot.append("  label=\"Workflow Inputs\"\n");	
+	dot.append("  fontname=\"Helvetica\",         \n");
+	dot.append("  fontsize=\"10\",              \n");
+	dot.append("  fontcolor=\"black\",  \n");
 	dot.append("  rank=\"same\"\n");    
 	for (int i=0; i<sources.length; i++) {
 	    dot.append("  WORKFLOWINTERNALSOURCE_"+sources[i].getName()+" [\n");
-	    dot.append("   shape=\"invtriangle\",\n");
+	    if (this.portDisplay != DotView.NONE) {
+		dot.append("   shape=\"invtriangle\",\n");
+	    }
+	    else {
+		dot.append("   shape=\"box\",\n");
+	    }
 	    dot.append("   width=\"0\",\n");
 	    dot.append("   height=\"0\",\n");
 	    dot.append("   fillcolor=\"skyblue\",\n");
@@ -308,15 +314,21 @@ public class DotView implements ScuflModelEventListener, java.io.Serializable {
 	dot.append(" }\n");
 	dot.append(" subgraph cluster_sinks {\n");
 	dot.append("  style=\"dotted\"\n");
-	dot.append("  label=\"Overall workflow outputs\"\n");
-	dot.append("  fontname=\"Courier\"\n");
-	dot.append("  fontsize=\"10\"\n");
+	dot.append("  label=\"Workflow Outputs\"\n");
+	dot.append("  fontname=\"Helvetica\"\n");
+	dot.append("  fontsize=\"10\"\n");	
+	dot.append("  fontcolor=\"black\",  \n");
 	dot.append("  rank=\"same\"\n");    
 	// ...then workflow sinks.
 	Port[] sinks = model.getWorkflowSinkProcessor().getPorts();
 	for (int i=0; i<sinks.length; i++) {
 	    dot.append("  WORKFLOWINTERNALSINK_"+sinks[i].getName()+" [\n");
-	    dot.append("   shape=\"triangle\",\n");
+	    if (this.portDisplay != DotView.NONE) {
+		dot.append("   shape=\"triangle\",\n");
+	    }
+	    else {
+		dot.append("   shape=\"box\",\n");
+	    }
 	    dot.append("   width=\"0\",\n");
 	    dot.append("   height=\"0\",\n");
 	    dot.append("   fillcolor=\"lightsteelblue2\",\n");

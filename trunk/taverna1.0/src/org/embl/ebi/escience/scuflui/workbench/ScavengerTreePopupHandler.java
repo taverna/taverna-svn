@@ -184,32 +184,9 @@ public class ScavengerTreePopupHandler extends MouseAdapter {
 		add.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ae) {
 			    String defaultName = node.toString();
-			    // split on non word characters
-			    String[] split = defaultName.split("\\W");
-			    defaultName = "";
-			    for (int i = 0; i < split.length; i++) {
-				defaultName = defaultName + split[i];
-				if (i < split.length - 1) {
-				    defaultName = defaultName + "_";
-				}
-			    }
+			    String validName = ScavengerTreePopupHandler.this.scavenger.model.getValidProcessorName(defaultName);
 			    try {
-				try {
-				    pf.createProcessor(defaultName, ScavengerTreePopupHandler.this.scavenger.model);
-				}
-				catch (DuplicateProcessorNameException dpne) {
-				    int suffix = 0;
-				    boolean success = false;
-				    while (!success) {
-					try {
-					    Processor testExists = ScavengerTreePopupHandler.this.scavenger.model.locateProcessor(defaultName+(++suffix));
-					}
-					catch (UnknownProcessorException upe) {
-					    success = true;
-					    pf.createProcessor(defaultName + suffix, ScavengerTreePopupHandler.this.scavenger.model);
-					}
-				    }
-				}
+				pf.createProcessor(validName, ScavengerTreePopupHandler.this.scavenger.model);
 			    }
 			    catch (ProcessorCreationException pce) {
 				 JOptionPane.showMessageDialog(null,

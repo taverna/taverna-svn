@@ -37,39 +37,8 @@ import java.lang.Thread;
  */
 public class ScuflModel 
     implements Serializable,
-	       LogAwareComponent,
-	       Transferable {
+	       LogAwareComponent {
     
-    final public static DataFlavor FLAVOR =
-	new DataFlavor(ScuflModel.class, "Workflow model");
-    static DataFlavor[] flavors = { FLAVOR };
-    /**
-     * Implements transferable interface
-     */
-    public Object getTransferData(DataFlavor df) 
-	throws UnsupportedFlavorException, IOException {
-	if (df.equals(FLAVOR)) {
-	    return this;
-	}
-	else {
-	    throw new UnsupportedFlavorException(df);
-	}
-    }
-    
-    /**
-     * Implements transferable interface
-     */
-    public boolean isDataFlavorSupported(DataFlavor df) {
-	return df.equals(FLAVOR);
-    }
-
-    /**
-     * Implements transferable interface
-     */
-    public DataFlavor[] getTransferDataFlavors() {
-	return flavors;
-    }
-
     /**
      * The log level for the model overall
      */
@@ -131,6 +100,42 @@ public class ScuflModel
      */
     private ArrayList dataconstraints = new ArrayList();
    
+    /**
+     * Get the next valid name based on the specified arbitrary string
+     * that could be used to create a new processor. This method will
+     * strip non word characters, replacing with the '_' and append
+     * a numerical suffix if required to ensure that the name returned
+     * is both valid and not already in use
+     */
+    public String getValidProcessorName(String originalName) {
+	int suffix = 0;
+	StringBuffer sb = new StringBuffer();
+	String[] split = originalName.split("\\W");
+	for (int i = 0; i < split.length; i++) {
+	    sb.append(split[i]);
+	    if (i < split.length-1) {
+		sb.append("_");
+	    }
+	}
+	String rootName = sb.toString();
+	try {
+	    Processor testExists = locateProcessor(rootName);
+	}
+	catch (UnknownProcessorException upe) {
+	    // Not found, so we can use this name
+	    return rootName;
+	}
+	// Otherwise will have to use a suffix
+	while (true) {
+	    try {
+		Processor testExists = locateProcessor(rootName+(++suffix));
+	    }
+	    catch (UnknownProcessorException upe) {
+		return rootName+suffix;
+	    }
+	}
+    }
+
     /**
      * Set the event reporting state, useful if you know you're going
      * to be generating a large number of model events that actually

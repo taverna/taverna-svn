@@ -36,7 +36,13 @@ import org.embl.ebi.escience.scuflui.workbench.Scavenger;
 import org.embl.ebi.escience.scuflui.workbench.ScavengerCreationException;
 import org.embl.ebi.escience.scuflui.workbench.ScavengerTreePopupHandler;
 import org.embl.ebi.escience.scuflui.workbench.ScavengerTreeRenderer;
+import org.embl.ebi.escience.scuflui.dnd.*;
+import java.awt.dnd.*;
+import java.awt.datatransfer.*;
+import org.jdom.*;
 import java.lang.String;
+import org.embl.ebi.escience.scuflworkers.*;
+import java.awt.*;
 
 
 
@@ -48,7 +54,9 @@ import java.lang.String;
  * @author Tom Oinn
  */
 public class ScavengerTree extends JTree 
-    implements ScuflUIComponent {
+    implements ScuflUIComponent,
+	       DragSourceListener,
+	       DragGestureListener {
     
     /** 
      * The model that this scavenger will create processor for 
@@ -83,6 +91,42 @@ public class ScavengerTree extends JTree
     }
 
     /**
+     * Recognize the drag gesture, only allow if there's a
+     * processor factory node here, and export the XML
+     * fragment from the node as the transferable
+     */
+    public void dragGestureRecognized(DragGestureEvent e) {
+	// Get the node that was dragged
+	Point l = e.getDragOrigin();
+	TreePath dragSourcePath = getPathForLocation((int)l.getX(), (int)l.getY());
+	DefaultMutableTreeNode node = (DefaultMutableTreeNode)dragSourcePath.getLastPathComponent();
+	Object userObject = node.getUserObject();
+	if (userObject instanceof ProcessorFactory) {
+	    Element el = ((ProcessorFactory)userObject).getXMLFragment();
+	    FactorySpecFragment fsf = new FactorySpecFragment(el, node.toString());
+	    Transferable t = new SpecFragmentTransferable(fsf);
+	    e.startDrag(DragSource.DefaultCopyDrop,
+			t,
+			this);
+	}
+    }
+    public void dragDropEnd(DragSourceDropEvent e) {
+	//
+    }
+    public void dragEnter(DragSourceDragEvent e) {
+	//
+    }
+    public void dragExit(DragSourceEvent e) {
+	//
+    }
+    public void dragOver(DragSourceDragEvent e) {
+	//
+    }
+    public void dropActionChanged(DragSourceDragEvent e) {
+	//
+    }
+
+    /**
      * Default constructor, equivalent to calling with populate
      * set to 'true'
      */
@@ -97,6 +141,10 @@ public class ScavengerTree extends JTree
      */
     public ScavengerTree(boolean populate) {
 	super();
+	DragSource dragSource = DragSource.getDefaultDragSource();
+	dragSource.createDefaultDragGestureRecognizer(this,
+						      DnDConstants.ACTION_COPY_OR_MOVE,
+						      this);
 	scavengerList = new ArrayList();
 	root = new DefaultMutableTreeNode("Available Processors");
 	treeModel = (DefaultTreeModel)this.getModel();

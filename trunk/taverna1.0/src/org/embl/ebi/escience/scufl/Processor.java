@@ -34,7 +34,7 @@ import java.lang.String;
  * An abstract superclass of the various processor subtypes
  * @author Tom Oinn
  */
-public abstract class Processor implements Serializable, Transferable {
+public abstract class Processor implements Serializable {
     
     private String name = "";
     private String description = "";
@@ -45,9 +45,9 @@ public abstract class Processor implements Serializable, Transferable {
     protected int retryDelay = 0;
     protected double backoff = 1.0;
     protected List alternates = new ArrayList();
-    final public static DataFlavor FLAVOR =
-	new DataFlavor(Processor.class, "Procesor");
-    static DataFlavor[] flavors = { FLAVOR };
+    //final public static DataFlavor FLAVOR =
+    //	new DataFlavor(Processor.class, "Procesor");
+    //static DataFlavor[] flavors = { FLAVOR };
     Processor parentProcessor = null;
     protected List templates = new ArrayList();
     protected IterationStrategy iterationStrategy = null;
@@ -168,34 +168,7 @@ public abstract class Processor implements Serializable, Transferable {
 	}
 	return (AnnotationTemplate[])dtemplates.toArray(new AnnotationTemplate[0]);
     }
-    
-    /**
-     * Implements transferable interface
-     */
-    public Object getTransferData(DataFlavor df) 
-	throws UnsupportedFlavorException, IOException {
-	if (df.equals(FLAVOR)) {
-	    return this;
-	}
-	else {
-	    throw new UnsupportedFlavorException(df);
-	}
-    }
-    
-    /**
-     * Implements transferable interface
-     */
-    public boolean isDataFlavorSupported(DataFlavor df) {
-	return df.equals(FLAVOR);
-    }
-
-    /**
-     * Implements transferable interface
-     */
-    public DataFlavor[] getTransferDataFlavors() {
-	return flavors;
-    }
-
+   
     /**
      * Return the list of AlternateProcessor holders
      * for this primary processor implementation.

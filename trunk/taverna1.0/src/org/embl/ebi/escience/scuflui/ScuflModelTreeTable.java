@@ -16,7 +16,11 @@ import org.embl.ebi.escience.scufl.view.*;
 import org.embl.ebi.escience.treetable.*;
 import java.awt.*;
 import javax.swing.table.*;
-
+import java.awt.dnd.*;
+import java.awt.datatransfer.*;
+import org.embl.ebi.escience.scuflui.dnd.*;
+import org.jdom.*;
+import org.embl.ebi.escience.scuflworkers.*;
 
 // Utility Imports
 import java.util.Enumeration;
@@ -38,7 +42,8 @@ import java.lang.String;
  */
 public class ScuflModelTreeTable extends JTreeTable 
     implements ScuflModelEventListener,
-	       ScuflUIComponent {
+	       ScuflUIComponent,
+	       DropTargetListener {
     
     // The ScuflModel that this is a view / controller over
     ScuflModel model = null;
@@ -52,6 +57,8 @@ public class ScuflModelTreeTable extends JTreeTable
      */
     public ScuflModelTreeTable() {
 	super();
+	// Set up the drop listener
+	new DropTarget(this, DnDConstants.ACTION_COPY_OR_MOVE, this);
 	setModel(treeModel);
 	TableColumnModel columnModel = getColumnModel();
 	for (int i = 1; i < 4; i++) {
@@ -68,6 +75,74 @@ public class ScuflModelTreeTable extends JTreeTable
 	this.setDragEnabled(true);
     }
     
+    public void drop(DropTargetDropEvent e) {
+	try {
+	    DataFlavor f = SpecFragmentTransferable.factorySpecFragmentFlavor;
+	    Transferable t = e.getTransferable();
+	    if (e.isDataFlavorSupported(f)) {
+		// Have something of type factorySpecFragmentFlavor;
+		FactorySpecFragment fsf = (FactorySpecFragment)t.getTransferData(f);
+		System.out.println("Drop of "+fsf.getFactoryNodeName());
+		// Get the tree path which the drop has landed on, if there is
+		// one.
+		Point p = e.getLocation();
+		int x = (int)p.getX();
+		int y = (int)p.getY();
+		// Transform drop coordinates to the coordinates of the JTree contained
+		// by the treetable
+		for (int counter = getColumnCount() - 1; counter >= 0; counter--) {
+		    if (getColumnClass(counter) == TreeTableModel.class) {
+			x = x - getCellRect(0, counter, true).x;
+			break;
+		    }
+		}
+		TreePath path = tree.getPathForLocation(x, y);
+		if (path != null && 
+		    path.getPathCount()>2 && 
+		    ((DefaultMutableTreeNode)path.getPathComponent(2)).getUserObject() instanceof Processor) {
+		    DefaultMutableTreeNode node = (DefaultMutableTreeNode)path.getPathComponent(2);
+		    System.out.println(node.toString());
+		    Processor target = (Processor)node.getUserObject();
+		    Element wrapperElement = new Element("wrapper");
+		    wrapperElement.addContent(fsf.getElement());
+		    Processor alternateProcessor = ProcessorHelper.loadProcessorFromXML(wrapperElement, null, "alternate");
+		    AlternateProcessor ap = new AlternateProcessor(alternateProcessor);
+		    target.addAlternate(ap);
+		    // Top level processor nodes are always located at Workflow/Processors/<NAME>
+		    // so if the path is length 3 or more, and the node at position 3 is a processor
+		    // then we've been dragged into a processor and should create an alternate.
+		}
+		else {
+		    System.out.println("No node under the drop.");
+		    // Just add the node to the model as a new processor
+		    String validName = model.getValidProcessorName(fsf.getFactoryNodeName());
+		    Element wrapperElement = new Element("wrapper");
+		    wrapperElement.addContent(fsf.getElement());
+		    
+		    Processor newProcessor = ProcessorHelper.loadProcessorFromXML(wrapperElement, model, validName);
+		    model.addProcessor(newProcessor);
+		}
+		e.acceptDrop(DnDConstants.ACTION_COPY_OR_MOVE);
+	    } 
+	}
+	catch (Exception ex) {
+	    e.rejectDrop();
+	}
+    }
+
+    public void dragEnter(DropTargetDragEvent e) {
+	//
+    }
+    public void dragExit(DropTargetEvent e) {
+	//
+    }
+    public void dragOver(DropTargetDragEvent e) { 
+	//
+    }
+    public void dropActionChanged(DropTargetDragEvent e) { 
+	//
+    }
+
     /**
      * Set the default expansion state, with all processors, data
      * constraints and workflow source and sink ports show, but
@@ -75,9 +150,14 @@ public class ScuflModelTreeTable extends JTreeTable
      */
     public void setDefaultExpansionState() {
 	synchronized(this.treeModel) {
+	    pathToSelect = null;
 	    expandAll(this.tree, new TreePath(this.treeModel.getRoot()), true);
+	    if (pathToSelect != null) {
+		this.tree.setSelectionPath(pathToSelect);
+	    }
 	}
     }
+    TreePath pathToSelect = null;
     private void expandAll(JTree tree, TreePath parent, boolean expand) {
 	synchronized(this.treeModel) {
 	    // Traverse children
@@ -91,6 +171,7 @@ public class ScuflModelTreeTable extends JTreeTable
 		    if (((DefaultMutableTreeNode)n).getUserObject() instanceof Processor) {
 			Processor p = (Processor)(((DefaultMutableTreeNode)n).getUserObject());
 			if (p == lastInterestingProcessor) {
+			    pathToSelect = path;
 			    expandAll(tree, path, expand);
 			}
 		    }
@@ -140,7 +221,7 @@ public class ScuflModelTreeTable extends JTreeTable
      */    
     public synchronized void receiveModelEvent(ScuflModelEvent event) {
 	if (event.getSource() instanceof Processor) {
-	    //  lastInterestingProcessor = (Processor)(event.getSource());
+	    lastInterestingProcessor = (Processor)(event.getSource());
 	}
 	((AbstractTableModel)(super.getModel())).fireTableDataChanged();
 	setDefaultExpansionState();
