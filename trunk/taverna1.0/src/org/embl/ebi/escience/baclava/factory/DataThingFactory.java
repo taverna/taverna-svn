@@ -15,7 +15,9 @@ import java.lang.Class;
 import java.lang.Number;
 import java.lang.Object;
 import java.lang.String;
-
+import java.net.URL;
+import java.net.URLConnection;
+import java.io.IOException;
 
 
 /**
@@ -24,7 +26,21 @@ import java.lang.String;
  * @author Tom Oinn
  */
 public class DataThingFactory {
-    
+    public static DataThing fetchFromURL(URL url)
+            throws IOException
+    {
+        URLConnection conn = url.openConnection();
+        conn.connect();
+        String contentType = conn.getContentType();
+        Object content = conn.getContent();
+
+        DataThing dt = new DataThing(content);
+        dt.getMetadata().setMIMETypes(
+                Arrays.asList(new String[] { contentType }));
+
+        return dt;
+    }
+
     public static DataThing bake(Object theObject) {
 	return new DataThing(convertObject(theObject));
     }
@@ -36,7 +52,7 @@ public class DataThingFactory {
     public static DataThing bake(String theString) {
 	return new DataThing(convertObject(theString));
     }
-    
+
     /**
      * For String arrays convert the array to a List and store
      * that.
@@ -51,7 +67,7 @@ public class DataThingFactory {
 	   return new DataThing(theList);
 	*/
     }
-    
+
     /**
      * For byte arrays store the byte array as is
      */
@@ -88,7 +104,7 @@ public class DataThingFactory {
 	    // original object wrapped in a DataThing
 	    return new DataThing(theList);
 	}
-	
+
 	Vector v = new Vector();
 	for (int i = 0; i < list.length; i++) {
 	    Object[] list2 = ((ArrayList)list[i]).toArray();
@@ -97,7 +113,7 @@ public class DataThingFactory {
 		for (int j = 0; j < list2.length; j++)
 		    bytes[j] = ((Byte)list2[j]).byteValue();
 		v.addElement (bytes);
-	    } 
+	    }
 	    else {
 		// If we can't cope here just return the original
 		// object wrapped up in a DataThing
@@ -123,14 +139,14 @@ public class DataThingFactory {
 	    }
 	    else {
 		// For all other arrays, create a new
-		// List and iterate over the array, 
+		// List and iterate over the array,
 		// unpackaging the item and recursively
 		// putting it into the new List after
 		// conversion
 		Object[] theArray = (Object[])theObject;
 		//System.out.println("Found an array length "+theArray.length+", repacking as List...");
 		List l = new ArrayList();
-		for (int i = 0; i < theArray.length; i++) { 
+		for (int i = 0; i < theArray.length; i++) {
 		    l.add(convertObject(theArray[i]));
 		}
 		return l;

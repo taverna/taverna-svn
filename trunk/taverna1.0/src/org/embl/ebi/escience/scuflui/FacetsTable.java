@@ -224,11 +224,13 @@ public class FacetsTable
                         cmp == null && ri.hasNext(); )
                     {
                         renderer = (MimeTypeRendererSPI) ri.next();
-                        try {
-                            cmp = renderer.getComponent(renderers, dataObj);
-                        } catch (Exception e) {
-                            LOG.error("Problem creating component from renderer",
-                                      e);
+                        if(renderer.isTerminal()) {
+                            try {
+                                cmp = renderer.getComponent(renderers, dataObj);
+                            } catch (Exception e) {
+                                LOG.error("Problem creating component from renderer",
+                                          e);
+                            }
                         }
                     }
                 }

@@ -1,22 +1,24 @@
 package org.embl.ebi.escience.scuflui.renderers;
 
 import org.embl.ebi.escience.baclava.DataThing;
+import org.embl.ebi.escience.baclava.factory.DataThingFactory;
 
 import javax.swing.*;
+import java.net.URL;
 import java.awt.*;
 import java.util.regex.Pattern;
 
 /**
- * View a URL as a clickable HTML URL.
+ * Display the content of a URL.
  *
  * @author Matthew Pocock
  */
-public class TextTavernaWebUrl
+public class TextTavernaWebUrlFetcher
         extends AbstractRenderer.ByPattern
 {
-    public TextTavernaWebUrl()
+    public TextTavernaWebUrlFetcher()
     {
-        super("Web URL",
+        super("Web URL Fetcher",
               new ImageIcon(ClassLoader.getSystemResource(
                 "org/embl/ebi/escience/baclava/icons/text.png")),
               Pattern.compile(".*text/x-taverna-web-url.*"));
@@ -32,7 +34,7 @@ public class TextTavernaWebUrl
 
     public boolean isTerminal()
     {
-        return true;
+        return false;
     }
 
     public JComponent getComponent(MimeTypeRendererRegistry renderers,
@@ -40,11 +42,10 @@ public class TextTavernaWebUrl
     {
         Object dataObject = dataThing.getDataObject();
         try {
-            JEditorPane jep = new JEditorPane();
-            String url = dataObject.toString();
-            jep.setContentType("text/html");
-            jep.setText("<a href=\"" + url + "\">" + url + "</a>");
-            return jep;
+            URL url = new URL((String) dataObject);
+            DataThing urlThing = DataThingFactory.fetchFromURL(url);
+            return renderers.getRenderer(urlThing).getComponent(
+                    renderers, urlThing);
         } catch (Exception ex) {
             JTextArea theTextArea = new JTextArea();
             theTextArea.setText((String) dataObject);

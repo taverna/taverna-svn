@@ -1,10 +1,10 @@
 package org.embl.ebi.escience.scuflui.renderers;
 
 import org.embl.ebi.escience.baclava.DataThing;
-import org.apache.log4j.Logger;
 
 import javax.swing.*;
 import java.util.regex.Pattern;
+import java.awt.image.ImageProducer;
 
 /**
  *
@@ -25,8 +25,10 @@ public class Image
                                 Object userObject,
                                 String mimeType)
     {
-        return super.canHandle(renderers, userObject, mimeType) &&
-                userObject instanceof byte[];
+        return super.canHandle(renderers, userObject, mimeType) && (
+                userObject instanceof byte[] ||
+                userObject instanceof ImageProducer
+                );
     }
 
     public boolean isTerminal()
@@ -37,7 +39,18 @@ public class Image
     public JComponent getComponent(MimeTypeRendererRegistry renderers,
                                    DataThing dataThing)
     {
-        ImageIcon theImage = new ImageIcon((byte[]) dataThing.getDataObject());
-        return new JLabel(theImage);
+        Object data = dataThing.getDataObject();
+        if(data instanceof byte[]) {
+            ImageIcon theImage = new ImageIcon((byte[]) data);
+            return new JLabel(theImage);
+        } else if(data instanceof ImageProducer) {
+            JLabel label = new JLabel();
+            java.awt.Image image = label.createImage((ImageProducer) data);
+            ImageIcon icon = new ImageIcon(image);
+            label.setIcon(icon);
+            return label;
+        }
+
+        return null;
     }
 }
