@@ -21,7 +21,7 @@ public abstract class AbstractProcessorAction implements ProcessorActionSPI {
     
     public final ActionListener getListener(Processor processor) {
 	// Create a simple JPanel with the specified component in
-	final ScuflUIComponent frame = new SimpleFrame(getComponent(processor));
+	final ScuflUIComponent frame = new SimpleFrame(getComponent(processor), processor);
 	return new ActionListener() {
 		public void actionPerformed(ActionEvent e) {
 		    Dimension loc = AbstractProcessorAction.this.getFrameLocation();
