@@ -3,9 +3,15 @@
  */
 package org.embl.ebi.escience.scuflui.graph.model;
 
+import java.awt.BasicStroke;
 import java.awt.Color;
+import java.awt.Component;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.Rectangle;
+import java.awt.Stroke;
+import java.awt.geom.RoundRectangle2D;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -16,6 +22,8 @@ import java.util.List;
 import java.util.Map;
 
 import javax.swing.BorderFactory;
+import javax.swing.ImageIcon;
+import javax.swing.border.LineBorder;
 import javax.swing.border.TitledBorder;
 import javax.swing.event.UndoableEditListener;
 import javax.swing.undo.UndoableEdit;
@@ -28,6 +36,7 @@ import org.embl.ebi.escience.scufl.Port;
 import org.embl.ebi.escience.scufl.Processor;
 import org.embl.ebi.escience.scufl.ScuflModel;
 import org.embl.ebi.escience.scufl.SemanticMarkup;
+import org.embl.ebi.escience.scuflui.ScuflUIComponent;
 import org.embl.ebi.escience.scuflui.graph.GraphColours;
 import org.embl.ebi.escience.scuflworkers.ProcessorHelper;
 import org.jgraph.event.GraphModelEvent;
@@ -41,10 +50,37 @@ import org.jgraph.graph.ParentMap;
 /**
  * 
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover </a>
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
-public class ScuflGraphModel implements GraphModel, GraphModelListener
+public class ScuflGraphModel implements GraphModel, GraphModelListener, ScuflUIComponent
 {
+	private class DottyBorder extends LineBorder
+	{
+		/**
+		 * @param color
+		 */
+		public DottyBorder(Color color)
+		{
+			super(color);
+		}
+
+		public void paintBorder(Component c, Graphics g, int x, int y, int width, int height)
+		{
+			if (g instanceof Graphics2D)
+			{
+				Graphics2D graphics = (Graphics2D) g;
+				Stroke oldStroke = graphics.getStroke();
+				Color oldColor = graphics.getColor();
+				graphics.setStroke(new BasicStroke(thickness, BasicStroke.CAP_SQUARE,
+						BasicStroke.JOIN_MITER, 1, new float[] { 4, 6 }, 0));
+				graphics.setColor(lineColor);
+				graphics.draw(new RoundRectangle2D.Float(x, y, width, height, 4, 4));
+				graphics.setColor(oldColor);
+				graphics.setStroke(oldStroke);
+			}
+		}
+	}	
+	
 	private class DummyPort
 	{
 		private Object parent;
@@ -70,21 +106,11 @@ public class ScuflGraphModel implements GraphModel, GraphModelListener
 	private static final String DUMMY_PORT = "dummy port";
 	
 	private ScuflModel model;
+	private ScuflModelReconciler reconciler;
 	private List roots = new ArrayList();	
 	private Map attributes = new HashMap();
 	
 	private Collection listeners = new HashSet();	
-	
-	/**
-	 * @param model
-	 *            Scufl model for the graph
-	 */
-	public ScuflGraphModel(ScuflModel model)
-	{
-		this.model = model;
-		createAttributes(this);		
-		new ScuflModelReconciler(this);
-	}
 
 	/*
 	 * (non-Javadoc)
@@ -184,17 +210,17 @@ public class ScuflGraphModel implements GraphModel, GraphModelListener
 			if(processor == model.getWorkflowSourceProcessor())
 			{
 				// TODO Something
-				//GraphConstants.setBounds(map, new Rectangle(100, 20));
+				GraphConstants.setValue(map, "");
 				GraphConstants.setOpaque(map, true);				
-				GraphConstants.setBorder(map, BorderFactory.createLineBorder(Color.GRAY));
-				GraphConstants.setGroupBorder(map, 5);				
+				GraphConstants.setBorder(map, new TitledBorder(new DottyBorder(Color.GRAY), "Workflow Inputs")); 
+				GraphConstants.setGroupBorder(map, 5);
 			}
 			else if(processor == model.getWorkflowSinkProcessor())
 			{
-				//GraphConstants.setBounds(map, new Rectangle(100, 20));
-				GraphConstants.setOpaque(map, true);				
-				GraphConstants.setBorder(map, new TitledBorder(BorderFactory.createLineBorder(Color.GRAY), "Workflow Outputs")); 
-				GraphConstants.setGroupBorder(map, 10);
+				GraphConstants.setValue(map, "");
+				GraphConstants.setOpaque(map, true);
+				GraphConstants.setBorder(map, new TitledBorder(new DottyBorder(Color.GRAY), "Workflow Outputs")); 
+				GraphConstants.setGroupBorder(map, 5);
 			}
 			else
 			{
@@ -232,7 +258,8 @@ public class ScuflGraphModel implements GraphModel, GraphModelListener
 			GraphConstants.setLineEnd(map, GraphConstants.ARROW_CLASSIC);
 			GraphConstants.setEndFill(map, true);
 			GraphConstants.setLineStyle(map, GraphConstants.STYLE_SPLINE);
-			GraphConstants.setDisconnectable(map, false);			
+			GraphConstants.setDisconnectable(map, false);
+			GraphConstants.setEditable(map, false);			
 			
 			List defaultPoints = new ArrayList();
 			defaultPoints.add(map.createPoint(10, 10));
@@ -254,7 +281,8 @@ public class ScuflGraphModel implements GraphModel, GraphModelListener
 			GraphConstants.setLineColor(map, Color.LIGHT_GRAY);
 			GraphConstants.setLineStyle(map, GraphConstants.STYLE_SPLINE);
 			GraphConstants.setDisconnectable(map, false);			
-
+			GraphConstants.setEditable(map, false);
+			
 			List defaultPoints = new ArrayList();
 			defaultPoints.add(map.createPoint(10, 10));
 			defaultPoints.add(map.createPoint(20, 20));
@@ -324,7 +352,11 @@ public class ScuflGraphModel implements GraphModel, GraphModelListener
 	 */
 	public boolean acceptsSource(Object edge, Object port)
 	{
-		return true;
+		if(edge instanceof DataConstraint)
+		{
+			return port instanceof OutputPort || (port instanceof DummyPort && ((DummyPort)port).getParent() instanceof OutputPort); 
+		}
+		return edge instanceof ConcurrencyConstraint && port instanceof DummyPort && ((DummyPort)port).getParent() instanceof Processor;
 	}
 
 	/*
@@ -335,7 +367,11 @@ public class ScuflGraphModel implements GraphModel, GraphModelListener
 	 */
 	public boolean acceptsTarget(Object edge, Object port)
 	{
-		return true;
+		if(edge instanceof DataConstraint)
+		{
+			return port instanceof InputPort || (port instanceof DummyPort && ((DummyPort)port).getParent() instanceof InputPort); 
+		}
+		return edge instanceof ConcurrencyConstraint && port instanceof DummyPort && ((DummyPort)port).getParent() instanceof Processor;
 	}
 
 	/*
@@ -537,7 +573,10 @@ public class ScuflGraphModel implements GraphModel, GraphModelListener
 		{
 			if(cells[index] instanceof Processor)
 			{
-				model.destroyProcessor((Processor)cells[index]);
+				if(cells[index] != model.getWorkflowSinkProcessor() && cells[index] != model.getWorkflowSourceProcessor())
+				{
+					model.destroyProcessor((Processor)cells[index]);
+				}
 			}
 			else if(cells[index] instanceof DataConstraint)
 			{
@@ -565,9 +604,26 @@ public class ScuflGraphModel implements GraphModel, GraphModelListener
 	 */
 	public void edit(Map attributes, ConnectionSet cs, ParentMap pm, UndoableEdit[] e)
 	{
-		//TODO Change name of processors on in-place edit, ie. where attribute 'value' is changed
 		if(attributes != null && !attributes.isEmpty())
 		{
+			Iterator it = attributes.entrySet().iterator();
+			while (it.hasNext())
+			{
+				Map.Entry entry = (Map.Entry) it.next();
+				Object cell = entry.getKey();
+				Map map = (Map) entry.getValue();
+				Object value = GraphConstants.getValue(map);
+				if(value != null)
+				{
+					if(cell instanceof Processor)
+					{
+						Processor processor = (Processor)cell;
+						processor.setName(value.toString());
+						GraphConstants.setValue(map, processor.getName());
+					}
+					// TODO Handle renaming of input/output ports?
+				}
+			}			
 			updateAttributes(attributes);			
 			fireGraphChangedEvent(new GraphModelEvent(this, new ScuflGraphAttributeChange(attributes)));
 		}
@@ -766,5 +822,39 @@ public class ScuflGraphModel implements GraphModel, GraphModelListener
 			((GraphModelEvent.ExecutableGraphChange)event.getChange()).execute();
 		}
 		fireGraphChangedEvent(event);
+	}
+
+	/* (non-Javadoc)
+	 * @see org.embl.ebi.escience.scuflui.ScuflUIComponent#attachToModel(org.embl.ebi.escience.scufl.ScuflModel)
+	 */
+	public void attachToModel(ScuflModel model)
+	{
+		this.model = model;
+		createAttributes(this);
+		reconciler = new ScuflModelReconciler(this);		
+	}
+
+	/* (non-Javadoc)
+	 * @see org.embl.ebi.escience.scuflui.ScuflUIComponent#detachFromModel()
+	 */
+	public void detachFromModel()
+	{
+		reconciler.detachFromModel();
+	}
+
+	/* (non-Javadoc)
+	 * @see org.embl.ebi.escience.scuflui.ScuflUIComponent#getName()
+	 */
+	public String getName()
+	{
+		return null;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.embl.ebi.escience.scuflui.ScuflUIComponent#getIcon()
+	 */
+	public ImageIcon getIcon()
+	{
+		return null;
 	}
 }

@@ -18,7 +18,7 @@ import org.jgraph.graph.GraphModel;
  * COMMENT
  * 
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover </a>
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public class GraphRows
 {
@@ -120,6 +120,11 @@ public class GraphRows
 	 */
 	public void setRow(Object node, int row)
 	{
+		if(node == null)
+		{
+			// TODO Sort out why its setting null
+			return;
+		}
 		Map nodeAttributes = model.getAttributes(node);
 		Integer oldRow = (Integer) nodeAttributes.get(ROW);
 		nodeAttributes.put(ROW, new Integer(row));
@@ -135,31 +140,6 @@ public class GraphRows
 		add(node, row);
 		calculateBounds(row);
 	}
-
-	// private VirtualNode addVirtualNodes(int row, Object finalNode, int
-	// finalRow)
-	// {
-	// VirtualNode node;
-	// int nextRow = row + 1;
-	//		
-	// if(nextRow == finalRow)
-	// {
-	// node = new VirtualNode(finalNode);
-	// }
-	// else
-	// {
-	// node = new VirtualNode(addVirtualNodes(nextRow, finalNode, finalRow));
-	// }
-	// List nodes;
-	// while(nextRow >= size())
-	// {
-	// nodes = new ArrayList();
-	// add(nodes);
-	// }
-	// nodes = (List)get(row);
-	// nodes.add(node);
-	// return node;
-	// }
 
 	/**
 	 * @param node
@@ -206,6 +186,14 @@ public class GraphRows
 			remove(node, row);
 		}
 	}
+	
+	/**
+	 * 
+	 */
+	public void clear()
+	{
+		rows.clear();
+	}
 
 	/**
 	 * @param neighbour
@@ -214,8 +202,8 @@ public class GraphRows
 	{
 		List nodes = (List) rows.get(row);
 		Map edits = new HashMap();
-		int y = row * ROW_HEIGHT;
-		int x = 0;
+		int y = row * ROW_HEIGHT + 10;
+		int x = 10;
 		for (int index = 0; index < nodes.size(); index++)
 		{
 			Object node = nodes.get(index);
@@ -318,15 +306,4 @@ public class GraphRows
 			nodes.add(edge);
 		}
 	}
-
-	// private void removeVirtualNodes(VirtualNode node, int row)
-	// {
-	// Object input = node.getInput();
-	// if(input instanceof VirtualNode)
-	// {
-	// removeVirtualNodes((VirtualNode)input, row + 1);
-	// }
-	// List nodes = (List)get(row);
-	// nodes.remove(node);
-	// }
 }

@@ -22,7 +22,7 @@ import org.jgraph.graph.GraphModel;
  * graph to be able to update as the graph changes.
  * 
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover </a>
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public class LayoutManager implements GraphModelListener
 {
@@ -89,11 +89,17 @@ public class LayoutManager implements GraphModelListener
 	 */
 	public void graphChanged(GraphModelEvent e)
 	{
+		if(model.getRootCount() == 0)
+		{
+			rows.clear();
+			return;
+		}
+
 		List edges = new EdgeList();
 		
-		Object[] removed = e.getChange().getRemoved();
-		if (removed != null)
+		if (e.getChange().getRemoved() != null)
 		{
+			Object[] removed = e.getChange().getRemoved();
 			for (int index = 0; index < removed.length; index++)
 			{
 				if (model.isEdge(removed[index]))
@@ -119,9 +125,9 @@ public class LayoutManager implements GraphModelListener
 			}
 		}
 
-		Object[] inserted = e.getChange().getInserted();
-		if (inserted != null)
+		if (e.getChange().getInserted() != null)
 		{
+			Object[] inserted = e.getChange().getInserted();
 			for (int index = 0; index < inserted.length; index++)
 			{
 				if (model.isEdge(inserted[index]))
@@ -192,10 +198,6 @@ public class LayoutManager implements GraphModelListener
 					{
 						if (rows.getRow(target) < rows.getMinimumRow(target))
 						{
-//							if(rows.getRow(source) > rows.getMaximumRow(source))
-//							{
-//								// Check if processor is above its maximum?
-//							}
 							// TODO New tree edge. Find existing path and break.
 							// Use cut values here?
 							System.err.println("Must replace tree edge!");
