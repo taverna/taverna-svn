@@ -81,7 +81,10 @@ public class ScavengerTreePopupHandler extends MouseAdapter {
      * option to the user
      */
     void doEvent(MouseEvent e) {
-	final DefaultMutableTreeNode node = (DefaultMutableTreeNode)(scavenger.getPathForLocation(e.getX(), e.getY()).getLastPathComponent());
+    TreePath path = scavenger.getPathForLocation(e.getX(), e.getY());
+    if(path != null)
+    {
+	final DefaultMutableTreeNode node = (DefaultMutableTreeNode)(path.getLastPathComponent());
 	Object scuflObject = node.getUserObject();
 	if (scuflObject != null) {
 
@@ -307,6 +310,7 @@ public class ScavengerTreePopupHandler extends MouseAdapter {
 		}
 	    }
 	}
+    }
     }
 
 }
