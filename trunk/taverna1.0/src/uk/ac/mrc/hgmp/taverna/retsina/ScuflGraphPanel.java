@@ -89,7 +89,7 @@ public class ScuflGraphPanel extends JPanel
 
 	graph = new ScuflGraph(new ScuflGraphModel());
 	graph.setMarqueeHandler(new ScuflMarqueeHandler());
-
+        graph.setBackground(new Color(153,153,255));
 	undoManager = new GraphUndoManager() 
         {
 		/**
@@ -117,7 +117,9 @@ public class ScuflGraphPanel extends JPanel
 	add(new JScrollPane(graph), BorderLayout.CENTER);
     }
 
-
+    /**
+     * Insert a new Vertex at point.
+     */
     public void insertCell(Point point, String group, String name) {
 
         SoaplabProcessor processor = null;
@@ -178,7 +180,8 @@ public class ScuflGraphPanel extends JPanel
 	attributes.put(vertex, map);
 	
 	// Insert the Vertex and its Attributes (can also use model)
-	graph.getGraphLayoutCache().insert(new Object[]{vertex}, attributes, null, null, null);
+	graph.getGraphLayoutCache().insert(new Object[]{vertex}, 
+                                  attributes, null, null, null);
     }
 
     /**
@@ -195,7 +198,8 @@ public class ScuflGraphPanel extends JPanel
 	GraphConstants.setLineEnd(map, GraphConstants.ARROW_TECHNICAL);
 	Hashtable attributes = new Hashtable();
 	attributes.put(edge, map);
-	graph.getGraphLayoutCache().insert(new Object[]{edge}, attributes, cs, null, null);
+	graph.getGraphLayoutCache().insert(new Object[]{edge}, 
+                                  attributes, cs, null, null);
     }
     
     /**
@@ -210,7 +214,8 @@ public class ScuflGraphPanel extends JPanel
 	    for (int i = 0; i < cells.length; i++) {
 		map.addEntry(cells[i], group);
 	    }
-	    graph.getGraphLayoutCache().insert(new Object[]{group}, null, null, map, null);
+	    graph.getGraphLayoutCache().insert(new Object[]{group}, 
+                                  null, null, map, null);
 	}
     }
     
@@ -232,7 +237,7 @@ public class ScuflGraphPanel extends JPanel
 	    for (int i = 0; i < cells.length; i++) {
 		if (isGroup(cells[i])) {
 		    groups.add(cells[i]);
-		    for (int j = 0; j < graph.getModel().getChildCount(cells[i]); j++) {
+		    for (int j = 0; j<graph.getModel().getChildCount(cells[i]); j++){
 			Object child = graph.getModel().getChild(cells[i], j);
 			if (!(child instanceof Port)) {
 			    children.add(child);
@@ -359,7 +364,6 @@ public class ScuflGraphPanel extends JPanel
 	public boolean isForceMarqueeEvent(MouseEvent e) {
 	    // If Right Mouse Button we want to Display the PopupMenu
 	    if (SwingUtilities.isRightMouseButton(e))
-		// Return Immediately
 		return true;
 	    // Find and Remember Port
 	    port = getSourcePortAt(e.getPoint());
@@ -387,7 +391,9 @@ public class ScuflGraphPanel extends JPanel
 	    } 
 	    else if (port != null && !e.isConsumed() && graph.isPortsVisible()) {
 		// Remember Start Location
-		start = graph.toScreen(port.getLocation(null));
+//		start = graph.toScreen(port.getLocation(null));
+                if(port instanceof ScuflOutputPortView)
+                  start = graph.toScreen(((ScuflOutputPortView)port).getLocation(null));
 		// Remember First Port
 		firstPort = port;
 		// Consume Event
@@ -402,7 +408,8 @@ public class ScuflGraphPanel extends JPanel
 	// Find Port under Mouse and Repaint Connector
 	public void mouseDragged(MouseEvent e) {
 	    // If remembered Start Point is Valid
-	    if (start != null && !e.isConsumed()) {
+	    if (start != null && !e.isConsumed()
+                              && !(firstPort instanceof ScuflInputPortView)) {
 		// Fetch Graphics from Graph
 		Graphics g = graph.getGraphics();
 		// Xor-Paint the old Connector (Hide old Connector)
@@ -462,11 +469,13 @@ public class ScuflGraphPanel extends JPanel
 	
 	// Show Special Cursor if Over Port
 	public void mouseMoved(MouseEvent e) {
+            PortView port = getTargetPortAt(e.getPoint());
 	    // Check Mode and Find Port
 	    if (e != null
 		&& getSourcePortAt(e.getPoint()) != null
 		&& !e.isConsumed()
-		&& graph.isPortsVisible()) {
+		&& graph.isPortsVisible()
+                && !(port instanceof ScuflInputPortView)) {
 		// Set Cusor on Graph (Automatically Reset)
 		graph.setCursor(new Cursor(Cursor.HAND_CURSOR));
 		// Consume Event

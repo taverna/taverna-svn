@@ -5,12 +5,14 @@ import com.jgraph.graph.CellMapper;
 import com.jgraph.graph.CellViewRenderer;
 import com.jgraph.graph.PortRenderer;
 import com.jgraph.graph.PortView;
+import com.jgraph.graph.EdgeView;
 import java.awt.Graphics;
 import java.awt.Rectangle;
 import java.awt.FontMetrics;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Dimension;
+import java.awt.Point;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 
@@ -45,7 +47,7 @@ public class ScuflInputPortView extends PortView {
      */
     public Rectangle getBounds() 
     {
-      Rectangle bounds = new Rectangle(getLocation(null));
+      Rectangle bounds = new Rectangle(super.getLocation(null));
       int width = getWidth((String)((ScuflInputPort)cell).getUserObject());
       int height = getHeight();
       bounds.x = bounds.x - width;
@@ -54,6 +56,17 @@ public class ScuflInputPortView extends PortView {
       bounds.height = height;
       return bounds;
       
+    }
+
+    /**
+     * Override this so that the edge connects to
+     * the left hand side of the port.
+     */
+    public Point getLocation(EdgeView e)
+    {
+      Point p = super.getLocation(null);
+      p.x -= getWidth((String)((ScuflInputPort)cell).getUserObject());
+      return p;
     }
 
     public CellViewRenderer getRenderer() 
