@@ -5,10 +5,25 @@
  */
 package org.embl.ebi.escience.scuflui;
 
+import java.awt.Component;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import javax.swing.ImageIcon;
+import javax.swing.JPopupMenu;
+import javax.swing.JTree;
+import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeCellRenderer;
+import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.TreeSelectionModel;
 import org.embl.ebi.escience.scufl.*;
-import javax.swing.*;
-import java.awt.*;
-import javax.swing.tree.*;
+
+import org.embl.ebi.escience.scuflui.NoContextMenuFoundException;
+import org.embl.ebi.escience.scuflui.ScuflContextMenuFactory;
+import java.lang.Class;
+import java.lang.ClassNotFoundException;
+import java.lang.Object;
+
+
 
 /**
  * A swing component that provides an expandable
@@ -34,7 +49,11 @@ public class ScuflModelExplorer extends JTree implements ScuflModelEventListener
 	this.root = new DefaultMutableTreeNode("No Scufl Model!");
 	DefaultTreeModel model = (DefaultTreeModel)this.getModel();
 	model.setRoot(this.root);
+	// Only allow single selection (not really important but...)
 	this.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
+	// Attach the popup menu generator to the tree
+	this.addMouseListener(new ScuflModelExplorerPopupHandler(this));
+	// Show lines in the tree diagram
 	this.putClientProperty("JTree.lineStyle","Angled");
 	ScuflModelExplorerRenderer renderer = new ScuflModelExplorerRenderer();
 	this.setCellRenderer(renderer);
@@ -156,11 +175,17 @@ public class ScuflModelExplorer extends JTree implements ScuflModelEventListener
     }
     
 }
+/**
+ * A cell renderer that paints the appropriate icons depending on the
+ * component of the model being displayed.
+ * @author Tom Oinn
+ */
 class ScuflModelExplorerRenderer extends DefaultTreeCellRenderer {
     
     static ImageIcon wsdlicon, soaplabicon, talismanicon, inputicon, outputicon, inputporticon, outputporticon, datalinkicon;
-
+    
     static {
+	// Load the image files found in this package into the class.
 	try {
 	    Class c = Class.forName("org.embl.ebi.escience.scuflui.ScuflModelExplorerRenderer");
 	    wsdlicon = new ImageIcon(c.getResource("wsdl.gif"));
@@ -176,11 +201,10 @@ class ScuflModelExplorerRenderer extends DefaultTreeCellRenderer {
 	    //
 	}
     }
-
-    public ScuflModelExplorerRenderer() {
-	super();
-    }
     
+    /**
+     * Return a custom renderer to draw the cell correctly for each node type
+     */
     public Component getTreeCellRendererComponent(JTree tree,
 						  Object value,
 						  boolean sel,
@@ -228,10 +252,58 @@ class ScuflModelExplorerRenderer extends DefaultTreeCellRenderer {
 	else if (userObject instanceof DataConstraint) {
 	    setIcon(datalinkicon);
 	}
-
 	return this;
     }
+}
+/**
+ * A class to handle popup menus on nodes on the tree
+ * @author Tom Oinn
+ */
+class ScuflModelExplorerPopupHandler extends MouseAdapter {
+    
+    private ScuflModelExplorer explorer;
+    
+    public ScuflModelExplorerPopupHandler(ScuflModelExplorer theExplorer) {
+	this.explorer = theExplorer;
+    }
+   
+    /**
+     * Handle the mouse pressed event in case this is the platform
+     * specific trigger for a popup menu
+     */
+    public void mousePressed(MouseEvent e) {
+	if (e.isPopupTrigger()) {
+	    doEvent(e);
+	}
+    }
+    
+    /**
+     * Similarly handle the mouse released event
+     */
+    public void mouseReleased(MouseEvent e) {
+	if (e.isPopupTrigger()) {
+	    doEvent(e);
+	}
+    }
 
-
+    /**
+     * If the event was a trigger for a popup then use the ScuflContextMenuFactory
+     * to find a suitable JPopupMenu for the node that was clicked on and display
+     * it. If we couldn't find anything suitable do nothing, all it means is that
+     * there wasn't a menu available for that type of node.
+     */
+    void doEvent(MouseEvent e) {
+	DefaultMutableTreeNode node = (DefaultMutableTreeNode)(explorer.getPathForLocation(e.getX(), e.getY()).getLastPathComponent());
+	Object scuflObject = node.getUserObject();
+	if (scuflObject != null) {
+	    try {
+		JPopupMenu theMenu = ScuflContextMenuFactory.getMenuForObject(scuflObject);
+		theMenu.show(explorer, e.getX(), e.getY());
+	    }
+	    catch (NoContextMenuFoundException ncmfe) {
+		// just means that there wasn't a suitable menu for the selected node.
+	    }
+	}
+    }
 
 }

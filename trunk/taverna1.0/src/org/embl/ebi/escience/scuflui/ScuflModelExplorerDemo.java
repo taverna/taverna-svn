@@ -5,25 +5,30 @@
  */
 package org.embl.ebi.escience.scuflui;
 
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import javax.swing.JFrame;
+import javax.swing.JScrollPane;
 import javax.swing.JTree;
 import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.event.TreeSelectionListener;
-import javax.swing.event.TreeSelectionEvent;
-import javax.swing.tree.TreeSelectionModel;
-import java.net.URL;
-import java.io.IOException;
-import javax.swing.JEditorPane;
-import javax.swing.JScrollPane;
-import javax.swing.JSplitPane;
-import javax.swing.JFrame;
-import java.awt.*;
-import java.awt.event.*;
-import java.io.*;
-import javax.swing.tree.*;
-import java.util.*;
+import javax.swing.tree.TreeNode;
+import javax.swing.tree.TreePath;
+import org.embl.ebi.escience.scufl.Processor;
+import org.embl.ebi.escience.scufl.ScuflModel;
+import org.embl.ebi.escience.scufl.parser.XScuflParser;
 
-import org.embl.ebi.escience.scufl.*;
-import org.embl.ebi.escience.scufl.parser.*;
+// Utility Imports
+import java.util.Enumeration;
+
+// IO Imports
+import java.io.File;
+
+import org.embl.ebi.escience.scuflui.ScuflModelExplorer;
+import java.lang.Exception;
+import java.lang.String;
+import java.lang.System;
+
+
 
 /**
  * A demo of the ScuflModelExplorer component
@@ -86,8 +91,5 @@ public class ScuflModelExplorerDemo extends JFrame {
             tree.collapsePath(parent);
         }
     }
-
-    
-
 }
-	
+
