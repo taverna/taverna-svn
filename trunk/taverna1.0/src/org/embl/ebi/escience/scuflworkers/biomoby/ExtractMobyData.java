@@ -63,32 +63,56 @@ public class ExtractMobyData implements LocalWorker {
 	    throw new TaskExecutionException("Unable to parse biomoby data, check the XML! "+ioe.getMessage());
 	}
 	// Now find the simple moby data
-	Element mobyDataElement;
+	Element mobyDataElement = null;
 	try {
-	    Element mobySimple = mobyElement.getChild("mobyContent",mobyNS).getChild("mobyData",mobyNS).getChild("Simple",mobyNS);
-	    // Get the first immediate child of the <moby:Simple>
-	    mobyDataElement = (Element)mobySimple.getChildren().get(0);
+	    Element mobyContent = mobyElement.getChild("mobyContent",mobyNS);
+	    if (mobyContent == null)
+		mobyContent = mobyElement.getChild("mobyContent");
+	    if (mobyContent == null)
+		throw new TaskExecutionException ("Unexpected structure within moby data: mobyContent tag is missing/misplaced.");
+
+	    Element mobyData = mobyContent.getChild("mobyData",mobyNS);
+	    if (mobyData == null)
+		mobyData = mobyContent.getChild("mobyData");
+	    if (mobyData == null)
+		throw new TaskExecutionException ("Unexpected structure within moby data: mobyData tag is missing /misplaced.");
+
+	    Element mobySimple = mobyData.getChild("Simple",mobyNS);
+	    if (mobySimple == null)
+		mobySimple = mobyData.getChild("Simple");
+
+	    if (mobySimple != null)
+		// Get the first immediate child of the <moby:Simple>
+		mobyDataElement = (Element)mobySimple.getChildren().get(0);
 	}
 	catch (NullPointerException npe) {
+// 	    npe.printStackTrace();
 	    throw new TaskExecutionException("Unexpected structure within moby data, check the input XML.");
 	}
 	Map results = new HashMap();
 	// Get the ID and namespace values, defaulting to the empty string if not present
-	String idValue, namespaceValue;
-	idValue = mobyDataElement.getAttributeValue("id");
-	if (idValue == null) {
-	    idValue = mobyDataElement.getAttributeValue("id",mobyNS,"");
+	if (mobyDataElement == null) {
+	    results.put ("id", new DataThing(""));
+	    results.put ("namespace", new DataThing (""));
+	    results.put ("value", new DataThing (""));
+	    results.put ("type", new DataThing (""));
+	    System.out.println ("Returning an empty result");
+	} else {
+	    String idValue, namespaceValue;
+	    idValue = mobyDataElement.getAttributeValue("id");
+	    if (idValue == null) {
+		idValue = mobyDataElement.getAttributeValue("id",mobyNS,"");
+	    }
+	    namespaceValue = mobyDataElement.getAttributeValue("namespace");
+	    if (namespaceValue == null) {
+		namespaceValue = mobyDataElement.getAttributeValue("namespace",mobyNS,"");
+	    }
+	    results.put("id",new DataThing(idValue));
+	    results.put("namespace",new DataThing(namespaceValue));
+	    results.put("value",new DataThing(mobyDataElement.getTextTrim()));
+	    results.put("type",new DataThing(mobyDataElement.getName()));
+	    System.out.println("Returning parsed results");
 	}
-	namespaceValue = mobyDataElement.getAttributeValue("namespace");
-	if (namespaceValue == null) {
-	    namespaceValue = mobyDataElement.getAttributeValue("namespace",mobyNS,"");
-	}
-	results.put("id",new DataThing(idValue));
-	results.put("namespace",new DataThing(namespaceValue));
-	results.put("value",new DataThing(mobyDataElement.getTextTrim()));
-	results.put("type",new DataThing(mobyDataElement.getName()));
-	System.out.println("Returning parsed results");
 	return results;
-	    
     }
 }
