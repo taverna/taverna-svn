@@ -106,7 +106,7 @@ public class LockStepIteratorNode extends DefaultMutableTreeNode implements Resu
      * A LockStepIteratorNode requires children to be
      * functional and is therefore never a leaf.
      */
-    boolean isLeaf() {
+    public boolean isLeaf() {
 	return false;
     }
     
@@ -114,7 +114,7 @@ public class LockStepIteratorNode extends DefaultMutableTreeNode implements Resu
      * LockStepIteratorNode objects pull iterators from
      * their children, therefore always allow them.
      */
-    boolean getAllowsChildren() {
+    public boolean getAllowsChildren() {
 	return true;
     }
 

@@ -107,7 +107,7 @@ public class JoinIteratorNode extends DefaultMutableTreeNode implements Resumabl
      * JoinIteratorNode objects are never leaves in the tree
      * or at least shouldn't act as such.
      */
-    boolean isLeaf() {
+    public boolean isLeaf() {
 	return false;
     }
     
@@ -116,7 +116,7 @@ public class JoinIteratorNode extends DefaultMutableTreeNode implements Resumabl
      * provide them with objects to iterate over, they do
      * not contain any collections themselves
      */
-    boolean getAllowsChildren() {
+    public boolean getAllowsChildren() {
 	return true;
     }
 }

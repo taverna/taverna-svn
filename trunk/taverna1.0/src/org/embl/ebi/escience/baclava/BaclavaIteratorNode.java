@@ -74,7 +74,7 @@ public class BaclavaIteratorNode extends DefaultMutableTreeNode implements Resum
      * These nodes are always leaf nodes, they act
      * as the basic source of iterated objects
      */
-    boolean isLeaf() {
+    public boolean isLeaf() {
 	return true;
     }
     
@@ -82,7 +82,7 @@ public class BaclavaIteratorNode extends DefaultMutableTreeNode implements Resum
      * BaclavaIteratorNode objects are not allowed
      * children
      */
-    boolean getAllowsChildren() {
+    public boolean getAllowsChildren() {
 	return false;
     }
     
