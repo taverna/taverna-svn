@@ -24,9 +24,9 @@
 //      Created for Project :   MYGRID
 //      Dependencies        :
 //
-//      Last commit info    :   $Author: mereden $
-//                              $Date: 2003-06-09 11:13:02 $
-//                              $Revision: 1.11 $
+//      Last commit info    :   $Author: dmarvin $
+//                              $Date: 2003-06-09 16:22:40 $
+//                              $Revision: 1.12 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 
@@ -150,7 +150,7 @@ public class TavernaFlowReceipt extends WSFlowReceipt {
 		}
 		catch (Exception ex){
 			//log the exception
-			ex.printStackTrace();
+			//ex.printStackTrace();
 			logger.error(ex);
 		}
   } 
