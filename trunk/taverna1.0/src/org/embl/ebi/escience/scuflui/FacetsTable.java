@@ -73,6 +73,7 @@ public class FacetsTable
         this.renderers = RendererRegistry.instance();
         setOpaque(true); // required to make sure bits of the rendering aren't
                          // left behind
+	setBackground(Color.WHITE);
         resizeAndValidate();
     }
 
@@ -86,6 +87,7 @@ public class FacetsTable
         if(finders != null)     { this.finders = finders; }
         if(renderers != null)   { this.renderers = renderers; }
         if(columnModel != null) { setColumnModel(columnModel); }
+	setBackground(Color.WHITE);
         setOpaque(true); // required to make sure bits of the rendering aren't
                          // left behind
         resizeAndValidate();
@@ -159,6 +161,7 @@ public class FacetsTable
         if (isInScrollPane) {
             add(table, BorderLayout.CENTER);
             JScrollPane pane = (JScrollPane) getParent().getParent();
+	    pane.getViewport().setBackground(Color.WHITE);
             pane.setViewportView(FacetsTable.this);
             pane.setColumnHeaderView(columnHeaders);
         } else {
@@ -198,8 +201,8 @@ public class FacetsTable
         exampleRow = null;
 
         columnHeaders = new JPanel(null);
-        table = new JPanel(null);
-
+	table = new JPanel(null);
+	table.setBackground(Color.WHITE);
         // make headings and also allocate column lists
         for(Iterator ci = columnModel.columnIterator(); ci.hasNext(); ) {
             FTableColumn column = (FTableColumn) ci.next();

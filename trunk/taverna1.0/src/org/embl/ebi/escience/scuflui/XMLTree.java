@@ -1,6 +1,7 @@
 package org.embl.ebi.escience.scuflui;
 
 import javax.swing.JTree;
+import javax.swing.tree.*;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeSelectionModel;
@@ -19,6 +20,7 @@ import java.lang.Exception;
 import java.lang.String;
 import java.lang.StringBuffer;
 import java.lang.System;
+import java.util.*;
 
 
 
@@ -50,8 +52,34 @@ public class XMLTree extends JTree {
 	// Take the DOM root node and convert it to a Tree model for the JTree
 	DefaultMutableTreeNode treeNode = createTreeNode(parseXml(text, db));
 	setModel(new DefaultTreeModel(treeNode));
+	setAllNodesExpanded();
     } 
-    
+    public void setAllNodesExpanded() {
+	synchronized(this.getModel()) {
+	    expandAll(this, new TreePath(this.getModel().getRoot()), true);
+	}
+    }
+    private void expandAll(JTree tree, TreePath parent, boolean expand) {
+	synchronized(this.getModel()) {
+	    // Traverse children
+	    // Ignores nodes who's userObject is a Processor type to
+	    // avoid overloading the UI with nodes at startup.
+	    TreeNode node = (TreeNode)parent.getLastPathComponent();
+	    if (node.getChildCount() >= 0) {
+		for (Enumeration e=node.children(); e.hasMoreElements(); ) {
+		    TreeNode n = (TreeNode)e.nextElement();
+		    TreePath path = parent.pathByAddingChild(n);
+		    expandAll(tree, path, expand);
+		}
+	    }
+	    // Expansion or collapse must be done bottom-up
+	    if (expand) {
+		tree.expandPath(parent);
+	    } else {
+		tree.collapsePath(parent);
+	    }
+	}
+    }
     /**
      * This takes a DOM Node and recurses through the children until each one is added
      * to a DefaultMutableTreeNode. The JTree then uses this object as a tree model.

@@ -120,6 +120,17 @@ public abstract class Port implements Serializable {
     public void setSyntacticType(String new_type) {
 	if (new_type.equals(this.syntacticType)==false) {
 	    this.syntacticType = new_type;
+	    // Add any mime types from the syntactic type into the
+	    // semantic markup object
+	    String[] split = new_type.split("'");
+	    String mime;
+	    if (split.length == 1) {
+		mime = split[0];
+	    }
+	    else {
+		mime = split[1];
+	    }
+	    metadata.addMIMEType(mime);
 	    fireModelEvent(new ScuflModelEvent(this, "Syntactic type changed to '"+new_type+"'"));
 	}
     }

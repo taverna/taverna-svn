@@ -44,7 +44,8 @@ public class BiomobyTask implements ProcessorTaskWorker {
     private static Logger logger = Logger.getLogger(BiomobyTask.class);
     private static final int INVOCATION_TIMEOUT = 0;
     private Processor proc;
-    
+    Namespace mobyNS = CreateMobyData.mobyNS;
+
     public BiomobyTask(Processor p) {
 	this.proc = p;
     }
@@ -69,6 +70,28 @@ public class BiomobyTask implements ProcessorTaskWorker {
 	    else {
 		// List of strings containing simple biomoby objects
 		List simpleInputs = (List)inputThing.getDataObject();
+		// Create the empty collection document
+		Element root = new Element("MOBY",mobyNS);
+		Element content = new Element("mobyContent",mobyNS);
+		root.addContent(content);
+		Element data = new Element("mobyData", mobyNS);
+		data.setAttribute("queryID","a1",mobyNS);
+		content.addContent(data);
+		Element collectionElement = new Element("Collection",mobyNS);
+		collectionElement.setAttribute("articleName","",mobyNS);
+		// It is this collection element that's going to acquire the simples
+		for (Iterator i = simpleInputs.iterator(); i.hasNext();) {
+		    Element el = (Element)i.next();
+		    Element mobyDataElement = el.getChild("mobyContent",mobyNS).getChild("mobyData",mobyNS);
+		    // Remove the single 'Simple' child from this...
+		    Element simpleElement = (Element)mobyDataElement.getChildren().get(0);
+		    // Tag the simple element onto the collection.
+		    collectionElement.addContent(simpleElement.detach());
+		}
+		XMLOutputter xo = new XMLOutputter();
+		xo.setIndent("  ");
+		xo.setNewlines(true);
+		inputXML = xo.outputString(new Document(root));
 		// Iterate and create the collection, 
 		// ....inputXML = collectionThing
 	    }
@@ -82,6 +105,7 @@ public class BiomobyTask implements ProcessorTaskWorker {
 
 	    OutputPort myOutput = proc.getOutputPorts()[0];
 	    String outputType = myOutput.getSyntacticType();
+	    //System.out.println(outputXML);
 	    // Will be either 'text/xml' or l('text/xml')
 	    if (outputType.equals("'text/xml'")) {
 		outputMap.put ("output", new DataThing (outputXML));
@@ -136,10 +160,10 @@ public class BiomobyTask implements ProcessorTaskWorker {
 		SAXBuilder saxBuilder = new SAXBuilder();
                 Document doc = saxBuilder.build (new InputSource (new StringReader (outputXML)));
 		Element mobyElement = doc.getRootElement();
-		Element collectionElement = mobyElement.getChild("mobyContent").getChild("mobyData").getChild("Collection");
-		List simpleElements = collectionElement.removeContent();
-		Namespace mobyNS = Namespace.getNamespace("moby","http://www.biomoby.org/moby");
-
+		Element collectionElement = mobyElement.getChild("mobyContent",mobyNS).getChild("mobyData",mobyNS).getChild("Collection",mobyNS);
+		List simpleElements = new ArrayList(collectionElement.getChildren());
+		//System.out.println(simpleElements.size());
+		//System.out.println(simpleElements.toArray());
 		for (Iterator i = simpleElements.iterator(); i.hasNext();) {
 		    Element simpleElement = (Element)i.next();
 		    
@@ -147,10 +171,13 @@ public class BiomobyTask implements ProcessorTaskWorker {
 		    Element newMobyContent = new Element("mobyContent",mobyNS);
 		    newRoot.addContent(newMobyContent);
 		    Element newMobyData = new Element("mobyData",mobyNS);
+		    newMobyData.setAttribute("queryID","a1",mobyNS);
 		    newMobyContent.addContent(newMobyData);
-		    newMobyData.addContent(simpleElement);
+		    newMobyData.addContent(simpleElement.detach());
 		    XMLOutputter xo = new XMLOutputter();
-		    outputList.add(xo.outputString(new Document(newRoot)));
+		    String outputItemString = xo.outputString(new Document(newRoot));
+		    outputList.add(outputItemString);
+		    //System.out.println(outputItemString);
 		    
 		}
 

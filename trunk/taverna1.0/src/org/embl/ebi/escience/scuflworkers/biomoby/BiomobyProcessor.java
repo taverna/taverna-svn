@@ -31,7 +31,7 @@ import org.biomoby.shared.*;
  * processor implementation will contact Biomoby registry in order to
  * find the list of extant ports at creation time. <p>
  *
- * @version $Id: BiomobyProcessor.java,v 1.6 2004-05-20 12:53:42 marsenger Exp $
+ * @version $Id: BiomobyProcessor.java,v 1.7 2004-05-20 14:22:31 mereden Exp $
  * @author Martin Senger
  */
 public class BiomobyProcessor extends Processor implements java.io.Serializable {
@@ -171,22 +171,31 @@ public class BiomobyProcessor extends Processor implements java.io.Serializable 
 
 	// inputs
 	Port input_port = new InputPort (this, "input");
-	input_port.setSyntacticType ("'text/xml'");
-	this.addPort (input_port);
-	    
-	// outputs
-	Port output_port = new OutputPort (this, "output");
-
-	boolean isCollection = false;
-	MobyData[] outputs = mobyService.getPrimaryOutputs();
-	for (int i = 0; i < outputs.length; i++) {
-	    if (outputs[i] instanceof MobyPrimaryDataSet) {
-		isCollection = true;
+	
+	boolean isInputCollection = false;
+	MobyData[] inputs = mobyService.getPrimaryInputs();
+	for (int i = 0; i < inputs.length; i++) {
+	    if (inputs[i] instanceof MobyPrimaryDataSet){
+		isInputCollection = true;
 		break;
 	    }
 	}
-
-	output_port.setSyntacticType (isCollection ? "'l(text/xml)'" : "'text/xml'");
+	input_port.setSyntacticType (isInputCollection? "l('text/xml')" : "'text/xml'");
+	this.addPort (input_port);
+	
+	// outputs
+	Port output_port = new OutputPort (this, "output");
+	
+	boolean isOutputCollection = false;
+	MobyData[] outputs = mobyService.getPrimaryOutputs();
+	for (int i = 0; i < outputs.length; i++) {
+	    if (outputs[i] instanceof MobyPrimaryDataSet) {
+		isOutputCollection = true;
+		break;
+	    }
+	}
+	
+	output_port.setSyntacticType (isOutputCollection ? "l('text/xml')" : "'text/xml'");
 	this.addPort (output_port);
     }
 
