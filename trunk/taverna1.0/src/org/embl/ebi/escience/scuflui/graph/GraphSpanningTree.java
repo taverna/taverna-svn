@@ -16,7 +16,7 @@ import java.util.TreeSet;
  * COMMENT
  * 
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover </a>
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public abstract class GraphSpanningTree
 {
@@ -169,7 +169,7 @@ public abstract class GraphSpanningTree
 	 */
 	protected void moveNodes(Set nodes, int change)
 	{
-		System.err.println("Move nodes " + nodes + " by " + change);
+		//System.err.println("Move nodes " + nodes + " by " + change);
 		Iterator iterator = nodes.iterator();
 		while(iterator.hasNext())
 		{
@@ -266,7 +266,7 @@ public abstract class GraphSpanningTree
 				}
 			}
 		}
-		System.err.println("Edges between " + tree1 + " and " +tree2 + ": " +joiningEdges);
+		//System.err.println("Edges between " + tree1 + " and " +tree2 + ": " +joiningEdges);
 		return joiningEdges;
 	}
 
@@ -277,7 +277,7 @@ public abstract class GraphSpanningTree
 	 */
 	protected void addTreeEdge(Object parent, Object child, Object edge)
 	{
-		System.err.println("Add tree edge " + edge);
+		//System.err.println("Add tree edge " + edge);
 		Set tree1 = getTreeSet(parent);
 		Set tree2 = getTreeSet(child);
 		if (tree1 == null)
@@ -371,7 +371,7 @@ public abstract class GraphSpanningTree
 					// System.err.println("Rearrange & remove tree edge " +
 					// edge);
 					// TODO!
-					System.err.println("Would be removing tree edge " + edge + " here!");					
+					//System.err.println("Would be removing tree edge " + edge + " here!");					
 					//removeTreeEdge(edge);
 				}
 				else
@@ -391,7 +391,7 @@ public abstract class GraphSpanningTree
 				if (targetMinRow - sourceMaxRow > minimumEdgeLength)
 				{
 					// TODO!
-					System.err.println("Would be removing tree edge " + edge + " here!");
+					//System.err.println("Would be removing tree edge " + edge + " here!");
 					//removeTreeEdge(edge);
 				}
 				else
@@ -530,7 +530,7 @@ public abstract class GraphSpanningTree
 			// split into two trees
 			treeNormalize(headSet);
 			treeNormalize(tailSet);
-			System.err.println("Remove tree edge " + edge);
+			//System.err.println("Remove tree edge " + edge);
 			return null;
 		}
 
@@ -544,7 +544,7 @@ public abstract class GraphSpanningTree
 			joinParent = child;
 			child = source;
 		}
-		System.err.println("Replace tree edge " + edge + " with " + replacement);
+		//System.err.println("Replace tree edge " + edge + " with " + replacement);
 		addTreeEdge(joinParent, child, replacement);
 		return replacement;
 	}
@@ -621,7 +621,7 @@ public abstract class GraphSpanningTree
 					{
 						// TODO Need to break some other edge
 						// Get path? Choose edge to remove?
-						System.err.println("Edge " + edge + " less than min length!");
+						//System.err.println("Edge " + edge + " less than min length!");
 						//addTreeEdge(source, target, edge);
 					}
 					//else

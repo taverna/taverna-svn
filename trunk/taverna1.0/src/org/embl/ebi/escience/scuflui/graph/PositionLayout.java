@@ -21,7 +21,7 @@ import org.jgraph.graph.GraphModel;
 
 /**
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover </a>
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public class PositionLayout extends GraphSpanningTree
 {
@@ -151,7 +151,7 @@ public class PositionLayout extends GraphSpanningTree
 			{
 				return false;
 			}
-			System.err.println("Remove node " + node + " from row " + rowIndex);
+			//System.err.println("Remove node " + node + " from row " + rowIndex);
 			Map attributes = getAttributes(node);
 			Edge leftEdge = LayoutConstants.getLeftEdge(attributes);
 			Edge rightEdge = LayoutConstants.getRightEdge(attributes);
@@ -470,7 +470,7 @@ public class PositionLayout extends GraphSpanningTree
 			int cutValue = super.getCutValue(edge, timeStamp);
 			LayoutConstants.setCutValueTimeStamp(attributes, timeStamp);
 			LayoutConstants.setCutValue(attributes, cutValue);
-			System.err.println("Cut " + cutValue + ": " + edge);
+			//System.err.println("Cut " + cutValue + ": " + edge);
 			return cutValue;
 		}
 		return 0;

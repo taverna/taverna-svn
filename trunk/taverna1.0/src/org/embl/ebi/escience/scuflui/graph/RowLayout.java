@@ -23,7 +23,7 @@ import org.jgraph.graph.GraphModel;
  * graph to be able to update as the graph changes.
  * 
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover </a>
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
 public class RowLayout extends GraphSpanningTree
 {
@@ -104,7 +104,7 @@ public class RowLayout extends GraphSpanningTree
 
 		// TODO Reduce crossovers here!
 		
-		System.err.println("Edges:" + positionLayout.edges);
+		//System.err.println("Edges:" + positionLayout.edges);
 		treeEdges = positionLayout.createInitialTree(positionLayout.edges.iterator());
 		positionLayout.edges.clear();
 		positionLayout.optimiseTree(treeEdges);
