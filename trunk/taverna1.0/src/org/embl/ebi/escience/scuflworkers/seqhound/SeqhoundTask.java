@@ -37,23 +37,33 @@ public class SeqhoundTask implements ProcessorTaskWorker {
 	    // of the target class
 	    Object targetObject = null;
 	    if (targetClass.isArray() == false) {
-		if (targetClass.equals(String.class)) {
-		    targetObject = (String)inputThing.getDataObject();
+		try {
+		    if (targetClass.equals(String.class)) {
+			targetObject = (String)inputThing.getDataObject();
+		    }
+		    else if (targetClass.equals(Integer.class) ||
+			     targetClass.equals(Integer.TYPE)) {
+			targetObject = new Integer((String)inputThing.getDataObject());
+		    }
+		    else if (targetClass.equals(Float.class) ||
+			     targetClass.equals(Float.TYPE)) {
+			targetObject = new Float((String)inputThing.getDataObject());
+		    }
+		    else if (targetClass.equals(Double.class) ||
+			     targetClass.equals(Double.TYPE)) {
+			targetObject = new Double((String)inputThing.getDataObject());
+		    }
+		    else if (targetClass.equals(Long.class) ||
+			     targetClass.equals(Long.TYPE)) {
+			targetObject = new Long((String)inputThing.getDataObject());
+		    }
+		    else {
+			throw new TaskExecutionException("Unable to generate input of type "+targetClass.toString()+" for input name "+inputName);
+		    }
 		}
-		else if (targetClass.equals(Integer.class) ||
-			 targetClass.equals(Integer.TYPE)) {
-		    targetObject = new Integer((String)inputThing.getDataObject());
-		}
-		else if (targetClass.equals(Float.class) ||
-			 targetClass.equals(Float.TYPE)) {
-		    targetObject = new Float((String)inputThing.getDataObject());
-		}
-		else if (targetClass.equals(Double.class) ||
-			 targetClass.equals(Float.TYPE)) {
-		    targetObject = new Double((String)inputThing.getDataObject());
-		}
-		else {
-		    throw new TaskExecutionException("Unable to generate input of type "+targetClass.toString()+" for input name "+inputName);
+		catch (NumberFormatException nfe) {
+		    // Couldn't parse the input as a numeral
+		    throw new TaskExecutionException("Attempt to create a numeric input from a non numeral, "+inputThing.getDataObject()+" cannot be parsed as a "+targetClass);
 		}
 	    }
 	    else {
