@@ -19,12 +19,12 @@ import org.apache.commons.httpclient.methods.PostMethod;
  * Last edited by $Author: phidias $
  * 
  * @author Mark
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class PostStreamTransmitter extends AbstractStreamTransmitter {
 
     /**
-     * @see com.kymerix.reflector.StreamTransmitter#transmit(com.kymerix.reflector.Reflector, com.kymerix.reflector.StreamProcessor)
+     * 
      */
     public Map transmit(Map map, StreamProcessor streamProcessor)
             throws TransmitterException {
