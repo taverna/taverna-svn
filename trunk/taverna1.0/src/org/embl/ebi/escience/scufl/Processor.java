@@ -41,6 +41,8 @@ public abstract class Processor implements Serializable {
     protected List templates = new ArrayList();
     protected IterationStrategy iterationStrategy = null;
     public boolean firingEvents = false;
+    private boolean breakpoint=false;
+    
 
     /**
      * A string representing a resource location within the enactor
@@ -48,6 +50,7 @@ public abstract class Processor implements Serializable {
      * operations and the local service processors.
      */
     public static String ENACTOR = "Local to enactor";
+
 
     /**
      * Allow subclasses to intercept requests to go offline and
@@ -61,19 +64,26 @@ public abstract class Processor implements Serializable {
 	//
     }
 
-    private boolean breakpoint=false;
 
-    //Check for a breakpoint
+    /**
+     * Check for a breakpoint
+     */
     public boolean hasBreakpoint(){
 	return breakpoint;
     }
 
-    //Add a breakpoint to the processor
+
+    /**
+     * Add a breakpoint to the processor
+     */
     public void addBreakpoint(){
 	breakpoint=true;
     }
 
-    //Remove a breakpoint to the processor
+
+    /**
+     * Remove a breakpoint to the processor
+     */
     public void rmvBreakpoint(){
 	breakpoint=false;
     }
@@ -99,6 +109,7 @@ public abstract class Processor implements Serializable {
 	}	
     }
 
+
     /**
      * If meaningful, obtain the host that the resource is based
      * in. Of course, not all processor implementations are service
@@ -108,6 +119,7 @@ public abstract class Processor implements Serializable {
     public String getResourceHost() {
 	return Processor.ENACTOR;
     }
+
 
     /**
      * Return the maximum number of task implementations that should
@@ -123,6 +135,7 @@ public abstract class Processor implements Serializable {
 	return 1;
     }
 
+
     /**
      * Return the default number of workers for an instance of this
      * processor type
@@ -131,11 +144,13 @@ public abstract class Processor implements Serializable {
 	return 1;
     }
 
+
     /**
      * The number of threads that this processor will use when
      * running on an implicit iteration run
      */
     private int workerThreads = getDefaultWorkers();
+
 
     /**
      * Return the number of workers for this instance
@@ -143,6 +158,7 @@ public abstract class Processor implements Serializable {
     public final int getWorkers() {
 	return this.workerThreads;
     }
+
 
     /**
      * Set the number of workers

@@ -34,6 +34,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.HashSet;
 import java.util.Enumeration;
+import java.util.List;
 
 import org.embl.ebi.escience.scuflui.*;
 import org.embl.ebi.escience.scuflui.workbench.Scavenger;
@@ -156,6 +157,13 @@ public class ScavengerTree extends ExtendedJTree
 	    if (e.isDataFlavorSupported(f)) {
 		ProcessorSpecFragment psf = (ProcessorSpecFragment)t.getTransferData(f);
 		XMLOutputter xo = new XMLOutputter();
+		// Remove the various fault tolerance etc attributes
+		Element processorElement = psf.getElement();
+		List attributes = processorElement.getAttributes();
+		for (Iterator i = attributes.iterator(); i.hasNext();) {
+		    Attribute att = (Attribute)i.next();
+		    processorElement.removeAttribute(att);
+		}
 		String searchString = xo.outputString(psf.getElement());
 		DefaultMutableTreeNode rootNode = (DefaultMutableTreeNode)treeModel.getRoot(); 
 		Enumeration en = rootNode.depthFirstEnumeration();

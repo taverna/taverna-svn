@@ -332,32 +332,52 @@ public class ProcessorHelper {
      * processor. Returns null if there is no handler.
      */
     public static Element elementForProcessor(Processor p) {
+	return elementForProcessor(p, true);
+    }
+
+    /**
+     * Given a processor instance, return the 'spec' block of
+     * XML that represents the processor in the XScufl language.
+     * This is the element directly inside the 's:processor' element
+     * and specifies specific information about this particular
+     * processor. Returns null if there is no handler.<p>
+     * If the decorations flag is set to true this will set the various
+     * attributes (maxretries, retrydelay, retrybackoff, critical,
+     * breakpoint), otherwise these will not be set. We need to be
+     * able to turn this off to allow the comparison to nodes in the
+     * services panel to function correctly - this is a textual comparison
+     * and these nodes never have these attributes.
+     */
+    public static Element elementForProcessor(Processor p, boolean decorations) {
 	String className = p.getClass().getName();
 	String tagName = (String)tagNameForClassName.get(className);
 	if (tagName != null) {
 	    XMLHandler xh = (XMLHandler)xmlHandlerForTagName.get(tagName);
 	    if (xh != null) {
 		Element result = xh.elementForProcessor(p);
-		if (p.getRetries()!=0) {
-		    result.setAttribute("maxretries",Integer.toString(p.getRetries()));
+		if (decorations) {
+		    if (p.getRetries()!=0) {
+			result.setAttribute("maxretries",Integer.toString(p.getRetries()));
+		    }
+		    if (p.getRetryDelay()!=0) {
+			result.setAttribute("retrydelay",Integer.toString(p.getRetryDelay()));
+		    }
+		    if (p.getBackoff()!=1.0) {
+			result.setAttribute("retrybackoff",Double.toString(p.getBackoff()));
+		    }
+		    if (p.getCritical() != false) {
+			result.setAttribute("critical", "" + p.getCritical());
+		    }
+		    if (p.hasBreakpoint()) {
+			result.setAttribute("breakpoint", "true");
+		    }
 		}
-		if (p.getRetryDelay()!=0) {
-		    result.setAttribute("retrydelay",Integer.toString(p.getRetryDelay()));
-		}
-		if (p.getBackoff()!=1.0) {
-		    result.setAttribute("retrybackoff",Double.toString(p.getBackoff()));
-		}
-                if (p.getCritical() != false) {
-                    result.setAttribute("critical", "" + p.getCritical());
-                }
-
-		result.setAttribute("breakpoint", "" + p.hasBreakpoint());
-
 		return result;
 	    }
 	}
 	return null;
     }
+
 
     /**
      * Return a factory capable of producing the supplied spec of processor. The element
@@ -412,9 +432,9 @@ public class ProcessorHelper {
           if(critical != null) {
             loadedProcessor.setCritical((new Boolean(critical).booleanValue()));
           }
-		  String breakpoint = candidateElement.getAttributeValue("breakpoint");
+	  String breakpoint = candidateElement.getAttributeValue("breakpoint");
           if(breakpoint != null) {
-            if((new Boolean(breakpoint).booleanValue()))loadedProcessor.addBreakpoint();
+	      if((new Boolean(breakpoint).booleanValue()))loadedProcessor.addBreakpoint();
           }
         }
       }
