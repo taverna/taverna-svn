@@ -13,7 +13,7 @@ import org.emboss.jemboss.gui.startup.ProgList;
 import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.broker.FlowBroker;
 import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.broker.FlowBrokerFactory;
 import uk.ac.soton.itinnovation.taverna.enactor.broker.TavernaFlowReceipt;
-import uk.ac.soton.itinnovation.taverna.enactor.broker.TavernaWorkflowSubmission;
+import uk.ac.soton.itinnovation.taverna.enactor.broker.TavernaStringifiedWorkflowSubmission;
 
 // IO Imports
 import java.io.*;
@@ -300,7 +300,7 @@ public class Retsina extends JApplet
 
        System.out.println(" **************** HERE ****************");
        System.out.println("\n\n"+graph.getXScufl());
-       TavernaWorkflowSubmission submit = new TavernaWorkflowSubmission(wsflDefn,input,"TestTavernaFlowBroker","http://www.it-innovation.soton.ac.uk/users");
+       TavernaStringifiedWorkflowSubmission submit = new TavernaStringifiedWorkflowSubmission(wsflDefn,input,"TestTavernaFlowBroker","http://www.it-innovation.soton.ac.uk/users");
 
        FlowBroker broker = FlowBrokerFactory.createFlowBroker("uk.ac.soton.itinnovation.taverna.enactor.broker.TavernaFlowBroker");
        TavernaFlowReceipt receipt = (TavernaFlowReceipt) broker.submitFlow(submit);

@@ -25,8 +25,8 @@
 //      Dependencies        :
 //
 //      Last commit info    :   $Author: dmarvin $
-//                              $Date: 2003-06-06 09:47:46 $
-//                              $Revision: 1.13 $
+//                              $Date: 2003-06-08 11:28:55 $
+//                              $Revision: 1.14 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 
@@ -63,7 +63,8 @@ import org.jdom.input.SAXBuilder;
 
 import uk.ac.soton.itinnovation.taverna.enactor.broker.LogLevel;
 import uk.ac.soton.itinnovation.taverna.enactor.broker.TavernaFlowReceipt;
-import uk.ac.soton.itinnovation.taverna.enactor.broker.TavernaWorkflowSubmission;
+import uk.ac.soton.itinnovation.taverna.enactor.broker.TavernaStringifiedWorkflowSubmission;
+import uk.ac.soton.itinnovation.taverna.enactor.broker.TavernaBinaryWorkflowSubmission;
 import uk.ac.soton.itinnovation.taverna.enactor.broker.XScuflDiGraphGenerator;
 import java.lang.Exception;
 import java.lang.IllegalArgumentException;
