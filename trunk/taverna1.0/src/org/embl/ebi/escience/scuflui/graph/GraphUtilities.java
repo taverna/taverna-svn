@@ -12,16 +12,16 @@ import org.jgraph.graph.DefaultGraphModel;
 import org.jgraph.graph.GraphModel;
 
 /**
- * COMMENT 
+ * COMMENT
  * 
- * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover</a>
- * @version $Revision: 1.1 $
+ * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover </a>
+ * @version $Revision: 1.2 $
  */
 public class GraphUtilities
 {
-	
+
 	/**
-	 * @param model 
+	 * @param model
 	 * @return all edges in the model
 	 */
 	public static Set getAllEdges(GraphModel model)
@@ -36,8 +36,8 @@ public class GraphUtilities
 			return result;
 		}
 		return null;
-	}	
-	
+	}
+
 	/**
 	 * @param model
 	 * @param edge
@@ -47,7 +47,7 @@ public class GraphUtilities
 	{
 		return getRoot(model, model.getSource(edge));
 	}
-	
+
 	/**
 	 * @param model
 	 * @param edge
@@ -56,8 +56,8 @@ public class GraphUtilities
 	public static Object getTargetNode(GraphModel model, Object edge)
 	{
 		return getRoot(model, model.getTarget(edge));
-	}	
-	
+	}
+
 	/**
 	 * @param model
 	 * @param node
@@ -70,10 +70,10 @@ public class GraphUtilities
 		while ((parent = model.getParent(result)) != null)
 		{
 			result = parent;
-		}		
+		}
 		return result;
 	}
-	
+
 	/**
 	 * @param model
 	 * @param parent
@@ -83,16 +83,16 @@ public class GraphUtilities
 	public static boolean isParentOf(GraphModel model, Object parent, Object node)
 	{
 		Object temp = node;
-		while((temp = model.getParent(temp)) != null)
+		while ((temp = model.getParent(temp)) != null)
 		{
-			if(parent == temp)
+			if (parent == temp)
 			{
 				return true;
 			}
 		}
 		return false;
 	}
-	
+
 	/**
 	 * @param model
 	 * @param node
@@ -120,22 +120,6 @@ public class GraphUtilities
 	/**
 	 * @param model
 	 * @param node
-	 * @param edge
-	 * @return get neighbour node
-	 */
-	public static Object getNeighbour(GraphModel model, Object node, Object edge)
-	{
-		Object source = getSourceNode(model, edge);
-		if (node == source)
-		{
-			return getTargetNode(model, edge);
-		}
-		return source;		
-	}
-	
-	/**
-	 * @param model
-	 * @param node
 	 * @return all the edges leaving the given <code>node</code>
 	 */
 	public static Set getOutgoingEdges(GraphModel model, Object node)
@@ -156,11 +140,12 @@ public class GraphUtilities
 		}
 		return result;
 	}
-	
+
 	/**
 	 * @param model
 	 * @param node
-	 * @return <code>true</code> if <code>node</code> contains other nodes, <code>false</code> if it only contains ports or is empty.
+	 * @return <code>true</code> if <code>node</code> contains other nodes,
+	 *         <code>false</code> if it only contains ports or is empty.
 	 */
 	public static boolean isGroup(GraphModel model, Object node)
 	{
@@ -170,5 +155,5 @@ public class GraphUtilities
 				return true;
 		}
 		return false;
-	}	
+	}
 }

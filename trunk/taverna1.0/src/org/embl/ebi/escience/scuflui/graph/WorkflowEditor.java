@@ -102,7 +102,7 @@ public class WorkflowEditor extends JGraph implements ScuflUIComponent
 		}
 	}
 
-	LayoutManager layoutManager;
+	RowLayout layoutManager;
 
 	/*
 	 * (non-Javadoc)
@@ -114,7 +114,7 @@ public class WorkflowEditor extends JGraph implements ScuflUIComponent
 		ScuflGraphModel graphModel = new ScuflGraphModel();
 		setModel(graphModel);
 		GraphLayoutCache layoutCache = getGraphLayoutCache();
-		layoutManager = new LayoutManager(graphModel, layoutCache);
+		layoutManager = new RowLayout(graphModel, layoutCache);
 		layoutCache.setAutoSizeOnValueChange(true);
 		layoutCache.setSelectLocalInsertedCells(false);
 		layoutCache.setSelectsAllInsertedCells(false);

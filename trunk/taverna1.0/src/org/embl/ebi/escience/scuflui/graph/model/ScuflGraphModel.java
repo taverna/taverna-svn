@@ -51,7 +51,7 @@ import org.jgraph.graph.ParentMap;
 /**
  * 
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover </a>
- * @version $Revision: 1.14 $
+ * @version $Revision: 1.15 $
  */
 public class ScuflGraphModel implements GraphModel, GraphModelListener, ScuflUIComponent
 {
@@ -293,8 +293,8 @@ public class ScuflGraphModel implements GraphModel, GraphModelListener, ScuflUIC
 			GraphConstants.setEditable(map, false);
 
 			List defaultPoints = new ArrayList();
-			defaultPoints.add(map.createPoint(10, 10));
-			defaultPoints.add(map.createPoint(20, 20));
+			defaultPoints.add(getSource(node));
+			defaultPoints.add(getTarget(node));
 			GraphConstants.setPoints(map, defaultPoints);
 
 			GraphConstants.setLabelAlongEdge(map, false);
@@ -315,9 +315,9 @@ public class ScuflGraphModel implements GraphModel, GraphModelListener, ScuflUIC
 			GraphConstants.setEditable(map, false);
 
 			List defaultPoints = new ArrayList();
-			defaultPoints.add(map.createPoint(10, 10));
-			defaultPoints.add(map.createPoint(20, 20));
-			GraphConstants.setPoints(map, defaultPoints);
+			defaultPoints.add(getSource(node));
+			defaultPoints.add(getTarget(node));
+			GraphConstants.setPoints(map, defaultPoints);			
 
 			GraphConstants.setLabelAlongEdge(map, false);
 			GraphConstants.setValue(map, "");
