@@ -25,8 +25,8 @@
 //      Dependencies        :
 //
 //      Last commit info    :   $Author: mereden $
-//                              $Date: 2004-02-26 13:10:27 $
-//                              $Revision: 1.36 $
+//                              $Date: 2004-03-02 17:59:46 $
+//                              $Revision: 1.37 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 package uk.ac.soton.itinnovation.taverna.enactor.entities;
@@ -47,6 +47,7 @@ import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.serviceprovidermana
 import uk.ac.soton.itinnovation.taverna.enactor.broker.LogLevel;
 import uk.ac.soton.itinnovation.taverna.enactor.broker.TavernaFlowReceipt;
 import org.embl.ebi.escience.scufl.*;
+import org.embl.ebi.escience.baclava.store.*;
 
 // Utility Imports
 import java.util.ArrayList;
@@ -77,6 +78,21 @@ import java.lang.String;
  */
 public class ProcessorTask extends TavernaTask{
     
+    private static BaclavaDataService STORE = null;
+    static {
+	String storageClassName = System.getProperty("taverna.datastore.class");
+	if (storageClassName!=null) {
+	    try {
+		Class c = Class.forName(storageClassName);
+		STORE = (BaclavaDataService)c.newInstance();
+	    }
+	    catch (Exception ex) {
+		System.out.println("Unable to initialize data store class : "+storageClassName);
+		ex.printStackTrace();
+	    }
+	}
+    }
+
     // The processor from which the task to be invoked
     // should be derived
     private Processor activeProcessor = null;
@@ -201,6 +217,22 @@ public class ProcessorTask extends TavernaTask{
 		DataThing resultDataThing = (DataThing)outputMap.get(portName);
 		if (resultDataThing != null) {
 		    outputPortTask.setData(resultDataThing);
+		    // If the data store is configured then
+		    // push the datathing into it
+		    if (ProcessorTask.STORE != null) {
+			try {
+			    STORE.storeDataThing(resultDataThing,true);
+			}
+			catch (DuplicateLSIDException dple) {
+			    //
+			}
+			catch (Exception e) {
+			    System.out.println("Exception thrown while trying to store a datathing,\n"+
+					       "disabling further stores.");
+			    e.printStackTrace();
+			    STORE = null;
+			}
+		    }
 		}
 	    }
 	}
