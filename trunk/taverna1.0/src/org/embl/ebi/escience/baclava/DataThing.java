@@ -463,8 +463,20 @@ public class DataThing {
 	else if (syntacticType.matches(".*text/html.*")) {
 	    defaultExtension = ".html";
 	}
+	else if (syntacticType.matches(".*text/rtf.*")) {
+	    defaultExtension = ".rtf";
+	}
 	else if (syntacticType.matches(".*image/png.*")) {
 	    defaultExtension = ".png";
+	}
+	else if (syntacticType.matches(".*image/jpeg.*")) {
+	    defaultExtension = ".jpeg";
+	}
+	else if (syntacticType.matches(".*image/gif.*")) {
+	    defaultExtension = "*.gif";
+	}
+	else if (syntacticType.matches(".*x-graphviz.*")) {
+	    defaultExtension = ".dot.text";
 	}
 	DataThing.writeObjectToFileSystem(destination, name, theDataObject, defaultExtension);
     }

@@ -514,7 +514,7 @@ public class Workbench extends JFrame {
 		}
 	    });
 	windowMenu.add(dotView);
-	JMenuItem servicePanel = new JMenuItem("Service Panel");
+	JMenuItem servicePanel = new JMenuItem("Service Panel (populated)");
 	servicePanel.addActionListener(new ActionListener() {
 		public void actionPerformed(ActionEvent e) {
 		    // Show a service selection panel
@@ -525,6 +525,17 @@ public class Workbench extends JFrame {
 		}
 	    });
 	windowMenu.add(servicePanel);
+	JMenuItem servicePanel2 = new JMenuItem("Service Panel (blank)");
+	servicePanel2.addActionListener(new ActionListener() {
+		public void actionPerformed(ActionEvent e) {
+		    // Show a service selection panel
+		    ScavengerTree thing = new ScavengerTree(false);
+		    GenericUIComponentFrame frame = new GenericUIComponentFrame(Workbench.this.model, thing);
+		    Workbench.this.desktop.add(frame);
+		    frame.moveToFront();
+		}
+	    });
+	windowMenu.add(servicePanel2);
 	/**
 	   JMenuItem inputPanel = new JMenuItem("Workflow Input Panel");
 	   inputPanel.addActionListener(new ActionListener() {

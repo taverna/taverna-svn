@@ -9,7 +9,7 @@ import javax.swing.JTree;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.MutableTreeNode;
-import javax.swing.tree.TreePath;
+import javax.swing.tree.*;
 import javax.swing.tree.TreeSelectionModel;
 import org.embl.ebi.escience.scufl.Processor;
 import org.embl.ebi.escience.scufl.ScuflModel;
@@ -28,6 +28,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
+import java.util.Enumeration;
 
 import org.embl.ebi.escience.scuflui.workbench.Scavenger;
 import org.embl.ebi.escience.scuflui.workbench.ScavengerCreationException;
@@ -80,9 +81,19 @@ public class ScavengerTree extends JTree
     }
 
     /**
-     * Create a new scavenger tree
+     * Default constructor, equivalent to calling with populate
+     * set to 'true'
      */
     public ScavengerTree() {
+	this(true);
+    }
+
+    /**
+     * Create a new scavenger tree, if the boolean 'populate' flag
+     * is true then load the default service set from the system
+     * properties, otherwise start with a completely blank panel.
+     */
+    public ScavengerTree(boolean populate) {
 	super();
 	scavengerList = new ArrayList();
 	root = new DefaultMutableTreeNode("Available Processors");
@@ -93,31 +104,90 @@ public class ScavengerTree extends JTree
 	ScavengerTreeRenderer renderer = new ScavengerTreeRenderer();
 	this.setCellRenderer(renderer);
 	this.addMouseListener(new ScavengerTreePopupHandler(this));
-	// Add the simple scavengers, should such exist
-	Set simpleScavengers = ProcessorHelper.getSimpleScavengerSet();
-	if (simpleScavengers.isEmpty() == false) {
-	    DefaultMutableTreeNode t = new DefaultMutableTreeNode("Internal Services");
-	    this.treeModel.insertNodeInto(t, 
-					  (MutableTreeNode)this.treeModel.getRoot(),
-					  this.treeModel.getChildCount(this.treeModel.getRoot()));
-	    for (Iterator i = simpleScavengers.iterator(); i.hasNext(); ) {
-		Scavenger s = (Scavenger)i.next();
-		this.treeModel.insertNodeInto(s,t,this.treeModel.getChildCount(t));
+	// Add the simple scavengers, should such exist, but only
+	// do this if the populate flag is set to true.
+	if (populate) {
+	    Set simpleScavengers = ProcessorHelper.getSimpleScavengerSet();
+	    if (simpleScavengers.isEmpty() == false) {
+		DefaultMutableTreeNode t = new DefaultMutableTreeNode("Internal Services");
+		this.treeModel.insertNodeInto(t, 
+					      (MutableTreeNode)this.treeModel.getRoot(),
+					      this.treeModel.getChildCount(this.treeModel.getRoot()));
+		for (Iterator i = simpleScavengers.iterator(); i.hasNext(); ) {
+		    Scavenger s = (Scavenger)i.next();
+		    this.treeModel.insertNodeInto(s,t,this.treeModel.getChildCount(t));
+		}
 	    }
+	    // Add the default soaplab installation if this is defined
+	    new DefaultScavengerLoaderThread(this);
 	}
-	// Add the default soaplab installation if this is defined
-	try {
-	    String soaplabDefaultURL = System.getProperty("taverna.defaultsoaplab");
-	    if (soaplabDefaultURL!=null) {
-		addScavenger(new SoaplabScavenger(soaplabDefaultURL));
-	    }
-	}
-	catch (Exception e) {
-	    //
-	}
+	expandPath(new TreePath(this.root));
+    }
 
-	TreePath path = new TreePath(this.root);
-	expandPath(path);
+    private void setAllNodesExpanded() {
+	synchronized(this.getModel()) {
+	    expandAll(this, new TreePath(this.root), true);
+	}
+    }
+    private void expandAll(JTree tree, TreePath parent, boolean expand) {
+	synchronized(this.getModel()) {
+	    // Traverse children
+	    // Ignores nodes who's userObject is a Processor type to
+	    // avoid overloading the UI with nodes at startup.
+	    TreeNode node = (TreeNode)parent.getLastPathComponent();
+	    if (node.getChildCount() >= 0 && (((DefaultMutableTreeNode)node).getUserObject() instanceof Processor == false)) {
+		for (Enumeration e=node.children(); e.hasMoreElements(); ) {
+		    TreeNode n = (TreeNode)e.nextElement();
+		    TreePath path = parent.pathByAddingChild(n);
+		    expandAll(tree, path, expand);
+		}
+	    }
+	    // Expansion or collapse must be done bottom-up
+	    if (expand) {
+		tree.expandPath(parent);
+	    } else {
+		tree.collapsePath(parent);
+	    }
+	}
+    }
+
+    class DefaultScavengerLoaderThread extends Thread {
+	
+	ScavengerTree scavengerTree;
+	
+	public DefaultScavengerLoaderThread(ScavengerTree scavengerTree) {
+	    this.scavengerTree = scavengerTree;
+	    start();
+	}
+	
+	public void run() {
+	    String wsdlURLList = System.getProperty("taverna.defaultwsdl");
+	    if (wsdlURLList != null) {
+		String[] urls = wsdlURLList.split("\\s*,\\s*");
+		for (int i = 0; i < urls.length; i++) {
+		    try {
+			scavengerTree.addScavenger(new WSDLBasedScavenger(urls[i]));
+		    }
+		    catch (ScavengerCreationException sce) {
+			sce.printStackTrace();
+		    }
+		}
+	    }
+	    String soaplabDefaultURLList = System.getProperty("taverna.defaultsoaplab");
+	    if (soaplabDefaultURLList != null) {
+		String[] urls = soaplabDefaultURLList.split("\\s*,\\s*");
+		for (int i = 0; i < urls.length; i++) {
+		    try {
+			System.out.println("Creating soaplab scavenger : '"+urls[i]+"'");
+			scavengerTree.addScavenger(new SoaplabScavenger(urls[i]));
+		    }
+		    catch (ScavengerCreationException sce) {
+			sce.printStackTrace();
+		    }
+		}
+	    }
+	    scavengerTree.setAllNodesExpanded();
+	}
     }
 
     /**
