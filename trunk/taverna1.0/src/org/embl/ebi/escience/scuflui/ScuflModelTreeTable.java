@@ -304,6 +304,11 @@ public class ScuflModelTreeTable extends JTreeTable
 	if (event.getSource() instanceof Processor) {
 	    lastInterestingProcessor = (Processor)(event.getSource());
 	}
+	else if (event.getSource() instanceof DataConstraint) {
+	    DataConstraint dc = (DataConstraint)(event.getSource());
+	    Port sourcePort = dc.getSource();
+	    lastInterestingProcessor = sourcePort.getProcessor();
+	}
 	((AbstractTableModel)(super.getModel())).fireTableDataChanged();
 	setDefaultExpansionState();
     }
