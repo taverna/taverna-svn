@@ -68,9 +68,12 @@ public class ResultItemPanel extends JPanel {
         JLabel label = new JLabel("Select results from the tree to the left");
         label.setPreferredSize(new Dimension(400,40));
         label.setBackground(Color.white);
+	JScrollPane foo = new JScrollPane(label);
+	foo.setPreferredSize(new Dimension(100,100));
         final JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,
                                                     new JScrollPane(structureTree),
-                                                    label);
+                                                    foo);
+	splitPane.setDividerLocation(-1);
         boolean isEmptyCollection = false;
         Object data = theDataThing.getDataObject();
         if(data instanceof Collection) {
@@ -92,7 +95,9 @@ public class ResultItemPanel extends JPanel {
                             JComponent component = renderer.getComponent(
                                     ResultItemPanel.this.renderers, dataThing);
                             if (component != null) {
-                                splitPane.setRightComponent(new JScrollPane(component));
+				JScrollPane foo = new JScrollPane(component);
+				foo.setPreferredSize(new Dimension(100,100));
+                                splitPane.setRightComponent(foo);
 				// Reset the widths of the split Pane to show the entire tree
 				splitPane.setDividerLocation(-1);
                             }
