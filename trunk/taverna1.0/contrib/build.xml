@@ -109,6 +109,7 @@
 	</target>
 	
 	<target name="fetchjars">
+		<mkdir dir="${contrib.netlib}" />
 		<get src="http://www.ibiblio.org/maven/jaxen/jars/jaxen-1.0-FCS-full.jar" dest="${contrib.netlib}/jaxen-1.0-FCS-full.jar" usetimestamp="yes"/>
 		<get src="http://www.ibiblio.org/maven/saxpath/jars/saxpath-1.0-FCS.jar" dest="${contrib.netlib}/saxpath-1.0-FCS.jar" usetimestamp="yes"/>
 		<get src="http://www.ibiblio.org/maven/bsf/jars/bsf-2.3.0.jar" dest="${contrib.netlib}/bsf.jar" usetimestamp="yes"/>	
@@ -182,6 +183,7 @@
 		
 		<copy todir="${project.lib}">
 			<fileset dir="${contrib.lib}"/>
+			<fileset dir="${contrib.netlib}"/>
 		</copy>
 
 	</target>
