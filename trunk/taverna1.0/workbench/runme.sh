@@ -37,4 +37,8 @@ do
   CLASSP=$CLASSP:$i
 done
 
+case "`uname`" in
+  CYGWIN*) CLASSP=`cygpath --path --type windows $CLASSP`;;
+esac
+
 java -classpath $CLASSP -Dtaverna.scrollDesktop -ea org.embl.ebi.escience.scuflui.workbench.Workbench
