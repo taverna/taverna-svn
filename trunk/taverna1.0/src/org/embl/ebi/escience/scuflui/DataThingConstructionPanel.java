@@ -85,7 +85,7 @@ import org.jdom.output.XMLOutputter;
  * Panel to construct the input for a workflow.
  * 
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover </a>
- * @version $Revision: 1.30 $
+ * @version $Revision: 1.31 $
  */
 public abstract class DataThingConstructionPanel extends JPanel implements ScuflUIComponent, ScuflModelEventListener
 {
@@ -476,6 +476,11 @@ public abstract class DataThingConstructionPanel extends JPanel implements Scufl
 			return thing;
 		}
 
+		public String toString()
+		{
+			return "Input List";			
+		}
+		
 		public void setDataThing(DataThing thing)
 		{
 			if (thing != null)
@@ -817,7 +822,16 @@ public abstract class DataThingConstructionPanel extends JPanel implements Scufl
 		 */
 		public String toString()
 		{
-			return getUserObject().toString();
+			String summaryText = "bleh";
+			if (userObject instanceof String)
+			{
+				summaryText = (String) userObject;
+				if (summaryText.length() > 25)
+				{
+					summaryText = "<html><em>Click to edit...</em></html>";
+				}
+			}
+			return summaryText;
 		}
 
 		/*
@@ -860,18 +874,6 @@ public abstract class DataThingConstructionPanel extends JPanel implements Scufl
 			else if (value instanceof InputDataThingNode)
 			{
 				setIcon(ScuflIcons.inputValueIcon);
-				InputDataThingNode thingNode = (InputDataThingNode) value;
-				Object userObject = thingNode.getUserObject();
-				String summaryText = "bleh";
-				if (userObject instanceof String)
-				{
-					summaryText = (String) userObject;
-					if (summaryText.length() > 25)
-					{
-						summaryText = "<html><em>Click to edit...</em></html>";
-					}
-				}
-				setText(summaryText);
 			}
 			else if (value instanceof InputListNode)
 			{
@@ -883,7 +885,6 @@ public abstract class DataThingConstructionPanel extends JPanel implements Scufl
 				{
 					setIcon(ScuflIcons.folderClosedIcon);
 				}
-				setText("Input List");
 			}
 			else if (expanded)
 			{
