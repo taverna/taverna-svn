@@ -25,8 +25,8 @@
 //      Dependencies        :
 //
 //      Last commit info    :   $Author: mereden $
-//                              $Date: 2003-09-30 17:11:18 $
-//                              $Revision: 1.1 $
+//                              $Date: 2003-10-01 09:03:44 $
+//                              $Revision: 1.2 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 
@@ -46,32 +46,30 @@ import uk.ac.soton.itinnovation.taverna.enactor.broker.LogLevel;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.List;
 import org.embl.ebi.escience.baclava.*;
+import org.embl.ebi.escience.baclava.factory.*;
 
 // Network Imports
 import java.net.URL;
 
 public class SoaplabTask extends ProcessorTask{
+
     private static Logger logger = Logger.getLogger(SoaplabTask.class);
     private static final int INVOCATION_TIMEOUT = 0;
-    private String soaplabWSDL = null;
-    //private Input inputForLog = null;
-    private Output outputForLog = null;
-    private String report = null;
-    private String detailedStatus = null;
     
     public SoaplabTask(String id,Processor proc,LogLevel l, String userID, String userCtx) {
 	super(id,proc,l,userID,userCtx);		
     }
     
     protected Map execute(Map inputMap) throws TaskExecutionException {
+	
 	try{
+	    
 	    HashMap outMap = null;
 	    
-	    //grab the input map
-	    //Map inputMap = new HashMap();
-	    //GraphNode[] inputs = getParents();
-	    
+	    // Copy the contents of the DataThing set in the input map to 
+	    // a new Map object which just contains the raw data objects
 	    Map soaplabInputMap = new HashMap();
 	    for (Iterator i = inputMap.keySet().iterator(); i.hasNext() ; ) {
 		String parameterName = (String)i.next();
@@ -82,10 +80,9 @@ public class SoaplabTask extends ProcessorTask{
 	    // Invoke the web service...
 	    Call call = (Call) new Service().createCall();
 	    URL soaplabWSDLURL = ((SoaplabProcessor) proc).getEndpoint();
-	    soaplabWSDL = soaplabWSDLURL.toExternalForm();
+	    String soaplabWSDL = soaplabWSDLURL.toExternalForm();
 	    call.setTargetEndpointAddress(soaplabWSDLURL);
 	    call.setOperationName(new QName("runAndWaitFor"));
-	    //call.setReturnType(new QName("apachesoap:Map"));
 	    HashMap outputMap = new HashMap((Map)call.invoke(new Object[] { soaplabInputMap }));
 	    //could also get some log info from service for the provenance using the describe method on the service
 	    
@@ -93,26 +90,46 @@ public class SoaplabTask extends ProcessorTask{
 	    // Build the map of DataThing objects
 	    for (Iterator i = outputMap.keySet().iterator(); i.hasNext(); ) {
 		String parameterName = (String)i.next();
-		DataThing outputThing = new DataThing(outputMap.get(parameterName));
+		Object outputObject = outputMap.get(parameterName);
+		DataThing outputThing = null;
+		logger.debug("Soaplab : parameter '"+parameterName+"' has type '"+outputObject.getClass().getName()+"'");
+		if (outputObject instanceof String[]) {
+		    outputThing = DataThingFactory.bake((String[])outputObject);
+		}
+		else if (outputObject instanceof byte[][]) {
+		    // Create a List of byte arrays, this will
+		    // map to l('application/octet-stream') in
+		    // the output document.
+		    outputThing = DataThingFactory.bake((byte[][])outputObject);
+		}
+		else if (outputObject instanceof List) {
+		    outputThing = DataThingFactory.bakeForSoaplab((List)outputObject);
+		}
+		else {
+		    // Fallthrough case, just put the object directly
+		    // into the DataThing, this mostly applies to
+		    // output of type byte[] or string, both of which
+		    // are handled perfectly sensibly by default.
+		    outputThing = new DataThing(outputObject);
+		}		
 		outMap.put(parameterName, outputThing);
 	    }
 	    
 	    //success
 	    return outMap;
 	}
+	
 	catch(Exception ex) {
 	    ex.printStackTrace();
 	    logger.error("Error invoking soaplab service for task " +getID() ,ex);
 	    throw new TaskExecutionException("Task " + getID() + " failed due to problem invoking soaplab service");			
 	}
+	
     }
     
     public void cleanUpConcreteTask() {
 	//nothing at mo, but should call destroy on job if job id available
 	//inputForLog = null;
-	outputForLog = null;
-	report = null;
-	detailedStatus = null;
     }
     
     /**
