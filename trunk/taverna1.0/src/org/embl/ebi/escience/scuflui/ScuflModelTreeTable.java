@@ -72,9 +72,15 @@ public class ScuflModelTreeTable extends JTreeTable
 	new DropTarget(this, DnDConstants.ACTION_COPY_OR_MOVE, this);
 	setModel(treeModel);
 	TableColumnModel columnModel = getColumnModel();
+	TableColumn mainColumn = columnModel.getColumn(0);
+	//mainColumn.setPreferredWidth(5000);
 	for (int i = 1; i < 5; i++) {
 	    TableColumn c = columnModel.getColumn(i);
-	    c.setMaxWidth(100);
+	    //c.sizeWidthToFit();
+	    c.setResizable(false);
+	    c.setMaxWidth(55);
+	    c.setMinWidth(55);
+	    c.setPreferredWidth(55);
 	}
 	setDefaultEditor(TreeTableModel.class, new ScuflModelTreeTableCellEditor());
         JCheckBox jcbox = new JCheckBox();
