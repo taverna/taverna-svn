@@ -149,7 +149,7 @@ public class WorkflowEditor extends JGraph implements ScuflUIComponent
 			// Change to non 1 value to show only part of the progress bar and leave
 			// the remaining space coloured by processor type.
 			int progressBarDivide = 1;
-			int progress = -1;
+			int progress = -2;
 			Color background2 = Color.WHITE;
 			Color background3 = Color.WHITE;
 			public void paint(Graphics g) {
@@ -170,7 +170,7 @@ public class WorkflowEditor extends JGraph implements ScuflUIComponent
 				g2d.setPaint(new GradientPaint(0,0,background2, getWidth(), getHeight(), org.embl.ebi.escience.scuflui.ShadedLabel.halfShade(background2)));
 				g2d.fillRect(newWidth, 0, remainingWidth, getHeight()/progressBarDivide);
 			    }
-			    else if (progress > -1) {
+			    else if (progress == -1) {
 				g2d.setPaint(new GradientPaint(0,0,background3, getWidth(), getHeight(), org.embl.ebi.escience.scuflui.ShadedLabel.halfShade(background3)));
 				g2d.fillRect(0,0,getWidth(),getHeight()/progressBarDivide);
 			    }
@@ -185,7 +185,7 @@ public class WorkflowEditor extends JGraph implements ScuflUIComponent
 				progress = Integer.parseInt(progressStringValue);
 			    }
 			    else {
-				progress = -1;
+				progress = -2;
 			    }
 			    if (map.containsKey("statuscolour1")) {
 				background3 = (Color)map.get("statuscolour1");
