@@ -90,6 +90,10 @@ public class Workbench extends JFrame {
 	    //
 	}
 
+	try {
+	    UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+	} catch (Exception e) { }
+	
 	// Initialize the component SPI
 	UIComponentRegistry.instance();
 
@@ -206,9 +210,6 @@ public class Workbench extends JFrame {
 	super("Scufl Workbench v"+
 	      org.embl.ebi.escience.scufl.TavernaReleaseInfo.getVersion()+", built "+
 	      org.embl.ebi.escience.scufl.TavernaReleaseInfo.getBuildDate().toString());
-	try {
-	    UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-	} catch (Exception e) { }
 
 	Workbench.workbench = this;
 	int inset = 50;
