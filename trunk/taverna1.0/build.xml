@@ -235,7 +235,8 @@
             debug="on"
             srcdir="${build.src}"
             destdir="${build.classes}"
-            source="1.4">
+            source="1.4"
+		deprecation="on">
 			<classpath refid="compile-classpath"/>
 		</javac>
 		<!-- Copy over any configuration files that you might have -->
