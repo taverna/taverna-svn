@@ -21,3 +21,6 @@ xercesSamples.jar
 mail.jar
 activation.jar
 lsid-client.jar
+wsif.jar
+seqhound.jar
+commons-httpclient-2.0.jar

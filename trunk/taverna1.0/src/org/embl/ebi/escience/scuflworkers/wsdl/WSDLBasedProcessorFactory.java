@@ -5,6 +5,7 @@
  */
 package org.embl.ebi.escience.scuflworkers.wsdl;
 import org.embl.ebi.escience.scuflworkers.ProcessorFactory;
+import javax.xml.namespace.QName;
 
 
 
@@ -17,14 +18,16 @@ import org.embl.ebi.escience.scuflworkers.ProcessorFactory;
 public class WSDLBasedProcessorFactory extends ProcessorFactory {
 
     String wsdlLocation, operationName;
-
+    QName portTypeName;
+    
     /**
      * Create a new factory with the specified wsdl location,
      * port type name and operation name
      */
-    public WSDLBasedProcessorFactory(String wsdlLocation, String operationName) {
+    public WSDLBasedProcessorFactory(String wsdlLocation, String operationName, QName portTypeName) {
 	this.wsdlLocation = wsdlLocation;
 	this.operationName = operationName;
+	this.portTypeName = portTypeName;
     }
 
     public String getWSDLLocation() {
@@ -33,6 +36,10 @@ public class WSDLBasedProcessorFactory extends ProcessorFactory {
 
     public String getOperationName() {
 	return this.operationName;
+    }
+
+    public QName getPortTypeName() {
+	return this.portTypeName;
     }
 
     /**

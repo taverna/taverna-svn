@@ -1,0 +1,109 @@
+/**
+ * This file is a component of the Taverna project,
+ * and is licensed under the GNU LGPL.
+ * Copyright Tom Oinn, EMBL-EBI
+ */
+package org.embl.ebi.escience.scuflworkers.seqhound;
+import org.embl.ebi.escience.baclava.*;
+import java.lang.reflect.*;
+import java.util.*;
+import org.embl.ebi.escience.scufl.*;
+import org.embl.ebi.escience.baclava.DataThing;
+import org.embl.ebi.escience.baclava.factory.DataThingFactory;
+import org.embl.ebi.escience.scufl.Processor;
+import org.embl.ebi.escience.scuflworkers.ProcessorTaskWorker;
+import uk.ac.soton.itinnovation.taverna.enactor.entities.TaskExecutionException;
+import uk.ac.soton.itinnovation.taverna.enactor.entities.ProcessorTask;
+
+public class SeqhoundTask implements ProcessorTaskWorker {
+    
+    private SeqhoundProcessor processor;
+
+    public SeqhoundTask(Processor p) {
+	this.processor = (SeqhoundProcessor)p;
+    }
+
+    public Map execute(Map inputMap, ProcessorTask parentTask)
+	throws TaskExecutionException {
+	
+	// Create an array of arguments to the method call
+	Object[] inputArray = new Object[inputMap.size()];
+	InputPort[] inputs = processor.getInputPorts();
+	for (int i = 0; i < inputs.length; i++) {
+	    String inputName = inputs[i].getName();
+	    DataThing inputThing = (DataThing)inputMap.get(inputName);
+	    Class targetClass = (Class)processor.inputTypes.get(inputName);
+	    // Now need to convert the value of the DataThing into an instance
+	    // of the target class
+	    Object targetObject = null;
+	    if (targetClass.equals(String.class)) {
+		targetObject = (String)inputThing.getDataObject();
+	    }
+	    else if (targetClass.equals(Integer.class) ||
+		     targetClass.equals(Integer.TYPE)) {
+		targetObject = new Integer((String)inputThing.getDataObject());
+	    }
+	    else if (targetClass.equals(Float.class) ||
+		     targetClass.equals(Float.TYPE)) {
+		targetObject = new Float((String)inputThing.getDataObject());
+	    }
+	    else {
+		throw new TaskExecutionException("Unable to generate input of type "+targetClass.toString()+" for input name "+inputName);
+	    }
+	    inputArray[i] = targetObject;
+	}
+	
+	try {
+	    Object result = processor.targetMethod.invoke(processor.seqhound, inputArray);
+	    // Do we have a simple type or an array being returned?
+	    Class resultClass = result.getClass();
+	    Map outputMap = new HashMap();
+	    if (result instanceof Hashtable == false) {
+		DataThing resultThing;
+		if (resultClass.isArray()) {
+		    if (resultClass.equals(int[].class)) {
+			int[] intArray = (int[])result;
+			List targetList = new ArrayList();
+			for (int i = 0; i < intArray.length; i++) {
+			    targetList.add(""+intArray[i]);
+			}
+			resultThing = new DataThing(targetList);
+		    }
+		    else {
+			// Unknown array type
+			Object[] resultArray = (Object[])result;
+			List targetList = new ArrayList();
+			for (int i = 0; i < resultArray.length; i++) {
+			    targetList.add(""+resultArray[i].toString());
+			}
+			resultThing = new DataThing(targetList);
+		    }
+		}
+		else {
+		    resultThing = new DataThing(result.toString());
+		}
+		outputMap.put("result",resultThing);
+	    }
+	    else {
+		// Is a hashtable of key -> value result pairs, emit in
+		// a pair of lists
+		Map resultMap = (Map)result;
+		List keyList = new ArrayList(resultMap.keySet());
+		List valueList = new ArrayList();
+		for (Iterator i = keyList.iterator(); i.hasNext(); ) {
+		    valueList.add(resultMap.get(i.next()));
+		}
+		outputMap.put("keys", new DataThing(keyList));
+		outputMap.put("values", new DataThing(valueList));
+	    }
+	    return outputMap;
+	}
+	catch (Exception ex) {
+	    TaskExecutionException tee = new TaskExecutionException("Could not invoke method!");
+	    tee.initCause(ex);
+	    throw tee;
+	}
+
+    }
+
+}

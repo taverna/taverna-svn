@@ -22,6 +22,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Vector;
+import java.util.Iterator;
 
 import org.embl.ebi.escience.scuflworkers.wsdl.WSDLBasedProcessor;
 import java.lang.Exception;
@@ -97,6 +98,11 @@ public class WSDLInvocationTask implements ProcessorTaskWorker {
 	    
 	    operation.executeRequestResponseOperation(input, output, fault);
 	    
+	    // Debug - print out all available part names
+	    for (Iterator i = output.getPartNames(); i.hasNext(); ) {
+		System.out.println(i.next());
+	    }
+
 	    Map resultMap = new HashMap();
 	    for (int i = 0; i < processor.outNames.length; i++) {
 		String outputName = processor.outNames[i];

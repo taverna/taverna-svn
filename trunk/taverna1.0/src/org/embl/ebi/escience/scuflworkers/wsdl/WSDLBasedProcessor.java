@@ -40,6 +40,7 @@ import org.apache.wsif.util.WSIFUtils;
 public class WSDLBasedProcessor extends Processor implements java.io.Serializable {
 
     WSIFPort port = null;
+    WSIFService dpf = null;
     String operationName = null;
     String inputName = null;
     String outputName = null;
@@ -47,12 +48,18 @@ public class WSDLBasedProcessor extends Processor implements java.io.Serializabl
     String[] inNames, outNames;
     Class[] inTypes, outTypes;
     
+    public WSDLBasedProcessor(ScuflModel model, String procName, String wsdlLocation, String operationName)
+	throws ProcessorCreationException,
+	       DuplicateProcessorNameException {
+	this(model, procName, wsdlLocation, operationName, null);
+    }
+
     /**
      * Construct a new processor from the given WSDL definition
      * and operation name, delegates to superclass then instantiates
      * ports based on WSDL inspection.
      */
-    public WSDLBasedProcessor(ScuflModel model, String procName, String wsdlLocation, String operationName)
+    public WSDLBasedProcessor(ScuflModel model, String procName, String wsdlLocation, String operationName, QName portTypeName)
 	throws ProcessorCreationException,
 	       DuplicateProcessorNameException {
 	super(model, procName);
@@ -69,9 +76,11 @@ public class WSDLBasedProcessor extends Processor implements java.io.Serializabl
 	    Service service = WSIFUtils.selectService(def, null, null);
 	    
 	    // Select the default port type
-	    PortType portType = WSIFUtils.selectPortType(def, null, null);
+	    PortType portType = WSIFUtils.selectPortType(def, 
+							 portTypeName == null ? null : portTypeName.getNamespaceURI(), 
+							 portTypeName == null ? null : portTypeName.getLocalPart());
 	    WSIFServiceFactory factory = WSIFServiceFactory.newInstance();
-	    WSIFService dpf = factory.getService(def, service, portType);
+	    dpf = factory.getService(def, service, portType);
 	    
 	    // Select the default port
 	    port = dpf.getPort();
@@ -217,7 +226,7 @@ public class WSDLBasedProcessor extends Processor implements java.io.Serializabl
 	return this.operationName;
     }
 
-    private static void retrieveSignature(List parts, String[] names, Class[] types) {
+    private void retrieveSignature(List parts, String[] names, Class[] types) {
         // get parts in correct order
         for (int i = 0; i < names.length; ++i) {
             Part part = (Part) parts.get(i);
@@ -246,21 +255,36 @@ public class WSDLBasedProcessor extends Processor implements java.io.Serializabl
             } else if ("boolean".equals(s)) {
                 types[i] = Boolean.TYPE;
             } else {
-                throw new RuntimeException("part type " + partType + " not supported in this sample");
-            }
+		// Hmmm, interesting. This is therefore a type that we haven't seen before
+		// and need to fudge things by registering a new serializer and deserializer
+		// with the WSIFService instance.
+                // throw new RuntimeException("part type " + partType + " not supported in this sample");
+		types[i] = org.w3c.dom.Element.class;
+		// Map to the Element type
+		try {
+		    dpf.mapType(partType, org.w3c.dom.Element.class);
+		    dpf.mapType(new QName(partType.getNamespaceURI(), getOperationName()+"Response"),
+				org.w3c.dom.Element.class);
+		}
+		catch (WSIFException wsife) {
+		    wsife.printStackTrace();
+		}
+	    }
         }
     }
     
     /**
      * Unwraps the top level part if this a wrapped DocLit message.
      */
-    private static void unWrapIfWrappedDocLit(List parts, String operationName, Definition def) throws WSIFException {
+    private void unWrapIfWrappedDocLit(List parts, String operationName, Definition def) throws WSIFException {
 	Part p = WSIFUtils.getWrappedDocLiteralPart(parts, operationName);
 	if (p != null) {
+	    //dpf.mapType(p.getTypeName(), org.w3c.dom.Element.class);
 	    List unWrappedParts = WSIFUtils.unWrapPart(p, def);
 	    parts.remove(p);
 	    parts.addAll(unWrappedParts);
 	}
+	
     }  
     
     /** 
@@ -268,10 +292,13 @@ public class WSDLBasedProcessor extends Processor implements java.io.Serializabl
      */
     private static String translateJavaType(Class type) {
 	if (type.equals(String[].class)) {
-	    return ("l('text/plain')");
+	    return "l('text/plain')";
+	}
+	else if (type.equals(org.w3c.dom.Element.class)) {
+	    return "'text/xml'";
 	}
 	else {
-	    return ("'text/plain'");
+	    return "'text/plain'";
 	}
     }
         
