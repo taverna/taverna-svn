@@ -48,8 +48,8 @@
       remote and local services and pass results between them, services include 
       at the present time.</font></div>
     <ul>
-      <li><font size="2" face="Arial, Helvetica, sans-serif"> Arbitrary single 
-        operation web services</font></li>
+      <li><font size="2" face="Arial, Helvetica, sans-serif"> Arbitrary WSDL-based 
+        single operation web services</font></li>
       <li><font size="2" face="Arial, Helvetica, sans-serif"> Soaplab bio-services</font></li>
       <li><font size="2" face="Arial, Helvetica, sans-serif"> Talisman tscript 
         definitions</font></li>
@@ -258,11 +258,29 @@
   has achieved status 'completed'. Available states are scheduled, running, completed 
   and aborted.</font></p>
 <hr>
-<h2><font size="3" face="Arial, Helvetica, sans-serif">Running an XScufl workflow using 
-  the IT Innovation Workflow Enactor</font></h2>
-<p><font size="2" face="Arial, Helvetica, sans-serif">Taken directly from Darren's 
-  documentation (in the top level of the Taverna cvs repository) and slightly 
-  modified to add Talisman compatibility :</font></p>
+<h2><font size="3" face="Arial, Helvetica, sans-serif">XScufl Workflow Enactment 
+  using the IT Innovation Workflow Enactor</font></h2>
+<p><font size="2" face="Arial, Helvetica, sans-serif">XScufl Language Support</font></p>
+<p><font size="2" face="Arial, Helvetica, sans-serif">The myGrid workflow enactment engine 
+  supports almost all the XScufl language constructs. The only exception is that 
+  there is not full support for the coodination constraints. In particular the 
+  enactment engine does not support all possible state transitions that an XScufl 
+  coordination constraint can define. This is essentially because the enactment 
+  engine has its own state models that enforce correct behaviour for the activities 
+  it controls. At present the enactment engine will only allow coordination constraints 
+  that conform to the following state transition:</font></p>
+<p><img src="controlflow.png" width="358" height="60"></p>
+<p><font size="2" face="Arial, Helvetica, sans-serif">At present the most common 
+  reason for using coordination constraints is to represent a dependency between 
+  two processors that is not actually a data dependency, this is essentially the 
+  case where you would like processor A to execute and complete before processor 
+  B commences execution. In XScufl this would be represented precisely as shown 
+  above for the coordination constraint called 'testcoordination', given a suitable 
+  substitution of 'A' for 'restrict_mutant' and 'B' for 'compare'. If the enactment 
+  engine receives a coordination constraint that does not conform to this restriction 
+  then the workflow will be rejected and no execution will take place..</font></p>
+<p><font size="2" face="Arial, Helvetica, sans-serif">Configuring myGrid Workflow Enactment 
+  Engine </font></p>
 <blockquote> 
   <p align="justify"><font size="2" face="Arial, Helvetica, sans-serif">It is 
     very easy to switch on myGrid Enactment Engine support for the XScufl workflow 
