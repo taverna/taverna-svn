@@ -4,6 +4,7 @@ commons-logging.jar
 concurrent.jar
 jaxrpc.jar
 jdom.jar
+jgraph.jar
 log4j-1.2.8.jar
 freefluo.jar
 saaj.jar
