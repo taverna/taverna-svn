@@ -66,7 +66,7 @@ public class Retsina extends JPanel
     }
     
     JMenuBar progMenuBar = new JMenuBar();
-    ProgList progs = new ProgList(wossname,null,progMenuBar);
+    ProgList progs = new ProgList(wossname,progMenuBar);
     graphPanel = new ScuflGraphPanel(null,progs);
     JPanel westPanel = new ProgramSelectionPanel(wossname,graphPanel,
                                                  progs,progMenuBar);

@@ -551,8 +551,8 @@ public class ScuflGraph extends JGraph
         try
         {
           processor = new SoaplabProcessor(scuflModel,procName,
-                       "http://u.hgmp.mrc.ac.uk:8080/axis/services/"+group+"::"+name);
-//                     "http://industry.ebi.ac.uk/soap/soaplab/"+group+"::"+name);
+//                     "http://u.hgmp.mrc.ac.uk:8080/axis/services/"+group+"::"+name);
+                       "http://industry.ebi.ac.uk/soap/soaplab/"+group+"::"+name);
 
           scuflModel.addProcessor(processor);
           System.out.println("Finished test : SoaplabProcessorCreation");
