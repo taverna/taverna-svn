@@ -166,28 +166,20 @@ public class DotView implements ScuflModelEventListener, java.io.Serializable {
 	    dot.append("  fillcolor = \""+
 		       org.embl.ebi.escience.scuflworkers.ProcessorHelper.getPreferredColour(p)+
 		       "\",\n");
-	    /**
-	       if (p instanceof WSDLBasedProcessor) {
-	       dot.append("  fillcolor = \"darkolivegreen3\",\n");
-	       }
-	       // Or if a TalismanProcessor
-	       else if (p instanceof TalismanProcessor) {
-	       dot.append("  fillcolor = \"plum2\",\n");
-	       }
-	       // Or if a WorkflowProcessor
-	       else if (p instanceof WorkflowProcessor) {
-	       dot.append("  fillcolor = \"orange\",\n");
-	       }
-	    */
 	    
 	    // Create the label...
 	    dot.append("  label = \"");
-
+	    
 	    // Are we generating port views?
 	    if (this.portDisplay == DotView.ALL || this.portDisplay == DotView.BOUND) {
 		// Name of the node
 		if (this.portDisplay == DotView.ALL) {
-		    dot.append("{"+p.getName().toUpperCase()+"}|{");
+		    if (p.getAlternatesList().isEmpty()) {
+			dot.append("{"+p.getName().toUpperCase()+"}|{");
+		    }
+		    else {
+			dot.append("{"+p.getName().toUpperCase()+"\\n"+p.getAlternatesList().size()+" alternates}|{");
+		    }
 		}
 		else {
 		    dot.append("{");
@@ -211,7 +203,12 @@ public class DotView implements ScuflModelEventListener, java.io.Serializable {
 		dot.append("}|");
 		
 		if (this.portDisplay == DotView.BOUND) {
-		    dot.append(p.getName().toUpperCase()+"|");
+		    if (p.getAlternatesList().isEmpty()) {
+			dot.append(p.getName().toUpperCase()+"|");
+		    }
+		    else {
+			dot.append(p.getName().toUpperCase()+"\\n"+p.getAlternatesList().size()+" alternates|");
+		    }
 		}
 
 		// List of outputs
@@ -321,38 +318,46 @@ public class DotView implements ScuflModelEventListener, java.io.Serializable {
 	ConcurrencyConstraint[] cc = model.getConcurrencyConstraints();
 	for (int i = 0; i < cc.length; i++) {
 	    ConcurrencyConstraint c = cc[i];
-	    // Create the box
-	    dot.append(" constraint"+c.getName()+" [\n");
-	    dot.append("  shape=\"rectangle\",\n");
-	    dot.append("  fillcolor=\"white\",\n");
-	    dot.append("  height=\"0\",\n");
-	    dot.append("  width=\"0\",\n");
-	    dot.append("  color=\"gray\",\n");
-	    dot.append("  label=\"coordination\"\n");
-	    dot.append(" ]\n");
-	    // Create the edge from controller to box
-	    dot.append(" "+c.getControllingProcessor().getName()+"->constraint"+c.getName()+" [\n");
-	    dot.append("  arrowhead=\"none\",\n");
-	    dot.append("  arrowtail=\"dot\",\n");
-	    dot.append("  color=\"gray\",\n");
-	    dot.append("  fontcolor=\"brown\",\n");
-	    dot.append("  label=\""+ConcurrencyConstraint.statusCodeToString(c.getControllerStateGuard())+"\"\n");
-	    dot.append(" ]\n");
-	    // Create the edge from box to target
-	    dot.append(" constraint"+c.getName()+"->"+c.getTargetProcessor().getName()+" [\n");
-	    dot.append("  arrowhead=\"odot\",\n");
-	    dot.append("  arrowtail=\"none\",\n");
-	    dot.append("  color=\"gray\",\n");
-	    dot.append("  fontcolor=\"darkgreen\",\n");
-	    String stateChangeLabel =
-		"from:"+
-		ConcurrencyConstraint.statusCodeToString(c.getTargetStateFrom())+"\\nto:"+
-		ConcurrencyConstraint.statusCodeToString(c.getTargetStateTo());
-	    dot.append("  label=\""+stateChangeLabel+"\"\n");
-	    dot.append(" ];\n");
-
+	    if (this.portDisplay != DotView.NONE) {
+		// Create the box
+		dot.append(" constraint"+c.getName()+" [\n");
+		dot.append("  shape=\"rectangle\",\n");
+		dot.append("  fillcolor=\"white\",\n");
+		dot.append("  height=\"0\",\n");
+		dot.append("  width=\"0\",\n");
+		dot.append("  color=\"gray\",\n");
+		dot.append("  label=\"coordination\"\n");
+		dot.append(" ]\n");
+		// Create the edge from controller to box
+		dot.append(" "+c.getControllingProcessor().getName()+"->constraint"+c.getName()+" [\n");
+		dot.append("  arrowhead=\"none\",\n");
+		dot.append("  arrowtail=\"dot\",\n");
+		dot.append("  color=\"gray\",\n");
+		dot.append("  fontcolor=\"brown\",\n");
+		dot.append("  label=\""+ConcurrencyConstraint.statusCodeToString(c.getControllerStateGuard())+"\"\n");
+		dot.append(" ]\n");
+		// Create the edge from box to target
+		dot.append(" constraint"+c.getName()+"->"+c.getTargetProcessor().getName()+" [\n");
+		dot.append("  arrowhead=\"odot\",\n");
+		dot.append("  arrowtail=\"none\",\n");
+		dot.append("  color=\"gray\",\n");
+		dot.append("  fontcolor=\"darkgreen\",\n");
+		String stateChangeLabel =
+		    "from:"+
+		    ConcurrencyConstraint.statusCodeToString(c.getTargetStateFrom())+"\\nto:"+
+		    ConcurrencyConstraint.statusCodeToString(c.getTargetStateTo());
+		dot.append("  label=\""+stateChangeLabel+"\"\n");
+		dot.append(" ];\n");
+	    }
+	    else {
+		dot.append(" "+c.getControllingProcessor().getName()+"->"+c.getTargetProcessor().getName()+" [\n");
+		dot.append("  color=\"gray\",\n");
+		dot.append("  arrowhead=\"odot\",\n");
+		dot.append("  arrowtail=\"none\"\n");
+		dot.append(" ];\n");
+	    }
 	}
-
+	
 	dot.append("}\n");
 	this.cachedRepresentation = dot.toString();
     }
