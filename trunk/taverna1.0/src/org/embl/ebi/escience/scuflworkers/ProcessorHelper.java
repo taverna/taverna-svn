@@ -358,74 +358,74 @@ public class ProcessorHelper {
      * return null if we can't handle it
      */
     public static Processor loadProcessorFromXML(Element processorNode, ScuflModel model, String name)
-	throws ProcessorCreationException, DuplicateProcessorNameException, XScuflFormatException {
-	// Get the first available handler for this processor and use it to load
-	Processor loadedProcessor = null;
-	Iterator i = processorNode.getChildren().iterator();
-	for (; i.hasNext() && loadedProcessor==null; ) {
-	    Element candidateElement = (Element)i.next();
-	    String elementName = candidateElement.getName();
-	    XMLHandler xh = (XMLHandler)xmlHandlerForTagName.get(elementName);
-	    if (xh != null) {
-		loadedProcessor = xh.loadProcessorFromXML(processorNode, model, name);
-		// Loaded the processor, now configure from the inner spec element
-		// for retry policy.
-		String maxRetryString = candidateElement.getAttributeValue("maxretries");
-		if (maxRetryString != null) {
-		    loadedProcessor.setRetries(Integer.parseInt(maxRetryString));
-		}
-		String retryDelayString = candidateElement.getAttributeValue("retrydelay");
-		if (retryDelayString != null) {
-		    loadedProcessor.setRetryDelay(Integer.parseInt(retryDelayString));
-		}
-		String retryBackoffString = candidateElement.getAttributeValue("retrybackoff");
-		if (retryBackoffString != null) {
-		    loadedProcessor.setBackoff(Double.parseDouble(retryBackoffString));
-		}
-	    }
-	}
-	// Appended to the name so the alternate processor have at least
-	// a local name. Doesn't really matter, just better than leaving
-	// them blank.
-	int alternateCount = 1;
-	if (loadedProcessor!=null) {
-	    // Iterate over all alternate definitions and load them into the
-	    // processor as appropriate
-	    List l = processorNode.getChildren("alternate",XScufl.XScuflNS);
-	    for (i = l.iterator(); i.hasNext(); ) {
-		Element alternateElement = (Element)i.next();
-		Processor alternateProcessor = loadProcessorFromXML(alternateElement, null, "alternate"+alternateCount++);
-		AlternateProcessor ap = new AlternateProcessor(alternateProcessor);
-		// Sort out the input mapping
-		List inputMapping = alternateElement.getChildren("inputmap",XScufl.XScuflNS);
-		for (Iterator j = inputMapping.iterator(); j.hasNext();) {
-		    Element inputMapItem = (Element)j.next();
-		    String key = inputMapItem.getAttributeValue("key");
-		    String value = inputMapItem.getAttributeValue("value");
-		    ap.getInputMapping().put(key, value);
-		}
-		// ..and the output mapping. See the javadoc
-		// for the AlternateProcessor class for more
-		// details about the mapping functionality.
-		List outputMapping = alternateElement.getChildren("outputmap",XScufl.XScuflNS);
-		for (Iterator j = outputMapping.iterator(); j.hasNext();) {
-		    Element outputMapItem = (Element)j.next();
-		    String key = outputMapItem.getAttributeValue("key");
-		    String value = outputMapItem.getAttributeValue("value");
-		    ap.getOutputMapping().put(key, value);
-		}
-		loadedProcessor.addAlternate(ap);
-	    }
+            throws ProcessorCreationException, DuplicateProcessorNameException, XScuflFormatException {
+      // Get the first available handler for this processor and use it to load
+      Processor loadedProcessor = null;
+      Iterator i = processorNode.getChildren().iterator();
+      for (; i.hasNext() && loadedProcessor==null; ) {
+        Element candidateElement = (Element)i.next();
+        String elementName = candidateElement.getName();
+        XMLHandler xh = (XMLHandler)xmlHandlerForTagName.get(elementName);
+        if (xh != null) {
+          loadedProcessor = xh.loadProcessorFromXML(processorNode, model, name);
+          // Loaded the processor, now configure from the inner spec element
+          // for retry policy.
+          String maxRetryString = candidateElement.getAttributeValue("maxretries");
+          if (maxRetryString != null) {
+            loadedProcessor.setRetries(Integer.parseInt(maxRetryString));
+          }
+          String retryDelayString = candidateElement.getAttributeValue("retrydelay");
+          if (retryDelayString != null) {
+            loadedProcessor.setRetryDelay(Integer.parseInt(retryDelayString));
+          }
+          String retryBackoffString = candidateElement.getAttributeValue("retrybackoff");
+          if (retryBackoffString != null) {
+            loadedProcessor.setBackoff(Double.parseDouble(retryBackoffString));
+          }
+        }
+      }
+      // Appended to the name so the alternate processor have at least
+      // a local name. Doesn't really matter, just better than leaving
+      // them blank.
+      int alternateCount = 1;
+      if (loadedProcessor!=null) {
+        // Iterate over all alternate definitions and load them into the
+        // processor as appropriate
+        List l = processorNode.getChildren("alternate",XScufl.XScuflNS);
+        for (i = l.iterator(); i.hasNext(); ) {
+          Element alternateElement = (Element)i.next();
+          Processor alternateProcessor = loadProcessorFromXML(alternateElement, null, "alternate"+alternateCount++);
+          AlternateProcessor ap = new AlternateProcessor(alternateProcessor);
+          // Sort out the input mapping
+          List inputMapping = alternateElement.getChildren("inputmap",XScufl.XScuflNS);
+          for (Iterator j = inputMapping.iterator(); j.hasNext();) {
+            Element inputMapItem = (Element)j.next();
+            String key = inputMapItem.getAttributeValue("key");
+            String value = inputMapItem.getAttributeValue("value");
+            ap.getInputMapping().put(key, value);
+          }
+          // ..and the output mapping. See the javadoc
+          // for the AlternateProcessor class for more
+          // details about the mapping functionality.
+          List outputMapping = alternateElement.getChildren("outputmap",XScufl.XScuflNS);
+          for (Iterator j = outputMapping.iterator(); j.hasNext();) {
+            Element outputMapItem = (Element)j.next();
+            String key = outputMapItem.getAttributeValue("key");
+            String value = outputMapItem.getAttributeValue("value");
+            ap.getOutputMapping().put(key, value);
+          }
+          loadedProcessor.addAlternate(ap);
+        }
 
-	}
-	if (loadedProcessor != null) {
-	    // Add the annotation templates
-	    List l = processorNode.getChildren("template", XScufl.XScuflNS);
-	    for (i = l.iterator(); i.hasNext();) {
-		loadedProcessor.addAnnotationTemplate(new AnnotationTemplate((Element)i.next()));
-	    }
+      }
+      if (loadedProcessor != null) {
+        // Add the annotation templates
+        List l = processorNode.getChildren("template", XScufl.XScuflNS);
+        for (i = l.iterator(); i.hasNext();) {
+          loadedProcessor.addAnnotationTemplate(new AnnotationTemplate((Element)i.next()));
+        }
 
-	}
-	return loadedProcessor;
+      }
+      return loadedProcessor;
     }
 }

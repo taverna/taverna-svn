@@ -47,13 +47,13 @@ import java.lang.String;
  * @author Tom Oinn
  */
 public class ScavengerTreePopupHandler extends MouseAdapter {
-    
+
     private ScavengerTree scavenger;
-    
+
     public ScavengerTreePopupHandler(ScavengerTree theTree) {
 	this.scavenger = theTree;
     }
-   
+
     /**
      * Handle the mouse pressed event in case this is the platform
      * specific trigger for a popup menu
@@ -63,7 +63,7 @@ public class ScavengerTreePopupHandler extends MouseAdapter {
 	    doEvent(e);
 	}
     }
-    
+
     /**
      * Similarly handle the mouse released event
      */
@@ -81,7 +81,7 @@ public class ScavengerTreePopupHandler extends MouseAdapter {
 	final DefaultMutableTreeNode node = (DefaultMutableTreeNode)(scavenger.getPathForLocation(e.getX(), e.getY()).getLastPathComponent());
 	Object scuflObject = node.getUserObject();
 	if (scuflObject != null) {
-	    
+
 	    if (scuflObject instanceof ProcessorFactory && scavenger.model != null) {
 		final ProcessorFactory pf = (ProcessorFactory)scuflObject;
 		// Show the popup for adding new processors to the model
@@ -106,20 +106,20 @@ public class ScavengerTreePopupHandler extends MouseAdapter {
 					theProcessor.addAlternate(alternate);
 				    }
 				    catch (Exception ex) {
-					JOptionPane.showMessageDialog(null, 
+					JOptionPane.showMessageDialog(null,
 								      "Problem creating alternate : \n"+ex.getMessage(),
 								      "Exception!",
 								      JOptionPane.ERROR_MESSAGE);
 				    }
 				}
-				    
+
 			    });
 		    }
 		    menu.add(processorList);
 		}
-		
+
 		// If this is a workflow factory then we might as well give
-		// the user the option to import the complete workflow as 
+		// the user the option to import the complete workflow as
 		// well as to wrap it in a processor
 		if (scuflObject instanceof WorkflowProcessorFactory) {
 		    JMenuItem imp = new JMenuItem("Import workflow...", ScuflIcons.webIcon);
@@ -189,12 +189,14 @@ public class ScavengerTreePopupHandler extends MouseAdapter {
 				pf.createProcessor(validName, ScavengerTreePopupHandler.this.scavenger.model);
 			    }
 			    catch (ProcessorCreationException pce) {
+            pce.printStackTrace(); // fixme: should be logged
 				 JOptionPane.showMessageDialog(null,
 								  "Processor creation exception : \n"+pce.getMessage(),
 								  "Exception!",
 								  JOptionPane.ERROR_MESSAGE);
 			    }
 			    catch (DuplicateProcessorNameException dpne) {
+            dpne.printStackTrace(); // fixme: should be logged
 				JOptionPane.showMessageDialog(null,
 							      "Duplicate name : \n"+dpne.getMessage(),
 							      "Exception!",
@@ -243,7 +245,7 @@ public class ScavengerTreePopupHandler extends MouseAdapter {
 										     "http://cvs.mygrid.org.uk/scufl/");
 				if (rootURL!=null) {
 				    try {
-					ScavengerTreePopupHandler.this.scavenger.addScavenger(new WebScavenger(rootURL, ScavengerTreePopupHandler.this.scavenger.treeModel));					
+					ScavengerTreePopupHandler.this.scavenger.addScavenger(new WebScavenger(rootURL, ScavengerTreePopupHandler.this.scavenger.treeModel));
 				    }
 				    catch (ScavengerCreationException sce) {
 					JOptionPane.showMessageDialog(null,
@@ -251,7 +253,7 @@ public class ScavengerTreePopupHandler extends MouseAdapter {
 								      "Exception!",
 								      JOptionPane.ERROR_MESSAGE);
 				    }
-				}	
+				}
 			    }
 			});
 		    JMenuItem collect = new JMenuItem("Collect scavengers from model", Workbench.importIcon);
@@ -277,9 +279,9 @@ public class ScavengerTreePopupHandler extends MouseAdapter {
 				ScavengerTreePopupHandler.this.scavenger.setAllNodesExpanded();
 			    }
 			});
-		    
+
 		    menu.show(scavenger, e.getX(), e.getY());
-		    
+
 		}
 		else {
 		    // Wasn't the 'available processors' link, so give the option to remove it
