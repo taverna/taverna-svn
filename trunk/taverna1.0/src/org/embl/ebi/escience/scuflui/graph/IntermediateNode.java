@@ -5,9 +5,9 @@ package org.embl.ebi.escience.scuflui.graph;
 
 public class IntermediateNode extends VirtualNode
 {
-	public IntermediateNode(Object source, Object target)
+	public IntermediateNode(Object edge, Object source, Object target)
 	{
-		super();
+		super(0, edge);
 		int weight = 1;
 		if(source instanceof VirtualNode && target instanceof VirtualNode)
 		{

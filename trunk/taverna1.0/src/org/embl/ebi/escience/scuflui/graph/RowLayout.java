@@ -5,7 +5,6 @@ package org.embl.ebi.escience.scuflui.graph;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -23,7 +22,7 @@ import org.jgraph.graph.GraphModel;
  * graph to be able to update as the graph changes.
  * 
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover </a>
- * @version $Revision: 1.6 $
+ * @version $Revision: 1.7 $
  */
 public class RowLayout extends ModelSpanningTree
 {
@@ -98,13 +97,17 @@ public class RowLayout extends ModelSpanningTree
 		Collection treeEdges = createInitialTree(edges.iterator());
 		optimiseTree(treeEdges);
 
-		// TODO Reduce crossovers here!
+		// TODO Reduce crossovers here!	
 		
+		for(int index = 0; index < rows.size(); index++)
+		{
+			getRow(index).updateEdges();
+		}
+
 		treeEdges = positionLayout.createInitialTree(positionLayout.edges.iterator());
-		positionLayout.edges.clear();
 		positionLayout.optimiseTree(treeEdges);
 	}
-
+	
 	/*
 	 * @see org.embl.ebi.escience.scuflui.graph.GraphSpanningTree#treeMoveNode(java.lang.Object,
 	 *      java.lang.Object, int)
@@ -217,9 +220,8 @@ public class RowLayout extends ModelSpanningTree
 			{
 				if (nodeRow > row)
 				{
-					VirtualNode node = new VirtualNode();
+					VirtualNode node = new VirtualNode(row, edge);
 					currentNode = node;
-					LayoutConstants.setRow(node.getAttributes(), row);
 					nodeChain.add(index, node);
 					getRow(row).add(node);
 				}
@@ -383,37 +385,5 @@ public class RowLayout extends ModelSpanningTree
 				updateEdgeGraph(edge);
 			}
 		}
-	}
-
-	protected Comparator getComparator(Object edge)
-	{
-		return new Comparator()
-		{
-			public int compare(Object o1, Object o2)
-			{
-				if (o1 == o2)
-				{
-					return 0;
-				}
-
-				int sourceRow1 = getRank(getSource(o1));
-				int targetRow1 = getRank(getTarget(o1));
-				int length1 = targetRow1 - sourceRow1;
-
-				int sourceRow2 = getRank(getSource(o2));
-				int targetRow2 = getRank(getTarget(o2));
-				int length2 = targetRow2 - sourceRow2;
-
-				if (length1 == length2)
-				{
-					if (sourceRow1 == sourceRow2)
-					{
-						return o1.toString().compareToIgnoreCase(o2.toString());
-					}
-					return sourceRow1 - sourceRow2;
-				}
-				return length1 - length2;
-			}
-		};
 	}
 }

@@ -51,7 +51,7 @@ import org.jgraph.graph.ParentMap;
 /**
  * 
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover </a>
- * @version $Revision: 1.15 $
+ * @version $Revision: 1.16 $
  */
 public class ScuflGraphModel implements GraphModel, GraphModelListener, ScuflUIComponent
 {
@@ -248,7 +248,6 @@ public class ScuflGraphModel implements GraphModel, GraphModelListener, ScuflUIC
 			}
 			else
 			{
-				// GraphConstants.setAutoSize(map, true);
 				GraphConstants.setValue(map, processor.getName());
 				GraphConstants.setBounds(map, new Rectangle(100, 20));
 				GraphConstants.setBackground(map, GraphColours.getColour(ProcessorHelper
@@ -264,7 +263,6 @@ public class ScuflGraphModel implements GraphModel, GraphModelListener, ScuflUIC
 			if (isPortOnWorkflowEdge(node))
 			{
 				// Port acting as graph node, as opposed to port
-				// GraphConstants.setAutoSize(map, true);
 				GraphConstants.setValue(map, node.toString());
 				GraphConstants.setBounds(map, new Rectangle(100, 20));
 				if (node instanceof InputPort)
@@ -825,9 +823,9 @@ public class ScuflGraphModel implements GraphModel, GraphModelListener, ScuflUIC
 	public void graphChanged(GraphModelEvent event)
 	{
 		GraphModelEvent.GraphModelChange change = event.getChange();
-		if (change instanceof GraphModelEvent.ExecutableGraphChange)
+		if (change instanceof ScuflGraphModelChange)
 		{
-			((GraphModelEvent.ExecutableGraphChange) change).execute();
+			((ScuflGraphModelChange) change).execute();
 		}
 		fireGraphChangedEvent(event);
 		Object[] removed = change.getRemoved();

@@ -13,13 +13,12 @@ import java.util.List;
 import java.util.Map;
 
 import org.embl.ebi.escience.scufl.Port;
-import org.embl.ebi.escience.scufl.ScuflModelAddEvent;
-import org.embl.ebi.escience.scufl.ScuflModelRemoveEvent;
 import org.embl.ebi.escience.scufl.Processor;
 import org.embl.ebi.escience.scufl.ScuflModel;
+import org.embl.ebi.escience.scufl.ScuflModelAddEvent;
 import org.embl.ebi.escience.scufl.ScuflModelEvent;
+import org.embl.ebi.escience.scufl.ScuflModelRemoveEvent;
 import org.embl.ebi.escience.scufl.ScuflModelRenameEvent;
-import org.jgraph.event.GraphModelEvent;
 import org.jgraph.event.GraphModelEvent.GraphModelChange;
 import org.jgraph.graph.CellView;
 import org.jgraph.graph.ConnectionSet;
@@ -29,10 +28,9 @@ import org.jgraph.graph.ParentMap;
 
 /**
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover </a>
- * @version $Revision: 1.8 $
+ * @version $Revision: 1.9 $
  */
-public class ScuflGraphModelChange implements GraphModelChange,
-		GraphModelEvent.ExecutableGraphChange
+public class ScuflGraphModelChange implements GraphModelChange
 {
 	private ScuflGraphModel model;
 	private Collection added = new HashSet();
@@ -314,5 +312,17 @@ public class ScuflGraphModelChange implements GraphModelChange,
 			}
 		}
 		return result;
+	}
+
+	public ConnectionSet getConnectionSet()
+	{
+		// TODO Implement getConnectionSet
+		return null;
+	}
+
+	public ParentMap getParentMap()
+	{
+		// TODO Implement getParentMap
+		return null;
 	}
 }

@@ -8,11 +8,11 @@ import java.awt.geom.Rectangle2D;
 import java.util.AbstractList;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.TreeSet;
 
 import org.jgraph.graph.CellMapper;
 import org.jgraph.graph.CellView;
@@ -22,7 +22,7 @@ import org.jgraph.graph.GraphModel;
 
 /**
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover </a>
- * @version $Revision: 1.5 $
+ * @version $Revision: 1.6 $
  */
 public class PositionLayout extends ModelSpanningTree
 {
@@ -30,37 +30,69 @@ public class PositionLayout extends ModelSpanningTree
 	{
 		private ArrayList nodes = new ArrayList();
 
-		private int rowIndex = -1;
+		// private int rowIndex = -1;
 
 		Row(int rowIndex)
 		{
-			this.rowIndex = rowIndex;
+			// this.rowIndex = rowIndex;
 		}
 
 		public void add(int index, Object node)
 		{
-			setY(node, (rowIndex * 40) + 10);
-			if (index != 0)
-			{
-				Object left = get(index - 1);
-				Edge edge = new Edge(left, node);
-				setLeftEdge(node, edge);
-				setRightEdge(left, edge);
-
-				edges.add(edge);
-			}
-
-			if (index < size())
-			{
-				Object right = get(index + 1);
-				Edge edge = new Edge(node, right);
-				setLeftEdge(right, edge);
-				setRightEdge(node, edge);
-
-				edges.add(edge);
-			}
+			// setY(node, (rowIndex * 40) + 10);
+			// if (index != 0)
+			// {
+			// Object left = get(index - 1);
+			// Edge edge = new Edge(left, node);
+			// setLeftEdge(node, edge);
+			// setRightEdge(left, edge);
+			//
+			// edges.add(edge);
+			// }
+			//
+			// if (index < size())
+			// {
+			// Object right = get(index + 1);
+			// Edge edge = new Edge(node, right);
+			// setLeftEdge(right, edge);
+			// setRightEdge(node, edge);
+			//
+			// edges.add(edge);
+			// }
 
 			nodes.add(index, node);
+		}
+
+		protected void updateEdges()
+		{
+			for (int index = 1; index < size(); index++)
+			{
+				Object left = get(index - 1);
+				Object right = get(index);
+
+				Map leftAttributes = getAttributes(left);
+				Map rightAttributes = getAttributes(right);
+				Edge edge = LayoutConstants.getRightEdge(leftAttributes);
+				if (edge != null && edge.getTarget() != right)
+				{
+					removeEdge(edge);
+					edge = LayoutConstants.getRightEdge(rightAttributes);
+					if (edge != null && edge.getSource() != left)
+					{
+						removeEdge(edge);
+						edge = null;
+					}
+				}
+
+				if (edge == null)
+				{
+					edge = new Edge(left, right);
+					LayoutConstants.setLeftEdge(rightAttributes, edge);
+					LayoutConstants.setRightEdge(leftAttributes, edge);
+
+					edges.add(edge);
+				}
+			}
 		}
 
 		private void setLeftEdge(Object node, Edge edge)
@@ -141,7 +173,7 @@ public class PositionLayout extends ModelSpanningTree
 
 	private static final int X_SEPARATION = 10;
 
-	protected Collection edges;
+	protected List edges;
 
 	private CellMapper mapper;
 
@@ -153,40 +185,7 @@ public class PositionLayout extends ModelSpanningTree
 	{
 		super(model);
 		this.mapper = mapper;
-		edges = new TreeSet(new Comparator()
-		{
-			public int compare(Object o1, Object o2)
-			{
-				if (o1 == o2)
-				{
-					return 0;
-				}
-
-				int edgeWeight1 = getEdgeWeight(o1);
-				if (edgeWeight1 == 0)
-				{
-					edgeWeight1 = 16;
-				}
-				int edgeWeight2 = getEdgeWeight(o2);
-				if (edgeWeight2 == 0)
-				{
-					edgeWeight2 = 16;
-				}
-
-				if (edgeWeight1 == edgeWeight2)
-				{
-					int targetRow1 = getRank(getTarget(o1));
-					int targetRow2 = getRank(getTarget(o2));
-
-					if (targetRow1 == targetRow2)
-					{
-						return o1.toString().compareToIgnoreCase(o2.toString());
-					}
-					return targetRow1 - targetRow2;
-				}
-				return edgeWeight2 - edgeWeight1;
-			}
-		});
+		edges = new ArrayList();
 	}
 
 	/*
@@ -277,38 +276,45 @@ public class PositionLayout extends ModelSpanningTree
 	 */
 	protected void setRank(Object node, int x)
 	{
-		// assert x >= getMinimumRank(node) : this + ": Attempted to set " +
-		// node + " to " + x;
-		// System.err.println("Set node " + node + " to " + x);
+		// assert x >= getMinimumRank(node) : this + ": Attempted to set " + node + " to " + x;
 		if (node instanceof VirtualNode)
 		{
 			Point2D point = ((VirtualNode) node).getPosition();
-			point.setLocation(x, point.getY());
-		}
-		else if (GraphUtilities.isGroup(model, node))
-		{
-			CellView view = mapper.getMapping(node, false);
-			int newX = (int) (x - (view.getBounds().getWidth() / 2));
-			for (int index = 0; index < model.getChildCount(node); index++)
-			{
-				// TODO Warning!
-				Map attributes = getAttributes(model.getChild(node, index));
-				assert (attributes != null) : model.getChild(node, index);
-				Rectangle2D rect = GraphConstants.getBounds(attributes);
-				assert rect != null : model.getChild(node, index);
-				rect.setFrame(newX, rect.getY(), rect.getWidth(), rect.getHeight());
-				newX += rect.getWidth() + 15;
-			}
-			view.update();
+			point.setLocation(x, ((VirtualNode) node).row * 40 + 20);
 		}
 		else
 		{
+			CellView view = mapper.getMapping(node, false);
 			Map attributes = getAttributes(node);
 			assert attributes != null : node;
-			Rectangle2D rect = GraphConstants.getBounds(attributes);
-			assert rect != null : node;
-			double newX = x - (rect.getWidth() / 2);
-			rect.setFrame(newX, rect.getY(), rect.getWidth(), rect.getHeight());
+			Integer row = LayoutConstants.getRow(attributes);
+			assert row != null : node;
+			int newY = (row.intValue() * 40) + 10;
+
+			if (view.isLeaf())
+			{
+				Rectangle2D rect = GraphConstants.getBounds(view.getAllAttributes());
+				assert rect != null : node;
+				int newX = x - ((int) rect.getWidth() / 2);
+				rect.setFrame(newX, newY, rect.getWidth(), rect.getHeight());
+			}
+			else
+			{
+				CellView[] children = view.getChildViews();
+				Rectangle2D rect = view.getBounds();
+				int newX = x - ((int) rect.getWidth() / 2);
+				int oldX = (int) rect.getX();
+				for (int index = 0; index < children.length; index++)
+				{
+					Rectangle2D childRect = GraphConstants.getBounds(children[index]
+							.getAllAttributes());
+					assert rect != null : model.getChild(node, index);
+					int childX = (int) childRect.getX() + (newX - oldX);
+					childRect.setFrame(childX, newY, childRect.getWidth(), childRect.getHeight());
+					children[index].update();
+				}
+			}
+			view.update();
 		}
 	}
 
@@ -320,7 +326,7 @@ public class PositionLayout extends ModelSpanningTree
 		Rectangle2D rect = getBounds(node);
 		if (rect != null && rect.getX() >= X_SEPARATION)
 		{
-			return (int) rect.getCenterX();
+			return (int) rect.getX() + ((int) rect.getWidth() / 2);
 		}
 		int rank = getMinimumRank(node);
 		setRank(node, rank);
@@ -340,7 +346,7 @@ public class PositionLayout extends ModelSpanningTree
 			Object leftNode = leftEdge.getSource();
 			return getMinimumRank(leftNode) + getMinimumEdgeLength(leftEdge);
 		}
-		return (int) ((getBounds(node).getWidth() / 2) + X_SEPARATION);
+		return ((int) (getBounds(node).getWidth() / 2) + X_SEPARATION);
 	}
 
 	/*
@@ -380,40 +386,41 @@ public class PositionLayout extends ModelSpanningTree
 			{
 				Object leftNode = ((Edge) edge).getSource();
 				Object rightNode = ((Edge) edge).getTarget();
-				return (int) ((getBounds(leftNode).getWidth() + getBounds(rightNode).getWidth()) / 2)
+				return ((int) (getBounds(leftNode).getWidth() / 2) + ((int) getBounds(rightNode)
+						.getWidth()) / 2)
 						+ X_SEPARATION;
 			}
 		}
 		return 0;
 	}
 
-	protected void setY(Object node, int y)
-	{
-		if (node instanceof VirtualNode)
-		{
-			Point2D point = ((VirtualNode) node).getPosition();
-			point.setLocation(point.getX(), y + 10);
-		}
-		else if (GraphUtilities.isGroup(model, node))
-		{
-			for (int index = 0; index < model.getChildCount(node); index++)
-			{
-				Map attributes = getAttributes(model.getChild(node, index));
-				assert attributes != null : model.getChild(node, index);
-				Rectangle2D rect = GraphConstants.getBounds(attributes);
-				assert rect != null : model.getChild(node, index);
-				rect.setFrame(rect.getX(), y, rect.getWidth(), rect.getHeight());
-			}
-		}
-		else
-		{
-			Map attributes = getAttributes(node);
-			assert attributes != null : node;
-			Rectangle2D rect = GraphConstants.getBounds(attributes);
-			assert rect != null : node;
-			rect.setFrame(rect.getX(), y, rect.getWidth(), rect.getHeight());
-		}
-	}
+	// private void setY(Object node, int y)
+	// {
+	// if (node instanceof VirtualNode)
+	// {
+	// Point2D point = ((VirtualNode) node).getPosition();
+	// point.setLocation(point.getX(), y + 10);
+	// }
+	// else if (GraphUtilities.isGroup(model, node))
+	// {
+	// for (int index = 0; index < model.getChildCount(node); index++)
+	// {
+	// Map attributes = getAttributes(model.getChild(node, index));
+	// assert attributes != null : model.getChild(node, index);
+	// Rectangle2D rect = GraphConstants.getBounds(attributes);
+	// assert rect != null : model.getChild(node, index);
+	// rect.setFrame(rect.getX(), y, rect.getWidth(), rect.getHeight());
+	// }
+	// }
+	// else
+	// {
+	// Map attributes = getAttributes(node);
+	// assert attributes != null : node;
+	// Rectangle2D rect = GraphConstants.getBounds(attributes);
+	// assert rect != null : node;
+	// rect.setFrame(rect.getX(), y, rect.getWidth(), rect.getHeight());
+	// }
+	// }
 
 	private Edge getNextEdgeSegment(Object previous, Object edge)
 	{
@@ -451,7 +458,7 @@ public class PositionLayout extends ModelSpanningTree
 		}
 		if (node == null)
 		{
-			node = new IntermediateNode(source, target);
+			node = new IntermediateNode(edge, source, target);
 		}
 		setNextEdgeSegment(source, edge, node.getTopEdge());
 		setPreviousEdgeSegment(target, edge, node.getBottomEdge());
@@ -546,62 +553,44 @@ public class PositionLayout extends ModelSpanningTree
 		return "Position Tree";
 	}
 
-	protected Comparator getComparator(final Object edge)
+	protected Collection createInitialTree(Iterator unused)
 	{
-		return new Comparator()
+		Collections.sort(edges, new Comparator()
 		{
-			// int edgeWeight = getEdgeWeight(edge);
-			// int targetRow = getRank(getTarget(edge));
-
-			public int compare(Object edge1, Object edge2)
+			public int compare(Object o1, Object o2)
 			{
-				if (edge1 == edge2)
+				if (o1 == o2)
 				{
 					return 0;
 				}
-				// int edgeWeight1 = getEdgeWeight(edge1);
-				// int edgeWeight2 = getEdgeWeight(edge2);
 
-				// if (edgeWeight1 == edgeWeight2)
-				// {
-
-				int sourceRow1 = getRank(getSource(edge1));
-				int targetRow1 = getRank(getTarget(edge1));
-				int sourceRow2 = getRank(getSource(edge2));
-				int targetRow2 = getRank(getTarget(edge2));
-
-				int length1 = targetRow1 - sourceRow1;
-				int length2 = targetRow2 - sourceRow2;
-				if (length1 == length2)
+				int edgeWeight1 = getEdgeWeight(o1);
+				if (edgeWeight1 == 0)
 				{
+					edgeWeight1 = 16;
+				}
+				int edgeWeight2 = getEdgeWeight(o2);
+				if (edgeWeight2 == 0)
+				{
+					edgeWeight2 = 16;
+				}
+
+				if (edgeWeight1 == edgeWeight2)
+				{
+					int targetRow1 = getRank(getTarget(o1));
+					int targetRow2 = getRank(getTarget(o2));
+
 					if (targetRow1 == targetRow2)
 					{
-						return edge1.toString().compareTo(edge2.toString());
+						return o1.toString().compareTo(o2.toString());
 					}
-
-					// if(targetRow1 < targetRow)
-					// {
-					// targetRow1 += targetRow;
-					// }
-					// if(targetRow2 < targetRow)
-					// {
-					// targetRow2 += targetRow;
-					// }
 					return targetRow1 - targetRow2;
 				}
-				return length2 - length1;
+				return edgeWeight2 - edgeWeight1;
 			}
-			//
-			// if(edgeWeight1 > edgeWeight)
-			// {
-			// edgeWeight1 -= edgeWeight;
-			// }
-			// if(edgeWeight2 > edgeWeight)
-			// {
-			// edgeWeight2 -= edgeWeight;
-			// }
-			// return edgeWeight2 - edgeWeight1;
-			// }
-		};
+		});
+		Collection result = super.createInitialTree(edges.iterator());
+		edges.clear();		
+		return result;
 	}
 }

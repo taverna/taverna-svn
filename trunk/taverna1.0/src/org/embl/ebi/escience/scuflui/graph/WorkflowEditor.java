@@ -32,7 +32,6 @@ import java.util.List;
 import java.util.Map;
 
 import javax.swing.ImageIcon;
-import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JPopupMenu;
 
@@ -122,7 +121,7 @@ public class WorkflowEditor extends JGraph implements ScuflUIComponent
 		GraphLayoutCache layoutCache = getGraphLayoutCache();
 		layoutManager = new RowLayout(graphModel, layoutCache);
 		layoutCache.setAutoSizeOnValueChange(true);
-		layoutCache.setSelectLocalInsertedCells(false);
+		layoutCache.setSelectsLocalInsertedCells(false);
 		layoutCache.setSelectsAllInsertedCells(false);
 		layoutCache.setFactory(new DefaultCellViewFactory()
 		{
@@ -150,8 +149,10 @@ public class WorkflowEditor extends JGraph implements ScuflUIComponent
 							return getAttributes().createPoint(r.getX(), r.getY());
 						}
 						else if (obj instanceof Point2D)
+						{
 							// Regular Point
 							return (Point2D) obj;
+						}
 						return null;
 					}
 				};
@@ -515,6 +516,28 @@ public class WorkflowEditor extends JGraph implements ScuflUIComponent
 	public String getName()
 	{
 		return "Workflow Editor (BETA)";
+	}
+
+	public void updateAutoSize(CellView view)
+	{
+		if(!view.isLeaf())
+		{
+			CellView[] children = view.getChildViews();
+			Rectangle2D rect = GraphConstants.getBounds(children[0].getAllAttributes());
+			double x = rect.getMaxX() + 10;
+			double y = rect.getY();
+			for(int index = 1; index < children.length; index++)
+			{
+				Rectangle2D childRect = GraphConstants.getBounds(children[index].getAllAttributes());
+				childRect.setFrame(x, y, childRect.getWidth(), childRect.getHeight());
+				x += childRect.getWidth() + 10;
+				children[index].update();
+			}			
+		}
+		else
+		{
+			super.updateAutoSize(view);
+		}
 	}
 
 	public void updateStatus(String status)

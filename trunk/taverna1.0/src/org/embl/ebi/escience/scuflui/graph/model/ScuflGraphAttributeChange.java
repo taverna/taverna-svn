@@ -13,7 +13,7 @@ import org.jgraph.graph.ParentMap;
 
 /**
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover</a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class ScuflGraphAttributeChange implements GraphModelChange
 {
@@ -124,4 +124,15 @@ public class ScuflGraphAttributeChange implements GraphModelChange
 		return null;
 	}
 
+	public ConnectionSet getConnectionSet()
+	{
+		// TODO Implement getConnectionSet
+		return null;
+	}
+
+	public ParentMap getParentMap()
+	{
+		// TODO Implement getParentMap
+		return null;
+	}
 }

@@ -13,7 +13,7 @@ import java.util.Map;
  * COMMENT
  * 
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover </a>
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
 public class VirtualNode
 {
@@ -21,7 +21,16 @@ public class VirtualNode
 	private Map attributes = new HashMap();
 	protected Edge previous;
 	protected Edge next;
+	protected Object edge;
+	int row;
 
+	public VirtualNode(int row, Object edge)
+	{
+		this.edge = edge;
+		this.row = row;
+		LayoutConstants.setRow(attributes, row);		
+	}
+	
 	public Edge getNextEdge()
 	{
 		return next;
@@ -42,14 +51,6 @@ public class VirtualNode
 		this.previous = previous;
 	}
 
-	/**
-	 * 
-	 */
-	public VirtualNode()
-	{
-		super();
-	}
-
 	public Map getAttributes()
 	{
 		return attributes;
@@ -57,7 +58,7 @@ public class VirtualNode
 
 	public String toString()
 	{
-		return "VirtualNode";
+		return "VirtualNode[" + edge + ", " + row + "]";
 	}
 
 	public Point2D getPosition()

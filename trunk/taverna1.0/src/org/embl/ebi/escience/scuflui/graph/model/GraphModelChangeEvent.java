@@ -20,7 +20,7 @@ import org.jgraph.graph.ParentMap;
  * COMMENT 
  * 
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover</a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class GraphModelChangeEvent implements GraphModelChange
 {
@@ -146,6 +146,18 @@ public class GraphModelChangeEvent implements GraphModelChange
 	public Object[] getContext()
 	{
 		return context;
+	}
+
+	public ConnectionSet getConnectionSet()
+	{
+		// TODO Implement getConnectionSet
+		return null;
+	}
+
+	public ParentMap getParentMap()
+	{
+		// TODO Implement getParentMap
+		return null;
 	}
 
 }
