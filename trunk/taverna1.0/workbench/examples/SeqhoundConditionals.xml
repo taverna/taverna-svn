@@ -29,11 +29,11 @@
   </s:processor>
   <s:processor name="seqret">
     <s:description>Reads and writes (returns) sequences</s:description>
-    <s:soaplabwsdl>http://industry.ebi.ac.uk/soap/soaplab/edit::seqret</s:soaplabwsdl>
+    <s:soaplabwsdl>http://www.ebi.ac.uk/soaplab/services/edit::seqret</s:soaplabwsdl>
   </s:processor>
   <s:processor name="transeq">
     <s:description>Translate nucleic acid sequences</s:description>
-    <s:soaplabwsdl>http://industry.ebi.ac.uk/soap/soaplab/nucleic_translation::transeq</s:soaplabwsdl>
+    <s:soaplabwsdl>http://www.ebi.ac.uk/soaplab/services/nucleic_translation::transeq</s:soaplabwsdl>
   </s:processor>
   <s:processor name="createSession">
     <s:arbitrarywsdl>
