@@ -83,51 +83,93 @@ public class WSDLInvocationTask implements ProcessorTaskWorker {
 		Class c = processor.inTypes[i];
 		String argName = processor.inNames[i];
 		DataThing inputObject = (DataThing)inputMap.get(argName);
-		if (inputObject == null) {
-		    throw new TaskExecutionException("Input to web service '"+argName+"' was defined but not provided.");
-		}
-		// Check whether the input port has been flagged as text/xml and create a DOM Node if so
-		if (c.equals(org.w3c.dom.Element.class)) {
-		    try {
-			System.out.println("Trying to create dom...");
-			// create a new Document
-			DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
-			String dataObject = (String)inputObject.getDataObject();
-			Document doc = builder.parse(new ByteArrayInputStream(dataObject.getBytes()));
-			value = doc.getDocumentElement();
+		if (processor.documentPartQName != null) {
+		    DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+		    DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+		    Document document = builder.newDocument();
+		    System.out.println("Attempting to create DOM, top level node has namespace "+processor.documentPartQName.getNamespaceURI());
+		    
+		    Element root = (Element)document.createElementNS(processor.documentPartQName.getNamespaceURI(),
+								     processor.documentPartQName.getLocalPart());
+		    // Hack to introduce the namespace back as an attribute. There has to be a nicer
+		    // way of doing it than this but it would seem not.
+		    Attr attr = document.createAttribute("xmlns");
+		    attr.setValue(processor.documentPartQName.getNamespaceURI());
+		    root.setAttributeNode(attr);
+		    for (Iterator j = processor.inputDescriptions.iterator(); j.hasNext();) {
+			InputDescription idesc = (InputDescription)j.next();
+			String inputName = idesc.elementName.getLocalPart();
+			DataThing inputThing = (DataThing)inputMap.get(inputName);
+			if (inputThing != null) {
+			    if (inputThing.getDataObject() instanceof String) {
+				String contents = (String)inputThing.getDataObject();
+				root.appendChild(idesc.getElement(contents, document));
+			    }
+			    else if (inputThing.getDataObject() instanceof List) {
+				List l = (List)inputThing.getDataObject();
+				for (Iterator k = l.iterator(); k.hasNext();) {
+				    String item = (String)k.next();
+				    root.appendChild(idesc.getElement(item, document));
+				}
+			    }			    
+			}
+			else {
+			    if (idesc.isOptional == false) {
+				throw new TaskExecutionException("Parameter '"+inputName+"' is mandatory for this service");
+			    }
+			}
 		    }
-		    catch (Exception ex) {
-			throw new TaskExecutionException("Operation requires an XML complex type but\n invalid XML was supplied : "+ex.getMessage());
-		    }
-		    /**
-		       TransformerFactory tFactory = TransformerFactory.newInstance();
-		       Transformer transformer = tFactory.newTransformer();
-		       DOMSource source = new DOMSource(doc.getDocumentElement());
-		       ByteArrayOutputStream baos = new ByteArrayOutputStream();
-		       transformer.transform(source, new StreamResult(baos));
-		       System.out.println(baos.toString());
-		    */
+		    document.appendChild(root);
+		    value = root;
+
 		}
 		else {
-		    // If the datathing contains a string and the service wants something else...
-		    if (inputObject.getDataObject() instanceof String) {
-			String argString = (String)inputObject.getDataObject();
-			if (c.equals(Double.TYPE)) {
-			    value = new Double(argString);
+		    if (inputObject == null) {
+			throw new TaskExecutionException("Input to web service '"+argName+"' was defined but not provided.");
+		    }
+		    // Check whether the input port has been flagged as text/xml and create a DOM Node if so
+		    if (c.equals(org.w3c.dom.Element.class)) {
+			try {
+			    System.out.println("Trying to create dom...");
+			    // create a new Document
+			    DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+			    String dataObject = (String)inputObject.getDataObject();
+			    Document doc = builder.parse(new ByteArrayInputStream(dataObject.getBytes()));
+			    value = doc.getDocumentElement();
 			}
-			else if (c.equals(Float.TYPE)) {
-			    value = new Float(argString);
+			catch (Exception ex) {
+			    throw new TaskExecutionException("Operation requires an XML complex type but\n invalid XML was supplied : "+ex.getMessage());
 			}
-			else if (c.equals(Integer.TYPE)) {
-			    value = new Integer(argString);
-			}
-			else if (c.equals(Boolean.TYPE)) {
-			    value = new Boolean(argString);
+			/**
+			   TransformerFactory tFactory = TransformerFactory.newInstance();
+			   Transformer transformer = tFactory.newTransformer();
+			   DOMSource source = new DOMSource(doc.getDocumentElement());
+			   ByteArrayOutputStream baos = new ByteArrayOutputStream();
+			   transformer.transform(source, new StreamResult(baos));
+			   System.out.println(baos.toString());
+			*/
+		    }
+		    else {
+			// If the datathing contains a string and the service wants something else...
+			if (inputObject.getDataObject() instanceof String) {
+			    String argString = (String)inputObject.getDataObject();
+			    if (c.equals(Double.TYPE)) {
+				value = new Double(argString);
+			    }
+			    else if (c.equals(Float.TYPE)) {
+				value = new Float(argString);
+			    }
+			    else if (c.equals(Integer.TYPE)) {
+				value = new Integer(argString);
+			    }
+			    else if (c.equals(Boolean.TYPE)) {
+				value = new Boolean(argString);
+			    }
 			}
 		    }
-		}
-		if (value == null) {
-		    value = inputObject.getDataObject();
+		    if (value == null) {
+			value = inputObject.getDataObject();
+		    }
 		}
 		input.setObjectPart(processor.inNames[i], value);
 	    }

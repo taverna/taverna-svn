@@ -28,6 +28,10 @@ import org.apache.wsif.providers.soap.apacheaxis.WSIFDynamicProvider_ApacheAxis;
 import org.apache.wsif.util.WSIFPluggableProviders;
 import org.apache.wsif.util.WSIFUtils;
 import org.apache.wsif.providers.ProviderUtils;
+import org.apache.wsif.schema.ComplexType;
+import org.apache.wsif.schema.ElementType;
+import org.apache.wsif.schema.Parser;
+import org.apache.wsif.schema.*;
 
 
 /**
@@ -53,6 +57,10 @@ public class WSDLBasedProcessor extends Processor implements java.io.Serializabl
     String wsdlLocation = null;
     String[] inNames, outNames;
     Class[] inTypes, outTypes;
+    boolean isWrappedDocLit = false;
+    // If this is defined then we're using the input part munging code
+    QName documentPartQName = null;
+    List inputDescriptions = new ArrayList();
     
     public WSDLBasedProcessor(ScuflModel model, String procName, String wsdlLocation, String operationName)
 	throws ProcessorCreationException,
@@ -142,10 +150,77 @@ public class WSDLBasedProcessor extends Processor implements java.io.Serializabl
 		inTypes = new Class[count];
 		retrieveSignature(parts, inNames, inTypes);
 		// Build input ports from these definitions
-		for (int i = 0; i < count; i++) {
-		    InputPort inputPort = new InputPort(this, inNames[i]);
-		    inputPort.setSyntacticType(translateJavaType(inTypes[i]));
-		    addPort(inputPort);
+
+		// Check for single length list with complex types and not wrapped doc lit (!)
+		if (parts.size() == 1 && !isWrappedDocLit) {
+		    Part documentPart = (Part)parts.get(0);
+		    if (documentPart.getElementName() != null) {
+			
+			System.out.println("Top level part has complex type "+documentPart.getElementName().toString());
+			documentPartQName = documentPart.getElementName();			
+
+			List schemaTypes = new ArrayList();
+			Parser.getAllSchemaTypes(def, schemaTypes, null);
+			// Get the QName of the part we're expanding
+			QName partQN = documentPart.getElementName();
+			ElementType et = getElementType(schemaTypes, partQN);
+			List children = et.getChildren();
+			ComplexType ct = null;
+			if (children == null || children.size() < 1) {
+			    ct = getComplexType(schemaTypes, et.getElementType());
+			}
+			else {
+			    ct = (ComplexType)children.get(0);
+			}
+			SequenceElement[] se = ct.getSequenceElements();
+			for (int i = 0; i < se.length; i++) {
+			    // Fully qualified element name of the subpart
+			    QName elementName = se[i].getTypeName();
+			    // Type definition
+			    QName elementType = PermissionHack.getXMLAttribute(se[i], new QName("type"));
+			    
+			    QName temp = PermissionHack.getXMLAttribute(se[i], new QName("minOccurs"));
+			    boolean isOptional = false;
+			    if (temp != null) {
+				if (temp.getLocalPart().equals("0")) {
+				    isOptional = true;
+				}
+			    }
+			    temp = PermissionHack.getXMLAttribute(se[i], new QName("maxOccurs"));
+			    boolean isArray = true;
+			    if (temp != null) {
+				if (temp.getLocalPart().equals("1")) {
+				    isArray = false;
+				}
+			    }
+			    inputDescriptions.add(new InputDescription(elementName, elementType, isOptional, isArray));
+			    
+			    //System.out.println(new InputDescription(elementName, elementType, isOptional, isArray));
+			    
+			    
+			    //System.out.println(type);
+			    //System.out.println(PermissionHack.getXMLAttribute(se[i], new QName("type")));
+			    //System.out.println(PermissionHack.getXMLAttribute(se[i], new QName("minOccurs")));
+			    //System.out.println(PermissionHack.getXMLAttribute(se[i], new QName("maxOccurs")));
+			}
+			
+		    }
+		}
+		
+		if (documentPartQName == null) {
+		    for (int i = 0; i < count; i++) {
+			InputPort inputPort = new InputPort(this, inNames[i]);
+			inputPort.setSyntacticType(translateJavaType(inTypes[i]));
+			addPort(inputPort);
+		    }
+		}
+		else {
+		    for (Iterator i = inputDescriptions.iterator(); i.hasNext();) {
+			InputDescription idesc = (InputDescription)i.next();
+			InputPort inputPort = new InputPort(this, idesc.elementName.getLocalPart());
+			inputPort.setSyntacticType(idesc.getTavernaType());
+			addPort(inputPort);
+		    }
 		}
 	    } 
 	    
@@ -305,6 +380,7 @@ public class WSDLBasedProcessor extends Processor implements java.io.Serializabl
 	    List unWrappedParts = ProviderUtils.unWrapPart(p, def);
 	    parts.remove(p);
 	    parts.addAll(unWrappedParts);
+	    isWrappedDocLit = true;
 	}
 	
     }  
@@ -312,7 +388,7 @@ public class WSDLBasedProcessor extends Processor implements java.io.Serializabl
     /** 
      * Translate a java type into a taverna type string
      */
-    private static String translateJavaType(Class type) {
+    static String translateJavaType(Class type) {
 	if (type.equals(String[].class)) {
 	    return "l('text/plain')";
 	}
@@ -324,5 +400,35 @@ public class WSDLBasedProcessor extends Processor implements java.io.Serializabl
 	}
     }
         
+    protected static ElementType getElementType(List l, QName qn) {
+    	ElementType et = null;
+	for (int i=0; i<l.size() && et==null; i++ ){
+	    Object o = l.get(i);
+	    if ( o instanceof ElementType ) {
+                QName etQN = ((ElementType)o).getTypeName();
+		if ( qn.equals(etQN) ){
+		    et = (ElementType)o;
+		}
+	    }
+	}
+	return et;
+    }
+    
+    protected static ComplexType getComplexType(List l, QName type) {
+       	ComplexType ct = null;
+    	if (type != null && l != null) {
+	    String name = type.getLocalPart();
+	    for (int i=0; i<l.size() && ct==null; i++ ) {
+		Object o = l.get(i);
+		if (o instanceof ComplexType) {
+		    if (name.equals(  ((ComplexType)o).getTypeName().getLocalPart() )){
+			ct = (ComplexType)o;
+		    }
+		}
+	    }
+    	}
+	return ct;
+    }
+    
 }
 
