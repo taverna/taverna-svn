@@ -42,11 +42,11 @@ public class ScavengerTreePanel extends JPanel
 	toolbar.setRollover(true);
 	toolbar.add(new JLabel(" Search list "));
 	regex = new JTextField();
-	regex.setPreferredSize(new Dimension(100,25));
-	regex.setMaximumSize(new Dimension(100,25));
+	regex.setPreferredSize(new Dimension(100,20));
+	regex.setMaximumSize(new Dimension(100,20));
 	toolbar.add(regex);
 	find = new JButton(ScuflIcons.findIcon);
-	find.setPreferredSize(new Dimension(25,25));
+	find.setPreferredSize(new Dimension(20,20));
 	find.setEnabled(false);
 	toolbar.add(find);
 	toolbar.addSeparator();

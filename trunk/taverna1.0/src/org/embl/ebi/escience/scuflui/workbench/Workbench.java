@@ -301,7 +301,7 @@ public class Workbench extends JFrame {
 	    }
 	}
 
-	JMenuItem thingBuilder = new JMenuItem("Run workflow");
+	JMenuItem thingBuilder = new JMenuItem("Run workflow", ScuflIcons.runIcon);
 	thingBuilder.addActionListener(new ActionListener() {
 		public void actionPerformed(ActionEvent e) {
 		    // Show a workflow input panel if there are workflow inputs, otherwise
