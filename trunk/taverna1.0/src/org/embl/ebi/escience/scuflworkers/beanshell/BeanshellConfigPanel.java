@@ -10,7 +10,6 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
-import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
@@ -22,11 +21,10 @@ import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
-import javax.swing.DefaultListModel;
+import javax.swing.DefaultCellEditor;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
-import javax.swing.JDialog;
-import javax.swing.JList;
+import javax.swing.JComboBox;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
@@ -35,7 +33,6 @@ import javax.swing.JTabbedPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.KeyStroke;
-import javax.swing.WindowConstants;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.event.TableModelEvent;
@@ -54,6 +51,7 @@ import org.embl.ebi.escience.scuflui.ScuflIcons;
 import org.embl.ebi.escience.scuflui.ScuflUIComponent;
 import org.embl.ebi.escience.scuflworkers.ProcessorHelper;
 import org.syntax.jedit.JEditTextArea;
+import org.syntax.jedit.TextAreaDefaults;
 import org.syntax.jedit.tokenmarker.JavaTokenMarker;
 
 /**
@@ -120,7 +118,7 @@ public class BeanshellConfigPanel extends JPanel implements ScuflUIComponent,
 		setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
 		this.processor = bp;
 
-		scriptText = new JEditTextArea();
+		scriptText = new JEditTextArea(new TextAreaDefaults());
 		scriptText.setText(processor.getScript());
 		scriptText.setTokenMarker(new JavaTokenMarker());
 		scriptText.setCaretPosition(0);
@@ -144,9 +142,6 @@ public class BeanshellConfigPanel extends JPanel implements ScuflUIComponent,
 
 		// Panel to edit the input and output ports
 		JPanel portEditPanel = new JPanel(new GridLayout(0, 2));
-
-		// ...and for the outputs
-		final DefaultListModel outputModel = new DefaultListModel();
 
 		MouseListener tableMouseListener = new MouseAdapter()
 		{
@@ -180,6 +175,22 @@ public class BeanshellConfigPanel extends JPanel implements ScuflUIComponent,
 		};
 		
 		deletePortAction.putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_DELETE, 0));
+		
+		JComboBox inputTypesCombo = new JComboBox();
+		inputTypesCombo.setEditable(true);
+		inputTypesCombo.addItem("'text/plain'");
+		inputTypesCombo.addItem("'text/html'");
+		inputTypesCombo.addItem("'text/xml'");
+		inputTypesCombo.addItem("'text/rtf'");
+		inputTypesCombo.addItem("'text/x-taverna-web-url'");
+		inputTypesCombo.addItem("'text/x-graphviz'");		
+		inputTypesCombo.addItem("'image/jpeg'");
+		inputTypesCombo.addItem("'image/gif'");
+		inputTypesCombo.addItem("'image/png'");
+		inputTypesCombo.addItem("'chemical/x-swissprot'");
+		inputTypesCombo.addItem("'chemical/x-embl-dl-nucleotide'");
+		inputTypesCombo.addItem("'chemical/x-swissprot'");
+		inputTypesCombo.addItem("'chemical/x-ppd'");		
 		
 		inputTable = new JTable(new AbstractTableModel()
 		{
@@ -246,6 +257,7 @@ public class BeanshellConfigPanel extends JPanel implements ScuflUIComponent,
 		inputTable.getInputMap().put((KeyStroke)deletePortAction.getValue(Action.ACCELERATOR_KEY), "DELETE_PORT");
 		inputTable.getActionMap().put("DELETE_PORT", deletePortAction);
 		inputTable.addMouseListener(tableMouseListener);
+		inputTable.getColumnModel().getColumn(1).setCellEditor(new DefaultCellEditor(inputTypesCombo));
 		inputTable.setDefaultRenderer(Port.class, new DefaultTableCellRenderer()
 		{
 			public Component getTableCellRendererComponent(JTable table, Object value,
@@ -332,6 +344,23 @@ public class BeanshellConfigPanel extends JPanel implements ScuflUIComponent,
 		outputEditPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory
 				.createEtchedBorder(), "Outputs"));
 
+		JComboBox outputTypesCombo = new JComboBox();
+		outputTypesCombo.setEditable(true);
+		outputTypesCombo.addItem("'text/plain'");
+		outputTypesCombo.addItem("'text/html'");
+		outputTypesCombo.addItem("'text/xml'");
+		outputTypesCombo.addItem("'text/rtf'");
+		outputTypesCombo.addItem("'text/x-taverna-web-url'");
+		outputTypesCombo.addItem("'text/x-graphviz'");		
+		outputTypesCombo.addItem("'image/jpeg'");
+		outputTypesCombo.addItem("'image/gif'");
+		outputTypesCombo.addItem("'image/png'");
+		outputTypesCombo.addItem("'chemical/x-swissprot'");
+		outputTypesCombo.addItem("'chemical/x-embl-dl-nucleotide'");
+		outputTypesCombo.addItem("'chemical/x-swissprot'");
+		outputTypesCombo.addItem("'chemical/x-ppd'");		
+				
+		
 		outputTable = new JTable(new AbstractTableModel()
 		{
 			public int getColumnCount()
@@ -396,6 +425,7 @@ public class BeanshellConfigPanel extends JPanel implements ScuflUIComponent,
 		outputTable.addMouseListener(tableMouseListener);		
 		outputTable.getInputMap().put((KeyStroke)deletePortAction.getValue(Action.ACCELERATOR_KEY), "DELETE_PORT");
 		outputTable.getActionMap().put("DELETE_PORT", deletePortAction);				
+		outputTable.getColumnModel().getColumn(1).setCellEditor(new DefaultCellEditor(outputTypesCombo));		
 		outputTable.setTableHeader(null);
 		outputTable.setDefaultRenderer(Port.class, new DefaultTableCellRenderer()
 		{
@@ -426,6 +456,7 @@ public class BeanshellConfigPanel extends JPanel implements ScuflUIComponent,
 					OutputPort op = new OutputPort(processor, addOutputField.getText());
 					op.setSyntacticType("'text/plain'");
 					processor.addPort(op);
+					addOutputField.setText("");
 				}
 				catch (PortCreationException pce)
 				{
@@ -479,84 +510,8 @@ public class BeanshellConfigPanel extends JPanel implements ScuflUIComponent,
 		tabbedPane.addTab("Script", scriptEditPanel);
 		tabbedPane.addTab("Ports", portEditPanel);
 		add(tabbedPane);
+		
 		setVisible(true);
-	}
-
-	protected class PortListMouseListener extends MouseAdapter
-	{
-		PortListMouseListener(JList list, DefaultListModel listModel, boolean inputFlag)
-		{
-			this.list = list;
-			this.listModel = listModel;
-			this.inputFlag = inputFlag;
-			list.addMouseListener(this);
-		}
-
-		protected JList list;
-		protected DefaultListModel listModel;
-		protected boolean inputFlag;
-
-		public void mousePressed(MouseEvent me)
-		{
-			popup(me);
-		}
-
-		public void mouseReleased(MouseEvent me)
-		{
-			popup(me);
-		}
-
-		protected void popup(MouseEvent me)
-		{
-			if (me.isPopupTrigger())
-			{
-				int index = list.locationToIndex(new Point(me.getX(), me.getY()));
-				if (index < 0 || index >= list.getModel().getSize())
-					return;
-				list.setSelectedIndex(index);
-				final Port p = (Port) list.getModel().getElementAt(index);
-				if (p != null)
-				{
-					JPopupMenu menu = new JPopupMenu();
-					menu.add(new JMenuItem(new AbstractAction("Remove port")
-					{
-						public void actionPerformed(ActionEvent ae)
-						{
-							processor.removePort(p);
-						}
-					}));
-					menu.add(new JMenuItem(new AbstractAction("Edit syntactic type")
-					{
-						public void actionPerformed(ActionEvent ae)
-						{
-							// System.out.println("Edit syntactic type of
-							// "+p.getName()+" ("+p.getSyntacticType()+")");
-							final JTextField field = new JTextField(40);
-							if (p.getSyntacticType() != null)
-							{
-								field.setText(p.getSyntacticType());
-							}
-							final JDialog dialog = new JDialog();
-							dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-							dialog.setTitle("Edit syntactic type of " + p.getName());
-							dialog.getContentPane().setLayout(new BorderLayout());
-							dialog.getContentPane().add(field);
-							field.addActionListener(new ActionListener()
-							{
-								public void actionPerformed(ActionEvent ae)
-								{
-									p.setSyntacticType(field.getText());
-									dialog.dispose();
-								}
-							});
-							dialog.pack();
-							dialog.setVisible(true);
-						}
-					}));
-					menu.show(list, me.getX(), me.getY());
-				}
-			}
-		}
 	}
 
 	public void attachToModel(ScuflModel theModel)
