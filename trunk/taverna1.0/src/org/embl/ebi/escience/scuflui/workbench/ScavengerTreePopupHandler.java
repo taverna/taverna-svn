@@ -359,6 +359,15 @@ public class ScavengerTreePopupHandler extends MouseAdapter {
 			    }
 			});
 
+		    JMenuItem hideAllNodes = new JMenuItem("Collapse all");
+		    menu.add(hideAllNodes);
+		    hideAllNodes.addActionListener(new ActionListener() {
+			    public void actionPerformed(ActionEvent ae) {
+					scavenger.setExpansion(false);
+					scavenger.expandPath(new TreePath(scavenger.treeModel.getRoot()));
+				    }
+				});
+		    
 		    //menu.show(scavenger, e.getX(), e.getY());
 
 		}
