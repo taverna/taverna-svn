@@ -36,19 +36,51 @@ public class SeqhoundTask implements ProcessorTaskWorker {
 	    // Now need to convert the value of the DataThing into an instance
 	    // of the target class
 	    Object targetObject = null;
-	    if (targetClass.equals(String.class)) {
-		targetObject = (String)inputThing.getDataObject();
-	    }
-	    else if (targetClass.equals(Integer.class) ||
-		     targetClass.equals(Integer.TYPE)) {
-		targetObject = new Integer((String)inputThing.getDataObject());
-	    }
-	    else if (targetClass.equals(Float.class) ||
-		     targetClass.equals(Float.TYPE)) {
-		targetObject = new Float((String)inputThing.getDataObject());
+	    if (targetClass.isArray() == false) {
+		if (targetClass.equals(String.class)) {
+		    targetObject = (String)inputThing.getDataObject();
+		}
+		else if (targetClass.equals(Integer.class) ||
+			 targetClass.equals(Integer.TYPE)) {
+		    targetObject = new Integer((String)inputThing.getDataObject());
+		}
+		else if (targetClass.equals(Float.class) ||
+			 targetClass.equals(Float.TYPE)) {
+		    targetObject = new Float((String)inputThing.getDataObject());
+		}
+		else {
+		    throw new TaskExecutionException("Unable to generate input of type "+targetClass.toString()+" for input name "+inputName);
+		}
 	    }
 	    else {
-		throw new TaskExecutionException("Unable to generate input of type "+targetClass.toString()+" for input name "+inputName);
+		// DataThing input must be a collection, the iteration framework will
+		// have ensured this. So, we need an appropriate array type to populate
+		// from this collection.
+		List inputList = (List)inputThing.getDataObject();
+		// Cope with input arrays
+		if (targetClass.equals(String[].class)) {
+		    // Just use the collection methods to build an input array
+		    targetObject = (String[])inputList.toArray(new String[0]);
+		}
+		else if (targetClass.equals(int[].class)) {
+		    int[] temp = new int[inputList.size()];
+		    for (int j = 0; j < temp.length; j++) {
+			temp[j] = Integer.parseInt((String)inputList.get(j));
+		    }
+		    targetObject = temp;
+		}
+		else if (targetClass.equals(float[].class)) {
+		    float[] temp = new float[inputList.size()];
+		    for (int j = 0; j < temp.length; j++) {
+			temp[j] = Float.parseFloat((String)inputList.get(j));
+		    }
+		    targetObject = temp;
+		}
+		else {
+		    throw new TaskExecutionException("Unable to generate array input of type "+
+						     targetClass.toString()+" for input name "+
+						     inputName);
+		}
 	    }
 	    inputArray[i] = targetObject;
 	}
