@@ -136,6 +136,23 @@ public class TalismanTask extends ProcessorTask {
 	 * overide this method and provide this information as an XML JDOM element
 	 */
 	public org.jdom.Element getProvenance() {
-		return new org.jdom.Element("TalismanTriggerInvocation");
+		org.jdom.Element e = new org.jdom.Element("TalismanTriggerInvocation");
+		if(logLevel.getLevel()>=LogLevel.LOW) {
+			org.jdom.Element status = new org.jdom.Element("status",PROVENANCE_NAMESPACE);
+			status.addContent(new org.jdom.Text(getStateString()));
+			e.addContent(status);
+			//add start and end time
+			if(startTime!=null) {
+				org.jdom.Element sT = new org.jdom.Element("startTime",PROVENANCE_NAMESPACE);
+				sT.addContent(new org.jdom.Text(startTime.getString()));
+				e.addContent(sT);
+			}
+			if(endTime!=null) {
+				org.jdom.Element eT = new org.jdom.Element("endTime",PROVENANCE_NAMESPACE);
+				eT.addContent(new org.jdom.Text(endTime.getString()));
+				e.addContent(eT);
+			}						
+		}
+		return e;
 	}
 }

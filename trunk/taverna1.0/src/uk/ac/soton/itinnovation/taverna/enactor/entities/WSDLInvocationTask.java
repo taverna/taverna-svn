@@ -24,9 +24,9 @@
 //      Created for Project :   MYGRID
 //      Dependencies        :
 //
-//      Last commit info    :   $Author: mereden $
-//                              $Date: 2003-05-23 12:36:00 $
-//                              $Revision: 1.7 $
+//      Last commit info    :   $Author: dmarvin $
+//                              $Date: 2003-05-29 10:08:19 $
+//                              $Revision: 1.8 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 
@@ -217,6 +217,22 @@ public class WSDLInvocationTask extends ProcessorTask implements InvocationDescr
 			org.jdom.Element status = new org.jdom.Element("status",PROVENANCE_NAMESPACE);
 			status.addContent(new org.jdom.Text(getStateString()));
 			e.addContent(status);
+			//add start and end time
+			if(startTime!=null) {
+				Element sT = new Element("startTime",PROVENANCE_NAMESPACE);
+				sT.addContent(new Text(startTime.getString()));
+				e.addContent(sT);
+			}
+			if(endTime!=null) {
+				Element eT = new Element("endTime",PROVENANCE_NAMESPACE);
+				eT.addContent(new Text(endTime.getString()));
+				e.addContent(eT);
+			}
+			
+			
+		}
+
+		if(logLevel.getLevel()>=LogLevel.NORMAL) {
 			//add the wsdl service invoked
 			String wsdlURL = getSelectedServiceWSDLURL().toExternalForm();
 			if(wsdlURL!=null) {
@@ -237,21 +253,7 @@ public class WSDLInvocationTask extends ProcessorTask implements InvocationDescr
 				Element op = new Element("Operation",PROVENANCE_NAMESPACE);
 				op.addContent(new Text(operation));
 				e.addContent(op);
-			}
-		}
-
-		if(logLevel.getLevel()>=LogLevel.NORMAL) {
-			//add start and end time
-			if(startTime!=null) {
-				Element sT = new Element("startTime",PROVENANCE_NAMESPACE);
-				sT.addContent(new Text(startTime.getString()));
-				e.addContent(sT);
-			}
-			if(endTime!=null) {
-				Element eT = new Element("endTime",PROVENANCE_NAMESPACE);
-				eT.addContent(new Text(endTime.getString()));
-				e.addContent(eT);
-			}
+			}	
 		}
 
 		if(logLevel.getLevel()>=LogLevel.HIGH) {

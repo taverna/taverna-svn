@@ -24,9 +24,9 @@
 //      Created for Project :   MYGRID
 //      Dependencies        :
 //
-//      Last commit info    :   $Author: mereden $
-//                              $Date: 2003-05-23 12:36:00 $
-//                              $Revision: 1.7 $
+//      Last commit info    :   $Author: dmarvin $
+//                              $Date: 2003-05-29 10:08:21 $
+//                              $Revision: 1.8 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 
@@ -206,15 +206,6 @@ public class SoaplabTask extends ProcessorTask{
 			org.jdom.Element status = new org.jdom.Element("status",PROVENANCE_NAMESPACE);
 			status.addContent(new org.jdom.Text(getStateString()));
 			e.addContent(status);
-			//add the wsdl service invoked
-			if(soaplabWSDL!=null) {
-				org.jdom.Element uri = new org.jdom.Element("WSDLURI",PROVENANCE_NAMESPACE);
-				uri.addContent(new org.jdom.Text(soaplabWSDL));
-				e.addContent(uri);
-			}			
-		}
-
-		if(logLevel.getLevel()>=LogLevel.NORMAL) {
 			//add start and end time
 			if(startTime!=null) {
 				org.jdom.Element sT = new org.jdom.Element("startTime",PROVENANCE_NAMESPACE);
@@ -225,6 +216,15 @@ public class SoaplabTask extends ProcessorTask{
 				org.jdom.Element eT = new org.jdom.Element("endTime",PROVENANCE_NAMESPACE);
 				eT.addContent(new org.jdom.Text(endTime.getString()));
 				e.addContent(eT);
+			}						
+		}
+
+		if(logLevel.getLevel()>=LogLevel.NORMAL) {			
+			//add the wsdl service invoked
+			if(soaplabWSDL!=null) {
+				org.jdom.Element uri = new org.jdom.Element("WSDLURI",PROVENANCE_NAMESPACE);
+				uri.addContent(new org.jdom.Text(soaplabWSDL));
+				e.addContent(uri);
 			}
 			if(report!=null) {
 				org.jdom.Element rep = new org.jdom.Element("soaplabReport",PROVENANCE_NAMESPACE);
