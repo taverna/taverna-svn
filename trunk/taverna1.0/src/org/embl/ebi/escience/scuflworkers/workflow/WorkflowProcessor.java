@@ -34,6 +34,32 @@ public class WorkflowProcessor extends Processor implements java.io.Serializable
     private String definitionURL = null;
 
     /**
+     * Go offline
+     */
+    public void setOffline() {
+	try {
+	    this.theModel.setOffline(true);
+	    System.out.println("Set nested processor to offline mode");
+	}
+	catch (SetOnlineException soe) {
+	    soe.printStackTrace();
+	}
+    }
+    
+    /**
+     * Go online
+     */
+    public void setOnline() {
+	try {
+	    this.theModel.setOffline(false);
+	    System.out.println("Set nested processor to online mode");
+	}
+	catch (SetOnlineException soe) {
+	    soe.printStackTrace();
+	}
+    }
+
+    /**
      * Construct a new processor with the given model to bind to, name
      * and URL of a workflow description to contain. 
      */
@@ -45,6 +71,12 @@ public class WorkflowProcessor extends Processor implements java.io.Serializable
 	try {
 	    // Create a new model instance
 	    this.theModel = new ScuflModel();
+	    try {
+		this.theModel.setOffline(model.isOffline());
+	    }
+	    catch (SetOnlineException soe) {
+		//
+	    }
 	    // Populate from the definition URL
 	    XScuflParser.populate(new URL(definitionURL).openStream(), theModel, null);
 	    buildPorts();
@@ -76,6 +108,12 @@ public class WorkflowProcessor extends Processor implements java.io.Serializable
 	try {
 	    Document doc = new Document((Element)scuflElement.clone());
 	    this.theModel = new ScuflModel();
+	    try {
+		this.theModel.setOffline(model.isOffline());
+	    }
+	    catch (SetOnlineException soe) {
+		//
+	    }
 	    XScuflParser.populate(doc, theModel, null);
 	    buildPorts();
 	    createListener();

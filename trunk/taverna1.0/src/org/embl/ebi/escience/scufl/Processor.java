@@ -63,6 +63,18 @@ public abstract class Processor implements Serializable {
     public static String ENACTOR = "Local to enactor";
 
     /**
+     * Allow subclasses to intercept requests to go offline and
+     * online, allows e.g. the workflow processor to delegate
+     * this to the child workflow
+     */
+    protected void setOnline() {
+	//
+    }
+    protected void setOffline() {
+	//
+    }
+
+    /**
      * If meaningful, obtain the host that the resource is based
      * in. Of course, not all processor implementations are service
      * based so this may return the string Processor.ENACTOR instead

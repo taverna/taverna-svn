@@ -26,19 +26,16 @@ public class WorkflowEditor implements ProcessorEditor {
 	return new ActionListener() {
 		public void actionPerformed(ActionEvent ae) {
 		    // Create the new model explorer and show it
-		    UIUtils.createFrame(nestedModel, new AdvancedModelExplorer() {
+		    AdvancedModelExplorer editor = new AdvancedModelExplorer() {
+			    public void attachToModel(ScuflModel theModel) {
+				super.attachToModel(theModel);
+				workOffline.setEnabled(false);
+			    }
 			    public String getName() {
 				return super.getName()+" ["+wp.getName()+"]";
 			    }
-			}, 40, 140, 500, 300);
-		    /**
-		       GenericUIComponentFrame editor = new GenericUIComponentFrame(nestedModel, new AdvancedModelExplorer());
-		       editor.setSize(500,300);
-		       editor.setLocation(40,140);
-		       editor.setTitle(editor.getTitle()+" ["+wp.getName()+"]");
-		       Workbench.workbench.desktop.add(editor);
-		       editor.moveToFront();
-		    */
+			};
+		    UIUtils.createFrame(nestedModel, editor, 40, 140, 500, 300);
 		}
 	    };
     }

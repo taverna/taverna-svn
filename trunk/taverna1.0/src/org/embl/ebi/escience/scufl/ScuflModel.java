@@ -28,6 +28,8 @@ import org.embl.ebi.escience.scufl.UnknownPortException;
 import org.embl.ebi.escience.scufl.UnknownProcessorException;
 import java.lang.String;
 import java.lang.Thread;
+import org.embl.ebi.escience.scufl.view.*;
+import org.embl.ebi.escience.scufl.parser.*;
 
 
 
@@ -54,8 +56,54 @@ public class ScuflModel
      * Set the online / offline status, true sets
      * to offline, false to online (the initial value)
      */
-    public void setOffline(boolean offlineValue) {
-	this.offline = offlineValue;
+    public synchronized void setOffline(boolean offlineValue) 
+	throws SetOnlineException {
+	if (offlineValue != this.offline) {
+	    this.offline = offlineValue;
+	    if (offlineValue == false) {
+		// Interesting case where the workflow was loaded offline
+		// but is now in online mode again...
+		XScuflView xsv = new XScuflView(this);
+		String xscuflText = xsv.getXMLText();
+		removeListener(xsv);
+		// Now have the XML form which should be identical whether
+		// loaded online or not. Can now reinstate the model
+		// with the XML form, processor loaders will be aware of
+		// the online status and fill in any details.
+		this.clear();
+		// Load the model in online mode with no prefix specified
+		try {
+		    XScuflParser.populate(xscuflText, this, null);
+		}
+		catch (Exception ex) {
+		    // Re-load the workflow in offline mode
+		    setOffline(true);
+		    try {
+			XScuflParser.populate(xscuflText, this, null);
+		    }
+		    catch (Exception e) {
+			//
+		    }
+		    SetOnlineException soe = new SetOnlineException("Unable to go online.");
+		    soe.initCause(ex);
+		    soe.printStackTrace();
+		    throw soe;
+		}
+	    }
+	    // Iterate over all the processors and kick the appropriate method
+	    Processor[] allProcessors = getProcessors();
+	    for (int i = 0; i < allProcessors.length; i++) {
+		if (offlineValue == true) {
+		    allProcessors[i].setOffline();
+		}
+		else {
+		    allProcessors[i].setOnline();
+		}
+	    }
+	    // Throw a minor model event to give a hint to the UI that
+	    // the model online status has been changed.
+	    fireModelEvent(new ScuflModelEvent(this, "Offline status change"));
+	}
     }
 
     /**

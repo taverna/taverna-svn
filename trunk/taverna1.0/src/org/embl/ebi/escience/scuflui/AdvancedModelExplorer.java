@@ -41,7 +41,7 @@ public class AdvancedModelExplorer extends JPanel
     private ScuflModel model;
 
     private JButton loadWorkflow, loadFromWeb, saveWorkflow, resetWorkflow, createNested;
-    private JCheckBox workOffline;
+    protected JCheckBox workOffline;
     final JFileChooser fc = new JFileChooser();
     public AdvancedModelExplorer() {
 	
@@ -95,11 +95,16 @@ public class AdvancedModelExplorer extends JPanel
 		public void itemStateChanged(ItemEvent e) {
 		    Object source = e.getItemSelectable();
 		    if (source == workOffline) {
-			if (e.getStateChange() == ItemEvent.DESELECTED) {
-			    model.setOffline(false);
+			try {
+			    if (e.getStateChange() == ItemEvent.DESELECTED) {
+				model.setOffline(false);
+			    }
+			    else {
+				model.setOffline(true);
+			    }
 			}
-			else {
-			    model.setOffline(true);
+			catch (SetOnlineException soe) {
+			    //
 			}
 		    }
 		}
@@ -699,14 +704,27 @@ public class AdvancedModelExplorer extends JPanel
 	return ScuflIcons.windowExplorer;
     }
 
+    private ScuflModelEventListener listener = null;
+
     public void attachToModel(ScuflModel theModel) {
 	this.model = theModel;
 	workOffline.setSelected(theModel.isOffline());
 	explorer.attachToModel(theModel);
+	listener = new ScuflModelEventListener() {
+		public void receiveModelEvent(ScuflModelEvent event) {
+		    if (event instanceof ScuflModelEvent &&
+			event.getSource() == AdvancedModelExplorer.this.model) {
+			boolean currentOfflineStatus = AdvancedModelExplorer.this.model.isOffline();
+			workOffline.setSelected(currentOfflineStatus);
+		    }
+		}
+	    };
+	theModel.addListener(listener);
     }
-
+    
     public void detachFromModel() {
 	explorer.detachFromModel();
+	this.model.removeListener(listener);
 	this.model = null;
     }
 
