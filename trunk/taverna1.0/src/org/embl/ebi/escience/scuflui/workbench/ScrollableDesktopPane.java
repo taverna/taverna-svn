@@ -1,12 +1,19 @@
- package org.embl.ebi.escience.scuflui.workbench; // Generated package name
+ package org.embl.ebi.escience.scuflui.workbench; 
 
-
-
-import javax.swing.*;
+import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.Graphics;
+import java.awt.event.ComponentEvent;
+import java.awt.event.ComponentListener;
+import javax.swing.JDesktopPane;
+import javax.swing.JInternalFrame;
+
+// Utility Imports
 import java.util.Hashtable;
-import java.awt.*;
-import java.awt.event.*;
+
+import java.lang.Object;
+import java.lang.String;
+
 
 
 /**
@@ -24,9 +31,8 @@ import java.awt.event.*;
  * Created: Fri Feb 19 15:08:09 1999
  *
  * @author Phillip Lord
- * @version $Id: ScrollableDesktopPane.java,v 1.1 2003-11-26 13:44:47 mereden Exp $
+ * @version $Id: ScrollableDesktopPane.java,v 1.2 2004-01-27 12:58:10 mereden Exp $
  */
-
 public class ScrollableDesktopPane extends JDesktopPane
 {
 

@@ -25,8 +25,8 @@
 //      Dependencies        :
 //
 //      Last commit info    :   $Author: mereden $
-//                              $Date: 2003-10-09 12:19:32 $
-//                              $Revision: 1.9 $
+//                              $Date: 2004-01-27 12:57:52 $
+//                              $Revision: 1.10 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 package uk.ac.soton.itinnovation.taverna.enactor.broker;
@@ -36,6 +36,7 @@ import org.embl.ebi.escience.scufl.ScuflModel;
 // Utility Imports
 import java.util.Map;
 
+import java.lang.String;
 
 
 

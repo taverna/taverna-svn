@@ -24,6 +24,10 @@ import org.jdom.JDOMException;
 import org.jdom.Namespace;
 import org.jdom.input.SAXBuilder;
 
+import java.lang.Class;
+import java.lang.Exception;
+import java.lang.Object;
+import java.lang.String;
 
 
 

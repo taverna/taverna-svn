@@ -14,14 +14,13 @@ import javax.swing.tree.TreeSelectionModel;
 import org.embl.ebi.escience.scufl.Processor;
 import org.embl.ebi.escience.scufl.ScuflModel;
 import org.embl.ebi.escience.scuflui.ScuflUIComponent;
+import org.embl.ebi.escience.scuflworkers.ProcessorHelper;
 import org.embl.ebi.escience.scuflworkers.soaplab.SoaplabProcessor;
 import org.embl.ebi.escience.scuflworkers.soaplab.SoaplabScavenger;
 import org.embl.ebi.escience.scuflworkers.talisman.TalismanProcessor;
 import org.embl.ebi.escience.scuflworkers.talisman.TalismanScavenger;
 import org.embl.ebi.escience.scuflworkers.wsdl.WSDLBasedProcessor;
 import org.embl.ebi.escience.scuflworkers.wsdl.WSDLBasedScavenger;
-import org.embl.ebi.escience.scuflworkers.ProcessorHelper;
-import org.embl.ebi.escience.scuflui.workbench.Scavenger;
 
 // Utility Imports
 import java.util.ArrayList;
@@ -30,6 +29,11 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
+import org.embl.ebi.escience.scuflui.workbench.Scavenger;
+import org.embl.ebi.escience.scuflui.workbench.ScavengerCreationException;
+import org.embl.ebi.escience.scuflui.workbench.ScavengerTreePopupHandler;
+import org.embl.ebi.escience.scuflui.workbench.ScavengerTreeRenderer;
+import java.lang.String;
 
 
 

@@ -7,13 +7,16 @@ package org.embl.ebi.escience.scuflui;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Dimension;
 import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import javax.imageio.ImageIO;
+import javax.imageio.ImageReader;
+import javax.imageio.stream.ImageInputStream;
 import javax.swing.*;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
@@ -21,16 +24,23 @@ import org.embl.ebi.escience.baclava.DataThing;
 import org.embl.ebi.escience.baclava.factory.DataThingTreeFactory;
 import org.embl.ebi.escience.baclava.factory.DataThingTreeNode;
 import org.embl.ebi.escience.scuflui.workbench.Workbench;
+
+// Utility Imports
 import java.util.Collection;
-import java.awt.image.BufferedImage;
-import javax.imageio.ImageIO;
-import javax.imageio.ImageReader;
-import javax.imageio.stream.ImageInputStream;
 import java.util.Iterator;
 
 // IO Imports
 import java.io.*;
-import java.net.*;
+
+// Network Imports
+import java.net.URL;
+
+import org.embl.ebi.escience.scuflui.XMLTree;
+import java.lang.Exception;
+import java.lang.Object;
+import java.lang.Process;
+import java.lang.Runtime;
+import java.lang.String;
 
 
 

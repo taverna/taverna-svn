@@ -16,6 +16,10 @@ import org.embl.ebi.escience.scufl.*;
 // Utility Imports
 import java.util.Enumeration;
 
+import org.embl.ebi.escience.scuflui.ScuflModelExplorerPopupHandler;
+import org.embl.ebi.escience.scuflui.ScuflModelExplorerRenderer;
+import org.embl.ebi.escience.scuflui.ScuflUIComponent;
+import java.lang.String;
 
 
 

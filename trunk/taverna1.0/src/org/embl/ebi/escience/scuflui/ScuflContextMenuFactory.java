@@ -17,6 +17,13 @@ import org.embl.ebi.escience.scuflui.workbench.Workbench;
 import org.embl.ebi.escience.scuflworkers.ProcessorEditor;
 import org.embl.ebi.escience.scuflworkers.ProcessorHelper;
 
+import org.embl.ebi.escience.scuflui.LinkingMenus;
+import org.embl.ebi.escience.scuflui.NoContextMenuFoundException;
+import org.embl.ebi.escience.scuflui.ScuflIcons;
+import org.embl.ebi.escience.scuflui.ScuflSemanticMarkupEditor;
+import java.lang.Exception;
+import java.lang.Object;
+import java.lang.String;
 
 
 

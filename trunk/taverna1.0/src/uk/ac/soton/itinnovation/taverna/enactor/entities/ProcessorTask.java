@@ -25,14 +25,17 @@
 //      Dependencies        :
 //
 //      Last commit info    :   $Author: mereden $
-//                              $Date: 2004-01-09 16:00:29 $
-//                              $Revision: 1.27 $
+//                              $Date: 2004-01-27 12:57:52 $
+//                              $Revision: 1.28 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 package uk.ac.soton.itinnovation.taverna.enactor.entities;
 
+import java.beans.IntrospectionException;
 import org.apache.log4j.Logger;
+import org.embl.ebi.escience.baclava.BaclavaIterator;
 import org.embl.ebi.escience.baclava.DataThing;
+import org.embl.ebi.escience.baclava.JoinIterator;
 import org.embl.ebi.escience.scufl.Processor;
 import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.entities.TimePoint;
 import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.eventservice.TaskStateMessage;
@@ -40,13 +43,12 @@ import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.serviceprovidermana
 import uk.ac.soton.itinnovation.taverna.enactor.broker.LogLevel;
 import uk.ac.soton.itinnovation.taverna.enactor.broker.TavernaFlowReceipt;
 
-import org.embl.ebi.escience.baclava.*;
-import java.beans.*;
-
 // Utility Imports
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
-import java.util.*;
 
 // IO Imports
 import java.io.PrintWriter;
@@ -56,6 +58,12 @@ import java.io.StringWriter;
 import org.jdom.Element;
 import org.jdom.Namespace;
 
+import uk.ac.soton.itinnovation.taverna.enactor.entities.PortTask;
+import uk.ac.soton.itinnovation.taverna.enactor.entities.TaskExecutionException;
+import uk.ac.soton.itinnovation.taverna.enactor.entities.TavernaTask;
+import java.lang.Exception;
+import java.lang.Object;
+import java.lang.String;
 
 
 

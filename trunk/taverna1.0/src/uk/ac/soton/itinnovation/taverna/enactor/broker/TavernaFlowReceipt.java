@@ -25,8 +25,8 @@
 //      Dependencies        :
 //
 //      Last commit info    :   $Author: mereden $
-//                              $Date: 2004-01-05 13:48:12 $
-//                              $Revision: 1.24 $
+//                              $Date: 2004-01-27 12:57:52 $
+//                              $Revision: 1.25 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 
@@ -52,12 +52,7 @@ import uk.ac.soton.itinnovation.taverna.enactor.entities.PortTask;
 import uk.ac.soton.itinnovation.taverna.enactor.entities.ProcessorTask;
 
 // Utility Imports
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
+import java.util.*;
 
 // JDOM Imports
 import org.jdom.Document;
@@ -66,6 +61,10 @@ import org.jdom.Namespace;
 import org.jdom.Text;
 import org.jdom.output.XMLOutputter;
 
+import uk.ac.soton.itinnovation.taverna.enactor.broker.LogLevel;
+import java.lang.Exception;
+import java.lang.String;
+import java.lang.StringBuffer;
 
 
 
@@ -81,7 +80,7 @@ import org.jdom.output.XMLOutputter;
  * @author Darren Marvin
  * @author Tom Oinn
  */
-public class TavernaFlowReceipt extends WSFlowReceipt {
+public class TavernaFlowReceipt extends WSFlowReceipt implements org.embl.ebi.escience.scufl.enactor.WorkflowInstance {
     
     private static final String REPORT_NAMESPACE = "http://www.it-innovation.soton.ac.uk/taverna/workflow/enactor/progress";
     
@@ -345,6 +344,10 @@ public class TavernaFlowReceipt extends WSFlowReceipt {
 	}
     }
     
+    public String getOutputXMLString() {
+	return getOutputString();
+    }
+
     public String getOutputString() {
 	Document doc = DataThingXMLFactory.getDataDocument(getOutput());
 	XMLOutputter xo = new XMLOutputter();
@@ -472,6 +475,26 @@ public class TavernaFlowReceipt extends WSFlowReceipt {
             msg = "CANCELLED";
         }
         return msg;
+    }
+
+    public boolean pauseExecution() {
+	return true;
+    }
+    
+    public boolean resumeExecution() {
+	return true;
+    }
+
+    public boolean isPaused() {
+	return false;
+    }
+    
+    public void cancel() {
+	//
+    }
+    
+    public void setInputs(Map inputMap) {
+	//
     }
 
 }

@@ -17,6 +17,8 @@ import org.embl.ebi.escience.scufl.Port;
 import org.embl.ebi.escience.scufl.ScuflModel;
 import org.embl.ebi.escience.scufl.ScuflModelEvent;
 import org.embl.ebi.escience.scufl.ScuflModelEventListener;
+import org.embl.ebi.escience.scufl.enactor.EnactorProxy;
+import org.embl.ebi.escience.scufl.enactor.implementation.FreefluoEnactorProxy;
 import org.embl.ebi.escience.scuflui.workbench.GenericUIComponentFrame;
 import org.embl.ebi.escience.scuflui.workbench.Workbench;
 
@@ -36,6 +38,13 @@ import org.jdom.output.XMLOutputter;
 // Network Imports
 import java.net.URL;
 
+import org.embl.ebi.escience.scuflui.EnactorInvocation;
+import org.embl.ebi.escience.scuflui.ScuflIcons;
+import org.embl.ebi.escience.scuflui.ScuflUIComponent;
+import java.lang.Exception;
+import java.lang.String;
+import java.lang.StringBuffer;
+import java.lang.System;
 
 
 
@@ -47,6 +56,8 @@ import java.net.URL;
 public class EnactorLaunchPanel extends JPanel 
     implements ScuflModelEventListener, ScuflUIComponent {
 
+    private static EnactorProxy defaultEnactor = new FreefluoEnactorProxy();
+    
     ScuflModel model = null;
     private JPanel inputPanel = null;
     
@@ -100,10 +111,10 @@ public class EnactorLaunchPanel extends JPanel
 		    try {
 			if (Workbench.workbench != null) {
 			    GenericUIComponentFrame thing = new GenericUIComponentFrame(Workbench.workbench.model,
-											new EnactorInvocation(null,
+											new EnactorInvocation(defaultEnactor,
 													      EnactorLaunchPanel.this.model,
-													      inputObject,
-													      null));
+													      inputObject
+													      ));
 			    thing.setSize(600,400);
 			    thing.setLocation(100,100);
 			    Workbench.workbench.desktop.add(thing);

@@ -1,18 +1,26 @@
 package org.embl.ebi.escience.scuflui;
 
-// W3C DOM classes
-import org.w3c.dom.*;
+import javax.swing.JTree;
+import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.TreeSelectionModel;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import org.w3c.dom.Document;
+import org.w3c.dom.NamedNodeMap;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
-// JAXP's classes for DOM I/O
-import javax.xml.parsers.*;
+// IO Imports
+import java.io.ByteArrayInputStream;
 
-// Standard Java classes
-import javax.swing.*;
-import javax.swing.tree.*;
-import javax.swing.event.*;
-import java.awt.*;
-import java.awt.event.*;
-import java.io.*;
+import java.lang.Exception;
+import java.lang.String;
+import java.lang.StringBuffer;
+import java.lang.System;
+
+
 
 /**
  * An extension of the javax.swing.JTree class, constructed

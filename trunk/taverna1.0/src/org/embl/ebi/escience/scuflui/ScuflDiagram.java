@@ -6,14 +6,13 @@
 package org.embl.ebi.escience.scuflui;
 
 import java.awt.Color;
-import java.awt.geom.*;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.event.*;
+import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
-import java.awt.image.VolatileImage;
 import javax.imageio.ImageIO;
 import javax.imageio.ImageReader;
 import javax.imageio.stream.ImageInputStream;
@@ -33,6 +32,12 @@ import java.util.Iterator;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+import org.embl.ebi.escience.scuflui.ScuflIcons;
+import org.embl.ebi.escience.scuflui.ScuflUIComponent;
+import java.lang.Exception;
+import java.lang.Process;
+import java.lang.Runtime;
+import java.lang.String;
 
 
 

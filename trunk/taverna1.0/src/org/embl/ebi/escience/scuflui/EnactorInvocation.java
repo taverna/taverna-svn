@@ -9,52 +9,33 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Font;
 import javax.swing.*;
-import javax.swing.event.*;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import org.embl.ebi.escience.baclava.DataThing;
 import org.embl.ebi.escience.scufl.ScuflModel;
 import org.embl.ebi.escience.scufl.UnknownProcessorException;
-
-import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.broker.FlowBroker;
-import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.broker.FlowBrokerFactory;
-import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.broker.FlowReceipt;
-import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.broker.InvalidFlowBrokerRequestException;
-import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.broker.WorkflowCommandException;
-import uk.ac.soton.itinnovation.taverna.enactor.TavernaWorkflowEnactor;
-import uk.ac.soton.itinnovation.taverna.enactor.broker.TavernaBinaryWorkflowSubmission;
-import uk.ac.soton.itinnovation.taverna.enactor.broker.TavernaFlowBroker;
-import uk.ac.soton.itinnovation.taverna.enactor.broker.TavernaFlowReceipt;
+import org.embl.ebi.escience.scufl.enactor.EnactorProxy;
+import org.embl.ebi.escience.scufl.enactor.WorkflowInstance;
+import org.embl.ebi.escience.scufl.enactor.WorkflowSubmissionException;
 
 // Utility Imports
-import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.Properties;
-import java.util.ResourceBundle;
 
+import org.embl.ebi.escience.scuflui.EnactorStatusTableModel;
+import org.embl.ebi.escience.scuflui.ResultItemPanel;
+import org.embl.ebi.escience.scuflui.ScuflUIComponent;
+import org.embl.ebi.escience.scuflui.XMLTree;
+import java.lang.Exception;
+import java.lang.InterruptedException;
+import java.lang.String;
+import java.lang.System;
+import java.lang.Thread;
 
 
 
 public class EnactorInvocation extends JPanel implements ScuflUIComponent {
 
-    // A default instance of the workflow enactor to use if
-    // the caller doesn't specify one to use
-    //private static TavernaWorkflowEnactor DEFAULT_ENACTOR;
-    private static String DEFAULT_USER = "DEFAULT_USER";
-    private static String DEFAULT_USER_CONTEXT = "DEFAULT_USER_CONTEXT";
-
-    // Initialize the default enactor
-    static {
-        ResourceBundle rb = ResourceBundle.getBundle("mygrid");
-        Properties sysProps = System.getProperties();
-        Enumeration keys = rb.getKeys();
-	while (keys.hasMoreElements()) {
-            String key = (String) keys.nextElement();
-            String value = (String) rb.getString(key);
-	    sysProps.put(key, value);
-        }
-	//DEFAULT_ENACTOR = new TavernaWorkflowEnactor();
-    }
-    
     public void attachToModel(ScuflModel theModel) {
 	//
     }
@@ -69,10 +50,10 @@ public class EnactorInvocation extends JPanel implements ScuflUIComponent {
 
     //private TavernaWorkflowEnactor theEnactor;
     private ScuflModel theModel;
-    private TavernaBinaryWorkflowSubmission theSubmission; 
     private String instanceID = null;
     private EnactorStatusTableModel statusTableModel = null;
-    private FlowReceipt flowReceipt = null;
+    //private FlowReceipt flowReceipt = null;
+    private WorkflowInstance flowReceipt = null;
     private JTextArea resultsText = null;
     private JTextArea provenanceText = null;
     private JPanel provenancePanel = null;
@@ -91,7 +72,7 @@ public class EnactorInvocation extends JPanel implements ScuflUIComponent {
      * Get the status text for this invocation
      */
     public String getStatusText() {
-	return ((TavernaFlowReceipt)(this.flowReceipt)).getProgressReportXMLString();
+	return this.flowReceipt.getProgressReportXMLString();
     }
     
     /**
@@ -103,7 +84,7 @@ public class EnactorInvocation extends JPanel implements ScuflUIComponent {
 	    System.out.println("Getting results...");
 	    boolean gotResults = false;
 	    while (!gotResults) {
-		results = ((TavernaFlowReceipt)(this.flowReceipt)).getOutputString();
+		results = this.flowReceipt.getOutputXMLString();
 		if (results.equals("") == false) {
 		    gotResults = true;
 		}
@@ -118,7 +99,7 @@ public class EnactorInvocation extends JPanel implements ScuflUIComponent {
 	    this.resultsText.setLineWrap(true);
 	    this.resultsText.setWrapStyleWord(true);
 	    // Get the output map and create new result detail panes
-	    Map resultMap = ((TavernaFlowReceipt)(this.flowReceipt)).getOutput();
+	    Map resultMap = this.flowReceipt.getOutput();
 	    for (Iterator i = resultMap.keySet().iterator(); i.hasNext(); ) {
 		String resultName = (String)i.next();
 		DataThing resultValue = (DataThing)resultMap.get(resultName);
@@ -136,7 +117,7 @@ public class EnactorInvocation extends JPanel implements ScuflUIComponent {
     public void showProvenance() {
 	String provenance = "";
 	try {
-	    provenance = ((TavernaFlowReceipt)(this.flowReceipt)).getProvenanceXMLString();
+	    provenance = this.flowReceipt.getProvenanceXMLString();
 	    this.provenanceText.setFont(new Font("Monospaced",Font.PLAIN,12));
 	    this.provenanceText.setLineWrap(true);
 	    this.provenanceText.setWrapStyleWord(true);
@@ -159,64 +140,21 @@ public class EnactorInvocation extends JPanel implements ScuflUIComponent {
     }
 
     /**
-     * Create a new enactor run panel including creating the
-     * status panel, invoking the workflow and all the rest.
-     * @throws InvalidFlowBrokerRequestException if the taverna flow broker is not found
-     * @throws WorkflowCommandException if the submission is invalid in some way
+     * Create a new enactor run panel using the new plugable enactor
+     * proxy.
+     * @throws WorkflowSubmissionException if the submission fails
+     * for some reason.
      */
-    public EnactorInvocation(TavernaWorkflowEnactor enactor,
+    public EnactorInvocation(EnactorProxy enactor,
 			     ScuflModel model,
-			     Map inputDataThings,
-			     String userID) 
-	throws InvalidFlowBrokerRequestException, 
-	       WorkflowCommandException {
+			     Map inputDataThings)
+	throws WorkflowSubmissionException {
 	super(new BorderLayout());
 	setPreferredSize(new Dimension(100,100));
-	//super((JFrame)null,"Enactor invocation run", false);
-	// Non modal dialog box
-	
-	// If the user didn't supply an enactor use the
-	// default singleton in this class.
-	//if (enactor == null) {
-	//    this.theEnactor = DEFAULT_ENACTOR;
-	//}
-	//else {
-	//    this.theEnactor = enactor;
-	//}
-
-	// If no user supplied use the default one
-	if (userID == null) {
-	    userID = DEFAULT_USER;
-	}
-
-	// Store a reference to the ScuflModel
 	this.theModel = model;
+	this.flowReceipt = enactor.submitWorkflow(model, inputDataThings);
 	
-	// Local invocation, create an enactor internally.
-	boolean localInvocation = true;
-	if (localInvocation) {
-	    // Create a new submission object
-	    this.theSubmission = new TavernaBinaryWorkflowSubmission(this.theModel,
-								     inputDataThings,
-								     userID,
-								     DEFAULT_USER_CONTEXT);
-	    System.out.println("Created the TavernaBinaryWorkflowSubmission : "+this.theSubmission.toString());
-	    // Invoke the enactor
-	    FlowBroker broker = FlowBrokerFactory.createFlowBroker("uk.ac.soton.itinnovation.taverna.enactor.broker.TavernaFlowBroker");
-	    this.flowReceipt = (TavernaFlowReceipt) ((TavernaFlowBroker)broker).submitFlow(this.theModel,
-											   inputDataThings,
-											   userID,
-											   DEFAULT_USER_CONTEXT);
-	    this.instanceID = this.flowReceipt.getID();
-	}
-	else {
-	    // Create the proxy receipt to the real enactor service.
-	    
-	    
-	}
-	
-	// Create the UI
-	// Create a tabbed pane for the status, results and provenance panels.
+    	// Create a tabbed pane for the status, results and provenance panels.
 	tabs = new JTabbedPane();
 	setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
 	add(tabs);
@@ -249,7 +187,7 @@ public class EnactorInvocation extends JPanel implements ScuflUIComponent {
 			// get the processor name
 			try {
 			    String processorName = (String)statusTableModel.getValueAt(selectedRow, 1);
-			    Map[] intermediateResultMaps = ((TavernaFlowReceipt)EnactorInvocation.this.flowReceipt).getIntermediateResultsForProcessor(processorName);
+			    Map[] intermediateResultMaps = EnactorInvocation.this.flowReceipt.getIntermediateResultsForProcessor(processorName);
 			    // Clear the tabs
 			    intermediateInputs.removeAll();
 			    intermediateOutputs.removeAll();

@@ -5,8 +5,14 @@
  */
 package org.embl.ebi.escience.scufl.enactor;
 
-import org.embl.ebi.escience.scufl.*;
-import java.util.*;
+import org.embl.ebi.escience.scufl.UnknownProcessorException;
+
+// Utility Imports
+import java.util.Map;
+
+import java.lang.String;
+
+
 
 /**
  * This interface is implemented by any returned object that
@@ -51,7 +57,15 @@ public interface WorkflowInstance {
      * the output document.
      * @return XML output document
      */
-    public String getOutput();
+    public String getOutputXMLString();
+
+    /**
+     * Return the Map of DataThing objects for all known workflow
+     * outputs, keys are the output names and values are the
+     * DataThing objects.
+     * @return Map of DataThing objects
+     */
+    public Map getOutput();
     
     /**
      * Return the XML string containing the provenance report,

@@ -7,6 +7,8 @@ package org.embl.ebi.escience.scuflui;
 
 import javax.swing.ImageIcon;
 
+import java.lang.Class;
+import java.lang.ClassNotFoundException;
 
 
 

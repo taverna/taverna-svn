@@ -23,6 +23,10 @@ import java.util.Enumeration;
 // IO Imports
 import java.io.File;
 
+import org.embl.ebi.escience.scuflui.ScuflModelExplorer;
+import java.lang.Exception;
+import java.lang.String;
+import java.lang.System;
 
 
 

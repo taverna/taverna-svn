@@ -24,6 +24,11 @@ import org.embl.ebi.escience.scufl.semantics.RDFSParser;
 // Utility Imports
 import java.util.Enumeration;
 
+import org.embl.ebi.escience.scuflui.ScuflIcons;
+import org.embl.ebi.escience.scuflui.ScuflUIComponent;
+import java.lang.ClassCastException;
+import java.lang.Object;
+import java.lang.String;
 
 
 
