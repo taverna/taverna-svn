@@ -130,10 +130,29 @@ public class BiomobyTask implements ProcessorTaskWorker {
 //           </moby:mobyContent>
 //        </moby:MOBY>
 
+		
+
 		// Create a DOM document from the resulting XML
 		SAXBuilder saxBuilder = new SAXBuilder();
                 Document doc = saxBuilder.build (new InputSource (new StringReader (outputXML)));
+		Element mobyElement = doc.getRootElement();
+		Element collectionElement = mobyElement.getChild("mobyContent").getChild("mobyData").getChild("Collection");
+		List simpleElements = collectionElement.getChildren();
+		Namespace mobyNS = Namespace.getNamespace("moby","http://www.biomoby.org/moby");
 
+		for (Iterator i = simpleElements.iterator(); i.hasNext();) {
+		    Element simpleElement = (Element)i.next();
+		    
+		    Element newRoot = new Element("MOBY",mobyNS);
+		    Element newMobyContent = new Element("mobyContent",mobyNS);
+		    newRoot.addContent(newMobyContent);
+		    Element newMobyData = new Element("mobyData",mobyNS);
+		    newMobyContent.addContent(newMobyData);
+		    newMobyData.addContent(simpleElement);
+		    XMLOutputter xo = new XMLOutputter();
+		    outputList.add(xo.outputString(new Document(newRoot)));
+		    
+		}
 
 		// Return the list
 		outputMap.put("output", new DataThing(outputList));
