@@ -34,4 +34,8 @@ public class InvokingWithIteration extends Invoking {
 	return this.iterationTotal;
     }
     
+    public void setIterationNumber(String newNumber) {
+	this.iterationNumber = newNumber;
+    }
+
 }
