@@ -49,8 +49,14 @@ public class QueryConfigPanel extends JPanel
 										 "default");
 	    JTabbedPane attributes = new JTabbedPane();
 	    AttributePage[] atPages = config.getAttributePages();
+	    boolean foundValidPage = false;
 	    for (int i = 0; i < atPages.length; i++) {
-		attributes.add(atPages[i].getDisplayName(),new AttributePageEditor(query,atPages[i]));
+		AttributePageEditor ape = new AttributePageEditor(query, atPages[i]);
+		attributes.add(atPages[i].getDisplayName(),ape);
+		if (ape.lastValid && !foundValidPage) {
+		    attributes.setSelectedComponent(ape);
+		    foundValidPage = true;
+		}
 	    }
 	    JTabbedPane filters = new JTabbedPane();
 	    FilterPage[] fPages = config.getFilterPages();

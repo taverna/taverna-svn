@@ -25,6 +25,7 @@ import java.awt.GradientPaint;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Container;
+import java.awt.CardLayout;
 import java.awt.event.*;
 
 /**
@@ -36,6 +37,11 @@ public class AttributePageEditor extends JPanel {
     private Query query;
     private AttributePage page;
     private QueryListener queryListener;
+    private CardLayout cardLayout = new CardLayout();
+    private JPanel card;
+    private LockedPageMessage errorMessage;
+    public boolean lastValid = false;
+    static Map allDescs = new HashMap();
 
     public AttributePageEditor(Query query, AttributePage page) {
 	super(new BorderLayout());
@@ -55,6 +61,11 @@ public class AttributePageEditor extends JPanel {
 	    BorderLayout.SOUTH);
 	add(Box.createRigidArea(new Dimension(10,10)),
 	    BorderLayout.EAST);
+	card = new JPanel();
+	card.setOpaque(false);
+	card.setLayout(cardLayout);
+	errorMessage = new LockedPageMessage();
+	card.add(errorMessage ,"locked");
 	JTabbedPane groups = new JTabbedPane();
 	List groupList = page.getAttributeGroups();
 	for (Iterator i = groupList.iterator(); i.hasNext();) {
@@ -79,7 +90,8 @@ public class AttributePageEditor extends JPanel {
 		System.out.println("Unknown attribute page child type"+o);
 	    }
 	}
-	add(groups, BorderLayout.CENTER);
+	card.add(groups,"unlocked");
+	add(card, BorderLayout.CENTER);
 	// Create a query listener to detect changes in the Query object and update
 	// the attribute checkboxes appropriately
 	queryListener = new QueryAdaptor() {
@@ -95,6 +107,7 @@ public class AttributePageEditor extends JPanel {
 			    //System.out.println("  Checkbox selected");
 			}
 		    }
+		    checkPage();
 		}
 		public void attributeRemoved(Query sourceQuery, int index, Attribute attribute) {
 		    if (attribute instanceof FieldAttribute) {
@@ -108,9 +121,14 @@ public class AttributePageEditor extends JPanel {
 			    //System.out.println("  Checkbox deselected");
 			}
 		    }
+		    checkPage();
+		}
+		public void sequenceDescriptionChanged(Query sourceQuery, SequenceDescription sd1, SequenceDescription sd2) {
+		    checkPage();
 		}
 	    };
 	query.addQueryChangeListener(queryListener);
+	checkPage();
     }
     
     /**
@@ -121,7 +139,49 @@ public class AttributePageEditor extends JPanel {
 	query.removeQueryChangeListener(queryListener);
     }
     
+    boolean containsSequence = false;
+
+    /**
+     * An attribute page is valid if and only if all the attributes
+     * and sequence properties in the current query appear within
+     * its structure
+     */
+    boolean isValidPage() {
+	if (containsSequence == false && query.getSequenceDescription()!= null) {
+	    // Page doesn't contain a sequence panel and the 
+	    // query has one specified, therefore invalid
+	    return false;
+	}
+	// Create a set of keys of attributes within the current query
+	Set currentAttributes = new HashSet();
+	Attribute[] attributes = query.getAttributes();
+	for (int i = 0; i < attributes.length; i++) {
+	    String key = (attributes[i].getField()+
+			  attributes[i].getKey()+
+			  attributes[i].getTableConstraint());
+	    currentAttributes.add(key);
+	}
+	Set pageAttributes = checkBoxLocations.keySet();
+	return pageAttributes.containsAll(currentAttributes);
+    }
     
+    /**
+     * Checks the page validity and flips the card to the appropriate page
+     * or warning message to suit
+     */
+    void checkPage() {
+	if (isValidPage()) {
+	    cardLayout.last(card);
+	    lastValid = true;
+	}
+	else {
+	    errorMessage.updateMessage();
+	    cardLayout.first(card);
+	    lastValid = false;
+	}
+    }
+    
+
     Map checkBoxLocations = new HashMap();
     
     /**
@@ -155,7 +215,109 @@ public class AttributePageEditor extends JPanel {
 	super.paintComponent(g);
     }
 
+    class LockedPageMessage extends JPanel {
+	
+	JEditorPane ed;
 
+	public LockedPageMessage() {
+	    super(new BorderLayout());
+	    setOpaque(false);
+	    add(Box.createRigidArea(new Dimension(10,10)),
+		BorderLayout.NORTH);
+	    add(Box.createRigidArea(new Dimension(10,10)),
+		BorderLayout.WEST);
+	    add(Box.createRigidArea(new Dimension(10,10)),
+		BorderLayout.EAST);
+	    add(Box.createRigidArea(new Dimension(10,10)),
+		BorderLayout.SOUTH);
+	    setBackground(Color.WHITE);
+	    add(new ShadedLabel("Locked Page", ShadedLabel.TAVERNA_BLUE, true),
+		BorderLayout.NORTH);
+	    ed = new JEditorPane("text/html","");
+	    JScrollPane edPane = new JScrollPane(ed);
+	    ed.setMaximumSize(new Dimension(400,2000));
+	    edPane.setPreferredSize(new Dimension(0,0));
+	    add(edPane, BorderLayout.CENTER);
+	    updateMessage();
+	}
+	
+	void updateMessage() {
+	    StringBuffer sb = new StringBuffer();
+	    sb.append("<html><head><STYLE TYPE=\"text/css\">");
+	    sb.append("body {\n");
+	    sb.append("  background-color: #ffffff;\n");
+	    sb.append("font-family: Helvetica, Arial, sans-serif;\n");
+	    sb.append("font-size: 12pt;\n");
+	    sb.append("}\n");
+	    sb.append("blockquote {\n");
+	    sb.append("  padding: 5px;\n");
+	    sb.append("  background-color: #f6e6c6;\n");
+	    sb.append("  border-width: 1px; border-style: solid; border-color: #aaaaaa;\n");
+	    sb.append("}\n");
+	    sb.append("</STYLE></head><body>");
+	    sb.append("<p><b>Page locked</b></p>\n");
+	    sb.append("<p>This page is unavailable because there are attributes or sequences "+
+		      "in the current query which are unavailable in this page. Because of "+
+		      "the implementation of the Biomart database the selection of attributes "+
+		      "from multiple pages causes enormous load on the data server. The " +
+		      "precise issues are outlined below :</p>\n");
+	    Set pageAttributes = checkBoxLocations.keySet();
+	    Map currentAttributesMap = new HashMap();
+	    Attribute[] attributes = query.getAttributes();
+	    for (int i = 0; i < attributes.length; i++) {
+		String key = (attributes[i].getField()+
+			      attributes[i].getKey()+
+			      attributes[i].getTableConstraint());
+		currentAttributesMap.put(key, attributes[i]);
+	    }
+	    Set currentAttributes = currentAttributesMap.keySet();
+	    if (query.getSequenceDescription() != null && containsSequence == false) {
+		sb.append("<p><b>Sequence Defined</b></p>\n");
+		sb.append("<blockquote>The query contains a <font color=\"red\">sequence</font> "+
+			  "specification which this page cannot support. You will need to remove "+
+			  "the sequence from the query if you wish to use features from this page."+
+			  "</blockquote>\n");
+	    }
+	    if (pageAttributes.containsAll(currentAttributes) == false) {
+		sb.append("<p><b>Unavailable Attributes</b></p>\n");
+		sb.append("<blockquote>Some of the <font color=\"red\">attributes</font> the current query contains cannot "+
+			  "be represented on this page, you will need to remove the following "+
+			  "attributes from the query if you wish to use features from this page:"+
+			  "<br>&nbsp;\n");
+		for (Iterator i = currentAttributes.iterator(); i.hasNext(); ) {
+		    String s = (String)i.next();
+		    if (pageAttributes.contains(s) == false) {
+			sb.append("<br><font color=\"red\">");
+			Attribute theAttribute = (Attribute)currentAttributesMap.get(s);
+			AttributeDescription aDesc = (AttributeDescription)allDescs.get(s);
+			if (aDesc != null) {
+			    sb.append(aDesc.getDisplayName());
+			}
+			else {
+			    sb.append(theAttribute.toString());
+			}
+			sb.append("</font>\n");
+		    }
+		}
+		sb.append("</blockquote>");
+	    }
+	    
+	    sb.append("</body></html>");
+	    ed.setText(sb.toString());
+	}
+
+	protected void paintComponent(Graphics g) {
+	    final int width = getWidth();
+	    final int height = getHeight();
+	    Graphics2D g2d = (Graphics2D)g;
+	    Paint oldPaint = g2d.getPaint();
+	    g2d.setPaint(new GradientPaint(0, 0, ShadedLabel.TAVERNA_BLUE, width, 0, ShadedLabel.halfShade(ShadedLabel.TAVERNA_BLUE)));
+	    g2d.fillRect(0, 0, width, height);
+	    g2d.setPaint(oldPaint);
+	    super.paintComponent(g);
+	}
+	
+    }
 
     class AttributeGroupEditor extends JPanel {
 
@@ -225,6 +387,7 @@ public class AttributePageEditor extends JPanel {
 	    for (Iterator i = attributes.iterator(); i.hasNext();) {
 		final AttributeDescription desc = (AttributeDescription)i.next();
 		final String myID = desc.getField()+desc.getKey()+desc.getTableConstraint();
+		allDescs.put(myID, desc);
 		JCheckBox cb = new JCheckBox(desc.getDisplayName());
 	    
 		// Add the checkbox to the location field
@@ -446,6 +609,8 @@ public class AttributePageEditor extends JPanel {
 
 	SequenceEditor(Query query) {
 	    super();
+	    // Set the flag in the parent container to indicate that this page contains a sequence
+	    containsSequence = true;
 	    setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
 	    this.query = query;
 	    List transcriptOptionsList = new ArrayList(Arrays.asList(geneOptions));
