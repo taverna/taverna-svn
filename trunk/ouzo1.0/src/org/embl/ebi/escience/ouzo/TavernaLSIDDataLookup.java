@@ -44,14 +44,17 @@ public class TavernaLSIDDataLookup {
 	// Don't do anything if the connection to the database
 	// has already been created.
 	if (connection != null) {
+	    System.out.println("Created database connection already, not bothering.");
 	    return;
 	}
 	// Load the HSQLDB driver
 	try {
+	    System.out.println("Creating connection to in memory db");
 	    Class.forName("org.hsqldb.jdbcDriver");
 	    // For now just use a test database in the root directory
 	    // ** TODO ** - make this configurable
-	    connection = DriverManager.getConnection("jdbc:hsqldb:/testauthority","ouzo","");
+	    connection = DriverManager.getConnection("jdbc:hsqldb:.","sa","");
+	    System.out.println("Connection created, success!");
 	}
 	catch (Exception e) {
 	    throw new LSIDServerException(e, 500, "Cannot instantiate hsqldb driver");

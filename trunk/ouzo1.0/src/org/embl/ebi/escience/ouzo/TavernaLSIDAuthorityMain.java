@@ -70,6 +70,7 @@ public class TavernaLSIDAuthorityMain extends SimpleAuthority {
      * authority, otherwise return null to indicate a fault condition.
      */
     public LSIDMetaDataPort[] getMetaDataLocations(LSID lsid, String url) {
+	System.out.println("Entering getMetaDataLocations method");
 	if (lookup == null) {
 	    // Error if there's no data lookup object
 	    return null;
@@ -96,6 +97,7 @@ public class TavernaLSIDAuthorityMain extends SimpleAuthority {
     }
     
     public LSIDDataPort[] getDataLocations(LSID lsid, String url) {
+	System.out.println("Entering getDataLocations method");
 	if (lookup == null) {
 	    // Error if there's no data object
 	    return null;
@@ -121,6 +123,7 @@ public class TavernaLSIDAuthorityMain extends SimpleAuthority {
 	HostDescriptor hd = new HostDescriptor(url);
 	// Return a pair of endpoints for the data fetch, one for
 	// SOAP (Web service) and one for basic HTTP GET
+	System.out.println(hd.baseURL);
 	return new LSIDDataPort[] {
 	    new SOAPDataLocation(hd.baseURL + "data"),
 	    new HTTPDataLocation(hd.host, hd.port, hd.pathPrefix + "/authority/data?" + lsid)
