@@ -260,7 +260,10 @@ public class XScuflParser {
 	    Processor sourceHolder = model.getWorkflowSourceProcessor();
 	    for (Iterator i = sourceList.iterator(); i.hasNext(); ) {
 		Element sourceElement = (Element)i.next();
-		String portName = sourceElement.getTextTrim();
+		String portName = sourceElement.getAttributeValue("name");
+		if (portName == null) {
+		    portName = sourceElement.getTextTrim();
+		}
 		try {
 		    if (usePrefix) {
 			portName = prefix+"_"+portName;
@@ -283,7 +286,10 @@ public class XScuflParser {
 	    Processor sinkHolder = model.getWorkflowSinkProcessor();
 	    for (Iterator i = sinkList.iterator(); i.hasNext(); ) {
 		Element sinkElement = (Element)i.next();
-		String portName = sinkElement.getTextTrim();
+		String portName = sinkElement.getAttributeValue("name");
+		if (portName == null) {
+		    portName = sinkElement.getTextTrim();
+		}
 		try {
 		    if (usePrefix) {
 			portName = prefix+"_"+portName;

@@ -193,7 +193,8 @@ public class XScuflView implements ScuflModelEventListener, java.io.Serializable
 	Port[] sources = model.getWorkflowSourceProcessor().getPorts();
 	for (int i = 0; i<sources.length; i++) {
 	    Element sourceElement = new Element("source",scuflNS());
-	    sourceElement.setText(sources[i].getName());
+	    //sourceElement.setText(sources[i].getName());
+	    sourceElement.setAttribute("name",sources[i].getName());
 	    Element metadataElement = sources[i].getMetadata().getConfigurationElement();
 	    if (metadataElement.getChildren().isEmpty()==false) {
 		sourceElement.addContent(metadataElement);
@@ -203,7 +204,8 @@ public class XScuflView implements ScuflModelEventListener, java.io.Serializable
 	Port[] sinks = model.getWorkflowSinkProcessor().getPorts();
 	for (int i = 0; i < sinks.length; i++) {
 	    Element sinkElement = new Element("sink",scuflNS());
-	    sinkElement.setText(sinks[i].getName());
+	    //sinkElement.setText(sinks[i].getName());
+	    sinkElement.setAttribute("name",sinks[i].getName());
 	    Element metadataElement = sinks[i].getMetadata().getConfigurationElement();
 	    if (metadataElement.getChildren().isEmpty()==false) {
 		sinkElement.addContent(metadataElement);
