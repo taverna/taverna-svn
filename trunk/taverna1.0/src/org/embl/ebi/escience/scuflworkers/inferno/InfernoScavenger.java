@@ -59,6 +59,7 @@ public class InfernoScavenger extends Scavenger {
 		    new InfernoProcessorFactory(host, port, serviceName);
 		add(new DefaultMutableTreeNode(ipf));
 	    }
+	    session.close();
 	}
 	catch (Exception ex) {
 	    if (ex instanceof ScavengerCreationException) {

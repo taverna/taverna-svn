@@ -17,6 +17,7 @@ import java.io.BufferedReader;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.BufferedOutputStream;
+import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
@@ -41,6 +42,10 @@ public class InfernoTask implements ProcessorTaskWorker {
     public InfernoTask(Processor p) {
 	this.processor = (InfernoProcessor)p;
     }
+
+    static {
+	System.setProperty("java.protocol.handler.pkgs", "uk.ac.rdg.resc.jstyx.client.protocol");
+    }	
 
     public Map execute(Map inputMap, ProcessorTask parentTask) 
 	throws TaskExecutionException {
@@ -86,6 +91,7 @@ public class InfernoTask implements ProcessorTaskWorker {
 	    StyxFileInputStream cloneIn = new StyxFileInputStream(cloneFile);
 	    BufferedReader bufCloneIn = new BufferedReader(new StyxFileInputStreamReader(cloneIn));
 	    String instanceID = bufCloneIn.readLine();
+	    System.out.println("Got instanceID : "+instanceID);
 	    bufCloneIn.close();
 	    
 	    // Flag to indicate whether the input has been defined, attempts
@@ -105,8 +111,18 @@ public class InfernoTask implements ProcessorTaskWorker {
 		bufUrlOut.flush();
 		bufUrlOut.close();
 		definedInput = true;
+		System.out.println("Sent reference "+inputURL);
 	    }
 	    
+	    // Start the service
+	    CStyxFile ctlFile = new CStyxFile(session, processor.getService()+"/"+instanceID+"/ctl");
+	    StyxFileOutputStream ctlOut = new StyxFileOutputStream(ctlFile);
+	    BufferedWriter bufCtlOut = new BufferedWriter(new StyxFileOutputStreamWriter(ctlOut));
+	    bufCtlOut.write("start");
+	    bufCtlOut.flush();
+	    bufCtlOut.close();
+	    System.out.println("Sent start signal");
+
 	    if (inputMap.containsKey("stringIn") ||
 		inputMap.containsKey("binaryIn")) {
 		CStyxFile inFile = new CStyxFile(session, processor.getService()+"/"+instanceID+"/io/in");
@@ -120,6 +136,7 @@ public class InfernoTask implements ProcessorTaskWorker {
 		    bufValueOut.flush();
 		    bufValueOut.close();
 		    definedInput = true;
+		    System.out.println("Sent string value");
 		}
 		if (inputMap.containsKey("binaryIn")) {
 		    // Send the byte[] value of the binaryIn input into the /io/in file
@@ -130,17 +147,10 @@ public class InfernoTask implements ProcessorTaskWorker {
 		    bos.flush();
 		    bos.close();
 		    definedInput = true;
+		    System.out.println("Sent binary value");
 		}
 	    }
-	    
-	    // Start the service
-	    CStyxFile ctlFile = new CStyxFile(session, processor.getService()+"/"+instanceID+"/ctl");
-	    StyxFileOutputStream ctlOut = new StyxFileOutputStream(ctlFile);
-	    BufferedWriter bufCtlOut = new BufferedWriter(new StyxFileOutputStreamWriter(ctlOut));
-	    bufCtlOut.write("start");
-	    bufCtlOut.flush();
-	    bufCtlOut.close();
-	    
+
 	    // Write the base URL out
 	    String baseURL = "styx://"+processor.getHost()+":"+processor.getPort()+"/"+
 		processor.getService()+"/"+instanceID+"/";
@@ -148,28 +158,31 @@ public class InfernoTask implements ProcessorTaskWorker {
 	    if (returnRef) {
 		results.put("refStdOut", new DataThing(baseURL+"io/out"));
 		results.put("refStdErr", new DataThing(baseURL+"io/err"));
+		System.out.println("Returned references");
+		session.close();
 	    }
 	    else if (returnString | returnBytes) {
 		// Return actual value
 		CStyxFile resultFile = new CStyxFile(session, processor.getService()+"/"+instanceID+"/io/out");
 		StyxFileInputStream sfis = new StyxFileInputStream(resultFile);
+		BufferedInputStream bis = new BufferedInputStream(sfis);
+		
+		System.out.println("Created file input stream to get literal results");
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
-		int b = 0;
-		while (b >= 0) {
-                    b = sfis.read(); // TODO: read more than 1 byte at a time
-                    if (b >= 0) {
-                        baos.write(b);
-                    }
-                }
-                sfis.close();
-		baos.flush();
-                baos.close();
+		BufferedOutputStream bos = new BufferedOutputStream(baos);
+		int b;
+		while ((b = bis.read()) != -1) {
+		    bos.write(b);
+		}
+		bos.close();
+		bis.close();
 		if (returnBytes) {
 		    results.put("binaryOut", new DataThing(baos.toByteArray()));
 		}
 		else {
 		    results.put("stringOut", new DataThing(baos.toString()));		    
 		}
+		session.close();
 	    }
 	    
 	    return results;
@@ -190,5 +203,5 @@ public class InfernoTask implements ProcessorTaskWorker {
 	    throw new TaskExecutionException("Input may consist of at most one of url, string value or binary value");
 	}
     }
-
+    
 }
