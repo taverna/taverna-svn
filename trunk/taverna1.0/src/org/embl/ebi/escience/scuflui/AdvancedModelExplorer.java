@@ -19,6 +19,7 @@ import java.net.*;
 import java.util.prefs.*;
 import java.util.*;
 import org.embl.ebi.escience.scuflui.workbench.Workbench;
+import org.embl.ebi.escience.baclava.*;
 
 /**
  * An amalgam of the ScuflModelExplorerTreeTable and the
@@ -273,14 +274,16 @@ public class AdvancedModelExplorer extends JPanel
      */
     private void updateTab() {
 	if (selectedObject != null && selectedObject instanceof Processor) {
-	    updateTabForProcessor();
+	    updateTabForProcessor((Processor)selectedObject);
 	}
 	else if (selectedObject != null && selectedObject instanceof String) {
 	    if (((String)selectedObject).equals("Workflow model")) {
 		updateTabForWorkflow();
 	    }
 	    else {
-		tabs.setEnabledAt(1, false);
+		tabs.setEnabledAt(1, false);	    
+		tabs.setIconAt(1, null);
+		tabs.setTitleAt(1, "");
 	    }
 	}
 	else if (selectedObject != null && selectedObject instanceof Port) {
@@ -291,11 +294,26 @@ public class AdvancedModelExplorer extends JPanel
 		propertiesPanel.setLayout(new BoxLayout(propertiesPanel, BoxLayout.PAGE_AXIS));
 		propertiesPanel.add(new ScuflSemanticMarkupEditor(m), BorderLayout.CENTER);
 		tabs.setEnabledAt(1, true);
+		tabs.setTitleAt(1, "Metadata for '"+p.getName()+"'");
+		tabs.setIconAt(1, (p.isSource())?ScuflIcons.inputIcon:ScuflIcons.outputIcon);
+	    }
+	    else {
+		tabs.setEnabledAt(1, false);	   
+		tabs.setIconAt(1, null);
+		tabs.setTitleAt(1, "");
 	    }
 	}
 	else {
 	    tabs.setEnabledAt(1, false);
+	    tabs.setIconAt(1, null);
+	    tabs.setTitleAt(1, "");
 	}
+    }
+
+    private void updateTabForSummary() {
+	propertiesPanel.removeAll();
+	propertiesPanel.setLayout(new BoxLayout(propertiesPanel, BoxLayout.PAGE_AXIS));
+	
     }
 
     private void updateTabForWorkflow() {
@@ -339,7 +357,7 @@ public class AdvancedModelExplorer extends JPanel
 	
 
 	
-	JTextField lsid = new JTextField(model.getDescription().getLSID());
+	final JTextField lsid = new JTextField(model.getDescription().getLSID());
 	lsid.setEditable(false);
 	JPanel lsidPanel = new JPanel() {
 		public Dimension getMaximumSize() {
@@ -350,6 +368,21 @@ public class AdvancedModelExplorer extends JPanel
 							       "LSID"));
 	lsidPanel.setLayout(new BorderLayout());
 	lsidPanel.add(lsid, BorderLayout.CENTER);
+	JButton assignNewLSID = new JButton("New", Workbench.openurlIcon);
+	assignNewLSID.setPreferredSize(new Dimension(80,25));
+	assignNewLSID.addActionListener(new ActionListener() {
+		public void actionPerformed(ActionEvent e) {
+		    WorkflowDescription wd = AdvancedModelExplorer.this.model.getDescription();
+		    String newLSID = DataThing.SYSTEM_DEFAULT_LSID_PROVIDER.getID(LSIDProvider.WFDEFINITION);
+		    wd.setLSID(newLSID);
+		    lsid.setText(newLSID);
+		}
+	    });
+	if (DataThing.SYSTEM_DEFAULT_LSID_PROVIDER == null) {
+	    assignNewLSID.setEnabled(false);
+	}
+	lsidPanel.add(assignNewLSID, BorderLayout.EAST);
+	
 	
 
 	description.getDocument().addDocumentListener(new DocumentListener() {
@@ -448,14 +481,16 @@ public class AdvancedModelExplorer extends JPanel
 	propertiesPanel.add(lsidPanel);
 	propertiesPanel.add(descriptionPanel);
 	tabs.setEnabledAt(1, true);
+	tabs.setTitleAt(1, "Workflow metadata");
+	tabs.setIconAt(1, ScuflIcons.windowExplorer);
 
     }
     
-    private void updateTabForProcessor() {
+    private void updateTabForProcessor(Processor processor) {
 	// Clear the properties panel and regenerate it
 	propertiesPanel.removeAll();
 	propertiesPanel.setLayout(new BoxLayout(propertiesPanel, BoxLayout.PAGE_AXIS));
-	final Processor p = (Processor)selectedObject;
+	final Processor p = processor;
 	// Create a description section...
 	JPanel descriptionPanel = new JPanel() {
 		public Dimension getMaximumSize() {
@@ -582,6 +617,8 @@ public class AdvancedModelExplorer extends JPanel
 	}
 	
 	tabs.setEnabledAt(1, true);
+	tabs.setTitleAt(1, "Metadata for '"+p.getName()+"'");
+	tabs.setIconAt(1,org.embl.ebi.escience.scuflworkers.ProcessorHelper.getPreferredIcon(p));
     }
     
     public String getName() {

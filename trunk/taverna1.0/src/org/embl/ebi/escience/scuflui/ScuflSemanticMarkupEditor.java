@@ -73,6 +73,23 @@ public class ScuflSemanticMarkupEditor extends JPanel implements ScuflUIComponen
 	JPanel currentTermPanel = new JPanel(new GridLayout(2,0));
 	currentTermPanel.add(new JLabel("Select from ontology or manually edit term below"));
 	currentTermPanel.add(selectedOntologyNode);
+	if (theMetadata.getSemanticType().equals("")==false) {
+	    String filterString = theMetadata.getSemanticType();
+	    String[] filter = theMetadata.getSemanticType().split("#");
+	    if (filter.length == 2) {
+		filterString = filter[1];
+	    }		
+	    ontologyTree.setCellRenderer(getRenderer(filterString));
+	    DefaultMutableTreeNode rootNode = (DefaultMutableTreeNode)treeModel.getRoot(); 
+	    Enumeration en = rootNode.depthFirstEnumeration();
+	    while (en.hasMoreElements()) {
+		DefaultMutableTreeNode theNode = (DefaultMutableTreeNode)en.nextElement();
+		if (theNode.getUserObject().toString().toLowerCase().matches(filterString)) {
+		    TreePath path = new TreePath(treeModel.getPathToRoot(theNode));
+		    ontologyTree.makeVisible(path);
+		}
+	    }
+	}
 	ontologyPanel.add(currentTermPanel, BorderLayout.SOUTH);
 
 	// Add the behaviour of putting the selected node, if a class holder,
