@@ -81,6 +81,9 @@ public class LinkingMenus {
 	    else if (processors[i] instanceof TalismanProcessor) {
 		icon = ScuflIcons.talismanIcon;
 	    }
+	    else if (processors[i] instanceof WorkflowProcessor) {
+		icon = ScuflIcons.workflowIcon;
+	    }
 	    JMenu processorMenu = new JMenu(processors[i].getName());
 	    processorMenu.setIcon(icon);
 	    theMenu.add(processorMenu);
