@@ -11,7 +11,11 @@ import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.*;
+import javax.swing.event.*;
+import java.awt.event.*;
+import java.awt.Point;
 import org.embl.ebi.escience.scufl.DuplicatePortNameException;
+import org.embl.ebi.escience.scufl.Port;
 import org.embl.ebi.escience.scufl.InputPort;
 import org.embl.ebi.escience.scufl.OutputPort;
 import org.embl.ebi.escience.scufl.PortCreationException;
@@ -27,7 +31,7 @@ import java.lang.String;
 
 /**
  * A JPanel that can configure the beanshell processor type
- * @author Tom Oinn
+ * @author Tom Oinn, Chris Greenhalgh
  */
 public class BeanshellConfigPanel extends JPanel implements ScuflUIComponent {
     
@@ -90,6 +94,8 @@ public class BeanshellConfigPanel extends JPanel implements ScuflUIComponent {
 		    return this;
 		}
 	    });
+	inputList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+   	new PortListMouseListener(inputList, inputModel, true);
 	JScrollPane inputPane = new JScrollPane(inputList);
 	inputEditPanel.add(inputPane, BorderLayout.CENTER);
 	// Add a text button to create a new input
@@ -99,7 +105,7 @@ public class BeanshellConfigPanel extends JPanel implements ScuflUIComponent {
 		    // Add a port to the input model!
 		    try {
 			InputPort ip = new InputPort(processor, addInputField.getText());
-			ip.setSyntacticType("string");
+			ip.setSyntacticType("'text/plain'");
 			processor.addPort(ip);
 			BeanshellConfigPanel.this.updateInputListModel(inputModel);
 		    }
@@ -131,6 +137,8 @@ public class BeanshellConfigPanel extends JPanel implements ScuflUIComponent {
 		    return this;
 		}
 	    });
+	outputList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+	new PortListMouseListener(outputList, outputModel, false);
 	JScrollPane outputPane = new JScrollPane(outputList);
 	outputEditPanel.add(outputPane, BorderLayout.CENTER);
 	// Add a text button to create a new input
@@ -140,7 +148,7 @@ public class BeanshellConfigPanel extends JPanel implements ScuflUIComponent {
 		    // Add a port to the input model!
 		    try {
 			OutputPort op = new OutputPort(processor, addOutputField.getText());
-			op.setSyntacticType("string");
+			op.setSyntacticType("'text/plain'");
 			processor.addPort(op);
 			BeanshellConfigPanel.this.updateOutputListModel(outputModel);
 		    }
@@ -159,7 +167,82 @@ public class BeanshellConfigPanel extends JPanel implements ScuflUIComponent {
 	tabbedPane.addTab("Ports", portEditPanel);
 	setVisible(true);
     }
-    
+   
+	protected class PortListMouseListener extends MouseAdapter 
+	{
+		PortListMouseListener(JList list, DefaultListModel listModel, boolean inputFlag) 
+		{
+			this.list = list;
+			this.listModel = listModel;
+			this.inputFlag = inputFlag;
+			list.addMouseListener(this);
+		}
+		protected JList list;
+		protected DefaultListModel listModel;
+		protected boolean inputFlag;
+
+		public void mousePressed(MouseEvent me) 
+		{
+			popup(me);
+		}
+		public void mouseReleased(MouseEvent me) 
+		{
+			popup(me);
+		}
+		protected void popup(MouseEvent me) 
+		{
+			if (me.isPopupTrigger()) 
+			{
+				int index = list.locationToIndex(new Point(me.getX(), me.getY()));
+				if (index<0 || index>=list.getModel().getSize())
+					return;
+				list.setSelectedIndex(index);
+				final Port p = (Port)list.getModel().getElementAt(index);
+				if (p!=null) 
+				{
+					JPopupMenu menu = new JPopupMenu();
+					menu.add(new JMenuItem(new AbstractAction("Remove port") 
+					{
+						public void actionPerformed(ActionEvent ae) 
+						{
+							processor.removePort(p);
+							if (inputFlag)
+								BeanshellConfigPanel.this.updateInputListModel(listModel);
+							else
+								BeanshellConfigPanel.this.updateOutputListModel(listModel);
+						}
+					}));
+					menu.add(new JMenuItem(new AbstractAction("Edit syntactic type") 
+					{
+						public void actionPerformed(ActionEvent ae) 
+						{
+							//System.out.println("Edit syntactic type of "+p.getName()+" ("+p.getSyntacticType()+")");
+							final JTextField field = new JTextField(40);
+							if (p.getSyntacticType()!=null)
+								field.setText(p.getSyntacticType());
+							final JDialog dialog = new JDialog();
+							dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+							dialog.setTitle("Edit syntactic type of "+p.getName());
+							dialog.getContentPane().setLayout(new BorderLayout());
+							dialog.getContentPane().add(field);
+							field.addActionListener(new ActionListener() 
+							{
+								public void actionPerformed(ActionEvent ae) 
+								{
+									p.setSyntacticType(field.getText());
+									dialog.dispose();
+								}
+							});
+							dialog.pack();
+							dialog.show();
+						}
+					}));
+					menu.show(list, me.getX(), me.getY());
+				}
+			}
+		}
+	}
+ 
     private void updateInputListModel(DefaultListModel model) {
 	synchronized(model) {
 	    model.clear();

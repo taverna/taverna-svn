@@ -34,6 +34,8 @@ public class BeanshellXMLHandler implements XMLHandler {
 	for (int i = 0; i < inputs.length; i++) {
 	    Element inputElement = new Element("beanshellinput",XScufl.XScuflNS);
 	    inputElement.setText(inputs[i].getName());
+	    if (inputs[i].getSyntacticType()!=null)
+		inputElement.setAttribute("syntactictype", inputs[i].getSyntacticType(), XScufl.XScuflNS);
 	    inputList.addContent(inputElement);
 	}
 	spec.addContent(inputList);
@@ -43,6 +45,8 @@ public class BeanshellXMLHandler implements XMLHandler {
 	for (int i = 0; i < outputs.length; i++) {
 	    Element outputElement = new Element("beanshelloutput",XScufl.XScuflNS);
 	    outputElement.setText(outputs[i].getName());
+	    if (outputs[i].getSyntacticType()!=null)
+		outputElement.setAttribute("syntactictype", outputs[i].getSyntacticType(), XScufl.XScuflNS);
 	    outputList.addContent(outputElement);
 	}
 	spec.addContent(outputList);
@@ -63,18 +67,22 @@ public class BeanshellXMLHandler implements XMLHandler {
 	       XScuflFormatException {
 	BeanshellProcessor bp = new BeanshellProcessor(model, name, "", new String[0], new String[0]);
 	Element beanshell = processorNode.getChild("beanshell",XScufl.XScuflNS);
-	Element scriptElement = beanshell.getChild("script",XScufl.XScuflNS);
+	Element scriptElement = beanshell.getChild("scriptvalue",XScufl.XScuflNS);
 	if (scriptElement != null) {
 	    String script = scriptElement.getTextTrim();
 	    bp.setScript(script);
 	}
 	// Handle inputs
 	Element inputList = beanshell.getChild("beanshellinputlist",XScufl.XScuflNS);
+	if(inputList!=null)
 	for (Iterator i = inputList.getChildren().iterator(); i.hasNext(); ) {
 	    Element inputElement = (Element)i.next();
 	    String inputName = inputElement.getTextTrim();
+	    String syntacticType = inputElement.getAttributeValue("syntactictype",XScufl.XScuflNS);
 	    try {
 		InputPort p = new InputPort(bp, inputName);
+		if (syntacticType!=null)
+		    p.setSyntacticType(syntacticType);
 		bp.addPort(p);
 	    }
 	    catch (PortCreationException pce) {
@@ -86,11 +94,15 @@ public class BeanshellXMLHandler implements XMLHandler {
 	}
 	// Handle outputs
 	Element outputList = beanshell.getChild("beanshelloutputlist",XScufl.XScuflNS);
+	if (outputList!=null)
 	for (Iterator i = outputList.getChildren().iterator(); i.hasNext(); ) {
 	    Element outputElement = (Element)i.next();
 	    String outputName = outputElement.getTextTrim();
+	    String syntacticType = outputElement.getAttributeValue("syntactictype",XScufl.XScuflNS);
 	    try {
 		OutputPort p = new OutputPort(bp, outputName);
+		if (syntacticType!=null)
+		    p.setSyntacticType(syntacticType);
 		bp.addPort(p);
 	    }
 	    catch (PortCreationException pce) {
