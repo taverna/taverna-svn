@@ -22,8 +22,8 @@
 //      Dependencies        :
 //
 //      Last commit info    :   $Author: cgreenhalgh $
-//                              $Date: 2004-10-01 12:21:41 $
-//                              $Revision: 1.1 $
+//                              $Date: 2004-10-01 12:28:31 $
+//                              $Revision: 1.2 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 
@@ -55,11 +55,19 @@ public class TransformDataThing
      */
     public static DataThing replacelsid(DataThing outdt, Map inputMap, Map outputMap) 
     {
-	System.out.println("replacelsid on "+outdt.getLSID(outdt.getDataObject()));
-	Object newValue = replaceLSIDsInDataThingValues(inputMap, outputMap, outdt, outdt.getDataObject());
-	DataThing newdt = new DataThing(newValue);
-	newdt.copyMetadataFrom(outdt);
-	return newdt;
+	try 
+	{
+	    //System.out.println("replacelsid on "+outdt.getLSID(outdt.getDataObject()));
+	    Object newValue = replaceLSIDsInDataThingValues(inputMap, outputMap, outdt, outdt.getDataObject());
+	    DataThing newdt = new DataThing(newValue);
+	    newdt.copyMetadataFrom(outdt);
+	    return newdt;
+	} 
+	catch (Exception e) 
+	{
+	    logger.error("replacelsid failed", e);
+	    return outdt;
+	}
     }
     private static Logger logger = Logger.getLogger(TransformDataThing.class);
     /** recursive worker for replacelsid
@@ -160,7 +168,7 @@ public class TransformDataThing
 			    logger.error("replacelsid could not find LSID for "+elementvalue);
 			else 
 			{
-			    System.out.println("Replace "+buffer.substring(index, from+len)+" with "+elementlsid);
+			    //System.out.println("Replace "+buffer.substring(index, from+len)+" with "+elementlsid);
 			    buffer.replace(index, from+len, elementlsid);
 			}
 		    }
