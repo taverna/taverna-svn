@@ -25,7 +25,8 @@ public abstract class Port implements java.io.Serializable {
     private String syntacticType = "";
     private String semanticType = "";
     private List aliases = null;
-    private String description = "";
+    //private String description = "";
+    private SemanticMarkup metadata = null;
     
     /**
      * Create a new port (obviously you can't actually construct this 
@@ -36,6 +37,8 @@ public abstract class Port implements java.io.Serializable {
     public Port(Processor processor, String name)
 	throws DuplicatePortNameException,
 	       PortCreationException {
+	// Create a new metadata holder
+	metadata = new SemanticMarkup(this);
 	// Check we have no nulls
 	if (processor == null) {
 	    throw new PortCreationException("Invalid call to create a port, the processor was null!");
@@ -73,21 +76,31 @@ public abstract class Port implements java.io.Serializable {
     }
     
     /**
+     * Get a reference to the SemanticMarkup container
+     * associated with this port
+     */
+    public SemanticMarkup getMetadata() {
+	return this.metadata;
+    }
+
+    /**
      * Set the free text description of the port
      */
-    public void setDescription(String theDescription) {
+    /**public void setDescription(String theDescription) {
 	if (theDescription != null) {
 	    this.description = theDescription;
 	    fireModelEvent(new ScuflModelEvent(this, "Description set"));
 	}
-    }
+	}*/
 
     /**
      * Get the description for this port
      */
-    public String getDescription() {
-	return this.description;
-    }
+    /**
+       public String getDescription() {
+       return this.description;
+       }
+    */
     
     /**
      * Set the syntactic type of the port, only visible

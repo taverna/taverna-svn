@@ -246,7 +246,12 @@ public class XScuflParser {
 		    if (usePrefix) {
 			portName = prefix+"_"+portName;
 		    }
-		    sourceHolder.addPort(new OutputPort(sourceHolder, portName));
+		    OutputPort sourcePort = new OutputPort(sourceHolder, portName);
+		    Element configurationElement = sourceElement.getChild("metadata", namespace);
+		    if (configurationElement != null) {
+			sourcePort.getMetadata().configureFromElement(configurationElement);
+		    }
+		    sourceHolder.addPort(sourcePort);
 		}
 		catch (DuplicatePortNameException dpne) {
 		    throw new XScuflFormatException("You have a duplicate source port in your definition file, aborting.");
@@ -264,7 +269,12 @@ public class XScuflParser {
 		    if (usePrefix) {
 			portName = prefix+"_"+portName;
 		    }
-		    sinkHolder.addPort(new InputPort(sinkHolder, portName));
+		    InputPort sinkPort = new InputPort(sinkHolder, portName);
+		    Element configurationElement = sinkElement.getChild("metadata", namespace);
+		    if (configurationElement != null) {
+			sinkPort.getMetadata().configureFromElement(configurationElement);
+		    }
+		    sinkHolder.addPort(sinkPort);
 		}
 		catch (DuplicatePortNameException dpne) {
 		    throw new XScuflFormatException("You have a duplicate sink port in your defintion file, aborting.");

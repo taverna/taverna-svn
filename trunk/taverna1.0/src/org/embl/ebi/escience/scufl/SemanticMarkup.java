@@ -6,6 +6,7 @@
 package org.embl.ebi.escience.scufl;
 
 import java.util.*;
+import org.jdom.*;
 
 /**
  * A container class for the semantic markup and mime 
@@ -36,6 +37,20 @@ public class SemanticMarkup {
     public SemanticMarkup(Object subject) {
 	super();
 	this.subject = subject;
+    }
+
+    /**
+     * Set the free text description
+     */
+    public void setDescription(String theDescription) {
+	this.description = theDescription;
+    }
+
+    /**
+     * Get the free text description
+     */
+    public String getDescription() {
+	return this.description;
     }
 
     /**
@@ -122,6 +137,51 @@ public class SemanticMarkup {
 	if (newSemanticType != null) {
 	    this.semanticType = newSemanticType;
 	}
+    }
+
+    /**
+     * Configure this markup object from the supplied
+     * XML element. This is assuming that the element
+     * passed in is the 'metadata' element in the XScufl
+     * namespace.
+     */
+    public void configureFromElement(Element theElement) {
+	// Do mime types
+	Element mimeTypeListElement = theElement.getChild("mimetypes",XScufl.XScuflNS);
+	if (mimeTypeListElement != null) {
+	    for (Iterator i = mimeTypeListElement.getChildren("mimetype",XScufl.XScuflNS).iterator(); i.hasNext(); ) {
+		Element typeElement = (Element)i.next();
+		addMIMEType(typeElement.getTextTrim());
+	    }
+	}
+	// Do description
+	Element descriptionElement = theElement.getChild("description",XScufl.XScuflNS);
+	if (descriptionElement != null) {
+	    this.description = descriptionElement.getTextTrim();
+	}
+    }
+
+    /**
+     * Emit an element that would be used to configure
+     * this object in the method above
+     */
+    public Element getConfigurationElement() {
+	Element topElement = new Element("metadata",XScufl.XScuflNS);
+	// Store MIME types
+	Element mimeTypeList = new Element("mimetypes",XScufl.XScuflNS);
+	topElement.addContent(mimeTypeList);
+	synchronized(this.mimeTypeList) {
+	    for (Iterator i = this.mimeTypeList.iterator(); i.hasNext(); ) {
+		Element typeElement = new Element("mimetype",XScufl.XScuflNS);
+		typeElement.setText((String)i.next());
+		mimeTypeList.addContent(typeElement);
+	    }
+	}
+	// Store free text description
+	Element descriptionElement = new Element("description",XScufl.XScuflNS);
+	topElement.addContent(descriptionElement);
+	descriptionElement.setText(this.description);
+	return topElement;
     }
 
 }

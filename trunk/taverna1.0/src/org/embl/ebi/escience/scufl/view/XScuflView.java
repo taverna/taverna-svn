@@ -149,12 +149,14 @@ public class XScuflView implements ScuflModelEventListener, java.io.Serializable
 	for (int i = 0; i<sources.length; i++) {
 	    Element sourceElement = new Element("source",scuflNS());
 	    sourceElement.setText(sources[i].getName());
+	    sourceElement.addContent(sources[i].getMetadata().getConfigurationElement());
 	    root.addContent(sourceElement);
 	}
 	Port[] sinks = model.getWorkflowSinkProcessor().getPorts();
 	for (int i = 0; i < sinks.length; i++) {
 	    Element sinkElement = new Element("sink",scuflNS());
 	    sinkElement.setText(sinks[i].getName());
+	    sinkElement.addContent(sinks[i].getMetadata().getConfigurationElement());
 	    root.addContent(sinkElement);
 	}
 
