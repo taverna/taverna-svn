@@ -78,7 +78,7 @@ class MartSpecificationPanel extends JPanel {
     String[] standardDBDrivers = new String[]{"com.mysql.jdbc.Driver"};
     JComboBox dbDriver = new JComboBox(standardDBDrivers);
     
-    String[] sampleInstances = new String[]{"ensembl_mart_22_1","msd_mart_2"};
+    String[] sampleInstances = new String[]{"ensembl_mart_22_1","msd_mart_2","uniprot_mart_9"};
     JComboBox dbInstance = new JComboBox(sampleInstances);
     
     JTextField dbHost = new JTextField("martdb.ebi.ac.uk");
