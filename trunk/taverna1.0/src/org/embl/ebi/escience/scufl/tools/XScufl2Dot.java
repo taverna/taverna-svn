@@ -11,7 +11,9 @@ import org.embl.ebi.escience.scufl.view.DotView;
 
 // IO Imports
 import java.io.File;
-import java.io.*;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
 
 import java.lang.ArrayIndexOutOfBoundsException;
 import java.lang.Exception;

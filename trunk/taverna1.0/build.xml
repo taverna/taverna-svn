@@ -272,28 +272,37 @@
 		</java>
 	</target> 
 
-        <!-- Generate the dot view from my hybrid workflow -->
-        <target name="test.tools.hybrid.all">
+        <!-- Generate the dot views from my hybrid workflow -->
+        <target name="test.tools.hybrid">
                 <java classname="org.embl.ebi.escience.scufl.tools.XScufl2Dot" fork="yes">
                     <arg line="hybridworkflow/workflow.xml"/>
+		    <arg line="hybridworkflow/workflow.none.dot"/>
+                    <arg line="none"/>
+                    <classpath refid="compile-classpath"/>
+                </java>
+		<java classname="org.embl.ebi.escience.scufl.tools.XScufl2Dot" fork="yes">
+                    <arg line="hybridworkflow/workflow.xml"/>
+		    <arg line="hybridworkflow/workflow.bound.dot"/>
+                    <arg line="bound"/>
+                    <classpath refid="compile-classpath"/>
+                </java>
+		<java classname="org.embl.ebi.escience.scufl.tools.XScufl2Dot" fork="yes">
+                    <arg line="hybridworkflow/workflow.xml"/>
+		    <arg line="hybridworkflow/workflow.all.dot"/>
                     <arg line="all"/>
                     <classpath refid="compile-classpath"/>
                 </java>
         </target>
-        <target name="test.tools.hybrid.bound">
-                <java classname="org.embl.ebi.escience.scufl.tools.XScufl2Dot" fork="yes">
-                    <arg line="hybridworkflow/workflow.xml"/>
-                    <arg line="bound"/>
-                    <classpath refid="compile-classpath"/>
-                </java>
-        </target>
-        <target name="test.tools.hybrid.none">
-                <java classname="org.embl.ebi.escience.scufl.tools.XScufl2Dot" fork="yes">
-                    <arg line="hybridworkflow/workflow.xml"/>
-                    <arg line="none"/>
-                    <classpath refid="compile-classpath"/>
-                </java>
-        </target>
+	
+	<!-- Run the XScufl to Dot tool -->
+	<target name="tools.dot">
+		<java classname="org.embl.ebi.escience.scufl.tools.XScufl2Dot" fork="yes">
+			<arg line="${file}"/>
+			<arg line="${outfile}"/>
+			<arg line="${ports}"/>
+			<classpath refid="compile-classpath"/>
+		</java>
+	</target>
 
 	<!-- Run arbitrary unit test -->
 	<target name="runtestunit" depends="jar">
