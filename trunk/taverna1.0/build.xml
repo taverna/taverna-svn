@@ -257,5 +257,29 @@
 		    <classpath refid="compile-classpath"/>
 		</java>
 	</target> 
+
+        <!-- Generate the dot view from my hybrid workflow -->
+        <target name="test.tools.hybrid.all">
+                <java classname="org.embl.ebi.escience.scufl.tools.XScufl2Dot" fork="yes">
+                    <arg line="hybridworkflow/workflow.xml"/>
+                    <arg line="all"/>
+                    <classpath refid="compile-classpath"/>
+                </java>
+        </target>
+        <target name="test.tools.hybrid.bound">
+                <java classname="org.embl.ebi.escience.scufl.tools.XScufl2Dot" fork="yes">
+                    <arg line="hybridworkflow/workflow.xml"/>
+                    <arg line="bound"/>
+                    <classpath refid="compile-classpath"/>
+                </java>
+        </target>
+        <target name="test.tools.hybrid.none">
+                <java classname="org.embl.ebi.escience.scufl.tools.XScufl2Dot" fork="yes">
+                    <arg line="hybridworkflow/workflow.xml"/>
+                    <arg line="none"/>
+                    <classpath refid="compile-classpath"/>
+                </java>
+        </target>
+
 	
 </project>

@@ -1,0 +1,67 @@
+digraph scufl_graph {
+ graph [             
+  style=""         
+ ]                   
+ node [              
+  fontname="Courier",         
+  fontsize="10",              
+  fontcolor="black",  
+  color="black",               
+  fillcolor="lightgoldenrodyellow",
+  style="filled"  
+ ];
+
+ edge [                         
+  fontname="Courier",         
+  fontsize="10",              
+  fontcolor="black",  
+  color="black"                
+ ];
+
+ externalcompareoutput [
+  shape="diamond",
+  width="0",
+  height="0",
+  fillcolor="skyblue",
+  label="out"
+ ]
+ compare:output->externalcompareoutput;
+ externalcreate_mutant_sequencesequence [
+  shape="diamond",
+  width="0",
+  height="0",
+  fillcolor="skyblue",
+  label="in"
+ ]
+ externalcreate_mutant_sequencesequence->create_mutant_sequence:sequence;
+ externalcreate_mutant_sequencesnplist [
+  shape="diamond",
+  width="0",
+  height="0",
+  fillcolor="skyblue",
+  label="in"
+ ]
+ externalcreate_mutant_sequencesnplist->create_mutant_sequence:snplist;
+ compare [ 
+  fillcolor = "plum2",
+  label = "compare"
+ ];              
+ restrict_normal [ 
+  label = "restrict_normal"
+ ];              
+ restrict_mutant [ 
+  label = "restrict_mutant"
+ ];              
+ create_mutant_sequence [ 
+  fillcolor = "plum2",
+  label = "create_mutant_sequence"
+ ];              
+ restrict_normal->compare [ 
+  label = "String" ];
+ restrict_mutant->compare [ 
+  label = "String" ];
+ create_mutant_sequence->restrict_normal [ 
+  label = "String" ];
+ create_mutant_sequence->restrict_mutant [ 
+  label = "String" ];
+}

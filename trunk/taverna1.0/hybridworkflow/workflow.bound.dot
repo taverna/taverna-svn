@@ -1,0 +1,69 @@
+digraph scufl_graph {
+ graph [             
+  style=""         
+  rankdir="LR"     
+ ]                   
+ node [              
+  fontname="Courier",         
+  fontsize="10",              
+  fontcolor="black",  
+  shape="record",             
+  color="black",               
+  fillcolor="lightgoldenrodyellow",
+  style="filled"  
+ ];
+
+ edge [                         
+  fontname="Courier",         
+  fontsize="10",              
+  fontcolor="black",  
+  color="black"                
+ ];
+
+ externalcompareoutput [
+  shape="diamond",
+  width="0",
+  height="0",
+  fillcolor="skyblue",
+  label="out"
+ ]
+ compare:output->externalcompareoutput;
+ externalcreate_mutant_sequencesequence [
+  shape="diamond",
+  width="0",
+  height="0",
+  fillcolor="skyblue",
+  label="in"
+ ]
+ externalcreate_mutant_sequencesequence->create_mutant_sequence:sequence;
+ externalcreate_mutant_sequencesnplist [
+  shape="diamond",
+  width="0",
+  height="0",
+  fillcolor="skyblue",
+  label="in"
+ ]
+ externalcreate_mutant_sequencesnplist->create_mutant_sequence:snplist;
+ compare [ 
+  fillcolor = "plum2",
+  label = "{COMPARE}|{{<report1>report1|<report2>report2}|{<output>output}}"
+ ];              
+ restrict_normal [ 
+  label = "{RESTRICT_NORMAL}|{{<sequence_direct_data>sequence_direct_data}|{<outfile>outfile}}"
+ ];              
+ restrict_mutant [ 
+  label = "{RESTRICT_MUTANT}|{{<sequence_direct_data>sequence_direct_data}|{<outfile>outfile}}"
+ ];              
+ create_mutant_sequence [ 
+  fillcolor = "plum2",
+  label = "{CREATE_MUTANT_SEQUENCE}|{{<sequence>sequence|<snplist>snplist}|{<originalsequence>originalsequence|<mutantsequence>mutantsequence}}"
+ ];              
+ restrict_normal:outfile->compare:report1 [ 
+  label = "String" ];
+ restrict_mutant:outfile->compare:report2 [ 
+  label = "String" ];
+ create_mutant_sequence:originalsequence->restrict_normal:sequence_direct_data [ 
+  label = "String" ];
+ create_mutant_sequence:mutantsequence->restrict_mutant:sequence_direct_data [ 
+  label = "String" ];
+}

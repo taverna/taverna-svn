@@ -112,13 +112,15 @@ public class DotView implements ScuflModelEventListener, java.io.Serializable {
 	    Processor theProcessor = thePort.getProcessor();
 	    String nodeName = "external"+theProcessor.getName()+thePort.getName();
 	    dot.append(" "+nodeName+" [\n");
-	    dot.append("  shape=\"doublecircle\",\n");
+	    dot.append("  shape=\"diamond\",\n");
+	    dot.append("  width=\"0\",\n");
+	    dot.append("  height=\"0\",\n");
 	    dot.append("  fillcolor=\"skyblue\",\n");
 	    if (thePort instanceof InputPort) {
-		dot.append("  label=\"Input\";\n");
+		dot.append("  label=\"in\"\n");
 	    }
 	    else {
-		dot.append("  label=\"Output\";\n");
+		dot.append("  label=\"out\"\n");
 	    }
 	    dot.append(" ]\n");
 	    // Create an edge to the named port, direction depends on the type

@@ -117,7 +117,7 @@ public abstract class Processor implements java.io.Serializable {
 	for (Iterator i = this.ports.iterator(); i.hasNext(); ) {
 	    try {
 		InputPort ip = (InputPort)i.next();
-		if (boundPorts.contains(ip)) {
+		if (boundPorts.contains(ip) || ip.isExternal()) {
 		    temp.add(ip);
 		}
 	    }
@@ -146,7 +146,7 @@ public abstract class Processor implements java.io.Serializable {
 	for (Iterator i = this.ports.iterator(); i.hasNext(); ) {
 	    try {
 		OutputPort op = (OutputPort)i.next();
-		if (boundPorts.contains(op)) {
+		if (boundPorts.contains(op) || op.isExternal()) {
 		    temp.add(op);
 		}
 	    }

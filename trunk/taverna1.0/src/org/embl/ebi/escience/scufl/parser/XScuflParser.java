@@ -185,7 +185,7 @@ public class XScuflParser {
 	// Build processors
 	// All processors are nodes of form <processor name="foo"> .... </processor>
 	List processors = root.getChildren("processor", namespace);
-	System.out.println("Found "+processors.size()+" processor nodes.");
+	//System.out.println("Found "+processors.size()+" processor nodes.");
 	for (Iterator i = processors.iterator(); i.hasNext(); ) {
 	    Element processorNode = (Element)i.next();
 	    String name = processorNode.getAttributeValue("name");
