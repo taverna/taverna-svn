@@ -38,9 +38,9 @@ public class ScuflDiagramPanel extends JPanel
     static {
 	try {
 	    Class c = Class.forName("org.embl.ebi.escience.scuflui.ScuflDiagramPanel");
-	    svgIcon = new ImageIcon(c.getResource("saveAsSVG.png"));
-	    dotIcon = new ImageIcon(c.getResource("saveAsDot.png"));
-	    pngIcon = new ImageIcon(c.getResource("saveAsPNG.png"));
+	    svgIcon = new ImageIcon(c.getResource("icons/graphicalview/saveAsSVG.png"));
+	    dotIcon = new ImageIcon(c.getResource("icons/graphicalview/saveAsDot.png"));
+	    pngIcon = new ImageIcon(c.getResource("icons/graphicalview/saveAsPNG.png"));
 
 	}
 	catch (Exception ex) {
