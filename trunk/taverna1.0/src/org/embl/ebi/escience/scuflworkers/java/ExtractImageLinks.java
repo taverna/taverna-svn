@@ -29,7 +29,7 @@ public class ExtractImageLinks implements LocalWorker {
 	return new String[]{"imagelinks"};
     }
     public String[] outputTypes() {
-	return new String[]{"l('text/x-taverna-web-link')"};
+	return new String[]{"l('text/x-taverna-web-url')"};
     }
     
     /**
