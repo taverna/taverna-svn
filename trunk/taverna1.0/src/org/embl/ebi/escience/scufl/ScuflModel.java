@@ -33,6 +33,20 @@ public class ScuflModel implements java.io.Serializable {
      */
     private ArrayList listeners = new ArrayList();
     
+    /**
+     * An internal processor implementation to hold the overall
+     * workflow source links; these appear as OutputPort objects
+     * in this processor.
+     */
+    private InternalSourcePortHolder sources = null;
+    
+    /** 
+     * An internal processor implementation to hold the overall 
+     * workflow outputs, appearing as InputPort objects and acting
+     * as sinks for data from the externally visible processors.
+     */
+    private InternalSinkPortHolder sinks = null;
+
     /** 
      * The processors defined by this workflow,
      * ArrayList of Processor subclasses.
@@ -50,7 +64,64 @@ public class ScuflModel implements java.io.Serializable {
      * ArrayList of DataConstraint objects.
      */
     private ArrayList dataconstraints = new ArrayList();
-    
+   
+    /**
+     * Default constructor, creates internal port holders
+     */
+    public ScuflModel() {
+	try {
+	    this.sinks = new InternalSinkPortHolder(this);
+	    this.sources = new InternalSourcePortHolder(this);
+	}
+	catch (ProcessorCreationException pce) {
+	    //
+	}
+	catch (DuplicateProcessorNameException dpne) {
+	    //
+	}
+    }
+
+    /**
+     * Return all the ports that act as overal workflow inputs; 
+     * in this case the workflow input ports are actually going
+     * to be instances of OutputPort, this is because they act
+     * as flow sources into the workflow.
+     * One possibility here, to make things a bit easier, would
+     * be to duplicate the ports on the input side as well, and
+     * return the corresponding InputPort instances, this presumably
+     * maps the interal processor implementation to the current
+     * way the enactor handles these workflows by creating a special
+     * input task.
+     */
+    public Port[] getWorkflowSourcePorts() {
+	return this.sources.getPorts();
+    }
+
+    /**
+     * as for the getWorkflowSourcePorts, but returns
+     * an array of ports that act as overal outputs from
+     * the workflow.
+     */
+    public Port[] getWorkflowSinkPorts() {
+	return this.sinks.getPorts();
+    }
+
+    /**
+     * Return the internal processor that represents the
+     * workflow sources.
+     */
+    public Processor getWorkflowSourceProcessor() {
+	return this.sources;
+    }
+
+    /**
+     * Return the internal processor that holds the overall
+     * workflow sink ports
+     */
+    public Processor getWorkflowSinkProcessor() {
+	return this.sinks;
+    }
+	
     /**
      * Return an array of the Processor objects
      * defined by this workflow model
@@ -162,22 +233,43 @@ public class ScuflModel implements java.io.Serializable {
     /**
      * Locate a given named port, the name is in the form
      * [PROCESSOR]:[PORT], and is not case sensitive.
+     * If the processor part is missing, this method will
+     * attempt to locate a new external ports with the single
+     * supplied port name in either the internal sink or 
+     * internal source processor.
      */
     public Port locatePort(String port_specifier)
 	throws UnknownProcessorException,
 	       UnknownPortException,
 	       MalformedNameException {
 	String[] parts = port_specifier.split(":");
-	if (parts.length != 2) {
+	if (parts.length < 1 || parts.length > 2) {
 	    throw new MalformedNameException("You must supply a name of the form [PROCESSOR]:[PORT] to the locate operation");
 	}
-	String processor_name = parts[0];
-	String port_name = parts[1];
-	
-	// Find the processor
-	Processor processor = locateProcessor(processor_name);
-	Port port = processor.locatePort(port_name);
-	return port;
+	else if (parts.length == 2) {
+	    // Should be a reference to an externally visible processor
+	    // port combination.
+	    String processor_name = parts[0];
+	    String port_name = parts[1];
+	    
+	    // Find the processor
+	    Processor processor = locateProcessor(processor_name);
+	    Port port = processor.locatePort(port_name);
+	    return port;
+	}
+	else if (parts.length == 1) {
+	    // Got a reference to an internal port
+	    Port port = null;
+	    String port_name = parts[0];
+	    try {
+		// Look for a source port
+		return this.sources.locatePort(port_name);
+	    }
+	    catch (UnknownPortException upe) {
+		return this.sinks.locatePort(port_name);
+	    }
+	}
+	throw new MalformedNameException("Couldn't resolver port name '"+port_specifier+"'.");
     }
     
     /**
@@ -206,4 +298,26 @@ public class ScuflModel implements java.io.Serializable {
     }
 
 }
-    
+/**
+ * A Processor subclass to hold ports for the overal workflow inputs. These
+ * ports are therefore output ports, as they are used as data sources for
+ * links into the workflow
+ */
+class InternalSourcePortHolder extends Processor implements java.io.Serializable {
+    protected InternalSourcePortHolder(ScuflModel model) 
+	throws DuplicateProcessorNameException,
+	       ProcessorCreationException {
+	super(model,"SCUFL_INTERNAL_SOURCEPORTS");
+    }
+}
+/**
+ * A Processor subclass to hold ports for the overall workflow outputs, these
+ * ports are therefore held as input ports, acting as they do as data sinks.
+ */
+class InternalSinkPortHolder extends Processor implements java.io.Serializable {
+    protected InternalSinkPortHolder(ScuflModel model) 
+	throws DuplicateProcessorNameException,
+	       ProcessorCreationException {
+	super(model,"SCUFL_INTERNAL_SINKPORTS");
+    }
+}
