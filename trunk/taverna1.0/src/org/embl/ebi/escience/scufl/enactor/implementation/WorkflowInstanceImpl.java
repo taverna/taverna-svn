@@ -25,8 +25,8 @@
 //      Dependencies        :
 //
 //      Last commit info    :   $Author: mereden $
-//                              $Date: 2004-07-09 18:37:18 $
-//                              $Revision: 1.5 $
+//                              $Date: 2004-07-16 11:53:00 $
+//                              $Revision: 1.6 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 package org.embl.ebi.escience.scufl.enactor.implementation;
@@ -44,7 +44,7 @@ import org.embl.ebi.escience.scufl.UnknownProcessorException;
 import uk.ac.soton.itinnovation.freefluo.event.*;
 import uk.ac.soton.itinnovation.taverna.enactor.entities.PortTask;
 import uk.ac.soton.itinnovation.taverna.enactor.entities.ProcessorTask;
-
+import org.embl.ebi.escience.scufl.enactor.event.*;
 
 
 // Utility Imports
@@ -114,6 +114,13 @@ public class WorkflowInstanceImpl implements WorkflowInstance {
     }
 
     /**
+     * Return the workflow instance ID
+     */
+    public String getID() {
+	return workflowInstanceId;
+    }
+
+    /**
      * Register the specified listener with the engine for this instance
      * and use the internal workflow ID
      */
@@ -152,7 +159,31 @@ public class WorkflowInstanceImpl implements WorkflowInstance {
         String errorMsg = "Error starting to run workflow instance with id " + workflowInstanceId; 
 
         try {
+	    // Populate the input map with LSIDs in case they don't already have them
+	    for (Iterator i = input.keySet().iterator(); i.hasNext();) {
+		String inputName = (String)i.next();
+		DataThing inputValue = (DataThing)input.get(inputName);
+		inputValue.fillLSIDValues();
+	    }
             engine.run(workflowInstanceId, input);
+	    WorkflowEventDispatcher.DISPATCHER.fireWorkflowCreated(new WorkflowCreationEvent(this,input));
+	    // Add a new listener to handle and emit the workflow completion events
+	    addWorkflowStateListener(new WorkflowStateListener() {
+		    public void workflowStateChanged(WorkflowStateChangedEvent event) {
+			WorkflowEventDispatcher dispatcher = WorkflowEventDispatcher.DISPATCHER;
+			WorkflowState state = event.getWorkflowState();
+			if (state.isFinal()) {
+			    // Have either completion, cancellation or failure
+			    if (state.equals(WorkflowState.CANCELLED) ||
+				state.equals(WorkflowState.FAILED)) {
+				dispatcher.fireWorkflowFailed(new WorkflowFailureEvent(WorkflowInstanceImpl.this));
+			    }
+			    else if (state.equals(WorkflowState.COMPLETE)) {
+				dispatcher.fireWorkflowCompleted(new WorkflowCompletionEvent(WorkflowInstanceImpl.this));
+			    }
+			}
+		    }
+		});
         }
         catch(InvalidInputException e) {
             logger.error(errorMsg + ".  The inputs don't map to sources in the dataflow.");

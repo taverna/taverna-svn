@@ -90,6 +90,12 @@ public interface WorkflowInstance {
     public Map getOutput();
     
     /**
+     * Return the identifier for this workflow instance assigned by the 
+     * workflow enactor
+     */
+    public String getID();
+
+    /**
      * Returns a human readable string containing details of errors 
      * that occurred during execution of this <code>WorkflowInstance</code>
      */
@@ -147,4 +153,7 @@ public interface WorkflowInstance {
      * the workflow instance is no longer required.
      */
     public void destroy();
+
+    
+    
 }

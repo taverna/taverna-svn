@@ -21,11 +21,11 @@ public class ProcessCompletionEvent extends WorkflowInstanceEvent {
 				  Map outputs,
 				  Processor proc,
 				  WorkflowInstance workflow) {
+	super(workflow);
 	this.isIterating = isIterating;
 	this.inputMap = inputs;
 	this.outputMap = outputs;
 	this.processor = proc;
-	this.workflowInstance = workflow;
     }
 
     public boolean isIterating() {
@@ -49,20 +49,29 @@ public class ProcessCompletionEvent extends WorkflowInstanceEvent {
      */
     public String toString() {
 	StringBuffer sb = new StringBuffer();
-	sb.append("Single process '"+processor.getName()+"' complete\n");
-	sb.append("  inputs\n");
+	sb.append("Process '"+processor.getName()+"' complete ");
+	if (isIterating) {
+	    sb.append("(iterating)");
+	}
+	else {
+	    sb.append("(simple)");
+	}
+	sb.append("\n");
+	String prefix = "in  ";
 	for (Iterator i = inputMap.keySet().iterator(); i.hasNext(); ) {
 	    String inputKey = (String)i.next();
 	    DataThing inputThing = (DataThing)inputMap.get(inputKey);
 	    String mainLSID = inputThing.getLSID(inputThing.getDataObject());
-	    sb.append("    "+inputKey+"->"+mainLSID+"\n");
+	    sb.append(prefix+"'"+inputKey+"'->"+mainLSID+"\n");
+	    prefix = "    ";
 	}
-	sb.append("  outputs\n");
+	prefix = "out ";
 	for (Iterator i = outputMap.keySet().iterator(); i.hasNext(); ) {
 	    String outputKey = (String)i.next();
 	    DataThing outputThing = (DataThing)outputMap.get(outputKey);
 	    String mainLSID = outputThing.getLSID(outputThing.getDataObject());
-	    sb.append("    "+outputKey+"->"+mainLSID+"\n");
+	    sb.append(prefix+""+mainLSID+"->'"+outputKey+"'\n");
+	    prefix = "    ";
 	}
 	return sb.toString();
     }

@@ -25,8 +25,8 @@
 //      Dependencies        :
 //
 //      Last commit info    :   $Author: mereden $
-//                              $Date: 2004-07-10 13:14:07 $
-//                              $Revision: 1.55 $
+//                              $Date: 2004-07-16 11:53:01 $
+//                              $Revision: 1.56 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 package uk.ac.soton.itinnovation.taverna.enactor.entities;
@@ -44,6 +44,7 @@ import org.embl.ebi.escience.scufl.*;
 import org.embl.ebi.escience.baclava.store.*;
 import org.embl.ebi.escience.scuflworkers.ProcessorHelper;
 import org.embl.ebi.escience.scufl.enactor.event.*;
+
 import org.embl.ebi.escience.scufl.enactor.*;
 import org.embl.ebi.escience.scufl.enactor.implementation.WorkflowEventDispatcher;
 
@@ -190,6 +191,9 @@ public class ProcessorTask extends AbstractTask {
 	    faultCausingException = ex;
 	    logger.error(ex);
 	    fail("Task " + getTaskId() + " in flow " + getFlow().getFlowId() + " failed.  " + ex.getMessage());
+	    DISPATCHER.fireProcessFailed(new ProcessFailureEvent(workflowInstance,
+								 activeProcessor,
+								 ex));
 	}	
     }
 
@@ -634,7 +638,9 @@ public class ProcessorTask extends AbstractTask {
 	DISPATCHER.fireIterationCompleted(new IterationCompletionEvent(collectionStructure,
 								       inputShredding,
 								       workflowInstance,
-								       activeProcessor));
+								       activeProcessor,
+								       inputMap,
+								       outputMap));
 								       
 	return outputMap;
     }

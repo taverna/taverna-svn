@@ -26,8 +26,8 @@
 //      Dependencies        :
 //
 //      Last commit info    :   $Author: mereden $
-//                              $Date: 2004-07-09 18:37:30 $
-//                              $Revision: 1.29 $
+//                              $Date: 2004-07-16 11:53:01 $
+//                              $Revision: 1.30 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 
@@ -39,10 +39,14 @@ import org.embl.ebi.escience.scufl.InputPort;
 import org.embl.ebi.escience.scufl.OutputPort;
 import org.embl.ebi.escience.scufl.Port;
 import org.embl.ebi.escience.scufl.SemanticMarkup;
+import org.embl.ebi.escience.scufl.enactor.event.*;
+import org.embl.ebi.escience.scufl.enactor.implementation.*;
+import org.embl.ebi.escience.scufl.enactor.*;
 
 import uk.ac.soton.itinnovation.freefluo.core.task.*;
 import uk.ac.soton.itinnovation.freefluo.core.event.*;
 import uk.ac.soton.itinnovation.freefluo.core.flow.*; 
+import uk.ac.soton.itinnovation.freefluo.main.Engine;
 
 // Utility Imports
 import java.util.ArrayList;
@@ -64,7 +68,9 @@ public class PortTask extends AbstractTask {
     private static Logger logger = Logger.getLogger(PortTask.class);
     public static int IN = 0;
     public static int OUT = 1;
-    
+    // The WorkflowInstance object which can access this
+    // workflow instance
+    private WorkflowInstance workflowInstance = null;
     private Port thePort; 
     private DataThing theDataThing = null;
     
@@ -132,7 +138,8 @@ public class PortTask extends AbstractTask {
 	int dataDimension = (dataSetType.length())/2;
 	int encapsulationDifference = portDimension - dataDimension;
 	////System.out.println("Think this is a difference of "+encapsulationDifference+" ("+portDimension+"-"+dataDimension+")");
-	if (encapsulationDifference > 0) {  
+	if (encapsulationDifference > 0) {
+	    String[] lsidWrapArray = new String[encapsulationDifference];
 	    Object theDataObject = newDataThing.getDataObject();
 	    while (encapsulationDifference > 0) {
 		encapsulationDifference--;
@@ -144,10 +151,29 @@ public class PortTask extends AbstractTask {
 		theDataObject = newList;
 	    }
 	    this.theDataThing = new DataThing(theDataObject);
-	    this.theDataThing.copyMetadataFrom(newDataThing);
+	    this.theDataThing.copyMetadataFrom(newDataThing);	
+	    // Fully populate the dataThing with LSID values if it doesn't already have them
+	    this.theDataThing.fillLSIDValues();
+	    // Emit an event corresponding to the wrapping operation.
+	    String originalLSID = newDataThing.getLSID(newDataThing.getDataObject());
+	    List l = (List)this.theDataThing.getDataObject();
+	    for (int i = 0; i < lsidWrapArray.length; i++) {
+		lsidWrapArray[i] = this.theDataThing.getLSID(l);
+		try {
+		    l = (List)l.get(0);
+		}
+		catch (ClassCastException cce) {
+		    break;
+		}
+	    }
+	    WorkflowEventDispatcher.DISPATCHER.fireCollectionConstructed(new CollectionConstructionEvent(workflowInstance,
+													 lsidWrapArray,
+													 originalLSID));
 	}
 	else {
-	    this.theDataThing = newDataThing;
+	    this.theDataThing = newDataThing;	
+	    // Fully populate the dataThing with LSID values if it doesn't already have them
+	    this.theDataThing.fillLSIDValues();
 	}
 	// Copy any MIME types available from the markup object
 	// on the Scufl port into the MIME container in the
@@ -222,6 +248,11 @@ public class PortTask extends AbstractTask {
 					   "No data for port " + thePort.getName() + ",please check its links");
 	    }	
 	    else {
+		// Get the workflow instance object
+		Flow flow = getFlow();
+		String flowID = flow.getFlowId();
+		Engine e = flow.getEngine();
+		this.workflowInstance = (WorkflowInstance)new org.embl.ebi.escience.scufl.enactor.implementation.WorkflowInstanceImpl(e, flowID);
                 //System.out.println("Invoking : "+getScuflPort().getProcessor().getName()+"."+getScuflPort().getName());
 		for(Iterator i = getChildren().iterator(); i.hasNext();) {
 		    Task task = (Task) i.next();

@@ -58,5 +58,12 @@ public interface WorkflowEventListener {
      * by a WorkflowFailed event.
      */
     public void processFailed(ProcessFailureEvent e);
-    
+ 
+    /**
+     * Called when a data item is wrapped up inside a default collection
+     * prior to being passed to a service expecting a higher cardinality
+     * version of the same input type
+     */
+    public void collectionConstructed(CollectionConstructionEvent e);
+   
 }

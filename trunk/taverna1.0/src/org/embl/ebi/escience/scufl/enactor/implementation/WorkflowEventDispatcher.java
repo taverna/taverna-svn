@@ -72,6 +72,10 @@ public class WorkflowEventDispatcher {
 	addEventToQueue(e);
     }
 
+    public void fireCollectionConstructed(CollectionConstructionEvent e) {
+	addEventToQueue(e);
+    }
+
     void fireEvents() {
 	// Return if nothing to do
 	if (hasPendingEvents() == false) {
@@ -127,6 +131,10 @@ public class WorkflowEventDispatcher {
 	}
 	else if (e instanceof ProcessFailureEvent) {
 	    l.processFailed((ProcessFailureEvent)e);
+	    return;
+	}
+	else if (e instanceof CollectionConstructionEvent) {
+	    l.collectionConstructed((CollectionConstructionEvent)e);
 	    return;
 	}
     }

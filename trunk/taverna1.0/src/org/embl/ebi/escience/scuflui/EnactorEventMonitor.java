@@ -47,6 +47,21 @@ public class EnactorEventMonitor extends JTextArea
 		public void processCompletedWithIteration(IterationCompletionEvent e) {
 		    EnactorEventMonitor.this.addText(e.toString());
 		}
+		public void processFailed(ProcessFailureEvent e) {
+		    EnactorEventMonitor.this.addText(e.toString());
+		}
+		public void collectionConstructed(CollectionConstructionEvent e) {
+		    EnactorEventMonitor.this.addText(e.toString());
+		}
+		public void workflowCreated(WorkflowCreationEvent e) {
+		    EnactorEventMonitor.this.addText(e.toString());
+		}
+		public void workflowFailed(WorkflowFailureEvent e) {
+		    EnactorEventMonitor.this.addText(e.toString());
+		}
+		public void workflowCompleted(WorkflowCompletionEvent e) {
+		    EnactorEventMonitor.this.addText(e.toString());
+		}
 	    };
     }
 

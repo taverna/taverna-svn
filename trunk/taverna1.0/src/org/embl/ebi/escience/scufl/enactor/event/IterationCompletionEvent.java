@@ -7,20 +7,25 @@ package org.embl.ebi.escience.scufl.enactor.event;
 import java.util.*;
 import org.embl.ebi.escience.scufl.*;
 import org.embl.ebi.escience.scufl.enactor.*;
+import org.embl.ebi.escience.baclava.*;
 
 public class IterationCompletionEvent extends WorkflowInstanceEvent {
     
     private Processor processor;
-    private Map structureMapping, inputShredding;
+    private Map structureMapping, inputShredding, inputMap, outputMap;
 
     public IterationCompletionEvent(Map structureMapping,
 				    Map inputShredding,
 				    WorkflowInstance wf,
-				    Processor activeProcessor) {
+				    Processor activeProcessor,
+				    Map inputs,
+				    Map outputs) {
+	super(wf);
 	this.structureMapping = structureMapping;
 	this.inputShredding = inputShredding;
 	this.processor = activeProcessor;
-	this.workflowInstance = wf;
+	this.inputMap = inputs;
+	this.outputMap = outputs;
     }
     
     /**
@@ -51,6 +56,24 @@ public class IterationCompletionEvent extends WorkflowInstanceEvent {
     public Processor getProcessor() {
 	return this.processor;
     }
+    
+    /**
+     * Returns a map of port name -> datathing corresponding to the
+     * overall inputs and outputs of the process which has been iterated
+     * over. These input values are the inputs as fed to the process
+     * before any iteration or composition has occured
+     */
+    public Map getOverallInputs() {
+	return this.inputMap;
+    }
+
+    /**
+     * As for the getOverallInputs but returns the final result map
+     * for this processor
+     */
+    public Map getOverallOutputs() {
+	return this.outputMap;
+    }
 
     /**
      * Print a summary of the information contained within this event
@@ -61,16 +84,16 @@ public class IterationCompletionEvent extends WorkflowInstanceEvent {
 	for (Iterator i = structureMapping.keySet().iterator(); i.hasNext(); ) {
 	    String keyLSID = (String)i.next();
 	    Set componentLSIDs = (Set)structureMapping.get(keyLSID);
-	    sb.append("LSID '"+keyLSID+"' built from {\n");
+	    sb.append("'"+findNameFromLSID(keyLSID)+"'->"+keyLSID+" built from {\n");
 	    for (Iterator j = componentLSIDs.iterator(); j.hasNext(); ) {
 		sb.append("  "+(String)j.next()+"\n");
 	    }
 	    sb.append("}\n");
 	}
-	for (Iterator i = inputShredding.keySet().iterator(); i.hasNext(); ) {
+       	for (Iterator i = inputShredding.keySet().iterator(); i.hasNext(); ) {
 	    String keyLSID = (String)i.next();
 	    Set componentLSIDs = (Set)inputShredding.get(keyLSID);
-	    sb.append("LSID '"+keyLSID+"' decomposed to {\n");
+	    sb.append("\n'"+findNameFromLSID(keyLSID)+"'->"+keyLSID+" decomposed to {\n");
 	    for (Iterator j = componentLSIDs.iterator(); j.hasNext(); ) {
 		sb.append("  "+(String)j.next()+"\n");
 	    }
@@ -79,4 +102,26 @@ public class IterationCompletionEvent extends WorkflowInstanceEvent {
 	return sb.toString();
     }
 
+    /**
+     * Utility method to find the input or output name for a given LSID,
+     * returns the empty string if none is found. This only searches
+     * within the scope of this event!
+     */
+    public String findNameFromLSID(String LSID) {
+	for (Iterator i = this.inputMap.keySet().iterator(); i.hasNext();) {
+	    String name = (String)i.next();
+	    DataThing thing = (DataThing)inputMap.get(name);
+	    if (thing.getLSID(thing.getDataObject()).equals(LSID)) {
+		return name;
+	    }
+	}
+	for (Iterator i = this.outputMap.keySet().iterator(); i.hasNext();) {
+	    String name = (String)i.next();
+	    DataThing thing = (DataThing)outputMap.get(name);
+	    if (thing.getLSID(thing.getDataObject()).equals(LSID)) {
+		return name;
+	    }
+	}
+	return "";
+    }
 }
