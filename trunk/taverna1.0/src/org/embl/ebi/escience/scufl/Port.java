@@ -37,7 +37,9 @@ public abstract class Port implements java.io.Serializable {
 
     /**
      * Create a new port (obviously you can't actually construct this 
-     * because it's abstract. Names must match [a-zA-Z_0-9]
+     * because it's abstract. Names must match [a-zA-Z_0-9].
+     * Lies lies lies, I removed that bit because it was breaking EMBOSS.
+     * tmo
      */
     public Port(Processor processor, String name)
 	throws DuplicatePortNameException,
@@ -52,10 +54,13 @@ public abstract class Port implements java.io.Serializable {
 	if (name.equals("")) {
 	    throw new PortCreationException("Refusing to create a port with name ''");
 	}
-	if (Pattern.matches("\\w++",name) == false) {
-	    throw new PortCreationException("Name contains an invalid character,\n"+
-					    "names must match [a-zA-Z_0-9].");
-	}
+	// Commented out - was failing with certain soaplab EMBOSS services which had names
+	// like foo-2
+	// tmo 30th May 2003
+	/**if (Pattern.matches("\\w++",name) == false) {
+	   throw new PortCreationException("Name contains an invalid character,\n"+
+	   "names must match [a-zA-Z_0-9].");
+	   }*/
 	
 	// Scan through the list of ports defined within 
 	// the parent processor and check that the name
