@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <s:scufl xmlns:s="http://org.embl.ebi.escience/xscufl/0.1alpha" version="0.1">
-  
+ 
   <s:processor name="seqret">
     <s:soaplabwsdl>http://industry.ebi.ac.uk/soap/soaplab/edit::seqret</s:soaplabwsdl>
   </s:processor>
@@ -54,10 +54,10 @@
     <s:input>plotorf:sequence_direct_data</s:input>
     <s:output>seqret:outseq</s:output>
   </s:link>
-  <s:external>seqret:sequence_usa</s:external>
-  <s:external>getorf:minsize</s:external>
-  <s:external>getorf:find</s:external>
-  <s:external>seqret2:sequence_usa</s:external>
-  <s:external>prophecy:type</s:external>
-  <s:external>prophet:outfile</s:external>
+  <s:external name="sequenceusa">seqret:sequence_usa</s:external>
+  <s:external name="orfminsize">getorf:minsize</s:external>
+  <s:external name="orffind">getorf:find</s:external>
+  <s:external name="sequenceRelated">seqret2:sequence_usa</s:external>
+  <s:external name="prophecyType">prophecy:type</s:external>
+  <s:external name="outfile">prophet:outfile</s:external>
 </s:scufl>
