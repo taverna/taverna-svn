@@ -5,6 +5,8 @@
  */
 package org.embl.ebi.escience.scufl.enactor;
 
+import uk.ac.soton.itinnovation.freefluo.main.FlowContext;
+
 /**
  * Represents a user workflow context. This allows the workflow
  * engine to which the context is passed to act on behalf of the
@@ -22,5 +24,6 @@ public interface UserContext {
     //public String getProject();
     //public String getExperiment();
     public String[] getUserNameAndPassword(String resourceExpression);
+    FlowContext toFlowContext();
 
 }

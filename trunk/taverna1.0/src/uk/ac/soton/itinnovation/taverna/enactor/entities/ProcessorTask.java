@@ -24,9 +24,9 @@
 //      Created for Project :   MYGRID
 //      Dependencies        :
 //
-//      Last commit info    :   $Author: mereden $
-//                              $Date: 2004-11-04 15:50:59 $
-//                              $Revision: 1.65 $
+//      Last commit info    :   $Author: ferris $
+//                              $Date: 2005-01-10 14:12:21 $
+//                              $Revision: 1.66 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 package uk.ac.soton.itinnovation.taverna.enactor.entities;
@@ -56,7 +56,6 @@ import uk.ac.soton.itinnovation.freefluo.core.task.*;
 import uk.ac.soton.itinnovation.freefluo.core.event.*;
 import uk.ac.soton.itinnovation.freefluo.core.flow.*;
 import uk.ac.soton.itinnovation.freefluo.task.*;
-import uk.ac.soton.itinnovation.freefluo.conf.*;
 import uk.ac.soton.itinnovation.freefluo.main.Engine;
 
 // Utility Imports
