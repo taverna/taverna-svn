@@ -94,7 +94,9 @@ public class WebScavenger extends Scavenger {
 	    try {
 		// If the URL ends in 'wsdl' then try to parse it as a wsdl document
 		if (allURLs[i].toLowerCase().endsWith("wsdl")) {
-		    try {
+		    try {	    
+			progressDisplayNode.setUserObject("Parsing WSDL at : "+allURLs[i]);
+			treeModel.nodeChanged(progressDisplayNode);
 			add(new WSDLBasedScavenger(allURLs[i]));
 		    }
 		    catch (ScavengerCreationException sce) {
@@ -102,6 +104,8 @@ public class WebScavenger extends Scavenger {
 		    }			   
 		}
 		else {
+		    progressDisplayNode.setUserObject("Reading : "+allURLs[i]);
+		    treeModel.nodeChanged(progressDisplayNode);
 		    // If this is an XScufl url then add a new WorkflowProcessorFactory to the node
 		    Document doc = sb.build(new InputStreamReader(new URL(allURLs[i]).openStream()));
 		    Element root = doc.getRootElement();
@@ -298,7 +302,7 @@ public class WebScavenger extends Scavenger {
 			    
 			    // if the proper type, add it to the results list
 			    // unless we have already seen it
-			    if (strLink.indexOf(".xml")>-1 || strLink.indexOf("wsdl")>-1) {
+			    if (strLink.indexOf(".xml")>-1 || strLink.toLowerCase().endsWith("wsdl")) {
 				if (vectorMatches.contains(strLink) == false) {
 				    listMatches.add(strLink);
 				    vectorMatches.addElement(strLink);
