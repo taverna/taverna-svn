@@ -343,6 +343,8 @@ public class ScuflDiagram extends JComponent
 	receiveModelEvent(null);
     }
 
+    private boolean triedImageFormatFix = false;
+
     private void updateGraphic() {
 	try {
 	    String imageSuffix = System.getProperty("taverna.scufldiagram.imagetype","png");
@@ -371,6 +373,15 @@ public class ScuflDiagram extends JComponent
 	    repaint();
 	}
 	catch (Exception ex) {
+	    if (ex instanceof ArrayIndexOutOfBoundsException &&
+		!triedImageFormatFix) {
+		// Catch these and craftily reset the system property
+		// which defines the image type, then re-call the method
+		triedImageFormatFix = true;
+		System.setProperty("taverna.scufldiagram.imagetype","gif");
+		updateGraphic();
+		return;
+	    }
 	    JOptionPane.showMessageDialog(ScuflDiagram.this,
 					  ex.getMessage(),
 					  "Error!",
