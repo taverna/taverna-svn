@@ -43,6 +43,34 @@ import java.net.URL;
  */
 public class FreefluoEnactorProxy implements EnactorProxy {
 
+    private Engine engine = null;
+    private static EnactorProxy staticInstance = null;
+    
+    public static EnactorProxy getInstance() {
+	if (staticInstance == null) {
+	    staticInstance = new FreefluoEnactorProxy();
+	}
+	return staticInstance;
+    }
+
+    public FreefluoEnactorProxy() {
+	// See whether we need to create a local engine or a proxy
+	// to talk to one over SOAP
+	String enactorEndpoint = System.getProperty("mygrid.enactor.soap.endpoint");
+	if (enactorEndpoint != null){
+	    try {
+		this.engine = new EngineStub(new URL(enactorEndpoint));
+	    }
+	    catch (Exception ex) {
+		// Problem with remote enactor creation
+		ex.printStackTrace();
+	    }
+	}
+	else {
+	    this.engine = new EngineImpl();
+	}
+    }
+
     public WorkflowInstance compileWorkflow(ScuflModel workflow, Map input) 
 	          throws WorkflowSubmissionException {
 	      WorkflowInstance workflowInstance = compileWorkflow(workflow);
@@ -52,27 +80,15 @@ public class FreefluoEnactorProxy implements EnactorProxy {
 
     public WorkflowInstance compileWorkflow(ScuflModel workflow) throws WorkflowSubmissionException {
         try {
-            Engine engine = null;
-
-            // would be nice to have a definition class somewhere with property definitions in
-            String enactorEndpoint = System.getProperty("mygrid.enactor.soap.endpoint");
-            if(enactorEndpoint != null) {
-                engine = new EngineStub(new URL(enactorEndpoint));
-            }
-            else {
-                // Use an in-process freefluo engine
-	              engine = new EngineImpl();
-            }
-
-            String workflowInstanceId = engine.compile(workflow);
+	    String workflowInstanceId = engine.compile(workflow);
             WorkflowInstance workflowInstance = new WorkflowInstanceImpl(engine, workflowInstanceId);   
             return workflowInstance;
-	      }
-	      catch (Exception e) {
-	          WorkflowSubmissionException wse = new WorkflowSubmissionException("Error during submission of workflow to in memory freefluo enactor");
-	          wse.initCause(e);
-	          throw wse;
-	      }
+	}
+	catch (Exception e) {
+	    WorkflowSubmissionException wse = new WorkflowSubmissionException("Error during submission of workflow to in memory freefluo enactor");
+	    wse.initCause(e);
+	    throw wse;
+	}
     }
 
     /**

@@ -24,6 +24,8 @@ public class WorkflowEventDispatcher {
     private List listeners = new ArrayList();
     private Thread notificationThread;
     
+    public static WorkflowEventDispatcher DISPATCHER = new WorkflowEventDispatcher(true);
+
     /**
      * Create a new workflow event dispatcher. If the boolean
      * loadFromSPI is true then this will scan for implementations
@@ -32,7 +34,7 @@ public class WorkflowEventDispatcher {
      * as listeners to this dispatcher. If false then this scan
      * is not performed and an empty dispatcher is created.
      */
-    public WorkflowEventDispatcher(boolean loadFromSPI) {
+    private WorkflowEventDispatcher(boolean loadFromSPI) {
 	if (loadFromSPI) {
 	    SPInterface spiIF = new SPInterface(WorkflowEventListener.class);
 	    ClassLoaders loaders = new ClassLoaders();
