@@ -1,0 +1,27 @@
+<body>
+<h1>LSIDAuth for <sup>my</sup>Grid</h1>
+<a href="mailto:tmo@ebi.ac.uk">tmo@ebi.ac.uk</a> 7<sup>th</sup> October 2004
+<p>This package contains the static LSIDAuth class and it's associated helpers. This class can be used to authenticate a user against an encrypted password stored in an LSID authority. The password is held in an RDF description of the user within the metadata for the LSID corresponding to them.</p>
+<p>In order to prevent horrible horrible performance there are optional parameters to a cache of <em>encrypted</em> passwords held in this module. The caching policy is to hold two distinct dates, the first date being when the LSID metadata was fetched and the second being the last time an authentication attempt was made against the cached password. A cached entry is valid if the current date is within a certain short time of the last request and also within a possibly longer time of the original fetch. This allows clients which don't maintain session to have at least some performance help - of course this potentially introduces a synchronization issue with the underlying password information so care should be used when setting these parameters. All values for cache expiry times are in milliseconds.</p>
+<p>When a request to authenticate is received the following interactions take place :<ol>
+<li>Get LSID from request</li>
+<li>Attempt cache lookup for specified user LSID
+<blockquote><font color="green"><b>Cache hit</b></font><br>
+                    Is request within $CACHE_EXPIRY of first request?<br>
+                    Is request within $SESSION_EXPIRY of most recent request?<br>
+                    If both of the above are true then fetch the encrypted password 
+		    from the cache, update the most recent request time and move on to step <b>3</b><br>
+		    If either is false then scrub the entry from the cache and retry step <b>2</b></blockquote>
+<blockquote><font color="red"><b>Cache miss</b></font><br>
+                    Attempt to fetch LSID metadata from authority using LSID client stack.<br>
+		    Parse metadata looking for a &lt;mygrid:cpassword&gt tag containing an encrypted password within the RDF description about the person LSID.<br>
+		    Insert fetch encrypted password into the cache with the current date.<br>
+		    Proceed to step <b>3</b></blockquote>
+		    </li>
+<li>Encrypt the supplied plaintext password.</li>
+<li>Compare encrypted plaintext with retrieved encrypted password using string comparison.</li>
+<li>If the strings match then return, otherwise throw an exception.</li>
+</ol>
+</p>
+<p>Generation of encrypted passwords which will then be compatible with this authentication mechanism is available through the encryptPassword method. The encryption algorithm uses a secret key which <b>must</b> be the same on all servers within a <sup>my</sup>Grid installation, this is used as an additional check to guard against brute force cracks of the encrypted passwords (as would be possible without the key or with an easily guessable default). The key must be set using the static 'init' method, attempts to use the getInstance method before this occurs will throw a RuntimeException.</p>
+</body>
