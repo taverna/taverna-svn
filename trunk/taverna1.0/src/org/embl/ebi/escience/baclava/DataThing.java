@@ -15,6 +15,8 @@ import org.embl.ebi.escience.scufl.SemanticMarkup;
 // Utility Imports
 import java.util.*;
 
+import java.io.*;
+
 // JDOM Imports
 import org.jdom.Element;
 
@@ -443,5 +445,85 @@ public class DataThing {
                 "\n\tmarkup=" + myMarkup +
                 "\n\tlsid=" + lsid +
                 "\n";
+    }
+    
+    /**
+     * Writes the contents of the DataThing into the
+     * specified directory using the given name. If 
+     * there is only one item a single file is created
+     * otherwise a directory structure mirroring the collection
+     * structure is built.
+     */
+    public void writeToFileSystem(File destination, String name) throws IOException {
+	String defaultExtension = ".text";
+	String syntacticType = (getSyntacticType().split("'"))[1].toLowerCase();
+	if (syntacticType.matches(".*text/xml.*")) {
+	    defaultExtension = ".xml";
+	}
+	else if (syntacticType.matches(".*text/html.*")) {
+	    defaultExtension = ".html";
+	}
+	else if (syntacticType.matches(".*image/png.*")) {
+	    defaultExtension = ".png";
+	}
+	DataThing.writeObjectToFileSystem(destination, name, theDataObject, defaultExtension);
+    }
+    /**
+     * Write a specific object to the filesystem
+     * this has no access to metadata about the object
+     * and so is not particularly clever
+     */
+    public static void writeObjectToFileSystem(File destination, String name, Object o, String defaultExtension) throws IOException {
+	// If the destination is not a directory then set the destination
+	// directory to the parent and the name to the filename
+	// i.e. if the destination is /tmp/foo.text and this exists
+	// then set destination to /tmp/ and name to 'foo.text'
+	if (destination.exists() && destination.isFile()) {
+	    name = destination.getName();
+	    destination = destination.getParentFile();
+	}
+	if (destination.exists() == false) {
+	    // Create the directory structure if not already present
+	    destination.mkdirs();
+	}
+	writeDataObject(destination, name, o, defaultExtension);
+    }
+    static char sep = File.separatorChar;
+    private static void writeDataObject(File destination, String name, Object o, String defaultExtension) throws IOException {
+	if (o instanceof Collection) {
+	    // Create a new directory, iterate over the collection recursively
+	    // calling this method
+	    File targetDir = new File(destination.toString()+sep+name);
+	    targetDir.mkdir();
+	    int count = 0;
+	    Collection c = (Collection)o;
+	    for (Iterator i = c.iterator(); i.hasNext();) {
+		writeDataObject(targetDir, ""+count++, i.next(), defaultExtension);
+	    }
+	}
+	else {
+	    // Write a single item
+	    if (o instanceof String && defaultExtension == null) {
+		name = name + ".text";
+	    }
+	    else {
+		if (defaultExtension != null) {
+		    name = name + defaultExtension;
+		}
+	    }
+	    File targetFile = new File(destination.toString()+sep+name);
+	    FileOutputStream fos = new FileOutputStream(targetFile);
+	    if (o instanceof byte[]) {
+		fos.write((byte[])o);
+		fos.flush();
+		fos.close();
+	    }
+	    else if (o instanceof String) {
+		PrintWriter out = new PrintWriter(new OutputStreamWriter(fos));
+		out.print((String)o);
+		out.flush();
+		out.close();
+	    }
+	}
     }
 }
