@@ -8,6 +8,7 @@ package org.embl.ebi.escience.scuflui;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.ImageIcon;
+import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
@@ -18,6 +19,7 @@ import org.embl.ebi.escience.scuflui.NoContextMenuFoundException;
 import org.embl.ebi.escience.scuflui.ScuflModelExplorerRenderer;
 import java.lang.Class;
 import java.lang.ClassNotFoundException;
+import java.lang.Exception;
 import java.lang.Object;
 import java.lang.String;
 
@@ -92,6 +94,9 @@ public class ScuflContextMenuFactory {
 	}
 	else if (theObject instanceof DataConstraint) {
 	    return getDataConstraintMenu((DataConstraint)theObject, model);
+	}
+	else if (theObject instanceof ConcurrencyConstraint) {
+	    return getConcurrencyConstraintMenu((ConcurrencyConstraint)theObject, model);
 	}
 	else if (theObject instanceof String) {
 	    String choice = (String)theObject;
@@ -188,10 +193,29 @@ public class ScuflContextMenuFactory {
 	JMenuItem title = new JMenuItem("Link : "+theConstraint.getName());
 	title.setEnabled(false);
 	theMenu.add(title);
+	theMenu.addSeparator();
 	JMenuItem delete = new JMenuItem("Remove from model", deleteIcon);
 	delete.addActionListener(new ActionListener() {
 		public void actionPerformed(ActionEvent a) {
 		    theModel.destroyDataConstraint(theConstraint);
+		}
+	    });
+	theMenu.add(delete);
+	return theMenu;
+    }
+
+    private static JPopupMenu getConcurrencyConstraintMenu(ConcurrencyConstraint cc, ScuflModel model) {
+	final ConcurrencyConstraint theConstraint = cc;
+	final ScuflModel theModel = model;
+	JPopupMenu theMenu = new JPopupMenu();
+	JMenuItem title = new JMenuItem("Coordination : "+theConstraint.getName());
+	title.setEnabled(false);
+	theMenu.add(title);
+	theMenu.addSeparator();
+	JMenuItem delete = new JMenuItem("Remove from model", deleteIcon);
+	delete.addActionListener(new ActionListener() {
+		public void actionPerformed(ActionEvent a) {
+		    theModel.destroyConcurrencyConstraint(theConstraint);
 		}
 	    });
 	theMenu.add(delete);
@@ -204,20 +228,63 @@ public class ScuflContextMenuFactory {
 	JMenuItem title = new JMenuItem("Processor : "+theProcessor.getName());
 	title.setEnabled(false);
 	theMenu.add(title);
+	theMenu.addSeparator();
 	JMenuItem delete = new JMenuItem("Remove from model",deleteIcon);
 	delete.addActionListener(new ActionListener() {
 		public void actionPerformed(ActionEvent a) {
 		    theProcessor.getModel().destroyProcessor(theProcessor);
 		}
 	    });
+	// Provide a submenu to create a coordination constraint
 	theMenu.add(delete);
-	JMenuItem properties = new JMenuItem("Properties ...");
-	properties.addActionListener(new ActionListener() {
-		public void actionPerformed(ActionEvent a) {
-		    //
+	JMenuItem block = new JMenu("Coordinate from");
+	block.setIcon(ScuflModelExplorerRenderer.constraintIcon);
+	theMenu.add(block);
+	// Iterate over the processors in the model to get the available
+	// gate processors.
+	Processor[] gp = processor.getModel().getProcessors();
+	for (int i = 0; i < gp.length; i++) {
+	    // Doesn't make sense to block on self, will deadlock.
+	    if (gp[i]!=processor) {
+		JMenuItem gpi = new JMenuItem(gp[i].getName());
+		if (gp[i] instanceof SoaplabProcessor) {
+		    gpi.setIcon(ScuflModelExplorerRenderer.soaplabIcon);
 		}
-	    });
-	theMenu.add(properties);
+		else if (gp[i] instanceof WSDLBasedProcessor) {
+		    gpi.setIcon(ScuflModelExplorerRenderer.wsdlIcon);
+		}
+		else if (gp[i] instanceof TalismanProcessor) {
+		    gpi.setIcon(ScuflModelExplorerRenderer.talismanIcon);
+		}
+		block.add(gpi);
+		final Processor controller = gp[i];
+		final Processor target = processor;
+		final ScuflModel model = processor.getModel();
+		gpi.addActionListener(new ActionListener() {
+			// Create a new concurrency constraint
+			public void actionPerformed(ActionEvent ae) {
+			    String ccName = target.getName()+"_BLOCKON_"+controller.getName();
+			    try {
+				ConcurrencyConstraint cc = new ConcurrencyConstraint(model,
+										     ccName,
+										     controller,
+										     target,
+										     ConcurrencyConstraint.SCHEDULED,
+										     ConcurrencyConstraint.RUNNING,
+										     ConcurrencyConstraint.COMPLETED);
+				model.addConcurrencyConstraint(cc);
+			    }
+			    catch (Exception e) {
+				JOptionPane.showMessageDialog(null,
+							      "Something wasn't happy : \n"+e.getMessage(),
+							      "Exception!",
+							      JOptionPane.ERROR_MESSAGE);
+			    }
+			}
+		    });
+		
+	    }
+	}
 	return theMenu;
     }
     

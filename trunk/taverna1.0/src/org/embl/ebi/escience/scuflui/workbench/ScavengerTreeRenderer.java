@@ -12,6 +12,7 @@ import org.embl.ebi.escience.scuflui.ScuflModelExplorerRenderer;
 
 import org.embl.ebi.escience.scuflui.workbench.ProcessorFactory;
 import org.embl.ebi.escience.scuflui.workbench.SoaplabProcessorFactory;
+import org.embl.ebi.escience.scuflui.workbench.WSDLBasedProcessorFactory;
 import java.lang.Object;
 
 

@@ -14,6 +14,8 @@ import org.embl.ebi.escience.scuflui.workbench.ProcessorFactory;
 import java.lang.Class;
 import java.lang.String;
 
+
+
 /**
  * Implementation of ProcessorFactory that creates
  * WSDLBasedProcessor nodes

@@ -14,8 +14,8 @@ import java.awt.event.WindowEvent;
 import javax.swing.*;
 import org.embl.ebi.escience.scufl.ScuflModel;
 import org.embl.ebi.escience.scufl.parser.XScuflParser;
-import org.embl.ebi.escience.scufl.view.XScuflView;
 import org.embl.ebi.escience.scufl.view.DotView;
+import org.embl.ebi.escience.scufl.view.XScuflView;
 import org.embl.ebi.escience.scuflui.DotTextArea;
 import org.embl.ebi.escience.scuflui.ScuflDiagram;
 import org.embl.ebi.escience.scuflui.ScuflModelExplorer;
@@ -26,10 +26,14 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.PrintWriter;
 
+// Network Imports
+import java.net.URL;
+
 import org.embl.ebi.escience.scuflui.workbench.GenericUIComponentFrame;
 import org.embl.ebi.escience.scuflui.workbench.ScavengerCreationException;
 import org.embl.ebi.escience.scuflui.workbench.ScavengerTree;
 import org.embl.ebi.escience.scuflui.workbench.SoaplabScavenger;
+import org.embl.ebi.escience.scuflui.workbench.WSDLBasedScavenger;
 import java.lang.Class;
 import java.lang.ClassNotFoundException;
 import java.lang.Exception;
@@ -46,7 +50,7 @@ import java.lang.System;
  */
 public class Workbench extends JFrame {
     
-    protected static ImageIcon openIcon, deleteIcon, importIcon, saveIcon;
+    protected static ImageIcon openIcon, deleteIcon, importIcon, saveIcon, openurlIcon;
 
     static {
 	try {
@@ -55,6 +59,7 @@ public class Workbench extends JFrame {
 	    deleteIcon = new ImageIcon(c.getResource("delete.gif"));
 	    saveIcon = new ImageIcon(c.getResource("save.gif"));
 	    importIcon = new ImageIcon(c.getResource("import.gif"));
+	    openurlIcon = new ImageIcon(c.getResource("openurl.gif"));
 	}
 	catch (ClassNotFoundException cnfe) {
 	    //
@@ -166,12 +171,41 @@ public class Workbench extends JFrame {
 			    XScuflParser.populate(file.toURL().openStream(), Workbench.this.model, null);
 			}
 			catch (Exception ex) {
-			    System.out.println("Exception while opening file! "+ex.getMessage());
+			    JOptionPane.showMessageDialog(null,
+							  "Problem opening XScufl from file : \n"+ex.getMessage(),
+							  "Exception!",
+							  JOptionPane.ERROR_MESSAGE);
 			}
 		    }
 		}
 	    });
 	fileMenu.add(openScufl);
+	// Load from web
+	JMenuItem openScuflURL = new JMenuItem("Import XScufl Definition from web",openurlIcon);
+	openScuflURL.addActionListener(new ActionListener() {
+		public void actionPerformed(ActionEvent ae) {
+		    try {
+			String name = (String)JOptionPane.showInputDialog(null,
+									  "URL of an XScufl definition to open?",
+									  "URL Required",
+									  JOptionPane.QUESTION_MESSAGE,
+									  null,
+									  null,
+									  "http://");
+			if (name != null) {
+			    XScuflParser.populate((new URL(name)).openStream(), Workbench.this.model, null);
+			}
+		    }
+		    catch (Exception ex) {
+			JOptionPane.showMessageDialog(null,
+						      "Problem opening XScufl from web : \n"+ex.getMessage(),
+						      "Exception!",
+						      JOptionPane.ERROR_MESSAGE);
+		    }
+		}
+	    });
+	
+	fileMenu.add(openScuflURL);
 	JMenuItem saveScufl = new JMenuItem("Save as XScufl", saveIcon);
 	saveScufl.addActionListener(new ActionListener() {
 		public void actionPerformed(ActionEvent e) {

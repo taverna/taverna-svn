@@ -4,14 +4,29 @@
  * Copyright Tom Oinn, EMBL-EBI
  */
 package org.embl.ebi.escience.scuflui.workbench;
-import javax.swing.*;
-import org.embl.ebi.escience.scufl.*;
-import javax.wsdl.*;
+import javax.swing.tree.DefaultMutableTreeNode;
+import javax.wsdl.Definition;
+import javax.wsdl.Operation;
+import javax.wsdl.PortType;
+import javax.wsdl.WSDLException;
 import javax.wsdl.factory.WSDLFactory;
 import javax.wsdl.xml.WSDLReader;
-import javax.swing.tree.*;
-import java.util.*;
-import java.net.*;
+
+// Utility Imports
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+
+// Network Imports
+import java.net.MalformedURLException;
+import java.net.URL;
+
+import org.embl.ebi.escience.scuflui.workbench.Scavenger;
+import org.embl.ebi.escience.scuflui.workbench.ScavengerCreationException;
+import org.embl.ebi.escience.scuflui.workbench.WSDLBasedProcessorFactory;
+import java.lang.String;
+
+
 
 /**
  * A Scavenger that knows how to inspect a given

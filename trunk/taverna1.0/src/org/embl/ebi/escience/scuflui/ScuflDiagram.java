@@ -10,11 +10,17 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import javax.imageio.ImageIO;
 import javax.imageio.ImageReader;
 import javax.imageio.stream.ImageInputStream;
 import javax.swing.JComponent;
+import javax.swing.JMenuItem;
+import javax.swing.JPopupMenu;
 import org.embl.ebi.escience.scufl.ScuflModel;
 import org.embl.ebi.escience.scufl.ScuflModelEvent;
 import org.embl.ebi.escience.scufl.ScuflModelEventListener;
@@ -54,6 +60,62 @@ public class ScuflDiagram extends JComponent
 	super();
 	setBackground(Color.white);
 	setOpaque(false);
+	// Create a popup menu handler
+	addMouseListener(new MouseAdapter() {
+		public void mousePressed(MouseEvent e) {
+		    if (e.isPopupTrigger()) {
+			doEvent(e);
+		    }
+		}
+		public void mouseReleased(MouseEvent e) {
+		    if (e.isPopupTrigger()) {
+			doEvent(e);
+		    }
+		}
+		void doEvent(MouseEvent e) {
+		    JPopupMenu menu = new JPopupMenu();
+		    JMenuItem title = new JMenuItem("Port display");
+		    title.setEnabled(false);
+		    menu.add(title);
+		    menu.addSeparator();
+		    JMenuItem none = new JMenuItem("No ports");
+		    menu.add(none);
+		    none.addActionListener(new ActionListener() {
+			    public void actionPerformed(ActionEvent ae) {
+				ScuflDiagram.this.setPortDisplay(DotView.NONE);
+			    }
+			});
+		    JMenuItem bound = new JMenuItem("Bound ports only");
+		    menu.add(bound);
+		    bound.addActionListener(new ActionListener() {
+			    public void actionPerformed(ActionEvent ae) {
+				ScuflDiagram.this.setPortDisplay(DotView.BOUND);
+			    }
+			});
+		    JMenuItem all = new JMenuItem("All ports");
+		    menu.add(all);
+		    all.addActionListener(new ActionListener() {
+			    public void actionPerformed(ActionEvent ae) {
+				ScuflDiagram.this.setPortDisplay(DotView.ALL);
+			    }
+			});
+		    
+		    menu.show(ScuflDiagram.this, e.getX(), e.getY());
+		}
+	    });
+
+    }
+
+    /**
+     * Change the port display setting, the default is to show
+     * bound ports, but the other options from DotView can be
+     * applied as well.
+     */
+    public void setPortDisplay(int portDisplayPolicy) {
+	if (this.dot != null) {
+	    this.dot.setPortDisplay(portDisplayPolicy);
+	    updateGraphic();
+	}
     }
 
     public Dimension getMinimumSize() {

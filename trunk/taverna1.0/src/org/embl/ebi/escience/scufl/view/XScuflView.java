@@ -242,7 +242,7 @@ public class XScuflView implements ScuflModelEventListener, java.io.Serializable
 	    Element from = new Element("from");
 	    Element to = new Element("to");
 	    from.setText(ConcurrencyConstraint.statusCodeToString(constraints[i].getTargetStateFrom()));
-	    to.setText(ConcurrencyConstraint.statusCodeToString(constraints[i].getTargetStateFrom()));
+	    to.setText(ConcurrencyConstraint.statusCodeToString(constraints[i].getTargetStateTo()));
 	    statechange.addContent(from);
 	    statechange.addContent(to);
 	}

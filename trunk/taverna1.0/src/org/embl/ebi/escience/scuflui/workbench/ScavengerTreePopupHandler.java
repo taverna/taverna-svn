@@ -17,7 +17,11 @@ import org.embl.ebi.escience.scufl.DuplicateProcessorNameException;
 import org.embl.ebi.escience.scufl.ProcessorCreationException;
 
 import org.embl.ebi.escience.scuflui.workbench.ProcessorFactory;
+import org.embl.ebi.escience.scuflui.workbench.ScavengerCreationException;
 import org.embl.ebi.escience.scuflui.workbench.ScavengerTree;
+import org.embl.ebi.escience.scuflui.workbench.ScavengerTreeRenderer;
+import org.embl.ebi.escience.scuflui.workbench.SoaplabScavenger;
+import org.embl.ebi.escience.scuflui.workbench.WSDLBasedScavenger;
 import org.embl.ebi.escience.scuflui.workbench.Workbench;
 import java.lang.Object;
 import java.lang.String;
@@ -106,6 +110,10 @@ public class ScavengerTreePopupHandler extends MouseAdapter {
 		String choice = (String)scuflObject;
 		if (choice.equals("Available Processors")) {
 		    JPopupMenu menu = new JPopupMenu();
+		    JMenuItem title = new JMenuItem("Create new scavenger");
+		    title.setEnabled(false);
+		    menu.add(title);
+		    menu.addSeparator();
 		    JMenuItem addSoaplab = new JMenuItem("Add new Soaplab scavenger...", ScavengerTreeRenderer.soaplabIcon);
 		    JMenuItem addWSDL = new JMenuItem("Add new WSDL scavenger...", ScavengerTreeRenderer.wsdlIcon);
 		    menu.add(addSoaplab);
@@ -154,6 +162,23 @@ public class ScavengerTreePopupHandler extends MouseAdapter {
 				}	
 			    }
 			});
+		    menu.addSeparator();
+		    JMenuItem collect = new JMenuItem("Collect scavengers from model", Workbench.importIcon);
+		    menu.add(collect);
+		    collect.addActionListener(new ActionListener() {
+			    public void actionPerformed(ActionEvent ae) {
+				try {
+				    ScavengerTreePopupHandler.this.scavenger.addScavengersFromModel();
+				}
+				catch (ScavengerCreationException sce) {
+					JOptionPane.showMessageDialog(null,
+								      "Unable to import scavengers!\n"+sce.getMessage(),
+								      "Exception!",
+								      JOptionPane.ERROR_MESSAGE);
+				}
+			    }
+			});
+		    
 		    menu.show(scavenger, e.getX(), e.getY());
 		}
 	    }
