@@ -21,6 +21,8 @@ import javax.swing.tree.*;
 import java.net.URL;
 
 import org.embl.ebi.escience.scuflworkers.java.LocalServiceProcessorFactory;
+import org.apache.log4j.Logger;
+
 import java.lang.ClassLoader;
 import java.lang.Exception;
 import java.lang.String;
@@ -28,39 +30,55 @@ import java.lang.String;
 
 
 /**
- * A scavenger that can create new LocalServiceProcessor nodes
+ * A scavenger that can create new LocalServiceProcessor nodes.
+ * <p/>
+ * This uses the Java SPI model to locate instances of LocalWorker. List all
+ * implementations under
+ * <code>META-INF/services/org.embl.ebi.escience.scuflworkers.java.LocalWorker</code>.
+ *
  * @author Tom Oinn
+ * @author Matthew Pocock
  */
 public class LocalServiceScavenger extends Scavenger {
-    
+  private static Logger LOG = Logger.getLogger(LocalServiceScavenger.class);
+
     private static Map workerList = new HashMap();
 
-    static {
-	try {
-	    Enumeration en = ClassLoader.getSystemResources("taverna.local.properties");
-	    Properties tavernaProperties = new Properties();
-	    while (en.hasMoreElements()) {
-		URL resourceURL = (URL)en.nextElement();
-		tavernaProperties.load(resourceURL.openStream());
-	    }
-	    // Iterate over the available local properties
-	    for (Iterator i = tavernaProperties.keySet().iterator(); i.hasNext();) {
-		String className = (String)i.next();
-		String description = (String)tavernaProperties.get(className);
-		String[] split = description.split(":");
-		String category = "default";
-		if (split.length == 2) {
-		    category = split[0];
-		    description = split[1];
-		}
-		workerList.put((String)tavernaProperties.get(className),
-			       new Scavenger(new LocalServiceProcessorFactory(className, description)));
-	    }
-	}
-	catch (Exception e) {
-	    //
-	}
+  static {
+    try {
+      LOG.warn("Loading LocalWorker implementations");
+      Enumeration en = LocalServiceScavenger.class.getClassLoader().getResources(
+              "META-INF/services/org.embl.ebi.escience.scuflworkers.java.LocalWorker");
+      Properties tavernaProperties = new Properties();
+      while (en.hasMoreElements()) {
+        URL resourceURL = (URL)en.nextElement();
+        LOG.debug("Loading workers from: " + resourceURL);
+        tavernaProperties.load(resourceURL.openStream());
+      }
+
+      // Iterate over the available local properties
+      for (Iterator i = tavernaProperties.keySet().iterator(); i.hasNext();) {
+        String className = (String)i.next();
+        String description = (String)tavernaProperties.get(className);
+        String[] split = description.split(":");
+        String category = "default";
+        if (split.length == 2) {
+          category = split[0];
+          description = split[1];
+        }
+        LOG.debug("Worker: " + className +
+                  " category: " + category +
+                  " desc: " + description);
+        workerList.put((String)tavernaProperties.get(className),
+                       new Scavenger(new LocalServiceProcessorFactory(
+                               className, description)));
+      }
+      LOG.warn("Loaded: " + workerList);
     }
+    catch (Exception e) {
+      LOG.error("Failure in initialization of LocalWorker scavenger", e);
+    }
+  }
 
     /**
      * Create a new local service scavenger
@@ -88,7 +106,7 @@ public class LocalServiceScavenger extends Scavenger {
 	    }
 	    categoryNode.add(s);
 	}
-	// for all available local widgets, add them as 
+	// for all available local widgets, add them as
 	// children to this scavenger.
 	for (Iterator i = nodeMap.values().iterator(); i.hasNext();) {
 	    add((DefaultMutableTreeNode)i.next());

@@ -2,7 +2,7 @@
 
 PATH=%PATH%;./bin/win32i386
 
-set OPTS=-Xms256m -Xmx512m -Dtaverna.scrollDesktop
+set OPTS= -Xmx512m -Dtaverna.scrollDesktop
 
 set CP=.;./resources;./conf
 for %%i in ("lib\*.jar") do call catenv.bat %%i

@@ -3,7 +3,12 @@
 # an identically named file somewhere in the classpath. Classes
 # named here must implement the LocalWorker interface defined in the
 # scuflworkers.java package.
+#
+# In the future, this will be re-formattted to strictly follow the SPI
+# guidelines. The description & name info will have to move onto the SPI
+#
 # Tom Oinn, tmo@ebi.ac.uk, 17th November 2003
+# Matthew Pocock, matthew.pocock@ncl.ac.uk, 28th May 2004
 org.embl.ebi.escience.scuflworkers.java.WebPageFetcher = net:Get web page from URL
 org.embl.ebi.escience.scuflworkers.java.WebImageFetcher = net:Get image from URL
 org.embl.ebi.escience.scuflworkers.java.ExtractImageLinks = net:Get image URLs from HTTP document
