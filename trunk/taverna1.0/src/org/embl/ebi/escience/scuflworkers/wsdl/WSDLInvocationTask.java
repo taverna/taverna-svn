@@ -88,10 +88,10 @@ public class WSDLInvocationTask extends ProcessorTask  {
 		    String name = (String)outNames.get(pos);
 		    Object value = outputs.get(name);
 		    if ((value == null) && (pos == 0)) {
-			map.put(name, makeThing(ret));
+			map.put(name, DataThingFactory.bake(ret));
 		    }
 		    else {
-			map.put(name, makeThing(value));
+			map.put(name, DataThingFactory.bake(value));
 		    }
 		}
 		return map;
@@ -105,40 +105,7 @@ public class WSDLInvocationTask extends ProcessorTask  {
 	    throw te;
 	}
     }
-    
-    private DataThing makeThing(Object o) {
-	return DataThingFactory.bake(o);
-	/**
-	   
-	if (o instanceof Number) {
-	return DataThingFactory.bake(o.toString());
-	}
-	else if (o instanceof Number[]) {
-	Number[] n = (Number[])o;
-	String[] stringArray = new String[n.length];
-	for (int i = 0; i < n.length; i++) {
-	stringArray[i] = n[i].toString();
-	}
-	return DataThingFactory.bake(stringArray);
-	}
-	else if (o instanceof String[]) {
-	return DataThingFactory.bake((String[])o);
-	}
-	else if (o instanceof List) {
-	return DataThingFactory.bake((List)o);
-	}
-	else {
-	// Try an explicit cast to String[]
-	try {
-	return DataThingFactory.bake((String[])o);
-	}
-	catch (ClassCastException cce) {
-	return DataThingFactory.bake(o);
-	}
-	}
-	*/
-    }
-
+  
     public void cleanUpConcreteTask() {
 	//
     }
