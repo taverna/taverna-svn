@@ -29,7 +29,7 @@ import org.jdom.output.*;
  * COMMENT DataThingConstructionPanel
  * 
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover</a>
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
 public class DataThingConstructionPanel extends JPanel implements ScuflUIComponent,
 		ScuflModelEventListener
@@ -66,18 +66,31 @@ public class DataThingConstructionPanel extends JPanel implements ScuflUICompone
 							if (thing != null)
 							{
 								portNode.removeAllChildren();
-								if (thing.getDataObject() instanceof Collection)
+								Object dataObject = thing.getDataObject();
+								if(dataObject instanceof Element)
 								{
-									Iterator iterator = thing.childIterator();
+									dataObject = DataThingXMLFactory.configureDataThing((Element)dataObject, thing);
+								}
+								if (dataObject instanceof Collection)
+								{
+									Iterator iterator = ((Collection)dataObject).iterator();
 									while (iterator.hasNext())
 									{
-										DataThing childThing = (DataThing) iterator.next();
-										portNode.addInput(childThing.getDataObject());
+										Object next = iterator.next();
+										if(next instanceof DataThing)
+										{
+											DataThing childThing = (DataThing)next;
+											portNode.addInput(childThing.getDataObject());											
+										}
+										else
+										{
+											portNode.addInput(next);
+										}
 									}
 								}
 								else
 								{
-									portNode.addInput(thing.getDataObject());
+									portNode.addInput(dataObject);
 								}
 							}
 						}
