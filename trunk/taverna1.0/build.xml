@@ -96,6 +96,12 @@
 		<classpath refid="compile-classpath"/>
 	</taskdef>
 
+	<!-- Version class generator task -->
+	<taskdef name="jreleaseinfo" classname="ch.oscg.jreleaseinfo.anttask.JReleaseInfoAntTask">
+	        <classpath refid="compile-classpath"/>
+	</taskdef>
+
+
 	<!-- Process the source tree to clean up the import declarations -->
 	<!-- CAUTION - modifies the /src directory                       -->
 	<target name="tidy" depends="splash">
@@ -167,9 +173,11 @@
                         </fileset>
                 </copy>
 		-->
+		<!--
                 <copy todir="${workbench.dir}/images">
                         <fileset dir="./images"/>
                 </copy>
+		-->
 		<copy todir="${workbench.dir}/lib">
 			<!-- List of libraries needeed by the workbench -->
 			<fileset dir="./lib" includesfile="./workbenchlibs.text"/>
@@ -219,6 +227,14 @@
 				<exclude name="**/CVS/**"/>
 			</fileset>
 		</copy>
+		<!-- Autogenerate the version information -->
+		<jreleaseinfo targetDir="${build.src}"
+		              className="TavernaReleaseInfo"
+			      packageName="org.embl.ebi.escience.scufl"
+			      project="${ant.project.name}"
+			      version="${project.version}"
+			      withViewer="false"/>
+			      
 	</target>
 
     <!-- Prepare the test source tree for compilation -->
