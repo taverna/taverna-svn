@@ -31,7 +31,7 @@ import org.biomoby.shared.*;
  * processor implementation will contact Biomoby registry in order to
  * find the list of extant ports at creation time. <p>
  *
- * @version $Id: BiomobyProcessor.java,v 1.12 2004-10-01 13:38:21 mereden Exp $
+ * @version $Id: BiomobyProcessor.java,v 1.13 2004-10-18 13:39:53 marsenger Exp $
  * @author Martin Senger
  */
 public class BiomobyProcessor extends Processor implements java.io.Serializable {
@@ -70,17 +70,47 @@ public class BiomobyProcessor extends Processor implements java.io.Serializable 
 	}
     }
 
+    /**
+     * Construct a new processor with the given model and name,
+     * delegates to the superclass.
+     */
+    public BiomobyProcessor (ScuflModel model,
+			     String processorName,
+			     MobyService service,
+			     String mobyEndpoint)
+	throws ProcessorCreationException,
+	       DuplicateProcessorNameException {
+	super (model, processorName);
+	this.mobyEndpoint = mobyEndpoint;
+	this.serviceName = service.getName();
+	this.authorityName = service.getAuthority();
+	this.mobyService = service;
+	if (this.isOffline() == false) {
+	    init();
+	}
+	else {
+	    try {
+		this.endpoint = new URL(service.getURL());
+	    }
+	    catch (MalformedURLException mue) {
+		//
+	    }
+	}
+    }
+
     void init() throws ProcessorCreationException {
 	// Find the service endpoint (by calling Moby registry)
 	try {
-	    worker = new CentralImpl (mobyEndpoint);
+	    if (mobyService == null) {
+		worker = new CentralImpl (mobyEndpoint);
 	    
-	    MobyService pattern = new MobyService (serviceName);
-	    pattern.setAuthority (authorityName);
-	    MobyService[] services = worker.findService (pattern);
-	    if (services == null || services.length == 0)
-		throw new ProcessorCreationException (formatError ("I cannot find the service."));
-	    mobyService = services[0];
+		MobyService pattern = new MobyService (serviceName);
+		pattern.setAuthority (authorityName);
+		MobyService[] services = worker.findService (pattern);
+		if (services == null || services.length == 0)
+		    throw new ProcessorCreationException (formatError ("I cannot find the service."));
+		mobyService = services[0];
+	    }
 	    String serviceEndpoint = mobyService.getURL();
 	    if (serviceEndpoint == null || serviceEndpoint.equals (""))
 		throw new ProcessorCreationException (formatError ("Service has an empty endpoint."));
@@ -90,6 +120,7 @@ public class BiomobyProcessor extends Processor implements java.io.Serializable 
 		throw new ProcessorCreationException (formatError ("Service has malformed endpoint: '" +
 								   serviceEndpoint + "'."));
 	    }
+		
 	} catch (Exception e) {
 	    if (e instanceof ProcessorCreationException) {
 		throw (ProcessorCreationException)e;
