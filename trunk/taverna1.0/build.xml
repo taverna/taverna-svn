@@ -90,9 +90,24 @@
 	<!-- Build javadocs -->
 	<target name="javadoc" depends="prepare-src">
 		<mkdir dir="${build.javadocs}"/>
-		<javadoc windowtitle="Taverna Java Classes" destdir="${build.javadocs}" sourcepath="${build.src}" doctitle="&lt;h1>Taverna Java API Documentation&lt;/h1>" author="true" bottom="" packagenames="*" version="true">
+		<javadoc windowtitle="Taverna Java Classes" destdir="${build.javadocs}" sourcepath="${src.dir}" doctitle="&lt;h1>Taverna Java API Documentation&lt;/h1>" author="true" packagenames="*" version="true">
 			<classpath refid="compile-classpath"/>
 		</javadoc>
 	</target>
 		
+	<!-- Test the scufl parser -->
+	<target name="testparser" depends="jar">
+	        <java classname="org.embl.ebi.escience.taverna.ScuflParser">
+		        <arg value="http://www.ebi.ac.uk/~tmo/scuflexample.text"/>	
+			<classpath>
+			    <fileset dir="./lib">
+			        <include name="*.jar"/>
+		        </fileset>
+				<fileset dir="./build">
+		        	<include name="*.jar"/>
+				</fileset>
+			</classpath>
+		</java>
+        </target> 
+
 </project>
