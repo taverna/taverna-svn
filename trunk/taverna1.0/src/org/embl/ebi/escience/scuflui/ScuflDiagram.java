@@ -128,7 +128,7 @@ public class ScuflDiagram extends JComponent
      */
     public void setFitToWindow(boolean fitToWindow) {
 	this.fitToWindow = fitToWindow;
-	updateGraphic();
+	repaint();
     }
 
     /**

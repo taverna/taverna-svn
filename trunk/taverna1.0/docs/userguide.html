@@ -20,7 +20,7 @@
 
 <p align="justify"><font size="2" face="Arial, Helvetica, sans-serif">Last updated 
 
-  $Date: 2003-05-28 07:17:32 $</font></p>
+  $Date: 2003-05-28 20:04:29 $</font></p>
 
 <p align="justify"><font size="2" face="Arial, Helvetica, sans-serif">This document 
 
@@ -243,19 +243,12 @@
   types are</font></p>
 
 <blockquote> 
-
   <pre><font size="2">&lt;s:soaplabwsdl&gt;<font color="#660099">http://url.to.your/soaplab/endpoint</font>&lt;/s:soaplabwsdl&gt;</font></pre>
-
   <p align="justify"><font size="2" face="Arial, Helvetica, sans-serif">The soaplabwsdl 
-
     processor type allows you to call a complete soaplab invocation in one unit. 
-
     The endpoint should be the full URL to the service endpoint, so including, 
-
     for example, edit::seqret at the end. Port names are extracted from the keys 
-
     of the Soaplab input and output Map objects.</font></p>
-
   <pre><font size="2">&lt;s:arbitrarywsdl&gt;
 
   &lt;s:wsdl&gt;<font color="#669933">http://url.to.your/wsdl/definition/file.wsdl</font>&lt;/s:wsdl&gt;
@@ -265,15 +258,10 @@
   &lt;s:operation&gt;<font color="669900">operation_name</font>&lt;/s:operation&gt;
 
 &lt;/s:arbitrarywsdl&gt;</font></pre>
-
   <div align="justify"><font size="2" face="Arial, Helvetica, sans-serif">The 
-
     arbitrarywsdl type allows a single call on a web service. Port names are derived 
-
     from the part names in the input and output messages for the specified operation. 
-
     </font> </div>
-
   <pre><font size="2">&lt;s:talisman&gt;
 
   &lt;s:tscript&gt;<font color="996600">http://url.to.your/talisman/tscript/file.xml</font>&lt;/s:tscript&gt;
@@ -281,65 +269,35 @@
 &lt;/s:talisman&gt;</font>
 
 </pre>
-
   <div align="justify"> 
-
     <p><font size="2" face="Arial, Helvetica, sans-serif">The talisman type allows 
-
       you to invoke a Talisman session as a service in your workflow. Currently 
-
       this doesn't use Talisman as a remote service, and will run the application 
-
       in the same address space as the enactor itself. Although not ideal in the 
-
       long run this should work fine for now. The tscript tag contains the full 
-
       URL to a tscript XML file; this in turn specifies the Talisman application 
-
       definition, a set of inputs and outputs and the operational behavious of 
-
       this service in terms of Talisman trigger invocations. The port names are 
-
       taken directly from the tscript file. The tscript definitions must be accessible 
-
       at processor creation time, but are not required after this stage. The scripts 
-
       look like this (in another file) :</font></p>
-
   </div>
-
   <blockquote> 
-
     <div align="justify"> 
-
       <pre><font size="2">&lt;tscript url=&quot;<font color="#000066">http://localhost:8080/regex.xml</font>&quot;<br>         trigger=&quot;<font color="#000066">Do Substitution</font>&quot;&gt;<br>  &lt;input name=&quot;inputString&quot;&gt;<font color="#000066">field:SourceField</font>&lt;/input&gt;<br>  &lt;output name=&quot;outputString&quot;&gt;<font color="#000066">field:SourceField</font>&lt;/output&gt;<br>&lt;/tscript&gt;</font></pre>
-
     </div>
-
-    <div align="justify"><font size="2" face="Arial, Helvetica, sans-serif">The 
-
-      script above directs the creation of a Talisman application session from 
-
-      the regex.xml file, then that first a string should be read from the port 
-
-      named 'inputString' and placed in the field with 'field:SourceField' as 
-
-      its locator within the page (see Talisman documentation for exactly what 
-
-      this means), then that a trigger called 'Do Substitution' should be run, 
-
-      then that the same Talisman field should be copied to the output port 'outputString'. 
-
-      As it happens, this script creates a processor that reads a string in and 
-
-      replaces all occurences of a certain substring with 'foo' on its output 
-
-      port. There would normally be multiple inputs and outputs, just that this 
-
-      application only has one of each. </font></div>
-
   </blockquote>
-
+  <div align="justify"><font size="2" face="Arial, Helvetica, sans-serif">The 
+    script above directs the creation of a Talisman application session from the 
+    regex.xml file, then that first a string should be read from the port named 
+    'inputString' and placed in the field with 'field:SourceField' as its locator 
+    within the page (see Talisman documentation for exactly what this means), 
+    then that a trigger called 'Do Substitution' should be run, then that the 
+    same Talisman field should be copied to the output port 'outputString'. As 
+    it happens, this script creates a processor that reads a string in and replaces 
+    all occurences of a certain substring with 'foo' on its output port. There 
+    would normally be multiple inputs and outputs, just that this application 
+    only has one of each. </font></div>
 </blockquote>
 
 <p align="justify"><font size="2" face="Arial, Helvetica, sans-serif">Processors 
@@ -524,209 +482,172 @@
 
   using the IT Innovation Workflow Enactor</font></h2>
 
-<p><font size="2" face="Arial, Helvetica, sans-serif">XScufl Language Support</font></p>
+<p><strong><font size="2" face="Arial, Helvetica, sans-serif">XScufl Language 
+  Support</font></strong></p>
 
-<p><font size="2" face="Arial, Helvetica, sans-serif">The myGrid workflow enactment 
-  engine supports almost all the XScufl language constructs. The most significant 
-  exception is that there is not full support for the coodination constraints. 
-  In particular the enactment engine does not support all possible state transitions 
-  that an XScufl coordination constraint can define. This is essentially because 
-  the enactment engine has its own state models that enforce correct behaviour 
-  for the activities it controls. At present the enactment engine will only allow 
-  coordination constraints that conform to the following state transition:</font></p>
+<p align="justify"><font size="2" face="Arial, Helvetica, sans-serif">The myGrid 
+  workflow enactment engine supports almost all the XScufl language constructs. 
+  The most significant exception is that there is not full support for the coodination 
+  constraints. In particular the enactment engine does not support all possible 
+  state transitions that an XScufl coordination constraint can define. This is 
+  essentially because the enactment engine has its own state models that enforce 
+  correct behaviour for the activities it controls. At present the enactment engine 
+  will only allow coordination constraints that conform to the following state 
+  transition:</font></p>
 
 <p><img src="controlflow.png" width="358" height="60"></p>
 
-<p><font size="2" face="Arial, Helvetica, sans-serif">At present the most common 
-  reason for using coordination constraints is to represent a dependency between 
-  two processors that is not actually a data dependency, this is essentially the 
-  case where you would like processor A to execute and complete before processor 
-  B commences execution. In XScufl this would be represented precisely as shown 
-  above for the coordination constraint called 'testcoordination', given a suitable 
-  substitution of 'A' for 'restrict_mutant' and 'B' for 'compare'. If the enactment 
-  engine receives a coordination constraint that does not conform to this restriction 
-  then the workflow will be rejected and no execution will take place.</font></p>
-<p>In addition the myGrid workflow enactment engine supports only 4 levels of 
-  provenance logging not 10. The general meanings for different log levels are:</p>
-<p>0 (NONE) - No provenance logging takes place.</p>
-<p>1 (LOW) - Basic information including services invoked and start and end times 
-  of processor executions.</p>
-<p>2 (NORMAL) - As with LOW but includes additional processor specific reporting.</p>
-<p>3-9 (HIGH) - As with NORMAL but includes additonal input and output data values.</p>
-<p>Provenance information is generated as XML conforming to the included schema 
-  'doc/enactor-provenance-report.xsd'. </p>
-<p><font size="2" face="Arial, Helvetica, sans-serif">Configuring myGrid Workflow Enactment 
-
-  Engine </font></p>
-
-<blockquote> 
-
-  <p align="justify"><font size="2" face="Arial, Helvetica, sans-serif">It is 
-
+<p align="justify"><font size="2" face="Arial, Helvetica, sans-serif">At present 
+  the most common reason for using coordination constraints is to represent a 
+  dependency between two processors that is not actually a data dependency, this 
+  is essentially the case where you would like processor A to execute and complete 
+  before processor B commences execution. In XScufl this would be represented 
+  precisely as shown above for the coordination constraint called 'testcoordination', 
+  given a suitable substitution of 'A' for 'restrict_mutant' and 'B' for 'compare'. 
+  If the enactment engine receives a coordination constraint that does not conform 
+  to this restriction then the workflow will be rejected and no execution will 
+  take place.</font></p>
+<p align="justify"><font size="2" face="Arial, Helvetica, sans-serif">In addition 
+  the myGrid workflow enactment engine supports only 4 levels of provenance logging 
+  not 10. The general meanings for different log levels are:</font></p>
+<ul>
+  <li><font size="2" face="Arial, Helvetica, sans-serif" align="justify">0 (NONE) 
+    - No provenance logging takes place.</font></li>
+  <li><font size="2" face="Arial, Helvetica, sans-serif" align="justify">1 (LOW) 
+    - Basic information including services invoked and start and end times of 
+    processor executions.</font></li>
+  <li><font size="2" face="Arial, Helvetica, sans-serif" align="justify">2 (NORMAL) 
+    - As with LOW but includes additional processor specific reporting.</font></li>
+  <li><font size="2" face="Arial, Helvetica, sans-serif" align="justify">3-9 (HIGH) 
+    - As with NORMAL but includes additonal input and output data values.</font></li>
+</ul>
+<p align="justify"><font size="2" face="Arial, Helvetica, sans-serif">Provenance 
+  information is generated as XML conforming to the included schema 'doc/enactor-provenance-report.xsd'. 
+  </font></p>
+<p align="justify"><strong><font size="2" face="Arial, Helvetica, sans-serif">Configuring 
+  myGrid Workflow Enactment Engine </font></strong></p>
+<blockquote>
+<p align="justify"><font size="2" face="Arial, Helvetica, sans-serif">It is 
     very easy to switch on myGrid Enactment Engine support for the XScufl workflow 
-
     language. The process only involves copying some libraries and making some 
-
     configuration changes. Note it is necessary to use Java 1.4.1 for the Enactment 
-
     Engine. The complete process is described here.</font></p>
-
-  <ul>
-
-    <li><font size="2" face="Arial, Helvetica, sans-serif" align="justify">Install 
-      the myGrid Enactment Engine as directed by its accompanying user manual. 
-      You should install version 0.1.4.2 or later.</font></li>
-
-    <li><font size="2" face="Arial, Helvetica, sans-serif" align="justify"> From 
-
-      within the Taverna source distribution directory 'taverna1.0' execute 'ant 
-
-      enactor.ext.jar'. This builds the taverna extensions library.</font></li>
-
-    <li><font size="2" face="Arial, Helvetica, sans-serif" align="justify"> Copy 
-
-      '<em>taverna1.0/build/tavernaenactor.jar</em>' to '<em>mygrid-wfenactor/lib</em>'.</font></li>
-
-    <li><font size="2" face="Arial, Helvetica, sans-serif" align="justify"> Copy 
-
-      '<em>taverna1.0/devlib/servlet.jar</em>' to '<em>mygrid-wfenactor/lib</em>'.</font></li>
-
-    <li><font size="2" face="Arial, Helvetica, sans-serif">Copy '<em>taverna1.0/lib/talisman1.4.5.11.jar</em>' 
-
-      to '<em>mygrid-wfenactor/lib</em>'</font></li>
-
-  </ul>
-
+  <div align="justify">
+    <ul>
+      <li>
+        <div align="left"><font size="2" face="Arial, Helvetica, sans-serif" align="justify">Install 
+          the myGrid Enactment Engine as directed by its accompanying user manual. 
+          You should install version 0.1.4.2 or later.</font></div>
+      </li>
+      <li>
+        <div align="left"><font size="2" face="Arial, Helvetica, sans-serif" align="justify"> 
+          From within the Taverna source distribution directory 'taverna1.0' execute 
+          'ant enactor.ext.jar'. This builds the taverna extensions library.</font></div>
+      </li>
+      <li>
+        <div align="left"><font size="2" face="Arial, Helvetica, sans-serif" align="justify"> 
+          Copy '<em>taverna1.0/build/tavernaenactor.jar</em>' to '<em>mygrid-wfenactor/lib</em>'.</font></div>
+      </li>
+      <li>
+        <div align="left"><font size="2" face="Arial, Helvetica, sans-serif" align="justify"> 
+          Copy '<em>taverna1.0/devlib/servlet.jar</em>' to '<em>mygrid-wfenactor/lib</em>'.</font></div>
+      </li>
+      <li>
+        <div align="left"><font size="2" face="Arial, Helvetica, sans-serif">Copy 
+          '<em>taverna1.0/lib/talisman1.4.5.11.jar</em>' to '<em>mygrid-wfenactor/lib</em>'</font></div>
+      </li>
+    </ul>
+  </div>
   <p align="justify"><font size="2" face="Arial, Helvetica, sans-serif"> For Standalone 
-
     Enactor continue by:</font></p>
-
-  <ul>
-
-    <li><font size="2" face="Arial, Helvetica, sans-serif" align="justify">Edit 
-
-      the myGrid Enactment Engine configuration file 'mygrid-wfenactor/conf/standalone/mygrid.properties'. 
-
-      In particular change the value for 'mygrid.workflow.enactor.api.class' to 
-
-      'uk.ac.soton.itinnovation.taverna.enactor.TavernaWorkflowEnactor' </font></li>
-
-    <li><font size="2" face="Arial, Helvetica, sans-serif" align="justify"> Edit 
-
-      the file 'mygrid-wfenactor/bin/runenactor.bat' by adding '..\lib\tavernaenactor.jar', 
-
-      '..\lib\servlet.jar' and '..\lib\talisman1.4.5.11.jar' to the classpath 
-
-      argument.</font></li>
-
-  </ul>
-
+  <div align="justify">
+    <ul>
+      <li>
+        <div align="left"><font size="2" face="Arial, Helvetica, sans-serif" align="justify">Edit 
+          the myGrid Enactment Engine configuration file 'mygrid-wfenactor/conf/standalone/mygrid.properties'. 
+          In particular change the value for 'mygrid.workflow.enactor.api.class' 
+          to 'uk.ac.soton.itinnovation.taverna.enactor.TavernaWorkflowEnactor' 
+          </font></div>
+      </li>
+      <li>
+        <div align="left"><font size="2" face="Arial, Helvetica, sans-serif" align="justify"> 
+          Edit the file 'mygrid-wfenactor/bin/runenactor.bat' by adding '..\lib\tavernaenactor.jar', 
+          '..\lib\servlet.jar' and '..\lib\talisman1.4.5.11.jar' to the classpath 
+          argument.</font></div>
+      </li>
+    </ul>
+  </div>
   <p align="justify"><font size="2" face="Arial, Helvetica, sans-serif">For Web 
-
     Service Enactor continue by:</font></p>
-
-  <ul>
-
-    <li><font size="2" face="Arial, Helvetica, sans-serif" align="justify">Edit 
-
-      the myGrid Enactment Engine configuration file 'mygrid-wfenactor/conf/webservice/mygrid.properties'. 
-
-      In particular change the value for 'mygrid.workflow.enactor.api.class' to 
-
-      'uk.ac.soton.itinnovation.taverna.enactor.TavernaWorkflowEnactor' </font></li>
-
-    <li><font size="2" face="Arial, Helvetica, sans-serif" align="justify"> Edit 
-
-      the file 'mygrid-wfenactor/bin/runwsclient.bat' by adding '..\lib\servlet.jar' 
-
-      to the classpath argument. </font></li>
-
-    <li><font size="2" face="Arial, Helvetica, sans-serif" align="justify"> Redeploy 
-
-      the myGrid Enactment Engine as directed by its manual. </font></li>
-
-    <li><font size="2" face="Arial, Helvetica, sans-serif" align="justify"> Copy 
-
-      'taverna1.0/build/tavernaenactor.jar' to $TOMCAT_HOME/webapps/axis/WEB-INF/lib' 
-
-      </font></li>
-
-    <li><font size="2" face="Arial, Helvetica, sans-serif" align="justify">Restart 
-
-      Tomcat.</font></li>
-
-    <li><font size="2" face="Arial, Helvetica, sans-serif" align="justify"> Off 
-
-      you go. </font></li>
-
-  </ul>
-
+  <div align="justify">
+    <ul>
+      <li>
+        <div align="left"><font size="2" face="Arial, Helvetica, sans-serif" align="justify">Edit 
+          the myGrid Enactment Engine configuration file 'mygrid-wfenactor/conf/webservice/mygrid.properties'. 
+          In particular change the value for 'mygrid.workflow.enactor.api.class' 
+          to 'uk.ac.soton.itinnovation.taverna.enactor.TavernaWorkflowEnactor' 
+          </font></div>
+      </li>
+      <li>
+        <div align="left"><font size="2" face="Arial, Helvetica, sans-serif" align="justify"> 
+          Edit the file 'mygrid-wfenactor/bin/runwsclient.bat' by adding '..\lib\servlet.jar' 
+          to the classpath argument. </font></div>
+      </li>
+      <li>
+        <div align="left"><font size="2" face="Arial, Helvetica, sans-serif" align="justify"> 
+          Redeploy the myGrid Enactment Engine as directed by its manual. </font></div>
+      </li>
+      <li>
+        <div align="left"><font size="2" face="Arial, Helvetica, sans-serif" align="justify"> 
+          Copy 'taverna1.0/build/tavernaenactor.jar' to $TOMCAT_HOME/webapps/axis/WEB-INF/lib' 
+          </font></div>
+      </li>
+      <li>
+        <div align="left"><font size="2" face="Arial, Helvetica, sans-serif" align="justify">Restart 
+          Tomcat.</font></div>
+      </li>
+      <li>
+        <div align="left"><font size="2" face="Arial, Helvetica, sans-serif" align="justify"> 
+          Off you go. </font></div>
+      </li>
+    </ul>
+  </div>
   <p align="justify"><font size="2" face="Arial, Helvetica, sans-serif">You can 
-
     use the sample standalone and gui clients for the myGrid Enactment Engine. 
-
     There are sample emboss tutorial workflows, input and user files in the directory 
-
     'taverna1.0/src/uk/ac/soton/itinnovation/taverna/enactor/broker/test'. You 
-
     should find that this workflow executes far quicker than its WSFL alternative.</font></p>
-
 </blockquote>
-
 <p align="justify"><font size="2" face="Arial, Helvetica, sans-serif">The steps 
-
   above assume that you have a copy of the Taverna project checked out locally, 
-
   and that you have also obtained the appropriate Talisman jar file from somewhere 
-
   (at the moment this is included in the Taverna lib directory, obviously as the 
-
   jar is versioned in the name you should use the current copy in your distribution).</font></p>
-
-<hr>
-
-<h2><font size="3" face="Arial, Helvetica, sans-serif">Obtaining and building 
-
-  a copy of the Taverna project code</font></h2>
-
-<p><font size="2" face="Arial, Helvetica, sans-serif">Copied from sourceforge's 
-
-  '<em>how to use anonymous cvs</em>' documentation :</font></p>
-
-<blockquote> 
-
-  <p><font size="2" face="Arial, Helvetica, sans-serif"><em>Anonymous CVS Access</em></font></p>
-
+<hr align="JUSTIFY">
+<h2 align="justify"><font size="3" face="Arial, Helvetica, sans-serif">Obtaining 
+  and building a copy of the Taverna project code</font></h2>
+<p align="justify"><font size="2" face="Arial, Helvetica, sans-serif">Copied from 
+  sourceforge's '<em>how to use anonymous cvs</em>' documentation :</font></p>
+<blockquote>
+<p align="justify"><font size="2" face="Arial, Helvetica, sans-serif"><em>Anonymous 
+    CVS Access</em></font></p>
   <p align="justify"><font size="2" face="Arial, Helvetica, sans-serif">This project's 
-
     SourceForge.net CVS repository can be checked out through anonymous (pserver) 
-
     CVS with the following instruction set. When prompted for a password for anonymous, 
-
     simply press the Enter key.</font></p>
-
-  <pre>&gt; cvs -d:pserver:anonymous@cvs.sourceforge.net:/cvsroot/taverna login 
+  <div align="justify">
+    <pre>&gt; cvs -d:pserver:anonymous@cvs.sourceforge.net:/cvsroot/taverna login 
 
 &gt; cvs -z3 -d:pserver:anonymous@cvs.sourceforge.net:/cvsroot/taverna co taverna1.0</pre>
-
-  <div align="justify"><font size="2" face="Arial, Helvetica, sans-serif">Updates 
-
-    from within the module's directory do not need the -d parameter.</font></div>
-
+    <font size="2" face="Arial, Helvetica, sans-serif">Updates from within the 
+    module's directory do not need the -d parameter.</font></div>
 </blockquote>
-
 <p align="justify"><font size="2" face="Arial, Helvetica, sans-serif">In order 
-
   to build Taverna, you may need to edit the build.xml. Specifically, if you don't 
-
   have the jikes compiler from IBM you'll need to change the 'build.compiler' 
-
   property from 'jikes' to 'modern'. Once that's done, you can build the enactor 
-
   plugin jar as described in the section previous to this one, or use the other 
-
   targets in the build file, see the readme.html inside your checked out project 
-
   directory for more build options.</font></p>
 
 <hr>
