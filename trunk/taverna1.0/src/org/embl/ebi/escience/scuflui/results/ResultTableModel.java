@@ -30,7 +30,7 @@ import org.jdom.input.SAXBuilder;
 
 /**
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover</a>
- * @version $Revision: 1.8 $
+ * @version $Revision: 1.9 $
  */
 public class ResultTableModel implements TableModel
 {
@@ -166,14 +166,21 @@ public class ResultTableModel implements TableModel
 		{
 			try
 			{
+				if(link.getSink().getProcessor().getName().equals("SCUFL_INTERNAL_SINKPORTS"))
+				{
+					thing = (DataThing)instance.getOutput().get(link.getSink().getName());
+				}
+				else
+				{
 				Map[] maps = instance.getIntermediateResultsForProcessor(link.getSink()
-						.getProcessor().getName());
-				Map outputs = maps[0];
-				thing = (DataThing) outputs.get(link.getSink().getName());
+							.getProcessor().getName());
+					Map outputs = maps[0];
+					thing = (DataThing) outputs.get(link.getSink().getName());
+				}
 			}
 			catch (Exception e)
 			{
-				// Don't throw error here. 
+				e.printStackTrace(); 
 			}
 		}
 		else
@@ -186,7 +193,7 @@ public class ResultTableModel implements TableModel
 			}
 			catch (Exception e)
 			{
-				// Don't throw error here.
+				e.printStackTrace();
 			}
 		}
 		ResultSource source = new ResultSource(link.getSource(), thing);
