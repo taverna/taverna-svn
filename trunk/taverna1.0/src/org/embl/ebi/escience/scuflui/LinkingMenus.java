@@ -67,7 +67,10 @@ public class LinkingMenus {
 	theMenu.addSeparator();
 	JMenu workflowSinks = new JMenu("Workflow outputs");
 	workflowSinks.setIcon(ScuflIcons.outputIcon);
-	theMenu.add(workflowSinks);
+	// Only add the workflow sinks menu option if this is NOT a workflow source
+	if (fromPort.getProcessor() != model.getWorkflowSourceProcessor()) {
+	    theMenu.add(workflowSinks);
+	}
 	// Add the possible workflow sink ports
 	Port[] wsp = model.getWorkflowSinkPorts();
 	for (int i = 0; i < wsp.length; i++) {
