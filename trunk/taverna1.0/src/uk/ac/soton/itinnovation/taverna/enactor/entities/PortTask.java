@@ -25,8 +25,8 @@
 //      Dependencies        :
 //
 //      Last commit info    :   $Author: dmarvin $
-//                              $Date: 2003-04-12 13:19:55 $
-//                              $Revision: 1.1 $
+//                              $Date: 2003-04-13 11:12:01 $
+//                              $Revision: 1.2 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 
@@ -34,8 +34,9 @@ package uk.ac.soton.itinnovation.taverna.enactor.entities;
 
 import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.entities.graph.GraphNode;
 import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.serviceprovidermanager.ServiceSelectionCriteria;
+import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.eventservice.TaskStateMessage;
 
-import uk.ac.soton.itinnovation.mygrid.workflow.enactor.io.Part;
+import uk.ac.soton.itinnovation.mygrid.workflow.enactor.io.Input;
 
 /**
  * GraphNode that represents a port on a Processor.
@@ -47,10 +48,10 @@ public class PortTask extends TavernaTask{
 
 	private org.embl.ebi.escience.scufl.Port port; 
 	private int type;
-	private Part dataPacket = null;
+	private Input dataPacket = null;
 		
-	public PortTask(org.embl.ebi.escience.scufl.Port port) {
-		super(port.getProcessor().getName() + ":" + port.getName());
+	public PortTask(String id, org.embl.ebi.escience.scufl.Port port) {
+		super(id);
 		this.port = port;
 		if(port instanceof org.embl.ebi.escience.scufl.InputPort)
 			type = 0;
@@ -91,7 +92,7 @@ public class PortTask extends TavernaTask{
 	 * and then supplies it
 	 * @return holder for data
 	 */
-	public synchronized Part waitForData() {
+	public synchronized Input waitForData() {
 		while(dataPacket==null) {
 			try{
 				wait();
@@ -105,7 +106,7 @@ public class PortTask extends TavernaTask{
 	 * Sets a reference to the actual data holder
 	 * @param data holder for data
 	 */
-	public synchronized void setData(Part p) {
+	public synchronized void setData(Input p) {
 		dataPacket = p;
 		//set data on child porttasks too
 		GraphNode[] chds = getChildren();
@@ -130,4 +131,9 @@ public class PortTask extends TavernaTask{
     public ServiceSelectionCriteria getServiceSelectionCriteria() {
         return null;
     }
+
+	public TaskStateMessage doTask() {
+		//don't do anything, later versions may have persistence writing to do
+		return new TaskStateMessage(getParentFlow().getID(), getID(), TaskStateMessage.COMPLETE, "Task finished successfully");
+	}
 } 

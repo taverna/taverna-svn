@@ -25,8 +25,8 @@
 //      Dependencies        :
 //
 //      Last commit info    :   $Author: dmarvin $
-//                              $Date: 2003-04-12 13:19:55 $
-//                              $Revision: 1.1 $
+//                              $Date: 2003-04-13 11:12:01 $
+//                              $Revision: 1.2 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 package uk.ac.soton.itinnovation.taverna.enactor.entities;
@@ -52,7 +52,5 @@ public abstract class TavernaTask extends Task {
         //complete normally, any scheduled tasks are cancelled normally in core framework
     }  
 	
-	public uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.eventservice.TaskStateMessage doTask() {
-		return null;
-	}
+	public abstract uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.eventservice.TaskStateMessage doTask();
 }

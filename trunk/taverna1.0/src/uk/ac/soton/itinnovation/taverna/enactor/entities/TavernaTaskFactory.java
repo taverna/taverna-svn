@@ -25,8 +25,8 @@
 //      Dependencies        :
 //
 //      Last commit info    :   $Author: dmarvin $
-//                              $Date: 2003-04-12 13:19:55 $
-//                              $Revision: 1.1 $
+//                              $Date: 2003-04-13 11:12:01 $
+//                              $Revision: 1.2 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 
@@ -34,13 +34,13 @@ package uk.ac.soton.itinnovation.taverna.enactor.entities;
 
 
 //java imports
+import java.lang.reflect.*;
 
 //third party imports
 import org.apache.log4j.Logger;
 
 //local imports
-
-
+import org.embl.ebi.escience.scufl.Processor;
 
 /**
  * Creates the correct concrete task for a given WSDL identifier
@@ -55,10 +55,11 @@ public class TavernaTaskFactory {
 	 *
      * @param String identifier for the required application
      */
-    public static TavernaTask getConcreteTavernaTask(String taskID,String processerName) throws UnsupportedTavernaProcessorException {
-        //obtain the class of this taskID, this could be shifted to configuration later
+    public static ProcessorTask getConcreteTavernaTask(String id,String taskID,Processor processor) throws UnsupportedTavernaProcessorException {
+        ProcessorTask pTask = null;
+		//obtain the class of this taskID, this could be shifted to configuration later
 		String taskClassName = null;
-		if(taskID.equals("http://industry.ebi.ac.uk/soap/soaplab/edit::seqret"))
+		if(taskID.equals("http://industry.ebi.ac.uk/soap/soaplab/edit::seqret")) 
 			taskClassName = "uk.ac.soton.itinnovation.taverna.enactorentities.SeqretTask";
 		else if(taskID.equals("http://industry.ebi.ac.uk/soap/soaplab/nucleic_gene_finding::getorf"))
 			taskClassName = "uk.ac.soton.itinnovation.taverna.enactorentities.GetOrfTask";
@@ -75,10 +76,34 @@ public class TavernaTaskFactory {
 			throw new UnsupportedTavernaProcessorException("Don't know how to deal with processor with soaplab wsdl '" + taskID + "'");
 		}
 		try {
-            return (TavernaTask) Class.forName(taskClassName).newInstance();
-        } catch (Exception ex) {
-            logger.error("Don't know how to deal with processor with soaplab wsdl '" + taskID + "'",ex);
+            
+			Class processorDefn = null;
+			Class[] argsClass = new Class[] {String.class,Processor.class};
+			Object[] args = new Object[] {id,processor};
+			Constructor argsConstructor;
+			processorDefn = Class.forName(taskClassName);
+			argsConstructor = processorDefn.getConstructor(argsClass);
+			pTask = (ProcessorTask) argsConstructor.newInstance(args);
+		} catch (InstantiationException e) {
+			logger.error("Can't instantiate task for processor with soaplab wsdl '" + taskID + "'",e);
+			throw new UnsupportedTavernaProcessorException("Couldn't load implementation for processor with soaplab wsdl '" + taskID + "'");
+		} catch (IllegalAccessException e) {
+			logger.error("Not allowed to instantiate processor with soaplab wsdl '" + taskID + "'",e);
+			throw new UnsupportedTavernaProcessorException("Couldn't load implementation for processor with soaplab wsdl '" + taskID + "'");
+		} catch (IllegalArgumentException e) {
+			logger.error("Inappropriate arguments pass to customt task for processor with soaplab wsdl '" + taskID + "'",e);
+			throw new UnsupportedTavernaProcessorException("Couldn't load implementation for processor with soaplab wsdl '" + taskID + "'");
+		} catch (InvocationTargetException e) {
+			logger.error("Unable to invoke constructor of custom task for processor with soaplab wsdl '" + taskID + "'",e);
+			throw new UnsupportedTavernaProcessorException("Couldn't load implementation for processor with soaplab wsdl '" + taskID + "'");
+		} catch (Exception e) {
+            logger.error("Don't know how to deal with processor with soaplab wsdl '" + taskID + "'",e);
 			throw new UnsupportedTavernaProcessorException("Couldn't load implementation for processor with soaplab wsdl '" + taskID + "'");
         }
+		if(pTask==null) {
+			logger.error("Don't know how to deal with processor with soaplab wsdl '" + taskID + "'");
+			throw new UnsupportedTavernaProcessorException("Couldn't load implementation for processor with soaplab wsdl '" + taskID + "'");
+		}
+		return pTask;
     }
 }
