@@ -89,7 +89,7 @@ import org.jdom.output.XMLOutputter;
  * COMMENT DataThingConstructionPanel
  * 
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover </a>
- * @version $Revision: 1.13 $
+ * @version $Revision: 1.14 $
  */
 public class DataThingConstructionPanel extends JPanel implements ScuflUIComponent, ScuflModelEventListener
 {
@@ -548,23 +548,33 @@ public class DataThingConstructionPanel extends JPanel implements ScuflUICompone
 				portPanel = new JPanel(new BorderLayout(3, 3));
 				portPanel.setBorder(BorderFactory.createEmptyBorder(3, 3, 3, 3));
 				JPanel descriptionPanel = new JPanel();
-
-				String detailText = "<html><font size=\"-1\" face=\"Verdana, Arial, Helvetica\"><font size=\"+1\">Workflow Input "
-						+ port.getName() + "</font>";
-				if (port.getMetadata().getSemanticType() != null && port.getMetadata().getSemanticType() != "")
-				{
-					detailText = detailText + "<p>" + port.getMetadata().getSemanticType() + "</p>";
+				StringBuffer sb = new StringBuffer();
+				sb.append("<html><h2>Workflow Input : " + port.getName() + "</h2>");
+				sb.append("<table border=\"1\"><tr><td bgcolor=\"#ddeeff\" colspan=\"2\"><b>Input Metadata</b></td></tr><tr><td bgcolor=\"#ddeeff\"><b>Semantic type</b></td><td>\n");
+				if (port.getMetadata().getSemanticType() != null && 
+				    port.getMetadata().getSemanticType() != "") {
+				    sb.append(port.getMetadata().getSemanticType());
 				}
-				if (port.getMetadata().getDisplayTypeList() != null && port.getMetadata().getDisplayTypeList() != "")
-				{
-					detailText = detailText + "<p>" + port.getMetadata().getDisplayTypeList() + "</p>";
+				else {
+				    sb.append("<font color=\"#666666\"><i>not specified</i></font>");
 				}
-				if (port.getMetadata().getDescription() != null && port.getMetadata().getDescription() != "")
-				{
-					detailText = detailText + "<p>" + port.getMetadata().getDescription() + "</p>";
+				sb.append("</td></tr>\n");
+				sb.append("<tr><td bgcolor=\"#ddeeff\"><b>Syntactic type</b></td><td>");
+				sb.append(port.getSyntacticType());
+				sb.append("</td></tr>\n");
+				sb.append("<tr><td bgcolor=\"#ddeeff\"colspan=\"2\"><b>Description</b></td></tr>\n");
+				sb.append("<tr><td colspan=\"2\">");
+				if (port.getMetadata().getDescription() != null && 
+				    port.getMetadata().getDescription() != "") {
+				    sb.append(port.getMetadata().getDescription());
 				}
-				detailText = detailText + "</font></html>";
-				JEditorPane portDetails = new JEditorPane("text/html", detailText);
+				else {
+				    sb.append("<font color=\"#666666\"><i>no description</i></font>");
+				}
+				sb.append("</td></tr></table>");
+				sb.append("<h2>Instructions</h2><p>To input data into this workflow you must first create either a single item or a list. Having done this you can select the item from the tree to the left of this panel and either enter the data manually, upload from a file on your local machine or load from a location on the internet. When all workflow inputs have been populated as required you can click the 'run workflow' button to run the workflow on these inputs.</p>");
+				sb.append("</html>");
+				JEditorPane portDetails = new JEditorPane("text/html", sb.toString());
 				portDetails.setEditable(false);
 				JScrollPane scrollPane = new JScrollPane(portDetails);
 				scrollPane.setPreferredSize(new Dimension(0,0));
