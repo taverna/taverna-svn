@@ -131,7 +131,7 @@ public class ScuflGraphPanel extends JPanel
       }
 
       graph.getModel().remove(cells);
-      graph.newScuflModel();
+      graph.clearScuflModel();
     }
 
     /**

@@ -7,11 +7,14 @@ import java.awt.*;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.dnd.*;
-import java.awt.event.MouseEvent;
+import java.awt.event.*;
 import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 import javax.swing.border.BevelBorder;
 import javax.swing.border.Border;
+import javax.swing.ToolTipManager;
+import javax.swing.JTextField;
+import javax.swing.JOptionPane;
 import org.embl.ebi.escience.scufl.*;
 import org.embl.ebi.escience.scufl.parser.XScuflFormatException;
 import org.embl.ebi.escience.scufl.parser.XScuflParser;
@@ -54,41 +57,140 @@ public class ScuflGraph extends JGraph
     private static int fontSize = 12;
     private static Font font = new Font("Monospaced",
                       Font.PLAIN, fontSize);
+    private DataSet dataSet = new DataSet();
 
     // Construct the Graph using the Model as its Data Source
     public ScuflGraph(GraphModel model, ProgList progs) 
     {
-	super(model);
- 
-        this.progs = progs;
-	// Use a Custom Marquee Handler
-	//setMarqueeHandler(new ScuflGraphPanel.ScuflMarqueeHandler());
-	// Tell the Graph to Select new Cells upon Insertion
-	setSelectNewCells(true);
-	// Make Ports Visible by Default
-	setPortsVisible(true);
-	// Use the Grid (but don't make it Visible)
-	setGridEnabled(true);
-	// Set the Grid Size to 10 Pixel
-	setGridSize(6);
-	// Set the Tolerance to 2 Pixel
-	setTolerance(2);
+      super(model);
 
-        newScuflModel();
-        setDropTarget(new DropTarget(this,this));
-    }
- 
-    /**
-     *
-     * Initialise the ScuflModel
-     *
-     */
-    public void newScuflModel()
-    {
+      this.progs = progs;
+      // Use a Custom Marquee Handler
+      //setMarqueeHandler(new ScuflGraphPanel.ScuflMarqueeHandler());
+      // Tell the Graph to Select new Cells upon Insertion
+      setSelectNewCells(true);
+      // Make Ports Visible by Default
+      setPortsVisible(true);
+      // Use the Grid (but don't make it Visible)
+      setGridEnabled(true);
+      // Set the Grid Size to 10 Pixel
+      setGridSize(6);
+      // Set the Tolerance to 2 Pixel
+      setTolerance(2);
+
+//      newScuflModel();
       scuflModel = new ScuflModel();
       // Register a listener to print to stdout
       scuflModel.addListener(new ScuflModelEventPrinter(null));
       scuflView = new XScuflView(scuflModel);
+
+      setDropTarget(new DropTarget(this,this));
+
+// MouseListener that Prints the Cell on Doubleclick
+      addMouseListener(new MouseAdapter() {
+        public void mousePressed(MouseEvent e) {
+          if (e.getClickCount() == 2) {
+            // Get Cell under Mousepointer
+            int x = e.getX(), y = e.getY();
+            Object cell = getPortForLocation(x, y);
+            // Print Cell Label
+            if (cell != null) 
+            {
+              String lab = convertValueToString(cell);
+              JTextField textField = new JTextField(10);
+
+              String s = (String)JOptionPane.showInputDialog(
+                                null, "Value of "+lab,
+                                lab,
+                                JOptionPane.PLAIN_MESSAGE,
+                                null,null,
+                                "");                  
+
+              System.out.println(lab+" = "+s);
+              if( s != null )
+                dataSet.addData(lab,"String",s);
+
+              // add input port & data constraint
+              try
+              {
+                Processor sourceProcessor = scuflModel.getWorkflowSourceProcessor();
+                OutputPort output = new OutputPort(sourceProcessor,lab);
+                sourceProcessor.addPort(output);
+ 
+                Processor sinkProcessor = scuflModel.getWorkflowSinkProcessor();
+                ScuflInputPort sip = (ScuflInputPort)cell;
+                org.embl.ebi.escience.scufl.InputPort input = (org.embl.ebi.escience.scufl.InputPort)sip.getScuflPort();
+                System.out.println("NAME "+input.toString());
+
+//              InputPort input = new InputPort(sinkProcessor,((Port)cell).toString());
+                sinkProcessor.addPort(input);
+                DataConstraint dc = new DataConstraint(scuflModel, output, input);
+                scuflModel.addDataConstraint(dc);
+              }
+//            catch(UnknownProcessorException upro)
+//            {
+//              System.out.println("UnknownProcessorException");
+//            }
+//            catch(MalformedNameException mal)
+//            {
+//              System.out.println("MalformedNameException");
+//            }
+//            catch(UnknownPortException upe)
+//            {
+//              System.out.println("UnknownPortException");
+//            }
+              catch(DuplicatePortNameException dpne)
+              {
+                System.out.println("DuplicatePortNameException");
+              }
+              catch(DataConstraintCreationException dce)
+              {
+                System.out.println("DataConstraintCreationException");
+              }
+              catch(PortCreationException pce)
+              {
+                System.out.println("PortCreationException");
+              }
+            }
+          }
+        }
+      });
+
+      //registered with Swing's ToolTipManager 
+      ToolTipManager.sharedInstance().registerComponent(this);
+    }
+ 
+    public DataSet getDataSet()
+    {
+      return dataSet;
+    }
+
+// Return Cell Label as a Tooltip
+    public String getToolTipText(MouseEvent e)
+    {
+      if(e != null)
+      {
+        // Fetch Cell under Mousepointer
+        Object c = getPortForLocation(e.getX(), e.getY());
+        if (c != null)
+          // Convert Cell to String and Return
+          return convertValueToString(c);
+      }
+      return null;
+    }
+
+    /**
+     *
+     * Re-initialise the ScuflModel
+     *
+     */
+    public void clearScuflModel()
+    {
+//    scuflModel = new ScuflModel();
+// Register a listener to print to stdout
+//    scuflModel.addListener(new ScuflModelEventPrinter(null));
+//    scuflView = new XScuflView(scuflModel);
+      scuflModel.clear();
     }
 
     /**
@@ -165,7 +267,11 @@ public class ScuflGraph extends JGraph
           ind2 = constraint.indexOf("-");
 
         if(ind1 < 0 || ind2 < 0 || ind1 > ind2)
+        {
+          System.out.println("**********************Input Data "+
+                        constraint.substring(0,constraint.indexOf("-")));
           continue;
+        }
 
 //      System.out.println("********************** ind1 ind2"+ind1+" "+ind2);
         String procName = constraint.substring(0,ind1).trim();
@@ -203,7 +309,7 @@ public class ScuflGraph extends JGraph
           for(int k=0;k<children.size();k++)
             if( ((String)((ScuflPort)children.get(k)).getUserObject()).equals(portName))
             {
-              System.out.println("**********************FOUND PORT "+portName);
+//            System.out.println("**********************FOUND PORT "+portName);
               return (ScuflPort)children.get(k);
             }
         }  
@@ -232,9 +338,9 @@ public class ScuflGraph extends JGraph
     }
 
     /**
-     * A custom portview to provide the orange and green
-     * arrow glyphs on input and output ports.
-     */
+    *  A custom portview to provide the orange and green
+    * arrow glyphs on input and output ports.
+    */
     protected PortView createPortView(Port p, CellMapper cm) {
         if( p instanceof ScuflOutputPort)
           return new ScuflOutputPortView(p,this,cm);

@@ -7,6 +7,7 @@ import com.jgraph.graph.EdgeView;
 import com.jgraph.graph.PortRenderer;
 import com.jgraph.graph.PortView;
 import java.awt.*;
+import java.awt.event.*;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 
@@ -34,8 +35,10 @@ public class ScuflInputPortView extends PortView {
     
     protected ScuflInputPortRenderer renderer = new ScuflInputPortRenderer();
     
-    public ScuflInputPortView(Object cell, JGraph graph, CellMapper cm) {
-	super(cell, graph, cm);
+    public ScuflInputPortView(Object cell, JGraph graph, CellMapper cm) 
+    {
+      super(cell, graph, cm);
+
     }
 
     /** 
