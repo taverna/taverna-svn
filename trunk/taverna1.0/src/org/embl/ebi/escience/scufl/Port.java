@@ -9,6 +9,8 @@ package org.embl.ebi.escience.scufl;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.io.*;
+import java.awt.datatransfer.*;
 
 import org.embl.ebi.escience.scufl.DuplicatePortNameException;
 import org.embl.ebi.escience.scufl.InternalSinkPortHolder;
@@ -26,8 +28,8 @@ import java.lang.String;
  * An abstract superclass of all processor ports
  * @author Tom Oinn
  */
-public abstract class Port implements java.io.Serializable {
-
+public abstract class Port implements Serializable {
+    
     private String name = "";
     private Processor processor = null;
     private boolean isExternal = false;

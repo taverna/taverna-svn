@@ -43,6 +43,7 @@ import org.embl.ebi.escience.scuflui.workbench.GenericUIComponentFrame;
 import org.embl.ebi.escience.scuflui.workbench.ScavengerTree;
 import org.embl.ebi.escience.scuflui.workbench.ScrollableDesktopPane;
 import org.embl.ebi.escience.scuflui.workbench.SplashScreen;
+import org.embl.ebi.escience.scuflui.*;
 import java.lang.Class;
 import java.lang.ClassLoader;
 import java.lang.ClassNotFoundException;
@@ -498,6 +499,19 @@ public class Workbench extends JFrame {
 	    });
 	windowMenu.add(inputPanel);
 	windowMenu.addSeparator();
+	JMenuItem thingBuilder = new JMenuItem("DataThing constructor");
+	thingBuilder.addActionListener(new ActionListener() {
+		public void actionPerformed(ActionEvent e) {
+		    // Show a workflow input panel
+		    DataThingConstructionPanel thing = new DataThingConstructionPanel();
+		    GenericUIComponentFrame frame = new GenericUIComponentFrame(Workbench.this.model, thing);
+		    Workbench.this.desktop.add(frame);
+		    frame.moveToFront();
+		}
+	    });
+	windowMenu.add(thingBuilder);
+	windowMenu.addSeparator();
+
 	JMenuItem retsinaView = new JMenuItem("EMBOSS Flow Builder (test)");
         retsinaView.addActionListener(new ActionListener() {
                public void actionPerformed(ActionEvent e) {

@@ -8,6 +8,9 @@ package org.embl.ebi.escience.scufl;
 // Utility Imports
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Iterator;
+import java.awt.datatransfer.*;
+import java.io.*;
 
 import org.embl.ebi.escience.scufl.Processor;
 /**
@@ -42,16 +45,47 @@ import org.embl.ebi.escience.scufl.Processor;
  * again with the original or primary name as the key and alternate name
  * as the value.
  */
-public class AlternateProcessor {
+public class AlternateProcessor implements Serializable, Transferable {
     
     private Processor alternate;
     private Map inputMapping = new HashMap();
     private Map outputMapping = new HashMap();
     
+    final public static DataFlavor FLAVOR =
+	new DataFlavor(AlternateProcessor.class, "Alternate Procesor");
+    static DataFlavor[] flavors = { FLAVOR };
+
     public AlternateProcessor(Processor alternate) {
 	this.alternate = alternate;
     }
     
+    /**
+     * Implements transferable interface
+     */
+    public Object getTransferData(DataFlavor df) 
+	throws UnsupportedFlavorException, IOException {
+	if (df.equals(FLAVOR)) {
+	    return this;
+	}
+	else {
+	    throw new UnsupportedFlavorException(df);
+	}
+    }
+    
+    /**
+     * Implements transferable interface
+     */
+    public boolean isDataFlavorSupported(DataFlavor df) {
+	return df.equals(FLAVOR);
+    }
+
+    /**
+     * Implements transferable interface
+     */
+    public DataFlavor[] getTransferDataFlavors() {
+	return flavors;
+    }
+
     /**
      * Return the alternate processor object. This Processor
      * object will not be bound to the same workflow model
@@ -95,6 +129,32 @@ public class AlternateProcessor {
      */
     public String toString() {
 	return this.alternate.toString();
+    }
+
+    /**
+     * For a given port name in this alternate, fetch
+     * the original port name. This is the opposite 
+     * way around to the stored mapping, but UI components
+     * may want this information.
+     * @return null if there is no mapping for the named port
+     * or the String name of the original port otherwise.
+     */
+    public String getPortTranslation(String alternatePort) {
+	for (Iterator i = inputMapping.keySet().iterator(); i.hasNext(); ) {
+	    String key = (String)i.next();
+	    String value = (String)inputMapping.get(key);
+	    if (value != null || value.equalsIgnoreCase(alternatePort)) {
+		return key;
+	    }
+	}
+	for (Iterator i = outputMapping.keySet().iterator(); i.hasNext(); ) {
+	    String key = (String)i.next();
+	    String value = (String)outputMapping.get(key);
+	    if (value != null || value.equalsIgnoreCase(alternatePort)) {
+		return key;
+	    }
+	}
+	return null;
     }
 
 }

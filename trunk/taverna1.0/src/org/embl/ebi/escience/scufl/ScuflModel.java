@@ -11,6 +11,8 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
+import java.io.*;
+import java.awt.datatransfer.*;
 
 import org.embl.ebi.escience.scufl.ConcurrencyConstraint;
 import org.embl.ebi.escience.scufl.DataConstraint;
@@ -34,8 +36,39 @@ import java.lang.Thread;
  * @author Tom Oinn
  */
 public class ScuflModel 
-    implements java.io.Serializable,
-	       LogAwareComponent {
+    implements Serializable,
+	       LogAwareComponent,
+	       Transferable {
+    
+    final public static DataFlavor FLAVOR =
+	new DataFlavor(ScuflModel.class, "Workflow model");
+    static DataFlavor[] flavors = { FLAVOR };
+    /**
+     * Implements transferable interface
+     */
+    public Object getTransferData(DataFlavor df) 
+	throws UnsupportedFlavorException, IOException {
+	if (df.equals(FLAVOR)) {
+	    return this;
+	}
+	else {
+	    throw new UnsupportedFlavorException(df);
+	}
+    }
+    
+    /**
+     * Implements transferable interface
+     */
+    public boolean isDataFlavorSupported(DataFlavor df) {
+	return df.equals(FLAVOR);
+    }
+
+    /**
+     * Implements transferable interface
+     */
+    public DataFlavor[] getTransferDataFlavors() {
+	return flavors;
+    }
 
     /**
      * The log level for the model overall

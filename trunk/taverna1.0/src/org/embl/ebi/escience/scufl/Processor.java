@@ -12,6 +12,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
 import java.util.regex.Pattern;
+import java.awt.datatransfer.*;
+import java.io.*;
 
 import org.embl.ebi.escience.scufl.AlternateProcessor;
 import org.embl.ebi.escience.scufl.DataConstraint;
@@ -32,7 +34,7 @@ import java.lang.String;
  * An abstract superclass of the various processor subtypes
  * @author Tom Oinn
  */
-public abstract class Processor implements java.io.Serializable {
+public abstract class Processor implements Serializable, Transferable {
     
     private String name = "";
     private String description = "";
@@ -43,7 +45,36 @@ public abstract class Processor implements java.io.Serializable {
     protected int retryDelay = 0;
     protected double backoff = 1.0;
     protected List alternates = new ArrayList();
+    final public static DataFlavor FLAVOR =
+	new DataFlavor(Processor.class, "Procesor");
+    static DataFlavor[] flavors = { FLAVOR };
+    /**
+     * Implements transferable interface
+     */
+    public Object getTransferData(DataFlavor df) 
+	throws UnsupportedFlavorException, IOException {
+	if (df.equals(FLAVOR)) {
+	    return this;
+	}
+	else {
+	    throw new UnsupportedFlavorException(df);
+	}
+    }
     
+    /**
+     * Implements transferable interface
+     */
+    public boolean isDataFlavorSupported(DataFlavor df) {
+	return df.equals(FLAVOR);
+    }
+
+    /**
+     * Implements transferable interface
+     */
+    public DataFlavor[] getTransferDataFlavors() {
+	return flavors;
+    }
+
     /**
      * Return the list of AlternateProcessor holders
      * for this primary processor implementation.
