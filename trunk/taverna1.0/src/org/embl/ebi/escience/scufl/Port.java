@@ -71,8 +71,10 @@ public abstract class Port implements Serializable {
 	for (int i = 0; i<the_ports.length; i++) {
 	    String existing_port_name = the_ports[i].getName();
 	    if (existing_port_name.equalsIgnoreCase(name)) {
-		throw new DuplicatePortNameException("Cannot create duplicate port name, was attempting to create '"+name+
-						     "', but it already exists in processor '"+processor.getName()+"'.");
+		if (this.getClass().toString().equals(the_ports[i].getClass().toString())) {
+		    throw new DuplicatePortNameException("Cannot create duplicate port name, was attempting to create '"+name+
+							 "', but it already exists in processor '"+processor.getName()+"'.");
+		}
 	    }
 	}
 	// Assign internal private members
