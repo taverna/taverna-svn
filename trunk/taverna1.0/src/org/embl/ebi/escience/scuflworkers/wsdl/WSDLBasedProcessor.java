@@ -72,7 +72,24 @@ public class WSDLBasedProcessor extends Processor implements java.io.Serializabl
 	// Load the WSDL document
 	try {
 	    wsdlParser = new Parser();
-	    wsdlParser.run(wsdlLocation);
+	    int retryCount = 3;
+	    int retryDelay = 1000;
+	    boolean loaded = false;
+	    while (retryCount > 0 && !loaded) {
+		try {
+		    wsdlParser.run(wsdlLocation);
+		    loaded = true;
+		}
+		catch (Exception ex2) {
+		    retryCount--;
+		    if (retryCount > 0) {
+			Thread.sleep(retryDelay);
+		    }
+		    else {
+			throw ex2;
+		    }
+		}
+	    }
 	}
 	catch (Exception ex) {
 	    ProcessorCreationException pce = new ProcessorCreationException("Unable to load wsdl!");
