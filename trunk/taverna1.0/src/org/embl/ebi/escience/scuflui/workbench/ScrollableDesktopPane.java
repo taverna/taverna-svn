@@ -31,7 +31,7 @@ import java.lang.String;
  * Created: Fri Feb 19 15:08:09 1999
  *
  * @author Phillip Lord
- * @version $Id: ScrollableDesktopPane.java,v 1.2 2004-01-27 12:58:10 mereden Exp $
+ * @version $Id: ScrollableDesktopPane.java,v 1.3 2004-10-01 13:38:20 mereden Exp $
  */
 public class ScrollableDesktopPane extends JDesktopPane
 {

@@ -23,7 +23,7 @@ import java.lang.String;
 /**
  * Handles XML store and load for the biomoby processor. <p>
  *
- * @version $Id: BiomobyXMLHandler.java,v 1.4 2004-05-01 22:30:36 mereden Exp $
+ * @version $Id: BiomobyXMLHandler.java,v 1.5 2004-10-01 13:38:21 mereden Exp $
  * @author Martin Senger
  */
 public class BiomobyXMLHandler implements XMLHandler {

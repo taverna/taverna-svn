@@ -20,7 +20,7 @@ import org.embl.ebi.escience.scuflworkers.biomoby.BiomobyProcessor;
  * Implementation of ProcessorFactory that creates
  * BiomobyProcessor nodes. <p>
  *
- * @version $Id: BiomobyProcessorFactory.java,v 1.2 2004-05-01 19:49:07 mereden Exp $
+ * @version $Id: BiomobyProcessorFactory.java,v 1.3 2004-10-01 13:38:21 mereden Exp $
  * @author Martin Senger
  */
 public class BiomobyProcessorFactory extends ProcessorFactory {

@@ -31,7 +31,7 @@ import org.biomoby.shared.*;
  * processor implementation will contact Biomoby registry in order to
  * find the list of extant ports at creation time. <p>
  *
- * @version $Id: BiomobyProcessor.java,v 1.11 2004-09-19 21:29:50 mereden Exp $
+ * @version $Id: BiomobyProcessor.java,v 1.12 2004-10-01 13:38:21 mereden Exp $
  * @author Martin Senger
  */
 public class BiomobyProcessor extends Processor implements java.io.Serializable {

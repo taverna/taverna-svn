@@ -27,7 +27,7 @@ import java.util.*;
  * A Scavenger that knows how to get all the Biomoby services from a
  * specified Biomoby Central Registry. <p>
  *
- * @version $Id: BiomobyScavenger.java,v 1.1 2004-04-01 14:31:34 mereden Exp $
+ * @version $Id: BiomobyScavenger.java,v 1.2 2004-10-01 13:38:21 mereden Exp $
  * @author Martin Senger
  */
 public class BiomobyScavenger extends Scavenger {
