@@ -90,9 +90,9 @@ import org.jdom.output.XMLOutputter;
  * COMMENT DataThingConstructionPanel
  * 
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover </a>
- * @version $Revision: 1.22 $
+ * @version $Revision: 1.23 $
  */
-public class DataThingConstructionPanel extends JPanel implements ScuflUIComponent, ScuflModelEventListener
+public abstract class DataThingConstructionPanel extends JPanel implements ScuflUIComponent, ScuflModelEventListener
 {
 	private interface PanelTreeNode
 	{
@@ -906,7 +906,7 @@ public class DataThingConstructionPanel extends JPanel implements ScuflUICompone
 		}
 	}
 
-	static EnactorProxy defaultEnactor = new FreefluoEnactorProxy();
+    //static EnactorProxy defaultEnactor = new FreefluoEnactorProxy();
 	static JFileChooser fileChooser = new JFileChooser();
 	static BaclavaDataService store = null;
 
@@ -1038,7 +1038,12 @@ public class DataThingConstructionPanel extends JPanel implements ScuflUICompone
 		}
 		return inputMap;
 	}
-
+    
+    /**
+     * Fully implement this method to allow launch of the workflow display from the input panel
+     */
+    public abstract void launchEnactorDisplay(Map inputObject);
+	
 	/*
 	 * @see org.embl.ebi.escience.scuflui.ScuflUIComponent#attachToModel(org.embl.ebi.escience.scufl.ScuflModel)
 	 */
@@ -1207,21 +1212,26 @@ public class DataThingConstructionPanel extends JPanel implements ScuflUICompone
 				Map inputObject = bakeInputMap();
 				try
 				{
-					if (Workbench.workbench != null)
-					{
-						GenericUIComponentFrame thing = new GenericUIComponentFrame(Workbench.workbench.model,
-								new EnactorInvocation(defaultEnactor, DataThingConstructionPanel.this.model,
-										inputObject));
-						thing.setSize(600, 400);
-						thing.setLocation(100, 100);
-						Workbench.workbench.desktop.add(thing);
-						thing.moveToFront();
-					}
+				    launchEnactorDisplay(inputObject);
+				    /**
+				       if (Workbench.workbench != null)
+				       {
+				       GenericUIComponentFrame thing = 
+				       new GenericUIComponentFrame(DataThingConstructionPanel.this.model,
+				       new EnactorInvocation(defaultEnactor, 
+				       DataThingConstructionPanel.this.model,
+				       inputObject));
+				       thing.setSize(600, 400);
+				       thing.setLocation(100, 100);
+				       Workbench.workbench.desktop.add(thing);
+				       thing.moveToFront();
+				       }
+				    */
 				}
 				catch (Exception e)
-				{
+				    {
 					e.printStackTrace();
-				}
+				    }
 			}
 		});
 		buttonPanel.add(runButton);

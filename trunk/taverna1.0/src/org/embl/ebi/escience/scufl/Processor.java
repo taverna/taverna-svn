@@ -71,6 +71,20 @@ public abstract class Processor implements Serializable {
     }
 
     /**
+     * Return the maximum number of task implementations that should
+     * be launched for this processor. This is ignored unless the
+     * processor is being iterated over in which case a number of
+     * threads up to the value specified are created to process the
+     * information. You must be particularly careful that the task
+     * implementation is thread safe before changing this from the
+     * default specified here, at the current time the web service
+     * processor is not thread safe!
+     */
+    public int getMaximumWorkers() {
+	return 1;
+    }
+
+    /**
      * Set the name, providing that names doesn't exist within the
      * current workflow that this processor is bound to. If it does
      * then do nothing

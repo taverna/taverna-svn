@@ -46,6 +46,7 @@ import org.embl.ebi.escience.scuflui.workbench.ScavengerTree;
 import org.embl.ebi.escience.scuflui.workbench.ScrollableDesktopPane;
 import org.embl.ebi.escience.scuflui.workbench.SplashScreen;
 import org.embl.ebi.escience.scuflui.*;
+import org.embl.ebi.escience.scufl.enactor.*;
 import java.lang.Class;
 import java.lang.ClassLoader;
 import java.lang.ClassNotFoundException;
@@ -313,9 +314,29 @@ public class Workbench extends JFrame {
 		public void actionPerformed(ActionEvent e) {
 		    // Show a workflow input panel if there are workflow inputs, otherwise
 		    // construct a new enactor invocation and run immediately
-		    ScuflModel theModel = Workbench.this.model;
+		    final ScuflModel theModel = Workbench.this.model;
 		    if (theModel.getWorkflowSourcePorts().length != 0) {
-			DataThingConstructionPanel thing = new DataThingConstructionPanel();
+			DataThingConstructionPanel thing = new DataThingConstructionPanel() {
+				public void launchEnactorDisplay(Map inputObject) {
+				    try {
+					GenericUIComponentFrame thing = 
+					    new GenericUIComponentFrame(theModel,
+									new EnactorInvocation(FreefluoEnactorProxy.getInstance(), 
+											      theModel,
+											      inputObject));
+					thing.setSize(600, 400);
+					thing.setLocation(100, 100);
+					Workbench.workbench.desktop.add(thing);
+					thing.moveToFront();
+				    }
+				    catch (WorkflowSubmissionException wse) {
+					JOptionPane.showMessageDialog(null,
+								      "Problem invoking workflow engine : \n"+wse.getMessage(),
+								      "Exception!",
+								      JOptionPane.ERROR_MESSAGE);
+				    }
+				}
+			    };
 			GenericUIComponentFrame frame = new GenericUIComponentFrame(Workbench.this.model, thing);
 			Workbench.this.desktop.add(frame);
 			frame.moveToFront();
