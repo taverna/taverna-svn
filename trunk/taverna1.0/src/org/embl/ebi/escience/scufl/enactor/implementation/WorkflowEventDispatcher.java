@@ -168,6 +168,7 @@ public class WorkflowEventDispatcher {
     class NotifyThread extends Thread {
 	protected NotifyThread() {
 	    super();
+	    setDaemon(true);
 	    start();
 	}
 	public void run() {
