@@ -576,9 +576,10 @@ public class DataThing {
      * specified directory using the given name. If 
      * there is only one item a single file is created
      * otherwise a directory structure mirroring the collection
-     * structure is built.
+     * structure is built. A File object representing the file
+     * or directory that has been written is returned.
      */
-    public void writeToFileSystem(File destination, String name) throws IOException {
+    public File writeToFileSystem(File destination, String name) throws IOException {
 	String defaultExtension = ".text";
 	String syntacticType = (getSyntacticType().split("'"))[1].toLowerCase();
 	if (syntacticType.matches(".*text/xml.*")) {
@@ -602,14 +603,17 @@ public class DataThing {
 	else if (syntacticType.matches(".*x-graphviz.*")) {
 	    defaultExtension = ".dot.text";
 	}
-	DataThing.writeObjectToFileSystem(destination, name, theDataObject, defaultExtension);
+	File writtenFile = DataThing.writeObjectToFileSystem(destination, name, theDataObject, defaultExtension);
+
+	return writtenFile;
     }
     /**
      * Write a specific object to the filesystem
      * this has no access to metadata about the object
-     * and so is not particularly clever
+     * and so is not particularly clever. A File object representing the file
+     * or directory that has been written is returned.
      */
-    public static void writeObjectToFileSystem(File destination, String name, Object o, String defaultExtension) throws IOException {
+    public static File writeObjectToFileSystem(File destination, String name, Object o, String defaultExtension) throws IOException {
 	// If the destination is not a directory then set the destination
 	// directory to the parent and the name to the filename
 	// i.e. if the destination is /tmp/foo.text and this exists
@@ -622,10 +626,11 @@ public class DataThing {
 	    // Create the directory structure if not already present
 	    destination.mkdirs();
 	}
-	writeDataObject(destination, name, o, defaultExtension);
+	File writtenFile = writeDataObject(destination, name, o, defaultExtension);
+	return writtenFile;
     }
     static char sep = File.separatorChar;
-    private static void writeDataObject(File destination, String name, Object o, String defaultExtension) throws IOException {
+    private static File writeDataObject(File destination, String name, Object o, String defaultExtension) throws IOException {
 	if (o instanceof Collection) {
 	    // Create a new directory, iterate over the collection recursively
 	    // calling this method
@@ -636,6 +641,7 @@ public class DataThing {
 	    for (Iterator i = c.iterator(); i.hasNext();) {
 		writeDataObject(targetDir, ""+count++, i.next(), defaultExtension);
 	    }
+	    return targetDir;
 	}
 	else {
 	    // Write a single item
@@ -660,6 +666,7 @@ public class DataThing {
 		out.flush();
 		out.close();
 	    }
+	    return targetFile;
 	}
     }
 }
