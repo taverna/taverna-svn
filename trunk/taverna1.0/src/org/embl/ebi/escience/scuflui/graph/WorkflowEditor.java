@@ -5,7 +5,11 @@ package org.embl.ebi.escience.scuflui.graph;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
+import java.awt.GradientPaint;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.Insets;
+import java.awt.Paint;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.dnd.DropTarget;
@@ -55,16 +59,14 @@ import org.jdom.input.SAXBuilder;
 import org.jgraph.JGraph;
 import org.jgraph.event.GraphModelEvent;
 import org.jgraph.event.GraphModelListener;
+import org.jgraph.graph.CellView;
 import org.jgraph.graph.DefaultCellViewFactory;
-import org.jgraph.graph.Edge;
 import org.jgraph.graph.EdgeView;
 import org.jgraph.graph.GraphConstants;
 import org.jgraph.graph.GraphLayoutCache;
 import org.jgraph.graph.PortView;
-import org.jgraph.graph.VertexView;
 import org.jgraph.graph.VertexRenderer;
-import java.awt.*;
-import org.jgraph.graph.CellView;
+import org.jgraph.graph.VertexView;
 import org.jgraph.plaf.basic.BasicGraphUI;
 
 /**
@@ -124,6 +126,37 @@ public class WorkflowEditor extends JGraph implements ScuflUIComponent
 		layoutCache.setSelectsAllInsertedCells(false);
 		layoutCache.setFactory(new DefaultCellViewFactory()
 		{
+			protected PortView createPortView(Object port)
+			{
+				return new PortView(port)
+				{
+					protected Point2D getEdgePoint(EdgeView view, int index)
+					{
+						Object obj = view.getPoints().get(index);
+						if (obj instanceof PortView)
+						{
+							VertexView vertex = (VertexView) ((CellView) obj).getParentView();
+							if (vertex != null)
+								return vertex.getCenterPoint();
+						}
+						else if (obj instanceof VirtualNode)
+						{
+							return ((VirtualNode)obj).getPosition(); 
+						}
+						else if (obj instanceof CellView)
+						{
+							System.err.println("CellView!");
+							Rectangle2D r = ((CellView) obj).getBounds();
+							return getAttributes().createPoint(r.getX(), r.getY());
+						}
+						else if (obj instanceof Point2D)
+							// Regular Point
+							return (Point2D) obj;
+						return null;
+					}
+				};
+			}
+			
 			protected EdgeView createEdgeView(Object cell)
 			{
 				return new EdgeView(cell)
@@ -133,7 +166,6 @@ public class WorkflowEditor extends JGraph implements ScuflUIComponent
 						Object obj = points.get(index);
 						if (obj instanceof PortView)
 						{
-							// Port Location Seen From This Edge
 							return ((PortView) obj).getLocation(this);
 						}
 						else if (obj instanceof VirtualNode)
@@ -142,7 +174,7 @@ public class WorkflowEditor extends JGraph implements ScuflUIComponent
 						}
 						else if (obj instanceof CellView)
 						{
-							// Should not happen
+							System.err.println("CellView!");
 							Rectangle2D r = ((CellView) obj).getBounds();
 							return getAttributes().createPoint(r.getX(), r.getY());
 						}

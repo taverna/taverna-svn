@@ -23,22 +23,18 @@ import org.jgraph.graph.GraphModel;
  * graph to be able to update as the graph changes.
  * 
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover </a>
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  */
-public class RowLayout extends GraphSpanningTree
+public class RowLayout extends ModelSpanningTree
 {
-	private static final String ROW_TREE_PARENT = "row tree parent";
-	private static final String ROW_TREE_SET = "row tree set";
-
 	PositionLayout positionLayout;
-	GraphModel model;
 	List rows = new ArrayList();
 
 	/**
 	 */
 	public RowLayout(GraphModel model, CellMapper mapper)
 	{
-		this.model = model;
+		super(model);
 		positionLayout = new PositionLayout(model, mapper);
 	}
 
@@ -104,73 +100,10 @@ public class RowLayout extends GraphSpanningTree
 
 		// TODO Reduce crossovers here!
 		
-		//System.err.println("Edges:" + positionLayout.edges);
+		
 		treeEdges = positionLayout.createInitialTree(positionLayout.edges.iterator());
 		positionLayout.edges.clear();
 		positionLayout.optimiseTree(treeEdges);
-	}
-
-	/*
-	 * @see org.embl.ebi.escience.scuflui.graph.GraphSpanningTree#getTreeSet(java.lang.Object)
-	 */
-	protected Set getTreeSet(Object node)
-	{
-		Map attributes = getAttributes(node);
-		return (Set) attributes.get(ROW_TREE_SET);
-	}
-
-	/*
-	 * @see org.embl.ebi.escience.scuflui.graph.GraphSpanningTree#getTreeParent(java.lang.Object)
-	 */
-	protected Object getTreeParent(Object node)
-	{
-		Map attributes = getAttributes(node);
-		if (attributes != null)
-		{
-			return attributes.get(ROW_TREE_PARENT);
-		}
-		return null;
-	}
-
-	/*
-	 * @see org.embl.ebi.escience.scuflui.graph.GraphSpanningTree#setTreeSet(java.lang.Object,
-	 *      java.util.Set)
-	 */
-	protected void setTreeSet(Object node, Set treeSet)
-	{
-		Map parentAttr = getAttributes(node);
-		if (parentAttr != null)
-		{
-			parentAttr.put(ROW_TREE_SET, treeSet);
-		}
-	}
-
-	/*
-	 * @see org.embl.ebi.escience.scuflui.graph.GraphSpanningTree#removeTreeEdge(java.lang.Object)
-	 */
-	protected void removeTreeEdge(Object edge)
-	{
-		Map attributes = getAttributes(edge);
-		// if(model.isEdge(edge))
-		// {
-		// GraphConstants.setLineColor(attributes, Color.BLACK);
-		// }
-		attributes.remove(ROW_TREE_PARENT);
-	}
-
-	/*
-	 * @see org.embl.ebi.escience.scuflui.graph.GraphSpanningTree#treeSetParent(java.lang.Object,
-	 *      java.lang.Object)
-	 */
-	protected void setTreeParent(Object child, Object parent)
-	{
-		Map attributes = getAttributes(child);
-		Object currentParent = attributes.get(ROW_TREE_PARENT);
-		attributes.put(ROW_TREE_PARENT, parent);
-		if (parent != null && currentParent != null && currentParent != parent)
-		{
-			setTreeParent(currentParent, child);
-		}
 	}
 
 	/*
@@ -260,7 +193,7 @@ public class RowLayout extends GraphSpanningTree
 	{
 		return "Row Tree";
 	}
-
+	
 	private void updateEdgeGraph(Object edge)
 	{
 		//System.err.println("Update " + edge);
@@ -297,15 +230,6 @@ public class RowLayout extends GraphSpanningTree
 			}
 		}
 		GraphConstants.setPoints(attributes, nodeChain);
-	}
-
-	protected Map getAttributes(Object node)
-	{
-		if (node instanceof VirtualNode)
-		{
-			return ((VirtualNode) node).getAttributes();
-		}
-		return model.getAttributes(node);
 	}
 
 	/*
@@ -357,6 +281,26 @@ public class RowLayout extends GraphSpanningTree
 		}
 	}
 
+	protected void removeEdge(Object edge)
+	{
+		super.removeEdge(edge);
+		removeEdgeGraph(edge);
+	}
+
+	private void removeEdgeGraph(Object edge)
+	{
+		//System.err.println("Update " + edge);
+		Object previousNode = getSource(edge);
+		Map attributes = getAttributes(edge);
+		List nodeChain = GraphConstants.getPoints(attributes);
+		for (int index = 1; index < nodeChain.size(); index++)
+		{
+			Object currentNode = GraphUtilities.getRoot(model, nodeChain.get(index));
+			positionLayout.removeIntermediateNode(previousNode, currentNode, edge);
+			previousNode = currentNode;
+		}
+	}
+
 	protected Object replaceTreeEdge(Object edge)
 	{
 		// TODO Implement replaceTreeEdge
@@ -372,23 +316,6 @@ public class RowLayout extends GraphSpanningTree
 			rows.add(positionLayout.new Row(size));
 		}
 		return (PositionLayout.Row) rows.get(index);
-	}
-
-	/*
-	 * @see org.embl.ebi.escience.scuflui.graph.GraphSpanningTree#getCutValue(java.lang.Object,
-	 *      java.lang.String)
-	 */
-	protected int getCutValue(Object edge, String timeStamp)
-	{
-		Map attributes = getAttributes(edge);
-		if (timeStamp.equals(LayoutConstants.getCutValueTimeStamp(attributes)))
-		{
-			return LayoutConstants.getCutValue(attributes).intValue();
-		}
-		int cutValue = super.getCutValue(edge, timeStamp);
-		LayoutConstants.setCutValueTimeStamp(attributes, timeStamp);
-		LayoutConstants.setCutValue(attributes, cutValue);
-		return cutValue;
 	}
 
 	/*
