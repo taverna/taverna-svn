@@ -69,7 +69,7 @@ public class DataThing {
 	    if (loader == null) {
 		loader = Thread.currentThread().getContextClassLoader();
 	    }
-	    Enumeration en = loader.getResources("mimetypes.properties");
+	    Enumeration en = loader.getResources("org/embl/ebi/escience/baclava/mimetypes.properties");
 	    while (en.hasMoreElements()) {
 		URL resourceURL = (URL)en.nextElement();
 		mimeTypes.load(resourceURL.openStream());
