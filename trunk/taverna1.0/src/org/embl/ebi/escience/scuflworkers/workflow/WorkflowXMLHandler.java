@@ -47,15 +47,26 @@ public class WorkflowXMLHandler implements XMLHandler {
     public Element elementForFactory(ProcessorFactory pf) {
 	WorkflowProcessorFactory wpf = (WorkflowProcessorFactory)pf;
 	Element spec = new Element("workflow",XScufl.XScuflNS);
-	Element definition = new Element("xscufllocation",XScufl.XScuflNS);
-	spec.addContent(definition);
-	definition.setText(wpf.getDefinitionURL());
-	return spec;
+	if (wpf.getDefinitionURL() != null) {
+	    Element definition = new Element("xscufllocation",XScufl.XScuflNS);
+	    spec.addContent(definition);
+	    definition.setText(wpf.getDefinitionURL());
+	    return spec;
+	}
+	else {
+	    return wpf.getDefinitionSpec();
+	}
     }
 
     public ProcessorFactory getFactory(Element specElement) {
-	String definitionURL = specElement.getChild("xscufllocation",XScufl.XScuflNS).getTextTrim();
-	return new WorkflowProcessorFactory(definitionURL);
+	if (specElement.getChild("xscufllocation",XScufl.XScuflNS) != null) {
+	    String definitionURL = specElement.getChild("xscufllocation",XScufl.XScuflNS).getTextTrim();
+	    return new WorkflowProcessorFactory(definitionURL);
+	}
+	else {
+	    Element scuflElement = specElement.getChild("scufl",XScufl.XScuflNS);
+	    return new WorkflowProcessorFactory(scuflElement);
+	}
     }
 
     public Processor loadProcessorFromXML(Element processorNode, ScuflModel model, String name)

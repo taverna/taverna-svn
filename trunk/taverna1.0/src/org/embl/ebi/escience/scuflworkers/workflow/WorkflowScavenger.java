@@ -8,7 +8,7 @@ package org.embl.ebi.escience.scuflworkers.workflow;
 import javax.swing.tree.DefaultMutableTreeNode;
 import org.embl.ebi.escience.scuflui.workbench.Scavenger;
 import org.embl.ebi.escience.scuflui.workbench.ScavengerCreationException;
-
+import org.embl.ebi.escience.scuflworkers.stringconstant.*;
 import org.embl.ebi.escience.scuflworkers.workflow.WorkflowProcessorFactory;
 import java.lang.String;
 import org.embl.ebi.escience.scufl.*;
@@ -55,6 +55,12 @@ public class WorkflowScavenger extends Scavenger {
 	    System.out.println(tagName+":"+processors[i].getName());
 	    if (xh != null) {
 		ProcessorFactory pf = xh.getFactory(xh.elementForProcessor(processors[i]));
+		if (pf instanceof WorkflowProcessorFactory) {
+		    ((WorkflowProcessorFactory)pf).setName(processors[i].getName());
+		}
+		else if (pf instanceof StringConstantProcessorFactory) {
+		    ((StringConstantProcessorFactory)pf).setName(processors[i].getName());
+		}
 		add(new DefaultMutableTreeNode(pf));
 	    }
 	}

@@ -23,7 +23,7 @@ import java.lang.String;
  */
 public class StringConstantProcessorFactory extends ProcessorFactory {
 
-    private String value;
+    private String value = null;
 
     /**
      * Create a new factory configured with the specified
@@ -33,11 +33,21 @@ public class StringConstantProcessorFactory extends ProcessorFactory {
 	this.value = value;
     }
     
+    private String name = "String Constant";
+
+    public void setName(String newName) {
+	this.name = newName;
+    }
+
+    public String getValue() {
+	return this.value;
+    }    
+
     /**
      * Return the constant value as the name
      */
     public String toString() {
-	return "String Constant";
+	return this.name;
     }
     
     /**

@@ -30,7 +30,11 @@ public class StringConstantXMLHandler implements XMLHandler {
     }
     
     public Element elementForFactory(ProcessorFactory pf) {
-	return new Element("stringconstant",XScufl.XScuflNS);
+	Element e = new Element("stringconstant",XScufl.XScuflNS);
+	if (((StringConstantProcessorFactory)pf).getValue() != null) {
+	    e.setText(((StringConstantProcessorFactory)pf).getValue());
+	}
+	return e;
     }
 
     public ProcessorFactory getFactory(Element specElement) {

@@ -109,7 +109,9 @@ public class WorkflowProcessor extends Processor implements java.io.Serializable
 	    Document doc = new Document((Element)scuflElement.clone());
 	    this.theModel = new ScuflModel();
 	    try {
-		this.theModel.setOffline(model.isOffline());
+		if (model != null) {
+		    this.theModel.setOffline(model.isOffline());
+		}
 	    }
 	    catch (SetOnlineException soe) {
 		//

@@ -41,6 +41,7 @@ import java.lang.Class;
 import java.lang.Exception;
 import java.lang.Object;
 import java.lang.String;
+import org.jdom.*;
 
 
 
@@ -108,10 +109,23 @@ public class ScavengerTreePopupHandler extends MouseAdapter {
 				public void actionPerformed(ActionEvent ae) {
 				    try {
 					int numberOfAlternates = theProcessor.getAlternatesArray().length;
-					AlternateProcessor alternate = new AlternateProcessor(pf.createProcessor("alternate"+(numberOfAlternates+1), null));
+					Processor alternateProcessor = pf.createProcessor("alternate"+(numberOfAlternates+1), null);
+					AlternateProcessor alternate = new AlternateProcessor(alternateProcessor);
 					theProcessor.addAlternate(alternate);
+					if (theProcessor.getModel() != null) {
+					    boolean isOffline = theProcessor.getModel().isOffline();
+					    if (isOffline) {
+						alternateProcessor.setOffline();
+					    }
+					    else {
+						alternateProcessor.setOnline();
+					    }
+					}
+					// Set the appropriate offline / online status
+					
 				    }
 				    catch (Exception ex) {
+					ex.printStackTrace();
 					JOptionPane.showMessageDialog(null,
 								      "Problem creating alternate : \n"+ex.getMessage(),
 								      "Exception!",
@@ -130,6 +144,7 @@ public class ScavengerTreePopupHandler extends MouseAdapter {
 		if (scuflObject instanceof WorkflowProcessorFactory) {
 		    JMenuItem imp = new JMenuItem("Import workflow...", ScuflIcons.webIcon);
 		    final String definitionURL = ((WorkflowProcessorFactory)scuflObject).getDefinitionURL();
+		    final Element definitionElement = (Element)((WorkflowProcessorFactory)scuflObject).getDefinition().clone();
 		    imp.addActionListener(new ActionListener() {
 			    public void actionPerformed(ActionEvent ae) {
 				try {
@@ -144,9 +159,17 @@ public class ScavengerTreePopupHandler extends MouseAdapter {
 					if (prefix.equals("")) {
 					    prefix = null;
 					}
-					XScuflParser.populate((new URL(definitionURL)).openStream(),
-							      ScavengerTreePopupHandler.this.scavenger.model,
-							      prefix);
+					if (definitionURL != null) {
+					    XScuflParser.populate((new URL(definitionURL)).openStream(),
+								  ScavengerTreePopupHandler.this.scavenger.model,
+								  prefix);
+					}
+					else {
+					    // Is a literal definition
+					    XScuflParser.populate(new Document(definitionElement), 
+								  ScavengerTreePopupHandler.this.scavenger.model,
+								  prefix);
+					}
 				    }
 				}
 				catch (Exception ex) {

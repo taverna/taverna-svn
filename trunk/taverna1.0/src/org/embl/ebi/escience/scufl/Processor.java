@@ -68,10 +68,10 @@ public abstract class Processor implements Serializable {
      * online, allows e.g. the workflow processor to delegate
      * this to the child workflow
      */
-    protected void setOnline() {
+    public void setOnline() {
 	//
     }
-    protected void setOffline() {
+    public void setOffline() {
 	//
     }
 
