@@ -24,9 +24,9 @@
 //      Created for Project :   MYGRID
 //      Dependencies        :
 //
-//      Last commit info    :   $Author: mereden $
-//                              $Date: 2003-05-23 12:36:00 $
-//                              $Revision: 1.10 $
+//      Last commit info    :   $Author: dmarvin $
+//                              $Date: 2003-05-27 07:07:48 $
+//                              $Revision: 1.11 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 
@@ -64,7 +64,7 @@ import uk.ac.soton.itinnovation.taverna.enactor.broker.LogLevel;
 import uk.ac.soton.itinnovation.taverna.enactor.broker.TavernaFlowReceipt;
 import uk.ac.soton.itinnovation.taverna.enactor.broker.TavernaWorkflowSubmission;
 import uk.ac.soton.itinnovation.taverna.enactor.broker.XScuflDiGraphGenerator;
-import uk.ac.soton.itinnovation.taverna.enactor.broker.XScuflInvalidException;
+import org.embl.ebi.escience.scufl.parser.XScuflFormatException;
 import java.lang.Exception;
 import java.lang.IllegalArgumentException;
 import java.lang.Object;
@@ -162,7 +162,7 @@ public class TavernaFlowBroker implements FlowBroker {
 			buf.append(":");
             try {
                 dGrph = XScuflDiGraphGenerator.build(buf.toString(), model, input, userID);
-            } catch (XScuflInvalidException ex) {
+            } catch (XScuflFormatException ex) {
                 logger.error(ex);
 				throw new WorkflowCommandException(ex.getMessage());
             }

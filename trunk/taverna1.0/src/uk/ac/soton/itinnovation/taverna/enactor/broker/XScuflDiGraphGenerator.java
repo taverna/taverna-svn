@@ -24,9 +24,9 @@
 //      Created for Project :   MYGRID
 //      Dependencies        :
 //
-//      Last commit info    :   $Author: mereden $
-//                              $Date: 2003-05-23 12:36:00 $
-//                              $Revision: 1.14 $
+//      Last commit info    :   $Author: dmarvin $
+//                              $Date: 2003-05-27 07:07:48 $
+//                              $Revision: 1.15 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 
@@ -51,8 +51,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import org.embl.ebi.escience.scufl.parser.XScuflFormatException;
 import uk.ac.soton.itinnovation.taverna.enactor.broker.LogLevel;
-import uk.ac.soton.itinnovation.taverna.enactor.broker.XScuflInvalidException;
 import java.lang.Exception;
 import java.lang.String;
 import java.lang.System;
@@ -79,7 +79,7 @@ public class XScuflDiGraphGenerator {
 	 * @param user identifier
      * @return Workflow Enactor DiGraph
      */
-    public static DiGraph build(String flowID, ScuflModel model, Input input, String userID) throws XScuflInvalidException, java.net.MalformedURLException {
+    public static DiGraph build(String flowID, ScuflModel model, Input input, String userID) throws XScuflFormatException, java.net.MalformedURLException {
         DiGraph graph = new DiGraph(model.toString());
 		try{
 						
@@ -165,7 +165,7 @@ public class XScuflDiGraphGenerator {
 			for(int i=0;i<conConstraints.length;i++) {
 			    //validate that the state transition is supported
 			    if(!validConcurrencyConstraint(conConstraints[i]))
-				throw new XScuflInvalidException("The concurrency constraint '" + conConstraints[i].getName() + "' uses a state transition that is not supported by the enactor");
+				throw new XScuflFormatException("The concurrency constraint '" + conConstraints[i].getName() + "' uses a state transition that is not supported by the enactor");
 			    //want to get the source processor
 			    Processor controller = conConstraints[i].getControllingProcessor();
 			    Processor controlled = conConstraints[i].getTargetProcessor();
@@ -180,7 +180,7 @@ public class XScuflDiGraphGenerator {
 				    controlledTask = p;
 			    }
 			    if(controllerTask == null || controlledTask == null) {
-				throw new XScuflInvalidException("Could not match processors within concurrency constraint '" + conConstraints[i].getName() + "' with actual processors in the ScuflModel");
+				throw new XScuflFormatException("Could not match processors within concurrency constraint '" + conConstraints[i].getName() + "' with actual processors in the ScuflModel");
 			    }
 			    //otherwise tie the two together as dependent
 			    controllerTask.addChild(controlledTask);
@@ -240,11 +240,11 @@ public class XScuflDiGraphGenerator {
 
 			
 			if (!checkRouteToAllNodes(processorTasks, graph.getInputNodes()))
-				throw new XScuflInvalidException("Not all the processor nodes are accessible from input nodes");		
+				throw new XScuflFormatException("Not all the processor nodes are accessible from input nodes");		
 		}		
 		catch(Exception ex) {
 			logger.error(ex);
-			throw new XScuflInvalidException("Unrecognised error occured whilst generating workflow, please consult the logs");
+			throw new XScuflFormatException("Unrecognised error occured whilst generating workflow, please consult the logs");
 		}
 		return graph;
 		
@@ -269,7 +269,7 @@ public class XScuflDiGraphGenerator {
 	return true;
     }
 
-	private static PortTask getPortTask(String flowID,List list,Port p) throws XScuflInvalidException{
+	private static PortTask getPortTask(String flowID,List list,Port p) throws XScuflFormatException{
 		Iterator i = list.iterator();
 		while(i.hasNext()) {
 			PortTask pT = (PortTask) i.next();
@@ -298,7 +298,7 @@ public class XScuflDiGraphGenerator {
             list.add(gNode);
     }
 	
-    private static boolean checkRouteToAllNodes(List processors, GraphNode[] inNodes) throws XScuflInvalidException {
+    private static boolean checkRouteToAllNodes(List processors, GraphNode[] inNodes) throws XScuflFormatException {
         boolean all = true;
 
         try {
@@ -319,16 +319,16 @@ public class XScuflDiGraphGenerator {
                     }
                 }
                 if (!foundActivity) {
-                    throw new XScuflInvalidException("The workflow is invalid since the processor " + activity.getProcessor().getName() + " is not accessible from the start of the workflow, please check links");
+                    throw new XScuflFormatException("The workflow is invalid since the processor " + activity.getProcessor().getName() + " is not accessible from the start of the workflow, please check links");
                 }
             }
             return true;
         } catch (Exception ex) {
-            if (ex instanceof XScuflInvalidException)
-                throw (XScuflInvalidException) ex;
+            if (ex instanceof XScuflFormatException)
+                throw (XScuflFormatException) ex;
             else {
-				ex.printStackTrace();
-                throw new XScuflInvalidException("The workflow is incomplete since some processors are not accessible when navigating from the start of the workflow, please check links");
+				logger.error(ex);
+				throw new XScuflFormatException("The workflow is incomplete since some processors are not accessible when navigating from the start of the workflow, please check links");
 			}
 		}			
     }
@@ -349,7 +349,8 @@ public class XScuflDiGraphGenerator {
             }
             return false;
         } catch (Exception ex) {
-            return false;
+            logger.error(ex);
+			return false;
         }
     }
 	
