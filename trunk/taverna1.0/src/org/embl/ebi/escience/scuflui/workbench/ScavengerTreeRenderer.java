@@ -5,16 +5,13 @@
  */
 package org.embl.ebi.escience.scuflui.workbench;
 
-import org.embl.ebi.escience.scuflui.*;
 import java.awt.Component;
-import javax.swing.ImageIcon;
 import javax.swing.JTree;
 import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.DefaultTreeCellRenderer;
-import org.embl.ebi.escience.scufl.*;
+import org.embl.ebi.escience.scuflui.ScuflModelExplorerRenderer;
 
-import java.lang.Class;
-import java.lang.ClassNotFoundException;
+import org.embl.ebi.escience.scuflui.workbench.ProcessorFactory;
+import org.embl.ebi.escience.scuflui.workbench.SoaplabProcessorFactory;
 import java.lang.Object;
 
 

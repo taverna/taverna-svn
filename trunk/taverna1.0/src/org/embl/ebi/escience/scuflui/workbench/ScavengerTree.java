@@ -4,11 +4,21 @@
  * Copyright Tom Oinn, EMBL-EBI
  */
 package org.embl.ebi.escience.scuflui.workbench;
-import org.embl.ebi.escience.scufl.*;
-import org.embl.ebi.escience.scuflui.*;
-import javax.swing.*;
-import java.awt.event.*;
-import javax.swing.tree.*;
+import javax.swing.JTree;
+import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.MutableTreeNode;
+import javax.swing.tree.TreePath;
+import javax.swing.tree.TreeSelectionModel;
+import org.embl.ebi.escience.scufl.ScuflModel;
+import org.embl.ebi.escience.scuflui.ScuflUIComponent;
+
+import org.embl.ebi.escience.scuflui.workbench.Scavenger;
+import org.embl.ebi.escience.scuflui.workbench.ScavengerTreePopupHandler;
+import org.embl.ebi.escience.scuflui.workbench.ScavengerTreeRenderer;
+import java.lang.String;
+
+
 
 /**
  * A JTree subclass showing available processors from some

@@ -14,15 +14,27 @@ import java.awt.event.WindowEvent;
 import javax.swing.*;
 import org.embl.ebi.escience.scufl.ScuflModel;
 import org.embl.ebi.escience.scufl.parser.XScuflParser;
+import org.embl.ebi.escience.scufl.view.XScuflView;
+import org.embl.ebi.escience.scuflui.DotTextArea;
+import org.embl.ebi.escience.scuflui.ScuflDiagram;
+import org.embl.ebi.escience.scuflui.ScuflModelExplorer;
+import org.embl.ebi.escience.scuflui.XScuflTextArea;
 
 // IO Imports
 import java.io.File;
-import org.embl.ebi.escience.scuflui.*;
+import java.io.FileWriter;
+import java.io.PrintWriter;
+
+import org.embl.ebi.escience.scuflui.workbench.GenericUIComponentFrame;
+import org.embl.ebi.escience.scuflui.workbench.ScavengerCreationException;
+import org.embl.ebi.escience.scuflui.workbench.ScavengerTree;
+import org.embl.ebi.escience.scuflui.workbench.SoaplabScavenger;
+import java.lang.Class;
+import java.lang.ClassNotFoundException;
 import java.lang.Exception;
+import java.lang.RuntimeException;
 import java.lang.String;
 import java.lang.System;
-import java.io.*;
-import org.embl.ebi.escience.scufl.view.*;
 
 
 
@@ -33,7 +45,7 @@ import org.embl.ebi.escience.scufl.view.*;
  */
 public class Workbench extends JFrame {
     
-    static ImageIcon openIcon, deleteIcon, importIcon, saveIcon;
+    protected static ImageIcon openIcon, deleteIcon, importIcon, saveIcon;
 
     static {
 	try {
@@ -207,7 +219,7 @@ public class Workbench extends JFrame {
 	    });
 	windowMenu.add(xscuflView);
 	JMenuItem dotView = new JMenuItem("Dot View");
-	xscuflView.addActionListener(new ActionListener() {
+	dotView.addActionListener(new ActionListener() {
 		public void actionPerformed(ActionEvent e) {
 		    // Show a Dot panel
 		    Workbench.this.desktop.add(new GenericUIComponentFrame(Workbench.this.model,

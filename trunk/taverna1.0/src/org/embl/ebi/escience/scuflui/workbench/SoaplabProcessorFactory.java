@@ -4,7 +4,17 @@
  * Copyright Tom Oinn, EMBL-EBI
  */
 package org.embl.ebi.escience.scuflui.workbench;
-import org.embl.ebi.escience.scufl.*;
+import org.embl.ebi.escience.scufl.DuplicateProcessorNameException;
+import org.embl.ebi.escience.scufl.Processor;
+import org.embl.ebi.escience.scufl.ProcessorCreationException;
+import org.embl.ebi.escience.scufl.ScuflModel;
+import org.embl.ebi.escience.scufl.SoaplabProcessor;
+
+import org.embl.ebi.escience.scuflui.workbench.ProcessorFactory;
+import java.lang.Class;
+import java.lang.String;
+
+
 
 /**
  * Implementation of ProcessorFactory that creates

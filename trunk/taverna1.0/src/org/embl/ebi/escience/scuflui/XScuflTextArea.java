@@ -12,6 +12,10 @@ import org.embl.ebi.escience.scufl.ScuflModelEventListener;
 import org.embl.ebi.escience.scufl.view.XScuflView;
 
 import org.embl.ebi.escience.scuflui.ScuflUIComponent;
+import java.lang.String;
+
+
+
 /**
  * A swing component that provides a textual view of the
  * xscufl corresponding to a given ScuflModel instance

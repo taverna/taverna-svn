@@ -19,6 +19,10 @@ import java.util.Enumeration;
 import org.embl.ebi.escience.scuflui.ScuflModelExplorerPopupHandler;
 import org.embl.ebi.escience.scuflui.ScuflModelExplorerRenderer;
 import org.embl.ebi.escience.scuflui.ScuflUIComponent;
+import java.lang.String;
+
+
+
 /**
  * A swing component that provides an expandable
  * tree view of the constituent components of a

@@ -4,11 +4,11 @@
  * Copyright Tom Oinn, EMBL-EBI
  */
 package org.embl.ebi.escience.scuflui.workbench;
-import org.embl.ebi.escience.scufl.*;
-import org.embl.ebi.escience.scuflui.*;
-import javax.swing.*;
-import java.awt.event.*;
-import javax.swing.tree.*;
+import javax.swing.tree.DefaultMutableTreeNode;
+
+import java.lang.Object;
+
+
 
 /**
  * A subclass of DefaultMutableTreeNode that should

@@ -5,11 +5,11 @@
  */
 package org.embl.ebi.escience.scuflui.workbench;
 
+import javax.swing.JComponent;
 import javax.swing.JInternalFrame;
 import javax.swing.JScrollPane;
 import javax.swing.event.InternalFrameAdapter;
 import javax.swing.event.InternalFrameEvent;
-import javax.swing.JComponent;
 import org.embl.ebi.escience.scufl.ScuflModel;
 import org.embl.ebi.escience.scuflui.ScuflUIComponent;
 
@@ -40,7 +40,6 @@ public class GenericUIComponentFrame extends JInternalFrame {
 		    GenericUIComponentFrame.this.component.detachFromModel();
 		}
 	    });
-	pack();
 	setSize(400,400);
 	setVisible(true);
     }
