@@ -58,6 +58,8 @@ import org.jgraph.graph.DefaultCellViewFactory;
 import org.jgraph.graph.GraphConstants;
 import org.jgraph.graph.GraphLayoutCache;
 import org.jgraph.graph.VertexView;
+import org.jgraph.graph.VertexRenderer;
+import java.awt.*;
 import org.jgraph.plaf.basic.BasicGraphUI;
 
 /**
@@ -138,9 +140,22 @@ public class WorkflowEditor extends JGraph implements ScuflUIComponent
 								+ insets.bottom);
 						groupBounds = r;
 					}
+				    
 				};
 			}
 		});
+		VertexView.renderer = new VertexRenderer() {
+			public void paint(Graphics g) {
+			    setOpaque(false);
+			    Graphics2D g2d = (Graphics2D)g;
+			    Paint oldPaint = g2d.getPaint();
+			    g2d.setPaint(new GradientPaint(0,0, getBackground(), getWidth(), getHeight(), org.embl.ebi.escience.scuflui.ShadedLabel.halfShade(getBackground())));
+			    g2d.fillRect(0,0,getWidth(),getHeight());
+			    g2d.setPaint(oldPaint);
+			    super.paint(g);
+			}
+			
+		    };
 		setUI(new BasicGraphUI()
 		{
 			protected GraphModelListener createGraphModelListener()
