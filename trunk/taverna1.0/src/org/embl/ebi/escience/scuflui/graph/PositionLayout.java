@@ -24,7 +24,7 @@ import org.jgraph.graph.GraphModel;
 
 /**
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover </a>
- * @version $Revision: 1.9 $
+ * @version $Revision: 1.10 $
  * 
  * TODO Change from center placed to left placed and use the port offset to fix it
  */
@@ -180,6 +180,7 @@ public class PositionLayout extends ModelSpanningTree
 	}
 
 	private static final int X_SEPARATION = 15;
+	private static final int ROW_HEIGHT = 45;
 
 	protected List edges;
 
@@ -288,7 +289,7 @@ public class PositionLayout extends ModelSpanningTree
 		if (node instanceof VirtualNode)
 		{
 			Point2D point = ((VirtualNode) node).getPosition();
-			point.setLocation(x, ((VirtualNode) node).row * 60 + 20);
+			point.setLocation(x, ((VirtualNode) node).row * ROW_HEIGHT + 20);
 		}
 		else
 		{
@@ -297,7 +298,7 @@ public class PositionLayout extends ModelSpanningTree
 			assert attributes != null : node;
 			Integer row = LayoutConstants.getRow(attributes);
 			assert row != null : node;
-			int newY = (row.intValue() * 40) + 10;
+			int newY = (row.intValue() * ROW_HEIGHT) + 10;
 
 			if (view.isLeaf())
 			{
