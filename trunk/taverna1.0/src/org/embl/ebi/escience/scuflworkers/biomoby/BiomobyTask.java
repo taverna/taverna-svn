@@ -10,11 +10,14 @@ import org.embl.ebi.escience.scufl.Processor;
 import org.embl.ebi.escience.scuflworkers.ProcessorTaskWorker;
 import uk.ac.soton.itinnovation.taverna.enactor.entities.TaskExecutionException;
 
+import org.embl.ebi.escience.scufl.*;
+
 // Utility Imports
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.*;
 
 // Network Imports
 import java.net.URL;
@@ -43,16 +46,50 @@ public class BiomobyTask implements ProcessorTaskWorker {
 
 	try {
 	    DataThing inputThing = (DataThing)inputMap.get("input");
-	    String inputXML = (String)inputThing.getDataObject();
-	
+	    
+	    InputPort myInput = proc.getInputPorts()[0];
+	    String inputType = myInput.getSyntacticType();
+	    // If this is 'text/xml' then the biomoby service consumes
+	    // a simple and there is no processing to do as that's what we have
+	    // If this is l('text/xml') biomoby expects a collection but
+	    // we have a java List of simples - need to convert this into 
+	    // a biomoby collection document
+	    
+	    String inputXML = null;
+	    if (inputType.equals("'text/xml'")) {
+		inputXML = (String)inputThing.getDataObject();
+	    }
+	    else {
+		// List of strings containing simple biomoby objects
+		List simpleInputs = (List)inputThing.getDataObject();
+		// Iterate and create the collection, 
+		// ....inputXML = collectionThing
+	    }
+
 	    // do the task and populate outputXML
 	    String methodName = ((BiomobyProcessor)proc).getServiceName();
 	    String serviceEndpoint = ((BiomobyProcessor) proc).getEndpoint().toExternalForm();
 	    String outputXML =
 		new CentralImpl (serviceEndpoint, "http://biomoby.org/").call (methodName, inputXML);
 	    Map outputMap = new HashMap();
-	    outputMap.put ("output", new DataThing (outputXML));
 
+	    OutputPort myOutput = proc.getOutputPorts()[0];
+	    String outputType = myOutput.getSyntacticType();
+	    // Will be either 'text/xml' or l('text/xml')
+	    if (outputType.equals("'text/xml'")) {
+		outputMap.put ("output", new DataThing (outputXML));
+	    }
+	    else {
+		List outputList = new ArrayList();
+		// Drill into the output xml document creating
+		// a list of strings containing simple types
+		// add them to the outputList
+		
+		
+
+		// Return the list
+		outputMap.put("output", new DataThing(outputList));
+	    }
 	    return outputMap;
 	} catch (Exception ex) {
 	    ex.printStackTrace();
