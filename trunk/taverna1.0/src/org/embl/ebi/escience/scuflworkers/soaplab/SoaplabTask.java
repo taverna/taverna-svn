@@ -25,8 +25,8 @@
 //      Dependencies        :
 //
 //      Last commit info    :   $Author: mereden $
-//                              $Date: 2004-07-10 13:14:06 $
-//                              $Revision: 1.9 $
+//                              $Date: 2005-02-21 17:27:24 $
+//                              $Revision: 1.10 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 
@@ -65,10 +65,10 @@ public class SoaplabTask implements ProcessorTaskWorker {
 
     private static Logger logger = Logger.getLogger(SoaplabTask.class);
     private static final int INVOCATION_TIMEOUT = 0;
-    private Processor proc;
+    private SoaplabProcessor proc;
     
     public SoaplabTask(Processor p) {
-	this.proc = p;
+	this.proc = (SoaplabProcessor)p;
     }
     
     public Map execute(Map inputMap, ProcessorTask parentTask) throws TaskExecutionException {
@@ -103,8 +103,41 @@ public class SoaplabTask implements ProcessorTaskWorker {
 		outputPortNames[i] = boundOutputs[i].getName();
 		System.out.println("Adding output : "+outputPortNames[i]);
 	    }
-	    call.setOperationName(new QName("waitFor"));
-	    call.invoke(new Object[] { jobID });
+	    
+	    if (this.proc.isPollingDefined() == false) {
+		// If we're not polling then use this behaviour
+		call.setOperationName(new QName("waitFor"));
+		call.invoke(new Object[] { jobID });
+	    }
+	    else {
+		// Wait for the polling interval then request a status
+		// and do this until the status is terminal.
+		boolean polling = true;
+		// Number of milliseconds to wait before the first status
+		// request.
+		int pollingInterval = this.proc.getPollingInterval();
+		while (polling) {
+		    try {
+			Thread.sleep(pollingInterval);
+		    }
+		    catch (InterruptedException ie) {
+			// do nothing
+		    }
+		    call.setOperationName(new QName("getStatus"));
+		    String statusString = (String)call.invoke(new Object[] { jobID });
+		    if (statusString == "RUNNING" ||
+			statusString == "CREATED") {
+			pollingInterval = (int)((double)pollingInterval * this.proc.getPollingBackoff());
+			if (pollingInterval > this.proc.getPollingIntervalMax()) {
+			    pollingInterval = this.proc.getPollingIntervalMax();
+			}
+		    }
+		    else {
+			// Either completed with an error or success
+			polling = false;
+		    }		    
+		}
+	    }
 	    
 	    // Get the results required by downstream processors
 	    call.setOperationName(new QName("getSomeResults"));
@@ -149,6 +182,9 @@ public class SoaplabTask implements ProcessorTaskWorker {
 	
 	catch(Exception ex) {
 	    ex.printStackTrace();
+	    if (ex instanceof TaskExecutionException) {
+		throw (TaskExecutionException)ex;
+	    }
 	    logger.error("Error invoking soaplab service for soaplab", ex);
 	    TaskExecutionException tee = new TaskExecutionException("Task failed due to problem invoking soaplab service");
 	    tee.initCause(ex);

@@ -41,6 +41,38 @@ public class SoaplabProcessor extends Processor implements java.io.Serializable 
 
     private URL endpoint = null;
 
+    private int pollingInterval = 0;
+    private double pollingBackoff = 1.0;
+    private int pollingIntervalMax = 0;
+
+    public void setPolling(int interval, double backoff, int maxInterval) {
+	if (maxInterval < interval) {
+	    maxInterval = interval;
+	    backoff = 1.0;
+	}
+	this.pollingInterval = interval;
+	this.pollingBackoff = backoff;
+	this.pollingIntervalMax = maxInterval;
+    }
+
+    public boolean isPollingDefined() {
+	return (pollingInterval != 0 ||
+		pollingBackoff != 1.0 ||
+		pollingIntervalMax != 0);
+    }
+    
+    public int getPollingInterval() {
+	return this.pollingInterval;
+    }
+
+    public double getPollingBackoff() {
+	return this.pollingBackoff;
+    }
+    
+    public int getPollingIntervalMax() {
+	return this.pollingIntervalMax;
+    }
+
     public int getMaximumWorkers() {
 	return 10;
     }

@@ -30,6 +30,12 @@ public class SoaplabXMLHandler implements XMLHandler {
 	SoaplabProcessor slp = (SoaplabProcessor)p;
 	Element spec = new Element("soaplabwsdl",XScufl.XScuflNS);
 	spec.setText(slp.getEndpoint().toString());
+	if (slp.isPollingDefined()) {
+	    // Add attributes for polling...
+	    spec.setAttribute("interval",slp.getPollingInterval()+"");
+	    spec.setAttribute("backoff",slp.getPollingBackoff()+"");
+	    spec.setAttribute("maxinterval",slp.getPollingIntervalMax()+"");
+	}
 	return spec;
     }
 
@@ -57,7 +63,14 @@ public class SoaplabXMLHandler implements XMLHandler {
 	catch (MalformedURLException mue) {
 	    throw new XScuflFormatException("The url specified for the soaplab endpoint for '"+name+"' was invalid : "+mue);
 	}
-	return new SoaplabProcessor(model, name, endpoint);
+	SoaplabProcessor theProcessor =  new SoaplabProcessor(model, name, endpoint);
+	// Set the polling properties if they're defined, or just use the defaults
+	// if not.
+	theProcessor.setPolling(Integer.parseInt(soaplab.getAttributeValue("interval","0")),
+				Double.parseDouble(soaplab.getAttributeValue("backoff","1.0")),
+				Integer.parseInt(soaplab.getAttributeValue("intervalmax","0")));
+	
+	return theProcessor;
     }
 
 }
