@@ -46,11 +46,13 @@ public class FileScavenger extends Scavenger {
 	    if (children.length > 0) {
 		DefaultMutableTreeNode dirNode = new DefaultMutableTreeNode(f.getName());
 		List childDirectoryNodes = new ArrayList();
+		boolean hasContents = false;
 		for (int i = 0; i < children.length; i++) {
 		    DefaultMutableTreeNode child = getNode(children[i]);
 		    if (child != null) {
 			if (child.getUserObject() instanceof ProcessorFactory) {
 			    dirNode.add(child);
+			    hasContents = true;
 			}
 			else {
 			    childDirectoryNodes.add(child);
@@ -60,8 +62,14 @@ public class FileScavenger extends Scavenger {
 		// Added all workflows, now add all subdirectories
 		for (Iterator i = childDirectoryNodes.iterator(); i.hasNext();) {
 		    dirNode.add((DefaultMutableTreeNode)i.next());
+		    hasContents = true;
 		}
-		return dirNode;		    
+		if (hasContents) {
+		    return dirNode;		
+		}
+		else {
+		    return null;
+		}
 	    }
 	    else {
 		// Empty directory, ignore it

@@ -195,6 +195,9 @@ public class XScuflParser {
 	    usePrefix = true;
 	}
 	Element root = document.getRootElement();
+	if (root.getName().equals("scufl")==false) {
+	    throw new XScuflFormatException("Doesn't appear to be a workflow!");
+	}
 
 	if (root.getAttributeValue("log") != null) {
 	    model.setLogLevel(Integer.parseInt(root.getAttributeValue("log")));

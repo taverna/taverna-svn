@@ -61,7 +61,7 @@ public class WorkflowScavenger extends Scavenger {
      */
     public WorkflowScavenger(Document doc, String workflowName) 
 	throws ScavengerCreationException {
-	super(new WorkflowProcessorFactory(doc.getRootElement()));	
+	super(new WorkflowProcessorFactory(doc.getRootElement()));
 	ProcessorFactory rootPF = (ProcessorFactory)getUserObject();
 	rootPF.setName(workflowName);
 	ScuflModel model = new ScuflModel();
@@ -72,7 +72,8 @@ public class WorkflowScavenger extends Scavenger {
 	    rootPF.setDescription(model.getDescription().getText());
 	}
 	catch (Exception ex) {
-	    ex.printStackTrace();
+	    //ex.printStackTrace();
+	    throw new ScavengerCreationException("Cannot create scavenger "+ex);
 	}
 	doChildren(model);
     }
