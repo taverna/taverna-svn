@@ -8,6 +8,7 @@ package org.embl.ebi.escience.scufl.parser;
 import org.embl.ebi.escience.scufl.*;
 
 // Utility Imports
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
@@ -28,7 +29,10 @@ import java.net.MalformedURLException;
 import java.net.URL;
 
 import org.embl.ebi.escience.scufl.parser.XScuflFormatException;
+import java.lang.Exception;
+import java.lang.InterruptedException;
 import java.lang.String;
+import java.lang.Thread;
 
 
 
@@ -191,54 +195,43 @@ public class XScuflParser {
 	// All processors are nodes of form <processor name="foo"> .... </processor>
 	List processors = root.getChildren("processor", namespace);
 	//System.out.println("Found "+processors.size()+" processor nodes.");
+	ExceptionHolder holder = new ExceptionHolder();
+	ArrayList threadList = new ArrayList();
 	for (Iterator i = processors.iterator(); i.hasNext(); ) {
 	    Element processorNode = (Element)i.next();
 	    String name = processorNode.getAttributeValue("name");
 	    if (usePrefix) {
 		name = prefix+"_"+name;
 	    }
-	    boolean foundSpec = false;
-	    
-	    // Handle soaplab
-	    Element soaplab = processorNode.getChild("soaplabwsdl",namespace);
-	    if (soaplab != null) {
-		foundSpec = true;
-		// Get the textual endpoint
-		String endpoint = soaplab.getTextTrim();
-		// Check the URL for validity
-		try {
-		    URL endpointURL = new URL(endpoint);
-		}
-		catch (MalformedURLException mue) {
-		    throw new XScuflFormatException("The url specified for the soaplab endpoint for '"+name+"' was invalid : "+mue);
-		}
-		model.addProcessor(new SoaplabProcessor(model, name, endpoint));
-	    }
-
-	    // Handle arbitrarywsdl
-	    Element wsdlProcessor = processorNode.getChild("arbitrarywsdl",namespace);
-	    if (wsdlProcessor != null && !foundSpec) {
-		foundSpec = true;
-	        String wsdlLocation = wsdlProcessor.getChild("wsdl",namespace).getTextTrim();
-		String portTypeName = wsdlProcessor.getChild("porttype",namespace).getTextTrim();
-		String operationName = wsdlProcessor.getChild("operation",namespace).getTextTrim();
-		//throw new XScuflFormatException(wsdlLocation+","+portTypeName+","+operationName);
-		model.addProcessor(new WSDLBasedProcessor(model, name, wsdlLocation, portTypeName, operationName));
-	    }
-
-	    // Handle talisman
-	    Element talismanProcessor = processorNode.getChild("talisman",namespace);
-	    if (talismanProcessor != null && !foundSpec) {
-		foundSpec = true;
-		String tscriptURL = talismanProcessor.getChild("tscript",namespace).getTextTrim();
-		model.addProcessor(new TalismanProcessor(model, name, tscriptURL));
-	    }
-	    
-	    // If no specifier has been found then throw an exception
-	    if (!foundSpec) {
-		throw new XScuflFormatException("Couldn't find a known specification mechanism for processor node '"+name+"'");
-	    }
+	    threadList.add(new ProcessorLoaderThread(model, processorNode, name, namespace, holder));
 	    // End iterator over processors
+	}
+	// Wait on all the threads in the threadList
+	for (Iterator i = threadList.iterator(); i.hasNext(); ) {
+	    Thread t = (Thread)i.next();
+	    try {
+		t.join();
+	    }
+	    catch (InterruptedException ie) {
+		//
+	    }
+	}
+	// Hack hack hack, since the threads themselves can't throw exceptions, they
+	// catch any of the following three exception types and put them into the
+	// exception holder. When all the threads have exited we check the holder and
+	// throw back any of the exceptions it contains in the main thread. Seems to
+	// work okay and is a big optimisation at load time.
+	if (holder.theException != null) {
+	    if (holder.theException instanceof ProcessorCreationException) {
+		throw (ProcessorCreationException)(holder.theException);
+	    } 
+	    else if (holder.theException instanceof XScuflFormatException) {
+		throw (XScuflFormatException)(holder.theException);
+	    }
+	    else if (holder.theException instanceof DuplicateProcessorNameException) {
+		throw (DuplicateProcessorNameException)(holder.theException);
+	    }
+	    
 	}
 
 	// Iterate over the external declarations and create appropriate input and output 
@@ -356,4 +349,82 @@ public class XScuflParser {
 	
     }
 
+}
+/**
+ * A thread subclass to load a processor without blocking everything
+ */
+class ProcessorLoaderThread extends Thread {
+    private ScuflModel model;
+    private Element processorNode;
+    private String name;
+    private Namespace namespace;
+    private ExceptionHolder holder;
+    protected ProcessorLoaderThread(ScuflModel model, Element processorNode, String name, Namespace namespace, ExceptionHolder holder) {
+	this.model = model;
+	this.namespace = namespace;
+	this.processorNode = processorNode;
+	this.name = name;
+	this.holder = holder;
+	this.start();
+    }
+    public void run() {
+	try {
+	    boolean foundSpec = false;
+	    // Handle soaplab
+	    Element soaplab = processorNode.getChild("soaplabwsdl",namespace);
+	    if (soaplab != null) {
+		foundSpec = true;
+		// Get the textual endpoint
+		String endpoint = soaplab.getTextTrim();
+		// Check the URL for validity
+		try {
+		    URL endpointURL = new URL(endpoint);
+		}
+		catch (MalformedURLException mue) {
+		    throw new XScuflFormatException("The url specified for the soaplab endpoint for '"+name+"' was invalid : "+mue);
+		}
+		model.addProcessor(new SoaplabProcessor(model, name, endpoint));
+	    }
+	    
+	    // Handle arbitrarywsdl
+	    Element wsdlProcessor = processorNode.getChild("arbitrarywsdl",namespace);
+	    if (wsdlProcessor != null && !foundSpec) {
+		foundSpec = true;
+		String wsdlLocation = wsdlProcessor.getChild("wsdl",namespace).getTextTrim();
+		String portTypeName = wsdlProcessor.getChild("porttype",namespace).getTextTrim();
+		String operationName = wsdlProcessor.getChild("operation",namespace).getTextTrim();
+		model.addProcessor(new WSDLBasedProcessor(model, name, wsdlLocation, portTypeName, operationName));
+	    }
+	    
+	    // Handle talisman
+	    Element talismanProcessor = processorNode.getChild("talisman",namespace);
+	    if (talismanProcessor != null && !foundSpec) {
+		foundSpec = true;
+		String tscriptURL = talismanProcessor.getChild("tscript",namespace).getTextTrim();
+		model.addProcessor(new TalismanProcessor(model, name, tscriptURL));
+	    }
+	    
+	    // If no specifier has been found then throw an exception
+	    if (!foundSpec) {
+		throw new XScuflFormatException("Couldn't find a known specification mechanism for processor node '"+name+"'");
+	    }
+	}
+	catch (XScuflFormatException xfe) {
+	    holder.theException = xfe;
+	}
+	catch (ProcessorCreationException pce) {	   
+	    holder.theException = pce;
+	}
+	catch (DuplicateProcessorNameException dpne) {	    
+	    holder.theException = dpne;
+	}
+    }
+    
+}
+/**
+ * Used to carry an exception between the worker threads loading the processors
+ * and the main thread that actually cares
+ */
+class ExceptionHolder {
+    public Exception theException = null;
 }

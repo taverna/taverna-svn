@@ -10,14 +10,15 @@ import java.awt.event.ActionListener;
 import javax.swing.ImageIcon;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
+import org.embl.ebi.escience.scufl.DataConstraint;
 import org.embl.ebi.escience.scufl.Port;
 import org.embl.ebi.escience.scufl.Processor;
+import org.embl.ebi.escience.scufl.ScuflModel;
 
 import org.embl.ebi.escience.scuflui.NoContextMenuFoundException;
 import java.lang.Class;
 import java.lang.ClassNotFoundException;
 import java.lang.Object;
-import java.lang.System;
 
 
 
@@ -49,8 +50,11 @@ public class ScuflContextMenuFactory {
      * Creates a JPopupMenu appropriate to the object supplied. If it
      * doesn't understand the object it's been given it will throw a 
      * NoContextMenuFoundException back at you.
+     * This method need a handle on the model it's working with so it
+     * can return sensible things if the object is a string appropriate
+     * to some node in the tree, i.e. 'Processors'
      */
-    public static JPopupMenu getMenuForObject(Object theObject) 
+    public static JPopupMenu getMenuForObject(Object theObject, ScuflModel model) 
 	throws NoContextMenuFoundException {
 	if (theObject == null) {
 	    throw new NoContextMenuFoundException("Supplied user object was null, giving up.");
@@ -73,25 +77,50 @@ public class ScuflContextMenuFactory {
 	     }
 	    */
 	}
+	else if (theObject instanceof DataConstraint) {
+	    return getDataConstraintMenu((DataConstraint)theObject, model);
+	}
 	
 	throw new NoContextMenuFoundException("Didn't know how to create a context menu for a "+theObject.getClass().toString());
+    }
+
+    private static JPopupMenu getDataConstraintMenu(DataConstraint dc, ScuflModel model) {
+	final DataConstraint theConstraint = dc;
+	final ScuflModel theModel = model;
+	JPopupMenu theMenu = new JPopupMenu();
+	JMenuItem title = new JMenuItem("Link : "+theConstraint.getName());
+	title.setEnabled(false);
+	theMenu.add(title);
+	JMenuItem delete = new JMenuItem("Remove from model", deleteIcon);
+	delete.addActionListener(new ActionListener() {
+		public void actionPerformed(ActionEvent a) {
+		    theModel.destroyDataConstraint(theConstraint);
+		}
+	    });
+	theMenu.add(delete);
+	return theMenu;
     }
 
     private static JPopupMenu getProcessorMenu(Processor processor) {
 	final Processor theProcessor = processor;
 	JPopupMenu theMenu = new JPopupMenu();
-	JMenuItem title = new JMenuItem(theProcessor.getName());
+	JMenuItem title = new JMenuItem("Processor : "+theProcessor.getName());
 	title.setEnabled(false);
 	theMenu.add(title);
 	JMenuItem delete = new JMenuItem("Remove from model",deleteIcon);
 	delete.addActionListener(new ActionListener() {
 		public void actionPerformed(ActionEvent a) {
-		    System.out.println("Deleting a node...");
 		    theProcessor.getModel().destroyProcessor(theProcessor);
 		}
 	    });
-	
 	theMenu.add(delete);
+	JMenuItem properties = new JMenuItem("Properties ...");
+	properties.addActionListener(new ActionListener() {
+		public void actionPerformed(ActionEvent a) {
+		    //
+		}
+	    });
+	theMenu.add(properties);
 	return theMenu;
     }
     

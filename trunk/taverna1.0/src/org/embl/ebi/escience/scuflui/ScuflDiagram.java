@@ -5,6 +5,7 @@
  */
 package org.embl.ebi.escience.scuflui;
 
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -13,7 +14,7 @@ import java.awt.image.BufferedImage;
 import javax.imageio.ImageIO;
 import javax.imageio.ImageReader;
 import javax.imageio.stream.ImageInputStream;
-import javax.swing.JPanel;
+import javax.swing.JComponent;
 import org.embl.ebi.escience.scufl.ScuflModel;
 import org.embl.ebi.escience.scufl.ScuflModelEvent;
 import org.embl.ebi.escience.scufl.ScuflModelEventListener;
@@ -29,8 +30,8 @@ import java.io.OutputStream;
 import java.lang.Exception;
 import java.lang.Process;
 import java.lang.Runtime;
+import java.lang.RuntimeException;
 import java.lang.String;
-import java.lang.System;
 
 
 
@@ -38,8 +39,9 @@ import java.lang.System;
  * A view on a ScuflModel that uses a native installation
  * of the dot tool to generate a bitmap graphical representation
  * on the fly, responding to model events appropriately
+ * @author Tom Oinn
  */
-public class ScuflDiagram extends JPanel 
+public class ScuflDiagram extends JComponent 
     implements ScuflModelEventListener {
     
     private ScuflModel model;
@@ -48,6 +50,7 @@ public class ScuflDiagram extends JPanel
     
     public ScuflDiagram() {
 	super();
+	setBackground(Color.white);
 	setOpaque(false);
     }
 
@@ -62,7 +65,7 @@ public class ScuflDiagram extends JPanel
 	return this.getMinimumSize();
     }
 
-    public Dimension getPreferedSize() {
+    public Dimension getPreferredSize() {
 	return this.getMinimumSize();
     }
 
@@ -82,6 +85,7 @@ public class ScuflDiagram extends JPanel
     public void bindToModel(ScuflModel model) {
 	if (this.model == null) {
 	    this.dot = new DotView(model);
+	    this.dot.setPortDisplay(DotView.BOUND);
 	    model.addListener(this);
 	    updateGraphic();
 	}
@@ -114,7 +118,7 @@ public class ScuflDiagram extends JPanel
 	    repaint();
 	}
 	catch (Exception e) {
-	    System.out.println("Exception! "+e.getMessage());
+	    throw new RuntimeException(e);
 	}
     }
 

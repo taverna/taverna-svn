@@ -37,7 +37,7 @@ public class ScuflModelExplorer extends JTree implements ScuflModelEventListener
     private DefaultMutableTreeNode root = null;
 
     // The ScuflModel that this is a view / controller over
-    private ScuflModel model = null;
+    ScuflModel model = null;
 
     // The tree model that contains the root element
     private DefaultTreeModel theTreeModel = null;
@@ -130,8 +130,8 @@ public class ScuflModelExplorer extends JTree implements ScuflModelEventListener
 	regenerateTreeModel();
 	// Send an event to the tree model that we've changed the
 	// structure of the nodes
-	theTreeModel.nodeStructureChanged(this.root);
-	setDefaultExpansionState();
+	//	theTreeModel.nodeStructureChanged(this.root);
+	//setDefaultExpansionState();
     }
     
     // 0 = idle, 1 = updating, 2 = updating but needs to again
@@ -143,68 +143,71 @@ public class ScuflModelExplorer extends JTree implements ScuflModelEventListener
     private void regenerateTreeModel() {
 	if (this.model != null) {
 	    if (this.regenerationStatus == 0) {
-		// Set flag to say we're working, clearing
-		// any indications that processing is required.
-		this.regenerationStatus = 1;
-		while (this.regenerationStatus != 0) {
-
-
-		    // Remove all existing children of the root node.
-		    this.root.removeAllChildren();
-		    // Set the root node to saying that there is a model.
-		    this.root.setUserObject("Scufl Model");
-
-		    // Create a new node for workflow inputs
-		    DefaultMutableTreeNode inputs = new DefaultMutableTreeNode("Workflow inputs");
-		    this.root.add(inputs);
-		    Port[] inputPorts = model.getWorkflowSourcePorts();
-		    for (int i = 0; i < inputPorts.length; i++) {
-			DefaultMutableTreeNode inode = new DefaultMutableTreeNode(inputPorts[i]);
-			inputs.add(inode);
-		    }
-		     // Create a new node for workflow outputs
-		    DefaultMutableTreeNode outputs = new DefaultMutableTreeNode("Workflow outputs");
-		    this.root.add(outputs);
-		    Port[] outputPorts = model.getWorkflowSinkPorts();
-		    for (int i = 0; i < outputPorts.length; i++) {
-			DefaultMutableTreeNode onode = new DefaultMutableTreeNode(outputPorts[i]);
-			outputs.add(onode);
-		    }
-
-		    // Create a new node for processors.
-		    DefaultMutableTreeNode processors = new DefaultMutableTreeNode("Processors");
-		    this.root.add(processors);
-		    // Populate from the processor list
-		    Processor[] p = model.getProcessors();
-		    for (int i = 0; i<p.length; i++) {
-			DefaultMutableTreeNode pnode = new DefaultMutableTreeNode(p[i]);
-			processors.add(pnode);
-			// For each processor, add the port list
-			Port[] ports = p[i].getPorts();
-			for (int j = 0; j<ports.length; j++) {
-			    DefaultMutableTreeNode portnode = new DefaultMutableTreeNode(ports[j]);
-			    pnode.add(portnode);
+		synchronized(this) {
+		    this.regenerationStatus = 1;
+		    while (this.regenerationStatus != 0) {
+			// Set flag to say we're working, clearing
+			// any indications that processing is required.
+			this.regenerationStatus = 1;
+			
+			// Remove all existing children of the root node.
+			this.root.removeAllChildren();
+			// Set the root node to saying that there is a model.
+			this.root.setUserObject("Scufl Model");
+			
+			// Create a new node for workflow inputs
+			DefaultMutableTreeNode inputs = new DefaultMutableTreeNode("Workflow inputs");
+			this.root.add(inputs);
+			Port[] inputPorts = model.getWorkflowSourcePorts();
+			for (int i = 0; i < inputPorts.length; i++) {
+			    DefaultMutableTreeNode inode = new DefaultMutableTreeNode(inputPorts[i]);
+			    inputs.add(inode);
 			}
+			// Create a new node for workflow outputs
+			DefaultMutableTreeNode outputs = new DefaultMutableTreeNode("Workflow outputs");
+			this.root.add(outputs);
+			Port[] outputPorts = model.getWorkflowSinkPorts();
+			for (int i = 0; i < outputPorts.length; i++) {
+			    DefaultMutableTreeNode onode = new DefaultMutableTreeNode(outputPorts[i]);
+			    outputs.add(onode);
+			}
+			
+			// Create a new node for processors.
+			DefaultMutableTreeNode processors = new DefaultMutableTreeNode("Processors");
+			this.root.add(processors);
+			// Populate from the processor list
+			Processor[] p = model.getProcessors();
+			for (int i = 0; i<p.length; i++) {
+			    DefaultMutableTreeNode pnode = new DefaultMutableTreeNode(p[i]);
+			    processors.add(pnode);
+			    // For each processor, add the port list
+			    Port[] ports = p[i].getPorts();
+			    for (int j = 0; j<ports.length; j++) {
+				DefaultMutableTreeNode portnode = new DefaultMutableTreeNode(ports[j]);
+				pnode.add(portnode);
+			    }
+			}	
+			
+			// Create a new node for data links
+			DefaultMutableTreeNode datalinks = new DefaultMutableTreeNode("Data links");
+			this.root.add(datalinks);
+			// Populate from the list of data links
+			DataConstraint[] dc = model.getDataConstraints();
+			for (int i = 0; i<dc.length; i++) {
+			    DefaultMutableTreeNode dcnode = new DefaultMutableTreeNode(dc[i]);
+			    datalinks.add(dcnode);
+			}
+			// If the status has been set to '2' while we were running
+			// then go around again. If it's still '1' we can exit safely
+			// as nothing else wants to update the state. Cheap way of doing
+			// update controls :)
+			if (this.regenerationStatus == 1) {
+			    this.regenerationStatus = 0;
+			}
+			
 		    }	
-	    
-		    // Create a new node for data links
-		    DefaultMutableTreeNode datalinks = new DefaultMutableTreeNode("Data links");
-		    this.root.add(datalinks);
-		    // Populate from the list of data links
-		    DataConstraint[] dc = model.getDataConstraints();
-		    for (int i = 0; i<dc.length; i++) {
-			DefaultMutableTreeNode dcnode = new DefaultMutableTreeNode(dc[i]);
-			datalinks.add(dcnode);
-		    }
-
-
-		    // If the status has been set to '2' while we were running
-		    // then go around again. If it's still '1' we can exit safely
-		    // as nothing else wants to update the state. Cheap way of doing
-		    // update controls :)
-		    if (this.regenerationStatus == 1) {
-			this.regenerationStatus = 0;
-		    }
+		    theTreeModel.nodeStructureChanged(this.root);
+		    setDefaultExpansionState();
 		}
 		return;
 	    }
@@ -212,10 +215,8 @@ public class ScuflModelExplorer extends JTree implements ScuflModelEventListener
 		// flag that the regeneration process should be called again.
 		this.regenerationStatus = 2;
 	    }
-	    
 	}
     }
-    
 }
 /**
  * A cell renderer that paints the appropriate icons depending on the
@@ -339,7 +340,7 @@ class ScuflModelExplorerPopupHandler extends MouseAdapter {
 	Object scuflObject = node.getUserObject();
 	if (scuflObject != null) {
 	    try {
-		JPopupMenu theMenu = ScuflContextMenuFactory.getMenuForObject(scuflObject);
+		JPopupMenu theMenu = ScuflContextMenuFactory.getMenuForObject(scuflObject, explorer.model);
 		theMenu.show(explorer, e.getX(), e.getY());
 	    }
 	    catch (NoContextMenuFoundException ncmfe) {

@@ -24,6 +24,7 @@ import java.lang.System;
 /**
  * Demos the interaction between the views, model and controllers
  * defined within this package.
+ * @author Tom Oinn
  */
 public class ComponentDemo {
 

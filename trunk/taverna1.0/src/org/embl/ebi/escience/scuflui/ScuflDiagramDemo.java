@@ -5,6 +5,7 @@
  */
 package org.embl.ebi.escience.scuflui;
 
+import java.awt.Color;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import javax.swing.JFrame;
@@ -22,6 +23,10 @@ import java.lang.System;
 
 
 
+/**
+ * Demonstrates the functionality of the ScuflDiagram class
+ * @author Tom Oinn
+ */
 public class ScuflDiagramDemo extends JFrame {
 
     ScuflModel model = new ScuflModel();
@@ -31,6 +36,8 @@ public class ScuflDiagramDemo extends JFrame {
     public ScuflDiagramDemo() {
 	super("Scufl Diagram Demo Application");
 	JScrollPane view = new JScrollPane(diagram);
+	view.setBackground(Color.white);
+	setBackground(Color.white);
 	getContentPane().add(view);
     }
     

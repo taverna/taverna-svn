@@ -21,6 +21,7 @@ import org.embl.ebi.escience.scufl.ScuflModelEventListener;
 import org.embl.ebi.escience.scufl.UnknownPortException;
 import org.embl.ebi.escience.scufl.UnknownProcessorException;
 import java.lang.String;
+import java.lang.Thread;
 
 
 
@@ -33,7 +34,7 @@ public class ScuflModel implements java.io.Serializable {
     /**
      * The active model listeners for this model
      */
-    private ArrayList listeners = new ArrayList();
+    ArrayList listeners = new ArrayList();
     
     /**
      * An internal processor implementation to hold the overall
@@ -160,8 +161,10 @@ public class ScuflModel implements java.io.Serializable {
      * Add a processor to the model
      */
     public void addProcessor(Processor the_processor) {
-	this.processors.add(the_processor);
-	fireModelEvent(new ScuflModelEvent(this, "Added processor '"+the_processor.getName()+"' to the model"));
+	synchronized(this.processors) {
+	    this.processors.add(the_processor);
+	    fireModelEvent(new ScuflModelEvent(this, "Added processor '"+the_processor.getName()+"' to the model"));
+	}
     }
 
     /**
@@ -322,13 +325,29 @@ public class ScuflModel implements java.io.Serializable {
      * Handle a ScuflModelEvent from one of our children
      */
     void fireModelEvent(ScuflModelEvent event) {
-	// Should notify any listeners at this point
-	for (Iterator i = this.listeners.iterator(); i.hasNext();) {
+	new NotifyThread(event, this);
+    }
+
+}
+/**
+ * A thread subclass to notify listeners of an event
+ */
+class NotifyThread extends Thread {
+    private ScuflModelEvent event;
+    private ArrayList listeners;
+    protected NotifyThread(ScuflModelEvent event, ScuflModel model) {
+	super();
+	this.event = event;
+	this.listeners = model.listeners;
+	this.start();
+    }
+    public void run() {
+	for (Iterator i = listeners.iterator(); i.hasNext();) {
 	    ScuflModelEventListener l = (ScuflModelEventListener)i.next();
+	    //System.out.println("Firing event to "+l.toString());
 	    l.receiveModelEvent(event);
 	}
     }
-
 }
 /**
  * A Processor subclass to hold ports for the overal workflow inputs. These
