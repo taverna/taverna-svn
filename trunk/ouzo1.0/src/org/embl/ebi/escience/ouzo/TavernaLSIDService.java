@@ -130,11 +130,11 @@ public class TavernaLSIDService extends SimpleResolutionService {
 					String[] acceptedFormats)
 	throws LSIDServerException {
 	StringBuffer result= new StringBuffer();
-	result.append("<?xml version=\"1.0\"?><rdf:RDF");
+	result.append("<?xml version=\"1.0\"?>\n<rdf:RDF");
 	result.append(" xmlns:rdf=\""+RDF_NS+"\"");
 	result.append(" xmlns:dc=\""+DC_NS+"\"");
 	result.append(" xmlns:i3cp=\""+I3CP_NS+"\"");
-	result.append(">");
+	result.append(">\n");
 
 	// If the namespace is 'datathing' then set metadata appropriately
 	if (request.getLsid().getNamespace().equals("datathing")) {

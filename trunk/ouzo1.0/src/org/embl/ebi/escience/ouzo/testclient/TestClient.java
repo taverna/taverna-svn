@@ -35,21 +35,15 @@ public class TestClient implements WSDLConstants {
 	String lsidString = args[0];
 	LSID lsid = new LSID(lsidString);
 	LSIDResolver resolver = new LSIDResolver(lsid);
-	System.out.println("Found a resolver for "+lsid.toString());
+	System.out.println("Resolving "+lsid.getLsid());
 	LSIDWSDLWrapper wrapper = resolver.getWSDLWrapper();
 	LSIDDataPort dataport = wrapper.getDataPortForProtocol(SOAP);
 	if (dataport == null) {
 	    System.out.println("No data available");
 	}
-	else {
+       	else {
 	    if (lsid.getNamespace().equals("datathing")) {
-		SAXBuilder sb = new SAXBuilder();
-		Document result = sb.build(resolver.getData(dataport));
-		XMLOutputter xo = new XMLOutputter();
-		xo.setNewlines(true);
-		xo.setIndent("  ");
-		System.out.println("Result is in XML format : ");
-		System.out.println(xo.outputString(result));
+		printInputStreamAsXML(resolver.getData(dataport));
 	    }
 	    else if (lsid.getNamespace().equals("raw")) {
 		InputStream is = resolver.getData(dataport);
@@ -61,6 +55,24 @@ public class TestClient implements WSDLConstants {
 		}
 	    }
 	}
+	System.out.println("Fetching metadata...");
+	LSIDMetadataPort metadataport = wrapper.getMetadataPortForProtocol(SOAP);
+        if (metadataport == null) {
+	    System.out.println("No metadata available");
+	}
+	else {
+	    MetadataResponse resp = resolver.getMetadata(metadataport);
+	    printInputStreamAsXML(resp.getMetadata());
+	}
+	
+    }
+    private static void printInputStreamAsXML(InputStream is) throws Exception {
+	SAXBuilder sb = new SAXBuilder();
+	Document result = sb.build(is);
+	XMLOutputter xo = new XMLOutputter();
+	xo.setNewlines(true);
+	xo.setIndent("  ");
+	System.out.println(xo.outputString(result));
     }
 
 }
