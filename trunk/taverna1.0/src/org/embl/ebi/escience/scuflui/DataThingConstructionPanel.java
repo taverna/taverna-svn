@@ -89,7 +89,7 @@ import org.jdom.output.XMLOutputter;
  * COMMENT DataThingConstructionPanel
  * 
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover </a>
- * @version $Revision: 1.14 $
+ * @version $Revision: 1.15 $
  */
 public class DataThingConstructionPanel extends JPanel implements ScuflUIComponent, ScuflModelEventListener
 {
@@ -1064,10 +1064,21 @@ public class DataThingConstructionPanel extends JPanel implements ScuflUICompone
 					}
 					else if(node instanceof InputListNode)
 					{
+						InputListNode listNode = (InputListNode)node;
 						loadInputsButton.setEnabled(true);
-						newInputButton.setEnabled(canAddInputs((InputListNode)node));
-						newListButton.setEnabled(canAddLists((InputListNode)node));
+						newInputButton.setEnabled(canAddInputs(listNode));
 						removeButton.setEnabled(true);
+
+						InputListNode parent = (InputListNode)listNode.getParent();
+						if(canAddLists(listNode) && parent != null)
+						{
+							InputListNode firstList = (InputListNode)parent.getFirstChild();
+							newListButton.setEnabled(canAddLists(firstList));
+						}
+						else
+						{
+							newListButton.setEnabled(false);
+						}
 					}
 					else if(node instanceof InputDataThingNode)
 					{
