@@ -11,7 +11,11 @@ import org.embl.ebi.escience.scufl.ScuflModel;
 /**
  * The interface implemented by all Scufl UI widgets 
  * specifying how they bind and detach from an instance
- * of a ScuflModel.
+ * of a ScuflModel. Any class implementing this interface
+ * must be a subclass of JComponent; unfortunately there's
+ * no way that I know of to enforce this constraint in the
+ * language, but if you don't stick to it your components
+ * won't work.
  * @author Tom Oinn
  */
 public interface ScuflUIComponent {
@@ -31,5 +35,11 @@ public interface ScuflUIComponent {
      * desist from listening to model events.
      */
     public void detachFromModel();
+
+    /**
+     * Get the preferred name of this component, for titles
+     * in windows etc.
+     */
+    public String getName();
 
 }

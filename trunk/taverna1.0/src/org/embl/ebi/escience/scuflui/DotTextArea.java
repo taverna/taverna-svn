@@ -9,22 +9,22 @@ import javax.swing.JTextArea;
 import org.embl.ebi.escience.scufl.ScuflModel;
 import org.embl.ebi.escience.scufl.ScuflModelEvent;
 import org.embl.ebi.escience.scufl.ScuflModelEventListener;
-import org.embl.ebi.escience.scufl.view.XScuflView;
+import org.embl.ebi.escience.scufl.view.DotView;
 
 import org.embl.ebi.escience.scuflui.ScuflUIComponent;
 /**
- * A swing component that provides a textual view of the
- * xscufl corresponding to a given ScuflModel instance
+ * A swing component that provides a textual dot representation
+ * corresponding to a given ScuflModel instance
  * @author Tom Oinn
  */
-public class XScuflTextArea extends JTextArea
+public class DotTextArea extends JTextArea
     implements ScuflModelEventListener,
 	       ScuflUIComponent {
     
-    private XScuflView xscufl = null;
+    private DotView dot = null;
     private ScuflModel model = null;
 
-    public XScuflTextArea() {
+    public DotTextArea() {
 	super();
 	setLineWrap(true);
 	setWrapStyleWord(true);
@@ -33,7 +33,7 @@ public class XScuflTextArea extends JTextArea
 
     public void attachToModel(ScuflModel model) {
 	if (this.model == null) {
-	    this.xscufl = new XScuflView(model);
+	    this.dot = new DotView(model);
 	    model.addListener(this);
 	    updateText();
 	}
@@ -42,16 +42,16 @@ public class XScuflTextArea extends JTextArea
     public void detachFromModel() {
 	if (this.model != null) {
 	    model.removeListener(this);
-	    model.removeListener(xscufl);
+	    model.removeListener(dot);
 	    this.model = null;
-	    this.xscufl = null;
+	    this.dot = null;
 	    updateText();
 	}
     }
 
     private void updateText() {
-	if (this.xscufl != null) {
-	    setText(xscufl.getXMLText());
+	if (this.dot != null) {
+	    setText(dot.getDot());
 	}
 	else {
 	    setText(null);
@@ -82,7 +82,7 @@ public class XScuflTextArea extends JTextArea
      * A name for this component
      */
     public String getName() {
-	return "XScufl";
+	return "Dot";
     }
 
 

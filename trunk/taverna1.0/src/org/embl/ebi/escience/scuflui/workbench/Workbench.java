@@ -21,6 +21,8 @@ import org.embl.ebi.escience.scuflui.*;
 import java.lang.Exception;
 import java.lang.String;
 import java.lang.System;
+import java.io.*;
+import org.embl.ebi.escience.scufl.view.*;
 
 
 
@@ -31,6 +33,21 @@ import java.lang.System;
  */
 public class Workbench extends JFrame {
     
+    static ImageIcon openIcon, deleteIcon, importIcon, saveIcon;
+
+    static {
+	try {
+	    Class c = Class.forName("org.embl.ebi.escience.scuflui.workbench.Workbench");
+	    openIcon = new ImageIcon(c.getResource("open.gif"));
+	    deleteIcon = new ImageIcon(c.getResource("delete.gif"));
+	    saveIcon = new ImageIcon(c.getResource("save.gif"));
+	    importIcon = new ImageIcon(c.getResource("import.gif"));
+	}
+	catch (ClassNotFoundException cnfe) {
+	    //
+	}
+    }
+
     JDesktopPane desktop;
 
     ScuflModel model;
@@ -44,19 +61,34 @@ public class Workbench extends JFrame {
     public static void main(String[] args) {
 	Workbench workbench = new Workbench();
 	// Add instances of all the components just for fun
-	GenericUIComponentFrame xscufl = new GenericUIComponentFrame(workbench.model, new XScuflTextArea());
+	GenericUIComponentFrame xscufl = new GenericUIComponentFrame(workbench.model, 
+								     new XScuflTextArea());
 	xscufl.setSize(600,300);
 	xscufl.setLocation(50,50);
 	workbench.desktop.add(xscufl);
-	GenericUIComponentFrame diagram = new GenericUIComponentFrame(workbench.model, new ScuflDiagram());
-	diagram.setSize(300,300);
+	GenericUIComponentFrame diagram = new GenericUIComponentFrame(workbench.model, 
+								      new ScuflDiagram());
+	diagram.setSize(600,600);
 	diagram.setLocation(50,400);
 	workbench.desktop.add(diagram);
-	GenericUIComponentFrame explorer = new GenericUIComponentFrame(workbench.model, new ScuflModelExplorer());
+	GenericUIComponentFrame explorer = new GenericUIComponentFrame(workbench.model, 
+								       new ScuflModelExplorer());
 	explorer.setSize(300,300);
-	explorer.setLocation(400,400);
+	explorer.setLocation(700,50);
 	workbench.desktop.add(explorer);
 
+	try {
+	    ScavengerTree s = new ScavengerTree();
+	    s.addScavenger(new SoaplabScavenger("http://industry.ebi.ac.uk/soap/soaplab/"));
+	    GenericUIComponentFrame scavenger = new GenericUIComponentFrame(workbench.model,
+									    s);
+	    scavenger.setSize(300,600);
+	    scavenger.setLocation(700,400);
+	    workbench.desktop.add(scavenger);
+	}
+	catch (ScavengerCreationException sce) {
+	    throw new RuntimeException(sce.getMessage());
+	}
 	workbench.setVisible(true);
     }
 
@@ -98,7 +130,7 @@ public class Workbench extends JFrame {
 
 	// Menu to handle opening XScufl files, clearing the model and saving
 	JMenu fileMenu = new JMenu("File");
-	JMenuItem openScufl = new JMenuItem("Import XScufl Definition");
+	JMenuItem openScufl = new JMenuItem("Import XScufl Definition", importIcon);
 	openScufl.addActionListener(new ActionListener() {
 		public void actionPerformed(ActionEvent e) {
 		    // Load an XScufl definition here
@@ -115,7 +147,29 @@ public class Workbench extends JFrame {
 		}
 	    });
 	fileMenu.add(openScufl);
-	JMenuItem clearModel = new JMenuItem("Reset model data");
+	JMenuItem saveScufl = new JMenuItem("Save as XScufl", saveIcon);
+	saveScufl.addActionListener(new ActionListener() {
+		public void actionPerformed(ActionEvent e) {
+		    // Save to XScufl
+		    try {
+			int returnVal = fc.showSaveDialog(Workbench.this);
+			if (returnVal == JFileChooser.APPROVE_OPTION) {
+			    File file = fc.getSelectedFile();
+			    XScuflView xsv = new XScuflView(Workbench.this.model);
+			    PrintWriter out = new PrintWriter(new FileWriter(file));
+			    out.println(xsv.getXMLText());
+			    Workbench.this.model.removeListener(xsv);
+			    out.flush();
+			    out.close();
+			}
+		    }
+		    catch (Exception ex) {
+			throw new RuntimeException(ex.getMessage());
+		    }
+		}
+	    });
+	fileMenu.add(saveScufl);
+	JMenuItem clearModel = new JMenuItem("Reset model data", deleteIcon);
 	clearModel.addActionListener(new ActionListener() {
 		public void actionPerformed(ActionEvent e) {
 		    Workbench.this.model.clear();
@@ -152,7 +206,17 @@ public class Workbench extends JFrame {
 		}
 	    });
 	windowMenu.add(xscuflView);
+	JMenuItem dotView = new JMenuItem("Dot View");
+	xscuflView.addActionListener(new ActionListener() {
+		public void actionPerformed(ActionEvent e) {
+		    // Show a Dot panel
+		    Workbench.this.desktop.add(new GenericUIComponentFrame(Workbench.this.model,
+									   new DotTextArea()));
+		}
+	    });
+	windowMenu.add(dotView);
 	
+
 	menuBar.add(fileMenu);
 	menuBar.add(windowMenu);
 	return menuBar;

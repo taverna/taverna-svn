@@ -28,7 +28,7 @@ public class GenericUIComponentFrame extends JInternalFrame {
     ScuflUIComponent component;
    
     public GenericUIComponentFrame(ScuflModel model, ScuflUIComponent component) {
-	super("XScufl", true, true, true, true);
+	super(component.getName(), true, true, true, true);
 	this.component = component;
 	JScrollPane pane = new JScrollPane((JComponent)component);
 	getContentPane().add(pane);
@@ -41,6 +41,7 @@ public class GenericUIComponentFrame extends JInternalFrame {
 		}
 	    });
 	pack();
+	setSize(400,400);
 	setVisible(true);
     }
     

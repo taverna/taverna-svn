@@ -143,4 +143,11 @@ public class ScuflDiagram extends JComponent
 	}
     }
 
+    /**
+     * A name for this component
+     */
+    public String getName() {
+	return "Scufl Diagram";
+    }
+
 }

@@ -223,4 +223,11 @@ public class ScuflModelExplorer extends JTree
 	    }
 	}
     }
+
+    /**
+     * Return a preferred name for windows containing this component
+     */
+    public String getName() {
+	return "Scufl Model Explorer";
+    }
 }

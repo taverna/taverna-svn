@@ -55,11 +55,13 @@ public abstract class Processor implements java.io.Serializable {
     }
     
     /**
-     * Construct the processor with the given name and parent
+     * Construct the processor with the given name and parent, replacing
+     * any occurences of ':' in the name with '.' to avoid general confusion
      */
     public Processor(ScuflModel model, String name) 
 	throws ProcessorCreationException,
 	       DuplicateProcessorNameException {
+	name = name.replace(':','_');
 	// Check for nulls
 	if (model == null) {
 	    throw new ProcessorCreationException("Cannot create a processor with the model as null");
