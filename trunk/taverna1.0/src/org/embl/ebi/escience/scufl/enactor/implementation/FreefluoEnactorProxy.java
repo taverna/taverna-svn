@@ -44,8 +44,8 @@ import java.net.URL;
 public class FreefluoEnactorProxy implements EnactorProxy {
 
     public WorkflowInstance compileWorkflow(ScuflModel workflow, Map input) 
-	        throws WorkflowSubmissionException {
-	WorkflowInstance workflowInstance = compileWorkflow(workflow);
+	          throws WorkflowSubmissionException {
+	      WorkflowInstance workflowInstance = compileWorkflow(workflow);
         workflowInstance.setInputs(input);
         return workflowInstance;
     }
@@ -61,47 +61,47 @@ public class FreefluoEnactorProxy implements EnactorProxy {
             }
             else {
                 // Use an in-process freefluo engine
-	        engine = new EngineImpl();
+	              engine = new EngineImpl();
             }
 
             String workflowInstanceId = engine.compile(workflow);
             WorkflowInstance workflowInstance = new WorkflowInstanceImpl(engine, workflowInstanceId);   
             return workflowInstance;
-	}
-	catch (Exception e) {
-	    WorkflowSubmissionException wse = new WorkflowSubmissionException("Error during submission of workflow to in memory freefluo enactor");
-	    wse.initCause(e);
-	    throw wse;
-	}
+	      }
+	      catch (Exception e) {
+	          WorkflowSubmissionException wse = new WorkflowSubmissionException("Error during submission of workflow to in memory freefluo enactor");
+	          wse.initCause(e);
+	          throw wse;
+	      }
     }
 
     /**
      * Dummy context handler, doesn't do anything at the moment
      */
     public void setUserContext(UserContext theContext) {
-	//
+	      //
     }
 
     /**
      * Return default user context
      */
     public UserContext getUserContext() {
-	return new UserContext() {
-		public String getUser() {
-		    return "Unknown user";
-		}
-		public String getProject() {
-		    return "Unknown project";
-		}
-		public String getOrganisation() {
-		    return "Unknown organisation";
-		}
-		public String getExperiment() {
-		    return "Unknown experiment";
-		}
-		public String[] getUserNameAndPassword(String resourceExpression) {
-		    return new String[]{"",""};
-		}
-	    };
+	      return new UserContext() {
+            public String getUser() {
+                return "Unknown user";
+            }
+            public String getProject() {
+                return "Unknown project";
+            }
+            public String getOrganisation() {
+                return "Unknown organisation";
+            }
+            public String getExperiment() {
+                return "Unknown experiment";
+            }
+            public String[] getUserNameAndPassword(String resourceExpression) {
+                return new String[]{"",""};
+            }
+	      };
     }	   
 }

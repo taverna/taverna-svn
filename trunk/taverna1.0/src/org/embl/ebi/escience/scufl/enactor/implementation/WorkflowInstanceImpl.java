@@ -25,8 +25,8 @@
 //      Dependencies        :
 //
 //      Last commit info    :   $Author: ferris $
-//                              $Date: 2004-06-03 11:39:24 $
-//                              $Revision: 1.1 $
+//                              $Date: 2004-06-03 11:59:20 $
+//                              $Revision: 1.2 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 package org.embl.ebi.escience.scufl.enactor.implementation;
@@ -96,7 +96,7 @@ public class WorkflowInstanceImpl implements WorkflowInstance {
      * @exception WorkflowSubmitInvalidException thrown by the superclass
      */
     public WorkflowInstanceImpl(Engine engine, String workflowInstanceId) {
-	this.engine = engine;
+	      this.engine = engine;
         this.workflowInstanceId = workflowInstanceId;
     }
 
@@ -144,8 +144,8 @@ public class WorkflowInstanceImpl implements WorkflowInstance {
      * with.
      */
     public Map[] getIntermediateResultsForProcessor(String processorName) 
-	throws UnknownProcessorException {
-	try {
+	           throws UnknownProcessorException {
+	      try {
             return engine.getIntermediateResultsForProcessor(workflowInstanceId, processorName);
         
         }
@@ -168,7 +168,7 @@ public class WorkflowInstanceImpl implements WorkflowInstance {
      */
     public String getProgressReportXMLString() {
         try {
-	    return engine.getProgressReportXML(workflowInstanceId);
+	          return engine.getProgressReportXML(workflowInstanceId);
         }
         catch(UnknownWorkflowInstanceException e) {
             String msg = "Error getting progress report xml string for workflow instance with id " + workflowInstanceId +
@@ -180,7 +180,7 @@ public class WorkflowInstanceImpl implements WorkflowInstance {
 
     public String getOutputXMLString() {
         try {
-	    return engine.getOutputXML(workflowInstanceId);
+	          return engine.getOutputXML(workflowInstanceId);
         }
         catch(UnknownWorkflowInstanceException e) {
             String msg = "Error getting output report xml string for workflow instance with id " + workflowInstanceId +
@@ -192,7 +192,7 @@ public class WorkflowInstanceImpl implements WorkflowInstance {
     
     public Map getOutput() {
         try {
-	    return engine.getOutput(workflowInstanceId);
+	          return engine.getOutput(workflowInstanceId);
         }
         catch(UnknownWorkflowInstanceException e) {
             String msg = "Error getting progress the output for workflow instance with id " + workflowInstanceId +
@@ -228,7 +228,7 @@ public class WorkflowInstanceImpl implements WorkflowInstance {
  
     public boolean pauseExecution() {
         try {
-	    return engine.pauseExecution(workflowInstanceId);
+	          return engine.pauseExecution(workflowInstanceId);
         }
         catch(UnknownWorkflowInstanceException e) {
             String msg = "Error pausing workflow instance with id " + workflowInstanceId +
@@ -252,7 +252,7 @@ public class WorkflowInstanceImpl implements WorkflowInstance {
 
     public boolean isPaused() {
         try {
-	    return engine.isPaused(workflowInstanceId);
+	          return engine.isPaused(workflowInstanceId);
         }
         catch(UnknownWorkflowInstanceException e) {
             String msg = "Error determining if the workflow is paused for workflow instance with id " + workflowInstanceId +
@@ -265,7 +265,7 @@ public class WorkflowInstanceImpl implements WorkflowInstance {
     
     public void cancel() {
         try {
-	    engine.cancel(workflowInstanceId);
+	          engine.cancel(workflowInstanceId);
         }
         catch(UnknownWorkflowInstanceException e) {
             String msg = "Error cancelling workflow instance with id " + workflowInstanceId +
