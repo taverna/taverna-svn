@@ -2,7 +2,7 @@
 
 PATH=./bin/win32i386;%PATH%
 
-set OPTS=-Xms256m -Xmx512m
+set OPTS=-Xms256m -Xmx512m -Dtaverna.home=. -Djava.protocol.handler.pkgs=uk.ac.rdg.resc.jstyx.client
 
 set CP=.;./resources;./conf
 for %%i in ("lib\*.jar") do call catenv.bat %%i

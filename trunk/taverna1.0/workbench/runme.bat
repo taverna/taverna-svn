@@ -2,7 +2,7 @@
 
 PATH=./bin/win32i386;%PATH%
 
-set OPTS= -Xmx512m -Dtaverna.scrollDesktop
+set OPTS= -Xmx512m -Dtaverna.scrollDesktop -Djava.protocol.handler.pkgs=uk.ac.rdg.resc.jstyx.client -Dtaverna.home=.
 
 set CP=.;./resources;./conf
 for %%i in ("lib\*.jar") do call catenv.bat %%i
