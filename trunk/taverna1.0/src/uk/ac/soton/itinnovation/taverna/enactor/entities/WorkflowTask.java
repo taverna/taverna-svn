@@ -24,51 +24,45 @@
 //      Created for Project :   MYGRID
 //      Dependencies        :
 //
-//      Last commit info    :   $Author: dmarvin $
-//                              $Date: 2003-06-09 07:30:30 $
-//                              $Revision: 1.1 $
+//      Last commit info    :   $Author: mereden $
+//                              $Date: 2003-06-09 11:13:03 $
+//                              $Revision: 1.2 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 
 package uk.ac.soton.itinnovation.taverna.enactor.entities;
 
 import org.apache.log4j.Logger;
-import org.embl.ebi.escience.scufl.Port;
 import org.embl.ebi.escience.scufl.Processor;
 import org.embl.ebi.escience.scufl.WorkflowProcessor;
-import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.entities.graph.GraphNode;
-import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.eventservice.TaskStateMessage;
+import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.broker.FlowBroker;
+import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.broker.FlowBrokerFactory;
+import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.broker.FlowCallback;
+import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.broker.FlowMessage;
 import uk.ac.soton.itinnovation.mygrid.workflow.enactor.io.Input;
 import uk.ac.soton.itinnovation.mygrid.workflow.enactor.io.Output;
 import uk.ac.soton.itinnovation.mygrid.workflow.enactor.io.Part;
 import uk.ac.soton.itinnovation.taverna.enactor.broker.LogLevel;
-import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.entities.TimePoint;
-import uk.ac.soton.itinnovation.taverna.enactor.broker.TavernaFlowBroker;
-import uk.ac.soton.itinnovation.taverna.enactor.broker.TavernaFlowReceipt;
 import uk.ac.soton.itinnovation.taverna.enactor.broker.TavernaBinaryWorkflowSubmission;
-import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.broker.FlowMessage;
-import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.broker.FlowBrokerFactory;
-import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.broker.FlowBroker;
-import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.broker.FlowCallback;
+import uk.ac.soton.itinnovation.taverna.enactor.broker.TavernaFlowReceipt;
 
 // Utility Imports
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.HashMap;
 
 // JDOM Imports
 import org.jdom.Element;
 import org.jdom.Text;
 
-// Network Imports
-import java.net.URL;
-
-import uk.ac.soton.itinnovation.taverna.enactor.entities.PortTask;
 import uk.ac.soton.itinnovation.taverna.enactor.entities.ProcessorTask;
+import uk.ac.soton.itinnovation.taverna.enactor.entities.TaskExecutionException;
 import java.lang.Exception;
+import java.lang.InterruptedException;
+import java.lang.NullPointerException;
 import java.lang.String;
+import java.lang.Thread;
 
 
 

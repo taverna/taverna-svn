@@ -24,9 +24,9 @@
 //      Created for Project :   MYGRID
 //      Dependencies        :
 //
-//      Last commit info    :   $Author: dmarvin $
-//                              $Date: 2003-06-09 07:28:04 $
-//                              $Revision: 1.19 $
+//      Last commit info    :   $Author: mereden $
+//                              $Date: 2003-06-09 11:13:02 $
+//                              $Revision: 1.20 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 
@@ -55,7 +55,6 @@ import java.util.List;
 import uk.ac.soton.itinnovation.taverna.enactor.broker.LogLevel;
 import java.lang.Exception;
 import java.lang.String;
-import java.lang.System;
 
 
 

@@ -15,7 +15,11 @@ import javax.swing.JPopupMenu;
 import javax.swing.tree.DefaultMutableTreeNode;
 import org.embl.ebi.escience.scufl.DuplicateProcessorNameException;
 import org.embl.ebi.escience.scufl.ProcessorCreationException;
+import org.embl.ebi.escience.scufl.parser.XScuflParser;
 import org.embl.ebi.escience.scuflui.ScuflIcons;
+
+// Network Imports
+import java.net.URL;
 
 import org.embl.ebi.escience.scuflui.workbench.ProcessorFactory;
 import org.embl.ebi.escience.scuflui.workbench.ScavengerCreationException;
@@ -25,11 +29,11 @@ import org.embl.ebi.escience.scuflui.workbench.TalismanScavenger;
 import org.embl.ebi.escience.scuflui.workbench.WSDLBasedScavenger;
 import org.embl.ebi.escience.scuflui.workbench.WebScavenger;
 import org.embl.ebi.escience.scuflui.workbench.Workbench;
+import org.embl.ebi.escience.scuflui.workbench.WorkflowProcessorFactory;
 import org.embl.ebi.escience.scuflui.workbench.WorkflowScavenger;
+import java.lang.Exception;
 import java.lang.Object;
 import java.lang.String;
-import java.net.*;
-import org.embl.ebi.escience.scufl.parser.*;
 
 
 

@@ -24,31 +24,45 @@
 //      Created for Project :   MYGRID
 //      Dependencies        :
 //
-//      Last commit info    :   $Author: dmarvin $
-//                              $Date: 2003-06-09 07:28:23 $
-//                              $Revision: 1.14 $
+//      Last commit info    :   $Author: mereden $
+//                              $Date: 2003-06-09 11:13:02 $
+//                              $Revision: 1.15 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 package uk.ac.soton.itinnovation.taverna.enactor.entities;
 
+import org.apache.log4j.Logger;
+import org.embl.ebi.escience.scufl.Port;
 import org.embl.ebi.escience.scufl.Processor;
+import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.entities.TimePoint;
+import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.entities.graph.GraphNode;
 import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.eventservice.TaskStateMessage;
 import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.serviceprovidermanager.ServiceSelectionCriteria;
+import uk.ac.soton.itinnovation.mygrid.workflow.enactor.io.DataParseException;
+import uk.ac.soton.itinnovation.mygrid.workflow.enactor.io.Part;
 import uk.ac.soton.itinnovation.taverna.enactor.broker.LogLevel;
-import uk.ac.soton.itinnovation.mygrid.workflow.enactor.io.*;
-import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.entities.graph.*;
-import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.entities.TimePoint;
-import org.embl.ebi.escience.scufl.Port;
-import java.util.*;
 
+// Utility Imports
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 // JDOM Imports
 import org.jdom.Element;
-import org.jdom.*;
+import org.jdom.JDOMException;
 
+import uk.ac.soton.itinnovation.taverna.enactor.entities.PortTask;
+import uk.ac.soton.itinnovation.taverna.enactor.entities.TaskExecutionException;
 import uk.ac.soton.itinnovation.taverna.enactor.entities.TavernaTask;
+import java.lang.Class;
+import java.lang.Exception;
+import java.lang.Integer;
+import java.lang.Object;
 import java.lang.String;
-import org.apache.log4j.Logger;
+import java.lang.StringBuffer;
+
 
 
 public abstract class ProcessorTask extends TavernaTask{

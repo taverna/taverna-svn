@@ -3,7 +3,7 @@
 <project name="taverna" default="all" basedir=".">
 
 	<!-- Current version of the project, used by doxygen -->
-	<property name="project.version" value="0.1beta2"/>
+	<property name="project.version" value="0.1beta3"/>
 
 	<!-- These directories are pretty standard, you probably     -->
 	<!-- don't want to change them                               -->
@@ -15,9 +15,9 @@
 	<property name="build.compiler" value="modern"/>
 		
 	<!-- Show the splash screen -->
-	<target name="splash">
+	<target name="splash"><!--
 		<splash showduration="0" imageurl="http://www.mygrid.org.uk/myGrid/img/mygridlogowhite.gif"/>
-	</target>
+-->	</target>
 		
 	<!-- Path used during compilation -->
 	<path id="compile-classpath">

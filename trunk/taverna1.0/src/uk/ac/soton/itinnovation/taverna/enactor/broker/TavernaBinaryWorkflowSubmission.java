@@ -24,15 +24,19 @@
 //      Created for Project :   MYGRID
 //      Dependencies        :
 //
-//      Last commit info    :   $Author: dmarvin $
-//                              $Date: 2003-06-06 09:47:46 $
-//                              $Revision: 1.1 $
+//      Last commit info    :   $Author: mereden $
+//                              $Date: 2003-06-09 11:13:01 $
+//                              $Revision: 1.2 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 package uk.ac.soton.itinnovation.taverna.enactor.broker;
 
 import org.embl.ebi.escience.scufl.ScuflModel;
 import uk.ac.soton.itinnovation.mygrid.workflow.enactor.io.Input;
+
+import java.lang.String;
+
+
 
 public class TavernaBinaryWorkflowSubmission {
 

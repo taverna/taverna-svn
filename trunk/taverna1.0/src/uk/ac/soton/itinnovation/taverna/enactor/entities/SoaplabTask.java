@@ -24,9 +24,9 @@
 //      Created for Project :   MYGRID
 //      Dependencies        :
 //
-//      Last commit info    :   $Author: dmarvin $
-//                              $Date: 2003-06-08 18:36:04 $
-//                              $Revision: 1.14 $
+//      Last commit info    :   $Author: mereden $
+//                              $Date: 2003-06-09 11:13:03 $
+//                              $Revision: 1.15 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 
@@ -39,9 +39,6 @@ import org.apache.log4j.Logger;
 import org.embl.ebi.escience.scufl.Processor;
 import org.embl.ebi.escience.scufl.SoaplabProcessor;
 import org.w3c.dom.Element;
-import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.entities.TimePoint;
-import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.entities.graph.GraphNode;
-import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.eventservice.TaskStateMessage;
 import uk.ac.soton.itinnovation.mygrid.workflow.enactor.io.Input;
 import uk.ac.soton.itinnovation.mygrid.workflow.enactor.io.Output;
 import uk.ac.soton.itinnovation.mygrid.workflow.enactor.io.Part;
@@ -52,13 +49,12 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
-import java.util.HashMap;
 
 // Network Imports
 import java.net.URL;
 
-import uk.ac.soton.itinnovation.taverna.enactor.entities.PortTask;
 import uk.ac.soton.itinnovation.taverna.enactor.entities.ProcessorTask;
+import uk.ac.soton.itinnovation.taverna.enactor.entities.TaskExecutionException;
 import java.lang.Boolean;
 import java.lang.Double;
 import java.lang.Exception;

@@ -15,6 +15,8 @@ import org.embl.ebi.escience.scufl.Port;
 import org.embl.ebi.escience.scufl.ScuflModel;
 import org.embl.ebi.escience.scufl.ScuflModelEvent;
 import org.embl.ebi.escience.scufl.ScuflModelEventListener;
+import uk.ac.soton.itinnovation.mygrid.workflow.enactor.io.DataParseException;
+import uk.ac.soton.itinnovation.mygrid.workflow.enactor.io.Input;
 
 // Utility Imports
 import java.util.HashMap;
@@ -22,6 +24,7 @@ import java.util.Iterator;
 import java.util.Map;
 
 // IO Imports
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.InputStream;
 
@@ -34,11 +37,13 @@ import org.jdom.output.XMLOutputter;
 // Network Imports
 import java.net.URL;
 
+import org.embl.ebi.escience.scuflui.EnactorInvocation;
 import org.embl.ebi.escience.scuflui.ScuflIcons;
 import org.embl.ebi.escience.scuflui.ScuflUIComponent;
 import java.lang.Exception;
 import java.lang.String;
 import java.lang.StringBuffer;
+import java.lang.System;
 
 
 
@@ -50,7 +55,7 @@ import java.lang.StringBuffer;
 public class EnactorLaunchPanel extends JPanel 
     implements ScuflModelEventListener, ScuflUIComponent {
 
-    private ScuflModel model = null;
+    ScuflModel model = null;
     private JPanel inputPanel = null;
     
     /**
@@ -95,6 +100,26 @@ public class EnactorLaunchPanel extends JPanel
 	add(xmlPanel, BorderLayout.CENTER);
 	JButton runButton = new JButton(ScuflIcons.runIcon);
 	actionPanel.add(runButton);
+	runButton.addActionListener(new ActionListener() {
+		public void actionPerformed(ActionEvent ae) {
+		    XMLOutputter xo = new XMLOutputter();
+		    xo.setIndent(" ");
+		    xo.setNewlines(true);
+		    String xmlInputDoc = xo.outputString(EnactorLaunchPanel.this.getInputDocument());
+		    try {
+			Input inputObject = new Input(new ByteArrayInputStream(xmlInputDoc.getBytes()));
+			System.out.println("Created the Input object.."+inputObject.toString());
+			new EnactorInvocation(null,
+					      EnactorLaunchPanel.this.model,
+					      null,
+					      null);
+		    }
+		    catch (DataParseException dpe) {
+			// TODO - show error box
+		    }
+		}
+	    });
+	
 	runButton.setPreferredSize(new Dimension(32,32));
 	show();
     }

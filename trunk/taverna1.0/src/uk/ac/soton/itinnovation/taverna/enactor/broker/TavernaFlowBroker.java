@@ -24,9 +24,9 @@
 //      Created for Project :   MYGRID
 //      Dependencies        :
 //
-//      Last commit info    :   $Author: dmarvin $
-//                              $Date: 2003-06-08 18:35:55 $
-//                              $Revision: 1.15 $
+//      Last commit info    :   $Author: mereden $
+//                              $Date: 2003-06-09 11:13:02 $
+//                              $Revision: 1.16 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 
@@ -62,9 +62,9 @@ import org.jdom.Document;
 import org.jdom.input.SAXBuilder;
 
 import uk.ac.soton.itinnovation.taverna.enactor.broker.LogLevel;
+import uk.ac.soton.itinnovation.taverna.enactor.broker.TavernaBinaryWorkflowSubmission;
 import uk.ac.soton.itinnovation.taverna.enactor.broker.TavernaFlowReceipt;
 import uk.ac.soton.itinnovation.taverna.enactor.broker.TavernaStringifiedWorkflowSubmission;
-import uk.ac.soton.itinnovation.taverna.enactor.broker.TavernaBinaryWorkflowSubmission;
 import uk.ac.soton.itinnovation.taverna.enactor.broker.XScuflDiGraphGenerator;
 import java.lang.Exception;
 import java.lang.IllegalArgumentException;

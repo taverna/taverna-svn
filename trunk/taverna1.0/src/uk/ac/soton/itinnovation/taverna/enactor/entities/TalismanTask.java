@@ -9,12 +9,9 @@ import org.apache.log4j.Logger;
 import org.embl.ebi.escience.scufl.Processor;
 import org.embl.ebi.escience.scufl.TalismanProcessor;
 import org.embl.ebi.escience.talisman.tservice.TeaTray;
-import org.w3c.dom.Element;
 import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.entities.graph.GraphNode;
-import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.eventservice.TaskStateMessage;
 import uk.ac.soton.itinnovation.mygrid.workflow.enactor.io.Part;
 import uk.ac.soton.itinnovation.taverna.enactor.broker.LogLevel;
-import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.entities.TimePoint;
 
 // Utility Imports
 import java.util.HashMap;
@@ -26,6 +23,7 @@ import java.net.URL;
 
 import uk.ac.soton.itinnovation.taverna.enactor.entities.PortTask;
 import uk.ac.soton.itinnovation.taverna.enactor.entities.ProcessorTask;
+import uk.ac.soton.itinnovation.taverna.enactor.entities.TaskExecutionException;
 import java.lang.Exception;
 import java.lang.String;
 
