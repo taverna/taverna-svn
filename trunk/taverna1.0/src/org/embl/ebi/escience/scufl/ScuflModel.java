@@ -180,6 +180,13 @@ public class ScuflModel implements java.io.Serializable {
 		destroyDataConstraint(constraints[i]);
 	    }
 	}
+	ConcurrencyConstraint[] cc = getConcurrencyConstraints();
+	for (int i = 0; i < cc.length; i++) {
+	    if (the_processor == cc[i].getTargetProcessor() ||
+		the_processor == cc[i].getControllingProcessor()) {
+		destroyConcurrencyConstraint(cc[i]);
+	    }
+	}
 	fireModelEvent(new ScuflModelEvent(this, "Destroyed processor '"+the_processor.getName()+"'"));
 	
     }
@@ -206,6 +213,14 @@ public class ScuflModel implements java.io.Serializable {
     public void addConcurrencyConstraint(ConcurrencyConstraint the_constraint) {
 	this.constraints.add(the_constraint);
 	fireModelEvent(new ScuflModelEvent(this, "Added concurrency constraint '"+the_constraint.getName()+"' to the model"));
+    }
+
+    /**
+     * Remove a concurrency constraint from the model
+     */
+    public void destroyConcurrencyConstraint(ConcurrencyConstraint the_constraint) {
+	this.constraints.remove(the_constraint);
+	fireModelEvent(new ScuflModelEvent(this, "Removed concurrency constraint '"+the_constraint.getName()+"' to the model"));
     }
 
     /**
