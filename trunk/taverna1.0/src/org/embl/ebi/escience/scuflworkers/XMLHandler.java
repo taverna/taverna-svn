@@ -9,6 +9,7 @@ import org.embl.ebi.escience.scufl.parser.XScuflFormatException;
 // JDOM Imports
 import org.jdom.Element;
 
+import java.lang.String;
 
 
 

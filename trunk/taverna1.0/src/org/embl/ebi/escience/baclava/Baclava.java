@@ -5,12 +5,26 @@
  */
 package org.embl.ebi.escience.baclava;
 
+// Utility Imports
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Properties;
+
 // JDOM Imports
 import org.jdom.Namespace;
+
 // Network Imports
 import java.net.URL;
-import java.util.*;
-import org.embl.ebi.escience.baclava.collections.*;
+
+import java.lang.Class;
+import java.lang.ClassLoader;
+import java.lang.Exception;
+import java.lang.String;
+import java.lang.System;
+
+
 
 /**
  * Provides general functionality, mostly in the form

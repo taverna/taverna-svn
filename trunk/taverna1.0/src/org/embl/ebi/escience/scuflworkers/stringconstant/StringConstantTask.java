@@ -5,24 +5,21 @@
  */
 package org.embl.ebi.escience.scuflworkers.stringconstant;
 
-
-import uk.ac.soton.itinnovation.taverna.enactor.entities.*;
 import org.apache.log4j.Logger;
 import org.embl.ebi.escience.scufl.Processor;
-import org.embl.ebi.escience.scuflworkers.talisman.TalismanProcessor;
-import org.embl.ebi.escience.talisman.tservice.TeaTray;
-import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.entities.graph.GraphNode;
 import uk.ac.soton.itinnovation.mygrid.workflow.enactor.io.Part;
 import uk.ac.soton.itinnovation.taverna.enactor.broker.LogLevel;
+import uk.ac.soton.itinnovation.taverna.enactor.entities.PortTask;
+import uk.ac.soton.itinnovation.taverna.enactor.entities.ProcessorTask;
+import uk.ac.soton.itinnovation.taverna.enactor.entities.TaskExecutionException;
 
 // Utility Imports
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 
-// Network Imports
-import java.net.URL;
-
+import org.embl.ebi.escience.scuflworkers.stringconstant.StringConstantProcessor;
+import java.lang.Exception;
+import java.lang.String;
 
 
 

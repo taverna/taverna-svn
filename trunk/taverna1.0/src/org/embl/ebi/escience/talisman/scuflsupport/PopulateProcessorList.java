@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.embl.ebi.escience.scufl.Processor;
 import org.embl.ebi.escience.talisman.*;
 
+import org.embl.ebi.escience.talisman.scuflsupport.AbstractScuflAction;
 /**
  * Populates a named SelectionList with names of processors
  * in the ScuflModel contained by the named bean field.

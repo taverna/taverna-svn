@@ -27,6 +27,11 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
+import org.embl.ebi.escience.scuflui.workbench.Scavenger;
+import org.embl.ebi.escience.scuflui.workbench.ScavengerCreationException;
+import org.embl.ebi.escience.scuflui.workbench.ScavengerTreePopupHandler;
+import org.embl.ebi.escience.scuflui.workbench.ScavengerTreeRenderer;
+import java.lang.String;
 
 
 

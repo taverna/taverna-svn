@@ -5,7 +5,6 @@
  */
 package org.embl.ebi.escience.baclava;
 
-import org.jdom.*;
 
 /**
  * Specifies the methods required for a plugin handler

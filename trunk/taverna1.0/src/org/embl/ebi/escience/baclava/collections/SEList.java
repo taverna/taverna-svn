@@ -5,7 +5,13 @@
  */
 package org.embl.ebi.escience.baclava.collections;
 
-import java.util.*;
+// Utility Imports
+import java.util.Collection;
+
+import org.embl.ebi.escience.baclava.collections.SECollection;
+import java.lang.Object;
+
+
 
 /**
  * Provides a parallel interface to the collections

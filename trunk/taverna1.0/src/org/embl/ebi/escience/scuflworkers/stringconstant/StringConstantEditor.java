@@ -5,10 +5,16 @@
  */
 package org.embl.ebi.escience.scuflworkers.stringconstant;
 
-import org.embl.ebi.escience.scuflworkers.*;
-import org.embl.ebi.escience.scufl.*;
-import javax.swing.*;
-import java.awt.event.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import javax.swing.JOptionPane;
+import org.embl.ebi.escience.scufl.Processor;
+import org.embl.ebi.escience.scuflworkers.ProcessorEditor;
+
+import org.embl.ebi.escience.scuflworkers.stringconstant.StringConstantProcessor;
+import java.lang.String;
+
+
 
 /**
  * An editor for the string constant processor, this handles

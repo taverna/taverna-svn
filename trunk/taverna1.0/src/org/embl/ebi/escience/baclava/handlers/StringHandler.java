@@ -5,8 +5,14 @@
  */
 package org.embl.ebi.escience.baclava.handlers;
 
-import org.jdom.*;
-import org.embl.ebi.escience.baclava.*;
+import org.embl.ebi.escience.baclava.XMLHandler;
+
+// JDOM Imports
+import org.jdom.Element;
+
+import java.lang.Object;
+
+
 
 /**
  * Handle String objects

@@ -25,8 +25,8 @@
 //      Dependencies        :
 //
 //      Last commit info    :   $Author: mereden $
-//                              $Date: 2003-09-12 13:25:41 $
-//                              $Revision: 1.21 $
+//                              $Date: 2003-09-26 12:22:15 $
+//                              $Revision: 1.22 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 
@@ -58,6 +58,11 @@ import org.jdom.Text;
 // Network Imports
 import java.net.URL;
 
+import uk.ac.soton.itinnovation.taverna.enactor.entities.PortTask;
+import uk.ac.soton.itinnovation.taverna.enactor.entities.ProcessorTask;
+import uk.ac.soton.itinnovation.taverna.enactor.entities.TaskExecutionException;
+import java.lang.Exception;
+import java.lang.String;
 
 
 

@@ -6,23 +6,25 @@
 package org.embl.ebi.escience.scuflui;
 
 import java.awt.BorderLayout;
-import java.awt.Container;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.*;
-import java.awt.*;
-import javax.swing.border.Border;
-import org.embl.ebi.escience.scufl.*;
-import javax.swing.tree.*;
-import javax.swing.event.*;
-import org.embl.ebi.escience.scufl.semantics.*;
+import javax.swing.event.TreeSelectionEvent;
+import javax.swing.event.TreeSelectionListener;
+import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeCellRenderer;
+import org.embl.ebi.escience.scufl.ScuflModel;
+import org.embl.ebi.escience.scufl.SemanticMarkup;
+import org.embl.ebi.escience.scufl.semantics.RDFSClassHolder;
+import org.embl.ebi.escience.scufl.semantics.RDFSParser;
 
-// Utility Imports
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.Properties;
-
+import org.embl.ebi.escience.scuflui.ScuflIcons;
+import org.embl.ebi.escience.scuflui.ScuflUIComponent;
+import java.lang.ClassCastException;
+import java.lang.Object;
+import java.lang.String;
 
 
 

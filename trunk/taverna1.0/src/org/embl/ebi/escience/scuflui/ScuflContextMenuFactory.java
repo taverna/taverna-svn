@@ -12,9 +12,18 @@ import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
 import org.embl.ebi.escience.scufl.*;
-import org.embl.ebi.escience.scuflworkers.*;
-import org.embl.ebi.escience.scuflui.workbench.*;
+import org.embl.ebi.escience.scuflui.workbench.GenericUIComponentFrame;
+import org.embl.ebi.escience.scuflui.workbench.Workbench;
+import org.embl.ebi.escience.scuflworkers.ProcessorEditor;
+import org.embl.ebi.escience.scuflworkers.ProcessorHelper;
 
+import org.embl.ebi.escience.scuflui.LinkingMenus;
+import org.embl.ebi.escience.scuflui.NoContextMenuFoundException;
+import org.embl.ebi.escience.scuflui.ScuflIcons;
+import org.embl.ebi.escience.scuflui.ScuflSemanticMarkupEditor;
+import java.lang.Exception;
+import java.lang.Object;
+import java.lang.String;
 
 
 

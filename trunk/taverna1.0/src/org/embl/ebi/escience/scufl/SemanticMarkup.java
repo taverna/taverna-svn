@@ -5,8 +5,22 @@
  */
 package org.embl.ebi.escience.scufl;
 
-import java.util.*;
-import org.jdom.*;
+// Utility Imports
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
+// JDOM Imports
+import org.jdom.Element;
+
+import org.embl.ebi.escience.scufl.Port;
+import org.embl.ebi.escience.scufl.ScuflModelEvent;
+import org.embl.ebi.escience.scufl.XScufl;
+import java.lang.Object;
+import java.lang.String;
+import java.lang.StringBuffer;
+
+
 
 /**
  * A container class for the semantic markup and mime 

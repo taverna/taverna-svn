@@ -5,19 +5,14 @@
  */
 package org.embl.ebi.escience.scuflworkers.beanshell;
 
-import javax.xml.namespace.QName;
-import org.apache.axis.client.Call;
-import org.apache.axis.client.Service;
 import org.embl.ebi.escience.scufl.*;
 
 // Utility Imports
-import java.util.ArrayList;
-import java.util.Map;
 import java.util.Properties;
 
-// Network Imports
-import java.net.MalformedURLException;
-import java.net.URL;
+import java.lang.String;
+
+
 
 /**
  * A processor that uses the Beanshell scripting engine

@@ -25,8 +25,8 @@
 //      Dependencies        :
 //
 //      Last commit info    :   $Author: mereden $
-//                              $Date: 2003-09-12 13:25:41 $
-//                              $Revision: 1.19 $
+//                              $Date: 2003-09-26 12:22:15 $
+//                              $Revision: 1.20 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 package uk.ac.soton.itinnovation.taverna.enactor.entities;
@@ -53,6 +53,15 @@ import java.util.Map;
 import org.jdom.Element;
 import org.jdom.JDOMException;
 
+import uk.ac.soton.itinnovation.taverna.enactor.entities.PortTask;
+import uk.ac.soton.itinnovation.taverna.enactor.entities.TaskExecutionException;
+import uk.ac.soton.itinnovation.taverna.enactor.entities.TavernaTask;
+import java.lang.Class;
+import java.lang.Exception;
+import java.lang.Integer;
+import java.lang.Object;
+import java.lang.String;
+import java.lang.StringBuffer;
 
 
 

@@ -12,8 +12,11 @@ import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 import org.embl.ebi.escience.scufl.*;
-import org.embl.ebi.escience.scuflui.workbench.*;
+import org.embl.ebi.escience.scuflui.workbench.GenericUIComponentFrame;
+import org.embl.ebi.escience.scuflui.workbench.Workbench;
 
+import org.embl.ebi.escience.scuflui.ScuflIcons;
+import org.embl.ebi.escience.scuflui.ScuflSemanticMarkupEditor;
 /**
  * A static method to generate appropriate menu items
  * to link from ports in a Scufl model

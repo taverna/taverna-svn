@@ -5,10 +5,11 @@
  */
 package org.embl.ebi.escience.scuflworkers.stringconstant;
 
-import javax.swing.tree.DefaultMutableTreeNode;
 import org.embl.ebi.escience.scuflui.workbench.Scavenger;
 import org.embl.ebi.escience.scuflui.workbench.ScavengerCreationException;
 
+import org.embl.ebi.escience.scuflworkers.stringconstant.StringConstantProcessorFactory;
+import java.lang.String;
 
 
 

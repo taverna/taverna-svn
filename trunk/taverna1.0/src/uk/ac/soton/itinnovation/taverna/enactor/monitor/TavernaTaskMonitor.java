@@ -25,8 +25,8 @@
 //      Dependencies        :
 //
 //      Last commit info    :   $Author: mereden $
-//                              $Date: 2003-09-12 13:25:41 $
-//                              $Revision: 1.6 $
+//                              $Date: 2003-09-26 12:22:16 $
+//                              $Revision: 1.7 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 
@@ -37,6 +37,7 @@ import EDU.oswego.cs.dl.util.concurrent.LinkedQueue;
 import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.eventservice.TaskReportHandler;
 import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.eventservice.TaskStateMessage;
 
+import java.lang.InterruptedException;
 
 
 

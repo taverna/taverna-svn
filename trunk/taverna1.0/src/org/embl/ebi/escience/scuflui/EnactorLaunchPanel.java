@@ -15,6 +15,8 @@ import org.embl.ebi.escience.scufl.Port;
 import org.embl.ebi.escience.scufl.ScuflModel;
 import org.embl.ebi.escience.scufl.ScuflModelEvent;
 import org.embl.ebi.escience.scufl.ScuflModelEventListener;
+import org.embl.ebi.escience.scuflui.workbench.GenericUIComponentFrame;
+import org.embl.ebi.escience.scuflui.workbench.Workbench;
 import uk.ac.soton.itinnovation.mygrid.workflow.enactor.io.DataParseException;
 import uk.ac.soton.itinnovation.mygrid.workflow.enactor.io.Input;
 
@@ -36,7 +38,14 @@ import org.jdom.output.XMLOutputter;
 
 // Network Imports
 import java.net.URL;
-import org.embl.ebi.escience.scuflui.workbench.*;
+
+import org.embl.ebi.escience.scuflui.EnactorInvocation;
+import org.embl.ebi.escience.scuflui.ScuflIcons;
+import org.embl.ebi.escience.scuflui.ScuflUIComponent;
+import java.lang.Exception;
+import java.lang.String;
+import java.lang.StringBuffer;
+import java.lang.System;
 
 
 

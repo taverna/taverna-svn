@@ -5,15 +5,13 @@
  */
 package org.embl.ebi.escience.scuflworkers.stringconstant;
 
-import org.embl.ebi.escience.scufl.DuplicateProcessorNameException;
-import org.embl.ebi.escience.scufl.Processor;
-import org.embl.ebi.escience.scufl.ProcessorCreationException;
-import org.embl.ebi.escience.scufl.ScuflModel;
 import org.embl.ebi.escience.scufl.*;
 
 // Utility Imports
 import java.util.Properties;
 
+import java.lang.Exception;
+import java.lang.String;
 
 
 

@@ -14,6 +14,7 @@ import java.awt.event.WindowEvent;
 import javax.swing.*;
 import org.embl.ebi.escience.scufl.ScuflModel;
 import org.embl.ebi.escience.scufl.parser.XScuflParser;
+import org.embl.ebi.escience.scufl.semantics.RDFSParser;
 import org.embl.ebi.escience.scufl.view.DotView;
 import org.embl.ebi.escience.scufl.view.XScuflView;
 import org.embl.ebi.escience.scuflui.DotTextArea;
@@ -21,7 +22,6 @@ import org.embl.ebi.escience.scuflui.EnactorLaunchPanel;
 import org.embl.ebi.escience.scuflui.ScuflDiagram;
 import org.embl.ebi.escience.scuflui.ScuflModelExplorer;
 import org.embl.ebi.escience.scuflui.XScuflTextArea;
-import org.embl.ebi.escience.scufl.semantics.*;
 
 // Utility Imports
 import java.util.Enumeration;
@@ -36,6 +36,17 @@ import java.io.PrintWriter;
 // Network Imports
 import java.net.URL;
 
+import org.embl.ebi.escience.scuflui.workbench.FileDrop;
+import org.embl.ebi.escience.scuflui.workbench.GenericUIComponentFrame;
+import org.embl.ebi.escience.scuflui.workbench.ScavengerTree;
+import org.embl.ebi.escience.scuflui.workbench.SplashScreen;
+import java.lang.Class;
+import java.lang.ClassLoader;
+import java.lang.ClassNotFoundException;
+import java.lang.Exception;
+import java.lang.RuntimeException;
+import java.lang.String;
+import java.lang.System;
 
 
 

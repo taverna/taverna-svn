@@ -5,8 +5,11 @@
  */
 package org.embl.ebi.escience.scuflworkers;
 import java.awt.event.ActionListener;
-import org.embl.ebi.escience.scufl.*;
-import org.embl.ebi.escience.scuflui.workbench.ScavengerTree;
+import org.embl.ebi.escience.scufl.Processor;
+
+import java.lang.String;
+
+
 
 /**
  * Classes implementing this perform in place editing of 

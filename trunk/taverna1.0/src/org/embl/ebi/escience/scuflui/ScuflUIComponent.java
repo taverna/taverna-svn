@@ -7,6 +7,7 @@ package org.embl.ebi.escience.scuflui;
 
 import org.embl.ebi.escience.scufl.ScuflModel;
 
+import java.lang.String;
 
 
 

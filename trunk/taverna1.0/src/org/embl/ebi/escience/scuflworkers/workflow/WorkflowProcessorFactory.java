@@ -10,6 +10,9 @@ import org.embl.ebi.escience.scufl.ProcessorCreationException;
 import org.embl.ebi.escience.scufl.ScuflModel;
 import org.embl.ebi.escience.scuflworkers.ProcessorFactory;
 
+import org.embl.ebi.escience.scuflworkers.workflow.WorkflowProcessor;
+import java.lang.Class;
+import java.lang.String;
 
 
 

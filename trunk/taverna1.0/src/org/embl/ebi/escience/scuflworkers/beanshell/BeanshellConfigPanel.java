@@ -6,29 +6,24 @@
 package org.embl.ebi.escience.scuflworkers.beanshell;
 
 import java.awt.BorderLayout;
-import java.awt.Container;
-import java.awt.Dimension;
+import java.awt.Component;
+import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.*;
-import java.awt.*;
-import javax.swing.border.Border;
-import org.embl.ebi.escience.scufl.*;
-import javax.swing.tree.*;
-import javax.swing.event.*;
-import org.embl.ebi.escience.scufl.semantics.*;
+import org.embl.ebi.escience.scufl.DuplicatePortNameException;
+import org.embl.ebi.escience.scufl.InputPort;
+import org.embl.ebi.escience.scufl.OutputPort;
+import org.embl.ebi.escience.scufl.PortCreationException;
+import org.embl.ebi.escience.scufl.ScuflModel;
+import org.embl.ebi.escience.scuflui.ScuflIcons;
+import org.embl.ebi.escience.scuflui.ScuflUIComponent;
 
-// Utility Imports
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.Properties;
+import org.embl.ebi.escience.scuflworkers.beanshell.BeanshellProcessor;
+import java.lang.Object;
+import java.lang.String;
 
-import org.embl.ebi.escience.scuflworkers.*;
-import org.embl.ebi.escience.scufl.*;
-import javax.swing.*;
-import java.awt.event.*;
-import org.embl.ebi.escience.scuflui.*;
-import org.embl.ebi.escience.scuflui.workbench.*;
+
 
 /**
  * A JPanel that can configure the beanshell processor type
