@@ -1,44 +1,63 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE web-app PUBLIC "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN" "http://java.sun.com/dtd/web-app_2_3.dtd">
 <web-app id="WebApp">
-	<display-name>LSID Server for Taverna</display-name>
+	<display-name>Taverna LSID Server</display-name>
 	<servlet>
-		<servlet-name>AuthorityService</servlet-name>
-		<display-name>Taverna Authority Servlet</display-name>
-		<servlet-class>com.ibm.lsid.server.AuthorityServlet</servlet-class>
+		<servlet-name>AuthorityServlet</servlet-name>
+		<display-name>AuthorityServlet</display-name>
+		<servlet-class>com.ibm.lsid.server.servlet.AuthorityServlet</servlet-class>
 		<init-param>
-			<param-name>service1</param-name>
-			<param-value>*:taverna-workflow org.embl.ebi.escience.ouzo.TavernaLSIDAuthorityMain</param-value>
+			<param-name>LSID_CLIENT_HOME</param-name>
+			<param-value>/lsid/java/server</param-value>
 		</init-param>
+		<load-on-startup>-1</load-on-startup>
 	</servlet>
 	<servlet>
-		<servlet-name>MetaDataService</servlet-name>
-		<display-name>Taverna MetaData Servlet</display-name>
-		<servlet-class>com.ibm.lsid.server.MetaDataServlet</servlet-class>
+		<servlet-name>MetadataServlet</servlet-name>
+		<display-name>MetadataServlet</display-name>
+		<servlet-class>com.ibm.lsid.server.servlet.MetadataServlet</servlet-class>
 		<init-param>
-			<param-name>service1</param-name>
-			<param-value>*:taverna-workflow org.embl.ebi.escience.ouzo.TavernaLSIDAuthorityMetaData</param-value>
+			<param-name>LSID_CLIENT_HOME</param-name>
+			<param-value>/lsid/java/server</param-value>
 		</init-param>
+		<load-on-startup>-1</load-on-startup>
 	</servlet>
 	<servlet>
-		<servlet-name>DataService</servlet-name>
-		<display-name>Taverna Data Servlet</display-name>
-		<servlet-class>com.ibm.lsid.server.DataServlet</servlet-class>
+		<servlet-name>DataServlet</servlet-name>
+		<display-name>DataServlet</display-name>
+		<servlet-class>com.ibm.lsid.server.servlet.DataServlet</servlet-class>
 		<init-param>
-			<param-name>service1</param-name>
-			<param-value>*:taverna-workflow org.embl.ebi.escience.ouzo.TavernaLSIDAuthorityData</param-value>
+			<param-name>LSID_CLIENT_HOME</param-name>
+			<param-value>/lsid/java/server</param-value>
 		</init-param>
+		<load-on-startup>-1</load-on-startup>
 	</servlet>
 	<servlet-mapping>
-		<servlet-name>AuthorityService</servlet-name>
-		<url-pattern>/authority/</url-pattern>
+		<servlet-name>AuthorityServlet</servlet-name>
+		<url-pattern>/</url-pattern>
 	</servlet-mapping>
 	<servlet-mapping>
-		<servlet-name>MetaDataService</servlet-name>
-		<url-pattern>/authority/metadata/*</url-pattern>
+		<servlet-name>MetadataServlet</servlet-name>
+		<url-pattern>/metadata</url-pattern>
 	</servlet-mapping>
 	<servlet-mapping>
-		<servlet-name>DataService</servlet-name>
-		<url-pattern>/authority/data</url-pattern>
+		<servlet-name>DataServlet</servlet-name>
+		<url-pattern>/data</url-pattern>
 	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>MetadataServlet</servlet-name>
+		<url-pattern>/metadata/*</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>DataServlet</servlet-name>
+		<url-pattern>/data/*</url-pattern>
+	</servlet-mapping>
+	<welcome-file-list>
+		<welcome-file>index.html</welcome-file>
+		<welcome-file>index.htm</welcome-file>
+		<welcome-file>index.jsp</welcome-file>
+		<welcome-file>default.html</welcome-file>
+		<welcome-file>default.htm</welcome-file>
+		<welcome-file>default.jsp</welcome-file>
+	</welcome-file-list>
 </web-app>

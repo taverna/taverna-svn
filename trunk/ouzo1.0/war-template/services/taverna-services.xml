@@ -1,0 +1,23 @@
+<deployment-descriptor xmlns="http://www.ibm.com/LSID/Standard/rsdl">
+	<maps>
+		<map name="taverna-main">
+			<pattern auth="taverna.org" ns="*" />
+		</map>
+	</maps>
+	<services>
+		<service name="TavernaLSIDService">
+			<params>
+				<param name="taverna.datastore.class">org.embl.ebi.escience.baclava.store.JDBCBaclavaDataService</param>
+				<param name="taverna.datastore.jdbc.driver">com.mysql.jdbc.Driver</param>
+				<param name="taverna.datastore.jdbc.url">jdbc:mysql://localhost/taverna</param>
+				<param name="taverna.datastore.jdbc.user">tmo</param>
+				<param name="taverna.datastore.jdbc.password">TT97m9at</param>
+			</params>
+			<components>
+				<auth map="taverna-main" type="class">org.embl.ebi.escience.ouzo.TavernaLSIDService</auth>
+				<meta map="taverna-main" type="class">org.embl.ebi.escience.ouzo.TavernaLSIDService</meta>
+				<data map="taverna-main" type="class">org.embl.ebi.escience.ouzo.TavernaLSIDService</data>
+			</components>
+		</service>
+	</services>
+</deployment-descriptor>
