@@ -11,14 +11,14 @@ import net.sourceforge.taverna.baclava.DataThingAdapter;
  * Last edited by $Author: phidias $
  * 
  * @author Mark
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class BlastParserWorkerTest extends TestCase {
 
     public void testExecute() throws Exception{
         HashMap inputMap = new HashMap();
         DataThingAdapter inAdapter = new DataThingAdapter(inputMap);
-        inAdapter.putString("fileurl","C:/Documents and Settings/Mark/My Documents/projects/taverna/contrib/test/src/etc/blast.txt");
+        inAdapter.putString("fileUrl","C:/Documents and Settings/Mark/My Documents/projects/taverna/contrib/test/src/etc/blast.txt");
         
         HashMap outputMap = new HashMap();
         DataThingAdapter outAdapter = new DataThingAdapter(outputMap);

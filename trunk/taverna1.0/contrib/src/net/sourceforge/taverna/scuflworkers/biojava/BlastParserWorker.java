@@ -31,7 +31,7 @@ import uk.ac.soton.itinnovation.taverna.enactor.entities.TaskExecutionException;
  * Last edited by $Author: phidias $
  * 
  * @author Mark
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class BlastParserWorker implements LocalWorker {
     
@@ -52,9 +52,10 @@ public class BlastParserWorker implements LocalWorker {
         HashMap outputMap = new HashMap();
         DataThingAdapter outAdapter = new DataThingAdapter(outputMap);
         try {
-            BlastLikeToXMLConverter  oBlast2XML = 
-        		new BlastLikeToXMLConverter(fileUrl);
-
+            
+            
+            BlastLikeToXMLConverter  oBlast2XML = new BlastLikeToXMLConverter(fileUrl);
+            
         	    if (tStrict) {
         	        oBlast2XML.setModeStrict();
         	    } else {
@@ -64,59 +65,6 @@ public class BlastParserWorker implements LocalWorker {
         	    
         	    outAdapter.putString("blastresults",oBlast2XML.toString());
             
-            /*
-            //get the Blast input as a Stream
-            InputStream is = new FileInputStream(fileUrl);
-
-            //make a BlastLikeSAXParser
-            BlastLikeSAXParser parser = new BlastLikeSAXParser();
-
-            //make the SAX event adapter that will pass events to a Handler.
-            SeqSimilarityAdapter adapter = new SeqSimilarityAdapter();
-
-            //set the parsers SAX event adapter
-            parser.setContentHandler(adapter);
-
-            //The list to hold the SeqSimilaritySearchResults
-            List results = new ArrayList();
-
-            //create the SearchContentHandler that will build SeqSimilaritySearchResults
-            //in the results List
-            SearchContentHandler builder = new BlastLikeSearchBuilder(results,
-                new DummySequenceDB("queries"), new DummySequenceDBInstallation());
-
-            //register builder with adapter
-            adapter.setSearchContentHandler(builder);
-
-            //parse the file, after this the result List will be populated with
-            //SeqSimilaritySearchResults
-            parser.parse(new InputSource(is));
-            
-            
-
-            //output some blast details
-            for (Iterator i = results.iterator(); i.hasNext(); ) {
-              SeqSimilaritySearchResult result =
-                  (SeqSimilaritySearchResult)i.next();
-
-              Annotation anno = result.getAnnotation();
-
-              for (Iterator j = anno.keys().iterator(); j.hasNext(); ) {
-                Object key = j.next();
-                Object property = anno.getProperty(key);
-                System.out.println(key+" : "+property);
-              }
-              System.out.println("Hits: ");
-
-              //list the hits
-              for (Iterator k = result.getHits().iterator(); k.hasNext(); ) {
-                SeqSimilaritySearchHit hit =
-                    (SeqSimilaritySearchHit)k.next();
-                System.out.print("\tmatch: "+hit.getSubjectID());
-                System.out.println("\te score: "+hit.getEValue());
-              }
-
-              System.out.println("\n");*/
             
             }catch (Exception ex){
                 throw new TaskExecutionException(ex);
