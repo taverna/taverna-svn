@@ -88,7 +88,12 @@ public class WorkflowEventDispatcher {
 	    for (Iterator i = listeners.iterator(); i.hasNext();) {
 		WorkflowEventListener listener = (WorkflowEventListener)i.next();
 		for (int j = 0; j < events.length; j++) {
-		    sendAnEvent(listener, events[j]);
+		    try {
+			sendAnEvent(listener, events[j]);
+		    }
+		    catch (Exception e) {
+			// Silently ignore, was probably an exception in a plugin
+		    }
 		}
 	    }
 	}
