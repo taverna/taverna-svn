@@ -61,24 +61,31 @@ public class FilterPageEditor extends JPanel {
 	    BorderLayout.EAST);
 	JTabbedPane groups = new JTabbedPane();
 	List filterGroups = page.getFilterGroups();
+	List filterGroupEditorList = new ArrayList();
 	for (Iterator i = filterGroups.iterator(); i.hasNext();) {
 	    Object o = i.next();
 	    if (o instanceof FilterGroup) {
 		// Generic filter
 		FilterGroup fg = (FilterGroup)o;
 		String groupName = fg.getDisplayName();
-		groups.add(groupName, new FilterGroupEditor(query, fg));
+		FilterGroupEditor fge = new FilterGroupEditor(query, fg);
+		groups.add(groupName, fge);
+		filterGroupEditorList.add(fge);
 	    }
 	    else if (o instanceof DSFilterGroup) {
 		System.out.println("Unable to set filter UI for "+o);
 	    }
 	}
 	add(groups, BorderLayout.CENTER);
-
-	queryListener = new QueryAdaptor() {
-		//
-	    };
-	query.addQueryChangeListener(queryListener);
+	
+	for (Iterator i = filterGroupEditorList.iterator(); i.hasNext();) {
+	    ((FilterGroupEditor)i.next()).pushFilterOptions();
+	}							  
+	
+	//queryListener = new QueryAdaptor() {
+	//
+	//    };
+	//query.addQueryChangeListener(queryListener);
     }
     
     protected void finalize() throws Throwable {
@@ -99,6 +106,7 @@ public class FilterPageEditor extends JPanel {
     class FilterGroupEditor extends JPanel {
 	
 	Map internalNameToLeafEditor = new HashMap();
+	List listFilterList = new ArrayList();
 
 	public FilterGroupEditor(Query query, FilterGroup fg) {
 	    super(new BorderLayout());
@@ -122,6 +130,12 @@ public class FilterPageEditor extends JPanel {
 	    for (int i = 0; i < collections.length; i++) {
 		FilterCollectionEditor fce = new FilterCollectionEditor(query, collections[i]);
 		filters.add(fce);
+		for (Iterator j = fce.internalNameToLeafEditor.values().iterator(); j.hasNext();) {
+		    Object o = j.next();
+		    if (o instanceof ListFilterEditor) {
+			listFilterList.add(o);
+		    }
+		}
 		internalNameToLeafEditor.putAll(fce.internalNameToLeafEditor);
 	    }
 	    JScrollPane sp = new JScrollPane(filters);
@@ -129,7 +143,16 @@ public class FilterPageEditor extends JPanel {
 	    sp.setPreferredSize(new Dimension(0,0));
 	    filters.add(Box.createVerticalGlue());
 	    add(sp, BorderLayout.CENTER);
+	    
 	}
+
+	public void pushFilterOptions() {
+	    for (Iterator i = listFilterList.iterator(); i.hasNext(); ) {
+		ListFilterEditor lfe = (ListFilterEditor)i.next();
+		lfe.pushFilterOptions();
+	    }
+	}
+
 	protected void paintComponent(Graphics g) {
 	    final int width = getWidth();
 	    final int height = getHeight();
@@ -156,11 +179,15 @@ public class FilterPageEditor extends JPanel {
 	    if (title == null) {
 		title = "&nbsp;";
 	    }
-	    add(new ShadedLabel("</b>"+title+"<b>", ShadedLabel.TAVERNA_ORANGE, true),
-		BorderLayout.NORTH);
+	    ShadedLabel sl = new ShadedLabel("</b>"+title+"<b>", ShadedLabel.TAVERNA_ORANGE, true);
+	    sl.setMaximumSize(new Dimension(6000,20));
+	    sl.setMinimumSize(new Dimension(60,20));
+	    add(sl, BorderLayout.NORTH);
 	    JPanel filterPanel = new JPanel();
 	    filterPanel.setLayout(new BoxLayout(filterPanel, BoxLayout.PAGE_AXIS));
-	    filterPanel.setBackground(Color.WHITE);
+	    filterPanel.setBackground(Color.WHITE);	
+	    filterPanel.add(Box.createRigidArea(new Dimension(2,2)));
+
 	    // Get all the individual filters within this collection
 	    List filterDescriptions = fc.getFilterDescriptions();
 	    for (Iterator i = filterDescriptions.iterator(); i.hasNext();) {
@@ -192,19 +219,23 @@ public class FilterPageEditor extends JPanel {
 		    // Add more filter types here....
 		    if (filterEditor != null) {
 			filterPanel.add(filterEditor);
+			filterPanel.add(Box.createRigidArea(new Dimension(2,2)));
 			filterLocations.put(key, filterEditor);
 			internalNameToLeafEditor.put(fd.getInternalName(), filterEditor);
 		    }
 			
 		}
 	    }
-	    int maxHeight = 0;
+	    int maxHeight = 2;
 	    Component[] components = filterPanel.getComponents();
 	    for (int i = 0; i < components.length; i++) {
-		maxHeight += components[i].getMaximumSize().getHeight();
+		if (components[i] instanceof FilterEditor) {
+		    maxHeight += components[i].getMaximumSize().getHeight();
+		    maxHeight += 2;
+		}
 	    }
 	    filterPanel.setMaximumSize(new Dimension(6000,maxHeight));
-	    setMaximumSize(new Dimension(6000,maxHeight+20));
+	    setMaximumSize(new Dimension(6000,maxHeight+sl.getHeight()));
 	    add(filterPanel, 
 		BorderLayout.CENTER);
 	}	
@@ -489,7 +520,7 @@ public class FilterPageEditor extends JPanel {
     class ListFilterEditor extends FilterEditor {
 
 	String[] myIDs = new String[0];
-	JComboBox list = new JComboBox();
+	public JComboBox list = new JComboBox();
 	Query query;
 	FilterDescription fd;
 	ActionListener listListener;
@@ -526,7 +557,7 @@ public class FilterPageEditor extends JPanel {
 	    list.removeActionListener(listListener);
 	    list.removeAllItems();
 	    list.addItem(emptySelection);
-	    list.setSelectedIndex(0);
+	    //list.setSelectedIndex(0);
 	    for (int i = 0; i < myIDs.length; i++) {
 		list.addItem(new OptionHolder(options[i]));
 		// Note IDs different in this case
@@ -536,13 +567,38 @@ public class FilterPageEditor extends JPanel {
 	    }
 	    if (myIDs.length == 0) {
 		list.setEnabled(false);
+		list.setSelectedIndex(0);
 	    }
 	    else {
 		list.setEnabled(true);
+		Filter[] currentFilters = query.getFilters();
+		for (int i = 0; i < currentFilters.length; i++) {
+		    String filterID = (currentFilters[i].getField()+
+				       currentFilters[i].getKey()+
+				       currentFilters[i].getTableConstraint());
+		    for (int j = 0; j < myIDs.length; j++) {
+			if (filterID.equals(myIDs[j]) &&
+			    currentFilters[i] instanceof BasicFilter) {
+			    Option op = ((OptionHolder)list.getItemAt(j+1)).option;
+			    if (currentFilters[i].getValue().equals(op.getValue())) {
+				list.setSelectedIndex(j+1);
+				break;
+			    }
+			}
+		    }
+		}	
 	    }
 	    list.addActionListener(listListener);	    
 	    list.validate();
 	    System.out.println("Done setting options for "+fd.getDisplayName());
+	}
+
+	public void pushFilterOptions() {
+	    OptionHolder oh = (OptionHolder)list.getSelectedItem();
+	    if (oh != emptySelection && oh != null) {
+		Option o = oh.option;
+		assignPushOptions(o.getPushActions());
+	    }
 	}
 
 	public ListFilterEditor(Query theQuery, FilterDescription filterDescription) {
@@ -585,7 +641,7 @@ public class FilterPageEditor extends JPanel {
 	    
 	    // Create a listener for the list box
 	    listListener = new ActionListener() {
-		    OptionHolder lastSelected = null;
+		    OptionHolder lastSelected = (OptionHolder)list.getSelectedItem();
 		    public void actionPerformed(ActionEvent ae) {
 			OptionHolder oh = (OptionHolder)list.getSelectedItem();
 			if (oh == lastSelected) {
@@ -954,9 +1010,9 @@ public class FilterPageEditor extends JPanel {
 	    final String myID = fd.getField()+fd.getKey()+fd.getTableConstraint();
 	    JLabel label = new JLabel(fd.getDisplayName());
 	    label.setBackground(Color.WHITE);
-	    final JTextArea field = new JTextArea();
-	    field.setBackground(ShadedLabel.TAVERNA_GREEN);
-	    field.setOpaque(true);
+	    final JTextField field = new JTextField();
+	    //field.setBackground(ShadedLabel.TAVERNA_GREEN);
+	    //field.setOpaque(true);
 	    setBackground(Color.WHITE);
 	    JPanel inputPanel = new JPanel(new GridLayout(1,3));
 	    inputPanel.setOpaque(false);
@@ -975,7 +1031,7 @@ public class FilterPageEditor extends JPanel {
 		BorderLayout.WEST);
 	    add(Box.createRigidArea(new Dimension(10,10)),
 		BorderLayout.EAST);
-	    setMaximumSize(new Dimension(6000,25));
+	    setMaximumSize(new Dimension(6000,20));
 	    // Find if there's an equivalent filter in the query
 	    Filter[] filters = query.getFilters();
 	    for (int i = 0; i < filters.length; i++) {
