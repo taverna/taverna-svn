@@ -65,33 +65,87 @@ public class BiomartTask implements ProcessorTaskWorker {
 		results.put(outputNames[i], new DataThing(new ArrayList()));
 	    }
 	    final BiomartProcessor pb = this.processor;
-	    OutputStream os = new OutputStream() {
-		    ByteArrayOutputStream currentLine = new ByteArrayOutputStream();
-		    public void close() {
-			doString(currentLine.toString());
-		    }
-		    public void flush() {
-			//
-		    }
-		    public void write(int b) throws IOException {
-			if (b == (int)'\n') {
+	    OutputStream os = null;
+	    if (query.getSequenceDescription() == null) {
+		// No query so can use sensible processing
+		os = new OutputStream() {
+			ByteArrayOutputStream currentLine = new ByteArrayOutputStream();
+			public void close() {
 			    doString(currentLine.toString());
-			    currentLine.reset();
 			}
-			else {
-			    currentLine.write(b);
+			public void flush() {
+			    //
 			}
-		    }
-		    private void doString(String theString) {
-			String[] items = theString.split("\t",-1);
-			for (int i = 0; i < items.length; i++) {
-			    String outputName = outputNames[i];
-			    DataThing outputThing = (DataThing)results.get(outputName);
-			    ((List)outputThing.getDataObject()).add(items[i]);
+			public void write(int b) throws IOException {
+			    if (b == (int)'\n') {
+				doString(currentLine.toString());
+				currentLine.reset();
+			    }
+			    else {
+				currentLine.write(b);
+			    }
 			}
-		    }
-		    
-		};
+			private void doString(String theString) {
+			    String[] items = theString.split("\t",-1);
+			    for (int i = 0; i < items.length && i < outputNames.length; i++) {
+				String outputName = outputNames[i];
+				DataThing outputThing = (DataThing)results.get(outputName);
+				((List)outputThing.getDataObject()).add(items[i]);
+			    }
+			}
+			
+		    };
+	    }
+	    else {
+		// Has a query so biomart is going to ignore everything we asked for and
+		// respond with some half assed keyed format. Mutter.
+		os = new OutputStream() {
+			ByteArrayOutputStream currentLine = new ByteArrayOutputStream();
+			public void close() {
+			    doString(currentLine.toString());
+			}
+			public void flush() {
+			    //
+			}
+			public void write(int b) throws IOException {
+			    if (b == (int)'\n') {
+				doString(currentLine.toString());
+				currentLine.reset();
+			    }
+			    else {
+				currentLine.write(b);
+			    }
+			}
+			private void doString(String theString) {
+			    String[] items = theString.split("\t",-1);
+			    for (int i = 0; i < outputNames.length; i++) {
+				String outputName = outputNames[i];
+				String result = "";
+				if (outputName.equals("sequenceexport")) {
+				    // sequence always the last item
+				    result = items[items.length-1];
+				}
+				else {
+				    // Go from item number length-(1+outputNames.length)
+				    // up to length-2
+				    for (int j = items.length - (1 + outputNames.length);
+					 j < items.length - 2;
+					 j++) {
+					String[] parts = items[j].split("=");
+					if (parts.length == 2) {
+					    if (parts[0].equals(outputName)) {
+						result = parts[1];
+					    }
+					}
+				    }
+				}
+				// Iterate over all the parts...
+				DataThing outputThing = (DataThing)results.get(outputName);
+				((List)outputThing.getDataObject()).add(result);
+			    }
+			}
+		    };
+	    }
 	    engine.execute(query,
 			   new FormatSpec(FormatSpec.TABULATED, "\t"),
 			   os);

@@ -440,6 +440,8 @@ public class AttributePageEditor extends JPanel {
 	// transcripts / proteins option is selected from the combobox
 	String[] transcriptOptions;
     
+	boolean firingEvents = false;
+
 	SequenceEditor(Query query) {
 	    super();
 	    setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
@@ -569,18 +571,21 @@ public class AttributePageEditor extends JPanel {
 	    imagePanel.setMaximumSize(new Dimension(600,95));
 	    add(imagePanel);
 	    updateUIPanel();
+	    firingEvents = true;
 	}
     
 	// Called when the query needs to be updated from the UI
 	void updateQuery() {
-	    SequenceDescription sd = query.getSequenceDescription();
-	    SequenceDescription newDesc = getSequenceDescription();
-	    if (sd == null && newDesc == null) {
-		return;
-	    }
-	    if (sd == null ||
-		sd.equals(newDesc) == false) {
-		query.setSequenceDescription(newDesc);
+	    if (firingEvents) {
+		SequenceDescription sd = query.getSequenceDescription();
+		SequenceDescription newDesc = getSequenceDescription();
+		if (sd == null && newDesc == null) {
+		    return;
+		}
+		if (sd == null ||
+		    sd.equals(newDesc) == false) {
+		    query.setSequenceDescription(newDesc);
+		}
 	    }
 	}
     

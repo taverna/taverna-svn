@@ -28,6 +28,7 @@ public class QueryConfigPanel extends JPanel
 
     public QueryConfigPanel(BiomartProcessor bp) {
 	super(new BorderLayout());
+	JTabbedPane tabs = new JTabbedPane();
 	this.theProcessor = bp;
 	BiomartConfigBean info = theProcessor.getConfig();
 	String dataSourceName = theProcessor.getDataSourceName();
@@ -51,7 +52,14 @@ public class QueryConfigPanel extends JPanel
 	    for (int i = 0; i < atPages.length; i++) {
 		attributes.add(atPages[i].getDisplayName(),new AttributePageEditor(query,atPages[i]));
 	    }
-	    add(attributes);
+	    JTabbedPane filters = new JTabbedPane();
+	    FilterPage[] fPages = config.getFilterPages();
+	    for (int i = 0; i < fPages.length; i++) {
+		filters.add(fPages[i].getDisplayName(), new FilterPageEditor(query, fPages[i]));
+	    }
+	    tabs.add("Attributes",attributes);
+	    tabs.add("Filters",filters);
+	    add(tabs);
 	}
 	catch (Exception ex) {
 	    ex.printStackTrace();
