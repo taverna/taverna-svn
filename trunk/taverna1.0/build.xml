@@ -139,6 +139,20 @@
 			</classpath>
 		</java>
 	</target> 
+	
+	<!-- Test the model, specifically the creation of soaplab nodes -->
+	<target name="test.soaplab" depends="jar">
+	        <java classname="org.embl.ebi.escience.scufl.test.SoaplabProcessorCreation" fork="yes">
+		    <classpath>
+			    <fileset dir="./lib">
+			        <include name="*.jar"/>
+		        </fileset>
+				<fileset dir="./build">
+		        	<include name="*.jar"/>
+				</fileset>
+			</classpath>
+		</java>
+	</target> 
 
 
 </project>
