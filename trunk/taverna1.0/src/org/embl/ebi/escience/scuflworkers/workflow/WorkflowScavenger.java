@@ -11,6 +11,10 @@ import org.embl.ebi.escience.scuflui.workbench.ScavengerCreationException;
 
 import org.embl.ebi.escience.scuflworkers.workflow.WorkflowProcessorFactory;
 import java.lang.String;
+import org.embl.ebi.escience.scufl.*;
+import org.embl.ebi.escience.scufl.parser.*;
+import org.embl.ebi.escience.scuflworkers.*;
+import java.net.URL;
 
 
 
@@ -27,10 +31,33 @@ public class WorkflowScavenger extends Scavenger {
      */
     public WorkflowScavenger(String definitionURL)
 	throws ScavengerCreationException {
-	super("XScufl @ "+definitionURL);
-	WorkflowProcessorFactory wpf = new WorkflowProcessorFactory(definitionURL);
-	DefaultMutableTreeNode factoryNode = new DefaultMutableTreeNode(wpf);
-	add(factoryNode);
+	super(new WorkflowProcessorFactory(definitionURL));
+	
+	//WorkflowProcessorFactory wpf = new WorkflowProcessorFactory(definitionURL);
+	//DefaultMutableTreeNode factoryNode = new DefaultMutableTreeNode(wpf);
+	
+	// Crafty addition of a load of the workflow in offline mode
+	// followed by extraction of all the processors...
+	ScuflModel model = new ScuflModel();
+	try {
+	    model.setOffline(true);
+	    XScuflParser.populate(new URL(definitionURL).openStream(),
+				  model, null);
+	}
+	catch (Exception ex) {
+	    ex.printStackTrace();
+	}
+	Processor[] processors = model.getProcessors();
+	for (int i = 0; i < processors.length; i++) {
+	    // Create a new node for the factory corresponding to this processor
+	    String tagName = ProcessorHelper.getTagNameForClassName(processors[i].getClass().getName());
+	    XMLHandler xh = (XMLHandler)ProcessorHelper.getXMLHandlerForTagName(tagName);
+	    System.out.println(tagName+":"+processors[i].getName());
+	    if (xh != null) {
+		ProcessorFactory pf = xh.getFactory(xh.elementForProcessor(processors[i]));
+		add(new DefaultMutableTreeNode(pf));
+	    }
+	}
     }
 }
 	

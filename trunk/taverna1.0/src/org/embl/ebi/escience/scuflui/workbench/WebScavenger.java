@@ -9,7 +9,7 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeNode;
 import org.embl.ebi.escience.scuflworkers.talisman.TalismanProcessorFactory;
-import org.embl.ebi.escience.scuflworkers.workflow.WorkflowProcessorFactory;
+import org.embl.ebi.escience.scuflworkers.workflow.WorkflowScavenger;
 import org.embl.ebi.escience.scuflworkers.wsdl.WSDLBasedScavenger;
 
 // Utility Imports
@@ -116,8 +116,9 @@ public class WebScavenger extends Scavenger {
 		    Document doc = sb.build(new InputStreamReader(new URL(allURLs[i]).openStream()));
 		    Element root = doc.getRootElement();
 		    if (root.getName().equals("scufl")) {
-			WorkflowProcessorFactory wpf = new WorkflowProcessorFactory(allURLs[i]);
-			add(new DefaultMutableTreeNode(wpf));
+			//WorkflowProcessorFactory wpf = new WorkflowProcessorFactory(allURLs[i]);
+			//add(new DefaultMutableTreeNode(wpf));
+			add(new WorkflowScavenger(allURLs[i]));
 		    }
 		    else if (root.getName().equals("tscript")) {
 			TalismanProcessorFactory tpf = new TalismanProcessorFactory(allURLs[i]);
@@ -126,6 +127,7 @@ public class WebScavenger extends Scavenger {
 		}
 	    }
 	    catch (Exception e) {
+		e.printStackTrace();
 		throw new ScavengerCreationException(e.getMessage());
 	    }
 	}

@@ -250,7 +250,14 @@ public class ProcessorHelper {
     public static ProcessorEditor getEditorForTagName(String tagName) {
 	return (ProcessorEditor)editorForTagName.get(tagName);
     }
-
+    
+    /** 
+     * Get the xml handler for a given tag name
+     */
+    public static XMLHandler getXMLHandlerForTagName(String tagname) {
+	return (XMLHandler)xmlHandlerForTagName.get(tagname);
+    }
+    
 
     /**
      * Given a tag name, return the preferred image icon for that

@@ -31,3 +31,4 @@ org.embl.ebi.escience.scuflworkers.java.StringStripDuplicates = list:Remove dupl
 org.embl.ebi.escience.scuflworkers.java.StringListMerge = list:Merge string list to string
 org.embl.ebi.escience.scuflworkers.java.GetLSID = metadata:Get internal LSID of input
 org.embl.ebi.escience.scuflworkers.java.EmitLotsOfStrings = test:Create lots of strings
+org.embl.ebi.escience.scuflworkers.java.GetLSIDValue = lsid:Resolve LSID Data

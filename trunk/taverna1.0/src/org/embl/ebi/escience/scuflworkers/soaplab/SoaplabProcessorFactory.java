@@ -42,7 +42,7 @@ public class SoaplabProcessorFactory extends ProcessorFactory {
      */
     public SoaplabProcessorFactory(String completeEndpoint) {
 	this.endpoint = completeEndpoint;
-	String[] split = applicationname.split(":");
+	String[] split = this.endpoint.split(":");
 	this.applicationname = split[split.length - 1];
     }
 
