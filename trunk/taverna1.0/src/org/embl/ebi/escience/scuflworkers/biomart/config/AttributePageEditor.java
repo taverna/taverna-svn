@@ -3,7 +3,7 @@
  * and is licensed under the GNU LGPL.
  * Copyright Tom Oinn, EMBL-EBI
  */
-package org.embl.ebi.escience.scuflworkers.biomart;
+package org.embl.ebi.escience.scuflworkers.biomart.config;
 
 import org.embl.ebi.escience.scufl.*;
 import org.embl.ebi.escience.scuflui.*;

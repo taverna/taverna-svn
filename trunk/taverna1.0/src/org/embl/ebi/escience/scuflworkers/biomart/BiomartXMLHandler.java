@@ -259,10 +259,18 @@ public class BiomartXMLHandler implements XMLHandler {
     private Element basicFilterToElement(BasicFilter bf) {
 	Element e = new Element("basicfilter", NAMESPACE);
 	e.setAttribute("field", bf.getField());
-	e.setAttribute("constraint", bf.getTableConstraint());
-	e.setAttribute("key", bf.getKey());
-	e.setAttribute("qualifier", bf.getQualifier());
-	e.setAttribute("value", bf.getValue());
+	if (bf.getTableConstraint() != null) {
+	    e.setAttribute("constraint", bf.getTableConstraint());
+	}
+	if (bf.getKey() != null) {
+	    e.setAttribute("key", bf.getKey());
+	}
+	if (bf.getQualifier() != null) {
+	    e.setAttribute("qualifier", bf.getQualifier());
+	}
+	if (bf.getValue() != null) {
+	    e.setAttribute("value", bf.getValue());
+	}
 	if (bf.getHandler() != null) {
 	    e.setAttribute("handler", bf.getHandler());
 	}

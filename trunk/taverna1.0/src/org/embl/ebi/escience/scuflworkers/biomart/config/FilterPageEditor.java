@@ -3,7 +3,7 @@
  * and is licensed under the GNU LGPL.
  * Copyright Tom Oinn, EMBL-EBI
  */
-package org.embl.ebi.escience.scuflworkers.biomart;
+package org.embl.ebi.escience.scuflworkers.biomart.config;
 
 import org.embl.ebi.escience.scufl.*;
 import org.embl.ebi.escience.scuflui.*;
@@ -15,6 +15,7 @@ import javax.swing.*;
 import java.awt.BorderLayout;
 import java.awt.GridLayout;
 import java.awt.FlowLayout;
+import java.awt.LayoutManager;
 import javax.swing.ImageIcon;
 import java.util.*;
 import java.awt.Color;
@@ -97,6 +98,8 @@ public class FilterPageEditor extends JPanel {
 
     class FilterGroupEditor extends JPanel {
 	
+	Map internalNameToLeafEditor = new HashMap();
+
 	public FilterGroupEditor(Query query, FilterGroup fg) {
 	    super(new BorderLayout());
 	    setOpaque(false);
@@ -117,7 +120,9 @@ public class FilterPageEditor extends JPanel {
 	    filters.setBackground(Color.WHITE);
 	    FilterCollection[] collections = fg.getFilterCollections();
 	    for (int i = 0; i < collections.length; i++) {
-		filters.add(new FilterCollectionEditor(query, collections[i]));
+		FilterCollectionEditor fce = new FilterCollectionEditor(query, collections[i]);
+		filters.add(fce);
+		internalNameToLeafEditor.putAll(fce.internalNameToLeafEditor);
 	    }
 	    JScrollPane sp = new JScrollPane(filters);
 	    sp.setBackground(Color.WHITE);
@@ -139,6 +144,8 @@ public class FilterPageEditor extends JPanel {
 
     class FilterCollectionEditor extends JPanel {
 	
+	Map internalNameToLeafEditor = new HashMap();
+
 	public FilterCollectionEditor(Query query, FilterCollection fc) {
 	    super(new BorderLayout());
 	    setBackground(Color.WHITE);
@@ -171,6 +178,11 @@ public class FilterPageEditor extends JPanel {
 			     filterType.equals("boolean_list")) {
 			filterEditor = new BooleanFilterEditor(query, fd);
 		    }
+		    else if (filterType.equals("list") ||
+			     filterType.equals("drop_down_basic_filter") ||
+			     filterType.equals("text_entry_basic_filter")) {
+			filterEditor = new ListFilterEditor(query, fd);
+		    }
 		    else {
 			filterEditor = new ToDoMessage(filterType);
 		    }
@@ -178,6 +190,7 @@ public class FilterPageEditor extends JPanel {
 		    if (filterEditor != null) {
 			filterPanel.add(filterEditor);
 			filterLocations.put(key, filterEditor);
+			internalNameToLeafEditor.put(fd.getInternalName(), filterEditor);
 		    }
 			
 		}
@@ -194,7 +207,245 @@ public class FilterPageEditor extends JPanel {
 	}	
     }
 
-    class ToDoMessage extends JPanel {
+    abstract class FilterEditor extends JPanel {
+	
+	protected OptionHolder emptySelection = new OptionHolder(null);
+
+	protected PushOptionsHandler[] pushOptionHandlers;
+
+	class PushOptionsHandler {
+	    
+	    private PushAction optionPush;
+
+	    public PushOptionsHandler(PushAction optionPush) {
+		this.optionPush = optionPush;
+	    }
+
+	    private FilterEditor getTargetEditor() {
+		FilterEditor fe = FilterEditor.this;
+		Component currentComponent = fe;
+		while (currentComponent instanceof FilterGroupEditor == false &&
+		       currentComponent != null) {
+		    currentComponent = currentComponent.getParent();
+		}
+		FilterGroupEditor fge = (FilterGroupEditor)currentComponent;
+		//for (Iterator i = fge.internalNameToLeafEditor.keySet().iterator(); i.hasNext();) {
+		//    String s = (String)i.next();
+		//    System.out.println(s);
+		//}
+		return (FilterEditor)fge.internalNameToLeafEditor.get(optionPush.getRef());
+	    }
+	    
+	    public void push() {
+		System.out.println("Push to : "+optionPush.getRef());
+		getTargetEditor().setOptions(optionPush.getOptions());
+	    }
+
+	    public void remove() {
+		getTargetEditor().setOptions(null);
+	    }
+	    
+	}
+	
+	class OptionHolder {
+	    Option option;
+	    public OptionHolder(Option o) {
+		this.option = o;
+	    }
+	    public String toString() {
+		if (option == null) {
+		    return "No filter";
+		}
+		return option.getDisplayName();
+	    }
+	}
+
+	protected FilterEditor(LayoutManager layout) {
+	    super(layout);
+	}
+
+	protected FilterEditor() {
+	    super();
+	}
+	
+	protected void setOptions(Option[] options) {
+	    //
+	}
+
+	protected void assignPushOptions(PushAction[] optionPushes) {
+	    pushOptionHandlers = new PushOptionsHandler[optionPushes.length];
+	    for (int i = 0; i < optionPushes.length; i++) {
+		pushOptionHandlers[i] = 
+		    new PushOptionsHandler(optionPushes[i]);
+		pushOptionHandlers[i].push();
+	    }
+	}
+	
+	protected void unassignPushOptions() {
+	    int n = (pushOptionHandlers == null) ? 0 : pushOptionHandlers.length;
+	    for (int i = 0; i < n; i++) {
+		pushOptionHandlers[i].remove();
+	    }
+	}
+
+    }
+
+    class ListFilterEditor extends FilterEditor {
+
+	String[] myIDs = new String[0];
+	JComboBox list = new JComboBox();
+	Query query;
+	FilterDescription fd;
+	ActionListener listListener;
+	
+	public BasicFilter getCurrentFilter() {
+	    Filter[] currentFilters = query.getFilters();
+	    for (int i = 0; i < currentFilters.length; i++) {
+		String filterID = (currentFilters[i].getField()+
+				   currentFilters[i].getKey()+
+				   currentFilters[i].getTableConstraint()+
+				   currentFilters[i].getValue());
+		for (int j = 0; j < myIDs.length; j++) {
+		    if (filterID.equals(myIDs[j]) &&
+			currentFilters[i] instanceof BasicFilter) {
+			return (BasicFilter)currentFilters[i];
+		    }
+		}
+	    }
+	    return null;
+	}
+
+	public void setOptions(Option[] options) {
+	    System.out.println("Setting options for "+fd.getDisplayName());
+	    unassignPushOptions();
+	    BasicFilter currentFilter = getCurrentFilter();
+	    if (currentFilter != null) {
+		query.removeFilter(currentFilter);
+	    }
+	    if (options != null) {
+		myIDs = new String[options.length];
+	    }
+	    else {
+		myIDs = new String[0];
+	    }
+	    list.removeActionListener(listListener);
+	    list.removeAllItems();
+	    list.addItem(emptySelection);
+	    list.setSelectedIndex(0);
+	    for (int i = 0; i < myIDs.length; i++) {
+		list.addItem(new OptionHolder(options[i]));
+		// Note IDs different in this case
+		myIDs[i] = (options[i].getFieldFromContext()+
+			    options[i].getKeyFromContext()+
+			    options[i].getTableConstraintFromContext()+
+			    options[i].getValue());
+	    }
+	    if (myIDs.length == 0) {
+		list.setEnabled(false);
+	    }
+	    else {
+		list.setEnabled(true);
+	    }
+	    list.addActionListener(listListener);	    
+	    list.validate();
+	    System.out.println("Done setting options for "+fd.getDisplayName());
+	}
+
+	public ListFilterEditor(Query theQuery, FilterDescription filterDescription) {
+	    super(new BorderLayout());
+	    fd = filterDescription;
+	    query = theQuery;
+	    setOpaque(false);
+	    Option[] options = filterDescription.getOptions();
+	    myIDs = new String[options.length];
+	    list.addItem(emptySelection);
+	    list.setSelectedIndex(0);
+	    for (int i = 0; i < options.length; i++) {
+		list.addItem(new OptionHolder(options[i]));
+		// Note IDs different in this case
+		myIDs[i] = (options[i].getFieldFromContext()+
+			    options[i].getKeyFromContext()+
+			    options[i].getTableConstraintFromContext()+
+			    options[i].getValue());
+	    }
+	    if (options.length == 0) {
+		list.setEnabled(false);
+	    }
+	    // Find an existing value if such exists
+	    Filter[] currentFilters = query.getFilters();
+	    for (int i = 0; i < currentFilters.length; i++) {
+		String filterID = (currentFilters[i].getField()+
+				   currentFilters[i].getKey()+
+				   currentFilters[i].getTableConstraint()+
+				   currentFilters[i].getValue());
+		for (int j = 0; j < myIDs.length; j++) {
+		    if (filterID.equals(myIDs[j]) &&
+			currentFilters[i] instanceof BasicFilter) {
+			list.setSelectedIndex(j+1);
+			break;
+		    }
+		}
+	    }
+	    // Create a listener for the list box
+	    listListener = new ActionListener() {
+		    OptionHolder lastSelected = null;
+		    public void actionPerformed(ActionEvent ae) {
+			OptionHolder oh = (OptionHolder)list.getSelectedItem();
+			if (oh == lastSelected) {
+			    return;
+			}
+			lastSelected = oh;
+			Filter currentFilter = getCurrentFilter();
+			if (currentFilter != null) {
+			    query.removeFilter(currentFilter);
+			}
+			if (oh != emptySelection) {
+			    Option o = oh.option;
+			    System.out.println(o);
+			    if (o.getValue() != null) {
+				Filter newFilter = new BasicFilter(o.getFieldFromContext(),
+								   o.getTableConstraintFromContext(),
+								   o.getKeyFromContext(),
+								   "=",
+								   o.getValue(),
+								   o.getHandlerFromContext());
+				System.out.println(newFilter);
+				query.addFilter(newFilter);
+			    }
+			    assignPushOptions(o.getPushActions());
+			}
+			
+			else {
+			    unassignPushOptions();
+			}
+		    }
+		};
+	    list.addActionListener(listListener);
+	    
+	    add(Box.createRigidArea(new Dimension(10,10)),
+		BorderLayout.EAST);
+	    add(Box.createRigidArea(new Dimension(10,10)),
+		BorderLayout.WEST);
+	    JPanel internalPanel = new JPanel();
+	    internalPanel.setLayout(new BoxLayout(internalPanel, BoxLayout.LINE_AXIS));
+	    internalPanel.setOpaque(false);
+	    JLabel filterNameLabel = new JLabel(fd.getDisplayName());
+	    //filterNameLabel.setMinimumSize(new Dimension(80,25));
+	    //filterNameLabel.setPreferredSize(new Dimension(80,25));
+	    internalPanel.add(filterNameLabel);
+	    internalPanel.add(Box.createRigidArea(new Dimension(10,10)));
+	    internalPanel.add(list);
+	    internalPanel.add(Box.createHorizontalGlue());
+	    add(internalPanel, BorderLayout.CENTER);
+	    setMaximumSize(new Dimension(6000,25));
+	}
+	
+	    
+
+    }
+
+
+    class ToDoMessage extends FilterEditor {
 	public ToDoMessage(String message) {
 	    super(new BorderLayout());
 	    setOpaque(false);
@@ -207,7 +458,7 @@ public class FilterPageEditor extends JPanel {
 	}
     }
 
-    class BooleanFilterEditor extends JPanel {
+    class BooleanFilterEditor extends FilterEditor {
 
 	Query query;
 	FilterDescription fd;
@@ -220,17 +471,40 @@ public class FilterPageEditor extends JPanel {
 	private String excludeFilterType = null;
 	private String requireFilterType = null;
 	
-	class OptionHolder {
-	    Option option;
-	    public OptionHolder(Option o) {
-		this.option = o;
-	    }
-	    public String toString() {
-		return option.getDisplayName();
-	    }
-	}
+	private ActionListener fieldSelectListener = null;
 
 	String[] myIDs;
+
+	public void setOptions(Option[] options) {
+	    if (fieldSelect == null) {
+		return;
+	    }
+	    fieldSelect.removeActionListener(fieldSelectListener);
+	    fieldSelect.removeAllItems();
+	    myIDs = new String[options.length];
+	    for (int i = 0; i < options.length; i++) {
+		Option o = options[i];
+		fieldSelect.addItem(new OptionHolder(o));
+		myIDs[i] = (options[i].getFieldFromContext()+
+			    options[i].getKeyFromContext()+
+			    options[i].getTableConstraintFromContext());
+	    }
+	    fieldSelect.addActionListener(fieldSelectListener);
+	    fieldSelect.setSelectedIndex(0);	    
+	}
+	
+	public BooleanFilter getCurrentFilter() {
+	    Filter[] filters = query.getFilters();
+	    for (int i = 0; i < filters.length; i++) {
+		for (int j = 0; j < myIDs.length; j++) {
+		    String filterID = filters[i].getField()+filters[i].getKey()+filters[i].getTableConstraint();
+		    if (filterID.equals(myIDs[j]) && filters[i] instanceof BooleanFilter) {
+			return (BooleanFilter)filters[i];
+		    }
+		}
+	    }
+	    return null;
+	}
 
 	public BooleanFilterEditor(Query theQuery, FilterDescription filterDescription) {
 	    super(new BorderLayout());
@@ -294,6 +568,42 @@ public class FilterPageEditor extends JPanel {
 	    
 	    // Register item listener for the field selector here...
 	    if (fieldSelect != null) {
+		fieldSelectListener = new ActionListener() {
+			OptionHolder lastSelectedItem = null;
+			public void actionPerformed(ActionEvent ae) {
+			    OptionHolder oh = (OptionHolder)fieldSelect.getSelectedItem();
+			    if (oh == lastSelectedItem) {
+				return;
+			    }
+			    if (ignore.isSelected()) {
+				return;
+			    }
+			    String filterType = requireFilterType;
+			    if (exclude.isSelected()) {
+				filterType = excludeFilterType;
+			    }
+			    BooleanFilter oldFilter = getCurrentFilter();
+			    
+			    QueryFilterSettings settings = fd;
+			    if (fieldSelect != null) {
+				settings = ((OptionHolder)fieldSelect.getSelectedItem()).option;
+				//System.out.println(settings);
+			    }
+			    BooleanFilter newFilter = new BooleanFilter(settings.getFieldFromContext(),
+									settings.getTableConstraintFromContext(),
+									settings.getKeyFromContext(),
+									filterType,
+									settings.getHandlerFromContext());
+			    if (oldFilter != null) {
+				query.replaceFilter(oldFilter, newFilter);
+			    }
+			    else {
+				query.addFilter(newFilter);
+			    }
+			    lastSelectedItem = oh;
+			}
+		    };
+		fieldSelect.addActionListener(fieldSelectListener);
 		// TODO - add item listener!
 	    }
 			
@@ -308,34 +618,29 @@ public class FilterPageEditor extends JPanel {
 			    if (exclude.isSelected()) {
 				exclude.setSelected(false);
 			    }
-			    Filter[] filters = query.getFilters();
-			    for (int i = 0; i < filters.length; i++) {
-				String filterID = filters[i].getField()+filters[i].getKey()+filters[i].getTableConstraint();
-				for (int j = 0; j < myIDs.length; j++) {
-				    if (filterID.equals(myIDs[j]) && filters[i] instanceof BooleanFilter) {
-					BooleanFilter oldFilter = (BooleanFilter)filters[i];
-					BooleanFilter newFilter = new BooleanFilter(oldFilter.getField(),
-										    oldFilter.getTableConstraint(),
-										    oldFilter.getKey(),
-										    requireFilterType,
-										    oldFilter.getHandler());
-					query.replaceFilter(oldFilter, newFilter);
-					return;
-				    }
+			    BooleanFilter oldFilter = getCurrentFilter();
+			    if (oldFilter != null) {
+				BooleanFilter newFilter = new BooleanFilter(oldFilter.getField(),
+									    oldFilter.getTableConstraint(),
+									    oldFilter.getKey(),
+									    requireFilterType,
+									    oldFilter.getHandler());
+				query.replaceFilter(oldFilter, newFilter);
+				return;
+			    }
+			    else {
+				QueryFilterSettings settings = fd;
+				if (fieldSelect != null) {
+				    settings = ((OptionHolder)fieldSelect.getSelectedItem()).option;
+				    //System.out.println(settings);
 				}
+				BooleanFilter newFilter = new BooleanFilter(settings.getFieldFromContext(),
+									    settings.getTableConstraintFromContext(),
+									    settings.getKeyFromContext(),
+									    requireFilterType,
+									    settings.getHandlerFromContext());
+				query.addFilter(newFilter);
 			    }
-			    // Didn't find a matching filter, create a new one
-			    QueryFilterSettings settings = fd;
-			    if (fieldSelect != null) {
-				settings = ((OptionHolder)fieldSelect.getSelectedItem()).option;
-				System.out.println(settings);
-			    }
-			    BooleanFilter newFilter = new BooleanFilter(settings.getFieldFromContext(),
-									settings.getTableConstraintFromContext(),
-									settings.getKeyFromContext(),
-									requireFilterType,
-									settings.getHandlerFromContext());
-			    query.addFilter(newFilter);
 			}
 			else {
 			    if (ignore.isSelected() == false) {
@@ -353,33 +658,29 @@ public class FilterPageEditor extends JPanel {
 			    if (ignore.isSelected()) {
 				ignore.setSelected(false);
 			    }
-			    Filter[] filters = query.getFilters();
-			    for (int i = 0; i < filters.length; i++) {
-				String filterID = filters[i].getField()+filters[i].getKey()+filters[i].getTableConstraint();
-				for (int j = 0; j < myIDs.length; j++) {
-				    if (filterID.equals(myIDs[j]) && filters[i] instanceof BooleanFilter) {
-					BooleanFilter oldFilter = (BooleanFilter)filters[i];
-					BooleanFilter newFilter = new BooleanFilter(oldFilter.getField(),
-										    oldFilter.getTableConstraint(),
-										    oldFilter.getKey(),
-										    excludeFilterType,
-										    oldFilter.getHandler());
-					query.replaceFilter(oldFilter, newFilter);
-					return;
-				    }
+			    BooleanFilter oldFilter = getCurrentFilter();
+			    if (oldFilter != null) {
+				BooleanFilter newFilter = new BooleanFilter(oldFilter.getField(),
+									    oldFilter.getTableConstraint(),
+									    oldFilter.getKey(),
+									    excludeFilterType,
+									    oldFilter.getHandler());
+				query.replaceFilter(oldFilter, newFilter);
+				return;
+			    }
+			    else {
+				// Didn't find a matching filter, create a new one
+				QueryFilterSettings settings = fd;
+				if (fieldSelect != null) {
+				    settings = ((OptionHolder)fieldSelect.getSelectedItem()).option;
 				}
+				BooleanFilter newFilter = new BooleanFilter(settings.getFieldFromContext(),
+									    settings.getTableConstraintFromContext(),
+									    settings.getKeyFromContext(),
+									    excludeFilterType,
+									    settings.getHandlerFromContext());
+				query.addFilter(newFilter);
 			    }
-			    // Didn't find a matching filter, create a new one
-			    QueryFilterSettings settings = fd;
-			    if (fieldSelect != null) {
-				settings = ((OptionHolder)fieldSelect.getSelectedItem()).option;
-			    }
-			    BooleanFilter newFilter = new BooleanFilter(settings.getFieldFromContext(),
-									settings.getTableConstraintFromContext(),
-									settings.getKeyFromContext(),
-									excludeFilterType,
-									settings.getHandlerFromContext());
-			    query.addFilter(newFilter);
 			}
 			else {
 			    if (ignore.isSelected() == false) {
@@ -397,15 +698,9 @@ public class FilterPageEditor extends JPanel {
 			    if (exclude.isSelected()) {
 				exclude.setSelected(false);
 			    }
-			    Filter[] filters = query.getFilters();
-			    for (int i = 0; i < filters.length; i++) {
-				String filterID = filters[i].getField()+filters[i].getKey()+filters[i].getTableConstraint();
-				for (int j = 0; j < myIDs.length; j++) {
-				    if (filterID.equals(myIDs[j]) && filters[i] instanceof BooleanFilter) {
-					query.removeFilter(filters[i]);
-					return;
-				    }
-				}
+			    BooleanFilter oldFilter = getCurrentFilter();
+			    if (oldFilter != null) {
+				query.removeFilter(oldFilter);
 			    }
 			}
 			else if (exclude.isSelected() == false &&
@@ -447,7 +742,7 @@ public class FilterPageEditor extends JPanel {
 
     }
     
-    class TextFilterEditor extends JPanel {
+    class TextFilterEditor extends FilterEditor {
 	
 	Query query;
 	FilterDescription fd;

@@ -94,15 +94,15 @@ public class BiomartProcessor extends Processor {
 	query.removeQueryChangeListener(queryListener);
     }
 
-    BiomartConfigBean getConfig() {
+    public BiomartConfigBean getConfig() {
 	return this.info;
     }
 
-    String getDataSourceName() {
+    public String getDataSourceName() {
 	return this.dataSourceName;
     }
     
-    Query getQuery() {
+    public Query getQuery() {
 	return this.query;
     }
 
@@ -118,7 +118,7 @@ public class BiomartProcessor extends Processor {
 	}
     }
     
-    DatasetConfig getDatasetConfig() throws ConfigurationException {
+    public DatasetConfig getDatasetConfig() throws ConfigurationException {
 	synchronized(query) {
 	    if (config != null) {
 		return config;
