@@ -8,6 +8,7 @@ package org.embl.ebi.escience.scuflui;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.dnd.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -16,6 +17,7 @@ import javax.swing.*;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import org.embl.ebi.escience.baclava.DataThing;
+import org.embl.ebi.escience.baclava.factory.*;
 import org.embl.ebi.escience.baclava.factory.DataThingTreeFactory;
 import org.embl.ebi.escience.baclava.factory.DataThingTreeNode;
 import org.embl.ebi.escience.scuflui.renderers.RendererRegistry;
@@ -36,7 +38,6 @@ import java.lang.Object;
 import java.lang.String;
 
 
-
 /**
  * A JPanel to represent a single result DataThing
  * to the user at the end of the workflow
@@ -44,7 +45,7 @@ import java.lang.String;
  * @author Matthew Pocock
  */
 public class ResultItemPanel extends JPanel {
-    Logger LOG = Logger.getLogger(ResultItemPanel.class);
+	Logger LOG = Logger.getLogger(ResultItemPanel.class);
     final JFileChooser fc = new JFileChooser();
     final RendererRegistry renderers;
 
@@ -65,14 +66,15 @@ public class ResultItemPanel extends JPanel {
 		    return getPreferredSize();
 		}
 	    };
-	// Fix for look and feel problems with multiline labels.
-	structureTree.setRowHeight(0);
+		// Fix for look and feel problems with multiline labels.
+		structureTree.setRowHeight(0);
         structureTree.setCellRenderer(DataThingTreeFactory.getRenderer());
+        new DataThingTreeTransferHandler(structureTree, DnDConstants.ACTION_COPY);
         JLabel label = new JLabel("Select results from the tree to the left");
         label.setPreferredSize(new Dimension(400,40));
         label.setBackground(Color.white);
-	JScrollPane foo = new JScrollPane(label);
-	foo.setPreferredSize(new Dimension(100,100));
+		JScrollPane foo = new JScrollPane(label);
+		foo.setPreferredSize(new Dimension(100,100));
         final JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,
                                                     new JScrollPane(structureTree),
                                                     foo);
