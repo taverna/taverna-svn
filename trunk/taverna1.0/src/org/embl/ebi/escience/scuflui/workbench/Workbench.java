@@ -22,6 +22,7 @@ import org.embl.ebi.escience.scuflui.EnactorLaunchPanel;
 import org.embl.ebi.escience.scuflui.ScuflDiagram;
 import org.embl.ebi.escience.scuflui.ScuflModelExplorer;
 import org.embl.ebi.escience.scuflui.XScuflTextArea;
+import uk.ac.mrc.hgmp.taverna.retsina.Retsina;
 
 // Utility Imports
 import java.util.Enumeration;
@@ -378,6 +379,18 @@ public class Workbench extends JFrame {
 
 	// Menu to show different UI widgets
 	JMenu windowMenu = new JMenu("Views");
+        JMenuItem retsinaView = new JMenuItem("EMBOSS Flow Builder");
+        retsinaView.addActionListener(new ActionListener() {
+               public void actionPerformed(ActionEvent e) {
+                  Retsina retsinaPane = new Retsina();
+                  GenericUIComponentFrame retsina = new GenericUIComponentFrame(Workbench.this.model,retsinaPane);
+                  Workbench.this.desktop.add(retsina);
+                  retsina.setSize(650,600);
+                  retsina.moveToFront();
+               }
+            });
+        windowMenu.add(retsinaView);
+
 	JMenuItem explorerView = new JMenuItem("Scufl Explorer");
 	explorerView.addActionListener(new ActionListener() {
 		public void actionPerformed(ActionEvent e) {
