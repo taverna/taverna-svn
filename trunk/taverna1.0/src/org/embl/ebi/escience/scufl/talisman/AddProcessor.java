@@ -7,10 +7,15 @@ package org.embl.ebi.escience.scufl.talisman;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import org.embl.ebi.escience.scufl.*;
+import org.embl.ebi.escience.scufl.DuplicateProcessorNameException;
+import org.embl.ebi.escience.scufl.ProcessorCreationException;
+import org.embl.ebi.escience.scufl.SoaplabProcessor;
 import org.embl.ebi.escience.talisman.*;
 
 import org.embl.ebi.escience.scufl.talisman.AbstractScuflAction;
+import java.lang.String;
+
+
 
 /**
  * Adds a new Processor to a ScuflModel within a Talisman BeanField.
