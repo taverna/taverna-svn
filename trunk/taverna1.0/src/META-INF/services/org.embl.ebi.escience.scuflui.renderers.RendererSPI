@@ -1,4 +1,5 @@
 org.embl.ebi.escience.scuflui.renderers.SeqVistaRenderer
+org.embl.ebi.escience.scuflui.renderers.JMolRenderer
 org.embl.ebi.escience.scuflui.renderers.TextHtml
 org.embl.ebi.escience.scuflui.renderers.TextRtf
 org.embl.ebi.escience.scuflui.renderers.TextTavernaWebUrl
