@@ -48,7 +48,7 @@ public class DataThingTreeFactory {
 		collectionType = "Set";
 	    }
 	    DataThingTreeNode result = new DataThingTreeNode(theDataThing,
-							     collectionType);
+							     theObject);
 	    for (Iterator i = ((Collection)theObject).iterator(); i.hasNext();) {
 		result.add(doNode(theDataThing, i.next()));
 	    }

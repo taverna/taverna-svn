@@ -8,9 +8,8 @@ package org.embl.ebi.escience.baclava.factory;
 import org.embl.ebi.escience.baclava.DataThing;
 
 // Utility Imports
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Vector;
+
+import java.util.*;
 
 
 
@@ -22,12 +21,16 @@ import java.util.Vector;
  */
 public class DataThingFactory {
     
+    public static DataThing bake(Object theObject) {
+	return new DataThing(convertObject(theObject));
+    }
+
     /**
      * Easy for String objects, everything already recognizes
      * them so no custom code required.
      */
     public static DataThing bake(String theString) {
-	return new DataThing(theString);
+	return new DataThing(convertObject(theString));
     }
     
     /**
@@ -35,18 +38,21 @@ public class DataThingFactory {
      * that.
      */
     public static DataThing bake(String[] theStringArray) {
-	List theList = new ArrayList();
-	for (int i = 0; i < theStringArray.length; i++) {
-	    theList.add(theStringArray[i]);
-	}
-	return new DataThing(theList);
+	return new DataThing(convertObject(theStringArray));
+	/**
+	   List theList = new ArrayList();
+	   for (int i = 0; i < theStringArray.length; i++) {
+	   theList.add(theStringArray[i]);
+	   }
+	   return new DataThing(theList);
+	*/
     }
-
+    
     /**
      * For byte arrays store the byte array as is
      */
     public static DataThing bake(byte[] theByteArray) {
-	return new DataThing(theByteArray);
+	return new DataThing(convertObject(theByteArray));
     }
 
     /**
@@ -54,11 +60,14 @@ public class DataThingFactory {
      * in a List
      */
     public static DataThing bake(byte[][] theByteArrayArray) {
-	List theList = new ArrayList();
-	for (int i = 0; i < theByteArrayArray.length; i++) {
-	    theList.add(theByteArrayArray[i]);
-	}
-	return new DataThing(theList);
+	return new DataThing(convertObject(theByteArrayArray));
+	/**
+	   List theList = new ArrayList();
+	   for (int i = 0; i < theByteArrayArray.length; i++) {
+	   theList.add(theByteArrayArray[i]);
+	   }
+	   return new DataThing(theList);
+	*/
     }
 
     /**
@@ -75,7 +84,7 @@ public class DataThingFactory {
 	    // original object wrapped in a DataThing
 	    return new DataThing(theList);
 	}
-		
+	
 	Vector v = new Vector();
 	for (int i = 0; i < list.length; i++) {
 	    Object[] list2 = ((ArrayList)list[i]).toArray();
@@ -94,6 +103,62 @@ public class DataThingFactory {
 	byte[][] results = new byte[v.size()][];
 	v.copyInto(results);
 	return bake(results);
+    }
+
+    private static Object convertObject(Object theObject) {
+	if (theObject == null) {
+	    return null;
+	}
+	// If an array type...
+	Class theClass = theObject.getClass();
+	if (theClass.isArray()) {
+	    // Special case for byte[]
+	    if (theObject instanceof byte[]) {
+		//System.out.println("Found a byte[], returning it.");
+		return theObject;
+	    }
+	    else {
+		// For all other arrays, create a new
+		// List and iterate over the array, 
+		// unpackaging the item and recursively
+		// putting it into the new List after
+		// conversion
+		Object[] theArray = (Object[])theObject;
+		//System.out.println("Found an array length "+theArray.length+", repacking as List...");
+		List l = new ArrayList();
+		for (int i = 0; i < theArray.length; i++) { 
+		    l.add(convertObject(theArray[i]));
+		}
+		return l;
+	    }
+	}
+	// If a collection, iterate over it and copy
+	if (theObject instanceof Collection) {
+	    if (theObject instanceof List) {
+		//System.out.println("Re-packing a list...");
+		List l = new ArrayList();
+		for (Iterator i = ((List)theObject).iterator(); i.hasNext();) {
+		    l.add(convertObject(i.next()));
+		}
+		return l;
+	    }
+	    else if (theObject instanceof Set) {
+		//System.out.println("Re-packing a set...");
+		Set s = new HashSet();
+		for (Iterator i = ((Set)theObject).iterator(); i.hasNext();) {
+		    s.add(convertObject(i.next()));
+		}
+		return s;
+	    }
+	}
+	// If a number then return the string representation for it
+	if (theObject instanceof Number) {
+	    //System.out.println("Found a number, converting it to a string...");
+	    return theObject.toString();
+	}
+	// Otherwise just return the object
+	//System.out.println("Found a "+theObject.getClass().getName()+", returning it");
+	return theObject;
     }
 
 }

@@ -215,18 +215,20 @@ public class DataThingXMLFactory {
 		// Handle lists
 		poElement.setAttribute("type","list");
 		// Iterate over the list, creating the new items
-		for (Iterator i = ((List)o).iterator(); i.hasNext(); ) {
-		    Element listItemElement = elementForObject(i.next(), theDataThing);
-		    listElement.addContent(listItemElement);
-		    listItemElement.setAttribute("index",""+currentIndex);
-		    // If the index is non zero create a new relation
-		    if (currentIndex > 0) {
-			Element relationElement = new Element("relation", namespace);
-			relationElement.setAttribute("parent", ""+(currentIndex-1));
-			relationElement.setAttribute("child", ""+currentIndex);
-			relationListElement.addContent(relationElement);
+		if (!((List)o).isEmpty()) {
+		    for (Iterator i = ((List)o).iterator(); i.hasNext(); ) {
+			Element listItemElement = elementForObject(i.next(), theDataThing);
+			listElement.addContent(listItemElement);
+			listItemElement.setAttribute("index",""+currentIndex);
+			// If the index is non zero create a new relation
+			if (currentIndex > 0) {
+			    Element relationElement = new Element("relation", namespace);
+			    relationElement.setAttribute("parent", ""+(currentIndex-1));
+			    relationElement.setAttribute("child", ""+currentIndex);
+			    relationListElement.addContent(relationElement);
+			}
+			currentIndex++;
 		    }
-		    currentIndex++;
 		}
 	    }
 	    else if (o instanceof Set) {

@@ -26,8 +26,8 @@
 //      Dependencies        :
 //
 //      Last commit info    :   $Author: mereden $
-//                              $Date: 2003-10-09 12:19:32 $
-//                              $Revision: 1.17 $
+//                              $Date: 2003-10-10 17:42:51 $
+//                              $Revision: 1.18 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 
@@ -129,6 +129,7 @@ public class PortTask extends TavernaTask {
 		encapsulationDifference--;
 		// While the dimensionality has not been reconciled create
 		// a new List container and put the current object in it.
+		System.out.println("Wrapping data...");
 		List newList = new ArrayList();
 		newList.add(theDataObject);
 		theDataObject = newList;

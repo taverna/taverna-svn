@@ -77,7 +77,7 @@ public class XMLTree extends JTree {
 	} 
 	nameBuffer.append("</html>");
 	treeNode = new DefaultMutableTreeNode( root.getNodeType() == Node.TEXT_NODE ? 
-					       "<html><font color=\"green\">"+value+"</font></html>" 
+					       "<html><pre><font color=\"green\">"+value+"</font></pre></html>" 
 					       :
 					       nameBuffer.toString() );
 	

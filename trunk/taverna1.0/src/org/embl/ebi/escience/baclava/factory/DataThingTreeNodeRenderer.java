@@ -6,6 +6,7 @@
 package org.embl.ebi.escience.baclava.factory;
 
 import java.awt.Component;
+import java.util.*;
 import javax.swing.ImageIcon;
 import javax.swing.JTree;
 import javax.swing.tree.DefaultTreeCellRenderer;
@@ -38,6 +39,15 @@ public class DataThingTreeNodeRenderer extends DefaultTreeCellRenderer {
 	DataThing theDataThing = theNode.getDataThing();
 	// If a leaf then do magic...
 	if (theNode.isLeaf()) {
+	    if (userObject instanceof Collection) {
+		if (userObject instanceof Set) {
+		    setText("<html><font color=\"red\">Empty set</font></html>");
+		}
+		else {
+		    setText("<html><font color=\"red\">Empty list</font></html>");
+		}
+		return this;
+	    }
 	    String syntacticType = theDataThing.getSyntacticTypeForObject(userObject);
 	    String mimeTypes = syntacticType.split("'")[1].toLowerCase();
 	    setText(mimeTypes);

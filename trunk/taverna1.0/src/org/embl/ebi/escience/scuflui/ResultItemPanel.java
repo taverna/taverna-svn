@@ -21,6 +21,7 @@ import org.embl.ebi.escience.baclava.DataThing;
 import org.embl.ebi.escience.baclava.factory.DataThingTreeFactory;
 import org.embl.ebi.escience.baclava.factory.DataThingTreeNode;
 import org.embl.ebi.escience.scuflui.workbench.Workbench;
+import java.util.Collection;
 
 // IO Imports
 import java.io.*;
@@ -61,6 +62,9 @@ public class ResultItemPanel extends JPanel {
 			    DataThing theDataThing = node.getDataThing();
 			    String syntacticType = theDataThing.getSyntacticTypeForObject(userObject);
 			    String mimeTypes = syntacticType.split("'")[1].toLowerCase();
+			    if(userObject instanceof Collection) {
+				userObject = "Empty collection, collection type was "+userObject.getClass().getName();
+			    }
 			    if (mimeTypes.matches(".*text/.*")) {
 				// Create a new text area
 				if (mimeTypes.matches(".*text/html.*")) {

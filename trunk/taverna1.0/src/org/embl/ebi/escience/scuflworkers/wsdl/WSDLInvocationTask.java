@@ -25,8 +25,8 @@
 //      Dependencies        :
 //
 //      Last commit info    :   $Author: mereden $
-//                              $Date: 2003-10-09 12:19:32 $
-//                              $Revision: 1.5 $
+//                              $Date: 2003-10-10 17:42:51 $
+//                              $Revision: 1.6 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 
@@ -131,26 +131,36 @@ public class WSDLInvocationTask extends ProcessorTask  {
     }
     
     private DataThing makeThing(Object o) {
+	return DataThingFactory.bake(o);
+	/**
+	   
 	if (o instanceof Number) {
-	    return DataThingFactory.bake(o.toString());
+	return DataThingFactory.bake(o.toString());
 	}
 	else if (o instanceof Number[]) {
-	    Number[] n = (Number[])o;
-	    String[] stringArray = new String[n.length];
-	    for (int i = 0; i < n.length; i++) {
-		stringArray[i] = n[i].toString();
-	    }
-	    return DataThingFactory.bake(stringArray);
+	Number[] n = (Number[])o;
+	String[] stringArray = new String[n.length];
+	for (int i = 0; i < n.length; i++) {
+	stringArray[i] = n[i].toString();
+	}
+	return DataThingFactory.bake(stringArray);
 	}
 	else if (o instanceof String[]) {
-	    return DataThingFactory.bake((String[])o);
+	return DataThingFactory.bake((String[])o);
 	}
 	else if (o instanceof List) {
-	    return DataThingFactory.bakeForSoaplab((List)o);
+	return DataThingFactory.bake((List)o);
 	}
 	else {
-	    return new DataThing(o);
+	// Try an explicit cast to String[]
+	try {
+	return DataThingFactory.bake((String[])o);
 	}
+	catch (ClassCastException cce) {
+	return DataThingFactory.bake(o);
+	}
+	}
+	*/
     }
 
     public void cleanUpConcreteTask() {

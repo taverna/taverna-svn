@@ -186,8 +186,19 @@ public class WSDLBasedProcessor extends Processor implements java.io.Serializabl
 	if (xsdType.startsWith("ArrayOf_")) {
 	    return ("l("+xsdTypeToInternalType(xsdType.replaceFirst("ArrayOf_",""))+")");
 	}
+	else if (xsdType.startsWith("ArrayOf")) {
+	    return ("l("+xsdTypeToInternalType(xsdType.replaceFirst("ArrayOf",""))+")");
+	}
 	else {
 	    return "'text/plain'";
+	    /**
+	       if (xsdType.equalsIgnoreCase("string")) {
+	       return "'text/plain'";
+	       }
+	       else {
+	       return "'text/x-xsd-unknown-type-"+xsdType+"'";
+	       }
+	    */
 	}
     }
 

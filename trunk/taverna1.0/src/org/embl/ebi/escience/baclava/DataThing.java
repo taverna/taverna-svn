@@ -115,7 +115,10 @@ public class DataThing {
     public String getSyntacticTypeForObject(Object o) {
 	if (o instanceof Collection) {
 	    if (((Collection)o).isEmpty()) {
-		return "'null'";
+		if (o instanceof Set) {
+		    return "s('null')";
+		}
+		return "l('null')";
 	    }
 	    else {
 		// Pull the first object out of the collection and recurse
