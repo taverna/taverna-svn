@@ -307,8 +307,15 @@
     <!-- Run the component demo -->
 	<target name="tools.demo">
 	        <java classname="org.embl.ebi.escience.scuflui.ComponentDemo" fork="yes">
-		        <arg value="${file}"/>
+		    <arg value="${file}"/>
 			<classpath refid="compile-classpath"/>
+		</java>
+	</target>
+	
+	<!-- Run the workbench -->
+	<target name="tools.workbench">
+		<java classname="org.embl.ebi.escience.scuflui.workbench.Workbench" fork="yes">
+		   	<classpath refid="compile-classpath"/>
 		</java>
 	</target>
 

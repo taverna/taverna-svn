@@ -18,13 +18,16 @@ import java.util.Enumeration;
 
 import org.embl.ebi.escience.scuflui.ScuflModelExplorerPopupHandler;
 import org.embl.ebi.escience.scuflui.ScuflModelExplorerRenderer;
+import org.embl.ebi.escience.scuflui.ScuflUIComponent;
 /**
  * A swing component that provides an expandable
  * tree view of the constituent components of a
  * ScuflModel instance.
  * @author Tom Oinn
  */
-public class ScuflModelExplorer extends JTree implements ScuflModelEventListener {
+public class ScuflModelExplorer extends JTree 
+    implements ScuflModelEventListener,
+	       ScuflUIComponent {
     
     // The root of the tree we're intended to display
     private DefaultMutableTreeNode root = null;

@@ -45,7 +45,7 @@ public class ComponentDemo {
 	tree.pack();
 	tree.setVisible(true);
 	ScuflDiagramDemo diagram = new ScuflDiagramDemo();
-	diagram.diagram.bindToModel(model);
+	diagram.diagram.attachToModel(model);
 	diagram.pack();
 	diagram.setVisible(true);
     }

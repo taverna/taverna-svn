@@ -56,7 +56,7 @@ public class ScuflDiagramDemo extends JFrame {
 	String filename = args[0];
 	File inputFile = new File(filename);
 	XScuflParser.populate(inputFile.toURL().openStream(), frame.model, null);
-	frame.diagram.bindToModel(frame.model);
+	frame.diagram.attachToModel(frame.model);
 	frame.pack();
 	frame.setVisible(true);
     }

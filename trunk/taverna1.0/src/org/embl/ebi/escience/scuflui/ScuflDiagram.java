@@ -27,6 +27,7 @@ import java.util.Iterator;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+import org.embl.ebi.escience.scuflui.ScuflUIComponent;
 import java.lang.Exception;
 import java.lang.Process;
 import java.lang.Runtime;
@@ -42,7 +43,8 @@ import java.lang.String;
  * @author Tom Oinn
  */
 public class ScuflDiagram extends JComponent 
-    implements ScuflModelEventListener {
+    implements ScuflModelEventListener,
+	       ScuflUIComponent {
     
     private ScuflModel model;
     private DotView dot;
@@ -82,7 +84,7 @@ public class ScuflDiagram extends JComponent
 	}
     }
 
-    public void bindToModel(ScuflModel model) {
+    public void attachToModel(ScuflModel model) {
 	if (this.model == null) {
 	    this.dot = new DotView(model);
 	    this.dot.setPortDisplay(DotView.BOUND);
@@ -91,7 +93,7 @@ public class ScuflDiagram extends JComponent
 	}
     }
 
-    public void unbindFromModel() {
+    public void detachFromModel() {
 	if (this.model != null) {
 	    model.removeListener(this);
 	    model.removeListener(dot);
@@ -128,9 +130,11 @@ public class ScuflDiagram extends JComponent
 	    updateStatus = 1;
 	    while (updateStatus != 0) {
 		updateGraphic();
-		updateStatus = 0;
 		if (updateStatus == 2) {
 		    updateStatus = 1;
+		}
+		else {
+		    updateStatus = 0;
 		}
 	    }
 	}

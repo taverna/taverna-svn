@@ -12,6 +12,7 @@ import java.util.Iterator;
 import org.embl.ebi.escience.scufl.ConcurrencyConstraint;
 import org.embl.ebi.escience.scufl.DataConstraint;
 import org.embl.ebi.escience.scufl.DuplicateProcessorNameException;
+import org.embl.ebi.escience.scufl.LogAwareComponent;
 import org.embl.ebi.escience.scufl.MalformedNameException;
 import org.embl.ebi.escience.scufl.Port;
 import org.embl.ebi.escience.scufl.Processor;
@@ -29,7 +30,28 @@ import java.lang.Thread;
  * Represents a single scufl workflow model
  * @author Tom Oinn
  */
-public class ScuflModel implements java.io.Serializable {
+public class ScuflModel 
+    implements java.io.Serializable,
+	       LogAwareComponent {
+
+    /**
+     * The log level for the model overall
+     */
+    int logLevel = 0;
+
+    /**
+     * Get the log level
+     */
+    public int getLogLevel() {
+	return this.logLevel;
+    }
+
+    /**
+     * Set the log level
+     */
+    public void setLogLevel(int level) {
+	this.logLevel = level;
+    }
 
     /**
      * The active model listeners for this model

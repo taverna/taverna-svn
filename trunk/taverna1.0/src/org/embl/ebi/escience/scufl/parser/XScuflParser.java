@@ -30,6 +30,7 @@ import java.net.URL;
 
 import org.embl.ebi.escience.scufl.parser.XScuflFormatException;
 import java.lang.Exception;
+import java.lang.Integer;
 import java.lang.InterruptedException;
 import java.lang.String;
 import java.lang.Thread;
@@ -189,6 +190,11 @@ public class XScuflParser {
 	    usePrefix = true;
 	}
 	Element root = document.getRootElement();
+
+	if (root.getAttributeValue("log") != null) {
+	    model.setLogLevel(Integer.parseInt(root.getAttributeValue("log")));
+	}
+
 	Namespace namespace = root.getNamespace();
 
 	// Build processors
@@ -372,6 +378,11 @@ class ProcessorLoaderThread extends Thread {
 	    boolean foundSpec = false;
 	    // Handle soaplab
 	    Element soaplab = processorNode.getChild("soaplabwsdl",namespace);
+	    String logLevel = processorNode.getAttributeValue("log");
+	    int log = 0;
+	    if (logLevel != null) {
+		log = Integer.parseInt(logLevel);
+	    }
 	    if (soaplab != null) {
 		foundSpec = true;
 		// Get the textual endpoint
@@ -383,7 +394,9 @@ class ProcessorLoaderThread extends Thread {
 		catch (MalformedURLException mue) {
 		    throw new XScuflFormatException("The url specified for the soaplab endpoint for '"+name+"' was invalid : "+mue);
 		}
-		model.addProcessor(new SoaplabProcessor(model, name, endpoint));
+		Processor p = new SoaplabProcessor(model, name, endpoint);
+		p.setLogLevel(log);
+		model.addProcessor(p);
 	    }
 	    
 	    // Handle arbitrarywsdl
@@ -393,7 +406,9 @@ class ProcessorLoaderThread extends Thread {
 		String wsdlLocation = wsdlProcessor.getChild("wsdl",namespace).getTextTrim();
 		String portTypeName = wsdlProcessor.getChild("porttype",namespace).getTextTrim();
 		String operationName = wsdlProcessor.getChild("operation",namespace).getTextTrim();
-		model.addProcessor(new WSDLBasedProcessor(model, name, wsdlLocation, portTypeName, operationName));
+		Processor p = new WSDLBasedProcessor(model, name, wsdlLocation, portTypeName, operationName);
+		p.setLogLevel(log);
+		model.addProcessor(p);
 	    }
 	    
 	    // Handle talisman
@@ -401,7 +416,9 @@ class ProcessorLoaderThread extends Thread {
 	    if (talismanProcessor != null && !foundSpec) {
 		foundSpec = true;
 		String tscriptURL = talismanProcessor.getChild("tscript",namespace).getTextTrim();
-		model.addProcessor(new TalismanProcessor(model, name, tscriptURL));
+		Processor p = new TalismanProcessor(model, name, tscriptURL);
+		p.setLogLevel(log);
+		model.addProcessor(p);
 	    }
 	    
 	    // If no specifier has been found then throw an exception

@@ -163,4 +163,12 @@ public class ConcurrencyConstraint implements java.io.Serializable {
 	return -1;
     }
 
+    /**
+     * Override toString method to display the two processors,
+     * controller first, that this constraint applies to.
+     */
+    public String toString() {
+	return this.getControllingProcessor().getName()+"::"+this.getTargetProcessor().getName();
+    }
+
 }

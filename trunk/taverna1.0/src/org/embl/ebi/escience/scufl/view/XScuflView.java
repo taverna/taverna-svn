@@ -46,20 +46,24 @@ public class XScuflView implements ScuflModelEventListener, java.io.Serializable
      * Get the XML Document from this view
      */
     public Document getDocument() {
-	if (!cacheValid) {
-	    updateCachedView();
+	synchronized(this) {
+	    if (!cacheValid) {
+		updateCachedView();
+	    }
+	    return this.cachedDocument;
 	}
-	return this.cachedDocument;
     }
 
     /**
      * Get the XML String from this view
      */
     public String getXMLText() {
-	if (!cacheValid) {
-	    updateCachedView();
+	synchronized (this) {
+	    if (!cacheValid) {
+		updateCachedView();
+	    }
+	    return this.cachedRepresentation;
 	}
-	return this.cachedRepresentation;
     }
 
     /**
@@ -69,7 +73,9 @@ public class XScuflView implements ScuflModelEventListener, java.io.Serializable
 	// Invalidate cache, this will
 	// force a recalculation next time
 	// the view is queried.
-	this.cacheValid = false;
+	synchronized(this) {
+	    this.cacheValid = false;
+	}
     }
 
     /**
@@ -82,6 +88,7 @@ public class XScuflView implements ScuflModelEventListener, java.io.Serializable
 	// Create the XML document
 	Element root = new Element("scufl",scuflNS());
 	root.setAttribute("version","0.1");
+	root.setAttribute("log",""+model.getLogLevel());
 	this.cachedDocument = new Document(root);
 	
 	// Create elements corresponding to processors
@@ -89,7 +96,7 @@ public class XScuflView implements ScuflModelEventListener, java.io.Serializable
 	for (int i = 0; i < processors.length; i++) {
 	    Element processor = new Element("processor",scuflNS());
 	    processor.setAttribute("name",processors[i].getName());
-
+	    processor.setAttribute("log",""+processors[i].getLogLevel());
 	    // Catch Soaplab processors - this should be more
 	    // extensible! Will do for now however...
 	    try {

@@ -36,6 +36,25 @@ public abstract class Processor implements java.io.Serializable {
     private ScuflModel model = null;
 
     /**
+     * The log level for this processor
+     */
+    int logLevel = 0;
+
+    /**
+     * Get the log level
+     */
+    public int getLogLevel() {
+	return this.logLevel;
+    }
+
+    /**
+     * Set the log level
+     */
+    public void setLogLevel(int level) {
+	this.logLevel = level;
+    }
+    
+    /**
      * Construct the processor with the given name and parent
      */
     public Processor(ScuflModel model, String name) 
