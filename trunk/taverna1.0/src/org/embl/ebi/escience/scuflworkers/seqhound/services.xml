@@ -268,14 +268,6 @@
       <parameter name="giList" />
     </parameters>
   </service>
-  <service name="SHoundGetFastaList">
-    <description>writes a series of fasta data into a writer object pointed to by out.
- Use this function to print a list of fasta data to a file.</description>
-    <parameters>
-      <parameter name="giList" />
-      <parameter name="out" />
-    </parameters>
-  </service>
   <service name="SHoundGetFastaFromRedundantGroupID">
     <description>The FASTA format is widely used in bioinformatics community;
  it consists of a definition line, new line followed by a
