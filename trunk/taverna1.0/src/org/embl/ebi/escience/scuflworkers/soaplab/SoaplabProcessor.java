@@ -74,6 +74,19 @@ public class SoaplabProcessor extends Processor implements java.io.Serializable 
 	}
     } 
     
+    // Get the installation path of the soaplab server
+    public String getServicePath() {
+	String[] pathbits = endpoint.getPath().split("/");
+	StringBuffer sb = new StringBuffer();
+	for (int i = 0; i < pathbits.length - 1; i++) {
+	    if (i>0) {
+		sb.append("/");
+	    }
+	    sb.append(pathbits[i]);
+	}
+	return sb.toString();
+    }
+
     // Get the application name of the application
     public String getAppName() {
 	String[] app = endpoint.getPath().split("::");
