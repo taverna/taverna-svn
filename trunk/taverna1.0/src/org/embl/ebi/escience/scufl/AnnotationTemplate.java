@@ -39,9 +39,9 @@ public class AnnotationTemplate {
 	AnnotationTemplate target = new AnnotationTemplate();
 	target.addLiteral("<rdf:Description xmlns:rdf=\""+RDF_NS+"\" rdf:about=\"");
 	target.addPortReference(subject);
-	target.addLiteral("\">\n  <"+verb+" rdf:resource=\"");
+	target.addLiteral("\"><"+verb+" rdf:resource=\"");
 	target.addPortReference(object);
-	target.addLiteral("\"/>\n</rdf:Description>\n");
+	target.addLiteral("\"/></rdf:Description>");
 	return target;
     }
 
@@ -132,6 +132,43 @@ public class AnnotationTemplate {
 	return templateElement;
     }
     
+    /**
+     * Return a chunk of HTML showing the unknowns in purple
+     */
+    public String getDescription() {
+	StringBuffer sb = new StringBuffer();
+	sb.append("<html>");
+	for (Iterator i = templateComponents.iterator(); i.hasNext();) {
+	    Object o = i.next();
+	    if (o instanceof String) {
+		sb.append(convert((String)o));
+	    }
+	    else if (o instanceof PortReference) {
+		sb.append("<font color=\"purple\">");
+		sb.append(((PortReference)o).getName());
+		sb.append("</font>");
+	    }
+	}
+	sb.append("</html>");
+	return sb.toString();
+    }
+    /**
+     * Take an input string and return the string with
+     * all less than characters replaced with the appropriate
+     * XML literal
+     */
+    public static String convert(String input) {
+	StringBuffer sb = new StringBuffer();
+	String[] parts = input.split("<");
+	for (int i = 0; i < parts.length; i++) {
+	    sb.append(parts[i]);
+	    if ((i+1) < parts.length) {
+		sb.append("&lt;");
+	    }
+	}
+	return sb.toString();
+    }
+
     class PortReference {
 	private String name;
 	public PortReference(String name) {

@@ -25,8 +25,8 @@
 //      Dependencies        :
 //
 //      Last commit info    :   $Author: mereden $
-//                              $Date: 2004-03-04 17:39:37 $
-//                              $Revision: 1.40 $
+//                              $Date: 2004-03-05 08:38:03 $
+//                              $Revision: 1.41 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 package uk.ac.soton.itinnovation.taverna.enactor.entities;
@@ -114,9 +114,6 @@ public class ProcessorTask extends TavernaTask{
      */
     private synchronized void schedule(Processor theProcessor) {
 	activeProcessor = theProcessor;
-	
-	activeProcessor.generateDefaultAnnotationTemplates();
-
 	activeInputMapping = null;
 	activeOutputMapping = null;
 	eventList.add(new ProcessScheduled(theProcessor));
@@ -127,9 +124,6 @@ public class ProcessorTask extends TavernaTask{
      */
     private synchronized void schedule(AlternateProcessor theAlternate) {
 	activeProcessor = theAlternate.getProcessor();
-	
-	activeProcessor.generateDefaultAnnotationTemplates();
-	
 	activeInputMapping = theAlternate.getInputMapping();
 	activeOutputMapping = new HashMap();
 	// invert the mapping contained by the alternates object!
@@ -364,8 +358,9 @@ public class ProcessorTask extends TavernaTask{
 	// Populate all LSIDs in the output map
 	Map outputMap = worker.execute(inputMap);
 	fillAllLSIDs(outputMap);
-	AnnotationTemplate[] templates = activeProcessor.getAnnotationTemplates();
-	if (templates.length > 0) {
+	AnnotationTemplate[] templates = activeProcessor.getAnnotationTemplates();	    
+	AnnotationTemplate[] defaultTemplates = activeProcessor.defaultAnnotationTemplates();
+	if (templates.length > 0 || defaultTemplates.length > 0) {
 	    // For the inputs and outputs get the LSIDs of all the
 	    // data objects, and apply these to the processor's
 	    // annotation templates.
@@ -389,7 +384,16 @@ public class ProcessorTask extends TavernaTask{
 	    for (int i = 0; i < templates.length; i++) {
 		String annotation = templates[i].getTextAnnotation(templateInputs, templateOutputs);
 		if (annotation != null) {
-		    provenanceList.add(annotation);
+		    provenanceList.add(AnnotationTemplate.convert(annotation));
+		    if (ProcessorTask.STORE != null) {
+			STORE.storeMetadata(annotation);
+		    }
+		}
+	    }
+	    for (int i = 0; i < defaultTemplates.length; i++) {
+		String annotation = defaultTemplates[i].getTextAnnotation(templateInputs, templateOutputs);
+		if (annotation != null) {
+		    provenanceList.add(AnnotationTemplate.convert(annotation));
 		    if (ProcessorTask.STORE != null) {
 			STORE.storeMetadata(annotation);
 		    }

@@ -17,6 +17,7 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import org.embl.ebi.escience.scufl.Processor;
 import org.embl.ebi.escience.scufl.*;
 import org.embl.ebi.escience.scufl.view.*;
+import org.embl.ebi.escience.scuflui.workbench.*;
 
 import org.embl.ebi.escience.scuflui.NoContextMenuFoundException;
 import org.embl.ebi.escience.scuflui.ScuflContextMenuFactory;
@@ -97,6 +98,22 @@ public class ScuflModelExplorerPopupHandler extends MouseAdapter {
 			    }
 			});
 		    theMenu.add(properties);
+		    JMenuItem editTemplates = new JMenuItem("Edit templates");
+		    editTemplates.addActionListener(new ActionListener() {
+			    public void actionPerformed(ActionEvent a) {
+				if (Workbench.workbench != null) {
+				    GenericUIComponentFrame thing = new GenericUIComponentFrame(Workbench.workbench.model,
+												new TemplateEditor(theProcessor));
+				    thing.setSize(300,300);
+				    thing.setLocation(100,100);
+				    Workbench.workbench.desktop.add(thing);
+				    thing.moveToFront();
+				}
+			    }
+			});
+		    if (Workbench.workbench != null) {
+			theMenu.add(editTemplates);
+		    }
 		}
 		theMenu.show(owner, e.getX(), e.getY());
 	    }
