@@ -4,6 +4,7 @@ import org.embl.ebi.escience.baclava.DataThing;
 
 import java.util.Set;
 import java.awt.*;
+import java.beans.PropertyChangeListener;
 
 /**
  * SPI for decomposing opaque data into facets.
@@ -99,8 +100,34 @@ public interface FacetFinderSPI
          * Get a human readable name for this column.
          * This may change as column properties change.
          *
-         * @return  a name
+         * @return  a name for this column
          */
         public String getName();
+
+        /**
+         * Add a property change listener that will be informed whenever any
+         * property of the column alters that could affect the data the column
+         * would return.
+         *
+         * @param listener  the PropertyChangeListener to register
+         */
+        public void addPropertyChangeListener(
+                PropertyChangeListener listener);
+
+        /**
+         * Remove a property change listener.
+         *
+         * @param listener  the PropertyChangeListener to unregister
+         */
+        public void removePropertyChangeListener(
+                PropertyChangeListener listener);
+
+        public void addPropertyChangeListener(
+                String propertyName,
+                PropertyChangeListener listener);
+
+        public void removePropertyChangeListener(
+                String propertyName,
+                PropertyChangeListener listener);
     }
 }

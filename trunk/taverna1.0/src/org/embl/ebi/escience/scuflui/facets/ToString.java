@@ -7,6 +7,7 @@ import org.embl.ebi.escience.baclava.factory.DataThingFactory;
 import java.util.Collections;
 import java.util.Set;
 import java.awt.*;
+import java.beans.PropertyChangeListener;
 
 /**
  *
@@ -75,6 +76,32 @@ public class ToString
         public String getName()
         {
             return "As String";
+        }
+
+        public void addPropertyChangeListener(
+                PropertyChangeListener listener)
+        {
+            // null implementation
+        }
+
+        public void removePropertyChangeListener(
+                PropertyChangeListener listener)
+        {
+            // null implementation
+        }
+
+        public void addPropertyChangeListener(
+                String propertyName,
+                PropertyChangeListener listener)
+        {
+            // null implementation
+        }
+
+        public void removePropertyChangeListener(
+                String propertyName,
+                PropertyChangeListener listener)
+        {
+            // null implementation
         }
     }
 }

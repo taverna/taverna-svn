@@ -1,6 +1,8 @@
 package org.embl.ebi.escience.scuflui.renderers;
 
 import org.embl.ebi.escience.scuflui.FacetsTable;
+import org.embl.ebi.escience.scuflui.FTableColumn;
+import org.embl.ebi.escience.scuflui.FTableColumnModel;
 import org.embl.ebi.escience.scuflui.facets.FacetFinderSPI;
 import org.embl.ebi.escience.scuflui.facets.FacetFinderRegistry;
 import org.embl.ebi.escience.baclava.DataThing;
@@ -63,7 +65,7 @@ public class CollectionAsTable
         FacetsTable table = new FacetsTable();
         FacetFinderRegistry facetReg = table.getFinders();
         List finders = facetReg.getFinders(ourThing);
-        List facets = new ArrayList();
+        FTableColumnModel columns = new FTableColumnModel();
 
         LOG.info(getName() + " Finders: (" + finders.size() + ") " + finders);
         int count = 0;
@@ -74,22 +76,22 @@ public class CollectionAsTable
             LOG.info(getName() + " Columns: (" + cols.size() + ") " + cols);
             for(Iterator j = cols.iterator(); j.hasNext(); ) {
                 FacetFinderSPI.ColumnID colID = (FacetFinderSPI.ColumnID) j.next();
-                FacetsTable.Column col = new FacetsTable.Column();
+                FTableColumn col = new FTableColumn();
                 col.setColID(colID);
                 col.setHorizontalSrollable(true);
                 col.setVerticalScrollable(true);
                 col.setFinder(finder);
                 col.setName("Col " + count++ + "(" + colID.getName() + ")");
                 col.setRenderer(null); // use default renderer
-                facets.add(col);
+                columns.addColumn(col);
             }
         }
 
-        if(facets.isEmpty()) {
+        if(columns.getColumnCount() == 0) {
             LOG.info("nothing" + --depth);
             return null;
         } else {
-            table.setColumns(facets);
+            table.setColumnModel(columns);
             table.setDataThing(dataThing);
 
             LOG.info("table" + --depth);

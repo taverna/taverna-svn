@@ -162,7 +162,11 @@
 	<!-- Compile the source files -->
 	<target name="java" depends="prepare-src">
 		<!-- Run javac to turn .java files into .class -->
-		<javac debug="on" srcdir="${build.src}" destdir="${build.classes}">
+		<javac
+            debug="on"
+            srcdir="${build.src}"
+            destdir="${build.classes}"
+            source="1.4">
 			<classpath refid="compile-classpath"/>
 		</javac>
 		<!-- Copy over any configuration files that you might have -->

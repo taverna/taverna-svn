@@ -2,7 +2,6 @@ package org.embl.ebi.escience.scuflui.facets;
 
 import org.embl.ebi.escience.baclava.DataThing;
 import org.embl.ebi.escience.baclava.factory.DataThingFactory;
-import org.apache.log4j.Logger;
 
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;
@@ -10,10 +9,7 @@ import java.util.Collections;
 import java.util.Set;
 import java.util.List;
 import java.util.ArrayList;
-import java.beans.PropertyEditorManager;
-import java.beans.PropertyEditor;
-import java.beans.PropertyChangeSupport;
-import java.beans.PropertyChangeListener;
+import java.beans.*;
 import java.awt.*;
 
 /**
@@ -27,7 +23,6 @@ import java.awt.*;
 public class RegexScanner
         implements FacetFinderSPI
 {
-    private static final Logger LOG = Logger.getLogger(RegexScanner.class);
     private static final int PATTERN_FLAGS = Pattern.MULTILINE & Pattern.DOTALL;
 
     private static final DataThing EMPTY_STRING = DataThingFactory.bake("");
@@ -43,7 +38,6 @@ public class RegexScanner
 
     public boolean canMakeFacets(DataThing dataThing)
     {
-        LOG.info(getName() + ": canMakeFacets: " + dataThing);
         return dataThing.getDataObject() instanceof CharSequence;
     }
 
@@ -73,17 +67,13 @@ public class RegexScanner
         Matcher matcher = scanner.getPattern().matcher(chars);
 
         if(!scanner.joinValues) {
-            LOG.info("not joining values");
             if(scanner.makeCollection) {
-                LOG.info("making a collection");
                 List hits = new ArrayList();
                 while(matcher.find()) {
                     hits.add(matcher.group(scanner.getGroup()));
                 }
-                LOG.info("got some hits: " + hits.size());
                 return DataThingFactory.bake(hits);
             } else {
-                LOG.info("not making collection");
                 if(!matcher.find()) {
                     return EMPTY_STRING;
                 }
@@ -95,15 +85,12 @@ public class RegexScanner
                 return EMPTY_STRING;
             }
 
-            LOG.info("concatenating all hits");
             StringBuffer res = new StringBuffer();
             res.append(matcher.group(scanner.getGroup()));
-            LOG.info("started with: " + matcher.group(scanner.getGroup()));
 
             while(matcher.find()) {
                 res.append(scanner.getJoinText());
                 res.append(matcher.group(scanner.getGroup()));
-                LOG.info("appended: " + matcher.group(scanner.getGroup()));
             }
 
             return DataThingFactory.bake(res.toString());
@@ -137,6 +124,8 @@ public class RegexScanner
                     Scanner.class, PropertySheet.Editor.class);
         }
 
+        private final PropertyChangeSupport pcs
+                = new PropertyChangeSupport(this);
         private Pattern pattern;
         private int group;
         private boolean joinValues;
@@ -170,6 +159,33 @@ public class RegexScanner
             this.makeCollection = makeCollection;
         }
 
+
+        public void addPropertyChangeListener(
+                PropertyChangeListener listener)
+        {
+            pcs.addPropertyChangeListener(listener);
+        }
+
+        public void removePropertyChangeListener(
+                PropertyChangeListener listener)
+        {
+            pcs.removePropertyChangeListener(listener);
+        }
+
+        public void addPropertyChangeListener(
+                String propertyName,
+                PropertyChangeListener listener)
+        {
+            pcs.addPropertyChangeListener(propertyName, listener);
+        }
+
+        public void removePropertyChangeListener(
+                String propertyName,
+                PropertyChangeListener listener)
+        {
+            pcs.removePropertyChangeListener(propertyName, listener);
+        }
+
         public Pattern getPattern()
         {
             return pattern;
@@ -181,7 +197,10 @@ public class RegexScanner
                 throw new NullPointerException("Can't set pattern to null");
             }
 
+            PropertyChangeEvent pce = new PropertyChangeEvent(
+                    this, "pattern", this.pattern, pattern);
             this.pattern = pattern;
+            pcs.firePropertyChange(pce);
         }
 
         public int getGroup()
@@ -191,7 +210,10 @@ public class RegexScanner
 
         public void setGroup(int group)
         {
+            PropertyChangeEvent pce = new PropertyChangeEvent(
+                    this, "group", new Integer(this.group), new Integer(group));
             this.group = group;
+            pcs.firePropertyChange(pce);
         }
 
         public boolean getJoinValues()
@@ -201,7 +223,11 @@ public class RegexScanner
 
         public void setJoinValues(boolean joinValues)
         {
+            PropertyChangeEvent pce = new PropertyChangeEvent(
+                    this, "joinValues",
+                    new Boolean(this.joinValues), new Boolean(joinValues));
             this.joinValues = joinValues;
+            pcs.firePropertyChange(pce);
         }
 
         public String getJoinText()
@@ -217,7 +243,10 @@ public class RegexScanner
                         "Use the empty string instead");
             }
 
+            PropertyChangeEvent pce = new PropertyChangeEvent(
+                    this, "joinText", this.joinText, joinText);
             this.joinText = joinText;
+            pcs.firePropertyChange(pce);
         }
 
         public boolean getMakeCollection()
@@ -227,7 +256,12 @@ public class RegexScanner
 
         public void setMakeCollection(boolean makeCollection)
         {
+            PropertyChangeEvent pce = new PropertyChangeEvent(
+                    this, "makeCollection",
+                    new Boolean(this.makeCollection),
+                    new Boolean(makeCollection));
             this.makeCollection = makeCollection;
+            pcs.firePropertyChange(pce);
         }
 
         public Component getCustomiser(DataThing dataThing)

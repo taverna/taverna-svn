@@ -12,10 +12,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.awt.*;
 import java.awt.event.ItemListener;
 import java.awt.event.ItemEvent;
-import java.beans.BeanInfo;
-import java.beans.Introspector;
-import java.beans.IntrospectionException;
-import java.beans.PropertyDescriptor;
+import java.beans.*;
 
 /**
  *
@@ -82,6 +79,8 @@ public class PropertyFetcher
     public static final class Closure
             implements ColumnID
     {
+        private final PropertyChangeSupport pcs = new PropertyChangeSupport(this);
+
         private Method method;
         private Object[] args;
 
@@ -101,6 +100,32 @@ public class PropertyFetcher
             this.args = args;
         }
 
+        public void addPropertyChangeListener(
+                PropertyChangeListener listener)
+        {
+            pcs.addPropertyChangeListener(listener);
+        }
+
+        public void removePropertyChangeListener(
+                PropertyChangeListener listener)
+        {
+            pcs.removePropertyChangeListener(listener);
+        }
+
+        public void addPropertyChangeListener(
+                String propertyName,
+                PropertyChangeListener listener)
+        {
+            pcs.addPropertyChangeListener(propertyName, listener);
+        }
+
+        public void removePropertyChangeListener(
+                String propertyName,
+                PropertyChangeListener listener)
+        {
+            pcs.removePropertyChangeListener(propertyName, listener);
+        }
+
         public Method getMethod()
         {
             return method;
@@ -108,7 +133,10 @@ public class PropertyFetcher
 
         public void setMethod(Method method)
         {
+            PropertyChangeEvent pce = new PropertyChangeEvent(
+                    this, "method", this.method, method);
             this.method = method;
+            pcs.firePropertyChange(pce);
         }
 
         public Object[] getArgs()
@@ -118,7 +146,10 @@ public class PropertyFetcher
 
         public void setArgs(Object[] args)
         {
+            PropertyChangeEvent pce = new PropertyChangeEvent(
+                    this, "args", this.args, args);
             this.args = args;
+            pcs.firePropertyChange(pce);
         }
 
         public Component getCustomiser(DataThing dataThing)

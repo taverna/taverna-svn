@@ -11,9 +11,8 @@ import javax.swing.*;
 import java.util.*;
 import java.util.List;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
+import java.awt.event.*;
+import java.beans.PropertyChangeEvent;
 
 /**
  * A tabular display of data using FacetFinders to decompose the information
@@ -25,34 +24,51 @@ public class FacetsTable
         extends JPanel
 {
     private static final Logger LOG = Logger.getLogger(FacetsTable.class);
-    private static final GridBagConstraints GBC;
+    private static final int H_PAD = 2;
+    private static final int V_PAD = 2;
 
-    static
-    {
-        GBC = new GridBagConstraints();
-        GBC.weightx = 1.0;
-        GBC.weighty = 1.0;
-        GBC.anchor = GBC.CENTER;
-        GBC.fill = GBC.BOTH;
-        GBC.insets = new Insets(1,1,1,1);
-    }
+    private final List headings; // List<width as int, heading as JComponent>
+    private final List columns; // List<column as List<cell as JComponent>>
+    private int headingHeight; // the height of the highest heading
+    private int[] rowHeights; // the height of each data row
 
-    // todo: There is no sensible incremental model editing - needs adding
-    // todo: Add standard table stuff - scrolleable, scrollalbe cells, reorder
-    // todo: the columns, better borders, row/col headings in seperate panes
+    boolean isInScrollPane;
+    private JComponent columnHeaders;   // the column header component
+    private JComponent table;           // the actual table component
 
-    private List columns;
+    private final FTableColumnModelListener nsync;
+    private FTableColumnModel columnModel;
     private DataThing dataThing;
     private FacetFinderRegistry finders;
     private MimeTypeRendererRegistry renderers;
+    private int rows;
 
-    private DataThing exampleThing;
-    private List exampleRow;
+    private transient DataThing exampleThing;
+    private transient List exampleRow;
+
+    private void invariant()
+    {
+        assert headings.size() == columns.size()
+                : "Must have the same headings and columns in the table: "
+                + headings.size() + ":" + columns.size();
+        assert headings.size() == columnModel.getColumnCount()
+                : "Must have the same headings as columns in the model"
+                + headings.size() + ":" + columnModel.getColumnCount();
+        assert exampleRow == null || exampleRow.size() == headings.size()
+                : "Must have the right number of examples"
+                + exampleRow.size() + ":" + headings.size();
+    }
 
     public FacetsTable()
     {
-        super(new GridBagLayout(), true);
+        super(new BorderLayout(), true);
+        isInScrollPane = false;
+        addHierarchyListener(new ScrollPaneChanger());
+        nsync = new NSynch();
+
+        this.headings = new ArrayList();
         this.columns = new ArrayList();
+        this.columnModel = new FTableColumnModel();
         this.finders = FacetFinderRegistry.instance();
         this.renderers = MimeTypeRendererRegistry.instance();
         setOpaque(true); // required to make sure bits of the rendering aren't
@@ -60,16 +76,16 @@ public class FacetsTable
         resizeAndValidate();
     }
 
-    public FacetsTable(List columns,
-                       DataThing theDataThing,
+    public FacetsTable(DataThing theDataThing,
                        FacetFinderRegistry finders,
-                       MimeTypeRendererRegistry renderers)
+                       MimeTypeRendererRegistry renderers,
+                       FTableColumnModel columnModel)
     {
         this();
-        this.columns.addAll(columns);
         this.dataThing = theDataThing;
-        if(finders != null)   { this.finders = finders; }
-        if(renderers != null) { this.renderers = renderers; }
+        if(finders != null)     { this.finders = finders; }
+        if(renderers != null)   { this.renderers = renderers; }
+        if(columnModel != null) { setColumnModel(columnModel); }
         setOpaque(true); // required to make sure bits of the rendering aren't
                          // left behind
         resizeAndValidate();
@@ -79,21 +95,21 @@ public class FacetsTable
                        FacetFinderRegistry finders,
                        MimeTypeRendererRegistry renderers)
     {
-        this(null, theDataThing, finders, renderers);
+        this(theDataThing, finders, renderers, null);
     }
 
-    public List getColumns()
+    public FTableColumnModel getColumnModel()
     {
-        return new ArrayList(columns);
+        return columnModel;
     }
 
-    public void setColumns(List columns)
+    public void setColumnModel(FTableColumnModel columnModel)
     {
-        if(columns == null) {
-            this.columns.clear();
-        } else {
-            this.columns = new ArrayList(columns);
+        if(this.columnModel != null) {
+            this.columnModel.removeFTableColumnModelListener(nsync);
         }
+        this.columnModel = columnModel;
+        this.columnModel.addFTableColumnModelListener(nsync);
 
         resizeAndValidate();
     }
@@ -130,8 +146,43 @@ public class FacetsTable
 
     public void setRenderers(MimeTypeRendererRegistry renderers)
     {
+        if(renderers == null) {
+            throw new NullPointerException("Can't set renderer registry to null");
+        }
+
         this.renderers = renderers;
-        resizeAndValidate();
+    }
+
+    protected void configureScrolling()
+    {
+        removeAll();
+        if (isInScrollPane) {
+            add(table, BorderLayout.CENTER);
+            JScrollPane pane = (JScrollPane) getParent().getParent();
+            pane.setViewportView(FacetsTable.this);
+            pane.setColumnHeaderView(columnHeaders);
+        } else {
+            this.add(columnHeaders, BorderLayout.NORTH);
+            this.add(table, BorderLayout.CENTER);
+        }
+    }
+
+    private Iterator makeRowIterator()
+    {
+        Iterator rowIt = null;
+
+        if (dataThing == null) {
+            rowIt = Collections.EMPTY_LIST.iterator();
+            rows = 0;
+        } else if (dataThing.getDataObject() instanceof Collection) {
+            rowIt = dataThing.childIterator();
+            rows = ((Collection) dataThing.getDataObject()).size();
+        } else {
+            rowIt = Collections.singleton(dataThing).iterator();
+            rows = 1;
+        }
+
+        return rowIt;
     }
 
     protected void resizeAndValidate()
@@ -139,216 +190,211 @@ public class FacetsTable
         LOG.info("resizeAndValidate: redoing layout: " + dataThing);
         // this is bruit force - we will probably want to optimize this for
         // incremental changes to the model
-        removeAll();
+
+        headings.clear();
+        columns.clear();
+
         exampleThing = null;
         exampleRow = null;
 
-        if(dataThing != null) {
-            LOG.info("resizeAndValidate: adding all data rows");
-            GridBagConstraints gbc = (GridBagConstraints) GBC.clone();
-            gbc.gridx = 0;
-            gbc.gridy = 1;
+        columnHeaders = new JPanel(null);
+        table = new JPanel(null);
 
-            if(dataThing.getDataObject() instanceof Collection) {
-                for(Iterator i = dataThing.childIterator(); i.hasNext(); ) {
-                    DataThing part = (DataThing) i.next();
-                    addRow(part, gbc);
-                    gbc.gridx = 0;
-                    gbc.gridy++;
-                }
-            } else {
-                addRow(dataThing, gbc);
+        // make headings and also allocate column lists
+        for(Iterator ci = columnModel.columnIterator(); ci.hasNext(); ) {
+            FTableColumn column = (FTableColumn) ci.next();
+            JComponent heading = makeHeading(column);
+            LOG.info("heading dimensions: " + heading.getPreferredSize());
+            headings.add(new Header(
+                    heading,
+                    (int) heading.getPreferredSize().getWidth()));
+            columns.add(new ArrayList());
+            columnHeaders.add(heading);
+        }
+
+
+        LOG.info("resizeAndValidate: adding all data rows");
+
+        Iterator rowIt = makeRowIterator();
+        rowHeights = new int[rows];
+
+        for(int r = 0; r < rows; r++) {
+            DataThing part = (DataThing) rowIt.next();
+
+            List ex = null;
+            if (exampleRow == null) {
+                ex = new ArrayList();
             }
 
-            LOG.info("resizeAndValidate: adding header row");
-            gbc.gridx = 0;
-            gbc.gridy = 0;
+            if (exampleThing == null) {
+                exampleThing = part;
+            }
 
-            addheader(gbc);
+            for(int c = 0; c < columnModel.getColumnCount(); c++) {
+                FTableColumn ftCol = columnModel.getColumn(c);
+                List col = (List) columns.get(c);
+                DataThing dataObj = ftCol.getFinder().getFacet(
+                        part, ftCol.getColID());
+
+                if(ex != null) {
+                    ex.add(dataObj);
+                }
+
+                JComponent cmp = makeCell(dataObj, ftCol);
+                LOG.info("cell size: " + cmp.getPreferredSize());
+                col.add(cmp);
+                table.add(cmp);
+            }
+
+            if (ex != null) {
+                exampleRow = ex;
+            }
         }
+        redoGeometry();
+        redoLayout();
+        configureScrolling();
 
         LOG.info("resizeAndValidate: done");
     }
 
-    private void addheader(GridBagConstraints gbc)
+    private void redoGeometry()
     {
-        GridBagConstraints gbcLoc = (GridBagConstraints) gbc.clone();
-        gbcLoc.anchor = GridBagConstraints.NORTH;
-        gbcLoc.fill = GridBagConstraints.NONE;
-        gbcLoc.weightx = 0.0;
-        gbcLoc.weighty = 0.0;
-        for(ListIterator i = columns.listIterator(); i.hasNext(); ) {
-            int indx = i.nextIndex();
-            Column col = (Column) i.next();
-            JLabel title = new JLabel(col.getName());
-            title.addMouseListener(new ColumnListener(col, title, indx));
-            add(title, gbcLoc);
-            gbcLoc.gridx++;
+        invariant();
+
+        for(int i = 0; i < rowHeights.length; i++) {
+            rowHeights[i] = 0;
+        }
+        headingHeight = 0;
+
+        LOG.info("rows: " + rowHeights.length);
+        LOG.info("columns: " + columnModel.getColumnCount());
+
+        for(int i = 0; i < columnModel.getColumnCount(); i++) {
+            Header header = (Header) headings.get(i);
+            List column = (List) columns.get(i);
+
+            assert column.size() == rowHeights.length
+                    : "Row heights should match column size";
+
+            Dimension hd = header.heading.getPreferredSize();
+            headingHeight = (int) Math.max(headingHeight, hd.getHeight());
+            header.width = (int) hd.getWidth();
+
+            for(int r = 0; r < column.size(); r++) {
+                JComponent cell = (JComponent) column.get(r);
+                Dimension dim = cell.getPreferredSize();
+                header.width = (int) Math.max(
+                        header.width,
+                        dim.getWidth());
+                rowHeights[r] = (int) Math.max(
+                        rowHeights[r],
+                        dim.getHeight());
+            }
         }
     }
 
-    private void addRow(DataThing dataThing,
-                        GridBagConstraints gbc)
+    private void redoLayout()
     {
-        List ex = null;
-        if(exampleRow == null) {
-            ex = new ArrayList();
-        }
+        invariant();
 
-        if(exampleThing == null) {
-            exampleThing = dataThing;
-        }
+        int xPos = H_PAD;
+        int yPos = V_PAD;
+        for(int i = 0; i < headings.size(); i++)
+        {
+            // header stuff
+            Header header = (Header) headings.get(i);
+            Component cmp = header.heading;
+            cmp.setSize(header.width, headingHeight);
+            cmp.setLocation(xPos, 0);
 
-        for(Iterator i = columns.iterator(); i.hasNext(); ) {
-            Column col = (Column) i.next();
-            DataThing dataObj = col.getFinder().getFacet(dataThing, col.getColID());
+            // column stuff
+            List col = (List) columns.get(i);
+            assert col.size() == rowHeights.length
+                    : "Row heights should match column size";
 
-            if(ex != null) {
-                ex.add(dataObj);
+            yPos = 0;
+            for(int r = 0; r < col.size(); r++) {
+                Component cell = (Component) col.get(r);
+                int height = rowHeights[r];
+                cell.setSize(header.width, height);
+                cell.setLocation(xPos, yPos);
+                yPos += height + V_PAD;
             }
 
-            if(dataObj != null) {
-                JComponent cmp = null;
-                MimeTypeRendererSPI renderer = col.getRenderer();
-                if(renderer != null) {
-                    try {
-                        cmp = renderer.getComponent(renderers, dataObj);
-                    } catch (Exception e) {
-                        LOG.error("Problem creating component from renderer",
-                                  e);
-                    }
-                }
+            // move on
+            xPos += header.width + H_PAD;
+        }
 
-                if(cmp == null) {
-                    for(Iterator ri = renderers.getRenderers(dataObj).iterator();
-                        cmp == null && ri.hasNext(); )
-                    {
-                        renderer = (MimeTypeRendererSPI) ri.next();
-                        if(renderer.isTerminal()) {
-                            try {
-                                cmp = renderer.getComponent(renderers, dataObj);
-                            } catch (Exception e) {
-                                LOG.error("Problem creating component from renderer",
-                                          e);
-                            }
+        // set container sizes
+        Dimension headersSize = new Dimension(xPos, headingHeight);
+        columnHeaders.setMinimumSize(headersSize);
+        columnHeaders.setPreferredSize(headersSize);
+        columnHeaders.setMaximumSize(headersSize);
+        columnHeaders.setSize(headersSize);
+        Dimension tableSize = new Dimension(xPos, yPos);
+        table.setMinimumSize(tableSize);
+        table.setPreferredSize(tableSize);
+        table.setMaximumSize(tableSize);
+        table.setSize(tableSize);
+
+        LOG.info("set table dims to " + tableSize);
+        validate();
+        LOG.info("table size is now " + table.getSize());
+    }
+
+    private JComponent makeHeading(FTableColumn col)
+    {
+        JComponent heading = new JLabel(col.getName());
+        heading.addMouseListener(new ColumnListener(col, heading));
+        return heading;
+    }
+
+    private JComponent makeCell(DataThing dataObj, FTableColumn ftCol)
+    {
+        JComponent cmp = null;
+        if(dataObj != null) {
+            MimeTypeRendererSPI renderer = ftCol.getRenderer();
+            if(renderer != null) {
+                try {
+                    cmp = renderer.getComponent(renderers, dataObj);
+                } catch (Exception e) {
+                    LOG.error("Problem creating component from renderer",
+                              e);
+                }
+            }
+            if (cmp == null) {
+                for (Iterator ri = renderers.getRenderers(dataObj).iterator();
+                     cmp == null && ri.hasNext();) {
+                    renderer = (MimeTypeRendererSPI) ri.next();
+                    if (renderer.isTerminal()) {
+                        try {
+                            cmp = renderer.getComponent(renderers, dataObj);
+                        } catch (Exception e) {
+                            LOG.error("Problem creating component from renderer",
+                                      e);
                         }
                     }
                 }
-
-                if(cmp == null) {
-                    cmp = new JLabel("No Renderer");
-                }
-
-                add(cmp, gbc);
             }
-            gbc.gridx++;
         }
 
-        if(ex != null) {
-            exampleRow = ex;
+        if (cmp == null) {
+            cmp = new JLabel("No Renderer");
         }
+
+        return cmp;
     }
 
-    public static final class Column
-    {
-        private String name;
-        private FacetFinderSPI finder;
-        private MimeTypeRendererSPI renderer;
-        private FacetFinderSPI.ColumnID colID;
-        private boolean horizontalSrollable;
-        private boolean verticalScrollable;
-
-        public Column()
-        {
-        }
-
-        public Column(String name,
-                      FacetFinderSPI finder,
-                      MimeTypeRendererSPI renderer,
-                      FacetFinderSPI.ColumnID colID,
-                      boolean rowSrollable,
-                      boolean colScrollable)
-        {
-            this.name = name;
-            this.finder = finder;
-            this.renderer = renderer;
-            this.colID = colID;
-            this.horizontalSrollable = rowSrollable;
-            this.verticalScrollable = colScrollable;
-        }
-
-        public String getName()
-        {
-            return name;
-        }
-
-        public void setName(String name)
-        {
-            this.name = name;
-        }
-
-        public FacetFinderSPI getFinder()
-        {
-            return finder;
-        }
-
-        public void setFinder(FacetFinderSPI finder)
-        {
-            this.finder = finder;
-        }
-
-        public MimeTypeRendererSPI getRenderer()
-        {
-            return renderer;
-        }
-
-        public void setRenderer(MimeTypeRendererSPI renderer)
-        {
-            this.renderer = renderer;
-        }
-
-        public FacetFinderSPI.ColumnID getColID()
-        {
-            return colID;
-        }
-
-        public void setColID(FacetFinderSPI.ColumnID colID)
-        {
-            this.colID = colID;
-        }
-
-        public boolean isHorizontalSrollable()
-        {
-            return horizontalSrollable;
-        }
-
-        public void setHorizontalSrollable(boolean horizontalSrollable)
-        {
-            this.horizontalSrollable = horizontalSrollable;
-        }
-
-        public boolean isVerticalScrollable()
-        {
-            return verticalScrollable;
-        }
-
-        public void setVerticalScrollable(boolean verticalScrollable)
-        {
-            this.verticalScrollable = verticalScrollable;
-        }
-    }
 
     private class ColumnListener implements MouseListener
     {
-        private final Column col;
-        private final JLabel title;
-        private final int indx;
+        private final FTableColumn col;
+        private final JComponent owner;
 
-        public ColumnListener(Column col, JLabel title, int indx)
+        public ColumnListener(FTableColumn col, JComponent owner)
         {
             this.col = col;
-            this.title = title;
-            this.indx = indx;
+            this.owner = owner;
         }
 
         private DataThing getCurrent()
@@ -356,7 +402,8 @@ public class FacetsTable
             if(exampleRow == null) {
                 return null;
             } else {
-                return (DataThing) exampleRow.get(indx);
+                return (DataThing) exampleRow.get(
+                        columnModel.getColumnIndex(col));
             }
         }
 
@@ -388,7 +435,7 @@ public class FacetsTable
                 JMenuItem remove = new JMenuItem(new RemoveColumn());
                 popup.add(remove);
 
-                popup.show(title, e.getX(), e.getY());
+                popup.show(owner, e.getX(), e.getY());
             }
         }
 
@@ -410,10 +457,9 @@ public class FacetsTable
                         {
                             public void actionPerformed(ActionEvent e)
                             {
-                                List columns = getColumns();
-                                columns.add(new Column(column.getName(), spi, null,
-                                                       column, true, true));
-                                setColumns(columns);
+                                columnModel.addColumn(new FTableColumn(
+                                        column.getName(), spi, null,
+                                        column, true, true));
                             }
                         });
                         add.add(item);
@@ -437,7 +483,6 @@ public class FacetsTable
                     public void actionPerformed(ActionEvent e)
                     {
                         col.setRenderer(renderer);
-                        resizeAndValidate();
                     }
                 });
                 view.add(choser);
@@ -453,9 +498,7 @@ public class FacetsTable
 
             public void actionPerformed(ActionEvent e)
             {
-                List cols = getColumns();
-                cols.remove(col);
-                setColumns(cols);
+                getColumnModel().removeColumn(col);
             }
         }
 
@@ -489,7 +532,6 @@ public class FacetsTable
                         editor,
                         "Configure " + col.getName(),
                         JOptionPane.DEFAULT_OPTION);
-                resizeAndValidate();
             }
         }
 
@@ -505,7 +547,178 @@ public class FacetsTable
                 String newName = JOptionPane.showInputDialog(
                         "New name", col.getName());
                 col.setName(newName);
-                resizeAndValidate(); // todo: this is heavyweight
+            }
+        }
+    }
+
+    private static final class Header
+    {
+        public int width;
+        public Component heading;
+
+        public Header(Component heading)
+        {
+            this(heading, 0);
+        }
+
+        public Header(Component heading, int width)
+        {
+            this.heading = heading;
+            this.width = width;
+        }
+    }
+
+    /**
+     * This is an ugly hack to make sure that when we are in a ScrollPannel, we
+     * put the headings at the top of the panel in the unscrolling bit, and when
+     * we are stand-alone, the heading is in a normal place.
+     */
+    private class ScrollPaneChanger implements HierarchyListener
+    {
+        /**
+         * Prevent us from infinite-looping by responding to events we cause.
+         */
+        boolean active = false;
+
+        public void hierarchyChanged(HierarchyEvent e)
+        {
+            if(!active) {
+                try {
+                    active = true;
+                    if(e.getChangeFlags() == e.PARENT_CHANGED &&
+                            e.getComponent() == FacetsTable.this) {
+                        boolean inSP = false;
+                        Component p = getParent();
+                        if(p != null) {
+                            p = p.getParent();
+                        }
+                        if(p instanceof JScrollPane) {
+                            inSP = true;
+                        }
+
+                        if(inSP != isInScrollPane) {
+                            isInScrollPane = inSP;
+                            configureScrolling();
+                        }
+                    }
+                } finally {
+                    active = false;
+                }
+            }
+        }
+    }
+
+    private class NSynch
+            implements FTableColumnModelListener
+    {
+        public void columnAdded(FTableColumnModelEvent evt)
+        {
+            int indx = evt.getToIndex();
+            FTableColumn col = columnModel.getColumn(indx);
+            Header header = new Header(makeHeading(col));
+            headings.add(indx, header);
+            List components = new ArrayList();
+
+            boolean first = true;
+            for(Iterator rowIt = makeRowIterator(); rowIt.hasNext(); ) {
+                DataThing item = (DataThing) rowIt.next();
+                DataThing dt = col.getFinder().getFacet(
+                        item, col.getColID());
+                if(first) {
+                    exampleRow.add(indx, dt);
+                    first = false;
+                }
+                Component cell = makeCell(dt, col);
+                components.add(cell);
+                table.add(cell);
+            }
+            columnHeaders.add(header.heading);
+            columns.add(indx, components);
+
+            redoGeometry();
+            redoLayout();
+        }
+
+        public void columnRemoved(FTableColumnModelEvent evt)
+        {
+            int indx = evt.getFromIndex();
+            Header header = (Header) headings.remove(indx);
+            columnHeaders.remove(header.heading);
+            List column = (List) columns.get(indx);
+            for(Iterator i = column.iterator(); i.hasNext(); ) {
+                Component cmp = (Component) i.next();
+                table.remove(cmp);
+            }
+
+            columns.remove(indx);
+            if(exampleRow != null) {
+                exampleRow.remove(indx);
+            }
+
+            redoGeometry();
+            redoLayout();
+        }
+
+        public void columnMoved(FTableColumnModelEvent evt)
+        {
+            int from = evt.getFromIndex();
+            int to = evt.getToIndex();
+
+            headings.add(to, headings.remove(from));
+            columns.add(to, columns.remove(from));
+            if(exampleRow != null) {
+                exampleRow.add(to, exampleRow.remove(from));
+            }
+
+            redoGeometry();
+            redoLayout();
+        }
+
+        public void columnChanged(FTableColumnModelEvent evt)
+        {
+            int indx = evt.getToIndex();
+            FTableColumn col = columnModel.getColumn(indx);
+            PropertyChangeEvent cause = evt.getCause();
+            LOG.info("change: " + cause.getPropertyName());
+            if("name".equals(cause.getPropertyName())) {
+                Header header = (Header) headings.remove(indx);
+                columnHeaders.remove(header.heading);
+                JComponent heading = makeHeading(columnModel.getColumn(indx));
+                Header newHeader = new Header(heading);
+                headings.add(indx, newHeader);
+                columnHeaders.add(newHeader.heading);
+
+                redoGeometry();
+                redoLayout();
+            } else {
+                List column = (List) columns.get(indx);
+                for (Iterator i = column.iterator(); i.hasNext();) {
+                    Component cmp = (Component) i.next();
+                    table.remove(cmp);
+                }
+
+                if(exampleRow != null) {
+                    exampleRow.remove(indx);
+                }
+
+                column.clear();
+
+                boolean fixExampleRow = exampleRow != null;
+                for (Iterator rowIt = makeRowIterator(); rowIt.hasNext();) {
+                    DataThing item = (DataThing) rowIt.next();
+                    DataThing dt = col.getFinder().getFacet(
+                            item, col.getColID());
+                    if(fixExampleRow) {
+                        exampleRow.add(indx, dt);
+                        fixExampleRow = false;
+                    }
+                    Component cell = makeCell(dt, col);
+                    column.add(cell);
+                    table.add(cell);
+                }
+
+                redoGeometry();
+                redoLayout();
             }
         }
     }

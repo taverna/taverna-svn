@@ -3,6 +3,8 @@ package org.embl.ebi.escience.scuflui.facets;
 import org.apache.log4j.Logger;
 
 import javax.swing.*;
+import javax.swing.text.Document;
+import javax.swing.text.BadLocationException;
 import java.beans.*;
 import java.awt.*;
 import java.awt.event.*;
@@ -111,6 +113,12 @@ public class PropertySheet
                                 final JTextField input = new JTextField(pe.getAsText());
                                 input.setEditable(true);
                                 final Color original = input.getBackground();
+                                input.addPropertyChangeListener(new PropertyChangeListener() {
+                                    public void propertyChange(PropertyChangeEvent evt)
+                                    {
+                                        LOG.info("property: " + evt.getPropertyName() + " " + evt.getNewValue());
+                                    }
+                                });
                                 input.addActionListener(new ActionListener() {
                                     public void actionPerformed(ActionEvent ae)
                                     {
@@ -123,7 +131,14 @@ public class PropertySheet
                                     public void focusGained(FocusEvent e) {}
                                     public void focusLost(FocusEvent e)
                                     {
-                                        update(write, bean, pe, pd);
+                                        Document doc = input.getDocument();
+                                        try {
+                                            input.setText(doc.getText(0, doc.getLength()));
+
+                                            LOG.info("focus lost. set text to " + input.getText());
+                                        } catch (BadLocationException ble) {
+                                            LOG.error(ble);
+                                        }
                                     }
                                 });
                                 add(new JLabel(pd.getDisplayName()), lhc);

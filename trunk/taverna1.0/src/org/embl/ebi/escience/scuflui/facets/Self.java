@@ -5,6 +5,7 @@ import org.embl.ebi.escience.baclava.DataThing;
 import java.util.Set;
 import java.util.Collections;
 import java.awt.*;
+import java.beans.PropertyChangeListener;
 
 /**
  *
@@ -53,7 +54,7 @@ public class Self
         return "Self";
     }
 
-    private static final class ColID 
+    private static final class ColID
             implements ColumnID
     {
         public Component getCustomiser(DataThing dataThing)
@@ -64,6 +65,32 @@ public class Self
         public String getName()
         {
             return "Self";
+        }
+
+        public void addPropertyChangeListener(
+                PropertyChangeListener listener)
+        {
+            // null implementation
+        }
+
+        public void removePropertyChangeListener(
+                PropertyChangeListener listener)
+        {
+            // null implementation
+        }
+
+        public void addPropertyChangeListener(
+                String propertyName,
+                PropertyChangeListener listener)
+        {
+            // null implementation
+        }
+
+        public void removePropertyChangeListener(
+                String propertyName,
+                PropertyChangeListener listener)
+        {
+            // null implementation
         }
     }
 }
