@@ -157,8 +157,7 @@ public class BeanshellConfigPanel extends JPanel implements ScuflUIComponent {
 	portEditPanel.add(outputEditPanel);
 	
 	tabbedPane.addTab("Ports", portEditPanel);
-
-	show();
+	setVisible(true);
     }
     
     private void updateInputListModel(DefaultListModel model) {

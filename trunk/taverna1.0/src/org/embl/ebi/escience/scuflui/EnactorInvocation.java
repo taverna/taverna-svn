@@ -19,6 +19,7 @@ import org.embl.ebi.escience.scufl.enactor.WorkflowInstance;
 import org.embl.ebi.escience.scufl.enactor.UserContext;
 import org.embl.ebi.escience.scufl.enactor.WorkflowSubmissionException;
 import java.awt.event.*;
+import org.jdom.output.*;
 
 import uk.ac.soton.itinnovation.freefluo.main.InvalidInputException;
 
@@ -357,8 +358,8 @@ public class EnactorInvocation extends JPanel implements ScuflUIComponent {
       // todo: why show() rather than setVisible(true)?
 	//pack();
 	//setSize(new Dimension(600,300));
-	//setVisible(true);
-	show();
+	setVisible(true);
+	//show();
 	// Run the workflow and poll for status messages
         try {
             workflowInstance.run();

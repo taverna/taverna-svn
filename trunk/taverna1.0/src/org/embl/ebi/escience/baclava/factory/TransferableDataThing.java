@@ -27,7 +27,7 @@ public class TransferableDataThing implements Transferable
 		System.err.println(thing);
 		lsid = thing.getLSID(thing.getDataObject());
 		//System.err.println(thing.getElement());
-		XMLOutputter outputter = new XMLOutputter("   ", true);
+		XMLOutputter outputter = new XMLOutputter(Format.getPrettyFormat());
 		dataThingElement = outputter.outputString(thing.getElement());
 		System.err.println(dataThingElement);
 	}

@@ -264,9 +264,7 @@ public class JDBCBaclavaDataService implements BaclavaDataService, LSIDProvider 
 	// Get the string version of the DataThing object
 	// from the XML factory
 	Document doc = new Document(DataThingXMLFactory.getElement(theDataThing));
-	XMLOutputter xo = new XMLOutputter();
-	xo.setIndent("  ");
-	xo.setNewlines(true);
+	XMLOutputter xo = new XMLOutputter(Format.getPrettyFormat());
 	String xmlRepresentation = xo.outputString(doc);
 	// Find all the LSIDs that this document contains
 	Map lsidMap = theDataThing.getLSIDMap();

@@ -32,11 +32,7 @@ public abstract class Port implements Serializable {
     
     private String name = "";
     private Processor processor = null;
-    private boolean isExternal = false;
     private String syntacticType = "";
-    private String semanticType = "";
-    private List aliases = null;
-    //private String description = "";
     private SemanticMarkup metadata = null;
     
     /**
@@ -113,25 +109,6 @@ public abstract class Port implements Serializable {
 	    }
 	}
     }
-
-    /**
-     * Set the free text description of the port
-     */
-    /**public void setDescription(String theDescription) {
-	if (theDescription != null) {
-	    this.description = theDescription;
-	    fireModelEvent(new ScuflModelEvent(this, "Description set"));
-	}
-	}*/
-
-    /**
-     * Get the description for this port
-     */
-    /**
-       public String getDescription() {
-       return this.description;
-       }
-    */
     
     /**
      * Set the syntactic type of the port, only visible
@@ -162,42 +139,6 @@ public abstract class Port implements Serializable {
 	return this.syntacticType;
     }
     
-    /**
-     * Set the semantic type of the port, only visible
-     * within this package, currently unused by this
-     * version of the software.
-     */
-    void setSemanticType(String new_type) {
-	throw new RuntimeException("Semantic types are not implemented at the moment.");
-    }
-
-    /**
-     * Get the semantic type of the port, not implemented
-     * in this version of the spec or software.
-     */
-    public String getSemanticType() {
-	throw new RuntimeException("Semantic types are not implemented at the moment.");
-    }
-
-    /**
-     * Set the visibility of this port outside the scope of the workflow
-     * @deprecated
-     */
-    public void setExternal(boolean external_value) {
-	if (external_value != this.isExternal) {
-	    fireModelEvent(new ScuflModelEvent(this,"Visibility of port changed to "+external_value));
-	}
-	this.isExternal = external_value;
-    }
-
-    /**
-     * Is this port visible outside the workflow?
-     * @deprecated
-     */
-    public boolean isExternal() {
-	return this.isExternal;
-    }
-
     /**
      * Is this port a workflow source?
      */
@@ -238,34 +179,6 @@ public abstract class Port implements Serializable {
     public String toString() {
 	return this.getName();
     }
-
-    /**
-     * Add a name to the list of aliases used to reference 
-     * this port.
-     */
-    public void addAlias(String name) {
-	if(aliases==null)
-	    aliases = new ArrayList();
-	aliases.add(name);
-	//Note at present no way to remove name, can't see
-	//any need for it at moment - would introduce 
-	//synchronization issues anyway. - djm 29/04/2003.
-    }
-    
-    /**
-     * Checks to see if supplied name is an alias for the port
-     */
-    public boolean isAlias(String name) {
-	if(aliases!=null){
-	    Iterator i = aliases.iterator();
-	    while(i.hasNext()) {
-		String n = (String) i.next();
-		if(n.equals(name))
-		    return true;
-	    }
-	}
-	return false;
-    }	
     
     /**
      * Handle model events

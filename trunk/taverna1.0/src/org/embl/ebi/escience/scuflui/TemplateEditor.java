@@ -88,7 +88,7 @@ public class TemplateEditor extends JComponent implements ScuflUIComponent {
 	populate();
 	add(existingTemplates);
 	add(defaultTemplates);
-	show();
+	setVisible(true);
     }
     private JComponent makeSmall(JComponent c) {
 	c.setPreferredSize(new Dimension(70,20));

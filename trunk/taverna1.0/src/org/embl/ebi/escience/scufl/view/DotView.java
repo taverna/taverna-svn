@@ -142,33 +142,35 @@ public class DotView implements ScuflModelEventListener, java.io.Serializable {
 	// Get the external ports, render these as special links
 	// and edges to show them in the generated diagram
 	// DEPRECATED
-	Port[] externalPorts = model.getExternalPorts();
-	for (int i=0; i<externalPorts.length; i++) {
-	    // Create the new node in the graph for this external port
-	    Port thePort = externalPorts[i];
-	    Processor theProcessor = thePort.getProcessor();
-	    String nodeName = "external"+theProcessor.getName()+thePort.getName();
-	    dot.append(" "+nodeName+" [\n");
-	    dot.append("  shape=\"diamond\",\n");
-	    dot.append("  width=\"0\",\n");
-	    dot.append("  height=\"0\",\n");
-	    dot.append("  fillcolor=\"skyblue\",\n");
-	    if (thePort instanceof InputPort) {
-		dot.append("  label=\"in\"\n");
-	    }
-	    else {
-		dot.append("  label=\"out\"\n");
-	    }
-	    dot.append(" ]\n");
-	    // Create an edge to the named port, direction depends on the type
-	    // of the port, whether input or output
-	    if (thePort instanceof InputPort) {
-		dot.append(" "+nodeName+"->"+theProcessor.getName()+":"+thePort.getName()+";\n");
-	    }
-	    else {
-		dot.append(" "+theProcessor.getName()+":"+thePort.getName()+"->"+nodeName+";\n");
-	    }
-	}
+	/**
+	   Port[] externalPorts = model.getExternalPorts();
+	   for (int i=0; i<externalPorts.length; i++) {
+	   // Create the new node in the graph for this external port
+	   Port thePort = externalPorts[i];
+	   Processor theProcessor = thePort.getProcessor();
+	   String nodeName = "external"+theProcessor.getName()+thePort.getName();
+	   dot.append(" "+nodeName+" [\n");
+	   dot.append("  shape=\"diamond\",\n");
+	   dot.append("  width=\"0\",\n");
+	   dot.append("  height=\"0\",\n");
+	   dot.append("  fillcolor=\"skyblue\",\n");
+	   if (thePort instanceof InputPort) {
+	   dot.append("  label=\"in\"\n");
+	   }
+	   else {
+	   dot.append("  label=\"out\"\n");
+	   }
+	   dot.append(" ]\n");
+	   // Create an edge to the named port, direction depends on the type
+	   // of the port, whether input or output
+	   if (thePort instanceof InputPort) {
+	   dot.append(" "+nodeName+"->"+theProcessor.getName()+":"+thePort.getName()+";\n");
+	   }
+	   else {
+	   dot.append(" "+theProcessor.getName()+":"+thePort.getName()+"->"+nodeName+";\n");
+	   }
+	   }
+	*/
 	
 
 	// For each processor, create a named node

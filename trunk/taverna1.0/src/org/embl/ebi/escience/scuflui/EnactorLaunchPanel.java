@@ -10,6 +10,7 @@ import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.*;
+import java.io.*;
 import javax.swing.border.Border;
 import org.embl.ebi.escience.baclava.factory.DataThingFactory;
 import org.embl.ebi.escience.baclava.factory.DataThingXMLFactory;
@@ -34,7 +35,7 @@ import java.io.InputStream;
 
 // JDOM Imports
 import org.jdom.Document;
-import org.jdom.output.XMLOutputter;
+import org.jdom.output.*;
 
 // Network Imports
 import java.net.URL;
@@ -95,9 +96,7 @@ public class EnactorLaunchPanel extends JPanel
 	actionPanel.add(xmlRefresh);
 	xmlRefresh.addActionListener(new ActionListener() {
 		public void actionPerformed(ActionEvent ae) {
-		    XMLOutputter xo = new XMLOutputter();
-		    xo.setIndent(" ");
-		    xo.setNewlines(true);
+		    XMLOutputter xo = new XMLOutputter(Format.getPrettyFormat());
 		    xmlText.setText(xo.outputString(EnactorLaunchPanel.this.getInputDocument()));
 		}
 	    });
@@ -130,7 +129,7 @@ public class EnactorLaunchPanel extends JPanel
 	    });
 
 	runButton.setPreferredSize(new Dimension(32,32));
-	show();
+	setVisible(true);
     }
 
     public String getName() {
@@ -327,7 +326,7 @@ class WorkflowInputPanel extends JPanel {
                           fc.getCurrentDirectory().toString());
 			    File file = fc.getSelectedFile();
 			    InputStream is = file.toURL().openStream();
-			    java.io.DataInputStream dis = new java.io.DataInputStream(new java.io.BufferedInputStream(is));
+			    BufferedReader dis = new BufferedReader(new InputStreamReader(new java.io.BufferedInputStream(is)));
 			    StringBuffer sb = new StringBuffer();
 			    String s = null;
 			    while ((s = dis.readLine()) != null) {
@@ -357,7 +356,7 @@ class WorkflowInputPanel extends JPanel {
 									  "http://");
 			if (name != null) {
 			    InputStream is = new URL(name).openStream();
-			    java.io.DataInputStream dis = new java.io.DataInputStream(new java.io.BufferedInputStream(is));
+			    BufferedReader dis = new BufferedReader(new InputStreamReader(new java.io.BufferedInputStream(is)));
 			    StringBuffer sb = new StringBuffer();
 			    String s = null;
 			    while ((s = dis.readLine()) != null) {

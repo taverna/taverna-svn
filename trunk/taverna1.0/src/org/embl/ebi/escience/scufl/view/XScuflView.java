@@ -15,7 +15,7 @@ import java.util.Iterator;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.Namespace;
-import org.jdom.output.XMLOutputter;
+import org.jdom.output.*;
 
 import java.lang.String;
 
@@ -270,9 +270,7 @@ public class XScuflView implements ScuflModelEventListener, java.io.Serializable
 	}
 
 	// Generate the textual version and cache it.
-	XMLOutputter xo = new XMLOutputter();
-	xo.setIndent("  ");
-	xo.setNewlines(true);
+	XMLOutputter xo = new XMLOutputter(Format.getPrettyFormat());
 	this.cachedRepresentation = xo.outputString(this.cachedDocument);
 
 	// Cache is now valid.

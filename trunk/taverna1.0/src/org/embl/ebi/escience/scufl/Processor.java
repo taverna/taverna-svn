@@ -455,7 +455,7 @@ public abstract class Processor implements Serializable {
 	for (Iterator i = this.ports.iterator(); i.hasNext(); ) {
 	    try {
 		InputPort ip = (InputPort)i.next();
-		if (boundPorts.contains(ip) || ip.isExternal()) {
+		if (boundPorts.contains(ip)) {
 		    temp.add(ip);
 		}
 	    }
@@ -484,7 +484,7 @@ public abstract class Processor implements Serializable {
 	for (Iterator i = this.ports.iterator(); i.hasNext(); ) {
 	    try {
 		OutputPort op = (OutputPort)i.next();
-		if (boundPorts.contains(op) || op.isExternal()) {
+		if (boundPorts.contains(op)) {
 		    temp.add(op);
 		}
 	    }

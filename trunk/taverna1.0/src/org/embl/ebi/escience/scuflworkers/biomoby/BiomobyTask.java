@@ -89,9 +89,7 @@ public class BiomobyTask implements ProcessorTaskWorker {
 		    // Tag the simple element onto the collection.
 		    collectionElement.addContent(simpleElement.detach());
 		}
-		XMLOutputter xo = new XMLOutputter();
-		xo.setIndent("  ");
-		xo.setNewlines(true);
+		XMLOutputter xo = new XMLOutputter(Format.getPrettyFormat());
 		inputXML = xo.outputString(new Document(root));
 		// Iterate and create the collection, 
 		// ....inputXML = collectionThing

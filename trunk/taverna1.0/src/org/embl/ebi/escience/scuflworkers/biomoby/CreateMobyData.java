@@ -115,9 +115,7 @@ public class CreateMobyData implements LocalWorker {
 	dataElement.setAttribute("id", idValue, mobyNS);
 	mobySimple.addContent(dataElement);
 	
-	XMLOutputter xo = new XMLOutputter();
-	xo.setIndent("  ");
-	xo.setNewlines(true);
+	XMLOutputter xo = new XMLOutputter(Format.getPrettyFormat());
 	String mobyOutputString = xo.outputString(new Document(mobyElement));
 	
 	Map results = new HashMap();

@@ -260,23 +260,24 @@ public class ScuflModel
      * corresponds to the list of overall workflow inputs
      * and outputs.
      */
-    public Port[] getExternalPorts() {
-	ArrayList externalPortList = new ArrayList();
-	// Iterate over processors
-	for (Iterator i = this.processors.iterator(); i.hasNext(); ) {
-	    Processor processor = (Processor)i.next();
-	    // Iterate over ports within that processor
-	    for (int j = 0; j < processor.getPorts().length; j++) {
-		Port port = processor.getPorts()[j];
-		if (port.isExternal()) {
-		    // If the port is flagged as being external
-		    // then add it to the list
-		    externalPortList.add(port);
-		}
-	    }
-	}
-	return (Port[])(externalPortList.toArray(new Port[0]));
-    }
+    /**public Port[] getExternalPorts() {
+       ArrayList externalPortList = new ArrayList();
+       // Iterate over processors
+       for (Iterator i = this.processors.iterator(); i.hasNext(); ) {
+       Processor processor = (Processor)i.next();
+       // Iterate over ports within that processor
+       for (int j = 0; j < processor.getPorts().length; j++) {
+       Port port = processor.getPorts()[j];
+       if (port.isExternal()) {
+       // If the port is flagged as being external
+       // then add it to the list
+       externalPortList.add(port);
+       }
+       }
+       }
+       return (Port[])(externalPortList.toArray(new Port[0]));
+       }
+    */
 
     /**
      * Add a processor to the model.

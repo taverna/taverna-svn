@@ -57,9 +57,7 @@ public class RemoteSOAPStore implements BaclavaDataService, LSIDProvider {
     public void storeDataThing(DataThing theDataThing, boolean silent)
 	throws DuplicateLSIDException {
 	Document doc = new Document(DataThingXMLFactory.getElement(theDataThing));
-	XMLOutputter xo = new XMLOutputter();
-	xo.setIndent("  ");
-	xo.setNewlines(true);
+	XMLOutputter xo = new XMLOutputter(Format.getPrettyFormat());
 	String stringifiedThing = xo.outputString(doc);
 	try {
 	    Call call = (Call) new Service().createCall();

@@ -11,7 +11,7 @@ import org.embl.ebi.escience.baclava.DataThing;
 // JDOM Imports
 import org.jdom.Document;
 import org.jdom.Element;
-import org.jdom.output.XMLOutputter;
+import org.jdom.output.*;
 
 import org.embl.ebi.escience.baclava.factory.DataThingFactory;
 import java.lang.Exception;
@@ -88,9 +88,7 @@ public class DataThingFactoryTest {
     private static void printDocument(Element e) {
 	try {
 	    Document doc = new Document(e);
-	    XMLOutputter xo = new XMLOutputter();
-	    xo.setIndent("  ");
-	    xo.setNewlines(true);
+	    XMLOutputter xo = new XMLOutputter(Format.getPrettyFormat());
 	    System.out.println(xo.outputString(doc));
 	}
 	catch (Exception ex) {

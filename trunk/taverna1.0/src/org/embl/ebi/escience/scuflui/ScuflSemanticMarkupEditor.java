@@ -199,8 +199,7 @@ public class ScuflSemanticMarkupEditor extends JPanel implements ScuflUIComponen
 	    });
 	mimeEditPanel.add(clearMimeTypes, BorderLayout.EAST);
 	tabbedPane.addTab("MIME Types",topLevelMimePanel);
-
-	show();
+	setVisible(true);
     }
     
     public javax.swing.ImageIcon getIcon() {
