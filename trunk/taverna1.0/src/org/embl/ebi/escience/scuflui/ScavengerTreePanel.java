@@ -124,10 +124,16 @@ public class ScavengerTreePanel extends JPanel
 
     private void cancelHighlight() {
 	ScuflModelExplorerRenderer r = (ScuflModelExplorerRenderer)tree.getCellRenderer();
-	r.setPattern(null);
+	if (regex.getText().equals("")) {
+	    r.setPattern(null);
+	}
+	else {
+	    String regexString = ".*"+regex.getText().toLowerCase()+".*";
+	    r.setPattern(regexString);
+	}
 	tree.repaint();
     }
-
+    
     private void jumpToAndHighlight() {
 	String regexString = ".*"+regex.getText().toLowerCase()+".*";
 	// Update the renderer to colour the cells correctly based on match

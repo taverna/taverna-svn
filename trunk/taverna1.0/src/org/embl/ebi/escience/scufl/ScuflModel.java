@@ -527,6 +527,7 @@ class InternalSourcePortHolder extends Processor implements java.io.Serializable
 	throws DuplicateProcessorNameException,
 	       ProcessorCreationException {
 	super(model,"SCUFL_INTERNAL_SOURCEPORTS");
+	firingEvents = true;
     } 
     public Properties getProperties() {
 	return null;
@@ -541,6 +542,7 @@ class InternalSinkPortHolder extends Processor implements java.io.Serializable {
 	throws DuplicateProcessorNameException,
 	       ProcessorCreationException {
 	super(model,"SCUFL_INTERNAL_SINKPORTS");
+	firingEvents = true;
     }
     public Properties getProperties() {
 	return null;

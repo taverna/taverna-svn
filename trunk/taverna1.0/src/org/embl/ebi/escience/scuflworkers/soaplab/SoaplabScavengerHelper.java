@@ -31,7 +31,7 @@ public class SoaplabScavengerHelper implements ScavengerHelper {
 	final ScavengerTree s = theScavenger;
 	return new ActionListener() {
 		public void actionPerformed(ActionEvent ae) {
-		    String baseURL = (String)JOptionPane.showInputDialog(null,
+		    final String baseURL = (String)JOptionPane.showInputDialog(null,
 									 "Base location for your soaplab installation?",
 									 "Soaplab location",
 									 JOptionPane.QUESTION_MESSAGE,
@@ -39,15 +39,19 @@ public class SoaplabScavengerHelper implements ScavengerHelper {
 									 null,
 									 "http://industry.ebi.ac.uk/soap/soaplab/");
 		    if (baseURL!=null) {
-			try {
-			    s.addScavenger(new SoaplabScavenger(baseURL));					
-			}
-			catch (ScavengerCreationException sce) {
-			    JOptionPane.showMessageDialog(null,
-							  "Unable to create scavenger!\n"+sce.getMessage(),
-							  "Exception!",
-							  JOptionPane.ERROR_MESSAGE);
-			}
+			new Thread() {
+			    public void run() {
+				try {
+				    s.addScavenger(new SoaplabScavenger(baseURL));					
+				}
+				catch (ScavengerCreationException sce) {
+				    JOptionPane.showMessageDialog(null,
+								  "Unable to create scavenger!\n"+sce.getMessage(),
+								  "Exception!",
+								  JOptionPane.ERROR_MESSAGE);
+				}
+			    }
+			}.start();
 		    }
 		}
 	    };
