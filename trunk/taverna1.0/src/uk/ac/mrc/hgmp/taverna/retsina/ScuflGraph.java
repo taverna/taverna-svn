@@ -7,6 +7,7 @@ import java.awt.Dimension;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.Cursor;
+import java.util.List;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.dnd.*;
@@ -15,6 +16,8 @@ import javax.swing.JLabel;
 import javax.swing.BorderFactory;
 import javax.swing.border.BevelBorder;
 import javax.swing.border.Border;
+import java.awt.FontMetrics;
+import java.awt.Font;
 
 // Utility Imports
 import java.util.Hashtable;
@@ -22,6 +25,7 @@ import java.util.Map;
 
 import uk.ac.mrc.hgmp.taverna.retsina.ProgNode;
 import uk.ac.mrc.hgmp.taverna.retsina.ScuflGraphCell;
+import uk.ac.mrc.hgmp.taverna.retsina.ScuflInputPort;
 import uk.ac.mrc.hgmp.taverna.retsina.ScuflInputPortView;
 import uk.ac.mrc.hgmp.taverna.retsina.ScuflOutputPort;
 import uk.ac.mrc.hgmp.taverna.retsina.ScuflOutputPortView;
@@ -30,12 +34,19 @@ import org.emboss.jemboss.gui.startup.ProgList;
 import org.embl.ebi.escience.scufl.DataConstraint;
 import org.embl.ebi.escience.scufl.DataConstraintCreationException;
 import org.embl.ebi.escience.scufl.DuplicateProcessorNameException;
+import org.embl.ebi.escience.scufl.UnknownProcessorException;
+import org.embl.ebi.escience.scufl.UnknownPortException;
+import org.embl.ebi.escience.scufl.MalformedNameException;
+import org.embl.ebi.escience.scufl.ConcurrencyConstraintCreationException;
+import org.embl.ebi.escience.scufl.DuplicateConcurrencyConstraintNameException;
+import org.embl.ebi.escience.scufl.parser.XScuflFormatException;
 import org.embl.ebi.escience.scufl.Processor;
 import org.embl.ebi.escience.scufl.ProcessorCreationException;
 import org.embl.ebi.escience.scufl.SoaplabProcessor;
 import org.embl.ebi.escience.scufl.ScuflModel;
 import org.embl.ebi.escience.scufl.ScuflModelEventPrinter;
 import org.embl.ebi.escience.scufl.view.XScuflView;
+import org.embl.ebi.escience.scufl.parser.XScuflParser;
 
 import java.lang.ClassCastException;
 import java.lang.Exception;
@@ -59,6 +70,10 @@ public class ScuflGraph extends JGraph
     private org.embl.ebi.escience.scufl.ScuflModel scuflModel;
     private ProgList progs;
     private XScuflView scuflView;
+
+    private static int fontSize = 12;
+    private static Font font = new Font("Monospaced",
+                      Font.PLAIN, fontSize);
 
     // Construct the Graph using the Model as its Data Source
     public ScuflGraph(GraphModel model, ProgList progs) 
@@ -86,7 +101,120 @@ public class ScuflGraph extends JGraph
         scuflView = new XScuflView(scuflModel);
         setDropTarget(new DropTarget(this,this));
     }
-    
+ 
+    /**
+     *
+     * Load in a XScufl workflow
+     * @param String xscufl XScufl as text
+     *
+     */
+    public void loadXScufl(String xscufl)
+    {
+      scuflModel = new ScuflModel();
+      scuflModel.addListener(new ScuflModelEventPrinter(null));
+      scuflView = new XScuflView(scuflModel);
+
+      // use xscufl to populate the ScuflModel
+      try
+      {
+        XScuflParser.populate(xscufl,scuflModel,null);
+      }
+      catch(UnknownProcessorException upe)
+      {
+        System.out.println("loadXScufl::UnknownProcessorException");
+      }
+      catch(UnknownPortException upte)
+      {
+        System.out.println("loadXScufl::UnknownPortException");
+      }
+      catch(ProcessorCreationException pce)
+      {
+        System.out.println("loadXScufl::ProcessorCreationException");
+      }
+      catch(DataConstraintCreationException dcce)
+      {
+        System.out.println("loadXScufl::DataConstraintCreationException");
+      }
+      catch(DuplicateProcessorNameException dpne)
+      {
+        System.out.println("loadXScufl::DuplicateProcessorNameException");
+      }
+      catch(MalformedNameException mne)
+      {
+        System.out.println("loadXScufl::MalformedNameException");
+      }
+      catch(ConcurrencyConstraintCreationException ccce)
+      {
+        System.out.println("loadXScufl::ConcurrencyConstraintCreationException");
+      }
+      catch(DuplicateConcurrencyConstraintNameException dccne)
+      {
+        System.out.println("loadXScufl::DuplicateConcurrencyConstraintNameException");
+      }
+      catch(XScuflFormatException xfe)
+      {
+        System.out.println("loadXScufl::XScuflFormatException");
+      }
+
+      Processor proc[] = scuflModel.getProcessors();
+
+      // draw processors in
+      int xpos = 0;
+      int ypos = 0;
+      for(int i=0;i<proc.length;i++)
+      {
+        Point p = new Point(xpos,ypos+=20);
+        xpos += insertCell(p,proc[i],proc[i].getName());
+      }
+
+      // connect data links between processor ports
+      DataConstraint dc[] = scuflModel.getDataConstraints();
+      Object cells[] = getRoots();
+      for(int i=0;i<dc.length;i++)
+      {
+        String constraint = dc[i].getName();
+        System.out.println("**********************DataConstraint "+constraint);
+        int ind1 = constraint.indexOf(":");
+        int ind2 = constraint.indexOf("'");
+        String procName = constraint.substring(0,ind1);
+        String portName = constraint.substring(ind1+1,ind2);
+        Port pstart = getJGraphPort(procName,portName,cells);
+        ind1 = constraint.indexOf("'",ind2+1);  
+        ind2 = constraint.indexOf(":",ind1);
+        procName = constraint.substring(ind1+1,ind2);
+        portName = constraint.substring(ind2+1);
+        Port pend = getJGraphPort(procName,portName,cells);
+        if(pstart != null && pend != null)
+          connect(pstart,pend);
+      }
+
+    }
+   
+    /**
+     * 
+     * @param String procName processor name
+     * @param String portName port name
+     * @param Object cells[] all roots (processors)
+     * @return Port belonging to procName and called portName
+     *
+     */
+    private Port getJGraphPort(String procName, String portName, Object cells[])
+    {
+      for(int j=0;j<cells.length;j++)
+        if(((String)(((ScuflGraphCell)cells[j]).getUserObject())).equals(procName))
+        {
+          List children = ((ScuflGraphCell)cells[j]).getChildren();
+          for(int k=0;k<children.size();k++)
+            if( ((String)((ScuflPort)children.get(k)).getUserObject()).equals(portName))
+            {
+              System.out.println("**********************FOUND PORT "+portName);
+              return (ScuflPort)children.get(k);
+            }
+        }  
+
+      return null;
+    } 
+
     /**
      * Override Superclass Method to Return Custom EdgeView
      */
@@ -125,11 +253,14 @@ public class ScuflGraph extends JGraph
     public void insertCell(Point point,String group,String name)
     {
         setCursor(cbusy);
-
         Processor proc = addSoaplabProcessor(group,name);
-        // Add user input parameters
-    
-        // Construct Vertex with no Label
+        insertCell(point,proc,name);
+        setCursor(cdone);
+    }
+
+    public int insertCell(Point point,Processor proc,String name)
+    {
+        // Construct Vertex 
         ScuflGraphCell vertex = new ScuflGraphCell(name,proc);
 
         // Create a Map that holds the attributes for the Vertex
@@ -144,7 +275,7 @@ public class ScuflGraph extends JGraph
         int width  = (int)size.getWidth()+10;
         int height = (int)size.getHeight() + (18*nports);
         size = new Dimension(width,height);
-        GraphConstants.setBounds(map, new Rectangle(point, size));
+//      GraphConstants.setBounds(map, new Rectangle(point, size));
 
         // Set raised border
         GraphConstants.setBorder(map, BorderFactory.createRaisedBevelBorder());
@@ -154,27 +285,100 @@ public class ScuflGraph extends JGraph
         Hashtable attributes = new Hashtable();
 
         // Associate the Vertex with its Attributes
-        attributes.put(vertex, map);
+//      attributes.put(vertex, map);
 
         // Add a load of ports, mainly to test whether I've gotten
         // the rendering code working for the custom port views.
 
         if(proc != null)
         {
+          int maxPortWidth = 0;
+          int wid = 0;
           org.embl.ebi.escience.scufl.Port inPorts[] = proc.getInputPorts();
+
+          //find the max width of the input ports
+          for(int j=0; j<inPorts.length;j++)
+          {
+            wid = getInputPortWidth(inPorts[j]);
+            if(wid > maxPortWidth)
+              maxPortWidth = wid;
+          }
+          width += maxPortWidth;
+
+          // add the max width of the input ports to insertion point
+          point.x += maxPortWidth;
+          GraphConstants.setBounds(map, new Rectangle(point, size)); 
+          // associate the Vertex with its Attributes
+          attributes.put(vertex, map);
+
+          // add input ports
           for(int j=0; j<inPorts.length;j++)
             attributes.putAll(vertex.addInputPort(inPorts[j]));
 
+          // add output ports and find max width
+          maxPortWidth = 0;
           org.embl.ebi.escience.scufl.Port outPorts[] = proc.getOutputPorts();
           for(int j=0; j<outPorts.length;j++)
+          {
             attributes.putAll(vertex.addOutputPort(outPorts[j]));
+            wid = getOutputPortWidth(outPorts[j]);
+            if(wid > maxPortWidth)
+              maxPortWidth = wid;
+          }
+          width += maxPortWidth;
+
         }
 
         // Insert the Vertex and its Attributes (can also use model)
         getGraphLayoutCache().insert(new Object[]{vertex}, attributes, null, null, null);
-        setCursor(cdone);
+        return width;
     }
 
+    /**
+     * Insert a new Edge between source and target. The error
+     * checking here is done entirely within the ScuflGraphModel class,
+     * you don't need to put it in here.
+     */
+    public void connect(Port source, Port target)
+    {
+        ConnectionSet cs = new ConnectionSet();
+        DefaultEdge edge = new DefaultEdge();
+        cs.connect(edge, source, target);
+        Map map = GraphConstants.createMap();
+        GraphConstants.setLineEnd(map, GraphConstants.ARROW_TECHNICAL);
+        Hashtable attributes = new Hashtable();
+        attributes.put(edge, map);
+        getGraphLayoutCache().insert(new Object[]{edge},
+                                  attributes, cs, null, null);
+    }
+
+    /**
+     *
+     *  Get the width of the port
+     *
+     */
+    public int getInputPortWidth(org.embl.ebi.escience.scufl.Port p)
+    {
+      String name = p.getName();
+      JLabel c = new JLabel();
+      FontMetrics fm = c.getFontMetrics(font);
+      int width = fm.stringWidth(name);
+      return width+ScuflInputPortView.inputPortIcon.getIconWidth();
+    }
+
+    /**
+     *
+     *  Get the width of the port
+     *
+     */
+    public int getOutputPortWidth(org.embl.ebi.escience.scufl.Port p)
+    {
+      String name = p.getName();
+      JLabel c = new JLabel();
+      FontMetrics fm = c.getFontMetrics(font);
+      int width = fm.stringWidth(name);
+      return width+ScuflOutputPortView.outputPortIcon.getIconWidth();
+    }
 
     /**
      *

@@ -16,6 +16,7 @@ import org.embl.ebi.escience.scufl.DuplicateProcessorNameException;
 import org.embl.ebi.escience.scufl.Processor;
 import org.embl.ebi.escience.scufl.ProcessorCreationException;
 import org.embl.ebi.escience.scufl.SoaplabProcessor;
+
 import org.emboss.jemboss.gui.startup.ProgList;
 
 // Utility Imports
@@ -111,6 +112,10 @@ public class ScuflGraphPanel extends JPanel
 	add(new JScrollPane(graph), BorderLayout.CENTER);
     }
 
+    public void loadXScufl(String xscufl)
+    {
+      graph.loadXScufl(xscufl);
+    }
 
     public String getXScufl()
     {
@@ -163,18 +168,18 @@ public class ScuflGraphPanel extends JPanel
      * checking here is done entirely within the ScuflGraphModel class,
      * you don't need to put it in here.
      */
-    public void connect(Port source, Port target) 
-    {
-	ConnectionSet cs = new ConnectionSet();
-	DefaultEdge edge = new DefaultEdge();
-	cs.connect(edge, source, target);
-	Map map = GraphConstants.createMap();
-	GraphConstants.setLineEnd(map, GraphConstants.ARROW_TECHNICAL);
-	Hashtable attributes = new Hashtable();
-	attributes.put(edge, map);
-	graph.getGraphLayoutCache().insert(new Object[]{edge}, 
-                                  attributes, cs, null, null);
-    }
+//  public void connect(Port source, Port target) 
+//  {
+//	ConnectionSet cs = new ConnectionSet();
+//	DefaultEdge edge = new DefaultEdge();
+//	cs.connect(edge, source, target);
+//	Map map = GraphConstants.createMap();
+//	GraphConstants.setLineEnd(map, GraphConstants.ARROW_TECHNICAL);
+//	Hashtable attributes = new Hashtable();
+//	attributes.put(edge, map);
+//	graph.getGraphLayoutCache().insert(new Object[]{edge}, 
+//                                  attributes, cs, null, null);
+//    }
     
     /**
      * Group the supplied cells together
@@ -434,7 +439,7 @@ public class ScuflGraphPanel extends JPanel
 		&& firstPort != port)
             {
 		// Then Establish Connection
-		connect((Port) firstPort.getCell(), (Port) port.getCell());
+		graph.connect((Port) firstPort.getCell(), (Port) port.getCell());
 		// Consume Event
 		e.consume();
                 graph.addDataConstraint( ((ScuflPort)firstPort.getCell()).getScuflPort(),
@@ -694,6 +699,11 @@ public class ScuflGraphPanel extends JPanel
 	toolbar.add(toback);
 	
 	return toolbar;
+    }
+
+    public ScuflGraph getCurrentJGraph()
+    {
+      return graph;
     }
     
     // This will change the source of the actionevent to graph.

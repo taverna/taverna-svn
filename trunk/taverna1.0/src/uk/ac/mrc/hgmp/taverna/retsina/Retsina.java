@@ -8,12 +8,19 @@ import java.awt.event.KeyEvent;
 import java.awt.Dimension;
 import java.awt.Color;
 import java.io.IOException;
+import java.io.BufferedInputStream;
+import java.io.StringWriter;
+import java.io.FileInputStream;
+import java.io.File;
+import java.io.FileWriter;
 import javax.swing.*;
+
 import org.emboss.jemboss.JembossJarUtil;
 import org.emboss.jemboss.gui.startup.ProgList;
 
 import uk.ac.mrc.hgmp.taverna.retsina.ProgramSelectionPanel;
 import uk.ac.mrc.hgmp.taverna.retsina.ScuflGraphPanel;
+import uk.ac.mrc.hgmp.taverna.retsina.ScuflGraph;
 import java.lang.Exception;
 import java.lang.String;
 import java.lang.System;
@@ -56,7 +63,6 @@ public class Retsina extends JApplet
   {
     String wossname = null;
 
-    setJMenuBar(createMenuBar());
     try
     {
       JembossJarUtil jwoss = new JembossJarUtil("resources/wossname.jar");
@@ -72,6 +78,8 @@ public class Retsina extends JApplet
     graphPanel = new ScuflGraphPanel(null,progs);
     JPanel westPanel = new ProgramSelectionPanel(wossname,graphPanel,
                                                  progs,progMenuBar);
+
+    setJMenuBar(createMenuBar(graphPanel));
     // Put the components in the content pane
     Container contentpane = getContentPane();
     contentpane.add(graphPanel,BorderLayout.CENTER);
@@ -81,11 +89,73 @@ public class Retsina extends JApplet
   /**
    * Create the menubar
    */
-  public JMenuBar createMenuBar()
+  public JMenuBar createMenuBar(final ScuflGraphPanel graphPanel)
   {
      JMenuBar menuBar = new JMenuBar();
+
+//file menu
      JMenu fileMenu = new JMenu("File");
      fileMenu.setMnemonic(KeyEvent.VK_F);
+
+     JMenuItem loadXScufl = new JMenuItem("Load XScufl Example");
+     loadXScufl.addActionListener(new ActionListener()
+     {
+       public void actionPerformed(ActionEvent e)
+       {
+   
+         try
+         {
+           BufferedInputStream workflow = new BufferedInputStream(new FileInputStream("src/uk/ac/soton/itinnovation/taverna/enactor/broker/test/XScufl_example.xml"));
+           StringWriter sWriter = new StringWriter();
+           while(workflow.available()>0) 
+             sWriter.write(workflow.read());
+           String xscufl = sWriter.toString();
+           graphPanel.loadXScufl(xscufl);
+         }
+         catch(Exception exp){}
+       }
+     });
+     fileMenu.add(loadXScufl);
+
+     JMenuItem saveXScufl = new JMenuItem("Save Workflow");
+     saveXScufl.addActionListener(new ActionListener()
+     {
+       public void actionPerformed(ActionEvent e)
+       {
+         SecurityManager sm = System.getSecurityManager();
+         System.setSecurityManager(null);
+         JFileChooser fc = new JFileChooser(System.getProperty("user.home"));
+         System.setSecurityManager(sm);
+         int returnVal = fc.showSaveDialog(fc);
+
+         if (returnVal == JFileChooser.APPROVE_OPTION)
+         {
+           File file = fc.getSelectedFile();
+           try
+           {
+             FileWriter out = new FileWriter(file);
+             out.write(graphPanel.getXScufl());
+             out.close();
+           }
+           catch(IOException ioe)
+           {}
+         }
+       }
+     });
+     fileMenu.add(saveXScufl);
+
+     JMenuItem fileRunScufl = new JMenuItem("Run workflow");
+     fileRunScufl.addActionListener(new ActionListener()
+     {
+       public void actionPerformed(ActionEvent e)
+       {
+         submitWorkFlow(graphPanel.getCurrentJGraph());
+       }
+     });
+     fileMenu.add(fileRunScufl);
+
+
+     fileMenu.add(new JSeparator());
      JMenuItem fileMenuExit = new JMenuItem("Exit");
      fileMenuExit.addActionListener(new ActionListener()
      {
@@ -155,6 +225,19 @@ public class Retsina extends JApplet
      menuBar.add(helpMenu);
 
      return menuBar;
+   }
+
+   private void submitWorkFlow(ScuflGraph graph)
+   {
+     String xscufl = graph.getXScufl();
+     System.out.println(xscufl);
+//   TavernaWorkflowSubmission submit = new TavernaWorkflowSubmission(
+//              xscufl,inputData,"TestTavernaFlowBroker",
+//              "http://www.hgmp.mrc.ac.uk/users");
+//   FlowBroker broker = FlowBrokerFactory.createFlowBroker(
+//              "uk.ac.soton.itinnovation.taverna.enactor.broker.TavernaFlowBroker");
+//   TavernaFlowReceipt receipt = (TavernaFlowReceipt)broker.submitFlow(submit);
+
    }
 
 }
