@@ -33,7 +33,7 @@ public class LockStepIteratorNode extends DefaultMutableTreeNode implements Resu
 		    return result;
 		}
 		boolean emptyIterator() {
-		    return false;
+		    return (LockStepIteratorNode.this.getChildCount()==0);
 		}
 	    };
     }

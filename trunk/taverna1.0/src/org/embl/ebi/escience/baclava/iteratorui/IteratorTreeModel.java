@@ -8,6 +8,7 @@ package org.embl.ebi.escience.baclava.iteratorui;
 import java.awt.*;
 import javax.swing.*;
 import javax.swing.tree.*;
+import javax.swing.event.*;
 import org.embl.ebi.escience.scufl.*;
 import org.embl.ebi.escience.baclava.*;
 import java.util.*;
@@ -20,6 +21,38 @@ public class IteratorTreeModel extends DefaultTreeModel {
     
     public IteratorTreeModel() {
 	super(new JoinIteratorNode());
+	addTreeModelListener(new TreeModelListener() {
+		public void treeNodesChanged(TreeModelEvent e) {
+		    //
+		}
+		public void treeNodesInserted(TreeModelEvent e) {
+		    //
+		}
+		public void treeNodesRemoved(TreeModelEvent e) {
+		    // If a node is removed, all children that are
+		    // instances of BaclavaIterator should be re-attached
+		    // to the root node to prevent them getting lost
+		    DefaultMutableTreeNode n = (DefaultMutableTreeNode)(e.getTreePath().getLastPathComponent());
+		    if (n instanceof BaclavaIteratorNode == false) {
+			Enumeration en = (n.depthFirstEnumeration());
+			Set nodesToRescue = new HashSet();
+			while (en.hasMoreElements()) {
+			    DefaultMutableTreeNode m = (DefaultMutableTreeNode)en.nextElement();
+			    if (m instanceof BaclavaIteratorNode) {
+				nodesToRescue.add(m);
+			    }
+			}
+			for (Iterator i = nodesToRescue.iterator(); i.hasNext();) {
+			    DefaultMutableTreeNode m = (DefaultMutableTreeNode)i.next();
+			    IteratorTreeModel.this.removeNodeFromParent(m);
+			    IteratorTreeModel.this.insertNodeInto(m,(MutableTreeNode)IteratorTreeModel.this.getRoot(),0);
+			}
+		    }
+		}
+		public void treeStructureChanged(TreeModelEvent e) {
+		    //
+		}
+	    });
     }
 
     /**

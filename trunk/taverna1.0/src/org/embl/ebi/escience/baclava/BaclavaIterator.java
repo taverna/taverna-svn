@@ -28,7 +28,7 @@ public class BaclavaIterator implements ResumableIterator {
     private Collection underlyingCollection = null;
     private Iterator internalIterator = null;
 
-    protected BaclavaIterator(Collection c) {
+    public BaclavaIterator(Collection c) {
 	this.underlyingCollection = c;
 	this.internalIterator = c.iterator();
     }

@@ -14,19 +14,23 @@ import javax.swing.tree.*;
  */
 public class IteratorNodeTests {
     
-    public static void main(String[] args) {
-
-	List colours = new ArrayList();
+    public static List colours, shapes, animals;
+    
+    static {
+	colours = new ArrayList();
 	colours.add("Red");
 	colours.add("Green");
 	
-	List shapes = new ArrayList();
+	shapes = new ArrayList();
 	shapes.add("Square");
 	shapes.add("Triangle");
 
-	List animals = new ArrayList();
+	animals = new ArrayList();
 	animals.add("Cat");
 	animals.add("Mouse");
+    }
+
+    public static void main(String[] args) {
 
 	try {
 	    
