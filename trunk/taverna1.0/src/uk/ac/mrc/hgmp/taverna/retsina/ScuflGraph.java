@@ -6,10 +6,12 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Point;
 import java.awt.Rectangle;
+import java.awt.Cursor;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.dnd.*;
 import java.awt.event.MouseEvent;
+import javax.swing.JLabel;
 import javax.swing.BorderFactory;
 import javax.swing.border.BevelBorder;
 import javax.swing.border.Border;
@@ -18,6 +20,7 @@ import javax.swing.border.Border;
 import java.util.Hashtable;
 import java.util.Map;
 
+import org.embl.ebi.escience.scufl.Processor;
 import uk.ac.mrc.hgmp.taverna.retsina.ProgNode;
 import uk.ac.mrc.hgmp.taverna.retsina.ScuflGraphCell;
 import uk.ac.mrc.hgmp.taverna.retsina.ScuflInputPortView;
@@ -38,7 +41,10 @@ import java.lang.System;
 public class ScuflGraph extends JGraph 
               implements DropTargetListener
 {
-    
+ 
+    final Cursor cbusy = new Cursor(Cursor.WAIT_CURSOR);
+    final Cursor cdone = new Cursor(Cursor.DEFAULT_CURSOR);
+   
     // Construct the Graph using the Model as its Data Source
     public ScuflGraph(GraphModel model) {
 	super(model);
@@ -63,6 +69,7 @@ public class ScuflGraph extends JGraph
      */
     protected EdgeView createEdgeView(Edge e, CellMapper cm) {
 	// Return Custom EdgeView
+ 
 	return new EdgeView(e, this, cm) {
 		// Override Superclass Method
 		public boolean isAddPointEvent(MouseEvent event) {
@@ -82,17 +89,26 @@ public class ScuflGraph extends JGraph
      * arrow glyphs on input and output ports.
      */
     protected PortView createPortView(Port p, CellMapper cm) {
-  	try {
-  	    ScuflOutputPort port = (ScuflOutputPort)p;
-  	    return new ScuflOutputPortView(p,this,cm);
-  	}
-  	catch (ClassCastException cce) {
-  	    return new ScuflInputPortView(p,this,cm);
-  	}
+        if( p instanceof ScuflOutputPort)
+          return new ScuflOutputPortView(p,this,cm);
+        else
+          return new ScuflInputPortView(p,this,cm);
     }
+
 
     public void insertCell(Point point,String name)
     {
+      insertCell(point,name,null);
+    }
+
+    /**
+    *  Add a program to the editor 
+    */
+    public void insertCell(Point point,String name, Processor proc)
+    {
+        setCursor(cbusy);
+        // Add user input parameters
+    
         // Construct Vertex with no Label
         ScuflGraphCell vertex = new ScuflGraphCell(name);
 
@@ -100,13 +116,19 @@ public class ScuflGraph extends JGraph
         Map map = GraphConstants.createMap();
 
         // Add a Bounds Attribute to the Map
-        Dimension size = new Dimension(100,80);
+        int nports = 0;
+        if(proc != null)
+          nports = proc.getInputPorts().length;
+        JLabel lab = new JLabel(name);
+        Dimension size = lab.getPreferredSize();
+        int width  = (int)size.getWidth()+10;
+        int height = (int)size.getHeight() + (18*nports);
+        size = new Dimension(width,height);
         GraphConstants.setBounds(map, new Rectangle(point, size));
-        // Add a Border Color Attribute to the Map
-        GraphConstants.setBorderColor(map, Color.black);
-        // Add a White Background
-        GraphConstants.setBackground(map, Color.gray);
-        // Make Vertex Opaque
+
+        // Set raised border
+        GraphConstants.setBorder(map, BorderFactory.createRaisedBevelBorder());
+        GraphConstants.setBackground(map, Color.orange);
         GraphConstants.setOpaque(map, true);
         // Construct a Map from cells to Maps (for insert)
         Hashtable attributes = new Hashtable();
@@ -116,14 +138,21 @@ public class ScuflGraph extends JGraph
 
         // Add a load of ports, mainly to test whether I've gotten
         // the rendering code working for the custom port views.
-        attributes.putAll(vertex.addInputPort());
-        attributes.putAll(vertex.addOutputPort());
-        attributes.putAll(vertex.addOutputPort());
-        attributes.putAll(vertex.addInputPort());
-        attributes.putAll(vertex.addOutputPort());
+
+        if(proc != null)
+        {
+          org.embl.ebi.escience.scufl.Port inPorts[] = proc.getInputPorts();
+          for(int j=0; j<inPorts.length;j++)
+            attributes.putAll(vertex.addInputPort(inPorts[j].getName()));
+
+          org.embl.ebi.escience.scufl.Port outPorts[] = proc.getOutputPorts();
+          for(int j=0; j<outPorts.length;j++)
+            attributes.putAll(vertex.addOutputPort(outPorts[j].getName()));
+        }
 
         // Insert the Vertex and its Attributes (can also use model)
         getGraphLayoutCache().insert(new Object[]{vertex}, attributes, null, null, null);
+        setCursor(cdone);
     }
 
 

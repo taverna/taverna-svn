@@ -7,25 +7,34 @@ import com.jgraph.graph.PortRenderer;
 import com.jgraph.graph.PortView;
 import java.awt.Graphics;
 import java.awt.Rectangle;
+import java.awt.FontMetrics;
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.Dimension;
 import javax.swing.ImageIcon;
+import javax.swing.JLabel;
 
 // Network Imports
 import java.net.URL;
 
 import java.lang.Object;
 
-
+import com.jgraph.graph.GraphConstants;
 
 public class ScuflInputPortView extends PortView {
 
     public static ImageIcon inputPortIcon = null;
-    
-    static {
+    private static int fontSize = 12;
+    private static Font font = new Font("Monospaced",
+                      Font.PLAIN, fontSize);
+
+    static 
+    {
 	URL inputPortIconURL = ScuflInputPortView.class.getClassLoader().getResource("images/input.gif");
 	inputPortIcon = new ImageIcon(inputPortIconURL);
     }
     
-    protected static ScuflInputPortRenderer renderer = new ScuflInputPortRenderer();
+    protected ScuflInputPortRenderer renderer = new ScuflInputPortRenderer();
     
     public ScuflInputPortView(Object cell, JGraph graph, CellMapper cm) {
 	super(cell, graph, cm);
@@ -34,31 +43,58 @@ public class ScuflInputPortView extends PortView {
     /** 
      * Returns the bounds for the port view. 
      */
-    public Rectangle getBounds() {
-	if (inputPortIcon != null) {
-	    Rectangle bounds = new Rectangle(getLocation(null));
-	    int width = inputPortIcon.getIconWidth();
-	    int height = inputPortIcon.getIconHeight();
-	    bounds.x = bounds.x - width / 2;
-	    bounds.y = bounds.y - height / 2;
-	    bounds.width = width;
-	    bounds.height = height;
-	    return bounds;
-	}
-	return super.getBounds();
+    public Rectangle getBounds() 
+    {
+      Rectangle bounds = new Rectangle(getLocation(null));
+      int width = getWidth((String)((ScuflInputPort)cell).getUserObject());
+      int height = getHeight();
+      bounds.x = bounds.x - width;
+      bounds.y = bounds.y - height/2;
+      bounds.width = width*2;
+      bounds.height = height;
+      return bounds;
+      
+    }
+
+    public CellViewRenderer getRenderer() 
+    {
+        return renderer;
+    }
+
+    public static int getWidth(String name)
+    {
+      JLabel c = new JLabel(); 
+      FontMetrics fm = c.getFontMetrics(font);
+      int width = fm.stringWidth(name);
+      return width+inputPortIcon.getIconWidth();
+    }
+
+    public int getHeight()
+    {
+      JLabel c = new JLabel();
+      FontMetrics fm = c.getFontMetrics(font);
+      return fm.getHeight()+8;
     }
     
-    public CellViewRenderer getRenderer() {
-	return renderer;
-    }
-    
-    public static class ScuflInputPortRenderer extends PortRenderer {
-	
-	public void paint(Graphics g) {
-	    g.setColor(graph.getBackground());
-	    inputPortIcon.paintIcon(graph, g, 0, 0);
-	}
+    public class ScuflInputPortRenderer extends PortRenderer 
+    {
+      public void paint(Graphics g) 
+      {
+        String param = (String)((ScuflInputPort)cell).getUserObject();
+        FontMetrics fm = getFontMetrics(font);
+        int width = fm.stringWidth(param);
+//      g.setXORMode(graph.getBackground());
+//      boolean offset =
+//              (GraphConstants.getOffset(view.getAllAttributes()) != null);
+
+        g.setColor(Color.red);
+        g.setFont(font);
+        g.drawString(param,0,18);
+        g.setColor(graph.getBackground());
+        inputPortIcon.paintIcon(graph,g,width,5);
+      }
     
     }
 
 }
+

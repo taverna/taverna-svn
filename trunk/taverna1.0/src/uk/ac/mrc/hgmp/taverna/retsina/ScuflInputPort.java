@@ -9,6 +9,8 @@ import java.lang.Object;
 
 public class ScuflInputPort extends ScuflPort {
 
+    Object userObject;
+
     public ScuflInputPort() {
 	super();
     }

@@ -4,6 +4,7 @@ import com.jgraph.graph.DefaultGraphCell;
 import com.jgraph.graph.GraphConstants;
 import java.awt.Point;
 import javax.swing.tree.MutableTreeNode;
+import javax.swing.JLabel;
 
 // Utility Imports
 import java.util.Hashtable;
@@ -23,11 +24,10 @@ public class ScuflGraphCell extends DefaultGraphCell {
     private static final int WIDTH = 50;
     private List inputPortList = new LinkedList();
     private List outputPortList = new LinkedList();
-    private static final int xCoordInput = -140;
     private int yCoordInput = 100;
     private int yCoordOutput = 100;
-    private static final int xCoordOutput = 1140;
-    private static final int yIncrement = 160;
+    private static final int xCoordOutput = 1000;
+    private static final int yIncrement = 40;
 
     public ScuflGraphCell() {
 	super();
@@ -45,12 +45,13 @@ public class ScuflGraphCell extends DefaultGraphCell {
         super(o, b);
     }
     
-    public Map addInputPort()
+    public Map addInputPort(String name)
     {
+        int xCoordInput = 0;
         Hashtable attributes = new Hashtable();
 	Map map = GraphConstants.createMap();
-	GraphConstants.setOffset(map, new Point(xCoordInput, yCoordInput));
-	ScuflInputPort defaultPort = new ScuflInputPort("Input");
+  	GraphConstants.setOffset(map, new Point(xCoordInput, yCoordInput));
+	ScuflInputPort defaultPort = new ScuflInputPort(name);
 	inputPortList.add(defaultPort);
 	attributes.put(defaultPort, map);
 	add(defaultPort);
@@ -58,17 +59,17 @@ public class ScuflGraphCell extends DefaultGraphCell {
 	return attributes;
     }
 
-    public Map addOutputPort()
+    public Map addOutputPort(String name)
     {
         Hashtable attributes = new Hashtable();
 	Map map = GraphConstants.createMap();
 	GraphConstants.setOffset(map, new Point(xCoordOutput, yCoordOutput));
-	ScuflOutputPort defaultPort = new ScuflOutputPort("Target Port");
+	ScuflOutputPort defaultPort = new ScuflOutputPort(name);
 	outputPortList.add(defaultPort);
 	attributes.put(defaultPort, map);
 	add(defaultPort);
 	yCoordOutput += yIncrement;
-	return attributes;
+        return attributes;
     }
   
 }

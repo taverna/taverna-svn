@@ -13,6 +13,7 @@ import java.awt.event.MouseEvent;
 import javax.swing.*;
 import javax.swing.event.UndoableEditEvent;
 import org.embl.ebi.escience.scufl.DuplicateProcessorNameException;
+import org.embl.ebi.escience.scufl.Processor;
 import org.embl.ebi.escience.scufl.ProcessorCreationException;
 import org.embl.ebi.escience.scufl.ScuflModel;
 import org.embl.ebi.escience.scufl.ScuflModelEventPrinter;
@@ -30,6 +31,8 @@ import uk.ac.mrc.hgmp.taverna.retsina.IScuflNodeCreator;
 import uk.ac.mrc.hgmp.taverna.retsina.ScuflGraph;
 import uk.ac.mrc.hgmp.taverna.retsina.ScuflGraphCell;
 import uk.ac.mrc.hgmp.taverna.retsina.ScuflGraphModel;
+
+
 import java.lang.Exception;
 import java.lang.Integer;
 import java.lang.Object;
@@ -117,12 +120,16 @@ public class ScuflGraphPanel extends JPanel
 
     public void insertCell(Point point, String group, String name) {
 
+        SoaplabProcessor processor = null;
+        String procName = name;
         // Attempt to create a new SoaplabProcessor
         try
         {
-          scuflModel.addProcessor(new SoaplabProcessor(scuflModel,
-                       "my_processor",
-                       "http://industry.ebi.ac.uk/soap/soaplab/"+group+"::"+name));
+          processor = new SoaplabProcessor(scuflModel,procName,
+                       "http://industry.ebi.ac.uk/soap/soaplab/"+group+"::"+name);
+
+          scuflModel.addProcessor(processor);
+
         } catch(ProcessorCreationException pce)
         {
           System.out.println("ProcessorCreationException addProcessor exception thrown");
@@ -138,7 +145,7 @@ public class ScuflGraphPanel extends JPanel
 
 
         System.out.println("Finished test : SoaplabProcessorCreation");
-        graph.insertCell(point,name);
+        graph.insertCell(point,name,processor);
     }
 
     /**
@@ -169,14 +176,6 @@ public class ScuflGraphPanel extends JPanel
 	
 	// Associate the Vertex with its Attributes
 	attributes.put(vertex, map);
-	
-	// Add a load of ports, mainly to test whether I've gotten
-	// the rendering code working for the custom port views.
-	attributes.putAll(vertex.addInputPort());
-	attributes.putAll(vertex.addOutputPort());
-	attributes.putAll(vertex.addOutputPort());
-	attributes.putAll(vertex.addInputPort());
-	attributes.putAll(vertex.addOutputPort());
 	
 	// Insert the Vertex and its Attributes (can also use model)
 	graph.getGraphLayoutCache().insert(new Object[]{vertex}, attributes, null, null, null);
