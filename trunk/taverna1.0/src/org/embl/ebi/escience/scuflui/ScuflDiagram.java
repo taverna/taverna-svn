@@ -92,6 +92,19 @@ public class ScuflDiagram extends JComponent
 				ScuflDiagram.this.setPortDisplay(DotView.ALL);
 			    }
 			});
+		    // Set whether labels are shown on edges
+		    JCheckBoxMenuItem types = new JCheckBoxMenuItem("Show types", ScuflDiagram.this.dot.getTypeLabelDisplay());
+		    menu.add(types);
+		    types.addItemListener(new ItemListener() {
+			    public void itemStateChanged(ItemEvent e) {
+				if (e.getStateChange() == ItemEvent.DESELECTED) {
+				    ScuflDiagram.this.setDisplayTypes(false);
+				}
+				else if (e.getStateChange() == ItemEvent.SELECTED) {
+				    ScuflDiagram.this.setDisplayTypes(true);
+				}
+			    }
+			});
 		    // Allow the user to select scaling
 		    menu.addSeparator();
 		    JCheckBoxMenuItem scale = new JCheckBoxMenuItem("Fit to window",ScuflIcons.zoomIcon,fitToWindow);
@@ -122,6 +135,16 @@ public class ScuflDiagram extends JComponent
     public void setFitToWindow(boolean fitToWindow) {
 	this.fitToWindow = fitToWindow;
 	repaint();
+    }
+
+    /**
+     * Set whether we're displaying the port types
+     */
+    public void setDisplayTypes(boolean displayTypes) {
+	if (this.dot != null) {
+	    this.dot.setTypeLabelDisplay(displayTypes);
+	    updateGraphic();
+	}
     }
 
     /**

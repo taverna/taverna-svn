@@ -1,37 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <s:scufl xmlns:s="http://org.embl.ebi.escience/xscufl/0.1alpha" version="0.1" log="0">
-  <s:processor name="seqret1">
-    <s:description>Reads and writes (returns) sequences</s:description>
-    <s:soaplabwsdl>http://industry.ebi.ac.uk/soap/soaplab/edit::seqret</s:soaplabwsdl>
-  </s:processor>
-  <s:processor name="emma">
-    <s:description>Multiple alignment program - interface to ClustalW program</s:description>
-    <s:soaplabwsdl>http://industry.ebi.ac.uk/soap/soaplab/alignment_multiple::emma</s:soaplabwsdl>
-  </s:processor>
-  <s:processor name="plot">
-    <s:description>Displays aligned sequences, with colouring and boxing</s:description>
-    <s:soaplabwsdl>http://industry.ebi.ac.uk/soap/soaplab/alignment_multiple::prettyplot</s:soaplabwsdl>
-  </s:processor>
   <s:processor name="sequenceid">
     <s:stringconstant>swallid:ops2_*</s:stringconstant>
-  </s:processor>
-  <s:processor name="prophecy">
-    <s:description>Creates matrices/profiles from multiple alignments</s:description>
-    <s:soaplabwsdl>http://industry.ebi.ac.uk/soap/soaplab/nucleic_profiles::prophecy</s:soaplabwsdl>
   </s:processor>
   <s:processor name="prophecyType">
     <s:stringconstant>G</s:stringconstant>
   </s:processor>
   <s:processor name="prophecyName">
     <s:stringconstant>Ops2 Sequences</s:stringconstant>
-  </s:processor>
-  <s:processor name="prophet">
-    <s:description>Gapped alignment for profiles</s:description>
-    <s:soaplabwsdl>http://industry.ebi.ac.uk/soap/soaplab/nucleic_profiles::prophet</s:soaplabwsdl>
-  </s:processor>
-  <s:processor name="transeq">
-    <s:description>Translate nucleic acid sequences</s:description>
-    <s:soaplabwsdl>http://industry.ebi.ac.uk/soap/soaplab/nucleic_translation::transeq</s:soaplabwsdl>
   </s:processor>
   <s:processor name="transeqSequenceID">
     <s:stringconstant>embl:xlrhodop</s:stringconstant>
@@ -41,6 +17,34 @@
   </s:processor>
   <s:processor name="send">
     <s:stringconstant>1171</s:stringconstant>
+  </s:processor>
+  <s:processor name="prophet">
+    <s:description>Gapped alignment for profiles</s:description>
+    <s:soaplabwsdl>http://industry.ebi.ac.uk/soap/soaplab/nucleic_profiles::prophet</s:soaplabwsdl>
+  </s:processor>
+  <s:processor name="prophecy">
+    <s:description>Creates matrices/profiles from multiple alignments</s:description>
+    <s:soaplabwsdl>http://industry.ebi.ac.uk/soap/soaplab/nucleic_profiles::prophecy</s:soaplabwsdl>
+  </s:processor>
+  <s:processor name="emma">
+    <s:description>Multiple alignment program - interface to ClustalW program</s:description>
+    <s:soaplabwsdl>http://industry.ebi.ac.uk/soap/soaplab/alignment_multiple::emma</s:soaplabwsdl>
+  </s:processor>
+  <s:processor name="seqret1">
+    <s:description>Reads and writes (returns) sequences</s:description>
+    <s:soaplabwsdl>http://industry.ebi.ac.uk/soap/soaplab/edit::seqret</s:soaplabwsdl>
+  </s:processor>
+  <s:processor name="transeq">
+    <s:description>Translate nucleic acid sequences</s:description>
+    <s:soaplabwsdl>http://industry.ebi.ac.uk/soap/soaplab/nucleic_translation::transeq</s:soaplabwsdl>
+  </s:processor>
+  <s:processor name="plot">
+    <s:description>Displays aligned sequences, with colouring and boxing</s:description>
+    <s:soaplabwsdl>http://industry.ebi.ac.uk/soap/soaplab/alignment_multiple::prettyplot</s:soaplabwsdl>
+  </s:processor>
+  <s:processor name="tmap">
+    <s:description>Displays membrane spanning regions</s:description>
+    <s:soaplabwsdl>http://industry.ebi.ac.uk/soap/soaplab/protein_2d_structure::tmap</s:soaplabwsdl>
   </s:processor>
   <s:link>
     <s:input>seqret1:sequence_usa</s:input>
@@ -94,6 +98,14 @@
     <s:input>prophetOutput</s:input>
     <s:output>prophet:outfile</s:output>
   </s:link>
+  <s:link>
+    <s:input>tmapPlot</s:input>
+    <s:output>tmap:Graphics_in_PNG</s:output>
+  </s:link>
+  <s:link>
+    <s:input>tmap:msf_direct_data</s:input>
+    <s:output>seqret1:outseq</s:output>
+  </s:link>
   <s:sink>
     outputPlot
     <s:metadata>
@@ -108,6 +120,16 @@
     prophetOutput
     <s:metadata>
       <s:mimeTypes />
+      <s:description />
+      <s:semanticType />
+    </s:metadata>
+  </s:sink>
+  <s:sink>
+    tmapPlot
+    <s:metadata>
+      <s:mimeTypes>
+        <s:mimeType>image/png</s:mimeType>
+      </s:mimeTypes>
       <s:description />
       <s:semanticType />
     </s:metadata>

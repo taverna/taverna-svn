@@ -38,8 +38,19 @@ public class DataThingTreeNodeRenderer extends DefaultTreeCellRenderer {
 	if (theNode.isLeaf()) {
 	    String syntacticType = theDataThing.getSyntacticTypeForObject(userObject);
 	    String mimeTypes = syntacticType.split("'")[1].toLowerCase();
+	    setText(mimeTypes);
 	    if (mimeTypes.matches(".*text/.*")) {
 		setIcon(textIcon);
+		// If possible then show a textual representation as well as just the
+		// mime type
+		if (theDataThing.getDataObject() instanceof String) {
+		    String summaryText = (String)theDataThing.getDataObject();
+		    if (summaryText.length() > 30) {
+			summaryText = "<em>Click to view...</em>";
+		    }
+		    setText("<html><font color=\"#666666\">"+mimeTypes+"</font><br>"+
+			    summaryText+"</html>");
+		}
 	    }
 	    else if (mimeTypes.matches(".*image/.*")) {
 		setIcon(imageIcon);
@@ -47,7 +58,6 @@ public class DataThingTreeNodeRenderer extends DefaultTreeCellRenderer {
 	    else if (mimeTypes.matches(".*application/.*")) {
 		setIcon(binaryIcon);
 	    }
-	    setText(mimeTypes);
 	}
 	return this;
     }

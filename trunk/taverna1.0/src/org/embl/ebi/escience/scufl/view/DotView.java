@@ -22,6 +22,7 @@ public class DotView implements ScuflModelEventListener, java.io.Serializable {
     private boolean cacheValid = false;
     private String cachedRepresentation = null;
     private int portDisplay = DotView.NONE;
+    private boolean displayTypes = true;
 
     public static final int ALL = 0;
     public static final int BOUND = 1;
@@ -50,6 +51,21 @@ public class DotView implements ScuflModelEventListener, java.io.Serializable {
     public void setPortDisplay(int policy) {
 	this.cacheValid = false;
 	this.portDisplay = policy;
+    }
+
+    /**
+     * Determine whether to show labels on edges for
+     * their types
+     */
+    public void setTypeLabelDisplay(boolean display) {
+	this.displayTypes = display;
+    }
+
+    /**
+     * Are we displaying type labels?
+     */
+    public boolean getTypeLabelDisplay() {
+	return this.displayTypes;
     }
 
     /**
@@ -252,7 +268,9 @@ public class DotView implements ScuflModelEventListener, java.io.Serializable {
 		// Is a link from an internal source to a workflow sink
 		dot.append(" "+sourceProcessorName+":"+sourcePortName+"->WORKFLOWINTERNALSINK_"+sinkPortName+" [ \n");
 	    }
-	    dot.append("  label = \""+dc.getSource().getSyntacticType()+"\\n"+dc.getSink().getSyntacticType()+"\"");
+	    if (displayTypes) {
+		dot.append("  label = \""+dc.getSource().getSyntacticType()+"\\n"+dc.getSink().getSyntacticType()+"\"");
+	    }
 	    dot.append(" ];\n");
 	}
 

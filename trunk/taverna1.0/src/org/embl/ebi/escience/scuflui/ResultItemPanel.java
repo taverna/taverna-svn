@@ -51,9 +51,18 @@ public class ResultItemPanel extends JPanel {
 			    String mimeTypes = syntacticType.split("'")[1].toLowerCase();
 			    if (mimeTypes.matches(".*text/.*")) {
 				// Create a new text area
-				JTextArea theTextArea = new JTextArea((String)userObject);
-				theTextArea.setFont(new Font("Monospaced",Font.PLAIN,12));
-				splitPane.setRightComponent(new JScrollPane(theTextArea));
+				if (mimeTypes.matches(".*text/html.*")) {
+				    splitPane.setRightComponent(new JScrollPane(new JEditorPane("text/html",(String)theDataThing.getDataObject())));
+				}
+				else if (mimeTypes.matches(".*text/rtf.*")) {
+				    splitPane.setRightComponent(new JScrollPane(new JEditorPane("text/rtf",(String)theDataThing.getDataObject())));
+				}
+				else {
+				    JTextArea theTextArea = new JTextArea();
+				    theTextArea.setText((String)theDataThing.getDataObject());
+				    theTextArea.setFont(new Font("Monospaced",Font.PLAIN,12));
+				    splitPane.setRightComponent(new JScrollPane(theTextArea));
+				}
 			    }
 			    else if (mimeTypes.matches(".*image/.*")) {
 				// Create a new image
@@ -98,13 +107,18 @@ public class ResultItemPanel extends JPanel {
 					    File file = fc.getSelectedFile();
 					    FileOutputStream fos = new FileOutputStream(file);
 					    if (theDataObject instanceof byte[]) {
+						// Byte
 						fos.write((byte[])theDataObject);
+						fos.flush();
+						fos.close();
 					    }
 					    else {
-						fos.write(((String)theDataObject).getBytes());
+						// String
+						Writer out = new BufferedWriter(new OutputStreamWriter(fos));
+						out.write((String)theDataObject);
+						out.flush();
+						out.close();
 					    }
-					    fos.flush();
-					    fos.close();
 					}
 				    }
 				    catch (IOException ioe) {
