@@ -48,19 +48,22 @@ public class SplitByRegex implements LocalWorker {
      */
     public Map execute(Map inputs) throws TaskExecutionException {
 	String input = (String)((DataThing)(inputs.get("string"))).getDataObject();
+	List output = new ArrayList();
+	// ktg: Added check so an empty string returns an empty list
+	// Any cases where this isn't true?
+	if(!input.equals(""))
+	{
 	String regex = ",";
 	if (inputs.containsKey("regex")) {
 	    regex = (String)((DataThing)(inputs.get("regex"))).getDataObject();
 	}
 	String[] result = input.split(regex);
-	List output = new ArrayList();
 	for (int i = 0; i < result.length; i++) {
 	    output.add(result[i]);
+	}
 	}
 	Map outputs = new HashMap();
 	outputs.put("split",new DataThing(output));
 	return outputs;
     }
-
-
 }
