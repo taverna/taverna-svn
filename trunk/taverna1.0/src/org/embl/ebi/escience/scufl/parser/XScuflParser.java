@@ -14,6 +14,7 @@ import java.util.List;
 // IO Imports
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.StringReader;
 
 // JDOM Imports
 import org.jdom.Document;
@@ -38,6 +39,53 @@ import java.lang.System;
  * @author Tom Oinn
  */
 public class XScuflParser {
+    
+    /**
+     * Read from the given String containing an XScufl document and
+     * populate the given ScuflModel with
+     * data from the definition. You can optionally
+     * specify a name prefix that will be used
+     * for all new processors created, this might be useful
+     * if you want to import more than one data file
+     * into the same model. If the prefix is null,
+     * none will be applied. The prefix should not contain
+     * characters other than alphanumeric ones, and will
+     * have a single underscore appended to it.
+     * @exception UnknownProcessorException if a data constraint 
+     * refers to a processor that isn't defined in the input
+     * @exception UnknownPortException if a data constraint 
+     * refers to a port that isn't defined in the input
+     * @exception ProcessorCreationException if there is a 
+     * general creation failure in a processor, i.e. when attempting
+     * to contact soaplab to get its inputs and outputs
+     * @exception DataConstraintCreationException if some internal
+     * error prevents a data constraint being built
+     * @exception DuplicateProcessorNameException if a processor
+     * is defined in the input with a name that already exists in the
+     * model.
+     * @exception MalformedNameException if a data constraint is not
+     * specified in the correct format of [PROCESSOR]:[PORT]
+     * @exception XScuflFormatException if the format of the input
+     * is not valid XScufl, or not valid XML.
+     */
+    public static void populate(String input, ScuflModel model, String prefix) 
+	throws UnknownProcessorException,
+	       UnknownPortException,
+	       ProcessorCreationException,
+	       DataConstraintCreationException,
+	       DuplicateProcessorNameException,
+	       MalformedNameException,
+	       XScuflFormatException {
+	try {
+	    SAXBuilder builder = new SAXBuilder(false);
+	    Document document = builder.build(new StringReader(input));
+	    populate(document, model, prefix);
+	}
+	catch (JDOMException jde) {
+	    throw new XScuflFormatException("Unable to load XScufl file, error : "+jde.getMessage());
+	}
+	
+    }
 
     /**
      * Read from the given InputStream and
@@ -75,11 +123,6 @@ public class XScuflParser {
 	       DuplicateProcessorNameException,
 	       MalformedNameException,
 	       XScuflFormatException {
-	// Check whether we're using prefixes
-	boolean usePrefix = false;
-	if (prefix != null) {
-	    usePrefix = true;
-	}
 	
 	// Load the data into a JDom Document
 	InputStreamReader isr = new InputStreamReader(is);
@@ -90,6 +133,51 @@ public class XScuflParser {
 	}
 	catch (JDOMException jde) {
 	    throw new XScuflFormatException("Unable to load XScufl file, error : "+jde.getMessage());
+	}
+	populate(document, model, prefix);
+	
+    }
+    
+    /**
+     * Read from the given JDOM Document and
+     * populate the given ScuflModel with
+     * data from the definition. You can optionally
+     * specify a name prefix that will be used
+     * for all new processors created, this might be useful
+     * if you want to import more than one data file
+     * into the same model. If the prefix is null,
+     * none will be applied. The prefix should not contain
+     * characters other than alphanumeric ones, and will
+     * have a single underscore appended to it.
+     * @exception UnknownProcessorException if a data constraint 
+     * refers to a processor that isn't defined in the input
+     * @exception UnknownPortException if a data constraint 
+     * refers to a port that isn't defined in the input
+     * @exception ProcessorCreationException if there is a 
+     * general creation failure in a processor, i.e. when attempting
+     * to contact soaplab to get its inputs and outputs
+     * @exception DataConstraintCreationException if some internal
+     * error prevents a data constraint being built
+     * @exception DuplicateProcessorNameException if a processor
+     * is defined in the input with a name that already exists in the
+     * model.
+     * @exception MalformedNameException if a data constraint is not
+     * specified in the correct format of [PROCESSOR]:[PORT]
+     * @exception XScuflFormatException if the format of the input
+     * is not valid XScufl, or not valid XML.
+     */
+    public static void populate(Document document, ScuflModel model, String prefix)
+	throws UnknownProcessorException,
+	       UnknownPortException,
+	       ProcessorCreationException,
+	       DataConstraintCreationException,
+	       DuplicateProcessorNameException,
+	       MalformedNameException,
+	       XScuflFormatException {
+	// Check whether we're using prefixes
+	boolean usePrefix = false;
+	if (prefix != null) {
+	    usePrefix = true;
 	}
 	Element root = document.getRootElement();
 	Namespace namespace = root.getNamespace();

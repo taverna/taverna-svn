@@ -3,7 +3,14 @@
  * and is licensed under the GNU LGPL.
  * Copyright Tom Oinn, EMBL-EBI
  */
-package org.embl.ebi.escience.taverna;
+package org.embl.ebi.escience.scufl.parser;
+
+// IO Imports
+import java.io.BufferedInputStream;
+import java.io.ByteArrayInputStream;
+import java.io.DataInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 
 // JDOM Imports
 import org.jdom.Document;
@@ -11,51 +18,56 @@ import org.jdom.Element;
 import org.jdom.Namespace;
 import org.jdom.output.XMLOutputter;
 
-// Network Imports
-import java.net.URL;
-
-import java.lang.Exception;
 import java.lang.RuntimeException;
 import java.lang.String;
 import java.lang.StringBuffer;
-import java.lang.System;
 
 
 
 /**
- * A set of methods to parse the human readable
- * scufl file format.
+ * Given an input stream from which to read a Scufl definition
+ * file, this class exposes an InputStream that contains the
+ * corresponding XScufl representation. This can be used in
+ * conjunction with the XScuflParser to populate a ScuflModel
+ * directly from the human readable Scufl format.
  * @author Tom Oinn
  */
-public class ScuflParser {
+public class Scufl2XScuflParser {
 
     /**
-     * Read in a scufl file from the supplied URL, and write
-     * it out into the console. Just a test really.
+     * Read the Scufl format on the supplied InputStream,
+     * return a new InputStream from which may be read the
+     * XScufl representation.
      */
-    public static void main(String[] args) throws Exception {
-	System.out.println(getScuflAndParse(args[0]));
-    }
-
-    /**
-     * Produce a string containing the xscufl representation
-     * of the scufl document found at the supplied URL.
-     */
-    public static String getScuflAndParse(String string_url) throws java.io.IOException {
-	URL url = new URL(string_url);
-	java.io.InputStream is = url.openStream();
-	java.io.DataInputStream dis = new java.io.DataInputStream(new java.io.BufferedInputStream(is));
-	StringBuffer sb = new StringBuffer();
+    public static InputStream parse(InputStream input) throws IOException {
+	
+	// Load the input data into a StringBuffer 
+	StringBuffer inputBuffer = new StringBuffer();
+	DataInputStream dis = new DataInputStream(new BufferedInputStream(input));
 	String s = null;
 	while ((s = dis.readLine()) != null) {
-	    sb.append(s);
-	    sb.append("\n");
+	    inputBuffer.append(s);
+	    inputBuffer.append("\n");
 	}
-	Document document = parseScufl(sb.toString());
+	Document document = parseScufl(inputBuffer.toString());
 	XMLOutputter xo = new XMLOutputter();
 	xo.setIndent("  ");
 	xo.setNewlines(true);
-	return xo.outputString(document);
+	String outputString = xo.outputString(document);
+	return new ByteArrayInputStream(outputString.getBytes());
+    }
+    
+    /**
+     * Read the Scufl format contained within the String
+     * and produce a String containing the XML format XScufl
+     */
+    public static String parse(String input) {
+	Document document = parseScufl(input);
+	XMLOutputter xo = new XMLOutputter();
+	xo.setIndent("  ");
+	xo.setNewlines(true);
+	String outputString = xo.outputString(document);
+	return outputString;
     }
 
     /**
@@ -182,4 +194,6 @@ public class ScuflParser {
 	return Namespace.getNamespace("s","http://org.embl.ebi.escience/xscufl/0.1alpha");
     }
 
+
+    
 }
