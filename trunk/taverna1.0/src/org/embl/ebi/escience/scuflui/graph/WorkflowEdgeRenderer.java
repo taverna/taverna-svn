@@ -25,6 +25,10 @@ public class WorkflowEdgeRenderer extends EdgeRenderer {
 	this.tension = tension;
     }
 
+    protected Shape createLineEnd(int size, int style, Point2D src, Point2D dst) {
+	return super.createLineEnd(size, style, new Point2D.Double(dst.getX(), src.getY()), dst);
+    }
+
     protected Shape createShape() {
 	int n = view.getPointCount();
 	if (n > 1) {
