@@ -222,7 +222,7 @@ public class ScuflModelTreeTable extends JTreeTable
 	    if (e.isDataFlavorSupported(f)) {
 		// Have something of type factorySpecFragmentFlavor;
 		FactorySpecFragment fsf = (FactorySpecFragment)t.getTransferData(f);
-		System.out.println("Drop of "+fsf.getFactoryNodeName());
+		//System.out.println("Drop of "+fsf.getFactoryNodeName());
 		// Get the tree path which the drop has landed on, if there is
 		// one.
 		Point p = e.getLocation();

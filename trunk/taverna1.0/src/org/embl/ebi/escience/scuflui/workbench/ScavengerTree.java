@@ -23,6 +23,8 @@ import org.embl.ebi.escience.scuflworkers.wsdl.WSDLBasedProcessor;
 import org.embl.ebi.escience.scuflworkers.wsdl.WSDLBasedScavenger;
 import org.embl.ebi.escience.scuflworkers.biomoby.*;
 
+import org.jdom.output.*;
+
 // Utility Imports
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -57,7 +59,8 @@ import java.awt.*;
 public class ScavengerTree extends JTree 
     implements ScuflUIComponent,
 	       DragSourceListener,
-	       DragGestureListener {
+	       DragGestureListener,
+	       DropTargetListener {
     
     /** 
      * The model that this scavenger will create processor for 
@@ -130,6 +133,52 @@ public class ScavengerTree extends JTree
 	//
     }
 
+    public void dragEnter(DropTargetDragEvent e) {
+	//
+    }
+    public void dragExit(DropTargetEvent e) {
+	//
+    }
+    public void dragOver(DropTargetDragEvent e) { 
+	//
+    }
+    public void dropActionChanged(DropTargetDragEvent e) { 
+	//
+    }
+
+    public void drop(DropTargetDropEvent e) {
+	try {
+	    DataFlavor f = SpecFragmentTransferable.processorSpecFragmentFlavor;
+	    Transferable t = e.getTransferable();
+	    if (e.isDataFlavorSupported(f)) {
+		ProcessorSpecFragment psf = (ProcessorSpecFragment)t.getTransferData(f);
+		XMLOutputter xo = new XMLOutputter();
+		String searchString = xo.outputString(psf.getElement());
+		DefaultMutableTreeNode rootNode = (DefaultMutableTreeNode)treeModel.getRoot(); 
+		Enumeration en = rootNode.depthFirstEnumeration();
+		while (en.hasMoreElements()) {
+		    DefaultMutableTreeNode theNode = (DefaultMutableTreeNode)en.nextElement();
+		    Object o = theNode.getUserObject();
+		    if (o instanceof ProcessorFactory) {
+			String compare = xo.outputString(((ProcessorFactory)o).getXMLFragment());
+			if (searchString.equals(compare)) {
+			    String selectedProcessorString = theNode.getUserObject().toString().toLowerCase();
+			    TreePath path = new TreePath(treeModel.getPathToRoot(theNode));
+			    setAllNodesCollapsed();
+			    ScuflModelExplorerRenderer r = (ScuflModelExplorerRenderer)getCellRenderer();
+			    r.setPattern(selectedProcessorString);
+			    makeVisible(path);
+			}
+		    }
+		}
+		
+	    }
+	}
+	catch (Exception ex) {
+	    e.rejectDrop();
+	}
+    }
+
     /**
      * Default constructor, equivalent to calling with populate
      * set to 'true'
@@ -152,6 +201,7 @@ public class ScavengerTree extends JTree
 	dragSource.createDefaultDragGestureRecognizer(this,
 						      DnDConstants.ACTION_COPY_OR_MOVE,
 						      this);
+	new DropTarget(this, DnDConstants.ACTION_COPY_OR_MOVE, this);
 	scavengerList = new ArrayList();
 	root = new DefaultMutableTreeNode("Available Processors");
 	treeModel = (DefaultTreeModel)this.getModel();
@@ -186,6 +236,11 @@ public class ScavengerTree extends JTree
     public void setAllNodesExpanded() {
 	synchronized(this.getModel()) {
 	    expandAll(this, new TreePath(this.root), true);
+	}
+    }
+    public void setAllNodesCollapsed() {
+	synchronized(this.getModel()) {
+	    expandAll(this, new TreePath(this.root), false);
 	}
     }
     private void expandAll(JTree tree, TreePath parent, boolean expand) {

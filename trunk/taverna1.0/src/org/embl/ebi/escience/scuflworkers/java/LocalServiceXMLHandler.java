@@ -38,7 +38,7 @@ public class LocalServiceXMLHandler implements XMLHandler {
 	LocalServiceProcessorFactory lspf = (LocalServiceProcessorFactory)pf;
 	Element spec = new Element("local",XScufl.XScuflNS);
 	spec.setText(lspf.getWorkerClassName());
-      System.out.println("LocalServiceXMLHandler: " + spec);
+	//System.out.println("LocalServiceXMLHandler: " + spec);
 	return spec;
     }
 
