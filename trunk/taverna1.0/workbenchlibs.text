@@ -13,6 +13,5 @@ talisman1.4.5.11.jar
 wsdl4j.jar
 xercesImpl.jar
 xmlParserAPIs.jar
-mysql-connector-java-3.0.11-stable-bin.jar
 dom4j.jar
 notification-processor.jar

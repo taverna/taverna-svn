@@ -1,2 +1,11 @@
+@echo off
+
 PATH=%PATH%;./bin/win32i386
-java -classpath .;./resources;./lib/jgraph.jar;./lib/xercesImpl.jar;./lib/xmlParserAPIs.jar;./lib/jaxrpc.jar;./lib/jdom.jar;./lib/saaj.jar;./lib/commons-logging.jar;./lib/commons-discovery.jar;./lib/taverna-0.1beta8.jar;./lib/concurrent.jar;./lib/axis.jar;./lib/wsdl4j.jar;./lib/log4j-1.2.8.jar;./lib/freefluo.jar;./lib/talisman1.4.5.11.jar;./lib/servlet.jar;./lib/mysql-connector-java-3.0.11-stable-bin.jar;./conf -Xms256m -Xmx512m org.embl.ebi.escience.scuflui.workbench.Workbench
+
+set OPTS=-Xms256m -Xmx512m
+
+set CP=.;./resources;./conf
+for %%i in ("lib\*.jar") do call catenv.bat %%i
+for %%i in ("plugins\*.jar") do call catenv.bat %%i
+
+java %OPTS% -classpath %CP% -ea org.embl.ebi.escience.scuflui.workbench.Workbench
