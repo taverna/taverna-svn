@@ -24,9 +24,9 @@
 //      Created for Project :   MYGRID
 //      Dependencies        :
 //
-//      Last commit info    :   $Author: dmarvin $
-//                              $Date: 2003-05-03 15:19:26 $
-//                              $Revision: 1.7 $
+//      Last commit info    :   $Author: mereden $
+//                              $Date: 2003-05-13 13:03:44 $
+//                              $Revision: 1.8 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 
@@ -34,7 +34,6 @@ package uk.ac.soton.itinnovation.taverna.enactor.broker;
 
 import org.apache.log4j.Logger;
 import org.embl.ebi.escience.scufl.ScuflModel;
-import org.embl.ebi.escience.scufl.*;
 import org.embl.ebi.escience.scufl.parser.XScuflParser;
 import uk.ac.soton.itinnovation.mygrid.workflow.enactor.broker.WorkflowSubmitInvalidException;
 import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.broker.FlowBroker;
@@ -70,6 +69,7 @@ import java.lang.IllegalArgumentException;
 import java.lang.Object;
 import java.lang.String;
 import java.lang.StringBuffer;
+import java.lang.System;
 
 
 

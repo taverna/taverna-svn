@@ -24,9 +24,9 @@
 //      Created for Project :   MYGRID
 //      Dependencies        :
 //
-//      Last commit info    :   $Author: dmarvin $
-//                              $Date: 2003-05-01 12:11:50 $
-//                              $Revision: 1.7 $
+//      Last commit info    :   $Author: mereden $
+//                              $Date: 2003-05-13 13:03:45 $
+//                              $Revision: 1.8 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 
@@ -35,7 +35,10 @@ package uk.ac.soton.itinnovation.taverna.enactor.entities;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import org.apache.log4j.Logger;
-import org.embl.ebi.escience.scufl.*;
+import org.embl.ebi.escience.scufl.Processor;
+import org.embl.ebi.escience.scufl.SoaplabProcessor;
+import org.embl.ebi.escience.scufl.TalismanProcessor;
+import org.embl.ebi.escience.scufl.WSDLBasedProcessor;
 
 import uk.ac.soton.itinnovation.taverna.enactor.entities.ProcessorTask;
 import uk.ac.soton.itinnovation.taverna.enactor.entities.UnsupportedTavernaProcessorException;

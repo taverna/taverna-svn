@@ -4,7 +4,7 @@ import com.jgraph.graph.DefaultGraphCell;
 import com.jgraph.graph.GraphConstants;
 import java.awt.Point;
 import javax.swing.tree.MutableTreeNode;
-import javax.swing.JLabel;
+import org.embl.ebi.escience.scufl.Processor;
 
 // Utility Imports
 import java.util.Hashtable;
@@ -12,8 +12,6 @@ import java.util.LinkedList;
 import java.util.List; // ambiguous with: java.awt.List 
 import java.util.Map;
 
-import org.embl.ebi.escience.scufl.Port;
-import org.embl.ebi.escience.scufl.Processor;
 import uk.ac.mrc.hgmp.taverna.retsina.ScuflInputPort;
 import uk.ac.mrc.hgmp.taverna.retsina.ScuflOutputPort;
 import java.lang.Object;

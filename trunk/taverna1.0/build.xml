@@ -16,9 +16,7 @@
 		
 	<!-- Show the splash screen -->
 	<target name="splash">
-<!--
 		<splash showduration="0" imageurl="http://mygrid.man.ac.uk/images/mygridlogowhite.gif"/>
--->
 	</target>
 		
 	<!-- Path used during compilation -->
@@ -116,7 +114,7 @@
 	</target>
 
 	<!-- Build jar file and javadocs -->
-	<target name="all" depends="jar,javadoc"/>
+	<target name="all" depends="jar,enactor.ext.jar,javadoc,doxygen"/>
 	
 	<!-- Prepare the source tree for compilation -->
 	<target name="prepare-src" depends="prepare">
@@ -201,21 +199,6 @@
 			<classpath refid="compile-classpath"/>
 		</java>
     </target> 
-
-	<!-- Test the editor component (ScuflGraphPanel) -->
-	<target name="test.panel" depends="jar">
-	    <java classname="org.embl.ebi.escience.taverna.retsina.ScuflGraphPanel" fork="yes">
-		    <classpath refid="compile-classpath"/>
-		</java>
-	</target> 
-
-	<!-- Test the editor -->
-	<target name="test.retsina" depends="jar">
-	    <java classname="org.embl.ebi.escience.taverna.retsina.Retsina" fork="yes">
-			<arg value="http://industry.ebi.ac.uk/soap/soaplab/AnalysisFactory"/>
-		    <classpath refid="compile-classpath"/>
-		</java>
-	</target>
 
 	<!-- retsina GUI -->
         <target name="retsina" depends="jar">
@@ -304,13 +287,6 @@
 			<classpath refid="compile-classpath"/>
 		</java>
 	</target>
-	
-	<!-- Run the XScufl to Dot tool -->
-	<target name="tools.svg">
-		<java classname="org.embl.ebi.escience.scuflui.SVGApplication" fork="yes">
-			<classpath refid="compile-classpath"/>
-		</java>
-	</target>
 
 	<!-- Run the tree model viewer -->
 	<target name="tools.tree">
@@ -319,14 +295,16 @@
 			<classpath refid="compile-classpath"/>
 		</java>
 	</target>
-        <!-- Run the diagram viewer -->
+
+    <!-- Run the diagram viewer -->
 	<target name="tools.diagram">
 	        <java classname="org.embl.ebi.escience.scuflui.ScuflDiagramDemo" fork="yes">
 		        <arg value="${file}"/>
 			<classpath refid="compile-classpath"/>
 		</java>
 	</target>
-        <!-- Run the component demo -->
+	
+    <!-- Run the component demo -->
 	<target name="tools.demo">
 	        <java classname="org.embl.ebi.escience.scuflui.ComponentDemo" fork="yes">
 		        <arg value="${file}"/>
@@ -341,4 +319,5 @@
 			<classpath refid="compile-classpath"/>
 		</java>
 	</target>
+	
 </project>

@@ -1,12 +1,24 @@
 
 package uk.ac.soton.itinnovation.taverna.enactor.broker.test;
 
-import java.io.*;
-import junit.framework.*;
-import org.embl.ebi.escience.scufl.*; 
-import uk.ac.soton.itinnovation.taverna.enactor.broker.*;
-import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.broker.*;
-import uk.ac.soton.itinnovation.mygrid.workflow.enactor.io.*;
+import junit.framework.TestCase;
+import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.broker.FlowBroker;
+import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.broker.FlowBrokerFactory;
+import uk.ac.soton.itinnovation.taverna.enactor.broker.TavernaFlowReceipt;
+import uk.ac.soton.itinnovation.taverna.enactor.broker.TavernaWorkflowSubmission;
+
+// IO Imports
+import java.io.BufferedInputStream;
+import java.io.FileInputStream;
+import java.io.StringWriter;
+
+import java.lang.Exception;
+import java.lang.InterruptedException;
+import java.lang.String;
+import java.lang.System;
+import java.lang.Thread;
+
+
 
 public class TestTavernaFlowBroker extends TestCase {
 

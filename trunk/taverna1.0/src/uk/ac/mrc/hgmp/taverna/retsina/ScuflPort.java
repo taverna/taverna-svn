@@ -6,6 +6,7 @@ import com.jgraph.graph.Port;
 import java.lang.Object;
 
 
+
 public abstract class ScuflPort extends DefaultPort {
 
     private org.embl.ebi.escience.scufl.Port scuflPort;

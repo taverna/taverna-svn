@@ -4,9 +4,7 @@ import com.jgraph.graph.Port;
 
 import uk.ac.mrc.hgmp.taverna.retsina.ScuflPort;
 import java.lang.Object;
-//port javax.swing.JLabel;
-//port java.awt.FontMetrics;
-//port java.awt.Font;
+
 
 
 public class ScuflInputPort extends ScuflPort {

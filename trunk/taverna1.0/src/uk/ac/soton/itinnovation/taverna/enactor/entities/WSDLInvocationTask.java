@@ -24,38 +24,40 @@
 //      Created for Project :   MYGRID
 //      Dependencies        :
 //
-//      Last commit info    :   $Author: dmarvin $
-//                              $Date: 2003-05-03 15:19:29 $
-//                              $Revision: 1.2 $
+//      Last commit info    :   $Author: mereden $
+//                              $Date: 2003-05-13 13:03:45 $
+//                              $Revision: 1.3 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 
 package uk.ac.soton.itinnovation.taverna.enactor.entities;
 
-import javax.xml.namespace.QName;
-import org.apache.axis.client.Call;
-import org.apache.axis.client.Service;
 import org.apache.log4j.Logger;
-import org.embl.ebi.escience.scufl.Processor;
 import org.embl.ebi.escience.scufl.Port;
+import org.embl.ebi.escience.scufl.Processor;
 import org.embl.ebi.escience.scufl.WSDLBasedProcessor;
-import org.w3c.dom.Element;
 import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.entities.graph.GraphNode;
 import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.eventservice.TaskStateMessage;
-import uk.ac.soton.itinnovation.mygrid.workflow.enactor.io.Part;
-import uk.ac.soton.itinnovation.mygrid.workflow.enactor.io.Input;
-import uk.ac.soton.itinnovation.mygrid.workflow.enactor.io.Output;
 import uk.ac.soton.itinnovation.mygrid.workflow.enactor.invocation.InvocationDescription;
 import uk.ac.soton.itinnovation.mygrid.workflow.enactor.invocation.WSDLServiceInvocation;
+import uk.ac.soton.itinnovation.mygrid.workflow.enactor.io.Input;
+import uk.ac.soton.itinnovation.mygrid.workflow.enactor.io.Output;
+import uk.ac.soton.itinnovation.mygrid.workflow.enactor.io.Part;
 
 // Utility Imports
-import java.util.List;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
+
+// Network Imports
 import java.net.URL;
 
 import uk.ac.soton.itinnovation.taverna.enactor.entities.PortTask;
 import uk.ac.soton.itinnovation.taverna.enactor.entities.ProcessorTask;
+import java.lang.Exception;
+import java.lang.String;
+
+
 
 public class WSDLInvocationTask extends ProcessorTask implements InvocationDescription {
 	private static Logger logger = Logger.getLogger(WSDLInvocationTask.class);

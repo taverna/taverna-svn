@@ -3,25 +3,21 @@ package uk.ac.mrc.hgmp.taverna.retsina;
 import com.jgraph.JGraph;
 import com.jgraph.graph.CellMapper;
 import com.jgraph.graph.CellViewRenderer;
+import com.jgraph.graph.EdgeView;
 import com.jgraph.graph.PortRenderer;
 import com.jgraph.graph.PortView;
-import com.jgraph.graph.EdgeView;
-import java.awt.Graphics;
-import java.awt.Rectangle;
-import java.awt.FontMetrics;
-import java.awt.Color;
-import java.awt.Font;
-import java.awt.Dimension;
-import java.awt.Point;
+import java.awt.*;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 
 // Network Imports
 import java.net.URL;
 
+import uk.ac.mrc.hgmp.taverna.retsina.ScuflInputPort;
 import java.lang.Object;
+import java.lang.String;
 
-import com.jgraph.graph.GraphConstants;
+
 
 public class ScuflInputPortView extends PortView {
 

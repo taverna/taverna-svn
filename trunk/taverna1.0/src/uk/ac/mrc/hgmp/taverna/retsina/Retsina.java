@@ -1,34 +1,36 @@
 package uk.ac.mrc.hgmp.taverna.retsina;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Container;
+import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
-import java.awt.Dimension;
-import java.awt.Color;
-import java.io.IOException;
-import java.io.BufferedInputStream;
-import java.io.StringWriter;
-import java.io.FileInputStream;
-import java.io.File;
-import java.io.FileWriter;
 import javax.swing.*;
-
 import org.emboss.jemboss.JembossJarUtil;
 import org.emboss.jemboss.gui.startup.ProgList;
+import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.broker.FlowBroker;
+import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.broker.FlowBrokerFactory;
+import uk.ac.soton.itinnovation.taverna.enactor.broker.TavernaFlowReceipt;
+import uk.ac.soton.itinnovation.taverna.enactor.broker.TavernaWorkflowSubmission;
+
+// IO Imports
+import java.io.*;
+
+// Network Imports
+import java.net.URL;
 
 import uk.ac.mrc.hgmp.taverna.retsina.ProgramSelectionPanel;
-import uk.ac.mrc.hgmp.taverna.retsina.ScuflGraphPanel;
 import uk.ac.mrc.hgmp.taverna.retsina.ScuflGraph;
-
-import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.broker.*;
-import uk.ac.soton.itinnovation.taverna.enactor.broker.TavernaWorkflowSubmission;
-import uk.ac.soton.itinnovation.taverna.enactor.broker.TavernaFlowReceipt;
+import uk.ac.mrc.hgmp.taverna.retsina.ScuflGraphPanel;
 import java.lang.Exception;
+import java.lang.InterruptedException;
+import java.lang.SecurityManager;
 import java.lang.String;
 import java.lang.System;
-import java.net.URL;
+import java.lang.Thread;
+
 
 
 /**

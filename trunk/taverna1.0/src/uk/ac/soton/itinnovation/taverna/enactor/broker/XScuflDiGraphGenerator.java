@@ -24,16 +24,20 @@
 //      Created for Project :   MYGRID
 //      Dependencies        :
 //
-//      Last commit info    :   $Author: dmarvin $
-//                              $Date: 2003-05-07 20:15:49 $
-//                              $Revision: 1.9 $
+//      Last commit info    :   $Author: mereden $
+//                              $Date: 2003-05-13 13:03:44 $
+//                              $Revision: 1.10 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 
 package uk.ac.soton.itinnovation.taverna.enactor.broker;
 
 import org.apache.log4j.Logger;
-import org.embl.ebi.escience.scufl.*;
+import org.embl.ebi.escience.scufl.ConcurrencyConstraint;
+import org.embl.ebi.escience.scufl.DataConstraint;
+import org.embl.ebi.escience.scufl.Port;
+import org.embl.ebi.escience.scufl.Processor;
+import org.embl.ebi.escience.scufl.ScuflModel;
 import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.entities.graph.DiGraph;
 import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.entities.graph.GraphNode;
 import uk.ac.soton.itinnovation.mygrid.workflow.enactor.io.Input;
@@ -46,10 +50,6 @@ import uk.ac.soton.itinnovation.taverna.enactor.entities.TavernaTaskFactory;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.StringTokenizer;
-
-// Network Imports
-import java.net.URL;
 
 import uk.ac.soton.itinnovation.taverna.enactor.broker.XScuflInvalidException;
 import java.lang.Exception;
