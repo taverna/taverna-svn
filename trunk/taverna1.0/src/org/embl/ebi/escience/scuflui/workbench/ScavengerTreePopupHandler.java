@@ -261,7 +261,7 @@ public class ScavengerTreePopupHandler extends MouseAdapter {
 		    });
 		add.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ae) {
-			    String defaultName = node.toString();
+			    String defaultName = pf.getName();
 			    String validName = ScavengerTreePopupHandler.this.scavenger.model.getValidProcessorName(defaultName);
 			    try {
 				pf.createProcessor(validName, ScavengerTreePopupHandler.this.scavenger.model);
