@@ -33,6 +33,9 @@ public class SoaplabScavenger extends Scavenger {
 	super("Soaplab @ "+base);
 	// Get the categories for this installation
 	try {
+	    if (!base.endsWith("/")) {
+		throw new RuntimeException("The url for soaplab should look like http://foo/bar/, see the faq for more information");
+	    }
 	    Call call = (Call) new Service().createCall();
 	    call.setTargetEndpointAddress(base+"AnalysisFactory");
 	    call.setOperationName(new QName("getAvailableCategories"));
@@ -53,7 +56,9 @@ public class SoaplabScavenger extends Scavenger {
 	    }
 	}
 	catch (Exception e) {
-	    throw new ScavengerCreationException(e.getMessage());
+	    ScavengerCreationException sce = new ScavengerCreationException(e.getMessage());
+	    sce.initCause(e);
+	    throw sce;
 	}
 	
     }
