@@ -12,6 +12,8 @@ import org.embl.ebi.escience.scufl.*;
 import org.embl.ebi.escience.scuflui.*;
 import org.embl.ebi.escience.scuflworkers.ProcessorEditor;
 import org.embl.ebi.escience.scuflui.workbench.*;
+import javax.swing.JSplitPane;
+import javax.swing.ImageIcon;
 
 /**
  * Creates a new AdvancedModelExplorer within the desktop pane
@@ -25,17 +27,8 @@ public class WorkflowEditor implements ProcessorEditor {
 	final ScuflModel nestedModel = wp.getInternalModel();
 	return new ActionListener() {
 		public void actionPerformed(ActionEvent ae) {
-		    // Create the new model explorer and show it
-		    AdvancedModelExplorer editor = new AdvancedModelExplorer() {
-			    public void attachToModel(ScuflModel theModel) {
-				super.attachToModel(theModel);
-				workOffline.setEnabled(false);
-			    }
-			    public String getName() {
-				return super.getName()+" ["+wp.getName()+"]";
-			    }
-			};
-		    UIUtils.createFrame(nestedModel, editor, 40, 140, 500, 300);
+		    ScuflUIComponent combinedEditor = new CombinedEditor(wp);
+		    UIUtils.createFrame(nestedModel, combinedEditor, 40, 140, 500, 600);
 		}
 	    };
     }
@@ -43,6 +36,36 @@ public class WorkflowEditor implements ProcessorEditor {
     public String getEditorDescription() {
 	return "Edit nested workflow...";
     }
-
+    
+    class CombinedEditor extends JSplitPane implements ScuflUIComponent {
+	private WorkflowProcessor wp;
+	public CombinedEditor(WorkflowProcessor wproc) {
+	    super(HORIZONTAL_SPLIT);
+	    setTopComponent(explorer);
+	    setBottomComponent(diagram);
+	    this.wp = wproc;
+	}
+	AdvancedModelExplorer explorer = new AdvancedModelExplorer() {
+		public void attachToModel(ScuflModel theModel) {
+		    super.attachToModel(theModel);
+		    workOffline.setEnabled(false);
+		}
+	    };
+	ScuflDiagramPanel diagram = new ScuflDiagramPanel();
+	public void attachToModel(ScuflModel theModel) {
+	    explorer.attachToModel(theModel);
+	    diagram.attachToModel(theModel);
+	}
+	public void detachFromModel() {
+	    explorer.detachFromModel();
+	    diagram.detachFromModel();
+	}
+	public ImageIcon getIcon() {
+	    return explorer.getIcon();
+	}
+	public String getName() {
+	    return "Nested workflow editor for : "+wp.getName();
+	}
+    }
 }
 	    
