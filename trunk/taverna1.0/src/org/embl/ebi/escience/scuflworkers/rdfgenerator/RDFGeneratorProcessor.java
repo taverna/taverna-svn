@@ -32,14 +32,14 @@ public class RDFGeneratorProcessor extends Processor implements java.io.Serializ
 	    Port newSubjectPort = new InputPort(this, "subject");
 	    Port newVerbPort = new InputPort(this, "verb");
 	    Port newObjectPort = new InputPort(this, "object");
-	    newSubjectPort.setSyntacticType("string");
-	    newVerbPort.setSyntacticType("string");
-	    newObjectPort.setSyntacticType("string");
+	    newSubjectPort.setSyntacticType("'text/plain'");
+	    newVerbPort.setSyntacticType("'text/plain'");
+	    newObjectPort.setSyntacticType("'text/plain'");
 	    this.addPort(newSubjectPort);
 	    this.addPort(newVerbPort);
 	    this.addPort(newObjectPort);
 	    Port newPort = new OutputPort(this, "statement");
-	    newPort.setSyntacticType("string");
+	    newPort.setSyntacticType("'text/xml'");
 	    this.addPort(newPort);
 	}
 	catch (Exception ex) {

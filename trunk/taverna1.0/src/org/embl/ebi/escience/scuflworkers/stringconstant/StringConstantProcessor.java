@@ -35,7 +35,7 @@ public class StringConstantProcessor extends Processor implements java.io.Serial
 	// Create a single output port
 	try {
 	    Port newPort = new OutputPort(this, "value");
-	    newPort.setSyntacticType("string");
+	    newPort.setSyntacticType("'text/plain'");
 	    this.addPort(newPort);
 	}
 	catch (Exception ex) {

@@ -9,7 +9,6 @@ import java.util.*;
 import org.jdom.*;
 import org.embl.ebi.escience.baclava.*;
 import org.embl.ebi.escience.scufl.*;
-import org.embl.ebi.escience.scufl.semantics.*;
 
 /**
  * Performs the creation of XML elements from DataThing

@@ -5,11 +5,8 @@
  */
 package org.embl.ebi.escience.baclava.factory;
 
-import java.util.*;
 import org.jdom.*;
 import org.jdom.output.*;
-import org.embl.ebi.escience.scufl.*;
-import org.embl.ebi.escience.scufl.semantics.*;
 import org.embl.ebi.escience.baclava.*;
 
 /**

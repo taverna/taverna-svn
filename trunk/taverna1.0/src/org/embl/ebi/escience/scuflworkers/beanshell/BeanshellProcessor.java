@@ -41,13 +41,13 @@ public class BeanshellProcessor extends Processor implements java.io.Serializabl
 	    // Iterate over inputs...
 	    for (int i = 0; i < inputs.length; i++) {
 		Port p = new InputPort(this, inputs[i]);
-		p.setSyntacticType("string");
+		p.setSyntacticType("'text/plain'");
 		addPort(p);
 	    }
 	    // Iterate over outputs
 	    for (int i = 0; i < outputs.length; i++) {
 		Port p = new OutputPort(this, outputs[i]);
-		p.setSyntacticType("string");
+		p.setSyntacticType("'text/plain'");
 		addPort(p);
 	    }
 	}

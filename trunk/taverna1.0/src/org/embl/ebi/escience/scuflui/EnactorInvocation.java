@@ -14,15 +14,16 @@ import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.broker.FlowBrokerFa
 import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.broker.FlowReceipt;
 import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.broker.InvalidFlowBrokerRequestException;
 import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.broker.WorkflowCommandException;
-import uk.ac.soton.itinnovation.mygrid.workflow.enactor.io.Input;
 import uk.ac.soton.itinnovation.taverna.enactor.TavernaWorkflowEnactor;
 import uk.ac.soton.itinnovation.taverna.enactor.broker.TavernaBinaryWorkflowSubmission;
-import uk.ac.soton.itinnovation.taverna.enactor.broker.TavernaFlowReceipt;
+import uk.ac.soton.itinnovation.taverna.enactor.broker.*;
+
 
 // Utility Imports
 import java.util.Enumeration;
 import java.util.Properties;
 import java.util.ResourceBundle;
+import java.util.*;
 
 
 
@@ -137,7 +138,7 @@ public class EnactorInvocation extends JPanel implements ScuflUIComponent {
      */
     public EnactorInvocation(TavernaWorkflowEnactor enactor,
 			     ScuflModel model,
-			     Input inputData,
+			     Map inputDataThings,
 			     String userID) 
 	throws InvalidFlowBrokerRequestException, 
 	       WorkflowCommandException {
@@ -164,14 +165,17 @@ public class EnactorInvocation extends JPanel implements ScuflUIComponent {
 	
 	// Create a new submission object
 	this.theSubmission = new TavernaBinaryWorkflowSubmission(this.theModel,
-								 inputData,
+								 inputDataThings,
 								 userID,
 								 DEFAULT_USER_CONTEXT);
 	System.out.println("Created the TavernaBinaryWorkflowSubmission : "+this.theSubmission.toString());
 	
 	// Invoke the enactor
 	FlowBroker broker = FlowBrokerFactory.createFlowBroker("uk.ac.soton.itinnovation.taverna.enactor.broker.TavernaFlowBroker");
-	this.flowReceipt = (TavernaFlowReceipt) broker.submitFlow(this.theSubmission);
+	this.flowReceipt = (TavernaFlowReceipt) ((TavernaFlowBroker)broker).submitFlow(this.theModel,
+								  inputDataThings,
+								  userID,
+								  DEFAULT_USER_CONTEXT);
 	this.instanceID = this.flowReceipt.getID();
 	
 	// Create the UI

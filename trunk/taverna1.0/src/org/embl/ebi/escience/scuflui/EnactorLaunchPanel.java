@@ -10,7 +10,6 @@ import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.*;
-import org.embl.ebi.escience.baclava.*;
 import org.embl.ebi.escience.baclava.factory.*;
 import javax.swing.border.Border;
 import org.embl.ebi.escience.scufl.Port;
@@ -19,8 +18,6 @@ import org.embl.ebi.escience.scufl.ScuflModelEvent;
 import org.embl.ebi.escience.scufl.ScuflModelEventListener;
 import org.embl.ebi.escience.scuflui.workbench.GenericUIComponentFrame;
 import org.embl.ebi.escience.scuflui.workbench.Workbench;
-import uk.ac.soton.itinnovation.mygrid.workflow.enactor.io.DataParseException;
-import uk.ac.soton.itinnovation.mygrid.workflow.enactor.io.Input;
 
 // Utility Imports
 import java.util.HashMap;
@@ -28,14 +25,11 @@ import java.util.Iterator;
 import java.util.Map;
 
 // IO Imports
-import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.InputStream;
 
 // JDOM Imports
-import org.jdom.CDATA;
 import org.jdom.Document;
-import org.jdom.Element;
 import org.jdom.output.XMLOutputter;
 
 // Network Imports
@@ -99,33 +93,26 @@ public class EnactorLaunchPanel extends JPanel
 	actionPanel.add(runButton);
 	runButton.addActionListener(new ActionListener() {
 		public void actionPerformed(ActionEvent ae) {
-		    XMLOutputter xo = new XMLOutputter();
-		    xo.setIndent(" ");
-		    xo.setNewlines(true);
-		    String xmlInputDoc = xo.outputString(EnactorLaunchPanel.this.getInputDocument());
+		    
+		    Map inputObject = EnactorLaunchPanel.this.getDataThingMap();
+		    System.out.println("Created the Input object.."+inputObject.toString());
 		    try {
-			Input inputObject = new Input(new ByteArrayInputStream(xmlInputDoc.getBytes()));
-			System.out.println("Created the Input object.."+inputObject.toString());
-			try {
-			    if (Workbench.workbench != null) {
-				GenericUIComponentFrame thing = new GenericUIComponentFrame(Workbench.workbench.model,
-											    new EnactorInvocation(null,
-														  EnactorLaunchPanel.this.model,
-														  inputObject,
-														  null));
-				thing.setSize(600,400);
-				thing.setLocation(100,100);
-				Workbench.workbench.desktop.add(thing);
-				thing.moveToFront();
-			    }
-			}
-			catch (Exception e) {
-			    e.printStackTrace();
+			if (Workbench.workbench != null) {
+			    GenericUIComponentFrame thing = new GenericUIComponentFrame(Workbench.workbench.model,
+											new EnactorInvocation(null,
+													      EnactorLaunchPanel.this.model,
+													      inputObject,
+													      null));
+			    thing.setSize(600,400);
+			    thing.setLocation(100,100);
+			    Workbench.workbench.desktop.add(thing);
+			    thing.moveToFront();
 			}
 		    }
-		    catch (DataParseException dpe) {
-			// TODO - show error box
+		    catch (Exception e) {
+			e.printStackTrace();
 		    }
+		    
 		}
 	    });
 	
@@ -195,7 +182,6 @@ public class EnactorLaunchPanel extends JPanel
 		WorkflowInputPanel wip = (WorkflowInputPanel)(currentInputs.get(key));
 		// Remove from the panel
 		inputPanel.remove(wip);
-
 		// Remove from the cached map
 		this.currentInputs.remove(key);
 		
@@ -248,6 +234,20 @@ public class EnactorLaunchPanel extends JPanel
 	    dataThings.put(wip.getPort().getName(), DataThingFactory.bake(wip.getText()));
 	}
 	return DataThingXMLFactory.getDataDocument(dataThings);
+    }
+
+    /**
+     * Get the Map back to actually do the submission
+     */
+    public Map getDataThingMap() {
+	// Create DataThing objects
+	Map dataThings = new HashMap(); 
+	for (Iterator i = currentInputs.keySet().iterator(); i.hasNext(); ) {
+	    String key = (String)i.next();
+	    WorkflowInputPanel wip = (WorkflowInputPanel)currentInputs.get(key);
+	    dataThings.put(wip.getPort().getName(), DataThingFactory.bake(wip.getText()));
+	}
+	return dataThings;
     }
 
     public void receiveModelEvent(ScuflModelEvent sme) {

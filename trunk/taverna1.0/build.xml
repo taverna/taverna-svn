@@ -355,6 +355,13 @@
 		</java>
 	</target>
 
+	<!-- Test the data thing type system -->
+	<target name="test.datathing" depends="java">
+		<java classname="org.embl.ebi.escience.baclava.factory.DataThingFactoryTest" fork="no">
+			<classpath refid="compile-classpath"/>
+		</java>
+	</target>
+
 
 	<!-- Run arbitrary unit test -->
 	<target name="runtestunit" depends="jar">

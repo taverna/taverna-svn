@@ -9,7 +9,7 @@ import java.util.*;
 import org.jdom.*;
 import org.embl.ebi.escience.baclava.factory.*;
 import org.embl.ebi.escience.scufl.*;
-import org.embl.ebi.escience.scufl.semantics.*;
+import javax.swing.*;
 
 /**
  * A simple wrapper around an arbitrary Collection
@@ -49,6 +49,16 @@ public class DataThing {
     public DataThing(Object o) {
 	theDataObject = o;
 	myMarkup = new SemanticMarkup(this);
+    }
+
+    /**
+     * Get a display icon for this DataThing,
+     * currently this is based on the MIME
+     * type from the syntactic type string.
+     */
+    public ImageIcon getIcon() {
+	String baseMIMEType = (getSyntacticType().split("'")[1].toLowerCase()).split("/")[0];
+	return new ImageIcon(ClassLoader.getSystemResource("org/embl/ebi/escience/baclava/icons/"+baseMIMEType+".png"));
     }
 
     /**

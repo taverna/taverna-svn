@@ -7,9 +7,7 @@ package org.embl.ebi.escience.scuflworkers.stringconstant;
 
 import org.apache.log4j.Logger;
 import org.embl.ebi.escience.scufl.Processor;
-import uk.ac.soton.itinnovation.mygrid.workflow.enactor.io.Part;
 import uk.ac.soton.itinnovation.taverna.enactor.broker.LogLevel;
-import uk.ac.soton.itinnovation.taverna.enactor.entities.PortTask;
 import uk.ac.soton.itinnovation.taverna.enactor.entities.ProcessorTask;
 import uk.ac.soton.itinnovation.taverna.enactor.entities.TaskExecutionException;
 
@@ -38,9 +36,8 @@ public class StringConstantTask extends ProcessorTask {
 	   
 	    StringConstantProcessor theProcessor = (StringConstantProcessor)proc;
 	    // Get the output port, there is always only a single child for this task
-	    PortTask pt = (PortTask)(getChildren()[0]);
 	    Map outputMap = new HashMap();
-	    outputMap.put("value",new Part(-1,"value","string",theProcessor.getStringValue()));
+	    outputMap.put("value",new DataThing(theProcessor.getStringValue()));
 	    return outputMap;
 	}
 	catch(Exception ex) {

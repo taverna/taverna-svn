@@ -150,7 +150,18 @@ public class SoaplabProcessor extends Processor implements java.io.Serializable 
 		// but at the moment we've got nowhere to put them
 		// so we don't bother.
 		Port new_port = new InputPort(this, input_name);
-		new_port.setSyntacticType(input_type);
+		if (input_type.equals("string")) {
+		    new_port.setSyntacticType("'text/plain'");
+		}
+		else if (input_type.equals("string[]")) {
+		    new_port.setSyntacticType("l('text/plain')");
+		}
+		else if (input_type.equals("byte[]")) {
+		    new_port.setSyntacticType("'application/octet-stream'");
+		}
+		else if (input_type.equals("byte[][]")) {
+		    new_port.setSyntacticType("l('application/octet-stream')");
+		}
 		this.addPort(new_port);
 	    }
 	    
@@ -170,7 +181,18 @@ public class SoaplabProcessor extends Processor implements java.io.Serializable 
 		if ((!output_name.equalsIgnoreCase("detailed_status")) 
 		    && (!output_name.equalsIgnoreCase("report"))) {
 		    Port new_port = new OutputPort(this, output_name);
-		    new_port.setSyntacticType(output_type);
+		    if (output_type.equals("string")) {
+			new_port.setSyntacticType("'text/plain'");
+		    }
+		    else if (output_type.equals("string[]")) {
+			new_port.setSyntacticType("l('text/plain')");
+		    }
+		    else if (output_type.equals("byte[]")) {
+			new_port.setSyntacticType("'application/octet-stream'");
+		    }
+		    else if (output_type.equals("byte[][]")) {
+			new_port.setSyntacticType("l('application/octet-stream')");
+		    }
 		    this.addPort(new_port);
 		}
 	    }
