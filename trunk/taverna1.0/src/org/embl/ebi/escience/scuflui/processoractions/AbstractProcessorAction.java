@@ -20,12 +20,14 @@ import java.awt.*;
 public abstract class AbstractProcessorAction implements ProcessorActionSPI {
     
     public final ActionListener getListener(Processor processor) {
+	final Processor theProcessor = processor;
 	// Create a simple JPanel with the specified component in
-	final ScuflUIComponent frame = new SimpleFrame(getComponent(processor), processor);
 	return new ActionListener() {
 		public void actionPerformed(ActionEvent e) {
 		    Dimension loc = AbstractProcessorAction.this.getFrameLocation();
 		    Dimension size = AbstractProcessorAction.this.getFrameSize();
+		    Component c = getComponent(theProcessor);
+		    ScuflUIComponent frame = new SimpleFrame(c, theProcessor);
 		    UIUtils.createFrame((ScuflModel)null, frame, (int)loc.getWidth(), (int)loc.getHeight(), (int)size.getWidth(), (int)size.getHeight());
 		}
 	    };
@@ -37,6 +39,10 @@ public abstract class AbstractProcessorAction implements ProcessorActionSPI {
 	    super(new BorderLayout());
 	    add(c, BorderLayout.CENTER);
 	    this.processor = p;
+	    //setPreferredSize(c.getPreferredSize());
+	    //setMinimumSize(c.getMinimumSize());
+	    //setMaximumSize(c.getMaximumSize());
+	    //setPreferredSize(new Dimension(0,0));
 	}
 	public void attachToModel(ScuflModel model) {
 	    //
