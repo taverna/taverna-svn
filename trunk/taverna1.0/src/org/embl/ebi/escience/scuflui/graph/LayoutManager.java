@@ -23,7 +23,7 @@ import org.jgraph.graph.GraphModel;
  * graph to be able to update as the graph changes.
  * 
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover </a>
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  */
 public class LayoutManager
 {
@@ -559,7 +559,7 @@ public class LayoutManager
 
 		Map attributes = model.getAttributes(edge);
 		attributes.put(EDGE_PARENT, parent);
-		GraphConstants.setLineColor(attributes, Color.RED);
+		//GraphConstants.setLineColor(attributes, Color.RED);
 
 		treeSetParent(child, edge);
 		treeAddChildren(child);
