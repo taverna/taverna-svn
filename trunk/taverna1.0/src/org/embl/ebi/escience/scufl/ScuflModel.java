@@ -461,7 +461,8 @@ public class ScuflModel
 	public void run() {
 	    while (true) {
 		// Are there any pending events?
-		if (pendingEventList.isEmpty()) {
+		if (pendingEventList == null ||
+		    pendingEventList.isEmpty()) {
 		    try {
 			Thread.sleep(10000);
 		    }
