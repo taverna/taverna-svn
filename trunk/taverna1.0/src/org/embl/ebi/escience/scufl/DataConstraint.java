@@ -29,7 +29,7 @@ public class DataConstraint implements java.io.Serializable {
 	       UnknownPortException,
 	       UnknownProcessorException,
 	       MalformedNameException {
-	this(model, model.locatePort(source_name), model.locatePort(sink_name));
+	this(model, model.locatePortOrCreate(source_name, false), model.locatePortOrCreate(sink_name, true));
     }
 
     /**

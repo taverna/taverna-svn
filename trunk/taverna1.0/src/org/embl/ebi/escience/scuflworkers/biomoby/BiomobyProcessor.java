@@ -31,7 +31,7 @@ import org.biomoby.shared.*;
  * processor implementation will contact Biomoby registry in order to
  * find the list of extant ports at creation time. <p>
  *
- * @version $Id: BiomobyProcessor.java,v 1.7 2004-05-20 14:22:31 mereden Exp $
+ * @version $Id: BiomobyProcessor.java,v 1.8 2004-09-15 13:33:03 mereden Exp $
  * @author Martin Senger
  */
 public class BiomobyProcessor extends Processor implements java.io.Serializable {
@@ -57,10 +57,16 @@ public class BiomobyProcessor extends Processor implements java.io.Serializable 
 	this.mobyEndpoint = mobyEndpoint;
 	this.serviceName = serviceName;
 	this.authorityName = authorityName;
+	if (this.isOffline() == false) {
+	    init();
+	}
+    }
+
+    void init() throws ProcessorCreationException {
 	// Find the service endpoint (by calling Moby registry)
 	try {
 	    worker = new CentralImpl (mobyEndpoint);
-
+	    
 	    MobyService pattern = new MobyService (serviceName);
 	    pattern.setAuthority (authorityName);
 	    MobyService[] services = worker.findService (pattern);

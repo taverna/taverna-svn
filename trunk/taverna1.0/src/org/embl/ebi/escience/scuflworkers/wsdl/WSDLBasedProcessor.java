@@ -63,10 +63,13 @@ public class WSDLBasedProcessor extends Processor implements java.io.Serializabl
 	throws ProcessorCreationException,
 	       DuplicateProcessorNameException {
 	super(model, procName);
+	this.wsdlLocation = wsdlLocation;
+	this.operationName = operationName;
+	if (this.isOffline()) {
+	    return;
+	}
 	try {
-	    this.wsdlLocation = wsdlLocation;
-	    this.operationName = operationName;
-	    
+
 	    // Configure to use axis then read the WSDL
 	    WSIFPluggableProviders.overrideDefaultProvider("http://schemas.xmlsoap.org/wsdl/soap/",
 							   new WSIFDynamicProvider_ApacheAxis());

@@ -38,6 +38,25 @@ import java.lang.Thread;
 public class ScuflModel
     implements Serializable,
 	       LogAwareComponent {
+    
+    /**
+     * Set to true if the workflow definition is being
+     * loaded in offline mode, i.e. no network activity
+     */
+    boolean offline = false;
+    /**
+     * Is the workflow in offline mode?
+     */
+    public boolean isOffline() {
+	return this.offline;
+    }
+    /**
+     * Set the online / offline status, true sets
+     * to offline, false to online (the initial value)
+     */
+    public void setOffline(boolean offlineValue) {
+	this.offline = offlineValue;
+    }
 
     /**
      * The log level for the model overall
@@ -256,31 +275,6 @@ public class ScuflModel
     }
 
     /**
-     * Return an array of all Port subclasses that are
-     * flagged as being exposed to the outside world. This
-     * corresponds to the list of overall workflow inputs
-     * and outputs.
-     */
-    /**public Port[] getExternalPorts() {
-       ArrayList externalPortList = new ArrayList();
-       // Iterate over processors
-       for (Iterator i = this.processors.iterator(); i.hasNext(); ) {
-       Processor processor = (Processor)i.next();
-       // Iterate over ports within that processor
-       for (int j = 0; j < processor.getPorts().length; j++) {
-       Port port = processor.getPorts()[j];
-       if (port.isExternal()) {
-       // If the port is flagged as being external
-       // then add it to the list
-       externalPortList.add(port);
-       }
-       }
-       }
-       return (Port[])(externalPortList.toArray(new Port[0]));
-       }
-    */
-
-    /**
      * Add a processor to the model.
      *
      * @throws NullPointerException if the processor is null
@@ -321,7 +315,6 @@ public class ScuflModel
 	    }
 	}
 	fireModelEvent(new ScuflModelEvent(this, "Destroyed processor '"+the_processor.getName()+"'"));
-
     }
 
     /**
@@ -434,7 +427,40 @@ public class ScuflModel
 		return this.sinks.locatePort(port_name);
 	    }
 	}
-	throw new MalformedNameException("Couldn't resolver port name '"+port_specifier+"'.");
+	throw new MalformedNameException("Couldn't resolve port name '"+port_specifier+"'.");
+    }
+    Port locatePortOrCreate(String port_specifier, boolean isInputPort)
+	throws UnknownProcessorException,
+	       UnknownPortException,
+	       MalformedNameException {
+	String[] parts = port_specifier.split(":");
+	if (parts.length < 1 || parts.length > 2) {
+	    throw new MalformedNameException("You must supply a name of the form [PROCESSOR]:[PORT] to the locate operation");
+	}
+	else if (parts.length == 2) {
+	    // Should be a reference to an externally visible processor
+	    // port combination.
+	    String processor_name = parts[0];
+	    String port_name = parts[1];
+
+	    // Find the processor
+	    Processor processor = locateProcessor(processor_name);
+	    Port port = processor.locatePortOrCreate(port_name, isInputPort);
+	    return port;
+	}
+	else if (parts.length == 1) {
+	    // Got a reference to an internal port
+	    Port port = null;
+	    String port_name = parts[0];
+	    try {
+		// Look for a source port
+		return this.sources.locatePort(port_name);
+	    }
+	    catch (UnknownPortException upe) {
+		return this.sinks.locatePort(port_name);
+	    }
+	}
+	throw new MalformedNameException("Couldn't resolve port name '"+port_specifier+"'.");
     }
 
     /**
@@ -521,30 +547,8 @@ public class ScuflModel
 	    }
 	}
     }
-
 }
-/**
- * A thread subclass to notify listeners of an event
- */
-/**class NotifyThread extends Thread {
-   private ScuflModelEvent event;
-   private List listeners;
-   protected NotifyThread(ScuflModelEvent event, ScuflModel model) {
-   super();
-   this.event = event;
-   this.listeners = model.listeners;
-   this.start();
-   }
-   public void run() {
-   for (Iterator i = listeners.iterator(); i.hasNext();) {
-   ScuflModelEventListener l = (ScuflModelEventListener)i.next();
-   //System.out.println("Firing event to "+l.toString());
-   l.receiveModelEvent(event);
-   }
-   
-   }
-   }
-*/
+
 /**
  * A Processor subclass to hold ports for the overal workflow inputs. These
  * ports are therefore output ports, as they are used as data sources for
@@ -561,6 +565,7 @@ class InternalSourcePortHolder extends Processor implements java.io.Serializable
 	return null;
     }
 }
+
 /**
  * A Processor subclass to hold ports for the overall workflow outputs, these
  * ports are therefore held as input ports, acting as they do as data sinks.

@@ -509,6 +509,46 @@ public abstract class Processor implements Serializable {
 	}
 	throw new UnknownPortException("Unable to find the port with name '"+port_name+"' in '"+getName()+"'");
     }
+    
+    /**
+     * Find a particular named port with a given type,
+     * creating the appropriate port if and only if the
+     * port is not found and the workflow is in offline
+     * mode
+     */
+    synchronized Port locatePortOrCreate(String port_name, boolean isInputPort) 
+	throws UnknownPortException {
+	try {
+	    return locatePort(port_name);
+	}
+	catch (UnknownPortException upe) {
+	    if (this.model != null && this.model.isOffline()) {
+		// Create a new port
+		try {
+		    Port result;
+		    if (isInputPort) {
+			result = new InputPort(this, port_name);
+		    }
+		    else {
+			result = new OutputPort(this, port_name);
+		    }
+		    addPort(result);
+		    return result;
+		}
+		catch (PortCreationException pce) {
+		    pce.printStackTrace();
+		    throw upe;
+		}
+		catch (DuplicatePortNameException dpne) {
+		    dpne.printStackTrace();
+		    throw upe;
+		}
+	    }
+	    else {
+		throw upe;
+	    }
+	}
+    }
 
     /**
      * Get an array containing only input ports
@@ -608,11 +648,24 @@ public abstract class Processor implements Serializable {
 	    }
 	}
     }
+
     /**
      * Return the processor's name in the toString()
      */
     public String toString() {
 	return this.getName();
+    }
+
+    public boolean isOffline() {
+	if (this.model != null && this.model.isOffline()) {
+	    return true;
+	}
+	else if (this.model == null && this.parentProcessor != null) {
+	    return this.parentProcessor.isOffline();
+	}
+	else {
+	    return false;
+	}
     }
 
 }

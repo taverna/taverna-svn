@@ -41,6 +41,7 @@ public class AdvancedModelExplorer extends JPanel
     private ScuflModel model;
 
     private JButton loadWorkflow, loadFromWeb, saveWorkflow, resetWorkflow, createNested;
+    private JCheckBox workOffline;
     final JFileChooser fc = new JFileChooser();
     public AdvancedModelExplorer() {
 	
@@ -88,6 +89,22 @@ public class AdvancedModelExplorer extends JPanel
 	createNested = new JButton(ScuflIcons.windowExplorer);
 	createNested.setPreferredSize(new Dimension(25,25));
 	
+	workOffline = new JCheckBox("Offline");
+	workOffline.setSelected(false);
+	workOffline.addItemListener(new ItemListener() {
+		public void itemStateChanged(ItemEvent e) {
+		    Object source = e.getItemSelectable();
+		    if (source == workOffline) {
+			if (e.getStateChange() == ItemEvent.DESELECTED) {
+			    model.setOffline(false);
+			}
+			else {
+			    model.setOffline(true);
+			}
+		    }
+		}
+	    });
+	
 	toolbar.add(new JLabel(" Load "));
 	toolbar.add(loadWorkflow);
 	toolbar.addSeparator();
@@ -101,6 +118,9 @@ public class AdvancedModelExplorer extends JPanel
 	toolbar.addSeparator();
 	toolbar.add(new JLabel("New subworkflow"));
 	toolbar.add(createNested);
+	
+	toolbar.addSeparator();
+	toolbar.add(workOffline);
 
 	toolbar.add(Box.createHorizontalGlue());
 	
@@ -681,6 +701,7 @@ public class AdvancedModelExplorer extends JPanel
 
     public void attachToModel(ScuflModel theModel) {
 	this.model = theModel;
+	workOffline.setSelected(theModel.isOffline());
 	explorer.attachToModel(theModel);
     }
 
