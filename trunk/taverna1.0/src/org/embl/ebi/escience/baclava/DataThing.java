@@ -129,7 +129,7 @@ public class DataThing {
 	// First check the DataThing itself
 	String selfValue = (String)(lsid.get(this));
 	if (selfValue == null || selfValue.equals("")) {
-	    lsid.put(this, provider.getID("datathing"));
+	    //lsid.put(this, provider.getID("datathing"));
 	}
 	// Recursively populate the data object lsid map
 	doInternalLSIDFill(theDataObject, provider);
@@ -560,6 +560,7 @@ public class DataThing {
         return super.toString() +
                 "\n\tdataObject=" + datStr +
                 "\n\tmetaData=" + metadataMap +
+	        "\n\tlsidMap=" + lsid +
                 "\n\tmarkup=" + myMarkup +
                 "\n\tlsid=" + (String)(lsid.get(this)) +
                 "\n";

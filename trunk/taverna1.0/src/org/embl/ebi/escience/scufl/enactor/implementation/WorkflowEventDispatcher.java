@@ -64,7 +64,7 @@ public class WorkflowEventDispatcher {
 	addEventToQueue(e);
     }
 
-    public void fireProcessCompletedWithIteration(IterationCompletionEvent e) {
+    public void fireIterationCompleted(IterationCompletionEvent e) {
 	addEventToQueue(e);
     }
     
@@ -90,7 +90,7 @@ public class WorkflowEventDispatcher {
 	}
     }
 
-    private void addListener(WorkflowEventListener listener) {
+    public void addListener(WorkflowEventListener listener) {
 	synchronized (this.listeners) {
 	    if (listeners.contains(listener) == false) {
 		listeners.add(listener);
@@ -98,7 +98,7 @@ public class WorkflowEventDispatcher {
 	}
     }
 
-    private void removeListener(WorkflowEventListener listener) {
+    public void removeListener(WorkflowEventListener listener) {
 	synchronized (this.listeners) {
 	    listeners.remove(listener);
 	}

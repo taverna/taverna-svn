@@ -25,8 +25,8 @@
 //      Dependencies        :
 //
 //      Last commit info    :   $Author: mereden $
-//                              $Date: 2004-07-07 11:03:38 $
-//                              $Revision: 1.52 $
+//                              $Date: 2004-07-09 14:20:49 $
+//                              $Revision: 1.53 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 package uk.ac.soton.itinnovation.taverna.enactor.entities;
@@ -184,14 +184,9 @@ public class ProcessorTask extends AbstractTask {
             // "Task " + getTaskId() + " in flow " + getFlow().getFlowId() + " completed successfully"
 	    complete();
 	}
-	catch (TaskExecutionException ex) {
-	    eventList.add(new ServiceFailure());
-	    faultCausingException = ex;
-	    logger.error(ex);
-	    fail("Task " + getTaskId() + " in flow " + getFlow().getFlowId() + " failed.  " + ex.getMessage());
-	}
 	catch (Exception ex){
 	    eventList.add(new ServiceFailure());
+	    ex.printStackTrace();
 	    faultCausingException = ex;
 	    logger.error(ex);
 	    fail("Task " + getTaskId() + " in flow " + getFlow().getFlowId() + " failed.  " + ex.getMessage());
@@ -220,6 +215,12 @@ public class ProcessorTask extends AbstractTask {
 	}
 	else {
 	    outputMap = invokeWithoutIteration(inputMap);
+	    // Fire a new ProcessCompletionEvent
+	    DISPATCHER.fireProcessCompleted(new ProcessCompletionEvent(false,
+								       inputMap,
+								       outputMap,
+								       activeProcessor,
+								       workflowInstance));
 	}
 	Set alreadyStoredThings = new HashSet();
 	// Iterate over the children, pushing data into the port tasks
@@ -515,6 +516,12 @@ public class ProcessorTask extends AbstractTask {
 	    }
 	}
 	
+	// Create the mapping of collection -> set of component LSIDs, this can then
+	// be passed on to the iteration completion event. The keys are LSIDs of the
+	// output collections, the values are sets of the LSIDs of the individual
+	// result items which have been used to compose these collections.
+	Map collectionStructure = new HashMap();
+
 	// Create the output container
 	Map outputMap = new HashMap();
 	for (Iterator i = getChildren().iterator(); i.hasNext();) {
@@ -522,15 +529,54 @@ public class ProcessorTask extends AbstractTask {
             if (task instanceof PortTask) {
 		PortTask outputPortTask = (PortTask) task;
 		// Create data things with array lists inside them.
-		outputMap.put(outputPortTask.getScuflPort().getName(), new DataThing(new ArrayList()));
+		DataThing outputThing = new DataThing(new ArrayList());
+		// Assign an LSID to the root collection object
+		outputThing.fillLSIDValues();
+		String collectionLSID = outputThing.getLSID(outputThing.getDataObject());
+		System.out.println("Got collection LSID : "+collectionLSID);
+		outputMap.put(outputPortTask.getScuflPort().getName(), outputThing);
+		// Create an entry in the collectionStructure map containing
+		// a set, initially empty
+		collectionStructure.put(collectionLSID, new HashSet());
 	    }
 	}
 
+	// Create a similar mapping for the input LSIDs, indicate where the collections
+	// have been shredded down to allow for the iteration composition
+	// Keys are strings containing the LSIDs of the input objects with values
+	// being the sets of decomposed datathing LSID values which the iteration has
+	// split them into. At the end of this sets with only one item (i.e. self iteration
+	// where no splitting has taken place) are removed to avoid redundant information
+	// in the provenance logs.
+	Map inputNameToLSID = new HashMap();
+	Map inputShredding = new HashMap();
+	for (Iterator i = getParents().iterator(); i.hasNext();) {
+	    Task task = (Task)i.next();
+	    if (task instanceof PortTask) {
+		PortTask inputPortTask = (PortTask)task;
+		DataThing inputThing = inputPortTask.getData();
+		String inputLSID = inputThing.getLSID(inputThing.getDataObject());
+		String inputName = inputPortTask.getScuflPort().getName();
+		inputNameToLSID.put(inputName, inputLSID);
+		inputShredding.put(inputLSID, new HashSet());
+	    }
+	}
+	
+	
 	// Do the iteration
 	int currentIteration = 0;
 	int totalIterations = rootNode.size();
 	while (rootNode.hasNext()) {
 	    Map inputSet = (Map)rootNode.next();
+	    // Iterate over the set and add the LSIDs of inputs to the inputShredding map...
+	    for (Iterator i = inputSet.keySet().iterator(); i.hasNext(); ) {
+		String inputName = (String)i.next();
+		DataThing inputThing = (DataThing)inputSet.get(inputName);
+		String inputThingLSID = inputThing.getLSID(inputThing.getDataObject());
+		String primaryLSID = (String)inputNameToLSID.get(inputName);
+		Set shredding = (Set)inputShredding.get(primaryLSID);
+		shredding.add(inputThingLSID);
+	    }
 	    int[] currentLocation = rootNode.getCurrentLocation();
 	    eventList.add(new InvokingWithIteration(++currentIteration, totalIterations));
 	    Map singleResultMap = invokeOnce(inputSet);
@@ -549,13 +595,47 @@ public class ProcessorTask extends AbstractTask {
 		// Before it tried to map all results from the service call into the subsequent
 		// data flow causing a null pointer exception if no such data flow existed.
 		if (outputMap.containsKey(outputName)) {
-		    List targetList = ((List)((DataThing)outputMap.get(outputName)).getDataObject());
+		    DataThing targetThing = (DataThing)outputMap.get(outputName);
+		    System.out.println(targetThing);
+		    targetThing.fillLSIDValues();
+		    System.out.println(targetThing);
+		    List targetList = (List)targetThing.getDataObject();
+		    System.out.println("Target list has object ID "+targetList.hashCode());
 		    //targetList.add(dataObject);
-		    insertObjectInto(dataObject, targetList, currentLocation);
+		    insertObjectInto(dataObject, targetList, currentLocation, targetThing);
+		    // Copy metadata from the original output into the new one, preserve LSID hopefully!
+		    targetThing.copyMetadataFrom(outputValue);
+		    // Get the LSID of the original output item
+		    System.out.println(targetThing);
+		    System.out.println(targetThing.getDataObject() == targetList);
+		    String originalLSID = targetThing.getLSID(dataObject);
+		    String collectionLSID = targetThing.getLSID(targetList);
+		    System.out.println("original : "+originalLSID+", collection : "+collectionLSID);
+		    ((Set)collectionStructure.get(collectionLSID)).add(originalLSID);
 		}
 		/// fix ends
 	    }
 	}
+	
+	// Iterate over the inputShredding map and remove any keys which map to sets with
+	// only a single item where the item in the set is the same as the key (i.e. where
+	// the iteration structure has iterated over a single item repeatedly)
+	Set removeKeys = new HashSet();
+	for (Iterator i = inputShredding.keySet().iterator(); i.hasNext();) {
+	    String key = (String)i.next();
+	    Set shredSet = (Set)inputShredding.get(key);
+	    if (shredSet.size() == 1 && shredSet.contains(key)) {
+		removeKeys.add(key);
+	    }
+	}
+	for (Iterator i = removeKeys.iterator(); i.hasNext();) {
+	    inputShredding.remove(i.next());
+	}
+	DISPATCHER.fireIterationCompleted(new IterationCompletionEvent(collectionStructure,
+								       inputShredding,
+								       workflowInstance,
+								       activeProcessor));
+								       
 	return outputMap;
     }
 
@@ -564,9 +644,14 @@ public class ProcessorTask extends AbstractTask {
      * by an array of integer indices as returned from the ResumableIterator getCurrentLocation
      * method. This method must be called with at least one element in the position array,
      * but I'm fairly sure that this is implied by the calling context anyway.
+     * The DataThing is supplied so that the LSID map can be correctly maintained
      */
-    private void insertObjectInto(Object o, List l, int[] position) {
+    private void insertObjectInto(Object o, List l, int[] position, DataThing theThing) {
 	List currentList = l;
+	String oldLSID = theThing.getLSID(l);
+	if (oldLSID != null) {
+	    theThing.getLSIDMap().remove(l);
+	}
 	// Walk over the index array to find the enclosing collection
 	for (int i = 0; i<position.length-1; i++) {
 	    int index = position[i];
@@ -592,6 +677,9 @@ public class ProcessorTask extends AbstractTask {
 	catch (IndexOutOfBoundsException ioobe) {
 	    // Just add onto the end
 	    currentList.add(o);
+	}
+	if (oldLSID!=null) {
+	    theThing.setLSID(l, oldLSID);
 	}
     }
 

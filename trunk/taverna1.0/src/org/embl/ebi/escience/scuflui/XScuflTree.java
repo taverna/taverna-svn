@@ -96,7 +96,7 @@ public class XScuflTree extends JComponent
      * A name for this component
      */
     public String getName() {
-	return "Workflow XML preview";
+	return "DEBUG - Workflow XML preview";
     }
 
 }

@@ -28,7 +28,7 @@ public class StupidLSIDProvider implements LSIDProvider {
      * Returns a particularly dumb implementation
      * of a unique identifier
      */
-    public String getID(String namespace) {
+    public synchronized String getID(String namespace) {
 	return "urn:lsid:net.sf.taverna:"+namespace+":"+(count++);
     }
 
