@@ -212,6 +212,13 @@
 		    <classpath refid="compile-classpath"/>
 		</java>
 	</target> 
+
+	<!-- Test the XScufl view -->
+	<target name="test.xscuflview" depends="jar">
+		<java classname="org.embl.ebi.escience.scufl.view.test.XScuflViewTest" fork="yes">
+		    <classpath refid="compile-classpath"/>
+		</java>
+	</target> 
 	
 </project>
 

@@ -7,9 +7,10 @@ package org.embl.ebi.escience.scufl;
 
 // Utility Imports
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.HashSet;
+import java.util.Iterator;
 
+import org.embl.ebi.escience.scufl.DataConstraint;
 import org.embl.ebi.escience.scufl.DuplicateProcessorNameException;
 import org.embl.ebi.escience.scufl.InputPort;
 import org.embl.ebi.escience.scufl.OutputPort;

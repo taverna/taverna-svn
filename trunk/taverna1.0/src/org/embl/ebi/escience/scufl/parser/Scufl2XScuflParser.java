@@ -5,6 +5,8 @@
  */
 package org.embl.ebi.escience.scufl.parser;
 
+import org.embl.ebi.escience.scufl.XScufl;
+
 // IO Imports
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
@@ -191,7 +193,7 @@ public class Scufl2XScuflParser {
      * The namespace for the Scufl elements
      */
     public static Namespace scuflNS() {
-	return Namespace.getNamespace("s","http://org.embl.ebi.escience/xscufl/0.1alpha");
+	return XScufl.XScuflNS;
     }
 
 
