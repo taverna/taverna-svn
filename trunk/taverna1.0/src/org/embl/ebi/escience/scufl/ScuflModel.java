@@ -233,6 +233,21 @@ public class ScuflModel implements java.io.Serializable {
     }
 
     /**
+     * Remove a ScuflModelEventListener from the listener list.
+     */
+    public void removeListener(ScuflModelEventListener listener) {
+	this.listeners.remove(listener);
+    }
+
+    /**
+     * Get an array of ScuflMovelEventListener implementors registered
+     * with this ScuflModel.
+     */
+    public ScuflModelEventListener[] getListeners() {
+	return (ScuflModelEventListener[])(this.listeners.toArray(new ScuflModelEventListener[0]));
+    }
+
+    /**
      * Locate a given named port, the name is in the form
      * [PROCESSOR]:[PORT], and is not case sensitive.
      * If the processor part is missing, this method will
