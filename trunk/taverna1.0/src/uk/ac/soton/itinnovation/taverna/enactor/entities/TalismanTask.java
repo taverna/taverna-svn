@@ -114,9 +114,13 @@ public class TalismanTask extends ProcessorTask {
 		logger.debug("Creating output - portName = "+portName+", fieldName = "+talismanName);
 		// Write the value to the port, is this the right way to do it?
 		PortTask pt = (PortTask)outputMap.get(portName.toLowerCase());
-		logger.debug("Port task found : "+pt.toString());
-		Part outputPart = new Part(-1, portName, "string", talismanValue);
-		pt.setData(outputPart);
+		// If the port task wasn't found in the map, then the output isn't bound
+		// to anything and therefore we shouldn't try to write the data out.
+		if (pt != null) {
+		    logger.debug("Port task found : "+pt.toString());
+		    Part outputPart = new Part(-1, portName, "string", talismanValue);
+		    pt.setData(outputPart);
+		}
 	    }
 
 	    // Done? I think so anyway.
