@@ -25,8 +25,8 @@
 //      Dependencies        :
 //
 //      Last commit info    :   $Author: dmarvin $
-//                              $Date: 2003-06-05 14:36:23 $
-//                              $Revision: 1.9 $
+//                              $Date: 2003-06-05 16:25:06 $
+//                              $Revision: 1.10 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 package uk.ac.soton.itinnovation.taverna.enactor.entities;
@@ -126,13 +126,16 @@ public abstract class ProcessorTask extends TavernaTask{
 	    // Check all the inputs, find any cardinality mismatches.
 	    Map inputInfoMap = new HashMap();
 	    GraphNode[] inputs = getParents();
-	    for (int i = 0; i < inputs.length; i++) {
+	    System.out.println("Number of inputs: "+ inputs.length);
+			for (int i = 0; i < inputs.length; i++) {
 		if (inputs[i] instanceof PortTask) {
 		    PortTask pt = (PortTask)inputs[i];
 		    Part p = pt.getData();
-		    String name = p.getName();
-		    Object value = p.getValue();
-		    PartInfo pi = new PartInfo(p);
+				String name = p.getName();
+		    Object value = p.getTypedValue();
+		    System.out.println("PortTask Part name: " + name);
+				System.out.println("PortTask Part type: "+ p.getType());				
+				PartInfo pi = new PartInfo(p);
 		    inputInfoMap.put(name, pi);
 		}
 	    }
@@ -141,10 +144,10 @@ public abstract class ProcessorTask extends TavernaTask{
 	    Map outputPortTaskMap = new HashMap();
 	    GraphNode[] outputs = getChildren();
 	    for (int i = 0; i < outputs.length; i++) {
-		if (outputs[i] instanceof PortTask) {
-		    PortTask pt = (PortTask)outputs[i];
-		    outputPortTaskMap.put(pt.getScuflPort().getName(),pt); 
-		}
+				if (outputs[i] instanceof PortTask) {
+						PortTask pt = (PortTask)outputs[i];
+						outputPortTaskMap.put(pt.getScuflPort().getName(),pt); 
+				}
 	    }
 
 	    InputSet is = new InputSet();
@@ -161,8 +164,9 @@ public abstract class ProcessorTask extends TavernaTask{
 	    // Completely naive implementation that just puts the parts in as they
 	    // are without attempting to do any iteration at all
 	    for (Iterator i = inputInfoMap.keySet().iterator(); i.hasNext(); ) {
-		PartInfo pi = (PartInfo)inputInfoMap.get(i.next());
-		is.addSinglePart(pi.getPart());
+				PartInfo pi = (PartInfo)inputInfoMap.get(i.next());
+				is.addSinglePart(pi.getPart());
+				System.out.println(pi.toString());
 	    }
 	    
 	    List inputList = is.getCurrentState();
@@ -177,7 +181,9 @@ public abstract class ProcessorTask extends TavernaTask{
 				Map outputMap = execute(inputMap);
 				outputList.add(outputMap);
 	    }
-
+			if(inputList.size()==0) {
+				outputList.add(execute(new HashMap()));		//for the exceptional case of no input parameters
+			}
 	    // Check whether there was any iteration
 	    if (outputList.size() == 1) {
 		Map outputMap = (Map)outputList.get(0);
@@ -185,12 +191,14 @@ public abstract class ProcessorTask extends TavernaTask{
 		    Part p = (Part)outputMap.get(i.next());
 		    // TODO - put parts in the appropriate port tasks for output
 		    PortTask pt = (PortTask)outputPortTaskMap.get(p.getName());
-		    pt.setData(p);
+		    if(pt!=null)
+					pt.setData(p);
 		}
 	    }
 	    else {
 		int outputSizes = outputList.size();
 		// Iterate over the different part names
+		
 		Map firstOutputRow = (Map)outputList.get(0);
 		for (Iterator i = firstOutputRow.keySet().iterator(); i.hasNext(); ) {
 		    Part exemplarPart = (Part)firstOutputRow.get(i.next());
@@ -206,7 +214,7 @@ public abstract class ProcessorTask extends TavernaTask{
 					try {
 							Map row = (Map)outputList.get(j);
 							Part thePart = (Part)row.get(partName);
-							Object data = thePart.getValue();
+							Object data = thePart.getTypedValue();
 							partData[j] = data;
 						}
 						catch (Exception e) {
@@ -219,7 +227,9 @@ public abstract class ProcessorTask extends TavernaTask{
 					// TODO - Create the Part object and put it into the appropriate output port task
 					Part thePart = new Part(-1, partName, partType, partData);
 					PortTask pt = (PortTask)outputPortTaskMap.get(thePart.getName());
-					pt.setData(thePart);
+					if (pt!=null)	{
+						pt.setData(thePart);
+					}
 				}
 	    }
 			return new TaskStateMessage(getParentFlow().getID(), getID(), TaskStateMessage.COMPLETE,"Task completed successfully");
@@ -228,11 +238,13 @@ public abstract class ProcessorTask extends TavernaTask{
 	    //return result;
 	}
 	catch (TaskExecutionException ex) {
-		logger.error(ex);
+			
+			logger.error(ex);
 			return new TaskStateMessage(getParentFlow().getID(),getID(), TaskStateMessage.FAILED,ex.getMessage());
 	}
 	catch (Exception ex){
-	    logger.error(ex);
+	    ex.printStackTrace();
+			logger.error(ex);
 	    return new TaskStateMessage(getParentFlow().getID(), 
 					getID(), 
 					TaskStateMessage.FAILED, 
@@ -370,7 +382,7 @@ class PartInfo {
 	// counting the number of times we can get an array type
 	// out of it.
 	this.dimension = 0;
-	Object value = thePart.getValue();
+	Object value = thePart.getTypedValue();
 	while (value.getClass().isArray()) {
 	    this.dimension++;
 	    dimensionSizeList.add(new Integer(((Object[])value).length));
@@ -412,7 +424,7 @@ class PartInfo {
      * Get the value of the underlying Part object
      */
     public Object getDataValue() throws DataParseException, JDOMException {
-	return this.thePart.getValue();
+	return this.thePart.getTypedValue();
     }
 
     /**
