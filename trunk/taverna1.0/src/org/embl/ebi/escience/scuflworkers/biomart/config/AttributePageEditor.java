@@ -440,6 +440,7 @@ public class AttributePageEditor extends JPanel {
 				FieldAttribute fa = new FieldAttribute(desc.getField(),
 								       desc.getTableConstraint(),
 								       desc.getKey());
+				fa.setUniqueName(desc.getInternalName());
 				System.out.println("Adding : "+fa);
 				query.addAttribute(fa);
 			    }

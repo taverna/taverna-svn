@@ -248,15 +248,20 @@ public class BiomartXMLHandler implements XMLHandler {
 	e.setAttribute("field",f.getField());
 	e.setAttribute("key",f.getKey());
 	e.setAttribute("constraint",f.getTableConstraint());
+	if (f.getUniqueName() != null) {
+	    e.setAttribute("uniquename", f.getUniqueName());
+	}
 	return e;	
     }
     /**
      * Deserialize FieldAttribute
      */
     private FieldAttribute elementToFieldAttribute(Element e) {
-	return new FieldAttribute(e.getAttributeValue("field"),
-				  e.getAttributeValue("constraint"),
-				  e.getAttributeValue("key"));
+	FieldAttribute fa = new FieldAttribute(e.getAttributeValue("field"),
+					       e.getAttributeValue("constraint"),
+					       e.getAttributeValue("key"));
+	fa.setUniqueName(e.getAttributeValue("uniquename"));
+	return fa;
     }
     
     /**

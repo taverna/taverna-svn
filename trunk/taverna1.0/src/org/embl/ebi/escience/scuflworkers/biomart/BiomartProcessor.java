@@ -214,15 +214,17 @@ public class BiomartProcessor extends Processor {
 	Set attributeNames = new HashSet();
 	// Create new ports corresponding to attributes
 	for (int i = 0; i < attributes.length; i++) {
-	    String fieldName = attributes[i].getField();
-	    attributeNames.add(fieldName);
-	    try {
-		locatePort(fieldName);
-	    }
-	    catch (UnknownPortException upe) {
-		Port newPort = new OutputPort(this, fieldName);
-		newPort.setSyntacticType("l('text/plain')");
-		addPort(newPort);
+	    if (attributes[i] instanceof FieldAttribute) {
+		String fieldName = ((FieldAttribute)attributes[i]).getUniqueName();
+		attributeNames.add(fieldName);
+		try {
+		    locatePort(fieldName);
+		}
+		catch (UnknownPortException upe) {
+		    Port newPort = new OutputPort(this, fieldName);
+		    newPort.setSyntacticType("l('text/plain')");
+		    addPort(newPort);
+		}
 	    }
 	}
 	// Create new port for the sequence if defined
