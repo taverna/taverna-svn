@@ -57,7 +57,11 @@ public class SeqVistaRenderer extends AbstractRenderer.ByMimeType {
     public JComponent getComponent(RendererRegistry renderers,
 				   DataThing dataThing) 
 	throws RendererException {
-	SeqVISTA vista = new SeqVISTA();
+	SeqVISTA vista = new SeqVISTA() {
+		public java.awt.Dimension getPreferredSize() {
+		    return new java.awt.Dimension(100,100);
+		}
+	    };
 	try {
 	    System.out.println((String)dataThing.getDataObject());
 	    System.out.println(seqType);

@@ -275,6 +275,8 @@ public class EnactorInvocation extends JPanel implements ScuflUIComponent {
 	toolbar = new JToolBar("Invocation tools");
 	toolbar.setFloatable(false);
 	toolbar.setRollover(true);
+	toolbar.setMaximumSize(new Dimension(2000,30));
+
 	//saveResultsButton = new JButton( "Save all results", ScuflIcons.saveIcon);
 	//toolbar.add(saveResultsButton);
 	//toolbar.add(Box.createHorizontalGlue());
