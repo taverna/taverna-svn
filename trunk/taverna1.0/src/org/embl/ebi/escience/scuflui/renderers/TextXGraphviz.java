@@ -61,7 +61,11 @@ public class TextXGraphviz
 	    if (dotLocation == null) {
 		dotLocation = "dot";
 	    }
-            Process dotProcess = Runtime.getRuntime().exec(new String[]{dotLocation,"-Tpng"});
+	    // Pick up gif, jpg or whatever alternate format for
+	    // the graphviz renderer from the properties already
+	    // defined by the workbench diagram.
+	    String imageSuffix = System.getProperty("taverna.scufldiagram.imagetype","png");
+            Process dotProcess = Runtime.getRuntime().exec(new String[]{dotLocation,"-T"+imageSuffix});
             OutputStream out = dotProcess.getOutputStream();
             out.write(dotText.getBytes());
             out.flush();
