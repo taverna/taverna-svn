@@ -19,6 +19,7 @@ import javax.swing.tree.*;
 import javax.swing.table.*;
 
 import java.awt.Dimension;
+import java.awt.event.*;
 import java.awt.Component;
 import java.awt.Graphics;
 import java.awt.Rectangle;
@@ -60,6 +61,28 @@ public class JTreeTable extends JTable {
 
 	// No intercell spacing
 	setIntercellSpacing(new Dimension(0, 0));	
+
+	// Add a mouse listener to forward events on to the tree
+	addMouseListener(new MouseAdapter() {
+		public void mousePressed(MouseEvent e) {
+		    for (int counter = getColumnCount() - 1; counter >= 0;
+			 counter--) {
+			if (getColumnClass(counter) == TreeTableModel.class) {
+			    MouseEvent me = (MouseEvent)e;
+			    MouseEvent newME = new MouseEvent(tree, me.getID(),
+							      me.getWhen(), me.getModifiers(),
+							      me.getX() - getCellRect(0, counter, true).x,
+							      me.getY(), me.getClickCount(),
+							      me.isPopupTrigger());
+			    //System.out.println(newME);
+			    if (me.getClickCount()==1) {
+				tree.dispatchEvent(newME);
+			    }
+			    //break;
+			}
+		    }
+		}
+	    });
 
 	// And update the height of the trees row to match that of
 	// the table.
@@ -232,21 +255,23 @@ public class JTreeTable extends JTable {
 	 * the tree will never be editable (at least by a key sequence).
 	 */
 	public boolean isCellEditable(EventObject e) {
-	    if (e instanceof MouseEvent) {
+	    /** if (e instanceof MouseEvent) {
 		for (int counter = getColumnCount() - 1; counter >= 0;
-		     counter--) {
-		    if (getColumnClass(counter) == TreeTableModel.class) {
-			MouseEvent me = (MouseEvent)e;
-			MouseEvent newME = new MouseEvent(tree, me.getID(),
-				   me.getWhen(), me.getModifiers(),
-				   me.getX() - getCellRect(0, counter, true).x,
-				   me.getY(), me.getClickCount(),
-                                   me.isPopupTrigger());
-			tree.dispatchEvent(newME);
-			break;
-		    }
+		counter--) {
+		if (getColumnClass(counter) == TreeTableModel.class) {
+		MouseEvent me = (MouseEvent)e;
+		MouseEvent newME = new MouseEvent(tree, me.getID(),
+		me.getWhen(), me.getModifiers(),
+		me.getX() - getCellRect(0, counter, true).x,
+		me.getY(), me.getClickCount(),
+		me.isPopupTrigger());
+		System.out.println(newME);
+		tree.dispatchEvent(newME);
+		break;
 		}
-	    }
+		}
+		}
+	    */
 	    return false;
 	}
     }

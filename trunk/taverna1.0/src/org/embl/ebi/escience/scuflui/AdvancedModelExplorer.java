@@ -91,7 +91,7 @@ public class AdvancedModelExplorer extends JTabbedPane
 	    descriptionPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(),
 									"Processor Description for '"+p.getName()+"'"));
 	    descriptionPanel.setLayout(new BorderLayout());
-	    JTextArea description = new JTextArea(p.getDescription(),5,0);
+	    JTextArea description = new JTextArea(p.getDescription(),4,0);
 	    JScrollPane descriptionPane = new JScrollPane(description);
 	    descriptionPane.setPreferredSize(new Dimension(100,100));
 	    description.getDocument().addDocumentListener(new DocumentListener() {
