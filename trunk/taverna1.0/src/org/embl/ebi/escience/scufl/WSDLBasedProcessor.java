@@ -132,7 +132,7 @@ public class WSDLBasedProcessor extends Processor implements java.io.Serializabl
 	    Part part = (Part)i.next();
 	    try {
 		Port newInputPort = new InputPort(this, part.getName());
-		newInputPort.setSyntacticType(part.getTypeName().getLocalPart());
+		newInputPort.setSyntacticType(xsdTypeToInternalType(part.getTypeName().getLocalPart()));
 		this.addPort(newInputPort);
 	    }
 	    catch (DuplicatePortNameException dpne) {
@@ -151,7 +151,7 @@ public class WSDLBasedProcessor extends Processor implements java.io.Serializabl
 	    Part part = (Part)i.next();
 	    try {
 		Port newOutputPort = new OutputPort(this, part.getName());
-		newOutputPort.setSyntacticType(part.getTypeName().getLocalPart());
+		newOutputPort.setSyntacticType(xsdTypeToInternalType(part.getTypeName().getLocalPart()));
 		this.addPort(newOutputPort);
 	    }
 	    catch (DuplicatePortNameException dpne) {
@@ -164,5 +164,11 @@ public class WSDLBasedProcessor extends Processor implements java.io.Serializabl
     
     }
 
+    public String xsdTypeToInternalType(String xsdType) {
+	if (xsdType.equals("ArrayOf_xsd_string")) { 
+	    return "string[]";
+	}
+	return xsdType;
+    }
 
 }
