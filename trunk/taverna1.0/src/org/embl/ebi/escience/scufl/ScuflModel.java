@@ -7,7 +7,9 @@ package org.embl.ebi.escience.scufl;
 
 // Utility Imports
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
+import java.util.List;
 
 import org.embl.ebi.escience.scufl.ConcurrencyConstraint;
 import org.embl.ebi.escience.scufl.DataConstraint;
@@ -61,7 +63,7 @@ public class ScuflModel
     /**
      * The active model listeners for this model
      */
-    ArrayList listeners = new ArrayList();
+    List listeners = Collections.synchronizedList(new ArrayList());
     
     /**
      * An internal processor implementation to hold the overall
@@ -405,7 +407,7 @@ public class ScuflModel
  */
 class NotifyThread extends Thread {
     private ScuflModelEvent event;
-    private ArrayList listeners;
+    private List listeners;
     protected NotifyThread(ScuflModelEvent event, ScuflModel model) {
 	super();
 	this.event = event;

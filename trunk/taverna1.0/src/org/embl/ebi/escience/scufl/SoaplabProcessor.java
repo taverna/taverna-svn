@@ -147,7 +147,7 @@ public class SoaplabProcessor extends Processor implements java.io.Serializable 
 	    for (int i = 0; i<inputs.length; i++) {
 		Map input_spec = inputs[i];
 		String input_name = (String)input_spec.get("name");
-		String input_type = (String)input_spec.get("type");
+		String input_type = ((String)(input_spec.get("type"))).toLowerCase();
 		// Could get other properties such as defaults here
 		// but at the moment we've got nowhere to put them
 		// so we don't bother.
@@ -165,7 +165,7 @@ public class SoaplabProcessor extends Processor implements java.io.Serializable 
 	    for (int i = 0; i<results.length; i++) {
 		Map output_spec = results[i];
 		String output_name = (String)output_spec.get("name");
-		String output_type = (String)output_spec.get("type");
+		String output_type = ((String)(output_spec.get("type"))).toLowerCase();
 		// Check to see whether the output is either report or detailed_status, in 
 		// which cases we ignore it, this is soaplab metadata rather than application
 		// data.

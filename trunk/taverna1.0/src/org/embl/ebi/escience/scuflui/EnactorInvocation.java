@@ -5,23 +5,28 @@
  */
 package org.embl.ebi.escience.scuflui;
 
+import java.awt.BorderLayout;
 import java.awt.Dimension;
 import javax.swing.*;
-import javax.swing.table.AbstractTableModel;
-import org.embl.ebi.escience.scufl.*;
+import org.embl.ebi.escience.scufl.ScuflModel;
+import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.broker.FlowBroker;
+import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.broker.FlowBrokerFactory;
+import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.broker.FlowReceipt;
+import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.broker.InvalidFlowBrokerRequestException;
+import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.broker.WorkflowCommandException;
 import uk.ac.soton.itinnovation.mygrid.workflow.enactor.io.Input;
 import uk.ac.soton.itinnovation.taverna.enactor.TavernaWorkflowEnactor;
 import uk.ac.soton.itinnovation.taverna.enactor.broker.TavernaBinaryWorkflowSubmission;
+import uk.ac.soton.itinnovation.taverna.enactor.broker.TavernaFlowReceipt;
 
 // Utility Imports
 import java.util.Enumeration;
 import java.util.Properties;
 import java.util.ResourceBundle;
 
-import org.embl.ebi.escience.scuflui.ScuflIcons;
-import java.lang.Class;
+import org.embl.ebi.escience.scuflui.EnactorStatusTableModel;
+import java.lang.Exception;
 import java.lang.InterruptedException;
-import java.lang.Object;
 import java.lang.String;
 import java.lang.System;
 import java.lang.Thread;
@@ -52,15 +57,84 @@ public class EnactorInvocation extends JDialog {
     private TavernaWorkflowEnactor theEnactor;
     private ScuflModel theModel;
     private TavernaBinaryWorkflowSubmission theSubmission; 
+    private String instanceID = null;
+    private EnactorStatusTableModel statusTableModel = null;
+    private FlowReceipt flowReceipt = null;
+    private JTextArea resultsText = null;
+    private JTextArea provenanceText = null;
+
+    /**
+     * Get the workflow instance ID for this invocation
+     */
+    public String getInstanceID() {
+	return this.instanceID;
+    }
+
+    /**
+     * Get the status text for this invocation
+     */
+    public String getStatusText() {
+	return ((TavernaFlowReceipt)(this.flowReceipt)).getProgressReportXMLString();
+    }
+    
+    /**
+     * Show the results in the text area
+     */
+    public void showResults() {
+	String results = "";
+	try {
+	    boolean gotResults = false;
+	    while (!gotResults) {
+		results = ((TavernaFlowReceipt)(this.flowReceipt)).getOutputString();
+		if (results.equals("") == false) {
+		    gotResults = true;
+		}
+		else {
+		    Thread.sleep(1000);
+		}
+	    }
+	    this.resultsText.setText(results);
+	}
+	catch (Exception ex) {
+	    this.resultsText.setText("No results available.");
+	}
+    }
+
+    /**
+     * Show the current provenance of this invocation
+     */
+    public void showProvenance() {
+	String provenance = "";
+	try {
+	    provenance = ((TavernaFlowReceipt)(this.flowReceipt)).getProvenanceXMLString();
+	    this.provenanceText.setText(provenance);
+	}
+	catch (Exception ex) {
+	    this.provenanceText.setText("No provenance available.");
+	}
+    }
+
+    /**
+     * Get the table model that is being used by this
+     * invocation panel to display the statii of the
+     * workflow processors
+     */
+    public EnactorStatusTableModel getTableModel() {
+	return this.statusTableModel;
+    }
 
     /**
      * Create a new enactor run panel including creating the
      * status panel, invoking the workflow and all the rest.
+     * @throws InvalidFlowBrokerRequestException if the taverna flow broker is not found
+     * @throws WorkflowCommandException if the submission is invalid in some way
      */
     public EnactorInvocation(TavernaWorkflowEnactor enactor,
 			     ScuflModel model,
 			     Input inputData,
-			     String userID) {
+			     String userID) 
+	throws InvalidFlowBrokerRequestException, 
+	       WorkflowCommandException {
 	super((JFrame)null,"Enactor invocation run", false);
 	// Non modal dialog box
 	
@@ -88,20 +162,50 @@ public class EnactorInvocation extends JDialog {
 								 DEFAULT_USER_CONTEXT);
 	System.out.println("Created the TavernaBinaryWorkflowSubmission : "+this.theSubmission.toString());
 	
+	// Invoke the enactor
+	FlowBroker broker = FlowBrokerFactory.createFlowBroker("uk.ac.soton.itinnovation.taverna.enactor.broker.TavernaFlowBroker");
+	this.flowReceipt = (TavernaFlowReceipt) broker.submitFlow(this.theSubmission);
+	this.instanceID = this.flowReceipt.getID();
+	
 	// Create the UI
 	getContentPane().setLayout(new BoxLayout(getContentPane(), BoxLayout.PAGE_AXIS));
 	final JPanel processorListPanel = new JPanel();
 	processorListPanel.setLayout(new BoxLayout(processorListPanel, BoxLayout.PAGE_AXIS));
 	processorListPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(),
 								      "Processor statii"));
-	final JTable processorTable = new JTable(new EnactorStatusTableModel(theModel));
+	statusTableModel = new EnactorStatusTableModel(theModel);
+	final JTable processorTable = new JTable(statusTableModel);
 	//processorTable.setPreferredScrollableViewportSize(new Dimension(500,100));
 	JScrollPane scrollPane = new JScrollPane(processorTable);
-	scrollPane.setPreferredSize(new Dimension(500,150));
+	scrollPane.setPreferredSize(new Dimension(500,200));
 	processorListPanel.add(scrollPane);
 	//processorListPanel.pack();
-	processorListPanel.setPreferredSize(new Dimension(500,150));
+	//processorListPanel.setPreferredSize(new Dimension(500,150));
 	getContentPane().add(processorListPanel);
+
+	// Create a text area to show the results
+	JPanel resultsPanel = new JPanel();
+	resultsPanel.setLayout(new BorderLayout());
+	resultsPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(),
+								"Workflow results"));
+	resultsText = new JTextArea();
+	JScrollPane resultsScrollPane = new JScrollPane(resultsText);
+	resultsScrollPane.setPreferredSize(new Dimension(100,100));
+	resultsPanel.add(resultsScrollPane, BorderLayout.CENTER);
+
+	getContentPane().add(resultsPanel);
+
+	// Create a text area to show the provenance
+	JPanel provenancePanel = new JPanel();
+	provenancePanel.setLayout(new BorderLayout());
+	provenancePanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(),
+								   "Workflow provenance"));
+	provenanceText = new JTextArea();
+	JScrollPane provenanceScrollPane = new JScrollPane(provenanceText);
+	provenanceScrollPane.setPreferredSize(new Dimension(100,100));
+	provenancePanel.add(provenanceScrollPane, BorderLayout.CENTER);
+	getContentPane().add(provenancePanel);
+
 	pack();
 	setSize(new Dimension(600,300));
 	setVisible(true);
@@ -120,6 +224,7 @@ class EnactorInvocationStatusThread extends Thread {
     boolean running = true;
     boolean abort = false;
     EnactorInvocation theEnactorInvocation;
+    String instanceID = null;
 
     /**
      * Create the enactor run thread, passing it
@@ -129,6 +234,7 @@ class EnactorInvocationStatusThread extends Thread {
     public EnactorInvocationStatusThread(EnactorInvocation theEnactorInvocation) {
 	super();
 	this.theEnactorInvocation = theEnactorInvocation;
+	this.instanceID = theEnactorInvocation.getInstanceID();
 	this.start();
     }
 
@@ -158,7 +264,37 @@ class EnactorInvocationStatusThread extends Thread {
 	    // this method was called. Of course, this doesn't remove
 	    // the need to actually implement this properly.
 	    try {
-		Thread.sleep(2000);
+		// Get the status, update the model with it and check the overall
+		// workflow status. If the workflow status is completed or aborted
+		// then set running to false which will drop us neatly out of the
+		// polling loop.
+		System.out.println("Polling...");
+		
+		try {
+		    String statusText = theEnactorInvocation.getStatusText();
+		    //System.out.println("Status document : "+statusText);
+		    String workflowStatus = theEnactorInvocation.getTableModel().update(statusText);
+		    //System.out.println("Workflow status : "+workflowStatus);
+		    if (workflowStatus.equals("FAILED") ||
+			workflowStatus.equals("CANCELLED")) {
+			theEnactorInvocation.showProvenance();
+			running = false;
+			abort = true;
+		    }
+		    else if (workflowStatus.equals("COMPLETE")) {
+			running = false;
+			// Set the results display in the display panel
+			theEnactorInvocation.showResults();
+			theEnactorInvocation.showProvenance();
+		    }
+		}
+		catch ( Exception e ) {
+		    // System.out.println(e.getMessage());
+		    // Status message not available I guess
+		}
+		if (running) {
+		    Thread.sleep(2000);
+		}
 	    }
 	    catch (InterruptedException ie) {
 		running = false;
@@ -175,117 +311,3 @@ class EnactorInvocationStatusThread extends Thread {
     }    
 }
 
-
-/** 
- * A Swing table model implementation that can be constructed from a
- * ScuflModel instance and updated by the XML coming back from the status
- * reports from the enactor
- */
-class EnactorStatusTableModel extends AbstractTableModel {
-    
-    private ScuflModel scuflModel;
-    private int rows = 0;
-    private Object[][] data;
-    final String[] columnNames = {"Type",
-				  "Name",
-				  "Status",
-				  "Start Time",
-				  "End Time"};
-
-    public EnactorStatusTableModel(ScuflModel scufl) {
-	this.scuflModel = scufl;
-	// One row for each processor.
-	Processor[] processors = scuflModel.getProcessors();
-	rows = processors.length;
-	data = new Object[rows][columnNames.length];
-	// Put appropriate content in the rows
-	for (int i = 0; i < rows; i++) {
-	    Processor p = processors[i];
-	    // do the icon
-	    if (p instanceof WorkflowProcessor) {
-		data[i][0] = ScuflIcons.workflowIcon;
-	    }
-	    else if (p instanceof WSDLBasedProcessor) {
-		data[i][0] = ScuflIcons.wsdlIcon;
-	    }
-	    else if (p instanceof TalismanProcessor) {
-		data[i][0] = ScuflIcons.talismanIcon;
-	    }
-	    else if (p instanceof SoaplabProcessor) {
-		data[i][0] = ScuflIcons.soaplabIcon;
-	    }
-	    // do the name
-	    data[i][1] = p.getName();
-	    // do status
-	    data[i][2] = "No data";
-	    // do start time
-	    data[i][3] = "--";
-	    // do end time
-	    data[i][4] = "--";
-	}
-    }
-    
-    /**
-     * Set the status string for a given processor
-     */
-    public void setStatusString(String processorName, String statusString) {
-	for (int i = 0; i < rows; i++) {
-	    if (((String)data[i][1]).equals(processorName)) {
-		setValueAt(statusString, i, 2);
-		return;
-	    }
-	}
-    }
-    
-    public void setStartTime(String processorName, String theString) {
-	for (int i = 0; i < rows; i++) {
-	    if (((String)data[i][1]).equals(processorName)) {
-		setValueAt(theString, i, 3);
-		return;
-	    }
-	}
-    }
-
-    public void setEndTime(String processorName, String theString) {
-	for (int i = 0; i < rows; i++) {
-	    if (((String)data[i][1]).equals(processorName)) {
-		setValueAt(theString, i, 4);
-		return;
-	    }
-	}
-    }
-
-
-    public Class getColumnClass(int c) {
-	return getValueAt(0, c).getClass();
-    }
-
-    public int getColumnCount() {
-	return columnNames.length;
-    }
-
-    public String getColumnName(int col) {
-	return columnNames[col];
-    }
-
-    public int getRowCount() {
-	return this.rows;
-    }
-    
-    public Object getValueAt(int row, int column) {
-	return data[row][column];
-    }
-
-    public boolean isCellEditable(int row, int col) {
-	return false;
-    }
-    
-    /**
-     * Set the value and fire the events appropriately
-     */
-    public void setValueAt(Object value, int row, int col) {
-	data[row][col] = value;
-	fireTableCellUpdated(row, col);
-    }
-
-}

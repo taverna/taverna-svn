@@ -109,10 +109,15 @@ public class EnactorLaunchPanel extends JPanel
 		    try {
 			Input inputObject = new Input(new ByteArrayInputStream(xmlInputDoc.getBytes()));
 			System.out.println("Created the Input object.."+inputObject.toString());
-			new EnactorInvocation(null,
-					      EnactorLaunchPanel.this.model,
-					      null,
-					      null);
+			try {
+			    new EnactorInvocation(null,
+						  EnactorLaunchPanel.this.model,
+						  inputObject,
+						  null);
+			}
+			catch (Exception e) {
+			    e.printStackTrace();
+			}
 		    }
 		    catch (DataParseException dpe) {
 			// TODO - show error box
