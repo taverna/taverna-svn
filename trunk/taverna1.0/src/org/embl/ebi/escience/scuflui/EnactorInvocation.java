@@ -229,7 +229,20 @@ public class EnactorInvocation extends JPanel implements ScuflUIComponent {
     public void showResultTable()
     {
 	try {
-	    //this.tabs.add("Result Table", new JScrollPane(new ResultTablePanel(theModel, workflowInstance)));    	
+		System.err.println("Provenance length: " + workflowInstance.getProvenanceXMLString().length());
+		int sizeLimit = 128000;
+		try
+		{
+			sizeLimit = Integer.parseInt(System.getProperty("taverna.resulttable.sizelimit"));
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+		}
+		if(workflowInstance.getProvenanceXMLString().length() < sizeLimit)
+		{
+			this.tabs.add("Result Table", new JScrollPane(new ResultTablePanel(theModel, workflowInstance)));
+		}
 	}
 	catch (Exception e) {
 	    // The above can cause a NPE, we need to track this down
