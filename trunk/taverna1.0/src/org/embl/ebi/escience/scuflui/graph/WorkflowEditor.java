@@ -13,19 +13,21 @@ import java.awt.dnd.DropTargetDragEvent;
 import java.awt.dnd.DropTargetDropEvent;
 import java.awt.dnd.DropTargetEvent;
 import java.awt.dnd.DropTargetListener;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
 
+import javax.swing.Icon;
 import javax.swing.ImageIcon;
+import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 
+import org.embl.ebi.escience.scufl.InputPort;
+import org.embl.ebi.escience.scufl.Port;
 import org.embl.ebi.escience.scufl.Processor;
 import org.embl.ebi.escience.scufl.ScuflModel;
 import org.embl.ebi.escience.scuflui.NoContextMenuFoundException;
@@ -33,8 +35,6 @@ import org.embl.ebi.escience.scuflui.ScuflContextMenuFactory;
 import org.embl.ebi.escience.scuflui.ScuflIcons;
 import org.embl.ebi.escience.scuflui.ScuflUIComponent;
 import org.embl.ebi.escience.scuflui.ShadedLabel;
-import org.embl.ebi.escience.scuflui.TemplateEditor;
-import org.embl.ebi.escience.scuflui.UIUtils;
 import org.embl.ebi.escience.scuflui.dnd.FactorySpecFragment;
 import org.embl.ebi.escience.scuflui.dnd.SpecFragmentTransferable;
 import org.embl.ebi.escience.scuflui.graph.model.LayoutManager;
@@ -114,26 +114,63 @@ public class WorkflowEditor extends JPanel implements ScuflUIComponent, DropTarg
 							try
 							{
 								JPopupMenu menu = ScuflContextMenuFactory.getMenuForObject(null,
-										scuflObject, WorkflowEditor.this.model);
+											scuflObject, WorkflowEditor.this.model);
 								if (scuflObject instanceof Processor)
 								{
 									Processor processor = (Processor) scuflObject;
-//									theMenu.addSeparator();
-//									theMenu.add(new ShadedLabel("Annotations",
-//											ShadedLabel.TAVERNA_BLUE));
-//									theMenu.addSeparator();
-//									JMenuItem editTemplates = new JMenuItem("Edit templates...",
-//											ScuflIcons.editIcon);
-//									editTemplates.addActionListener(new ActionListener()
-//									{
-//										public void actionPerformed(ActionEvent a)
-//										{
-//											UIUtils.createFrame(theProcessor.getModel(),
-//													new TemplateEditor(theProcessor), 100, 100,
-//													300, 300);
-//										}
-//									});
-//									theMenu.add(editTemplates);
+									Port[] ports = processor.getPorts();
+									if (ports.length > 0)
+									{
+										if (ports.length == 1)
+										{
+											String text;
+											Icon icon;
+											if(ports[0] instanceof InputPort)
+											{
+												text = "Add Link to " + ports[0].getName();
+												icon = ScuflIcons.inputPortIcon;
+											}
+											else
+											{
+												text = "Add Link from " + ports[0].getName();
+												icon = ScuflIcons.outputPortIcon;
+											}
+											JMenuItem linkItem = new JMenuItem(text, icon);
+											menu.add(linkItem);
+										}
+										else
+										{
+											JMenu linkMenu = new JMenu("Add Link to...");
+											ports = processor.getInputPorts();
+											if (ports.length > 0)
+											{
+												linkMenu.add(new ShadedLabel("Inputs",
+														ShadedLabel.TAVERNA_GREEN));
+												linkMenu.addSeparator();
+												for (int index = 0; index < ports.length; index++)
+												{
+													JMenuItem inputItem = new JMenuItem(
+															ports[index].getName(), ScuflIcons.inputPortIcon);
+													linkMenu.add(inputItem);
+												}
+												linkMenu.addSeparator();
+											}
+											ports = processor.getOutputPorts();
+											if (ports.length > 0)
+											{
+												linkMenu.add(new ShadedLabel("Outputs",
+														ShadedLabel.TAVERNA_ORANGE));
+												linkMenu.addSeparator();
+												for (int index = 0; index < ports.length; index++)
+												{
+													JMenuItem inputItem = new JMenuItem(
+															ports[index].getName(), ScuflIcons.outputPortIcon);
+													linkMenu.add(inputItem);
+												}
+											}
+											menu.add(linkMenu);											
+										}
+									}
 								}
 								menu.show(WorkflowEditor.this, event.getX(), event.getY());
 							}
@@ -148,6 +185,10 @@ public class WorkflowEditor extends JPanel implements ScuflUIComponent, DropTarg
 					{
 						e.printStackTrace();
 					}
+				}
+				else
+				{
+					// TODO If adding edge
 				}
 			}
 		});

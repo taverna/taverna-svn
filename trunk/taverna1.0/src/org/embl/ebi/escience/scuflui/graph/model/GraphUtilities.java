@@ -14,7 +14,7 @@ import org.jgraph.graph.GraphModel;
  * COMMENT 
  * 
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover</a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class GraphUtilities
 {
@@ -55,6 +55,19 @@ public class GraphUtilities
 		return result;
 	}
 	
+	public static boolean isParentOf(GraphModel model, Object parent, Object node)
+	{
+		Object temp = node;
+		while((temp = model.getParent(temp)) != null)
+		{
+			if(parent == temp)
+			{
+				return true;
+			}
+		}
+		return false;
+	}
+	
 	/**
 	 * @param model
 	 * @param node
@@ -72,8 +85,7 @@ public class GraphUtilities
 			if (!isGroup(model, edge))
 			{
 				Object target = model.getTarget(edge);
-				Object parent = model.getParent(target);
-				if (target == node || parent == node)
+				if (target == node || isParentOf(model, node, target))
 					result.add(edge);
 			}
 		}

@@ -16,15 +16,18 @@ import java.util.List;
 import java.util.Map;
 
 import javax.swing.BorderFactory;
+import javax.swing.border.TitledBorder;
 import javax.swing.event.UndoableEditListener;
 import javax.swing.undo.UndoableEdit;
 
 import org.embl.ebi.escience.scufl.ConcurrencyConstraint;
 import org.embl.ebi.escience.scufl.DataConstraint;
 import org.embl.ebi.escience.scufl.InputPort;
+import org.embl.ebi.escience.scufl.OutputPort;
 import org.embl.ebi.escience.scufl.Port;
 import org.embl.ebi.escience.scufl.Processor;
 import org.embl.ebi.escience.scufl.ScuflModel;
+import org.embl.ebi.escience.scufl.SemanticMarkup;
 import org.embl.ebi.escience.scuflui.graph.GraphColours;
 import org.embl.ebi.escience.scuflworkers.ProcessorHelper;
 import org.jgraph.event.GraphModelEvent;
@@ -38,68 +41,39 @@ import org.jgraph.graph.ParentMap;
 /**
  * 
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover </a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class ScuflGraphModel implements GraphModel, GraphModelListener
 {
-	private class ConcurrencyPort
+	private class DummyPort
 	{
-		private Processor processor;
-		private Collection constraints = new HashSet();
+		private Object parent;
 		
 		/**
-		 * @param processor
+		 * @param parent
 		 */
-		public ConcurrencyPort(Processor processor)
+		public DummyPort(Object parent)
 		{
-			this.processor = processor;
+			this.parent = parent;
 		}
 		
 		/**
 		 * @return processor
 		 */
-		public Processor getProcessor()
+		public Object getParent()
 		{
-			return processor;
-		}
-		
-		/**
-		 * @param constraint
-		 */
-		public void addConstraint(ConcurrencyConstraint constraint)
-		{
-			constraints.add(constraint);
-		}
-		
-		/**
-		 * @param constraint
-		 */
-		public void removeConstraint(ConcurrencyConstraint constraint)
-		{
-			constraints.remove(constraint);
-		}
-		
-		/**
-		 * @return edge iterator
-		 */
-		public Iterator edges()
-		{
-			return constraints.iterator();
+			return parent;
 		}
 	}
 	
-	
 	private static final String PORT_EDGES = "port edges";
-	private static final String PARENT_PROCESSOR = "parent processor";
-	private static final String CONCURRENCY_PORT = "concurrency port";
+	private static final String DUMMY_PORT = "dummy port";
 	
-	//private List inputs;
-	//private List outputs;
-	private Collection listeners = new HashSet();
-
 	private ScuflModel model;
-	List roots = new ArrayList();	
+	private List roots = new ArrayList();	
 	private Map attributes = new HashMap();
+	
+	private Collection listeners = new HashSet();	
 	
 	/**
 	 * @param model
@@ -174,14 +148,14 @@ public class ScuflGraphModel implements GraphModel, GraphModelListener
 		return (AttributeMap) attributes.get(this);
 	}
 
-	private ConcurrencyPort getConcurrencyPort(Processor processor)
+	private DummyPort getDummyPort(Object node)
 	{
-		Map attrs = getAttributes(processor);
-		ConcurrencyPort port = (ConcurrencyPort)attrs.get(CONCURRENCY_PORT);
+		Map attrs = getAttributes(node);
+		DummyPort port = (DummyPort)attrs.get(DUMMY_PORT);
 		if(port == null)
 		{
-			port = new ConcurrencyPort(processor);
-			attrs.put(CONCURRENCY_PORT, port);
+			port = new DummyPort(node);
+			attrs.put(DUMMY_PORT, port);
 			createAttributes(port);
 		}
 		return port;
@@ -193,42 +167,65 @@ public class ScuflGraphModel implements GraphModel, GraphModelListener
 	 */
 	private AttributeMap createAttributes(Object node)
 	{
-		AttributeMap map = new AttributeMap();
+		AttributeMap map = getAttributes(node);
+		if(map == null)
+		{
+			map = new AttributeMap();
+			attributes.put(node, map);			
+		}
+		
 		if (node instanceof ScuflGraphModel)
 		{
-			// Bleh
+			// TODO Something
 		}
 		else if (node instanceof Processor)
 		{
 			Processor processor = (Processor) node;
-			GraphConstants.setValue(map, processor.getName());
-			GraphConstants.setBounds(map, new Rectangle(100, 20));
-			GraphConstants.setBackground(map, GraphColours.getColour(ProcessorHelper
-					.getPreferredColour(processor), Color.WHITE));
-			GraphConstants.setOpaque(map, true);
-			GraphConstants.setBorder(map, BorderFactory.createRaisedBevelBorder());
-		}
-		else if (node instanceof DummyProcessor)
-		{
-			GraphConstants.setValue(map, node.toString());
-			GraphConstants.setBounds(map, new Rectangle(100, 20));
-			if (((DummyProcessor) node).getPort() instanceof InputPort)
+			if(processor == model.getWorkflowSourceProcessor())
 			{
-				GraphConstants.setBackground(map, GraphColours.getColour("lightsteelblue2",
-						Color.WHITE));
-
+				// TODO Something
+				//GraphConstants.setBounds(map, new Rectangle(100, 20));
+				GraphConstants.setOpaque(map, true);				
+				GraphConstants.setBorder(map, BorderFactory.createLineBorder(Color.GRAY));
+				GraphConstants.setGroupBorder(map, 5);				
+			}
+			else if(processor == model.getWorkflowSinkProcessor())
+			{
+				//GraphConstants.setBounds(map, new Rectangle(100, 20));
+				GraphConstants.setOpaque(map, true);				
+				GraphConstants.setBorder(map, new TitledBorder(BorderFactory.createLineBorder(Color.GRAY), "Workflow Outputs")); 
+				GraphConstants.setGroupBorder(map, 10);
 			}
 			else
 			{
-				GraphConstants.setBackground(map, GraphColours.getColour("skyblue", Color.WHITE));
+				GraphConstants.setValue(map, processor.getName());
+				GraphConstants.setBounds(map, new Rectangle(100, 20));
+				GraphConstants.setBackground(map, GraphColours.getColour(ProcessorHelper
+						.getPreferredColour(processor), Color.WHITE));
+				GraphConstants.setOpaque(map, true);
+				GraphConstants.setBorder(map, BorderFactory.createRaisedBevelBorder());
 			}
-			GraphConstants.setOpaque(map, true);
-			GraphConstants.setBorder(map, BorderFactory.createRaisedBevelBorder());
 		}
 		else if (node instanceof Port)
 		{
+			if(isPortOnWorkflowEdge(node))
+			{
+				// Port acting as graph node, as opposed to port
+				GraphConstants.setValue(map, node.toString());
+				GraphConstants.setBounds(map, new Rectangle(100, 20));				
+				if(node instanceof InputPort)
+				{
+					GraphConstants.setBackground(map, GraphColours.getColour("lightsteelblue2",
+							Color.WHITE));
+				}
+				else
+				{
+					GraphConstants.setBackground(map, GraphColours.getColour("skyblue", Color.WHITE));
+				}
+				GraphConstants.setOpaque(map, true);
+				GraphConstants.setBorder(map, BorderFactory.createRaisedBevelBorder());				
+			}
 			GraphConstants.setDisconnectable(map, false);
-			map.put(PARENT_PROCESSOR, ((Port)node).getProcessor());			
 		}
 		else if (node instanceof DataConstraint)
 		{
@@ -270,7 +267,6 @@ public class ScuflGraphModel implements GraphModel, GraphModelListener
 			Point labelPosition = new Point(center, center);
 			GraphConstants.setLabelPosition(map, labelPosition);
 		}
-		attributes.put(node, map);
 		return map;
 	}
 
@@ -283,11 +279,16 @@ public class ScuflGraphModel implements GraphModel, GraphModelListener
 	{
 		if (edge instanceof DataConstraint)
 		{
-			return ((DataConstraint) edge).getSource();
+			Object source = ((DataConstraint) edge).getSource();
+			if(isPortOnWorkflowEdge(source))
+			{
+				return getDummyPort(source);
+			}
+			return source;
 		}
 		else if (edge instanceof ConcurrencyConstraint)
 		{
-			return getConcurrencyPort(((ConcurrencyConstraint) edge).getControllingProcessor());
+			return getDummyPort(((ConcurrencyConstraint) edge).getControllingProcessor());
 		}
 		return null;
 	}
@@ -301,11 +302,16 @@ public class ScuflGraphModel implements GraphModel, GraphModelListener
 	{
 		if (edge instanceof DataConstraint)
 		{
-			return ((DataConstraint) edge).getSink();
+			Object target = ((DataConstraint) edge).getSink();
+			if(isPortOnWorkflowEdge(target))
+			{
+				return getDummyPort(target);
+			}
+			return target;
 		}
 		else if (edge instanceof ConcurrencyConstraint)
 		{
-			return getConcurrencyPort(((ConcurrencyConstraint) edge).getTargetProcessor());
+			return getDummyPort(((ConcurrencyConstraint) edge).getTargetProcessor());
 		}
 		return null;
 	}
@@ -339,7 +345,7 @@ public class ScuflGraphModel implements GraphModel, GraphModelListener
 	 */
 	public Iterator edges(Object port)
 	{
-		if (port instanceof Port)
+		if (port instanceof Port || port instanceof DummyPort)
 		{
 			Map attributes = getAttributes(port);
 			if(attributes != null)
@@ -350,10 +356,6 @@ public class ScuflGraphModel implements GraphModel, GraphModelListener
 					return edges.iterator();
 				}
 			}
-		}
-		else if(port instanceof ConcurrencyPort)
-		{
-			return ((ConcurrencyPort)port).edges();
 		}
 		return Collections.EMPTY_LIST.iterator();
 	}
@@ -375,9 +377,22 @@ public class ScuflGraphModel implements GraphModel, GraphModelListener
 	 */
 	public boolean isPort(Object port)
 	{
-		return port instanceof Port || port instanceof ConcurrencyPort;
+		return (port instanceof Port && !isPortOnWorkflowEdge(port)) || port instanceof DummyPort || port instanceof SemanticMarkup;
 	}
 
+	private boolean isPortOnWorkflowEdge(Object port)
+	{
+		if(port instanceof InputPort)
+		{
+			return ((Port)port).getProcessor() == model.getWorkflowSinkProcessor();
+		}
+		else if(port instanceof OutputPort)
+		{
+			return ((Port)port).getProcessor() == model.getWorkflowSourceProcessor();			
+		}
+		return false;
+	}
+	
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -387,15 +402,11 @@ public class ScuflGraphModel implements GraphModel, GraphModelListener
 	{
 		if (child instanceof Port)
 		{
-			Map attrs = (Map)attributes.get(child);
-			if(attrs != null)
-			{
-				return attrs.get(PARENT_PROCESSOR);
-			}
+			return ((Port)child).getProcessor();
 		}
-		else if(child instanceof ConcurrencyPort)
+		else if(child instanceof DummyPort)
 		{
-			return ((ConcurrencyPort)child).getProcessor();
+			return ((DummyPort)child).getParent();
 		}
 		return null;
 	}
@@ -419,8 +430,9 @@ public class ScuflGraphModel implements GraphModel, GraphModelListener
 				}
 			}
 		}
-		else if (parent instanceof DummyProcessor)
+		else if (parent instanceof Port)
 		{
+			// Check port is actually on the workflow edge?
 			return 0;
 		}
 		return -1;
@@ -441,11 +453,12 @@ public class ScuflGraphModel implements GraphModel, GraphModelListener
 			{
 				return ports[index];
 			}
-			return getConcurrencyPort(processor);
+			return getDummyPort(processor);
 		}
-		else if (parent instanceof DummyProcessor)
+		else if (parent instanceof Port)
 		{
-			return ((DummyProcessor) parent).getPort();
+			// TODO Check port is actually on the workflow edge?
+			return getDummyPort(parent);
 		}
 		else if(parent instanceof List)
 		{
@@ -463,9 +476,14 @@ public class ScuflGraphModel implements GraphModel, GraphModelListener
 	{
 		if (parent instanceof Processor)
 		{
-			return ((Processor) parent).getPorts().length + 1;
+			int ports = ((Processor) parent).getPorts().length;
+			if(getAttributes(parent).get(DUMMY_PORT) != null)
+			{
+				ports += 1;
+			}
+			return ports;
 		}
-		else if (parent instanceof DummyProcessor)
+		else if (parent instanceof Port && isPortOnWorkflowEdge(parent))
 		{
 			return 1;
 		}
@@ -487,7 +505,7 @@ public class ScuflGraphModel implements GraphModel, GraphModelListener
 		{
 			return ((Processor) node).getPorts().length != 0;
 		}
-		else if (node instanceof DummyProcessor)
+		else if (node instanceof Port && isPortOnWorkflowEdge(node))
 		{
 			return false;
 		}
@@ -529,9 +547,10 @@ public class ScuflGraphModel implements GraphModel, GraphModelListener
 			{
 				model.destroyConcurrencyConstraint((ConcurrencyConstraint)cells[index]);
 			}
-			else if(cells[index] instanceof DummyProcessor)
+			else if(cells[index] instanceof Port)
 			{
-				Port port = ((DummyProcessor)cells[index]).getPort();
+				// TODO Check port is actually on the workflow edge?				
+				Port port = (Port)cells[index];
 				port.getProcessor().removePort(port);
 			}
 		}
@@ -546,7 +565,7 @@ public class ScuflGraphModel implements GraphModel, GraphModelListener
 	 */
 	public void edit(Map attributes, ConnectionSet cs, ParentMap pm, UndoableEdit[] e)
 	{
-		//TODO Change name of processors on in-place edit
+		//TODO Change name of processors on in-place edit, ie. where attribute 'value' is changed
 		if(attributes != null && !attributes.isEmpty())
 		{
 			updateAttributes(attributes);			
@@ -682,6 +701,11 @@ public class ScuflGraphModel implements GraphModel, GraphModelListener
 		}
 	}
 
+	List getRoots()
+	{
+		return roots;
+	}
+	
 	Map nodeAdded(Object newNode, ConnectionSet cs)
 	{
 		if(newNode instanceof Processor)
@@ -692,27 +716,17 @@ public class ScuflGraphModel implements GraphModel, GraphModelListener
 				createAttributes(ports[index]);
 			}
 		}
-		if (newNode instanceof DataConstraint)
+		else if (isEdge(newNode))
 		{
-			DataConstraint constraint = (DataConstraint) newNode;
-			cs.connect(constraint, constraint.getSource(), constraint.getSink());
-			edgeAdded(constraint.getSource(), constraint);
-			edgeAdded(constraint.getSink(), constraint);
+			Object source = getSource(newNode);
+			Object target = getTarget(newNode);			
+			cs.connect(newNode, source, target);
+			edgeAdded(source, newNode);
+			edgeAdded(target, newNode);
 		}
-		else if (newNode instanceof ConcurrencyConstraint)
+		else if (newNode instanceof Port)
 		{
-			ConcurrencyConstraint constraint = (ConcurrencyConstraint)newNode;
-			ConcurrencyPort sourcePort = getConcurrencyPort(constraint.getControllingProcessor());
-			ConcurrencyPort targetPort = getConcurrencyPort(constraint.getTargetProcessor());
-			sourcePort.addConstraint(constraint);
-			targetPort.addConstraint(constraint);			
-			cs.connect(constraint, sourcePort, targetPort);			
-		}
-		else if (newNode instanceof DummyProcessor)
-		{
-			DummyProcessor processor = (DummyProcessor)newNode;
-			AttributeMap map = createAttributes(processor.getPort());
-			map.put(PARENT_PROCESSOR, processor);
+			// TODO!
 		}
 		roots.add(newNode);
 		return createAttributes(newNode);
@@ -722,27 +736,21 @@ public class ScuflGraphModel implements GraphModel, GraphModelListener
 	{
 		if (node instanceof Processor)
 		{
+			// TODO Move port stuff to changed event
 			Port[] ports = ((Processor)node).getPorts();
 			for(int index = 0; index < ports.length; index++)
 			{
 				attributes.remove(ports[index]);
 			}
 		}
-		else if (node instanceof DataConstraint)
+		else if (isEdge(node))
 		{
-			DataConstraint constraint = (DataConstraint) node;
-			edgeRemoved(constraint.getSource(), constraint);
-			edgeRemoved(constraint.getSink(), constraint);
+			edgeRemoved(getSource(node), node);
+			edgeRemoved(getTarget(node), node);
 		}
-		else if (node instanceof ConcurrencyConstraint)
+		else if (node instanceof Port)
 		{
-			ConcurrencyConstraint constraint = (ConcurrencyConstraint)node;
-			getConcurrencyPort(constraint.getControllingProcessor()).removeConstraint(constraint);
-			getConcurrencyPort(constraint.getTargetProcessor()).removeConstraint(constraint);
-		}		
-		else if (node instanceof DummyProcessor)
-		{
-			attributes.remove(((DummyProcessor) node).getPort());
+			// TODO Something	
 		}
 		roots.remove(node);
 	}

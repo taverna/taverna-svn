@@ -12,7 +12,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import org.embl.ebi.escience.scufl.Port;
 import org.embl.ebi.escience.scufl.Processor;
 import org.embl.ebi.escience.scufl.ScuflModel;
 import org.embl.ebi.escience.scufl.ScuflModelEvent;
@@ -26,7 +25,7 @@ import org.jgraph.graph.ParentMap;
 
 /**
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover </a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class ScuflGraphModelChange implements GraphModelChange,
 		GraphModelEvent.ExecutableGraphChange
@@ -53,15 +52,15 @@ public class ScuflGraphModelChange implements GraphModelChange,
 	{
 		List newRoots = new ArrayList();
 		newRoots.addAll(Arrays.asList(scuflModel.getProcessors()));
-		Port[] ports = scuflModel.getWorkflowSinkPorts();
-		for (int index = 0; index < ports.length; index++)
+		Processor processor = scuflModel.getWorkflowSinkProcessor();
+		if(processor.getPorts().length != 0)
 		{
-			newRoots.add(new DummyProcessor(ports[index]));
+			newRoots.add(processor);
 		}
-		ports = scuflModel.getWorkflowSourcePorts();
-		for (int index = 0; index < ports.length; index++)
+		processor = scuflModel.getWorkflowSourceProcessor();
+		if(processor.getPorts().length != 0)
 		{
-			newRoots.add(new DummyProcessor(ports[index]));
+			newRoots.add(processor);
 		}
 		newRoots.addAll(Arrays.asList(scuflModel.getConcurrencyConstraints()));
 		newRoots.addAll(Arrays.asList(scuflModel.getDataConstraints()));
@@ -73,11 +72,12 @@ public class ScuflGraphModelChange implements GraphModelChange,
 	 */
 	public void calculateChanges(ScuflModelEvent event)
 	{
+		// TODO Also add new ports/children to inserted/removed		
 		Object source = event.getSource();
 		if (source instanceof ScuflModel)
 		{
 			List newRoots = getRoots((ScuflModel) source);
-			List roots = model.roots;
+			List roots = model.getRoots();
 			inserted = difference(roots, newRoots);
 			removed = difference(newRoots, roots);
 
@@ -89,7 +89,7 @@ public class ScuflGraphModelChange implements GraphModelChange,
 		else if(source instanceof Processor)
 		{
 			//TODO Change scufl event model to send actual add events
-			if(model.roots.contains(source))
+			if(model.getRoots().contains(source))
 			{
 				changed.add(source);
 				Processor processor = (Processor)source;
