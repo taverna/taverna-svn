@@ -3,6 +3,7 @@
  */
 package org.embl.ebi.escience.scuflui.graph.model;
 
+import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -28,7 +29,7 @@ import org.jgraph.graph.ParentMap;
 
 /**
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover </a>
- * @version $Revision: 1.9 $
+ * @version $Revision: 1.10 $
  */
 public class ScuflGraphModelChange implements GraphModelChange
 {
@@ -130,8 +131,12 @@ public class ScuflGraphModelChange implements GraphModelChange
 					attrs = new HashMap();
 					attributes.put(source, attrs);
 				}
-				String newName = ((ScuflModelRenameEvent)event).getNewName();				
+				String newName = ((Processor)source).getName();
+				assert newName != null: source;
+				assert !newName.equals(((ScuflModelRenameEvent)event).getOldName()): source;
 				GraphConstants.setValue(attrs, newName);
+				GraphConstants.setResize(attrs, true);
+				GraphConstants.setBounds(attrs, new Rectangle2D.Float());
 				changed.add(source);				
 			}
 		}
@@ -201,7 +206,6 @@ public class ScuflGraphModelChange implements GraphModelChange
 	 */
 	public ParentMap getPreviousParentMap()
 	{
-		// TODO Auto-generated method stub
 		return null;
 	}
 
@@ -268,7 +272,7 @@ public class ScuflGraphModelChange implements GraphModelChange
 	 */
 	public boolean hasChanges()
 	{
-		return !added.isEmpty() || !removed.isEmpty();
+		return !added.isEmpty() || !removed.isEmpty() || !changed.isEmpty();
 	}
 
 	/*
@@ -316,13 +320,11 @@ public class ScuflGraphModelChange implements GraphModelChange
 
 	public ConnectionSet getConnectionSet()
 	{
-		// TODO Implement getConnectionSet
 		return null;
 	}
 
 	public ParentMap getParentMap()
 	{
-		// TODO Implement getParentMap
 		return null;
 	}
 }

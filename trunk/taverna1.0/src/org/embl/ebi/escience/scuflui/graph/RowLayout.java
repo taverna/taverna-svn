@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.Map.Entry;
 
 import org.jgraph.event.GraphModelEvent;
 import org.jgraph.graph.CellMapper;
@@ -23,7 +24,7 @@ import org.jgraph.graph.GraphModel;
  * graph to be able to update as the graph changes.
  * 
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover </a>
- * @version $Revision: 1.8 $
+ * @version $Revision: 1.9 $
  */
 public class RowLayout extends ModelSpanningTree
 {
@@ -109,6 +110,17 @@ public class RowLayout extends ModelSpanningTree
 
 		treeEdges = positionLayout.createInitialTree(positionLayout.edges.iterator());
 		positionLayout.optimiseTree(treeEdges);
+		
+		Iterator attributes = change.getAttributes().entrySet().iterator();
+		while(attributes.hasNext())
+		{
+			Entry entry = (Entry)attributes.next();
+			Map attrs = (Map) entry.getValue();
+			if(GraphConstants.getBounds(attrs) != null)
+			{
+				positionLayout.updateNode(entry.getKey());
+			}
+		}
 	}
 	
 	/*
@@ -235,7 +247,10 @@ public class RowLayout extends ModelSpanningTree
 		}
 		GraphConstants.setPoints(attributes, nodeChain);
 		CellView view = mapper.getMapping(edge, false);
-		view.refresh(model, mapper, false);		
+		if(view != null)
+		{
+			view.refresh(model, mapper, false);
+		}
 	}
 
 	/*

@@ -51,7 +51,7 @@ import org.jgraph.graph.ParentMap;
 /**
  * 
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover </a>
- * @version $Revision: 1.16 $
+ * @version $Revision: 1.17 $
  */
 public class ScuflGraphModel implements GraphModel, GraphModelListener, ScuflUIComponent
 {
@@ -639,6 +639,7 @@ public class ScuflGraphModel implements GraphModel, GraphModelListener, ScuflUIC
 	 */
 	public void edit(Map attributes, ConnectionSet cs, ParentMap pm, UndoableEdit[] e)
 	{
+		System.err.println("Edit! " + attributes);
 		if (attributes != null && !attributes.isEmpty())
 		{
 			Iterator it = attributes.entrySet().iterator();
@@ -659,9 +660,9 @@ public class ScuflGraphModel implements GraphModel, GraphModelListener, ScuflUIC
 					// TODO Handle renaming of input/output ports?
 				}
 			}
-			updateAttributes(attributes);
-			fireGraphChangedEvent(new GraphModelEvent(this, new ScuflGraphAttributeChange(
-					attributes)));
+			//updateAttributes(attributes);
+			//fireGraphChangedEvent(new GraphModelEvent(this, new ScuflGraphAttributeChange(
+			//		attributes)));
 		}
 	}
 
@@ -749,16 +750,16 @@ public class ScuflGraphModel implements GraphModel, GraphModelListener, ScuflUIC
 	{
 		if (attributes != null)
 		{
-			Iterator it = attributes.entrySet().iterator();
-			while (it.hasNext())
+			Iterator iterator = attributes.entrySet().iterator();
+			while (iterator.hasNext())
 			{
-				Map.Entry entry = (Map.Entry) it.next();
-				Object cell = entry.getKey();
-				Map deltaNew = (Map) entry.getValue();
-				AttributeMap attr = getAttributes(cell);
+				Map.Entry entry = (Map.Entry) iterator.next();
+				Object node = entry.getKey();
+				Map newAttributes = (Map) entry.getValue();
+				AttributeMap attr = getAttributes(node);
 				if (attr != null)
 				{
-					attr.applyMap(deltaNew);
+					attr.putAll(newAttributes);
 				}
 			}
 		}

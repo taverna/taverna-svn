@@ -10,9 +10,11 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.jgraph.graph.CellMapper;
 import org.jgraph.graph.CellView;
@@ -22,7 +24,7 @@ import org.jgraph.graph.GraphModel;
 
 /**
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover </a>
- * @version $Revision: 1.7 $
+ * @version $Revision: 1.8 $
  */
 public class PositionLayout extends ModelSpanningTree
 {
@@ -65,32 +67,36 @@ public class PositionLayout extends ModelSpanningTree
 
 		protected void updateEdges()
 		{
-			for (int index = 1; index < size(); index++)
+			if(size() > 0)
 			{
-				Object left = get(index - 1);
-				Object right = get(index);
-
-				Map leftAttributes = getAttributes(left);
-				Map rightAttributes = getAttributes(right);
-				Edge edge = LayoutConstants.getRightEdge(leftAttributes);
-				if (edge != null && edge.getTarget() != right)
+				getRank(get(0));
+				for (int index = 1; index < size(); index++)
 				{
-					removeEdge(edge);
-					edge = LayoutConstants.getRightEdge(rightAttributes);
-					if (edge != null && edge.getSource() != left)
+					Object left = get(index - 1);
+					Object right = get(index);
+	
+					Map leftAttributes = getAttributes(left);
+					Map rightAttributes = getAttributes(right);
+					Edge edge = LayoutConstants.getRightEdge(leftAttributes);
+					if (edge != null && edge.getTarget() != right)
 					{
 						removeEdge(edge);
-						edge = null;
+						edge = LayoutConstants.getRightEdge(rightAttributes);
+						if (edge != null && edge.getSource() != left)
+						{
+							removeEdge(edge);
+							edge = null;
+						}
 					}
-				}
-
-				if (edge == null)
-				{
-					edge = new Edge(left, right);
-					LayoutConstants.setLeftEdge(rightAttributes, edge);
-					LayoutConstants.setRightEdge(leftAttributes, edge);
-
-					edges.add(edge);
+	
+					if (edge == null)
+					{
+						edge = new Edge(left, right);
+						LayoutConstants.setLeftEdge(rightAttributes, edge);
+						LayoutConstants.setRightEdge(leftAttributes, edge);
+	
+						edges.add(edge);
+					}
 				}
 			}
 		}
@@ -511,8 +517,11 @@ public class PositionLayout extends ModelSpanningTree
 			return ((VirtualNode) node).getBounds();
 		}
 		CellView view = mapper.getMapping(node, false);
-		assert view != null: node;
-		return view.getBounds();
+		if(view != null)
+		{
+			return view.getBounds();
+		}
+		return null;
 	}
 
 	private Edge getPreviousEdgeSegment(Object previous, Object edge)
@@ -593,5 +602,27 @@ public class PositionLayout extends ModelSpanningTree
 		Collection result = super.createInitialTree(edges.iterator());
 		edges.clear();		
 		return result;
+	}
+
+	public void updateNode(Object node)
+	{
+		Iterator edges = getEdges(node);
+		while(edges.hasNext())
+		{
+			Object edge = edges.next();
+			if(isTreeEdge(edge))
+			{
+				Set tailSet = new HashSet();
+				Set headSet = new HashSet();
+
+				Object tail = getTarget(edge);
+				getTailSet(tail, tailSet, edge);
+				//getTailSet(getSource(edge), headSet, edge);
+				headSet.addAll(getTreeSet(tail));
+				headSet.removeAll(tailSet);
+				assert !headSet.isEmpty(): edge;
+				tightenEdge(edge, headSet, tailSet);
+			}
+		}
 	}
 }

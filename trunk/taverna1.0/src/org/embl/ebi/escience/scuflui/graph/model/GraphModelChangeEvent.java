@@ -20,7 +20,7 @@ import org.jgraph.graph.ParentMap;
  * COMMENT 
  * 
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover</a>
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public class GraphModelChangeEvent implements GraphModelChange
 {
@@ -100,7 +100,6 @@ public class GraphModelChangeEvent implements GraphModelChange
 	 */
 	public ParentMap getPreviousParentMap()
 	{
-		// TODO Auto-generated method stub
 		return null;
 	}
 
@@ -150,14 +149,11 @@ public class GraphModelChangeEvent implements GraphModelChange
 
 	public ConnectionSet getConnectionSet()
 	{
-		// TODO Implement getConnectionSet
 		return null;
 	}
 
 	public ParentMap getParentMap()
 	{
-		// TODO Implement getParentMap
 		return null;
 	}
-
 }

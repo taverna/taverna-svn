@@ -13,7 +13,7 @@ import org.jgraph.graph.ParentMap;
 
 /**
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover</a>
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public class ScuflGraphAttributeChange implements GraphModelChange
 {
@@ -33,7 +33,6 @@ public class ScuflGraphAttributeChange implements GraphModelChange
 	 */
 	public Object[] getInserted()
 	{
-		// TODO
 		return null;
 	}
 
@@ -42,7 +41,6 @@ public class ScuflGraphAttributeChange implements GraphModelChange
 	 */
 	public Object[] getRemoved()
 	{
-		// TODO
 		return null;
 	}
 
@@ -59,7 +57,6 @@ public class ScuflGraphAttributeChange implements GraphModelChange
 	 */
 	public ConnectionSet getPreviousConnectionSet()
 	{
-		// TODO Auto-generated method stub
 		return null;
 	}
 
@@ -68,7 +65,6 @@ public class ScuflGraphAttributeChange implements GraphModelChange
 	 */
 	public ParentMap getPreviousParentMap()
 	{
-		// TODO Auto-generated method stub
 		return null;
 	}
 
@@ -77,8 +73,7 @@ public class ScuflGraphAttributeChange implements GraphModelChange
 	 */
 	public void putViews(GraphLayoutCache view, CellView[] cellViews)
 	{
-		// TODO Auto-generated method stub
-
+		// Um...?
 	}
 
 	/* (non-Javadoc)
@@ -86,7 +81,6 @@ public class ScuflGraphAttributeChange implements GraphModelChange
 	 */
 	public CellView[] getViews(GraphLayoutCache view)
 	{
-		// TODO Auto-generated method stub
 		return null;
 	}
 
@@ -95,7 +89,6 @@ public class ScuflGraphAttributeChange implements GraphModelChange
 	 */
 	public Object getSource()
 	{
-		// TODO Auto-generated method stub
 		return null;
 	}
 
@@ -120,19 +113,16 @@ public class ScuflGraphAttributeChange implements GraphModelChange
 	 */
 	public Object[] getContext()
 	{
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	public ConnectionSet getConnectionSet()
 	{
-		// TODO Implement getConnectionSet
 		return null;
 	}
 
 	public ParentMap getParentMap()
 	{
-		// TODO Implement getParentMap
 		return null;
 	}
 }
