@@ -25,8 +25,8 @@
 //      Dependencies        :
 //
 //      Last commit info    :   $Author: mereden $
-//                              $Date: 2004-03-12 17:09:02 $
-//                              $Revision: 1.43 $
+//                              $Date: 2004-03-29 14:46:20 $
+//                              $Revision: 1.44 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 package uk.ac.soton.itinnovation.taverna.enactor.entities;
@@ -240,6 +240,13 @@ public class ProcessorTask extends TavernaTask{
 			    STORE = null;
 			}
 		    }
+		}
+		else {
+		    // Datathing was null, so the processor didn't produce an output that it
+		    // declared it did in its operational contract. This is an error condition
+		    // and should be reported as such to the user
+		    eventList.add(new ServiceError(new RuntimeException("Output '"+portName+"' was declared but never created!")));
+		    throw new TaskExecutionException("Output port '"+portName+"' not populated by service instance");
 		}
 	    }
 	}
