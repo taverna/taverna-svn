@@ -646,6 +646,22 @@ public abstract class Processor implements Serializable {
 	}
 	throw new UnknownPortException("Unable to find the port with name '"+port_name+"' in '"+getName()+"'");
     }
+
+    /**
+     * Find a particular named port, input port if boolean flag is true
+     */
+    public Port locatePort(String port_name, boolean isInputPort) 
+	throws UnknownPortException {
+	for (Iterator i = ports.iterator(); i.hasNext();) {
+	    Port p = (Port)i.next();
+	    if (p.getName().equalsIgnoreCase(port_name)) {
+		if ((isInputPort && p instanceof InputPort) ||
+		    (!isInputPort && p instanceof OutputPort))
+		    return p;
+	    }
+	}
+	throw new UnknownPortException("Unable to find the port with name '"+port_name+"' in '"+getName()+"'");
+    }
     
     /**
      * Find a particular named port with a given type,
@@ -656,7 +672,7 @@ public abstract class Processor implements Serializable {
     synchronized Port locatePortOrCreate(String port_name, boolean isInputPort) 
 	throws UnknownPortException {
 	try {
-	    return locatePort(port_name);
+	    return locatePort(port_name, isInputPort);
 	}
 	catch (UnknownPortException upe) {
 	    if (this.model != null && this.model.isOffline()) {
