@@ -10,6 +10,8 @@ import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.*;
+import org.embl.ebi.escience.baclava.*;
+import org.embl.ebi.escience.baclava.factory.*;
 import javax.swing.border.Border;
 import org.embl.ebi.escience.scufl.Port;
 import org.embl.ebi.escience.scufl.ScuflModel;
@@ -238,27 +240,14 @@ public class EnactorLaunchPanel extends JPanel
      * set of workflow inputs.
      */
     public Document getInputDocument() {
-	Element rootElement = new Element("dataset");
-	Document doc = new Document(rootElement);
-	for (Iterator i = this.currentInputs.keySet().iterator(); i.hasNext(); ) {
+	// Create DataThing objects
+	Map dataThings = new HashMap(); 
+	for (Iterator i = currentInputs.keySet().iterator(); i.hasNext(); ) {
 	    String key = (String)i.next();
-	    WorkflowInputPanel wip = (WorkflowInputPanel)(currentInputs.get(key));
-	    Element dataElement = new Element("data");
-	    rootElement.addContent(dataElement);
-	    Element id = new Element("ID");
-	    Element name = new Element("name");
-	    Element type = new Element("type");
-	    Element value = new Element("value");
-	    dataElement.addContent(id);
-	    dataElement.addContent(name);
-	    dataElement.addContent(type);
-	    dataElement.addContent(value);
-	    id.setText("-1");
-	    name.setText(wip.getPort().getName());
-	    type.setText(wip.getPort().getSyntacticType());
-	    value.addContent(new CDATA(wip.getText()));
+	    WorkflowInputPanel wip = (WorkflowInputPanel)currentInputs.get(key);
+	    dataThings.put(wip.getPort().getName(), DataThingFactory.bake(wip.getText()));
 	}
-	return doc;
+	return DataThingXMLFactory.getDataDocument(dataThings);
     }
 
     public void receiveModelEvent(ScuflModelEvent sme) {

@@ -6,6 +6,7 @@
 package org.embl.ebi.escience.scuflworkers.wsdl;
 
 import javax.wsdl.*;
+import javax.xml.namespace.*;
 import javax.wsdl.factory.WSDLFactory;
 import javax.wsdl.xml.WSDLReader;
 import org.embl.ebi.escience.scufl.*;
@@ -35,8 +36,9 @@ public class WSDLBasedProcessor extends Processor implements java.io.Serializabl
     private String wsdlLocationString = null;
     private String operationString = null;
     private String portTypeString = null;
-	private String requestMessageName = null;
-	private String responseMessageName = null;
+    private String requestMessageName = null;
+    private String responseMessageName = null;
+    private String operationStyle = null;
 
     public String getWSDLLocation() {
 	return this.wsdlLocationString;
@@ -47,19 +49,22 @@ public class WSDLBasedProcessor extends Processor implements java.io.Serializabl
     public String getPortTypeName() {
 	return this.portTypeString;
     }
-	public String getRequestMessageName() {
+    public String getRequestMessageName() {
 	return this.requestMessageName;
-	}
-	public String getResponseMessageName() {
+    }
+    public String getResponseMessageName() {
 	return this.responseMessageName;
-	}
-
+    }
+    public String getOperationStyle() {
+	return this.operationStyle;
+    }
+    
     /**
      * Construct a new processor from the given WSDL definition
      * and operation name, delegates to superclass then instantiates
      * ports based on WSDL inspection.
      */
-    public WSDLBasedProcessor(ScuflModel model, String name, String wsdlLocation, String portTypeName, String operationName)
+    public WSDLBasedProcessor(ScuflModel model, String name, String wsdlLocation, String portTypeName, String operationName, String operationStyle)
 	throws ProcessorCreationException,
 	       DuplicateProcessorNameException {
 	super(model, name);
@@ -68,6 +73,8 @@ public class WSDLBasedProcessor extends Processor implements java.io.Serializabl
 	this.wsdlLocationString = wsdlLocation;
 	this.operationString = operationName;
 	this.portTypeString = portTypeName;
+	// is either 'rpc' or 'document' I think...
+	this.operationStyle = operationStyle;
 
 	// Attempt to construct a URL object
 	try {
@@ -115,43 +122,61 @@ public class WSDLBasedProcessor extends Processor implements java.io.Serializabl
 	}
 	// Get the input and output objects, use these to create input and 
 	// output ports from the message parts.
-
-	// Do the inputs first...
 	Message inputMessage = theOperation.getInput().getMessage();
-	requestMessageName = inputMessage.getQName().getLocalPart();
-	// Iterate over the message parts, creating appropriate Port implementations
-	//System.out.println("Input ports...");
-	for (Iterator i = inputMessage.getParts().values().iterator(); i.hasNext(); ) {
-	    Part part = (Part)i.next();
-	    try {
-		Port newInputPort = new InputPort(this, part.getName());
-		newInputPort.setSyntacticType(xsdTypeToInternalType(part.getTypeName().getLocalPart()));
-		this.addPort(newInputPort);
+	Message outputMessage = theOperation.getOutput().getMessage();
+	if (operationStyle.equals("rpc")) {
+	    // Do the inputs first...
+	    QName inputMessageQName = inputMessage.getQName();
+	    // Iterate over the message parts, creating appropriate Port implementations
+	    //System.out.println("Input ports...");
+	    for (Iterator i = inputMessage.getParts().values().iterator(); i.hasNext(); ) {
+		Part part = (Part)i.next();
+		try {
+		    System.out.println(part.getName());
+		    Port newInputPort = new InputPort(this, part.getName());
+		    newInputPort.setSyntacticType(xsdTypeToInternalType(part.getTypeName().getLocalPart()));
+		    this.addPort(newInputPort);
+		}
+		catch (DuplicatePortNameException dpne) {
+		    throw new ProcessorCreationException("Attempted to create a duplicate input port '"+part.getName()+"'.");
+		}
+		catch (PortCreationException pce) {
+		    throw new ProcessorCreationException("Problem creating input port : "+pce.getMessage());
+		}
 	    }
-	    catch (DuplicatePortNameException dpne) {
-		throw new ProcessorCreationException("Attempted to create a duplicate input port '"+part.getName()+"'.");
-	    }
-	    catch (PortCreationException pce) {
-		throw new ProcessorCreationException("Problem creating input port : "+pce.getMessage());
+	    // Then do the outputs
+	    // Iterate over the output parts, creating appropriate Port implementations
+	    //System.out.println("Output ports...");
+	    for (Iterator i = outputMessage.getParts().values().iterator(); i.hasNext(); ) {
+		Part part = (Part)i.next();
+		try {
+		    Port newOutputPort = new OutputPort(this, part.getName());
+		    newOutputPort.setSyntacticType(xsdTypeToInternalType(part.getTypeName().getLocalPart()));
+		    this.addPort(newOutputPort);
+		}
+		catch (DuplicatePortNameException dpne) {
+		    throw new ProcessorCreationException("Attempted to create a duplicate output port '"+part.getName()+"'.");
+		}
+		catch (PortCreationException pce) {
+		    throw new ProcessorCreationException("Problem creating output port : "+pce.getMessage());
+		}
 	    }
 	}
-	// Then do the outputs
-	Message outputMessage = theOperation.getOutput().getMessage();
-	responseMessageName = outputMessage.getQName().getLocalPart();
-	// Iterate over the output parts, creating appropriate Port implementations
-	//System.out.println("Output ports...");
-	for (Iterator i = outputMessage.getParts().values().iterator(); i.hasNext(); ) {
-	    Part part = (Part)i.next();
+	else {
 	    try {
-		Port newOutputPort = new OutputPort(this, part.getName());
-		newOutputPort.setSyntacticType(xsdTypeToInternalType(part.getTypeName().getLocalPart()));
-		this.addPort(newOutputPort);
+		if (inputMessage.getParts().isEmpty() == false) {
+		    Port newInputPort = new InputPort(this, "InputDocument");
+		    newInputPort.setSyntacticType("string");
+		    this.addPort(newInputPort);
+		}
+		if (outputMessage.getParts().isEmpty() == false) {
+		    Port newOutputPort = new OutputPort(this, "OutputDocument");
+		    newOutputPort.setSyntacticType("string");
+		    this.addPort(newOutputPort);
+		}
 	    }
-	    catch (DuplicatePortNameException dpne) {
-		throw new ProcessorCreationException("Attempted to create a duplicate output port '"+part.getName()+"'.");
-	    }
-	    catch (PortCreationException pce) {
-		throw new ProcessorCreationException("Problem creating output port : "+pce.getMessage());
+	    catch (Exception e) {
+		e.printStackTrace();
 	    }
 	}
     

@@ -3,7 +3,7 @@
  * and is licensed under the GNU LGPL.
  * Copyright Tom Oinn, EMBL-EBI
  */
-package org.embl.ebi.escience.baclava;
+package org.embl.ebi.escience.baclava.factory;
 
 import java.util.*;
 import org.jdom.*;
@@ -13,7 +13,8 @@ import org.embl.ebi.escience.scufl.semantics.*;
 
 /**
  * Performs the creation of XML elements from DataThing
- * objects
+ * objects and the configuration of existing DataThing
+ * objects from an XML representation.
  * @author Tom Oinn
  */
 public class DataThingXMLFactory {
@@ -26,6 +27,42 @@ public class DataThingXMLFactory {
 	Namespace.getNamespace("b",
 			       "http://org.embl.ebi.escience/baclava/0.1alpha");
     
+    /**
+     * Return a Document from a Map of String to DataThing, this
+     * is the input and output document format for the workflow
+     * enactment engine.
+     */
+    public static Document getDataDocument(Map dataThings) {
+	Element rootElement = new Element("dataThingMap",namespace);
+	Document theDocument = new Document(rootElement);
+	for (Iterator i = dataThings.keySet().iterator(); i.hasNext(); ) {
+	    String key = (String)i.next();
+	    DataThing value = (DataThing)dataThings.get(key);
+	    Element dataThingElement = new Element("dataThing",namespace);
+	    dataThingElement.setAttribute("key",key);
+	    dataThingElement.addContent(value.getElement());
+	    rootElement.addContent(dataThingElement);
+	}
+	return theDocument;
+    }
+
+    /**
+     * Parse a data document and return a Map of DataThing objects,
+     * the keys in the map being the string key attributes from the
+     * data document
+     */
+    public static Map parseDataDocument(Document dataDocument) {
+	Map result = new HashMap();
+	Element rootElement = dataDocument.getRootElement();
+	for (Iterator i = rootElement.getChildren("dataThing",namespace).iterator(); i.hasNext(); ) {
+	    Element e = (Element)i.next();
+	    String key = e.getAttributeValue("key");
+	    DataThing d = new DataThing(e.getChild("myGridDataDocument",namespace));
+	    result.put(key, d);
+	}
+	return result;
+    }
+
     /**
      * Build a DataThing from the supplied Element object, the Element 
      * in this case is the 'myGridDataDocument' element.

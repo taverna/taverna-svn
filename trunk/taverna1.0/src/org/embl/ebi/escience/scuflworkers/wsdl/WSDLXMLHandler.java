@@ -26,12 +26,15 @@ public class WSDLXMLHandler implements XMLHandler {
 	Element wsdl = new Element("wsdl",XScufl.XScuflNS);
 	Element port = new Element("porttype",XScufl.XScuflNS);
 	Element operation = new Element("operation",XScufl.XScuflNS);
+	Element style = new Element("style",XScufl.XScuflNS);
 	wsdl.setText(wsdlp.getWSDLLocation());
 	port.setText(wsdlp.getPortTypeName());
 	operation.setText(wsdlp.getOperationName());
+	style.setText(wsdlp.getOperationStyle());
 	spec.addContent(wsdl);
 	spec.addContent(port);
 	spec.addContent(operation);
+	spec.addContent(style);
 	return spec;
     }
     
@@ -43,7 +46,12 @@ public class WSDLXMLHandler implements XMLHandler {
 	String wsdlLocation = wsdlProcessor.getChild("wsdl",XScufl.XScuflNS).getTextTrim();
 	String portTypeName = wsdlProcessor.getChild("porttype",XScufl.XScuflNS).getTextTrim();
 	String operationName = wsdlProcessor.getChild("operation",XScufl.XScuflNS).getTextTrim();
-	return new WSDLBasedProcessor(model, name, wsdlLocation, portTypeName, operationName);
+	String operationStyle = "rpc";
+	Element styleElement = wsdlProcessor.getChild("style",XScufl.XScuflNS);
+	if (styleElement != null) {
+	    operationStyle = styleElement.getTextTrim();
+	}
+	return new WSDLBasedProcessor(model, name, wsdlLocation, portTypeName, operationName, operationStyle);
     }
 
 }

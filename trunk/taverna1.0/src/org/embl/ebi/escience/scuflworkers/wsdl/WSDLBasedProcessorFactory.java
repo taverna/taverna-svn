@@ -20,16 +20,17 @@ import org.embl.ebi.escience.scuflworkers.ProcessorFactory;
  */
 public class WSDLBasedProcessorFactory implements ProcessorFactory {
 
-    String wsdlLocation, portTypeName, operationName;
+    String wsdlLocation, portTypeName, operationName, operationStyle;
 
     /**
      * Create a new factory with the specified wsdl location,
      * port type name and operation name
      */
-    public WSDLBasedProcessorFactory(String wsdlLocation, String portTypeName, String operationName) {
+    public WSDLBasedProcessorFactory(String wsdlLocation, String portTypeName, String operationName, String operationStyle) {
 	this.wsdlLocation = wsdlLocation;
 	this.portTypeName = portTypeName;
 	this.operationName = operationName;
+	this.operationStyle = operationStyle;
     }
 
     /**
@@ -45,7 +46,7 @@ public class WSDLBasedProcessorFactory implements ProcessorFactory {
     public void createProcessor(String name, ScuflModel model) 
 	throws ProcessorCreationException,
 	       DuplicateProcessorNameException {
-	Processor theProcessor = new WSDLBasedProcessor(model, name, this.wsdlLocation, this.portTypeName, this.operationName);
+	Processor theProcessor = new WSDLBasedProcessor(model, name, this.wsdlLocation, this.portTypeName, this.operationName, this.operationStyle);
 	model.addProcessor(theProcessor);
     }
 

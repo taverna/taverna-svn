@@ -9,11 +9,15 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.wsdl.Definition;
 import javax.wsdl.Operation;
 import javax.wsdl.PortType;
+import javax.wsdl.*;
+import javax.wsdl.extensions.soap.*;
+import javax.wsdl.extensions.*;
 import javax.wsdl.WSDLException;
 import javax.wsdl.factory.WSDLFactory;
 import javax.wsdl.xml.WSDLReader;
 import org.embl.ebi.escience.scuflui.workbench.Scavenger;
 import org.embl.ebi.escience.scuflui.workbench.ScavengerCreationException;
+import com.ibm.wsdl.extensions.soap.*;
 
 // Utility Imports
 import java.util.Iterator;
@@ -60,23 +64,41 @@ public class WSDLBasedScavenger extends Scavenger {
 	catch (WSDLException wsdle) {
 	    throw new ScavengerCreationException("Unable to load the WSDL definition, underlying reason was "+wsdle.getMessage());
 	}
-	// Iterate over port types
-	Map portTypeMap = theDefinition.getPortTypes();
-	for (Iterator i = portTypeMap.values().iterator(); i.hasNext(); ) {
-	    PortType thePortType = (PortType)i.next();
-	    String portTypeName = thePortType.getQName().getLocalPart();
-	    DefaultMutableTreeNode portTypeNode = new DefaultMutableTreeNode("porttype: "+portTypeName);
-	    add(portTypeNode);
-	    // Iterate over all the operation names
-	    List operationList = thePortType.getOperations();
-	    for (Iterator j = operationList.iterator(); j.hasNext(); ) {
-		Operation op = (Operation)j.next();
-		String operationName = op.getName();
-		WSDLBasedProcessorFactory wpf = new WSDLBasedProcessorFactory(wsdlLocation, portTypeName, operationName);
-		DefaultMutableTreeNode operationNode = new DefaultMutableTreeNode(wpf);
-		portTypeNode.add(operationNode);
+	// Iterate over bindings
+	Map bindingMap = theDefinition.getBindings();
+	for (Iterator j = bindingMap.values().iterator(); j.hasNext();) {
+	    Binding theBinding = (Binding)j.next();
+	    List extensibilityElementList = theBinding.getExtensibilityElements();
+	    for (Iterator k = extensibilityElementList.iterator(); k.hasNext(); ) {
+		ExtensibilityElement ee = (ExtensibilityElement)k.next();
+		// Look for a soap binding, which indicates that this binding is interesting.
+		if (ee instanceof SOAPBindingImpl) {
+		    SOAPBinding sb = (SOAPBinding)ee;
+		    // Found the soap binding so add the new scavengers
+		    PortType thePortType = theBinding.getPortType();
+		    String portTypeName = thePortType.getQName().getLocalPart();
+		    String name = "";
+		    if (sb.getStyle().equals("document")) {
+			name = "<html>porttype: "+portTypeName+" [<font color=\"red\">DOCUMENT</font>]</html>";
+		    }
+		    else {
+			name = "<html>porttype: "+portTypeName+" [<font color=\"green\">"+sb.getStyle().toUpperCase()+"</font>]</html>";
+		    }
+		    DefaultMutableTreeNode portTypeNode = new DefaultMutableTreeNode(name);
+		    add(portTypeNode);
+		    // Iterate over all the operation names
+		    List operationList = thePortType.getOperations();
+		    for (Iterator i = operationList.iterator(); i.hasNext(); ) {
+			Operation op = (Operation)i.next();
+			String operationName = op.getName();
+			WSDLBasedProcessorFactory wpf = new WSDLBasedProcessorFactory(wsdlLocation, portTypeName, operationName, sb.getStyle());
+			DefaultMutableTreeNode operationNode = new DefaultMutableTreeNode(wpf);
+			portTypeNode.add(operationNode);
+		    }
+		}
 	    }
 	}
+
     }
 }
 	
