@@ -14,6 +14,7 @@ import org.embl.ebi.escience.baclava.DataThing;
 public class ResultTableCompositeCell extends ResultTableCell
 {
 	protected ArrayList cells = new ArrayList();
+	protected boolean expanded = true;
 
 	protected ResultTableCompositeCell(ResultTableModel model, DataThing thing)
 	{
@@ -92,7 +93,7 @@ public class ResultTableCompositeCell extends ResultTableCell
 		if (startRow != 0)
 		{
 			ResultTableCell previousCell = getColumn().getCell(startRow - 1);
-			if (previousCell != null && previousCell.thing.equals(thing))
+			if (previousCell != null && previousCell.getLSID().equals(thing.getLSID(thing.getDataObject())))
 			{
 				previousCell.endRow = currentRow;
 				System.out.println("Cell extended "

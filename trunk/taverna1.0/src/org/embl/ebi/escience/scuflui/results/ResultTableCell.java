@@ -67,6 +67,11 @@ public class ResultTableCell
 		return parent.getColumn();
 	}
 
+	public String getLSID()
+	{
+		return thing.getLSID(thing.getDataObject());
+	}
+	
 	/**
 	 * @param inputList
 	 */

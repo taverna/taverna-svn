@@ -166,15 +166,18 @@ public class ResultTableModel implements TableModel
 					e.printStackTrace();
 				}
 			}
-			try
+			else
 			{
-				Map[] maps = instance.getIntermediateResultsForProcessor(processor.getName());
-				Map outputs = maps[1];
-				thing = (DataThing) outputs.get(links[index].getSource().getName());
-			}
-			catch (Exception e)
-			{
-				e.printStackTrace();
+				try
+				{
+					Map[] maps = instance.getIntermediateResultsForProcessor(processor.getName());
+					Map outputs = maps[1];
+					thing = (DataThing) outputs.get(links[index].getSource().getName());
+				}
+				catch (Exception e)
+				{
+					e.printStackTrace();
+				}
 			}
 			columnMap.put(links[index].getSource(), new ResultTableColumn(this, links[index], thing));
 			//columns[index] = new ResultTableColumn(links[index]);

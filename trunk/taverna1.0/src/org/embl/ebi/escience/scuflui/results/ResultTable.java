@@ -29,7 +29,7 @@ public class ResultTable extends JTable
 			setIcon(null);
 			if(value != null)
 			{
-				setBackground(new Color(250,252,255));
+				setBackground(new Color(232, 242, 254));
 			}
 			else
 			{
@@ -40,17 +40,21 @@ public class ResultTable extends JTable
 			if(value != null)
 			{
 				ResultTableCell cell = (ResultTableCell)value;
-//				int topBorder = 0;
+				int topBorder = 0;
 				int bottomBorder = 0;
-//				if(cell.startRow == row && row != 0)
-//				{
-//					topBorder = 1;
-//				}
+				if(cell.startRow == row && row != 0)
+				{
+					topBorder = 1;
+				}
 				if(cell.endRow == row)
 				{
 					bottomBorder = 1;
 				}
-				setBorder(BorderFactory.createMatteBorder(0,0,bottomBorder,0, new Color(235, 235, 235)));
+				setBorder(BorderFactory.createMatteBorder(topBorder,0,bottomBorder,0, Color.WHITE));
+				if(hasFocus)
+				{
+					setBackground(new Color(202, 222, 254));
+				}				
 				if(cell.getColumn().hasOutputs() && !(cell.parent instanceof ResultTableColumn))
 				{
 					// List!
@@ -60,12 +64,8 @@ public class ResultTable extends JTable
 					}
 					else
 					{
-						setBorder(BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(0,16,0,0), getBorder()));
+						setBorder(BorderFactory.createCompoundBorder(BorderFactory.createMatteBorder(0,12,0,0, getBackground()), getBorder()));
 					}
-				}
-				if(hasFocus)
-				{
-					setBackground(new Color(225,235,245));
 				}
 				setValue(cell.thing.getDataObject());
 			}
