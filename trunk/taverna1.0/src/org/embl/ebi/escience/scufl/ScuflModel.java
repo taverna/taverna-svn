@@ -59,6 +59,18 @@ public class ScuflModel
     }
 
     /**
+     * A workflow description object containing fields such
+     * as a free text description, author list etc
+     */
+    private WorkflowDescription description = new WorkflowDescription();
+    public WorkflowDescription getDescription() {
+	return this.description;
+    }
+    public void setDescription(WorkflowDescription description) {
+	this.description = description;
+    }
+
+    /**
      * Whether the model should fire events to its listeners
      */
     public boolean isFiringEvents = true;

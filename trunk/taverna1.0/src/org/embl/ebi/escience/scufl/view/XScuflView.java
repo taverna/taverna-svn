@@ -94,6 +94,9 @@ public class XScuflView implements ScuflModelEventListener, java.io.Serializable
 	root.setAttribute("log",""+model.getLogLevel());
 	this.cachedDocument = new Document(root);
 	
+	WorkflowDescription wd = model.getDescription();
+	root.addContent(WorkflowDescription.getElement(wd));
+	
 	// Create elements corresponding to processors
 	Processor[] processors = model.getProcessors();
 	for (int i = 0; i < processors.length; i++) {

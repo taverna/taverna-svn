@@ -202,6 +202,13 @@ public class XScuflParser {
 
 	Namespace namespace = root.getNamespace();
 
+	// Load the workflow description
+	Element descriptionElement = root.getChild("workflowdescription",namespace);
+	if (descriptionElement != null) {
+	    model.setDescription(WorkflowDescription.build(descriptionElement));
+	}
+	
+	
 	// Build processors
 	// All processors are nodes of form <processor name="foo"> .... </processor>
 	List processors = root.getChildren("processor", namespace);
