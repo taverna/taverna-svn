@@ -106,6 +106,7 @@ public class BiomobyTask implements ProcessorTaskWorker {
 	    String outputType = myOutput.getSyntacticType();
 	    //System.out.println(outputXML);
 	    // Will be either 'text/xml' or l('text/xml')
+
 	    if (outputType.equals("'text/xml'")) {
 		outputMap.put ("output", new DataThing (outputXML));
 	    }
@@ -159,35 +160,46 @@ public class BiomobyTask implements ProcessorTaskWorker {
 		SAXBuilder saxBuilder = new SAXBuilder();
                 Document doc = saxBuilder.build (new InputSource (new StringReader (outputXML)));
 		Element mobyElement = doc.getRootElement();
-		Element collectionElement = mobyElement.getChild("mobyContent",mobyNS).getChild("mobyData",mobyNS).getChild("Collection",mobyNS);
-		List simpleElements = new ArrayList(collectionElement.getChildren());
-		//System.out.println(simpleElements.size());
-		//System.out.println(simpleElements.toArray());
-		for (Iterator i = simpleElements.iterator(); i.hasNext();) {
-		    Element simpleElement = (Element)i.next();
+		Element mobyDataElement = mobyElement.getChild("mobyContent",mobyNS).getChild("mobyData",mobyNS);
+
+		Element collectionElement = mobyDataElement.getChild ("Collection", mobyNS);
+		if (collectionElement != null) {
+		    List simpleElements = new ArrayList(collectionElement.getChildren());
+		    for (Iterator i = simpleElements.iterator(); i.hasNext();) {
+			Element simpleElement = (Element)i.next();
 		    
-		    Element newRoot = new Element("MOBY",mobyNS);
-		    Element newMobyContent = new Element("mobyContent",mobyNS);
-		    newRoot.addContent(newMobyContent);
-		    Element newMobyData = new Element("mobyData",mobyNS);
-		    newMobyData.setAttribute("queryID","a1",mobyNS);
-		    newMobyContent.addContent(newMobyData);
-		    newMobyData.addContent(simpleElement.detach());
-		    XMLOutputter xo = new XMLOutputter();
-		    String outputItemString = xo.outputString(new Document(newRoot));
-		    outputList.add(outputItemString);
-		    //System.out.println(outputItemString);
-		    
+			Element newRoot = new Element("MOBY",mobyNS);
+			Element newMobyContent = new Element("mobyContent",mobyNS);
+			newRoot.addContent(newMobyContent);
+			Element newMobyData = new Element("mobyData",mobyNS);
+			newMobyData.setAttribute("queryID","a1",mobyNS);
+			newMobyContent.addContent(newMobyData);
+			newMobyData.addContent(simpleElement.detach());
+			XMLOutputter xo = new XMLOutputter();
+			String outputItemString = xo.outputString(new Document(newRoot));
+			outputList.add(outputItemString);
+		    }
 		}
 
-		// Return the list
+		// Return the list (may be empty)
 		outputMap.put("output", new DataThing(outputList));
 	    }
 	    return outputMap;
+
+	} catch (MobyException ex) {
+	    // a MobyException should be already reasonably formatted
+	    logger.error ("Error invoking biomoby service for biomoby. A MobyException caught", ex);
+	    TaskExecutionException tee =
+		new TaskExecutionException ("Task failed due to problem invoking biomoby service.\n" + ex.getMessage());
+	    tee.initCause(ex);
+	    throw tee;
+
 	} catch (Exception ex) {
+	    // details of other exceptions will appear only in a log
 	    ex.printStackTrace();
 	    logger.error("Error invoking biomoby service for biomoby", ex);
-	    TaskExecutionException tee = new TaskExecutionException("Task failed due to problem invoking biomoby service");
+	    TaskExecutionException tee =
+		new TaskExecutionException ("Task failed due to problem invoking biomoby service (see details in log)");
 	    tee.initCause(ex);
 	    throw tee;
 	}
