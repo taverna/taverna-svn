@@ -37,7 +37,7 @@ public class BiomartXMLHandler implements XMLHandler {
      */
     public Element elementForFactory(ProcessorFactory pf) {
 	BiomartProcessorFactory bpf = (BiomartProcessorFactory)pf;
-	return getElement(bpf.getConfig(), bpf.getDataSourceName(), null);
+	return getElement(bpf.getConfig(), bpf.getDataSourceName(), bpf.getQuery());
     }
 
     /**
@@ -47,9 +47,14 @@ public class BiomartXMLHandler implements XMLHandler {
 	Element martConfig = specElement.getChild("biomartconfig", NAMESPACE);
 	Element dsNameElement = specElement.getChild("biomartds", NAMESPACE);
 	Element queryElement = specElement.getChild("query", NAMESPACE);
+	Query query = null;
+	if (queryElement != null) {
+	    query = elementToQuery(queryElement);
+	}
 	// Ignores Query for now
 	return new BiomartProcessorFactory(getConfigBeanFromElement(martConfig),
-					   dsNameElement.getTextTrim());
+					   dsNameElement.getTextTrim(),
+					   query);
     }
     
     /**

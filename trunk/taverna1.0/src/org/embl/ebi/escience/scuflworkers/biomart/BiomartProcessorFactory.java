@@ -6,6 +6,7 @@
 package org.embl.ebi.escience.scuflworkers.biomart;
 
 import org.embl.ebi.escience.scuflworkers.*;
+import org.ensembl.mart.lib.Query;
 
 /**
  * A processor factory for the Biomart query processor
@@ -15,11 +16,19 @@ public class BiomartProcessorFactory extends ProcessorFactory {
 
     private BiomartConfigBean info;
     private String dataSourceName;
+    private Query query;
 
     public BiomartProcessorFactory(BiomartConfigBean info,
 				   String dataSourceName) {
+	this(info, dataSourceName, null);
+    }
+
+    public BiomartProcessorFactory(BiomartConfigBean info,
+				   String dataSourceName,
+				   Query query) {
 	setName(dataSourceName);
 	this.info = info;
+	this.query = query;
 	this.dataSourceName = dataSourceName;
     }
     
@@ -33,6 +42,10 @@ public class BiomartProcessorFactory extends ProcessorFactory {
 
     String getDataSourceName() {
 	return this.dataSourceName;
+    }
+
+    Query getQuery() {
+	return this.query;
     }
 
     public Class getProcessorClass() {

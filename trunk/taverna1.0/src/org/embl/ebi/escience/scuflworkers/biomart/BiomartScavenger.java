@@ -36,6 +36,8 @@ public class BiomartScavenger extends Scavenger {
 	    String[] dataSetNames = adaptor.getDatasetNames();
 	    for (int i = 0; i < dataSetNames.length; i++) {
 		BiomartProcessorFactory bpf = new BiomartProcessorFactory(info, dataSetNames[i]);
+		DatasetConfig dc = adaptor.getDatasetConfigByDatasetInternalName(dataSetNames[i], "default");
+		bpf.setDescription(dc.getDescription());
 		add(new DefaultMutableTreeNode(bpf));
 	    }
 	}
