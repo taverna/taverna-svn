@@ -64,6 +64,7 @@ public class ScuflModelExplorerPopupHandler extends MouseAdapter {
 	Object scuflObject = node.getUserObject();
 	if (scuflObject != null) {
 	    try {
+		final MouseEvent theMouseEvent = e;
 		JPopupMenu theMenu = ScuflContextMenuFactory.getMenuForObject(scuflObject, explorer.model);
 		if (scuflObject instanceof Processor) {
 		    // show the properties display
@@ -75,6 +76,7 @@ public class ScuflModelExplorerPopupHandler extends MouseAdapter {
 				ProcessorInfoFrame pif = new ProcessorInfoFrame(theProcessor);
 				ScuflModelExplorerPopupHandler.this.explorer.pane.add(pif);
 				pif.moveToFront();
+				pif.setLocation(theMouseEvent.getX(), theMouseEvent.getY());
 			    }
 			});
 		    theMenu.add(properties);
