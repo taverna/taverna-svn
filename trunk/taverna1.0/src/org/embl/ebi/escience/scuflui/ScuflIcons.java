@@ -18,7 +18,7 @@ import java.lang.ClassNotFoundException;
  */
 public class ScuflIcons {
 
-    public static ImageIcon inputIcon, outputIcon, inputPortIcon, outputPortIcon, dataLinkIcon, constraintIcon, deleteIcon, zoomIcon, webIcon, openIcon, runIcon, refreshIcon, editIcon, classIcon, selectedClassIcon, findIcon, folderOpenIcon, folderClosedIcon, newInputIcon, newListIcon, inputValueIcon, xmlNodeIcon, leafIcon, windowRun, windowScavenger, windowInput, windowDiagram, windowExplorer, saveIcon, importIcon, openurlIcon;
+    public static ImageIcon inputIcon, outputIcon, inputPortIcon, outputPortIcon, dataLinkIcon, constraintIcon, deleteIcon, zoomIcon, webIcon, openIcon, runIcon, refreshIcon, editIcon, classIcon, selectedClassIcon, findIcon, folderOpenIcon, folderClosedIcon, newInputIcon, newListIcon, inputValueIcon, xmlNodeIcon, leafIcon, windowRun, windowScavenger, windowInput, windowDiagram, windowExplorer, saveIcon, importIcon, openurlIcon, pauseIcon, playIcon, stopIcon, breakIcon, rbreakIcon, tickIcon, nullIcon;
 
     static {
 	// Load the image files found in this package into the class.
@@ -56,6 +56,13 @@ public class ScuflIcons {
 	    importIcon = new ImageIcon(c.getResource("icons/generic/import.gif"));
 	    openurlIcon = new ImageIcon(c.getResource("icons/generic/openurl.gif"));	    
 	    openIcon = new ImageIcon(c.getResource("icons/generic/open.gif"));
+			pauseIcon = new ImageIcon(c.getResource("icons/generic/pause.gif"));
+	    playIcon = new ImageIcon(c.getResource("icons/generic/play.gif"));
+	    stopIcon = new ImageIcon(c.getResource("icons/generic/stop.gif"));
+	    breakIcon = new ImageIcon(c.getResource("icons/generic/break.gif"));
+	    rbreakIcon = new ImageIcon(c.getResource("icons/generic/rbreak.gif"));
+	    tickIcon = new ImageIcon(c.getResource("icons/generic/tick.gif"));
+	    nullIcon = new ImageIcon(new java.awt.image.BufferedImage(1,1,java.awt.image.BufferedImage.TYPE_INT_RGB)); 
 
 	}
 	catch (ClassNotFoundException cnfe) {

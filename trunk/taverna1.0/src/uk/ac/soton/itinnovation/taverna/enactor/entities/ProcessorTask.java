@@ -24,9 +24,9 @@
 //      Created for Project :   MYGRID
 //      Dependencies        :
 //
-//      Last commit info    :   $Author: ferris $
-//                              $Date: 2005-01-18 11:14:07 $
-//                              $Revision: 1.67 $
+//      Last commit info    :   $Author: matskan $
+//                              $Date: 2005-02-09 13:22:46 $
+//                              $Revision: 1.68 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 package uk.ac.soton.itinnovation.taverna.enactor.entities;
@@ -147,6 +147,34 @@ public class ProcessorTask extends AbstractTask {
 	}
 	eventList.add(new AlternateProcessScheduled(activeProcessor));
     }
+
+		/**
+     * Add paused event to the event list.
+     */
+    protected synchronized void taskPaused() {
+			eventList.add(new ProcessPaused(activeProcessor));
+    }
+
+    /**
+     * Add cancel event to the event list.
+     */
+    protected synchronized void taskCancelled() {
+			eventList.add(new ProcessCancelled(activeProcessor));
+    }
+
+    /**
+     * Add resume (invoking) event to the event list.
+     */
+    protected synchronized void taskResumed() {
+			eventList.add(new Invoking());
+    }
+
+    /**
+     * Add complete  event to the event list.
+     */
+    protected synchronized void taskComplete() {
+			eventList.add(new ProcessComplete());
+    } 
     
     /**
      * Run the task

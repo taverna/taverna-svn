@@ -24,9 +24,9 @@
 //      Created for Project :   MYGRID
 //      Dependencies        :
 //
-//      Last commit info    :   $Author: ferris $
-//                              $Date: 2005-01-18 11:14:06 $
-//                              $Revision: 1.13 $
+//      Last commit info    :   $Author: matskan $
+//                              $Date: 2005-02-09 13:22:44 $
+//                              $Revision: 1.14 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 package org.embl.ebi.escience.scufl.enactor.implementation;
@@ -405,6 +405,31 @@ public class WorkflowInstanceImpl implements WorkflowInstance {
             throw new IllegalStateException(msg);
         }
     }
+
+		public void pause(String processorId) {
+        try {    
+            engine.pause(workflowInstanceId, processorId);
+        }
+        catch(UnknownWorkflowInstanceException e) {
+            String msg = "Error destroying workflow instance with id " + workflowInstanceId +
+                    ".  The workflow engine didn't recognise the workflow isntance id";
+            logger.error(msg, e);
+            throw new IllegalStateException(msg);
+        }
+    }
+
+    public void resume(String processorId) {
+        try {    
+            engine.resume(workflowInstanceId, processorId);
+        }
+        catch(UnknownWorkflowInstanceException e) {
+            String msg = "Error destroying workflow instance with id " + workflowInstanceId +
+                    ".  The workflow engine didn't recognise the workflow isntance id";
+            logger.error(msg, e);
+            throw new IllegalStateException(msg);
+        }
+    }
+
 
     public UserContext getUserContext() {
 	return this.context;

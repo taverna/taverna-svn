@@ -196,6 +196,25 @@ public class ScuflContextMenuFactory {
 	    edit.addActionListener(pe.getListener(theProcessor));
 	    theMenu.add(edit);
 	}
+
+	//Add breakpoint to the processor.
+	final JMenuItem addBreakpoint = new JMenuItem("Add breakpoint", ScuflIcons.breakIcon);
+	addBreakpoint.addActionListener(new ActionListener() {
+		public void actionPerformed(ActionEvent a) {
+		    theProcessor.addBreakpoint();
+		} 
+	});
+
+	//Remove breakpoint from the processor.
+	final JMenuItem rmvBreakpoint = new JMenuItem("Remove breakpoint", ScuflIcons.rbreakIcon);
+  rmvBreakpoint.addActionListener(new ActionListener() {
+		public void actionPerformed(ActionEvent a) {
+		    theProcessor.rmvBreakpoint();
+		} 
+	});
+	if (theProcessor.hasBreakpoint())theMenu.add(rmvBreakpoint);
+	else theMenu.add(addBreakpoint);
+	
 	JMenuItem block = new JMenu("Coordinate from");
 	block.setIcon(ScuflIcons.constraintIcon);
 	// Iterate over the processors in the model to get the available

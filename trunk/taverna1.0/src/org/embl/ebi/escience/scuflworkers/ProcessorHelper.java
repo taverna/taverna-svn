@@ -350,6 +350,9 @@ public class ProcessorHelper {
                 if (p.getCritical() != false) {
                     result.setAttribute("critical", "" + p.getCritical());
                 }
+
+		result.setAttribute("breakpoint", "" + p.hasBreakpoint());
+
 		return result;
 	    }
 	}
@@ -408,6 +411,10 @@ public class ProcessorHelper {
           String critical = candidateElement.getAttributeValue("critical");
           if(critical != null) {
             loadedProcessor.setCritical((new Boolean(critical).booleanValue()));
+          }
+		  String breakpoint = candidateElement.getAttributeValue("breakpoint");
+          if(breakpoint != null) {
+            if((new Boolean(breakpoint).booleanValue()))loadedProcessor.addBreakpoint();
           }
         }
       }

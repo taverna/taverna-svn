@@ -55,14 +55,14 @@ public class ResultItemPanel extends JPanel {
         this(theDataThing, RendererRegistry.instance());
     }
 
-    public ResultItemPanel(DataThing theDataThing, RendererRegistry renderers) {
+    public ResultItemPanel( final DataThing theDataThing, RendererRegistry renderers) {
         super(new BorderLayout());
 
         this.renderers = renderers;
 
         // Construct the scrollable view of the structure
         // of the DataThing
-	TreeNode tn = DataThingTreeFactory.getTree(theDataThing);
+				final TreeNode tn = DataThingTreeFactory.getTree(theDataThing);
         final JTree structureTree = new JTree(tn) {
 		//public Dimension getMinimumSize() {
 		//    return getPreferredSize();
@@ -102,13 +102,37 @@ public class ResultItemPanel extends JPanel {
 
                         if (renderer != null) {
                           try {
-                            JComponent component = renderer.getComponent(
+                            final JComponent component = renderer.getComponent(
                                     ResultItemPanel.this.renderers, dataThing);
                             if (component != null) {
 				JScrollPane foo = new JScrollPane(component);
 				foo.getViewport().setBackground(java.awt.Color.WHITE);
 				foo.setPreferredSize(new Dimension(100,100));
-                                splitPane.setRightComponent(foo);
+				//Add the update button and the text area.
+				JPanel panel=new JPanel(new java.awt.BorderLayout());
+				JPanel rightPanel=new JPanel(new java.awt.FlowLayout());
+				JPanel leftPanel=new JPanel(new java.awt.BorderLayout());
+				JButton cmdEdit=new JButton("Change");
+				cmdEdit.addActionListener( new ActionListener(){
+					public void actionPerformed(ActionEvent ae) {
+						if (component instanceof javax.swing.text.JTextComponent)
+							theDataThing.setDataObject(new String(((javax.swing.text.JTextComponent)component).getText()));
+						else ;
+			 		//theDataThing.setDataObject(((javax.swing.JTable)component).getValueAt(0,0));
+					  //((DataThingTreeNode)tn).update(theDataThing);
+						structureTree.treeDidChange();
+						structureTree.update(structureTree.getGraphics());
+					//	structureTree.repaint(); 
+					//	splitPane.getLeftComponent().repaint();
+					//	splitPane.repaint();
+					}
+				});
+			  leftPanel.add(foo);
+				rightPanel.add(cmdEdit);
+				panel.add(leftPanel, BorderLayout.CENTER);
+				panel.add(rightPanel, BorderLayout.EAST);
+				panel.setPreferredSize(new Dimension(200,80));
+                                splitPane.setRightComponent(panel);
 				// Reset the widths of the split Pane to show the entire tree
 				splitPane.setDividerLocation(-1);
                             }
@@ -211,11 +235,38 @@ public class ResultItemPanel extends JPanel {
                             public void actionPerformed(ActionEvent e)
                             {
                               try {
-                                JComponent component = renderer.getComponent(ResultItemPanel.this.renderers, nodeThing);
+                                final JComponent component = renderer.getComponent(ResultItemPanel.this.renderers, nodeThing);
                                 if (ui != null) {
 				    JScrollPane jp = new JScrollPane(component);
 				    jp.getViewport().setBackground(java.awt.Color.WHITE);
-				    splitPane.setRightComponent(jp);
+
+						//Add the update button and the text area.
+						JPanel panel=new JPanel(new java.awt.BorderLayout()); 
+				    JPanel leftPanel=new JPanel(new java.awt.BorderLayout()); 
+				    JPanel rightPanel=new JPanel(); 
+				    JButton cmdEdit=new JButton("Change"); 
+				    cmdEdit.addActionListener( new ActionListener(){
+					     public void actionPerformed(ActionEvent ae) { 
+							 if (component instanceof javax.swing.text.JTextComponent)
+								theDataThing.setDataObject(new String(((javax.swing.text.JTextComponent)component).getText()));
+							 else ;
+			 		//theDataThing.setDataObject(((javax.swing.JTable)component).getValueAt(0,0));
+					  //((DataThingTreeNode)tn).update(theDataThing);
+						structureTree.treeDidChange();
+						structureTree.update(structureTree.getGraphics());
+						//structureTree.repaint(); 
+						//splitPane.getLeftComponent().repaint();
+						//splitPane.repaint();
+					     }
+					});
+					panel.removeAll();
+					leftPanel.add(jp);
+					rightPanel.add(cmdEdit);
+					panel.add(leftPanel, BorderLayout.CENTER);
+					panel.add(rightPanel, BorderLayout.EAST);
+					panel.setPreferredSize(new Dimension(200,80));
+
+				    splitPane.setRightComponent(panel);
                                 }
                               } catch (RendererException re) {
                                 // should be informing the user something is wrong

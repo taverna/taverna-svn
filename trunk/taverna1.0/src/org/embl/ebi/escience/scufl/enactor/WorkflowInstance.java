@@ -130,6 +130,20 @@ public interface WorkflowInstance {
      * any resources used
      */
     public void cancel();
+
+		/**
+     * Add breakoint to the specific processor. 
+     * This consists of setting the hasBreakpoint boolean flag.
+     * The procesor will pause when it is about to run.
+     */
+    public void pause(String processorId);
+
+    /**
+     * Remove breakoint to the specific processor and resume it. This consists of setting the
+     * hasBreakpoint boolean flag.
+     */
+    public void resume(String processorId);
+
     
     /** 
      * Set workflow inputs. Takes a Map of DataThing objects,

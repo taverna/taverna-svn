@@ -61,6 +61,24 @@ public abstract class Processor implements Serializable {
 	//
     }
 
+    private boolean breakpoint=false;
+
+    //Check for a breakpoint
+    public boolean hasBreakpoint(){
+	return breakpoint;
+    }
+
+    //Add a breakpoint to the processor
+    public void addBreakpoint(){
+	breakpoint=true;
+    }
+
+    //Remove a breakpoint to the processor
+    public void rmvBreakpoint(){
+	breakpoint=false;
+    }
+
+
     /**
      * If this is an alternate processor then fetch the AlternateProcessor
      * object which represents it in the parent

@@ -25,9 +25,9 @@
 //      Created for Project :   MYGRID
 //      Dependencies        :
 //
-//      Last commit info    :   $Author: ferris $
-//                              $Date: 2005-01-18 11:14:07 $
-//                              $Revision: 1.32 $
+//      Last commit info    :   $Author: matskan $
+//                              $Date: 2005-02-09 13:22:45 $
+//                              $Revision: 1.33 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 
@@ -301,5 +301,64 @@ public class PortTask extends AbstractTask {
 	}
 	//System.out.println("Done : "+getScuflPort().getProcessor().getName()+"."+getScuflPort().getName());
     }
+
+	  /**
+     * Add paused event to the event list.
+     */
+    protected synchronized void taskPaused() {
+			if (getScuflPort() instanceof OutputPort){ 
+	    	Collection parents = getParents();
+				Object[] tasks=parents.toArray();
+				((ProcessorTask)tasks[parents.size()-1]).taskPaused();
+			}
+			else {
+	    	Collection children = getChildren();
+				Object[] tasks=children.toArray();
+				((ProcessorTask)tasks[0]).taskPaused();
+			}
+    }
+
+    /**
+     * Add cancel event to the event list.
+     */
+    protected synchronized void taskCancelled() {
+			if (getScuflPort() instanceof OutputPort){ 
+	    	Collection parents = getParents();
+				Object[] tasks=parents.toArray();
+				((ProcessorTask)tasks[parents.size()-1]).taskCancelled();
+			}
+			else {
+	    	Collection children = getChildren();
+				Object[] tasks=children.toArray();
+				((ProcessorTask)tasks[0]).taskCancelled();
+			}
+    }
+
+    /**
+     * Add resume (invoke/complete) event to the event list.
+		 * Invoke/Complete is added depending on the processor's input/output port is resumed.
+     */
+    protected synchronized void taskResumed() {
+			if (getScuflPort() instanceof OutputPort){ 
+	    	Collection parents = getParents();
+				Object[] tasks=parents.toArray();
+				((ProcessorTask)tasks[parents.size()-1]).taskComplete();
+			}
+			else {
+	    	Collection children = getChildren();
+				Object[] tasks=children.toArray();
+				((ProcessorTask)tasks[0]).taskResumed();
+			}
+    }
+
+		/*
+		public void setInput(Object theData){
+			this.theDataThing=(DataThing)theData;
+		}
+
+		public void setOutput(Object theData){
+			this.theDataThing=(DataThing)theData;
+		}*/
+
 
 }

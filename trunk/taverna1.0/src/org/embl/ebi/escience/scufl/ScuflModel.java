@@ -110,6 +110,21 @@ public class ScuflModel
 	}
     }
 
+
+		public Object clone(){ 
+			try{ 
+				XScuflView xsv = new XScuflView(this); 
+				String xscuflText = xsv.getXMLText();
+
+				ScuflModel newModel=new ScuflModel();
+				XScuflParser.populate(xscuflText, newModel, null);
+			  return newModel;
+			}catch(Exception upe){System.out.println("Achtung! Model not cloned!!!");return this;}
+
+
+    }
+
+
     /**
      * The log level for the model overall
      */

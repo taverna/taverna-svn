@@ -264,6 +264,17 @@ public class DataThing {
 	return this.theDataObject;
     }
 
+		/**
+     * Set the underlying data object, this is
+     * the first level of the data document.
+     */
+    public void setDataObject(Object data) {
+					this.theDataObject=data; 
+					setLSID(theDataObject,""); 
+					doInternalLSIDFill(theDataObject, SYSTEM_DEFAULT_LSID_PROVIDER); 
+    }
+
+
     /**
      * Get the syntax type of this DataThing. The type
      * string is based around application of the collection

@@ -11,11 +11,17 @@ import java.awt.Dimension;
 import java.util.Iterator;
 import java.util.Map;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JPanel;
+import javax.swing.JLabel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTabbedPane;
@@ -37,6 +43,7 @@ import org.embl.ebi.escience.scuflui.graph.WorkflowEditor;
 import org.embl.ebi.escience.scuflui.results.ResultMapSaveRegistry;
 import org.embl.ebi.escience.scuflui.results.ResultMapSaveSPI;
 import org.embl.ebi.escience.scuflui.results.ResultTablePanel;
+import org.embl.ebi.escience.scufl.Processor;
 
 import uk.ac.soton.itinnovation.freefluo.main.InvalidInputException;
 
@@ -102,6 +109,21 @@ public class EnactorInvocation extends JPanel implements ScuflUIComponent {
 	return this.instanceID;
     }
 
+		//The workflow status label
+		JLabel flowLabel=null;
+
+		
+    /**
+		 * Returns the processor that user pointed to obtain a breakpoint
+     */
+    private Processor getPointedProcessor(int X, int Y, JTable table){
+	final Processor[] processors = theModel.getProcessors();
+	for (int i=0; i<processors.length; i++)
+		if (table.getCellRect(i,5,true).contains(X,Y)) return processors[i];
+	return null;
+    }
+
+
     /**
      * Get the status text for this invocation
      */
@@ -146,6 +168,7 @@ public class EnactorInvocation extends JPanel implements ScuflUIComponent {
    */
   public void showResults() {
     ensureGotResults();
+		toolbar.removeAll();
     // Show the results
     this.tabs.add("Results",individualResults);
     // Populate the toolbar with all the buttons from
@@ -266,6 +289,17 @@ public class EnactorInvocation extends JPanel implements ScuflUIComponent {
 	}
     }
 
+		 /**
+     * Remove the detailed enactor progress report as a tree
+     */
+    public void rmvProgressReport() {
+			try {
+	    	this.tabs.remove(this.tabs.indexOfTab("Process report"));
+			}
+			catch (Exception ex) { }
+    }
+
+
     /**
      * Get the table model that is being used by this
      * invocation panel to display the statii of the
@@ -295,7 +329,7 @@ public class EnactorInvocation extends JPanel implements ScuflUIComponent {
 	throws WorkflowSubmissionException {
 	super(new BorderLayout());
 	this.workflowInstance = instance;
-	this.theModel = instance.getWorkflowModel();
+	this.theModel =(ScuflModel) instance.getWorkflowModel().clone();
 	setPreferredSize(new Dimension(100,100));
 	
 	// Create a new toolbar for the save results option...
@@ -333,6 +367,108 @@ public class EnactorInvocation extends JPanel implements ScuflUIComponent {
 	processorTable.setShowVerticalLines(false);
 	processorTable.getColumnModel().getColumn(0).setMaxWidth(30);
 	processorTable.getColumnModel().getColumn(0).setResizable(false);	
+	processorTable.addMouseListener(new MouseAdapter(){
+
+    public void mouseClicked(MouseEvent e) {
+	final Processor theProcessor=getPointedProcessor(e.getX(),e.getY(),processorTable); 
+	if (theProcessor != null) {
+		if (!theProcessor.hasBreakpoint()){ 
+			theProcessor.addBreakpoint();
+	   	try {
+				statusTableModel.update(getStatusText()); 
+	    } catch (InvalidStatusReportException isre) { }
+			processorTable.repaint();
+			workflowInstance.pause(theProcessor.getName()); 
+		} 
+		else{
+			theProcessor.rmvBreakpoint();
+	   	try {
+				statusTableModel.update(getStatusText()); 
+	   	} catch (InvalidStatusReportException isre) { }
+			processorTable.repaint();
+			workflowInstance.resume(theProcessor.getName()); 
+		} 
+	}
+    }
+
+	});
+
+	//Create a computation steering contorl area
+ 	final JButton playButton = new JButton("Resume", ScuflIcons.playIcon);
+ 	final JButton pauseButton = new JButton("Pause", ScuflIcons.pauseIcon);
+ 	final JButton stopButton = new JButton("Stop", ScuflIcons.stopIcon);
+ 	final JLabel taskLabel=new JLabel("Processor");
+ 	flowLabel=new JLabel("NEW");
+	flowLabel.setFont(new java.awt.Font("Monospaced", java.awt.Font.BOLD, 16));
+ 	final JButton breakButton = new JButton("Add Breakpoint", ScuflIcons.breakIcon);
+ 	final JButton rbreakButton = new JButton("Resume", ScuflIcons.rbreakIcon);
+	
+	playButton.setVisible(false);
+	playButton.setSize(70,30);
+	playButton.addActionListener(new ActionListener()
+		{
+			public void actionPerformed(ActionEvent event)
+			{
+				try
+				{
+					workflowInstance.resumeExecution();
+					playButton.setVisible(false);
+					pauseButton.setVisible(true);
+				}
+				catch (Exception e)
+				    {
+					e.printStackTrace();
+				    }
+			} 
+		});
+
+	pauseButton.setSize(70,30);
+	pauseButton.addActionListener(new ActionListener()
+		{
+			public void actionPerformed(ActionEvent event)
+			{
+				try
+				{
+					workflowInstance.pauseExecution();
+					pauseButton.setVisible(false);
+					playButton.setVisible(true);
+				}
+				catch (Exception e)
+				    {
+					e.printStackTrace();
+				    }
+			}
+		});
+
+	stopButton.setSize(70,30);
+	stopButton.addActionListener(new ActionListener()
+		{
+			public void actionPerformed(ActionEvent event)
+			{
+				try
+				{
+					workflowInstance.cancel();
+					//pauseButton.setEnabled(false);
+					//playButton.setEnabled(false);
+				}
+				catch (Exception e)
+				    {
+					e.printStackTrace();
+				    }
+			}
+		});
+	toolbar.add(new JLabel("       "));
+	toolbar.add(new JLabel("Workflow Status"));
+	toolbar.add(new JLabel("       "));
+	toolbar.add(flowLabel);
+	toolbar.add(new JLabel("       "));
+	toolbar.addSeparator();
+	toolbar.add(playButton);
+	toolbar.add(pauseButton);
+	toolbar.addSeparator();
+	toolbar.add(stopButton);
+
+
 	// Add a listener to the table to allow the display of intermediate results
 	JTabbedPane intermediateResults = new JTabbedPane();
 	final JTabbedPane intermediateOutputs = new JTabbedPane();
@@ -451,6 +587,7 @@ public class EnactorInvocation extends JPanel implements ScuflUIComponent {
 class EnactorInvocationStatusThread extends Thread {
 
     boolean running = true;
+		boolean paused = true;
     boolean abort = false;
     EnactorInvocation theEnactorInvocation;
     String instanceID = null;
@@ -500,26 +637,48 @@ class EnactorInvocationStatusThread extends Thread {
 		//System.out.println("Polling...");
 
 		try {
-		    String statusText = theEnactorInvocation.getStatusText();
+				String statusText = theEnactorInvocation.getStatusText();
 		    // System.out.println("Status document : "+statusText);
 		    String workflowStatus = theEnactorInvocation.getTableModel().update(statusText);
-		    theEnactorInvocation.workflowEditor.updateStatus(statusText);
+				theEnactorInvocation.workflowEditor.updateStatus(statusText);
 		    // System.out.println("Workflow status : "+workflowStatus);
-		    if (workflowStatus.equals("FAILED") ||
-			workflowStatus.equals("CANCELLED")) {
-			//theEnactorInvocation.showProvenance();
-			theEnactorInvocation.showProgressReport();
-			running = false;
-			abort = true;
+		    if ( workflowStatus.equals("CANCELLED") ) {
+					//theEnactorInvocation.showProvenance();
+					theEnactorInvocation.rmvProgressReport();
+					theEnactorInvocation.showProgressReport();
+					running = false;
+					abort = true;
+					theEnactorInvocation.flowLabel.setText("CANCELLED");
 		    }
 		    else if (workflowStatus.equals("COMPLETE")) {
-			running = false;
-			// Set the results display in the display panel
-			theEnactorInvocation.showResults();
-			theEnactorInvocation.showResultTable();			
-			// theEnactorInvocation.showProvenance();
-			theEnactorInvocation.showProgressReport();
-			// theEnactorInvocation.saveResults(); - commented out as it's anoying MRP
+					running = false;
+					// Set the results display in the display panel
+					theEnactorInvocation.showResults();
+					theEnactorInvocation.showResultTable();			
+					// theEnactorInvocation.showProvenance();
+					theEnactorInvocation.rmvProgressReport();
+					theEnactorInvocation.showProgressReport();
+					// theEnactorInvocation.saveResults(); - commented out as it's anoying MRP
+					theEnactorInvocation.flowLabel.setText("COMPLETE");
+		    }
+				else if  (workflowStatus.equals("PAUSED") && !paused){
+					paused=true;
+					theEnactorInvocation.showProgressReport();
+					theEnactorInvocation.flowLabel.setText("PAUSED");
+				}
+				else if ( workflowStatus.equals("FAILED") ) {
+					//theEnactorInvocation.showProvenance();
+					theEnactorInvocation.rmvProgressReport();
+					theEnactorInvocation.showProgressReport();
+					running = false;
+					abort = true;
+					theEnactorInvocation.flowLabel.setText("FAILED");
+		    }
+				else if ( workflowStatus.equals("RUNNING") ) {
+					//theEnactorInvocation.showProvenance();
+					paused=false;
+					theEnactorInvocation.rmvProgressReport();
+					theEnactorInvocation.flowLabel.setText("RUNNING");
 		    }
 		}
 		catch ( Exception e ) {

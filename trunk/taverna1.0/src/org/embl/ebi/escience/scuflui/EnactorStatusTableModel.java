@@ -49,7 +49,8 @@ public class EnactorStatusTableModel extends AbstractTableModel {
 				  "Name",
 				  "Last event",
 				  "Event timestamp",
-				  "Event detail"};
+				  "Event detail",
+				  "Breakpoint"};
 
     public EnactorStatusTableModel(ScuflModel scufl) {
 	this.scuflModel = scufl;
@@ -70,6 +71,8 @@ public class EnactorStatusTableModel extends AbstractTableModel {
 	    data[i][3] = "--";
 	    // do end time
 	    data[i][4] = "--";
+			//do the breakpoint
+	    if (p.hasBreakpoint())data[i][5]=ScuflIcons.tickIcon; else data[i][5]=ScuflIcons.nullIcon;
 	}
     }
     
@@ -84,8 +87,9 @@ public class EnactorStatusTableModel extends AbstractTableModel {
 		if (statusString.equals("ProcessComplete")) {
 		    colour = "#1C7366";
 		}
+		else if (statusString.equals("ProcessPaused")) colour="brown";
 		else if (statusString.equals("ServiceError") ||
-			 statusString.equals("ServiceFailure")) {
+			 statusString.equals("ServiceFailure") || statusString.equals("ProcessCancelled")) {
 		    colour = "red";
 		}
 		else if (statusString.startsWith("Invoking")) {
@@ -123,6 +127,19 @@ public class EnactorStatusTableModel extends AbstractTableModel {
 	    }
 	}
     }
+
+    /**
+     * Set the breakpoint icon for a given processor
+     */
+		 public void setBreakpointStatus(String processorName, ImageIcon bstatus) { 
+	for (int i = 0; i < rows; i++) { 
+	    if (((String)data[i][1]).equals(processorName)) {
+		data[i][5]=bstatus;
+	 	return; 
+	    }
+	}
+    }
+
     
     /**
      * Update the table with data from the progress report
@@ -165,6 +182,20 @@ public class EnactorStatusTableModel extends AbstractTableModel {
 	    String processorStatus = "Unknown";
 	    String eventTime = "--";
 	    String eventDetail = "--";
+			
+		
+			//Breakpoint update
+			Processor[] processors = scuflModel.getProcessors(); 
+	    Processor p=processors[0]; 
+			
+	    ImageIcon breakpointStatus=ScuflIcons.nullIcon;
+			
+	    for (int pIndex=0; pIndex<processors.length;pIndex++) 
+							if (processors[pIndex].getName().equals(processorName)){p=processors[pIndex];break;} 
+	    if (p.hasBreakpoint())breakpointStatus=ScuflIcons.tickIcon; 
+			
+			//String breakpoint=processorElement.getAttributeValue("breakpoint");
+	    //if (breakpoint.equals("true"))breakpointStatus=ScuflIcons.tickIcon; 
 
 	    // Get the first child of the processor element.
 	    List childElementList = processorElement.getChildren();
@@ -201,12 +232,13 @@ public class EnactorStatusTableModel extends AbstractTableModel {
 	    setEventDetail(processorName, eventDetail);
 	    setEventTime(processorName, eventTime);
 	    setStatusString(processorName, processorStatus);
+			setBreakpointStatus(processorName,breakpointStatus);
 	}
 	return workflowStatus;
     }
 
     public Class getColumnClass(int c) {
-	if (c == 0) {
+	if (c == 0 || c==5 ){
 	    return ImageIcon.class;
 	}
 	else {
