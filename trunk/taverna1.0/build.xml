@@ -207,7 +207,7 @@
 
 	<!-- retsina GUI -->
         <target name="retsina" depends="jar">
-                <java classname="uk.ac.mrc.hgmp.taverna.retsina.Retsina" fork="yes">
+                <java classname="uk.ac.mrc.hgmp.taverna.retsina.RetsinaApplet" fork="yes">
                     <classpath refid="compile-classpath"/>
                 </java>
         </target>
