@@ -7,6 +7,7 @@ import java.awt.Component;
 import java.awt.Graphics;
 import java.awt.Point;
 import java.awt.Rectangle;
+import java.util.Iterator;
 
 import javax.swing.JComponent;
 import javax.swing.plaf.basic.BasicTableUI;
@@ -60,8 +61,35 @@ public class ResultTableUI extends BasicTableUI
 			cMax = table.getColumnCount() - 1;
 		}
 
+		// Paint the grid.
+		paintGrid(g, rMin, rMax, cMin, cMax);
+
 		// Paint the cells.
 		paintCells(g, rMin, rMax, cMin, cMax);
+	}
+
+	/*
+	 * Paints the grid lines within <I>aRect </I>, using the grid color set with
+	 * <I>setGridColor </I>. Paints vertical lines if <code>
+	 * getShowVerticalLines() </code> returns true and paints horizontal lines
+	 * if <code> getShowHorizontalLines() </code> returns true.
+	 */
+	private void paintGrid(Graphics g, int rMin, int rMax, int cMin, int cMax)
+	{
+		g.setColor(table.getGridColor());
+
+		int rowHeight = table.getRowHeight();
+		if (table.getShowHorizontalLines())
+		{
+			int tableWidth = g.getClipBounds().width;
+			int x = g.getClipBounds().x;
+			int y = rowHeight * rMin;
+			for (int row = rMin; row <= rMax; row++)
+			{
+				y += rowHeight;
+				g.drawLine(x, y - 1, tableWidth - 1, y - 1);
+			}
+		}
 	}
 
 	private void paintCells(Graphics g, int rMin, int rMax, int cMin, int cMax)
@@ -69,56 +97,17 @@ public class ResultTableUI extends BasicTableUI
 		JTableHeader header = table.getTableHeader();
 		TableColumn draggedColumn = (header == null) ? null : header.getDraggedColumn();
 
-		TableColumnModel cm = table.getColumnModel();
-		int columnMargin = cm.getColumnMargin();
-
-		Rectangle cellRect;
-		TableColumn aColumn;
-		int columnWidth;
-		if (table.getComponentOrientation().isLeftToRight())
+		for (int column = cMin; column <= cMax; column++)
 		{
-			for (int row = rMin; row <= rMax; row++)
+			ResultTableColumn aColumn = ((ResultTableModel)table.getModel()).getColumn(column);
+			Iterator cells = aColumn.getCellsBetween(rMin, rMax).iterator();
+			while(cells.hasNext())
 			{
-				for (int column = cMin; column <= cMax; column++)
-				{
-					cellRect = table.getCellRect(row, column, false);
-					aColumn = cm.getColumn(column);
-					columnWidth = aColumn.getWidth();
-					cellRect.width = columnWidth - columnMargin;
-					if (aColumn != draggedColumn)
-					{
-						paintCell(g, cellRect, row, column);
-					}
-					cellRect.x += columnWidth;
-				}
+				ResultTableCell cell = (ResultTableCell)cells.next();
+				Rectangle cellRect = ((ResultTable)table).getCellRect(cell, column, false);
+				paintCell(g, cellRect, cell.startRow, column);
 			}
 		}
-		else
-		{
-			for (int row = rMin; row <= rMax; row++)
-			{
-				cellRect = table.getCellRect(row, cMin, false);
-				aColumn = cm.getColumn(cMin);
-				if (aColumn != draggedColumn)
-				{
-					columnWidth = aColumn.getWidth();
-					cellRect.width = columnWidth - columnMargin;
-					paintCell(g, cellRect, row, cMin);
-				}
-				for (int column = cMin + 1; column <= cMax; column++)
-				{
-					aColumn = cm.getColumn(column);
-					columnWidth = aColumn.getWidth();
-					cellRect.width = columnWidth - columnMargin;
-					cellRect.x -= columnWidth;
-					if (aColumn != draggedColumn)
-					{
-						paintCell(g, cellRect, row, column);
-					}
-				}
-			}
-		}
-
 		// Paint the dragged column if we are dragging.
 		if (draggedColumn != null)
 		{
@@ -134,11 +123,11 @@ public class ResultTableUI extends BasicTableUI
 		TableCellRenderer renderer = table.getCellRenderer(row, column);
 		Component component = table.prepareRenderer(renderer, row, column);
 		rendererPane.paintComponent(g, component, table, cellRect.x, cellRect.y, cellRect.width,
-									cellRect.height, true);
+				cellRect.height, true);
 	}
 
 	private void paintDraggedArea(Graphics g, int rMin, int rMax, TableColumn draggedColumn,
-									int distance)
+			int distance)
 	{
 		int draggedColumnIndex = viewIndexForColumn(draggedColumn);
 
@@ -150,7 +139,7 @@ public class ResultTableUI extends BasicTableUI
 		// Paint a gray well in place of the moving column.
 		g.setColor(table.getParent().getBackground());
 		g.fillRect(vacatedColumnRect.x, vacatedColumnRect.y, vacatedColumnRect.width,
-					vacatedColumnRect.height);
+				vacatedColumnRect.height);
 
 		// Move to the where the cell has been dragged.
 		vacatedColumnRect.x += distance;
@@ -158,7 +147,7 @@ public class ResultTableUI extends BasicTableUI
 		// Fill the background.
 		g.setColor(table.getBackground());
 		g.fillRect(vacatedColumnRect.x, vacatedColumnRect.y, vacatedColumnRect.width,
-					vacatedColumnRect.height);
+				vacatedColumnRect.height);
 
 		// Paint the vertical grid lines if necessary.
 		if (table.getShowVerticalLines())
@@ -208,5 +197,4 @@ public class ResultTableUI extends BasicTableUI
 		}
 		return -1;
 	}
-
 }

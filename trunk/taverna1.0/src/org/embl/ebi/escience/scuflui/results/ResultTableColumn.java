@@ -129,7 +129,8 @@ public class ResultTableColumn extends ResultTableCellCollection
 		{
 			ResultTableCell cell = (ResultTableCell) cellIterator.next();
 			if ((startRow <= cell.startRow && endRow >= cell.startRow)
-					|| (startRow <= cell.endRow && endRow >= cell.endRow))
+					|| (startRow <= cell.endRow && endRow >= cell.endRow) ||
+					(cell.startRow <= startRow && cell.endRow >= endRow))
 			{
 				cellList.add(cell);
 			}

@@ -11,8 +11,6 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
 
 import org.embl.ebi.escience.scufl.ScuflModel;
 import org.embl.ebi.escience.scufl.enactor.WorkflowInstance;
@@ -24,7 +22,7 @@ import org.embl.ebi.escience.scuflworkers.ProcessorHelper;
 /**
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover</a>
  */
-public class ResultTablePanel extends JPanel implements ListSelectionListener
+public class ResultTablePanel extends JPanel implements ResultTable.TableSelectionListener
 {
 	ResultTable resultTable;
 	private JSplitPane split;
@@ -39,7 +37,6 @@ public class ResultTablePanel extends JPanel implements ListSelectionListener
 	{
 		setLayout(new BorderLayout());
 		resultTable = new ResultTable(model, workflowInstance);
-		resultTable.getSelectionModel().addListSelectionListener(this);
 		
 		JScrollPane pane = new JScrollPane();
 		pane.setViewportView(resultTable);
@@ -50,16 +47,16 @@ public class ResultTablePanel extends JPanel implements ListSelectionListener
 		split.setRightComponent(null);
 		split.setResizeWeight(0.8);
 		
-		add(split, BorderLayout.CENTER);		
+		add(split, BorderLayout.CENTER);
+		resultTable.addTableSelectionListener(this);		
 	}
 
 	/* (non-Javadoc)
-	 * @see javax.swing.event.ListSelectionListener#valueChanged(javax.swing.event.ListSelectionEvent)
+	 * @see org.embl.ebi.escience.scuflui.results.ResultTable.TableSelectionListener#valueChanged(org.embl.ebi.escience.scuflui.results.ResultTable, org.embl.ebi.escience.scuflui.results.ResultThing)
 	 */
-	public void valueChanged(ListSelectionEvent e)
+	public void valueChanged(ResultTable table, ResultThing thing)
 	{
 		System.out.println("Cell: " + resultTable.getSelectedColumn() + "," + resultTable.getSelectedRow());
-		ResultThing thing = (ResultThing)resultTable.getValueAt(resultTable.getSelectedRow(),resultTable.getSelectedColumn());
 		if(thing != null)
 		{
 			JPanel panel = new JPanel();
@@ -89,7 +86,7 @@ public class ResultTablePanel extends JPanel implements ListSelectionListener
 				// TODO Handle RendererException
 				e1.printStackTrace();
 			}
-			split.setRightComponent(panel);			
+			split.setRightComponent(panel);					
 		}
 		else
 		{
