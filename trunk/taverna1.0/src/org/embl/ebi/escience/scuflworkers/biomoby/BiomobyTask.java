@@ -48,7 +48,8 @@ public class BiomobyTask implements ProcessorTaskWorker {
 	    // do the task and populate outputXML
 	    String methodName = ((BiomobyProcessor)proc).getServiceName();
 	    String serviceEndpoint = ((BiomobyProcessor) proc).getEndpoint().toExternalForm();
-	    String outputXML = new CentralImpl (serviceEndpoint).call (methodName, inputXML);
+	    String outputXML =
+		new CentralImpl (serviceEndpoint, "http://biomoby.org/").call (methodName, inputXML);
 	    Map outputMap = new HashMap();
 	    outputMap.put ("output", new DataThing (outputXML));
 
