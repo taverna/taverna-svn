@@ -28,6 +28,23 @@ public class AnnotationTemplate {
 	//
     }
     
+    // Namespace for RDF statements
+    private static final String RDF_NS = "http://www.w3.org/1999/02/22-rdf-syntax-ns#";
+    
+    /**
+     * Create a basic 'subject verb object' triple in RDF
+     * format
+     */
+    public static AnnotationTemplate standardTemplate(Port subject, String verb, Port object) {
+	AnnotationTemplate target = new AnnotationTemplate();
+	target.addLiteral("<rdf:Description xmlns:rdf=\""+RDF_NS+"\"rdf:about=\"");
+	target.addPortReference(subject);
+	target.addLiteral("\"><"+verb+" rdf:resource=\"");
+	target.addPortReference(object);
+	target.addLiteral("\"/></rdf:Description>\n");
+	return target;
+    }
+
     /**
      * Add a new text literal to the template
      */

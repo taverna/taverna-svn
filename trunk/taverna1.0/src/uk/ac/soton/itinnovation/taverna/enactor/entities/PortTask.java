@@ -26,8 +26,8 @@
 //      Dependencies        :
 //
 //      Last commit info    :   $Author: mereden $
-//                              $Date: 2004-02-26 11:25:04 $
-//                              $Revision: 1.23 $
+//                              $Date: 2004-03-03 17:28:14 $
+//                              $Revision: 1.24 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 
@@ -159,6 +159,16 @@ public class PortTask extends TavernaTask {
 	this.theDataThing.getMetadata().setSemanticType(portMarkup.getSemanticType());
 	// Fully populate the dataThing with LSID values if it doesn't already have them
 	this.theDataThing.fillLSIDValues();
+	if (getScuflPort().isSource()) {
+	    if (ProcessorTask.STORE != null) {
+		try {
+		    ProcessorTask.STORE.storeDataThing(theDataThing,true);
+		}
+		catch (Exception ex) {
+		    //
+		}
+	    }
+	}
     }
     
     /**

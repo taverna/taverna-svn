@@ -112,6 +112,15 @@ public class TavernaLSIDService extends SimpleResolutionService {
     }
 
     
+    private static final String RDF_NS = "http://www.w3.org/1999/02/22-rdf-syntax-ns#";
+    private static final String DC_NS = "http://purl.org/dc/elements/1.1/";
+    private static final String I3CP_NS= "urn:lsid:i3c.org:predicates:";
+    private static final String I3C_CONTENT= "urn:lsid:i3c.org:types:content";
+    //private static final String I3C_SPROT= "urn:lsid:i3c.org:formats:sprot";
+    //private static final String I3C_FASTA= "urn:lsid:i3c.org:formats:fasta";
+    private static final String TAVERNA_DATATHING = "urn:lsid:net.sf.taverna:types:datathing";
+    private static final String TAVERNA_RAW = "urn:lsid:net.sf.taverna:types:raw";
+
     /**
      * Get the metadata for a particular LSID
      * @return InputStream an input stream to the metadata, 
@@ -120,9 +129,48 @@ public class TavernaLSIDService extends SimpleResolutionService {
     public MetadataResponse getMetadata(LSIDRequestContext request,
 					String[] acceptedFormats)
 	throws LSIDServerException {
-	// Always return null for now, will return chunks of RDF
-	// in the near future
-	return null;
+	StringBuffer result= new StringBuffer();
+	result.append("<?xml version=\"1.0\"?><rdf:RDF");
+	result.append(" xmlns:rdf=\""+RDF_NS+"\"");
+	result.append(" xmlns:dc=\""+DC_NS+"\"");
+	result.append(" xmlns:i3cp=\""+I3CP_NS+"\"");
+	result.append(">");
+
+	// If the namespace is 'datathing' then set metadata appropriately
+	if (request.getLsid().getNamespace().equals("datathing")) {
+	    appendTripleResource(result, request.getLsid().getLsid(), "rdf:type", I3C_CONTENT);	    
+	    appendTripleResource(result, request.getLsid().getLsid(), "dc:format", TAVERNA_DATATHING);
+
+	    try {
+		LSID rawFormatLSID = new LSID(request.getLsid().getAuthority().getAuthority(),
+					      "raw",
+					      request.getLsid().getObject(),
+					      request.getLsid().getRevision());
+		if (theDataService.hasData(rawFormatLSID.getLsid())) {
+		    appendTripleResource(result, request.getLsid().getLsid(), "i3cp:storedas", rawFormatLSID.getLsid());
+		}
+	    }
+	    catch (MalformedLSIDException mle) {
+		//
+	    }
+	}
+	else if (request.getLsid().getNamespace().equals("raw")) {
+	    appendTripleResource(result, request.getLsid().getLsid(), "rdf:type", I3C_CONTENT);
+	    appendTripleResource(result, request.getLsid().getLsid(), "dc:format", TAVERNA_RAW);
+	}
+	String additionalMetadata = theDataService.getMetadata(request.getLsid().getLsid());
+	if (additionalMetadata!=null) {
+	    result.append(additionalMetadata);
+	}
+	result.append("</rdf:RDF>");
+	System.out.println(result.toString());
+	InputStream metadataStream = new ByteArrayInputStream(result.toString().getBytes());
+	return new MetadataResponse(metadataStream, null);
+    }
+    private void appendTripleResource(StringBuffer src, String subj, String pred, String obj) {
+	src.append("<rdf:Description rdf:about=\""+subj+"\">\n");
+	src.append("  <"+pred+" rdf:resource=\""+obj+"\"/>\n");
+	src.append("</rdf:Description>\n");
     }
 
 
@@ -149,7 +197,9 @@ public class TavernaLSIDService extends SimpleResolutionService {
      * implementer may assume that the LSID is valid 
      */
     public boolean hasMetadata(LSIDRequestContext request) {
-	return theDataService.hasMetadata(request.getLsid().getLsid());
+	// All entries with data also have metadata, in this current
+	// implementation there are no abstract entities.
+	return (theDataService.hasMetadata(request.getLsid().getLsid()) || hasData(request));
     }
     
 

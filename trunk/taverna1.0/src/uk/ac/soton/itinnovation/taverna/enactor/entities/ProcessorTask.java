@@ -25,8 +25,8 @@
 //      Dependencies        :
 //
 //      Last commit info    :   $Author: mereden $
-//                              $Date: 2004-03-03 11:02:45 $
-//                              $Revision: 1.38 $
+//                              $Date: 2004-03-03 17:28:14 $
+//                              $Revision: 1.39 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 package uk.ac.soton.itinnovation.taverna.enactor.entities;
@@ -80,7 +80,7 @@ import java.lang.String;
  */
 public class ProcessorTask extends TavernaTask{
     
-    private static BaclavaDataService STORE = null;
+    static BaclavaDataService STORE = null;
     static {
 	String storageClassName = System.getProperty("taverna.datastore.class");
 	if (storageClassName!=null) {
@@ -384,6 +384,9 @@ public class ProcessorTask extends TavernaTask{
 		String annotation = templates[i].getTextAnnotation(templateInputs, templateOutputs);
 		if (annotation != null) {
 		    provenanceList.add(annotation);
+		    if (ProcessorTask.STORE != null) {
+			STORE.storeMetadata(annotation);
+		    }
 		}
 	    }
 	}

@@ -78,6 +78,17 @@ public interface BaclavaDataService {
      * metadata reference
      */
     public boolean hasMetadata(String LSID);
+
+    /**
+     * Store a string containing RDF format metadata
+     * and one or more LSIDs as resources
+     */
+    public void storeMetadata(String theMetadata);
     
+    /**
+     * Returns a string of all the metadata statements
+     * that reference the given LSID
+     */
+    public String getMetadata(String LSID);
 
 }

@@ -79,9 +79,15 @@ public class JDBCBaclavaDataService implements BaclavaDataService {
 	try {
 	    con = getConnectionObject();
 	    Statement st = con.createStatement();
+	    st.executeUpdate("CREATE TABLE IF NOT EXISTS metadata (id INT UNSIGNED NOT NULL AUTO_INCREMENT,"+
+			     "                                     rdfstring TEXT NOT NULL,"+
+			     "                                     PRIMARY KEY(id)) TYPE = InnoDB;");
+	    st.executeUpdate("CREATE TABLE IF NOT EXISTS lsid2metadata (lsid CHAR(200) NOT NULL,"+
+			     "                                          id INT UNSIGNED NOT NULL REFERENCES metadata(id),"+
+			     "                                          PRIMARY KEY(lsid)) TYPE = InnoDB;");
 	    st.executeUpdate("CREATE TABLE IF NOT EXISTS datathings (id INT UNSIGNED NOT NULL AUTO_INCREMENT,"+
-			     "                         thing TEXT NOT NULL,"+
-			     "                         PRIMARY KEY(id)) TYPE = InnoDB;");
+			     "                                       thing TEXT NOT NULL,"+
+			     "                                       PRIMARY KEY(id)) TYPE = InnoDB;");
 	    st.executeUpdate("CREATE TABLE IF NOT EXISTS lsid2datathings (lsid CHAR(200) NOT NULL UNIQUE,"+
 			     "                    id INT UNSIGNED NOT NULL REFERENCES datathings(id),"+
 			     "                    reftype ENUM(\"datathing\",\"collection\",\"leaf\"),"+
@@ -115,6 +121,8 @@ public class JDBCBaclavaDataService implements BaclavaDataService {
 	    Statement st = con.createStatement();
 	    st.executeUpdate("DROP TABLE IF EXISTS datathings");
 	    st.executeUpdate("DROP TABLE IF EXISTS lsid2datathings");
+	    st.executeUpdate("DROP TABLE IF EXISTS metadata");
+	    st.executeUpdate("DROP TABLE IF EXISTS lsid2metadata");
 	}
 	catch (Exception ex) {
 	    ex.printStackTrace();
@@ -122,6 +130,54 @@ public class JDBCBaclavaDataService implements BaclavaDataService {
 	finally {
 	    releaseConnection(con);
 	}
+    }
+
+    /**
+     * Store some metadata
+     */
+    public void storeMetadata(String theMetadata) {
+	// First decompose the metadata string to find
+	// any LSIDs
+	String[] split = theMetadata.split("\"");
+	List lsidList = new ArrayList();
+	for (int i = 0; i < split.length; i++) {
+	    if (split[i].startsWith("urn:lsid:")) {
+		lsidList.add(split[i]);
+	    }
+	}
+	if (lsidList.isEmpty()) {
+	    // No LSID references found within the metadata
+	    // so it's not particularly interesting to us
+	    return;
+	}
+	Connection con = getConnectionObject();
+	try {
+	    synchronized(writeLockObject) {
+		PreparedStatement st = con.prepareStatement("INSERT INTO metadata (rdfstring) VALUES (?)");
+		st.setString(1,theMetadata);
+		st.executeUpdate();
+		st.close();
+		PreparedStatement st2 = con.prepareStatement("INSERT INTO lsid2metadata (lsid, id) VALUES (?,LAST_INSERT_ID())");
+		for (Iterator i = lsidList.iterator(); i.hasNext();) {
+		    st2.setString(1,(String)i.next());
+		    st2.executeUpdate();
+		}
+		st2.close();
+		con.commit();
+	    }
+	}
+	catch(SQLException sqle) {
+	    try {
+		con.rollback();
+	    }
+	    catch (Exception e) {
+		//
+	    }
+	}
+	finally {
+	    releaseConnection(con);
+	}
+	
     }
 
     
@@ -309,11 +365,42 @@ public class JDBCBaclavaDataService implements BaclavaDataService {
 
     
     /**
+     * Get the metadata associated with this LSID
+     */
+    public String getMetadata(String LSID) {
+	Connection con = null;
+	try {
+	    con = getConnectionObject();
+	    PreparedStatement p = con.prepareStatement("SELECT UNIQUE m.rdfstring FROM metadata m, lsid2metadata l WHERE l.id = r.id AND l.lsid = ?");
+	    p.setString(1, LSID);
+	    ResultSet rs = p.executeQuery();
+	    StringBuffer sb = new StringBuffer();
+	    while (rs.next()) {
+		sb.append(rs.getString("rdfstring"));
+	    }
+	    String result = sb.toString();
+	    if (result.equals("")) {
+		return null;
+	    }
+	    else {
+		return result;
+	    }
+	}
+	catch (SQLException sqle) {
+	    return null;
+	}
+	finally {
+	    releaseConnection(con);
+	}
+    }
+
+
+    /**
      * Does the given LSID have associated metadata?
      * Always returns false at present.
      */
     public boolean hasMetadata(String LSID) {
-	return false;
+	return (getMetadata(LSID)!=null);
     }
 
 
