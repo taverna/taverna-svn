@@ -50,7 +50,7 @@ public class ResultItemPanel extends JPanel {
     final JFileChooser fc = new JFileChooser();
     final RendererRegistry renderers;
 
-		private boolean allowEditing=true;
+		private boolean allowEditing=false;
 
 		public void setResultsEditing(boolean permitance){
 						allowEditing=permitance;

@@ -464,7 +464,10 @@ public class EnactorInvocation extends JPanel implements ScuflUIComponent {
 			    for (Iterator i = intermediateResultMaps[1].keySet().iterator(); i.hasNext(); ) {
 				String name = (String)i.next();
 				DataThing value = (DataThing)intermediateResultMaps[1].get(name);
-				intermediateOutputs.add(name, new ResultItemPanel(value));
+				ResultItemPanel rip=new ResultItemPanel(value);
+				if (workflowInstance.isDataNonVolatile(processorName))rip.setResultsEditing(true);
+				else rip.setResultsEditing(false);
+				intermediateOutputs.add(name, rip);
 			    }
 
 

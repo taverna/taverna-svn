@@ -25,8 +25,8 @@
 //      Dependencies        :
 //
 //      Last commit info    :   $Author: matskan $
-//                              $Date: 2005-02-09 13:22:44 $
-//                              $Revision: 1.14 $
+//                              $Date: 2005-03-02 15:20:16 $
+//                              $Revision: 1.15 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 package org.embl.ebi.escience.scufl.enactor.implementation;
@@ -417,6 +417,18 @@ public class WorkflowInstanceImpl implements WorkflowInstance {
             throw new IllegalStateException(msg);
         }
     }
+
+		public boolean isDataNonVolatile(String processorId){
+        try {    
+           return engine.isDataNonVolatile(workflowInstanceId, processorId);
+        }
+        catch(UnknownWorkflowInstanceException e) {
+            String msg = "Error destroying workflow instance with id " + workflowInstanceId +
+                    ".  The workflow engine didn't recognise the workflow isntance id";
+            logger.error(msg, e);
+            throw new IllegalStateException(msg);
+        }
+		}
 
     public void resume(String processorId) {
         try {    

@@ -143,6 +143,12 @@ public interface WorkflowInstance {
      * hasBreakpoint boolean flag.
      */
     public void resume(String processorId);
+		
+
+    /** 
+		 * Checks if task's output is allowed to be editied.
+     */
+		public boolean isDataNonVolatile(String processorId);
 
     
     /** 
