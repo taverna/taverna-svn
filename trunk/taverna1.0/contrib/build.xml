@@ -101,11 +101,14 @@
 	<target name="prepare-src" depends="prepare">
 		<mkdir dir="${build.src}"/>
 		<mkdir dir="${build.classes}"/>
+		<!-- Don't do this, breaks Taverna's build! The build.src is intended as an intermediate staging area
+		     before we do any transforms such as aspect insertion and the like, it's not part of the release.
 		<copy todir="${build.src}" filtering="on">
 			<fileset dir="${contrib.src}">
 				<exclude name="**/CVS/**"/>
 			</fileset>
 		</copy>
+		-->
 	</target>
 	
 	<target name="fetchjars">
