@@ -139,7 +139,7 @@ public class Workbench extends JFrame {
 	}
 	
 	final Workbench workbench = new Workbench();
-	
+	java.net.Authenticator.setDefault(new WorkbenchAuthenticator(workbench));
 	// Create a new implementation of the FrameCreator interface to create windows in the desktop
 	// Only do this if the property 'taverna.workbench.useinternalframes' is defined
 	if (System.getProperty("taverna.workbench.useinternalframes") != null) {
