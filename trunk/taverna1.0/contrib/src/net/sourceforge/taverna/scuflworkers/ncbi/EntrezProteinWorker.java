@@ -7,6 +7,7 @@ package net.sourceforge.taverna.scuflworkers.ncbi;
 import java.net.MalformedURLException;
 import java.util.Map;
 
+import net.sourceforge.taverna.baclava.DataThingAdapter;
 import net.sourceforge.taverna.io.TransmitterException;
 
 import org.embl.ebi.escience.baclava.DataThing;
@@ -16,32 +17,36 @@ import uk.ac.soton.itinnovation.taverna.enactor.entities.TaskExecutionException;
 /**
  * 
  * @author mfortner
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class EntrezProteinWorker extends AbstractNCBIWorker {
 	
 	public EntrezProteinWorker(){
 		this.cmd = "Display";
-		this.originalDb = "gene";
-		this.startTag = "<Bioseq-set>";
-		this.endTag = "</Bioseq-set>";
-		this.displayOption = "gene_protein";
+		this.originalDb = "protein";
+		this.startTag = "&lt;Seq-entry&gt;";
+		
+		this.endTag = "&lt;/Seq-entry&gt;";
+		this.displayOption = "xml";
 		this.url = "http://www.ncbi.nlm.nih.gov/entrez/query.fcgi";
+		this.rettype = "gp";
 	}
 
 	/* (non-Javadoc)
 	 * @see net.sourceforge.taverna.scuflworkers.ncbi.AbstractNCBIWorker#execute(java.util.Map)
 	 */
 	public Map execute(Map inputMap) throws TaskExecutionException {
-	    this.term = (String)((DataThing)inputMap.get("term")).getDataObject();
-	    String maxRecs = (String)((DataThing)inputMap.get("maxRecords")).getDataObject();
-	    this.maxRecords = (maxRecs != null)?Integer.parseInt(maxRecs): -1;
+	    DataThingAdapter inAdapter = new DataThingAdapter(inputMap);
+	    
+	    this.term = inAdapter.getString("term");
+	    String maxRecs = inAdapter.getString("maxRecords");
+	    this.maxRecords = (maxRecs != null)?Integer.parseInt(maxRecs): 1;
 	    	    
         
-        transmitterMap.put("DB","protein");       
+        transmitterMap.put("db","protein");       
         transmitterMap.put("rettype",this.rettype);
         transmitterMap.put("term",this.term);
-        transmitterMap.put("CMD","search");
+        transmitterMap.put("CMD","Text");
         transmitterMap.put("cmd","Search");
         transmitterMap.put("cmd_current","search");
         transmitterMap.put("query_key",this.queryKey);

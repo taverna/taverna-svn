@@ -15,7 +15,8 @@ import org.embl.ebi.escience.baclava.DataThing;
 import uk.ac.soton.itinnovation.taverna.enactor.entities.TaskExecutionException;
 
 /**
- *
+ * This class is designed to fetch locuslink data from the NCBI
+ * database as XML.
  * @author mfortner
  */
 public class LocusLinkWorker extends AbstractEFetchWorker {

@@ -10,19 +10,14 @@ import java.util.Map;
 import net.sourceforge.taverna.baclava.DataThingAdapter;
 
 /**
- * This class reads the text from a socket and places it in the outputmap.
+ * This class is used to process file streams.
  * 
  * Last edited by $Author: phidias $
  * 
  * @author Mark
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.1 $
  */
-public class PostStreamProcessor extends AbstractStreamProcessor implements StreamProcessor {
-
-    
-    public PostStreamProcessor(){
-        
-    }
+public class FileStreamProcessor extends AbstractStreamProcessor implements StreamProcessor {
 
     /**
      * @see net.sourceforge.taverna.io.StreamProcessor#processStream(java.io.InputStream)

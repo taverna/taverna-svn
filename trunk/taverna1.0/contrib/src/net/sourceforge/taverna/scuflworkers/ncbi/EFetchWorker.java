@@ -15,7 +15,7 @@ import uk.ac.soton.itinnovation.taverna.enactor.entities.TaskExecutionException;
  * Last edited by $Author: phidias $
  * 
  * @author Mark
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class EFetchWorker extends AbstractEFetchWorker {
 
@@ -65,7 +65,7 @@ public class EFetchWorker extends AbstractEFetchWorker {
      * @see org.embl.ebi.escience.scuflworkers.java.LocalWorker#outputTypes()
      */
     public String[] outputTypes() {
-       return new String[]{"]text/plain'"};
+       return new String[]{"'text/plain'"};
     }
 
 }

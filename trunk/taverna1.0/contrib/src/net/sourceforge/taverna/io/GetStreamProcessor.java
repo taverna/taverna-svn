@@ -15,15 +15,15 @@ import net.sourceforge.taverna.baclava.DataThingAdapter;
  * Last edited by $Author: phidias $
  * 
  * @author Mark
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
-public class GetStreamProcessor implements StreamProcessor {
+public class GetStreamProcessor extends AbstractStreamProcessor implements StreamProcessor {
 
     public GetStreamProcessor(){
         
     }
     
-    public static final String NEWLINE = System.getProperty("line.separator");
+    
 
     /**
      * @see net.sourceforge.taverna.io.StreamProcessor#processStream(java.io.InputStream)

@@ -136,6 +136,7 @@
 		<get src="http://www.ibiblio.org/maven/batik/jars/batik-xml-1.5.jar" dest="${contrib.netlib}/batik-xml-1.5.jar" usetimestamp="yes"/>
 		
 		<get src="http://www.ibiblio.org/maven/velocity/jars/velocity-1.3.jar" dest="${contrib.netlib}/velocity-1.3.jar" usetimestamp="yes"/>
+		<get src="http://www.ibiblio.org/maven/commons-vfs/jars/commons-vfs-20041214060500.jar" dest="${contrib.netlib}/commons-vfs-20041214060500.jar" usetimestamp="yes"/>
 	</target>
 
 
