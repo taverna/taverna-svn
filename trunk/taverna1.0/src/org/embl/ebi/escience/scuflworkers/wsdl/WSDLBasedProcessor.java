@@ -242,7 +242,8 @@ public class WSDLBasedProcessor extends Processor implements java.io.Serializabl
 
 		OutputPort outputPort = new OutputPort(this, outName);
 		// Check whether there's a base type (which we can handle) or not...
-		if (((Parameter)outTypes.get(i)).getType().isBaseType()) {
+		if (((Parameter)outTypes.get(i)).getType().isBaseType() ||
+		    ((Parameter)outTypes.get(i)).getType().getQName().getLocalPart().startsWith("ArrayOf")) {
 		    outputPort.setSyntacticType(xsdTypeToInternalType(((Parameter)outTypes.get(i)).getType().getQName().getLocalPart()));
 		}
 		else {
