@@ -56,7 +56,16 @@ public class ScuflDiagram extends JComponent
     private BufferedImage image = null;
     private boolean fitToWindow = false;
     private Timer updateTimer = null;
-    
+    private boolean listenToMouse = true;
+
+    public String getDot() {
+	return this.dot.getDot();
+    }
+
+    public void disableMouseListener() {
+	listenToMouse = false;
+    }
+
     public ScuflDiagram() {
 	super();
 	setBackground(Color.white);
@@ -74,63 +83,65 @@ public class ScuflDiagram extends JComponent
 		    }
 		}
 		void doEvent(MouseEvent e) {
-		    JPopupMenu menu = new JPopupMenu();
-		    JMenuItem title = new JMenuItem("Port display");
-		    title.setEnabled(false);
-		    menu.add(title);
-		    menu.addSeparator();
-		    JMenuItem none = new JMenuItem("No ports");
-		    menu.add(none);
-		    none.addActionListener(new ActionListener() {
-			    public void actionPerformed(ActionEvent ae) {
-				ScuflDiagram.this.setPortDisplay(DotView.NONE);
-			    }
-			});
-		    JMenuItem bound = new JMenuItem("Bound ports only");
-		    menu.add(bound);
-		    bound.addActionListener(new ActionListener() {
-			    public void actionPerformed(ActionEvent ae) {
-				ScuflDiagram.this.setPortDisplay(DotView.BOUND);
-			    }
-			});
-		    JMenuItem all = new JMenuItem("All ports");
-		    menu.add(all);
-		    all.addActionListener(new ActionListener() {
-			    public void actionPerformed(ActionEvent ae) {
-				ScuflDiagram.this.setPortDisplay(DotView.ALL);
-			    }
-			});
-		    // Set whether labels are shown on edges
-		    JCheckBoxMenuItem types = new JCheckBoxMenuItem("Show types", ScuflDiagram.this.dot.getTypeLabelDisplay());
-		    menu.add(types);
-		    types.addItemListener(new ItemListener() {
-			    public void itemStateChanged(ItemEvent e) {
-				if (e.getStateChange() == ItemEvent.DESELECTED) {
-				    ScuflDiagram.this.setDisplayTypes(false);
+		    if (listenToMouse) {
+			JPopupMenu menu = new JPopupMenu();
+			JMenuItem title = new JMenuItem("Port display");
+			title.setEnabled(false);
+			menu.add(title);
+			menu.addSeparator();
+			JMenuItem none = new JMenuItem("No ports");
+			menu.add(none);
+			none.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent ae) {
+				    ScuflDiagram.this.setPortDisplay(DotView.NONE);
 				}
-				else if (e.getStateChange() == ItemEvent.SELECTED) {
-				    ScuflDiagram.this.setDisplayTypes(true);
+			    });
+			JMenuItem bound = new JMenuItem("Bound ports only");
+			menu.add(bound);
+			bound.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent ae) {
+				    ScuflDiagram.this.setPortDisplay(DotView.BOUND);
 				}
-			    }
-			});
-		    // Allow the user to select scaling
-		    menu.addSeparator();
-		    JCheckBoxMenuItem scale = new JCheckBoxMenuItem("Fit to window",ScuflIcons.zoomIcon,fitToWindow);
-		    menu.add(scale);
-		    
-		    scale.addItemListener(new ItemListener() {
-			    public void itemStateChanged(ItemEvent e) {
-				if (e.getStateChange() == ItemEvent.DESELECTED) {
-				    ScuflDiagram.this.setFitToWindow(false);
+			    });
+			JMenuItem all = new JMenuItem("All ports");
+			menu.add(all);
+			all.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent ae) {
+				    ScuflDiagram.this.setPortDisplay(DotView.ALL);
 				}
-				else if (e.getStateChange() == ItemEvent.SELECTED) {
-				    ScuflDiagram.this.setFitToWindow(true);
+			    });
+			// Set whether labels are shown on edges
+			JCheckBoxMenuItem types = new JCheckBoxMenuItem("Show types", ScuflDiagram.this.dot.getTypeLabelDisplay());
+			menu.add(types);
+			types.addItemListener(new ItemListener() {
+				public void itemStateChanged(ItemEvent e) {
+				    if (e.getStateChange() == ItemEvent.DESELECTED) {
+					ScuflDiagram.this.setDisplayTypes(false);
+				    }
+				    else if (e.getStateChange() == ItemEvent.SELECTED) {
+					ScuflDiagram.this.setDisplayTypes(true);
+				    }
 				}
-			    }
-			});
-		    
-
-		    menu.show(ScuflDiagram.this, e.getX(), e.getY());
+			    });
+			// Allow the user to select scaling
+			menu.addSeparator();
+			JCheckBoxMenuItem scale = new JCheckBoxMenuItem("Fit to window",ScuflIcons.zoomIcon,fitToWindow);
+			menu.add(scale);
+			
+			scale.addItemListener(new ItemListener() {
+				public void itemStateChanged(ItemEvent e) {
+				    if (e.getStateChange() == ItemEvent.DESELECTED) {
+					ScuflDiagram.this.setFitToWindow(false);
+				    }
+				    else if (e.getStateChange() == ItemEvent.SELECTED) {
+					ScuflDiagram.this.setFitToWindow(true);
+				    }
+				}
+			    });
+			
+			
+			menu.show(ScuflDiagram.this, e.getX(), e.getY());
+		    }
 		}
 	    });
 
@@ -142,6 +153,9 @@ public class ScuflDiagram extends JComponent
      */
     public void setFitToWindow(boolean fitToWindow) {
 	this.fitToWindow = fitToWindow;
+	if (fitToWindow == false) {
+	    rescaledImage = null;
+	}
 	repaint();
 	//paintComponent(getGraphics());
     }
@@ -326,6 +340,7 @@ public class ScuflDiagram extends JComponent
 	    imageReader.setInput(iis, false);
 	    this.image = imageReader.read(0);
 	    in.close();
+	    rescaledImage = null;
 	    doLayout();
 	    repaint();
 	}

@@ -151,7 +151,7 @@ public class Workbench extends JFrame {
 	//workbench.desktop.add(xscufl);
 
 	GenericUIComponentFrame diagram = new GenericUIComponentFrame(workbench.model,
-								      new ScuflDiagram());
+								      new ScuflDiagramPanel());
 	diagram.setSize(500,500);
 	diagram.setLocation(20,440);
 	workbench.desktop.add(diagram);
@@ -326,102 +326,6 @@ public class Workbench extends JFrame {
 	    });
 	fileMenu.add(saveScufl);
 
-	// Sub menu for the various dot save options
-	JMenu dotSubMenu = new JMenu("Save as Dot");
-	dotSubMenu.setIcon(saveIcon);
-	fileMenu.add(dotSubMenu);
-
-	JMenuItem noPorts = new JMenuItem("No ports shown", saveIcon);
-	JMenuItem boundPorts = new JMenuItem("Bound ports only", saveIcon);
-	JMenuItem allPorts = new JMenuItem("All ports shown", saveIcon);
-	dotSubMenu.add(noPorts);
-	dotSubMenu.add(boundPorts);
-	dotSubMenu.add(allPorts);
-	noPorts.addActionListener(new ActionListener() {
-		public void actionPerformed(ActionEvent ae) {
-		    try {
-                Preferences prefs = Preferences.userNodeForPackage(
-                        Workbench.class);
-                String curDir = prefs.get(
-                        "currentDir",
-                        System.getProperty("user.home"));
-                fc.setCurrentDirectory(new File(curDir));
-			int returnVal = fc.showSaveDialog(Workbench.this);
-			if (returnVal == JFileChooser.APPROVE_OPTION) {
-                prefs.put("currentDir",
-                          fc.getCurrentDirectory().toString());
-                File file = fc.getSelectedFile();
-			    DotView dv = new DotView(Workbench.this.model);
-			    dv.setPortDisplay(DotView.NONE);
-			    PrintWriter out = new PrintWriter(new FileWriter(file));
-			    out.println(dv.getDot());
-			    Workbench.this.model.removeListener(dv);
-			    out.flush();
-			    out.close();
-			}
-		    }
-		    catch (Exception ex) {
-			throw new RuntimeException(ex.getMessage());
-		    }
-		}
-	    });
-	boundPorts.addActionListener(new ActionListener() {
-		public void actionPerformed(ActionEvent ae) {
-		    try {
-                Preferences prefs = Preferences.userNodeForPackage(
-                        Workbench.class);
-                String curDir = prefs.get(
-                        "currentDir",
-                        System.getProperty("user.home"));
-                fc.setCurrentDirectory(new File(curDir));
-			int returnVal = fc.showSaveDialog(Workbench.this);
-			if (returnVal == JFileChooser.APPROVE_OPTION) {
-                prefs.put("currentDir",
-                          fc.getCurrentDirectory().toString());
-			    File file = fc.getSelectedFile();
-			    DotView dv = new DotView(Workbench.this.model);
-			    dv.setPortDisplay(DotView.BOUND);
-			    PrintWriter out = new PrintWriter(new FileWriter(file));
-			    out.println(dv.getDot());
-			    Workbench.this.model.removeListener(dv);
-			    out.flush();
-			    out.close();
-			}
-		    }
-		    catch (Exception ex) {
-			throw new RuntimeException(ex.getMessage());
-		    }
-		}
-	    });
-	allPorts.addActionListener(new ActionListener() {
-		public void actionPerformed(ActionEvent ae) {
-		    try {
-                Preferences prefs = Preferences.userNodeForPackage(
-                        Workbench.class);
-                String curDir = prefs.get(
-                        "currentDir",
-                        System.getProperty("user.home"));
-                fc.setCurrentDirectory(new File(curDir));
-			int returnVal = fc.showSaveDialog(Workbench.this);
-			if (returnVal == JFileChooser.APPROVE_OPTION) {
-                prefs.put("currentDir",
-                          fc.getCurrentDirectory().toString());
-			    File file = fc.getSelectedFile();
-			    DotView dv = new DotView(Workbench.this.model);
-			    dv.setPortDisplay(DotView.ALL);
-			    PrintWriter out = new PrintWriter(new FileWriter(file));
-			    out.println(dv.getDot());
-			    Workbench.this.model.removeListener(dv);
-			    out.flush();
-			    out.close();
-			}
-		    }
-		    catch (Exception ex) {
-			throw new RuntimeException(ex.getMessage());
-		    }
-		}
-	    });
-
 	JMenuItem clearModel = new JMenuItem("Reset model data", deleteIcon);
 	clearModel.addActionListener(new ActionListener() {
 		public void actionPerformed(ActionEvent e) {
@@ -463,7 +367,7 @@ public class Workbench extends JFrame {
 	diagramView.addActionListener(new ActionListener() {
 		public void actionPerformed(ActionEvent e) {
 		    // Show a scufl diagram panel
-		    ScuflDiagram thing = new ScuflDiagram();
+		    ScuflDiagramPanel thing = new ScuflDiagramPanel();
 		    GenericUIComponentFrame frame = new GenericUIComponentFrame(Workbench.this.model, thing);
 		    Workbench.this.desktop.add(frame);
 		    frame.moveToFront();
