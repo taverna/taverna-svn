@@ -22,7 +22,9 @@ public class SoaplabProcessorCreation {
 	model.addListener(new ScuflModelEventPrinter(null));
 	
 	// Attempt to create a new SoaplabProcessor
-	new SoaplabProcessor(model, "my_processor", "http://industry.ebi.ac.uk/soap/soaplab/nucleic_gene_finding::getorf");
+	model.addProcessor(new SoaplabProcessor(model, 
+						"my_processor", 
+						"http://industry.ebi.ac.uk/soap/soaplab/nucleic_gene_finding::getorf"));
 	
 	System.out.println("Finished test : SoaplabProcessorCreation");
     }

@@ -65,7 +65,6 @@ public class SoaplabProcessor extends Processor implements java.io.Serializable 
 	}
 	this.endpoint = new_endpoint;
 	try {
-	    System.out.println("About to generate ports");
 	    generatePorts();
 	}
 	catch (PortCreationException pce) {

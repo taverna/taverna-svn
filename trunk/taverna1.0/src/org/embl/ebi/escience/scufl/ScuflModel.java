@@ -66,9 +66,9 @@ public class ScuflModel implements java.io.Serializable {
     /**
      * Add a processor to the model
      */
-    public addProcessor(Processor the_processor) {
+    public void addProcessor(Processor the_processor) {
 	this.processors.add(the_processor);
-	fireModelEvent(this, "Added processor '"+the_processor.getName()+"' to the model")
+	fireModelEvent(new ScuflModelEvent(this, "Added processor '"+the_processor.getName()+"' to the model"));
     }
 
     /**
