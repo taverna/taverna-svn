@@ -26,8 +26,8 @@
 //      Dependencies        :
 //
 //      Last commit info    :   $Author: mereden $
-//                              $Date: 2003-09-30 17:11:18 $
-//                              $Revision: 1.14 $
+//                              $Date: 2003-10-01 11:57:46 $
+//                              $Revision: 1.15 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 
@@ -104,7 +104,15 @@ public class PortTask extends TavernaTask {
      * @param newDataThing holder for data
      */
     public synchronized void setData(DataThing newDataThing) {
-	this.theDataThing = newDataThing;				
+	this.theDataThing = newDataThing;
+	// Copy any MIME types available from the markup object
+	// on the Scufl port into the MIME container in the
+	// DataThing
+	SemanticMarkup portMarkup = getScuflPort().getMetadata();
+	String[] portMIMETypes = portMarkup.getMIMETypes();
+	for (int i = 0; i < portMIMETypes.length; i++) {
+	    theDataThing.getMetadata().addMIMEType(portMIMETypes[i]);
+	}
     }
     
     /**

@@ -98,7 +98,7 @@ public class DataThing {
 	return getSyntacticTypeForObject(this.theDataObject);
     }
 
-    private String getSyntacticTypeForObject(Object o) {
+    public String getSyntacticTypeForObject(Object o) {
 	if (o instanceof Collection) {
 	    if (((Collection)o).isEmpty()) {
 		return "'null'";
@@ -146,15 +146,22 @@ public class DataThing {
 		}
 	    }
 	    catch (NoMetadataFoundException nmfe) {
+		StringBuffer sb = new StringBuffer();
+		if (getMetadata().getMIMETypeList().isEmpty() == false) {
+		    for (Iterator i = getMetadata().getMIMETypeList().iterator(); i.hasNext(); ) {
+			sb.append(","+(String)i.next());
+		    }
+		}
+		String specifiedMIMETypes = sb.toString();
 		// Make a 'best guess' at the appropriate type
 		if (o instanceof String) {
-		    return "'text/plain'";
+		    return "'text/plain"+specifiedMIMETypes+"'";
 		}
 		else if (o instanceof byte[]) {
-		    return "'application/octet-stream'";
+		    return "'application/octet-stream"+specifiedMIMETypes+"'";
 		}	    
 		// Fallback, return special unknown type thing
-		return ("'application/X-UNKNOWN-JAVA-TYPE-"+o.getClass().getName()+"'");
+		return ("'application/X-UNKNOWN-JAVA-TYPE-"+o.getClass().getName()+specifiedMIMETypes+"'");
 	    }
 	    
 	}

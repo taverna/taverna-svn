@@ -9,6 +9,7 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import javax.swing.*;
 import org.embl.ebi.escience.scufl.ScuflModel;
+import org.embl.ebi.escience.baclava.*;
 import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.broker.FlowBroker;
 import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.broker.FlowBrokerFactory;
 import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.broker.FlowReceipt;
@@ -69,6 +70,9 @@ public class EnactorInvocation extends JPanel implements ScuflUIComponent {
     private FlowReceipt flowReceipt = null;
     private JTextArea resultsText = null;
     private JTextArea provenanceText = null;
+    private JTabbedPane individualResults = new JTabbedPane();
+    private JPanel resultsPanel = null;
+    private JTabbedPane tabs = null;
 
     /**
      * Get the workflow instance ID for this invocation
@@ -100,7 +104,16 @@ public class EnactorInvocation extends JPanel implements ScuflUIComponent {
 		    Thread.sleep(1000);
 		}
 	    }
+	    this.tabs.add("Results",individualResults);
+	    this.tabs.add("Results as XML",resultsPanel);
 	    this.resultsText.setText(results);
+	    // Get the output map and create new result detail panes
+	    Map resultMap = ((TavernaFlowReceipt)(this.flowReceipt)).getOutput();
+	    for (Iterator i = resultMap.keySet().iterator(); i.hasNext(); ) {
+		String resultName = (String)i.next();
+		DataThing resultValue = (DataThing)resultMap.get(resultName);
+		this.individualResults.add(resultName, new ResultItemPanel(resultValue));
+	    }
 	}
 	catch (Exception ex) {
 	    this.resultsText.setText("No results available : "+ex.toString());
@@ -180,7 +193,7 @@ public class EnactorInvocation extends JPanel implements ScuflUIComponent {
 	
 	// Create the UI
 	// Create a tabbed pane for the status, results and provenance panels.
-	JTabbedPane tabs = new JTabbedPane();
+	tabs = new JTabbedPane();
 	setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
 	add(tabs);
 	final JPanel processorListPanel = new JPanel();
@@ -198,7 +211,7 @@ public class EnactorInvocation extends JPanel implements ScuflUIComponent {
 	tabs.add(processorListPanel,"Status");
 
 	// Create a text area to show the results
-	JPanel resultsPanel = new JPanel();
+	resultsPanel = new JPanel();
 	resultsPanel.setLayout(new BorderLayout());
 	resultsPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(),
 								"Workflow results"));
@@ -206,8 +219,8 @@ public class EnactorInvocation extends JPanel implements ScuflUIComponent {
 	JScrollPane resultsScrollPane = new JScrollPane(resultsText);
 	resultsScrollPane.setPreferredSize(new Dimension(100,100));
 	resultsPanel.add(resultsScrollPane, BorderLayout.CENTER);
-
-	tabs.add(resultsPanel,"Results");
+	
+	//tabs.add(resultsPanel,"Results");
 
 	// Create a text area to show the provenance
 	JPanel provenancePanel = new JPanel();
@@ -219,6 +232,9 @@ public class EnactorInvocation extends JPanel implements ScuflUIComponent {
 	provenanceScrollPane.setPreferredSize(new Dimension(100,100));
 	provenancePanel.add(provenanceScrollPane, BorderLayout.CENTER);
 	tabs.add(provenancePanel,"Provenance");
+
+	//individualResults = new JTabbedPane();
+	//tabs.add(individualResults, "Detail");
 
 	//pack();
 	//setSize(new Dimension(600,300));

@@ -264,11 +264,13 @@ public class ProcessorHelper {
      */
     public static Processor loadProcessorFromXML(Element processorNode, ScuflModel model, String name)
 	throws ProcessorCreationException, DuplicateProcessorNameException, XScuflFormatException {
-	// Get the element name of the first child
-	String tagName = ((Element)(processorNode.getChildren().get(0))).getName();
-	XMLHandler xh = (XMLHandler)xmlHandlerForTagName.get(tagName);
-	if (xh != null) {
-	    return xh.loadProcessorFromXML(processorNode, model, name);
+	// Get the first available handler for this processor and use it to load
+	for (Iterator i = processorNode.getChildren().iterator(); i.hasNext(); ) {
+	    String elementName = ((Element)i.next()).getName();
+	    XMLHandler xh = (XMLHandler)xmlHandlerForTagName.get(elementName);
+	    if (xh != null) {
+		return xh.loadProcessorFromXML(processorNode, model, name);
+	    }
 	}
 	return null;
     }
