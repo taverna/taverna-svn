@@ -6,6 +6,7 @@ import org.embl.ebi.escience.baclava.factory.DataThingFactory;
 
 import java.util.Collections;
 import java.util.Set;
+import java.awt.*;
 
 /**
  *
@@ -15,41 +16,65 @@ import java.util.Set;
 public class ToString
         implements FacetFinderSPI
 {
-    private static final Object COL_ID;
+    private static final ColumnID COL_ID;
     private static final Set COLUMNS;
 
     static
     {
-        COL_ID = ToString.class.toString() + ":TO_STRING";
+        COL_ID = new ColID();
         COLUMNS = Collections.singleton(COL_ID);
     }
 
     public boolean canMakeFacets(DataThing dataThing)
     {
-        return true;
+        return !(dataThing.getDataObject() instanceof String) ||
+                dataThing.getMetadata().getMIMETypes().length != 0;
     }
 
-    public Set getStandardColumns()
+    public Set getStandardColumns(DataThing dataThing)
     {
-        return COLUMNS;
+        if(canMakeFacets(dataThing)) {
+            return COLUMNS;
+        } else {
+            return Collections.EMPTY_SET;
+        }
     }
 
-    public boolean hasColumn(Object colID)
+    public ColumnID newColumn(DataThing dataThing)
+    {
+        return COL_ID;
+    }
+
+    public boolean hasColumn(ColumnID colID)
     {
         return COL_ID.equals(colID);
     }
 
-    public DataThing getFacet(DataThing dataThing, Object colID)
+    public DataThing getFacet(DataThing dataThing, ColumnID colID)
     {
-        if(hasColumn(colID)) {
+        if(hasColumn(colID) && canMakeFacets(dataThing)) {
             return DataThingFactory.bake(dataThing.getDataObject().toString());
+        } else {
+            return null;
         }
-
-        return null;
     }
 
     public String getName()
     {
         return "ToString";
+    }
+
+    private static class ColID
+            implements ColumnID
+    {
+        public Component getCustomiser(DataThing dataThing)
+        {
+            return null;
+        }
+
+        public String getName()
+        {
+            return "As String";
+        }
     }
 }

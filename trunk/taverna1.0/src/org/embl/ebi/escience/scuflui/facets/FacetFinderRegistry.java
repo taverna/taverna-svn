@@ -78,10 +78,12 @@ public class FacetFinderRegistry
      */
     public List getFinders(DataThing dataThing)
     {
+        LOG.info("Finding facetisers: " + dataThing);
         List res = new ArrayList();
         for (Iterator i = facetFinders.iterator(); i.hasNext();) {
             FacetFinderSPI finder = (FacetFinderSPI) i.next();
             if (finder.canMakeFacets(dataThing)) {
+                LOG.info("\tFound: " + finder.getName());
                 res.add(finder);
             }
         }

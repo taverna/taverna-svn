@@ -164,6 +164,9 @@ public class SemanticMarkup {
             // fixme:
             //   mimeTypeList.contains(mimeType) may be more efficient [mrp]
 		for (Iterator i = this.mimeTypeList.iterator(); i.hasNext(); ) {
+            // fixme:
+            //   is it intended that we double-check each element is a string?
+            //   is this not checked out earlier? [mrp]
 		    if (((String)i.next()).equals(mimeType)) {
 			// Bail if we already have one
 			return;
@@ -279,4 +282,11 @@ public class SemanticMarkup {
 	}
     }
 
+    public String toString()
+    {
+        return super.toString() +
+                " description=" + description +
+                " semanticType=" + semanticType +
+                " mimeTypes=" + mimeTypeList;
+    }
 }

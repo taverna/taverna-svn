@@ -9,6 +9,9 @@ import java.util.Collections;
 import java.util.Set;
 import java.util.List;
 import java.util.ArrayList;
+import java.beans.PropertyEditorManager;
+import java.beans.PropertyEditor;
+import java.awt.*;
 
 /**
  *
@@ -25,17 +28,22 @@ public class RegexScanner
         return dataThing.getDataObject() instanceof CharSequence;
     }
 
-    public Set getStandardColumns()
+    public Set getStandardColumns(DataThing dataThing)
     {
         return Collections.EMPTY_SET;
     }
 
-    public boolean hasColumn(Object colID)
+    public boolean hasColumn(ColumnID colID)
     {
         return colID instanceof Scanner;
     }
 
-    public DataThing getFacet(DataThing dataThing, Object colID)
+    public ColumnID newColumn(DataThing dataThing)
+    {
+        return new Scanner();
+    }
+
+    public DataThing getFacet(DataThing dataThing, ColumnID colID)
     {
         if(!hasColumn(colID) || !canMakeFacets(dataThing)) {
             return null;
@@ -82,6 +90,7 @@ public class RegexScanner
     }
 
     public static class Scanner
+            implements ColumnID
     {
         private Pattern pattern;
         private int group;
@@ -174,6 +183,23 @@ public class RegexScanner
         public void setMakeCollection(boolean makeCollection)
         {
             this.makeCollection = makeCollection;
+        }
+
+        public Component getCustomiser(DataThing dataThing)
+        {
+            Object dataObject = dataThing.getDataObject();
+            PropertyEditor editor = PropertyEditorManager.findEditor(
+                    dataObject.getClass());
+            return editor.getCustomEditor();
+        }
+
+        public String getName()
+        {
+            if(getPattern() == null) {
+                return "Regex";
+            } else {
+                return "Regex " + getPattern().pattern();
+            }
         }
 
         public boolean equals(Object o)

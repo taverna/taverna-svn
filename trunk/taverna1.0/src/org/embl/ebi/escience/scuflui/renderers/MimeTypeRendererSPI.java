@@ -7,9 +7,22 @@ import javax.swing.JComponent;
 
 /**
  * SPI for rendering a data thing.
- * <p>
+ *
+ * <h2>Users</h2>
+ *
+ * Instances of this interface will normaly be obtained from methods on
+ * MimeTypeRendererRegistry. You can then use methods on a particular instance
+ * to get its icon and name, a Component for rendering data, and query if it
+ * is capable of rendering particular data. It is a good idea to wrap calls to
+ * these methods in a try/catch block for common runtime exceptions like
+ * NullPointerException, as each SPI is implemented independantly of the main
+ * library, and may fail in exciting and unpredictable ways.
+ *
+ * <h2>Implementors</h2>
+ *
  * Each jar providing implementations of this SPI should list them in
  * <code>META-INF/services/org.embl.ebi.escience.scuflui.renderers.MimeTypeRendererSPI</code>.
+ * <p>
  * If a particular SPI needs extra information, it should be in a resource in
  * the same location as the .class file, and prefixed by the local class name,
  * so that it could be retrieved as:

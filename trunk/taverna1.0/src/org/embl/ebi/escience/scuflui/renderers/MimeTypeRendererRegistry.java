@@ -80,11 +80,13 @@ public class MimeTypeRendererRegistry {
      */
     public MimeTypeRendererSPI getRenderer(DataThing dataThing)
     {
+        LOG.info("Finding renderer: " + dataThing);
         for(Iterator i = renderers.iterator(); i.hasNext(); )
         {
             MimeTypeRendererSPI rend = (MimeTypeRendererSPI) i.next();
             if(rend.canHandle(this, dataThing))
             {
+                LOG.info("\tFound: " + rend.getName());
                 return rend;
             }
         }
@@ -101,10 +103,12 @@ public class MimeTypeRendererRegistry {
      */
     public List getRenderers(DataThing dataThing)
     {
+        LOG.info("Finding renderers: " + dataThing);
         List res = new ArrayList();
         for(Iterator i = renderers.iterator(); i.hasNext();) {
             MimeTypeRendererSPI rend = (MimeTypeRendererSPI) i.next();
             if(rend.canHandle(this, dataThing)) {
+                LOG.info("\tFound: " + rend.getName());
                 res.add(rend);
             }
         }

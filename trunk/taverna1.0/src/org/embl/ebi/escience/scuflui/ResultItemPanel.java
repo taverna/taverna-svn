@@ -100,7 +100,6 @@ public class ResultItemPanel extends JPanel {
 		void doEvent(MouseEvent e) {
 		    final DataThingTreeNode node =
 			(DataThingTreeNode)(structureTree.getPathForLocation(e.getX(),e.getY()).getLastPathComponent());
-		    if (node.isLeaf()) {
 			final Object theDataObject = node.getUserObject();
 			// Can only save on leaf nodes
 			JPopupMenu theMenu = new JPopupMenu();
@@ -176,7 +175,6 @@ public class ResultItemPanel extends JPanel {
                 }
 
 			theMenu.show(structureTree, e.getX(), e.getY());
-		    }
 		}
 	    });
 	add(splitPane, BorderLayout.CENTER);

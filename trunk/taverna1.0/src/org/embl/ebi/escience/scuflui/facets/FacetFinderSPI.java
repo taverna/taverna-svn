@@ -3,6 +3,7 @@ package org.embl.ebi.escience.scuflui.facets;
 import org.embl.ebi.escience.baclava.DataThing;
 
 import java.util.Set;
+import java.awt.*;
 
 /**
  * SPI for decomposing opaque data into facets.
@@ -39,19 +40,32 @@ public interface FacetFinderSPI
     /***
      * Get a Set of columns this facet finder can use on any data.
      * The returned Set should be immutable, and should not change. Users of
-     * this API should make a copy of this if they want to edit it.
+     * this API should make a copy of this if they want to edit it. Calling
+     * mutators on the column ID should not affect the columns returned
+     * by previous or future invocations.
      *
+     * @param dataThing  the dataThing to get standard columns for, or null if
+     *      default columns should be returned
      * @return a Set (never null) containing the standard columns
      */
-    public Set getStandardColumns();
+    public Set getStandardColumns(DataThing dataThing);
+
+    /**
+     * Get a new, independant column for a data item. Call this method to get
+     * a column ID that can then be customised.
+     *
+     * @param dataThing  the data item to work with
+     * @return  a new column ID
+     */
+    public ColumnID newColumn(DataThing dataThing);
 
     /**
      * Indicate if this facet finder can return data for this column.
      *
-     * @param colID  the Object identifying the column
+     * @param colID  the ColumnID identifying the column
      * @return true if the colID is known by this facet finder, false otherwise
      */
-    public boolean hasColumn(Object colID);
+    public boolean hasColumn(ColumnID colID);
 
     /**
      * Get the value associated with a particular column of a data object.
@@ -61,6 +75,18 @@ public interface FacetFinderSPI
      * @return  a DataThing holding the value of that facet, or null if that
      *      column ID could not be fetched for dataThing
      */
-    public DataThing getFacet(DataThing dataThing, Object colID);
+    public DataThing getFacet(DataThing dataThing, ColumnID colID);
+
+    /**
+     * Get a human readable name for this facetiser.
+     *
+     * @return the name
+     */
     public String getName();
+
+    public static interface ColumnID
+    {
+        public Component getCustomiser(DataThing dataThing);
+        public String getName();
+    }
 }

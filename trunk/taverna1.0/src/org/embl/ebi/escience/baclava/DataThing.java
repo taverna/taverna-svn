@@ -418,4 +418,13 @@ public class DataThing {
 	}
     }
 
+    public String toString()
+    {
+        return super.toString() +
+                "\n\tdataObject=" + theDataObject +
+                "\n\tmetaData=" + metadataMap +
+                "\n\tmarkup=" + myMarkup +
+                "\n\tlsid=" + lsid +
+                "\n";
+    }
 }

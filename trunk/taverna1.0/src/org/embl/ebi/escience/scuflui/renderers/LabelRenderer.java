@@ -28,7 +28,7 @@ public class LabelRenderer
             }
         }
 
-        return true;
+        return false;
     }
 
     public JComponent getComponent(MimeTypeRendererRegistry renderers,
@@ -36,10 +36,19 @@ public class LabelRenderer
     {
         Object dataObject = dataThing.getDataObject();
 
-        if(dataObject instanceof Number
-                || dataObject instanceof CharSequence)
+        if(dataObject instanceof Number)
         {
-            return new JLabel(dataObject.toString());
+            return new JTextArea(dataObject.toString());
+        }
+
+        if(dataObject instanceof String)
+        {
+            return new JTextArea((String) dataObject);
+        }
+
+        if(dataObject instanceof CharSequence)
+        {
+            return new JTextArea(dataObject.toString());
         }
 
         if(dataObject instanceof Image) {
