@@ -229,7 +229,6 @@ public class EnactorInvocation extends JPanel implements ScuflUIComponent {
     public void showResultTable()
     {
 	try {
-		System.err.println("Provenance length: " + workflowInstance.getProvenanceXMLString().length());
 		int sizeLimit = 128000;
 		try
 		{
