@@ -20,7 +20,6 @@ import javax.swing.border.Border;
 import java.util.Hashtable;
 import java.util.Map;
 
-import org.embl.ebi.escience.scufl.Processor;
 import uk.ac.mrc.hgmp.taverna.retsina.ProgNode;
 import uk.ac.mrc.hgmp.taverna.retsina.ScuflGraphCell;
 import uk.ac.mrc.hgmp.taverna.retsina.ScuflInputPortView;
@@ -28,12 +27,18 @@ import uk.ac.mrc.hgmp.taverna.retsina.ScuflOutputPort;
 import uk.ac.mrc.hgmp.taverna.retsina.ScuflOutputPortView;
 import org.emboss.jemboss.gui.startup.ProgList;
 
+import org.embl.ebi.escience.scufl.DataConstraint;
+import org.embl.ebi.escience.scufl.MalformedNameException;
+import org.embl.ebi.escience.scufl.UnknownPortException;
+import org.embl.ebi.escience.scufl.UnknownProcessorException;
+import org.embl.ebi.escience.scufl.DataConstraintCreationException;
 import org.embl.ebi.escience.scufl.DuplicateProcessorNameException;
 import org.embl.ebi.escience.scufl.Processor;
 import org.embl.ebi.escience.scufl.ProcessorCreationException;
 import org.embl.ebi.escience.scufl.SoaplabProcessor;
 import org.embl.ebi.escience.scufl.ScuflModel;
 import org.embl.ebi.escience.scufl.ScuflModelEventPrinter;
+import org.embl.ebi.escience.scufl.view.XScuflView;
 
 import java.lang.ClassCastException;
 import java.lang.Exception;
@@ -56,6 +61,7 @@ public class ScuflGraph extends JGraph
     // ScuflModel instance represented in this panel
     private org.embl.ebi.escience.scufl.ScuflModel scuflModel;
     private ProgList progs;
+    private XScuflView scuflView;
 
     // Construct the Graph using the Model as its Data Source
     public ScuflGraph(GraphModel model, ProgList progs) 
@@ -80,6 +86,7 @@ public class ScuflGraph extends JGraph
         // Register a listener to print to stdout
         scuflModel.addListener(new ScuflModelEventPrinter(null));
 
+        scuflView = new XScuflView(scuflModel);
         setDropTarget(new DropTarget(this,this));
     }
     
@@ -159,16 +166,52 @@ public class ScuflGraph extends JGraph
         {
           org.embl.ebi.escience.scufl.Port inPorts[] = proc.getInputPorts();
           for(int j=0; j<inPorts.length;j++)
-            attributes.putAll(vertex.addInputPort(inPorts[j].getName()));
+            attributes.putAll(vertex.addInputPort(inPorts[j]));
 
           org.embl.ebi.escience.scufl.Port outPorts[] = proc.getOutputPorts();
           for(int j=0; j<outPorts.length;j++)
-            attributes.putAll(vertex.addOutputPort(outPorts[j].getName()));
+            attributes.putAll(vertex.addOutputPort(outPorts[j]));
         }
 
         // Insert the Vertex and its Attributes (can also use model)
         getGraphLayoutCache().insert(new Object[]{vertex}, attributes, null, null, null);
         setCursor(cdone);
+    }
+
+    /**
+     * Get the XML text
+     */
+    public String getXScufl()
+    {
+        return scuflView.getXMLText();
+    }
+
+    public void addDataConstraint(org.embl.ebi.escience.scufl.Port source_name, 
+                                  org.embl.ebi.escience.scufl.Port sink_name)
+    {
+      
+      try
+      {
+        DataConstraint dc = new DataConstraint(scuflModel,source_name,sink_name);
+        scuflModel.addDataConstraint(dc);
+      }
+      catch(DataConstraintCreationException dcce)
+      {
+        System.out.println("DataConstraintCreationException:: in addDataConstraint");
+      }
+//    catch(UnknownPortException upe)
+//    {
+//      System.out.println("UnknownPortException:: in addDataConstraint");
+//    }
+//    catch(UnknownProcessorException upre)
+//    {
+//      System.out.println("UnknownProcessorException:: in addDataConstraint");
+//    }
+//    catch(MalformedNameException pne)
+//    {
+//      System.out.println("MalformedNameException:: in addDataConstraint");
+//    }
+
     }
 
     public SoaplabProcessor addSoaplabProcessor(String group, String name)

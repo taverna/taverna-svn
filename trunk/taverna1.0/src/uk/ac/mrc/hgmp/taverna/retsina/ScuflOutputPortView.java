@@ -66,7 +66,6 @@ public class ScuflOutputPortView extends PortView {
       return p;
     }
 
-
     public static int getWidth(String name)
     {
       JLabel c = new JLabel();

@@ -28,6 +28,8 @@ import java.net.URL;
 public class Retsina extends JApplet 
 {
     
+  private ScuflGraphPanel graphPanel;
+
   public static void main(String[] args) 
   {
     Retsina retsinaPane = new Retsina();
@@ -67,7 +69,7 @@ public class Retsina extends JApplet
     
     JMenuBar progMenuBar = new JMenuBar();
     ProgList progs = new ProgList(wossname,null,progMenuBar);
-    ScuflGraphPanel graphPanel = new ScuflGraphPanel(null,progs);
+    graphPanel = new ScuflGraphPanel(null,progs);
     JPanel westPanel = new ProgramSelectionPanel(wossname,graphPanel,
                                                  progs,progMenuBar);
     // Put the components in the content pane
@@ -95,6 +97,21 @@ public class Retsina extends JApplet
      fileMenu.add(fileMenuExit);
      menuBar.add(fileMenu);
 
+//view menu
+     JMenu viewMenu = new JMenu("View");
+     viewMenu.setMnemonic(KeyEvent.VK_V);
+     JMenuItem viewXScufl = new JMenuItem("Display XScufl");
+     viewXScufl.addActionListener(new ActionListener()
+     {
+       public void actionPerformed(ActionEvent e)
+       {
+         System.out.println(graphPanel.getXScufl());
+       }
+     });
+     viewMenu.add(viewXScufl);
+     menuBar.add(viewMenu);
+
+//help menu
      JMenu helpMenu = new JMenu("Help");
      helpMenu.setMnemonic(KeyEvent.VK_H);
      JMenuItem aboutMenu = new JMenuItem("About");
@@ -102,26 +119,24 @@ public class Retsina extends JApplet
      {
        public void actionPerformed(ActionEvent e)
        {
+         URL inURL = getClass().getClassLoader().getResource("resources/retsina.html");
+         JTextPane about = new JTextPane();
+         JPanel pscroll = new JPanel(new BorderLayout());
+         JScrollPane rscroll = new JScrollPane(pscroll);
+         rscroll.getViewport().setBackground(Color.white);
+ 
+         try
+         {
+           about.setPage(inURL);
+         }
+         catch(IOException ioe){}
+         about.setEditable(false);
+         pscroll.add(about);
+         JOptionPane jop = new JOptionPane();
+         rscroll.setPreferredSize(new Dimension(400,180));
 
-          URL inURL = getClass().getClassLoader().getResource("resources/retsina.html");
-          JTextPane about = new JTextPane();
-          JPanel pscroll = new JPanel(new BorderLayout());
-          JScrollPane rscroll = new JScrollPane(pscroll);
-          rscroll.getViewport().setBackground(Color.white);
-  
-          try
-          {
-            about.setPage(inURL);
-          }
-          catch(IOException ioe){}
-
-          about.setEditable(false);
-          pscroll.add(about);
-          JOptionPane jop = new JOptionPane();
-          rscroll.setPreferredSize(new Dimension(400,180));
-
-          jop.showMessageDialog(null,rscroll,"About ",
-                              JOptionPane.PLAIN_MESSAGE);
+         jop.showMessageDialog(null,rscroll,"About ",
+                             JOptionPane.PLAIN_MESSAGE);
        }
      });
      helpMenu.add(aboutMenu);

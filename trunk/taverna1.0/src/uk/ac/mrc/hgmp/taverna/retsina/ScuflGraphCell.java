@@ -12,6 +12,7 @@ import java.util.LinkedList;
 import java.util.List; // ambiguous with: java.awt.List 
 import java.util.Map;
 
+import org.embl.ebi.escience.scufl.Port;
 import uk.ac.mrc.hgmp.taverna.retsina.ScuflInputPort;
 import uk.ac.mrc.hgmp.taverna.retsina.ScuflOutputPort;
 import java.lang.Object;
@@ -45,13 +46,13 @@ public class ScuflGraphCell extends DefaultGraphCell {
         super(o, b);
     }
     
-    public Map addInputPort(String name)
+    public Map addInputPort(org.embl.ebi.escience.scufl.Port p)
     {
         int xCoordInput = 0;
         Hashtable attributes = new Hashtable();
 	Map map = GraphConstants.createMap();
   	GraphConstants.setOffset(map, new Point(xCoordInput, yCoordInput));
-	ScuflInputPort defaultPort = new ScuflInputPort(name);
+	ScuflInputPort defaultPort = new ScuflInputPort(p.getName(),p);
 	inputPortList.add(defaultPort);
 	attributes.put(defaultPort, map);
 	add(defaultPort);
@@ -59,12 +60,12 @@ public class ScuflGraphCell extends DefaultGraphCell {
 	return attributes;
     }
 
-    public Map addOutputPort(String name)
+    public Map addOutputPort(org.embl.ebi.escience.scufl.Port p)
     {
         Hashtable attributes = new Hashtable();
 	Map map = GraphConstants.createMap();
 	GraphConstants.setOffset(map, new Point(xCoordOutput, yCoordOutput));
-	ScuflOutputPort defaultPort = new ScuflOutputPort(name);
+	ScuflOutputPort defaultPort = new ScuflOutputPort(p.getName(),p);
 	outputPortList.add(defaultPort);
 	attributes.put(defaultPort, map);
 	add(defaultPort);

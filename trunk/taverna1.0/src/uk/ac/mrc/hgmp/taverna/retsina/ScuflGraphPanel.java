@@ -54,7 +54,8 @@ public class ScuflGraphPanel extends JPanel
     protected IScuflNodeCreator creatorDelegate;
 
     // Actions which Change State
-    protected Action undo, redo, remove, group,	ungroup, tofront, toback, cut, copy, paste;
+    protected Action undo, redo, remove, group,	ungroup; 
+    protected Action tofront, toback, cut, copy, paste;
 
     // Main Method
     public static void main(String[] args) 
@@ -107,6 +108,12 @@ public class ScuflGraphPanel extends JPanel
 
 	// Add the Graph as Center Component
 	add(new JScrollPane(graph), BorderLayout.CENTER);
+    }
+
+
+    public String getXScufl()
+    {
+      return graph.getXScufl();
     }
 
     /**
@@ -358,6 +365,8 @@ public class ScuflGraphPanel extends JPanel
 	    else if (port != null && !e.isConsumed() && graph.isPortsVisible()) {
 		// Remember Start Location
 //		start = graph.toScreen(port.getLocation(null));
+
+                // start has to be an output port
                 if(port instanceof ScuflOutputPortView)
                   start = graph.toScreen(((ScuflOutputPortView)port).getLocation(null));
 		// Remember First Port
@@ -418,13 +427,16 @@ public class ScuflGraphPanel extends JPanel
 		&& !e.isConsumed()
 		&& port != null
 		&& firstPort != null
-		&& firstPort != port) {
+		&& firstPort != port)
+            {
 		// Then Establish Connection
 		connect((Port) firstPort.getCell(), (Port) port.getCell());
 		// Consume Event
 		e.consume();
-		// Else Repaint the Graph
-	    } else
+                graph.addDataConstraint( ((ScuflPort)firstPort.getCell()).getScuflPort(),
+                                         ((ScuflPort)port.getCell()).getScuflPort() );
+            }
+	    else
 		graph.repaint();
 	    // Reset Global Vars
 	    firstPort = port = null;

@@ -23,4 +23,8 @@ public class ScuflInputPort extends ScuflPort {
         super(userObject, anchor);
     }
 
+    public ScuflInputPort(Object userObject, org.embl.ebi.escience.scufl.Port scuflPort){
+        super(userObject,scuflPort);
+    }
+
 }

@@ -6,8 +6,9 @@ import com.jgraph.graph.Port;
 import java.lang.Object;
 
 
-
 public abstract class ScuflPort extends DefaultPort {
+
+    private org.embl.ebi.escience.scufl.Port scuflPort;
 
     public ScuflPort() {
 	super();
@@ -19,6 +20,15 @@ public abstract class ScuflPort extends DefaultPort {
 
     public ScuflPort(Object userObject, Port anchor) {
         super(userObject, anchor);
+    }
+
+    public ScuflPort(Object userObject, org.embl.ebi.escience.scufl.Port scuflPort){
+        super(userObject);
+        this.scuflPort = scuflPort;
+    }
+
+    public org.embl.ebi.escience.scufl.Port getScuflPort(){
+        return scuflPort;
     }
 
 }
