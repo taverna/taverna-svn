@@ -5,26 +5,19 @@
  */
 package org.embl.ebi.escience.scuflui;
 
-import java.awt.Component;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import javax.swing.ImageIcon;
-import javax.swing.JPopupMenu;
 import javax.swing.JTree;
-import javax.swing.tree.*;
+import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.TreeNode;
+import javax.swing.tree.TreePath;
+import javax.swing.tree.TreeSelectionModel;
 import org.embl.ebi.escience.scufl.*;
 
 // Utility Imports
 import java.util.Enumeration;
 
-import org.embl.ebi.escience.scuflui.NoContextMenuFoundException;
-import org.embl.ebi.escience.scuflui.ScuflContextMenuFactory;
-import java.lang.Class;
-import java.lang.ClassNotFoundException;
-import java.lang.Object;
-
-
-
+import org.embl.ebi.escience.scuflui.ScuflModelExplorerPopupHandler;
+import org.embl.ebi.escience.scuflui.ScuflModelExplorerRenderer;
 /**
  * A swing component that provides an expandable
  * tree view of the constituent components of a
@@ -197,6 +190,16 @@ public class ScuflModelExplorer extends JTree implements ScuflModelEventListener
 			    DefaultMutableTreeNode dcnode = new DefaultMutableTreeNode(dc[i]);
 			    datalinks.add(dcnode);
 			}
+
+			// Create and populate new node for coordination constraints
+			DefaultMutableTreeNode coordinations = new DefaultMutableTreeNode("Coordination constraints");
+			this.root.add(coordinations);
+			ConcurrencyConstraint[] cc = model.getConcurrencyConstraints();
+			for (int i = 0; i < cc.length; i++) {
+			    DefaultMutableTreeNode ccnode = new DefaultMutableTreeNode(cc[i]);
+			    coordinations.add(ccnode);
+			}
+
 			// If the status has been set to '2' while we were running
 			// then go around again. If it's still '1' we can exit safely
 			// as nothing else wants to update the state. Cheap way of doing
@@ -217,136 +220,4 @@ public class ScuflModelExplorer extends JTree implements ScuflModelEventListener
 	    }
 	}
     }
-}
-/**
- * A cell renderer that paints the appropriate icons depending on the
- * component of the model being displayed.
- * @author Tom Oinn
- */
-class ScuflModelExplorerRenderer extends DefaultTreeCellRenderer {
-    
-    static ImageIcon wsdlicon, soaplabicon, talismanicon, inputicon, outputicon, inputporticon, outputporticon, datalinkicon;
-    
-    static {
-	// Load the image files found in this package into the class.
-	try {
-	    Class c = Class.forName("org.embl.ebi.escience.scuflui.ScuflModelExplorerRenderer");
-	    wsdlicon = new ImageIcon(c.getResource("wsdl.gif"));
-	    talismanicon = new ImageIcon(c.getResource("talisman.gif"));
-	    soaplabicon = new ImageIcon(c.getResource("soaplab.gif"));
-	    inputporticon = new ImageIcon(c.getResource("inputport.gif"));
-	    outputporticon = new ImageIcon(c.getResource("outputport.gif"));
-	    datalinkicon = new ImageIcon(c.getResource("datalink.gif"));
-	    inputicon = new ImageIcon(c.getResource("input.gif"));
-	    outputicon = new ImageIcon(c.getResource("output.gif"));
-	}
-	catch (ClassNotFoundException cnfe) {
-	    //
-	}
-    }
-    
-    /**
-     * Return a custom renderer to draw the cell correctly for each node type
-     */
-    public Component getTreeCellRendererComponent(JTree tree,
-						  Object value,
-						  boolean sel,
-						  boolean expanded,
-						  boolean leaf,
-						  int row,
-						  boolean hasFocus) {
-	super.getTreeCellRendererComponent(tree, value, sel,
-					   expanded, leaf, row,
-					   hasFocus);
-	Object userObject = ((DefaultMutableTreeNode)value).getUserObject();
-	if (userObject instanceof Processor) {
-	    if (userObject instanceof WSDLBasedProcessor) {
-		setIcon(wsdlicon);
-	    }
-	    else if (userObject instanceof TalismanProcessor) {
-		setIcon(talismanicon);
-	    }
-	    else if (userObject instanceof SoaplabProcessor) {
-		setIcon(soaplabicon);
-	    }
-	}
-	else if (userObject instanceof Port) {
-	    Port thePort = (Port)userObject;
-	    Processor theProcessor = thePort.getProcessor();
-	    ScuflModel model = theProcessor.getModel();
-	    if (theProcessor == model.getWorkflowSourceProcessor()) {
-		// Workflow source port
-		setIcon(inputicon);
-	    }
-	    else if (theProcessor == model.getWorkflowSinkProcessor()) {
-		// Workflow sink port
-		setIcon(outputicon);
-	    }
-	    else {
-		// Normal port
-		if (thePort instanceof InputPort) {
-		    setIcon(inputporticon);
-		}
-		else if (thePort instanceof OutputPort) {
-		    setIcon(outputporticon);
-		}
-	    }
-	}
-	else if (userObject instanceof DataConstraint) {
-	    setIcon(datalinkicon);
-	}
-	return this;
-    }
-}
-/**
- * A class to handle popup menus on nodes on the tree
- * @author Tom Oinn
- */
-class ScuflModelExplorerPopupHandler extends MouseAdapter {
-    
-    private ScuflModelExplorer explorer;
-    
-    public ScuflModelExplorerPopupHandler(ScuflModelExplorer theExplorer) {
-	this.explorer = theExplorer;
-    }
-   
-    /**
-     * Handle the mouse pressed event in case this is the platform
-     * specific trigger for a popup menu
-     */
-    public void mousePressed(MouseEvent e) {
-	if (e.isPopupTrigger()) {
-	    doEvent(e);
-	}
-    }
-    
-    /**
-     * Similarly handle the mouse released event
-     */
-    public void mouseReleased(MouseEvent e) {
-	if (e.isPopupTrigger()) {
-	    doEvent(e);
-	}
-    }
-
-    /**
-     * If the event was a trigger for a popup then use the ScuflContextMenuFactory
-     * to find a suitable JPopupMenu for the node that was clicked on and display
-     * it. If we couldn't find anything suitable do nothing, all it means is that
-     * there wasn't a menu available for that type of node.
-     */
-    void doEvent(MouseEvent e) {
-	DefaultMutableTreeNode node = (DefaultMutableTreeNode)(explorer.getPathForLocation(e.getX(), e.getY()).getLastPathComponent());
-	Object scuflObject = node.getUserObject();
-	if (scuflObject != null) {
-	    try {
-		JPopupMenu theMenu = ScuflContextMenuFactory.getMenuForObject(scuflObject, explorer.model);
-		theMenu.show(explorer, e.getX(), e.getY());
-	    }
-	    catch (NoContextMenuFoundException ncmfe) {
-		// just means that there wasn't a suitable menu for the selected node.
-	    }
-	}
-    }
-
 }

@@ -127,8 +127,8 @@ public class ScuflDiagram extends JComponent
 	if (updateStatus == 0) {
 	    updateStatus = 1;
 	    while (updateStatus != 0) {
-		updateStatus = 0;
 		updateGraphic();
+		updateStatus = 0;
 		if (updateStatus == 2) {
 		    updateStatus = 1;
 		}
