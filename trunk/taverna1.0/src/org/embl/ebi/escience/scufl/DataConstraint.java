@@ -15,7 +15,28 @@ public class DataConstraint implements java.io.Serializable {
     private InputPort sink;
     private OutputPort source;
 
+    /**
+     * Create a new data constraint from two name strings of the form
+     * [PROCESSOR]:[PORT] for source and sink. These must exist within
+     * the model specified.
+     * @exception MalformedNameException if the name supplied is not in the correct format
+     * @exception DataConstraintCreationException if the ports are found but are incorrectly typed
+     * @exception UnknownPortException if the processor is found but doesn't contain the named port
+     * @exception UnknownProcessorException if the model doesn't contain the particular processor name
+     */
+    public DataConstraint(ScuflModel model, String source_name, String sink_name)
+	throws DataConstraintCreationException,
+	       UnknownPortException,
+	       UnknownProcessorException,
+	       MalformedNameException {
+	this(model, model.locatePort(source_name), model.locatePort(sink_name));
+    }
 
+    /**
+     * Create a new data constraint from the source to the sink port. 
+     * The ports must be instances of OutputPort and InputPort respectively
+     * @exception DataConstraintCreationException if the ports are found but are incorrectly typed
+     */
     public DataConstraint(ScuflModel model, Port source, Port sink)
 	throws DataConstraintCreationException {
 	
