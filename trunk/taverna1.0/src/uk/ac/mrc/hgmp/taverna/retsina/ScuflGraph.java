@@ -28,9 +28,6 @@ import uk.ac.mrc.hgmp.taverna.retsina.ScuflOutputPortView;
 import org.emboss.jemboss.gui.startup.ProgList;
 
 import org.embl.ebi.escience.scufl.DataConstraint;
-import org.embl.ebi.escience.scufl.MalformedNameException;
-import org.embl.ebi.escience.scufl.UnknownPortException;
-import org.embl.ebi.escience.scufl.UnknownProcessorException;
 import org.embl.ebi.escience.scufl.DataConstraintCreationException;
 import org.embl.ebi.escience.scufl.DuplicateProcessorNameException;
 import org.embl.ebi.escience.scufl.Processor;
@@ -133,7 +130,7 @@ public class ScuflGraph extends JGraph
         // Add user input parameters
     
         // Construct Vertex with no Label
-        ScuflGraphCell vertex = new ScuflGraphCell(name);
+        ScuflGraphCell vertex = new ScuflGraphCell(name,proc);
 
         // Create a Map that holds the attributes for the Vertex
         Map map = GraphConstants.createMap();
@@ -178,6 +175,17 @@ public class ScuflGraph extends JGraph
         setCursor(cdone);
     }
 
+
+    /**
+     *
+     *  Destroy a processor
+     * 
+     */
+    public void destroyProcessor(Processor processor)
+    {
+      scuflModel.destroyProcessor(processor);
+    }
+
     /**
      * Get the XML text
      */
@@ -199,18 +207,6 @@ public class ScuflGraph extends JGraph
       {
         System.out.println("DataConstraintCreationException:: in addDataConstraint");
       }
-//    catch(UnknownPortException upe)
-//    {
-//      System.out.println("UnknownPortException:: in addDataConstraint");
-//    }
-//    catch(UnknownProcessorException upre)
-//    {
-//      System.out.println("UnknownProcessorException:: in addDataConstraint");
-//    }
-//    catch(MalformedNameException pne)
-//    {
-//      System.out.println("MalformedNameException:: in addDataConstraint");
-//    }
 
     }
 

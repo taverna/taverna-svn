@@ -105,7 +105,19 @@ public class Retsina extends JApplet
      {
        public void actionPerformed(ActionEvent e)
        {
-         System.out.println(graphPanel.getXScufl());
+         JTextPane xscufl = new JTextPane();
+         JPanel pscroll = new JPanel(new BorderLayout());
+         JScrollPane rscroll = new JScrollPane(pscroll);
+         rscroll.getViewport().setBackground(Color.white);
+         xscufl.setText(graphPanel.getXScufl());
+         xscufl.setEditable(false);
+         pscroll.add(xscufl);
+         JOptionPane jop = new JOptionPane();
+         rscroll.setPreferredSize(new Dimension(400,180));
+
+         xscufl.setCaretPosition(0);
+         jop.showMessageDialog(null,rscroll,"XScufl",
+                             JOptionPane.PLAIN_MESSAGE);
        }
      });
      viewMenu.add(viewXScufl);

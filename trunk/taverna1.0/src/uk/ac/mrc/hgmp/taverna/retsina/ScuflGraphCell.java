@@ -13,6 +13,7 @@ import java.util.List; // ambiguous with: java.awt.List
 import java.util.Map;
 
 import org.embl.ebi.escience.scufl.Port;
+import org.embl.ebi.escience.scufl.Processor;
 import uk.ac.mrc.hgmp.taverna.retsina.ScuflInputPort;
 import uk.ac.mrc.hgmp.taverna.retsina.ScuflOutputPort;
 import java.lang.Object;
@@ -29,6 +30,7 @@ public class ScuflGraphCell extends DefaultGraphCell {
     private int yCoordOutput = 100;
     private static final int xCoordOutput = 1000;
     private static final int yIncrement = 40;
+    private Processor processor = null;
 
     public ScuflGraphCell() {
 	super();
@@ -38,6 +40,11 @@ public class ScuflGraphCell extends DefaultGraphCell {
         super(o);
     }
 
+    public ScuflGraphCell(Object o, Processor processor) {
+        super(o);
+        this.processor = processor;
+    }
+
     public ScuflGraphCell(Object o, MutableTreeNode[] mutableTreeNodes) {
         super(o, mutableTreeNodes);
     }
@@ -45,7 +52,12 @@ public class ScuflGraphCell extends DefaultGraphCell {
     public ScuflGraphCell(Object o, boolean b) {
         super(o, b);
     }
-    
+ 
+    public Processor getScuflProcessor()
+    {
+      return processor;
+    }
+   
     public Map addInputPort(org.embl.ebi.escience.scufl.Port p)
     {
         int xCoordInput = 0;

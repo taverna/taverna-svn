@@ -83,6 +83,7 @@ public class ScuflGraphPanel extends JPanel
 	graph = new ScuflGraph(new ScuflGraphModel(),progs);
 	graph.setMarqueeHandler(new ScuflMarqueeHandler());
         graph.setBackground(new Color(153,153,255));
+
 	undoManager = new GraphUndoManager() 
         {
 		/**
@@ -307,15 +308,18 @@ public class ScuflGraphPanel extends JPanel
      */
     public void keyReleased(KeyEvent e) {
     }
+
     /** 
      * Implements KeyListener
      */
     public void keyTyped(KeyEvent e) {
     }
+
     /**
      * Trap delete events
      */
-    public void keyPressed(KeyEvent e) {
+    public void keyPressed(KeyEvent e) 
+    {
 	// Listen for Delete Key Press
 	if (e.getKeyCode() == KeyEvent.VK_DELETE)
 	    // Execute Remove Action on Delete Key Press
@@ -493,21 +497,24 @@ public class ScuflGraphPanel extends JPanel
 		});
 	}
 	// Remove
-	if (!graph.isSelectionEmpty()) {
+	if (!graph.isSelectionEmpty()) 
+        {
 	    menu.addSeparator();
-	    menu.add(new AbstractAction("Remove") {
-		    public void actionPerformed(ActionEvent e) {
-			remove.actionPerformed(e);
-		    }
-		});
-	}
-	menu.addSeparator();
-	// Insert
-	menu.add(new AbstractAction("Insert") {
-		public void actionPerformed(ActionEvent ev) {
-		    insert(pt);
-		}
+	    menu.add(new AbstractAction("Remove") 
+            {
+	      public void actionPerformed(ActionEvent e) 
+              {
+		remove.actionPerformed(e);
+	      }
 	    });
+	}
+//	menu.addSeparator();
+	// Insert
+//	menu.add(new AbstractAction("Insert") {
+//		public void actionPerformed(ActionEvent ev) {
+//		    insert(pt);
+//		}
+//	    });
 	return menu;
     }
     
@@ -598,10 +605,14 @@ public class ScuflGraphPanel extends JPanel
 	ImageIcon removeIcon = new ImageIcon(removeUrl);
 	remove = new AbstractAction("", removeIcon) {
 		public void actionPerformed(ActionEvent e) {
-		    if (!graph.isSelectionEmpty()) {
+		    if (!graph.isSelectionEmpty())
+                    {
 			Object[] cells = graph.getSelectionCells();
 			cells = graph.getDescendants(cells);
-			graph.getModel().remove(cells);
+                        for(int i=0;i<cells.length;i++)
+                          if(cells[i] instanceof ScuflGraphCell)
+                            graph.destroyProcessor(((ScuflGraphCell)cells[i]).getScuflProcessor());
+                        graph.getModel().remove(cells);
 		    }
 		}
 	    };
