@@ -125,19 +125,16 @@ public class ResultItemPanel extends JPanel {
 				JButton cmdEdit=new JButton("Change");
 				cmdEdit.addActionListener( new ActionListener(){
 					public void actionPerformed(ActionEvent ae) {
+            DataThingTreeNode node = (DataThingTreeNode)structureTree.getLastSelectedPathComponent();
+            if (node != null /*&& node.isLeaf()*/) 
 						if (component instanceof javax.swing.text.JTextComponent){
-								String oldData=(String)theDataThing.getDataObject();
+                DataThing dataThing = node.getNodeThing();
+								String oldData=(String)dataThing.getDataObject();
 								String newData=((javax.swing.text.JTextComponent)component).getText();
 							  if (!oldData.equals(newData)){
-												//NOTE:Very temp. Needs more tests
-													theDataThing.setDataObject(new String(newData));
-													DefaultMutableTreeNode newTn = DataThingTreeFactory.getTree(theDataThing);
-													DefaultTreeModel tm=(DefaultTreeModel)structureTree.getModel();
-													tm.insertNodeInto((DefaultMutableTreeNode)tn,newTn,tn.getChildCount());
-													tm.setRoot(newTn);
-													tm.removeNodeFromParent((DefaultMutableTreeNode)tn);
-													tm.reload();
-													structureTree.update(structureTree.getGraphics());
+												theDataThing.setDataObject(new String(newData));
+												node.setUserObject(theDataThing.getDataObject());
+												structureTree.update(structureTree.getGraphics());
 								}
 						}
 						else {
@@ -266,25 +263,22 @@ public class ResultItemPanel extends JPanel {
 				    JButton cmdEdit=new JButton("Change"); 
 				    cmdEdit.addActionListener( new ActionListener(){
 					     public void actionPerformed(ActionEvent ae) { 
-									if (component instanceof javax.swing.text.JTextComponent){
-										String oldData=(String)theDataThing.getDataObject();
-										String newData=((javax.swing.text.JTextComponent)component).getText();
-							  		if (!oldData.equals(newData)){
-												//NOTE:Very temp. Needs more tests
-													theDataThing.setDataObject(new String(newData));
-													DefaultMutableTreeNode newTn = DataThingTreeFactory.getTree(theDataThing);
-													DefaultTreeModel tm=(DefaultTreeModel)structureTree.getModel();
-													tm.insertNodeInto((DefaultMutableTreeNode)tn,newTn,tn.getChildCount());
-													tm.setRoot(newTn);
-													tm.removeNodeFromParent((DefaultMutableTreeNode)tn);
-													tm.reload();
-													structureTree.update(structureTree.getGraphics());
+											 DataThingTreeNode node = (DataThingTreeNode)structureTree.getLastSelectedPathComponent(); 
+											 if (node != null /*&& node.isLeaf()*/) 
+										if (component instanceof javax.swing.text.JTextComponent){ 
+														DataThing dataThing = node.getNodeThing(); 
+														String oldData=(String)dataThing.getDataObject(); 
+														String newData=((javax.swing.text.JTextComponent)component).getText(); 
+														if (!oldData.equals(newData)){ 
+																		theDataThing.setDataObject(new String(newData)); 
+																		node.setUserObject(theDataThing.getDataObject()); 
+																		structureTree.update(structureTree.getGraphics());
+													 	} 
 										}
-									}
-									else {
+									 	else {
 										//TODO for other renderers 
 										//theDataThing.setDataObject(((javax.swing.JTable)component).getValueAt(0,0));
-									}
+										}
 					     }
 					});
 					panel.removeAll();
