@@ -37,7 +37,7 @@ public class SoaplabScavengerHelper implements ScavengerHelper {
 									       JOptionPane.QUESTION_MESSAGE,
 									       null,
 									       null,
-									       "http://industry.ebi.ac.uk/soap/soaplab/");
+									       "http://www.ebi.ac.uk/soaplab/services/");
 		    if (baseURL!=null) {
 			new Thread() {
 			    public void run() {
