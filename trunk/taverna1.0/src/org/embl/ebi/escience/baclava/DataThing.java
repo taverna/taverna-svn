@@ -543,8 +543,7 @@ public class DataThing {
     }
 
 
-    public String toString()
-    {
+    public String toString() {
         String datStr = theDataObject.toString();
         boolean trimmed = false;
         int nl = datStr.indexOf('\n');
@@ -559,15 +558,9 @@ public class DataThing {
         if(trimmed) {
             datStr += "...";
         }
-
-
-        return super.toString() +
-                "\n\tdataObject=" + datStr +
-                "\n\tmetaData=" + metadataMap +
-	        "\n\tlsidMap=" + lsid +
-                "\n\tmarkup=" + myMarkup +
-                "\n\tlsid=" + (String)(lsid.get(this)) +
-                "\n";
+	return super.toString() +
+	    "\n\tValue="+datStr+
+	    "\n\tLSID="+getLSID(theDataObject)+"\n";
     }
     
     /**
@@ -579,36 +572,21 @@ public class DataThing {
      * or directory that has been written is returned.
      */
     public File writeToFileSystem(File destination, String name) throws IOException {
-	String defaultExtension = ".text";
-	String syntacticType = (getSyntacticType().split("'"))[1].toLowerCase();
-	if (syntacticType.matches(".*text/xml.*")) {
-	    defaultExtension = ".xml";
+	// Check for the most interesting type, if defined
+	String interestingType = getMostInterestingMIMETypeForObject(this.theDataObject);
+	String fileExtension = ".text";
+	if (interestingType != null) {
+	    // MIME types look like 'foo/bar'
+	    String lastPart = interestingType.split("/")[1];
+	    if (lastPart.startsWith("x-") == false) {
+		fileExtension = lastPart;
+	    }
 	}
-	else if (syntacticType.matches(".*text/html.*")) {
-	    defaultExtension = ".html";
-	}
-	else if (syntacticType.matches(".*text/rtf.*")) {
-	    defaultExtension = ".rtf";
-	}
-	else if (syntacticType.matches(".*image/png.*")) {
-	    defaultExtension = ".png";
-	}
-	else if (syntacticType.matches(".*image/jpeg.*")) {
-	    defaultExtension = ".jpeg";
-	}
-	else if (syntacticType.matches(".*image/gif.*")) {
-	    defaultExtension = ".gif";
-	}
-	else if (syntacticType.matches(".*x-graphviz.*")) {
-	    defaultExtension = ".dot.text";
-	}
-	else if (syntacticType.matches(".*application/zip.*")) {
-	    defaultExtension = ".zip";
-	}
-	File writtenFile = DataThing.writeObjectToFileSystem(destination, name, theDataObject, defaultExtension);
-
+	File writtenFile = DataThing.writeObjectToFileSystem(destination, name, theDataObject, fileExtension);
 	return writtenFile;
     }
+    
+    
     /**
      * Write a specific object to the filesystem
      * this has no access to metadata about the object
