@@ -19,6 +19,9 @@ import java.lang.reflect.*;
 import org.blueprint.seqhound.*;
 import java.util.*;
 import java.net.URL;
+import org.jdom.*;
+import org.jdom.input.*;
+import java.io.*;
 
 public class SeqhoundProcessor extends Processor {
 
@@ -29,6 +32,51 @@ public class SeqhoundProcessor extends Processor {
     Method targetMethod;
     Properties config = new Properties();
     
+    static Map descriptions = new HashMap();
+    static Map parameters = new HashMap();
+
+    static {
+	// Load information from the services.xml if it exists. If not
+	// then don't worry too much about it!
+	ClassLoader loader = SeqhoundProcessor.class.getClassLoader();
+	if (loader == null) {
+	    loader = Thread.currentThread().getContextClassLoader();
+	}
+	URL serviceMetadata = loader.getResource("org/embl/ebi/escience/scuflworkers/seqhound/services.xml");
+	if (serviceMetadata != null) {
+	    Document document = null;
+	    try {
+		InputStream is = serviceMetadata.openStream();
+		InputStreamReader isr = new InputStreamReader(is);
+		SAXBuilder builder = new SAXBuilder(false);
+		document = builder.build(isr);
+		List services = document.getRootElement().getChildren("service");
+		for (Iterator i = services.iterator(); i.hasNext(); ) {
+		    Element service = (Element)i.next();
+		    String serviceName = service.getAttributeValue("name");
+		    // Get the service description from the javadoc
+		    String serviceDescription = service.getChild("description").getTextTrim();
+		    descriptions.put(serviceName, serviceDescription);
+		    // Now get the list of parameter names
+		    List parameterElements = service.getChild("parameters").getChildren("parameter");
+		    String[] parameterNames = new String[parameterElements.size()];
+		    for (int j = 0; j < parameterNames.length; j++) {
+			Element parameterElement = (Element)parameterElements.get(j);
+			parameterNames[j] = parameterElement.getAttributeValue("name");
+		    }
+		    parameters.put(serviceName, parameterNames);
+		}
+	    
+	    }
+	    catch (Exception ex) {
+		ex.printStackTrace();
+	    }
+	}
+	else {
+	    System.out.println("No seqhound service metadata available");
+	}
+    }
+
     public SeqhoundProcessor(ScuflModel theModel, 
 			     String processorName, 
 			     String methodName,
@@ -60,6 +108,10 @@ public class SeqhoundProcessor extends Processor {
 	catch (java.io.IOException ioe) {
 	    throw new ProcessorCreationException("Unable to contact the seqhound server!");
 	}
+	String description = (String)descriptions.get(methodName);
+	if (description != null) {
+	    setDescription(description);
+	}
 	// Locate the Method object corresponding to this method name
 	// and inspect it to get the available inputs and output
 	// classes. Use these to then build the appropriate ports
@@ -80,9 +132,17 @@ public class SeqhoundProcessor extends Processor {
 	Class returnType = theMethod.getReturnType();
 	targetMethod = theMethod;
 	
+	String[] parameterNames = (String[])parameters.get(methodName);
+	
 	try {
 	    for (int i = 0; i < parameterTypes.length; i++) {
-		InputPort ip = new InputPort(this, "in"+i);
+		InputPort ip;
+		if (parameterNames == null) {
+		    ip = new InputPort(this, "in"+i);
+		}
+		else {
+		    ip = new InputPort(this, parameterNames[i]);
+		}
 		if (parameterTypes[i].isArray()) {
 		    ip.setSyntacticType("l('text/plain')");
 		}

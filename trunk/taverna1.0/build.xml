@@ -35,6 +35,10 @@
 		<fileset dir="./devlib">
 			<include name="*.jar"/>
 		</fileset>
+		<!-- tools.jar from the JDK -->
+		<fileset dir="${java.home}/lib">
+		        <include name="tools.jar"/>
+		</fileset>
 		<!-- Also include our own source tree -->
                 <pathelement path="."/>
 		<pathelement path="${build.classes}"/>
@@ -319,6 +323,15 @@
              source="1.4"
 			 version="true">
 			<classpath refid="compile-classpath"/>
+		</javadoc>
+	</target>
+
+	<!-- Fetch seqhound metadata -->
+	<target name="seqhound">
+	        <javadoc sourcefiles="../seqhound/src/org/blueprint/seqhound/SeqHound.java">
+		        <doclet name="org.embl.ebi.escience.scuflworkers.seqhound.SeqhoundMetadataDoclet" path="build/classes/"/>
+			<classpath refid="compile-classpath"/>
+			
 		</javadoc>
 	</target>
 

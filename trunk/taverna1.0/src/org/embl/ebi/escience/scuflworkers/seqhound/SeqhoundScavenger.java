@@ -76,7 +76,10 @@ public class SeqhoundScavenger extends Scavenger {
 	}
     }
     
-    private static boolean isInternal(String methodName) {
+    static boolean isInternal(String methodName) {
+	if (methodName.startsWith("SHound") == false) {
+	    return true;
+	}
 	for (int i = 0; i < internalOperations.length; i++) {
 	    if (methodName.equals("SHound"+internalOperations[i])) {
 		return true;
