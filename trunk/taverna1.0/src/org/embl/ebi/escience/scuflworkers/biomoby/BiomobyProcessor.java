@@ -31,12 +31,12 @@ import org.biomoby.shared.*;
  * processor implementation will contact Biomoby registry in order to
  * find the list of extant ports at creation time. <p>
  *
- * @version $Id: BiomobyProcessor.java,v 1.10 2004-09-18 23:07:55 mereden Exp $
+ * @version $Id: BiomobyProcessor.java,v 1.11 2004-09-19 21:29:50 mereden Exp $
  * @author Martin Senger
  */
 public class BiomobyProcessor extends Processor implements java.io.Serializable {
 
-    private URL endpoint = null;
+    private URL endpoint;
     private String mobyEndpoint = null;
     private Central worker = null;
     private MobyService mobyService = null;
@@ -59,6 +59,14 @@ public class BiomobyProcessor extends Processor implements java.io.Serializable 
 	this.authorityName = authorityName;
 	if (this.isOffline() == false) {
 	    init();
+	}
+	else {
+	    try {
+		this.endpoint = new URL("http://unknown.host.org/UnknownHost");
+	    }
+	    catch (MalformedURLException mue) {
+		//
+	    }
 	}
     }
 
