@@ -12,6 +12,8 @@ import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 import org.embl.ebi.escience.scufl.*;
+import javax.swing.JLabel;
+import java.awt.Color;
 //import org.embl.ebi.escience.scuflui.workbench.GenericUIComponentFrame;
 //import org.embl.ebi.escience.scuflui.workbench.Workbench;
 
@@ -36,6 +38,8 @@ public class LinkingMenus {
 	JPopupMenu theMenu = new JPopupMenu("Possible targets");
 	// Is this a workflow source? If so give the option to delete it
 	if (fromPort.getProcessor() == model.getWorkflowSourceProcessor()) {
+	    theMenu.add(new ShadedLabel("Workflow input \""+sourcePort.getName()+"\"", ShadedLabel.TAVERNA_GREEN));
+	    theMenu.addSeparator();
 	    JMenuItem delete = new JMenuItem("Remove from model",ScuflIcons.deleteIcon);
 	    delete.addActionListener(new ActionListener() {
 		    public void actionPerformed(ActionEvent ae) {
@@ -43,7 +47,6 @@ public class LinkingMenus {
 		    }
 		});
 	    theMenu.add(delete);
-	    theMenu.addSeparator();
 	    JMenuItem edit = new JMenuItem("Edit metadata...", ScuflIcons.editIcon);
 	    edit.addActionListener(new ActionListener() {
 		    public void actionPerformed(ActionEvent ae) {
@@ -62,17 +65,37 @@ public class LinkingMenus {
 		});
 	    theMenu.add(edit);
 	    theMenu.addSeparator();
+	    theMenu.add(new ShadedLabel("Connect to...", ShadedLabel.TAVERNA_ORANGE));
+	    theMenu.addSeparator();
 	}
-	JMenuItem title = new JMenuItem("Link '"+sourcePort.getName()+"' to....");
-	title.setEnabled(false);
-	theMenu.add(title);
-	theMenu.addSeparator();
-	JMenu workflowSinks = new JMenu("Workflow outputs");
-	workflowSinks.setIcon(ScuflIcons.outputIcon);
-	theMenu.add(workflowSinks);
-	
-	// Add the possible workflow sink ports
+	else {
+	    theMenu.add(new ShadedLabel("Link "+sourcePort.getName()+" to...", ShadedLabel.TAVERNA_GREEN));
+	    theMenu.addSeparator();
+	}
+	//JMenuItem title = new JMenuItem("Link '"+sourcePort.getName()+"' to...");
+	//title.setEnabled(false);
+	//theMenu.add(title);
+
 	Port[] wsp = model.getWorkflowSinkPorts();
+	Processor[] processors = sourcePort.getProcessor().getModel().getProcessors();
+	
+	/**JLabel heading = new JLabel("<html><body><b>Link <font color=\"purple\">"+sourcePort.getName()+"</font> to...</b></body></html>");
+	   heading.setBackground(Color.WHITE);
+	   heading.setOpaque(true);
+	   theMenu.add(heading);
+	*/
+	/**
+	   theMenu.add(new ShadedLabel("Link to...", ShadedLabel.TAVERNA_ORANGE));
+	   theMenu.addSeparator();
+	*/
+	   JMenu workflowSinks = new JMenu("Workflow outputs");
+	workflowSinks.setIcon(ScuflIcons.outputIcon);
+	
+	// Do the workflow sink ports
+	if (wsp.length > 0) {
+	    theMenu.add(workflowSinks);
+	    theMenu.addSeparator();
+	}
 	for (int i = 0; i < wsp.length; i++) {
 	    JMenuItem wspitem = new JMenuItem(wsp[i].getName(), 
 					      ScuflIcons.outputIcon);
@@ -90,44 +113,45 @@ public class LinkingMenus {
 	    workflowSinks.add(wspitem);
 	}
 
-	theMenu.addSeparator();
-	Processor[] processors = sourcePort.getProcessor().getModel().getProcessors();
+	// Do the target processors
 	for (int i = 0; i < processors.length; i++) {
-	    ImageIcon icon = null;
-	    icon = org.embl.ebi.escience.scuflworkers.ProcessorHelper.getPreferredIcon(processors[i]);
-	    JMenu processorMenu = new JMenu(processors[i].getName());
-	    processorMenu.setIcon(icon);
-	    theMenu.add(processorMenu);
 	    // Get all the input ports for this processor
 	    InputPort[] inputs = processors[i].getInputPorts();
-	    int offset = 0;
-	    int menuSize = 15;
-	    JMenu currentMenu = processorMenu;
-	    boolean finished = false;
-	    while (!finished) {
-		if (inputs.length > menuSize) {
-		    currentMenu = new JMenu("Inputs "+(offset+1)+" to "+((offset + menuSize > inputs.length)?inputs.length:offset+menuSize)); 
-		    processorMenu.add(currentMenu);
-		}
-		for (int j = offset; (j < inputs.length) && 
-			 (j < offset + menuSize); j++) {
-		    final Port toPort = inputs[j];
-		    final JMenuItem ip = new JMenuItem(inputs[j].getName(), ScuflIcons.inputPortIcon);
-		    currentMenu.add(ip);
-		    ip.addActionListener(new ActionListener() {
-			    public void actionPerformed(ActionEvent ae) {
-				try {
-				    model.addDataConstraint(new DataConstraint(model, fromPort, toPort));
+	    if (inputs.length > 0) {
+		ImageIcon icon = null;
+		icon = org.embl.ebi.escience.scuflworkers.ProcessorHelper.getPreferredIcon(processors[i]);
+		JMenu processorMenu = new JMenu(processors[i].getName());
+		processorMenu.setIcon(icon);
+		int offset = 0;
+		int menuSize = 15;
+		JMenu currentMenu = processorMenu;
+		boolean finished = false;
+		theMenu.add(processorMenu);
+		while (!finished) {
+		    if (inputs.length > menuSize) {
+			currentMenu = new JMenu("Inputs "+(offset+1)+" to "+((offset + menuSize > inputs.length)?inputs.length:offset+menuSize)); 
+			processorMenu.add(currentMenu);
+		    }
+		    for (int j = offset; (j < inputs.length) && 
+			     (j < offset + menuSize); j++) {
+			final Port toPort = inputs[j];
+			final JMenuItem ip = new JMenuItem(inputs[j].getName(), ScuflIcons.inputPortIcon);
+			currentMenu.add(ip);
+			ip.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent ae) {
+				    try {
+					model.addDataConstraint(new DataConstraint(model, fromPort, toPort));
+				    }
+				    catch (DataConstraintCreationException dcce) {
+					//
+				    }
 				}
-				catch (DataConstraintCreationException dcce) {
-				    //
-				}
-			    }
-			});
-		}
-		offset += menuSize;
-		if (offset >= inputs.length) {
-		    finished = true;
+			    });
+		    }
+		    offset += menuSize;
+		    if (offset >= inputs.length) {
+			finished = true;
+		    }
 		}
 	    }
 	}

@@ -66,9 +66,7 @@ public class ScuflContextMenuFactory {
 	    if (parent.getUserObject() instanceof AlternateProcessor) {
 		final AlternateProcessor ap = (AlternateProcessor)parent.getUserObject();
 		JPopupMenu theMenu = new JPopupMenu();
-		JMenuItem title = new JMenuItem("Map port '"+thePort.getName()+"' to...");
-		theMenu.add(title);
-		title.setEnabled(false);
+		theMenu.add(new ShadedLabel("Map port '"+thePort.getName()+"' to...", ShadedLabel.TAVERNA_GREEN));
 		theMenu.addSeparator();
 		if (theObject instanceof OutputPort) {
 		    // Fetch the original port names from the output ports on the
@@ -112,10 +110,8 @@ public class ScuflContextMenuFactory {
 		// If this is a workflow sink, give the option to remove it.
 		if (thePort.getProcessor() == model.getWorkflowSinkProcessor()) {
 		    JPopupMenu theMenu = new JPopupMenu();
-		    JMenuItem title = new JMenuItem("Workflow sink : "+thePort.getName());
+		    theMenu.add(new ShadedLabel("Workflow sink : "+thePort.getName(), ShadedLabel.TAVERNA_GREEN));
 		    final Port sinkPort = thePort;
-		    theMenu.add(title);
-		    title.setEnabled(false);
 		    theMenu.addSeparator();
 		    
 		    JMenuItem edit = new JMenuItem("Edit metadata...", ScuflIcons.editIcon);
@@ -160,11 +156,9 @@ public class ScuflContextMenuFactory {
 	    if (choice.equals("Workflow inputs")) {
 		// Show menu to create a new workflow source
 		JPopupMenu theMenu = new JPopupMenu();
-		JMenuItem title = new JMenuItem("Workflow inputs");
-		theMenu.add(title);
-		title.setEnabled(false);
+		theMenu.add(new ShadedLabel("Workflow inputs",ShadedLabel.TAVERNA_GREEN));
 		theMenu.addSeparator();
-		JMenuItem createInput = new JMenuItem("Create new input",ScuflIcons.inputIcon);
+		JMenuItem createInput = new JMenuItem("Create new input...",ScuflIcons.inputIcon);
 		theMenu.add(createInput);
 		final ScuflModel theModel = model;
 		createInput.addActionListener(new ActionListener() {
@@ -202,11 +196,9 @@ public class ScuflContextMenuFactory {
 	    else if (choice.equals("Workflow outputs")) {
 		// Show menu to create a new workflow sink
 		JPopupMenu theMenu = new JPopupMenu();
-		JMenuItem title = new JMenuItem("Workflow outputs");
-		theMenu.add(title);
-		title.setEnabled(false);
+		theMenu.add(new ShadedLabel("Workflow outputs", ShadedLabel.TAVERNA_GREEN));
 		theMenu.addSeparator();
-		JMenuItem createOutput = new JMenuItem("Create new output",ScuflIcons.outputIcon);
+		JMenuItem createOutput = new JMenuItem("Create new output...",ScuflIcons.outputIcon);
 		theMenu.add(createOutput);
 		final ScuflModel theModel = model;
 		createOutput.addActionListener(new ActionListener() {
@@ -249,9 +241,7 @@ public class ScuflContextMenuFactory {
 	final DataConstraint theConstraint = dc;
 	final ScuflModel theModel = model;
 	JPopupMenu theMenu = new JPopupMenu();
-	JMenuItem title = new JMenuItem("Link : "+theConstraint.getName());
-	title.setEnabled(false);
-	theMenu.add(title);
+	theMenu.add(new ShadedLabel("Link : "+theConstraint.getName(), ShadedLabel.TAVERNA_GREEN));
 	theMenu.addSeparator();
 	JMenuItem delete = new JMenuItem("Remove from model", ScuflIcons.deleteIcon);
 	delete.addActionListener(new ActionListener() {
@@ -267,9 +257,7 @@ public class ScuflContextMenuFactory {
 	final ConcurrencyConstraint theConstraint = cc;
 	final ScuflModel theModel = model;
 	JPopupMenu theMenu = new JPopupMenu();
-	JMenuItem title = new JMenuItem("Coordination : "+theConstraint.getName());
-	title.setEnabled(false);
-	theMenu.add(title);
+	theMenu.add(new ShadedLabel("Coordination : "+theConstraint.getName(), ShadedLabel.TAVERNA_GREEN));
 	theMenu.addSeparator();
 	JMenuItem delete = new JMenuItem("Remove from model", ScuflIcons.deleteIcon);
 	delete.addActionListener(new ActionListener() {
@@ -284,9 +272,7 @@ public class ScuflContextMenuFactory {
     private static JPopupMenu getProcessorMenu(Processor processor) {
 	final Processor theProcessor = processor;
 	JPopupMenu theMenu = new JPopupMenu();
-	JMenuItem title = new JMenuItem("Processor : "+theProcessor.getName());
-	title.setEnabled(false);
-	theMenu.add(title);
+	theMenu.add(new ShadedLabel("Processor : "+theProcessor.getName(), ShadedLabel.TAVERNA_GREEN));
 	theMenu.addSeparator();
 	JMenuItem delete = new JMenuItem("Remove from model", ScuflIcons.deleteIcon);
 	delete.addActionListener(new ActionListener() {
@@ -352,9 +338,7 @@ public class ScuflContextMenuFactory {
     
     private static JPopupMenu getAlternateProcessorMenu(AlternateProcessor ap) {
 	JPopupMenu theMenu = new JPopupMenu();
-	JMenuItem title = new JMenuItem("Alternate processor");
-	title.setEnabled(false);
-	theMenu.add(title);
+	theMenu.add(new ShadedLabel("Alternate processor",ShadedLabel.TAVERNA_GREEN));
 	theMenu.addSeparator();
 	final Processor parentProcessor = ap.getOriginalProcessor();
 	final AlternateProcessor alternate = ap;
