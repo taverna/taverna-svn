@@ -54,13 +54,36 @@ public class BeanshellXMLHandler implements XMLHandler {
     }
     
     public Element elementForFactory(ProcessorFactory pf) {
-	return new Element("beanshell",XScufl.XScuflNS);
+	BeanshellProcessorFactory bpf = (BeanshellProcessorFactory)pf;
+	if (bpf.getPrototype() != null) {
+	    return elementForProcessor(bpf.getPrototype());
+	}
+	else {
+	    Element spec = new Element("beanshell",XScufl.XScuflNS);
+	    return spec;
+	}
     }
 
     public ProcessorFactory getFactory(Element specElement) {
-	return new BeanshellProcessorFactory();
+	Element processorNode = new Element("processor");
+	Element spec = (Element)specElement.clone();
+	spec.detach();
+	processorNode.addContent(spec);
+	BeanshellProcessor bp = null;
+	try {
+	    bp = (BeanshellProcessor)loadProcessorFromXML(processorNode, null, "foo");
+	}
+	catch (Exception ex) {
+	    ex.printStackTrace();
+	}
+	if (bp != null) {
+	    return new BeanshellProcessorFactory(bp);
+	}
+	else {
+	    return new BeanshellProcessorFactory();
+	}
     }
-
+    
     public Processor loadProcessorFromXML(Element processorNode, ScuflModel model, String name)
 	throws ProcessorCreationException, 
 	       DuplicateProcessorNameException, 
@@ -74,42 +97,44 @@ public class BeanshellXMLHandler implements XMLHandler {
 	}
 	// Handle inputs
 	Element inputList = beanshell.getChild("beanshellinputlist",XScufl.XScuflNS);
-	if(inputList!=null)
-	for (Iterator i = inputList.getChildren().iterator(); i.hasNext(); ) {
-	    Element inputElement = (Element)i.next();
-	    String inputName = inputElement.getTextTrim();
-	    String syntacticType = inputElement.getAttributeValue("syntactictype",XScufl.XScuflNS);
-	    try {
-		InputPort p = new InputPort(bp, inputName);
-		if (syntacticType!=null)
-		    p.setSyntacticType(syntacticType);
-		bp.addPort(p);
-	    }
-	    catch (PortCreationException pce) {
-		throw new ProcessorCreationException("Unable to create port! "+pce.getMessage());
-	    }
-	    catch (DuplicatePortNameException dpne) {
-		throw new ProcessorCreationException("Unable to create port! "+dpne.getMessage());
+	if(inputList!=null) {
+	    for (Iterator i = inputList.getChildren().iterator(); i.hasNext(); ) {
+		Element inputElement = (Element)i.next();
+		String inputName = inputElement.getTextTrim();
+		String syntacticType = inputElement.getAttributeValue("syntactictype",XScufl.XScuflNS);
+		try {
+		    InputPort p = new InputPort(bp, inputName);
+		    if (syntacticType!=null)
+			p.setSyntacticType(syntacticType);
+		    bp.addPort(p);
+		}
+		catch (PortCreationException pce) {
+		    throw new ProcessorCreationException("Unable to create port! "+pce.getMessage());
+		}
+		catch (DuplicatePortNameException dpne) {
+		    throw new ProcessorCreationException("Unable to create port! "+dpne.getMessage());
+		}
 	    }
 	}
 	// Handle outputs
 	Element outputList = beanshell.getChild("beanshelloutputlist",XScufl.XScuflNS);
-	if (outputList!=null)
-	for (Iterator i = outputList.getChildren().iterator(); i.hasNext(); ) {
-	    Element outputElement = (Element)i.next();
-	    String outputName = outputElement.getTextTrim();
-	    String syntacticType = outputElement.getAttributeValue("syntactictype",XScufl.XScuflNS);
-	    try {
-		OutputPort p = new OutputPort(bp, outputName);
-		if (syntacticType!=null)
-		    p.setSyntacticType(syntacticType);
-		bp.addPort(p);
-	    }
-	    catch (PortCreationException pce) {
-		throw new ProcessorCreationException("Unable to create port! "+pce.getMessage());
-	    }
-	    catch (DuplicatePortNameException dpne) {
-		throw new ProcessorCreationException("Unable to create port! "+dpne.getMessage());
+	if (outputList!=null) {
+	    for (Iterator i = outputList.getChildren().iterator(); i.hasNext(); ) {
+		Element outputElement = (Element)i.next();
+		String outputName = outputElement.getTextTrim();
+		String syntacticType = outputElement.getAttributeValue("syntactictype",XScufl.XScuflNS);
+		try {
+		    OutputPort p = new OutputPort(bp, outputName);
+		    if (syntacticType!=null)
+			p.setSyntacticType(syntacticType);
+		    bp.addPort(p);
+		}
+		catch (PortCreationException pce) {
+		    throw new ProcessorCreationException("Unable to create port! "+pce.getMessage());
+		}
+		catch (DuplicatePortNameException dpne) {
+		    throw new ProcessorCreationException("Unable to create port! "+dpne.getMessage());
+		}
 	    }
 	}
 	//return new BeanshellProcessor(model, name, script, new String[0], new String[0]);

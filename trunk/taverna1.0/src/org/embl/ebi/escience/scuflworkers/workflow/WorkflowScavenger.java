@@ -10,6 +10,7 @@ import org.embl.ebi.escience.scuflui.workbench.Scavenger;
 import org.embl.ebi.escience.scuflui.workbench.ScavengerCreationException;
 import org.embl.ebi.escience.scuflworkers.stringconstant.*;
 import org.embl.ebi.escience.scuflworkers.workflow.WorkflowProcessorFactory;
+import org.embl.ebi.escience.scuflworkers.beanshell.*;
 import java.lang.String;
 import org.embl.ebi.escience.scufl.*;
 import org.embl.ebi.escience.scufl.parser.*;
@@ -60,6 +61,9 @@ public class WorkflowScavenger extends Scavenger {
 		}
 		else if (pf instanceof StringConstantProcessorFactory) {
 		    ((StringConstantProcessorFactory)pf).setName(processors[i].getName());
+		}
+		else if (pf instanceof BeanshellProcessorFactory) {
+		    ((BeanshellProcessorFactory)pf).setName(processors[i].getName());
 		}
 		add(new DefaultMutableTreeNode(pf));
 	    }

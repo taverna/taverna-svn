@@ -23,6 +23,9 @@ import java.lang.String;
  */
 public class BeanshellProcessorFactory extends ProcessorFactory {
 
+    private BeanshellProcessor prototype = null;
+    private String name = "Beanshell scripting host";
+    
     /**
      * Create a new factory
      */
@@ -30,11 +33,26 @@ public class BeanshellProcessorFactory extends ProcessorFactory {
 	//
     }
     
+    public BeanshellProcessorFactory(BeanshellProcessor prot) {
+	this.prototype = prot;
+    }
+
+    public BeanshellProcessor getPrototype() {
+	return this.prototype;
+    }
+
     /**
      * Return the constant value as the name
      */
     public String toString() {
-	return "Beanshell scripting host";
+	return this.name;
+    }
+    
+    /**
+     * Set the name
+     */
+    public void setName(String newName) {
+	this.name = newName;
     }
     
     /**
