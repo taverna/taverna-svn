@@ -38,7 +38,7 @@ public class TextXGraphviz
               Pattern.compile(".*text/x-graphviz.*"));
     }
 
-    protected boolean canHandle(MimeTypeRendererRegistry renderers,
+    protected boolean canHandle(RendererRegistry renderers,
                                 Object userObject,
                                 String mimeType)
     {
@@ -51,8 +51,9 @@ public class TextXGraphviz
         return true;
     }
 
-    public JComponent getComponent(MimeTypeRendererRegistry renderers,
+    public JComponent getComponent(RendererRegistry renderers,
                                    DataThing dataThing)
+            throws RendererException
     {
         String dotText = (String) dataThing.getDataObject();
         try {
@@ -74,10 +75,7 @@ public class TextXGraphviz
                     new Dimension(theImage.getIconWidth(), theImage.getIconHeight()));
             return theImagePanel;
         } catch (IOException ioe) {
-            JTextArea theTextArea = new JTextArea();
-            theTextArea.setText(dotText);
-            theTextArea.setFont(new Font("Monospaced", Font.PLAIN, 12));
-            return theTextArea;
+            throw new RendererException("Could not render dot text", ioe);
         }
     }
  }

@@ -105,7 +105,7 @@ but can also return the same icon for all cases.
 
 <p>
 Lastly, package your renderer up in a .jar file. To this .jar, add a file at
-<code>META-INF/services/org.embl.ebi.escience.scuflui.renderers.MimeTypeRendererSPI</code>
+<code>META-INF/services/org.embl.ebi.escience.scuflui.renderers.RendererSPI</code>
 containing the full class-name of your SPI implementation. If you have
 several different SPIs in your .jar file, then add each class name on its own
 line. The registry will take care of loading all of the classes listed in this

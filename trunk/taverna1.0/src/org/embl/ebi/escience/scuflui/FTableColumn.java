@@ -1,7 +1,7 @@
 package org.embl.ebi.escience.scuflui;
 
 import org.embl.ebi.escience.scuflui.facets.FacetFinderSPI;
-import org.embl.ebi.escience.scuflui.renderers.MimeTypeRendererSPI;
+import org.embl.ebi.escience.scuflui.renderers.RendererSPI;
 
 import java.beans.PropertyChangeSupport;
 import java.beans.PropertyChangeEvent;
@@ -20,7 +20,7 @@ public final class FTableColumn
 
     private String name;
     private FacetFinderSPI finder;
-    private MimeTypeRendererSPI renderer;
+    private RendererSPI renderer;
     private FacetFinderSPI.ColumnID colID;
     private boolean horizontalSrollable;
     private boolean verticalScrollable;
@@ -39,7 +39,7 @@ public final class FTableColumn
 
     public FTableColumn(String name,
                   FacetFinderSPI finder,
-                  MimeTypeRendererSPI renderer,
+                  RendererSPI renderer,
                   FacetFinderSPI.ColumnID colID,
                   boolean rowSrollable,
                   boolean colScrollable)
@@ -80,12 +80,12 @@ public final class FTableColumn
         pcSupport.firePropertyChange(pce);
     }
 
-    public MimeTypeRendererSPI getRenderer()
+    public RendererSPI getRenderer()
     {
         return renderer;
     }
 
-    public void setRenderer(MimeTypeRendererSPI renderer)
+    public void setRenderer(RendererSPI renderer)
     {
         PropertyChangeEvent pce = new PropertyChangeEvent(
                 this, "renderer", this.renderer, renderer);

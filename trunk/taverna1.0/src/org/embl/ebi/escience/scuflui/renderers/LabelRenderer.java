@@ -10,9 +10,9 @@ import javax.swing.*;
  * @author Matthew Pocock
  */
 public class LabelRenderer
-        implements MimeTypeRendererSPI
+        implements RendererSPI
 {
-    public boolean canHandle(MimeTypeRendererRegistry renderers,
+    public boolean canHandle(RendererRegistry renderers,
                              DataThing dataThing)
     {
         String[] mimeTypes = dataThing.getMetadata().getMIMETypes();
@@ -36,7 +36,7 @@ public class LabelRenderer
         return true;
     }
 
-    public JComponent getComponent(MimeTypeRendererRegistry renderers,
+    public JComponent getComponent(RendererRegistry renderers,
                                    DataThing dataThing)
     {
         Object dataObject = dataThing.getDataObject();
@@ -72,7 +72,7 @@ public class LabelRenderer
         return "LabelRenderer";
     }
 
-    public Icon getIcon(MimeTypeRendererRegistry renderers,
+    public Icon getIcon(RendererRegistry renderers,
                         DataThing dataThing)
     {
         return null;

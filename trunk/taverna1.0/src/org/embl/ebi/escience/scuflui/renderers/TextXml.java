@@ -30,7 +30,7 @@ public class TextXml
               Pattern.compile(".*text/xml.*"));
     }
 
-    protected boolean canHandle(MimeTypeRendererRegistry renderers,
+    protected boolean canHandle(RendererRegistry renderers,
                                 Object userObject,
                                 String mimeType)
     {
@@ -43,14 +43,15 @@ public class TextXml
         return true;
     }
 
-    public JComponent getComponent(MimeTypeRendererRegistry renderers,
+    public JComponent getComponent(RendererRegistry renderers,
                                    DataThing dataThing)
+            throws RendererException
     {
         DataThing copy = new DataThing(dataThing);
         copy.getMetadata().setMIMETypes(
                 Arrays.asList(strip(dataThing.getMetadata().getMIMETypes())));
 
-        MimeTypeRendererSPI delegate = renderers.getRenderer(copy);
+        RendererSPI delegate = renderers.getRenderer(copy);
         JComponent plain = delegate.getComponent(
                 renderers, copy);
         try {

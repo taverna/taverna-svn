@@ -12,7 +12,7 @@ import java.util.ArrayList;
  * @author Matthew Pocock
  */
 public abstract class AbstractRenderer
-        implements MimeTypeRendererSPI
+        implements RendererSPI
 {
     private String name;
     private Icon icon;
@@ -28,7 +28,7 @@ public abstract class AbstractRenderer
         this.icon = icon;
     }
 
-    public final boolean canHandle(MimeTypeRendererRegistry renderers,
+    public final boolean canHandle(RendererRegistry renderers,
                                    DataThing dataThing)
     {
         String[] mimeTypes = dataThing.getMetadata().getMIMETypes();
@@ -50,11 +50,11 @@ public abstract class AbstractRenderer
      * @param mimeType      one of the mime types associated with it
      * @return  true if we can handle this object with this mime type
      */
-    protected abstract boolean canHandle(MimeTypeRendererRegistry renderers,
+    protected abstract boolean canHandle(RendererRegistry renderers,
                                          Object userObject,
                                          String mimeType);
 
-    public final Icon getIcon(MimeTypeRendererRegistry renderers,
+    public final Icon getIcon(RendererRegistry renderers,
                               DataThing dataThing)
     {
         return icon;
@@ -87,7 +87,7 @@ public abstract class AbstractRenderer
             return pattern;
         }
 
-        protected boolean canHandle(MimeTypeRendererRegistry renderers,
+        protected boolean canHandle(RendererRegistry renderers,
                                     Object userObject,
                                     String mimeType)
         {

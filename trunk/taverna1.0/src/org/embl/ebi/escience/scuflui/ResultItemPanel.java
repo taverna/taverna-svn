@@ -18,9 +18,11 @@ import javax.swing.event.TreeSelectionListener;
 import org.embl.ebi.escience.baclava.DataThing;
 import org.embl.ebi.escience.baclava.factory.DataThingTreeFactory;
 import org.embl.ebi.escience.baclava.factory.DataThingTreeNode;
-import org.embl.ebi.escience.scuflui.renderers.MimeTypeRendererRegistry;
-import org.embl.ebi.escience.scuflui.renderers.MimeTypeRendererSPI;
+import org.embl.ebi.escience.scuflui.renderers.RendererRegistry;
+import org.embl.ebi.escience.scuflui.renderers.RendererSPI;
+import org.embl.ebi.escience.scuflui.renderers.RendererException;
 import org.embl.ebi.escience.scuflui.workbench.Workbench;
+import org.apache.log4j.Logger;
 
 // Utility Imports
 import java.util.Iterator;
@@ -42,15 +44,16 @@ import java.lang.String;
  * @author Matthew Pocock
  */
 public class ResultItemPanel extends JPanel {
+    Logger LOG = Logger.getLogger(ResultItemPanel.class);
     final JFileChooser fc = new JFileChooser();
-    final MimeTypeRendererRegistry renderers;
+    final RendererRegistry renderers;
 
     public ResultItemPanel(DataThing theDataThing)
     {
-        this(theDataThing, MimeTypeRendererRegistry.instance());
+        this(theDataThing, RendererRegistry.instance());
     }
 
-    public ResultItemPanel(DataThing theDataThing, MimeTypeRendererRegistry renderers) {
+    public ResultItemPanel(DataThing theDataThing, RendererRegistry renderers) {
         super(new BorderLayout());
 
         this.renderers = renderers;
@@ -88,10 +91,11 @@ public class ResultItemPanel extends JPanel {
                     if (node != null /*&& node.isLeaf()*/) {
                         // Only interested in leaf nodes as they contain the data
                         DataThing dataThing = node.getNodeThing();
-                        MimeTypeRendererSPI renderer =
+                        RendererSPI renderer =
                                 ResultItemPanel.this.renderers.getRenderer(dataThing);
 
                         if (renderer != null) {
+                          try {
                             JComponent component = renderer.getComponent(
                                     ResultItemPanel.this.renderers, dataThing);
                             if (component != null) {
@@ -101,6 +105,12 @@ public class ResultItemPanel extends JPanel {
 				// Reset the widths of the split Pane to show the entire tree
 				splitPane.setDividerLocation(-1);
                             }
+                          } catch (RendererException re) {
+                            // we should print up some message about the problem
+
+                            // and then log this
+                            LOG.error("Problem loading renderer", re);
+                          }
                         }
                     }
                 }
@@ -185,18 +195,25 @@ public class ResultItemPanel extends JPanel {
                     JMenu viewers = new JMenu("Viewers");
 
                     while(renderers.hasNext()) {
-                        final MimeTypeRendererSPI renderer =
-                                (MimeTypeRendererSPI) renderers.next();
+                        final RendererSPI renderer =
+                                (RendererSPI) renderers.next();
                         viewers.add(new JMenuItem(new AbstractAction(
                                 renderer.getName(),
                                 renderer.getIcon(ResultItemPanel.this.renderers, nodeThing))
                         {
                             public void actionPerformed(ActionEvent e)
                             {
+                              try {
                                 JComponent component = renderer.getComponent(ResultItemPanel.this.renderers, nodeThing);
-                                if(ui != null) {
-                                    splitPane.setRightComponent(new JScrollPane(component));
+                                if (ui != null) {
+                                  splitPane.setRightComponent(new JScrollPane(component));
                                 }
+                              } catch (RendererException re) {
+                                // should be informing the user something is wrong
+
+                                // log this
+                                LOG.error("Unable to load renderer", re);
+                              }
                             }
                         }));
                     }

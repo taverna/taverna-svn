@@ -24,7 +24,7 @@ public class TextTavernaWebUrlFetcher
               Pattern.compile(".*text/x-taverna-web-url.*"));
     }
 
-    protected boolean canHandle(MimeTypeRendererRegistry renderers,
+    protected boolean canHandle(RendererRegistry renderers,
                                 Object userObject,
                                 String mimeType)
     {
@@ -37,7 +37,7 @@ public class TextTavernaWebUrlFetcher
         return false;
     }
 
-    public JComponent getComponent(MimeTypeRendererRegistry renderers,
+    public JComponent getComponent(RendererRegistry renderers,
                                    DataThing dataThing)
     {
         Object dataObject = dataThing.getDataObject();

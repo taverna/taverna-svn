@@ -12,28 +12,26 @@ import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
 
-import org.embl.ebi.escience.scuflui.renderers.MimeTypeRendererSPI;
-
 /**
  * A registry that maintains a list of all renderer service providers.
  * <p>
- * The <code>MimeTypeRendererRegistry</code> should be accessed through the
- * instance obtained by calling <code>MimeTypeRendererRegistry.instance()</code>.
+ * The <code>RendererRegistry</code> should be accessed through the
+ * instance obtained by calling <code>RendererRegistry.instance()</code>.
  * This instance is initialised with the SPI implementations available through
  * the current class path.
  *
  * @author Matthew Pocock
  */
-public class MimeTypeRendererRegistry {
-    private static Logger LOG = Logger.getLogger(MimeTypeRendererRegistry.class);
-    private static MimeTypeRendererRegistry instance;
+public class RendererRegistry {
+    private static Logger LOG = Logger.getLogger(RendererRegistry.class);
+    private static RendererRegistry instance;
 
-    public static synchronized MimeTypeRendererRegistry instance()
+    public static synchronized RendererRegistry instance()
     {
         if(instance == null)
         {
-            instance = new MimeTypeRendererRegistry();
-            instance.loadInstances(MimeTypeRendererRegistry.class.getClassLoader());
+            instance = new RendererRegistry();
+            instance.loadInstances(RendererRegistry.class.getClassLoader());
         }
 
         return instance;
@@ -43,15 +41,15 @@ public class MimeTypeRendererRegistry {
 
     /**
      * Create a new instance. Intialize it with no renderers. You will probably
-     * want to call <code>MimeTypeRendererRegistry.instance()</code> instead.
+     * want to call <code>RendererRegistry.instance()</code> instead.
      */
-    public MimeTypeRendererRegistry()
+    public RendererRegistry()
     {
         renderers = new ArrayList();
     }
 
     /**
-     * Load all MimeTypeRendererSPI implementations that are registered in the
+     * Load all RendererSPI implementations that are registered in the
      * given ClassLoader.
      *
      * @param classLoader  a ClassLoader which will be searched
@@ -59,12 +57,12 @@ public class MimeTypeRendererRegistry {
     public void loadInstances(ClassLoader classLoader)
     {
         LOG.info("Loading all renderers");
-        SPInterface spiIF = new SPInterface(MimeTypeRendererSPI.class);
+        SPInterface spiIF = new SPInterface(RendererSPI.class);
         ClassLoaders loaders = new ClassLoaders();
         loaders.put(classLoader);
         Enumeration spe = Service.providers(spiIF, loaders);
         while (spe.hasMoreElements()) {
-            MimeTypeRendererSPI spi = (MimeTypeRendererSPI) spe.nextElement();
+            RendererSPI spi = (RendererSPI) spe.nextElement();
             LOG.info("\t" + spi.getName());
             renderers.add(spi);
         }
@@ -78,12 +76,12 @@ public class MimeTypeRendererRegistry {
      * @return  a MimeTypeRendereSPI that can render this, or null if none is
      *      found
      */
-    public MimeTypeRendererSPI getRenderer(DataThing dataThing)
+    public RendererSPI getRenderer(DataThing dataThing)
     {
         LOG.info("Finding renderer: " + dataThing);
         for(Iterator i = renderers.iterator(); i.hasNext(); )
         {
-            MimeTypeRendererSPI rend = (MimeTypeRendererSPI) i.next();
+            RendererSPI rend = (RendererSPI) i.next();
             if(rend.canHandle(this, dataThing))
             {
                 LOG.info("\tFound: " + rend.getName());
@@ -99,14 +97,14 @@ public class MimeTypeRendererRegistry {
      * If there are no renderers, then this list is empty.
      *
      * @param dataThing the object to render
-     * @return a (possibly empty) List of MimeTypeRendererSPI instances
+     * @return a (possibly empty) List of RendererSPI instances
      */
     public List getRenderers(DataThing dataThing)
     {
         LOG.info("Finding renderers: " + dataThing);
         List res = new ArrayList();
         for(Iterator i = renderers.iterator(); i.hasNext();) {
-            MimeTypeRendererSPI rend = (MimeTypeRendererSPI) i.next();
+            RendererSPI rend = (RendererSPI) i.next();
             if(rend.canHandle(this, dataThing)) {
                 LOG.info("\tFound: " + rend.getName());
                 res.add(rend);
@@ -116,12 +114,12 @@ public class MimeTypeRendererRegistry {
         return res;
     }
 
-    public void addRenderer(MimeTypeRendererSPI renderer)
+    public void addRenderer(RendererSPI renderer)
     {
         renderers.add(renderer);
     }
 
-    public void removeRenderer(MimeTypeRendererSPI renderer)
+    public void removeRenderer(RendererSPI renderer)
     {
         renderers.remove(renderer);
     }
@@ -136,8 +134,8 @@ public class MimeTypeRendererRegistry {
         return renderers.iterator();
     }
 
-    public MimeTypeRendererSPI get(int i)
+    public RendererSPI get(int i)
     {
-        return (MimeTypeRendererSPI) renderers.get(i);
+        return (RendererSPI) renderers.get(i);
     }
 }

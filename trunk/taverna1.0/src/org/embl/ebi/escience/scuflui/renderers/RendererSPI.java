@@ -11,7 +11,7 @@ import javax.swing.JComponent;
  * <h2>Users</h2>
  *
  * Instances of this interface will normaly be obtained from methods on
- * MimeTypeRendererRegistry. You can then use methods on a particular instance
+ * RendererRegistry. You can then use methods on a particular instance
  * to get its icon and name, a Component for rendering data, and query if it
  * is capable of rendering particular data. It is a good idea to wrap calls to
  * these methods in a try/catch block for common runtime exceptions like
@@ -21,7 +21,7 @@ import javax.swing.JComponent;
  * <h2>Implementors</h2>
  *
  * Each jar providing implementations of this SPI should list them in
- * <code>META-INF/services/org.embl.ebi.escience.scuflui.renderers.MimeTypeRendererSPI</code>.
+ * <code>META-INF/services/org.embl.ebi.escience.scuflui.renderers.RendererSPI</code>.
  * <p>
  * If a particular SPI needs extra information, it should be in a resource in
  * the same location as the .class file, and prefixed by the local class name,
@@ -40,7 +40,7 @@ import javax.swing.JComponent;
  *
  * @author Matthew Pocock
  */
-public interface MimeTypeRendererSPI {
+public interface RendererSPI {
     /**
      * Discover if this is a terminal renderer.
      * A renderer is terminal if it renders the given DataThing. It is not
@@ -60,7 +60,7 @@ public interface MimeTypeRendererSPI {
      * @param dataThing the object to render
      * @return true if we can handle the mime type
      */
-    public boolean canHandle(MimeTypeRendererRegistry renderers,
+    public boolean canHandle(RendererRegistry renderers,
                              DataThing dataThing);
 
     /**
@@ -73,8 +73,9 @@ public interface MimeTypeRendererSPI {
      * @param dataThing the object to render
      * @return a JComponent for displaying the object, or null
      */
-    public JComponent getComponent(MimeTypeRendererRegistry renderers,
-                                   DataThing dataThing);
+    public JComponent getComponent(RendererRegistry renderers,
+                                   DataThing dataThing)
+            throws RendererException;
 
     /**
      * A human-readable name for this SPI.
@@ -91,6 +92,6 @@ public interface MimeTypeRendererSPI {
      * @param dataThing the object to render
      * @return an appropreate icon, or null if this SPI doesn't have an icon
      */
-    public Icon getIcon(MimeTypeRendererRegistry renderers,
+    public Icon getIcon(RendererRegistry renderers,
                         DataThing dataThing);
 }

@@ -2,8 +2,8 @@ package org.embl.ebi.escience.scuflui;
 
 import org.embl.ebi.escience.scuflui.facets.FacetFinderSPI;
 import org.embl.ebi.escience.scuflui.facets.FacetFinderRegistry;
-import org.embl.ebi.escience.scuflui.renderers.MimeTypeRendererRegistry;
-import org.embl.ebi.escience.scuflui.renderers.MimeTypeRendererSPI;
+import org.embl.ebi.escience.scuflui.renderers.RendererRegistry;
+import org.embl.ebi.escience.scuflui.renderers.RendererSPI;
 import org.embl.ebi.escience.baclava.DataThing;
 import org.apache.log4j.Logger;
 
@@ -40,7 +40,7 @@ public class FacetsTable
     private FTableColumnModel columnModel;
     private DataThing dataThing;
     private FacetFinderRegistry finders;
-    private MimeTypeRendererRegistry renderers;
+    private RendererRegistry renderers;
     private int rows;
 
     private transient DataThing exampleThing;
@@ -70,7 +70,7 @@ public class FacetsTable
         this.columns = new ArrayList();
         this.columnModel = new FTableColumnModel();
         this.finders = FacetFinderRegistry.instance();
-        this.renderers = MimeTypeRendererRegistry.instance();
+        this.renderers = RendererRegistry.instance();
         setOpaque(true); // required to make sure bits of the rendering aren't
                          // left behind
         resizeAndValidate();
@@ -78,7 +78,7 @@ public class FacetsTable
 
     public FacetsTable(DataThing theDataThing,
                        FacetFinderRegistry finders,
-                       MimeTypeRendererRegistry renderers,
+                       RendererRegistry renderers,
                        FTableColumnModel columnModel)
     {
         this();
@@ -93,7 +93,7 @@ public class FacetsTable
 
     public FacetsTable(DataThing theDataThing,
                        FacetFinderRegistry finders,
-                       MimeTypeRendererRegistry renderers)
+                       RendererRegistry renderers)
     {
         this(theDataThing, finders, renderers, null);
     }
@@ -139,12 +139,12 @@ public class FacetsTable
         this.finders = finders;
     }
 
-    public MimeTypeRendererRegistry getRenderers()
+    public RendererRegistry getRenderers()
     {
         return renderers;
     }
 
-    public void setRenderers(MimeTypeRendererRegistry renderers)
+    public void setRenderers(RendererRegistry renderers)
     {
         if(renderers == null) {
             throw new NullPointerException("Can't set renderer registry to null");
@@ -353,7 +353,7 @@ public class FacetsTable
     {
         JComponent cmp = null;
         if(dataObj != null) {
-            MimeTypeRendererSPI renderer = ftCol.getRenderer();
+            RendererSPI renderer = ftCol.getRenderer();
             if(renderer != null) {
                 try {
                     cmp = renderer.getComponent(renderers, dataObj);
@@ -365,7 +365,7 @@ public class FacetsTable
             if (cmp == null) {
                 for (Iterator ri = renderers.getRenderers(dataObj).iterator();
                      cmp == null && ri.hasNext();) {
-                    renderer = (MimeTypeRendererSPI) ri.next();
+                    renderer = (RendererSPI) ri.next();
                     if (renderer.isTerminal()) {
                         try {
                             cmp = renderer.getComponent(renderers, dataObj);
@@ -475,8 +475,8 @@ public class FacetsTable
             for(Iterator i = renderers.getRenderers(current).iterator();
                 i.hasNext(); )
             {
-                final MimeTypeRendererSPI renderer
-                        = (MimeTypeRendererSPI) i.next();
+                final RendererSPI renderer
+                        = (RendererSPI) i.next();
                 JMenuItem choser = new JMenuItem(new AbstractAction(
                         renderer.getName(),
                         renderer.getIcon(renderers, current))
@@ -586,7 +586,7 @@ public class FacetsTable
             if(!active) {
                 try {
                     active = true;
-                    if(e.getChangeFlags() == e.PARENT_CHANGED &&
+                    if(e.getChangeFlags() == HierarchyEvent.PARENT_CHANGED &&
                             e.getComponent() == FacetsTable.this) {
                         boolean inSP = false;
                         Component p = getParent();

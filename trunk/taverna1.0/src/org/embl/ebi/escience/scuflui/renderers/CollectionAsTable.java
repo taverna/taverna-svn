@@ -17,7 +17,7 @@ import java.util.*;
  * @author Matthew Pocock
  */
 public class CollectionAsTable
-        implements MimeTypeRendererSPI
+        implements RendererSPI
 {
     private static Logger LOG = Logger.getLogger(CollectionAsTable.class);
 
@@ -28,7 +28,7 @@ public class CollectionAsTable
         return false;
     }
 
-    public boolean canHandle(MimeTypeRendererRegistry renderers,
+    public boolean canHandle(RendererRegistry renderers,
                              DataThing dataThing)
     {
         return true;
@@ -39,13 +39,13 @@ public class CollectionAsTable
         return "Table";
     }
 
-    public Icon getIcon(MimeTypeRendererRegistry renderers,
+    public Icon getIcon(RendererRegistry renderers,
                         DataThing dataThing)
     {
         return null;
     }
 
-    public JComponent getComponent(MimeTypeRendererRegistry renderers,
+    public JComponent getComponent(RendererRegistry renderers,
                                    DataThing dataThing)
     {
         LOG.info("" + depth++);
@@ -68,7 +68,6 @@ public class CollectionAsTable
         FTableColumnModel columns = new FTableColumnModel();
 
         LOG.info(getName() + " Finders: (" + finders.size() + ") " + finders);
-        int count = 0;
         for(Iterator i = finders.iterator(); i.hasNext(); ) {
             FacetFinderSPI finder = (FacetFinderSPI) i.next();
             LOG.info(getName() + " finder: " + finder);

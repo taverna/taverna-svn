@@ -21,7 +21,7 @@ public class Image
               Pattern.compile(".*image/.*"));
     }
 
-    protected boolean canHandle(MimeTypeRendererRegistry renderers,
+    protected boolean canHandle(RendererRegistry renderers,
                                 Object userObject,
                                 String mimeType)
     {
@@ -36,7 +36,7 @@ public class Image
         return true;
     }
 
-    public JComponent getComponent(MimeTypeRendererRegistry renderers,
+    public JComponent getComponent(RendererRegistry renderers,
                                    DataThing dataThing)
     {
         Object data = dataThing.getDataObject();
