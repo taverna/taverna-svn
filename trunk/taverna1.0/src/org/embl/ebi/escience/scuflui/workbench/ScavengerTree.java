@@ -162,7 +162,7 @@ public class ScavengerTree extends JTree
 	if (populate) {
 	    Set simpleScavengers = ProcessorHelper.getSimpleScavengerSet();
 	    if (simpleScavengers.isEmpty() == false) {
-		DefaultMutableTreeNode t = new DefaultMutableTreeNode("Internal Services");
+		DefaultMutableTreeNode t = new DefaultMutableTreeNode("Local Services");
 		this.treeModel.insertNodeInto(t, 
 					      (MutableTreeNode)this.treeModel.getRoot(),
 					      this.treeModel.getChildCount(this.treeModel.getRoot()));

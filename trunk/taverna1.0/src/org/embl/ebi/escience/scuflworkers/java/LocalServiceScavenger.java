@@ -14,6 +14,8 @@ import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
+import java.util.*;
+import javax.swing.tree.*;
 
 // Network Imports
 import java.net.URL;
@@ -31,7 +33,7 @@ import java.lang.String;
  */
 public class LocalServiceScavenger extends Scavenger {
     
-    private static List workerList = new ArrayList();
+    private static Map workerList = new HashMap();
 
     static {
 	try {
@@ -45,7 +47,14 @@ public class LocalServiceScavenger extends Scavenger {
 	    for (Iterator i = tavernaProperties.keySet().iterator(); i.hasNext();) {
 		String className = (String)i.next();
 		String description = (String)tavernaProperties.get(className);
-		workerList.add(new Scavenger(new LocalServiceProcessorFactory(className, description)));
+		String[] split = description.split(":");
+		String category = "default";
+		if (split.length == 2) {
+		    category = split[0];
+		    description = split[1];
+		}
+		workerList.put((String)tavernaProperties.get(className),
+			       new Scavenger(new LocalServiceProcessorFactory(className, description)));
 	    }
 	}
 	catch (Exception e) {
@@ -59,10 +68,30 @@ public class LocalServiceScavenger extends Scavenger {
     public LocalServiceScavenger()
 	throws ScavengerCreationException {
 	super("Local Java widgets");
+	// Get all the categories and create nodes
+	Map nodeMap = new HashMap();
+	for (Iterator i = workerList.keySet().iterator(); i.hasNext();) {
+	    String key = (String)i.next();
+	    Scavenger s = (Scavenger)workerList.get(key);
+	    String category = "default";
+	    if (key.split(":").length == 2) {
+		category = key.split(":")[0];
+	    }
+	    // If the category doesn't exist create it
+	    DefaultMutableTreeNode categoryNode;
+	    if (nodeMap.containsKey(category)) {
+		categoryNode = (DefaultMutableTreeNode)nodeMap.get(category);
+	    }
+	    else {
+		categoryNode = new DefaultMutableTreeNode(category);
+		nodeMap.put(category, categoryNode);
+	    }
+	    categoryNode.add(s);
+	}
 	// for all available local widgets, add them as 
 	// children to this scavenger.
-	for (Iterator i = workerList.iterator(); i.hasNext();) {
-	    add((Scavenger)i.next());
+	for (Iterator i = nodeMap.values().iterator(); i.hasNext();) {
+	    add((DefaultMutableTreeNode)i.next());
 	}
     }
 
