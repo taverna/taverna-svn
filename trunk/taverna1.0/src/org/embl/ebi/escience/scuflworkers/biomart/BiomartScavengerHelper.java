@@ -90,19 +90,19 @@ class MartSpecificationPanel extends JPanel {
 	dbDriver.setEditable(true);
 	GridLayout layout = new GridLayout(8,2);
 	setLayout(layout);
-	add(new ShadedLabel("Database Type", ShadedLabel.TAVERNA_GREEN));
+	add(new ShadedLabel("Database Type", ShadedLabel.TAVERNA_GREEN, true));
 	add(dbType);
-	add(new ShadedLabel("Database Driver", ShadedLabel.TAVERNA_GREEN));
+	add(new ShadedLabel("Database Driver", ShadedLabel.TAVERNA_GREEN, true));
 	add(dbDriver);
-	add(new ShadedLabel("Host", ShadedLabel.TAVERNA_ORANGE));
+	add(new ShadedLabel("Host", ShadedLabel.TAVERNA_ORANGE, true));
 	add(dbHost);
-	add(new ShadedLabel("Port", ShadedLabel.TAVERNA_ORANGE));
+	add(new ShadedLabel("Port", ShadedLabel.TAVERNA_ORANGE, true));
 	add(dbPort);
-	add(new ShadedLabel("Database", ShadedLabel.TAVERNA_ORANGE));
+	add(new ShadedLabel("Database", ShadedLabel.TAVERNA_ORANGE, true));
 	add(dbInstance);
-	add(new ShadedLabel("User", ShadedLabel.TAVERNA_BLUE));
+	add(new ShadedLabel("User", ShadedLabel.TAVERNA_BLUE, true));
 	add(dbUser);
-	add(new ShadedLabel("Password", ShadedLabel.TAVERNA_BLUE));
+	add(new ShadedLabel("Password", ShadedLabel.TAVERNA_BLUE, true));
 	add(dbPassword);
 	setPreferredSize(new Dimension(400,200));
     }
