@@ -36,6 +36,18 @@ public class WSDLBasedProcessorFactory implements ProcessorFactory {
 	this.operationStyle = operationStyle;
     }
 
+    public String getWSDLLocation() {
+	return this.wsdlLocation;
+    }
+
+    public String getPortTypeName() {
+	return this.portTypeName;
+    }
+
+    public String getOperationName() {
+	return this.operationName;
+    }
+
     /**
      * Return the operation name as the toString result
      */
