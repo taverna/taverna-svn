@@ -24,51 +24,23 @@ import java.lang.String;
 public class BeanshellProcessorFactory extends ProcessorFactory {
 
     private BeanshellProcessor prototype = null;
-    private String name = "Beanshell scripting host";
     
     /**
      * Create a new factory
      */
     public BeanshellProcessorFactory() {
-	//
+	setName("Beanshell scripting host");
+
     }
     
     public BeanshellProcessorFactory(BeanshellProcessor prot) {
+	setName("Beanshell scripting host");
 	this.prototype = prot;
     }
 
     public BeanshellProcessor getPrototype() {
 	return this.prototype;
     }
-
-    /**
-     * Return the constant value as the name
-     */
-    public String toString() {
-	return this.name;
-    }
-    
-    /**
-     * Set the name
-     */
-    public void setName(String newName) {
-	this.name = newName;
-    }
-    
-    /**
-     * Create a new BeanshellProcessor and add it to the model
-     */
-    /**
-       public Processor createProcessor(String name, ScuflModel model)
-       throws ProcessorCreationException,
-       DuplicateProcessorNameException {
-       Processor theProcessor = new BeanshellProcessor(model, name, "", new String[0], new String[0]);
-       if (model!=null) {
-       model.addProcessor(theProcessor);
-       }	
-       return theProcessor;
-       }
-    */
     
     /**
      * Return a textual description of the factory

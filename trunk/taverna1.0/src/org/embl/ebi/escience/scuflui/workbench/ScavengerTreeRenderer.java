@@ -42,7 +42,8 @@ public class ScavengerTreeRenderer extends ScuflModelExplorerRenderer {
 					   hasFocus);
 	Object userObject = ((DefaultMutableTreeNode)value).getUserObject();
 	if (userObject instanceof ProcessorFactory) {
-	    Class processorClass = ((ProcessorFactory)userObject).getProcessorClass();
+	    ProcessorFactory pf = (ProcessorFactory)userObject;
+	    Class processorClass = pf.getProcessorClass();
 	    String tagName = ProcessorHelper.getTagNameForClassName(processorClass.getName());
 	    ImageIcon icon = ProcessorHelper.getIconForTagName(tagName);
 	    if (icon != null) {

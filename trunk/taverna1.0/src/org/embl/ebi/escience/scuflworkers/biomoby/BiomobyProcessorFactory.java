@@ -20,7 +20,7 @@ import org.embl.ebi.escience.scuflworkers.biomoby.BiomobyProcessor;
  * Implementation of ProcessorFactory that creates
  * BiomobyProcessor nodes. <p>
  *
- * @version $Id: BiomobyProcessorFactory.java,v 1.3 2004-10-01 13:38:21 mereden Exp $
+ * @version $Id: BiomobyProcessorFactory.java,v 1.4 2004-11-12 16:34:28 mereden Exp $
  * @author Martin Senger
  */
 public class BiomobyProcessorFactory extends ProcessorFactory {
@@ -53,31 +53,9 @@ public class BiomobyProcessorFactory extends ProcessorFactory {
 	this.mobyEndpoint = mobyEndpoint;
 	this.authorityName = authorityName;
 	this.serviceName = serviceName;
+	setName(serviceName);
     }
-    
-    /**
-     * Return the application name as the toString result
-     */
-    public String toString() {
-	return serviceName;
-    }
-    
-    /**
-     * Create a new BiomobyProcessor and add it to the model
-     */
-    /**
-       public Processor createProcessor (String processorName, ScuflModel model)
-       throws ProcessorCreationException,
-       DuplicateProcessorNameException {
-       Processor theProcessor =
-       new BiomobyProcessor (model, processorName, authorityName, serviceName, mobyEndpoint);
-       if (model != null) {
-       model.addProcessor (theProcessor);
-       }
-       return theProcessor;
-       }
-    */
-    
+        
     /**
      * Return a textual description of the factory
      */

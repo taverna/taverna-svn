@@ -33,33 +33,12 @@ public class LocalServiceProcessorFactory extends ProcessorFactory {
     public LocalServiceProcessorFactory(String workerClassName, String descriptiveName) {
 	this.className = workerClassName;
 	this.descriptiveName = descriptiveName;
+	setName(descriptiveName);
     }
     
     public String getWorkerClassName() {
 	return this.className;
     }
-
-    /**
-     * Return a name
-     */
-    public String toString() {
-	return descriptiveName;
-    }
-
-    /**
-     * Create a new processor and add to the model
-     */
-    /**
-       public Processor createProcessor(String name, ScuflModel model)
-       throws ProcessorCreationException,
-       DuplicateProcessorNameException {
-       Processor theProcessor = new LocalServiceProcessor(model, name, this.className);
-       if (model!=null) {
-       model.addProcessor(theProcessor);
-       }
-       return theProcessor;
-       }
-    */
 
     /**
      * A description of the factory

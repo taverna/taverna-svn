@@ -79,10 +79,10 @@ public class WSDLBasedScavenger extends Scavenger {
 		    String portTypeName = thePortType.getQName().getLocalPart();
 		    String name = "";
 		    if (sb.getStyle().equals("document")) {
-			name = "<html>porttype: "+portTypeName+" [<font color=\"red\">DOCUMENT</font>]</html>";
+			name = "porttype: "+portTypeName+" [<font color=\"red\">DOCUMENT</font>]";
 		    }
 		    else {
-			name = "<html>porttype: "+portTypeName+" [<font color=\"green\">"+sb.getStyle().toUpperCase()+"</font>]</html>";
+			name = "porttype: "+portTypeName+" [<font color=\"green\">"+sb.getStyle().toUpperCase()+"</font>]";
 		    }
 		    DefaultMutableTreeNode portTypeNode = new DefaultMutableTreeNode(name);
 		    add(portTypeNode);

@@ -28,6 +28,7 @@ public class WSDLBasedProcessorFactory extends ProcessorFactory {
 	this.wsdlLocation = wsdlLocation;
 	this.operationName = operationName;
 	this.portTypeName = portTypeName;
+	setName(operationName);
     }
 
     public String getWSDLLocation() {
@@ -41,44 +42,6 @@ public class WSDLBasedProcessorFactory extends ProcessorFactory {
     public QName getPortTypeName() {
 	return this.portTypeName;
     }
-
-    /**
-     * Return the operation name as the toString result
-     */
-    public String toString() {
-	return this.operationName;
-    }
-
-    /**
-     * Create a new WSDLBasedProcessor and add it to the model
-     */
-    /**
-       public Processor createProcessor(String name, ScuflModel model) 
-       throws ProcessorCreationException,
-       DuplicateProcessorNameException {
-       Processor theProcessor = new WSDLBasedProcessor(model, name, this.wsdlLocation, this.operationName);
-       if (model!=null) {
-       model.addProcessor(theProcessor);
-       }
-       return theProcessor;
-       }
-    */
-
-    /**
-     * Return the XML fragment for processors defined by this factory
-     */
-    /**
-       public Element getXMLFragment() {
-       Element spec = new Element("arbitrarywsdl",XScufl.XScuflNS);
-       Element wsdl = new Element("wsdl",XScufl.XScuflNS);
-       Element operation = new Element("operation",XScufl.XScuflNS);
-       wsdl.setText(this.wsdlLocation);
-       operation.setText(this.operationName);
-       spec.addContent(wsdl);
-       spec.addContent(operation);
-       return spec;
-       }
-    */
     
     /**
      * Return a description of the factory

@@ -31,6 +31,8 @@ public class TalismanProcessorFactory extends ProcessorFactory {
      */
     public TalismanProcessorFactory(String scriptURL) {
 	this.scriptURL = scriptURL;
+	String[] parts = scriptURL.split("/");
+	setName(parts[parts.length - 1]);
     }
     
     /**
@@ -40,29 +42,6 @@ public class TalismanProcessorFactory extends ProcessorFactory {
 	return this.scriptURL;
     }
 
-    /**
-     * Return the leaf of the path as the factory name
-     */
-    public String toString() {
-	String[] parts = scriptURL.split("/");
-	return parts[parts.length - 1];
-    }
-    
-    /**
-     * Create a new SoaplabProcessor and add it to the model
-     */
-    /**
-       public Processor createProcessor(String name, ScuflModel model)
-       throws ProcessorCreationException,
-       DuplicateProcessorNameException {
-       Processor theProcessor = new TalismanProcessor(model, name, this.scriptURL);
-       if (model!=null) {
-       model.addProcessor(theProcessor);
-       }
-       return theProcessor;
-       }
-    */
-    
     /**
      * Return a textual description of the factory
      */

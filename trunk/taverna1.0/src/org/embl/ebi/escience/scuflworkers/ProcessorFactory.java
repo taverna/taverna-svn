@@ -30,6 +30,9 @@ import org.jdom.Element;
  */
 public abstract class ProcessorFactory {
 
+    private String name = "";
+    private String description = null;
+
     /**
      * Instantiate a new processor with the supplied
      * name and bind it to the specified model. This
@@ -83,6 +86,38 @@ public abstract class ProcessorFactory {
 	String tagName = ProcessorHelper.getTagNameForClassName(getProcessorClass().getName());
 	XMLHandler xh = (XMLHandler)ProcessorHelper.xmlHandlerForTagName.get(tagName);
 	return xh.elementForFactory(this);
+    }
+    
+    /**
+     * Get a name for this factory
+     */
+    public final String getName() {
+	return this.name;
+    }
+    
+    /**
+     * Set the name
+     */
+    public final void setName(String newName) {
+	this.name = newName;
+    }
+    
+    /**
+     * Set the description
+     */
+    public final void setDescription(String newDescription) {
+	this.description = newDescription;
+    }
+    
+    /**
+     * Get a description for the factory
+     */
+    public final String getDescription() {
+	return this.description;
+    }
+    
+    public final String toString() {
+	return getName()+((getDescription()!=null)?" - <font color=\"green\">"+getDescription()+"</font>":"");
     }
 
 }

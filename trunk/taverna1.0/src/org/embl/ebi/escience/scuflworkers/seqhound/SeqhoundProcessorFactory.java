@@ -64,6 +64,7 @@ public class SeqhoundProcessorFactory extends ProcessorFactory {
 	this.path = path;
 	this.jseqremServer = jseqremServer;
 	this.jseqremPath = jseqremPath;
+	setName(this.methodName.split("SHound")[1]);
     }
     
     public String getMethodName() {
@@ -84,10 +85,6 @@ public class SeqhoundProcessorFactory extends ProcessorFactory {
     
     public String getJseqremPath() {
 	return this.jseqremPath;
-    }
-    public String toString() {
-	// Trim off the initial 'SHound'
-	return this.methodName.split("SHound")[1];
     }
     
     public String getProcessorDescription() {

@@ -26,15 +26,7 @@ import org.jdom.Element;
 public class WorkflowProcessorFactory extends ProcessorFactory {
     
     private String definitionURL = null;
-    private String name = "Inline Workflow";
     private Element definitionElement = null;
-
-    /**
-     * Set the name
-     */
-    public void setName(String newName) {
-	this.name = newName;
-    }
 
     /**
      * Return the definition URL
@@ -44,7 +36,7 @@ public class WorkflowProcessorFactory extends ProcessorFactory {
     }
 
     /**
-     * Return the literak workflow definition
+     * Return the literal workflow definition
      */
     public Element getDefinition() {
 	return this.definitionElement;
@@ -67,6 +59,9 @@ public class WorkflowProcessorFactory extends ProcessorFactory {
      */
     public WorkflowProcessorFactory(String definitionURL) {
 	this.definitionURL = definitionURL;
+	String[] parts = definitionURL.split("/");
+	setName(parts[parts.length - 1]);
+	
     }
 
     /**
@@ -75,36 +70,8 @@ public class WorkflowProcessorFactory extends ProcessorFactory {
      */
     public WorkflowProcessorFactory(Element definition) {
 	this.definitionElement = definition;
+	setName("Inline Workflow");
     }
-
-    /**
-     * Return the leaf of the path as the factory name
-     */
-    public String toString() {
-	if (definitionURL != null) {
-	    String[] parts = definitionURL.split("/");
-	    return parts[parts.length - 1];
-	}
-	else {
-	    return this.name;
-	}
-    }
-
-
-    /**
-     * Build a new WorkflowProcessor and add it to the model
-     */
-    /**
-       public Processor createProcessor(String name, ScuflModel model) 
-       throws ProcessorCreationException,
-       DuplicateProcessorNameException {
-       Processor theProcessor = new WorkflowProcessor(model, name, this.definitionURL);
-       if (model!=null) {
-       model.addProcessor(theProcessor);
-       }
-       return theProcessor;
-       }
-    */
 
     /**
      * Return a textual description of the factory

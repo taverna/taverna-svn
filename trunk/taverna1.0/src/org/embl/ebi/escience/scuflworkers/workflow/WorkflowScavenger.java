@@ -56,15 +56,21 @@ public class WorkflowScavenger extends Scavenger {
 	    System.out.println(tagName+":"+processors[i].getName());
 	    if (xh != null) {
 		ProcessorFactory pf = xh.getFactory(xh.elementForProcessor(processors[i]));
-		if (pf instanceof WorkflowProcessorFactory) {
-		    ((WorkflowProcessorFactory)pf).setName(processors[i].getName());
+		pf.setName(processors[i].getName());
+		if (processors[i].getDescription().equals("") == false) {
+		    pf.setDescription(processors[i].getDescription());
 		}
-		else if (pf instanceof StringConstantProcessorFactory) {
-		    ((StringConstantProcessorFactory)pf).setName(processors[i].getName());
-		}
-		else if (pf instanceof BeanshellProcessorFactory) {
-		    ((BeanshellProcessorFactory)pf).setName(processors[i].getName());
-		}
+		/**
+		   if (pf instanceof WorkflowProcessorFactory) {
+		   ((WorkflowProcessorFactory)pf).setName(processors[i].getName());
+		   }
+		   else if (pf instanceof StringConstantProcessorFactory) {
+		   ((StringConstantProcessorFactory)pf).setName(processors[i].getName());
+		   }
+		   else if (pf instanceof BeanshellProcessorFactory) {
+		   ((BeanshellProcessorFactory)pf).setName(processors[i].getName());
+		   }
+		*/
 		add(new DefaultMutableTreeNode(pf));
 	    }
 	}

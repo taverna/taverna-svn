@@ -66,11 +66,16 @@ public class NodeColouringRenderer extends DefaultTreeCellRenderer {
 	    }		
 	}
 	// Do highlight
-	if (pattern != null) {
-	    if (userObject.toString().toLowerCase().matches(pattern)) {
-		setText("<html><font color=\"red\">"+userObject.toString()+"</font></html>");
-	    }
+	if (pattern != null && userObject.toString().toLowerCase().matches(pattern)) {
+	    setText("<html><font color=\"red\">"+userObject.toString()+"</font></html>");
 	}
+	else if (userObject.toString().indexOf("<") > -1) {
+	    setText("<html>"+userObject.toString()+"</html>");
+	}
+	else {
+	    setText(userObject.toString());
+	}
+	
 	return this;
     }
 }

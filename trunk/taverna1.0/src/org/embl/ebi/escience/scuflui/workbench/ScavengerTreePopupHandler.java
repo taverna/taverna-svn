@@ -27,6 +27,9 @@ import org.embl.ebi.escience.scuflworkers.workflow.WorkflowProcessorFactory;
 
 // Utility Imports
 import java.util.Iterator;
+import java.util.Enumeration;
+import java.util.List;
+import java.util.ArrayList;
 
 // Network Imports
 import java.net.URL;
@@ -86,13 +89,58 @@ public class ScavengerTreePopupHandler extends MouseAdapter {
     if(path != null)
     {
 	final DefaultMutableTreeNode node = (DefaultMutableTreeNode)(path.getLastPathComponent());
+	final DefaultTreeModel tmodel = (DefaultTreeModel)scavenger.getModel();
 	Object scuflObject = node.getUserObject();
 	if (scuflObject != null) {
+	    boolean addDescribeOption = true;
+	    JPopupMenu menu = new JPopupMenu();
+	    // Create the menu item to fetch descriptions
+	    JMenuItem getDescriptions = new JMenuItem("Fetch descriptions", ScuflIcons.zoomIcon);
+	    getDescriptions.addActionListener(new ActionListener() {
+		    public void actionPerformed(ActionEvent ae) {
+			// Create a new thread to iterate over all child
+			// items and fetch descriptions where possible
+			new Thread() {
+			    public void run() {
+				Enumeration en = node.depthFirstEnumeration();
+				List pflist = new ArrayList();
+				List nodelist = new ArrayList();
+				while (en.hasMoreElements()) {
+				    DefaultMutableTreeNode tn = (DefaultMutableTreeNode)en.nextElement();
+				    if (tn.getUserObject() instanceof ProcessorFactory) {
+					pflist.add(tn.getUserObject());
+					nodelist.add(tn);
+				    }
+				}
+				Iterator j = nodelist.iterator();
+				for (Iterator i = pflist.iterator(); i.hasNext();) {
+				    ProcessorFactory pf = (ProcessorFactory)i.next();
+				    TreeNode tnode = (TreeNode)j.next();
+				    if (pf.getDescription() == null) {
+					System.out.println("  fetching for "+pf.toString());
+					try {
+					    String description = pf.createProcessor("foo",null).getDescription();
+					    //System.out.println(description);
+					    pf.setDescription(description);
+					    //System.out.println(pf.getDescription());
+					}
+					catch (Exception ex) {
+					    pf.setDescription("<font color=\"red\">Cannot fetch description!</font>");
+					}
+					finally {
+					    tmodel.nodeStructureChanged(tnode);
+					}
+				    }
+				}
+			    }
+			}.start();
+		    }
+		});
+
 
 	    if (scuflObject instanceof ProcessorFactory && scavenger.model != null) {
 		final ProcessorFactory pf = (ProcessorFactory)scuflObject;
 		// Show the popup for adding new processors to the model
-		JPopupMenu menu = new JPopupMenu();
 		JMenuItem add = new JMenuItem("Add to model", ScuflIcons.importIcon);
 		menu.add(add);
 		JMenuItem addWithName = new JMenuItem("Add to model with name...", ScuflIcons.importIcon);
@@ -218,14 +266,14 @@ public class ScavengerTreePopupHandler extends MouseAdapter {
 				pf.createProcessor(validName, ScavengerTreePopupHandler.this.scavenger.model);
 			    }
 			    catch (ProcessorCreationException pce) {
-            LOG.error("Problen crating processor", pce);
+            LOG.error("Problen creating processor", pce);
 				 JOptionPane.showMessageDialog(null,
 								  "Processor creation exception : \n"+pce.getMessage(),
 								  "Exception!",
 								  JOptionPane.ERROR_MESSAGE);
 			    }
 			    catch (DuplicateProcessorNameException dpne) {
-            LOG.error("Problen crating processor", dpne);
+            LOG.error("Problen creating processor", dpne);
 				JOptionPane.showMessageDialog(null,
 							      "Duplicate name : \n"+dpne.getMessage(),
 							      "Exception!",
@@ -233,14 +281,15 @@ public class ScavengerTreePopupHandler extends MouseAdapter {
 			    }
 			}
 		    });
-		menu.show(scavenger, e.getX(), e.getY());
+		//menu.show(scavenger, e.getX(), e.getY());
 	    }
 	    else if (scuflObject instanceof String) {
 		// Catch the click on the 'Available Processors' text to add
 		// a new scavenger
 		String choice = (String)scuflObject;
 		if (choice.equals("Available Processors")) {
-		    JPopupMenu menu = new JPopupMenu();
+		    addDescribeOption = false;
+		    //JPopupMenu menu = new JPopupMenu();
 		    menu.setLabel("Create new scavenger");
 		    // Iterate over the scavenger creator list from the ProcessorHelper class
 		    for (Iterator i = ProcessorHelper.getScavengerToTagNames().keySet().iterator(); i.hasNext(); ) {
@@ -309,13 +358,13 @@ public class ScavengerTreePopupHandler extends MouseAdapter {
 			    }
 			});
 
-		    menu.show(scavenger, e.getX(), e.getY());
+		    //menu.show(scavenger, e.getX(), e.getY());
 
 		}
 		else {
 		    // Wasn't the 'available processors' link, so give the option to remove it
 		    if (choice.equals("Internal Services")==false && choice.equals("Local Java widgets")==false) {
-			JPopupMenu menu = new JPopupMenu();
+			//JPopupMenu menu = new JPopupMenu();
 			JMenuItem remove = new JMenuItem("Remove from tree", ScuflIcons.deleteIcon);
 			final String scavengerName = choice;
 			remove.addActionListener(new ActionListener() {
@@ -328,10 +377,15 @@ public class ScavengerTreePopupHandler extends MouseAdapter {
 				}
 			    });
 			menu.add(remove);
-			menu.show(scavenger, e.getX(), e.getY());
+			//menu.show(scavenger, e.getX(), e.getY());
 		    }
 		}
 	    }
+	    if (addDescribeOption == true) {
+		menu.addSeparator();
+		menu.add(getDescriptions);
+	    }
+	    menu.show(scavenger, e.getX(), e.getY());
 	}
     }
     }

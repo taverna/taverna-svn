@@ -110,7 +110,8 @@ public class ScavengerTree extends ExtendedJTree
 		Object userObject = node.getUserObject();
 		if (userObject instanceof ProcessorFactory) {
 		    Element el = ((ProcessorFactory)userObject).getXMLFragment();
-		    FactorySpecFragment fsf = new FactorySpecFragment(el, node.toString());
+		    String name = ((ProcessorFactory)userObject).getName();
+		    FactorySpecFragment fsf = new FactorySpecFragment(el, name);
 		    Transferable t = new SpecFragmentTransferable(fsf);
 		    e.startDrag(DragSource.DefaultCopyDrop,
 				t,

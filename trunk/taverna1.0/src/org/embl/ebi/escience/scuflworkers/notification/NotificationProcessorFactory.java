@@ -12,18 +12,11 @@ import org.embl.ebi.escience.scufl.*;
  * @author Ananth Krishna
  */
 public class NotificationProcessorFactory extends ProcessorFactory {
-    /**
-       public Processor createProcessor(String name, ScuflModel model)
-       throws ProcessorCreationException,
-       DuplicateProcessorNameException {
-       NotificationProcessor processor = new NotificationProcessor(model, name);
-       if(model != null) {
-       model.addProcessor(processor);
-       }
-       return processor;
-       }
-    */
-
+    
+    public NotificationProcessorFactory() {
+	setName("Notification Processor");
+    }
+    
     public String getProcessorDescription() {
         return "A Notification Processor";
     }
@@ -32,7 +25,4 @@ public class NotificationProcessorFactory extends ProcessorFactory {
         return NotificationProcessor.class;
     }
 
-    public String toString() {
-        return "Notification Processor";
-    }
 }

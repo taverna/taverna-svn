@@ -35,6 +35,7 @@ public class SoaplabProcessorFactory extends ProcessorFactory {
 	this.endpoint = endpointbase+applicationname;
 	String[] split = applicationname.split(":");
 	this.applicationname = split[split.length - 1];
+	setName(this.applicationname);
     }
     
     /**
@@ -44,15 +45,9 @@ public class SoaplabProcessorFactory extends ProcessorFactory {
 	this.endpoint = completeEndpoint;
 	String[] split = this.endpoint.split(":");
 	this.applicationname = split[split.length - 1];
+	setName(this.applicationname);
     }
 
-    /**
-     * Return the application name as the toString result
-     */
-    public String toString() {
-	return this.applicationname;
-    }
-    
     /**
      * Return the endpoint
      */
