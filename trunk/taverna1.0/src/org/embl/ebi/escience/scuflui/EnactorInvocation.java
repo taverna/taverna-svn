@@ -38,7 +38,7 @@ import org.embl.ebi.escience.scufl.enactor.EnactorProxy;
 import org.embl.ebi.escience.scufl.enactor.UserContext;
 import org.embl.ebi.escience.scufl.enactor.WorkflowInstance;
 import org.embl.ebi.escience.scufl.enactor.WorkflowSubmissionException;
-import org.embl.ebi.escience.scuflui.results.ResultTablePanel;
+import org.embl.ebi.escience.scuflui.results.*;
 
 import uk.ac.soton.itinnovation.freefluo.main.InvalidInputException;
 
@@ -94,6 +94,7 @@ public class EnactorInvocation extends JPanel implements ScuflUIComponent {
     private JPanel resultsPanel = null;
     private JTabbedPane tabs = null;
     private JButton saveResultsButton = null;
+    private JToolBar toolbar = null;
 
     /**
      * Get the workflow instance ID for this invocation
@@ -141,11 +142,25 @@ public class EnactorInvocation extends JPanel implements ScuflUIComponent {
    */
   public void showResults() {
     ensureGotResults();
-
+    // Show the results
     this.tabs.add("Results",individualResults);
-    saveResultsButton.setEnabled(true);
-    // Get the output map and create new result detail panes
+    // Populate the toolbar with all the buttons from
+    // the ResultMapSaveSPI
     Map resultMap = this.workflowInstance.getOutput();
+    ResultMapSaveSPI[] savePlugins = ResultMapSaveRegistry.plugins();
+    for (int i = 0; i < savePlugins.length; i++) {
+	JButton saveAction = new JButton(savePlugins[i].getName(),
+					 savePlugins[i].getIcon());
+	saveAction.addActionListener(savePlugins[i].getListener(resultMap, this));
+	toolbar.add(saveAction);
+	if (i < savePlugins.length) {
+	    toolbar.addSeparator();
+	}
+    }
+    toolbar.add(Box.createHorizontalGlue());
+
+    // saveResultsButton.setEnabled(true);
+    // Get the output map and create new result detail panes
     for (Iterator i = resultMap.keySet().iterator(); i.hasNext(); ) {
       String resultName = (String)i.next();
       DataThing resultValue = (DataThing)resultMap.get(resultName);
@@ -250,19 +265,19 @@ public class EnactorInvocation extends JPanel implements ScuflUIComponent {
 	 */
 	this.workflowInstance = enactor.compileWorkflow(model, inputDataThings, EnactorInvocation.USERCONTEXT);
 	// Create a new toolbar for the save results option...
-	JToolBar toolbar = new JToolBar("Invocation tools");
+	toolbar = new JToolBar("Invocation tools");
 	toolbar.setFloatable(false);
 	toolbar.setRollover(true);
-	saveResultsButton = new JButton( "Save all results", ScuflIcons.saveIcon);
-	toolbar.add(saveResultsButton);
-	toolbar.add(Box.createHorizontalGlue());
-	saveResultsButton.setEnabled(false);
+	//saveResultsButton = new JButton( "Save all results", ScuflIcons.saveIcon);
+	//toolbar.add(saveResultsButton);
+	//toolbar.add(Box.createHorizontalGlue());
+	//saveResultsButton.setEnabled(false);
 	add(toolbar, BorderLayout.PAGE_START);
-	saveResultsButton.addActionListener(new ActionListener() {
-		public void actionPerformed(ActionEvent e) {
-		    EnactorInvocation.this.saveResults();
-		}
-	    });
+	//saveResultsButton.addActionListener(new ActionListener() {
+	//	public void actionPerformed(ActionEvent e) {
+	//EnactorInvocation.this.saveResults();
+	//	}
+	//   });
 
     	// Create a tabbed pane for the status, results and provenance panels.
 	tabs = new JTabbedPane();

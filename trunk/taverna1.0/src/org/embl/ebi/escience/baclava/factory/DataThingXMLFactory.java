@@ -277,6 +277,7 @@ public class DataThingXMLFactory {
 		theBytes = (byte[])o;
 	    }
 	    // Convert to base64
+	    System.out.println("Size of binary data is "+theBytes.length+" bytes.");
 	    realDataElement.setText(Base64.encodeBytes(theBytes));
 	    dataElement.addContent(realDataElement);
 	    return dataElement;
