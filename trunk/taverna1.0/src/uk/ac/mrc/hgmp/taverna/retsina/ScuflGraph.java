@@ -197,7 +197,15 @@ public class ScuflGraph extends JGraph
         if (c != null)
           // Convert Cell to String and Return
           return convertValueToString(c);
+
+        c = getFirstCellForLocation(e.getX(), e.getY());
+        if(c != null && c instanceof ScuflGraphCell)
+        {
+          Processor proc = ((ScuflGraphCell)c).getScuflProcessor();
+          return proc.getDescription();
+        }
       }
+      
       return null;
     }
 
