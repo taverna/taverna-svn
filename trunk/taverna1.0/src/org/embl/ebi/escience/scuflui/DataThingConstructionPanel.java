@@ -86,7 +86,7 @@ import org.jdom.output.XMLOutputter;
  * COMMENT DataThingConstructionPanel
  * 
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover </a>
- * @version $Revision: 1.28 $
+ * @version $Revision: 1.29 $
  */
 public abstract class DataThingConstructionPanel extends JPanel implements ScuflUIComponent, ScuflModelEventListener
 {
@@ -834,7 +834,7 @@ public abstract class DataThingConstructionPanel extends JPanel implements Scufl
 			JMenuItem loadFileItem = new JMenuItem("Load Input from File", ScuflIcons.openIcon);
 			loadFileItem.addActionListener(loadFileAction);
 			JMenuItem loadURLItem = new JMenuItem("Load Input from URL", ScuflIcons.openIcon);
-			loadFileItem.addActionListener(loadURLAction);
+			loadURLItem.addActionListener(loadURLAction);
 			menu.add(removeItem);
 			menu.add(loadFileItem);
 			menu.add(loadURLItem);
