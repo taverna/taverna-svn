@@ -43,6 +43,37 @@ public class AnnotationTemplate {
     }
 
     /**
+     * Given two maps of inputName->LSID and outputName->LSID
+     * create a concatenated text string from all the elements
+     * in this annotation template populated with the LSID
+     * values. Return null if any of the values are unknown
+     */
+    public String getTextAnnotation(Map inputs, Map outputs) {
+	StringBuffer sb = new StringBuffer();
+	for (Iterator i = templateComponents.iterator(); i.hasNext();) {
+	    Object component = i.next();
+	    if (component instanceof String) {
+		sb.append((String)component);
+	    }
+	    else if (component instanceof PortReference) {
+		String portName = ((PortReference)component).getName();
+		if (inputs.containsKey(portName)) {
+		    sb.append((String)inputs.get(portName));
+		}
+		else {
+		    if (outputs.containsKey(portName)) {
+			sb.append((String)outputs.get(portName));
+		    }
+		    else {
+			return null;
+		    }
+		}
+	    }
+	}
+	return sb.toString();
+    }
+
+    /**
      * Create an annotation template object from a
      * JDOM Element, the element being the &lt;template&gt;
      * tag.

@@ -25,8 +25,8 @@
 //      Dependencies        :
 //
 //      Last commit info    :   $Author: mereden $
-//                              $Date: 2004-02-04 11:21:21 $
-//                              $Revision: 1.27 $
+//                              $Date: 2004-02-26 13:10:26 $
+//                              $Revision: 1.28 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 
@@ -429,60 +429,20 @@ public class TavernaFlowReceipt extends WSFlowReceipt implements org.embl.ebi.es
     
     
     public Element getProvenanceXML() {
-	// Top level provenance element
-	Element prov = new Element("workflowProvenance", provNS);
-	prov.setAttribute("id",flow.getID());
-	prov.setAttribute("user",userID);
-	prov.setAttribute("status",translateFlowState(flow.getStatus()));
-	
-	Element processorList = new Element("processorList", provNS);
-	prov.addContent(processorList);
+	Element prov = new Element("dataProvenance", provNS);
 	Task[] tasks = flow.getTasks();
 	for (int i = 0; i < tasks.length; i++) {
 	    if (tasks[i] instanceof ProcessorTask) {
-		ProcessorTask theProcessorTask = (ProcessorTask)tasks[i];
-		Processor theProcessor = theProcessorTask.getProcessor();
-		Element processor = new Element("processor", provNS);
-		processor.setAttribute("name",theProcessor.getName());
-		processor.setAttribute("status",translateStateString(tasks[i].getStateString()));
-		if (theProcessorTask.getStartTime() != null) {
-		    processor.setAttribute("starttime",theProcessorTask.getStartTime().getShortString());
+		for (Iterator j = ((ProcessorTask)tasks[i]).getProvenanceList().iterator(); j.hasNext();) {
+		    String provenanceItem = (String)j.next();
+		    Element item = new Element("item", provNS);
+		    item.setText(provenanceItem);
+		    prov.addContent(item);
 		}
-		else {
-		    processor.setAttribute("starttime","NOT STARTED");
-		}
-		if (theProcessorTask.getEndTime() != null) {
-		    processor.setAttribute("endtime",theProcessorTask.getEndTime().getShortString());
-		}
-		else {
-		    processor.setAttribute("endtime","NOT ENDED");
-		}
-		Element faultElement = theProcessorTask.getFaultElement();
-		if (faultElement != null) {
-		    processor.addContent(faultElement);
-		}
-		Element processorProperties = new Element("processorProperties", provNS);
-		Properties theProperties = theProcessorTask.getProcessor().getProperties();
-		for (Iterator j = theProperties.keySet().iterator(); j.hasNext();) {
-		    Element propertyElement = new Element("property", provNS);
-		    String key = (String)j.next();
-		    String value = (String)theProperties.get(key);
-		    propertyElement.setText(value);
-		    propertyElement.setAttribute("name", key);
-		    processorProperties.addContent(propertyElement);
-		}
-		processor.addContent(processorProperties);
-		Element invocationDetail = new Element("invocationDetail", provNS);
-		invocationDetail.addContent(theProcessorTask.getProvenance());
-		processor.addContent(invocationDetail);
-					    
-		processorList.addContent(processor);
 	    }
 	}
-	
 	return prov;
     }
-    
     
     private String translateStateString(String s) {
 	String newString = null;

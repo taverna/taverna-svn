@@ -134,15 +134,15 @@ public class EnactorInvocation extends JPanel implements ScuflUIComponent {
     public void showProvenance() {
 	String provenance = "";
 	try {
-	    /**
-	       provenance = this.flowReceipt.getProvenanceXMLString();
-	       this.provenanceText.setFont(new Font("Monospaced",Font.PLAIN,12));
-	       this.provenanceText.setLineWrap(true);
-	       this.provenanceText.setWrapStyleWord(true);
-	       this.provenanceText.setText(provenance);
-	       this.tabs.add("Provenance Text", provenancePanel);
-	       this.tabs.add("Provenance Tree", new JScrollPane(new XMLTree(provenance)));
-	    */
+	    
+	    provenance = this.flowReceipt.getProvenanceXMLString();
+	    //this.provenanceText.setFont(new Font("Monospaced",Font.PLAIN,12));
+	    //this.provenanceText.setLineWrap(true);
+	    //this.provenanceText.setWrapStyleWord(true);
+	    //this.provenanceText.setText(provenance);
+	    //this.tabs.add("Provenance Text", provenancePanel);
+	    this.tabs.add("Provenance Tree", new JScrollPane(new XMLTree(provenance)));
+	    
 	}
 	catch (Exception ex) {
 	    this.provenanceText.setText("No provenance available : "+ex.toString());

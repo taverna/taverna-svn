@@ -25,8 +25,8 @@
 //      Dependencies        :
 //
 //      Last commit info    :   $Author: mereden $
-//                              $Date: 2004-02-26 11:25:04 $
-//                              $Revision: 1.35 $
+//                              $Date: 2004-02-26 13:10:27 $
+//                              $Revision: 1.36 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 package uk.ac.soton.itinnovation.taverna.enactor.entities;
@@ -37,6 +37,7 @@ import org.embl.ebi.escience.baclava.BaclavaIterator;
 import org.embl.ebi.escience.baclava.DataThing;
 import org.embl.ebi.escience.baclava.JoinIterator;
 import org.embl.ebi.escience.scufl.Processor;
+import org.embl.ebi.escience.scufl.AnnotationTemplate;
 import org.embl.ebi.escience.scufl.provenance.process.*;
 import org.embl.ebi.escience.scuflworkers.ProcessorHelper;
 import org.embl.ebi.escience.scuflworkers.ProcessorTaskWorker;
@@ -83,7 +84,13 @@ public class ProcessorTask extends TavernaTask{
     private Map activeInputMapping = null;
     // The current output mapping
     private Map activeOutputMapping = null;
-     
+    // The list of provenance statements, text for now
+    private List provenanceList = new ArrayList();
+    
+    public List getProvenanceList() {
+	return this.provenanceList;
+    }
+
     /**
      * Set up the next invocation to use the specified processor
      */
@@ -255,14 +262,12 @@ public class ProcessorTask extends TavernaTask{
 
     /**
      * Given a map of DataThing objects, call the fillLSIDValues()
-     * method on each object within the map and return self for
-     * convenience
+     * method on each object within the map.
      */
-    private Map fillAllLSIDs(Map inputMap) {
+    private void fillAllLSIDs(Map inputMap) {
 	for (Iterator i = inputMap.values().iterator(); i.hasNext();) {
 	    ((DataThing)i.next()).fillLSIDValues();
 	}
-	return inputMap;
     }
     
     /**
@@ -271,7 +276,7 @@ public class ProcessorTask extends TavernaTask{
     private Map doInvocationWithRetryLogic(ProcessorTaskWorker worker, Map inputMap) throws TaskExecutionException {
 	try {
 	    // If the first invocation works then great, return it.
-	    return fillAllLSIDs(worker.execute(inputMap));
+	    return runAndGenerateTemplates(worker, inputMap);
 	}
 	catch (TaskExecutionException tee) {
 	    eventList.add(new ServiceError(tee));
@@ -290,7 +295,7 @@ public class ProcessorTask extends TavernaTask{
 		try {
 		    eventList.add(new WaitingToRetry(waitTime, i+1, maxRetries));
 		    Thread.sleep(waitTime);
-		    return fillAllLSIDs(worker.execute(inputMap));
+		    return runAndGenerateTemplates(worker, inputMap);
 		}
 		catch (InterruptedException ie) {
 		    TaskExecutionException t = new TaskExecutionException("Interrupted during wait to retry");
@@ -304,6 +309,47 @@ public class ProcessorTask extends TavernaTask{
 	    }
 	}
 	throw new TaskExecutionException("No retries remaining");
+    }
+
+    /**
+     * Call the service worker, populate LSID and generate any available templates
+     */
+    private Map runAndGenerateTemplates(ProcessorTaskWorker worker, Map inputMap) 
+	throws TaskExecutionException {
+	// Populate all LSIDs in the output map
+	Map outputMap = worker.execute(inputMap);
+	fillAllLSIDs(outputMap);
+	AnnotationTemplate[] templates = activeProcessor.getAnnotationTemplates();
+	if (templates.length > 0) {
+	    // For the inputs and outputs get the LSIDs of all the
+	    // data objects, and apply these to the processor's
+	    // annotation templates.
+	    Map templateInputs = new HashMap();
+	    Map templateOutputs = new HashMap();
+	    for (Iterator i = inputMap.keySet().iterator(); i.hasNext();) { 
+		String inputName = (String)i.next();
+		DataThing inputValue = (DataThing)inputMap.get(inputName);
+		String objectLSID = inputValue.getLSID(inputValue.getDataObject());
+		templateInputs.put(inputName, objectLSID);
+	    }
+	    for (Iterator i = outputMap.keySet().iterator(); i.hasNext();) {
+		String outputName = (String)i.next();
+		DataThing outputValue = (DataThing)outputMap.get(outputName);
+		String objectLSID = outputValue.getLSID(outputValue.getDataObject());
+		templateOutputs.put(outputName, objectLSID);
+	    }
+	    // Iterate over each of the templates, getting their
+	    // textual provenance back for the moment and adding it to the
+	    // provenance list
+	    for (int i = 0; i < templates.length; i++) {
+		String annotation = templates[i].getTextAnnotation(templateInputs, templateOutputs);
+		if (annotation != null) {
+		    provenanceList.add(annotation);
+		}
+	    }
+	}
+	
+	return outputMap;
     }
 
     /**
