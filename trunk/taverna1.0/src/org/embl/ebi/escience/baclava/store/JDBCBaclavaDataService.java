@@ -22,8 +22,7 @@ import java.io.*;
 public class JDBCBaclavaDataService implements BaclavaDataService, LSIDProvider {
     
     private String connectionURL, username, password, defaultAuthority;
-    
-    private List availableConnections, activeConnections;
+    private JDBCConnectionPool pool;
     
     private Object connectionSetLockObject = new Object();
     private Object writeLockObject = new Object();
@@ -70,8 +69,11 @@ public class JDBCBaclavaDataService implements BaclavaDataService, LSIDProvider 
 		//
 	    }
 	}
-	availableConnections = new ArrayList();
-	activeConnections = new ArrayList();
+	pool = new JDBCConnectionPool(props.getProperty("taverna.datastore.jdbc.driver"),
+				      connectionURL,
+				      username,
+				      password,
+				      maxConnections);
 	createTables();
     }
     
@@ -82,7 +84,7 @@ public class JDBCBaclavaDataService implements BaclavaDataService, LSIDProvider 
     private void createTables() {
 	Connection con = null;
 	try {
-	    con = getConnectionObject();
+	    con = pool.borrowConnection();
 	    Statement st = con.createStatement();
 	    st.executeUpdate("CREATE TABLE IF NOT EXISTS metadata (id INT UNSIGNED NOT NULL AUTO_INCREMENT,"+
 			     "                                     rdfstring TEXT NOT NULL,"+
@@ -100,12 +102,14 @@ public class JDBCBaclavaDataService implements BaclavaDataService, LSIDProvider 
 			     "                    PRIMARY KEY(lsid)) TYPE = InnoDB;");
 	    st.executeUpdate("CREATE TABLE IF NOT EXISTS idcounter (count INT UNSIGNED NOT NULL) TYPE = InnoDB;");
 	    
-	}
+	    pool.returnConnection(con);
+	}	
 	catch (Exception ex) {
+	    pool.returnConnection(con);
 	    ex.printStackTrace();
 	}
 	finally {
-	    releaseConnection(con);
+	    //
 	}
     }
 
@@ -125,19 +129,23 @@ public class JDBCBaclavaDataService implements BaclavaDataService, LSIDProvider 
     private void destroyTables() {
 	Connection con = null;
 	try {
-	    con = getConnectionObject();
+	    con = pool.borrowConnection();
+
 	    Statement st = con.createStatement();
 	    st.executeUpdate("DROP TABLE IF EXISTS datathings");
 	    st.executeUpdate("DROP TABLE IF EXISTS lsid2datathings");
 	    st.executeUpdate("DROP TABLE IF EXISTS metadata");
 	    st.executeUpdate("DROP TABLE IF EXISTS lsid2metadata");
 	    st.executeUpdate("DROP TABLE IF EXISTS idcounter");
+	
+	    pool.returnConnection(con);
 	}
 	catch (Exception ex) {
+	    pool.returnConnection(con);
 	    ex.printStackTrace();
 	}
 	finally {
-	    releaseConnection(con);
+	    //
 	}
     }
 
@@ -148,7 +156,7 @@ public class JDBCBaclavaDataService implements BaclavaDataService, LSIDProvider 
     public String getID(String namespace) {
 	String prefix = "urn:lsid:"+defaultAuthority+":"+namespace+":";
 	// Fetch the next value from the counter
-	Connection con = getConnectionObject();
+	Connection con = pool.borrowConnection();
 	try {
 	    Statement s = con.createStatement();
 	    //s.executeUpdate("LOCK TABLES idcounter WRITE");
@@ -166,20 +174,22 @@ public class JDBCBaclavaDataService implements BaclavaDataService, LSIDProvider 
 	    //s.executeUpdate("UNLOCK TABLES");
 	    s.close();
 	    con.commit();
+	    pool.returnConnection(con);
 	    return prefix+suffix;
 	}
 	catch (SQLException sqle) {
 	    sqle.printStackTrace();
 	    try {
 		con.rollback();
+		pool.returnConnection(con);
 	    }
 	    catch (SQLException sqle2) {
-		//
-	    }		  
+		pool.returnConnection(con);
+	    }
 	    return "NO_IDENTIFIER_ASSIGNED";
 	}
 	finally {
-	    releaseConnection(con);
+	    //
 	}
     }
 
@@ -202,7 +212,7 @@ public class JDBCBaclavaDataService implements BaclavaDataService, LSIDProvider 
 	    // so it's not particularly interesting to us
 	    return;
 	}
-	Connection con = getConnectionObject();
+	Connection con = pool.borrowConnection();
 	try {
 	    synchronized(writeLockObject) {
 		PreparedStatement st = con.prepareStatement("INSERT INTO metadata (rdfstring) VALUES (?)");
@@ -216,19 +226,21 @@ public class JDBCBaclavaDataService implements BaclavaDataService, LSIDProvider 
 		}
 		st2.close();
 		con.commit();
+		pool.returnConnection(con);
 	    }
 	}
 	catch(SQLException sqle) {
 	    sqle.printStackTrace();
 	    try {
 		con.rollback();
+		pool.returnConnection(con);
 	    }
 	    catch (Exception e) {
-		//
+		pool.returnConnection(con);
 	    }
 	}
 	finally {
-	    releaseConnection(con);
+	    //
 	}
 	
     }
@@ -249,7 +261,7 @@ public class JDBCBaclavaDataService implements BaclavaDataService, LSIDProvider 
 	// Find all the LSIDs that this document contains
 	Map lsidMap = theDataThing.getLSIDMap();
 	// Obtain a connection
-	Connection con = getConnectionObject();
+	Connection con = pool.borrowConnection();
 	try {
 	    synchronized(writeLockObject) {
 		boolean addedAtLeastOneMapping = false;
@@ -286,6 +298,7 @@ public class JDBCBaclavaDataService implements BaclavaDataService, LSIDProvider 
 			// because the constraint is violated we can either
 			// do nothing (silent == true) or throw an exception
 			if (!silent) {
+			    pool.returnConnection(con);
 			    DuplicateLSIDException dle = new DuplicateLSIDException();
 			    dle.initCause(sqle);
 			    throw dle;
@@ -296,9 +309,11 @@ public class JDBCBaclavaDataService implements BaclavaDataService, LSIDProvider 
 		st2.close();
 		if (addedAtLeastOneMapping) {
 		    con.commit();
+		    pool.returnConnection(con);
 		}
 		else {
 		    con.rollback();
+		    pool.returnConnection(con);
 		}
 	    }
 	}
@@ -306,8 +321,10 @@ public class JDBCBaclavaDataService implements BaclavaDataService, LSIDProvider 
 	    ex.printStackTrace();
 	    try {
 		con.rollback();
+		pool.returnConnection(con);
 	    }
 	    catch (SQLException sqle) {
+		pool.returnConnection(con);
 		sqle.printStackTrace();
 	    }
 	    if (ex instanceof DuplicateLSIDException) {
@@ -315,7 +332,7 @@ public class JDBCBaclavaDataService implements BaclavaDataService, LSIDProvider 
 	    }
 	}
 	finally {
-	    releaseConnection(con);
+	    //
 	}	
     }
 
@@ -327,7 +344,8 @@ public class JDBCBaclavaDataService implements BaclavaDataService, LSIDProvider 
 	throws NoSuchLSIDException {
 	Connection con = null;
 	try {
-	    con = getConnectionObject();
+	    // DB ACCESS START ***************************************************
+	    con = pool.borrowConnection();
 	    PreparedStatement p = con.prepareStatement("SELECT t.thing FROM datathings t, lsid2datathings l WHERE t.id=l.id AND l.lsid=?");
 	    p.setString(1, LSID);
 	    ResultSet rs = p.executeQuery();
@@ -336,8 +354,12 @@ public class JDBCBaclavaDataService implements BaclavaDataService, LSIDProvider 
 		thingAsXML = rs.getString("thing");
 	    }
 	    else {
+		pool.returnConnection(con);
 		throw new NoSuchLSIDException();
 	    }
+	    pool.returnConnection(con);
+	    // DB ACCESS END ******************************************************
+
 	    // Parse the XML and get the DataThing that was
 	    // originally submitted, although we may have
 	    // to split this down to actually get the desired
@@ -362,13 +384,15 @@ public class JDBCBaclavaDataService implements BaclavaDataService, LSIDProvider 
 	    }
 	}
 	catch (SQLException sqle) {
+	    pool.returnConnection(con);
 	    sqle.printStackTrace();
 	}
 	catch (JDOMException jde) {
+	    pool.returnConnection(con);
 	    jde.printStackTrace();
 	}
 	finally {
-	    releaseConnection(con);
+	    //
 	}
 	throw new NoSuchLSIDException();
     }
@@ -391,11 +415,16 @@ public class JDBCBaclavaDataService implements BaclavaDataService, LSIDProvider 
 	}
     	Connection con = null;
 	try {
-	    con = getConnectionObject();
+	    // DB ACCESS START **************************************
+	    con = pool.borrowConnection();
 	    PreparedStatement p = con.prepareStatement("SELECT id, reftype FROM lsid2datathings WHERE lsid=?");
 	    p.setString(1,LSID);
 	    ResultSet rs = p.executeQuery();
 	    boolean hasReference = rs.first();
+	    rs.close();
+	    p.close();
+	    pool.returnConnection(con);
+	    // DB ACCESS END ****************************************
 	    if (hasReference == false) {
 		return false;
 	    }
@@ -411,10 +440,10 @@ public class JDBCBaclavaDataService implements BaclavaDataService, LSIDProvider 
 	    return false;
 	}
 	catch (Exception ex) {
-	    //
+	    pool.returnConnection(con);
 	}
 	finally {
-	    releaseConnection(con);
+	    //
 	}
 	return false;
     }
@@ -428,7 +457,8 @@ public class JDBCBaclavaDataService implements BaclavaDataService, LSIDProvider 
     public String getMIMEType(String LSID) {
 	Connection con = null;
 	try {
-	    con = getConnectionObject();
+	    // DB ACCESS START ***********************************************
+	    con = pool.borrowConnection();
 	    PreparedStatement p = con.prepareStatement("SELECT mimetype FROM lsid2datathings WHERE lsid = ? AND reftype='leaf'");
 	    p.setString(1, LSID);
 	    ResultSet rs = p.executeQuery();
@@ -438,14 +468,17 @@ public class JDBCBaclavaDataService implements BaclavaDataService, LSIDProvider 
 	    String result = rs.getString("mimetype");
 	    rs.close();
 	    p.close();
+	    pool.returnConnection(con);
+	    // DB ACCESS END ************************************************
 	    return result;
 	}
 	catch (SQLException sqle) {
+	    pool.returnConnection(con);
 	    sqle.printStackTrace();
 	    return null;
 	}
 	finally {
-	    releaseConnection(con);
+	    //
 	}
     }
     
@@ -456,7 +489,7 @@ public class JDBCBaclavaDataService implements BaclavaDataService, LSIDProvider 
     public String getMetadata(String LSID) {
 	Connection con = null;
 	try {
-	    con = getConnectionObject();
+	    con = pool.borrowConnection();
 	    PreparedStatement p = con.prepareStatement("SELECT m.rdfstring FROM metadata m, lsid2metadata l WHERE l.id = m.id AND l.lsid = ?");
 	    p.setString(1, LSID);
 	    ResultSet rs = p.executeQuery();
@@ -465,6 +498,7 @@ public class JDBCBaclavaDataService implements BaclavaDataService, LSIDProvider 
 		sb.append(rs.getString("rdfstring"));
 	    }
 	    String result = sb.toString();
+	    pool.returnConnection(con);
 	    if (result.equals("")) {
 		return null;
 	    }
@@ -473,11 +507,12 @@ public class JDBCBaclavaDataService implements BaclavaDataService, LSIDProvider 
 	    }
 	}
 	catch (SQLException sqle) {
+	    pool.returnConnection(con);
 	    sqle.printStackTrace();
 	    return null;
 	}
 	finally {
-	    releaseConnection(con);
+	    //;
 	}
     }
 
@@ -489,79 +524,152 @@ public class JDBCBaclavaDataService implements BaclavaDataService, LSIDProvider 
     public boolean hasMetadata(String LSID) {
 	return (getMetadata(LSID)!=null);
     }
+}
 
+class JDBCConnectionPool extends ObjectPool {
+    
+    String driver, dsn, usr, pwd;
 
-    /**
-     * Obtain a connection object for use by methods within
-     * this class
-     */
-    private Connection getConnectionObject() {
-	// Is there a free connection?
+    public Connection borrowConnection() {
+	return( ( Connection ) super.checkOut() );
+    }
+    
+    public void returnConnection( Connection c ) {
+	super.checkIn( c );
+    }
+
+    public JDBCConnectionPool( String driver, String dsn, 
+			       String usr, String pwd, int maxConnections ) {
 	try {
-	    return testAndGrabConnectionObject();
+	    Class.forName( driver ).newInstance();
 	}
-	catch (Exception ex) {
-	    // No free connections, can we make one?
-	    if (activeConnections.size()<=maxConnections) {
-		return createNewConnectionObject();
-	    }
-	    else {
-		while (true) {
-		    try {
-			Thread.sleep(1000);
-		    }
-		    catch (InterruptedException ie) {
-			//
-		    }
-		    try {
-			return testAndGrabConnectionObject();
-		    }
-		    catch (Exception ex2) {
-			//
-		    }
+	catch( Exception e ) {
+	    e.printStackTrace();
+	}
+	this.dsn = dsn;
+	this.usr = usr;
+	this.pwd = pwd;
+	this.maxObjects = maxConnections;
+    }
+    
+    Object create() {
+	try {
+	    Connection con = DriverManager.getConnection( dsn, usr, pwd );
+	    con.setAutoCommit(false);
+	    return con;
+	}
+	catch( SQLException e ) {
+	    e.printStackTrace();
+	    return( null );
+	}
+    }
+    
+    void expire( Object o ) {
+	try {
+	    ( ( Connection ) o ).close();
+	}
+	catch( SQLException e ) {
+	    e.printStackTrace();
+	}
+    }
+
+    boolean validate( Object o ) {
+	try {
+	    return( ! ( ( Connection ) o ).isClosed() );
+	}
+	catch( SQLException e ) {
+	    e.printStackTrace();
+	    return( false );
+	}
+    }
+    
+}
+
+
+    
+
+
+abstract class ObjectPool {
+    
+    private long expirationTime;   
+    private Hashtable locked, unlocked;        
+    int maxObjects = 10;
+
+    abstract Object create();
+    abstract boolean validate( Object o );
+    abstract void expire( Object o );
+
+    ObjectPool() {
+	expirationTime = 30000; // 30 seconds
+	locked = new Hashtable();         
+	unlocked = new Hashtable();
+    }
+    
+
+    synchronized Object checkOut() {
+	try {
+	    return realCheckOut();
+	}
+	catch (Exception e) {
+	    while (true) {
+		try {
+		    Thread.sleep(2000);
+		    return realCheckOut();
+		}
+		catch (Exception e2) {
+		    //
 		}
 	    }
 	}
     }
-    private Connection testAndGrabConnectionObject() throws Exception {
-	synchronized(connectionSetLockObject) {
-	    if (availableConnections.isEmpty() == false) {
-		Connection theConnection = (Connection)availableConnections.remove(0);
-		activeConnections.add(theConnection);
-		return theConnection;
-	    }
-	    else {
-		throw new Exception();
-	    }
-	}
-    }
-    private Connection createNewConnectionObject() {
-	synchronized(connectionSetLockObject) {
-	    try {
-		Connection theConnection =  DriverManager.getConnection(connectionURL,
-									username,
-									password);
-		theConnection.setAutoCommit(false);
-		return theConnection;
-	    }
-	    catch (Exception ex) {
-		ex.printStackTrace();
-		// Should handle exceptions from jdbc here
-		return null;
-	    }
-	}
-    }
-    /**
-     * Return a connection back to the pool
-     */
-    private void releaseConnection(Connection con) {
-	synchronized(connectionSetLockObject) {
-	    if (con!=null && activeConnections.contains(con) && availableConnections.contains(con)==false) {
-		activeConnections.remove(con);
-		availableConnections.add(con);
-	    }
-	}
-    }
-
-}
     
+
+
+    synchronized Object realCheckOut() throws Exception {
+	long now = System.currentTimeMillis();
+	Object o;        
+	if( unlocked.size() > 0 ) {
+	    Enumeration e = unlocked.keys();  
+	    while( e.hasMoreElements() ) {
+		o = e.nextElement();           
+		if( ( now - ( ( Long ) unlocked.get( o ) ).longValue() ) >
+		    expirationTime ) {
+		    // object has expired
+		    unlocked.remove( o );
+		    expire( o );
+		    o = null;
+		}
+		else {
+		    if( validate( o ) ) {
+			unlocked.remove( o );
+			locked.put( o, new Long( now ) );                
+			return( o );
+		    }
+		    else {
+			// object failed validation
+			unlocked.remove( o );
+			expire( o );
+			o = null;
+		    }
+		}
+	    }
+	}        
+	int currentObjects = locked.size();
+	if (currentObjects < maxObjects) {
+	    // no objects available, create a new one
+	    o = create();        
+	    locked.put( o, new Long( now ) ); 
+	    return( o );
+	}
+	else {
+	    throw new Exception("Pool too big, refusing to grow");
+	}
+    }
+    
+    
+    synchronized void checkIn( Object o ) {
+	locked.remove( o );
+	unlocked.put( o, new Long( System.currentTimeMillis() ) );
+    }
+    
+}
