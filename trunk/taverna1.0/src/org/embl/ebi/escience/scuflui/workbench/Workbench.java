@@ -152,7 +152,7 @@ public class Workbench extends JFrame {
 	workbench.desktop.add(explorer);
 
 	GenericUIComponentFrame scavenger = new GenericUIComponentFrame(workbench.model,
-									new ScavengerTree());
+									new ScavengerTreePanel());
 	scavenger.setSize(300,820);
 	scavenger.setLocation(540,120);
 	workbench.desktop.add(scavenger);
@@ -304,29 +304,17 @@ public class Workbench extends JFrame {
 	    });
 	windowMenu.add(dotView);
 
-	JMenuItem servicePanel = new JMenuItem("Service Panel (populated)");
+	JMenuItem servicePanel = new JMenuItem("Service Panel");
 	servicePanel.addActionListener(new ActionListener() {
 		public void actionPerformed(ActionEvent e) {
 		    // Show a service selection panel
-		    ScavengerTree thing = new ScavengerTree();
+		    ScavengerTreePanel thing = new ScavengerTreePanel();
 		    GenericUIComponentFrame frame = new GenericUIComponentFrame(Workbench.this.model, thing);
 		    Workbench.this.desktop.add(frame);
 		    frame.moveToFront();
 		}
 	    });
 	windowMenu.add(servicePanel);
-
-	JMenuItem servicePanel2 = new JMenuItem("Service Panel (blank)");
-	servicePanel2.addActionListener(new ActionListener() {
-		public void actionPerformed(ActionEvent e) {
-		    // Show a service selection panel
-		    ScavengerTree thing = new ScavengerTree(false);
-		    GenericUIComponentFrame frame = new GenericUIComponentFrame(Workbench.this.model, thing);
-		    Workbench.this.desktop.add(frame);
-		    frame.moveToFront();
-		}
-	    });
-	windowMenu.add(servicePanel2);
 
 	JMenuItem thingBuilder = new JMenuItem("Run workflow");
 	thingBuilder.addActionListener(new ActionListener() {

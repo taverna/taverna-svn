@@ -23,6 +23,29 @@ import java.lang.Object;
  */
 public class ScuflModelExplorerRenderer extends DefaultTreeCellRenderer {
     
+    private String pattern = null;
+
+    public void setPattern(String pattern) {
+	this.pattern = pattern;
+    }
+
+    /**
+     * Create a new explorer renderer with no regular expression based
+     * highlight operation
+     */
+    public ScuflModelExplorerRenderer() {
+	super();
+    }
+    
+    /**
+     * Create a new renderer which marks nodes that have text matching
+     * the regular expression in red
+     */
+    public ScuflModelExplorerRenderer(String pattern) {
+	super();
+	this.pattern = pattern;
+    }
+
     /**
      * Return a custom renderer to draw the cell correctly for each node type
      */
@@ -85,6 +108,12 @@ public class ScuflModelExplorerRenderer extends DefaultTreeCellRenderer {
 	}
 	else if (((DefaultMutableTreeNode)value).isLeaf()) {
 	    setIcon(closedIcon);
+	}
+	// Do highlight
+	if (pattern != null) {
+	    if (userObject.toString().toLowerCase().matches(pattern)) {
+		setText("<html><font color=\"red\">"+userObject.toString()+"</font></html>");
+	    }
 	}
 	return this;
     }
