@@ -282,11 +282,11 @@
 		<mkdir dir="${build.javadocs}"/>
 		<javadoc windowtitle="${ant.project.name} Java Classes"
 			 destdir="${build.javadocs}"
+             linksource="yes"
+             breakiterator="yes"
 			 sourcepath="${build.src}"
 			 doctitle="&lt;h1>${ant.project.name} Java API Documentation&lt;/h1>"
 			 packagenames="*"
-             linksource="yes"
-             breakiterator="yes"
              source="1.4"
 			 version="true">
 			<classpath refid="compile-classpath"/>
@@ -455,5 +455,12 @@
 			<classpath refid="compile-classpath"/>
 		</java>
 	</target>
-
+	
+	<!-- Run chainsaw -->
+	<target name="chainsaw">
+		<java classname="org.apache.log4j.chainsaw.Main" fork="true">
+			<classpath refid="compile-classpath"/>
+			<sysproperty key="chainsaw.port" value="4445"/>
+		</java>
+	</target>
 </project>
