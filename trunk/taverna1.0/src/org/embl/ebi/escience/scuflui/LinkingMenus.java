@@ -51,16 +51,6 @@ public class LinkingMenus {
 	    edit.addActionListener(new ActionListener() {
 		    public void actionPerformed(ActionEvent ae) {
 			UIUtils.createFrame(model, new ScuflSemanticMarkupEditor(fromPort.getMetadata()), 100, 100, 400, 600);
-			/**
-			   if (Workbench.workbench != null) {
-			   GenericUIComponentFrame thing = new GenericUIComponentFrame(Workbench.workbench.model,
-			   new ScuflSemanticMarkupEditor(fromPort.getMetadata()));
-			   thing.setSize(400,600);
-			   thing.setLocation(100,100);
-			   Workbench.workbench.desktop.add(thing);
-			   thing.moveToFront();
-			   }
-			*/
 		    }
 		});
 	    theMenu.add(edit);
@@ -69,7 +59,7 @@ public class LinkingMenus {
 	    theMenu.addSeparator();
 	}
 	else {
-	    theMenu.add(new ShadedLabel("Link "+sourcePort.getName()+" to...", ShadedLabel.TAVERNA_GREEN));
+	    theMenu.add(new ShadedLabel("Connect ouptut \""+sourcePort.getName()+"\" to...", ShadedLabel.TAVERNA_GREEN));
 	    theMenu.addSeparator();
 	}
 	//JMenuItem title = new JMenuItem("Link '"+sourcePort.getName()+"' to...");
@@ -121,6 +111,7 @@ public class LinkingMenus {
 		ImageIcon icon = null;
 		icon = org.embl.ebi.escience.scuflworkers.ProcessorHelper.getPreferredIcon(processors[i]);
 		JMenu processorMenu = new JMenu(processors[i].getName());
+		processorMenu.add(new ShadedLabel("Choose an Input",ShadedLabel.TAVERNA_GREEN));
 		processorMenu.setIcon(icon);
 		int offset = 0;
 		int menuSize = 15;
@@ -131,6 +122,7 @@ public class LinkingMenus {
 		    if (inputs.length > menuSize) {
 			currentMenu = new JMenu("Inputs "+(offset+1)+" to "+((offset + menuSize > inputs.length)?inputs.length:offset+menuSize)); 
 			processorMenu.add(currentMenu);
+			currentMenu.add(new ShadedLabel("Inputs "+(offset+1)+" to "+((offset + menuSize > inputs.length)?inputs.length:offset+menuSize), ShadedLabel.TAVERNA_ORANGE));
 		    }
 		    for (int j = offset; (j < inputs.length) && 
 			     (j < offset + menuSize); j++) {
