@@ -148,9 +148,27 @@
 	</target>
 
 	<!-- Trivial setup -->
-	<target name="prepare" depends="fetchjars">
+	<target name="prepare" depends="">
 		<mkdir dir="${build.dir}"/>
 		<mkdir dir="${reports.tests}"/>
+		<mkdir dir="netlib"/>
+		<path id="downloaded-libs">
+		        <fileset dir="./netlib">
+			       <include name="*.jar"/>
+			</fileset>
+		</path>
+		<path id="compile-classpath">
+		        <path refid="base-compile-classpath"/>
+			<path refid="downloaded-libs"/>
+		</path>	
+		<path id="run-classpath">
+		<path refid="base-run-classpath"/>
+			<path refid="downloaded-libs"/>
+		</path>
+		<path id="test-classpath">
+		        <path refid="base-test-classpath"/>
+			<path refid="downloaded-libs"/>
+		</path>	
 	</target>
 
 	<!-- Build the workbench binary distribution -->
