@@ -13,10 +13,10 @@ import java.net.*;
 import org.embl.ebi.escience.baclava.*;
 
 /**
- * Fetch a single web page from URL
+ * Fetch a single image from URL
  * @author Tom Oinn
  */
-public class WebPageFetcher implements LocalWorker {
+public class WebImageFetcher implements LocalWorker {
     
     private static final String NEWLINE = System.getProperty("line.separator");
 
@@ -27,10 +27,10 @@ public class WebPageFetcher implements LocalWorker {
 	return new String[]{"'text/x-taverna-web-url'","'text/x-taverna-web-url'"};
     }
     public String[] outputNames() {
-	return new String[]{"contents"};
+	return new String[]{"image"};
     }
     public String[] outputTypes() {
-	return new String[]{LocalWorker.HTML};
+	return new String[]{"'image/*'"};
     }
     
     /**
@@ -41,27 +41,31 @@ public class WebPageFetcher implements LocalWorker {
     public Map execute(Map inputs) throws TaskExecutionException {
 	BufferedReader reader = null;
 	try {
-	    String inputURLString = (String)((DataThing)inputs.get("url")).getDataObject();
 	    URL inputURL = null;
+	    String inputURLString = (String)((DataThing)inputs.get("url")).getDataObject();
+	    // Was a base URL supplied?
 	    if (inputs.get("base")!=null) {
 		inputURL = new URL(new URL((String)((DataThing)inputs.get("base")).getDataObject()),inputURLString);
 	    }
 	    else {
 		inputURL = new URL(inputURLString);
 	    }
-	    StringBuffer result = new StringBuffer();
-	    reader = new BufferedReader( new InputStreamReader(inputURL.openStream()) );
-	    String line = null;
-	    while ( (line = reader.readLine()) != null) {
-		result.append(line);
-		result.append(NEWLINE);
+	    System.out.println("Content length is "+inputURL.openConnection().getContentLength());
+	    byte[] contents = new byte[inputURL.openConnection().getContentLength()];
+	    int bytesRead = 0;
+	    int totalBytesRead = 0;
+	    InputStream is = inputURL.openStream();
+	    while (bytesRead != -1) {
+		bytesRead = is.read(contents, totalBytesRead, contents.length - totalBytesRead);
+		totalBytesRead += bytesRead;
 	    }
+	    System.out.println("Read "+totalBytesRead+" from input stream");
 	    Map outputMap = new HashMap();
-	    outputMap.put("contents",new DataThing(result.toString()));
+	    outputMap.put("image",new DataThing(contents));
 	    return outputMap;
 	}
 	catch (IOException ioe) {
-	    TaskExecutionException tee = new TaskExecutionException("Error fetching web page!");
+	    TaskExecutionException tee = new TaskExecutionException("Error fetching web image!");
 	    tee.initCause(ioe);
 	    throw tee;
 	}

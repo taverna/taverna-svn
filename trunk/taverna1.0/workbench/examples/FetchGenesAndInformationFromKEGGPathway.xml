@@ -1,5 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <s:scufl xmlns:s="http://org.embl.ebi.escience/xscufl/0.1alpha" version="0.1" log="0">
+  <s:processor name="baseURL">
+    <s:stringconstant>http://soap.genome.ad.jp/</s:stringconstant>
+  </s:processor>
+  <s:processor name="getImages">
+    <s:local>org.embl.ebi.escience.scuflworkers.java.WebImageFetcher</s:local>
+  </s:processor>
+  <s:processor name="getPages">
+    <s:local>org.embl.ebi.escience.scuflworkers.java.WebPageFetcher</s:local>
+  </s:processor>
+  <s:processor name="findImageURLs">
+    <s:local>org.embl.ebi.escience.scuflworkers.java.ExtractImageLinks</s:local>
+  </s:processor>
   <s:processor name="pathwayID">
     <s:stringconstant>path:eco00020</s:stringconstant>
   </s:processor>
@@ -21,6 +33,18 @@
       <s:operation>get_genes_by_pathway</s:operation>
     </s:arbitrarywsdl>
   </s:processor>
+  <s:link>
+    <s:input>getImages:url</s:input>
+    <s:output>findImageURLs:imagelinks</s:output>
+  </s:link>
+  <s:link>
+    <s:input>getImages:base</s:input>
+    <s:output>baseURL:value</s:output>
+  </s:link>
+  <s:link>
+    <s:input>findImageURLs:document</s:input>
+    <s:output>getPages:contents</s:output>
+  </s:link>
   <s:link>
     <s:input>kegg_getEntries:kids</s:input>
     <s:output>kegg_getGenesByPathway:return</s:output>
@@ -46,8 +70,12 @@
     <s:output>kegg_getGenesByPathway:return</s:output>
   </s:link>
   <s:link>
-    <s:input>pathwayURLs</s:input>
+    <s:input>getPages:url</s:input>
     <s:output>markPathway:return</s:output>
+  </s:link>
+  <s:link>
+    <s:input>images</s:input>
+    <s:output>getImages:image</s:output>
   </s:link>
   <s:sink>
     results
@@ -66,11 +94,9 @@
     </s:metadata>
   </s:sink>
   <s:sink>
-    pathwayURLs
+    images
     <s:metadata>
-      <s:mimeTypes>
-        <s:mimeType>text/x-taverna-web-url</s:mimeType>
-      </s:mimeTypes>
+      <s:mimeTypes />
       <s:description />
       <s:semanticType />
     </s:metadata>
