@@ -39,5 +39,17 @@ public interface EnactorProxy {
      */
     public WorkflowInstance submitWorkflow(ScuflModel workflow, Map inputs)
 	throws WorkflowSubmissionException;
+    
+    /**
+     * Configure this enactor instance with the specified user context,
+     * this can be used to allow the enactor access to protected resources
+     * and to inform provenance generation.
+     */
+    public void setUserContext(UserContext contect);
+    
+    /**
+     * Return the user context object currently applied to this enactor instance
+     */
+    public UserContext getUserContext();
 
 }

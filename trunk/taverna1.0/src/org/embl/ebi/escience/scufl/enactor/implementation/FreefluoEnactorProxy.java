@@ -6,7 +6,7 @@
 package org.embl.ebi.escience.scufl.enactor.implementation;
 
 import org.embl.ebi.escience.scufl.ScuflModel;
-import org.embl.ebi.escience.scufl.enactor.EnactorProxy;
+import org.embl.ebi.escience.scufl.enactor.*;
 import org.embl.ebi.escience.scufl.enactor.WorkflowInstance;
 import org.embl.ebi.escience.scufl.enactor.WorkflowSubmissionException;
 import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.broker.FlowBroker;
@@ -80,5 +80,36 @@ public class FreefluoEnactorProxy implements EnactorProxy {
 	    throw wse;
 	}
     }
+
+    /**
+     * Dummy context handler, doesn't do anything at the moment
+     */
+    public void setUserContext(UserContext theContext) {
+	//
+    }
+
+    /**
+     * Return default user context
+     */
+    public UserContext getUserContext() {
+	return new UserContext() {
+		public String getUser() {
+		    return "Unknown user";
+		}
+		public String getProject() {
+		    return "Unknown project";
+		}
+		public String getOrganisation() {
+		    return "Unknown organisation";
+		}
+		public String getExperiment() {
+		    return "Unknown experiment";
+		}
+		public String[] getUserNameAndPassword(String resourceExpression) {
+		    return new String[]{"",""};
+		}
+	    };
+    }
+	    
 
 }
