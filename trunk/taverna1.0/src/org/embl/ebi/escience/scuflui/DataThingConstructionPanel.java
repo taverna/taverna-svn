@@ -86,7 +86,7 @@ import org.jdom.output.XMLOutputter;
  * COMMENT DataThingConstructionPanel
  * 
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover </a>
- * @version $Revision: 1.26 $
+ * @version $Revision: 1.27 $
  */
 public abstract class DataThingConstructionPanel extends JPanel implements ScuflUIComponent, ScuflModelEventListener
 {
@@ -400,7 +400,7 @@ public abstract class DataThingConstructionPanel extends JPanel implements Scufl
 
 		public InputListNode(DataThing thing)
 		{
-			this.thing = thing;
+			setDataThing(thing);
 		}
 
 		/*
