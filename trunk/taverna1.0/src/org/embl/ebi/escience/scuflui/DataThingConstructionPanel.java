@@ -90,7 +90,7 @@ import org.jdom.output.XMLOutputter;
  * COMMENT DataThingConstructionPanel
  * 
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover </a>
- * @version $Revision: 1.21 $
+ * @version $Revision: 1.22 $
  */
 public class DataThingConstructionPanel extends JPanel implements ScuflUIComponent, ScuflModelEventListener
 {
@@ -308,7 +308,8 @@ public class DataThingConstructionPanel extends JPanel implements ScuflUICompone
 						FileWriter fileWriter = new FileWriter(file);
 						BufferedWriter writer = new BufferedWriter(fileWriter);
 						XMLOutputter outputter = new XMLOutputter(Format.getCompactFormat());
-						BufferedReader reader = new BufferedReader(new StringReader(outputter.outputString(DataThingXMLFactory.getDataDocument(bakeInputMap()))));
+						BufferedReader reader = new BufferedReader(new StringReader(outputter
+								.outputString(DataThingXMLFactory.getDataDocument(bakeInputMap()))));
 						String line = null;
 						while ((line = reader.readLine()) != null)
 						{
@@ -335,7 +336,7 @@ public class DataThingConstructionPanel extends JPanel implements ScuflUICompone
 			if (panel == null)
 			{
 				panel = new JPanel(new BorderLayout());
-				
+
 				scrollPane = new JScrollPane();
 				scrollPane.setPreferredSize(new Dimension(0, 0));
 				JToolBar toolbar = new JToolBar();
@@ -356,12 +357,13 @@ public class DataThingConstructionPanel extends JPanel implements ScuflUICompone
 
 				panel.add(scrollPane, BorderLayout.CENTER);
 				panel.add(toolbar, BorderLayout.NORTH);
-				panel.setPreferredSize(new Dimension(0,0));
+				panel.setPreferredSize(new Dimension(0, 0));
 			}
 			try
 			{
-				XMLOutputter outputter = new XMLOutputter(Format.getCompactFormat());				
-				scrollPane.setViewportView(new XMLTree(outputter.outputString(DataThingXMLFactory.getDataDocument(bakeInputMap()))));
+				XMLOutputter outputter = new XMLOutputter(Format.getCompactFormat());
+				scrollPane.setViewportView(new XMLTree(outputter.outputString(DataThingXMLFactory
+						.getDataDocument(bakeInputMap()))));
 			}
 			catch (ParserConfigurationException e)
 			{
@@ -617,7 +619,7 @@ public class DataThingConstructionPanel extends JPanel implements ScuflUICompone
 			menu.add(createItem);
 			menu.add(createListItem);
 		}
-		
+
 		public DataThing getDataThing()
 		{
 			if (getChildCount() == 1)
@@ -625,7 +627,7 @@ public class DataThingConstructionPanel extends JPanel implements ScuflUICompone
 				return ((DataThingNode) getFirstChild()).getDataThing();
 			}
 			return super.getDataThing();
-		}		
+		}
 	}
 
 	private class InputDataThingNode extends DefaultMutableTreeNode implements PanelTreeNode, DataThingNode
@@ -803,7 +805,7 @@ public class DataThingConstructionPanel extends JPanel implements ScuflUICompone
 
 		public DataThing getDataThing()
 		{
-			DataThing newThing = DataThingFactory.bake(getUserObject()); 
+			DataThing newThing = DataThingFactory.bake(getUserObject());
 			if (thing != null)
 			{
 				newThing.copyMetadataFrom(thing);
@@ -1025,39 +1027,24 @@ public class DataThingConstructionPanel extends JPanel implements ScuflUICompone
 		}
 	}
 
-	/**
-	 * COMMENT Constructs a new <code>DataThingConstructionPanel</code>.
-	 */
-	public DataThingConstructionPanel()
+	public Map bakeInputMap()
 	{
-		super(new BorderLayout());
-		portTree = new JTree(treeModel);
-		splitter = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
-		JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-		JButton runButton = new JButton("Run Workflow", ScuflIcons.runIcon);
-		runButton.addActionListener(new ActionListener()
+		HashMap inputMap = new HashMap();
+		Enumeration children = rootNode.children();
+		while (children.hasMoreElements())
 		{
-			public void actionPerformed(ActionEvent event)
-			{
-				Map inputObject = bakeInputMap();
-				try
-				{
-					if (Workbench.workbench != null)
-					{
-						GenericUIComponentFrame thing = new GenericUIComponentFrame(Workbench.workbench.model,
-								new EnactorInvocation(defaultEnactor, model, inputObject));
-						thing.setSize(600, 400);
-						thing.setLocation(100, 100);
-						Workbench.workbench.desktop.add(thing);
-						thing.moveToFront();
-					}
-				}
-				catch (Exception e)
-				{
-					e.printStackTrace();
-				}
-			}
-		});
+			InputPortNode portNode = (InputPortNode) children.nextElement();
+			inputMap.put(portNode.getPort().getName(), portNode.getDataThing());
+		}
+		return inputMap;
+	}
+
+	/*
+	 * @see org.embl.ebi.escience.scuflui.ScuflUIComponent#attachToModel(org.embl.ebi.escience.scufl.ScuflModel)
+	 */
+	public void attachToModel(ScuflModel model)
+	{
+		portTree = new JTree(treeModel);
 		portTree.setRowHeight(0);
 		portTree.setCellRenderer(new InputNodeRenderer());
 		portTree.setDragEnabled(true);
@@ -1202,15 +1189,43 @@ public class DataThingConstructionPanel extends JPanel implements ScuflUICompone
 			}
 		});
 		new TreeTransferHandler(portTree);
-		buttonPanel.add(runButton);
 
-		JScrollPane scrollPane = new JScrollPane(portTree);
-
+		JScrollPane scrollPane = new JScrollPane();
+		scrollPane.setViewportView(portTree);
+		
+		splitter = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
 		splitter.setContinuousLayout(false);
 		splitter.setLeftComponent(scrollPane);
 		splitter.setPreferredSize(new Dimension(0, 0));
 
-		JToolBar toolbar = new JToolBar();
+		JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+		JButton runButton = new JButton("Run Workflow", ScuflIcons.runIcon);
+		runButton.addActionListener(new ActionListener()
+		{
+			public void actionPerformed(ActionEvent event)
+			{
+				Map inputObject = bakeInputMap();
+				try
+				{
+					if (Workbench.workbench != null)
+					{
+						GenericUIComponentFrame thing = new GenericUIComponentFrame(Workbench.workbench.model,
+								new EnactorInvocation(defaultEnactor, DataThingConstructionPanel.this.model,
+										inputObject));
+						thing.setSize(600, 400);
+						thing.setLocation(100, 100);
+						Workbench.workbench.desktop.add(thing);
+						thing.moveToFront();
+					}
+				}
+				catch (Exception e)
+				{
+					e.printStackTrace();
+				}
+			}
+		});
+		buttonPanel.add(runButton);
+
 		loadInputsButton = new JButton("Load Inputs", ScuflIcons.openIcon);
 		loadInputsButton.setEnabled(false);
 		loadInputsButton.addActionListener(loadFilesAction);
@@ -1224,6 +1239,7 @@ public class DataThingConstructionPanel extends JPanel implements ScuflUICompone
 		removeButton.setEnabled(false);
 		removeButton.addActionListener(removeAction);
 
+		JToolBar toolbar = new JToolBar();
 		toolbar.setFloatable(false);
 		toolbar.setRollover(true);
 		toolbar.add(loadInputsButton);
@@ -1231,30 +1247,13 @@ public class DataThingConstructionPanel extends JPanel implements ScuflUICompone
 		toolbar.add(newListButton);
 		toolbar.add(removeButton);
 
+		setLayout(new BorderLayout());
 		//add(portTree, BorderLayout.WEST);
 		add(toolbar, BorderLayout.NORTH);
 		add(splitter, BorderLayout.CENTER);
 		add(buttonPanel, BorderLayout.SOUTH);
 		setVisible(true);
-	}
 
-	public Map bakeInputMap()
-	{
-		HashMap inputMap = new HashMap();
-		Enumeration children = rootNode.children();
-		while (children.hasMoreElements())
-		{
-			InputPortNode portNode = (InputPortNode) children.nextElement();
-			inputMap.put(portNode.getPort().getName(), portNode.getDataThing());
-		}
-		return inputMap;
-	}
-
-	/*
-	 * @see org.embl.ebi.escience.scuflui.ScuflUIComponent#attachToModel(org.embl.ebi.escience.scufl.ScuflModel)
-	 */
-	public void attachToModel(ScuflModel model)
-	{
 		if (this.model == null)
 		{
 			this.model = model;
@@ -1324,9 +1323,10 @@ public class DataThingConstructionPanel extends JPanel implements ScuflUICompone
 		return "Run Workflow";
 	}
 
-    public ImageIcon getIcon() {
-	return ScuflIcons.windowInput;
-    }
+	public ImageIcon getIcon()
+	{
+		return ScuflIcons.windowInput;
+	}
 
 	/*
 	 * @see org.embl.ebi.escience.scufl.ScuflModelEventListener#receiveModelEvent(org.embl.ebi.escience.scufl.ScuflModelEvent)
