@@ -37,6 +37,9 @@ public class TreeTableModelView extends TreeModelView implements TreeTableModel 
      * The interesting bit
      */
     public Object getValueAt(Object nodeObject, int column) {
+	if (nodeObject == null) {
+	    return null;
+	}
 	DefaultMutableTreeNode node = (DefaultMutableTreeNode)nodeObject;
 	Processor p = null;
 	if (node.getUserObject() instanceof Processor) {
@@ -83,6 +86,7 @@ public class TreeTableModelView extends TreeModelView implements TreeTableModel 
 	return true;
     }
     public void setValueAt(Object value, Object nodeObject, int column) {
+	//System.out.println("Setting value at column "+column+" to "+value.toString());
 	DefaultMutableTreeNode node = (DefaultMutableTreeNode)nodeObject;
 	Processor p = null;
 	if (node.getUserObject() instanceof Processor) {
@@ -98,17 +102,15 @@ public class TreeTableModelView extends TreeModelView implements TreeTableModel 
 	    case 1:
 		Integer retries = (Integer)value;
 		p.setRetries(retries.intValue());
+		return;
 	    case 2:
 		Integer retryDelay = (Integer)value;
 		p.setRetryDelay(retryDelay.intValue());
+		return;
 	    case 3:
-		try {
-		    Double backoff = (Double)value;
-		    p.setBackoff(backoff.doubleValue());
-		}
-		catch (Exception e) {
-		    //
-		}
+		Double backoff = (Double)value;
+		p.setBackoff(backoff.doubleValue());
+		return;
 	    }
 	}
     }

@@ -25,8 +25,8 @@
 //      Dependencies        :
 //
 //      Last commit info    :   $Author: mereden $
-//                              $Date: 2004-02-05 15:35:55 $
-//                              $Revision: 1.33 $
+//                              $Date: 2004-02-13 11:59:35 $
+//                              $Revision: 1.34 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 package uk.ac.soton.itinnovation.taverna.enactor.entities;
@@ -124,6 +124,9 @@ public class ProcessorTask extends TavernaTask{
 		}
 		try {
 		    invoke();
+		    return new TaskStateMessage(getParentFlow().getID(), 
+						getID(), 
+						TaskStateMessage.COMPLETE,"Task completed successfully");
 		}
 		catch (TaskExecutionException tee) {
 		    // If there are alternates left then just loop
@@ -136,9 +139,6 @@ public class ProcessorTask extends TavernaTask{
 		    }
 		}
 	    }
-	    return new TaskStateMessage(getParentFlow().getID(), 
-					getID(), 
-					TaskStateMessage.COMPLETE,"Task completed successfully");
 	}
 	catch (TaskExecutionException ex) {
 	    ex.printStackTrace();
@@ -157,7 +157,11 @@ public class ProcessorTask extends TavernaTask{
 					getID(), 
 					TaskStateMessage.FAILED, 
 					"Unrecognised dispatch failure for a task within the workflow.");
-	}	
+	}
+	return new TaskStateMessage(getParentFlow().getID(), 
+				    getID(), 
+				    TaskStateMessage.FAILED, 
+				    "Unrecognised dispatch failure for a task within the workflow.");	
     }
 
     /**

@@ -60,7 +60,7 @@ public class TreeModelView extends DefaultTreeModel implements ScuflModelEventLi
     /**
      * Handle a model change event
      */
-    public void receiveModelEvent(ScuflModelEvent event) {
+    public synchronized void receiveModelEvent(ScuflModelEvent event) {
 	Object source = event.getSource();
 	if (source instanceof Processor) {
 	    // Check that the event didn't originate from the
@@ -74,7 +74,9 @@ public class TreeModelView extends DefaultTreeModel implements ScuflModelEventLi
 		return;
 	    }
 	    else {
-		updateProcessorNode((Processor)source);
+		if (event instanceof MinorScuflModelEvent == false) {
+		    updateProcessorNode((Processor)source);
+		}
 		return;
 	    }
 	}
@@ -100,7 +102,7 @@ public class TreeModelView extends DefaultTreeModel implements ScuflModelEventLi
     /**
      * Clear the model and regenerate
      */
-    private void generateInitialModel() {
+    private synchronized void generateInitialModel() {
 	clearNode(getRootNode());
 	inputRootNode = new DefaultMutableTreeNode("Workflow inputs");
 	outputRootNode = new DefaultMutableTreeNode("Workflow outputs");
@@ -246,10 +248,9 @@ public class TreeModelView extends DefaultTreeModel implements ScuflModelEventLi
      * Remove all child nodes of a MutableTreeNode within this
      * TreeModel
      */
-    private void clearNode(MutableTreeNode parent) {
-	for (int i = parent.getChildCount(); i > 0; i--) {
-	    TreeNode childNode = parent.getChildAt(i-1);
-	    removeNodeFromParent((MutableTreeNode)childNode);
+    private synchronized void clearNode(MutableTreeNode parent) {
+	while (parent.getChildCount() > 0) {
+	    removeNodeFromParent((MutableTreeNode)parent.getChildAt(0));
 	}
     }
 

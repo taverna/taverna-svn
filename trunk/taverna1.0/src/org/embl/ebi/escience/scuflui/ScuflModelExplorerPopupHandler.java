@@ -85,7 +85,7 @@ public class ScuflModelExplorerPopupHandler extends MouseAdapter {
 	if (scuflObject != null) {
 	    try {
 		final MouseEvent theMouseEvent = e;
-		JPopupMenu theMenu = ScuflContextMenuFactory.getMenuForObject(scuflObject, model.getModel());
+		JPopupMenu theMenu = ScuflContextMenuFactory.getMenuForObject(node, scuflObject, model.getModel());
 		if (scuflObject instanceof Processor) {
 		    // show the properties display
 		    final Processor theProcessor = (Processor)scuflObject;

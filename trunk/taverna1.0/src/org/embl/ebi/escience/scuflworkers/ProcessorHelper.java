@@ -369,7 +369,7 @@ public class ProcessorHelper {
 		    String value = outputMapItem.getAttributeValue("value");
 		    ap.getOutputMapping().put(key, value);
 		}
-		loadedProcessor.getAlternatesList().add(ap);
+		loadedProcessor.addAlternate(ap);
 	    }
 	    
 	}

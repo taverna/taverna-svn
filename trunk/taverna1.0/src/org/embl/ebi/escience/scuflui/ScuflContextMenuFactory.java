@@ -11,6 +11,8 @@ import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
+import javax.swing.tree.*;
+import java.util.*;
 import org.embl.ebi.escience.scufl.*;
 import org.embl.ebi.escience.scuflui.workbench.GenericUIComponentFrame;
 import org.embl.ebi.escience.scuflui.workbench.Workbench;
@@ -44,17 +46,64 @@ public class ScuflContextMenuFactory {
      * can return sensible things if the object is a string appropriate
      * to some node in the tree, i.e. 'Processors'
      */
-    public static JPopupMenu getMenuForObject(Object theObject, ScuflModel model) 
+    public static JPopupMenu getMenuForObject(DefaultMutableTreeNode theNode, Object theObject, ScuflModel model) 
 	throws NoContextMenuFoundException {
 	if (theObject == null) {
 	    throw new NoContextMenuFoundException("Supplied user object was null, giving up.");
 	}
-	if (theObject instanceof Processor) {
+	else if (theObject instanceof Processor) {
 	    return getProcessorMenu((Processor)theObject);
 	}
+	else if (theObject instanceof AlternateProcessor) {
+	    return getAlternateProcessorMenu((AlternateProcessor)theObject);
+	}
 	else if (theObject instanceof Port) {
+	    // Check whether the port parent node is an AlternateProcessor
+	    // in which case we display the mapping options
+	    DefaultMutableTreeNode parent = (DefaultMutableTreeNode)theNode.getParent();
+	    final Port thePort = (Port)theObject;
+	    if (parent.getUserObject() instanceof AlternateProcessor) {
+		final AlternateProcessor ap = (AlternateProcessor)parent.getUserObject();
+		JPopupMenu theMenu = new JPopupMenu();
+		JMenuItem title = new JMenuItem("Map port '"+thePort.getName()+"' to...");
+		theMenu.add(title);
+		title.setEnabled(false);
+		theMenu.addSeparator();
+		if (theObject instanceof OutputPort) {
+		    // Fetch the original port names from the output ports on the
+		    // original processor
+		    OutputPort[] originalPorts = ap.getOriginalProcessor().getOutputPorts();
+		    for (int i = 0; i < originalPorts.length; i++) {
+			JMenuItem item = new JMenuItem(originalPorts[i].getName(), ScuflIcons.outputPortIcon);
+			final Port originalPort = originalPorts[i]; 
+			item.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent ae) {
+				    ap.getOutputMapping().put(originalPort.getName(), thePort.getName());
+				    ap.getOriginalProcessor().fireModelEvent(new MinorScuflModelEvent(ap.getProcessor(), "Port mapping changed"));
+				}
+			    });
+			theMenu.add(item);
+		    }
+		}
+		else {
+		    InputPort[] originalPorts = ap.getOriginalProcessor().getInputPorts();
+		    for (int i = 0; i < originalPorts.length; i++) {
+			JMenuItem item = new JMenuItem(originalPorts[i].getName(), ScuflIcons.inputPortIcon);
+			final Port originalPort = originalPorts[i]; 
+			item.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent ae) {
+				    ap.getInputMapping().put(originalPort.getName(), thePort.getName());
+				    ap.getOriginalProcessor().fireModelEvent(new MinorScuflModelEvent(ap.getProcessor(), "Port mapping changed"));
+				}
+			    });
+			theMenu.add(item);
+		    }
+		}
+		return theMenu;
+		
+	    }
 	    // Is the port a workflow source?
-	    Port thePort = (Port)theObject;
+	    //Port thePort = (Port)theObject;
 	    if (thePort instanceof OutputPort) {
 		return LinkingMenus.linkFrom(thePort);
 	    }
@@ -296,5 +345,69 @@ public class ScuflContextMenuFactory {
 	return theMenu;
     }
     
+    private static JPopupMenu getAlternateProcessorMenu(AlternateProcessor ap) {
+	JPopupMenu theMenu = new JPopupMenu();
+	JMenuItem title = new JMenuItem("Alternate processor");
+	title.setEnabled(false);
+	theMenu.add(title);
+	theMenu.addSeparator();
+	final Processor parentProcessor = ap.getOriginalProcessor();
+	final AlternateProcessor alternate = ap;
+	final Processor theProcessor = ap.getProcessor();
+	// See whether we can configure this alternate
+	String tagName = ProcessorHelper.getTagNameForClassName(theProcessor.getClass().getName());
+	ProcessorEditor pe = ProcessorHelper.getEditorForTagName(tagName);
+	if (pe != null) {
+	    JMenuItem edit = new JMenuItem(pe.getEditorDescription(), ScuflIcons.editIcon);
+	    edit.addActionListener(pe.getListener(theProcessor));
+	    theMenu.add(edit);
+	}
+	// Always show the delete option
+	JMenuItem delete = new JMenuItem("Remove this alternate",ScuflIcons.deleteIcon);
+	delete.addActionListener(new ActionListener() {
+		public void actionPerformed(ActionEvent a) {
+		    parentProcessor.removeAlternate(alternate);
+		}
+	    });
+	theMenu.add(delete);
+	// If there is more than one alternate then we show the 'promote/demote' options
+	final int numberOfAlternates = parentProcessor.getAlternatesList().size();
+	final int alternateIndex = parentProcessor.getAlternatesList().indexOf(alternate);
+	if (numberOfAlternates > 1 && alternateIndex != -1) {
+	    if (alternateIndex > 0) { 
+		// Not the first item in the list so allow promotion
+		JMenuItem promote = new JMenuItem("Promote alternate");
+		promote.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent a) {
+			    // Swap this alternate with the one one lower in the list
+			    List theList = parentProcessor.getAlternatesList();
+			    Object o = theList.get(alternateIndex);
+			    theList.remove(o);
+			    theList.add(alternateIndex-1, o);
+			    parentProcessor.fireModelEvent(new ScuflModelEvent(parentProcessor, "Alternates reordered"));
+			}
+		    });
+		theMenu.add(promote);
+	    }
+	    if (alternateIndex < numberOfAlternates-1) {
+		// Not the last item in the list so allow demotion
+		JMenuItem demote = new JMenuItem("Demote alternate");
+		demote.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent a) {
+			    // Swap this alternate with the one one lower in the list
+			    List theList = parentProcessor.getAlternatesList();
+			    Object o = theList.get(alternateIndex);
+			    theList.remove(o);
+			    theList.add(alternateIndex+1, o);
+			    parentProcessor.fireModelEvent(new ScuflModelEvent(parentProcessor, "Alternates reordered"));
+			}
+		    });
+		theMenu.add(demote);
+	    }
+	}
+
+	return theMenu;
+    }
+
 }
 

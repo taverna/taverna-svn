@@ -48,6 +48,7 @@ public abstract class Processor implements Serializable, Transferable {
     final public static DataFlavor FLAVOR =
 	new DataFlavor(Processor.class, "Procesor");
     static DataFlavor[] flavors = { FLAVOR };
+    Processor parentProcessor = null;
     /**
      * Implements transferable interface
      */
@@ -96,6 +97,7 @@ public abstract class Processor implements Serializable, Transferable {
      */
     public void addAlternate(AlternateProcessor ap) {
 	this.alternates.add(ap);
+	ap.setOriginalProcessor(this);
 	fireModelEvent(new ScuflModelEvent(this, "Alternate added"));
     }
     
@@ -121,7 +123,10 @@ public abstract class Processor implements Serializable, Transferable {
      * Set the timeout parameter
      */
     public void setTimeout(int timeout) {
-	this.timeout = timeout;
+	if (timeout != this.timeout) {
+	    this.timeout = timeout;
+	    fireModelEvent(new MinorScuflModelEvent(this, "Timeout changed"));
+	}
     }
 
     /**
@@ -137,7 +142,10 @@ public abstract class Processor implements Serializable, Transferable {
      * Set the number of retries
      */
     public void setRetries(int retries) {
-	this.retries = retries;
+	if (retries != this.retries) {
+	    this.retries = retries;
+	    fireModelEvent(new MinorScuflModelEvent(this, "Retry count changed"));
+	}
     }
 
     /**
@@ -153,7 +161,10 @@ public abstract class Processor implements Serializable, Transferable {
      * Set the retry delay
      */
     public void setRetryDelay(int delay) {
-	this.retryDelay = delay;
+	if (delay != this.retryDelay) {
+	    this.retryDelay = delay;
+	    fireModelEvent(new MinorScuflModelEvent(this, "Retry delay changed"));
+	}
     }
 
     /**
@@ -170,7 +181,10 @@ public abstract class Processor implements Serializable, Transferable {
      * Set the backoff factor
      */
     public void setBackoff(double backoff) {
-	this.backoff = backoff;
+	if (backoff != this.backoff) {
+	    this.backoff = backoff;
+	    fireModelEvent(new MinorScuflModelEvent(this, "Backoff changed"));
+	}
     }
 
     /**
@@ -447,12 +461,19 @@ public abstract class Processor implements Serializable, Transferable {
     /**
      * Fire a change event back to the model
      */
-    protected void fireModelEvent(ScuflModelEvent event) {
+    public void fireModelEvent(ScuflModelEvent event) {
 	if (this.model!=null) {
 	    this.model.fireModelEvent(event);
 	}
+	else {
+	    // Fire event back to the parent processor if this
+	    // is an alternate
+	    if (this.parentProcessor != null) {
+		event.source = this.parentProcessor;
+		this.parentProcessor.fireModelEvent(event);
+	    }
+	}
     }
-
     /**
      * Return the processor's name in the toString()
      */

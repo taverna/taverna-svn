@@ -42,7 +42,7 @@ public class ScuflModelTreeTable extends JTreeTable
     
     // The ScuflModel that this is a view / controller over
     ScuflModel model = null;
-    
+    Processor lastInterestingProcessor = null;
     TreeTableModelView treeModel = new TreeTableModelView();
     
     /**
@@ -56,7 +56,7 @@ public class ScuflModelTreeTable extends JTreeTable
 	TableColumnModel columnModel = getColumnModel();
 	for (int i = 1; i < 4; i++) {
 	    TableColumn c = columnModel.getColumn(i);
-	    c.setMaxWidth(150);
+	    c.setMaxWidth(100);
 	}
 	// Attach the popup menu generator to the tree
 	this.addMouseListener(new ScuflModelExplorerPopupHandler(this));
@@ -73,10 +73,10 @@ public class ScuflModelTreeTable extends JTreeTable
      * constraints and workflow source and sink ports show, but
      * nothing else.
      */
-    public void setDefaultExpansionState() {
+    public synchronized void setDefaultExpansionState() {
 	expandAll(this.tree, new TreePath(this.treeModel.getRoot()), true);
     }
-    private void expandAll(JTree tree, TreePath parent, boolean expand) {
+    private synchronized void expandAll(JTree tree, TreePath parent, boolean expand) {
         // Traverse children
 	// Ignores nodes who's userObject is a Processor type to
 	// avoid overloading the UI with nodes at startup.
@@ -86,6 +86,10 @@ public class ScuflModelTreeTable extends JTreeTable
                 TreeNode n = (TreeNode)e.nextElement();
                 TreePath path = parent.pathByAddingChild(n);
 		if (((DefaultMutableTreeNode)n).getUserObject() instanceof Processor) {
+		    Processor p = (Processor)(((DefaultMutableTreeNode)n).getUserObject());
+		    if (p == lastInterestingProcessor) {
+			expandAll(tree, path, expand);
+		    }
 		}
 		else {
 		    expandAll(tree, path, expand);
@@ -130,7 +134,11 @@ public class ScuflModelTreeTable extends JTreeTable
      * Handle events from the model in order to keep up 
      * to date with any changes in state.
      */    
-    public void receiveModelEvent(ScuflModelEvent event) {
+    public synchronized void receiveModelEvent(ScuflModelEvent event) {
+	if (event.getSource() instanceof Processor) {
+	    lastInterestingProcessor = (Processor)(event.getSource());
+	}
+	((AbstractTableModel)(super.getModel())).fireTableDataChanged();
 	setDefaultExpansionState();
     }
     

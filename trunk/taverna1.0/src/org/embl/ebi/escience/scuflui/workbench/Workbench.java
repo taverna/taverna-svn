@@ -144,19 +144,19 @@ public class Workbench extends JFrame {
 
 	GenericUIComponentFrame diagram = new GenericUIComponentFrame(workbench.model,
 								      new ScuflDiagram());
-	diagram.setSize(600,600);
+	diagram.setSize(500,500);
 	diagram.setLocation(50,400);
 	workbench.desktop.add(diagram);
 	GenericUIComponentFrame explorer = new GenericUIComponentFrame(workbench.model,
-								       new ScuflModelExplorer());
-	explorer.setSize(300,300);
-	explorer.setLocation(700,50);
+								       new ScuflModelTreeTable());
+	explorer.setSize(500,300);
+	explorer.setLocation(50,50);
 	workbench.desktop.add(explorer);
 
 	GenericUIComponentFrame scavenger = new GenericUIComponentFrame(workbench.model,
 									new ScavengerTree());
-	scavenger.setSize(300,600);
-	scavenger.setLocation(700,400);
+	scavenger.setSize(300,850);
+	scavenger.setLocation(600,50);
 	workbench.desktop.add(scavenger);
 
 	workbench.setVisible(true);
@@ -170,12 +170,22 @@ public class Workbench extends JFrame {
      */
     public Workbench() {
 	super("Scufl Workbench");
+	try {
+	    UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+	} catch (Exception e) { }
+	
 	Workbench.workbench = this;
 	int inset = 50;
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-        setBounds(inset, inset,
-                  screenSize.width - inset*2,
-                  screenSize.height-inset*2);
+        int width = 950;
+	int height = 1000;
+	if (screenSize.width - inset * 2 < width) {
+	    width = screenSize.width - inset * 2;
+	}
+	if (screenSize.height - inset * 2 < height) {
+	    height = screenSize.height - inset * 2;
+	}
+	setBounds(inset, inset, width, height);
 
 	// Initialise the scufl model
 	this.model = new ScuflModel();
@@ -431,25 +441,26 @@ public class Workbench extends JFrame {
 
 	// Menu to show different UI widgets
 	JMenu windowMenu = new JMenu("Views");
-
-	JMenuItem explorerView = new JMenuItem("Scufl Explorer");
-	explorerView.addActionListener(new ActionListener() {
-		public void actionPerformed(ActionEvent e) {
-		    // Show a scufl explorer panel
-		    ScuflModelExplorer thing = new ScuflModelExplorer();
-		    GenericUIComponentFrame frame = new GenericUIComponentFrame(Workbench.this.model, thing);
-		    Workbench.this.desktop.add(frame);
-		    frame.moveToFront();
-		}
-	    });
-	windowMenu.add(explorerView);
-
+	/**
+	   JMenuItem explorerView = new JMenuItem("Scufl Explorer");
+	   explorerView.addActionListener(new ActionListener() {
+	   public void actionPerformed(ActionEvent e) {
+	   // Show a scufl explorer panel
+	   ScuflModelExplorer thing = new ScuflModelExplorer();
+	   GenericUIComponentFrame frame = new GenericUIComponentFrame(Workbench.this.model, thing);
+	   Workbench.this.desktop.add(frame);
+	   frame.moveToFront();
+	   }
+	   });
+	   windowMenu.add(explorerView);
+	*/
 	JMenuItem explorerTableView = new JMenuItem("Scufl Explorer TreeTable");
 	explorerTableView.addActionListener(new ActionListener() {
 		public void actionPerformed(ActionEvent e) {
 		    // Show a scufl explorer panel
 		    ScuflModelTreeTable thing = new ScuflModelTreeTable();
 		    GenericUIComponentFrame frame = new GenericUIComponentFrame(Workbench.this.model, thing);
+		    frame.setSize(600,300);
 		    Workbench.this.desktop.add(frame);
 		    frame.moveToFront();
 		}
@@ -501,19 +512,21 @@ public class Workbench extends JFrame {
 		}
 	    });
 	windowMenu.add(servicePanel);
-	JMenuItem inputPanel = new JMenuItem("Workflow Input Panel");
-	inputPanel.addActionListener(new ActionListener() {
-		public void actionPerformed(ActionEvent e) {
-		    // Show a workflow input panel
-		    EnactorLaunchPanel thing = new EnactorLaunchPanel();
-		    GenericUIComponentFrame frame = new GenericUIComponentFrame(Workbench.this.model, thing);
-		    Workbench.this.desktop.add(frame);
-		    frame.moveToFront();
-		}
-	    });
-	windowMenu.add(inputPanel);
-	windowMenu.addSeparator();
-	JMenuItem thingBuilder = new JMenuItem("DataThing constructor");
+	/**
+	   JMenuItem inputPanel = new JMenuItem("Workflow Input Panel");
+	   inputPanel.addActionListener(new ActionListener() {
+	   public void actionPerformed(ActionEvent e) {
+	   // Show a workflow input panel
+	   EnactorLaunchPanel thing = new EnactorLaunchPanel();
+	   GenericUIComponentFrame frame = new GenericUIComponentFrame(Workbench.this.model, thing);
+	   Workbench.this.desktop.add(frame);
+	   frame.moveToFront();
+	   }
+	   });
+	   windowMenu.add(inputPanel);
+	   windowMenu.addSeparator();
+	*/
+	JMenuItem thingBuilder = new JMenuItem("Run workflow");
 	thingBuilder.addActionListener(new ActionListener() {
 		public void actionPerformed(ActionEvent e) {
 		    // Show a workflow input panel

@@ -12,7 +12,7 @@ package org.embl.ebi.escience.scufl;
  */
 public class ScuflModelEvent {
 
-    private Object source = null;
+    Object source = null;
     private String message = null;
 
     /**

@@ -48,6 +48,7 @@ import org.embl.ebi.escience.scufl.Processor;
 public class AlternateProcessor implements Serializable, Transferable {
     
     private Processor alternate;
+    private Processor original;
     private Map inputMapping = new HashMap();
     private Map outputMapping = new HashMap();
     
@@ -102,6 +103,20 @@ public class AlternateProcessor implements Serializable, Transferable {
 	return this.alternate;
     }
     
+    /**
+     * Return the processor for which this container holds
+     * the alternate implementation. This will return null
+     * if no original processor has been defined for the
+     * alternate.
+     */
+    public Processor getOriginalProcessor() {
+	return this.original;
+    }
+    public void setOriginalProcessor(Processor p) {
+	this.original = p;
+	this.alternate.parentProcessor = p;
+    }
+
     /**
      * Get the input mappings, a Map object with
      * keys being the original or primary input names
