@@ -31,8 +31,8 @@ public class ScuflDiagramPanel extends JPanel
     JCheckBox typeDisplay = new JCheckBox("Show types",true);
     JCheckBox fitToWindow = new JCheckBox("Fit to window",false);
     static ImageIcon svgIcon,pngIcon,dotIcon;
-    final JFileChooser fc = new JFileChooser();
-    
+    final JFileChooser fc;
+
     static {
 	try {
 	    Class c = Class.forName("org.embl.ebi.escience.scuflui.ScuflDiagramPanel");
@@ -197,7 +197,7 @@ public class ScuflDiagramPanel extends JPanel
 		    }
 		}
 	    });
-	
+	fc = new JFileChooser();
 	add(toolbar, BorderLayout.PAGE_START);
     }
     
