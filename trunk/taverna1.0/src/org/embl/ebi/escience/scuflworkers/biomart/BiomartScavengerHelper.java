@@ -78,9 +78,12 @@ class MartSpecificationPanel extends JPanel {
     String[] standardDBDrivers = new String[]{"com.mysql.jdbc.Driver"};
     JComboBox dbDriver = new JComboBox(standardDBDrivers);
     
+    String[] sampleInstances = new String[]{"ensembl_mart_22_1","msd_mart_2"};
+    JComboBox dbInstance = new JComboBox(sampleInstances);
+    
     JTextField dbHost = new JTextField("martdb.ebi.ac.uk");
     JTextField dbPort = new JTextField("3306");
-    JTextField dbInstance = new JTextField("ensembl_mart_22_1");
+    //JTextField dbInstance = new JTextField("ensembl_mart_22_1");
     JTextField dbUser = new JTextField("anonymous");
     JPasswordField dbPassword = new JPasswordField();
     
@@ -88,6 +91,7 @@ class MartSpecificationPanel extends JPanel {
 	super();
 	dbType.setEditable(true);
 	dbDriver.setEditable(true);
+	dbInstance.setEditable(true);
 	GridLayout layout = new GridLayout(8,2);
 	setLayout(layout);
 	add(new ShadedLabel("Database Type", ShadedLabel.TAVERNA_GREEN, true));
@@ -124,7 +128,7 @@ class MartSpecificationPanel extends JPanel {
     }
     
     public String getDBInstance() {
-	return dbInstance.getText();
+	return (String)dbInstance.getSelectedItem();
     }
 
     public String getDBUser() {

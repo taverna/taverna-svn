@@ -379,12 +379,9 @@ public class AttributePageEditor extends JPanel {
 	    JPanel attributePanel = new JPanel();
 	    attributePanel.setBackground(Color.WHITE);
 	    List attributes = collection.getAttributeDescriptions();
-	    int numberOfAttributes = attributes.size();
-	    int rows = numberOfAttributes / 3;
-	    if (rows * 3 < numberOfAttributes) {
-		rows++;
-	    }
-	    attributePanel.setLayout(new GridLayout(rows,2));
+	    int numberOfAttributes = 0;
+	    int rows = 1;
+	    //attributePanel.setLayout(new GridLayout(rows,3));
 	    for (Iterator i = attributes.iterator(); i.hasNext();) {
 		final AttributeDescription desc = (AttributeDescription)i.next();
 		final String myID = desc.getField()+desc.getKey()+desc.getTableConstraint();
@@ -453,13 +450,22 @@ public class AttributePageEditor extends JPanel {
 			}
 		    });
 		// Add to the panel
-		attributePanel.add(cb);	    
+		attributePanel.add(cb);
+		numberOfAttributes++;
+		if (numberOfAttributes == 3 && i.hasNext()) {
+		    numberOfAttributes = 0;
+		    rows++;
+		}
 	    }
+	    if (rows == 0) {
+		rows ++;
+	    }
+	    attributePanel.setLayout(new GridLayout(rows, 3));
 	    // Fix up any blank space caused by only having one or two
 	    // items to show
-	    while (numberOfAttributes < 3) {
-		numberOfAttributes++;
-		attributePanel.add(Box.createHorizontalGlue());
+	    while (numberOfAttributes < 3 && numberOfAttributes > 0) {
+	    	numberOfAttributes++;
+	    	attributePanel.add(Box.createHorizontalGlue());
 	    }
 	    attributePanel.setMaximumSize(new Dimension(5000,rows*20));
 	    add(attributePanel,

@@ -59,7 +59,8 @@ public class ServiceError extends ProcessEvent {
 			fileName = "Unknown filename";
 			// The source filename is not available
 		    }
-		    String className = stack[i].getClassName();
+		    String[] classNameParts = stack[i].getClassName().split("\\.");
+		    String className = classNameParts[classNameParts.length - 1];
 		    String methodName = stack[i].getMethodName();
 		    boolean isNativeMethod = stack[i].isNativeMethod();
 		    int line = stack[i].getLineNumber();

@@ -149,8 +149,10 @@ public class BiomartProcessor extends Processor {
 				       info.dbDriver);
 	    DSConfigAdaptor adaptor = new DatabaseDSConfigAdaptor(ds, ds.getUser(), 
 								  true, false, false);
-	    config = adaptor.getDatasetConfigByDatasetInternalName(dataSourceName,
-								   "default");
+	    DatasetConfigIterator configs = adaptor.getDatasetConfigsByDataset(dataSourceName);
+	    config = (DatasetConfig)configs.next();
+	    //config = adaptor.getDatasetConfigByDatasetInternalName(dataSourceName,
+	    //							   "default");
 	    query.setDataSource(ds);
 	    query.setDataset(config.getDataset());
 	    query.setDatasetConfig(config);

@@ -171,16 +171,32 @@ public class EnactorStatusTableModel extends AbstractTableModel {
 	    if (childElementList.isEmpty()==false) {
 		Element firstChildElement = (Element)childElementList.get(0);
 		processorStatus = firstChildElement.getName();
+		boolean foundError = false;
 		eventTime = firstChildElement.getAttributeValue("TimeStamp");
-		StringBuffer eventDetailBuffer = new StringBuffer();
-		for (Iterator j = firstChildElement.getAttributes().iterator(); j.hasNext();) {
-		    Attribute a = (Attribute)j.next();
-		    String attributeName = a.getName();
-		    if (!attributeName.equalsIgnoreCase("TimeStamp")) {
-			eventDetailBuffer.append(attributeName+"='"+a.getValue()+"' ");
+		if (firstChildElement.getName().equals("ServiceFailure")) {
+		    // Reset the first child to be the first ServiceError element
+		    for (Iterator j = childElementList.iterator(); j.hasNext() && foundError == false;) {
+			Element subElement = (Element)j.next();
+			if (subElement.getName().equals("ServiceError")) {
+			    firstChildElement = subElement;
+			    foundError = true;
+			}
 		    }
 		}
-		eventDetail = eventDetailBuffer.toString();
+		if (foundError == false) {
+		    StringBuffer eventDetailBuffer = new StringBuffer();
+		    for (Iterator j = firstChildElement.getAttributes().iterator(); j.hasNext();) {
+			Attribute a = (Attribute)j.next();
+			String attributeName = a.getName();
+			if (!attributeName.equalsIgnoreCase("TimeStamp")) {
+			    eventDetailBuffer.append(attributeName+"='"+a.getValue()+"' ");
+			}
+		    }
+		    eventDetail = eventDetailBuffer.toString();
+		}
+		else {
+		    eventDetail = firstChildElement.getAttributeValue("Message");
+		}
 	    }
 	    setEventDetail(processorName, eventDetail);
 	    setEventTime(processorName, eventTime);

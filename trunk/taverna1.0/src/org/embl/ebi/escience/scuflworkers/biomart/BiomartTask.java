@@ -39,29 +39,6 @@ public class BiomartTask implements ProcessorTaskWorker {
 	    Query query = new Query(processor.getFullyPopulatedQuery());
 	    // Copy across the DataSetConfig object!
 	    query.setDatasetConfig(processor.getFullyPopulatedQuery().getDatasetConfig());
-	    /**String dataSourceName = processor.getDataSourceName();
-	     // Create new DetailedDataSource
-	     DetailedDataSource ds = 
-	     new DetailedDataSource(info.dbType,
-	     info.dbHost,
-	     info.dbPort,
-	     info.dbInstance,
-	     info.dbUser,
-	     info.dbPassword,
-	     10,
-	     info.dbDriver);
-	     DSConfigAdaptor adaptor = new DatabaseDSConfigAdaptor(ds, ds.getUser(), 
-	     true, false, false);
-	     DatasetConfig config = adaptor.getDatasetConfigByDatasetInternalName(dataSourceName,
-	     "default");
-	     query.setDataSource(ds);
-	     // dataset query applies to
-	     query.setDataset(config.getDataset());
-	     // prefixes for databases we want to use
-	     query.setMainTables(config.getStarBases());
-	     // primary keys available for sql table joins 
-	     query.setPrimaryKeys(config.getPrimaryKeys());
-	    */
 	    
 	    // Configure any filters
 	    Filter[] filters = query.getFilters();
@@ -192,6 +169,11 @@ public class BiomartTask implements ProcessorTaskWorker {
 			   new FormatSpec(FormatSpec.TABULATED, "\t"),
 			   os);
 	    return results;
+	}
+	catch (InvalidQueryException iqe) {
+	    TaskExecutionException tee = new TaskExecutionException("Biomart : "+iqe.getMessage());
+	    tee.initCause(iqe);
+	    throw tee;
 	}
 	catch (Exception ex) {
 	    TaskExecutionException tee = new TaskExecutionException("Failure calling biomart");
