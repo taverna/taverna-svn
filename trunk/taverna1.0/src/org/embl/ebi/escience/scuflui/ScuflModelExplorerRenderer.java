@@ -12,6 +12,7 @@ import javax.swing.tree.DefaultTreeCellRenderer;
 import org.embl.ebi.escience.scufl.*;
 
 import org.embl.ebi.escience.scuflui.ScuflIcons;
+
 import java.lang.Object;
 
 
@@ -107,7 +108,18 @@ public class ScuflModelExplorerRenderer extends DefaultTreeCellRenderer {
 	    setIcon(ScuflIcons.dataLinkIcon);
 	}
 	else if (((DefaultMutableTreeNode)value).isLeaf()) {
-	    setIcon(closedIcon);
+	    setIcon(ScuflIcons.folderClosedIcon);
+	}
+	else
+	{
+		if (expanded)
+		{
+			setIcon(ScuflIcons.folderOpenIcon);
+		}
+		else
+		{
+			setIcon(ScuflIcons.folderClosedIcon);
+		}		
 	}
 	// Do highlight
 	if (pattern != null) {

@@ -18,7 +18,7 @@ import java.lang.ClassNotFoundException;
  */
 public class ScuflIcons {
 
-    public static ImageIcon inputIcon, outputIcon, inputPortIcon, outputPortIcon, dataLinkIcon, constraintIcon, deleteIcon, zoomIcon, webIcon, openIcon, runIcon, refreshIcon, editIcon, classIcon, selectedClassIcon, findIcon;
+    public static ImageIcon inputIcon, outputIcon, inputPortIcon, outputPortIcon, dataLinkIcon, constraintIcon, deleteIcon, zoomIcon, webIcon, openIcon, runIcon, refreshIcon, editIcon, classIcon, selectedClassIcon, findIcon, folderOpenIcon, folderClosedIcon;
 
     static {
 	// Load the image files found in this package into the class.
@@ -40,6 +40,8 @@ public class ScuflIcons {
 	    classIcon = new ImageIcon(c.getResource("class.gif"));
 	    selectedClassIcon = new ImageIcon(c.getResource("selectedclass.gif"));
 	    findIcon = new ImageIcon(c.getResource("find.gif"));
+	    folderOpenIcon = new ImageIcon(c.getResource("folder-open.png"));
+	    folderClosedIcon = new ImageIcon(c.getResource("folder-closed.png"));	    
 	}
 	catch (ClassNotFoundException cnfe) {
 	    //
