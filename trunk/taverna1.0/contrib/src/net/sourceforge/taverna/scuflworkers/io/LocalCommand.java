@@ -13,12 +13,12 @@ import uk.ac.soton.itinnovation.taverna.enactor.entities.TaskExecutionException;
 
 /**
  * This class executes a commandline and returns the response 
- * as a String.
+ * as a String.  Code borrowed from: http://www.javaworld.com/javaworld/jw-12-2000/jw-1229-traps.html
  * 
  * Last edited by $Author: phidias $
  * 
  * @author Mark
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class LocalCommand implements LocalWorker {
 
@@ -37,7 +37,19 @@ public class LocalCommand implements LocalWorker {
         Process proc = null;
         try {
             Runtime rt = Runtime.getRuntime();
-            proc = rt.exec(cmd);
+            
+            String osName = System.getProperty("os.name" );
+            String[] cmdArray = null;
+            if (osName.equals("Windows NT") || osName.equals("Windows XP")){
+                cmdArray = new String[]{"cmd.exe","/c",cmd};
+            }else if (osName.equals("Windows 95")){
+                cmdArray = new String[]{"command.exe","/c",cmd};
+            }else {//TODO: investigate if this will work in Linux and OSX
+                cmdArray = new String[]{cmd};
+            }
+            
+            proc = rt.exec(cmdArray);
+            
             
             //Get the input stream and read from it
             InputStream in = proc.getInputStream();
@@ -49,7 +61,7 @@ public class LocalCommand implements LocalWorker {
             }
             in.close();
             outAdapter.putString("result",sb.toString());
-        } catch (IOException e) {
+        } catch (IOException e) {           
            throw new TaskExecutionException(e);
            
         }
