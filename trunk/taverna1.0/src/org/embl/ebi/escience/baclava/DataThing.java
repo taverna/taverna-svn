@@ -575,11 +575,12 @@ public class DataThing {
 	// Check for the most interesting type, if defined
 	String interestingType = getMostInterestingMIMETypeForObject(this.theDataObject);
 	String fileExtension = ".text";
-	if (interestingType != null) {
+	if (interestingType != null &&
+	    interestingType.equals("text/plain") == false) {
 	    // MIME types look like 'foo/bar'
 	    String lastPart = interestingType.split("/")[1];
 	    if (lastPart.startsWith("x-") == false) {
-		fileExtension = lastPart;
+		fileExtension = "."+lastPart;
 	    }
 	}
 	File writtenFile = DataThing.writeObjectToFileSystem(destination, name, theDataObject, fileExtension);
