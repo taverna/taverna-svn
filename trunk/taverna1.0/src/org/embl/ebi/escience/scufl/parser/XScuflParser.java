@@ -407,7 +407,10 @@ class ProcessorLoaderThread extends Thread {
 		}
 		Processor p = new SoaplabProcessor(model, name, endpoint);
 		p.setLogLevel(log);
-		p.setDescription(description);
+		// If there was a description then set it, overriding the default soaplab description field.
+		if (de!=null) {
+		    p.setDescription(description);
+		}
 		model.addProcessor(p);
 	    }
 	    

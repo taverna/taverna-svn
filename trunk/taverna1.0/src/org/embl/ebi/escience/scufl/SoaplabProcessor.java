@@ -88,12 +88,37 @@ public class SoaplabProcessor extends Processor implements java.io.Serializable 
 	this.endpoint = new_endpoint;
 	try {
 	    generatePorts();
+	    getDescriptionText();
 	}
 	catch (PortCreationException pce) {
 	    throw new ProcessorCreationException("Exception when trying to create ports from Soaplab endpoint : "+pce.getMessage());
 	}
 	catch (DuplicatePortNameException dpne) {
 	    throw new ProcessorCreationException("Exception when trying to create ports from Soaplab endpoint : "+dpne.getMessage());
+	}
+    }
+
+    /**
+     * Use the endpoint data to set the description field
+     */
+    public void getDescriptionText() 
+	throws ProcessorCreationException {
+	try {
+	    Call call = (Call)new Service().createCall();
+	    call.setTargetEndpointAddress(this.endpoint.toString());
+	    call.setOperationName(new QName("getAnalysisType"));
+	    Map info = (Map)call.invoke(new Object[0]);
+	    // Get the description element from the map
+	    String description = (String)info.get("description");
+	    if (description != null) {
+		setDescription(description);
+	    }
+	}
+	catch (javax.xml.rpc.ServiceException se) {
+	    throw new ProcessorCreationException("Unable to create a new call to connect to soaplab, error was : "+se.getMessage());
+	}
+	catch (java.rmi.RemoteException re) {
+	    throw new ProcessorCreationException("Unable to call the get description method : "+re.getMessage());
 	}
     }
 
