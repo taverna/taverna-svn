@@ -293,9 +293,9 @@ public class DotView implements ScuflModelEventListener, java.io.Serializable {
 	dot.append(" subgraph cluster_sources {\n");
 	dot.append("  style=\"dotted\"\n");
 	dot.append("  label=\"Workflow Inputs\"\n");	
-	dot.append("  fontname=\"Helvetica\",         \n");
-	dot.append("  fontsize=\"10\",              \n");
-	dot.append("  fontcolor=\"black\",  \n");
+	dot.append("  fontname=\"Helvetica\"         \n");
+	dot.append("  fontsize=\"10\"              \n");
+	dot.append("  fontcolor=\"black\"  \n");
 	dot.append("  rank=\"same\"\n");    
 	for (int i=0; i<sources.length; i++) {
 	    dot.append("  WORKFLOWINTERNALSOURCE_"+sources[i].getName()+" [\n");
@@ -317,7 +317,7 @@ public class DotView implements ScuflModelEventListener, java.io.Serializable {
 	dot.append("  label=\"Workflow Outputs\"\n");
 	dot.append("  fontname=\"Helvetica\"\n");
 	dot.append("  fontsize=\"10\"\n");	
-	dot.append("  fontcolor=\"black\",  \n");
+	dot.append("  fontcolor=\"black\"  \n");
 	dot.append("  rank=\"same\"\n");    
 	// ...then workflow sinks.
 	Port[] sinks = model.getWorkflowSinkProcessor().getPorts();
