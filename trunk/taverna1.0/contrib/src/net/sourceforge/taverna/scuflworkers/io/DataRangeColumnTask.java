@@ -18,7 +18,7 @@ import uk.ac.soton.itinnovation.taverna.enactor.entities.TaskExecutionException;
  * Last edited by $Author: phidias $
  * 
  * @author Mark
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public class DataRangeColumnTask extends DataRangeTask implements LocalWorker {
 
@@ -68,7 +68,7 @@ public class DataRangeColumnTask extends DataRangeTask implements LocalWorker {
      * @see org.embl.ebi.escience.scuflworkers.java.LocalWorker#inputTypes()
      */
     public String[] inputTypes() {
-        return new String[]{"'text/plain'","'text/plain'"};
+        return new String[]{"l(l('text/plain'))","'text/plain'"};
     }
 
     /**
