@@ -1,0 +1,24 @@
+/**
+ * This file is a component of the Taverna project,
+ * and is licensed under the GNU LGPL.
+ * Copyright Tom Oinn, EMBL-EBI
+ */
+package org.embl.ebi.escience.baclava;
+
+/**
+ * A ridiculously over simplified implementation of
+ * the LSIDProvider interface, just returns strings
+ * appended with a counter. IDs will be unique within
+ * a single JVM instance but certainly not beyond it.
+ * @author Tom Oinn
+ */
+public class StupidLSIDProvider implements LSIDProvider {
+    
+    static String baseString = "LSID:net.sf.taverna:temporaryID:";
+    static int count = 0;
+    
+    public String getID() {
+	return baseString+(count++);
+    }
+
+}

@@ -151,6 +151,7 @@ public class DataThingXMLFactory {
 	    SemanticMarkup m = theDataThing.getMetadataForObject(result, true);
 	    m.configureFromElement(metadataElement);
 	}
+	theDataThing.setLSID(result, e.getAttributeValue("lsid"));
 	return result;
     }
 
@@ -182,9 +183,10 @@ public class DataThingXMLFactory {
 	for (Iterator i = itemListElement.getChildren("partialOrder",namespace).iterator();
 	     i.hasNext(); ) {
 	    // Iterate over any nested partial orders
-	    result.add(objectForCollectionElement((Element)i.next(), theDataThing, rootElement));
+	    Element nextElement = (Element)i.next();
+	    result.add(objectForCollectionElement(nextElement, theDataThing, rootElement));
 	}
-	
+	theDataThing.setLSID(result, e.getAttributeValue("lsid"));
 	return result;
     }
 
@@ -195,6 +197,7 @@ public class DataThingXMLFactory {
      */
     public static Element getElement(DataThing theDataThing) {
 	Element rootElement = new Element("myGridDataDocument", namespace);
+	rootElement.setAttribute("lsid",theDataThing.getLSID(theDataThing));
 	rootElement.setAttribute("syntactictype",theDataThing.getSyntacticType());
 	rootElement.addContent(theDataThing.getMetadata().getConfigurationElement());
 	rootElement.addContent(elementForObject(theDataThing.getDataObject(), theDataThing));
@@ -209,6 +212,7 @@ public class DataThingXMLFactory {
 	// Handle collections
 	if (o instanceof Collection) {
 	    Element poElement = new Element("partialOrder", namespace);
+	    poElement.setAttribute("lsid",theDataThing.getLSID(o));
 	    Element relationListElement = new Element("relationList", namespace);
 	    Element listElement = new Element("itemList", namespace);
 	    int currentIndex = 0;
@@ -244,6 +248,7 @@ public class DataThingXMLFactory {
 	else {
 	    // Handle data elements
 	    Element dataElement = new Element("dataElement", namespace);
+	    dataElement.setAttribute("lsid",theDataThing.getLSID(o));
 	    try {
 		SemanticMarkup sm = theDataThing.getMetadataForObject(o, false);
 		dataElement.addContent(sm.getConfigurationElement());

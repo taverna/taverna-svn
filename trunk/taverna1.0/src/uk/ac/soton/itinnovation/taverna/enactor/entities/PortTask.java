@@ -26,8 +26,8 @@
 //      Dependencies        :
 //
 //      Last commit info    :   $Author: mereden $
-//                              $Date: 2004-01-27 12:57:52 $
-//                              $Revision: 1.21 $
+//                              $Date: 2004-01-30 17:11:07 $
+//                              $Revision: 1.22 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 
@@ -141,6 +141,7 @@ public class PortTask extends TavernaTask {
 		theDataObject = newList;
 	    }
 	    this.theDataThing = new DataThing(theDataObject);
+	    this.theDataThing.copyMetadataFrom(newDataThing);
 	}
 	else {
 	    this.theDataThing = newDataThing;

@@ -46,7 +46,8 @@ public class DataThing {
     protected Object theDataObject;
     protected HashMap metadataMap = new HashMap();
     protected SemanticMarkup myMarkup;
-
+    protected HashMap lsid = new HashMap();
+    
     /**
      * Construct a new DataThing from the supplied
      * XML Jdom Element. Delegates to the 
@@ -58,6 +59,59 @@ public class DataThing {
 	theDataObject = DataThingXMLFactory.configureDataThing(e, this); 
     }
 
+    /**
+     * Populate all unassigned LSID values in the
+     * LSID map from the supplied LSIDProvider.
+     * This traverses the object contained within
+     * the DataThing as well as the DataThing itself
+     * and provides LSID values where there are
+     * none defined.
+     */
+    public void fillLSIDValues(LSIDProvider provider) {
+	// First check the DataThing itself
+	String selfValue = (String)(lsid.get(this));
+	if (selfValue == null || selfValue.equals("")) {
+	    lsid.put(this, provider.getID());
+	}
+	// Recursively populate the data object lsid map
+	doInternalLSIDFill(theDataObject, provider);
+    }
+    private void doInternalLSIDFill(Object o, LSIDProvider provider) {
+	String lsidValue = (String)(lsid.get(o));
+	if (lsidValue == null || lsidValue.equals("")) {
+	    lsid.put(o, provider.getID());
+	}
+	if (o instanceof Collection) {
+	    Iterator i = ((Collection)o).iterator();
+	    for (; i.hasNext(); ) {
+		doInternalLSIDFill(i.next(), provider);
+	    }
+	}
+	else {
+	    // got to the leaf
+	    return;
+	}
+    }
+    
+
+    /**
+     * Set the LSID of the named object to the specified
+     * value.
+     */
+    public void setLSID(Object target, String id) {
+	if (id != null) {
+	    lsid.put(target, id);
+	}
+    }
+
+    /**
+     * Get the LSID of the named object, returns the
+     * empty string if there is no such mapping
+     */
+    public String getLSID(Object target) {
+	return (lsid.get(target)!=null)?(String)(lsid.get(target)):"";
+    }
+    
     /**
      * Create and bind a new SemanticMarkup
      * object to the DataThing itself, it's
@@ -197,6 +251,16 @@ public class DataThing {
     }
 
     /**
+     * Copy the markup from the supplied DataThing object to this
+     * one. This is mainly used when the data has been repackaged,
+     * to preserve eg. LSID values.
+     */
+    public void copyMetadataFrom(DataThing source) {
+	lsid.putAll(source.lsid);
+	metadataMap.putAll(source.metadataMap);
+    }
+
+    /**
      * Get the SemanticMarkup associated with an object
      * in this DataThing. If there is no such metadata 
      * available the behavious depends upon the value
@@ -221,8 +285,8 @@ public class DataThing {
 	    else {
 		// Create a new markup object and store
 		// it bound to the object specified
-		SemanticMarkup theMarkup = new SemanticMarkup(new WeakReference(theObject));
-		this.metadataMap.put(theObject, theMarkup);
+		SemanticMarkup theMarkup = new SemanticMarkup(theObject);
+		this.metadataMap.put(theObject, new WeakReference(theMarkup));
 		return theMarkup;
 	    }
 	}
@@ -246,8 +310,20 @@ public class DataThing {
      */
     public BaclavaIterator iterator(String desiredType) 
 	throws IntrospectionException {
-	String type = desiredType.split("\\'")[0];
-	String currentType = getSyntacticType().split("\\'")[0];
+	String type = null;
+	String currentType = null;
+	try {
+	    type = desiredType.split("\\'")[0];
+	}
+	catch (ArrayIndexOutOfBoundsException aioobe) {
+	    type = "";
+	}
+	try {
+	    currentType = getSyntacticType().split("\\'")[0];
+	}
+	catch (ArrayIndexOutOfBoundsException aioobe) {
+	    currentType = "";
+	}
 	// At this point, we should have split the mime types away from the
 	// collection types, so the current type looks like, for example, l() or s(l())
 	
@@ -276,7 +352,8 @@ public class DataThing {
 	    for (Iterator i = targetList.iterator(); i.hasNext(); ) {
 		DataThing newThing = new DataThing(i.next());
 		// Copy any metadata into the new datathing
-		newThing.metadataMap = this.metadataMap;
+		newThing.metadataMap.putAll(this.metadataMap);
+		newThing.lsid.putAll(this.lsid);
 		dataThingList.add(newThing);
 	    }
 	    return new BaclavaIterator(dataThingList);

@@ -5,7 +5,7 @@
  */
 package org.embl.ebi.escience.baclava.factory;
 
-import org.embl.ebi.escience.baclava.DataThing;
+import org.embl.ebi.escience.baclava.*;
 
 // JDOM Imports
 import org.jdom.Document;
@@ -54,6 +54,22 @@ public class DataThingFactoryTest {
 	    theDataThing = DataThingFactory.bake(theXMLString);
 	    theDataThing.getMetadataForObject(theXMLString, true).addMIMEType("text/xml");
 	    print(theDataThing);
+	    
+	    // Test the LSID functionality
+	    System.out.println("Some LSID stuff... : ");
+	    theDataThing = DataThingFactory.bake(theStringArray);
+	    theDataThing.setLSID(theDataThing,"LSID:mainDataThingID");
+	    theDataThing.setLSID(theDataThing.getDataObject(),"LSID:theStringArrayThing");
+	    for (int i = 0; i < theStringArray.length; i++) {
+		theDataThing.setLSID(theStringArray[i], "LSID:anItem:"+i);
+	    }
+	    print(theDataThing);
+	    System.out.println("Testing iteration over the above...");
+	    BaclavaIterator i = theDataThing.iterator("''");
+	    for (;i.hasNext();) {
+		DataThing innerThing = (DataThing)(i.next());
+		print(innerThing);
+	    }
 	}
 	catch (Exception ex) {
 	    ex.printStackTrace();
