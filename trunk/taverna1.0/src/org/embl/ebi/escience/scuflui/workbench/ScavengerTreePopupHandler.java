@@ -144,7 +144,7 @@ public class ScavengerTreePopupHandler extends MouseAdapter {
 		if (scuflObject instanceof WorkflowProcessorFactory) {
 		    JMenuItem imp = new JMenuItem("Import workflow...", ScuflIcons.webIcon);
 		    final String definitionURL = ((WorkflowProcessorFactory)scuflObject).getDefinitionURL();
-		    final Element definitionElement = (Element)((WorkflowProcessorFactory)scuflObject).getDefinition().clone();
+		    final Element definitionElement = (Element)((WorkflowProcessorFactory)scuflObject).getDefinition();
 		    imp.addActionListener(new ActionListener() {
 			    public void actionPerformed(ActionEvent ae) {
 				try {
@@ -166,7 +166,7 @@ public class ScavengerTreePopupHandler extends MouseAdapter {
 					}
 					else {
 					    // Is a literal definition
-					    XScuflParser.populate(new Document(definitionElement), 
+					    XScuflParser.populate(new Document((Element)definitionElement.clone()), 
 								  ScavengerTreePopupHandler.this.scavenger.model,
 								  prefix);
 					}
