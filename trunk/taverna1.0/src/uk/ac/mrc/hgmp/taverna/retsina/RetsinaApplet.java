@@ -89,7 +89,7 @@ public class RetsinaApplet extends JApplet
      {
        public void actionPerformed(ActionEvent e)
        {
-         retsinaPane.getScuflGraph();
+         retsinaPane.newWorkFlow();
        }
      });
      fileMenu.add(newWorkFlow);
@@ -108,7 +108,7 @@ public class RetsinaApplet extends JApplet
            while(workflow.available()>0) 
              sWriter.write(workflow.read());
            String xscufl = sWriter.toString();
-           retsinaPane.getScuflGraph();
+           retsinaPane.loadXScufl(xscufl);
          }
          catch(Exception exp){}
        }

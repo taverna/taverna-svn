@@ -82,6 +82,49 @@ public class Retsina extends JPanel
     return graphPanel.getCurrentJGraph();
   }
 
+  /**
+   *
+   * Remove existing processors and children and
+   * create a new ScuflModel.
+   * @param String xscufl
+   *
+   */
+  public void newWorkFlow()
+  {
+    ScuflGraph graph = getScuflGraph();
+    // clear graph of old workflow
+    Object[] cells = graph.getRoots();
+    for(int i=0;i<cells.length;i++)
+    {
+      if(cells[i] instanceof ScuflGraphCell)
+      {
+        ScuflGraphCell cell = (ScuflGraphCell)cells[i];
+        cell.removeAllChildren();
+        graph.destroyProcessor(cell.getScuflProcessor());
+      }
+    }
+                                                                                                              
+    graph.getModel().remove(cells);
+    graph.clearScuflModel();
+  }
+
+  /**
+   *
+   * Load in a new XScufl workflow.
+   * @param String xscufl
+   *
+   */
+  public void loadXScufl(String xscufl)
+  {
+    newWorkFlow();
+    
+    // load in new workflow
+    getScuflGraph().loadXScufl(xscufl);
+  }
+
+
+
+
   // ScuflUIComponent
   /**
    * Directs the implementing component to bind to the

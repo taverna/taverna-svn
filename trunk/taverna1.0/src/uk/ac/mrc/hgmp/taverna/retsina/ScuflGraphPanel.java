@@ -118,23 +118,23 @@ public class ScuflGraphPanel extends JPanel
      * @param String xscufl
      *
      */
-    public void newWorkFlow()
-    {
-      // clear graph of old workflow
-      Object[] cells = graph.getRoots();
-      for(int i=0;i<cells.length;i++)
-      {
-        if(cells[i] instanceof ScuflGraphCell)
-        {
-          ScuflGraphCell cell = (ScuflGraphCell)cells[i];
-          cell.removeAllChildren();
-          graph.destroyProcessor(cell.getScuflProcessor());
-        }
-      }
+//  public void newWorkFlow()
+//  {
+//    // clear graph of old workflow
+//    Object[] cells = graph.getRoots();
+//    for(int i=0;i<cells.length;i++)
+//    {
+//      if(cells[i] instanceof ScuflGraphCell)
+//      {
+//        ScuflGraphCell cell = (ScuflGraphCell)cells[i];
+//        cell.removeAllChildren();
+//        graph.destroyProcessor(cell.getScuflProcessor());
+//      }
+//    }
 
-      graph.getModel().remove(cells);
-      graph.clearScuflModel();
-    }
+//    graph.getModel().remove(cells);
+//    graph.clearScuflModel();
+//  }
 
     /**
      *
@@ -142,12 +142,12 @@ public class ScuflGraphPanel extends JPanel
      * @param String xscufl
      *
      */
-    public void loadXScufl(String xscufl)
-    {
-      newWorkFlow();
-      // load in new workflow
-      graph.loadXScufl(xscufl);
-    }
+//  public void loadXScufl(String xscufl)
+//  {
+//    newWorkFlow();
+//    // load in new workflow
+//    graph.loadXScufl(xscufl);
+//  }
 
      /**
      *
