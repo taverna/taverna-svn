@@ -1,7 +1,7 @@
 <deployment-descriptor xmlns="http://www.ibm.com/LSID/Standard/rsdl">
 	<maps>
 		<map name="taverna-main">
-			<pattern auth="taverna.org" ns="*" />
+			<pattern auth="net.sf.taverna" ns="*" />
 		</map>
 	</maps>
 	<services>

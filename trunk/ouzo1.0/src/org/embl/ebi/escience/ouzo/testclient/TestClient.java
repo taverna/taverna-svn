@@ -3,7 +3,7 @@
  * and is licensed under the GNU LGPL.
  * Copyright Tom Oinn, EMBL-EBI
  */
-package org.embl.ebi.escience.ouzo.test;
+package org.embl.ebi.escience.ouzo.testclient;
 
 import com.ibm.lsid.MetadataResponse;
 import com.ibm.lsid.client.LSIDAuthority;
