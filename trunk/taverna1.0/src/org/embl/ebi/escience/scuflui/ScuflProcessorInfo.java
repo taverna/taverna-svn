@@ -13,16 +13,12 @@ import java.awt.event.ActionListener;
 import javax.swing.*;
 import javax.swing.border.Border;
 import org.embl.ebi.escience.scufl.Processor;
-import org.embl.ebi.escience.scufl.SoaplabProcessor;
-import org.embl.ebi.escience.scufl.TalismanProcessor;
-import org.embl.ebi.escience.scufl.WSDLBasedProcessor;
-import org.embl.ebi.escience.scufl.WorkflowProcessor;
 
 // Utility Imports
 import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.Properties;
 
-import java.lang.Object;
-import java.lang.String;
 
 
 
@@ -67,20 +63,29 @@ public class ScuflProcessorInfo extends JDialog {
 	String[] columnNames = {"Property","Value"};
 	addRow("Name",theProcessor.getName());
 	addRow("Class",theProcessor.getClass().toString());
-	if (theProcessor instanceof WSDLBasedProcessor) {
-	    addRow("WSDL Location",((WSDLBasedProcessor)theProcessor).getWSDLLocation());
-	    addRow("Port Type",((WSDLBasedProcessor)theProcessor).getPortTypeName());
-	    addRow("Operation",((WSDLBasedProcessor)theProcessor).getOperationName());
+	// Iterate over the arbitrary additional properties for this processor
+	Properties props = theProcessor.getProperties();
+	for (Iterator i = props.keySet().iterator(); i.hasNext();) {
+	    String key = (String)i.next();
+	    String value = (String)props.get(key);
+	    addRow(key,value);
 	}
-	else if (theProcessor instanceof SoaplabProcessor) {
-	    addRow("Soaplab URL",((SoaplabProcessor)theProcessor).getEndpoint().toString());
-	}
-	else if (theProcessor instanceof TalismanProcessor) {
-	    addRow("TScript URL",((TalismanProcessor)theProcessor).getTScriptURL());
-	}
-	else if (theProcessor instanceof WorkflowProcessor) {
-	    addRow("XScufl URL",((WorkflowProcessor)theProcessor).getDefinitionURL());
-	}
+	/**
+	   if (theProcessor instanceof WSDLBasedProcessor) {
+	   addRow("WSDL Location",((WSDLBasedProcessor)theProcessor).getWSDLLocation());
+	   addRow("Port Type",((WSDLBasedProcessor)theProcessor).getPortTypeName());
+	   addRow("Operation",((WSDLBasedProcessor)theProcessor).getOperationName());
+	   }
+	   else if (theProcessor instanceof SoaplabProcessor) {
+	   addRow("Soaplab URL",((SoaplabProcessor)theProcessor).getEndpoint().toString());
+	   }
+	   else if (theProcessor instanceof TalismanProcessor) {
+	   addRow("TScript URL",((TalismanProcessor)theProcessor).getTScriptURL());
+	   }
+	   else if (theProcessor instanceof WorkflowProcessor) {
+	   addRow("XScufl URL",((WorkflowProcessor)theProcessor).getDefinitionURL());
+	   }
+	*/
 	Object[][] tableData = new Object[propertyValues.size()][2];
 	for (int i = 0; i < propertyValues.size(); i++) {
 	    tableData[i][0] = propertyNames.get(i);

@@ -11,12 +11,6 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import org.embl.ebi.escience.scuflui.ScuflIcons;
 import org.embl.ebi.escience.scuflui.ScuflModelExplorerRenderer;
 
-import org.embl.ebi.escience.scuflui.workbench.ProcessorFactory;
-import org.embl.ebi.escience.scuflui.workbench.SoaplabProcessorFactory;
-import org.embl.ebi.escience.scuflui.workbench.TalismanProcessorFactory;
-import org.embl.ebi.escience.scuflui.workbench.WSDLBasedProcessorFactory;
-import org.embl.ebi.escience.scuflui.workbench.WorkflowProcessorFactory;
-import java.lang.Object;
 
 
 

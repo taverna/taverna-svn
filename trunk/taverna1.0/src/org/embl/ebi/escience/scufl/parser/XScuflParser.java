@@ -24,16 +24,6 @@ import org.jdom.JDOMException;
 import org.jdom.Namespace;
 import org.jdom.input.SAXBuilder;
 
-// Network Imports
-import java.net.MalformedURLException;
-import java.net.URL;
-
-import org.embl.ebi.escience.scufl.parser.XScuflFormatException;
-import java.lang.Exception;
-import java.lang.Integer;
-import java.lang.InterruptedException;
-import java.lang.String;
-import java.lang.Thread;
 
 
 
@@ -306,24 +296,7 @@ public class XScuflParser {
 		
 		// End iterator over data constraints
 	    }
-	    
-	    // Iterate over external port declarations
-	    // DEPRECATED!
-	    /**
-	       List externalPorts = root.getChildren("external",namespace);
-	       for (Iterator i = externalPorts.iterator(); i.hasNext(); ) {
-	       Element external = (Element)i.next();
-	       // Should be in the form 'processor:port'
-	       String specifier = external.getTextTrim();
-	       if (usePrefix) {
-	       specifier = prefix+"_"+specifier;
-	       }
-	       Port thePort = model.locatePort(specifier);
-	       thePort.setExternal(true);
-	       }
-	    */
-
-	    
+	    	    
 	    // Build concurrency constraints
 	    List concurrencyConstraints = root.getChildren("coordination",namespace);
 	    for (Iterator i = concurrencyConstraints.iterator(); i.hasNext(); ) {
@@ -394,76 +367,21 @@ class ProcessorLoaderThread extends Thread {
 	    if (logLevel != null) {
 		log = Integer.parseInt(logLevel);
 	    }
-	    boolean foundSpec = false;
-	    
+	    Processor theProcessor = 
+		org.embl.ebi.escience.scuflworkers.ProcessorHelper.loadProcessorFromXML(processorNode, model, name);
+	    if (theProcessor == null) {
+		throw new XScuflFormatException("Couldn't find a known specification mechanism"+
+						" for processor node '"+name+"'");
+	    }
+	    theProcessor.setLogLevel(log);
 	    // Get the description if present
 	    String description = "";
 	    Element de = processorNode.getChild("description",namespace);
 	    if (de!=null) {
 		description = de.getTextTrim();
+		theProcessor.setDescription(description);
 	    }
-
-	    // Handle soaplab
-	    Element soaplab = processorNode.getChild("soaplabwsdl",namespace);
-	    if (soaplab != null) {
-		foundSpec = true;
-		// Get the textual endpoint
-		String endpoint = soaplab.getTextTrim();
-		// Check the URL for validity
-		try {
-		    URL endpointURL = new URL(endpoint);
-		}
-		catch (MalformedURLException mue) {
-		    throw new XScuflFormatException("The url specified for the soaplab endpoint for '"+name+"' was invalid : "+mue);
-		}
-		Processor p = new SoaplabProcessor(model, name, endpoint);
-		p.setLogLevel(log);
-		// If there was a description then set it, overriding the default soaplab description field.
-		if (de!=null) {
-		    p.setDescription(description);
-		}
-		model.addProcessor(p);
-	    }
-	    
-	    // Handle arbitrarywsdl
-	    Element wsdlProcessor = processorNode.getChild("arbitrarywsdl",namespace);
-	    if (wsdlProcessor != null && !foundSpec) {
-		foundSpec = true;
-		String wsdlLocation = wsdlProcessor.getChild("wsdl",namespace).getTextTrim();
-		String portTypeName = wsdlProcessor.getChild("porttype",namespace).getTextTrim();
-		String operationName = wsdlProcessor.getChild("operation",namespace).getTextTrim();
-		Processor p = new WSDLBasedProcessor(model, name, wsdlLocation, portTypeName, operationName);
-		p.setLogLevel(log);	
-		p.setDescription(description);
-		model.addProcessor(p);
-	    }
-	    
-	    // Handle talisman
-	    Element talismanProcessor = processorNode.getChild("talisman",namespace);
-	    if (talismanProcessor != null && !foundSpec) {
-		foundSpec = true;
-		String tscriptURL = talismanProcessor.getChild("tscript",namespace).getTextTrim();
-		Processor p = new TalismanProcessor(model, name, tscriptURL);
-		p.setLogLevel(log);		
-		p.setDescription(description);
-		model.addProcessor(p);
-	    }
-
-	    // Handle nested workflow
-	    Element workflowProcessor = processorNode.getChild("workflow",namespace);
-	    if (workflowProcessor != null && !foundSpec) {
-		foundSpec = true;
-		String definitionURL = workflowProcessor.getChild("xscufllocation",namespace).getTextTrim();
-		Processor p = new WorkflowProcessor(model, name, definitionURL);
-		p.setLogLevel(log);
-		p.setDescription(description);
-		model.addProcessor(p);
-	    }
-	    
-	    // If no specifier has been found then throw an exception
-	    if (!foundSpec) {
-		throw new XScuflFormatException("Couldn't find a known specification mechanism for processor node '"+name+"'");
-	    }
+	    model.addProcessor(theProcessor);
 	}
 	catch (XScuflFormatException xfe) {
 	    holder.theException = xfe;

@@ -37,13 +37,6 @@ import org.jdom.output.XMLOutputter;
 // Network Imports
 import java.net.URL;
 
-import org.embl.ebi.escience.scuflui.EnactorInvocation;
-import org.embl.ebi.escience.scuflui.ScuflIcons;
-import org.embl.ebi.escience.scuflui.ScuflUIComponent;
-import java.lang.Exception;
-import java.lang.String;
-import java.lang.StringBuffer;
-import java.lang.System;
 
 
 
@@ -269,6 +262,10 @@ class WorkflowInputPanel extends JPanel {
     Port underlyingPort;
     JTextArea textArea;
 
+
+    // Each input panel corresponds to a single workflow input port
+    // in the workflow, hence the constructor with the Port argument,
+    // this port is one of the internal workflow source ports.
     public WorkflowInputPanel(Port p) {
 
 	super();

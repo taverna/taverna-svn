@@ -11,8 +11,6 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeCellRenderer;
 import org.embl.ebi.escience.scufl.*;
 
-import org.embl.ebi.escience.scuflui.ScuflIcons;
-import java.lang.Object;
 
 
 
@@ -38,18 +36,21 @@ public class ScuflModelExplorerRenderer extends DefaultTreeCellRenderer {
 					   hasFocus);
 	Object userObject = ((DefaultMutableTreeNode)value).getUserObject();
 	if (userObject instanceof Processor) {
-	    if (userObject instanceof WSDLBasedProcessor) {
-		setIcon(ScuflIcons.wsdlIcon);
-	    }
-	    else if (userObject instanceof TalismanProcessor) {
-		setIcon(ScuflIcons.talismanIcon);
-	    }
-	    else if (userObject instanceof SoaplabProcessor) {
-		setIcon(ScuflIcons.soaplabIcon);
-	    }
-	    else if (userObject instanceof WorkflowProcessor) {
-		setIcon(ScuflIcons.workflowIcon);
-	    }
+	    setIcon(org.embl.ebi.escience.scuflworkers.ProcessorHelper.getPreferredIcon((Processor)userObject));
+	    /**
+	       if (userObject instanceof WSDLBasedProcessor) {
+	       setIcon(ScuflIcons.wsdlIcon);
+	       }
+	       else if (userObject instanceof TalismanProcessor) {
+	       setIcon(ScuflIcons.talismanIcon);
+	       }
+	       else if (userObject instanceof SoaplabProcessor) {
+	       setIcon(ScuflIcons.soaplabIcon);
+	       }
+	       else if (userObject instanceof WorkflowProcessor) {
+	       setIcon(ScuflIcons.workflowIcon);
+	       }
+	    */
 	}
 	else if (userObject instanceof ConcurrencyConstraint) {
 	    setIcon(ScuflIcons.constraintIcon);

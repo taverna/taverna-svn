@@ -3,15 +3,12 @@
  * and is licensed under the GNU LGPL.
  * Copyright Tom Oinn, EMBL-EBI
  */
-package org.embl.ebi.escience.scufl.test;
+package org.embl.ebi.escience.scuflworkers.soaplab.test;
 
 import org.embl.ebi.escience.scufl.ScuflModel;
 import org.embl.ebi.escience.scufl.ScuflModelEventPrinter;
-import org.embl.ebi.escience.scufl.SoaplabProcessor;
+import org.embl.ebi.escience.scuflworkers.soaplab.SoaplabProcessor;
 
-import java.lang.Exception;
-import java.lang.String;
-import java.lang.System;
 
 
 

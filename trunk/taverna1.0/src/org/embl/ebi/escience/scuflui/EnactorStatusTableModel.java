@@ -7,7 +7,8 @@ package org.embl.ebi.escience.scuflui;
 
 import javax.swing.ImageIcon;
 import javax.swing.table.AbstractTableModel;
-import org.embl.ebi.escience.scufl.*;
+import org.embl.ebi.escience.scufl.Processor;
+import org.embl.ebi.escience.scufl.ScuflModel;
 
 // Utility Imports
 import java.util.Iterator;
@@ -23,11 +24,6 @@ import org.jdom.JDOMException;
 import org.jdom.Namespace;
 import org.jdom.input.SAXBuilder;
 
-import org.embl.ebi.escience.scuflui.ScuflIcons;
-import java.lang.Class;
-import java.lang.Exception;
-import java.lang.Object;
-import java.lang.String;
 
 
 
@@ -58,18 +54,21 @@ public class EnactorStatusTableModel extends AbstractTableModel {
 	for (int i = 0; i < rows; i++) {
 	    Processor p = processors[i];
 	    // do the icon
-	    if (p instanceof WorkflowProcessor) {
-		data[i][0] = ScuflIcons.workflowIcon;
-	    }
-	    else if (p instanceof WSDLBasedProcessor) {
-		data[i][0] = ScuflIcons.wsdlIcon;
-	    }
-	    else if (p instanceof TalismanProcessor) {
-		data[i][0] = ScuflIcons.talismanIcon;
-	    }
-	    else if (p instanceof SoaplabProcessor) {
-		data[i][0] = ScuflIcons.soaplabIcon;
-	    }
+	    data[i][0] = org.embl.ebi.escience.scuflworkers.ProcessorHelper.getPreferredIcon(p);
+	    /**
+	       if (p instanceof WorkflowProcessor) {
+	       data[i][0] = ScuflIcons.workflowIcon;
+	       }
+	       else if (p instanceof WSDLBasedProcessor) {
+	       data[i][0] = ScuflIcons.wsdlIcon;
+	       }
+	       else if (p instanceof TalismanProcessor) {
+	       data[i][0] = ScuflIcons.talismanIcon;
+	       }
+	       else if (p instanceof SoaplabProcessor) {
+	       data[i][0] = ScuflIcons.soaplabIcon;
+	       }
+	    */
 	    // do the name
 	    data[i][1] = p.getName();
 	    // do status

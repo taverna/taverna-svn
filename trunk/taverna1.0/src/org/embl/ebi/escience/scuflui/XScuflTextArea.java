@@ -11,8 +11,6 @@ import org.embl.ebi.escience.scufl.ScuflModelEvent;
 import org.embl.ebi.escience.scufl.ScuflModelEventListener;
 import org.embl.ebi.escience.scufl.view.XScuflView;
 
-import org.embl.ebi.escience.scuflui.ScuflUIComponent;
-import java.lang.String;
 
 
 

@@ -9,19 +9,9 @@ package org.embl.ebi.escience.scufl;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Properties;
 import java.util.regex.Pattern;
 
-import org.embl.ebi.escience.scufl.DataConstraint;
-import org.embl.ebi.escience.scufl.DuplicateProcessorNameException;
-import org.embl.ebi.escience.scufl.InputPort;
-import org.embl.ebi.escience.scufl.OutputPort;
-import org.embl.ebi.escience.scufl.Port;
-import org.embl.ebi.escience.scufl.ProcessorCreationException;
-import org.embl.ebi.escience.scufl.ScuflModel;
-import org.embl.ebi.escience.scufl.ScuflModelEvent;
-import org.embl.ebi.escience.scufl.UnknownPortException;
-import java.lang.ClassCastException;
-import java.lang.String;
 
 
 
@@ -33,7 +23,7 @@ public abstract class Processor implements java.io.Serializable {
     
     private String name = "";
     private String description = "";
-    ArrayList ports = new ArrayList();
+    protected ArrayList ports = new ArrayList();
     private ScuflModel model = null;
 
     /**
@@ -72,6 +62,15 @@ public abstract class Processor implements java.io.Serializable {
 	this.logLevel = level;
 	fireModelEvent(new ScuflModelEvent(this, "Log level changed"));
     }
+
+    /**
+     * Return a properties object containing the processor specific
+     * properties for this processor type instance. This is used by
+     * the user interface code to display additional properties for
+     * each processor and should be implemented by the subclasses to
+     * display useful information
+     */
+    public abstract Properties getProperties();
     
     /**
      * Construct the processor with the given name and parent, complaining
@@ -295,7 +294,7 @@ public abstract class Processor implements java.io.Serializable {
     /**
      * Fire a change event back to the model
      */
-    void fireModelEvent(ScuflModelEvent event) {
+    protected void fireModelEvent(ScuflModelEvent event) {
 	this.model.fireModelEvent(event);
     }
 

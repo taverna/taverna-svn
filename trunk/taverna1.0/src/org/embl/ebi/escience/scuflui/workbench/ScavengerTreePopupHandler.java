@@ -21,19 +21,6 @@ import org.embl.ebi.escience.scuflui.ScuflIcons;
 // Network Imports
 import java.net.URL;
 
-import org.embl.ebi.escience.scuflui.workbench.ProcessorFactory;
-import org.embl.ebi.escience.scuflui.workbench.ScavengerCreationException;
-import org.embl.ebi.escience.scuflui.workbench.ScavengerTree;
-import org.embl.ebi.escience.scuflui.workbench.SoaplabScavenger;
-import org.embl.ebi.escience.scuflui.workbench.TalismanScavenger;
-import org.embl.ebi.escience.scuflui.workbench.WSDLBasedScavenger;
-import org.embl.ebi.escience.scuflui.workbench.WebScavenger;
-import org.embl.ebi.escience.scuflui.workbench.Workbench;
-import org.embl.ebi.escience.scuflui.workbench.WorkflowProcessorFactory;
-import org.embl.ebi.escience.scuflui.workbench.WorkflowScavenger;
-import java.lang.Exception;
-import java.lang.Object;
-import java.lang.String;
 
 
 

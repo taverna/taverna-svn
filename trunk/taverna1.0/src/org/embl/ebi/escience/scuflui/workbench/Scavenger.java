@@ -6,7 +6,6 @@
 package org.embl.ebi.escience.scuflui.workbench;
 import javax.swing.tree.DefaultMutableTreeNode;
 
-import java.lang.Object;
 
 
 

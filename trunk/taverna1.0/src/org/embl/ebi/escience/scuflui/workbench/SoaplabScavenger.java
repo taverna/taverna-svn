@@ -9,12 +9,6 @@ import javax.xml.namespace.QName;
 import org.apache.axis.client.Call;
 import org.apache.axis.client.Service;
 
-import org.embl.ebi.escience.scuflui.workbench.Scavenger;
-import org.embl.ebi.escience.scuflui.workbench.ScavengerCreationException;
-import org.embl.ebi.escience.scuflui.workbench.SoaplabProcessorFactory;
-import java.lang.Exception;
-import java.lang.Object;
-import java.lang.String;
 
 
 

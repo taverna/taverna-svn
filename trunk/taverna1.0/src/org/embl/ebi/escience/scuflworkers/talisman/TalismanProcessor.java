@@ -3,13 +3,16 @@
  * and is licensed under the GNU LGPL.
  * Copyright Tom Oinn, EMBL-EBI
  */
-package org.embl.ebi.escience.scufl;
+package org.embl.ebi.escience.scuflworkers.talisman;
+
+import org.embl.ebi.escience.scufl.*;
 
 // Utility Imports
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 
 // IO Imports
 import java.io.IOException;
@@ -24,16 +27,6 @@ import org.jdom.input.SAXBuilder;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-import org.embl.ebi.escience.scufl.DuplicatePortNameException;
-import org.embl.ebi.escience.scufl.DuplicateProcessorNameException;
-import org.embl.ebi.escience.scufl.InputPort;
-import org.embl.ebi.escience.scufl.OutputPort;
-import org.embl.ebi.escience.scufl.Port;
-import org.embl.ebi.escience.scufl.PortCreationException;
-import org.embl.ebi.escience.scufl.Processor;
-import org.embl.ebi.escience.scufl.ProcessorCreationException;
-import org.embl.ebi.escience.scufl.ScuflModel;
-import java.lang.String;
 
 
 
@@ -192,5 +185,13 @@ public class TalismanProcessor extends Processor implements java.io.Serializable
 	}
 
     }
-
+    
+    /**
+     * Get the properties for this processor for display purposes
+     */
+    public Properties getProperties() {
+	Properties props = new Properties();
+	props.put("TScript URL",getTScriptURL());
+	return props;
+    }
 }

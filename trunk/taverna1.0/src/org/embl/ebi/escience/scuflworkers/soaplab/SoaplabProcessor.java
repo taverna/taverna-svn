@@ -3,33 +3,22 @@
  * and is licensed under the GNU LGPL.
  * Copyright Tom Oinn, EMBL-EBI
  */
-package org.embl.ebi.escience.scufl;
+package org.embl.ebi.escience.scuflworkers.soaplab;
 
 import javax.xml.namespace.QName;
 import org.apache.axis.client.Call;
 import org.apache.axis.client.Service;
+import org.embl.ebi.escience.scufl.*;
 
 // Utility Imports
 import java.util.ArrayList;
 import java.util.Map;
+import java.util.Properties;
 
 // Network Imports
 import java.net.MalformedURLException;
 import java.net.URL;
 
-import org.embl.ebi.escience.scufl.DuplicatePortNameException;
-import org.embl.ebi.escience.scufl.DuplicateProcessorNameException;
-import org.embl.ebi.escience.scufl.InputPort;
-import org.embl.ebi.escience.scufl.OutputPort;
-import org.embl.ebi.escience.scufl.Port;
-import org.embl.ebi.escience.scufl.PortCreationException;
-import org.embl.ebi.escience.scufl.Processor;
-import org.embl.ebi.escience.scufl.ProcessorCreationException;
-import org.embl.ebi.escience.scufl.ScuflModel;
-import org.embl.ebi.escience.scufl.ScuflModelEvent;
-import java.lang.NullPointerException;
-import java.lang.Object;
-import java.lang.String;
 
 
 
@@ -64,6 +53,15 @@ public class SoaplabProcessor extends Processor implements java.io.Serializable 
 	catch (MalformedURLException mue) {
 	    throw new ProcessorCreationException("The supplied endpoint url was malformed, endpoint was specified as '"+endpoint+"'");
 	}
+    }
+
+    /**
+     * Get the properties for this processor for display purposes
+     */
+    public Properties getProperties() {
+	Properties props = new Properties();
+	props.put("Soaplab URL",getEndpoint());
+	return props;
     }
 
     /**

@@ -3,7 +3,7 @@
  * and is licensed under the GNU LGPL.
  * Copyright Tom Oinn, EMBL-EBI
  */
-package org.embl.ebi.escience.scufl.talisman;
+package org.embl.ebi.escience.talisman.scuflsupport;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -14,8 +14,6 @@ import org.embl.ebi.escience.scufl.UnknownPortException;
 import org.embl.ebi.escience.scufl.UnknownProcessorException;
 import org.embl.ebi.escience.talisman.*;
 
-import org.embl.ebi.escience.scufl.talisman.AbstractScuflAction;
-import java.lang.String;
 
 
 

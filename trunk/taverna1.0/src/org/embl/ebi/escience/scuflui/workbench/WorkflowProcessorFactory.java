@@ -8,11 +8,8 @@ import org.embl.ebi.escience.scufl.DuplicateProcessorNameException;
 import org.embl.ebi.escience.scufl.Processor;
 import org.embl.ebi.escience.scufl.ProcessorCreationException;
 import org.embl.ebi.escience.scufl.ScuflModel;
-import org.embl.ebi.escience.scufl.WorkflowProcessor;
+import org.embl.ebi.escience.scuflworkers.workflow.WorkflowProcessor;
 
-import org.embl.ebi.escience.scuflui.workbench.ProcessorFactory;
-import java.lang.Class;
-import java.lang.String;
 
 
 
@@ -70,7 +67,7 @@ public class WorkflowProcessorFactory implements ProcessorFactory {
      * be created by this factory
      */
     public Class getProcessorClass() {
-	return org.embl.ebi.escience.scufl.WorkflowProcessor.class;
+	return org.embl.ebi.escience.scuflworkers.workflow.WorkflowProcessor.class;
     }
 
 }

@@ -3,20 +3,15 @@
  * and is licensed under the GNU LGPL.
  * Copyright Tom Oinn, EMBL-EBI
  */
-package org.embl.ebi.escience.scufl.test;
+package org.embl.ebi.escience.scuflworkers.talisman.test;
 
 import org.embl.ebi.escience.scufl.ScuflModel;
 import org.embl.ebi.escience.scufl.ScuflModelEventPrinter;
-import org.embl.ebi.escience.scufl.TalismanProcessor;
+import org.embl.ebi.escience.scuflworkers.talisman.TalismanProcessor;
 
 // Network Imports
 import java.net.URL;
 
-import java.lang.ClassLoader;
-import java.lang.Exception;
-import java.lang.String;
-import java.lang.System;
-import java.lang.Thread;
 
 
 

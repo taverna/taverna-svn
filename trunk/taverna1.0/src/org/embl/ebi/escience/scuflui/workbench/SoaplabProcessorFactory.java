@@ -8,11 +8,8 @@ import org.embl.ebi.escience.scufl.DuplicateProcessorNameException;
 import org.embl.ebi.escience.scufl.Processor;
 import org.embl.ebi.escience.scufl.ProcessorCreationException;
 import org.embl.ebi.escience.scufl.ScuflModel;
-import org.embl.ebi.escience.scufl.SoaplabProcessor;
+import org.embl.ebi.escience.scuflworkers.soaplab.SoaplabProcessor;
 
-import org.embl.ebi.escience.scuflui.workbench.ProcessorFactory;
-import java.lang.Class;
-import java.lang.String;
 
 
 
@@ -66,7 +63,7 @@ public class SoaplabProcessorFactory implements ProcessorFactory {
      * be created by this factory
      */
     public Class getProcessorClass() {
-	return org.embl.ebi.escience.scufl.SoaplabProcessor.class;
+	return org.embl.ebi.escience.scuflworkers.soaplab.SoaplabProcessor.class;
     }
     
 }

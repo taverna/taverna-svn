@@ -13,7 +13,6 @@ import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 import org.embl.ebi.escience.scufl.*;
 
-import org.embl.ebi.escience.scuflui.ScuflIcons;
 /**
  * A static method to generate appropriate menu items
  * to link from ports in a Scufl model
@@ -72,18 +71,21 @@ public class LinkingMenus {
 	Processor[] processors = sourcePort.getProcessor().getModel().getProcessors();
 	for (int i = 0; i < processors.length; i++) {
 	    ImageIcon icon = null;
-	    if (processors[i] instanceof SoaplabProcessor) {
-		icon = ScuflIcons.soaplabIcon;
-	    }
-	    else if (processors[i] instanceof WSDLBasedProcessor) {
-		icon = ScuflIcons.wsdlIcon;
-	    }
-	    else if (processors[i] instanceof TalismanProcessor) {
-		icon = ScuflIcons.talismanIcon;
-	    }
-	    else if (processors[i] instanceof WorkflowProcessor) {
-		icon = ScuflIcons.workflowIcon;
-	    }
+	    icon = org.embl.ebi.escience.scuflworkers.ProcessorHelper.getPreferredIcon(processors[i]);
+	    /**
+	       if (processors[i] instanceof SoaplabProcessor) {
+	       icon = ScuflIcons.soaplabIcon;
+	       }
+	       else if (processors[i] instanceof WSDLBasedProcessor) {
+	       icon = ScuflIcons.wsdlIcon;
+	       }
+	       else if (processors[i] instanceof TalismanProcessor) {
+	       icon = ScuflIcons.talismanIcon;
+	       }
+	       else if (processors[i] instanceof WorkflowProcessor) {
+	       icon = ScuflIcons.workflowIcon;
+	       }
+	    */
 	    JMenu processorMenu = new JMenu(processors[i].getName());
 	    processorMenu.setIcon(icon);
 	    theMenu.add(processorMenu);

@@ -3,7 +3,7 @@
  * and is licensed under the GNU LGPL.
  * Copyright Tom Oinn, EMBL-EBI
  */
-package org.embl.ebi.escience.scufl.talisman;
+package org.embl.ebi.escience.talisman.scuflsupport;
 
 import org.embl.ebi.escience.scufl.ScuflModel;
 import org.embl.ebi.escience.scufl.view.DotView;
@@ -12,7 +12,6 @@ import org.embl.ebi.escience.scufl.view.XScuflView;
 // IO Imports
 import java.io.Serializable;
 
-import java.lang.String;
 
 
 

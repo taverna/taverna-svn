@@ -6,6 +6,7 @@
 package org.embl.ebi.escience.scufl.view;
 
 import org.embl.ebi.escience.scufl.*;
+import org.embl.ebi.escience.scuflworkers.ProcessorHelper;
 
 // JDOM Imports
 import org.jdom.Document;
@@ -13,8 +14,6 @@ import org.jdom.Element;
 import org.jdom.Namespace;
 import org.jdom.output.XMLOutputter;
 
-import java.lang.ClassCastException;
-import java.lang.String;
 
 
 
@@ -108,65 +107,9 @@ public class XScuflView implements ScuflModelEventListener, java.io.Serializable
 		de.setText(description);
 		processor.addContent(de);
 	    }
-	    // Catch Soaplab processors - this should be more
-	    // extensible! Will do for now however...
-	    try {
-		SoaplabProcessor slp = (SoaplabProcessor)processors[i];
-		// No exception therefore we have a soaplab processor
-		Element spec = new Element("soaplabwsdl",scuflNS());
-		spec.setText(slp.getEndpoint().toString());
-		processor.addContent(spec);
-		root.addContent(processor);
-	    }
-	    catch (ClassCastException cce) {
-		//
-	    }
-	    // Catch WorkflowProcessor
-	    try {
-		WorkflowProcessor wp = (WorkflowProcessor)processors[i];
-		Element spec = new Element("workflow",scuflNS());
-		Element definition = new Element("xscufllocation",scuflNS());
-		spec.addContent(definition);
-		definition.setText(wp.getDefinitionURL());
-		processor.addContent(spec);
-		root.addContent(processor);
-	    }
-	    catch (ClassCastException cce) {
-		//
-	    }
-	    // Catch WSDLBasedProcessor
-	    try {
-		WSDLBasedProcessor wsdlp = (WSDLBasedProcessor)processors[i];
-		Element spec = new Element("arbitrarywsdl",scuflNS());
-		Element wsdl = new Element("wsdl",scuflNS());
-		Element port = new Element("porttype",scuflNS());
-		Element operation = new Element("operation",scuflNS());
-		wsdl.setText(wsdlp.getWSDLLocation());
-		port.setText(wsdlp.getPortTypeName());
-		operation.setText(wsdlp.getOperationName());
-		spec.addContent(wsdl);
-		spec.addContent(port);
-		spec.addContent(operation);
-		processor.addContent(spec);
-		root.addContent(processor);
-	    }
-	    catch (ClassCastException cce) {
-		//
-	    }
-	    // Catch TalismanProcessor
-	    try {
-		TalismanProcessor tp = (TalismanProcessor)processors[i];
-		Element spec = new Element("talisman",scuflNS());
-		Element tscript = new Element("tscript",scuflNS());
-		tscript.setText(tp.getTScriptURL());
-		spec.addContent(tscript);
-		processor.addContent(spec);
-		root.addContent(processor);
-	    }
-	    catch (ClassCastException cce) { 
-		//
-	    }
-	    
+	    Element spec = ProcessorHelper.elementForProcessor(processors[i]);
+	    processor.addContent(spec);
+	    root.addContent(processor);
 	}
 	
 

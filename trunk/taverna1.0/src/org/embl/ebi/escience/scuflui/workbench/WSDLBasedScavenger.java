@@ -21,10 +21,6 @@ import java.util.Map;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-import org.embl.ebi.escience.scuflui.workbench.Scavenger;
-import org.embl.ebi.escience.scuflui.workbench.ScavengerCreationException;
-import org.embl.ebi.escience.scuflui.workbench.WSDLBasedProcessorFactory;
-import java.lang.String;
 
 
 

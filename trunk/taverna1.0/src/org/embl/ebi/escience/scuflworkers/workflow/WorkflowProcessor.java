@@ -3,23 +3,18 @@
  * and is licensed under the GNU LGPL.
  * Copyright Tom Oinn, EMBL-EBI
  */
-package org.embl.ebi.escience.scufl;
+package org.embl.ebi.escience.scuflworkers.workflow;
 
+import org.embl.ebi.escience.scufl.*;
 import org.embl.ebi.escience.scufl.parser.XScuflParser;
+
+// Utility Imports
+import java.util.Properties;
 
 // Network Imports
 import java.net.MalformedURLException;
 import java.net.URL;
 
-import org.embl.ebi.escience.scufl.DuplicateProcessorNameException;
-import org.embl.ebi.escience.scufl.InputPort;
-import org.embl.ebi.escience.scufl.OutputPort;
-import org.embl.ebi.escience.scufl.Port;
-import org.embl.ebi.escience.scufl.Processor;
-import org.embl.ebi.escience.scufl.ProcessorCreationException;
-import org.embl.ebi.escience.scufl.ScuflModel;
-import java.lang.Exception;
-import java.lang.String;
 
 
 
@@ -84,7 +79,16 @@ public class WorkflowProcessor extends Processor implements java.io.Serializable
     public ScuflModel getInternalModel() {
 	return this.theModel;
     }
-
+    
+    /**
+     * Get the properties for this processor for display purposes
+     */
+    public Properties getProperties() {
+	Properties props = new Properties();
+	props.put("XScufl URL",getDefinitionURL());
+	return props;
+    }
+    
     public String getDefinitionURL() {
 	return this.definitionURL;
     }

@@ -7,8 +7,6 @@ package org.embl.ebi.escience.scufl.view;
 
 import org.embl.ebi.escience.scufl.*;
 
-import java.lang.String;
-import java.lang.StringBuffer;
 
 
 
@@ -147,17 +145,22 @@ public class DotView implements ScuflModelEventListener, java.io.Serializable {
 	    // Create the new node
 	    dot.append(" "+p.getName()+" [ \n");
 	    // Change the colour if this is a WSDLBasedProcessor (hack hack hack)
-	    if (p instanceof WSDLBasedProcessor) {
-		dot.append("  fillcolor = \"darkolivegreen3\",\n");
-	    }
-	    // Or if a TalismanProcessor
-	    else if (p instanceof TalismanProcessor) {
-		dot.append("  fillcolor = \"plum2\",\n");
-	    }
-	    // Or if a WorkflowProcessor
-	    else if (p instanceof WorkflowProcessor) {
-		dot.append("  fillcolor = \"orange\",\n");
-	    }
+	    dot.append("  fillcolor = \""+
+		       org.embl.ebi.escience.scuflworkers.ProcessorHelper.getPreferredColour(p)+
+		       "\",\n");
+	    /**
+	       if (p instanceof WSDLBasedProcessor) {
+	       dot.append("  fillcolor = \"darkolivegreen3\",\n");
+	       }
+	       // Or if a TalismanProcessor
+	       else if (p instanceof TalismanProcessor) {
+	       dot.append("  fillcolor = \"plum2\",\n");
+	       }
+	       // Or if a WorkflowProcessor
+	       else if (p instanceof WorkflowProcessor) {
+	       dot.append("  fillcolor = \"orange\",\n");
+	       }
+	    */
 	    
 	    // Create the label...
 	    dot.append("  label = \"");

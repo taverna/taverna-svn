@@ -10,14 +10,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import org.embl.ebi.escience.scufl.DuplicatePortNameException;
-import org.embl.ebi.escience.scufl.InternalSinkPortHolder;
-import org.embl.ebi.escience.scufl.InternalSourcePortHolder;
-import org.embl.ebi.escience.scufl.PortCreationException;
-import org.embl.ebi.escience.scufl.Processor;
-import org.embl.ebi.escience.scufl.ScuflModelEvent;
-import java.lang.RuntimeException;
-import java.lang.String;
 
 
 
@@ -101,7 +93,7 @@ public abstract class Port implements java.io.Serializable {
      * Set the syntactic type of the port, only visible
      * within this package by default.
      */
-    void setSyntacticType(String new_type) {
+    public void setSyntacticType(String new_type) {
 	if (new_type.equals(this.syntacticType)==false) {
 	    this.syntacticType = new_type;
 	    fireModelEvent(new ScuflModelEvent(this, "Syntactic type changed to '"+new_type+"'"));

@@ -13,12 +13,6 @@ import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
 import org.embl.ebi.escience.scufl.*;
 
-import org.embl.ebi.escience.scuflui.LinkingMenus;
-import org.embl.ebi.escience.scuflui.NoContextMenuFoundException;
-import org.embl.ebi.escience.scuflui.ScuflIcons;
-import java.lang.Exception;
-import java.lang.Object;
-import java.lang.String;
 
 
 
@@ -229,18 +223,21 @@ public class ScuflContextMenuFactory {
 	    // Doesn't make sense to block on self, will deadlock.
 	    if (gp[i]!=processor) {
 		JMenuItem gpi = new JMenuItem(gp[i].getName());
-		if (gp[i] instanceof SoaplabProcessor) {
-		    gpi.setIcon(ScuflIcons.soaplabIcon);
-		}
-		else if (gp[i] instanceof WSDLBasedProcessor) {
-		    gpi.setIcon(ScuflIcons.wsdlIcon);
-		}
-		else if (gp[i] instanceof TalismanProcessor) {
-		    gpi.setIcon(ScuflIcons.talismanIcon);
-		}
-		else if (gp[i] instanceof WorkflowProcessor) {
-		    gpi.setIcon(ScuflIcons.workflowIcon);
-		}
+		gpi.setIcon(org.embl.ebi.escience.scuflworkers.ProcessorHelper.getPreferredIcon(gp[i]));
+		/**
+		   if (gp[i] instanceof SoaplabProcessor) {
+		   gpi.setIcon(ScuflIcons.soaplabIcon);
+		   }
+		   else if (gp[i] instanceof WSDLBasedProcessor) {
+		   gpi.setIcon(ScuflIcons.wsdlIcon);
+		   }
+		   else if (gp[i] instanceof TalismanProcessor) {
+		   gpi.setIcon(ScuflIcons.talismanIcon);
+		   }
+		   else if (gp[i] instanceof WorkflowProcessor) {
+		   gpi.setIcon(ScuflIcons.workflowIcon);
+		   }
+		*/
 		block.add(gpi);
 		final Processor controller = gp[i];
 		final Processor target = processor;
@@ -250,6 +247,9 @@ public class ScuflContextMenuFactory {
 			public void actionPerformed(ActionEvent ae) {
 			    String ccName = target.getName()+"_BLOCKON_"+controller.getName();
 			    try {
+				// Constraints created by this menu are, for now, always
+				// of the form 'block scheduled to running until completed',
+				// as this is all the enactor can currently support.
 				ConcurrencyConstraint cc = new ConcurrencyConstraint(model,
 										     ccName,
 										     controller,

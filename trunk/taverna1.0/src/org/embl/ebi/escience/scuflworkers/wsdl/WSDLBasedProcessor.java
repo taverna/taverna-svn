@@ -3,31 +3,24 @@
  * and is licensed under the GNU LGPL.
  * Copyright Tom Oinn, EMBL-EBI
  */
-package org.embl.ebi.escience.scufl;
+package org.embl.ebi.escience.scuflworkers.wsdl;
 
 import javax.wsdl.*;
 import javax.wsdl.factory.WSDLFactory;
 import javax.wsdl.xml.WSDLReader;
+import org.embl.ebi.escience.scufl.*;
 import org.embl.ebi.escience.scufl.Port; // ambiguous with: javax.wsdl.Port 
 
 // Utility Imports
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 
 // Network Imports
 import java.net.MalformedURLException;
 import java.net.URL;
 
-import org.embl.ebi.escience.scufl.DuplicatePortNameException;
-import org.embl.ebi.escience.scufl.DuplicateProcessorNameException;
-import org.embl.ebi.escience.scufl.InputPort;
-import org.embl.ebi.escience.scufl.OutputPort;
-import org.embl.ebi.escience.scufl.PortCreationException;
-import org.embl.ebi.escience.scufl.Processor;
-import org.embl.ebi.escience.scufl.ProcessorCreationException;
-import org.embl.ebi.escience.scufl.ScuflModel;
-import java.lang.String;
 
 
 
@@ -171,4 +164,14 @@ public class WSDLBasedProcessor extends Processor implements java.io.Serializabl
 	return xsdType;
     }
 
+    /**
+     * Get the properties for this processor for display purposes
+     */
+    public Properties getProperties() {
+	Properties props = new Properties();
+	props.put("WSDL Location",getWSDLLocation());
+	props.put("Port Type",getPortTypeName());
+	props.put("Operation",getOperationName());
+	return props;
+    }
 }

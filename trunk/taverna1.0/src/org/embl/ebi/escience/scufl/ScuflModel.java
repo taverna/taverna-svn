@@ -10,21 +10,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Properties;
 
-import org.embl.ebi.escience.scufl.ConcurrencyConstraint;
-import org.embl.ebi.escience.scufl.DataConstraint;
-import org.embl.ebi.escience.scufl.DuplicateProcessorNameException;
-import org.embl.ebi.escience.scufl.LogAwareComponent;
-import org.embl.ebi.escience.scufl.MalformedNameException;
-import org.embl.ebi.escience.scufl.Port;
-import org.embl.ebi.escience.scufl.Processor;
-import org.embl.ebi.escience.scufl.ProcessorCreationException;
-import org.embl.ebi.escience.scufl.ScuflModelEvent;
-import org.embl.ebi.escience.scufl.ScuflModelEventListener;
-import org.embl.ebi.escience.scufl.UnknownPortException;
-import org.embl.ebi.escience.scufl.UnknownProcessorException;
-import java.lang.String;
-import java.lang.Thread;
 
 
 
@@ -432,6 +419,9 @@ class InternalSourcePortHolder extends Processor implements java.io.Serializable
 	throws DuplicateProcessorNameException,
 	       ProcessorCreationException {
 	super(model,"SCUFL_INTERNAL_SOURCEPORTS");
+    } 
+    public Properties getProperties() {
+	return null;
     }
 }
 /**
@@ -443,5 +433,8 @@ class InternalSinkPortHolder extends Processor implements java.io.Serializable {
 	throws DuplicateProcessorNameException,
 	       ProcessorCreationException {
 	super(model,"SCUFL_INTERNAL_SINKPORTS");
+    }
+    public Properties getProperties() {
+	return null;
     }
 }

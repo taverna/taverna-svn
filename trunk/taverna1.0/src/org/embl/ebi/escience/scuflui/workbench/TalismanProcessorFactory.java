@@ -8,11 +8,8 @@ import org.embl.ebi.escience.scufl.DuplicateProcessorNameException;
 import org.embl.ebi.escience.scufl.Processor;
 import org.embl.ebi.escience.scufl.ProcessorCreationException;
 import org.embl.ebi.escience.scufl.ScuflModel;
-import org.embl.ebi.escience.scufl.TalismanProcessor;
+import org.embl.ebi.escience.scuflworkers.talisman.TalismanProcessor;
 
-import org.embl.ebi.escience.scuflui.workbench.ProcessorFactory;
-import java.lang.Class;
-import java.lang.String;
 
 
 
@@ -63,7 +60,7 @@ public class TalismanProcessorFactory implements ProcessorFactory {
      * be created by this factory
      */
     public Class getProcessorClass() {
-	return org.embl.ebi.escience.scufl.TalismanProcessor.class;
+	return org.embl.ebi.escience.scuflworkers.talisman.TalismanProcessor.class;
     }
     
 }
