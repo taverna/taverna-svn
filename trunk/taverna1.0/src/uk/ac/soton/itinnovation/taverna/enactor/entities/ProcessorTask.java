@@ -24,9 +24,9 @@
 //      Created for Project :   MYGRID
 //      Dependencies        :
 //
-//      Last commit info    :   $Author: mereden $
-//                              $Date: 2003-06-09 11:13:02 $
-//                              $Revision: 1.15 $
+//      Last commit info    :   $Author: dmarvin $
+//                              $Date: 2003-06-12 16:09:23 $
+//                              $Revision: 1.16 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 package uk.ac.soton.itinnovation.taverna.enactor.entities;
@@ -199,6 +199,10 @@ public abstract class ProcessorTask extends TavernaTask{
 							prts[x] = prt;
 							}
 							is.addOrthogonalArray(prts);
+					}
+					else {
+						//type is actually supposed to be a string array so supply it directly
+						is.addSinglePart(pi.getPart());
 					}
 				}
 				else 
