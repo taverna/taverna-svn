@@ -61,23 +61,27 @@ public class ProcessorHelper {
     static Map coloursForTagName = new HashMap();
     static Map tagNameForClassName = new HashMap();
     static Map classNameForTagName = new HashMap();
-    static Map iconForTagName = new HashMap();
+    static Map iconForTagName = null;
     static Map taskClassForTagName = new HashMap();
     static Map xmlHandlerForTagName = new HashMap();
     static Map tagNameForScavenger = new HashMap();
     static Map editorForTagName = new HashMap();
     static Set simpleScavengers = new HashSet();
+    static Properties tavernaProperties = null;
 
     static ImageIcon unknownProcessorIcon;
 
     static {
 	try {
+	    // Get the classloader for this class
+	    ClassLoader loader = ProcessorHelper.class.getClassLoader();
+	    
 	    // Load the 'unknown processor' image icon
-	    unknownProcessorIcon = new ImageIcon(ClassLoader.getSystemResource("org/embl/ebi/escience/scuflui/unknownprocessor.gif"));
+	    unknownProcessorIcon = new ImageIcon(loader.getResource("org/embl/ebi/escience/scuflui/unknownprocessor.gif"));
 	    // Load up the values from any taverna.properties files located
 	    // by the class resource loader.
-	    Enumeration en = ClassLoader.getSystemResources("taverna.properties");
-	    Properties tavernaProperties = new Properties();
+	    Enumeration en = loader.getResources("taverna.properties");
+	    tavernaProperties = new Properties();
 	    while (en.hasMoreElements()) {
 		URL resourceURL = (URL)en.nextElement();
 		//System.out.println("Loading resources from : "+resourceURL.toString());
@@ -89,7 +93,7 @@ public class ProcessorHelper {
 	    for (Iterator i = tavernaProperties.keySet().iterator(); i.hasNext(); ) {
 		String key = (String)i.next();
 		String value = tavernaProperties.getProperty(key);
-		System.out.println(key+" == "+value);
+		//System.out.println(key+" == "+value);
 		String[] keyElements = key.split("\\.");
 		// Detect the processor keys
 		if (keyElements.length == 4 && keyElements[1].equals("processor")) {
@@ -107,10 +111,11 @@ public class ProcessorHelper {
 			coloursForTagName.put(tagName,value);
 		    }
 		    // Form : taverna.processor.<TAGNAME>.icon = <RENDERINGHINT_ICON>
-		    else if (keyElements[3].equals("icon")) {
+		    // *** NOW LOADS ON DEMAND ***
+		    //else if (keyElements[3].equals("icon")) {
 			// Fetch resource icon...
-			iconForTagName.put(tagName,new ImageIcon(ClassLoader.getSystemResource(value)));
-		    }
+		    //	iconForTagName.put(tagName,new ImageIcon(loader.getResource(value)));
+		    //}
 		    // Form : taverna.processor.<TAGNAME>.taskclass = <ENACTOR_TASK_CLASS>
 		    else if (keyElements[3].equals("taskclass")) {
 			// Configure the taverna task for the enactor to run this type of processor
@@ -243,6 +248,24 @@ public class ProcessorHelper {
      * tag.
      */
     public static ImageIcon getIconForTagName(String tagName) {
+	if (iconForTagName == null) {
+	    // Initialise the icon store
+	    iconForTagName = new HashMap();
+	    for (Iterator i = tavernaProperties.keySet().iterator(); i.hasNext(); ) {
+		String key = (String)i.next();
+		String value = tavernaProperties.getProperty(key);
+		String[] keyElements = key.split("\\.");
+		if (keyElements.length == 4 && keyElements[1].equals("processor")) {
+		    String loadTagName = keyElements[2];
+		    // Form : taverna.processor.<TAGNAME>.icon = <RENDERINGHINT_ICON>
+		    if (keyElements[3].equals("icon")) {
+			// Fetch resource icon...
+			iconForTagName.put(loadTagName,new ImageIcon(ProcessorHelper.class.getClassLoader().getResource(value)));
+		    }
+		}
+	    }
+	}
+	
 	//System.out.println("Request for icon for : "+tagName);
 	ImageIcon icon = (ImageIcon)iconForTagName.get(tagName);
 	if (icon == null) { 
