@@ -347,10 +347,9 @@
 	</target>
 
         <!-- Examine the taverna resource bundle -->
-        <target name="tools.rb" depends="java">
-		<java classname="TestRB" fork="yes">
-		        <arg value="taverna"/>
-		   	<classpath refid="compile-classpath"/>
+        <target name="test.rdfs" depends="java">
+		<java classname="org.embl.ebi.escience.scufl.semantics.ParserTest" fork="yes">
+			<classpath refid="compile-classpath"/>
 		</java>
 	</target>
 
