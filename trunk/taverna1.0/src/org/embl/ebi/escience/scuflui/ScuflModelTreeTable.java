@@ -85,6 +85,7 @@ public class ScuflModelTreeTable extends JTreeTable
 	}
 	setDefaultEditor(TreeTableModel.class, new ScuflModelTreeTableCellEditor());
         JCheckBox jcbox = new JCheckBox();
+	jcbox.setOpaque(false);
         jcbox.setBackground(getBackground());
         jcbox.setHorizontalAlignment(SwingConstants.CENTER);
         setDefaultEditor(Boolean.class, new DefaultCellEditor(jcbox));
