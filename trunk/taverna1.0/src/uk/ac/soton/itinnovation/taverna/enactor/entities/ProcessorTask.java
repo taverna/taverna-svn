@@ -25,8 +25,8 @@
 //      Dependencies        :
 //
 //      Last commit info    :   $Author: mereden $
-//                              $Date: 2004-11-03 18:22:36 $
-//                              $Revision: 1.63 $
+//                              $Date: 2004-11-04 15:29:07 $
+//                              $Revision: 1.64 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 package uk.ac.soton.itinnovation.taverna.enactor.entities;
@@ -67,6 +67,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.HashSet;
+import java.util.Collections;
 
 // IO Imports
 import java.io.PrintWriter;
@@ -382,8 +383,10 @@ public class ProcessorTask extends AbstractTask {
 	    for (int i = 0; i < maxRetries; i++) {
 		int waitTime = (int)((double)baseTimeout * Math.pow(backoff,(double)i));
 		try {
+		    System.out.println(Thread.currentThread()+" About to sleep for "+waitTime+", retry "+(i+1)+" of "+maxRetries);
 		    eventList.add(new WaitingToRetry(waitTime, i+1, maxRetries));
-		    Thread.sleep(waitTime);
+		    Thread.currentThread().sleep(waitTime);
+		    System.out.println(Thread.currentThread()+" Done sleeping, attempting to rerun operation");
 		    return runAndGenerateTemplates(worker, inputMap);
 		}
 		catch (InterruptedException ie) {
@@ -394,6 +397,9 @@ public class ProcessorTask extends AbstractTask {
 		}
 		catch (TaskExecutionException t) {
 		    eventList.add(new ServiceError(t));
+		}
+		catch (Exception ex) {
+		    ex.printStackTrace();
 		}
 	    }
 	}
@@ -406,7 +412,9 @@ public class ProcessorTask extends AbstractTask {
     private Map runAndGenerateTemplates(ProcessorTaskWorker worker, Map inputMap) 
 	throws TaskExecutionException {
 	// Populate all LSIDs in the output map
+	//System.out.println(Thread.currentThread()+" invoking");
 	Map outputMap = worker.execute(inputMap, this);
+	//System.out.println(Thread.currentThread()+" --done");
 	fillAllLSIDs(outputMap);
 	transformOutputDataThings(inputMap, outputMap);
 	AnnotationTemplate[] templates = activeProcessor.getAnnotationTemplates();	    
@@ -601,13 +609,12 @@ public class ProcessorTask extends AbstractTask {
 	}
 	
 	currentIteration = 0;
-	final InvokingWithIteration event = new InvokingWithIteration(0, totalIterations);
-	eventList.add(event);
-	
+	final List finalEventList = eventList;
+		
 	// Different code paths for processors which allow multiple workers...
 	if (activeProcessor.getMaximumWorkers() == 1) {
 	    while (doSingleIteration(rootNode,
-				     event,
+				     finalEventList,
 				     outputMap,
 				     inputShredding,
 				     collectionStructure,
@@ -628,10 +635,11 @@ public class ProcessorTask extends AbstractTask {
 		final ResumableIterator irootNode = rootNode;
 		new Thread() {
 		    public void run() {
-			try {		
+			try {	
+			    System.out.println(Thread.currentThread()+" started");
 			    active[position] = true;
 			    while (doSingleIteration(irootNode,
-						     event,
+						     finalEventList,
 						     outputMap,
 						     inputShredding,
 						     collectionStructure,
@@ -640,9 +648,15 @@ public class ProcessorTask extends AbstractTask {
 			    active[position] = false;
 			}
 			catch (TaskExecutionException tee) {
+			    tee.printStackTrace();
 			    exception[0] = tee;
 			}
+			catch (Throwable e) {
+			    e.printStackTrace();
+			}
 			finally {
+			    System.out.println(Thread.currentThread()+" completed");
+			    active[position] = false;
 			    manager.interrupt();
 			}
 		    }
@@ -657,10 +671,11 @@ public class ProcessorTask extends AbstractTask {
 		    if (exception[0] != null) {
 			throw exception[0];
 		    }
-		    for (int i = 0; i < workers; i++) {
-			if (active[i] == false) {
-			    finished = true;
-			}
+		}
+		finished = true;
+		for (int i = 0; i < workers; i++) {
+		    if (active[i] == true) {
+			finished = false;
 		    }
 		}
 	    }
@@ -763,7 +778,7 @@ public class ProcessorTask extends AbstractTask {
     }
     private int currentIteration = 0;
     private boolean doSingleIteration(ResumableIterator jobQueue, 
-				      InvokingWithIteration event, 
+				      List eventList, 
 				      Map outputMap,
 				      Map inputShredding,
 				      Map collectionStructure,
@@ -772,7 +787,8 @@ public class ProcessorTask extends AbstractTask {
 	throws TaskExecutionException {
 	Map inputSet = null;
 	int[] currentLocation = null;
-	
+	int queueSize = 0;
+	InvokingWithIteration event;
 	synchronized (jobQueue) {
 	    if (jobQueue.hasNext() == false) {
 		return false;
@@ -780,8 +796,20 @@ public class ProcessorTask extends AbstractTask {
 	    else {
 		inputSet = (Map)jobQueue.next();
 		currentLocation = jobQueue.getCurrentLocation();
+		queueSize = jobQueue.size();
+		int eventListSize = eventList.size();
+		Object o = eventList.get(eventListSize - 1);
+		if (o instanceof InvokingWithIteration) {
+		    event = (InvokingWithIteration)o;
+		}
+		else {
+		    event = new InvokingWithIteration(currentIteration, queueSize);
+		    eventList.add(event);
+		}
 	    }
 	}
+	//System.out.println(Thread.currentThread().toString()+currentLocation[0]);
+	
 	// Iterate over the set and add the LSIDs of inputs to the inputShredding map...
 	for (Iterator i = inputSet.keySet().iterator(); i.hasNext(); ) {
 	    String inputName = (String)i.next();
@@ -821,7 +849,7 @@ public class ProcessorTask extends AbstractTask {
 		//System.out.println("Target list has object ID "+targetList.hashCode());
 		//targetList.add(dataObject);
 		// Store the result into the appropriate output collection
-		insertObjectInto(dataObject, targetList, currentLocation, targetThing);
+		//insertObjectInto(dataObject, targetList, currentLocation, targetThing);
 		// Copy metadata from the original output into the new one, preserve LSID hopefully!
 		targetThing.copyMetadataFrom(outputValue);
 		// Get the LSID of the original output item
@@ -877,14 +905,27 @@ public class ProcessorTask extends AbstractTask {
 	    }
 	    // The leaf index is the last in the position array
 	    int objectIndex = position[position.length-1];
-	    // Check whether it's safe to just insert this item at the
-	    // given position
-	    if (currentList.size() < objectIndex) {
-		currentList.add(o);
+	    int listSize = currentList.size();
+	    if (objectIndex+1 > listSize) {
+		// Grow the list and populate it with nulls to fit
+		// to at least the size required
+		for (int i = listSize; i < objectIndex+1; i++) {
+		    currentList.add("");
+		}
 	    }
-	    else {
-		currentList.add(objectIndex, o);
-	    }
+	    // By definition can just set the object at list index to the
+	    // correct value
+	    currentList.set(objectIndex, o);
+	    /**
+	     * Check whether it's safe to just insert this item at the
+	     * given position
+	     if (currentList.size() < objectIndex) {
+	     currentList.add(o);
+	     }
+	     else {
+	     currentList.add(objectIndex, o);
+	     }
+	    */
 	    /**
 	       try {
 	       currentList.add(objectIndex, o);
@@ -920,7 +961,7 @@ public class ProcessorTask extends AbstractTask {
 	this.logLevel = new LogLevel(l.getLevel());
 	this.userID = userID;
 	this.userCtx = userCtx;
-	this.eventList = new ArrayList();
+	this.eventList = Collections.synchronizedList(new ArrayList());
         super.setFailFlowOnTaskFailure(p.getCritical());
 	// Add an event to the list for the scheduling operation
 	schedule(p);

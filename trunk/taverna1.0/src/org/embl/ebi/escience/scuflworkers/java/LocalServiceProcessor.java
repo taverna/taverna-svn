@@ -36,6 +36,10 @@ public class LocalServiceProcessor extends Processor {
 	return this.theImplementation;
     }
 
+    public int getMaximumWorkers() {
+	return 5;
+    }
+
     public LocalServiceProcessor(ScuflModel model, String name, String workerClassName) 
 	throws ProcessorCreationException,
 	       DuplicateProcessorNameException {

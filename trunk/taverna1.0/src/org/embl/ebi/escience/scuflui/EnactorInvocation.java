@@ -472,7 +472,7 @@ class EnactorInvocationStatusThread extends Thread {
 		// workflow status. If the workflow status is completed or aborted
 		// then set running to false which will drop us neatly out of the
 		// polling loop.
-		System.out.println("Polling...");
+		//System.out.println("Polling...");
 
 		try {
 		    String statusText = theEnactorInvocation.getStatusText();

@@ -179,6 +179,7 @@ public class SaveAsExcel implements ResultMapSaveSPI {
 			wb = new HSSFWorkbook();
 			setStyles();
 			sheet = wb.createSheet("Workflow results");
+			sheet.setDisplayGridlines(false);
 			int currentCol = 0;
 			for (Iterator i = resultMap.keySet().iterator(); i.hasNext();) {
 			    String resultName = (String)i.next();
@@ -223,6 +224,7 @@ public class SaveAsExcel implements ResultMapSaveSPI {
 					setStyle(currentCol, x,y);
 				    }
 				}
+				sheet.setColumnWidth((short)(currentCol+setWidth), (short)200);
 				currentCol+=setWidth+1;
 			    }
 
@@ -241,9 +243,6 @@ public class SaveAsExcel implements ResultMapSaveSPI {
 			if (returnVal == JFileChooser.APPROVE_OPTION) {
 			    // Build the string containing the XML
 			    // document from the datathing map
-			    Document doc = DataThingXMLFactory.getDataDocument(resultMap);
-			    XMLOutputter xo = new XMLOutputter(Format.getPrettyFormat());
-			    String xmlString = xo.outputString(doc);
 			    File f = jfc.getSelectedFile();
 			    FileOutputStream fos = new FileOutputStream(f);
 			    wb.write(fos);
