@@ -86,6 +86,14 @@ public class TreeTableModelView extends TreeModelView implements TreeTableModel 
 	    if (node.getUserObject() instanceof Processor) {
 		return true;
 	    }
+	    else if (node.getUserObject() instanceof Port) {
+		// Check whether this is a top level workflow source or
+		// sink port
+		Port port = (Port)node.getUserObject();
+		if (port.isSource() || port.isSink()) {
+		    return true;
+		}
+	    }
 	    else {
 		return false;
 	    }
@@ -122,6 +130,15 @@ public class TreeTableModelView extends TreeModelView implements TreeTableModel 
 		Double backoff = (Double)value;
 		p.setBackoff(backoff.doubleValue());
 		return;
+	    }
+	}
+	else if (node.getUserObject() instanceof Port) {
+	    Port thePort = (Port)node.getUserObject();
+	    Processor theProcessor = thePort.getProcessor();
+	    ScuflModel model = theProcessor.getModel();
+	    // Check that the port is a workflow input or output
+	    if (thePort.isSource() || thePort.isSink()) {
+		thePort.setName((String)value);
 	    }
 	}
     }

@@ -95,6 +95,26 @@ public abstract class Port implements Serializable {
     }
 
     /**
+     * Set the name of the port - should only ever be called on
+     * workflow sink or source ports, will have no effect on others
+     * The new name must match '\w+'
+     */
+    public void setName(String name) {
+	if (this.processor.getModel() != null && (this.processor == this.processor.getModel().getWorkflowSinkProcessor() ||
+						  this.processor == this.processor.getModel().getWorkflowSourceProcessor())) {
+	    if (name.equals(this.name)) {
+		// Ignore
+	    }
+	    else {
+		if (name.matches("\\w+")) {
+		    this.name = name;
+		    fireModelEvent(new MinorScuflModelEvent(this, "Port name changed to "+name));
+		}
+	    }
+	}
+    }
+
+    /**
      * Set the free text description of the port
      */
     /**public void setDescription(String theDescription) {
@@ -203,7 +223,10 @@ public abstract class Port implements Serializable {
     /**
      * Get the name for this port. There is no set method,
      * ports are named at creation time and the names are
-     * immutable from that point onwards.
+     * immutable from that point onwards. <br>
+     * There is an exception to this rule in the case of workflow
+     * source and sink ports, these can be renamed after their
+     * creation.
      */
     public String getName() {
 	return this.name;

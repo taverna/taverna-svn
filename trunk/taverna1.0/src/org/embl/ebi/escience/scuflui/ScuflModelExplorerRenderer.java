@@ -72,13 +72,13 @@ public class ScuflModelExplorerRenderer extends DefaultTreeCellRenderer {
 	}
 	else if (userObject instanceof Port) {
 	    Port thePort = (Port)userObject;
-	    Processor theProcessor = thePort.getProcessor();
-	    ScuflModel model = theProcessor.getModel();
-	    if (model != null && theProcessor == model.getWorkflowSourceProcessor()) {
+	    //Processor theProcessor = thePort.getProcessor();
+	    ScuflModel model = thePort.getProcessor().getModel();
+	    if (thePort.isSource()) {
 		// Workflow source port
 		setIcon(ScuflIcons.inputIcon);
 	    }
-	    else if (model != null && theProcessor == model.getWorkflowSinkProcessor()) {
+	    else if (thePort.isSink()) {
 		// Workflow sink port
 		setIcon(ScuflIcons.outputIcon);
 	    }
