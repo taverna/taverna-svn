@@ -3,7 +3,7 @@ package net.sourceforge.taverna.scuflui.actions;
 /**
  * Represents a file open action.
  * @author Mark Fortner
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 import javax.swing.Action;
 public class OpenAction extends DefaultAction {
@@ -11,8 +11,8 @@ public class OpenAction extends DefaultAction {
       private static final String ACTION_COMMAND_KEY_ABOUT = "open-command";
 
     private static final String NAME_ABOUT = "Open...";
-    private static final String SMALL_ICON_ABOUT = "etc/metal/Open16.gif";
-    private static final String LARGE_ICON_ABOUT = "etc/metal/Open24.gif";
+    private static final String SMALL_ICON_ABOUT = "etc/icons/stock_open-16.png";
+    private static final String LARGE_ICON_ABOUT = "etc/icons/stock_open.png";
     private static final String SHORT_DESCRIPTION_ABOUT = "Open File";
     private static final String LONG_DESCRIPTION_ABOUT = "Open A New File";
     private static final int MNEMONIC_KEY_ABOUT = 'O';

@@ -12,12 +12,12 @@ import org.embl.ebi.escience.scufl.ScuflModel;
 import org.embl.ebi.escience.scuflui.AdvancedModelExplorer;
 
 /**
- * This class
+ * This class creates a new sub workflow.
  * 
  * Last edited by $Author: phidias $
  * 
  * @author Mark
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class NewSubWorkflowAction extends DefaultAction {
 
@@ -25,9 +25,9 @@ public class NewSubWorkflowAction extends DefaultAction {
 
     private static final String NAME_ABOUT = "New SubWorkflow...";
 
-    private static final String SMALL_ICON_ABOUT = "etc/metal/New16.gif";
+    private static final String SMALL_ICON_ABOUT = "etc/icons/newdiagram.gif";
 
-    private static final String LARGE_ICON_ABOUT = "etc/metal/New24.gif";
+    private static final String LARGE_ICON_ABOUT = "etc/icons/newdiagram.gif";
 
     private static final String SHORT_DESCRIPTION_ABOUT = "New File";
 

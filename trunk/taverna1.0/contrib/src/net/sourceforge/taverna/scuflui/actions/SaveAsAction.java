@@ -3,15 +3,15 @@ package net.sourceforge.taverna.scuflui.actions;
 /**
  * Represents the SaveAsAction
  * @author Mark Fortner
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 
 public class SaveAsAction extends DefaultAction {
 
     private static final String ACTION_COMMAND_KEY_ABOUT = "saveas-command";
     private static final String NAME_ABOUT = "Save As...";
-    private static final String SMALL_ICON_ABOUT = "etc/metal/SaveAs16.gif";
-    private static final String LARGE_ICON_ABOUT = "etc/metal/SaveAs24.gif";
+    private static final String SMALL_ICON_ABOUT = "etc/icons/stock_save_as-16.png";
+    private static final String LARGE_ICON_ABOUT = "etc/icons/stock_save_as.png";
     private static final String SHORT_DESCRIPTION_ABOUT = "Save the currently open file under a different name.";
     private static final String LONG_DESCRIPTION_ABOUT = "Save the currently open file under a different name.";
     private static final int MNEMONIC_KEY_ABOUT = 'S';

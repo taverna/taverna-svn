@@ -3,12 +3,12 @@ package net.sourceforge.taverna.scuflui.actions;
 import java.awt.event.ActionEvent;
 
 /**
- * This class
+ * This class imports a workflow into the cuccrent workflow.
  * 
  * Last edited by $Author: phidias $
  * 
  * @author Mark
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class ImportWorkflowAction extends DefaultAction{
 
@@ -34,7 +34,7 @@ public class ImportWorkflowAction extends DefaultAction{
     }
     
     public void actionPerformed(ActionEvent ae){
-        
+       //TODO: implement me 
     }
 
 }

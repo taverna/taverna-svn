@@ -8,14 +8,14 @@ import java.awt.event.ActionEvent;
  * Last edited by $Author: phidias $
  * 
  * @author Mark
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class WorkflowHelpAction extends DefaultAction {
 
     private static final String ACTION_COMMAND_KEY_ABOUT = "workflow-help-command";
     private static final String NAME_ABOUT = "Workflow Help...";
-    private static final String SMALL_ICON_ABOUT = "etc/metal/Help16.gif";
-    private static final String LARGE_ICON_ABOUT = "etc/metal/Help24.gif";
+    private static final String SMALL_ICON_ABOUT = "etc/icons/stock_help-16.png";
+    private static final String LARGE_ICON_ABOUT = "etc/icons/stock_help.png";
     private static final String SHORT_DESCRIPTION_ABOUT = "Get help regarding a workflow";
     private static final String LONG_DESCRIPTION_ABOUT = "Provide information regarding the application";
     private static final int MNEMONIC_KEY_ABOUT = 'H';

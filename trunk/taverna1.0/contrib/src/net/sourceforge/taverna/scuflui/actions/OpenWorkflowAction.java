@@ -21,7 +21,7 @@ import org.embl.ebi.escience.scuflui.ScuflIcons;
  * Last edited by $Author: phidias $
  * 
  * @author Mark
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class OpenWorkflowAction extends DefaultAction {
 
@@ -75,12 +75,17 @@ public class OpenWorkflowAction extends DefaultAction {
                     try {
                         // todo: does the update need running in the AWT thread?
                         // perhaps this thread should be spawned in populate?
-                        ScuflModel model = new ScuflModel();
-                        Workbench.setModel(model);
+                        
+                        ScuflModel model = Workbench.treeExplorer.getScuflModel();
+                        model = (model == null)? new ScuflModel():model;
+                        
                         XScuflParser.populate(file.toURL().openStream(), model,
                                 null);
                         
+                        
+                        
                     } catch (Exception ex) {
+                        ex.printStackTrace();
                         JOptionPane.showMessageDialog(
                                         null,
                                         "Problem opening workflow from file : \n\n"

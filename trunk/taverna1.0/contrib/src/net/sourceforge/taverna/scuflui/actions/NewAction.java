@@ -12,8 +12,8 @@ public class NewAction extends DefaultAction {
     private static final String ACTION_COMMAND_KEY_ABOUT = "new-command";
 
     private static final String NAME_ABOUT = "New...";
-    private static final String SMALL_ICON_ABOUT = "etc/metal/New16.gif";
-    private static final String LARGE_ICON_ABOUT = "etc/metal/New24.gif";
+    private static final String SMALL_ICON_ABOUT = "etc/icons/stock_new-16.png";
+    private static final String LARGE_ICON_ABOUT = "etc/icons/stock_new.png";
     private static final String SHORT_DESCRIPTION_ABOUT = "New File";
     private static final String LONG_DESCRIPTION_ABOUT = "Create A New File";
     private static final int MNEMONIC_KEY_ABOUT = 'N';

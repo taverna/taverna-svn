@@ -20,15 +20,15 @@ import org.embl.ebi.escience.scuflui.ExtensionFileFilter;
  * Last edited by $Author: phidias $
  * 
  * @author Mark
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class SaveWorkflowAction extends DefaultAction {
     
     private static final String ACTION_COMMAND_KEY_ABOUT = "save-workflow-command";
 
     private static final String NAME_ABOUT = "Save Workflow";
-    private static final String SMALL_ICON_ABOUT = "etc/metal/Save16.gif";
-    private static final String LARGE_ICON_ABOUT = "etc/metal/Save24.gif";
+    private static final String SMALL_ICON_ABOUT = "etc/icons/stock_save-16.png";
+    private static final String LARGE_ICON_ABOUT = "etc/icons/stock_save.png";
     private static final String SHORT_DESCRIPTION_ABOUT = "Save Workflow";
     private static final String LONG_DESCRIPTION_ABOUT = "Save Workflow";
     private static final int MNEMONIC_KEY_ABOUT = 'S';

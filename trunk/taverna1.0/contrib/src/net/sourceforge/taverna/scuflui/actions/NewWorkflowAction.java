@@ -1,6 +1,10 @@
 package net.sourceforge.taverna.scuflui.actions;
 
+import java.awt.event.ActionEvent;
+
 import javax.swing.Action;
+
+import net.sourceforge.taverna.scuflui.workbench.Workbench;
 
 /**
  * This class
@@ -8,7 +12,7 @@ import javax.swing.Action;
  * Last edited by $Author: phidias $
  * 
  * @author Mark
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class NewWorkflowAction extends DefaultAction {
 
@@ -16,8 +20,8 @@ public class NewWorkflowAction extends DefaultAction {
     private static final String ACTION_COMMAND_KEY_ABOUT = "new-command";
 
     private static final String NAME_ABOUT = "New Workflow...";
-    private static final String SMALL_ICON_ABOUT = "etc/metal/New16.gif";
-    private static final String LARGE_ICON_ABOUT = "etc/metal/New24.gif";
+    private static final String SMALL_ICON_ABOUT = "org/embl/ebi/escience/scuflui/icons/generic/newinput.gif";
+    private static final String LARGE_ICON_ABOUT = "org/embl/ebi/escience/scuflui/icons/generic/newinput.gif";
     private static final String SHORT_DESCRIPTION_ABOUT = "New File";
     private static final String LONG_DESCRIPTION_ABOUT = "Create A New Workflow";
     private static final int MNEMONIC_KEY_ABOUT = 'N';
@@ -36,5 +40,9 @@ public class NewWorkflowAction extends DefaultAction {
         putValue(NewAction.MNEMONIC_KEY, new Integer(MNEMONIC_KEY_ABOUT));
         putValue(NewAction.ACTION_COMMAND_KEY, ACTION_COMMAND_KEY_ABOUT);
         putValue(Action.ACCELERATOR_KEY, getKeyStroke(ACCELERATOR_KEY));
+    }
+    
+    public void actionPerformed(ActionEvent ae){
+        Workbench.clearModel();
     }
 }

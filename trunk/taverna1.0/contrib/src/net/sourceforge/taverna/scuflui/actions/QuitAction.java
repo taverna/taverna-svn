@@ -1,7 +1,13 @@
 package net.sourceforge.taverna.scuflui.actions;
 
+import java.awt.event.ActionEvent;
+
 public class QuitAction extends DefaultAction{
   public QuitAction() {
-    super("Quit", "etc/metal/Quit16.gif", "etc/metal/Quit24.gif", "Quit Application", "QuitApplication");
+    super("Quit", "etc/icons/stock_exit-16.png", "etc/icons/stock_exit.png", "Quit Application", "QuitApplication");
+  }
+  
+  public void actionPerformed(ActionEvent ae){
+      System.exit(0);
   }
 }

@@ -10,7 +10,7 @@ import javax.swing.KeyStroke;
 
 public class PrintSetupAction extends DefaultAction{
   public PrintSetupAction() {
-    init("Page Setup","etc/metal/PageSetup16.gif","etc/metal/PageSetup24.gif","Print Options...","Print Options");
+    init("Page Setup","etc/icons/stock_print-preview-16.png","etc/icons/stock_print-preview.png","Print Options...","Print Options");
 
 
             // Set a mnemonic character. In most look and feels, this causes the

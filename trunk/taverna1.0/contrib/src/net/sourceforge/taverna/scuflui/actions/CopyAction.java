@@ -11,8 +11,8 @@ public class CopyAction extends DefaultAction {
 
     private static final String ACTION_COMMAND_KEY_COPY = "copy-command";
     private static final String NAME_COPY = "Copy";
-    private static final String SMALL_ICON_COPY = "etc/metal/Copy16.gif";
-    private static final String LARGE_ICON_COPY = "etc/metal/Copy24.gif";
+    private static final String SMALL_ICON_COPY = "etc/icons/stock_copy-16.png";
+    private static final String LARGE_ICON_COPY = "etc/icons/stock_copy.png";
     private static final String SHORT_DESCRIPTION_COPY = "Copy";
     private static final String LONG_DESCRIPTION_COPY = "Create a duplicate of the selected object. This duplicate is now available to be pasted elsewhere.";
     private static final int MNEMONIC_KEY_COPY = 'C';

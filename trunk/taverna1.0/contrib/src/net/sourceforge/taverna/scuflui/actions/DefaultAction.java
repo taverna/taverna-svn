@@ -20,7 +20,7 @@ import javax.swing.text.EditorKit;
 /**
  * Represents the default action
  * @author  mfortner
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 
 public abstract class DefaultAction extends AbstractAction {
@@ -223,7 +223,7 @@ public abstract class DefaultAction extends AbstractAction {
         System.out.println("Aborted");
       }
       else if (loadStatus == MediaTracker.COMPLETE) {
-        System.out.println("COMPLETE");
+        // DO NOTHING System.out.println("COMPLETE");
       }
       else if (loadStatus == MediaTracker.ERRORED) {
         System.out.println("ERRORED: " + name);

@@ -18,8 +18,8 @@ public class PrintAction extends DefaultAction{
   private static final String ACTION_COMMAND_KEY_ABOUT = "print-command";
 
 private static final String NAME_ABOUT = "Print...";
-private static final String SMALL_ICON_ABOUT = "etc/metal/Print16.gif";
-private static final String LARGE_ICON_ABOUT = "etc/metal/Print24.gif";
+private static final String SMALL_ICON_ABOUT = "etc/icons/stock_print-16.png";
+private static final String LARGE_ICON_ABOUT = "etc/icons/stock_print.png";
 private static final String SHORT_DESCRIPTION_ABOUT = "Print File";
 private static final String LONG_DESCRIPTION_ABOUT = "Print A File";
 private static final int MNEMONIC_KEY_ABOUT = 'P';

@@ -8,12 +8,12 @@ import javax.swing.JOptionPane;
 import net.sourceforge.taverna.scuflui.workbench.Workbench;
 
 /**
- * This class
+ * This class generates the workflow documentation for a given directory.
  * 
  * Last edited by $Author: phidias $
  * 
  * @author Mark
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class GenerateWorkflowDocAction extends DefaultAction {
     private static final String ACTION_COMMAND_KEY_ABOUT = "clear-workflow-command";
@@ -42,17 +42,6 @@ public class GenerateWorkflowDocAction extends DefaultAction {
     }
     
     public void actionPerformed(ActionEvent ae){
-        Object[] options = {"Confirm reset","Cancel"};
-	    int n = JOptionPane.showOptionDialog(null,
-						  "Are you sure you want to clear the workflow,\nany changes you have made will be lost?",
-						  "Confirm workflow reset",
-						  JOptionPane.YES_NO_OPTION,
-						  JOptionPane.QUESTION_MESSAGE,
-						  null,
-						  options,
-						  options[1]);
-	    if (n == 0) {
-	        Workbench.clearModel();
-	    }
+       
     }
 }
