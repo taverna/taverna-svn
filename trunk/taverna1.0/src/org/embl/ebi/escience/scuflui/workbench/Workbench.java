@@ -217,30 +217,40 @@ public class Workbench extends JFrame {
 	// workflow definition in (cheers to Robert Harder!)
 	// http://iharder.sourceforge.net/
 	new FileDrop(desktop, new FileDrop.Listener() {
-		public void filesDropped(File[] files) {
+		public void filesDropped(File[] filesDropped) {
+		    final File[] files = filesDropped;
 		    if (files.length == 1) {
 			// Don't use a prefix, single drop event
-			try {
-			    XScuflParser.populate(files[0].toURL().openStream(), Workbench.this.model, null);
-			}
-			catch (Exception ex) {
-			    JOptionPane.showMessageDialog(null,
-							  "Problem opening XScufl from file : \n"+ex.getMessage(),
-							  "Exception!",
-							  JOptionPane.ERROR_MESSAGE);
-			}
+			new Thread() {
+			    public void run() {
+				try {
+				    XScuflParser.populate(files[0].toURL().openStream(), Workbench.this.model, null);
+				}
+				catch (Exception ex) {
+				    JOptionPane.showMessageDialog(null,
+								  "Problem opening XScufl from file : \n"+ex.getMessage(),
+								  "Exception!",
+								  JOptionPane.ERROR_MESSAGE);
+				}
+			    }
+			}.start();
 		    }
 		    else {
 			for (int i = 0; i < files.length; i++) {
-			    try {
-				XScuflParser.populate(files[0].toURL().openStream(), Workbench.this.model, ""+i);
-			    }
-			    catch (Exception ex) {
-				JOptionPane.showMessageDialog(null,
-							      "Problem opening XScufl from file : \n"+ex.getMessage(),
-							      "Exception!",
-							      JOptionPane.ERROR_MESSAGE);
-			    }
+			    final int j = i;
+			    new Thread() {
+				public void run() {
+				    try {
+					XScuflParser.populate(files[j].toURL().openStream(), Workbench.this.model, "file"+j);
+				    }
+				    catch (Exception ex) {
+					JOptionPane.showMessageDialog(null,
+								      "Problem opening XScufl from file : \n"+ex.getMessage(),
+								      "Exception!",
+								      JOptionPane.ERROR_MESSAGE);
+				    }
+				}
+			    }.start();
 			}
 		    }
 		}
