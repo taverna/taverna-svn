@@ -64,7 +64,10 @@ public class TalismanTask extends ProcessorTask {
 	    Map outputMap = new HashMap();
 	    GraphNode[] outputs = getChildren();
 	    for (int i = 0; i < outputs.length; i++) {
+		
 		PortTask pt = (PortTask)outputs[i];
+		logger.debug("Found an output port task, registering it with name : "+pt.getScuflPort().getName().toLowerCase());
+
 		// convert all port names to lower case, eases matching later on
 		outputMap.put(pt.getScuflPort().getName().toLowerCase(),pt);
 	    }
@@ -108,9 +111,12 @@ public class TalismanTask extends ProcessorTask {
 		String talismanName = (String)talismanOutputMap.get(portName);
 		// talismanValue is the contents of the field defined in talismanName
 		String talismanValue = teaTray.getStringValue(sessionID, talismanName);
+		logger.debug("Creating output - portName = "+portName+", fieldName = "+talismanName);
 		// Write the value to the port, is this the right way to do it?
 		PortTask pt = (PortTask)outputMap.get(portName.toLowerCase());
-		pt.setData(new Part(-1, portName, "string", talismanValue));
+		logger.debug("Port task found : "+pt.toString());
+		Part outputPart = new Part(-1, portName, "string", talismanValue);
+		pt.setData(outputPart);
 	    }
 
 	    // Done? I think so anyway.
