@@ -5,7 +5,7 @@
  */
 package org.embl.ebi.escience.scuflui.processoractions;
 
-import javax.swing.Icon;
+import javax.swing.ImageIcon;
 import java.awt.event.ActionListener;
 import org.embl.ebi.escience.scufl.Processor;
 
@@ -46,6 +46,6 @@ public interface ProcessorActionSPI {
      * Return an Icon to represent this action, return null if you
      * want to use the default icon (boring)
      */
-    public Icon getIcon();
+    public ImageIcon getIcon();
 
 }
