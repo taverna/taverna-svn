@@ -43,6 +43,7 @@
 	</path>
 	<path id="base-test-classpath">
 	        <path refid="base-run-classpath"/>
+		<path refid="${java.class.path}"/>
 		<pathelement path="${build.text.classes}"/>
         </path>
 	<path id="compile-classpath">
@@ -83,6 +84,7 @@
 	        <mkdir dir="./netlib"/>
 	        <get src="http://www.ibiblio.org/maven/bsh/jars/bsh-2.0b1.jar" dest="./netlib/bsh-2.0b1.jar" usetimestamp="yes"/>
 		<get src="http://www.ibiblio.org/maven/jdom/jars/jdom-b10.jar" dest="./netlib/jdom-b10.jar" usetimestamp="yes"/>
+		<get src="http://www.ibiblio.org/maven/axis/jars/axis-1.2-beta-3.jar" dest="./netlib/axis-1.2-beta-3.jar" usetimestamp="yes"/>
 		<get src="http://www.ibiblio.org/maven/axis/jars/axis-wsdl4j-1.2-beta-3.jar" dest="./netlib/axis-wsdl4j-1.2-beta-3.jar" usetimestamp="yes"/>
 		<get src="http://www.ibiblio.org/maven/axis/jars/axis-jaxrpc-1.2-beta-3.jar" dest="./netlib/axis-jaxrpc-1.2-beta-3.jar" usetimestamp="yes"/>
 		<get src="http://www.ibiblio.org/maven/axis/jars/axis-saaj-1.2-beta-3.jar" dest="./netlib/axis-saaj-1.2-beta-3.jar" usetimestamp="yes"/>
@@ -278,16 +280,21 @@
         </copy>
     </target>
 
-    <target name="run-tests" depends="jar,javac-tests">
+    <target name="run-tests" depends="javac-tests">
         <property name="test.subtree" value="**"/>
-
+<available classpath="${java.class.path}"
+        classname="junit.framework.TestCase"
+        property="${junit.present}"/>
         <echo message="JUnit present:           ${junit.present}"/>
         <echo message="Running tests:           ${test.subtree}"/>
 
         <junit maxmemory="128m" printsummary="yes" haltonfailure="no" reloading="no">
             <formatter type="plain" usefile="true"/>
-            <classpath refid="test-classpath"/>
-            <!-- The junit task doesn't support 'if' so we test for JUnit here -->
+            <classpath>
+	      <path refid="test-classpath"/>
+	      <pathelement path="${java.class.path}"/>
+            </classpath>
+	    <!-- The junit task doesn't support 'if' so we test for JUnit here -->
             <batchtest fork="no" todir="${reports.tests}" if="junit.present">
                 <fileset dir="${build.test.classes}">
                     <include name="${test.subtree}/*Test.class"/>
