@@ -5,7 +5,7 @@
     "http://java.sun.com/j2ee/dtds/web-app_2.2.dtd">
 
 <web-app>
-  <display-name>Apache-Axis</display-name>
+  <display-name>GoViz - Axis based Gene Ontology Visualisation Service</display-name>
   <servlet>
     <servlet-name>AxisServlet</servlet-name>
     <display-name>Apache-Axis Servlet</display-name>
