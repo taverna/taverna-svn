@@ -34,6 +34,7 @@ public class AdvancedModelExplorer extends JPanel
     private JTabbedPane tabs;
     private JPanel propertiesPanel;
     private Object selectedObject = null;
+    private ScuflModel model;
 
     private JButton loadWorkflow, loadFromWeb, saveWorkflow, resetWorkflow, createNested;
     final JFileChooser fc = new JFileChooser();
@@ -271,144 +272,266 @@ public class AdvancedModelExplorer extends JPanel
      * the appropriate context object into the selectedObject value
      */
     private void updateTab() {
-	if (selectedObject == null || selectedObject instanceof Processor == false) {
-	    // Not a processor, don't show the info for now
-	    tabs.setEnabledAt(1, false);
+	if (selectedObject != null && selectedObject instanceof Processor) {
+	    updateTabForProcessor();
 	}
-	else {
-	    // Clear the properties panel and regenerate it
-	    propertiesPanel.removeAll();
-	    propertiesPanel.setLayout(new BoxLayout(propertiesPanel, BoxLayout.PAGE_AXIS));
-	    final Processor p = (Processor)selectedObject;
-	    // Create a description section...
-	    JPanel descriptionPanel = new JPanel() {
-		    public Dimension getMaximumSize() {
-			return new Dimension(99999,150);
-		    }
-		};
-	    descriptionPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(),
-									"Processor Description for '"+p.getName()+"'"));
-	    descriptionPanel.setLayout(new BorderLayout());
-	    JTextArea description = new JTextArea(p.getDescription(),4,0);
-	    JScrollPane descriptionPane = new JScrollPane(description);
-	    descriptionPane.setPreferredSize(new Dimension(100,100));
-	    description.getDocument().addDocumentListener(new DocumentListener() {
-		    public void insertUpdate(DocumentEvent e) {
-			try {
-			    Document d = e.getDocument();
-			    p.setDescription(d.getText(0, d.getLength()));
-			}
-			catch (BadLocationException ble) {
-			    //
-			}
-		    }
-		    public void removeUpdate(DocumentEvent e) {
-			try {
-			    Document d = e.getDocument();
-			    p.setDescription(d.getText(0, d.getLength()));
-			}
-			catch (BadLocationException ble) {
-			    //
-			}
-		    }
-		    public void changedUpdate(DocumentEvent e) {
-			try {
-			    Document d = e.getDocument();
-			    p.setDescription(d.getText(0, d.getLength()));
-			}
-			catch (BadLocationException ble) {
-			    //
-			}
-		    }
-		});
-	    
-
-	    //descriptionPane.setPreferredSize(new Dimension(0,0));
-	    description.setEditable(true);
-	    description.setLineWrap(true);
-	    description.setWrapStyleWord(true);
-	    descriptionPanel.add(descriptionPane);
-	    propertiesPanel.add(descriptionPanel);
-	    final JPanel iterationConfigPanel = new JPanel(){
-		    public Dimension getMaximumSize() {
-			return new Dimension(99999,100);
-		    }
-		};
-	    iterationConfigPanel.setLayout(new BorderLayout());
-	    iterationConfigPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(),
-									    "Configure Iterators"));
-	    
-	    final JButton createStrategy = new JButton("Create iteration strategy");
-	    final JButton resetStrategy = new JButton("Reset iteration strategy");
-	    
-	    final String noIteratorMessage = "<h2>No iterator strategy</h2>If you would like to override Taverna's default strategy you need to click the '<em><font color=\"green\">create strategy</font></em>' button and then use the editing controls to manipulate the tree of iterators. Note that the iteration strategy created will only include the inputs bound at the time you press the button, if you subsequently add new input links you will have to reset and recreate the strategy; all bound inputs <font color=\"red\">must</font> be included.";
-	    
-	    createStrategy.addActionListener(new ActionListener() {
-		    public void actionPerformed(ActionEvent e) {
-			// Derive the default iteration strategy from the
-			// processor
-			p.setIterationStrategy(new IterationStrategy(p));
-			createStrategy.setEnabled(false);
-			resetStrategy.setEnabled(true);
-			IterationStrategyEditorControl editor = new IterationStrategyEditorControl(p.getIterationStrategy());
-			iterationConfigPanel.removeAll();
-			JScrollPane pane = new JScrollPane(editor);
-			pane.setPreferredSize(new Dimension(100,100));
-			iterationConfigPanel.add(pane);
-			doLayout();
-			AdvancedModelExplorer.this.repaint();
-
-		    }
-		});
-	    
-	    resetStrategy.addActionListener(new ActionListener() {
-		    public void actionPerformed(ActionEvent e) {
-			// Reset the iteration strategy to null
-			p.setIterationStrategy(null);
-			resetStrategy.setEnabled(false);
-			createStrategy.setEnabled(true);
-			iterationConfigPanel.removeAll();
-			JEditorPane ed = new JEditorPane("text/html",noIteratorMessage);
-			ed.setEditable(false);
-			JScrollPane helpPane = new JScrollPane(ed);
-			helpPane.setPreferredSize(new Dimension(100,100));
-			iterationConfigPanel.add(helpPane);
-			iterationConfigPanel.doLayout();
-			doLayout();
-			AdvancedModelExplorer.this.repaint();
-		    }
-		});
-	    
-	    JPanel buttonPanel = new JPanel() {
-		    public Dimension getMaximumSize() {
-			return new Dimension(99999,20);
-		    }
-		};
-	    buttonPanel.setLayout(new GridLayout(0,2));
-	    buttonPanel.add(createStrategy);
-	    buttonPanel.add(resetStrategy);
-	    propertiesPanel.add(buttonPanel);
-	    propertiesPanel.add(new JScrollPane(iterationConfigPanel));
-	    if (p.getIterationStrategy() == null) {
-		resetStrategy.setEnabled(false);
-		JEditorPane ed = new JEditorPane("text/html",noIteratorMessage);
-		ed.setEditable(false);
-		JScrollPane helpPane = new JScrollPane(ed);
-		helpPane.setPreferredSize(new Dimension(100,100));
-		iterationConfigPanel.add(helpPane);
+	else if (selectedObject != null && selectedObject instanceof String) {
+	    if (((String)selectedObject).equals("Workflow model")) {
+		updateTabForWorkflow();
 	    }
 	    else {
-		createStrategy.setEnabled(false);
-		IterationStrategyEditorControl editor = new IterationStrategyEditorControl(p.getIterationStrategy());
-		JScrollPane pane = new JScrollPane(editor);
-		pane.setPreferredSize(new Dimension(100,100));
-		iterationConfigPanel.add(pane);
+		tabs.setEnabledAt(1, false);
 	    }
-	    
-	    tabs.setEnabledAt(1, true);
+	}
+	else {
+	    tabs.setEnabledAt(1, false);
 	}
     }
 
+    private void updateTabForWorkflow() {
+	propertiesPanel.removeAll();
+	propertiesPanel.setLayout(new BoxLayout(propertiesPanel, BoxLayout.PAGE_AXIS));
+
+	JPanel descriptionPanel = new JPanel() {
+		public Dimension getMaximumSize() {
+		    return new Dimension(99999,3000);
+		}
+	    };
+	descriptionPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(),
+								    "Workflow description"));
+	descriptionPanel.setLayout(new BorderLayout());
+	JTextArea description = new JTextArea(model.getDescription().getText());
+	JScrollPane descriptionPane = new JScrollPane(description);
+	descriptionPane.setPreferredSize(new Dimension(100,100));
+	final WorkflowDescription wd = model.getDescription();
+	
+	JTextField author = new JTextField(model.getDescription().getAuthor());
+	JPanel authorPanel = new JPanel() {
+		public Dimension getMaximumSize() {
+		    return new Dimension(99999,50);
+		}
+	    };
+	authorPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(),
+								    "Author"));
+	authorPanel.setLayout(new BorderLayout());
+	authorPanel.add(author, BorderLayout.CENTER);
+	//authorPanel.add(new JLabel("Workflow author"), BorderLayout.WEST);
+	
+	JTextField lsid = new JTextField(model.getDescription().getLSID());
+	lsid.setEditable(false);
+	JPanel lsidPanel = new JPanel() {
+		public Dimension getMaximumSize() {
+		    return new Dimension(99999,50);
+		}
+	    };
+	lsidPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(),
+							       "LSID"));
+	lsidPanel.setLayout(new BorderLayout());
+	lsidPanel.add(lsid, BorderLayout.CENTER);
+	
+
+	description.getDocument().addDocumentListener(new DocumentListener() {
+		public void insertUpdate(DocumentEvent e) {
+		    try {
+			Document d = e.getDocument();
+			wd.setText(d.getText(0, d.getLength()));
+		    }
+		    catch (BadLocationException ble) {
+			//
+		    }
+		}
+		public void removeUpdate(DocumentEvent e) {
+		    try {
+			Document d = e.getDocument();
+			wd.setText(d.getText(0, d.getLength()));
+		    }
+		    catch (BadLocationException ble) {
+			//
+		    }
+		}
+		public void changedUpdate(DocumentEvent e) {
+		    try {
+			Document d = e.getDocument();
+			wd.setText(d.getText(0, d.getLength()));
+		    }
+		    catch (BadLocationException ble) {
+			//
+		    }
+		}
+	    });
+	author.getDocument().addDocumentListener(new DocumentListener() {
+		public void insertUpdate(DocumentEvent e) {
+		    try {
+			Document d = e.getDocument();
+			wd.setAuthor(d.getText(0, d.getLength()));
+		    }
+		    catch (BadLocationException ble) {
+			//
+		    }
+		}
+		public void removeUpdate(DocumentEvent e) {
+		    try {
+			Document d = e.getDocument();
+			wd.setAuthor(d.getText(0, d.getLength()));
+		    }
+		    catch (BadLocationException ble) {
+			//
+		    }
+		}
+		public void changedUpdate(DocumentEvent e) {
+		    try {
+			Document d = e.getDocument();
+			wd.setAuthor(d.getText(0, d.getLength()));
+		    }
+		    catch (BadLocationException ble) {
+			//
+		    }
+		}
+	    });
+	description.setEditable(true);
+	description.setLineWrap(true);
+	description.setWrapStyleWord(true);
+	descriptionPanel.add(descriptionPane);
+	propertiesPanel.add(authorPanel);
+	propertiesPanel.add(lsidPanel);
+	propertiesPanel.add(descriptionPanel);
+	tabs.setEnabledAt(1, true);
+
+    }
+    
+    private void updateTabForProcessor() {
+	// Clear the properties panel and regenerate it
+	propertiesPanel.removeAll();
+	propertiesPanel.setLayout(new BoxLayout(propertiesPanel, BoxLayout.PAGE_AXIS));
+	final Processor p = (Processor)selectedObject;
+	// Create a description section...
+	JPanel descriptionPanel = new JPanel() {
+		public Dimension getMaximumSize() {
+		    return new Dimension(99999,150);
+		}
+	    };
+	descriptionPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(),
+								    "Processor Description for '"+p.getName()+"'"));
+	descriptionPanel.setLayout(new BorderLayout());
+	JTextArea description = new JTextArea(p.getDescription(),4,0);
+	JScrollPane descriptionPane = new JScrollPane(description);
+	descriptionPane.setPreferredSize(new Dimension(100,100));
+	description.getDocument().addDocumentListener(new DocumentListener() {
+		public void insertUpdate(DocumentEvent e) {
+		    try {
+			Document d = e.getDocument();
+			p.setDescription(d.getText(0, d.getLength()));
+		    }
+		    catch (BadLocationException ble) {
+			//
+		    }
+		}
+		public void removeUpdate(DocumentEvent e) {
+		    try {
+			Document d = e.getDocument();
+			p.setDescription(d.getText(0, d.getLength()));
+		    }
+		    catch (BadLocationException ble) {
+			//
+		    }
+		}
+		public void changedUpdate(DocumentEvent e) {
+		    try {
+			Document d = e.getDocument();
+			p.setDescription(d.getText(0, d.getLength()));
+		    }
+		    catch (BadLocationException ble) {
+			//
+		    }
+		}
+	    });
+	
+	
+	//descriptionPane.setPreferredSize(new Dimension(0,0));
+	description.setEditable(true);
+	description.setLineWrap(true);
+	description.setWrapStyleWord(true);
+	descriptionPanel.add(descriptionPane);
+	propertiesPanel.add(descriptionPanel);
+	final JPanel iterationConfigPanel = new JPanel(){
+		public Dimension getMaximumSize() {
+		    return new Dimension(99999,100);
+		}
+	    };
+	iterationConfigPanel.setLayout(new BorderLayout());
+	iterationConfigPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(),
+									"Configure Iterators"));
+	
+	final JButton createStrategy = new JButton("Create iteration strategy");
+	final JButton resetStrategy = new JButton("Reset iteration strategy");
+	
+	final String noIteratorMessage = "<h2>No iterator strategy</h2>If you would like to override Taverna's default strategy you need to click the '<em><font color=\"green\">create strategy</font></em>' button and then use the editing controls to manipulate the tree of iterators. Note that the iteration strategy created will only include the inputs bound at the time you press the button, if you subsequently add new input links you will have to reset and recreate the strategy; all bound inputs <font color=\"red\">must</font> be included.";
+	
+	createStrategy.addActionListener(new ActionListener() {
+		public void actionPerformed(ActionEvent e) {
+		    // Derive the default iteration strategy from the
+		    // processor
+		    p.setIterationStrategy(new IterationStrategy(p));
+		    createStrategy.setEnabled(false);
+		    resetStrategy.setEnabled(true);
+		    IterationStrategyEditorControl editor = new IterationStrategyEditorControl(p.getIterationStrategy());
+		    iterationConfigPanel.removeAll();
+		    JScrollPane pane = new JScrollPane(editor);
+		    pane.setPreferredSize(new Dimension(100,100));
+		    iterationConfigPanel.add(pane);
+		    doLayout();
+		    AdvancedModelExplorer.this.repaint();
+		    
+		}
+	    });
+	
+	resetStrategy.addActionListener(new ActionListener() {
+		public void actionPerformed(ActionEvent e) {
+		    // Reset the iteration strategy to null
+		    p.setIterationStrategy(null);
+		    resetStrategy.setEnabled(false);
+		    createStrategy.setEnabled(true);
+		    iterationConfigPanel.removeAll();
+		    JEditorPane ed = new JEditorPane("text/html",noIteratorMessage);
+		    ed.setEditable(false);
+		    JScrollPane helpPane = new JScrollPane(ed);
+		    helpPane.setPreferredSize(new Dimension(100,100));
+		    iterationConfigPanel.add(helpPane);
+		    iterationConfigPanel.doLayout();
+		    doLayout();
+		    AdvancedModelExplorer.this.repaint();
+		}
+	    });
+	
+	JPanel buttonPanel = new JPanel() {
+		public Dimension getMaximumSize() {
+		    return new Dimension(99999,20);
+		}
+	    };
+	buttonPanel.setLayout(new GridLayout(0,2));
+	buttonPanel.add(createStrategy);
+	buttonPanel.add(resetStrategy);
+	propertiesPanel.add(buttonPanel);
+	propertiesPanel.add(new JScrollPane(iterationConfigPanel));
+	if (p.getIterationStrategy() == null) {
+	    resetStrategy.setEnabled(false);
+	    JEditorPane ed = new JEditorPane("text/html",noIteratorMessage);
+	    ed.setEditable(false);
+	    JScrollPane helpPane = new JScrollPane(ed);
+	    helpPane.setPreferredSize(new Dimension(100,100));
+	    iterationConfigPanel.add(helpPane);
+	}
+	else {
+	    createStrategy.setEnabled(false);
+	    IterationStrategyEditorControl editor = new IterationStrategyEditorControl(p.getIterationStrategy());
+	    JScrollPane pane = new JScrollPane(editor);
+	    pane.setPreferredSize(new Dimension(100,100));
+	    iterationConfigPanel.add(pane);
+	}
+	
+	tabs.setEnabledAt(1, true);
+    }
+    
     public String getName() {
 	return "Advanced model explorer";
     }
@@ -418,11 +541,13 @@ public class AdvancedModelExplorer extends JPanel
     }
 
     public void attachToModel(ScuflModel theModel) {
+	this.model = theModel;
 	explorer.attachToModel(theModel);
     }
 
     public void detachFromModel() {
 	explorer.detachFromModel();
+	this.model = null;
     }
 
 }
