@@ -25,8 +25,8 @@
 //      Dependencies        :
 //
 //      Last commit info    :   $Author: mereden $
-//                              $Date: 2004-01-27 12:57:52 $
-//                              $Revision: 1.25 $
+//                              $Date: 2004-03-11 17:20:37 $
+//                              $Revision: 1.26 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 
@@ -187,7 +187,7 @@ public class TavernaFlowBroker implements FlowBroker {
     /**
      * Provides for cancelling a workflow previously submitted to the flow engine
      *
-     * @param String identifier for the workflow to cancel.
+     * @param identifier String identifier for the workflow to cancel.
      */
     public void cancelFlow(String identifier) throws WorkflowCommandException {
         try {
@@ -211,7 +211,7 @@ public class TavernaFlowBroker implements FlowBroker {
     /**
      * Provides for suspending a workflow previously submitted to the flow engine - Not yet implemented.
      *
-     * @param String identifier for the workflow to suspend 
+     * @param identifier String identifier for the workflow to suspend 
      */
     public void suspendFlow(String identifier) throws WorkflowCommandException {
         throw new WorkflowCommandException("Sorry, this functionality is not yet available.");
@@ -220,7 +220,7 @@ public class TavernaFlowBroker implements FlowBroker {
     /**
      * Provides for resuming a workflow previously suspended - Not yet implemented.
      *
-     * @param String identifier for the workflow to resume.
+     * @param identifier String identifier for the workflow to resume.
      */
     public void resumeFlow(String identifier) throws WorkflowCommandException {
         throw new WorkflowCommandException("Sorry, this functionality is not yet available.");

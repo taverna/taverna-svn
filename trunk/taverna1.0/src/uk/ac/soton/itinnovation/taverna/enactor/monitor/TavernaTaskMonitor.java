@@ -25,8 +25,8 @@
 //      Dependencies        :
 //
 //      Last commit info    :   $Author: mereden $
-//                              $Date: 2004-01-27 12:57:53 $
-//                              $Revision: 1.9 $
+//                              $Date: 2004-03-11 17:20:38 $
+//                              $Revision: 1.10 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 
@@ -91,7 +91,7 @@ public class TavernaTaskMonitor {
     /**
      * Deposit a report for a task.
      *
-     * @param TaskEventReport report.
+     * @param report report.
      */
     public void put(TaskStateMessage report) {
         try {

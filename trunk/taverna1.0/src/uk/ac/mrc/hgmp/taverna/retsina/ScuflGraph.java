@@ -228,7 +228,7 @@ public class ScuflGraph extends JGraph
     /**
      *
      * Load in a XScufl workflow
-     * @param String xscufl XScufl as text
+     * @param xscufl XScufl as text
      *
      */
     public void loadXScufl(String xscufl)

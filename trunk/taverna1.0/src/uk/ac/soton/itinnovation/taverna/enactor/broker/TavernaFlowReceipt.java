@@ -25,8 +25,8 @@
 //      Dependencies        :
 //
 //      Last commit info    :   $Author: mereden $
-//                              $Date: 2004-03-05 08:38:03 $
-//                              $Revision: 1.30 $
+//                              $Date: 2004-03-11 17:20:37 $
+//                              $Revision: 1.31 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 
@@ -98,7 +98,7 @@ public class TavernaFlowReceipt extends WSFlowReceipt implements org.embl.ebi.es
     /**
      * Constructor for this concrete instance of a flow receipt
      * @param flow - the flow to which this receipt applies.
-     * @param flowDenString - the original XScufl file that defined the workflow
+     * @param flowDefnString - the original XScufl file that defined the workflow
      * @param input - a map of String->DataThing objects defining the workflow input
      * @param userID - string representing the user
      * @param modelLogLevel - the logging level for the scufl model
@@ -121,7 +121,7 @@ public class TavernaFlowReceipt extends WSFlowReceipt implements org.embl.ebi.es
     /**
      * Process an event associated with a Flow
      *
-     * @param FlowEvent describing the event.
+     * @param flowEvent FlowEvent describing the event.
      */
     public void processFlowEvent(FlowEvent flowEvent) {        
 	try {

@@ -17,6 +17,10 @@ public class LockStepIteratorNode extends DefaultMutableTreeNode implements Resu
     
     LockStepIterator iterator;
 
+    /**
+     * Create a new LockStepIteratorNode, calls to insert(...)
+     * will add iterators to the dot product.
+     */
     public LockStepIteratorNode() {
 	iterator = new LockStepIterator() {
 		// Gather a list of all children in the
@@ -34,6 +38,12 @@ public class LockStepIteratorNode extends DefaultMutableTreeNode implements Resu
 	    };
     }
     
+    /**
+     * Return a Map of named objects derived from any iterator
+     * nodes attached to this one as children, the iteration
+     * strategy is derived from the underlying LockStepIterator
+     * which performs a cross product of all available sub-iterators
+     */
     public Object next() {
 	// Result will be an array of Map objects, convert to a Map i.e.
 	// convert [{foo->bar}],[{urgle->wibble}] to {foo->bar,urgle->wibble}
@@ -55,14 +65,23 @@ public class LockStepIteratorNode extends DefaultMutableTreeNode implements Resu
 	return result;
     }
     
+    /**
+     * Delegates to contained LockStepIterator
+     */
     public boolean hasNext() {
 	return iterator.hasNext();
     }
     
+    /**
+     * Delegates to contained LockStepIterator
+     */
     public void reset() {
 	iterator.reset();
     }
 
+    /**
+     * Delegates to contained LockStepIterator
+     */
     public int size() {
 	return iterator.size();
     }
@@ -81,6 +100,22 @@ public class LockStepIteratorNode extends DefaultMutableTreeNode implements Resu
     public void insert(MutableTreeNode node, int index) {
 	super.insert(node, index);
 	reset();
+    }
+
+    /**
+     * A LockStepIteratorNode requires children to be
+     * functional and is therefore never a leaf.
+     */
+    boolean isLeaf() {
+	return false;
+    }
+    
+    /**
+     * LockStepIteratorNode objects pull iterators from
+     * their children, therefore always allow them.
+     */
+    boolean getAllowsChildren() {
+	return true;
     }
 
 }

@@ -207,7 +207,9 @@
 			 sourcepath="${build.src}"
 			 doctitle="&lt;h1>${ant.project.name} Java API Documentation&lt;/h1>"
 			 packagenames="*"
-             source="1.4"
+			 source="1.4"
+			 linksource="yes"
+			 breakiterator="yes"
 			 version="true">
 			<classpath refid="compile-classpath"/>
 		</javadoc>
@@ -356,7 +358,7 @@
 	</target>
 	<!-- Test the data thing iterator system -->
 	<target name="test.iterator" depends="java">
-		<java classname="org.embl.ebi.escience.baclava.IteratorTest" fork="no">
+		<java classname="org.embl.ebi.escience.baclava.IteratorNodeTests" fork="no">
 			<classpath refid="compile-classpath"/>
 		</java>
 	</target>

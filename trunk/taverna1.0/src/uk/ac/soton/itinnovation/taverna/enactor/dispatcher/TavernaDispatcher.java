@@ -15,8 +15,8 @@
 //      Dependencies        :   
 //
 //      Last commit info    :   $Author: mereden $
-//                              $Date: 2004-01-27 12:57:52 $
-//                              $Revision: 1.9 $
+//                              $Date: 2004-03-11 17:20:37 $
+//                              $Revision: 1.10 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 
@@ -64,7 +64,7 @@ public class TavernaDispatcher extends Dispatcher {
   /**
    * Dispatches the passed task according to the dispatch rules for Taverna.
    *
-   * @param Task to dispatch.
+   * @param task Task to dispatch.
    */
   public void dispatch(Task task) {
     if(!(task instanceof TavernaTask)){

@@ -17,6 +17,10 @@ public class JoinIteratorNode extends DefaultMutableTreeNode implements Resumabl
     
     JoinIterator iterator;
     
+    /**
+     * Create a new JoinIteratorNode, calls to insert(...)
+     * will add iterators to the join.
+     */
     public JoinIteratorNode() {
 	iterator = new JoinIterator() {
 		// Gather a list of all children in the
@@ -35,6 +39,12 @@ public class JoinIteratorNode extends DefaultMutableTreeNode implements Resumabl
 	    };
     }
     
+    /**
+     * Return a Map of named objects derived from any iterator
+     * nodes attached to this one as children. The iteration strategy
+     * is derived from the JoinIterator which performs a cross product
+     * or orthoganol join across all the sub-iterators
+     */
     public Object next() {
 	// Result will be an array of Map objects, convert to a Map i.e.
 	// convert [{foo->bar}],[{urgle->wibble}] to {foo->bar,urgle->wibble}
@@ -56,14 +66,23 @@ public class JoinIteratorNode extends DefaultMutableTreeNode implements Resumabl
 	return result;
     }
     
+    /**
+     * Return true if calls to next() will succeed
+     */
     public boolean hasNext() {
 	return iterator.hasNext();
     }
     
+    /**
+     * Reset the underlying JoinIterator
+     */
     public void reset() {
 	iterator.reset();
     }
 
+    /**
+     * Return the size of the underlying JoinIterator
+     */
     public int size() {
 	return iterator.size();
     }
@@ -82,6 +101,23 @@ public class JoinIteratorNode extends DefaultMutableTreeNode implements Resumabl
     public void insert(MutableTreeNode node, int index) {
 	super.insert(node, index);
 	reset();
+    } 
+
+    /**
+     * JoinIteratorNode objects are never leaves in the tree
+     * or at least shouldn't act as such.
+     */
+    boolean isLeaf() {
+	return false;
+    }
+    
+    /**
+     * JoinIteratorNode objects rely on their children to
+     * provide them with objects to iterate over, they do
+     * not contain any collections themselves
+     */
+    boolean getAllowsChildren() {
+	return true;
     }
 }
     

@@ -25,8 +25,8 @@
 //      Dependencies        :
 //
 //      Last commit info    :   $Author: mereden $
-//                              $Date: 2004-01-27 12:57:52 $
-//                              $Revision: 1.28 $
+//                              $Date: 2004-03-11 17:20:37 $
+//                              $Revision: 1.29 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 
@@ -75,7 +75,7 @@ public class XScuflDiGraphGenerator {
      * @param flowID gives the assigned identifier for this flow
      * @param model that contains all the information related to the XScufl definition.
      * @param input a map containing String->DataThing mappings
-     * @param user identifier
+     * @param userID user identifier
      * @return Workflow Enactor DiGraph
      */
     public static DiGraph build(String flowID, ScuflModel model, Map input, String userID, String userCxt) throws XScuflFormatException, java.net.MalformedURLException {

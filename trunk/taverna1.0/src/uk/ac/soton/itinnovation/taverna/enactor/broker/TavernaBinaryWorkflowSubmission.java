@@ -25,8 +25,8 @@
 //      Dependencies        :
 //
 //      Last commit info    :   $Author: mereden $
-//                              $Date: 2004-01-27 12:57:52 $
-//                              $Revision: 1.10 $
+//                              $Date: 2004-03-11 17:20:37 $
+//                              $Revision: 1.11 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 package uk.ac.soton.itinnovation.taverna.enactor.broker;
@@ -50,7 +50,7 @@ public class TavernaBinaryWorkflowSubmission {
 
     /**
      * Constructor used when no email notification is necessary.
-     * @param xscuflSpec
+     * @param scuflModel
      * @param inputData
      * @param userID
      * @param userNamespaceCxt

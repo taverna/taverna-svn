@@ -310,7 +310,7 @@ public class Base64
      * Example: <code>encodeObject( myObj, Base64.GZIP | Base64.DONT_BREAK_LINES )</code>
      *
      * @param serializableObject The object to encode
-     * @options Specified options
+     * @param options Specified options
      * @return The Base64-encoded object
      * @see Base64#GZIP
      * @see Base64#DONT_BREAK_LINES
@@ -436,7 +436,6 @@ public class Base64
      * @param source The data to convert
      * @param off Offset in array where conversion should begin
      * @param len Length of data to convert
-     * @param breakLines Break lines at 80 characters or less.
      * @param options Specified options
      * @see Base64#GZIP
      * @see Base64#DONT_BREAK_LINES
@@ -812,7 +811,7 @@ public class Base64
     
     
     /**
-     * A {@link Base64#InputStream} will read data from another
+     * A {#InputStream} will read data from another
      * {@link java.io.InputStream}, given in the constructor,
      * and encode/decode to/from Base64 notation on the fly.
      *
@@ -833,7 +832,7 @@ public class Base64
         
         
         /**
-         * Constructs a {@link Base64#InputStream} in DECODE mode.
+         * Constructs a {#InputStream} in DECODE mode.
          *
          * @param in the {@link java.io.InputStream} from which to read data.
          * @since 1.3
@@ -845,7 +844,7 @@ public class Base64
         
         
         /**
-         * Constructs a {@link Base64#InputStream} in
+         * Constructs a {#InputStream} in
          * either ENCODE or DECODE mode.
          * <p>
          * Valid options:<pre>
@@ -1047,7 +1046,7 @@ public class Base64
     
     
     /**
-     * A {@link Base64#OutputStream} will write data to another
+     * A {#OutputStream} will write data to another
      * {@link java.io.OutputStream}, given in the constructor,
      * and encode/decode to/from Base64 notation on the fly.
      *
@@ -1068,7 +1067,7 @@ public class Base64
         private boolean suspendEncoding;
         
         /**
-         * Constructs a {@link Base64#OutputStream} in ENCODE mode.
+         * Constructs a {#OutputStream} in ENCODE mode.
          *
          * @param out the {@link java.io.OutputStream} to which data will be written.
          * @since 1.3
@@ -1080,7 +1079,7 @@ public class Base64
         
         
         /**
-         * Constructs a {@link Base64#OutputStream} in
+         * Constructs a {$OutputStream} in
          * either ENCODE or DECODE mode.
          * <p>
          * Valid options:<pre>

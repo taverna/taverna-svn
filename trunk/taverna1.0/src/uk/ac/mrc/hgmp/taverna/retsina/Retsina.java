@@ -90,11 +90,8 @@ public class Retsina extends JPanel
   }
 
   /**
-   *
    * Remove existing processors and children and
    * create a new ScuflModel.
-   * @param String xscufl
-   *
    */
   public void newWorkFlow()
   {
@@ -118,7 +115,7 @@ public class Retsina extends JPanel
   /**
    *
    * Load in a new XScufl workflow.
-   * @param String xscufl
+   * @param xscufl The workflow definition to load in XScufl format
    *
    */
   public void loadXScufl(String xscufl)

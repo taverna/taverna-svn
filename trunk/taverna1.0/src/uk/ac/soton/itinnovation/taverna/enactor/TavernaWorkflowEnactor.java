@@ -25,8 +25,8 @@
 //      Dependencies        :
 //
 //      Last commit info    :   $Author: mereden $
-//                              $Date: 2004-01-27 12:57:52 $
-//                              $Revision: 1.16 $
+//                              $Date: 2004-03-11 17:20:37 $
+//                              $Revision: 1.17 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 
@@ -435,7 +435,7 @@ public class TavernaWorkflowEnactor extends WorkflowEnactor implements FlowCallb
     /**
      * Process message associated with submitted flow.
      *
-     * @param FlowMessage describing the event.
+     * @param msg FlowMessage describing the event.
      */
     public void notify(FlowMessage msg) {
         //can notify standalone client about finalised execution

@@ -25,8 +25,8 @@
 //      Dependencies        :
 //
 //      Last commit info    :   $Author: mereden $
-//                              $Date: 2004-03-05 08:38:03 $
-//                              $Revision: 1.41 $
+//                              $Date: 2004-03-11 17:20:38 $
+//                              $Revision: 1.42 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 package uk.ac.soton.itinnovation.taverna.enactor.entities;
@@ -561,7 +561,7 @@ public class ProcessorTask extends TavernaTask{
     
     /**
      * Retrieves the XScufl Processor object for this task
-     * @return 
+     * @return the Processor object that this task is an execution shim for
      */
     public Processor getProcessor() {
 	return proc;
