@@ -3,7 +3,6 @@
  */
 package org.embl.ebi.escience.scuflui.graph.model;
 
-import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
@@ -12,7 +11,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import org.jgraph.graph.AttributeMap;
 import org.jgraph.graph.GraphConstants;
 import org.jgraph.graph.GraphModel;
 
@@ -20,7 +18,7 @@ import org.jgraph.graph.GraphModel;
  * COMMENT
  * 
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover </a>
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  */
 public class GraphRows
 {
@@ -54,9 +52,9 @@ public class GraphRows
 			rows.add(nodes);
 		}
 		nodes = (List) rows.get(row);
-		if(GraphUtilities.isGroup(model, node))
+		if (GraphUtilities.isGroup(model, node))
 		{
-			for(int index = 0; index < model.getChildCount(node); index++)
+			for (int index = 0; index < model.getChildCount(node); index++)
 			{
 				nodes.add(model.getChild(node, index));
 			}
@@ -83,7 +81,7 @@ public class GraphRows
 		row += 1;
 		return row;
 	}
-	
+
 	/**
 	 * @param node
 	 * @return the maximum row this node can be in
@@ -98,7 +96,7 @@ public class GraphRows
 			row = Math.min(row, childRank);
 		}
 		row -= 1;
-		return row;		
+		return row;
 	}
 
 	/**
@@ -124,7 +122,7 @@ public class GraphRows
 	 */
 	public void setRow(Object node, int row)
 	{
-		if(node == null)
+		if (node == null)
 		{
 			// TODO Sort out why its setting null
 			return;
@@ -190,7 +188,7 @@ public class GraphRows
 			remove(node, row);
 		}
 	}
-	
+
 	/**
 	 * 
 	 */
@@ -213,24 +211,24 @@ public class GraphRows
 			Object node = nodes.get(index);
 			if (model.isEdge(node))
 			{
-				Map attributes = model.getAttributes(node);
-				if(attributes != null)
-				{
-					int lineMid = y + (ROW_HEIGHT / 2);
-					x += X_SEPARATION;
-					List points = GraphConstants.getPoints(attributes);
-					Point point = new Point(x, lineMid);
-					for(int index2 = 0; index2 < points.size(); index2++)
-					{
-						Point existingPoint = (Point)points.get(index2);
-						if(existingPoint.y > lineMid)
-						{
-							points.add(index2, point);
-							break;
-						}
-					}
-					x += X_SEPARATION;
-				}
+				// Map attributes = model.getAttributes(node);
+				// if(attributes != null)
+				// {
+				// int lineMid = y + (ROW_HEIGHT / 2);
+				// x += X_SEPARATION;
+				// List points = GraphConstants.getPoints(attributes);
+				// Point2D point = new Point(x, lineMid);
+				// for(int index2 = 0; index2 < points.size(); index2++)
+				// {
+				// Point2D existingPoint = (Point2D)points.get(index2);
+				// if(existingPoint.getY() > lineMid)
+				// {
+				// points.add(index2, point);
+				// break;
+				// }
+				// }
+				// x += X_SEPARATION;
+				// }
 			}
 			else
 			{
@@ -322,7 +320,7 @@ public class GraphRows
 		int targetRow = getRow(target);
 		for (int index = sourceRow + 1; index < targetRow; index++)
 		{
-			System.err.println("Added non-tree edge " + sourceRow + "-" + targetRow + ": " + edge);			
+			System.err.println("Added non-tree edge " + sourceRow + "-" + targetRow + ": " + edge);
 			List nodes = (List) rows.get(index);
 			nodes.add(edge);
 		}

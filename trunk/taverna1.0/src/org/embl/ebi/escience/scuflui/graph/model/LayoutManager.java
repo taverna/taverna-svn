@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.embl.ebi.escience.scufl.DataConstraint;
 import org.jgraph.event.GraphModelEvent;
 import org.jgraph.event.GraphModelListener;
 import org.jgraph.graph.DefaultGraphModel;
@@ -22,7 +23,7 @@ import org.jgraph.graph.GraphModel;
  * graph to be able to update as the graph changes.
  * 
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover </a>
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  */
 public class LayoutManager implements GraphModelListener
 {
@@ -157,7 +158,15 @@ public class LayoutManager implements GraphModelListener
 				{
 					if (sourceTreeSet == null)
 					{
-						adjustTree(source, rows.getRow(target) - 1);
+						int sourceRow = rows.getRow(source);
+						if(sourceRow + 1 <  rows.getMinimumRow(target))
+						{
+							adjustTree(source, rows.getRow(target) - 1);
+						}
+						else
+						{
+							adjustTree(target, sourceRow + 1);							
+						}
 						treeAddEdge(target, source, edge);
 					}
 					else if (targetTreeSet == null)
@@ -193,15 +202,17 @@ public class LayoutManager implements GraphModelListener
 					{
 						treeAddEdge(source, target, edge);
 						adjustTree(target, rows.getRow(source) + 1);
+						treeAdd(source);
 					}
 					else
 					{
 						int edgeLength = rows.getRow(target) - rows.getRow(source);
 						if (edgeLength < 1)
 						{
-							// TODO New tree edge. Find existing tree edge to replace.
-							//treeReplaceParent(source, target, edge);
-							
+							// TODO New tree edge. Find existing tree edge to
+							// replace.
+							// treeReplaceParent(source, target, edge);
+
 							System.err.println("Must replace tree edge!");
 						}
 						else if (edgeLength > 1)
@@ -224,12 +235,10 @@ public class LayoutManager implements GraphModelListener
 							}
 							if (lowestCut < 0)
 							{
-								Map attributes = model.getAttributes(edge);
+								Map attributes = model.getAttributes(cutEdge);
 								attributes.remove(EDGE_PARENT);
-								treeAddEdge(source, target, cutEdge);
-								//treeReplaceEdge(cutEdge, edge);
-								//treeRemoveEdge(cutEdge);
-								//treeAddEdge(source, target, edge);
+								adjustTree(target, rows.getRow(source)+1);
+								treeAddEdge(source, target, edge);
 							}
 							else
 							{
@@ -245,34 +254,61 @@ public class LayoutManager implements GraphModelListener
 
 	private int getCutValue(Object cutEdge)
 	{
-		// TODO Calculate cut values
+		// TODO Store cut value sensibly
 		Object parent = getParent(cutEdge);
-		Object child = GraphUtilities.getNeighbour(model, parent, cutEdge);
-		Set tailSet = new HashSet();
-		getTailSet(child, tailSet);
+		Object child = GraphUtilities.getSourceNode(model, cutEdge);
+		int direction = -1;
+		if (child == parent)
+		{
+			child = GraphUtilities.getTargetNode(model, cutEdge);
+			direction = 1;
+		}
+
+		//String text = "";
+
 		Iterator edges = DefaultGraphModel.getEdges(model, new Object[] { child }).iterator();
 		int cutValue = 0;
 		while (edges.hasNext())
 		{
 			Object edge = edges.next();
-			if (isTreeEdge(edge) && edge != cutEdge)
+			if (edge == cutEdge)
 			{
-				cutValue += getCutValue(edge) - 1;
+				cutValue += 1;
+				//text += 1 + " ";
 			}
 			else
 			{
-				if(child == GraphUtilities.getSourceNode(model, edge))
+				if (isTreeEdge(edge))
 				{
-					cutValue -= 1;
+					cutValue += getCutValue(edge);
+					//text += getCutValue(edge) + "[" + printEdge(edge) + "] ";
+				}
+
+				if (child == GraphUtilities.getTargetNode(model, edge))
+				{
+					cutValue += direction;
+					//text += direction + " ";
 				}
 				else
 				{
-					cutValue += 1;
+					cutValue -= direction;
+					//text += -direction + " ";
 				}
 			}
-		}			
-		System.err.println(cutValue + " cut value for " + cutEdge);
+		}
+		//System.err.println("Cut for " + printEdge(cutEdge) + " = " + cutValue + " = " + text);
 		return cutValue;
+	}
+
+	private String printEdge(Object edge)
+	{
+		if (edge instanceof DataConstraint)
+		{
+			DataConstraint constraint = (DataConstraint) edge;
+			return constraint.getSource().getProcessor().getName() + "->"
+					+ constraint.getSink().getProcessor().getName();
+		}
+		return null;
 	}
 
 	private Set getPath(Object node1, Object node2)
