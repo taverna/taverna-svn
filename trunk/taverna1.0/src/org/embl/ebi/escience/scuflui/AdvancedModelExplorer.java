@@ -133,6 +133,7 @@ public class AdvancedModelExplorer extends JPanel
 		    // Load an XScufl definition here
 		    Preferences prefs = Preferences.userNodeForPackage(Workbench.class);
 		    String curDir = prefs.get("currentDir", System.getProperty("user.home"));
+		    fc.resetChoosableFileFilters();
 		    fc.setFileFilter(new ExtensionFileFilter(new String[]{"xml"}));
 		    fc.setCurrentDirectory(new File(curDir));
 		    int returnVal = fc.showOpenDialog(AdvancedModelExplorer.this);
@@ -193,6 +194,7 @@ public class AdvancedModelExplorer extends JPanel
 		    try {
 			Preferences prefs = Preferences.userNodeForPackage(AdvancedModelExplorer.class);
 			String curDir = prefs.get("currentDir", System.getProperty("user.home"));
+			fc.resetChoosableFileFilters();
 			fc.setFileFilter(new ExtensionFileFilter(new String[]{"xml"}));
 			fc.setCurrentDirectory(new File(curDir));
 			int returnVal = fc.showSaveDialog(AdvancedModelExplorer.this);

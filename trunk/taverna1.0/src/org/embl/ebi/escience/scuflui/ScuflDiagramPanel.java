@@ -125,6 +125,7 @@ public class ScuflDiagramPanel extends JPanel
 			Preferences prefs = Preferences.userNodeForPackage(ScuflDiagramPanel.class);
 			String curDir = prefs.get("currentDir", System.getProperty("user.home"));
 			fc.setCurrentDirectory(new File(curDir));
+			fc.resetChoosableFileFilters();
 			fc.setFileFilter(new ExtensionFileFilter(new String[]{"dot"}));
 			int returnVal = fc.showSaveDialog(ScuflDiagramPanel.this);
 			if (returnVal == JFileChooser.APPROVE_OPTION) {
@@ -147,6 +148,7 @@ public class ScuflDiagramPanel extends JPanel
 			Preferences prefs = Preferences.userNodeForPackage(ScuflDiagramPanel.class);
 			String curDir = prefs.get("currentDir", System.getProperty("user.home"));
 			fc.setCurrentDirectory(new File(curDir));
+			fc.resetChoosableFileFilters();
 			fc.setFileFilter(new ExtensionFileFilter(new String[]{"png"}));
 			int returnVal = fc.showSaveDialog(ScuflDiagramPanel.this);
 			if (returnVal == JFileChooser.APPROVE_OPTION) {
@@ -177,6 +179,7 @@ public class ScuflDiagramPanel extends JPanel
 			Preferences prefs = Preferences.userNodeForPackage(ScuflDiagramPanel.class);
 			String curDir = prefs.get("currentDir", System.getProperty("user.home"));
 			fc.setCurrentDirectory(new File(curDir));
+			fc.resetChoosableFileFilters();
 			fc.setFileFilter(new ExtensionFileFilter(new String[]{"svg"}));
 			int returnVal = fc.showSaveDialog(ScuflDiagramPanel.this);
 			if (returnVal == JFileChooser.APPROVE_OPTION) {
