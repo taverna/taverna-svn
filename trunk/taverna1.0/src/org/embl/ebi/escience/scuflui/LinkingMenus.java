@@ -59,7 +59,7 @@ public class LinkingMenus {
 	    theMenu.addSeparator();
 	}
 	else {
-	    theMenu.add(new ShadedLabel("Connect ouptut \""+sourcePort.getName()+"\" to...", ShadedLabel.TAVERNA_GREEN));
+	    theMenu.add(new ShadedLabel("Connect output \""+sourcePort.getName()+"\" to...", ShadedLabel.TAVERNA_GREEN));
 	    theMenu.addSeparator();
 	}
 	//JMenuItem title = new JMenuItem("Link '"+sourcePort.getName()+"' to...");
