@@ -133,6 +133,10 @@ public class TemplateEditor extends JComponent implements ScuflUIComponent {
     public String getName() {
 	return "Template editor for "+theProcessor.getName();
     }
+
+    public ImageIcon getIcon() {
+	return null;
+    }
     
 }
 class PortComboBoxRenderer extends JLabel implements ListCellRenderer {

@@ -90,7 +90,7 @@ import org.jdom.output.XMLOutputter;
  * COMMENT DataThingConstructionPanel
  * 
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover </a>
- * @version $Revision: 1.19 $
+ * @version $Revision: 1.20 $
  */
 public class DataThingConstructionPanel extends JPanel implements ScuflUIComponent, ScuflModelEventListener
 {
@@ -1322,6 +1322,10 @@ public class DataThingConstructionPanel extends JPanel implements ScuflUICompone
 	{
 		return "Run Workflow";
 	}
+
+    public ImageIcon getIcon() {
+	return ScuflIcons.windowInput;
+    }
 
 	/*
 	 * @see org.embl.ebi.escience.scufl.ScuflModelEventListener#receiveModelEvent(org.embl.ebi.escience.scufl.ScuflModelEvent)

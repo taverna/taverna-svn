@@ -46,6 +46,10 @@ public class ScuflDiagramPanel extends JPanel
 	}
     }
     
+    public javax.swing.ImageIcon getIcon() {
+	return ScuflIcons.windowDiagram;
+    }
+
     public ScuflDiagramPanel() {
 	super();
 	setLayout(new BorderLayout());

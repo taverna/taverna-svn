@@ -7,6 +7,8 @@ package org.embl.ebi.escience.scuflui;
 
 import org.embl.ebi.escience.scufl.ScuflModel;
 
+import javax.swing.ImageIcon;
+
 import java.lang.String;
 
 
@@ -44,5 +46,11 @@ public interface ScuflUIComponent {
      * in windows etc.
      */
     public String getName();
+
+    /**
+     * Get an icon to be used in window decorations for this
+     * component.
+     */
+    public ImageIcon getIcon();
 
 }

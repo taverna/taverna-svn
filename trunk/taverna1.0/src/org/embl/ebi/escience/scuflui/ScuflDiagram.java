@@ -66,6 +66,10 @@ public class ScuflDiagram extends JComponent
 	listenToMouse = false;
     }
 
+    public javax.swing.ImageIcon getIcon() {
+	return ScuflIcons.windowDiagram;
+    }
+
     public ScuflDiagram() {
 	super();
 	setBackground(Color.white);

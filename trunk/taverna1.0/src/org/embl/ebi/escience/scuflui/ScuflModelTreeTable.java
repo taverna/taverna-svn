@@ -378,4 +378,8 @@ public class ScuflModelTreeTable extends JTreeTable
     public String getName() {
 	return "Scufl Model Explorer";
     }
+
+    public ImageIcon getIcon() {
+	return ScuflIcons.windowExplorer;
+    }
 }

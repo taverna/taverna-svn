@@ -59,6 +59,10 @@ public class ScuflGraph extends JGraph
               implements DropTargetListener, ScuflUIComponent
 {
  
+    public javax.swing.ImageIcon getIcon() {
+	return null;
+    }
+    
     final Cursor cbusy = new Cursor(Cursor.WAIT_CURSOR);
     final Cursor cdone = new Cursor(Cursor.DEFAULT_CURSOR);
     // ScuflModel instance represented in this panel

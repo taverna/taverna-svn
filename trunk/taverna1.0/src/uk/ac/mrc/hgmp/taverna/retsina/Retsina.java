@@ -47,7 +47,9 @@ import java.lang.Thread;
 public class Retsina extends JPanel  
                           implements ScuflUIComponent
 {
-    
+    public javax.swing.ImageIcon getIcon() {
+	return null;
+    }
   private ScuflGraphPanel graphPanel;
   private ScuflModel scuflModel;
 

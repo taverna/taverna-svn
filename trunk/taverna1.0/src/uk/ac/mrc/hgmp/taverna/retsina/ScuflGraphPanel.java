@@ -42,7 +42,9 @@ import java.lang.System;
 public class ScuflGraphPanel extends JPanel
        implements GraphSelectionListener, KeyListener, ScuflUIComponent
 {
-    
+    public javax.swing.ImageIcon getIcon() {
+	return null;
+    }
     // JGraph instance
     protected ScuflGraph graph;
     

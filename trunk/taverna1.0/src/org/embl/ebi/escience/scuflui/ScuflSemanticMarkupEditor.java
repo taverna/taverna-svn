@@ -203,6 +203,10 @@ public class ScuflSemanticMarkupEditor extends JPanel implements ScuflUIComponen
 	show();
     }
     
+    public javax.swing.ImageIcon getIcon() {
+	return ScuflIcons.classIcon;
+    }
+
     public void attachToModel(ScuflModel theModel) {
 	//
     }

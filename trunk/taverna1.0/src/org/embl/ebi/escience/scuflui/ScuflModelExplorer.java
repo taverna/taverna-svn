@@ -60,6 +60,10 @@ public class ScuflModelExplorer extends JTree
 	//this.setDragEnabled(true);
     }
     
+    public javax.swing.ImageIcon getIcon() {
+	return ScuflIcons.windowExplorer;
+    }
+
     /**
      * Set the default expansion state, with all processors, data
      * constraints and workflow source and sink ports show, but

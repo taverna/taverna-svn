@@ -267,6 +267,10 @@ public class EnactorLaunchPanel extends JPanel
 	updatePanel();
     }
 
+    public ImageIcon getIcon() {
+	return ScuflIcons.windowInput;
+    }
+
 }
 class WorkflowInputPanel extends JPanel {
 

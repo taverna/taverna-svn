@@ -62,6 +62,10 @@ public class EnactorInvocation extends JPanel implements ScuflUIComponent {
 	return "Enactor invocation";
     }
 
+    public javax.swing.ImageIcon getIcon() {
+	return ScuflIcons.windowRun;
+    }
+
     //private TavernaWorkflowEnactor theEnactor;
     private ScuflModel theModel;
     private String instanceID = null;

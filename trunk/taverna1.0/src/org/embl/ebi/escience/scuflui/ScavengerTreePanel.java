@@ -203,6 +203,10 @@ public class ScavengerTreePanel extends JPanel
     public String getName() {
 	return "Available services";
     }
+    
+    public javax.swing.ImageIcon getIcon() {
+	return ScuflIcons.windowScavenger;
+    }
 
 }
 	

@@ -82,6 +82,10 @@ public class XScuflTextArea extends JTextArea
 	}
     }
     
+    public javax.swing.ImageIcon getIcon() {
+	return ScuflIcons.xmlNodeIcon;
+    }
+
     /**
      * A name for this component
      */

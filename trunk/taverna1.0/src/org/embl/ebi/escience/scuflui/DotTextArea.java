@@ -43,6 +43,10 @@ public class DotTextArea extends JTextArea
 	}
     }
     
+    public javax.swing.ImageIcon getIcon() {
+	return ScuflIcons.inputValueIcon;
+    }
+
     public void detachFromModel() {
 	if (this.model != null) {
 	    model.removeListener(this);

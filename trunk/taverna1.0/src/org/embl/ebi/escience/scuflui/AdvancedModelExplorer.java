@@ -383,6 +383,10 @@ public class AdvancedModelExplorer extends JPanel
 	return "Advanced model explorer";
     }
 
+    public ImageIcon getIcon() {
+	return ScuflIcons.windowExplorer;
+    }
+
     public void attachToModel(ScuflModel theModel) {
 	explorer.attachToModel(theModel);
     }

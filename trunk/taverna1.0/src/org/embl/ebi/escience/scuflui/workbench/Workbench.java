@@ -276,7 +276,14 @@ public class Workbench extends JFrame {
 	    final String itemName = (String)i.next();
 	    try {
 		final Class itemClass = Class.forName((String)registry.getComponents().get(itemName));
-		JMenuItem menuItem = new JMenuItem(itemName);
+		final ImageIcon itemIcon = (ImageIcon)registry.getIcons().get(itemName);
+		JMenuItem menuItem = null;
+		if (itemIcon == null) {
+		    menuItem = new JMenuItem(itemName);
+		}
+		else {
+		    menuItem = new JMenuItem(itemName, itemIcon);
+		}
 		menuItem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ae) {
 			    try {

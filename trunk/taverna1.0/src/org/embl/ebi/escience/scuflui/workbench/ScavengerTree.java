@@ -32,6 +32,7 @@ import java.util.Set;
 import java.util.HashSet;
 import java.util.Enumeration;
 
+import org.embl.ebi.escience.scuflui.*;
 import org.embl.ebi.escience.scuflui.workbench.Scavenger;
 import org.embl.ebi.escience.scuflui.workbench.ScavengerCreationException;
 import org.embl.ebi.escience.scuflui.workbench.ScavengerTreePopupHandler;
@@ -369,6 +370,10 @@ public class ScavengerTree extends JTree
      */
     public String getName() {
 	return "Available services";
+    }
+
+    public javax.swing.ImageIcon getIcon() {
+	return ScuflIcons.windowScavenger;
     }
 
 }

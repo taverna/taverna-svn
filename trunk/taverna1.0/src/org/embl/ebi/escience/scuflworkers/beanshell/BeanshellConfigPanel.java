@@ -192,4 +192,8 @@ public class BeanshellConfigPanel extends JPanel implements ScuflUIComponent {
     public String getName() {
 	return "Configuring beanshell for "+processor.getName();
     }
+
+    public javax.swing.ImageIcon getIcon() {
+	return null;
+    }
 }

@@ -18,7 +18,7 @@ import java.lang.ClassNotFoundException;
  */
 public class ScuflIcons {
 
-    public static ImageIcon inputIcon, outputIcon, inputPortIcon, outputPortIcon, dataLinkIcon, constraintIcon, deleteIcon, zoomIcon, webIcon, openIcon, runIcon, refreshIcon, editIcon, classIcon, selectedClassIcon, findIcon, folderOpenIcon, folderClosedIcon, newInputIcon, newListIcon, inputValueIcon, xmlNodeIcon, leafIcon;
+    public static ImageIcon inputIcon, outputIcon, inputPortIcon, outputPortIcon, dataLinkIcon, constraintIcon, deleteIcon, zoomIcon, webIcon, openIcon, runIcon, refreshIcon, editIcon, classIcon, selectedClassIcon, findIcon, folderOpenIcon, folderClosedIcon, newInputIcon, newListIcon, inputValueIcon, xmlNodeIcon, leafIcon, windowRun, windowScavenger, windowInput, windowDiagram, windowExplorer;
 
     static {
 	// Load the image files found in this package into the class.
@@ -47,6 +47,11 @@ public class ScuflIcons {
 	    inputValueIcon = new ImageIcon(c.getResource("inputValue.gif"));
 	    xmlNodeIcon = new ImageIcon(c.getResource("xml_node.gif"));
 	    leafIcon = new ImageIcon(c.getResource("leaf.gif"));
+	    windowRun = new ImageIcon(c.getResource("windows/run.gif"));
+	    windowScavenger = new ImageIcon(c.getResource("windows/scavenger.gif"));
+	    windowInput = new ImageIcon(c.getResource("windows/input.gif"));
+	    windowDiagram = new ImageIcon(c.getResource("windows/diagram.gif"));
+	    windowExplorer = new ImageIcon(c.getResource("windows/advancedModel.gif"));
 	}
 	catch (ClassNotFoundException cnfe) {
 	    //

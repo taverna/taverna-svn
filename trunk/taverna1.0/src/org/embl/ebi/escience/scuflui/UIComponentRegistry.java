@@ -18,6 +18,7 @@ public class UIComponentRegistry {
     private static Logger log = Logger.getLogger(UIComponentRegistry.class);
     private static UIComponentRegistry instance;
     private Map components;
+    private Map icons;
 
     public static synchronized UIComponentRegistry instance() {
 	if (instance == null) {
@@ -29,6 +30,7 @@ public class UIComponentRegistry {
     
     public UIComponentRegistry() {
 	components = new HashMap();
+	icons = new HashMap();
     }
     
     public void loadInstances(ClassLoader classLoader) {
@@ -43,12 +45,18 @@ public class UIComponentRegistry {
 	    String componentDisplayName = component.getName();
 	    components.put(componentDisplayName,
 			   componentClassName);
+	    icons.put(componentDisplayName,
+		      component.getIcon());
 	}
 	log.info("Done");
     }
 
     public Map getComponents() {
 	return this.components;
+    }
+
+    public Map getIcons() {
+	return this.icons;
     }
 
 }

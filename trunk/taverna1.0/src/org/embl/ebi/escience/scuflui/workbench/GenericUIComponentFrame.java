@@ -32,6 +32,9 @@ public class GenericUIComponentFrame extends JInternalFrame {
 	super(component.getName(), true, true, true, true);
 	this.component = component;
 	JScrollPane pane = new JScrollPane((JComponent)component);
+	if (component.getIcon() != null) {
+	    setFrameIcon(component.getIcon());
+	}
 	getContentPane().add(pane);
 	//pane.getViewport().setBackground(Color.WHITE);
 	// Bind to the specified model
