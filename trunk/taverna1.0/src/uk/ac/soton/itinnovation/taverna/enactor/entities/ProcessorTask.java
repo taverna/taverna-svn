@@ -24,9 +24,9 @@
 //      Created for Project :   MYGRID
 //      Dependencies        :
 //
-//      Last commit info    :   $Author: cgreenhalgh $
-//                              $Date: 2004-10-01 12:21:41 $
-//                              $Revision: 1.59 $
+//      Last commit info    :   $Author: mereden $
+//                              $Date: 2004-10-03 21:49:03 $
+//                              $Revision: 1.60 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 package uk.ac.soton.itinnovation.taverna.enactor.entities;
@@ -298,7 +298,9 @@ public class ProcessorTask extends AbstractTask {
 		    targetInputName = originalInputName;
 		}
 		////System.out.println("Mapping input name '"+originalInputName+"' to processor port '"+targetInputName+"'");
-		taskInput.put(targetInputName, inputItem);
+		if (inputItem != null) {
+		    taskInput.put(targetInputName, inputItem);
+		}
 	    }
 	    output = doInvocationWithRetryLogic(worker, taskInput);
 	}
