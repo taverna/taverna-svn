@@ -209,6 +209,8 @@ public class WSDLBasedProcessor extends Processor implements java.io.Serializabl
      */
     public Properties getProperties() {
 	Properties props = new Properties();
+	props.put("wsdlLocation",getWSDLLocation());
+	props.put("operation",getOperationName());
 	return props;
     } 
     

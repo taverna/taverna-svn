@@ -25,8 +25,8 @@
 //      Dependencies        :
 //
 //      Last commit info    :   $Author: mereden $
-//                              $Date: 2003-10-09 12:19:32 $
-//                              $Revision: 1.3 $
+//                              $Date: 2003-10-13 16:43:23 $
+//                              $Revision: 1.4 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 
@@ -81,6 +81,7 @@ public class SoaplabTask extends ProcessorTask{
 	    
 	    // Invoke the web service...
 	    Call call = (Call) new Service().createCall();
+	    call.setTimeout(new Integer(0));
 	    URL soaplabWSDLURL = ((SoaplabProcessor) proc).getEndpoint();
 	    String soaplabWSDL = soaplabWSDLURL.toExternalForm();
 	    call.setTargetEndpointAddress(soaplabWSDLURL);

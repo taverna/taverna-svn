@@ -80,6 +80,9 @@ public class ScuflModelExplorerRenderer extends DefaultTreeCellRenderer {
 	else if (userObject instanceof DataConstraint) {
 	    setIcon(ScuflIcons.dataLinkIcon);
 	}
+	else if (((DefaultMutableTreeNode)value).isLeaf()) {
+	    setIcon(closedIcon);
+	}
 	return this;
     }
 }

@@ -25,8 +25,8 @@
 //      Dependencies        :
 //
 //      Last commit info    :   $Author: mereden $
-//                              $Date: 2003-10-10 17:42:51 $
-//                              $Revision: 1.6 $
+//                              $Date: 2003-10-13 16:43:23 $
+//                              $Revision: 1.7 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 
@@ -104,7 +104,7 @@ public class WSDLInvocationTask extends ProcessorTask  {
 		    System.out.println("Data thing for port "+p.getInputPorts()[i].getName());
 		    System.out.println(theData.getDataObject());
 		}
-		
+		call.setTimeout(new Integer(0));
 		Object ret = call.invoke(args);
 		Map outputs = call.getOutputParams();
 		HashMap map = new HashMap();

@@ -25,8 +25,8 @@
 //      Dependencies        :
 //
 //      Last commit info    :   $Author: mereden $
-//                              $Date: 2003-10-09 12:19:32 $
-//                              $Revision: 1.21 $
+//                              $Date: 2003-10-13 16:43:23 $
+//                              $Revision: 1.22 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 
@@ -56,6 +56,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 
 // JDOM Imports
 import org.jdom.Document;
@@ -340,6 +341,16 @@ public class TavernaFlowReceipt extends WSFlowReceipt {
 		Element faultElement = theProcessorTask.getFaultElement();
 		if (faultElement != null) {
 		    processor.addContent(faultElement);
+		}
+		Element processorProperties = new Element("processorProperties", provNS);
+		Properties theProperties = theProcessorTask.getProcessor().getProperties();
+		for (Iterator j = theProperties.keySet().iterator(); j.hasNext();) {
+		    Element propertyElement = new Element("property", provNS);
+		    String key = (String)j.next();
+		    String value = (String)theProperties.get(key);
+		    propertyElement.setText(value);
+		    propertyElement.setAttribute("name", key);
+		    processorProperties.addContent(propertyElement);
 		}
 		Element invocationDetail = new Element("invocationDetail", provNS);
 		invocationDetail.addContent(theProcessorTask.getProvenance());
