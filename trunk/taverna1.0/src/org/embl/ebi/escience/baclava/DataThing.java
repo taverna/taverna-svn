@@ -15,6 +15,8 @@ import org.embl.ebi.escience.scufl.SemanticMarkup;
 // Utility Imports
 import java.util.*;
 
+import java.net.URL;
+
 import java.io.*;
 
 // JDOM Imports
@@ -58,7 +60,25 @@ public class DataThing {
     private static String[] interestingTypes = new String[]{"text/html","text/xml","text/rtf","text/x-graphviz",
 						   "image/png","image/jpeg","image/gif","application/zip","text/plain"};
     
+    public static Properties mimeTypes = new Properties();
+    
     static {
+	// Get the mimetypes.properties data
+	try {
+	    ClassLoader loader = DataThing.class.getClassLoader();
+	    if (loader == null) {
+		loader = Thread.currentThread().getContextClassLoader();
+	    }
+	    Enumeration en = loader.getResources("mimetypes.properties");
+	    while (en.hasMoreElements()) {
+		URL resourceURL = (URL)en.nextElement();
+		mimeTypes.load(resourceURL.openStream());
+	    }
+	}
+	catch (Exception ex) {
+	    System.out.println("Unable to get mime type information.");
+	    ex.printStackTrace();
+	}
 	// Interrogate the system properties and instantiate
 	// a single static instance of the LSIDProvider
 	// implementation if such is found, otherwise leave
