@@ -25,8 +25,8 @@
 //      Dependencies        :
 //
 //      Last commit info    :   $Author: mereden $
-//                              $Date: 2004-01-05 13:52:03 $
-//                              $Revision: 1.26 $
+//                              $Date: 2004-01-09 16:00:29 $
+//                              $Revision: 1.27 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 package uk.ac.soton.itinnovation.taverna.enactor.entities;
@@ -151,7 +151,7 @@ public abstract class ProcessorTask extends TavernaTask{
 		    String portType = inputPortTask.getScuflPort().getSyntacticType().split("\\'")[0];
 		    if (dataType.equals(portType) == false) {
 			implicitIteration = true;
-			System.out.println("Found a type mismatch, will need the implicit iteration.");
+			//System.out.println("Found a type mismatch, will need the implicit iteration.");
 		    }	    
 		    
 		    inputMap.put(portName, dataThing);

@@ -190,7 +190,7 @@ public class WSDLBasedProcessor extends Processor implements java.io.Serializabl
 	}
 	catch (Exception e) {
 	    e.printStackTrace();
-	    ProcessorCreationException pce = new ProcessorCreationException("Problem initialising from wsdl...");
+	    ProcessorCreationException pce = new ProcessorCreationException("Problem initialising from wsdl at "+wsdlLocation);
 	    pce.initCause(e);
 	    throw pce;
 	}
