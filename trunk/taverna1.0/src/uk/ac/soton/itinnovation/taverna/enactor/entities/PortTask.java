@@ -26,8 +26,8 @@
 //      Dependencies        :
 //
 //      Last commit info    :   $Author: mereden $
-//                              $Date: 2004-03-04 23:12:34 $
-//                              $Revision: 1.26 $
+//                              $Date: 2004-05-26 17:24:08 $
+//                              $Revision: 1.27 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 
@@ -115,6 +115,7 @@ public class PortTask extends TavernaTask {
      * @param newDataThing holder for data
      */
     public synchronized void setData(DataThing newDataThing) {
+	System.out.println("Pushing data into port task "+getScuflPort().getProcessor().getName()+"."+getScuflPort().getName());
 	// Check whether the new data is a lower dimension than
 	// the type of this port task
 	String portSyntaxType = thePort.getSyntacticType();
@@ -166,7 +167,7 @@ public class PortTask extends TavernaTask {
 		SemanticMarkup portMarkup = targetMetadataPort.getMetadata();
 		String[] portMIMETypes = portMarkup.getMIMETypes();
 		for (int i = 0; i < portMIMETypes.length; i++) {
-		    System.out.println("Adding mime type "+portMIMETypes[i]+" to "+((Object)theDataThing).toString());
+		    //System.out.println("Adding mime type "+portMIMETypes[i]+" to "+((Object)theDataThing).toString());
 		    this.theDataThing.getMetadata().addMIMEType(portMIMETypes[i]);
 		}
 		// Copy any semantic markup into the markup object as well
@@ -176,7 +177,7 @@ public class PortTask extends TavernaTask {
 	    SemanticMarkup portMarkup = getScuflPort().getMetadata();
 	    String[] portMIMETypes = portMarkup.getMIMETypes();
 	    for (int i = 0; i < portMIMETypes.length; i++) {
-		System.out.println("Adding mime type "+portMIMETypes[i]+" to "+((Object)theDataThing).toString());
+		//System.out.println("Adding mime type "+portMIMETypes[i]+" to "+((Object)theDataThing).toString());
 		this.theDataThing.getMetadata().addMIMEType(portMIMETypes[i]);
 	    }
 	}
@@ -229,6 +230,7 @@ public class PortTask extends TavernaTask {
 					   "No data for port " + thePort.getName() + ",please check its links");
 	    }	
 	    else {
+		System.out.println("Invoking : "+getScuflPort().getProcessor().getName()+"."+getScuflPort().getName());
 		GraphNode[] chds = getChildren();
 		for(int i=0;i<chds.length;i++) {
 		    if(chds[i] instanceof PortTask) {
@@ -249,6 +251,7 @@ public class PortTask extends TavernaTask {
 				       TaskStateMessage.FAILED, 
 				       ex.getMessage());
 	}
+	System.out.println("Done : "+getScuflPort().getProcessor().getName()+"."+getScuflPort().getName());
 	return msg;
     }
 

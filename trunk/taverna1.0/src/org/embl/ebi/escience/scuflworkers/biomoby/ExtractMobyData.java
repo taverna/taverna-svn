@@ -42,6 +42,7 @@ public class ExtractMobyData implements LocalWorker {
     }
     
     public Map execute(Map inputs) throws TaskExecutionException {
+	System.out.println("Entering moby parse stage");
 	// Must contain a single input called mobydata, if not
 	// then complain
 	if (inputs.containsKey("mobydata")==false) {
@@ -86,6 +87,7 @@ public class ExtractMobyData implements LocalWorker {
 	results.put("namespace",new DataThing(namespaceValue));
 	results.put("value",new DataThing(mobyDataElement.getTextTrim()));
 	results.put("type",new DataThing(mobyDataElement.getName()));
+	System.out.println("Returning parsed results");
 	return results;
 	    
     }

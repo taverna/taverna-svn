@@ -25,8 +25,8 @@
 //      Dependencies        :
 //
 //      Last commit info    :   $Author: mereden $
-//                              $Date: 2004-04-06 10:46:30 $
-//                              $Revision: 1.46 $
+//                              $Date: 2004-05-26 17:24:08 $
+//                              $Revision: 1.47 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 package uk.ac.soton.itinnovation.taverna.enactor.entities;
@@ -140,6 +140,7 @@ public class ProcessorTask extends TavernaTask{
      */
     public TaskStateMessage doTask() {
 	try {
+	    System.out.println("Invoking processor task for "+activeProcessor.getName());
 	    // The default processor will have been scheduled by the
 	    // constructor to this class so we can get on and do stuff.
 	    for (int i = -1; i < proc.getAlternatesArray().length; i++) {

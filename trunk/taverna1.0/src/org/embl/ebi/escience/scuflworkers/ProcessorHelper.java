@@ -78,7 +78,9 @@ public class ProcessorHelper {
     try {
       // Get the classloader for this class
       ClassLoader loader = ProcessorHelper.class.getClassLoader();
-
+      if (loader == null) {
+	  loader = Thread.currentThread().getContextClassLoader();
+      }
       // Load the 'unknown processor' image icon
       unknownProcessorIcon = new ImageIcon(loader.getResource("org/embl/ebi/escience/scuflui/unknownprocessor.gif"));
       // Load up the values from any taverna.properties files located

@@ -257,7 +257,7 @@ public class DataThing {
 
     public String getMostInterestingMIMETypeForObject(Object o) {
 	String typeString = getSyntacticTypeForObject(o);
-	System.out.println("Got types : "+typeString);
+	//System.out.println("Got types : "+typeString);
 	String mimeTypes = typeString.split("'")[1].toLowerCase();
 	for (int i = 0; i < interestingTypes.length; i++) {
 	    if (mimeTypes.matches(".*"+interestingTypes[i]+".*")) {
