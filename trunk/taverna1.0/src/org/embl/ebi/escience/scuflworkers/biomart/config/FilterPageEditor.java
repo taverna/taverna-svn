@@ -213,6 +213,9 @@ public class FilterPageEditor extends JPanel {
 		    else if (filterType.equals("id_list")) {
 			filterEditor = new IDListFilterEditor(query, fd);
 		    }
+		    else if (filterType.equals("tree")) {
+			filterEditor = new TreeFilterEditor(query, fd);
+		    }
 		    else {
 			filterEditor = new ToDoMessage(filterType);
 		    }
@@ -323,6 +326,200 @@ public class FilterPageEditor extends JPanel {
 	}
 
     }
+
+    class TreeFilterEditor extends FilterEditor {
+	
+	Option currentSelectedOption = null;
+	private JTextField optionDisplay = new JTextField("No filter");
+	private JPopupMenu theMenu = new JPopupMenu();
+	JButton menuButton = new JButton("Choose...");
+	boolean hasAssignedValue = false;
+
+	private Set idSet = new HashSet();
+	private Map valueToOption = new HashMap();
+	
+	private Query query;
+	private FilterDescription fd;
+
+	public TreeFilterEditor(Query theQuery, FilterDescription filterDescription) {
+	    super(new BorderLayout());
+	    
+	    setOpaque(false);
+	    
+	    query = theQuery;
+	    fd = filterDescription;
+	    
+	    // Disabled by default, will be enabled by the setOptions call
+	    // if appropriate.
+	    menuButton.setEnabled(false);
+	    menuButton.setOpaque(false);
+	    
+	    // Initialise everything
+	    setOptions(fd.getOptions());
+	    
+	    menuButton.addActionListener(new ActionListener() {
+		    public void actionPerformed(ActionEvent ae) {
+			// Show choice menu
+			theMenu.show(menuButton, 0, 20);
+		    }
+		});
+	    optionDisplay.setEditable(false);
+
+	    JPanel internalPanel = new JPanel(new BorderLayout());
+	    internalPanel.setOpaque(false);
+
+	    add(Box.createRigidArea(new Dimension(10,10)),
+		BorderLayout.WEST);
+	    add(Box.createRigidArea(new Dimension(10,10)),
+		BorderLayout.EAST);
+	    internalPanel.add(new JLabel(filterDescription.getDisplayName()),
+		BorderLayout.NORTH);
+	    internalPanel.add(menuButton,
+		BorderLayout.WEST);
+	    internalPanel.add(optionDisplay,
+		BorderLayout.CENTER);
+	    add(internalPanel,
+		BorderLayout.CENTER);
+	    optionDisplay.setMaximumSize(new Dimension(400,20));
+	    setMaximumSize(new Dimension(6000,40));
+	    
+	}
+	
+	/**
+	 * Set the current options and update
+	 * the display from any preexisting filter
+	 */
+	public void setOptions(Option[] options) {
+	    
+	    BasicFilter currentFilter = getCurrentFilter();
+	    if (currentFilter != null && menuButton.isEnabled()) {
+		query.removeFilter(currentFilter);
+	    }
+	    
+	    // Clear set and map
+	    idSet = new HashSet();
+	    valueToOption = new HashMap();
+	    theMenu.removeAll();
+	    theMenu.add(new ShadedLabel("Pick option :", ShadedLabel.TAVERNA_GREEN));
+	    theMenu.addSeparator();
+	    // currentSelectedOption = null;
+	    JMenuItem nullOptionItem = new JMenuItem("No Filter");
+	    nullOptionItem.addActionListener(new ActionListener() {
+		    public void actionPerformed(ActionEvent ae) {
+			setOption(null);
+		    }
+		});
+	    theMenu.add(nullOptionItem);
+	    
+	    if (options != null && options.length > 0) {
+		menuButton.setEnabled(true);
+		optionDisplay.setEnabled(true);
+		for (int i = 0; i < options.length; i++) {
+		    theMenu.add(buildSubMenu(options[i]));
+		}
+	    }
+	    else {
+		menuButton.setEnabled(false);
+		optionDisplay.setEnabled(false);
+	    }		   
+	    
+	    // Get the current filter (if any) in light of new option set
+	    currentFilter = getCurrentFilter();
+	    if (currentFilter != null) {
+		setOption((Option)valueToOption.get(currentFilter.getValue()));
+	    }
+	    else {
+		setOption(null);
+	    }
+	    
+	}
+
+	/**
+	 * Get the current filter or null if none applicable
+	 */
+	private BasicFilter getCurrentFilter() {
+	    Filter[] currentFilters = query.getFilters();
+	    for (int i = 0; i < currentFilters.length; i++) {
+		String filterKey = (currentFilters[i].getField()+
+				    currentFilters[i].getKey()+
+				    currentFilters[i].getTableConstraint());
+		if (idSet.contains(filterKey) && 
+		    currentFilters[i] instanceof BasicFilter) {
+		    return (BasicFilter)currentFilters[i]; 
+		}
+	    }
+	    return null;
+	}
+
+	/**
+	 * Recursively build the option menu including
+	 * a default null option
+	 */
+	private Component buildSubMenu(Option option) {
+	    if (option.getOptions().length == 0) {
+		final Option theOption = option;
+		// Leaf node, create action listener
+		JMenuItem optionItem = new JMenuItem(theOption.getDisplayName());
+		String itemID = (theOption.getFieldFromContext()+
+				 theOption.getKeyFromContext()+
+				 theOption.getTableConstraint());
+		idSet.add(itemID);
+		valueToOption.put(theOption.getValue(), theOption);
+		optionItem.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent ae) {
+			    setOption(theOption);
+			}
+		    });
+		return optionItem;
+	    }
+	    else {
+		Option[] subOptions = option.getOptions();
+		JMenu subMenu = new JMenu(option.getDisplayName());
+		for (int i = 0; i < subOptions.length; i++) {
+		    subMenu.add(buildSubMenu(subOptions[i]));
+		}
+		return subMenu;
+	    }
+	}
+
+	/**
+	 * Set the current option
+	 */
+	private void setOption(Option newOption) {
+	    if (newOption != currentSelectedOption) {
+		currentSelectedOption = newOption;
+		unassignPushOptions();
+		BasicFilter currentFilter = getCurrentFilter();
+		if (newOption == null) {
+		    if (currentFilter != null && menuButton.isEnabled()) {
+			query.removeFilter(currentFilter);
+		    }
+		    optionDisplay.setText("No filter");
+		    System.out.println("Option set to null");
+		    return;
+		}
+		BasicFilter newFilter = new BasicFilter(newOption.getFieldFromContext(),
+							newOption.getTableConstraintFromContext(),
+							newOption.getKeyFromContext(),
+							"=",
+							newOption.getValueFromContext(),
+							newOption.getHandlerFromContext());
+		if (currentFilter == null) {
+		    query.addFilter(newFilter);
+		}
+		else {
+		    query.replaceFilter(currentFilter, newFilter);
+		}
+		assignPushOptions(newOption.getPushActions());
+		hasAssignedValue = true;
+		System.out.println("Option assigned as : "+newOption.getDisplayName());
+		optionDisplay.setText(newOption.getDisplayName());
+	    }
+	}
+	
+    }
+
+
 
     class IDListFilterEditor extends FilterEditor {
 
@@ -614,7 +811,7 @@ public class FilterPageEditor extends JPanel {
 	    for (int i = 0; i < options.length; i++) {
 		//System.out.println("  Trying option "+options[i].getDisplayName());
 		PushAction[] optionPushes = options[i].getPushActions();
-		boolean found = true;
+		boolean found = false;
 		List actionsToUndo = new ArrayList();
 		for (int j = 0; j < optionPushes.length; j++) {
 		    PushOptionsHandler poh = new PushOptionsHandler(optionPushes[j]);
@@ -631,18 +828,38 @@ public class FilterPageEditor extends JPanel {
 			    poh.push();
 			    // System.out.println(lfe.list.getSelectedItem());
 			    if (((OptionHolder)lfe.list.getSelectedItem()).option == null) {
-				found = false;
+				// found = false;
+			    }
+			    else {
+				found = true;
 			    }
 			}
 			else {
 			    // System.out.println("List already populated");
 			}
 		    }
+		    if (fe instanceof TreeFilterEditor) {
+			TreeFilterEditor tfe = (TreeFilterEditor)fe;
+			if (tfe.hasAssignedValue == false) {
+			    actionsToUndo.add(poh);
+			    poh.push();
+			    if (tfe.hasAssignedValue == false) {
+				//found = false;
+				//tfe.menuButton.setEnabled(false);
+			    }
+			    else {
+				found = true;
+			    }
+			}
+		    }
 		}
 		if (!found) {
 		    for (Iterator j = actionsToUndo.iterator(); j.hasNext();) {
 			PushOptionsHandler poh = (PushOptionsHandler)j.next();
-			((ListFilterEditor)poh.getTargetEditor()).list.setEnabled(false);
+			FilterEditor fe = poh.getTargetEditor();
+			if (fe instanceof ListFilterEditor) {
+			    ((ListFilterEditor)fe).list.setEnabled(false);
+			}
 			poh.remove();
 		    }
 		}
@@ -708,7 +925,7 @@ public class FilterPageEditor extends JPanel {
 			}
 			if (oh != emptySelection) {
 			    Option o = oh.option;
-			    System.out.println(o);
+			    //System.out.println(o);
 			    if (o.getValue() != null) {
 				Filter newFilter = new BasicFilter(o.getFieldFromContext(),
 								   o.getTableConstraintFromContext(),
@@ -716,7 +933,7 @@ public class FilterPageEditor extends JPanel {
 								   "=",
 								   o.getValue(),
 								   o.getHandlerFromContext());
-				System.out.println(newFilter);
+				//System.out.println(newFilter);
 				query.addFilter(newFilter);
 			    }
 			    assignPushOptions(o.getPushActions());
