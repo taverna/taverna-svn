@@ -34,6 +34,7 @@ import org.emboss.jemboss.gui.startup.ProgList;
 
 // Utility Imports
 import java.util.Hashtable;
+import java.util.Vector;
 import java.util.List; // ambiguous with: java.awt.List 
 import java.util.Map;
 
@@ -68,6 +69,7 @@ public class ScuflGraph extends JGraph
     private static Font font = new Font("Monospaced",
                       Font.PLAIN, fontSize);
     private DataSet dataSet = new DataSet();
+    private Vector soapLabProcessorNameStore = new Vector();
 
     // Construct the Graph using the Model as its Data Source
     public ScuflGraph(GraphModel model, ProgList progs) 
@@ -272,6 +274,7 @@ public class ScuflGraph extends JGraph
       {
         Point p = new Point(xpos,ypos+=20);
         xpos += insertCell(p,proc[i],proc[i].getName());
+        soapLabProcessorNameStore.add(proc[i].getName());
       }
 
       // connect data links between processor ports
@@ -381,7 +384,7 @@ public class ScuflGraph extends JGraph
         try
         {
           Processor proc = addSoaplabProcessor(group,name);
-          insertCell(point,proc,name);
+          insertCell(point,proc,proc.getName());
         }
         catch(DuplicateProcessorNameException dpne)
         {
@@ -552,14 +555,21 @@ public class ScuflGraph extends JGraph
     public SoaplabProcessor addSoaplabProcessor(String group, String name)
                                          throws DuplicateProcessorNameException, Exception
     {
+
+        String serviceName = name;
+        if(soapLabProcessorNameStore.contains(name))
+          name = getUniqueProcessorName(name);
+
         SoaplabProcessor processor = null;
         String procName = name;
+        soapLabProcessorNameStore.add(name);
+
         // Attempt to create a new SoaplabProcessor
         try
         {
           processor = new SoaplabProcessor(scuflModel,procName,
-//                     "http://u.hgmp.mrc.ac.uk:8080/axis/services/"+group+"::"+name);
-                       "http://industry.ebi.ac.uk/soap/soaplab/"+group+"::"+name);
+//                     "http://u.hgmp.mrc.ac.uk:8080/axis/services/"+group+"::"+serviceName);
+                       "http://industry.ebi.ac.uk/soap/soaplab/"+group+"::"+serviceName);
 
           scuflModel.addProcessor(processor);
           System.out.println("Finished test : SoaplabProcessorCreation");
@@ -567,17 +577,27 @@ public class ScuflGraph extends JGraph
         {
           System.out.println("ProcessorCreationException addProcessor exception thrown");
         }
-//      catch(DuplicateProcessorNameException dpne)
-//      {
-//        System.out.println("DuplicateProcessorNameException addProcessor exception thrown");
-//      }
-//      catch(Exception exp)
-//      {
-//        System.out.println("addProcessor exception thrown");
-//      }
 
-//      System.out.println("Finished test : SoaplabProcessorCreation");
         return processor;
+    }
+
+    /**
+    *
+    * Get a unique processor name based on the program
+    * name
+    * @param name	name of program
+    * @return		unique processor name
+    *
+    */
+    private String getUniqueProcessorName(String name)
+    {
+      int num = 1;
+      String newName = name;
+
+      while(soapLabProcessorNameStore.contains(newName))
+        newName = name + num++;
+
+      return newName;
     }
 
 // ScuflUIComponent
