@@ -25,8 +25,8 @@
 //      Dependencies        :
 //
 //      Last commit info    :   $Author: mereden $
-//                              $Date: 2003-10-13 16:43:23 $
-//                              $Revision: 1.22 $
+//                              $Date: 2003-10-13 17:01:33 $
+//                              $Revision: 1.23 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 
@@ -352,6 +352,7 @@ public class TavernaFlowReceipt extends WSFlowReceipt {
 		    propertyElement.setAttribute("name", key);
 		    processorProperties.addContent(propertyElement);
 		}
+		processor.addContent(processorProperties);
 		Element invocationDetail = new Element("invocationDetail", provNS);
 		invocationDetail.addContent(theProcessorTask.getProvenance());
 		processor.addContent(invocationDetail);
