@@ -150,7 +150,7 @@ public class ScuflModel
 	else {
 	    this.isFiringEvents = reportEvents;
 	    if (this.isFiringEvents) {
-		fireModelEvent(new ScuflModelEvent(this,"Event reporting re-enabled, forcing update"));
+		fireModelEvent(new ScuflModelEvent(this,"Event reporting re-enabled, forcing update", ScuflModelEvent.LOAD));
 	    }
 	}
     }

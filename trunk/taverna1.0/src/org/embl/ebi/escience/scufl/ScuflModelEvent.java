@@ -12,8 +12,13 @@ package org.embl.ebi.escience.scufl;
  */
 public class ScuflModelEvent {
 
+    public static int UNKNOWN = 0;
+    public static int LOAD = 1;
+
     Object source = null;
     private String message = null;
+    int eventType = UNKNOWN;
+    
 
     /**
      * Construct a new event, the object generating the
@@ -21,6 +26,13 @@ public class ScuflModelEvent {
      * may optionally supply a textual message as well
      */
     public ScuflModelEvent(Object source, String message) {
+	this(source, message, UNKNOWN);
+    }
+
+    /**
+     * Construct a new event with the specified event type
+     */
+    public ScuflModelEvent(Object source, String message, int eventType) {
 	this.source = source;
 	if (message != null) {
 	    this.message = message;
@@ -28,6 +40,7 @@ public class ScuflModelEvent {
 	else {
 	    this.message = "ScuflModelEvent : No message provided";
 	}
+	this.eventType = eventType;
     }
 
     /**
@@ -35,6 +48,13 @@ public class ScuflModelEvent {
      */
     public String getMessage() {
 	return this.message;
+    }
+
+    /**
+     * Get the event type
+     */
+    public int getEventType() {
+	return this.eventType;
     }
 
     /**

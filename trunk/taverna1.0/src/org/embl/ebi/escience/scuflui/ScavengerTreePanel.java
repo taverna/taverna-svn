@@ -29,7 +29,26 @@ public class ScavengerTreePanel extends JPanel
     ScavengerTree tree;
     JTextField regex = null;
     JButton find;
-
+    JCheckBox watchLoads = new JCheckBox("Watch loads",true);
+    boolean isWatchingLoads = true;
+    ScuflModelEventListener eventListener = new ScuflModelEventListener() {
+	    public void receiveModelEvent(ScuflModelEvent event) {
+		if (event.getEventType() == ScuflModelEvent.LOAD &&
+		    ScavengerTreePanel.this.isWatchingLoads) {
+		    new Thread() {
+			public void run() {
+			    try {
+				ScavengerTreePanel.this.tree.addScavengersFromModel();
+			    }
+			    catch (Exception ex) {
+				// Ignore silently
+			    }
+			}
+		    }.start();
+		}
+	    }
+	};
+    
     public ScavengerTreePanel() {
 	super();
 	setLayout(new BorderLayout());
@@ -50,8 +69,23 @@ public class ScavengerTreePanel extends JPanel
 	find.setEnabled(false);
 	toolbar.add(find);
 	toolbar.addSeparator();
+	toolbar.add(watchLoads);
 	toolbar.add(Box.createHorizontalGlue());
 	add(toolbar, BorderLayout.PAGE_START);
+	
+	// Add an event listener to kick the contained tree
+	// into fetching processor factories from loaded
+	// workflows if the watchLoads checkbox is true
+	watchLoads.addItemListener(new ItemListener() {
+		public void itemStateChanged(ItemEvent e) {
+		    if (e.getStateChange() == ItemEvent.DESELECTED) {
+			ScavengerTreePanel.this.isWatchingLoads = false;
+		    }
+		    else {		
+			ScavengerTreePanel.this.isWatchingLoads = true;
+		    }
+		}
+	    });
 	
 	// Add an action listener to the button to find the
 	// nodes matching the supplied regex.
@@ -151,13 +185,19 @@ public class ScavengerTreePanel extends JPanel
 	    }
 	}
     }
-
+    
+    private ScuflModel model = null;
+    
     public void attachToModel(ScuflModel model) {
+	this.model = model;
 	tree.attachToModel(model);
+	model.addListener(eventListener);
     }
     
     public void detachFromModel() {
+	model.removeListener(eventListener);
 	tree.detachFromModel();
+	this.model = null;
     }
 
     public String getName() {
