@@ -57,6 +57,7 @@ public abstract class Port implements java.io.Serializable {
      */
     void setSyntacticType(String new_type) {
 	if (new_type.equals(this.syntacticType)==false) {
+	    this.syntacticType = new_type;
 	    fireModelEvent(new ScuflModelEvent(this, "Syntactic type changed to '"+new_type+"'"));
 	}
     }

@@ -136,10 +136,16 @@ public class SoaplabProcessor extends Processor implements java.io.Serializable 
 	    // Iterate over the outputs
 	    for (Iterator i = results.keySet().iterator(); i.hasNext(); ) {
 		String output_name = (String)i.next();
-		String output_type = (String)results.get(output_name);
-		Port new_port = new OutputPort(this, output_name);
-		new_port.setSyntacticType(output_type);
-		this.addPort(new_port);
+		// Check to see whether the output is either report or detailed_status, in 
+		// which cases we ignore it, this is soaplab metadata rather than application
+		// data.
+		if ((!output_name.equalsIgnoreCase("detailed_status")) 
+		    && (!output_name.equalsIgnoreCase("report"))) {
+		    String output_type = (String)results.get(output_name);
+		    Port new_port = new OutputPort(this, output_name);
+		    new_port.setSyntacticType(output_type);
+		    this.addPort(new_port);
+		}
 	    }
 
 	}

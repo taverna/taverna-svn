@@ -8,6 +8,7 @@ package org.embl.ebi.escience.scufl;
 // Utility Imports
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.HashSet;
 
 import org.embl.ebi.escience.scufl.DuplicateProcessorNameException;
 import org.embl.ebi.escience.scufl.InputPort;
@@ -96,6 +97,65 @@ public abstract class Processor implements java.io.Serializable {
     public Port[] getPorts() {
 	return (Port[])(this.ports.toArray(new Port[0]));
     }
+
+    /**
+     * Get an array of the input ports that are bound
+     * by data constraints defined within this processor
+     */
+    public InputPort[] getBoundInputPorts() {
+	ArrayList temp = new ArrayList();
+	HashSet boundPorts = new HashSet();
+	// Iterate over all data constraints getting their
+	// sink ports, if the input port is bound then
+	// it'll be in the sink port of a constraint somewhere
+	DataConstraint dc[] = model.getDataConstraints();
+	for (int i = 0; i < dc.length; i++) {
+	    DataConstraint d = dc[i];
+	    boundPorts.add(d.getSink());
+	}
+	for (Iterator i = this.ports.iterator(); i.hasNext(); ) {
+	    try {
+		InputPort ip = (InputPort)i.next();
+		if (boundPorts.contains(ip)) {
+		    temp.add(ip);
+		}
+	    }
+	    catch (ClassCastException cce) {
+		//
+	    }
+	}
+	return (InputPort[])temp.toArray(new InputPort[0]);
+    }
+
+    /**
+     * Get an array of all the output ports that are bound
+     * by data constraints and defined within this processor
+     */
+    public OutputPort[] getBoundOutputPorts() {
+	ArrayList temp = new ArrayList();
+	HashSet boundPorts = new HashSet();
+	// Iterate over all data constraints getting their
+	// source ports, if the output port is bound then
+	// it'll be in the source port of a constraint somewhere
+	DataConstraint dc[] = model.getDataConstraints();
+	for (int i = 0; i < dc.length; i++) {
+	    DataConstraint d = dc[i];
+	    boundPorts.add(d.getSource());
+	}
+	for (Iterator i = this.ports.iterator(); i.hasNext(); ) {
+	    try {
+		OutputPort op = (OutputPort)i.next();
+		if (boundPorts.contains(op)) {
+		    temp.add(op);
+		}
+	    }
+	    catch (ClassCastException cce) {
+		//
+	    }
+	}
+	return (OutputPort[])temp.toArray(new OutputPort[0]);
+    }
+
 
     /**
      * Find a particular named port

@@ -18,7 +18,9 @@ import org.embl.ebi.escience.talisman.*;
  * Provides a Talisman action plugin that parses
  * an XScufl definition found in a named 'input' field and
  * writes the dot format representation of it into 
- * the 'output' field.
+ * the 'output' field. The 'ports' field must contain
+ * one of 'all','bound' or 'none', and sets the policy
+ * for displaying the ports within processors in the graph.
  * @author Tom Oinn
  */
 public class XScufl2Dot implements ActionWorker {
@@ -29,12 +31,22 @@ public class XScufl2Dot implements ActionWorker {
 	Trigger trigger = (Trigger)action.getParent();
 
 	// Get the fields
-	action.requireParameters("input,output");
+	action.requireParameters("input,output,ports");
 	Field input = Resolver.getField(action.props.getProperty("input"),action);
 	Field output = Resolver.getField(action.props.getProperty("output"),action);
+	String portPolicyString = Resolver.getFieldValue(action.props.getProperty("ports"),action);
+	
 
 	ScuflModel model = new ScuflModel();
 	DotView view = new DotView(model);
+	if (portPolicyString.equalsIgnoreCase("all")) {
+	    view.setPortDisplay(DotView.ALL);
+	}
+	if (portPolicyString.equalsIgnoreCase("bound")) {
+	    view.setPortDisplay(DotView.BOUND);
+	}
+	// Defaults to DotView.NONE
+
 	try {
 	    XScuflParser.populate(input.getValue(),model,null);
 	    output.setValue(view.getDot());

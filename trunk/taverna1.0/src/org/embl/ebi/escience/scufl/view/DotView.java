@@ -8,6 +8,7 @@ package org.embl.ebi.escience.scufl.view;
 import org.embl.ebi.escience.scufl.DataConstraint;
 import org.embl.ebi.escience.scufl.Processor;
 import org.embl.ebi.escience.scufl.ScuflModel;
+import org.embl.ebi.escience.scufl.Port;
 import org.embl.ebi.escience.scufl.ScuflModelEvent;
 import org.embl.ebi.escience.scufl.ScuflModelEventListener;
 
@@ -27,6 +28,11 @@ public class DotView implements ScuflModelEventListener {
     private ScuflModel model = null;
     private boolean cacheValid = false;
     private String cachedRepresentation = null;
+    private int portDisplay = DotView.NONE;
+
+    public static final int ALL = 0;
+    public static final int BOUND = 1;
+    public static final int NONE = 2;
 
     /**
      * Construct the view and attach it to the 
@@ -40,6 +46,17 @@ public class DotView implements ScuflModelEventListener {
 	this.cacheValid = false;
 	// Register ourselves as a listener
 	this.model.addListener(this);
+    }
+
+    /**
+     * Define whether we are looking at all,
+     * none or only bound input output ports
+     * in the view, using the DotView.ALL|BOUND|NONE
+     * constants.
+     */
+    public void setPortDisplay(int policy) {
+	this.cacheValid = false;
+	this.portDisplay = policy;
     }
 
     /**
@@ -58,11 +75,39 @@ public class DotView implements ScuflModelEventListener {
      */
     void generateDot() {
 	StringBuffer dot = new StringBuffer();
+
+	// Overall graph style
 	dot.append("digraph scufl_graph {\n");
 	dot.append(" graph [             \n");
 	dot.append("  style=\"\"         \n");
+	// Only set left to right view if using port views
+	if (this.portDisplay == DotView.ALL || this.portDisplay == DotView.BOUND) {
+	    dot.append("  rankdir=\"LR\"     \n");
+	}
 	dot.append(" ]                   \n"); 
 	
+	// Overall node style
+	dot.append(" node [              \n");
+	dot.append("  fontname=\"Courier\",         \n");
+	dot.append("  fontsize=\"10\",              \n");
+	dot.append("  fontcolor=\"black\",  \n");
+	// Only set record shape if we're using port views
+	if (this.portDisplay == DotView.ALL || this.portDisplay == DotView.BOUND) {
+	    dot.append("  shape=\"record\",             \n");
+	}
+	dot.append("  color=\"black\",               \n");
+	dot.append("  fillcolor=\"lightgoldenrodyellow\",\n");
+	dot.append("  style=\"filled\"  \n");
+	dot.append(" ];\n\n");
+  
+	// Overall edge style
+	dot.append(" edge [                         \n");
+	dot.append("  fontname=\"Courier\",         \n");
+	dot.append("  fontsize=\"10\",              \n");
+	dot.append("  fontcolor=\"black\",  \n");
+	dot.append("  color=\"black\"                \n");
+	dot.append(" ];\n\n");
+
 	// For each processor, create a named node
 	// Currently creates oval blobs per node,
 	// as and when I can get the dot manual to 
@@ -73,7 +118,58 @@ public class DotView implements ScuflModelEventListener {
 	    Processor p = processors[i];
 	    // Create the new node
 	    dot.append(" "+p.getName()+" [ \n");
-	    dot.append("  color = green  \n");
+	    // Create the label...
+	    dot.append("  label = \"");
+
+	    // Are we generating port views?
+	    if (this.portDisplay == DotView.ALL || this.portDisplay == DotView.BOUND) {
+		// Name of the node
+		dot.append("{"+p.getName().toUpperCase()+"}|{");
+				
+		// List of inputs
+		Port[] inputs = null;
+		if (this.portDisplay == DotView.ALL) {
+		    inputs = p.getInputPorts();
+		}
+		else {
+		    inputs = p.getBoundInputPorts();
+		}
+		
+		dot.append("{");
+		for (int j = 0; j<inputs.length; j++) {
+		    dot.append("<"+inputs[j].getName()+">"+inputs[j].getName());
+		    if (j < (inputs.length-1)) {
+			dot.append("|");
+		    }
+		}
+		dot.append("}|");
+		
+		// List of outputs
+		Port[] outputs = null;
+		if (this.portDisplay == DotView.ALL) {
+		    outputs = p.getOutputPorts();
+		}
+		else {
+		    outputs = p.getBoundOutputPorts();
+		}
+		dot.append("{");
+		for (int j = 0; j<outputs.length; j++) {
+		    dot.append("<"+outputs[j].getName()+">"+outputs[j].getName());
+		    if (j < (outputs.length-1)) {
+			dot.append("|");
+		    }
+		}
+		dot.append("}");
+		
+		dot.append("}");
+	    }
+	    else {
+		// Not generating the port view, just append the name of the
+		// node.
+		dot.append(p.getName());
+	    }
+	    // Close the label
+	    dot.append("\"\n");
 	    dot.append(" ];              \n");
 	}
 
@@ -86,8 +182,13 @@ public class DotView implements ScuflModelEventListener {
 	    String sourceProcessorName = dc.getSource().getProcessor().getName();
 	    String sinkPortName = dc.getSink().getName();
 	    String sinkProcessorName = dc.getSink().getProcessor().getName();
-	    dot.append(" "+sourceProcessorName+"->"+sinkProcessorName+" [ \n");
-	    dot.append("  label = \""+sourcePortName+" ->\\n"+sinkPortName+"\" \n");
+	    if (this.portDisplay == DotView.ALL || this.portDisplay == DotView.BOUND) {
+		dot.append(" "+sourceProcessorName+":"+sourcePortName+"->"+sinkProcessorName+":"+sinkPortName+" [ \n");
+	    }
+	    else {
+		dot.append(" "+sourceProcessorName+"->"+sinkProcessorName+" [ \n");
+	    }
+	    dot.append("  label = \""+dc.getSource().getSyntacticType()+"\"");
 	    dot.append(" ];\n");
 	}
 
