@@ -25,9 +25,9 @@
 //      Created for Project :   MYGRID
 //      Dependencies        :
 //
-//      Last commit info    :   $Author: mereden $
-//                              $Date: 2004-10-25 17:39:11 $
-//                              $Revision: 1.31 $
+//      Last commit info    :   $Author: ferris $
+//                              $Date: 2005-01-18 11:14:07 $
+//                              $Revision: 1.32 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 
@@ -281,7 +281,7 @@ public class PortTask extends AbstractTask {
 		Flow flow = getFlow();
 		String flowID = flow.getFlowId();
 		Engine e = flow.getEngine();
-		this.workflowInstance = (WorkflowInstance)new org.embl.ebi.escience.scufl.enactor.implementation.WorkflowInstanceImpl(e, flowID);
+		this.workflowInstance = (WorkflowInstance)new org.embl.ebi.escience.scufl.enactor.implementation.WorkflowInstanceImpl(e, thePort.getProcessor().getModel(), flowID);
                 //System.out.println("Invoking : "+getScuflPort().getProcessor().getName()+"."+getScuflPort().getName());
 		for(Iterator i = getChildren().iterator(); i.hasNext();) {
 		    Task task = (Task) i.next();

@@ -25,8 +25,8 @@
 //      Dependencies        :
 //
 //      Last commit info    :   $Author: ferris $
-//                              $Date: 2005-01-16 10:16:46 $
-//                              $Revision: 1.12 $
+//                              $Date: 2005-01-18 11:14:06 $
+//                              $Revision: 1.13 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 package org.embl.ebi.escience.scufl.enactor.implementation;
@@ -90,7 +90,7 @@ import java.lang.StringBuffer;
 public class WorkflowInstanceImpl implements WorkflowInstance {    
     private Logger logger = Logger.getLogger(getClass());
    
-    private EngineImpl engine;
+    private Engine engine;
     private String workflowInstanceId;
     private Map input;
     private WorkflowState state;
@@ -106,28 +106,14 @@ public class WorkflowInstanceImpl implements WorkflowInstance {
      * @param workflowInstanceId - the unique Id for the workflow instance
      * @exception WorkflowSubmitInvalidException thrown by the superclass
      */
-    public WorkflowInstanceImpl(Engine engine, String workflowInstanceId) {
-	this.engine = (EngineImpl)engine;
+    public WorkflowInstanceImpl(Engine engine, ScuflModel scuflModel, String workflowInstanceId) {
+        this.workflowModel = scuflModel;
         this.workflowInstanceId = workflowInstanceId;
+        this.engine = engine;
 	try {
-	    uk.ac.soton.itinnovation.freefluo.main.WorkflowInstance internalInstance = this.engine.getWorkflowInstance(workflowInstanceId);
-	    this.context = new SimpleUserContext(internalInstance.getFlowContext());
-	    // Get a reference to the Flow object, use this to find the starting tasks
-	    // and then do some unpleasant hacks from there to get the scufl model
-	    Flow flow = internalInstance.getFlow();
-	    Collection c = flow.getStartTasks();
-	    if (c.isEmpty() == false) {
-		Task t = (Task)c.iterator().next();
-		if (t instanceof ProcessorTask) {
-		    Processor p = ((ProcessorTask)t).getProcessor();
-		    this.workflowModel = p.getModel();
-		}
-		else if (t instanceof PortTask) {
-		    Port p = ((PortTask)t).getScuflPort();
-		    this.workflowModel = p.getProcessor().getModel();
-		}
-	    }
-	    // If there's a global LSID provider configured then use
+            this.context = new SimpleUserContext(engine.getFlowContext(workflowInstanceId));
+	    
+            // If there's a global LSID provider configured then use
 	    // it to get an LSID for the workflow instance class and
 	    // store it.
 	    if (DataThing.SYSTEM_DEFAULT_LSID_PROVIDER != null) {

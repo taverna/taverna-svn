@@ -25,8 +25,8 @@
 //      Dependencies        :
 //
 //      Last commit info    :   $Author: ferris $
-//                              $Date: 2005-01-10 14:12:21 $
-//                              $Revision: 1.66 $
+//                              $Date: 2005-01-18 11:14:07 $
+//                              $Revision: 1.67 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 package uk.ac.soton.itinnovation.taverna.enactor.entities;
@@ -157,7 +157,7 @@ public class ProcessorTask extends AbstractTask {
 	    Flow flow = getFlow();
 	    String flowID = flow.getFlowId();
 	    Engine e = flow.getEngine();
-	    this.workflowInstance = (WorkflowInstance)new org.embl.ebi.escience.scufl.enactor.implementation.WorkflowInstanceImpl(e, flowID);
+	    this.workflowInstance = (WorkflowInstance)new org.embl.ebi.escience.scufl.enactor.implementation.WorkflowInstanceImpl(e, activeProcessor.getModel(), flowID);
 	    // //System.out.println("Invoking processor task for "+activeProcessor.getName());
 	    // The default processor will have been scheduled by the
 	    // constructor to this class so we can get on and do stuff.
