@@ -70,14 +70,20 @@ public class BiomartTask implements ProcessorTaskWorker {
 		if (inputMap.containsKey(filterField+"_filter")) {
 		    DataThing filterThing = (DataThing)inputMap.get(filterField+"_filter");
 		    if (filters[i] instanceof BasicFilter) {
-			String filterValue = (String)filterThing.getDataObject();
-			BasicFilter newFilter = new BasicFilter(filters[i].getField(),
-								filters[i].getTableConstraint(),
-								filters[i].getKey(),
-								filters[i].getQualifier(),
-								filterValue,
-								filters[i].getHandler());
-			query.replaceFilter(filters[i], newFilter);
+			if (filters[i].getValue() == null) {
+			    // Remove the placeholder query
+			    query.removeFilter(filters[i]);
+			}
+			else {
+			    String filterValue = (String)filterThing.getDataObject();
+			    BasicFilter newFilter = new BasicFilter(filters[i].getField(),
+								    filters[i].getTableConstraint(),
+								    filters[i].getKey(),
+								    filters[i].getQualifier(),
+								    filterValue,
+								    filters[i].getHandler());
+			    query.replaceFilter(filters[i], newFilter);
+			}
 		    }
 		    else if (filters[i] instanceof IDListFilter) {
 			List idList = (List)filterThing.getDataObject();

@@ -255,7 +255,7 @@ public class FilterPageEditor extends JPanel {
 		this.optionPush = optionPush;
 	    }
 
-	    private FilterEditor getTargetEditor() {
+	    public FilterEditor getTargetEditor() {
 		FilterEditor fe = FilterEditor.this;
 		Component currentComponent = fe;
 		while (currentComponent instanceof FilterGroupEditor == false &&
@@ -520,6 +520,7 @@ public class FilterPageEditor extends JPanel {
     class ListFilterEditor extends FilterEditor {
 
 	String[] myIDs = new String[0];
+	Option[] myOptions = new Option[0];
 	public JComboBox list = new JComboBox();
 	Query query;
 	FilterDescription fd;
@@ -542,10 +543,11 @@ public class FilterPageEditor extends JPanel {
 	}
 
 	public void setOptions(Option[] options) {
+	    myOptions = options;
 	    System.out.println("Setting options for "+fd.getDisplayName());
 	    unassignPushOptions();
 	    BasicFilter currentFilter = getCurrentFilter();
-	    if (currentFilter != null) {
+	    if (currentFilter != null && list.isEnabled()) {
 		query.removeFilter(currentFilter);
 	    }
 	    if (options != null) {
@@ -565,9 +567,9 @@ public class FilterPageEditor extends JPanel {
 			    options[i].getKeyFromContext()+
 			    options[i].getTableConstraintFromContext());
 	    }
+	    list.setSelectedIndex(0);
 	    if (myIDs.length == 0) {
 		list.setEnabled(false);
-		list.setSelectedIndex(0);
 	    }
 	    else {
 		list.setEnabled(true);
@@ -594,11 +596,63 @@ public class FilterPageEditor extends JPanel {
 	}
 
 	public void pushFilterOptions() {
+	    if (fd.getOptions().length > 0 &&
+		fd.getOptions()[0].getValue() == null) {
+		assignPushOptionsUntilFound(fd.getOptions());
+		return;
+	    }
+	    // Normal field
 	    OptionHolder oh = (OptionHolder)list.getSelectedItem();
 	    if (oh != emptySelection && oh != null) {
 		Option o = oh.option;
 		assignPushOptions(o.getPushActions());
 	    }
+	}
+	
+	void assignPushOptionsUntilFound(Option[] options) {
+	    //System.out.println("Assigning all push options until one fits...");
+	    for (int i = 0; i < options.length; i++) {
+		//System.out.println("  Trying option "+options[i].getDisplayName());
+		PushAction[] optionPushes = options[i].getPushActions();
+		boolean found = true;
+		List actionsToUndo = new ArrayList();
+		for (int j = 0; j < optionPushes.length; j++) {
+		    PushOptionsHandler poh = new PushOptionsHandler(optionPushes[j]);
+		    FilterEditor fe = poh.getTargetEditor();
+		    //System.out.println(fe.toString());
+		    if (fe instanceof ListFilterEditor) {
+			ListFilterEditor lfe = (ListFilterEditor)fe;
+			if (lfe.list.getSelectedItem() == emptySelection ||
+			    lfe.list.isEnabled() == false) {	
+			    
+			    // System.out.println("Trying to push to list...");
+
+			    actionsToUndo.add(poh);
+			    poh.push();
+			    // System.out.println(lfe.list.getSelectedItem());
+			    if (((OptionHolder)lfe.list.getSelectedItem()).option == null) {
+				found = false;
+			    }
+			}
+			else {
+			    // System.out.println("List already populated");
+			}
+		    }
+		}
+		if (!found) {
+		    for (Iterator j = actionsToUndo.iterator(); j.hasNext();) {
+			PushOptionsHandler poh = (PushOptionsHandler)j.next();
+			((ListFilterEditor)poh.getTargetEditor()).list.setEnabled(false);
+			poh.remove();
+		    }
+		}
+		else {
+		    list.removeActionListener(listListener);
+		    list.setSelectedIndex(i+1);
+		    list.addActionListener(listListener);
+		    return;
+		}		       
+	    }	    
 	}
 
 	public ListFilterEditor(Query theQuery, FilterDescription filterDescription) {

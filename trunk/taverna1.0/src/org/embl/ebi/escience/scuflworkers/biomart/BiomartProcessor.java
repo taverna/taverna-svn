@@ -174,15 +174,17 @@ public class BiomartProcessor extends Processor {
 	Set filterNames = new HashSet();
 	for (int i = 0; i < filters.length; i++) {
 	    if (filters[i] instanceof BasicFilter) {
-		String fieldName = filters[i].getField();
-		filterNames.add(fieldName+"_filter");
-		try {
-		    locatePort(fieldName+"_filter");
-		}
-		catch (UnknownPortException upe) {
-		    Port newPort = new InputPort(this, fieldName+"_filter");
-		    newPort.setSyntacticType("'text/plain'");
-		    addPort(newPort);
+		if (filters[i].getValue() != null) {
+		    String fieldName = filters[i].getField();
+		    filterNames.add(fieldName+"_filter");
+		    try {
+			locatePort(fieldName+"_filter");
+		    }
+		    catch (UnknownPortException upe) {
+			Port newPort = new InputPort(this, fieldName+"_filter");
+			newPort.setSyntacticType("'text/plain'");
+			addPort(newPort);
+		    }
 		}
 	    }
 	    else if (filters[i] instanceof IDListFilter) {
