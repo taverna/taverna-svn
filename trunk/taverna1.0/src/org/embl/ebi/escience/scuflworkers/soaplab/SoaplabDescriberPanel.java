@@ -20,6 +20,14 @@ import org.apache.axis.client.Call;
 import org.apache.axis.client.Service;
 import java.net.URL;
 import java.util.*;
+import javax.xml.transform.Result;
+import javax.xml.transform.Source;
+import javax.xml.transform.Templates;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.stream.StreamSource;
+import javax.xml.transform.stream.StreamResult;
+import java.io.*;
 
 
 /**
@@ -53,6 +61,14 @@ public class SoaplabDescriberPanel extends AbstractProcessorAction {
 	    g2d.setPaint(oldPaint);
 	    super.paintComponent(g);
 	}
+	/**
+	   public boolean getScrollableTracksViewportWidth() {
+	   return true;
+	   }
+	   public boolean getScrollableTracksViewportHeight() {
+	   return false;
+	   }
+	*/
     }
     
     class ColXMLTree extends XMLTree {
@@ -89,8 +105,29 @@ public class SoaplabDescriberPanel extends AbstractProcessorAction {
 		call.setTargetEndpointAddress(soaplabEndpoint);
 		call.setOperationName(new QName("describe"));
 		String metadata = (String)call.invoke(new Object[0]);
-		ColXMLTree tree = new ColXMLTree(metadata);
-		return tree;
+		
+		// Old impl, returns a tree of the XML
+		// ColXMLTree tree = new ColXMLTree(metadata);
+		URL sheetURL = SoaplabDescriberPanel.class.getResource("analysis_metadata_2_html.xsl");
+		TransformerFactory transformerFactory = TransformerFactory.newInstance();
+		Templates stylesheet = transformerFactory.newTemplates(new StreamSource(sheetURL.openStream()));
+		Transformer transformer = stylesheet.newTransformer();
+		StreamSource inputStream = new StreamSource(new ByteArrayInputStream(metadata.getBytes()));
+		ByteArrayOutputStream transformedStream = new ByteArrayOutputStream();
+		StreamResult result = new StreamResult(transformedStream);
+		transformer.transform(inputStream, result);
+		transformedStream.flush();
+		transformedStream.close();
+		String summaryText = "<html><head>"+WorkflowSummaryAsHTML.STYLE_NOBG+"</head>"+transformedStream.toString()+"</html>";
+		JEditorPane metadataPane = new ColJEditorPane("text/html",summaryText);
+		metadataPane.setText(transformedStream.toString());
+		System.out.println(transformedStream.toString());
+		JScrollPane jsp = new JScrollPane(metadataPane, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
+						  JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+		jsp.setPreferredSize(new Dimension(0,0));
+		jsp.getVerticalScrollBar().setValue(0);
+		return jsp;
+		//return tree;
 	    }
 	    catch (Exception ex) {
 		JEditorPane error = new ColJEditorPane("text/html", "<html><head>"+WorkflowSummaryAsHTML.STYLE_NOBG+"</head><body><font color=\"red\">Error</font><p>An exception occured while trying to fetch Soaplab metadata from the server. The error was :<pre>"+ex.getMessage()+"</pre></body></html>");
@@ -110,6 +147,10 @@ public class SoaplabDescriberPanel extends AbstractProcessorAction {
 
     public ImageIcon getIcon() {
 	return ProcessorHelper.getIconForTagName("soaplabwsdl");
+    }
+
+    public Dimension getFrameSize() {
+	return new Dimension(450,450);
     }
 
 }
