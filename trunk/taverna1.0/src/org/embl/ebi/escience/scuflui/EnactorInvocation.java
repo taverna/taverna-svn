@@ -21,6 +21,7 @@ import org.embl.ebi.escience.scufl.enactor.WorkflowSubmissionException;
 // Utility Imports
 import java.util.Iterator;
 import java.util.Map;
+import java.io.*;
 
 import org.embl.ebi.escience.scuflui.EnactorStatusTableModel;
 import org.embl.ebi.escience.scuflui.ResultItemPanel;
@@ -93,17 +94,33 @@ public class EnactorInvocation extends JPanel implements ScuflUIComponent {
 		}
 	    }
 	    this.tabs.add("Results",individualResults);
-	    this.tabs.add("Results as XML",resultsPanel);
-	    this.resultsText.setText(results);
-	    this.resultsText.setFont(new Font("Monospaced",Font.PLAIN,12));
-	    this.resultsText.setLineWrap(true);
-	    this.resultsText.setWrapStyleWord(true);
+	    /**
+	       this.tabs.add("Results as XML",resultsPanel);
+	       this.resultsText.setText(results);
+	       this.resultsText.setFont(new Font("Monospaced",Font.PLAIN,12));
+	       this.resultsText.setLineWrap(true);
+	       this.resultsText.setWrapStyleWord(true);
+	    */
 	    // Get the output map and create new result detail panes
 	    Map resultMap = this.flowReceipt.getOutput();
+	    JFileChooser chooser = new JFileChooser();
+	    chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+	    int returnVal = chooser.showSaveDialog(this);
 	    for (Iterator i = resultMap.keySet().iterator(); i.hasNext(); ) {
 		String resultName = (String)i.next();
 		DataThing resultValue = (DataThing)resultMap.get(resultName);
 		this.individualResults.add(resultName, new ResultItemPanel(resultValue));
+		try {
+		    if (returnVal == JFileChooser.APPROVE_OPTION) {
+			File f = chooser.getSelectedFile();
+			String name = resultName;
+			resultValue.writeToFileSystem(f, name);
+		    }
+		} 
+		catch (IOException ioe) {
+		    ioe.printStackTrace();
+		    //
+		}
 	    }
 	}
 	catch (Exception ex) {
@@ -117,13 +134,15 @@ public class EnactorInvocation extends JPanel implements ScuflUIComponent {
     public void showProvenance() {
 	String provenance = "";
 	try {
-	    provenance = this.flowReceipt.getProvenanceXMLString();
-	    this.provenanceText.setFont(new Font("Monospaced",Font.PLAIN,12));
-	    this.provenanceText.setLineWrap(true);
-	    this.provenanceText.setWrapStyleWord(true);
-	    this.provenanceText.setText(provenance);
-	    this.tabs.add("Provenance Text", provenancePanel);
-	    this.tabs.add("Provenance Tree", new JScrollPane(new XMLTree(provenance)));
+	    /**
+	       provenance = this.flowReceipt.getProvenanceXMLString();
+	       this.provenanceText.setFont(new Font("Monospaced",Font.PLAIN,12));
+	       this.provenanceText.setLineWrap(true);
+	       this.provenanceText.setWrapStyleWord(true);
+	       this.provenanceText.setText(provenance);
+	       this.tabs.add("Provenance Text", provenancePanel);
+	       this.tabs.add("Provenance Tree", new JScrollPane(new XMLTree(provenance)));
+	    */
 	}
 	catch (Exception ex) {
 	    this.provenanceText.setText("No provenance available : "+ex.toString());

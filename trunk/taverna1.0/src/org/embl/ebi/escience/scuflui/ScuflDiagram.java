@@ -188,7 +188,7 @@ public class ScuflDiagram extends JComponent
 	super.paint(g);
     }
 
-    public void paintComponent(Graphics g) {
+    public void paintComponent_old(Graphics g) {
 	if (this.image != null) {
 	    Graphics2D g2d = (Graphics2D)g;
 	    int fx = getWidth();
@@ -215,7 +215,7 @@ public class ScuflDiagram extends JComponent
     int lastImageWidth = -1;
     double lastScaleFactor = 0.0;
     java.awt.Image rescaledImage = null;
-    public void paintComponent_old(Graphics g) {
+    public void paintComponent(Graphics g) {
 	if (this.image != null) {
 	    if (fitToWindow == false) {
 		g.drawImage( image, 0, 0, image.getWidth(), image.getHeight(), null );

@@ -168,9 +168,9 @@ public class ResultItemPanel extends JPanel {
                         }
                     }
                 });
-
-                theMenu.add(saveAction);
-
+		if (node.isLeaf()) {
+		    theMenu.add(saveAction);
+		}
                 // all possible viewers
                 final DataThing nodeThing = node.getNodeThing();
                 boolean isEmptyCollection = false;
