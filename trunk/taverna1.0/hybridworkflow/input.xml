@@ -4,13 +4,13 @@
 
    <data>
       <ID>105</ID>
-      <name>create_mutant_sequence:sequence</name>
+      <name>sequence</name>
       <type>string</type>
       <value><![CDATA[actagtacgcgttaggatcgtacgatgcatcgtatgcgcgctagatcatcgtgcatgcatgctataaaaaatcgtacgtacgatc]]></value>
    </data>
    <data>
       <ID>106</ID>
-      <name>create_mutant_sequence:snplist</name>
+      <name>snplist</name>
       <type>string</type>
       <value><![CDATA[2:g,6:c,30:a,40:a]]></value>
    </data>
