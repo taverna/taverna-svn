@@ -611,7 +611,7 @@ public class ScuflModel
 			    try {
 				l.receiveModelEvent(events[i]);
 			    }
-			    catch (Exception ex) {
+			    catch (Throwable ex) {
 				ex.printStackTrace();
 			    }
 			}
