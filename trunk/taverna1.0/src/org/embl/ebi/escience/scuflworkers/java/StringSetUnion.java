@@ -37,11 +37,6 @@ public class StringSetUnion implements LocalWorker {
 	return new String[]{LocalWorker.STRING_ARRAY};
     }
     
-    /**
-     * Fetch the web page pointed to by the URL supplied as the 'url'
-     * parameter into the service, the 'base' parameter specifies a 
-     * URL to use as the base for relative URL resolution.
-     */
     public Map execute(Map inputs) throws TaskExecutionException {
 	Set results = new HashSet();
 	Collection list1 = (Collection)((DataThing)inputs.get("list1")).getDataObject();
