@@ -95,6 +95,7 @@
 		<get src="http://www.ibiblio.org/maven/xerces/jars/xercesImpl-2.6.2.jar" dest="./netlib/xercesImpl-2.6.2.jar" usetimestamp="yes"/>
 		<get src="http://www.ibiblio.org/maven/concurrent/jars/concurrent-1.3.4.jar" dest="./netlib/concurrent-1.3.4.jar" usetimestamp="yes"/>
 		<get src="http://www.ibiblio.org/maven/servletapi/jars/servlet-api-2.4-20040521.jar" dest="./netlib/servlet-api-2.4-20040521.jar" usetimestamp="yes"/>
+		<get src="http://www.ibiblio.org/maven/junit/jars/junit-3.8.jar" dest="./netlib/junit-3.8.jar" usetimestamp="yes"/>
 		<!-- Reset the compile classpath to include the newly fetched classes -->	
 		<path id="downloaded-libs">
 		        <fileset dir="./netlib">
