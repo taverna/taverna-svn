@@ -65,7 +65,7 @@ public class ScuflInputPortView extends PortView {
     {
       Point p = super.getLocation(null);
       p.x -= getParameterWidth((String)((ScuflInputPort)cell).getUserObject());
-      p.y += getParameterHeight();
+//    p.y += getParameterHeight();
       return p;
     }
 

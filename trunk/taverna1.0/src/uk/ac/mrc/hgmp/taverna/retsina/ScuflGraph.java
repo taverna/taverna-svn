@@ -87,8 +87,10 @@ public class ScuflGraph extends JGraph
       setDropTarget(new DropTarget(this,this));
 
 // MouseListener that Prints the Cell on Doubleclick
-      addMouseListener(new MouseAdapter() {
-        public void mousePressed(MouseEvent e) {
+      addMouseListener(new MouseAdapter() 
+      {
+        public void mousePressed(MouseEvent e) 
+        {
           if (e.getClickCount() == 2) {
             // Get Cell under Mousepointer
             int x = e.getX(), y = e.getY();
@@ -140,18 +142,6 @@ public class ScuflGraph extends JGraph
                 DataConstraint dc = new DataConstraint(scuflModel, output, input);
                 scuflModel.addDataConstraint(dc);
               }
-//            catch(UnknownProcessorException upro)
-//            {
-//              System.out.println("UnknownProcessorException");
-//            }
-//            catch(MalformedNameException mal)
-//            {
-//              System.out.println("MalformedNameException");
-//            }
-//            catch(UnknownPortException upe)
-//            {
-//              System.out.println("UnknownPortException");
-//            }
               catch(DuplicatePortNameException dpne)
               {
                 System.out.println("DuplicatePortNameException");
@@ -381,16 +371,9 @@ public class ScuflGraph extends JGraph
         // Create a Map that holds the attributes for the Vertex
         Map map = GraphConstants.createMap();
 
-        // Add a Bounds Attribute to the Map
-        int nports = 0;
-        if(proc != null)
-          nports = proc.getInputPorts().length;
         JLabel lab = new JLabel(name);
         Dimension size = lab.getPreferredSize();
         int width  = (int)size.getWidth()+10;
-        int height = (int)size.getHeight() + (18*nports);
-        size = new Dimension(width,height);
-//      GraphConstants.setBounds(map, new Rectangle(point, size));
 
         // Set raised border
         GraphConstants.setBorder(map, BorderFactory.createRaisedBevelBorder());
@@ -399,8 +382,6 @@ public class ScuflGraph extends JGraph
         // Construct a Map from cells to Maps (for insert)
         Hashtable attributes = new Hashtable();
 
-        // Associate the Vertex with its Attributes
-//      attributes.put(vertex, map);
 
         // Add a load of ports, mainly to test whether I've gotten
         // the rendering code working for the custom port views.
@@ -410,9 +391,14 @@ public class ScuflGraph extends JGraph
           int maxPortWidth = 0;
           int wid = 0;
           org.embl.ebi.escience.scufl.Port inPorts[] = proc.getInputPorts();
+          int nports = inPorts.length;
+
+          System.out.println("Number of input port = "+nports);
+          int height = (int)size.getHeight() + (16*nports);
+          size = new Dimension(width,height);
 
           //find the max width of the input ports
-          for(int j=0; j<inPorts.length;j++)
+          for(int j=0; j<nports;j++)
           {
             wid = getInputPortWidth(inPorts[j]);
             if(wid > maxPortWidth)
