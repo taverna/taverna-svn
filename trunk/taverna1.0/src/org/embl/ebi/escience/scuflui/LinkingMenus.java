@@ -102,7 +102,8 @@ public class LinkingMenus {
 		});
 	    workflowSinks.add(wspitem);
 	}
-
+	theMenu.add(new ShadedLabel("Processors",ShadedLabel.TAVERNA_BLUE));
+	theMenu.addSeparator();
 	// Do the target processors
 	for (int i = 0; i < processors.length; i++) {
 	    // Get all the input ports for this processor
@@ -111,7 +112,7 @@ public class LinkingMenus {
 		ImageIcon icon = null;
 		icon = org.embl.ebi.escience.scuflworkers.ProcessorHelper.getPreferredIcon(processors[i]);
 		JMenu processorMenu = new JMenu(processors[i].getName());
-		processorMenu.add(new ShadedLabel("Choose an Input",ShadedLabel.TAVERNA_GREEN));
+		processorMenu.add(new ShadedLabel("Choose an Input",ShadedLabel.TAVERNA_ORANGE));
 		processorMenu.setIcon(icon);
 		int offset = 0;
 		int menuSize = 15;

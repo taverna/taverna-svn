@@ -88,29 +88,14 @@ public class ScuflModelExplorerPopupHandler extends MouseAdapter {
 		final MouseEvent theMouseEvent = e;
 		JPopupMenu theMenu = ScuflContextMenuFactory.getMenuForObject(node, scuflObject, model.getModel());
 		if (scuflObject instanceof Processor) {
-		    // show the properties display
 		    final Processor theProcessor = (Processor)scuflObject;
 		    theMenu.addSeparator();
-		    //JMenuItem properties = new JMenuItem("Properties...");
-		    //properties.addActionListener(new ActionListener() {
-		    //	    public void actionPerformed(ActionEvent a) {
-		    //		ScuflProcessorInfo spi = new ScuflProcessorInfo(theProcessor);
-		    //	    }
-		    //	});
-		    //theMenu.add(properties);
-		    JMenuItem editTemplates = new JMenuItem("Edit templates");
+		    theMenu.add(new ShadedLabel("Annotations", ShadedLabel.TAVERNA_BLUE));
+		    theMenu.addSeparator();
+		    JMenuItem editTemplates = new JMenuItem("Edit templates...", ScuflIcons.editIcon);
 		    editTemplates.addActionListener(new ActionListener() {
 			    public void actionPerformed(ActionEvent a) {
 				UIUtils.createFrame(theProcessor.getModel(), new TemplateEditor(theProcessor), 100, 100, 300, 300);
-				/**
-				   if (Workbench.workbench != null) {
-				   GenericUIComponentFrame thing = new GenericUIComponentFrame(Workbench.workbench.model,
-				   new TemplateEditor(theProcessor));
-				   thing.setSize(300,300);
-				   thing.setLocation(100,100);
-				   Workbench.workbench.desktop.add(thing);
-				   thing.moveToFront();
-				*/
 			    }
 			});
 		    theMenu.add(editTemplates);

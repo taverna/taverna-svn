@@ -292,10 +292,15 @@ public class ScuflContextMenuFactory {
 	}
 	JMenuItem block = new JMenu("Coordinate from");
 	block.setIcon(ScuflIcons.constraintIcon);
-	theMenu.add(block);
 	// Iterate over the processors in the model to get the available
 	// gate processors.
 	Processor[] gp = processor.getModel().getProcessors();
+	if (gp.length > 1) {
+	    theMenu.add(block);
+	    ((JMenu)block).add(new ShadedLabel("Processors",ShadedLabel.TAVERNA_ORANGE));
+	    ((JMenu)block).addSeparator();
+	}
+		
 	for (int i = 0; i < gp.length; i++) {
 	    // Doesn't make sense to block on self, will deadlock.
 	    if (gp[i]!=processor) {
