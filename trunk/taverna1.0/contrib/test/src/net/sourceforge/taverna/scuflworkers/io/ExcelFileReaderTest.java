@@ -12,7 +12,7 @@ import net.sourceforge.taverna.baclava.DataThingAdapter;
  * Last edited by $Author: phidias $
  * 
  * @author Mark
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class ExcelFileReaderTest extends TestCase {
 
@@ -20,11 +20,9 @@ public class ExcelFileReaderTest extends TestCase {
         ExcelFileReader reader = new ExcelFileReader();
         HashMap inputMap = new HashMap();
         DataThingAdapter inAdapter = new DataThingAdapter(inputMap);
-        inAdapter.putString("filename","C:/Documents and Settings/Mark/My Documents/projects/taverna/contrib/test/src/etc/test.xls");
+        inAdapter.putString("filename","C:/Documents and Settings/Mark/My Documents/projects/taverna1.0/contrib/test/src/etc/test.xls");
         
-        HashMap outputMap =  (HashMap)reader.execute(inputMap);
-        
-        
+        HashMap outputMap =  (HashMap)reader.execute(inputMap);       
         
         assertTrue("The outputMap was null", outputMap != null);
         assertTrue("The outputMap was empty", !outputMap.isEmpty());
@@ -37,6 +35,14 @@ public class ExcelFileReaderTest extends TestCase {
         ArrayList firstRow = (ArrayList)dataArray.get(0);
         assertTrue("Unable to get String","ABC".equals((String)firstRow.get(0)));
         assertTrue("Unable to get numeric value","123".equals((String)firstRow.get(1)));
+        
+        // retest the Excel parsing after identifying the column that has a date in it.
+        inAdapter.putString("dateIndexes","2");   
+        outputMap = (HashMap)reader.execute(inputMap);
+        outAdapter = new DataThingAdapter(outputMap);
+        dataArray = outAdapter.getArrayList("data");
+        firstRow = (ArrayList)dataArray.get(0);
+        
         assertTrue("Unable to get date value","04/01/2005".equals((String)firstRow.get(2)));
         
     }
