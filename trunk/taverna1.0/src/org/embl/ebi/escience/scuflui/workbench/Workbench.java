@@ -203,7 +203,9 @@ public class Workbench extends JFrame {
      * contained components.
      */
     public Workbench() {
-	super("Scufl Workbench");
+	super("Scufl Workbench v"+
+	      org.embl.ebi.escience.scufl.TavernaReleaseInfo.getVersion()+", built "+
+	      org.embl.ebi.escience.scufl.TavernaReleaseInfo.getBuildDate().toString());
 	try {
 	    UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 	} catch (Exception e) { }
