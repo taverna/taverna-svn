@@ -13,10 +13,13 @@ import java.util.Iterator;
 public class WorkflowCreationEvent extends WorkflowInstanceEvent {
 
     private Map inputs;
+    private String defn;
 
     public WorkflowCreationEvent(WorkflowInstance workflow,
-				 Map inputs) {
+				 Map inputs,
+				 String definitionLSID) {
 	super(workflow);
+	this.defn = definitionLSID;
 	this.inputs = inputs;
     }
 
@@ -26,6 +29,14 @@ public class WorkflowCreationEvent extends WorkflowInstanceEvent {
      */
     public Map getInputs() {
 	return this.inputs;
+    }
+
+    /**
+     * Returns the LSID of the workflow definition used to create
+     * this workflow instance
+     */
+    public String getDefinitionLSID() {
+	return this.defn;
     }
 
     /**
@@ -40,6 +51,7 @@ public class WorkflowCreationEvent extends WorkflowInstanceEvent {
 	    String inputLSID = inputValue.getLSID(inputValue.getDataObject());
 	    sb.append("  '"+inputName+"'->"+inputLSID+"\n");
 	}
+	sb.append("Created from workflow definition "+getDefinitionLSID()+"\n");
 	UserContext workflowContext = this.workflowInstance.getUserContext();
 	if (workflowContext == null) {
 	    sb.append("No user context supplied\n");

@@ -25,8 +25,8 @@
 //      Dependencies        :
 //
 //      Last commit info    :   $Author: mereden $
-//                              $Date: 2004-07-19 16:01:44 $
-//                              $Revision: 1.7 $
+//                              $Date: 2004-07-21 14:50:48 $
+//                              $Revision: 1.8 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 package org.embl.ebi.escience.scufl.enactor.implementation;
@@ -92,6 +92,7 @@ public class WorkflowInstanceImpl implements WorkflowInstance {
     private HashSet stateListeners = new HashSet();
     private UserContext context = null;
     private static Map internalToLSID = new HashMap();
+    static Map instanceToDefinitionLSID = new HashMap();
 
     /**
      * Constructor for this concrete instance of a flow receipt
@@ -144,6 +145,13 @@ public class WorkflowInstanceImpl implements WorkflowInstance {
 	}
 	return workflowInstanceId;
     }
+    public String getDefinitionLSID() {
+	String definitionLSID = (String)instanceToDefinitionLSID.get(getID());
+	if (definitionLSID != null) {
+	    return definitionLSID;
+	}
+	return "";
+    }
 
     /**
      * Register the specified listener with the engine for this instance
@@ -191,7 +199,7 @@ public class WorkflowInstanceImpl implements WorkflowInstance {
 		inputValue.fillLSIDValues();
 	    }
             engine.run(workflowInstanceId, input);
-	    WorkflowEventDispatcher.DISPATCHER.fireWorkflowCreated(new WorkflowCreationEvent(this,input));
+	    WorkflowEventDispatcher.DISPATCHER.fireWorkflowCreated(new WorkflowCreationEvent(this,input,this.getDefinitionLSID()));
 	    // Add a new listener to handle and emit the workflow completion events
 	    final Map lsidMap = internalToLSID;
 	    addWorkflowStateListener(new WorkflowStateListener() {
@@ -212,6 +220,7 @@ public class WorkflowInstanceImpl implements WorkflowInstance {
 			    // Remove the LSID mapping from the global map as the internal
 			    // ID will be recycled, don't want the LSID to be picked up as
 			    // well.
+			    WorkflowInstanceImpl.instanceToDefinitionLSID.remove(lsidMap.get(WorkflowInstanceImpl.this.workflowInstanceId));
 			    lsidMap.remove(WorkflowInstanceImpl.this.workflowInstanceId);
 			}
 		    }

@@ -207,6 +207,9 @@ public class XScuflParser {
 	if (descriptionElement != null) {
 	    model.setDescription(WorkflowDescription.build(descriptionElement));
 	}
+	else {
+	    model.setDescription(new WorkflowDescription());
+	}
 	
 	
 	// Build processors

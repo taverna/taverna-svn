@@ -82,7 +82,10 @@ public class FreefluoEnactorProxy implements EnactorProxy {
 	try {
 	    String workflowInstanceId = engine.compile(workflow);
             engine.setUserContext(workflowInstanceId, user);
-            WorkflowInstance workflowInstance = new WorkflowInstanceImpl(engine, workflowInstanceId);   
+            WorkflowInstance workflowInstance = new WorkflowInstanceImpl(engine, workflowInstanceId);
+	    String definitionLSID = workflow.getDescription().getLSID();
+	    String instanceLSID = workflowInstance.getID();
+	    WorkflowInstanceImpl.instanceToDefinitionLSID.put(instanceLSID, definitionLSID);
             return workflowInstance;
 	}
 	catch (Exception e) {

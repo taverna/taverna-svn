@@ -4,6 +4,7 @@
  * Copyright Tom Oinn, EMBL-EBI
  */
 package org.embl.ebi.escience.scufl;
+import org.embl.ebi.escience.baclava.*;
 
 import org.jdom.*;
 
@@ -18,6 +19,19 @@ public class WorkflowDescription {
     private String text = "";
     private String lsid = "";
     private String author = "";
+
+    /**
+     * Override the default constructor to set an LSID
+     * by default from the assigning service if one has
+     * been defined in the global configuration
+     */
+    public WorkflowDescription() {
+	// Assign a new LSID by default from any configured assigning service
+	LSIDProvider p = DataThing.SYSTEM_DEFAULT_LSID_PROVIDER;
+	if (p != null) {
+	    this.lsid = p.getID(LSIDProvider.WFDEFINITION);
+	}
+    }
 
     /**
      * Get the free text description for this workflow
@@ -88,10 +102,23 @@ public class WorkflowDescription {
      * from a JDom Element
      */
     public static WorkflowDescription build(Element theElement) {
+	try {
+	    Class.forName("org.embl.ebi.escience.baclava.DataThing");
+	}
+	catch (Exception e) {
+	    //
+	}
 	WorkflowDescription description = new WorkflowDescription();
 	description.setText(theElement.getTextTrim());
 	description.setAuthor(theElement.getAttributeValue("author",""));
 	description.setLSID(theElement.getAttributeValue("lsid",""));
+	if (description.lsid.equals("")) {
+	    // Assign a new LSID by default from any configured assigning service
+	    LSIDProvider p = DataThing.SYSTEM_DEFAULT_LSID_PROVIDER;
+	    if (p != null) {
+		description.lsid = p.getID(LSIDProvider.WFDEFINITION);
+	    }
+	}
 	return description;
     }
     
