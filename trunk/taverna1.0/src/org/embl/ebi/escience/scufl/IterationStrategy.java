@@ -36,7 +36,7 @@ public class IterationStrategy {
      */
     public IterationStrategy(Processor p) {
 	strategyModel = new StrategyModel(new CrossNode());
-	InputPort[] inputs = p.getInputPorts();
+	InputPort[] inputs = p.getBoundInputPorts();
 	for (int i = 0; i < inputs.length; i++) {
 	    strategyModel.insertNodeInto(new LeafNode(inputs[i].getName()),
 					(MutableTreeNode)strategyModel.getRoot(),i);

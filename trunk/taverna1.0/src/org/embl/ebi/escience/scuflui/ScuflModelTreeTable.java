@@ -140,7 +140,7 @@ public class ScuflModelTreeTable extends JTreeTable
      */    
     public synchronized void receiveModelEvent(ScuflModelEvent event) {
 	if (event.getSource() instanceof Processor) {
-	    lastInterestingProcessor = (Processor)(event.getSource());
+	    //  lastInterestingProcessor = (Processor)(event.getSource());
 	}
 	((AbstractTableModel)(super.getModel())).fireTableDataChanged();
 	setDefaultExpansionState();

@@ -156,7 +156,7 @@ public class Workbench extends JFrame {
 	diagram.setLocation(20,440);
 	workbench.desktop.add(diagram);
 	GenericUIComponentFrame explorer = new GenericUIComponentFrame(workbench.model,
-								       new ScuflModelTreeTable());
+								       new AdvancedModelExplorer());
 	explorer.setSize(500,300);
 	explorer.setLocation(20,120);
 	workbench.desktop.add(explorer);
@@ -445,11 +445,11 @@ public class Workbench extends JFrame {
 	   });
 	   windowMenu.add(explorerView);
 	*/
-	JMenuItem explorerTableView = new JMenuItem("Scufl Explorer TreeTable");
+	JMenuItem explorerTableView = new JMenuItem("Advanced Scufl Explorer");
 	explorerTableView.addActionListener(new ActionListener() {
 		public void actionPerformed(ActionEvent e) {
 		    // Show a scufl explorer panel
-		    ScuflModelTreeTable thing = new ScuflModelTreeTable();
+		    AdvancedModelExplorer thing = new AdvancedModelExplorer();
 		    GenericUIComponentFrame frame = new GenericUIComponentFrame(Workbench.this.model, thing);
 		    frame.setSize(600,300);
 		    Workbench.this.desktop.add(frame);

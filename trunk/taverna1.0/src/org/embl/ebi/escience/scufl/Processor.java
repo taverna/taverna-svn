@@ -370,7 +370,7 @@ public abstract class Processor implements Serializable, Transferable {
      */
     public void setDescription(String the_description) {
 	if (the_description.equalsIgnoreCase(this.description)==false) {
-	    fireModelEvent(new ScuflModelEvent(this,"Description changed"));
+	    //fireModelEvent(new ScuflModelEvent(this,"Description changed"));
 	}
 	this.description = the_description;
     }

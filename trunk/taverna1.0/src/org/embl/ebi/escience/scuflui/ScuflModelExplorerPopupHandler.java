@@ -91,13 +91,13 @@ public class ScuflModelExplorerPopupHandler extends MouseAdapter {
 		    // show the properties display
 		    final Processor theProcessor = (Processor)scuflObject;
 		    theMenu.addSeparator();
-		    JMenuItem properties = new JMenuItem("Properties...");
-		    properties.addActionListener(new ActionListener() {
-			    public void actionPerformed(ActionEvent a) {
-				ScuflProcessorInfo spi = new ScuflProcessorInfo(theProcessor);
-			    }
-			});
-		    theMenu.add(properties);
+		    //JMenuItem properties = new JMenuItem("Properties...");
+		    //properties.addActionListener(new ActionListener() {
+		    //	    public void actionPerformed(ActionEvent a) {
+		    //		ScuflProcessorInfo spi = new ScuflProcessorInfo(theProcessor);
+		    //	    }
+		    //	});
+		    //theMenu.add(properties);
 		    JMenuItem editTemplates = new JMenuItem("Edit templates");
 		    editTemplates.addActionListener(new ActionListener() {
 			    public void actionPerformed(ActionEvent a) {

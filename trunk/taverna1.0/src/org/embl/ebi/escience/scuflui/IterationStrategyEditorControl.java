@@ -158,7 +158,9 @@ public class IterationStrategyEditorControl extends JPanel {
 	
 	// Add components to the control panel
 	add(buttonPanel);
-	add(new JScrollPane(tree));
+	JScrollPane treePane = new JScrollPane(tree);
+	treePane.setPreferredSize(new Dimension(0,0));
+	add(treePane);
 	
     }
 

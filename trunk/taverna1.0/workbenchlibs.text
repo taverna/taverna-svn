@@ -18,3 +18,5 @@ notification-processor.jar
 jmoby.jar
 alltools.jar
 xercesSamples.jar
+mail.jar
+activation.jar
