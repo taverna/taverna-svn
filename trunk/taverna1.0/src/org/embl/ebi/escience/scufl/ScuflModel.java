@@ -512,24 +512,25 @@ public class ScuflModel
 /**
  * A thread subclass to notify listeners of an event
  */
-class NotifyThread extends Thread {
-    private ScuflModelEvent event;
-    private List listeners;
-    protected NotifyThread(ScuflModelEvent event, ScuflModel model) {
-	super();
-	this.event = event;
-	this.listeners = model.listeners;
-	this.start();
-    }
-    public void run() {
-	for (Iterator i = listeners.iterator(); i.hasNext();) {
-	    ScuflModelEventListener l = (ScuflModelEventListener)i.next();
-	    //System.out.println("Firing event to "+l.toString());
-	    l.receiveModelEvent(event);
-	}
-
-    }
-}
+/**class NotifyThread extends Thread {
+   private ScuflModelEvent event;
+   private List listeners;
+   protected NotifyThread(ScuflModelEvent event, ScuflModel model) {
+   super();
+   this.event = event;
+   this.listeners = model.listeners;
+   this.start();
+   }
+   public void run() {
+   for (Iterator i = listeners.iterator(); i.hasNext();) {
+   ScuflModelEventListener l = (ScuflModelEventListener)i.next();
+   //System.out.println("Firing event to "+l.toString());
+   l.receiveModelEvent(event);
+   }
+   
+   }
+   }
+*/
 /**
  * A Processor subclass to hold ports for the overal workflow inputs. These
  * ports are therefore output ports, as they are used as data sources for
