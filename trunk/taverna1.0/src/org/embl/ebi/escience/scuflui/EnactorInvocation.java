@@ -221,7 +221,14 @@ public class EnactorInvocation extends JPanel implements ScuflUIComponent {
 
     public void showResultTable()
     {
+	try {
 	    this.tabs.add("Result Table", new JScrollPane(new ResultTablePanel(theModel, workflowInstance)));    	
+	}
+	catch (Exception e) {
+	    // The above can cause a NPE, we need to track this down
+	    // FIXME
+	    e.printStackTrace();
+	}
     }
     
     /**
