@@ -21,7 +21,7 @@
     <s:biomobywsdl>
       <s:mobyEndpoint>http://mobycentral.cbr.nrc.ca/cgi-bin/MOBY05/mobycentral.pl</s:mobyEndpoint>
       <s:serviceName>getDragonSimpleAnnotatedImages</s:serviceName>
-      <s:authorityName>www.illuminae.com</s:authorityName>
+      <s:authorityName>antirrhinum.net</s:authorityName>
     </s:biomobywsdl>
   </s:processor>
   <s:link source="getDragonSimpleAnnotatedImages:output" sink="Parse_moby_data:mobydata" />
