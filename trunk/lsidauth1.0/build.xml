@@ -67,6 +67,7 @@
 		<get src="http://www.ibiblio.org/maven/jdom/jars/jdom-b10.jar" dest="./netlib/jdom-b10.jar" usetimestamp="yes"/>
 		<get src="http://www.ibiblio.org/maven/axis/jars/axis-1.2-beta-3.jar" dest="./netlib/axis-1.2-beta-3.jar" usetimestamp="yes"/>
 		<get src="http://www.ibiblio.org/maven/axis/jars/axis-jaxrpc-1.2-beta-3.jar" dest="./netlib/axis-jaxrpc-1.2-beta-3.jar" usetimestamp="yes"/>
+		<get src="http://www.ibiblio.org/maven/axis/jars/axis-wsdl4j-1.2-beta-3.jar" dest="./netlib/axis-wsdl4j-1.2-beta-3.jar" usetimestamp="yes"/>
 		<get src="http://www.ibiblio.org/maven/axis/jars/axis-saaj-1.2-beta-3.jar" dest="./netlib/axis-saaj-1.2-beta-3.jar" usetimestamp="yes"/>
 		<get src="http://www.ibiblio.org/maven/commons-logging/jars/commons-logging-1.0.4.jar" dest="./netlib/commons-logging-1.0.4.jar" usetimestamp="yes"/>
 		<get src="http://www.ibiblio.org/maven/log4j/jars/log4j-1.2.8.jar" dest="./netlib/log4j-1.2.8.jar" usetimestamp="yes"/>

@@ -55,4 +55,21 @@ public class VerifyTest extends TestCase {
 	    fail(ex.getMessage());
 	}
     }
+    
+    /**
+     * Try to log in using the LSID mechanism
+     */
+    public void testFullLogin() {
+	byte[] secretKey = "myGridKey".getBytes();
+	String secretPassword = "SecretPassword";
+	String userLSID = "urn:lsid:www.mygrid.org.uk:person:2111111";
+	try {
+	    LSIDAuth.init(secretKey);
+	    LSIDAuth.getInstance().login(userLSID, secretPassword, 0, 0);
+	}
+	catch (Exception ex) {
+	    ex.printStackTrace();
+	    fail(ex.getMessage());
+	}
+    }
 }

@@ -8,6 +8,8 @@ import java.util.Map;
 import java.util.HashMap;
 import java.util.Date;
 import java.util.Arrays;
+import java.util.Iterator;
+import java.util.List;
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 import java.security.SecureRandom;
@@ -257,8 +259,17 @@ public final class LSIDAuth implements WSDLConstants {
 	// RDF which we can parse to extract the person's password
 	// from.
 	Element rootElement = doc.getRootElement();
-	Element passwordElement = rootElement.getChild("CPASSWORD",
-						       mygridNamespace);
+	List descriptions = rootElement.getChildren("description",rdfNamespace);
+	Element passwordElement = null;
+	for (Iterator i = descriptions.iterator(); 
+	     i.hasNext() && passwordElement == null;) {
+	    Element description = (Element)i.next();
+	    String about = description.getAttributeValue("about",rdfNamespace);
+	    if (about != null &&
+		about.equals(personLSID)) {
+		passwordElement = description.getChild("password",mygridNamespace);
+	    }
+	}
 	if (passwordElement == null) {
 	    throw new RuntimeException("Cannot find password element!");
 	}
@@ -268,8 +279,8 @@ public final class LSIDAuth implements WSDLConstants {
 	Namespace.getNamespace("rdf",
 			       "http://www.w3.org/1999/02/22-rdf-syntax-ns#");
     private static Namespace mygridNamespace =
-	Namespace.getNamespace("mygrid",
-			       "http://www.mygrid.org.uk/2004/auth/0.1#");
+	Namespace.getNamespace("j.0",
+			       "http://www.mygrid.org.uk/2004/infomodel-rdf/0.1#");
 
         
     /**

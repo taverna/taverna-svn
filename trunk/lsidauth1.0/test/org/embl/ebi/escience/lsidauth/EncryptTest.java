@@ -11,11 +11,14 @@ import junit.framework.TestCase;
 public class EncryptTest extends TestCase {
     
     public void testEncrypt() {
-	byte[] sampleKey = "asdkjhsdkjfhsdf".getBytes();
+	byte[] sampleKey = "myGridKey".getBytes();
 	LSIDAuth.init(sampleKey);
 	LSIDAuth auth = LSIDAuth.getInstance();
 	try {
+	    System.out.println("Secret key : \"myGridKey\".getBytes()");
+	    System.out.println("Password   : SecretPassword");
 	    String cryptedPass = auth.createPassword("SecretPassword");
+	    System.out.println("Encrypted  : "+cryptedPass);
 	}
 	catch (Exception ex) {
 	    fail(ex.getMessage());
