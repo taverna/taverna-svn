@@ -23,12 +23,22 @@ public class BiomartProcessor extends Processor {
     public BiomartProcessor(ScuflModel model,
 			    String processorName,
 			    BiomartConfigBean info, 
-			    String dataSourceName)
+			    String dataSourceName,
+			    Query query)
 	throws ProcessorCreationException,
 	       DuplicateProcessorNameException {
 	super(model, processorName);
 	this.info = info;
 	this.dataSourceName = dataSourceName;
+	this.query = query;
+	try {
+	    buildPortsFromQuery();
+	}
+	catch (Exception ex) {
+	    ProcessorCreationException pce = new ProcessorCreationException("Can't build output ports");
+	    pce.initCause(ex);
+	    throw pce;
+	}
     }
 
     BiomartConfigBean getConfig() {
@@ -46,5 +56,17 @@ public class BiomartProcessor extends Processor {
     public Properties getProperties() {
 	return new Properties();
     }
-
+    
+    private void buildPortsFromQuery()
+	throws PortCreationException,
+	       DuplicatePortNameException {
+	Attribute[] attributes = query.getAttributes();
+	for (int i = 0; i < attributes.length; i++) {
+	    String fieldName = attributes[i].getField();
+	    Port newPort = new InputPort(this, fieldName);
+	    newPort.setSyntacticType("l('text/plain')");
+	    addPort(newPort);
+	}
+    }
+    
 }

@@ -5,7 +5,9 @@
  */
 package org.embl.ebi.escience.scuflworkers.biomart;
 
-import org.jdom.*;
+import org.jdom.Element;
+import org.jdom.Namespace;
+import java.util.*;
 import org.embl.ebi.escience.scuflworkers.*;
 import org.ensembl.mart.lib.*;
 import org.embl.ebi.escience.scufl.*;
@@ -14,6 +16,8 @@ import org.embl.ebi.escience.scufl.parser.XScuflFormatException;
 
 public class BiomartXMLHandler implements XMLHandler {
     
+    public static Namespace NAMESPACE = Namespace.getNamespace("biomart","http://org.embl.ebi.escience/xscufl-biomart/0.1alpha");
+
     /**
      * Get the spec element for the specified BiomartProcessor.
      * @param p The Processor object to serialize to an Element
@@ -36,9 +40,9 @@ public class BiomartXMLHandler implements XMLHandler {
      * Build a new BiomartProcessorFactory from the specified element
      */
     public ProcessorFactory getFactory(Element specElement) {
-	Element martConfig = specElement.getChild("biomartconfig", XScufl.XScuflNS);
-	Element dsNameElement = specElement.getChild("biomartds", XScufl.XScuflNS);
-	Element queryElement = specElement.getChild("biomartquery", XScufl.XScuflNS);
+	Element martConfig = specElement.getChild("biomartconfig", NAMESPACE);
+	Element dsNameElement = specElement.getChild("biomartds", NAMESPACE);
+	Element queryElement = specElement.getChild("biomartquery", NAMESPACE);
 	// Ignores Query for now
 	return new BiomartProcessorFactory(getConfigBeanFromElement(martConfig),
 					   dsNameElement.getTextTrim());
@@ -54,14 +58,22 @@ public class BiomartXMLHandler implements XMLHandler {
 	       DuplicateProcessorNameException,
 	       XScuflFormatException {
 	Element biomart = processorNode.getChild("biomart", XScufl.XScuflNS);
-	Element martConfig = biomart.getChild("biomartconfig", XScufl.XScuflNS);
-	Element dsNameElement = biomart.getChild("biomartds", XScufl.XScuflNS);
-	Element queryElement = biomart.getChild("biomartquery", XScufl.XScuflNS);
-	// Ignore Query for now, code doesn't yet exist to serialize / deserialize it
+	Element martConfig = biomart.getChild("biomartconfig", NAMESPACE);
+	Element dsNameElement = biomart.getChild("biomartds", NAMESPACE);
+	Element queryElement = biomart.getChild("biomartquery", NAMESPACE);
+	Query q = null;
+	if (queryElement != null) {
+	    q = elementToQuery(queryElement);
+	}
+	else {
+	    // Create a blank query object
+	    q = new Query();
+	}
 	return new BiomartProcessor(model,
 				    processorName,
 				    getConfigBeanFromElement(martConfig),
-				    dsNameElement.getTextTrim());
+				    dsNameElement.getTextTrim(),
+				    q);
     }
 
     /**
@@ -76,9 +88,12 @@ public class BiomartXMLHandler implements XMLHandler {
     private Element getElement(BiomartConfigBean martConfig, String dataSourceName, Query query) {
 	Element spec = new Element("biomart", XScufl.XScuflNS);
 	spec.addContent(getConfigElement(martConfig));
-	Element dsElement = new Element("biomartds", XScufl.XScuflNS);
+	Element dsElement = new Element("biomartds", NAMESPACE);
 	dsElement.setText(dataSourceName);
 	spec.addContent(dsElement);	
+	if (query != null) {
+	    spec.addContent(queryToElement(query));
+	}
 	return spec;
     }
 
@@ -87,7 +102,7 @@ public class BiomartXMLHandler implements XMLHandler {
      * @param info the BiomartConfigBean to serialize to an Element
      */
     private Element getConfigElement(BiomartConfigBean info) {
-	Element martConfig = new Element("biomartconfig", XScufl.XScuflNS);
+	Element martConfig = new Element("biomartconfig", NAMESPACE);
 	martConfig.setAttribute("dbtype", info.dbType);
 	martConfig.setAttribute("dbdriver", info.dbDriver);
 	martConfig.setAttribute("dbhost", info.dbHost);
@@ -99,7 +114,9 @@ public class BiomartXMLHandler implements XMLHandler {
 	}
 	return martConfig;
     }
-    
+    /**
+     * Deserialize a BiomartConfigBean from Element
+     */
     private BiomartConfigBean getConfigBeanFromElement(Element e) {
 	return new BiomartConfigBean(e.getAttributeValue("dbtype"),
 				     e.getAttributeValue("dbdriver"),
@@ -110,4 +127,149 @@ public class BiomartXMLHandler implements XMLHandler {
 				     e.getAttributeValue("dbpassword"));
     }
 
+    /**
+     * Serialize a Query object to Element
+     */
+    private Element queryToElement(Query q) {
+	Element e = new Element("query", NAMESPACE);
+	
+	// Do attributes
+	Attribute[] attributes = q.getAttributes();
+	if (attributes.length > 0) {
+	    Element attributesElement = new Element("attributes", NAMESPACE);
+	    e.addContent(attributesElement);
+	    for (int i = 0; i < attributes.length; i++) {
+		Attribute at = attributes[i];
+		if (at instanceof FieldAttribute) {
+		    attributesElement.addContent(fieldAttributeToElement((FieldAttribute)at));
+		}
+	    }
+	}
+	
+	// Do filters
+	Filter[] filters = q.getFilters();
+	if (filters.length > 0) {
+	    Element filtersElement = new Element("filters", NAMESPACE);
+	    e.addContent(filtersElement);
+	    for (int i = 0; i < filters.length; i++) {
+		Filter f = filters[i];
+		if (f instanceof BasicFilter) {
+		    filtersElement.addContent(basicFilterToElement((BasicFilter)f));
+		}
+		else if (f instanceof BooleanFilter) {
+		    filtersElement.addContent(booleanFilterToElement((BooleanFilter)f));
+		}
+	    }
+	}
+	return e;
+    }
+
+    /**
+     * Deserialize a Query from an Element
+     */
+    private Query elementToQuery(Element e) {
+	// Create new query object
+	Query q = new Query();
+	
+	// Get attributes
+	Element attributesElement = e.getChild("attributes", NAMESPACE);
+	if (attributesElement != null) {
+	    for (Iterator i = attributesElement.getChildren().iterator(); i.hasNext();) {
+		Element ae = (Element)i.next();
+		if (ae.getName().equals("fieldattribute")) {
+		    q.addAttribute(elementToFieldAttribute(ae));
+		}
+	    }
+	}
+
+	// Get filters
+	Element filtersElement = e.getChild("filters", NAMESPACE);
+	if (filtersElement != null) {
+	    for (Iterator i = filtersElement.getChildren().iterator(); i.hasNext();) {
+		Element fe = (Element)i.next();
+		if (fe.getName().equals("basicfilter")) {
+		    q.addFilter(elementToBasicFilter(fe));
+		}
+		else if (fe.getName().equals("booleanfilter")) {
+		    q.addFilter(elementToBooleanFilter(fe));
+		}
+	    }
+	}
+	
+	return q;	
+    }
+
+
+    /**
+     * Serialize FieldAttribute
+     */
+    private Element fieldAttributeToElement(FieldAttribute f) {
+	Element e = new Element("fieldattribute", NAMESPACE);
+	e.setAttribute("field",f.getField());
+	e.setAttribute("key",f.getKey());
+	e.setAttribute("constraint",f.getTableConstraint());
+	return e;	
+    }
+    /**
+     * Deserialize FieldAttribute
+     */
+    private FieldAttribute elementToFieldAttribute(Element e) {
+	return new FieldAttribute(e.getAttributeValue("field"),
+				  e.getAttributeValue("constraint"),
+				  e.getAttributeValue("key"));
+    }
+    
+    /**
+     * Serialize BasicFilter
+     */
+    private Element basicFilterToElement(BasicFilter bf) {
+	Element e = new Element("basicfilter", NAMESPACE);
+	e.setAttribute("field", bf.getField());
+	e.setAttribute("constraint", bf.getTableConstraint());
+	e.setAttribute("key", bf.getKey());
+	e.setAttribute("qualifier", bf.getQualifier());
+	e.setAttribute("value", bf.getValue());
+	if (bf.getHandler() != null) {
+	    e.setAttribute("handler", bf.getHandler());
+	}
+	return e;	
+    }
+    /**
+     * Deserialize BasicFilter
+     */
+    private BasicFilter elementToBasicFilter(Element e) {
+	return new BasicFilter(e.getAttributeValue("field"),
+			       e.getAttributeValue("constraint"),
+			       e.getAttributeValue("key"),
+			       e.getAttributeValue("qualifier"),
+			       e.getAttributeValue("value"),
+			       e.getAttributeValue("handler"));
+    }
+    
+    /**
+     * Serialize BooleanFilter
+     */
+    private Element booleanFilterToElement(BooleanFilter bf) {
+	Element e = new Element("booleanfilter", NAMESPACE);
+	e.setAttribute("field", bf.getField());
+	e.setAttribute("constraint", bf.getTableConstraint());
+	e.setAttribute("key", bf.getKey());
+	e.setAttribute("qualifier", bf.getQualifier());
+	if (bf.getHandler() != null) {
+	    e.setAttribute("handler", bf.getHandler());
+	}
+	return e;
+    }
+    /**
+     * Deserialize BooleanFilter
+     */
+    private BooleanFilter elementToBooleanFilter(Element e) {
+	return new BooleanFilter(e.getAttributeValue("field"),
+				 e.getAttributeValue("constraint"),
+				 e.getAttributeValue("key"),
+				 e.getAttributeValue("qualifier"),
+				 e.getAttributeValue("handler"));
+    }
+    
+    
 }
