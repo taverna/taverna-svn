@@ -24,9 +24,9 @@
 //      Created for Project :   MYGRID
 //      Dependencies        :
 //
-//      Last commit info    :   $Author: ferris $
-//                              $Date: 2004-07-22 10:28:00 $
-//                              $Revision: 1.58 $
+//      Last commit info    :   $Author: cgreenhalgh $
+//                              $Date: 2004-10-01 12:21:41 $
+//                              $Revision: 1.59 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 package uk.ac.soton.itinnovation.taverna.enactor.entities;
@@ -50,6 +50,7 @@ import org.embl.ebi.escience.scufl.enactor.implementation.WorkflowEventDispatche
 
 import uk.ac.soton.itinnovation.taverna.enactor.entities.PortTask;
 import uk.ac.soton.itinnovation.taverna.enactor.entities.TaskExecutionException;
+import uk.ac.soton.itinnovation.taverna.enactor.entities.TransformDataThing;
 
 import uk.ac.soton.itinnovation.freefluo.core.task.*;
 import uk.ac.soton.itinnovation.freefluo.core.event.*;
@@ -332,7 +333,28 @@ public class ProcessorTask extends AbstractTask {
 	    ((DataThing)i.next()).fillLSIDValues();
 	}
     }
-    
+   
+    /**
+     * Do any post-processor transformations required on output 
+     * data things. Currently just special-case handling of replacelsid...
+     * (insert SPI here).
+     */
+    private void transformOutputDataThings(Map inputMap, Map outputMap) {
+	if (outputMap==null) return;
+       	HashMap newMap = new HashMap();
+	for (Iterator i = outputMap.keySet().iterator(); i.hasNext();) {
+	    String name = (String)i.next();
+	    DataThing dataThing = (DataThing)outputMap.get(name);
+	    if (dataThing!=null && name.startsWith("replacelsid")) {
+		newMap.put(name, TransformDataThing.replacelsid(dataThing, inputMap, outputMap));
+       	    }
+	}
+	for (Iterator i = newMap.keySet().iterator(); i.hasNext();) {
+	    String name = (String)i.next();
+	    outputMap.remove(name);
+	    outputMap.put(name, newMap.get(name));
+	}
+    } 
     /**
      * Actually call the service instance, handles the retry logic.
      */
@@ -382,6 +404,7 @@ public class ProcessorTask extends AbstractTask {
 	// Populate all LSIDs in the output map
 	Map outputMap = worker.execute(inputMap, this);
 	fillAllLSIDs(outputMap);
+	transformOutputDataThings(inputMap, outputMap);
 	AnnotationTemplate[] templates = activeProcessor.getAnnotationTemplates();	    
 	AnnotationTemplate[] defaultTemplates = activeProcessor.defaultAnnotationTemplates();
 	if (templates.length > 0 || defaultTemplates.length > 0) {
