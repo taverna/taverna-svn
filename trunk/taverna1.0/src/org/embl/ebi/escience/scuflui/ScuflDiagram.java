@@ -29,8 +29,7 @@ import org.embl.ebi.escience.scufl.view.DotView;
 import java.util.Iterator;
 
 // IO Imports
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
 
 import org.embl.ebi.escience.scuflui.ScuflIcons;
 import org.embl.ebi.escience.scuflui.ScuflUIComponent;
@@ -330,9 +329,13 @@ public class ScuflDiagram extends JComponent
 	try {
 	    String dotText = this.dot.getDot();
 	    Process dotProcess = Runtime.getRuntime().exec("dot -Tpng");
-	    OutputStream out = dotProcess.getOutputStream();
+	    OutputStream out = new BufferedOutputStream(dotProcess.getOutputStream());
 	    out.write(dotText.getBytes());
-	    InputStream in = dotProcess.getInputStream();
+	    out.flush();
+	    out.close();
+	    InputStream in = new BufferedInputStream(dotProcess.getInputStream());
+	    // Wait for the process to complete
+	    //dotProcess.waitFor();
 	    ImageInputStream iis = ImageIO.createImageInputStream(in);
 	    String suffix = "png";
 	    Iterator readers = ImageIO.getImageReadersBySuffix( suffix );
