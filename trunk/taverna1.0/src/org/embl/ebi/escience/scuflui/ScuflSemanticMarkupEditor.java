@@ -250,6 +250,17 @@ public class ScuflSemanticMarkupEditor extends JPanel implements ScuflUIComponen
 			    }
 			}
 		    }
+		    else
+		    {
+		    	if (expanded)
+				{
+					setIcon(ScuflIcons.folderOpenIcon);
+				}
+				else
+				{
+					setIcon(ScuflIcons.folderClosedIcon);
+				}		    	
+		    }
 		    return this;
 		} 
 	    };

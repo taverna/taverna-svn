@@ -17,6 +17,8 @@ import java.util.List; // ambiguous with: java.awt.List
 import java.util.Set;
 
 import org.embl.ebi.escience.baclava.factory.DataThingTreeNode;
+import org.embl.ebi.escience.scuflui.ScuflIcons;
+
 import java.lang.ClassLoader;
 import java.lang.Exception;
 import java.lang.Object;
@@ -93,6 +95,14 @@ public class DataThingTreeNodeRenderer extends DefaultTreeCellRenderer {
 	    else {
 		setText("<html>Set"+lsid+"</html>");
 	    }
+	    if (expanded)
+		{
+			setIcon(ScuflIcons.folderOpenIcon);
+		}
+		else
+		{
+			setIcon(ScuflIcons.folderClosedIcon);
+		}	    
 	}
 	return this;
     }

@@ -89,7 +89,7 @@ import org.jdom.output.XMLOutputter;
  * COMMENT DataThingConstructionPanel
  * 
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover </a>
- * @version $Revision: 1.16 $
+ * @version $Revision: 1.17 $
  */
 public class DataThingConstructionPanel extends JPanel implements ScuflUIComponent, ScuflModelEventListener
 {
@@ -450,20 +450,37 @@ public class DataThingConstructionPanel extends JPanel implements ScuflUICompone
 		 */
 		public DataThing getDataThing()
 		{
-			if (getChildCount() == 1)
-			{
-				return ((DataThingNode) getFirstChild()).getDataThing();
-			}
 			ArrayList inputList = new ArrayList();
 			HashMap dataThingList = new HashMap();
+			//boolean areCollections = false;
 			for (int index = 0; index < getChildCount(); index++)
 			{
 				DataThingNode inputNode = (DataThingNode) getChildAt(index);
-				inputList.add(inputNode.getDataThing().getDataObject());
-				dataThingList.put(inputNode.getDataThing().getDataObject(), inputNode.getDataThing());
+				DataThing childThing = inputNode.getDataThing();
+				inputList.add(childThing.getDataObject());
+				dataThingList.put(childThing.getDataObject(), childThing);
+				/*if (childThing.getDataObject() instanceof Collection)
+				{
+					areCollections = true;
+				}*/
 			}
+			/*if (areCollections)
+			{
+				for (int index = 0; index < inputList.size(); index++)
+				{
+					Object dataObject = inputList.get(index);
+					if (!(dataObject instanceof Collection))
+					{
+						ArrayList collection = new ArrayList();
+						collection.add(dataObject);
+						inputList.set(index, collection);
+						Object obj = dataThingList.get(dataObject);
+						dataThingList.put(collection, obj);
+					}
+				}
+			}*/
 			DataThing result = DataThingFactory.bake(inputList);
-			// HACK Ugly ugly hack. Oh well.
+			// Make sure metadata is persisted
 			for (int index = 0; index < inputList.size(); index++)
 			{
 				result.copyMetadataFrom((DataThing) dataThingList.get(inputList.get(index)));
@@ -611,6 +628,15 @@ public class DataThingConstructionPanel extends JPanel implements ScuflUICompone
 			menu.add(createItem);
 			menu.add(createListItem);
 		}
+		
+		public DataThing getDataThing()
+		{
+			if (getChildCount() == 1)
+			{
+				return ((DataThingNode) getFirstChild()).getDataThing();
+			}
+			return super.getDataThing();
+		}		
 	}
 
 	private class InputDataThingNode extends DefaultMutableTreeNode implements PanelTreeNode, DataThingNode
@@ -1077,18 +1103,18 @@ public class DataThingConstructionPanel extends JPanel implements ScuflUICompone
 						{
 							boolean canAddList = true;
 							boolean canAddInput = true;
-							for(int index = 0; index < parent.getChildCount(); index++)
+							for (int index = 0; index < parent.getChildCount(); index++)
 							{
 								InputListNode aListNode = (InputListNode) parent.getChildAt(index);
-								if(aListNode.getChildCount() > 0)
+								if (aListNode.getChildCount() > 0)
 								{
 									canAddList = aListNode.getFirstChild() instanceof InputListNode;
 									canAddInput = !canAddList;
-									break;									
+									break;
 								}
 							}
 							newListButton.setEnabled(canAddList);
-							newInputButton.setEnabled(canAddInput);	
+							newInputButton.setEnabled(canAddInput);
 						}
 						else
 						{

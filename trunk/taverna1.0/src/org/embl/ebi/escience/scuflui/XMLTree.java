@@ -14,6 +14,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 // IO Imports
+import java.awt.Component;
 import java.io.ByteArrayInputStream;
 
 import java.lang.Exception;
@@ -35,6 +36,17 @@ import java.util.*;
  */
 public class XMLTree extends JTree {
        
+	private class XMLNode extends DefaultMutableTreeNode
+	{
+		short nodeType;
+		
+		public XMLNode(Object userObject, short nodeType)
+		{
+			super(userObject);
+			this.nodeType = nodeType;
+		}
+	}
+	
     /**
      * Build a new XMLTree from the supplied String containing XML.
      */
@@ -52,6 +64,36 @@ public class XMLTree extends JTree {
 	// Take the DOM root node and convert it to a Tree model for the JTree
 	DefaultMutableTreeNode treeNode = createTreeNode(parseXml(text, db));
 	setModel(new DefaultTreeModel(treeNode));
+	setCellRenderer(new DefaultTreeCellRenderer()
+	{
+		/*
+		 * @see javax.swing.tree.TreeCellRenderer#getTreeCellRendererComponent(javax.swing.JTree,
+		 *      java.lang.Object, boolean, boolean, boolean, int, boolean)
+		 */
+		public Component getTreeCellRendererComponent(JTree tree, Object value, boolean sel, boolean expanded,
+				boolean leaf, int row, boolean hasFocus)
+		{
+			super.getTreeCellRendererComponent(tree, value, sel, expanded, leaf, row, hasFocus);
+			if(value instanceof XMLNode)
+			{
+				XMLNode node = (XMLNode)value;
+				switch (node.nodeType)
+					{
+						case Node.ELEMENT_NODE:
+							setIcon(ScuflIcons.xmlNodeIcon);
+							break;
+
+						case Node.TEXT_NODE:
+							setIcon(ScuflIcons.leafIcon);
+							break;
+							
+						default:
+							break;
+					}
+			}
+			return this;
+		}		
+	});
 	setAllNodesExpanded();
     } 
     public void setAllNodesExpanded() {
@@ -85,11 +127,11 @@ public class XMLTree extends JTree {
      * to a DefaultMutableTreeNode. The JTree then uses this object as a tree model.
      * @return Returns a DefaultMutableTreeNode object based on the root Node passed in
      */
-    private DefaultMutableTreeNode createTreeNode(Node root) {
-	DefaultMutableTreeNode  treeNode = null;
-	String                  type, value;
-	NamedNodeMap            attribs;
-	Node                    attribNode;
+    private XMLNode createTreeNode(Node root) {
+	XMLNode       treeNode = null;
+	String        type, value;
+	NamedNodeMap  attribs;
+	Node          attribNode;
 	// Get data from root node
 	type = getNodeType( root );
 	StringBuffer nameBuffer = new StringBuffer("<html>"+root.getNodeName());
@@ -115,10 +157,10 @@ public class XMLTree extends JTree {
 	    } 
 	} 
 	nameBuffer.append("</html>");
-	treeNode = new DefaultMutableTreeNode( root.getNodeType() == Node.TEXT_NODE ? 
+	treeNode = new XMLNode( root.getNodeType() == Node.TEXT_NODE ? 
 					       "<html><pre><font color=\"green\">"+value+"</font></pre></html>" 
 					       :
-					       nameBuffer.toString() );
+					       nameBuffer.toString(), root.getNodeType() );
 	
 	// Recurse children nodes if any exist
 	if(root.hasChildNodes()) {
