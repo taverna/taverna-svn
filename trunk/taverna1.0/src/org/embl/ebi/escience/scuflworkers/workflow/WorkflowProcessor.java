@@ -58,7 +58,11 @@ public class WorkflowProcessor extends Processor implements java.io.Serializable
 	    soe.printStackTrace();
 	}
     }
-
+    
+    public int getMaximumWorkers() {
+	return 10;
+    }
+    
     /**
      * Construct a new processor with the given model to bind to, name
      * and URL of a workflow description to contain. 

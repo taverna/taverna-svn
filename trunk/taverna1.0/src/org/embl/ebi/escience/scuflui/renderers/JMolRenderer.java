@@ -26,8 +26,10 @@ public class JMolRenderer extends AbstractRenderer.ByMimeType {
     public boolean canHandle(RendererRegistry renderers,
 			     Object userObject,
 			     String mimeType) {
-	if (mimeType.matches(".*chemical/x-pdb.*")) {
-	    return true;
+	if (userObject instanceof String) {
+	    if (mimeType.matches(".*chemical/x-pdb.*")) {
+		return true;
+	    }
 	}
 	return false;
     }
