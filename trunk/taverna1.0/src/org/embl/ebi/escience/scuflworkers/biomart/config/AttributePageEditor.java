@@ -732,7 +732,6 @@ public class AttributePageEditor extends JPanel {
 	    extentPanel.setMaximumSize(new Dimension(600,45));
 	    add(extentPanel);
 
-
 	    JPanel imagePanel = new JPanel(new BorderLayout());
 	    imagePanel.setBackground(Color.WHITE);
 	    imagePanel.add(new ShadedLabel("Sequence glyph", ShadedLabel.TAVERNA_ORANGE, true),
@@ -743,6 +742,7 @@ public class AttributePageEditor extends JPanel {
 	
 	    // Change the image when an option is selected and set the appropriate
 	    // flanking options, also update the query.
+	    final Query theQuery = query;
 	    sequenceOptionsSelect.addActionListener(new ActionListener() {
 		    public void actionPerformed(ActionEvent ae) {
 			fiveFlankLength.setEnabled(false);
@@ -766,6 +766,15 @@ public class AttributePageEditor extends JPanel {
 					      BorderLayout.CENTER);
 			    fiveFlankLength.setEnabled(has5Flank[index]);
 			    threeFlankLength.setEnabled(has3Flank[index]);
+			    SequenceDescription sd = theQuery.getSequenceDescription();
+			    if (sd != null) {
+				if (has5Flank[index]) {
+				    fiveFlankLength.setText(sd.getLeftFlank()+"");
+				}
+				if (has3Flank[index]) {
+				    threeFlankLength.setText(sd.getRightFlank()+"");
+				}
+			    }
 			}
 			else {
 			    internalImage.removeAll();

@@ -564,6 +564,7 @@ public class FilterPageEditor extends JPanel {
 	    if (options.length == 0) {
 		list.setEnabled(false);
 	    }
+	    
 	    // Find an existing value if such exists
 	    Filter[] currentFilters = query.getFilters();
 	    for (int i = 0; i < currentFilters.length; i++) {
@@ -573,11 +574,15 @@ public class FilterPageEditor extends JPanel {
 		for (int j = 0; j < myIDs.length; j++) {
 		    if (filterID.equals(myIDs[j]) &&
 			currentFilters[i] instanceof BasicFilter) {
-			list.setSelectedIndex(j+1);
-			break;
+			Option op = ((OptionHolder)list.getItemAt(j+1)).option;
+			if (currentFilters[i].getValue().equals(op.getValue())) {
+			    list.setSelectedIndex(j+1);
+			    break;
+			}
 		    }
 		}
 	    }
+	    
 	    // Create a listener for the list box
 	    listListener = new ActionListener() {
 		    OptionHolder lastSelected = null;
@@ -613,7 +618,7 @@ public class FilterPageEditor extends JPanel {
 		    }
 		};
 	    list.addActionListener(listListener);
-	    
+	    	    
 	    add(Box.createRigidArea(new Dimension(10,10)),
 		BorderLayout.EAST);
 	    add(Box.createRigidArea(new Dimension(10,10)),
