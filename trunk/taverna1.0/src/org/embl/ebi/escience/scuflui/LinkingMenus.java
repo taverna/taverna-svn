@@ -125,6 +125,7 @@ public class LinkingMenus {
 			currentMenu = new JMenu("Inputs "+(offset+1)+" to "+((offset + menuSize > inputs.length)?inputs.length:offset+menuSize)); 
 			processorMenu.add(currentMenu);
 			currentMenu.add(new ShadedLabel("Inputs "+(offset+1)+" to "+((offset + menuSize > inputs.length)?inputs.length:offset+menuSize), ShadedLabel.TAVERNA_ORANGE));
+			currentMenu.addSeparator();
 		    }
 		    for (int j = offset; (j < inputs.length) && 
 			     (j < offset + menuSize); j++) {
