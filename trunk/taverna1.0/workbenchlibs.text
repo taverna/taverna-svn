@@ -5,7 +5,7 @@ concurrent.jar
 jaxrpc.jar
 jdom.jar
 log4j.jar
-mygridwfe.jar
+freefluo.jar
 saaj.jar
 servlet.jar
 talisman1.4.5.11.jar
