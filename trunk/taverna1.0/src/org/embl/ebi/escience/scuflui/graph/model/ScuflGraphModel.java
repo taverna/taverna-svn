@@ -51,7 +51,7 @@ import org.jgraph.graph.ParentMap;
 /**
  * 
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover </a>
- * @version $Revision: 1.17 $
+ * @version $Revision: 1.18 $
  */
 public class ScuflGraphModel implements GraphModel, GraphModelListener, ScuflUIComponent
 {
@@ -639,7 +639,6 @@ public class ScuflGraphModel implements GraphModel, GraphModelListener, ScuflUIC
 	 */
 	public void edit(Map attributes, ConnectionSet cs, ParentMap pm, UndoableEdit[] e)
 	{
-		System.err.println("Edit! " + attributes);
 		if (attributes != null && !attributes.isEmpty())
 		{
 			Iterator it = attributes.entrySet().iterator();
@@ -653,16 +652,21 @@ public class ScuflGraphModel implements GraphModel, GraphModelListener, ScuflUIC
 				{
 					if (cell instanceof Processor)
 					{
+						map.remove(GraphConstants.VALUE);
+						map.remove(GraphConstants.BOUNDS);
+						map.remove(GraphConstants.RESIZE);
+						if(map.isEmpty())
+						{
+							it.remove();
+						}						
 						Processor processor = (Processor) cell;
 						processor.setName(value.toString());
-						GraphConstants.setValue(map, processor.getName());
 					}
 					// TODO Handle renaming of input/output ports?
 				}
 			}
-			//updateAttributes(attributes);
-			//fireGraphChangedEvent(new GraphModelEvent(this, new ScuflGraphAttributeChange(
-			//		attributes)));
+			updateAttributes(attributes);
+			fireGraphChangedEvent(new GraphModelEvent(this, new ScuflGraphAttributeChange(attributes)));
 		}
 	}
 
