@@ -23,6 +23,7 @@ import org.embl.ebi.escience.scuflui.workbench.ScavengerTree;
 import org.embl.ebi.escience.scuflui.workbench.SoaplabScavenger;
 import org.embl.ebi.escience.scuflui.workbench.TalismanScavenger;
 import org.embl.ebi.escience.scuflui.workbench.WSDLBasedScavenger;
+import org.embl.ebi.escience.scuflui.workbench.WebScavenger;
 import org.embl.ebi.escience.scuflui.workbench.Workbench;
 import org.embl.ebi.escience.scuflui.workbench.WorkflowScavenger;
 import java.lang.Object;
@@ -120,10 +121,12 @@ public class ScavengerTreePopupHandler extends MouseAdapter {
 		    JMenuItem addWSDL = new JMenuItem("Add new WSDL scavenger...", ScuflIcons.wsdlIcon);
 		    JMenuItem addTalisman = new JMenuItem("Add new Talisman scavenger...", ScuflIcons.talismanIcon);
 		    JMenuItem addWorkflow = new JMenuItem("Add new Workflow scavenger...", ScuflIcons.workflowIcon);
+		    JMenuItem addWeb = new JMenuItem("Collect Workflows from web...", ScuflIcons.webIcon);
 		    menu.add(addSoaplab);
 		    menu.add(addWSDL);
 		    menu.add(addTalisman);
 		    menu.add(addWorkflow);
+		    menu.add(addWeb);
 		    addSoaplab.addActionListener(new ActionListener() {
 			    public void actionPerformed(ActionEvent ae) {
 				String baseURL = (String)JOptionPane.showInputDialog(null,
@@ -212,7 +215,28 @@ public class ScavengerTreePopupHandler extends MouseAdapter {
 				}	
 			    }
 			});
-
+		    addWeb.addActionListener(new ActionListener() {
+			    public void actionPerformed(ActionEvent ae) {
+				String rootURL = (String)JOptionPane.showInputDialog(null,
+										     "Address of the web page to crawl from?",
+										     "Web root location",
+										     JOptionPane.QUESTION_MESSAGE,
+										     null,
+										     null,
+										     "http://");
+				if (rootURL!=null) {
+				    try {
+					ScavengerTreePopupHandler.this.scavenger.addScavenger(new WebScavenger(rootURL));					
+				    }
+				    catch (ScavengerCreationException sce) {
+					JOptionPane.showMessageDialog(null,
+								      "Unable to create scavenger!\n"+sce.getMessage(),
+								      "Exception!",
+								      JOptionPane.ERROR_MESSAGE);
+				    }
+				}	
+			    }
+			});
 		    menu.addSeparator();
 		    JMenuItem collect = new JMenuItem("Collect scavengers from model", Workbench.importIcon);
 		    menu.add(collect);

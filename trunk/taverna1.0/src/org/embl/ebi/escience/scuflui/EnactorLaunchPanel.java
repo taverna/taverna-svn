@@ -21,16 +21,24 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
+// IO Imports
+import java.io.File;
+import java.io.InputStream;
+
 // JDOM Imports
 import org.jdom.CDATA;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.output.XMLOutputter;
 
+// Network Imports
+import java.net.URL;
+
 import org.embl.ebi.escience.scuflui.ScuflIcons;
 import org.embl.ebi.escience.scuflui.ScuflUIComponent;
+import java.lang.Exception;
 import java.lang.String;
-import java.lang.System;
+import java.lang.StringBuffer;
 
 
 
@@ -67,7 +75,8 @@ public class EnactorLaunchPanel extends JPanel
 	JScrollPane xmlPane = new JScrollPane(xmlText);
 	xmlPane.setPreferredSize(new Dimension(100,100));
 	JPanel xmlPanel = new JPanel(new BorderLayout());
-	xmlPanel.setBorder(BorderFactory.createEtchedBorder());
+	xmlPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(),
+							    "Preview input.xml and run"));
 	xmlPanel.add(xmlPane, BorderLayout.CENTER);
 	JPanel actionPanel = new JPanel();
 	actionPanel.setLayout(new BoxLayout(actionPanel, BoxLayout.PAGE_AXIS));
@@ -84,8 +93,6 @@ public class EnactorLaunchPanel extends JPanel
 		}
 	    });
 	add(xmlPanel, BorderLayout.CENTER);
-
-
 	JButton runButton = new JButton(ScuflIcons.runIcon);
 	actionPanel.add(runButton);
 	runButton.setPreferredSize(new Dimension(32,32));
@@ -236,7 +243,6 @@ class WorkflowInputPanel extends JPanel {
 
 	super();
 	setLayout(new BorderLayout());
-	System.out.println("Creating new workflow input panel "+p.getName()+" - "+p.getSyntacticType());
 	Border border = BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(),
 							 p.getName()+" - "+p.getSyntacticType());
 	this.setBorder(border);
@@ -263,14 +269,60 @@ class WorkflowInputPanel extends JPanel {
 		    text.setText("");
 		}
 	    });
+	final JFileChooser fc = new JFileChooser();
 	loadFromFile.addActionListener(new ActionListener() {
 		public void actionPerformed(ActionEvent e) {
-		    // TODO - Implement load from file
+		    try {
+			int returnVal = fc.showOpenDialog(WorkflowInputPanel.this);
+			if (returnVal == JFileChooser.APPROVE_OPTION) {
+			    File file = fc.getSelectedFile();
+			    InputStream is = file.toURL().openStream();
+			    java.io.DataInputStream dis = new java.io.DataInputStream(new java.io.BufferedInputStream(is));
+			    StringBuffer sb = new StringBuffer();
+			    String s = null;
+			    while ((s = dis.readLine()) != null) { 
+				sb.append(s);
+				sb.append("\n");
+			    }
+			    text.setText(sb.toString());
+			}
+		    }
+		    catch (Exception ex) {
+			JOptionPane.showMessageDialog(null,
+						      "Problem opening content from web : \n"+ex.getMessage(),
+						      "Exception!",
+						      JOptionPane.ERROR_MESSAGE);
+		    }
 		}
 	    });
 	loadFromURL.addActionListener(new ActionListener() {
 		public void actionPerformed(ActionEvent e) {
-		    // TODO - Implement load from URL
+		    try {
+			String name = (String)JOptionPane.showInputDialog(null,
+									  "URL to open?",
+									  "URL Required",
+									  JOptionPane.QUESTION_MESSAGE,
+									  null,
+									  null,
+									  "http://");
+			if (name != null) {
+			    InputStream is = new URL(name).openStream();
+			    java.io.DataInputStream dis = new java.io.DataInputStream(new java.io.BufferedInputStream(is));
+			    StringBuffer sb = new StringBuffer();
+			    String s = null;
+			    while ((s = dis.readLine()) != null) { 
+				sb.append(s);
+				sb.append("\n");
+			    }
+			    text.setText(sb.toString());
+			}
+		    }
+		    catch (Exception ex) {
+			JOptionPane.showMessageDialog(null,
+						      "Problem opening content from web : \n"+ex.getMessage(),
+						      "Exception!",
+						      JOptionPane.ERROR_MESSAGE);
+		    }
 		}
 	    });
 	
