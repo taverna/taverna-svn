@@ -57,7 +57,11 @@ public class TextXGraphviz
     {
         String dotText = (String) dataThing.getDataObject();
         try {
-            Process dotProcess = Runtime.getRuntime().exec("dot -Tpng");
+	    String dotLocation = System.getProperty("taverna.dotlocation");
+	    if (dotLocation == null) {
+		dotLocation = "dot";
+	    }
+            Process dotProcess = Runtime.getRuntime().exec(new String[]{dotLocation,"-Tpng"});
             OutputStream out = dotProcess.getOutputStream();
             out.write(dotText.getBytes());
             out.flush();

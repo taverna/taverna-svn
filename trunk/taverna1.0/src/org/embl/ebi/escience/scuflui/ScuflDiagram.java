@@ -38,6 +38,7 @@ import java.lang.Process;
 import java.lang.Runtime;
 import java.lang.String;
 import java.util.*;
+import javax.swing.JOptionPane;
 
 
 /**
@@ -328,7 +329,11 @@ public class ScuflDiagram extends JComponent
     private void updateGraphic() {
 	try {
 	    String dotText = this.dot.getDot();
-	    Process dotProcess = Runtime.getRuntime().exec("dot -Tpng");
+	    String dotLocation = System.getProperty("taverna.dotlocation");
+	    if (dotLocation == null) {
+		dotLocation = "dot";
+	    }
+	    Process dotProcess = Runtime.getRuntime().exec(new String[]{dotLocation,"-Tpng"});
 	    OutputStream out = new BufferedOutputStream(dotProcess.getOutputStream());
 	    out.write(dotText.getBytes());
 	    out.flush();
@@ -347,7 +352,11 @@ public class ScuflDiagram extends JComponent
 	    doLayout();
 	    repaint();
 	}
-	catch (Exception e) {
+	catch (Exception ex) {
+	    JOptionPane.showMessageDialog(ScuflDiagram.this,
+					  ex.getMessage(),
+					  "Error!",
+					  JOptionPane.ERROR_MESSAGE);
 	    // Do nothing
 	    // throw new RuntimeException(e);
 	}

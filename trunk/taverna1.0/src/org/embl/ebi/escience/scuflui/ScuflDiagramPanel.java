@@ -150,7 +150,11 @@ public class ScuflDiagramPanel extends JPanel
 			    File file = fc.getSelectedFile();
 			    FileOutputStream fos = new FileOutputStream(file);
 			    // Invoke DOT to get the SVG document as a byte stream
-			    Process dotProcess = Runtime.getRuntime().exec("dot -Tpng");
+			    String dotLocation = System.getProperty("taverna.dotlocation");
+			    if (dotLocation == null) {
+				dotLocation = "dot";
+			    }
+			    Process dotProcess = Runtime.getRuntime().exec(new String[]{dotLocation,"-Tpng"});
 			    OutputStream dotOut = dotProcess.getOutputStream();
 			    dotOut.write(diagram.getDot().getBytes());
 			    dotOut.flush();
@@ -176,7 +180,11 @@ public class ScuflDiagramPanel extends JPanel
 			    File file = fc.getSelectedFile();
 			    FileOutputStream fos = new FileOutputStream(file);
 			    // Invoke DOT to get the SVG document as a byte stream
-			    Process dotProcess = Runtime.getRuntime().exec("dot -Tsvg");
+			    String dotLocation = System.getProperty("taverna.dotlocation");
+			    if (dotLocation == null) {
+				dotLocation = "dot";
+			    }
+			    Process dotProcess = Runtime.getRuntime().exec(new String[]{dotLocation,"-Tsvg"});
 			    OutputStream dotOut = dotProcess.getOutputStream();
 			    dotOut.write(diagram.getDot().getBytes());
 			    dotOut.flush();
