@@ -25,7 +25,7 @@
 		<s:input>subworkflow:prophecyType</s:input>
 		<s:output>prophecyType</s:output>
 	</s:link>
-	<!--
+	
 	<s:link>
 		<s:input>outfile</s:input>
 		<s:output>subworkflow:outfile2</s:output>
@@ -33,7 +33,7 @@
 	<s:link>
 		<s:input>outfile2</s:input>
 		<s:output>subworkflow:outfile2</s:output>
-	</s:link> -->
+	</s:link> 
 	<s:source>sequenceusa</s:source>
 	<s:source>orfminsize</s:source>
 	<s:source>orffind</s:source>

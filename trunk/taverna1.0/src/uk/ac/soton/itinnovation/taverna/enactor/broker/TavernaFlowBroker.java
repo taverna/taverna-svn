@@ -25,8 +25,8 @@
 //      Dependencies        :
 //
 //      Last commit info    :   $Author: dmarvin $
-//                              $Date: 2003-06-08 11:28:55 $
-//                              $Revision: 1.14 $
+//                              $Date: 2003-06-08 18:35:55 $
+//                              $Revision: 1.15 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 
@@ -90,10 +90,11 @@ public class TavernaFlowBroker implements FlowBroker {
         Flow flow = null;
         DiGraph dGrph = null;
         String inputData = null;
-				String userID = null;
-				String userCtx = null;
-				Input input = null;
-				LogLevel modelLogLevel = null;
+		String userID = null;
+		String userCtx = null;
+		Input input = null;
+		LogLevel modelLogLevel = null;
+		String originalFlowDefn = null;
         try {
             //for Taverna the passed object is a holder for the XScufl represention of the workflow and other important bits???
             ScuflModel model = null;
@@ -101,8 +102,8 @@ public class TavernaFlowBroker implements FlowBroker {
             if (o instanceof TavernaStringifiedWorkflowSubmission) {
                 TavernaStringifiedWorkflowSubmission submit = (TavernaStringifiedWorkflowSubmission) o;
                 String workflowDefn = submit.getXScuflDefinition();
-				
-								inputData = submit.getInputData();
+				originalFlowDefn = workflowDefn;
+				inputData = submit.getInputData();
                 userID = submit.getUserID();
                 userCtx = submit.getUserNamespaceCxt();
                 try {
@@ -157,7 +158,8 @@ public class TavernaFlowBroker implements FlowBroker {
 								model = submit.getScuflModel();
 								input = submit.getInputData();
 								userID = submit.getUserID();
-                userCtx = submit.getUserNamespaceCxt();
+								userCtx = submit.getUserNamespaceCxt();
+								//**TODO** originalFlowDefn = model.getXScuflDefnAsString();
 						} else
                 throw new WorkflowCommandException("Sorry unsupported format for submitted flow");
 
@@ -195,10 +197,10 @@ public class TavernaFlowBroker implements FlowBroker {
                 Dispatcher dispatcher = new TavernaDispatcher();
 
                 tasks[i].setDispatcher(dispatcher);
-						}
+			}
             //update the flow for this
             flow.update();
-            TavernaFlowReceipt receipt = new TavernaFlowReceipt(flow,userID,modelLogLevel);
+            TavernaFlowReceipt receipt = new TavernaFlowReceipt(flow,originalFlowDefn,input,userID,modelLogLevel);
 
             flow.addListener(receipt);
 
@@ -206,7 +208,6 @@ public class TavernaFlowBroker implements FlowBroker {
 
             //create flowcommandevent and fire it
             commandHandler.put(new FlowCommandEvent("New flow submitted with ID: " + flow.getID(), flow, FlowCommandEvent.FLOW_SUBMIT));
-            //notifyFlowCommandEventListeners(new FlowCommandEvent("New flow submitted with ID: " + flow.getID(),flow,FlowCommandEvent.FLOW_SUBMIT));
             boolean notifyConfigSetting = false;
 
             //return a suitable receipt
@@ -282,11 +283,10 @@ public class TavernaFlowBroker implements FlowBroker {
     public void releaseFlow(FlowReceipt receipt) throws WorkflowCommandException {
 		try{	
 			//get the flow
-		  Flow flow = FlowRegistry.getInstance().getFlow(receipt.getID());
-		  FlowCommandHandler commandHandler = FlowCommandHandler.getInstance();
-
-		  commandHandler.put(new FlowCommandEvent("Release flow with ID: " + receipt.getID(), flow, FlowCommandEvent.FLOW_REMOVE));
-
+			Flow flow = FlowRegistry.getInstance().getFlow(receipt.getID());
+			FlowCommandHandler commandHandler = FlowCommandHandler.getInstance();
+			commandHandler.put(new FlowCommandEvent("Release flow with ID: " + receipt.getID(), flow, FlowCommandEvent.FLOW_REMOVE));
+		  
 		} catch (Exception ex) {
 		  logger.error(ex);
 		}	

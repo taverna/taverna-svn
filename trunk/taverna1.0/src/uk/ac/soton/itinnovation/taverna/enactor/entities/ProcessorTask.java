@@ -25,8 +25,8 @@
 //      Dependencies        :
 //
 //      Last commit info    :   $Author: dmarvin $
-//                              $Date: 2003-06-06 16:45:09 $
-//                              $Revision: 1.12 $
+//                              $Date: 2003-06-08 18:36:05 $
+//                              $Revision: 1.13 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 package uk.ac.soton.itinnovation.taverna.enactor.entities;
@@ -37,6 +37,7 @@ import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.serviceprovidermana
 import uk.ac.soton.itinnovation.taverna.enactor.broker.LogLevel;
 import uk.ac.soton.itinnovation.mygrid.workflow.enactor.io.*;
 import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.entities.graph.*;
+import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.entities.TimePoint;
 import org.embl.ebi.escience.scufl.Port;
 import java.util.*;
 
@@ -121,26 +122,23 @@ public abstract class ProcessorTask extends TavernaTask{
      */
     public uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.eventservice.TaskStateMessage doTask() {
 	try {
-	    uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.eventservice.TaskStateMessage result;
-	    //do any pre-processing here
+	    System.out.println("Commencing ProcessorTask");
+		uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.eventservice.TaskStateMessage result;
+	    startTime =  new TimePoint();
+		//do any pre-processing here
 	    
 	    // Check all the inputs, find any cardinality mismatches.
 	    Map inputInfoMap = new HashMap();
 	    GraphNode[] inputs = getParents();
-	    System.out.println("Number of inputs: "+ inputs.length);
-			for (int i = 0; i < inputs.length; i++) {
+	    for (int i = 0; i < inputs.length; i++) {
 		if (inputs[i] instanceof PortTask) {
 		    PortTask pt = (PortTask)inputs[i];
 		    Part p = pt.getData();
 				String name = p.getName();
-		    Object value = p.getTypedValue();
-		    System.out.println("PortTask Part name: " + name);
-				System.out.println("PortTask Part type: "+ p.getType());
-				System.out.println("PortTask Part actualType: " + p.getTypedValue().getClass());
+				Object value = p.getTypedValue();
 				PartInfo pi = new PartInfo(p);
-				System.out.println("First time: "+ pi.toString());
-		    inputInfoMap.put(name, pi);
-		}
+				inputInfoMap.put(name, pi);
+			}
 	    }
 	    
 	    // Get the output PortTask objects
@@ -175,7 +173,8 @@ public abstract class ProcessorTask extends TavernaTask{
 					//at present only support single dimension String Arrays
 					//if this is a String Array and the associated input is a String 
 					//(distinguished by port syntactic type)
-					//then want to iterate 
+					//then want to iterate
+					System.out.println("Dimension is greater that zero, going to iterate");
 					Part part = pi.getPart();
 					Port port = proc.locatePort(part.getName());
 					if(part.getType().equals("string[]") && port.getSyntacticType().equals("string")) {
@@ -183,7 +182,6 @@ public abstract class ProcessorTask extends TavernaTask{
 						Part[] prts = new Part[strings.length];
 						for(int x=0;x<strings.length;x++) {
 							Part prt = new Part(-1,part.getName(),"string",strings[x]);
-							System.out.println("Type of element:" + strings[x].getClass());
 							prts[x] = prt;
 							}
 							is.addOrthogonalArray(prts);
@@ -256,19 +254,20 @@ public abstract class ProcessorTask extends TavernaTask{
 					}
 				}
 	    }
+			endTime = new TimePoint();
 			return new TaskStateMessage(getParentFlow().getID(), getID(), TaskStateMessage.COMPLETE,"Task completed successfully");
 	    
 
 	    //return result;
 	}
 	catch (TaskExecutionException ex) {
-			
+			endTime = new TimePoint();
 			logger.error(ex);
 			return new TaskStateMessage(getParentFlow().getID(),getID(), TaskStateMessage.FAILED,ex.getMessage());
 	}
 	catch (Exception ex){
-	    ex.printStackTrace();
-			logger.error(ex);
+	    endTime = new TimePoint();
+		logger.error(ex);
 	    return new TaskStateMessage(getParentFlow().getID(), 
 					getID(), 
 					TaskStateMessage.FAILED, 

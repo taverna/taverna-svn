@@ -25,8 +25,8 @@
 //      Dependencies        :
 //
 //      Last commit info    :   $Author: dmarvin $
-//                              $Date: 2003-06-06 09:47:46 $
-//                              $Revision: 1.8 $
+//                              $Date: 2003-06-08 18:35:55 $
+//                              $Revision: 1.9 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 
@@ -45,6 +45,7 @@ import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.entities.graph.Grap
 import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.entities.taskstate.TaskState;
 import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.eventservice.FlowEvent;
 import uk.ac.soton.itinnovation.mygrid.workflow.enactor.io.Output;
+import uk.ac.soton.itinnovation.mygrid.workflow.enactor.io.Input;
 import uk.ac.soton.itinnovation.mygrid.workflow.enactor.io.Part;
 import uk.ac.soton.itinnovation.taverna.enactor.entities.PortTask;
 import uk.ac.soton.itinnovation.taverna.enactor.entities.ProcessorTask;
@@ -59,6 +60,7 @@ import java.util.List;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.Text;
+import org.jdom.CDATA;
 import org.jdom.output.XMLOutputter;
 
 import uk.ac.soton.itinnovation.taverna.enactor.broker.LogLevel;
@@ -79,14 +81,18 @@ public class TavernaFlowReceipt extends WSFlowReceipt {
 	private Logger logger = Logger.getLogger(getClass());
 	private String userID = null;
 	private LogLevel modelLogLevel;
+	private String flowDefnString;
+	private Input input;
     /**
      * Constructor for this concrete instance of a flow receipt
      * @ Flow to which this receipt applies.
      */
-    public TavernaFlowReceipt(Flow flow,String userID,LogLevel modelLogLevel) throws  WorkflowSubmitInvalidException  {
+    public TavernaFlowReceipt(Flow flow,String flowDefnString,Input input,String userID,LogLevel modelLogLevel) throws  WorkflowSubmitInvalidException  {
         super(flow);   
 		this.userID = userID;
 		this.modelLogLevel = modelLogLevel;
+		this.flowDefnString = flowDefnString;
+		this.input = input;
     }
 
     /**
@@ -146,7 +152,12 @@ public class TavernaFlowReceipt extends WSFlowReceipt {
 			//log the exception
             logger.error(ex);
 		}
-  }   
+  } 
+
+	public void releaseConcrete() {
+		flowDefnString = null;
+		input = null;
+	}
 
 	public String getStatusString() {
 
@@ -234,18 +245,32 @@ public class TavernaFlowReceipt extends WSFlowReceipt {
 				statString = "CANCELLED";
 				break;
 			}
-			report.setAttribute("workflowStatus",statString);
+			report.setAttribute("workflowStatus",statString);			
 			report.addContent(activityReport);
 			//get the activity list
 			Task[] tasks = flow.getTasks();
 			for(int i=0;i<tasks.length;i++) {
-			if(tasks[i] instanceof ProcessorTask) {
-				ProcessorTask task = (ProcessorTask) tasks[i];
-				Element a = new Element("processor",REPORT_NAMESPACE);
-				a.setAttribute("name",task.getProcessor().getName());
-				a.setAttribute("status",translateStateString(task.getStateString()));
-				activityReport.addContent(a);
-			}	
+				if(tasks[i] instanceof ProcessorTask) {
+					ProcessorTask task = (ProcessorTask) tasks[i];
+					Element a = new Element("processor",REPORT_NAMESPACE);
+					a.setAttribute("name",task.getProcessor().getName());
+					a.setAttribute("status",translateStateString(task.getStateString()));
+					TimePoint startTp = task.getStartTime();
+					if(startTp!=null) {
+						a.setAttribute("startTime",startTp.getShortString());
+					}
+					TimePoint endTp = task.getEndTime();
+					if(endTp!=null) {
+						a.setAttribute("endTime",endTp.getShortString());
+					}
+					String clientMessage = task.getClientMessage();
+					if(clientMessage!=null) {
+						Element msg = new Element("executionMessage",REPORT_NAMESPACE);
+						msg.addContent(new Text(clientMessage));
+						a.addContent(msg);
+					}
+					activityReport.addContent(a);
+				}	
 			}
 			XMLOutputter xmlout = new XMLOutputter();
 			xmlout.setIndent(" ");
@@ -275,17 +300,21 @@ public class TavernaFlowReceipt extends WSFlowReceipt {
 			GraphNode[] outNodes = flow.getDiGraph().getOutputNodes();
 			int count = 0;
 			for(int i=0;i<outNodes.length;i++) {
-				PortTask pT = (PortTask) outNodes[i];
-				if(!pT.dataAvailable()) {
-					output.addPart(new Part(count + 1,"UNKNOWN","UNKNOWN","NO_DATA"));
-				}
-				else {
-					output.addPart(pT.getData());
+				if(outNodes[i] instanceof PortTask) {
+					
+					PortTask pT = (PortTask) outNodes[i];
+					if(!pT.dataAvailable()) {
+						output.addPart(new Part(count + 1,"UNKNOWN","UNKNOWN","NO_DATA"));
+					}
+					else {
+						output.addPart(pT.getData());
+					}
 				}
 			}
 			return output;
 		}
 		catch(Exception ex) {
+			logger.error(ex);
 			return output;
 		}
 	}
@@ -303,6 +332,9 @@ public class TavernaFlowReceipt extends WSFlowReceipt {
 		Element stat = new Element("workflowStatus",PROVENANCE_NAMESPACE);
 		stat.addContent(new Text(translateFlowState(flow.getStatus())));
 		prov.addContent(stat);
+		Element originalFlowDefinition = new Element("xscuflDefinition",REPORT_NAMESPACE);
+		originalFlowDefinition.addContent(new CDATA(flowDefnString));
+		prov.addContent(originalFlowDefinition);
 		Element processors = new Element("processorList",PROVENANCE_NAMESPACE);
 
 		TimePoint start = null;
@@ -330,6 +362,16 @@ public class TavernaFlowReceipt extends WSFlowReceipt {
 			prov.addContent(endTime);
 		}
 		prov.addContent(processors);
+		//add in input and output data
+		Element workflowInput = new Element("workflowInput",PROVENANCE_NAMESPACE);
+		workflowInput.addContent(input.toString());
+		prov.addContent(workflowInput);
+		Output output = getOutput();
+		if(output!=null) {
+			Element workflowOutput = new Element("workflowOutput",PROVENANCE_NAMESPACE);
+			workflowOutput.addContent(output.toString());
+			prov.addContent(workflowOutput);
+		}		
 		return prov;
 	}
 

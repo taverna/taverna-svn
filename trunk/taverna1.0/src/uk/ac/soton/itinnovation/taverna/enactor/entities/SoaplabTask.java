@@ -25,8 +25,8 @@
 //      Dependencies        :
 //
 //      Last commit info    :   $Author: dmarvin $
-//                              $Date: 2003-06-06 09:47:47 $
-//                              $Revision: 1.13 $
+//                              $Date: 2003-06-08 18:36:04 $
+//                              $Revision: 1.14 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 
@@ -85,24 +85,13 @@ public class SoaplabTask extends ProcessorTask{
 	protected java.util.Map execute(java.util.Map inputMap) throws TaskExecutionException {
 		try{
 			HashMap outMap = null;
-			startTime = new TimePoint();
-			
+						
 			//grab the input map
 			//Map inputMap = new HashMap();
 			//GraphNode[] inputs = getParents();
 			if(logLevel.getLevel()>=LogLevel.HIGH)
 				inputForLog = new Input();
-			/*
-			for(int i=0;i<inputs.length;i++) {
-				PortTask pT = (PortTask) inputs[i];				
-				//for now going to wait for all data inputs to be available, this must change for the special requirements for taverna.
-				//actually want to set data in jobs as it becomes available, so don't block, check if data available every so often
-				Part p = pT.getData();	
-				if(logLevel.getLevel()>=LogLevel.HIGH)
-					inputForLog.addPart(p);
-				Element e = (Element) p.getValue();
-				inputMap.put(p.getName(),e.getFirstChild().getNodeValue());
-			}*/
+			
 			Map soaplabInputMap = new HashMap();
 			for (Iterator i = inputMap.keySet().iterator(); i.hasNext() ; ){
 					Part p = (Part)(inputMap.get(i.next()));
@@ -172,59 +161,9 @@ public class SoaplabTask extends ProcessorTask{
 								throw new TaskExecutionException("Task failed since could not handle return type");
 							Part part = new Part(-1,keys[j],type,values[j]);
 							outMap.put(keys[j],part);
-							//pT.setData(part);
-							//outputForLog.addPart(part);												
+																			
 					}
-			/*
-			GraphNode[] outputs = getChildren();
-			boolean foundAllOutput = true;
-			boolean foundOutputItem = true;
-			for(int i=0;i<outputs.length;i++) {				
-				//look for portTests with the correct portname
-				if(outputs[i] instanceof PortTask) {
-					foundOutputItem = false;
-					PortTask pT = (PortTask) outputs[i];
-					String pTName = pT.getScuflPort().getName();
-					for(int j=0;j<keys.length;j++) {					
-						if(pTName.equals(keys[j])) {
-							String type = null;
-							if(values[j] instanceof Boolean)
-								type = "boolean";
-							else if(values[j] instanceof String)
-								type = "string";
-							else if(values[j] instanceof Float)
-								type = "float";
-							else if(values[j] instanceof Integer)
-								type = "int";
-							else if(values[j] instanceof java.math.BigInteger)
-								type = "integer";
-							else if(values[j] instanceof Double)
-								type = "double";
-							else if(values[j] instanceof byte[])
-								type = "byte[]";
-							else if(values[j] instanceof String[])
-								type = "string[]";
-							else if(values[j] instanceof byte[][])
-								type = "byte[][]";
-							else if(values[j] instanceof Element)
-								type = "org.w3c.dom.Element";
-							else
-								return new TaskStateMessage(getParentFlow().getID(),getID(),TaskStateMessage.FAILED,"Task failed since could not handle return type");
-							Part part = new Part(-1,keys[j],type,values[j]);
-							pT.setData(part);
-							outputForLog.addPart(part);						
-							foundOutputItem = true;
-						}						
-					}
-					if(!foundOutputItem) {
-						foundAllOutput = false;
-						return new TaskStateMessage(getParentFlow().getID(),getID(),TaskStateMessage.FAILED,"Task failed since could not obtain output '" + pTName + "' from processor '" + proc.getName() + ", please check its links");
-					}
-				}
-				
-				
-			}*/
-			endTime = new TimePoint();
+			
 			
 			//success
 			return outMap;

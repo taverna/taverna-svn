@@ -25,8 +25,8 @@
 //      Dependencies        :
 //
 //      Last commit info    :   $Author: dmarvin $
-//                              $Date: 2003-06-06 09:47:46 $
-//                              $Revision: 1.17 $
+//                              $Date: 2003-06-08 18:35:54 $
+//                              $Revision: 1.18 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 
@@ -222,11 +222,11 @@ public class XScuflDiGraphGenerator {
 			
 			iterator = flowExtOutPorts.iterator();
 			while(iterator.hasNext()) {
+				
 				PortTask pT = (PortTask) iterator.next();
 				graph.addOutputNode(pT);
 				
 			}
-
 			iterator = tasks.iterator();
 			GraphNode[] gnodes = new GraphNode[tasks.size()];
 
@@ -237,7 +237,7 @@ public class XScuflDiGraphGenerator {
 				gnodes[count++] = gn;
 			}
 			graph.setNodeList(gnodes);
-
+		
 			
 			if (!checkRouteToAllNodes(processorTasks, graph.getInputNodes()))
 				throw new XScuflFormatException("Not all the processor nodes are accessible from input nodes");		
@@ -341,8 +341,7 @@ public class XScuflDiGraphGenerator {
             for (int i = 0; i < children.length; i++) {
 					
                 if (children[i].getID().equals(id)) {
-                    System.out.println("Found match: " + id);
-					return true;
+                    return true;
                 } else if (checkDescendents(children[i], id)) {
                     return true;
                 }

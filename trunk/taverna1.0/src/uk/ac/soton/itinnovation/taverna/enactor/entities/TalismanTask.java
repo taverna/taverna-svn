@@ -45,7 +45,7 @@ public class TalismanTask extends ProcessorTask {
     
     protected java.util.Map execute(java.util.Map workflowInputMap) throws TaskExecutionException {
 	try{
-	    startTime =  new TimePoint();
+	   
 	    TalismanProcessor theProcessor = (TalismanProcessor)proc;
 	    
 	    // Get a map of the inputs, for each entry in the map the key is the
@@ -69,7 +69,6 @@ public class TalismanTask extends ProcessorTask {
 	    for (Iterator i = workflowInputMap.keySet().iterator(); i.hasNext(); ) {
 			String partName = (String)(i.next());
 			Part thePart = (Part)workflowInputMap.get(partName);
-			//System.out.println("Part name: "+ thePart.getName() + ", part type: " + thePart.getType());
 			inputMap.put(thePart.getName(), thePart.getTypedValue());
 	    }
 	    // Get a map of the output ports, keys are port names, values are
@@ -142,7 +141,7 @@ public class TalismanTask extends ProcessorTask {
 	    }
 
 	    // Done? I think so anyway.
-			endTime = new TimePoint();
+			
 	    // Success
 	    return outMap;
 		}

@@ -33,8 +33,11 @@ public class TestSoapLabTask extends TestCase {
   }
 
   protected void setUp() {
-		System.setProperty("http.proxyHost","wwwcache.cs.nott.ac.uk");
-		System.setProperty("http.proxyPort","3128");
+		/** TODO put in proxy settings here **/
+		/*
+		System.setProperty("http.proxyHost","<proxy-host>");
+		System.setProperty("http.proxyPort","<proxy-port>");
+		*/
 	}
 
   protected void tearDown() {

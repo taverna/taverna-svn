@@ -27,8 +27,11 @@ public class TestTavernaFlowBroker extends TestCase {
   }
 
   protected void setUp() {
-		System.setProperty("http.proxyHost","wwwcache.cs.nott.ac.uk");
-		System.setProperty("http.proxyPort","3128");
+		/** TODO put in proxy settings here **/
+		/*
+		System.setProperty("http.proxyHost","<proxy-host>");
+		System.setProperty("http.proxyPort","<proxy-port>");
+		*/
 	}
 
   protected void tearDown() {
@@ -38,10 +41,10 @@ public class TestTavernaFlowBroker extends TestCase {
 	try{
 	   //BufferedInputStream workflowspec = new BufferedInputStream(new FileInputStream("src/uk/ac/soton/itinnovation/taverna/enactor/broker/test/XScufl_example.xml"));
 	   //BufferedInputStream inData = new BufferedInputStream(new FileInputStream("src/uk/ac/soton/itinnovation/taverna/enactor/broker/test/input.xml"));
-		 BufferedInputStream workflowspec = new BufferedInputStream(new FileInputStream("hybridworkflow/workflow.xml"));
-	   BufferedInputStream inData = new BufferedInputStream(new FileInputStream("hybridworkflow/input.xml"));
-	   //BufferedInputStream workflowspec = new BufferedInputStream(new FileInputStream("src/uk/ac/soton/itinnovation/taverna/enactor/broker/test/nested_example.xml"));
-	   //BufferedInputStream inData = new BufferedInputStream(new FileInputStream("src/uk/ac/soton/itinnovation/taverna/enactor/broker/test/input.xml"));
+		 //BufferedInputStream workflowspec = new BufferedInputStream(new FileInputStream("hybridworkflow/workflow.xml"));
+		 //BufferedInputStream inData = new BufferedInputStream(new FileInputStream("hybridworkflow/input.xml"));
+	   BufferedInputStream workflowspec = new BufferedInputStream(new FileInputStream("src/uk/ac/soton/itinnovation/taverna/enactor/broker/test/nested_example.xml"));
+	   BufferedInputStream inData = new BufferedInputStream(new FileInputStream("src/uk/ac/soton/itinnovation/taverna/enactor/broker/test/input.xml"));
 		 StringWriter sWriter = new StringWriter();
        while(workflowspec.available()>0) {
          sWriter.write(workflowspec.read());
@@ -70,9 +73,11 @@ public class TestTavernaFlowBroker extends TestCase {
 
          }
        }
+	   
        if(status.equals("FAILED"))
 	   System.out.println("Error message: " + receipt.getErrorMessage());
        System.out.println("Emboss Workflow has finished with status: " + status); 
+	   System.out.println("Output:\n\n" + receipt.getOutputString());
        
 
 	}

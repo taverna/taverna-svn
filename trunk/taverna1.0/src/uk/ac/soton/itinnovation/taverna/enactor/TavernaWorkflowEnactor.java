@@ -25,8 +25,8 @@
 //      Dependencies        :
 //
 //      Last commit info    :   $Author: dmarvin $
-//                              $Date: 2003-06-06 16:44:24 $
-//                              $Revision: 1.7 $
+//                              $Date: 2003-06-08 18:36:06 $
+//                              $Revision: 1.8 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 
@@ -214,17 +214,7 @@ public class TavernaWorkflowEnactor extends WorkflowEnactor implements FlowCallb
 	
     }
     
-    /*
-     public synchronized String checkServicesAvailable(String workflowSpec) throws Exception {
-     byte[] wfArray = workflowSpec.getBytes();
-     ByteArrayInputStream wfbais = new ByteArrayInputStream(wfArray);
-     // check that the wsdl for each activity in the workflowSpec
-     // is discoverable and is readable.  But don't invoke the services.
-     DummyRunner dummy = new DummyRunner(wfbais);
-     return dummy.run();
-     }
-     */
-    
+        
     /**
      * Get the status document as a string containing XML for the given instance
      * @throws NoSuchInstanceException if there is no instance with that ID
@@ -411,12 +401,13 @@ public class TavernaWorkflowEnactor extends WorkflowEnactor implements FlowCallb
 	boolean released = false;
 	Iterator iterator = registry.iterator();
 	while(iterator.hasNext()) {
-	    WorkflowInstance wf = (WorkflowInstance) iterator.next();
-	    FlowReceipt rec = wf.getFlowReceipt();
-	    if(rec.getID().equals(workflowInstanceID)) {
-		FlowBroker broker = FlowBrokerFactory.createFlowBroker("uk.ac.soton.itinnovation.taverna.enactor.broker.TavernaFlowBroker");	
-		broker.releaseFlow(rec);
-		released = true;
+			WorkflowInstance wf = (WorkflowInstance) iterator.next();
+			FlowReceipt rec = wf.getFlowReceipt();
+			if(rec.getID().equals(workflowInstanceID)) {
+			FlowBroker broker = FlowBrokerFactory.createFlowBroker("uk.ac.soton.itinnovation.taverna.enactor.broker.TavernaFlowBroker");	
+			broker.releaseFlow(rec);
+			rec.release();
+			released = true;
 	    }
 	    iterator.remove();
 	}

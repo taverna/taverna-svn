@@ -25,8 +25,8 @@
 //      Dependencies        :
 //
 //      Last commit info    :   $Author: dmarvin $
-//                              $Date: 2003-06-08 10:58:17 $
-//                              $Revision: 1.15 $
+//                              $Date: 2003-06-08 18:36:04 $
+//                              $Revision: 1.16 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 
@@ -131,14 +131,13 @@ public class WSDLInvocationTask extends ProcessorTask implements InvocationDescr
 							
 						}
           
-			endTime = new TimePoint();
+			
 			//success
 			return outputMap;
 		}
 		catch(Exception ex) {
-			ex.printStackTrace();
 			logger.error("Error invoking soaplab service for task " +getID() ,ex);
-			throw new TaskExecutionException("Task " + getID() + " failed due to problem invoking WSDL-based service");
+			throw new TaskExecutionException("WSDL-based service invocation failed due to '" + ex.getMessage() + "'");
 		}
 
 	}
