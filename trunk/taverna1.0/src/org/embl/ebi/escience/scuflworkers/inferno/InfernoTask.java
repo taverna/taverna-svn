@@ -120,6 +120,20 @@ public class InfernoTask implements ProcessorTaskWorker {
 		System.out.println("Sent reference "+inputURL);
 	    }
 	    
+	    // Send params if any
+	    if (inputMap.containsKey("params")) {
+		String parameterString = (String)((DataThing)inputMap.get("params")).getDataObject();
+		
+		CStyxFile ctlFile = new CStyxFile(session, processor.getService()+"/"+instanceID+"/params");
+		StyxFileOutputStream ctlOut = new StyxFileOutputStream(ctlFile);
+		BufferedWriter bufCtlOut = new BufferedWriter(new StyxFileOutputStreamWriter(ctlOut));
+		bufCtlOut.write(parameterString);
+		bufCtlOut.flush();
+		bufCtlOut.close();
+		ctlFile.close();
+		System.out.println("Sent parameters");
+	    }
+	    
 	    // Start the service
 	    CStyxFile ctlFile = new CStyxFile(session, processor.getService()+"/"+instanceID+"/ctl");
 	    StyxFileOutputStream ctlOut = new StyxFileOutputStream(ctlFile);
