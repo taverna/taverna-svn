@@ -15,10 +15,16 @@ import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeCellRenderer;
+import javax.swing.tree.TreeCellRenderer;
 import org.embl.ebi.escience.scufl.ScuflModel;
 import org.embl.ebi.escience.scufl.SemanticMarkup;
 import org.embl.ebi.escience.scufl.semantics.RDFSClassHolder;
 import org.embl.ebi.escience.scufl.semantics.RDFSParser;
+import java.awt.event.*;
+import java.awt.*;
+import javax.swing.tree.*;
+import java.util.*;
+
 
 import org.embl.ebi.escience.scuflui.ScuflIcons;
 import org.embl.ebi.escience.scuflui.ScuflUIComponent;
@@ -57,29 +63,19 @@ public class ScuflSemanticMarkupEditor extends JPanel implements ScuflUIComponen
 	ontologyPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(),
 								 "Pick from ontology"));
 	ontologyPanel.setPreferredSize(new Dimension(400,400));
-	final JTree ontologyTree = new JTree(RDFSParser.rootNode);
-	ontologyTree.setCellRenderer(new DefaultTreeCellRenderer() {
-		public Component getTreeCellRendererComponent(JTree tree,
-							      Object value,
-							      boolean sel,
-							      boolean expanded,
-							      boolean leaf,
-							      int row,
-							      boolean hasFocus) {
-		    super.getTreeCellRendererComponent(tree, value, sel,
-						       expanded, leaf, row,
-						       hasFocus);
-		    Object userObject = ((DefaultMutableTreeNode)value).getUserObject();
-		    if (userObject instanceof RDFSClassHolder) {
-			setIcon(ScuflIcons.classIcon);
-		    }
-		    return this;
-		} 
-	    });
-	JScrollPane ontologyTreeDisplayPane = new JScrollPane(ontologyTree);
+	final DefaultTreeModel treeModel = new DefaultTreeModel(RDFSParser.rootNode);
+	final JTree ontologyTree = new JTree(treeModel);
+	ontologyTree.setCellRenderer(getRenderer(null));
+	
+       	JScrollPane ontologyTreeDisplayPane = new JScrollPane(ontologyTree);
 	ontologyPanel.add(ontologyTreeDisplayPane, BorderLayout.CENTER);
 	final JTextField selectedOntologyNode = new JTextField(theMetadata.getSemanticType());
 	ontologyPanel.add(selectedOntologyNode, BorderLayout.SOUTH);
+	JPanel currentTermPanel = new JPanel(new GridLayout(2,0));
+	currentTermPanel.add(new JLabel("Select from ontology or manually edit term below"));
+	currentTermPanel.add(selectedOntologyNode);
+	ontologyPanel.add(currentTermPanel, BorderLayout.SOUTH);
+
 	// Add the behaviour of putting the selected node, if a class holder,
 	// into the box and setting the semantic type field of the metadata
 	// holder at the same time.
@@ -106,6 +102,46 @@ public class ScuflSemanticMarkupEditor extends JPanel implements ScuflUIComponen
 		    theMetadata.setSemanticType(selectedOntologyNode.getText());
 		}
 	    });
+	// Show a filter dialog at the top
+	JPanel filterPanel = new JPanel();
+	filterPanel.setLayout(new GridLayout(0,2));
+	final JTextField filterText = new JTextField("");
+	filterText.addActionListener(new ActionListener() {
+		public void actionPerformed(ActionEvent ae) {
+		    String filterString = filterText.getText();
+		    if (filterString.equals("")) {
+			ontologyTree.setCellRenderer(getRenderer(null));
+		    }
+		    else {
+			ontologyTree.setCellRenderer(getRenderer(filterString));
+		    }
+		}
+	    });
+	JButton showFromFilter = new JButton("Find from regex : ");
+	showFromFilter.addActionListener(new ActionListener() {
+		public void actionPerformed(ActionEvent ae) {
+		    // Find everything in the tree that matches and 
+		    // ensure that it is viewable
+		    String filterString = filterText.getText();
+		    expandAll(ontologyTree, false);
+		    if (filterString.equals("")==false) {
+			ontologyTree.setCellRenderer(getRenderer(filterString));
+			DefaultMutableTreeNode rootNode = (DefaultMutableTreeNode)treeModel.getRoot(); 
+			Enumeration en = rootNode.depthFirstEnumeration();
+			while (en.hasMoreElements()) {
+			    DefaultMutableTreeNode theNode = (DefaultMutableTreeNode)en.nextElement();
+			    if (theNode.getUserObject().toString().toLowerCase().matches(filterString)) {
+				TreePath path = new TreePath(treeModel.getPathToRoot(theNode));
+				ontologyTree.makeVisible(path);
+			    }
+			}
+		    }
+		}
+	    });
+	filterPanel.add(showFromFilter);
+	filterPanel.add(filterText);
+	ontologyPanel.add(filterPanel, BorderLayout.NORTH);
+
 	tabbedPane.addTab("Ontology",ontologyPanel);
 
 	// Free text description
@@ -179,4 +215,71 @@ public class ScuflSemanticMarkupEditor extends JPanel implements ScuflUIComponen
     public String getName() {
 	return "Markup editor for "+theMetadata.getSubject().toString();
     }
+    
+    /**
+     * If the 'searchRegex' parameter is not null
+     * then choose the icon based on whether a regex
+     * match exists between the string and the toString
+     * method on the user object within the tree
+     */
+    public TreeCellRenderer getRenderer(String searchRegex) {
+	final String searchString = searchRegex;
+	return new DefaultTreeCellRenderer() {
+		public Component getTreeCellRendererComponent(JTree tree,
+							      Object value,
+							      boolean sel,
+							      boolean expanded,
+							      boolean leaf,
+							      int row,
+							      boolean hasFocus) {
+		    super.getTreeCellRendererComponent(tree, value, sel,
+						       expanded, leaf, row,
+						       hasFocus);
+		    Object userObject = ((DefaultMutableTreeNode)value).getUserObject();
+		    if (userObject instanceof RDFSClassHolder) {
+			if (searchString == null) {
+			    setIcon(ScuflIcons.classIcon);
+			}
+			else {
+			    if (userObject.toString().toLowerCase().matches(searchString)) {
+				setIcon(ScuflIcons.selectedClassIcon);
+				setText("<html><font color=\"red\">"+userObject.toString()+"</font></html>");
+				setBackground(new Color(191,213,197));
+			    }
+			    else {
+				setIcon(ScuflIcons.classIcon);
+			    }
+			}
+		    }
+		    return this;
+		} 
+	    };
+    }
+
+    // If expand is true, expands all nodes in the tree.
+    // Otherwise, collapses all nodes in the tree.
+    public void expandAll(JTree tree, boolean expand) {
+        TreeNode root = (TreeNode)tree.getModel().getRoot();
+	// Traverse tree from root
+        expandAll(tree, new TreePath(root), expand);
+    }
+    private void expandAll(JTree tree, TreePath parent, boolean expand) {
+        // Traverse children
+        TreeNode node = (TreeNode)parent.getLastPathComponent();
+        if (node.getChildCount() >= 0) {
+            for (Enumeration e=node.children(); e.hasMoreElements(); ) {
+                TreeNode n = (TreeNode)e.nextElement();
+                TreePath path = parent.pathByAddingChild(n);
+                expandAll(tree, path, expand);
+            }
+        }
+	// Expansion or collapse must be done bottom-up
+        if (expand) {
+            tree.expandPath(parent);
+        } else {
+            tree.collapsePath(parent);
+        }
+    }
+
+
 }
