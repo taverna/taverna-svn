@@ -76,7 +76,7 @@ public class DotView implements ScuflModelEventListener, java.io.Serializable {
 	dot.append(" graph [             \n");
 	dot.append("  style=\"\"         \n");
 	// Only set left to right view if using port views
-	if (this.portDisplay == DotView.ALL || this.portDisplay == DotView.BOUND) {
+	if (this.portDisplay == DotView.ALL) {
 	    dot.append("  rankdir=\"LR\"     \n");
 	}
 	dot.append(" ]                   \n"); 
@@ -105,6 +105,7 @@ public class DotView implements ScuflModelEventListener, java.io.Serializable {
 
 	// Get the external ports, render these as special links
 	// and edges to show them in the generated diagram
+	// DEPRECATED
 	Port[] externalPorts = model.getExternalPorts();
 	for (int i=0; i<externalPorts.length; i++) {
 	    // Create the new node in the graph for this external port
@@ -160,8 +161,12 @@ public class DotView implements ScuflModelEventListener, java.io.Serializable {
 	    // Are we generating port views?
 	    if (this.portDisplay == DotView.ALL || this.portDisplay == DotView.BOUND) {
 		// Name of the node
-		dot.append("{"+p.getName().toUpperCase()+"}|{");
-				
+		if (this.portDisplay == DotView.ALL) {
+		    dot.append("{"+p.getName().toUpperCase()+"}|{");
+		}
+		else {
+		    dot.append("{");
+		}
 		// List of inputs
 		Port[] inputs = null;
 		if (this.portDisplay == DotView.ALL) {
@@ -180,6 +185,10 @@ public class DotView implements ScuflModelEventListener, java.io.Serializable {
 		}
 		dot.append("}|");
 		
+		if (this.portDisplay == DotView.BOUND) {
+		    dot.append(p.getName().toUpperCase()+"|");
+		}
+
 		// List of outputs
 		Port[] outputs = null;
 		if (this.portDisplay == DotView.ALL) {
@@ -218,15 +227,67 @@ public class DotView implements ScuflModelEventListener, java.io.Serializable {
 	    String sourceProcessorName = dc.getSource().getProcessor().getName();
 	    String sinkPortName = dc.getSink().getName();
 	    String sinkProcessorName = dc.getSink().getProcessor().getName();
-	    if (this.portDisplay == DotView.ALL || this.portDisplay == DotView.BOUND) {
-		dot.append(" "+sourceProcessorName+":"+sourcePortName+"->"+sinkProcessorName+":"+sinkPortName+" [ \n");
+	    // If this is a normal internal link....
+	    if (dc.getSource().getProcessor() != model.getWorkflowSourceProcessor() && 
+		dc.getSink().getProcessor() != model.getWorkflowSinkProcessor()) {
+		if (this.portDisplay == DotView.ALL || this.portDisplay == DotView.BOUND) {
+		    dot.append(" "+sourceProcessorName+":"+sourcePortName+"->"+sinkProcessorName+":"+sinkPortName+" [ \n");
+		}
+		else {
+		    dot.append(" "+sourceProcessorName+"->"+sinkProcessorName+" [ \n");
+		}
 	    }
-	    else {
-		dot.append(" "+sourceProcessorName+"->"+sinkProcessorName+" [ \n");
+	    else if (dc.getSource().getProcessor() == model.getWorkflowSourceProcessor()) {
+		// Is a link from a workflow source to an internal sink
+		dot.append(" WORKFLOWINTERNALSOURCE_"+sourcePortName+"->"+sinkProcessorName+":"+sinkPortName+" [ \n");
+	    }
+	    else if (dc.getSink().getProcessor() == model.getWorkflowSinkProcessor()) {
+		// Is a link from an internal source to a workflow sink
+		dot.append(" "+sourceProcessorName+":"+sourcePortName+"->WORKFLOWINTERNALSINK_"+sinkPortName+" [ \n");
 	    }
 	    dot.append("  label = \""+dc.getSource().getSyntacticType()+"\"");
 	    dot.append(" ];\n");
 	}
+
+	// For each port in the external source and sink processors create a new input or output
+	// diamond.
+	// Do workflow sources first.
+	Port[] sources = model.getWorkflowSourceProcessor().getPorts();
+	dot.append(" subgraph cluster_sources {\n");
+	dot.append("  style=\"dotted\"\n");
+	dot.append("  label=\"Overall workflow inputs\"\n");
+	dot.append("  fontname=\"Courier\"\n");
+	dot.append("  fontsize=\"10\"\n");
+	dot.append("  rank=\"same\"\n");    
+	for (int i=0; i<sources.length; i++) {
+	    dot.append("  WORKFLOWINTERNALSOURCE_"+sources[i].getName()+" [\n");
+	    dot.append("   shape=\"invtriangle\",\n");
+	    dot.append("   width=\"0\",\n");
+	    dot.append("   height=\"0\",\n");
+	    dot.append("   fillcolor=\"skyblue\",\n");
+	    dot.append("   label=\""+sources[i].getName()+"\"\n");
+	    dot.append("  ]\n");
+	}
+	dot.append(" }\n");
+	dot.append(" subgraph cluster_sinks {\n");
+	dot.append("  style=\"dotted\"\n");
+	dot.append("  label=\"Overall workflow outputs\"\n");
+	dot.append("  fontname=\"Courier\"\n");
+	dot.append("  fontsize=\"10\"\n");
+	dot.append("  rank=\"same\"\n");    
+	// ...then workflow sinks.
+	Port[] sinks = model.getWorkflowSinkProcessor().getPorts();
+	for (int i=0; i<sinks.length; i++) {
+	    dot.append("  WORKFLOWINTERNALSINK_"+sinks[i].getName()+" [\n");
+	    dot.append("   shape=\"triangle\",\n");
+	    dot.append("   width=\"0\",\n");
+	    dot.append("   height=\"0\",\n");
+	    dot.append("   fillcolor=\"lightsteelblue2\",\n");
+	    dot.append("   label=\""+sinks[i].getName()+"\"\n");
+	    dot.append("  ]\n");
+	}
+	dot.append(" }\n");
+	
 
 	// For each concurrency constraint, create a box and dashed arrow from the
 	// controller to the box and from the box to the target

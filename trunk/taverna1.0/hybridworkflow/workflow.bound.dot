@@ -1,7 +1,6 @@
 digraph scufl_graph {
  graph [             
   style=""         
-  rankdir="LR"     
  ]                   
  node [              
   fontname="Courier",         
@@ -20,82 +19,100 @@ digraph scufl_graph {
   color="black"                
  ];
 
- externalblastdatabase [
-  shape="diamond",
-  width="0",
-  height="0",
-  fillcolor="skyblue",
-  label="in"
- ]
- externalblastdatabase->blast:database;
- externalblastprogram [
-  shape="diamond",
-  width="0",
-  height="0",
-  fillcolor="skyblue",
-  label="in"
- ]
- externalblastprogram->blast:program;
- externalblastresult [
-  shape="diamond",
-  width="0",
-  height="0",
-  fillcolor="skyblue",
-  label="out"
- ]
- blast:result->externalblastresult;
- externalcompareoutput [
-  shape="diamond",
-  width="0",
-  height="0",
-  fillcolor="skyblue",
-  label="out"
- ]
- compare:output->externalcompareoutput;
- externalcreate_mutant_sequencesequence [
-  shape="diamond",
-  width="0",
-  height="0",
-  fillcolor="skyblue",
-  label="in"
- ]
- externalcreate_mutant_sequencesequence->create_mutant_sequence:sequence;
- externalcreate_mutant_sequencesnplist [
-  shape="diamond",
-  width="0",
-  height="0",
-  fillcolor="skyblue",
-  label="in"
- ]
- externalcreate_mutant_sequencesnplist->create_mutant_sequence:snplist;
- blast [ 
-  fillcolor = "darkolivegreen3",
-  label = "{BLAST}|{{<query>query|<database>database|<program>program}|{<result>result}}"
- ];
  compare [ 
   fillcolor = "plum2",
-  label = "{COMPARE}|{{<report1>report1|<report2>report2}|{<output>output}}"
- ];
- restrict_normal [ 
-  label = "{RESTRICT_NORMAL}|{{<sequence_direct_data>sequence_direct_data}|{<outfile>outfile}}"
+  label = "{{<report1>report1|<report2>report2}|COMPARE|{<output>output}}"
  ];
  restrict_mutant [ 
-  label = "{RESTRICT_MUTANT}|{{<sequence_direct_data>sequence_direct_data}|{<outfile>outfile}}"
+  label = "{{<sequence_direct_data>sequence_direct_data}|RESTRICT_MUTANT|{<outfile>outfile}}"
  ];
  create_mutant_sequence [ 
   fillcolor = "plum2",
-  label = "{CREATE_MUTANT_SEQUENCE}|{{<sequence>sequence|<snplist>snplist}|{<originalsequence>originalsequence|<mutantsequence>mutantsequence}}"
+  label = "{{<sequence>sequence|<snplist>snplist}|CREATE_MUTANT_SEQUENCE|{<mutantsequence>mutantsequence}}"
  ];
- create_mutant_sequence:originalsequence->blast:query [ 
-  label = "String" ];
- restrict_normal:outfile->compare:report1 [ 
-  label = "String" ];
+ restrictCreateJob [ 
+  fillcolor = "darkolivegreen3",
+  label = "{{}|RESTRICTCREATEJOB|{<createEmptyJobReturn>createEmptyJobReturn}}"
+ ];
+ restrictSetInput1 [ 
+  fillcolor = "darkolivegreen3",
+  label = "{{<value>value|<jobId>jobId}|RESTRICTSETINPUT1|{}}"
+ ];
+ restrictRun [ 
+  fillcolor = "darkolivegreen3",
+  label = "{{<in0>in0}|RESTRICTRUN|{}}"
+ ];
+ restrictWait [ 
+  fillcolor = "darkolivegreen3",
+  label = "{{<in0>in0}|RESTRICTWAIT|{}}"
+ ];
+ restrictGetResults [ 
+  fillcolor = "darkolivegreen3",
+  label = "{{<jobId>jobId}|RESTRICTGETRESULTS|{<get_outfileReturn>get_outfileReturn}}"
+ ];
+ restrictDeleteJob [ 
+  fillcolor = "darkolivegreen3",
+  label = "{{<in0>in0}|RESTRICTDELETEJOB|{}}"
+ ];
+ restrictGetResults:get_outfileReturn->compare:report1 [ 
+  label = "string" ];
  restrict_mutant:outfile->compare:report2 [ 
   label = "String" ];
- create_mutant_sequence:originalsequence->restrict_normal:sequence_direct_data [ 
+ WORKFLOWINTERNALSOURCE_snplist->create_mutant_sequence:snplist [ 
+  label = "String" ];
+ WORKFLOWINTERNALSOURCE_sequence->create_mutant_sequence:sequence [ 
+  label = "string" ];
+ compare:output->WORKFLOWINTERNALSINK_report [ 
   label = "String" ];
  create_mutant_sequence:mutantsequence->restrict_mutant:sequence_direct_data [ 
   label = "String" ];
+ restrictCreateJob:createEmptyJobReturn->restrictSetInput1:jobId [ 
+  label = "string" ];
+ WORKFLOWINTERNALSOURCE_sequence->restrictSetInput1:value [ 
+  label = "string" ];
+ restrictCreateJob:createEmptyJobReturn->restrictRun:in0 [ 
+  label = "string" ];
+ restrictCreateJob:createEmptyJobReturn->restrictWait:in0 [ 
+  label = "string" ];
+ restrictCreateJob:createEmptyJobReturn->restrictGetResults:jobId [ 
+  label = "string" ];
+ restrictCreateJob:createEmptyJobReturn->restrictDeleteJob:in0 [ 
+  label = "string" ];
+ subgraph cluster_sources {
+  style="dotted"
+  label="Overall workflow inputs"
+  fontname="Courier"
+  fontsize="10"
+  rank="same"
+  WORKFLOWINTERNALSOURCE_sequence [
+   shape="invtriangle",
+   width="0",
+   height="0",
+   fillcolor="skyblue",
+   label="sequence"
+  ]
+  WORKFLOWINTERNALSOURCE_snplist [
+   shape="invtriangle",
+   width="0",
+   height="0",
+   fillcolor="skyblue",
+   label="snplist"
+  ]
+ }
+ subgraph cluster_sinks {
+  style="dotted"
+  label="Overall workflow outputs"
+  fontname="Courier"
+  fontsize="10"
+  rank="same"
+  WORKFLOWINTERNALSINK_report [
+   shape="triangle",
+   width="0",
+   height="0",
+   fillcolor="lightsteelblue2",
+   label="report"
+  ]
+ }
  constrainttestcoordination [
   shape="rectangle",
   fillcolor="white",
@@ -104,7 +121,7 @@ digraph scufl_graph {
   color="gray",
   label="coordination"
  ]
- restrict_normal->constrainttestcoordination [
+ restrict_mutant->constrainttestcoordination [
   arrowhead="none",
   arrowtail="dot",
   color="gray",
@@ -112,6 +129,116 @@ digraph scufl_graph {
   label="Completed"
  ]
  constrainttestcoordination->compare [
+  arrowhead="odot",
+  arrowtail="none",
+  color="gray",
+  fontcolor="darkgreen",
+  label="from:Scheduled\nto:Running"
+ ];
+ constraintsetInput1 [
+  shape="rectangle",
+  fillcolor="white",
+  height="0",
+  width="0",
+  color="gray",
+  label="coordination"
+ ]
+ restrictCreateJob->constraintsetInput1 [
+  arrowhead="none",
+  arrowtail="dot",
+  color="gray",
+  fontcolor="brown",
+  label="Completed"
+ ]
+ constraintsetInput1->restrictSetInput1 [
+  arrowhead="odot",
+  arrowtail="none",
+  color="gray",
+  fontcolor="darkgreen",
+  label="from:Scheduled\nto:Running"
+ ];
+ constraintwaitForInput1 [
+  shape="rectangle",
+  fillcolor="white",
+  height="0",
+  width="0",
+  color="gray",
+  label="coordination"
+ ]
+ restrictSetInput1->constraintwaitForInput1 [
+  arrowhead="none",
+  arrowtail="dot",
+  color="gray",
+  fontcolor="brown",
+  label="Completed"
+ ]
+ constraintwaitForInput1->restrictRun [
+  arrowhead="odot",
+  arrowtail="none",
+  color="gray",
+  fontcolor="darkgreen",
+  label="from:Scheduled\nto:Running"
+ ];
+ constraintwaitForExecution [
+  shape="rectangle",
+  fillcolor="white",
+  height="0",
+  width="0",
+  color="gray",
+  label="coordination"
+ ]
+ restrictRun->constraintwaitForExecution [
+  arrowhead="none",
+  arrowtail="dot",
+  color="gray",
+  fontcolor="brown",
+  label="Completed"
+ ]
+ constraintwaitForExecution->restrictWait [
+  arrowhead="odot",
+  arrowtail="none",
+  color="gray",
+  fontcolor="darkgreen",
+  label="from:Scheduled\nto:Running"
+ ];
+ constraintgetResults [
+  shape="rectangle",
+  fillcolor="white",
+  height="0",
+  width="0",
+  color="gray",
+  label="coordination"
+ ]
+ restrictWait->constraintgetResults [
+  arrowhead="none",
+  arrowtail="dot",
+  color="gray",
+  fontcolor="brown",
+  label="Completed"
+ ]
+ constraintgetResults->restrictGetResults [
+  arrowhead="odot",
+  arrowtail="none",
+  color="gray",
+  fontcolor="darkgreen",
+  label="from:Scheduled\nto:Running"
+ ];
+ constraintcleanup [
+  shape="rectangle",
+  fillcolor="white",
+  height="0",
+  width="0",
+  color="gray",
+  label="coordination"
+ ]
+ restrictGetResults->constraintcleanup [
+  arrowhead="none",
+  arrowtail="dot",
+  color="gray",
+  fontcolor="brown",
+  label="Completed"
+ ]
+ constraintcleanup->restrictDeleteJob [
   arrowhead="odot",
   arrowtail="none",
   color="gray",

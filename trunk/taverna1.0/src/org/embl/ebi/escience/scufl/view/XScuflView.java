@@ -151,22 +151,50 @@ public class XScuflView implements ScuflModelEventListener, java.io.Serializable
 
 	    Element link = new Element("link",scuflNS());
 	    Element inputNode = new Element("input",scuflNS());
-	    inputNode.setText(sinkProcessorName+":"+sinkPortName);
+	    if (dc.getSink().getProcessor() != model.getWorkflowSinkProcessor()) {
+		inputNode.setText(sinkProcessorName+":"+sinkPortName);
+	    }
+	    else {
+		inputNode.setText(sinkPortName);
+	    }
+	    
 	    Element outputNode = new Element("output",scuflNS());
-	    outputNode.setText(sourceProcessorName+":"+sourcePortName);
-
+	    if (dc.getSource().getProcessor() != model.getWorkflowSourceProcessor()) {
+		outputNode.setText(sourceProcessorName+":"+sourcePortName);
+	    }
+	    else {
+		outputNode.setText(sourcePortName);
+	    }
 	    link.addContent(inputNode);
 	    link.addContent(outputNode);
 	    root.addContent(link);
 	}
 	
+	// Create elements for external ports
+	Port[] sources = model.getWorkflowSourceProcessor().getPorts();
+	for (int i = 0; i<sources.length; i++) {
+	    Element sourceElement = new Element("source",scuflNS());
+	    sourceElement.setText(sources[i].getName());
+	    root.addContent(sourceElement);
+	}
+	Port[] sinks = model.getWorkflowSinkProcessor().getPorts();
+	for (int i = 0; i < sinks.length; i++) {
+	    Element sinkElement = new Element("sink",scuflNS());
+	    sinkElement.setText(sinks[i].getName());
+	    root.addContent(sinkElement);
+	}
+
+
 	// Create elements corresponding to external port definitions
+	// DEPRECATED
+	/**
 	Port[] externalPorts = model.getExternalPorts();
 	for (int i = 0; i < externalPorts.length; i++) {
-	    Element external = new Element("external",scuflNS());
-	    external.setText(externalPorts[i].getProcessor().getName()+":"+externalPorts[i].getName());
-	    root.addContent(external);
+	Element external = new Element("external",scuflNS());
+	external.setText(externalPorts[i].getProcessor().getName()+":"+externalPorts[i].getName());
+	root.addContent(external);
 	}
+	*/
 
 	// Create elements corresponding to concurrency constraints
 	ConcurrencyConstraint[] constraints = model.getConcurrencyConstraints();

@@ -244,12 +244,15 @@ public class XScuflParser {
 
 	// Iterate over the external declarations and create appropriate input and output 
 	// ports in the internal source and sink processors.
-	List sourceList = root.getChildren("sources", namespace);
+	List sourceList = root.getChildren("source", namespace);
 	Processor sourceHolder = model.getWorkflowSourceProcessor();
 	for (Iterator i = sourceList.iterator(); i.hasNext(); ) {
 	    Element sourceElement = (Element)i.next();
 	    String portName = sourceElement.getTextTrim();
 	    try {
+		if (usePrefix) {
+		    portName = prefix+"_"+portName;
+		}
 		sourceHolder.addPort(new OutputPort(sourceHolder, portName));
 	    }
 	    catch (DuplicatePortNameException dpne) {
@@ -259,12 +262,15 @@ public class XScuflParser {
 		throw new XScuflFormatException("Unable to create source port.");
 	    }
 	}
-	List sinkList = root.getChildren("sinks", namespace);
+	List sinkList = root.getChildren("sink", namespace);
 	Processor sinkHolder = model.getWorkflowSinkProcessor();
 	for (Iterator i = sinkList.iterator(); i.hasNext(); ) {
 	    Element sinkElement = (Element)i.next();
 	    String portName = sinkElement.getTextTrim();
 	    try {
+		if (usePrefix) {
+		    portName = prefix+"_"+portName;
+		}
 		sinkHolder.addPort(new InputPort(sinkHolder, portName));
 	    }
 	    catch (DuplicatePortNameException dpne) {
@@ -294,24 +300,25 @@ public class XScuflParser {
 		outputName = prefix+"_"+outputName;
 	    }
 	    model.addDataConstraint(new DataConstraint(model, outputName, inputName));
-				    
+	   				    
 	    // End iterator over data constraints
 	}
 
 	// Iterate over external port declarations
-	/**
-	   List externalPorts = root.getChildren("external",namespace);
-	   for (Iterator i = externalPorts.iterator(); i.hasNext(); ) {
-	   Element external = (Element)i.next();
-	   // Should be in the form 'processor:port'
-	   String specifier = external.getTextTrim();
-	   if (usePrefix) {
-	   specifier = prefix+"_"+specifier;
-	   }
-	   Port thePort = model.locatePort(specifier);
-	   thePort.setExternal(true);
-	   }
-	*/
+	// DEPRECATED!
+	
+	List externalPorts = root.getChildren("external",namespace);
+	for (Iterator i = externalPorts.iterator(); i.hasNext(); ) {
+	    Element external = (Element)i.next();
+	    // Should be in the form 'processor:port'
+	    String specifier = external.getTextTrim();
+	    if (usePrefix) {
+		specifier = prefix+"_"+specifier;
+	    }
+	    Port thePort = model.locatePort(specifier);
+	    thePort.setExternal(true);
+	}
+       
 
 
 	// Build concurrency constraints

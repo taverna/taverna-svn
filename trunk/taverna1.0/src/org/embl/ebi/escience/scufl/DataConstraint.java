@@ -76,6 +76,15 @@ public class DataConstraint implements java.io.Serializable {
 	    throw new DataConstraintCreationException("Source port must be an instance of OutputPort");
 	}
 
+	// If the source port is an external input, set the type of it to the same type as the sink
+	if (this.source.getProcessor() == model.getWorkflowSourceProcessor()) {
+	    this.source.setSyntacticType(this.sink.getSyntacticType());
+	}
+	// If the sink port is an external input, set the type of it to the same as the source
+	else if (this.sink.getProcessor() == model.getWorkflowSinkProcessor()) {
+	    this.sink.setSyntacticType(this.source.getSyntacticType());
+	}
+
 	model.fireModelEvent(new ScuflModelEvent(this, "New data constraint created, '"+getName()+"'"));
 
     }
