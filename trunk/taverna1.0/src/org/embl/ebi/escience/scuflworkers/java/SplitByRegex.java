@@ -22,7 +22,9 @@ import java.lang.String;
 
 /**
  * Split an input string into a list of strings using the given
- * regular expression to determine the delimiter.
+ * regular expression to determine the delimiter. If the regular
+ * expression is not supplied then it will default to the ','
+ * character
  *
  * @author Tom Oinn
  */
@@ -46,7 +48,10 @@ public class SplitByRegex implements LocalWorker {
      */
     public Map execute(Map inputs) throws TaskExecutionException {
 	String input = (String)((DataThing)(inputs.get("string"))).getDataObject();
-	String regex = (String)((DataThing)(inputs.get("regex"))).getDataObject();
+	String regex = ",";
+	if (inputs.containsKey("regex")) {
+	    regex = (String)((DataThing)(inputs.get("regex"))).getDataObject();
+	}
 	String[] result = input.split(regex);
 	List output = new ArrayList();
 	for (int i = 0; i < result.length; i++) {
