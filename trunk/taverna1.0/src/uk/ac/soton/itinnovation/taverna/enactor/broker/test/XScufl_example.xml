@@ -54,10 +54,114 @@
     <s:input>plotorf:sequence_direct_data</s:input>
     <s:output>seqret:outseq</s:output>
   </s:link>
-  <s:external name="sequenceusa">seqret:sequence_usa</s:external>
+
+<s:external name="sequenceusa">seqret:sequence_usa</s:external>
   <s:external name="orfminsize">getorf:minsize</s:external>
   <s:external name="orffind">getorf:find</s:external>
   <s:external name="sequenceRelated">seqret2:sequence_usa</s:external>
   <s:external name="prophecyType">prophecy:type</s:external>
   <s:external name="outfile">prophet:outfile</s:external>
+
+<!-- following is an alternative wsdl based workflow for doing prophet alone but using data generated from above -->
+
+
+<s:processor name="prophetCreateJob">
+  <s:arbitrarywsdl>
+  <s:wsdl>http://industry.ebi.ac.uk/soaplab/wsdl/nucleic_profiles__prophet__derived.wsdl</s:wsdl>
+  <s:portType>nucleic_profiles__prophet</s:portType>
+  <s:operation>createEmptyJob</s:operation>
+  </s:arbitrarywsdl>
+  </s:processor>
+
+  <s:link>
+  <s:input>prophetSetInput1:jobId</s:input>
+  <s:output>prophetCreateJob:return</s:output>
+  </s:link>
+
+  <s:link>
+  <s:input>prophetSetInput1:value</s:input>
+  <s:output>transeq:sequence_direct_data</s:output>
+  </s:link>
+
+  <s:processor name="prophetSetInput1">
+  <s:arbitrarywsdl>
+  <s:wsdl>http://industry.ebi.ac.uk/soaplab/wsdl/nucleic_profiles__prophet__derived.wsdl</s:wsdl>
+  <s:portType>nucleic_profiles__prophet</s:portType>
+  <s:operation>set_sequence_direct_data</s:operation>
+  </s:arbitrarywsdl>
+  </s:processor>
+  
+  <s:link>
+  <s:input>prophetSetInput2:jobId</s:input>
+  <s:output>prophetCreateJob:return</s:output>
+  </s:link>
+
+  <s:link>
+  <s:input>prophetSetInput2:value</s:input>
+  <s:output>prophecy:get_outfReturn</s:output>
+  </s:link>
+
+  <s:processor name="prophetSetInput2">
+  <s:arbitrarywsdl>
+  <s:wsdl>http://industry.ebi.ac.uk/soaplab/wsdl/nucleic_profiles__prophet__derived.wsdl</s:wsdl>
+  <s:portType>nucleic_profiles__prophet</s:portType>
+  <s:operation>set_infile_direct_data</s:operation>
+  </s:arbitrarywsdl>
+  </s:processor>
+
+  <s:link>
+  <s:input>prophetRun:jobId</s:input>
+  <s:output>prophetCreateJob:return</s:output>
+  </s:link>
+
+  <s:processor name="prophetRun">
+  <s:arbitrarywsdl>
+  <s:wsdl>http://industry.ebi.ac.uk/soaplab/wsdl/nucleic_profiles__prophet__derived.wsdl</s:wsdl>
+    <s:portType>soaplab_nucleic_gene_finding_plotorf</s:portType>
+    <s:operation>run</s:operation>
+  </s:arbitrarywsdl>
+  </s:processor>
+
+  <s:link>
+  <s:input>prophetWait:jobId</s:input>
+  <s:output>prophetCreateJob:return</s:output>
+  </s:link>
+
+  <s:processor name="prophetWait">
+  <s:arbitrarywsdl>
+  <s:wsdl>http://industry.ebi.ac.uk/soaplab/wsdl/nucleic_profiles__prophet__derived.wsdl</s:wsdl>
+    <s:portType>nucleic_profiles__prophet</s:portType>
+    <s:operation>waitFor</s:operation>
+  </s:arbitrarywsdl>
+  </s:processor>
+
+  <s:link>
+  <s:input>prophetGetResults:jobId</s:input>
+  <s:output>prophetCreateJob:return</s:output>
+  </s:link>
+
+  <s:processor name="prophetGetResults">
+  <s:arbitrarywsdl>
+  <s:wsdl>http://industry.ebi.ac.uk/soaplab/wsdl/nucleic_profiles__prophet__derived.wsdl</s:wsdl>
+  <s:portType>nucleic_profiles__prophet</s:portType>
+  <s:operation>get_outfile</s:operation>
+  </s:arbitrarywsdl>
+  </s:processor>
+  
+  <s:link>
+  <s:input>prophetDeleteJob:jobId</s:input>
+  <s:output>prophetCreateJob:return</s:output>
+  </s:link>
+
+  <s:processor name="prophetDeleteJob">
+  <s:arbitrarywsdl>
+  <s:wsdl>http://industry.ebi.ac.uk/soaplab/wsdl/nucleic_profiles__prophet__derived.wsdl</s:wsdl>
+  <s:portType>nucleic_profiles__prophet</s:portType>
+  <s:operation>destroy</s:operation>
+  </s:arbitrarywsdl>
+  </s:processor>
+
+  <s:external name="outfile2">prophetGetResults:outfile</s:external>
+
+
 </s:scufl>
