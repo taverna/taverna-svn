@@ -364,6 +364,8 @@ public class DataThing {
 		}
 		else {
 		    // Special magic MIME type for Java class
+		    // Destroy all existing mime types first if this is the case!
+		    getMetadata().clearMIMETypes();
 		    getMetadata().addMIMEType("java/"+o.getClass().getName());
 		}
 		for (Iterator i = getMetadata().getMIMETypeList().iterator(); i.hasNext(); ) {

@@ -13,6 +13,10 @@ import javax.swing.*;
 import org.embl.ebi.escience.baclava.*;
 import org.jmol.viewer.Viewer;
 
+/**
+ * Renders using the Jmol software for chemical structures
+ * @author Tom Oinn
+ */
 public class JMolRenderer extends AbstractRenderer.ByMimeType {
     
     public JMolRenderer() {

@@ -1,3 +1,4 @@
+org.embl.ebi.escience.scuflui.renderers.AWTComponentRenderer
 org.embl.ebi.escience.scuflui.renderers.SeqVistaRenderer
 org.embl.ebi.escience.scuflui.renderers.JMolRenderer
 org.embl.ebi.escience.scuflui.renderers.TextHtml

@@ -85,6 +85,31 @@ public abstract class AbstractRenderer
                                          String mimeType);
   }
 
+    /**
+     * Accept based on user object type match to a particular Class
+     */
+    public abstract static class ByJavaClass
+	extends AbstractRenderer {
+	
+	protected ByJavaClass(String name) {
+	    super(name);
+	}
+	
+	protected ByJavaClass(String name, Icon icon) {
+	    super(name, icon);
+	}
+	
+	public final boolean canHandle(RendererRegistry renderers,
+				       DataThing dataThing) {
+	    Class dataObjectClass = dataThing.getDataObject().getClass();
+	    return canHandle(renderers, dataThing, dataObjectClass);
+	}
+	
+	protected abstract boolean canHandle(RendererRegistry renderers,
+					     Object userObject,
+					     Class dataClass);
+    }
+
   /**
    * Accept a DataThing based upon the mime type matching a regular expression
    * pattern.

@@ -160,8 +160,8 @@ public class DataThingXMLFactory {
 	    catch (Exception ex) {
 		System.out.println("Failed to deserialize java object type");
 		ex.printStackTrace();
+		result = new String("Unable to decode "+mimeHint);
 	    }
-	    result = new String("Unable to decode "+mimeHint);
 	}
 	else {
 	    result = decodedData;
