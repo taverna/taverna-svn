@@ -38,7 +38,7 @@ public class EnactorInvocation extends JPanel implements ScuflUIComponent {
 
     // A default instance of the workflow enactor to use if
     // the caller doesn't specify one to use
-    private static TavernaWorkflowEnactor DEFAULT_ENACTOR;
+    //private static TavernaWorkflowEnactor DEFAULT_ENACTOR;
     private static String DEFAULT_USER = "DEFAULT_USER";
     private static String DEFAULT_USER_CONTEXT = "DEFAULT_USER_CONTEXT";
 
@@ -52,7 +52,7 @@ public class EnactorInvocation extends JPanel implements ScuflUIComponent {
             String value = (String) rb.getString(key);
 	    sysProps.put(key, value);
         }
-	DEFAULT_ENACTOR = new TavernaWorkflowEnactor();
+	//DEFAULT_ENACTOR = new TavernaWorkflowEnactor();
     }
     
     public void attachToModel(ScuflModel theModel) {
@@ -67,7 +67,7 @@ public class EnactorInvocation extends JPanel implements ScuflUIComponent {
 	return "Enactor invocation";
     }
 
-    private TavernaWorkflowEnactor theEnactor;
+    //private TavernaWorkflowEnactor theEnactor;
     private ScuflModel theModel;
     private TavernaBinaryWorkflowSubmission theSubmission; 
     private String instanceID = null;
@@ -177,12 +177,12 @@ public class EnactorInvocation extends JPanel implements ScuflUIComponent {
 	
 	// If the user didn't supply an enactor use the
 	// default singleton in this class.
-	if (enactor == null) {
-	    this.theEnactor = DEFAULT_ENACTOR;
-	}
-	else {
-	    this.theEnactor = enactor;
-	}
+	//if (enactor == null) {
+	//    this.theEnactor = DEFAULT_ENACTOR;
+	//}
+	//else {
+	//    this.theEnactor = enactor;
+	//}
 
 	// If no user supplied use the default one
 	if (userID == null) {
@@ -192,20 +192,28 @@ public class EnactorInvocation extends JPanel implements ScuflUIComponent {
 	// Store a reference to the ScuflModel
 	this.theModel = model;
 	
-	// Create a new submission object
-	this.theSubmission = new TavernaBinaryWorkflowSubmission(this.theModel,
-								 inputDataThings,
-								 userID,
-								 DEFAULT_USER_CONTEXT);
-	System.out.println("Created the TavernaBinaryWorkflowSubmission : "+this.theSubmission.toString());
-	
-	// Invoke the enactor
-	FlowBroker broker = FlowBrokerFactory.createFlowBroker("uk.ac.soton.itinnovation.taverna.enactor.broker.TavernaFlowBroker");
-	this.flowReceipt = (TavernaFlowReceipt) ((TavernaFlowBroker)broker).submitFlow(this.theModel,
-								  inputDataThings,
-								  userID,
-								  DEFAULT_USER_CONTEXT);
-	this.instanceID = this.flowReceipt.getID();
+	// Local invocation, create an enactor internally.
+	boolean localInvocation = true;
+	if (localInvocation) {
+	    // Create a new submission object
+	    this.theSubmission = new TavernaBinaryWorkflowSubmission(this.theModel,
+								     inputDataThings,
+								     userID,
+								     DEFAULT_USER_CONTEXT);
+	    System.out.println("Created the TavernaBinaryWorkflowSubmission : "+this.theSubmission.toString());
+	    // Invoke the enactor
+	    FlowBroker broker = FlowBrokerFactory.createFlowBroker("uk.ac.soton.itinnovation.taverna.enactor.broker.TavernaFlowBroker");
+	    this.flowReceipt = (TavernaFlowReceipt) ((TavernaFlowBroker)broker).submitFlow(this.theModel,
+											   inputDataThings,
+											   userID,
+											   DEFAULT_USER_CONTEXT);
+	    this.instanceID = this.flowReceipt.getID();
+	}
+	else {
+	    // Create the proxy receipt to the real enactor service.
+	    
+	    
+	}
 	
 	// Create the UI
 	// Create a tabbed pane for the status, results and provenance panels.
