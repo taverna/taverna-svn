@@ -7,7 +7,6 @@ package org.embl.ebi.escience.scuflui;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import javax.swing.ImageIcon;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
@@ -16,9 +15,7 @@ import org.embl.ebi.escience.scufl.*;
 
 import org.embl.ebi.escience.scuflui.LinkingMenus;
 import org.embl.ebi.escience.scuflui.NoContextMenuFoundException;
-import org.embl.ebi.escience.scuflui.ScuflModelExplorerRenderer;
-import java.lang.Class;
-import java.lang.ClassNotFoundException;
+import org.embl.ebi.escience.scuflui.ScuflIcons;
 import java.lang.Exception;
 import java.lang.Object;
 import java.lang.String;
@@ -33,21 +30,6 @@ import java.lang.String;
  * @author Tom Oinn
  */
 public class ScuflContextMenuFactory {
-    
-    static ImageIcon deleteIcon;
-
-    /**
-     * Load images for menus
-     */
-    static {
-	try {
-	    Class c = Class.forName("org.embl.ebi.escience.scuflui.ScuflContextMenuFactory");
-	    deleteIcon = new ImageIcon(c.getResource("delete.gif"));
-	}
-	catch (ClassNotFoundException cnfe) {
-	    //
-	}
-    }
 
     /**
      * Creates a JPopupMenu appropriate to the object supplied. If it
@@ -80,7 +62,7 @@ public class ScuflContextMenuFactory {
 		    theMenu.add(title);
 		    title.setEnabled(false);
 		    theMenu.addSeparator();
-		    JMenuItem delete = new JMenuItem("Remove from model", deleteIcon);
+		    JMenuItem delete = new JMenuItem("Remove from model", ScuflIcons.deleteIcon);
 		    delete.addActionListener(new ActionListener() {
 			    public void actionPerformed(ActionEvent ae) {
 				sinkPort.getProcessor().removePort(sinkPort);
@@ -107,7 +89,7 @@ public class ScuflContextMenuFactory {
 		theMenu.add(title);
 		title.setEnabled(false);
 		theMenu.addSeparator();
-		JMenuItem createInput = new JMenuItem("Create new input",ScuflModelExplorerRenderer.inputIcon);
+		JMenuItem createInput = new JMenuItem("Create new input",ScuflIcons.inputIcon);
 		theMenu.add(createInput);
 		final ScuflModel theModel = model;
 		createInput.addActionListener(new ActionListener() {
@@ -148,7 +130,7 @@ public class ScuflContextMenuFactory {
 		theMenu.add(title);
 		title.setEnabled(false);
 		theMenu.addSeparator();
-		JMenuItem createOutput = new JMenuItem("Create new output",ScuflModelExplorerRenderer.outputIcon);
+		JMenuItem createOutput = new JMenuItem("Create new output",ScuflIcons.outputIcon);
 		theMenu.add(createOutput);
 		final ScuflModel theModel = model;
 		createOutput.addActionListener(new ActionListener() {
@@ -194,7 +176,7 @@ public class ScuflContextMenuFactory {
 	title.setEnabled(false);
 	theMenu.add(title);
 	theMenu.addSeparator();
-	JMenuItem delete = new JMenuItem("Remove from model", deleteIcon);
+	JMenuItem delete = new JMenuItem("Remove from model", ScuflIcons.deleteIcon);
 	delete.addActionListener(new ActionListener() {
 		public void actionPerformed(ActionEvent a) {
 		    theModel.destroyDataConstraint(theConstraint);
@@ -212,7 +194,7 @@ public class ScuflContextMenuFactory {
 	title.setEnabled(false);
 	theMenu.add(title);
 	theMenu.addSeparator();
-	JMenuItem delete = new JMenuItem("Remove from model", deleteIcon);
+	JMenuItem delete = new JMenuItem("Remove from model", ScuflIcons.deleteIcon);
 	delete.addActionListener(new ActionListener() {
 		public void actionPerformed(ActionEvent a) {
 		    theModel.destroyConcurrencyConstraint(theConstraint);
@@ -229,7 +211,7 @@ public class ScuflContextMenuFactory {
 	title.setEnabled(false);
 	theMenu.add(title);
 	theMenu.addSeparator();
-	JMenuItem delete = new JMenuItem("Remove from model",deleteIcon);
+	JMenuItem delete = new JMenuItem("Remove from model", ScuflIcons.deleteIcon);
 	delete.addActionListener(new ActionListener() {
 		public void actionPerformed(ActionEvent a) {
 		    theProcessor.getModel().destroyProcessor(theProcessor);
@@ -238,7 +220,7 @@ public class ScuflContextMenuFactory {
 	// Provide a submenu to create a coordination constraint
 	theMenu.add(delete);
 	JMenuItem block = new JMenu("Coordinate from");
-	block.setIcon(ScuflModelExplorerRenderer.constraintIcon);
+	block.setIcon(ScuflIcons.constraintIcon);
 	theMenu.add(block);
 	// Iterate over the processors in the model to get the available
 	// gate processors.
@@ -248,13 +230,13 @@ public class ScuflContextMenuFactory {
 	    if (gp[i]!=processor) {
 		JMenuItem gpi = new JMenuItem(gp[i].getName());
 		if (gp[i] instanceof SoaplabProcessor) {
-		    gpi.setIcon(ScuflModelExplorerRenderer.soaplabIcon);
+		    gpi.setIcon(ScuflIcons.soaplabIcon);
 		}
 		else if (gp[i] instanceof WSDLBasedProcessor) {
-		    gpi.setIcon(ScuflModelExplorerRenderer.wsdlIcon);
+		    gpi.setIcon(ScuflIcons.wsdlIcon);
 		}
 		else if (gp[i] instanceof TalismanProcessor) {
-		    gpi.setIcon(ScuflModelExplorerRenderer.talismanIcon);
+		    gpi.setIcon(ScuflIcons.talismanIcon);
 		}
 		block.add(gpi);
 		final Processor controller = gp[i];

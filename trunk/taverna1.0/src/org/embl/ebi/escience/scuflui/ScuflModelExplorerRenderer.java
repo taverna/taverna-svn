@@ -6,14 +6,12 @@
 package org.embl.ebi.escience.scuflui;
 
 import java.awt.Component;
-import javax.swing.ImageIcon;
 import javax.swing.JTree;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeCellRenderer;
 import org.embl.ebi.escience.scufl.*;
 
-import java.lang.Class;
-import java.lang.ClassNotFoundException;
+import org.embl.ebi.escience.scuflui.ScuflIcons;
 import java.lang.Object;
 
 
@@ -24,27 +22,6 @@ import java.lang.Object;
  * @author Tom Oinn
  */
 public class ScuflModelExplorerRenderer extends DefaultTreeCellRenderer {
-    
-    public static ImageIcon wsdlIcon, soaplabIcon, talismanIcon, inputIcon, outputIcon, inputPortIcon, outputPortIcon, dataLinkIcon, constraintIcon;
-    
-    static {
-	// Load the image files found in this package into the class.
-	try {
-	    Class c = Class.forName("org.embl.ebi.escience.scuflui.ScuflModelExplorerRenderer");
-	    wsdlIcon = new ImageIcon(c.getResource("wsdl.gif"));
-	    talismanIcon = new ImageIcon(c.getResource("talisman.gif"));
-	    soaplabIcon = new ImageIcon(c.getResource("soaplab.gif"));
-	    inputPortIcon = new ImageIcon(c.getResource("inputport.gif"));
-	    outputPortIcon = new ImageIcon(c.getResource("outputport.gif"));
-	    dataLinkIcon = new ImageIcon(c.getResource("datalink.gif"));
-	    inputIcon = new ImageIcon(c.getResource("input.gif"));
-	    outputIcon = new ImageIcon(c.getResource("output.gif"));
-	    constraintIcon = new ImageIcon(c.getResource("constraint.gif"));
-	}
-	catch (ClassNotFoundException cnfe) {
-	    //
-	}
-    }
     
     /**
      * Return a custom renderer to draw the cell correctly for each node type
@@ -62,17 +39,17 @@ public class ScuflModelExplorerRenderer extends DefaultTreeCellRenderer {
 	Object userObject = ((DefaultMutableTreeNode)value).getUserObject();
 	if (userObject instanceof Processor) {
 	    if (userObject instanceof WSDLBasedProcessor) {
-		setIcon(wsdlIcon);
+		setIcon(ScuflIcons.wsdlIcon);
 	    }
 	    else if (userObject instanceof TalismanProcessor) {
-		setIcon(talismanIcon);
+		setIcon(ScuflIcons.talismanIcon);
 	    }
 	    else if (userObject instanceof SoaplabProcessor) {
-		setIcon(soaplabIcon);
+		setIcon(ScuflIcons.soaplabIcon);
 	    }
 	}
 	else if (userObject instanceof ConcurrencyConstraint) {
-	    setIcon(constraintIcon);
+	    setIcon(ScuflIcons.constraintIcon);
 	}
 	else if (userObject instanceof Port) {
 	    Port thePort = (Port)userObject;
@@ -80,24 +57,24 @@ public class ScuflModelExplorerRenderer extends DefaultTreeCellRenderer {
 	    ScuflModel model = theProcessor.getModel();
 	    if (theProcessor == model.getWorkflowSourceProcessor()) {
 		// Workflow source port
-		setIcon(inputIcon);
+		setIcon(ScuflIcons.inputIcon);
 	    }
 	    else if (theProcessor == model.getWorkflowSinkProcessor()) {
 		// Workflow sink port
-		setIcon(outputIcon);
+		setIcon(ScuflIcons.outputIcon);
 	    }
 	    else {
 		// Normal port
 		if (thePort instanceof InputPort) {
-		    setIcon(inputPortIcon);
+		    setIcon(ScuflIcons.inputPortIcon);
 		}
 		else if (thePort instanceof OutputPort) {
-		    setIcon(outputPortIcon);
+		    setIcon(ScuflIcons.outputPortIcon);
 		}
 	    }
 	}
 	else if (userObject instanceof DataConstraint) {
-	    setIcon(dataLinkIcon);
+	    setIcon(ScuflIcons.dataLinkIcon);
 	}
 	return this;
     }

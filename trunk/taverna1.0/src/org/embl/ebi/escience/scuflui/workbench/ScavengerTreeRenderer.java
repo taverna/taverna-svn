@@ -8,10 +8,12 @@ package org.embl.ebi.escience.scuflui.workbench;
 import java.awt.Component;
 import javax.swing.JTree;
 import javax.swing.tree.DefaultMutableTreeNode;
+import org.embl.ebi.escience.scuflui.ScuflIcons;
 import org.embl.ebi.escience.scuflui.ScuflModelExplorerRenderer;
 
 import org.embl.ebi.escience.scuflui.workbench.ProcessorFactory;
 import org.embl.ebi.escience.scuflui.workbench.SoaplabProcessorFactory;
+import org.embl.ebi.escience.scuflui.workbench.TalismanProcessorFactory;
 import org.embl.ebi.escience.scuflui.workbench.WSDLBasedProcessorFactory;
 import java.lang.Object;
 
@@ -41,10 +43,13 @@ public class ScavengerTreeRenderer extends ScuflModelExplorerRenderer {
 	Object userObject = ((DefaultMutableTreeNode)value).getUserObject();
 	if (userObject instanceof ProcessorFactory) {
 	    if (userObject instanceof SoaplabProcessorFactory) {
-		setIcon(soaplabIcon);
+		setIcon(ScuflIcons.soaplabFactoryIcon);
 	    }
 	    else if (userObject instanceof WSDLBasedProcessorFactory) {
-		setIcon(wsdlIcon);
+		setIcon(ScuflIcons.wsdlFactoryIcon);
+	    }
+	    else if (userObject instanceof TalismanProcessorFactory) {
+		setIcon(ScuflIcons.talismanFactoryIcon);
 	    }
 	}
 	return this;

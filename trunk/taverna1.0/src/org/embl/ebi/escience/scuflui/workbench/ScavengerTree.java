@@ -96,6 +96,7 @@ public class ScavengerTree extends JTree
     public void addScavengersFromModel() 
 	throws ScavengerCreationException {
 	if (this.model != null) {
+	    // Get all WSDL processors
 	    Map wsdlLocations = new HashMap();
 	    Processor[] p = model.getProcessors();
 	    for (int i = 0; i < p.length; i++) {
@@ -113,6 +114,7 @@ public class ScavengerTree extends JTree
 		String wsdlLocation = (String)i.next();
 		addScavenger(new WSDLBasedScavenger(wsdlLocation));
 	    }
+	    
 	}
     }
 

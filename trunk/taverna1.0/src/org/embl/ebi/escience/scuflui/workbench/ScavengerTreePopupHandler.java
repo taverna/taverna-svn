@@ -15,12 +15,13 @@ import javax.swing.JPopupMenu;
 import javax.swing.tree.DefaultMutableTreeNode;
 import org.embl.ebi.escience.scufl.DuplicateProcessorNameException;
 import org.embl.ebi.escience.scufl.ProcessorCreationException;
+import org.embl.ebi.escience.scuflui.ScuflIcons;
 
 import org.embl.ebi.escience.scuflui.workbench.ProcessorFactory;
 import org.embl.ebi.escience.scuflui.workbench.ScavengerCreationException;
 import org.embl.ebi.escience.scuflui.workbench.ScavengerTree;
-import org.embl.ebi.escience.scuflui.workbench.ScavengerTreeRenderer;
 import org.embl.ebi.escience.scuflui.workbench.SoaplabScavenger;
+import org.embl.ebi.escience.scuflui.workbench.TalismanScavenger;
 import org.embl.ebi.escience.scuflui.workbench.WSDLBasedScavenger;
 import org.embl.ebi.escience.scuflui.workbench.Workbench;
 import java.lang.Object;
@@ -114,10 +115,12 @@ public class ScavengerTreePopupHandler extends MouseAdapter {
 		    title.setEnabled(false);
 		    menu.add(title);
 		    menu.addSeparator();
-		    JMenuItem addSoaplab = new JMenuItem("Add new Soaplab scavenger...", ScavengerTreeRenderer.soaplabIcon);
-		    JMenuItem addWSDL = new JMenuItem("Add new WSDL scavenger...", ScavengerTreeRenderer.wsdlIcon);
+		    JMenuItem addSoaplab = new JMenuItem("Add new Soaplab scavenger...", ScuflIcons.soaplabIcon);
+		    JMenuItem addWSDL = new JMenuItem("Add new WSDL scavenger...", ScuflIcons.wsdlIcon);
+		    JMenuItem addTalisman = new JMenuItem("Add new Talisman scavenger...", ScuflIcons.talismanIcon);
 		    menu.add(addSoaplab);
 		    menu.add(addWSDL);
+		    menu.add(addTalisman);
 		    addSoaplab.addActionListener(new ActionListener() {
 			    public void actionPerformed(ActionEvent ae) {
 				String baseURL = (String)JOptionPane.showInputDialog(null,
@@ -152,6 +155,28 @@ public class ScavengerTreePopupHandler extends MouseAdapter {
 				if (wsdlLocation!=null) {
 				    try {
 					ScavengerTreePopupHandler.this.scavenger.addScavenger(new WSDLBasedScavenger(wsdlLocation));					
+				    }
+				    catch (ScavengerCreationException sce) {
+					JOptionPane.showMessageDialog(null,
+								      "Unable to create scavenger!\n"+sce.getMessage(),
+								      "Exception!",
+								      JOptionPane.ERROR_MESSAGE);
+				    }
+				}	
+			    }
+			});
+		    addTalisman.addActionListener(new ActionListener() {
+			    public void actionPerformed(ActionEvent ae) {
+				String scriptURL = (String)JOptionPane.showInputDialog(null,
+										       "Address of the TScript document?",
+										       "TScript location",
+										       JOptionPane.QUESTION_MESSAGE,
+										       null,
+										       null,
+										       "http://");
+				if (scriptURL!=null) {
+				    try {
+					ScavengerTreePopupHandler.this.scavenger.addScavenger(new TalismanScavenger(scriptURL));					
 				    }
 				    catch (ScavengerCreationException sce) {
 					JOptionPane.showMessageDialog(null,
