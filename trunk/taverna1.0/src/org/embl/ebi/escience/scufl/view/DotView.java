@@ -106,6 +106,12 @@ public class DotView implements ScuflModelEventListener, java.io.Serializable {
 	dot.append("digraph scufl_graph {\n");
 	dot.append(" graph [             \n");
 	dot.append("  style=\"\"         \n");
+	if (System.getProperty("taverna.scufldiagram.ranksep") != null) {
+	    dot.append("  ranksep=\""+System.getProperty("taverna.scufldiagram.ranksep")+"\"\n");
+	}
+	if (System.getProperty("taverna.scufldiagram.nodesep") != null) {
+	    dot.append("  nodesep=\""+System.getProperty("taverna.scufldiagram.nodesep")+"\"\n");
+	}
 	// Only set left to right view if using port views
 	if (this.lralign) {
 	    dot.append("  rankdir=\"LR\"     \n");
