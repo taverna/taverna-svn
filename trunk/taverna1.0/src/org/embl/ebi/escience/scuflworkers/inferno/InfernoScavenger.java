@@ -42,7 +42,7 @@ public class InfernoScavenger extends Scavenger {
      */
     public InfernoScavenger(String host, int port)
 	throws ScavengerCreationException {
-	super("Inferno @ "+host+":"+port);
+	super("Styx @ "+host+":"+port);
 	try {
 	    StyxConnection session = new StyxConnection(host, port);
 	    //session.connect();
