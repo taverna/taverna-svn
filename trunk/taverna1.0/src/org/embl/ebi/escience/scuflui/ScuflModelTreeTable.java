@@ -6,6 +6,7 @@
 package org.embl.ebi.escience.scuflui;
 
 import javax.swing.*;
+import javax.swing.plaf.basic.BasicCheckBoxUI;
 import javax.swing.tree.*;
 import java.awt.event.*;
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -85,8 +86,8 @@ public class ScuflModelTreeTable extends JTreeTable
 	}
 	setDefaultEditor(TreeTableModel.class, new ScuflModelTreeTableCellEditor());
         JCheckBox jcbox = new JCheckBox();
-	jcbox.setOpaque(false);
-        jcbox.setBackground(getBackground());
+	jcbox.setOpaque(true);
+        jcbox.setBackground(getSelectionBackground());
         jcbox.setHorizontalAlignment(SwingConstants.CENTER);
         setDefaultEditor(Boolean.class, new DefaultCellEditor(jcbox));
         setDefaultRenderer(Boolean.class, new TableCheckbox());
@@ -397,21 +398,47 @@ public class ScuflModelTreeTable extends JTreeTable
     }
 
     class TableCheckbox extends JCheckBox implements TableCellRenderer {
-        TableCheckbox() {
-            setBackground(ScuflModelTreeTable.this.getBackground());
+		TableCheckbox() {
             setHorizontalAlignment(SwingConstants.CENTER);
         }
 
         public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
-            if(value != null) {
+            if(value != null)
+            {
                 setSelected(((Boolean) value).booleanValue());
+                if(isSelected)
+                {
+                	setForeground(ScuflModelTreeTable.this.getSelectionForeground());
+                	setBackground(ScuflModelTreeTable.this.getSelectionBackground());
+                }
+                else
+                {
+                	setForeground(ScuflModelTreeTable.this.getForeground());
+                	setBackground(ScuflModelTreeTable.this.getBackground());
+                }
                 return this;
             }
-            else {
-                JLabel label = new JLabel("");
-                label.setBackground(ScuflModelTreeTable.this.getBackground());
-                return label;
+            JLabel label = new JLabel("");
+            label.setOpaque(true);
+            if(isSelected)
+            {
+            	label.setForeground(ScuflModelTreeTable.this.getSelectionForeground());
+            	label.setBackground(ScuflModelTreeTable.this.getSelectionBackground());
             }
+            else
+            {
+            	label.setForeground(ScuflModelTreeTable.this.getForeground());            	
+            	label.setBackground(ScuflModelTreeTable.this.getBackground());
+            }
+            if(hasFocus)
+            {
+            	label.setBorder(UIManager.getBorder("Table.focusCellHighlightBorder"));
+            }
+            else
+            {
+            	label.setBorder(null);
+            }
+            return label;
         }
     }
 }
