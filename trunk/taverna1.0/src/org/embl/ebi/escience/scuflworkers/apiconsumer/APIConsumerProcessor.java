@@ -39,7 +39,9 @@ public class APIConsumerProcessor extends Processor {
 	    }
 	    
 	    // Add a return value port for non void operations
-	    if (definition.tName.equals("void") == false) {
+	    if (definition.tName.equals("void") == false 
+		&& definition.isConstructor == false) {
+		// Use the 'object' port for constructors rather than the 'result' one
 		OutputPort resultPort = new OutputPort(this, "result");
 		resultPort.setSyntacticType(definition.getTavernaOutputTypeString());
 		addPort(resultPort);

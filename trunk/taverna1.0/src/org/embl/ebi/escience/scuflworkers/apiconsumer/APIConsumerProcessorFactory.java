@@ -17,14 +17,15 @@ public class APIConsumerProcessorFactory extends ProcessorFactory {
     
     APIConsumerDefinition definition;
 
-    public APIConsumerProcessorFactory(Element e) {
-	String methodName = e.getAttributeValue("name","No method!");
-	setName(methodName);
-	Element descriptionElement = e.getChild("Description");
-	if (descriptionElement != null) {
-	    setDescription(descriptionElement.getTextTrim());
-	}
-    }
+    /**    public APIConsumerProcessorFactory(Element e) {
+	   String methodName = e.getAttributeValue("name","No method!");
+	   setName(methodName);
+	   Element descriptionElement = e.getChild("Description");
+	   if (descriptionElement != null) {
+	   setDescription(descriptionElement.getTextTrim());
+	   }
+	   }
+    */
     
     public APIConsumerProcessorFactory(APIConsumerDefinition def) {
 	this.definition = def;

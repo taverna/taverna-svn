@@ -48,6 +48,8 @@ public class APIConsumerScavenger extends Scavenger {
 		    
 		    String methodName = methodElement.getAttributeValue("name");
 		    String methodType = methodElement.getAttributeValue("type");
+		    boolean methodStatic = methodElement.getAttributeValue("static","false").equals("true");
+		    boolean methodConstructor = methodElement.getAttributeValue("constructor","false").equals("true");
 		    int dimension = Integer.parseInt(methodElement.getAttributeValue("dimension"));
 		    String description = methodElement.getChild("Description").getTextTrim();
 		    List paramList = methodElement.getChildren("Parameter");
@@ -62,7 +64,7 @@ public class APIConsumerScavenger extends Scavenger {
 			pDimensions[count] = Integer.parseInt(parameterElement.getAttributeValue("dimension"));
 			count++;
 		    }
-		    APIConsumerDefinition ad = new APIConsumerDefinition(className, methodName, pNames, pTypes, pDimensions, methodType, dimension, description, false, false);
+		    APIConsumerDefinition ad = new APIConsumerDefinition(className, methodName, pNames, pTypes, pDimensions, methodType, dimension, description, methodConstructor, methodStatic);
 		    classNode.add(new DefaultMutableTreeNode(new APIConsumerProcessorFactory(ad)));
 		}
 		add(classNode);
