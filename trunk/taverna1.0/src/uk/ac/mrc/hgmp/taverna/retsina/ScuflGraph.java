@@ -213,6 +213,7 @@ public class ScuflGraph extends JGraph
 //    scuflModel.addListener(new ScuflModelEventPrinter(null));
 //    scuflView = new XScuflView(scuflModel);
       scuflModel.clear();
+      soapLabProcessorNameStore.removeAllElements();
     }
 
     /**
