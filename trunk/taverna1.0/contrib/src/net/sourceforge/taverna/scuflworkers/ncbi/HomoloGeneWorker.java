@@ -7,6 +7,7 @@ package net.sourceforge.taverna.scuflworkers.ncbi;
 import java.net.MalformedURLException;
 import java.util.Map;
 
+import net.sourceforge.taverna.baclava.DataThingAdapter;
 import net.sourceforge.taverna.io.TransmitterException;
 
 import org.embl.ebi.escience.baclava.DataThing;
@@ -14,10 +15,9 @@ import org.embl.ebi.escience.baclava.DataThing;
 import uk.ac.soton.itinnovation.taverna.enactor.entities.TaskExecutionException;
 
 /**
+ * This class fetches HomoloGene data from NCBI.
  * @author mfortner
  *
- * TODO To change the template for this generated type comment go to
- * Window - Preferences - Java - Code Generation - Code and Comments
  */
 public class HomoloGeneWorker extends AbstractNCBIWorker {
 	
@@ -32,9 +32,10 @@ public class HomoloGeneWorker extends AbstractNCBIWorker {
 	 * @see net.sourceforge.taverna.scuflworkers.ncbi.AbstractNCBIWorker#execute(java.util.Map)
 	 */
 	public Map execute(Map inputMap) throws TaskExecutionException {
-	    this.term = (String)((DataThing)inputMap.get("term")).getDataObject();
-	    String maxRecs = (String)((DataThing)inputMap.get("maxRecords")).getDataObject();
-	    this.maxRecords = Integer.parseInt(maxRecs);
+	    DataThingAdapter inAdapter = new DataThingAdapter(inputMap);
+	    this.term = inAdapter.getString("term");
+	    String maxRecs = inAdapter.getString("maxRecords");
+	    this.maxRecords = (maxRecs != null)?Integer.parseInt(maxRecs): 10;
 	    
 	   
 	    	    
