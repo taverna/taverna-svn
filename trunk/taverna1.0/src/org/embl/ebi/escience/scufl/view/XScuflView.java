@@ -81,6 +81,7 @@ public class XScuflView implements ScuflModelEventListener {
     private void updateCachedView() {
 	// Create the XML document
 	Element root = new Element("scufl",scuflNS());
+	root.setAttribute("version","0.1");
 	this.cachedDocument = new Document(root);
 	
 	// Create elements corresponding to processors
