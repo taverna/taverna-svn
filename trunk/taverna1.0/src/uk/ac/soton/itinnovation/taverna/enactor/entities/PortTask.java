@@ -26,8 +26,8 @@
 //      Dependencies        :
 //
 //      Last commit info    :   $Author: mereden $
-//                              $Date: 2004-07-16 11:53:01 $
-//                              $Revision: 1.30 $
+//                              $Date: 2004-10-25 17:39:11 $
+//                              $Revision: 1.31 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 
@@ -57,6 +57,7 @@ import java.lang.Object;
 import java.lang.String;
 import java.lang.System;
 import java.util.Collection;
+import java.util.*;
 
 
 
@@ -122,6 +123,9 @@ public class PortTask extends AbstractTask {
      * @param newDataThing holder for data
      */
     public synchronized void setData(DataThing newDataThing) {
+	if (dataAvailable()) {
+	    return;
+	}
 	//System.out.println("Pushing data into port task "+getScuflPort().getProcessor().getName()+"."+getScuflPort().getName());
 	// Check whether the new data is a lower dimension than
 	// the type of this port task
@@ -222,6 +226,31 @@ public class PortTask extends AbstractTask {
 		}
 	    }
 	}
+	if (getScuflPort() instanceof InputPort) {
+	    // This is an input
+	    Collection parents = getParents();
+	    Set removeMe = new HashSet();
+	    if (parents.size() > 1) {
+		for (Iterator i = parents.iterator(); i.hasNext(); ) {
+		    PortTask port = (PortTask)i.next();
+		    if (port.dataAvailable() == false) {
+			removeMe.add(port);
+		    }
+		}
+	    }
+	    for (Iterator i = removeMe.iterator(); i.hasNext();) {
+		getParents().remove(i.next());
+	    }
+	}
+	/**
+	 // Kick all parent tasks into the completed state (um, is this the right way to do this?)
+	 for (Iterator i = getParents().iterator(); i.hasNext(); ) {
+	 Object o = i.next();
+	 if (o instanceof PortTask) {
+	 ((PortTask)o).cancel();
+	 }
+	 }
+	*/
     }
     
     /**

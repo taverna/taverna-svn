@@ -32,3 +32,6 @@ org.embl.ebi.escience.scuflworkers.java.StringListMerge = list:Merge string list
 org.embl.ebi.escience.scuflworkers.java.GetLSID = metadata:Get internal LSID of input
 org.embl.ebi.escience.scuflworkers.java.EmitLotsOfStrings = test:Create lots of strings
 #org.embl.ebi.escience.scuflworkers.java.GetLSIDValue = lsid:Resolve LSID Data
+
+org.embl.ebi.escience.scuflworkers.java.FailIfTrue = conditional:Fail if true
+org.embl.ebi.escience.scuflworkers.java.FailIfFalse = conditional:Fail if false
