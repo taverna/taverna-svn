@@ -16,6 +16,7 @@ import org.embl.ebi.escience.scuflworkers.ProcessorTaskWorker;
 import java.io.*;
 import org.embl.ebi.escience.baclava.*;
 
+
 /**
  * Task to invoke a search over a Biomart data warehouse
  * @author Tom Oinn
@@ -36,7 +37,8 @@ public class BiomartTask implements ProcessorTaskWorker {
 	    // a copy so that any filter value settings are not
 	    // overwritten by input values
 	    Query query = new Query(processor.getFullyPopulatedQuery());
-	    
+	    // Copy across the DataSetConfig object!
+	    query.setDatasetConfig(processor.getFullyPopulatedQuery().getDatasetConfig());
 	    /**String dataSourceName = processor.getDataSourceName();
 	     // Create new DetailedDataSource
 	     DetailedDataSource ds = 

@@ -27,6 +27,7 @@ import java.awt.Graphics2D;
 import java.awt.Container;
 import java.awt.CardLayout;
 import java.awt.event.*;
+import javax.swing.event.*;
 
 /**
  * JPanel subclass for an Attribute Page
@@ -509,8 +510,8 @@ public class AttributePageEditor extends JPanel {
 	final JComboBox geneTranscriptSelect = new JComboBox(new String[]{
 	    "None","Transcripts / Proteins","Genes"});
 	JComboBox sequenceOptionsSelect = new JComboBox();
-	final JTextArea fiveFlankLength = new JTextArea("1000");
-	final JTextArea threeFlankLength = new JTextArea("1000");
+	final JTextField fiveFlankLength = new JTextField("1000");
+	final JTextField threeFlankLength = new JTextField("1000");
     
 	// Options available for both genes and transcripts
 	String[] geneOptions = new String[]{"Gene sequence",
@@ -776,6 +777,13 @@ public class AttributePageEditor extends JPanel {
 	    imagePanel.setMaximumSize(new Dimension(600,95));
 	    add(imagePanel);
 	    updateUIPanel();
+	    ActionListener docListener = new ActionListener() {
+		    public void actionPerformed(ActionEvent ae) {
+			updateQuery();
+		    }
+		};
+	    fiveFlankLength.addActionListener(docListener);
+	    threeFlankLength.addActionListener(docListener);
 	    firingEvents = true;
 	}
     
@@ -795,28 +803,34 @@ public class AttributePageEditor extends JPanel {
 	}
     
 	SequenceDescription getSequenceDescription() {
-	    if (geneTranscriptSelect.getSelectedIndex() > 0 &&
-		sequenceOptionsSelect.getSelectedIndex() > -1) {
-		int sdType = (geneTranscriptSelect.getSelectedIndex() == 1 ? 
-			      transcriptTypes[sequenceOptionsSelect.getSelectedIndex()] : 
-			      geneTypes[sequenceOptionsSelect.getSelectedIndex()]);
-		int fiveFlankLengthValue = (fiveFlankLength.isEnabled() ?
-					    new Integer(fiveFlankLength.getText()).intValue() :
-					    0);
-		int threeFlankLengthValue = (threeFlankLength.isEnabled() ?
-					     new Integer(threeFlankLength.getText()).intValue() :
-					     0);
-		try {
-		    return new SequenceDescription(sdType,
-						   fiveFlankLengthValue,
-						   threeFlankLengthValue);
+	    try {
+		if (geneTranscriptSelect.getSelectedIndex() > 0 &&
+		    sequenceOptionsSelect.getSelectedIndex() > -1) {
+		    int sdType = (geneTranscriptSelect.getSelectedIndex() == 1 ? 
+				  transcriptTypes[sequenceOptionsSelect.getSelectedIndex()] : 
+				  geneTypes[sequenceOptionsSelect.getSelectedIndex()]);
+		    int fiveFlankLengthValue = (fiveFlankLength.isEnabled() ?
+						new Integer(fiveFlankLength.getText()).intValue() :
+						0);
+		    int threeFlankLengthValue = (threeFlankLength.isEnabled() ?
+						 new Integer(threeFlankLength.getText()).intValue() :
+						 0);
+		    try {
+			return new SequenceDescription(sdType,
+						       fiveFlankLengthValue,
+						       threeFlankLengthValue);
+		    }
+		    catch (InvalidQueryException iqe) {
+			iqe.printStackTrace();
+			return null;
+		    }
 		}
-		catch (InvalidQueryException iqe) {
-		    iqe.printStackTrace();
+		else {
 		    return null;
 		}
 	    }
-	    else {
+	    catch (NumberFormatException nfe) {
+		System.out.println("Invalid number for flank length!");
 		return null;
 	    }
 	}

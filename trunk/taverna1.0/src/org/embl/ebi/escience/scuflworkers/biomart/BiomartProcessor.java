@@ -149,6 +149,7 @@ public class BiomartProcessor extends Processor {
 								   "default");
 	    query.setDataSource(ds);
 	    query.setDataset(config.getDataset());
+	    query.setDatasetConfig(config);
 	    query.setMainTables(config.getStarBases());
 	    query.setPrimaryKeys(config.getPrimaryKeys());
 	}
