@@ -18,6 +18,7 @@ import org.embl.ebi.escience.scufl.ScuflModelRemoveEvent;
 import org.embl.ebi.escience.scufl.Processor;
 import org.embl.ebi.escience.scufl.ScuflModel;
 import org.embl.ebi.escience.scufl.ScuflModelEvent;
+import org.embl.ebi.escience.scufl.ScuflModelRenameEvent;
 import org.jgraph.event.GraphModelEvent;
 import org.jgraph.event.GraphModelEvent.GraphModelChange;
 import org.jgraph.graph.CellView;
@@ -28,19 +29,20 @@ import org.jgraph.graph.ParentMap;
 
 /**
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover </a>
- * @version $Revision: 1.5 $
+ * @version $Revision: 1.6 $
  */
 public class ScuflGraphModelChange implements GraphModelChange,
 		GraphModelEvent.ExecutableGraphChange
 {
 	private ScuflGraphModel model;
-	private Collection added = new ArrayList();
-	private Collection removed = new ArrayList();
+	private Collection added = new HashSet();
+	private Collection removed = new HashSet();
 	private ConnectionSet connectionSet;
 	private Map attributes = new HashMap();
 	private Map cellViews = new HashMap();
 	private Collection changed = new HashSet();
 	private Object[] context;
+	private List newRoots;
 
 	/**
 	 * @param model
@@ -66,7 +68,7 @@ public class ScuflGraphModelChange implements GraphModelChange,
 		}
 		newRoots.addAll(Arrays.asList(scuflModel.getProcessors()));
 		newRoots.addAll(Arrays.asList(scuflModel.getConcurrencyConstraints()));
-		newRoots.addAll(Arrays.asList(scuflModel.getDataConstraints()));
+		newRoots.addAll(Arrays.asList(scuflModel.getDataConstraints()));			
 		return newRoots;
 	}
 	
@@ -88,20 +90,22 @@ public class ScuflGraphModelChange implements GraphModelChange,
 	 */
 	public void calculateChanges(ScuflModelEvent event)
 	{
-		// TODO Also add new ports/children to inserted/removed
 		Object source = event.getSource();
+		newRoots = getRoots(model.getModel());		
 		if (event instanceof ScuflModelRemoveEvent)
 		{
 			Object removedObject = ((ScuflModelRemoveEvent) event).getRemovedObject();
 			if (!model.isPort(removedObject) && removedObject instanceof Port
 					&& ((Port) removedObject).getProcessor().getPorts().length == 0)
 			{
-				removed.add(((Port) removedObject).getProcessor());
+				removedObject = model.getParent(removedObject);
 			}
-			else
+			addNode(removed,removedObject);
+			Object parent = model.getParent(removedObject);
+			if(parent != null)
 			{
-				addNode(removed, removedObject);				
-			}
+				changed.add(parent);
+			}				
 		}
 		else if (event instanceof ScuflModelAddEvent)
 		{
@@ -109,19 +113,35 @@ public class ScuflGraphModelChange implements GraphModelChange,
 			if (!model.isPort(addedObject) && addedObject instanceof Port
 					&& !model.contains(((Port) addedObject).getProcessor()))
 			{
-				added.add(((Port) addedObject).getProcessor());
+				addedObject = model.getParent(addedObject);
 			}
-			else
+			addNode(added, addedObject);
+			Object parent = model.getParent(addedObject);
+			if(parent != null)
 			{
-				addNode(added, addedObject);				
+				changed.add(parent);
+			}
+		}
+		else if(event instanceof ScuflModelRenameEvent)
+		{
+			if (model.contains(source))
+			{
+				Map attrs = (Map) attributes.get(source);
+				if (attrs == null)
+				{
+					attrs = new HashMap();
+					attributes.put(source, attrs);
+				}
+				String newName = ((ScuflModelRenameEvent)event).getNewName();				
+				GraphConstants.setValue(attrs, newName);
+				changed.add(source);				
 			}
 		}
 		else
 		{
 			if (source instanceof ScuflModel)
 			{
-				List newRoots = getRoots((ScuflModel) source);
-				List roots = model.getRoots();
+				List roots = model.roots;
 				Iterator difference = difference(roots, newRoots).iterator();
 				while(difference.hasNext())
 				{
@@ -131,36 +151,6 @@ public class ScuflGraphModelChange implements GraphModelChange,
 				while(difference.hasNext())
 				{
 					addNode(removed, difference.next());
-				}
-			}
-			else if (source instanceof Processor)
-			{
-				// TODO Change scufl event model to send actual add events
-				if (model.contains(source))
-				{
-					changed.add(source);
-					ScuflModel scuflModel = model.getModel();
-					if (source != scuflModel.getWorkflowSinkProcessor()
-							&& source != scuflModel.getWorkflowSourceProcessor())
-					{
-						Processor processor = (Processor) source;
-						Map attrs = model.getAttributes(processor);
-						String name = (String) GraphConstants.getValue(attrs);
-						if (!name.equals(processor.getName()))
-						{
-							Map procAttr = (Map) attributes.get(processor);
-							if (procAttr == null)
-							{
-								procAttr = new HashMap();
-								attributes.put(processor, procAttr);
-							}
-							GraphConstants.setValue(procAttr, processor.getName());
-						}
-					}
-				}
-				else
-				{
-					added.add(source);
 				}
 			}
 		}
@@ -290,6 +280,7 @@ public class ScuflGraphModelChange implements GraphModelChange,
 	 */
 	public void execute()
 	{
+		model.roots = newRoots;
 		model.updateAttributes(attributes);
 
 		Iterator insertIterator = added.iterator();

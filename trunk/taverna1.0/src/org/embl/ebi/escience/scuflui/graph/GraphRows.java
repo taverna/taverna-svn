@@ -19,7 +19,7 @@ import org.jgraph.graph.GraphModel;
  * COMMENT
  * 
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover </a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class GraphRows
 {
@@ -55,23 +55,11 @@ public class GraphRows
 			rows.add(nodes);
 		}
 		nodes = (List) rows.get(row);
-		if (GraphUtilities.isGroup(model, node))
+		if(!nodes.contains(node))
 		{
-			for (int index = 0; index < model.getChildCount(node); index++)
-			{
-				if(!nodes.contains(model.getChild(node, index)))
-				{
-					nodes.add(model.getChild(node, index));
-				}
-			}
+			nodes.add(node);
 		}
-		else
-		{
-			if(!nodes.contains(node))
-			{
-				nodes.add(node);
-			}
-		}
+		calculateBounds(row);
 	}
 
 	/**
@@ -155,17 +143,7 @@ public class GraphRows
 	{
 		boolean removed = true;
 		List nodes = (List) rows.get(row);
-		if (GraphUtilities.isGroup(model, node))
-		{
-			for (int index = 0; index < model.getChildCount(node); index++)
-			{
-				removed = nodes.remove(model.getChild(node, index)) && removed;
-			}
-		}
-		else
-		{
-			removed = nodes.remove(node);
-		}
+		removed = nodes.remove(node);
 		if (removed)
 		{
 			calculateBounds(row);
@@ -228,53 +206,70 @@ public class GraphRows
 			Object node = nodes.get(index);
 			if (model.isEdge(node))
 			{
-				// Map attributes = model.getAttributes(node);
-				// if(attributes != null)
-				// {
-				// int lineMid = y + (ROW_HEIGHT / 2);
-				// x += X_SEPARATION;
-				// List points = GraphConstants.getPoints(attributes);
-				// Point2D point = new Point(x, lineMid);
-				// for(int index2 = 0; index2 < points.size(); index2++)
-				// {
-				// Point2D existingPoint = (Point2D)points.get(index2);
-				// if(existingPoint.getY() > lineMid)
-				// {
-				// points.add(index2, point);
-				// break;
-				// }
-				// }
-				// x += X_SEPARATION;
-				// }
+				 Map attributes = model.getAttributes(node);
+				if (attributes != null)
+				{
+//					int lineMid = y + (ROW_HEIGHT / 2);
+//					x += X_SEPARATION;
+//					List points = GraphConstants.getPoints(attributes);
+//					Point2D point = new Point2D.Double(x, lineMid);
+//					for (int index2 = 0; index2 < points.size(); index2++)
+//					{
+//						Point2D existingPoint = (Point2D) points.get(index2);
+//						if (existingPoint.getY() > lineMid)
+//						{
+//							points.add(index2, point);
+//							break;
+//						}
+//					}
+//					x += X_SEPARATION;
+				}
 			}
 			else
 			{
-				Map attributes = model.getAttributes(node);
-				if (attributes != null)
+				if(GraphUtilities.isGroup(model, node))
 				{
-					Rectangle2D bounds = GraphConstants.getBounds(attributes);
-					if (bounds != null)
+					for(int index2 = 0; index2 < model.getChildCount(node); index2++)
 					{
-						if (x != bounds.getX() || y != bounds.getY())
-						{
-							bounds.setRect(x, y, bounds.getWidth(), bounds.getHeight());
-							CellView view = layout.getMapping(node, false);
-							view.update();
-							// TODO Easier way of updating edges?
-							Iterator edges = DefaultGraphModel.getEdges(model, new Object[] { node }).iterator();
-							while(edges.hasNext())
-							{
-								CellView edgeView = layout.getMapping(edges.next(), false);
-								edgeView.update();
-							}
-						}
-						x += bounds.getWidth() + X_SEPARATION;
+						Object child = model.getChild(node, index2);
+						x += setPosition(child, x, y);
 					}
+				}
+				else
+				{
+					x += setPosition(node, x, y);
 				}
 			}
 		}
 	}
 
+	private double setPosition(Object node, int x, int y)
+	{
+		Map attributes = model.getAttributes(node);
+		if (attributes != null)
+		{
+			Rectangle2D bounds = GraphConstants.getBounds(attributes);
+			if (bounds != null)
+			{
+				if (x != bounds.getX() || y != bounds.getY())
+				{
+					bounds.setRect(x, y, bounds.getWidth(), bounds.getHeight());
+					CellView view = layout.getMapping(node, false);
+					view.update();
+					// TODO Easier way of updating edges?
+					Iterator edges = DefaultGraphModel.getEdges(model, new Object[] { node }).iterator();
+					while(edges.hasNext())
+					{
+						CellView edgeView = layout.getMapping(edges.next(), false);
+						edgeView.update();
+					}
+				}
+				return bounds.getWidth() + X_SEPARATION;				
+			}
+		}
+		return 0;
+	}
+	
 	private int getCrossings()
 	{
 		int crossings = 0;

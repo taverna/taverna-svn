@@ -20,7 +20,7 @@ import org.jgraph.graph.GraphLayoutCache;
  * graph to be able to update as the graph changes.
  * 
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover </a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class LayoutManager extends GraphLayoutCache
 {
@@ -124,13 +124,6 @@ public class LayoutManager extends GraphLayoutCache
 					if (root == inserted[index])
 					{
 						rows.getRow(root);
-					}
-					else
-					{
-						if (!graphModel.isPort(inserted[index]))
-						{
-							rows.setRow(inserted[index], rows.getRow(root));
-						}
 					}
 				}
 			}
@@ -633,9 +626,12 @@ public class LayoutManager extends GraphLayoutCache
 		if (parent != null && currentParent != null && currentParent != parent)
 		{
 			Object oldNode = treeGetParent(currentParent);
-			Map edgeAttr = graphModel.getAttributes(currentParent);
-			edgeAttr.put(EDGE_PARENT, child);
-			treeSetParent(oldNode, currentParent);
+			if(oldNode != null)
+			{
+				Map edgeAttr = graphModel.getAttributes(currentParent);
+				edgeAttr.put(EDGE_PARENT, child);
+				treeSetParent(oldNode, currentParent);
+			}
 		}
 		attributes.put(EDGE_PARENT, parent);
 	}

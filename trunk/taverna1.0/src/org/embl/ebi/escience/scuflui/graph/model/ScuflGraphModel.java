@@ -36,7 +36,6 @@ import org.embl.ebi.escience.scufl.OutputPort;
 import org.embl.ebi.escience.scufl.Port;
 import org.embl.ebi.escience.scufl.Processor;
 import org.embl.ebi.escience.scufl.ScuflModel;
-import org.embl.ebi.escience.scufl.SemanticMarkup;
 import org.embl.ebi.escience.scuflui.ScuflUIComponent;
 import org.embl.ebi.escience.scuflui.graph.GraphColours;
 import org.embl.ebi.escience.scuflui.graph.GraphUtilities;
@@ -52,7 +51,7 @@ import org.jgraph.graph.ParentMap;
 /**
  * 
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover </a>
- * @version $Revision: 1.9 $
+ * @version $Revision: 1.10 $
  */
 public class ScuflGraphModel implements GraphModel, GraphModelListener, ScuflUIComponent
 {
@@ -133,7 +132,7 @@ public class ScuflGraphModel implements GraphModel, GraphModelListener, ScuflUIC
 
 	private ScuflModel model;
 	private ScuflModelReconciler reconciler;
-	private List roots = new ArrayList();
+	List roots = new ArrayList();
 	private Map attributes = new HashMap();
 
 	private Collection listeners = new HashSet();
@@ -238,7 +237,7 @@ public class ScuflGraphModel implements GraphModel, GraphModelListener, ScuflUIC
 				GraphConstants.setBorder(map, new TitledBorder(new DottyBorder(Color.GRAY),
 						"Workflow Inputs"));
 				GraphConstants.setGroupBorder(map, 5);
-				GraphConstants.setEditable(map, false);				
+				GraphConstants.setEditable(map, false);
 			}
 			else if (processor == model.getWorkflowSinkProcessor())
 			{
@@ -247,7 +246,7 @@ public class ScuflGraphModel implements GraphModel, GraphModelListener, ScuflUIC
 				GraphConstants.setBorder(map, new TitledBorder(new DottyBorder(Color.GRAY),
 						"Workflow Outputs"));
 				GraphConstants.setGroupBorder(map, 5);
-				GraphConstants.setEditable(map, false);				
+				GraphConstants.setEditable(map, false);
 			}
 			else
 			{
@@ -451,8 +450,7 @@ public class ScuflGraphModel implements GraphModel, GraphModelListener, ScuflUIC
 	 */
 	public boolean isPort(Object port)
 	{
-		return (port instanceof Port && !isPortOnWorkflowEdge(port)) || port instanceof DummyPort
-				|| port instanceof SemanticMarkup;
+		return (port instanceof Port && !isPortOnWorkflowEdge(port)) || port instanceof DummyPort;
 	}
 
 	private boolean isPortOnWorkflowEdge(Object port)
@@ -552,7 +550,7 @@ public class ScuflGraphModel implements GraphModel, GraphModelListener, ScuflUIC
 		if (parent instanceof Processor)
 		{
 			int ports = ((Processor) parent).getPorts().length;
-			if (getAttributes(parent).get(DUMMY_PORT) != null)
+			if (getAttributes(parent) != null && getAttributes(parent).get(DUMMY_PORT) != null)
 			{
 				ports += 1;
 			}
@@ -799,11 +797,6 @@ public class ScuflGraphModel implements GraphModel, GraphModelListener, ScuflUIC
 		}
 	}
 
-	List getRoots()
-	{
-		return roots;
-	}
-
 	Map addNode(Object newNode, ConnectionSet cs)
 	{
 		if (isEdge(newNode))
@@ -813,10 +806,6 @@ public class ScuflGraphModel implements GraphModel, GraphModelListener, ScuflUIC
 			cs.connect(newNode, source, target);
 			addEdge(source, newNode);
 			addEdge(target, newNode);
-		}
-		if (!(newNode instanceof Port))
-		{
-			roots.add(newNode);
 		}
 		return addAttributes(newNode);
 	}
@@ -828,7 +817,6 @@ public class ScuflGraphModel implements GraphModel, GraphModelListener, ScuflUIC
 			removeEdge(getSource(node), node);
 			removeEdge(getTarget(node), node);
 		}
-		roots.remove(node);
 	}
 
 	/*

@@ -97,7 +97,7 @@ public class WorkflowEditor extends JGraph implements ScuflUIComponent
 		 */
 		public void actionPerformed(ActionEvent e)
 		{
-			((MarqueeHandler)getMarqueeHandler()).startEdge(WorkflowEditor.this, port);
+			((MarqueeHandler) getMarqueeHandler()).startEdge(WorkflowEditor.this, port);
 		}
 	}
 
@@ -128,14 +128,10 @@ public class WorkflowEditor extends JGraph implements ScuflUIComponent
 				childViews = new CellView[result.size()];
 				result.toArray(childViews);
 				Rectangle2D r = getBounds(childViews);
-				if (GraphConstants.isOpaque(getAllAttributes()))
-				{
-					Insets insets = GraphConstants.getBorder(getAllAttributes()).getBorderInsets(
-							new JLabel());
-					r.setFrame(r.getX() - insets.left, r.getY() - insets.top, r.getWidth()
-							+ insets.left + insets.right, r.getHeight() + insets.top
-							+ insets.bottom);
-				}
+				Insets insets = GraphConstants.getBorder(getAllAttributes()).getBorderInsets(
+						new JLabel());
+				r.setFrame(r.getX() - insets.left, r.getY() - insets.top, r.getWidth()
+						+ insets.left + insets.right, r.getHeight() + insets.top + insets.bottom);
 				groupBounds = r;
 			}
 
@@ -258,42 +254,34 @@ public class WorkflowEditor extends JGraph implements ScuflUIComponent
 										Port[] ports = processor.getPorts();
 										if (ports.length > 0)
 										{
-											if (ports.length == 1)
+											JMenu linkMenu = new JMenu("Start link from...");
+											linkMenu.setIcon(ScuflIcons.dataLinkIcon);
+											ports = processor.getInputPorts();
+											if (ports.length > 0)
 											{
-												// TODO Change text
-												menu.add(new StartLinkAction(model, ports[0]));
+												linkMenu.add(new ShadedLabel("Inputs",
+														ShadedLabel.TAVERNA_GREEN));
+												linkMenu.addSeparator();
+												for (int index = 0; index < ports.length; index++)
+												{
+													linkMenu.add(new StartLinkAction(model,
+															ports[index]));
+												}
+												linkMenu.addSeparator();
 											}
-											else
+											ports = processor.getOutputPorts();
+											if (ports.length > 0)
 											{
-												JMenu linkMenu = new JMenu("Start link from...");
-												linkMenu.setIcon(ScuflIcons.dataLinkIcon);
-												ports = processor.getInputPorts();
-												if (ports.length > 0)
+												linkMenu.add(new ShadedLabel("Outputs",
+														ShadedLabel.TAVERNA_ORANGE));
+												linkMenu.addSeparator();
+												for (int index = 0; index < ports.length; index++)
 												{
-													linkMenu.add(new ShadedLabel("Inputs",
-															ShadedLabel.TAVERNA_GREEN));
-													linkMenu.addSeparator();
-													for (int index = 0; index < ports.length; index++)
-													{
-														linkMenu.add(new StartLinkAction(model,
-																ports[index]));
-													}
-													linkMenu.addSeparator();
+													linkMenu.add(new StartLinkAction(model,
+															ports[index]));
 												}
-												ports = processor.getOutputPorts();
-												if (ports.length > 0)
-												{
-													linkMenu.add(new ShadedLabel("Outputs",
-															ShadedLabel.TAVERNA_ORANGE));
-													linkMenu.addSeparator();
-													for (int index = 0; index < ports.length; index++)
-													{
-														linkMenu.add(new StartLinkAction(model,
-																ports[index]));
-													}
-												}
-												menu.add(linkMenu);
 											}
+											menu.add(linkMenu);
 										}
 									}
 								}

@@ -32,7 +32,7 @@ import org.jgraph.graph.VertexView;
  * COMMENT
  * 
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover </a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class MarqueeHandler extends BasicMarqueeHandler
 {
@@ -143,6 +143,8 @@ public class MarqueeHandler extends BasicMarqueeHandler
 		{
 			if (target instanceof VertexView)
 			{
+				if(((VertexView) target).getCell() instanceof Processor)
+				{
 				Processor processor = (Processor) ((VertexView) target).getCell();
 				Port[] ports;
 				if (startPort instanceof InputPort)
@@ -163,11 +165,17 @@ public class MarqueeHandler extends BasicMarqueeHandler
 							startPort, ports[index]));
 				}
 				popupMenu.show(graph, e.getX(), e.getY());
+				}
+				else if(((VertexView) target).getCell() instanceof Port)
+				{
+					new AddDataConstraintAction(startPort.getProcessor().getModel(), startPort, (Port)((VertexView) target).getCell()).actionPerformed(null);
+				}
 			}
 			startPort = null;
 			target = null;
 			graph.setCursor(Cursor.getDefaultCursor());
 			graph.repaint();
+			e.consume();
 		}
 		else
 		{
