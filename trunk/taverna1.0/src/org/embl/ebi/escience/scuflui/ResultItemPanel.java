@@ -7,16 +7,11 @@ package org.embl.ebi.escience.scuflui;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Component;
 import java.awt.Dimension;
-import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import javax.imageio.ImageIO;
-import javax.imageio.ImageReader;
-import javax.imageio.stream.ImageInputStream;
 import javax.swing.*;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
@@ -25,32 +20,25 @@ import org.embl.ebi.escience.baclava.factory.DataThingTreeFactory;
 import org.embl.ebi.escience.baclava.factory.DataThingTreeNode;
 import org.embl.ebi.escience.scuflui.workbench.Workbench;
 
+// rendere SPI
+import org.embl.ebi.escience.scuflui.renderers.MimeTypeRendererSPI;
+import org.embl.ebi.escience.scuflui.renderers.MimeTypeRendererRegistry;
+
 // Utility Imports
 import java.util.Collection;
-import java.util.Iterator;
+
 
 // IO Imports
 import java.io.*;
-
-// Network Imports
-import java.net.URL;
-
-import org.embl.ebi.escience.scuflui.XMLTree;
-import java.lang.Exception;
-import java.lang.Object;
-import java.lang.Process;
-import java.lang.Runtime;
-import java.lang.String;
-
-
 
 /**
  * A JPanel to represent a single result DataThing
  * to the user at the end of the workflow
  * @author Tom Oinn
+ * @author Matthew Pocock
  */
 public class ResultItemPanel extends JPanel {
-    
+
     final JFileChooser fc = new JFileChooser();
 
     public ResultItemPanel(DataThing theDataThing) {
@@ -70,99 +58,27 @@ public class ResultItemPanel extends JPanel {
 	structureTree.addTreeSelectionListener(new TreeSelectionListener() {
 		public void valueChanged(TreeSelectionEvent e) {
 		    DataThingTreeNode node = (DataThingTreeNode)structureTree.getLastSelectedPathComponent();
-		    if (node != null) {
-			if (node.isLeaf()) {
-			    // Only interested in leaf nodes as they contain the data
-			    Object userObject = node.getUserObject();
-			    DataThing theDataThing = node.getDataThing();
-			    String syntacticType = theDataThing.getSyntacticTypeForObject(userObject);
-			    String mimeTypes = syntacticType.split("'")[1].toLowerCase();
-			    if(userObject instanceof Collection) {
-				userObject = "Empty collection, collection type was "+userObject.getClass().getName();
-			    }
-			    if (mimeTypes.matches(".*text/.*")) {
-				// Create a new text area
-				if (mimeTypes.matches(".*text/html.*")) {
-				    splitPane.setRightComponent(new JScrollPane(new JEditorPane("text/html","<pre>"+(String)userObject+"</pre>")));
-				}
-				else if (mimeTypes.matches(".*text/rtf.*")) {
-				    splitPane.setRightComponent(new JScrollPane(new JEditorPane("text/rtf",(String)userObject)));
-				}
-				else if (mimeTypes.matches(".*text/x-taverna-web-url.*")) {
-				    try {
-					JEditorPane jep = new JEditorPane();
-					jep.setPage(new URL((String)userObject));
-					splitPane.setRightComponent(new JScrollPane(jep));
-				    }
-				    catch (Exception ex) {
-					JTextArea theTextArea = new JTextArea();
-					theTextArea.setText((String)userObject);
-					theTextArea.setFont(new Font("Monospaced",Font.PLAIN,12));
-					splitPane.setRightComponent(new JScrollPane(theTextArea));
-				    }
-				}
-				// Handle graphviz dot file format, see comments at 
-				// http://www.research.att.com/lists/graphviz-interest/msg01013.html
-				// for discussion of mime types
-				else if (mimeTypes.matches(".*text/x-graphviz.*")) {
-				    try {
-					String dotText = (String)userObject;
-					Process dotProcess = Runtime.getRuntime().exec("dot -Tpng");
-					OutputStream out = dotProcess.getOutputStream();
-					out.write(dotText.getBytes());
-					out.flush();
-					out.close();
-					InputStream in = dotProcess.getInputStream();
-					ImageInputStream iis = ImageIO.createImageInputStream(in);
-					String suffix = "png";
-					Iterator readers = ImageIO.getImageReadersBySuffix( suffix );
-					ImageReader imageReader = (ImageReader)readers.next();
-					imageReader.setInput(iis, false);
-					ImageIcon theImage = new ImageIcon(imageReader.read(0));
-					JPanel theImagePanel = new JPanel();
-					theImagePanel.add(new JLabel(theImage));
-					theImagePanel.setPreferredSize(new Dimension(theImage.getIconWidth(), theImage.getIconHeight()));
-					splitPane.setRightComponent(new JScrollPane(theImagePanel));
-				    }
-				    catch (IOException ioe) {
-					JTextArea theTextArea = new JTextArea();
-					theTextArea.setText((String)userObject);
-					theTextArea.setFont(new Font("Monospaced",Font.PLAIN,12));
-					splitPane.setRightComponent(new JScrollPane(theTextArea));
-				    }
-				}
-				else {
-				    JTextArea theTextArea = new JTextArea();
-				    theTextArea.setText((String)userObject);
-				    theTextArea.setFont(new Font("Monospaced",Font.PLAIN,12));
-				    splitPane.setRightComponent(new JScrollPane(theTextArea));
-				}
-				// If text/xml then create a new split pane to show a tree version of it
-				if (mimeTypes.matches(".*text/xml.*")) {
-				    try {
-					Component originalComponent = splitPane.getRightComponent();
-					XMLTree xmlTreeDisplay = new XMLTree((String)userObject);
-					JSplitPane pane2 = new JSplitPane(JSplitPane.VERTICAL_SPLIT,
-									  new JScrollPane(xmlTreeDisplay),
-									  originalComponent);
-					splitPane.setRightComponent(pane2);
-				    }
-				    catch (Exception ex) {
-					// Probably not valid xml so don't do the display change
-				    }
-				}
-			    }
-			    else if (mimeTypes.matches(".*image/.*")) {
-				// Create a new image
-				ImageIcon theImage = new ImageIcon((byte[])userObject);
-				JPanel theImagePanel = new JPanel();
-				theImagePanel.add(new JLabel(theImage));
-				theImagePanel.setPreferredSize(new Dimension(theImage.getIconWidth(), theImage.getIconHeight()));
-				splitPane.setRightComponent(new JScrollPane(theImagePanel));
-			    }
-			    
-			}
-		    }
+            if (node != null && node.isLeaf()) {
+                // Only interested in leaf nodes as they contain the data
+                Object userObject = node.getUserObject();
+                DataThing theDataThing = node.getDataThing();
+                String syntacticType = theDataThing.getSyntacticTypeForObject(userObject);
+                String mimeTypes = syntacticType.split("'")[1].toLowerCase();
+                if (userObject instanceof Collection) {
+                    userObject = "Empty collection, collection type was " + userObject.getClass().getName();
+                }
+                MimeTypeRendererSPI renderer =
+                        MimeTypeRendererRegistry.instance().getRenderer(
+                                userObject, mimeTypes);
+
+                if (renderer != null) {
+                    JComponent component = renderer.getComponent(
+                            userObject, mimeTypes);
+                    if (component != null) {
+                        splitPane.setRightComponent(new JScrollPane(component));
+                    }
+                }
+            }
 		}
 	    });
 	// Add a mouse listener to allow the user to save results to disc
@@ -178,7 +94,7 @@ public class ResultItemPanel extends JPanel {
 		    }
 		}
 		void doEvent(MouseEvent e) {
-		    final DataThingTreeNode node = 
+		    final DataThingTreeNode node =
 			(DataThingTreeNode)(structureTree.getPathForLocation(e.getX(),e.getY()).getLastPathComponent());
 		    if (node.isLeaf()) {
 			final Object theDataObject = node.getUserObject();
@@ -217,7 +133,7 @@ public class ResultItemPanel extends JPanel {
 				    }
 				}
 			    });
-			
+
 			theMenu.add(saveAction);
 			theMenu.show(structureTree, e.getX(), e.getY());
 		    }

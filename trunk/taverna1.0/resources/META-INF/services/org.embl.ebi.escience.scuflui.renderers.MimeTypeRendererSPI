@@ -1,0 +1,7 @@
+org.embl.ebi.escience.scuflui.renderers.TextHtml
+org.embl.ebi.escience.scuflui.renderers.TextRtf
+org.embl.ebi.escience.scuflui.renderers.TextTavernaWebUrl
+org.embl.ebi.escience.scuflui.renderers.TextXGraphViz
+org.embl.ebi.escience.scuflui.renderers.TextXml
+org.embl.ebi.escience.scuflui.renderers.Text # must go last to avoid gazumping
+org.embl.ebi.escience.scuflui.renderers.Image

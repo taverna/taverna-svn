@@ -13,12 +13,12 @@
 	<property name="build.classes" value="${build.dir}/classes"/>
 	<property name="build.javadocs" value="${build.dir}/api"/>
 	<property name="build.compiler" value="modern"/>
-		
+
 	<!-- Show the splash screen -->
 	<target name="splash"><!--
 		<splash showduration="0" imageurl="http://www.mygrid.org.uk/myGrid/img/mygridlogowhite.gif"/>
 -->	</target>
-		
+
 	<!-- Path used during compilation -->
 	<path id="compile-classpath">
 		<!-- Jar files used when building or running the project go here -->
@@ -52,11 +52,11 @@
 	-->
 
 	<!-- Import tidier task -->
-	<taskdef name="cleanimports" classname="com.tombrus.cleanImports.ant.CleanImports"> 
+	<taskdef name="cleanimports" classname="com.tombrus.cleanImports.ant.CleanImports">
 	<!-- declare classes needed to run the task -->
 		<classpath refid="compile-classpath"/>
 	</taskdef>
-	
+
 	<!-- Doxygen task -->
 	<taskdef name="doxygen" classname="org.doxygen.tools.DoxygenTask">
 		<!-- Declare classes needed to run the task -->
@@ -102,7 +102,7 @@
 			haveDot="yes"
 			ignoreVersion="yes"
 			sourceBrowser="yes"/>
-	</target>	 	
+	</target>
 
 	<!-- Clean the build -->
 	<target name="clean">
@@ -116,7 +116,7 @@
 
 	<!-- Build jar file and javadocs -->
 	<target name="all" depends="jar,enactor.ext.jar,javadoc,doxygen"/>
-	
+
 
 	<!-- Build the workbench binary distribution -->
 	<target name="workbench" depends="jar">
@@ -127,7 +127,9 @@
 		</copy>
 		<!-- Copy the required libraries into the lib subdirectory of the workbench -->
 		<copy todir="${workbench.dir}/resources">
-                        <fileset dir="./resources"/>
+                        <fileset dir="./resources">
+                            <exclude name="**/CVS/**"/>
+                        </fileset>
                 </copy>
                 <copy todir="${workbench.dir}/images">
                         <fileset dir="./images"/>
@@ -217,23 +219,23 @@
 	<!-- Build javadocs -->
 	<target name="javadoc" depends="prepare-src">
 		<mkdir dir="${build.javadocs}"/>
-		<javadoc windowtitle="${ant.project.name} Java Classes" 
-			 destdir="${build.javadocs}" 
-			 sourcepath="${build.src}" 
-			 doctitle="&lt;h1>${ant.project.name} Java API Documentation&lt;/h1>" 
-			 packagenames="*" 
+		<javadoc windowtitle="${ant.project.name} Java Classes"
+			 destdir="${build.javadocs}"
+			 sourcepath="${build.src}"
+			 doctitle="&lt;h1>${ant.project.name} Java API Documentation&lt;/h1>"
+			 packagenames="*"
 			 version="true">
 			<classpath refid="compile-classpath"/>
 		</javadoc>
 	</target>
-				
+
 	<!-- Test the scufl parser -->
 	<target name="test.parser" depends="jar">
 	    <java classname="org.embl.ebi.escience.taverna.ScuflParser">
-		    <arg value="http://www.ebi.ac.uk/~tmo/scuflexample.text"/>	
+		    <arg value="http://www.ebi.ac.uk/~tmo/scuflexample.text"/>
 			<classpath refid="compile-classpath"/>
 		</java>
-    </target> 
+    </target>
 
 	<!-- retsina GUI -->
         <target name="retsina" depends="jar">
@@ -241,55 +243,55 @@
                     <classpath refid="compile-classpath"/>
                 </java>
         </target>
- 
-	
+
+
 	<!-- Test the model, specifically the creation of soaplab nodes -->
 	<target name="test.soaplab" depends="jar">
 	    <java classname="org.embl.ebi.escience.scufl.test.SoaplabProcessorCreation" fork="yes">
 		    <classpath refid="compile-classpath"/>
 		</java>
-	</target> 
-	
+	</target>
+
 	<!-- Test the creation of talisman processor nodes -->
 	<target name="test.talisman" depends="jar">
 	        <java classname="org.embl.ebi.escience.scufl.test.TalismanProcessorCreation" fork="yes">
 		    <classpath refid="compile-classpath"/>
 		</java>
-	</target> 
+	</target>
 	<!-- Test the creation of arbitrarywsdl processor nodes -->
 	<target name="test.wsdl" depends="jar">
 	        <java classname="org.embl.ebi.escience.scufl.test.WSDLBasedProcessorCreation" fork="yes">
 		    <classpath refid="compile-classpath"/>
 		</java>
-	</target> 
+	</target>
 
 	<!-- Test the XScufl parser -->
 	<target name="test.xscuflparser" depends="jar">
 	    <java classname="org.embl.ebi.escience.scufl.parser.test.XScuflParserTest" fork="yes">
 		    <classpath refid="run-classpath"/>
 		</java>
-	</target> 
+	</target>
 
 	<!-- Test the Scufl to XScufl convertor -->
 	<target name="test.scuflparser" depends="jar">
 	    <java classname="org.embl.ebi.escience.scufl.parser.test.Scufl2XScuflParserTest" fork="yes">
 		    <classpath refid="compile-classpath"/>
 		</java>
-	</target> 
+	</target>
 
 	<!-- Test the dot view -->
 	<target name="test.dotview">
 		<java classname="org.embl.ebi.escience.scufl.view.test.DotViewTest" fork="yes">
 		    <classpath refid="compile-classpath"/>
 		</java>
-	</target> 
+	</target>
 
 	<!-- Test the XScufl view -->
 	<target name="test.xscuflview" depends="jar">
 		<java classname="org.embl.ebi.escience.scufl.view.test.XScuflViewTest" fork="yes">
 		    <classpath refid="compile-classpath"/>
 		</java>
-	</target> 
+	</target>
 
         <!-- Generate the dot views from my hybrid workflow -->
         <target name="test.tools.hybrid">
@@ -312,7 +314,7 @@
                     <classpath refid="compile-classpath"/>
                 </java>
         </target>
-	
+
 	<!-- Run the XScufl to Dot tool -->
 	<target name="tools.dot">
 		<java classname="org.embl.ebi.escience.scufl.tools.XScufl2Dot" fork="yes">
@@ -338,7 +340,7 @@
 			<classpath refid="compile-classpath"/>
 		</java>
 	</target>
-	
+
     <!-- Run the component demo -->
 	<target name="tools.demo">
 	        <java classname="org.embl.ebi.escience.scuflui.ComponentDemo" fork="yes">
@@ -346,7 +348,7 @@
 			<classpath refid="compile-classpath"/>
 		</java>
 	</target>
-	
+
 	<!-- Run the workbench -->
 	<target name="tools.workbench">
 		<java classname="org.embl.ebi.escience.scuflui.workbench.Workbench" fork="yes">
@@ -374,7 +376,7 @@
 			<classpath refid="compile-classpath"/>
 		</java>
 	</target>
-	
+
 	<!-- Run arbitrary unit test -->
 	<target name="runtestunit" depends="jar">
 		<java classname="junit.textui.TestRunner" fork="true">
@@ -382,5 +384,5 @@
 			<classpath refid="compile-classpath"/>
 		</java>
 	</target>
-	
+
 </project>
