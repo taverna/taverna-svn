@@ -29,7 +29,7 @@ import org.jdom.output.*;
  * COMMENT DataThingConstructionPanel
  * 
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover</a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class DataThingConstructionPanel extends JPanel implements ScuflUIComponent, ScuflModelEventListener
 {
@@ -722,7 +722,13 @@ public class DataThingConstructionPanel extends JPanel implements ScuflUICompone
 			model.removeListener(this);
 			this.model = null;
 			rootNode.removeAllChildren();
-			splitter.remove(splitter.getRightComponent());
+			try {
+			    splitter.remove(splitter.getRightComponent());
+			}
+			catch (NullPointerException npe) {
+			    // Can occur if the split window isn't populated
+			    // tmo, 17th feb 2004
+			}
 		}
 	}
 

@@ -57,7 +57,13 @@ public class ResultItemPanel extends JPanel {
 
         // Construct the scrollable view of the structure
         // of the DataThing
-        final JTree structureTree = new JTree(DataThingTreeFactory.getTree(theDataThing));
+        final JTree structureTree = new JTree(DataThingTreeFactory.getTree(theDataThing)) {
+		public Dimension getMinimumSize() {
+		    return getPreferredSize();
+		}
+	    };
+	// Fix for look and feel problems with multiline labels.
+	structureTree.setRowHeight(0);
         structureTree.setCellRenderer(DataThingTreeFactory.getRenderer());
         JLabel label = new JLabel("Select results from the tree to the left");
         label.setPreferredSize(new Dimension(400,40));
@@ -87,6 +93,8 @@ public class ResultItemPanel extends JPanel {
                                     ResultItemPanel.this.renderers, dataThing);
                             if (component != null) {
                                 splitPane.setRightComponent(new JScrollPane(component));
+				// Reset the widths of the split Pane to show the entire tree
+				splitPane.setDividerLocation(-1);
                             }
                         }
                     }
