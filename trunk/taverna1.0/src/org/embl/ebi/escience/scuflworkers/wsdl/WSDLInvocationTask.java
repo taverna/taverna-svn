@@ -42,6 +42,18 @@ import org.apache.wsif.providers.soap.apacheaxis.WSIFDynamicProvider_ApacheAxis;
 import org.apache.wsif.util.WSIFPluggableProviders;
 import org.apache.wsif.util.WSIFUtils;
 
+import org.w3c.dom.*;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerConfigurationException;
+
+import javax.xml.transform.dom.DOMSource; 
+import javax.xml.parsers.*;
+
+import javax.xml.transform.stream.StreamResult; 
+import java.io.ByteArrayOutputStream;
+import java.io.ByteArrayInputStream;
 
 /**
  * The task required to invoke an arbitrary web service.
@@ -74,20 +86,44 @@ public class WSDLInvocationTask implements ProcessorTaskWorker {
 		if (inputObject == null) {
 		    throw new TaskExecutionException("Input to web service '"+argName+"' was defined but not provided.");
 		}
-		// If the datathing contains a string and the service wants something else...
-		if (inputObject.getDataObject() instanceof String) {
-		    String argString = (String)inputObject.getDataObject();
-		    if (c.equals(Double.TYPE)) {
-			value = new Double(argString);
+		// Check whether the input port has been flagged as text/xml and create a DOM Node if so
+		if (c.equals(org.w3c.dom.Element.class)) {
+		    try {
+			System.out.println("Trying to create dom...");
+			// create a new Document
+			DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+			String dataObject = (String)inputObject.getDataObject();
+			Document doc = builder.parse(new ByteArrayInputStream(dataObject.getBytes()));
+			value = doc.getDocumentElement();
 		    }
-		    else if (c.equals(Float.TYPE)) {
-			value = new Float(argString);
+		    catch (Exception ex) {
+			throw new TaskExecutionException("Operation requires an XML complex type but\n invalid XML was supplied : "+ex.getMessage());
 		    }
-		    else if (c.equals(Integer.TYPE)) {
-			value = new Integer(argString);
-		    }
-		    else if (c.equals(Boolean.TYPE)) {
-			value = new Boolean(argString);
+		    /**
+		       TransformerFactory tFactory = TransformerFactory.newInstance();
+		       Transformer transformer = tFactory.newTransformer();
+		       DOMSource source = new DOMSource(doc.getDocumentElement());
+		       ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		       transformer.transform(source, new StreamResult(baos));
+		       System.out.println(baos.toString());
+		    */
+		}
+		else {
+		    // If the datathing contains a string and the service wants something else...
+		    if (inputObject.getDataObject() instanceof String) {
+			String argString = (String)inputObject.getDataObject();
+			if (c.equals(Double.TYPE)) {
+			    value = new Double(argString);
+			}
+			else if (c.equals(Float.TYPE)) {
+			    value = new Float(argString);
+			}
+			else if (c.equals(Integer.TYPE)) {
+			    value = new Integer(argString);
+			}
+			else if (c.equals(Boolean.TYPE)) {
+			    value = new Boolean(argString);
+			}
 		    }
 		}
 		if (value == null) {
@@ -106,12 +142,27 @@ public class WSDLInvocationTask implements ProcessorTaskWorker {
 	    Map resultMap = new HashMap();
 	    for (int i = 0; i < processor.outNames.length; i++) {
 		String outputName = processor.outNames[i];
-		resultMap.put(outputName, new DataThing(output.getObjectPart(outputName)));
+		Object resultObject = output.getObjectPart(outputName);
+		if (resultObject instanceof Node) {
+		    // If the output is an instance of Node then convert it to a text/xml
+		    // form.
+		    Node node = (Node)resultObject;
+		    TransformerFactory tFactory = TransformerFactory.newInstance();
+		    Transformer transformer = tFactory.newTransformer();
+		    DOMSource source = new DOMSource(node.getOwnerDocument());
+		    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		    transformer.transform(source, new StreamResult(baos));
+		    resultObject = baos.toString();
+		}
+		resultMap.put(outputName, new DataThing(resultObject));
 	    }
 	    
 	    return resultMap;
 	}
 	catch (Exception ex) {
+	    if (ex instanceof TaskExecutionException) {
+		throw (TaskExecutionException)ex;
+	    }
 	    ex.printStackTrace();
 	    TaskExecutionException te = new TaskExecutionException("Error occured during invocation "+
 								   ex.getMessage());

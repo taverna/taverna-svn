@@ -41,6 +41,10 @@ import org.apache.wsif.providers.ProviderUtils;
 
 public class WSDLBasedProcessor extends Processor implements java.io.Serializable {
 
+    public int getMaximumWorkers() {
+	return 10;
+    }
+
     WSIFPort port = null;
     WSIFService dpf = null;
     String operationName = null;
