@@ -11,8 +11,12 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
+import javax.swing.tree.*;
+import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
 import org.embl.ebi.escience.scufl.Processor;
+import org.embl.ebi.escience.scufl.*;
+import org.embl.ebi.escience.scufl.view.*;
 
 import org.embl.ebi.escience.scuflui.NoContextMenuFoundException;
 import org.embl.ebi.escience.scuflui.ScuflContextMenuFactory;
@@ -28,12 +32,22 @@ import java.lang.Object;
  */
 public class ScuflModelExplorerPopupHandler extends MouseAdapter {
     
-    ScuflModelExplorer explorer;
-    
+    JTree explorer;
+    TreeModelView model;
+    JComponent owner;
+
     public ScuflModelExplorerPopupHandler(ScuflModelExplorer theExplorer) {
 	this.explorer = theExplorer;
+	this.model = theExplorer.treeModel;
+	this.owner = theExplorer;
     }
    
+    public ScuflModelExplorerPopupHandler(ScuflModelTreeTable theTable) {
+	explorer = theTable.getTree();
+	model = theTable.treeModel;
+	this.owner = theTable;
+    }
+
     /**
      * Handle the mouse pressed event in case this is the platform
      * specific trigger for a popup menu
@@ -71,7 +85,7 @@ public class ScuflModelExplorerPopupHandler extends MouseAdapter {
 	if (scuflObject != null) {
 	    try {
 		final MouseEvent theMouseEvent = e;
-		JPopupMenu theMenu = ScuflContextMenuFactory.getMenuForObject(scuflObject, explorer.model);
+		JPopupMenu theMenu = ScuflContextMenuFactory.getMenuForObject(scuflObject, model.getModel());
 		if (scuflObject instanceof Processor) {
 		    // show the properties display
 		    final Processor theProcessor = (Processor)scuflObject;
@@ -84,7 +98,7 @@ public class ScuflModelExplorerPopupHandler extends MouseAdapter {
 			});
 		    theMenu.add(properties);
 		}
-		theMenu.show(explorer, e.getX(), e.getY());
+		theMenu.show(owner, e.getX(), e.getY());
 	    }
 	    catch (NoContextMenuFoundException ncmfe) {
 		// just means that there wasn't a suitable menu for the selected node.

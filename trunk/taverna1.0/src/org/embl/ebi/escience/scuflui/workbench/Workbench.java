@@ -443,6 +443,20 @@ public class Workbench extends JFrame {
 		}
 	    });
 	windowMenu.add(explorerView);
+
+	JMenuItem explorerTableView = new JMenuItem("Scufl Explorer TreeTable");
+	explorerTableView.addActionListener(new ActionListener() {
+		public void actionPerformed(ActionEvent e) {
+		    // Show a scufl explorer panel
+		    ScuflModelTreeTable thing = new ScuflModelTreeTable();
+		    GenericUIComponentFrame frame = new GenericUIComponentFrame(Workbench.this.model, thing);
+		    Workbench.this.desktop.add(frame);
+		    frame.moveToFront();
+		}
+	    });
+	windowMenu.add(explorerTableView);
+
+
 	JMenuItem diagramView = new JMenuItem("Workflow Diagram");
 	diagramView.addActionListener(new ActionListener() {
 		public void actionPerformed(ActionEvent e) {

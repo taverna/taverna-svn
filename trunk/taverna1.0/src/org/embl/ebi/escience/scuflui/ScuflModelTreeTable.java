@@ -13,6 +13,9 @@ import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 import org.embl.ebi.escience.scufl.*;
 import org.embl.ebi.escience.scufl.view.*;
+import org.embl.ebi.escience.treetable.*;
+import java.awt.*;
+import javax.swing.table.*;
 
 
 // Utility Imports
@@ -28,35 +31,40 @@ import java.lang.String;
 /**
  * A swing component that provides an expandable
  * tree view of the constituent components of a
- * ScuflModel instance.
+ * ScuflModel instance. This extends the normal
+ * scufl model explorer to add a treetable view
+ * over the reliablity features.
  * @author Tom Oinn
  */
-public class ScuflModelExplorer extends JTree 
+public class ScuflModelTreeTable extends JTreeTable 
     implements ScuflModelEventListener,
 	       ScuflUIComponent {
     
     // The ScuflModel that this is a view / controller over
     ScuflModel model = null;
     
-    TreeModelView treeModel = new TreeModelView();
+    TreeTableModelView treeModel = new TreeTableModelView();
     
     /**
      * Default constructor, creates a new ScuflModelExplorer that
      * is not bound to any ScuflModel instance. Use the attachToModel
      * method to actually show data in this component.
      */
-    public ScuflModelExplorer() {
+    public ScuflModelTreeTable() {
 	super();
 	setModel(treeModel);
-	// Only allow single selection (not really important but...)
-	this.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
+	TableColumnModel columnModel = getColumnModel();
+	for (int i = 1; i < 4; i++) {
+	    TableColumn c = columnModel.getColumn(i);
+	    c.setMaxWidth(150);
+	}
 	// Attach the popup menu generator to the tree
 	this.addMouseListener(new ScuflModelExplorerPopupHandler(this));
 	// Show lines in the tree diagram
-	this.putClientProperty("JTree.lineStyle","Angled");
+	this.tree.putClientProperty("JTree.lineStyle","Angled");
 	ScuflModelExplorerRenderer renderer = new ScuflModelExplorerRenderer();
-	this.setCellRenderer(renderer);
-	this.addMouseMotionListener(new ScuflModelExplorerDragHandler(this));
+	this.tree.setCellRenderer(renderer);
+	//this.addMouseMotionListener(new ScuflModelExplorerDragHandler(this.tree));
 	this.setDragEnabled(true);
     }
     
@@ -66,7 +74,7 @@ public class ScuflModelExplorer extends JTree
      * nothing else.
      */
     public void setDefaultExpansionState() {
-	expandAll(this, new TreePath(this.treeModel.getRoot()), true);
+	expandAll(this.tree, new TreePath(this.treeModel.getRoot()), true);
     }
     private void expandAll(JTree tree, TreePath parent, boolean expand) {
         // Traverse children

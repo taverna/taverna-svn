@@ -29,6 +29,13 @@ public class TreeModelView extends DefaultTreeModel implements ScuflModelEventLi
     }
     
     /**
+     * Return the workflow this view is bound to
+     */
+    public ScuflModel getModel() {
+	return this.workflow;
+    }
+
+    /**
      * Bind to a ScuflModel
      */
     public void attachToModel(ScuflModel theModel) {
@@ -115,7 +122,7 @@ public class TreeModelView extends DefaultTreeModel implements ScuflModelEventLi
     /**
      * Clear the workflow input list and regenerate
      */
-    private void generateInputs() {
+    private synchronized void generateInputs() {
 	clearNode(inputRootNode);
 	Port[] inputPorts = workflow.getWorkflowSourcePorts();
 	for (int i = 0; i < inputPorts.length; i++) {
@@ -128,7 +135,7 @@ public class TreeModelView extends DefaultTreeModel implements ScuflModelEventLi
     /**
      * Clear the workflow output list and regenerate
      */
-    private void generateOutputs() {
+    private synchronized void generateOutputs() {
 	clearNode(outputRootNode);
 	Port[] outputPorts = workflow.getWorkflowSinkPorts();
 	for (int i = 0; i < outputPorts.length; i++) {
@@ -141,7 +148,7 @@ public class TreeModelView extends DefaultTreeModel implements ScuflModelEventLi
     /**
      * Clear the data link list and regenerate
      */
-    private void generateLinks() {
+    private synchronized void generateLinks() {
 	clearNode(datalinkRootNode);
 	DataConstraint[] links = workflow.getDataConstraints();
 	for (int i = 0; i < links.length; i++) {
@@ -154,7 +161,7 @@ public class TreeModelView extends DefaultTreeModel implements ScuflModelEventLi
     /**
      * Clear the coordination constraint list and regenerate
      */
-    private void generateConstraints() {
+    private synchronized void generateConstraints() {
 	clearNode(constraintRootNode);
 	ConcurrencyConstraint[] controls = workflow.getConcurrencyConstraints();
 	for (int i = 0; i < controls.length; i++) {
@@ -167,7 +174,7 @@ public class TreeModelView extends DefaultTreeModel implements ScuflModelEventLi
     /**
      * Clear the processor list and regenerate
      */
-    private void generateProcessors() {
+    private synchronized void generateProcessors() {
 	clearNode(processorRootNode);
 	Processor[] processors = workflow.getProcessors();
 	for (int i = 0; i < processors.length; i++) {
@@ -179,7 +186,7 @@ public class TreeModelView extends DefaultTreeModel implements ScuflModelEventLi
      * Update the given processor, or create a node for it if it
      * doesn't already exist
      */
-    private void updateProcessorNode(Processor p) {
+    private synchronized void updateProcessorNode(Processor p) {
 	MutableTreeNode processorNode = null;
 	for (int i = 0; i < processorRootNode.getChildCount() && processorNode == null; i++) {
 	    if (((DefaultMutableTreeNode)processorRootNode.getChildAt(i)).getUserObject()==p) {
@@ -199,7 +206,7 @@ public class TreeModelView extends DefaultTreeModel implements ScuflModelEventLi
     /**
      * Refresh the given processor node from the workflow model
      */
-    private void refreshProcessorNode(DefaultMutableTreeNode processorNode) {
+    private synchronized void refreshProcessorNode(DefaultMutableTreeNode processorNode) {
 	clearNode(processorNode);
 	Processor processor = (Processor)processorNode.getUserObject();
 	InputPort[] inputs = processor.getInputPorts();
