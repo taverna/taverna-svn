@@ -73,35 +73,39 @@ public class ScuflModelTreeTable extends JTreeTable
      * constraints and workflow source and sink ports show, but
      * nothing else.
      */
-    public synchronized void setDefaultExpansionState() {
-	expandAll(this.tree, new TreePath(this.treeModel.getRoot()), true);
+    public void setDefaultExpansionState() {
+	synchronized(this.treeModel) {
+	    expandAll(this.tree, new TreePath(this.treeModel.getRoot()), true);
+	}
     }
-    private synchronized void expandAll(JTree tree, TreePath parent, boolean expand) {
-        // Traverse children
-	// Ignores nodes who's userObject is a Processor type to
-	// avoid overloading the UI with nodes at startup.
-        TreeNode node = (TreeNode)parent.getLastPathComponent();
-        if (node.getChildCount() >= 0 && (((DefaultMutableTreeNode)node).getUserObject() instanceof Processor == false)) {
-            for (Enumeration e=node.children(); e.hasMoreElements(); ) {
-                TreeNode n = (TreeNode)e.nextElement();
-                TreePath path = parent.pathByAddingChild(n);
-		if (((DefaultMutableTreeNode)n).getUserObject() instanceof Processor) {
-		    Processor p = (Processor)(((DefaultMutableTreeNode)n).getUserObject());
-		    if (p == lastInterestingProcessor) {
+    private void expandAll(JTree tree, TreePath parent, boolean expand) {
+	synchronized(this.treeModel) {
+	    // Traverse children
+	    // Ignores nodes who's userObject is a Processor type to
+	    // avoid overloading the UI with nodes at startup.
+	    TreeNode node = (TreeNode)parent.getLastPathComponent();
+	    if (node.getChildCount() >= 0 && (((DefaultMutableTreeNode)node).getUserObject() instanceof Processor == false)) {
+		for (Enumeration e=node.children(); e.hasMoreElements(); ) {
+		    TreeNode n = (TreeNode)e.nextElement();
+		    TreePath path = parent.pathByAddingChild(n);
+		    if (((DefaultMutableTreeNode)n).getUserObject() instanceof Processor) {
+			Processor p = (Processor)(((DefaultMutableTreeNode)n).getUserObject());
+			if (p == lastInterestingProcessor) {
+			    expandAll(tree, path, expand);
+			}
+		    }
+		    else {
 			expandAll(tree, path, expand);
 		    }
 		}
-		else {
-		    expandAll(tree, path, expand);
-		}
 	    }
-        }
-	// Expansion or collapse must be done bottom-up
-        if (expand) {
-            tree.expandPath(parent);
-        } else {
-            tree.collapsePath(parent);
-        }
+	    // Expansion or collapse must be done bottom-up
+	    if (expand) {
+		tree.expandPath(parent);
+	    } else {
+		tree.collapsePath(parent);
+	    }
+	}
     }
 
 
