@@ -380,6 +380,7 @@ public class Workbench extends JFrame {
 			//GenericUIComponentFrame frame = new GenericUIComponentFrame(Workbench.this.model, thing);
 			//Workbench.this.desktop.add(frame);
 			//frame.moveToFront();
+				UIUtils.createFrame(theModel, thing, 100, 100, 600, 400);
 		    }
 		    else {
 			try {
