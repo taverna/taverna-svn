@@ -17,7 +17,7 @@ import org.embl.ebi.escience.scufl.Processor;
  * output port of a processor, or an input to thr workflow.
  * 
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover</a>
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  * @see ResultThing
  */
 public class ResultSource
@@ -117,7 +117,10 @@ public class ResultSource
 	 */
 	void populateResults(HashMap provenance)
 	{
-		addResult(thing, provenance, null);
+		if(thing != null)
+		{
+			addResult(thing, provenance, null);
+		}
 	}
 
 	private void addResult(DataThing thing, HashMap provenance, Collection inputLSIDs)
