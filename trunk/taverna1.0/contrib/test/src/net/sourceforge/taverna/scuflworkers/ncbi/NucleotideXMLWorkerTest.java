@@ -3,26 +3,27 @@ package net.sourceforge.taverna.scuflworkers.ncbi;
 import java.util.HashMap;
 import java.util.Map;
 
-import junit.framework.TestCase;
 import net.sourceforge.taverna.baclava.DataThingAdapter;
 
 import org.embl.ebi.escience.scuflworkers.java.LocalWorker;
 
+import junit.framework.TestCase;
+
 /**
- * This class
+ * This class tests the NucleotideXMLWorker.
  * 
  * Last edited by $Author: phidias $
  * 
  * @author Mark
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.1 $
  */
-public class EntrezGeneWorkerTest extends TestCase {
+public class NucleotideXMLWorkerTest extends TestCase {
 
     public void testExecute() throws Exception{
-        LocalWorker worker = new EntrezGeneWorker();
+        LocalWorker worker = new NucleotideXMLWorker();
         Map inputMap = new HashMap();
         DataThingAdapter inAdapter = new DataThingAdapter(inputMap);
-        inAdapter.putString("term","brca2");
+        inAdapter.putString("term","NM_000059");
         
         Map outputMap = worker.execute(inputMap);
         DataThingAdapter outAdapter = new DataThingAdapter(outputMap);
