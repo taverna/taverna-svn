@@ -16,10 +16,11 @@ import java.lang.Object;
 import java.lang.String;
 
 /**
- * Returns the intersection of two sets or lists of string types where elements
- * only exist in the output if they occur in both inputs.
+ * Returns the items that are different between two sets or lists of string types where elements
+ * only exist in the output if they occur in either input, but not both.
  * 
  * @author Tom Oinn
+ * @author Kevin Glover
  */
 public class StringSetDifference implements LocalWorker
 {

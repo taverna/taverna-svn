@@ -175,7 +175,8 @@ public class BeanshellConfigPanel extends JPanel implements ScuflUIComponent,
 		};
 		
 		deletePortAction.putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_DELETE, 0));
-		
+
+		// TODO Generate this list more intelligently
 		JComboBox inputTypesCombo = new JComboBox();
 		inputTypesCombo.setEditable(true);
 		inputTypesCombo.addItem("'text/plain'");

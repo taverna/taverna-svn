@@ -89,7 +89,7 @@ import org.jdom.output.XMLOutputter;
  * Panel to construct the input for a workflow.
  * 
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover </a>
- * @version $Revision: 1.33 $
+ * @version $Revision: 1.34 $
  */
 public abstract class DataThingConstructionPanel extends JPanel implements ScuflUIComponent, ScuflModelEventListener
 {
@@ -659,7 +659,7 @@ public abstract class DataThingConstructionPanel extends JPanel implements Scufl
 	private class InputDataThingNode extends DefaultMutableTreeNode implements PanelTreeNode, DataThingNode
 	{
 		private DataThing thing;
-		private JComponent panel;
+		JComponent panel;
 		private List mimeTypes;
 		JTextArea editor;
 		private ActionListener loadURLAction = new ActionListener()
@@ -1331,25 +1331,11 @@ public abstract class DataThingConstructionPanel extends JPanel implements Scufl
 				try
 				{
 				    launchEnactorDisplay(inputObject);
-				    /**
-				       if (Workbench.workbench != null)
-				       {
-				       GenericUIComponentFrame thing = 
-				       new GenericUIComponentFrame(DataThingConstructionPanel.this.model,
-				       new EnactorInvocation(defaultEnactor, 
-				       DataThingConstructionPanel.this.model,
-				       inputObject));
-				       thing.setSize(600, 400);
-				       thing.setLocation(100, 100);
-				       Workbench.workbench.desktop.add(thing);
-				       thing.moveToFront();
-				       }
-				    */
 				}
 				catch (Exception e)
-				    {
+			    {
 					e.printStackTrace();
-				    }
+			    }
 			}
 		});
 		buttonPanel.add(runButton);
@@ -1376,7 +1362,6 @@ public abstract class DataThingConstructionPanel extends JPanel implements Scufl
 		toolbar.add(removeButton);
 
 		setLayout(new BorderLayout());
-		//add(portTree, BorderLayout.WEST);
 		add(toolbar, BorderLayout.NORTH);
 		add(splitter, BorderLayout.CENTER);
 		add(buttonPanel, BorderLayout.SOUTH);
