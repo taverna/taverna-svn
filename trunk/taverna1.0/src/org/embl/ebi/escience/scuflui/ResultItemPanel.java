@@ -25,6 +25,7 @@ import java.util.Collection;
 
 // IO Imports
 import java.io.*;
+import java.net.*;
 
 
 
@@ -72,6 +73,19 @@ public class ResultItemPanel extends JPanel {
 				}
 				else if (mimeTypes.matches(".*text/rtf.*")) {
 				    splitPane.setRightComponent(new JScrollPane(new JEditorPane("text/rtf",(String)userObject)));
+				}
+				else if (mimeTypes.matches(".*text/x-taverna-web-url.*")) {
+				    try {
+					JEditorPane jep = new JEditorPane();
+					jep.setPage(new URL((String)userObject));
+					splitPane.setRightComponent(new JScrollPane(jep));
+				    }
+				    catch (Exception ex) {
+					JTextArea theTextArea = new JTextArea();
+					theTextArea.setText((String)userObject);
+					theTextArea.setFont(new Font("Monospaced",Font.PLAIN,12));
+					splitPane.setRightComponent(new JScrollPane(theTextArea));
+				    }
 				}
 				else {
 				    JTextArea theTextArea = new JTextArea();
