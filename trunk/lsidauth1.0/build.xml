@@ -1,5 +1,5 @@
 <!-- Tom Oinn (tmo@ebi.ac.uk) 7th October 2004 -->
-<project name="LSIDAuth" default="run-tests" basedir=".">
+<project name="LSIDAuth" default="all" basedir=".">
 
 	<!-- Current version of the project, used by doxygen -->
 	<property name="project.version" value="0.1"/>
@@ -55,21 +55,12 @@
 	        <path refid="base-test-classpath"/>
 	</path>
 	
-	<!-- Check the current system classpath for JUnit -->
-	<available classpath="${java.class.path}"
-	           classname="junit.framework.TestCase"
-		   property="junit.present"/>
-
-	<!-- Doxygen task -->
-	<taskdef name="doxygen" classname="org.doxygen.tools.DoxygenTask">
-		<!-- Declare classes needed to run the task -->
-		<classpath refid="compile-classpath"/>
-	</taskdef>
-
 	<!-- Version class generator task -->
 	<taskdef name="jreleaseinfo" classname="ch.oscg.jreleaseinfo.anttask.JReleaseInfoAntTask">
 	        <classpath refid="compile-classpath"/>
 	</taskdef>
+
+	<target name="all" depends="run-tests,javadoc"/>
 
 	<!-- Fetch .jar files -->
 	<target name="fetchjars">
@@ -89,24 +80,6 @@
 	<!-- Purge all fetched jar files -->
 	<target name="purgejars">
 	        <delete dir="./netlib"/>
-	</target>
-
-	<!-- Run doxygen -->
-	<target name="doxygen" depends="prepare">
-		<mkdir dir="${build.dir}/doxygen"/>
-		<!-- Run doxygen, with output specialized for java -->
-		<doxygen
-			outputDirectory="${build.dir}/doxygen"
-			input="${src.dir}"
-			recursive="yes"
-			generateLatex="false"
-			projectNumber="${project.version}"
-			projectName="Generated Doxygen Docs for ${ant.project.name}"
-			generateTreeview="test"
-			optimizeOutputJava="yes"
-			haveDot="yes"
-			ignoreVersion="yes"
-			sourceBrowser="yes"/>
 	</target>
 
 	<!-- Clean the build -->
@@ -220,10 +193,9 @@
         </copy>
     </target>
 
-    <target name="run-tests" depends="jar,javac-tests">	
-        <property name="test.subtree" value="**"/>
-        <echo message="Running tests:           ${test.subtree}"/>
-        <junit maxmemory="128m" printsummary="yes" fork="yes" haltonfailure="no">
+    <!-- Run unit tests -->
+    <target name="run-tests" depends="jar,javac-tests">
+        <junit maxmemory="128m" printsummary="yes" haltonfailure="no">
 	    <formatter type="plain" usefile="true"/>
             <classpath>
 	        <pathelement path="${build.dir}/${ant.project.name}-${project.version}.jar"/>
@@ -233,8 +205,8 @@
             <!-- The junit task doesn't support 'if' so we test for JUnit here -->
             <batchtest fork="no" todir="${reports.tests}">
                 <fileset dir="${build.test.classes}">
-                    <include name="${test.subtree}/*Test.class"/>
-                    <include name="${test.subtree}/*TestSuite.class"/>
+                    <include name="**/*Test.class"/>
+                    <include name="**/*TestSuite.class"/>
                     <exclude name="**/Abstract*Test.class"/>
                 </fileset>
             </batchtest>
