@@ -29,11 +29,11 @@ import org.jdom.JDOMException;
 import org.jdom.input.SAXBuilder;
 
 /**
- * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover </a>
+ * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover</a>
+ * @version $Revision: 1.7 $
  */
 public class ResultTableModel implements TableModel
 {
-
 	private ScuflModel model;
 	WorkflowInstance instance;
 	HashMap provenance;
@@ -94,7 +94,6 @@ public class ResultTableModel implements TableModel
 	 */
 	public Class getColumnClass(int columnIndex)
 	{
-		// TODO Implement ResultTableModel.getColumnClass
 		return ResultTableCell.class;
 	}
 
@@ -107,11 +106,11 @@ public class ResultTableModel implements TableModel
 	{
 		return columns[columnIndex].getValue(rowIndex);
 	}
-	
+
 	public ResultTableColumn getColumn(int column)
 	{
 		return columns[column];
-	}	
+	}
 
 	/*
 	 * (non-Javadoc)
@@ -153,6 +152,11 @@ public class ResultTableModel implements TableModel
 		tableListeners.remove(l);
 	}
 
+	/**
+	 * 
+	 * @param link
+	 * @return a new <code>ResultSource</code> built from the given link
+	 */
 	private ResultSource createSource(DataConstraint link)
 	{
 		// Get DataThing
@@ -190,6 +194,10 @@ public class ResultTableModel implements TableModel
 		return source;
 	}
 
+	/**
+	 * 
+	 *  
+	 */
 	private void createSources()
 	{
 		if (sources == null)
@@ -200,7 +208,6 @@ public class ResultTableModel implements TableModel
 			}
 			catch (Exception e)
 			{
-				// TODO Handle JDOMException
 				e.printStackTrace();
 			}
 			HashMap sourceMap = new HashMap();
@@ -215,21 +222,21 @@ public class ResultTableModel implements TableModel
 				}
 				source.addOutputProcessor(links[index].getSink().getProcessor());
 			}
-			
+
 			// Build graph of sources
 			Iterator sourceIterator = sourceMap.values().iterator();
-			while(sourceIterator.hasNext())
+			while (sourceIterator.hasNext())
 			{
-				ResultSource source = (ResultSource)sourceIterator.next();
+				ResultSource source = (ResultSource) sourceIterator.next();
 				Iterator processorIterator = source.outputProcessors.iterator();
-				while(processorIterator.hasNext())
+				while (processorIterator.hasNext())
 				{
-					Processor processor = (Processor)processorIterator.next();
+					Processor processor = (Processor) processorIterator.next();
 					OutputPort[] ports = processor.getBoundOutputPorts();
-					for(int index = 0; index < ports.length; index++)
+					for (int index = 0; index < ports.length; index++)
 					{
-						ResultSource outputSource = (ResultSource)sourceMap.get(ports[index]);
-						if(outputSource != null)
+						ResultSource outputSource = (ResultSource) sourceMap.get(ports[index]);
+						if (outputSource != null)
 						{
 							source.addOutput(outputSource);
 							outputSource.addInput(source);
@@ -237,10 +244,10 @@ public class ResultTableModel implements TableModel
 					}
 				}
 			}
-			
-			sources = new ResultSource[ sourceMap.size() ];
+
+			sources = new ResultSource[sourceMap.size()];
 			sourceMap.values().toArray(sources);
-			
+
 			Arrays.sort(sources, new Comparator()
 			{
 				public boolean equals(Object obj)
@@ -250,19 +257,23 @@ public class ResultTableModel implements TableModel
 
 				public int compare(Object o1, Object o2)
 				{
-					return ((ResultSource)o1).getDepth() - ((ResultSource)o2).getDepth();
+					return ((ResultSource) o1).getDepth() - ((ResultSource) o2).getDepth();
 				}
 			});
 		}
 	}
 
+	/**
+	 * 
+	 *  
+	 */
 	private void createColumns()
 	{
 		createSources();
 		Collection columnList = new ArrayList();
 		int depth = -1;
 		ResultTableColumn column = null;
-		for(int index = 0; index < sources.length; index++)
+		for (int index = 0; index < sources.length; index++)
 		{
 			if (condenseColumns)
 			{
@@ -270,13 +281,13 @@ public class ResultTableModel implements TableModel
 				{
 					ResultTableColumn newColumn = new ResultTableColumn();
 					newColumn.previousColumn = column;
-					if(column != null)
+					if (column != null)
 					{
 						column.nextColumn = newColumn;
 					}
 					column = newColumn;
 					depth = sources[index].getDepth();
-					columnList.add(column);					
+					columnList.add(column);
 				}
 			}
 			else
@@ -285,7 +296,7 @@ public class ResultTableModel implements TableModel
 				newColumn.previousColumn = column;
 				column.nextColumn = newColumn;
 				column = newColumn;
-				columnList.add(column);				
+				columnList.add(column);
 			}
 			column.addSource(sources[index]);
 		}
@@ -294,6 +305,15 @@ public class ResultTableModel implements TableModel
 		update();
 	}
 
+	/**
+	 * 
+	 * @param provenanceXML
+	 *            the provenance as a chunk of almost rdf
+	 * @return a HashMap with the keys being lsids, and the values being an
+	 *         ArrayList of lsids that contributed to creating the key lsid.
+	 * @throws JDOMException
+	 * @throws IOException
+	 */
 	private HashMap parseProvenance(String provenanceXML) throws JDOMException, IOException
 	{
 		SAXBuilder builder = new SAXBuilder();

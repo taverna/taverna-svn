@@ -21,13 +21,20 @@ import org.embl.ebi.escience.scuflui.renderers.RendererSPI;
 import org.embl.ebi.escience.scuflworkers.ProcessorHelper;
 
 /**
+ * A panel for display the ResultTable. It also has a 
+ * 
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover</a>
+ * @version $Revision: 1.5 $
  */
 public class ResultTablePanel extends JPanel implements ResultTable.TableSelectionListener
 {
 	ResultTable resultTable;
 	private JSplitPane split;
 	
+	/**
+	 * @param model
+	 * @param workflowInstance
+	 */
 	public ResultTablePanel(ScuflModel model, WorkflowInstance workflowInstance)
 	{
 		super();
@@ -71,8 +78,8 @@ public class ResultTablePanel extends JPanel implements ResultTable.TableSelecti
 			textPanel.setLayout(new GridLayout(2,1));
 			
 			JLabel otherLabel = new JLabel("This is the output of");
-			JLabel outputLabel = new JLabel(thing.source.toString());
-			outputLabel.setIcon(ProcessorHelper.getPreferredIcon(thing.source.getProcessor()));
+			JLabel outputLabel = new JLabel(thing.getSource().toString());
+			outputLabel.setIcon(ProcessorHelper.getPreferredIcon(thing.getSource().getProcessor()));
 			
 			textPanel.add(otherLabel);
 			textPanel.add(outputLabel);

@@ -3,8 +3,10 @@
  */
 package org.embl.ebi.escience.scuflui.results;
 
-
-
+/**
+ * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover</a>
+ * @version $Revision: 1.4 $
+ */
 public class ResultTableCell
 {
 	protected int startRow = 0;
@@ -12,6 +14,9 @@ public class ResultTableCell
 	
 	protected ResultTableCellCollection parent;
 	
+	/**
+	 * @param startRow the row where the cell starts
+	 */
 	public ResultTableCell(int startRow)
 	{
 		this.startRow = startRow;

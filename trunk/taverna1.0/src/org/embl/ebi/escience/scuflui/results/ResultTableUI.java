@@ -17,11 +17,22 @@ import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
 
 /**
+ * A special TableUI, to render the ResultTable with cells that can span several
+ * rows. Its mostly code borrowed straight from BasicTableUI, but since most of
+ * the important methods there are marked as private, I have to reproduce them
+ * here. The great benefits of inheritance, eh?
+ * 
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover </a>
+ * @version $Revision: 1.3 $
  */
 public class ResultTableUI extends BasicTableUI
 {
-
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see javax.swing.plaf.ComponentUI#paint(java.awt.Graphics,
+	 *      javax.swing.JComponent)
+	 */
 	public void paint(Graphics g, JComponent c)
 	{
 		if (table.getRowCount() <= 0 || table.getColumnCount() <= 0)
@@ -61,26 +72,33 @@ public class ResultTableUI extends BasicTableUI
 			cMax = table.getColumnCount() - 1;
 		}
 
-		// Paint the grid.
-		paintGrid(g, rMin, rMax, cMin, cMax);
+		// Paint the grid. Removed column parameters since I don't use them. I
+		// don't draw any vertical grid lines.
+		paintGrid(g, rMin, rMax);
 
 		// Paint the cells.
 		paintCells(g, rMin, rMax, cMin, cMax);
 	}
 
-	/*
-	 * Paints the grid lines within <I>aRect </I>, using the grid color set with
-	 * <I>setGridColor </I>. Paints vertical lines if <code>
-	 * getShowVerticalLines() </code> returns true and paints horizontal lines
-	 * if <code> getShowHorizontalLines() </code> returns true.
+	/**
+	 * Paints the horizontal grid lines between rMin and rMax if
+	 * {@link JTable#getShowHorizontalLines() getShowHorizontalLines}returns
+	 * <code>true</code>.
+	 * 
+	 * @param g
+	 *            the graphics context to draw onto
+	 * @param rMin
+	 *            the first row to draw the grid around
+	 * @param rMax
+	 *            the last row to draw the grid around
 	 */
-	private void paintGrid(Graphics g, int rMin, int rMax, int cMin, int cMax)
+	private void paintGrid(Graphics g, int rMin, int rMax)
 	{
-		g.setColor(table.getGridColor());
-
-		int rowHeight = table.getRowHeight();
 		if (table.getShowHorizontalLines())
 		{
+			g.setColor(table.getGridColor());
+
+			int rowHeight = table.getRowHeight();
 			int tableWidth = g.getClipBounds().width;
 			int x = g.getClipBounds().x;
 			int y = rowHeight * rMin;
@@ -92,6 +110,27 @@ public class ResultTableUI extends BasicTableUI
 		}
 	}
 
+	/**
+	 * Paints the cells into the table. This is really where all the real
+	 * changes from BasicTableUI are really. Rather than iterating over every
+	 * row, this calls
+	 * {@link ResultTableColumn#getCellsBetween(int,int) getCellsBetween(rMin, rMax)}
+	 * and iterates over each cell in that. This ensures that each cell is only
+	 * draw once. The downside is that it completely ignores any rows without a
+	 * {@link ResultTableCell ResultTableCell}, so you can't do anything with
+	 * empty cells.
+	 * 
+	 * @param g
+	 *            the graphics context to draw onto
+	 * @param rMin
+	 *            the first row to draw the cells of
+	 * @param rMax
+	 *            the last row to draw the cells of
+	 * @param cMin
+	 *            the first column to draw the cells of
+	 * @param cMax
+	 *            the last column to draw the cells of
+	 */
 	private void paintCells(Graphics g, int rMin, int rMax, int cMin, int cMax)
 	{
 		JTableHeader header = table.getTableHeader();
@@ -99,12 +138,12 @@ public class ResultTableUI extends BasicTableUI
 
 		for (int column = cMin; column <= cMax; column++)
 		{
-			ResultTableColumn aColumn = ((ResultTableModel)table.getModel()).getColumn(column);
+			ResultTableColumn aColumn = ((ResultTableModel) table.getModel()).getColumn(column);
 			Iterator cells = aColumn.getCellsBetween(rMin, rMax).iterator();
-			while(cells.hasNext())
+			while (cells.hasNext())
 			{
-				ResultTableCell cell = (ResultTableCell)cells.next();
-				Rectangle cellRect = ((ResultTable)table).getCellRect(cell, column, false);
+				ResultTableCell cell = (ResultTableCell) cells.next();
+				Rectangle cellRect = ((ResultTable) table).getCellRect(cell, column, false);
 				paintCell(g, cellRect, cell.startRow, column);
 			}
 		}
@@ -118,16 +157,33 @@ public class ResultTableUI extends BasicTableUI
 		rendererPane.removeAll();
 	}
 
+	/**
+	 * Paints an individual cell.
+	 * 
+	 * @param g
+	 * @param cellRect
+	 * @param row
+	 * @param column
+	 */
 	private void paintCell(Graphics g, Rectangle cellRect, int row, int column)
 	{
 		TableCellRenderer renderer = table.getCellRenderer(row, column);
 		Component component = table.prepareRenderer(renderer, row, column);
 		rendererPane.paintComponent(g, component, table, cellRect.x, cellRect.y, cellRect.width,
-				cellRect.height, true);
+									cellRect.height, true);
 	}
 
+	/**
+	 * Lifted straight from BasicTableUI...
+	 * 
+	 * @param g
+	 * @param rMin
+	 * @param rMax
+	 * @param draggedColumn
+	 * @param distance
+	 */
 	private void paintDraggedArea(Graphics g, int rMin, int rMax, TableColumn draggedColumn,
-			int distance)
+									int distance)
 	{
 		int draggedColumnIndex = viewIndexForColumn(draggedColumn);
 
@@ -139,7 +195,7 @@ public class ResultTableUI extends BasicTableUI
 		// Paint a gray well in place of the moving column.
 		g.setColor(table.getParent().getBackground());
 		g.fillRect(vacatedColumnRect.x, vacatedColumnRect.y, vacatedColumnRect.width,
-				vacatedColumnRect.height);
+					vacatedColumnRect.height);
 
 		// Move to the where the cell has been dragged.
 		vacatedColumnRect.x += distance;
@@ -147,7 +203,7 @@ public class ResultTableUI extends BasicTableUI
 		// Fill the background.
 		g.setColor(table.getBackground());
 		g.fillRect(vacatedColumnRect.x, vacatedColumnRect.y, vacatedColumnRect.width,
-				vacatedColumnRect.height);
+					vacatedColumnRect.height);
 
 		// Paint the vertical grid lines if necessary.
 		if (table.getShowVerticalLines())
@@ -185,6 +241,10 @@ public class ResultTableUI extends BasicTableUI
 		}
 	}
 
+	/**
+	 * @param aColumn
+	 * @return index of the view order of the column
+	 */
 	private int viewIndexForColumn(TableColumn aColumn)
 	{
 		TableColumnModel cm = table.getColumnModel();
