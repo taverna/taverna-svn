@@ -25,8 +25,8 @@
 //      Dependencies        :
 //
 //      Last commit info    :   $Author: mereden $
-//                              $Date: 2004-02-04 11:21:21 $
-//                              $Revision: 1.30 $
+//                              $Date: 2004-02-04 16:36:10 $
+//                              $Revision: 1.31 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 package uk.ac.soton.itinnovation.taverna.enactor.entities;
@@ -45,6 +45,7 @@ import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.eventservice.TaskSt
 import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.serviceprovidermanager.ServiceSelectionCriteria;
 import uk.ac.soton.itinnovation.taverna.enactor.broker.LogLevel;
 import uk.ac.soton.itinnovation.taverna.enactor.broker.TavernaFlowReceipt;
+import org.embl.ebi.escience.scufl.*;
 
 // Utility Imports
 import java.util.ArrayList;
@@ -75,6 +76,288 @@ import java.lang.String;
  */
 public class ProcessorTask extends TavernaTask{
     
+    // The processor from which the task to be invoked
+    // should be derived
+    private Processor activeProcessor = null;
+    // The current input mapping
+    private Map activeInputMapping = null;
+    // The current output mapping
+    private Map activeOutputMapping = null;
+     
+    /**
+     * Set up the next invocation to use the specified processor
+     */
+    private synchronized void schedule(Processor theProcessor) {
+	activeProcessor = theProcessor;
+	activeInputMapping = null;
+	activeOutputMapping = null;
+	eventList.add(new ProcessScheduled());
+    }
+    
+    /**
+     * Set up the next invocation to use the specified alternate processor
+     */
+    private synchronized void schedule(AlternateProcessor theAlternate) {
+	activeProcessor = theAlternate.getProcessor();
+	activeInputMapping = theAlternate.getInputMapping();
+	activeOutputMapping = new HashMap();
+	// invert the mapping contained by the alternates object!
+	for (Iterator i = theAlternate.getOutputMapping().keySet().iterator(); i.hasNext();) {
+	    String key = (String)i.next();
+	    String value = (String)theAlternate.getOutputMapping().get(key);
+	    activeOutputMapping.put(value,key);
+	}
+	eventList.add(new ProcessScheduled());
+    }
+    
+    /**
+     * Run the task
+     */
+    public TaskStateMessage doTask() {
+	try {
+	    // The default processor will have been scheduled by the
+	    // constructor to this class so we can get on and do stuff.
+	    for (int i = -1; i < proc.getAlternatesArray().length; i++) {
+		// If i>-1 then reschedule an alternate.
+		if (i>-1) {
+		    schedule(proc.getAlternatesArray()[i]);
+		}
+		try {
+		    invoke();
+		}
+		catch (TaskExecutionException tee) {
+		    // If there are alternates left then just loop
+		    // otherwise rethrow
+		    if (i>=proc.getAlternatesArray().length) {
+			throw tee;
+		    }
+		    else {
+			// loop
+		    }
+		}
+	    }
+	    return new TaskStateMessage(getParentFlow().getID(), 
+					getID(), 
+					TaskStateMessage.COMPLETE,"Task completed successfully");
+	}
+	catch (TaskExecutionException ex) {
+	    ex.printStackTrace();
+	    eventList.add(new ServiceFailure());
+	    endTime = new TimePoint();
+	    faultCausingException = ex;
+	    logger.error(ex);
+	    return new TaskStateMessage(getParentFlow().getID(),getID(), TaskStateMessage.FAILED,ex.getMessage());
+	}
+	catch (Exception ex){
+	    eventList.add(new ServiceFailure());
+	    endTime = new TimePoint();
+	    faultCausingException = ex;
+	    logger.error(ex);
+	    return new TaskStateMessage(getParentFlow().getID(), 
+					getID(), 
+					TaskStateMessage.FAILED, 
+					"Unrecognised dispatch failure for a task within the workflow.");
+	}	
+    }
+
+    /**
+     * Invoke, checking for iteration or not first
+     */
+    private synchronized void invoke() throws TaskExecutionException {
+	// Gather data from the inputs to build the input map
+	Map inputMap = new HashMap();
+	Map outputMap = null;
+	for (int i=0; i<getParents().length; i++) {
+	    if (getParents()[i] instanceof PortTask) {
+		PortTask inputPortTask = (PortTask)getParents()[i];
+		DataThing dataThing = inputPortTask.getData();
+		String portName = inputPortTask.getScuflPort().getName();
+		inputMap.put(portName, dataThing);
+	    }
+	}
+	if (iterationRequired()) {
+	    outputMap = invokeWithIteration(inputMap);
+	}
+	else {
+	    outputMap = invokeWithoutIteration(inputMap);
+	}
+	// Iterate over the children, pushing data into the port tasks
+	// as appropriate.
+	for (int i = 0; i < getChildren().length; i++) {
+	    if (getChildren()[i] instanceof PortTask) {
+		PortTask outputPortTask = (PortTask)getChildren()[i];
+		String portName = outputPortTask.getScuflPort().getName();
+		DataThing resultDataThing = (DataThing)outputMap.get(portName);
+		if (resultDataThing != null) {
+		    outputPortTask.setData(resultDataThing);
+		}
+	    }
+	}
+	eventList.add(new ProcessComplete());
+    }
+
+
+    /**
+     * Method that actually undertakes a service action. Should be implemented by concrete processors.
+     * @return output map containing String->DataThing named pairs, with the key
+     * being the name of the output port. This implementation also includes the logic
+     * to remap the port names in the event of an alternate processor being used with
+     * differing names for the inputs and outputs.
+     */
+    private synchronized Map invokeOnce(Map inputMap) throws TaskExecutionException {
+	ProcessorTaskWorker worker = ProcessorHelper.getTaskWorker(activeProcessor);
+	Map output = null;
+	
+	if (activeInputMapping == null) {
+	    // If no input mapping is defined then we just invoke directly
+	    output = worker.execute(inputMap);	
+	}
+	else {
+	    // Otherwise have to remap the input map
+	    Map taskInput = new HashMap();
+	    for (Iterator i = inputMap.keySet().iterator(); i.hasNext();) {
+		String originalInputName = (String)i.next();
+		DataThing inputItem = (DataThing)inputMap.get(originalInputName);
+		String targetInputName = (String)activeInputMapping.get(originalInputName);
+		if (targetInputName == null) {
+		    targetInputName = originalInputName;
+		}
+		System.out.println("Mapping input name '"+originalInputName+"' to processor port '"+targetInputName+"'");
+		taskInput.put(targetInputName, inputItem);
+	    }
+	    System.out.println("Invoking...");
+	    try {
+		output = worker.execute(taskInput);
+	    }
+	    catch (Exception ex) {
+		ex.printStackTrace();
+	    }
+	    System.out.println("Done invoking");
+	}
+	
+	// Now do the same for the output mapping
+	if (activeOutputMapping == null) {
+	    System.out.println("No mapping, returning output straight");
+	    return output;
+	}
+	else {
+	    Map taskOutput = new HashMap();
+	    for (Iterator i = output.keySet().iterator(); i.hasNext();) {
+		String realOutputName = (String)i.next();
+		String targetOutputName = (String)activeOutputMapping.get(realOutputName);
+		if (targetOutputName == null) {
+		    targetOutputName = realOutputName;
+		}
+		System.out.println("Storing result from '"+realOutputName+"' as '"+targetOutputName+"'");
+		DataThing outputItem = (DataThing)output.get(realOutputName);
+		taskOutput.put(targetOutputName, outputItem);
+	    }
+	    return taskOutput;
+	}
+    }
+
+    /**
+     * Wrapper to invoke without iteration
+     */
+    private synchronized Map invokeWithoutIteration(Map inputMap) throws TaskExecutionException {
+	eventList.add(new Invoking());
+	return invokeOnce(inputMap);
+    }
+    
+    /**
+     * Check whether iteration is required
+     */
+    private synchronized boolean iterationRequired() {
+	for (int i = 0; i < getParents().length; i++) {
+	    if (getParents()[i] instanceof PortTask) {
+		// For each input port task check the types
+		PortTask inputPortTask = (PortTask)getParents()[i];
+		String portName = inputPortTask.getScuflPort().getName();
+		DataThing dataThing = inputPortTask.getData();
+		String dataType = dataThing.getSyntacticType().split("\\'")[0];
+		String portType = inputPortTask.getScuflPort().getSyntacticType().split("\\'")[0];
+		if (dataType.equals(portType) == false) {
+		    return true;
+		}	    
+	    }
+	}
+	return false;
+    }
+
+    /**
+     * Invoke with iteration
+     */
+    private synchronized Map invokeWithIteration(Map inputMap) throws TaskExecutionException {
+	// Build the iterator
+	eventList.add(new ConstructingIterator());
+	String[] inputNames = new String[inputMap.keySet().size()];
+	BaclavaIterator[] inputIterators = new BaclavaIterator[inputNames.length];
+	int j=0;
+	for (int i=0; i<getParents().length; i++) {
+	    if (getParents()[i] instanceof PortTask) {
+		PortTask inputPortTask = (PortTask)getParents()[i];
+		inputNames[j] = inputPortTask.getScuflPort().getName();
+		DataThing dataThing = inputPortTask.getData();
+		try {
+		    inputIterators[j] = dataThing.iterator(inputPortTask.getScuflPort().getSyntacticType());
+		}
+		catch (IntrospectionException ie) {
+		    eventList.add(new DataMismatchError());
+		    throw new TaskExecutionException("Unable to reconcile iterator types");
+		}
+		j++;
+	    }
+	}
+
+	// Create the output container
+	Map outputMap = new HashMap();
+	for (int i = 0; i < getChildren().length; i++) {
+	    if (getChildren()[i] instanceof PortTask) {
+		PortTask outputPortTask = (PortTask)getChildren()[i];
+		// Create data things with array lists inside them.
+		outputMap.put(outputPortTask.getScuflPort().getName(), new DataThing(new ArrayList()));
+	    }
+	}
+
+	// Build the join iterator
+	JoinIterator i = new JoinIterator(inputIterators);
+	int totalIterations = i.size();
+	int currentIteration = 0;
+		
+	// Do the iteration
+	for (; i.hasNext(); ) {
+	    currentIteration++;
+	    Object[] inputs = (Object[])i.next();
+	    Map splitInput = new HashMap();
+	    for (int k = 0; k < inputs.length; k++) {
+		splitInput.put(inputNames[k], inputs[k]);
+	    }
+	    // Have now populated the input map for the service invocation
+	    eventList.add(new InvokingWithIteration(currentIteration, totalIterations));
+	    Map singleResultMap = execute(splitInput);
+	    
+	    // Iterate over the outputs
+	    for (Iterator l = singleResultMap.keySet().iterator(); l.hasNext(); ) {
+		String outputName = (String)l.next();
+		DataThing outputValue = (DataThing)singleResultMap.get(outputName);
+		Object dataObject = outputValue.getDataObject();
+		// addition of a fix here by Chris Wroe
+		// Before it tried to map all results from the service call into the subsequent
+		// data flow causing a null pointer exception if no such data flow existed.
+		if (outputMap.containsKey(outputName)) {
+		    List targetList = ((List)((DataThing)outputMap.get(outputName)).getDataObject());
+		    targetList.add(dataObject);
+		}
+		/// fix ends
+	    }
+	}
+	
+	// Return the output map
+	return outputMap;
+    }
+
+
+    
     //protected static final String PROVENANCE_NAMESPACE = "http://www.it-innovation.soton.ac.uk/taverna/workflow/enactor/provenance";
     protected static final Namespace PROVENANCE_NAMESPACE = TavernaFlowReceipt.provNS;
     protected Processor proc = null;
@@ -96,7 +379,7 @@ public class ProcessorTask extends TavernaTask{
 	this.userCtx = userCtx;
 	this.eventList = new ArrayList();
 	// Add an event to the list for the scheduling operation
-	eventList.add(new ProcessScheduled());
+	schedule(p);
     }
     
     /**
@@ -148,154 +431,6 @@ public class ProcessorTask extends TavernaTask{
 	return new Element("NotImplementedHere",PROVENANCE_NAMESPACE);
     }
     
-    /**
-     * Wrapper method to enable pre and post processing for actual service invocations
-     */
-    public TaskStateMessage doTask() {
-	try {
-	    TaskStateMessage result;
-	    startTime =  new TimePoint();
-	    //do any pre-processing here
-	    
-	    // The input map, contains String->DataThing
-	    // where the string keys are the input port
-	    // names of the processor
-	    Map inputMap = new HashMap();
-	    // Get all the inputs, which are all PortTasks
-	    boolean implicitIteration = false;
-	    int numberOfParameters = 0;
-	    for (int i = 0; i < getParents().length; i++) {
-		if (getParents()[i] instanceof PortTask) {
-		    numberOfParameters++;
-		    PortTask inputPortTask = (PortTask)getParents()[i];
-		    String portName = inputPortTask.getScuflPort().getName();
-		    DataThing dataThing = inputPortTask.getData();
-		    
-		    String dataType = dataThing.getSyntacticType().split("\\'")[0];
-		    String portType = inputPortTask.getScuflPort().getSyntacticType().split("\\'")[0];
-		    if (dataType.equals(portType) == false) {
-			implicitIteration = true;
-			//System.out.println("Found a type mismatch, will need the implicit iteration.");
-		    }	    
-		    
-		    inputMap.put(portName, dataThing);
-		}
-	    }
-	    
-	    Map outputMap = null;
-	    
-	    if (!implicitIteration) {
-		eventList.add(new Invoking());
-		// No implicit iteration required.
-		outputMap = execute(inputMap);
-		eventList.add(new ProcessComplete());
-	    }
-	    else {
-		eventList.add(new ConstructingIterator());
-		// Do the iteration here. First get the iterators for each
-		// input datathing
-		String[] inputNames = new String[numberOfParameters];
-		BaclavaIterator[] inputIterators = new BaclavaIterator[numberOfParameters];
-		int j = 0;
-		for (int i = 0; i < getParents().length; i++) {
-		    if (getParents()[i] instanceof PortTask) {
-			PortTask inputPortTask = (PortTask)getParents()[i];
-			inputNames[j] = inputPortTask.getScuflPort().getName();
-			DataThing dataThing = inputPortTask.getData();
-			try {
-			    inputIterators[j] = dataThing.iterator(inputPortTask.getScuflPort().getSyntacticType());
-			}
-			catch (IntrospectionException ie) {
-			    eventList.add(new DataMismatchError());
-			    throw new TaskExecutionException("Unable to reconcile iterator types");
-			}
-			j++;
-		    }
-		}
-		// Create a new DataThing object for each output
-		outputMap = new HashMap();
-		for (int i = 0; i < getChildren().length; i++) {
-		    if (getChildren()[i] instanceof PortTask) {
-			PortTask outputPortTask = (PortTask)getChildren()[i];
-			outputMap.put(outputPortTask.getScuflPort().getName(), new DataThing(new ArrayList()));
-		    }
-		}
-		// Now have an array of iterators covering all the inputs needed, need to repeatedly invoke
-		// the task on each possible combination
-		// Query the iterator to find out how many iterations will be needed
-		// and report these in the processor events.
-		JoinIterator i = new JoinIterator(inputIterators);
-		int totalIterations = i.size();
-		int currentIteration = 0;
-		for (; i.hasNext(); ) {
-		    currentIteration++;
-		    Object[] inputs = (Object[])i.next();
-		    Map splitInput = new HashMap();
-		    for (int k = 0; k < inputs.length; k++) {
-			splitInput.put(inputNames[k], inputs[k]);
-		    }
-		    // Have now populated the input map for the service invocation
-		    eventList.add(new InvokingWithIteration(currentIteration, totalIterations));
-		    Map singleResultMap = execute(splitInput);
-		    
-		    // Iterate over the outputs
-		    for (Iterator l = singleResultMap.keySet().iterator(); l.hasNext(); ) {
-			String outputName = (String)l.next();
-			DataThing outputValue = (DataThing)singleResultMap.get(outputName);
-			Object dataObject = outputValue.getDataObject();
-			// addition of a fix here by Chris Wroe
-			// Before it tried to map all results from the service call into the subsequent
-			// data flow causing a null pointer exception if no such data flow existed.
-			if (outputMap.containsKey(outputName)) {
-			    List targetList = ((List)((DataThing)outputMap.get(outputName)).getDataObject());
-			    targetList.add(dataObject);
-			}
-			/// fix ends
-		    }
-		}
-		eventList.add(new ProcessComplete());
-		
-
-	    }
-
-	    // Iterate over the children, pushing data into the port tasks
-	    // as appropriate.
-	    for (int i = 0; i < getChildren().length; i++) {
-		if (getChildren()[i] instanceof PortTask) {
-		    PortTask outputPortTask = (PortTask)getChildren()[i];
-		    String portName = outputPortTask.getScuflPort().getName();
-		    DataThing resultDataThing = (DataThing)outputMap.get(portName);
-		    if (resultDataThing != null) {
-			outputPortTask.setData(resultDataThing);
-		    }
-		}
-	    }
-	    
-	    endTime = new TimePoint();
-	    
-	    return new TaskStateMessage(getParentFlow().getID(), 
-					getID(), 
-					TaskStateMessage.COMPLETE,"Task completed successfully");
-	}
-	catch (TaskExecutionException ex) {
-	    eventList.add(new ServiceFailure());
-	    endTime = new TimePoint();
-	    faultCausingException = ex;
-	    logger.error(ex);
-	    return new TaskStateMessage(getParentFlow().getID(),getID(), TaskStateMessage.FAILED,ex.getMessage());
-	}
-	catch (Exception ex){
-	    eventList.add(new ServiceFailure());
-	    endTime = new TimePoint();
-	    faultCausingException = ex;
-	    logger.error(ex);
-	    return new TaskStateMessage(getParentFlow().getID(), 
-					getID(), 
-					TaskStateMessage.FAILED, 
-					"Unrecognised dispatch failure for a task within the workflow.");
-	}	
-    }
-    
     private Exception faultCausingException = null;
     /**
      * If the processor invocation throws an exception causing it
@@ -333,7 +468,7 @@ public class ProcessorTask extends TavernaTask{
      * @return output map containing String->DataThing named pairs, with the key
      * being the name of the output port.
      */
-    protected Map execute(Map inputMap) throws TaskExecutionException {
+    private Map execute(Map inputMap) throws TaskExecutionException {
 	ProcessorTaskWorker worker = ProcessorHelper.getTaskWorker(proc);
 	return worker.execute(inputMap);
     }

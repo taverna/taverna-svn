@@ -24,7 +24,7 @@ import java.lang.String;
 public class StringConcat implements LocalWorker {
     
     public String[] inputNames() {
-	return new String[]{"firststring","secondstring"};
+	return new String[]{"string1","string2"};
     }
     public String[] inputTypes() {
 	return new String[]{"'text/plain'","'text/plain'"};
@@ -36,15 +36,18 @@ public class StringConcat implements LocalWorker {
 	return new String[]{"'text/plain'"};
     }
     
-    /**
-     * Just throw an exception!
-     */
     public Map execute(Map inputs) throws TaskExecutionException {
-	String firstString = (String)((DataThing)inputs.get("firststring")).getDataObject();	
-	String secondString = (String)((DataThing)inputs.get("secondstring")).getDataObject();
-	Map outputs = new HashMap();
-	outputs.put("output",new DataThing(firstString+secondString));
-	return outputs;
+	try {
+	    String firstString = (String)((DataThing)inputs.get("string1")).getDataObject();	
+	    String secondString = (String)((DataThing)inputs.get("string2")).getDataObject();
+	    Map outputs = new HashMap();
+	    outputs.put("output",new DataThing(firstString+secondString));
+	    return outputs;
+	}
+	catch (Exception ex) {
+	    ex.printStackTrace();
+	    throw new RuntimeException(ex);
+	}
     }
 
 

@@ -7,14 +7,14 @@
 		<s:local>org.embl.ebi.escience.scuflworkers.java.StringConcat</s:local>
 		<s:inputmap key="foo" value="string1"/>
 		<s:inputmap key="bar" value="string2"/>
-		<s:outputmap key="urgle" value="concatenation"/>
+		<s:outputmap key="urgle" value="output"/>
 	</s:alternate>
   </s:processor>
   <s:processor name="string1">
-    <s:stringconstant>edit me!</s:stringconstant>
+    <s:stringconstant>Hello </s:stringconstant>
   </s:processor>
   <s:processor name="string2">
-    <s:stringconstant>edit me!</s:stringconstant>
+    <s:stringconstant>world</s:stringconstant>
   </s:processor>
   <s:link>
     <s:input>failingthing:foo</s:input>
