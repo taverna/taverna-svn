@@ -252,7 +252,7 @@ public class FilterPageEditor extends JPanel {
 
 	class PushOptionsHandler {
 	    
-	    private PushAction optionPush;
+	    PushAction optionPush;
 
 	    public PushOptionsHandler(PushAction optionPush) {
 		this.optionPush = optionPush;
@@ -319,8 +319,10 @@ public class FilterPageEditor extends JPanel {
 	}
 	
 	protected void unassignPushOptions() {
+	    System.out.println(pushOptionHandlers==null?"Null handler":pushOptionHandlers.length+" handlers assigned");
 	    int n = (pushOptionHandlers == null) ? 0 : pushOptionHandlers.length;
 	    for (int i = 0; i < n; i++) {
+		System.out.println("Removing options from : "+pushOptionHandlers[i].optionPush.getRef());
 		pushOptionHandlers[i].remove();
 	    }
 	}
@@ -818,6 +820,7 @@ public class FilterPageEditor extends JPanel {
 			    Option op = ((OptionHolder)list.getItemAt(j+1)).option;
 			    if (currentFilters[i].getValue().equals(op.getValue())) {
 				list.setSelectedIndex(j+1);
+				lastSelected = (OptionHolder)list.getItemAt(j+1);
 				break;
 			    }
 			}
@@ -850,8 +853,13 @@ public class FilterPageEditor extends JPanel {
 		PushAction[] optionPushes = options[i].getPushActions();
 		boolean found = false;
 		List actionsToUndo = new ArrayList();
+		// Set the push option handlers for this list, otherwise behaviour
+		// is inconsistant after the UI has been constructed.
+		pushOptionHandlers = new PushOptionsHandler[optionPushes.length];
+		    
 		for (int j = 0; j < optionPushes.length; j++) {
 		    PushOptionsHandler poh = new PushOptionsHandler(optionPushes[j]);
+		    pushOptionHandlers[j] = poh;
 		    FilterEditor fe = poh.getTargetEditor();
 		    //System.out.println(fe.toString());
 		    if (fe instanceof ListFilterEditor) {
@@ -886,6 +894,7 @@ public class FilterPageEditor extends JPanel {
 			    }
 			    else {
 				found = true;
+				tfe.hasAssignedValue = false;
 			    }
 			}
 		    }
@@ -903,11 +912,14 @@ public class FilterPageEditor extends JPanel {
 		else {
 		    list.removeActionListener(listListener);
 		    list.setSelectedIndex(i+1);
+		    lastSelected = (OptionHolder)list.getItemAt(i+1);
 		    list.addActionListener(listListener);
 		    return;
 		}		       
 	    }	    
 	}
+
+	OptionHolder lastSelected = emptySelection;
 
 	public ListFilterEditor(Query theQuery, FilterDescription filterDescription) {
 	    super(new BorderLayout());
@@ -941,18 +953,23 @@ public class FilterPageEditor extends JPanel {
 			Option op = ((OptionHolder)list.getItemAt(j+1)).option;
 			if (currentFilters[i].getValue().equals(op.getValue())) {
 			    list.setSelectedIndex(j+1);
+			    lastSelected = (OptionHolder)list.getItemAt(j+1);
 			    break;
 			}
 		    }
 		}
 	    }
 	    
+	    lastSelected = (OptionHolder)list.getSelectedItem();
+
 	    // Create a listener for the list box
 	    listListener = new ActionListener() {
-		    OptionHolder lastSelected = (OptionHolder)list.getSelectedItem();
+
 		    public void actionPerformed(ActionEvent ae) {
+			
 			OptionHolder oh = (OptionHolder)list.getSelectedItem();
 			if (oh == lastSelected) {
+			    System.out.println("Last selected option selected again");
 			    return;
 			}
 			lastSelected = oh;
@@ -977,6 +994,7 @@ public class FilterPageEditor extends JPanel {
 			}
 			
 			else {
+			    System.out.println("Calling unassign options...");
 			    unassignPushOptions();
 			}
 		    }
