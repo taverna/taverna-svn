@@ -60,7 +60,7 @@ public class SoaplabProcessor extends Processor implements java.io.Serializable 
      */
     public Properties getProperties() {
 	Properties props = new Properties();
-	props.put("Soaplab URL",getEndpoint());
+	props.put("Soaplab URL",getEndpoint().toString());
 	return props;
     }
 
