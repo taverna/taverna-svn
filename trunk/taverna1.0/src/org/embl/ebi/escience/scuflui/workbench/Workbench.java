@@ -120,11 +120,13 @@ public class Workbench extends JFrame {
 	}
 
 	// Add instances of all the components just for fun
-	GenericUIComponentFrame xscufl = new GenericUIComponentFrame(workbench.model, 
-								     new XScuflTextArea());
-	xscufl.setSize(600,300);
-	xscufl.setLocation(50,50);
-	workbench.desktop.add(xscufl);
+
+	//GenericUIComponentFrame xscufl = new GenericUIComponentFrame(workbench.model, 
+	//							     new XScuflTextArea());
+	//xscufl.setSize(600,300);
+	//xscufl.setLocation(50,50);
+	//workbench.desktop.add(xscufl);
+
 	GenericUIComponentFrame diagram = new GenericUIComponentFrame(workbench.model, 
 								      new ScuflDiagram());
 	diagram.setSize(600,600);
