@@ -183,6 +183,9 @@ public class FilterPageEditor extends JPanel {
 			     filterType.equals("text_entry_basic_filter")) {
 			filterEditor = new ListFilterEditor(query, fd);
 		    }
+		    else if (filterType.equals("id_list")) {
+			filterEditor = new IDListFilterEditor(query, fd);
+		    }
 		    else {
 			filterEditor = new ToDoMessage(filterType);
 		    }
@@ -290,6 +293,199 @@ public class FilterPageEditor extends JPanel {
 
     }
 
+    class IDListFilterEditor extends FilterEditor {
+
+	String[] myIDs = new String[0];
+	JComboBox list = new JComboBox();
+	JTextArea idText = new JTextArea(10,10);
+	Query query;
+	FilterDescription fd;
+	ActionListener listListener = null;
+	JButton clearButton, updateButton;
+	
+	public void setOptions(Option[] options) {
+	    if (list == null) {
+		return;
+	    }
+	    list.removeActionListener(listListener);
+	    list.removeAllItems();
+	    list.addItem(emptySelection);
+	    myIDs = new String[options.length];
+	    for (int i = 0; i < options.length; i++) {
+		Option o = options[i];
+		list.addItem(new OptionHolder(o));
+		myIDs[i] = (o.getFieldFromContext()+
+			    o.getKeyFromContext()+
+			    o.getTableConstraintFromContext());
+	    }
+	    IDListFilter f = getCurrentFilter();
+	    if (f!=null) {
+		list.setSelectedIndex(lastFilterIndex+1);
+		idText.setEnabled(true);
+		
+		String[] ids = f.getIdentifiers();
+		if (ids.length > 0) {
+		    StringBuffer sb = new StringBuffer();
+		    for (int i = 0; i < ids.length; i++) {
+			if (i > 0) {
+			    sb.append("\n");
+			}
+			sb.append(ids[i]);
+		    }
+		    idText.setText(sb.toString());
+		}
+		else {
+		    idText.setText("");
+		}
+	    }	
+	    else {
+		list.setSelectedIndex(0);
+		idText.setText("");
+		idText.setEnabled(false);
+	    }
+	    list.addActionListener(listListener);
+	    list.validate();
+	}
+
+	int lastFilterIndex = -1;
+
+	public IDListFilter getCurrentFilter() {
+	    Filter[] currentFilters = query.getFilters();
+	    for (int i = 0; i < currentFilters.length; i++) {
+		String filterID = (currentFilters[i].getField()+
+				   currentFilters[i].getKey()+
+				   currentFilters[i].getTableConstraint());
+		for (int j = 0; j < myIDs.length; j++) {
+		    if (filterID.equals(myIDs[j]) &&
+			currentFilters[i] instanceof IDListFilter) {
+			lastFilterIndex = j;
+			return (IDListFilter)currentFilters[i];
+		    }
+		}
+	    }
+	    return null;
+	}
+	
+	public IDListFilterEditor(Query theQuery, FilterDescription filterDescription) {
+	    super(new BorderLayout());
+	    setBackground(Color.WHITE);
+	    query = theQuery;
+	    fd = filterDescription;
+	    setOptions(fd.getOptions());
+	    add(Box.createRigidArea(new Dimension(10,10)),
+		BorderLayout.WEST);
+	    add(Box.createRigidArea(new Dimension(10,10)),
+		BorderLayout.EAST);
+	    add(Box.createRigidArea(new Dimension(10,10)),
+		BorderLayout.SOUTH);
+	    add(Box.createRigidArea(new Dimension(10,10)),
+		BorderLayout.NORTH);
+	    JPanel internalPanel = new JPanel(new BorderLayout());
+	    internalPanel.setOpaque(false);
+	    internalPanel.add(list, BorderLayout.NORTH);
+	    JScrollPane sp = new JScrollPane(idText);
+	    //sp.setPreferredSize(new Dimension(0,0));
+	    internalPanel.add(sp, BorderLayout.CENTER);
+	    //internalPanel.add(new JLabel(fd.getDisplayName()), BorderLayout.WEST);
+	    JPanel buttonPanel = new JPanel();
+	    buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.PAGE_AXIS));
+	    updateButton = new JButton("Update IDs");
+	    updateButton.setMaximumSize(new Dimension(300,25));
+	    clearButton = new JButton("Clear");
+	    clearButton.setMaximumSize(new Dimension(300,25));
+	    buttonPanel.add(updateButton);
+	    buttonPanel.add(clearButton);
+	    buttonPanel.add(Box.createVerticalGlue());
+	    buttonPanel.setOpaque(false);
+	    internalPanel.add(buttonPanel, BorderLayout.EAST);
+	    add(internalPanel, BorderLayout.CENTER);
+	    setMaximumSize(new Dimension(6000,250));
+	    
+	    clearButton.addActionListener(new ActionListener() {
+		    public void actionPerformed(ActionEvent ae) {
+			idText.setText("");
+			updateButton.setEnabled(false);
+			list.setSelectedIndex(0);
+		    }
+		});
+
+	    updateButton.addActionListener(new ActionListener() {
+		    public void actionPerformed(ActionEvent ae) {
+			IDListFilter currentFilter = getCurrentFilter();
+			Option o = ((OptionHolder)list.getSelectedItem()).option;
+			IDListFilter newFilter = new IDListFilter(o.getFieldFromContext(),
+							    o.getTableConstraintFromContext(),
+							    o.getKeyFromContext(),
+							    idText.getText().split("(\\s+|\\s*,\\s*)"));
+			if (currentFilter == null) {
+			    query.addFilter(newFilter);
+			}
+			else {
+			    query.replaceFilter(currentFilter, newFilter);
+			}
+			clearButton.setEnabled(true);
+			String[] ids = newFilter.getIdentifiers();
+			if (ids.length > 0) {
+			    StringBuffer sb = new StringBuffer();
+			    for (int i = 0; i < ids.length; i++) {
+				if (i > 0) {
+				    sb.append("\n");
+				}
+				sb.append(ids[i]);
+			    }
+			    idText.setText(sb.toString());
+			}
+		    }
+		});
+
+	    // Create the actionlistener for the checkbox
+	    listListener = new ActionListener() {
+		    OptionHolder lastSelectedOption = (OptionHolder)list.getSelectedItem();
+		    public void actionPerformed(ActionEvent ae) {
+			if (list.getSelectedItem() == lastSelectedOption) {
+			    // Ignore, no change in selection
+			    return;
+			}		
+			clearButton.setEnabled(false);
+			if (list.getSelectedItem() == emptySelection) {
+			    updateButton.setEnabled(false);
+			    // Destroy the active filter if any, disable
+			    // the text area
+			    idText.setEnabled(false);
+			    Filter currentFilter = getCurrentFilter();
+			    if (currentFilter != null) {
+				query.removeFilter(currentFilter);
+			    }
+			    return;
+			}
+			updateButton.setEnabled(true);
+			if (idText.getText().equals("") == false) {
+			    // is both an id selector and some id text
+			    Filter currentFilter = getCurrentFilter();
+			    Option o = ((OptionHolder)list.getSelectedItem()).option;
+			    Filter newFilter = new IDListFilter(o.getFieldFromContext(),
+								o.getTableConstraintFromContext(),
+								o.getKeyFromContext(),
+								idText.getText().split("(\\s+|\\s*,\\s*)"));
+			    if (currentFilter == null) {
+				query.addFilter(newFilter);
+			    }
+			    else {
+				query.removeFilter(currentFilter);
+				query.addFilter(newFilter);
+				
+				// query.replaceFilter(currentFilter, newFilter);
+			    }
+			    clearButton.setEnabled(true);
+			}
+			idText.setEnabled(true);
+		    }
+		};
+	    list.addActionListener(listListener);
+	}
+	
+    }
+
     class ListFilterEditor extends FilterEditor {
 
 	String[] myIDs = new String[0];
@@ -303,8 +499,7 @@ public class FilterPageEditor extends JPanel {
 	    for (int i = 0; i < currentFilters.length; i++) {
 		String filterID = (currentFilters[i].getField()+
 				   currentFilters[i].getKey()+
-				   currentFilters[i].getTableConstraint()+
-				   currentFilters[i].getValue());
+				   currentFilters[i].getTableConstraint());
 		for (int j = 0; j < myIDs.length; j++) {
 		    if (filterID.equals(myIDs[j]) &&
 			currentFilters[i] instanceof BasicFilter) {
@@ -337,8 +532,7 @@ public class FilterPageEditor extends JPanel {
 		// Note IDs different in this case
 		myIDs[i] = (options[i].getFieldFromContext()+
 			    options[i].getKeyFromContext()+
-			    options[i].getTableConstraintFromContext()+
-			    options[i].getValue());
+			    options[i].getTableConstraintFromContext());
 	    }
 	    if (myIDs.length == 0) {
 		list.setEnabled(false);
@@ -365,8 +559,7 @@ public class FilterPageEditor extends JPanel {
 		// Note IDs different in this case
 		myIDs[i] = (options[i].getFieldFromContext()+
 			    options[i].getKeyFromContext()+
-			    options[i].getTableConstraintFromContext()+
-			    options[i].getValue());
+			    options[i].getTableConstraintFromContext());
 	    }
 	    if (options.length == 0) {
 		list.setEnabled(false);
@@ -376,8 +569,7 @@ public class FilterPageEditor extends JPanel {
 	    for (int i = 0; i < currentFilters.length; i++) {
 		String filterID = (currentFilters[i].getField()+
 				   currentFilters[i].getKey()+
-				   currentFilters[i].getTableConstraint()+
-				   currentFilters[i].getValue());
+				   currentFilters[i].getTableConstraint());
 		for (int j = 0; j < myIDs.length; j++) {
 		    if (filterID.equals(myIDs[j]) &&
 			currentFilters[i] instanceof BasicFilter) {
@@ -546,6 +738,7 @@ public class FilterPageEditor extends JPanel {
 	    
 	    // See if there's a filter with this key in the current query
 	    Filter[] filters = query.getFilters();
+	    ignore.setSelected(true);
 	    for (int i = 0; i < filters.length; i++) {
 		for (int j = 0; j < myIDs.length; j++) {
 		    String filterID = filters[i].getField()+filters[i].getKey()+filters[i].getTableConstraint();
@@ -553,9 +746,11 @@ public class FilterPageEditor extends JPanel {
 			BooleanFilter bf = (BooleanFilter)filters[i];
 			if (bf.getQualifier().equals(excludeFilterType)) {
 			    exclude.setSelected(true);
+			    ignore.setSelected(false);
 			}
 			else if (bf.getQualifier().equals(requireFilterType)) {
 			    require.setSelected(true);
+			    ignore.setSelected(false);
 			}
 			if (fieldSelect != null) {
 			    fieldSelect.setSelectedIndex(j);
@@ -563,7 +758,6 @@ public class FilterPageEditor extends JPanel {
 			break;
 		    }
 		}
-		ignore.setSelected(true);
 	    }
 	    
 	    // Register item listener for the field selector here...
@@ -736,7 +930,8 @@ public class FilterPageEditor extends JPanel {
 	    add(Box.createRigidArea(new Dimension(10,10)),
 	    BorderLayout.WEST);
 	    add(Box.createRigidArea(new Dimension(10,10)),
-	    BorderLayout.EAST);
+	    BorderLayout.EAST);	    
+	    	    
 	    setMaximumSize(new Dimension(6000,25));
 	}
 

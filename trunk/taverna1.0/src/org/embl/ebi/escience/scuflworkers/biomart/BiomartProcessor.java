@@ -180,6 +180,18 @@ public class BiomartProcessor extends Processor {
 		    addPort(newPort);
 		}
 	    }
+	    else if (filters[i] instanceof IDListFilter) {
+		String fieldName = filters[i].getField();
+		filterNames.add(fieldName+"_filter");
+		try {
+		    locatePort(fieldName+"_filter");
+		}
+		catch (UnknownPortException upe) {
+		    Port newPort = new InputPort(this, fieldName+"_filter");
+		    newPort.setSyntacticType("l('text/plain')");
+		    addPort(newPort);
+		}
+	    }
 	}
 	InputPort[] currentInputs = getInputPorts();
 	for (int i = 0; i < currentInputs.length; i++) {

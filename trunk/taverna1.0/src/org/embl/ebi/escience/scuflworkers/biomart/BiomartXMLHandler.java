@@ -168,6 +168,9 @@ public class BiomartXMLHandler implements XMLHandler {
 		else if (f instanceof BooleanFilter) {
 		    filtersElement.addContent(booleanFilterToElement((BooleanFilter)f));
 		}
+		else if (f instanceof IDListFilter) {
+		    filtersElement.addContent(idListFilterToElement((IDListFilter)f));
+		}
 	    }
 	}
 
@@ -226,6 +229,9 @@ public class BiomartXMLHandler implements XMLHandler {
 		}
 		else if (fe.getName().equals("booleanfilter")) {
 		    q.addFilter(elementToBooleanFilter(fe));
+		}
+		else if (fe.getName().equals("idlistfilter")) {
+		    q.addFilter(elementToIDListFilter(fe));
 		}
 	    }
 	}
@@ -313,5 +319,40 @@ public class BiomartXMLHandler implements XMLHandler {
 				 e.getAttributeValue("handler"));
     }
     
+    /**
+     * Serialize IDListFilter
+     */
+    private Element idListFilterToElement(IDListFilter idf) {
+	Element e = new Element("idlistfilter", NAMESPACE);
+	e.setAttribute("field", idf.getField());
+	e.setAttribute("constraint", idf.getTableConstraint());
+	e.setAttribute("key", idf.getKey());
+	if (idf.getHandler() != null){
+	    e.setAttribute("handler", idf.getHandler());
+	}
+	// Do the id list
+	String[] ids = idf.getIdentifiers();
+	for (int i = 0; i < ids.length; i++) {
+	    Element idElement = new Element("idlistitem", NAMESPACE);
+	    idElement.setAttribute("id",ids[i]);
+	    e.addContent(idElement);
+	}
+	return e;
+    }
+    /**
+     * Deserialize IDListFilter
+     */
+    private IDListFilter elementToIDListFilter(Element e) {
+	List idElementList = e.getChildren("idlistitem", NAMESPACE);
+	String[] ids = new String[idElementList.size()];
+	for (int i = 0; i < ids.length; i++) {
+	    ids[i] = ((Element)idElementList.get(i)).getAttributeValue("id");
+	}
+	return new IDListFilter(e.getAttributeValue("field"),
+				e.getAttributeValue("constraint"),
+				e.getAttributeValue("key"),
+				ids,
+				e.getAttributeValue("handler"));
+    }
     
 }
