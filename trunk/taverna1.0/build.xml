@@ -14,6 +14,11 @@
 	<property name="build.javadocs" value="${build.dir}/api"/>
 	<property name="build.compiler" value="jikes"/>
 		
+	<!-- Show the splash screen -->
+	<target name="splash">
+		<splash showduration="0" imageurl="http://mygrid.man.ac.uk/images/mygridlogowhite.gif"/>
+	</target>
+		
 	<!-- Path used during compilation -->
 	<path id="compile-classpath">
 		<!-- Jar files used when building or running the project go here -->
@@ -49,7 +54,7 @@
 
 	<!-- Process the source tree to clean up the import declarations -->
 	<!-- CAUTION - modifies the /src directory                       -->
-	<target name="tidy">
+	<target name="tidy" depends="splash">
 		<cleanimports srcdir="${src.dir}">
             <cleanformat>
 		<!-- Use wildcards iff there are more than five imports -->
@@ -93,7 +98,7 @@
 	</target>
 
 	<!-- Trivial setup -->
-	<target name="prepare">
+	<target name="prepare" depends="splash">
 		<mkdir dir="${build.dir}"/>
 	</target>
 
