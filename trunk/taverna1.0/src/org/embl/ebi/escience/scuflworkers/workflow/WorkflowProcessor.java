@@ -16,6 +16,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 
 import java.lang.Exception;
+import org.jdom.*;
 import java.lang.String;
 
 
@@ -30,7 +31,7 @@ import java.lang.String;
 public class WorkflowProcessor extends Processor implements java.io.Serializable {
 
     private ScuflModel theModel = null;
-    private String definitionURL = "";
+    private String definitionURL = null;
 
     /**
      * Construct a new processor with the given model to bind to, name
@@ -46,24 +47,8 @@ public class WorkflowProcessor extends Processor implements java.io.Serializable
 	    this.theModel = new ScuflModel();
 	    // Populate from the definition URL
 	    XScuflParser.populate(new URL(definitionURL).openStream(), theModel, null);
-	    // Iterate over the workflow sinks to get the output ports
-	    Port[] outputs = this.theModel.getWorkflowSinkPorts();
-	    for (int i = 0; i < outputs.length; i++) {
-		// Create a new output port
-		Port newPort = new OutputPort(this, outputs[i].getName());
-		newPort.setSyntacticType(outputs[i].getSyntacticType());
-		//newPort.setSemanticType(outputs[i].getSemanticType());
-		this.addPort(newPort);
-	    }
-	    // Iterate over workflow sources to get the input ports
-	    Port[] inputs = this.theModel.getWorkflowSourcePorts();
-	    for (int i = 0; i < inputs.length; i++) {
-		// Create a new input port
-		Port newPort = new InputPort(this, inputs[i].getName());
-		newPort.setSyntacticType(inputs[i].getSyntacticType());
-		//newPort.setSemanticType(inputs[i].getSemanticType());
-		this.addPort(newPort);
-	    }
+	    buildPorts();
+	    createListener();
 	}
 	catch (MalformedURLException mue) {
 	    throw new ProcessorCreationException("The supplied definition URL was malformed, specified as '"
@@ -75,7 +60,81 @@ public class WorkflowProcessor extends Processor implements java.io.Serializable
 						 "\n during creation. The exception had type :\n"+
 						 e.getClass().toString());
 	}
-	
+    }
+    
+    /**
+     * Construct a new processor from the supplied JDOM element, this 
+     * element being the 'scufl' top level workflow element from an inline
+     * nested workflow declaration
+     */
+    public WorkflowProcessor(ScuflModel model, String name, Element scuflElement)
+	throws ProcessorCreationException,
+	       DuplicateProcessorNameException {
+	super(model, name);
+	// Have to clone the element because it already has a parent
+	// so will not work with a new document instance
+	try {
+	    Document doc = new Document((Element)scuflElement.clone());
+	    this.theModel = new ScuflModel();
+	    XScuflParser.populate(doc, theModel, null);
+	    buildPorts();
+	    createListener();
+	}
+	catch (Exception e) {
+	    throw new ProcessorCreationException("The workflow processor '"+name+
+						 "' caused an exception :\n"+e.getMessage()+
+						 "\n during creation. The exception had type :\n"+
+						 e.getClass().toString());
+	}
+    }
+
+    /**
+     * Construct a new processor with a blank internal workflow
+     */
+    public WorkflowProcessor(ScuflModel model, String name) 
+	throws ProcessorCreationException,
+	       DuplicateProcessorNameException {
+	super(model, name);
+	this.theModel = new ScuflModel();
+	createListener();
+    }
+
+    /**
+     * Attach a listener to the contained workflow instance which will set
+     * the location string to null, indicating that the original workflow
+     * (if any) has been changed, effectively performing a copy on write style
+     * caching.
+     */
+    private void createListener() {
+	this.theModel.addListener(new ScuflModelEventListener() {
+		public void receiveModelEvent(ScuflModelEvent event) {
+		    WorkflowProcessor.this.definitionURL = null;
+		}
+	    });
+    }
+
+    /**
+     * Inspect the current workflow model and create any ports required
+     */
+    private void buildPorts() throws PortCreationException, DuplicatePortNameException {
+	// Iterate over the workflow sinks to get the output ports
+	Port[] outputs = this.theModel.getWorkflowSinkPorts();
+	for (int i = 0; i < outputs.length; i++) {
+	    // Create a new output port
+	    Port newPort = new OutputPort(this, outputs[i].getName());
+	    newPort.setSyntacticType(outputs[i].getSyntacticType());
+	    //newPort.setSemanticType(outputs[i].getSemanticType());
+	    this.addPort(newPort);
+	}
+	// Iterate over workflow sources to get the input ports
+	Port[] inputs = this.theModel.getWorkflowSourcePorts();
+	for (int i = 0; i < inputs.length; i++) {
+	    // Create a new input port
+	    Port newPort = new InputPort(this, inputs[i].getName());
+	    newPort.setSyntacticType(inputs[i].getSyntacticType());
+	    //newPort.setSemanticType(inputs[i].getSemanticType());
+	    this.addPort(newPort);
+	}
     }
 
     public ScuflModel getInternalModel() {

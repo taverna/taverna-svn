@@ -10,8 +10,9 @@ import org.embl.ebi.escience.scuflworkers.XMLHandler;
 import org.embl.ebi.escience.scuflworkers.ProcessorFactory;
 
 // JDOM Imports
-import org.jdom.Element;
+import org.jdom.*;
 
+import org.embl.ebi.escience.scufl.view.*;
 import org.embl.ebi.escience.scuflworkers.workflow.WorkflowProcessor;
 import org.embl.ebi.escience.scuflworkers.workflow.WorkflowProcessorFactory;
 import java.lang.String;
@@ -27,9 +28,19 @@ public class WorkflowXMLHandler implements XMLHandler {
     public Element elementForProcessor(Processor p) {
 	WorkflowProcessor wp = (WorkflowProcessor)p;
 	Element spec = new Element("workflow",XScufl.XScuflNS);
-	Element definition = new Element("xscufllocation",XScufl.XScuflNS);
-	spec.addContent(definition);
-	definition.setText(wp.getDefinitionURL());
+	// Does this processor have a reference to an external file?
+	if (wp.getDefinitionURL() != null) {
+	    Element definition = new Element("xscufllocation",XScufl.XScuflNS);
+	    spec.addContent(definition);
+	    definition.setText(wp.getDefinitionURL());
+	}
+	else {
+	    // No definition URL so inline the workflow
+	    XScuflView view = new XScuflView(wp.getInternalModel());
+	    Document doc = view.getDocument();
+	    spec.addContent(doc.detachRootElement());
+	    wp.getInternalModel().removeListener(view);
+	}
 	return spec;
     }
     
@@ -52,8 +63,23 @@ public class WorkflowXMLHandler implements XMLHandler {
 	       DuplicateProcessorNameException, 
 	       XScuflFormatException {
 	Element workflowProcessor = processorNode.getChild("workflow",XScufl.XScuflNS);
-	String definitionURL = workflowProcessor.getChild("xscufllocation",XScufl.XScuflNS).getTextTrim();
-	return new WorkflowProcessor(model, name, definitionURL);
+	// See if we're being loaded from a URL, if so use the old mechanism to load.
+	Element locationElement = workflowProcessor.getChild("xscufllocation",XScufl.XScuflNS);
+	if (locationElement != null) {
+	    String definitionURL = workflowProcessor.getChild("xscufllocation",XScufl.XScuflNS).getTextTrim();
+	    return new WorkflowProcessor(model, name, definitionURL);
+	}
+	else {
+	    // Loading from inlined workflow
+	    Element scuflElement = workflowProcessor.getChild("scufl",XScufl.XScuflNS);
+	    if (scuflElement == null) {
+		// Neither location nor literal workflow, this is a fault
+		throw new ProcessorCreationException("Neither XScufl location nor literal inlined workflow defined for nested workflow processor, failing!");
+	    }
+	    // Otherwise have a full XScufl definition to use to populate the model with
+	    return new WorkflowProcessor(model, name, scuflElement);
+	}
+	
     }
 
 }

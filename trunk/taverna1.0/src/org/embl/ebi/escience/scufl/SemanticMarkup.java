@@ -160,7 +160,7 @@ public class SemanticMarkup {
      */
     public void addMIMEType(String mimeType) {
 	synchronized(this.mimeTypeList) {
-	    if (mimeType != null) {
+	    if (mimeType != null && mimeType.equals("") == false) {
             // fixme:
             //   mimeTypeList.contains(mimeType) may be more efficient [mrp]
 		for (Iterator i = this.mimeTypeList.iterator(); i.hasNext(); ) {
