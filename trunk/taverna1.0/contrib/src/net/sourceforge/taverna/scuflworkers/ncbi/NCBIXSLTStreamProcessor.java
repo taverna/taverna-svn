@@ -33,7 +33,7 @@ import org.embl.ebi.escience.baclava.DataThing;
  * Last edited by $Author: phidias $
  * 
  * @author Mark
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class NCBIXSLTStreamProcessor extends NCBIXMLStreamProcessor {
 
@@ -46,9 +46,9 @@ public class NCBIXSLTStreamProcessor extends NCBIXMLStreamProcessor {
         this.oldText = new String[] { "&lt;", "&gt;", "&quot;", "<b>", "</b>",
                 "<font color=\"#C00000\">", "</font>",
                 "<font color=\"#4040FF\">", "<font color=\"#C00000\">",
-                "<font color=\"#C04000\">" };
+                "<font color=\"#C04000\">","&amp;amp;" };
         this.replacementText = new String[] { "<", ">", "\"", "", "", "", "",
-                "", "", "" };
+                "", "", "","&amp;" };
         this.setOldText(oldText);
         this.setReplacementText(replacementText);
         this.startTag = startTag;
