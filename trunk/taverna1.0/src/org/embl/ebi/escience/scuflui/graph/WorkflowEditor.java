@@ -170,7 +170,7 @@ public class WorkflowEditor extends JGraph implements ScuflUIComponent
 				g2d.setPaint(new GradientPaint(0,0,background2, getWidth(), getHeight(), org.embl.ebi.escience.scuflui.ShadedLabel.halfShade(background2)));
 				g2d.fillRect(newWidth, 0, remainingWidth, getHeight()/progressBarDivide);
 			    }
-			    else {
+			    else if (progress > -1) {
 				g2d.setPaint(new GradientPaint(0,0,background3, getWidth(), getHeight(), org.embl.ebi.escience.scuflui.ShadedLabel.halfShade(background3)));
 				g2d.fillRect(0,0,getWidth(),getHeight()/progressBarDivide);
 			    }
