@@ -29,30 +29,56 @@ import java.util.*;
  */
 public class SoaplabDescriberPanel extends AbstractProcessorAction {
     
-    Color col,col2;
+    static Color col,col2;
+
+    static {
+	col = Color.WHITE;
+	col2 = Color.WHITE;
+    }
+
+    class ColJEditorPane extends JEditorPane {
+	public ColJEditorPane(String type, String text) {
+	    super(type, text);
+	    setOpaque(false);
+	    setEditable(false);
+	    setPreferredSize(new Dimension(0,0));
+	}
+	protected void paintComponent(Graphics g) {
+	    final int width = getWidth();
+	    final int height = getHeight();
+	    Graphics2D g2d = (Graphics2D)g;
+	    Paint oldPaint = g2d.getPaint();
+	    g2d.setPaint(new GradientPaint(0,0,col,width,0,col2));
+	    g2d.fillRect(0,0,width,height);
+	    g2d.setPaint(oldPaint);
+	    super.paintComponent(g);
+	}
+    }
+    
+    class ColXMLTree extends XMLTree {
+	public ColXMLTree(String text) throws java.io.IOException, org.jdom.JDOMException {
+	    super(text);
+	    setOpaque(false);
+	}
+	protected void paintComponent(Graphics g) {
+	    final int width = getWidth();
+	    final int height = getHeight();
+	    Graphics2D g2d = (Graphics2D)g;
+	    Paint oldPaint = g2d.getPaint();
+	    g2d.setPaint(new GradientPaint(0,0,col,width,0,col2));
+	    g2d.fillRect(0,0,width,height);
+	    g2d.setPaint(oldPaint);
+	    super.paintComponent(g);
+	}
+    }
 
     public JComponent getComponent(Processor processor) {
 	col = GraphColours.getColour(ProcessorHelper.getPreferredColour(processor),Color.WHITE);
 	col2 = ShadedLabel.halfShade(col);
-	JPanel rootPanel = new JPanel() {
-		protected void paintComponent(Graphics g) {
-		    final int width = getWidth();
-		    final int height = getHeight();
-		    Graphics2D g2d = (Graphics2D)g;
-		    Paint oldPaint = g2d.getPaint();
-		    g2d.setPaint(new GradientPaint(0,0,col,width,0,col2));
-		    g2d.fillRect(0,0,width,height);
-		    g2d.setPaint(oldPaint);
-		    super.paintComponent(g);
-		}
-	    };
-	rootPanel.setOpaque(false);
-	rootPanel.setLayout(new BorderLayout());
 	if (processor.isOffline()) {
 	    // Can't fetch metadata when we're in offline mode
-	    JEditorPane message = new JEditorPane("text/html","<html><head>"+WorkflowSummaryAsHTML.STYLE_NOBG+"</head><body><font color=\"red\">Offline mode</font><p>Taverna is currently working in offline mode, metadata must be fetched from the Soaplab server and is therefore unavailable in this mode.</body></html>");
-	    message.setOpaque(false);
-	    rootPanel.add(message, BorderLayout.CENTER);
+	    ColJEditorPane message = new ColJEditorPane("text/html","<html><head>"+WorkflowSummaryAsHTML.STYLE_NOBG+"</head><body><font color=\"red\">Offline mode</font><p>Taverna is currently working in offline mode, metadata must be fetched from the Soaplab server and is therefore unavailable in this mode.</body></html>");
+	    return message;
 	}
 	else {
 	    try {
@@ -63,19 +89,15 @@ public class SoaplabDescriberPanel extends AbstractProcessorAction {
 		call.setTargetEndpointAddress(soaplabEndpoint);
 		call.setOperationName(new QName("describe"));
 		String metadata = (String)call.invoke(new Object[0]);
-		XMLTree tree = new XMLTree(metadata);
-		tree.setOpaque(false);
-		rootPanel.add(tree, BorderLayout.CENTER);
+		ColXMLTree tree = new ColXMLTree(metadata);
+		return tree;
 	    }
 	    catch (Exception ex) {
-		JEditorPane error = new JEditorPane("text/html", "<html><head>"+WorkflowSummaryAsHTML.STYLE_NOBG+"</head><body><font color=\"red\">Error</font><p>An exception occured while trying to fetch Soaplab metadata from the server. The error was :<pre>"+ex.getMessage()+"</pre></body></html>");
+		JEditorPane error = new ColJEditorPane("text/html", "<html><head>"+WorkflowSummaryAsHTML.STYLE_NOBG+"</head><body><font color=\"red\">Error</font><p>An exception occured while trying to fetch Soaplab metadata from the server. The error was :<pre>"+ex.getMessage()+"</pre></body></html>");
 		ex.printStackTrace();
-		error.setOpaque(false);
-		rootPanel.add(error, BorderLayout.CENTER);
+		return error;
 	    }
 	}
-	rootPanel.setPreferredSize(new Dimension(10,10));
-	return rootPanel;
     }
 
     public boolean canHandle(Processor processor) {

@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.util.Enumeration;
 import java.util.Iterator;
+import java.awt.Color;
 
 import javax.swing.JTree;
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -62,12 +63,14 @@ public class XMLTree extends JTree
 		super();
 		Document document = new SAXBuilder(false).build(new StringReader(text));
 		init(document.getRootElement());
+		revalidate();
 	}
 
 	public XMLTree(Document document)
 	{
 		super();
 		init(document.getRootElement());
+		revalidate();
 	}
 
 	private void init(Content content)
@@ -81,6 +84,15 @@ public class XMLTree extends JTree
 		setModel(new DefaultTreeModel(createTreeNode(content)));
 		setCellRenderer(new DefaultTreeCellRenderer()
 		{
+		    
+		    public Color getBackgroundNonSelectionColor() {
+			return null;
+		    }
+
+		    public Color getBackground() {
+			return null;
+		    }
+
 			/*
 			 * @see javax.swing.tree.TreeCellRenderer#getTreeCellRendererComponent(javax.swing.JTree,
 			 *      java.lang.Object, boolean, boolean, boolean, int, boolean)
@@ -90,6 +102,7 @@ public class XMLTree extends JTree
 															int row, boolean hasFocus)
 			{
 				super.getTreeCellRendererComponent(tree, value, sel, expanded, leaf, row, hasFocus);
+				setOpaque(false);
 				if (value instanceof XMLNode)
 				{
 					XMLNode node = (XMLNode) value;
@@ -163,6 +176,7 @@ public class XMLTree extends JTree
 								+ "</font></pre></html>");
 					}
 				}
+				setBackground(new Color(0,0,0,0));
 				return this;
 			}
 		});
