@@ -113,6 +113,14 @@ public class DotView implements ScuflModelEventListener {
 	    Processor p = processors[i];
 	    // Create the new node
 	    dot.append(" "+p.getName()+" [ \n");
+	    // Change the colour if this is a WSDLBasedProcessor (hack hack hack)
+	    try {
+		WSDLBasedProcessor wsdlp = (WSDLBasedProcessor)p;
+		dot.append("  fillcolor = \"lightsteelblue1\",\n");
+	    }
+	    catch (ClassCastException cce) {
+		//
+	    }
 	    // Create the label...
 	    dot.append("  label = \"");
 
