@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <s:scufl xmlns:s="http://org.embl.ebi.escience/xscufl/0.1alpha" version="0.2" log="0">
-  <s:workflowdescription lsid="urn:lsid:www.mygrid.org.uk:operation:R1ECF0TGHI0" author="Tom Oinn" title="Test of SeqHound integration">Starts with a GI number, uses this to cross reference to locus link and fetch a descriptive title. The LocusLink ID is then cross references into the Gene Ontology to create a list of GO ids. This list is then passed back to a seqhound service to fetch the titles corresponding to the ids and also via some local operations (required to convert eg 7601 to GO:0007601) into a web service running at the EBI (European Bioinformatics Institute) which then uses Taverna's stateful service interaction mechanism to build up a visualisation of the subgraph of the gene ontology containing these terms.</s:workflowdescription>
+  <s:workflowdescription lsid="urn:lsid:www.mygrid.org.uk:operation:FCVF1OGS9R2" author="Tom Oinn" title="Test of SeqHound integration">Starts with a GI number, uses this to cross reference to locus link and fetch a descriptive title. The LocusLink ID is then cross references into the Gene Ontology to create a list of GO ids. This list is then passed back to a seqhound service to fetch the titles corresponding to the ids and also via some local operations (required to convert eg 7601 to GO:0007601) into a web service running at the EBI (European Bioinformatics Institute) which then uses Taverna's stateful service interaction mechanism to build up a visualisation of the subgraph of the gene ontology containing these terms. The raw 'dot' text from the visualisation service is then passed into a Soaplab wrapper around the 'dot' tool from AT&amp;T research which performs graph layout and renders to a PNG image.</s:workflowdescription>
   <s:processor name="FlattenList">
     <s:local>org.embl.ebi.escience.scuflworkers.java.FlattenList</s:local>
   </s:processor>
@@ -73,6 +73,13 @@
       <s:jseqrempath>/jseqhound/jseqrem</s:jseqrempath>
     </s:seqhound>
   </s:processor>
+  <s:processor name="dot">
+    <s:description>Draw directed graphs as hierarchies</s:description>
+    <s:soaplabwsdl>http://industry.ebi.ac.uk/soap/soaplab/graphics::dot</s:soaplabwsdl>
+  </s:processor>
+  <s:processor name="ImageFormat">
+    <s:stringconstant>png</s:stringconstant>
+  </s:processor>
   <s:link source="GINumber" sink="LLIDFromGi:in0" />
   <s:link source="LLIDFromGi:result" sink="LocusLink" />
   <s:link source="GINumber" sink="TitleFromGi:in0" />
@@ -86,9 +93,11 @@
   <s:link source="createSession:createSessionReturn" sink="getDot:sessionID" />
   <s:link source="createSession:createSessionReturn" sink="destroySession:sessionID" />
   <s:link source="CreateID:output" sink="addTerm:geneOntologyID" />
-  <s:link source="getDot:getDotReturn" sink="GODiagram" />
   <s:link source="FlattenList:outputlist" sink="GODBGetNameByID:in0" />
   <s:link source="GODBGetNameByID:result" sink="GOTerms" />
+  <s:link source="getDot:getDotReturn" sink="dot:dotfile_direct_data" />
+  <s:link source="ImageFormat:value" sink="dot:format" />
+  <s:link source="dot:outfile" sink="GraphImage" />
   <s:source name="GINumber">
     <s:metadata>
       <s:description>A GI number to seed the workflow with, an example would be the single string '4557225' (without the quotes)</s:description>
@@ -97,11 +106,11 @@
   <s:sink name="LocusLink" />
   <s:sink name="Title" />
   <s:sink name="GOTerms" />
-  <s:sink name="GODiagram">
+  <s:sink name="GraphImage">
     <s:metadata>
       <s:mimeTypes>
-        <s:mimeType>text/plain</s:mimeType>
-        <s:mimeType>text/x-graphviz</s:mimeType>
+        <s:mimeType>application/octet-stream</s:mimeType>
+        <s:mimeType>image/png</s:mimeType>
       </s:mimeTypes>
     </s:metadata>
   </s:sink>
