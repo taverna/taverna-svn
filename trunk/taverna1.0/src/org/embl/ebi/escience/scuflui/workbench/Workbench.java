@@ -171,8 +171,14 @@ public class Workbench extends JFrame {
         });
 	
 	// Create the desktop pane and menu
-	desktop = new ScrollableDesktopPane();
-	setContentPane(new JScrollPane(desktop));
+	if (System.getProperty("taverna.scrollDesktop") == null) {
+	    desktop = new JDesktopPane();
+	    setContentPane(desktop);
+	}
+	else {
+	    desktop = new ScrollableDesktopPane();
+	    setContentPane(new JScrollPane(desktop));
+	}
 	setJMenuBar(createMenuBar());
 	
 	// Add a filedrop listener to allow users to drag

@@ -97,7 +97,7 @@ public class DotView implements ScuflModelEventListener, java.io.Serializable {
 	
 	// Overall node style
 	dot.append(" node [              \n");
-	dot.append("  fontname=\"Courier\",         \n");
+	dot.append("  fontname=\"Helvetica\",         \n");
 	dot.append("  fontsize=\"10\",              \n");
 	dot.append("  fontcolor=\"black\",  \n");
 	// Only set record shape if we're using port views
@@ -111,8 +111,8 @@ public class DotView implements ScuflModelEventListener, java.io.Serializable {
   
 	// Overall edge style
 	dot.append(" edge [                         \n");
-	dot.append("  fontname=\"Courier\",         \n");
-	dot.append("  fontsize=\"10\",              \n");
+	dot.append("  fontname=\"Helvetica\",         \n");
+	dot.append("  fontsize=\"8\",              \n");
 	dot.append("  fontcolor=\"black\",  \n");
 	dot.append("  color=\"black\"                \n");
 	dot.append(" ];\n\n");
