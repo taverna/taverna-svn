@@ -17,6 +17,7 @@ import org.embl.ebi.escience.scufl.UnknownProcessorException;
 import org.embl.ebi.escience.scufl.enactor.EnactorProxy;
 import org.embl.ebi.escience.scufl.enactor.WorkflowInstance;
 import org.embl.ebi.escience.scufl.enactor.WorkflowSubmissionException;
+import java.awt.event.*;
 
 // Utility Imports
 import java.util.Iterator;
@@ -64,6 +65,7 @@ public class EnactorInvocation extends JPanel implements ScuflUIComponent {
     private JTabbedPane individualResults = new JTabbedPane();
     private JPanel resultsPanel = null;
     private JTabbedPane tabs = null;
+    private JButton saveResultsButton = null;
 
     /**
      * Get the workflow instance ID for this invocation
@@ -113,9 +115,7 @@ public class EnactorInvocation extends JPanel implements ScuflUIComponent {
     ensureGotResults();
 
     this.tabs.add("Results",individualResults);
-    if (System.getProperty("taverna.saveresults")!=null) {
-	saveResults();
-    }
+    saveResultsButton.setEnabled(true);
     // Get the output map and create new result detail panes
     Map resultMap = this.flowReceipt.getOutput();
     for (Iterator i = resultMap.keySet().iterator(); i.hasNext(); ) {
@@ -213,11 +213,25 @@ public class EnactorInvocation extends JPanel implements ScuflUIComponent {
 	setPreferredSize(new Dimension(100,100));
 	this.theModel = model;
 	this.flowReceipt = enactor.submitWorkflow(model, inputDataThings);
+	// Create a new toolbar for the save results option...
+	JToolBar toolbar = new JToolBar("Invocation tools");
+	toolbar.setFloatable(false);
+	toolbar.setRollover(true);
+	saveResultsButton = new JButton( "Save all results", org.embl.ebi.escience.scuflui.workbench.Workbench.saveIcon);
+	toolbar.add(saveResultsButton);
+	toolbar.add(Box.createHorizontalGlue());
+	saveResultsButton.setEnabled(false);
+	add(toolbar, BorderLayout.PAGE_START);
+	saveResultsButton.addActionListener(new ActionListener() {
+		public void actionPerformed(ActionEvent e) {
+		    EnactorInvocation.this.saveResults();
+		}
+	    });
 
     	// Create a tabbed pane for the status, results and provenance panels.
 	tabs = new JTabbedPane();
 	setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
-	add(tabs);
+	add(tabs, BorderLayout.CENTER);
 	final JPanel processorListPanel = new JPanel();
 	processorListPanel.setLayout(new BoxLayout(processorListPanel, BoxLayout.PAGE_AXIS));
 	processorListPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(),

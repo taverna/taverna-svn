@@ -9,6 +9,7 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.dnd.*;
+import java.awt.event.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -66,18 +67,19 @@ public class ResultItemPanel extends JPanel {
 		    return getPreferredSize();
 		}
 	    };
-		// Fix for look and feel problems with multiline labels.
-		structureTree.setRowHeight(0);
-        structureTree.setCellRenderer(DataThingTreeFactory.getRenderer());
+	// Fix for look and feel problems with multiline labels.
+	structureTree.setRowHeight(0);
+	structureTree.setCellRenderer(DataThingTreeFactory.getRenderer());
         new DataThingTreeTransferHandler(structureTree, DnDConstants.ACTION_COPY);
-        JLabel label = new JLabel("Select results from the tree to the left");
-        label.setPreferredSize(new Dimension(400,40));
-        label.setBackground(Color.white);
-		JScrollPane foo = new JScrollPane(label);
-		foo.setPreferredSize(new Dimension(100,100));
+	String viewerHelp = "<h2>Result browser</h2>Click on items in the tree to the left of this panel to select them and show their values in this area. Right clicking on an item within the tree will allow you to select different rendering options that might be available, for example displaying an XML file as text or as a navigable tree.";
+	JEditorPane help = new JEditorPane("text/html",viewerHelp);
+	help.setPreferredSize(new Dimension(200,100));
+	help.setEditable(false);
+	JScrollPane helpPanel = new JScrollPane(help);
+	helpPanel.getViewport().setBackground(java.awt.Color.WHITE);
         final JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,
                                                     new JScrollPane(structureTree),
-                                                    foo);
+                                                    helpPanel);
 	splitPane.setDividerLocation(-1);
         boolean isEmptyCollection = false;
         Object data = theDataThing.getDataObject();
@@ -102,6 +104,7 @@ public class ResultItemPanel extends JPanel {
                                     ResultItemPanel.this.renderers, dataThing);
                             if (component != null) {
 				JScrollPane foo = new JScrollPane(component);
+				foo.getViewport().setBackground(java.awt.Color.WHITE);
 				foo.setPreferredSize(new Dimension(100,100));
                                 splitPane.setRightComponent(foo);
 				// Reset the widths of the split Pane to show the entire tree
@@ -208,7 +211,9 @@ public class ResultItemPanel extends JPanel {
                               try {
                                 JComponent component = renderer.getComponent(ResultItemPanel.this.renderers, nodeThing);
                                 if (ui != null) {
-                                  splitPane.setRightComponent(new JScrollPane(component));
+				    JScrollPane jp = new JScrollPane(component);
+				    jp.getViewport().setBackground(java.awt.Color.WHITE);
+				    splitPane.setRightComponent(jp);
                                 }
                               } catch (RendererException re) {
                                 // should be informing the user something is wrong
