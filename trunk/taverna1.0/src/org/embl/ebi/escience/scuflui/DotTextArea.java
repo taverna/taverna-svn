@@ -86,7 +86,7 @@ public class DotTextArea extends JTextArea
      * A name for this component
      */
     public String getName() {
-	return "Dot";
+	return "Dot text";
     }
 
 

@@ -86,7 +86,7 @@ public class XScuflTextArea extends JTextArea
      * A name for this component
      */
     public String getName() {
-	return "XScufl";
+	return "Workflow XML preview";
     }
 
 

@@ -114,21 +114,23 @@ public class Workbench extends JFrame {
      * in internal frames and waits for the user to load a model from file
      */
     public static void main(String[] args) {
+	
 	new SplashScreen(8000);
+	
 	// Load the test ontology for the annotation of workflow
 	// source and sink ports
 	try {
-	    System.out.println("Loading ontologies...");
 	    URL ontologyURL =
 		ClassLoader.getSystemResource("org/embl/ebi/escience/scufl/semantics/mygrid-reasoned-small.rdfs");
 	    RDFSParser.loadRDFSDocument(ontologyURL.openStream(), "internal test ontology");
-	    System.out.println("Done loading ontologies.");
 	}
 	catch (Exception ex) {
 	    System.out.println("Failed to load ontology data! "+ex.getMessage());
 	    ex.printStackTrace();
 	}
+	
 	Workbench workbench = new Workbench();
+	
 	// Treat any command line arguments as files to import into the workbench
 	for (int i = 0; i < args.length; i++) {
 	    try {
@@ -265,66 +267,36 @@ public class Workbench extends JFrame {
 
 	JMenu windowMenu = new JMenu("Tools and Workflow Invocation");
 	
-	JMenuItem explorerTableView = new JMenuItem("Advanced Scufl Explorer");
-	explorerTableView.addActionListener(new ActionListener() {
-		public void actionPerformed(ActionEvent e) {
-		    // Show a scufl explorer panel
-		    AdvancedModelExplorer thing = new AdvancedModelExplorer();
-		    GenericUIComponentFrame frame = new GenericUIComponentFrame(Workbench.this.model, thing);
-		    frame.setSize(600,300);
-		    Workbench.this.desktop.add(frame);
-		    frame.moveToFront();
-		}
-	    });
-	windowMenu.add(explorerTableView);
-
-	JMenuItem diagramView = new JMenuItem("Workflow Diagram");
-	diagramView.addActionListener(new ActionListener() {
-		public void actionPerformed(ActionEvent e) {
-		    // Show a scufl diagram panel
-		    ScuflDiagramPanel thing = new ScuflDiagramPanel();
-		    GenericUIComponentFrame frame = new GenericUIComponentFrame(Workbench.this.model, thing);
-		    Workbench.this.desktop.add(frame);
-		    frame.moveToFront();
-		}
-	    });
-	windowMenu.add(diagramView);
-
-	JMenuItem xscuflView = new JMenuItem("XScufl View");
-	xscuflView.addActionListener(new ActionListener() {
-		public void actionPerformed(ActionEvent e) {
-		    // Show an XScufl panel
-		    XScuflTextArea thing = new XScuflTextArea();
-		    GenericUIComponentFrame frame = new GenericUIComponentFrame(Workbench.this.model, thing);
-		    Workbench.this.desktop.add(frame);
-		    frame.moveToFront();
-		}
-	    });
-	windowMenu.add(xscuflView);
-
-	JMenuItem dotView = new JMenuItem("Dot View");
-	dotView.addActionListener(new ActionListener() {
-		public void actionPerformed(ActionEvent e) {
-		    // Show a Dot panel
-		    DotTextArea thing = new DotTextArea();
-		    GenericUIComponentFrame frame = new GenericUIComponentFrame(Workbench.this.model, thing);
-		    Workbench.this.desktop.add(frame);
-		    frame.moveToFront();
-		}
-	    });
-	windowMenu.add(dotView);
-
-	JMenuItem servicePanel = new JMenuItem("Service Panel");
-	servicePanel.addActionListener(new ActionListener() {
-		public void actionPerformed(ActionEvent e) {
-		    // Show a service selection panel
-		    ScavengerTreePanel thing = new ScavengerTreePanel();
-		    GenericUIComponentFrame frame = new GenericUIComponentFrame(Workbench.this.model, thing);
-		    Workbench.this.desktop.add(frame);
-		    frame.moveToFront();
-		}
-	    });
-	windowMenu.add(servicePanel);
+	// Use the component SPI to discover appropriate components for this menu
+	UIComponentRegistry registry = UIComponentRegistry.instance();
+	for (Iterator i = registry.getComponents().keySet().iterator(); i.hasNext();) {
+	    final String itemName = (String)i.next();
+	    try {
+		final Class itemClass = Class.forName((String)registry.getComponents().get(itemName));
+		JMenuItem menuItem = new JMenuItem(itemName);
+		menuItem.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent ae) {
+			    try {
+				ScuflUIComponent thing = (ScuflUIComponent)itemClass.newInstance();
+				GenericUIComponentFrame frame = new GenericUIComponentFrame(Workbench.this.model, thing);
+				frame.setSize(400,400);
+				Workbench.this.desktop.add(frame);
+				frame.moveToFront();
+			    }
+			    catch (InstantiationException ie) {
+				//
+			    }
+			    catch (IllegalAccessException iae) {
+				//
+			    }
+			}
+		    });
+		windowMenu.add(menuItem);
+	    }
+	    catch (Exception ex) {
+		//
+	    }
+	}
 
 	JMenuItem thingBuilder = new JMenuItem("Run workflow");
 	thingBuilder.addActionListener(new ActionListener() {

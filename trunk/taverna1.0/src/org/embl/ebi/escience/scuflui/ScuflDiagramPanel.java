@@ -233,7 +233,7 @@ public class ScuflDiagramPanel extends JPanel
     }
 
     public String getName() {
-	return "Diagram panel";
+	return "Workflow diagram";
     }
 
 }
