@@ -114,8 +114,8 @@ public class WorkflowProcessor extends Processor implements java.io.Serializable
 			    // Only throw a new event up if nothing has changed in the port
 			    // list, if something has been changed then the parent workflow
 			    // will already have been kicked by the port creation or destruction
-			    fireModelEvent(new MinorScuflModelEvent(WorkflowProcessor.this, 
-								    "Underlying workflow changed"));
+			    fireModelEvent(new ScuflModelEvent(WorkflowProcessor.this, 
+							       "Underlying workflow changed"));
 			}
 		    }
 		    catch (PortCreationException pce) {
@@ -139,7 +139,7 @@ public class WorkflowProcessor extends Processor implements java.io.Serializable
 	for (int i = 0; i < outputs.length; i++) {
 	    // Create a new output port if it doesn't already exist
 	    try {
-		locatePort(outputs[i].getName());
+		locatePort(outputs[i].getName()).setSyntacticType(outputs[i].getSyntacticType());
 	    }
 	    catch (UnknownPortException upe) {
 		Port newPort = new OutputPort(this, outputs[i].getName());
@@ -154,7 +154,7 @@ public class WorkflowProcessor extends Processor implements java.io.Serializable
 	for (int i = 0; i < inputs.length; i++) {
 	    // Create a new input port if it doesn't already exist
 	    try {
-		locatePort(inputs[i].getName());
+		locatePort(inputs[i].getName()).setSyntacticType(inputs[i].getSyntacticType());
 	    }
 	    catch (UnknownPortException upe) {
 		Port newPort = new InputPort(this, inputs[i].getName());
