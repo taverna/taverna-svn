@@ -13,6 +13,8 @@ import org.embl.ebi.escience.scuflworkers.ProcessorFactory;
 import org.embl.ebi.escience.scuflworkers.wsdl.WSDLBasedProcessor;
 import java.lang.Class;
 import java.lang.String;
+import org.jdom.*;
+import org.embl.ebi.escience.scufl.XScufl;
 
 
 
@@ -21,7 +23,7 @@ import java.lang.String;
  * WSDLBasedProcessor nodes
  * @author Tom Oinn
  */
-public class WSDLBasedProcessorFactory implements ProcessorFactory {
+public class WSDLBasedProcessorFactory extends ProcessorFactory {
 
     String wsdlLocation, portTypeName, operationName, operationStyle, targetEndpoint;
 
@@ -58,16 +60,34 @@ public class WSDLBasedProcessorFactory implements ProcessorFactory {
     /**
      * Create a new WSDLBasedProcessor and add it to the model
      */
-    public Processor createProcessor(String name, ScuflModel model) 
-	throws ProcessorCreationException,
-	       DuplicateProcessorNameException {
-	Processor theProcessor = new WSDLBasedProcessor(model, name, this.wsdlLocation, this.operationName);
-	if (model!=null) {
-	    model.addProcessor(theProcessor);
-	}
-	return theProcessor;
-    }
+    /**
+       public Processor createProcessor(String name, ScuflModel model) 
+       throws ProcessorCreationException,
+       DuplicateProcessorNameException {
+       Processor theProcessor = new WSDLBasedProcessor(model, name, this.wsdlLocation, this.operationName);
+       if (model!=null) {
+       model.addProcessor(theProcessor);
+       }
+       return theProcessor;
+       }
+    */
 
+    /**
+     * Return the XML fragment for processors defined by this factory
+     */
+    /**
+       public Element getXMLFragment() {
+       Element spec = new Element("arbitrarywsdl",XScufl.XScuflNS);
+       Element wsdl = new Element("wsdl",XScufl.XScuflNS);
+       Element operation = new Element("operation",XScufl.XScuflNS);
+       wsdl.setText(this.wsdlLocation);
+       operation.setText(this.operationName);
+       spec.addContent(wsdl);
+       spec.addContent(operation);
+       return spec;
+       }
+    */
+    
     /**
      * Return a description of the factory
      */

@@ -6,7 +6,7 @@ import org.embl.ebi.escience.scufl.ProcessorCreationException;
 import org.embl.ebi.escience.scufl.ScuflModel;
 import org.embl.ebi.escience.scufl.XScufl;
 import org.embl.ebi.escience.scufl.parser.XScuflFormatException;
-import org.embl.ebi.escience.scuflworkers.XMLHandler;
+import org.embl.ebi.escience.scuflworkers.*;
 
 // JDOM Imports
 import org.jdom.Element;
@@ -32,7 +32,14 @@ public class SoaplabXMLHandler implements XMLHandler {
 	spec.setText(slp.getEndpoint().toString());
 	return spec;
     }
-    
+
+    public Element elementForFactory(ProcessorFactory pf){
+	SoaplabProcessorFactory slpf = (SoaplabProcessorFactory)pf;
+	Element spec = new Element("soaplabwsdl",XScufl.XScuflNS);
+	spec.setText(slpf.getEndpoint());
+	return spec;
+    }
+   
     public Processor loadProcessorFromXML(Element processorNode, ScuflModel model, String name)
 	throws ProcessorCreationException, 
 	       DuplicateProcessorNameException, 

@@ -21,7 +21,7 @@ import java.lang.String;
  * Implementation of ProcessorFactory that can create LocalServiceProcessor instances
  * @author Tom Oinn
  */
-public class LocalServiceProcessorFactory implements ProcessorFactory {
+public class LocalServiceProcessorFactory extends ProcessorFactory {
     
     private String className;
     private String descriptiveName;
@@ -35,6 +35,10 @@ public class LocalServiceProcessorFactory implements ProcessorFactory {
 	this.descriptiveName = descriptiveName;
     }
     
+    public String getWorkerClassName() {
+	return this.className;
+    }
+
     /**
      * Return a name
      */
@@ -45,15 +49,17 @@ public class LocalServiceProcessorFactory implements ProcessorFactory {
     /**
      * Create a new processor and add to the model
      */
-    public Processor createProcessor(String name, ScuflModel model)
-	throws ProcessorCreationException,
-	       DuplicateProcessorNameException {
-	Processor theProcessor = new LocalServiceProcessor(model, name, this.className);
-	if (model!=null) {
-	    model.addProcessor(theProcessor);
-	}
-	return theProcessor;
-    }
+    /**
+       public Processor createProcessor(String name, ScuflModel model)
+       throws ProcessorCreationException,
+       DuplicateProcessorNameException {
+       Processor theProcessor = new LocalServiceProcessor(model, name, this.className);
+       if (model!=null) {
+       model.addProcessor(theProcessor);
+       }
+       return theProcessor;
+       }
+    */
 
     /**
      * A description of the factory

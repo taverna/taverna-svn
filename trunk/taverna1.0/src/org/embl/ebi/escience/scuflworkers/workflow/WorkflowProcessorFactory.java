@@ -21,7 +21,7 @@ import java.lang.String;
  * WorkflowProcessor nodes
  * @author Tom Oinn
  */
-public class WorkflowProcessorFactory implements ProcessorFactory {
+public class WorkflowProcessorFactory extends ProcessorFactory {
     
     private String definitionURL;
 
@@ -51,15 +51,17 @@ public class WorkflowProcessorFactory implements ProcessorFactory {
     /**
      * Build a new WorkflowProcessor and add it to the model
      */
-    public Processor createProcessor(String name, ScuflModel model) 
-	throws ProcessorCreationException,
-	       DuplicateProcessorNameException {
-	Processor theProcessor = new WorkflowProcessor(model, name, this.definitionURL);
-	if (model!=null) {
-	    model.addProcessor(theProcessor);
-	}
-	return theProcessor;
-    }
+    /**
+       public Processor createProcessor(String name, ScuflModel model) 
+       throws ProcessorCreationException,
+       DuplicateProcessorNameException {
+       Processor theProcessor = new WorkflowProcessor(model, name, this.definitionURL);
+       if (model!=null) {
+       model.addProcessor(theProcessor);
+       }
+       return theProcessor;
+       }
+    */
 
     /**
      * Return a textual description of the factory

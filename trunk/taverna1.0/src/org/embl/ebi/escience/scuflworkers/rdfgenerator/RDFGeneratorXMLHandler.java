@@ -6,7 +6,7 @@ import org.embl.ebi.escience.scufl.ProcessorCreationException;
 import org.embl.ebi.escience.scufl.ScuflModel;
 import org.embl.ebi.escience.scufl.XScufl;
 import org.embl.ebi.escience.scufl.parser.XScuflFormatException;
-import org.embl.ebi.escience.scuflworkers.XMLHandler;
+import org.embl.ebi.escience.scuflworkers.*;
 
 // JDOM Imports
 import org.jdom.Element;
@@ -26,6 +26,12 @@ public class RDFGeneratorXMLHandler implements XMLHandler {
 	Element spec = new Element("rdfgenerator",XScufl.XScuflNS);
 	return spec;
     }
+
+    public Element elementForFactory(ProcessorFactory pf) {
+	Element spec = new Element("rdfgenerator",XScufl.XScuflNS);
+	return spec;
+    }
+	
     
     public Processor loadProcessorFromXML(Element processorNode, ScuflModel model, String name)
 	throws ProcessorCreationException, 

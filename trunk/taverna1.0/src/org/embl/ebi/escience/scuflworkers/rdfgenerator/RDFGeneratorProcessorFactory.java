@@ -21,7 +21,7 @@ import java.lang.String;
  * RDFGeneratingProcessor nodes
  * @author Tom Oinn
  */
-public class RDFGeneratorProcessorFactory implements ProcessorFactory {
+public class RDFGeneratorProcessorFactory extends ProcessorFactory {
 
     /**
      * Create a new factory configured with the specified
@@ -41,15 +41,17 @@ public class RDFGeneratorProcessorFactory implements ProcessorFactory {
     /**
      * Create a new RDFGeneratingProcessor and add it to the model
      */
-    public Processor createProcessor(String name, ScuflModel model)
-	throws ProcessorCreationException,
-	       DuplicateProcessorNameException {
-	Processor theProcessor = new RDFGeneratorProcessor(model, name);
-	if (model != null) {
-	    model.addProcessor(theProcessor);
-	}
-	return theProcessor;
-    }
+    /**
+       public Processor createProcessor(String name, ScuflModel model)
+       throws ProcessorCreationException,
+       DuplicateProcessorNameException {
+       Processor theProcessor = new RDFGeneratorProcessor(model, name);
+       if (model != null) {
+       model.addProcessor(theProcessor);
+       }
+       return theProcessor;
+       }
+    */
     
     /**
      * Return a textual description of the factory

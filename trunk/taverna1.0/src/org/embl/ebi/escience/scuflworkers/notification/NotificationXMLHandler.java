@@ -20,9 +20,15 @@ import org.jdom.Element;
  * @author Ananth Krishna
  */
 public class NotificationXMLHandler implements XMLHandler {
+
     public Element elementForProcessor(Processor processor) {
         NotificationProcessor cp = (NotificationProcessor) processor;
         Element element = new Element("notification", XScufl.XScuflNS);
+        return element;
+    } 
+
+    public Element elementForFactory(ProcessorFactory pf) {
+	Element element = new Element("notification", XScufl.XScuflNS);
         return element;
     } 
 

@@ -21,7 +21,7 @@ import java.lang.String;
  * SoaplabProcessor nodes
  * @author Tom Oinn
  */
-public class SoaplabProcessorFactory implements ProcessorFactory {
+public class SoaplabProcessorFactory extends ProcessorFactory {
 
     private String endpoint;
     private String applicationname;
@@ -54,15 +54,17 @@ public class SoaplabProcessorFactory implements ProcessorFactory {
     /**
      * Create a new SoaplabProcessor and add it to the model
      */
-    public Processor createProcessor(String name, ScuflModel model)
-	throws ProcessorCreationException,
-	       DuplicateProcessorNameException {
-	Processor theProcessor = new SoaplabProcessor(model, name, this.endpoint);
-	if (model!=null) {
-	    model.addProcessor(theProcessor);
-	}
-	return theProcessor;
-    }
+    /**
+       public Processor createProcessor(String name, ScuflModel model)
+       throws ProcessorCreationException,
+       DuplicateProcessorNameException {
+       Processor theProcessor = new SoaplabProcessor(model, name, this.endpoint);
+       if (model!=null) {
+       model.addProcessor(theProcessor);
+       }
+       return theProcessor;
+       }
+    */
     
     /**
      * Return a textual description of the factory

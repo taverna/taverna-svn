@@ -6,7 +6,7 @@ import org.embl.ebi.escience.scufl.ProcessorCreationException;
 import org.embl.ebi.escience.scufl.ScuflModel;
 import org.embl.ebi.escience.scufl.XScufl;
 import org.embl.ebi.escience.scufl.parser.XScuflFormatException;
-import org.embl.ebi.escience.scuflworkers.XMLHandler;
+import org.embl.ebi.escience.scuflworkers.*;
 
 // JDOM Imports
 import org.jdom.Element;
@@ -29,6 +29,10 @@ public class StringConstantXMLHandler implements XMLHandler {
 	return spec;
     }
     
+    public Element elementForFactory(ProcessorFactory pf) {
+	return new Element("stringconstant",XScufl.XScuflNS);
+    }
+
     public Processor loadProcessorFromXML(Element processorNode, ScuflModel model, String name)
 	throws ProcessorCreationException, 
 	       DuplicateProcessorNameException, 

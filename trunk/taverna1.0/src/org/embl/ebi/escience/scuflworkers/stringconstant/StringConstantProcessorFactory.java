@@ -21,7 +21,7 @@ import java.lang.String;
  * StringConstantProcessor nodes
  * @author Tom Oinn
  */
-public class StringConstantProcessorFactory implements ProcessorFactory {
+public class StringConstantProcessorFactory extends ProcessorFactory {
 
     private String value;
 
@@ -43,15 +43,17 @@ public class StringConstantProcessorFactory implements ProcessorFactory {
     /**
      * Create a new StringConstantProcessor and add it to the model
      */
-    public Processor createProcessor(String name, ScuflModel model)
-	throws ProcessorCreationException,
-	       DuplicateProcessorNameException {
-	Processor theProcessor = new StringConstantProcessor(model, name, this.value);
-	if (model!=null) {
-	    model.addProcessor(theProcessor);
-	}
-	return theProcessor;
-    }
+    /**
+       public Processor createProcessor(String name, ScuflModel model)
+       throws ProcessorCreationException,
+       DuplicateProcessorNameException {
+       Processor theProcessor = new StringConstantProcessor(model, name, this.value);
+       if (model!=null) {
+       model.addProcessor(theProcessor);
+       }
+       return theProcessor;
+       }
+    */
     
     /**
      * Return a textual description of the factory

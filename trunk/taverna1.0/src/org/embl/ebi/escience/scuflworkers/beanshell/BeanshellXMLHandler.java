@@ -2,7 +2,7 @@ package org.embl.ebi.escience.scuflworkers.beanshell;
 
 import org.embl.ebi.escience.scufl.*;
 import org.embl.ebi.escience.scufl.parser.XScuflFormatException;
-import org.embl.ebi.escience.scuflworkers.XMLHandler;
+import org.embl.ebi.escience.scuflworkers.*;
 
 // Utility Imports
 import java.util.Iterator;
@@ -49,6 +49,10 @@ public class BeanshellXMLHandler implements XMLHandler {
 	return spec;
     }
     
+    public Element elementForFactory(ProcessorFactory pf) {
+	return new Element("beanshell",XScufl.XScuflNS);
+    }
+
     public Processor loadProcessorFromXML(Element processorNode, ScuflModel model, String name)
 	throws ProcessorCreationException, 
 	       DuplicateProcessorNameException, 
@@ -56,8 +60,10 @@ public class BeanshellXMLHandler implements XMLHandler {
 	BeanshellProcessor bp = new BeanshellProcessor(model, name, "", new String[0], new String[0]);
 	Element beanshell = processorNode.getChild("beanshell",XScufl.XScuflNS);
 	Element scriptElement = beanshell.getChild("script",XScufl.XScuflNS);
-	String script = scriptElement.getTextTrim();
-	bp.setScript(script);
+	if (scriptElement != null) {
+	    String script = scriptElement.getTextTrim();
+	    bp.setScript(script);
+	}
 	// Handle inputs
 	Element inputList = beanshell.getChild("beanshellinputlist",XScufl.XScuflNS);
 	for (Iterator i = inputList.getChildren().iterator(); i.hasNext(); ) {
@@ -90,7 +96,8 @@ public class BeanshellXMLHandler implements XMLHandler {
 		throw new ProcessorCreationException("Unable to create port! "+dpne.getMessage());
 	    }
 	}
-	return new BeanshellProcessor(model, name, script, new String[0], new String[0]);
+	//return new BeanshellProcessor(model, name, script, new String[0], new String[0]);
+	return bp;
     }
 
 }

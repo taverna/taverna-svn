@@ -20,14 +20,28 @@ import org.embl.ebi.escience.scuflworkers.biomoby.BiomobyProcessor;
  * Implementation of ProcessorFactory that creates
  * BiomobyProcessor nodes. <p>
  *
- * @version $Id: BiomobyProcessorFactory.java,v 1.1 2004-04-01 14:31:34 mereden Exp $
+ * @version $Id: BiomobyProcessorFactory.java,v 1.2 2004-05-01 19:49:07 mereden Exp $
  * @author Martin Senger
  */
-public class BiomobyProcessorFactory implements ProcessorFactory {
+public class BiomobyProcessorFactory extends ProcessorFactory {
 
     private String mobyEndpoint;
     private String serviceName;
     private String authorityName;
+
+    public String getMobyEndpoint() {
+	return this.mobyEndpoint;
+    }
+
+    public String getServiceName() {
+	return this.serviceName;
+    }
+
+    public String getAuthorityName() {
+	return this.authorityName;
+    }
+    
+    
     /**
      * Create a new factory configured with the specified
      * endpoint base and application name, which will 
@@ -51,16 +65,18 @@ public class BiomobyProcessorFactory implements ProcessorFactory {
     /**
      * Create a new BiomobyProcessor and add it to the model
      */
-    public Processor createProcessor (String processorName, ScuflModel model)
-	throws ProcessorCreationException,
-	       DuplicateProcessorNameException {
-	Processor theProcessor =
-	    new BiomobyProcessor (model, processorName, authorityName, serviceName, mobyEndpoint);
-	if (model != null) {
-	    model.addProcessor (theProcessor);
-	}
-	return theProcessor;
-    }
+    /**
+       public Processor createProcessor (String processorName, ScuflModel model)
+       throws ProcessorCreationException,
+       DuplicateProcessorNameException {
+       Processor theProcessor =
+       new BiomobyProcessor (model, processorName, authorityName, serviceName, mobyEndpoint);
+       if (model != null) {
+       model.addProcessor (theProcessor);
+       }
+       return theProcessor;
+       }
+    */
     
     /**
      * Return a textual description of the factory

@@ -6,7 +6,7 @@ import org.embl.ebi.escience.scufl.ProcessorCreationException;
 import org.embl.ebi.escience.scufl.ScuflModel;
 import org.embl.ebi.escience.scufl.XScufl;
 import org.embl.ebi.escience.scufl.parser.XScuflFormatException;
-import org.embl.ebi.escience.scuflworkers.XMLHandler;
+import org.embl.ebi.escience.scuflworkers.*;
 
 // JDOM Imports
 import org.jdom.Element;
@@ -23,7 +23,7 @@ import java.lang.String;
 /**
  * Handles XML store and load for the biomoby processor. <p>
  *
- * @version $Id: BiomobyXMLHandler.java,v 1.2 2004-04-06 11:22:12 mereden Exp $
+ * @version $Id: BiomobyXMLHandler.java,v 1.3 2004-05-01 19:49:07 mereden Exp $
  * @author Martin Senger
  */
 public class BiomobyXMLHandler implements XMLHandler {
@@ -36,18 +36,31 @@ public class BiomobyXMLHandler implements XMLHandler {
 
     public Element elementForProcessor (Processor p) {
 	BiomobyProcessor bmproc = (BiomobyProcessor)p;
-	Element spec = new Element (MOBY_SPEC, XScufl.XScuflNS);
+	return getElement(bmproc.getMobyEndpoint(),
+			  bmproc.getServiceName(),
+			  bmproc.getAuthorityName());
+    }
 
+    public Element elementForFactory(ProcessorFactory pf) {
+	BiomobyProcessorFactory bpf = (BiomobyProcessorFactory)pf;
+	return getElement(bpf.getMobyEndpoint(),
+			  bpf.getServiceName(),
+			  bpf.getAuthorityName());
+    }
+    
+    private Element getElement(String mobyEndpoint, String serviceName, String authorityName) {
+	Element spec = new Element (MOBY_SPEC, XScufl.XScuflNS);
+	
 	Element mobyEndpointElement = new Element (MOBY_ENDPOINT, XScufl.XScuflNS);
-	mobyEndpointElement.setText (bmproc.getMobyEndpoint());
+	mobyEndpointElement.setText (mobyEndpoint);
 	spec.addContent (mobyEndpointElement);
 	
 	Element serviceNameElement = new Element (SERVICE_NAME, XScufl.XScuflNS);
-	serviceNameElement.setText (bmproc.getServiceName());
+	serviceNameElement.setText (serviceName);
 	spec.addContent (serviceNameElement);
 	
 	Element authorityNameElement = new Element (AUTHORITY_NAME, XScufl.XScuflNS);
-	authorityNameElement.setText (bmproc.getAuthorityName());
+	authorityNameElement.setText (authorityName);
 	spec.addContent (authorityNameElement);
 	
 	return spec;

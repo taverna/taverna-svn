@@ -21,7 +21,7 @@ import java.lang.String;
  * Beanshell nodes
  * @author Tom Oinn
  */
-public class BeanshellProcessorFactory implements ProcessorFactory {
+public class BeanshellProcessorFactory extends ProcessorFactory {
 
     /**
      * Create a new factory
@@ -40,15 +40,17 @@ public class BeanshellProcessorFactory implements ProcessorFactory {
     /**
      * Create a new BeanshellProcessor and add it to the model
      */
-    public Processor createProcessor(String name, ScuflModel model)
-	throws ProcessorCreationException,
-	       DuplicateProcessorNameException {
-	Processor theProcessor = new BeanshellProcessor(model, name, "", new String[0], new String[0]);
-	if (model!=null) {
-	    model.addProcessor(theProcessor);
-	}	
-	return theProcessor;
-    }
+    /**
+       public Processor createProcessor(String name, ScuflModel model)
+       throws ProcessorCreationException,
+       DuplicateProcessorNameException {
+       Processor theProcessor = new BeanshellProcessor(model, name, "", new String[0], new String[0]);
+       if (model!=null) {
+       model.addProcessor(theProcessor);
+       }	
+       return theProcessor;
+       }
+    */
     
     /**
      * Return a textual description of the factory

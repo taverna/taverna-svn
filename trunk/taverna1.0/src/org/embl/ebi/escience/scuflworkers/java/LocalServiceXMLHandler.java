@@ -11,7 +11,7 @@ import org.embl.ebi.escience.scufl.ProcessorCreationException;
 import org.embl.ebi.escience.scufl.ScuflModel;
 import org.embl.ebi.escience.scufl.XScufl;
 import org.embl.ebi.escience.scufl.parser.XScuflFormatException;
-import org.embl.ebi.escience.scuflworkers.XMLHandler;
+import org.embl.ebi.escience.scuflworkers.*;
 
 // JDOM Imports
 import org.jdom.Element;
@@ -31,6 +31,13 @@ public class LocalServiceXMLHandler implements XMLHandler {
 	LocalServiceProcessor lsp = (LocalServiceProcessor)p;
 	Element spec = new Element("local",XScufl.XScuflNS);
 	spec.setText(lsp.getWorkerClassName());
+	return spec;
+    }
+    
+    public Element elementForFactory(ProcessorFactory pf) {
+	LocalServiceProcessorFactory lspf = (LocalServiceProcessorFactory)pf;
+	Element spec = new Element("local",XScufl.XScuflNS);
+	spec.setText(lspf.getWorkerClassName());
 	return spec;
     }
     

@@ -11,17 +11,18 @@ import org.embl.ebi.escience.scufl.*;
  * @author Justin Ferris
  * @author Ananth Krishna
  */
-public class NotificationProcessorFactory implements ProcessorFactory {
-  
-    public Processor createProcessor(String name, ScuflModel model)
-	    throws ProcessorCreationException,
-	           DuplicateProcessorNameException {
-        NotificationProcessor processor = new NotificationProcessor(model, name);
-        if(model != null) {
-            model.addProcessor(processor);
-        }
-        return processor;
-    }
+public class NotificationProcessorFactory extends ProcessorFactory {
+    /**
+       public Processor createProcessor(String name, ScuflModel model)
+       throws ProcessorCreationException,
+       DuplicateProcessorNameException {
+       NotificationProcessor processor = new NotificationProcessor(model, name);
+       if(model != null) {
+       model.addProcessor(processor);
+       }
+       return processor;
+       }
+    */
 
     public String getProcessorDescription() {
         return "A Notification Processor";

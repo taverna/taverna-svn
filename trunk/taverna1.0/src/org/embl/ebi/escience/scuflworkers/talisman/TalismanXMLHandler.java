@@ -6,12 +6,13 @@ import org.embl.ebi.escience.scufl.ProcessorCreationException;
 import org.embl.ebi.escience.scufl.ScuflModel;
 import org.embl.ebi.escience.scufl.XScufl;
 import org.embl.ebi.escience.scufl.parser.XScuflFormatException;
-import org.embl.ebi.escience.scuflworkers.XMLHandler;
+import org.embl.ebi.escience.scuflworkers.*;
 
 // JDOM Imports
 import org.jdom.Element;
 
 import org.embl.ebi.escience.scuflworkers.talisman.TalismanProcessor;
+import org.embl.ebi.escience.scuflworkers.talisman.TalismanProcessorFactory;
 import java.lang.String;
 
 
@@ -30,6 +31,16 @@ public class TalismanXMLHandler implements XMLHandler {
 	spec.addContent(tscript);
 	return spec;
     }
+    
+    public Element elementForFactory(ProcessorFactory pf) {
+	TalismanProcessorFactory tpf = (TalismanProcessorFactory)pf;
+	Element spec = new Element("talisman",XScufl.XScuflNS);
+	Element tscript = new Element("tscript",XScufl.XScuflNS);
+	tscript.setText(tpf.getTScriptURL());
+	spec.addContent(tscript);
+	return spec;	
+    }
+
     
     public Processor loadProcessorFromXML(Element processorNode, ScuflModel model, String name)
 	throws ProcessorCreationException, 

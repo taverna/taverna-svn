@@ -30,6 +30,15 @@ public interface XMLHandler {
     public Element elementForProcessor(Processor p);
 
     /**
+     * Return the spec element for a given ProcessorFactory.
+     * In reality each XML handler will be given only a particular
+     * subclass of the ProcessorFactory to deal with so
+     * you can reasonably cast it to your specific implementation
+     * straight off to get factory specific data out.
+     */
+    public Element elementForFactory(ProcessorFactory pf);
+
+    /**
      * Create a new processor from the given chunk of XML
      */
      public Processor loadProcessorFromXML(Element processorNode, ScuflModel model, String name)

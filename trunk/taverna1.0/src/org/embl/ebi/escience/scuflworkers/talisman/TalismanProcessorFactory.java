@@ -21,7 +21,7 @@ import java.lang.String;
  * TalismanProcessor nodes
  * @author Tom Oinn
  */
-public class TalismanProcessorFactory implements ProcessorFactory {
+public class TalismanProcessorFactory extends ProcessorFactory {
 
     private String scriptURL;
 
@@ -34,6 +34,13 @@ public class TalismanProcessorFactory implements ProcessorFactory {
     }
     
     /**
+     * Get the script URL
+     */
+    public String getTScriptURL() {
+	return this.scriptURL;
+    }
+
+    /**
      * Return the leaf of the path as the factory name
      */
     public String toString() {
@@ -44,15 +51,17 @@ public class TalismanProcessorFactory implements ProcessorFactory {
     /**
      * Create a new SoaplabProcessor and add it to the model
      */
-    public Processor createProcessor(String name, ScuflModel model)
-	throws ProcessorCreationException,
-	       DuplicateProcessorNameException {
-	Processor theProcessor = new TalismanProcessor(model, name, this.scriptURL);
-	if (model!=null) {
-	    model.addProcessor(theProcessor);
-	}
-	return theProcessor;
-    }
+    /**
+       public Processor createProcessor(String name, ScuflModel model)
+       throws ProcessorCreationException,
+       DuplicateProcessorNameException {
+       Processor theProcessor = new TalismanProcessor(model, name, this.scriptURL);
+       if (model!=null) {
+       model.addProcessor(theProcessor);
+       }
+       return theProcessor;
+       }
+    */
     
     /**
      * Return a textual description of the factory
