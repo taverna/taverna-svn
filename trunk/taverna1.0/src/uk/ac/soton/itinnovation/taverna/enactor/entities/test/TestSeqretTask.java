@@ -1,12 +1,23 @@
 
 package uk.ac.soton.itinnovation.taverna.enactor.entities.test;
 
-import java.io.*;
-import junit.framework.*;
-import org.embl.ebi.escience.scufl.*; 
-import uk.ac.soton.itinnovation.mygrid.workflow.enactor.io.*;
+import junit.framework.TestCase;
+import org.embl.ebi.escience.scufl.Port;
+import org.embl.ebi.escience.scufl.ScuflModel;
+import org.embl.ebi.escience.scufl.SoaplabProcessor;
 import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.eventservice.TaskStateMessage;
-import uk.ac.soton.itinnovation.taverna.enactor.entities.*;
+import uk.ac.soton.itinnovation.mygrid.workflow.enactor.io.Input;
+import uk.ac.soton.itinnovation.mygrid.workflow.enactor.io.Part;
+import uk.ac.soton.itinnovation.taverna.enactor.entities.PortTask;
+import uk.ac.soton.itinnovation.taverna.enactor.entities.SeqretTask;
+
+// IO Imports
+import java.io.FileInputStream;
+
+import java.lang.Exception;
+import java.lang.String;
+import java.lang.System;
+
 
 
 public class TestSeqretTask extends TestCase {

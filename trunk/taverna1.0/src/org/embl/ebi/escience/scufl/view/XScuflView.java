@@ -102,6 +102,25 @@ public class XScuflView implements ScuflModelEventListener {
 	    catch (ClassCastException cce) {
 		//
 	    }
+	    // Catch WSDLBasedProcessor
+	    try {
+		WSDLBasedProcessor wsdlp = (WSDLBasedProcessor)processors[i];
+		Element spec = new Element("arbitrarywsdl",scuflNS());
+		Element wsdl = new Element("wsdl",scuflNS());
+		Element port = new Element("porttype",scuflNS());
+		Element operation = new Element("operation",scuflNS());
+		wsdl.setText(wsdlp.getWSDLLocation());
+		port.setText(wsdlp.getPortTypeName());
+		operation.setText(wsdlp.getOperationName());
+		spec.addContent(wsdl);
+		spec.addContent(port);
+		spec.addContent(operation);
+		processor.addContent(spec);
+		root.addContent(processor);
+	    }
+	    catch (ClassCastException cce) {
+		//
+	    }
 	}
 
 	// Create elements corresponding to data constraints

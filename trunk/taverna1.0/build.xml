@@ -220,5 +220,12 @@
 		</java>
 	</target> 
 	
+	<!-- Test the WSDL based processor creation -->
+	<target name="test.wsdlprocessor" depends="jar">
+		<java classname="org.embl.ebi.escience.scufl.test.WSDLBasedProcessorCreationTest" fork="yes">
+			<classpath refid="compile-classpath"/>
+		</java>
+	</target>
+	
 </project>
 

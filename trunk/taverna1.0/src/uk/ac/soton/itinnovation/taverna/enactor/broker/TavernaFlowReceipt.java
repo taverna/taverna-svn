@@ -24,39 +24,20 @@
 //      Created for Project :   MYGRID
 //      Dependencies        :
 //
-//      Last commit info    :   $Author: dmarvin $
-//                              $Date: 2003-04-12 13:18:08 $
-//                              $Revision: 1.1 $
+//      Last commit info    :   $Author: mereden $
+//                              $Date: 2003-04-17 15:21:47 $
+//                              $Revision: 1.2 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 
 package uk.ac.soton.itinnovation.taverna.enactor.broker;
 
-
-//java imports
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.Properties;
-
-//third party imports
-
-//local imports
-import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.entities.graph.DiGraph;
-import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.entities.graph.GraphNode;
-import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.entities.Flow;
-import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.entities.FlowStates;
-import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.eventservice.FlowEvent;
-import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.broker.FlowReceipt;
-import uk.ac.soton.itinnovation.mygrid.workflow.enactor.io.Part;
-import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.entities.Task;
-import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.entities.taskstate.TaskState;
-import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.broker.FlowCallback;
-import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.broker.FlowMessage;
-
 import org.apache.log4j.Logger;
+import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.broker.FlowReceipt;
+import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.entities.Flow;
+import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.eventservice.FlowEvent;
 
-
+import uk.ac.soton.itinnovation.taverna.enactor.broker.WorkflowSubmitException;
 /**
  * Represents a receipt for a workflow submitted by the client
  */

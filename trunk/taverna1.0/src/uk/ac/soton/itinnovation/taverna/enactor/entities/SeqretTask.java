@@ -24,34 +24,37 @@
 //      Created for Project :   MYGRID
 //      Dependencies        :
 //
-//      Last commit info    :   $Author: dmarvin $
-//                              $Date: 2003-04-13 11:12:01 $
-//                              $Revision: 1.2 $
+//      Last commit info    :   $Author: mereden $
+//                              $Date: 2003-04-17 15:21:48 $
+//                              $Revision: 1.3 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 
 package uk.ac.soton.itinnovation.taverna.enactor.entities;
 
-import java.net.URL;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Iterator;
-
-import org.apache.log4j.*;
-
-import uk.ac.soton.itinnovation.taverna.enactor.dispatcher.TavernaInvocationDescription;
-import uk.ac.soton.itinnovation.mygrid.workflow.enactor.invocation.wsdl.WSDLReader;
+import org.apache.log4j.Logger;
+import org.embl.ebi.escience.scufl.Processor;
+import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.entities.graph.GraphNode;
+import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.eventservice.TaskStateMessage;
 import uk.ac.soton.itinnovation.mygrid.workflow.enactor.invocation.WSDLServiceInvocation;
-import uk.ac.soton.itinnovation.mygrid.workflow.enactor.io.Part;
 import uk.ac.soton.itinnovation.mygrid.workflow.enactor.io.Input;
 import uk.ac.soton.itinnovation.mygrid.workflow.enactor.io.Output;
-import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.entities.graph.GraphNode;
-import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.entities.Task;
-import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.eventservice.TaskStateMessage;
-import uk.ac.soton.itinnovation.taverna.enactor.entities.TavernaTask;
-import uk.ac.soton.itinnovation.taverna.enactor.monitor.TavernaTaskMonitor;
+import uk.ac.soton.itinnovation.mygrid.workflow.enactor.io.Part;
+import uk.ac.soton.itinnovation.taverna.enactor.dispatcher.TavernaInvocationDescription;
 
-import org.embl.ebi.escience.scufl.Processor;
+// Utility Imports
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
+// Network Imports
+import java.net.URL;
+
+import uk.ac.soton.itinnovation.taverna.enactor.entities.PortTask;
+import uk.ac.soton.itinnovation.taverna.enactor.entities.ProcessorTask;
+import java.lang.String;
+
+
 
 public class SeqretTask extends ProcessorTask {
 	

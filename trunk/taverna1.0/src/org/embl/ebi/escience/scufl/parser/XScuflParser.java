@@ -194,7 +194,7 @@ public class XScuflParser {
 	    }
 	    boolean foundSpec = false;
 	    
-	    // Only handles soaplabwsdl at the moment
+	    // Handle soaplab
 	    Element soaplab = processorNode.getChild("soaplabwsdl",namespace);
 	    if (soaplab != null) {
 		foundSpec = true;
@@ -208,6 +208,16 @@ public class XScuflParser {
 		    throw new XScuflFormatException("The url specified for the soaplab endpoint for '"+name+"' was invalid : "+mue);
 		}
 		model.addProcessor(new SoaplabProcessor(model, name, endpoint));
+	    }
+
+	    // Handle arbitrarywsdl
+	    Element wsdlProcessor = processorNode.getChild("arbitrarywsdl",namespace);
+	    if (wsdlProcessor != null && !foundSpec) {
+		foundSpec = true;
+	        String wsdlLocation = wsdlProcessor.getChild("wsdl",namespace).getTextTrim();
+		String portTypeName = wsdlProcessor.getChild("porttype",namespace).getTextTrim();
+		String operationName = wsdlProcessor.getChild("operation",namespace).getTextTrim();
+		model.addProcessor(new WSDLBasedProcessor(model, name, wsdlLocation, portTypeName, operationName));
 	    }
 	    
 	    // If no specifier has been found then throw an exception
