@@ -29,9 +29,10 @@ import org.jdom.output.*;
  * COMMENT DataThingConstructionPanel
  * 
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover</a>
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
-public class DataThingConstructionPanel extends JPanel implements ScuflUIComponent, ScuflModelEventListener
+public class DataThingConstructionPanel extends JPanel implements ScuflUIComponent,
+		ScuflModelEventListener
 {
 	private interface PanelTreeNode
 	{
@@ -144,7 +145,7 @@ public class DataThingConstructionPanel extends JPanel implements ScuflUICompone
 			if (panel == null)
 			{
 				panel = new JPanel(new BorderLayout());
-				
+
 				editor = new JTextArea();
 				editor.setEditable(false);
 				editor.setPreferredSize(new Dimension(100, 100));
@@ -225,6 +226,39 @@ public class DataThingConstructionPanel extends JPanel implements ScuflUICompone
 			}
 		};
 
+		private ActionListener createFilesAction = new ActionListener()
+		{
+			public void actionPerformed(ActionEvent e)
+			{
+				fileChooser.setMultiSelectionEnabled(true);
+				int returnVal = fileChooser.showOpenDialog(DataThingConstructionPanel.this);
+				if (returnVal == JFileChooser.APPROVE_OPTION)
+				{
+					File[] files = fileChooser.getSelectedFiles();
+					for (int index = 0; index < files.length; index++)
+					{
+						try
+						{
+							BufferedReader reader = new BufferedReader(new FileReader(files[index]));
+							StringBuffer sb = new StringBuffer();
+							String s = null;
+							while ((s = reader.readLine()) != null)
+							{
+								sb.append(s);
+								sb.append("\n");
+							}
+							addInput(sb.toString());
+						}
+						catch (Exception exception)
+						{
+							exception.printStackTrace();
+						}
+					}
+				}
+				fileChooser.setMultiSelectionEnabled(false);				
+			}
+		};
+
 		public PortTreeNode(Port port)
 		{
 			super(port);
@@ -276,14 +310,14 @@ public class DataThingConstructionPanel extends JPanel implements ScuflUICompone
 			if (portPanel == null)
 			{
 				portPanel = new JPanel(new BorderLayout(3, 3));
-				portPanel.setBorder(BorderFactory.createEmptyBorder(3,3,3,3));
-				
+				portPanel.setBorder(BorderFactory.createEmptyBorder(3, 3, 3, 3));
+
 				JPanel buttonPanel = new JPanel();
 				JLabel description = new JLabel();
 				JPanel descriptionPanel = new JPanel();
 
 				JButton addButton = new JButton("Create New Input Value");
-				JButton addFileListButton = new JButton("Load List of Inputs", ScuflIcons.openIcon);
+				JButton addFileListButton = new JButton("Create Inputs from Files", ScuflIcons.openIcon);
 
 				addButton.setAlignmentX(CENTER_ALIGNMENT);
 				addButton.setMaximumSize(new Dimension(Integer.MAX_VALUE, addButton
@@ -293,35 +327,7 @@ public class DataThingConstructionPanel extends JPanel implements ScuflUICompone
 				addFileListButton.setMaximumSize(new Dimension(Integer.MAX_VALUE, addFileListButton
 						.getPreferredSize().height));
 				addFileListButton.setAlignmentX(CENTER_ALIGNMENT);
-				addFileListButton.addActionListener(new ActionListener()
-				{
-					public void actionPerformed(ActionEvent e)
-					{
-						try
-						{
-							int returnVal = fileChooser.showOpenDialog(DataThingConstructionPanel.this);
-							if (returnVal == JFileChooser.APPROVE_OPTION)
-							{
-								File file = fileChooser.getSelectedFile();
-								//FileFilter fileFilter =
-								// fileChooser.getFileFilter();
-
-								BufferedReader reader = new BufferedReader(new FileReader(file));
-								String s = null;
-								while ((s = reader.readLine()) != null)
-								{
-									addInput(s);
-								}
-							}
-						}
-						catch (Exception ex)
-						{
-							JOptionPane.showMessageDialog(null,
-									"Problem opening content from web : \n" + ex.getMessage(),
-									"Exception!", JOptionPane.ERROR_MESSAGE);
-						}
-					}
-				});
+				addFileListButton.addActionListener(createFilesAction);
 
 				buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.Y_AXIS));
 				buttonPanel.add(addButton);
@@ -375,14 +381,12 @@ public class DataThingConstructionPanel extends JPanel implements ScuflUICompone
 			{
 				try
 				{
-					String name = (String) JOptionPane.showInputDialog(null,
-							"URL to open?", "URL Required", JOptionPane.QUESTION_MESSAGE,
-							null, null, "http://");
+					String name = (String) JOptionPane.showInputDialog(null, "URL to open?",
+							"URL Required", JOptionPane.QUESTION_MESSAGE, null, null, "http://");
 					if (name != null)
 					{
 						InputStream is = new URL(name).openStream();
-						BufferedReader reader = new BufferedReader(
-								new InputStreamReader(is));
+						BufferedReader reader = new BufferedReader(new InputStreamReader(is));
 						StringBuffer sb = new StringBuffer();
 						String s = null;
 						while ((s = reader.readLine()) != null)
@@ -395,14 +399,13 @@ public class DataThingConstructionPanel extends JPanel implements ScuflUICompone
 				}
 				catch (Exception ex)
 				{
-					JOptionPane.showMessageDialog(null,
-							"Problem opening content from web : \n" + ex.getMessage(),
-							"Exception!", JOptionPane.ERROR_MESSAGE);
+					JOptionPane.showMessageDialog(null, "Problem opening content from web : \n"
+							+ ex.getMessage(), "Exception!", JOptionPane.ERROR_MESSAGE);
 				}
 
 			}
 		};
-		
+
 		private ActionListener loadFileAction = new ActionListener()
 		{
 			public void actionPerformed(ActionEvent e)
@@ -429,13 +432,12 @@ public class DataThingConstructionPanel extends JPanel implements ScuflUICompone
 				}
 				catch (Exception ex)
 				{
-					JOptionPane.showMessageDialog(null,
-							"Problem opening content from web : \n" + ex.getMessage(),
-							"Exception!", JOptionPane.ERROR_MESSAGE);
+					JOptionPane.showMessageDialog(null, "Problem opening content from web : \n"
+							+ ex.getMessage(), "Exception!", JOptionPane.ERROR_MESSAGE);
 				}
 			}
 		};
-		
+
 		private ActionListener removeAction = new ActionListener()
 		{
 			public void actionPerformed(ActionEvent e)
@@ -527,12 +529,13 @@ public class DataThingConstructionPanel extends JPanel implements ScuflUICompone
 			JMenuItem removeItem = new JMenuItem("Remove Input Value", ScuflIcons.deleteIcon);
 			removeItem.addActionListener(removeAction);
 
-			JMenuItem loadFileItem = new JMenuItem("Load Input Value from File", ScuflIcons.openIcon);
+			JMenuItem loadFileItem = new JMenuItem("Load Input Value from File",
+					ScuflIcons.openIcon);
 			loadFileItem.addActionListener(loadFileAction);
 
 			JMenuItem loadURLItem = new JMenuItem("Load Input Value from URL", ScuflIcons.openIcon);
 			loadFileItem.addActionListener(loadURLAction);
-			
+
 			menu.add(removeItem);
 			menu.add(loadFileItem);
 			menu.add(loadURLItem);
@@ -622,6 +625,7 @@ public class DataThingConstructionPanel extends JPanel implements ScuflUICompone
 			}
 		});
 
+		portTree.setRowHeight(0);
 		portTree.setCellRenderer(new InputRenderer());
 		portTree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
 		portTree.addTreeSelectionListener(new TreeSelectionListener()
@@ -722,12 +726,14 @@ public class DataThingConstructionPanel extends JPanel implements ScuflUICompone
 			model.removeListener(this);
 			this.model = null;
 			rootNode.removeAllChildren();
-			try {
-			    splitter.remove(splitter.getRightComponent());
+			try
+			{
+				splitter.remove(splitter.getRightComponent());
 			}
-			catch (NullPointerException npe) {
-			    // Can occur if the split window isn't populated
-			    // tmo, 17th feb 2004
+			catch (NullPointerException npe)
+			{
+				// Can occur if the split window isn't populated
+				// tmo, 17th feb 2004
 			}
 		}
 	}
@@ -795,7 +801,7 @@ public class DataThingConstructionPanel extends JPanel implements ScuflUICompone
 	 */
 	public String getName()
 	{
-		return "Enactor Launch";
+		return "Run Workflow";
 	}
 
 	/*

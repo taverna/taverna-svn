@@ -107,7 +107,7 @@ xembl service is actually maintained). Context menus on this component
 allow you to add new processors to the workflow, and also to add new
 scavengers - components that fetch sets of service factories - to the
 service panel</li>
-    <li>Enactor launch panel.<br>
+    <li>Run Workflow panel.<br>
 Allows you to specify inputs to the workflow and launch a local
 instance of the enactor. This is actually sufficiently functional for
 real use, but in particular for myGrid developers it provides a way to
@@ -252,20 +252,26 @@ scale to the window, but be aware that this is highly non optimized
 (read, horribly slow on some machines). </li>
     <li> <font color="#0000cc"><strong><a name="4m"></a>...run the
 workflow?</strong></font><br>
-In order to run a workflow you must open the Workflow Input Panel from
-the view menu. Into this you should be able to enter the input data,
-either editing it directly, loading from a file or loading from a URL.
-For information only you can view the resultant input document, or
-click the 'play' icon to launch the enactor locally. This will in turn
-show an enactor run dialog containing the statii of the processors,
-results assuming the workflow terminates successfully and provenance
-information in any case. </li>
+In order to run a workflow you must open the Run Workflow Panel from
+the Tools and Workflow Invocation menu. This panel displays a tree of
+all the input ports to the workflow. You can add any number of input
+values to each input port, either by creating new values, or by loading
+a selection of files as input values.  The input values will appear as 
+children to the inpurt port in the tree, and each can be clicked on to
+bring up an editor, where you can load in a value from a file or from
+a url or remove that input value.
+The root of the tree, Input Document, allows you to view the input
+document to the workflow, and to load and save it. The Run Workflow 
+button will launch the enactor locally, and in turn show an enactor run
+dialog containing the statii of the processors, results assuming the 
+workflow terminates successfully and provenance information in any case.
+</li>
   </ul>
 </blockquote>
 <h2><a name="5"></a>Changing the way results are viewed</h2>
 <blockquote>
   <p>After launching a workflow, there will be lots of data flowing
-through it. The Workflow Input Panel opens an enactor run dialog box
+through it. The Run Workflow Panel opens an enactor run dialog box
 containing information about the current state of each processor. If
 the workflow has terminated successfully, this will also display the
 final results of the workflow.&nbsp; The final result, and intermediate
