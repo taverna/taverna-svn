@@ -13,6 +13,7 @@ import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 import org.embl.ebi.escience.scufl.*;
 
+import org.embl.ebi.escience.scuflui.ScuflContextMenuFactory;
 import org.embl.ebi.escience.scuflui.ScuflModelExplorerRenderer;
 /**
  * A static method to generate appropriate menu items
@@ -47,13 +48,13 @@ public class LinkingMenus {
 	theMenu.add(title);
 	theMenu.addSeparator();
 	JMenu workflowSinks = new JMenu("Workflow outputs");
-	workflowSinks.setIcon(ScuflModelExplorerRenderer.outputicon);
+	workflowSinks.setIcon(ScuflModelExplorerRenderer.outputIcon);
 	theMenu.add(workflowSinks);
 	// Add the possible workflow sink ports
 	Port[] wsp = model.getWorkflowSinkPorts();
 	for (int i = 0; i < wsp.length; i++) {
 	    JMenuItem wspitem = new JMenuItem(wsp[i].getName(), 
-					      ScuflModelExplorerRenderer.outputicon);
+					      ScuflModelExplorerRenderer.outputIcon);
 	    final Port toPort = wsp[i];
 	    wspitem.addActionListener(new ActionListener() {
 		    public void actionPerformed(ActionEvent ae) {
@@ -73,13 +74,13 @@ public class LinkingMenus {
 	for (int i = 0; i < processors.length; i++) {
 	    ImageIcon icon = null;
 	    if (processors[i] instanceof SoaplabProcessor) {
-		icon = ScuflModelExplorerRenderer.soaplabicon;
+		icon = ScuflModelExplorerRenderer.soaplabIcon;
 	    }
 	    else if (processors[i] instanceof WSDLBasedProcessor) {
-		icon = ScuflModelExplorerRenderer.wsdlicon;
+		icon = ScuflModelExplorerRenderer.wsdlIcon;
 	    }
 	    else if (processors[i] instanceof TalismanProcessor) {
-		icon = ScuflModelExplorerRenderer.talismanicon;
+		icon = ScuflModelExplorerRenderer.talismanIcon;
 	    }
 	    JMenu processorMenu = new JMenu(processors[i].getName());
 	    processorMenu.setIcon(icon);
@@ -88,7 +89,7 @@ public class LinkingMenus {
 	    InputPort[] inputs = processors[i].getInputPorts();
 	    for (int j = 0; j < inputs.length; j++) {
 		final Port toPort = inputs[j];
-		final JMenuItem ip = new JMenuItem(inputs[j].getName(), ScuflModelExplorerRenderer.inputporticon);
+		final JMenuItem ip = new JMenuItem(inputs[j].getName(), ScuflModelExplorerRenderer.inputPortIcon);
 		processorMenu.add(ip);
 		ip.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ae) {

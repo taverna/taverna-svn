@@ -40,7 +40,7 @@ public class ScavengerTreeRenderer extends ScuflModelExplorerRenderer {
 	Object userObject = ((DefaultMutableTreeNode)value).getUserObject();
 	if (userObject instanceof ProcessorFactory) {
 	    if (userObject instanceof SoaplabProcessorFactory) {
-		setIcon(soaplabicon);
+		setIcon(soaplabIcon);
 	    }
 	}
 	return this;

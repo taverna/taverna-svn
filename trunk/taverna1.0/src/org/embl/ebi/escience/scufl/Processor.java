@@ -9,6 +9,7 @@ package org.embl.ebi.escience.scufl;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.regex.Pattern;
 
 import org.embl.ebi.escience.scufl.DataConstraint;
 import org.embl.ebi.escience.scufl.DuplicateProcessorNameException;
@@ -55,14 +56,12 @@ public abstract class Processor implements java.io.Serializable {
     }
     
     /**
-     * Construct the processor with the given name and parent, replacing
-     * any occurences of ':' in the name with '.' to avoid general confusion
+     * Construct the processor with the given name and parent, complaining
+     * if the name doesn't conform to [a-zA-Z_0-9]
      */
     public Processor(ScuflModel model, String name) 
 	throws ProcessorCreationException,
 	       DuplicateProcessorNameException {
-	name = name.replace(':','_').replace(' ','_');
-	
 	// Check for nulls
 	if (model == null) {
 	    throw new ProcessorCreationException("Cannot create a processor with the model as null");
@@ -72,6 +71,10 @@ public abstract class Processor implements java.io.Serializable {
 	}
 	if (name.equals("")) {
 	    throw new ProcessorCreationException("Refusing to create a processor with name ''");
+	}
+	if (Pattern.matches("\\w++",name) == false) {
+	    throw new ProcessorCreationException("Name contains an invalid character,\n"+
+						 "names must match [a-zA-Z_0-9].");
 	}
 	// Check for duplicate names
 	Processor[] existing_processors = model.getProcessors();
