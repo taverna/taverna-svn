@@ -47,6 +47,7 @@ import org.jdom.*;
 import java.lang.String;
 import org.embl.ebi.escience.scuflworkers.*;
 import java.awt.*;
+import java.io.File;
 
 
 

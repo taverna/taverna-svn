@@ -50,9 +50,13 @@ public class ScavengerTreePanel extends JPanel
 	};
     
     public ScavengerTreePanel() {
+	this(true);
+    }
+
+    public ScavengerTreePanel(boolean populated) {
 	super();
 	setLayout(new BorderLayout());
-	tree = new ScavengerTree(true);
+	tree = new ScavengerTree(populated);
 	JScrollPane treePane = new JScrollPane(tree);
 	treePane.setPreferredSize(new Dimension(0,0));
 	add(treePane, BorderLayout.CENTER);
@@ -72,7 +76,23 @@ public class ScavengerTreePanel extends JPanel
 	toolbar.add(watchLoads);
 	toolbar.add(Box.createHorizontalGlue());
 	add(toolbar, BorderLayout.PAGE_START);
-	
+	// Add the filedrop to the toolbar, we can't add it to the main
+	// panel because that's already looking out for drag and drop events
+	// from the explorer
+	new FileDrop(toolbar, new FileDrop.Listener() {
+		public void filesDropped(File[] files) {
+		    for (int i = 0; i < files.length; i++) {
+			try {
+			    ScavengerTreePanel.this.tree.addScavenger(new FileScavenger(files[i]));
+			}
+			catch (ScavengerCreationException sce) {
+			    sce.printStackTrace();
+			}
+		    }
+		}
+	    });
+
+
 	// Add an event listener to kick the contained tree
 	// into fetching processor factories from loaded
 	// workflows if the watchLoads checkbox is true

@@ -16,6 +16,7 @@ import org.embl.ebi.escience.scufl.*;
 import org.embl.ebi.escience.scufl.parser.*;
 import org.embl.ebi.escience.scuflworkers.*;
 import java.net.URL;
+import org.jdom.*;
 
 
 
@@ -26,9 +27,9 @@ import java.net.URL;
 public class WorkflowScavenger extends Scavenger {
 
     /**
-     * Create a new Talisman scavenger, the single parameter
+     * Create a new Workflow scavenger, the single parameter
      * should be resolvable to a location from which the 
-     * tscript could be fetched.
+     * definition could be fetched.
      */
     public WorkflowScavenger(String definitionURL)
 	throws ScavengerCreationException {
@@ -50,6 +51,33 @@ public class WorkflowScavenger extends Scavenger {
 	catch (Exception ex) {
 	    ex.printStackTrace();
 	}
+	doChildren(model);
+    }
+    
+    /**
+     * Create a new workflow scavenger from a JDOM Document and a name,
+     * the name is required because there's no way to infer this from
+     * the document, it's a property of the storage medium.
+     */
+    public WorkflowScavenger(Document doc, String workflowName) 
+	throws ScavengerCreationException {
+	super(new WorkflowProcessorFactory(doc.getRootElement()));	
+	ProcessorFactory rootPF = (ProcessorFactory)getUserObject();
+	rootPF.setName(workflowName);
+	ScuflModel model = new ScuflModel();
+	try {
+	    model.setOffline(true);
+	    XScuflParser.populate(doc,
+				  model, null);
+	    rootPF.setDescription(model.getDescription().getText());
+	}
+	catch (Exception ex) {
+	    ex.printStackTrace();
+	}
+	doChildren(model);
+    }
+
+    private void doChildren(ScuflModel model) {
 	Processor[] processors = model.getProcessors();
 	for (int i = 0; i < processors.length; i++) {
 	    // Create a new node for the factory corresponding to this processor
