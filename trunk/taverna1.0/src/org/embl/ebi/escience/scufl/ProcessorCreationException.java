@@ -12,9 +12,22 @@ package org.embl.ebi.escience.scufl;
  * @author Tom Oinn
  */
 public class ProcessorCreationException extends Exception {
+  public ProcessorCreationException()
+  {
+  }
 
-    public ProcessorCreationException(String the_message) {
-	super(the_message);
-    }
+  public ProcessorCreationException(String message)
+  {
+    super(message);
+  }
 
+  public ProcessorCreationException(Throwable cause)
+  {
+    super(cause);
+  }
+
+  public ProcessorCreationException(String message, Throwable cause)
+  {
+    super(message, cause);
+  }
 }

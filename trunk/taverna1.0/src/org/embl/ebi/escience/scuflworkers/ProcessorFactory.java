@@ -46,6 +46,10 @@ public abstract class ProcessorFactory {
 	wrapperElement.addContent(getXMLFragment());
 	try {
 	    Processor newProcessor = ProcessorHelper.loadProcessorFromXML(wrapperElement, model, name);
+    if(newProcessor == null) {
+      throw new ProcessorCreationException("Failed to find processor for: " + wrapperElement);
+    }
+    
 	    if (model != null) {
 		model.addProcessor(newProcessor);
 	    }
@@ -55,20 +59,20 @@ public abstract class ProcessorFactory {
 	    throw new ProcessorCreationException("Invalid internal XML representation!");
 	}
     };
-    
+
     /**
      * Describe the processor that would be created
      * by this factory were the createProcessor method
      * invoked
      */
     public abstract String getProcessorDescription();
-    
+
     /**
      * Return the Class object describing the processor
      * this factory would build
      */
     public abstract Class getProcessorClass();
-    
+
     /**
      * Return the XML 'spec' element that this factory
      * will use to build its processor instances

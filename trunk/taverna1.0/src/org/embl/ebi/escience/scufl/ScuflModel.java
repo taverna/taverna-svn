@@ -35,10 +35,10 @@ import java.lang.Thread;
  * Represents a single scufl workflow model
  * @author Tom Oinn
  */
-public class ScuflModel 
+public class ScuflModel
     implements Serializable,
 	       LogAwareComponent {
-    
+
     /**
      * The log level for the model overall
      */
@@ -67,39 +67,39 @@ public class ScuflModel
      * The active model listeners for this model
      */
     List listeners = Collections.synchronizedList(new ArrayList());
-    
+
     /**
      * An internal processor implementation to hold the overall
      * workflow source links; these appear as OutputPort objects
      * in this processor.
      */
     private InternalSourcePortHolder sources = null;
-    
-    /** 
-     * An internal processor implementation to hold the overall 
+
+    /**
+     * An internal processor implementation to hold the overall
      * workflow outputs, appearing as InputPort objects and acting
      * as sinks for data from the externally visible processors.
      */
     private InternalSinkPortHolder sinks = null;
 
-    /** 
+    /**
      * The processors defined by this workflow,
      * ArrayList of Processor subclasses.
      */
     private ArrayList processors = new ArrayList();
-    
-    /** 
-     * The concurrency constraints defined by this workflow, 
+
+    /**
+     * The concurrency constraints defined by this workflow,
      * ArrayList of ConcurrencyConstraint objects.
      */
     private ArrayList constraints = new ArrayList();
-    
-    /** 
+
+    /**
      * The data flow constraints defined by this workflow,
      * ArrayList of DataConstraint objects.
      */
     private ArrayList dataconstraints = new ArrayList();
-   
+
     /**
      * Get the next valid name based on the specified arbitrary string
      * that could be used to create a new processor. This method will
@@ -182,7 +182,7 @@ public class ScuflModel
 	    this.dataconstraints = new ArrayList();
 	    this.constraints = new ArrayList();
 	    this.processors = new ArrayList();
-	    this.setLogLevel(0);	    
+	    this.setLogLevel(0);
 	    fireModelEvent(new ScuflModelEvent(this, "Reset model to initial state."));
 	}
 	catch (ProcessorCreationException pce) {
@@ -194,7 +194,7 @@ public class ScuflModel
     }
 
     /**
-     * Return all the ports that act as overal workflow inputs; 
+     * Return all the ports that act as overal workflow inputs;
      * in this case the workflow input ports are actually going
      * to be instances of OutputPort, this is because they act
      * as flow sources into the workflow.
@@ -233,7 +233,7 @@ public class ScuflModel
     public Processor getWorkflowSinkProcessor() {
 	return this.sinks;
     }
-	
+
     /**
      * Return an array of the Processor objects
      * defined by this workflow model
@@ -241,7 +241,7 @@ public class ScuflModel
     public Processor[] getProcessors() {
 	return (Processor[])(this.processors.toArray(new Processor[0]));
     }
-    
+
     /**
      * Return an array of all Port subclasses that are
      * flagged as being exposed to the outside world. This
@@ -267,13 +267,19 @@ public class ScuflModel
     }
 
     /**
-     * Add a processor to the model
+     * Add a processor to the model.
+     *
+     * @throws NullPointerException if the processor is null
      */
-    public void addProcessor(Processor the_processor) {
+    public void addProcessor(Processor processor) {
+      if(processor == null) {
+        throw new NullPointerException("Processor must not be null");
+      }
+      
 	synchronized(this.processors) {
-	    this.processors.add(the_processor);
-	    the_processor.firingEvents = true;
-	    fireModelEvent(new ScuflModelEvent(the_processor, "Added processor '"+the_processor.getName()+"' to the model"));
+	    this.processors.add(processor);
+	    processor.firingEvents = true;
+	    fireModelEvent(new ScuflModelEvent(processor, "Added processor '"+processor.getName()+"' to the model"));
 	}
     }
 
@@ -301,7 +307,7 @@ public class ScuflModel
 	    }
 	}
 	fireModelEvent(new ScuflModelEvent(this, "Destroyed processor '"+the_processor.getName()+"'"));
-	
+
     }
 
     /**
@@ -351,7 +357,7 @@ public class ScuflModel
     public DataConstraint[] getDataConstraints() {
 	return (DataConstraint[])(this.dataconstraints.toArray(new DataConstraint[0]));
     }
-   
+
     /**
      * Add a new ScuflModelEventListener to the listener
      * list.
@@ -380,7 +386,7 @@ public class ScuflModel
      * [PROCESSOR]:[PORT], and is not case sensitive.
      * If the processor part is missing, this method will
      * attempt to locate a new external ports with the single
-     * supplied port name in either the internal sink or 
+     * supplied port name in either the internal sink or
      * internal source processor.
      */
     public Port locatePort(String port_specifier)
@@ -396,7 +402,7 @@ public class ScuflModel
 	    // port combination.
 	    String processor_name = parts[0];
 	    String port_name = parts[1];
-	    
+
 	    // Find the processor
 	    Processor processor = locateProcessor(processor_name);
 	    Port port = processor.locatePort(port_name);
@@ -416,11 +422,11 @@ public class ScuflModel
 	}
 	throw new MalformedNameException("Couldn't resolver port name '"+port_specifier+"'.");
     }
-    
+
     /**
      * Locate a named processor
      */
-    public Processor locateProcessor(String processor_name) 
+    public Processor locateProcessor(String processor_name)
 	throws UnknownProcessorException {
 	for (Iterator i = processors.iterator(); i.hasNext(); ) {
 	    Processor p = (Processor)i.next();
@@ -446,7 +452,7 @@ public class ScuflModel
 
     Thread eventThread = new NotifyThread(this);
     List pendingEventList = new ArrayList();
-    
+
     /**
      * A thread subclass to notify listeners of an event
      */
@@ -514,7 +520,7 @@ class NotifyThread extends Thread {
 	    //System.out.println("Firing event to "+l.toString());
 	    l.receiveModelEvent(event);
 	}
-	
+
     }
 }
 /**
@@ -523,12 +529,12 @@ class NotifyThread extends Thread {
  * links into the workflow
  */
 class InternalSourcePortHolder extends Processor implements java.io.Serializable {
-    protected InternalSourcePortHolder(ScuflModel model) 
+    protected InternalSourcePortHolder(ScuflModel model)
 	throws DuplicateProcessorNameException,
 	       ProcessorCreationException {
 	super(model,"SCUFL_INTERNAL_SOURCEPORTS");
 	firingEvents = true;
-    } 
+    }
     public Properties getProperties() {
 	return null;
     }
@@ -538,7 +544,7 @@ class InternalSourcePortHolder extends Processor implements java.io.Serializable
  * ports are therefore held as input ports, acting as they do as data sinks.
  */
 class InternalSinkPortHolder extends Processor implements java.io.Serializable {
-    protected InternalSinkPortHolder(ScuflModel model) 
+    protected InternalSinkPortHolder(ScuflModel model)
 	throws DuplicateProcessorNameException,
 	       ProcessorCreationException {
 	super(model,"SCUFL_INTERNAL_SINKPORTS");

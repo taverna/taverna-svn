@@ -35,7 +35,7 @@ import java.lang.String;
  * @author Tom Oinn
  */
 public abstract class Processor implements Serializable {
-    
+
     private String name = "";
     private String description = "";
     protected ArrayList ports = new ArrayList();
@@ -52,14 +52,14 @@ public abstract class Processor implements Serializable {
     protected List templates = new ArrayList();
     protected IterationStrategy iterationStrategy = null;
     public boolean firingEvents = false;
-    
+
     /**
      * A string representing a resource location within the enactor
      * JVM. This is the case, for example, for the simple string
      * operations and the local service processors.
      */
     public static String ENACTOR = "Local to enactor";
-    
+
     /**
      * If meaningful, obtain the host that the resource is based
      * in. Of course, not all processor implementations are service
@@ -93,7 +93,7 @@ public abstract class Processor implements Serializable {
 	    }
 	    this.name = newName;
 	    fireModelEvent(new ScuflModelEvent(this, "Processor renamed to '"+name+"'"));
-	}	   
+	}
     }
 
     /**
@@ -118,7 +118,7 @@ public abstract class Processor implements Serializable {
     public AnnotationTemplate[] getAnnotationTemplates() {
 	return (AnnotationTemplate[])templates.toArray(new AnnotationTemplate[0]);
     }
-    
+
     /**
      * Add an annotation template to this processor
      */
@@ -138,7 +138,7 @@ public abstract class Processor implements Serializable {
 	    fireModelEvent(new MinorScuflModelEvent(this, "Template removed"));
 	}
     }
-    
+
     /**
      * Create a standard annotation template for each pair of
      * bound input / output ports, mostly just to test the
@@ -169,7 +169,7 @@ public abstract class Processor implements Serializable {
 	}
 	return (AnnotationTemplate[])dtemplates.toArray(new AnnotationTemplate[0]);
     }
-   
+
     /**
      * Return the list of AlternateProcessor holders
      * for this primary processor implementation.
@@ -194,7 +194,7 @@ public abstract class Processor implements Serializable {
 	ap.setOriginalProcessor(this);
 	fireModelEvent(new ScuflModelEvent(this, "Alternate added"));
     }
-    
+
     /**
      * Delete an alternate processor from this processor definition
      */
@@ -303,7 +303,7 @@ public abstract class Processor implements Serializable {
     /**
      * Get the real log level set by this processor, this
      * can be -1 in which case the getLogLevel method will
-     * return the log level of the ScuflModel that 'owns' 
+     * return the log level of the ScuflModel that 'owns'
      * this processor
      */
     public int getRealLogLevel() {
@@ -323,15 +323,18 @@ public abstract class Processor implements Serializable {
      * properties for this processor type instance. This is used by
      * the user interface code to display additional properties for
      * each processor and should be implemented by the subclasses to
-     * display useful information
+     * display useful information.
+     *
+     * @return a Properties instance containing all processor-specific
+     *         properties, or optinally null if there are none
      */
     public abstract Properties getProperties();
-    
+
     /**
      * Construct the processor with the given name and parent, complaining
      * if the name doesn't conform to [a-zA-Z_0-9]
      */
-    public Processor(ScuflModel model, String name) 
+    public Processor(ScuflModel model, String name)
 	throws ProcessorCreationException,
 	       DuplicateProcessorNameException {
 	// Check for nulls
@@ -461,7 +464,7 @@ public abstract class Processor implements Serializable {
     /**
      * Find a particular named port
      */
-    public Port locatePort(String port_name) 
+    public Port locatePort(String port_name)
 	throws UnknownPortException {
 	for (Iterator i = ports.iterator(); i.hasNext(); ) {
 	    Port p = (Port)i.next();
@@ -488,8 +491,8 @@ public abstract class Processor implements Serializable {
 	}
 	return (InputPort[])(temp.toArray(new InputPort[0]));
     }
-    
-    
+
+
     /**
      * Get an array containing only output ports
      */
@@ -524,7 +527,7 @@ public abstract class Processor implements Serializable {
     }
 
     /**
-     * Remove a port from a processor (only really applicable 
+     * Remove a port from a processor (only really applicable
      * to the workflow source and sink ports, so be careful
      * when you're using it)
      */
@@ -542,7 +545,7 @@ public abstract class Processor implements Serializable {
 	    }
 	}
 	fireModelEvent(new ScuflModelEvent(this, "Removed a port"));
-	
+
     }
 
     /**

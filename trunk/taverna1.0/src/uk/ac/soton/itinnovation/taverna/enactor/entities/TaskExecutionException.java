@@ -24,16 +24,30 @@
 //      Created for Project :   MYGRID
 //      Dependencies        :
 //
-//      Last commit info    :   $Author: dmarvin $
-//                              $Date: 2003-06-05 14:36:23 $
-//                              $Revision: 1.1 $
+//      Last commit info    :   $Author: mpocock $
+//                              $Date: 2004-05-25 19:45:58 $
+//                              $Revision: 1.2 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 package uk.ac.soton.itinnovation.taverna.enactor.entities;
 
 public class TaskExecutionException extends Exception {
+  public TaskExecutionException()
+  {
+  }
 
-    public TaskExecutionException(String message) {
-        super(message);
-    }
+  public TaskExecutionException(String message)
+  {
+    super(message);
+  }
+
+  public TaskExecutionException(Throwable cause)
+  {
+    super(cause);
+  }
+
+  public TaskExecutionException(String message, Throwable cause)
+  {
+    super(message, cause);
+  }
 }

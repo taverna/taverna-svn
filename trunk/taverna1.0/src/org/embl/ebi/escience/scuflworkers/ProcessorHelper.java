@@ -36,7 +36,7 @@ import java.lang.System;
 /**
  * Provides rendering and other hints for different processor
  * implementations, including preferred colours and icons. The
- * data used by this class is loaded at classload time from 
+ * data used by this class is loaded at classload time from
  * all 'taverna.properties' files found by the system classloader,
  * these files contain the processor specific configuration that
  * this class acts as an interface to. An example for the Soaplab
@@ -75,7 +75,7 @@ public class ProcessorHelper {
 	try {
 	    // Get the classloader for this class
 	    ClassLoader loader = ProcessorHelper.class.getClassLoader();
-	    
+
 	    // Load the 'unknown processor' image icon
 	    unknownProcessorIcon = new ImageIcon(loader.getResource("org/embl/ebi/escience/scuflui/unknownprocessor.gif"));
 	    // Load up the values from any taverna.properties files located
@@ -84,7 +84,7 @@ public class ProcessorHelper {
 	    tavernaProperties = new Properties();
 	    while (en.hasMoreElements()) {
 		URL resourceURL = (URL)en.nextElement();
-		//System.out.println("Loading resources from : "+resourceURL.toString());
+		System.out.println("Loading resources from : "+resourceURL.toString());
 		tavernaProperties.load(resourceURL.openStream());
 	    }
 	    // Should now have a populated properties list, set up the various
@@ -167,7 +167,7 @@ public class ProcessorHelper {
 	    // System.exit(1);
 	}
     }
-    
+
     /**
      * Return the set of instances of simple (null constructor)
      * scavengers; these are added automatically to all service
@@ -241,7 +241,7 @@ public class ProcessorHelper {
     public static ProcessorEditor getEditorForTagName(String tagName) {
 	return (ProcessorEditor)editorForTagName.get(tagName);
     }
-    
+
 
     /**
      * Given a tag name, return the preferred image icon for that
@@ -265,10 +265,10 @@ public class ProcessorHelper {
 		}
 	    }
 	}
-	
+
 	//System.out.println("Request for icon for : "+tagName);
 	ImageIcon icon = (ImageIcon)iconForTagName.get(tagName);
-	if (icon == null) { 
+	if (icon == null) {
 	    return unknownProcessorIcon;
 	}
 	else {
@@ -309,7 +309,7 @@ public class ProcessorHelper {
     }
 
     /**
-     * Given a processor instance, return the 'spec' block of 
+     * Given a processor instance, return the 'spec' block of
      * XML that represents the processor in the XScufl language.
      * This is the element directly inside the 's:processor' element
      * and specifies specific information about this particular
@@ -330,7 +330,7 @@ public class ProcessorHelper {
 		}
 		if (p.getBackoff()!=1.0) {
 		    result.setAttribute("retrybackoff",Double.toString(p.getBackoff()));
-		}				    
+		}
 		return result;
 	    }
 	}
@@ -416,7 +416,7 @@ public class ProcessorHelper {
 		}
 		loadedProcessor.addAlternate(ap);
 	    }
-	    
+
 	}
 	if (loadedProcessor != null) {
 	    // Add the annotation templates
@@ -424,7 +424,7 @@ public class ProcessorHelper {
 	    for (i = l.iterator(); i.hasNext();) {
 		loadedProcessor.addAnnotationTemplate(new AnnotationTemplate((Element)i.next()));
 	    }
-	    
+
 	}
 	return loadedProcessor;
     }
