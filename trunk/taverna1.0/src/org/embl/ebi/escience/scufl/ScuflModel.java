@@ -54,6 +54,11 @@ public class ScuflModel
     }
 
     /**
+     * Whether the model should fire events to its listeners
+     */
+    public boolean isFiringEvents = true;
+
+    /**
      * The active model listeners for this model
      */
     ArrayList listeners = new ArrayList();
@@ -90,6 +95,25 @@ public class ScuflModel
      */
     private ArrayList dataconstraints = new ArrayList();
    
+    /**
+     * Set the event reporting state, useful if you know you're going
+     * to be generating a large number of model events that actually
+     * reflect only a single change. Setting the event status to true
+     * will also fire a new model event, as this is normally only used
+     * where there have been events that were previously masked.
+     */
+    public void setEventStatus(boolean reportEvents) {
+	if (reportEvents == this.isFiringEvents) {
+	    return;
+	}
+	else {
+	    this.isFiringEvents = reportEvents;
+	    if (this.isFiringEvents) {
+		fireModelEvent(new ScuflModelEvent(this,"Event reporting re-enabled, forcing update"));
+	    }
+	}
+    }
+
     /**
      * Default constructor, creates internal port holders
      */
@@ -366,10 +390,13 @@ public class ScuflModel
     }
 
     /**
-     * Handle a ScuflModelEvent from one of our children
+     * Handle a ScuflModelEvent from one of our children or self, only
+     * send an event notification if the isFiringEvents is set to true.
      */
     void fireModelEvent(ScuflModelEvent event) {
-	new NotifyThread(event, this);
+	if (this.isFiringEvents) {
+	    new NotifyThread(event, this);
+	}
     }
 
 }

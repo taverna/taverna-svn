@@ -33,8 +33,9 @@ public abstract class Port implements java.io.Serializable {
     private boolean isExternal = false;
     private String syntacticType = "";
     private String semanticType = "";
-	private List aliases = null;
-
+    private List aliases = null;
+    private String description = "";
+    
     /**
      * Create a new port (obviously you can't actually construct this 
      * because it's abstract. Names must match [a-zA-Z_0-9].
@@ -78,6 +79,23 @@ public abstract class Port implements java.io.Serializable {
 	//this.name = name.toLowerCase(); //this causes problems with wsdl invocations
 	this.name = name;
 	fireModelEvent(new ScuflModelEvent(this, "New port created '"+name+"' in processor '"+processor.getName()+"'"));
+    }
+    
+    /**
+     * Set the free text description of the port
+     */
+    public void setDescription(String theDescription) {
+	if (theDescription != null) {
+	    this.description = theDescription;
+	    fireModelEvent(new ScuflModelEvent(this, "Description set"));
+	}
+    }
+
+    /**
+     * Get the description for this port
+     */
+    public String getDescription() {
+	return this.description;
     }
     
     /**

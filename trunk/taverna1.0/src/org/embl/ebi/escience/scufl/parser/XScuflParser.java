@@ -184,6 +184,9 @@ public class XScuflParser {
 	       ConcurrencyConstraintCreationException,
 	DuplicateConcurrencyConstraintNameException,
 	       XScuflFormatException {
+	// Disable model events for the duration of the load
+	model.setEventStatus(false);
+
 	// Check whether we're using prefixes
 	boolean usePrefix = false;
 	if (prefix != null) {
@@ -228,6 +231,8 @@ public class XScuflParser {
 	// throw back any of the exceptions it contains in the main thread. Seems to
 	// work okay and is a big optimisation at load time.
 	if (holder.theException != null) {
+	    // Re-enable events before exiting the method.
+	    model.setEventStatus(true);
 	    if (holder.theException instanceof ProcessorCreationException) {
 		throw (ProcessorCreationException)(holder.theException);
 	    } 
@@ -239,120 +244,126 @@ public class XScuflParser {
 	    }
 	    
 	}
-
-	// Iterate over the external declarations and create appropriate input and output 
-	// ports in the internal source and sink processors.
-	List sourceList = root.getChildren("source", namespace);
-	Processor sourceHolder = model.getWorkflowSourceProcessor();
-	for (Iterator i = sourceList.iterator(); i.hasNext(); ) {
-	    Element sourceElement = (Element)i.next();
-	    String portName = sourceElement.getTextTrim();
-	    try {
-		if (usePrefix) {
-		    portName = prefix+"_"+portName;
+	try {
+	    // Iterate over the external declarations and create appropriate input and output 
+	    // ports in the internal source and sink processors.
+	    List sourceList = root.getChildren("source", namespace);
+	    Processor sourceHolder = model.getWorkflowSourceProcessor();
+	    for (Iterator i = sourceList.iterator(); i.hasNext(); ) {
+		Element sourceElement = (Element)i.next();
+		String portName = sourceElement.getTextTrim();
+		try {
+		    if (usePrefix) {
+			portName = prefix+"_"+portName;
+		    }
+		    sourceHolder.addPort(new OutputPort(sourceHolder, portName));
 		}
-		sourceHolder.addPort(new OutputPort(sourceHolder, portName));
-	    }
-	    catch (DuplicatePortNameException dpne) {
-		throw new XScuflFormatException("You have a duplicate source port in your definition file, aborting.");
-	    }
-	    catch (PortCreationException pce) {
-		throw new XScuflFormatException("Unable to create source port.");
-	    }
-	}
-	List sinkList = root.getChildren("sink", namespace);
-	Processor sinkHolder = model.getWorkflowSinkProcessor();
-	for (Iterator i = sinkList.iterator(); i.hasNext(); ) {
-	    Element sinkElement = (Element)i.next();
-	    String portName = sinkElement.getTextTrim();
-	    try {
-		if (usePrefix) {
-		    portName = prefix+"_"+portName;
+		catch (DuplicatePortNameException dpne) {
+		    throw new XScuflFormatException("You have a duplicate source port in your definition file, aborting.");
 		}
-		sinkHolder.addPort(new InputPort(sinkHolder, portName));
+		catch (PortCreationException pce) {
+		    throw new XScuflFormatException("Unable to create source port.");
+		}
 	    }
-	    catch (DuplicatePortNameException dpne) {
-		throw new XScuflFormatException("You have a duplicate sink port in your defintion file, aborting.");
-	    } 
-	    catch (PortCreationException pce) {
-		throw new XScuflFormatException("Unable to create sink port.");
+	    List sinkList = root.getChildren("sink", namespace);
+	    Processor sinkHolder = model.getWorkflowSinkProcessor();
+	    for (Iterator i = sinkList.iterator(); i.hasNext(); ) {
+		Element sinkElement = (Element)i.next();
+		String portName = sinkElement.getTextTrim();
+		try {
+		    if (usePrefix) {
+			portName = prefix+"_"+portName;
+		    }
+		    sinkHolder.addPort(new InputPort(sinkHolder, portName));
+		}
+		catch (DuplicatePortNameException dpne) {
+		    throw new XScuflFormatException("You have a duplicate sink port in your defintion file, aborting.");
+		} 
+		catch (PortCreationException pce) {
+		    throw new XScuflFormatException("Unable to create sink port.");
+		}
 	    }
-	}
 
-	// Build data constraints
-	List dataConstraintList = root.getChildren("link",namespace);
-	for (Iterator i = dataConstraintList.iterator(); i.hasNext(); ) {
-	    Element linkElement = (Element)i.next();
-	    Element inputElement = linkElement.getChild("input",namespace);
-	    Element outputElement = linkElement.getChild("output",namespace);
-	    if (inputElement == null) {
-		throw new XScuflFormatException("A data constraint must have an input child element");
+	    // Build data constraints
+	    List dataConstraintList = root.getChildren("link",namespace);
+	    for (Iterator i = dataConstraintList.iterator(); i.hasNext(); ) {
+		Element linkElement = (Element)i.next();
+		Element inputElement = linkElement.getChild("input",namespace);
+		Element outputElement = linkElement.getChild("output",namespace);
+		if (inputElement == null) {
+		    throw new XScuflFormatException("A data constraint must have an input child element");
+		}
+		if (outputElement == null) {
+		    throw new XScuflFormatException("A data constraint must have an output child element");
+		}
+		String inputName = inputElement.getTextTrim();
+		String outputName = outputElement.getTextTrim();
+		if (usePrefix) {
+		    inputName = prefix+"_"+inputName;
+		    outputName = prefix+"_"+outputName;
+		}
+		model.addDataConstraint(new DataConstraint(model, outputName, inputName));
+		
+		// End iterator over data constraints
 	    }
-	    if (outputElement == null) {
-		throw new XScuflFormatException("A data constraint must have an output child element");
-	    }
-	    String inputName = inputElement.getTextTrim();
-	    String outputName = outputElement.getTextTrim();
-	    if (usePrefix) {
-		inputName = prefix+"_"+inputName;
-		outputName = prefix+"_"+outputName;
-	    }
-	    model.addDataConstraint(new DataConstraint(model, outputName, inputName));
-	   				    
-	    // End iterator over data constraints
-	}
+	    
+	    // Iterate over external port declarations
+	    // DEPRECATED!
+	    /**
+	       List externalPorts = root.getChildren("external",namespace);
+	       for (Iterator i = externalPorts.iterator(); i.hasNext(); ) {
+	       Element external = (Element)i.next();
+	       // Should be in the form 'processor:port'
+	       String specifier = external.getTextTrim();
+	       if (usePrefix) {
+	       specifier = prefix+"_"+specifier;
+	       }
+	       Port thePort = model.locatePort(specifier);
+	       thePort.setExternal(true);
+	       }
+	    */
 
-	// Iterate over external port declarations
-	// DEPRECATED!
+	    
+	    // Build concurrency constraints
+	    List concurrencyConstraints = root.getChildren("coordination",namespace);
+	    for (Iterator i = concurrencyConstraints.iterator(); i.hasNext(); ) {
+		Element coordination = (Element)i.next();
+		String constraintName = coordination.getAttributeValue("name");
+		if (usePrefix) {
+		    constraintName = prefix+"_"+constraintName;
+		}
+		Element condition = coordination.getChild("condition",namespace);
+		Element action = coordination.getChild("action",namespace);
+		String controllerName = condition.getChild("target",namespace).getTextTrim();
+		if (usePrefix) {
+		    controllerName = prefix+"_"+controllerName;
+		}
+		Processor controller = model.locateProcessor(controllerName);
+		int controllerStateGuard = ConcurrencyConstraint.statusStringToInt(condition.getChild("state",namespace).getTextTrim());
+		String targetName = action.getChild("target",namespace).getTextTrim();
+		if (usePrefix) {
+		    targetName = prefix+"_"+targetName;
+		}
+		Processor target = model.locateProcessor(targetName);
+		int targetStateTo = 
+		    ConcurrencyConstraint.statusStringToInt(action.getChild("statechange",namespace).getChild("to",namespace).getTextTrim());
+		int targetStateFrom = 
+		    ConcurrencyConstraint.statusStringToInt(action.getChild("statechange",namespace).getChild("from",namespace).getTextTrim());
+		model.addConcurrencyConstraint(new ConcurrencyConstraint(model,
+									 constraintName,
+									 controller,
+									 target,
+									 targetStateFrom,
+									 targetStateTo,
+									 controllerStateGuard));
+	    }
 	
-	List externalPorts = root.getChildren("external",namespace);
-	for (Iterator i = externalPorts.iterator(); i.hasNext(); ) {
-	    Element external = (Element)i.next();
-	    // Should be in the form 'processor:port'
-	    String specifier = external.getTextTrim();
-	    if (usePrefix) {
-		specifier = prefix+"_"+specifier;
-	    }
-	    Port thePort = model.locatePort(specifier);
-	    thePort.setExternal(true);
 	}
-       
-
-
-	// Build concurrency constraints
-	List concurrencyConstraints = root.getChildren("coordination",namespace);
-	for (Iterator i = concurrencyConstraints.iterator(); i.hasNext(); ) {
-	    Element coordination = (Element)i.next();
-	    String constraintName = coordination.getAttributeValue("name");
-	    if (usePrefix) {
-		constraintName = prefix+"_"+constraintName;
-	    }
-	    Element condition = coordination.getChild("condition",namespace);
-	    Element action = coordination.getChild("action",namespace);
-	    String controllerName = condition.getChild("target",namespace).getTextTrim();
-	    if (usePrefix) {
-		controllerName = prefix+"_"+controllerName;
-	    }
-	    Processor controller = model.locateProcessor(controllerName);
-	    int controllerStateGuard = ConcurrencyConstraint.statusStringToInt(condition.getChild("state",namespace).getTextTrim());
-	    String targetName = action.getChild("target",namespace).getTextTrim();
-	    if (usePrefix) {
-		targetName = prefix+"_"+targetName;
-	    }
-	    Processor target = model.locateProcessor(targetName);
-	    int targetStateTo = 
-		ConcurrencyConstraint.statusStringToInt(action.getChild("statechange",namespace).getChild("to",namespace).getTextTrim());
-	    int targetStateFrom = 
-		ConcurrencyConstraint.statusStringToInt(action.getChild("statechange",namespace).getChild("from",namespace).getTextTrim());
-	    model.addConcurrencyConstraint(new ConcurrencyConstraint(model,
-								     constraintName,
-								     controller,
-								     target,
-								     targetStateFrom,
-								     targetStateTo,
-								     controllerStateGuard));
+	catch (XScuflFormatException xfe) {
+	    model.setEventStatus(true);
+	    throw xfe;
 	}
-	
+	model.setEventStatus(true);
     }
 
 }

@@ -20,7 +20,8 @@ public class ScuflIcons {
 
     public static ImageIcon wsdlIcon, soaplabIcon, talismanIcon, inputIcon, outputIcon, inputPortIcon, outputPortIcon, dataLinkIcon, constraintIcon, deleteIcon, zoomIcon;
     public static ImageIcon wsdlFactoryIcon, soaplabFactoryIcon, talismanFactoryIcon;
-    
+    public static ImageIcon webIcon, openIcon, runIcon, refreshIcon;
+
     static {
 	// Load the image files found in this package into the class.
 	try {
@@ -39,6 +40,10 @@ public class ScuflIcons {
 	    constraintIcon = new ImageIcon(c.getResource("constraint.gif"));
 	    deleteIcon = new ImageIcon(c.getResource("delete.gif"));
 	    zoomIcon = new ImageIcon(c.getResource("zoom.gif"));
+	    webIcon = new ImageIcon(c.getResource("web.gif"));
+	    openIcon = new ImageIcon(c.getResource("open.gif"));
+	    runIcon = new ImageIcon(c.getResource("run.gif"));
+	    refreshIcon = new ImageIcon(c.getResource("refresh.gif"));
 
 	}
 	catch (ClassNotFoundException cnfe) {

@@ -20,6 +20,7 @@ import org.embl.ebi.escience.scuflui.DotTextArea;
 import org.embl.ebi.escience.scuflui.ScuflDiagram;
 import org.embl.ebi.escience.scuflui.ScuflModelExplorer;
 import org.embl.ebi.escience.scuflui.XScuflTextArea;
+import org.embl.ebi.escience.scuflui.EnactorLaunchPanel;
 
 // IO Imports
 import java.io.File;
@@ -357,7 +358,17 @@ public class Workbench extends JFrame {
 		}
 	    });
 	windowMenu.add(servicePanel);
-
+	JMenuItem inputPanel = new JMenuItem("Workflow Input Panel");
+	inputPanel.addActionListener(new ActionListener() {
+		public void actionPerformed(ActionEvent e) {
+		    // Show a workflow input panel
+		    EnactorLaunchPanel thing = new EnactorLaunchPanel();
+		    GenericUIComponentFrame frame = new GenericUIComponentFrame(Workbench.this.model, thing);
+		    Workbench.this.desktop.add(frame);
+		    frame.moveToFront();
+		}
+	    });
+	windowMenu.add(inputPanel);
 	
 
 	menuBar.add(fileMenu);
