@@ -24,9 +24,9 @@
 //      Created for Project :   MYGRID
 //      Dependencies        :
 //
-//      Last commit info    :   $Author: ferris $
-//                              $Date: 2004-06-03 11:39:25 $
-//                              $Revision: 1.48 $
+//      Last commit info    :   $Author: mereden $
+//                              $Date: 2004-06-03 15:18:26 $
+//                              $Revision: 1.49 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 package uk.ac.soton.itinnovation.taverna.enactor.entities;
@@ -376,14 +376,18 @@ public class ProcessorTask extends AbstractTask {
 	    for (Iterator i = inputMap.keySet().iterator(); i.hasNext();) { 
 		String inputName = (String)i.next();
 		DataThing inputValue = (DataThing)inputMap.get(inputName);
-		String objectLSID = inputValue.getLSID(inputValue.getDataObject());
-		templateInputs.put(inputName, objectLSID);
+		String objectLSID = inputValue.getLSID(inputValue.getDataObject()); 
+		if (objectLSID!=null && objectLSID.equals("")==false) {
+		    templateInputs.put(inputName, objectLSID);
+		}
 	    }
 	    for (Iterator i = outputMap.keySet().iterator(); i.hasNext();) {
 		String outputName = (String)i.next();
 		DataThing outputValue = (DataThing)outputMap.get(outputName);
 		String objectLSID = outputValue.getLSID(outputValue.getDataObject());
-		templateOutputs.put(outputName, objectLSID);
+		if (objectLSID!=null && objectLSID.equals("")==false) {
+		    templateOutputs.put(outputName, objectLSID);
+		}
 	    }
 	    // Iterate over each of the templates, getting their
 	    // textual provenance back for the moment and adding it to the
