@@ -4,7 +4,7 @@ import com.jgraph.JGraph;
 import com.jgraph.event.GraphSelectionEvent;
 import com.jgraph.event.GraphSelectionListener;
 import com.jgraph.graph.*;
-import com.jgraph.graph.Port; // ambiguous with: org.embl.ebi.escience.scufl.Port
+import com.jgraph.graph.Port; // ambiguous with: org.embl.ebi.escience.scufl.Port 
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
@@ -12,11 +12,11 @@ import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import javax.swing.*;
 import javax.swing.event.UndoableEditEvent;
+import org.embl.ebi.escience.scufl.DuplicateProcessorNameException;
+import org.embl.ebi.escience.scufl.ProcessorCreationException;
 import org.embl.ebi.escience.scufl.ScuflModel;
 import org.embl.ebi.escience.scufl.ScuflModelEventPrinter;
 import org.embl.ebi.escience.scufl.SoaplabProcessor;
-import org.embl.ebi.escience.scufl.ProcessorCreationException;
-import org.embl.ebi.escience.scufl.DuplicateProcessorNameException;
 
 // Utility Imports
 import java.util.ArrayList;
@@ -35,6 +35,8 @@ import java.lang.Integer;
 import java.lang.Object;
 import java.lang.String;
 import java.lang.System;
+
+
 
 public class ScuflGraphPanel extends JPanel
        implements GraphSelectionListener, KeyListener 

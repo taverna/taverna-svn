@@ -12,15 +12,17 @@ import java.util.List;
 import java.util.Map;
 
 // IO Imports
-import java.io.StringReader;
-import java.io.*;
-import java.net.*;
+import java.io.IOException;
 
 // JDOM Imports
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.JDOMException;
 import org.jdom.input.SAXBuilder;
+
+// Network Imports
+import java.net.MalformedURLException;
+import java.net.URL;
 
 import org.embl.ebi.escience.scufl.DuplicatePortNameException;
 import org.embl.ebi.escience.scufl.DuplicateProcessorNameException;
