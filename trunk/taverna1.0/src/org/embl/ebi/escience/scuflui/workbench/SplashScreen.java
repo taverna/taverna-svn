@@ -15,11 +15,6 @@ import javax.swing.JLabel;
 import javax.swing.JWindow;
 import javax.swing.SwingUtilities;
 
-import java.lang.Class;
-import java.lang.ClassNotFoundException;
-import java.lang.Exception;
-import java.lang.Runnable;
-import java.lang.Thread;
 
 
 

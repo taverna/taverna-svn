@@ -5,6 +5,11 @@
  */
 package org.embl.ebi.escience.scuflui.workbench;
 
+import org.embl.ebi.escience.scuflworkers.wsdl.WSDLBasedScavenger;
+import org.embl.ebi.escience.scuflworkers.workflow.WorkflowScavenger;
+import org.embl.ebi.escience.scuflworkers.talisman.TalismanScavenger;
+import org.embl.ebi.escience.scuflworkers.soaplab.SoaplabScavenger;
+import org.embl.ebi.escience.scuflworkers.ProcessorFactory;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -18,22 +23,15 @@ import org.embl.ebi.escience.scufl.ProcessorCreationException;
 import org.embl.ebi.escience.scufl.parser.XScuflParser;
 import org.embl.ebi.escience.scuflui.ScuflIcons;
 
+import java.util.*;
+import org.embl.ebi.escience.scuflworkers.ProcessorHelper;
+import org.embl.ebi.escience.scuflworkers.ScavengerHelper;
+import javax.swing.*;
+
 // Network Imports
 import java.net.URL;
 
-import org.embl.ebi.escience.scuflui.workbench.ProcessorFactory;
-import org.embl.ebi.escience.scuflui.workbench.ScavengerCreationException;
-import org.embl.ebi.escience.scuflui.workbench.ScavengerTree;
-import org.embl.ebi.escience.scuflui.workbench.SoaplabScavenger;
-import org.embl.ebi.escience.scuflui.workbench.TalismanScavenger;
-import org.embl.ebi.escience.scuflui.workbench.WSDLBasedScavenger;
-import org.embl.ebi.escience.scuflui.workbench.WebScavenger;
-import org.embl.ebi.escience.scuflui.workbench.Workbench;
-import org.embl.ebi.escience.scuflui.workbench.WorkflowProcessorFactory;
-import org.embl.ebi.escience.scuflui.workbench.WorkflowScavenger;
-import java.lang.Exception;
-import java.lang.Object;
-import java.lang.String;
+import org.embl.ebi.escience.scuflworkers.workflow.WorkflowProcessorFactory;
 
 
 
@@ -158,105 +156,27 @@ public class ScavengerTreePopupHandler extends MouseAdapter {
 		    title.setEnabled(false);
 		    menu.add(title);
 		    menu.addSeparator();
-		    JMenuItem addSoaplab = new JMenuItem("Add new Soaplab scavenger...", ScuflIcons.soaplabIcon);
-		    JMenuItem addWSDL = new JMenuItem("Add new WSDL scavenger...", ScuflIcons.wsdlIcon);
-		    JMenuItem addTalisman = new JMenuItem("Add new Talisman scavenger...", ScuflIcons.talismanIcon);
-		    JMenuItem addWorkflow = new JMenuItem("Add new Workflow scavenger...", ScuflIcons.workflowIcon);
+		    // Iterate over the scavenger creator list from the ProcessorHelper class
+		    for (Iterator i = ProcessorHelper.getScavengerToTagNames().keySet().iterator(); i.hasNext(); ) {
+			String scavengerClassName = (String)i.next();
+			ImageIcon scavengerIcon = ProcessorHelper.getIconForTagName((String)(ProcessorHelper.getScavengerToTagNames().get(scavengerClassName)));
+			// Instantiate a ScavengerHelper...
+			try {
+			    Class scavengerHelperClass = Class.forName(scavengerClassName);
+			    ScavengerHelper sh = (ScavengerHelper)scavengerHelperClass.newInstance();
+			    String scavengerDescription = sh.getScavengerDescription();
+			    JMenuItem scavengerMenuItem = new JMenuItem(scavengerDescription,scavengerIcon);
+			    scavengerMenuItem.addActionListener(sh.getListener(ScavengerTreePopupHandler.this.scavenger));
+			    menu.add(scavengerMenuItem);
+			}
+			catch (Exception ex) {
+			    // Just for now...
+			    ex.printStackTrace();
+			}
+		    }
 		    JMenuItem addWeb = new JMenuItem("Collect scavengers from web...", ScuflIcons.webIcon);
-		    menu.add(addSoaplab);
-		    menu.add(addWSDL);
-		    menu.add(addTalisman);
-		    menu.add(addWorkflow);
 		    menu.addSeparator();
 		    menu.add(addWeb);
-		    addSoaplab.addActionListener(new ActionListener() {
-			    public void actionPerformed(ActionEvent ae) {
-				String baseURL = (String)JOptionPane.showInputDialog(null,
-										     "Base location for your soaplab installation?",
-										     "Soaplab location",
-										     JOptionPane.QUESTION_MESSAGE,
-										     null,
-										     null,
-										     "http://");
-				if (baseURL!=null) {
-				    try {
-					ScavengerTreePopupHandler.this.scavenger.addScavenger(new SoaplabScavenger(baseURL));					
-				    }
-				    catch (ScavengerCreationException sce) {
-					JOptionPane.showMessageDialog(null,
-								      "Unable to create scavenger!\n"+sce.getMessage(),
-								      "Exception!",
-								      JOptionPane.ERROR_MESSAGE);
-				    }
-				}
-			    }
-			});
-		    addWSDL.addActionListener(new ActionListener() {
-			    public void actionPerformed(ActionEvent ae) {
-				String wsdlLocation = (String)JOptionPane.showInputDialog(null,
-											  "Address of the WSDL document?",
-											  "WSDL location",
-											  JOptionPane.QUESTION_MESSAGE,
-											  null,
-											  null,
-											  "http://");
-				if (wsdlLocation!=null) {
-				    try {
-					ScavengerTreePopupHandler.this.scavenger.addScavenger(new WSDLBasedScavenger(wsdlLocation));					
-				    }
-				    catch (ScavengerCreationException sce) {
-					JOptionPane.showMessageDialog(null,
-								      "Unable to create scavenger!\n"+sce.getMessage(),
-								      "Exception!",
-								      JOptionPane.ERROR_MESSAGE);
-				    }
-				}	
-			    }
-			});
-		    addTalisman.addActionListener(new ActionListener() {
-			    public void actionPerformed(ActionEvent ae) {
-				String scriptURL = (String)JOptionPane.showInputDialog(null,
-										       "Address of the TScript document?",
-										       "TScript location",
-										       JOptionPane.QUESTION_MESSAGE,
-										       null,
-										       null,
-										       "http://");
-				if (scriptURL!=null) {
-				    try {
-					ScavengerTreePopupHandler.this.scavenger.addScavenger(new TalismanScavenger(scriptURL));					
-				    }
-				    catch (ScavengerCreationException sce) {
-					JOptionPane.showMessageDialog(null,
-								      "Unable to create scavenger!\n"+sce.getMessage(),
-								      "Exception!",
-								      JOptionPane.ERROR_MESSAGE);
-				    }
-				}	
-			    }
-			});
-		    addWorkflow.addActionListener(new ActionListener() {
-			    public void actionPerformed(ActionEvent ae) {
-				String definitionURL = (String)JOptionPane.showInputDialog(null,
-											   "Address of the XScufl document?",
-											   "XScufl location",
-											   JOptionPane.QUESTION_MESSAGE,
-											   null,
-											   null,
-											   "http://");
-				if (definitionURL!=null) {
-				    try {
-					ScavengerTreePopupHandler.this.scavenger.addScavenger(new WorkflowScavenger(definitionURL));					
-				    }
-				    catch (ScavengerCreationException sce) {
-					JOptionPane.showMessageDialog(null,
-								      "Unable to create scavenger!\n"+sce.getMessage(),
-								      "Exception!",
-								      JOptionPane.ERROR_MESSAGE);
-				    }
-				}	
-			    }
-			});
 		    addWeb.addActionListener(new ActionListener() {
 			    public void actionPerformed(ActionEvent ae) {
 				String rootURL = (String)JOptionPane.showInputDialog(null,

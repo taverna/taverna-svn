@@ -9,9 +9,6 @@ import org.embl.ebi.escience.scufl.ScuflModel;
 import org.embl.ebi.escience.scufl.ScuflModelEventPrinter;
 import org.embl.ebi.escience.scuflworkers.soaplab.SoaplabProcessor;
 
-import java.lang.Exception;
-import java.lang.String;
-import java.lang.System;
 
 
 

@@ -3,16 +3,13 @@
  * and is licensed under the GNU LGPL.
  * Copyright Tom Oinn, EMBL-EBI
  */
-package org.embl.ebi.escience.scuflui.workbench;
+package org.embl.ebi.escience.scuflworkers.wsdl;
 import org.embl.ebi.escience.scufl.DuplicateProcessorNameException;
 import org.embl.ebi.escience.scufl.Processor;
 import org.embl.ebi.escience.scufl.ProcessorCreationException;
 import org.embl.ebi.escience.scufl.ScuflModel;
-import org.embl.ebi.escience.scuflworkers.wsdl.WSDLBasedProcessor;
 
-import org.embl.ebi.escience.scuflui.workbench.ProcessorFactory;
-import java.lang.Class;
-import java.lang.String;
+import org.embl.ebi.escience.scuflworkers.ProcessorFactory;
 
 
 

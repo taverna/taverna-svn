@@ -13,7 +13,6 @@ import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 import org.embl.ebi.escience.scufl.*;
 
-import org.embl.ebi.escience.scuflui.ScuflIcons;
 /**
  * A static method to generate appropriate menu items
  * to link from ports in a Scufl model

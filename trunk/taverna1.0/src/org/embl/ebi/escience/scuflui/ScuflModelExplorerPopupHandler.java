@@ -14,11 +14,6 @@ import javax.swing.JPopupMenu;
 import javax.swing.tree.DefaultMutableTreeNode;
 import org.embl.ebi.escience.scufl.Processor;
 
-import org.embl.ebi.escience.scuflui.NoContextMenuFoundException;
-import org.embl.ebi.escience.scuflui.ScuflContextMenuFactory;
-import org.embl.ebi.escience.scuflui.ScuflModelExplorer;
-import org.embl.ebi.escience.scuflui.ScuflProcessorInfo;
-import java.lang.Object;
 
 
 

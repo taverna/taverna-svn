@@ -3,42 +3,42 @@
  * and is licensed under the GNU LGPL.
  * Copyright Tom Oinn, EMBL-EBI
  */
-package org.embl.ebi.escience.scuflui.workbench;
+package org.embl.ebi.escience.scuflworkers.soaplab;
 import org.embl.ebi.escience.scufl.DuplicateProcessorNameException;
 import org.embl.ebi.escience.scufl.Processor;
 import org.embl.ebi.escience.scufl.ProcessorCreationException;
 import org.embl.ebi.escience.scufl.ScuflModel;
-import org.embl.ebi.escience.scuflworkers.talisman.TalismanProcessor;
 
-import org.embl.ebi.escience.scuflui.workbench.ProcessorFactory;
-import java.lang.Class;
-import java.lang.String;
+import org.embl.ebi.escience.scuflworkers.ProcessorFactory;
 
 
 
 /**
  * Implementation of ProcessorFactory that creates
- * TalismanProcessor nodes
+ * SoaplabProcessor nodes
  * @author Tom Oinn
  */
-public class TalismanProcessorFactory implements ProcessorFactory {
+public class SoaplabProcessorFactory implements ProcessorFactory {
 
-    private String scriptURL;
+    private String endpoint;
+    private String applicationname;
 
     /**
      * Create a new factory configured with the specified
-     * script URL
+     * endpoint base and application name, which will 
+     * be concatenated to produce the endpoint URL.
      */
-    public TalismanProcessorFactory(String scriptURL) {
-	this.scriptURL = scriptURL;
+    public SoaplabProcessorFactory(String endpointbase, String applicationname) {
+	this.endpoint = endpointbase+applicationname;
+	String[] split = applicationname.split(":");
+	this.applicationname = split[split.length - 1];
     }
     
     /**
-     * Return the leaf of the path as the factory name
+     * Return the application name as the toString result
      */
     public String toString() {
-	String[] parts = scriptURL.split("/");
-	return parts[parts.length - 1];
+	return this.applicationname;
     }
     
     /**
@@ -47,7 +47,7 @@ public class TalismanProcessorFactory implements ProcessorFactory {
     public void createProcessor(String name, ScuflModel model)
 	throws ProcessorCreationException,
 	       DuplicateProcessorNameException {
-	Processor theProcessor = new TalismanProcessor(model, name, this.scriptURL);
+	Processor theProcessor = new SoaplabProcessor(model, name, this.endpoint);
 	model.addProcessor(theProcessor);
     }
     
@@ -55,7 +55,7 @@ public class TalismanProcessorFactory implements ProcessorFactory {
      * Return a textual description of the factory
      */
     public String getProcessorDescription() {
-	return "A processor based on Talisman, using the tscript at "+this.scriptURL;
+	return "A processor based on Soaplab, with an access endpoint of "+this.endpoint;
     }
 
     /**
@@ -63,7 +63,7 @@ public class TalismanProcessorFactory implements ProcessorFactory {
      * be created by this factory
      */
     public Class getProcessorClass() {
-	return org.embl.ebi.escience.scuflworkers.talisman.TalismanProcessor.class;
+	return org.embl.ebi.escience.scuflworkers.soaplab.SoaplabProcessor.class;
     }
     
 }

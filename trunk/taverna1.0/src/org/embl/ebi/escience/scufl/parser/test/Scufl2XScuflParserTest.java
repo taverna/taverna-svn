@@ -13,10 +13,6 @@ import org.embl.ebi.escience.scufl.parser.XScuflParser;
 // Network Imports
 import java.net.URL;
 
-import java.lang.ClassLoader;
-import java.lang.Exception;
-import java.lang.String;
-import java.lang.Thread;
 
 
 

@@ -4,6 +4,10 @@
  * Copyright Tom Oinn, EMBL-EBI
  */
 package org.embl.ebi.escience.scuflui.workbench;
+
+import org.embl.ebi.escience.scuflworkers.wsdl.WSDLBasedScavenger;
+import org.embl.ebi.escience.scuflworkers.talisman.TalismanScavenger;
+import org.embl.ebi.escience.scuflworkers.soaplab.SoaplabScavenger;
 import javax.swing.JTree;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
@@ -23,14 +27,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-import org.embl.ebi.escience.scuflui.workbench.Scavenger;
-import org.embl.ebi.escience.scuflui.workbench.ScavengerCreationException;
-import org.embl.ebi.escience.scuflui.workbench.ScavengerTreePopupHandler;
-import org.embl.ebi.escience.scuflui.workbench.ScavengerTreeRenderer;
-import org.embl.ebi.escience.scuflui.workbench.SoaplabScavenger;
-import org.embl.ebi.escience.scuflui.workbench.TalismanScavenger;
-import org.embl.ebi.escience.scuflui.workbench.WSDLBasedScavenger;
-import java.lang.String;
 
 
 

@@ -11,8 +11,6 @@ import org.embl.ebi.escience.scuflworkers.XMLHandler;
 // JDOM Imports
 import org.jdom.Element;
 
-import org.embl.ebi.escience.scuflworkers.talisman.TalismanProcessor;
-import java.lang.String;
 
 
 

@@ -5,18 +5,14 @@
  */
 package org.embl.ebi.escience.scuflui.workbench;
 
+import org.embl.ebi.escience.scuflworkers.ProcessorFactory;
 import java.awt.Component;
 import javax.swing.JTree;
 import javax.swing.tree.DefaultMutableTreeNode;
-import org.embl.ebi.escience.scuflui.ScuflIcons;
 import org.embl.ebi.escience.scuflui.ScuflModelExplorerRenderer;
+import org.embl.ebi.escience.scuflworkers.ProcessorHelper;
+import javax.swing.*;
 
-import org.embl.ebi.escience.scuflui.workbench.ProcessorFactory;
-import org.embl.ebi.escience.scuflui.workbench.SoaplabProcessorFactory;
-import org.embl.ebi.escience.scuflui.workbench.TalismanProcessorFactory;
-import org.embl.ebi.escience.scuflui.workbench.WSDLBasedProcessorFactory;
-import org.embl.ebi.escience.scuflui.workbench.WorkflowProcessorFactory;
-import java.lang.Object;
 
 
 
@@ -43,17 +39,11 @@ public class ScavengerTreeRenderer extends ScuflModelExplorerRenderer {
 					   hasFocus);
 	Object userObject = ((DefaultMutableTreeNode)value).getUserObject();
 	if (userObject instanceof ProcessorFactory) {
-	    if (userObject instanceof SoaplabProcessorFactory) {
-		setIcon(ScuflIcons.soaplabFactoryIcon);
-	    }
-	    else if (userObject instanceof WSDLBasedProcessorFactory) {
-		setIcon(ScuflIcons.wsdlFactoryIcon);
-	    }
-	    else if (userObject instanceof TalismanProcessorFactory) {
-		setIcon(ScuflIcons.talismanFactoryIcon);
-	    }
-	    else if (userObject instanceof WorkflowProcessorFactory) {
-		setIcon(ScuflIcons.workflowFactoryIcon);
+	    Class processorClass = ((ProcessorFactory)userObject).getProcessorClass();
+	    String tagName = ProcessorHelper.getTagNameForClassName(processorClass.getName());
+	    ImageIcon icon = ProcessorHelper.getIconForTagName(tagName);
+	    if (icon != null) {
+		setIcon(icon);
 	    }
 	}
 	return this;

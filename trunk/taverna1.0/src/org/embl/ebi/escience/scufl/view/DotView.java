@@ -7,8 +7,6 @@ package org.embl.ebi.escience.scufl.view;
 
 import org.embl.ebi.escience.scufl.*;
 
-import java.lang.String;
-import java.lang.StringBuffer;
 
 
 

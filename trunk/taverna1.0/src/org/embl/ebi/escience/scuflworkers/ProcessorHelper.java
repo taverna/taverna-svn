@@ -11,7 +11,6 @@ import org.embl.ebi.escience.scufl.Processor;
 import org.embl.ebi.escience.scufl.ProcessorCreationException;
 import org.embl.ebi.escience.scufl.ScuflModel;
 import org.embl.ebi.escience.scufl.parser.XScuflFormatException;
-import org.embl.ebi.escience.scuflworkers.XMLHandler;
 
 // Utility Imports
 import java.util.Enumeration;
@@ -26,17 +25,30 @@ import org.jdom.Element;
 // Network Imports
 import java.net.URL;
 
-import java.lang.Class;
-import java.lang.ClassLoader;
-import java.lang.Exception;
-import java.lang.String;
-import java.lang.System;
 
 
 
 /**
  * Provides rendering and other hints for different processor
- * implementations, including preferred colours and icons.
+ * implementations, including preferred colours and icons. The
+ * data used by this class is loaded at classload time from 
+ * all 'taverna.properties' files found by the system classloader,
+ * these files contain the processor specific configuration that
+ * this class acts as an interface to. An example for the Soaplab
+ * processor type is shown below :
+ * <pre>
+ * taverna.processor.soaplabwsdl.class = org.embl.ebi.escience.scuflworkers.soaplab.SoaplabProcessor
+ * taverna.processor.soaplabwsdl.xml = org.embl.ebi.escience.scuflworkers.soaplab.SoaplabXMLHandler
+ * taverna.processor.soaplabwsdl.colour = lightgoldenrodyellow
+ * taverna.processor.soaplabwsdl.icon = org/embl/ebi/escience/scuflui/soaplab.gif
+ * taverna.processor.soaplabwsdl.taskclass = uk.ac.soton.itinnovation.taverna.enactor.entities.SoaplabTask
+ * </pre>
+ * To load additional processor types for enactment and display within
+ * the workbench, you will need to create the appropriate helper
+ * classes such as the XML handler and then point to the class names
+ * in a 'taverna.properties' file. I suggest you package all these items
+ * into a single .jar file, in which case simply ensuring that the
+ * classpath contains your .jar should allow everything to work.
  * @author Tom Oinn
  */
 public class ProcessorHelper {
@@ -47,6 +59,7 @@ public class ProcessorHelper {
     static Map iconForTagName = new HashMap();
     static Map taskClassForTagName = new HashMap();
     static Map xmlHandlerForTagName = new HashMap();
+    static Map tagNameForScavenger = new HashMap();
 
     static {
 	try {
@@ -68,26 +81,31 @@ public class ProcessorHelper {
 		System.out.println(key+" == "+value);
 		String[] keyElements = key.split("\\.");
 		// Detect the processor keys
-		if (keyElements[1].equals("processor")) {
+		if (keyElements.length == 4 && keyElements[1].equals("processor")) {
 		    String tagName = keyElements[2];
 		    // If this is the class name...
+		    // Form : taverna.processor.<TAGNAME>.class = <CLASSNAME>
 		    if (keyElements[3].equals("class")) {
 			// Store the class name <-> tag name mappings
 			tagNameForClassName.put(value,tagName);
 			classNameForTagName.put(tagName,value);
 		    }
+		    // Form : taverna.processor.<TAGNAME>.colour = <RENDERINGHINT_COLOUR>
 		    else if (keyElements[3].equals("colour")) {
 			// Configure default display colour for i.e. dot
 			coloursForTagName.put(tagName,value);
 		    }
+		    // Form : taverna.processor.<TAGNAME>.icon = <RENDERINGHINT_ICON>
 		    else if (keyElements[3].equals("icon")) {
 			// Fetch resource icon...
 			iconForTagName.put(tagName,new ImageIcon(ClassLoader.getSystemResource(value)));
 		    }
+		    // Form : taverna.processor.<TAGNAME>.taskclass = <ENACTOR_TASK_CLASS>
 		    else if (keyElements[3].equals("taskclass")) {
 			// Configure the taverna task for the enactor to run this type of processor
 			taskClassForTagName.put(tagName, value);
 		    }
+		    // Form : taverna.processor.<TAGNAME>.xml = <XML_HANDLER_CLASS>
 		    else if (keyElements[3].equals("xml")) {
 			// Configure and instantiate the XML handler for this type of processor
 			String handlerClassName = value;
@@ -96,17 +114,41 @@ public class ProcessorHelper {
 			XMLHandler xh = (XMLHandler)handlerClass.newInstance();
 			xmlHandlerForTagName.put(tagName, xh);
 		    }
-		    
+		}
+		// Form : taverna.scavenger.<TAGNAME> = <SCAVENGERCLASS>
+		// Use the scavenger class as a key, as this allows us to have
+		// more than one scavenger per tag type. We have the tag type as
+		// a value in order that the rendering code can get the icon hint
+		// for the type being created.
+		keyElements = key.split("\\.",3);
+		if (keyElements.length == 3 && keyElements[1].equals("scavenger")) {
+		    // Get the set of scavenger creating classes
+		    String scavengerClassName = keyElements[2];
+		    String scavengerTagName = value;
+		    tagNameForScavenger.put(scavengerClassName, scavengerTagName);
 		}
 	    }
 	}
 	catch (Exception e) {
 	    System.out.println("Error during initialisation for taverna properties! : "+e.getMessage());
 	    e.printStackTrace();
-	    //System.exit(1);
+	    // Don't exit, as this hides the stack trace etc!
+	    // System.exit(1);
 	}
     }
 
+    /**
+     * Return the map of scavenger class names to tag names
+     */
+    public static Map getScavengerToTagNames() {
+	return tagNameForScavenger;
+    }
+
+    /**
+     * Given a processor instance, return the fully qualified class name
+     * of a TavernaTask for the myGrid enactor to invoke the operation
+     * represented by the processor
+     */
     public static String getTaskClassName(Processor p) {
 	String className = p.getClass().getName();
 	String tagName = (String)tagNameForClassName.get(className);
@@ -119,6 +161,29 @@ public class ProcessorHelper {
 	return null;
     }
 
+    /**
+     * Given a class name, return the tag name used by this helper
+     * class as an index for the other categories such as icons.
+     */
+    public static String getTagNameForClassName(String className) {
+	//System.out.println("Request for tag name for : "+className);
+	return (String)tagNameForClassName.get(className);
+    }
+
+    
+    /**
+     * Given a tag name, return the preferred image icon for that
+     * tag.
+     */
+    public static ImageIcon getIconForTagName(String tagName) {
+	//System.out.println("Request for icon for : "+tagName);
+	return (ImageIcon)iconForTagName.get(tagName);
+    }
+
+    /**
+     * Given a processor instance, return the preferred colour
+     * to be used for UI representations.
+     */
     public static String getPreferredColour(Processor p) {
 	String className = p.getClass().getName();
 	String tagName = (String)tagNameForClassName.get(className);
@@ -131,6 +196,10 @@ public class ProcessorHelper {
 	return "white";
     }
 
+    /**
+     * Given a processor instance, return an image icon to be
+     * used in, for example, tree renderer objects.
+     */
     public static ImageIcon getPreferredIcon(Processor p) {
 	String className = p.getClass().getName();
 	String tagName = (String)tagNameForClassName.get(className);
@@ -143,6 +212,13 @@ public class ProcessorHelper {
 	return null;
     }
 
+    /**
+     * Given a processor instance, return the 'spec' block of 
+     * XML that represents the processor in the XScufl language.
+     * This is the element directly inside the 's:processor' element
+     * and specifies specific information about this particular
+     * processor. Returns null if there is no handler.
+     */
     public static Element elementForProcessor(Processor p) {
 	String className = p.getClass().getName();
 	String tagName = (String)tagNameForClassName.get(className);

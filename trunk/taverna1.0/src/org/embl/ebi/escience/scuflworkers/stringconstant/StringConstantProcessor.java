@@ -13,7 +13,6 @@ import org.embl.ebi.escience.scufl.ScuflModel;
 // Utility Imports
 import java.util.Properties;
 
-import java.lang.String;
 
 
 

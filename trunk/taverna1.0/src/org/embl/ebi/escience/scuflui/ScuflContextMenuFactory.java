@@ -13,12 +13,6 @@ import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
 import org.embl.ebi.escience.scufl.*;
 
-import org.embl.ebi.escience.scuflui.LinkingMenus;
-import org.embl.ebi.escience.scuflui.NoContextMenuFoundException;
-import org.embl.ebi.escience.scuflui.ScuflIcons;
-import java.lang.Exception;
-import java.lang.Object;
-import java.lang.String;
 
 
 

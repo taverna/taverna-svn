@@ -10,14 +10,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import org.embl.ebi.escience.scufl.DuplicatePortNameException;
-import org.embl.ebi.escience.scufl.InternalSinkPortHolder;
-import org.embl.ebi.escience.scufl.InternalSourcePortHolder;
-import org.embl.ebi.escience.scufl.PortCreationException;
-import org.embl.ebi.escience.scufl.Processor;
-import org.embl.ebi.escience.scufl.ScuflModelEvent;
-import java.lang.RuntimeException;
-import java.lang.String;
 
 
 
