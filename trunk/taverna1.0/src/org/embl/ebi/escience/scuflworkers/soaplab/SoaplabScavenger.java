@@ -63,11 +63,7 @@ public class SoaplabScavenger extends Scavenger {
 		    }
 		}
 	    } catch (Exception e) {
-		// ignore if AnalysisFactory service does not exist -
-		// there may still be a GowlabFactory
-		if (e.getMessage().indexOf ("CORBA.COMM_FAILURE") == -1) {
-		    throw e;
-		}
+		// Ignore
 	    }
 	    try {
 		call.setTargetEndpointAddress(base+"GowlabFactory");
@@ -88,9 +84,7 @@ public class SoaplabScavenger extends Scavenger {
 		    }
 		}
 	    } catch (Exception e) {
-		if (e.getMessage().indexOf ("CORBA.COMM_FAILURE") == -1) {
-		    throw e;
-		}
+		// Do nothing
 	    }
 	}
 	catch (Exception e) {
