@@ -53,10 +53,12 @@ public class TalismanTask extends ProcessorTask {
 	    // Parents are all PortTasks (I think?)
 	    GraphNode[] inputs = getParents();
 	    for (int i = 0; i < inputs.length; i++) {
-		PortTask pt = (PortTask)inputs[i];
-		Part p = pt.getData();
-		Element e = (Element)p.getValue();
-		inputMap.put(p.getName(),e.getFirstChild().getNodeValue());
+			if(inputs[i] instanceof PortTask) {
+				PortTask pt = (PortTask)inputs[i];
+				Part p = pt.getData();
+				Element e = (Element)p.getValue();
+				inputMap.put(p.getName(),e.getFirstChild().getNodeValue());
+			}
 	    }
 	    // Get a map of the output ports, keys are port names, values are
 	    // PortTask instances, used when we have named output and need to
@@ -64,12 +66,13 @@ public class TalismanTask extends ProcessorTask {
 	    Map outputMap = new HashMap();
 	    GraphNode[] outputs = getChildren();
 	    for (int i = 0; i < outputs.length; i++) {
-		
-		PortTask pt = (PortTask)outputs[i];
-		logger.debug("Found an output port task, registering it with name : "+pt.getScuflPort().getName().toLowerCase());
+			if(outputs[i] instanceof PortTask) {
+				PortTask pt = (PortTask)outputs[i];
+				logger.debug("Found an output port task, registering it with name : "+pt.getScuflPort().getName().toLowerCase());
 
-		// convert all port names to lower case, eases matching later on
-		outputMap.put(pt.getScuflPort().getName().toLowerCase(),pt);
+				// convert all port names to lower case, eases matching later on
+				outputMap.put(pt.getScuflPort().getName().toLowerCase(),pt);
+			}
 	    }
 	    
 	    // Get the parameters for this invocation

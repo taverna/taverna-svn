@@ -25,8 +25,8 @@
 //      Dependencies        :
 //
 //      Last commit info    :   $Author: dmarvin $
-//                              $Date: 2003-05-29 10:08:21 $
-//                              $Revision: 1.8 $
+//                              $Date: 2003-05-30 08:26:36 $
+//                              $Revision: 1.9 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 
@@ -135,46 +135,50 @@ public class SoaplabTask extends ProcessorTask{
 
 			GraphNode[] outputs = getChildren();
 			boolean foundAllOutput = true;
+			boolean foundOutputItem = true;
 			for(int i=0;i<outputs.length;i++) {				
-				boolean foundOutputItem = false;
 				//look for portTests with the correct portname
-				PortTask pT = (PortTask) outputs[i];
-				String pTName = pT.getScuflPort().getName();
-				for(int j=0;j<keys.length;j++) {					
-				    if(pTName.equals(keys[j])) {
-						String type = null;
-						if(values[j] instanceof Boolean)
-							type = "boolean";
-						else if(values[j] instanceof String)
-							type = "string";
-						else if(values[j] instanceof Float)
-							type = "float";
-						else if(values[j] instanceof Integer)
-							type = "int";
-						else if(values[j] instanceof java.math.BigInteger)
-							type = "integer";
-						else if(values[j] instanceof Double)
-							type = "double";
-						else if(values[j] instanceof byte[])
-							type = "byte[]";
-						else if(values[j] instanceof String[])
-							type = "string[]";
-						else if(values[j] instanceof byte[][])
-							type = "byte[][]";
-						else if(values[j] instanceof Element)
-							type = "org.w3c.dom.Element";
-						else
-							return new TaskStateMessage(getParentFlow().getID(),getID(),TaskStateMessage.FAILED,"Task failed since could not handle return type");
-						Part part = new Part(-1,keys[j],type,values[j]);
-						pT.setData(part);
-						outputForLog.addPart(part);						
-						foundOutputItem = true;
-					}					
+				if(outputs[i] instanceof PortTask) {
+					foundOutputItem = false;
+					PortTask pT = (PortTask) outputs[i];
+					String pTName = pT.getScuflPort().getName();
+					for(int j=0;j<keys.length;j++) {					
+						if(pTName.equals(keys[j])) {
+							String type = null;
+							if(values[j] instanceof Boolean)
+								type = "boolean";
+							else if(values[j] instanceof String)
+								type = "string";
+							else if(values[j] instanceof Float)
+								type = "float";
+							else if(values[j] instanceof Integer)
+								type = "int";
+							else if(values[j] instanceof java.math.BigInteger)
+								type = "integer";
+							else if(values[j] instanceof Double)
+								type = "double";
+							else if(values[j] instanceof byte[])
+								type = "byte[]";
+							else if(values[j] instanceof String[])
+								type = "string[]";
+							else if(values[j] instanceof byte[][])
+								type = "byte[][]";
+							else if(values[j] instanceof Element)
+								type = "org.w3c.dom.Element";
+							else
+								return new TaskStateMessage(getParentFlow().getID(),getID(),TaskStateMessage.FAILED,"Task failed since could not handle return type");
+							Part part = new Part(-1,keys[j],type,values[j]);
+							pT.setData(part);
+							outputForLog.addPart(part);						
+							foundOutputItem = true;
+						}						
+					}
+					if(!foundOutputItem) {
+						foundAllOutput = false;
+						return new TaskStateMessage(getParentFlow().getID(),getID(),TaskStateMessage.FAILED,"Task failed since could not obtain output '" + pTName + "' from processor '" + proc.getName() + ", please check its links");
+					}
 				}
-				if(!foundOutputItem) {
-					foundAllOutput = false;
-					return new TaskStateMessage(getParentFlow().getID(),getID(),TaskStateMessage.FAILED,"Task failed since could not obtain output '" + pTName + "' from processor '" + proc.getName() + ", please check its links");
-				}
+				
 			}
 			endTime = new TimePoint();
 			
