@@ -33,4 +33,25 @@ public class GoViz {
 	GoVizService.addTerm(sessionID, geneOntologyID);
     }
     
+    public void markTerm(String sessionID, String geneOntologyID, String colour) {
+	GoVizService.markTerm(sessionID, geneOntologyID, colour);
+    }
+
+    public void clearColours(String sessionID) {
+	GoVizService.clearColours(sessionID);
+    }
+
+    public String[] getParents(String geneOntologyID) {
+	return GoVizService.getParents(geneOntologyID);
+    }
+
+    public String[] getChildren(String geneOntologyID) {
+	return GoVizService.getChildren(geneOntologyID);
+    }
+
+    public String[] getAncestors(String geneOntologyID) {
+	return GoVizService.getAncestors(geneOntologyID);
+    }
+
+    
 }

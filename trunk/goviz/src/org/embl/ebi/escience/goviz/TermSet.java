@@ -23,6 +23,7 @@ import uk.ac.ebi.factory.toolkit.SimpleQuery;
 // Utility Imports
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.*;
 
 import java.lang.ClassLoader;
 import java.lang.String;
@@ -32,7 +33,9 @@ import java.lang.StringBuffer;
 
 /**
  * A dictionary of GO term containers used to store the
- * information to render to DOT
+ * information to render to DOT as well as providing the
+ * various static operations to get parents and children
+ * of particular GO term nodes.
  * @author Tom Oinn
  */
 public class TermSet {
@@ -56,6 +59,11 @@ public class TermSet {
 	}
     }
     
+    /**
+     * Create a new TermSet, the first call to this will fail
+     * if the static block throws any exceptions, this indicates
+     * a probably factory misconfiguration.
+     */
     public TermSet() throws 
 	FactoryConfigurationException,
 	FactoryNotFoundException {
@@ -97,8 +105,15 @@ public class TermSet {
 	    TermContainer tc = (TermContainer)i.next();
 	    dot.append(" "+stripColon(tc.theTerm.getAccession())+" [\n");
 	    dot.append("  label = \""+tc.theTerm.getName().replaceAll(" ","\\\\n")+"\\n"+tc.theTerm.getAccession()+"\"\n");
-	    if (tc.hitCount>0) {
-		dot.append("  fillcolor = \"mediumpurple1\"\n");
+	    // If there is a colour defined for this term then use it otherwise
+	    // use the default hit based colouring.
+	    if (tc.colour != null) {
+		dot.append("  fillcolor = \""+tc.colour+"\"\n");
+	    }
+	    else {
+		if (tc.hitCount>0) {
+		    dot.append("  fillcolor = \"mediumpurple1\"\n");
+		}
 	    }
 	    dot.append(" ];\n");
 	    // Show edges
@@ -109,38 +124,38 @@ public class TermSet {
 		dot.append(" ];\n");
 	    }
 	}
-	
+
 	dot.append("}");
 	return dot.toString();
     }
-
-    String stripColon(String input) {
+    private String stripColon(String input) {
 	return input.replace(':','t');
     }
+    
 
+    /** Add a term to the current state of this object. */
     public void addTerm(String geneOntologyID)
 	throws DataLoadFailedException,
 	       GoTermUnavailableException {
 	// Pre-load the ancestors for this term
 	gtf.query(null,null,new SimpleQuery(GoTermFactory.QUERY_ANCESTRY,geneOntologyID),GoTermFactory.LOAD_MASK_ALL);
 	// Populate the map
-	doTerm(gtf.fetchTerm(geneOntologyID));
+	doAddTerm(gtf.fetchTerm(geneOntologyID));
 	// Increment the selected term's hit count by one
 	TermContainer tc = (TermContainer)terms.get(geneOntologyID);
 	tc.hitCount++;
     }
-
     // Recursively store the term and all its ancestors
-    void doTerm(GoTerm g) throws DataLoadFailedException {
+    private void doAddTerm(GoTerm g) throws DataLoadFailedException {
 	storeTerm(g);
 	GoRelation[] r = g.getParentRelations();
 	for (int i = 0; i < r.length; i++) {
 	    GoRelation relation = r[i];
-	    doTerm(relation.getParent());
+	    doAddTerm(relation.getParent());
 	}
     }
-
-    void storeTerm(GoTerm g) {
+    // Add a term to the current state
+    private void storeTerm(GoTerm g) {
 	// Did we already have it?
 	TermContainer tc = (TermContainer)terms.get(g.getAccession());
 	if (tc != null) {
@@ -152,13 +167,83 @@ public class TermSet {
     }
 
 
+    /** Mark the specified GO term in this state with the specified
+	colour, does nothing if the term hasn't been added yet. */
+    public void markTerm(String geneOntologyID, String colour) {
+	TermContainer tc = (TermContainer)terms.get(geneOntologyID);
+	if (tc != null) {
+	    tc.colour = colour;
+	}
+    }
+
+
+    /** Clear all colours */
+    public void clearColours() {
+	for (Iterator i = terms.entrySet().iterator(); i.hasNext(); ) {
+	    TermContainer tc = (TermContainer)i.next();
+	    tc.colour = null;
+	}
+    }
+
+
+    /** Fetch all ancestors of the supplied term (STATIC) */
+    public static String[] getAncestors(String geneOntologyID)
+	throws DataLoadFailedException,
+	       GoTermUnavailableException {
+	// Pre-load the ancestors to optimise access time (if this does anything!)
+	gtf.query(null, null, new SimpleQuery(GoTermFactory.QUERY_ANCESTRY, geneOntologyID), GoTermFactory.LOAD_MASK_ALL);
+	Set termSet = new HashSet();
+	addTermsToSet(termSet, gtf.fetchTerm(geneOntologyID));
+	return (String[])termSet.toArray(new String[0]);
+    }
+    private static void addTermsToSet(Set s, GoTerm g) 
+	throws DataLoadFailedException,
+	       GoTermUnavailableException {
+	s.add(g.getAccession());
+	GoRelation[] r = g.getParentRelations();
+	for (int i = 0; i < r.length; i++) {
+	    addTermsToSet(s, r[i].getParent());
+	}
+    }
+
+
+    /** Fetch the immediate child ids of the supplied term (STATIC) */
+    public static String[] getChildren(String geneOntologyID)
+	throws DataLoadFailedException,
+	       GoTermUnavailableException {
+	GoRelation[] r = gtf.fetchTerm(geneOntologyID).getChildRelations();
+	List childIDList = new ArrayList();
+	for (int i = 0; i < r.length; i++) {
+	    childIDList.add(r[i].getChild().getAccession());
+	}
+	return (String[])childIDList.toArray(new String[0]);
+    }
+
+
+    /** Fetch the immediate parent ids of the supplied term (STATIC) */
+    public static String[] getParents(String geneOntologyID)
+	throws DataLoadFailedException,
+	       GoTermUnavailableException {
+	GoRelation[] r = gtf.fetchTerm(geneOntologyID).getParentRelations();
+	List parentIDList = new ArrayList();
+	for (int i = 0; i < r.length; i++) {
+	    parentIDList.add(r[i].getParent().getAccession());
+	}
+	return (String[])parentIDList.toArray(new String[0]);
+    }
 }
 
+/**
+ * A simple container class to record the number of hits each term
+ * has within the state of this object
+ * @author Tom Oinn
+ */
 class TermContainer {
     
     GoTerm theTerm;
     int hitCount = 0;
-
+    String colour = null;
+    
     public TermContainer(GoTerm theTerm, int hitCount) {
 	this.theTerm = theTerm;
 	this.hitCount = hitCount;
