@@ -34,6 +34,9 @@ public class BaclavaIterator implements ResumableIterator {
     }
     
     public synchronized boolean hasNext() {
+	if (underlyingCollection.isEmpty()) {
+	    return false;
+	}
 	return this.internalIterator.hasNext();
     }
 

@@ -34,6 +34,11 @@ public class JoinIteratorNode extends DefaultMutableTreeNode implements Resumabl
 		}
 		// Check for validity of the iterator
 		boolean emptyIterator() {
+		    for (int i = 0; i < JoinIteratorNode.this.getChildCount(); i++) {
+			if (((ResumableIterator)JoinIteratorNode.this.getChildAt(i)).size()==0) {
+			    return true;
+			}
+		    }
 		    return false;
 		}
 	    };
