@@ -9,6 +9,7 @@ import java.beans.IntrospectionException;
 import java.lang.ref.WeakReference;
 import javax.swing.ImageIcon;
 import org.embl.ebi.escience.baclava.factory.DataThingXMLFactory;
+import org.embl.ebi.escience.baclava.factory.DataThingFactory;
 import org.embl.ebi.escience.scufl.SemanticMarkup;
 
 // Utility Imports
@@ -64,7 +65,7 @@ public class DataThing {
      * DataThingXMLFactory for almost all the real
      * work here.
     */
-    public DataThing(Element e) {
+    DataThing(Element e) {
 	myMarkup = new SemanticMarkup(this);
 	theDataObject = DataThingXMLFactory.configureDataThing(e, this);
     }
@@ -132,7 +133,7 @@ public class DataThing {
 	if (o == null) {
 	    throw new RuntimeException("Attempt to create a null data object, definitely not allowed!");
 	}
-	theDataObject = o;
+	theDataObject = DataThingFactory.convertObject(o);
 	myMarkup = new SemanticMarkup(this);
     }
 

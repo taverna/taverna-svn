@@ -125,7 +125,7 @@ public class DataThingFactory {
 	return bake(results);
     }
 
-    private static Object convertObject(Object theObject) {
+    public static Object convertObject(Object theObject) {
 	if (theObject == null) {
 	    return null;
 	}
