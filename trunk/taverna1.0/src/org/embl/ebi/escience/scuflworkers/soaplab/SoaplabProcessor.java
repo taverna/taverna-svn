@@ -62,6 +62,29 @@ public class SoaplabProcessor extends Processor implements java.io.Serializable 
 	return endpoint.getHost();
     }
 
+    // Get the category of the application
+    public String getCategory() {
+	String[] app = endpoint.getPath().split("::");
+	if (app.length == 1) {
+	    return "";
+	}
+	else {
+	    String[] pathbits = app[0].split("/");
+	    return pathbits[pathbits.length-1];
+	}
+    } 
+    
+    // Get the application name of the application
+    public String getAppName() {
+	String[] app = endpoint.getPath().split("::");
+	if (app.length == 1) {
+	    return "";
+	}
+	else {
+	    return app[1];
+	}
+    }
+
 
     /**
 

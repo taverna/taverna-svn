@@ -20,6 +20,9 @@ import java.util.prefs.*;
 import java.util.*;
 import org.embl.ebi.escience.scuflui.workbench.Workbench;
 import org.embl.ebi.escience.baclava.*;
+import org.embl.ebi.escience.scuflworkers.wsdl.WSDLBasedProcessor;
+import org.embl.ebi.escience.scuflworkers.soaplab.SoaplabProcessor;
+import org.embl.ebi.escience.scuflworkers.biomoby.BiomobyProcessor;
 
 /**
  * An amalgam of the ScuflModelExplorerTreeTable and the
@@ -280,6 +283,9 @@ public class AdvancedModelExplorer extends JPanel
 	    if (((String)selectedObject).equals("Workflow model")) {
 		updateTabForWorkflow();
 	    }
+	    else if (((String)selectedObject).equals("Processors")) {
+		updateTabForSummary();
+	    }
 	    else {
 		tabs.setEnabledAt(1, false);	    
 		tabs.setIconAt(1, null);
@@ -313,7 +319,69 @@ public class AdvancedModelExplorer extends JPanel
     private void updateTabForSummary() {
 	propertiesPanel.removeAll();
 	propertiesPanel.setLayout(new BoxLayout(propertiesPanel, BoxLayout.PAGE_AXIS));
-	
+	Processor[] processors = model.getProcessors();
+	Map resources = new HashMap();
+	for (int i = 0; i<processors.length; i++) {
+	    String resourceHost = processors[i].getResourceHost();
+	    if (resourceHost != Processor.ENACTOR) {
+		if (resources.containsKey(resourceHost) == false) {
+		    resources.put(resourceHost, new ArrayList());
+		}
+		java.util.List processorForResource = (java.util.List)resources.get(resourceHost);
+		processorForResource.add(processors[i]);
+	    }
+	}
+	StringBuffer sb = new StringBuffer();
+	sb.append("<html><body><h2>Resource usage report</h2><font size=\"-1\">");
+	sb.append("This display shows the various external resources used by the current workflow. It does not show resources such as local operations or string constants which are run within the enactment engine. Services are categorized by resource host and type, and the name of the instance of each service shown to the right.");
+	sb.append("<table border=\"1\" width=\"100%\">");
+	for (Iterator i = resources.keySet().iterator(); i.hasNext();) {
+	    String hostName = (String)i.next();
+	    java.util.List usageList = (java.util.List)resources.get(hostName);
+	    sb.append("<tr><td bgcolor=\"#eeeeff\" colspan=\"3\"><code>"+hostName+"</code></td></tr>\n");
+	    for (Iterator j = usageList.iterator(); j.hasNext(); ) {
+		Processor p = (Processor)j.next();
+		sb.append("<tr>");
+		if (p instanceof SoaplabProcessor) {
+		    sb.append("<td bgcolor=\"#ffff88\"><font size=\"-1\">Soaplab</font></td>");
+		    SoaplabProcessor sp = (SoaplabProcessor)p;
+		    sb.append("<td><font size=\"-1\">"+sp.getCategory()+"::<font color=\"purple\">"+sp.getAppName()+"</font></font></td>");
+		}
+		else if (p instanceof WSDLBasedProcessor) {
+		    sb.append("<td bgcolor=\"#55bb22\"><font size=\"-1\">Web&nbsp;service</font></td>");
+		    String targetOperation = ((WSDLBasedProcessor)p).getOperationName();
+		    String wsdlLocation = ((WSDLBasedProcessor)p).getWSDLLocation();
+		    String wsdl = "";
+		    try {
+			URL wsdlURL = new URL(wsdlLocation);
+			wsdl = wsdlURL.getFile();
+		    }
+		    catch (MalformedURLException mue) {
+			//
+		    }
+		    sb.append("<td><font size=\"-1\"><font color=\"purple\">"+targetOperation+"</font>&nbsp;in&nbsp;"+wsdl+"</font></td>");
+		}
+		else if (p instanceof BiomobyProcessor) {
+		    sb.append("<td bgcolor=\"#ff9900\"><font size=\"-1\">Biomoby</font></td>");
+		    BiomobyProcessor bp = (BiomobyProcessor)p;
+		    sb.append("<td><font size=\"-1\"><font color=\"purple\">"+bp.getServiceName()+"</font>&nbsp;in&nbsp;"+bp.getEndpoint().getFile()+"</font></td>");
+		}
+		else {
+		    sb.append("<td colspan=\"2\" bgcolor=\"#ffffff\"><font size=\"-1\">Unknown&nbsp;type</font></td>");
+		}
+		sb.append("<td bgcolor=\"#ffffff\"><font size=\"-1\">"+p.getName()+"</font></td>");
+		sb.append("</tr>\n");
+	    }
+	}
+	sb.append("</table></font></body></html>");
+	JEditorPane ed = new JEditorPane("text/html",sb.toString());
+	ed.setEditable(false);
+	JScrollPane edPane = new JScrollPane(ed);
+	propertiesPanel.add(edPane);
+	edPane.setPreferredSize(new Dimension(100,100));
+	tabs.setEnabledAt(1, true);
+	tabs.setIconAt(1, Workbench.openurlIcon);
+	tabs.setTitleAt(1, "Remote resource usage");
     }
 
     private void updateTabForWorkflow() {
