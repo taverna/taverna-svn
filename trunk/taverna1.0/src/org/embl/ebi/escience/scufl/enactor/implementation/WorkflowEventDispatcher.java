@@ -34,7 +34,7 @@ public class WorkflowEventDispatcher {
      * as listeners to this dispatcher. If false then this scan
      * is not performed and an empty dispatcher is created.
      */
-    private WorkflowEventDispatcher(boolean loadFromSPI) {
+    public WorkflowEventDispatcher(boolean loadFromSPI) {
 	if (loadFromSPI) {
 	    SPInterface spiIF = new SPInterface(WorkflowEventListener.class);
 	    ClassLoaders loaders = new ClassLoaders();
