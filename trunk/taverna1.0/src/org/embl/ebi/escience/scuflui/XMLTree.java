@@ -28,8 +28,11 @@ import org.jdom.input.SAXBuilder;
  * and used to display the XML structure as an interactive tree. Derived from
  * original code by Kyle Gabhart from
  * http://www.devx.com/gethelpon/10MinuteSolution/16694/0/page/1
- * And then subsequently heavily rewritten to move to JDOM, and moved lots of the
- * setup code to the renderer to cut down initialisation time.
+ * 
+ * And then subsequently heavily rewritten to move to JDOM, and moved lots of
+ * the setup code to the renderer to cut down initialisation time. Added text
+ * node size limit as well. Displaying large gene sequences as base64 encoded
+ * text in a single node really, really hurts performance.
  * 
  * @author Kyle Gabhart
  * @author Tom Oinn
@@ -46,9 +49,10 @@ public class XMLTree extends JTree
 	}
 
 	int textSizeLimit = 1000;
-	
+
 	/**
 	 * Build a new XMLTree from the supplied String containing XML.
+	 * 
 	 * @param text
 	 * @throws IOException
 	 * @throws JDOMException
@@ -65,7 +69,7 @@ public class XMLTree extends JTree
 		super();
 		init(document.getRootElement());
 	}
-	
+
 	private void init(Content content)
 	{
 		// Fix for platforms other than metal which can't otherwise
@@ -73,7 +77,7 @@ public class XMLTree extends JTree
 		setRowHeight(0);
 		getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
 		setShowsRootHandles(true);
-		setEditable(false);		
+		setEditable(false);
 		setModel(new DefaultTreeModel(createTreeNode(content)));
 		setCellRenderer(new DefaultTreeCellRenderer()
 		{
@@ -89,31 +93,41 @@ public class XMLTree extends JTree
 				if (value instanceof XMLNode)
 				{
 					XMLNode node = (XMLNode) value;
-					if(node.getUserObject() instanceof Element)
+					if (node.getUserObject() instanceof Element)
 					{
 						setIcon(ScuflIcons.xmlNodeIcon);
-						Element element = (Element)node.getUserObject();
-						StringBuffer nameBuffer = new StringBuffer("<html>" + element.getQualifiedName());						
+						Element element = (Element) node.getUserObject();
+						StringBuffer nameBuffer = new StringBuffer("<html>"
+								+ element.getQualifiedName());
 						boolean addedAnAttribute = false;
-						if(element.getParent() instanceof Element)
+						// Bit of a quick and dirty hack here to try to ensure
+						// that the element namespace is shown. There appears no
+						// way to get the actual xmlns declarations that are
+						// part of an element through jdom. Also, please note,
+						// theres no namespace handling at all for attributes...
+						if (element.getParent() instanceof Element)
 						{
-							Element parent = (Element)element.getParent();
-							if(parent.getNamespace(element.getNamespacePrefix()) == null)
+							Element parent = (Element) element.getParent();
+							if (parent.getNamespace(element.getNamespacePrefix()) == null)
 							{
-								nameBuffer.append(" <font color=\"purple\">xmlns:" + element.getNamespacePrefix()
-													+ "</font>=\"<font color=\"green\">" + element.getNamespaceURI() + "</font>\"");
+								nameBuffer.append(" <font color=\"purple\">xmlns:"
+										+ element.getNamespacePrefix()
+										+ "</font>=\"<font color=\"green\">"
+										+ element.getNamespaceURI() + "</font>\"");
 							}
 						}
 						else
 						{
-							nameBuffer.append(" <font color=\"purple\">xmlns:" + element.getNamespacePrefix()
-												+ "</font>=\"<font color=\"green\">" + element.getNamespaceURI() + "</font>\"");							
+							nameBuffer.append(" <font color=\"purple\">xmlns:"
+									+ element.getNamespacePrefix()
+									+ "</font>=\"<font color=\"green\">"
+									+ element.getNamespaceURI() + "</font>\"");
 						}
-						
+
 						Iterator attributes = element.getAttributes().iterator();
-						while(attributes.hasNext())
+						while (attributes.hasNext())
 						{
-							Attribute attribute = (Attribute)attributes.next();
+							Attribute attribute = (Attribute) attributes.next();
 							String name = attribute.getName().trim();
 							String attributeValue = attribute.getValue().trim();
 							if (attributeValue != null)
@@ -126,33 +140,35 @@ public class XMLTree extends JTree
 									}
 									addedAnAttribute = true;
 									nameBuffer.append(" <font color=\"purple\">" + name
-											+ "</font>=\"<font color=\"green\">" + attributeValue + "</font>\"");
+											+ "</font>=\"<font color=\"green\">" + attributeValue
+											+ "</font>\"");
 								}
 							}
 						}
-				
+
 						nameBuffer.append("</html>");
 						setText(nameBuffer.toString());
 					}
-					else if(node.getUserObject() instanceof Text)
+					else if (node.getUserObject() instanceof Text)
 					{
 						setIcon(ScuflIcons.leafIcon);
-						Text text = (Text)node.getUserObject();
+						Text text = (Text) node.getUserObject();
 						String name = text.getText();
-						if(textSizeLimit > -1 && name.length() > textSizeLimit)
+						if (textSizeLimit > -1 && name.length() > textSizeLimit)
 						{
 							name = name.substring(0, textSizeLimit) + "...";
 						}
-						setText("<html><pre><font color=\"blue\">" + name.replaceAll("<br>", "\n").replaceAll("<", "&lt;")
-						+ "</font></pre></html>");
+						setText("<html><pre><font color=\"blue\">"
+								+ name.replaceAll("<br>", "\n").replaceAll("<", "&lt;")
+								+ "</font></pre></html>");
 					}
 				}
 				return this;
 			}
 		});
-		setAllNodesExpanded();		
+		setAllNodesExpanded();
 	}
-	
+
 	public void setAllNodesExpanded()
 	{
 		synchronized (this.getModel())
@@ -194,28 +210,28 @@ public class XMLTree extends JTree
 	{
 		textSizeLimit = sizeLimit;
 	}
-	
+
 	private XMLNode createTreeNode(Content content)
 	{
 		XMLNode node = new XMLNode(content);
-		if(content instanceof Parent)
+		if (content instanceof Parent)
 		{
-			Parent parent = (Parent)content;
+			Parent parent = (Parent) content;
 			Iterator children = parent.getContent().iterator();
-			while(children.hasNext())
+			while (children.hasNext())
 			{
 				Object child = children.next();
-				if(child instanceof Element)
+				if (child instanceof Element)
 				{
-					node.add(createTreeNode((Content)child));
+					node.add(createTreeNode((Content) child));
 				}
-				else if(textSizeLimit != 0 && child instanceof Text)
+				else if (textSizeLimit != 0 && child instanceof Text)
 				{
-					Text text = (Text)child;
-					if(!text.getTextNormalize().equals(""))
+					Text text = (Text) child;
+					if (!text.getTextNormalize().equals(""))
 					{
-						node.add(createTreeNode(text));						
-					}					
+						node.add(createTreeNode(text));
+					}
 				}
 			}
 		}

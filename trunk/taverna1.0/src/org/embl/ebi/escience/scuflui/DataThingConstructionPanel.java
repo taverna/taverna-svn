@@ -62,7 +62,6 @@ import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
-import javax.xml.parsers.ParserConfigurationException;
 
 import org.embl.ebi.escience.baclava.DataThing;
 import org.embl.ebi.escience.baclava.factory.DataThingFactory;
@@ -83,10 +82,10 @@ import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
 
 /**
- * COMMENT DataThingConstructionPanel
+ * Panel to construct the input for a workflow.
  * 
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover </a>
- * @version $Revision: 1.29 $
+ * @version $Revision: 1.30 $
  */
 public abstract class DataThingConstructionPanel extends JPanel implements ScuflUIComponent, ScuflModelEventListener
 {
@@ -217,7 +216,7 @@ public abstract class DataThingConstructionPanel extends JPanel implements Scufl
 		 * @param targetNode
 		 * @param transferable
 		 * @param action
-		 * @return
+		 * @return <code>true</code> if the drop executed successfully
 		 */
 		private boolean executeDrop(TreeNode targetNode, Transferable transferable, int action)
 		{
@@ -361,7 +360,6 @@ public abstract class DataThingConstructionPanel extends JPanel implements Scufl
 			}
 			catch (Exception e)
 			{
-				// TODO Handle ParserConfigurationException
 				e.printStackTrace();
 			}
 			return panel;
@@ -670,8 +668,6 @@ public abstract class DataThingConstructionPanel extends JPanel implements Scufl
 					if (returnVal == JFileChooser.APPROVE_OPTION)
 					{
 						File file = fileChooser.getSelectedFile();
-						//FileFilter fileFilter =
-						// fileChooser.getFileFilter();
 						BufferedReader reader = new BufferedReader(new FileReader(file));
 						StringBuffer sb = new StringBuffer();
 						String s = null;
@@ -1289,9 +1285,6 @@ public abstract class DataThingConstructionPanel extends JPanel implements Scufl
 		}
 	}
 
-	/**
-	 * COMMENT Method DataThingConstructionPanel.updateModel
-	 */
 	private void updateModel()
 	{
 		Port[] inputs = model.getWorkflowSourcePorts();
