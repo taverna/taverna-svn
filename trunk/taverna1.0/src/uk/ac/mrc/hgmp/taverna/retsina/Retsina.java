@@ -26,6 +26,7 @@ import uk.ac.mrc.hgmp.taverna.retsina.ScuflGraph;
 import uk.ac.mrc.hgmp.taverna.retsina.ScuflGraphPanel;
 import java.lang.Exception;
 import java.lang.InterruptedException;
+import java.lang.Object;
 import java.lang.SecurityManager;
 import java.lang.String;
 import java.lang.System;
@@ -253,7 +254,7 @@ public class Retsina extends JApplet
      {
        public void actionPerformed(ActionEvent e)
        {
-         URL inURL = getClass().getClassLoader().getResource("resources/retsina.html");
+         URL inURL = ((Object)this).getClass().getClassLoader().getResource("resources/retsina.html");
          JTextPane about = new JTextPane();
          JPanel pscroll = new JPanel(new BorderLayout());
          JScrollPane rscroll = new JScrollPane(pscroll);

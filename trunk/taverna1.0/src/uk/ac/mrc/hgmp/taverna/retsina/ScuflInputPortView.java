@@ -99,8 +99,8 @@ public class ScuflInputPortView extends PortView {
         g.setColor(Color.red);
         g.setFont(font);
         g.drawString(param,0,18);
-        g.setColor(graph.getBackground());
-        inputPortIcon.paintIcon(graph,g,width,5);
+        g.setColor(this.graph.getBackground());
+        inputPortIcon.paintIcon(this.graph,g,width,5);
       }
     
     }

@@ -567,9 +567,9 @@ public class ScuflGraphPanel extends JPanel
 		    graph.setPortsVisible(!graph.isPortsVisible());
 		    URL connectUrl;
 		    if (graph.isPortsVisible()) 
-			connectUrl = getClass().getClassLoader().getResource("images/connecton.gif");
+			connectUrl = ((Object)this).getClass().getClassLoader().getResource("images/connecton.gif");
 		    else 
-			connectUrl = getClass().getClassLoader().getResource("images/connectoff.gif");
+			connectUrl = ((Object)this).getClass().getClassLoader().getResource("images/connectoff.gif");
 		    
 		    ImageIcon connectIcon = new ImageIcon(connectUrl);
 		    putValue(SMALL_ICON, connectIcon);
