@@ -25,8 +25,8 @@
 //      Dependencies        :
 //
 //      Last commit info    :   $Author: mereden $
-//                              $Date: 2004-11-01 21:07:10 $
-//                              $Revision: 1.62 $
+//                              $Date: 2004-11-03 18:22:36 $
+//                              $Revision: 1.63 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 package uk.ac.soton.itinnovation.taverna.enactor.entities;
@@ -616,7 +616,7 @@ public class ProcessorTask extends AbstractTask {
 	}
 	else {
 	    // Create multiple worker threads
-	    int workers = activeProcessor.getMaximumWorkers();
+	    int workers = activeProcessor.getWorkers();
 	    if (workers > rootNode.size()) {
 		workers = rootNode.size();
 	    }
