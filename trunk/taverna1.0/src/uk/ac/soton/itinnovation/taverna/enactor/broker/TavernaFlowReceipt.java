@@ -24,9 +24,9 @@
 //      Created for Project :   MYGRID
 //      Dependencies        :
 //
-//      Last commit info    :   $Author: dmarvin $
-//                              $Date: 2003-06-09 16:48:59 $
-//                              $Revision: 1.13 $
+//      Last commit info    :   $Author: mereden $
+//                              $Date: 2003-09-08 12:17:42 $
+//                              $Revision: 1.14 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 
@@ -63,10 +63,6 @@ import org.jdom.Element;
 import org.jdom.Text;
 import org.jdom.output.XMLOutputter;
 
-import uk.ac.soton.itinnovation.taverna.enactor.broker.LogLevel;
-import java.lang.Exception;
-import java.lang.String;
-import java.lang.StringBuffer;
 
 
 

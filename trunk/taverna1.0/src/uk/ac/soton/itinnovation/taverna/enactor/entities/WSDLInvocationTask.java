@@ -25,8 +25,8 @@
 //      Dependencies        :
 //
 //      Last commit info    :   $Author: mereden $
-//                              $Date: 2003-06-09 11:13:03 $
-//                              $Revision: 1.18 $
+//                              $Date: 2003-09-08 12:17:42 $
+//                              $Revision: 1.19 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 
@@ -35,7 +35,7 @@ package uk.ac.soton.itinnovation.taverna.enactor.entities;
 import org.apache.log4j.Logger;
 import org.embl.ebi.escience.scufl.Port;
 import org.embl.ebi.escience.scufl.Processor;
-import org.embl.ebi.escience.scufl.WSDLBasedProcessor;
+import org.embl.ebi.escience.scuflworkers.wsdl.WSDLBasedProcessor;
 import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.entities.graph.GraphNode;
 import uk.ac.soton.itinnovation.mygrid.workflow.enactor.invocation.InvocationDescription;
 import uk.ac.soton.itinnovation.mygrid.workflow.enactor.invocation.WSDLServiceInvocation;
@@ -58,11 +58,6 @@ import org.jdom.Text;
 // Network Imports
 import java.net.URL;
 
-import uk.ac.soton.itinnovation.taverna.enactor.entities.PortTask;
-import uk.ac.soton.itinnovation.taverna.enactor.entities.ProcessorTask;
-import uk.ac.soton.itinnovation.taverna.enactor.entities.TaskExecutionException;
-import java.lang.Exception;
-import java.lang.String;
 
 
 

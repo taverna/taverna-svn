@@ -25,8 +25,8 @@
 //      Dependencies        :
 //
 //      Last commit info    :   $Author: mereden $
-//                              $Date: 2003-06-09 11:13:03 $
-//                              $Revision: 1.2 $
+//                              $Date: 2003-09-08 12:17:42 $
+//                              $Revision: 1.3 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 
@@ -34,7 +34,7 @@ package uk.ac.soton.itinnovation.taverna.enactor.entities;
 
 import org.apache.log4j.Logger;
 import org.embl.ebi.escience.scufl.Processor;
-import org.embl.ebi.escience.scufl.WorkflowProcessor;
+import org.embl.ebi.escience.scuflworkers.workflow.WorkflowProcessor;
 import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.broker.FlowBroker;
 import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.broker.FlowBrokerFactory;
 import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.broker.FlowCallback;
@@ -56,13 +56,6 @@ import java.util.Map;
 import org.jdom.Element;
 import org.jdom.Text;
 
-import uk.ac.soton.itinnovation.taverna.enactor.entities.ProcessorTask;
-import uk.ac.soton.itinnovation.taverna.enactor.entities.TaskExecutionException;
-import java.lang.Exception;
-import java.lang.InterruptedException;
-import java.lang.NullPointerException;
-import java.lang.String;
-import java.lang.Thread;
 
 
 

@@ -2,21 +2,21 @@ package uk.ac.mrc.hgmp.taverna.retsina;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import javax.swing.*;
+import org.embl.ebi.escience.scufl.ScuflModel;
+import org.embl.ebi.escience.scuflui.ScuflUIComponent;
 import org.emboss.jemboss.JembossJarUtil;
 import org.emboss.jemboss.gui.startup.ProgList;
 import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.broker.FlowBroker;
 import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.broker.FlowBrokerFactory;
-import uk.ac.soton.itinnovation.taverna.enactor.broker.TavernaFlowReceipt;
-import uk.ac.soton.itinnovation.taverna.enactor.broker.TavernaStringifiedWorkflowSubmission;
 import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.broker.InvalidFlowBrokerRequestException;
 import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.broker.WorkflowCommandException;
-import org.embl.ebi.escience.scuflui.ScuflUIComponent;
+import uk.ac.soton.itinnovation.taverna.enactor.broker.TavernaFlowReceipt;
+import uk.ac.soton.itinnovation.taverna.enactor.broker.TavernaStringifiedWorkflowSubmission;
 
 // IO Imports
 import java.io.*;
@@ -24,17 +24,6 @@ import java.io.*;
 // Network Imports
 import java.net.URL;
 
-import org.embl.ebi.escience.scufl.ScuflModel;
-import uk.ac.mrc.hgmp.taverna.retsina.ProgramSelectionPanel;
-import uk.ac.mrc.hgmp.taverna.retsina.ScuflGraph;
-import uk.ac.mrc.hgmp.taverna.retsina.ScuflGraphPanel;
-import java.lang.Exception;
-import java.lang.InterruptedException;
-import java.lang.Object;
-import java.lang.SecurityManager;
-import java.lang.String;
-import java.lang.System;
-import java.lang.Thread;
 
 
 

@@ -17,8 +17,8 @@
 //	Dependencies:
 //
 //	Last commit info :    $Author: mereden $
-//                        $Date: 2003-04-17 15:21:48 $
-//                        $Revision: 1.2 $
+//                        $Date: 2003-09-08 12:17:42 $
+//                        $Revision: 1.3 $
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -29,8 +29,6 @@ import uk.ac.soton.itinnovation.mygrid.workflow.enactor.invocation.InvocationDes
 // Network Imports
 import java.net.URL;
 
-import java.lang.IllegalArgumentException;
-import java.lang.String;
 
 
 

@@ -24,9 +24,9 @@
 //      Created for Project :   MYGRID
 //      Dependencies        :
 //
-//      Last commit info    :   $Author: dmarvin $
-//                              $Date: 2003-06-12 16:09:23 $
-//                              $Revision: 1.16 $
+//      Last commit info    :   $Author: mereden $
+//                              $Date: 2003-09-08 12:17:42 $
+//                              $Revision: 1.17 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 package uk.ac.soton.itinnovation.taverna.enactor.entities;
@@ -53,15 +53,6 @@ import java.util.Map;
 import org.jdom.Element;
 import org.jdom.JDOMException;
 
-import uk.ac.soton.itinnovation.taverna.enactor.entities.PortTask;
-import uk.ac.soton.itinnovation.taverna.enactor.entities.TaskExecutionException;
-import uk.ac.soton.itinnovation.taverna.enactor.entities.TavernaTask;
-import java.lang.Class;
-import java.lang.Exception;
-import java.lang.Integer;
-import java.lang.Object;
-import java.lang.String;
-import java.lang.StringBuffer;
 
 
 

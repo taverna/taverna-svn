@@ -25,8 +25,8 @@
 //      Dependencies        :
 //
 //      Last commit info    :   $Author: mereden $
-//                              $Date: 2003-06-09 11:13:01 $
-//                              $Revision: 1.2 $
+//                              $Date: 2003-09-08 12:17:42 $
+//                              $Revision: 1.3 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 package uk.ac.soton.itinnovation.taverna.enactor.broker;
@@ -34,7 +34,6 @@ package uk.ac.soton.itinnovation.taverna.enactor.broker;
 import org.embl.ebi.escience.scufl.ScuflModel;
 import uk.ac.soton.itinnovation.mygrid.workflow.enactor.io.Input;
 
-import java.lang.String;
 
 
 

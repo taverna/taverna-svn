@@ -346,6 +346,15 @@
 		</java>
 	</target>
 
+        <!-- Examine the taverna resource bundle -->
+        <target name="tools.rb" depends="java">
+		<java classname="TestRB" fork="yes">
+		        <arg value="taverna"/>
+		   	<classpath refid="compile-classpath"/>
+		</java>
+	</target>
+
+
 	<!-- Run arbitrary unit test -->
 	<target name="runtestunit" depends="jar">
 		<java classname="junit.textui.TestRunner" fork="true">

@@ -25,9 +25,9 @@
 //      Created for Project :   MYGRID
 //      Dependencies        :
 //
-//      Last commit info    :   $Author: dmarvin $
-//                              $Date: 2003-06-09 07:28:23 $
-//                              $Revision: 1.8 $
+//      Last commit info    :   $Author: mereden $
+//                              $Date: 2003-09-08 12:17:42 $
+//                              $Revision: 1.9 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 
@@ -39,9 +39,6 @@ import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.eventservice.TaskSt
 import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.serviceprovidermanager.ServiceSelectionCriteria;
 import uk.ac.soton.itinnovation.mygrid.workflow.enactor.io.Part;
 
-import uk.ac.soton.itinnovation.taverna.enactor.entities.TavernaTask;
-import java.lang.Exception;
-import java.lang.String;
 
 
 

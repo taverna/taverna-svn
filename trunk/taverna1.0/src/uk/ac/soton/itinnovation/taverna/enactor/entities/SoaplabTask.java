@@ -24,9 +24,9 @@
 //      Created for Project :   MYGRID
 //      Dependencies        :
 //
-//      Last commit info    :   $Author: dmarvin $
-//                              $Date: 2003-06-09 16:49:00 $
-//                              $Revision: 1.16 $
+//      Last commit info    :   $Author: mereden $
+//                              $Date: 2003-09-08 12:17:42 $
+//                              $Revision: 1.17 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 
@@ -37,7 +37,7 @@ import org.apache.axis.client.Call;
 import org.apache.axis.client.Service;
 import org.apache.log4j.Logger;
 import org.embl.ebi.escience.scufl.Processor;
-import org.embl.ebi.escience.scufl.SoaplabProcessor;
+import org.embl.ebi.escience.scuflworkers.soaplab.SoaplabProcessor;
 import org.w3c.dom.Element;
 import uk.ac.soton.itinnovation.mygrid.workflow.enactor.io.Input;
 import uk.ac.soton.itinnovation.mygrid.workflow.enactor.io.Output;
@@ -53,15 +53,6 @@ import java.util.Set;
 // Network Imports
 import java.net.URL;
 
-import uk.ac.soton.itinnovation.taverna.enactor.entities.ProcessorTask;
-import uk.ac.soton.itinnovation.taverna.enactor.entities.TaskExecutionException;
-import java.lang.Boolean;
-import java.lang.Double;
-import java.lang.Exception;
-import java.lang.Float;
-import java.lang.Integer;
-import java.lang.Object;
-import java.lang.String;
 
 
 

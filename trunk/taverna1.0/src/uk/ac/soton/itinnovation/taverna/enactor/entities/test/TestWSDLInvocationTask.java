@@ -5,7 +5,7 @@ import junit.framework.TestCase;
 import org.embl.ebi.escience.scufl.Processor;
 import org.embl.ebi.escience.scufl.ScuflModel;
 import org.embl.ebi.escience.scufl.ScuflModelEventPrinter;
-import org.embl.ebi.escience.scufl.WSDLBasedProcessor;
+import org.embl.ebi.escience.scuflworkers.wsdl.WSDLBasedProcessor;
 import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.entities.Flow;
 import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.entities.graph.DiGraph;
 import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.entities.graph.GraphNode;
@@ -17,9 +17,6 @@ import uk.ac.soton.itinnovation.taverna.enactor.entities.TavernaTaskFactory;
 import org.jdom.Element;
 import org.jdom.output.XMLOutputter;
 
-import java.lang.Exception;
-import java.lang.String;
-import java.lang.System;
 
 
 

@@ -10,44 +10,33 @@ import com.jgraph.JGraph;
 import com.jgraph.graph.*;
 import com.jgraph.graph.Port; // ambiguous with: org.embl.ebi.escience.scufl.Port 
 import com.jgraph.plaf.basic.BasicGraphUI;
-
-import javax.swing.event.CellEditorListener;
 import java.awt.*;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.dnd.*;
-import java.awt.event.*;
-import javax.swing.JFrame;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import javax.swing.BorderFactory;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.ToolTipManager;
 import javax.swing.border.BevelBorder;
 import javax.swing.border.Border;
-import javax.swing.ToolTipManager;
-import javax.swing.JTextField;
-import javax.swing.JOptionPane;
 import org.embl.ebi.escience.scufl.*;
 import org.embl.ebi.escience.scufl.parser.XScuflFormatException;
 import org.embl.ebi.escience.scufl.parser.XScuflParser;
 import org.embl.ebi.escience.scufl.view.XScuflView;
 import org.embl.ebi.escience.scuflui.ScuflUIComponent;
+import org.embl.ebi.escience.scuflworkers.soaplab.SoaplabProcessor;
 import org.emboss.jemboss.gui.startup.ProgList;
 
 // Utility Imports
 import java.util.Hashtable;
-import java.util.Vector;
 import java.util.List; // ambiguous with: java.awt.List 
 import java.util.Map;
+import java.util.Vector;
 
-import uk.ac.mrc.hgmp.taverna.retsina.ProgNode;
-import uk.ac.mrc.hgmp.taverna.retsina.ScuflGraphCell;
-import uk.ac.mrc.hgmp.taverna.retsina.ScuflInputPortView;
-import uk.ac.mrc.hgmp.taverna.retsina.ScuflOutputPort;
-import uk.ac.mrc.hgmp.taverna.retsina.ScuflOutputPortView;
-import uk.ac.mrc.hgmp.taverna.retsina.ScuflPort;
-import java.lang.Exception;
-import java.lang.Object;
-import java.lang.String;
-import java.lang.System;
+
 
 
 /**

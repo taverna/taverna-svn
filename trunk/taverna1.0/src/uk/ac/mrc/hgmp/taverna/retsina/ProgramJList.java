@@ -14,9 +14,6 @@ import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
-import uk.ac.mrc.hgmp.taverna.retsina.ProgNode;
-import java.lang.String;
-import java.lang.System;
 
 
 

@@ -14,9 +14,9 @@
 //      Created for Project :   MYGRID
 //      Dependencies        :   
 //
-//      Last commit info    :   $Author: dmarvin $
-//                              $Date: 2003-05-20 17:23:16 $
-//                              $Revision: 1.3 $
+//      Last commit info    :   $Author: mereden $
+//                              $Date: 2003-09-08 12:17:42 $
+//                              $Revision: 1.4 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 
@@ -30,11 +30,6 @@ import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.eventservice.TaskSt
 import uk.ac.soton.itinnovation.taverna.enactor.entities.TavernaTask;
 import uk.ac.soton.itinnovation.taverna.enactor.monitor.TavernaTaskMonitor;
 
-import java.lang.Exception;
-import java.lang.IllegalArgumentException;
-import java.lang.Runnable;
-import java.lang.System;
-import java.lang.Thread;
 
 
 

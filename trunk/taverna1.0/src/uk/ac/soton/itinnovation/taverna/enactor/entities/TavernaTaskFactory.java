@@ -24,9 +24,9 @@
 //      Created for Project :   MYGRID
 //      Dependencies        :
 //
-//      Last commit info    :   $Author: dmarvin $
-//                              $Date: 2003-06-05 14:36:23 $
-//                              $Revision: 1.11 $
+//      Last commit info    :   $Author: mereden $
+//                              $Date: 2003-09-08 12:17:42 $
+//                              $Revision: 1.12 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 
@@ -36,21 +36,12 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import org.apache.log4j.Logger;
 import org.embl.ebi.escience.scufl.Processor;
-import org.embl.ebi.escience.scufl.SoaplabProcessor;
-import org.embl.ebi.escience.scufl.TalismanProcessor;
-import org.embl.ebi.escience.scufl.WSDLBasedProcessor;
-import org.embl.ebi.escience.scufl.WorkflowProcessor;
+import org.embl.ebi.escience.scuflworkers.soaplab.SoaplabProcessor;
+import org.embl.ebi.escience.scuflworkers.talisman.TalismanProcessor;
+import org.embl.ebi.escience.scuflworkers.workflow.WorkflowProcessor;
+import org.embl.ebi.escience.scuflworkers.wsdl.WSDLBasedProcessor;
 import uk.ac.soton.itinnovation.taverna.enactor.broker.LogLevel;
 
-import uk.ac.soton.itinnovation.taverna.enactor.entities.ProcessorTask;
-import uk.ac.soton.itinnovation.taverna.enactor.entities.UnsupportedTavernaProcessorException;
-import java.lang.Class;
-import java.lang.Exception;
-import java.lang.IllegalAccessException;
-import java.lang.IllegalArgumentException;
-import java.lang.InstantiationException;
-import java.lang.Object;
-import java.lang.String;
 
 
 

@@ -7,16 +7,12 @@ import com.jgraph.graph.EdgeView;
 import com.jgraph.graph.PortRenderer;
 import com.jgraph.graph.PortView;
 import java.awt.*;
-import java.awt.event.*;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 
 // Network Imports
 import java.net.URL;
 
-import uk.ac.mrc.hgmp.taverna.retsina.ScuflInputPort;
-import java.lang.Object;
-import java.lang.String;
 
 
 
