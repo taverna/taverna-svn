@@ -11,6 +11,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.awt.*;
 import javax.swing.*;
 import javax.swing.event.InternalFrameAdapter;
 import javax.swing.event.InternalFrameEvent;
@@ -181,6 +182,36 @@ public class Workbench extends JFrame {
 	    // If not defined then reset the bounds of the Workbench object so it doesn't
 	    // take up so much space.
 	    workbench.setBounds(0,0,450,105);
+	    // If we're using OS-X on a mac then redefine the frame creator to add the default
+	    // JMenuBar to each top level JFrame - this will cause it to appear in the OSX menu
+	    // bar as per normal Apple applications
+	    if (System.getProperty("taverna.osxpresent") != null) {
+		UIUtils.DEFAULT_FRAME_CREATOR = new UIUtils.FrameCreator() {
+			public void createFrame(ScuflModel targetModel, ScuflUIComponent targetComponent, int posX, int posY, int sizeX, int sizeY) {
+			    final ScuflUIComponent component = targetComponent;
+			    final ScuflModel model = targetModel;
+			    JFrame newFrame = new JFrame(component.getName());
+			    newFrame.setJMenuBar(workbench.createMenuBar());
+			    newFrame.getContentPane().setLayout(new BorderLayout());
+			    newFrame.getContentPane().add(new JScrollPane((JComponent)targetComponent),
+							  BorderLayout.CENTER);
+			    newFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+			    newFrame.addWindowListener(new WindowAdapter() {
+				    public void windowClosed(WindowEvent e) {
+					component.detachFromModel();
+				    }
+				});
+			    if (component.getIcon() != null) {
+				newFrame.setIconImage(component.getIcon().getImage());
+			    }
+			    component.attachToModel(model);
+			    newFrame.setSize(sizeX, sizeY);
+			    newFrame.setLocation(posX, posY);
+			    newFrame.setVisible(true);
+			}
+			
+		    };
+	    }
 	}
 	
 	// Treat any command line arguments as files to import into the workbench
@@ -194,8 +225,12 @@ public class Workbench extends JFrame {
 	    }
 	}
 	
-	workbench.setVisible(true);
-	workbench.toFront();
+	// Only show the workbench window if we're not on OSX and using external frames...
+	if (System.getProperty("taverna.osxpresent") == null ||
+	    System.getProperty("taverna.workbench.useinternalframes") != null) {
+	    workbench.setVisible(true);
+	    workbench.toFront();
+	}
 	
 	UIUtils.createFrame(workbench.model, new ScuflDiagramPanel(), 20, 440, 500, 400);
 	UIUtils.createFrame(workbench.model, new AdvancedModelExplorer(), 20, 120, 500, 300);
