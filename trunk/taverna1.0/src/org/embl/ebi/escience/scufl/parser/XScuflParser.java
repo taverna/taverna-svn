@@ -242,19 +242,31 @@ public class XScuflParser {
 	// exception holder. When all the threads have exited we check the holder and
 	// throw back any of the exceptions it contains in the main thread. Seems to
 	// work okay and is a big optimisation at load time.
-	if (holder.theException != null) {
+	if (holder.exceptionList.isEmpty() == false) {
 	    // Re-enable events before exiting the method.
 	    model.setEventStatus(true);
-	    if (holder.theException instanceof ProcessorCreationException) {
-		throw (ProcessorCreationException)(holder.theException);
-	    } 
-	    else if (holder.theException instanceof XScuflFormatException) {
-		throw (XScuflFormatException)(holder.theException);
+	    // Build the message
+	    StringBuffer message = new StringBuffer();
+	    for (Iterator i = holder.exceptionList.iterator(); i.hasNext();) {
+		message.append(((Exception)i.next()).getMessage());
+		if (i.hasNext()) {
+		    message.append("\n");
+		}
 	    }
-	    else if (holder.theException instanceof DuplicateProcessorNameException) {
-		throw (DuplicateProcessorNameException)(holder.theException);
-	    }
-	    
+	    //message.append("\n\nTo load this workflow try setting offline mode, this will ");
+	    //message.append("allow you to load and remove any defunct operations."); 
+	    throw new ProcessorCreationException(message.toString());
+	    /**
+	       if (holder.theException instanceof ProcessorCreationException) {
+	       throw (ProcessorCreationException)(holder.theException);
+	       } 
+	       else if (holder.theException instanceof XScuflFormatException) {
+	       throw (XScuflFormatException)(holder.theException);
+	       }
+	       else if (holder.theException instanceof DuplicateProcessorNameException) {
+	       throw (DuplicateProcessorNameException)(holder.theException);
+	       }
+	    */
 	}
 	try {
 	    // Iterate over the external declarations and create appropriate input and output 
@@ -438,13 +450,13 @@ class ProcessorLoaderThread extends Thread {
 	    model.addProcessor(theProcessor);
 	}
 	catch (XScuflFormatException xfe) {
-	    holder.theException = xfe;
+	    holder.addException(xfe);
 	}
 	catch (ProcessorCreationException pce) {	   
-	    holder.theException = pce;
+	    holder.addException(pce);
 	}
 	catch (DuplicateProcessorNameException dpne) {	    
-	    holder.theException = dpne;
+	    holder.addException(dpne);
 	}
     }
     
@@ -454,5 +466,9 @@ class ProcessorLoaderThread extends Thread {
  * and the main thread that actually cares
  */
 class ExceptionHolder {
-    public Exception theException = null;
+    public List exceptionList = new ArrayList();
+    public synchronized void addException(Exception ex) {
+	exceptionList.add(ex);
+    }
+    //public Exception theException = null;
 }

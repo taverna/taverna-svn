@@ -68,13 +68,24 @@ public class WSDLBasedProcessor extends Processor implements java.io.Serializabl
 	if (this.isOffline()) {
 	    return;
 	}
+	
+	
+	// Configure to use axis then read the WSDL
+	WSIFPluggableProviders.overrideDefaultProvider("http://schemas.xmlsoap.org/wsdl/soap/",
+						       new WSIFDynamicProvider_ApacheAxis());
+	Definition def = null;
 	try {
+	    def = WSIFUtils.readWSDL(null, wsdlLocation);
+	}
+	catch (Exception ex) {
+	    ProcessorCreationException pce = new ProcessorCreationException(procName+": Unable to load wsdl at " +
+									    wsdlLocation);
+	    pce.initCause(ex);
+	    pce.printStackTrace();
+	    throw pce;
+	}
 
-	    // Configure to use axis then read the WSDL
-	    WSIFPluggableProviders.overrideDefaultProvider("http://schemas.xmlsoap.org/wsdl/soap/",
-							   new WSIFDynamicProvider_ApacheAxis());
-	    Definition def = WSIFUtils.readWSDL(null, wsdlLocation);
-	    
+	try {
 	    // Select the default service
 	    Service service = WSIFUtils.selectService(def, null, null);
 	    
@@ -101,7 +112,7 @@ public class WSDLBasedProcessor extends Processor implements java.io.Serializabl
 		    continue;
 		}
 		if (found) {
-		    throw new RuntimeException("Operation "+name+" is overloaded, confused now.");
+		    throw new ProcessorCreationException(procName+": Operation "+name+" is overloaded in WSDL at "+wsdlLocation);
 		}
 		op = opTemp;
 		found = true;
@@ -111,7 +122,7 @@ public class WSDLBasedProcessor extends Processor implements java.io.Serializabl
 		outputName = (opOutput.getName() == null) ? null : opOutput.getName();
 	    }
 	    if (!found) {
-		throw new RuntimeException("Unable to locate the named operation");
+		throw new ProcessorCreationException(procName+": Unable to locate operation "+operationName+" in WSDL at "+wsdlLocation);
 	    }
 	    
 	    inNames = new String[0];
@@ -162,9 +173,11 @@ public class WSDLBasedProcessor extends Processor implements java.io.Serializabl
 	    pce.initCause(portce);
 	    throw pce;
 	}
+	catch (ProcessorCreationException pce) {
+	    throw pce;
+	}
 	catch (Exception ex) {
-	    ProcessorCreationException pce = new ProcessorCreationException("Unable to load wsdl at " +
-									    wsdlLocation);
+	    ProcessorCreationException pce = new ProcessorCreationException(procName+": "+ex.getMessage());
 	    pce.initCause(ex);
 	    pce.printStackTrace();
 	    throw pce;

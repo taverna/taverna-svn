@@ -98,7 +98,7 @@ public class SoaplabProcessor extends Processor implements java.io.Serializable 
 	    setEndpoint(firstPart);
 	}
 	catch (MalformedURLException mue) {
-	    throw new ProcessorCreationException("The supplied endpoint url was malformed, endpoint was specified as '"+endpoint+"'");
+	    throw new ProcessorCreationException(name+": The supplied endpoint url was \n   malformed, endpoint was specified as '"+endpoint+"'");
 	}
     }
 
@@ -138,10 +138,10 @@ public class SoaplabProcessor extends Processor implements java.io.Serializable 
 	    }
 	}
 	catch (PortCreationException pce) {
-	    throw new ProcessorCreationException("Exception when trying to create ports from Soaplab endpoint : "+pce.getMessage());
+	    throw new ProcessorCreationException(getName()+": Exception when trying to create ports\n   from Soaplab endpoint : "+pce.getMessage());
 	}
 	catch (DuplicatePortNameException dpne) {
-	    throw new ProcessorCreationException("Exception when trying to create ports from Soaplab endpoint : "+dpne.getMessage());
+	    throw new ProcessorCreationException(getName()+": Exception when trying to create ports\n   from Soaplab endpoint : "+dpne.getMessage());
 	}
     }
 
@@ -162,10 +162,10 @@ public class SoaplabProcessor extends Processor implements java.io.Serializable 
 	    }
 	}
 	catch (javax.xml.rpc.ServiceException se) {
-	    throw new ProcessorCreationException("Unable to create a new call to connect to soaplab, error was : "+se.getMessage());
+	    throw new ProcessorCreationException(getName()+": Unable to create a new call to connect to\n   soaplab, error was : "+se.getMessage());
 	}
 	catch (java.rmi.RemoteException re) {
-	    throw new ProcessorCreationException("Unable to call the get description method for XScufl processor "+getName()+"\nendpoint : "+this.endpoint.toString()+"\nRemote exception message"+re.getMessage());
+	    throw new ProcessorCreationException(getName()+": Unable to call the get description method\n   for XScufl processor "+getName()+"\nendpoint : "+this.endpoint.toString()+"\n   Remote exception message "+re.getMessage());
 	}
     }
 
@@ -248,10 +248,10 @@ public class SoaplabProcessor extends Processor implements java.io.Serializable 
 
 	}
 	catch (javax.xml.rpc.ServiceException se) {
-	    throw new ProcessorCreationException("Unable to create a new call to connect to soaplab, error was : "+se.getMessage());
+	    throw new ProcessorCreationException(getName()+": Unable to create a new call to connect\n   to soaplab, error was : "+se.getMessage());
 	}
 	catch (java.rmi.RemoteException re) {
-	    throw new ProcessorCreationException("Unable to call the get spec method for XScufl processor "+getName()+"\nendpoint : "+this.endpoint.toString()+"\nRemote exception message"+re.getMessage());
+	    throw new ProcessorCreationException(getName()+": Unable to call the get spec method for\n   endpoint : "+this.endpoint.toString()+"\n   Remote exception message "+re.getMessage());
 	}
 	catch (NullPointerException npe) {
 	    // If we had a null pointer exception, go around again - this is a bug somewhere between axis and soaplab

@@ -266,7 +266,8 @@ public class Workbench extends JFrame {
 				}
 				catch (Exception ex) {
 				    JOptionPane.showMessageDialog(null,
-								  "Problem opening XScufl from file : \n"+ex.getMessage(),
+								  "Problem opening XScufl from file : \n\n"+ex.getMessage()+
+								  "\n\nTo load this workflow try setting offline mode, this will allow you to load and remove any defunct operations.",
 								  "Exception!",
 								  JOptionPane.ERROR_MESSAGE);
 				}
