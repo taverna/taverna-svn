@@ -25,8 +25,8 @@
 //      Dependencies        :
 //
 //      Last commit info    :   $Author: mereden $
-//                              $Date: 2004-01-27 12:57:52 $
-//                              $Revision: 1.28 $
+//                              $Date: 2004-02-03 12:57:14 $
+//                              $Revision: 1.29 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 package uk.ac.soton.itinnovation.taverna.enactor.entities;
@@ -37,6 +37,7 @@ import org.embl.ebi.escience.baclava.BaclavaIterator;
 import org.embl.ebi.escience.baclava.DataThing;
 import org.embl.ebi.escience.baclava.JoinIterator;
 import org.embl.ebi.escience.scufl.Processor;
+import org.embl.ebi.escience.scufl.provenance.process.*;
 import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.entities.TimePoint;
 import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.eventservice.TaskStateMessage;
 import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.serviceprovidermanager.ServiceSelectionCriteria;
@@ -79,7 +80,8 @@ public abstract class ProcessorTask extends TavernaTask{
     private Logger logger = Logger.getLogger(ProcessorTask.class);
     private String userID;
     private String userCtx;
-    
+    private List eventList;
+
     /**
      * Default Constructor
      * @param id
@@ -90,6 +92,9 @@ public abstract class ProcessorTask extends TavernaTask{
 	this.logLevel = new LogLevel(l.getLevel());
 	this.userID = userID;
 	this.userCtx = userCtx;
+	this.eventList = new ArrayList();
+	// Add an event to the list for the scheduling operation
+	eventList.add(new ProcessScheduled());
     }
     
     /**
@@ -99,6 +104,13 @@ public abstract class ProcessorTask extends TavernaTask{
 	return userID;
     }
     
+    /**
+     * Get the list of events thus far
+     */
+    public ProcessEvent[] getEventList() {
+	return (ProcessEvent[])this.eventList.toArray(new ProcessEvent[0]);
+    }
+
     /**
      * Retrieve the user context for the parent workflow
      */
@@ -169,10 +181,13 @@ public abstract class ProcessorTask extends TavernaTask{
 	    Map outputMap = null;
 	    
 	    if (!implicitIteration) {
+		eventList.add(new Invoking());
 		// No implicit iteration required.
 		outputMap = execute(inputMap);
+		eventList.add(new ProcessComplete());
 	    }
 	    else {
+		eventList.add(new ConstructingIterator());
 		// Do the iteration here. First get the iterators for each
 		// input datathing
 		String[] inputNames = new String[numberOfParameters];
@@ -187,6 +202,7 @@ public abstract class ProcessorTask extends TavernaTask{
 			    inputIterators[j] = dataThing.iterator(inputPortTask.getScuflPort().getSyntacticType());
 			}
 			catch (IntrospectionException ie) {
+			    eventList.add(new DataMismatchError());
 			    throw new TaskExecutionException("Unable to reconcile iterator types");
 			}
 			j++;
@@ -202,14 +218,20 @@ public abstract class ProcessorTask extends TavernaTask{
 		}
 		// Now have an array of iterators covering all the inputs needed, need to repeatedly invoke
 		// the task on each possible combination
-		for (Iterator i = new JoinIterator(inputIterators); i.hasNext(); ) {
+		// Query the iterator to find out how many iterations will be needed
+		// and report these in the processor events.
+		JoinIterator i = new JoinIterator(inputIterators);
+		int totalIterations = i.size();
+		int currentIteration = 0;
+		for (; i.hasNext(); ) {
+		    currentIteration++;
 		    Object[] inputs = (Object[])i.next();
 		    Map splitInput = new HashMap();
 		    for (int k = 0; k < inputs.length; k++) {
 			splitInput.put(inputNames[k], inputs[k]);
 		    }
 		    // Have now populated the input map for the service invocation
-		    
+		    eventList.add(new InvokingWithIteration(currentIteration, totalIterations));
 		    Map singleResultMap = execute(splitInput);
 		    
 		    // Iterate over the outputs
@@ -227,6 +249,7 @@ public abstract class ProcessorTask extends TavernaTask{
 			/// fix ends
 		    }
 		}
+		eventList.add(new ProcessComplete());
 		
 
 	    }

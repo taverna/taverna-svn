@@ -128,5 +128,17 @@ public class JoinIterator implements Iterator {
 	return currentState;
     }
     
+    /**
+     * Return the total number of iterations this joinIterator will produce,
+     * this is the product of the sizes of all component iterators.
+     */
+    public int size() {
+	int size = 1;
+	for (int i = 0; i < iterators.length; i++) {
+	    size = size * iterators[i].size();
+	}
+	return size;
+    }
+    
     
 }

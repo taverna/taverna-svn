@@ -23,14 +23,23 @@ public abstract class ProcessEvent {
     
     // Provide a public get method for the date string
     public String getTimeStamp() {
-	return DateFormat.getDateInstance().format(eventDate);
+	return DateFormat.getDateTimeInstance().format(eventDate);
     }
-
-    // Return an XML Element representing this event
+    
+    /**
+     * Subclass this method to add information to the Element
+     * returned, the eventTopLevelElement will build the
+     * enclosing element for you.
+     */
     public Element eventElement() {
+	return eventTopLevelElement();
+    }
+    
+    // Return an XML Element representing this event
+    public Element eventTopLevelElement() {
 	Class eventClass = this.getClass();
-	Method[] methods = eventClass.getDeclaredMethods();
-	String leafClassName = (eventClass.getName().split("."))[eventClass.getName().split(".").length];
+	Method[] methods = eventClass.getMethods();
+	String leafClassName = (eventClass.getName().split("\\."))[eventClass.getName().split("\\.").length-1];
 	Element theElement = new Element(leafClassName);
 	for (int i = 0; i < methods.length; i++) {
 	    String methodName = methods[i].getName();

@@ -25,8 +25,8 @@
 //      Dependencies        :
 //
 //      Last commit info    :   $Author: mereden $
-//                              $Date: 2004-01-27 12:57:52 $
-//                              $Revision: 1.25 $
+//                              $Date: 2004-02-03 12:57:14 $
+//                              $Revision: 1.26 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 
@@ -34,6 +34,7 @@ package uk.ac.soton.itinnovation.taverna.enactor.broker;
 
 import org.apache.log4j.Logger;
 import org.embl.ebi.escience.baclava.DataThing;
+import org.embl.ebi.escience.scufl.provenance.process.*;
 import org.embl.ebi.escience.baclava.factory.DataThingXMLFactory;
 import org.embl.ebi.escience.scufl.Processor;
 import org.embl.ebi.escience.scufl.UnknownProcessorException;
@@ -291,7 +292,50 @@ public class TavernaFlowReceipt extends WSFlowReceipt implements org.embl.ebi.es
         return buf.toString();
     }
     
+    /**
+     * Updated progress report code to use the event lists
+     */
     public String getProgressReportXMLString() {
+	try {
+	    Element report = new Element("workflowReport");
+	    report.setAttribute("workflowID",flow.getID());
+	    report.setAttribute("workflowStatus",translateFlowState(flow.getStatus()));	
+	    Document doc = new Document(report);
+	    Element processorListElement = new Element("processorList");
+	    report.addContent(processorListElement);
+	    // Iterate over all tasks, filter for processor tasks and
+	    // get their event lists, using the methods in ProcessEvent
+	    // to create XML fragments and add them to the report
+	    Task[] tasks = flow.getTasks();
+	    for (int i = 0; i < tasks.length; i++) {
+		if (tasks[i] instanceof ProcessorTask) {
+		    ProcessorTask theTask = (ProcessorTask)tasks[i];
+		    Element processorElement = new Element("processor");
+		    processorListElement.addContent(processorElement);
+		    processorElement.setAttribute("name",theTask.getProcessor().getName());
+		    ProcessEvent[] eventList = theTask.getEventList();
+		    // Add all events into the log
+		    for (int j = eventList.length-1; j>=0; j--) {
+			processorElement.addContent(eventList[j].eventElement());
+		    }		    
+		}
+	    }
+	    XMLOutputter xmlout = new XMLOutputter();
+	    xmlout.setIndent(" ");
+	    xmlout.setNewlines(true);
+	    xmlout.setTextNormalize(false);
+	    return (xmlout.outputString(doc));
+	}
+	catch (Exception ex) {
+	    logger.error("Unable to create progress report for workflow : "+ flow.getID(),ex);
+	}
+	return "";
+    }
+
+    /**
+     * The old version of the progress report code
+     */
+    public String getProgressReportXMLString_old() {
 	try {
 	    Element report = new Element("workflowReport",REPORT_NAMESPACE);
 	    Document doc = new Document(report);

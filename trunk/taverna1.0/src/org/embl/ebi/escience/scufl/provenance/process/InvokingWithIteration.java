@@ -15,6 +15,17 @@ public class InvokingWithIteration extends Invoking {
     private String iterationNumber = "0";
     private String iterationTotal = "0";
     
+    public InvokingWithIteration() {
+	super();
+    }
+    
+    public InvokingWithIteration(int iterationNumber,
+				 int iterationTotal) {
+	super();
+	this.iterationNumber = ""+iterationNumber;
+	this.iterationTotal = ""+iterationTotal;
+    }
+
     public String getIterationNumber() {
 	return this.iterationNumber;
     }

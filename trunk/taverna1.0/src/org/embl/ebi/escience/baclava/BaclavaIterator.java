@@ -50,5 +50,9 @@ public class BaclavaIterator implements Iterator {
     public synchronized void reset() {
 	this.internalIterator = underlyingCollection.iterator();
     }
+
+    public int size() {
+	return this.underlyingCollection.size();
+    }
         
 }

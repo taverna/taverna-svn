@@ -131,6 +131,20 @@ public class EnactorInvocation extends JPanel implements ScuflUIComponent {
     }
 
     /**
+     * Show the detailed enactor progress report as a tree
+     */
+    public void showProgressReport() {
+	String progressReport = "";
+	try {
+	    progressReport = this.flowReceipt.getProgressReportXMLString();
+	    this.tabs.add("Process report", new JScrollPane(new XMLTree(progressReport)));
+	}
+	catch (Exception ex) {
+	    //
+	}
+    }
+
+    /**
      * Get the table model that is being used by this
      * invocation panel to display the statii of the
      * workflow processors
@@ -327,6 +341,7 @@ class EnactorInvocationStatusThread extends Thread {
 		    if (workflowStatus.equals("FAILED") ||
 			workflowStatus.equals("CANCELLED")) {
 			theEnactorInvocation.showProvenance();
+			theEnactorInvocation.showProgressReport();
 			running = false;
 			abort = true;
 		    }
@@ -334,7 +349,8 @@ class EnactorInvocationStatusThread extends Thread {
 			running = false;
 			// Set the results display in the display panel
 			theEnactorInvocation.showResults();
-			theEnactorInvocation.showProvenance();
+			theEnactorInvocation.showProvenance();			
+			theEnactorInvocation.showProgressReport();
 		    }
 		}
 		catch ( Exception e ) {

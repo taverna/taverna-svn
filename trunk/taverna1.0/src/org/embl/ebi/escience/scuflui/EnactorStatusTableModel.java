@@ -20,6 +20,7 @@ import java.io.StringReader;
 // JDOM Imports
 import org.jdom.Document;
 import org.jdom.Element;
+import org.jdom.Attribute;
 import org.jdom.JDOMException;
 import org.jdom.Namespace;
 import org.jdom.input.SAXBuilder;
@@ -44,9 +45,9 @@ public class EnactorStatusTableModel extends AbstractTableModel {
     private Object[][] data;
     final String[] columnNames = {"Type",
 				  "Name",
-				  "Status",
-				  "Start Time",
-				  "End Time"};
+				  "Last event",
+				  "Event timestamp",
+				  "Event detail"};
 
     public EnactorStatusTableModel(ScuflModel scufl) {
 	this.scuflModel = scufl;
@@ -59,20 +60,6 @@ public class EnactorStatusTableModel extends AbstractTableModel {
 	    Processor p = processors[i];
 	    // do the icon
 	    data[i][0] = org.embl.ebi.escience.scuflworkers.ProcessorHelper.getPreferredIcon(p);
-	    /**
-	       if (p instanceof WorkflowProcessor) {
-	       data[i][0] = ScuflIcons.workflowIcon;
-	       }
-	       else if (p instanceof WSDLBasedProcessor) {
-	       data[i][0] = ScuflIcons.wsdlIcon;
-	       }
-	       else if (p instanceof TalismanProcessor) {
-	       data[i][0] = ScuflIcons.talismanIcon;
-	       }
-	       else if (p instanceof SoaplabProcessor) {
-	       data[i][0] = ScuflIcons.soaplabIcon;
-	       }
-	    */
 	    // do the name
 	    data[i][1] = p.getName();
 	    // do status
@@ -99,7 +86,7 @@ public class EnactorStatusTableModel extends AbstractTableModel {
     /**
      * Set the start time string for a given processor
      */
-    public void setStartTime(String processorName, String theString) {
+    public void setEventTime(String processorName, String theString) {
 	for (int i = 0; i < rows; i++) {
 	    if (((String)data[i][1]).equals(processorName)) {
 		setValueAt(theString, i, 3);
@@ -111,7 +98,7 @@ public class EnactorStatusTableModel extends AbstractTableModel {
     /**
      * Set the end time string for a given processor
      */
-    public void setEndTime(String processorName, String theString) {
+    public void setEventDetail(String processorName, String theString) {
 	for (int i = 0; i < rows; i++) {
 	    if (((String)data[i][1]).equals(processorName)) {
 		setValueAt(theString, i, 4);
@@ -121,17 +108,10 @@ public class EnactorStatusTableModel extends AbstractTableModel {
     }
     
     /**
-     * Given a string containing an XML status report, update the
-     * model to reflect the current statii and start / end times
-     * of the processors in the model. The progress report should
-     * conform to the schema in docs/enactor-progress-report.xsd
-     * The returned string is the workflowStatus string, this could
-     * be used to determine whether to stop polling for status, for 
-     * example.
+     * Update the table with data from the progress report
      */
     public String update(String progressReport) 
 	throws InvalidStatusReportException {
-	// Construct an XML document from the progress report
 	Element processorList;
 	String workflowID = null;
 	String workflowStatus = null;
@@ -139,8 +119,7 @@ public class EnactorStatusTableModel extends AbstractTableModel {
 	try {
 	    SAXBuilder builder = new SAXBuilder(false);
 	    Document document = builder.build(new StringReader(progressReport));
-	    documentNamespace = document.getRootElement().getNamespace();
-	    processorList = document.getRootElement().getChild("processorList", documentNamespace);
+	    processorList = document.getRootElement().getChild("processorList");
 	    workflowID = document.getRootElement().getAttributeValue("workflowID");
 	    workflowStatus = document.getRootElement().getAttributeValue("workflowStatus");
 	}
@@ -158,36 +137,35 @@ public class EnactorStatusTableModel extends AbstractTableModel {
 	if (processorList == null) {
 	    throw new InvalidStatusReportException("Workflow progress report didn't contain a processorList");
 	}
-	// Iterate over the children of the processorList, 
-	// which should be one processor node for each processor
-	// in the model to update.
-	List processors = processorList.getChildren("processor", documentNamespace);
-	for (Iterator i = processors.iterator(); i.hasNext(); ) {
-	    
-	    // Get the processor element, read the name and status
-	    // and update the TableModel with the data appropriately
+	for (Iterator i = processorList.getChildren("processor").iterator(); i.hasNext();) {
 	    Element processorElement = (Element)i.next();
 	    String processorName = processorElement.getAttributeValue("name");
-	    String processorStatus = processorElement.getAttributeValue("status");
-	    setStatusString(processorName, processorStatus);
-	    
-	    // Optional start and end times if present
-	    // if they are absent, don't set the values.
-	    String startTime = processorElement.getAttributeValue("startTime");
-	    if (startTime != null) {
-		setStartTime(processorName, startTime);
-	    }
-	    String endTime = processorElement.getAttributeValue("endTime");
-	    if (endTime != null) {
-		setEndTime(processorName, endTime);
-	    }
+	    String processorStatus = "Unknown";
+	    String eventTime = "--";
+	    String eventDetail = "--";
 
+	    // Get the first child of the processor element.
+	    List childElementList = processorElement.getChildren();
+	    if (childElementList.isEmpty()==false) {
+		Element firstChildElement = (Element)childElementList.get(0);
+		processorStatus = firstChildElement.getName();
+		eventTime = firstChildElement.getAttributeValue("TimeStamp");
+		StringBuffer eventDetailBuffer = new StringBuffer();
+		for (Iterator j = firstChildElement.getAttributes().iterator(); j.hasNext();) {
+		    Attribute a = (Attribute)j.next();
+		    String attributeName = a.getName();
+		    if (!attributeName.equalsIgnoreCase("TimeStamp")) {
+			eventDetailBuffer.append(attributeName+"='"+a.getValue()+"' ");
+		    }
+		}
+		eventDetail = eventDetailBuffer.toString();
+	    }
+	    setEventDetail(processorName, eventDetail);
+	    setEventTime(processorName, eventTime);
+	    setStatusString(processorName, processorStatus);
 	}
-	
-	// Return the overall workflow status
 	return workflowStatus;
     }
-
 
     public Class getColumnClass(int c) {
 	if (c == 0) {
