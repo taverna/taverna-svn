@@ -22,8 +22,10 @@ public class NotificationProcessor extends Processor {
     public NotificationProcessor(ScuflModel model, String name) throws ProcessorCreationException,                                                                     DuplicateProcessorNameException {
         super(model, name);
         try {
-            Port inputPort = new InputPort(this, "publishMessage");
-            addPort(inputPort);
+            Port inputPort1 = new InputPort(this, "publishMessage");
+	    Port inputPort2 = new InputPort(this, "Topic");
+            addPort(inputPort1);
+            addPort(inputPort2);
         }
         catch (Exception e) {
             throw new ProcessorCreationException("Couldn't create NotificationProcessor");

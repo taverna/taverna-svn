@@ -32,6 +32,9 @@ public class NotificationProcessorTask implements ProcessorTaskWorker {
     private static PublishProcessor publishProcessor;
     private static DynamicProxy proxy;
     private static String portDelimiter = ":";
+    private String methodName;
+    private DataThing topic;
+    private DataThing message;
     
     /** 
      * Creates a new instance of NotificationProcessorTaskImpl 
@@ -49,13 +52,17 @@ public class NotificationProcessorTask implements ProcessorTaskWorker {
     public Map execute(Map inputMap) throws TaskExecutionException {
         try{
             Set set = inputMap.keySet();
-            if(inputMap.size() > 1)
-                throw new TaskExecutionException(" This task accepts only 1 input" );
             for(Iterator itr = set.iterator(); itr.hasNext();){
-                String key = (String) itr.next();
-                DataThing value = (DataThing) inputMap.get(key);
+                String portName = (String) itr.next();
+                DataThing value = (DataThing) inputMap.get(portName);
+		if(portName.equals(NotificationProcessorConstants.PUBLISH_METHOD)){
+			methodName = portName;
+			message = value;
+		}else if(portName.equals(NotificationProcessorConstants.PUBLISH_TOPIC)){
+				topic = value;
+		}
+	     }
                 
-                String methodName = getMethodName(key);
                 publishProcessorClass = Class.forName(NotificationProcessorConstants.PUBLISH_PROCESSOR);
                 String parameterClassName = NotificationProcessorConstants.W3C_DOM_DOCUMENT;
                 publishProcessor = (PublishProcessor) publishProcessorClass.newInstance();
@@ -64,16 +71,20 @@ public class NotificationProcessorTask implements ProcessorTaskWorker {
                 for(int i=0;i<methods.length;i++){
                     Method method = (Method) methods[i];
                     Class[] parameterTypes = method.getParameterTypes();
-                    if(parameterTypes.length != 1)
+                    if(parameterTypes.length != 3)
                         continue;
-                    if(method.getName().equals(methodName) &&
-                        ((Class)parameterTypes[0]).getName().equals(parameterClassName)){
+                    if(method.getName().equalsIgnoreCase(methodName) &&
+				((Class)parameterTypes[0]).getName().equals(String.class.getName()) &&
+				((Class)parameterTypes[1]).getName().equals(String.class.getName()) &&
+                        	((Class)parameterTypes[2]).getName().equals(parameterClassName)){
                             
-                            org.w3c.dom.Document notificationMessage = convertInputMessage(value);
-                            method.invoke(publishProcessor, new Object[] { notificationMessage });
+                            org.w3c.dom.Document notificationMessage = convertInputMessage(message);
+			    String topicName = convertInputTopic(topic);
+                            method.invoke(publishProcessor, new Object[] { NotificationProcessorConstants.DEFAULT_WORKFLOW_PUBLISHER,
+							topicName,
+							notificationMessage });
                     }
                 }
-            }
         } catch(Exception ex){
             ex.printStackTrace();
             throw new TaskExecutionException(ex.toString());
@@ -99,8 +110,19 @@ public class NotificationProcessorTask implements ProcessorTaskWorker {
         return doc;
     }
     
-    private String getMethodName(String key){
-        return key.substring(key.indexOf(portDelimiter)+1);
+    private String convertInputTopic(DataThing value){
+	if(value == null)
+		return NotificationProcessorConstants.DEFAULT_WORKFLOW_TOPIC;
+    	Object object = value.getDataObject();
+	if(object == null || object == "")
+		return NotificationProcessorConstants.DEFAULT_WORKFLOW_TOPIC;
+      	if(object instanceof String == false) {
+        	throw new IllegalArgumentException("NotificationProcessorTask cannot accept illegal DataThing argument of class " +
+                	                            object.getClass().getName());
+      	}
+	
+	return (String) object;
+
     }
     
     /*
