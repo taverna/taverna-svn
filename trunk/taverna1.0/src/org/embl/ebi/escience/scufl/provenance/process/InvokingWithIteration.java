@@ -14,7 +14,8 @@ public class InvokingWithIteration extends Invoking {
     
     private String iterationNumber = "0";
     private String iterationTotal = "0";
-    
+    private String activeWorkers = "0";
+
     public InvokingWithIteration() {
 	super();
     }
@@ -32,6 +33,14 @@ public class InvokingWithIteration extends Invoking {
     
     public String getIterationTotal() {
 	return this.iterationTotal;
+    }
+
+    public String getActiveWorkers() {
+	return this.activeWorkers;
+    }
+
+    public void setActiveWorkers(String activeWorkers) {
+	this.activeWorkers = activeWorkers;
     }
     
     public void setIterationNumber(String newNumber) {

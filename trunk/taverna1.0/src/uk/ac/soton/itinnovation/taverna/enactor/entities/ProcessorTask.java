@@ -24,9 +24,9 @@
 //      Created for Project :   MYGRID
 //      Dependencies        :
 //
-//      Last commit info    :   $Author: matskan $
-//                              $Date: 2005-02-09 13:22:46 $
-//                              $Revision: 1.68 $
+//      Last commit info    :   $Author: mereden $
+//                              $Date: 2005-03-23 15:57:27 $
+//                              $Revision: 1.69 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 package uk.ac.soton.itinnovation.taverna.enactor.entities;
@@ -89,7 +89,8 @@ public class ProcessorTask extends AbstractTask {
     public static Namespace provNS = Namespace.getNamespace("p","http://org.embl.ebi.escience/xscuflprovenance/0.1alpha");
     public static final String REPORT_NAMESPACE = "http://www.it-innovation.soton.ac.uk/taverna/workflow/enactor/progress";
     private static WorkflowEventDispatcher DISPATCHER = WorkflowEventDispatcher.DISPATCHER;
-    
+    int activeWorkers = 0;
+
     static BaclavaDataService STORE = null;
     static {
 	String storageClassName = System.getProperty("taverna.datastore.class");
@@ -637,9 +638,10 @@ public class ProcessorTask extends AbstractTask {
 	
 	currentIteration = 0;
 	final List finalEventList = eventList;
-		
+	
 	// Different code paths for processors which allow multiple workers...
 	if (activeProcessor.getMaximumWorkers() == 1) {
+	    activeWorkers++;
 	    while (doSingleIteration(rootNode,
 				     finalEventList,
 				     outputMap,
@@ -647,6 +649,7 @@ public class ProcessorTask extends AbstractTask {
 				     collectionStructure,
 				     lsidForNamedOutput,
 				     inputNameToLSID));
+	    activeWorkers--;
 	}
 	else {
 	    // Create multiple worker threads
@@ -665,6 +668,7 @@ public class ProcessorTask extends AbstractTask {
 			try {	
 			    System.out.println(Thread.currentThread()+" started");
 			    active[position] = true;
+			    activeWorkers++;
 			    while (doSingleIteration(irootNode,
 						     finalEventList,
 						     outputMap,
@@ -672,6 +676,7 @@ public class ProcessorTask extends AbstractTask {
 						     collectionStructure,
 						     lsidForNamedOutput,
 						     inputNameToLSID));
+			    activeWorkers--;
 			    active[position] = false;
 			}
 			catch (TaskExecutionException tee) {
@@ -849,6 +854,7 @@ public class ProcessorTask extends AbstractTask {
 	//eventList.add(new InvokingWithIteration(++currentIteration, totalIterations));
 	// Mark the current iteration
 	event.setIterationNumber(""+(++currentIteration));
+	event.setActiveWorkers(""+activeWorkers);
 	// Run the process
 	//System.out.println("Starting invocation "+Thread.currentThread().toString()+" "+currentLocation);
 	Map singleResultMap = invokeOnce(inputSet);
