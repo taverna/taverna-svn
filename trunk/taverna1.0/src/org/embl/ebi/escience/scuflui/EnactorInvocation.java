@@ -9,8 +9,11 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Font;
 import javax.swing.*;
+import javax.swing.event.*;
 import org.embl.ebi.escience.baclava.DataThing;
 import org.embl.ebi.escience.scufl.ScuflModel;
+import org.embl.ebi.escience.scufl.UnknownProcessorException;
+
 import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.broker.FlowBroker;
 import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.broker.FlowBrokerFactory;
 import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.broker.FlowReceipt;
@@ -213,12 +216,69 @@ public class EnactorInvocation extends JPanel implements ScuflUIComponent {
 	processorListPanel.setLayout(new BoxLayout(processorListPanel, BoxLayout.PAGE_AXIS));
 	processorListPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(),
 								      "Processor statii"));
+	
 	statusTableModel = new EnactorStatusTableModel(theModel);
 	final JTable processorTable = new JTable(statusTableModel);
+	// Add a listener to the table to allow the display of intermediate results
+	JTabbedPane intermediateResults = new JTabbedPane();
+	final JTabbedPane intermediateOutputs = new JTabbedPane();
+	final JTabbedPane intermediateInputs = new JTabbedPane();
+	intermediateResults.add("Intermediate inputs", intermediateInputs);
+	intermediateResults.add("Intermediate outputs", intermediateOutputs);
+	processorTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+	//Ask to be notified of selection changes.
+	ListSelectionModel rowSM = processorTable.getSelectionModel();
+	rowSM.addListSelectionListener(new ListSelectionListener() {
+		public void valueChanged(ListSelectionEvent e) {
+		    //Ignore extra messages.
+		    if (e.getValueIsAdjusting()) return;
+		    ListSelectionModel lsm = (ListSelectionModel)e.getSource();
+		    if (lsm.isSelectionEmpty()) {
+			//no rows are selected
+		    } 
+		    else {
+			int selectedRow = lsm.getMinSelectionIndex();
+			// get the processor name
+			try {
+			    String processorName = (String)statusTableModel.getValueAt(selectedRow, 1);
+			    Map[] intermediateResultMaps = ((TavernaFlowReceipt)EnactorInvocation.this.flowReceipt).getIntermediateResultsForProcessor(processorName);
+			    // Clear the tabs
+			    intermediateInputs.removeAll();
+			    intermediateOutputs.removeAll();
+			    // Do the inputs
+			    for (Iterator i = intermediateResultMaps[0].keySet().iterator(); i.hasNext(); ) {
+				String name = (String)i.next();
+				DataThing value = (DataThing)intermediateResultMaps[0].get(name);
+				intermediateInputs.add(name, new ResultItemPanel(value));
+			    }
+			    // And the outputs
+			    for (Iterator i = intermediateResultMaps[1].keySet().iterator(); i.hasNext(); ) {
+				String name = (String)i.next();
+				DataThing value = (DataThing)intermediateResultMaps[1].get(name);
+				intermediateOutputs.add(name, new ResultItemPanel(value));
+			    }
+			    
+			    
+			}
+			catch (UnknownProcessorException upe) {
+			    //
+			}
+		    }
+		    
+		}
+	    });
+	
+
+
+
 	//processorTable.setPreferredScrollableViewportSize(new Dimension(500,100));
 	JScrollPane scrollPane = new JScrollPane(processorTable);
 	scrollPane.setPreferredSize(new Dimension(500,200));
-	processorListPanel.add(scrollPane);
+	JSplitPane statusSplitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT,
+						    scrollPane,
+						    intermediateResults);
+	
+	processorListPanel.add(statusSplitPane);
 	//processorListPanel.pack();
 	//processorListPanel.setPreferredSize(new Dimension(500,150));
 	tabs.add(processorListPanel,"Status");

@@ -25,8 +25,8 @@
 //      Dependencies        :
 //
 //      Last commit info    :   $Author: mereden $
-//                              $Date: 2003-10-13 17:01:33 $
-//                              $Revision: 1.23 $
+//                              $Date: 2004-01-05 13:48:12 $
+//                              $Revision: 1.24 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 
@@ -36,6 +36,7 @@ import org.apache.log4j.Logger;
 import org.embl.ebi.escience.baclava.DataThing;
 import org.embl.ebi.escience.baclava.factory.DataThingXMLFactory;
 import org.embl.ebi.escience.scufl.Processor;
+import org.embl.ebi.escience.scufl.UnknownProcessorException;
 import uk.ac.soton.itinnovation.mygrid.workflow.enactor.broker.WSFlowReceipt;
 import uk.ac.soton.itinnovation.mygrid.workflow.enactor.broker.WorkflowSubmitInvalidException;
 import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.broker.FlowCallback;
@@ -69,7 +70,16 @@ import org.jdom.output.XMLOutputter;
 
 
 /**
- * Represents a receipt for a workflow submitted by the client
+ * Represents a receipt for a workflow submitted by the client<p>
+ *
+ * This receipt is used as the handle for all client operations on a
+ * running or scheduled workflow instance. It includes methods to extract
+ * status and result documents and is augemented by Taverna to also include
+ * methods to return the inputs and outputs to a specific processor for
+ * debug purpopses during the construction of a workflow.
+ * 
+ * @author Darren Marvin
+ * @author Tom Oinn
  */
 public class TavernaFlowReceipt extends WSFlowReceipt {
     
@@ -121,43 +131,38 @@ public class TavernaFlowReceipt extends WSFlowReceipt {
 	    
             //For map the tasks are stacked which is the wrong way round, so correct ;)
             for (int i = 0; i < tasks.length; i++) {
-                if (tasks[i] instanceof ProcessorTask)
+                if (tasks[i] instanceof ProcessorTask) {
                     processorSummaries.add("Processor {" + ((ProcessorTask) tasks[i]).getProcessor().getName() + "} has status {" + tasks[i].getStateString() + "}");
-            }
-            Iterator iterator = processorSummaries.iterator();
-            String[] taskSummary = new String[processorSummaries.size()];
-            int count = 0;
-	    
-            while (iterator.hasNext()) {
-                taskSummary[count] = (String) iterator.next();
-                count++;
-            }
-            String message = "Workflow active";
-            boolean report = false;
+		}
+	    }
+	    String[] taskSummary = (String[])processorSummaries.toArray(new String[0]);
+
+            String message = "Workflow active.";
 	    if (flow.getStatus() == FlowStates.FAILED) {
                 //find a failed task, should only be one, but otherwise deal with one error at a time.
                 message = "Unknown error.";
 		for (int i = 0; i < tasks.length; i++) {
-                    if (tasks[i].getCurrentState() == TaskState.FAILED)
+                    if (tasks[i].getCurrentState() == TaskState.FAILED) {
                         message = "Reason for failure: " + tasks[i].getClientMessage();
-                }
-                report = true;
-            }
-            if (flow.getStatus() == FlowStates.COMPLETE) {
-                message = "Dataflow completed successfully";
-		report = true;
-            }
-            if (report) {
-                //not interested in other events here
-                if (callbacks != null && !callbacks.isEmpty()) {
-                    iterator = callbacks.iterator();
-                    while (iterator.hasNext()) {
-                        FlowCallback cb = (FlowCallback) iterator.next();
-			
-                        cb.notify(new FlowMessage(getID(), flow.getStatus(), taskSummary, message));
-                    }
-                }
-            }
+		    }
+		}
+	    }
+            else if (flow.getStatus() == FlowStates.COMPLETE) {
+                message = "Workflow completed successfully.";
+	    }
+	    else {
+		// Nothing interesting happened
+		return;
+	    }
+	    
+	    //not interested in other events here
+	    if (callbacks != null) {
+		for (Iterator i = callbacks.iterator(); i.hasNext();) {
+		    FlowCallback cb = (FlowCallback)i.next();
+		    cb.notify(new FlowMessage(getID(), flow.getStatus(), taskSummary, message));
+		}
+	    }
+	    
 	}
 	catch (Exception ex){
 	    //log the exception
@@ -166,6 +171,73 @@ public class TavernaFlowReceipt extends WSFlowReceipt {
 	}
     } 
     
+    /**
+     * Returns two Map objects of port name -> dataThing. The input document
+     * is at position 0, the output at position 1 and the result array has
+     * exactly two slots, the documents are in the format defined by the
+     * Baclava package and used elsewhere - this allows reuse of the display
+     * code from the main workbench.
+     * @exception UnknownProcessorException if a ProcessorTask with the supplied
+     * name cannot be found within the DiGraph that this FlowReceipt is associated
+     * with.
+     */
+    public Map[] getIntermediateResultsForProcessor(String processorName) 
+	throws UnknownProcessorException {
+	// Create a new array, just used to return a pair of strings,
+	// have to do this due to Java's inadequate type system.
+	Map[] results = new Map[2];
+	// Locate a ProcessorTask with the appropriate name
+	Task[] tasks = flow.getTasks();
+	ProcessorTask targetTask = null;
+	for (int i = 0; i < tasks.length && targetTask == null; i++) {
+	    if (tasks[i] instanceof ProcessorTask) {
+		Processor p = ((ProcessorTask)tasks[i]).getProcessor();
+		if (p.getName().equalsIgnoreCase(processorName)) {
+		    targetTask = (ProcessorTask)tasks[i];
+		}
+	    }
+	}
+	if (targetTask == null) {
+	    throw new UnknownProcessorException("Unable to find a task with name '"+processorName+"' within the current workflow instance.");
+	}
+
+	// Configure an XML Outputter to 'print' the documents to the output
+	// string array later.
+	XMLOutputter xo = new XMLOutputter();
+	xo.setIndent(" ");
+	xo.setNewlines(true);
+	xo.setTextNormalize(false);
+
+	// If we reach this point then there is a processor task with the appropriate
+	// name, so find all children (which should be PortTask entities, and, for all
+	// those that have data available - which could be none - add their data to the
+	// map for inputs or outputs respectively.
+	GraphNode[] inputs = targetTask.getParents();
+	Map inputMap = new HashMap();
+	for (int i = 0; i < inputs.length; i++) {
+	    if (inputs[i] instanceof PortTask) {
+		String portName = ((PortTask)inputs[i]).getScuflPort().getName();
+		if (((PortTask)inputs[i]).dataAvailable()) {
+		    inputMap.put(portName, ((PortTask)inputs[i]).getData());
+		}
+	    }
+	}
+	results[0] = inputMap;
+	// Repeat for the outputs
+	GraphNode[] outputs = targetTask.getChildren();
+	Map outputMap = new HashMap();
+	for (int i = 0; i < outputs.length; i++) {
+	    if (outputs[i] instanceof PortTask) {
+		String portName = ((PortTask)outputs[i]).getScuflPort().getName();
+		if (((PortTask)outputs[i]).dataAvailable()) {
+		    outputMap.put(portName, ((PortTask)outputs[i]).getData());
+		}
+	    }
+	}
+	results[1] = outputMap;
+	return results;
+    }
+
     public void releaseConcrete() {
 	flowDefnString = null;
 	input = null;

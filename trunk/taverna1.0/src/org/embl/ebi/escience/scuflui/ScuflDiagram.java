@@ -6,12 +6,14 @@
 package org.embl.ebi.escience.scuflui;
 
 import java.awt.Color;
+import java.awt.geom.*;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.event.*;
 import java.awt.image.BufferedImage;
+import java.awt.image.VolatileImage;
 import javax.imageio.ImageIO;
 import javax.imageio.ImageReader;
 import javax.imageio.stream.ImageInputStream;
@@ -134,7 +136,7 @@ public class ScuflDiagram extends JComponent
      */
     public void setFitToWindow(boolean fitToWindow) {
 	this.fitToWindow = fitToWindow;
-	repaint();
+	paintComponent(getGraphics());
     }
 
     /**
@@ -181,13 +183,34 @@ public class ScuflDiagram extends JComponent
 	super.paint(g);
     }
 
+    public void paintComponent(Graphics g) {
+	if (this.image != null) {
+	    Graphics2D g2d = (Graphics2D)g;
+	    int fx = getWidth();
+	    int fy = getHeight();
+	    int ix = image.getWidth();
+	    int iy = image.getHeight();
+	    double sx = (double)fx / (double)ix;
+	    double sy = (double)fy / (double)iy;
+	    double scale = sx < sy ? sx : sy;
+	    scale = scale > 1.0 ? 1.0 : scale;
+	    AffineTransform tx = new AffineTransform();
+	    if (scale != 1.0) {
+		tx.scale(scale, scale);
+	    }
+	    g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, 
+			      RenderingHints.VALUE_ANTIALIAS_ON);
+	    g2d.drawImage(image, tx, null);
+	}
+    }
+
     int lastFrameHeight = -1;
     int lastFrameWidth = -1;
     int lastImageHeight = -1;
     int lastImageWidth = -1;
     double lastScaleFactor = 0.0;
     java.awt.Image rescaledImage = null;
-    public void paintComponent(Graphics g) {
+    public void paintComponent_old(Graphics g) {
 	if (this.image != null) {
 	    if (fitToWindow == false) {
 		g.drawImage( image, 0, 0, image.getWidth(), image.getHeight(), null );
