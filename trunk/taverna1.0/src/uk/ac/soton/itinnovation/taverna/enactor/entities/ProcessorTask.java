@@ -25,8 +25,8 @@
 //      Dependencies        :
 //
 //      Last commit info    :   $Author: mereden $
-//                              $Date: 2003-10-09 12:19:32 $
-//                              $Revision: 1.24 $
+//                              $Date: 2003-11-14 14:11:29 $
+//                              $Revision: 1.25 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 package uk.ac.soton.itinnovation.taverna.enactor.entities;
@@ -40,9 +40,13 @@ import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.serviceprovidermana
 import uk.ac.soton.itinnovation.taverna.enactor.broker.LogLevel;
 import uk.ac.soton.itinnovation.taverna.enactor.broker.TavernaFlowReceipt;
 
+import org.embl.ebi.escience.baclava.*;
+import java.beans.*;
+
 // Utility Imports
 import java.util.HashMap;
 import java.util.Map;
+import java.util.*;
 
 // IO Imports
 import java.io.PrintWriter;
@@ -134,21 +138,85 @@ public abstract class ProcessorTask extends TavernaTask{
 	    // names of the processor
 	    Map inputMap = new HashMap();
 	    // Get all the inputs, which are all PortTasks
+	    boolean implicitIteration = false;
+	    int numberOfParameters = 0;
 	    for (int i = 0; i < getParents().length; i++) {
 		if (getParents()[i] instanceof PortTask) {
+		    numberOfParameters++;
 		    PortTask inputPortTask = (PortTask)getParents()[i];
 		    String portName = inputPortTask.getScuflPort().getName();
 		    DataThing dataThing = inputPortTask.getData();
+		    
+		    String dataType = dataThing.getSyntacticType().split("\\'")[0];
+		    String portType = inputPortTask.getScuflPort().getSyntacticType().split("\\'")[0];
+		    if (dataType.equals(portType) == false) {
+			implicitIteration = true;
+			System.out.println("Found a type mismatch, will need the implicit iteration.");
+		    }	    
+		    
 		    inputMap.put(portName, dataThing);
 		}
 	    }
-	    	    
-	    // Not bothering with the iteration stuff for now, it's neat
-	    // but we don't need the extra complexity as well as moving
-	    // to a new data model.
-	    // Do the actual processing (this delegates to the subclass)
-	    Map outputMap = execute(inputMap);
 	    
+	    Map outputMap = null;
+	    
+	    if (!implicitIteration) {
+		// No implicit iteration required.
+		outputMap = execute(inputMap);
+	    }
+	    else {
+		// Do the iteration here. First get the iterators for each
+		// input datathing
+		String[] inputNames = new String[numberOfParameters];
+		BaclavaIterator[] inputIterators = new BaclavaIterator[numberOfParameters];
+		int j = 0;
+		for (int i = 0; i < getParents().length; i++) {
+		    if (getParents()[i] instanceof PortTask) {
+			PortTask inputPortTask = (PortTask)getParents()[i];
+			inputNames[j] = inputPortTask.getScuflPort().getName();
+			DataThing dataThing = inputPortTask.getData();
+			try {
+			    inputIterators[j] = dataThing.iterator(inputPortTask.getScuflPort().getSyntacticType());
+			}
+			catch (IntrospectionException ie) {
+			    throw new TaskExecutionException("Unable to reconcile iterator types");
+			}
+			j++;
+		    }
+		}
+		// Create a new DataThing object for each output
+		outputMap = new HashMap();
+		for (int i = 0; i < getChildren().length; i++) {
+		    if (getChildren()[i] instanceof PortTask) {
+			PortTask outputPortTask = (PortTask)getChildren()[i];
+			outputMap.put(outputPortTask.getScuflPort().getName(), new DataThing(new ArrayList()));
+		    }
+		}
+		// Now have an array of iterators covering all the inputs needed, need to repeatedly invoke
+		// the task on each possible combination
+		for (Iterator i = new JoinIterator(inputIterators); i.hasNext(); ) {
+		    Object[] inputs = (Object[])i.next();
+		    Map splitInput = new HashMap();
+		    for (int k = 0; k < inputs.length; k++) {
+			splitInput.put(inputNames[k], inputs[k]);
+		    }
+		    // Have now populated the input map for the service invocation
+		    
+		    Map singleResultMap = execute(splitInput);
+		    
+		    // Iterate over the outputs
+		    for (Iterator l = singleResultMap.keySet().iterator(); l.hasNext(); ) {
+			String outputName = (String)l.next();
+			DataThing outputValue = (DataThing)singleResultMap.get(outputName);
+			Object dataObject = outputValue.getDataObject();
+			List targetList = ((List)((DataThing)outputMap.get(outputName)).getDataObject());
+			targetList.add(dataObject);
+		    }
+		}
+		
+
+	    }
+
 	    // Iterate over the children, pushing data into the port tasks
 	    // as appropriate.
 	    for (int i = 0; i < getChildren().length; i++) {

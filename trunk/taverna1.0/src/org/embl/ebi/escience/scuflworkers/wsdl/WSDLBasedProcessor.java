@@ -77,6 +77,7 @@ public class WSDLBasedProcessor extends Processor implements java.io.Serializabl
 	catch (Exception ex) {
 	    ProcessorCreationException pce = new ProcessorCreationException("Unable to load wsdl!");
 	    pce.initCause(ex);
+	    pce.printStackTrace();
 	    throw pce;
 	}
 

@@ -368,14 +368,13 @@
 			<classpath refid="compile-classpath"/>
 		</java>
 	</target>
-	
-    <!-- Test the data thing type system -->
-	<target name="test.invoke" depends="java">
-		<java classname="samples.client.DynamicInvoker" fork="yes">
+	<!-- Test the data thing iterator system -->
+	<target name="test.iterator" depends="java">
+		<java classname="org.embl.ebi.escience.baclava.IteratorTest" fork="no">
 			<classpath refid="compile-classpath"/>
 		</java>
 	</target>
-
+	
 	<!-- Run arbitrary unit test -->
 	<target name="runtestunit" depends="jar">
 		<java classname="junit.textui.TestRunner" fork="true">

@@ -14,7 +14,10 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.ArrayList;
 import java.util.Set;
+import java.lang.ref.*;
+import java.beans.*;
 
 // JDOM Imports
 import org.jdom.Element;
@@ -32,6 +35,8 @@ import org.jdom.Element;
  * on the DataThingFactory in the factory subpackage,
  * this is to allow the factory to sensibly configure such
  * things as types and underlying collections.
+ * TODO - LSID needs to be added to this class to allow provenance
+ * collection to work correctly with BowerBird
  * @author Tom Oinn
  */
 public class DataThing {
@@ -196,9 +201,11 @@ public class DataThing {
     public SemanticMarkup getMetadataForObject(Object theObject, 
 					       boolean supplyDefault) 
 	throws NoMetadataFoundException {
-	SemanticMarkup theMarkup = (SemanticMarkup)metadataMap.get(theObject);
-	if (theMarkup != null) {
-	    return theMarkup;
+	WeakReference ref = (WeakReference)metadataMap.get(theObject);
+	
+	//SemanticMarkup theMarkup = (SemanticMarkup)((WeakReference)metadataMap.get(theObject)).get();
+	if (ref != null) {
+	    return (SemanticMarkup)ref.get();
 	}
 	else {
 	    if (supplyDefault == false) {
@@ -207,7 +214,7 @@ public class DataThing {
 	    else {
 		// Create a new markup object and store
 		// it bound to the object specified
-		theMarkup = new SemanticMarkup(theObject);
+		SemanticMarkup theMarkup = new SemanticMarkup(new WeakReference(theObject));
 		this.metadataMap.put(theObject, theMarkup);
 		return theMarkup;
 	    }
@@ -220,6 +227,78 @@ public class DataThing {
      */
     public Element getElement() {
 	return DataThingXMLFactory.getElement(this);
+    }
+
+    /**
+     * Given a desired type, return the BaclavaIterator that
+     * provides DataThing objects of this type. If the desired 
+     * collection structure is not contained by this DataThing
+     * then an exception is thrown.
+     * @exception IntrospectionException thrown if the supplied type is not
+     * contained within the current DataThing type.
+     */
+    public BaclavaIterator iterator(String desiredType) 
+	throws IntrospectionException {
+	String type = desiredType.split("\\'")[0];
+	String currentType = getSyntacticType().split("\\'")[0];
+	// At this point, we should have split the mime types away from the
+	// collection types, so the current type looks like, for example, l() or s(l())
+	
+	// If the strings are the same then we return an iterator with a single item 
+	// in it, namely the current DataThing; this is needed where the enactor has
+	// detected that iteration is required somewhere else using the join iterator
+	if (type.equals(currentType)) {
+	    List dataThingList = new ArrayList();
+	    dataThingList.add(this);
+	    return new BaclavaIterator(dataThingList);
+	}
+
+	// Now need to check that the conversion is valid, so either the
+	// input type is the empty string (iterate over everything to produce leaf nodes)
+	// or it is a substring of the collection type
+	if (type.equals("") || currentType.endsWith(type)) {
+	    // See how deep the iterator needs to go.
+	    int iterationDepth = (currentType.length() - type.length()) / 2;
+	    // Now drill down into the data structure that number of levels, build a list
+	    // of all the items into a new collection, iterate over this list building
+	    // the DataThing objects and return the iterator over that list (and breathe...)
+	    List targetList = new ArrayList();
+	    drill(iterationDepth, targetList, (Collection)theDataObject);
+	    // Now iterate over the target list creating new DataThing objects from it
+	    List dataThingList = new ArrayList();
+	    for (Iterator i = targetList.iterator(); i.hasNext(); ) {
+		DataThing newThing = new DataThing(i.next());
+		// Copy any metadata into the new datathing
+		newThing.metadataMap = this.metadataMap;
+		dataThingList.add(newThing);
+	    }
+	    return new BaclavaIterator(dataThingList);
+	}
+	else {
+	    throw new IntrospectionException("Incompatible types for iterator, cannot extract "+type+" from "+getSyntacticType());
+	}
+	
+    }
+    
+    /**
+     * Drill into a collection, adding items to the list if we're at the desired depth,
+     * this makes the underlying assumption that the collection contains either collections
+     * or objects, but never a mix of both.
+     */
+    private void drill(int iterationDepth, List targetList, Collection theDataObject) {
+	if (iterationDepth == 1) {
+	    // Collecting items
+	    for (Iterator i = theDataObject.iterator(); i.hasNext(); ) {
+		targetList.add(i.next());
+	    }
+	}
+	else {
+	    // Iterating further down
+	    for (Iterator i = theDataObject.iterator(); i.hasNext(); ) {
+		Collection theCollection = (Collection)i.next();
+		drill(iterationDepth-1, targetList, theCollection);
+	    }
+	}
     }
 
 }
