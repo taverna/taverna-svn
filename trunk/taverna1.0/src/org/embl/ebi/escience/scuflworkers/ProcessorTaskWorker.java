@@ -13,8 +13,14 @@ import java.util.Map;
 
 
 /**
- * Implementors of this interface provide concrete implementations
- * of the processor they reference.
+ * An implementation of this class provides the concrete invocation
+ * functionality matching the possibly more abstract definition from
+ * the Processor subclass. For example, the processor definition for
+ * a web service has the responsibility of parsing WSDL, generating
+ * ports and fetching any descriptive information whereas the
+ * ProcessorTaskWorker implementation for this type has the task of
+ * actually creating and invoking the network call to perform a single
+ * instance of the operation defined by the Processor.
  * @author Tom Oinn
  */
 public interface ProcessorTaskWorker {

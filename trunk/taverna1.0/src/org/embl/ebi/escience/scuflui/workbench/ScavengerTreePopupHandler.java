@@ -92,9 +92,9 @@ public class ScavengerTreePopupHandler extends MouseAdapter {
 		final ProcessorFactory pf = (ProcessorFactory)scuflObject;
 		// Show the popup for adding new processors to the model
 		JPopupMenu menu = new JPopupMenu();
-		JMenuItem add = new JMenuItem("Add to model", Workbench.importIcon);
+		JMenuItem add = new JMenuItem("Add to model", ScuflIcons.importIcon);
 		menu.add(add);
-		JMenuItem addWithName = new JMenuItem("Add to model with name...", Workbench.importIcon);
+		JMenuItem addWithName = new JMenuItem("Add to model with name...", ScuflIcons.importIcon);
 		menu.add(addWithName);
 		// Prepare the 'add as alternate menu'
 		Processor[] processors = scavenger.model.getProcessors();
@@ -262,7 +262,7 @@ public class ScavengerTreePopupHandler extends MouseAdapter {
 				}
 			    }
 			});
-		    JMenuItem collect = new JMenuItem("Collect scavengers from model", Workbench.importIcon);
+		    JMenuItem collect = new JMenuItem("Collect scavengers from model", ScuflIcons.importIcon);
 		    menu.add(collect);
 		    collect.addActionListener(new ActionListener() {
 			    public void actionPerformed(ActionEvent ae) {

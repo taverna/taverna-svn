@@ -70,7 +70,7 @@ public class DataThingViewer extends JFrame {
 	JMenuBar menuBar = new JMenuBar();
 	// File menu to allow saving of the data thing to disk
 	JMenu fileMenu = new JMenu("File");
-	JMenuItem save = new JMenuItem("Save contents to disk", Workbench.saveIcon);
+	JMenuItem save = new JMenuItem("Save contents to disk", ScuflIcons.saveIcon);
 	final DataThing dataThing = theThing;
 	save.addActionListener(new ActionListener() {
 		public void actionPerformed(ActionEvent e) {

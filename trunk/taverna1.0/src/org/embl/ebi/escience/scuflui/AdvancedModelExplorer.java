@@ -77,13 +77,13 @@ public class AdvancedModelExplorer extends JPanel
 	// Add options to load the workflow, import from web, save and reset
 	// These options were available from the workbench file menu previously
 	// but I think they're more intuitive here as buttons.
-	loadWorkflow = new JButton(Workbench.openIcon);
+	loadWorkflow = new JButton(ScuflIcons.openIcon);
 	loadWorkflow.setPreferredSize(new Dimension(25,25));
-	loadFromWeb = new JButton(Workbench.openurlIcon);
+	loadFromWeb = new JButton(ScuflIcons.openurlIcon);
 	loadFromWeb.setPreferredSize(new Dimension(25,25));
-	saveWorkflow = new JButton(Workbench.saveIcon);
+	saveWorkflow = new JButton(ScuflIcons.saveIcon);
 	saveWorkflow.setPreferredSize(new Dimension(25,25));
-	resetWorkflow = new JButton(Workbench.deleteIcon);
+	resetWorkflow = new JButton(ScuflIcons.deleteIcon);
 	resetWorkflow.setPreferredSize(new Dimension(25,25));
 	createNested = new JButton(ScuflIcons.windowExplorer);
 	createNested.setPreferredSize(new Dimension(25,25));
@@ -136,7 +136,7 @@ public class AdvancedModelExplorer extends JPanel
 	loadWorkflow.addActionListener(new ActionListener() {
 		public void actionPerformed(ActionEvent ae) {
 		    // Load an XScufl definition here
-		    Preferences prefs = Preferences.userNodeForPackage(Workbench.class);
+		    Preferences prefs = Preferences.userNodeForPackage(ScuflIcons.class);
 		    String curDir = prefs.get("currentDir", System.getProperty("user.home"));
 		    fc.resetChoosableFileFilters();
 		    fc.setFileFilter(new ExtensionFileFilter(new String[]{"xml"}));
@@ -325,7 +325,7 @@ public class AdvancedModelExplorer extends JPanel
 	toolbar.setRollover(true);
 	toolbar.setMaximumSize(new Dimension(2000,30));
 	toolbar.setBorderPainted(true);
-	JButton saveHTML = new JButton(Workbench.saveIcon);
+	JButton saveHTML = new JButton(ScuflIcons.saveIcon);
 	saveHTML.setPreferredSize(new Dimension(25,25));
 	toolbar.add(new JLabel(" Save HTML description "));
 	toolbar.add(saveHTML);
@@ -362,7 +362,7 @@ public class AdvancedModelExplorer extends JPanel
 	propertiesPanel.add(edPane);
 	edPane.setPreferredSize(new Dimension(100,100));
 	tabs.setEnabledAt(1, true);
-	tabs.setIconAt(1, Workbench.openurlIcon);
+	tabs.setIconAt(1, ScuflIcons.openurlIcon);
 	tabs.setTitleAt(1, "Remote resource usage");
     }
 
@@ -418,7 +418,7 @@ public class AdvancedModelExplorer extends JPanel
 							       "LSID"));
 	lsidPanel.setLayout(new BorderLayout());
 	lsidPanel.add(lsid, BorderLayout.CENTER);
-	JButton assignNewLSID = new JButton("New", Workbench.openurlIcon);
+	JButton assignNewLSID = new JButton("New", ScuflIcons.openurlIcon);
 	assignNewLSID.setPreferredSize(new Dimension(80,25));
 	assignNewLSID.addActionListener(new ActionListener() {
 		public void actionPerformed(ActionEvent e) {

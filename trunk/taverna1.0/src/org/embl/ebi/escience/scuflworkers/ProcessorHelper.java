@@ -82,7 +82,7 @@ public class ProcessorHelper {
 	  loader = Thread.currentThread().getContextClassLoader();
       }
       // Load the 'unknown processor' image icon
-      unknownProcessorIcon = new ImageIcon(loader.getResource("org/embl/ebi/escience/scuflui/png/unknownprocessor.png"));
+      unknownProcessorIcon = new ImageIcon(loader.getResource("org/embl/ebi/escience/scuflui/icons/explorer/unknownprocessor.png"));
       // Load up the values from any taverna.properties files located
       // by the class resource loader.
       Enumeration en = loader.getResources("taverna.properties");

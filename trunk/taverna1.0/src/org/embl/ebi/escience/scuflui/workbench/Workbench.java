@@ -67,7 +67,7 @@ import java.lang.System;
  */
 public class Workbench extends JFrame {
 
-    public static ImageIcon openIcon, deleteIcon, importIcon, saveIcon, openurlIcon, background;
+    public static ImageIcon background;
 
     /**
      * If the workbench is created, it will set this
@@ -81,11 +81,6 @@ public class Workbench extends JFrame {
     static {
 	try {
 	    Class c = Class.forName("org.embl.ebi.escience.scuflui.workbench.Workbench");
-	    openIcon = new ImageIcon(c.getResource("open.gif"));
-	    deleteIcon = new ImageIcon(c.getResource("delete.gif"));
-	    saveIcon = new ImageIcon(c.getResource("save.gif"));
-	    importIcon = new ImageIcon(c.getResource("import.gif"));
-	    openurlIcon = new ImageIcon(c.getResource("openurl.gif"));
 	    try {
 		background = new ImageIcon(c.getResource("background.png"));
 	    }
@@ -142,6 +137,7 @@ public class Workbench extends JFrame {
 	}
 	
 	final Workbench workbench = new Workbench();
+	
 	// Create a new implementation of the FrameCreator interface to create windows in the desktop
 	// Only do this if the property 'taverna.workbench.useinternalframes' is defined
 	if (System.getProperty("taverna.workbench.useinternalframes") != null) {
@@ -164,7 +160,6 @@ public class Workbench extends JFrame {
 				setFrameIcon(component.getIcon());
 			    }
 			    getContentPane().add(pane);
-			    //pane.getViewport().setBackground(Color.WHITE);
 			    // Bind to the specified model
 			    component.attachToModel(model);
 			    // Unbind on window close
@@ -177,6 +172,12 @@ public class Workbench extends JFrame {
 		    };
 		};
 	}
+	else {
+	    // If not defined then reset the bounds of the Workbench object so it doesn't
+	    // take up so much space.
+	    workbench.setBounds(0,0,450,105);
+	}
+	
 	// Treat any command line arguments as files to import into the workbench
 	for (int i = 0; i < args.length; i++) {
 	    try {
@@ -187,31 +188,14 @@ public class Workbench extends JFrame {
 		System.out.println(e.getMessage());
 	    }
 	}
-       
+	
+	workbench.setVisible(true);
+	workbench.toFront();
+	
 	UIUtils.createFrame(workbench.model, new ScuflDiagramPanel(), 20, 440, 500, 400);
-	/**
-	   GenericUIComponentFrame diagram = new GenericUIComponentFrame(workbench.model,
-	   new ScuflDiagramPanel());
-	   diagram.setSize(500,400);
-	   diagram.setLocation(20,440);
-	   workbench.desktop.add(diagram);
-	*/
 	UIUtils.createFrame(workbench.model, new AdvancedModelExplorer(), 20, 120, 500, 300);
 	UIUtils.createFrame(workbench.model, new ScavengerTreePanel(), 540, 120, 300, 720);
-	/**
-	   GenericUIComponentFrame explorer = new GenericUIComponentFrame(workbench.model,
-	   new AdvancedModelExplorer());
-	   explorer.setSize(500,300);
-	   explorer.setLocation(20,120);
-	   workbench.desktop.add(explorer);
-	   
-	   GenericUIComponentFrame scavenger = new GenericUIComponentFrame(workbench.model,
-	   new ScavengerTreePanel());
-	   scavenger.setSize(300,720);
-	   scavenger.setLocation(540,120);
-	   workbench.desktop.add(scavenger);
-	*/
-	workbench.setVisible(true);
+	
     }
 
     /**

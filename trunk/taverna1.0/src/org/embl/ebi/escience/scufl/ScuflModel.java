@@ -194,6 +194,7 @@ public class ScuflModel
 	    this.dataconstraints = new ArrayList();
 	    this.constraints = new ArrayList();
 	    this.processors = new ArrayList();
+	    this.description = new WorkflowDescription();
 	    this.setLogLevel(0);
 	    fireModelEvent(new ScuflModelEvent(this, "Reset model to initial state."));
 	}

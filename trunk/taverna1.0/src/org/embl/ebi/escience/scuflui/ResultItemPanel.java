@@ -24,7 +24,6 @@ import org.embl.ebi.escience.baclava.factory.DataThingTreeNode;
 import org.embl.ebi.escience.scuflui.renderers.RendererRegistry;
 import org.embl.ebi.escience.scuflui.renderers.RendererSPI;
 import org.embl.ebi.escience.scuflui.renderers.RendererException;
-import org.embl.ebi.escience.scuflui.workbench.Workbench;
 import org.apache.log4j.Logger;
 
 // Utility Imports
@@ -141,7 +140,7 @@ public class ResultItemPanel extends JPanel {
                 final Object theDataObject = node.getUserObject();
                 // Can only save on leaf nodes
                 JPopupMenu theMenu = new JPopupMenu();
-                JMenuItem saveAction = new JMenuItem("Save to file",Workbench.saveIcon);
+                JMenuItem saveAction = new JMenuItem("Save to file",ScuflIcons.saveIcon);
                 saveAction.addActionListener(new ActionListener() {
                     public void actionPerformed(ActionEvent ae) {
                         try {

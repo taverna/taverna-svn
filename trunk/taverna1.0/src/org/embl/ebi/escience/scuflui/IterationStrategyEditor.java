@@ -27,10 +27,10 @@ public class IterationStrategyEditor extends JTree
 
     static {
 	try {
-	    Class c = Class.forName("org.embl.ebi.escience.baclava.iteratorui.IteratorJTree");
-	    joinIteratorIcon = new ImageIcon(c.getResource("crossproducticon.png"));
-	    lockStepIteratorIcon = new ImageIcon(c.getResource("dotproducticon.png"));
-	    baclavaIteratorIcon = new ImageIcon(c.getResource("baclavaiteratoricon.png"));
+	    Class c = Class.forName("org.embl.ebi.escience.scuflui.IterationStrategyEditor");
+	    joinIteratorIcon = new ImageIcon(c.getResource("icons/iteration/crossproducticon.png"));
+	    lockStepIteratorIcon = new ImageIcon(c.getResource("icons/iteration/dotproducticon.png"));
+	    baclavaIteratorIcon = new ImageIcon(c.getResource("icons/iteration/baclavaiteratoricon.png"));
 	}
 	catch (Exception ex) {
 	    //
