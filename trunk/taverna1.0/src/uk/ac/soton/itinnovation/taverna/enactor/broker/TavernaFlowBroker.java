@@ -24,9 +24,9 @@
 //      Created for Project :   MYGRID
 //      Dependencies        :
 //
-//      Last commit info    :   $Author: mereden $
-//                              $Date: 2003-05-13 13:03:44 $
-//                              $Revision: 1.8 $
+//      Last commit info    :   $Author: dmarvin $
+//                              $Date: 2003-05-20 17:23:16 $
+//                              $Revision: 1.9 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 
@@ -91,6 +91,7 @@ public class TavernaFlowBroker implements FlowBroker {
         String inputData = null;
 		String userID = null;
 		Input input = null;
+		LogLevel modelLogLevel = null;
         try {
             //for Taverna the passed object is a holder for the XScufl represention of the workflow and other important bits???
             ScuflModel model = null;
@@ -115,7 +116,7 @@ public class TavernaFlowBroker implements FlowBroker {
 					System.out.println("About to try to populate ScuflModel");
 					XScuflParser.populate(doc,model,null);
 					logger.debug("Loaded ScuflModel from xml file");
-					
+					modelLogLevel = new LogLevel(model.getLogLevel());
 					
                 } catch(org.embl.ebi.escience.scufl.parser.XScuflFormatException ex) {
 					logger.error(ex);
@@ -142,7 +143,9 @@ public class TavernaFlowBroker implements FlowBroker {
                 if (model == null)
                     throw new WorkflowCommandException("Unable to obtain model representing the XScufl definition");
 
-            } else
+				if(model.getProcessors().length==0)
+					throw new WorkflowCommandException("Could not resolve any processors from the submitted workflow, please check the workflow definition is correct");
+			} else
                 throw new WorkflowCommandException("Sorry unsupported format for submitted flow");
 
             //generate the digraph representation
@@ -186,7 +189,7 @@ public class TavernaFlowBroker implements FlowBroker {
 			}
             //update the flow for this
             flow.update();
-            TavernaFlowReceipt receipt = new TavernaFlowReceipt(flow);
+            TavernaFlowReceipt receipt = new TavernaFlowReceipt(flow,userID,modelLogLevel);
 
             flow.addListener(receipt);
 

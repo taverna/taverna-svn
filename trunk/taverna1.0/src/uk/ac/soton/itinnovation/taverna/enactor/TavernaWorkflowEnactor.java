@@ -25,8 +25,8 @@
 //      Dependencies        :
 //
 //      Last commit info    :   $Author: dmarvin $
-//                              $Date: 2003-05-01 12:11:50 $
-//                              $Revision: 1.3 $
+//                              $Date: 2003-05-20 17:23:16 $
+//                              $Revision: 1.4 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 
@@ -41,6 +41,7 @@ import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.broker.FlowBrokerFa
 import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.broker.FlowCallback;
 import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.broker.FlowMessage;
 import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.broker.FlowReceipt;
+import uk.ac.soton.itinnovation.mygrid.workflow.enactor.broker.WSFlowReceipt;
 import uk.ac.soton.itinnovation.mygrid.workflow.enactor.evictor.Evictor;
 import uk.ac.soton.itinnovation.mygrid.workflow.enactor.frontend.WorkflowEnactor;
 import uk.ac.soton.itinnovation.mygrid.workflow.enactor.frontend.WorkflowInstance;
@@ -114,18 +115,6 @@ public class TavernaWorkflowEnactor extends WorkflowEnactor implements FlowCallb
         throws Exception {
 
         try {
-            /*
-			StringBuffer errorLog = new StringBuffer();
-            boolean val = isValid(workflowSpec, errorLog);
-
-            if (m_log != null) {
-                m_log.debug("submitWorkflow()");
-                m_log.debug("isValid returned: " + val);
-            }
-            if (!val) {
-                throw new WorkflowCommandException(errorLog.toString());
-            }
-			*/
             String nl = System.getProperty("line.separator");
 
             byte[] wfArray = workflowSpec.getBytes();
@@ -225,6 +214,33 @@ public class TavernaWorkflowEnactor extends WorkflowEnactor implements FlowCallb
         return ret;
     }
 
+	public String getProgressReportXMLString(String workflowInstanceID) throws Exception {
+		//find the workflow
+        String ret = null;
+        Iterator iterator = registry.iterator();
+        boolean found = false;
+
+        while (iterator.hasNext() && !found) {
+            WorkflowInstance wfl = (WorkflowInstance) iterator.next();
+            if (wfl.getID().equals(workflowInstanceID)) {
+                found = true;
+                if (wfl.getFlowReceipt() != null) 
+                    ret = wfl.getFlowReceipt().getProgressReportXMLString();                
+            }
+        }
+        if (!found || ret == null) {
+            m_log.error("Unable to find workflow instance with workflow ID: "+ workflowInstanceID);
+			//generate best attempt at xml
+			StringBuffer buf = new StringBuffer("<workflowReport workflowID=\"");
+			buf.append(workflowInstanceID);
+			buf.append("\" workflowStatus=\"");
+			buf.append("UNKNOWN\"");
+			buf.append("><processorList/></workflowReport>");
+			ret = buf.toString();
+        }
+        return ret;
+	}
+
 	public synchronized String getErrorMessage(String workflowInstanceID) throws Exception {
 		//find the workflow
         String ret = null;
@@ -293,6 +309,33 @@ public class TavernaWorkflowEnactor extends WorkflowEnactor implements FlowCallb
         return buf.toString();
     }
 
+	public String getProvenance(String workflowInstanceID) throws Exception {
+		String ret = null;
+			Iterator iterator = registry.iterator();
+			boolean found = false;
+			while (iterator.hasNext() && !found) {
+				WorkflowInstance wfl = (WorkflowInstance) iterator.next();
+
+				if (wfl.getID().equals(workflowInstanceID)) {
+					found = true;
+
+					WSFlowReceipt flowReceipt = wfl.getFlowReceipt();
+					if(flowReceipt == null) {
+						// what does this mean?
+						m_log.warn("Flow receipt for workflow instance with id=" + wfl.getID() + " was NULL");
+						return "";
+					}
+					ret = flowReceipt.getProvenanceXMLString();
+				}
+			}
+			if (!found || ret == null) {
+				throw new Exception("No provenance available for workflow instance with ID, " +
+						workflowInstanceID);
+			}
+			return ret;
+		
+	}
+
 	public synchronized boolean releaseWorkflow(String workflowInstanceID) throws Exception {
 		boolean released = false;
 		Iterator iterator = registry.iterator();
@@ -309,33 +352,26 @@ public class TavernaWorkflowEnactor extends WorkflowEnactor implements FlowCallb
 		return released;
 	}
 
-    public synchronized boolean stopWorkflow(String workflowInstanceID) {
+    public boolean stopWorkflow(String workflowInstanceID) {
 
-        /*
-         try
-         {
-         //find the workflow in the registry
-         Iterator iterator = registry.iterator();
-         boolean found = false;
-         boolean success = false;
-         while(iterator.hasNext() && !found)
-         {
-         WorkflowInstance wfl = (WorkflowInstance) iterator.next();
-         if(wfl.getID().equals(workflowInstanceID))
-         {
-         found = true;
-         wfl.getRunner().stop();
-         wfl.getRunner().waitFor();
-         success = true;
+       try{
+			 //find the workflow in the registry
+			 Iterator iterator = registry.iterator();
+			 boolean found = false;
+			 boolean success = false;
+			 while(iterator.hasNext() && !found){
+				 WorkflowInstance wfl = (WorkflowInstance) iterator.next();
+				 if(wfl.getID().equals(workflowInstanceID)){
+					FlowBroker broker = FlowBrokerFactory.createFlowBroker("uk.ac.soton.itinnovation.taverna.enactor.broker.TavernaFlowBroker");
+					broker.cancelFlow(workflowInstanceID);
+					//if no exception then it will be successful
+				}
+			}
+			return success;
          }
-         }
-         return success;
-         }
-         catch(Exception ex)
-         {
-         return false;
-         }
-         */
+         catch(Exception ex){
+			
+         }         
         return false;
     }
 
@@ -344,23 +380,12 @@ public class TavernaWorkflowEnactor extends WorkflowEnactor implements FlowCallb
      *
      * @param FlowMessage describing the event.
      */
-    public synchronized void notify(FlowMessage msg) {
+    public void notify(FlowMessage msg) {
         //can notify standalone client about finalised execution
         String flowID = msg.getFlowID();
 
         notifyListeners(flowID);
-        //can clean the registry
-        /*
-         Iterator iterator = registry.iterator();
-         while(iterator.hasNext())
-         {
-         WorkflowInstance wfl = (WorkflowInstance) iterator.next();
-         if(wfl.getID().equals(msg.getFlowID()))
-         {
-         iterator.remove();
-         }
-         }
-         */
+        
     }
 
     public synchronized void addListener(iWorkflowExecutionListener listener) {

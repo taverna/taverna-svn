@@ -25,8 +25,8 @@
 //      Dependencies        :
 //
 //      Last commit info    :   $Author: dmarvin $
-//                              $Date: 2003-05-19 18:32:58 $
-//                              $Revision: 1.4 $
+//                              $Date: 2003-05-20 17:23:16 $
+//                              $Revision: 1.5 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 
@@ -66,8 +66,6 @@ import org.jdom.Text;
 public class WSDLInvocationTask extends ProcessorTask implements InvocationDescription {
 	private static Logger logger = Logger.getLogger(WSDLInvocationTask.class);
 	private static final int INVOCATION_TIMEOUT = 0;
-	private TimePoint startTime = null;
-	private TimePoint endTime = null;
 	private Input inputForLog = null;
 	private Output outputForLog = null;
 
@@ -215,6 +213,9 @@ public class WSDLInvocationTask extends ProcessorTask implements InvocationDescr
 	public org.jdom.Element getProvenance() {
 		Element e = new Element("WSDLInvocation");
 		if(logLevel.getLevel()>=LogLevel.LOW) {
+			org.jdom.Element status = new org.jdom.Element("status");
+			status.addContent(new org.jdom.Text(getStateString()));
+			e.addContent(status);
 			//add the wsdl service invoked
 			String wsdlURL = getSelectedServiceWSDLURL().toExternalForm();
 			if(wsdlURL!=null) {
@@ -255,8 +256,10 @@ public class WSDLInvocationTask extends ProcessorTask implements InvocationDescr
 		if(logLevel.getLevel()>=LogLevel.HIGH) {
 			//add the input and output data
 			//required retrieving of it
-			e.addContent(inputForLog.toXMLElement());
-			e.addContent(outputForLog.toXMLElement());
+			if(inputForLog!=null)
+				e.addContent(inputForLog.toXMLElement());
+			if(outputForLog!=null)
+				e.addContent(outputForLog.toXMLElement());
 		}		
 		return e;
 	}

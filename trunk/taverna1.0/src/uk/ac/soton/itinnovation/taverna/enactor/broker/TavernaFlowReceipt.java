@@ -24,9 +24,9 @@
 //      Created for Project :   MYGRID
 //      Dependencies        :
 //
-//      Last commit info    :   $Author: mereden $
-//                              $Date: 2003-04-25 14:57:08 $
-//                              $Revision: 1.4 $
+//      Last commit info    :   $Author: dmarvin $
+//                              $Date: 2003-05-20 17:23:16 $
+//                              $Revision: 1.5 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 
@@ -40,6 +40,7 @@ import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.broker.FlowMessage;
 import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.entities.Flow;
 import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.entities.FlowStates;
 import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.entities.Task;
+import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.entities.TimePoint;
 import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.entities.graph.GraphNode;
 import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.entities.taskstate.TaskState;
 import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.eventservice.FlowEvent;
@@ -47,6 +48,7 @@ import uk.ac.soton.itinnovation.mygrid.workflow.enactor.io.Output;
 import uk.ac.soton.itinnovation.mygrid.workflow.enactor.io.Part;
 import uk.ac.soton.itinnovation.taverna.enactor.entities.PortTask;
 import uk.ac.soton.itinnovation.taverna.enactor.entities.ProcessorTask;
+import uk.ac.soton.itinnovation.taverna.enactor.entities.TavernaTask;
 
 // Utility Imports
 import java.util.ArrayList;
@@ -57,6 +59,9 @@ import java.lang.Exception;
 import java.lang.String;
 import java.lang.StringBuffer;
 
+import org.jdom.*;
+import org.jdom.output.*;
+
 
 
 /**
@@ -64,14 +69,20 @@ import java.lang.StringBuffer;
  */
 public class TavernaFlowReceipt extends WSFlowReceipt {
     
-    private Logger logger = Logger.getLogger(getClass());
+    private static final String REPORT_NAMESPACE = "http://www.it-innovation.soton.ac.uk/taverna/workflow/enactor/progress";
+	private static final String PROVENANCE_NAMESPACE = "http://www.it-innovation.soton.ac.uk/taverna/workflow/enactor/provenance";
 
+	private Logger logger = Logger.getLogger(getClass());
+	private String userID = null;
+	private LogLevel modelLogLevel;
     /**
      * Constructor for this concrete instance of a flow receipt
      * @ Flow to which this receipt applies.
      */
-    public TavernaFlowReceipt(Flow flow) throws  WorkflowSubmitInvalidException  {
-        super(flow);        
+    public TavernaFlowReceipt(Flow flow,String userID,LogLevel modelLogLevel) throws  WorkflowSubmitInvalidException  {
+        super(flow);   
+		this.userID = userID;
+		this.modelLogLevel = modelLogLevel;
     }
 
     /**
@@ -190,6 +201,66 @@ public class TavernaFlowReceipt extends WSFlowReceipt {
         return buf.toString();
     }
 
+	public String getProgressReportXMLString() {
+		try {
+			Element report = new Element("workflowReport",REPORT_NAMESPACE);
+			Document doc = new Document(report);
+			Element activityReport = new Element("processorList",REPORT_NAMESPACE);
+			//set the flow id
+			report.setAttribute("workflowID",flow.getID());
+			int stat = flow.getStatus();
+			String statString = "UNKNOWN";
+			switch(stat) {
+			case 0:
+				statString = "NEW";
+				break;
+			case 1:
+				statString = "SCHEDULED";
+				break;
+			case 2:
+				statString = "RUNNING";
+				break;
+			case 3:
+				statString = "COMPLETE";
+				break;
+			case 4:
+				statString = "FAILED";
+				break;
+			case 5:
+				statString = "CANCELLED";
+				break;
+			}
+			report.setAttribute("workflowStatus",statString);
+			report.addContent(activityReport);
+			//get the activity list
+			Task[] tasks = flow.getTasks();
+			for(int i=0;i<tasks.length;i++) {
+			if(tasks[i] instanceof ProcessorTask) {
+				ProcessorTask task = (ProcessorTask) tasks[i];
+				Element a = new Element("processor",REPORT_NAMESPACE);
+				a.setAttribute("name",task.getProcessor().getName());
+				a.setAttribute("status",translateStateString(task.getStateString()));
+				activityReport.addContent(a);
+			}	
+			}
+			XMLOutputter xmlout = new XMLOutputter();
+			xmlout.setIndent(" ");
+			xmlout.setNewlines(true);
+			xmlout.setTextNormalize(false);
+			return (xmlout.outputString(doc));
+		}
+		catch(Exception ex) {
+			logger.error("Unable to create progress report for workflow : "+ flow.getID(),ex);
+			//generate best attempt at xml
+			StringBuffer buf = new StringBuffer("<workflowReport workflowID=\"");
+			buf.append(flow.getID());
+			buf.append("\" workflowStatus=\"");
+			buf.append("UNKNOWN\"");
+			buf.append("><ProcessorList/></workflowReport>");
+			return buf.toString();
+		}
+    }
+
 	public String getOutputString() {
 		Output output = new Output();
 		try	{
@@ -215,6 +286,98 @@ public class TavernaFlowReceipt extends WSFlowReceipt {
 		catch(Exception ex) {
 			return output.toXML();
 		}
-	}    
+	}
+
+	public String getProvenanceXMLString() {
+		String ret = null;
+		//get the end provenance task or return empty string
+		Element prov = new Element("workflowProvenance",PROVENANCE_NAMESPACE);
+		//populate with flow level information
+		Element id = new Element("workflowID");
+		id.addContent(new Text(flow.getID()));
+		prov.addContent(id);
+		Element user = new Element("userID");
+		user.addContent(new Text(userID));
+		Element stat = new Element("workflowStatus");
+		stat.addContent(new Text(translateFlowState(flow.getStatus())));
+		prov.addContent(stat);
+		Element processors = new Element("processorList");
+
+		TimePoint start = null;
+		TimePoint end = null;
+		Task[] tasks = flow.getTasks();
+		for(int i=0;i<tasks.length;i++) {
+			TimePoint stp = ((TavernaTask) tasks[i]).getStartTime();
+			if((stp!=null) && (start==null || stp ==null || stp.getMillisecs() < start.getMillisecs()))
+				start = stp;
+			TimePoint etp = ((TavernaTask) tasks[i]).getEndTime();
+			if((etp != null) && (end==null || etp.getMillisecs() > end.getMillisecs()))
+				end = etp;
+			if(tasks[i] instanceof ProcessorTask) {
+				processors.addContent(((ProcessorTask) tasks[i]).getProvenance());
+			}
+		}
+		if(start!=null) {
+			Element startTime = new Element("startTime");
+			startTime.addContent(new Text(start.getShortString()));
+			prov.addContent(startTime);
+		}
+		if(end!=null) {
+			Element endTime = new Element("endTime");
+			endTime.addContent(new Text(end.getShortString()));
+			prov.addContent(endTime);
+		}
+		prov.addContent(processors);
+		//put in processor provenance
+		if(ret==null) {
+			prov = new Element("workflowProvenance",PROVENANCE_NAMESPACE);
+			id = new Element("workflowID",flow.getID());
+			XMLOutputter xmlout = new XMLOutputter();
+			xmlout.setIndent(" ");
+			xmlout.setNewlines(true);
+			xmlout.setTextNormalize(false);
+			return (xmlout.outputString(prov));
+		}			
+
+		return ret;
+	}
+	
+	private String translateStateString(String s) {
+		String newString = null;
+		if(s.equals("CANCELLED"))
+			newString = "ABORTED";
+		else
+			newString = s;
+		return newString;
+	}
+
+	private String translateFlowState(int status) {
+		String msg = "UNKNOWN";
+		switch (status) {
+        case 0:
+            msg = "NEW";
+            break;
+
+        case 1:
+            msg = "SCHEDULED";
+            break;
+
+        case 2:
+            msg = "RUNNING";
+            break;
+
+        case 3:
+            msg = "COMPLETE";
+            break;
+
+        case 4:
+            msg = "FAILED";
+            break;
+
+        case 5:
+            msg = "CANCELLED";
+        }
+        return msg;
+    }
 
 }

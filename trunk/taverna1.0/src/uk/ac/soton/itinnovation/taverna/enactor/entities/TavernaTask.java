@@ -24,28 +24,45 @@
 //      Created for Project :   MYGRID
 //      Dependencies        :
 //
-//      Last commit info    :   $Author: mereden $
-//                              $Date: 2003-04-17 15:21:48 $
-//                              $Revision: 1.3 $
+//      Last commit info    :   $Author: dmarvin $
+//                              $Date: 2003-05-20 17:23:15 $
+//                              $Revision: 1.4 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 package uk.ac.soton.itinnovation.taverna.enactor.entities;
 
 import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.entities.Task;
-
+import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.entities.TimePoint;
 import java.lang.String;
 
 
 
 public abstract class TavernaTask extends Task {
 
-    /**
+	protected TimePoint startTime = null;
+	protected TimePoint endTime = null;
+    
+	/**
      * Default Constructor
      * @param id
      */
     public TavernaTask(String id) {
         super(id);
     }
+
+	/**
+	 * Retrieve the execution start time
+	 */
+	public TimePoint getStartTime() {
+		return startTime;
+	}
+
+	/**
+	 * Retrieve the execution end time
+	 */
+	public TimePoint getEndTime() {
+		return endTime;
+	}
 
     /**
      * Undertakes any special cancel processing required by Taverna tasks

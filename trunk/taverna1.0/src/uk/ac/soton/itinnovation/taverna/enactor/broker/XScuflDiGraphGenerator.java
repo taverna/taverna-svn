@@ -25,8 +25,8 @@
 //      Dependencies        :
 //
 //      Last commit info    :   $Author: dmarvin $
-//                              $Date: 2003-05-19 18:32:54 $
-//                              $Revision: 1.11 $
+//                              $Date: 2003-05-20 17:23:16 $
+//                              $Revision: 1.12 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 
@@ -106,7 +106,7 @@ public class XScuflDiGraphGenerator {
 			    Processor theProcessor = processors[i];
 			    String id = flowID + ":Processor:" + theProcessor.getName();
 				
-				LogLevel logLevel = new LogLevel();
+				LogLevel logLevel = new LogLevel(theProcessor.getLogLevel());
 			    
 			    // Create the actual task to do the work of this processor.
 			    ProcessorTask serviceTask = TavernaTaskFactory.getConcreteTavernaTask(id,theProcessor,logLevel);

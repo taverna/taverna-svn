@@ -24,9 +24,9 @@
 //      Created for Project :   MYGRID
 //      Dependencies        :
 //
-//      Last commit info    :   $Author: mereden $
-//                              $Date: 2003-04-17 15:21:48 $
-//                              $Revision: 1.2 $
+//      Last commit info    :   $Author: dmarvin $
+//                              $Date: 2003-05-20 17:23:15 $
+//                              $Revision: 1.3 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 package uk.ac.soton.itinnovation.taverna.enactor.entities;
@@ -36,21 +36,26 @@ import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.eventservice.TaskSt
 import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.serviceprovidermanager.ServiceSelectionCriteria;
 
 import uk.ac.soton.itinnovation.taverna.enactor.entities.TavernaTask;
+import uk.ac.soton.itinnovation.taverna.enactor.broker.LogLevel;
 import java.lang.String;
+
+import org.jdom.Element;
 
 
 
 public abstract class ProcessorTask extends TavernaTask{
 
     protected Processor proc = null;
+	protected LogLevel logLevel = null;	
 	
 	/**
      * Default Constructor
      * @param id
      */
-    public ProcessorTask(String id,Processor p) {
+    public ProcessorTask(String id,Processor p,LogLevel l) {
         super(id);
 		proc = p;
+		this.logLevel = new LogLevel(l.getLevel());
     }
 
     /**
@@ -75,4 +80,13 @@ public abstract class ProcessorTask extends TavernaTask{
 	public ServiceSelectionCriteria getServiceSelectionCriteria() {
 		return null;
 	}
+
+	/**
+	 * Retrieve provenance information for this task, concrete tasks should
+	 * overide this method and provide this information as an XML JDOM element
+	 */
+	public org.jdom.Element getProvenance() {
+		return new Element("processorExecution");
+	}
+
 }

@@ -24,6 +24,7 @@ import java.net.URL;
 
 import uk.ac.soton.itinnovation.taverna.enactor.entities.PortTask;
 import uk.ac.soton.itinnovation.taverna.enactor.entities.ProcessorTask;
+import uk.ac.soton.itinnovation.taverna.enactor.broker.LogLevel;
 import java.lang.Exception;
 import java.lang.String;
 
@@ -37,8 +38,8 @@ public class TalismanTask extends ProcessorTask {
     private static Logger logger = Logger.getLogger(TalismanTask.class);
     private static final int INVOCATION_TIMEOUT = 0;
     
-    public TalismanTask(String id,Processor proc) {
-	super(id,proc);
+    public TalismanTask(String id,Processor proc,LogLevel l) {
+	super(id,proc,l);
     }
     
     public uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.eventservice.TaskStateMessage doTask() {
@@ -129,4 +130,12 @@ public class TalismanTask extends ProcessorTask {
 	// implemented this in the t-service anyway so I can't at the moment.
 	// tmo.
     }
+
+	/**
+	 * Retrieve provenance information for this task, concrete tasks should
+	 * overide this method and provide this information as an XML JDOM element
+	 */
+	public org.jdom.Element getProvenance() {
+		return new org.jdom.Element("talismanTriggerInvocation");
+	}
 }

@@ -24,9 +24,9 @@
 //      Created for Project :   MYGRID
 //      Dependencies        :
 //
-//      Last commit info    :   $Author: mereden $
-//                              $Date: 2003-04-17 15:21:47 $
-//                              $Revision: 1.2 $
+//      Last commit info    :   $Author: dmarvin $
+//                              $Date: 2003-05-20 17:23:16 $
+//                              $Revision: 1.3 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 package uk.ac.soton.itinnovation.taverna.enactor.broker;
