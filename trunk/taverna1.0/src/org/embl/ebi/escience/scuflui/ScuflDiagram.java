@@ -141,7 +141,8 @@ public class ScuflDiagram extends JComponent
      */
     public void setFitToWindow(boolean fitToWindow) {
 	this.fitToWindow = fitToWindow;
-	paintComponent(getGraphics());
+	repaint();
+	//paintComponent(getGraphics());
     }
 
     /**
@@ -224,10 +225,10 @@ public class ScuflDiagram extends JComponent
 		if (getWidth() == lastFrameWidth && 
 		    getHeight() == lastFrameHeight && 
 		    image.getWidth() == lastImageWidth && 
-		    image.getHeight() == lastImageHeight) {
+		    image.getHeight() == lastImageHeight &&
+		    rescaledImage != null) {
 		    // Repaint the previously scaled image, no need to resize it
-		    g.drawImage(rescaledImage, 0, 0, (int)(image.getWidth() * lastScaleFactor), 
-				(int)(image.getHeight() * lastScaleFactor), null);
+		    g.drawImage(rescaledImage, 0, 0, null);
 		}
 		else {
 		    double imageWidth = (double)(image.getWidth());
@@ -247,14 +248,18 @@ public class ScuflDiagram extends JComponent
 		    // If the scale factor is greater than one then set it to one and draw the image normally
 		    if (scale > 1.0) {
 			scale = 1.0;
-			g.drawImage( image, 0, 0, image.getWidth(), image.getHeight(), null );
+			g.drawImage( image, 0, 0, null );
 		    }
 		    // Otherwise regenerate the scaled image and show it.
 		    else {
+			if (rescaledImage != null) {
+			    rescaledImage.flush();
+			}
+			//System.out.print("Creating new scaled instance");
 			rescaledImage = this.image.getScaledInstance((int)(imageWidth * scale), 
 								     (int)(imageHeight * scale),
 								     java.awt.Image.SCALE_SMOOTH);
-			g.drawImage( rescaledImage, 0, 0, (int)(imageWidth * scale), (int)(imageHeight * scale), null);
+			g.drawImage( rescaledImage, 0, 0, null);
 		    }
 		    lastFrameHeight = getHeight();
 		    lastFrameWidth = getWidth();
@@ -281,6 +286,13 @@ public class ScuflDiagram extends JComponent
 	    model.removeListener(dot);
 	    this.dot = null;
 	    this.model = null;
+	    if (this.image!=null) {
+		image.flush();
+	    }
+	    if (this.rescaledImage!=null) {
+		rescaledImage.flush();
+	    }
+	    this.rescaledImage = null;
 	    this.image = null;
 	    repaint();
 	}
