@@ -22,7 +22,7 @@ import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
 
-import uk.ac.rdg.resc.jstyx.client.StyxClientSession;
+import uk.ac.rdg.resc.jstyx.client.StyxConnection;
 import uk.ac.rdg.resc.jstyx.client.CStyxFile;
 import uk.ac.rdg.resc.jstyx.client.StyxFileInputStream;
 import uk.ac.rdg.resc.jstyx.client.StyxFileInputStreamReader;
@@ -44,9 +44,8 @@ public class InfernoScavenger extends Scavenger {
 	throws ScavengerCreationException {
 	super("Inferno @ "+host+":"+port);
 	try {
-	    StyxClientSession session = 
-		StyxClientSession.createSession(host, port);
-	    session.connect();
+	    StyxConnection session = new StyxConnection(host, port);
+	    //session.connect();
 	    CStyxFile directory = new CStyxFile(session, "/");
 	    if (directory.isDirectory() == false) {
 		throw new ScavengerCreationException("Root isn't a directory, bad!");

@@ -24,7 +24,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.nio.*;
 
-import uk.ac.rdg.resc.jstyx.client.StyxClientSession;
+import uk.ac.rdg.resc.jstyx.client.StyxConnection;
 import uk.ac.rdg.resc.jstyx.client.CStyxFile;
 import uk.ac.rdg.resc.jstyx.client.StyxFileInputStream;
 import uk.ac.rdg.resc.jstyx.client.StyxFileInputStreamReader;
@@ -86,8 +86,9 @@ public class InfernoTask implements ProcessorTaskWorker {
 	    }
 
 	    // Connect to the Styx session
-	    StyxClientSession session = StyxClientSession.createSession(processor.getHost(), processor.getPort());
-	    session.connect();
+	    //StyxClientSession session = StyxClientSession.createSession(processor.getHost(), processor.getPort());
+	    //session.connect();
+	    StyxConnection session = new StyxConnection(processor.getHost(), processor.getPort());
 	    
 	    // Create a new instance of the service
 	    CStyxFile cloneFile = new CStyxFile(session, processor.getService()+"/clone");
