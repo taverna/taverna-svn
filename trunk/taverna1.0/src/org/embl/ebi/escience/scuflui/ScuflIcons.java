@@ -27,8 +27,8 @@ public class ScuflIcons {
 	    inputPortIcon = new ImageIcon(c.getResource("inputport.gif"));
 	    outputPortIcon = new ImageIcon(c.getResource("outputport.gif"));
 	    dataLinkIcon = new ImageIcon(c.getResource("datalink.gif"));
-	    inputIcon = new ImageIcon(c.getResource("input.gif"));
-	    outputIcon = new ImageIcon(c.getResource("output.gif"));
+	    inputIcon = new ImageIcon(c.getResource("png/input.png"));
+	    outputIcon = new ImageIcon(c.getResource("png/output.png"));
 	    constraintIcon = new ImageIcon(c.getResource("constraint.gif"));
 	    deleteIcon = new ImageIcon(c.getResource("delete.gif"));
 	    zoomIcon = new ImageIcon(c.getResource("zoom.gif"));
