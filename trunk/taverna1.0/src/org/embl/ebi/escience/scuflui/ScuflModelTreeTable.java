@@ -414,6 +414,7 @@ public class ScuflModelTreeTable extends JTreeTable
 	}
 	//((AbstractTableModel)(super.getModel())).fireTableDataChanged();
 	setDefaultExpansionState();
+	repaint();
     }
     
     /**
