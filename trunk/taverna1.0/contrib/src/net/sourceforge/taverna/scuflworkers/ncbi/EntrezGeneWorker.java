@@ -17,14 +17,15 @@ import uk.ac.soton.itinnovation.taverna.enactor.entities.TaskExecutionException;
 /**
  * This class is responsible for fetching an Entrez Gene record in XML format.
  * @author mfortner
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public class EntrezGeneWorker extends AbstractNCBIWorker {
 	
 	public EntrezGeneWorker(){
-		this.url = "http://www.ncbi.nlm.nih.gov/entrez/query.fcgi";
-		this.startTag = "&lt;Entrezgene&gt;";
-		this.endTag = "&lt;/Entrezgene&gt;";
+		//this.url = "http://www.ncbi.nlm.nih.gov/entrez/query.fcgi";
+		this.url="http://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi";
+		this.startTag = "<Entrezgene>";
+		this.endTag = "</Entrezgene>";
 		this.originalDb = "gene";		
 	}
 
@@ -41,19 +42,19 @@ public class EntrezGeneWorker extends AbstractNCBIWorker {
 	    	    
         
         transmitterMap.put("db",this.originalDb);       
-        transmitterMap.put("rettype",this.rettype);
-        transmitterMap.put("term",this.term);
-        transmitterMap.put("CMD","Text");
-        transmitterMap.put("cmd","Search");
-        transmitterMap.put("cmd_current","search");
-        transmitterMap.put("query_key",this.queryKey);
-        transmitterMap.put("CrntRpt","DocSum");
-        transmitterMap.put("doptcmdl","xml");
-        transmitterMap.put("SUBMIT","y");
+        transmitterMap.put("retmode","xml");
+        transmitterMap.put("id",this.term);
+        //transmitterMap.put("CMD","Text");
+        //transmitterMap.put("cmd","Search");
+        //transmitterMap.put("cmd_current","search");
+        //transmitterMap.put("query_key",this.queryKey);
+        //transmitterMap.put("CrntRpt","DocSum");
+        //transmitterMap.put("doptcmdl","xml");
+        //transmitterMap.put("SUBMIT","y");
         
-        transmitterMap.put("dopt",this.displayOption);
-        transmitterMap.put("orig_db",this.originalDb);
-        transmitterMap.put("disp_max",String.valueOf(this.maxRecords));		
+        //transmitterMap.put("dopt",this.displayOption);
+        //transmitterMap.put("orig_db",this.originalDb);
+        //transmitterMap.put("disp_max",String.valueOf(this.maxRecords));		
 		
         try {
             outputMap = this.transmit(transmitterMap);
@@ -65,7 +66,7 @@ public class EntrezGeneWorker extends AbstractNCBIWorker {
         }catch (Throwable th){
             th.printStackTrace();
         }
-		
+		System.gc();
 				
 		return outputMap;
 	}
