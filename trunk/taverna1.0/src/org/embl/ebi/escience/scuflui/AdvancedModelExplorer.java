@@ -12,6 +12,13 @@ import java.awt.event.*;
 import javax.swing.tree.*;
 import javax.swing.text.*;
 import org.embl.ebi.escience.scufl.*;
+import java.io.*;
+import org.embl.ebi.escience.scufl.view.*;
+import org.embl.ebi.escience.scufl.parser.*;
+import java.net.*;
+import java.util.prefs.*;
+import java.util.*;
+import org.embl.ebi.escience.scuflui.workbench.Workbench;
 
 /**
  * An amalgam of the ScuflModelExplorerTreeTable and the
@@ -28,6 +35,8 @@ public class AdvancedModelExplorer extends JPanel
     private JPanel propertiesPanel;
     private Object selectedObject = null;
 
+    private JButton loadWorkflow, loadFromWeb, saveWorkflow, resetWorkflow;
+    final JFileChooser fc = new JFileChooser();
     public AdvancedModelExplorer() {
 	
 	setLayout(new BorderLayout());
@@ -39,7 +48,10 @@ public class AdvancedModelExplorer extends JPanel
 	JScrollPane explorerPane = new JScrollPane(explorer);
 	explorerPane.setPreferredSize(new Dimension(0,0));
 	explorerPane.getViewport().setBackground(java.awt.Color.WHITE);
-	tabs.add("Workflow",explorerPane);
+	JPanel workflowPanel = new JPanel();
+	workflowPanel.setLayout(new BorderLayout());
+	workflowPanel.add(explorerPane, BorderLayout.CENTER);
+	tabs.add("Workflow",workflowPanel);
 	
 	// Create the properties panel but disable it
 	// and don't populate it for now
@@ -47,8 +59,156 @@ public class AdvancedModelExplorer extends JPanel
 	tabs.add("Object properties", propertiesPanel);
 	tabs.setEnabledAt(1, false);
 	
+	// Add the tabbed pane to the center area of the panel
 	add(tabs, BorderLayout.CENTER);
+	
+	// Create the tool bar
+	JToolBar toolbar = new JToolBar();
+	toolbar.setFloatable(false);
+	toolbar.setRollover(true);
+	toolbar.setMaximumSize(new Dimension(2000,30));
+	toolbar.setBorderPainted(true);
 
+	// Add options to load the workflow, import from web, save and reset
+	// These options were available from the workbench file menu previously
+	// but I think they're more intuitive here as buttons.
+	loadWorkflow = new JButton(Workbench.openIcon);
+	loadWorkflow.setPreferredSize(new Dimension(25,25));
+	loadFromWeb = new JButton(Workbench.openurlIcon);
+	loadFromWeb.setPreferredSize(new Dimension(25,25));
+	saveWorkflow = new JButton(Workbench.saveIcon);
+	saveWorkflow.setPreferredSize(new Dimension(25,25));
+	resetWorkflow = new JButton(Workbench.deleteIcon);
+	resetWorkflow.setPreferredSize(new Dimension(25,25));
+	
+	toolbar.add(new JLabel(" Load "));
+	toolbar.add(loadWorkflow);
+	toolbar.addSeparator();
+	toolbar.add(new JLabel("Load from web "));
+	toolbar.add(loadFromWeb);
+	toolbar.addSeparator();
+	
+	toolbar.add(new JLabel("Save "));
+	toolbar.add(saveWorkflow);
+	
+	toolbar.add(Box.createHorizontalGlue());
+	
+	toolbar.add(new JLabel("Reset "));
+	toolbar.add(resetWorkflow);
+	
+	// Add the toolbar to the top of the panel
+	workflowPanel.add(toolbar, BorderLayout.PAGE_START);
+	
+	// Add actionlistener to the load from file button
+	loadWorkflow.addActionListener(new ActionListener() {
+		public void actionPerformed(ActionEvent ae) {
+		    // Load an XScufl definition here
+		    Preferences prefs = Preferences.userNodeForPackage(Workbench.class);
+		    String curDir = prefs.get("currentDir", System.getProperty("user.home"));
+		    fc.setFileFilter(new ExtensionFileFilter(new String[]{"xml"}));
+		    fc.setCurrentDirectory(new File(curDir));
+		    int returnVal = fc.showOpenDialog(AdvancedModelExplorer.this);
+		    if (returnVal == JFileChooser.APPROVE_OPTION) {
+			prefs.put("currentDir", fc.getCurrentDirectory().toString());
+			final File file = fc.getSelectedFile();
+			// mrp Refactored to do the heavy-lifting in a new thread
+			new Thread(new Runnable() {
+				public void run()
+				{
+				    try {
+					// todo: does the update need running in the AWT thread?
+					// perhaps this thread should be spawned in populate?
+					XScuflParser.populate(file.toURL().openStream(),
+							      explorer.model, null);
+				    } catch (Exception ex) {
+					JOptionPane.showMessageDialog(AdvancedModelExplorer.this,
+								      "Problem opening workflow from file : \n" +
+								      ex.getMessage(),
+								      "Error",
+								      JOptionPane.ERROR_MESSAGE);
+				    }
+				}
+			    }).start();
+			
+		    }
+		}
+	    });
+	
+	// Add actionlistener to the load from web button
+	loadFromWeb.addActionListener(new ActionListener() {
+		public void actionPerformed(ActionEvent ae) {
+		    try {
+			String name = (String)JOptionPane.showInputDialog(AdvancedModelExplorer.this,
+									  "URL of an workflow definition to open?",
+									  "URL Required",
+									  JOptionPane.QUESTION_MESSAGE,
+									  null,
+									  null,
+									  "http://");
+			if (name != null) {
+			    XScuflParser.populate((new URL(name)).openStream(), explorer.model, null);
+			}
+		    }
+		    catch (Exception ex) {
+			JOptionPane.showMessageDialog(AdvancedModelExplorer.this,
+						      "Problem opening workflow from web : \n"+ex.getMessage(),
+						      "Error!",
+						      JOptionPane.ERROR_MESSAGE);
+		    }
+		}
+	    });
+	
+	// Add actionlistener to the save button
+	saveWorkflow.addActionListener(new ActionListener() {
+		public void actionPerformed(ActionEvent e) {
+		    // Save to XScufl
+		    try {
+			Preferences prefs = Preferences.userNodeForPackage(AdvancedModelExplorer.class);
+			String curDir = prefs.get("currentDir", System.getProperty("user.home"));
+			fc.setFileFilter(new ExtensionFileFilter(new String[]{"xml"}));
+			fc.setCurrentDirectory(new File(curDir));
+			int returnVal = fc.showSaveDialog(AdvancedModelExplorer.this);
+			if (returnVal == JFileChooser.APPROVE_OPTION) {
+			    prefs.put("currentDir", fc.getCurrentDirectory().toString());
+			    File file = fc.getSelectedFile();
+			    XScuflView xsv = new XScuflView(explorer.model);
+			    PrintWriter out = new PrintWriter(new FileWriter(file));
+			    out.println(xsv.getXMLText());
+			    explorer.model.removeListener(xsv);
+			    out.flush();
+			    out.close();
+			}
+		    }
+		    catch (Exception ex) {
+			JOptionPane.showMessageDialog(AdvancedModelExplorer.this,
+						      "Problem saving workflow : \n"+ex.getMessage(),
+						      "Error!",
+						      JOptionPane.ERROR_MESSAGE);
+		    }
+		}
+	    });
+
+	// Add actionlistener to the reset button, throw up a dialog requesting
+	// confirmation then nuke the workflow.
+	resetWorkflow.addActionListener(new ActionListener() {
+		public void actionPerformed(ActionEvent e) {
+		    Object[] options = {"Confirm reset","Cancel"};
+		    int n = JOptionPane.showOptionDialog(AdvancedModelExplorer.this,
+							  "Are you sure you want to reset the model,\nany changes you have made will be lost?",
+							  "Confirm workflow reset",
+							  JOptionPane.YES_NO_OPTION,
+							  JOptionPane.QUESTION_MESSAGE,
+							  null,
+							  options,
+							  options[1]);
+		    if (n == 0) {
+			explorer.model.clear();
+		    }
+		    
+		}
+	    });
+	
+	
 	// Bind a list selection listener to the explorer
 	explorer.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
 		public void valueChanged(ListSelectionEvent e) {
@@ -71,6 +231,9 @@ public class AdvancedModelExplorer extends JPanel
 		    }
 		}
 	    });
+	
+	// Just in case, update the file chooser's ui model
+	fc.updateUI();
     }
     
     /**

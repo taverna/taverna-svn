@@ -109,8 +109,6 @@ public class Workbench extends JFrame {
 
     public ScuflModel model;
 
-    final JFileChooser fc = new JFileChooser();
-
     /**
      * Launch the model workbench, shows the default set of UI components
      * in internal frames and waits for the user to load a model from file
@@ -142,14 +140,6 @@ public class Workbench extends JFrame {
 	    }
 	}
 
-	// Add instances of all the components just for fun
-
-	//GenericUIComponentFrame xscufl = new GenericUIComponentFrame(workbench.model,
-	//							     new XScuflTextArea());
-	//xscufl.setSize(600,300);
-	//xscufl.setLocation(50,50);
-	//workbench.desktop.add(xscufl);
-
 	GenericUIComponentFrame diagram = new GenericUIComponentFrame(workbench.model,
 								      new ScuflDiagramPanel());
 	diagram.setSize(500,500);
@@ -180,7 +170,6 @@ public class Workbench extends JFrame {
 	super("Scufl Workbench");
 	try {
 	    UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-	    fc.updateUI();
 	} catch (Exception e) { }
 
 	Workbench.workbench = this;
@@ -264,91 +253,8 @@ public class Workbench extends JFrame {
     JMenuBar createMenuBar() {
 	JMenuBar menuBar = new JMenuBar();
 
-	// Menu to handle opening XScufl files, clearing the model and saving
-	JMenu fileMenu = new JMenu("File");
-	JMenuItem openScufl = new JMenuItem("Import XScufl Definition", importIcon);
-	openScufl.addActionListener(new ImportScuflListener());
-	fileMenu.add(openScufl);
-	// Load from web
-	JMenuItem openScuflURL = new JMenuItem("Import XScufl Definition from web",openurlIcon);
-	openScuflURL.addActionListener(new ActionListener() {
-		public void actionPerformed(ActionEvent ae) {
-		    try {
-			String name = (String)JOptionPane.showInputDialog(null,
-									  "URL of an XScufl definition to open?",
-									  "URL Required",
-									  JOptionPane.QUESTION_MESSAGE,
-									  null,
-									  null,
-									  "http://");
-			if (name != null) {
-			    XScuflParser.populate((new URL(name)).openStream(), Workbench.this.model, null);
-			}
-		    }
-		    catch (Exception ex) {
-			JOptionPane.showMessageDialog(null,
-						      "Problem opening XScufl from web : \n"+ex.getMessage(),
-						      "Exception!",
-						      JOptionPane.ERROR_MESSAGE);
-		    }
-		}
-	    });
-
-	fileMenu.add(openScuflURL);
-	JMenuItem saveScufl = new JMenuItem("Save as XScufl", saveIcon);
-	saveScufl.addActionListener(new ActionListener() {
-		public void actionPerformed(ActionEvent e) {
-		    // Save to XScufl
-		    try {
-                Preferences prefs = Preferences.userNodeForPackage(
-                        Workbench.class);
-                String curDir = prefs.get(
-                        "currentDir",
-                        System.getProperty("user.home"));
-                fc.setCurrentDirectory(new File(curDir));
-			int returnVal = fc.showSaveDialog(Workbench.this);
-			if (returnVal == JFileChooser.APPROVE_OPTION) {
-                prefs.put("currentDir",
-                          fc.getCurrentDirectory().toString());
-			    File file = fc.getSelectedFile();
-			    XScuflView xsv = new XScuflView(Workbench.this.model);
-			    PrintWriter out = new PrintWriter(new FileWriter(file));
-			    out.println(xsv.getXMLText());
-			    Workbench.this.model.removeListener(xsv);
-			    out.flush();
-			    out.close();
-			}
-		    }
-		    catch (Exception ex) {
-			throw new RuntimeException(ex.getMessage());
-		    }
-		}
-	    });
-	fileMenu.add(saveScufl);
-
-	JMenuItem clearModel = new JMenuItem("Reset model data", deleteIcon);
-	clearModel.addActionListener(new ActionListener() {
-		public void actionPerformed(ActionEvent e) {
-		    Workbench.this.model.clear();
-		}
-	    });
-	fileMenu.add(clearModel);
-
-	// Menu to show different UI widgets
 	JMenu windowMenu = new JMenu("Tools and Workflow Invocation");
-	/**
-	   JMenuItem explorerView = new JMenuItem("Scufl Explorer");
-	   explorerView.addActionListener(new ActionListener() {
-	   public void actionPerformed(ActionEvent e) {
-	   // Show a scufl explorer panel
-	   ScuflModelExplorer thing = new ScuflModelExplorer();
-	   GenericUIComponentFrame frame = new GenericUIComponentFrame(Workbench.this.model, thing);
-	   Workbench.this.desktop.add(frame);
-	   frame.moveToFront();
-	   }
-	   });
-	   windowMenu.add(explorerView);
-	*/
+	
 	JMenuItem explorerTableView = new JMenuItem("Advanced Scufl Explorer");
 	explorerTableView.addActionListener(new ActionListener() {
 		public void actionPerformed(ActionEvent e) {
@@ -362,7 +268,6 @@ public class Workbench extends JFrame {
 	    });
 	windowMenu.add(explorerTableView);
 
-
 	JMenuItem diagramView = new JMenuItem("Workflow Diagram");
 	diagramView.addActionListener(new ActionListener() {
 		public void actionPerformed(ActionEvent e) {
@@ -374,6 +279,7 @@ public class Workbench extends JFrame {
 		}
 	    });
 	windowMenu.add(diagramView);
+
 	JMenuItem xscuflView = new JMenuItem("XScufl View");
 	xscuflView.addActionListener(new ActionListener() {
 		public void actionPerformed(ActionEvent e) {
@@ -385,6 +291,7 @@ public class Workbench extends JFrame {
 		}
 	    });
 	windowMenu.add(xscuflView);
+
 	JMenuItem dotView = new JMenuItem("Dot View");
 	dotView.addActionListener(new ActionListener() {
 		public void actionPerformed(ActionEvent e) {
@@ -396,6 +303,7 @@ public class Workbench extends JFrame {
 		}
 	    });
 	windowMenu.add(dotView);
+
 	JMenuItem servicePanel = new JMenuItem("Service Panel (populated)");
 	servicePanel.addActionListener(new ActionListener() {
 		public void actionPerformed(ActionEvent e) {
@@ -407,6 +315,7 @@ public class Workbench extends JFrame {
 		}
 	    });
 	windowMenu.add(servicePanel);
+
 	JMenuItem servicePanel2 = new JMenuItem("Service Panel (blank)");
 	servicePanel2.addActionListener(new ActionListener() {
 		public void actionPerformed(ActionEvent e) {
@@ -418,20 +327,7 @@ public class Workbench extends JFrame {
 		}
 	    });
 	windowMenu.add(servicePanel2);
-	/**
-	   JMenuItem inputPanel = new JMenuItem("Workflow Input Panel");
-	   inputPanel.addActionListener(new ActionListener() {
-	   public void actionPerformed(ActionEvent e) {
-	   // Show a workflow input panel
-	   EnactorLaunchPanel thing = new EnactorLaunchPanel();
-	   GenericUIComponentFrame frame = new GenericUIComponentFrame(Workbench.this.model, thing);
-	   Workbench.this.desktop.add(frame);
-	   frame.moveToFront();
-	   }
-	   });
-	   windowMenu.add(inputPanel);
-	   windowMenu.addSeparator();
-	*/
+
 	JMenuItem thingBuilder = new JMenuItem("Run workflow");
 	thingBuilder.addActionListener(new ActionListener() {
 		public void actionPerformed(ActionEvent e) {
@@ -464,62 +360,12 @@ public class Workbench extends JFrame {
 	    });
 	windowMenu.addSeparator();
 	windowMenu.add(thingBuilder);
-	/**
-	   windowMenu.addSeparator();
 
-	   JMenuItem retsinaView = new JMenuItem("EMBOSS Flow Builder (test)");
-	   retsinaView.addActionListener(new ActionListener() {
-	   public void actionPerformed(ActionEvent e) {
-	   Retsina retsinaPane = new Retsina();
-	   GenericUIComponentFrame retsina = new GenericUIComponentFrame(Workbench.this.model,retsinaPane);
-	   Workbench.this.desktop.add(retsina);
-	   retsina.setSize(650,600);
-	   retsina.moveToFront();
-	   }
-	   });
-	   windowMenu.add(retsinaView);
-	*/
-	menuBar.add(fileMenu);
 	menuBar.add(windowMenu);
 	return menuBar;
 
     }
+    
 
-  private class ImportScuflListener
-          implements ActionListener
-  {
-    public void actionPerformed(ActionEvent e)
-    {
-      // Load an XScufl definition here
-      Preferences prefs = Preferences.userNodeForPackage(Workbench.class);
-      String curDir = prefs.get("currentDir",
-                                System.getProperty("user.home"));
-      fc.setCurrentDirectory(new File(curDir));
-      int returnVal = fc.showOpenDialog(Workbench.this);
-      if (returnVal == JFileChooser.APPROVE_OPTION) {
-        prefs.put("currentDir",
-                  fc.getCurrentDirectory().toString());
-        final File file = fc.getSelectedFile();
-        // mrp Refactored to do the heavy-lifting in a new thread
-        new Thread(new Runnable() {
-          public void run()
-          {
-            try {
-              // todo: does the update need running in the AWT thread?
-              // perhaps this thread should be spawned in populate?
-              XScuflParser.populate(file.toURL().openStream(),
-                                    Workbench.this.model, null);
-            } catch (Exception ex) {
-              JOptionPane.showMessageDialog(null,
-                                            "Problem opening XScufl from file : \n" +
-                                            ex.getMessage(),
-                                            "Exception!",
-                                            JOptionPane.ERROR_MESSAGE);
-            }
-          }
-        }).start();
-      }
-    }
-  }
 
 }
