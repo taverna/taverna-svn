@@ -113,7 +113,9 @@ public class EnactorInvocation extends JPanel implements ScuflUIComponent {
     ensureGotResults();
 
     this.tabs.add("Results",individualResults);
-
+    if (System.getProperty("taverna.saveresults")!=null) {
+	saveResults();
+    }
     // Get the output map and create new result detail panes
     Map resultMap = this.flowReceipt.getOutput();
     for (Iterator i = resultMap.keySet().iterator(); i.hasNext(); ) {
@@ -131,9 +133,6 @@ public class EnactorInvocation extends JPanel implements ScuflUIComponent {
   public void saveResults()
   {
     ensureGotResults();
-
-    this.tabs.add("Results", individualResults);
-
     // Get the output map and create new result detail panes
     Map resultMap = this.flowReceipt.getOutput();
     JFileChooser chooser = new JFileChooser();
