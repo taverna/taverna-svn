@@ -30,8 +30,8 @@ public class ScuflDiagramPanel extends JPanel
     JComboBox displayPolicyChooser = new JComboBox(displayPolicyStrings);
     JComboBox alignmentChooser = new JComboBox(alignment);
     ScuflDiagram diagram = new ScuflDiagram();
-    JCheckBox typeDisplay = new JCheckBox("Show types",true);
-    JCheckBox fitToWindow = new JCheckBox("Fit to window",false);
+    JCheckBox typeDisplay = new JCheckBox("Show types",false);
+    JCheckBox fitToWindow = new JCheckBox("Fit to window",true);
     static ImageIcon svgIcon,pngIcon,dotIcon;
     final JFileChooser fc;
 
@@ -63,6 +63,12 @@ public class ScuflDiagramPanel extends JPanel
 	diagramPane.setPreferredSize(new Dimension(0,0));
 	diagramPane.getViewport().setBackground(java.awt.Color.WHITE);
 	add(diagramPane, BorderLayout.CENTER);
+	// Default to no ports shown
+	diagram.setPortDisplay(2);
+	// Default to resize to fit
+	diagram.setDisplayTypes(false);
+	// Default to no types shown
+	diagram.setFitToWindow(true);
 	
 	// Create the save buttons
 	saveAsDot = new JButton(dotIcon);
@@ -92,7 +98,7 @@ public class ScuflDiagramPanel extends JPanel
 	toolbar.setMaximumSize(new Dimension(2000,30));
 	
 	// Create the action listeners
-	displayPolicyChooser.setSelectedIndex(1);
+	displayPolicyChooser.setSelectedIndex(2);
 	displayPolicyChooser.addActionListener(new ActionListener() {
 		public void actionPerformed(ActionEvent e) {
 		    diagram.setPortDisplay(displayPolicyChooser.getSelectedIndex());
@@ -244,6 +250,10 @@ public class ScuflDiagramPanel extends JPanel
 
     public void attachToModel(ScuflModel model) {
 	diagram.attachToModel(model);
+	diagram.setPortDisplay(displayPolicyChooser.getSelectedIndex());
+	diagram.setLRAlignment(alignmentChooser.getSelectedIndex()==0?false:true);
+	diagram.setFitToWindow(true);
+	diagram.setDisplayTypes(false);
     }
 
     public void detachFromModel() {

@@ -348,60 +348,46 @@ public class Workbench extends JFrame {
 		    // Show a workflow input panel if there are workflow inputs, otherwise
 		    // construct a new enactor invocation and run immediately
 		    final ScuflModel theModel = Workbench.this.model;
-		    if (theModel.getWorkflowSourcePorts().length != 0) {
-			DataThingConstructionPanel thing = new DataThingConstructionPanel() {
-				public void launchEnactorDisplay(Map inputObject) {
-				    try {
-					UIUtils.createFrame(theModel, new EnactorInvocation(FreefluoEnactorProxy.getInstance(), 
-											    theModel,
-											    inputObject),
-							    100, 100, 600, 400);
-					/**
-					   GenericUIComponentFrame thing = 
-					   new GenericUIComponentFrame(theModel,
-					   new EnactorInvocation(FreefluoEnactorProxy.getInstance(), 
-					   theModel,
-					   inputObject));
-					   thing.setSize(600, 400);
-					   thing.setLocation(100, 100);
-					   Workbench.workbench.desktop.add(thing);
-					   thing.moveToFront();
-					*/
-				    }
-				    catch (WorkflowSubmissionException wse) {
-					JOptionPane.showMessageDialog(null,
-								      "Problem invoking workflow engine : \n"+wse.getMessage(),
-								      "Exception!",
-								      JOptionPane.ERROR_MESSAGE);
-				    }
-				}
-			    };
-			
-			//GenericUIComponentFrame frame = new GenericUIComponentFrame(Workbench.this.model, thing);
-			//Workbench.this.desktop.add(frame);
-			//frame.moveToFront();
-				UIUtils.createFrame(theModel, thing, 100, 100, 600, 400);
+		    // Check whether we're in offline mode, if so then just chuck up an error
+		    if (theModel.isOffline()) {
+			JOptionPane.showMessageDialog(null,
+						      "Workflow is currently offline, cannot be invoked.\n"+
+						      "Deselect the 'offline' checkbox in the AME to set \n"+
+						      "online mode in order to run this workflow.",
+						      "Offline, cannot invoke",
+						      JOptionPane.ERROR_MESSAGE);
 		    }
 		    else {
-			try {
-			    // No inputs so launch the enactor directly
-			    UIUtils.createFrame(theModel, new EnactorInvocation(FreefluoEnactorProxy.getInstance(), 
-										theModel,
-										new HashMap()),
-						100, 100, 600, 400);
-			    /**
-			       GenericUIComponentFrame frame = new GenericUIComponentFrame(theModel,
-			       new EnactorInvocation(new FreefluoEnactorProxy(),
-			       theModel,
-			       new HashMap()));
-			       frame.setSize(600,400);
-			       frame.setLocation(100,100);
-			       Workbench.this.desktop.add(frame);
-			       frame.moveToFront();
-			    */
+			if (theModel.getWorkflowSourcePorts().length != 0) {
+			    DataThingConstructionPanel thing = new DataThingConstructionPanel() {
+				    public void launchEnactorDisplay(Map inputObject) {
+					try {
+					    UIUtils.createFrame(theModel, new EnactorInvocation(FreefluoEnactorProxy.getInstance(), 
+												theModel,
+												inputObject),
+								100, 100, 600, 400);
+					}
+					catch (WorkflowSubmissionException wse) {
+					    JOptionPane.showMessageDialog(null,
+									  "Problem invoking workflow engine : \n"+wse.getMessage(),
+									  "Exception!",
+									  JOptionPane.ERROR_MESSAGE);
+					}
+				    }
+				};
+			    UIUtils.createFrame(theModel, thing, 100, 100, 600, 400);
 			}
-			catch (Exception ex) {
-			    ex.printStackTrace();
+			else {
+			    try {
+				// No inputs so launch the enactor directly
+				UIUtils.createFrame(theModel, new EnactorInvocation(FreefluoEnactorProxy.getInstance(), 
+										    theModel,
+										    new HashMap()),
+						    100, 100, 600, 400);
+			    }
+			    catch (Exception ex) {
+				ex.printStackTrace();
+			    }
 			}
 		    }
 		}
