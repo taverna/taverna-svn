@@ -45,46 +45,16 @@ import org.embl.ebi.escience.scufl.Processor;
  * again with the original or primary name as the key and alternate name
  * as the value.
  */
-public class AlternateProcessor implements Serializable, Transferable {
+public class AlternateProcessor implements Serializable {
     
     private Processor alternate;
     private Processor original;
     private Map inputMapping = new HashMap();
     private Map outputMapping = new HashMap();
     
-    final public static DataFlavor FLAVOR =
-	new DataFlavor(AlternateProcessor.class, "Alternate Procesor");
-    static DataFlavor[] flavors = { FLAVOR };
-
     public AlternateProcessor(Processor alternate) {
 	this.alternate = alternate;
-    }
-    
-    /**
-     * Implements transferable interface
-     */
-    public Object getTransferData(DataFlavor df) 
-	throws UnsupportedFlavorException, IOException {
-	if (df.equals(FLAVOR)) {
-	    return this;
-	}
-	else {
-	    throw new UnsupportedFlavorException(df);
-	}
-    }
-    
-    /**
-     * Implements transferable interface
-     */
-    public boolean isDataFlavorSupported(DataFlavor df) {
-	return df.equals(FLAVOR);
-    }
-
-    /**
-     * Implements transferable interface
-     */
-    public DataFlavor[] getTransferDataFlavors() {
-	return flavors;
+	alternate.firingEvents = true;
     }
 
     /**

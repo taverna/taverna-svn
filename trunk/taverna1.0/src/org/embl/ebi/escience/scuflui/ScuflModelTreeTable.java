@@ -153,7 +153,7 @@ public class ScuflModelTreeTable extends JTreeTable
 	    pathToSelect = null;
 	    expandAll(this.tree, new TreePath(this.treeModel.getRoot()), true);
 	    if (pathToSelect != null) {
-		this.tree.setSelectionPath(pathToSelect);
+		//this.tree.setSelectionPath(pathToSelect);
 	    }
 	}
     }

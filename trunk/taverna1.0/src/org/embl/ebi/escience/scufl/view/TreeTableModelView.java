@@ -68,6 +68,9 @@ public class TreeTableModelView extends TreeModelView implements TreeTableModel 
     }
     public boolean isCellEditable(Object nodeObject, int column) {	
 	DefaultMutableTreeNode node = (DefaultMutableTreeNode)nodeObject;
+	if (node == null) {
+	    return false;
+	}
 	Processor p = null;
 	if (node.getUserObject() instanceof Processor) {
 	    p = (Processor)node.getUserObject();

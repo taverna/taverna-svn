@@ -421,6 +421,7 @@ public class JTreeTable extends JTable {
 
 	public ListToTreeSelectionModelWrapper() {
 	    super();
+	    setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
 	    getListSelectionModel().addListSelectionListener
 	                            (createListSelectionListener());
 	}

@@ -12,6 +12,7 @@ import javax.swing.event.InternalFrameAdapter;
 import javax.swing.event.InternalFrameEvent;
 import org.embl.ebi.escience.scufl.ScuflModel;
 import org.embl.ebi.escience.scuflui.ScuflUIComponent;
+import java.awt.Color;
 
 
 /**
@@ -32,6 +33,7 @@ public class GenericUIComponentFrame extends JInternalFrame {
 	this.component = component;
 	JScrollPane pane = new JScrollPane((JComponent)component);
 	getContentPane().add(pane);
+	//pane.getViewport().setBackground(Color.WHITE);
 	// Bind to the specified model
 	component.attachToModel(model);
 	// Unbind on window close

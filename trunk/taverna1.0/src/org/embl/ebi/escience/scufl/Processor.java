@@ -51,6 +51,7 @@ public abstract class Processor implements Serializable {
     Processor parentProcessor = null;
     protected List templates = new ArrayList();
     protected IterationStrategy iterationStrategy = null;
+    public boolean firingEvents = false;
     
     /**
      * A string representing a resource location within the enactor
@@ -361,7 +362,7 @@ public abstract class Processor implements Serializable {
 	}
 	this.model = model;
 	this.name = name;
-	fireModelEvent(new ScuflModelEvent(this, "New processor created '"+name+"'"));
+	//fireModelEvent(new ScuflModelEvent(this, "New processor created '"+name+"'"));
     }
 
     /**
@@ -555,15 +556,17 @@ public abstract class Processor implements Serializable {
      * Fire a change event back to the model
      */
     public void fireModelEvent(ScuflModelEvent event) {
-	if (this.model!=null) {
-	    this.model.fireModelEvent(event);
-	}
-	else {
-	    // Fire event back to the parent processor if this
-	    // is an alternate
-	    if (this.parentProcessor != null) {
-		event.source = this.parentProcessor;
-		this.parentProcessor.fireModelEvent(event);
+	if (firingEvents) {
+	    if (this.model!=null) {
+		this.model.fireModelEvent(event);
+	    }
+	    else {
+		// Fire event back to the parent processor if this
+		// is an alternate
+		if (this.parentProcessor != null) {
+		    event.source = this.parentProcessor;
+		    this.parentProcessor.fireModelEvent(event);
+		}
 	    }
 	}
     }

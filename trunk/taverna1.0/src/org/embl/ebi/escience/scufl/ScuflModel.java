@@ -272,7 +272,8 @@ public class ScuflModel
     public void addProcessor(Processor the_processor) {
 	synchronized(this.processors) {
 	    this.processors.add(the_processor);
-	    fireModelEvent(new ScuflModelEvent(this, "Added processor '"+the_processor.getName()+"' to the model"));
+	    the_processor.firingEvents = true;
+	    fireModelEvent(new ScuflModelEvent(the_processor, "Added processor '"+the_processor.getName()+"' to the model"));
 	}
     }
 
@@ -436,7 +437,60 @@ public class ScuflModel
      */
     void fireModelEvent(ScuflModelEvent event) {
 	if (this.isFiringEvents) {
-	    new NotifyThread(event, this);
+	    synchronized(pendingEventList) {
+		pendingEventList.add(event);
+	    }
+	    eventThread.interrupt();
+	}
+    }
+
+    Thread eventThread = new NotifyThread(this);
+    List pendingEventList = new ArrayList();
+    
+    /**
+     * A thread subclass to notify listeners of an event
+     */
+    class NotifyThread extends Thread {
+	private ScuflModelEvent event;
+	private List listeners;
+	protected NotifyThread(ScuflModel model) {
+	    super();
+	    this.listeners = model.listeners;
+	    this.start();
+	}
+	public void run() {
+	    while (true) {
+		// Are there any pending events?
+		if (pendingEventList.isEmpty()) {
+		    try {
+			Thread.sleep(10000);
+		    }
+		    catch (InterruptedException ie) {
+			//
+		    }
+		}
+		else {
+		    ScuflModelEvent[] events;
+		    synchronized(pendingEventList) {
+			// Copy the event list across to an array of events and
+			// clear it
+			events = (ScuflModelEvent[])pendingEventList.toArray(new ScuflModelEvent[0]);
+			pendingEventList.clear();
+		    }
+		    for (int i = 0; i < events.length; i++) {
+			System.out.println(events[i].toString());
+			for (Iterator j = listeners.iterator(); j.hasNext();) {
+			    ScuflModelEventListener l = (ScuflModelEventListener)j.next();
+			    try {
+				l.receiveModelEvent(events[i]);
+			    }
+			    catch (Exception ex) {
+				ex.printStackTrace();
+			    }
+			}
+		    }
+		}
+	    }
 	}
     }
 
@@ -459,6 +513,7 @@ class NotifyThread extends Thread {
 	    //System.out.println("Firing event to "+l.toString());
 	    l.receiveModelEvent(event);
 	}
+	
     }
 }
 /**

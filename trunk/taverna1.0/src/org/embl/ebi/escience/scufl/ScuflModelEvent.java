@@ -44,4 +44,8 @@ public class ScuflModelEvent {
 	return this.source;
     }
 
+    public String toString() {
+	return this.source.toString()+" :: "+this.message;
+    }
+
 }

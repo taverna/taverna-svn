@@ -36,6 +36,7 @@ public class AdvancedModelExplorer extends JTabbedPane
 	explorer = new ScuflModelTreeTable();
 	JScrollPane explorerPane = new JScrollPane(explorer);
 	explorerPane.setPreferredSize(new Dimension(0,0));
+	explorerPane.getViewport().setBackground(java.awt.Color.WHITE);
 	tabs.add("Workflow",explorerPane);
 	
 	// Create the properties panel but disable it
@@ -73,7 +74,7 @@ public class AdvancedModelExplorer extends JTabbedPane
      * the appropriate context object into the selectedObject value
      */
     private void updateTab() {
-	if (selectedObject instanceof Processor == false) {
+	if (selectedObject == null || selectedObject instanceof Processor == false) {
 	    // Not a processor, don't show the info for now
 	    setEnabledAt(1, false);
 	}

@@ -38,7 +38,7 @@ import java.lang.Exception;
 import java.lang.Process;
 import java.lang.Runtime;
 import java.lang.String;
-
+import java.util.*;
 
 
 /**
@@ -55,6 +55,7 @@ public class ScuflDiagram extends JComponent
     private DotView dot;
     private BufferedImage image = null;
     private boolean fitToWindow = false;
+    private Timer updateTimer = null;
     
     public ScuflDiagram() {
 	super();
@@ -175,11 +176,17 @@ public class ScuflDiagram extends JComponent
     }
     
     public Dimension getMaximumSize() {
-	return this.getMinimumSize();
+	if (this.image != null && !fitToWindow) {
+	    return new Dimension(image.getWidth(), image.getHeight());
+	}
+	else return super.getMaximumSize();
     }
 
     public Dimension getPreferredSize() {
-	return this.getMinimumSize();
+	if (this.image != null && !fitToWindow) {
+	    return new Dimension(image.getWidth(), image.getHeight());
+	}
+	else return super.getPreferredSize();
     }
 
     public void paint(Graphics g) {
@@ -276,10 +283,12 @@ public class ScuflDiagram extends JComponent
 	    this.dot = new DotView(model);
 	    this.dot.setPortDisplay(DotView.BOUND);
 	    model.addListener(this);
-	    updateGraphic();
+	    updateTimer = new Timer();
+	    updateTimer.schedule(new UpdateTimer(), (long)0, (long)2000);
+	    //updateGraphic();
 	}
     }
-
+    
     public void detachFromModel() {
 	if (this.model != null) {
 	    model.removeListener(this);
@@ -295,6 +304,7 @@ public class ScuflDiagram extends JComponent
 	    this.rescaledImage = null;
 	    this.image = null;
 	    repaint();
+	    updateTimer.cancel();
 	}
     }
 
@@ -315,6 +325,8 @@ public class ScuflDiagram extends JComponent
 	    ImageReader imageReader = (ImageReader)readers.next();
 	    imageReader.setInput(iis, false);
 	    this.image = imageReader.read(0);
+	    in.close();
+	    doLayout();
 	    repaint();
 	}
 	catch (Exception e) {
@@ -323,24 +335,23 @@ public class ScuflDiagram extends JComponent
 	}
     }
 
-    private int updateStatus = 0;
     public void receiveModelEvent(ScuflModelEvent event) {
-	if (updateStatus == 0) {
-	    updateStatus = 1;
-	    while (updateStatus != 0) {
+	graphicValid = false;
+    }
+    
+    boolean graphicValid = false;
+    class UpdateTimer extends TimerTask {
+	public UpdateTimer() {
+	    super();
+	}
+	public void run() {
+	    if (!graphicValid) {
+		graphicValid = true;
 		updateGraphic();
-		if (updateStatus == 2) {
-		    updateStatus = 1;
-		}
-		else {
-		    updateStatus = 0;
-		}
 	    }
 	}
-	else {
-	    updateStatus = 2;
-	}
     }
+    
 
     /**
      * A name for this component
