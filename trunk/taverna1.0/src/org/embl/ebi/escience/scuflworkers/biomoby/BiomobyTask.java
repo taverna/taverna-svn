@@ -22,6 +22,13 @@ import java.util.*;
 // Network Imports
 import java.net.URL;
 
+// for converting XML
+import java.io.*;
+import org.jdom.*;
+import org.jdom.input.*;
+import org.jdom.output.*;
+import org.xml.sax.*;
+
 import org.embl.ebi.escience.scuflworkers.biomoby.BiomobyProcessor;
 // import java.lang.Exception;
 // import java.lang.Integer;
@@ -85,7 +92,48 @@ public class BiomobyTask implements ProcessorTaskWorker {
 		// a list of strings containing simple types
 		// add them to the outputList
 		
-		
+
+// This is in the 'outputXML'		
+// --------------------------
+//        <?xml version="1.0" encoding="UTF-8"?>
+//        <moby:MOBY xmlns:moby="http://www.biomoby.org/moby">
+//          <moby:mobyContent>
+//           <moby:mobyData  queryID='b1'>
+//               <Collection articleName="mySequenceCollection">
+//                  <Simple>
+//                   <Object namespace="Genbank/gi" id="163483"/>
+//                  </Simple>
+//                  <Simple>
+//                   <Object namespace="Genbank/gi" id="244355"/>
+//                  </Simple>
+//                  <Simple>
+//                   <Object namespace="Genbank/gi" id="533253"/>
+//                  </Simple>
+//                  <Simple>
+//                   <Object namespace="Genbank/gi" id="745290"/>
+//                  </Simple>
+//                </Collection>
+//           </moby:mobyData>
+//          </moby:mobyContent>
+//        </moby:MOBY>
+
+// And this is what I want to create - several times:
+// --------------------------------------------------
+//        <?xml version="1.0" encoding="UTF-8"?>
+//        <moby:MOBY xmlns:moby="http://www.biomoby.org/moby">
+//           <moby:mobyContent>
+//               <moby:mobyData queryID='a1'>
+//                    <Simple articleName=''>
+//                       <Object namespace="Genbank/gi" id="163483"/>
+//                    </Simple>
+//               </moby:mobyData>
+//           </moby:mobyContent>
+//        </moby:MOBY>
+
+		// Create a DOM document from the resulting XML
+		SAXBuilder saxBuilder = new SAXBuilder();
+                Document doc = saxBuilder.build (new InputSource (new StringReader (outputXML)));
+
 
 		// Return the list
 		outputMap.put("output", new DataThing(outputList));
