@@ -79,7 +79,22 @@ public class EnactorStatusTableModel extends AbstractTableModel {
     public void setStatusString(String processorName, String statusString) {
 	for (int i = 0; i < rows; i++) {
 	    if (((String)data[i][1]).equals(processorName)) {
-		setValueAt(statusString, i, 2);
+		// Add colours using HTML labels
+		String colour = "black";
+		if (statusString.equals("ProcessComplete")) {
+		    colour = "#1C7366";
+		}
+		else if (statusString.equals("ServiceError") ||
+			 statusString.equals("ServiceFailure")) {
+		    colour = "red";
+		}
+		else if (statusString.startsWith("Invoking")) {
+		    colour = "purple";
+		}
+		else if (statusString.equals("ProcessScheduled")) {
+		    colour = "#CE7220";
+		}
+		setValueAt("<html><font color=\""+colour+"\">"+statusString+"</font></html>", i, 2);
 		return;
 	    }
 	}
