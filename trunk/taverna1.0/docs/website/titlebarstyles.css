@@ -2,8 +2,8 @@ body {
 	background-color: #FFFFFF;
 	text-align: justify;
 	list-style-type: square;
-	background-image: url(menubarbacklight.png);
-	background-repeat: repeat;
+	background-image: url(titleimage.png);
+	background-repeat: no-repeat;
 	background-attachment: scroll;
 	font-family: Arial, Helvetica, sans-serif;
 	font-size: x-small;
@@ -32,6 +32,7 @@ blockquote {
 
 }
 a {
+	color: #FFFFFF;
 	font-size: x-small;
 	font-family: Arial, Helvetica, sans-serif;
 	font-style: normal;
@@ -39,8 +40,6 @@ a {
 	font-weight: normal;
 	font-variant: normal;
 	text-transform: none;
-	color: #000000;
-
 
 
 
@@ -93,10 +92,4 @@ em {
 pre {
 	font-family: "Courier New", Courier, mono;
 	font-size: x-small;
-}
-td {
-	font-size: x-small;
-	text-align: justify;
-	vertical-align: top;
-
 }
