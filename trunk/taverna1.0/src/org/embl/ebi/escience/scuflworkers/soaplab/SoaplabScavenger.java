@@ -59,22 +59,27 @@ public class SoaplabScavenger extends Scavenger {
 		    category.add(new DefaultMutableTreeNode(f));
 		}
 	    }
-	    call.setTargetEndpointAddress(base+"GowlabFactory");
-	    call.setOperationName(new QName("getAvailableCategories"));
-	    categories = (String[])(call.invoke(new Object[0]));
-	    // Iterate over all the categories, creating new child nodes
-	    for (int i = 0; i < categories.length; i++) {
-		DefaultMutableTreeNode category = new DefaultMutableTreeNode(categories[i]);
-		add(category);
-		call = (Call) new Service().createCall();
+	    try {
 		call.setTargetEndpointAddress(base+"GowlabFactory");
-		call.setOperationName(new QName("getAvailableAnalysesInCategory"));
-		String[] services = (String[])(call.invoke(new String[]{categories[i]}));
-		// Iterate over the services
-		for (int j = 0; j < services.length; j++) {
-		    SoaplabProcessorFactory f = new SoaplabProcessorFactory(base, services[j]);
-		    category.add(new DefaultMutableTreeNode(f));
+		call.setOperationName(new QName("getAvailableCategories"));
+		categories = (String[])(call.invoke(new Object[0]));
+		// Iterate over all the categories, creating new child nodes
+		for (int i = 0; i < categories.length; i++) {
+		    DefaultMutableTreeNode category = new DefaultMutableTreeNode(categories[i]);
+		    add(category);
+		    call = (Call) new Service().createCall();
+		    call.setTargetEndpointAddress(base+"GowlabFactory");
+		    call.setOperationName(new QName("getAvailableAnalysesInCategory"));
+		    String[] services = (String[])(call.invoke(new String[]{categories[i]}));
+		    // Iterate over the services
+		    for (int j = 0; j < services.length; j++) {
+			SoaplabProcessorFactory f = new SoaplabProcessorFactory(base, services[j]);
+			category.add(new DefaultMutableTreeNode(f));
+		    }
 		}
+	    }
+	    catch (Exception e) {
+		// Was an old version of soaplab without the gowlab port
 	    }
 	}
 	catch (Exception e) {
