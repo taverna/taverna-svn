@@ -124,6 +124,14 @@ public class XScuflView implements ScuflModelEventListener {
 	    link.addContent(outputNode);
 	    root.addContent(link);
 	}
+	
+	// Create elements corresponding to external port definitions
+	Port[] externalPorts = model.getExternalPorts();
+	for (int i = 0; i < externalPorts.length; i++) {
+	    Element external = new Element("external",scuflNS());
+	    external.setText(externalPorts[i].getProcessor().getName()+":"+externalPorts[i].getName());
+	    root.addContent(external);
+	}
 
 	// Generate the textual version and cache it.
 	XMLOutputter xo = new XMLOutputter();
