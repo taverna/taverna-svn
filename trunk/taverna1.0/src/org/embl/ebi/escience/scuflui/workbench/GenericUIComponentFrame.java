@@ -41,6 +41,7 @@ public class GenericUIComponentFrame extends JInternalFrame {
 		}
 	    });
 	setSize(400,400);
+	moveToFront();
 	setVisible(true);
     }
     

@@ -5,10 +5,15 @@
  */
 package org.embl.ebi.escience.scuflui;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 import javax.swing.tree.DefaultMutableTreeNode;
+import org.embl.ebi.escience.scufl.Processor;
+import org.embl.ebi.escience.scuflui.workbench.ProcessorInfoFrame;
 
 import org.embl.ebi.escience.scuflui.NoContextMenuFoundException;
 import org.embl.ebi.escience.scuflui.ScuflContextMenuFactory;
@@ -23,7 +28,7 @@ import java.lang.Object;
  */
 public class ScuflModelExplorerPopupHandler extends MouseAdapter {
     
-    private ScuflModelExplorer explorer;
+    ScuflModelExplorer explorer;
     
     public ScuflModelExplorerPopupHandler(ScuflModelExplorer theExplorer) {
 	this.explorer = theExplorer;
@@ -60,6 +65,20 @@ public class ScuflModelExplorerPopupHandler extends MouseAdapter {
 	if (scuflObject != null) {
 	    try {
 		JPopupMenu theMenu = ScuflContextMenuFactory.getMenuForObject(scuflObject, explorer.model);
+		if (scuflObject instanceof Processor) {
+		    // show the properties display
+		    final Processor theProcessor = (Processor)scuflObject;
+		    theMenu.addSeparator();
+		    JMenuItem properties = new JMenuItem("Properties...");
+		    properties.addActionListener(new ActionListener() {
+			    public void actionPerformed(ActionEvent a) {
+				ProcessorInfoFrame pif = new ProcessorInfoFrame(theProcessor);
+				ScuflModelExplorerPopupHandler.this.explorer.pane.add(pif);
+				pif.moveToFront();
+			    }
+			});
+		    theMenu.add(properties);
+		}
 		theMenu.show(explorer, e.getX(), e.getY());
 	    }
 	    catch (NoContextMenuFoundException ncmfe) {

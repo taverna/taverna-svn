@@ -96,7 +96,18 @@ public class XScuflView implements ScuflModelEventListener, java.io.Serializable
 	for (int i = 0; i < processors.length; i++) {
 	    Element processor = new Element("processor",scuflNS());
 	    processor.setAttribute("name",processors[i].getName());
-	    processor.setAttribute("log",""+processors[i].getLogLevel());
+	    // Only set the log level if it is zero or higher, negative values
+	    // implicitly mean 'inherit from model'
+	    if (processors[i].getRealLogLevel() > -1) {
+		processor.setAttribute("log",""+processors[i].getLogLevel());
+	    }
+	    // Set the description if it isn't the empty string
+	    String description = processors[i].getDescription();
+	    if (description.equals("")==false) {
+		Element de = new Element("description",scuflNS());
+		de.setText(description);
+		processor.addContent(de);
+	    }
 	    // Catch Soaplab processors - this should be more
 	    // extensible! Will do for now however...
 	    try {

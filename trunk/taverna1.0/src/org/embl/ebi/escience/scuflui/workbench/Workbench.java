@@ -98,7 +98,7 @@ public class Workbench extends JFrame {
 	diagram.setLocation(50,400);
 	workbench.desktop.add(diagram);
 	GenericUIComponentFrame explorer = new GenericUIComponentFrame(workbench.model, 
-								       new ScuflModelExplorer());
+								       new ScuflModelExplorer(workbench.desktop));
 	explorer.setSize(300,300);
 	explorer.setLocation(700,50);
 	workbench.desktop.add(explorer);
@@ -305,8 +305,10 @@ public class Workbench extends JFrame {
 	explorerView.addActionListener(new ActionListener() {
 		public void actionPerformed(ActionEvent e) {
 		    // Show a scufl explorer panel
-		    Workbench.this.desktop.add(new GenericUIComponentFrame(Workbench.this.model,
-									   new ScuflModelExplorer()));
+		    ScuflModelExplorer thing = new ScuflModelExplorer(Workbench.this.desktop);
+		    GenericUIComponentFrame frame = new GenericUIComponentFrame(Workbench.this.model, thing);
+		    Workbench.this.desktop.add(frame);
+		    frame.moveToFront();
 		}
 	    });
 	windowMenu.add(explorerView);
@@ -314,8 +316,10 @@ public class Workbench extends JFrame {
 	diagramView.addActionListener(new ActionListener() {
 		public void actionPerformed(ActionEvent e) {
 		    // Show a scufl diagram panel
-		    Workbench.this.desktop.add(new GenericUIComponentFrame(Workbench.this.model,
-									   new ScuflDiagram()));
+		    ScuflDiagram thing = new ScuflDiagram();
+		    GenericUIComponentFrame frame = new GenericUIComponentFrame(Workbench.this.model, thing);
+		    Workbench.this.desktop.add(frame);
+		    frame.moveToFront();
 		}
 	    });
 	windowMenu.add(diagramView);
@@ -323,8 +327,10 @@ public class Workbench extends JFrame {
 	xscuflView.addActionListener(new ActionListener() {
 		public void actionPerformed(ActionEvent e) {
 		    // Show an XScufl panel
-		    Workbench.this.desktop.add(new GenericUIComponentFrame(Workbench.this.model,
-									   new XScuflTextArea()));
+		    XScuflTextArea thing = new XScuflTextArea();
+		    GenericUIComponentFrame frame = new GenericUIComponentFrame(Workbench.this.model, thing);
+		    Workbench.this.desktop.add(frame);
+		    frame.moveToFront();
 		}
 	    });
 	windowMenu.add(xscuflView);
@@ -332,8 +338,10 @@ public class Workbench extends JFrame {
 	dotView.addActionListener(new ActionListener() {
 		public void actionPerformed(ActionEvent e) {
 		    // Show a Dot panel
-		    Workbench.this.desktop.add(new GenericUIComponentFrame(Workbench.this.model,
-									   new DotTextArea()));
+		    DotTextArea thing = new DotTextArea();
+		    GenericUIComponentFrame frame = new GenericUIComponentFrame(Workbench.this.model, thing);
+		    Workbench.this.desktop.add(frame);
+		    frame.moveToFront();
 		}
 	    });
 	windowMenu.add(dotView);
@@ -341,8 +349,10 @@ public class Workbench extends JFrame {
 	servicePanel.addActionListener(new ActionListener() {
 		public void actionPerformed(ActionEvent e) {
 		    // Show a service selection panel
-		    Workbench.this.desktop.add(new GenericUIComponentFrame(Workbench.this.model,
-									   new ScavengerTree()));
+		    ScavengerTree thing = new ScavengerTree();
+		    GenericUIComponentFrame frame = new GenericUIComponentFrame(Workbench.this.model, thing);
+		    Workbench.this.desktop.add(frame);
+		    frame.moveToFront();
 		}
 	    });
 	windowMenu.add(servicePanel);

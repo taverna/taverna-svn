@@ -375,14 +375,25 @@ class ProcessorLoaderThread extends Thread {
     }
     public void run() {
 	try {
-	    boolean foundSpec = false;
-	    // Handle soaplab
-	    Element soaplab = processorNode.getChild("soaplabwsdl",namespace);
+
 	    String logLevel = processorNode.getAttributeValue("log");
-	    int log = 0;
+	    // Default value for a processor is -1, which translates to
+	    // 'inherit from model'.
+	    int log = -1;
 	    if (logLevel != null) {
 		log = Integer.parseInt(logLevel);
 	    }
+	    boolean foundSpec = false;
+	    
+	    // Get the description if present
+	    String description = "";
+	    Element de = processorNode.getChild("description",namespace);
+	    if (de!=null) {
+		description = de.getTextTrim();
+	    }
+
+	    // Handle soaplab
+	    Element soaplab = processorNode.getChild("soaplabwsdl",namespace);
 	    if (soaplab != null) {
 		foundSpec = true;
 		// Get the textual endpoint
@@ -396,6 +407,7 @@ class ProcessorLoaderThread extends Thread {
 		}
 		Processor p = new SoaplabProcessor(model, name, endpoint);
 		p.setLogLevel(log);
+		p.setDescription(description);
 		model.addProcessor(p);
 	    }
 	    
@@ -407,7 +419,8 @@ class ProcessorLoaderThread extends Thread {
 		String portTypeName = wsdlProcessor.getChild("porttype",namespace).getTextTrim();
 		String operationName = wsdlProcessor.getChild("operation",namespace).getTextTrim();
 		Processor p = new WSDLBasedProcessor(model, name, wsdlLocation, portTypeName, operationName);
-		p.setLogLevel(log);
+		p.setLogLevel(log);	
+		p.setDescription(description);
 		model.addProcessor(p);
 	    }
 	    
@@ -417,7 +430,8 @@ class ProcessorLoaderThread extends Thread {
 		foundSpec = true;
 		String tscriptURL = talismanProcessor.getChild("tscript",namespace).getTextTrim();
 		Processor p = new TalismanProcessor(model, name, tscriptURL);
-		p.setLogLevel(log);
+		p.setLogLevel(log);		
+		p.setDescription(description);
 		model.addProcessor(p);
 	    }
 	    

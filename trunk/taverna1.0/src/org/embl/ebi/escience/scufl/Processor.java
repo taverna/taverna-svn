@@ -39,12 +39,29 @@ public abstract class Processor implements java.io.Serializable {
     /**
      * The log level for this processor
      */
-    int logLevel = 0;
+    int logLevel = -1;
 
     /**
-     * Get the log level
+     * Get the log level, this is the effective log level
+     * of the processor taking into account possible inheritence
+     * of the level from the ScuflModel instance.
      */
     public int getLogLevel() {
+	if (this.getModel() == null || this.logLevel > -1) {
+	    return this.logLevel;
+	}
+	else {
+	    return this.getModel().getLogLevel();
+	}
+    }
+
+    /**
+     * Get the real log level set by this processor, this
+     * can be -1 in which case the getLogLevel method will
+     * return the log level of the ScuflModel that 'owns' 
+     * this processor
+     */
+    public int getRealLogLevel() {
 	return this.logLevel;
     }
 
@@ -53,6 +70,7 @@ public abstract class Processor implements java.io.Serializable {
      */
     public void setLogLevel(int level) {
 	this.logLevel = level;
+	fireModelEvent(new ScuflModelEvent(this, "Log level changed"));
     }
     
     /**
