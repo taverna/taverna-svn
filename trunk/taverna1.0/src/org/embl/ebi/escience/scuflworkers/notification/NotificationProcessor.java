@@ -23,7 +23,7 @@ public class NotificationProcessor extends Processor {
         super(model, name);
         try {
             Port inputPort1 = new InputPort(this, "publishMessage");
-	    Port inputPort2 = new InputPort(this, "Topic");
+	    	Port inputPort2 = new InputPort(this, "Topic");
             addPort(inputPort1);
             addPort(inputPort2);
         }

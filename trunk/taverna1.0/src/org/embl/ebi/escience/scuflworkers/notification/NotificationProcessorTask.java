@@ -26,7 +26,7 @@ import org.embl.ebi.escience.baclava.DataThing;
  * @author  kahs
  * @author Justin Ferris
  */
-public class NotificationProcessorTask implements ProcessorTaskWorker {  
+public class NotificationProcessorTask implements ProcessorTaskWorker {
     private Processor processor;
     private static Class publishProcessorClass;
     private static PublishProcessor publishProcessor;
@@ -35,64 +35,64 @@ public class NotificationProcessorTask implements ProcessorTaskWorker {
     private String methodName;
     private DataThing topic;
     private DataThing message;
-    
-    /** 
-     * Creates a new instance of NotificationProcessorTaskImpl 
-     * The processor used here is a dummy processor just to 
+
+    /**
+     * Creates a new instance of NotificationProcessorTaskImpl
+     * The processor used here is a dummy processor just to
      * plug in to taverna for gui purposes.
      */
     public NotificationProcessorTask(Processor p) {
         this.processor = p;
     }
-    
+
     public NotificationProcessorTask(){
-        
+
     }
-    
+
     public Map execute(Map inputMap) throws TaskExecutionException {
         try{
             Set set = inputMap.keySet();
             for(Iterator itr = set.iterator(); itr.hasNext();){
                 String portName = (String) itr.next();
                 DataThing value = (DataThing) inputMap.get(portName);
-		if(portName.equals(NotificationProcessorConstants.PUBLISH_METHOD)){
-			methodName = portName;
-			message = value;
-		}else if(portName.equals(NotificationProcessorConstants.PUBLISH_TOPIC)){
-				topic = value;
-		}
-	     }
-                
-                publishProcessorClass = Class.forName(NotificationProcessorConstants.PUBLISH_PROCESSOR);
-                String parameterClassName = NotificationProcessorConstants.W3C_DOM_DOCUMENT;
-                publishProcessor = (PublishProcessor) publishProcessorClass.newInstance();
-                
-                Method[] methods = publishProcessorClass.getDeclaredMethods();
-                for(int i=0;i<methods.length;i++){
-                    Method method = (Method) methods[i];
-                    Class[] parameterTypes = method.getParameterTypes();
-                    if(parameterTypes.length != 3)
-                        continue;
-                    if(method.getName().equalsIgnoreCase(methodName) &&
-				((Class)parameterTypes[0]).getName().equals(String.class.getName()) &&
-				((Class)parameterTypes[1]).getName().equals(String.class.getName()) &&
-                        	((Class)parameterTypes[2]).getName().equals(parameterClassName)){
-                            
-                            org.w3c.dom.Document notificationMessage = convertInputMessage(message);
-			    String topicName = convertInputTopic(topic);
-                            method.invoke(publishProcessor, new Object[] { NotificationProcessorConstants.DEFAULT_WORKFLOW_PUBLISHER,
-							topicName,
-							notificationMessage });
-                    }
-                }
+				if(portName.equalsIgnoreCase(NotificationProcessorConstants.PUBLISH_METHOD)){
+					methodName = portName;
+					message = value;
+				}else if(portName.equalsIgnoreCase(NotificationProcessorConstants.PUBLISH_TOPIC)){
+					topic = value;
+				}
+	     	}
+
+			publishProcessorClass = Class.forName(NotificationProcessorConstants.PUBLISH_PROCESSOR);
+			String parameterClassName = NotificationProcessorConstants.W3C_DOM_DOCUMENT;
+			publishProcessor = (PublishProcessor) publishProcessorClass.newInstance();
+
+			Method[] methods = publishProcessorClass.getDeclaredMethods();
+			for(int i=0;i<methods.length;i++){
+				Method method = (Method) methods[i];
+				Class[] parameterTypes = method.getParameterTypes();
+				if(parameterTypes.length != 3)
+					continue;
+				if(method.getName().equalsIgnoreCase(methodName) &&
+			((Class)parameterTypes[0]).getName().equals(String.class.getName()) &&
+			((Class)parameterTypes[1]).getName().equals(String.class.getName()) &&
+						((Class)parameterTypes[2]).getName().equals(parameterClassName)){
+
+						org.w3c.dom.Document notificationMessage = convertInputMessage(message);
+			String topicName = convertInputTopic(topic);
+						method.invoke(publishProcessor, new Object[] { NotificationProcessorConstants.DEFAULT_WORKFLOW_PUBLISHER,
+						topicName,
+						notificationMessage });
+				}
+			}
         } catch(Exception ex){
             ex.printStackTrace();
             throw new TaskExecutionException(ex.toString());
         }
-        
+
         return new HashMap();
     }
-    
+
     private org.w3c.dom.Document convertInputMessage(DataThing value) throws Exception {
         Object object = value.getDataObject();
         if(object instanceof String == false) {
@@ -109,7 +109,7 @@ public class NotificationProcessorTask implements ProcessorTaskWorker {
         doc.appendChild(element);
         return doc;
     }
-    
+
     private String convertInputTopic(DataThing value){
 	if(value == null)
 		return NotificationProcessorConstants.DEFAULT_WORKFLOW_TOPIC;
@@ -120,23 +120,23 @@ public class NotificationProcessorTask implements ProcessorTaskWorker {
         	throw new IllegalArgumentException("NotificationProcessorTask cannot accept illegal DataThing argument of class " +
                 	                            object.getClass().getName());
       	}
-	
+
 	return (String) object;
 
     }
-    
+
     /*
      * Main method added to test the working of the processor task
      * along with taverna classes.
-     * 
+     *
      */
-    
-    public static void main(String args[]) throws Exception { 
+
+    public static void main(String args[]) throws Exception {
         if(args.length != 1){
             System.out.println(" Usage : java <program name> <xmlFileName> ");
             System.exit(0);
         }
-        
+
         String workflowEventFile = args[0];
         java.io.File messageFile = new java.io.File(workflowEventFile);
         javax.xml.parsers.DocumentBuilder docBuilder = javax.xml.parsers.DocumentBuilderFactory.newInstance().newDocumentBuilder();
