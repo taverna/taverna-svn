@@ -203,10 +203,10 @@ public class DotView implements ScuflModelEventListener, java.io.Serializable {
 		// Name of the node
 		if (this.portDisplay == DotView.ALL) {
 		    if (p.getAlternatesList().isEmpty()) {
-			dot.append("{"+p.getName()+(p.isOffline()?" (o)":"")+"}|{");
+			dot.append("{"+p.getName()+(p.isOffline()?"[o]":"")+"}|{");
 		    }
 		    else {
-			dot.append("{"+p.getName()+(p.isOffline()?" (o)":"")+"\\n"+p.getAlternatesList().size()+" alternate");
+			dot.append("{"+p.getName()+(p.isOffline()?"[o]":"")+"\\n"+p.getAlternatesList().size()+" alternate");
 		    if (p.getAlternatesList().size()!=1) {
 			dot.append("s");
 		    }
@@ -236,10 +236,10 @@ public class DotView implements ScuflModelEventListener, java.io.Serializable {
 		
 		if (this.portDisplay == DotView.BOUND) {
 		    if (p.getAlternatesList().isEmpty()) {
-			dot.append(p.getName()+"|");
+			dot.append(p.getName()+(p.isOffline()?"[o]":"")+"|");
 		    }
 		    else {
-			dot.append(p.getName()+"\\n"+p.getAlternatesList().size()+" alternate");
+			dot.append(p.getName()+(p.isOffline()?"[o]":"")+"\\n"+p.getAlternatesList().size()+" alternate");
 			if (p.getAlternatesList().size()!=1) {
 			    dot.append("s");
 			}
@@ -269,7 +269,7 @@ public class DotView implements ScuflModelEventListener, java.io.Serializable {
 	    else {
 		// Not generating the port view, just append the name of the
 		// node.
-		dot.append(p.getName());
+		dot.append(p.getName()+(p.isOffline()?"[o]":""));
 	    }
 	    // Close the label
 	    dot.append("\"\n");
