@@ -38,6 +38,9 @@ public class XMLTree extends JTree {
      */
     public XMLTree(String text) throws ParserConfigurationException {
 	super();
+	// Fix for platforms other than metal which can't otherwise
+	// cope with arbitrary size rows
+	setRowHeight(0);
 	getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
 	setShowsRootHandles(true);
 	setEditable(false);

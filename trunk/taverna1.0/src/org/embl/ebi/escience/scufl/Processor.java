@@ -50,7 +50,24 @@ public abstract class Processor implements Serializable, Transferable {
     static DataFlavor[] flavors = { FLAVOR };
     Processor parentProcessor = null;
     protected List templates = new ArrayList();
-    
+    protected IterationStrategy iterationStrategy = null;
+
+
+    /**
+     * Get the iteration strategy for this processor, or null
+     * if the default should be used
+     */
+    public IterationStrategy getIterationStrategy() {
+	return this.iterationStrategy;
+    }
+
+    /**
+     * Set the iteration strategy
+     */
+    public void setIterationStrategy(IterationStrategy i) {
+	this.iterationStrategy = i;
+    }
+
     /**
      * Return an array containing all annotation templates
      * for this processor

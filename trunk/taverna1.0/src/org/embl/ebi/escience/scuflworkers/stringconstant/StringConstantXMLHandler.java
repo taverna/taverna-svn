@@ -34,7 +34,7 @@ public class StringConstantXMLHandler implements XMLHandler {
 	       DuplicateProcessorNameException, 
 	       XScuflFormatException {
 	Element stringconstant = processorNode.getChild("stringconstant",XScufl.XScuflNS);
-	String value = stringconstant.getTextTrim();
+	String value = stringconstant.getText();
 	return new StringConstantProcessor(model, name, value);
     }
 

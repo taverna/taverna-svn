@@ -397,6 +397,11 @@ class ProcessorLoaderThread extends Thread {
 		description = de.getTextTrim();
 		theProcessor.setDescription(description);
 	    }
+	    // Get the iteration strategy if present
+	    Element iterationStrategyElement = processorNode.getChild("iterationstrategy",namespace);
+	    if (iterationStrategyElement != null) {
+		theProcessor.setIterationStrategy(new IterationStrategy(iterationStrategyElement));
+	    }
 	    model.addProcessor(theProcessor);
 	}
 	catch (XScuflFormatException xfe) {

@@ -25,15 +25,15 @@
 //      Dependencies        :
 //
 //      Last commit info    :   $Author: mereden $
-//                              $Date: 2004-03-29 14:46:20 $
-//                              $Revision: 1.44 $
+//                              $Date: 2004-04-05 12:17:32 $
+//                              $Revision: 1.45 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 package uk.ac.soton.itinnovation.taverna.enactor.entities;
 
 import java.beans.IntrospectionException;
 import org.apache.log4j.Logger;
-import org.embl.ebi.escience.baclava.BaclavaIterator;
+import org.embl.ebi.escience.baclava.*;
 import org.embl.ebi.escience.baclava.DataThing;
 import org.embl.ebi.escience.baclava.JoinIterator;
 import org.embl.ebi.escience.scufl.Processor;
@@ -445,25 +445,45 @@ public class ProcessorTask extends TavernaTask{
     private synchronized Map invokeWithIteration(Map inputMap) throws TaskExecutionException {
 	// Build the iterator
 	eventList.add(new ConstructingIterator());
-	String[] inputNames = new String[inputMap.keySet().size()];
-	BaclavaIterator[] inputIterators = new BaclavaIterator[inputNames.length];
-	int j=0;
-	for (int i=0; i<getParents().length; i++) {
+
+	// Create a map of input name -> BaclavaIteratorNode instance
+	Map iteratorNodeMap = new HashMap();
+	// Iterate over all parent tasks to get the original port
+	// types, use this to determine how deeply into the collection
+	// we need to drill
+	for (int i = 0; i < getParents().length; i++) {
 	    if (getParents()[i] instanceof PortTask) {
-		PortTask inputPortTask = (PortTask)getParents()[i];
-		inputNames[j] = inputPortTask.getScuflPort().getName();
-		DataThing dataThing = inputPortTask.getData();
+		// Found an input port
+		String portName = ((PortTask)getParents()[i]).getScuflPort().getName();
+		String portType = ((PortTask)getParents()[i]).getScuflPort().getSyntacticType();
+		DataThing portData = (DataThing)inputMap.get(portName);
 		try {
-		    inputIterators[j] = dataThing.iterator(inputPortTask.getScuflPort().getSyntacticType());
+		    BaclavaIterator iterator = portData.iterator(portType);
+		    BaclavaIteratorNode iteratorNode = new BaclavaIteratorNode(iterator, portName);
+		    iteratorNodeMap.put(portName, iteratorNode);
 		}
 		catch (IntrospectionException ie) {
 		    eventList.add(new DataMismatchError());
 		    throw new TaskExecutionException("Unable to reconcile iterator types");
 		}
-		j++;
 	    }
 	}
-
+	
+	ResumableIterator rootNode = null;
+	
+	if (getProcessor().getIterationStrategy() == null) {
+	    // Default behaviour is to create a cross join across all input iterators
+	    rootNode = new JoinIteratorNode();
+	    for (Iterator i = iteratorNodeMap.values().iterator(); i.hasNext();) {
+		BaclavaIteratorNode iteratorNode = (BaclavaIteratorNode)i.next();
+		((JoinIteratorNode)rootNode).add(iteratorNode);
+	    }
+	}
+	else {
+	    // Use the IterationStrategy object to construct the iterator
+	    rootNode = getProcessor().getIterationStrategy().buildIterator(iteratorNodeMap);
+	}
+	
 	// Create the output container
 	Map outputMap = new HashMap();
 	for (int i = 0; i < getChildren().length; i++) {
@@ -473,24 +493,14 @@ public class ProcessorTask extends TavernaTask{
 		outputMap.put(outputPortTask.getScuflPort().getName(), new DataThing(new ArrayList()));
 	    }
 	}
-
-	// Build the join iterator
-	JoinIterator i = new JoinIterator(inputIterators);
-	int totalIterations = i.size();
-	int currentIteration = 0;
-		
+	
 	// Do the iteration
-	for (; i.hasNext(); ) {
-	    currentIteration++;
-	    Object[] inputs = (Object[])i.next();
-	    Map splitInput = new HashMap();
-	    for (int k = 0; k < inputs.length; k++) {
-		splitInput.put(inputNames[k], inputs[k]);
-	    }
-	    // Have now populated the input map for the service invocation
-	    eventList.add(new InvokingWithIteration(currentIteration, totalIterations));
-	    Map singleResultMap = execute(splitInput);
-	    
+	int currentIteration = 0;
+	int totalIterations = rootNode.size();
+	while (rootNode.hasNext()) {
+	    Map inputSet = (Map)rootNode.next();
+	    eventList.add(new InvokingWithIteration(++currentIteration, totalIterations));
+	    Map singleResultMap = execute(inputSet);
 	    // Iterate over the outputs
 	    for (Iterator l = singleResultMap.keySet().iterator(); l.hasNext(); ) {
 		String outputName = (String)l.next();
@@ -506,8 +516,6 @@ public class ProcessorTask extends TavernaTask{
 		/// fix ends
 	    }
 	}
-	
-	// Return the output map
 	return outputMap;
     }
 

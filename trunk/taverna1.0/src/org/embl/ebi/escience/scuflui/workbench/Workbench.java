@@ -178,6 +178,7 @@ public class Workbench extends JFrame {
 	super("Scufl Workbench");
 	try {
 	    UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+	    fc.updateUI();
 	} catch (Exception e) { }
 
 	Workbench.workbench = this;
