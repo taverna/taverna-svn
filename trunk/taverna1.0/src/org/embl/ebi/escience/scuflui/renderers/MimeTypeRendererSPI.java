@@ -38,4 +38,13 @@ public interface MimeTypeRendererSPI {
      * @return the name
      */
     public String getName();
+
+    /**
+     * An icon that can be used to identify this SPI.
+     *
+     * @param userObject the Object to render
+     * @param mimetypes the mime type this object is meant to have
+     * @return an appropreate icon, or null if this SPI doesn't have an icon
+     */
+    public Icon getIcon(Object userObject, String mimetypes);
 }

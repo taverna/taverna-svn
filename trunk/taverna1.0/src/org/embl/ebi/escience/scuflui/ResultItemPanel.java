@@ -26,6 +26,7 @@ import org.embl.ebi.escience.scuflui.renderers.MimeTypeRendererRegistry;
 
 // Utility Imports
 import java.util.Collection;
+import java.util.Iterator;
 
 
 // IO Imports
@@ -135,6 +136,41 @@ public class ResultItemPanel extends JPanel {
 			    });
 
 			theMenu.add(saveAction);
+
+                // all possible viewers
+                Object userObject = node.getUserObject();
+                DataThing theDataThing = node.getDataThing();
+                String syntacticType = theDataThing.getSyntacticTypeForObject(userObject);
+                final String mimeTypes = syntacticType.split("'")[1].toLowerCase();
+                if (userObject instanceof Collection) {
+                    userObject = "Empty collection, collection type was " + userObject.getClass().getName();
+                }
+                final Object uObject = userObject;
+                Iterator renderers = MimeTypeRendererRegistry.instance().getRenderers(
+                                userObject, mimeTypes).iterator();
+                if(renderers.hasNext()) {
+                    JMenu viewers = new JMenu("Viewers");
+
+                    while(renderers.hasNext()) {
+                        final MimeTypeRendererSPI renderer =
+                                (MimeTypeRendererSPI) renderers.next();
+                        viewers.add(new JMenuItem(new AbstractAction(
+                                renderer.getName(),
+                                renderer.getIcon(userObject, mimeTypes))
+                        {
+                            public void actionPerformed(ActionEvent e)
+                            {
+                                JComponent component = renderer.getComponent(uObject, mimeTypes);
+                                if(ui != null) {
+                                    splitPane.setRightComponent(new JScrollPane(component));
+                                }
+                            }
+                        }));
+                    }
+
+                    theMenu.add(viewers);
+                }
+
 			theMenu.show(structureTree, e.getX(), e.getY());
 		    }
 		}

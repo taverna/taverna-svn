@@ -1,7 +1,5 @@
 package org.embl.ebi.escience.scuflui.renderers;
 
-import org.apache.log4j.Logger;
-
 import javax.swing.*;
 import javax.imageio.stream.ImageInputStream;
 import javax.imageio.ImageIO;
@@ -20,6 +18,14 @@ import java.awt.*;
 public class TextXGraphviz
         implements MimeTypeRendererSPI
 {
+    private Icon icon;
+
+    public TextXGraphviz()
+    {
+        icon = new ImageIcon(ClassLoader.getSystemResource(
+                "org/embl/ebi/escience/baclava/icons/text.png"));
+    }
+
     public boolean canHandle(Object userObject, String mimetypes)
     {
         return mimetypes.matches(".*text/x-graphviz.*") &&
@@ -58,4 +64,9 @@ public class TextXGraphviz
     {
         return "X-Graphviz";
     }
-}
+
+    public Icon getIcon(Object userObject, String mimetypes)
+    {
+        return icon;
+    }
+ }

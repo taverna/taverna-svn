@@ -10,6 +10,14 @@ import javax.swing.*;
 public class TextRtf
         implements MimeTypeRendererSPI
 {
+    private Icon icon;
+
+    public TextRtf()
+    {
+        icon = new ImageIcon(ClassLoader.getSystemResource(
+                "org/embl/ebi/escience/baclava/icons/text.png"));
+    }
+
     public boolean canHandle(Object userObject, String mimetypes)
     {
         return mimetypes.matches(".*text/rtf.*") &&
@@ -26,4 +34,9 @@ public class TextRtf
     {
         return "RTF";
     }
-}
+
+    public Icon getIcon(Object userObject, String mimetypes)
+    {
+        return icon;
+    }
+ }

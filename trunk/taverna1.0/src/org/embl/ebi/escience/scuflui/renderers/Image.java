@@ -11,6 +11,13 @@ import java.awt.*;
 public class Image
         implements MimeTypeRendererSPI
 {
+    private Icon icon;
+
+    public Image() {
+        icon = new ImageIcon(ClassLoader.getSystemResource(
+                "org/embl/ebi/escience/baclava/icons/image.png"));
+    }
+    
     public boolean canHandle(Object userObject, String mimetypes)
     {
         return mimetypes.matches(".*image/.*") &&
@@ -29,5 +36,10 @@ public class Image
     public String getName()
     {
         return "Image";
+    }
+
+    public Icon getIcon(Object userObject, String mimetypes)
+    {
+        return icon;
     }
 }
