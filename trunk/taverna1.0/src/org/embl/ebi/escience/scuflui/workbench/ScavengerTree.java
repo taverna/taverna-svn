@@ -204,6 +204,7 @@ public class ScavengerTree extends ExtendedJTree
      */
     public ScavengerTree(boolean populate) {
 	super();
+	setRowHeight(0);
 	wsdlURLList = System.getProperty("taverna.defaultwsdl");
 	soaplabDefaultURLList = System.getProperty("taverna.defaultsoaplab");
 	biomobyDefaultURLList = System.getProperty("taverna.defaultbiomoby");

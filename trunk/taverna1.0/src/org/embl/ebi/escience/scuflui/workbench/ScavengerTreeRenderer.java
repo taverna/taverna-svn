@@ -8,6 +8,7 @@ package org.embl.ebi.escience.scuflui.workbench;
 import java.awt.Component;
 import javax.swing.ImageIcon;
 import javax.swing.JTree;
+import javax.swing.SwingConstants;
 import javax.swing.tree.DefaultMutableTreeNode;
 import org.embl.ebi.escience.scuflui.ScuflModelExplorerRenderer;
 import org.embl.ebi.escience.scuflworkers.ProcessorFactory;
@@ -41,6 +42,7 @@ public class ScavengerTreeRenderer extends ScuflModelExplorerRenderer {
 					   expanded, leaf, row,
 					   hasFocus);
 	Object userObject = ((DefaultMutableTreeNode)value).getUserObject();
+	setVerticalTextPosition(SwingConstants.BOTTOM);
 	if (userObject instanceof ProcessorFactory) {
 	    ProcessorFactory pf = (ProcessorFactory)userObject;
 	    Class processorClass = pf.getProcessorClass();
