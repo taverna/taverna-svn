@@ -25,8 +25,8 @@
 //      Dependencies        :
 //
 //      Last commit info    :   $Author: mereden $
-//                              $Date: 2004-11-01 12:30:36 $
-//                              $Revision: 1.61 $
+//                              $Date: 2004-11-01 21:07:10 $
+//                              $Revision: 1.62 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 package uk.ac.soton.itinnovation.taverna.enactor.entities;
@@ -278,8 +278,10 @@ public class ProcessorTask extends AbstractTask {
      * being the name of the output port. This implementation also includes the logic
      * to remap the port names in the event of an alternate processor being used with
      * differing names for the inputs and outputs.
+     *
+     * CHANGE - this method was synchronized, was there a reason for this?
      */
-    private synchronized Map invokeOnce(Map inputMap) throws TaskExecutionException {
+    private Map invokeOnce(Map inputMap) throws TaskExecutionException {
 	ProcessorTaskWorker worker = ProcessorHelper.getTaskWorker(activeProcessor);
 	Map output = null;
 	
@@ -549,12 +551,12 @@ public class ProcessorTask extends AbstractTask {
 	// be passed on to the iteration completion event. The keys are LSIDs of the
 	// output collections, the values are sets of the LSIDs of the individual
 	// result items which have been used to compose these collections.
-	Map collectionStructure = new HashMap();
+	final Map collectionStructure = new HashMap();
 	int totalIterations = rootNode.size();
-	Map lsidForNamedOutput = new HashMap();
+	final Map lsidForNamedOutput = new HashMap();
 	
 	// Create the output container
-	Map outputMap = new HashMap();
+	final Map outputMap = new HashMap();
 	for (Iterator i = getChildren().iterator(); i.hasNext();) {
 	    Task task = (Task) i.next();
             if (task instanceof PortTask) {
@@ -584,8 +586,8 @@ public class ProcessorTask extends AbstractTask {
 	// split them into. At the end of this sets with only one item (i.e. self iteration
 	// where no splitting has taken place) are removed to avoid redundant information
 	// in the provenance logs.
-	Map inputNameToLSID = new HashMap();
-	Map inputShredding = new HashMap();
+	final Map inputNameToLSID = new HashMap();
+	final Map inputShredding = new HashMap();
 	for (Iterator i = getParents().iterator(); i.hasNext();) {
 	    Task task = (Task)i.next();
 	    if (task instanceof PortTask) {
@@ -598,75 +600,136 @@ public class ProcessorTask extends AbstractTask {
 	    }
 	}
 	
-	
-	// Do the iteration
-	int currentIteration = 0;
-	
-	InvokingWithIteration event = new InvokingWithIteration(0, totalIterations);
+	currentIteration = 0;
+	final InvokingWithIteration event = new InvokingWithIteration(0, totalIterations);
 	eventList.add(event);
-	while (rootNode.hasNext()) {
-	    // Pick up a new set of input data from the iterator
-	    Map inputSet = null;
-	    int[] currentLocation = null;
-	    synchronized (rootNode) {
-		inputSet = (Map)rootNode.next();
-		currentLocation = rootNode.getCurrentLocation();
+	
+	// Different code paths for processors which allow multiple workers...
+	if (activeProcessor.getMaximumWorkers() == 1) {
+	    while (doSingleIteration(rootNode,
+				     event,
+				     outputMap,
+				     inputShredding,
+				     collectionStructure,
+				     lsidForNamedOutput,
+				     inputNameToLSID));
+	}
+	else {
+	    // Create multiple worker threads
+	    int workers = activeProcessor.getMaximumWorkers();
+	    if (workers > rootNode.size()) {
+		workers = rootNode.size();
 	    }
-	    // Iterate over the set and add the LSIDs of inputs to the inputShredding map...
-	    for (Iterator i = inputSet.keySet().iterator(); i.hasNext(); ) {
-		String inputName = (String)i.next();
-		DataThing inputThing = (DataThing)inputSet.get(inputName);
-		String inputThingLSID = inputThing.getLSID(inputThing.getDataObject());
-		String primaryLSID = (String)inputNameToLSID.get(inputName);
-		Set shredding = (Set)inputShredding.get(primaryLSID);
-		shredding.add(inputThingLSID);
+	    final boolean[] active = new boolean[workers];
+	    final Thread manager = Thread.currentThread();
+	    final TaskExecutionException[] exception = new TaskExecutionException[1];
+	    for (int i = 0; i < workers; i++) {
+		final int position = i;
+		final ResumableIterator irootNode = rootNode;
+		new Thread() {
+		    public void run() {
+			try {		
+			    active[position] = true;
+			    while (doSingleIteration(irootNode,
+						     event,
+						     outputMap,
+						     inputShredding,
+						     collectionStructure,
+						     lsidForNamedOutput,
+						     inputNameToLSID));
+			    active[position] = false;
+			}
+			catch (TaskExecutionException tee) {
+			    exception[0] = tee;
+			}
+			finally {
+			    manager.interrupt();
+			}
+		    }
+		}.start();
 	    }
-	    //eventList.add(new InvokingWithIteration(++currentIteration, totalIterations));
-	    // Mark the current iteration
-	    event.setIterationNumber(""+(++currentIteration));
-	    // Run the process
-	    Map singleResultMap = invokeOnce(inputSet);
-	    // Fire a new ProcessCompletionEvent
-	    DISPATCHER.fireProcessCompleted(new ProcessCompletionEvent(true,
-								       inputSet,
-								       singleResultMap,
-								       activeProcessor,
-								       workflowInstance));
-	    // Iterate over the outputs
-	    for (Iterator l = singleResultMap.keySet().iterator(); l.hasNext(); ) {
-		String outputName = (String)l.next();
-		DataThing outputValue = (DataThing)singleResultMap.get(outputName);
-		Object dataObject = outputValue.getDataObject();
-		// addition of a fix here by Chris Wroe
-		// Before it tried to map all results from the service call into the subsequent
-		// data flow causing a null pointer exception if no such data flow existed.
-		if (outputMap.containsKey(outputName)) {
-		    DataThing targetThing = (DataThing)outputMap.get(outputName);
-		    //System.out.println(targetThing);
-		    //targetThing.fillLSIDValues();
-		    //System.out.println(targetThing);
-		    List targetList = (List)targetThing.getDataObject();
-		    //System.out.println("Target list has object ID "+targetList.hashCode());
-		    //targetList.add(dataObject);
-		    // Store the result into the appropriate output collection
-		    insertObjectInto(dataObject, targetList, currentLocation, targetThing);
-		    // Copy metadata from the original output into the new one, preserve LSID hopefully!
-		    targetThing.copyMetadataFrom(outputValue);
-		    // Get the LSID of the original output item
-		    //System.out.println(targetThing);
-		    //System.out.println(targetThing.getDataObject() == targetList);
-		    String originalLSID = outputValue.getLSID(dataObject);
-		    //String collectionLSID = targetThing.getLSID(targetList);
-		    String collectionLSID = (String)lsidForNamedOutput.get(outputName);
-		    //System.out.println("original : "+originalLSID+", collection : "+collectionLSID);
-		    synchronized(collectionStructure) {
-			((Set)collectionStructure.get(collectionLSID)).add(originalLSID);
+	    boolean finished = false;
+	    while (finished == false) {
+		try {
+		    manager.sleep(1000);
+		}
+		catch (InterruptedException ie) {
+		    if (exception[0] != null) {
+			throw exception[0];
+		    }
+		    for (int i = 0; i < workers; i++) {
+			if (active[i] == false) {
+			    finished = true;
+			}
 		    }
 		}
-		/// fix ends
 	    }
 	}
-	
+	/**
+	   
+	while (rootNode.hasNext()) {
+	// Pick up a new set of input data from the iterator
+	Map inputSet = null;
+	int[] currentLocation = null;
+	synchronized (rootNode) {
+	inputSet = (Map)rootNode.next();
+	currentLocation = rootNode.getCurrentLocation();
+	}
+	// Iterate over the set and add the LSIDs of inputs to the inputShredding map...
+	for (Iterator i = inputSet.keySet().iterator(); i.hasNext(); ) {
+	String inputName = (String)i.next();
+	DataThing inputThing = (DataThing)inputSet.get(inputName);
+	String inputThingLSID = inputThing.getLSID(inputThing.getDataObject());
+	String primaryLSID = (String)inputNameToLSID.get(inputName);
+	Set shredding = (Set)inputShredding.get(primaryLSID);
+	shredding.add(inputThingLSID);
+	}
+	//eventList.add(new InvokingWithIteration(++currentIteration, totalIterations));
+	// Mark the current iteration
+	event.setIterationNumber(""+(++currentIteration));
+	// Run the process
+	Map singleResultMap = invokeOnce(inputSet);
+	// Fire a new ProcessCompletionEvent
+	DISPATCHER.fireProcessCompleted(new ProcessCompletionEvent(true,
+	inputSet,
+	singleResultMap,
+	activeProcessor,
+	workflowInstance));
+	// Iterate over the outputs
+	for (Iterator l = singleResultMap.keySet().iterator(); l.hasNext(); ) {
+	String outputName = (String)l.next();
+	DataThing outputValue = (DataThing)singleResultMap.get(outputName);
+	Object dataObject = outputValue.getDataObject();
+	// addition of a fix here by Chris Wroe
+	// Before it tried to map all results from the service call into the subsequent
+	// data flow causing a null pointer exception if no such data flow existed.
+	if (outputMap.containsKey(outputName)) {
+	DataThing targetThing = (DataThing)outputMap.get(outputName);
+	//System.out.println(targetThing);
+	//targetThing.fillLSIDValues();
+	//System.out.println(targetThing);
+	List targetList = (List)targetThing.getDataObject();
+	//System.out.println("Target list has object ID "+targetList.hashCode());
+	//targetList.add(dataObject);
+	// Store the result into the appropriate output collection
+	insertObjectInto(dataObject, targetList, currentLocation, targetThing);
+	// Copy metadata from the original output into the new one, preserve LSID hopefully!
+	targetThing.copyMetadataFrom(outputValue);
+	// Get the LSID of the original output item
+	//System.out.println(targetThing);
+	//System.out.println(targetThing.getDataObject() == targetList);
+	String originalLSID = outputValue.getLSID(dataObject);
+	//String collectionLSID = targetThing.getLSID(targetList);
+	String collectionLSID = (String)lsidForNamedOutput.get(outputName);
+	//System.out.println("original : "+originalLSID+", collection : "+collectionLSID);
+	synchronized(collectionStructure) {
+	((Set)collectionStructure.get(collectionLSID)).add(originalLSID);
+	}
+	}
+	/// fix ends
+	}
+	}
+	*/
 	// Fix up the LSIDs in the outputs
 	for (Iterator i = outputMap.keySet().iterator(); i.hasNext();) {
 	    String outputName = (String)i.next();
@@ -698,6 +761,84 @@ public class ProcessorTask extends AbstractTask {
 								       
 	return outputMap;
     }
+    private int currentIteration = 0;
+    private boolean doSingleIteration(ResumableIterator jobQueue, 
+				      InvokingWithIteration event, 
+				      Map outputMap,
+				      Map inputShredding,
+				      Map collectionStructure,
+				      Map lsidForNamedOutput,
+				      Map inputNameToLSID) 
+	throws TaskExecutionException {
+	Map inputSet = null;
+	int[] currentLocation = null;
+	
+	synchronized (jobQueue) {
+	    if (jobQueue.hasNext() == false) {
+		return false;
+	    }
+	    else {
+		inputSet = (Map)jobQueue.next();
+		currentLocation = jobQueue.getCurrentLocation();
+	    }
+	}
+	// Iterate over the set and add the LSIDs of inputs to the inputShredding map...
+	for (Iterator i = inputSet.keySet().iterator(); i.hasNext(); ) {
+	    String inputName = (String)i.next();
+	    DataThing inputThing = (DataThing)inputSet.get(inputName);
+	    String inputThingLSID = inputThing.getLSID(inputThing.getDataObject());
+	    String primaryLSID = (String)inputNameToLSID.get(inputName);
+	    Set shredding = (Set)inputShredding.get(primaryLSID);
+	    shredding.add(inputThingLSID);
+	}
+	//eventList.add(new InvokingWithIteration(++currentIteration, totalIterations));
+	// Mark the current iteration
+	event.setIterationNumber(""+(++currentIteration));
+	// Run the process
+	//System.out.println("Starting invocation "+Thread.currentThread().toString()+" "+currentLocation);
+	Map singleResultMap = invokeOnce(inputSet);
+	//System.out.println("Finished invocation "+Thread.currentThread().toString());
+	// Fire a new ProcessCompletionEvent
+	DISPATCHER.fireProcessCompleted(new ProcessCompletionEvent(true,
+								   inputSet,
+								   singleResultMap,
+								   activeProcessor,
+								   workflowInstance));
+	// Iterate over the outputs
+	for (Iterator l = singleResultMap.keySet().iterator(); l.hasNext(); ) {
+	    String outputName = (String)l.next();
+	    DataThing outputValue = (DataThing)singleResultMap.get(outputName);
+	    Object dataObject = outputValue.getDataObject();
+	    // addition of a fix here by Chris Wroe
+	    // Before it tried to map all results from the service call into the subsequent
+	    // data flow causing a null pointer exception if no such data flow existed.
+	    if (outputMap.containsKey(outputName)) {
+		DataThing targetThing = (DataThing)outputMap.get(outputName);
+		//System.out.println(targetThing);
+		//targetThing.fillLSIDValues();
+		//System.out.println(targetThing);
+		List targetList = (List)targetThing.getDataObject();
+		//System.out.println("Target list has object ID "+targetList.hashCode());
+		//targetList.add(dataObject);
+		// Store the result into the appropriate output collection
+		insertObjectInto(dataObject, targetList, currentLocation, targetThing);
+		// Copy metadata from the original output into the new one, preserve LSID hopefully!
+		targetThing.copyMetadataFrom(outputValue);
+		// Get the LSID of the original output item
+		//System.out.println(targetThing);
+		//System.out.println(targetThing.getDataObject() == targetList);
+		String originalLSID = outputValue.getLSID(dataObject);
+		//String collectionLSID = targetThing.getLSID(targetList);
+		String collectionLSID = (String)lsidForNamedOutput.get(outputName);
+		//System.out.println("original : "+originalLSID+", collection : "+collectionLSID);
+		synchronized(collectionStructure) {
+		    ((Set)collectionStructure.get(collectionLSID)).add(originalLSID);
+		}
+	    }
+	    /// fix ends
+	}
+	return true;
+    }
 
     /**
      * A private method to insert an object into a root list at the position specified
@@ -706,55 +847,57 @@ public class ProcessorTask extends AbstractTask {
      * but I'm fairly sure that this is implied by the calling context anyway.
      * The DataThing is supplied so that the LSID map can be correctly maintained
      */
-    private synchronized void insertObjectInto(Object o, List l, int[] position, DataThing theThing) {
-	List currentList = l;
-	// Does this get and set LSID logic slow the thing down? Seems like it shouldn't
-	// but we don't really need to do this once per iteration, should really be once
-	// per processor surely? Even if this isn't the source of the non constant time 
-	// cost for this method it should be moved out, has to help performance a bit.
-	// Should investigate what the costs are for the remove and containskey operations
-	// on the hashes. 
-	//String oldLSID = theThing.getLSID(l);
-	//if (oldLSID != null) {
-	//   theThing.getLSIDMap().remove(l);
-	//}
-	// Walk over the index array to find the enclosing collection
-	for (int i = 0; i<position.length-1; i++) {
-	    int index = position[i];
-	    if (index < currentList.size()) {
-		currentList = (List)currentList.get(index);
+    private void insertObjectInto(Object o, List l, int[] position, DataThing theThing) {
+	synchronized (l) {
+	    List currentList = l;
+	    // Does this get and set LSID logic slow the thing down? Seems like it shouldn't
+	    // but we don't really need to do this once per iteration, should really be once
+	    // per processor surely? Even if this isn't the source of the non constant time 
+	    // cost for this method it should be moved out, has to help performance a bit.
+	    // Should investigate what the costs are for the remove and containskey operations
+	    // on the hashes. 
+	    //String oldLSID = theThing.getLSID(l);
+	    //if (oldLSID != null) {
+	    //   theThing.getLSIDMap().remove(l);
+	    //}
+	    // Walk over the index array to find the enclosing collection
+	    for (int i = 0; i<position.length-1; i++) {
+		int index = position[i];
+		if (index < currentList.size()) {
+		    currentList = (List)currentList.get(index);
+		}
+		else {
+		    // How many lists are needed to pad this?
+		    int numberShort = (index - currentList.size())+1;
+		    for (int j = 0; j < numberShort; j++) {
+			currentList.add(new ArrayList());
+		    }
+		    currentList = (List)currentList.get(index);
+		}
+	    }
+	    // The leaf index is the last in the position array
+	    int objectIndex = position[position.length-1];
+	    // Check whether it's safe to just insert this item at the
+	    // given position
+	    if (currentList.size() < objectIndex) {
+		currentList.add(o);
 	    }
 	    else {
-		// How many lists are needed to pad this?
-		int numberShort = (index - currentList.size())+1;
-		for (int j = 0; j < numberShort; j++) {
-		    currentList.add(new ArrayList());
-		}
-		currentList = (List)currentList.get(index);
+		currentList.add(objectIndex, o);
 	    }
+	    /**
+	       try {
+	       currentList.add(objectIndex, o);
+	       }
+	       catch (IndexOutOfBoundsException ioobe) {
+	       // Just add onto the end
+	       currentList.add(o);
+	       }
+	    */
+	    //if (oldLSID!=null) {
+	    //    theThing.setLSID(l, oldLSID);
+	    //}
 	}
-	// The leaf index is the last in the position array
-	int objectIndex = position[position.length-1];
-	// Check whether it's safe to just insert this item at the
-	// given position
-	if (currentList.size() < objectIndex) {
-	    currentList.add(o);
-	}
-	else {
-	    currentList.add(objectIndex, o);
-	}
-	/**
-	   try {
-	   currentList.add(objectIndex, o);
-	   }
-	   catch (IndexOutOfBoundsException ioobe) {
-	   // Just add onto the end
-	   currentList.add(o);
-	   }
-	*/
-	//if (oldLSID!=null) {
-	//    theThing.setLSID(l, oldLSID);
-	//}
     }
 
     

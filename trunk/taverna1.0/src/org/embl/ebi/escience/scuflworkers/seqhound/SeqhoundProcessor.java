@@ -34,7 +34,7 @@ public class SeqhoundProcessor extends Processor {
     
     static Map descriptions = new HashMap();
     static Map parameters = new HashMap();
-
+    
     static {
 	// Load information from the services.xml if it exists. If not
 	// then don't worry too much about it!
