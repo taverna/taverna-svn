@@ -1,6 +1,6 @@
 <p align="justify"><font face="Arial, Helvetica, sans-serif"><strong>Scufl Workbench</strong></font></p>
 <p align="justify"><font size="2" face="Arial, Helvetica, sans-serif"><em><a href="mailto:tmo@ebi.ac.uk">tmo@ebi.ac.uk</a>, 
-  21st May 2003</em></font></p>
+  23rd May 2003</em></font></p>
 <p align="justify"><font size="2" face="Arial, Helvetica, sans-serif">This point 
   release of the Taverna project contains an application called the Scufl Workbench. 
   This is intended to allow you to create, edit and otherwise tinker with workflows 
@@ -100,6 +100,13 @@
         http://foo.bar/soaplab/ to create the scavenger. </font></li>
     </ul>
   </li>
+  <li><font size="2" face="Arial, Helvetica, sans-serif"><strong><font color="#9900FF">...import 
+    services from my workflow into the service panel?</font></strong><br>
+    The context menu described above to add new scavengers has an additional option 
+    to collect scavengers from your current scuf model. This will attempt to locate 
+    appropriate scavenger modules that would be capable of building the processors 
+    found in your model definition. Specifically, it will look for any references 
+    to WSDL documents it doesn't already know about and import those.</font></li>
   <li><font size="2" face="Arial, Helvetica, sans-serif" align="justify"><strong><font color="#9900FF">...create 
     a new service in the workflow?</font></strong><br>
     Assuming you have correctly created the appropriate scavenger (see above), 
@@ -137,16 +144,34 @@
     as XScufl, save as dot (three versions, choose the one you want from the submenu) 
     or clear the current model. If you want to completely restart the model from 
     a new workflow, you'll need to clear it then import.</font></li>
+  <li><font size="2" face="Arial, Helvetica, sans-serif"><strong><font color="#9900FF">...load 
+    a workflow from the web?</font></strong><br>
+    The 'file' menu contains an option to load an XScufl definition file from 
+    a URL. You simply enter the URL to your definition and the editor will import 
+    it into the model.</font></li>
   <li><font color="#9900FF" size="2" face="Arial, Helvetica, sans-serif" align="justify"><strong>...delete 
     things from my workflow?</strong></font><font size="2" face="Arial, Helvetica, sans-serif" align="justify"><br>
     In general if it is possible to delete something from the workflow there will 
     be a 'remove from model' option in the right click menu available from the 
     Scufl Model Explorer panel. To completely reset the workflow you should use 
     the 'Reset model data' option in the 'file' menu of the main window.</font></li>
-  <li><font size="2" face="Arial, Helvetica, sans-serif"><strong><font color="#9900FF">...edit 
+  <li><font size="2" face="Arial, Helvetica, sans-serif"><strong><font color="#9900FF">...create 
     coordination constraints?</font></strong><br>
-    You can't, I haven't implemented that bit yet. It'll be there before too long, 
-    but if you need it really badly let me know and I'll make it more of a priority.</font></li>
+    The only kind of coordination constraint the enactor currently supports is 
+    one that prevents a processor moving from scheduled to running until another 
+    processor has completed. To create an instance of this kind of constraint, 
+    you can use the context menu on a processor node in the scufl model explorer 
+    panel. Select the processor that you want to be controlled by the constraint, 
+    then choose the processor that guards the state transition from the submenu, 
+    you should see the new constraint in any open views you happen to have.</font></li>
+  <li><font size="2" face="Arial, Helvetica, sans-serif"><strong><font color="#9900FF">...change 
+    the graphical display?</font></strong><br>
+    There are three possible policies for the graphical display; display no ports, 
+    only display bound ports and display everything. If you right click on the 
+    graphic display panel you should see a menu, choose the appropriate policy 
+    and the display will update. The default value is to show only bound ports, 
+    this is a sensible comprimise between information richness and diagram size, 
+    but the other values have their uses. Have a play.</font></li>
 </ul>
 <hr>
 <p><font size="2" face="Arial, Helvetica, sans-serif"></font></p>

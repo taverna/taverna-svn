@@ -24,9 +24,9 @@
 //      Created for Project :   MYGRID
 //      Dependencies        :
 //
-//      Last commit info    :   $Author: dmarvin $
-//                              $Date: 2003-05-20 17:23:16 $
-//                              $Revision: 1.4 $
+//      Last commit info    :   $Author: mereden $
+//                              $Date: 2003-05-23 12:36:00 $
+//                              $Revision: 1.5 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 
@@ -36,12 +36,12 @@ package uk.ac.soton.itinnovation.taverna.enactor;
 import org.apache.log4j.Logger;
 import org.embl.ebi.escience.scufl.ScuflModel;
 import org.embl.ebi.escience.scufl.parser.XScuflParser;
+import uk.ac.soton.itinnovation.mygrid.workflow.enactor.broker.WSFlowReceipt;
 import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.broker.FlowBroker;
 import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.broker.FlowBrokerFactory;
 import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.broker.FlowCallback;
 import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.broker.FlowMessage;
 import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.broker.FlowReceipt;
-import uk.ac.soton.itinnovation.mygrid.workflow.enactor.broker.WSFlowReceipt;
 import uk.ac.soton.itinnovation.mygrid.workflow.enactor.evictor.Evictor;
 import uk.ac.soton.itinnovation.mygrid.workflow.enactor.frontend.WorkflowEnactor;
 import uk.ac.soton.itinnovation.mygrid.workflow.enactor.frontend.WorkflowInstance;

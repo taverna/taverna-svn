@@ -24,9 +24,9 @@
 //      Created for Project :   MYGRID
 //      Dependencies        :
 //
-//      Last commit info    :   $Author: dmarvin $
-//                              $Date: 2003-05-21 12:29:29 $
-//                              $Revision: 1.4 $
+//      Last commit info    :   $Author: mereden $
+//                              $Date: 2003-05-23 12:36:00 $
+//                              $Revision: 1.5 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 package uk.ac.soton.itinnovation.taverna.enactor.entities;
@@ -34,12 +34,13 @@ package uk.ac.soton.itinnovation.taverna.enactor.entities;
 import org.embl.ebi.escience.scufl.Processor;
 import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.eventservice.TaskStateMessage;
 import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.serviceprovidermanager.ServiceSelectionCriteria;
+import uk.ac.soton.itinnovation.taverna.enactor.broker.LogLevel;
+
+// JDOM Imports
+import org.jdom.Element;
 
 import uk.ac.soton.itinnovation.taverna.enactor.entities.TavernaTask;
-import uk.ac.soton.itinnovation.taverna.enactor.broker.LogLevel;
 import java.lang.String;
-
-import org.jdom.Element;
 
 
 

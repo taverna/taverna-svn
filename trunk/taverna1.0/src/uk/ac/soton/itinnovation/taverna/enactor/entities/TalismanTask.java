@@ -13,6 +13,7 @@ import org.w3c.dom.Element;
 import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.entities.graph.GraphNode;
 import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.eventservice.TaskStateMessage;
 import uk.ac.soton.itinnovation.mygrid.workflow.enactor.io.Part;
+import uk.ac.soton.itinnovation.taverna.enactor.broker.LogLevel;
 
 // Utility Imports
 import java.util.HashMap;
@@ -24,7 +25,6 @@ import java.net.URL;
 
 import uk.ac.soton.itinnovation.taverna.enactor.entities.PortTask;
 import uk.ac.soton.itinnovation.taverna.enactor.entities.ProcessorTask;
-import uk.ac.soton.itinnovation.taverna.enactor.broker.LogLevel;
 import java.lang.Exception;
 import java.lang.String;
 

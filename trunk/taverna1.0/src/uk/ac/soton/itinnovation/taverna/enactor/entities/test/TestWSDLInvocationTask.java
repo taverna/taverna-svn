@@ -2,25 +2,26 @@
 package uk.ac.soton.itinnovation.taverna.enactor.entities.test;
 
 import junit.framework.TestCase;
-import org.embl.ebi.escience.scufl.*;
-import uk.ac.soton.itinnovation.taverna.enactor.broker.*;
-import uk.ac.soton.itinnovation.taverna.enactor.entities.*;
-import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.entities.*;
-import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.entities.graph.*;
+import org.embl.ebi.escience.scufl.Processor;
+import org.embl.ebi.escience.scufl.ScuflModel;
+import org.embl.ebi.escience.scufl.ScuflModelEventPrinter;
+import org.embl.ebi.escience.scufl.WSDLBasedProcessor;
+import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.entities.Flow;
+import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.entities.graph.DiGraph;
+import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.entities.graph.GraphNode;
+import uk.ac.soton.itinnovation.taverna.enactor.broker.LogLevel;
+import uk.ac.soton.itinnovation.taverna.enactor.entities.ProcessorTask;
+import uk.ac.soton.itinnovation.taverna.enactor.entities.TavernaTaskFactory;
 
-// IO Imports
-import java.io.BufferedInputStream;
-import java.io.FileInputStream;
-import java.io.StringWriter;
+// JDOM Imports
+import org.jdom.Element;
+import org.jdom.output.XMLOutputter;
 
 import java.lang.Exception;
-import java.lang.InterruptedException;
 import java.lang.String;
 import java.lang.System;
-import java.lang.Thread;
 
-import org.jdom.*;
-import org.jdom.output.*;
+
 
 public class TestWSDLInvocationTask extends TestCase {
 
