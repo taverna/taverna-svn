@@ -24,8 +24,8 @@ public class ScuflIcons {
 	// Load the image files found in this package into the class.
 	try {
 	    Class c = Class.forName("org.embl.ebi.escience.scuflui.ScuflIcons");
-	    inputPortIcon = new ImageIcon(c.getResource("icons/explorer/inputport.gif"));
-	    outputPortIcon = new ImageIcon(c.getResource("icons/explorer/outputport.gif"));
+	    inputPortIcon = new ImageIcon(c.getResource("icons/explorer/inputport.png"));
+	    outputPortIcon = new ImageIcon(c.getResource("icons/explorer/outputport.png"));
 	    dataLinkIcon = new ImageIcon(c.getResource("icons/explorer/datalink.gif"));
 	    inputIcon = new ImageIcon(c.getResource("icons/explorer/input.png"));
 	    outputIcon = new ImageIcon(c.getResource("icons/explorer/output.png"));
