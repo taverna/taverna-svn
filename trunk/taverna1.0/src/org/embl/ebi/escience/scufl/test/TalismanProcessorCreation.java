@@ -44,21 +44,13 @@ public class TalismanProcessorCreation {
 	ClassLoader loader = Thread.currentThread().getContextClassLoader();
 	URL location = loader.getResource("org/embl/ebi/escience/scufl/test/tscript.xml");
 	System.out.println("Loading talisman script from : "+location.toString());
-	InputStream is = location.openStream();
-	DataInputStream dis = new DataInputStream(new BufferedInputStream(is));
-	StringBuffer sb = new StringBuffer();
-	String s = null;
-	while ((s = dis.readLine()) != null) {
-	    sb.append(s);
-	    sb.append("\n");
-	}
-	String tscript = sb.toString();
+	String tscriptURL = location.toString();
 	
 
 	// Attempt to create a new TalismanProcessor
 	model.addProcessor(new TalismanProcessor(model,
 						 "my_talisman_processor",
-						 tscript));
+						 tscriptURL));
     }
 
 }

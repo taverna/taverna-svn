@@ -145,13 +145,14 @@ public class DotView implements ScuflModelEventListener, java.io.Serializable {
 	    // Create the new node
 	    dot.append(" "+p.getName()+" [ \n");
 	    // Change the colour if this is a WSDLBasedProcessor (hack hack hack)
-	    try {
-		WSDLBasedProcessor wsdlp = (WSDLBasedProcessor)p;
+	    if (p instanceof WSDLBasedProcessor) {
 		dot.append("  fillcolor = \"lightsteelblue1\",\n");
 	    }
-	    catch (ClassCastException cce) {
-		//
+	    // Or if a TalismanProcessor
+	    if (p instanceof TalismanProcessor) {
+		dot.append("  fillcolor = \"plum2\",\n");
 	    }
+	    
 	    // Create the label...
 	    dot.append("  label = \"");
 

@@ -219,6 +219,14 @@ public class XScuflParser {
 		String operationName = wsdlProcessor.getChild("operation",namespace).getTextTrim();
 		model.addProcessor(new WSDLBasedProcessor(model, name, wsdlLocation, portTypeName, operationName));
 	    }
+
+	    // Handle talisman
+	    Element talismanProcessor = processorNode.getChild("talisman",namespace);
+	    if (talismanProcessor != null && !foundSpec) {
+		foundSpec = true;
+		String tscriptURL = wsdlProcessor.getChild("tscript",namespace).getTextTrim();
+		model.addProcessor(new TalismanProcessor(model, name, tscriptURL));
+	    }
 	    
 	    // If no specifier has been found then throw an exception
 	    if (!foundSpec) {

@@ -13,6 +13,8 @@ import java.util.Map;
 
 // IO Imports
 import java.io.StringReader;
+import java.io.*;
+import java.net.*;
 
 // JDOM Imports
 import org.jdom.Document;
@@ -43,7 +45,10 @@ import java.lang.String;
  */
 public class TalismanProcessor extends Processor implements java.io.Serializable {
 
-    private String tscript = null;
+    // Holds the string form of the URL that the script is
+    // loaded from to create the processor. Effectively the
+    // script defines the service.
+    private String tscriptURL = null;
     // Hash of input port names to Talisman node names, the
     // key is the port name, so i.e. 'input1=field:foo'
     private Map inputs = null;
@@ -58,6 +63,42 @@ public class TalismanProcessor extends Processor implements java.io.Serializable
     private String talismanDefinitionURL = null;
 
     /**
+     * Return the URL of the talisman script used
+     * to build this processor (string form)
+     */
+    public String getTScriptURL() {
+	return this.tscriptURL;
+    }
+    
+    /**
+     * Return the map of input port name (key) to talisman field locator (value)
+     */
+    public Map getInputMappings() {
+	return this.inputs;
+    }
+    
+    /**
+     * Return the map of output port name (key) to talisman field locator (value)
+     */
+    public Map getOutputMappings() {
+	return this.outputs;
+    }
+
+    /**
+     * Return the name of the trigger that gets invoked in this processor invocation
+     */
+    public String getTriggerName() {
+	return this.triggerName;
+    }
+
+    /**
+     * Return the URL that the talisman page definition is found at (string form)
+     */
+    public String getTalismanDefinitionURL() {
+	return this.talismanDefinitionURL;
+    }
+
+    /**
      * Construct a new processor from the supplied Talisman
      * script document.
      */
@@ -65,10 +106,10 @@ public class TalismanProcessor extends Processor implements java.io.Serializable
 	throws ProcessorCreationException,
 	       DuplicateProcessorNameException {
 	super(model, name);
-	this.tscript = tscript;
+	this.tscriptURL = tscript;
 	this.inputs = new HashMap();
 	this.outputs = new HashMap();
-	// Now read from the tscript string to get the input
+	// Now read from the tscript url to get the input
 	// and output hashes as well as the url and trigger name
 	// The script looks something like this :
 	// <tscript url="..." trigger="...">
@@ -78,8 +119,9 @@ public class TalismanProcessor extends Processor implements java.io.Serializable
 	//  ...
 	// </tscript>
 	try {
+	    URL scriptLocation = new URL(tscript);
 	    SAXBuilder builder = new SAXBuilder(false);
-	    Document tscriptDocument = builder.build(new StringReader(tscript));
+	    Document tscriptDocument = builder.build(scriptLocation.openStream());
 	    Element tscriptElement = tscriptDocument.getRootElement();
 	    this.triggerName = tscriptElement.getAttributeValue("trigger");
 	    this.talismanDefinitionURL = tscriptElement.getAttributeValue("url");
@@ -130,6 +172,12 @@ public class TalismanProcessor extends Processor implements java.io.Serializable
 	}
 	catch (JDOMException jde) {
 	    throw new ProcessorCreationException("Unable to instantiate the TalismanProcessor '"+name+"', error was : "+jde.getMessage());
+	}
+	catch (MalformedURLException mue) {
+	    throw new ProcessorCreationException("Unable to read script from '"+tscript+"' for '"+name+"', error was : "+mue.getMessage());
+	}
+	catch (IOException ioe) {
+	     throw new ProcessorCreationException("Unable to read script from '"+tscript+"' for '"+name+"', error was : "+ioe.getMessage());
 	}
 
     }

@@ -89,6 +89,7 @@ public class XScuflView implements ScuflModelEventListener, java.io.Serializable
 	for (int i = 0; i < processors.length; i++) {
 	    Element processor = new Element("processor",scuflNS());
 	    processor.setAttribute("name",processors[i].getName());
+
 	    // Catch Soaplab processors - this should be more
 	    // extensible! Will do for now however...
 	    try {
@@ -121,7 +122,22 @@ public class XScuflView implements ScuflModelEventListener, java.io.Serializable
 	    catch (ClassCastException cce) {
 		//
 	    }
+	    // Catch TalismanProcessor
+	    try {
+		TalismanProcessor tp = (TalismanProcessor)processors[i];
+		Element spec = new Element("talisman",scuflNS());
+		Element tscript = new Element("tscript",scuflNS());
+		tscript.setText(tp.getTScriptURL());
+		spec.addContent(tscript);
+		processor.addContent(spec);
+		root.addContent(processor);
+	    }
+	    catch (ClassCastException cce) { 
+		//
+	    }
+	    
 	}
+	
 
 	// Create elements corresponding to data constraints
 	DataConstraint[] dataconstraints = model.getDataConstraints();
