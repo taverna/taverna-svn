@@ -6,7 +6,7 @@ import javax.swing.Action;
 
 import org.embl.ebi.escience.scuflui.ScavengerTreePanel;
 import org.embl.ebi.escience.scuflui.UIUtils;
-import org.embl.ebi.escience.scuflui.workbench.Workbench;
+import net.sourceforge.taverna.scuflui.workbench.Workbench;
 
 /**
  * This class
@@ -14,7 +14,7 @@ import org.embl.ebi.escience.scuflui.workbench.Workbench;
  * Last edited by $Author: phidias $
  * 
  * @author Mark
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public class ServicesAction extends DefaultAction {
     private static final String ACTION_COMMAND_KEY_ABOUT = "view-services-command";
