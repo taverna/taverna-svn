@@ -205,7 +205,7 @@ class StrategyModel extends DefaultTreeModel {
 		// Check whether anything needs doing
 		
 		// Check for collation nodes with no children
-		if (!(n.isLeaf()) && n.getParent()!=null && n.getChildCount() == 0) {
+		if (!(n instanceof LeafNode) && n.getParent()!=null && n.getChildCount() == 0) {
 		    // Remove the node from its parent and set finished to false
 		    removeNodeFromParent(n);
 		    finished = false;
@@ -215,8 +215,10 @@ class StrategyModel extends DefaultTreeModel {
 		    // Replace it with the child node
 		    MutableTreeNode child = (MutableTreeNode)n.getChildAt(0);
 		    MutableTreeNode parent = (MutableTreeNode)n.getParent();
+		    // Find the index of the collation node in its parent
+		    int oldIndex = getIndexOfChild(n.getParent(), n);
 		    removeNodeFromParent(n);
-		    insertNodeInto(child, parent, 0);
+		    insertNodeInto(child, parent, oldIndex);
 		    finished = false;
 		}
 		else if (n.getParent() == null && n.getChildCount() == 1) {

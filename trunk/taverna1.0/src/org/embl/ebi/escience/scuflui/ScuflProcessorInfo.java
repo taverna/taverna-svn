@@ -130,9 +130,13 @@ public class ScuflProcessorInfo extends JDialog {
 
 	Container contentPane = getContentPane();
 
+	if (p.getIterationStrategy() != null) {
+	    contentPane.add(new IterationStrategyEditorControl(p.getIterationStrategy()), BorderLayout.CENTER);
+	}
+
 	contentPane.add(dp, BorderLayout.NORTH);
 	contentPane.add(updateDescription, BorderLayout.WEST);
-	contentPane.add(provenanceLevel, BorderLayout.CENTER);
+	//contentPane.add(provenanceLevel, BorderLayout.CENTER);
 	contentPane.add(cancelUpdate, BorderLayout.EAST);
 	contentPane.add(infoTablePane, BorderLayout.SOUTH);
 	pack();
