@@ -59,10 +59,22 @@ public class FreefluoEnactorProxy implements EnactorProxy {
 	// See whether we need to create a local engine or a proxy
 	// to talk to one over SOAP
 	String enactorEndpoint = System.getProperty("mygrid.enactor.soap.endpoint");
+
+        // temp use of system properties for auth credential for 
+        // remote freefluo web service.
+        String username = System.getProperty("mygrid.enactor.username");
+        String password = System.getProperty("mygrid.enactor.password");
         EngineConfiguration engineConfig = getEngineConfiguration();
 	if (enactorEndpoint != null){
 	    try {
-		this.engine = new EngineStub(engineConfig, new URL(enactorEndpoint));
+                EngineStub stub = new EngineStub(engineConfig, new URL(enactorEndpoint));     
+		this.engine = stub;
+                if(username != null) {
+                    stub.setUsername(username);
+                }
+                if(password != null) {
+                    stub.setPassword(password);
+                }
 	    }
 	    catch (Exception ex) {
 		// Problem with remote enactor creation
@@ -70,7 +82,7 @@ public class FreefluoEnactorProxy implements EnactorProxy {
 	    }
 	}
 	else {
-	    this.engine = new EngineImpl(engineConfig);
+            this.engine = new EngineImpl(engineConfig);
 	}
     }
 
