@@ -420,8 +420,24 @@ public class DataThing {
 
     public String toString()
     {
+        String datStr = theDataObject.toString();
+        boolean trimmed = false;
+        int nl = datStr.indexOf('\n');
+        if (nl > -1) {
+            datStr = datStr.substring(0, nl);
+            trimmed = true;
+        }
+        if(datStr.length() > 30) {
+            datStr = datStr.substring(0, 27);
+            trimmed = true;
+        }
+        if(trimmed) {
+            datStr += "...";
+        }
+
+
         return super.toString() +
-                "\n\tdataObject=" + theDataObject +
+                "\n\tdataObject=" + datStr +
                 "\n\tmetaData=" + metadataMap +
                 "\n\tmarkup=" + myMarkup +
                 "\n\tlsid=" + lsid +

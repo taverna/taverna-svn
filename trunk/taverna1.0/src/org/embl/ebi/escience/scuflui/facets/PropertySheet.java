@@ -5,23 +5,30 @@ import org.apache.log4j.Logger;
 import javax.swing.*;
 import java.beans.*;
 import java.awt.*;
-import java.awt.event.ItemListener;
-import java.awt.event.ItemEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
+import java.awt.event.*;
 import java.lang.reflect.Method;
 import java.lang.reflect.InvocationTargetException;
 
 /**
- *
+ * A component that represents the style sheet for a Java Bean.
+ * This will use the bean APIs to construct the GUI components for editing the
+ * properties of a bean.
  *
  * @author Matthew Pocock
  */
 public class PropertySheet
         extends JPanel
 {
+    // todo: Support paintable beans - if I can ever understand this
+    // todo: Support changing the bean we are editing
+
     private static Logger LOG = Logger.getLogger(PropertySheet.class);
 
+    /**
+     * Create a new property sheet for editing a bean.
+     *
+     * @param bean  the Java Bean to edit
+     */
     public PropertySheet(final Object bean)
     {
         LOG.info("Creating property sheet for bean " + bean.getClass().getName());
@@ -37,6 +44,7 @@ public class PropertySheet
             rhc.gridy = 0;
             lhc.anchor = GridBagConstraints.EAST;
             rhc.anchor = GridBagConstraints.WEST;
+            rhc.fill = GridBagConstraints.BOTH;
 
             BeanInfo info = Introspector.getBeanInfo(bean.getClass());
             PropertyDescriptor[] props = info.getPropertyDescriptors();
@@ -49,10 +57,12 @@ public class PropertySheet
 
                 if(read != null && write != null) {
                     LOG.info("mutable");
-                    Class propType = read.getDeclaringClass();
+                    Class propType = read.getReturnType();
                     LOG.info("of type: " + propType.getName());
                     final PropertyEditor pe = PropertyEditorManager.findEditor(propType);
-                    if(pe != null) {
+                    if(pe == null) {
+                        LOG.info("no property editor");
+                    } else {
                         LOG.info("got editor: " + pe);
                         pe.setValue(read.invoke(bean, new Object[] {}));
                         if(pe.supportsCustomEditor()) {
@@ -68,14 +78,7 @@ public class PropertySheet
                                 pe.addPropertyChangeListener(new PropertyChangeListener() {
                                     public void propertyChange(PropertyChangeEvent evt)
                                     {
-                                        try {
-                                            write.invoke(bean,
-                                                         new Object[] { pe.getValue() });
-                                        } catch (IllegalAccessException e) {
-                                            LOG.error("Unable to set property " + pd.getDisplayName(), e);
-                                        } catch (InvocationTargetException e) {
-                                            LOG.error("Unable to set property " + pd.getDisplayName(), e);
-                                        }
+                                        update(write, bean, pe, pd);
                                     }
                                 });
                             }
@@ -89,19 +92,13 @@ public class PropertySheet
                                 // we have a list of legal items
                                 LOG.info("One of several options");
                                 final JComboBox options = new JComboBox(vals);
+                                options.setSelectedItem(pe.getAsText());
                                 options.setEditable(false);
                                 options.addItemListener(new ItemListener() {
                                     public void itemStateChanged(ItemEvent ie)
                                     {
-                                        try {
-                                            pe.setAsText((String) options.getSelectedItem());
-                                            write.invoke(bean,
-                                                         new Object[] { pe.getValue() });
-                                        } catch (IllegalAccessException e) {
-                                            LOG.error("Unable to set property " + pd.getDisplayName(), e);
-                                        } catch (InvocationTargetException e) {
-                                            LOG.error("Unable to set property " + pd.getDisplayName(), e);
-                                        }
+                                        pe.setAsText((String) options.getSelectedItem());
+                                        update(write, bean, pe, pd);
                                     }
                                 });
                                 add(new JLabel(pd.getDisplayName()), lhc);
@@ -113,18 +110,20 @@ public class PropertySheet
                                 LOG.info("Text input");
                                 final JTextField input = new JTextField(pe.getAsText());
                                 input.setEditable(true);
+                                final Color original = input.getBackground();
                                 input.addActionListener(new ActionListener() {
                                     public void actionPerformed(ActionEvent ae)
                                     {
-                                        try {
-                                            pe.setAsText(input.getText());
-                                            write.invoke(bean,
-                                                         new Object[]{pe.getValue()});
-                                        } catch (IllegalAccessException e) {
-                                            LOG.error("Unable to set property " + pd.getDisplayName(), e);
-                                        } catch (InvocationTargetException e) {
-                                            LOG.error("Unable to set property " + pd.getDisplayName(), e);
-                                        }
+                                        pe.setAsText(input.getText());
+                                        input.setBackground(original);
+                                        update(write, bean, pe, pd);
+                                    }
+                                });
+                                input.addFocusListener(new FocusListener() {
+                                    public void focusGained(FocusEvent e) {}
+                                    public void focusLost(FocusEvent e)
+                                    {
+                                        update(write, bean, pe, pd);
                                     }
                                 });
                                 add(new JLabel(pd.getDisplayName()), lhc);
@@ -142,11 +141,32 @@ public class PropertySheet
         }
     }
 
+    private void update(final Method write, final Object bean, final PropertyEditor pe, final PropertyDescriptor pd)
+    {
+        try {
+            LOG.info("update " + pd.getDisplayName() + " to " + pe.getValue());
+            write.invoke(bean,
+                         new Object[] { pe.getValue() });
+        } catch (IllegalAccessException e) {
+            LOG.error("Unable to set property " + pd.getDisplayName(), e);
+        } catch (InvocationTargetException e) {
+            LOG.error("Unable to set property " + pd.getDisplayName(), e);
+        }
+    }
+
+    /**
+     * A property editor that delegates all editing work to a style sheet.
+     *
+     * @author Matthew Pocock
+     */
     public static class Editor
             extends PropertyEditorSupport
     {
         final JPanel child;
 
+        /**
+         * Create a new editor.
+         */
         public Editor()
         {
             LOG.info("Creating new PropertySheet.Editor");

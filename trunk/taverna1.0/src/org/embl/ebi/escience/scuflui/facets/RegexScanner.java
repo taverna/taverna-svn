@@ -12,10 +12,15 @@ import java.util.List;
 import java.util.ArrayList;
 import java.beans.PropertyEditorManager;
 import java.beans.PropertyEditor;
+import java.beans.PropertyChangeSupport;
+import java.beans.PropertyChangeListener;
 import java.awt.*;
 
 /**
+ * Extract matches to a regular expression. The details of what to do with the
+ * regular expression are encapsulated in the Scanner objects.
  *
+ * @see Scanner
  *
  * @author Matthew Pocock
  */
@@ -23,8 +28,18 @@ public class RegexScanner
         implements FacetFinderSPI
 {
     private static final Logger LOG = Logger.getLogger(RegexScanner.class);
+    private static final int PATTERN_FLAGS = Pattern.MULTILINE & Pattern.DOTALL;
 
     private static final DataThing EMPTY_STRING = DataThingFactory.bake("");
+
+    static
+    {
+        // register editor for Pattern
+        if(PropertyEditorManager.findEditor(Pattern.class) == null) {
+            PropertyEditorManager.registerEditor(Pattern.class,
+                                                 PatternEditor.class);
+        }
+    }
 
     public boolean canMakeFacets(DataThing dataThing)
     {
@@ -58,13 +73,17 @@ public class RegexScanner
         Matcher matcher = scanner.getPattern().matcher(chars);
 
         if(!scanner.joinValues) {
+            LOG.info("not joining values");
             if(scanner.makeCollection) {
+                LOG.info("making a collection");
                 List hits = new ArrayList();
                 while(matcher.find()) {
                     hits.add(matcher.group(scanner.getGroup()));
                 }
+                LOG.info("got some hits: " + hits.size());
                 return DataThingFactory.bake(hits);
             } else {
+                LOG.info("not making collection");
                 if(!matcher.find()) {
                     return EMPTY_STRING;
                 }
@@ -76,12 +95,15 @@ public class RegexScanner
                 return EMPTY_STRING;
             }
 
+            LOG.info("concatenating all hits");
             StringBuffer res = new StringBuffer();
             res.append(matcher.group(scanner.getGroup()));
+            LOG.info("started with: " + matcher.group(scanner.getGroup()));
 
             while(matcher.find()) {
                 res.append(scanner.getJoinText());
                 res.append(matcher.group(scanner.getGroup()));
+                LOG.info("appended: " + matcher.group(scanner.getGroup()));
             }
 
             return DataThingFactory.bake(res.toString());
@@ -93,6 +115,19 @@ public class RegexScanner
         return "RegexScanner";
     }
 
+    /**
+     * A column that describes how to turn regular expression matches into
+     * facets.
+     * <p>
+     * In the case of no matches, the empty string is returned. If the
+     * joinValues option is enabled, then all matches are concatenated into a
+     * single string, seperated by the value of joinText. If joinValues is not
+     * enabled, then makeCollections is considered. When makeCollections is
+     * enabled, a List containing every match is returned. If it is not enabled,
+     * then the first match only is returned.
+     *
+     * @author Matthew Pocock
+     */
     public static class Scanner
             implements ColumnID
     {
@@ -110,7 +145,7 @@ public class RegexScanner
 
         public Scanner()
         {
-            pattern = Pattern.compile(".*");
+            pattern = Pattern.compile(".*", PATTERN_FLAGS);
             group = 0;
             joinValues = false;
             joinText = "";
@@ -159,7 +194,7 @@ public class RegexScanner
             this.group = group;
         }
 
-        public boolean doJoinValues()
+        public boolean getJoinValues()
         {
             return joinValues;
         }
@@ -185,7 +220,7 @@ public class RegexScanner
             this.joinText = joinText;
         }
 
-        public boolean isMakeCollection()
+        public boolean getMakeCollection()
         {
             return makeCollection;
         }
@@ -241,6 +276,82 @@ public class RegexScanner
             result = 29 * result + joinText.hashCode();
             result = 29 * result + (makeCollection ? 1 : 0);
             return result;
+        }
+    }
+
+    public static final class PatternEditor
+            implements PropertyEditor
+    {
+        private final PropertyChangeSupport pcs;
+        private Pattern pattern;
+
+        public PatternEditor()
+        {
+            this.pcs = new PropertyChangeSupport(this);
+        }
+
+        public void setValue(Object value)
+        {
+            Pattern oldPattern = pattern;
+            pattern = (Pattern) value;
+            pcs.firePropertyChange(null, oldPattern, pattern);
+        }
+
+        public Object getValue()
+        {
+            return pattern;
+        }
+
+        public boolean isPaintable()
+        {
+            return false;
+        }
+
+        public void paintValue(Graphics gfx, Rectangle box)
+        {
+            return;
+        }
+
+        public String getJavaInitializationString()
+        {
+            return "Pattern.compile(\""
+                    + pattern.pattern() + "\", "
+                    + PATTERN_FLAGS + ")";
+        }
+
+        public String getAsText()
+        {
+            return pattern.pattern();
+        }
+
+        public void setAsText(String text) throws IllegalArgumentException
+        {
+            setValue(Pattern.compile(text, PATTERN_FLAGS));
+        }
+
+        public String[] getTags()
+        {
+            return null;
+        }
+
+        public Component getCustomEditor()
+        {
+            return null;
+        }
+
+        public boolean supportsCustomEditor()
+        {
+            return false;
+        }
+
+        public void addPropertyChangeListener(
+                    PropertyChangeListener listener) {
+            pcs.addPropertyChangeListener(listener);
+        }
+
+        public void removePropertyChangeListener(
+                    PropertyChangeListener listener) {
+            pcs.removePropertyChangeListener(listener);
         }
     }
 }

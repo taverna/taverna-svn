@@ -38,8 +38,8 @@ public class FacetsTable
     }
 
     // todo: There is no sensible incremental model editing - needs adding
-    // todo: The 'table' isn't very clearly drawn, and columns aren't the
-    //    right size - add borders, scrollability etc.
+    // todo: Add standard table stuff - scrolleable, scrollalbe cells, reorder
+    // todo: the columns, better borders, row/col headings in seperate panes
 
     private List columns;
     private DataThing dataThing;
@@ -55,6 +55,8 @@ public class FacetsTable
         this.columns = new ArrayList();
         this.finders = FacetFinderRegistry.instance();
         this.renderers = MimeTypeRendererRegistry.instance();
+        setOpaque(true); // required to make sure bits of the rendering aren't
+                         // left behind
         resizeAndValidate();
     }
 
@@ -68,6 +70,8 @@ public class FacetsTable
         this.dataThing = theDataThing;
         if(finders != null)   { this.finders = finders; }
         if(renderers != null) { this.renderers = renderers; }
+        setOpaque(true); // required to make sure bits of the rendering aren't
+                         // left behind
         resizeAndValidate();
     }
 
@@ -171,6 +175,8 @@ public class FacetsTable
         GridBagConstraints gbcLoc = (GridBagConstraints) gbc.clone();
         gbcLoc.anchor = GridBagConstraints.NORTH;
         gbcLoc.fill = GridBagConstraints.NONE;
+        gbcLoc.weightx = 0.0;
+        gbcLoc.weighty = 0.0;
         for(ListIterator i = columns.listIterator(); i.hasNext(); ) {
             int indx = i.nextIndex();
             Column col = (Column) i.next();
