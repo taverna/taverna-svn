@@ -92,7 +92,7 @@ public class DataThingTreeTransferHandler implements DragGestureListener, DragSo
 			if (pathComponent instanceof DataThingTreeNode)
 			{
 				DataThingTreeNode node = (DataThingTreeNode) pathComponent;
-				DataThing dataThing = node.getDataThing();
+				DataThing dataThing = node.getNodeThing();
 				dragSource.startDrag(dge, DragSource.DefaultMoveNoDrop, /*
 																		 * image,
 																		 * new
