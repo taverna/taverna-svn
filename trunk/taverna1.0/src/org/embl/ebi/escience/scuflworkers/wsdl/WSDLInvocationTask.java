@@ -1,35 +1,8 @@
-////////////////////////////////////////////////////////////////////////////////
-//
-// © University of Southampton IT Innovation Centre, 2002
-//
-// Copyright in this library belongs to the IT Innovation Centre of
-// 2 Venture Road, Chilworth Science Park, Southampton SO16 7NP, UK.
-//
-// This library is free software; you can redistribute it and/or
-// modify it under the terms of the GNU Lesser General Public License
-// as published by the Free Software Foundation; either version 2.1
-// of the License, or (at your option) any later version.
-//
-// This library is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-// GNU Lesser General Public License for more details.
-//
-// You should have received a copy of the GNU Lesser General Public
-// License along with this library; if not, write to the Free Software
-// Foundation Inc, 59 Temple Place, Suite 330, Boston MA 02111-1307 USA.
-//
-//      Created By          :   Darren Marvin
-//      Created Date        :   2003/4/9
-//      Created for Project :   MYGRID
-//      Dependencies        :
-//
-//      Last commit info    :   $Author: mereden $
-//                              $Date: 2003-10-13 16:43:23 $
-//                              $Revision: 1.7 $
-//
-///////////////////////////////////////////////////////////////////////////////////////
-
+/**
+ * This file is a component of the Taverna project,
+ * and is licensed under the GNU LGPL.
+ * Copyright Tom Oinn, EMBL-EBI
+ */
 package org.embl.ebi.escience.scuflworkers.wsdl;
 
 import org.apache.axis.client.Call;
@@ -53,7 +26,10 @@ import org.jdom.Element;
 
 
 
-
+/**
+ * The task required to invoke an arbitrary web service.
+ * @author Tom Oinn
+ */
 public class WSDLInvocationTask extends ProcessorTask  {
     
     private static Logger logger = Logger.getLogger(WSDLInvocationTask.class);

@@ -100,6 +100,7 @@
 			generateTreeview="test"
 			optimizeOutputJava="yes"
 			haveDot="yes"
+			ignoreVersion="yes"
 			sourceBrowser="yes"/>
 	</target>	 	
 
