@@ -473,7 +473,7 @@ public class DataThing {
 	    defaultExtension = ".jpeg";
 	}
 	else if (syntacticType.matches(".*image/gif.*")) {
-	    defaultExtension = "*.gif";
+	    defaultExtension = ".gif";
 	}
 	else if (syntacticType.matches(".*x-graphviz.*")) {
 	    defaultExtension = ".dot.text";
