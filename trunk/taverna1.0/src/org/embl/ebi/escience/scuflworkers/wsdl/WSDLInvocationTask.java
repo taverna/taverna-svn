@@ -13,6 +13,7 @@ import org.embl.ebi.escience.baclava.factory.DataThingFactory;
 import org.embl.ebi.escience.scufl.Processor;
 import org.embl.ebi.escience.scuflworkers.ProcessorTaskWorker;
 import uk.ac.soton.itinnovation.taverna.enactor.entities.TaskExecutionException;
+import org.apache.axis.utils.*;
 
 // Utility Imports
 import java.util.HashMap;
@@ -86,16 +87,56 @@ public class WSDLInvocationTask implements ProcessorTaskWorker {
 		    System.out.println(theData.getDataObject());
 		}
 		call.setTimeout(new Integer(0));
-		Object ret = call.invoke(args);
+		
+		Object[] parsedArgs = new Object[args.length];
+		for (int i = 0; i < parsedArgs.length; i++) {
+		    if (args[i] instanceof String) {
+			try {
+			    parsedArgs[i] = new Integer((String)args[i]);
+			}
+			catch (NumberFormatException nfe) {
+			    try {
+				parsedArgs[i] = new Float((String)args[i]);
+			    }
+			    catch (NumberFormatException nfe2) {
+				
+				if (((String)args[i]).equalsIgnoreCase("false")) {
+				    parsedArgs[i] = Boolean.FALSE;
+				}
+				else if (((String)args[i]).equalsIgnoreCase("true")) {
+				    parsedArgs[i] = Boolean.TRUE;
+				}
+				else {
+				    parsedArgs[i] = args[i];
+				}
+				
+				
+			    }
+			}
+		    }
+		    else {
+			parsedArgs[i] = args[i];
+		    }
+		}
+		
+		Object ret = call.invoke(parsedArgs);
 		Map outputs = call.getOutputParams();
 		HashMap map = new HashMap();
 		for (int pos = 0; pos < p.outNames.size(); ++pos) {
 		    String name = (String)outNames.get(pos);
 		    Object value = outputs.get(name);
 		    if ((value == null) && (pos == 0)) {
+			if (ret instanceof org.w3c.dom.Element) {
+			    // Convert to string of xml
+			    ret = XMLUtils.ElementToString((org.w3c.dom.Element)ret);
+			}
 			map.put(name, DataThingFactory.bake(ret));
 		    }
 		    else {
+			if (value instanceof org.w3c.dom.Element) {
+			    // Convert to string of xml
+			    value = XMLUtils.ElementToString((org.w3c.dom.Element)value);
+			}
 			map.put(name, DataThingFactory.bake(value));
 		    }
 		}

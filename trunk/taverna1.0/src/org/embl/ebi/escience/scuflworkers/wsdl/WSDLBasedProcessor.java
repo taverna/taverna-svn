@@ -38,7 +38,9 @@ import java.net.*;
 
 import java.util.*;
 
-
+import org.apache.axis.encoding.ser.ElementSerializerFactory;
+import org.apache.axis.encoding.ser.ElementDeserializerFactory;
+import org.apache.axis.encoding.ser.ElementDeserializer;
 
 import java.lang.Class;
 
@@ -239,9 +241,18 @@ public class WSDLBasedProcessor extends Processor implements java.io.Serializabl
 		String outName = (String)outNames.get(i);
 
 		OutputPort outputPort = new OutputPort(this, outName);
-
-		outputPort.setSyntacticType(xsdTypeToInternalType(((Parameter)outTypes.get(i)).getType().getQName().getLocalPart()));
-
+		// Check whether there's a base type (which we can handle) or not...
+		if (((Parameter)outTypes.get(i)).getType().isBaseType()) {
+		    outputPort.setSyntacticType(xsdTypeToInternalType(((Parameter)outTypes.get(i)).getType().getQName().getLocalPart()));
+		}
+		else {
+		    // Register the serializer for the element
+		    ((org.apache.axis.client.Call)call).registerTypeMapping(org.w3c.dom.Element.class, 
+									    ((Parameter)outTypes.get(i)).getType().getQName(),
+									    new ElementSerializerFactory(),
+									    new ElementDeserializerFactory());
+		    outputPort.setSyntacticType("'text/xml'");
+		}
 		addPort(outputPort);
 
 	    }
@@ -311,7 +322,7 @@ public class WSDLBasedProcessor extends Processor implements java.io.Serializabl
 	    org.apache.axis.client.Service dpf = new org.apache.axis.client.Service(wsdlParser, service.getQName());
 
 	    this.call = dpf.createCall(QName.valueOf(portName), QName.valueOf(operationName));
-
+	    ((org.apache.axis.client.Call)this.call).setProperty(ElementDeserializer.DESERIALIZE_CURRENT_ELEMENT, Boolean.TRUE);
 	    
 
 	    SymbolTable symbolTable = wsdlParser.getSymbolTable();
