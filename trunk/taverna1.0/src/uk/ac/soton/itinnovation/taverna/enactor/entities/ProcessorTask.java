@@ -25,8 +25,8 @@
 //      Dependencies        :
 //
 //      Last commit info    :   $Author: mereden $
-//                              $Date: 2004-02-13 11:59:35 $
-//                              $Revision: 1.34 $
+//                              $Date: 2004-02-26 11:25:04 $
+//                              $Revision: 1.35 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 package uk.ac.soton.itinnovation.taverna.enactor.entities;
@@ -252,6 +252,18 @@ public class ProcessorTask extends TavernaTask{
 	    return taskOutput;
 	}
     }
+
+    /**
+     * Given a map of DataThing objects, call the fillLSIDValues()
+     * method on each object within the map and return self for
+     * convenience
+     */
+    private Map fillAllLSIDs(Map inputMap) {
+	for (Iterator i = inputMap.values().iterator(); i.hasNext();) {
+	    ((DataThing)i.next()).fillLSIDValues();
+	}
+	return inputMap;
+    }
     
     /**
      * Actually call the service instance, handles the retry logic.
@@ -259,7 +271,7 @@ public class ProcessorTask extends TavernaTask{
     private Map doInvocationWithRetryLogic(ProcessorTaskWorker worker, Map inputMap) throws TaskExecutionException {
 	try {
 	    // If the first invocation works then great, return it.
-	    return worker.execute(inputMap);
+	    return fillAllLSIDs(worker.execute(inputMap));
 	}
 	catch (TaskExecutionException tee) {
 	    eventList.add(new ServiceError(tee));
@@ -278,7 +290,7 @@ public class ProcessorTask extends TavernaTask{
 		try {
 		    eventList.add(new WaitingToRetry(waitTime, i+1, maxRetries));
 		    Thread.sleep(waitTime);
-		    return worker.execute(inputMap);
+		    return fillAllLSIDs(worker.execute(inputMap));
 		}
 		catch (InterruptedException ie) {
 		    TaskExecutionException t = new TaskExecutionException("Interrupted during wait to retry");

@@ -47,20 +47,24 @@ public class DataThingTreeNodeRenderer extends DefaultTreeCellRenderer {
 	Object userObject = theNode.getUserObject();
 	DataThing theDataThing = theNode.getDataThing();
 	// If a leaf then do magic...
+	String lsid = theDataThing.getLSID(userObject);
+	if (lsid.equals("")==false) {
+	    lsid = "<br><font color=\"blue\">"+lsid+"</font>";
+	}
 	if (theNode.isLeaf()) {
 	    if (userObject instanceof Collection) {
 		if (userObject instanceof Set) {
-		    setText("<html><font color=\"red\">Empty set</font></html>");
+		    setText("<html><font color=\"red\">Empty set</font>"+lsid+"</html>");
 		}
 		else {
-		    setText("<html><font color=\"red\">Empty list</font></html>");
+		    setText("<html><font color=\"red\">Empty list</font>"+lsid+"</html>");
 		}
 		setIcon(closedIcon);
 		return this;
 	    }
 	    String syntacticType = theDataThing.getSyntacticTypeForObject(userObject);
 	    String mimeTypes = syntacticType.split("'")[1].toLowerCase();
-	    setText(mimeTypes);
+	    setText("<html>"+mimeTypes+lsid+"</html>");
 	    if (mimeTypes.matches(".*text/.*")) {
 		setIcon(textIcon);
 		// If possible then show a textual representation as well as just the
@@ -71,7 +75,7 @@ public class DataThingTreeNodeRenderer extends DefaultTreeCellRenderer {
 			summaryText = "<em>Click to view...</em>";
 		    }
 		    setText("<html><font color=\"#666666\">"+mimeTypes+"</font><br>"+
-			    summaryText+"</html>");
+			    summaryText+lsid+"</html>");
 		}
 	    }
 	    else if (mimeTypes.matches(".*image/.*")) {
@@ -84,10 +88,10 @@ public class DataThingTreeNodeRenderer extends DefaultTreeCellRenderer {
 	else {
 	    // Collection node
 	    if (userObject instanceof List) {
-		setText("List");
+		setText("<html>List"+lsid+"</html>");
 	    }
 	    else {
-		setText("Set");
+		setText("<html>Set"+lsid+"</html>");
 	    }
 	}
 	return this;

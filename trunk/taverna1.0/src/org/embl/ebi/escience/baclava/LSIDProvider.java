@@ -8,7 +8,7 @@ package org.embl.ebi.escience.baclava;
 /**
  * A trivial interface to a service capable of providing
  * unique identifiers on demand. Used by the DataThing
- * object to 'fill in' any hooles in its LSID map.
+ * object to 'fill in' any holes in its LSID map.
  * @author Tom Oinn
  */
 public interface LSIDProvider {

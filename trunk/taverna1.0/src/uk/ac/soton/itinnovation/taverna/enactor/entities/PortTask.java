@@ -26,8 +26,8 @@
 //      Dependencies        :
 //
 //      Last commit info    :   $Author: mereden $
-//                              $Date: 2004-01-30 17:11:07 $
-//                              $Revision: 1.22 $
+//                              $Date: 2004-02-26 11:25:04 $
+//                              $Revision: 1.23 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 
@@ -157,6 +157,8 @@ public class PortTask extends TavernaTask {
 	}
 	// Copy any semantic markup into the markup object as well
 	this.theDataThing.getMetadata().setSemanticType(portMarkup.getSemanticType());
+	// Fully populate the dataThing with LSID values if it doesn't already have them
+	this.theDataThing.fillLSIDValues();
     }
     
     /**

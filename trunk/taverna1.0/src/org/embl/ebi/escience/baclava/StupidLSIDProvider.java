@@ -14,9 +14,21 @@ package org.embl.ebi.escience.baclava;
  */
 public class StupidLSIDProvider implements LSIDProvider {
     
-    static String baseString = "LSID:net.sf.taverna:temporaryID:";
+    static String baseString = "urn:lsid:net.sf.taverna:temporaryID:";
     static int count = 0;
     
+    /**
+     * Default constructor so an instance can be
+     * created for use by the enactor framework
+     */
+    public StupidLSIDProvider() {
+	//
+    }
+    
+    /**
+     * Returns a particularly dumb implementation
+     * of a unique identifier
+     */
     public String getID() {
 	return baseString+(count++);
     }

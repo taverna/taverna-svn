@@ -42,8 +42,6 @@ import java.lang.StringBuffer;
  * on the DataThingFactory in the factory subpackage,
  * this is to allow the factory to sensibly configure such
  * things as types and underlying collections.
- * TODO - LSID needs to be added to this class to allow provenance
- * collection to work correctly with BowerBird
  * @author Tom Oinn
  */
 public class DataThing {
@@ -52,6 +50,24 @@ public class DataThing {
     protected HashMap metadataMap = new HashMap();
     protected SemanticMarkup myMarkup;
     protected HashMap lsid = new HashMap();
+    public static LSIDProvider SYSTEM_DEFAULT_LSID_PROVIDER = null;
+    
+    static {
+	// Interrogate the system properties and instantiate
+	// a single static instance of the LSIDProvider
+	// implementation if such is found, otherwise leave
+	// it as null
+	String providerClassName = System.getProperty("taverna.lsidproviderclass");
+	if (providerClassName!=null) {
+	    try {
+		Class providerClass = Class.forName(providerClassName);
+		SYSTEM_DEFAULT_LSID_PROVIDER = (LSIDProvider)providerClass.newInstance();
+	    }
+	    catch (Exception ex) {
+		ex.printStackTrace();
+	    }
+	}
+    }
 
     public DataThing(DataThing other)
     {
@@ -70,6 +86,21 @@ public class DataThing {
     DataThing(Element e) {
 	myMarkup = new SemanticMarkup(this);
 	theDataObject = DataThingXMLFactory.configureDataThing(e, this);
+    }
+
+    /**
+     * Populate all unassigned LSID values using the
+     * system default LSID provider
+     */
+    public void fillLSIDValues() {
+	if (SYSTEM_DEFAULT_LSID_PROVIDER!=null) {
+	    try {
+		fillLSIDValues(SYSTEM_DEFAULT_LSID_PROVIDER);
+	    }
+	    catch (Throwable ex) {
+		ex.printStackTrace();
+	    }
+	}
     }
 
     /**
@@ -443,7 +474,7 @@ public class DataThing {
                 "\n\tdataObject=" + datStr +
                 "\n\tmetaData=" + metadataMap +
                 "\n\tmarkup=" + myMarkup +
-                "\n\tlsid=" + lsid +
+                "\n\tlsid=" + (String)(lsid.get(this)) +
                 "\n";
     }
     
