@@ -12,7 +12,7 @@ import org.embl.ebi.escience.scufl.view.*;
  * Tests the creation of a WSDLBasedProcessor node
  * @author Tom Oinn
  */
-public class WSDLBasedProcessorCreationTest {
+public class WSDLBasedProcessorCreation {
 
     public static void main(String[] args) throws Exception {
 	System.out.println("Starting test : WSDLBasedProcessorCreation");
