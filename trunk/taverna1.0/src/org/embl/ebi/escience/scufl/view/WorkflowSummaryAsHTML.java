@@ -195,8 +195,8 @@ public class WorkflowSummaryAsHTML {
 		Map nameToProcessorName = (Map)seqhoundLocations.get(location);
 		int rows = 2+nameToProcessorName.size();
 		sb.append("<tr>");
-		sb.append("<td width=\"80\" valign=\"top\" rowspan=\""+rows+"\" bgcolor=\"#2f25fa\">SeqHound</td>");
-		sb.append("<td colspan=\"2\" bgcolor=\"2f25fa\">Service rooted at <em>"+location+"</em></td>");
+		sb.append("<td width=\"80\" valign=\"top\" rowspan=\""+rows+"\" bgcolor=\"#836fff\">SeqHound</td>");
+		sb.append("<td colspan=\"2\" bgcolor=\"#836fff\">Service rooted at <em>"+location+"</em></td>");
 		sb.append("</tr>");
 		sb.append("<tr><td bgcolor=\"#eeeedd\">Method name</td><td bgcolor=\"#eeeedd\">Processors</td></tr>");
 		for (Iterator k = nameToProcessorName.keySet().iterator(); k.hasNext();) {
