@@ -25,8 +25,8 @@
 //      Dependencies        :
 //
 //      Last commit info    :   $Author: mereden $
-//                              $Date: 2004-04-05 12:17:32 $
-//                              $Revision: 1.45 $
+//                              $Date: 2004-04-06 10:46:30 $
+//                              $Revision: 1.46 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 package uk.ac.soton.itinnovation.taverna.enactor.entities;
@@ -443,8 +443,16 @@ public class ProcessorTask extends TavernaTask{
      * Invoke with iteration
      */
     private synchronized Map invokeWithIteration(Map inputMap) throws TaskExecutionException {
-	// Build the iterator
-	eventList.add(new ConstructingIterator());
+
+	if (getProcessor().getIterationStrategy() == null) {
+	    // No explicit strategy specified
+	    eventList.add(new ConstructingIterator());
+	}
+	else {
+	    // Strategy defined so pass strategy information into
+	    // process provenance
+	    eventList.add(new ConstructingIterator(getProcessor().getIterationStrategy()));
+	}
 
 	// Create a map of input name -> BaclavaIteratorNode instance
 	Map iteratorNodeMap = new HashMap();
@@ -481,7 +489,13 @@ public class ProcessorTask extends TavernaTask{
 	}
 	else {
 	    // Use the IterationStrategy object to construct the iterator
-	    rootNode = getProcessor().getIterationStrategy().buildIterator(iteratorNodeMap);
+	    try {
+		rootNode = getProcessor().getIterationStrategy().buildIterator(iteratorNodeMap);
+	    }
+	    catch (IntrospectionException ie) {
+		eventList.add(new DataMismatchError());
+		throw new TaskExecutionException("Unable to reconcile iterator types");
+	    }
 	}
 	
 	// Create the output container
