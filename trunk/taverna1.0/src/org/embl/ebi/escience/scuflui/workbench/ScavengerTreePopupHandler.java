@@ -88,7 +88,8 @@ public class ScavengerTreePopupHandler extends MouseAdapter {
 		JPopupMenu menu = new JPopupMenu();
 		JMenuItem add = new JMenuItem("Add to model", Workbench.importIcon);
 		menu.add(add);
-		
+		JMenuItem addWithName = new JMenuItem("Add to model with name...", Workbench.importIcon);
+		menu.add(addWithName);
 		// Prepare the 'add as alternate menu'
 		Processor[] processors = scavenger.model.getProcessors();
 		if (processors.length > 0) {
@@ -152,7 +153,7 @@ public class ScavengerTreePopupHandler extends MouseAdapter {
 			});
 		    menu.add(imp);
 		}
-		add.addActionListener(new ActionListener() {
+		addWithName.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ae) {
 			    String name = (String)JOptionPane.showInputDialog(null,
 									      "Name for the new processor?",
@@ -177,6 +178,50 @@ public class ScavengerTreePopupHandler extends MouseAdapter {
 								  "Exception!",
 								  JOptionPane.ERROR_MESSAGE);
 				}
+			    }
+			}
+		    });
+		add.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent ae) {
+			    String defaultName = node.toString();
+			    // split on non word characters
+			    String[] split = defaultName.split("\\W");
+			    defaultName = "";
+			    for (int i = 0; i < split.length; i++) {
+				defaultName = defaultName + split[i];
+				if (i < split.length - 1) {
+				    defaultName = defaultName + "_";
+				}
+			    }
+			    try {
+				try {
+				    pf.createProcessor(defaultName, ScavengerTreePopupHandler.this.scavenger.model);
+				}
+				catch (DuplicateProcessorNameException dpne) {
+				    int suffix = 0;
+				    boolean success = false;
+				    while (!success) {
+					try {
+					    Processor testExists = ScavengerTreePopupHandler.this.scavenger.model.locateProcessor(defaultName+(++suffix));
+					}
+					catch (UnknownProcessorException upe) {
+					    success = true;
+					    pf.createProcessor(defaultName + suffix, ScavengerTreePopupHandler.this.scavenger.model);
+					}
+				    }
+				}
+			    }
+			    catch (ProcessorCreationException pce) {
+				 JOptionPane.showMessageDialog(null,
+								  "Processor creation exception : \n"+pce.getMessage(),
+								  "Exception!",
+								  JOptionPane.ERROR_MESSAGE);
+			    }
+			    catch (DuplicateProcessorNameException dpne) {
+				JOptionPane.showMessageDialog(null,
+							      "Duplicate name : \n"+dpne.getMessage(),
+							      "Exception!",
+							      JOptionPane.ERROR_MESSAGE);
 			    }
 			}
 		    });

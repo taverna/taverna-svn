@@ -37,7 +37,7 @@ public class StringConstantProcessorFactory extends ProcessorFactory {
      * Return the constant value as the name
      */
     public String toString() {
-	return "String : "+this.value;
+	return "String Constant";
     }
     
     /**

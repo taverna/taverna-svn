@@ -66,12 +66,7 @@ public class TreeTableModelView extends TreeModelView implements TreeTableModel 
 	}
 	return null;
     }
-    public boolean isCellEditable(Object nodeObject, int column) {
-	// Always allow 'edits' on column 0, passes mouse events
-	// through to be handled by the tree
-	if (column == 0) {
-	    return true;
-	}
+    public boolean isCellEditable(Object nodeObject, int column) {	
 	DefaultMutableTreeNode node = (DefaultMutableTreeNode)nodeObject;
 	Processor p = null;
 	if (node.getUserObject() instanceof Processor) {
@@ -79,6 +74,18 @@ public class TreeTableModelView extends TreeModelView implements TreeTableModel 
 	}
 	else if (node.getUserObject() instanceof AlternateProcessor) {
 	    p = ((AlternateProcessor)node.getUserObject()).getProcessor();
+	}
+	// Always allow 'edits' on column 0, passes mouse events
+	// through to be handled by the tree
+	if (column == 0) {
+	    // Check whether this is a processor with a non null
+	    // model, i.e. not an alternate
+	    if (node.getUserObject() instanceof Processor) {
+		return true;
+	    }
+	    else {
+		return false;
+	    }
 	}
 	if (p == null) {
 	    return false;
@@ -98,6 +105,7 @@ public class TreeTableModelView extends TreeModelView implements TreeTableModel 
 	if (p!=null) {
 	    switch (column) {
 	    case 0:
+		p.setName((String)value);
 		return;
 	    case 1:
 		Integer retries = (Integer)value;

@@ -70,6 +70,32 @@ public abstract class Processor implements Serializable, Transferable {
     }
 
     /**
+     * Set the name, providing that names doesn't exist within the
+     * current workflow that this processor is bound to. If it does
+     * then do nothing
+     */
+    public void setName(String newName) {
+	if (this.model == null) {
+	    return;
+	}
+	try {
+	    Processor testExists = model.locateProcessor(newName);
+	    return;
+	}
+	catch (UnknownProcessorException upe) {
+	    // No existing processor with this name
+	    if (name.equals("")) {
+		return;
+	    }
+	    if (Pattern.matches("\\w++",name) == false) {
+		return;
+	    }
+	    this.name = newName;
+	    fireModelEvent(new ScuflModelEvent(this, "Processor renamed to '"+name+"'"));
+	}	   
+    }
+
+    /**
      * Get the iteration strategy for this processor, or null
      * if the default should be used
      */

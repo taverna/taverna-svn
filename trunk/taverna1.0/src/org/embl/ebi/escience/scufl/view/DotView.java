@@ -106,6 +106,11 @@ public class DotView implements ScuflModelEventListener, java.io.Serializable {
 	if (this.portDisplay == DotView.ALL || this.portDisplay == DotView.BOUND) {
 	    dot.append("  shape=\"record\",             \n");
 	}
+	else {
+	    dot.append("  shape=\"box\",                \n");
+	    dot.append("  height=\"0\",\n");
+	    dot.append("  width=\"0\",\n");
+	}
 	dot.append("  color=\"black\",               \n");
 	dot.append("  fillcolor=\"lightgoldenrodyellow\",\n");
 	dot.append("  style=\"filled\"  \n");
@@ -175,10 +180,10 @@ public class DotView implements ScuflModelEventListener, java.io.Serializable {
 		// Name of the node
 		if (this.portDisplay == DotView.ALL) {
 		    if (p.getAlternatesList().isEmpty()) {
-			dot.append("{"+p.getName().toUpperCase()+"}|{");
+			dot.append("{"+p.getName()+"}|{");
 		    }
 		    else {
-			dot.append("{"+p.getName().toUpperCase()+"\\n"+p.getAlternatesList().size()+" alternate");
+			dot.append("{"+p.getName()+"\\n"+p.getAlternatesList().size()+" alternate");
 		    if (p.getAlternatesList().size()!=1) {
 			dot.append("s");
 		    }
@@ -208,10 +213,10 @@ public class DotView implements ScuflModelEventListener, java.io.Serializable {
 		
 		if (this.portDisplay == DotView.BOUND) {
 		    if (p.getAlternatesList().isEmpty()) {
-			dot.append(p.getName().toUpperCase()+"|");
+			dot.append(p.getName()+"|");
 		    }
 		    else {
-			dot.append(p.getName().toUpperCase()+"\\n"+p.getAlternatesList().size()+" alternate");
+			dot.append(p.getName()+"\\n"+p.getAlternatesList().size()+" alternate");
 			if (p.getAlternatesList().size()!=1) {
 			    dot.append("s");
 			}
@@ -326,7 +331,7 @@ public class DotView implements ScuflModelEventListener, java.io.Serializable {
 	ConcurrencyConstraint[] cc = model.getConcurrencyConstraints();
 	for (int i = 0; i < cc.length; i++) {
 	    ConcurrencyConstraint c = cc[i];
-	    if (this.portDisplay != DotView.NONE) {
+	    if (this.portDisplay != DotView.NONE && displayTypes) {
 		// Create the box
 		dot.append(" constraint"+c.getName()+" [\n");
 		dot.append("  shape=\"rectangle\",\n");

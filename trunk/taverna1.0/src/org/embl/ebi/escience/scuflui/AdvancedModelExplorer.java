@@ -143,7 +143,7 @@ public class AdvancedModelExplorer extends JTabbedPane
 	    final JButton createStrategy = new JButton("Create iteration strategy");
 	    final JButton resetStrategy = new JButton("Reset iteration strategy");
 	    
-	    final String noIteratorMessage = "<h2>No iterator strategy</h2>If you would like to override Taverna's default strategy you need to click the '<em><font color=\"green\">create strategy</font></em>' button and then use the editing controls to manipulate the tree of iterators.";
+	    final String noIteratorMessage = "<h2>No iterator strategy</h2>If you would like to override Taverna's default strategy you need to click the '<em><font color=\"green\">create strategy</font></em>' button and then use the editing controls to manipulate the tree of iterators. Note that the iteration strategy created will only include the inputs bound at the time you press the button, if you subsequently add new input links you will have to reset and recreate the strategy; all bound inputs <font color=\"red\">must</font> be included.";
 	    
 	    createStrategy.addActionListener(new ActionListener() {
 		    public void actionPerformed(ActionEvent e) {

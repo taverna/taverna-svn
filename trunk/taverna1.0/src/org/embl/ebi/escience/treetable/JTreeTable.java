@@ -17,9 +17,11 @@ import javax.swing.*;
 import javax.swing.event.*;
 import javax.swing.tree.*;
 import javax.swing.table.*;
+import javax.swing.border.*;
 
 import java.awt.Dimension;
 import java.awt.event.*;
+import java.awt.*;
 import java.awt.Component;
 import java.awt.Graphics;
 import java.awt.Rectangle;
@@ -123,7 +125,34 @@ public class JTreeTable extends JTable {
         return (getColumnClass(editingColumn) == TreeTableModel.class) ? -1 :
 	        editingRow;  
     }
-
+    
+    /**
+     * Returns the actual row that is editing as <code>getEditingRow</code>
+     * will always return -1.
+     */
+    private int realEditingRow() {
+	return editingRow;
+    }
+    
+    /**
+     * This is overridden to invoke super's implementation, and then,
+     * if the receiver is editing a Tree column, the editor's bounds is
+     * reset. The reason we have to do this is because JTable doesn't
+     * think the table is being edited, as <code>getEditingRow</code> returns
+     * -1, and therefore doesn't automatically resize the editor for us.
+     */
+    public void sizeColumnsToFit(int resizingColumn) { 
+	super.sizeColumnsToFit(resizingColumn);
+	if (getEditingColumn() != -1 && getColumnClass(editingColumn) ==
+	    TreeTableModel.class) {
+	    Rectangle cellRect = getCellRect(realEditingRow(),
+					     getEditingColumn(), false);
+            Component component = getEditorComponent();
+	    component.setBounds(cellRect);
+            component.validate();
+	}
+    }
+    
     /**
      * Overridden to pass the new rowHeight to the tree.
      */
@@ -142,12 +171,27 @@ public class JTreeTable extends JTable {
     }
 
     /**
+     * Overridden to invoke repaint for the particular location if
+     * the column contains the tree. This is done as the tree editor does
+     * not fill the bounds of the cell, we need the renderer to paint
+     * the tree in the background, and then draw the editor over it.
+     */
+    public boolean editCellAt(int row, int column, EventObject e){
+	boolean retValue = super.editCellAt(row, column, e);
+	if (retValue && getColumnClass(column) == TreeTableModel.class) {
+	    repaint(getCellRect(row, column, false));
+	}
+	return retValue;
+    }
+
+    /**
      * A TreeCellRenderer that displays a JTree.
      */
     public class TreeTableCellRenderer extends JTree implements
 	         TableCellRenderer {
 	/** Last table/tree row asked to renderer. */
 	protected int visibleRow;
+	protected Border highlightBorder;
 
 	public TreeTableCellRenderer(TreeModel model) {
 	    super(model); 
@@ -168,10 +212,10 @@ public class JTreeTable extends JTable {
 		// exception to be thrown if the border selection color is
 		// null.
 		// dtcr.setBorderSelectionColor(null);
-		dtcr.setTextSelectionColor(UIManager.getColor
-					   ("Table.selectionForeground"));
-		dtcr.setBackgroundSelectionColor(UIManager.getColor
-						("Table.selectionBackground"));
+		//dtcr.setTextSelectionColor(UIManager.getColor
+		//			   ("Table.selectionForeground"));
+		//dtcr.setBackgroundSelectionColor(UIManager.getColor
+		//				("Table.selectionBackground"));
 	    }
 	}
 
@@ -203,6 +247,12 @@ public class JTreeTable extends JTable {
 	public void paint(Graphics g) {
 	    g.translate(0, -visibleRow * getRowHeight());
 	    super.paint(g);
+	    // Draw the Table border if we have focus.
+	    if (highlightBorder != null) {
+		highlightBorder.paintBorder(this, g, 0, visibleRow *
+					    getRowHeight(), getWidth(),
+					    getRowHeight());
+	    }
 	}
 
 	/**
@@ -213,13 +263,51 @@ public class JTreeTable extends JTable {
 						       boolean isSelected,
 						       boolean hasFocus,
 						       int row, int column) {
-	    if(isSelected)
-		setBackground(table.getSelectionBackground());
-	    else
-		setBackground(table.getBackground());
+	    Color background;
+	    Color foreground;
+
+	    if(isSelected) {
+		background = table.getSelectionBackground();
+		foreground = table.getSelectionForeground();
+	    }
+	    else {
+		background = table.getBackground();
+		foreground = table.getForeground();
+	    }
+	    highlightBorder = null;
+	    if (realEditingRow() == row && getEditingColumn() == column) {
+		//background = UIManager.getColor("Table.focusCellBackground");
+		//foreground = UIManager.getColor("Table.focusCellForeground");
+	    }
+	    else if (hasFocus) {
+		highlightBorder = UIManager.getBorder
+		                  ("Table.focusCellHighlightBorder");
+		if (isCellEditable(row, column)) {
+		    //background = UIManager.getColor
+		    //	         ("Table.focusCellBackground");
+		    background = table.getSelectionBackground();
+		    foreground = table.getSelectionForeground();
+		}
+	    }
+
 	    visibleRow = row;
+	    setBackground(background);
+	    
+	    TreeCellRenderer tcr = getCellRenderer();
+	    if (tcr instanceof DefaultTreeCellRenderer) {
+		DefaultTreeCellRenderer dtcr = ((DefaultTreeCellRenderer)tcr); 
+		if (isSelected) {
+		    dtcr.setTextSelectionColor(foreground);
+		    dtcr.setBackgroundSelectionColor(background);
+		}
+		else {
+		    dtcr.setTextNonSelectionColor(foreground);
+		    dtcr.setBackgroundNonSelectionColor(background);
+		}
+	    }
 	    return this;
 	}
+
     }
 
 
@@ -227,32 +315,53 @@ public class JTreeTable extends JTable {
      * TreeTableCellEditor implementation. Component returned is the
      * JTree.
      */
-    public class TreeTableCellEditor extends AbstractCellEditor implements
-	         TableCellEditor {
+    public class TreeTableCellEditor extends DefaultCellEditor {
+	public TreeTableCellEditor() {
+	    super(new TreeTableTextField());
+	}
 	public Component getTableCellEditorComponent(JTable table,
 						     Object value,
 						     boolean isSelected,
 						     int r, int c) {
-	    return tree;
+	    Component component = super.getTableCellEditorComponent
+		(table, value, isSelected, r, c);
+	    JTree t = getTree();
+	    boolean rv = t.isRootVisible();
+	    int offsetRow = rv ? r : r - 1;
+	    Rectangle bounds = t.getRowBounds(offsetRow);
+	    int offset = bounds.x;
+	    TreeCellRenderer tcr = t.getCellRenderer();
+	    if (tcr instanceof DefaultTreeCellRenderer) {
+		Object node = t.getPathForRow(offsetRow).
+		    getLastPathComponent();
+		boolean isExpanded = t.isExpanded(t.getPathForRow(offsetRow));
+		boolean isLeaf = t.getModel().isLeaf(node);
+		Component renderer = tcr.getTreeCellRendererComponent(t,
+								      node,
+								      true,
+								      isExpanded,
+								      isLeaf,
+								      offsetRow,
+								      true);
+		Icon icon = ((JLabel)renderer).getIcon();
+		//if (t.getModel().isLeaf(node))
+		//   icon = ((DefaultTreeCellRenderer)tcr).getLeafIcon();
+		//else if (tree.isExpanded(offsetRow))
+		//    icon = ((DefaultTreeCellRenderer)tcr).getOpenIcon();
+		//else
+		//    icon = ((DefaultTreeCellRenderer)tcr).getClosedIcon();
+		if (icon != null) {
+		    offset += ((DefaultTreeCellRenderer)tcr).getIconTextGap() +
+			icon.getIconWidth();
+		}
+	    }
+	    ((TreeTableTextField)getComponent()).offset = offset;
+	    return component;
 	}
 
 	/**
-	 * Overridden to return false, and if the event is a mouse event
-	 * it is forwarded to the tree.<p>
-	 * The behavior for this is debatable, and should really be offered
-	 * as a property. By returning false, all keyboard actions are
-	 * implemented in terms of the table. By returning true, the
-	 * tree would get a chance to do something with the keyboard
-	 * events. For the most part this is ok. But for certain keys,
-	 * such as left/right, the tree will expand/collapse where as
-	 * the table focus should really move to a different column. Page
-	 * up/down should also be implemented in terms of the table.
-	 * By returning false this also has the added benefit that clicking
-	 * outside of the bounds of the tree node, but still in the tree
-	 * column will select the row, whereas if this returned true
-	 * that wouldn't be the case.
-	 * <p>By returning false we are also enforcing the policy that
-	 * the tree will never be editable (at least by a key sequence).
+	 * This is overridden to forward the event to the tree. This will
+	 * return true if the click count >= 3, or the event is null.
 	 */
 	public boolean isCellEditable(EventObject e) {
 	    /** if (e instanceof MouseEvent) {
@@ -272,10 +381,32 @@ public class JTreeTable extends JTable {
 		}
 		}
 	    */
+	    if (e instanceof MouseEvent) {
+		MouseEvent me = (MouseEvent)e;
+		if (me.getClickCount() >= 3) {
+		    return true;
+		}
+	    }
+	    if (e == null) {
+		return true;
+	    }
 	    return false;
 	}
     }
 
+    /**
+     * Component used by TreeTableCellEditor. The only thing this does
+     * is to override the <code>reshape</code> method, and to ALWAYS
+     * make the x location be <code>offset</code>.
+     */
+    static class TreeTableTextField extends JTextField {
+	public int offset;
+
+	public void reshape(int x, int y, int w, int h) {
+	    int newX = Math.max(x, offset);
+	    super.reshape(newX, y, w - (newX - x), h);
+	}
+    }
 
     /**
      * ListToTreeSelectionModelWrapper extends DefaultTreeSelectionModel
