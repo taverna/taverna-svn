@@ -206,7 +206,7 @@ public class DotView implements ScuflModelEventListener, java.io.Serializable {
 	    }
 	    // Close the label
 	    dot.append("\"\n");
-	    dot.append(" ];              \n");
+	    dot.append(" ];\n");
 	}
 
 	// For each data constraint, create an edge
@@ -226,6 +226,43 @@ public class DotView implements ScuflModelEventListener, java.io.Serializable {
 	    }
 	    dot.append("  label = \""+dc.getSource().getSyntacticType()+"\"");
 	    dot.append(" ];\n");
+	}
+
+	// For each concurrency constraint, create a box and dashed arrow from the
+	// controller to the box and from the box to the target
+	ConcurrencyConstraint[] cc = model.getConcurrencyConstraints();
+	for (int i = 0; i < cc.length; i++) {
+	    ConcurrencyConstraint c = cc[i];
+	    // Create the box
+	    dot.append(" constraint"+c.getName()+" [\n");
+	    dot.append("  shape=\"rectangle\",\n");
+	    dot.append("  fillcolor=\"white\",\n");
+	    dot.append("  height=\"0\",\n");
+	    dot.append("  width=\"0\",\n");
+	    dot.append("  color=\"gray\",\n");
+	    dot.append("  label=\"coordination\"\n");
+	    dot.append(" ]\n");
+	    // Create the edge from controller to box
+	    dot.append(" "+c.getControllingProcessor().getName()+"->constraint"+c.getName()+" [\n");
+	    dot.append("  arrowhead=\"none\",\n");
+	    dot.append("  arrowtail=\"dot\",\n");
+	    dot.append("  color=\"gray\",\n");
+	    dot.append("  fontcolor=\"brown\",\n");
+	    dot.append("  label=\""+ConcurrencyConstraint.statusCodeToString(c.getControllerStateGuard())+"\"\n");
+	    dot.append(" ]\n");
+	    // Create the edge from box to target
+	    dot.append(" constraint"+c.getName()+"->"+c.getTargetProcessor().getName()+" [\n");
+	    dot.append("  arrowhead=\"odot\",\n");
+	    dot.append("  arrowtail=\"none\",\n");
+	    dot.append("  color=\"gray\",\n");
+	    dot.append("  fontcolor=\"darkgreen\",\n");
+	    String stateChangeLabel =
+		"from:"+
+		ConcurrencyConstraint.statusCodeToString(c.getTargetStateFrom())+"\\nto:"+
+		ConcurrencyConstraint.statusCodeToString(c.getTargetStateTo());
+	    dot.append("  label=\""+stateChangeLabel+"\"\n");
+	    dot.append(" ];\n");
+
 	}
 
 	dot.append("}\n");

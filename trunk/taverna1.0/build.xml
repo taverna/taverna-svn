@@ -245,7 +245,7 @@
 	</target> 
 
 	<!-- Test the dot view -->
-	<target name="test.dotview" depends="jar">
+	<target name="test.dotview">
 		<java classname="org.embl.ebi.escience.scufl.view.test.DotViewTest" fork="yes">
 		    <classpath refid="compile-classpath"/>
 		</java>

@@ -82,6 +82,14 @@ public class XScufl2Dot implements ActionWorker {
 	    trigger.addError(xsfe.getMessage());
 	    throw new AbortActionException();
 	}
+	catch (ConcurrencyConstraintCreationException dce) {
+	    trigger.addError(dce.getMessage());
+	    throw new AbortActionException();
+	}
+	catch (DuplicateConcurrencyConstraintNameException dpne) {
+	    trigger.addError(dpne.getMessage());
+	    throw new AbortActionException();
+	}
     }
 
 }

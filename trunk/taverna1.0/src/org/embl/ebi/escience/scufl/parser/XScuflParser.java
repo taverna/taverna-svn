@@ -75,6 +75,8 @@ public class XScuflParser {
 	       DataConstraintCreationException,
 	       DuplicateProcessorNameException,
 	       MalformedNameException,
+	       ConcurrencyConstraintCreationException,
+	DuplicateConcurrencyConstraintNameException,
 	       XScuflFormatException {
 	try {
 	    SAXBuilder builder = new SAXBuilder(false);
@@ -121,7 +123,9 @@ public class XScuflParser {
 	       ProcessorCreationException,
 	       DataConstraintCreationException,
 	       DuplicateProcessorNameException,
-	       MalformedNameException,
+	       MalformedNameException,	       
+	ConcurrencyConstraintCreationException,
+	DuplicateConcurrencyConstraintNameException,
 	       XScuflFormatException {
 	
 	// Load the data into a JDom Document
@@ -173,6 +177,8 @@ public class XScuflParser {
 	       DataConstraintCreationException,
 	       DuplicateProcessorNameException,
 	       MalformedNameException,
+	       ConcurrencyConstraintCreationException,
+	DuplicateConcurrencyConstraintNameException,
 	       XScuflFormatException {
 	// Check whether we're using prefixes
 	boolean usePrefix = false;
@@ -272,7 +278,39 @@ public class XScuflParser {
 	}
 
 
-	// Build concurrency constraints (not yet implemented)
+	// Build concurrency constraints
+	List concurrencyConstraints = root.getChildren("coordination",namespace);
+	for (Iterator i = concurrencyConstraints.iterator(); i.hasNext(); ) {
+	    Element coordination = (Element)i.next();
+	    String constraintName = coordination.getAttributeValue("name");
+	    if (usePrefix) {
+		constraintName = prefix+"_"+constraintName;
+	    }
+	    Element condition = coordination.getChild("condition",namespace);
+	    Element action = coordination.getChild("action",namespace);
+	    String controllerName = condition.getChild("target",namespace).getTextTrim();
+	    if (usePrefix) {
+		controllerName = prefix+"_"+controllerName;
+	    }
+	    Processor controller = model.locateProcessor(controllerName);
+	    int controllerStateGuard = ConcurrencyConstraint.statusStringToInt(condition.getChild("state",namespace).getTextTrim());
+	    String targetName = action.getChild("target",namespace).getTextTrim();
+	    if (usePrefix) {
+		targetName = prefix+"_"+targetName;
+	    }
+	    Processor target = model.locateProcessor(targetName);
+	    int targetStateTo = 
+		ConcurrencyConstraint.statusStringToInt(action.getChild("statechange",namespace).getChild("to",namespace).getTextTrim());
+	    int targetStateFrom = 
+		ConcurrencyConstraint.statusStringToInt(action.getChild("statechange",namespace).getChild("from",namespace).getTextTrim());
+	    model.addConcurrencyConstraint(new ConcurrencyConstraint(model,
+								     constraintName,
+								     controller,
+								     target,
+								     targetStateFrom,
+								     targetStateTo,
+								     controllerStateGuard));
+	}
 	
     }
 

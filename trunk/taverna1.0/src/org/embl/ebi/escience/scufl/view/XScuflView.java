@@ -168,6 +168,50 @@ public class XScuflView implements ScuflModelEventListener, java.io.Serializable
 	    root.addContent(external);
 	}
 
+	// Create elements corresponding to concurrency constraints
+	ConcurrencyConstraint[] constraints = model.getConcurrencyConstraints();
+	for (int i = 0; i < constraints.length; i++) {
+	    Element coordination = new Element("coordination", scuflNS());
+	    coordination.setAttribute("name",constraints[i].getName());
+	    root.addContent(coordination);
+	    Element condition = new Element("condition", scuflNS());
+	    Element action = new Element("action", scuflNS());
+	    coordination.addContent(condition);
+	    coordination.addContent(action);
+
+	    // Define the condition
+	    // <condition>
+	    //   <target>ControllingProcessor</target>
+	    //   <state>COMPLETED</state>
+	    // </condition>
+	    Element state = new Element("state", scuflNS());
+	    state.setText(ConcurrencyConstraint.statusCodeToString(constraints[i].getControllerStateGuard()));
+	    condition.addContent(state);
+	    Element ctarget = new Element("target", scuflNS());
+	    ctarget.setText(constraints[i].getControllingProcessor().getName());
+	    condition.addContent(ctarget);
+	    
+	    // Define the action
+	    // <action>
+	    //   <target>targetProcessor</target>
+	    //   <statechange>
+	    //     <from>SCHEDULED</from>
+	    //     <to>RUNNING</to>
+	    //   </statechange>
+	    // </action>
+	    Element target = new Element("target", scuflNS());
+	    target.setText(constraints[i].getTargetProcessor().getName());
+	    action.addContent(target);
+	    Element statechange = new Element("statechange", scuflNS());
+	    action.addContent(statechange);
+	    Element from = new Element("from");
+	    Element to = new Element("to");
+	    from.setText(ConcurrencyConstraint.statusCodeToString(constraints[i].getTargetStateFrom()));
+	    to.setText(ConcurrencyConstraint.statusCodeToString(constraints[i].getTargetStateFrom()));
+	    statechange.addContent(from);
+	    statechange.addContent(to);
+	}
+
 	// Generate the textual version and cache it.
 	XMLOutputter xo = new XMLOutputter();
 	xo.setIndent("  ");
