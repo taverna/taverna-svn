@@ -1,13 +1,21 @@
 package net.sourceforge.taverna.scuflworkers.xml;
 
+import java.io.BufferedOutputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.OutputStream;
+import java.io.StringReader;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.xml.transform.stream.StreamSource;
+
 import net.sf.saxon.Configuration;
+import net.sf.saxon.om.DocumentInfo;
+import net.sf.saxon.query.DynamicQueryContext;
+import net.sf.saxon.query.QueryResult;
 import net.sf.saxon.query.StaticQueryContext;
 import net.sf.saxon.query.XQueryExpression;
 import net.sf.saxon.xpath.XPathException;
-
 import net.sourceforge.taverna.baclava.DataThingAdapter;
 
 import org.embl.ebi.escience.scuflworkers.java.LocalWorker;
@@ -15,12 +23,13 @@ import org.embl.ebi.escience.scuflworkers.java.LocalWorker;
 import uk.ac.soton.itinnovation.taverna.enactor.entities.TaskExecutionException;
 
 /**
- * This class 
+ * This class allows the user to create XQuery's against
+ * an XML document.
  * 
  * Last edited by $Author: phidias $
  * 
  * @author Mark
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class XQueryWorker implements LocalWorker {
 
@@ -37,9 +46,20 @@ public class XQueryWorker implements LocalWorker {
         
         Configuration config = new Configuration();
         StaticQueryContext staticContext = new StaticQueryContext(config);
+        DynamicQueryContext context = new DynamicQueryContext(config);
         try {
+           
             XQueryExpression exp =  staticContext.compileQuery(script);
-            //staticContext.buildDocument( );
+            StreamSource doc = new StreamSource(new StringReader(inputDoc));
+            DocumentInfo docInfo = staticContext.buildDocument(doc);
+            context.setContextNode(docInfo);
+            
+            OutputStream outputStream = new ByteArrayOutputStream();
+            BufferedOutputStream buff = new BufferedOutputStream(outputStream);
+            StringBuffer sb = new StringBuffer();
+            QueryResult.serializeSequence(exp.iterator(context), config,buff,null);
+            System.out.println(buff.toString());
+            
         } catch (XPathException e) {
             throw new TaskExecutionException(e);
         }
