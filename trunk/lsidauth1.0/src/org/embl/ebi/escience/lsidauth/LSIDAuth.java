@@ -278,7 +278,7 @@ public final class LSIDAuth implements WSDLConstants {
      * @throws NoSuchAlgorithmException if the provider is not correctly installed
      * @throws InvalidKeyException if the key is invalid for some reason
      */
-    private boolean comparePasswords(byte[] hashPassword, String stringPassword)
+     boolean comparePasswords(byte[] hashPassword, String stringPassword)
 	throws NoSuchAlgorithmException, 
 	       InvalidKeyException {
 	byte[] salt = new byte[SIZE_OF_SALT];
