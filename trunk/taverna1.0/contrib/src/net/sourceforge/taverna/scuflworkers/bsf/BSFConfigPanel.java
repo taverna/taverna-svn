@@ -370,7 +370,7 @@ public class BSFConfigPanel extends JPanel implements ScuflUIComponent,
 		super(new BorderLayout());
 		setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
 		this.processor = bp;
-
+		
 		scriptText = new JEditTextArea(new TextAreaDefaults());
 		scriptText.setText(processor.getScript());
 		scriptText.setTokenMarker(new JavaTokenMarker());
@@ -408,7 +408,7 @@ public class BSFConfigPanel extends JPanel implements ScuflUIComponent,
 		});
 
 		// create the button panel
-		JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+		JPanel buttonPanel = new JPanel(new FlowLayout());
 		JLabel scriptLabel = new JLabel("Script Language");
 		
 		//buttonPanel.add(testScriptButton);
@@ -418,7 +418,8 @@ public class BSFConfigPanel extends JPanel implements ScuflUIComponent,
 
 		JPanel scriptEditPanel = new JPanel(new BorderLayout());
 		scriptEditPanel.add(scriptText, BorderLayout.CENTER);
-		scriptEditPanel.add(buttonPanel, BorderLayout.PAGE_END);
+		//this.add(buttonPanel, BorderLayout.SOUTH);
+		scriptEditPanel.add(buttonPanel, BorderLayout.SOUTH);
 
 		// Panel to edit the input and output ports
 		JPanel portEditPanel = new JPanel(new GridLayout(0, 2));

@@ -23,7 +23,7 @@ import org.xml.sax.SAXException;
  * Last edited by $Author: phidias $
  * 
  * @author Mark
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class SVGRenderer extends ByPattern {
 
@@ -55,7 +55,7 @@ public class SVGRenderer extends ByPattern {
         
         Object data = dataThing.getDataObject();
         String mimetype = dataThing.getSyntacticType();
-        if(data instanceof String) {
+        if(data instanceof String && data != null && !data.equals("")) {
             if ("'image/svg+xml'".equals(mimetype)){
                 String svgContent = (String)data;
                 

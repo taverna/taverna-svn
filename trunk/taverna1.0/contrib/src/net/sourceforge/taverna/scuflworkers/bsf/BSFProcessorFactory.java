@@ -37,7 +37,7 @@ public class BSFProcessorFactory extends ProcessorFactory {
      * Return a textual description of the factory
      */
     public String getProcessorDescription() {
-        return "A processor that allows arbitrary Java scripts";
+        return "A processor that allows arbitrary scripts";
     }
 
     /**

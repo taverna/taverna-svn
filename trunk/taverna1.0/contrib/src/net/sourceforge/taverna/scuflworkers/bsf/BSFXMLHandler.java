@@ -14,7 +14,8 @@ import org.embl.ebi.escience.scufl.XScufl;
 import org.embl.ebi.escience.scufl.parser.XScuflFormatException;
 import org.embl.ebi.escience.scuflworkers.ProcessorFactory;
 import org.embl.ebi.escience.scuflworkers.XMLHandler;
-import org.embl.ebi.escience.scuflworkers.beanshell.BeanshellProcessor;
+
+import net.sourceforge.taverna.scuflworkers.bsf.*;
 import org.jdom.Element;
 
 /**
@@ -94,7 +95,7 @@ public class BSFXMLHandler implements XMLHandler {
         BSFProcessor bp = new BSFProcessor(model, name, "",
                 new String[0], new String[0]);
         Element beanshell = processorNode
-                .getChild("beanshell", XScufl.XScuflNS);
+                .getChild("bsfscript", XScufl.XScuflNS);
         Element scriptElement = beanshell.getChild("scriptvalue",
                 XScufl.XScuflNS);
         if (scriptElement != null) {
