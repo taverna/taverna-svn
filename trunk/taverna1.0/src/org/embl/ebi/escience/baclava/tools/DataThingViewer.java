@@ -63,7 +63,7 @@ public class DataThingViewer extends JFrame {
 	getContentPane().add(panel);
 	setJMenuBar(createMenuBar(theThing));
 	pack();
-	show();
+	setVisible(true);
     }
     
     private JMenuBar createMenuBar(DataThing theThing) {

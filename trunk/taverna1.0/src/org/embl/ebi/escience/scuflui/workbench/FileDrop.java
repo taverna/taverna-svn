@@ -554,7 +554,8 @@ public class FileDrop
 
         frame.setBounds( 100, 100, 300, 400 );
         frame.setDefaultCloseOperation( frame.EXIT_ON_CLOSE );
-        frame.show();
+        //frame.show();
+	frame.setVisible(true);
     }   // end main
 
 

@@ -234,7 +234,7 @@ public class BeanshellConfigPanel extends JPanel implements ScuflUIComponent {
 								}
 							});
 							dialog.pack();
-							dialog.show();
+							dialog.setVisible(true);
 						}
 					}));
 					menu.show(list, me.getX(), me.getY());
