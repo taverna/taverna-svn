@@ -33,3 +33,8 @@ commons-logging.jar
 axis.jar
 jaxrpc.jar
 saaj.jar
+
+# Misc
+activation.jar
+mail.jar
+log4j-1.2.8.jar

@@ -10,7 +10,11 @@ import com.ibm.lsid.server.*;
 import com.ibm.lsid.*;
 
 import org.embl.ebi.escience.baclava.*;
+import org.embl.ebi.escience.baclava.factory.*;
 import org.embl.ebi.escience.baclava.store.*;
+
+import org.jdom.*;
+import org.jdom.output.*;
 
 import java.util.*;
 import java.io.*;
@@ -44,10 +48,8 @@ public class TavernaLSIDService extends SimpleResolutionService {
 	for (Enumeration en = config.getPropertyNames(); en.hasMoreElements();) {
 	    String propertyName = (String)en.nextElement();
 	    String propertyValue = config.getProperty(propertyName);
-	    System.out.println("  "+propertyName+" = "+propertyValue);
 	    serviceProps.setProperty(propertyName, propertyValue);
 	}
-	
 	theDataService = new JDBCBaclavaDataService(serviceProps);
 	System.out.println("Created new TavernaLSIDService and data service object");
     }
@@ -60,7 +62,29 @@ public class TavernaLSIDService extends SimpleResolutionService {
      */
     public InputStream getData(LSIDRequestContext request)
 	throws LSIDServerException {
-	return null;
+	LSID theLSID = request.getLsid();
+	String theLSIDString = theLSID.getLsid();
+	System.out.println("Request for LSID : "+theLSIDString);
+	try {
+	    DataThing theThing = theDataService.fetchDataThing(theLSIDString);
+	    
+	    Document doc = new Document(DataThingXMLFactory.getElement(theThing));
+	    XMLOutputter xo = new XMLOutputter();
+	    xo.setIndent("  ");
+	    xo.setNewlines(true);
+	    String xmlRepresentation = xo.outputString(doc);
+	    return new ByteArrayInputStream(xmlRepresentation.getBytes());
+	}
+	catch (NoSuchLSIDException lsle) {
+	    lsle.printStackTrace();
+	    return null;
+	}
+	catch (Exception ex) {
+	    ex.printStackTrace();
+	    LSIDServerException lse = new LSIDServerException("Problem accessing the data store");
+	    lse.initCause(ex);
+	    throw lse;
+	}
     }
 
     
@@ -72,6 +96,8 @@ public class TavernaLSIDService extends SimpleResolutionService {
     public MetadataResponse getMetadata(LSIDRequestContext request,
 					String[] acceptedFormats)
 	throws LSIDServerException {
+	// Always return null for now, will return chunks of RDF
+	// in the near future
 	return null;
     }
 

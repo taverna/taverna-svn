@@ -188,7 +188,16 @@
 			</fileset>	
 		</copy>
 		<!-- create the war file -->
-		<jar destfile="${build.dir}/${ant.project.name}-${project.version}.war" basedir="${build.dir}/war" update="no"/>
+		<jar destfile="${build.dir}/authority.war" basedir="${build.dir}/war" update="no"/>
+	</target>
+	
+	<!-- Test the lsid authority running on localhost:8080/authority -->
+	<target name="test.client" depends="jar">
+		<java classname="org.embl.ebi.escience.ouzo.test.TestClient" fork="yes">
+			<arg line="urn:lsid:net.sf.taverna:temporaryID:4"/>
+			<sysproperty key="LSID_CLIENT_HOME" value="."/>
+			<classpath refid="run-classpath"/>
+		</java>
 	</target>
 
 </project>
