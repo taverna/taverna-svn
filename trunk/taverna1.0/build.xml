@@ -3,7 +3,7 @@
 <project name="taverna" default="workbench" basedir=".">
 
 	<!-- Current version of the project, used by doxygen -->
-	<property name="project.version" value="0.1beta12"/>
+	<property name="project.version" value="1.0"/>
 
 	<!-- These directories are pretty standard, you probably     -->
 	<!-- don't want to change them                               -->
