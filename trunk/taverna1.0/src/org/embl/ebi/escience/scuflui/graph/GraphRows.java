@@ -3,31 +3,24 @@
  */
 package org.embl.ebi.escience.scuflui.graph;
 
-import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
 import org.jgraph.graph.CellMapper;
-import org.jgraph.graph.CellView;
-import org.jgraph.graph.DefaultGraphModel;
-import org.jgraph.graph.GraphConstants;
 import org.jgraph.graph.GraphModel;
 
 /**
  * COMMENT
  * 
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover </a>
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
 public class GraphRows
 {
 	private static final String ROW = "row";
 	private static int ITERATIONS = 20;
-	private static int ROW_HEIGHT = 45;
-	private static int X_SEPARATION = 10;
-	private static int GRAPH_EDGE = 10;
 
 	private GraphModel model;
 	private CellMapper mapper;
@@ -48,18 +41,11 @@ public class GraphRows
 	 */
 	private void add(Object node, int row)
 	{
-		List nodes;
 		while (row >= rows.size())
 		{
-			nodes = new ArrayList();
-			rows.add(nodes);
+			rows.add(new GraphRow(model, mapper));
 		}
-		nodes = (List) rows.get(row);
-		if(!nodes.contains(node))
-		{
-			nodes.add(node);
-		}
-		calculateBounds(row);
+		getGraphRow(row).add(node);
 	}
 
 	/**
@@ -128,13 +114,23 @@ public class GraphRows
 			{
 				return;
 			}
+			//TODO Check edges!
+			
 			remove(node, oldRow.intValue());
 		}
-		//System.err.println("Set row " + row + ": " + node);
+		assert row >= getMinimumRow(node);
 		add(node, row);
-		calculateBounds(row);
 	}
 
+	public void calculateBounds()
+	{
+		int y = 15;
+		for(int index = 0; index < rows.size(); index++)
+		{
+			y = getGraphRow(index).calculateBounds(y) + 20;
+		}
+	}
+	
 	/**
 	 * @param node
 	 * @param row
@@ -142,15 +138,12 @@ public class GraphRows
 	private void remove(Object node, int row)
 	{
 		boolean removed = true;
-		List nodes = (List) rows.get(row);
-		removed = nodes.remove(node);
+		removed = getGraphRow(row).remove(node);
 		if (removed)
 		{
-			calculateBounds(row);
 			for (int index = rows.size() - 1; index > 0; index--)
 			{
-				nodes = (List) rows.get(index);
-				if (nodes.isEmpty())
+				if (getGraphRow(index).isEmpty())
 				{
 					rows.remove(index);
 				}
@@ -159,17 +152,6 @@ public class GraphRows
 					break;
 				}
 			}
-
-			// Iterator inputs = getInputs(node);
-			// while(inputs.hasNext())
-			// {
-			// Object input = inputs.next();
-			// if(input instanceof VirtualNode)
-			// {
-			// removeVirtualNodes((VirtualNode)input, row + 1);
-			// }
-			// }
-	
 		}
 	}
 
@@ -180,7 +162,7 @@ public class GraphRows
 	{
 		for (int row = 0; row < rows.size(); row++)
 		{
-			remove(node, row);
+			getGraphRow(row).remove(node);
 		}
 	}
 
@@ -192,84 +174,6 @@ public class GraphRows
 		rows.clear();
 	}
 
-	/**
-	 * @param neighbour
-	 */
-	private void calculateBounds(int row)
-	{
-		// TODO Switch to cellviews?
-		List nodes = (List) rows.get(row);
-		int y = row * ROW_HEIGHT + GRAPH_EDGE;
-		int x = GRAPH_EDGE;
-		for (int index = 0; index < nodes.size(); index++)
-		{
-			Object node = nodes.get(index);
-			if (model.isEdge(node))
-			{
-				 Map attributes = model.getAttributes(node);
-				if (attributes != null)
-				{
-//					int lineMid = y + (ROW_HEIGHT / 2);
-//					x += X_SEPARATION;
-//					List points = GraphConstants.getPoints(attributes);
-//					Point2D point = new Point2D.Double(x, lineMid);
-//					for (int index2 = 0; index2 < points.size(); index2++)
-//					{
-//						Point2D existingPoint = (Point2D) points.get(index2);
-//						if (existingPoint.getY() > lineMid)
-//						{
-//							points.add(index2, point);
-//							break;
-//						}
-//					}
-//					x += X_SEPARATION;
-				}
-			}
-			else
-			{
-				if(GraphUtilities.isGroup(model, node))
-				{
-					for(int index2 = 0; index2 < model.getChildCount(node); index2++)
-					{
-						Object child = model.getChild(node, index2);
-						x += setPosition(child, x, y);
-					}
-				}
-				else
-				{
-					x += setPosition(node, x, y);
-				}
-			}
-		}
-	}
-
-	private double setPosition(Object node, int x, int y)
-	{
-		Map attributes = model.getAttributes(node);
-		if (attributes != null)
-		{
-			Rectangle2D bounds = GraphConstants.getBounds(attributes);
-			if (bounds != null)
-			{
-				if (x != bounds.getX() || y != bounds.getY())
-				{
-					bounds.setRect(x, y, bounds.getWidth(), bounds.getHeight());
-					CellView view = mapper.getMapping(node, false);					
-					view.update();
-					// TODO Easier way of updating edges?
-					Iterator edges = DefaultGraphModel.getEdges(model, new Object[] { node }).iterator();
-					while(edges.hasNext())
-					{
-						CellView edgeView = mapper.getMapping(edges.next(), false);
-						edgeView.update();
-					}
-				}
-				return bounds.getWidth() + X_SEPARATION;				
-			}
-		}
-		return 0;
-	}
-	
 	private int getCrossings()
 	{
 		int crossings = 0;
@@ -322,6 +226,11 @@ public class GraphRows
 		}
 	}
 
+	private GraphRow getGraphRow(int index)
+	{
+		return (GraphRow)rows.get(index);
+	}
+	
 	/**
 	 * @param edge
 	 */
@@ -331,11 +240,9 @@ public class GraphRows
 		Object target = GraphUtilities.getTargetNode(model, edge);
 		int sourceRow = getRow(source);
 		int targetRow = getRow(target);
-		//System.err.println("Adding non-tree edge " + sourceRow + "-" + targetRow + ": " + edge);		
 		for (int index = sourceRow + 1; index < targetRow; index++)
 		{
-			List nodes = (List) rows.get(index);
-			nodes.add(edge);
+			getGraphRow(index).add(edge);
 		}
 	}
 }

@@ -3,7 +3,9 @@
  */
 package org.embl.ebi.escience.scuflui.graph;
 
+import java.awt.Color;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -13,6 +15,7 @@ import java.util.Set;
 import org.jgraph.event.GraphModelEvent;
 import org.jgraph.graph.CellMapper;
 import org.jgraph.graph.DefaultGraphModel;
+import org.jgraph.graph.GraphConstants;
 import org.jgraph.graph.GraphModel;
 
 /**
@@ -20,7 +23,7 @@ import org.jgraph.graph.GraphModel;
  * graph to be able to update as the graph changes.
  * 
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover </a>
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
 public class LayoutManager
 {
@@ -28,14 +31,27 @@ public class LayoutManager
 	{
 		public boolean add(Object edge)
 		{
-			int length = getEdgeLength(edge);
+			int sourceRow = rows.getRow(GraphUtilities.getSourceNode(model, edge));
+			int targetRow = rows.getRow(GraphUtilities.getTargetNode(model, edge));
+			int length = targetRow - sourceRow;
 			for (int index = 0; index < size(); index++)
 			{
 				if (edge.equals(get(index)))
 				{
 					return true;
 				}
-				if (length < getEdgeLength(get(index)))
+				int currentSourceRow = rows.getRow(GraphUtilities.getSourceNode(model, get(index)));
+				int currentTargetRow = rows.getRow(GraphUtilities.getTargetNode(model, get(index)));
+				int currentLength = currentTargetRow - currentSourceRow;
+				if(length == currentLength)
+				{
+					if(sourceRow < currentSourceRow)
+					{
+						add(index, edge);
+						return true;
+					}
+				}
+				else if (length < currentLength)
 				{
 					add(index, edge);
 					return true;
@@ -47,9 +63,11 @@ public class LayoutManager
 
 	private static final String EDGE_PARENT = "tree edge parent";
 	private static final String TREE_SET = "tree set";
+	private static final String CUT_EDGE = "cut edge";
+	private static final String CUT_TIME_STAMP = "cut time stamp";
 
-	private GraphRows rows;
-	private GraphModel model;
+	GraphRows rows;
+	GraphModel model;
 
 	/**
 	 */
@@ -172,7 +190,7 @@ public class LayoutManager
 						if (edgeLength < 1)
 						{
 							treeAddEdge(source, target, edge);
-							System.err.println("New tree edge! Existing edges may be broken");
+							//System.err.println("New tree edge! Existing edges may be broken");
 						}
 						else if (edgeLength > 1)
 						{
@@ -181,35 +199,45 @@ public class LayoutManager
 							Iterator path = getPath(source, target).iterator();
 							int lowestCut = Integer.MAX_VALUE;
 							Object cutEdge = null;
+							String timeStamp = new Date().toString();
 							while (path.hasNext())
 							{
 								Object pathEdge = path.next();
-								int cut = getCutValue(pathEdge);
+								int cut = getCutValue(pathEdge, timeStamp);
 								if (cut < lowestCut)
 								{
 									lowestCut = cut;
 									cutEdge = pathEdge;
 								}
 							}
-							if (lowestCut < 0)
-							{
-								treeRemoveEdge(cutEdge, edge);
-							}
-							else
-							{
-								// Non-tree edge, so add as virtual node chain.
+//							if (lowestCut < 0)
+//							{
+//								treeRemoveEdge(cutEdge, edge);
+//							}
+//							else
+//							{
+//								// Non-tree edge, so add as virtual node chain.
 								rows.addEdge(edge);
-							}
+//							}
 						}
 					}
 				}
 			}
 		}
+		
+		rows.calculateBounds();
 	}
 
-	private int getCutValue(Object cutEdge)
+	private int getCutValue(Object cutEdge, String timeStamp)
 	{
 		// TODO Otimise this. Currently calculates the same edges repeatedly
+		Map attributes = model.getAttributes(cutEdge);
+		if(timeStamp.equals(attributes.get(CUT_TIME_STAMP)))
+		{
+			return ((Integer)attributes.get(CUT_EDGE)).intValue();
+		}
+		attributes.put(CUT_TIME_STAMP, timeStamp);
+		
 		Object parent = treeGetParent(cutEdge);
 		Object child = GraphUtilities.getSourceNode(model, cutEdge);
 		int direction = -1;
@@ -219,7 +247,7 @@ public class LayoutManager
 			direction = 1;
 		}
 
-		// String text = "";
+		String text = "";
 
 		Iterator edges = DefaultGraphModel.getEdges(model, new Object[] { child }).iterator();
 		int cutValue = 0;
@@ -229,30 +257,31 @@ public class LayoutManager
 			if (edge == cutEdge)
 			{
 				cutValue += 1;
-				// text += 1 + " ";
+				text += 1 + " ";
 			}
 			else
 			{
 				if (isTreeEdge(edge))
 				{
-					cutValue += getCutValue(edge);
-					// text += getCutValue(edge) + "[" + edge + "] ";
+					int value = getCutValue(edge, timeStamp);
+					cutValue += value;
+					text += value + "[" + edge + "] ";
 				}
 
 				if (child == GraphUtilities.getTargetNode(model, edge))
 				{
 					cutValue += direction;
-					// text += direction + " ";
+					text += direction + " ";
 				}
 				else
 				{
 					cutValue -= direction;
-					// text += -direction + " ";
+					text += -direction + " ";
 				}
 			}
 		}
-		// System.err.println("Cut for " + cutEdge + " = " + cutValue + " = " +
-		// text);
+		//System.err.println("Cut for " + cutEdge + " = " + cutValue + " = " + text);
+		attributes.put(CUT_EDGE, new Integer(cutValue));
 		return cutValue;
 	}
 
@@ -281,6 +310,13 @@ public class LayoutManager
 			tempNode = treeGetParent(parentEdge);
 		}
 
+		//Iterator pathIterator = path.iterator();
+		//String text = "Tree path between " + node1 + " & " + node2 + "= ";
+		//while(pathIterator.hasNext())
+		//{
+			//text = text + ", " + pathIterator.next();
+		//}
+		//System.err.println(text);
 		return path;
 	}
 
@@ -301,6 +337,7 @@ public class LayoutManager
 				int sourceMaxRow = rows.getMaximumRow(source);
 				if (targetMinRow - sourceMaxRow > 1)
 				{
+					//System.err.println("Rearrange & remove tree edge " + edge);
 					treeRemoveParent(edge);
 				}
 				else
@@ -415,12 +452,6 @@ public class LayoutManager
 		return joiningEdges;
 	}
 
-	int getEdgeLength(Object edge)
-	{
-		return rows.getRow(GraphUtilities.getTargetNode(model, edge))
-				- rows.getRow(GraphUtilities.getSourceNode(model, edge));
-	}
-
 	private Object treeGetParent(Object node)
 	{
 		Map attributes = model.getAttributes(node);
@@ -492,7 +523,7 @@ public class LayoutManager
 	 */
 	private void treeAddEdge(Object parent, Object child, Object edge)
 	{
-		// System.err.println("Adding tree edge " + edge);
+		//System.err.println("Adding tree edge " + edge);
 		treeMinimizeEdgeLength(edge, null);
 		Set tree1 = getTreeSet(parent);
 		Set tree2 = getTreeSet(child);
@@ -528,6 +559,7 @@ public class LayoutManager
 
 		Map attributes = model.getAttributes(edge);
 		attributes.put(EDGE_PARENT, parent);
+		GraphConstants.setLineColor(attributes, Color.RED);
 
 		treeSetParent(child, edge);
 		treeAddChildren(child);
@@ -535,7 +567,7 @@ public class LayoutManager
 
 	private void treeRemoveEdge(Object edge, Object replacement)
 	{
-		// System.err.println("Remove tree edge " + edge);
+		//System.err.println("Remove tree edge " + edge);
 		Object parent = treeGetParent(edge);
 		Object tailParent = GraphUtilities.getNeighbour(model, parent, edge);
 		if (!model.contains(tailParent))
@@ -608,6 +640,10 @@ public class LayoutManager
 	private void treeRemoveParent(Object edge)
 	{
 		Map attributes = model.getAttributes(edge);
+//		if(model.isEdge(edge))
+//		{
+//			GraphConstants.setLineColor(attributes, Color.BLACK);
+//		}
 		attributes.remove(EDGE_PARENT);
 	}
 

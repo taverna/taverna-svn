@@ -44,6 +44,7 @@ import org.jgraph.event.GraphModelEvent;
 import org.jgraph.event.GraphModelListener;
 import org.jgraph.graph.AttributeMap;
 import org.jgraph.graph.ConnectionSet;
+import org.jgraph.graph.DefaultEdge;
 import org.jgraph.graph.GraphConstants;
 import org.jgraph.graph.GraphModel;
 import org.jgraph.graph.ParentMap;
@@ -51,7 +52,7 @@ import org.jgraph.graph.ParentMap;
 /**
  * 
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover </a>
- * @version $Revision: 1.12 $
+ * @version $Revision: 1.13 $
  */
 public class ScuflGraphModel implements GraphModel, GraphModelListener, ScuflUIComponent
 {
