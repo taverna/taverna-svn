@@ -90,7 +90,7 @@ import org.jdom.output.XMLOutputter;
  * COMMENT DataThingConstructionPanel
  * 
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover </a>
- * @version $Revision: 1.18 $
+ * @version $Revision: 1.19 $
  */
 public class DataThingConstructionPanel extends JPanel implements ScuflUIComponent, ScuflModelEventListener
 {
@@ -460,33 +460,13 @@ public class DataThingConstructionPanel extends JPanel implements ScuflUICompone
 		{
 			ArrayList inputList = new ArrayList();
 			HashMap dataThingList = new HashMap();
-			//boolean areCollections = false;
 			for (int index = 0; index < getChildCount(); index++)
 			{
 				DataThingNode inputNode = (DataThingNode) getChildAt(index);
 				DataThing childThing = inputNode.getDataThing();
 				inputList.add(childThing.getDataObject());
 				dataThingList.put(childThing.getDataObject(), childThing);
-				/*if (childThing.getDataObject() instanceof Collection)
-				{
-					areCollections = true;
-				}*/
 			}
-			/*if (areCollections)
-			{
-				for (int index = 0; index < inputList.size(); index++)
-				{
-					Object dataObject = inputList.get(index);
-					if (!(dataObject instanceof Collection))
-					{
-						ArrayList collection = new ArrayList();
-						collection.add(dataObject);
-						inputList.set(index, collection);
-						Object obj = dataThingList.get(dataObject);
-						dataThingList.put(collection, obj);
-					}
-				}
-			}*/
 			DataThing result = DataThingFactory.bake(inputList);
 			// Make sure metadata is persisted
 			for (int index = 0; index < inputList.size(); index++)
@@ -822,10 +802,12 @@ public class DataThingConstructionPanel extends JPanel implements ScuflUICompone
 
 		public DataThing getDataThing()
 		{
-			if (thing == null)
+			DataThing newThing = DataThingFactory.bake(getUserObject()); 
+			if (thing != null)
 			{
-				thing = DataThingFactory.bake(getUserObject());
+				newThing.copyMetadataFrom(thing);
 			}
+			thing = newThing;
 			return thing;
 		}
 
