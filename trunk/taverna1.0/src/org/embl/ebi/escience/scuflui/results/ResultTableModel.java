@@ -270,7 +270,10 @@ public class ResultTableModel implements TableModel
 				{
 					ResultTableColumn newColumn = new ResultTableColumn();
 					newColumn.previousColumn = column;
-					column.nextColumn = newColumn;					
+					if(column != null)
+					{
+						column.nextColumn = newColumn;
+					}
 					column = newColumn;
 					depth = sources[index].getDepth();
 					columnList.add(column);					
