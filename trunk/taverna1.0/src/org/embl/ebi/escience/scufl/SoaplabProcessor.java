@@ -33,11 +33,14 @@ import java.lang.String;
 
 
 /**
- * A processor based on a Soaplab service. Currently
- * not fully implemented, but potentially this could
- * use the describe() call in Soaplab to build its
- * own ports and suchlike. This is the next thing to
- * do.
+ * A processor based on the Soaplab web service
+ * around the EMBOSS tools. This processor
+ * implementation will contact Soaplab in order
+ * to find the list of extant ports at creation
+ * time. It is therefore important when creating
+ * an instance of this class that the creating
+ * thread should be able to make an HTTP connection
+ * to the supplied endpoint.
  * @author Tom Oinn
  */
 public class SoaplabProcessor extends Processor implements java.io.Serializable {
