@@ -13,7 +13,7 @@ import java.util.TreeSet;
 
 /**
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover </a>
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  */
 public abstract class GraphSpanningTree
 {
@@ -189,7 +189,7 @@ public abstract class GraphSpanningTree
 		return source;
 	}
 
-	protected abstract Comparator getComparator();
+	protected abstract Comparator getComparator(Object edge);
 
 	/**
 	 * Get all non-tree edges connecting a node in the head set to a node in the
@@ -199,9 +199,9 @@ public abstract class GraphSpanningTree
 	 * @param tree2
 	 * @return list of edges connecting the head and tail sets
 	 */
-	private Collection getConnectingEdges(Set tree1, Set tree2)
+	private Collection getReplacementEdges(Object replaceEdge, Set tree1, Set tree2)
 	{
-		Collection joiningEdges = new TreeSet(getComparator());
+		Collection joiningEdges = new TreeSet(getComparator(replaceEdge));
 		Iterator nodes;
 		if (tree1.size() < tree2.size())
 		{
@@ -225,7 +225,6 @@ public abstract class GraphSpanningTree
 					{
 						if (tree2.contains(target))
 						{
-							// System.err.println("Connecting edge " + edge);
 							joiningEdges.add(edge);
 						}
 					}
@@ -233,15 +232,12 @@ public abstract class GraphSpanningTree
 					{
 						if (tree1.contains(target))
 						{
-							// System.err.println("Connecting edge " + edge);
 							joiningEdges.add(edge);
 						}
 					}
 				}
 			}
 		}
-		// System.err.println("Edges between " + tree1 + " and " +tree2 + ": "
-		// +joiningEdges);
 		return joiningEdges;
 	}
 
@@ -252,7 +248,7 @@ public abstract class GraphSpanningTree
 	 */
 	protected void addTreeEdge(Object parent, Object child, Object edge)
 	{
-		// System.err.println(this + ": Add tree edge " + edge);
+		System.err.println(this + ": Add tree edge " + edge);
 		Set tree1 = getTreeSet(parent);
 		Set tree2 = getTreeSet(child);
 		if (tree1 == null)
@@ -398,7 +394,7 @@ public abstract class GraphSpanningTree
 			direction = -1;
 		}
 
-		String text = "";
+		// String text = "";
 
 		Iterator edges = getEdges(child);
 		int cutValue = 0;
@@ -427,14 +423,19 @@ public abstract class GraphSpanningTree
 					{
 						value += getCutValue(edge, timeStamp) * -direction;
 					}
-					text += "[" + edge + "]";
+					// text += "[" + edge + "]";
 				}
 			}
 			cutValue += value;
-			text += value + " ";
+			// text += value + " ";
 		}
-		System.err.println(this + ": Cut " + cutValue + " for " + treeEdge + " = " + text
-				+ ", direction = " + direction + ", child = " + child);
+		if (cutValue <= 0)
+		{
+			System.err.println(this + ": Cut " + cutValue + " for " + treeEdge);
+		}
+		// System.err.println(this + ": Cut " + cutValue + " for " + treeEdge +
+		// " = " + text
+		// + ", direction = " + direction + ", child = " + child);
 		return cutValue;
 	}
 
@@ -443,35 +444,29 @@ public abstract class GraphSpanningTree
 	 */
 	protected void optimiseTree(Collection treeEdges)
 	{
-		while (true)
+		// TODO Search all tree edges!
+		boolean hasCutEdges = true;
+		while (hasCutEdges)
 		{
-			Object cutEdge = null;
-			int lowestCut = Integer.MAX_VALUE;
-			String timeStamp = "" + System.currentTimeMillis() + Math.random();
+			Collection newEdges = new ArrayList(); 
+			hasCutEdges = false;
 			Iterator iterator = treeEdges.iterator();
+			String timeStamp = "" + System.currentTimeMillis() + Math.random();							
 			while (iterator.hasNext())
 			{
 				Object edge = iterator.next();
 				int cut = getCutValue(edge, timeStamp);
-				if (cut < lowestCut)
+				if (cut < 0)
 				{
-					lowestCut = cut;
-					cutEdge = edge;
+					Object replacedEdge = replaceTreeEdge(edge);
+					assert replacedEdge != null : "Failed to replace " + edge;
+					newEdges.add(replacedEdge);
+					hasCutEdges = true;
+					iterator.remove();					
+					timeStamp = "" + System.currentTimeMillis() + Math.random();					
 				}
 			}
-			if (lowestCut < 0)
-			{
-				treeEdges.remove(cutEdge);
-				Object replacedEdge = replaceTreeEdge(cutEdge);
-				if (replacedEdge != null)
-				{
-					treeEdges.add(replacedEdge);
-				}
-			}
-			else
-			{
-				break;
-			}
+			treeEdges.addAll(newEdges);
 		}
 	}
 
@@ -493,7 +488,7 @@ public abstract class GraphSpanningTree
 		headSet.addAll(getTreeSet(parent));
 		headSet.removeAll(tailSet);
 		// Get all non-tree edges connecting the head and tail of this edge
-		Collection joiningEdges = getConnectingEdges(headSet, tailSet);
+		Collection joiningEdges = getReplacementEdges(edge, headSet, tailSet);
 		removeTreeEdge(edge);
 		removeTreeEdge(tailParent);
 		if (joiningEdges.isEmpty())
@@ -516,7 +511,8 @@ public abstract class GraphSpanningTree
 			joinParent = child;
 			child = source;
 		}
-		System.err.println(this + ": Replace tree edge " + edge + " with " + replacement);
+		System.err.println(this + ": Replace tree edge " + edge + " with " + replacement
+				+ " out of " + joiningEdges);
 		addTreeEdge(joinParent, child, replacement);
 		return replacement;
 	}

@@ -23,7 +23,7 @@ import org.jgraph.graph.GraphModel;
  * graph to be able to update as the graph changes.
  * 
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover </a>
- * @version $Revision: 1.5 $
+ * @version $Revision: 1.6 $
  */
 public class RowLayout extends ModelSpanningTree
 {
@@ -52,7 +52,7 @@ public class RowLayout extends ModelSpanningTree
 			return;
 		}
 
-		Collection edges = new TreeSet(getComparator());
+		Collection edges = new TreeSet(getComparator(null));
 
 		if (change.getRemoved() != null)
 		{
@@ -99,7 +99,6 @@ public class RowLayout extends ModelSpanningTree
 		optimiseTree(treeEdges);
 
 		// TODO Reduce crossovers here!
-		
 		
 		treeEdges = positionLayout.createInitialTree(positionLayout.edges.iterator());
 		positionLayout.edges.clear();
@@ -386,7 +385,7 @@ public class RowLayout extends ModelSpanningTree
 		}
 	}
 
-	protected Comparator getComparator()
+	protected Comparator getComparator(Object edge)
 	{
 		return new Comparator()
 		{

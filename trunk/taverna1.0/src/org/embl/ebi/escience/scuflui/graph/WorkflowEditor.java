@@ -141,7 +141,7 @@ public class WorkflowEditor extends JGraph implements ScuflUIComponent
 						}
 						else if (obj instanceof VirtualNode)
 						{
-							return ((VirtualNode)obj).getPosition(); 
+							return ((VirtualNode) obj).getPosition();
 						}
 						else if (obj instanceof CellView)
 						{
@@ -156,7 +156,7 @@ public class WorkflowEditor extends JGraph implements ScuflUIComponent
 					}
 				};
 			}
-			
+
 			protected EdgeView createEdgeView(Object cell)
 			{
 				return new EdgeView(cell)
@@ -170,7 +170,7 @@ public class WorkflowEditor extends JGraph implements ScuflUIComponent
 						}
 						else if (obj instanceof VirtualNode)
 						{
-							return ((VirtualNode)obj).getPosition(); 
+							return ((VirtualNode) obj).getPosition();
 						}
 						else if (obj instanceof CellView)
 						{
@@ -202,13 +202,12 @@ public class WorkflowEditor extends JGraph implements ScuflUIComponent
 					{
 						Rectangle2D r = getBounds(getChildViews());
 						Insets insets = GraphConstants.getBorder(getAllAttributes())
-								.getBorderInsets(new JLabel());
+								.getBorderInsets(WorkflowEditor.this);
 						r.setFrame(r.getX() - insets.left, r.getY() - insets.top, r.getWidth()
 								+ insets.left + insets.right, r.getHeight() + insets.top
 								+ insets.bottom);
 						groupBounds = r;
 					}
-
 				};
 			}
 		});

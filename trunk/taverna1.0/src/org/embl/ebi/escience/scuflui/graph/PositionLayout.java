@@ -15,13 +15,14 @@ import java.util.Map;
 import java.util.TreeSet;
 
 import org.jgraph.graph.CellMapper;
+import org.jgraph.graph.CellView;
 import org.jgraph.graph.DefaultGraphModel;
 import org.jgraph.graph.GraphConstants;
 import org.jgraph.graph.GraphModel;
 
 /**
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover </a>
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  */
 public class PositionLayout extends ModelSpanningTree
 {
@@ -142,7 +143,7 @@ public class PositionLayout extends ModelSpanningTree
 
 	protected Collection edges;
 
-	// private CellMapper mapper;
+	private CellMapper mapper;
 
 	/**
 	 * @param model
@@ -151,10 +152,9 @@ public class PositionLayout extends ModelSpanningTree
 	public PositionLayout(GraphModel model, CellMapper mapper)
 	{
 		super(model);
-		// this.mapper = mapper;
+		this.mapper = mapper;
 		edges = new TreeSet(new Comparator()
 		{
-
 			public int compare(Object o1, Object o2)
 			{
 				if (o1 == o2)
@@ -163,7 +163,15 @@ public class PositionLayout extends ModelSpanningTree
 				}
 
 				int edgeWeight1 = getEdgeWeight(o1);
+				if (edgeWeight1 == 0)
+				{
+					edgeWeight1 = 16;
+				}
 				int edgeWeight2 = getEdgeWeight(o2);
+				if (edgeWeight2 == 0)
+				{
+					edgeWeight2 = 16;
+				}
 
 				if (edgeWeight1 == edgeWeight2)
 				{
@@ -176,7 +184,7 @@ public class PositionLayout extends ModelSpanningTree
 					}
 					return targetRow1 - targetRow2;
 				}
-				return edgeWeight1 - edgeWeight2;
+				return edgeWeight2 - edgeWeight1;
 			}
 		});
 	}
@@ -269,8 +277,9 @@ public class PositionLayout extends ModelSpanningTree
 	 */
 	protected void setRank(Object node, int x)
 	{
-		assert x >= getMinimumRank(node) : this + ": Attempted to set " + node + " to " + x;
-		//System.err.println("Set node " + node + " to " + x);
+		// assert x >= getMinimumRank(node) : this + ": Attempted to set " +
+		// node + " to " + x;
+		// System.err.println("Set node " + node + " to " + x);
 		if (node instanceof VirtualNode)
 		{
 			Point2D point = ((VirtualNode) node).getPosition();
@@ -278,7 +287,8 @@ public class PositionLayout extends ModelSpanningTree
 		}
 		else if (GraphUtilities.isGroup(model, node))
 		{
-			int newX = x;
+			CellView view = mapper.getMapping(node, false);
+			int newX = (int) (x - (view.getBounds().getWidth() / 2));
 			for (int index = 0; index < model.getChildCount(node); index++)
 			{
 				// TODO Warning!
@@ -289,6 +299,7 @@ public class PositionLayout extends ModelSpanningTree
 				rect.setFrame(newX, rect.getY(), rect.getWidth(), rect.getHeight());
 				newX += rect.getWidth() + 15;
 			}
+			view.update();
 		}
 		else
 		{
@@ -306,26 +317,10 @@ public class PositionLayout extends ModelSpanningTree
 	 */
 	protected int getRank(Object node)
 	{
-		if (node instanceof VirtualNode)
+		Rectangle2D rect = getBounds(node);
+		if (rect != null && rect.getX() >= X_SEPARATION)
 		{
-			Point2D point = ((VirtualNode) node).getPosition();
-			int x = (int) point.getX();
-			if (x >= X_SEPARATION)
-			{
-				return x;
-			}
-		}
-		else
-		{
-			Map attributes = model.getAttributes(node);
-			if (attributes != null)
-			{
-				Rectangle2D rect = GraphConstants.getBounds(attributes);
-				if (rect != null && rect.getX() >= X_SEPARATION)
-				{
-					return (int) rect.getCenterX();
-				}
-			}
+			return (int) rect.getCenterX();
 		}
 		int rank = getMinimumRank(node);
 		setRank(node, rank);
@@ -345,7 +340,7 @@ public class PositionLayout extends ModelSpanningTree
 			Object leftNode = leftEdge.getSource();
 			return getMinimumRank(leftNode) + getMinimumEdgeLength(leftEdge);
 		}
-		return (getSize(node) / 2) + X_SEPARATION;
+		return (int) ((getBounds(node).getWidth() / 2) + X_SEPARATION);
 	}
 
 	/*
@@ -385,7 +380,8 @@ public class PositionLayout extends ModelSpanningTree
 			{
 				Object leftNode = ((Edge) edge).getSource();
 				Object rightNode = ((Edge) edge).getTarget();
-				return ((getSize(leftNode) + getSize(rightNode)) / 2) + X_SEPARATION;
+				return (int) ((getBounds(leftNode).getWidth() + getBounds(rightNode).getWidth()) / 2)
+						+ X_SEPARATION;
 			}
 		}
 		return 0;
@@ -402,7 +398,7 @@ public class PositionLayout extends ModelSpanningTree
 		{
 			for (int index = 0; index < model.getChildCount(node); index++)
 			{
-				Map attributes = model.getAttributes(model.getChild(node, index));
+				Map attributes = getAttributes(model.getChild(node, index));
 				assert attributes != null : model.getChild(node, index);
 				Rectangle2D rect = GraphConstants.getBounds(attributes);
 				assert rect != null : model.getChild(node, index);
@@ -411,7 +407,7 @@ public class PositionLayout extends ModelSpanningTree
 		}
 		else
 		{
-			Map attributes = model.getAttributes(node);
+			Map attributes = getAttributes(node);
 			assert attributes != null : node;
 			Rectangle2D rect = GraphConstants.getBounds(attributes);
 			assert rect != null : node;
@@ -501,20 +497,14 @@ public class PositionLayout extends ModelSpanningTree
 		}
 	}
 
-	private int getSize(Object node)
+	private Rectangle2D getBounds(Object node)
 	{
 		if (node instanceof VirtualNode)
 		{
-			return 0;
+			return ((VirtualNode) node).getBounds();
 		}
-		// TODO Get bounding box for inputs/outputs
-		Map attributes = getAttributes(node);
-		Rectangle2D rect = GraphConstants.getBounds(attributes);
-		if (rect != null)
-		{
-			return (int) rect.getWidth();
-		}
-		return 0;
+		CellView view = mapper.getMapping(node, false);
+		return view.getBounds();
 	}
 
 	private Edge getPreviousEdgeSegment(Object previous, Object edge)
@@ -556,34 +546,62 @@ public class PositionLayout extends ModelSpanningTree
 		return "Position Tree";
 	}
 
-	protected Comparator getComparator()
+	protected Comparator getComparator(final Object edge)
 	{
 		return new Comparator()
 		{
+			// int edgeWeight = getEdgeWeight(edge);
+			// int targetRow = getRank(getTarget(edge));
 
-			public int compare(Object o1, Object o2)
+			public int compare(Object edge1, Object edge2)
 			{
-				if (o1 == o2)
+				if (edge1 == edge2)
 				{
 					return 0;
 				}
+				// int edgeWeight1 = getEdgeWeight(edge1);
+				// int edgeWeight2 = getEdgeWeight(edge2);
 
-				int edgeWeight1 = getEdgeWeight(o1);
-				int edgeWeight2 = getEdgeWeight(o2);
+				// if (edgeWeight1 == edgeWeight2)
+				// {
 
-				if (edgeWeight1 == edgeWeight2)
+				int sourceRow1 = getRank(getSource(edge1));
+				int targetRow1 = getRank(getTarget(edge1));
+				int sourceRow2 = getRank(getSource(edge2));
+				int targetRow2 = getRank(getTarget(edge2));
+
+				int length1 = targetRow1 - sourceRow1;
+				int length2 = targetRow2 - sourceRow2;
+				if (length1 == length2)
 				{
-					int targetRow1 = getRank(getTarget(o1));
-					int targetRow2 = getRank(getTarget(o2));
-
 					if (targetRow1 == targetRow2)
 					{
-						return o1.toString().compareToIgnoreCase(o2.toString());
+						return edge1.toString().compareTo(edge2.toString());
 					}
+
+					// if(targetRow1 < targetRow)
+					// {
+					// targetRow1 += targetRow;
+					// }
+					// if(targetRow2 < targetRow)
+					// {
+					// targetRow2 += targetRow;
+					// }
 					return targetRow1 - targetRow2;
 				}
-				return edgeWeight2 - edgeWeight1;
+				return length2 - length1;
 			}
+			//
+			// if(edgeWeight1 > edgeWeight)
+			// {
+			// edgeWeight1 -= edgeWeight;
+			// }
+			// if(edgeWeight2 > edgeWeight)
+			// {
+			// edgeWeight2 -= edgeWeight;
+			// }
+			// return edgeWeight2 - edgeWeight1;
+			// }
 		};
 	}
 }
