@@ -84,6 +84,15 @@ public class BiomartTask implements ProcessorTaskWorker {
 		results.put(outputNames[i], new DataThing(new ArrayList()));
 	    }
 	    final BiomartProcessor pb = this.processor;
+	    final Map fieldToOutput = new HashMap();
+	    Attribute[] attributes = query.getAttributes();
+	    for (int i = 0; i < attributes.length; i++) {
+		if (attributes[i] instanceof FieldAttribute) {
+		    String portName = ((FieldAttribute)attributes[i]).getUniqueName();
+		    String fieldName = ((FieldAttribute)attributes[i]).getField();
+		    fieldToOutput.put(fieldName, portName);
+		}
+	    }
 	    OutputStream os = null;
 	    if (query.getSequenceDescription() == null) {
 		// No query so can use sensible processing
@@ -147,13 +156,17 @@ public class BiomartTask implements ProcessorTaskWorker {
 				else {
 				    // Go from item number length-(1+outputNames.length)
 				    // up to length-2
-				    for (int j = items.length - (1 + outputNames.length);
+				    for (int j = 0;
 					 j < items.length - 2;
 					 j++) {
 					String[] parts = items[j].split("=");
 					if (parts.length == 2) {
-					    if (parts[0].equals(outputName)) {
-						result = parts[1];
+					    String fieldName = parts[0];
+					    String value = parts[1];
+					    String portName = (String)fieldToOutput.get(fieldName);
+					    if (portName != null &&
+						portName.equals(outputName)) {
+						result = value;
 					    }
 					}
 				    }
