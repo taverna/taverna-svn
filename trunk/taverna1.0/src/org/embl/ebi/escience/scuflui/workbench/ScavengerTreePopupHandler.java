@@ -188,10 +188,7 @@ public class ScavengerTreePopupHandler extends MouseAdapter {
 		String choice = (String)scuflObject;
 		if (choice.equals("Available Processors")) {
 		    JPopupMenu menu = new JPopupMenu();
-		    JMenuItem title = new JMenuItem("Create new scavenger");
-		    title.setEnabled(false);
-		    menu.add(title);
-		    menu.addSeparator();
+		    menu.setLabel("Create new scavenger");
 		    // Iterate over the scavenger creator list from the ProcessorHelper class
 		    for (Iterator i = ProcessorHelper.getScavengerToTagNames().keySet().iterator(); i.hasNext(); ) {
 			String scavengerClassName = (String)i.next();
@@ -250,8 +247,17 @@ public class ScavengerTreePopupHandler extends MouseAdapter {
 				}
 			    }
 			});
+		    menu.addSeparator();
+		    JMenuItem showAllNodes = new JMenuItem("Expand all");
+		    menu.add(showAllNodes);
+		    showAllNodes.addActionListener(new ActionListener() {
+			    public void actionPerformed(ActionEvent ae) {
+				ScavengerTreePopupHandler.this.scavenger.setAllNodesExpanded();
+			    }
+			});
 		    
 		    menu.show(scavenger, e.getX(), e.getY());
+		    
 		}
 		else {
 		    // Wasn't the 'available processors' link, so give the option to remove it

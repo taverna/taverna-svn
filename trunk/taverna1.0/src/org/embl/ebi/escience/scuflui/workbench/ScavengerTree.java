@@ -21,6 +21,7 @@ import org.embl.ebi.escience.scuflworkers.talisman.TalismanProcessor;
 import org.embl.ebi.escience.scuflworkers.talisman.TalismanScavenger;
 import org.embl.ebi.escience.scuflworkers.wsdl.WSDLBasedProcessor;
 import org.embl.ebi.escience.scuflworkers.wsdl.WSDLBasedScavenger;
+import org.embl.ebi.escience.scuflworkers.biomoby.*;
 
 // Utility Imports
 import java.util.ArrayList;
@@ -28,6 +29,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
+import java.util.HashSet;
 import java.util.Enumeration;
 
 import org.embl.ebi.escience.scuflui.workbench.Scavenger;
@@ -121,10 +123,12 @@ public class ScavengerTree extends JTree
 	    // Add the default soaplab installation if this is defined
 	    new DefaultScavengerLoaderThread(this);
 	}
-	expandPath(new TreePath(this.root));
+	else {
+	    expandPath(new TreePath(this.root));
+	}
     }
 
-    private void setAllNodesExpanded() {
+    public void setAllNodesExpanded() {
 	synchronized(this.getModel()) {
 	    expandAll(this, new TreePath(this.root), true);
 	}
@@ -186,6 +190,19 @@ public class ScavengerTree extends JTree
 		    }
 		}
 	    }
+	    String biomobyDefaultURLList = System.getProperty("taverna.defaultbiomoby");
+	    if (biomobyDefaultURLList != null) {
+		String[] urls = biomobyDefaultURLList.split("\\s*,\\s*");
+		for (int i = 0; i < urls.length; i++) {
+		    try {
+			System.out.println("Creating biomoby scavenger : '"+urls[i]+"'");
+			scavengerTree.addScavenger(new BiomobyScavenger(urls[i]));
+		    }
+		    catch (ScavengerCreationException sce) {
+			sce.printStackTrace();
+		    }
+		}
+	    }
 	    scavengerTree.setAllNodesExpanded();
 	}
     }
@@ -202,6 +219,7 @@ public class ScavengerTree extends JTree
 	    Map wsdlLocations = new HashMap();
 	    Map talismanLocations = new HashMap();
 	    Map soaplabInstallations = new HashMap();
+	    Set biomobyCentralLocations = new HashSet();
 	    Processor[] p = model.getProcessors();
 	    for (int i = 0; i < p.length; i++) {
 		// If the processor is a WSDLBasedProcessor then get
@@ -223,6 +241,10 @@ public class ScavengerTree extends JTree
 		    }
 		    soaplabInstallations.put(base,null);
 		}
+		else if (p[i] instanceof BiomobyProcessor) {
+		    String mobyCentralLocation = ((BiomobyProcessor)p[i]).getMobyEndpoint();
+		    biomobyCentralLocations.add(mobyCentralLocation);
+		}
 	    }
 	    // Now iterate over all the wsdl locations found and
 	    // create new WSDL scavengers, adding them to the 
@@ -238,6 +260,10 @@ public class ScavengerTree extends JTree
 	    for (Iterator i = soaplabInstallations.keySet().iterator(); i.hasNext(); ) {
 		String base = (String)i.next();
 		addScavenger(new SoaplabScavenger(base));
+	    }
+	    for (Iterator i = biomobyCentralLocations.iterator(); i.hasNext();) {
+		String mobyCentralLocation = (String)i.next();
+		addScavenger(new BiomobyScavenger(mobyCentralLocation));
 	    }
 	}
     }
