@@ -25,8 +25,8 @@
 //      Dependencies        :
 //
 //      Last commit info    :   $Author: mereden $
-//                              $Date: 2003-04-25 14:57:07 $
-//                              $Revision: 1.5 $
+//                              $Date: 2003-04-27 21:26:03 $
+//                              $Revision: 1.6 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 
@@ -34,6 +34,7 @@ package uk.ac.soton.itinnovation.taverna.enactor.broker;
 
 import org.apache.log4j.Logger;
 import org.embl.ebi.escience.scufl.ScuflModel;
+import org.embl.ebi.escience.scufl.*;
 import org.embl.ebi.escience.scufl.parser.XScuflParser;
 import uk.ac.soton.itinnovation.mygrid.workflow.enactor.broker.WorkflowSubmitInvalidException;
 import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.broker.FlowBroker;
@@ -110,7 +111,10 @@ public class TavernaFlowBroker implements FlowBroker {
 					Document doc = sb.build(stream);
                     //obtain a scuflmodel
 					model = new ScuflModel();
-					XScuflParser.populate(doc,model,null);                    
+					//model.addListener(new ScuflModelEventPrinter(null)); 
+					XScuflParser.populate(doc,model,null);
+					logger.debug("Loaded ScuflModel from xml file");
+					
                 } catch(org.embl.ebi.escience.scufl.parser.XScuflFormatException ex) {
 					logger.error(ex);
 					throw new WorkflowCommandException(ex.getMessage());

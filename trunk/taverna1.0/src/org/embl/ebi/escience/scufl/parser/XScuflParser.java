@@ -224,7 +224,7 @@ public class XScuflParser {
 	    Element talismanProcessor = processorNode.getChild("talisman",namespace);
 	    if (talismanProcessor != null && !foundSpec) {
 		foundSpec = true;
-		String tscriptURL = wsdlProcessor.getChild("tscript",namespace).getTextTrim();
+		String tscriptURL = talismanProcessor.getChild("tscript",namespace).getTextTrim();
 		model.addProcessor(new TalismanProcessor(model, name, tscriptURL));
 	    }
 	    

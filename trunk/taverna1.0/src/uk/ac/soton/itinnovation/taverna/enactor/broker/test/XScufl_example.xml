@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <s:scufl xmlns:s="http://org.embl.ebi.escience/xscufl/0.1alpha" version="0.1">
+  
   <s:processor name="seqret">
     <s:soaplabwsdl>http://industry.ebi.ac.uk/soap/soaplab/edit::seqret</s:soaplabwsdl>
   </s:processor>
@@ -17,6 +18,7 @@
     <s:input>transeq:sequence_direct_data</s:input>
     <s:output>getorf:outseq</s:output>
   </s:link>
+  
   <s:processor name="seqret2">
     <s:soaplabwsdl>http://industry.ebi.ac.uk/soap/soaplab/edit::seqret</s:soaplabwsdl>
   </s:processor>

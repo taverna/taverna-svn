@@ -51,6 +51,7 @@ public class TalismanProcessor extends Processor implements java.io.Serializable
     // loaded from to create the processor. Effectively the
     // script defines the service.
     private String tscriptURL = null;
+    private URL tscriptURLObject = null;
     // Hash of input port names to Talisman node names, the
     // key is the port name, so i.e. 'input1=field:foo'
     private Map inputs = null;
@@ -70,6 +71,13 @@ public class TalismanProcessor extends Processor implements java.io.Serializable
      */
     public String getTScriptURL() {
 	return this.tscriptURL;
+    }
+    /**
+     * Return the URL of the talisman script used
+     * to build this processor (URL object)
+     */
+    public URL getTScriptURLObject() {
+	return this.tscriptURLObject;
     }
     
     /**
@@ -122,6 +130,7 @@ public class TalismanProcessor extends Processor implements java.io.Serializable
 	// </tscript>
 	try {
 	    URL scriptLocation = new URL(tscript);
+	    this.tscriptURLObject = scriptLocation;
 	    SAXBuilder builder = new SAXBuilder(false);
 	    Document tscriptDocument = builder.build(scriptLocation.openStream());
 	    Element tscriptElement = tscriptDocument.getRootElement();

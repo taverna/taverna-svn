@@ -25,8 +25,8 @@
 //      Dependencies        :
 //
 //      Last commit info    :   $Author: mereden $
-//                              $Date: 2003-04-25 14:57:10 $
-//                              $Revision: 1.5 $
+//                              $Date: 2003-04-27 21:26:03 $
+//                              $Revision: 1.6 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 
@@ -35,7 +35,7 @@ package uk.ac.soton.itinnovation.taverna.enactor.entities;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import org.apache.log4j.Logger;
-import org.embl.ebi.escience.scufl.Processor;
+import org.embl.ebi.escience.scufl.*;
 
 import uk.ac.soton.itinnovation.taverna.enactor.entities.ProcessorTask;
 import uk.ac.soton.itinnovation.taverna.enactor.entities.UnsupportedTavernaProcessorException;
@@ -66,15 +66,25 @@ public class TavernaTaskFactory {
         ProcessorTask pTask = null;
 		//obtain the class of this taskID, this could be shifted to configuration later
 		String taskClassName = null;
-		if(taskID.startsWith("http://industry.ebi.ac.uk/soap/soaplab/")) 
-			taskClassName = "uk.ac.soton.itinnovation.taverna.enactor.entities.SoaplabTask";
+
+		// next section was : 
+		//   if (taskID.startsWith("http://industry.ebi.ac.uk/soap/soaplab/"))
+		// which will only succeed on EBI soaplab installations - in this case
+		// the taskID is derived from the external form of the soaplab endpoint
+		// url.
+		// tmo@ebi.ac.uk, 27th april 2003
+		if (processor instanceof SoaplabProcessor) {
+		    taskClassName = "uk.ac.soton.itinnovation.taverna.enactor.entities.SoaplabTask";
+		}
+		else if (processor instanceof TalismanProcessor) {
+		    taskClassName = "uk.ac.soton.itinnovation.taverna.enactor.entities.TalismanTask";
+		}
 		else {
-			logger.error("Don't know how to deal with processor with name '" + taskID + "'");
-			throw new UnsupportedTavernaProcessorException("Don't know how to deal with processor with name '" + taskID + "'");
+		    logger.error("Don't know how to deal with processor with name '" + taskID + "'");
+		    throw new UnsupportedTavernaProcessorException("Don't know how to deal with processor with name '" + taskID + "'");
 		}
 		try {
-            
-			Class processorDefn = null;
+            		Class processorDefn = null;
 			Class[] argsClass = new Class[] {String.class,Processor.class};
 			Object[] args = new Object[] {id,processor};
 			Constructor argsConstructor;

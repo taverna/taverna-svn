@@ -64,7 +64,8 @@ public class TalismanTask extends ProcessorTask {
 	    GraphNode[] outputs = getChildren();
 	    for (int i = 0; i < outputs.length; i++) {
 		PortTask pt = (PortTask)outputs[i];
-		outputMap.put(pt.getScuflPort().getName(),pt);
+		// convert all port names to lower case, eases matching later on
+		outputMap.put(pt.getScuflPort().getName().toLowerCase(),pt);
 	    }
 	    
 	    // Get the parameters for this invocation
@@ -89,8 +90,9 @@ public class TalismanTask extends ProcessorTask {
 		String talismanName = (String)talismanInputMap.get(portName);
 		// portValue is the string value of the port, and it had better be
 		// a string or there will be much bitching!
-		String portValue = (String)inputMap.get(portName);
+		String portValue = (String)inputMap.get(portName.toLowerCase());
 		// Set the value in the talisman session
+		logger.debug("Setting value : "+talismanName+" to "+portValue);
 		teaTray.setStringValue(sessionID, talismanName, portValue);
 	    }
 	    
@@ -106,7 +108,7 @@ public class TalismanTask extends ProcessorTask {
 		// talismanValue is the contents of the field defined in talismanName
 		String talismanValue = teaTray.getStringValue(sessionID, talismanName);
 		// Write the value to the port, is this the right way to do it?
-		PortTask pt = (PortTask)outputMap.get(portName);
+		PortTask pt = (PortTask)outputMap.get(portName.toLowerCase());
 		pt.setData(new Part(-1, portName, "string", talismanValue));
 	    }
 

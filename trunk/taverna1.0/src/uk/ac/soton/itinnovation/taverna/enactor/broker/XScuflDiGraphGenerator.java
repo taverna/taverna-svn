@@ -25,8 +25,8 @@
 //      Dependencies        :
 //
 //      Last commit info    :   $Author: mereden $
-//                              $Date: 2003-04-25 14:57:09 $
-//                              $Revision: 1.5 $
+//                              $Date: 2003-04-27 21:26:03 $
+//                              $Revision: 1.6 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 
@@ -89,24 +89,36 @@ public class XScuflDiGraphGenerator {
 			List processorTasks = new ArrayList();
 
 			//create tasks for each processor
+			// changed by tmo - restructured and added talisman task
 			Processor[] processors = model.getProcessors();
-			ArrayList soapLabProcessors = new ArrayList();
 			for(int i=0;i<processors.length;i++){
-				//at moment only support SoapLabProcessors
-				if(!(processors[i] instanceof SoaplabProcessor))
-					throw new XScuflInvalidException("Processor '" + processors[i].getName() + "' is not a Soaplab processor. Only support Soaplab processors at present.");
-				//actual custom task selected depends on the wsdl identifier
-				//note cannot support Java API version, although is this simply a custom task?
-				SoaplabProcessor sProcessor = (SoaplabProcessor) processors[i];
-				soapLabProcessors.add(sProcessor);
-				//Note following will make a network connection.
-				URL wsdlURI = sProcessor.getEndpoint();
-				String serviceID = wsdlURI.toExternalForm();
-				String id = flowID + ":Processor:" + sProcessor.getName();
-				ProcessorTask serviceTask = TavernaTaskFactory.getConcreteTavernaTask(id,serviceID,sProcessor);
-				addToListIfNotThere(tasks,serviceTask);
-				processorTasks.add(serviceTask);
-				//for each task generate the necessary input and output port nodes				
+			    Processor theProcessor = processors[i];
+			    String id = flowID + ":Processor:" + theProcessor.getName();
+			    String serviceID = null;
+			    if (theProcessor instanceof SoaplabProcessor) {
+				// A soaplab service is defined by the URL of its soaplab endpoint
+				serviceID = ((SoaplabProcessor)theProcessor).getEndpoint().toExternalForm();
+			    }
+			    else if (theProcessor instanceof TalismanProcessor) {
+				// A talisman service is defined by the URL of the script file
+				serviceID = ((TalismanProcessor)theProcessor).getTScriptURLObject().toExternalForm();
+			    }
+			    else {
+				throw new XScuflInvalidException("Processor '"+theProcessor.getName()+"' "+
+								 "cannot be understood by this version of the "+
+								 "Taverna enactor.");
+			    }
+			    // Create the actual task to do the work of this processor.
+			    ProcessorTask serviceTask = TavernaTaskFactory.getConcreteTavernaTask(id,serviceID,theProcessor);
+			    addToListIfNotThere(tasks,serviceTask);
+			    processorTasks.add(serviceTask);
+			    
+			    // for each task generate the necessary input and output port nodes
+			    // djm
+			    //
+			    // Specifically, _only_ the necessary ones? - it seems to only create
+			    // port tasks for ports in the processor that are bound or external, 
+			    // which makes sense I guess. tmo@ebi.ac.uk, 27th april 2003
 			}
 
 			//dataconstraints associate nodes based on linking ports between processors
