@@ -3,3 +3,4 @@ org.embl.ebi.escience.scuflui.ScuflDiagramPanel
 org.embl.ebi.escience.scuflui.ScavengerTreePanel
 #org.embl.ebi.escience.scuflui.XScuflTextArea
 #org.embl.ebi.escience.scuflui.DotTextArea
+org.embl.ebi.escience.scuflui.XScuflTree
