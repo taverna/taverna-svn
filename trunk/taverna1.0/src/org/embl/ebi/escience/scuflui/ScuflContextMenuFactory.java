@@ -5,15 +5,19 @@
  */
 package org.embl.ebi.escience.scuflui;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import javax.swing.ImageIcon;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
+import org.embl.ebi.escience.scufl.Port;
 import org.embl.ebi.escience.scufl.Processor;
-import org.embl.ebi.escience.scufl.*;
-import javax.swing.*;
-import java.awt.event.*;
 
 import org.embl.ebi.escience.scuflui.NoContextMenuFoundException;
+import java.lang.Class;
+import java.lang.ClassNotFoundException;
 import java.lang.Object;
+import java.lang.System;
 
 
 

@@ -13,7 +13,7 @@ import javax.swing.JTree;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
-import org.embl.ebi.escience.scufl.*;
+import org.embl.ebi.escience.scufl.Processor;
 import org.embl.ebi.escience.scufl.ScuflModel;
 import org.embl.ebi.escience.scufl.parser.XScuflParser;
 
@@ -62,7 +62,7 @@ public class ScuflModelExplorerDemo extends JFrame {
 	File inputFile = new File(filename);
 	XScuflParser.populate(inputFile.toURL().openStream(), frame.model, null);
 	frame.explorer.attachToModel(frame.model);
-	frame.model.addListener(new ScuflModelEventPrinter(null));
+	// frame.model.addListener(new ScuflModelEventPrinter(null));
 	TreeNode root = (TreeNode)(frame.explorer).getModel().getRoot();
 	// Traverse tree from root
         frame.expandAll(frame.explorer, new TreePath(root), true);

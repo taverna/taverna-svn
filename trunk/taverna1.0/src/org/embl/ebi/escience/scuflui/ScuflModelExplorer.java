@@ -11,11 +11,11 @@ import java.awt.event.MouseEvent;
 import javax.swing.ImageIcon;
 import javax.swing.JPopupMenu;
 import javax.swing.JTree;
-import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.DefaultTreeCellRenderer;
-import javax.swing.tree.DefaultTreeModel;
-import javax.swing.tree.TreeSelectionModel;
+import javax.swing.tree.*;
 import org.embl.ebi.escience.scufl.*;
+
+// Utility Imports
+import java.util.Enumeration;
 
 import org.embl.ebi.escience.scuflui.NoContextMenuFoundException;
 import org.embl.ebi.escience.scuflui.ScuflContextMenuFactory;
@@ -39,6 +39,9 @@ public class ScuflModelExplorer extends JTree implements ScuflModelEventListener
     // The ScuflModel that this is a view / controller over
     private ScuflModel model = null;
 
+    // The tree model that contains the root element
+    private DefaultTreeModel theTreeModel = null;
+
     /**
      * Default constructor, creates a new ScuflModelExplorer that
      * is not bound to any ScuflModel instance. Use the attachToModel
@@ -49,6 +52,7 @@ public class ScuflModelExplorer extends JTree implements ScuflModelEventListener
 	this.root = new DefaultMutableTreeNode("No Scufl Model!");
 	DefaultTreeModel model = (DefaultTreeModel)this.getModel();
 	model.setRoot(this.root);
+	theTreeModel = model;
 	// Only allow single selection (not really important but...)
 	this.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
 	// Attach the popup menu generator to the tree
@@ -60,6 +64,39 @@ public class ScuflModelExplorer extends JTree implements ScuflModelEventListener
     }
     
     /**
+     * Set the default expansion state, with all processors, data
+     * constraints and workflow source and sink ports show, but
+     * nothing else.
+     */
+    public void setDefaultExpansionState() {
+	expandAll(this, new TreePath(this.root), true);
+    }
+    private void expandAll(JTree tree, TreePath parent, boolean expand) {
+        // Traverse children
+	// Ignores nodes who's userObject is a Processor type to
+	// avoid overloading the UI with nodes at startup.
+        TreeNode node = (TreeNode)parent.getLastPathComponent();
+        if (node.getChildCount() >= 0 && (((DefaultMutableTreeNode)node).getUserObject() instanceof Processor == false)) {
+            for (Enumeration e=node.children(); e.hasMoreElements(); ) {
+                TreeNode n = (TreeNode)e.nextElement();
+                TreePath path = parent.pathByAddingChild(n);
+		if (((DefaultMutableTreeNode)n).getUserObject() instanceof Processor) {
+		}
+		else {
+		    expandAll(tree, path, expand);
+		}
+	    }
+        }
+	// Expansion or collapse must be done bottom-up
+        if (expand) {
+            tree.expandPath(parent);
+        } else {
+            tree.collapsePath(parent);
+        }
+    }
+
+
+    /**
      * Bind this view onto a ScuflModel instance, this
      * registers the view to receive events and thus keep
      * up to date.
@@ -68,6 +105,7 @@ public class ScuflModelExplorer extends JTree implements ScuflModelEventListener
 	this.model = theModel;
 	theModel.addListener(this);
 	regenerateTreeModel();
+	setDefaultExpansionState();
     }
 
     /**
@@ -89,8 +127,11 @@ public class ScuflModelExplorer extends JTree implements ScuflModelEventListener
      * to date with any changes in state.
      */    
     public void receiveModelEvent(ScuflModelEvent event) {
-	System.out.println("Event from the model..." + event.toString());
 	regenerateTreeModel();
+	// Send an event to the tree model that we've changed the
+	// structure of the nodes
+	theTreeModel.nodeStructureChanged(this.root);
+	setDefaultExpansionState();
     }
     
     // 0 = idle, 1 = updating, 2 = updating but needs to again

@@ -319,7 +319,21 @@
 			<classpath refid="compile-classpath"/>
 		</java>
 	</target>
-	
+        <!-- Run the diagram viewer -->
+	<target name="tools.diagram">
+	        <java classname="org.embl.ebi.escience.scuflui.ScuflDiagramDemo" fork="yes">
+		        <arg value="${file}"/>
+			<classpath refid="compile-classpath"/>
+		</java>
+	</target>
+        <!-- Run the component demo -->
+	<target name="tools.demo">
+	        <java classname="org.embl.ebi.escience.scuflui.ComponentDemo" fork="yes">
+		        <arg value="${file}"/>
+			<classpath refid="compile-classpath"/>
+		</java>
+	</target>
+
 	<!-- Run arbitrary unit test -->
 	<target name="runtestunit" depends="jar">
 		<java classname="junit.textui.TestRunner" fork="true">
