@@ -110,7 +110,7 @@ public class ScuflContextMenuFactory {
 		// If this is a workflow sink, give the option to remove it.
 		if (thePort.getProcessor() == model.getWorkflowSinkProcessor()) {
 		    JPopupMenu theMenu = new JPopupMenu();
-		    theMenu.add(new ShadedLabel("Workflow sink : "+thePort.getName(), ShadedLabel.TAVERNA_GREEN));
+		    theMenu.add(new ShadedLabel("Workflow Output : "+thePort.getName(), ShadedLabel.TAVERNA_GREEN));
 		    final Port sinkPort = thePort;
 		    theMenu.addSeparator();
 		    
@@ -118,16 +118,6 @@ public class ScuflContextMenuFactory {
 		    edit.addActionListener(new ActionListener() {
 			    public void actionPerformed(ActionEvent ae) {
 				UIUtils.createFrame(model, new ScuflSemanticMarkupEditor(sinkPort.getMetadata()), 100, 100, 400, 600);
-				/**
-				   if (Workbench.workbench != null) {
-				   GenericUIComponentFrame thing = new GenericUIComponentFrame(Workbench.workbench.model,
-				   new ScuflSemanticMarkupEditor(sinkPort.getMetadata()));
-				   thing.setSize(400,600);
-				   thing.setLocation(100,100);
-				   Workbench.workbench.desktop.add(thing);
-				   thing.moveToFront();
-				   }
-				*/
 			    }
 			});
 		    theMenu.add(edit);

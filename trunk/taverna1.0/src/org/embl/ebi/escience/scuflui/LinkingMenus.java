@@ -38,7 +38,7 @@ public class LinkingMenus {
 	JPopupMenu theMenu = new JPopupMenu("Possible targets");
 	// Is this a workflow source? If so give the option to delete it
 	if (fromPort.getProcessor() == model.getWorkflowSourceProcessor()) {
-	    theMenu.add(new ShadedLabel("Workflow input \""+sourcePort.getName()+"\"", ShadedLabel.TAVERNA_GREEN));
+	    theMenu.add(new ShadedLabel("Workflow Input : "+sourcePort.getName(), ShadedLabel.TAVERNA_GREEN));
 	    theMenu.addSeparator();
 	    JMenuItem delete = new JMenuItem("Remove from model",ScuflIcons.deleteIcon);
 	    delete.addActionListener(new ActionListener() {
@@ -113,6 +113,7 @@ public class LinkingMenus {
 		icon = org.embl.ebi.escience.scuflworkers.ProcessorHelper.getPreferredIcon(processors[i]);
 		JMenu processorMenu = new JMenu(processors[i].getName());
 		processorMenu.add(new ShadedLabel("Choose an Input",ShadedLabel.TAVERNA_ORANGE));
+		processorMenu.addSeparator();
 		processorMenu.setIcon(icon);
 		int offset = 0;
 		int menuSize = 15;
