@@ -24,7 +24,9 @@ import org.jgraph.graph.GraphModel;
 
 /**
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover </a>
- * @version $Revision: 1.8 $
+ * @version $Revision: 1.9 $
+ * 
+ * TODO Change from center placed to left placed and use the port offset to fix it
  */
 public class PositionLayout extends ModelSpanningTree
 {
@@ -67,14 +69,14 @@ public class PositionLayout extends ModelSpanningTree
 
 		protected void updateEdges()
 		{
-			if(size() > 0)
+			if (size() > 0)
 			{
 				getRank(get(0));
 				for (int index = 1; index < size(); index++)
 				{
 					Object left = get(index - 1);
 					Object right = get(index);
-	
+
 					Map leftAttributes = getAttributes(left);
 					Map rightAttributes = getAttributes(right);
 					Edge edge = LayoutConstants.getRightEdge(leftAttributes);
@@ -88,13 +90,13 @@ public class PositionLayout extends ModelSpanningTree
 							edge = null;
 						}
 					}
-	
+
 					if (edge == null)
 					{
 						edge = new Edge(left, right);
 						LayoutConstants.setLeftEdge(rightAttributes, edge);
 						LayoutConstants.setRightEdge(leftAttributes, edge);
-	
+
 						edges.add(edge);
 					}
 				}
@@ -177,7 +179,7 @@ public class PositionLayout extends ModelSpanningTree
 		}
 	}
 
-	private static final int X_SEPARATION = 10;
+	private static final int X_SEPARATION = 15;
 
 	protected List edges;
 
@@ -286,7 +288,7 @@ public class PositionLayout extends ModelSpanningTree
 		if (node instanceof VirtualNode)
 		{
 			Point2D point = ((VirtualNode) node).getPosition();
-			point.setLocation(x, ((VirtualNode) node).row * 40 + 20);
+			point.setLocation(x, ((VirtualNode) node).row * 60 + 20);
 		}
 		else
 		{
@@ -517,7 +519,7 @@ public class PositionLayout extends ModelSpanningTree
 			return ((VirtualNode) node).getBounds();
 		}
 		CellView view = mapper.getMapping(node, false);
-		if(view != null)
+		if (view != null)
 		{
 			return view.getBounds();
 		}
@@ -600,27 +602,27 @@ public class PositionLayout extends ModelSpanningTree
 			}
 		});
 		Collection result = super.createInitialTree(edges.iterator());
-		edges.clear();		
+		edges.clear();
 		return result;
 	}
 
 	public void updateNode(Object node)
 	{
 		Iterator edges = getEdges(node);
-		while(edges.hasNext())
+		while (edges.hasNext())
 		{
 			Object edge = edges.next();
-			if(isTreeEdge(edge))
+			if (isTreeEdge(edge))
 			{
 				Set tailSet = new HashSet();
 				Set headSet = new HashSet();
 
 				Object tail = getTarget(edge);
 				getTailSet(tail, tailSet, edge);
-				//getTailSet(getSource(edge), headSet, edge);
+				// getTailSet(getSource(edge), headSet, edge);
 				headSet.addAll(getTreeSet(tail));
 				headSet.removeAll(tailSet);
-				assert !headSet.isEmpty(): edge;
+				assert !headSet.isEmpty() : edge;
 				tightenEdge(edge, headSet, tailSet);
 			}
 		}
