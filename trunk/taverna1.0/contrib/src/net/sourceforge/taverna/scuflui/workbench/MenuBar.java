@@ -11,14 +11,18 @@ import net.sourceforge.taverna.scuflui.actions.CopyAction;
 import net.sourceforge.taverna.scuflui.actions.CutAction;
 import net.sourceforge.taverna.scuflui.actions.ExplorerAction;
 import net.sourceforge.taverna.scuflui.actions.GenerateWorkflowDocAction;
+import net.sourceforge.taverna.scuflui.actions.HelpAction;
 import net.sourceforge.taverna.scuflui.actions.NewSubWorkflowAction;
 import net.sourceforge.taverna.scuflui.actions.NewWorkflowAction;
 import net.sourceforge.taverna.scuflui.actions.OpenWorkflowAction;
 import net.sourceforge.taverna.scuflui.actions.OpenWorkflowFromWebAction;
 import net.sourceforge.taverna.scuflui.actions.PasteAction;
 import net.sourceforge.taverna.scuflui.actions.QuitAction;
+import net.sourceforge.taverna.scuflui.actions.RedoAction;
 import net.sourceforge.taverna.scuflui.actions.RunWorkflowAction;
 import net.sourceforge.taverna.scuflui.actions.ServicesAction;
+import net.sourceforge.taverna.scuflui.actions.UndoAction;
+import net.sourceforge.taverna.scuflui.actions.WorkflowHelpAction;
 import net.sourceforge.taverna.scuflui.actions.WorkflowViewAction;
 
 /**
@@ -73,7 +77,7 @@ Help
  * Last edited by $Author: phidias $
  * 
  * @author Mark
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class MenuBar extends JMenuBar {
     
@@ -126,6 +130,10 @@ public class MenuBar extends JMenuBar {
         menu.add(new JMenuItem(new CopyAction()));
         menu.add(new JMenuItem(new PasteAction()));
         
+        
+        menu.addSeparator();
+        menu.add(new JMenuItem(new UndoAction()));
+        menu.add(new JMenuItem(new RedoAction()));
         //menu.addSeparator();
         //menu.add(new JMenuItem(new PreferencesAction()));
         return menu;
@@ -153,6 +161,8 @@ public class MenuBar extends JMenuBar {
     private JMenu createHelpMenu(){
         JMenu menu = new JMenu("Help");
         menu.add(new JMenuItem(new AboutAction()));
+        menu.add(new JMenuItem(new HelpAction()));
+        menu.add(new JMenuItem(new WorkflowHelpAction()));
         return menu;
 
     }

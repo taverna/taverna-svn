@@ -34,8 +34,8 @@ import org.embl.ebi.escience.scufl.parser.XScuflParser;
 import org.embl.ebi.escience.scufl.semantics.RDFSParser;
 import org.embl.ebi.escience.scuflui.AdvancedModelExplorer;
 import org.embl.ebi.escience.scuflui.ScavengerTreePanel;
-import org.embl.ebi.escience.scuflui.ScuflDiagramPanel;
 import org.embl.ebi.escience.scuflui.ScuflModelTreeTable;
+import org.embl.ebi.escience.scuflui.ScuflModelTreeTableContrib;
 import org.embl.ebi.escience.scuflui.ScuflUIComponent;
 import org.embl.ebi.escience.scuflui.UIComponentRegistry;
 import org.embl.ebi.escience.scuflui.UIUtils;
@@ -54,13 +54,13 @@ public class Workbench extends JFrame {
 
     public static ImageIcon background;
 
-    public static AdvancedModelExplorer explorer = new AdvancedModelExplorer();
-    public static ScuflModelTreeTable treeExplorer = new ScuflModelTreeTable();
+    public static AdvancedModelExplorer explorer = null;
+    public static ScuflModelTreeTableContrib treeExplorer = null;
     
-    public static ScuflDiagramPanel diagram ;
+    //public static ScuflDiagramPanel diagram ;
 
-    public static ScavengerTreePanel treePanel = new ScavengerTreePanel();
-    static WorkflowEditor editor = new WorkflowEditor();
+    public static ScavengerTreePanel treePanel = null;
+    static WorkflowEditor editor = null;
 
     /**
      * If the workbench is created, it will set this to the instance value. This
@@ -71,23 +71,14 @@ public class Workbench extends JFrame {
     public static Workbench workbench = null;
 
     static {
-        /*
-        try {
-            Class c = Class
-                    .forName("org.embl.ebi.escience.scuflui.workbench.Workbench");
-            try {
-                background = new ImageIcon(c.getResource("background.png"));
-            } catch (Exception e) {
-                background = null;
-            }
-        } catch (ClassNotFoundException cnfe) {
-            //
-        }*/
+       
 
         try {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
         } catch (Exception e) {
         }
+        
+        
 
         // Initialize the component SPI
         UIComponentRegistry.instance();
@@ -101,13 +92,13 @@ public class Workbench extends JFrame {
             String value = (String) rb.getString(key);
             sysProps.put(key, value);
         }
-        editor.setEnabled(false);
+        
 
     }
 
     public JDesktopPane desktop;
 
-    public static ScuflModel model;
+    public static ScuflModel model = new ScuflModel();
 
 
     /**
@@ -127,11 +118,12 @@ public class Workbench extends JFrame {
      */
     public static void setModel(ScuflModel _model) {
         model = _model;
-        //explorer.model = _model;
-        explorer.attachToModel(_model);
-        treeExplorer.attachToModel( _model);
+        
+        //explorer.attachToModel(_model);
+        //treeExplorer.attachToModel( _model);
         //diagram.attachToModel(_model);
-        editor.attachToModel(_model);
+        
+        //editor.attachToModel(_model);
         
     }
     
@@ -142,11 +134,12 @@ public class Workbench extends JFrame {
      */
     public static void clearModel(){
         
-        explorer.detachFromModel();
-        treeExplorer.detachFromModel();
+        //explorer.detachFromModel();
+        //treeExplorer.detachFromModel();
         //diagram.detachFromModel();
-        editor.detachFromModel();
+        //editor.detachFromModel();
         model.clear();
+       
     }
 
     /**
@@ -243,15 +236,26 @@ public class Workbench extends JFrame {
 
         workbench.setVisible(true);
         workbench.toFront();
-        //explorer = new AdvancedModelExplorer();
-        //diagram = new ScuflDiagramPanel();
+        
         treePanel = new ScavengerTreePanel();
+        explorer = new AdvancedModelExplorer();
+        treeExplorer = new ScuflModelTreeTableContrib();
+        treeExplorer.attachToModel(model);
+        
+        treePanel = new ScavengerTreePanel();
+        treePanel.attachToModel(model);
+        
+        //diagram = new ScuflDiagramPanel();
+        editor = new WorkflowEditor();
+        editor.setEnabled(false);
+        editor.attachToModel(model);
+        
+        
         //UIUtils.createFrame(model, diagram, 20, 440, 500, 400);
         
-        
-        UIUtils.createFrame(model, editor,20, 440, 500, 400);
-        UIUtils.createFrame(model, explorer, 20, 120, 500, 300);
-        UIUtils.createFrame(model, treePanel, 540, 120, 300, 720);
+        UIUtils.createFrame(model, editor ,20, 320, 500, 400);
+        UIUtils.createFrame(model, explorer, 20, 10, 500, 300);
+        UIUtils.createFrame(model, treePanel, 540, 10, 300, 720);
         
 
     }
