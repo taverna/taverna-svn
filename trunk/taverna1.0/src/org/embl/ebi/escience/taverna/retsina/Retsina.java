@@ -57,18 +57,14 @@ public class Retsina extends JApplet {
 						      JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 	servicelistpane.setViewportBorder(BorderFactory.createTitledBorder("Services"));
 	// Create the graph edit view
-	ScuflGraph graph = new ScuflGraph();
-	// Again, in a scrollpane
-	JScrollPane graphpane = new JScrollPane(graph, 
-						JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, 
-						JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
-	graphpane.setViewportBorder(BorderFactory.createTitledBorder("Workflow"));
+	ScuflGraphPanel graph = new ScuflGraphPanel(null);
+	
 	// Put the components in the content pane
 	Container contentpane = getContentPane();
 	JPanel pane = new JPanel();
 	pane.setLayout(new BorderLayout());
 	pane.add(servicelistpane,BorderLayout.WEST);
-	pane.add(graphpane,BorderLayout.CENTER);
+	pane.add(graph,BorderLayout.CENTER);
 	contentpane.add(pane, BorderLayout.CENTER);
     }
 

@@ -2,6 +2,7 @@ package org.embl.ebi.escience.taverna.retsina;
 
 import com.jgraph.JGraph;
 import com.jgraph.graph.*;
+import java.awt.event.*;
 
 /**
  * Defines a Graph that uses the Shift-Button (Instead of the Right
@@ -13,7 +14,7 @@ public class ScuflGraph extends JGraph {
     public ScuflGraph(GraphModel model) {
 	super(model);
 	// Use a Custom Marquee Handler
-	setMarqueeHandler(new ScuflMarqueeHandler());
+	//setMarqueeHandler(new ScuflGraphPanel.ScuflMarqueeHandler());
 	// Tell the Graph to Select new Cells upon Insertion
 	setSelectNewCells(true);
 	// Make Ports Visible by Default
@@ -26,7 +27,9 @@ public class ScuflGraph extends JGraph {
 	setTolerance(2);
     }
     
-    // Override Superclass Method to Return Custom EdgeView
+    /**
+     * Override Superclass Method to Return Custom EdgeView
+     */
     protected EdgeView createEdgeView(Edge e, CellMapper cm) {
 	// Return Custom EdgeView
 	return new EdgeView(e, this, cm) {
@@ -42,4 +45,19 @@ public class ScuflGraph extends JGraph {
 		}
 	    };
     }
+
+    /**
+     * A custom portview to provide the orange and green
+     * arrow glyphs on input and output ports.
+     */
+    protected PortView createPortView(Port p, CellMapper cm) {
+	try {
+	    ScuflOutputPort port = (ScuflOutputPort)p;
+	    return new ScuflOutputPortView(p,this,cm);
+	}
+	catch (ClassCastException cce) {
+	    return new ScuflInputPortView(p,this,cm);
+	}
+    }
+
 }

@@ -23,6 +23,9 @@ public class ScuflGraphPanel extends JPanel implements GraphSelectionListener, K
     // Undo Manager
     protected GraphUndoManager undoManager;
     
+    // A delegate to create instances of the processor nodes
+    protected IScuflNodeCreator creatorDelegate;
+
     // Actions which Change State
     protected Action undo, redo, remove, group,	ungroup, tofront, toback, cut, copy, paste;
 
@@ -31,18 +34,9 @@ public class ScuflGraphPanel extends JPanel implements GraphSelectionListener, K
 	// Construct Frame
 	JFrame frame = new JFrame("Retsina application mode test");
 	// Set Close Operation to Exit
-	//frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+	frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	// Add an Editor Panel
-	frame.getContentPane().add(new Editor());
-	// Fetch URL to Icon Resource
-	URL jgraphUrl = Editor.class.getClassLoader().getResource("jgraph.gif");
-	// If Valid URL
-	if (jgraphUrl != null) {
-	    // Load Icon
-	    ImageIcon jgraphIcon = new ImageIcon(jgraphUrl);
-	    // Use in Window
-	    frame.setIconImage(jgraphIcon.getImage());
-	}
+	frame.getContentPane().add(new ScuflGraphPanel(null));
 	// Set Default Size
 	frame.setSize(520, 390);
 	// Show Frame
@@ -62,22 +56,9 @@ public class ScuflGraphPanel extends JPanel implements GraphSelectionListener, K
 
 	setLayout(new BorderLayout());
 
-	graph = new ScuflGraph(new ScuflModel()) {
-		/**
-		 * A custom portview to provide the orange and green
-		 * arrow glyphs on input and output ports.
-		 */
-		protected PortView createPortView(Port p, CellMapper cm) {
-		    try {
-			ScuflOutputPort port = (ScuflOutputPort)p;
-			return new ScuflOutputPortView(p,this,cm);
-		    }
-		    catch (ClassCastException cce) {
-			return new ScuflInputPortView(p,this,cm);
-		    }
-		}
-	    };
-	
+	graph = new ScuflGraph(new ScuflModel());
+	graph.setMarqueeHandler(new ScuflMarqueeHandler());
+
 	undoManager = new GraphUndoManager() {
 		/**
 		 * A custom edit handler that updates the toolbar buttons
@@ -310,7 +291,7 @@ public class ScuflGraphPanel extends JPanel implements GraphSelectionListener, K
     /**
      * MarqueeHandler that Connects Vertices and Displays PopupMenus
      */
-    public class MyMarqueeHandler extends BasicMarqueeHandler {
+    public class ScuflMarqueeHandler extends BasicMarqueeHandler {
 	
 	// Holds the Start and the Current Point
 	protected Point start, current;
@@ -495,7 +476,7 @@ public class ScuflGraphPanel extends JPanel implements GraphSelectionListener, K
 	toolbar.setFloatable(false);
 	
 	// Insert
-	URL insertUrl = getClass().getClassLoader().getResource("insert.gif");
+	URL insertUrl = getClass().getClassLoader().getResource("org/embl/ebi/escience/taverna/retsina/insert.gif");
 	ImageIcon insertIcon = new ImageIcon(insertUrl);
 	toolbar.add(new AbstractAction("", insertIcon) {
 		public void actionPerformed(ActionEvent e) {
@@ -504,17 +485,17 @@ public class ScuflGraphPanel extends JPanel implements GraphSelectionListener, K
 	    });
 	
 	// Toggle Connect Mode
-	URL connectUrl = getClass().getClassLoader().getResource("connecton.gif");
+	URL connectUrl = getClass().getClassLoader().getResource("org/embl/ebi/escience/taverna/retsina/connecton.gif");
 	ImageIcon connectIcon = new ImageIcon(connectUrl);
 	toolbar.add(new AbstractAction("", connectIcon) {
 		public void actionPerformed(ActionEvent e) {
 		    graph.setPortsVisible(!graph.isPortsVisible());
 		    URL connectUrl;
 		    if (graph.isPortsVisible()) {
-			connectUrl = getClass().getClassLoader().getResource("connecton.gif");
+			connectUrl = getClass().getClassLoader().getResource("org/embl/ebi/escience/taverna/retsina/connecton.gif");
 		    }
 		    else {
-			connectUrl = getClass().getClassLoader().getResource("connectoff.gif");
+			connectUrl = getClass().getClassLoader().getResource("corg/embl/ebi/escience/taverna/retsina/onnectoff.gif");
 		    }
 		    ImageIcon connectIcon = new ImageIcon(connectUrl);
 		    putValue(SMALL_ICON, connectIcon);
@@ -523,7 +504,7 @@ public class ScuflGraphPanel extends JPanel implements GraphSelectionListener, K
 
 	// Undo
 	toolbar.addSeparator();
-	URL undoUrl = getClass().getClassLoader().getResource("undo.gif");
+	URL undoUrl = getClass().getClassLoader().getResource("org/embl/ebi/escience/taverna/retsina/undo.gif");
 	ImageIcon undoIcon = new ImageIcon(undoUrl);
 	undo = new AbstractAction("", undoIcon) {
 		public void actionPerformed(ActionEvent e) {
@@ -534,7 +515,7 @@ public class ScuflGraphPanel extends JPanel implements GraphSelectionListener, K
 	toolbar.add(undo);
 
 	// Redo
-	URL redoUrl = getClass().getClassLoader().getResource("redo.gif");
+	URL redoUrl = getClass().getClassLoader().getResource("org/embl/ebi/escience/taverna/retsina/redo.gif");
 	ImageIcon redoIcon = new ImageIcon(redoUrl);
 	redo = new AbstractAction("", redoIcon) {
 		public void actionPerformed(ActionEvent e) {
@@ -553,24 +534,24 @@ public class ScuflGraphPanel extends JPanel implements GraphSelectionListener, K
 	
 	// Copy
 	action = graph.getTransferHandler().getCopyAction();
-	url = getClass().getClassLoader().getResource("copy.gif");
+	url = getClass().getClassLoader().getResource("org/embl/ebi/escience/taverna/retsina/copy.gif");
 	action.putValue(Action.SMALL_ICON, new ImageIcon(url));
 	toolbar.add(copy = new EventRedirector(action));
 	
 	// Paste
 	action = graph.getTransferHandler().getPasteAction();
-	url = getClass().getClassLoader().getResource("paste.gif");
+	url = getClass().getClassLoader().getResource("org/embl/ebi/escience/taverna/retsina/paste.gif");
 	action.putValue(Action.SMALL_ICON, new ImageIcon(url));
 	toolbar.add(paste = new EventRedirector(action));
 	
 	// Cut
 	action = graph.getTransferHandler().getCutAction();
-	url = getClass().getClassLoader().getResource("cut.gif");
+	url = getClass().getClassLoader().getResource("org/embl/ebi/escience/taverna/retsina/cut.gif");
 	action.putValue(Action.SMALL_ICON, new ImageIcon(url));
 	toolbar.add(cut = new EventRedirector(action));
 	
 	// Remove
-	URL removeUrl = getClass().getClassLoader().getResource("delete.gif");
+	URL removeUrl = getClass().getClassLoader().getResource("org/embl/ebi/escience/taverna/retsina/delete.gif");
 	ImageIcon removeIcon = new ImageIcon(removeUrl);
 	remove = new AbstractAction("", removeIcon) {
 		public void actionPerformed(ActionEvent e) {
@@ -586,7 +567,7 @@ public class ScuflGraphPanel extends JPanel implements GraphSelectionListener, K
 
 	// Zoom Std
 	toolbar.addSeparator();
-	URL zoomUrl = getClass().getClassLoader().getResource("zoom.gif");
+	URL zoomUrl = getClass().getClassLoader().getResource("org/embl/ebi/escience/taverna/retsina/zoom.gif");
 	ImageIcon zoomIcon = new ImageIcon(zoomUrl);
 	toolbar.add(new AbstractAction("", zoomIcon) {
 		public void actionPerformed(ActionEvent e) {
@@ -594,7 +575,7 @@ public class ScuflGraphPanel extends JPanel implements GraphSelectionListener, K
 		}
 	    });
 	// Zoom In
-	URL zoomInUrl = getClass().getClassLoader().getResource("zoomin.gif");
+	URL zoomInUrl = getClass().getClassLoader().getResource("org/embl/ebi/escience/taverna/retsina/zoomin.gif");
 	ImageIcon zoomInIcon = new ImageIcon(zoomInUrl);
 	toolbar.add(new AbstractAction("", zoomInIcon) {
 		public void actionPerformed(ActionEvent e) {
@@ -602,7 +583,7 @@ public class ScuflGraphPanel extends JPanel implements GraphSelectionListener, K
 		}
 	    });
 	// Zoom Out
-	URL zoomOutUrl = getClass().getClassLoader().getResource("zoomout.gif");
+	URL zoomOutUrl = getClass().getClassLoader().getResource("org/embl/ebi/escience/taverna/retsina/zoomout.gif");
 	ImageIcon zoomOutIcon = new ImageIcon(zoomOutUrl);
 	toolbar.add(new AbstractAction("", zoomOutIcon) {
 		public void actionPerformed(ActionEvent e) {
@@ -612,7 +593,7 @@ public class ScuflGraphPanel extends JPanel implements GraphSelectionListener, K
 	
 	// Group
 	toolbar.addSeparator();
-	URL groupUrl = getClass().getClassLoader().getResource("group.gif");
+	URL groupUrl = getClass().getClassLoader().getResource("org/embl/ebi/escience/taverna/retsina/group.gif");
 	ImageIcon groupIcon = new ImageIcon(groupUrl);
 	group = new AbstractAction("", groupIcon) {
 		public void actionPerformed(ActionEvent e) {
@@ -623,7 +604,7 @@ public class ScuflGraphPanel extends JPanel implements GraphSelectionListener, K
 	toolbar.add(group);
 	
 	// Ungroup
-	URL ungroupUrl = getClass().getClassLoader().getResource("ungroup.gif");
+	URL ungroupUrl = getClass().getClassLoader().getResource("org/embl/ebi/escience/taverna/retsina/ungroup.gif");
 	ImageIcon ungroupIcon = new ImageIcon(ungroupUrl);
 	ungroup = new AbstractAction("", ungroupIcon) {
 		public void actionPerformed(ActionEvent e) {
@@ -635,7 +616,7 @@ public class ScuflGraphPanel extends JPanel implements GraphSelectionListener, K
 	
 	// To Front
 	toolbar.addSeparator();
-	URL toFrontUrl = getClass().getClassLoader().getResource("tofront.gif");
+	URL toFrontUrl = getClass().getClassLoader().getResource("org/embl/ebi/escience/taverna/retsina/tofront.gif");
 	ImageIcon toFrontIcon = new ImageIcon(toFrontUrl);
 	tofront = new AbstractAction("", toFrontIcon) {
 		public void actionPerformed(ActionEvent e) {
@@ -647,7 +628,7 @@ public class ScuflGraphPanel extends JPanel implements GraphSelectionListener, K
 	toolbar.add(tofront);
 	
 	// To Back
-	URL toBackUrl = getClass().getClassLoader().getResource("toback.gif");
+	URL toBackUrl = getClass().getClassLoader().getResource("org/embl/ebi/escience/taverna/retsina/toback.gif");
 	ImageIcon toBackIcon = new ImageIcon(toBackUrl);
 	toback = new AbstractAction("", toBackIcon) {
 		public void actionPerformed(ActionEvent e) {

@@ -78,6 +78,7 @@
 			<fileset dir="${src.dir}">
 				<include name="**/*.properties"/>
 				<include name="**/*.xml"/>
+	 			<include name="**/*.gif"/>
 			</fileset>
 		</copy>
 	</target>
@@ -109,6 +110,20 @@
 			</classpath>
 		</java>
     </target> 
+
+	<!-- Test the editor component (ScuflGraphPanel) -->
+	<target name="testpanel" depends="jar">
+	        <java classname="org.embl.ebi.escience.taverna.retsina.ScuflGraphPanel" fork="yes">
+		    <classpath>
+			    <fileset dir="./lib">
+			        <include name="*.jar"/>
+		        </fileset>
+				<fileset dir="./build">
+		        	<include name="*.jar"/>
+				</fileset>
+			</classpath>
+		</java>
+	</target> 
 
 	<!-- Test the editor -->
 	<target name="testretsina" depends="jar">
