@@ -20,7 +20,7 @@ import org.embl.ebi.escience.baclava.DataThing;
  * Last edited by $Author: phidias $
  * 
  * @author mfortner
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class NCBIXMLStreamProcessor extends ReplacementStreamProcessor
         implements StreamProcessor {
@@ -121,10 +121,13 @@ public class NCBIXMLStreamProcessor extends ReplacementStreamProcessor
         out.write("</searchResults>");
         out.close();
         String outStr = sw.toString();
-        /*
+        
+        // now that we have all of the raw text,
+        // replace all of the escaped characters with real characters
+        // in order to make the XML parseable
         for (int i = 0; i < oldText.length; i++) {
-            outStr.replaceAll(oldText[i], replacementText[i]);
-        }*/
+            outStr = outStr.replaceAll(oldText[i], replacementText[i]);
+        }
                 
         if (this.outputFile != null){
             fw.flush();
