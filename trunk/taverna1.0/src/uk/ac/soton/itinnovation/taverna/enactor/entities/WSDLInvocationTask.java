@@ -25,8 +25,8 @@
 //      Dependencies        :
 //
 //      Last commit info    :   $Author: dmarvin $
-//                              $Date: 2003-06-06 16:45:09 $
-//                              $Revision: 1.14 $
+//                              $Date: 2003-06-08 10:58:17 $
+//                              $Revision: 1.15 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 
@@ -120,7 +120,6 @@ public class WSDLInvocationTask extends ProcessorTask implements InvocationDescr
 							outputForLog = output;
 						List outputParts = output.getPartList();
 						
-						System.out.println("Number of output items: " + outputParts.size());
 						Map outputMap = new HashMap();
             iterator = outputParts.iterator();
             while (iterator.hasNext()) {
@@ -128,10 +127,7 @@ public class WSDLInvocationTask extends ProcessorTask implements InvocationDescr
 	            
 							Part part = (Part) iterator.next();
               String partName = part.getName();
-              System.out.println("--- part name: " + partName);
-							System.out.println("--- part apparent type: " + part.getType());
-							System.out.println("--- part type: " + part.getTypedValue().getClass());
-							outputMap.put(partName,part);
+              outputMap.put(partName,part);
 							
 						}
           
