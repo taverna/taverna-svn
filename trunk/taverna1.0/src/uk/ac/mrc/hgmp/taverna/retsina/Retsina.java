@@ -31,10 +31,16 @@ public class Retsina extends JApplet
   {
     Retsina retsinaPane = new Retsina();
     retsinaPane.init();
-
+ 
     JFrame frame = new JFrame("Retsina");
+    Dimension d = frame.getToolkit().getScreenSize();
+    if(d.getWidth()<1024)
+      d = new Dimension(795,600);
+    else
+      d = new Dimension(840,640);
+
     frame.getContentPane().add(retsinaPane);
-    frame.setSize(820, 650);
+    frame.setSize(d);
     frame.show();
   }
     
@@ -109,8 +115,6 @@ public class Retsina extends JApplet
           pscroll.add(about);
           JOptionPane jop = new JOptionPane();
           rscroll.setPreferredSize(new Dimension(400,180));
-//        rscroll.setMinimumSize(new Dimension(300,180));
-//        rscroll.setMaximumSize(new Dimension(300,180));
 
           jop.showMessageDialog(null,rscroll,"About ",
                               JOptionPane.PLAIN_MESSAGE);

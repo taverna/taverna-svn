@@ -98,6 +98,10 @@ public class ProgramSelectionPanel extends JPanel
 
     add(progMenuBar,BorderLayout.NORTH);
     add(alphaPane,BorderLayout.CENTER);
+
+    Dimension d = getMinimumSize();
+    d = new Dimension((int)d.getWidth()-10,(int)d.getHeight());
+    setPreferredSize(d);
     createProgramMenuListener(allAcd,numProgs);
     createProgramListListener(progList,allAcd);
     createTextEntryListener(progList,allAcd,alphaTextPaneEntry);
