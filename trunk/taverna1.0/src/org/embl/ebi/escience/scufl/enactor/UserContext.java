@@ -14,10 +14,13 @@ package org.embl.ebi.escience.scufl.enactor;
  */
 public interface UserContext {
     
-    public String getUser();
-    public String getOrganisation();
-    public String getProject();
-    public String getExperiment();
+    //public String getUser();
+    public String getPersonLSID();
+    //public String getOrganisation();
+    public String getOrganizationLSID();
+    public String getExperimentDesignLSID();
+    //public String getProject();
+    //public String getExperiment();
     public String[] getUserNameAndPassword(String resourceExpression);
 
 }

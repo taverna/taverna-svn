@@ -16,32 +16,26 @@ import org.embl.ebi.escience.scufl.enactor.*;
  */
 public class SimpleUserContext implements UserContext {
     
-    private String user, project, organisation, experiment;
+    private String personLSID, organizationLSID, experimentDesignLSID;
 
-    public SimpleUserContext(String userID,
-			     String project,
-			     String organisation,
-			     String experiment) {
-	this.user = userID;
-	this.project = project;
-	this.organisation = organisation;
-	this.experiment = experiment;
+    public SimpleUserContext(String personLSID,
+			     String organizationLSID,
+			     String experimentDesignLSID) {
+	this.personLSID = personLSID;
+	this.organizationLSID = organizationLSID;
+	this.experimentDesignLSID = experimentDesignLSID;
     }
     
-    public String getUser() {
-	return this.user;
+    public String getPersonLSID() {
+	return this.personLSID;
     }
 
-    public String getProject() {
-	return this.project;
+    public String getOrganizationLSID() {
+	return this.organizationLSID;
     }
 
-    public String getOrganisation() {
-	return this.organisation;
-    }
-
-    public String getExperiment() {
-	return this.experiment;
+    public String getExperimentDesignLSID() {
+	return this.experimentDesignLSID;
     }
 
     public String[] getUserNameAndPassword(String resourceExpression) {

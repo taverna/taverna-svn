@@ -16,6 +16,7 @@ import org.embl.ebi.escience.scufl.ScuflModel;
 import org.embl.ebi.escience.scufl.UnknownProcessorException;
 import org.embl.ebi.escience.scufl.enactor.EnactorProxy;
 import org.embl.ebi.escience.scufl.enactor.WorkflowInstance;
+import org.embl.ebi.escience.scufl.enactor.UserContext;
 import org.embl.ebi.escience.scufl.enactor.WorkflowSubmissionException;
 import java.awt.event.*;
 
@@ -42,6 +43,15 @@ import java.lang.Thread;
  * @author Matthew Pocock
  */
 public class EnactorInvocation extends JPanel implements ScuflUIComponent {
+
+    /**
+     * A not particularly elegant way of setting the user context
+     * from Kevin's MIR browser plugin. If this is set to non null
+     * it will be passed through to the enactor instance that
+     * this invocation component launches, and in turn through to
+     * the event system (hopefully)
+     */
+    public static UserContext USERCONTEXT = null; 
 
     public void attachToModel(ScuflModel theModel) {
 	//
@@ -227,7 +237,7 @@ public class EnactorInvocation extends JPanel implements ScuflUIComponent {
 	/**
 	 * TODO - get the user proxy object from somewhere!
 	 */
-	this.workflowInstance = enactor.compileWorkflow(model, inputDataThings, null);
+	this.workflowInstance = enactor.compileWorkflow(model, inputDataThings, EnactorInvocation.USERCONTEXT);
 	// Create a new toolbar for the save results option...
 	JToolBar toolbar = new JToolBar("Invocation tools");
 	toolbar.setFloatable(false);

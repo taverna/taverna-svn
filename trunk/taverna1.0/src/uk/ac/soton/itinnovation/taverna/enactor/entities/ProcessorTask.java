@@ -25,8 +25,8 @@
 //      Dependencies        :
 //
 //      Last commit info    :   $Author: mereden $
-//                              $Date: 2004-07-16 11:53:01 $
-//                              $Revision: 1.56 $
+//                              $Date: 2004-07-16 12:27:00 $
+//                              $Revision: 1.57 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 package uk.ac.soton.itinnovation.taverna.enactor.entities;
@@ -115,7 +115,7 @@ public class ProcessorTask extends AbstractTask {
     private List provenanceList = new ArrayList();
     // The WorkflowInstance object which can access this
     // workflow instance
-    private WorkflowInstance workflowInstance = null;
+    public WorkflowInstance workflowInstance = null;
     
     public List getProvenanceList() {
 	return this.provenanceList;

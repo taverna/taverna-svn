@@ -25,8 +25,8 @@
 //      Dependencies        :
 //
 //      Last commit info    :   $Author: mereden $
-//                              $Date: 2004-07-10 13:14:07 $
-//                              $Revision: 1.9 $
+//                              $Date: 2004-07-16 12:27:00 $
+//                              $Revision: 1.10 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 
@@ -91,10 +91,10 @@ public class WorkflowTask implements ProcessorTaskWorker {
 	
 	// The inputMap is already in the form we need for a submission
 	try {
-	    /**
-	     * TODO - set the user context here from the parent workflow
-	     */
-            workflowInstance = defaultEnactor.compileWorkflow(theNestedModel, inputMap, null);
+	    // Get the parent workflow instance
+	    WorkflowInstance parentInstance = parentTask.workflowInstance;
+	    UserContext context = parentInstance.getUserContext();
+            workflowInstance = defaultEnactor.compileWorkflow(theNestedModel, inputMap, context);
 	}
         catch(WorkflowSubmissionException e) {
             String msg = "Error executing workflow task.  Error compiling the nested workflow.";

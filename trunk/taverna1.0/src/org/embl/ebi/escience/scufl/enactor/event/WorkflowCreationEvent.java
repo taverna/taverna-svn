@@ -4,6 +4,7 @@
  * Copyright Tom Oinn, EMBL-EBI
  */
 package org.embl.ebi.escience.scufl.enactor.event;
+import org.embl.ebi.escience.scufl.enactor.UserContext;
 import org.embl.ebi.escience.scufl.enactor.WorkflowInstance;
 import org.embl.ebi.escience.baclava.DataThing;
 import java.util.Map;
@@ -38,6 +39,15 @@ public class WorkflowCreationEvent extends WorkflowInstanceEvent {
 	    DataThing inputValue = (DataThing)inputs.get(inputName);
 	    String inputLSID = inputValue.getLSID(inputValue.getDataObject());
 	    sb.append("  '"+inputName+"'->"+inputLSID+"\n");
+	}
+	UserContext workflowContext = this.workflowInstance.getUserContext();
+	if (workflowContext == null) {
+	    sb.append("No context supplied\n");
+	}
+	else {
+	    sb.append("'Person'->"+workflowContext.getPersonLSID()+"\n");
+	    sb.append("'ExperimentDesign'->"+workflowContext.getExperimentDesignLSID()+"\n");
+	    sb.append("'Organization'->"+workflowContext.getOrganizationLSID()+"\n");
 	}
 	return sb.toString();
     }
