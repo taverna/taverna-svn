@@ -5,9 +5,19 @@
  */
 package org.embl.ebi.escience.scufl;
 
+// Utility Imports
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.ArrayList;
+
+import org.embl.ebi.escience.scufl.DuplicatePortNameException;
+import org.embl.ebi.escience.scufl.PortCreationException;
+import org.embl.ebi.escience.scufl.Processor;
+import org.embl.ebi.escience.scufl.ScuflModelEvent;
+import java.lang.RuntimeException;
+import java.lang.String;
+
+
 
 /**
  * An abstract superclass of all processor ports

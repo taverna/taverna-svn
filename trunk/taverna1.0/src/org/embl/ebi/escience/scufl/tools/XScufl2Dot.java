@@ -5,10 +5,20 @@
  */
 package org.embl.ebi.escience.scufl.tools;
 
-import org.embl.ebi.escience.scufl.*;
-import org.embl.ebi.escience.scufl.parser.*;
-import org.embl.ebi.escience.scufl.view.*;
+import org.embl.ebi.escience.scufl.ScuflModel;
+import org.embl.ebi.escience.scufl.parser.XScuflParser;
+import org.embl.ebi.escience.scufl.view.DotView;
+
+// IO Imports
+import java.io.File;
 import java.io.*;
+
+import java.lang.ArrayIndexOutOfBoundsException;
+import java.lang.Exception;
+import java.lang.String;
+import java.lang.System;
+
+
 
 /**
  * Command line tool to read in an XScufl definition and produce the dot
@@ -23,9 +33,9 @@ public class XScufl2Dot {
 	try {
 	    int portPolicy = DotView.ALL;
 	    String filename = args[0];
-	    if (args.length == 2) {
+	    if (args.length == 3) {
 		// defaults to showing all ports.
-		String portPolicyString = args[1];
+		String portPolicyString = args[2];
 		if (portPolicyString.equalsIgnoreCase("none")) {
 		    portPolicy = DotView.NONE;
 		}
@@ -34,8 +44,8 @@ public class XScufl2Dot {
 		}
 		
 	    }
-	    
-
+	    String outfilename = args[1];
+	    PrintWriter out = new PrintWriter(new FileWriter(outfilename));
 
 	    // Create a new scuflmodel
 	    ScuflModel model = new ScuflModel();
@@ -46,10 +56,15 @@ public class XScufl2Dot {
 	    view.setPortDisplay(portPolicy);
 	    File inputFile = new File(filename);
 	    XScuflParser.populate(inputFile.toURL().openStream(), model, null);
-	    System.out.println(view.getDot());
+	    out.println(view.getDot());
+	    out.flush();
+	    out.close();
 	}
 	catch (ArrayIndexOutOfBoundsException aioobe) {
-	    System.out.println("Usage : ... XScufl2Dot <xscuflfilename> [none|bound|all]");
+	    System.out.println("Usage : ... XScufl2Dot <xscuflfilename> <outputfilename> [none|bound|all]");
+	}
+	catch (IOException ioe) {
+	    System.out.println("IOException : "+ioe.getMessage());
 	}
     }
 

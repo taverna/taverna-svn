@@ -29,7 +29,6 @@ import java.net.URL;
 
 import org.embl.ebi.escience.scufl.parser.XScuflFormatException;
 import java.lang.String;
-import java.lang.System;
 
 
 

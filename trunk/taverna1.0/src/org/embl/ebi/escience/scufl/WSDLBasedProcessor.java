@@ -28,7 +28,6 @@ import org.embl.ebi.escience.scufl.Processor;
 import org.embl.ebi.escience.scufl.ProcessorCreationException;
 import org.embl.ebi.escience.scufl.ScuflModel;
 import java.lang.String;
-import java.lang.System;
 
 
 

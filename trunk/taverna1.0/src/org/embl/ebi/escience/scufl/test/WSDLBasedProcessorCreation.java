@@ -5,8 +5,16 @@
  */
 package org.embl.ebi.escience.scufl.test;
 
-import org.embl.ebi.escience.scufl.*;
-import org.embl.ebi.escience.scufl.view.*;
+import org.embl.ebi.escience.scufl.ScuflModel;
+import org.embl.ebi.escience.scufl.ScuflModelEventPrinter;
+import org.embl.ebi.escience.scufl.WSDLBasedProcessor;
+import org.embl.ebi.escience.scufl.view.XScuflView;
+
+import java.lang.Exception;
+import java.lang.String;
+import java.lang.System;
+
+
 
 /**
  * Tests the creation of a WSDLBasedProcessor node
