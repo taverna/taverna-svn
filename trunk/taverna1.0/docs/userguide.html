@@ -42,7 +42,7 @@
 
 
 
-  $Date: 2003-05-30 14:34:59 $</font></p>
+  $Date: 2003-06-01 12:33:16 $</font></p>
 
 
 
@@ -501,21 +501,9 @@
     of the Soaplab input and output Map objects.</font></p>
 
   <pre><font size="2">&lt;s:arbitrarywsdl&gt;
-
-
-
   &lt;s:wsdl&gt;<font color="#669933">http://url.to.your/wsdl/definition/file.wsdl</font>&lt;/s:wsdl&gt;
-
-
-
   &lt;s:porttype&gt;<font color="#669900">port_type_name</font>&lt;/s:porttype&gt;
-
-
-
   &lt;s:operation&gt;<font color="669900">operation_name</font>&lt;/s:operation&gt;
-
-
-
 &lt;/s:arbitrarywsdl&gt;</font></pre>
 
   <div align="justify"><font size="2" face="Arial, Helvetica, sans-serif">The 
@@ -527,17 +515,8 @@
     </font> </div>
 
   <pre><font size="2">&lt;s:talisman&gt;
-
-
-
   &lt;s:tscript&gt;<font color="996600">http://url.to.your/talisman/tscript/file.xml</font>&lt;/s:tscript&gt;
-
-
-
 &lt;/s:talisman&gt;</font>
-
-
-
 </pre>
 
   <div align="justify"> 
@@ -663,17 +642,8 @@
 
 
   <pre>&lt;s:link&gt;
-
-
-
   &lt;s:input&gt;<font color="#CC0099">prophet:infile_direct_data</font>&lt;/s:input&gt;
-
-
-
   &lt;s:output&gt;<font color="cc0099">prophecy:outf</font>&lt;/s:output&gt;
-
-
-
 &lt;/s:link&gt;</pre>
 
 
@@ -883,53 +853,17 @@
 
 
 &lt;s:coordination name=&quot;<font color="#0000FF">testcoordination</font>&quot;&gt;
-
-
-
   &lt;s:condition&gt;
-
-
-
     &lt;s:target&gt;<font color="#0000FF">restrict_mutant</font>&lt;/s:target&gt;
-
-
-
     &lt;s:state&gt;<font color="#0000FF">COMPLETED</font>&lt;/s:state&gt;
-
-
-
   &lt;/s:condition&gt;
-
-
-
   &lt;s:action&gt;
-
-
-
     &lt;s:target&gt;<font color="#0000FF">compare</font>&lt;/s:target&gt;
-
-
-
     &lt;s:statechange&gt;
-
-
-
       &lt;s:from&gt;<font color="#0000FF">SCHEDULED</font>&lt;/s:from&gt;
-
-
-
       &lt;s:to&gt;<font color="#0000FF">RUNNING</font>&lt;/s:to&gt;
-
-
-
     &lt;/s:statechange&gt;
-
-
-
   &lt;/s:action&gt;
-
-
-
 &lt;/s:coordination&gt;</pre>
 
 
@@ -1264,9 +1198,6 @@
   <div align="justify">
 
     <pre>&gt; cvs -d:pserver:anonymous@cvs.sourceforge.net:/cvsroot/taverna login 
-
-
-
 &gt; cvs -z3 -d:pserver:anonymous@cvs.sourceforge.net:/cvsroot/taverna co taverna1.0</pre>
 
     <font size="2" face="Arial, Helvetica, sans-serif">Updates from within the 
