@@ -51,6 +51,16 @@ public class SeqVistaRenderer extends AbstractRenderer.ByMimeType {
 	    seqType = "ppd";
 	    return true;
 	}
+	else if (mimeType.matches(".*chemical/seq-na-genbank.*")) {
+	    seqType = "auto";
+	    np = 1;
+	    return true;
+	}
+	else if (mimeType.matches(".*chemical/seq-aa-genpept.*")) {
+	    seqType = "auto";
+	    np = 2;
+	    return true;
+	}
 	return false;
     }
     
