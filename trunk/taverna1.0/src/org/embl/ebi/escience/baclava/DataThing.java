@@ -363,7 +363,8 @@ public class DataThing {
 		    getMetadata().addMIMEType("application/octet-stream");
 		}
 		else {
-		    getMetadata().addMIMEType("application/X-UNKNOWN-JAVA-TYPE-"+o.getClass().getName());
+		    // Special magic MIME type for Java class
+		    getMetadata().addMIMEType("java/"+o.getClass().getName());
 		}
 		for (Iterator i = getMetadata().getMIMETypeList().iterator(); i.hasNext(); ) {
 		    sb.append((String)i.next());

@@ -13,6 +13,7 @@ import org.embl.ebi.escience.scufl.XScufl;
 
 // Utility Imports
 import java.util.*;
+import java.io.*;
 
 // JDOM Imports
 import org.jdom.Document;
@@ -149,6 +150,19 @@ public class DataThingXMLFactory {
        	if (mimeMajorType.equals("text")) {
 	    result = new String(decodedData);
 	}
+	// Handle java objects
+	else if (mimeMajorType.equals("java")) {
+	    try {
+		ObjectInputStream in = new ObjectInputStream(new ByteArrayInputStream(decodedData));
+		result = (Object)in.readObject();
+		in.close();		
+	    }
+	    catch (Exception ex) {
+		System.out.println("Failed to deserialize java object type");
+		ex.printStackTrace();
+	    }
+	    result = new String("Unable to decode "+mimeHint);
+	}
 	else {
 	    result = decodedData;
 	}
@@ -275,6 +289,19 @@ public class DataThingXMLFactory {
 	    }
 	    else if (o instanceof byte[]) {
 		theBytes = (byte[])o;
+	    }
+	    // Handle java object
+	    else {
+		try {
+		    ByteArrayOutputStream bos = new ByteArrayOutputStream();
+		    ObjectOutputStream oos = new ObjectOutputStream(bos);
+		    oos.writeObject(o);
+		    theBytes = bos.toByteArray();
+		}
+		catch (Exception ex) {
+		    System.out.println("Error serializing "+o.getClass().getName());
+		    ex.printStackTrace();
+		}
 	    }
 	    // Convert to base64
 	    System.out.println("Size of binary data is "+theBytes.length+" bytes.");
