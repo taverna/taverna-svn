@@ -30,7 +30,9 @@ public class AnnotationTemplate {
     
     // Namespace for RDF statements
     private static final String RDF_NS = "http://www.w3.org/1999/02/22-rdf-syntax-ns#";
-    
+    public static final String TAVERNA_PROVENANCE_NS = "urn:lsid:net.sf.taverna:predicates:";
+
+
     /**
      * Create a basic 'subject verb object' triple in RDF
      * format

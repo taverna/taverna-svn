@@ -87,13 +87,24 @@ public abstract class Processor implements Serializable, Transferable {
      */
     public AnnotationTemplate[] defaultAnnotationTemplates() {
 	List dtemplates = new ArrayList();
-	Port[] boundInputs = getBoundInputPorts();
-	Port[] boundOutputs = getBoundOutputPorts();
+	Port[] boundInputs, boundOutputs;
+	if (model != null) {
+	    boundInputs = getBoundInputPorts();
+	    boundOutputs = getBoundOutputPorts();
+	}
+	else if (model == null && parentProcessor != null) {
+	    boundInputs = parentProcessor.getBoundInputPorts();
+	    boundOutputs = parentProcessor.getBoundOutputPorts();
+	}
+	else {
+	    boundInputs = new Port[0];
+	    boundOutputs = new Port[0];
+	}
 	for (int i = 0; i < boundInputs.length; i++) {
 	    for (int j = 0; j < boundOutputs.length; j++) {
 		Port input = boundInputs[i];
 		Port output = boundOutputs[j];
-		dtemplates.add(AnnotationTemplate.standardTemplate(output,"createdFrom",input));
+		dtemplates.add(AnnotationTemplate.standardTemplate(output,"tavp:createdFrom",input));
 	    }
 	}
 	return (AnnotationTemplate[])dtemplates.toArray(new AnnotationTemplate[0]);
