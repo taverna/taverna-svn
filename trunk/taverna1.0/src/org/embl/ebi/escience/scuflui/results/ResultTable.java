@@ -40,16 +40,16 @@ public class ResultTable extends JTable
 												column);
 			if(value != null)
 			{
-				ResultTableCell cell = (ResultTableCell)value;
 				setBorder(BorderFactory.createMatteBorder(1,0,1,0, Color.WHITE));
 				if(hasFocus)
 				{
 					setBackground(new Color(202, 222, 254));
-				}				
-				if(cell.getColumn().hasOutputs() && !(cell.parent instanceof ResultTableColumn))
+				}			
+				ResultTableCell cell = ((ResultTable)table).getCell(row, column);
+				if(cell !=null && !(cell.parent instanceof ResultTableColumn))
 				{
 					// List!
-					if(cell.startRow == cell.parent.startRow)
+					if(cell.parent.getCell(row - 1) == null)
 					{
 						setIcon(UIManager.getIcon("Tree.expandedIcon"));
 					}
@@ -58,16 +58,38 @@ public class ResultTable extends JTable
 						setBorder(BorderFactory.createCompoundBorder(BorderFactory.createMatteBorder(0,12,0,0, getBackground()), getBorder()));
 					}
 				}
-				setValue(cell.thing.getDataObject());
+				setValue(value);
 			}
 
 			return this;
 		}
 	}
 
+	/* (non-Javadoc)
+	 * @see javax.swing.JTable#isCellSelected(int, int)
+	 */
+//	public boolean isCellSelected(int row, int column)
+//	{
+//		ResultTableCell cell = (ResultTableCell)getValueAt(row, column);
+//		if(cell == null)
+//		{
+//			return super.isCellSelected(row, column);
+//		}
+//		if(getSelectedColumn() == column)
+//		{
+//			return row >= cell.startRow && row <= cell.endRow;
+//		}
+//		return false;
+//	}
+	
+	public ResultTableCell getCell(int row, int column)
+	{
+		return ((ResultTableModel)getModel()).getColumn(column).getCell(row);
+	}
+	
 	public Rectangle getCellRect(int row, int column, boolean includeSpacing)
 	{
-		ResultTableCell cell = (ResultTableCell)getValueAt(row, column);		
+		ResultTableCell cell = getCell(row, column);		
 		if(cell == null)
 		{
 			return super.getCellRect(row, column, includeSpacing);

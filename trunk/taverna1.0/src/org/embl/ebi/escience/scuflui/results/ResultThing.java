@@ -14,17 +14,21 @@ import org.embl.ebi.escience.baclava.DataThing;
 public class ResultThing
 {
 	private DataThing thing;
+	protected String[] inputLSIDs;
+	protected ResultSource source;
 	
 	protected Collection inputs = new HashSet();
 	protected Collection outputs = new HashSet();
 	
 	/**
 	 * @param thing
+	 * @param inputLSIDs
 	 */
-	public ResultThing(DataThing thing)
+	public ResultThing(DataThing thing, String[] inputLSIDs)
 	{
 		super();
 		this.thing = thing;
+		this.inputLSIDs = inputLSIDs;
 	}
 	
 	public void addInput(ResultThing thing)
@@ -40,5 +44,15 @@ public class ResultThing
 	public DataThing getDataThing()
 	{
 		return thing;
+	}
+	
+	public String getLSID()
+	{
+		return thing.getLSID(thing.getDataObject());
+	}
+	
+	public String toString()
+	{
+		return thing.getDataObject().toString();
 	}
 }

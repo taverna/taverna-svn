@@ -5,7 +5,9 @@ package org.embl.ebi.escience.scuflui.results;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.awt.GridLayout;
 
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
@@ -17,6 +19,7 @@ import org.embl.ebi.escience.scufl.enactor.WorkflowInstance;
 import org.embl.ebi.escience.scuflui.renderers.RendererException;
 import org.embl.ebi.escience.scuflui.renderers.RendererRegistry;
 import org.embl.ebi.escience.scuflui.renderers.RendererSPI;
+import org.embl.ebi.escience.scuflworkers.ProcessorHelper;
 
 /**
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover</a>
@@ -56,21 +59,37 @@ public class ResultTablePanel extends JPanel implements ListSelectionListener
 	public void valueChanged(ListSelectionEvent e)
 	{
 		System.out.println("Cell: " + resultTable.getSelectedColumn() + "," + resultTable.getSelectedRow());
-		ResultTableCell cell = (ResultTableCell)resultTable.getValueAt(resultTable.getSelectedRow(),resultTable.getSelectedColumn());
-		if(cell != null)
+		ResultThing thing = (ResultThing)resultTable.getValueAt(resultTable.getSelectedRow(),resultTable.getSelectedColumn());
+		if(thing != null)
 		{
-			RendererSPI renderer = RendererRegistry.instance().getRenderer(cell.getDataThing());
+			JPanel panel = new JPanel();
+			panel.setLayout(new BorderLayout());
+			
+			JPanel textPanel = new JPanel();
+			textPanel.setLayout(new GridLayout(2,1));
+			
+			JLabel otherLabel = new JLabel("This is the output of");
+			JLabel outputLabel = new JLabel(thing.source.toString());
+			outputLabel.setIcon(ProcessorHelper.getPreferredIcon(thing.source.getProcessor()));
+			
+			textPanel.add(otherLabel);
+			textPanel.add(outputLabel);
+			
+			panel.add(textPanel, BorderLayout.NORTH);
+			
+			RendererSPI renderer = RendererRegistry.instance().getRenderer(thing.getDataThing());
 			try
 			{
-				JScrollPane scroll = new JScrollPane(renderer.getComponent(RendererRegistry.instance(), cell.getDataThing()));
+				JScrollPane scroll = new JScrollPane(renderer.getComponent(RendererRegistry.instance(), thing.getDataThing()));
 				scroll.setPreferredSize(new Dimension(0,0));
-				split.setRightComponent(scroll);
+				panel.add(scroll, BorderLayout.CENTER);
 			}
 			catch (RendererException e1)
 			{
 				// TODO Handle RendererException
 				e1.printStackTrace();
 			}
+			split.setRightComponent(panel);			
 		}
 		else
 		{

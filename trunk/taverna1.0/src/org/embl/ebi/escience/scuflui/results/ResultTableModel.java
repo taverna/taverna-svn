@@ -10,6 +10,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -19,6 +20,7 @@ import javax.swing.table.TableModel;
 
 import org.embl.ebi.escience.baclava.DataThing;
 import org.embl.ebi.escience.scufl.DataConstraint;
+import org.embl.ebi.escience.scufl.OutputPort;
 import org.embl.ebi.escience.scufl.Processor;
 import org.embl.ebi.escience.scufl.ScuflModel;
 import org.embl.ebi.escience.scufl.enactor.WorkflowInstance;
@@ -38,7 +40,10 @@ public class ResultTableModel implements TableModel
 	HashMap provenance;
 	private int rowCount;
 
-	private ArrayList tableListeners = new ArrayList();
+	private ResultSource[] sources = null;
+	private boolean condenseColumns = true;
+
+	private Collection tableListeners = new ArrayList();
 
 	private ResultTableColumn[] columns;
 
@@ -50,7 +55,7 @@ public class ResultTableModel implements TableModel
 	{
 		this.model = model;
 		this.instance = instance;
-		init();
+		createColumns();
 	}
 
 	/*
@@ -101,8 +106,13 @@ public class ResultTableModel implements TableModel
 	 */
 	public Object getValueAt(int rowIndex, int columnIndex)
 	{
-		return columns[columnIndex].getCell(rowIndex);
+		return columns[columnIndex].getValue(rowIndex);
 	}
+	
+	public ResultTableColumn getColumn(int column)
+	{
+		return columns[column];
+	}	
 
 	/*
 	 * (non-Javadoc)
@@ -144,79 +154,139 @@ public class ResultTableModel implements TableModel
 		tableListeners.remove(l);
 	}
 
-	private void init()
+	private ResultSource createSource(DataConstraint link)
 	{
-		DataConstraint[] links = model.getDataConstraints();
-		HashMap columnMap = new HashMap();
-		for (int index = 0; index < links.length; index++)
+		// Get DataThing
+		DataThing thing = null;
+		Processor processor = link.getSource().getProcessor();
+		if (processor.getName().equals("SCUFL_INTERNAL_SOURCEPORTS"))
 		{
-			DataThing thing = null;
-			Processor processor = links[index].getSource().getProcessor();
-			if (processor.getName().equals("SCUFL_INTERNAL_SOURCEPORTS"))
+			try
 			{
-				try
+				Map[] maps = instance.getIntermediateResultsForProcessor(link.getSink()
+						.getProcessor().getName());
+				Map outputs = maps[0];
+				thing = (DataThing) outputs.get(link.getSink().getName());
+			}
+			catch (Exception e)
+			{
+				e.printStackTrace();
+			}
+		}
+		else
+		{
+			try
+			{
+				Map[] maps = instance.getIntermediateResultsForProcessor(processor.getName());
+				Map outputs = maps[1];
+				thing = (DataThing) outputs.get(link.getSource().getName());
+			}
+			catch (Exception e)
+			{
+				e.printStackTrace();
+			}
+		}
+		ResultSource source = new ResultSource(link.getSource(), thing);
+		source.populateResults(provenance);
+		return source;
+	}
+
+	private void createSources()
+	{
+		if (sources == null)
+		{
+			try
+			{
+				provenance = parseProvenance(instance.getProvenanceXMLString());
+			}
+			catch (Exception e)
+			{
+				// TODO Handle JDOMException
+				e.printStackTrace();
+			}
+			HashMap sourceMap = new HashMap();
+			DataConstraint[] links = model.getDataConstraints();
+			for (int index = 0; index < links.length; index++)
+			{
+				ResultSource source = (ResultSource) sourceMap.get(links[index].getSource());
+				if (source == null)
 				{
-					Map[] maps = instance.getIntermediateResultsForProcessor(links[index].getSink()
-							.getProcessor().getName());
-					Map outputs = maps[0];
-					thing = (DataThing) outputs.get(links[index].getSink().getName());
+					source = createSource(links[index]);
+					sourceMap.put(links[index].getSource(), source);
 				}
-				catch (Exception e)
+				source.addOutputProcessor(links[index].getSink().getProcessor());
+			}
+			
+			// Build graph of sources
+			Iterator sourceIterator = sourceMap.values().iterator();
+			while(sourceIterator.hasNext())
+			{
+				ResultSource source = (ResultSource)sourceIterator.next();
+				Iterator processorIterator = source.outputProcessors.iterator();
+				while(processorIterator.hasNext())
 				{
-					e.printStackTrace();
+					Processor processor = (Processor)processorIterator.next();
+					OutputPort[] ports = processor.getBoundOutputPorts();
+					for(int index = 0; index < ports.length; index++)
+					{
+						ResultSource outputSource = (ResultSource)sourceMap.get(ports[index]);
+						if(outputSource != null)
+						{
+							source.addOutput(outputSource);
+							outputSource.addInput(source);
+						}
+					}
+				}
+			}
+			
+			sources = new ResultSource[ sourceMap.size() ];
+			sourceMap.values().toArray(sources);
+			
+			Arrays.sort(sources, new Comparator()
+			{
+				public boolean equals(Object obj)
+				{
+					return false;
+				}
+
+				public int compare(Object o1, Object o2)
+				{
+					return ((ResultSource)o1).getDepth() - ((ResultSource)o2).getDepth();
+				}
+			});
+		}
+	}
+
+	private void createColumns()
+	{
+		createSources();
+		Collection columnList = new ArrayList();
+		int depth = -1;
+		ResultTableColumn column = null;
+		for(int index = 0; index < sources.length; index++)
+		{
+			if (condenseColumns)
+			{
+				if (sources[index].getDepth() != depth)
+				{
+					ResultTableColumn newColumn = new ResultTableColumn();
+					newColumn.previousColumn = column;
+					column = newColumn;
+					depth = sources[index].getDepth();
+					columnList.add(column);					
 				}
 			}
 			else
 			{
-				try
-				{
-					Map[] maps = instance.getIntermediateResultsForProcessor(processor.getName());
-					Map outputs = maps[1];
-					thing = (DataThing) outputs.get(links[index].getSource().getName());
-				}
-				catch (Exception e)
-				{
-					e.printStackTrace();
-				}
+				ResultTableColumn newColumn = new ResultTableColumn();
+				newColumn.previousColumn = column;
+				column = newColumn;
+				columnList.add(column);				
 			}
-			columnMap.put(links[index].getSource(), new ResultTableColumn(this, links[index], thing));
-			//columns[index] = new ResultTableColumn(links[index]);
+			column.addSource(sources[index]);
 		}
-		for (int index = 0; index < links.length; index++)
-		{
-			ResultTableColumn column = (ResultTableColumn) columnMap.get(links[index].getSource());
-			Processor sinkProcessor = links[index].getSink().getProcessor();
-			Processor sourceProcessor = links[index].getSource().getProcessor();
-			for (int innerindex = 0; innerindex < links.length; innerindex++)
-			{
-				if (sourceProcessor.equals(links[innerindex].getSink().getProcessor()))
-				{
-					column.addInput((ResultTableColumn) columnMap
-							.get(links[innerindex].getSource()));
-				}
-				if (sinkProcessor.equals(links[innerindex].getSource().getProcessor()))
-				{
-					column.addOutput((ResultTableColumn) columnMap.get(links[innerindex]
-							.getSource()));
-				}
-
-			}
-		}
-
-		columns = new ResultTableColumn[columnMap.size()];
-		columnMap.values().toArray(columns);
-		Arrays.sort(columns, new Comparator()
-		{
-			public boolean equals(Object obj)
-			{
-				return false;
-			}
-
-			public int compare(Object o1, Object o2)
-			{
-				return ((ResultTableColumn) o1).getDepth() - ((ResultTableColumn) o2).getDepth();
-			}
-		});
+		columns = new ResultTableColumn[columnList.size()];
+		columnList.toArray(columns);
 		update();
 	}
 
@@ -271,21 +341,11 @@ public class ResultTableModel implements TableModel
 	{
 		try
 		{
-			provenance = parseProvenance(instance.getProvenanceXMLString());
-
 			int row = 0;
 			for (int index = columns.length - 1; index > 0; index--)
 			{
-				if (!columns[index].hasOutputs())
-				{
-					System.out.println("Getting data for " + columns[index]);
-					DataThing result = columns[index].getDataThing();
-					if (result != null)
-					{
-						row = columns[index].createCell(result, row, null).endRow + 1;
-						System.out.println(result.getLSID(result.getDataObject()));
-					}
-				}
+				System.out.println("Getting data for " + columns[index]);
+				row = columns[index].fillColumn(row);
 			}
 			rowCount = row;
 		}
@@ -321,7 +381,7 @@ public class ResultTableModel implements TableModel
 			{
 				DataThing child = (DataThing) children.next();
 				DataThing result = findThing(child, lsid, inputLSIDs);
-				if(result != null)
+				if (result != null)
 				{
 					getAllInputs(thing, inputLSIDs);
 					return result;
