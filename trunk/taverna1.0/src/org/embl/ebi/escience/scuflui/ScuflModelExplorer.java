@@ -61,6 +61,8 @@ public class ScuflModelExplorer extends JTree
 	this.putClientProperty("JTree.lineStyle","Angled");
 	ScuflModelExplorerRenderer renderer = new ScuflModelExplorerRenderer();
 	this.setCellRenderer(renderer);
+	this.addMouseMotionListener(new ScuflModelExplorerDragHandler(this));
+	this.setDragEnabled(true);
     }
     
     /**

@@ -60,7 +60,13 @@ public class ScuflModelExplorerPopupHandler extends MouseAdapter {
      * there wasn't a menu available for that type of node.
      */
     void doEvent(MouseEvent e) {
-	DefaultMutableTreeNode node = (DefaultMutableTreeNode)(explorer.getPathForLocation(e.getX(), e.getY()).getLastPathComponent());
+	DefaultMutableTreeNode node = null;
+	try {
+	    node = (DefaultMutableTreeNode)(explorer.getPathForLocation(e.getX(), e.getY()).getLastPathComponent());
+	}
+	catch (NullPointerException npe) {
+	    return;
+	}
 	Object scuflObject = node.getUserObject();
 	if (scuflObject != null) {
 	    try {
