@@ -29,7 +29,7 @@ import uk.ac.soton.itinnovation.taverna.enactor.entities.TaskExecutionException;
  * Last edited by $Author: phidias $
  * 
  * @author Mark
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public class SelectFileWorker implements LocalWorker {
     
@@ -64,7 +64,7 @@ public class SelectFileWorker implements LocalWorker {
         
         // create the file filters
         for (int i=0; i < fileTypeList.length; i++){
-            FileExtFilter filter = new FileExtFilter(fileTypeList[i], filterLabelList[i]);
+            FileExtFilter filter = new FileExtFilter(fileTypeList[i], filterLabelList[i],true);
             chooser.setFileFilter(filter);           
         }
         
@@ -73,7 +73,10 @@ public class SelectFileWorker implements LocalWorker {
             public void propertyChange(PropertyChangeEvent e){
                 if(e.getPropertyName().equals(JFileChooser.SELECTED_FILE_CHANGED_PROPERTY)){
                     File f = (File)e.getNewValue();
-                    String s = f.getPath(), suffix = null;
+                    if (f != null && f.isFile()){
+                        String s = f.getPath();
+                        String suffix = null;
+                    }
                     
                 }
             }
@@ -175,10 +178,10 @@ public class SelectFileWorker implements LocalWorker {
     
     class FileExtFilter extends FileFilter{
      
-        public FileExtFilter(String ext, String label){
+        public FileExtFilter(String ext, String label, boolean includeDir){
             this.ext = ext;
             this.label = label;
-            
+            this.includeDir = includeDir;
         }
         
         public String getDescription(){
@@ -186,11 +189,15 @@ public class SelectFileWorker implements LocalWorker {
         }
         
         public boolean accept(File file){
+            if (file.isDirectory() && includeDir){
+                return true;
+            }else {
             return file.getName().endsWith(this.ext);
+            }
         }
         
         String ext, label;
-        
+        boolean includeDir;
     }
 
 }

@@ -18,7 +18,7 @@ import uk.ac.soton.itinnovation.taverna.enactor.entities.TaskExecutionException;
  * Last edited by $Author: phidias $
  * 
  * @author Mark
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class DataRangeColumnTask extends DataRangeTask implements LocalWorker {
 
@@ -36,7 +36,7 @@ public class DataRangeColumnTask extends DataRangeTask implements LocalWorker {
         }
         int columnIndex = Integer.parseInt(colIndexStr)-1;
         
-        ArrayList inDataArray = inAdapter.getArrayList("inputArray");
+        ArrayList inDataArray = inAdapter.getArrayList("inputArray"); // the 2D arraylist containing the values parsed from the Excel file.
         if (inDataArray == null || inDataArray.isEmpty()){
             throw new TaskExecutionException("The 'inputArray' attribute cannot be null or empty");                
         }
@@ -68,7 +68,7 @@ public class DataRangeColumnTask extends DataRangeTask implements LocalWorker {
      * @see org.embl.ebi.escience.scuflworkers.java.LocalWorker#inputTypes()
      */
     public String[] inputTypes() {
-        return new String[]{"'text/plain'"};
+        return new String[]{"'text/plain'","'text/plain'"};
     }
 
     /**

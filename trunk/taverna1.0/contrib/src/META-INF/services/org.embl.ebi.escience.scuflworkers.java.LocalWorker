@@ -29,6 +29,12 @@ net.sourceforge.taverna.scuflworkers.xml.XPathTextWorker = xml:XPath From Text
 
 net.sourceforge.taverna.scuflworkers.io.TextFileReader = io:Read Text File
 net.sourceforge.taverna.scuflworkers.io.TextFileWriter = io:Write Text File
+net.sourceforge.taverna.scuflworkers.io.LocalCommand = io:Execute cmd-line app
+net.sourceforge.taverna.scuflworkers.io.ExcelFileReader = io:Read Excel File
+net.sourceforge.taverna.scuflworkers.io.FileListByExtTask = io:List Files By Extension
+net.sourceforge.taverna.scuflworkers.io.FileListByRegexTask = io:List Files By Regex
+net.sourceforge.taverna.scuflworkers.io.DataRangeTask = io:Select Data Range From File
+net.sourceforge.taverna.scuflworkers.io.DataRangeColumnTask = io:Select Column From File
 
 net.sourceforge.taverna.scuflworkers.ui.AskWorker = ui:Ask
 net.sourceforge.taverna.scuflworkers.ui.SelectWorker = ui:Select
