@@ -51,7 +51,23 @@ public abstract class Processor implements Serializable, Transferable {
     Processor parentProcessor = null;
     protected List templates = new ArrayList();
     protected IterationStrategy iterationStrategy = null;
-
+    
+    /**
+     * A string representing a resource location within the enactor
+     * JVM. This is the case, for example, for the simple string
+     * operations and the local service processors.
+     */
+    public static String ENACTOR = "Local to enactor";
+    
+    /**
+     * If meaningful, obtain the host that the resource is based
+     * in. Of course, not all processor implementations are service
+     * based so this may return the string Processor.ENACTOR instead
+     * to represent this, and this is the default.
+     */
+    public String getResourceHost() {
+	return Processor.ENACTOR;
+    }
 
     /**
      * Get the iteration strategy for this processor, or null

@@ -32,7 +32,7 @@ import org.apache.axis.wsdl.symbolTable.*;
 
 import org.embl.ebi.escience.scufl.*;
 
-
+import java.net.*;
 
 // Utility Imports
 
@@ -112,6 +112,20 @@ public class WSDLBasedProcessor extends Processor implements java.io.Serializabl
 
     }
 
+
+    /**
+     * Get the target endpoint for this processor
+     */
+    public String getResourceHost() {
+	String fullEndpoint = call.getTargetEndpointAddress();
+	try {
+	    URL endpointURL = new URL(fullEndpoint);
+	    return endpointURL.getHost();
+	}
+	catch (MalformedURLException mue) {
+	    return "Unknown!";
+	}
+    }
     
 
     private String operationName = null;
