@@ -14,6 +14,7 @@ import java.util.*;
  */
 public class JoinIterator implements Iterator {
     
+    private boolean emptyIterator = false;
     private BaclavaIterator[] iterators;
     private boolean nextState;
     private Object[] currentState;
@@ -40,7 +41,7 @@ public class JoinIterator implements Iterator {
 	    // have at least one element in
 	    for (int i = 0; i < b.length; i++) {
 		if (b[i].hasNext() == false) {
-		    nextState = false;
+		    emptyIterator = true;
 		}
 	    }
 	}
@@ -57,6 +58,9 @@ public class JoinIterator implements Iterator {
      * value of true
      */
     public synchronized boolean hasNext() {
+	if (emptyIterator) {
+	    return false;
+	}
 	for (int i = 0; i < iterators.length; i++) {
 	    if (iterators[i].hasNext()) {
 		return true;
