@@ -73,13 +73,9 @@ import org.embl.ebi.escience.scufl.Port;
 import org.embl.ebi.escience.scufl.ScuflModel;
 import org.embl.ebi.escience.scufl.ScuflModelEvent;
 import org.embl.ebi.escience.scufl.ScuflModelEventListener;
-import org.embl.ebi.escience.scufl.enactor.EnactorProxy;
-import org.embl.ebi.escience.scufl.enactor.implementation.FreefluoEnactorProxy;
 import org.embl.ebi.escience.scuflui.renderers.RendererException;
 import org.embl.ebi.escience.scuflui.renderers.RendererRegistry;
 import org.embl.ebi.escience.scuflui.renderers.RendererSPI;
-import org.embl.ebi.escience.scuflui.workbench.GenericUIComponentFrame;
-import org.embl.ebi.escience.scuflui.workbench.Workbench;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.input.SAXBuilder;
@@ -90,7 +86,7 @@ import org.jdom.output.XMLOutputter;
  * COMMENT DataThingConstructionPanel
  * 
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover </a>
- * @version $Revision: 1.23 $
+ * @version $Revision: 1.24 $
  */
 public abstract class DataThingConstructionPanel extends JPanel implements ScuflUIComponent, ScuflModelEventListener
 {
@@ -906,7 +902,8 @@ public abstract class DataThingConstructionPanel extends JPanel implements Scufl
 		}
 	}
 
-    //static EnactorProxy defaultEnactor = new FreefluoEnactorProxy();
+	public static UserContext userContext = new UserContext();
+	
 	static JFileChooser fileChooser = new JFileChooser();
 	static BaclavaDataService store = null;
 
@@ -1041,6 +1038,7 @@ public abstract class DataThingConstructionPanel extends JPanel implements Scufl
     
     /**
      * Fully implement this method to allow launch of the workflow display from the input panel
+     * @param inputObject
      */
     public abstract void launchEnactorDisplay(Map inputObject);
 	
