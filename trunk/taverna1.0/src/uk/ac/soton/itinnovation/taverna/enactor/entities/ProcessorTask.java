@@ -25,8 +25,8 @@
 //      Dependencies        :
 //
 //      Last commit info    :   $Author: mereden $
-//                              $Date: 2003-11-14 14:11:29 $
-//                              $Revision: 1.25 $
+//                              $Date: 2004-01-05 13:52:03 $
+//                              $Revision: 1.26 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 package uk.ac.soton.itinnovation.taverna.enactor.entities;
@@ -209,8 +209,14 @@ public abstract class ProcessorTask extends TavernaTask{
 			String outputName = (String)l.next();
 			DataThing outputValue = (DataThing)singleResultMap.get(outputName);
 			Object dataObject = outputValue.getDataObject();
-			List targetList = ((List)((DataThing)outputMap.get(outputName)).getDataObject());
-			targetList.add(dataObject);
+			// addition of a fix here by Chris Wroe
+			// Before it tried to map all results from the service call into the subsequent
+			// data flow causing a null pointer exception if no such data flow existed.
+			if (outputMap.containsKey(outputName)) {
+			    List targetList = ((List)((DataThing)outputMap.get(outputName)).getDataObject());
+			    targetList.add(dataObject);
+			}
+			/// fix ends
 		    }
 		}
 		
