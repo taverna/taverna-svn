@@ -7,6 +7,7 @@ package org.embl.ebi.escience.scuflworkers.biomart;
 
 import org.embl.ebi.escience.scufl.*;
 import org.ensembl.mart.lib.*;
+import org.ensembl.mart.lib.config.*;
 import java.util.*;
 
 /**
@@ -34,6 +35,7 @@ public class BiomartProcessor extends Processor {
 	this.query = query;
 	try {
 	    buildPortsFromQuery();
+	    buildInputPortsFromQuery();
 	}
 	catch (Exception ex) {
 	    ProcessorCreationException pce = new ProcessorCreationException("Can't build output ports");
@@ -56,6 +58,23 @@ public class BiomartProcessor extends Processor {
 			(sd1 != null && sd2 == null)) {
 			// Only update if there's either a removed sequence or a newly placed one
 			update();
+		    }
+		}
+		public void filterAdded(Query sourceQuery, int index, Filter filter) {
+		    updateInputs();
+		}
+		public void filterRemoved(Query sourceQuery, int index, Filter filter) {
+		    updateInputs();
+		}
+		public void filterChanged(Query sourceQuery, int index, Filter oldFilter, Filter newFilter) {
+		    pingModel();
+		}
+		private void updateInputs() {
+		    try {
+			buildInputPortsFromQuery();
+		    }
+		    catch (Exception ex) {
+			ex.printStackTrace();
 		    }
 		}
 		private void update() {
@@ -87,10 +106,90 @@ public class BiomartProcessor extends Processor {
 	return this.query;
     }
 
+    Query getFullyPopulatedQuery() throws ConfigurationException {
+	synchronized(query) {
+	    if (this.query.getDataSource() != null) {
+		return getQuery();
+	    }
+	    else {
+		initQuery();
+		return getQuery();
+	    }
+	}
+    }
+    
+    DatasetConfig getDatasetConfig() throws ConfigurationException {
+	synchronized(query) {
+	    if (config != null) {
+		return config;
+	    }
+	    else {
+		initQuery();
+		return config;
+	    }
+	}
+    }
+    
+    DatasetConfig config = null;
+
+    void initQuery() throws ConfigurationException {
+	synchronized(query) {
+	    DetailedDataSource ds = 
+		new DetailedDataSource(info.dbType,
+				       info.dbHost,
+				       info.dbPort,
+				       info.dbInstance,
+				       info.dbUser,
+				       info.dbPassword,
+				       10,
+				       info.dbDriver);
+	    DSConfigAdaptor adaptor = new DatabaseDSConfigAdaptor(ds, ds.getUser(), 
+								  true, false, false);
+	    config = adaptor.getDatasetConfigByDatasetInternalName(dataSourceName,
+								   "default");
+	    query.setDataSource(ds);
+	    query.setDataset(config.getDataset());
+	    query.setMainTables(config.getStarBases());
+	    query.setPrimaryKeys(config.getPrimaryKeys());
+	}
+    }
+    
     public Properties getProperties() {
 	return new Properties();
     }
     
+    void pingModel() {
+	fireModelEvent(new MinorScuflModelEvent(this, "Filter attributes changed"));
+    }
+
+    private void buildInputPortsFromQuery() 
+	throws PortCreationException,
+	       DuplicatePortNameException {
+	Filter[] filters = query.getFilters();
+	Set filterNames = new HashSet();
+	for (int i = 0; i < filters.length; i++) {
+	    if (filters[i] instanceof BasicFilter) {
+		String fieldName = filters[i].getField();
+		filterNames.add(fieldName+"_filter");
+		try {
+		    locatePort(fieldName+"_filter");
+		}
+		catch (UnknownPortException upe) {
+		    Port newPort = new InputPort(this, fieldName+"_filter");
+		    newPort.setSyntacticType("'text/plain'");
+		    addPort(newPort);
+		}
+	    }
+	}
+	InputPort[] currentInputs = getInputPorts();
+	for (int i = 0; i < currentInputs.length; i++) {
+	    Port inputPort = currentInputs[i];
+	    if (filterNames.contains(inputPort.getName()) == false) {
+		removePort(inputPort);
+	    }
+	}
+    }
+
     private void buildPortsFromQuery()
 	throws PortCreationException,
 	       DuplicatePortNameException {

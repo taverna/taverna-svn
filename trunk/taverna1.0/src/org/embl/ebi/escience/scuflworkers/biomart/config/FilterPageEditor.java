@@ -14,6 +14,7 @@ import org.ensembl.mart.lib.config.*;
 import javax.swing.*;
 import java.awt.BorderLayout;
 import java.awt.GridLayout;
+import java.awt.FlowLayout;
 import javax.swing.ImageIcon;
 import java.util.*;
 import java.awt.Color;
@@ -146,7 +147,7 @@ public class FilterPageEditor extends JPanel {
 		title = fc.getDisplayName();
 	    }
 	    if (title == null) {
-		title = "";
+		title = "&nbsp;";
 	    }
 	    add(new ShadedLabel("</b>"+title+"<b>", ShadedLabel.TAVERNA_ORANGE, true),
 		BorderLayout.NORTH);
@@ -165,6 +166,13 @@ public class FilterPageEditor extends JPanel {
 		    if (filterType.equals("text")) {
 			filterEditor = new TextFilterEditor(query, fd);
 		    }
+		    else if (filterType.equals("boolean") ||
+			     filterType.equals("boolean_num")) {
+			filterEditor = new BooleanFilterEditor(query, fd);
+		    }
+		    else {
+			filterEditor = new ToDoMessage(filterType);
+		    }
 		    // Add more filter types here....
 		    if (filterEditor != null) {
 			filterPanel.add(filterEditor);
@@ -178,11 +186,200 @@ public class FilterPageEditor extends JPanel {
 	    for (int i = 0; i < components.length; i++) {
 		maxHeight += components[i].getMaximumSize().getHeight();
 	    }
-	    filterPanel.setMaximumSize(new Dimension(600,maxHeight));
-	    setMaximumSize(new Dimension(600,maxHeight+20));
+	    filterPanel.setMaximumSize(new Dimension(6000,maxHeight));
+	    setMaximumSize(new Dimension(6000,maxHeight+20));
 	    add(filterPanel, 
 		BorderLayout.CENTER);
 	}	
+    }
+
+    class ToDoMessage extends JPanel {
+	public ToDoMessage(String message) {
+	    super(new BorderLayout());
+	    setOpaque(false);
+	    setMaximumSize(new Dimension(6000,25));
+	    add(Box.createRigidArea(new Dimension(10,10)),
+		BorderLayout.WEST);
+	    add(Box.createRigidArea(new Dimension(10,10)),
+		BorderLayout.EAST);
+	    add(new JLabel("<html><body>To do - <font color=\"red\">"+message+"</font></body></html>"), BorderLayout.CENTER);
+	}
+    }
+
+    class BooleanFilterEditor extends JPanel {
+
+	Query query;
+	FilterDescription fd;
+	
+	private JRadioButton require = new JRadioButton("Require");
+	private JRadioButton exclude = new JRadioButton("Exclude");
+	private JRadioButton ignore  = new JRadioButton("Ignore");
+
+	private String excludeFilterType = null;
+	private String requireFilterType = null;
+	
+	public BooleanFilterEditor(Query theQuery, FilterDescription filterDescription) {
+	    super(new BorderLayout());
+	    setBackground(Color.WHITE);
+	    query = theQuery;
+	    fd = filterDescription;
+	    final String myID = fd.getField()+fd.getKey()+fd.getTableConstraint();
+	    if ("boolean".equals(fd.getType())) {
+		requireFilterType = BooleanFilter.isNotNULL;
+		excludeFilterType = BooleanFilter.isNULL;
+	    } else if ("boolean_num".equals(fd.getType())) {
+		requireFilterType = BooleanFilter.isNotNULL_NUM;
+		excludeFilterType = BooleanFilter.isNULL_NUM;
+	    }
+	    else {
+		System.out.println("Don't understand type "+fd.getType()+" in the current impl.");
+		return;
+	    }
+	    
+	    // See if there's a filter with this key in the current query
+	    Filter[] filters = query.getFilters();
+	    for (int i = 0; i < filters.length; i++) {
+		String filterID = filters[i].getField()+filters[i].getKey()+filters[i].getTableConstraint();
+		if (filterID.equals(myID) && filters[i] instanceof BooleanFilter) {
+		    BooleanFilter bf = (BooleanFilter)filters[i];
+		    if (bf.getQualifier().equals(excludeFilterType)) {
+			exclude.setSelected(true);
+		    }
+		    else if (bf.getQualifier().equals(requireFilterType)) {
+			require.setSelected(true);
+		    }
+		    break;
+		}
+		ignore.setSelected(true);
+	    }
+
+	    // Register listeners for the radio buttons
+	    require.addActionListener(new ActionListener() {
+		    public void actionPerformed(ActionEvent ae) {
+			if (require.isSelected()) {
+			    if (ignore.isSelected()) {
+				ignore.setSelected(false);
+			    }
+			    if (exclude.isSelected()) {
+				exclude.setSelected(false);
+			    }
+			    Filter[] filters = query.getFilters();
+			    for (int i = 0; i < filters.length; i++) {
+				String filterID = filters[i].getField()+filters[i].getKey()+filters[i].getTableConstraint();
+				if (filterID.equals(myID) && filters[i] instanceof BooleanFilter) {
+				    BooleanFilter oldFilter = (BooleanFilter)filters[i];
+				    BooleanFilter newFilter = new BooleanFilter(oldFilter.getField(),
+										oldFilter.getTableConstraint(),
+										oldFilter.getKey(),
+										requireFilterType,
+										oldFilter.getHandler());
+				    query.replaceFilter(oldFilter, newFilter);
+				    return;
+				}
+			    }
+			    // Didn't find a matching filter, create a new one
+			    BooleanFilter newFilter = new BooleanFilter(fd.getField(),
+									fd.getTableConstraint(),
+									fd.getKey(),
+									requireFilterType,
+									fd.getHandler());
+			    query.addFilter(newFilter);
+			}
+			else {
+			    if (ignore.isSelected() == false) {
+				ignore.setSelected(true);
+			    }
+			}
+		    }
+		});
+	    exclude.addActionListener(new ActionListener() {
+		    public void actionPerformed(ActionEvent ae) {
+			if (exclude.isSelected()) {
+			    if (require.isSelected()) {
+				require.setSelected(false);
+			    }
+			    if (ignore.isSelected()) {
+				ignore.setSelected(false);
+			    }
+			    Filter[] filters = query.getFilters();
+			    for (int i = 0; i < filters.length; i++) {
+				String filterID = filters[i].getField()+filters[i].getKey()+filters[i].getTableConstraint();
+				if (filterID.equals(myID) && filters[i] instanceof BooleanFilter) {
+				    BooleanFilter oldFilter = (BooleanFilter)filters[i];
+				    BooleanFilter newFilter = new BooleanFilter(oldFilter.getField(),
+										oldFilter.getTableConstraint(),
+										oldFilter.getKey(),
+										excludeFilterType,
+										oldFilter.getHandler());
+				    query.replaceFilter(oldFilter, newFilter);
+				    return;
+				}
+			    }
+			    // Didn't find a matching filter, create a new one
+			    BooleanFilter newFilter = new BooleanFilter(fd.getField(),
+									fd.getTableConstraint(),
+									fd.getKey(),
+									excludeFilterType,
+									fd.getHandler());
+			    query.addFilter(newFilter);
+			}
+			else {
+			    if (ignore.isSelected() == false) {
+				ignore.setSelected(true);
+			    }
+			}
+		    }
+		});
+	    ignore.addActionListener(new ActionListener() {
+		    public void actionPerformed(ActionEvent ae) {
+			if (ignore.isSelected()) {
+			    if (require.isSelected()) {
+				require.setSelected(false);
+			    }
+			    if (exclude.isSelected()) {
+				exclude.setSelected(false);
+			    }
+			    Filter[] filters = query.getFilters();
+			    for (int i = 0; i < filters.length; i++) {
+				String filterID = filters[i].getField()+filters[i].getKey()+filters[i].getTableConstraint();
+				if (filterID.equals(myID) && filters[i] instanceof BooleanFilter) {
+				    query.removeFilter(filters[i]);
+				    return;
+				}
+			    }
+			}
+			else if (exclude.isSelected() == false &&
+				 require.isSelected() == false &&
+				 ignore.isSelected() == false) {
+			    ignore.setSelected(true);
+			}
+			      
+		    }
+		});
+
+	    JPanel choicePanel = new JPanel(new GridLayout(1,2));
+	    choicePanel.setOpaque(false);
+	    JLabel label = new JLabel(fd.getDisplayName());
+	    label.setBackground(Color.WHITE);
+	    label.setOpaque(false);
+	    require.setOpaque(false);
+	    exclude.setOpaque(false);
+	    ignore.setOpaque(false);
+	    JPanel buttonPanel = new JPanel(new GridLayout(1,3));
+	    buttonPanel.setOpaque(false);
+	    choicePanel.add(label);
+	    buttonPanel.add(require);
+	    buttonPanel.add(exclude);
+	    buttonPanel.add(ignore);
+	    choicePanel.add(buttonPanel);
+	    add(choicePanel, BorderLayout.CENTER);
+	    add(Box.createRigidArea(new Dimension(10,10)),
+	    BorderLayout.WEST);
+	    add(Box.createRigidArea(new Dimension(10,10)),
+	    BorderLayout.EAST);
+	    setMaximumSize(new Dimension(6000,25));
+	}
+
     }
     
     class TextFilterEditor extends JPanel {
@@ -191,18 +388,20 @@ public class FilterPageEditor extends JPanel {
 	FilterDescription fd;
 
 	public TextFilterEditor(Query theQuery, FilterDescription filterDescription) {
-	    super(new GridLayout(1,3));
+	    super(new BorderLayout());
 	    query = theQuery;
 	    fd = filterDescription;
 	    final String myID = fd.getField()+fd.getKey()+fd.getTableConstraint();
 	    JLabel label = new JLabel(fd.getDisplayName());
 	    label.setBackground(Color.WHITE);
 	    final JTextArea field = new JTextArea();
-	    field.setBackground(Color.WHITE);
+	    field.setBackground(ShadedLabel.TAVERNA_GREEN);
 	    field.setOpaque(true);
 	    setBackground(Color.WHITE);
-	    add(label);
-	    add(field);
+	    JPanel inputPanel = new JPanel(new GridLayout(1,3));
+	    inputPanel.setOpaque(false);
+	    inputPanel.add(label);
+	    inputPanel.add(field);
 	    JButton clearButton = new JButton("Clear");
 	    clearButton.setOpaque(false);
 	    clearButton.addActionListener(new ActionListener() {
@@ -210,8 +409,13 @@ public class FilterPageEditor extends JPanel {
 			field.setText("");
 		    }
 		});
-	    add(clearButton);
-	    setMaximumSize(new Dimension(600,25));
+	    inputPanel.add(clearButton);
+	    add(inputPanel, BorderLayout.CENTER);
+	    add(Box.createRigidArea(new Dimension(10,10)),
+		BorderLayout.WEST);
+	    add(Box.createRigidArea(new Dimension(10,10)),
+		BorderLayout.EAST);
+	    setMaximumSize(new Dimension(6000,25));
 	    // Find if there's an equivalent filter in the query
 	    Filter[] filters = query.getFilters();
 	    for (int i = 0; i < filters.length; i++) {

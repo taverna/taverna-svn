@@ -34,19 +34,22 @@ public class QueryConfigPanel extends JPanel
 	String dataSourceName = theProcessor.getDataSourceName();
 	Query query = theProcessor.getQuery();
 	try {
-	    DetailedDataSource ds = 
-		new DetailedDataSource(info.dbType,
-				       info.dbHost,
-				       info.dbPort,
-				       info.dbInstance,
-				       info.dbUser,
-				       info.dbPassword,
-				       10,
-				       info.dbDriver);
-	    DSConfigAdaptor adaptor = new DatabaseDSConfigAdaptor(ds, ds.getUser(), 
-								  true, false, false);
-	    DatasetConfig config = adaptor.getDatasetConfigByDatasetInternalName(dataSourceName,
-										 "default");
+	    /**
+	       DetailedDataSource ds = 
+	       new DetailedDataSource(info.dbType,
+	       info.dbHost,
+	       info.dbPort,
+	       info.dbInstance,
+	       info.dbUser,
+	       info.dbPassword,
+	       10,
+	       info.dbDriver);
+	       DSConfigAdaptor adaptor = new DatabaseDSConfigAdaptor(ds, ds.getUser(), 
+	       true, false, false);
+	       DatasetConfig config = adaptor.getDatasetConfigByDatasetInternalName(dataSourceName,
+	       "default");
+	    */
+	    DatasetConfig config = theProcessor.getDatasetConfig();
 	    JTabbedPane attributes = new JTabbedPane();
 	    AttributePage[] atPages = config.getAttributePages();
 	    boolean foundValidPage = false;

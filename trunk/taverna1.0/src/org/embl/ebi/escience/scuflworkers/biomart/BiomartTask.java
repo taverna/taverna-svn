@@ -32,30 +32,54 @@ public class BiomartTask implements ProcessorTaskWorker {
 	throws TaskExecutionException {
 	try {
 	    BiomartConfigBean info = processor.getConfig();
-	    Query query = processor.getQuery();
-	    String dataSourceName = processor.getDataSourceName();
-	    // Create new DetailedDataSource
-	    DetailedDataSource ds = 
-		new DetailedDataSource(info.dbType,
-				       info.dbHost,
-				       info.dbPort,
-				       info.dbInstance,
-				       info.dbUser,
-				       info.dbPassword,
-				       10,
-				       info.dbDriver);
-	    DSConfigAdaptor adaptor = new DatabaseDSConfigAdaptor(ds, ds.getUser(), 
-								  true, false, false);
-	    DatasetConfig config = adaptor.getDatasetConfigByDatasetInternalName(dataSourceName,
-										 "default");
-	    query.setDataSource(ds);
-	    // dataset query applies to
-	    query.setDataset(config.getDataset());
-	    // prefixes for databases we want to use
-	    query.setMainTables(config.getStarBases());
-	    // primary keys available for sql table joins 
-	    query.setPrimaryKeys(config.getPrimaryKeys());
+	    // Get a query including data source etc, creating
+	    // a copy so that any filter value settings are not
+	    // overwritten by input values
+	    Query query = new Query(processor.getFullyPopulatedQuery());
 	    
+	    /**String dataSourceName = processor.getDataSourceName();
+	     // Create new DetailedDataSource
+	     DetailedDataSource ds = 
+	     new DetailedDataSource(info.dbType,
+	     info.dbHost,
+	     info.dbPort,
+	     info.dbInstance,
+	     info.dbUser,
+	     info.dbPassword,
+	     10,
+	     info.dbDriver);
+	     DSConfigAdaptor adaptor = new DatabaseDSConfigAdaptor(ds, ds.getUser(), 
+	     true, false, false);
+	     DatasetConfig config = adaptor.getDatasetConfigByDatasetInternalName(dataSourceName,
+	     "default");
+	     query.setDataSource(ds);
+	     // dataset query applies to
+	     query.setDataset(config.getDataset());
+	     // prefixes for databases we want to use
+	     query.setMainTables(config.getStarBases());
+	     // primary keys available for sql table joins 
+	     query.setPrimaryKeys(config.getPrimaryKeys());
+	    */
+	    
+	    // Configure any filters
+	    Filter[] filters = query.getFilters();
+	    for (int i = 0; i < filters.length; i++) {
+		String filterField = filters[i].getField();
+		if (inputMap.containsKey(filterField+"_filter")) {
+		    DataThing filterThing = (DataThing)inputMap.get(filterField+"_filter");
+		    String filterValue = (String)filterThing.getDataObject();
+		    if (filters[i] instanceof BasicFilter) {
+			BasicFilter newFilter = new BasicFilter(filters[i].getField(),
+								filters[i].getTableConstraint(),
+								filters[i].getKey(),
+								filters[i].getQualifier(),
+								filterValue,
+								filters[i].getHandler());
+			query.replaceFilter(filters[i], newFilter);
+		    }
+		}
+	    }
+
 	    Engine engine = new Engine();
 	    final Map results = new HashMap();
 	    OutputPort[] outputs = this.processor.getOutputPorts();

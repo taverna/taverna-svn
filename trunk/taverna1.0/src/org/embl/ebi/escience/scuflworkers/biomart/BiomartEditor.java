@@ -30,7 +30,7 @@ public class BiomartEditor implements ProcessorEditor {
 		    UIUtils.createFrame(bp.getModel(),
 					new QueryConfigPanel(bp),
 					100, 100,
-					400, 500);
+					600, 500);
 		}
 	    };
     }

@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<s:scufl xmlns:s="http://org.embl.ebi.escience/xscufl/0.1alpha" version="0.2" log="0">
+  <s:workflowdescription lsid="urn:lsid:www.mygrid.org.uk:operation:CQ5MQBK6ZI2" author="" title="" />
+  <s:processor name="rnorvegicus_gene_ensembl">
+    <s:biomart>
+      <biomart:biomartconfig xmlns:biomart="http://org.embl.ebi.escience/xscufl-biomart/0.1alpha" dbtype="mysql" dbdriver="com.mysql.jdbc.Driver" dbhost="martdb.ebi.ac.uk" dbport="3306" dbinstance="ensembl_mart_22_1" dbuser="anonymous" />
+      <biomart:biomartds xmlns:biomart="http://org.embl.ebi.escience/xscufl-biomart/0.1alpha">rnorvegicus_gene_ensembl</biomart:biomartds>
+      <biomart:query xmlns:biomart="http://org.embl.ebi.escience/xscufl-biomart/0.1alpha">
+        <biomart:attributes>
+          <biomart:fieldattribute field="gene_chrom_start" key="gene_id_key" constraint="main" />
+          <biomart:fieldattribute field="gene_chrom_end" key="gene_id_key" constraint="main" />
+        </biomart:attributes>
+        <biomart:filters>
+          <biomart:basicfilter field="gene_chrom_start" constraint="main" key="gene_id_key" qualifier="&gt;=" value="0" />
+          <biomart:basicfilter field="gene_chrom_end" constraint="main" key="gene_id_key" qualifier="&lt;=" value="10000" />
+        </biomart:filters>
+        <biomart:sequence type="1" fiveprime="0" threeprime="0" />
+      </biomart:query>
+    </s:biomart>
+  </s:processor>
+  <s:link source="rnorvegicus_gene_ensembl:gene_chrom_start" sink="start" />
+  <s:link source="rnorvegicus_gene_ensembl:gene_chrom_end" sink="end" />
+  <s:link source="rnorvegicus_gene_ensembl:sequenceexport" sink="sequence" />
+  <s:link source="start" sink="rnorvegicus_gene_ensembl:gene_chrom_start_filter" />
+  <s:source name="start" />
+  <s:sink name="start" />
+  <s:sink name="sequence" />
+  <s:sink name="end" />
+</s:scufl>
+
+
