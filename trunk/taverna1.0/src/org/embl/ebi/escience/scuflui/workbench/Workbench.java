@@ -27,7 +27,6 @@ import org.embl.ebi.escience.scuflui.EnactorLaunchPanel;
 import org.embl.ebi.escience.scuflui.ScuflDiagram;
 import org.embl.ebi.escience.scuflui.ScuflModelExplorer;
 import org.embl.ebi.escience.scuflui.XScuflTextArea;
-import uk.ac.mrc.hgmp.taverna.retsina.Retsina;
 
 // Utility Imports
 import java.util.Enumeration;
@@ -44,7 +43,6 @@ import java.io.PrintWriter;
 import java.net.URL;
 
 import org.embl.ebi.escience.scuflui.workbench.FileDrop;
-//import org.embl.ebi.escience.scuflui.workbench.GenericUIComponentFrame;
 import org.embl.ebi.escience.scuflui.workbench.ScavengerTree;
 import org.embl.ebi.escience.scuflui.workbench.ScrollableDesktopPane;
 import org.embl.ebi.escience.scuflui.workbench.SplashScreen;
