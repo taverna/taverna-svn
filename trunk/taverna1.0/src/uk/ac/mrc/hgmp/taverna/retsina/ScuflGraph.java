@@ -1,3 +1,9 @@
+/**
+ * This file is a component of the Taverna project,
+ * and is licensed under the GNU LGPL.
+ * Copyright Tim Carver, HGMP
+ */
+
 package uk.ac.mrc.hgmp.taverna.retsina;
 
 import com.jgraph.JGraph;
@@ -36,7 +42,6 @@ import java.lang.Exception;
 import java.lang.Object;
 import java.lang.String;
 import java.lang.System;
-
 
 
 /**
@@ -100,67 +105,66 @@ public class ScuflGraph extends JGraph
             if (cell != null) 
             {
               String lab = convertValueToString(cell);
-              JTextField textField = new JTextField(10);
 
               String value = null;
-              if(dataSet.dataContains((Port)cell))
-                value = dataSet.getValue((Port)cell);
+              org.embl.ebi.escience.scufl.Port port = ((ScuflPort)cell).getScuflPort();
+              if(dataSet.dataContains(port))
+                value = dataSet.getValue(port);
 
-              System.out.println("VALUE "+value);
-   
               String s = (String)JOptionPane.showInputDialog(
-                                null, "Value of "+lab,
-                                lab,
-                                JOptionPane.PLAIN_MESSAGE,
-                                null,null,
-                                "");                  
+                                null,"Value of "+lab,value);
 
               System.out.println(lab+" = "+s);
-              if( s != null && !dataSet.dataContains((Port)cell) )
+              if( s != null )     // add input port & data constraint
               {
-                dataSet.addData(lab,"string",s,(Port)cell);
-
-                // add input port & data constraint
-                try
+                if( !dataSet.dataContains(port) )
                 {
-                  Processor sinkProcessor = scuflModel.getWorkflowSinkProcessor();
-                  Processor sourceProcessor = scuflModel.getWorkflowSourceProcessor();
-  
-                  org.embl.ebi.escience.scufl.InputPort input = null;
-                  OutputPort output = null;
-                  if( cell instanceof ScuflInputPort)         // source
+                  dataSet.addData(lab,"string",s,port);
+                  try
                   {
-                    ScuflInputPort sip = (ScuflInputPort)cell;
-                    input = (org.embl.ebi.escience.scufl.InputPort)sip.getScuflPort();
-                    sinkProcessor.addPort(input);
-
-                    output = new OutputPort(sourceProcessor,lab);
-                    sourceProcessor.addPort(output);
-                  }
-                  else if ( cell instanceof ScuflOutputPort)  // sink
-                  {
-                    ScuflOutputPort sip = (ScuflOutputPort)cell;
-                    output = (org.embl.ebi.escience.scufl.OutputPort)sip.getScuflPort();
-                    sourceProcessor.addPort(output);
+                    Processor sinkProcessor = scuflModel.getWorkflowSinkProcessor();
+                    Processor sourceProcessor = scuflModel.getWorkflowSourceProcessor();
+    
+                    org.embl.ebi.escience.scufl.InputPort input = null;
+                    OutputPort output = null;
+                    if( cell instanceof ScuflInputPort)         // source
+                    {
+                      ScuflInputPort sip = (ScuflInputPort)cell;
+                      input = (org.embl.ebi.escience.scufl.InputPort)sip.getScuflPort();
+                      sinkProcessor.addPort(input);
   
-                    input = new InputPort(sinkProcessor,lab);
-                    sinkProcessor.addPort(input);
-                  }
+                      output = new OutputPort(sourceProcessor,lab);
+                      sourceProcessor.addPort(output);
+                    }
+                    else if ( cell instanceof ScuflOutputPort)  // sink
+                    {
+                      ScuflOutputPort sip = (ScuflOutputPort)cell;
+                      output = (org.embl.ebi.escience.scufl.OutputPort)sip.getScuflPort();
+                      sourceProcessor.addPort(output);
+  
+                      input = new InputPort(sinkProcessor,lab);
+                      sinkProcessor.addPort(input);
+                    }
 
-                  DataConstraint dc = new DataConstraint(scuflModel, output, input);
-                  scuflModel.addDataConstraint(dc);
+                    DataConstraint dc = new DataConstraint(scuflModel, output, input);
+                    scuflModel.addDataConstraint(dc);
+                  }
+                  catch(DuplicatePortNameException dpne)
+                  {
+                    System.out.println("DuplicatePortNameException");
+                  }
+                  catch(DataConstraintCreationException dce)
+                  {
+                    System.out.println("DataConstraintCreationException");
+                  }
+                  catch(PortCreationException pce)
+                  {
+                    System.out.println("PortCreationException");
+                  }
                 }
-                catch(DuplicatePortNameException dpne)
+                else
                 {
-                  System.out.println("DuplicatePortNameException");
-                }
-                catch(DataConstraintCreationException dce)
-                {
-                  System.out.println("DataConstraintCreationException");
-                }
-                catch(PortCreationException pce)
-                {
-                  System.out.println("PortCreationException");
+                   dataSet.setDataValue(lab,s,port);
                 }
               }
             }
@@ -367,8 +371,21 @@ public class ScuflGraph extends JGraph
     public void insertCell(Point point,String group,String name)
     {
         setCursor(cbusy);
-        Processor proc = addSoaplabProcessor(group,name);
-        insertCell(point,proc,name);
+        try
+        {
+          Processor proc = addSoaplabProcessor(group,name);
+          insertCell(point,proc,name);
+        }
+        catch(DuplicateProcessorNameException dpne)
+        {
+          System.out.println("DuplicateProcessorNameException addProcessor exception thrown");
+        }
+        catch(Exception exp)
+        {
+          System.out.println("addProcessor exception thrown");
+          exp.printStackTrace();
+        }
+
         setCursor(cdone);
     }
 
@@ -526,6 +543,7 @@ public class ScuflGraph extends JGraph
     }
 
     public SoaplabProcessor addSoaplabProcessor(String group, String name)
+                                         throws DuplicateProcessorNameException, Exception
     {
         SoaplabProcessor processor = null;
         String procName = name;
@@ -536,21 +554,21 @@ public class ScuflGraph extends JGraph
                        "http://industry.ebi.ac.uk/soap/soaplab/"+group+"::"+name);
 
           scuflModel.addProcessor(processor);
-
+          System.out.println("Finished test : SoaplabProcessorCreation");
         } catch(ProcessorCreationException pce)
         {
           System.out.println("ProcessorCreationException addProcessor exception thrown");
         }
-        catch(DuplicateProcessorNameException dpne)
-        {
-          System.out.println("DuplicateProcessorNameException addProcessor exception thrown");        }
-        catch(Exception exp)
-        {
-          System.out.println("addProcessor exception thrown");
-        }
+//      catch(DuplicateProcessorNameException dpne)
+//      {
+//        System.out.println("DuplicateProcessorNameException addProcessor exception thrown");
+//      }
+//      catch(Exception exp)
+//      {
+//        System.out.println("addProcessor exception thrown");
+//      }
 
-
-        System.out.println("Finished test : SoaplabProcessorCreation");
+//      System.out.println("Finished test : SoaplabProcessorCreation");
         return processor;
     }
 
