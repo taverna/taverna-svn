@@ -1,9 +1,18 @@
 package uk.ac.mrc.hgmp.taverna.retsina;
 
-import java.awt.datatransfer.*;
-import javax.swing.tree.*;
-import java.io.*;
-import java.util.*;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.Transferable;
+import java.awt.datatransfer.UnsupportedFlavorException;
+
+// IO Imports
+import java.io.IOException;
+import java.io.Serializable;
+
+import java.lang.ClassNotFoundException;
+import java.lang.Object;
+import java.lang.String;
+
+
 
 public class ProgNode 
                  implements Transferable, Serializable

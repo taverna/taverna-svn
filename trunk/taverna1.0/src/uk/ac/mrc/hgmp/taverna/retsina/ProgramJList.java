@@ -1,15 +1,24 @@
 package uk.ac.mrc.hgmp.taverna.retsina;
 
-import java.awt.*;
-import java.awt.event.*;
-import java.awt.datatransfer.*;
+import java.awt.Cursor;
+import java.awt.datatransfer.Transferable;
 import java.awt.dnd.*;
-import javax.swing.*;
-import javax.swing.event.*;
-import javax.swing.tree.*;
-import java.io.*;
-import java.util.Vector;
-import java.util.Enumeration;
+import java.awt.event.InputEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import javax.swing.DefaultListModel;
+import javax.swing.JList;
+import javax.swing.JPopupMenu;
+import javax.swing.ListSelectionModel;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+
+import uk.ac.mrc.hgmp.taverna.retsina.ProgNode;
+import java.lang.String;
+import java.lang.System;
+
+
 
 /**
 *

@@ -25,22 +25,25 @@
 //      Created for Project :   MYGRID
 //      Dependencies        :
 //
-//      Last commit info    :   $Author: dmarvin $
-//                              $Date: 2003-04-18 20:41:39 $
-//                              $Revision: 1.4 $
+//      Last commit info    :   $Author: mereden $
+//                              $Date: 2003-04-25 14:57:09 $
+//                              $Revision: 1.5 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 
 package uk.ac.soton.itinnovation.taverna.enactor.entities;
 
+import org.apache.log4j.Logger;
 import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.entities.graph.GraphNode;
-import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.serviceprovidermanager.ServiceSelectionCriteria;
 import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.eventservice.TaskStateMessage;
-
-import uk.ac.soton.itinnovation.mygrid.workflow.enactor.io.Input;
+import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.serviceprovidermanager.ServiceSelectionCriteria;
 import uk.ac.soton.itinnovation.mygrid.workflow.enactor.io.Part;
 
-import org.apache.log4j.*;
+import uk.ac.soton.itinnovation.taverna.enactor.entities.TavernaTask;
+import java.lang.Exception;
+import java.lang.String;
+
+
 
 /**
  * GraphNode that represents a port on a Processor.

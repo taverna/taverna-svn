@@ -1,10 +1,20 @@
 package uk.ac.mrc.hgmp.taverna.retsina;
 
-import java.awt.*;
-import java.awt.event.*;
+import java.awt.BorderLayout;
+import java.awt.Container;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
 import javax.swing.*;
-
 import org.emboss.jemboss.JembossJarUtil;
+
+import uk.ac.mrc.hgmp.taverna.retsina.ProgramSelectionPanel;
+import uk.ac.mrc.hgmp.taverna.retsina.ScuflGraphPanel;
+import java.lang.Exception;
+import java.lang.String;
+import java.lang.System;
+
+
 
 /**
 *

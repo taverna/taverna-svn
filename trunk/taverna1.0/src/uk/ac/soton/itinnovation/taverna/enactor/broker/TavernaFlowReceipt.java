@@ -24,45 +24,39 @@
 //      Created for Project :   MYGRID
 //      Dependencies        :
 //
-//      Last commit info    :   $Author: dmarvin $
-//                              $Date: 2003-04-18 20:41:42 $
-//                              $Revision: 1.3 $
+//      Last commit info    :   $Author: mereden $
+//                              $Date: 2003-04-25 14:57:08 $
+//                              $Revision: 1.4 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 
 package uk.ac.soton.itinnovation.taverna.enactor.broker;
 
-
-//java imports
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.Properties;
-
-//third party imports
-
-//local imports
-import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.entities.graph.DiGraph;
-import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.entities.graph.GraphNode;
-import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.entities.Flow;
-import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.entities.FlowStates;
-import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.eventservice.FlowEvent;
-import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.broker.FlowReceipt;
-import uk.ac.soton.itinnovation.mygrid.workflow.enactor.broker.WorkflowSubmitInvalidException;
+import org.apache.log4j.Logger;
 import uk.ac.soton.itinnovation.mygrid.workflow.enactor.broker.WSFlowReceipt;
-import uk.ac.soton.itinnovation.mygrid.workflow.enactor.io.Part;
-import uk.ac.soton.itinnovation.mygrid.workflow.enactor.io.Input;
-import uk.ac.soton.itinnovation.mygrid.workflow.enactor.io.Output;
-import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.entities.Task;
-import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.entities.taskstate.TaskState;
+import uk.ac.soton.itinnovation.mygrid.workflow.enactor.broker.WorkflowSubmitInvalidException;
 import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.broker.FlowCallback;
 import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.broker.FlowMessage;
-
-
+import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.entities.Flow;
+import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.entities.FlowStates;
+import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.entities.Task;
+import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.entities.graph.GraphNode;
+import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.entities.taskstate.TaskState;
+import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.eventservice.FlowEvent;
+import uk.ac.soton.itinnovation.mygrid.workflow.enactor.io.Output;
+import uk.ac.soton.itinnovation.mygrid.workflow.enactor.io.Part;
 import uk.ac.soton.itinnovation.taverna.enactor.entities.PortTask;
 import uk.ac.soton.itinnovation.taverna.enactor.entities.ProcessorTask;
 
-import org.apache.log4j.Logger;
+// Utility Imports
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
+import java.lang.Exception;
+import java.lang.String;
+import java.lang.StringBuffer;
+
 
 
 /**

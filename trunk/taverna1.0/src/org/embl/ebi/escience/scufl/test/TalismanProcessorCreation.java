@@ -5,10 +5,26 @@
  */
 package org.embl.ebi.escience.scufl.test;
 
-import org.embl.ebi.escience.scufl.*;
-import java.util.*;
-import java.net.*;
-import java.io.*;
+import org.embl.ebi.escience.scufl.ScuflModel;
+import org.embl.ebi.escience.scufl.ScuflModelEventPrinter;
+import org.embl.ebi.escience.scufl.TalismanProcessor;
+
+// IO Imports
+import java.io.BufferedInputStream;
+import java.io.DataInputStream;
+import java.io.InputStream;
+
+// Network Imports
+import java.net.URL;
+
+import java.lang.ClassLoader;
+import java.lang.Exception;
+import java.lang.String;
+import java.lang.StringBuffer;
+import java.lang.System;
+import java.lang.Thread;
+
+
 
 /**
  * Tests the creation of the TalismanProcessor node

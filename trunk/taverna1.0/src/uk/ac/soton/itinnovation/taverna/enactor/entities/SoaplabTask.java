@@ -25,33 +25,41 @@
 //      Dependencies        :
 //
 //      Last commit info    :   $Author: mereden $
-//                              $Date: 2003-04-25 13:30:55 $
-//                              $Revision: 1.2 $
+//                              $Date: 2003-04-25 14:57:09 $
+//                              $Revision: 1.3 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 
 package uk.ac.soton.itinnovation.taverna.enactor.entities;
 
-import java.util.Set;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Iterator;
-import java.util.List;
-import org.w3c.dom.Element;
-
-import org.apache.axis.client.*;
-
-import org.apache.log4j.*;
 import javax.xml.namespace.QName;
-
-import uk.ac.soton.itinnovation.mygrid.workflow.enactor.io.Part;
-import uk.ac.soton.itinnovation.mygrid.workflow.enactor.io.Input;
-import uk.ac.soton.itinnovation.mygrid.workflow.enactor.io.Output;
+import org.apache.axis.client.Call;
+import org.apache.axis.client.Service;
+import org.apache.log4j.Logger;
+import org.embl.ebi.escience.scufl.Processor;
+import org.embl.ebi.escience.scufl.SoaplabProcessor;
+import org.w3c.dom.Element;
 import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.entities.graph.GraphNode;
-import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.entities.Task;
 import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.eventservice.TaskStateMessage;
+import uk.ac.soton.itinnovation.mygrid.workflow.enactor.io.Part;
 
-import org.embl.ebi.escience.scufl.*;
+// Utility Imports
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
+
+import uk.ac.soton.itinnovation.taverna.enactor.entities.PortTask;
+import uk.ac.soton.itinnovation.taverna.enactor.entities.ProcessorTask;
+import java.lang.Boolean;
+import java.lang.Double;
+import java.lang.Exception;
+import java.lang.Float;
+import java.lang.Integer;
+import java.lang.Object;
+import java.lang.String;
+
+
 
 public class SoaplabTask extends ProcessorTask{
 	private static Logger logger = Logger.getLogger(SoaplabTask.class);

@@ -24,23 +24,30 @@
 //      Created for Project :   MYGRID
 //      Dependencies        :
 //
-//      Last commit info    :   $Author: dmarvin $
-//                              $Date: 2003-04-18 20:41:40 $
-//                              $Revision: 1.4 $
+//      Last commit info    :   $Author: mereden $
+//                              $Date: 2003-04-25 14:57:10 $
+//                              $Revision: 1.5 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 
 package uk.ac.soton.itinnovation.taverna.enactor.entities;
 
-
-//java imports
-import java.lang.reflect.*;
-
-//third party imports
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import org.apache.log4j.Logger;
-
-//local imports
 import org.embl.ebi.escience.scufl.Processor;
+
+import uk.ac.soton.itinnovation.taverna.enactor.entities.ProcessorTask;
+import uk.ac.soton.itinnovation.taverna.enactor.entities.UnsupportedTavernaProcessorException;
+import java.lang.Class;
+import java.lang.Exception;
+import java.lang.IllegalAccessException;
+import java.lang.IllegalArgumentException;
+import java.lang.InstantiationException;
+import java.lang.Object;
+import java.lang.String;
+
+
 
 /**
  * Creates the correct concrete task for a given WSDL identifier

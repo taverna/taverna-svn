@@ -1,10 +1,26 @@
 package uk.ac.mrc.hgmp.taverna.retsina;
 
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.GridLayout;
+import java.awt.Point;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import javax.swing.*;
-import javax.swing.event.*;
-import java.awt.*;
-import java.awt.event.*;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import org.emboss.jemboss.gui.startup.ProgList;
+
+import uk.ac.mrc.hgmp.taverna.retsina.ProgramJList;
+import uk.ac.mrc.hgmp.taverna.retsina.ScuflGraphPanel;
+import java.lang.String;
+import java.lang.System;
+
+
 
 public class ProgramSelectionPanel extends JPanel 
 {

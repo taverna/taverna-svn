@@ -1,23 +1,40 @@
 package uk.ac.mrc.hgmp.taverna.retsina;
 
-import java.awt.*;
-import java.awt.event.*;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.Hashtable;
-import java.util.Map;
-
-import javax.swing.*;
-import javax.swing.event.UndoableEditEvent;
-
 import com.jgraph.JGraph;
 import com.jgraph.event.GraphSelectionEvent;
 import com.jgraph.event.GraphSelectionListener;
 import com.jgraph.graph.*;
-
+import com.jgraph.graph.Port; // ambiguous with: org.embl.ebi.escience.scufl.Port 
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+import java.awt.event.MouseEvent;
+import javax.swing.*;
+import javax.swing.event.UndoableEditEvent;
 import org.embl.ebi.escience.scufl.ScuflModel;
 import org.embl.ebi.escience.scufl.ScuflModelEventPrinter;
 import org.embl.ebi.escience.scufl.SoaplabProcessor;
+
+// Utility Imports
+import java.util.ArrayList;
+import java.util.Hashtable;
+import java.util.Map;
+
+// Network Imports
+import java.net.URL;
+
+import uk.ac.mrc.hgmp.taverna.retsina.IScuflNodeCreator;
+import uk.ac.mrc.hgmp.taverna.retsina.ScuflGraph;
+import uk.ac.mrc.hgmp.taverna.retsina.ScuflGraphCell;
+import uk.ac.mrc.hgmp.taverna.retsina.ScuflGraphModel;
+import java.lang.Exception;
+import java.lang.Integer;
+import java.lang.Object;
+import java.lang.String;
+import java.lang.System;
+
+
 
 public class ScuflGraphPanel extends JPanel
        implements GraphSelectionListener, KeyListener 

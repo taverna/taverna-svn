@@ -24,63 +24,54 @@
 //      Created for Project :   MYGRID
 //      Dependencies        :
 //
-//      Last commit info    :   $Author: dmarvin $
-//                              $Date: 2003-04-18 20:41:41 $
-//                              $Revision: 1.4 $
+//      Last commit info    :   $Author: mereden $
+//                              $Date: 2003-04-25 14:57:07 $
+//                              $Revision: 1.5 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 
 package uk.ac.soton.itinnovation.taverna.enactor.broker;
 
-
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.io.FileInputStream;
-import java.io.InputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.ByteArrayInputStream;
-import java.util.Date;
-
-import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.entities.graph.DiGraph;
-import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.entities.graph.GraphNode;
+import org.apache.log4j.Logger;
+import org.embl.ebi.escience.scufl.ScuflModel;
+import org.embl.ebi.escience.scufl.parser.XScuflParser;
+import uk.ac.soton.itinnovation.mygrid.workflow.enactor.broker.WorkflowSubmitInvalidException;
 import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.broker.FlowBroker;
-import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.broker.WorkflowCommandException;
 import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.broker.FlowReceipt;
-import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.registry.FlowRegistry;
+import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.broker.WorkflowCommandException;
+import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.dispatcher.Dispatcher; // ambiguous with: org.apache.log4j.Dispatcher 
 import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.entities.Flow;
-import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.serviceprovidermanager.ServiceProviderManager;
-import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.serviceprovidermanager.NoReservationSPManager;
+import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.entities.Task;
+import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.entities.graph.DiGraph;
+import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.eventservice.FlowCommandEvent;
+import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.eventservice.FlowCommandHandler;
+import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.registry.FlowRegistry;
 import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.scheduler.NoReservationScheduler;
 import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.scheduler.Scheduler;
-import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.dispatcher.Dispatcher;
-import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.eventservice.FlowCommandHandler;
-import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.eventservice.FlowCommandEvent;
-import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.entities.Task;
-import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.entities.FlowStates;
-import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.eventservice.TaskScheduledStateMessage;
-
-import uk.ac.soton.itinnovation.mygrid.workflow.enactor.broker.WorkflowSubmitInvalidException;
-
+import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.serviceprovidermanager.NoReservationSPManager;
+import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.serviceprovidermanager.ServiceProviderManager;
 import uk.ac.soton.itinnovation.mygrid.workflow.enactor.io.Input;
-import uk.ac.soton.itinnovation.mygrid.workflow.enactor.io.User;
-import uk.ac.soton.itinnovation.mygrid.workflow.enactor.io.Part;
-
 import uk.ac.soton.itinnovation.taverna.enactor.dispatcher.TavernaDispatcher;
 
-import org.embl.ebi.escience.scufl.ScuflModel;
+// IO Imports
+import java.io.ByteArrayInputStream;
 
-import org.apache.log4j.Logger;
-import org.jdom.input.SAXBuilder;
+// JDOM Imports
 import org.jdom.Document;
-import org.embl.ebi.escience.scufl.parser.XScuflParser; 
+import org.jdom.input.SAXBuilder;
+
+import uk.ac.soton.itinnovation.taverna.enactor.broker.TavernaFlowReceipt;
+import uk.ac.soton.itinnovation.taverna.enactor.broker.TavernaWorkflowSubmission;
+import uk.ac.soton.itinnovation.taverna.enactor.broker.XScuflDiGraphGenerator;
+import uk.ac.soton.itinnovation.taverna.enactor.broker.XScuflInvalidException;
+import java.lang.Exception;
+import java.lang.IllegalArgumentException;
+import java.lang.Object;
+import java.lang.String;
+import java.lang.StringBuffer;
 
 
 
-/**
- * Negotiates on behalf of a taverna client to submit a flow to the flow engine
- */
 public class TavernaFlowBroker implements FlowBroker {
 
     private static Logger logger = Logger.getLogger(TavernaFlowBroker.class);

@@ -1,21 +1,20 @@
 package uk.ac.mrc.hgmp.taverna.retsina;
 
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Graphics;
-import java.awt.Rectangle;
-import java.net.URL;
-
-import javax.swing.ImageIcon;
-import javax.swing.JFrame;
-import javax.swing.JScrollPane;
-
 import com.jgraph.JGraph;
 import com.jgraph.graph.CellMapper;
 import com.jgraph.graph.CellViewRenderer;
-import com.jgraph.graph.Port;
 import com.jgraph.graph.PortRenderer;
 import com.jgraph.graph.PortView;
+import java.awt.Graphics;
+import java.awt.Rectangle;
+import javax.swing.ImageIcon;
+
+// Network Imports
+import java.net.URL;
+
+import java.lang.Object;
+
+
 
 public class ScuflInputPortView extends PortView {
 

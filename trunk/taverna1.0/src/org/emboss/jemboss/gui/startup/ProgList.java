@@ -22,11 +22,27 @@
 
 package org.emboss.jemboss.gui.startup;
 
-import java.io.*;
-import java.util.*;
-import javax.swing.*;
+import java.awt.Container;
+import java.awt.Font;
+import javax.swing.BoxLayout;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
+import javax.swing.JPopupMenu;
 import javax.swing.border.BevelBorder;
-import java.awt.*;
+
+// Utility Imports
+import java.util.Enumeration;
+import java.util.Vector;
+
+// IO Imports
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.StringReader;
+
+import java.lang.String;
+import java.lang.System;
+
 
 
 /**

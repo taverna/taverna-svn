@@ -24,48 +24,51 @@
 //      Created for Project :   MYGRID
 //      Dependencies        :
 //
-//      Last commit info    :   $Author: dmarvin $
-//                              $Date: 2003-04-18 21:02:44 $
-//                              $Revision: 1.1 $
+//      Last commit info    :   $Author: mereden $
+//                              $Date: 2003-04-25 14:57:06 $
+//                              $Revision: 1.2 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 
 
 package uk.ac.soton.itinnovation.taverna.enactor;
 
-
-import java.util.List;
-import java.util.Iterator;
-import java.util.ArrayList;
-import java.util.Enumeration;
-import java.io.IOException;
-import java.io.ByteArrayInputStream;
-import java.io.StringWriter;
-import java.io.BufferedInputStream;
-import java.util.ResourceBundle;
-import java.util.Properties;
-
-import uk.ac.soton.itinnovation.mygrid.workflow.enactor.specification.WorkflowValidationException;
-import uk.ac.soton.itinnovation.mygrid.workflow.enactor.specification.WorkflowSpecParseException;
-import uk.ac.soton.itinnovation.mygrid.workflow.enactor.io.User;
-
-import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.broker.FlowBrokerFactory;
+import org.apache.log4j.Logger;
+import org.embl.ebi.escience.scufl.ScuflModel;
+import org.embl.ebi.escience.scufl.parser.XScuflParser;
 import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.broker.FlowBroker;
-import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.broker.FlowReceipt;
-import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.broker.WorkflowCommandException;
-import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.broker.InvalidFlowBrokerRequestException;
+import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.broker.FlowBrokerFactory;
 import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.broker.FlowCallback;
 import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.broker.FlowMessage;
+import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.broker.FlowReceipt;
 import uk.ac.soton.itinnovation.mygrid.workflow.enactor.evictor.Evictor;
-import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.broker.*;
-import uk.ac.soton.itinnovation.mygrid.workflow.enactor.frontend.*;
-import uk.ac.soton.itinnovation.taverna.enactor.broker.TavernaWorkflowSubmission;
+import uk.ac.soton.itinnovation.mygrid.workflow.enactor.frontend.WorkflowEnactor;
+import uk.ac.soton.itinnovation.mygrid.workflow.enactor.frontend.WorkflowInstance;
+import uk.ac.soton.itinnovation.mygrid.workflow.enactor.frontend.iWorkflowExecutionListener;
+import uk.ac.soton.itinnovation.mygrid.workflow.enactor.frontend.iWorkflowExecutionSource;
+import uk.ac.soton.itinnovation.mygrid.workflow.enactor.io.User;
+import uk.ac.soton.itinnovation.mygrid.workflow.enactor.specification.WorkflowSpecParseException;
+import uk.ac.soton.itinnovation.mygrid.workflow.enactor.specification.WorkflowValidationException;
 import uk.ac.soton.itinnovation.taverna.enactor.broker.TavernaFlowReceipt;
+import uk.ac.soton.itinnovation.taverna.enactor.broker.TavernaWorkflowSubmission;
 
-import org.apache.log4j.Logger;
+// Utility Imports
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
-import org.embl.ebi.escience.scufl.parser.*;
-import org.embl.ebi.escience.scufl.*;
+// IO Imports
+import java.io.BufferedInputStream;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.StringWriter;
+
+import java.lang.Exception;
+import java.lang.String;
+import java.lang.StringBuffer;
+import java.lang.System;
+
+
 
 /**
  This is the basic workflow frontend that is

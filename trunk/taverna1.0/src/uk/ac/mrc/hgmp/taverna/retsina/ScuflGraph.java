@@ -2,14 +2,34 @@ package uk.ac.mrc.hgmp.taverna.retsina;
 
 import com.jgraph.JGraph;
 import com.jgraph.graph.*;
-import java.awt.event.*;
-import java.util.*;
-
-import java.awt.datatransfer.*;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Point;
+import java.awt.Rectangle;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.Transferable;
 import java.awt.dnd.*;
-import javax.swing.border.*;
-import java.awt.*;
+import java.awt.event.MouseEvent;
 import javax.swing.BorderFactory;
+import javax.swing.border.BevelBorder;
+import javax.swing.border.Border;
+
+// Utility Imports
+import java.util.Hashtable;
+import java.util.Map;
+
+import uk.ac.mrc.hgmp.taverna.retsina.ProgNode;
+import uk.ac.mrc.hgmp.taverna.retsina.ScuflGraphCell;
+import uk.ac.mrc.hgmp.taverna.retsina.ScuflInputPortView;
+import uk.ac.mrc.hgmp.taverna.retsina.ScuflOutputPort;
+import uk.ac.mrc.hgmp.taverna.retsina.ScuflOutputPortView;
+import java.lang.ClassCastException;
+import java.lang.Exception;
+import java.lang.Object;
+import java.lang.String;
+import java.lang.System;
+
+
 
 /**
  * Defines a Graph that uses the Shift-Button (Instead of the Right

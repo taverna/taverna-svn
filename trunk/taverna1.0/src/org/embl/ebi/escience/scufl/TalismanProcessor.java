@@ -5,10 +5,33 @@
  */
 package org.embl.ebi.escience.scufl;
 
-import java.util.*;
-import org.jdom.*;
-import org.jdom.input.*;
-import java.io.*;
+// Utility Imports
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+
+// IO Imports
+import java.io.StringReader;
+
+// JDOM Imports
+import org.jdom.Document;
+import org.jdom.Element;
+import org.jdom.JDOMException;
+import org.jdom.input.SAXBuilder;
+
+import org.embl.ebi.escience.scufl.DuplicatePortNameException;
+import org.embl.ebi.escience.scufl.DuplicateProcessorNameException;
+import org.embl.ebi.escience.scufl.InputPort;
+import org.embl.ebi.escience.scufl.OutputPort;
+import org.embl.ebi.escience.scufl.Port;
+import org.embl.ebi.escience.scufl.PortCreationException;
+import org.embl.ebi.escience.scufl.Processor;
+import org.embl.ebi.escience.scufl.ProcessorCreationException;
+import org.embl.ebi.escience.scufl.ScuflModel;
+import java.lang.String;
+
+
 
 /**
  * A processor that makes use of a local installation

@@ -24,40 +24,37 @@
 //      Created for Project :   MYGRID
 //      Dependencies        :
 //
-//      Last commit info    :   $Author: dmarvin $
-//                              $Date: 2003-04-18 20:41:42 $
-//                              $Revision: 1.4 $
+//      Last commit info    :   $Author: mereden $
+//                              $Date: 2003-04-25 14:57:09 $
+//                              $Revision: 1.5 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 
 package uk.ac.soton.itinnovation.taverna.enactor.broker;
 
-
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.net.URL;
-import java.util.StringTokenizer;
-
+import org.apache.log4j.Logger;
+import org.embl.ebi.escience.scufl.*;
 import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.entities.graph.DiGraph;
 import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.entities.graph.GraphNode;
 import uk.ac.soton.itinnovation.mygrid.workflow.enactor.io.Input;
 import uk.ac.soton.itinnovation.mygrid.workflow.enactor.io.Part;
-import uk.ac.soton.itinnovation.taverna.enactor.entities.TavernaTask;
-import uk.ac.soton.itinnovation.taverna.enactor.entities.ProcessorTask;
 import uk.ac.soton.itinnovation.taverna.enactor.entities.PortTask;
+import uk.ac.soton.itinnovation.taverna.enactor.entities.ProcessorTask;
 import uk.ac.soton.itinnovation.taverna.enactor.entities.TavernaTaskFactory;
 
-import org.embl.ebi.escience.scufl.ScuflModel;
-import org.embl.ebi.escience.scufl.InputPort;
-import org.embl.ebi.escience.scufl.OutputPort;
-import org.embl.ebi.escience.scufl.Processor;
-import org.embl.ebi.escience.scufl.SoaplabProcessor;
-import org.embl.ebi.escience.scufl.Port; 
-import org.embl.ebi.escience.scufl.DataConstraint;
+// Utility Imports
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.StringTokenizer;
 
+// Network Imports
+import java.net.URL;
 
-import org.apache.log4j.Logger;
+import uk.ac.soton.itinnovation.taverna.enactor.broker.XScuflInvalidException;
+import java.lang.Exception;
+import java.lang.String;
+
 
 
 /**
