@@ -31,7 +31,7 @@ import org.jdom.output.*;
  * COMMENT DataThingConstructionPanel
  * 
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover </a>
- * @version $Revision: 1.5 $
+ * @version $Revision: 1.6 $
  */
 public class DataThingConstructionPanel extends JPanel implements ScuflUIComponent,
 		ScuflModelEventListener
@@ -465,20 +465,23 @@ public class DataThingConstructionPanel extends JPanel implements ScuflUICompone
 					while (iterator.hasNext())
 					{
 						Object next = iterator.next();
+						InputTreeNode node;						
 						if (next instanceof DataThing)
 						{
 							DataThing childThing = (DataThing) next;
-							addInput(childThing.getDataObject());
+							node = addInput(childThing.getDataObject());
 						}
 						else
 						{
-							addInput(next);
+							node = addInput(next);
 						}
+						node.lsid = thing.getLSID(next);
 					}
 				}
 				else
 				{
-					addInput(dataObject);
+					InputTreeNode node = addInput(dataObject);
+					node.lsid = thing.getLSID(dataObject);
 				}
 			}
 		}
@@ -491,14 +494,24 @@ public class DataThingConstructionPanel extends JPanel implements ScuflUICompone
 				InputTreeNode inputNode = (InputTreeNode) getChildAt(index);
 				inputList.add(inputNode.getUserObject());
 			}
+			DataThing thing;
 			if (inputList.size() != 1)
 			{
-				return DataThingFactory.bake(inputList);
+				thing = DataThingFactory.bake(inputList);
 			}
 			else
 			{
-				return DataThingFactory.bake(inputList.get(0));
+				thing = DataThingFactory.bake(inputList.get(0));
 			}
+			for (int index = 0; index < getChildCount(); index++)
+			{
+				InputTreeNode inputNode = (InputTreeNode) getChildAt(index);
+				if(inputNode.lsid != null)
+				{
+					thing.setLSID(inputNode.getUserObject(), inputNode.lsid);
+				}
+			}			
+			return thing;			
 		}
 
 		public InputTreeNode addInput(Object inputValue)
@@ -586,6 +599,7 @@ public class DataThingConstructionPanel extends JPanel implements ScuflUICompone
 	private class InputTreeNode extends DefaultMutableTreeNode implements PanelTreeNode
 	{
 		private JComponent panel;
+		String lsid = null;
 		JTextArea editor;
 		String syntacticType;
 
