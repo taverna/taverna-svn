@@ -2,8 +2,6 @@ package org.embl.ebi.escience.scuflui.renderers;
 
 import javax.swing.ImageIcon;
 import javax.swing.JComponent;
-import javax.swing.JScrollPane;
-import javax.swing.JSplitPane;
 import org.embl.ebi.escience.scuflui.XMLTree;
 import org.embl.ebi.escience.baclava.DataThing;
 
@@ -15,7 +13,7 @@ import java.lang.Object;
 import java.lang.String;
 
 /**
- *
+ * Viewer to display XML as a tree.
  *
  * @author Matthew Pocock
  */
@@ -51,18 +49,10 @@ public class TextXml
         copy.getMetadata().setMIMETypes(
                 Arrays.asList(strip(dataThing.getMetadata().getMIMETypes())));
 
-        RendererSPI delegate = renderers.getRenderer(copy);
-        JComponent plain = delegate.getComponent(
-                renderers, copy);
         try {
-            XMLTree xmlTreeDisplay = new XMLTree(
-                    (String) dataThing.getDataObject());
-            JSplitPane pane2 = new JSplitPane(JSplitPane.VERTICAL_SPLIT,
-                                              new JScrollPane(xmlTreeDisplay),
-                                              plain);
-            return pane2;
+            return new XMLTree((String) dataThing.getDataObject());
         } catch (Exception ex) {
-            return plain;
+          throw new RendererException(ex);
         }
     }
  }
