@@ -35,6 +35,8 @@ net.sourceforge.taverna.scuflworkers.io.FileListByExtTask = io:List Files By Ext
 net.sourceforge.taverna.scuflworkers.io.FileListByRegexTask = io:List Files By Regex
 net.sourceforge.taverna.scuflworkers.io.DataRangeTask = io:Select Data Range From File
 net.sourceforge.taverna.scuflworkers.io.DataRangeColumnTask = io:Select Column From File
+net.sourceforge.taverna.scuflworkers.io.ConcatenateFileListWorker = io:Concatenate Files
+net.sourceforge.taverna.scuflworkers.io.EnvVariableWorker = io:Get Environment Variables as XML
 
 net.sourceforge.taverna.scuflworkers.ui.AskWorker = ui:Ask
 net.sourceforge.taverna.scuflworkers.ui.SelectWorker = ui:Select
@@ -53,5 +55,3 @@ net.sourceforge.taverna.scuflworkers.biojava.ReverseCompWorker = biojava:Reverse
 
 net.sourceforge.taverna.scuflworkers.jdbc.SQLQueryWorker = jdbc:Execute SQL query
 net.sourceforge.taverna.scuflworkers.jdbc.SQLUpdateWorker = jdbc:Execute SQLUpdate
-
-#net.sourceforge.taverna.scuflworkers.bsf.BSFTask = script:BSF
