@@ -52,7 +52,11 @@ public class BiomartProcessor extends Processor {
 		public void sequenceDescriptionChanged(Query sourceQuery, 
 						       SequenceDescription sd1, 
 						       SequenceDescription sd2) {
-		    update();
+		    if ((sd1 == null && sd2 != null) ||
+			(sd1 != null && sd2 == null)) {
+			// Only update if there's either a removed sequence or a newly placed one
+			update();
+		    }
 		}
 		private void update() {
 		    try {

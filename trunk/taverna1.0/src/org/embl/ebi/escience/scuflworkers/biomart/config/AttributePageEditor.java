@@ -442,6 +442,8 @@ public class AttributePageEditor extends JPanel {
     
 	boolean firingEvents = false;
 
+	int lastSelectedGeneTranscriptOption = -1;
+
 	SequenceEditor(Query query) {
 	    super();
 	    setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
@@ -464,31 +466,63 @@ public class AttributePageEditor extends JPanel {
 		    public void actionPerformed(ActionEvent ae) {
 			JComboBox source = (JComboBox)ae.getSource();
 			int index = source.getSelectedIndex();
-			if (index == 0) {
-			    // Deselect and update query
-			    sOptions.removeAllItems();
-			    sOptions.setSelectedIndex(-1);
-			    sOptions.setEnabled(false);
-			}
-			else if (index == 1) {
-			    // Transcripts and proteins
-			    sOptions.setEnabled(false);
-			    sOptions.removeAllItems();
-			    for (int i = 0; i < transcriptOptions.length; i++) {
-				sOptions.addItem(transcriptOptions[i]);
+			if (index != lastSelectedGeneTranscriptOption) {
+			    if (index == 0) {
+				// Deselect and update query
+				sOptions.removeAllItems();
+				sOptions.setSelectedIndex(-1);
+				sOptions.setEnabled(false);
 			    }
-			    sOptions.setSelectedIndex(-1);
-			    sOptions.setEnabled(true);
-			}
-			else if (index == 2) {
-			    // Genes
-			    sOptions.setEnabled(false);
-			    sOptions.removeAllItems();
-			    for (int i = 0; i < geneOptions.length; i++) {
-				sOptions.addItem(transcriptOptions[i]);
+			    else if (index == 1) {
+				// Transcripts and proteins
+				//firingEvents = false;
+				int oldSOptionsIndex = sOptions.getSelectedIndex();
+				boolean wasFiringEvents = firingEvents;
+				firingEvents = false;
+				sOptions.setEnabled(false);
+				sOptions.removeAllItems();
+				for (int i = 0; i < transcriptOptions.length; i++) {
+				    sOptions.addItem(transcriptOptions[i]);
+				}
+				
+				//sOptions.setSelectedIndex(-1);
+				sOptions.setEnabled(true);
+				firingEvents = wasFiringEvents;
+				//firingEvents = true;
+				if (oldSOptionsIndex >=0) {
+				    if (oldSOptionsIndex >= transcriptOptions.length) {
+					sOptions.setSelectedIndex(-1);
+				    }
+				    else {
+					sOptions.setSelectedIndex(oldSOptionsIndex);
+				    }
+				}
 			    }
-			    sOptions.setSelectedIndex(-1);
-			    sOptions.setEnabled(true);
+			    else if (index == 2) {
+				// Genes
+				//firingEvents = false;
+				int oldSOptionsIndex = sOptions.getSelectedIndex();
+				boolean wasFiringEvents = firingEvents;
+				firingEvents = false;
+				sOptions.setEnabled(false);
+				sOptions.removeAllItems();
+				for (int i = 0; i < geneOptions.length; i++) {
+				    sOptions.addItem(transcriptOptions[i]);
+				}
+				//sOptions.setSelectedIndex(-1);
+				sOptions.setEnabled(true);
+				firingEvents = wasFiringEvents;
+				//firingEvents = true;
+				if (oldSOptionsIndex >= 0) {
+				    if (oldSOptionsIndex >= geneOptions.length) {
+					sOptions.setSelectedIndex(-1);
+				    }
+				    else {
+					sOptions.setSelectedIndex(oldSOptionsIndex);
+				    }
+				}
+			    }
+			    lastSelectedGeneTranscriptOption = index;
 			}
 			
 		    }
@@ -618,6 +652,8 @@ public class AttributePageEditor extends JPanel {
 
 	// Called when the ui needs to be updated from the query
 	void updateUIPanel() {
+	    // Disable events while the panel updates
+	    firingEvents = false;
 	    SequenceDescription sd = query.getSequenceDescription();
 	    if (sd == null) {
 		// No query
@@ -656,6 +692,8 @@ public class AttributePageEditor extends JPanel {
 		    }
 		}
 	    }
+	    // Reenable events
+	    firingEvents = true;
 	}
 
     }
