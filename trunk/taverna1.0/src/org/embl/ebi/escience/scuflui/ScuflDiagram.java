@@ -332,12 +332,13 @@ public class ScuflDiagram extends JComponent
 
     private void updateGraphic() {
 	try {
+	    String imageSuffix = System.getProperty("taverna.scufldiagram.imagetype","png");
 	    String dotText = this.dot.getDot();
 	    String dotLocation = System.getProperty("taverna.dotlocation");
 	    if (dotLocation == null) {
 		dotLocation = "dot";
 	    }
-	    Process dotProcess = Runtime.getRuntime().exec(new String[]{dotLocation,"-Tpng"});
+	    Process dotProcess = Runtime.getRuntime().exec(new String[]{dotLocation,"-T"+imageSuffix});
 	    OutputStream out = new BufferedOutputStream(dotProcess.getOutputStream());
 	    out.write(dotText.getBytes());
 	    out.flush();
@@ -346,8 +347,8 @@ public class ScuflDiagram extends JComponent
 	    // Wait for the process to complete
 	    //dotProcess.waitFor();
 	    ImageInputStream iis = ImageIO.createImageInputStream(in);
-	    String suffix = "png";
-	    Iterator readers = ImageIO.getImageReadersBySuffix( suffix );
+	    //String suffix = "png";
+	    Iterator readers = ImageIO.getImageReadersBySuffix( imageSuffix );
 	    ImageReader imageReader = (ImageReader)readers.next();
 	    imageReader.setInput(iis, false);
 	    this.image = imageReader.read(0);
