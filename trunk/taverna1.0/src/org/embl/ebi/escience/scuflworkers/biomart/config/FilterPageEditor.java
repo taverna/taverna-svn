@@ -414,8 +414,13 @@ public class FilterPageEditor extends JPanel {
 	    if (options != null && options.length > 0) {
 		menuButton.setEnabled(true);
 		optionDisplay.setEnabled(true);
+		JMenuItem[] temp = new JMenuItem[options.length];
 		for (int i = 0; i < options.length; i++) {
-		    theMenu.add(buildSubMenu(options[i]));
+		    temp[i] = buildSubMenu(options[i]);
+		}
+		JMenuItem[] tempSplit = packComponents(temp);
+		for (int i = 0; i < tempSplit.length; i++) {
+		    theMenu.add(tempSplit[i]);
 		}
 	    }
 	    else {
@@ -455,7 +460,7 @@ public class FilterPageEditor extends JPanel {
 	 * Recursively build the option menu including
 	 * a default null option
 	 */
-	private Component buildSubMenu(Option option) {
+	private JMenuItem buildSubMenu(Option option) {
 	    if (option.getOptions().length == 0) {
 		final Option theOption = option;
 		// Leaf node, create action listener
@@ -475,11 +480,43 @@ public class FilterPageEditor extends JPanel {
 	    else {
 		Option[] subOptions = option.getOptions();
 		JMenu subMenu = new JMenu(option.getDisplayName());
-		for (int i = 0; i < subOptions.length; i++) {
-		    subMenu.add(buildSubMenu(subOptions[i]));
+		JMenuItem[] tempItems = new JMenuItem[subOptions.length];
+		for (int i = 0; i < tempItems.length; i++) {
+		    tempItems[i] = buildSubMenu(subOptions[i]);
+		}
+		JMenuItem[] splitItems = packComponents(tempItems);
+		for (int i = 0; i < splitItems.length; i++) {
+		    subMenu.add(splitItems[i]);
 		}
 		return subMenu;
 	    }
+	}
+
+	/**
+	 * Consume a list of arbitrary numbers of components
+	 * and package them, if required, into subsections of
+	 * at most fifteen items
+	 */
+	private JMenuItem[] packComponents(JMenuItem[] c) {
+	    if (c.length < 16) {
+		return c;
+	    }
+	    List componentList = new ArrayList();
+	    int currentIndex = 0;
+	    while (currentIndex < c.length) {
+		int endIndex = currentIndex + 15;
+		if (endIndex > c.length) {
+		    endIndex = c.length;
+		}
+		String label = c[currentIndex].getText()+" ... "+c[endIndex-1].getText();
+		JMenu subMenu = new JMenu(label);
+		for (int i = currentIndex; i < endIndex; i++) {
+		    subMenu.add(c[i]);
+		}
+		componentList.add(subMenu);
+		currentIndex = endIndex;
+	    }
+	    return (JMenuItem[])componentList.toArray(new JMenuItem[0]);
 	}
 
 	/**
