@@ -1,12 +1,14 @@
 package net.sourceforge.taverna.scuflworkers.ncbi;
 
+import java.io.File;
+import java.io.FileWriter;
 import java.util.HashMap;
 import java.util.Map;
 
-import junit.framework.TestCase;
 import net.sourceforge.taverna.baclava.DataThingAdapter;
 
 import org.embl.ebi.escience.scuflworkers.java.LocalWorker;
+import org.w3c.dom.Element;
 
 /**
  * This class
@@ -14,9 +16,9 @@ import org.embl.ebi.escience.scuflworkers.java.LocalWorker;
  * Last edited by $Author: phidias $
  * 
  * @author Mark
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
-public class EntrezGeneWorkerTest extends TestCase {
+public class EntrezGeneWorkerTest extends AbstractXmlWorkerTest {
 
     public void testExecute() throws Exception{
         LocalWorker worker = new EntrezGeneWorker();
@@ -29,8 +31,10 @@ public class EntrezGeneWorkerTest extends TestCase {
         
         String results = outAdapter.getString("resultsXml");
         assertNotNull("The results were null", results);
-        System.out.println(results);
-
+               
+        this.writeFile("test_entrez_gene.xml", results);
+        Element root = this.parseXml(results);
+        this.testXmlNotEmpty(root);
     }
 
 }

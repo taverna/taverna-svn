@@ -16,7 +16,7 @@ import junit.framework.TestCase;
  * Last edited by $Author: phidias $
  * 
  * @author Mark
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class OMIMWorkerTest extends AbstractXmlWorkerTest {
 
@@ -33,7 +33,7 @@ public class OMIMWorkerTest extends AbstractXmlWorkerTest {
         assertNotNull("The results were null", results);
         System.out.println(results);
         
-        this.writeFile("omim_test.xml", results);
+        this.writeFile("test_omim.xml", results);
         Element root = this.parseXml(results);
         this.testXmlNotEmpty(root);
 

@@ -7,6 +7,7 @@ import junit.framework.TestCase;
 import net.sourceforge.taverna.baclava.DataThingAdapter;
 
 import org.embl.ebi.escience.scuflworkers.java.LocalWorker;
+import org.w3c.dom.Element;
 
 /**
  * This class verifies that the HomoloGeneWorker is functioning properly.
@@ -14,9 +15,9 @@ import org.embl.ebi.escience.scuflworkers.java.LocalWorker;
  * Last edited by $Author: phidias $
  * 
  * @author Mark
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
-public class HomoloGeneWorkerTest extends TestCase {
+public class HomoloGeneWorkerTest extends AbstractXmlWorkerTest {
 
     public void testExecute() throws Exception{
         LocalWorker worker = new HomoloGeneWorker();
@@ -31,6 +32,9 @@ public class HomoloGeneWorkerTest extends TestCase {
         assertNotNull("The results were null", results);
         System.out.println(results);
         
+        this.writeFile("test_homologene.xml", results);
+        Element root = this.parseXml(results);
+        this.testXmlNotEmpty(root);
         
     }
 
