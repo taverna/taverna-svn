@@ -8,6 +8,13 @@
   <parameter name="sendXMLDeclaration" value="true"/>
   <parameter name="axis.sendMinimizedElements" value="true"/>
   <requestFlow>
+       <handler type="java:org.apache.axis.handlers.JWSHandler">
+        <parameter name="scope" value="session"/>
+     </handler>
+     <handler type="java:org.apache.axis.handlers.JWSHandler">
+        <parameter name="scope" value="request"/>
+        <parameter name="extension" value=".jwr"/>
+     </handler>
    <handler type="java:com.ibm.lsid.server.soap.LSIDURLMapper"/>
    <handler type="java:org.apache.axis.handlers.http.HTTPAuthHandler"/>
   </requestFlow>
@@ -37,6 +44,7 @@
  </service>
  <transport name="http">
   <requestFlow>
+  <handler type="URLMapper"/>
    <handler type="java:org.apache.axis.handlers.http.HTTPAuthHandler"/>
   </requestFlow>
  </transport>
@@ -45,4 +53,8 @@
    <handler type="LocalResponder"/>
   </responseFlow>
  </transport>
+ <handler type="java:org.apache.axis.handlers.http.URLMapper" name="URLMapper"/>
+ <handler type="java:org.apache.axis.transport.local.LocalResponder" name="LocalResponder"/>
+ <handler type="java:org.apache.axis.handlers.SimpleAuthenticationHandler" name="Authenticate"/>
+
 </deployment>

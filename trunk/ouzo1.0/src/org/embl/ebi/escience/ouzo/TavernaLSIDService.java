@@ -35,7 +35,7 @@ public class TavernaLSIDService extends SimpleResolutionService {
      * The data service object that actually connects to 
      * the database etc
      */
-    private BaclavaDataService theDataService;
+    public static BaclavaDataService theDataService = null;
     
     static Logger log = Logger.getLogger(TavernaLSIDService.class.getName());
 
@@ -48,14 +48,16 @@ public class TavernaLSIDService extends SimpleResolutionService {
 	throws LSIDServerException {
 	System.out.println("Creating new TavernaLSIDService instance");
 	
-	Properties serviceProps = new Properties();
-	for (Enumeration en = config.getPropertyNames(); en.hasMoreElements();) {
-	    String propertyName = (String)en.nextElement();
-	    String propertyValue = config.getProperty(propertyName);
-	    serviceProps.setProperty(propertyName, propertyValue);
+	if (theDataService == null) {
+	    Properties serviceProps = new Properties();
+	    for (Enumeration en = config.getPropertyNames(); en.hasMoreElements();) {
+		String propertyName = (String)en.nextElement();
+		String propertyValue = config.getProperty(propertyName);
+		serviceProps.setProperty(propertyName, propertyValue);
+	    }
+	    theDataService = new JDBCBaclavaDataService(serviceProps);
+	    System.out.println("Created new TavernaLSIDService and data service object");
 	}
-	theDataService = new JDBCBaclavaDataService(serviceProps);
-	System.out.println("Created new TavernaLSIDService and data service object");
     }
 
     
