@@ -1,7 +1,9 @@
 package org.embl.ebi.escience.scuflui.renderers;
 
-import java.awt.Dimension;
-import java.awt.Font;
+import org.embl.ebi.escience.baclava.DataThing;
+
+import javax.swing.*;
+import javax.imageio.stream.ImageInputStream;
 import javax.imageio.ImageIO;
 import javax.imageio.ImageReader;
 import javax.imageio.stream.ImageInputStream;
@@ -14,15 +16,11 @@ import java.util.Iterator;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-
-import org.embl.ebi.escience.scuflui.renderers.MimeTypeRendererSPI;
-import java.lang.ClassLoader;
-import java.lang.Object;
-import java.lang.Process;
-import java.lang.Runtime;
-import java.lang.String;
-
-
+import java.io.InputStream;
+import java.io.IOException;
+import java.util.Iterator;
+import java.util.regex.Pattern;
+import java.awt.*;
 
 /**
  *
@@ -30,26 +28,29 @@ import java.lang.String;
  * @author Matthew Pocock
  */
 public class TextXGraphviz
-        implements MimeTypeRendererSPI
+        extends AbstractRenderer.ByPattern
 {
-    private Icon icon;
-
     public TextXGraphviz()
     {
-        icon = new ImageIcon(ClassLoader.getSystemResource(
-                "org/embl/ebi/escience/baclava/icons/text.png"));
+        super("X-Graphviz",
+              new ImageIcon(ClassLoader.getSystemResource(
+                "org/embl/ebi/escience/baclava/icons/text.png")),
+              Pattern.compile(".*text/x-graphviz.*"));
     }
 
-    public boolean canHandle(Object userObject, String mimetypes)
+    protected boolean canHandle(MimeTypeRendererRegistry renderers,
+                                Object userObject,
+                                String mimeType)
     {
-        return mimetypes.matches(".*text/x-graphviz.*") &&
+        return super.canHandle(renderers, userObject, mimeType) &&
                 userObject instanceof String;
     }
 
-    public JComponent getComponent(Object userObject, String mimetypes)
+    public JComponent getComponent(MimeTypeRendererRegistry renderers,
+                                   DataThing dataThing)
     {
+        String dotText = (String) dataThing.getDataObject();
         try {
-            String dotText = (String) userObject;
             Process dotProcess = Runtime.getRuntime().exec("dot -Tpng");
             OutputStream out = dotProcess.getOutputStream();
             out.write(dotText.getBytes());
@@ -64,23 +65,14 @@ public class TextXGraphviz
             ImageIcon theImage = new ImageIcon(imageReader.read(0));
             JPanel theImagePanel = new JPanel();
             theImagePanel.add(new JLabel(theImage));
-            theImagePanel.setPreferredSize(new Dimension(theImage.getIconWidth(), theImage.getIconHeight()));
+            theImagePanel.setPreferredSize(
+                    new Dimension(theImage.getIconWidth(), theImage.getIconHeight()));
             return theImagePanel;
         } catch (IOException ioe) {
             JTextArea theTextArea = new JTextArea();
-            theTextArea.setText((String) userObject);
+            theTextArea.setText(dotText);
             theTextArea.setFont(new Font("Monospaced", Font.PLAIN, 12));
             return theTextArea;
         }
-    }
-
-    public String getName()
-    {
-        return "X-Graphviz";
-    }
-
-    public Icon getIcon(Object userObject, String mimetypes)
-    {
-        return icon;
     }
  }

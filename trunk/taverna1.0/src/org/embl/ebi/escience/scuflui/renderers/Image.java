@@ -1,18 +1,10 @@
 package org.embl.ebi.escience.scuflui.renderers;
 
-import java.awt.Dimension;
-import javax.swing.Icon;
-import javax.swing.ImageIcon;
-import javax.swing.JComponent;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
+import org.embl.ebi.escience.baclava.DataThing;
 
-import org.embl.ebi.escience.scuflui.renderers.MimeTypeRendererSPI;
-import java.lang.ClassLoader;
-import java.lang.Object;
-import java.lang.String;
-
-
+import javax.swing.*;
+import java.awt.*;
+import java.util.regex.Pattern;
 
 /**
  *
@@ -20,37 +12,33 @@ import java.lang.String;
  * @author Matthew Pocock
  */
 public class Image
-        implements MimeTypeRendererSPI
+        extends AbstractRenderer.ByPattern
 {
     private Icon icon;
 
     public Image() {
-        icon = new ImageIcon(ClassLoader.getSystemResource(
-                "org/embl/ebi/escience/baclava/icons/image.png"));
+        super("Image",
+              new ImageIcon(ClassLoader.getSystemResource(
+                "org/embl/ebi/escience/baclava/icons/image.png")),
+              Pattern.compile(".*image/.*"));
     }
-    
-    public boolean canHandle(Object userObject, String mimetypes)
+
+    protected boolean canHandle(MimeTypeRendererRegistry renderers,
+                                Object userObject,
+                                String mimeType)
     {
-        return mimetypes.matches(".*image/.*") &&
+        return super.canHandle(renderers, userObject, mimeType) &&
                 userObject instanceof byte[];
     }
 
-    public JComponent getComponent(Object userObject, String mimetypes)
+    public JComponent getComponent(MimeTypeRendererRegistry renderers,
+                                   DataThing dataThing)
     {
-        ImageIcon theImage = new ImageIcon((byte[]) userObject);
+        ImageIcon theImage = new ImageIcon((byte[]) dataThing.getDataObject());
         JPanel theImagePanel = new JPanel();
         theImagePanel.add(new JLabel(theImage));
-        theImagePanel.setPreferredSize(new Dimension(theImage.getIconWidth(), theImage.getIconHeight()));
+        theImagePanel.setPreferredSize(
+                new Dimension(theImage.getIconWidth(), theImage.getIconHeight()));
         return theImagePanel;
-    }
-
-    public String getName()
-    {
-        return "Image";
-    }
-
-    public Icon getIcon(Object userObject, String mimetypes)
-    {
-        return icon;
     }
 }

@@ -23,11 +23,11 @@ import java.lang.StringBuffer;
 
 
 /**
- * A container class for the semantic markup and mime 
+ * A container class for the semantic markup and mime
  * type data for overall workflow input and output
  * ports, although presumably it could be attached
  * to other entities as well. The data contained are a
- * free text description, an array of zero or more 
+ * free text description, an array of zero or more
  * mime types and a chunk of text containing semantic
  * metadata. Currently this last is unstructured, but
  * this class will be improved by the addition of a more
@@ -41,7 +41,7 @@ public class SemanticMarkup {
     private String semanticType = "";
     private List mimeTypeList = new ArrayList();
     private Object subject = null;
-    
+
     /**
      * Create a new item of semantic markup for the
      * Object specified. This should be interpreted
@@ -53,9 +53,26 @@ public class SemanticMarkup {
 	this.subject = subject;
     }
 
+    public SemanticMarkup(SemanticMarkup other)
+    {
+        super();
+        this.description = other.description;
+        this.semanticType = other.semanticType;
+        this.mimeTypeList.addAll(other.mimeTypeList);
+        this.subject = other.subject;
+    }
+
+    // fixme:
+    //   We should make either both getMIMETypes() and getMIMETypeList()
+    // return a copy or the original data. +1 for copy [mrp]
+    // fixme:
+    //   These two calls are redundant - let's use one or the other. List is
+    // used 2x, String[] is used 10x [mrp]
+
     /**
      * Get hold of the List used to hold the MIME types,
      * useful for UI components.
+     * The returned list is owned by this object.
      */
     public List getMIMETypeList() {
 	return this.mimeTypeList;
@@ -89,9 +106,8 @@ public class SemanticMarkup {
     }
 
     /**
-     * Get the array of strings containing MIME
-     * types for the item this markup object 
-     * applies to.
+     * Get an array of strings containing MIME types for the item this markup
+     * object applies to. The returned array is owned by the caller.
      */
     public String[] getMIMETypes() {
 	synchronized(this.mimeTypeList) {
@@ -114,7 +130,7 @@ public class SemanticMarkup {
 	    }
 	}
     }
-    
+
     /**
      * Get the MIME types as a single string with
      * new lines seperating the types
@@ -145,6 +161,8 @@ public class SemanticMarkup {
     public void addMIMEType(String mimeType) {
 	synchronized(this.mimeTypeList) {
 	    if (mimeType != null) {
+            // fixme:
+            //   mimeTypeList.contains(mimeType) may be more efficient [mrp]
 		for (Iterator i = this.mimeTypeList.iterator(); i.hasNext(); ) {
 		    if (((String)i.next()).equals(mimeType)) {
 			// Bail if we already have one
@@ -155,6 +173,21 @@ public class SemanticMarkup {
 		fireModelEvent();
 	    }
 	}
+    }
+
+    public void setMIMETypes(List mimeTypes)
+    {
+        synchronized(this.mimeTypeList) {
+            this.mimeTypeList.clear();
+            for(Iterator i = mimeTypes.iterator(); i.hasNext(); ) {
+                String mt = (String) i.next();
+                if(!this.mimeTypeList.contains(mt)) {
+                    this.mimeTypeList.add(mt);
+                }
+            }
+
+            fireModelEvent();
+        }
     }
 
     /**
@@ -231,7 +264,7 @@ public class SemanticMarkup {
 	Element semanticTypeElement = new Element("semanticType",XScufl.XScuflNS);
 	topElement.addContent(semanticTypeElement);
 	semanticTypeElement.setText(this.semanticType);
-	
+
 	return topElement;
     }
 

@@ -26,6 +26,7 @@ import org.embl.ebi.escience.scuflui.workbench.Workbench;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.prefs.Preferences;
 
 // IO Imports
 import java.io.File;
@@ -53,14 +54,14 @@ import java.lang.System;
  * and controls to launch the enactment engine from the given input
  * @author Tom Oinn
  */
-public class EnactorLaunchPanel extends JPanel 
+public class EnactorLaunchPanel extends JPanel
     implements ScuflModelEventListener, ScuflUIComponent {
 
     private static EnactorProxy defaultEnactor = new FreefluoEnactorProxy();
-    
+
     ScuflModel model = null;
     private JPanel inputPanel = null;
-    
+
     /**
      * An array list of the ports that this particular view thinks
      * the model contains. This is used when receiving model events
@@ -105,7 +106,7 @@ public class EnactorLaunchPanel extends JPanel
 	actionPanel.add(runButton);
 	runButton.addActionListener(new ActionListener() {
 		public void actionPerformed(ActionEvent ae) {
-		    
+
 		    Map inputObject = EnactorLaunchPanel.this.getDataThingMap();
 		    System.out.println("Created the Input object.."+inputObject.toString());
 		    try {
@@ -124,10 +125,10 @@ public class EnactorLaunchPanel extends JPanel
 		    catch (Exception e) {
 			e.printStackTrace();
 		    }
-		    
+
 		}
 	    });
-	
+
 	runButton.setPreferredSize(new Dimension(32,32));
 	show();
     }
@@ -154,7 +155,7 @@ public class EnactorLaunchPanel extends JPanel
 		return true;
 	    }
 	    // Check that all the Port objects in the array of workflow sources
-	    // are present in the map. If so, as there are the same number of 
+	    // are present in the map. If so, as there are the same number of
 	    // objects in each then presumably the array and map are consistant
 	    // and we should return false. If not, there must have been a change
 	    // and we return true.
@@ -196,7 +197,7 @@ public class EnactorLaunchPanel extends JPanel
 		inputPanel.remove(wip);
 		// Remove from the cached map
 		this.currentInputs.remove(key);
-		
+
 	    }
 	}
 	// Iterate over the new map, adding entries to the cached one if
@@ -224,7 +225,7 @@ public class EnactorLaunchPanel extends JPanel
 	    updatePanel();
 	}
     }
-    
+
     public void detachFromModel() {
 	if (this.model != null) {
 	    model.removeListener(this);
@@ -232,14 +233,14 @@ public class EnactorLaunchPanel extends JPanel
 	    //    clearPanel();
 	}
     }
-    
+
     /**
      * Return the JDOM Document object that represents this
      * set of workflow inputs.
      */
     public Document getInputDocument() {
 	// Create DataThing objects
-	Map dataThings = new HashMap(); 
+	Map dataThings = new HashMap();
 	for (Iterator i = currentInputs.keySet().iterator(); i.hasNext(); ) {
 	    String key = (String)i.next();
 	    WorkflowInputPanel wip = (WorkflowInputPanel)currentInputs.get(key);
@@ -253,7 +254,7 @@ public class EnactorLaunchPanel extends JPanel
      */
     public Map getDataThingMap() {
 	// Create DataThing objects
-	Map dataThings = new HashMap(); 
+	Map dataThings = new HashMap();
 	for (Iterator i = currentInputs.keySet().iterator(); i.hasNext(); ) {
 	    String key = (String)i.next();
 	    WorkflowInputPanel wip = (WorkflowInputPanel)currentInputs.get(key);
@@ -310,14 +311,22 @@ class WorkflowInputPanel extends JPanel {
 	loadFromFile.addActionListener(new ActionListener() {
 		public void actionPerformed(ActionEvent e) {
 		    try {
+                Preferences prefs = Preferences.userNodeForPackage(
+                        EnactorLaunchPanel.class);
+                String curDir = prefs.get(
+                        "currentDir",
+                        System.getProperty("user.home"));
+                fc.setCurrentDirectory(new File(curDir));
 			int returnVal = fc.showOpenDialog(WorkflowInputPanel.this);
 			if (returnVal == JFileChooser.APPROVE_OPTION) {
+                prefs.put("currentDir",
+                          fc.getCurrentDirectory().toString());
 			    File file = fc.getSelectedFile();
 			    InputStream is = file.toURL().openStream();
 			    java.io.DataInputStream dis = new java.io.DataInputStream(new java.io.BufferedInputStream(is));
 			    StringBuffer sb = new StringBuffer();
 			    String s = null;
-			    while ((s = dis.readLine()) != null) { 
+			    while ((s = dis.readLine()) != null) {
 				sb.append(s);
 				sb.append("\n");
 			    }
@@ -347,7 +356,7 @@ class WorkflowInputPanel extends JPanel {
 			    java.io.DataInputStream dis = new java.io.DataInputStream(new java.io.BufferedInputStream(is));
 			    StringBuffer sb = new StringBuffer();
 			    String s = null;
-			    while ((s = dis.readLine()) != null) { 
+			    while ((s = dis.readLine()) != null) {
 				sb.append(s);
 				sb.append("\n");
 			    }
@@ -362,10 +371,10 @@ class WorkflowInputPanel extends JPanel {
 		    }
 		}
 	    });
-	
+
 	add(buttonPanel, BorderLayout.EAST);
 	this.underlyingPort = p;
-	
+
     }
 
     public String getText() {
@@ -375,12 +384,12 @@ class WorkflowInputPanel extends JPanel {
     public String getName() {
 	return this.underlyingPort.getName();
     }
-    
+
     public Port getPort() {
 	return this.underlyingPort;
     }
 
 }
-    
-    
-    
+
+
+

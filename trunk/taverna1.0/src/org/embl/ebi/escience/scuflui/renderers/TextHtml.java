@@ -1,16 +1,16 @@
 package org.embl.ebi.escience.scuflui.renderers;
 
+import org.embl.ebi.escience.baclava.DataThing;
+
+import java.util.regex.Pattern;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JComponent;
 import javax.swing.JEditorPane;
 
-import org.embl.ebi.escience.scuflui.renderers.MimeTypeRendererSPI;
 import java.lang.ClassLoader;
 import java.lang.Object;
 import java.lang.String;
-
-
 
 /**
  *
@@ -18,35 +18,28 @@ import java.lang.String;
  * @author Matthew Pocock
  */
 public class TextHtml
-        implements MimeTypeRendererSPI
+        extends AbstractRenderer.ByPattern
 {
-    private Icon icon;
-
     public TextHtml()
     {
-        icon = new ImageIcon(ClassLoader.getSystemResource(
-                "org/embl/ebi/escience/baclava/icons/text.png"));
+        super("HTML",
+              new ImageIcon(ClassLoader.getSystemResource(
+                "org/embl/ebi/escience/baclava/icons/text.png")),
+              Pattern.compile(".*text/html.*"));
     }
 
-    public boolean canHandle(Object userObject, String mimetypes)
+    protected boolean canHandle(MimeTypeRendererRegistry renderers,
+                                Object userObject,
+                                String mimeType)
     {
-        return mimetypes.matches(".*text/html.*") &&
+        return super.canHandle(renderers, userObject, mimeType) &&
                 userObject instanceof String;
     }
 
-    public JComponent getComponent(Object userObject, String mimetypes)
+    public JComponent getComponent(MimeTypeRendererRegistry renderers,
+                                   DataThing dataThing)
     {
         return new JEditorPane(
-                "text/html", "<pre>" + (String) userObject + "</pre>");
-    }
-
-    public String getName()
-    {
-        return "HTML";
-    }
-
-    public Icon getIcon(Object userObject, String mimetypes)
-    {
-        return icon;
+                "text/html", "<pre>" + (String) dataThing.getDataObject() + "</pre>");
     }
  }

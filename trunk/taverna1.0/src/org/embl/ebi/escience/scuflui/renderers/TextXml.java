@@ -1,20 +1,18 @@
 package org.embl.ebi.escience.scuflui.renderers;
 
-import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JComponent;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import org.embl.ebi.escience.scuflui.XMLTree;
+import org.embl.ebi.escience.baclava.DataThing;
 
-import org.embl.ebi.escience.scuflui.renderers.MimeTypeRendererSPI;
-import org.embl.ebi.escience.scuflui.renderers.Text;
+import java.util.regex.Pattern;
+import java.util.Arrays;
 import java.lang.ClassLoader;
 import java.lang.Exception;
 import java.lang.Object;
 import java.lang.String;
-
-
 
 /**
  *
@@ -22,29 +20,37 @@ import java.lang.String;
  * @author Matthew Pocock
  */
 public class TextXml
-        implements MimeTypeRendererSPI
+        extends AbstractRenderer.ByPattern
 {
-    private Icon icon;
-
     public TextXml()
     {
-        icon = new ImageIcon(ClassLoader.getSystemResource(
-                "org/embl/ebi/escience/baclava/icons/text.png"));
-
+        super("XML",
+              new ImageIcon(ClassLoader.getSystemResource(
+                "org/embl/ebi/escience/baclava/icons/text.png")),
+              Pattern.compile(".*text/xml.*"));
     }
 
-    public boolean canHandle(Object userObject, String mimetypes)
+    protected boolean canHandle(MimeTypeRendererRegistry renderers,
+                                Object userObject,
+                                String mimeType)
     {
-        return mimetypes.matches(".*text/xml.*") &&
+        return super.canHandle(renderers, userObject, mimeType) &&
                 userObject instanceof String;
     }
 
-    public JComponent getComponent(Object userObject, String mimetypes)
+    public JComponent getComponent(MimeTypeRendererRegistry renderers,
+                                   DataThing dataThing)
     {
-        JComponent plain = new Text().getComponent(
-                userObject, mimetypes);
+        DataThing copy = new DataThing(dataThing);
+        copy.getMetadata().setMIMETypes(
+                Arrays.asList(strip(dataThing.getMetadata().getMIMETypes())));
+
+        MimeTypeRendererSPI delegate = renderers.getRenderer(copy);
+        JComponent plain = delegate.getComponent(
+                renderers, copy);
         try {
-            XMLTree xmlTreeDisplay = new XMLTree((String) userObject);
+            XMLTree xmlTreeDisplay = new XMLTree(
+                    (String) dataThing.getDataObject());
             JSplitPane pane2 = new JSplitPane(JSplitPane.VERTICAL_SPLIT,
                                               new JScrollPane(xmlTreeDisplay),
                                               plain);
@@ -52,15 +58,5 @@ public class TextXml
         } catch (Exception ex) {
             return plain;
         }
-    }
-
-    public String getName()
-    {
-        return "XML";
-    }
-
-    public Icon getIcon(Object userObject, String mimetypes)
-    {
-        return icon;
     }
  }

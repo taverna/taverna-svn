@@ -28,6 +28,7 @@ import uk.ac.mrc.hgmp.taverna.retsina.Retsina;
 import java.util.Enumeration;
 import java.util.Properties;
 import java.util.ResourceBundle;
+import java.util.prefs.Preferences;
 
 // IO Imports
 import java.io.File;
@@ -53,12 +54,12 @@ import java.lang.System;
 
 
 /**
- * A sample workbench application to allow editing and visualization 
+ * A sample workbench application to allow editing and visualization
  * of Scufl workflows
  * @author Tom Oinn
  */
 public class Workbench extends JFrame {
-    
+
     public static ImageIcon openIcon, deleteIcon, importIcon, saveIcon, openurlIcon;
 
     /**
@@ -82,7 +83,7 @@ public class Workbench extends JFrame {
 	catch (ClassNotFoundException cnfe) {
 	    //
 	}
-	
+
 	// Initialize the proxy settings etc.
 	ResourceBundle rb = ResourceBundle.getBundle("mygrid");
         Properties sysProps = System.getProperties();
@@ -92,6 +93,7 @@ public class Workbench extends JFrame {
             String value = (String) rb.getString(key);
 	    sysProps.put(key, value);
         }
+
     }
 
     public JDesktopPane desktop;
@@ -105,12 +107,12 @@ public class Workbench extends JFrame {
      * in internal frames and waits for the user to load a model from file
      */
     public static void main(String[] args) {
-	new SplashScreen(6000);	
+	new SplashScreen(6000);
 	// Load the test ontology for the annotation of workflow
 	// source and sink ports
 	try {
 	    System.out.println("Loading ontologies...");
-	    URL ontologyURL = 
+	    URL ontologyURL =
 		ClassLoader.getSystemResource("org/embl/ebi/escience/scufl/semantics/mygrid-reasoned-small.rdfs");
 	    RDFSParser.loadRDFSDocument(ontologyURL.openStream(), "internal test ontology");
 	    System.out.println("Done loading ontologies.");
@@ -133,18 +135,18 @@ public class Workbench extends JFrame {
 
 	// Add instances of all the components just for fun
 
-	//GenericUIComponentFrame xscufl = new GenericUIComponentFrame(workbench.model, 
+	//GenericUIComponentFrame xscufl = new GenericUIComponentFrame(workbench.model,
 	//							     new XScuflTextArea());
 	//xscufl.setSize(600,300);
 	//xscufl.setLocation(50,50);
 	//workbench.desktop.add(xscufl);
 
-	GenericUIComponentFrame diagram = new GenericUIComponentFrame(workbench.model, 
+	GenericUIComponentFrame diagram = new GenericUIComponentFrame(workbench.model,
 								      new ScuflDiagram());
 	diagram.setSize(600,600);
 	diagram.setLocation(50,400);
 	workbench.desktop.add(diagram);
-	GenericUIComponentFrame explorer = new GenericUIComponentFrame(workbench.model, 
+	GenericUIComponentFrame explorer = new GenericUIComponentFrame(workbench.model,
 								       new ScuflModelExplorer());
 	explorer.setSize(300,300);
 	explorer.setLocation(700,50);
@@ -155,7 +157,7 @@ public class Workbench extends JFrame {
 	scavenger.setSize(300,600);
 	scavenger.setLocation(700,400);
 	workbench.desktop.add(scavenger);
-	
+
 	workbench.setVisible(true);
     }
 
@@ -170,20 +172,20 @@ public class Workbench extends JFrame {
 	Workbench.workbench = this;
 	int inset = 50;
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-        setBounds(inset, inset, 
-                  screenSize.width - inset*2, 
+        setBounds(inset, inset,
+                  screenSize.width - inset*2,
                   screenSize.height-inset*2);
 
 	// Initialise the scufl model
 	this.model = new ScuflModel();
-	
+
 	//Quit this app when the big window closes.
         addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent e) {
                 System.exit(0);
             }
         });
-	
+
 	// Create the desktop pane and menu
 	if (System.getProperty("taverna.scrollDesktop") == null) {
 	    desktop = new JDesktopPane();
@@ -194,7 +196,7 @@ public class Workbench extends JFrame {
 	    setContentPane(new JScrollPane(desktop));
 	}
 	setJMenuBar(createMenuBar());
-	
+
 	// Add a filedrop listener to allow users to drag
 	// workflow definition in (cheers to Robert Harder!)
 	// http://iharder.sourceforge.net/
@@ -228,7 +230,7 @@ public class Workbench extends JFrame {
 		}
 	    });
     }
-    
+
     /**
      * Create the menus required by the application
      */
@@ -241,8 +243,16 @@ public class Workbench extends JFrame {
 	openScufl.addActionListener(new ActionListener() {
 		public void actionPerformed(ActionEvent e) {
 		    // Load an XScufl definition here
+            Preferences prefs = Preferences.userNodeForPackage(
+                    Workbench.class);
+            String curDir = prefs.get(
+                    "currentDir",
+                    System.getProperty("user.home"));
+            fc.setCurrentDirectory(new File(curDir));
 		    int returnVal = fc.showOpenDialog(Workbench.this);
 		    if (returnVal == JFileChooser.APPROVE_OPTION) {
+                prefs.put("currentDir",
+                          fc.getCurrentDirectory().toString());
 			File file = fc.getSelectedFile();
 			try {
 			    XScuflParser.populate(file.toURL().openStream(), Workbench.this.model, null);
@@ -281,15 +291,23 @@ public class Workbench extends JFrame {
 		    }
 		}
 	    });
-	
+
 	fileMenu.add(openScuflURL);
 	JMenuItem saveScufl = new JMenuItem("Save as XScufl", saveIcon);
 	saveScufl.addActionListener(new ActionListener() {
 		public void actionPerformed(ActionEvent e) {
 		    // Save to XScufl
 		    try {
+                Preferences prefs = Preferences.userNodeForPackage(
+                        Workbench.class);
+                String curDir = prefs.get(
+                        "currentDir",
+                        System.getProperty("user.home"));
+                fc.setCurrentDirectory(new File(curDir));
 			int returnVal = fc.showSaveDialog(Workbench.this);
 			if (returnVal == JFileChooser.APPROVE_OPTION) {
+                prefs.put("currentDir",
+                          fc.getCurrentDirectory().toString());
 			    File file = fc.getSelectedFile();
 			    XScuflView xsv = new XScuflView(Workbench.this.model);
 			    PrintWriter out = new PrintWriter(new FileWriter(file));
@@ -305,12 +323,12 @@ public class Workbench extends JFrame {
 		}
 	    });
 	fileMenu.add(saveScufl);
-	
+
 	// Sub menu for the various dot save options
 	JMenu dotSubMenu = new JMenu("Save as Dot");
 	dotSubMenu.setIcon(saveIcon);
 	fileMenu.add(dotSubMenu);
-	
+
 	JMenuItem noPorts = new JMenuItem("No ports shown", saveIcon);
 	JMenuItem boundPorts = new JMenuItem("Bound ports only", saveIcon);
 	JMenuItem allPorts = new JMenuItem("All ports shown", saveIcon);
@@ -320,9 +338,17 @@ public class Workbench extends JFrame {
 	noPorts.addActionListener(new ActionListener() {
 		public void actionPerformed(ActionEvent ae) {
 		    try {
+                Preferences prefs = Preferences.userNodeForPackage(
+                        Workbench.class);
+                String curDir = prefs.get(
+                        "currentDir",
+                        System.getProperty("user.home"));
+                fc.setCurrentDirectory(new File(curDir));
 			int returnVal = fc.showSaveDialog(Workbench.this);
 			if (returnVal == JFileChooser.APPROVE_OPTION) {
-			    File file = fc.getSelectedFile();
+                prefs.put("currentDir",
+                          fc.getCurrentDirectory().toString());
+                File file = fc.getSelectedFile();
 			    DotView dv = new DotView(Workbench.this.model);
 			    dv.setPortDisplay(DotView.NONE);
 			    PrintWriter out = new PrintWriter(new FileWriter(file));
@@ -334,14 +360,22 @@ public class Workbench extends JFrame {
 		    }
 		    catch (Exception ex) {
 			throw new RuntimeException(ex.getMessage());
-		    }  
+		    }
 		}
 	    });
 	boundPorts.addActionListener(new ActionListener() {
 		public void actionPerformed(ActionEvent ae) {
 		    try {
+                Preferences prefs = Preferences.userNodeForPackage(
+                        Workbench.class);
+                String curDir = prefs.get(
+                        "currentDir",
+                        System.getProperty("user.home"));
+                fc.setCurrentDirectory(new File(curDir));
 			int returnVal = fc.showSaveDialog(Workbench.this);
 			if (returnVal == JFileChooser.APPROVE_OPTION) {
+                prefs.put("currentDir",
+                          fc.getCurrentDirectory().toString());
 			    File file = fc.getSelectedFile();
 			    DotView dv = new DotView(Workbench.this.model);
 			    dv.setPortDisplay(DotView.BOUND);
@@ -354,14 +388,22 @@ public class Workbench extends JFrame {
 		    }
 		    catch (Exception ex) {
 			throw new RuntimeException(ex.getMessage());
-		    }  
+		    }
 		}
 	    });
 	allPorts.addActionListener(new ActionListener() {
 		public void actionPerformed(ActionEvent ae) {
 		    try {
+                Preferences prefs = Preferences.userNodeForPackage(
+                        Workbench.class);
+                String curDir = prefs.get(
+                        "currentDir",
+                        System.getProperty("user.home"));
+                fc.setCurrentDirectory(new File(curDir));
 			int returnVal = fc.showSaveDialog(Workbench.this);
 			if (returnVal == JFileChooser.APPROVE_OPTION) {
+                prefs.put("currentDir",
+                          fc.getCurrentDirectory().toString());
 			    File file = fc.getSelectedFile();
 			    DotView dv = new DotView(Workbench.this.model);
 			    dv.setPortDisplay(DotView.ALL);
@@ -374,7 +416,7 @@ public class Workbench extends JFrame {
 		    }
 		    catch (Exception ex) {
 			throw new RuntimeException(ex.getMessage());
-		    }  
+		    }
 		}
 	    });
 
@@ -471,7 +513,7 @@ public class Workbench extends JFrame {
 	menuBar.add(fileMenu);
 	menuBar.add(windowMenu);
 	return menuBar;
-	
+
     }
 
 }

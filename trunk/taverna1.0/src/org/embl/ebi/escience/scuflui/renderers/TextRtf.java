@@ -1,16 +1,9 @@
 package org.embl.ebi.escience.scuflui.renderers;
 
-import javax.swing.Icon;
-import javax.swing.ImageIcon;
-import javax.swing.JComponent;
-import javax.swing.JEditorPane;
+import org.embl.ebi.escience.baclava.DataThing;
 
-import org.embl.ebi.escience.scuflui.renderers.MimeTypeRendererSPI;
-import java.lang.ClassLoader;
-import java.lang.Object;
-import java.lang.String;
-
-
+import javax.swing.*;
+import java.util.regex.Pattern;
 
 /**
  *
@@ -18,35 +11,28 @@ import java.lang.String;
  * @author Matthew Pocock
  */
 public class TextRtf
-        implements MimeTypeRendererSPI
+        extends AbstractRenderer.ByPattern
 {
-    private Icon icon;
-
     public TextRtf()
     {
-        icon = new ImageIcon(ClassLoader.getSystemResource(
-                "org/embl/ebi/escience/baclava/icons/text.png"));
+        super("RTF",
+              new ImageIcon(ClassLoader.getSystemResource(
+                "org/embl/ebi/escience/baclava/icons/text.png")),
+              Pattern.compile(".*text/rtf.*"));
     }
 
-    public boolean canHandle(Object userObject, String mimetypes)
+    protected boolean canHandle(MimeTypeRendererRegistry renderers,
+                                Object userObject,
+                                String mimeType)
     {
-        return mimetypes.matches(".*text/rtf.*") &&
+        return super.canHandle(renderers, userObject, mimeType) &&
                 userObject instanceof String;
     }
 
-    public JComponent getComponent(Object userObject, String mimetypes)
+    public JComponent getComponent(MimeTypeRendererRegistry renderers,
+                                   DataThing dataThing)
     {
         return new JEditorPane(
-                "text/html", (String) userObject);
+                "text/html", (String) dataThing.getDataObject());
     }
-
-    public String getName()
-    {
-        return "RTF";
-    }
-
-    public Icon getIcon(Object userObject, String mimetypes)
-    {
-        return icon;
-    }
- }
+}

@@ -112,4 +112,12 @@ line. The registry will take care of loading all of the classes listed in this
 file, and will be able to load in classes from multiple .jar files.
 </p>
 
+<p>
+The {@link AbstractRenderer} class provides a convenient base-class for making
+renderers. This will take care of unpacking the mime type list, and stooring a
+name and icon. It also contains a static inner class ByPattern that will scan
+mime types with a regular expression, leaving you needing to just implement the
+getComponent() method.
+</p>
+
 </body>

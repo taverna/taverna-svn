@@ -23,8 +23,8 @@ import org.embl.ebi.escience.scuflui.renderers.MimeTypeRendererSPI;
 import org.embl.ebi.escience.scuflui.workbench.Workbench;
 
 // Utility Imports
-import java.util.Collection;
 import java.util.Iterator;
+import java.util.prefs.Preferences;
 
 // IO Imports
 import java.io.*;
@@ -41,11 +41,19 @@ import java.lang.String;
  * @author Matthew Pocock
  */
 public class ResultItemPanel extends JPanel {
-
     final JFileChooser fc = new JFileChooser();
+    final MimeTypeRendererRegistry renderers;
 
-    public ResultItemPanel(DataThing theDataThing) {
-	super(new BorderLayout());
+    public ResultItemPanel(DataThing theDataThing)
+    {
+        this(theDataThing, MimeTypeRendererRegistry.instance());
+    }
+
+    public ResultItemPanel(DataThing theDataThing, MimeTypeRendererRegistry renderers) {
+        super(new BorderLayout());
+
+        this.renderers = renderers;
+
 	// Construct the scrollable view of the structure
 	// of the DataThing
 	final JTree structureTree = new JTree(DataThingTreeFactory.getTree(theDataThing));
@@ -63,20 +71,13 @@ public class ResultItemPanel extends JPanel {
 		    DataThingTreeNode node = (DataThingTreeNode)structureTree.getLastSelectedPathComponent();
             if (node != null && node.isLeaf()) {
                 // Only interested in leaf nodes as they contain the data
-                Object userObject = node.getUserObject();
                 DataThing theDataThing = node.getDataThing();
-                String syntacticType = theDataThing.getSyntacticTypeForObject(userObject);
-                String mimeTypes = syntacticType.split("'")[1].toLowerCase();
-                if (userObject instanceof Collection) {
-                    userObject = "Empty collection, collection type was " + userObject.getClass().getName();
-                }
                 MimeTypeRendererSPI renderer =
-                        MimeTypeRendererRegistry.instance().getRenderer(
-                                userObject, mimeTypes);
+                        ResultItemPanel.this.renderers.getRenderer(theDataThing);
 
                 if (renderer != null) {
                     JComponent component = renderer.getComponent(
-                            userObject, mimeTypes);
+                            ResultItemPanel.this.renderers, theDataThing);
                     if (component != null) {
                         splitPane.setRightComponent(new JScrollPane(component));
                     }
@@ -107,10 +108,18 @@ public class ResultItemPanel extends JPanel {
 			saveAction.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent ae) {
 				    try {
-					// Popup a save dialog and allow the user to store
-					// the data to disc
-					int returnVal = fc.showSaveDialog(ResultItemPanel.this);
-					if (returnVal == JFileChooser.APPROVE_OPTION) {
+                        // Popup a save dialog and allow the user to store
+					    // the data to disc
+                        Preferences prefs = Preferences.userNodeForPackage(
+                                ResultItemPanel.class);
+                        String curDir = prefs.get(
+                                "currentDir",
+                                System.getProperty("user.home"));
+                        fc.setCurrentDirectory(new File(curDir));
+                        int returnVal = fc.showSaveDialog(ResultItemPanel.this);
+                        if (returnVal == JFileChooser.APPROVE_OPTION) {
+                            prefs.put("currentDir",
+                                      fc.getCurrentDirectory().toString());
 					    File file = fc.getSelectedFile();
 					    FileOutputStream fos = new FileOutputStream(file);
 					    if (theDataObject instanceof byte[]) {
@@ -140,16 +149,9 @@ public class ResultItemPanel extends JPanel {
 			theMenu.add(saveAction);
 
                 // all possible viewers
-                Object userObject = node.getUserObject();
-                DataThing theDataThing = node.getDataThing();
-                String syntacticType = theDataThing.getSyntacticTypeForObject(userObject);
-                final String mimeTypes = syntacticType.split("'")[1].toLowerCase();
-                if (userObject instanceof Collection) {
-                    userObject = "Empty collection, collection type was " + userObject.getClass().getName();
-                }
-                final Object uObject = userObject;
-                Iterator renderers = MimeTypeRendererRegistry.instance().getRenderers(
-                                userObject, mimeTypes).iterator();
+                final DataThing theDataThing = node.getDataThing();
+                Iterator renderers = ResultItemPanel.this.renderers.getRenderers(
+                                theDataThing).iterator();
                 if(renderers.hasNext()) {
                     JMenu viewers = new JMenu("Viewers");
 
@@ -158,11 +160,11 @@ public class ResultItemPanel extends JPanel {
                                 (MimeTypeRendererSPI) renderers.next();
                         viewers.add(new JMenuItem(new AbstractAction(
                                 renderer.getName(),
-                                renderer.getIcon(userObject, mimeTypes))
+                                renderer.getIcon(ResultItemPanel.this.renderers, theDataThing))
                         {
                             public void actionPerformed(ActionEvent e)
                             {
-                                JComponent component = renderer.getComponent(uObject, mimeTypes);
+                                JComponent component = renderer.getComponent(ResultItemPanel.this.renderers, theDataThing);
                                 if(ui != null) {
                                     splitPane.setRightComponent(new JScrollPane(component));
                                 }

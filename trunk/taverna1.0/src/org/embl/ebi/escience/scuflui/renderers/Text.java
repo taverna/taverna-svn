@@ -1,17 +1,16 @@
 package org.embl.ebi.escience.scuflui.renderers;
 
+import org.embl.ebi.escience.baclava.DataThing;
+
+import java.util.regex.Pattern;
 import java.awt.Font;
-import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JComponent;
 import javax.swing.JTextArea;
 
-import org.embl.ebi.escience.scuflui.renderers.MimeTypeRendererSPI;
 import java.lang.ClassLoader;
 import java.lang.Object;
 import java.lang.String;
-
-
 
 /**
  *
@@ -19,38 +18,30 @@ import java.lang.String;
  * @author Matthew Pocock
  */
 public class Text
-        implements MimeTypeRendererSPI
+        extends AbstractRenderer.ByPattern
 {
-    private Icon icon;
-
     public Text()
     {
-        icon = new ImageIcon(ClassLoader.getSystemResource(
-                "org/embl/ebi/escience/baclava/icons/text.png"));
-
+        super("Text",
+              new ImageIcon(ClassLoader.getSystemResource(
+                      "org/embl/ebi/escience/baclava/icons/text.png")),
+              Pattern.compile(".*text/.*"));
     }
 
-    public boolean canHandle(Object userObject, String mimetypes)
+    protected boolean canHandle(MimeTypeRendererRegistry renderers,
+                                Object userObject,
+                                String mimeType)
     {
-        return mimetypes.matches(".*text/.*") &&
+        return super.canHandle(renderers, userObject, mimeType) &&
                 userObject instanceof String;
     }
 
-    public JComponent getComponent(Object userObject, String mimetypes)
+    public JComponent getComponent(MimeTypeRendererRegistry renderers,
+                                   DataThing dataThing)
     {
         JTextArea theTextArea = new JTextArea();
-        theTextArea.setText((String) userObject);
+        theTextArea.setText((String) dataThing.getDataObject());
         theTextArea.setFont(new Font("Monospaced", Font.PLAIN, 12));
         return theTextArea;
-    }
-
-    public String getName()
-    {
-        return "Text";
-    }
-
-    public Icon getIcon(Object userObject, String mimetypes)
-    {
-        return icon;
     }
 }

@@ -31,7 +31,7 @@ import java.lang.StringBuffer;
 
 /**
  * A simple wrapper around an arbitrary Collection
- * object which allows lookup and storage of any 
+ * object which allows lookup and storage of any
  * metadata within the collection or its children.
  * In addition, there is an object of metadata concerning
  * the DataThing itself.
@@ -49,16 +49,24 @@ public class DataThing {
     protected HashMap metadataMap = new HashMap();
     protected SemanticMarkup myMarkup;
     protected HashMap lsid = new HashMap();
-    
+
+    public DataThing(DataThing other)
+    {
+        this.theDataObject = other.theDataObject;
+        this.metadataMap.putAll(other.metadataMap);
+        this.myMarkup = new SemanticMarkup(other.myMarkup);
+        this.lsid.putAll(other.lsid);
+    }
+
     /**
      * Construct a new DataThing from the supplied
-     * XML Jdom Element. Delegates to the 
+     * XML Jdom Element. Delegates to the
      * DataThingXMLFactory for almost all the real
      * work here.
     */
     public DataThing(Element e) {
 	myMarkup = new SemanticMarkup(this);
-	theDataObject = DataThingXMLFactory.configureDataThing(e, this); 
+	theDataObject = DataThingXMLFactory.configureDataThing(e, this);
     }
 
     /**
@@ -94,7 +102,7 @@ public class DataThing {
 	    return;
 	}
     }
-    
+
 
     /**
      * Set the LSID of the named object to the specified
@@ -113,11 +121,11 @@ public class DataThing {
     public String getLSID(Object target) {
 	return (lsid.get(target)!=null)?(String)(lsid.get(target)):"";
     }
-    
+
     /**
      * Create and bind a new SemanticMarkup
      * object to the DataThing itself, it's
-     * not totally clear there's a need for 
+     * not totally clear there's a need for
      * this but it does no harm so why not?
      */
     public DataThing(Object o) {
@@ -145,7 +153,7 @@ public class DataThing {
     public SemanticMarkup getMetadata() {
 	return this.myMarkup;
     }
-    
+
     /**
      * Get the underlying data object, this is
      * the first level of the data document.
@@ -153,7 +161,7 @@ public class DataThing {
     public Object getDataObject() {
 	return this.theDataObject;
     }
-    
+
     /**
      * Get the syntax type of this DataThing. The type
      * string is based around application of the collection
@@ -226,7 +234,7 @@ public class DataThing {
 		}
 	    }
 	    catch (NoMetadataFoundException nmfe) {
-		StringBuffer sb = new StringBuffer();		
+		StringBuffer sb = new StringBuffer();
 		// Try to annotate with mime types based on data object type
 		if (o instanceof String) {
 		    getMetadata().addMIMEType("text/plain");
@@ -243,12 +251,12 @@ public class DataThing {
 			sb.append(",");
 		    }
 		}
-		
+
 		// Try to annotate with mime types based on data object type
 		String specifiedMIMETypes = sb.toString();
 		return ("'"+specifiedMIMETypes+"'");
 	    }
-	    
+
 	}
     }
 
@@ -264,18 +272,18 @@ public class DataThing {
 
     /**
      * Get the SemanticMarkup associated with an object
-     * in this DataThing. If there is no such metadata 
+     * in this DataThing. If there is no such metadata
      * available the behavious depends upon the value
      * of the supplyDefaults parameter. If false, then
-     * a NoMetadataFoundException is thrown, if true a 
-     * new SemanticMarkup object is created, stored in 
+     * a NoMetadataFoundException is thrown, if true a
+     * new SemanticMarkup object is created, stored in
      * the dictionary and returned to the caller.
      */
-    public SemanticMarkup getMetadataForObject(Object theObject, 
-					       boolean supplyDefault) 
+    public SemanticMarkup getMetadataForObject(Object theObject,
+					       boolean supplyDefault)
 	throws NoMetadataFoundException {
 	WeakReference ref = (WeakReference)metadataMap.get(theObject);
-	
+
 	//SemanticMarkup theMarkup = (SemanticMarkup)((WeakReference)metadataMap.get(theObject)).get();
 	if (ref != null) {
 	    return (SemanticMarkup)ref.get();
@@ -303,14 +311,37 @@ public class DataThing {
     }
 
     /**
+     * Iterate over all imediate children.
+     * If there are no children, return an iterator over nothing.
+     * All children will be viewed as DataThing instances.
+     *
+     * @return an Iterator over all children
+     */
+    public Iterator childIterator()
+    {
+        if (theDataObject instanceof Collection) {
+            List dataThingList = new ArrayList();
+            for (Iterator i = ((Collection) theDataObject).iterator();
+                 i.hasNext();) {
+                DataThing newThing = new DataThing(this);
+                newThing.theDataObject = i.next();
+                dataThingList.add(newThing);
+            }
+            return dataThingList.iterator();
+        } else {
+            return Collections.EMPTY_LIST.iterator();
+        }
+    }
+
+    /**
      * Given a desired type, return the BaclavaIterator that
-     * provides DataThing objects of this type. If the desired 
+     * provides DataThing objects of this type. If the desired
      * collection structure is not contained by this DataThing
      * then an exception is thrown.
      * @exception IntrospectionException thrown if the supplied type is not
      * contained within the current DataThing type.
      */
-    public BaclavaIterator iterator(String desiredType) 
+    public BaclavaIterator iterator(String desiredType)
 	throws IntrospectionException {
 	String type = null;
 	String currentType = null;
@@ -328,8 +359,8 @@ public class DataThing {
 	}
 	// At this point, we should have split the mime types away from the
 	// collection types, so the current type looks like, for example, l() or s(l())
-	
-	// If the strings are the same then we return an iterator with a single item 
+
+	// If the strings are the same then we return an iterator with a single item
 	// in it, namely the current DataThing; this is needed where the enactor has
 	// detected that iteration is required somewhere else using the join iterator
 	if (type.equals(currentType)) {
@@ -363,9 +394,9 @@ public class DataThing {
 	else {
 	    throw new IntrospectionException("Incompatible types for iterator, cannot extract "+type+" from "+getSyntacticType());
 	}
-	
+
     }
-    
+
     /**
      * Drill into a collection, adding items to the list if we're at the desired depth,
      * this makes the underlying assumption that the collection contains either collections

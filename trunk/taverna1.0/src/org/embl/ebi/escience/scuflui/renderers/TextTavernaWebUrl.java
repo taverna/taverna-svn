@@ -1,22 +1,11 @@
 package org.embl.ebi.escience.scuflui.renderers;
 
-import java.awt.Font;
-import javax.swing.Icon;
-import javax.swing.ImageIcon;
-import javax.swing.JComponent;
-import javax.swing.JEditorPane;
-import javax.swing.JTextArea;
+import org.embl.ebi.escience.baclava.DataThing;
 
-// Network Imports
+import javax.swing.*;
 import java.net.URL;
-
-import org.embl.ebi.escience.scuflui.renderers.MimeTypeRendererSPI;
-import java.lang.ClassLoader;
-import java.lang.Exception;
-import java.lang.Object;
-import java.lang.String;
-
-
+import java.awt.*;
+import java.util.regex.Pattern;
 
 /**
  *
@@ -24,43 +13,37 @@ import java.lang.String;
  * @author Matthew Pocock
  */
 public class TextTavernaWebUrl
-        implements MimeTypeRendererSPI
+        extends AbstractRenderer.ByPattern
 {
-    private Icon icon;
-
     public TextTavernaWebUrl()
     {
-        icon = new ImageIcon(ClassLoader.getSystemResource(
-                "org/embl/ebi/escience/baclava/icons/text.png"));
+        super("Web URL",
+              new ImageIcon(ClassLoader.getSystemResource(
+                "org/embl/ebi/escience/baclava/icons/text.png")),
+              Pattern.compile(".*text/x-taverna-web-url.*"));
     }
 
-    public boolean canHandle(Object userObject, String mimetypes)
+    protected boolean canHandle(MimeTypeRendererRegistry renderers,
+                                Object userObject,
+                                String mimeType)
     {
-        return mimetypes.matches(".*text/x-taverna-web-url.*") &&
+        return super.canHandle(renderers, userObject, mimeType) &&
                 userObject instanceof String;
     }
 
-    public JComponent getComponent(Object userObject, String mimetypes)
+    public JComponent getComponent(MimeTypeRendererRegistry renderers,
+                                   DataThing dataThing)
     {
+        Object dataObject = dataThing.getDataObject();
         try {
             JEditorPane jep = new JEditorPane();
-            jep.setPage(new URL((String) userObject));
+            jep.setPage(new URL((String) dataObject));
             return jep;
         } catch (Exception ex) {
             JTextArea theTextArea = new JTextArea();
-            theTextArea.setText((String) userObject);
+            theTextArea.setText((String) dataObject);
             theTextArea.setFont(new Font("Monospaced", Font.PLAIN, 12));
             return theTextArea;
         }
-    }
-
-    public String getName()
-    {
-        return "Web URL";
-    }
-
-    public Icon getIcon(Object userObject, String mimetypes)
-    {
-        return icon;
     }
  }
