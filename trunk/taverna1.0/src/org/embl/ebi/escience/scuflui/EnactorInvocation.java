@@ -191,7 +191,9 @@ public class EnactorInvocation extends JPanel implements ScuflUIComponent {
     for (Iterator i = resultMap.keySet().iterator(); i.hasNext(); ) {
       String resultName = (String)i.next();
       DataThing resultValue = (DataThing)resultMap.get(resultName);
-      this.individualResults.add(resultName, new ResultItemPanel(resultValue));
+				ResultItemPanel rip=new ResultItemPanel(resultValue);
+				rip.setResultsEditing(false);
+      this.individualResults.add(resultName,rip);
     }
     this.tabs.setSelectedComponent(individualResults);
   }
@@ -504,7 +506,9 @@ public class EnactorInvocation extends JPanel implements ScuflUIComponent {
 			    for (Iterator i = intermediateResultMaps[0].keySet().iterator(); i.hasNext(); ) {
 				String name = (String)i.next();
 				DataThing value = (DataThing)intermediateResultMaps[0].get(name);
-				intermediateInputs.add(name, new ResultItemPanel(value));
+				ResultItemPanel rip=new ResultItemPanel(value);
+				rip.setResultsEditing(false);
+				intermediateInputs.add(name,rip );
 			    }
 			    // And the outputs
 			    for (Iterator i = intermediateResultMaps[1].keySet().iterator(); i.hasNext(); ) {
