@@ -223,22 +223,23 @@ public class WebScavenger extends Scavenger {
 			} catch (MalformedURLException e) {
 			    continue;
 			}
-			
+			boolean validURLToSearch = true;
 			//System.out.println("Examining link : "+strLink);
 			// only look at http links
 			if (urlLink.getProtocol().compareTo("http") != 0) {
-			    System.out.println("  - not http");
-			    break;
+			    //System.out.println("  - not http");
+			    validURLToSearch=false;
 			}
-			boolean validURLToSearch = true;
 			// If there is a '?' in the url then reject it
 			if (strLink.indexOf("?")>0) {
 			    validURLToSearch=false;
+			    //System.out.println("Not searching "+strLink+", it has a query in it");
 			}
 			// Only look at links that are 'below' the original one in
 			// the web heirarchy
 			if (strLink.toLowerCase().startsWith(initialURL.toLowerCase()) == false) {
 			    validURLToSearch=false;
+			    //System.out.println("Not searching "+strLink+", doesn't start with "+initialURL);
 			}
 			try {
 			    // try opening the URL
@@ -248,17 +249,17 @@ public class WebScavenger extends Scavenger {
 			    String strType = urlLinkConnection.guessContentTypeFromStream(linkStream);
 			    linkStream.close();
 			    // if another page, add to the end of search list
-			    if (strType!=null && strType.compareTo("text/html") == 0) {
-				// check to see if this URL has already been 
-				// searched or is going to be searched
-				if ((!vectorSearched.contains(strLink)) 
-				    && (!vectorToSearch.contains(strLink))) {
-				    // test to make sure it is robot-safe!
-				    if (robotSafe(urlLink) && strLink.indexOf("?")==-1 && validURLToSearch) {
-					vectorToSearch.addElement(strLink);
-				    }
+			    //System.out.println(strType);
+			    // check to see if this URL has already been 
+			    // searched or is going to be searched
+			    if ((!vectorSearched.contains(strLink)) 
+				&& (!vectorToSearch.contains(strLink))) {
+				// test to make sure it is robot-safe!
+				if (robotSafe(urlLink) && validURLToSearch) {
+				    vectorToSearch.addElement(strLink);
 				}
 			    }
+			    
 			    
 			    // if the proper type, add it to the results list
 			    // unless we have already seen it

@@ -49,7 +49,7 @@ import java.lang.System;
  */
 public class Workbench extends JFrame {
     
-    protected static ImageIcon openIcon, deleteIcon, importIcon, saveIcon, openurlIcon;
+    public static ImageIcon openIcon, deleteIcon, importIcon, saveIcon, openurlIcon;
 
     static {
 	try {

@@ -24,6 +24,13 @@ import java.lang.String;
 public class WorkflowProcessorFactory implements ProcessorFactory {
     
     private String definitionURL;
+
+    /**
+     * Return the definition URL
+     */
+    public String getDefinitionURL() {
+	return this.definitionURL;
+    }
     
     /**
      * Create a new factory configured with the specified

@@ -28,6 +28,8 @@ import org.embl.ebi.escience.scuflui.workbench.Workbench;
 import org.embl.ebi.escience.scuflui.workbench.WorkflowScavenger;
 import java.lang.Object;
 import java.lang.String;
+import java.net.*;
+import org.embl.ebi.escience.scufl.parser.*;
 
 
 
@@ -75,6 +77,42 @@ public class ScavengerTreePopupHandler extends MouseAdapter {
 		// Show the popup for adding new processors to the model
 		JPopupMenu menu = new JPopupMenu();
 		JMenuItem add = new JMenuItem("Add to model", Workbench.importIcon);
+		menu.add(add);
+		// If this is a workflow factory then we might as well give
+		// the user the option to import the complete workflow as 
+		// well as to wrap it in a processor
+		if (scuflObject instanceof WorkflowProcessorFactory) {
+		    JMenuItem imp = new JMenuItem("Import workflow...", ScuflIcons.webIcon);
+		    final String definitionURL = ((WorkflowProcessorFactory)scuflObject).getDefinitionURL();
+		    imp.addActionListener(new ActionListener() {
+			    public void actionPerformed(ActionEvent ae) {
+				try {
+				    String prefix = (String)JOptionPane.showInputDialog(null,
+											"Optional name prefix?",
+											"Prefix",
+											JOptionPane.QUESTION_MESSAGE,
+											null,
+											null,
+											"");
+				    if (prefix != null) {
+					if (prefix.equals("")) {
+					    prefix = null;
+					}
+					XScuflParser.populate((new URL(definitionURL)).openStream(),
+							      ScavengerTreePopupHandler.this.scavenger.model,
+							      prefix);
+				    }
+				}
+				catch (Exception ex) {
+				    JOptionPane.showMessageDialog(null,
+								  "Problem opening XScufl from web : \n"+ex.getMessage(),
+								  "Exception!",
+								  JOptionPane.ERROR_MESSAGE);
+				}
+			    }
+			});
+		    menu.add(imp);
+		}
 		final ProcessorFactory pf = (ProcessorFactory)scuflObject;
 		add.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ae) {
@@ -104,7 +142,6 @@ public class ScavengerTreePopupHandler extends MouseAdapter {
 			    }
 			}
 		    });
-		menu.add(add);
 		menu.show(scavenger, e.getX(), e.getY());
 	    }
 	    else if (scuflObject instanceof String) {
@@ -223,7 +260,7 @@ public class ScavengerTreePopupHandler extends MouseAdapter {
 										     JOptionPane.QUESTION_MESSAGE,
 										     null,
 										     null,
-										     "http://");
+										     "http://cvs.mygrid.org.uk/scufl/");
 				if (rootURL!=null) {
 				    try {
 					ScavengerTreePopupHandler.this.scavenger.addScavenger(new WebScavenger(rootURL));					
