@@ -656,12 +656,18 @@ public class AttributePageEditor extends JPanel {
 				//firingEvents = true;
 				if (oldSOptionsIndex >=0) {
 				    if (oldSOptionsIndex >= transcriptOptions.length) {
-					sOptions.setSelectedIndex(-1);
+					sOptions.setSelectedIndex(0);
 				    }
 				    else {
 					sOptions.setSelectedIndex(oldSOptionsIndex);
 				    }
 				}
+				else {
+				    // UI is inconsistant if there's no selection as there
+				    // will still be an entry visible in the options view.
+				    sOptions.setSelectedIndex(0);
+				}
+				       
 			    }
 			    else if (index == 2) {
 				// Genes
