@@ -131,11 +131,19 @@
 			</fileset>
 		</copy>
 		<!-- Use aspectj to prepare the source files -->
+		<!--
 		<ajc srcdir="${src.dir}"
 			 preprocess="true"
 			 workingdir="${build.src}">
 			<classpath refid="compile-classpath"/>
 		</ajc>
+		-->
+		<!-- Just copy the source files -->
+		<copy todir="${build.src}" filtering="on">
+			<fileset dir="${src.dir}">
+				<include name="**/*.java"/>
+			</fileset>
+		</copy>
 	</target>
 
 	<!-- Compile the source files -->
