@@ -704,7 +704,7 @@ abstract class ObjectPool {
 	    }
 	}        
 	int currentObjects = locked.size();
-	if (currentObjects < maxObjects) {
+	if (currentObjects < maxObjects || maxObjects == 0) {
 	    // no objects available, create a new one
 	    o = create();        
 	    locked.put( o, new Long( now ) ); 

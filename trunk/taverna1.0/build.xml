@@ -439,6 +439,12 @@
 		<java classname="org.embl.ebi.escience.baclava.IteratorNodeTest" fork="no">
 			<classpath refid="compile-classpath"/>
 		</java>
+	</target>	
+	<!-- Test the data thing iterator UI -->
+	<target name="test.iteratorui" depends="java">
+		<java classname="org.embl.ebi.escience.baclava.iteratorui.IteratorJTree" fork="no">
+			<classpath refid="compile-classpath"/>
+		</java>
 	</target>
 
 	<!-- Test the data thing iterator system -->
