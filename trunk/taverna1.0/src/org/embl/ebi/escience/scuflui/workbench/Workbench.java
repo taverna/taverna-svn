@@ -143,11 +143,44 @@ public class Workbench extends JFrame {
                 System.exit(0);
             }
         });
-
+	
 	// Create the desktop pane and menu
 	desktop = new JDesktopPane();
 	setContentPane(desktop);
 	setJMenuBar(createMenuBar());
+	
+	// Add a filedrop listener to allow users to drag
+	// workflow definition in (cheers to Robert Harder!)
+	// http://iharder.sourceforge.net/
+	new FileDrop(desktop, new FileDrop.Listener() {
+		public void filesDropped(File[] files) {
+		    if (files.length == 1) {
+			// Don't use a prefix, single drop event
+			try {
+			    XScuflParser.populate(files[0].toURL().openStream(), Workbench.this.model, null);
+			}
+			catch (Exception ex) {
+			    JOptionPane.showMessageDialog(null,
+							  "Problem opening XScufl from file : \n"+ex.getMessage(),
+							  "Exception!",
+							  JOptionPane.ERROR_MESSAGE);
+			}
+		    }
+		    else {
+			for (int i = 0; i < files.length; i++) {
+			    try {
+				XScuflParser.populate(files[0].toURL().openStream(), Workbench.this.model, ""+i);
+			    }
+			    catch (Exception ex) {
+				JOptionPane.showMessageDialog(null,
+							      "Problem opening XScufl from file : \n"+ex.getMessage(),
+							      "Exception!",
+							      JOptionPane.ERROR_MESSAGE);
+			    }
+			}
+		    }
+		}
+	    });
     }
     
     /**
