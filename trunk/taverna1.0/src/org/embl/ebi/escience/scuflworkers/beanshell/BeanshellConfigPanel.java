@@ -104,6 +104,7 @@ public class BeanshellConfigPanel extends JPanel implements ScuflUIComponent {
 		    // Add a port to the input model!
 		    try {
 			InputPort ip = new InputPort(processor, addInputField.getText());
+			ip.setSyntacticType("string");
 			processor.addPort(ip);
 			BeanshellConfigPanel.this.updateInputListModel(inputModel);
 		    }
@@ -144,6 +145,7 @@ public class BeanshellConfigPanel extends JPanel implements ScuflUIComponent {
 		    // Add a port to the input model!
 		    try {
 			OutputPort op = new OutputPort(processor, addOutputField.getText());
+			op.setSyntacticType("string");
 			processor.addPort(op);
 			BeanshellConfigPanel.this.updateOutputListModel(outputModel);
 		    }
