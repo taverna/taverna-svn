@@ -83,7 +83,7 @@
 	<target name="fetchjars">
 	        <mkdir dir="./netlib"/>
 	        <get src="http://www.ibiblio.org/maven/bsh/jars/bsh-2.0b1.jar" dest="./netlib/bsh-2.0b1.jar" usetimestamp="yes"/>
-		<get src="http://www.ibiblio.org/maven/jdom/jars/jdom-b10.jar" dest="./netlib/jdom-b10.jar" usetimestamp="yes"/>
+			<get src="http://www.ibiblio.org/maven/jdom/jars/jdom-1.0.jar" dest="./netlib/jdom-1.0.jar" usetimestamp="yes"/>
 		<get src="http://www.ibiblio.org/maven/axis/jars/axis-1.2-beta-3.jar" dest="./netlib/axis-1.2-beta-3.jar" usetimestamp="yes"/>
 		<get src="http://www.ibiblio.org/maven/axis/jars/axis-wsdl4j-1.2-beta-3.jar" dest="./netlib/axis-wsdl4j-1.2-beta-3.jar" usetimestamp="yes"/>
 		<get src="http://www.ibiblio.org/maven/axis/jars/axis-jaxrpc-1.2-beta-3.jar" dest="./netlib/axis-jaxrpc-1.2-beta-3.jar" usetimestamp="yes"/>
@@ -99,6 +99,8 @@
 		<get src="http://www.ibiblio.org/maven/servletapi/jars/servlet-api-2.4-20040521.jar" dest="./netlib/servlet-api-2.4-20040521.jar" usetimestamp="yes"/>
 		<get src="http://www.ibiblio.org/maven/junit/jars/junit-3.8.jar" dest="./netlib/junit-3.8.jar" usetimestamp="yes"/>
 		<get src="http://www.ibiblio.org/maven/poi/jars/poi-2.0-final-20040126.jar" dest="./netlib/poi-2.0-final-20040126.jar" usetimestamp="yes"/>
+		<get src="http://www.ibiblio.org/maven/mysql/jars/mysql-connector-java-3.0.10-stable-bin.jar" dest="./netlib/mysql-connector-java-3.0.10-stable-bin.jar" usetimestamp="yes"/>
+		
 		<!-- Reset the compile classpath to include the newly fetched classes -->	
 		<path id="downloaded-libs">
 		        <fileset dir="./netlib">

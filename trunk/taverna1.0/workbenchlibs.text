@@ -9,9 +9,13 @@ lsid-client-1.1.jar
 wsif-hacked.jar
 seqhound.jar
 seqvista-hacked.jar
+martj.jar
+
+mysql-connector-java-3.0.10-stable-bin.jar
+ecp1_0beta.jar
 
 bsh-2.0b1.jar
-jdom-b10.jar
+jdom-1.0.jar
 commons-httpclient-2.0.jar
 axis-1.2-beta-3.jar
 axis-jaxrpc-1.2-beta-3.jar
