@@ -205,6 +205,7 @@
 			 sourcepath="${build.src}"
 			 doctitle="&lt;h1>${ant.project.name} Java API Documentation&lt;/h1>"
 			 packagenames="*"
+             source="1.4"
 			 version="true">
 			<classpath refid="compile-classpath"/>
 		</javadoc>
