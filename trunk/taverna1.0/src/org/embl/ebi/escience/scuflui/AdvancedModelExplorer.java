@@ -6,7 +6,6 @@
 package org.embl.ebi.escience.scuflui;
 import javax.swing.*;
 import javax.swing.event.*;
-import javax.swing.table.*;
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.tree.*;
@@ -17,12 +16,7 @@ import org.embl.ebi.escience.scufl.view.*;
 import org.embl.ebi.escience.scufl.parser.*;
 import java.net.*;
 import java.util.prefs.*;
-import java.util.*;
-import org.embl.ebi.escience.scuflui.workbench.Workbench;
 import org.embl.ebi.escience.baclava.*;
-import org.embl.ebi.escience.scuflworkers.wsdl.WSDLBasedProcessor;
-import org.embl.ebi.escience.scuflworkers.soaplab.SoaplabProcessor;
-import org.embl.ebi.escience.scuflworkers.biomoby.BiomobyProcessor;
 
 /**
  * An amalgam of the ScuflModelExplorerTreeTable and the
@@ -50,6 +44,7 @@ public class AdvancedModelExplorer extends JPanel
 	// Create a tabbed layout and put the 
 	// explorer component in the first tab
 	tabs = new JTabbedPane();
+	tabs.setPreferredSize(new Dimension(450,100));
 	explorer = new ScuflModelTreeTable();
 	JScrollPane explorerPane = new JScrollPane(explorer);
 	explorerPane.setPreferredSize(new Dimension(0,0));
