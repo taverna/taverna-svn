@@ -41,6 +41,10 @@ public class SoaplabProcessor extends Processor implements java.io.Serializable 
 
     private URL endpoint = null;
 
+    public int getMaximumWorkers() {
+	return 10;
+    }
+
     // Get the host part of the endpoint
     public String getResourceHost() {
 	return endpoint.getHost();
