@@ -33,6 +33,20 @@ public class DataConstraint implements java.io.Serializable {
     }
 
     /**
+     * Return the source Port
+     */
+    public Port getSource() {
+	return this.source;
+    }
+
+    /**
+     * Return the sink Port
+     */
+    public Port getSink() {
+	return this.sink;
+    }
+
+    /**
      * Create a new data constraint from the source to the sink port. 
      * The ports must be instances of OutputPort and InputPort respectively
      * @exception DataConstraintCreationException if the ports are found but are incorrectly typed
