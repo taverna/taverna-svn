@@ -282,7 +282,7 @@ public class ScavengerTreePopupHandler extends MouseAdapter {
 		    menu.add(showAllNodes);
 		    showAllNodes.addActionListener(new ActionListener() {
 			    public void actionPerformed(ActionEvent ae) {
-				ScavengerTreePopupHandler.this.scavenger.setAllNodesExpanded();
+				ScavengerTreePopupHandler.this.scavenger.setExpansion(true);
 			    }
 			});
 

@@ -57,7 +57,7 @@ import java.awt.*;
  * a user object implementing ProcessorFactory.
  * @author Tom Oinn
  */
-public class ScavengerTree extends JTree 
+public class ScavengerTree extends ExtendedJTree 
     implements ScuflUIComponent,
 	       DragSourceListener,
 	       DragGestureListener,
@@ -165,9 +165,8 @@ public class ScavengerTree extends JTree
 			if (searchString.equals(compare)) {
 			    String selectedProcessorString = theNode.getUserObject().toString().toLowerCase();
 			    TreePath path = new TreePath(treeModel.getPathToRoot(theNode));
-			    setAllNodesCollapsed();
-			    ScuflModelExplorerRenderer r = (ScuflModelExplorerRenderer)getCellRenderer();
-			    r.setPattern(selectedProcessorString);
+			    setExpansion(false);
+			    setPattern(selectedProcessorString);
 			    makeVisible(path);
 			}
 		    }
@@ -231,39 +230,7 @@ public class ScavengerTree extends JTree
 	    new DefaultScavengerLoaderThread(this);
 	}
 	else {
-	    expandPath(new TreePath(this.root));
-	}
-    }
-
-    public void setAllNodesExpanded() {
-	synchronized(this.getModel()) {
-	    expandAll(this, new TreePath(this.root), true);
-	}
-    }
-    public void setAllNodesCollapsed() {
-	synchronized(this.getModel()) {
-	    expandAll(this, new TreePath(this.root), false);
-	}
-    }
-    private void expandAll(JTree tree, TreePath parent, boolean expand) {
-	synchronized(this.getModel()) {
-	    // Traverse children
-	    // Ignores nodes who's userObject is a Processor type to
-	    // avoid overloading the UI with nodes at startup.
-	    TreeNode node = (TreeNode)parent.getLastPathComponent();
-	    if (node.getChildCount() >= 0 && (((DefaultMutableTreeNode)node).getUserObject() instanceof Processor == false)) {
-		for (Enumeration e=node.children(); e.hasMoreElements(); ) {
-		    TreeNode n = (TreeNode)e.nextElement();
-		    TreePath path = parent.pathByAddingChild(n);
-		    expandAll(tree, path, expand);
-		}
-	    }
-	    // Expansion or collapse must be done bottom-up
-	    if (expand) {
-		tree.expandPath(parent);
-	    } else {
-		tree.collapsePath(parent);
-	    }
+	    setExpansion(true);
 	}
     }
 
@@ -339,8 +306,7 @@ public class ScavengerTree extends JTree
 	    catch (ScavengerCreationException sce) {
 		sce.printStackTrace();
 	    }
-
-	    scavengerTree.setAllNodesExpanded();
+	    scavengerTree.setExpansion(true);
 	}
     }
 

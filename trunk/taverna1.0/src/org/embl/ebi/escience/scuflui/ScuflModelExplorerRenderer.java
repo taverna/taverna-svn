@@ -22,14 +22,8 @@ import java.lang.Object;
  * component of the model being displayed.
  * @author Tom Oinn
  */
-public class ScuflModelExplorerRenderer extends DefaultTreeCellRenderer {
+public class ScuflModelExplorerRenderer extends NodeColouringRenderer {
     
-    private String pattern = null;
-
-    public void setPattern(String pattern) {
-	this.pattern = pattern;
-    }
-
     /**
      * Create a new explorer renderer with no regular expression based
      * highlight operation
@@ -43,8 +37,7 @@ public class ScuflModelExplorerRenderer extends DefaultTreeCellRenderer {
      * the regular expression in red
      */
     public ScuflModelExplorerRenderer(String pattern) {
-	super();
-	this.pattern = pattern;
+	super(pattern);
     }
 
     /**
@@ -109,23 +102,6 @@ public class ScuflModelExplorerRenderer extends DefaultTreeCellRenderer {
 	}
 	else if (((DefaultMutableTreeNode)value).isLeaf()) {
 	    setIcon(ScuflIcons.folderClosedIcon);
-	}
-	else
-	{
-		if (expanded)
-		{
-			setIcon(ScuflIcons.folderOpenIcon);
-		}
-		else
-		{
-			setIcon(ScuflIcons.folderClosedIcon);
-		}		
-	}
-	// Do highlight
-	if (pattern != null) {
-	    if (userObject.toString().toLowerCase().matches(pattern)) {
-		setText("<html><font color=\"red\">"+userObject.toString()+"</font></html>");
-	    }
 	}
 	return this;
     }
