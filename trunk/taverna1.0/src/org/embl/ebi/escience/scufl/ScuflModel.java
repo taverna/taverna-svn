@@ -92,11 +92,39 @@ public class ScuflModel implements java.io.Serializable {
     }
 
     /**
+     * Destroy a processor, this also removes any data constraints
+     * that have the processor as either a source or a sink.
+     */
+    public void destroyProcessor(Processor the_processor) {
+	this.processors.remove(the_processor);
+	// Iterate over all the data constraints, remove any that
+	// refer to this processor.
+	DataConstraint[] constraints = getDataConstraints();
+	for (int i = 0; i < constraints.length; i++) {
+	    Processor source = constraints[i].getSource().getProcessor();
+	    Processor sink = constraints[i].getSink().getProcessor();
+	    if (source == the_processor || sink == the_processor) {
+		destroyDataConstraint(constraints[i]);
+	    }
+	}
+	fireModelEvent(new ScuflModelEvent(this, "Destroyed processor '"+the_processor.getName()+"'"));
+	
+    }
+
+    /**
      * Add a data constraint to the model
      */
     public void addDataConstraint(DataConstraint the_constraint) {
 	this.dataconstraints.add(the_constraint);
 	fireModelEvent(new ScuflModelEvent(this, "Added data constraint '"+the_constraint.getName()+"' to the model"));
+    }
+
+    /**
+     * Remove a data constraint from the model
+     */
+    public void destroyDataConstraint(DataConstraint the_constraint) {
+	this.dataconstraints.remove(the_constraint);
+	fireModelEvent(new ScuflModelEvent(this, "Removed data constraint '"+the_constraint.getName()+"'"));
     }
 
     /**
