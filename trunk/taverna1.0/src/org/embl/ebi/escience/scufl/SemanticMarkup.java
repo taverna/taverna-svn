@@ -257,6 +257,7 @@ public class SemanticMarkup {
 		Element typeElement = new Element("mimeType",XScufl.XScuflNS);
 		typeElement.setText((String)i.next());
 		mimeTypeList.addContent(typeElement);
+		addedMIME = true;
 	    }
 	    if (addedMIME) {
 		topElement.addContent(mimeTypeList);
