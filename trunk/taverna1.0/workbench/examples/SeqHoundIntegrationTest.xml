@@ -1,14 +1,97 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <s:scufl xmlns:s="http://org.embl.ebi.escience/xscufl/0.1alpha" version="0.2" log="0">
   <s:workflowdescription lsid="urn:lsid:www.mygrid.org.uk:operation:VT9VQTHA5Z10" author="Tom Oinn" title="Test of SeqHound integration with Soaplab, WSDL and Biomoby">Starts with a GI number, uses this to cross reference to locus link and fetch a descriptive title. The LocusLink ID is then cross references into the Gene Ontology to create a list of GO ids. This list is then passed back to a seqhound service to fetch the titles corresponding to the ids and also via some local operations (required to convert eg 7601 to GO:0007601) into a web service running at the EBI (European Bioinformatics Institute) which then uses Taverna's stateful service interaction mechanism to build up a visualisation of the subgraph of the gene ontology containing these terms. The raw 'dot' text from the visualisation service is then passed into a Soaplab wrapper around the 'dot' tool from AT&amp;T research which performs graph layout and renders to a PNG image. While this is happening the FASTA format sequence is fetched from the SeqHound server, wrapped into 80 column format with seqret (from the EMBOSS tool set) and BLASTed against the known Arabidopsis coding regions using a BioMoby service (this is pretty pointless, the gene is from human so unlikely to produce anything interesting, it's just there to demonstrate that we can interoperate these services)</s:workflowdescription>
-  <s:processor name="Parse_moby_data">
-    <s:local>org.embl.ebi.escience.scuflworkers.biomoby.ExtractMobyData</s:local>
-  </s:processor>
   <s:processor name="id">
     <s:stringconstant />
   </s:processor>
   <s:processor name="namespace">
     <s:stringconstant>AGI_LocusCode</s:stringconstant>
+  </s:processor>
+  <s:processor name="ImageFormat">
+    <s:stringconstant>png</s:stringconstant>
+  </s:processor>
+  <s:processor name="FlattenList">
+    <s:local>org.embl.ebi.escience.scuflworkers.java.FlattenList</s:local>
+  </s:processor>
+  <s:processor name="Parse_moby_data">
+    <s:local>org.embl.ebi.escience.scuflworkers.biomoby.ExtractMobyData</s:local>
+  </s:processor>
+  <s:processor name="Create_moby_data1">
+    <s:local>org.embl.ebi.escience.scuflworkers.biomoby.CreateMobyData</s:local>
+  </s:processor>
+  <s:processor name="FixGeneOntologyID">
+    <s:workflow>
+      <s:scufl version="0.2" log="0">
+        <s:workflowdescription lsid="urn:lsid:www.mygrid.org.uk:operation:VT9VQTHA5Z7" author="Tom Oinn" title="GO id reformat">Simple internal workflow to correct GO ids - SeqHound uses ids of the form '7601' whereas we need them in the form 'GO:0007601'</s:workflowdescription>
+        <s:processor name="GOPrefix">
+          <s:stringconstant>GO:</s:stringconstant>
+        </s:processor>
+        <s:processor name="AddPrefix">
+          <s:local>org.embl.ebi.escience.scuflworkers.java.StringConcat</s:local>
+        </s:processor>
+        <s:processor name="PadNumeral">
+          <s:local>org.embl.ebi.escience.scuflworkers.java.PadNumber</s:local>
+        </s:processor>
+        <s:link source="RawID" sink="PadNumeral:input" />
+        <s:link source="GOPrefix:value" sink="AddPrefix:string1" />
+        <s:link source="PadNumeral:padded" sink="AddPrefix:string2" />
+        <s:link source="AddPrefix:output" sink="GeneOntologyID" />
+        <s:source name="RawID" />
+        <s:sink name="GeneOntologyID" />
+      </s:scufl>
+    </s:workflow>
+  </s:processor>
+  <s:processor name="GetFasta">
+    <s:description>The FASTA format is widely used in bioinformatics community;
+ it consists of a definition line, new line followed by a
+ sequence terminated by a second new line.</s:description>
+    <s:seqhound>
+      <s:method>SHoundGetFasta</s:method>
+      <s:server>seqhound.blueprint.org</s:server>
+      <s:jseqremserver>skinner.blueprint.org:8080</s:jseqremserver>
+      <s:path>/cgi-bin/seqrem</s:path>
+      <s:jseqrempath>/jseqhound/jseqrem</s:jseqrempath>
+    </s:seqhound>
+  </s:processor>
+  <s:processor name="TitleFromGi">
+    <s:description>Gets title given a gi value.</s:description>
+    <s:seqhound>
+      <s:method>SHoundTitleFromGi</s:method>
+      <s:server>seqhound.blueprint.org</s:server>
+      <s:jseqremserver>skinner.blueprint.org:8080</s:jseqremserver>
+      <s:path>/cgi-bin/seqrem</s:path>
+      <s:jseqrempath>/jseqhound/jseqrem</s:jseqrempath>
+    </s:seqhound>
+  </s:processor>
+  <s:processor name="GODBGetNameByID">
+    <s:description>retrieves the name of a given goid</s:description>
+    <s:seqhound>
+      <s:method>SHoundGODBGetNameByID</s:method>
+      <s:server>seqhound.blueprint.org</s:server>
+      <s:jseqremserver>skinner.blueprint.org:8080</s:jseqremserver>
+      <s:path>/cgi-bin/seqrem</s:path>
+      <s:jseqrempath>/jseqhound/jseqrem</s:jseqrempath>
+    </s:seqhound>
+  </s:processor>
+  <s:processor name="LLIDFromGi">
+    <s:description>retrieves locuslink id for a given protein gi</s:description>
+    <s:seqhound>
+      <s:method>SHoundLLIDFromGi</s:method>
+      <s:server>seqhound.blueprint.org</s:server>
+      <s:jseqremserver>skinner.blueprint.org:8080</s:jseqremserver>
+      <s:path>/cgi-bin/seqrem</s:path>
+      <s:jseqrempath>/jseqhound/jseqrem</s:jseqrempath>
+    </s:seqhound>
+  </s:processor>
+  <s:processor name="GOIDFromLLID">
+    <s:description>retrieves an array of gene ontology identifiers with the specified locus link identifier</s:description>
+    <s:seqhound>
+      <s:method>SHoundGOIDFromLLID</s:method>
+      <s:server>seqhound.blueprint.org</s:server>
+      <s:jseqremserver>skinner.blueprint.org:8080</s:jseqremserver>
+      <s:path>/cgi-bin/seqrem</s:path>
+      <s:jseqrempath>/jseqhound/jseqrem</s:jseqrempath>
+    </s:seqhound>
   </s:processor>
   <s:processor name="BlastFastaVsArabiProteincoding">
     <s:description>blast Fasta sequence against MAtDB Arabidopsis protein coding genes</s:description>
@@ -18,47 +101,11 @@
       <s:authorityName>mips.gsf.de</s:authorityName>
     </s:biomobywsdl>
   </s:processor>
-  <s:processor name="FlattenList">
-    <s:local>org.embl.ebi.escience.scuflworkers.java.FlattenList</s:local>
-  </s:processor>
-  <s:processor name="ImageFormat">
-    <s:stringconstant>png</s:stringconstant>
-  </s:processor>
-  <s:processor name="TitleFromGi">
-    <s:seqhound>
-      <s:method>SHoundTitleFromGi</s:method>
-      <s:server>seqhound.blueprint.org</s:server>
-      <s:jseqremserver>skinner.blueprint.org:8080</s:jseqremserver>
-      <s:path>/cgi-bin/seqrem</s:path>
-      <s:jseqrempath>/jseqhound/jseqrem</s:jseqrempath>
-    </s:seqhound>
-  </s:processor>
-  <s:processor name="LLIDFromGi">
-    <s:seqhound>
-      <s:method>SHoundLLIDFromGi</s:method>
-      <s:server>seqhound.blueprint.org</s:server>
-      <s:jseqremserver>skinner.blueprint.org:8080</s:jseqremserver>
-      <s:path>/cgi-bin/seqrem</s:path>
-      <s:jseqrempath>/jseqhound/jseqrem</s:jseqrempath>
-    </s:seqhound>
-  </s:processor>
-  <s:processor name="GODBGetNameByID">
-    <s:seqhound>
-      <s:method>SHoundGODBGetNameByID</s:method>
-      <s:server>seqhound.blueprint.org</s:server>
-      <s:jseqremserver>skinner.blueprint.org:8080</s:jseqremserver>
-      <s:path>/cgi-bin/seqrem</s:path>
-      <s:jseqrempath>/jseqhound/jseqrem</s:jseqrempath>
-    </s:seqhound>
-  </s:processor>
-  <s:processor name="GOIDFromLLID">
-    <s:seqhound>
-      <s:method>SHoundGOIDFromLLID</s:method>
-      <s:server>seqhound.blueprint.org</s:server>
-      <s:jseqremserver>skinner.blueprint.org:8080</s:jseqremserver>
-      <s:path>/cgi-bin/seqrem</s:path>
-      <s:jseqrempath>/jseqhound/jseqrem</s:jseqrempath>
-    </s:seqhound>
+  <s:processor name="getDot">
+    <s:arbitrarywsdl>
+      <s:wsdl>http://www.ebi.ac.uk/collab/mygrid/service1/goviz/GoViz.jws?wsdl</s:wsdl>
+      <s:operation>getDot</s:operation>
+    </s:arbitrarywsdl>
   </s:processor>
   <s:processor name="addTerm">
     <s:arbitrarywsdl>
@@ -78,71 +125,31 @@
       <s:operation>destroySession</s:operation>
     </s:arbitrarywsdl>
   </s:processor>
-  <s:processor name="getDot">
-    <s:arbitrarywsdl>
-      <s:wsdl>http://www.ebi.ac.uk/collab/mygrid/service1/goviz/GoViz.jws?wsdl</s:wsdl>
-      <s:operation>getDot</s:operation>
-    </s:arbitrarywsdl>
-  </s:processor>
   <s:processor name="RunDot">
     <s:description>Draw directed graphs as hierarchies</s:description>
     <s:soaplabwsdl>http://industry.ebi.ac.uk/soap/soaplab/graphics::dot</s:soaplabwsdl>
-  </s:processor>
-  <s:processor name="GetFasta">
-    <s:seqhound>
-      <s:method>SHoundGetFasta</s:method>
-      <s:server>seqhound.blueprint.org</s:server>
-      <s:jseqremserver>skinner.blueprint.org:8080</s:jseqremserver>
-      <s:path>/cgi-bin/seqrem</s:path>
-      <s:jseqrempath>/jseqhound/jseqrem</s:jseqrempath>
-    </s:seqhound>
   </s:processor>
   <s:processor name="FormatSequence">
     <s:description>Reads and writes (returns) sequences</s:description>
     <s:soaplabwsdl>http://industry.ebi.ac.uk/soap/soaplab/edit::seqret</s:soaplabwsdl>
   </s:processor>
-  <s:processor name="Create_moby_data1">
-    <s:local>org.embl.ebi.escience.scuflworkers.biomoby.CreateMobyData</s:local>
-  </s:processor>
-  <s:processor name="FixGeneOntologyID">
-    <s:workflow>
-      <s:scufl version="0.2" log="0">
-        <s:workflowdescription lsid="urn:lsid:www.mygrid.org.uk:operation:VT9VQTHA5Z7" author="Tom Oinn" title="GO id reformat">Simple internal workflow to correct GO ids - SeqHound uses ids of the form '7601' whereas we need them in the form 'GO:0007601'</s:workflowdescription>
-        <s:processor name="PadNumeral">
-          <s:local>org.embl.ebi.escience.scuflworkers.java.PadNumber</s:local>
-        </s:processor>
-        <s:processor name="AddPrefix">
-          <s:local>org.embl.ebi.escience.scuflworkers.java.StringConcat</s:local>
-        </s:processor>
-        <s:processor name="GOPrefix">
-          <s:stringconstant>GO:</s:stringconstant>
-        </s:processor>
-        <s:link source="RawID" sink="PadNumeral:input" />
-        <s:link source="GOPrefix:value" sink="AddPrefix:string1" />
-        <s:link source="PadNumeral:padded" sink="AddPrefix:string2" />
-        <s:link source="AddPrefix:output" sink="GeneOntologyID" />
-        <s:source name="RawID" />
-        <s:sink name="GeneOntologyID" />
-      </s:scufl>
-    </s:workflow>
-  </s:processor>
   <s:link source="BlastFastaVsArabiProteincoding:output" sink="Parse_moby_data:mobydata" />
   <s:link source="Parse_moby_data:value" sink="BlastReport" />
-  <s:link source="GINumber" sink="LLIDFromGi:in0" />
+  <s:link source="GINumber" sink="LLIDFromGi:gi" />
   <s:link source="LLIDFromGi:result" sink="LocusLink" />
-  <s:link source="GINumber" sink="TitleFromGi:in0" />
+  <s:link source="GINumber" sink="TitleFromGi:gi" />
   <s:link source="TitleFromGi:result" sink="Title" />
-  <s:link source="LLIDFromGi:result" sink="GOIDFromLLID:in0" />
+  <s:link source="LLIDFromGi:result" sink="GOIDFromLLID:llid" />
   <s:link source="GOIDFromLLID:result" sink="FlattenList:inputlist" />
   <s:link source="createSession:createSessionReturn" sink="addTerm:sessionID" />
   <s:link source="createSession:createSessionReturn" sink="getDot:sessionID" />
   <s:link source="createSession:createSessionReturn" sink="destroySession:sessionID" />
-  <s:link source="FlattenList:outputlist" sink="GODBGetNameByID:in0" />
+  <s:link source="FlattenList:outputlist" sink="GODBGetNameByID:goid" />
   <s:link source="GODBGetNameByID:result" sink="GOTerms" />
   <s:link source="getDot:getDotReturn" sink="RunDot:dotfile_direct_data" />
   <s:link source="ImageFormat:value" sink="RunDot:format" />
   <s:link source="RunDot:outfile" sink="GraphImage" />
-  <s:link source="GINumber" sink="GetFasta:in0" />
+  <s:link source="GINumber" sink="GetFasta:gi" />
   <s:link source="GetFasta:result" sink="FormatSequence:sequence_direct_data" />
   <s:link source="FormatSequence:outseq" sink="ProteinSequence" />
   <s:link source="FormatSequence:outseq" sink="Create_moby_data1:stringvalue" />
