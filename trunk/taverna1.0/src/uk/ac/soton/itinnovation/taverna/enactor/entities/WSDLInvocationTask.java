@@ -24,9 +24,9 @@
 //      Created for Project :   MYGRID
 //      Dependencies        :
 //
-//      Last commit info    :   $Author: mereden $
-//                              $Date: 2003-05-13 13:03:45 $
-//                              $Revision: 1.3 $
+//      Last commit info    :   $Author: dmarvin $
+//                              $Date: 2003-05-19 18:32:58 $
+//                              $Revision: 1.4 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 
@@ -43,6 +43,7 @@ import uk.ac.soton.itinnovation.mygrid.workflow.enactor.invocation.WSDLServiceIn
 import uk.ac.soton.itinnovation.mygrid.workflow.enactor.io.Input;
 import uk.ac.soton.itinnovation.mygrid.workflow.enactor.io.Output;
 import uk.ac.soton.itinnovation.mygrid.workflow.enactor.io.Part;
+import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.entities.TimePoint;
 
 // Utility Imports
 import java.util.ArrayList;
@@ -54,25 +55,35 @@ import java.net.URL;
 
 import uk.ac.soton.itinnovation.taverna.enactor.entities.PortTask;
 import uk.ac.soton.itinnovation.taverna.enactor.entities.ProcessorTask;
+import uk.ac.soton.itinnovation.taverna.enactor.broker.LogLevel;
 import java.lang.Exception;
 import java.lang.String;
+import org.jdom.Element;
+import org.jdom.Text;
 
 
 
 public class WSDLInvocationTask extends ProcessorTask implements InvocationDescription {
 	private static Logger logger = Logger.getLogger(WSDLInvocationTask.class);
 	private static final int INVOCATION_TIMEOUT = 0;
+	private TimePoint startTime = null;
+	private TimePoint endTime = null;
+	private Input inputForLog = null;
+	private Output outputForLog = null;
 
-	public WSDLInvocationTask(String id,Processor proc) {
-		super(id,proc);
+	public WSDLInvocationTask(String id,Processor proc,LogLevel l) {
+		super(id,proc,l);
 	}
 	
 	public uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.eventservice.TaskStateMessage doTask() {
 		try{
+			
 			//want to siffle through the input ports and get input parts  
 			GraphNode[] inputs = getParents();
 			//want to create suitable input parts
 			Input input = new Input();			
+			if(logLevel.getLevel()>=LogLevel.HIGH)
+				inputForLog = input;
 			for(int i=0;i<inputs.length;i++) {
 			    if(inputs[i] instanceof PortTask){
 			    PortTask pT = (PortTask) inputs[i];				
@@ -101,8 +112,10 @@ public class WSDLInvocationTask extends ProcessorTask implements InvocationDescr
             serviceInvocation.executeOperation();
             //group together the output parts and write to child partchecks
             Output output = serviceInvocation.getServiceOutput();
-            List outputParts = output.getPartList();
-
+            if(logLevel.getLevel()>=LogLevel.HIGH) 
+				outputForLog = output;
+			List outputParts = output.getPartList();
+			
             Iterator iterator = outputParts.iterator();
             while (iterator.hasNext()) {
 		//match with child part by name and set the part value
@@ -121,7 +134,7 @@ public class WSDLInvocationTask extends ProcessorTask implements InvocationDescr
                     }
                 }
             }
-		
+			
 			//success
 			return new TaskStateMessage(getParentFlow().getID(), getID(), TaskStateMessage.COMPLETE, "Task finished successfully");
 		}
@@ -193,5 +206,58 @@ public class WSDLInvocationTask extends ProcessorTask implements InvocationDescr
 	public int getSocketTimeOut() {
 		//use 0 to allow endless wait, can't assume anything at present about the length of time for an invocation.
 		return 0;
+	}
+
+	/**
+	 * Retrieve provenance information for this task, concrete tasks should
+	 * overide this method and provide this information as an XML JDOM element
+	 */
+	public org.jdom.Element getProvenance() {
+		Element e = new Element("WSDLInvocation");
+		if(logLevel.getLevel()>=LogLevel.LOW) {
+			//add the wsdl service invoked
+			String wsdlURL = getSelectedServiceWSDLURL().toExternalForm();
+			if(wsdlURL!=null) {
+				Element uri = new Element("WSDLURI");
+				uri.addContent(new Text(wsdlURL));
+				e.addContent(uri);
+			}
+			//add the portType
+			String portType = getPortType();
+			if(portType!=null) {
+				Element pT = new Element("PortType");
+				pT.addContent(new Text(portType));
+				e.addContent(pT);
+			}
+			//add the operation
+			String operation = getOperation();
+			if(operation!=null) {
+				Element op = new Element("Operation");
+				op.addContent(new Text(operation));
+				e.addContent(op);
+			}
+		}
+
+		if(logLevel.getLevel()>=LogLevel.NORMAL) {
+			//add start and end time
+			if(startTime!=null) {
+				Element sT = new Element("startTime");
+				sT.addContent(new Text(startTime.getString()));
+				e.addContent(sT);
+			}
+			if(endTime!=null) {
+				Element eT = new Element("endTime");
+				eT.addContent(new Text(endTime.getString()));
+				e.addContent(eT);
+			}
+		}
+
+		if(logLevel.getLevel()>=LogLevel.HIGH) {
+			//add the input and output data
+			//required retrieving of it
+			e.addContent(inputForLog.toXMLElement());
+			e.addContent(outputForLog.toXMLElement());
+		}		
+		return e;
 	}
 }

@@ -24,9 +24,9 @@
 //      Created for Project :   MYGRID
 //      Dependencies        :
 //
-//      Last commit info    :   $Author: mereden $
-//                              $Date: 2003-05-13 13:03:44 $
-//                              $Revision: 1.10 $
+//      Last commit info    :   $Author: dmarvin $
+//                              $Date: 2003-05-19 18:32:54 $
+//                              $Revision: 1.11 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 
@@ -100,14 +100,16 @@ public class XScuflDiGraphGenerator {
 			    addToListIfNotThere(tasks,pT);
 			}
 			//create tasks for each processor
-			// changed by tmo - restructured and added talisman task
+			
 			Processor[] processors = model.getProcessors();
 			for(int i=0;i<processors.length;i++){
 			    Processor theProcessor = processors[i];
 			    String id = flowID + ":Processor:" + theProcessor.getName();
+				
+				LogLevel logLevel = new LogLevel();
 			    
 			    // Create the actual task to do the work of this processor.
-			    ProcessorTask serviceTask = TavernaTaskFactory.getConcreteTavernaTask(id,theProcessor);
+			    ProcessorTask serviceTask = TavernaTaskFactory.getConcreteTavernaTask(id,theProcessor,logLevel);
 			    addToListIfNotThere(tasks,serviceTask);
 			    processorTasks.add(serviceTask);
 			    
@@ -183,76 +185,8 @@ public class XScuflDiGraphGenerator {
 			    controlledTask.addParent(controllerTask);
 			}
 			
-			/*
-			Port[] sourcePorts = model.getWorkflowSourcePorts();
-			//Might think should check length of this array but in fact it is conceivable to have a workflow that has no sources or sinks, it would act purely on 
-			//remote systems therefore checking the length of sourcePorts is non-zero is incorrect
-			for(int i=0;i<sourcePorts.length;i++) {
-			    PortTask source = getPortTask(flowID,flowExtInPorts,sourcePorts[i]);
-			    addToListIfNotThere(tasks,source);
-			    //find processorTasks that match
-			    Iterator iterator = processorTasks.iterator();
-			    while(iterator.hasNext()) {
-				ProcessorTask pT = (ProcessorTask) iterator.next();
-				String procName = pT.getProcessor().getName();
-				if(procName.equals(source.getScuflPort().getProcessor().getName())) {
-				    pT.addParent(source);
-				    source.addChild(pT);
-				}
-			    }
-			}
 			
-			Port[] sinkPorts = model.getWorkflowSinkPorts();
-			for(int i=0;i<sinkPorts.length;i++) {
-			    PortTask sink = getPortTask(flowID,flowExtInPorts,sinkPorts[i]);
-			    addToListIfNotThere(tasks,source);
-			    //find processorTasks that match
-			    Iterator iterator = processorTasks.iterator();
-			    while(iterator.hasNext()) {
-				ProcessorTask pT = (ProcessorTask) iterator.next();
-				String procName = pT.getProcessor().getName();
-				if(procName.equals(sink.getScuflPort().getProcessor().getName())) {
-				    pT.addParent(sink);
-				    source.addChild(pT);
-				}
-			    }
-			}
-			*/
-			/*
-			//get external ports 
-			Port[] externalPorts = model.getExternalPorts();
-			if(externalPorts.length == 0)
-				throw new XScuflInvalidException("There are no external ports defined for the XScufl workflow");
-			for(int i=0;i<externalPorts.length;i++) {
-				if(externalPorts[i] instanceof InputPort) {
-					PortTask source = getPortTask(flowID,flowExtInPorts,externalPorts[i]);
-					addToListIfNotThere(tasks,source);
-					//find processortasks that match
-					Iterator iterator = processorTasks.iterator();
-					while(iterator.hasNext()) {
-						ProcessorTask pT = (ProcessorTask) iterator.next();
-						String procName = pT.getProcessor().getName();
-						if(procName.equals(source.getScuflPort().getProcessor().getName())) {
-							pT.addParent(source);
-							source.addChild(pT);
-						}						
-					}
-				}
-				if(externalPorts[i] instanceof OutputPort) {
-					PortTask sink = getPortTask(flowID,flowExtOutPorts,externalPorts[i]);
-					addToListIfNotThere(tasks,sink);
-					Iterator iterator = processorTasks.iterator();
-					while(iterator.hasNext()) {
-						ProcessorTask pT = (ProcessorTask) iterator.next();
-						String procName = pT.getProcessor().getName();
-						if(procName.equals(sink.getScuflPort().getProcessor().getName())) {
-							pT.addChild(sink);
-							sink.addParent(pT);
-						}						
-					}
-				}
-			}
-			*/
+			
 			//set input and output nodes
 			List partList = input.getPartList();
 			Iterator iterator = flowExtInPorts.iterator();

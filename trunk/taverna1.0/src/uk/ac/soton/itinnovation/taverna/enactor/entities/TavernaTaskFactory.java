@@ -24,9 +24,9 @@
 //      Created for Project :   MYGRID
 //      Dependencies        :
 //
-//      Last commit info    :   $Author: mereden $
-//                              $Date: 2003-05-13 13:03:45 $
-//                              $Revision: 1.8 $
+//      Last commit info    :   $Author: dmarvin $
+//                              $Date: 2003-05-19 18:32:58 $
+//                              $Revision: 1.9 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 
@@ -42,6 +42,7 @@ import org.embl.ebi.escience.scufl.WSDLBasedProcessor;
 
 import uk.ac.soton.itinnovation.taverna.enactor.entities.ProcessorTask;
 import uk.ac.soton.itinnovation.taverna.enactor.entities.UnsupportedTavernaProcessorException;
+import uk.ac.soton.itinnovation.taverna.enactor.broker.LogLevel;
 import java.lang.Class;
 import java.lang.Exception;
 import java.lang.IllegalAccessException;
@@ -65,7 +66,7 @@ public class TavernaTaskFactory {
 	 *
      * @param String identifier for the required application
      */
-    public static ProcessorTask getConcreteTavernaTask(String id,Processor processor) throws UnsupportedTavernaProcessorException {
+    public static ProcessorTask getConcreteTavernaTask(String id,Processor processor,LogLevel l) throws UnsupportedTavernaProcessorException {
         ProcessorTask pTask = null;
 		
 		String taskClassName = null;
@@ -85,8 +86,8 @@ public class TavernaTaskFactory {
 		}
 		try {
             		Class processorDefn = null;
-			Class[] argsClass = new Class[] {String.class,Processor.class};
-			Object[] args = new Object[] {id,processor};
+			Class[] argsClass = new Class[] {String.class,Processor.class,LogLevel.class};
+			Object[] args = new Object[] {id,processor,l};
 			Constructor argsConstructor;
 			processorDefn = Class.forName(taskClassName);
 			argsConstructor = processorDefn.getConstructor(argsClass);
