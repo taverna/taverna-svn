@@ -21,6 +21,7 @@ import org.embl.ebi.escience.scuflui.EnactorLaunchPanel;
 import org.embl.ebi.escience.scuflui.ScuflDiagram;
 import org.embl.ebi.escience.scuflui.ScuflModelExplorer;
 import org.embl.ebi.escience.scuflui.XScuflTextArea;
+import org.embl.ebi.escience.scufl.semantics.*;
 
 // Utility Imports
 import java.util.Enumeration;
@@ -68,6 +69,7 @@ public class Workbench extends JFrame {
 	catch (ClassNotFoundException cnfe) {
 	    //
 	}
+	
 	// Initialize the proxy settings etc.
 	ResourceBundle rb = ResourceBundle.getBundle("mygrid");
         Properties sysProps = System.getProperties();
@@ -90,7 +92,20 @@ public class Workbench extends JFrame {
      * in internal frames and waits for the user to load a model from file
      */
     public static void main(String[] args) {
-	new SplashScreen(6000);
+	new SplashScreen(6000);	
+	// Load the test ontology for the annotation of workflow
+	// source and sink ports
+	try {
+	    System.out.println("Loading ontologies...");
+	    URL ontologyURL = 
+		ClassLoader.getSystemResource("org/embl/ebi/escience/scufl/semantics/mygrid-reasoned-small.rdfs");
+	    RDFSParser.loadRDFSDocument(ontologyURL.openStream(), "internal test ontology");
+	    System.out.println("Done loading ontologies.");
+	}
+	catch (Exception ex) {
+	    System.out.println("Failed to load ontology data! "+ex.getMessage());
+	    ex.printStackTrace();
+	}
 	Workbench workbench = new Workbench();
 	// Treat any command line arguments as files to import into the workbench
 	for (int i = 0; i < args.length; i++) {

@@ -13,6 +13,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
 import org.embl.ebi.escience.scufl.*;
 import org.embl.ebi.escience.scuflworkers.*;
+import org.embl.ebi.escience.scuflui.workbench.*;
 
 
 
@@ -57,6 +58,24 @@ public class ScuflContextMenuFactory {
 		    theMenu.add(title);
 		    title.setEnabled(false);
 		    theMenu.addSeparator();
+		    
+		    JMenuItem edit = new JMenuItem("Edit metadata...", ScuflIcons.editIcon);
+		    edit.addActionListener(new ActionListener() {
+			    public void actionPerformed(ActionEvent ae) {
+				// Show the configuration panel here.
+				if (Workbench.workbench != null) {
+				    GenericUIComponentFrame thing = new GenericUIComponentFrame(Workbench.workbench.model,
+												new ScuflSemanticMarkupEditor(sinkPort.getMetadata()));
+				    thing.setSize(400,600);
+				    thing.setLocation(100,100);
+				    Workbench.workbench.desktop.add(thing);
+				    thing.moveToFront();
+				}
+			    }
+			});
+		    theMenu.add(edit);
+		    theMenu.addSeparator();
+		    
 		    JMenuItem delete = new JMenuItem("Remove from model", ScuflIcons.deleteIcon);
 		    delete.addActionListener(new ActionListener() {
 			    public void actionPerformed(ActionEvent ae) {

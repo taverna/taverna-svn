@@ -40,10 +40,19 @@ public class SemanticMarkup {
     }
 
     /**
+     * Get hold of the List used to hold the MIME types,
+     * useful for UI components.
+     */
+    public List getMIMETypeList() {
+	return this.mimeTypeList;
+    }
+
+    /**
      * Set the free text description
      */
     public void setDescription(String theDescription) {
 	this.description = theDescription;
+	fireModelEvent();
     }
 
     /**
@@ -98,6 +107,7 @@ public class SemanticMarkup {
     public void clearMIMETypes() {
 	synchronized(this.mimeTypeList) {
 	    this.mimeTypeList.clear();
+	    fireModelEvent();
 	}
     }
 
@@ -114,6 +124,7 @@ public class SemanticMarkup {
 		    }
 		}
 		this.mimeTypeList.add(mimeType);
+		fireModelEvent();
 	    }
 	}
     }
@@ -137,6 +148,7 @@ public class SemanticMarkup {
 	if (newSemanticType != null) {
 	    this.semanticType = newSemanticType;
 	}
+	fireModelEvent();
     }
 
     /**
@@ -147,9 +159,9 @@ public class SemanticMarkup {
      */
     public void configureFromElement(Element theElement) {
 	// Do mime types
-	Element mimeTypeListElement = theElement.getChild("mimetypes",XScufl.XScuflNS);
+	Element mimeTypeListElement = theElement.getChild("mimeTypes",XScufl.XScuflNS);
 	if (mimeTypeListElement != null) {
-	    for (Iterator i = mimeTypeListElement.getChildren("mimetype",XScufl.XScuflNS).iterator(); i.hasNext(); ) {
+	    for (Iterator i = mimeTypeListElement.getChildren("mimeType",XScufl.XScuflNS).iterator(); i.hasNext(); ) {
 		Element typeElement = (Element)i.next();
 		addMIMEType(typeElement.getTextTrim());
 	    }
@@ -159,6 +171,12 @@ public class SemanticMarkup {
 	if (descriptionElement != null) {
 	    this.description = descriptionElement.getTextTrim();
 	}
+	// Do semantic type
+	Element semanticTypeElement = theElement.getChild("semanticType",XScufl.XScuflNS);
+	if (semanticTypeElement != null) {
+	    this.semanticType = semanticTypeElement.getTextTrim();
+	}
+	fireModelEvent();
     }
 
     /**
@@ -168,11 +186,11 @@ public class SemanticMarkup {
     public Element getConfigurationElement() {
 	Element topElement = new Element("metadata",XScufl.XScuflNS);
 	// Store MIME types
-	Element mimeTypeList = new Element("mimetypes",XScufl.XScuflNS);
+	Element mimeTypeList = new Element("mimeTypes",XScufl.XScuflNS);
 	topElement.addContent(mimeTypeList);
 	synchronized(this.mimeTypeList) {
 	    for (Iterator i = this.mimeTypeList.iterator(); i.hasNext(); ) {
-		Element typeElement = new Element("mimetype",XScufl.XScuflNS);
+		Element typeElement = new Element("mimeType",XScufl.XScuflNS);
 		typeElement.setText((String)i.next());
 		mimeTypeList.addContent(typeElement);
 	    }
@@ -181,7 +199,23 @@ public class SemanticMarkup {
 	Element descriptionElement = new Element("description",XScufl.XScuflNS);
 	topElement.addContent(descriptionElement);
 	descriptionElement.setText(this.description);
+	// Store semantic type, still as text for now
+	Element semanticTypeElement = new Element("semanticType",XScufl.XScuflNS);
+	topElement.addContent(semanticTypeElement);
+	semanticTypeElement.setText(this.semanticType);
+	
 	return topElement;
+    }
+
+    /**
+     * If the subject of this metadata is a port then fire events off
+     * when things are changed, if not then tough, we don't know how
+     * to.
+     */
+    void fireModelEvent() {
+	if (this.subject instanceof Port) {
+	    ((Port)this.subject).fireModelEvent(new ScuflModelEvent(this, "Metadata change"));
+	}
     }
 
 }

@@ -12,6 +12,7 @@ import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 import org.embl.ebi.escience.scufl.*;
+import org.embl.ebi.escience.scuflui.workbench.*;
 
 /**
  * A static method to generate appropriate menu items
@@ -39,6 +40,22 @@ public class LinkingMenus {
 		    }
 		});
 	    theMenu.add(delete);
+	    theMenu.addSeparator();
+	    JMenuItem edit = new JMenuItem("Edit metadata...", ScuflIcons.editIcon);
+	    edit.addActionListener(new ActionListener() {
+		    public void actionPerformed(ActionEvent ae) {
+			// Show the configuration panel here.
+			if (Workbench.workbench != null) {
+			    GenericUIComponentFrame thing = new GenericUIComponentFrame(Workbench.workbench.model,
+											new ScuflSemanticMarkupEditor(fromPort.getMetadata()));
+			    thing.setSize(400,600);
+			    thing.setLocation(100,100);
+			    Workbench.workbench.desktop.add(thing);
+			    thing.moveToFront();
+			}
+		    }
+		});
+	    theMenu.add(edit);
 	    theMenu.addSeparator();
 	}
 	JMenuItem title = new JMenuItem("Link '"+sourcePort.getName()+"' to....");

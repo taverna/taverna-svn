@@ -70,22 +70,6 @@ public class ScuflProcessorInfo extends JDialog {
 	    String value = (String)props.get(key);
 	    addRow(key,value);
 	}
-	/**
-	   if (theProcessor instanceof WSDLBasedProcessor) {
-	   addRow("WSDL Location",((WSDLBasedProcessor)theProcessor).getWSDLLocation());
-	   addRow("Port Type",((WSDLBasedProcessor)theProcessor).getPortTypeName());
-	   addRow("Operation",((WSDLBasedProcessor)theProcessor).getOperationName());
-	   }
-	   else if (theProcessor instanceof SoaplabProcessor) {
-	   addRow("Soaplab URL",((SoaplabProcessor)theProcessor).getEndpoint().toString());
-	   }
-	   else if (theProcessor instanceof TalismanProcessor) {
-	   addRow("TScript URL",((TalismanProcessor)theProcessor).getTScriptURL());
-	   }
-	   else if (theProcessor instanceof WorkflowProcessor) {
-	   addRow("XScufl URL",((WorkflowProcessor)theProcessor).getDefinitionURL());
-	   }
-	*/
 	Object[][] tableData = new Object[propertyValues.size()][2];
 	for (int i = 0; i < propertyValues.size(); i++) {
 	    tableData[i][0] = propertyNames.get(i);
