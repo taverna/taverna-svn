@@ -35,7 +35,7 @@ public class SoaplabScavenger extends Scavenger {
      */
     public SoaplabScavenger(String base) 
 	throws ScavengerCreationException {
-	super("Soaplab @ "+base);
+	super("Soaplab @ "+(base.endsWith("/")?base:base+"/"));
 	// Get the categories for this installation
 	try {
 	    if (!base.endsWith("/")) {
