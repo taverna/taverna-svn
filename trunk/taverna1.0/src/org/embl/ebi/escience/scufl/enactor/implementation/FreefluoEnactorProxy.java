@@ -73,20 +73,15 @@ public class FreefluoEnactorProxy implements EnactorProxy {
 
     public WorkflowInstance compileWorkflow(ScuflModel workflow, Map input, UserContext user) 
 	          throws WorkflowSubmissionException {
-	/**
-	 * TODO - implement the user context transfer to the server side workflow instance 
-	 */
 	WorkflowInstance workflowInstance = compileWorkflow(workflow, user);
         workflowInstance.setInputs(input);
         return workflowInstance;
     }
 
     public WorkflowInstance compileWorkflow(ScuflModel workflow, UserContext user) throws WorkflowSubmissionException {
-	/**
-	 * TODO - implement the user context transfer to the server side workflow instance 
-	 */
 	try {
 	    String workflowInstanceId = engine.compile(workflow);
+            engine.setUserContext(workflowInstanceId, user);
             WorkflowInstance workflowInstance = new WorkflowInstanceImpl(engine, workflowInstanceId);   
             return workflowInstance;
 	}
