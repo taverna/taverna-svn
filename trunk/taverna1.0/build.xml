@@ -156,6 +156,9 @@
 			<fileset dir="${src.dir}">
 				<include name="**/*.properties"/>
 				<include name="**/*.xml"/>
+				<include name="**/*.html"/>
+				<include name="**/*.text"/>
+				<include name="**/*.gif"/>
 			</fileset>
 		</copy>
 		<!-- Run the RMI Compiler on anything that looks like a remote class -->
