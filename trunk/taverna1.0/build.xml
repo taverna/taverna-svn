@@ -1,9 +1,9 @@
 <!-- Tom Oinn (tmo@ebi.ac.uk) 25th March 2003                    -->
 <!-- General mygrid project template, edit to suit               -->
-<project name="Taverna" default="all" basedir=".">
+<project name="taverna" default="all" basedir=".">
 
 	<!-- Current version of the project, used by doxygen -->
-	<property name="project.version" value="0.1"/>
+	<property name="project.version" value="0.1alpha2"/>
 
 	<!-- These directories are pretty standard, you probably     -->
 	<!-- don't want to change them                               -->
@@ -16,7 +16,7 @@
 		
 	<!-- Show the splash screen -->
 	<target name="splash">
-		<splash showduration="0" imageurl="http://mygrid.man.ac.uk/images/mygridlogowhite.gif"/>
+		<splash showduration="0" imageurl="http://www.mygrid.org.uk/myGrid/img/mygridlogowhite.gif"/>
 	</target>
 		
 	<!-- Path used during compilation -->
@@ -166,12 +166,12 @@
 
 	<!-- Create a jar of the classes and configuration files -->
 	<target name="jar" depends="java">
-		<jar destfile="${build.dir}/${ant.project.name}.jar" basedir="${build.classes}" update="no"/>
+		<jar destfile="${build.dir}/${ant.project.name}-${project.version}.jar" basedir="${build.classes}" update="no"/>
 	</target>
 
 	<!-- Create a jar of the enactor extension classes for inclusion in a deployed enactor -->
 	<target name="enactor.ext.jar" depends="java">
-		<jar destfile="${build.dir}/tavernaenactor.jar" update="no">
+		<jar destfile="${build.dir}/tavernaenactor-${project.version}.jar" update="no">
 			<fileset dir="${build.classes}">
 				<include name="**/itinnovation/taverna/**"/>
 				<include name="**/escience/scufl/**"/>
