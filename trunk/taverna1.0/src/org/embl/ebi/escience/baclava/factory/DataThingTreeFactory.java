@@ -9,14 +9,10 @@ import javax.swing.tree.TreeCellRenderer;
 import org.embl.ebi.escience.baclava.DataThing;
 
 // Utility Imports
-import java.util.Collection;
 import java.util.Iterator;
-import java.util.Set;
 
 import org.embl.ebi.escience.baclava.factory.DataThingTreeNode;
 import org.embl.ebi.escience.baclava.factory.DataThingTreeNodeRenderer;
-import java.lang.Object;
-import java.lang.String;
 
 
 
@@ -36,35 +32,32 @@ public class DataThingTreeFactory {
      * data object contained within this DataThing
      */
     public static DataThingTreeNode getTree(DataThing theDataThing) {
-	return doNode(theDataThing, theDataThing.getDataObject());
+        return doNode(theDataThing, theDataThing);
     }
+
     /**
      * Recursive collection walker to build the
      * data structure
      */
     private static DataThingTreeNode doNode(DataThing theDataThing,
-					    Object theObject) {
-	// Handle collections
-	if (theObject instanceof Collection) {
-	    // Only lists and sets supported for now
-	    String collectionType = "List";
-	    if (theObject instanceof Set) {
-		collectionType = "Set";
-	    }
-	    DataThingTreeNode result = new DataThingTreeNode(theDataThing,
-							     theObject);
-	    for (Iterator i = ((Collection)theObject).iterator(); i.hasNext();) {
-		result.add(doNode(theDataThing, i.next()));
-	    }
-	    return result;
-	}
-	else {
-	    return new DataThingTreeNode(theDataThing, theObject);
-	}
+                                            DataThing nodeThing) {
+        DataThingTreeNode node = new DataThingTreeNode(theDataThing, nodeThing);
+
+        // Handle collections
+        for(Iterator i = nodeThing.childIterator(); i.hasNext(); ) {
+            node.add(doNode(theDataThing, (DataThing) i.next()));
+        }
+
+        return node;
     }
-    
+
+    /**
+     * Return the renderer for data thing tree nodes.
+     *
+     * @return a TreeCellRenderer for our tree
+     */
     public static TreeCellRenderer getRenderer() {
-	return new DataThingTreeNodeRenderer();
+        return new DataThingTreeNodeRenderer();
     }
-  
+
 }

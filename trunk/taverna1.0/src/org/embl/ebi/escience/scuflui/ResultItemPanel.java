@@ -69,15 +69,15 @@ public class ResultItemPanel extends JPanel {
 	structureTree.addTreeSelectionListener(new TreeSelectionListener() {
 		public void valueChanged(TreeSelectionEvent e) {
 		    DataThingTreeNode node = (DataThingTreeNode)structureTree.getLastSelectedPathComponent();
-            if (node != null && node.isLeaf()) {
+            if (node != null /*&& node.isLeaf()*/) {
                 // Only interested in leaf nodes as they contain the data
-                DataThing theDataThing = node.getDataThing();
+                DataThing dataThing = node.getNodeThing();
                 MimeTypeRendererSPI renderer =
-                        ResultItemPanel.this.renderers.getRenderer(theDataThing);
+                        ResultItemPanel.this.renderers.getRenderer(dataThing);
 
                 if (renderer != null) {
                     JComponent component = renderer.getComponent(
-                            ResultItemPanel.this.renderers, theDataThing);
+                            ResultItemPanel.this.renderers, dataThing);
                     if (component != null) {
                         splitPane.setRightComponent(new JScrollPane(component));
                     }
@@ -149,9 +149,9 @@ public class ResultItemPanel extends JPanel {
 			theMenu.add(saveAction);
 
                 // all possible viewers
-                final DataThing theDataThing = node.getDataThing();
+                final DataThing nodeThing = node.getNodeThing();
                 Iterator renderers = ResultItemPanel.this.renderers.getRenderers(
-                                theDataThing).iterator();
+                                nodeThing).iterator();
                 if(renderers.hasNext()) {
                     JMenu viewers = new JMenu("Viewers");
 
@@ -160,11 +160,11 @@ public class ResultItemPanel extends JPanel {
                                 (MimeTypeRendererSPI) renderers.next();
                         viewers.add(new JMenuItem(new AbstractAction(
                                 renderer.getName(),
-                                renderer.getIcon(ResultItemPanel.this.renderers, theDataThing))
+                                renderer.getIcon(ResultItemPanel.this.renderers, nodeThing))
                         {
                             public void actionPerformed(ActionEvent e)
                             {
-                                JComponent component = renderer.getComponent(ResultItemPanel.this.renderers, theDataThing);
+                                JComponent component = renderer.getComponent(ResultItemPanel.this.renderers, nodeThing);
                                 if(ui != null) {
                                     splitPane.setRightComponent(new JScrollPane(component));
                                 }

@@ -1,9 +1,9 @@
 package org.embl.ebi.escience.scuflui.renderers;
 
 import org.embl.ebi.escience.baclava.DataThing;
+import org.apache.log4j.Logger;
 
 import javax.swing.*;
-import java.awt.*;
 import java.util.regex.Pattern;
 
 /**
@@ -14,7 +14,7 @@ import java.util.regex.Pattern;
 public class Image
         extends AbstractRenderer.ByPattern
 {
-    private Icon icon;
+    private static Logger LOG = Logger.getLogger(Image.class);
 
     public Image() {
         super("Image",
@@ -27,6 +27,7 @@ public class Image
                                 Object userObject,
                                 String mimeType)
     {
+        LOG.info("canHandle " + mimeType + " for " + userObject.getClass());
         return super.canHandle(renderers, userObject, mimeType) &&
                 userObject instanceof byte[];
     }
@@ -34,11 +35,8 @@ public class Image
     public JComponent getComponent(MimeTypeRendererRegistry renderers,
                                    DataThing dataThing)
     {
+        LOG.info("getComponent " + dataThing);
         ImageIcon theImage = new ImageIcon((byte[]) dataThing.getDataObject());
-        JPanel theImagePanel = new JPanel();
-        theImagePanel.add(new JLabel(theImage));
-        theImagePanel.setPreferredSize(
-                new Dimension(theImage.getIconWidth(), theImage.getIconHeight()));
-        return theImagePanel;
+        return new JLabel(theImage);
     }
 }
