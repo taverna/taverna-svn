@@ -560,6 +560,13 @@ public class ScuflModel
 	private List listeners;
 	protected NotifyThread(ScuflModel model) {
 	    super();
+	    try {
+		setDaemon(true);
+	    }
+	    catch (Exception ex) {
+		// Should never happen!
+		ex.printStackTrace();
+	    }
 	    this.listeners = model.listeners;
 	    this.start();
 	}
