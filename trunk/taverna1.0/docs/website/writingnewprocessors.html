@@ -125,6 +125,14 @@ h4 {
     In addition, this class is currently responsible for generating provenance 
     blocks, although this is due for replacement and so can safely be ignored 
     at present. In all probability.</p>
+  <p><em>Update - 5.2.2004</em></p>
+  <p>The ProcessorTask is now refactored. Instead of subclassing this abstract 
+    class you should implement the ProcessorTaskWorker interface. This specifies 
+    the execute(...) method defined in the ProcessorTask class, so in general 
+    converting any existing processor task implementation consists of making your 
+    implementation declare this interface and otherwise making no changes. I needed 
+    to do this to allow implementation of the fault tolerence mechanisms in the 
+    ProcessorTask class itself, sorry for any inconvenience! <a href="mailto:tmo@ebi.ac.uk">tmo@ebi.ac.uk</a></p>
 </blockquote>
 <h3>Editor (optional)</h3>
 <blockquote>
