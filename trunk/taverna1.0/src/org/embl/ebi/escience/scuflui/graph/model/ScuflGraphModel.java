@@ -21,8 +21,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
+import javax.swing.border.CompoundBorder;
+import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 import javax.swing.border.TitledBorder;
 import javax.swing.event.UndoableEditListener;
@@ -50,7 +51,7 @@ import org.jgraph.graph.ParentMap;
 /**
  * 
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover </a>
- * @version $Revision: 1.7 $
+ * @version $Revision: 1.8 $
  */
 public class ScuflGraphModel implements GraphModel, GraphModelListener, ScuflUIComponent
 {
@@ -79,12 +80,36 @@ public class ScuflGraphModel implements GraphModel, GraphModelListener, ScuflUIC
 				graphics.setStroke(oldStroke);
 			}
 		}
-	}	
-	
+	}
+
+	private class RaisedBorder extends LineBorder
+	{
+		/**
+		 */
+		public RaisedBorder()
+		{
+			super(null);
+		}
+
+		public void paintBorder(Component c, Graphics g, int x, int y, int width, int height)
+		{
+			Color oldColor = g.getColor();
+			// g.setColor(c.getBackground());
+			// g.draw3DRect(x, y, width, height, true);
+			g.setColor(c.getBackground().brighter());
+			g.drawLine(x, y, x, y + height);
+			g.drawLine(x + 1, y, x + width - 1, y);
+			g.setColor(c.getBackground().darker());
+			g.drawLine(x + 1, y + height - 1, x + width, y + height - 1);
+			g.drawLine(x + width - 1, y, x + width - 1, y + height - 1);
+			g.setColor(oldColor);
+		}
+	}
+
 	private class DummyPort
 	{
 		private Object parent;
-		
+
 		/**
 		 * @param parent
 		 */
@@ -92,7 +117,7 @@ public class ScuflGraphModel implements GraphModel, GraphModelListener, ScuflUIC
 		{
 			this.parent = parent;
 		}
-		
+
 		/**
 		 * @return processor
 		 */
@@ -101,16 +126,16 @@ public class ScuflGraphModel implements GraphModel, GraphModelListener, ScuflUIC
 			return parent;
 		}
 	}
-	
+
 	private static final String PORT_EDGES = "port edges";
 	private static final String DUMMY_PORT = "dummy port";
-	
+
 	private ScuflModel model;
 	private ScuflModelReconciler reconciler;
-	private List roots = new ArrayList();	
+	private List roots = new ArrayList();
 	private Map attributes = new HashMap();
-	
-	private Collection listeners = new HashSet();	
+
+	private Collection listeners = new HashSet();
 
 	/*
 	 * (non-Javadoc)
@@ -129,7 +154,7 @@ public class ScuflGraphModel implements GraphModel, GraphModelListener, ScuflUIC
 	{
 		return model;
 	}
-	
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -169,8 +194,8 @@ public class ScuflGraphModel implements GraphModel, GraphModelListener, ScuflUIC
 	{
 		if (node != null)
 		{
-			AttributeMap map = (AttributeMap)attributes.get(node);
-			if(map == null & contains(node))
+			AttributeMap map = (AttributeMap) attributes.get(node);
+			if (map == null & contains(node))
 			{
 				map = new AttributeMap();
 				attributes.put(node, map);
@@ -183,8 +208,8 @@ public class ScuflGraphModel implements GraphModel, GraphModelListener, ScuflUIC
 	private DummyPort getDummyPort(Object node)
 	{
 		Map attrs = getAttributes(node);
-		DummyPort port = (DummyPort)attrs.get(DUMMY_PORT);
-		if(port == null)
+		DummyPort port = (DummyPort) attrs.get(DUMMY_PORT);
+		if (port == null)
 		{
 			port = new DummyPort(node);
 			attrs.put(DUMMY_PORT, port);
@@ -192,7 +217,7 @@ public class ScuflGraphModel implements GraphModel, GraphModelListener, ScuflUIC
 		}
 		return port;
 	}
-	
+
 	/**
 	 * @param node
 	 * @return created AttributeMap
@@ -200,57 +225,62 @@ public class ScuflGraphModel implements GraphModel, GraphModelListener, ScuflUIC
 	private AttributeMap addAttributes(Object node)
 	{
 		AttributeMap map = getAttributes(node);
-		
+
 		if (node instanceof Processor)
 		{
 			Processor processor = (Processor) node;
-			if(processor == model.getWorkflowSourceProcessor())
+			if (processor == model.getWorkflowSourceProcessor())
 			{
 				// TODO Something
 				GraphConstants.setValue(map, "");
-				GraphConstants.setOpaque(map, true);				
-				GraphConstants.setBorder(map, new TitledBorder(new DottyBorder(Color.GRAY), "Workflow Inputs")); 
+				GraphConstants.setOpaque(map, true);
+				GraphConstants.setBorder(map, new TitledBorder(new DottyBorder(Color.GRAY),
+						"Workflow Inputs"));
 				GraphConstants.setGroupBorder(map, 5);
 			}
-			else if(processor == model.getWorkflowSinkProcessor())
+			else if (processor == model.getWorkflowSinkProcessor())
 			{
 				GraphConstants.setValue(map, "");
 				GraphConstants.setOpaque(map, true);
-				GraphConstants.setBorder(map, new TitledBorder(new DottyBorder(Color.GRAY), "Workflow Outputs")); 
+				GraphConstants.setBorder(map, new TitledBorder(new DottyBorder(Color.GRAY),
+						"Workflow Outputs"));
 				GraphConstants.setGroupBorder(map, 5);
 			}
 			else
 			{
-				//GraphConstants.setAutoSize(map, true);
+				// GraphConstants.setAutoSize(map, true);
 				GraphConstants.setValue(map, processor.getName());
 				GraphConstants.setBounds(map, new Rectangle(100, 20));
 				GraphConstants.setBackground(map, GraphColours.getColour(ProcessorHelper
 						.getPreferredColour(processor), Color.WHITE));
 				GraphConstants.setOpaque(map, true);
 				GraphConstants.setResize(map, true);
-				GraphConstants.setBorder(map, BorderFactory.createCompoundBorder(BorderFactory.createRaisedBevelBorder(), BorderFactory.createEmptyBorder(2,7,2,7)));
+				GraphConstants.setBorder(map, new CompoundBorder(new RaisedBorder(),
+						new EmptyBorder(2, 7, 2, 7)));
 			}
 		}
 		else if (node instanceof Port)
 		{
-			if(isPortOnWorkflowEdge(node))
+			if (isPortOnWorkflowEdge(node))
 			{
 				// Port acting as graph node, as opposed to port
-				//GraphConstants.setAutoSize(map, true);				
+				// GraphConstants.setAutoSize(map, true);
 				GraphConstants.setValue(map, node.toString());
-				GraphConstants.setBounds(map, new Rectangle(100, 20));				
-				if(node instanceof InputPort)
+				GraphConstants.setBounds(map, new Rectangle(100, 20));
+				if (node instanceof InputPort)
 				{
 					GraphConstants.setBackground(map, GraphColours.getColour("lightsteelblue2",
 							Color.WHITE));
 				}
 				else
 				{
-					GraphConstants.setBackground(map, GraphColours.getColour("skyblue", Color.WHITE));
+					GraphConstants.setBackground(map, GraphColours
+							.getColour("skyblue", Color.WHITE));
 				}
 				GraphConstants.setOpaque(map, true);
-				GraphConstants.setResize(map, true);				
-				GraphConstants.setBorder(map, BorderFactory.createCompoundBorder(BorderFactory.createRaisedBevelBorder(), BorderFactory.createEmptyBorder(2,7,2,7)));				
+				GraphConstants.setResize(map, true);
+				GraphConstants.setBorder(map, new CompoundBorder(new RaisedBorder(),
+						new EmptyBorder(2, 7, 2, 7)));
 			}
 			GraphConstants.setDisconnectable(map, false);
 		}
@@ -260,8 +290,8 @@ public class ScuflGraphModel implements GraphModel, GraphModelListener, ScuflUIC
 			GraphConstants.setEndFill(map, true);
 			GraphConstants.setLineStyle(map, GraphConstants.STYLE_SPLINE);
 			GraphConstants.setDisconnectable(map, false);
-			GraphConstants.setEditable(map, false);			
-			
+			GraphConstants.setEditable(map, false);
+
 			List defaultPoints = new ArrayList();
 			defaultPoints.add(map.createPoint(10, 10));
 			defaultPoints.add(map.createPoint(20, 20));
@@ -281,9 +311,9 @@ public class ScuflGraphModel implements GraphModel, GraphModelListener, ScuflUIC
 			GraphConstants.setEndSize(map, 6);
 			GraphConstants.setLineColor(map, Color.LIGHT_GRAY);
 			GraphConstants.setLineStyle(map, GraphConstants.STYLE_SPLINE);
-			GraphConstants.setDisconnectable(map, false);			
+			GraphConstants.setDisconnectable(map, false);
 			GraphConstants.setEditable(map, false);
-			
+
 			List defaultPoints = new ArrayList();
 			defaultPoints.add(map.createPoint(10, 10));
 			defaultPoints.add(map.createPoint(20, 20));
@@ -309,7 +339,7 @@ public class ScuflGraphModel implements GraphModel, GraphModelListener, ScuflUIC
 		if (edge instanceof DataConstraint)
 		{
 			Object source = ((DataConstraint) edge).getSource();
-			if(isPortOnWorkflowEdge(source))
+			if (isPortOnWorkflowEdge(source))
 			{
 				return getDummyPort(source);
 			}
@@ -332,7 +362,7 @@ public class ScuflGraphModel implements GraphModel, GraphModelListener, ScuflUIC
 		if (edge instanceof DataConstraint)
 		{
 			Object target = ((DataConstraint) edge).getSink();
-			if(isPortOnWorkflowEdge(target))
+			if (isPortOnWorkflowEdge(target))
 			{
 				return getDummyPort(target);
 			}
@@ -353,11 +383,13 @@ public class ScuflGraphModel implements GraphModel, GraphModelListener, ScuflUIC
 	 */
 	public boolean acceptsSource(Object edge, Object port)
 	{
-		if(edge instanceof DataConstraint)
+		if (edge instanceof DataConstraint)
 		{
-			return port instanceof OutputPort || (port instanceof DummyPort && ((DummyPort)port).getParent() instanceof OutputPort); 
+			return port instanceof OutputPort
+					|| (port instanceof DummyPort && ((DummyPort) port).getParent() instanceof OutputPort);
 		}
-		return edge instanceof ConcurrencyConstraint && port instanceof DummyPort && ((DummyPort)port).getParent() instanceof Processor;
+		return edge instanceof ConcurrencyConstraint && port instanceof DummyPort
+				&& ((DummyPort) port).getParent() instanceof Processor;
 	}
 
 	/*
@@ -368,11 +400,13 @@ public class ScuflGraphModel implements GraphModel, GraphModelListener, ScuflUIC
 	 */
 	public boolean acceptsTarget(Object edge, Object port)
 	{
-		if(edge instanceof DataConstraint)
+		if (edge instanceof DataConstraint)
 		{
-			return port instanceof InputPort || (port instanceof DummyPort && ((DummyPort)port).getParent() instanceof InputPort); 
+			return port instanceof InputPort
+					|| (port instanceof DummyPort && ((DummyPort) port).getParent() instanceof InputPort);
 		}
-		return edge instanceof ConcurrencyConstraint && port instanceof DummyPort && ((DummyPort)port).getParent() instanceof Processor;
+		return edge instanceof ConcurrencyConstraint && port instanceof DummyPort
+				&& ((DummyPort) port).getParent() instanceof Processor;
 	}
 
 	/*
@@ -385,7 +419,7 @@ public class ScuflGraphModel implements GraphModel, GraphModelListener, ScuflUIC
 		if (port instanceof Port || port instanceof DummyPort)
 		{
 			Map attributes = getAttributes(port);
-			if(attributes != null)
+			if (attributes != null)
 			{
 				Collection edges = (Collection) attributes.get(PORT_EDGES);
 				if (edges != null)
@@ -414,22 +448,23 @@ public class ScuflGraphModel implements GraphModel, GraphModelListener, ScuflUIC
 	 */
 	public boolean isPort(Object port)
 	{
-		return (port instanceof Port && !isPortOnWorkflowEdge(port)) || port instanceof DummyPort || port instanceof SemanticMarkup;
+		return (port instanceof Port && !isPortOnWorkflowEdge(port)) || port instanceof DummyPort
+				|| port instanceof SemanticMarkup;
 	}
 
 	private boolean isPortOnWorkflowEdge(Object port)
 	{
-		if(port instanceof InputPort)
+		if (port instanceof InputPort)
 		{
-			return ((Port)port).getProcessor() == model.getWorkflowSinkProcessor();
+			return ((Port) port).getProcessor() == model.getWorkflowSinkProcessor();
 		}
-		else if(port instanceof OutputPort)
+		else if (port instanceof OutputPort)
 		{
-			return ((Port)port).getProcessor() == model.getWorkflowSourceProcessor();			
+			return ((Port) port).getProcessor() == model.getWorkflowSourceProcessor();
 		}
 		return false;
 	}
-	
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -439,11 +474,11 @@ public class ScuflGraphModel implements GraphModel, GraphModelListener, ScuflUIC
 	{
 		if (child instanceof Port)
 		{
-			return ((Port)child).getProcessor();
+			return ((Port) child).getProcessor();
 		}
-		else if(child instanceof DummyPort)
+		else if (child instanceof DummyPort)
 		{
-			return ((DummyPort)child).getParent();
+			return ((DummyPort) child).getParent();
 		}
 		return null;
 	}
@@ -497,10 +532,10 @@ public class ScuflGraphModel implements GraphModel, GraphModelListener, ScuflUIC
 			// TODO Check port is actually on the workflow edge?
 			return getDummyPort(parent);
 		}
-		else if(parent instanceof List)
+		else if (parent instanceof List)
 		{
-			return ((List)parent).get(index);
-		}		
+			return ((List) parent).get(index);
+		}
 		return null;
 	}
 
@@ -514,7 +549,7 @@ public class ScuflGraphModel implements GraphModel, GraphModelListener, ScuflUIC
 		if (parent instanceof Processor)
 		{
 			int ports = ((Processor) parent).getPorts().length;
-			if(getAttributes(parent).get(DUMMY_PORT) != null)
+			if (getAttributes(parent).get(DUMMY_PORT) != null)
 			{
 				ports += 1;
 			}
@@ -524,9 +559,9 @@ public class ScuflGraphModel implements GraphModel, GraphModelListener, ScuflUIC
 		{
 			return 1;
 		}
-		else if(parent instanceof List)
+		else if (parent instanceof List)
 		{
-			return ((List)parent).size();
+			return ((List) parent).size();
 		}
 		return 0;
 	}
@@ -560,7 +595,8 @@ public class ScuflGraphModel implements GraphModel, GraphModelListener, ScuflUIC
 			UndoableEdit[] e)
 	{
 		updateAttributes(attributes);
-		//fireGraphChangedEvent(new ScuflGraphModelChange(this, null, null, null, attributes));
+		// fireGraphChangedEvent(new ScuflGraphModelChange(this, null, null,
+		// null, attributes));
 	}
 
 	/*
@@ -570,27 +606,28 @@ public class ScuflGraphModel implements GraphModel, GraphModelListener, ScuflUIC
 	 */
 	public void remove(Object[] cells)
 	{
-		for(int index = 0; index < cells.length; index++)
+		for (int index = 0; index < cells.length; index++)
 		{
-			if(cells[index] instanceof Processor)
+			if (cells[index] instanceof Processor)
 			{
-				if(cells[index] != model.getWorkflowSinkProcessor() && cells[index] != model.getWorkflowSourceProcessor())
+				if (cells[index] != model.getWorkflowSinkProcessor()
+						&& cells[index] != model.getWorkflowSourceProcessor())
 				{
-					model.destroyProcessor((Processor)cells[index]);
+					model.destroyProcessor((Processor) cells[index]);
 				}
 			}
-			else if(cells[index] instanceof DataConstraint)
+			else if (cells[index] instanceof DataConstraint)
 			{
-				model.destroyDataConstraint((DataConstraint)cells[index]);
+				model.destroyDataConstraint((DataConstraint) cells[index]);
 			}
-			else if(cells[index] instanceof ConcurrencyConstraint)
+			else if (cells[index] instanceof ConcurrencyConstraint)
 			{
-				model.destroyConcurrencyConstraint((ConcurrencyConstraint)cells[index]);
+				model.destroyConcurrencyConstraint((ConcurrencyConstraint) cells[index]);
 			}
-			else if(cells[index] instanceof Port)
+			else if (cells[index] instanceof Port)
 			{
-				// TODO Check port is actually on the workflow edge?				
-				Port port = (Port)cells[index];
+				// TODO Check port is actually on the workflow edge?
+				Port port = (Port) cells[index];
 				port.getProcessor().removePort(port);
 			}
 		}
@@ -605,7 +642,7 @@ public class ScuflGraphModel implements GraphModel, GraphModelListener, ScuflUIC
 	 */
 	public void edit(Map attributes, ConnectionSet cs, ParentMap pm, UndoableEdit[] e)
 	{
-		if(attributes != null && !attributes.isEmpty())
+		if (attributes != null && !attributes.isEmpty())
 		{
 			Iterator it = attributes.entrySet().iterator();
 			while (it.hasNext())
@@ -614,19 +651,20 @@ public class ScuflGraphModel implements GraphModel, GraphModelListener, ScuflUIC
 				Object cell = entry.getKey();
 				Map map = (Map) entry.getValue();
 				Object value = GraphConstants.getValue(map);
-				if(value != null)
+				if (value != null)
 				{
-					if(cell instanceof Processor)
+					if (cell instanceof Processor)
 					{
-						Processor processor = (Processor)cell;
+						Processor processor = (Processor) cell;
 						processor.setName(value.toString());
 						GraphConstants.setValue(map, processor.getName());
 					}
 					// TODO Handle renaming of input/output ports?
 				}
-			}			
-			updateAttributes(attributes);			
-			fireGraphChangedEvent(new GraphModelEvent(this, new ScuflGraphAttributeChange(attributes)));
+			}
+			updateAttributes(attributes);
+			fireGraphChangedEvent(new GraphModelEvent(this, new ScuflGraphAttributeChange(
+					attributes)));
 		}
 	}
 
@@ -740,7 +778,7 @@ public class ScuflGraphModel implements GraphModel, GraphModelListener, ScuflUIC
 		}
 		edges.add(edge);
 	}
-	
+
 	/**
 	 * @param port
 	 * @param constraint
@@ -748,7 +786,7 @@ public class ScuflGraphModel implements GraphModel, GraphModelListener, ScuflUIC
 	private void removeEdge(Object port, Object constraint)
 	{
 		Map attrs = getAttributes(port);
-		if(attrs != null)
+		if (attrs != null)
 		{
 			Collection edges = (Collection) attrs.get(PORT_EDGES);
 			if (edges != null)
@@ -757,29 +795,29 @@ public class ScuflGraphModel implements GraphModel, GraphModelListener, ScuflUIC
 			}
 		}
 	}
-	
+
 	List getRoots()
 	{
 		return roots;
 	}
-	
+
 	Map addNode(Object newNode, ConnectionSet cs)
 	{
 		if (isEdge(newNode))
 		{
 			Object source = getSource(newNode);
-			Object target = getTarget(newNode);			
+			Object target = getTarget(newNode);
 			cs.connect(newNode, source, target);
 			addEdge(source, newNode);
 			addEdge(target, newNode);
 		}
 		if (!(newNode instanceof Port))
 		{
-			roots.add(newNode);			
+			roots.add(newNode);
 		}
 		return addAttributes(newNode);
 	}
-	
+
 	void removeNode(Object node)
 	{
 		if (isEdge(node))
@@ -789,36 +827,42 @@ public class ScuflGraphModel implements GraphModel, GraphModelListener, ScuflUIC
 		}
 		roots.remove(node);
 	}
-	
-	/* (non-Javadoc)
+
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.jgraph.event.GraphModelListener#graphChanged(org.jgraph.event.GraphModelEvent)
 	 */
 	public void graphChanged(GraphModelEvent event)
 	{
 		GraphModelEvent.GraphModelChange change = event.getChange();
-		if(change instanceof GraphModelEvent.ExecutableGraphChange)
+		if (change instanceof GraphModelEvent.ExecutableGraphChange)
 		{
-			((GraphModelEvent.ExecutableGraphChange)change).execute();
+			((GraphModelEvent.ExecutableGraphChange) change).execute();
 		}
 		fireGraphChangedEvent(event);
 		Object[] removed = change.getRemoved();
-		for(int index = 0; index < removed.length; index++)
+		for (int index = 0; index < removed.length; index++)
 		{
 			attributes.remove(removed[index]);
 		}
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.embl.ebi.escience.scuflui.ScuflUIComponent#attachToModel(org.embl.ebi.escience.scufl.ScuflModel)
 	 */
 	public void attachToModel(ScuflModel model)
 	{
 		this.model = model;
 		addAttributes(this);
-		reconciler = new ScuflModelReconciler(this);		
+		reconciler = new ScuflModelReconciler(this);
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.embl.ebi.escience.scuflui.ScuflUIComponent#detachFromModel()
 	 */
 	public void detachFromModel()
@@ -826,7 +870,9 @@ public class ScuflGraphModel implements GraphModel, GraphModelListener, ScuflUIC
 		reconciler.detachFromModel();
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.embl.ebi.escience.scuflui.ScuflUIComponent#getName()
 	 */
 	public String getName()
@@ -834,7 +880,9 @@ public class ScuflGraphModel implements GraphModel, GraphModelListener, ScuflUIC
 		return null;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.embl.ebi.escience.scuflui.ScuflUIComponent#getIcon()
 	 */
 	public ImageIcon getIcon()

@@ -8,10 +8,6 @@ package org.embl.ebi.escience.scuflui;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.io.File;
-import java.io.IOException;
 import java.util.Iterator;
 import java.util.Map;
 
@@ -19,7 +15,6 @@ import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
-import javax.swing.JFileChooser;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
@@ -38,7 +33,10 @@ import org.embl.ebi.escience.scufl.enactor.EnactorProxy;
 import org.embl.ebi.escience.scufl.enactor.UserContext;
 import org.embl.ebi.escience.scufl.enactor.WorkflowInstance;
 import org.embl.ebi.escience.scufl.enactor.WorkflowSubmissionException;
-import org.embl.ebi.escience.scuflui.results.*;
+import org.embl.ebi.escience.scuflui.graph.WorkflowEditor;
+import org.embl.ebi.escience.scuflui.results.ResultMapSaveRegistry;
+import org.embl.ebi.escience.scuflui.results.ResultMapSaveSPI;
+import org.embl.ebi.escience.scuflui.results.ResultTablePanel;
 
 import uk.ac.soton.itinnovation.freefluo.main.InvalidInputException;
 
@@ -66,6 +64,7 @@ public class EnactorInvocation extends JPanel implements ScuflUIComponent {
 	// detachFromModel() is called by GeneridUIComponentFrame when
         // it is closing.  Cleanup of remote resources will be done here.
         try {
+        	workflowEditor.detachFromModel();
             workflowInstance.cancel();
         }
         catch(Exception e) {
@@ -85,6 +84,7 @@ public class EnactorInvocation extends JPanel implements ScuflUIComponent {
     private ScuflModel theModel;
     private String instanceID = null;
     private EnactorStatusTableModel statusTableModel = null;
+    WorkflowEditor workflowEditor = null;
     //private FlowReceipt flowReceipt = null;
     private WorkflowInstance workflowInstance = null;
     private JTextArea resultsText = null;
@@ -93,7 +93,6 @@ public class EnactorInvocation extends JPanel implements ScuflUIComponent {
     private JTabbedPane individualResults = new JTabbedPane();
     private JPanel resultsPanel = null;
     private JTabbedPane tabs = null;
-    private JButton saveResultsButton = null;
     private JToolBar toolbar = null;
 
     /**
@@ -332,6 +331,11 @@ public class EnactorInvocation extends JPanel implements ScuflUIComponent {
 	JTabbedPane intermediateResults = new JTabbedPane();
 	final JTabbedPane intermediateOutputs = new JTabbedPane();
 	final JTabbedPane intermediateInputs = new JTabbedPane();
+	workflowEditor = new WorkflowEditor();
+	workflowEditor.attachToModel(model);
+	workflowEditor.updateStatus(getStatusText());
+	workflowEditor.setReadOnly(true);
+	intermediateResults.add("Graph", new JScrollPane(workflowEditor));
 	intermediateResults.add("Intermediate inputs", intermediateInputs);
 	intermediateResults.add("Intermediate outputs", intermediateOutputs);
 	processorTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
@@ -493,6 +497,7 @@ class EnactorInvocationStatusThread extends Thread {
 		    String statusText = theEnactorInvocation.getStatusText();
 		    // System.out.println("Status document : "+statusText);
 		    String workflowStatus = theEnactorInvocation.getTableModel().update(statusText);
+		    theEnactorInvocation.workflowEditor.updateStatus(statusText);
 		    // System.out.println("Workflow status : "+workflowStatus);
 		    if (workflowStatus.equals("FAILED") ||
 			workflowStatus.equals("CANCELLED")) {

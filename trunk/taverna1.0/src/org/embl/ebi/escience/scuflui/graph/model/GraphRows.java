@@ -18,7 +18,7 @@ import org.jgraph.graph.GraphModel;
  * COMMENT
  * 
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover </a>
- * @version $Revision: 1.7 $
+ * @version $Revision: 1.8 $
  */
 public class GraphRows
 {
@@ -81,7 +81,7 @@ public class GraphRows
 		Iterator edges = GraphUtilities.getIncomingEdges(model, node).iterator();
 		while (edges.hasNext())
 		{
-			int parentRank = getRow(GraphUtilities.getSourceNode(model, edges.next()));
+			int parentRank = getMinimumRow(GraphUtilities.getSourceNode(model, edges.next()));
 			row = Math.max(row, parentRank);
 		}
 		row += 1;
@@ -139,7 +139,7 @@ public class GraphRows
 			}
 			remove(node, oldRow.intValue());
 		}
-		System.err.println("Set row " + row + ": " + node);
+		//System.err.println("Set row " + row + ": " + node);
 		add(node, row);
 		calculateBounds(row);
 	}

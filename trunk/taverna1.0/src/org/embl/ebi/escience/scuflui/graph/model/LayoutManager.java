@@ -20,7 +20,7 @@ import org.jgraph.graph.GraphModel;
  * graph to be able to update as the graph changes.
  * 
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover </a>
- * @version $Revision: 1.7 $
+ * @version $Revision: 1.8 $
  */
 public class LayoutManager implements GraphModelListener
 {
@@ -86,7 +86,7 @@ public class LayoutManager implements GraphModelListener
 				{
 					if (isTreeEdge(removed[index]))
 					{
-						treeRemoveEdge(removed[index]);
+						treeRemoveEdge(removed[index], null);
 					}
 					else
 					{
@@ -203,8 +203,7 @@ public class LayoutManager implements GraphModelListener
 							}
 							if (lowestCut < 0)
 							{
-								treeRemoveParent(cutEdge);
-								treeAddEdge(source, target, edge);
+								treeRemoveEdge(cutEdge, edge);
 							}
 							else
 							{
@@ -298,75 +297,65 @@ public class LayoutManager implements GraphModelListener
 	private void treeMinimizeEdgeLength(Object edge, Object fixedNode)
 	{
 		Object source = GraphUtilities.getSourceNode(model, edge);
-		Object target = GraphUtilities.getTargetNode(model, edge);		
-		
+		Object target = GraphUtilities.getTargetNode(model, edge);
+
 		int sourceRow = rows.getRow(source);
 		int sourceMinRow = rows.getMinimumRow(source);
 		int targetRow = rows.getRow(target);
-		int targetMinRow = rows.getMinimumRow(target);		
+		int targetMinRow = rows.getMinimumRow(target);
 
-		if(target == fixedNode)
+		if (targetRow - sourceRow != 1)
 		{
-			if(sourceRow != targetRow - 1)
-			{
-				treeMoveNode(source, targetRow - 1);
-			}
-		}
-		else if(source == fixedNode)
-		{
-			if(targetRow != sourceRow + 1)
-			{
-				treeMoveNode(target, sourceRow + 1);
-			}
-		}
-		else if(targetRow < targetMinRow)
-		{
-			treeMoveNode(target, targetMinRow);
-		}
-		else if(sourceRow < sourceMinRow)
-		{
-			treeMoveNode(source, sourceMinRow);
-		}
-		else if(targetRow - sourceRow != 1)
-		{
-			if (targetMinRow <= sourceRow) 
-			{
-				treeMoveNode(target, sourceRow + 1);
-			}
-			else
+			if (target == fixedNode || sourceRow < sourceMinRow)
 			{
 				int sourceMaxRow = rows.getMaximumRow(source);
-				if(targetMinRow - sourceMaxRow > 1)
+				if (targetMinRow - sourceMaxRow > 1)
 				{
 					treeRemoveParent(edge);
 				}
 				else
 				{
-					if(sourceRow < sourceMaxRow)
+					treeMoveNode(source, edge, targetRow - 1);
+				}
+			}
+			else if (source == fixedNode || targetRow < targetMinRow || targetMinRow <= sourceRow)
+			{
+				treeMoveNode(target, edge, sourceRow + 1);
+			}
+			else
+			{
+				int sourceMaxRow = rows.getMaximumRow(source);
+				if (targetMinRow - sourceMaxRow > 1)
+				{
+					treeRemoveParent(edge);
+				}
+				else
+				{
+					if (sourceRow < sourceMaxRow)
 					{
-						treeMoveNode(source, targetRow - 1);
+						treeMoveNode(source, edge, targetRow - 1);
 					}
 					else
 					{
-						treeMoveNode(target, sourceRow + 1);
+						treeMoveNode(target, edge, sourceRow + 1);
 					}
 				}
 			}
 		}
 	}
-	
+
 	/**
 	 * @param source
 	 * @param newRow
 	 */
-	private void treeMoveNode(Object node, int row)
+	private void treeMoveNode(Object node, Object previousEdge, int row)
 	{
 		rows.setRow(node, row);
 		Iterator edges = DefaultGraphModel.getEdges(model, new Object[] { node }).iterator();
 		while (edges.hasNext())
 		{
 			Object edge = edges.next();
-			if (isTreeEdge(edge))
+			if (edge != previousEdge && isTreeEdge(edge))
 			{
 				treeMinimizeEdgeLength(edge, node);
 			}
@@ -396,7 +385,7 @@ public class LayoutManager implements GraphModelListener
 		while (edges.hasNext())
 		{
 			Object edge = edges.next();
-			if (!edge.equals(parent) && isTreeEdge(edge))
+			if (edge != parent && isTreeEdge(edge))
 			{
 				getTailSet(GraphUtilities.getNeighbour(model, node, edge), tailSet);
 			}
@@ -549,12 +538,12 @@ public class LayoutManager implements GraphModelListener
 
 		Map attributes = model.getAttributes(edge);
 		attributes.put(EDGE_PARENT, parent);
-		
+
 		treeSetParent(child, edge);
 		treeAddChildren(child);
 	}
 
-	private void treeRemoveEdge(Object edge)
+	private void treeRemoveEdge(Object edge, Object replacement)
 	{
 		// System.err.println("Remove tree edge " + edge);
 		Object parent = treeGetParent(edge);
@@ -568,38 +557,40 @@ public class LayoutManager implements GraphModelListener
 			}
 			return;
 		}
-
+		
+		treeRemoveParent(edge);
 		treeRemoveParent(tailParent);
 
 		Set tailSet = new HashSet();
 		getTailSet(tailParent, tailSet);
 		Set headSet = new HashSet();
 		headSet.addAll(getTreeSet(parent));
-		headSet.removeAll(tailSet);
-		// Get all non-tree edges connecting the head and tail of this edge
-		List joiningEdges = getConnectingEdges(headSet, tailSet);
-		if (joiningEdges.isEmpty())
+		headSet.removeAll(tailSet);		
+		if(replacement == null)
 		{
-			// If there are no edges connecting the head and tail, then split
-			// into two trees
-			treeNormalize(headSet);
-			treeNormalize(tailSet);
-		}
-		else
-		{
-			// Otherwise, replace this tree edge with a non-tree edge
-			Object joinEdge = joiningEdges.get(0);
-			Object source = GraphUtilities.getSourceNode(model, joinEdge);
-			Object joinParent = source;
-			Object target = GraphUtilities.getTargetNode(model, joinEdge);
-			Object child = target;
-			if (!headSet.contains(source))
+			// Get all non-tree edges connecting the head and tail of this edge
+			List joiningEdges = getConnectingEdges(headSet, tailSet);
+			if (joiningEdges.isEmpty())
 			{
-				joinParent = child;
-				child = source;
+				// If there are no edges connecting the head and tail, then split
+				// into two trees
+				treeNormalize(headSet);
+				treeNormalize(tailSet);
+				return;
 			}
-			treeAddEdge(joinParent, child, joinEdge);
+			// Otherwise, replace this tree edge with a non-tree edge
+			replacement = joiningEdges.get(0);
 		}
+		Object source = GraphUtilities.getSourceNode(model, replacement);
+		Object joinParent = source;
+		Object target = GraphUtilities.getTargetNode(model, replacement);
+		Object child = target;
+		if (!headSet.contains(source))
+		{
+			joinParent = child;
+			child = source;
+		}
+		treeAddEdge(joinParent, child, replacement);		
 	}
 
 	private void treeNormalize(Set tree)
@@ -620,20 +611,14 @@ public class LayoutManager implements GraphModelListener
 		}
 		if (lowestRow > 0 && lowestRow != Integer.MAX_VALUE)
 		{
-			treeMoveNode(lowestNode, 0);
+			treeMoveNode(lowestNode, null, 0);
 		}
 	}
-	
+
 	private void treeRemoveParent(Object edge)
 	{
 		Map attributes = model.getAttributes(edge);
-		Object currentParent = attributes.get(EDGE_PARENT);
-		if(currentParent != null)
-		{
-			attributes.remove(EDGE_PARENT);			
-			Object child = GraphUtilities.getNeighbour(model, currentParent, edge);
-			
-		}
+		attributes.remove(EDGE_PARENT);
 	}
 
 	/**
