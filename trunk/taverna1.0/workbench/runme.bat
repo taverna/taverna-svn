@@ -1,6 +1,6 @@
 @echo off
 
-PATH=./bin/win32i386;%PATH$
+PATH=./bin/win32i386;%PATH%
 
 set OPTS= -Xmx512m -Dtaverna.scrollDesktop
 
