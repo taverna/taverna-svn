@@ -26,8 +26,8 @@
 //      Dependencies        :
 //
 //      Last commit info    :   $Author: mereden $
-//                              $Date: 2004-03-04 17:39:37 $
-//                              $Revision: 1.25 $
+//                              $Date: 2004-03-04 23:12:34 $
+//                              $Revision: 1.26 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 
@@ -171,6 +171,13 @@ public class PortTask extends TavernaTask {
 		}
 		// Copy any semantic markup into the markup object as well
 		this.theDataThing.getMetadata().setSemanticType(portMarkup.getSemanticType());
+	    }
+	    // Now copy all MIME types available from this port
+	    SemanticMarkup portMarkup = getScuflPort().getMetadata();
+	    String[] portMIMETypes = portMarkup.getMIMETypes();
+	    for (int i = 0; i < portMIMETypes.length; i++) {
+		System.out.println("Adding mime type "+portMIMETypes[i]+" to "+((Object)theDataThing).toString());
+		this.theDataThing.getMetadata().addMIMEType(portMIMETypes[i]);
 	    }
 	}
 	// Fully populate the dataThing with LSID values if it doesn't already have them
