@@ -708,6 +708,12 @@ public class Base64
     {   
         byte[] bytes = s.getBytes();
         bytes = decode( bytes, 0, bytes.length );
+	// Degenerate case where the original data
+	// is only a single character, would cause
+	// the array bounds checking below to fail.
+	if (bytes.length < 2) {
+	    return bytes;
+	}
         
         // Check to see if it's gzip-compressed
         // GZIP Magic Two-Byte Number: 0x8b1f (35615)
