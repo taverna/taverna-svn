@@ -25,8 +25,8 @@
 //      Dependencies        :
 //
 //      Last commit info    :   $Author: ferris $
-//                              $Date: 2005-01-10 18:09:56 $
-//                              $Revision: 1.11 $
+//                              $Date: 2005-01-16 10:16:46 $
+//                              $Revision: 1.12 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 package org.embl.ebi.escience.scufl.enactor.implementation;
@@ -111,7 +111,7 @@ public class WorkflowInstanceImpl implements WorkflowInstance {
         this.workflowInstanceId = workflowInstanceId;
 	try {
 	    uk.ac.soton.itinnovation.freefluo.main.WorkflowInstance internalInstance = this.engine.getWorkflowInstance(workflowInstanceId);
-	    this.context = internalInstance.getUserContext();
+	    this.context = new SimpleUserContext(internalInstance.getFlowContext());
 	    // Get a reference to the Flow object, use this to find the starting tasks
 	    // and then do some unpleasant hacks from there to get the scufl model
 	    Flow flow = internalInstance.getFlow();
@@ -226,7 +226,8 @@ public class WorkflowInstanceImpl implements WorkflowInstance {
 		DataThing inputValue = (DataThing)input.get(inputName);
 		inputValue.fillLSIDValues();
 	    }
-            engine.run(workflowInstanceId, input);
+            engine.setInput(workflowInstanceId, input);
+            engine.run(workflowInstanceId);
 	    WorkflowEventDispatcher.DISPATCHER.fireWorkflowCreated(new WorkflowCreationEvent(this,input,this.getDefinitionLSID()));
 	    // Add a new listener to handle and emit the workflow completion events
 	    final Map lsidMap = internalToLSID;
@@ -316,18 +317,6 @@ public class WorkflowInstanceImpl implements WorkflowInstance {
         }
         catch(UnknownWorkflowInstanceException e) {
             String msg = "Error getting progress report xml string for workflow instance with id " + workflowInstanceId +
-                    ".  The workflow engine didn't recognise the workflow isntance id";
-            logger.error(msg, e);
-            throw new IllegalStateException(msg);
-        }
-    }
-
-    public String getOutputXMLString() {
-        try {
-	          return engine.getOutputXML(workflowInstanceId);
-        }
-        catch(UnknownWorkflowInstanceException e) {
-            String msg = "Error getting output report xml string for workflow instance with id " + workflowInstanceId +
                     ".  The workflow engine didn't recognise the workflow isntance id";
             logger.error(msg, e);
             throw new IllegalStateException(msg);

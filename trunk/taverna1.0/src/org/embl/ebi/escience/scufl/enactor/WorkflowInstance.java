@@ -70,16 +70,6 @@ public interface WorkflowInstance {
      * @return XML progress report document
      */
     public String getProgressReportXMLString();
-    
-    /**
-     * Return the XML document containing all the set of results
-     * this is in the form of the baclava data model defined by
-     * the org.embl.ebi.escience.baclava package. Any outputs that
-     * have not yet been populated with data will not appear in
-     * the output document.
-     * @return XML output document
-     */
-    public String getOutputXMLString();
 
     /**
      * Return the Map of DataThing objects for all known workflow

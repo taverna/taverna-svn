@@ -16,6 +16,7 @@ import uk.ac.soton.itinnovation.freefluo.main.Engine;
 import uk.ac.soton.itinnovation.freefluo.main.EngineStub;
 import uk.ac.soton.itinnovation.freefluo.main.EngineImpl;
 import uk.ac.soton.itinnovation.freefluo.event.WorkflowStateListener;
+import uk.ac.soton.itinnovation.freefluo.conf.*;
 
 // Utility Imports
 import java.util.Enumeration;
@@ -45,6 +46,7 @@ public class FreefluoEnactorProxy implements EnactorProxy {
 
     private Engine engine = null;
     private static EnactorProxy staticInstance = null;
+    private EngineConfiguration config = null;
     
     public static EnactorProxy getInstance() {
 	if (staticInstance == null) {
@@ -57,9 +59,10 @@ public class FreefluoEnactorProxy implements EnactorProxy {
 	// See whether we need to create a local engine or a proxy
 	// to talk to one over SOAP
 	String enactorEndpoint = System.getProperty("mygrid.enactor.soap.endpoint");
+        EngineConfiguration engineConfig = getEngineConfiguration();
 	if (enactorEndpoint != null){
 	    try {
-		this.engine = new EngineStub(new URL(enactorEndpoint));
+		this.engine = new EngineStub(engineConfig, new URL(enactorEndpoint));
 	    }
 	    catch (Exception ex) {
 		// Problem with remote enactor creation
@@ -67,7 +70,7 @@ public class FreefluoEnactorProxy implements EnactorProxy {
 	    }
 	}
 	else {
-	    this.engine = new EngineImpl();
+	    this.engine = new EngineImpl(engineConfig);
 	}
     }
 
@@ -80,8 +83,14 @@ public class FreefluoEnactorProxy implements EnactorProxy {
 
     public WorkflowInstance compileWorkflow(ScuflModel workflow, UserContext user) throws WorkflowSubmissionException {
 	try {
-	    String workflowInstanceId = engine.compile(workflow);
-            engine.setUserContext(workflowInstanceId, user);
+            XScuflView scuflView = new XScuflView(workflow);
+            String strWorkflow = scuflView.getXMLText();
+	    String workflowInstanceId = engine.compile(strWorkflow);
+
+            if(user != null) {
+              engine.setFlowContext(workflowInstanceId, user.toFlowContext());
+            }
+
             WorkflowInstance workflowInstance = new WorkflowInstanceImpl(engine, workflowInstanceId);
 	    String definitionLSID = workflow.getDescription().getLSID();
 	    String instanceLSID = workflowInstance.getID();
@@ -91,8 +100,27 @@ public class FreefluoEnactorProxy implements EnactorProxy {
 	catch (Exception e) {
 	    WorkflowSubmissionException wse = new WorkflowSubmissionException("Error during submission of workflow to in memory freefluo enactor");
 	    wse.initCause(e);
+	    e.printStackTrace();
+            wse.initCause(e);
 	    throw wse;
 	}
     }
 
+    private EngineConfiguration getEngineConfiguration() {
+        if(config != null) {
+          return config;
+        }
+        
+        ConfigurationDescription configDescription = new ConfigurationDescription("taverna", 
+                "uk.ac.soton.itinnovation.freefluo.exts.taverna.TavernaScuflModelParser", 
+                "uk.ac.soton.itinnovation.freefluo.exts.taverna.TavernaDataHandler"); 
+        try {
+          config = new EngineConfigurationImpl(configDescription, getClass().getClassLoader());
+        }
+        catch(Exception e) {
+          e.printStackTrace();
+          throw new RuntimeException(e.getMessage(), e);
+        }
+        return config;
+    }
 }
