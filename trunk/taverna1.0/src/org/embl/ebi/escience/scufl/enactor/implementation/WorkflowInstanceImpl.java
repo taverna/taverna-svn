@@ -25,8 +25,8 @@
 //      Dependencies        :
 //
 //      Last commit info    :   $Author: mereden $
-//                              $Date: 2004-07-21 14:50:48 $
-//                              $Revision: 1.8 $
+//                              $Date: 2004-07-22 09:14:15 $
+//                              $Revision: 1.9 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 package org.embl.ebi.escience.scufl.enactor.implementation;
@@ -45,6 +45,7 @@ import uk.ac.soton.itinnovation.freefluo.event.*;
 import uk.ac.soton.itinnovation.taverna.enactor.entities.PortTask;
 import uk.ac.soton.itinnovation.taverna.enactor.entities.ProcessorTask;
 import org.embl.ebi.escience.scufl.enactor.event.*;
+import uk.ac.soton.itinnovation.taverna.enactor.entities.*;
 
 
 // Utility Imports
@@ -57,6 +58,10 @@ import org.jdom.Namespace;
 import org.jdom.Text;
 import org.jdom.output.XMLOutputter;
 
+import org.embl.ebi.escience.scufl.*;
+
+import uk.ac.soton.itinnovation.freefluo.core.task.*;
+import uk.ac.soton.itinnovation.freefluo.core.flow.*;
 import uk.ac.soton.itinnovation.freefluo.task.LogLevel;
 import uk.ac.soton.itinnovation.freefluo.main.Engine;
 import uk.ac.soton.itinnovation.freefluo.main.WorkflowState;
@@ -93,6 +98,7 @@ public class WorkflowInstanceImpl implements WorkflowInstance {
     private UserContext context = null;
     private static Map internalToLSID = new HashMap();
     static Map instanceToDefinitionLSID = new HashMap();
+    private ScuflModel workflowModel = null;
 
     /**
      * Constructor for this concrete instance of a flow receipt
@@ -106,6 +112,21 @@ public class WorkflowInstanceImpl implements WorkflowInstance {
 	try {
 	    uk.ac.soton.itinnovation.freefluo.main.WorkflowInstance internalInstance = this.engine.getWorkflowInstance(workflowInstanceId);
 	    this.context = internalInstance.getUserContext();
+	    // Get a reference to the Flow object, use this to find the starting tasks
+	    // and then do some unpleasant hacks from there to get the scufl model
+	    Flow flow = internalInstance.getFlow();
+	    Collection c = flow.getStartTasks();
+	    if (c.isEmpty() == false) {
+		Task t = (Task)c.iterator().next();
+		if (t instanceof ProcessorTask) {
+		    Processor p = ((ProcessorTask)t).getProcessor();
+		    this.workflowModel = p.getModel();
+		}
+		else if (t instanceof PortTask) {
+		    Port p = ((PortTask)t).getScuflPort();
+		    this.workflowModel = p.getProcessor().getModel();
+		}
+	    }
 	    // If there's a global LSID provider configured then use
 	    // it to get an LSID for the workflow instance class and
 	    // store it.
@@ -125,6 +146,13 @@ public class WorkflowInstanceImpl implements WorkflowInstance {
             logger.warn(msg);
             throw new IllegalStateException(msg);
         }
+    }
+
+    /**
+     * Return a reference to the ScuflModel which this workflow was built from
+     */
+    public ScuflModel getWorkflowModel() {
+	return this.workflowModel;
     }
 
     /**

@@ -7,6 +7,9 @@ package org.embl.ebi.escience.scufl.enactor.event;
 import org.embl.ebi.escience.scufl.enactor.UserContext;
 import org.embl.ebi.escience.scufl.enactor.WorkflowInstance;
 import org.embl.ebi.escience.baclava.DataThing;
+import org.embl.ebi.escience.scufl.*;
+import org.embl.ebi.escience.scufl.view.*;
+import org.embl.ebi.escience.scufl.enactor.implementation.*;
 import java.util.Map;
 import java.util.Iterator;
 
@@ -14,6 +17,7 @@ public class WorkflowCreationEvent extends WorkflowInstanceEvent {
 
     private Map inputs;
     private String defn;
+    private ScuflModel model;
 
     public WorkflowCreationEvent(WorkflowInstance workflow,
 				 Map inputs,
@@ -21,6 +25,9 @@ public class WorkflowCreationEvent extends WorkflowInstanceEvent {
 	super(workflow);
 	this.defn = definitionLSID;
 	this.inputs = inputs;
+	if (workflow instanceof WorkflowInstanceImpl) {
+	    this.model = ((WorkflowInstanceImpl)workflow).getWorkflowModel();
+	}
     }
 
     /**
@@ -40,6 +47,31 @@ public class WorkflowCreationEvent extends WorkflowInstanceEvent {
     }
 
     /**
+     * Return a reference to the ScuflModel object used to create
+     * this workflow
+     */
+    public ScuflModel getModel() {
+	return this.model;
+    }
+
+    /**
+     * Return the XML form of the workflow definition, or 
+     * return null if the workflow model has not been initialised
+     * for some reason
+     */
+    public String getModelXML() {
+	if (this.model != null) {
+	    XScuflView xsv = new XScuflView(this.model);
+	    String xml = xsv.getXMLText();
+	    this.model.removeListener(xsv);
+	    return xml;
+	}
+	else {
+	    return null;
+	}
+    }
+
+    /**
      * Override toString()
      */
     public String toString() {
@@ -51,7 +83,7 @@ public class WorkflowCreationEvent extends WorkflowInstanceEvent {
 	    String inputLSID = inputValue.getLSID(inputValue.getDataObject());
 	    sb.append("  '"+inputName+"'->"+inputLSID+"\n");
 	}
-	sb.append("Created from workflow definition "+getDefinitionLSID()+"\n");
+	sb.append("Created from workflow definition "+this.model.getDescription().getLSID()+"\n");
 	UserContext workflowContext = this.workflowInstance.getUserContext();
 	if (workflowContext == null) {
 	    sb.append("No user context supplied\n");
