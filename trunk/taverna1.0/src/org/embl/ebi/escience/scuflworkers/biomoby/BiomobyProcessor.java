@@ -31,7 +31,7 @@ import org.biomoby.shared.*;
  * processor implementation will contact Biomoby registry in order to
  * find the list of extant ports at creation time. <p>
  *
- * @version $Id: BiomobyProcessor.java,v 1.5 2004-05-08 15:56:53 mereden Exp $
+ * @version $Id: BiomobyProcessor.java,v 1.6 2004-05-20 12:53:42 marsenger Exp $
  * @author Martin Senger
  */
 public class BiomobyProcessor extends Processor implements java.io.Serializable {
@@ -176,7 +176,17 @@ public class BiomobyProcessor extends Processor implements java.io.Serializable 
 	    
 	// outputs
 	Port output_port = new OutputPort (this, "output");
-	output_port.setSyntacticType ("'text/xml'");
+
+	boolean isCollection = false;
+	MobyData[] outputs = mobyService.getPrimaryOutputs();
+	for (int i = 0; i < outputs.length; i++) {
+	    if (outputs[i] instanceof MobyPrimaryDataSet) {
+		isCollection = true;
+		break;
+	    }
+	}
+
+	output_port.setSyntacticType (isCollection ? "'l(text/xml)'" : "'text/xml'");
 	this.addPort (output_port);
     }
 
