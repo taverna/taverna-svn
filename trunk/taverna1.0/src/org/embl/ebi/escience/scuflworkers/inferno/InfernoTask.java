@@ -21,6 +21,9 @@ import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
+import java.net.URL;
+import java.nio.*;
+
 import uk.ac.rdg.resc.jstyx.client.StyxClientSession;
 import uk.ac.rdg.resc.jstyx.client.CStyxFile;
 import uk.ac.rdg.resc.jstyx.client.StyxFileInputStream;
@@ -93,6 +96,7 @@ public class InfernoTask implements ProcessorTaskWorker {
 	    String instanceID = bufCloneIn.readLine();
 	    System.out.println("Got instanceID : "+instanceID);
 	    bufCloneIn.close();
+	    cloneFile.close();
 	    
 	    // Flag to indicate whether the input has been defined, attempts
 	    // to set any input (stream, text or binary literals) when this
@@ -111,6 +115,7 @@ public class InfernoTask implements ProcessorTaskWorker {
 		bufUrlOut.flush();
 		bufUrlOut.close();
 		definedInput = true;
+		urlFile.close();
 		System.out.println("Sent reference "+inputURL);
 	    }
 	    
@@ -121,6 +126,7 @@ public class InfernoTask implements ProcessorTaskWorker {
 	    bufCtlOut.write("start");
 	    bufCtlOut.flush();
 	    bufCtlOut.close();
+	    ctlFile.close();
 	    System.out.println("Sent start signal");
 
 	    if (inputMap.containsKey("stringIn") ||
@@ -149,6 +155,13 @@ public class InfernoTask implements ProcessorTaskWorker {
 		    definedInput = true;
 		    System.out.println("Sent binary value");
 		}
+		// Send an empty string
+		StyxFileOutputStream endLine = new StyxFileOutputStream(inFile);
+		BufferedWriter bufEndLine = new BufferedWriter(new StyxFileOutputStreamWriter(endLine));
+		bufEndLine.write("");
+		bufEndLine.flush();
+		bufEndLine.close();
+		inFile.close();
 	    }
 
 	    // Write the base URL out
@@ -164,24 +177,49 @@ public class InfernoTask implements ProcessorTaskWorker {
 	    else if (returnString | returnBytes) {
 		// Return actual value
 		CStyxFile resultFile = new CStyxFile(session, processor.getService()+"/"+instanceID+"/io/out");
-		StyxFileInputStream sfis = new StyxFileInputStream(resultFile);
-		BufferedInputStream bis = new BufferedInputStream(sfis);
-		
-		System.out.println("Created file input stream to get literal results");
+
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
-		BufferedOutputStream bos = new BufferedOutputStream(baos);
-		int b;
-		while ((b = bis.read()) != -1) {
-		    bos.write(b);
+		// Read bytes from the file directly
+		boolean done = false;
+		int offset = 0;
+		while (!done) {
+		    ByteBuffer bytes = resultFile.read(offset);
+		    System.out.println("Fetched bytes from "+offset+" to "+(offset+bytes.remaining()));
+		    if (bytes.hasRemaining() == false) {
+			done = true;
+		    }
+		    while (bytes.hasRemaining()) {
+			baos.write(bytes.get());
+			offset++;
+		    }
 		}
-		bos.close();
-		bis.close();
+		
+		//StyxFileInputStream sfis = new StyxFileInputStream(resultFile);
+
+		//URL resultURL = new URL(baseURL+"io/out");
+		//InputStream uis = resultURL.openStream();
+		//BufferedInputStream bis = new BufferedInputStream(sfis);
+		
+		//System.out.println("Created file input stream to get literal results");
+		//ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		//int b;
+		//int count = 0;
+		//while ((b = bis.read()) != -1) {
+		//    count++;
+		//    baos.write(b);
+		//}
+		//System.out.println(count+" bytes read from "+baseURL+"io/out");
+		//bis.close();
+		baos.flush();
+		// Okay to close then read, behaves correctly according to J2SE spec
+		baos.close();
 		if (returnBytes) {
 		    results.put("binaryOut", new DataThing(baos.toByteArray()));
 		}
 		else {
 		    results.put("stringOut", new DataThing(baos.toString()));		    
 		}
+		resultFile.close();
 		session.close();
 	    }
 	    

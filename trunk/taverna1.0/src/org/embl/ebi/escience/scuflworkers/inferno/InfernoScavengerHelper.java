@@ -19,7 +19,7 @@ import org.embl.ebi.escience.scuflworkers.ScavengerHelper;
 public class InfernoScavengerHelper implements ScavengerHelper {
 
     public String getScavengerDescription() {
-	return "Add new Inferno SGS installation...";
+	return "Add new Styx Grid Service...";
     }
 
     public ActionListener getListener(ScavengerTree theScavenger) {
