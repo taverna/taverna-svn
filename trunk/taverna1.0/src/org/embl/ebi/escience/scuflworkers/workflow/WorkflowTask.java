@@ -24,9 +24,9 @@
 //      Created for Project :   MYGRID
 //      Dependencies        :
 //
-//      Last commit info    :   $Author: mereden $
-//                              $Date: 2004-04-06 12:05:48 $
-//                              $Revision: 1.5 $
+//      Last commit info    :   $Author: ferris $
+//                              $Date: 2004-06-03 11:39:24 $
+//                              $Revision: 1.6 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 
@@ -38,14 +38,18 @@ import org.embl.ebi.escience.scufl.enactor.implementation.*;
 import org.apache.log4j.Logger;
 import org.embl.ebi.escience.scufl.Processor;
 import org.embl.ebi.escience.scufl.ScuflModel;
+// import org.embl.ebi.escience.scufl.enactor.*;
+import org.embl.ebi.escience.scufl.enactor.EnactorProxy;
+import org.embl.ebi.escience.scufl.enactor.implementation.FreefluoEnactorProxy;
+import org.embl.ebi.escience.scufl.enactor.WorkflowInstance;
+import org.embl.ebi.escience.scufl.enactor.WorkflowSubmissionException;
 import org.embl.ebi.escience.scuflworkers.ProcessorTaskWorker;
-import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.broker.FlowBroker;
-import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.broker.FlowBrokerFactory;
-import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.broker.FlowCallback;
-import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.broker.FlowMessage;
-import uk.ac.soton.itinnovation.taverna.enactor.broker.TavernaBinaryWorkflowSubmission;
-import uk.ac.soton.itinnovation.taverna.enactor.broker.TavernaFlowReceipt;
+
 import uk.ac.soton.itinnovation.taverna.enactor.entities.TaskExecutionException;
+
+import uk.ac.soton.itinnovation.freefluo.event.WorkflowStateListener;
+import uk.ac.soton.itinnovation.freefluo.event.WorkflowStateChangedEvent;
+import uk.ac.soton.itinnovation.freefluo.main.WorkflowState;
 
 // Utility Imports
 import java.util.HashMap;
@@ -61,8 +65,15 @@ import java.lang.Thread;
 
 
 public class WorkflowTask implements ProcessorTaskWorker {
+    private static EnactorProxy defaultEnactor = new FreefluoEnactorProxy();
+    private static Logger logger = Logger.getLogger(WorkflowTask.class);
+    private static final int INVOCATION_TIMEOUT = 0;
+    private static final long WAITTIME = 10000;
+    private String subWorkflowID = null;
+    private WorkflowInstance workflowInstance = null;
 
     private Processor proc;
+    private WorkflowState workflowState;
 
     public WorkflowTask(Processor p) {
 	this.proc = p;
@@ -73,36 +84,57 @@ public class WorkflowTask implements ProcessorTaskWorker {
      * to DataThing objects containing the current values.
      */
     public Map execute(Map inputMap) throws TaskExecutionException {
-	WorkflowProcessor theProcessor = (WorkflowProcessor)proc;
+	WorkflowProcessor theProcessor = (WorkflowProcessor) proc;
 	ScuflModel theNestedModel = theProcessor.getInternalModel();
 	
-	EnactorProxy theEnactor = new FreefluoEnactorProxy();
-	WorkflowInstance flowReceipt = null;
+	// The inputMap is already in the form we need for a submission
 	try {
-	    flowReceipt = theEnactor.submitWorkflow(theNestedModel, inputMap);
+            workflowInstance = defaultEnactor.compileWorkflow(theNestedModel, inputMap);
 	}
-	catch (WorkflowSubmissionException wse) {
-	    TaskExecutionException tee = new TaskExecutionException("Error submitting nested workflow");
-	    tee.initCause(wse);
-	    throw tee;
+        catch(WorkflowSubmissionException e) {
+            String msg = "Error executing workflow task.  Error compiling the nested workflow.";
+            logger.error(msg, e);
+            throw new TaskExecutionException(msg);
 	}
-	try {
-	    String results;
-	    boolean gotResults = false;
-	    while (!gotResults) {
-		results = flowReceipt.getOutputXMLString();
-		if (results.equals("") == false) {
-		    gotResults = true;
-		} else {
-		    Thread.sleep(1000);
-		}
-	    }
-	} catch (InterruptedException ie) {
-	    TaskExecutionException tee = new TaskExecutionException("Nested workflow failure");
-	    tee.initCause(ie);
-	    throw tee;
-	}
-	return flowReceipt.getOutput();
-    }
+
+        try {
+	    workflowInstance.run();
+        }
+        catch(Exception e) {
+            String msg = "Nested workflow failed in task, error message was: " + e.getMessage();
+            logger.error(msg, e);
+            throw new TaskExecutionException(msg);
+        }
+
+        WorkflowState workflowState = null;
+        while(true) {
+            workflowState = WorkflowState.getState(workflowInstance.getStatus());
+            if(workflowState.isFinal()) {
+                break;
+            }
+            else {
+                try {
+                    Thread.sleep(2000);
+                }
+                catch(Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }
         
+	
+	// Did we finish okay?
+	if (workflowState.equals(WorkflowState.COMPLETE)) {
+	    return workflowInstance.getOutput();
+	}
+	else if (workflowState.equals(WorkflowState.FAILED)) {
+	    throw new TaskExecutionException("Nested workflow failed in task, error message was : " + workflowInstance.getErrorMessage());
+	}
+	else if (workflowState.equals(WorkflowState.CANCELLED)) {
+	    return new HashMap();
+	}
+	else {
+	    throw new TaskExecutionException("Unknown flow state in task, failing.");
+	}
+    }
 }

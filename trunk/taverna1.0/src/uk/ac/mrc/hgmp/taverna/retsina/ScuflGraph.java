@@ -183,6 +183,10 @@ public class ScuflGraph extends JGraph
       ToolTipManager.sharedInstance().registerComponent(this);
     }
  
+    public ScuflModel getScuflModel() {
+      return scuflModel;
+    }
+
     public DataSet getDataSet()
     {
       return dataSet;

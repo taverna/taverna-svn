@@ -7,12 +7,12 @@ package org.embl.ebi.escience.scufl.enactor;
 
 import org.embl.ebi.escience.scufl.UnknownProcessorException;
 
+import uk.ac.soton.itinnovation.freefluo.main.InvalidInputException;
+
 // Utility Imports
 import java.util.Map;
 
 import java.lang.String;
-
-
 
 /**
  * This interface is implemented by any returned object that
@@ -25,6 +25,22 @@ import java.lang.String;
  * @author Tom Oinn
  */
 public interface WorkflowInstance {
+    
+   /**
+    * Start this workflow istance running.
+    * @throw InvalidInputException if the input is doesn't map to source in the dataflow.
+    */
+    public void run() throws InvalidInputException;
+   
+   /**
+    * This method can be used to get a simple String that describes
+    * the current state of this workflow instance object.
+    * The possible values for the return value are enumerated in 
+    * <code>FlowStateDefinition</code>.
+    * @return simple string to that describes the workflow status 
+    * @see uk.ac.soton.itinnovation.freefluo.main.FlowStateDefinition
+    */
+    public String getStatus();
     
     /**
      * Return an array of Maps containing intermediate results
@@ -66,6 +82,12 @@ public interface WorkflowInstance {
      * @return Map of DataThing objects
      */
     public Map getOutput();
+    
+    /**
+     * Returns a human readable string containing details of errors 
+     * that occurred during execution of this <code>WorkflowInstance</code>
+     */
+    public String getErrorMessage();
     
     /**
      * Return the XML string containing the provenance report,
@@ -114,4 +136,9 @@ public interface WorkflowInstance {
      */
     public void setInputs(Map inputMap);
 
+    /**
+     * Signal that any allocated resources should be cleaned up because 
+     * the workflow instance is no longer required.
+     */
+    public void destroy();
 }

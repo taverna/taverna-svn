@@ -6,13 +6,16 @@
 package org.embl.ebi.escience.scufl.enactor.implementation;
 
 import org.embl.ebi.escience.scufl.ScuflModel;
+
+import org.embl.ebi.escience.scufl.view.XScuflView;
 import org.embl.ebi.escience.scufl.enactor.*;
 import org.embl.ebi.escience.scufl.enactor.WorkflowInstance;
 import org.embl.ebi.escience.scufl.enactor.WorkflowSubmissionException;
-import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.broker.FlowBroker;
-import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.broker.FlowBrokerFactory;
-import uk.ac.soton.itinnovation.taverna.enactor.broker.TavernaFlowBroker;
-import uk.ac.soton.itinnovation.taverna.enactor.broker.TavernaFlowReceipt;
+
+import uk.ac.soton.itinnovation.freefluo.main.Engine;
+import uk.ac.soton.itinnovation.freefluo.main.EngineStub;
+import uk.ac.soton.itinnovation.freefluo.main.EngineImpl;
+import uk.ac.soton.itinnovation.freefluo.event.WorkflowStateListener;
 
 // Utility Imports
 import java.util.Enumeration;
@@ -24,55 +27,46 @@ import java.lang.Exception;
 import java.lang.String;
 import java.lang.System;
 
+import java.net.URL;
 
 
 /**
- * An implementation of the EnactorProxy class that represents
- * an in memory instance of the FreeFluo enactor.
+ * An implementation of the EnactorProxy class that uses
+ * the Freefluo workflow enactor.  For now, either a local
+ * or remote freefluo enactor is used depending on whether
+ * the property mygrid.enactor.soap.endpoint is set in
+ * mygrid.properties.  If it isn't set, a local in-memory
+ * enactor is used; if it is, the enactor at the provided
+ * soap endpoint is used.  
+ *
  * @author Tom Oinn
  */
 public class FreefluoEnactorProxy implements EnactorProxy {
 
-    /**
-     * Initialize the proxy settings for the enactor should
-     * these be required.
-     */
-    static {
-	try {
-	    ResourceBundle rb = ResourceBundle.getBundle("mygrid");
-	    Properties sysProps = System.getProperties();
-	    Enumeration keys = rb.getKeys();
-	    while (keys.hasMoreElements()) {
-		String key = (String) keys.nextElement();
-		String value = (String) rb.getString(key);
-		sysProps.put(key, value);
-	    }
-	}
-	catch (Exception e) {
-	    // No resource bundle specified, probably an error
-	    // but we'll fail silently here.
-	}
+    public WorkflowInstance compileWorkflow(ScuflModel workflow, Map input) 
+	        throws WorkflowSubmissionException {
+	WorkflowInstance workflowInstance = compileWorkflow(workflow);
+        workflowInstance.setInputs(input);
+        return workflowInstance;
     }
-    
-    private static String DEFAULT_USER = "DEFAULT_USER";
-    private static String DEFAULT_USER_CONTEXT = "DEFAULT_USER_CONTEXT";
-    private static String BROKER_CLASS = "uk.ac.soton.itinnovation.taverna.enactor.broker.TavernaFlowBroker";
 
-    /**
-     * Create an enactor instance if one does not already exist
-     * and submit the supplied workflow to it. This then returns
-     * a TavernaFlowReceipt object, now retrofitted to implement
-     * the WorkflowInstance interface.
-     */
-    public WorkflowInstance submitWorkflow(ScuflModel workflow, Map inputs) 
-	throws WorkflowSubmissionException {
-	try {
-	    FlowBroker broker = FlowBrokerFactory.createFlowBroker(BROKER_CLASS);
-	    TavernaFlowReceipt theReceipt = (TavernaFlowReceipt)((TavernaFlowBroker)broker).submitFlow(workflow,
-												       inputs,
-												       DEFAULT_USER,
-												       DEFAULT_USER_CONTEXT);
-	    return (WorkflowInstance)theReceipt;
+    public WorkflowInstance compileWorkflow(ScuflModel workflow) throws WorkflowSubmissionException {
+        try {
+            Engine engine = null;
+
+            // would be nice to have a definition class somewhere with property definitions in
+            String enactorEndpoint = System.getProperty("mygrid.enactor.soap.endpoint");
+            if(enactorEndpoint != null) {
+                engine = new EngineStub(new URL(enactorEndpoint));
+            }
+            else {
+                // Use an in-process freefluo engine
+	        engine = new EngineImpl();
+            }
+
+            String workflowInstanceId = engine.compile(workflow);
+            WorkflowInstance workflowInstance = new WorkflowInstanceImpl(engine, workflowInstanceId);   
+            return workflowInstance;
 	}
 	catch (Exception e) {
 	    WorkflowSubmissionException wse = new WorkflowSubmissionException("Error during submission of workflow to in memory freefluo enactor");
@@ -109,7 +103,5 @@ public class FreefluoEnactorProxy implements EnactorProxy {
 		    return new String[]{"",""};
 		}
 	    };
-    }
-	    
-
+    }	   
 }

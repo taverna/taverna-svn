@@ -25,9 +25,9 @@
 //      Created for Project :   MYGRID
 //      Dependencies        :
 //
-//      Last commit info    :   $Author: mereden $
-//                              $Date: 2004-05-26 17:24:08 $
-//                              $Revision: 1.27 $
+//      Last commit info    :   $Author: ferris $
+//                              $Date: 2004-06-03 11:39:25 $
+//                              $Revision: 1.28 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 
@@ -39,26 +39,27 @@ import org.embl.ebi.escience.scufl.InputPort;
 import org.embl.ebi.escience.scufl.OutputPort;
 import org.embl.ebi.escience.scufl.Port;
 import org.embl.ebi.escience.scufl.SemanticMarkup;
-import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.entities.graph.GraphNode;
-import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.eventservice.TaskStateMessage;
-import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.serviceprovidermanager.ServiceSelectionCriteria;
+
+import uk.ac.soton.itinnovation.freefluo.core.task.*;
+import uk.ac.soton.itinnovation.freefluo.core.event.*;
+import uk.ac.soton.itinnovation.freefluo.core.flow.*; 
 
 // Utility Imports
 import java.util.ArrayList;
 import java.util.List;
-
-import uk.ac.soton.itinnovation.taverna.enactor.entities.TavernaTask;
+import java.util.Iterator;
 import java.lang.Exception;
 import java.lang.Object;
 import java.lang.String;
 import java.lang.System;
+import java.util.Collection;
 
 
 
 /**
  * GraphNode that represents a port on a Processor.
  */
-public class PortTask extends TavernaTask {
+public class PortTask extends AbstractTask {
     
     private static Logger logger = Logger.getLogger(PortTask.class);
     public static int IN = 0;
@@ -67,8 +68,8 @@ public class PortTask extends TavernaTask {
     private Port thePort; 
     private DataThing theDataThing = null;
     
-    public PortTask(String id, Port port) {
-	super(id);
+    public PortTask(String id, Flow flow, Port port) {
+	super(id, flow);
 	this.thePort = port;
     }
     
@@ -155,10 +156,11 @@ public class PortTask extends TavernaTask {
 	// the additional annotation at the moment.
 	if (getScuflPort() instanceof OutputPort) {
 	    PortTask childPortTask = null;
-	    GraphNode[] g = getChildren();
-	    for (int i = 0; i < g.length; i++) {
-		if (g[i] instanceof PortTask) {
-		    childPortTask = (PortTask)g[i];
+	    Collection g = getChildren();
+	    for (Iterator i = g.iterator(); i.hasNext();) {
+		Task task = (Task) i.next();
+                if (task instanceof PortTask) {
+		    childPortTask = (PortTask) task;
 		    break;
 		}
 	    }
@@ -199,18 +201,11 @@ public class PortTask extends TavernaTask {
     /**
      * Forces class to clean itself up a bit.
      */
-    public void cleanUpConcreteTask() {
+    protected void handleDestroy() {
 	thePort = null;
 	theDataThing = null;
     }
     
-    /**
-     * Retrieves the selection criteria associated with this task. This criteria
-     * determines the service provider for a particular service.
-     */
-    public ServiceSelectionCriteria getServiceSelectionCriteria() {
-        return null;
-    }
 
     /**
      * Transfer data from this port task into any child port tasks that are present, this
@@ -218,41 +213,33 @@ public class PortTask extends TavernaTask {
      * processor implementations pull from the input port and push to the output port so
      * this is the link inbetween two processors.
      */
-    public TaskStateMessage doTask() {
-	TaskStateMessage msg = null;
+    public void handleRun(RunEvent runEvent) {
 	try{
 	    //don't do anything, later versions may have persistence writing to do
 	    //set data on child porttasks too
 	    if(theDataThing == null) {
-		msg = new TaskStateMessage(getParentFlow().getID(), 
-					   getID(), 
-					   TaskStateMessage.FAILED,
+		fail("Task " + getTaskId() + " in flow " + getFlow().getFlowId() + " failed.  " + 
 					   "No data for port " + thePort.getName() + ",please check its links");
 	    }	
 	    else {
-		System.out.println("Invoking : "+getScuflPort().getProcessor().getName()+"."+getScuflPort().getName());
-		GraphNode[] chds = getChildren();
-		for(int i=0;i<chds.length;i++) {
-		    if(chds[i] instanceof PortTask) {
-			PortTask childPortTask = (PortTask)chds[i];
+                System.out.println("Invoking : "+getScuflPort().getProcessor().getName()+"."+getScuflPort().getName());
+		for(Iterator i = getChildren().iterator(); i.hasNext();) {
+		    Task task = (Task) i.next();
+                    if(task instanceof PortTask) {
+			PortTask childPortTask = (PortTask) task;
 			childPortTask.setData(this.theDataThing);
 		    }
 		}
-		msg = new TaskStateMessage(getParentFlow().getID(), 
-					   getID(), 
-					   TaskStateMessage.COMPLETE, 
-					   "Task finished successfully");
+
+                // "Task " + getTaskId() + " in flow " + getFlow().getFlowId() + " completed successfully"
+		complete();
 	    }
 	}
 	catch(Exception ex) {
 	    logger.error(ex);
-	    msg = new TaskStateMessage(getParentFlow().getID(), 
-				       getID(), 
-				       TaskStateMessage.FAILED, 
-				       ex.getMessage());
+	    fail("Task " + getTaskId() + " in flow " + getFlow().getFlowId() + " failed.  " + ex.getMessage());
 	}
 	System.out.println("Done : "+getScuflPort().getProcessor().getName()+"."+getScuflPort().getName());
-	return msg;
     }
 
 }

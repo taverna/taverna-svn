@@ -8,9 +8,13 @@ package uk.ac.mrc.hgmp.taverna.retsina;
 
 // Utility Imports
 import java.util.Hashtable;
+import java.util.Map;
+import java.util.HashMap;
 
 import java.lang.String;
 
+import org.embl.ebi.escience.baclava.factory.DataThingFactory;
+import org.embl.ebi.escience.baclava.DataThing;
 
 
 public class DataSet
@@ -19,6 +23,9 @@ public class DataSet
   private String dataSet = "";
   private int id = 1;
   private Hashtable ports = new Hashtable();
+
+  /** Map of name:String -> data:DataThing */
+  private HashMap dataMap = new HashMap();
 
   public DataSet()
   {
@@ -41,6 +48,8 @@ public class DataSet
      id++;
 
      ports.put(port,value);
+     DataThing dataThing = DataThingFactory.bake(value);
+     dataMap.put(name, dataThing);
   }
 
   /**
@@ -69,6 +78,8 @@ public class DataSet
       ports.remove(p);
     }
     ports.put(p,value);
+    DataThing dataThing = DataThingFactory.bake(value);
+    dataMap.put(name, dataThing);
   }
 
   /**
@@ -81,6 +92,13 @@ public class DataSet
   {
     return "<?xml version=\"1.0\"?><dataset>\n"+
            dataSet+"\n</dataset>";
+  }
+
+  /**
+   * Get the data as a map of Baclava objects
+   */ 
+  public Map getData() {
+    return dataMap;
   }
 
   /**

@@ -11,18 +11,19 @@ import org.embl.ebi.escience.scufl.ScuflModel;
 import org.embl.ebi.escience.scuflui.ScuflUIComponent;
 import org.emboss.jemboss.JembossJarUtil;
 import org.emboss.jemboss.gui.startup.ProgList;
-import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.broker.FlowBroker;
-import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.broker.FlowBrokerFactory;
-import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.broker.InvalidFlowBrokerRequestException;
-import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.broker.WorkflowCommandException;
-import uk.ac.soton.itinnovation.taverna.enactor.broker.TavernaFlowReceipt;
-import uk.ac.soton.itinnovation.taverna.enactor.broker.TavernaStringifiedWorkflowSubmission;
+import org.embl.ebi.escience.scufl.enactor.WorkflowInstance;
+import org.embl.ebi.escience.scufl.enactor.EnactorProxy;
+import org.embl.ebi.escience.scufl.enactor.implementation.FreefluoEnactorProxy;
+import org.embl.ebi.escience.scufl.enactor.WorkflowSubmissionException;
+import uk.ac.soton.itinnovation.freefluo.main.WorkflowState;
 
 // IO Imports
 import java.io.*;
 
 // Network Imports
 import java.net.URL;
+
+import java.util.Map;
 
 import uk.ac.mrc.hgmp.taverna.retsina.ProgramSelectionPanel;
 import uk.ac.mrc.hgmp.taverna.retsina.ScuflGraph;
@@ -333,7 +334,8 @@ public class Retsina extends JPanel
 
      try
      {
-       TavernaFlowReceipt receipt = null;
+       EnactorProxy enactorProxy = new FreefluoEnactorProxy();
+       WorkflowInstance workflowInstance = null;
        try
        {
 //       BufferedInputStream workflowspec = new BufferedInputStream(new FileInputStream("./scufl_test.xml"));
@@ -342,21 +344,18 @@ public class Retsina extends JPanel
 //         sWriter.write(workflowspec.read());
 //       String scuflDefn = sWriter.toString();
 
-         String scuflDefn = graph.getXScufl();
+//       String scuflDefn = graph.getXScufl();
          String input = graph.getDataSet().getDataSetString();
          System.out.println(input);
-         TavernaStringifiedWorkflowSubmission submit = 
-                    new TavernaStringifiedWorkflowSubmission(
-                               scuflDefn,input,
-                               "TestTavernaFlowBroker",
-                               "http://www.it-innovation.soton.ac.uk/users");
-
-         FlowBroker broker = FlowBrokerFactory.createFlowBroker(
-                               "uk.ac.soton.itinnovation.taverna.enactor.broker.TavernaFlowBroker");
-         receipt = (TavernaFlowReceipt) broker.submitFlow(submit);
+         Map inputMap = graph.getDataSet().getData();
+         
+         workflowInstance = enactorProxy.compileWorkflow(graph.getScuflModel(), inputMap);
        }
-       catch(InvalidFlowBrokerRequestException invalid){}
-       catch(WorkflowCommandException wfException){} 
+       catch(WorkflowSubmissionException e) {
+         e.printStackTrace();
+         // throw an exception, popup a dialog?
+         return;
+       }
 
        //poll for status every 500ms
        boolean stop = false;
@@ -364,8 +363,8 @@ public class Retsina extends JPanel
        while(!stop) 
        {
          //retrieve the status
-         status = receipt.getStatusString();
-         if(status.equals("COMPLETE") || status.equals("FAILED"))
+         status = workflowInstance.getStatus();
+         if(status.equals(WorkflowState.COMPLETE_STATE) || status.equals(WorkflowState.FAILED_STATE))
            stop = true;
          try 
          {
@@ -377,10 +376,10 @@ public class Retsina extends JPanel
          }
        }
      
-       if(status.equals("FAILED"))
-             System.out.println("Error message: " + receipt.getErrorMessage());
+       if(status.equals(WorkflowState.FAILED_STATE))
+             System.out.println("Error message: " + workflowInstance.getErrorMessage());
        System.out.println("Emboss Workflow has finished with status: " + status);
-       System.out.println("Output:\n\n" + receipt.getOutputString());
+       System.out.println("Output:\n\n" + workflowInstance.getOutputXMLString());
 
      }
      catch(Exception ex) 

@@ -20,10 +20,13 @@ import org.embl.ebi.escience.scufl.enactor.WorkflowSubmissionException;
 public interface EnactorProxy {
     
     /**
-     * Submit a workflow to the enactor represented by this proxy,
-     * the workflow submission is in the form of a ScuflModel
+     * Submit a workflow to the enactor represented by this proxy.
+     * The workflow submission is provided in the form of a ScuflModel
      * instance, and a WorkflowInstance implementation is returned
-     * to allow further interaction with the running state.<br>
+     * to allow further interaction with the workflow state.  Calling
+     * this method compiles the workflow but doesn't start it running.
+     * This allows registering listeners on the WorkflowInstance state
+     * before it starts running.<br>
      * The inputs parameter is used to supply any known inputs at the
      * time of workflow submission. Some enactor implementations may
      * only allow input specification at this stage, but others may
@@ -37,9 +40,22 @@ public interface EnactorProxy {
      * to wrap the real exception using standard exception chaining
      * mechanisms.
      */
-    public WorkflowInstance submitWorkflow(ScuflModel workflow, Map inputs)
+    public WorkflowInstance compileWorkflow(ScuflModel workflow, Map inputs)
 	throws WorkflowSubmissionException;
-    
+ 
+    /**
+     * Submit to the enactor represented by this proxy for compilation the
+     * workflow submission.
+     * The workflow submission is provided in the form of a ScuflModel
+     * instance, and a WorkflowInstance implementation is returned
+     * to allow further interaction with the workflow state.  Calling
+     * this method compiles the workflow but doesn't set its inputs or start 
+     * it running.  This allows registering listeners on the WorkflowInstance state
+     * before it starts running.
+     */
+    public WorkflowInstance compileWorkflow(ScuflModel workflow)
+	throws WorkflowSubmissionException;
+
     /**
      * Configure this enactor instance with the specified user context,
      * this can be used to allow the enactor access to protected resources
@@ -51,5 +67,4 @@ public interface EnactorProxy {
      * Return the user context object currently applied to this enactor instance
      */
     public UserContext getUserContext();
-
 }

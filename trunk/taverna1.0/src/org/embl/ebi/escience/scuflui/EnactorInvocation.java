@@ -19,6 +19,8 @@ import org.embl.ebi.escience.scufl.enactor.WorkflowInstance;
 import org.embl.ebi.escience.scufl.enactor.WorkflowSubmissionException;
 import java.awt.event.*;
 
+import uk.ac.soton.itinnovation.freefluo.main.InvalidInputException;
+
 // Utility Imports
 import java.util.Iterator;
 import java.util.Map;
@@ -46,7 +48,14 @@ public class EnactorInvocation extends JPanel implements ScuflUIComponent {
     }
 
     public void detachFromModel() {
-	//
+	// detachFromModel() is called by GeneridUIComponentFrame when
+        // it is closing.  Cleanup of remote resources will be done here.
+        try {
+            workflowInstance.destroy();
+        }
+        catch(Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public String getName() {
@@ -58,7 +67,7 @@ public class EnactorInvocation extends JPanel implements ScuflUIComponent {
     private String instanceID = null;
     private EnactorStatusTableModel statusTableModel = null;
     //private FlowReceipt flowReceipt = null;
-    private WorkflowInstance flowReceipt = null;
+    private WorkflowInstance workflowInstance = null;
     private JTextArea resultsText = null;
     private JTextArea provenanceText = null;
     private JPanel provenancePanel = null;
@@ -78,7 +87,7 @@ public class EnactorInvocation extends JPanel implements ScuflUIComponent {
      * Get the status text for this invocation
      */
     public String getStatusText() {
-	return this.flowReceipt.getProgressReportXMLString();
+	return this.workflowInstance.getProgressReportXMLString();
     }
 
   /**
@@ -93,7 +102,7 @@ public class EnactorInvocation extends JPanel implements ScuflUIComponent {
       System.out.println("Getting results...");
       boolean gotResults = false;
       while (!gotResults) {
-        results = this.flowReceipt.getOutputXMLString();
+	results = this.workflowInstance.getOutputXMLString();
         if (results.equals("") == false) {
           gotResults = true;
         } else {
@@ -117,7 +126,7 @@ public class EnactorInvocation extends JPanel implements ScuflUIComponent {
     this.tabs.add("Results",individualResults);
     saveResultsButton.setEnabled(true);
     // Get the output map and create new result detail panes
-    Map resultMap = this.flowReceipt.getOutput();
+    Map resultMap = this.workflowInstance.getOutput();
     for (Iterator i = resultMap.keySet().iterator(); i.hasNext(); ) {
       String resultName = (String)i.next();
       DataThing resultValue = (DataThing)resultMap.get(resultName);
@@ -134,7 +143,7 @@ public class EnactorInvocation extends JPanel implements ScuflUIComponent {
   {
     ensureGotResults();
     // Get the output map and create new result detail panes
-    Map resultMap = this.flowReceipt.getOutput();
+    Map resultMap = this.workflowInstance.getOutput();
     JFileChooser chooser = new JFileChooser();
     chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
     int returnVal = chooser.showSaveDialog(this);
@@ -161,8 +170,7 @@ public class EnactorInvocation extends JPanel implements ScuflUIComponent {
     public void showProvenance() {
 	String provenance = "";
 	try {
-
-	    provenance = this.flowReceipt.getProvenanceXMLString();
+	    provenance = this.workflowInstance.getProvenanceXMLString();
 	    //this.provenanceText.setFont(new Font("Monospaced",Font.PLAIN,12));
 	    //this.provenanceText.setLineWrap(true);
 	    //this.provenanceText.setWrapStyleWord(true);
@@ -182,7 +190,7 @@ public class EnactorInvocation extends JPanel implements ScuflUIComponent {
     public void showProgressReport() {
 	String progressReport = "";
 	try {
-	    progressReport = this.flowReceipt.getProgressReportXMLString();
+	    progressReport = this.workflowInstance.getProgressReportXMLString();
 	    this.tabs.add("Process report", new JScrollPane(new XMLTree(progressReport)));
 	}
 	catch (Exception ex) {
@@ -212,7 +220,7 @@ public class EnactorInvocation extends JPanel implements ScuflUIComponent {
 	super(new BorderLayout());
 	setPreferredSize(new Dimension(100,100));
 	this.theModel = model;
-	this.flowReceipt = enactor.submitWorkflow(model, inputDataThings);
+	this.workflowInstance = enactor.compileWorkflow(model, inputDataThings);
 	// Create a new toolbar for the save results option...
 	JToolBar toolbar = new JToolBar("Invocation tools");
 	toolbar.setFloatable(false);
@@ -261,7 +269,7 @@ public class EnactorInvocation extends JPanel implements ScuflUIComponent {
 			// get the processor name
 			try {
 			    String processorName = (String)statusTableModel.getValueAt(selectedRow, 1);
-			    Map[] intermediateResultMaps = EnactorInvocation.this.flowReceipt.getIntermediateResultsForProcessor(processorName);
+			    Map[] intermediateResultMaps = EnactorInvocation.this.workflowInstance.getIntermediateResultsForProcessor(processorName);
 			    // Clear the tabs
 			    intermediateInputs.removeAll();
 			    intermediateOutputs.removeAll();
@@ -335,8 +343,14 @@ public class EnactorInvocation extends JPanel implements ScuflUIComponent {
 	//setVisible(true);
 	show();
 	// Run the workflow and poll for status messages
+        try {
+            workflowInstance.run();
+        }
+        catch(InvalidInputException e) {
+            WorkflowSubmissionException wse = new WorkflowSubmissionException(e.getMessage());     
+            throw wse;
+        }
 	EnactorInvocationStatusThread s = new EnactorInvocationStatusThread(this);
-
     }
 }
 
@@ -396,9 +410,9 @@ class EnactorInvocationStatusThread extends Thread {
 
 		try {
 		    String statusText = theEnactorInvocation.getStatusText();
-		    //System.out.println("Status document : "+statusText);
+		    // System.out.println("Status document : "+statusText);
 		    String workflowStatus = theEnactorInvocation.getTableModel().update(statusText);
-		    //System.out.println("Workflow status : "+workflowStatus);
+		    // System.out.println("Workflow status : "+workflowStatus);
 		    if (workflowStatus.equals("FAILED") ||
 			workflowStatus.equals("CANCELLED")) {
 			theEnactorInvocation.showProvenance();

@@ -24,9 +24,9 @@
 //      Created for Project :   MYGRID
 //      Dependencies        :
 //
-//      Last commit info    :   $Author: mereden $
-//                              $Date: 2004-05-26 17:24:08 $
-//                              $Revision: 1.47 $
+//      Last commit info    :   $Author: ferris $
+//                              $Date: 2004-06-03 11:39:25 $
+//                              $Revision: 1.48 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 package uk.ac.soton.itinnovation.taverna.enactor.entities;
@@ -39,15 +39,19 @@ import org.embl.ebi.escience.baclava.JoinIterator;
 import org.embl.ebi.escience.scufl.Processor;
 import org.embl.ebi.escience.scufl.AnnotationTemplate;
 import org.embl.ebi.escience.scufl.provenance.process.*;
-import org.embl.ebi.escience.scuflworkers.ProcessorHelper;
 import org.embl.ebi.escience.scuflworkers.ProcessorTaskWorker;
-import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.entities.TimePoint;
-import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.eventservice.TaskStateMessage;
-import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.serviceprovidermanager.ServiceSelectionCriteria;
-import uk.ac.soton.itinnovation.taverna.enactor.broker.LogLevel;
-import uk.ac.soton.itinnovation.taverna.enactor.broker.TavernaFlowReceipt;
 import org.embl.ebi.escience.scufl.*;
 import org.embl.ebi.escience.baclava.store.*;
+import org.embl.ebi.escience.scuflworkers.ProcessorHelper;
+
+import uk.ac.soton.itinnovation.taverna.enactor.entities.PortTask;
+import uk.ac.soton.itinnovation.taverna.enactor.entities.TaskExecutionException;
+
+import uk.ac.soton.itinnovation.freefluo.core.task.*;
+import uk.ac.soton.itinnovation.freefluo.core.event.*;
+import uk.ac.soton.itinnovation.freefluo.core.flow.*;
+import uk.ac.soton.itinnovation.freefluo.task.*;
+import uk.ac.soton.itinnovation.freefluo.conf.*;
 
 // Utility Imports
 import java.util.ArrayList;
@@ -66,9 +70,6 @@ import java.io.StringWriter;
 import org.jdom.Element;
 import org.jdom.Namespace;
 
-import uk.ac.soton.itinnovation.taverna.enactor.entities.PortTask;
-import uk.ac.soton.itinnovation.taverna.enactor.entities.TaskExecutionException;
-import uk.ac.soton.itinnovation.taverna.enactor.entities.TavernaTask;
 import java.lang.Exception;
 import java.lang.Object;
 import java.lang.String;
@@ -78,15 +79,17 @@ import java.lang.String;
 /**
  * The superclass of all actual task implementations
  */
-public class ProcessorTask extends TavernaTask{
+public class ProcessorTask extends AbstractTask {
+    public static Namespace provNS = Namespace.getNamespace("p","http://org.embl.ebi.escience/xscuflprovenance/0.1alpha");
+    public static final String REPORT_NAMESPACE = "http://www.it-innovation.soton.ac.uk/taverna/workflow/enactor/progress";
     
     static BaclavaDataService STORE = null;
     static {
 	String storageClassName = System.getProperty("taverna.datastore.class");
 	if (storageClassName!=null) {
 	    try {
-		Class c = Class.forName(storageClassName);
-		STORE = (BaclavaDataService)c.newInstance();
+		      Class c = Class.forName(storageClassName);
+		      STORE = (BaclavaDataService)c.newInstance();
 	    }
 	    catch (Exception ex) {
 		System.out.println("Unable to initialize data store class : "+storageClassName);
@@ -138,7 +141,7 @@ public class ProcessorTask extends TavernaTask{
     /**
      * Run the task
      */
-    public TaskStateMessage doTask() {
+    public void handleRun(RunEvent runEvents) {
 	try {
 	    System.out.println("Invoking processor task for "+activeProcessor.getName());
 	    // The default processor will have been scheduled by the
@@ -150,9 +153,8 @@ public class ProcessorTask extends TavernaTask{
 		}
 		try {
 		    invoke();
-		    return new TaskStateMessage(getParentFlow().getID(), 
-						getID(), 
-						TaskStateMessage.COMPLETE,"Task completed successfully");
+		    // "Task completed successfully"
+                    break;
 		}
 		catch (TaskExecutionException tee) {
 		    // If there are alternates left then just loop
@@ -165,29 +167,23 @@ public class ProcessorTask extends TavernaTask{
 		    }
 		}
 	    }
+
+            // "Task " + getTaskId() + " in flow " + getFlow().getFlowId() + " completed successfully"
+	    complete();
 	}
 	catch (TaskExecutionException ex) {
 	    ex.printStackTrace();
 	    eventList.add(new ServiceFailure());
-	    endTime = new TimePoint();
 	    faultCausingException = ex;
 	    logger.error(ex);
-	    return new TaskStateMessage(getParentFlow().getID(),getID(), TaskStateMessage.FAILED,ex.getMessage());
+	    fail("Task " + getTaskId() + " in flow " + getFlow().getFlowId() + " failed.  " + ex.getMessage());
 	}
 	catch (Exception ex){
 	    eventList.add(new ServiceFailure());
-	    endTime = new TimePoint();
 	    faultCausingException = ex;
-	    logger.error(ex,ex);
-	    return new TaskStateMessage(getParentFlow().getID(), 
-					getID(), 
-					TaskStateMessage.FAILED, 
-					"Unrecognised dispatch failure for a task within the workflow.");
-	}
-	return new TaskStateMessage(getParentFlow().getID(), 
-				    getID(), 
-				    TaskStateMessage.FAILED, 
-				    "Unrecognised dispatch failure for a task within the workflow.");	
+	    logger.error(ex);
+	    fail("Task " + getTaskId() + " in flow " + getFlow().getFlowId() + " failed.  " + ex.getMessage());
+	}	
     }
 
     /**
@@ -197,9 +193,11 @@ public class ProcessorTask extends TavernaTask{
 	// Gather data from the inputs to build the input map
 	Map inputMap = new HashMap();
 	Map outputMap = null;
-	for (int i=0; i<getParents().length; i++) {
-	    if (getParents()[i] instanceof PortTask) {
-		PortTask inputPortTask = (PortTask)getParents()[i];
+	for (Iterator i = getParents().iterator(); i.hasNext();) {
+	    Task task = (Task) i.next();
+            
+            if (task instanceof PortTask) {
+		PortTask inputPortTask = (PortTask) task;
 		DataThing dataThing = inputPortTask.getData();
 		String portName = inputPortTask.getScuflPort().getName();
 		inputMap.put(portName, dataThing);
@@ -214,9 +212,10 @@ public class ProcessorTask extends TavernaTask{
 	Set alreadyStoredThings = new HashSet();
 	// Iterate over the children, pushing data into the port tasks
 	// as appropriate.
-	for (int i = 0; i < getChildren().length; i++) {
-	    if (getChildren()[i] instanceof PortTask) {
-		PortTask outputPortTask = (PortTask)getChildren()[i];
+	for (Iterator i = getChildren().iterator(); i.hasNext();) {
+	    Task task = (Task) i.next();
+            if (task instanceof PortTask) {
+		PortTask outputPortTask = (PortTask) task;
 		String portName = outputPortTask.getScuflPort().getName();
 		DataThing resultDataThing = (DataThing)outputMap.get(portName);
 		if (resultDataThing != null) {
@@ -424,10 +423,11 @@ public class ProcessorTask extends TavernaTask{
      * Check whether iteration is required
      */
     private synchronized boolean iterationRequired() {
-	for (int i = 0; i < getParents().length; i++) {
-	    if (getParents()[i] instanceof PortTask) {
+	for (Iterator i = getParents().iterator(); i.hasNext();) {
+            Task task = (Task) i.next();
+            if (task instanceof PortTask) {
 		// For each input port task check the types
-		PortTask inputPortTask = (PortTask)getParents()[i];
+		PortTask inputPortTask = (PortTask) task;
 		String portName = inputPortTask.getScuflPort().getName();
 		DataThing dataThing = inputPortTask.getData();
 		String dataType = dataThing.getSyntacticType().split("\\'")[0];
@@ -444,7 +444,6 @@ public class ProcessorTask extends TavernaTask{
      * Invoke with iteration
      */
     private synchronized Map invokeWithIteration(Map inputMap) throws TaskExecutionException {
-
 	if (getProcessor().getIterationStrategy() == null) {
 	    // No explicit strategy specified
 	    eventList.add(new ConstructingIterator());
@@ -460,11 +459,12 @@ public class ProcessorTask extends TavernaTask{
 	// Iterate over all parent tasks to get the original port
 	// types, use this to determine how deeply into the collection
 	// we need to drill
-	for (int i = 0; i < getParents().length; i++) {
-	    if (getParents()[i] instanceof PortTask) {
+	for (Iterator i = getParents().iterator(); i.hasNext();) {
+            Task task = (Task) i.next();
+	    if (task instanceof PortTask) {
 		// Found an input port
-		String portName = ((PortTask)getParents()[i]).getScuflPort().getName();
-		String portType = ((PortTask)getParents()[i]).getScuflPort().getSyntacticType();
+		String portName = ((PortTask) task).getScuflPort().getName();
+		String portType = ((PortTask) task).getScuflPort().getSyntacticType();
 		DataThing portData = (DataThing)inputMap.get(portName);
 		try {
 		    BaclavaIterator iterator = portData.iterator(portType);
@@ -501,14 +501,15 @@ public class ProcessorTask extends TavernaTask{
 	
 	// Create the output container
 	Map outputMap = new HashMap();
-	for (int i = 0; i < getChildren().length; i++) {
-	    if (getChildren()[i] instanceof PortTask) {
-		PortTask outputPortTask = (PortTask)getChildren()[i];
+	for (Iterator i = getChildren().iterator(); i.hasNext();) {
+	    Task task = (Task) i.next();
+            if (task instanceof PortTask) {
+		PortTask outputPortTask = (PortTask) task;
 		// Create data things with array lists inside them.
 		outputMap.put(outputPortTask.getScuflPort().getName(), new DataThing(new ArrayList()));
 	    }
 	}
-	
+
 	// Do the iteration
 	int currentIteration = 0;
 	int totalIterations = rootNode.size();
@@ -537,7 +538,7 @@ public class ProcessorTask extends TavernaTask{
 
     
     //protected static final String PROVENANCE_NAMESPACE = "http://www.it-innovation.soton.ac.uk/taverna/workflow/enactor/provenance";
-    protected static final Namespace PROVENANCE_NAMESPACE = TavernaFlowReceipt.provNS;
+    protected static final Namespace PROVENANCE_NAMESPACE = provNS;
     protected Processor proc = null;
     protected LogLevel logLevel = null;	
     private Logger logger = Logger.getLogger(ProcessorTask.class);
@@ -549,8 +550,8 @@ public class ProcessorTask extends TavernaTask{
      * Default Constructor
      * @param id
      */
-    public ProcessorTask(String id,Processor p,LogLevel l,String userID, String userCtx) {
-        super(id);
+    public ProcessorTask(String id, Flow flow, Processor p, LogLevel l, String userID, String userCtx) {
+        super(id, flow);
 	proc = p;
 	this.logLevel = new LogLevel(l.getLevel());
 	this.userID = userID;
@@ -582,23 +583,11 @@ public class ProcessorTask extends TavernaTask{
     }
     
     /**
-     * Undertakes any special cancel processing required by Processor tasks
-     */
-    public void cancelConcreteTask() {
-	//no additional processing is undertaken, any running invocations are allowed to
-        //complete normally, any scheduled tasks are cancelled normally in core framework
-    }  
-    
-    /**
      * Retrieves the XScufl Processor object for this task
      * @return the Processor object that this task is an execution shim for
      */
     public Processor getProcessor() {
 	return proc;
-    }
-    
-    public ServiceSelectionCriteria getServiceSelectionCriteria() {
-	return null;
     }
     
     /**
@@ -637,10 +626,6 @@ public class ProcessorTask extends TavernaTask{
 	return faultElement;
     }
     
-    public void cleanUpConcreteTask() {
-	//
-    }
-
     /**
      * Method that actually undertakes a service action. Should be implemented by concrete processors.
      * @return output map containing String->DataThing named pairs, with the key
