@@ -450,6 +450,13 @@ public class ScuflModel
 	}
     }
 
+    /**
+     * Create an internal model event to force an update of the model
+     */
+    public void forceUpdate() {
+	fireModelEvent(new ScuflModelEvent(this, "Forced update"));
+    }	
+
     Thread eventThread = new NotifyThread(this);
     List pendingEventList = new ArrayList();
 

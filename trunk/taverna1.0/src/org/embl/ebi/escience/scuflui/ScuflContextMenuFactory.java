@@ -176,6 +176,7 @@ public class ScuflContextMenuFactory {
 			    if (name != null) {
 				try {
 				    theModel.getWorkflowSourceProcessor().addPort(new OutputPort(theModel.getWorkflowSourceProcessor(), name));
+				    theModel.forceUpdate();
 				}
 				catch (PortCreationException pce) {
 				    JOptionPane.showMessageDialog(null,
@@ -216,7 +217,8 @@ public class ScuflContextMenuFactory {
 									      "");
 			    if (name != null) {
 				try {
-				    theModel.getWorkflowSinkProcessor().addPort(new InputPort(theModel.getWorkflowSinkProcessor(), name));
+				    theModel.getWorkflowSinkProcessor().addPort(new InputPort(theModel.getWorkflowSinkProcessor(), name));				
+				    theModel.forceUpdate();
 				}
 				catch (PortCreationException pce) {
 				    JOptionPane.showMessageDialog(null,
