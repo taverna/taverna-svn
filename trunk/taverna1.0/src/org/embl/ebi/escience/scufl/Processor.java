@@ -80,6 +80,25 @@ public abstract class Processor implements Serializable, Transferable {
     }
     
     /**
+     * Create a standard annotation template for each pair of
+     * bound input / output ports, mostly just to test the
+     * metadata store and browser functionality. Removes any existing
+     * template definitions!
+     */
+    public void generateDefaultAnnotationTemplates() {
+	this.templates = new ArrayList();
+	Port[] boundInputs = getBoundInputPorts();
+	Port[] boundOutputs = getBoundOutputPorts();
+	for (int i = 0; i < boundInputs.length; i++) {
+	    for (int j = 0; j < boundOutputs.length; j++) {
+		Port input = boundInputs[i];
+		Port output = boundOutputs[j];
+		addAnnotationTemplate(AnnotationTemplate.standardTemplate(output,"createdFrom",input));
+	    }
+	}
+    }
+    
+    /**
      * Implements transferable interface
      */
     public Object getTransferData(DataFlavor df) 

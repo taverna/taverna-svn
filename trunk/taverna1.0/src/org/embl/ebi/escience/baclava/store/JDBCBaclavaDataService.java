@@ -19,9 +19,9 @@ import java.io.*;
  * data with a JDBC based relational database.
  * @author Tom Oinn
  */
-public class JDBCBaclavaDataService implements BaclavaDataService {
+public class JDBCBaclavaDataService implements BaclavaDataService, LSIDProvider {
     
-    private String connectionURL, username, password;
+    private String connectionURL, username, password, defaultAuthority;
     
     private List availableConnections, activeConnections;
     
@@ -53,6 +53,11 @@ public class JDBCBaclavaDataService implements BaclavaDataService {
 	catch (Exception ex) {
 	    ex.printStackTrace();
 	}
+	// The default authority string to use for the lsid provider
+	defaultAuthority = props.getProperty("taverna.lsid.providerauthority");
+	if (defaultAuthority == null) {
+	    defaultAuthority = "net.sf.taverna";
+	}
 	connectionURL = props.getProperty("taverna.datastore.jdbc.url");
 	username = props.getProperty("taverna.datastore.jdbc.user");
 	password = props.getProperty("taverna.datastore.jdbc.password");
@@ -83,15 +88,18 @@ public class JDBCBaclavaDataService implements BaclavaDataService {
 			     "                                     rdfstring TEXT NOT NULL,"+
 			     "                                     PRIMARY KEY(id)) TYPE = InnoDB;");
 	    st.executeUpdate("CREATE TABLE IF NOT EXISTS lsid2metadata (lsid CHAR(200) NOT NULL,"+
-			     "                                          id INT UNSIGNED NOT NULL REFERENCES metadata(id),"+
-			     "                                          PRIMARY KEY(lsid)) TYPE = InnoDB;");
+			     "                                          id INT UNSIGNED NOT NULL REFERENCES metadata(id)"+
+			     "                                          ) TYPE = InnoDB;");
 	    st.executeUpdate("CREATE TABLE IF NOT EXISTS datathings (id INT UNSIGNED NOT NULL AUTO_INCREMENT,"+
 			     "                                       thing TEXT NOT NULL,"+
 			     "                                       PRIMARY KEY(id)) TYPE = InnoDB;");
 	    st.executeUpdate("CREATE TABLE IF NOT EXISTS lsid2datathings (lsid CHAR(200) NOT NULL UNIQUE,"+
 			     "                    id INT UNSIGNED NOT NULL REFERENCES datathings(id),"+
 			     "                    reftype ENUM(\"datathing\",\"collection\",\"leaf\"),"+
+			     "                    mimetype CHAR(200),"+
 			     "                    PRIMARY KEY(lsid)) TYPE = InnoDB;");
+	    st.executeUpdate("CREATE TABLE IF NOT EXISTS idcounter (count INT UNSIGNED NOT NULL) TYPE = InnoDB;");
+	    
 	}
 	catch (Exception ex) {
 	    ex.printStackTrace();
@@ -123,6 +131,7 @@ public class JDBCBaclavaDataService implements BaclavaDataService {
 	    st.executeUpdate("DROP TABLE IF EXISTS lsid2datathings");
 	    st.executeUpdate("DROP TABLE IF EXISTS metadata");
 	    st.executeUpdate("DROP TABLE IF EXISTS lsid2metadata");
+	    st.executeUpdate("DROP TABLE IF EXISTS idcounter");
 	}
 	catch (Exception ex) {
 	    ex.printStackTrace();
@@ -131,6 +140,49 @@ public class JDBCBaclavaDataService implements BaclavaDataService {
 	    releaseConnection(con);
 	}
     }
+
+
+    /**
+     * Implement LSIDProvider
+     */
+    public String getID(String namespace) {
+	String prefix = "urn:lsid:"+defaultAuthority+":"+namespace+":";
+	// Fetch the next value from the counter
+	Connection con = getConnectionObject();
+	try {
+	    Statement s = con.createStatement();
+	    //s.executeUpdate("LOCK TABLES idcounter WRITE");
+	    s.executeUpdate("UPDATE idcounter SET count = count + 1");
+	    ResultSet rs = s.executeQuery("SELECT count FROM idcounter");
+	    String suffix = "1";
+	    if (rs.first()) {
+		// Resultset contained a result so return it
+		suffix = rs.getString("count");
+	    }
+	    else {
+		s.executeUpdate("INSERT INTO idcounter (count) VALUES (1)");
+	    }
+	    rs.close();
+	    //s.executeUpdate("UNLOCK TABLES");
+	    s.close();
+	    con.commit();
+	    return prefix+suffix;
+	}
+	catch (SQLException sqle) {
+	    sqle.printStackTrace();
+	    try {
+		con.rollback();
+	    }
+	    catch (SQLException sqle2) {
+		//
+	    }		  
+	    return "NO_IDENTIFIER_ASSIGNED";
+	}
+	finally {
+	    releaseConnection(con);
+	}
+    }
+
 
     /**
      * Store some metadata
@@ -167,6 +219,7 @@ public class JDBCBaclavaDataService implements BaclavaDataService {
 	    }
 	}
 	catch(SQLException sqle) {
+	    sqle.printStackTrace();
 	    try {
 		con.rollback();
 	    }
@@ -205,10 +258,11 @@ public class JDBCBaclavaDataService implements BaclavaDataService {
 		st.executeUpdate();	    
 		st.close();
 		//System.out.println("Stored string : \n"+xmlRepresentation);
-		PreparedStatement st2 = con.prepareStatement("INSERT INTO lsid2datathings (lsid, id, reftype) VALUES (?,LAST_INSERT_ID(),?)");
+		PreparedStatement st2 = con.prepareStatement("INSERT INTO lsid2datathings (lsid, id, reftype, mimetype) VALUES (?,LAST_INSERT_ID(),?,?)");
 		for (Iterator i = lsidMap.keySet().iterator(); i.hasNext();) {
 		    Object o = i.next();
 		    String type = null;
+		    String mimetype = null;
 		    if (o instanceof DataThing) {
 			type = "datathing";
 		    }
@@ -217,9 +271,11 @@ public class JDBCBaclavaDataService implements BaclavaDataService {
 		    }
 		    else {
 			type = "leaf";
+			mimetype = theDataThing.getMostInterestingMIMETypeForObject(o);
 		    }
 		    st2.setString(1,(String)lsidMap.get(o));
 		    st2.setString(2,type);
+		    st2.setString(3,mimetype);
 		    try {
 			st2.executeUpdate();
 			addedAtLeastOneMapping = true;
@@ -365,6 +421,36 @@ public class JDBCBaclavaDataService implements BaclavaDataService {
 
     
     /**
+     * Get the raw mime type for the datathing form of this LSID
+     * or null if the node references isn't a leaf or doesn't
+     * exist.
+     */
+    public String getMIMEType(String LSID) {
+	Connection con = null;
+	try {
+	    con = getConnectionObject();
+	    PreparedStatement p = con.prepareStatement("SELECT mimetype FROM lsid2datathings WHERE lsid = ? AND reftype='leaf'");
+	    p.setString(1, LSID);
+	    ResultSet rs = p.executeQuery();
+	    if (rs.first()==false) {
+		return null;
+	    }
+	    String result = rs.getString("mimetype");
+	    rs.close();
+	    p.close();
+	    return result;
+	}
+	catch (SQLException sqle) {
+	    sqle.printStackTrace();
+	    return null;
+	}
+	finally {
+	    releaseConnection(con);
+	}
+    }
+    
+
+    /**
      * Get the metadata associated with this LSID
      */
     public String getMetadata(String LSID) {
@@ -478,3 +564,4 @@ public class JDBCBaclavaDataService implements BaclavaDataService {
     }
 
 }
+    

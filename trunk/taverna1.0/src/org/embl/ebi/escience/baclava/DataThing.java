@@ -52,6 +52,13 @@ public class DataThing {
     protected HashMap lsid = new HashMap();
     public static LSIDProvider SYSTEM_DEFAULT_LSID_PROVIDER = null;
     
+    // This array contains mime types, when asked for its most
+    // interesting type this list is checked and the first match
+    // returned.
+    private static String[] interestingTypes = new String[]{"text/html","text/xml","text/rtf","text/x-graphviz",
+						   "text/plain","image/png","image/jpeg",
+						   "image/gif"};
+    
     static {
 	// Interrogate the system properties and instantiate
 	// a single static instance of the LSIDProvider
@@ -122,7 +129,7 @@ public class DataThing {
 	// First check the DataThing itself
 	String selfValue = (String)(lsid.get(this));
 	if (selfValue == null || selfValue.equals("")) {
-	    lsid.put(this, provider.getID());
+	    lsid.put(this, provider.getID("datathing"));
 	}
 	// Recursively populate the data object lsid map
 	doInternalLSIDFill(theDataObject, provider);
@@ -130,7 +137,7 @@ public class DataThing {
     private void doInternalLSIDFill(Object o, LSIDProvider provider) {
 	String lsidValue = (String)(lsid.get(o));
 	if (lsidValue == null || lsidValue.equals("")) {
-	    lsid.put(o, provider.getID());
+	    lsid.put(o, provider.getID("datathing"));
 	}
 	if (o instanceof Collection) {
 	    Iterator i = ((Collection)o).iterator();
@@ -247,6 +254,24 @@ public class DataThing {
     public String getSyntacticType() {
 	return getSyntacticTypeForObject(this.theDataObject);
     }
+
+    public String getMostInterestingMIMETypeForObject(Object o) {
+	String typeString = getSyntacticTypeForObject(o);
+	System.out.println("Got types : "+typeString);
+	String mimeTypes = typeString.split("'")[1].toLowerCase();
+	for (int i = 0; i < interestingTypes.length; i++) {
+	    if (mimeTypes.matches(".*"+interestingTypes[i]+".*")) {
+		return interestingTypes[i];
+	    }
+	}
+	try {
+	    return mimeTypes.split(",")[0];
+	}
+	catch (Exception ex) {
+	    return "null";
+	}
+    }
+
 
     public String getSyntacticTypeForObject(Object o) {
 	if (o instanceof Collection) {

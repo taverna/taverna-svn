@@ -17,6 +17,6 @@ public interface LSIDProvider {
      * Return a unique identifier to be used as an LSID
      * or similar
      */
-    public String getID();
+    public String getID(String namespace);
 
 }

@@ -25,8 +25,8 @@
 //      Dependencies        :
 //
 //      Last commit info    :   $Author: mereden $
-//                              $Date: 2004-02-26 13:10:26 $
-//                              $Revision: 1.28 $
+//                              $Date: 2004-03-04 17:39:37 $
+//                              $Revision: 1.29 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 
@@ -59,6 +59,7 @@ import java.util.*;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.Namespace;
+import org.jdom.CDATA;
 import org.jdom.Text;
 import org.jdom.output.XMLOutputter;
 
@@ -436,7 +437,7 @@ public class TavernaFlowReceipt extends WSFlowReceipt implements org.embl.ebi.es
 		for (Iterator j = ((ProcessorTask)tasks[i]).getProvenanceList().iterator(); j.hasNext();) {
 		    String provenanceItem = (String)j.next();
 		    Element item = new Element("item", provNS);
-		    item.setText(provenanceItem);
+		    item.addContent(new CDATA(provenanceItem));
 		    prov.addContent(item);
 		}
 	    }

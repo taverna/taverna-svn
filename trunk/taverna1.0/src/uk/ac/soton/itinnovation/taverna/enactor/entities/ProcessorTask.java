@@ -25,8 +25,8 @@
 //      Dependencies        :
 //
 //      Last commit info    :   $Author: mereden $
-//                              $Date: 2004-03-03 17:28:14 $
-//                              $Revision: 1.39 $
+//                              $Date: 2004-03-04 17:39:37 $
+//                              $Revision: 1.40 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 package uk.ac.soton.itinnovation.taverna.enactor.entities;
@@ -114,6 +114,9 @@ public class ProcessorTask extends TavernaTask{
      */
     private synchronized void schedule(Processor theProcessor) {
 	activeProcessor = theProcessor;
+	
+	activeProcessor.generateDefaultAnnotationTemplates();
+
 	activeInputMapping = null;
 	activeOutputMapping = null;
 	eventList.add(new ProcessScheduled(theProcessor));
@@ -124,6 +127,9 @@ public class ProcessorTask extends TavernaTask{
      */
     private synchronized void schedule(AlternateProcessor theAlternate) {
 	activeProcessor = theAlternate.getProcessor();
+	
+	activeProcessor.generateDefaultAnnotationTemplates();
+	
 	activeInputMapping = theAlternate.getInputMapping();
 	activeOutputMapping = new HashMap();
 	// invert the mapping contained by the alternates object!
@@ -225,9 +231,9 @@ public class ProcessorTask extends TavernaTask{
 		    if (ProcessorTask.STORE != null) {
 			try {
 			    // Avoid duplicates
-			    if (alreadyStoredThings.contains(resultDataThing)==false) {
-				STORE.storeDataThing(resultDataThing,true);
-				alreadyStoredThings.add(resultDataThing);
+			    if (alreadyStoredThings.contains(outputPortTask.getData())==false) {
+				STORE.storeDataThing(outputPortTask.getData(),true);
+				alreadyStoredThings.add(outputPortTask.getData());
 			    }
 			}
 			catch (DuplicateLSIDException dple) {

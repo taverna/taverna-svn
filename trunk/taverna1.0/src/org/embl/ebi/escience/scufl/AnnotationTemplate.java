@@ -37,11 +37,11 @@ public class AnnotationTemplate {
      */
     public static AnnotationTemplate standardTemplate(Port subject, String verb, Port object) {
 	AnnotationTemplate target = new AnnotationTemplate();
-	target.addLiteral("<rdf:Description xmlns:rdf=\""+RDF_NS+"\"rdf:about=\"");
+	target.addLiteral("<rdf:Description xmlns:rdf=\""+RDF_NS+"\" rdf:about=\"");
 	target.addPortReference(subject);
-	target.addLiteral("\"><"+verb+" rdf:resource=\"");
+	target.addLiteral("\">\n  <"+verb+" rdf:resource=\"");
 	target.addPortReference(object);
-	target.addLiteral("\"/></rdf:Description>\n");
+	target.addLiteral("\"/>\n</rdf:Description>\n");
 	return target;
     }
 
@@ -66,6 +66,7 @@ public class AnnotationTemplate {
      * values. Return null if any of the values are unknown
      */
     public String getTextAnnotation(Map inputs, Map outputs) {
+	System.out.println("Attempting to create template :\n  "+inputs.toString()+"\n"+"  "+outputs.toString());
 	StringBuffer sb = new StringBuffer();
 	for (Iterator i = templateComponents.iterator(); i.hasNext();) {
 	    Object component = i.next();
@@ -87,6 +88,7 @@ public class AnnotationTemplate {
 		}
 	    }
 	}
+	System.out.println("Created template : \n  "+sb.toString());
 	return sb.toString();
     }
 

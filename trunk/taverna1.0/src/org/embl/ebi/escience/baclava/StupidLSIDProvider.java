@@ -14,7 +14,6 @@ package org.embl.ebi.escience.baclava;
  */
 public class StupidLSIDProvider implements LSIDProvider {
     
-    static String baseString = "urn:lsid:net.sf.taverna:datathing:";
     static int count = 0;
     
     /**
@@ -29,8 +28,8 @@ public class StupidLSIDProvider implements LSIDProvider {
      * Returns a particularly dumb implementation
      * of a unique identifier
      */
-    public String getID() {
-	return baseString+(count++);
+    public String getID(String namespace) {
+	return "urn:lsid:net.sf.taverna:"+namespace+":"+(count++);
     }
 
 }

@@ -26,8 +26,8 @@
 //      Dependencies        :
 //
 //      Last commit info    :   $Author: mereden $
-//                              $Date: 2004-03-03 17:28:14 $
-//                              $Revision: 1.24 $
+//                              $Date: 2004-03-04 17:39:37 $
+//                              $Revision: 1.25 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 
@@ -36,6 +36,7 @@ package uk.ac.soton.itinnovation.taverna.enactor.entities;
 import org.apache.log4j.Logger;
 import org.embl.ebi.escience.baclava.DataThing;
 import org.embl.ebi.escience.scufl.InputPort;
+import org.embl.ebi.escience.scufl.OutputPort;
 import org.embl.ebi.escience.scufl.Port;
 import org.embl.ebi.escience.scufl.SemanticMarkup;
 import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.entities.graph.GraphNode;
@@ -148,17 +149,33 @@ public class PortTask extends TavernaTask {
 	}
 	// Copy any MIME types available from the markup object
 	// on the Scufl port into the MIME container in the
-	// DataThing
-	SemanticMarkup portMarkup = getScuflPort().getMetadata();
-	String[] portMIMETypes = portMarkup.getMIMETypes();
-	for (int i = 0; i < portMIMETypes.length; i++) {
-	    System.out.println("Adding mime type "+portMIMETypes[i]+" to "+((Object)theDataThing).toString());
-	    this.theDataThing.getMetadata().addMIMEType(portMIMETypes[i]);
+	// DataThing. This will only happen on input ports as 
+	// these are the only workflow entities that can support
+	// the additional annotation at the moment.
+	if (getScuflPort() instanceof OutputPort) {
+	    PortTask childPortTask = null;
+	    GraphNode[] g = getChildren();
+	    for (int i = 0; i < g.length; i++) {
+		if (g[i] instanceof PortTask) {
+		    childPortTask = (PortTask)g[i];
+		    break;
+		}
+	    }
+	    if (childPortTask!=null) {
+		Port targetMetadataPort = childPortTask.getScuflPort();
+		SemanticMarkup portMarkup = targetMetadataPort.getMetadata();
+		String[] portMIMETypes = portMarkup.getMIMETypes();
+		for (int i = 0; i < portMIMETypes.length; i++) {
+		    System.out.println("Adding mime type "+portMIMETypes[i]+" to "+((Object)theDataThing).toString());
+		    this.theDataThing.getMetadata().addMIMEType(portMIMETypes[i]);
+		}
+		// Copy any semantic markup into the markup object as well
+		this.theDataThing.getMetadata().setSemanticType(portMarkup.getSemanticType());
+	    }
 	}
-	// Copy any semantic markup into the markup object as well
-	this.theDataThing.getMetadata().setSemanticType(portMarkup.getSemanticType());
 	// Fully populate the dataThing with LSID values if it doesn't already have them
 	this.theDataThing.fillLSIDValues();
+	// If this is a workflow source then store the data thing.
 	if (getScuflPort().isSource()) {
 	    if (ProcessorTask.STORE != null) {
 		try {

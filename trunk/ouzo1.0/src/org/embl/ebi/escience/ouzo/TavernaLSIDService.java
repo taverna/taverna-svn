@@ -120,6 +120,7 @@ public class TavernaLSIDService extends SimpleResolutionService {
     //private static final String I3C_FASTA= "urn:lsid:i3c.org:formats:fasta";
     private static final String TAVERNA_DATATHING = "urn:lsid:net.sf.taverna:types:datathing";
     private static final String TAVERNA_RAW = "urn:lsid:net.sf.taverna:types:raw";
+    private static final String TAVERNA_MIME_PREFIX = "urn:lsid:net.sf.taverna:mimetypes:";
 
     /**
      * Get the metadata for a particular LSID
@@ -156,7 +157,23 @@ public class TavernaLSIDService extends SimpleResolutionService {
 	}
 	else if (request.getLsid().getNamespace().equals("raw")) {
 	    appendTripleResource(result, request.getLsid().getLsid(), "rdf:type", I3C_CONTENT);
-	    appendTripleResource(result, request.getLsid().getLsid(), "dc:format", TAVERNA_RAW);
+	    try {
+		LSID datathingFormatLSID = new LSID(request.getLsid().getAuthority().getAuthority(),
+						    "datathing",
+						    request.getLsid().getObject(),
+						    request.getLsid().getRevision());
+		String mime = ((JDBCBaclavaDataService)theDataService).getMIMEType(datathingFormatLSID.getLsid());
+		if (mime == null) {
+		    throw new Exception();
+		}
+		String[] mimeParts = mime.split("/");
+		// Avoid the '/' character in LSID, it's not valid
+		mime = mimeParts[0]+"."+mimeParts[1];
+		appendTripleResource(result, request.getLsid().getLsid(), "dc:format", TAVERNA_MIME_PREFIX+mime);
+	    }
+	    catch (Exception ex) {
+		appendTripleResource(result, request.getLsid().getLsid(), "dc:format", TAVERNA_RAW);
+	    }
 	}
 	String additionalMetadata = theDataService.getMetadata(request.getLsid().getLsid());
 	if (additionalMetadata!=null) {
@@ -165,7 +182,7 @@ public class TavernaLSIDService extends SimpleResolutionService {
 	result.append("</rdf:RDF>");
 	System.out.println(result.toString());
 	InputStream metadataStream = new ByteArrayInputStream(result.toString().getBytes());
-	return new MetadataResponse(metadataStream, null);
+	return new MetadataResponse(metadataStream, (long)10000);
     }
     private void appendTripleResource(StringBuffer src, String subj, String pred, String obj) {
 	src.append("<rdf:Description rdf:about=\""+subj+"\">\n");
