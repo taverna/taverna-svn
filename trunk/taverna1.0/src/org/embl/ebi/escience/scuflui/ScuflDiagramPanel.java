@@ -102,6 +102,10 @@ public class ScuflDiagramPanel extends JPanel
 	displayPolicyChooser.addActionListener(new ActionListener() {
 		public void actionPerformed(ActionEvent e) {
 		    diagram.setPortDisplay(displayPolicyChooser.getSelectedIndex());
+		    // Read the new alignment from the diagram, some port settings
+		    // may change this and we need to listen otherwise we end up
+		    // with an inconsistant ui
+		    alignmentChooser.setSelectedIndex(diagram.getLRAlignment()?1:0);
 		    ScuflDiagramPanel.this.doLayout();
 		    ScuflDiagramPanel.this.repaint();
 		}

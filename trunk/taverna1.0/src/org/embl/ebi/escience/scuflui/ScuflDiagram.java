@@ -67,6 +67,10 @@ public class ScuflDiagram extends JComponent
 	}
     }
 
+    public boolean getLRAlignment() {
+	return this.dot.getAlignment();
+    }
+
     public String getDot() {
 	return this.dot.getDot();
     }

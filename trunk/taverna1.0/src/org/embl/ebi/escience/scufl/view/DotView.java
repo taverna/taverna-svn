@@ -55,6 +55,14 @@ public class DotView implements ScuflModelEventListener, java.io.Serializable {
 	    this.lralign = alignment;
 	}
     }
+    
+    /**
+     * Get the alignment, true is equivalent to left to 
+     * right, false being top to bottom.
+     */
+    public boolean getAlignment() {
+	return this.lralign;
+    }
 
     /**
      * Define whether we are looking at all,
@@ -67,6 +75,9 @@ public class DotView implements ScuflModelEventListener, java.io.Serializable {
 	this.portDisplay = policy;
 	if (policy == ALL) {
 	    this.lralign = true;
+	}
+	else {
+	    this.lralign = false;
 	}
     }
 
@@ -203,10 +214,10 @@ public class DotView implements ScuflModelEventListener, java.io.Serializable {
 		// Name of the node
 		if (this.portDisplay == DotView.ALL) {
 		    if (p.getAlternatesList().isEmpty()) {
-			dot.append("{"+p.getName()+(p.isOffline()?"[o]":"")+"}|{");
+			dot.append("{"+p.getName()+(p.isOffline()?"":"")+"}|{");
 		    }
 		    else {
-			dot.append("{"+p.getName()+(p.isOffline()?"[o]":"")+"\\n"+p.getAlternatesList().size()+" alternate");
+			dot.append("{"+p.getName()+(p.isOffline()?"":"")+"\\n"+p.getAlternatesList().size()+" alternate");
 		    if (p.getAlternatesList().size()!=1) {
 			dot.append("s");
 		    }
@@ -236,10 +247,10 @@ public class DotView implements ScuflModelEventListener, java.io.Serializable {
 		
 		if (this.portDisplay == DotView.BOUND) {
 		    if (p.getAlternatesList().isEmpty()) {
-			dot.append(p.getName()+(p.isOffline()?"[o]":"")+"|");
+			dot.append(p.getName()+(p.isOffline()?"":"")+"|");
 		    }
 		    else {
-			dot.append(p.getName()+(p.isOffline()?"[o]":"")+"\\n"+p.getAlternatesList().size()+" alternate");
+			dot.append(p.getName()+(p.isOffline()?"":"")+"\\n"+p.getAlternatesList().size()+" alternate");
 			if (p.getAlternatesList().size()!=1) {
 			    dot.append("s");
 			}
@@ -269,7 +280,7 @@ public class DotView implements ScuflModelEventListener, java.io.Serializable {
 	    else {
 		// Not generating the port view, just append the name of the
 		// node.
-		dot.append(p.getName()+(p.isOffline()?"[o]":""));
+		dot.append(p.getName()+(p.isOffline()?"":""));
 	    }
 	    // Close the label
 	    dot.append("\"\n");

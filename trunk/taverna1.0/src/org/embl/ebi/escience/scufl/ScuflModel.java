@@ -77,12 +77,16 @@ public class ScuflModel
 		}
 		catch (Exception ex) {
 		    // Re-load the workflow in offline mode
+		    this.clear();
 		    setOffline(true);
 		    try {
 			XScuflParser.populate(xscuflText, this, null);
 		    }
 		    catch (Exception e) {
-			//
+			System.out.println("--------------------------");
+			e.printStackTrace();
+			System.out.println("--------------------------");
+
 		    }
 		    SetOnlineException soe = new SetOnlineException("Unable to go online.");
 		    soe.initCause(ex);
