@@ -24,9 +24,9 @@
 //      Created for Project :   MYGRID
 //      Dependencies        :
 //
-//      Last commit info    :   $Author: mereden $
-//                              $Date: 2003-06-05 13:11:55 $
-//                              $Revision: 1.7 $
+//      Last commit info    :   $Author: dmarvin $
+//                              $Date: 2003-06-05 14:20:05 $
+//                              $Revision: 1.8 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 package uk.ac.soton.itinnovation.taverna.enactor.entities;
@@ -154,11 +154,11 @@ public abstract class ProcessorTask extends TavernaTask{
 	    // Iterate over all the maps in the input list
 	    
 	    for (int i = 0; i < inputList.size(); i++) {
-		Map inputMap = (Map)inputList.get(i);
-		// Invoke with the appropriate input map
-		// Put result parts in the output map.
-		
-		
+				Map inputMap = (Map)inputList.get(i);
+				// Invoke with the appropriate input map
+				// Put result parts in the output map.
+				Map outputMap = execute(inputMap);
+				outputList.add(outputMap);
 	    }
 
 	    // Check whether there was any iteration
@@ -186,27 +186,33 @@ public abstract class ProcessorTask extends TavernaTask{
 		    for (int j = 0; j < outputSizes; j++) {
 			// Populate the partData array from the data 
 			// in each output part.
-			try {
-			    Map row = (Map)outputList.get(j);
-			    Part thePart = (Part)row.get(partName);
-			    Object data = thePart.getValue();
-			    partData[j] = data;
-			}
-			catch (Exception e) {
-			    // TODO - Return a fault code
-			}
-		    }
-		    // Now have an array populated with the appropriate data.
-		    // TODO - Create the Part object and put it into the appropriate output port task
-		    Part thePart = new Part(-1, partName, partType, partData);
-		    PortTask pt = (PortTask)outputPortTaskMap.get(thePart.getName());
-		    pt.setData(thePart);
-		}
+					try {
+							Map row = (Map)outputList.get(j);
+							Part thePart = (Part)row.get(partName);
+							Object data = thePart.getValue();
+							partData[j] = data;
+						}
+						catch (Exception e) {
+							// TODO - Return a fault code
+							return new TaskStateMessage(getParentFlow.getID(), getID(), TaskStateMessage.FAILED,"Unable to obtain part data");
+							logger.error(e);
+						}
+					}
+					// Now have an array populated with the appropriate data.
+					// TODO - Create the Part object and put it into the appropriate output port task
+					Part thePart = new Part(-1, partName, partType, partData);
+					PortTask pt = (PortTask)outputPortTaskMap.get(thePart.getName());
+					pt.setData(thePart);
+				}
 	    }
-
-	    return execute();
+			return new TaskStateMessage(getParentFlow.getID(), getID(), TaskStateMessage.COMPLETE,"Task completed successfully");
+	    
 
 	    //return result;
+	}
+	catch (TaskExecutionException ex) {
+		logger.error(ex);
+			return new TaskStateMessage(getParentFlow().getID(),getID(), TaskStateMessage.FAILED,ex.getMessage());
 	}
 	catch (Exception ex){
 	    logger.error(ex);
@@ -220,8 +226,9 @@ public abstract class ProcessorTask extends TavernaTask{
     
     /**
      * Method that actually undertakes a service action. Should be implemented by concrete processors.
+		 * @return output map containing part name / value pairs.
      */
-    protected abstract uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.eventservice.TaskStateMessage execute();
+    protected abstract java.util.Map execute(Map inputMap) throws TaskExecutionException;
 }
 /**
  * Contains the current inner state of the input model
