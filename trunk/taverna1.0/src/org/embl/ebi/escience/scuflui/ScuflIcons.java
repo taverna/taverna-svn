@@ -16,20 +16,12 @@ import javax.swing.ImageIcon;
  */
 public class ScuflIcons {
 
-    public static ImageIcon wsdlIcon, soaplabIcon, talismanIcon, inputIcon, outputIcon, inputPortIcon, outputPortIcon, dataLinkIcon, constraintIcon, deleteIcon, zoomIcon, wsdlFactoryIcon, soaplabFactoryIcon, talismanFactoryIcon, webIcon, openIcon, runIcon, refreshIcon, workflowIcon, workflowFactoryIcon;
+    public static ImageIcon inputIcon, outputIcon, inputPortIcon, outputPortIcon, dataLinkIcon, constraintIcon, deleteIcon, zoomIcon, webIcon, openIcon, runIcon, refreshIcon;
 
     static {
 	// Load the image files found in this package into the class.
 	try {
 	    Class c = Class.forName("org.embl.ebi.escience.scuflui.ScuflIcons");
-	    wsdlIcon = new ImageIcon(c.getResource("wsdl.gif"));
-	    talismanIcon = new ImageIcon(c.getResource("talisman.gif"));
-	    soaplabIcon = new ImageIcon(c.getResource("soaplab.gif"));
-	    workflowIcon = new ImageIcon(c.getResource("workflow.gif"));
-	    wsdlFactoryIcon = wsdlIcon;
-	    talismanFactoryIcon = talismanIcon;
-	    soaplabFactoryIcon = soaplabIcon;
-	    workflowFactoryIcon = workflowIcon;
 	    inputPortIcon = new ImageIcon(c.getResource("inputport.gif"));
 	    outputPortIcon = new ImageIcon(c.getResource("outputport.gif"));
 	    dataLinkIcon = new ImageIcon(c.getResource("datalink.gif"));

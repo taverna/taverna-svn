@@ -61,8 +61,12 @@ public class ProcessorHelper {
     static Map xmlHandlerForTagName = new HashMap();
     static Map tagNameForScavenger = new HashMap();
 
+    static ImageIcon unknownProcessorIcon;
+
     static {
 	try {
+	    // Load the 'unknown processor' image icon
+	    unknownProcessorIcon = new ImageIcon(ClassLoader.getSystemResource("org/embl/ebi/escience/scuflui/unknownprocessor.gif"));
 	    // Load up the values from any taverna.properties files located
 	    // by the class resource loader.
 	    Enumeration en = ClassLoader.getSystemResources("taverna.properties");
@@ -177,7 +181,13 @@ public class ProcessorHelper {
      */
     public static ImageIcon getIconForTagName(String tagName) {
 	//System.out.println("Request for icon for : "+tagName);
-	return (ImageIcon)iconForTagName.get(tagName);
+	ImageIcon icon = (ImageIcon)iconForTagName.get(tagName);
+	if (icon == null) { 
+	    return unknownProcessorIcon;
+	}
+	else {
+	    return icon;
+	}
     }
 
     /**
@@ -209,7 +219,7 @@ public class ProcessorHelper {
 		return icon;
 	    }
 	}
-	return null;
+	return unknownProcessorIcon;
     }
 
     /**
