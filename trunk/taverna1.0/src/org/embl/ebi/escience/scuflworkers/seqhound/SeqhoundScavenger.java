@@ -61,7 +61,7 @@ public class SeqhoundScavenger extends Scavenger {
 			     String jseqremServer,
 			     String jseqremPath)
 	throws ScavengerCreationException {
-	super("Seqhound @ "+server);
+	super("SeqHound @ "+server);
 	// Fetch all the methods within the org.blueprint.seqhound.SeqHound class
 	Class theClass = org.blueprint.seqhound.SeqHound.class;
 	Method[] methods = theClass.getDeclaredMethods();

@@ -21,6 +21,7 @@ import org.embl.ebi.escience.scuflworkers.talisman.TalismanProcessor;
 import org.embl.ebi.escience.scuflworkers.talisman.TalismanScavenger;
 import org.embl.ebi.escience.scuflworkers.wsdl.WSDLBasedProcessor;
 import org.embl.ebi.escience.scuflworkers.wsdl.WSDLBasedScavenger;
+import org.embl.ebi.escience.scuflworkers.seqhound.SeqhoundScavenger;
 import org.embl.ebi.escience.scuflworkers.biomoby.*;
 
 import org.jdom.output.*;
@@ -277,6 +278,7 @@ public class ScavengerTree extends JTree
 	}
 	
 	public void run() {
+	    
 	    //String wsdlURLList = System.getProperty("taverna.defaultwsdl");
 	    if (wsdlURLList != null) {
 		String[] urls = wsdlURLList.split("\\s*,\\s*");
@@ -314,7 +316,16 @@ public class ScavengerTree extends JTree
 			sce.printStackTrace();
 		    }
 		}
+	    } 
+
+	    // Add the seqhound scavenger to the end of the list
+	    try {
+		scavengerTree.addScavenger(new SeqhoundScavenger());
 	    }
+	    catch (ScavengerCreationException sce) {
+		sce.printStackTrace();
+	    }
+
 	    scavengerTree.setAllNodesExpanded();
 	}
     }
