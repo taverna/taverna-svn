@@ -144,4 +144,7 @@ public class SeqhoundProcessor extends Processor {
 	return this.config;
     }
 
+    public String getResourceHost() {
+	return this.server;
+    }
 }

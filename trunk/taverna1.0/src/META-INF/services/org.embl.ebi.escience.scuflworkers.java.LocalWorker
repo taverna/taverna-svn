@@ -19,6 +19,7 @@ org.embl.ebi.escience.scuflworkers.java.StringSetUnion = text:String list union
 org.embl.ebi.escience.scuflworkers.java.StringConcat = text:Concatenate two strings
 org.embl.ebi.escience.scuflworkers.java.TestAlwaysFailingProcessor = test:TEST - always fails
 org.embl.ebi.escience.scuflworkers.java.SplitByRegex = text:Split string into string list by regular expression
+org.embl.ebi.escience.scuflworkers.java.PadNumber = text:Pad numeral with leading 0s
 org.embl.ebi.escience.scuflworkers.java.SendEmail = net:Send an email
 org.embl.ebi.escience.scuflworkers.biomoby.CreateMobyData = moby:Create moby data
 org.embl.ebi.escience.scuflworkers.biomoby.ExtractMobyData = moby:Parse moby data

@@ -7,6 +7,7 @@ import org.embl.ebi.escience.baclava.*;
 import org.embl.ebi.escience.scuflworkers.wsdl.WSDLBasedProcessor;
 import org.embl.ebi.escience.scuflworkers.soaplab.SoaplabProcessor;
 import org.embl.ebi.escience.scuflworkers.biomoby.BiomobyProcessor;
+import org.embl.ebi.escience.scuflworkers.seqhound.SeqhoundProcessor;
 
 /**
  * A utility class containing a single static method which
@@ -165,11 +166,61 @@ public class WorkflowSummaryAsHTML {
 		    sb.append("</td></tr>");
 		}
 	    }
-	    
+
+	    // Do all seqhound installations within this host
+	    temp = new HashSet();
+	    for (Iterator j = usageList.iterator(); j.hasNext(); ) {
+		Object o = j.next();
+		if (o instanceof SeqhoundProcessor) {
+		    temp.add(o);
+		}
+	    }
+	    SeqhoundProcessor sq[] = (SeqhoundProcessor[])temp.toArray(new SeqhoundProcessor[0]);
+	    Map seqhoundLocations = new HashMap();
+	    for (int j = 0; j < sq.length; j++) {
+		String seqhoundLocation = sq[j].getPath();
+		if (seqhoundLocations.containsKey(seqhoundLocation) == false) {
+		    seqhoundLocations.put(seqhoundLocation, new HashMap());
+		}
+		Map nameToProcessorNames = (Map)seqhoundLocations.get(seqhoundLocation);
+		String methodName = "<font color=\"purple\">"+sq[j].getMethodName()+"</font>";
+		if (nameToProcessorNames.containsKey(methodName) == false) {
+		    nameToProcessorNames.put(methodName, new HashSet());
+		}
+		Set processorNames = (Set)nameToProcessorNames.get(methodName);
+		processorNames.add(sq[j].getName());
+	    }
+	    for (Iterator j = seqhoundLocations.keySet().iterator(); j.hasNext(); ) {
+		String location = (String)j.next();
+		Map nameToProcessorName = (Map)seqhoundLocations.get(location);
+		int rows = 2+nameToProcessorName.size();
+		sb.append("<tr>");
+		sb.append("<td width=\"80\" valign=\"top\" rowspan=\""+rows+"\" bgcolor=\"#2f25fa\">SeqHound</td>");
+		sb.append("<td colspan=\"2\" bgcolor=\"2f25fa\">Service rooted at <em>"+location+"</em></td>");
+		sb.append("</tr>");
+		sb.append("<tr><td bgcolor=\"#eeeedd\">Method name</td><td bgcolor=\"#eeeedd\">Processors</td></tr>");
+		for (Iterator k = nameToProcessorName.keySet().iterator(); k.hasNext();) {
+		    String appName = (String)k.next();
+		    Set processorNames = (Set)nameToProcessorName.get(appName);
+		    sb.append("<tr>");
+		    sb.append("<td>"+appName+"</td>");
+		    sb.append("<td>");
+		    for (Iterator l = processorNames.iterator(); l.hasNext();) {
+			sb.append((String)l.next());
+			if (l.hasNext()) {
+			    sb.append(", ");
+			}
+		    }
+		    sb.append("</td></tr>");
+		}
+	    }
+
+
 	    for (Iterator j = usageList.iterator(); j.hasNext(); ) {
 		Processor p = (Processor)j.next();
 		if (p instanceof WSDLBasedProcessor == false &&
-		    p instanceof SoaplabProcessor == false) {
+		    p instanceof SoaplabProcessor == false &&
+		    p instanceof SeqhoundProcessor == false) {
 		    sb.append("<tr>");
 		    if (p instanceof BiomobyProcessor) {
 			sb.append("<td bgcolor=\"#ffd200\">Biomoby</td>");
