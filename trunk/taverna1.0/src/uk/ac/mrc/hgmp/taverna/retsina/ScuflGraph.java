@@ -91,7 +91,8 @@ public class ScuflGraph extends JGraph
       {
         public void mousePressed(MouseEvent e) 
         {
-          if (e.getClickCount() == 2) {
+          if (e.getClickCount() == 2) 
+          {
             // Get Cell under Mousepointer
             int x = e.getX(), y = e.getY();
             Object cell = getPortForLocation(x, y);
@@ -101,6 +102,12 @@ public class ScuflGraph extends JGraph
               String lab = convertValueToString(cell);
               JTextField textField = new JTextField(10);
 
+              String value = null;
+              if(dataSet.dataContains((Port)cell))
+                value = dataSet.getValue((Port)cell);
+
+              System.out.println("VALUE "+value);
+   
               String s = (String)JOptionPane.showInputDialog(
                                 null, "Value of "+lab,
                                 lab,
@@ -109,50 +116,52 @@ public class ScuflGraph extends JGraph
                                 "");                  
 
               System.out.println(lab+" = "+s);
-              if( s != null )
-                dataSet.addData(lab,"string",s);
-
-              // add input port & data constraint
-              try
+              if( s != null && !dataSet.dataContains((Port)cell) )
               {
-                Processor sinkProcessor = scuflModel.getWorkflowSinkProcessor();
-                Processor sourceProcessor = scuflModel.getWorkflowSourceProcessor();
+                dataSet.addData(lab,"string",s,(Port)cell);
 
-                org.embl.ebi.escience.scufl.InputPort input = null;
-                OutputPort output = null;
-                if( cell instanceof ScuflInputPort)         // source
+                // add input port & data constraint
+                try
                 {
-                  ScuflInputPort sip = (ScuflInputPort)cell;
-                  input = (org.embl.ebi.escience.scufl.InputPort)sip.getScuflPort();
-                  sinkProcessor.addPort(input);
+                  Processor sinkProcessor = scuflModel.getWorkflowSinkProcessor();
+                  Processor sourceProcessor = scuflModel.getWorkflowSourceProcessor();
+  
+                  org.embl.ebi.escience.scufl.InputPort input = null;
+                  OutputPort output = null;
+                  if( cell instanceof ScuflInputPort)         // source
+                  {
+                    ScuflInputPort sip = (ScuflInputPort)cell;
+                    input = (org.embl.ebi.escience.scufl.InputPort)sip.getScuflPort();
+                    sinkProcessor.addPort(input);
 
-                  output = new OutputPort(sourceProcessor,lab);
-                  sourceProcessor.addPort(output);
+                    output = new OutputPort(sourceProcessor,lab);
+                    sourceProcessor.addPort(output);
+                  }
+                  else if ( cell instanceof ScuflOutputPort)  // sink
+                  {
+                    ScuflOutputPort sip = (ScuflOutputPort)cell;
+                    output = (org.embl.ebi.escience.scufl.OutputPort)sip.getScuflPort();
+                    sourceProcessor.addPort(output);
+  
+                    input = new InputPort(sinkProcessor,lab);
+                    sinkProcessor.addPort(input);
+                  }
+
+                  DataConstraint dc = new DataConstraint(scuflModel, output, input);
+                  scuflModel.addDataConstraint(dc);
                 }
-                else if ( cell instanceof ScuflOutputPort)  // sink
+                catch(DuplicatePortNameException dpne)
                 {
-                  ScuflOutputPort sip = (ScuflOutputPort)cell;
-                  output = (org.embl.ebi.escience.scufl.OutputPort)sip.getScuflPort();
-                  sourceProcessor.addPort(output);
-
-                  input = new InputPort(sinkProcessor,lab);
-                  sinkProcessor.addPort(input);
+                  System.out.println("DuplicatePortNameException");
                 }
-
-                DataConstraint dc = new DataConstraint(scuflModel, output, input);
-                scuflModel.addDataConstraint(dc);
-              }
-              catch(DuplicatePortNameException dpne)
-              {
-                System.out.println("DuplicatePortNameException");
-              }
-              catch(DataConstraintCreationException dce)
-              {
-                System.out.println("DataConstraintCreationException");
-              }
-              catch(PortCreationException pce)
-              {
-                System.out.println("PortCreationException");
+                catch(DataConstraintCreationException dce)
+                {
+                  System.out.println("DataConstraintCreationException");
+                }
+                catch(PortCreationException pce)
+                {
+                  System.out.println("PortCreationException");
+                }
               }
             }
           }

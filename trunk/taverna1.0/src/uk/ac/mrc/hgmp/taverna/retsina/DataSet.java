@@ -6,12 +6,15 @@
 
 package uk.ac.mrc.hgmp.taverna.retsina;
 
+import com.jgraph.graph.Port; // ambiguous with: org.embl.ebi.escience.scufl.Port
+import java.util.Hashtable;
 
 public class DataSet
 {
 
   private String dataSet = "";
   private int id = 1;
+  private Hashtable ports = new Hashtable();
 
   public DataSet()
   {
@@ -22,8 +25,8 @@ public class DataSet
   * Add data to the data set
   *
   */
-  public void addData(String name, String type,
-                      String value)
+  public void addData(String name, String type, String value,
+                      Port port)
   {
      dataSet = dataSet+" <data>\n";
      dataSet = dataSet+"   <ID>"+id+"</ID>\n";
@@ -32,6 +35,8 @@ public class DataSet
      dataSet = dataSet+"   <value><![CDATA["+value+"]]></value>\n";
      dataSet = dataSet+" </data>";
      id++;
+
+     ports.put(port,value);
   }
 
   /**
@@ -46,5 +51,19 @@ public class DataSet
            dataSet+"\n</dataset>";
   }
 
+  public boolean dataContains(Port p)
+  {
+    return ports.containsKey(p);
+  }
+
+  public String getValue(Port p)
+  {
+    if(dataContains(p))
+      return (String)ports.get(p);
+
+    return null;
+  }
+
+  
 }
 
