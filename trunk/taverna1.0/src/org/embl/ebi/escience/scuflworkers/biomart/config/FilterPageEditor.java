@@ -167,7 +167,8 @@ public class FilterPageEditor extends JPanel {
 			filterEditor = new TextFilterEditor(query, fd);
 		    }
 		    else if (filterType.equals("boolean") ||
-			     filterType.equals("boolean_num")) {
+			     filterType.equals("boolean_num") ||
+			     filterType.equals("boolean_list")) {
 			filterEditor = new BooleanFilterEditor(query, fd);
 		    }
 		    else {
@@ -214,44 +215,88 @@ public class FilterPageEditor extends JPanel {
 	private JRadioButton require = new JRadioButton("Require");
 	private JRadioButton exclude = new JRadioButton("Exclude");
 	private JRadioButton ignore  = new JRadioButton("Ignore");
+	private JComboBox fieldSelect = null;
 
 	private String excludeFilterType = null;
 	private String requireFilterType = null;
 	
+	class OptionHolder {
+	    Option option;
+	    public OptionHolder(Option o) {
+		this.option = o;
+	    }
+	    public String toString() {
+		return option.getDisplayName();
+	    }
+	}
+
+	String[] myIDs;
+
 	public BooleanFilterEditor(Query theQuery, FilterDescription filterDescription) {
 	    super(new BorderLayout());
 	    setBackground(Color.WHITE);
 	    query = theQuery;
 	    fd = filterDescription;
-	    final String myID = fd.getField()+fd.getKey()+fd.getTableConstraint();
+	    //final String myID = fd.getField()+fd.getKey()+fd.getTableConstraint();
 	    if ("boolean".equals(fd.getType())) {
 		requireFilterType = BooleanFilter.isNotNULL;
 		excludeFilterType = BooleanFilter.isNULL;
 	    } else if ("boolean_num".equals(fd.getType())) {
 		requireFilterType = BooleanFilter.isNotNULL_NUM;
 		excludeFilterType = BooleanFilter.isNULL_NUM;
-	    }
-	    else {
+	    } else if ("boolean_list".equals(fd.getType())) {
+		requireFilterType = BooleanFilter.isNotNULL;
+		excludeFilterType = BooleanFilter.isNULL;
+		fieldSelect = new JComboBox();
+		Option[] options = fd.getOptions();
+		myIDs = new String[options.length];
+		for (int i = 0; i < options.length; i++) {
+		    fieldSelect.addItem(new OptionHolder(options[i]));
+		    myIDs[i] = (options[i].getFieldFromContext()+
+				options[i].getKeyFromContext()+
+				options[i].getTableConstraintFromContext());
+		}
+		// By default there is no selected index, this causes errors
+		// so select the first in the list by default instead.
+		fieldSelect.setSelectedIndex(0);
+	    } else {
 		System.out.println("Don't understand type "+fd.getType()+" in the current impl.");
 		return;
+	    }
+	    
+	    if (fieldSelect == null) {
+		// Single option only
+		myIDs = new String[1];
+		myIDs[0] = fd.getField()+fd.getKey()+fd.getTableConstraint();
 	    }
 	    
 	    // See if there's a filter with this key in the current query
 	    Filter[] filters = query.getFilters();
 	    for (int i = 0; i < filters.length; i++) {
-		String filterID = filters[i].getField()+filters[i].getKey()+filters[i].getTableConstraint();
-		if (filterID.equals(myID) && filters[i] instanceof BooleanFilter) {
-		    BooleanFilter bf = (BooleanFilter)filters[i];
-		    if (bf.getQualifier().equals(excludeFilterType)) {
-			exclude.setSelected(true);
+		for (int j = 0; j < myIDs.length; j++) {
+		    String filterID = filters[i].getField()+filters[i].getKey()+filters[i].getTableConstraint();
+		    if (filterID.equals(myIDs[j]) && filters[i] instanceof BooleanFilter) {
+			BooleanFilter bf = (BooleanFilter)filters[i];
+			if (bf.getQualifier().equals(excludeFilterType)) {
+			    exclude.setSelected(true);
+			}
+			else if (bf.getQualifier().equals(requireFilterType)) {
+			    require.setSelected(true);
+			}
+			if (fieldSelect != null) {
+			    fieldSelect.setSelectedIndex(j);
+			}
+			break;
 		    }
-		    else if (bf.getQualifier().equals(requireFilterType)) {
-			require.setSelected(true);
-		    }
-		    break;
 		}
 		ignore.setSelected(true);
 	    }
+	    
+	    // Register item listener for the field selector here...
+	    if (fieldSelect != null) {
+		// TODO - add item listener!
+	    }
+			
 
 	    // Register listeners for the radio buttons
 	    require.addActionListener(new ActionListener() {
@@ -266,23 +311,30 @@ public class FilterPageEditor extends JPanel {
 			    Filter[] filters = query.getFilters();
 			    for (int i = 0; i < filters.length; i++) {
 				String filterID = filters[i].getField()+filters[i].getKey()+filters[i].getTableConstraint();
-				if (filterID.equals(myID) && filters[i] instanceof BooleanFilter) {
-				    BooleanFilter oldFilter = (BooleanFilter)filters[i];
-				    BooleanFilter newFilter = new BooleanFilter(oldFilter.getField(),
-										oldFilter.getTableConstraint(),
-										oldFilter.getKey(),
-										requireFilterType,
-										oldFilter.getHandler());
-				    query.replaceFilter(oldFilter, newFilter);
-				    return;
+				for (int j = 0; j < myIDs.length; j++) {
+				    if (filterID.equals(myIDs[j]) && filters[i] instanceof BooleanFilter) {
+					BooleanFilter oldFilter = (BooleanFilter)filters[i];
+					BooleanFilter newFilter = new BooleanFilter(oldFilter.getField(),
+										    oldFilter.getTableConstraint(),
+										    oldFilter.getKey(),
+										    requireFilterType,
+										    oldFilter.getHandler());
+					query.replaceFilter(oldFilter, newFilter);
+					return;
+				    }
 				}
 			    }
 			    // Didn't find a matching filter, create a new one
-			    BooleanFilter newFilter = new BooleanFilter(fd.getField(),
-									fd.getTableConstraint(),
-									fd.getKey(),
+			    QueryFilterSettings settings = fd;
+			    if (fieldSelect != null) {
+				settings = ((OptionHolder)fieldSelect.getSelectedItem()).option;
+				System.out.println(settings);
+			    }
+			    BooleanFilter newFilter = new BooleanFilter(settings.getFieldFromContext(),
+									settings.getTableConstraintFromContext(),
+									settings.getKeyFromContext(),
 									requireFilterType,
-									fd.getHandler());
+									settings.getHandlerFromContext());
 			    query.addFilter(newFilter);
 			}
 			else {
@@ -304,23 +356,29 @@ public class FilterPageEditor extends JPanel {
 			    Filter[] filters = query.getFilters();
 			    for (int i = 0; i < filters.length; i++) {
 				String filterID = filters[i].getField()+filters[i].getKey()+filters[i].getTableConstraint();
-				if (filterID.equals(myID) && filters[i] instanceof BooleanFilter) {
-				    BooleanFilter oldFilter = (BooleanFilter)filters[i];
-				    BooleanFilter newFilter = new BooleanFilter(oldFilter.getField(),
-										oldFilter.getTableConstraint(),
-										oldFilter.getKey(),
-										excludeFilterType,
-										oldFilter.getHandler());
-				    query.replaceFilter(oldFilter, newFilter);
-				    return;
+				for (int j = 0; j < myIDs.length; j++) {
+				    if (filterID.equals(myIDs[j]) && filters[i] instanceof BooleanFilter) {
+					BooleanFilter oldFilter = (BooleanFilter)filters[i];
+					BooleanFilter newFilter = new BooleanFilter(oldFilter.getField(),
+										    oldFilter.getTableConstraint(),
+										    oldFilter.getKey(),
+										    excludeFilterType,
+										    oldFilter.getHandler());
+					query.replaceFilter(oldFilter, newFilter);
+					return;
+				    }
 				}
 			    }
 			    // Didn't find a matching filter, create a new one
-			    BooleanFilter newFilter = new BooleanFilter(fd.getField(),
-									fd.getTableConstraint(),
-									fd.getKey(),
+			    QueryFilterSettings settings = fd;
+			    if (fieldSelect != null) {
+				settings = ((OptionHolder)fieldSelect.getSelectedItem()).option;
+			    }
+			    BooleanFilter newFilter = new BooleanFilter(settings.getFieldFromContext(),
+									settings.getTableConstraintFromContext(),
+									settings.getKeyFromContext(),
 									excludeFilterType,
-									fd.getHandler());
+									settings.getHandlerFromContext());
 			    query.addFilter(newFilter);
 			}
 			else {
@@ -342,9 +400,11 @@ public class FilterPageEditor extends JPanel {
 			    Filter[] filters = query.getFilters();
 			    for (int i = 0; i < filters.length; i++) {
 				String filterID = filters[i].getField()+filters[i].getKey()+filters[i].getTableConstraint();
-				if (filterID.equals(myID) && filters[i] instanceof BooleanFilter) {
-				    query.removeFilter(filters[i]);
-				    return;
+				for (int j = 0; j < myIDs.length; j++) {
+				    if (filterID.equals(myIDs[j]) && filters[i] instanceof BooleanFilter) {
+					query.removeFilter(filters[i]);
+					return;
+				    }
 				}
 			    }
 			}
@@ -367,7 +427,12 @@ public class FilterPageEditor extends JPanel {
 	    ignore.setOpaque(false);
 	    JPanel buttonPanel = new JPanel(new GridLayout(1,3));
 	    buttonPanel.setOpaque(false);
-	    choicePanel.add(label);
+	    if (fieldSelect == null) {
+		choicePanel.add(label);
+	    }
+	    else {
+		choicePanel.add(fieldSelect);
+	    }
 	    buttonPanel.add(require);
 	    buttonPanel.add(exclude);
 	    buttonPanel.add(ignore);
