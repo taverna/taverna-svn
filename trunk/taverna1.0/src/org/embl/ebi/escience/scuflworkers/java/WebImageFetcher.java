@@ -65,7 +65,22 @@ public class WebImageFetcher implements LocalWorker {
 		inputURL = new URL(inputURLString);
 	    }
 	    System.out.println("Content length is "+inputURL.openConnection().getContentLength());
-	    byte[] contents = new byte[inputURL.openConnection().getContentLength()];
+	    byte[] contents;
+	    if (inputURL.openConnection().getContentLength() == -1) {
+		// Content size unknown, must read first...
+		byte[] buffer = new byte[1024];
+		int bytesRead = 0;
+		int totalBytesRead = 0;
+		InputStream is = inputURL.openStream();
+		while (bytesRead != -1) {
+		    totalBytesRead += bytesRead;
+		    bytesRead = is.read(buffer, 0, 1024);
+		}
+		contents = new byte[totalBytesRead];
+	    }
+	    else {
+		contents = new byte[inputURL.openConnection().getContentLength()];
+	    }
 	    int bytesRead = 0;
 	    int totalBytesRead = 0;
 	    InputStream is = inputURL.openStream();
