@@ -61,7 +61,7 @@ import java.lang.System;
  */
 public class Workbench extends JFrame {
 
-    public static ImageIcon openIcon, deleteIcon, importIcon, saveIcon, openurlIcon;
+    public static ImageIcon openIcon, deleteIcon, importIcon, saveIcon, openurlIcon, background;
 
     /**
      * If the workbench is created, it will set this
@@ -80,6 +80,12 @@ public class Workbench extends JFrame {
 	    saveIcon = new ImageIcon(c.getResource("save.gif"));
 	    importIcon = new ImageIcon(c.getResource("import.gif"));
 	    openurlIcon = new ImageIcon(c.getResource("openurl.gif"));
+	    try {
+		background = new ImageIcon(c.getResource("background.png"));
+	    }
+	    catch (Exception e) {
+		background = null;
+	    }
 	}
 	catch (ClassNotFoundException cnfe) {
 	    //
@@ -208,6 +214,13 @@ public class Workbench extends JFrame {
 	}
 	setJMenuBar(createMenuBar());
 
+	// Put the background image in
+	if (background != null) {
+	    JLabel bgLabel = new JLabel(background);
+	    bgLabel.setBounds(0,0,background.getIconWidth(), background.getIconHeight());
+	    desktop.add(bgLabel, new Integer(Integer.MIN_VALUE));
+	}
+	    
 	// Add a filedrop listener to allow users to drag
 	// workflow definition in (cheers to Robert Harder!)
 	// http://iharder.sourceforge.net/
