@@ -12,6 +12,7 @@ import uk.ac.soton.ecs.iam.notification.publishprocessor.infc.PublishProcessor;
 import uk.ac.soton.ecs.iam.notification.constants.NotificationProcessorConstants;
 import org.embl.ebi.escience.scuflworkers.ProcessorTaskWorker;
 import org.embl.ebi.escience.scufl.Processor;
+import uk.ac.soton.ecs.iam.notification.notifconfig.infc.NotificationProcessorConfiguration;
 import uk.ac.soton.itinnovation.taverna.enactor.entities.TaskExecutionException;
 import java.util.Map;
 import java.util.HashMap;
@@ -35,6 +36,7 @@ public class NotificationProcessorTask implements ProcessorTaskWorker {
     private String methodName;
     private DataThing topic;
     private DataThing message;
+    private static NotificationProcessorConfiguration configuration;
 
     /**
      * Creates a new instance of NotificationProcessorTaskImpl
@@ -67,6 +69,12 @@ public class NotificationProcessorTask implements ProcessorTaskWorker {
 			String parameterClassName = NotificationProcessorConstants.W3C_DOM_DOCUMENT;
 			publishProcessor = (PublishProcessor) publishProcessorClass.newInstance();
 
+			configuration = (NotificationProcessorConfiguration)
+											proxy.newInstance(NotificationProcessorConstants.NOTIFICATION_PROCESSOR_CONFIG);
+			configuration.loadConfigurationDetails(NotificationProcessorConstants.CONFIG_FILE);
+			String defaultPublisherName = configuration.getConfigValue(NotificationProcessorConstants.PUBLISHER_NAME);
+
+
 			Method[] methods = publishProcessorClass.getDeclaredMethods();
 			for(int i=0;i<methods.length;i++){
 				Method method = (Method) methods[i];
@@ -74,13 +82,13 @@ public class NotificationProcessorTask implements ProcessorTaskWorker {
 				if(parameterTypes.length != 3)
 					continue;
 				if(method.getName().equalsIgnoreCase(methodName) &&
-			((Class)parameterTypes[0]).getName().equals(String.class.getName()) &&
-			((Class)parameterTypes[1]).getName().equals(String.class.getName()) &&
-						((Class)parameterTypes[2]).getName().equals(parameterClassName)){
+					((Class)parameterTypes[0]).getName().equals(String.class.getName()) &&
+					((Class)parameterTypes[1]).getName().equals(String.class.getName()) &&
+					((Class)parameterTypes[2]).getName().equals(parameterClassName)){
 
 						org.w3c.dom.Document notificationMessage = convertInputMessage(message);
-			String topicName = convertInputTopic(topic);
-						method.invoke(publishProcessor, new Object[] { NotificationProcessorConstants.DEFAULT_WORKFLOW_PUBLISHER,
+						String topicName = convertInputTopic(topic);
+						method.invoke(publishProcessor, new Object[] { defaultPublisherName,
 						topicName,
 						notificationMessage });
 				}
@@ -112,14 +120,14 @@ public class NotificationProcessorTask implements ProcessorTaskWorker {
 
     private String convertInputTopic(DataThing value){
 	if(value == null)
-		return NotificationProcessorConstants.DEFAULT_WORKFLOW_TOPIC;
+		return configuration.getConfigValue(NotificationProcessorConstants.PUBLISHER_TOPIC_NAME);
     	Object object = value.getDataObject();
 	if(object == null || object == "")
-		return NotificationProcessorConstants.DEFAULT_WORKFLOW_TOPIC;
-      	if(object instanceof String == false) {
-        	throw new IllegalArgumentException("NotificationProcessorTask cannot accept illegal DataThing argument of class " +
-                	                            object.getClass().getName());
-      	}
+		return configuration.getConfigValue(NotificationProcessorConstants.PUBLISHER_TOPIC_NAME);
+	if(object instanceof String == false) {
+		throw new IllegalArgumentException("NotificationProcessorTask cannot accept illegal DataThing argument of class " +
+											object.getClass().getName());
+	}
 
 	return (String) object;
 
