@@ -34,6 +34,7 @@ import javax.swing.border.BevelBorder;
 // Utility Imports
 import java.util.Enumeration;
 import java.util.Vector;
+import java.util.Hashtable;
 
 // IO Imports
 import java.io.BufferedReader;
@@ -70,7 +71,9 @@ public class ProgList
    private JMenuItem mItem[];
    /** font used for the menu items */
    private Font menuFont = new Font("SansSerif", Font.BOLD, 11);
-// private Font menuFont = new Font(null, Font.BOLD, 10);
+   /** program group */
+   private Hashtable programGroup = new Hashtable();
+
 
    public ProgList(String woss, String currentDirectory,
                    JMenuBar menuBar)
@@ -237,6 +240,7 @@ public class ProgList
              {
                if(p.equalsIgnoreCase(allProgs[i]))
                {
+                 programGroup.put(allProgs[i],groups);
                  app = i;
                  break;
                }
@@ -263,6 +267,20 @@ public class ProgList
      }
 
    }
+
+/**
+*
+* Returns the groups for the given application
+*
+*/
+  public String getProgramGroup(String app)
+  {
+    if(programGroup.containsKey(app))
+      return (String)programGroup.get(app);
+    else
+      return null;
+  }
+
 
 /**
 *
