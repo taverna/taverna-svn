@@ -107,17 +107,13 @@ public interface WorkflowInstance {
      * processes. Be aware therefore that calling this is not always
      * safe as it may interrupt processes that maintain some kind
      * of external state.
-     * @return boolean value true if the workflow is still running,
-     * false if it is now paused
      */
-    public boolean pauseExecution();
+    public void pauseExecution();
     
     /**
      * Resume the workflow enactment.
-     * @return boolean value true if the workflow is now running,
-     * false if paused
      */
-    public boolean resumeExecution();
+    public void resumeExecution();
 
     /**
      * Return whether the workflow is currently paused
@@ -129,7 +125,7 @@ public interface WorkflowInstance {
      * Cancel the currently running workflow, freeing
      * any resources used
      */
-    public void cancel();
+    public void cancelExecution();
 
 		/**
      * Add breakoint to the specific processor. 
@@ -149,6 +145,13 @@ public interface WorkflowInstance {
 		 * Checks if task's output is allowed to be editied.
      */
 		public boolean isDataNonVolatile(String processorId);
+
+		/**
+		 * Changes intermediate output data on the output porttask.
+		 * @return true if data is non volatile and 
+		 * the changes can be performed.
+		 */
+		public boolean changeOutputPortTaskData(String processorId,String OutputPortName, Object newData);
 
     
     /** 

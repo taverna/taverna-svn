@@ -39,6 +39,8 @@ import org.embl.ebi.escience.scufl.enactor.EnactorProxy;
 import org.embl.ebi.escience.scufl.enactor.UserContext;
 import org.embl.ebi.escience.scufl.enactor.WorkflowInstance;
 import org.embl.ebi.escience.scufl.enactor.WorkflowSubmissionException;
+import org.embl.ebi.escience.scufl.enactor.event.UserChangedDataEvent;
+import org.embl.ebi.escience.scufl.enactor.WorkflowEventListener;
 import org.embl.ebi.escience.scuflui.graph.WorkflowEditor;
 import org.embl.ebi.escience.scuflui.results.ResultMapSaveRegistry;
 import org.embl.ebi.escience.scuflui.results.ResultMapSaveSPI;
@@ -52,7 +54,7 @@ import uk.ac.soton.itinnovation.freefluo.main.InvalidInputException;
  * @author Tom Oinn
  * @author Matthew Pocock
  */
-public class EnactorInvocation extends JPanel implements ScuflUIComponent {
+public class EnactorInvocation extends JPanel implements ScuflUIComponent{
 
     /**
      * A not particularly elegant way of setting the user context
@@ -72,7 +74,7 @@ public class EnactorInvocation extends JPanel implements ScuflUIComponent {
         // it is closing.  Cleanup of remote resources will be done here.
         try {
 	    workflowEditor.detachFromModel();
-            workflowInstance.cancel();
+            workflowInstance.cancelExecution();
         }
         catch(Exception e) {
             e.printStackTrace();
@@ -190,8 +192,7 @@ public class EnactorInvocation extends JPanel implements ScuflUIComponent {
 	for (Iterator i = resultMap.keySet().iterator(); i.hasNext(); ) {
 	    String resultName = (String)i.next();
 	    DataThing resultValue = (DataThing)resultMap.get(resultName);
-	    ResultItemPanel rip=new ResultItemPanel(resultValue);
-	    rip.setResultsEditing(false);
+	    ResultItemPanel rip=new ResultItemPanel(resultValue, workflowInstance);
 	    this.individualResults.add(resultName,rip);
 	}
 	this.tabs.setSelectedComponent(individualResults);
@@ -399,7 +400,7 @@ public class EnactorInvocation extends JPanel implements ScuflUIComponent {
 		{
 		    try
 			{
-			    workflowInstance.cancel();
+			    workflowInstance.cancelExecution();
 			    //pauseButton.setEnabled(false);
 			    //playButton.setEnabled(false);
 			}
@@ -456,17 +457,15 @@ public class EnactorInvocation extends JPanel implements ScuflUIComponent {
 			    for (Iterator i = intermediateResultMaps[0].keySet().iterator(); i.hasNext(); ) {
 				String name = (String)i.next();
 				DataThing value = (DataThing)intermediateResultMaps[0].get(name);
-				ResultItemPanel rip=new ResultItemPanel(value);
-				rip.setResultsEditing(false);
+				ResultItemPanel rip=new ResultItemPanel(value, workflowInstance);
 				intermediateInputs.add(name,rip );
 			    }
 			    // And the outputs
 			    for (Iterator i = intermediateResultMaps[1].keySet().iterator(); i.hasNext(); ) {
 				String name = (String)i.next();
 				DataThing value = (DataThing)intermediateResultMaps[1].get(name);
-				ResultItemPanel rip=new ResultItemPanel(value);
-				if (workflowInstance.isDataNonVolatile(processorName))rip.setResultsEditing(true);
-				else rip.setResultsEditing(false);
+				ResultItemPanel rip=new ResultItemPanel(value , workflowInstance);
+				rip.setSelectedPort(processorName,name);
 				intermediateOutputs.add(name, rip);
 			    }
 

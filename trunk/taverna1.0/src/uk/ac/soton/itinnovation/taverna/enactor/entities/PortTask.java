@@ -26,8 +26,8 @@
 //      Dependencies        :
 //
 //      Last commit info    :   $Author: matskan $
-//                              $Date: 2005-03-02 15:33:37 $
-//                              $Revision: 1.34 $
+//                              $Date: 2005-04-05 16:01:07 $
+//                              $Revision: 1.35 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 
@@ -117,13 +117,21 @@ public class PortTask extends AbstractTask {
     public synchronized DataThing getData() {
 	return this.theDataThing;
     }
+
+		public void forceSetData(DataThing newDataThing){
+					setData(newDataThing, true);
+		}
     
+		public void setData(DataThing newDataThing){
+					setData(newDataThing, false);//temp only change to false
+		}
+
     /**
      * Sets a reference to the actual data holder
      * @param newDataThing holder for data
      */
-    public synchronized void setData(DataThing newDataThing) {
-	if (dataAvailable()) {
+    public synchronized void setData(DataThing newDataThing, boolean forced) {
+	if (!forced && dataAvailable()) {
 	    return;
 	}
 	//System.out.println("Pushing data into port task "+getScuflPort().getProcessor().getName()+"."+getScuflPort().getName());

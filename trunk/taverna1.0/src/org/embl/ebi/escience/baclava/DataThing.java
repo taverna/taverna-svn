@@ -47,7 +47,7 @@ import java.lang.StringBuffer;
  * things as types and underlying collections.
  * @author Tom Oinn
  */
-public class DataThing {
+public class DataThing implements Cloneable, Serializable {
 
     protected Object theDataObject;
     protected HashMap metadataMap = new HashMap();
@@ -265,14 +265,14 @@ public class DataThing {
 	return this.theDataObject;
     }
 
-		/**
+    /**
      * Set the underlying data object, this is
      * the first level of the data document.
      */
-    public void setDataObject(Object data) {
-					this.theDataObject=data; 
-					setLSID(theDataObject,""); 
-					doInternalLSIDFill(theDataObject, SYSTEM_DEFAULT_LSID_PROVIDER); 
+    private void setDataObject(Object data) {
+	    this.theDataObject=data; 
+	    setLSID(theDataObject,""); 
+	    doInternalLSIDFill(theDataObject, SYSTEM_DEFAULT_LSID_PROVIDER); 
     }
 
 
@@ -563,29 +563,45 @@ public class DataThing {
 	    throw new IntrospectionException("Incompatible types for iterator, cannot extract "+type+" from "+getSyntacticType());
 	}
 
+    } 
+		
+	/**
+	 * Drill into a collection searching for a data-object that has the same data
+	 * with oldDT and replace its data with newData.
+	 * @return true if a datathing's dataObject has been replaced with the newData.
+	 */
+    public DataThing drillAndSet(DataThing oldDT, String newData){ 
+	    if (this.theDataObject instanceof Collection ) { 
+		    ArrayList dtList=new ArrayList((Collection) this.theDataObject); 
+		    for (int i=0; i<dtList.size();i++){
+				DataThing tmp=new DataThing(dtList.get(i));
+				tmp.metadataMap = this.metadataMap;
+				tmp.myMarkup = new SemanticMarkup(this.myMarkup);
+				tmp.lsid = this.lsid;
+				DataThing newDT=tmp.drillAndSet(oldDT,newData);
+				if (newDT!=null) {
+					dtList.set(i,newDT.getDataObject());
+					this.setDataObject(dtList);
+					return this;
+				} 
+		    } 
+		    return null; 
+	    } 
+	    else if (this.getDataObject().equals(oldDT.getDataObject())){ 
+		    this.setDataObject(new String(newData)); 
+		    return this; 
+	    } else return null; 
     }
+			
 
-		public DataThing drillAndSet(DataThing oldDT, String newData, int depth ){ 
-						if (depth>2 && (this.getDataObject() instanceof ArrayList)) return this.drillAndSet(oldDT,newData,depth--);
-						else if (depth==2 && (this.getDataObject() instanceof ArrayList)){
-										ArrayList dtList=((ArrayList)this.getDataObject());
-										for (int i=0; i<dtList.size();i++)
-														if (dtList.get(i).equals(oldDT.getDataObject())){
-																	 oldDT.setDataObject(new String(newData));
-																	 dtList.set(i,oldDT.getDataObject()); 
-																	 this.setDataObject(this.getDataObject());
-																	 return oldDT;
-														}
-						}
-						else {
-									this.setDataObject(new String(newData));
-									return this;
-						}
-						return null;
+/*	public void drillAndPrint(){ 
+		System.out.print("-");
+		System.out.println(this.toString());
+		for (Iterator iDT=this.childIterator();iDT.hasNext();){
+			System.out.print("-");
+			((DataThing)iDT.next()).drillAndPrint();
 		}
-										
-														
-
+	}*/
 
     /**
      * Drill into a collection, adding items to the list if we're at the desired depth,
@@ -704,6 +720,7 @@ public class DataThing {
 	    }
 	    return targetDir;
 	}
+
 	else {
 	    // Write a single item
 	    if (o instanceof String && defaultExtension == null) {
@@ -729,5 +746,18 @@ public class DataThing {
 	    }
 	    return targetFile;
 	}
+    }
+
+
+    public Object clone(){ 
+	    ByteArrayOutputStream bin=new ByteArrayOutputStream();
+	    try{
+	    	ObjectOutputStream out=new ObjectOutputStream(bin );
+	    	out.writeObject(this);
+	    	byte[] buf=bin.toByteArray();
+	    	ObjectInputStream in=new ObjectInputStream(new ByteArrayInputStream(buf));
+	    	return in.readObject();
+	    }catch (IOException e){e.printStackTrace();return null;}
+	    catch (ClassNotFoundException e){e.printStackTrace();return null;}
     }
 }

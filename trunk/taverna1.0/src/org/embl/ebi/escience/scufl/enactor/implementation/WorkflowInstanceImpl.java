@@ -25,8 +25,8 @@
 //      Dependencies        :
 //
 //      Last commit info    :   $Author: matskan $
-//                              $Date: 2005-03-02 15:20:16 $
-//                              $Revision: 1.15 $
+//                              $Date: 2005-04-05 16:01:06 $
+//                              $Revision: 1.16 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 package org.embl.ebi.escience.scufl.enactor.implementation;
@@ -345,9 +345,9 @@ public class WorkflowInstanceImpl implements WorkflowInstance {
         }
     }
  
-    public boolean pauseExecution() {
+    public void pauseExecution() {
         try {
-	          return engine.pauseExecution(workflowInstanceId);
+	          engine.pauseExecution(workflowInstanceId);
         }
         catch(UnknownWorkflowInstanceException e) {
             String msg = "Error pausing workflow instance with id " + workflowInstanceId +
@@ -357,9 +357,9 @@ public class WorkflowInstanceImpl implements WorkflowInstance {
         }
     }
     
-    public boolean resumeExecution() {
+    public void resumeExecution() {
         try {
-            return engine.resumeExecution(workflowInstanceId);
+             engine.resumeExecution(workflowInstanceId);
         }
         catch(UnknownWorkflowInstanceException e) {
             String msg = "Error resuming workflow instance with id " + workflowInstanceId +
@@ -382,9 +382,9 @@ public class WorkflowInstanceImpl implements WorkflowInstance {
         
     }
     
-    public void cancel() {
-        try {
-	          engine.cancel(workflowInstanceId);
+    public void cancelExecution() {
+        try { 
+		engine.cancelExecution(workflowInstanceId);
         }
         catch(UnknownWorkflowInstanceException e) {
             String msg = "Error cancelling workflow instance with id " + workflowInstanceId +
@@ -416,19 +416,32 @@ public class WorkflowInstanceImpl implements WorkflowInstance {
             logger.error(msg, e);
             throw new IllegalStateException(msg);
         }
+    } 
+    
+    public boolean isDataNonVolatile(String processorId){ 
+	    try {    
+		    return engine.isDataNonVolatile(workflowInstanceId, processorId); 
+	    } 
+	    catch(UnknownWorkflowInstanceException e) { 
+		    String msg = "Error destroying workflow instance with id " + workflowInstanceId +
+                    ".  The workflow engine didn't recognise the workflow isntance id";
+		    logger.error(msg, e); 
+		    throw new IllegalStateException(msg);
+	    }
+    } 
+    
+    public boolean changeOutputPortTaskData(String processorId,String OutputPortName, Object newData){ 
+	    try {    
+		    return engine.changeOutputPortTaskData(workflowInstanceId, processorId, OutputPortName,newData);
+	    } 
+	    catch(UnknownWorkflowInstanceException e) {
+		    String msg = "Error destroying workflow instance with id " + workflowInstanceId +
+			    ".  The workflow engine didn't recognise the workflow isntance id"; 
+		    logger.error(msg, e); 
+		    throw new IllegalStateException(msg); 
+	    }
     }
 
-		public boolean isDataNonVolatile(String processorId){
-        try {    
-           return engine.isDataNonVolatile(workflowInstanceId, processorId);
-        }
-        catch(UnknownWorkflowInstanceException e) {
-            String msg = "Error destroying workflow instance with id " + workflowInstanceId +
-                    ".  The workflow engine didn't recognise the workflow isntance id";
-            logger.error(msg, e);
-            throw new IllegalStateException(msg);
-        }
-		}
 
     public void resume(String processorId) {
         try {    

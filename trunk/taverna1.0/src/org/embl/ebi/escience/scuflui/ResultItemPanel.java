@@ -25,6 +25,11 @@ import org.embl.ebi.escience.baclava.factory.DataThingTreeNode;
 import org.embl.ebi.escience.scuflui.renderers.RendererRegistry;
 import org.embl.ebi.escience.scuflui.renderers.RendererSPI;
 import org.embl.ebi.escience.scuflui.renderers.RendererException;
+import org.embl.ebi.escience.scufl.enactor.WorkflowInstance;
+import org.embl.ebi.escience.scufl.enactor.implementation.WorkflowEventDispatcher;
+import org.embl.ebi.escience.scufl.enactor.event.*;
+
+
 import org.apache.log4j.Logger;
 
 // Utility Imports
@@ -45,24 +50,31 @@ import java.lang.String;
  * @author Tom Oinn
  * @author Matthew Pocock
  */
-public class ResultItemPanel extends JPanel {
-	Logger LOG = Logger.getLogger(ResultItemPanel.class);
+public class ResultItemPanel extends JPanel { 
+    Logger LOG = Logger.getLogger(ResultItemPanel.class);
     final JFileChooser fc = new JFileChooser();
-    final RendererRegistry renderers;
+    final RendererRegistry renderers; 
+    WorkflowInstance workflowInstance; 
+    String processorName=null; 
+    String portName=null; 
+    private static WorkflowEventDispatcher DISPATCHER = WorkflowEventDispatcher.DISPATCHER;
 
-		private boolean allowEditing=false;
+    
+    public void setSelectedPort(String processor, String port){ 
+	processorName=processor;
+	portName=port; 
+    }
 
-		public void setResultsEditing(boolean permitance){
-						allowEditing=permitance;
-		}
-
-		public final boolean getResultsEditing(){
-						return allowEditing;
-		}
 
     public ResultItemPanel(DataThing theDataThing)
     {
         this(theDataThing, RendererRegistry.instance());
+    }
+
+    public ResultItemPanel(DataThing theDataThing, WorkflowInstance workflowInstance)
+    {
+        this(theDataThing, RendererRegistry.instance());
+				this.workflowInstance=workflowInstance;
     }
 
     public ResultItemPanel( final DataThing theDataThing, RendererRegistry renderers) {
@@ -71,8 +83,9 @@ public class ResultItemPanel extends JPanel {
         this.renderers = renderers;
 
         // Construct the scrollable view of the structure
-        // of the DataThing
-				final TreeNode tn = DataThingTreeFactory.getTree(theDataThing);
+        // of the DataThing by using a copy.
+	final DataThing newDataThing=(DataThing)theDataThing.clone(); 
+	final TreeNode tn = DataThingTreeFactory.getTree(newDataThing);
         final JTree structureTree = new JTree(tn) {
 		//public Dimension getMinimumSize() {
 		//    return getPreferredSize();
@@ -94,7 +107,7 @@ public class ResultItemPanel extends JPanel {
                                                     helpPanel);
 	splitPane.setDividerLocation(-1);
         boolean isEmptyCollection = false;
-        Object data = theDataThing.getDataObject();
+        Object data = newDataThing.getDataObject();
         if(data instanceof Collection) {
             isEmptyCollection = ((Collection) data).isEmpty();
         }
@@ -124,30 +137,44 @@ public class ResultItemPanel extends JPanel {
 				JPanel leftPanel=new JPanel(new java.awt.BorderLayout());
 				JButton cmdEdit=new JButton("Change");
 				cmdEdit.addActionListener( new ActionListener(){
-					public void actionPerformed(ActionEvent ae) {
-            DataThingTreeNode node = (DataThingTreeNode)structureTree.getLastSelectedPathComponent();
-            if (node != null /*&& node.isLeaf()*/) 
-						if (component instanceof javax.swing.text.JTextComponent){
-                DataThing dataThing = node.getNodeThing();
-								String oldData=(String)dataThing.getDataObject();
-								String newData=((javax.swing.text.JTextComponent)component).getText();
-							  if (!oldData.equals(newData)){
-												dataThing=theDataThing.drillAndSet(dataThing,newData,
-																structureTree.getSelectionPath().getPathCount());
-												node.setUserObject(dataThing.getDataObject());
-												structureTree.update(structureTree.getGraphics()); 
+					public void actionPerformed(ActionEvent ae) { 
+						DataThingTreeNode node = (DataThingTreeNode)structureTree.getLastSelectedPathComponent(); 
+						if (node != null /*&& node.isLeaf()*/) 
+						if (component instanceof javax.swing.text.JTextComponent){ 
+							DataThing dataThing = node.getNodeThing(); 
+							String oldData=(String)dataThing.getDataObject(); 
+							String newData=((javax.swing.text.JTextComponent)component).getText(); 
+							if (!oldData.equals(newData)){ 
+							    	String oldLSID=newDataThing.getLSID(newDataThing.getDataObject());
+								DataThing thing=newDataThing.drillAndSet(dataThing,newData);
+								if(thing!=null 
+									&& workflowInstance.changeOutputPortTaskData(processorName,portName,newDataThing)){ 
+									DISPATCHER.fireUserChangedData(new UserChangedDataEvent(workflowInstance,oldLSID,newDataThing));
+									//System.out.println("DATATHIN CHANGED EVENT!!!!");
+
+									//Update the JTree
+									structureTree.setEditable(true);
+									((DefaultMutableTreeNode)tn).removeAllChildren();
+									DefaultMutableTreeNode root=(DefaultMutableTreeNode)structureTree.getModel().getRoot(); 
+									root.removeAllChildren();
+									DataThingTreeNode  rootDataThing=DataThingTreeFactory.getTree(newDataThing); 
+									DefaultTreeModel newTree=new DefaultTreeModel(rootDataThing);
+									structureTree.setModel(newTree);
+									structureTree.setEditable(false);
+									structureTree.repaint();
 								}
+							}
 						}
 						else {
-										//TODO for other renderers 
-										//theDataThing.setDataObject(((javax.swing.JTable)component).getValueAt(0,0));
+							//TODO for other renderers 
+							//newDataThing.setDataObject(((javax.swing.JTable)component).getValueAt(0,0));
 						}	
 					}
 				});
-			  leftPanel.add(foo);
+			       	leftPanel.add(foo);
 				rightPanel.add(cmdEdit);
 				panel.add(leftPanel, BorderLayout.CENTER);
-				if (getResultsEditing()) panel.add(rightPanel, BorderLayout.EAST);
+				if (processorName!=null && workflowInstance.isDataNonVolatile(processorName)) panel.add(rightPanel, BorderLayout.EAST);
 				panel.setPreferredSize(new Dimension(200,80));
                                 splitPane.setRightComponent(panel);
 				// Reset the widths of the split Pane to show the entire tree
@@ -262,31 +289,46 @@ public class ResultItemPanel extends JPanel {
 				    JPanel leftPanel=new JPanel(new java.awt.BorderLayout()); 
 				    JPanel rightPanel=new JPanel(); 
 				    JButton cmdEdit=new JButton("Change"); 
-				    cmdEdit.addActionListener( new ActionListener(){
-					     public void actionPerformed(ActionEvent ae) { 
-											 DataThingTreeNode node = (DataThingTreeNode)structureTree.getLastSelectedPathComponent(); 
-											 if (node != null /*&& node.isLeaf()*/) 
-										if (component instanceof javax.swing.text.JTextComponent){ 
-														DataThing dataThing = node.getNodeThing(); 
-														String oldData=(String)dataThing.getDataObject(); 
-														String newData=((javax.swing.text.JTextComponent)component).getText(); 
-														if (!oldData.equals(newData)){ 
-																		theDataThing.setDataObject(new String(newData)); 
-																		node.setUserObject(theDataThing.getDataObject()); 
-																		structureTree.update(structureTree.getGraphics());
-													 	} 
-										}
-									 	else {
-										//TODO for other renderers 
-										//theDataThing.setDataObject(((javax.swing.JTable)component).getValueAt(0,0));
-										}
-					     }
+				    cmdEdit.addActionListener( new ActionListener(){ 
+					    public void actionPerformed(ActionEvent ae) { 
+						    DataThingTreeNode node = (DataThingTreeNode)structureTree.getLastSelectedPathComponent(); 
+						    if (node != null /*&& node.isLeaf()*/) 
+					    if (component instanceof javax.swing.text.JTextComponent){ 
+						    DataThing dataThing = node.getNodeThing(); 
+						    String oldData=(String)dataThing.getDataObject(); 
+						    String newData=((javax.swing.text.JTextComponent)component).getText(); 
+						    if (!oldData.equals(newData)){ 
+							    String oldLSID=newDataThing.getLSID(newDataThing.getDataObject());
+							    DataThing thing=newDataThing.drillAndSet(dataThing,newData);
+							    if(thing!=null 
+									&& workflowInstance.changeOutputPortTaskData(processorName,portName,newDataThing)){ 
+									DISPATCHER.fireUserChangedData(new UserChangedDataEvent(workflowInstance, oldLSID, newDataThing));
+									//System.out.println("DATATHIN CHANGED EVENT!!!!");
+
+									//Update the JTree
+									structureTree.setEditable(true);
+									((DefaultMutableTreeNode)tn).removeAllChildren();
+									DefaultMutableTreeNode root=(DefaultMutableTreeNode)structureTree.getModel().getRoot(); 
+									root.removeAllChildren();
+									DataThingTreeNode  rootDataThing=DataThingTreeFactory.getTree(newDataThing); 
+									DefaultTreeModel newTree=new DefaultTreeModel(rootDataThing);
+									structureTree.setModel(newTree);
+									structureTree.setEditable(false);
+									structureTree.repaint();
+									//structureTree.update(structureTree.getGraphics()); 
+									}
+							}
+					    } else {
+						    //TODO for other renderers 
+						    //newDataThing.setDataObject(((javax.swing.JTable)component).getValueAt(0,0));
+					    }
+					    }
 					});
 					panel.removeAll();
 					leftPanel.add(jp);
 					rightPanel.add(cmdEdit);
 					panel.add(leftPanel, BorderLayout.CENTER);
-					if (getResultsEditing())panel.add(rightPanel, BorderLayout.EAST);
+					if (processorName!=null && workflowInstance.isDataNonVolatile(processorName))panel.add(rightPanel, BorderLayout.EAST);
 					panel.setPreferredSize(new Dimension(200,80));
 
 				    splitPane.setRightComponent(panel);

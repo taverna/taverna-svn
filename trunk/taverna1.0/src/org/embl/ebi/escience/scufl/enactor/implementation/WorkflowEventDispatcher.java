@@ -64,6 +64,11 @@ public class WorkflowEventDispatcher {
 	addEventToQueue(e);
     }
 
+    public void fireUserChangedData(UserChangedDataEvent e) {
+	addEventToQueue(e);
+    }
+		
+
     public void fireIterationCompleted(IterationCompletionEvent e) {
 	addEventToQueue(e);
     }
@@ -140,6 +145,10 @@ public class WorkflowEventDispatcher {
 	}
 	else if (e instanceof CollectionConstructionEvent) {
 	    l.collectionConstructed((CollectionConstructionEvent)e);
+	    return;
+	}
+	else if (e instanceof UserChangedDataEvent) {
+	    l.dataChanged((UserChangedDataEvent)e);
 	    return;
 	}
     }

@@ -58,6 +58,12 @@ public interface WorkflowEventListener {
      * by a WorkflowFailed event.
      */
     public void processFailed(ProcessFailureEvent e);
+
+
+    /**
+     * Called when a user changes intemediate data (output).
+     */
+    public void dataChanged(UserChangedDataEvent e);
  
     /**
      * Called when a data item is wrapped up inside a default collection

@@ -35,7 +35,10 @@ import java.lang.StringBuffer;
  * point.
  * @author Tom Oinn
  */
-public class SemanticMarkup {
+
+import java.io.*;
+
+public class SemanticMarkup implements Serializable {
 
     private String description  = "";
     private String semanticType = "";

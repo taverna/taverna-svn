@@ -62,6 +62,9 @@ public class EnactorEventMonitor extends JTextArea
 		public void workflowCompleted(WorkflowCompletionEvent e) {
 		    EnactorEventMonitor.this.addText(e.toString());
 		}
+		public void dataChanged(UserChangedDataEvent e) {
+		    EnactorEventMonitor.this.addText(e.toString());
+		}
 	    };
     }
 
