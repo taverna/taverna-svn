@@ -160,12 +160,15 @@ public class Workbench extends JFrame {
 			ScuflUIComponent component;
 			public GenericUIComponentFrame(ScuflModel model, ScuflUIComponent component) {
 			    super(component.getName(), true, true, true, true);
+			    getContentPane().setLayout(new BorderLayout());
 			    this.component = component;
 			    JScrollPane pane = new JScrollPane((JComponent)component);
+			    pane.setPreferredSize(new Dimension(0,0));
+			    ((JComponent)component).revalidate();
 			    if (component.getIcon() != null) {
 				setFrameIcon(component.getIcon());
 			    }
-			    getContentPane().add(pane);
+			    getContentPane().add(pane, BorderLayout.CENTER);
 			    // Bind to the specified model
 			    component.attachToModel(model);
 			    // Unbind on window close
