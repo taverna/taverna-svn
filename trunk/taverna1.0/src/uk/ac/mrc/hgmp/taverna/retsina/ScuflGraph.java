@@ -114,7 +114,7 @@ public class ScuflGraph extends JGraph
               String s = (String)JOptionPane.showInputDialog(
                                 null,"Value of "+lab,value);
 
-              System.out.println(lab+" = "+s);
+//            System.out.println(lab+" = "+s);
               if( s != null )     // add input port & data constraint
               {
                 if( !dataSet.dataContains(port) )
@@ -276,7 +276,7 @@ public class ScuflGraph extends JGraph
       for(int i=0;i<dc.length;i++)
       {
         String constraint = dc[i].getName();
-        System.out.println("**********************DataConstraint "+constraint);
+//      System.out.println("**********************DataConstraint "+constraint);
         int ind1 = constraint.indexOf(":");
         int ind2 = constraint.indexOf("'");
         if(ind2 < 0)
@@ -284,8 +284,8 @@ public class ScuflGraph extends JGraph
 
         if(ind1 < 0 || ind2 < 0 || ind1 > ind2)
         {
-          System.out.println("**********************Input Data "+
-                        constraint.substring(0,constraint.indexOf("-")));
+//        System.out.println("**********************Input Data "+
+//                      constraint.substring(0,constraint.indexOf("-")));
           continue;
         }
 
@@ -357,7 +357,8 @@ public class ScuflGraph extends JGraph
     *  A custom portview to provide the orange and green
     * arrow glyphs on input and output ports.
     */
-    protected PortView createPortView(Port p, CellMapper cm) {
+    protected PortView createPortView(Port p, CellMapper cm) 
+    {
         if( p instanceof ScuflOutputPort)
           return new ScuflOutputPortView(p,this,cm);
         else
@@ -419,8 +420,8 @@ public class ScuflGraph extends JGraph
           org.embl.ebi.escience.scufl.Port inPorts[] = proc.getInputPorts();
           int nports = inPorts.length;
 
-          System.out.println("Number of input port = "+nports);
-          int height = (int)size.getHeight() + (16*nports);
+//        System.out.println("Number of input port = "+nports);
+          int height = ((int)size.getHeight()) + (32*nports);
           size = new Dimension(width,height);
 
           //find the max width of the input ports

@@ -60,6 +60,7 @@ public class ScuflOutputPortView extends PortView {
     {
       Point p = super.getLocation(null);
       p.x += getWidth((String)((ScuflOutputPort)cell).getUserObject());
+      p.y = p.y-outputPortIcon.getIconHeight()/2+1;
       return p;
     }
 
@@ -92,9 +93,9 @@ public class ScuflOutputPortView extends PortView {
         int width = fm.stringWidth(param);
         g.setColor(Color.red);
         g.setFont(font);
-        g.drawString(param,0,18);
+        g.drawString(param,0,12);
         g.setColor(this.graph.getBackground());
-        outputPortIcon.paintIcon(this.graph, g, width, 5);
+        outputPortIcon.paintIcon(this.graph, g, width, 0);
       }
     
     }

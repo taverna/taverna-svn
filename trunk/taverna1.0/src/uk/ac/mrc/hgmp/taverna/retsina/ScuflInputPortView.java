@@ -20,7 +20,8 @@ import java.lang.String;
 
 
 
-public class ScuflInputPortView extends PortView {
+public class ScuflInputPortView extends PortView 
+{
 
     public static ImageIcon inputPortIcon = null;
     private static int fontSize = 12;
@@ -29,8 +30,8 @@ public class ScuflInputPortView extends PortView {
 
     static 
     {
-	URL inputPortIconURL = ScuflInputPortView.class.getClassLoader().getResource("images/input.gif");
-	inputPortIcon = new ImageIcon(inputPortIconURL);
+      URL inputPortIconURL = ScuflInputPortView.class.getClassLoader().getResource("images/input.gif");
+      inputPortIcon = new ImageIcon(inputPortIconURL);
     }
     
     protected ScuflInputPortRenderer renderer = new ScuflInputPortRenderer();
@@ -102,9 +103,9 @@ public class ScuflInputPortView extends PortView {
 
         g.setColor(Color.red);
         g.setFont(font);
-        g.drawString(param,0,18);
+        g.drawString(param,0,12);
         g.setColor(this.graph.getBackground());
-        inputPortIcon.paintIcon(this.graph,g,width,5);
+        inputPortIcon.paintIcon(this.graph,g,width,0); 
       }
     
     }
