@@ -51,7 +51,7 @@ public class SQLQueryWorker implements LocalWorker {
 		String password = inAdapter.getString("password");
 		
 		String provideXmlStr = inAdapter.getString("provideXml");
-		boolean provideXml = (provideXmlStr != null)?Boolean.parseBoolean(provideXmlStr):false;
+		boolean provideXml = (provideXmlStr != null)?Boolean.getBoolean(provideXmlStr):false;
 		
 		// get the sql statement parameters
 		String[] params = inAdapter.getStringArray("params");

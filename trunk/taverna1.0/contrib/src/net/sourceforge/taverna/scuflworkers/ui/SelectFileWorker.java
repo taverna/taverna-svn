@@ -29,7 +29,7 @@ import uk.ac.soton.itinnovation.taverna.enactor.entities.TaskExecutionException;
  * Last edited by $Author: phidias $
  * 
  * @author Mark
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class SelectFileWorker implements LocalWorker {
     
@@ -46,7 +46,7 @@ public class SelectFileWorker implements LocalWorker {
         DataThingAdapter outAdapter = new DataThingAdapter(outputMap);
 
         String component = inAdapter.getString("usePreviewComponent");
-        boolean useComp = (component!= null)?Boolean.parseBoolean(component):false;
+        boolean useComp = (component!= null)?Boolean.getBoolean(component):false;
                
         JFileChooser chooser = new JFileChooser();
         chooser.setDialogTitle(inAdapter.getString("title"));
@@ -126,7 +126,7 @@ public class SelectFileWorker implements LocalWorker {
         boolean doesContain = false;
         
         for (int i=0; i < values.length; i++){
-           doesContain = values[i].contains(searchString);
+           doesContain = (values[i].indexOf(searchString) != -1);
            if (doesContain){
                break;
            }
