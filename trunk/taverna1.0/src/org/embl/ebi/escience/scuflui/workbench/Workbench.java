@@ -151,18 +151,18 @@ public class Workbench extends JFrame {
 	GenericUIComponentFrame diagram = new GenericUIComponentFrame(workbench.model,
 								      new ScuflDiagram());
 	diagram.setSize(500,500);
-	diagram.setLocation(50,400);
+	diagram.setLocation(20,440);
 	workbench.desktop.add(diagram);
 	GenericUIComponentFrame explorer = new GenericUIComponentFrame(workbench.model,
 								       new ScuflModelTreeTable());
 	explorer.setSize(500,300);
-	explorer.setLocation(50,50);
+	explorer.setLocation(20,120);
 	workbench.desktop.add(explorer);
 
 	GenericUIComponentFrame scavenger = new GenericUIComponentFrame(workbench.model,
 									new ScavengerTree());
-	scavenger.setSize(300,850);
-	scavenger.setLocation(600,50);
+	scavenger.setSize(300,820);
+	scavenger.setLocation(540,120);
 	workbench.desktop.add(scavenger);
 
 	workbench.setVisible(true);
@@ -183,8 +183,8 @@ public class Workbench extends JFrame {
 	Workbench.workbench = this;
 	int inset = 50;
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-        int width = 950;
-	int height = 1000;
+        int width = 880;
+	int height = 1010;
 	if (screenSize.width - inset * 2 < width) {
 	    width = screenSize.width - inset * 2;
 	}
@@ -453,7 +453,7 @@ public class Workbench extends JFrame {
 	fileMenu.add(clearModel);
 
 	// Menu to show different UI widgets
-	JMenu windowMenu = new JMenu("Views");
+	JMenu windowMenu = new JMenu("Tools and Workflow Invocation");
 	/**
 	   JMenuItem explorerView = new JMenuItem("Scufl Explorer");
 	   explorerView.addActionListener(new ActionListener() {
@@ -549,21 +549,23 @@ public class Workbench extends JFrame {
 		    frame.moveToFront();
 		}
 	    });
-	windowMenu.add(thingBuilder);
 	windowMenu.addSeparator();
-
-	JMenuItem retsinaView = new JMenuItem("EMBOSS Flow Builder (test)");
-        retsinaView.addActionListener(new ActionListener() {
-               public void actionPerformed(ActionEvent e) {
-                  Retsina retsinaPane = new Retsina();
-                  GenericUIComponentFrame retsina = new GenericUIComponentFrame(Workbench.this.model,retsinaPane);
-                  Workbench.this.desktop.add(retsina);
-                  retsina.setSize(650,600);
-                  retsina.moveToFront();
-               }
-            });
-        windowMenu.add(retsinaView);
-
+	windowMenu.add(thingBuilder);
+	/**
+	   windowMenu.addSeparator();
+	   
+	   JMenuItem retsinaView = new JMenuItem("EMBOSS Flow Builder (test)");
+	   retsinaView.addActionListener(new ActionListener() {
+	   public void actionPerformed(ActionEvent e) {
+	   Retsina retsinaPane = new Retsina();
+	   GenericUIComponentFrame retsina = new GenericUIComponentFrame(Workbench.this.model,retsinaPane);
+	   Workbench.this.desktop.add(retsina);
+	   retsina.setSize(650,600);
+	   retsina.moveToFront();
+	   }
+	   });
+	   windowMenu.add(retsinaView);
+	*/
 	menuBar.add(fileMenu);
 	menuBar.add(windowMenu);
 	return menuBar;
