@@ -62,6 +62,7 @@ import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
+import javax.xml.parsers.ParserConfigurationException;
 
 import org.embl.ebi.escience.baclava.DataThing;
 import org.embl.ebi.escience.baclava.factory.DataThingFactory;
@@ -89,7 +90,7 @@ import org.jdom.output.XMLOutputter;
  * COMMENT DataThingConstructionPanel
  * 
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover </a>
- * @version $Revision: 1.17 $
+ * @version $Revision: 1.18 $
  */
 public class DataThingConstructionPanel extends JPanel implements ScuflUIComponent, ScuflModelEventListener
 {
@@ -260,7 +261,8 @@ public class DataThingConstructionPanel extends JPanel implements ScuflUICompone
 	private class InputsRootNode extends DefaultMutableTreeNode implements PanelTreeNode
 	{
 		JComponent panel;
-		JTextArea editor;
+		XMLTree xmlTree;
+		JScrollPane scrollPane;
 		private ActionListener loadInputDocAction = new ActionListener()
 		{
 			public void actionPerformed(ActionEvent e)
@@ -305,8 +307,8 @@ public class DataThingConstructionPanel extends JPanel implements ScuflUICompone
 						// fileChooser.getFileFilter();
 						FileWriter fileWriter = new FileWriter(file);
 						BufferedWriter writer = new BufferedWriter(fileWriter);
-						getPanel();
-						BufferedReader reader = new BufferedReader(new StringReader(editor.getText()));
+						XMLOutputter outputter = new XMLOutputter(Format.getCompactFormat());
+						BufferedReader reader = new BufferedReader(new StringReader(outputter.outputString(DataThingXMLFactory.getDataDocument(bakeInputMap()))));
 						String line = null;
 						while ((line = reader.readLine()) != null)
 						{
@@ -333,10 +335,8 @@ public class DataThingConstructionPanel extends JPanel implements ScuflUICompone
 			if (panel == null)
 			{
 				panel = new JPanel(new BorderLayout());
-				editor = new JTextArea();
-				editor.setEditable(false);
-				editor.setToolTipText("Input Document");
-				JScrollPane scrollPane = new JScrollPane(editor);
+				
+				scrollPane = new JScrollPane();
 				scrollPane.setPreferredSize(new Dimension(0, 0));
 				JToolBar toolbar = new JToolBar();
 				JButton loadInputDocButton = new JButton("Load Input Doc", ScuflIcons.openIcon);
@@ -357,8 +357,16 @@ public class DataThingConstructionPanel extends JPanel implements ScuflUICompone
 				panel.add(scrollPane, BorderLayout.CENTER);
 				panel.add(toolbar, BorderLayout.NORTH);
 			}
-			XMLOutputter outputter = new XMLOutputter(Format.getPrettyFormat());
-			editor.setText(outputter.outputString(DataThingXMLFactory.getDataDocument(bakeInputMap())));
+			try
+			{
+				XMLOutputter outputter = new XMLOutputter(Format.getCompactFormat());				
+				scrollPane.setViewportView(new XMLTree(outputter.outputString(DataThingXMLFactory.getDataDocument(bakeInputMap()))));
+			}
+			catch (ParserConfigurationException e)
+			{
+				// TODO Handle ParserConfigurationException
+				e.printStackTrace();
+			}
 			return panel;
 		}
 
