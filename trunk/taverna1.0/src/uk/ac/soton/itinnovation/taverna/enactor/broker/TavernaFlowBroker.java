@@ -24,9 +24,9 @@
 //      Created for Project :   MYGRID
 //      Dependencies        :
 //
-//      Last commit info    :   $Author: mereden $
-//                              $Date: 2003-04-27 21:26:03 $
-//                              $Revision: 1.6 $
+//      Last commit info    :   $Author: dmarvin $
+//                              $Date: 2003-05-03 15:19:26 $
+//                              $Revision: 1.7 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 
@@ -112,8 +112,10 @@ public class TavernaFlowBroker implements FlowBroker {
                     //obtain a scuflmodel
 					model = new ScuflModel();
 					//model.addListener(new ScuflModelEventPrinter(null)); 
+					System.out.println("About to try to populate ScuflModel");
 					XScuflParser.populate(doc,model,null);
 					logger.debug("Loaded ScuflModel from xml file");
+					
 					
                 } catch(org.embl.ebi.escience.scufl.parser.XScuflFormatException ex) {
 					logger.error(ex);

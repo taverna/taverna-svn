@@ -52,7 +52,8 @@ public abstract class Port implements java.io.Serializable {
 	}
 	// Assign internal private members
 	this.processor = processor;
-	this.name = name.toLowerCase();
+	//this.name = name.toLowerCase(); //this causes problems with wsdl invocations
+	this.name = name;
 	fireModelEvent(new ScuflModelEvent(this, "New port created '"+name+"' in processor '"+processor.getName()+"'"));
     }
     

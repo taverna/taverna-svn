@@ -25,8 +25,8 @@
 //      Dependencies        :
 //
 //      Last commit info    :   $Author: dmarvin $
-//                              $Date: 2003-05-01 12:11:44 $
-//                              $Revision: 1.7 $
+//                              $Date: 2003-05-03 15:19:26 $
+//                              $Revision: 1.8 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 
@@ -164,6 +164,34 @@ public class XScuflDiGraphGenerator {
 					}
 				}
 			}
+
+			//for the taverna enactor concurrency constraints allow control flow declaration between processors
+			
+			ConcurrencyConstraint[]conConstraints =  model.getConcurrencyConstraints();
+			for(int i=0;i<conConstraints.length;i++) {
+			    //validate that the state transition is supported
+			    if(!validConcurrencyConstraint(conConstraints[i]))
+				throw new XScuflInvalidException("The concurrency constraint '" + conConstraints[i].getName() + "' uses a state transition that is not supported by the enactor");
+			    //want to get the source processor
+			    Processor controller = conConstraints[i].getControllingProcessor();
+			    Processor controlled = conConstraints[i].getTargetProcessor();
+			    ProcessorTask controllerTask = null;
+			    ProcessorTask controlledTask = null;
+			    Iterator itor = processorTasks.iterator();
+			    while(itor.hasNext()) {
+				ProcessorTask p = (ProcessorTask) itor.next();
+				if(p.getProcessor().getName().equals(controller.getName()))
+				    controllerTask = p;
+				else if(p.getProcessor().getName().equals(controlled.getName()))
+				    controlledTask = p;
+			    }
+			    if(controllerTask == null || controlledTask == null) {
+				throw new XScuflInvalidException("Could not match processors within concurrency constraint '" + conConstraints[i].getName() + "' with actual processors in the ScuflModel");
+			    }
+			    //otherwise tie the two together as dependent
+			    controllerTask.addChild(controlledTask);
+			    controlledTask.addParent(controllerTask);
+			}
 			
 			//get external ports 
 			Port[] externalPorts = model.getExternalPorts();
@@ -247,6 +275,25 @@ public class XScuflDiGraphGenerator {
 		}
 		return graph;
 		
+    }
+
+    private static boolean validConcurrencyConstraint(ConcurrencyConstraint constraint) {
+	//Note that actual support of XScufl concurrency constraints may never be complete, Scufl is after all
+	//a very general language. At present validation here will reject any state changes that don't follow
+	//SCHEDULED->RUNNING->COMPLETED type flow (not FAILED since why bother). In particular at present
+	//don't want to support the possibility for cycles, at least until the workflow enactment core supports them natively.
+	Processor controller = constraint.getControllingProcessor();
+	Processor controlled = constraint.getTargetProcessor();
+	//firstly only interested in controller states of COMPLETED
+	if(constraint.getControllerStateGuard()!=ConcurrencyConstraint.COMPLETED)
+	    return false;
+	//only interested in controlled state transitions from SCHEDULED TO RUNNING
+	if(constraint.getTargetStateFrom()!=ConcurrencyConstraint.SCHEDULED)
+	    return false;
+	if(constraint.getTargetStateTo()!=ConcurrencyConstraint.RUNNING)
+	    return false;
+	//constraint is valid given current enactor support
+	return true;
     }
 
 	private static PortTask getPortTask(String flowID,List list,Port p) throws XScuflInvalidException{

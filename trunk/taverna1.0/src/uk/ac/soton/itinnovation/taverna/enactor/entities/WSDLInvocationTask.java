@@ -25,8 +25,8 @@
 //      Dependencies        :
 //
 //      Last commit info    :   $Author: dmarvin $
-//                              $Date: 2003-05-01 12:11:50 $
-//                              $Revision: 1.1 $
+//                              $Date: 2003-05-03 15:19:29 $
+//                              $Revision: 1.2 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 
@@ -72,10 +72,12 @@ public class WSDLInvocationTask extends ProcessorTask implements InvocationDescr
 			//want to create suitable input parts
 			Input input = new Input();			
 			for(int i=0;i<inputs.length;i++) {
-				PortTask pT = (PortTask) inputs[i];				
+			    if(inputs[i] instanceof PortTask){
+			    PortTask pT = (PortTask) inputs[i];				
 				//for now going to wait for all data inputs to be available, this must change for the special requirements for taverna.
 				//actually want to set data in jobs as it becomes available, so don't block, check if data available every so often
-				input.addPart(pT.getData());					
+			    input.addPart(pT.getData());
+			    }					
 			}
 
 			WSDLServiceInvocation serviceInvocation = new WSDLServiceInvocation(this,input,WSDLServiceInvocation.OPERATION_TYPE_REQUEST_RESPONSE);
@@ -101,17 +103,17 @@ public class WSDLInvocationTask extends ProcessorTask implements InvocationDescr
 
             Iterator iterator = outputParts.iterator();
             while (iterator.hasNext()) {
-				//match with child part by name and set the part value
-
+		//match with child part by name and set the part value
+		
                 Part part = (Part) iterator.next();
                 String partName = part.getName();
                 Iterator iter2 = outParts.iterator();
 
                 while (iter2.hasNext()) {
-					Part prt = (Part) iter2.next();
+		     Part prt = (Part) iter2.next();
 
                     if (prt.getName().equals(partName)) {
-						prt.setValue(part.getValue());
+			prt.setValue(part.getValue());
                         prt.setType(part.getType());
                         prt.setID(part.getID());
                     }
