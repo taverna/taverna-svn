@@ -178,7 +178,11 @@ public class DotView implements ScuflModelEventListener, java.io.Serializable {
 			dot.append("{"+p.getName().toUpperCase()+"}|{");
 		    }
 		    else {
-			dot.append("{"+p.getName().toUpperCase()+"\\n"+p.getAlternatesList().size()+" alternates}|{");
+			dot.append("{"+p.getName().toUpperCase()+"\\n"+p.getAlternatesList().size()+" alternate");
+		    if (p.getAlternatesList().size()!=1) {
+			dot.append("s");
+		    }
+		    dot.append("}|{");
 		    }
 		}
 		else {
@@ -207,7 +211,11 @@ public class DotView implements ScuflModelEventListener, java.io.Serializable {
 			dot.append(p.getName().toUpperCase()+"|");
 		    }
 		    else {
-			dot.append(p.getName().toUpperCase()+"\\n"+p.getAlternatesList().size()+" alternates|");
+			dot.append(p.getName().toUpperCase()+"\\n"+p.getAlternatesList().size()+" alternate");
+			if (p.getAlternatesList().size()!=1) {
+			    dot.append("s");
+			}
+			dot.append("|");
 		    }
 		}
 
