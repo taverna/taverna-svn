@@ -9,11 +9,15 @@ package uk.ac.mrc.hgmp.taverna.retsina;
 import com.jgraph.JGraph;
 import com.jgraph.graph.*;
 import com.jgraph.graph.Port; // ambiguous with: org.embl.ebi.escience.scufl.Port 
+import com.jgraph.plaf.basic.BasicGraphUI;
+
+import javax.swing.event.CellEditorListener;
 import java.awt.*;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.dnd.*;
 import java.awt.event.*;
+import javax.swing.JFrame;
 import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 import javax.swing.border.BevelBorder;
@@ -332,6 +336,8 @@ public class ScuflGraph extends JGraph
 
       return null;
     } 
+
+
 
     /**
      * Override Superclass Method to Return Custom EdgeView
@@ -670,6 +676,41 @@ public class ScuflGraph extends JGraph
 
   public void dragOver(DropTargetDragEvent e) {}
   public void dropActionChanged(DropTargetDragEvent e) {}
+
+  /**
+   * Customizing In-Place Editing
+   */
+  public void updateUI(){
+    // Install a new UI
+    setUI(new DialogUI());
+    invalidate();
+  }
+
+  public class DialogUI extends BasicGraphUI 
+  {
+
+    Object editingCell;
+
+    public void startEditingAtCell(JGraph graph, Object cell) 
+    {
+      super.startEditingAtCell(graph,cell);
+      editingCell = cell;
+    }
+
+    protected void completeEditing(boolean messageStop,
+                                   boolean messageCancel,
+                                   boolean messageGraph) 
+    {
+      super.completeEditing(messageStop,messageCancel,messageGraph);
+      if(editingCell != null)
+      {
+        Processor p = ((ScuflGraphCell)editingCell).getScuflProcessor();
+        System.out.println("Processor old name "+p.getName());
+        System.out.println("Processor new name "+editingCell.toString());
+        // p.setName(editingCell.toString());
+      }
+    }
+  }
 
 }
 
