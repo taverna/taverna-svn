@@ -27,6 +27,7 @@ import org.embl.ebi.escience.scufl.ScuflModelEvent;
 import org.embl.ebi.escience.scufl.UnknownPortException;
 import java.lang.ClassCastException;
 import java.lang.String;
+import java.util.Map;
 
 
 
@@ -72,6 +73,26 @@ public abstract class Processor implements Serializable {
     }
     protected void setOffline() {
 	//
+    }
+
+    /**
+     * If this is an alternate processor then fetch the AlternateProcessor
+     * object which represents it in the parent
+     */
+    private AlternateProcessor getAlternateDescription() {
+	if (this.model == null && this.parentProcessor != null) {
+	    List alternateList = parentProcessor.getAlternatesList();
+	    for (Iterator i = alternateList.iterator(); i.hasNext();) {
+		AlternateProcessor ap = (AlternateProcessor)i.next();
+		if (ap.getProcessor() == this) {
+		    return ap;
+		}
+	    }
+	    throw new RuntimeException("No alternates found within parent processor!");
+	}
+	else {
+	    throw new RuntimeException("Cannot fetch the alternate description for a primary processor "+getName());
+	}	
     }
 
     /**
@@ -454,28 +475,62 @@ public abstract class Processor implements Serializable {
      * by data constraints defined within this processor
      */
     public InputPort[] getBoundInputPorts() {
-	ArrayList temp = new ArrayList();
-	HashSet boundPorts = new HashSet();
-	// Iterate over all data constraints getting their
-	// sink ports, if the input port is bound then
-	// it'll be in the sink port of a constraint somewhere
-	DataConstraint dc[] = model.getDataConstraints();
-	for (int i = 0; i < dc.length; i++) {
-	    DataConstraint d = dc[i];
-	    boundPorts.add(d.getSink());
-	}
-	for (Iterator i = this.ports.iterator(); i.hasNext(); ) {
-	    try {
-		InputPort ip = (InputPort)i.next();
-		if (boundPorts.contains(ip)) {
-		    temp.add(ip);
+	if (model != null) {
+	    ArrayList temp = new ArrayList();
+	    HashSet boundPorts = new HashSet();
+	    // Iterate over all data constraints getting their
+	    // sink ports, if the input port is bound then
+	    // it'll be in the sink port of a constraint somewhere
+	    DataConstraint dc[] = model.getDataConstraints();
+	    for (int i = 0; i < dc.length; i++) {
+		DataConstraint d = dc[i];
+		boundPorts.add(d.getSink());
+	    }
+	    for (Iterator i = this.ports.iterator(); i.hasNext(); ) {
+		try {
+		    InputPort ip = (InputPort)i.next();
+		    if (boundPorts.contains(ip)) {
+			temp.add(ip);
+		    }
+		}
+		catch (ClassCastException cce) {
+		    //
 		}
 	    }
-	    catch (ClassCastException cce) {
-		//
+	    return (InputPort[])temp.toArray(new InputPort[0]);
+	}
+	else {
+	    if (parentProcessor == null) {
+		// Shouldn't really happen, but behave sensibly
+		return new InputPort[0];
+	    }
+	    else {
+		AlternateProcessor ap = getAlternateDescription();
+		Map inputMapping = ap.getInputMapping();
+		Map outputMapping = ap.getOutputMapping();
+		// This is an alternate processor
+		InputPort[] parentInputs = parentProcessor.getBoundInputPorts();
+		List resultList = new ArrayList();
+		for (int i = 0; i < parentInputs.length; i++) {
+		    // For each parent port which has been bound add the
+		    // corresponding child port to the list if the mapping
+		    // exists for that port name
+		    String parentPortName = parentInputs[i].getName();
+		    String childPortName = (String)inputMapping.get(parentPortName);
+		    if (childPortName != null) {
+			try {
+			    resultList.add(locatePort(childPortName));
+			}
+			catch (UnknownPortException ex) {
+			    // Ignore the potential exception here, it should
+			    // never happen and it's existance indicates that
+			    // the port wasn't bound (it didn't exist!)
+			}
+		    }
+		}
+		return (InputPort[])resultList.toArray(new InputPort[0]);
 	    }
 	}
-	return (InputPort[])temp.toArray(new InputPort[0]);
     }
 
     /**
@@ -483,28 +538,62 @@ public abstract class Processor implements Serializable {
      * by data constraints and defined within this processor
      */
     public OutputPort[] getBoundOutputPorts() {
-	ArrayList temp = new ArrayList();
-	HashSet boundPorts = new HashSet();
-	// Iterate over all data constraints getting their
-	// source ports, if the output port is bound then
-	// it'll be in the source port of a constraint somewhere
-	DataConstraint dc[] = model.getDataConstraints();
-	for (int i = 0; i < dc.length; i++) {
-	    DataConstraint d = dc[i];
-	    boundPorts.add(d.getSource());
-	}
-	for (Iterator i = this.ports.iterator(); i.hasNext(); ) {
-	    try {
-		OutputPort op = (OutputPort)i.next();
-		if (boundPorts.contains(op)) {
-		    temp.add(op);
+	if (this.model != null) {
+	    ArrayList temp = new ArrayList();
+	    HashSet boundPorts = new HashSet();
+	    // Iterate over all data constraints getting their
+	    // source ports, if the output port is bound then
+	    // it'll be in the source port of a constraint somewhere
+	    DataConstraint dc[] = model.getDataConstraints();
+	    for (int i = 0; i < dc.length; i++) {
+		DataConstraint d = dc[i];
+		boundPorts.add(d.getSource());
+	    }
+	    for (Iterator i = this.ports.iterator(); i.hasNext(); ) {
+		try {
+		    OutputPort op = (OutputPort)i.next();
+		    if (boundPorts.contains(op)) {
+			temp.add(op);
+		    }
+		}
+		catch (ClassCastException cce) {
+		    //
 		}
 	    }
-	    catch (ClassCastException cce) {
-		//
+	    return (OutputPort[])temp.toArray(new OutputPort[0]);
+	}
+	else {
+	    if (parentProcessor == null) {
+		// Shouldn't really happen, but behave sensibly
+		return new OutputPort[0];
+	    }
+	    else {
+		// This is an alternate processor		
+		AlternateProcessor ap = getAlternateDescription();
+		Map inputMapping = ap.getInputMapping();
+		Map outputMapping = ap.getOutputMapping();
+		OutputPort[] parentOutputs = parentProcessor.getBoundOutputPorts();
+		List resultList = new ArrayList();
+		for (int i = 0; i < parentOutputs.length; i++) {
+		    // For each parent port which has been bound add the
+		    // corresponding child port to the list if the mapping
+		    // exists for that port name
+		    String parentPortName = parentOutputs[i].getName();
+		    String childPortName = (String)outputMapping.get(parentPortName);
+		    if (childPortName != null) {
+			try {
+			    resultList.add(locatePort(childPortName));
+			}
+			catch (UnknownPortException ex) {
+			    // Ignore the potential exception here, it should
+			    // never happen and it's existance indicates that
+			    // the port wasn't bound (it didn't exist!)
+			}
+		    }
+		}
+		return (OutputPort[])resultList.toArray(new OutputPort[0]);
 	    }
 	}
-	return (OutputPort[])temp.toArray(new OutputPort[0]);
     }
 
 
