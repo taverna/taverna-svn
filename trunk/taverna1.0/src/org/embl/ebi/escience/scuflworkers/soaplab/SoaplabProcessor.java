@@ -10,39 +10,23 @@
 
 package org.embl.ebi.escience.scuflworkers.soaplab;
 
-
-
 import javax.xml.namespace.QName;
-
 import org.apache.axis.client.Call;
-
 import org.apache.axis.client.Service;
-
 import org.embl.ebi.escience.scufl.*;
 
-
-
 // Utility Imports
-
 import java.util.ArrayList;
-
 import java.util.Map;
-
 import java.util.Properties;
 
-
-
 // Network Imports
-
 import java.net.MalformedURLException;
-
 import java.net.URL;
 
-
-
-
-
-
+import java.lang.NullPointerException;
+import java.lang.Object;
+import java.lang.String;
 
 
 
@@ -67,7 +51,6 @@ import java.net.URL;
  * @author Tom Oinn
 
  */
-
 public class SoaplabProcessor extends Processor implements java.io.Serializable {
 
 

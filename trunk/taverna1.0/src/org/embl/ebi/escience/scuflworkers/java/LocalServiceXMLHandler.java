@@ -16,6 +16,8 @@ import org.embl.ebi.escience.scuflworkers.XMLHandler;
 // JDOM Imports
 import org.jdom.Element;
 
+import org.embl.ebi.escience.scuflworkers.java.LocalServiceProcessor;
+import java.lang.String;
 
 
 

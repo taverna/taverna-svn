@@ -6,12 +6,21 @@
 package org.embl.ebi.escience.baclava.factory;
 
 import java.awt.Component;
-import java.util.*;
 import javax.swing.ImageIcon;
 import javax.swing.JTree;
 import javax.swing.tree.DefaultTreeCellRenderer;
 import org.embl.ebi.escience.baclava.DataThing;
 
+// Utility Imports
+import java.util.Collection;
+import java.util.List; // ambiguous with: java.awt.List 
+import java.util.Set;
+
+import org.embl.ebi.escience.baclava.factory.DataThingTreeNode;
+import java.lang.ClassLoader;
+import java.lang.Exception;
+import java.lang.Object;
+import java.lang.String;
 
 
 

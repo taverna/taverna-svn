@@ -5,24 +5,22 @@
  */
 package org.embl.ebi.escience.baclava;
 
-import javax.swing.ImageIcon;
-import org.embl.ebi.escience.baclava.factory.DataThingXMLFactory;
 import org.embl.ebi.escience.baclava.factory.DataThingFactory;
-import org.embl.ebi.escience.scufl.SemanticMarkup;
 
 // Utility Imports
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Set;
 import java.util.HashSet;
-import java.lang.ref.*;
-import java.beans.*;
+import java.util.Iterator;
+import java.util.Set;
 
-// JDOM Imports
-import org.jdom.Element;
+import org.embl.ebi.escience.baclava.BaclavaIterator;
+import org.embl.ebi.escience.baclava.DataThing;
+import org.embl.ebi.escience.baclava.JoinIterator;
+import java.lang.Exception;
+import java.lang.Object;
+import java.lang.String;
+import java.lang.System;
+
+
 
 /**
  * Tests the functionality of the various Baclava iterator widgets

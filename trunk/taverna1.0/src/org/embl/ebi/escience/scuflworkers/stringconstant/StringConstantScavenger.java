@@ -8,9 +8,7 @@ package org.embl.ebi.escience.scuflworkers.stringconstant;
 import org.embl.ebi.escience.scuflui.workbench.Scavenger;
 import org.embl.ebi.escience.scuflui.workbench.ScavengerCreationException;
 
-
-
-
+import org.embl.ebi.escience.scuflworkers.stringconstant.StringConstantProcessorFactory;
 /**
  * A Scavenger that knows how to create string constant nodes
  * @author Tom Oinn

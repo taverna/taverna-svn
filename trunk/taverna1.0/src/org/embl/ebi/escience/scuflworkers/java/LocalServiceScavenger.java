@@ -5,11 +5,25 @@
  */
 package org.embl.ebi.escience.scuflworkers.java;
 
-import java.util.*;
-import java.net.*;
-import java.io.*;
 import org.embl.ebi.escience.scuflui.workbench.Scavenger;
 import org.embl.ebi.escience.scuflui.workbench.ScavengerCreationException;
+
+// Utility Imports
+import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Properties;
+
+// Network Imports
+import java.net.URL;
+
+import org.embl.ebi.escience.scuflworkers.java.LocalServiceProcessorFactory;
+import java.lang.ClassLoader;
+import java.lang.Exception;
+import java.lang.String;
+
+
 
 /**
  * A scavenger that can create new LocalServiceProcessor nodes

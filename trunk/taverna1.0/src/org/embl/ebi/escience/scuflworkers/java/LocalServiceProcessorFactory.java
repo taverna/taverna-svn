@@ -11,6 +11,12 @@ import org.embl.ebi.escience.scufl.ProcessorCreationException;
 import org.embl.ebi.escience.scufl.ScuflModel;
 import org.embl.ebi.escience.scuflworkers.ProcessorFactory;
 
+import org.embl.ebi.escience.scuflworkers.java.LocalServiceProcessor;
+import java.lang.Class;
+import java.lang.String;
+
+
+
 /**
  * Implementation of ProcessorFactory that can create LocalServiceProcessor instances
  * @author Tom Oinn

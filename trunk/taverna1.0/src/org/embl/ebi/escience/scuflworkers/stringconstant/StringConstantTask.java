@@ -19,6 +19,9 @@ import java.util.Map;
 // JDOM Imports
 import org.jdom.Element;
 
+import org.embl.ebi.escience.scuflworkers.stringconstant.StringConstantProcessor;
+import java.lang.Exception;
+import java.lang.String;
 
 
 

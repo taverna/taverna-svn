@@ -12,6 +12,10 @@ import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.output.XMLOutputter;
 
+import org.embl.ebi.escience.baclava.factory.DataThingFactory;
+import java.lang.Exception;
+import java.lang.String;
+import java.lang.System;
 
 
 

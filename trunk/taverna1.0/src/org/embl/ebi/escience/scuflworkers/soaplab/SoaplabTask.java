@@ -25,8 +25,8 @@
 //      Dependencies        :
 //
 //      Last commit info    :   $Author: mereden $
-//                              $Date: 2003-10-31 15:51:08 $
-//                              $Revision: 1.5 $
+//                              $Date: 2004-01-27 13:00:18 $
+//                              $Revision: 1.6 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 
@@ -52,6 +52,11 @@ import java.util.Map;
 // Network Imports
 import java.net.URL;
 
+import org.embl.ebi.escience.scuflworkers.soaplab.SoaplabProcessor;
+import java.lang.Exception;
+import java.lang.Integer;
+import java.lang.Object;
+import java.lang.String;
 
 
 

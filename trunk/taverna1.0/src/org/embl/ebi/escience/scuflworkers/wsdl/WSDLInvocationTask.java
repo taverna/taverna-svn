@@ -24,6 +24,14 @@ import java.util.Vector;
 // JDOM Imports
 import org.jdom.Element;
 
+import org.embl.ebi.escience.scuflworkers.wsdl.WSDLBasedProcessor;
+import java.lang.Exception;
+import java.lang.Integer;
+import java.lang.Object;
+import java.lang.RuntimeException;
+import java.lang.String;
+import java.lang.System;
+
 
 
 /**

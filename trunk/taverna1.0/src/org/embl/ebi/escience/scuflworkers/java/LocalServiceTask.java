@@ -6,19 +6,19 @@
 package org.embl.ebi.escience.scuflworkers.java;
 
 import org.apache.log4j.Logger;
-import org.embl.ebi.escience.baclava.DataThing;
 import org.embl.ebi.escience.scufl.Processor;
 import uk.ac.soton.itinnovation.taverna.enactor.broker.LogLevel;
 import uk.ac.soton.itinnovation.taverna.enactor.entities.ProcessorTask;
 import uk.ac.soton.itinnovation.taverna.enactor.entities.TaskExecutionException;
 
 // Utility Imports
-import java.util.HashMap;
 import java.util.Map;
 
 // JDOM Imports
 import org.jdom.Element;
 
+import org.embl.ebi.escience.scuflworkers.java.LocalServiceProcessor;
+import java.lang.String;
 
 
 

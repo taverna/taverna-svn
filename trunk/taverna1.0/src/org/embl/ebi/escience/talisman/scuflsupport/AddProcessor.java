@@ -12,6 +12,8 @@ import org.embl.ebi.escience.scufl.ProcessorCreationException;
 import org.embl.ebi.escience.scuflworkers.soaplab.SoaplabProcessor;
 import org.embl.ebi.escience.talisman.*;
 
+import org.embl.ebi.escience.talisman.scuflsupport.AbstractScuflAction;
+import java.lang.String;
 
 
 

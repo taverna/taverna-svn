@@ -8,6 +8,7 @@ package org.embl.ebi.escience.baclava.factory;
 import javax.swing.tree.DefaultMutableTreeNode;
 import org.embl.ebi.escience.baclava.DataThing;
 
+import java.lang.Object;
 
 
 

@@ -12,6 +12,7 @@ import org.embl.ebi.escience.scufl.view.XScuflView;
 // IO Imports
 import java.io.Serializable;
 
+import java.lang.String;
 
 
 

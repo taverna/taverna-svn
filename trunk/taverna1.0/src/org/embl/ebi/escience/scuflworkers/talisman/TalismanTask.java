@@ -21,6 +21,9 @@ import java.util.Map;
 // Network Imports
 import java.net.URL;
 
+import org.embl.ebi.escience.scuflworkers.talisman.TalismanProcessor;
+import java.lang.Exception;
+import java.lang.String;
 
 
 

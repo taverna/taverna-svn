@@ -5,7 +5,15 @@
  */
 package org.embl.ebi.escience.baclava;
 
-import java.util.*;
+// Utility Imports
+import java.util.Iterator;
+import java.util.NoSuchElementException;
+
+import org.embl.ebi.escience.baclava.BaclavaIterator;
+import java.lang.Object;
+import java.lang.UnsupportedOperationException;
+
+
 
 /**
  * Provides an Iterator that iterates over the orthogonal

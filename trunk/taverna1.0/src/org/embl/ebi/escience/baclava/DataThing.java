@@ -5,23 +5,25 @@
  */
 package org.embl.ebi.escience.baclava;
 
+import java.beans.IntrospectionException;
+import java.lang.ref.WeakReference;
 import javax.swing.ImageIcon;
 import org.embl.ebi.escience.baclava.factory.DataThingXMLFactory;
 import org.embl.ebi.escience.scufl.SemanticMarkup;
 
 // Utility Imports
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Set;
-import java.lang.ref.*;
-import java.beans.*;
+import java.util.*;
 
 // JDOM Imports
 import org.jdom.Element;
 
+import org.embl.ebi.escience.baclava.BaclavaIterator;
+import org.embl.ebi.escience.baclava.NoMetadataFoundException;
+import java.lang.ClassLoader;
+import java.lang.Object;
+import java.lang.RuntimeException;
+import java.lang.String;
+import java.lang.StringBuffer;
 
 
 

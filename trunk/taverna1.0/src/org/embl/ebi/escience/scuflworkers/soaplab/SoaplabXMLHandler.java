@@ -15,6 +15,8 @@ import org.jdom.Element;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+import org.embl.ebi.escience.scuflworkers.soaplab.SoaplabProcessor;
+import java.lang.String;
 
 
 

@@ -25,8 +25,8 @@
 //      Dependencies        :
 //
 //      Last commit info    :   $Author: mereden $
-//                              $Date: 2003-10-09 12:19:32 $
-//                              $Revision: 1.2 $
+//                              $Date: 2004-01-27 13:00:30 $
+//                              $Revision: 1.3 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 
@@ -52,6 +52,12 @@ import java.util.Map;
 // JDOM Imports
 import org.jdom.Element;
 
+import org.embl.ebi.escience.scuflworkers.workflow.WorkflowProcessor;
+import java.lang.Exception;
+import java.lang.InterruptedException;
+import java.lang.NullPointerException;
+import java.lang.String;
+import java.lang.Thread;
 
 
 

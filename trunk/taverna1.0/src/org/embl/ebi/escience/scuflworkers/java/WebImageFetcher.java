@@ -5,12 +5,26 @@
  */
 package org.embl.ebi.escience.scuflworkers.java;
 
+import org.embl.ebi.escience.baclava.DataThing;
 import uk.ac.soton.itinnovation.taverna.enactor.entities.TaskExecutionException;
-import java.util.Map;
+
+// Utility Imports
 import java.util.HashMap;
-import java.io.*;
-import java.net.*;
-import org.embl.ebi.escience.baclava.*;
+import java.util.Map;
+
+// IO Imports
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+
+// Network Imports
+import java.net.URL;
+
+import org.embl.ebi.escience.scuflworkers.java.LocalWorker;
+import java.lang.String;
+import java.lang.System;
+
+
 
 /**
  * Fetch a single image from URL

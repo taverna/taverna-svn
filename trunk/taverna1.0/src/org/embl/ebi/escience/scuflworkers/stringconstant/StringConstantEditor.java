@@ -11,6 +11,8 @@ import javax.swing.JOptionPane;
 import org.embl.ebi.escience.scufl.Processor;
 import org.embl.ebi.escience.scuflworkers.ProcessorEditor;
 
+import org.embl.ebi.escience.scuflworkers.stringconstant.StringConstantProcessor;
+import java.lang.String;
 
 
 

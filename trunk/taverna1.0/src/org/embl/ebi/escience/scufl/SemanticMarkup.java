@@ -13,6 +13,12 @@ import java.util.List;
 // JDOM Imports
 import org.jdom.Element;
 
+import org.embl.ebi.escience.scufl.Port;
+import org.embl.ebi.escience.scufl.ScuflModelEvent;
+import org.embl.ebi.escience.scufl.XScufl;
+import java.lang.Object;
+import java.lang.String;
+import java.lang.StringBuffer;
 
 
 

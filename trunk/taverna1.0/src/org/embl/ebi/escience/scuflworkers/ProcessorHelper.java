@@ -14,13 +14,7 @@ import org.embl.ebi.escience.scufl.parser.XScuflFormatException;
 import org.embl.ebi.escience.scuflui.workbench.Scavenger;
 
 // Utility Imports
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Set;
-import java.util.HashSet;
-import java.util.Properties;
+import java.util.*;
 
 // JDOM Imports
 import org.jdom.Element;
@@ -28,6 +22,15 @@ import org.jdom.Element;
 // Network Imports
 import java.net.URL;
 
+import org.embl.ebi.escience.scuflworkers.ProcessorEditor;
+import org.embl.ebi.escience.scuflworkers.ScavengerHelper;
+import org.embl.ebi.escience.scuflworkers.XMLHandler;
+import java.lang.Class;
+import java.lang.ClassLoader;
+import java.lang.Exception;
+import java.lang.Object;
+import java.lang.String;
+import java.lang.System;
 
 
 

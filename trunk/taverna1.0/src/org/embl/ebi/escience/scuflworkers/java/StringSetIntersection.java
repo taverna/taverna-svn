@@ -5,11 +5,17 @@
  */
 package org.embl.ebi.escience.scuflworkers.java;
 
+import org.embl.ebi.escience.baclava.DataThing;
 import uk.ac.soton.itinnovation.taverna.enactor.entities.TaskExecutionException;
+
+// Utility Imports
 import java.util.*;
-import java.io.*;
-import java.net.*;
-import org.embl.ebi.escience.baclava.*;
+
+import org.embl.ebi.escience.scuflworkers.java.LocalWorker;
+import java.lang.Object;
+import java.lang.String;
+
+
 
 /**
  * Returns the intersection of two sets or lists of string types

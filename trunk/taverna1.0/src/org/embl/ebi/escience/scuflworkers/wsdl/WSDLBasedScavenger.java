@@ -28,6 +28,8 @@ import java.util.Map;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+import org.embl.ebi.escience.scuflworkers.wsdl.WSDLBasedProcessorFactory;
+import java.lang.String;
 
 
 

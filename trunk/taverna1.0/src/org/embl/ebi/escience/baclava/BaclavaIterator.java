@@ -5,7 +5,15 @@
  */
 package org.embl.ebi.escience.baclava;
 
-import java.util.*;
+// Utility Imports
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.NoSuchElementException;
+
+import java.lang.Object;
+import java.lang.UnsupportedOperationException;
+
+
 
 /**
  * This provides an Iterator interface with a single

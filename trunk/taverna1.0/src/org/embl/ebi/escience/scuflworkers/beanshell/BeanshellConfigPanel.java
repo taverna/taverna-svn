@@ -19,6 +19,9 @@ import org.embl.ebi.escience.scufl.ScuflModel;
 import org.embl.ebi.escience.scuflui.ScuflIcons;
 import org.embl.ebi.escience.scuflui.ScuflUIComponent;
 
+import org.embl.ebi.escience.scuflworkers.beanshell.BeanshellProcessor;
+import java.lang.Object;
+import java.lang.String;
 
 
 

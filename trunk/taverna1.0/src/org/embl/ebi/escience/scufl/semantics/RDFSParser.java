@@ -24,6 +24,10 @@ import org.jdom.Element;
 import org.jdom.Namespace;
 import org.jdom.input.SAXBuilder;
 
+import org.embl.ebi.escience.scufl.semantics.RDFSClassHolder;
+import java.lang.Exception;
+import java.lang.String;
+import java.lang.System;
 
 
 

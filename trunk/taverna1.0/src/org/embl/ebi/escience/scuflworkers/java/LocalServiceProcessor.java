@@ -10,6 +10,14 @@ import org.embl.ebi.escience.scufl.*;
 // Utility Imports
 import java.util.Properties;
 
+import org.embl.ebi.escience.scuflworkers.java.LocalWorker;
+import java.lang.Class;
+import java.lang.Exception;
+import java.lang.String;
+import java.lang.System;
+
+
+
 /**
  * A processor that runs the quick Java plugins defined by the
  * LocalService interface in this package.

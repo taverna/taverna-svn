@@ -5,11 +5,20 @@
  */
 package org.embl.ebi.escience.scuflworkers.java;
 
+import org.embl.ebi.escience.baclava.DataThing;
 import uk.ac.soton.itinnovation.taverna.enactor.entities.TaskExecutionException;
-import java.util.*;
-import java.io.*;
-import java.net.*;
-import org.embl.ebi.escience.baclava.*;
+
+// Utility Imports
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+
+import org.embl.ebi.escience.scuflworkers.java.LocalWorker;
+import java.lang.String;
+
+
 
 /**
  * Filter a list of Strings, only passing through those that match the supplied
