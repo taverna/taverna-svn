@@ -19,11 +19,12 @@ import org.embl.ebi.escience.treetable.*;
  */
 public class TreeTableModelView extends TreeModelView implements TreeTableModel {
 
-    private static String[] columnNames = {"Workflow object", "Retries", "Delay", "Backoff"};
+    private static String[] columnNames = {"Workflow object", "Retries", "Delay", "Backoff", "Critical"};
     private static Class[] columnClasses = { TreeTableModel.class,
 					     Integer.class,
 					     Integer.class,
-					     Double.class };
+					     Double.class,
+                                             Boolean.class};
     public int getColumnCount() {
 	return columnNames.length;
     }
@@ -63,7 +64,11 @@ public class TreeTableModelView extends TreeModelView implements TreeTableModel 
 	    if (p != null) {
 		return new Double(p.getBackoff());
 	    }
-	}
+        case 4:
+            if (p != null) {
+                return new Boolean(p.getCritical());
+            }
+        }
 	return null;
     }
     public boolean isCellEditable(Object nodeObject, int column) {	
@@ -130,7 +135,10 @@ public class TreeTableModelView extends TreeModelView implements TreeTableModel 
 		Double backoff = (Double)value;
 		p.setBackoff(backoff.doubleValue());
 		return;
-	    }
+            case 4:
+                p.setCritical(((Boolean) value).booleanValue());
+                return;
+            }
 	}
 	else if (node.getUserObject() instanceof Port) {
 	    Port thePort = (Port)node.getUserObject();
@@ -145,5 +153,4 @@ public class TreeTableModelView extends TreeModelView implements TreeTableModel 
     public void receiveModelEvent(ScuflModelEvent event) {
 	super.receiveModelEvent(event);
     }
-    
 }

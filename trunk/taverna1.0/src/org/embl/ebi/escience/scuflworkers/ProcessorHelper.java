@@ -340,6 +340,9 @@ public class ProcessorHelper {
 		if (p.getBackoff()!=1.0) {
 		    result.setAttribute("retrybackoff",Double.toString(p.getBackoff()));
 		}
+                if (p.getCritical() != false) {
+                    result.setAttribute("critical", "" + p.getCritical());
+                }
 		return result;
 	    }
 	}
@@ -394,6 +397,10 @@ public class ProcessorHelper {
           String retryBackoffString = candidateElement.getAttributeValue("retrybackoff");
           if (retryBackoffString != null) {
             loadedProcessor.setBackoff(Double.parseDouble(retryBackoffString));
+          }
+          String critical = candidateElement.getAttributeValue("critical");
+          if(critical != null) {
+            loadedProcessor.setCritical((new Boolean(critical).booleanValue()));
           }
         }
       }

@@ -44,6 +44,8 @@ public abstract class Processor implements Serializable {
     protected int retries = 0;
     protected int retryDelay = 0;
     protected double backoff = 1.0;
+    /** If a processor is critical its execution failure will fail the workflow */
+    protected boolean critical = false;
     protected List alternates = new ArrayList();
     //final public static DataFlavor FLAVOR =
     //	new DataFlavor(Processor.class, "Procesor");
@@ -293,6 +295,25 @@ public abstract class Processor implements Serializable {
 	    this.backoff = backoff;
 	    fireModelEvent(new MinorScuflModelEvent(this, "Backoff changed"));
 	}
+    }
+
+    /**
+     * Get whether the Processor is critical. This is true
+     * if its execution failure will cause its containing
+     * workflow to fail.
+     */
+    public boolean getCritical() {
+        return critical;
+    }
+
+    /**
+     * Set whether the Processor is critical. When a critical Processor's
+     * execution fails, its containing workflow is halted and fails. In contrast,
+     * the containing workflow will ignore failures of non-critical Processors
+     * and will continue to run.
+     */
+    public void setCritical(boolean critical) {
+        this.critical = critical;
     }
 
     /**

@@ -24,9 +24,9 @@
 //      Created for Project :   MYGRID
 //      Dependencies        :
 //
-//      Last commit info    :   $Author: mereden $
-//                              $Date: 2004-07-16 12:27:00 $
-//                              $Revision: 1.57 $
+//      Last commit info    :   $Author: ferris $
+//                              $Date: 2004-07-22 10:28:00 $
+//                              $Revision: 1.58 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 package uk.ac.soton.itinnovation.taverna.enactor.entities;
@@ -173,7 +173,7 @@ public class ProcessorTask extends AbstractTask {
 		catch (TaskExecutionException tee) {
 		    // If there are alternates left then just loop
 		    // otherwise rethrow
-		    if (i>=proc.getAlternatesArray().length) {
+		    if (i == proc.getAlternatesArray().length - 1) {
 			throw tee;
 		    }
 		    else {
@@ -710,6 +710,7 @@ public class ProcessorTask extends AbstractTask {
 	this.userID = userID;
 	this.userCtx = userCtx;
 	this.eventList = new ArrayList();
+        super.setFailFlowOnTaskFailure(p.getCritical());
 	// Add an event to the list for the scheduling operation
 	schedule(p);
     }

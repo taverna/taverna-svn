@@ -72,11 +72,16 @@ public class ScuflModelTreeTable extends JTreeTable
 	new DropTarget(this, DnDConstants.ACTION_COPY_OR_MOVE, this);
 	setModel(treeModel);
 	TableColumnModel columnModel = getColumnModel();
-	for (int i = 1; i < 4; i++) {
+	for (int i = 1; i < 5; i++) {
 	    TableColumn c = columnModel.getColumn(i);
 	    c.setMaxWidth(100);
 	}
 	setDefaultEditor(TreeTableModel.class, new ScuflModelTreeTableCellEditor());
+        JCheckBox jcbox = new JCheckBox();
+        jcbox.setBackground(getBackground());
+        jcbox.setHorizontalAlignment(SwingConstants.CENTER);
+        setDefaultEditor(Boolean.class, new DefaultCellEditor(jcbox));
+        setDefaultRenderer(Boolean.class, new TableCheckbox());
 	// Attach the popup menu generator to the tree
 	this.addMouseListener(new ScuflModelExplorerPopupHandler(this));
 	// Show lines in the tree diagram
@@ -381,5 +386,24 @@ public class ScuflModelTreeTable extends JTreeTable
 
     public ImageIcon getIcon() {
 	return ScuflIcons.windowExplorer;
+    }
+
+    class TableCheckbox extends JCheckBox implements TableCellRenderer {
+        TableCheckbox() {
+            setBackground(ScuflModelTreeTable.this.getBackground());
+            setHorizontalAlignment(SwingConstants.CENTER);
+        }
+
+        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+            if(value != null) {
+                setSelected(((Boolean) value).booleanValue());
+                return this;
+            }
+            else {
+                JLabel label = new JLabel("");
+                label.setBackground(ScuflModelTreeTable.this.getBackground());
+                return label;
+            }
+        }
     }
 }
