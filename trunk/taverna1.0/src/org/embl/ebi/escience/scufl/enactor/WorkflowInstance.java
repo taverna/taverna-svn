@@ -34,7 +34,7 @@ public interface WorkflowInstance {
     
     /**
      * Start this workflow istance running.
-     * @throw InvalidInputException if the input is doesn't map to source in the dataflow.
+     * @exception InvalidInputException if the input is doesn't map to source in the dataflow.
      */
     public void run() throws InvalidInputException;
     
@@ -44,7 +44,7 @@ public interface WorkflowInstance {
     * The possible values for the return value are enumerated in 
     * <code>FlowStateDefinition</code>.
     * @return simple string to that describes the workflow status 
-    * @see uk.ac.soton.itinnovation.freefluo.main.FlowStateDefinition
+    * see uk.ac.soton.itinnovation.freefluo.main.FlowStateDefinition
     */
     public String getStatus();
     
