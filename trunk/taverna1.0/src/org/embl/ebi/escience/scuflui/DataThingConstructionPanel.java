@@ -89,7 +89,7 @@ import org.jdom.output.XMLOutputter;
  * COMMENT DataThingConstructionPanel
  * 
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover </a>
- * @version $Revision: 1.11 $
+ * @version $Revision: 1.12 $
  */
 public class DataThingConstructionPanel extends JPanel implements ScuflUIComponent, ScuflModelEventListener
 {
@@ -411,7 +411,9 @@ public class DataThingConstructionPanel extends JPanel implements ScuflUICompone
 				RendererSPI renderer = registry.getRenderer(thing);
 				try
 				{
-					return new JScrollPane(renderer.getComponent(registry, thing));
+					JScrollPane scrollPane = new JScrollPane(renderer.getComponent(registry, thing));
+					scrollPane.setPreferredSize(new Dimension(0,0));
+					return scrollPane;
 				}
 				catch (RendererException e)
 				{
@@ -552,6 +554,10 @@ public class DataThingConstructionPanel extends JPanel implements ScuflUICompone
 				if (port.getMetadata().getSemanticType() != null && port.getMetadata().getSemanticType() != "")
 				{
 					detailText = detailText + "<p>" + port.getMetadata().getSemanticType() + "</p>";
+				}
+				if (port.getMetadata().getDisplayTypeList() != null && port.getMetadata().getDisplayTypeList() != "")
+				{
+					detailText = detailText + "<p>" + port.getMetadata().getDisplayTypeList() + "</p>";
 				}
 				if (port.getMetadata().getDescription() != null && port.getMetadata().getDescription() != "")
 				{
@@ -754,6 +760,7 @@ public class DataThingConstructionPanel extends JPanel implements ScuflUICompone
 					try
 					{
 						panel = new JScrollPane(renderer.getComponent(registry, thing));
+						panel.setPreferredSize(new Dimension(0,0));
 					}
 					catch (RendererException e)
 					{
@@ -1041,15 +1048,24 @@ public class DataThingConstructionPanel extends JPanel implements ScuflUICompone
 					else if (node instanceof InputPortNode)
 					{
 						loadInputsButton.setEnabled(true);
-						newInputButton.setEnabled(true);
-						newListButton.setEnabled(true);
+						newInputButton.setEnabled(canAddInputs((InputListNode)node));
+						newListButton.setEnabled(canAddLists((InputListNode)node));
 						removeButton.setEnabled(false);
 					}
-					else
+					else if(node instanceof InputListNode)
 					{
+						loadInputsButton.setEnabled(true);
+						newInputButton.setEnabled(canAddInputs((InputListNode)node));
+						newListButton.setEnabled(canAddLists((InputListNode)node));
+						removeButton.setEnabled(true);
+					}
+					else if(node instanceof InputDataThingNode)
+					{
+						InputDataThingNode thingNode = (InputDataThingNode)node;
+						InputListNode parent = (InputListNode)thingNode.getParent();
 						loadInputsButton.setEnabled(true);						
-						newInputButton.setEnabled(true);
-						newListButton.setEnabled(true);
+						newInputButton.setEnabled(canAddInputs(parent));
+						newListButton.setEnabled(canAddLists(parent));
 						removeButton.setEnabled(true);
 					}
 				}
@@ -1066,6 +1082,30 @@ public class DataThingConstructionPanel extends JPanel implements ScuflUICompone
 				}
 				splitter.validate();
 			}
+			
+			private boolean canAddLists(InputListNode node)
+			{
+				if(node.getChildCount() > 0)
+				{
+					if(node.getFirstChild() instanceof InputDataThingNode)
+					{
+						return false;
+					}
+				}
+				return true;
+			}
+			
+			private boolean canAddInputs(InputListNode node)
+			{
+				if(node.getChildCount() > 0)
+				{
+					if(node.getFirstChild() instanceof InputListNode)
+					{
+						return false;
+					}
+				}
+				return true;
+			}			
 		});
 		portTree.addMouseListener(new MouseAdapter()
 		{
