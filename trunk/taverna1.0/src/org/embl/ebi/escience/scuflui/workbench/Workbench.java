@@ -124,9 +124,14 @@ public class Workbench extends JFrame {
 	// Load the test ontology for the annotation of workflow
 	// source and sink ports
 	try {
-	    URL ontologyURL =
-		ClassLoader.getSystemResource("org/embl/ebi/escience/scufl/semantics/mygrid-reasoned-small.rdfs");
-	    RDFSParser.loadRDFSDocument(ontologyURL.openStream(), "internal test ontology");
+	    URL ontologyURL;
+	    if (System.getProperty("taverna.ontology.location")!=null) {
+		ontologyURL = new URL("taverna.ontology.location");
+	    }
+	    else {
+		ontologyURL = ClassLoader.getSystemResource("org/embl/ebi/escience/scufl/semantics/mygrid-reasoned-small.rdfs");
+	    }
+	    RDFSParser.loadRDFSDocument(ontologyURL.openStream(), "Types");
 	}
 	catch (Exception ex) {
 	    System.out.println("Failed to load ontology data! "+ex.getMessage());

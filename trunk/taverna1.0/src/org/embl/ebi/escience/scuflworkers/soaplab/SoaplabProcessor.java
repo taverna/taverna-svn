@@ -84,8 +84,8 @@ public class SoaplabProcessor extends Processor implements java.io.Serializable 
 	// from the returned parameters of the soap call.
 
 	try {
-
-	    setEndpoint(endpoint);
+	    String firstPart = endpoint.split("\\?")[0];
+	    setEndpoint(firstPart);
 
 	}
 

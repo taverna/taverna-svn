@@ -283,6 +283,16 @@ public class AdvancedModelExplorer extends JPanel
 		tabs.setEnabledAt(1, false);
 	    }
 	}
+	else if (selectedObject != null && selectedObject instanceof Port) {
+	    Port p = (Port)selectedObject;
+	    if (p.isSource() || p.isSink()) {
+		SemanticMarkup m = p.getMetadata();
+		propertiesPanel.removeAll();
+		propertiesPanel.setLayout(new BoxLayout(propertiesPanel, BoxLayout.PAGE_AXIS));
+		propertiesPanel.add(new ScuflSemanticMarkupEditor(m), BorderLayout.CENTER);
+		tabs.setEnabledAt(1, true);
+	    }
+	}
 	else {
 	    tabs.setEnabledAt(1, false);
 	}
