@@ -47,6 +47,15 @@ public class Workbench extends JFrame {
     
     public static ImageIcon openIcon, deleteIcon, importIcon, saveIcon, openurlIcon;
 
+    /**
+     * If the workbench is created, it will set this
+     * to the instance value. This allows ui components
+     * that otherwise don't have a handle to the desktop
+     * pane to create themselves in internal windows. This
+     * especially applies to the workflow run panel
+     */
+    public static Workbench workbench = null;
+
     static {
 	try {
 	    Class c = Class.forName("org.embl.ebi.escience.scuflui.workbench.Workbench");
@@ -70,9 +79,9 @@ public class Workbench extends JFrame {
         }
     }
 
-    JDesktopPane desktop;
+    public JDesktopPane desktop;
 
-    ScuflModel model;
+    public ScuflModel model;
 
     final JFileChooser fc = new JFileChooser();
 
@@ -128,6 +137,7 @@ public class Workbench extends JFrame {
      */
     public Workbench() {
 	super("Scufl Workbench");
+	Workbench.workbench = this;
 	int inset = 50;
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
         setBounds(inset, inset, 

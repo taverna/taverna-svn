@@ -16,7 +16,7 @@ import javax.swing.ImageIcon;
  */
 public class ScuflIcons {
 
-    public static ImageIcon inputIcon, outputIcon, inputPortIcon, outputPortIcon, dataLinkIcon, constraintIcon, deleteIcon, zoomIcon, webIcon, openIcon, runIcon, refreshIcon;
+    public static ImageIcon inputIcon, outputIcon, inputPortIcon, outputPortIcon, dataLinkIcon, constraintIcon, deleteIcon, zoomIcon, webIcon, openIcon, runIcon, refreshIcon, editIcon;
 
     static {
 	// Load the image files found in this package into the class.
@@ -34,6 +34,8 @@ public class ScuflIcons {
 	    openIcon = new ImageIcon(c.getResource("open.gif"));
 	    runIcon = new ImageIcon(c.getResource("run.gif"));
 	    refreshIcon = new ImageIcon(c.getResource("refresh.gif"));
+	    editIcon = new ImageIcon(c.getResource("edit.gif"));
+
 
 	}
 	catch (ClassNotFoundException cnfe) {

@@ -29,16 +29,10 @@ public class StringConstantScavengerHelper implements ScavengerHelper {
 	final ScavengerTree s = theScavenger;
 	return new ActionListener() {
 		public void actionPerformed(ActionEvent ae) {
-		    String value = (String)JOptionPane.showInputDialog(null,
-								       "String constant",
-								       "Constant value?",
-								       JOptionPane.QUESTION_MESSAGE,
-								       null,
-								       null,
-								       "");
+		    String value = "edit me!";
 		    if (value!=null) {
 			try {
-			    s.addScavenger(new StringConstantScavenger(value));					
+			    s.addScavenger(new StringConstantScavenger(value));
 			}
 			catch (ScavengerCreationException sce) {
 			    JOptionPane.showMessageDialog(null,

@@ -51,7 +51,7 @@ public class StringConstantProcessor extends Processor implements java.io.Serial
      * Override the toString method
      */
     public String toString() {
-	return "Constant : "+theStringValue;
+	return getName() + " : "+theStringValue;
     }
 
     /**
@@ -59,6 +59,15 @@ public class StringConstantProcessor extends Processor implements java.io.Serial
      */
     public String getStringValue() {
 	return theStringValue;
+    }
+
+    /**
+     * Set the string value for the string constant
+     */
+    public void setStringValue(String theStringValue) {
+	this.theStringValue = theStringValue;
+	// Fire a model event
+	fireModelEvent(new ScuflModelEvent(this, "String value changed to '"+theStringValue+"'"));
     }
 
     /**

@@ -34,7 +34,7 @@ public class StringConstantProcessorFactory implements ProcessorFactory {
      * Return the constant value as the name
      */
     public String toString() {
-	return "String : "+value;
+	return "String constant";
     }
     
     /**

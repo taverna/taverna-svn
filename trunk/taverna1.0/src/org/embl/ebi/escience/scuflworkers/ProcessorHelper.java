@@ -60,6 +60,7 @@ public class ProcessorHelper {
     static Map taskClassForTagName = new HashMap();
     static Map xmlHandlerForTagName = new HashMap();
     static Map tagNameForScavenger = new HashMap();
+    static Map editorForTagName = new HashMap();
 
     static ImageIcon unknownProcessorIcon;
 
@@ -73,7 +74,7 @@ public class ProcessorHelper {
 	    Properties tavernaProperties = new Properties();
 	    while (en.hasMoreElements()) {
 		URL resourceURL = (URL)en.nextElement();
-		System.out.println("Loading resources from : "+resourceURL.toString());
+		//System.out.println("Loading resources from : "+resourceURL.toString());
 		tavernaProperties.load(resourceURL.openStream());
 	    }
 	    // Should now have a populated properties list, set up the various
@@ -117,6 +118,15 @@ public class ProcessorHelper {
 			Class handlerClass = Class.forName(handlerClassName);
 			XMLHandler xh = (XMLHandler)handlerClass.newInstance();
 			xmlHandlerForTagName.put(tagName, xh);
+		    }
+		    // Form : taverna.processor.<TAGNAME>.editor = <EDITOR_CLASS>
+		    else if (keyElements[3].equals("editor")) {
+			// Configure and create the processor editor handler
+			String editorClassName = value;
+			// Create an instance...
+			Class editorClass = Class.forName(editorClassName);
+			ProcessorEditor pe = (ProcessorEditor)editorClass.newInstance();
+			editorForTagName.put(tagName, pe);
 		    }
 		}
 		// Form : taverna.scavenger.<TAGNAME> = <SCAVENGERCLASS>
@@ -174,7 +184,14 @@ public class ProcessorHelper {
 	return (String)tagNameForClassName.get(className);
     }
 
+    /**
+     * Given a tag name, return the in place editor for the processor
+     */
+    public static ProcessorEditor getEditorForTagName(String tagName) {
+	return (ProcessorEditor)editorForTagName.get(tagName);
+    }
     
+
     /**
      * Given a tag name, return the preferred image icon for that
      * tag.

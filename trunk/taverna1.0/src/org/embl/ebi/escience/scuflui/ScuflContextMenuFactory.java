@@ -12,6 +12,7 @@ import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
 import org.embl.ebi.escience.scufl.*;
+import org.embl.ebi.escience.scuflworkers.*;
 
 
 
@@ -213,6 +214,14 @@ public class ScuflContextMenuFactory {
 	    });
 	// Provide a submenu to create a coordination constraint
 	theMenu.add(delete);
+	// Check whether we have an appropriate editor available....
+	String tagName = ProcessorHelper.getTagNameForClassName(theProcessor.getClass().getName());
+	ProcessorEditor pe = ProcessorHelper.getEditorForTagName(tagName);
+	if (pe != null) {
+	    JMenuItem edit = new JMenuItem(pe.getEditorDescription(), ScuflIcons.editIcon);
+	    edit.addActionListener(pe.getListener(theProcessor));
+	    theMenu.add(edit);
+	}
 	JMenuItem block = new JMenu("Coordinate from");
 	block.setIcon(ScuflIcons.constraintIcon);
 	theMenu.add(block);
@@ -224,20 +233,6 @@ public class ScuflContextMenuFactory {
 	    if (gp[i]!=processor) {
 		JMenuItem gpi = new JMenuItem(gp[i].getName());
 		gpi.setIcon(org.embl.ebi.escience.scuflworkers.ProcessorHelper.getPreferredIcon(gp[i]));
-		/**
-		   if (gp[i] instanceof SoaplabProcessor) {
-		   gpi.setIcon(ScuflIcons.soaplabIcon);
-		   }
-		   else if (gp[i] instanceof WSDLBasedProcessor) {
-		   gpi.setIcon(ScuflIcons.wsdlIcon);
-		   }
-		   else if (gp[i] instanceof TalismanProcessor) {
-		   gpi.setIcon(ScuflIcons.talismanIcon);
-		   }
-		   else if (gp[i] instanceof WorkflowProcessor) {
-		   gpi.setIcon(ScuflIcons.workflowIcon);
-		   }
-		*/
 		block.add(gpi);
 		final Processor controller = gp[i];
 		final Processor target = processor;

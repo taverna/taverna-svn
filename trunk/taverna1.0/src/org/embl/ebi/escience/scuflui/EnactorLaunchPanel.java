@@ -36,7 +36,7 @@ import org.jdom.output.XMLOutputter;
 
 // Network Imports
 import java.net.URL;
-
+import org.embl.ebi.escience.scuflui.workbench.*;
 
 
 
@@ -103,10 +103,17 @@ public class EnactorLaunchPanel extends JPanel
 			Input inputObject = new Input(new ByteArrayInputStream(xmlInputDoc.getBytes()));
 			System.out.println("Created the Input object.."+inputObject.toString());
 			try {
-			    new EnactorInvocation(null,
-						  EnactorLaunchPanel.this.model,
-						  inputObject,
-						  null);
+			    if (Workbench.workbench != null) {
+				GenericUIComponentFrame thing = new GenericUIComponentFrame(Workbench.workbench.model,
+											    new EnactorInvocation(null,
+														  EnactorLaunchPanel.this.model,
+														  inputObject,
+														  null));
+				thing.setSize(600,400);
+				thing.setLocation(100,100);
+				Workbench.workbench.desktop.add(thing);
+				thing.moveToFront();
+			    }
 			}
 			catch (Exception e) {
 			    e.printStackTrace();

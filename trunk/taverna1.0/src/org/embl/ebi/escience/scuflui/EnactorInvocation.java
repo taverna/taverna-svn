@@ -24,10 +24,11 @@ import java.util.Enumeration;
 import java.util.Properties;
 import java.util.ResourceBundle;
 
+import org.embl.ebi.escience.scuflui.workbench.*;
 
 
 
-public class EnactorInvocation extends JDialog {
+public class EnactorInvocation extends JPanel implements ScuflUIComponent {
 
     // A default instance of the workflow enactor to use if
     // the caller doesn't specify one to use
@@ -48,6 +49,18 @@ public class EnactorInvocation extends JDialog {
 	DEFAULT_ENACTOR = new TavernaWorkflowEnactor();
     }
     
+    public void attachToModel(ScuflModel theModel) {
+	//
+    }
+
+    public void detachFromModel() {
+	//
+    }
+
+    public String getName() {
+	return "Enactor invocation";
+    }
+
     private TavernaWorkflowEnactor theEnactor;
     private ScuflModel theModel;
     private TavernaBinaryWorkflowSubmission theSubmission; 
@@ -129,7 +142,8 @@ public class EnactorInvocation extends JDialog {
 			     String userID) 
 	throws InvalidFlowBrokerRequestException, 
 	       WorkflowCommandException {
-	super((JFrame)null,"Enactor invocation run", false);
+	super(new BorderLayout());
+	//super((JFrame)null,"Enactor invocation run", false);
 	// Non modal dialog box
 	
 	// If the user didn't supply an enactor use the
@@ -162,7 +176,7 @@ public class EnactorInvocation extends JDialog {
 	this.instanceID = this.flowReceipt.getID();
 	
 	// Create the UI
-	getContentPane().setLayout(new BoxLayout(getContentPane(), BoxLayout.PAGE_AXIS));
+	setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
 	final JPanel processorListPanel = new JPanel();
 	processorListPanel.setLayout(new BoxLayout(processorListPanel, BoxLayout.PAGE_AXIS));
 	processorListPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(),
@@ -175,7 +189,7 @@ public class EnactorInvocation extends JDialog {
 	processorListPanel.add(scrollPane);
 	//processorListPanel.pack();
 	//processorListPanel.setPreferredSize(new Dimension(500,150));
-	getContentPane().add(processorListPanel);
+	add(processorListPanel);
 
 	// Create a text area to show the results
 	JPanel resultsPanel = new JPanel();
@@ -187,7 +201,7 @@ public class EnactorInvocation extends JDialog {
 	resultsScrollPane.setPreferredSize(new Dimension(100,100));
 	resultsPanel.add(resultsScrollPane, BorderLayout.CENTER);
 
-	getContentPane().add(resultsPanel);
+	add(resultsPanel);
 
 	// Create a text area to show the provenance
 	JPanel provenancePanel = new JPanel();
@@ -198,12 +212,12 @@ public class EnactorInvocation extends JDialog {
 	JScrollPane provenanceScrollPane = new JScrollPane(provenanceText);
 	provenanceScrollPane.setPreferredSize(new Dimension(100,100));
 	provenancePanel.add(provenanceScrollPane, BorderLayout.CENTER);
-	getContentPane().add(provenancePanel);
+	add(provenancePanel);
 
-	pack();
-	setSize(new Dimension(600,300));
-	setVisible(true);
-	
+	//pack();
+	//setSize(new Dimension(600,300));
+	//setVisible(true);
+	show();
 	// Run the workflow and poll for status messages
 	EnactorInvocationStatusThread s = new EnactorInvocationStatusThread(this);
 
