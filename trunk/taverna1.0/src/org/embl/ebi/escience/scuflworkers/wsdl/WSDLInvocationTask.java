@@ -174,32 +174,42 @@ public class WSDLInvocationTask implements ProcessorTaskWorker {
 		input.setObjectPart(processor.inNames[i], value);
 	    }
 	    
-	    operation.executeRequestResponseOperation(input, output, fault);
+	    boolean respOK = operation.executeRequestResponseOperation(input, output, fault);
 	    
-	    // Debug - print out all available part names
-	    for (Iterator i = output.getPartNames(); i.hasNext(); ) {
-		System.out.println(i.next());
-	    }
-
-	    Map resultMap = new HashMap();
-	    for (int i = 0; i < processor.outNames.length; i++) {
-		String outputName = processor.outNames[i];
-		Object resultObject = output.getObjectPart(outputName);
-		if (resultObject instanceof Node) {
-		    // If the output is an instance of Node then convert it to a text/xml
-		    // form.
-		    Node node = (Node)resultObject;
-		    TransformerFactory tFactory = TransformerFactory.newInstance();
-		    Transformer transformer = tFactory.newTransformer();
-		    DOMSource source = new DOMSource(node.getOwnerDocument());
-		    ByteArrayOutputStream baos = new ByteArrayOutputStream();
-		    transformer.transform(source, new StreamResult(baos));
-		    resultObject = baos.toString();
+	    if (respOK) {
+		// Operation succeeded - extract output parts
+		Map resultMap = new HashMap();
+		for (int i = 0; i < processor.outNames.length; i++) {
+		    String outputName = processor.outNames[i];
+		    Object resultObject = output.getObjectPart(outputName);
+		    if (resultObject instanceof Node) {
+			// If the output is an instance of Node then 
+			// convert it to a text/xml form.
+			Node node = (Node)resultObject;
+			TransformerFactory tFactory = TransformerFactory.newInstance();
+			Transformer transformer = tFactory.newTransformer();
+			DOMSource source = new DOMSource(node.getOwnerDocument());
+			ByteArrayOutputStream baos = new ByteArrayOutputStream();
+			transformer.transform(source, new StreamResult(baos));
+			resultObject = baos.toString();
+		    }
+		    resultMap.put(outputName, new DataThing(resultObject));
 		}
-		resultMap.put(outputName, new DataThing(resultObject));
+		return resultMap;
 	    }
-	    
-	    return resultMap;
+	    else {
+		// Operation failed - extract failure parts
+		StringBuffer errorMessage = new StringBuffer();
+		errorMessage.append("Error from WSIF based invocation :\n");
+		for (Iterator i = fault.getPartNames(); i.hasNext();) {
+		    String name = (String)i.next();
+		    errorMessage.append(fault.getObjectPart(name).toString());
+		    if (i.hasNext()) {
+			errorMessage.append("\n");
+		    }
+		}
+		throw new TaskExecutionException(errorMessage.toString());
+	    }
 	}
 	catch (Exception ex) {
 	    if (ex instanceof TaskExecutionException) {
