@@ -9,7 +9,7 @@ import org.embl.ebi.escience.baclava.*;
 import uk.ac.soton.itinnovation.taverna.enactor.entities.TaskExecutionException;
 
 /**
- * Spit out a list of 200 strings
+ * Spit out a list of 40 strings
  */
 public class EmitLotsOfStrings implements LocalWorker {
 
@@ -30,8 +30,8 @@ public class EmitLotsOfStrings implements LocalWorker {
      * Just throw an exception!
      */
     public Map execute(Map inputs) throws TaskExecutionException {
-	String[] results = new String[200];
-	for (int i = 0; i < 200; i++) {
+	String[] results = new String[40];
+	for (int i = 0; i < 40; i++) {
 	    results[i] = "String"+i;
 	}
 	DataThing resultThing = new DataThing(results);

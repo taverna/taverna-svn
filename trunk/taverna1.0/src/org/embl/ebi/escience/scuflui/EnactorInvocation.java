@@ -51,7 +51,7 @@ public class EnactorInvocation extends JPanel implements ScuflUIComponent {
 	// detachFromModel() is called by GeneridUIComponentFrame when
         // it is closing.  Cleanup of remote resources will be done here.
         try {
-            workflowInstance.destroy();
+            workflowInstance.cancel();
         }
         catch(Exception e) {
             e.printStackTrace();

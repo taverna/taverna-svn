@@ -25,8 +25,8 @@
 //      Dependencies        :
 //
 //      Last commit info    :   $Author: mereden $
-//                              $Date: 2004-07-09 14:20:49 $
-//                              $Revision: 1.53 $
+//                              $Date: 2004-07-09 18:37:30 $
+//                              $Revision: 1.54 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 package uk.ac.soton.itinnovation.taverna.enactor.entities;
@@ -97,7 +97,7 @@ public class ProcessorTask extends AbstractTask {
 		      STORE = (BaclavaDataService)c.newInstance();
 	    }
 	    catch (Exception ex) {
-		System.out.println("Unable to initialize data store class : "+storageClassName);
+		//System.out.println("Unable to initialize data store class : "+storageClassName);
 		ex.printStackTrace();
 	    }
 	}
@@ -156,7 +156,7 @@ public class ProcessorTask extends AbstractTask {
 	    String flowID = flow.getFlowId();
 	    Engine e = flow.getEngine();
 	    this.workflowInstance = (WorkflowInstance)new org.embl.ebi.escience.scufl.enactor.implementation.WorkflowInstanceImpl(e, flowID);
-	    // System.out.println("Invoking processor task for "+activeProcessor.getName());
+	    // //System.out.println("Invoking processor task for "+activeProcessor.getName());
 	    // The default processor will have been scheduled by the
 	    // constructor to this class so we can get on and do stuff.
 	    for (int i = -1; i < proc.getAlternatesArray().length; i++) {
@@ -292,7 +292,7 @@ public class ProcessorTask extends AbstractTask {
 		if (targetInputName == null) {
 		    targetInputName = originalInputName;
 		}
-		//System.out.println("Mapping input name '"+originalInputName+"' to processor port '"+targetInputName+"'");
+		////System.out.println("Mapping input name '"+originalInputName+"' to processor port '"+targetInputName+"'");
 		taskInput.put(targetInputName, inputItem);
 	    }
 	    output = doInvocationWithRetryLogic(worker, taskInput);
@@ -300,7 +300,7 @@ public class ProcessorTask extends AbstractTask {
 	
 	// Now do the same for the output mapping
 	if (activeOutputMapping == null) {
-	    //System.out.println("No mapping, returning output straight");
+	    ////System.out.println("No mapping, returning output straight");
 	    return output;
 	}
 	else {
@@ -311,7 +311,7 @@ public class ProcessorTask extends AbstractTask {
 		if (targetOutputName == null) {
 		    targetOutputName = realOutputName;
 		}
-		//System.out.println("Storing result from '"+realOutputName+"' as '"+targetOutputName+"'");
+		////System.out.println("Storing result from '"+realOutputName+"' as '"+targetOutputName+"'");
 		DataThing outputItem = (DataThing)output.get(realOutputName);
 		taskOutput.put(targetOutputName, outputItem);
 	    }
@@ -533,7 +533,7 @@ public class ProcessorTask extends AbstractTask {
 		// Assign an LSID to the root collection object
 		outputThing.fillLSIDValues();
 		String collectionLSID = outputThing.getLSID(outputThing.getDataObject());
-		System.out.println("Got collection LSID : "+collectionLSID);
+		//System.out.println("Got collection LSID : "+collectionLSID);
 		outputMap.put(outputPortTask.getScuflPort().getName(), outputThing);
 		// Create an entry in the collectionStructure map containing
 		// a set, initially empty
@@ -596,21 +596,21 @@ public class ProcessorTask extends AbstractTask {
 		// data flow causing a null pointer exception if no such data flow existed.
 		if (outputMap.containsKey(outputName)) {
 		    DataThing targetThing = (DataThing)outputMap.get(outputName);
-		    System.out.println(targetThing);
+		    //System.out.println(targetThing);
 		    targetThing.fillLSIDValues();
-		    System.out.println(targetThing);
+		    //System.out.println(targetThing);
 		    List targetList = (List)targetThing.getDataObject();
-		    System.out.println("Target list has object ID "+targetList.hashCode());
+		    //System.out.println("Target list has object ID "+targetList.hashCode());
 		    //targetList.add(dataObject);
 		    insertObjectInto(dataObject, targetList, currentLocation, targetThing);
 		    // Copy metadata from the original output into the new one, preserve LSID hopefully!
 		    targetThing.copyMetadataFrom(outputValue);
 		    // Get the LSID of the original output item
-		    System.out.println(targetThing);
-		    System.out.println(targetThing.getDataObject() == targetList);
+		    //System.out.println(targetThing);
+		    //System.out.println(targetThing.getDataObject() == targetList);
 		    String originalLSID = targetThing.getLSID(dataObject);
 		    String collectionLSID = targetThing.getLSID(targetList);
-		    System.out.println("original : "+originalLSID+", collection : "+collectionLSID);
+		    //System.out.println("original : "+originalLSID+", collection : "+collectionLSID);
 		    ((Set)collectionStructure.get(collectionLSID)).add(originalLSID);
 		}
 		/// fix ends

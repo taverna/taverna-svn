@@ -25,9 +25,9 @@
 //      Created for Project :   MYGRID
 //      Dependencies        :
 //
-//      Last commit info    :   $Author: ferris $
-//                              $Date: 2004-06-03 11:39:25 $
-//                              $Revision: 1.28 $
+//      Last commit info    :   $Author: mereden $
+//                              $Date: 2004-07-09 18:37:30 $
+//                              $Revision: 1.29 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 
@@ -116,7 +116,7 @@ public class PortTask extends AbstractTask {
      * @param newDataThing holder for data
      */
     public synchronized void setData(DataThing newDataThing) {
-	System.out.println("Pushing data into port task "+getScuflPort().getProcessor().getName()+"."+getScuflPort().getName());
+	//System.out.println("Pushing data into port task "+getScuflPort().getProcessor().getName()+"."+getScuflPort().getName());
 	// Check whether the new data is a lower dimension than
 	// the type of this port task
 	String portSyntaxType = thePort.getSyntacticType();
@@ -126,19 +126,19 @@ public class PortTask extends AbstractTask {
 	//if (portSyntaxType != dataSyntaxType) {
 	String portSetType = portSyntaxType.split("\\'")[0];
 	String dataSetType = dataSyntaxType.split("\\'")[0];
-	//System.out.println("Set types are "+portSetType+" and "+dataSetType);
+	////System.out.println("Set types are "+portSetType+" and "+dataSetType);
 	// Get the number of 'l(' elements
 	int portDimension = (portSetType.length())/2;
 	int dataDimension = (dataSetType.length())/2;
 	int encapsulationDifference = portDimension - dataDimension;
-	//System.out.println("Think this is a difference of "+encapsulationDifference+" ("+portDimension+"-"+dataDimension+")");
+	////System.out.println("Think this is a difference of "+encapsulationDifference+" ("+portDimension+"-"+dataDimension+")");
 	if (encapsulationDifference > 0) {  
 	    Object theDataObject = newDataThing.getDataObject();
 	    while (encapsulationDifference > 0) {
 		encapsulationDifference--;
 		// While the dimensionality has not been reconciled create
 		// a new List container and put the current object in it.
-		System.out.println("Wrapping data...");
+		//System.out.println("Wrapping data...");
 		List newList = new ArrayList();
 		newList.add(theDataObject);
 		theDataObject = newList;
@@ -169,7 +169,7 @@ public class PortTask extends AbstractTask {
 		SemanticMarkup portMarkup = targetMetadataPort.getMetadata();
 		String[] portMIMETypes = portMarkup.getMIMETypes();
 		for (int i = 0; i < portMIMETypes.length; i++) {
-		    //System.out.println("Adding mime type "+portMIMETypes[i]+" to "+((Object)theDataThing).toString());
+		    ////System.out.println("Adding mime type "+portMIMETypes[i]+" to "+((Object)theDataThing).toString());
 		    this.theDataThing.getMetadata().addMIMEType(portMIMETypes[i]);
 		}
 		// Copy any semantic markup into the markup object as well
@@ -179,7 +179,7 @@ public class PortTask extends AbstractTask {
 	    SemanticMarkup portMarkup = getScuflPort().getMetadata();
 	    String[] portMIMETypes = portMarkup.getMIMETypes();
 	    for (int i = 0; i < portMIMETypes.length; i++) {
-		//System.out.println("Adding mime type "+portMIMETypes[i]+" to "+((Object)theDataThing).toString());
+		////System.out.println("Adding mime type "+portMIMETypes[i]+" to "+((Object)theDataThing).toString());
 		this.theDataThing.getMetadata().addMIMEType(portMIMETypes[i]);
 	    }
 	}
@@ -222,7 +222,7 @@ public class PortTask extends AbstractTask {
 					   "No data for port " + thePort.getName() + ",please check its links");
 	    }	
 	    else {
-                System.out.println("Invoking : "+getScuflPort().getProcessor().getName()+"."+getScuflPort().getName());
+                //System.out.println("Invoking : "+getScuflPort().getProcessor().getName()+"."+getScuflPort().getName());
 		for(Iterator i = getChildren().iterator(); i.hasNext();) {
 		    Task task = (Task) i.next();
                     if(task instanceof PortTask) {
@@ -239,7 +239,7 @@ public class PortTask extends AbstractTask {
 	    logger.error(ex);
 	    fail("Task " + getTaskId() + " in flow " + getFlow().getFlowId() + " failed.  " + ex.getMessage());
 	}
-	System.out.println("Done : "+getScuflPort().getProcessor().getName()+"."+getScuflPort().getName());
+	//System.out.println("Done : "+getScuflPort().getProcessor().getName()+"."+getScuflPort().getName());
     }
 
 }

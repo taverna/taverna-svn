@@ -25,8 +25,8 @@
 //      Dependencies        :
 //
 //      Last commit info    :   $Author: mereden $
-//                              $Date: 2004-07-08 13:25:03 $
-//                              $Revision: 1.4 $
+//                              $Date: 2004-07-09 18:37:18 $
+//                              $Revision: 1.5 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 package org.embl.ebi.escience.scufl.enactor.implementation;
@@ -41,7 +41,7 @@ import uk.ac.soton.itinnovation.freefluo.main.Engine;
 import uk.ac.soton.itinnovation.freefluo.main.EngineImpl;
 
 import org.embl.ebi.escience.scufl.UnknownProcessorException;
-
+import uk.ac.soton.itinnovation.freefluo.event.*;
 import uk.ac.soton.itinnovation.taverna.enactor.entities.PortTask;
 import uk.ac.soton.itinnovation.taverna.enactor.entities.ProcessorTask;
 
@@ -108,6 +108,37 @@ public class WorkflowInstanceImpl implements WorkflowInstance {
 	catch (UnknownWorkflowInstanceException e) { 
 	    String errorMsg = "Error starting to run workflow instance with id " + workflowInstanceId; 
 	    String msg = errorMsg + ".  The workflow engine didn't recognise the workflow instance id.";
+            logger.warn(msg);
+            throw new IllegalStateException(msg);
+        }
+    }
+
+    /**
+     * Register the specified listener with the engine for this instance
+     * and use the internal workflow ID
+     */
+    public void addWorkflowStateListener(WorkflowStateListener listener) {
+	try {
+	    engine.addWorkflowStateListener(workflowInstanceId, listener);
+	}
+	catch (UnknownWorkflowInstanceException e) {	   
+	    String errorMsg = "Cannot add listener";
+            String msg = errorMsg + ".  The workflow engine didn't recognise the workflow instance id.";
+            logger.warn(msg);
+            throw new IllegalStateException(msg);
+        }
+    }
+
+    /**
+     * Remove a workflow state listener
+     */
+    public void removeWorkflowStateListener(WorkflowStateListener listener) {
+	try {
+	    engine.removeWorkflowStateListener(workflowInstanceId, listener);
+	}
+	catch (UnknownWorkflowInstanceException e) {
+	    String errorMsg = "Cannot remove listener";
+            String msg = errorMsg + ".  The workflow engine didn't recognise the workflow instance id.";
             logger.warn(msg);
             throw new IllegalStateException(msg);
         }

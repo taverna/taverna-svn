@@ -25,8 +25,8 @@
 //      Dependencies        :
 //
 //      Last commit info    :   $Author: mereden $
-//                              $Date: 2004-07-07 11:03:38 $
-//                              $Revision: 1.7 $
+//                              $Date: 2004-07-09 18:37:26 $
+//                              $Revision: 1.8 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 
@@ -38,7 +38,8 @@ import org.embl.ebi.escience.scufl.enactor.implementation.*;
 import org.apache.log4j.Logger;
 import org.embl.ebi.escience.scufl.Processor;
 import org.embl.ebi.escience.scufl.ScuflModel;
-// import org.embl.ebi.escience.scufl.enactor.*;
+import org.embl.ebi.escience.scufl.enactor.implementation.*;
+import uk.ac.soton.itinnovation.freefluo.event.*;
 import org.embl.ebi.escience.scufl.enactor.EnactorProxy;
 import org.embl.ebi.escience.scufl.enactor.implementation.FreefluoEnactorProxy;
 import org.embl.ebi.escience.scufl.enactor.WorkflowInstance;
@@ -101,6 +102,15 @@ public class WorkflowTask implements ProcessorTaskWorker {
 	}
 
         try {
+	    final Thread taskThread = Thread.currentThread();
+	    ((WorkflowInstanceImpl)workflowInstance).addWorkflowStateListener(new WorkflowStateListener() {
+		    public void workflowStateChanged(WorkflowStateChangedEvent event) {
+			WorkflowState state = event.getWorkflowState();
+			if (state.isFinal()) {
+			    taskThread.interrupt();
+			}
+		    }
+		});								    
 	    workflowInstance.run();
         }
         catch(Exception e) {
@@ -108,23 +118,17 @@ public class WorkflowTask implements ProcessorTaskWorker {
             logger.error(msg, e);
             throw new TaskExecutionException(msg);
         }
-
-        WorkflowState workflowState = null;
-        while(true) {
-            workflowState = WorkflowState.getState(workflowInstance.getStatus());
-            if(workflowState.isFinal()) {
-                break;
-            }
-            else {
-                try {
-                    Thread.sleep(2000);
-                }
-                catch(Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-        
+	
+	try {
+	    while (true) {
+		Thread.sleep(10000);
+	    }
+	}
+	catch (InterruptedException ie) {
+	    //
+	}
+	
+        WorkflowState workflowState = WorkflowState.getState(workflowInstance.getStatus());
 	
 	// Did we finish okay?
 	if (workflowState.equals(WorkflowState.COMPLETE)) {
