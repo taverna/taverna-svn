@@ -133,7 +133,7 @@
 				<include name="${ant.project.name}-${project.version}.jar"/>
 			</fileset>
 		</copy>
-		<zip destfile="${build.dir}/${ant.project.name}-workbench-${project.version}.zip"
+		<zip destfile="${build.dir}/${ant.project.name}-scuflworkbench-win32-${project.version}.zip"
 			basedir="${workbench.dir}"/>
 	</target>
 
