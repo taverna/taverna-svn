@@ -104,6 +104,7 @@ public abstract class Port implements java.io.Serializable {
 
     /**
      * Set the visibility of this port outside the scope of the workflow
+     * @deprecated
      */
     public void setExternal(boolean external_value) {
 	if (external_value != this.isExternal) {
@@ -114,9 +115,24 @@ public abstract class Port implements java.io.Serializable {
 
     /**
      * Is this port visible outside the workflow?
+     * @deprecated
      */
     public boolean isExternal() {
 	return this.isExternal;
+    }
+
+    /**
+     * Is this port a workflow source?
+     */
+    public boolean isSource() {
+	return (this.getProcessor() instanceof InternalSourcePortHolder);
+    }
+
+    /**
+     * Is this port a workflow sink?
+     */
+    public boolean isSink() {
+	return (this.getProcessor() instanceof InternalSinkPortHolder);
     }
 
     /**

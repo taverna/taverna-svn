@@ -89,6 +89,7 @@ public class ScuflModelExplorer extends JTree implements ScuflModelEventListener
      * to date with any changes in state.
      */    
     public void receiveModelEvent(ScuflModelEvent event) {
+	System.out.println("Event from the model..." + event.toString());
 	regenerateTreeModel();
     }
     

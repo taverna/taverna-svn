@@ -8,6 +8,9 @@ package org.embl.ebi.escience.scuflui;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 import org.embl.ebi.escience.scufl.Processor;
+import org.embl.ebi.escience.scufl.*;
+import javax.swing.*;
+import java.awt.event.*;
 
 import org.embl.ebi.escience.scuflui.NoContextMenuFoundException;
 import java.lang.Object;
@@ -22,6 +25,21 @@ import java.lang.Object;
  * @author Tom Oinn
  */
 public class ScuflContextMenuFactory {
+    
+    static ImageIcon deleteIcon;
+
+    /**
+     * Load images for menus
+     */
+    static {
+	try {
+	    Class c = Class.forName("org.embl.ebi.escience.scuflui.ScuflContextMenuFactory");
+	    deleteIcon = new ImageIcon(c.getResource("delete.gif"));
+	}
+	catch (ClassNotFoundException cnfe) {
+	    //
+	}
+    }
 
     /**
      * Creates a JPopupMenu appropriate to the object supplied. If it
@@ -33,13 +51,45 @@ public class ScuflContextMenuFactory {
 	if (theObject == null) {
 	    throw new NoContextMenuFoundException("Supplied user object was null, giving up.");
 	}
-	JPopupMenu theMenu = new JPopupMenu();
 	// Trivial dummy implementation, only understands how to build processor menus.
 	if (theObject instanceof Processor) {
-	    theMenu.add(new JMenuItem("Oooh, found a processor node..."));
-	    return theMenu;
+	    return getProcessorMenu((Processor)theObject);
 	}
+	else if (theObject instanceof Port) {
+	    /**
+	     // Is the port a workflow source?
+	     Port thePort = (Port)theObject;
+	     if (thePort.isSource()) {
+	     theMenu.add(new JMenuItem("Workflow source port"));
+	     return theMenu;
+	     }
+	     else if (thePort.isSink()) {
+	     theMenu.add(new JMenuItem("Workflow sink port"));
+	     return theMenu;
+	     }
+	    */
+	}
+	
 	throw new NoContextMenuFoundException("Didn't know how to create a context menu for a "+theObject.getClass().toString());
+    }
+
+    private static JPopupMenu getProcessorMenu(Processor processor) {
+	final Processor theProcessor = processor;
+	JPopupMenu theMenu = new JPopupMenu();
+	JMenuItem title = new JMenuItem(theProcessor.getName());
+	title.setEnabled(false);
+	theMenu.add(title);
+	JMenuItem delete = new JMenuItem("Remove from model",deleteIcon);
+	delete.addActionListener(new ActionListener() {
+		public void actionPerformed(ActionEvent a) {
+		    System.out.println("Deleting a node...");
+		    theProcessor.getModel().destroyProcessor(theProcessor);
+		}
+	    });
+	
+	theMenu.add(delete);
+	return theMenu;
     }
     
 }
+
