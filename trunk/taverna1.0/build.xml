@@ -12,7 +12,7 @@
 	<property name="build.src" value="${build.dir}/src"/>
 	<property name="build.classes" value="${build.dir}/classes"/>
 	<property name="build.javadocs" value="${build.dir}/api"/>
-	<property name="build.compiler" value="jikes"/>
+	<property name="build.compiler" value="modern"/>
 		
 	<!-- Show the splash screen -->
 	<target name="splash">
@@ -27,6 +27,16 @@
 		</fileset>
 		<!-- Jar files that are only used when building the project go here -->
 		<fileset dir="./devlib">
+			<include name="*.jar"/>
+		</fileset>
+		<!-- Also include our own source tree -->
+		<pathelement path="${build.classes}"/>
+		<pathelement path="${build.src}"/>
+	</path>
+
+	<path id="run-classpath">
+		<!-- Jar files used when running the project go here -->
+		<fileset dir="./lib">
 			<include name="*.jar"/>
 		</fileset>
 		<!-- Also include our own source tree -->
@@ -128,7 +138,7 @@
 	<!-- Compile the source files -->
 	<target name="java" depends="prepare-src">
 		<!-- Run javac to turn .java files into .class -->
-		<javac srcdir="${build.src}" destdir="${build.classes}">
+		<javac debug="on" srcdir="${build.src}" destdir="${build.classes}">
 			<classpath refid="compile-classpath"/>
 		</javac>
 		<!-- Copy over any configuration files that you might have -->
@@ -147,6 +157,16 @@
 	<!-- Create a jar of the classes and configuration files -->
 	<target name="jar" depends="java">
 		<jar destfile="${build.dir}/${ant.project.name}.jar" basedir="${build.classes}" update="no"/>
+	</target>
+
+	<!-- Create a jar of the enactor extension classes for inclusion in a deployed enactor -->
+	<target name="enactor.ext.jar" depends="java">
+		<jar destfile="${build.dir}/tavernaenactor.jar" update="no">
+			<fileset dir="${build.classes}">
+				<include name="**/itinnovation/taverna/**"/>
+				<include name="**/escience/scufl/**"/>
+			</fileset>
+		</jar>
 	</target>
 
 	<!-- Build javadocs -->
@@ -195,7 +215,7 @@
 	<!-- Test the XScufl parser -->
 	<target name="test.xscuflparser" depends="jar">
 	    <java classname="org.embl.ebi.escience.scufl.parser.test.XScuflParserTest" fork="yes">
-		    <classpath refid="compile-classpath"/>
+		    <classpath refid="run-classpath"/>
 		</java>
 	</target> 
 
@@ -220,12 +240,4 @@
 		</java>
 	</target> 
 	
-	<!-- Test the WSDL based processor creation -->
-	<target name="test.wsdlprocessor" depends="jar">
-		<java classname="org.embl.ebi.escience.scufl.test.WSDLBasedProcessorCreationTest" fork="yes">
-			<classpath refid="compile-classpath"/>
-		</java>
-	</target>
-	
 </project>
-
