@@ -15,43 +15,35 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
+import org.embl.ebi.escience.scuflui.results.*;
+import java.util.*;
+import java.util.prefs.*;
 
 /**
  * A simple data thing viewer tool that can be launched
  * from the command line or LSID launchpad to view
- * the XML form of data thing object. The main method
+ * the XML form of data thing object Map. The main method
  * takes a single filename as its command lines argument
  * and creates a JFrame with the data renderer in.
  * @author Tom Oinn
  */
 public class DataThingViewer extends JFrame {
     
+    private JTabbedPane tabs;
+    private JToolBar toolbar;
+    private Map resultMap;
+    final JFileChooser fc = new JFileChooser();
+
     public static void main(String[] args) throws Exception {
-	try {
-	    String dataThingFileName = args[0];
-	    System.out.println("Opening file : "+dataThingFileName);
-	    File f = new File(dataThingFileName);
-	    InputStream is = new FileInputStream(f);
-	    SAXBuilder builder = new SAXBuilder();
-	    Document doc = builder.build(is);
-	    Element e = doc.getRootElement();
-	    DataThing theThing = new DataThing(e);
-	    new DataThingViewer(theThing);
-	}
-	catch (Exception e) {
-	    e.printStackTrace();
-	    Thread.sleep(10000);
+	UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+	DataThingViewer viewer = new DataThingViewer();
+	if (args.length == 1) {
+	    viewer.load(new File(args[0]));
 	}
     }
-
-    public DataThingViewer(DataThing theThing) {
+    
+    public DataThingViewer() {
 	super("DataThing Viewer");
-	try {
-	    UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-	} 
-	catch (Exception e) {
-	    //
-	}
 	setBounds(100,100,500,500);
 	//Quit this app when the big window closes.
         addWindowListener(new WindowAdapter() {
@@ -59,49 +51,108 @@ public class DataThingViewer extends JFrame {
 		    System.exit(0);
 		}
 	    });
-	ResultItemPanel panel = new ResultItemPanel(theThing);
-	getContentPane().add(panel);
-	setJMenuBar(createMenuBar(theThing));
-	pack();
+	this.tabs = new JTabbedPane();
+	getContentPane().add(this.tabs);
+	this.toolbar = new JToolBar();
+	toolbar.setFloatable(false);
+	toolbar.setRollover(true);
+	toolbar.setMaximumSize(new Dimension(2000,30));
+	toolbar.setBorderPainted(true);
+	getContentPane().add(this.toolbar, BorderLayout.NORTH);
+	toolbar.add(Box.createHorizontalGlue());
+	setJMenuBar(createMenuBar());
+	clear();
 	setVisible(true);
     }
+
+    private void clear() {
+	toolbar.removeAll();
+	tabs.removeAll();
+	resultMap = new HashMap();
+	ResultMapSaveSPI[] savePlugins = ResultMapSaveRegistry.plugins();
+	for (int i = 0; i < savePlugins.length; i++) {
+	    JButton saveAction = new JButton(savePlugins[i].getName(),
+					     savePlugins[i].getIcon());
+	    saveAction.addActionListener(savePlugins[i].getListener(resultMap,null));
+	    saveAction.setEnabled(false);
+	    toolbar.add(saveAction);
+	    if (i < savePlugins.length - 1) {
+		toolbar.addSeparator();
+	    }
+	}
+    }
     
-    private JMenuBar createMenuBar(DataThing theThing) {
+    private void load(File f) throws Exception {
+	InputStream is = new FileInputStream(f);
+	SAXBuilder builder = new SAXBuilder();
+	Document doc = builder.build(is);
+	tabs.removeAll();
+	resultMap = DataThingXMLFactory.parseDataDocument(doc);
+	for (Iterator i = resultMap.keySet().iterator(); i.hasNext(); ) {
+	    String resultName = (String)i.next();
+	    DataThing resultValue = (DataThing)resultMap.get(resultName);
+	    this.tabs.add(resultName, new ResultItemPanel(resultValue));
+	}
+	toolbar.removeAll();
+	ResultMapSaveSPI[] savePlugins = ResultMapSaveRegistry.plugins();
+	for (int i = 0; i < savePlugins.length; i++) {
+	    JButton saveAction = new JButton(savePlugins[i].getName(),
+					     savePlugins[i].getIcon());
+	    saveAction.addActionListener(savePlugins[i].getListener(resultMap,null));
+	    toolbar.add(saveAction);
+	    if (i < savePlugins.length - 1) {
+		toolbar.addSeparator();
+	    }
+	}
+	toolbar.add(Box.createHorizontalGlue());
+    }
+
+    private JMenuBar createMenuBar() {
 	JMenuBar menuBar = new JMenuBar();
 	// File menu to allow saving of the data thing to disk
 	JMenu fileMenu = new JMenu("File");
-	JMenuItem save = new JMenuItem("Save contents to disk", ScuflIcons.saveIcon);
-	final DataThing dataThing = theThing;
-	save.addActionListener(new ActionListener() {
-		public void actionPerformed(ActionEvent e) {
-		    JFileChooser chooser = new JFileChooser();
-		    chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-		    int returnVal = chooser.showSaveDialog(DataThingViewer.this);
-		    if (returnVal == JFileChooser.APPROVE_OPTION) {
-			File f = chooser.getSelectedFile();
-			String name = "datathing";
-			try {
-			    dataThing.writeToFileSystem(f, name);
-			}
-			catch (IOException ioe) {
-			    //
-			}
-		    }
-		}
-	    });
-	fileMenu.add(save);
-	
 	JMenuItem exit = new JMenuItem("Exit");
 	exit.addActionListener(new ActionListener() {
 		public void actionPerformed(ActionEvent e) {
 		    System.exit(0);
 		}
 	    });
+	JMenuItem reset = new JMenuItem("Reset", ScuflIcons.deleteIcon);
+	reset.addActionListener(new ActionListener() {
+		public void actionPerformed(ActionEvent e) {
+		    clear();
+		}
+	    });
+	JMenuItem load = new JMenuItem("Load", ScuflIcons.openIcon);
+	load.addActionListener(new ActionListener() {
+		public void actionPerformed(ActionEvent ae) {
+		    Preferences prefs = Preferences.userNodeForPackage(DataThingViewer.class);
+		    String curDir = prefs.get("currentDir", System.getProperty("user.home"));
+		    fc.resetChoosableFileFilters();
+		    fc.setFileFilter(new ExtensionFileFilter(new String[]{"xml"}));
+		    fc.setCurrentDirectory(new File(curDir));
+		    int returnVal = fc.showOpenDialog(DataThingViewer.this);
+		    if (returnVal == JFileChooser.APPROVE_OPTION) {
+			prefs.put("currentDir", fc.getCurrentDirectory().toString());
+			try {
+			    DataThingViewer.this.load(fc.getSelectedFile());
+			}
+			catch (Exception ex) {
+			    ex.printStackTrace();
+			    JOptionPane.showMessageDialog(DataThingViewer.this,
+							  "Cannot open XML : \n\n" +
+							  ex.getMessage(),
+							  "Error",
+							  JOptionPane.ERROR_MESSAGE);
+			}
+		    }
+		}
+	    });
+	fileMenu.add(load);	
+	fileMenu.add(reset);
 	fileMenu.add(exit);
-	
 	menuBar.add(fileMenu);
 	return menuBar;
-
     }
     
     
