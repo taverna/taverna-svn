@@ -12,7 +12,7 @@
 	<property name="build.src" value="${build.dir}/src"/>
 	<property name="build.classes" value="${build.dir}/classes"/>
 	<property name="build.javadocs" value="${build.dir}/api"/>
-	<property name="build.compiler" value="modern"/>
+	<property name="build.compiler" value="jikes"/>
 		
 	<!-- Show the splash screen -->
 	<target name="splash">
@@ -223,6 +223,13 @@
 		</java>
 	</target> 
 	
+	<!-- Test the creation of talisman processor nodes -->
+	<target name="test.talisman" depends="jar">
+	        <java classname="org.embl.ebi.escience.scufl.test.TalismanProcessorCreation" fork="yes">
+		    <classpath refid="compile-classpath"/>
+		</java>
+	</target> 
+
 	<!-- Test the XScufl parser -->
 	<target name="test.xscuflparser" depends="jar">
 	    <java classname="org.embl.ebi.escience.scufl.parser.test.XScuflParserTest" fork="yes">

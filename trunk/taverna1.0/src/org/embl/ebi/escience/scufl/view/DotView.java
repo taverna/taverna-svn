@@ -18,7 +18,7 @@ import java.lang.StringBuffer;
  * rendering tools.
  * @author Tom Oinn
  */
-public class DotView implements ScuflModelEventListener {
+public class DotView implements ScuflModelEventListener, java.io.Serializable {
 
     private ScuflModel model = null;
     private boolean cacheValid = false;

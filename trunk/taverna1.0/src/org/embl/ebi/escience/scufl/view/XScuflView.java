@@ -23,7 +23,7 @@ import java.lang.String;
  * document.
  * @author Tom Oinn
  */
-public class XScuflView implements ScuflModelEventListener {
+public class XScuflView implements ScuflModelEventListener, java.io.Serializable {
     
     private ScuflModel model = null;
     private boolean cacheValid = false;

@@ -1,0 +1,49 @@
+/**
+ * This file is a component of the Taverna project,
+ * and is licensed under the GNU LGPL.
+ * Copyright Tom Oinn, EMBL-EBI
+ */
+package org.embl.ebi.escience.scufl.test;
+
+import org.embl.ebi.escience.scufl.*;
+import java.util.*;
+import java.net.*;
+import java.io.*;
+
+/**
+ * Tests the creation of the TalismanProcessor node
+ * @author Tom Oinn
+ */
+public class TalismanProcessorCreation {
+
+    public static void main(String[] args) throws Exception {
+	System.out.println("Starting test : TalismanProcessorCreation");
+	
+	// Create a new ScuflModel
+	ScuflModel model = new ScuflModel();
+	// Register a listener to print to stdout
+	model.addListener(new ScuflModelEventPrinter(null));
+
+	// Fetch the example tscript file from the archive
+	ClassLoader loader = Thread.currentThread().getContextClassLoader();
+	URL location = loader.getResource("org/embl/ebi/escience/scufl/test/tscript.xml");
+	System.out.println("Loading talisman script from : "+location.toString());
+	InputStream is = location.openStream();
+	DataInputStream dis = new DataInputStream(new BufferedInputStream(is));
+	StringBuffer sb = new StringBuffer();
+	String s = null;
+	while ((s = dis.readLine()) != null) {
+	    sb.append(s);
+	    sb.append("\n");
+	}
+	String tscript = sb.toString();
+	
+
+	// Attempt to create a new TalismanProcessor
+	model.addProcessor(new TalismanProcessor(model,
+						 "my_talisman_processor",
+						 tscript));
+    }
+
+}
+	
