@@ -224,7 +224,10 @@ public class EnactorInvocation extends JPanel implements ScuflUIComponent {
 	super(new BorderLayout());
 	setPreferredSize(new Dimension(100,100));
 	this.theModel = model;
-	this.workflowInstance = enactor.compileWorkflow(model, inputDataThings);
+	/**
+	 * TODO - get the user proxy object from somewhere!
+	 */
+	this.workflowInstance = enactor.compileWorkflow(model, inputDataThings, null);
 	// Create a new toolbar for the save results option...
 	JToolBar toolbar = new JToolBar("Invocation tools");
 	toolbar.setFloatable(false);

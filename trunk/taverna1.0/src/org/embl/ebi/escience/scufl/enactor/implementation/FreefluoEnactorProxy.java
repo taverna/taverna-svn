@@ -71,15 +71,21 @@ public class FreefluoEnactorProxy implements EnactorProxy {
 	}
     }
 
-    public WorkflowInstance compileWorkflow(ScuflModel workflow, Map input) 
+    public WorkflowInstance compileWorkflow(ScuflModel workflow, Map input, UserContext user) 
 	          throws WorkflowSubmissionException {
-	      WorkflowInstance workflowInstance = compileWorkflow(workflow);
+	/**
+	 * TODO - implement the user context transfer to the server side workflow instance 
+	 */
+	WorkflowInstance workflowInstance = compileWorkflow(workflow, user);
         workflowInstance.setInputs(input);
         return workflowInstance;
     }
 
-    public WorkflowInstance compileWorkflow(ScuflModel workflow) throws WorkflowSubmissionException {
-        try {
+    public WorkflowInstance compileWorkflow(ScuflModel workflow, UserContext user) throws WorkflowSubmissionException {
+	/**
+	 * TODO - implement the user context transfer to the server side workflow instance 
+	 */
+	try {
 	    String workflowInstanceId = engine.compile(workflow);
             WorkflowInstance workflowInstance = new WorkflowInstanceImpl(engine, workflowInstanceId);   
             return workflowInstance;
@@ -91,33 +97,4 @@ public class FreefluoEnactorProxy implements EnactorProxy {
 	}
     }
 
-    /**
-     * Dummy context handler, doesn't do anything at the moment
-     */
-    public void setUserContext(UserContext theContext) {
-	      //
-    }
-
-    /**
-     * Return default user context
-     */
-    public UserContext getUserContext() {
-	      return new UserContext() {
-            public String getUser() {
-                return "Unknown user";
-            }
-            public String getProject() {
-                return "Unknown project";
-            }
-            public String getOrganisation() {
-                return "Unknown organisation";
-            }
-            public String getExperiment() {
-                return "Unknown experiment";
-            }
-            public String[] getUserNameAndPassword(String resourceExpression) {
-                return new String[]{"",""};
-            }
-	      };
-    }	   
 }

@@ -351,7 +351,7 @@ public class Retsina extends JPanel
          System.out.println(input);
          Map inputMap = graph.getDataSet().getData();
          
-         workflowInstance = enactorProxy.compileWorkflow(graph.getScuflModel(), inputMap);
+         workflowInstance = enactorProxy.compileWorkflow(graph.getScuflModel(), inputMap,null);
        }
        catch(WorkflowSubmissionException e) {
          e.printStackTrace();

@@ -25,8 +25,8 @@
 //      Dependencies        :
 //
 //      Last commit info    :   $Author: mereden $
-//                              $Date: 2004-06-09 07:49:19 $
-//                              $Revision: 1.51 $
+//                              $Date: 2004-07-07 11:03:38 $
+//                              $Revision: 1.52 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 package uk.ac.soton.itinnovation.taverna.enactor.entities;
@@ -43,6 +43,9 @@ import org.embl.ebi.escience.scuflworkers.ProcessorTaskWorker;
 import org.embl.ebi.escience.scufl.*;
 import org.embl.ebi.escience.baclava.store.*;
 import org.embl.ebi.escience.scuflworkers.ProcessorHelper;
+import org.embl.ebi.escience.scufl.enactor.event.*;
+import org.embl.ebi.escience.scufl.enactor.*;
+import org.embl.ebi.escience.scufl.enactor.implementation.WorkflowEventDispatcher;
 
 import uk.ac.soton.itinnovation.taverna.enactor.entities.PortTask;
 import uk.ac.soton.itinnovation.taverna.enactor.entities.TaskExecutionException;
@@ -52,6 +55,7 @@ import uk.ac.soton.itinnovation.freefluo.core.event.*;
 import uk.ac.soton.itinnovation.freefluo.core.flow.*;
 import uk.ac.soton.itinnovation.freefluo.task.*;
 import uk.ac.soton.itinnovation.freefluo.conf.*;
+import uk.ac.soton.itinnovation.freefluo.main.Engine;
 
 // Utility Imports
 import java.util.ArrayList;
@@ -82,6 +86,7 @@ import java.lang.String;
 public class ProcessorTask extends AbstractTask {
     public static Namespace provNS = Namespace.getNamespace("p","http://org.embl.ebi.escience/xscuflprovenance/0.1alpha");
     public static final String REPORT_NAMESPACE = "http://www.it-innovation.soton.ac.uk/taverna/workflow/enactor/progress";
+    private static WorkflowEventDispatcher DISPATCHER = WorkflowEventDispatcher.DISPATCHER;
     
     static BaclavaDataService STORE = null;
     static {
@@ -107,6 +112,9 @@ public class ProcessorTask extends AbstractTask {
     private Map activeOutputMapping = null;
     // The list of provenance statements, text for now
     private List provenanceList = new ArrayList();
+    // The WorkflowInstance object which can access this
+    // workflow instance
+    private WorkflowInstance workflowInstance = null;
     
     public List getProvenanceList() {
 	return this.provenanceList;
@@ -143,7 +151,12 @@ public class ProcessorTask extends AbstractTask {
      */
     public void handleRun(RunEvent runEvents) {
 	try {
-	    System.out.println("Invoking processor task for "+activeProcessor.getName());
+	    // Get the workflow instance object
+	    Flow flow = getFlow();
+	    String flowID = flow.getFlowId();
+	    Engine e = flow.getEngine();
+	    this.workflowInstance = (WorkflowInstance)new org.embl.ebi.escience.scufl.enactor.implementation.WorkflowInstanceImpl(e, flowID);
+	    // System.out.println("Invoking processor task for "+activeProcessor.getName());
 	    // The default processor will have been scheduled by the
 	    // constructor to this class so we can get on and do stuff.
 	    for (int i = -1; i < proc.getAlternatesArray().length; i++) {
@@ -278,7 +291,7 @@ public class ProcessorTask extends AbstractTask {
 		if (targetInputName == null) {
 		    targetInputName = originalInputName;
 		}
-		System.out.println("Mapping input name '"+originalInputName+"' to processor port '"+targetInputName+"'");
+		//System.out.println("Mapping input name '"+originalInputName+"' to processor port '"+targetInputName+"'");
 		taskInput.put(targetInputName, inputItem);
 	    }
 	    output = doInvocationWithRetryLogic(worker, taskInput);
@@ -286,7 +299,7 @@ public class ProcessorTask extends AbstractTask {
 	
 	// Now do the same for the output mapping
 	if (activeOutputMapping == null) {
-	    System.out.println("No mapping, returning output straight");
+	    //System.out.println("No mapping, returning output straight");
 	    return output;
 	}
 	else {
@@ -297,7 +310,7 @@ public class ProcessorTask extends AbstractTask {
 		if (targetOutputName == null) {
 		    targetOutputName = realOutputName;
 		}
-		System.out.println("Storing result from '"+realOutputName+"' as '"+targetOutputName+"'");
+		//System.out.println("Storing result from '"+realOutputName+"' as '"+targetOutputName+"'");
 		DataThing outputItem = (DataThing)output.get(realOutputName);
 		taskOutput.put(targetOutputName, outputItem);
 	    }
@@ -521,6 +534,12 @@ public class ProcessorTask extends AbstractTask {
 	    int[] currentLocation = rootNode.getCurrentLocation();
 	    eventList.add(new InvokingWithIteration(++currentIteration, totalIterations));
 	    Map singleResultMap = invokeOnce(inputSet);
+	    // Fire a new ProcessCompletionEvent
+	    DISPATCHER.fireProcessCompleted(new ProcessCompletionEvent(true,
+								       inputSet,
+								       singleResultMap,
+								       activeProcessor,
+								       workflowInstance));
 	    // Iterate over the outputs
 	    for (Iterator l = singleResultMap.keySet().iterator(); l.hasNext(); ) {
 		String outputName = (String)l.next();

@@ -28,3 +28,4 @@ org.embl.ebi.escience.scuflworkers.java.EchoList = list:Echo list
 org.embl.ebi.escience.scuflworkers.java.FlattenList = list:Flatten l(l()) to l()
 org.embl.ebi.escience.scuflworkers.java.StringStripDuplicates = list:Remove duplicate strings
 org.embl.ebi.escience.scuflworkers.java.StringListMerge = list:Merge string list to string
+org.embl.ebi.escience.scuflworkers.java.EmitLotsOfStrings = test:Create lots of strings

@@ -26,12 +26,18 @@ import java.lang.String;
  */
 public interface WorkflowInstance {
     
-   /**
-    * Start this workflow istance running.
-    * @throw InvalidInputException if the input is doesn't map to source in the dataflow.
-    */
+    /**
+     * Get the user context for this workflow instance in the form of
+     * a UserContext implementation
+     */
+    public UserContext getUserContext();
+    
+    /**
+     * Start this workflow istance running.
+     * @throw InvalidInputException if the input is doesn't map to source in the dataflow.
+     */
     public void run() throws InvalidInputException;
-   
+    
    /**
     * This method can be used to get a simple String that describes
     * the current state of this workflow instance object.

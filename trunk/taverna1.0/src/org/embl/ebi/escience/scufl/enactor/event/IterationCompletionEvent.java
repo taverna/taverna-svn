@@ -6,5 +6,5 @@
 package org.embl.ebi.escience.scufl.enactor.event;
 
 public class IterationCompletionEvent extends WorkflowInstanceEvent {
-
+    
 }

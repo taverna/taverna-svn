@@ -345,9 +345,9 @@ public class SoaplabProcessor extends Processor implements java.io.Serializable 
 
 		// data.
 
-		if ((!output_name.equalsIgnoreCase("detailed_status")) 
+		if ((!output_name.equalsIgnoreCase("detailed_status"))) { 
 
-		    && (!output_name.equalsIgnoreCase("report"))) {
+		    //&& (!output_name.equalsIgnoreCase("report"))) {
 
 		    Port new_port = new OutputPort(this, output_name);
 

@@ -68,7 +68,7 @@ public class AnnotationTemplate {
      * values. Return null if any of the values are unknown
      */
     public String getTextAnnotation(Map inputs, Map outputs) {
-	System.out.println("Attempting to create template :\n  "+inputs.toString()+"\n"+"  "+outputs.toString());
+	//System.out.println("Attempting to create template :\n  "+inputs.toString()+"\n"+"  "+outputs.toString());
 	StringBuffer sb = new StringBuffer();
 	for (Iterator i = templateComponents.iterator(); i.hasNext();) {
 	    Object component = i.next();
@@ -90,7 +90,7 @@ public class AnnotationTemplate {
 		}
 	    }
 	}
-	System.out.println("Created template : \n  "+sb.toString());
+	//System.out.println("Created template : \n  "+sb.toString());
 	return sb.toString();
     }
 

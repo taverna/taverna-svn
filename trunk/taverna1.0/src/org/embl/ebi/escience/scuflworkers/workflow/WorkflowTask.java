@@ -24,9 +24,9 @@
 //      Created for Project :   MYGRID
 //      Dependencies        :
 //
-//      Last commit info    :   $Author: ferris $
-//                              $Date: 2004-06-03 11:39:24 $
-//                              $Revision: 1.6 $
+//      Last commit info    :   $Author: mereden $
+//                              $Date: 2004-07-07 11:03:38 $
+//                              $Revision: 1.7 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 
@@ -89,7 +89,10 @@ public class WorkflowTask implements ProcessorTaskWorker {
 	
 	// The inputMap is already in the form we need for a submission
 	try {
-            workflowInstance = defaultEnactor.compileWorkflow(theNestedModel, inputMap);
+	    /**
+	     * TODO - set the user context here from the parent workflow
+	     */
+            workflowInstance = defaultEnactor.compileWorkflow(theNestedModel, inputMap, null);
 	}
         catch(WorkflowSubmissionException e) {
             String msg = "Error executing workflow task.  Error compiling the nested workflow.";

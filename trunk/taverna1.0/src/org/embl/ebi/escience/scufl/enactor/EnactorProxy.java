@@ -40,9 +40,9 @@ public interface EnactorProxy {
      * to wrap the real exception using standard exception chaining
      * mechanisms.
      */
-    public WorkflowInstance compileWorkflow(ScuflModel workflow, Map inputs)
+    public WorkflowInstance compileWorkflow(ScuflModel workflow, Map inputs, UserContext user)
 	throws WorkflowSubmissionException;
- 
+    
     /**
      * Submit to the enactor represented by this proxy for compilation the
      * workflow submission.
@@ -53,18 +53,7 @@ public interface EnactorProxy {
      * it running.  This allows registering listeners on the WorkflowInstance state
      * before it starts running.
      */
-    public WorkflowInstance compileWorkflow(ScuflModel workflow)
+    public WorkflowInstance compileWorkflow(ScuflModel workflow, UserContext user)
 	throws WorkflowSubmissionException;
-
-    /**
-     * Configure this enactor instance with the specified user context,
-     * this can be used to allow the enactor access to protected resources
-     * and to inform provenance generation.
-     */
-    public void setUserContext(UserContext contect);
     
-    /**
-     * Return the user context object currently applied to this enactor instance
-     */
-    public UserContext getUserContext();
 }

@@ -9,20 +9,10 @@ import org.embl.ebi.escience.scufl.enactor.*;
 
 public class WorkflowInstanceEvent {
 
-    private EnactorProxy enactor;
-    private UserContext userContext;
-    private WorkflowInstance workflowInstance;
+    protected WorkflowInstance workflowInstance;
 
     public WorkflowInstance getWorkflowInstance() {
 	return this.workflowInstance;
-    }
-
-    public EnactorProxy getEnactor() {
-	return this.enactor;
-    }
-
-    public UserContext getUserContext() {
-	return this.userContext;
     }
 
 }
