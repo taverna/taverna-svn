@@ -46,6 +46,7 @@ public class DataThingTreeNodeRenderer extends DefaultTreeCellRenderer {
 		else {
 		    setText("<html><font color=\"red\">Empty list</font></html>");
 		}
+		setIcon(closedIcon);
 		return this;
 	    }
 	    String syntacticType = theDataThing.getSyntacticTypeForObject(userObject);
@@ -69,6 +70,15 @@ public class DataThingTreeNodeRenderer extends DefaultTreeCellRenderer {
 	    }
 	    else if (mimeTypes.matches(".*application/.*")) {
 		setIcon(binaryIcon);
+	    }
+	}
+	else {
+	    // Collection node
+	    if (userObject instanceof List) {
+		setText("List");
+	    }
+	    else {
+		setText("Set");
 	    }
 	}
 	return this;
