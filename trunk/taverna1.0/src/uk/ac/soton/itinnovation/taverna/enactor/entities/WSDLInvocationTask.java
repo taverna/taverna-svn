@@ -25,8 +25,8 @@
 //      Dependencies        :
 //
 //      Last commit info    :   $Author: dmarvin $
-//                              $Date: 2003-05-29 10:08:19 $
-//                              $Revision: 1.8 $
+//                              $Date: 2003-06-03 12:46:48 $
+//                              $Revision: 1.9 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 
@@ -74,7 +74,7 @@ public class WSDLInvocationTask extends ProcessorTask implements InvocationDescr
 		super(id,proc,l);
 	}
 	
-	public uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.eventservice.TaskStateMessage doTask() {
+	public uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.eventservice.TaskStateMessage execute() {
 		try{
 			
 			//want to siffle through the input ports and get input parts  

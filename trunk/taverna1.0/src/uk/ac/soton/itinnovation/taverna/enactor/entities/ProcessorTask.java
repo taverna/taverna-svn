@@ -24,9 +24,9 @@
 //      Created for Project :   MYGRID
 //      Dependencies        :
 //
-//      Last commit info    :   $Author: mereden $
-//                              $Date: 2003-05-23 12:36:00 $
-//                              $Revision: 1.5 $
+//      Last commit info    :   $Author: dmarvin $
+//                              $Date: 2003-06-03 12:46:48 $
+//                              $Revision: 1.6 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 package uk.ac.soton.itinnovation.taverna.enactor.entities;
@@ -41,14 +41,14 @@ import org.jdom.Element;
 
 import uk.ac.soton.itinnovation.taverna.enactor.entities.TavernaTask;
 import java.lang.String;
-
+import org.apache.log4j.Logger;
 
 
 public abstract class ProcessorTask extends TavernaTask{
 	protected static final String PROVENANCE_NAMESPACE = "http://www.it-innovation.soton.ac.uk/taverna/workflow/enactor/provenance";
-    protected Processor proc = null;
+  protected Processor proc = null;
 	protected LogLevel logLevel = null;	
-	
+	private Logger logger = Logger.getLogger(ProcessorTask.class);
 	/**
      * Default Constructor
      * @param id
@@ -66,10 +66,7 @@ public abstract class ProcessorTask extends TavernaTask{
         //complete normally, any scheduled tasks are cancelled normally in core framework
     }  
 	
-	public uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.eventservice.TaskStateMessage doTask() {
-		return new TaskStateMessage(getParentFlow().getID(), getID(), TaskStateMessage.FAILED, "No idea how to do task");
-	}
-
+	
 	/**
 	 * Retrieves the XScufl Processor object for this task
 	 * @return 
@@ -90,4 +87,22 @@ public abstract class ProcessorTask extends TavernaTask{
 		return new Element("processorExecution");
 	}
 
+	/**
+	 * Wrapper method to enable pre and post processing for actual service invocations
+	 */
+	public uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.eventservice.TaskStateMessage doTask() {
+		try{
+			//do any pre-processing here
+			return execute();
+		}
+		catch (Exception ex){
+			logger.error(ex);
+			return new TaskStateMessage(getParentFlow().getID(), getID(), TaskStateMessage.FAILED, "Unrecognised dispatch failure for a task within the workflow.");
+		}	
+	}
+
+	/**
+	 * Method that actually undertakes a service action. Should be implemented by concrete processors.
+	 */
+	protected abstract uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.eventservice.TaskStateMessage execute();
 }

@@ -42,7 +42,7 @@ public class TalismanTask extends ProcessorTask {
 	super(id,proc,l);
     }
     
-    public uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.eventservice.TaskStateMessage doTask() {
+    protected uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.eventservice.TaskStateMessage execute() {
 	try{
 	    TalismanProcessor theProcessor = (TalismanProcessor)proc;
 

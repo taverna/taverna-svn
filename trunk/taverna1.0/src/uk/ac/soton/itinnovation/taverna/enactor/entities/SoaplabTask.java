@@ -25,8 +25,8 @@
 //      Dependencies        :
 //
 //      Last commit info    :   $Author: dmarvin $
-//                              $Date: 2003-05-30 08:26:36 $
-//                              $Revision: 1.9 $
+//                              $Date: 2003-06-03 12:46:48 $
+//                              $Revision: 1.10 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 
@@ -81,7 +81,7 @@ public class SoaplabTask extends ProcessorTask{
 		super(id,proc,l);		
 	}
 	
-	public uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.eventservice.TaskStateMessage doTask() {
+	protected uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.eventservice.TaskStateMessage execute() {
 		try{
 			startTime = new TimePoint();
 			//grab the input map
