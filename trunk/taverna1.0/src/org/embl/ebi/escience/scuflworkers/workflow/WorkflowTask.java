@@ -25,12 +25,15 @@
 //      Dependencies        :
 //
 //      Last commit info    :   $Author: mereden $
-//                              $Date: 2004-02-04 11:21:21 $
-//                              $Revision: 1.4 $
+//                              $Date: 2004-04-06 12:05:48 $
+//                              $Revision: 1.5 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 
 package org.embl.ebi.escience.scuflworkers.workflow;
+
+import org.embl.ebi.escience.scufl.enactor.*;
+import org.embl.ebi.escience.scufl.enactor.implementation.*;
 
 import org.apache.log4j.Logger;
 import org.embl.ebi.escience.scufl.Processor;
@@ -59,13 +62,6 @@ import java.lang.Thread;
 
 public class WorkflowTask implements ProcessorTaskWorker {
 
-    private static Logger logger = Logger.getLogger(WorkflowTask.class);
-    private static final int INVOCATION_TIMEOUT = 0;
-    private static final long WAITTIME = 10000;
-    private String subWorkflowID = null;
-    private TavernaFlowReceipt receipt = null;
-    private FlowBroker broker = null;
-    private int flowState = FlowMessage.NEW;
     private Processor proc;
 
     public WorkflowTask(Processor p) {
@@ -79,103 +75,34 @@ public class WorkflowTask implements ProcessorTaskWorker {
     public Map execute(Map inputMap) throws TaskExecutionException {
 	WorkflowProcessor theProcessor = (WorkflowProcessor)proc;
 	ScuflModel theNestedModel = theProcessor.getInternalModel();
-	//String userID = getUserID();
-	//String userContext = getUserNamespaceContext();
-	String userID = "";
-	String userContext = "";
-	// The inputMap is already in the form we need for a submission
-	TavernaBinaryWorkflowSubmission theSubmission = new TavernaBinaryWorkflowSubmission(theNestedModel,
-											    inputMap,
-											    userID,
-											    userContext);
-	try {
-	    broker = FlowBrokerFactory.createFlowBroker("uk.ac.soton.itinnovation.taverna.enactor.broker.TavernaFlowBroker");
-	    receipt = (TavernaFlowReceipt)broker.submitFlow(theSubmission);
-	}
-	catch (Exception ex) {
-	    //
-	}
-	subWorkflowID = receipt.getID();
-	// The flowState is manipulated by the new FlowCallBack
-	EnhancedFlowCallback monitor = new EnhancedFlowCallback() {
-		private boolean running = true;
-		private Thread myThread = null;
-		public void waitFor() {
-		    myThread = Thread.currentThread();
-		    while (running) {
-			try {
-			    Thread.sleep(WAITTIME);
-			}
-			catch (InterruptedException ie) {
-			    //
-			}
-		    }
-		}
-		public void notify(FlowMessage msg) {
-		    try {
-			flowState = msg.getNewState();
-			switch(flowState) {
-			case 3: // Complete
-			case 4: // Failed
-			case 5: // Cancelled
-			    this.running = false;
-			    myThread.interrupt();
-			    break;
-			}
-		    }
-		    catch (NullPointerException ex) {
-			logger.error(ex);
-		    }
-		}
-	    };
-	receipt.registerFlowCallback(monitor);
-	monitor.waitFor();
 	
-	// Did we finish okay?
-	if (flowState == FlowMessage.COMPLETE) {
-	    return receipt.getOutput();
+	EnactorProxy theEnactor = new FreefluoEnactorProxy();
+	WorkflowInstance flowReceipt = null;
+	try {
+	    flowReceipt = theEnactor.submitWorkflow(theNestedModel, inputMap);
 	}
-	else if (flowState == FlowMessage.FAILED) {
-	    throw new TaskExecutionException("Nested workflow failed in task, error message was : "+receipt.getErrorMessage());
+	catch (WorkflowSubmissionException wse) {
+	    TaskExecutionException tee = new TaskExecutionException("Error submitting nested workflow");
+	    tee.initCause(wse);
+	    throw tee;
 	}
-	else if (flowState == FlowMessage.CANCELLED) {
-	    return new HashMap();
-	}
-	else {
-	    throw new TaskExecutionException("Unknown flow state in task, failing.");
-	}
-    }
-    
-    private interface EnhancedFlowCallback extends FlowCallback {
-	public void waitFor();
-    }
-
-    public void cleanUpConcreteTask() {
-	try{
-	    if(receipt!=null) {
-		broker.releaseFlow(receipt);
+	try {
+	    String results;
+	    boolean gotResults = false;
+	    while (!gotResults) {
+		results = flowReceipt.getOutputXMLString();
+		if (results.equals("") == false) {
+		    gotResults = true;
+		} else {
+		    Thread.sleep(1000);
+		}
 	    }
+	} catch (InterruptedException ie) {
+	    TaskExecutionException tee = new TaskExecutionException("Nested workflow failure");
+	    tee.initCause(ie);
+	    throw tee;
 	}
-	catch(Exception ex) {
-	    //we tried
-	}
-    }
-    
-    /**
-     * Undertakes any special cancel processing required by Taverna tasks
-     */
-    public void cancelConcreteTask() {
-	try{
-	    broker.cancelFlow(subWorkflowID);
-	}
-	catch(uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.broker.WorkflowCommandException ex) {
-	    ex.printStackTrace();
-	    logger.error(ex);
-	}
-	catch(NullPointerException ex) {
-	    logger.error(ex);
-	    //we have tried
-	}
+	return flowReceipt.getOutput();
     }
         
 }
