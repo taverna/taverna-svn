@@ -313,6 +313,16 @@ public class Workbench extends JFrame {
 		}
 	    });
 	windowMenu.add(dotView);
+	JMenuItem servicePanel = new JMenuItem("Service Panel");
+	servicePanel.addActionListener(new ActionListener() {
+		public void actionPerformed(ActionEvent e) {
+		    // Show a service selection panel
+		    Workbench.this.desktop.add(new GenericUIComponentFrame(Workbench.this.model,
+									   new ScavengerTree()));
+		}
+	    });
+	windowMenu.add(servicePanel);
+
 	
 
 	menuBar.add(fileMenu);
