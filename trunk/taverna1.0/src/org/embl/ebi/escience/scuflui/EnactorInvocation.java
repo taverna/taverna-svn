@@ -71,7 +71,7 @@ public class EnactorInvocation extends JPanel implements ScuflUIComponent {
 	// detachFromModel() is called by GeneridUIComponentFrame when
         // it is closing.  Cleanup of remote resources will be done here.
         try {
-        	workflowEditor.detachFromModel();
+	    workflowEditor.detachFromModel();
             workflowInstance.cancel();
         }
         catch(Exception e) {
@@ -109,165 +109,112 @@ public class EnactorInvocation extends JPanel implements ScuflUIComponent {
 	return this.instanceID;
     }
 
-		//The workflow status label
-		JLabel flowLabel=null;
+    //The workflow status label
+    JLabel flowLabel=null;
 
 		
     /**
-		 * Returns the processor that user pointed to obtain a breakpoint
+     * Returns the processor that user pointed to obtain a breakpoint
      */
     private Processor getPointedProcessor(int X, int Y, JTable table){
 	final Processor[] processors = theModel.getProcessors();
 	for (int i=0; i<processors.length; i++)
-		if (table.getCellRect(i,5,true).contains(X,Y)) return processors[i];
+	    if (table.getCellRect(i,5,true).contains(X,Y)) return processors[i];
 	return null;
     }
-
-
+    
     /**
      * Get the status text for this invocation
      */
     public String getStatusText() {
 	return this.workflowInstance.getProgressReportXMLString();
     }
-
-  /**
-   * Ensure that the results have been retrieved. This is code factored out
-   * from showResults().
-   */
-  protected void ensureGotResults()
-  {
-    // todo: surely we can re-write this to use synchronization rather than sleep?
-    String results = "";
-    try {
-      System.out.println("Getting results...");
-      boolean gotResults = false;
-      while (!gotResults) {
-	  if (this.workflowInstance.getStatus().equalsIgnoreCase("Complete")) {
-	      gotResults = true;
-	  }
-	  
-	  //System.out.println(this.workflowInstance.getStatus());
-	  //results = this.workflowInstance.getOutputXMLString();
-	  //if (results.equals("") == false) {
-          //gotResults = true;
-        else {
-          Thread.sleep(1000);
-        }
-      }
-    } catch (InterruptedException ie) {
-      // todo: ugly hack - I didn't want to change the logic just incase
-      // but shouldn't the try be close on the sleep()?
-      this.resultsText.setText("No results available : " + ie.toString());
-    }
-  }
-
-  // todo: should this be public? We only call it here.
-  /**
-   * Show the results in the text area.
-   */
-  public void showResults() {
-    ensureGotResults();
-		toolbar.removeAll();
-    // Show the results
-    this.tabs.add("Results",individualResults);
-    // Populate the toolbar with all the buttons from
-    // the ResultMapSaveSPI
-    Map resultMap = this.workflowInstance.getOutput();
-    ResultMapSaveSPI[] savePlugins = ResultMapSaveRegistry.plugins();
-    for (int i = 0; i < savePlugins.length; i++) {
-	JButton saveAction = new JButton(savePlugins[i].getName(),
-					 savePlugins[i].getIcon());
-	saveAction.addActionListener(savePlugins[i].getListener(resultMap, this));
-	toolbar.add(saveAction);
-	if (i < savePlugins.length) {
-	    toolbar.addSeparator();
-	}
-    }
-    toolbar.add(Box.createHorizontalGlue());
-
-    // saveResultsButton.setEnabled(true);
-    // Get the output map and create new result detail panes
-    for (Iterator i = resultMap.keySet().iterator(); i.hasNext(); ) {
-      String resultName = (String)i.next();
-      DataThing resultValue = (DataThing)resultMap.get(resultName);
-				ResultItemPanel rip=new ResultItemPanel(resultValue);
-				rip.setResultsEditing(false);
-      this.individualResults.add(resultName,rip);
-    }
-    this.tabs.setSelectedComponent(individualResults);
-  }
-
-  // todo: this should be the same level of access as showResults()
-  /**
-   * Save the results to a directory. This will display a dialog box to find
-   * the directory.
-   */
+    
     /**
-       public void saveResults()
-       {
-       ensureGotResults();
-       // Get the output map and create new result detail panes
-       Map resultMap = this.workflowInstance.getOutput();
-       JFileChooser chooser = new JFileChooser();
-       chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-       int returnVal = chooser.showSaveDialog(this);
-       for (Iterator i = resultMap.keySet().iterator(); i.hasNext();) {
-       String resultName = (String) i.next();
-       DataThing resultValue = (DataThing) resultMap.get(resultName);
-       try {
-       if (returnVal == JFileChooser.APPROVE_OPTION) {
-       File f = chooser.getSelectedFile();
-       String name = resultName;
-       resultValue.writeToFileSystem(f, name);
-       }
-       } catch (IOException ioe) {
-       // todo: ugly hack - how are we meant to be handling errors?
-       ioe.printStackTrace();
-       //
-       }
-       }
-       }
-    */
-
-    /**
-     * Show the current provenance of this invocation
+     * Ensure that the results have been retrieved. This is code factored out
+     * from showResults().
      */
-    public void showProvenance() {
-	String provenance = "";
+    protected void ensureGotResults()
+    {
+	// todo: surely we can re-write this to use synchronization rather than sleep?
+	String results = "";
 	try {
-	    //provenance = this.workflowInstance.getProvenanceXMLString();
-	    //this.provenanceText.setFont(new Font("Monospaced",Font.PLAIN,12));
-	    //this.provenanceText.setLineWrap(true);
-	    //this.provenanceText.setWrapStyleWord(true);
-	    //this.provenanceText.setText(provenance);
-	    //this.tabs.add("Provenance Text", provenancePanel);
-	    //this.tabs.add("Provenance Tree", new JScrollPane(new XMLTree(provenance)));
-
-	}
-	catch (Exception ex) {
-	    this.provenanceText.setText("No provenance available : "+ex.toString());
+	    System.out.println("Getting results...");
+	    boolean gotResults = false;
+	    while (!gotResults) {
+		if (this.workflowInstance.getStatus().equalsIgnoreCase("Complete")) {
+		    gotResults = true;
+		}
+	  
+		//System.out.println(this.workflowInstance.getStatus());
+		//results = this.workflowInstance.getOutputXMLString();
+		//if (results.equals("") == false) {
+		//gotResults = true;
+		else {
+		    Thread.sleep(1000);
+		}
+	    }
+	} catch (InterruptedException ie) {
+	    // todo: ugly hack - I didn't want to change the logic just incase
+	    // but shouldn't the try be close on the sleep()?
+	    this.resultsText.setText("No results available : " + ie.toString());
 	}
     }
 
-    public void showResultTable()
-    {
+    // todo: should this be public? We only call it here.
+    /**
+     * Show the results in the text area.
+     */
+    public void showResults() {
+	ensureGotResults();
+	toolbar.removeAll();
+	// Show the results
+	this.tabs.add("Results",individualResults);
+	// Populate the toolbar with all the buttons from
+	// the ResultMapSaveSPI
+	Map resultMap = this.workflowInstance.getOutput();
+	ResultMapSaveSPI[] savePlugins = ResultMapSaveRegistry.plugins();
+	for (int i = 0; i < savePlugins.length; i++) {
+	    JButton saveAction = new JButton(savePlugins[i].getName(),
+					     savePlugins[i].getIcon());
+	    saveAction.addActionListener(savePlugins[i].getListener(resultMap, this));
+	    toolbar.add(saveAction);
+	    if (i < savePlugins.length) {
+		toolbar.addSeparator();
+	    }
+	}
+	toolbar.add(Box.createHorizontalGlue());
+
+	// saveResultsButton.setEnabled(true);
+	// Get the output map and create new result detail panes
+	for (Iterator i = resultMap.keySet().iterator(); i.hasNext(); ) {
+	    String resultName = (String)i.next();
+	    DataThing resultValue = (DataThing)resultMap.get(resultName);
+	    ResultItemPanel rip=new ResultItemPanel(resultValue);
+	    rip.setResultsEditing(false);
+	    this.individualResults.add(resultName,rip);
+	}
+	this.tabs.setSelectedComponent(individualResults);
+    }
+
+
+    public void showResultTable() {
 	if (System.getProperty("taverna.resulttable.enable") == null) {
 	    return;
 	}
 	try {
-		int sizeLimit = 128000;
-		try
+	    int sizeLimit = 128000;
+	    try
 		{
-			sizeLimit = Integer.parseInt(System.getProperty("taverna.resulttable.sizelimit"));
+		    sizeLimit = Integer.parseInt(System.getProperty("taverna.resulttable.sizelimit"));
 		}
-		catch(Exception e)
+	    catch(Exception e)
 		{
-			e.printStackTrace();
+		    e.printStackTrace();
 		}
-		if(workflowInstance.getProvenanceXMLString().length() < sizeLimit)
+	    if(workflowInstance.getProvenanceXMLString().length() < sizeLimit)
 		{
-			this.tabs.add("Result Table", new JScrollPane(new ResultTablePanel(theModel, workflowInstance)));
+		    this.tabs.add("Result Table", new JScrollPane(new ResultTablePanel(theModel, workflowInstance)));
 		}
 	}
 	catch (Exception e) {
@@ -277,6 +224,7 @@ public class EnactorInvocation extends JPanel implements ScuflUIComponent {
 	}
     }
     
+
     /**
      * Show the detailed enactor progress report as a tree
      */
@@ -291,14 +239,15 @@ public class EnactorInvocation extends JPanel implements ScuflUIComponent {
 	}
     }
 
-		 /**
+
+    /**
      * Remove the detailed enactor progress report as a tree
      */
     public void rmvProgressReport() {
-			try {
-	    	this.tabs.remove(this.tabs.indexOfTab("Process report"));
-			}
-			catch (Exception ex) { }
+	try {
+	    this.tabs.remove(this.tabs.indexOfTab("Process report"));
+	}
+	catch (Exception ex) { }
     }
 
 
@@ -371,99 +320,100 @@ public class EnactorInvocation extends JPanel implements ScuflUIComponent {
 	processorTable.getColumnModel().getColumn(0).setResizable(false);	
 	processorTable.addMouseListener(new MouseAdapter(){
 
-    public void mouseClicked(MouseEvent e) {
-	final Processor theProcessor=getPointedProcessor(e.getX(),e.getY(),processorTable); 
-	if (theProcessor != null) {
-		if (!theProcessor.hasBreakpoint()){ 
-			theProcessor.addBreakpoint();
-	   	try {
+		public void mouseClicked(MouseEvent e) {
+		    final Processor theProcessor=getPointedProcessor(e.getX(),e.getY(),processorTable); 
+		    if (theProcessor != null) {
+			if (!theProcessor.hasBreakpoint()){ 
+			    theProcessor.addBreakpoint();
+			    try {
 				statusTableModel.update(getStatusText()); 
-	    } catch (InvalidStatusReportException isre) { }
-			processorTable.repaint();
-			workflowInstance.pause(theProcessor.getName()); 
-		} 
-		else{
-			theProcessor.rmvBreakpoint();
-	   	try {
+			    } catch (InvalidStatusReportException isre) { }
+			    processorTable.repaint();
+			    workflowInstance.pause(theProcessor.getName()); 
+			} 
+			else{
+			    theProcessor.rmvBreakpoint();
+			    try {
 				statusTableModel.update(getStatusText()); 
-	   	} catch (InvalidStatusReportException isre) { }
-			processorTable.repaint();
-			workflowInstance.resume(theProcessor.getName()); 
-		} 
-	}
-    }
+			    } catch (InvalidStatusReportException isre) { }
+			    processorTable.repaint();
+			    workflowInstance.resume(theProcessor.getName()); 
+			} 
+		    }
+		}
 
-	});
+	    });
 
 	//Create a computation steering contorl area
  	final JButton playButton = new JButton("Resume", ScuflIcons.playIcon);
  	final JButton pauseButton = new JButton("Pause", ScuflIcons.pauseIcon);
  	final JButton stopButton = new JButton("Stop", ScuflIcons.stopIcon);
  	final JLabel taskLabel=new JLabel("Processor");
- 	flowLabel=new JLabel("NEW");
-	flowLabel.setFont(new java.awt.Font("Monospaced", java.awt.Font.BOLD, 16));
+ 	flowLabel=new JLabel("<html><em>New</em></html>");
+	// Eugh. Ugly. Will use HTML labels instead. tmo
+	//flowLabel.setFont(new java.awt.Font("Monospaced", java.awt.Font.BOLD, 16));
  	final JButton breakButton = new JButton("Add Breakpoint", ScuflIcons.breakIcon);
  	final JButton rbreakButton = new JButton("Resume", ScuflIcons.rbreakIcon);
 	
 	playButton.setVisible(false);
 	playButton.setSize(70,30);
 	playButton.addActionListener(new ActionListener()
+	    {
+		public void actionPerformed(ActionEvent event)
 		{
-			public void actionPerformed(ActionEvent event)
+		    try
 			{
-				try
-				{
-					workflowInstance.resumeExecution();
-					playButton.setVisible(false);
-					pauseButton.setVisible(true);
-				}
-				catch (Exception e)
-				    {
-					e.printStackTrace();
-				    }
-			} 
-		});
+			    workflowInstance.resumeExecution();
+			    playButton.setVisible(false);
+			    pauseButton.setVisible(true);
+			}
+		    catch (Exception e)
+			{
+			    e.printStackTrace();
+			}
+		} 
+	    });
 
 	pauseButton.setSize(70,30);
 	pauseButton.addActionListener(new ActionListener()
+	    {
+		public void actionPerformed(ActionEvent event)
 		{
-			public void actionPerformed(ActionEvent event)
+		    try
 			{
-				try
-				{
-					workflowInstance.pauseExecution();
-					pauseButton.setVisible(false);
-					playButton.setVisible(true);
-				}
-				catch (Exception e)
-				    {
-					e.printStackTrace();
-				    }
+			    workflowInstance.pauseExecution();
+			    pauseButton.setVisible(false);
+			    playButton.setVisible(true);
 			}
-		});
+		    catch (Exception e)
+			{
+			    e.printStackTrace();
+			}
+		}
+	    });
 
 	stopButton.setSize(70,30);
 	stopButton.addActionListener(new ActionListener()
+	    {
+		public void actionPerformed(ActionEvent event)
 		{
-			public void actionPerformed(ActionEvent event)
+		    try
 			{
-				try
-				{
-					workflowInstance.cancel();
-					//pauseButton.setEnabled(false);
-					//playButton.setEnabled(false);
-				}
-				catch (Exception e)
-				    {
-					e.printStackTrace();
-				    }
+			    workflowInstance.cancel();
+			    //pauseButton.setEnabled(false);
+			    //playButton.setEnabled(false);
 			}
-		});
-	toolbar.add(new JLabel("       "));
-	toolbar.add(new JLabel("Workflow Status"));
-	toolbar.add(new JLabel("       "));
+		    catch (Exception e)
+			{
+			    e.printStackTrace();
+			}
+		}
+	    });
+	//toolbar.add(new JLabel("       "));
+	toolbar.add(new JLabel("Workflow Status : "));
+	//toolbar.add(new JLabel("       "));
 	toolbar.add(flowLabel);
-	toolbar.add(new JLabel("       "));
+	toolbar.add(Box.createHorizontalGlue());
 	toolbar.addSeparator();
 	toolbar.add(playButton);
 	toolbar.add(pauseButton);
@@ -568,7 +518,7 @@ public class EnactorInvocation extends JPanel implements ScuflUIComponent {
 	//individualResults = new JTabbedPane();
 	//tabs.add(individualResults, "Detail");
 
-      // todo: why show() rather than setVisible(true)?
+	// todo: why show() rather than setVisible(true)?
 	//pack();
 	//setSize(new Dimension(600,300));
 	setVisible(true);
@@ -591,7 +541,7 @@ public class EnactorInvocation extends JPanel implements ScuflUIComponent {
 class EnactorInvocationStatusThread extends Thread {
 
     boolean running = true;
-		boolean paused = true;
+    boolean paused = true;
     boolean abort = false;
     EnactorInvocation theEnactorInvocation;
     String instanceID = null;
@@ -641,52 +591,48 @@ class EnactorInvocationStatusThread extends Thread {
 		//System.out.println("Polling...");
 
 		try {
-				String statusText = theEnactorInvocation.getStatusText();
+		    String statusText = theEnactorInvocation.getStatusText();
 		    // System.out.println("Status document : "+statusText);
 		    String workflowStatus = theEnactorInvocation.getTableModel().update(statusText);
-				theEnactorInvocation.workflowEditor.updateStatus(statusText);
+		    theEnactorInvocation.workflowEditor.updateStatus(statusText);
 		    // System.out.println("Workflow status : "+workflowStatus);
 		    if ( workflowStatus.equals("CANCELLED") ) {
-					//theEnactorInvocation.showProvenance();
-					theEnactorInvocation.rmvProgressReport();
-					theEnactorInvocation.showProgressReport();
-					running = false;
-					abort = true;
-					theEnactorInvocation.flowLabel.setText("CANCELLED");
+			theEnactorInvocation.rmvProgressReport();
+			theEnactorInvocation.showProgressReport();
+			running = false;
+			abort = true;
+			theEnactorInvocation.flowLabel.setText("<html><font color=\"red\">Cancelled</font></html>");
 		    }
 		    else if (workflowStatus.equals("COMPLETE")) {
-					running = false;
-					// Set the results display in the display panel
-					theEnactorInvocation.showResults();
-					theEnactorInvocation.showResultTable();			
-					// theEnactorInvocation.showProvenance();
-					theEnactorInvocation.rmvProgressReport();
-					theEnactorInvocation.showProgressReport();
-					// theEnactorInvocation.saveResults(); - commented out as it's anoying MRP
-					theEnactorInvocation.flowLabel.setText("COMPLETE");
+			running = false;
+			// Set the results display in the display panel
+			theEnactorInvocation.showResults();
+			theEnactorInvocation.showResultTable();			
+			theEnactorInvocation.rmvProgressReport();
+			theEnactorInvocation.showProgressReport();
+			// theEnactorInvocation.saveResults(); - commented out as it's anoying MRP
+			theEnactorInvocation.flowLabel.setText("<html><font color=\"blue\">Complete</font></html>");
 		    }
-				else if  (workflowStatus.equals("PAUSED") && !paused){
-					paused=true;
-					theEnactorInvocation.showProgressReport();
-					theEnactorInvocation.flowLabel.setText("PAUSED");
-				}
-				else if ( workflowStatus.equals("FAILED") ) {
-					//theEnactorInvocation.showProvenance();
-					theEnactorInvocation.rmvProgressReport();
-					theEnactorInvocation.showProgressReport();
-					running = false;
-					abort = true;
-					theEnactorInvocation.flowLabel.setText("FAILED");
+		    else if  (workflowStatus.equals("PAUSED") && !paused){
+			paused=true;
+			theEnactorInvocation.showProgressReport();
+			theEnactorInvocation.flowLabel.setText("<html><font color=\"purple\">Paused</font></html>");
 		    }
-				else if ( workflowStatus.equals("RUNNING") ) {
-					//theEnactorInvocation.showProvenance();
-					paused=false;
-					theEnactorInvocation.rmvProgressReport();
-					theEnactorInvocation.flowLabel.setText("RUNNING");
+		    else if ( workflowStatus.equals("FAILED") ) {
+			theEnactorInvocation.rmvProgressReport();
+			theEnactorInvocation.showProgressReport();
+			running = false;
+			abort = true;
+			theEnactorInvocation.flowLabel.setText("<html><font color=\"red\">Failed</font></html>");
+		    }
+		    else if ( workflowStatus.equals("RUNNING") ) {
+			paused=false;
+			theEnactorInvocation.rmvProgressReport();
+			theEnactorInvocation.flowLabel.setText("<html><font color=\"green\">Running</font></html>");
 		    }
 		}
 		catch ( Exception e ) {
-			e.printStackTrace();
+		    e.printStackTrace();
 		    // System.out.println(e.getMessage());
 		    // Status message not available I guess
 		}
