@@ -6,6 +6,8 @@
 package org.embl.ebi.escience.scuflworkers.wsdl;
 
 import javax.wsdl.*;
+import javax.wsdl.extensions.*;
+import javax.wsdl.extensions.soap.*;
 import javax.xml.namespace.*;
 import javax.wsdl.factory.WSDLFactory;
 import javax.wsdl.xml.WSDLReader;
@@ -39,6 +41,7 @@ public class WSDLBasedProcessor extends Processor implements java.io.Serializabl
     private String requestMessageName = null;
     private String responseMessageName = null;
     private String operationStyle = null;
+    private String targetEndpoint = null;
 
     public String getWSDLLocation() {
 	return this.wsdlLocationString;
@@ -58,6 +61,9 @@ public class WSDLBasedProcessor extends Processor implements java.io.Serializabl
     public String getOperationStyle() {
 	return this.operationStyle;
     }
+    public String getTargetEndpoint() {
+	return this.targetEndpoint;
+    }
     
     /**
      * Construct a new processor from the given WSDL definition
@@ -73,6 +79,7 @@ public class WSDLBasedProcessor extends Processor implements java.io.Serializabl
 	this.wsdlLocationString = wsdlLocation;
 	this.operationString = operationName;
 	this.portTypeString = portTypeName;
+	
 	// is either 'rpc' or 'document' I think...
 	this.operationStyle = operationStyle;
 
@@ -93,19 +100,39 @@ public class WSDLBasedProcessor extends Processor implements java.io.Serializabl
 	catch (WSDLException wsdle) {
 	    throw new ProcessorCreationException("Unable to load the WSDL definition, underlying reason was "+wsdle.getMessage());
 	}
-	// Get the list of port types and search for one with the local part of the
-	// QName equal to the supplied portTypeName
-	Map portTypeMap = theDefinition.getPortTypes();
+
 	PortType portType = null;
-	for (Iterator i = portTypeMap.values().iterator(); i.hasNext(); ) {
-	    PortType thePortType = (PortType)i.next();
-	    if (thePortType.getQName().getLocalPart().equals(portTypeName)) {
-		// Found it.
-		portType = thePortType;
+	// Iterate over the Service objects in the definition, then over Port objects within
+	// services until we find the particular Port containing the binding.
+	boolean found = false;
+	for (Iterator i = theDefinition.getServices().values().iterator(); i.hasNext() && !found; ) {
+	    Service s = (Service)i.next();
+	    // Iterate over Port objects within service
+	    for (Iterator j = s.getPorts().values().iterator(); j.hasNext() && !found; ) {
+		javax.wsdl.Port p = (javax.wsdl.Port)j.next();
+		Binding b = p.getBinding();
+		PortType pt = b.getPortType();
+		// Does this have the correct port type name?
+		if (pt.getQName().getLocalPart().equals(portTypeName)) {
+		    portType = pt;
+		    // Iterate over the extensibility elements for the port
+		    for (Iterator k = p.getExtensibilityElements().iterator(); k.hasNext(); ) {
+			ExtensibilityElement ee = (ExtensibilityElement)k.next();
+			if (ee instanceof SOAPAddress) {
+			    targetEndpoint = ((SOAPAddress)ee).getLocationURI();
+			}
+		    }
+		    found = true;
+		}
 	    }
 	}
 	if (portType == null) {
-	    throw new ProcessorCreationException("Unable to locate portType '"+portTypeName+"' in '"+wsdlLocation+"'.");
+	    throw new ProcessorCreationException("Unable to locate portType '"+
+						 portTypeName+"' in '"+wsdlLocation+"'.");
+	}
+	if (targetEndpoint == null) {
+	    throw new ProcessorCreationException("Unable to locate the target endpoint for '"+
+						 portTypeName+"' in '"+wsdlLocation+"'.");
 	}
 	// Get the list of operations and search for one with local QName part
 	// equal to the supplied operationName
@@ -183,9 +210,18 @@ public class WSDLBasedProcessor extends Processor implements java.io.Serializabl
     }
 
     public String xsdTypeToInternalType(String xsdType) {
-	if (xsdType.equals("ArrayOf_xsd_string")) { 
-	    return "string[]";
+	// Can cope with String types and nested strings
+	if (xsdType.startsWith("ArrayOf_")) {
+	    return ("l("+xsdTypeToInternalType(xsdType.replaceFirst("ArrayOf_",""))+")");
 	}
+	else {
+	    if (xsdType.equalsIgnoreCase("xsd_string") || 
+		xsdType.equalsIgnoreCase("xsd:string") || 
+		xsdType.equalsIgnoreCase("string")) {
+		return "'text/plain'";
+	    }
+	}
+	// Fall through
 	return xsdType;
     }
 
@@ -197,6 +233,7 @@ public class WSDLBasedProcessor extends Processor implements java.io.Serializabl
 	props.put("WSDL Location",getWSDLLocation());
 	props.put("Port Type",getPortTypeName());
 	props.put("Operation",getOperationName());
+	props.put("Target Endpoint",getTargetEndpoint());
 	return props;
     }
 }

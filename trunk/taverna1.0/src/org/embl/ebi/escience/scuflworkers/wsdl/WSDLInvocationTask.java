@@ -25,8 +25,8 @@
 //      Dependencies        :
 //
 //      Last commit info    :   $Author: mereden $
-//                              $Date: 2003-09-30 17:11:18 $
-//                              $Revision: 1.1 $
+//                              $Date: 2003-10-02 10:15:40 $
+//                              $Revision: 1.2 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 
@@ -36,107 +36,96 @@ import uk.ac.soton.itinnovation.taverna.enactor.entities.ProcessorTask;
 import uk.ac.soton.itinnovation.taverna.enactor.entities.TaskExecutionException;
 import org.apache.log4j.Logger;
 import org.embl.ebi.escience.scufl.Processor;
-import uk.ac.soton.itinnovation.mygrid.workflow.enactor.invocation.InvocationDescription;
-import uk.ac.soton.itinnovation.mygrid.workflow.enactor.io.Output;
 import uk.ac.soton.itinnovation.taverna.enactor.broker.LogLevel;
-
+import org.embl.ebi.escience.scufl.*;
+import org.embl.ebi.escience.baclava.*;
+import org.embl.ebi.escience.baclava.factory.*;
+import javax.xml.namespace.QName;
+import org.apache.axis.client.Call;
+import org.apache.axis.client.Service;
 // Utility Imports
 import java.util.HashMap;
+import java.util.*;
 
 // JDOM Imports
 import org.jdom.Element;
 
 // Network Imports
-import java.net.URL;
+import java.net.*;
 
 
 
 
-public class WSDLInvocationTask extends ProcessorTask implements InvocationDescription {
+public class WSDLInvocationTask extends ProcessorTask  {
+    
     private static Logger logger = Logger.getLogger(WSDLInvocationTask.class);
     private static final int INVOCATION_TIMEOUT = 0;
-    //private Input inputForLog = null;
-    private Output outputForLog = null;
     
     public WSDLInvocationTask(String id,Processor proc,LogLevel l, String userID, String userCtx) {
 	super(id,proc,l,userID,userCtx);
     }
     
-    public java.util.Map execute(java.util.Map inputMap) throws TaskExecutionException {
-	
-	return new HashMap();
-	
-    }
-    
-    public void cleanUpConcreteTask() {
-	//nothing at mo, but should call destroy on job if job id available
-    }
-    
-    //following required to implement the invocation description interface
-    
-    public String getName() {
-	return proc.getName();
-    }
-    
-    
-    /**
-     * Obtain the WSDL portType identifier required for this invocation. - required for InvocationDescription
-     * @return identifier
-     */
-    public String getPortType() {
-	return ((WSDLBasedProcessor) proc).getPortTypeName();
-    }
-    
-    /**
-     * Obtain the WSDL Operation identifier required for this invocation - required for InvocationDescription
-     * @return identifier
-     */
-    public String getOperation() {
-	return ((WSDLBasedProcessor) proc).getOperationName();
-    }
-    
-    /**
-     * Obtain the WSDL selected for invocation against - required for InvocationDescription
-     * @return URL location
-     */
-    public URL getSelectedServiceWSDLURL(){
-	try{
-	    return new URL(((WSDLBasedProcessor) proc).getWSDLLocation());
-	}catch(java.net.MalformedURLException ex) {
-	    return null;
+    public Map execute(Map inputMap) throws TaskExecutionException {
+	try {
+	    WSDLBasedProcessor p = (WSDLBasedProcessor)proc;
+	    Map results = new HashMap();
+	    Call call = (Call) new Service().createCall();
+	    try {
+		call.setTargetEndpointAddress(new URL(p.getTargetEndpoint()));
+	    }
+	    catch (MalformedURLException mue) {
+		throw new TaskExecutionException("URL for service endpoint was malformed : "+mue.getMessage());
+	    }
+	    call.setOperationName(new QName(p.getOperationName()));
+	    Object[] args = new Object[p.getInputPorts().length];
+	    for (int i = 0; i < args.length; i++) {
+		DataThing theData = (DataThing)inputMap.get(p.getInputPorts()[i].getName());
+		Object theDataObject = theData.getDataObject();
+		// Check for the case of List of String and convert to a String[]
+		if (theDataObject instanceof List) {
+		    if (((List)theDataObject).isEmpty()) {
+			theDataObject = new String[0];
+		    }
+		    else {
+			Object firstItem = ((List)theDataObject).get(0);
+			if (firstItem instanceof String) {
+			    theDataObject = ((List)theDataObject).toArray(new String[0]);
+			}
+		    }
+		}
+		args[i] = theDataObject;
+		System.out.println("Data thing for port "+p.getInputPorts()[i].getName());
+		System.out.println(theData.getDataObject());
+	    }
+	    Object o = call.invoke(args);
+	    DataThing outputThing = null;
+	    if (o instanceof String[]) {
+		outputThing = DataThingFactory.bake((String[])o);
+	    }
+	    else if (o instanceof List) {
+		outputThing = DataThingFactory.bakeForSoaplab((List)o);
+	    }
+	    else {
+		outputThing = new DataThing(o);
+	    }
+	    results.put(p.getOutputPorts()[0].getName(), outputThing);
+	    return results;
+	}
+	catch (Exception ex) {
+	    ex.printStackTrace();
+	    throw new TaskExecutionException("Error occured during invocation "+ex.getMessage());
 	}
     }
     
-    /**
-     * Obtain the WSDL RequestMessageName for the operation - required for InvocationDescription
-     * @return identifier
-     */
-    public String getRequestMessageName() {
-	return ((WSDLBasedProcessor) proc).getRequestMessageName();
-    }
-    
-    /**
-     * Obtain the WSDL ResponseMessageName for the operation - required for InvocationDescription
-     * @return identifier
-     */
-    public String getResponseMessageName() {
-	return ((WSDLBasedProcessor) proc).getResponseMessageName();
-    }
-    
-    /**
-     * Get the socket timeout period for the invocation - required for InvocationDescription
-     * @return time period
-     */
-    public int getSocketTimeOut() {
-	//use 0 to allow endless wait, can't assume anything at present about the length of time for an invocation.
-	return 0;
+    public void cleanUpConcreteTask() {
+	//
     }
     
     /**
      * Retrieve provenance information for this task, concrete tasks should
      * overide this method and provide this information as an XML JDOM element
      */
-    public org.jdom.Element getProvenance() {
+    public Element getProvenance() {
 	Element e = new Element("WSDLInvocation",PROVENANCE_NAMESPACE);
 	return e;
     }

@@ -15,6 +15,8 @@ import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.entities.graph.Grap
 import uk.ac.soton.itinnovation.mygrid.workflow.enactor.io.Part;
 import uk.ac.soton.itinnovation.taverna.enactor.broker.LogLevel;
 
+import org.embl.ebi.escience.baclava.*;
+
 // Utility Imports
 import java.util.HashMap;
 import java.util.Iterator;
@@ -62,24 +64,9 @@ public class TalismanTask extends ProcessorTask {
 	    */
 	    Map inputMap = new HashMap();
 	    for (Iterator i = workflowInputMap.keySet().iterator(); i.hasNext(); ) {
-			String partName = (String)(i.next());
-			Part thePart = (Part)workflowInputMap.get(partName);
-			inputMap.put(thePart.getName(), thePart.getTypedValue());
-	    }
-	    // Get a map of the output ports, keys are port names, values are
-	    // PortTask instances, used when we have named output and need to
-	    // set the port values.
-	    Map outputMap = new HashMap();
-	    
-			GraphNode[] outputs = getChildren();
-	    for (int i = 0; i < outputs.length; i++) {
-				if(outputs[i] instanceof PortTask) {
-					PortTask pt = (PortTask)outputs[i];
-					logger.debug("Found an output port task, registering it with name : "+pt.getScuflPort().getName().toLowerCase());
-
-					// convert all port names to lower case, eases matching later on
-					outputMap.put(pt.getScuflPort().getName().toLowerCase(),pt);
-				}
+			String portName = (String)(i.next());
+			DataThing theDataThing = (DataThing)workflowInputMap.get(portName);
+			inputMap.put(portName, theDataThing.getDataObject());
 	    }
 	    
 	    // Get the parameters for this invocation
@@ -98,52 +85,44 @@ public class TalismanTask extends ProcessorTask {
 	    
 	    // Iterate over the talismanInputMap....
 	    for (Iterator i = talismanInputMap.keySet().iterator(); i.hasNext(); ) {
-				// portName is the name of one of the ports on this processor
-				String portName = (String)i.next();
-				// talismanName is the specifier for a field in the talisman session
-				String talismanName = (String)talismanInputMap.get(portName);
-				// portValue is the string value of the port, and it had better be
-				// a string or there will be much bitching!
-				String portValue = (String)inputMap.get(portName.toLowerCase());
-				// Set the value in the talisman session
-				logger.debug("Setting value : "+talismanName+" to "+portValue);
-				teaTray.setStringValue(sessionID, talismanName, portValue);
+		// portName is the name of one of the ports on this processor
+		String portName = (String)i.next();
+		// talismanName is the specifier for a field in the talisman session
+		String talismanName = (String)talismanInputMap.get(portName);
+		// portValue is the string value of the port, and it had better be
+		// a string or there will be much bitching!
+		String portValue = (String)inputMap.get(portName.toLowerCase());
+		// Set the value in the talisman session
+		logger.debug("Setting value : "+talismanName+" to "+portValue);
+		teaTray.setStringValue(sessionID, talismanName, portValue);
 	    }
 	    
 	    // Invoke the trigger
 	    teaTray.invokeTrigger(sessionID, triggerName);
 	    
 	    Map outMap = new HashMap();
-			// Iterate over the talismanOutputMap....
+	    // Iterate over the talismanOutputMap....
 	    for (Iterator i = talismanOutputMap.keySet().iterator(); i.hasNext(); ) {
-					// portName is the name of the port the value should be sent to
-					String portName = (String)i.next();
-					// talismanName is the name of the field the value should be read from
-					String talismanName = (String)talismanOutputMap.get(portName);
-					// talismanValue is the contents of the field defined in talismanName
-					String talismanValue = teaTray.getStringValue(sessionID, talismanName);
-					logger.debug("Creating output - portName = "+portName+", fieldName = "+talismanName);
-					// Write the value to the port, is this the right way to do it?
-					PortTask pt = (PortTask)outputMap.get(portName.toLowerCase());
-					// If the port task wasn't found in the map, then the output isn't bound
-					// to anything and therefore we shouldn't try to write the data out.
-					if (pt != null) {
-							logger.debug("Port task found : "+pt.toString());
-							Part outputPart = new Part(-1, portName, "string", talismanValue);
-							//pt.setData(outputPart);
-							outMap.put(portName,outputPart);
-					}
+		// portName is the name of the port the value should be sent to
+		String portName = (String)i.next();
+		// talismanName is the name of the field the value should be read from
+		String talismanName = (String)talismanOutputMap.get(portName);
+		// talismanValue is the contents of the field defined in talismanName
+		String talismanValue = teaTray.getStringValue(sessionID, talismanName);
+		logger.debug("Creating output - portName = "+portName+", fieldName = "+talismanName);
+		
+		outMap.put(portName, new DataThing(talismanValue));
 	    }
-
+	    
 	    // Done? I think so anyway.
-			
+	    
 	    // Success
 	    return outMap;
-		}
-		catch(Exception ex) {
-				logger.error("Error invoking talisman for task " +getID() ,ex);
-				throw new TaskExecutionException("Task " + getID() + " failed due to problem invoking talisman");
-		}	
+	}
+	catch(Exception ex) {
+	    logger.error("Error invoking talisman for task " +getID() ,ex);
+	    throw new TaskExecutionException("Task " + getID() + " failed due to problem invoking talisman");
+	}	
     }
     
     public void cleanUpConcreteTask() {

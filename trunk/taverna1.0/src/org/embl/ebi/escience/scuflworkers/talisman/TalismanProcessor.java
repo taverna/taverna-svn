@@ -139,7 +139,7 @@ public class TalismanProcessor extends Processor implements java.io.Serializable
 		try {
 		    Port newPort = new InputPort(this, inputElement.getAttributeValue("name"));
 		    // All talisman ports are string for now, will adapt this if needed!
-		    newPort.setSyntacticType("string");
+		    newPort.setSyntacticType("'text/plain'");
 		    // Register port
 		    this.addPort(newPort);
 		}
@@ -160,7 +160,7 @@ public class TalismanProcessor extends Processor implements java.io.Serializable
 		try {
 		    Port newPort = new OutputPort(this, outputElement.getAttributeValue("name"));
 		    // All talisman ports are string for now, will adapt this if needed!
-		    newPort.setSyntacticType("String");
+		    newPort.setSyntacticType("'text/plain'");
 		    // Register port
 		    this.addPort(newPort);
 		}	

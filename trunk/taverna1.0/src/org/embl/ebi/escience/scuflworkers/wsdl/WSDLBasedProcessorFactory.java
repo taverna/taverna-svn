@@ -20,7 +20,7 @@ import org.embl.ebi.escience.scuflworkers.ProcessorFactory;
  */
 public class WSDLBasedProcessorFactory implements ProcessorFactory {
 
-    String wsdlLocation, portTypeName, operationName, operationStyle;
+    String wsdlLocation, portTypeName, operationName, operationStyle, targetEndpoint;
 
     /**
      * Create a new factory with the specified wsdl location,

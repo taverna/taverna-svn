@@ -94,6 +94,7 @@ public class EnactorInvocation extends JPanel implements ScuflUIComponent {
     public void showResults() {
 	String results = "";
 	try {
+	    System.out.println("Getting results...");
 	    boolean gotResults = false;
 	    while (!gotResults) {
 		results = ((TavernaFlowReceipt)(this.flowReceipt)).getOutputString();

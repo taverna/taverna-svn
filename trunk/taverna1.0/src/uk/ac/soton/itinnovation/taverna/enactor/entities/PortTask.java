@@ -26,8 +26,8 @@
 //      Dependencies        :
 //
 //      Last commit info    :   $Author: mereden $
-//                              $Date: 2003-10-01 11:57:46 $
-//                              $Revision: 1.15 $
+//                              $Date: 2003-10-02 10:15:40 $
+//                              $Revision: 1.16 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 
@@ -39,7 +39,7 @@ import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.eventservice.TaskSt
 import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.serviceprovidermanager.ServiceSelectionCriteria;
 import org.embl.ebi.escience.baclava.*;
 import org.embl.ebi.escience.scufl.*;
-
+import java.util.*;
 
 
 
@@ -104,7 +104,35 @@ public class PortTask extends TavernaTask {
      * @param newDataThing holder for data
      */
     public synchronized void setData(DataThing newDataThing) {
-	this.theDataThing = newDataThing;
+	// Check whether the new data is a lower dimension than
+	// the type of this port task
+	String portSyntaxType = thePort.getSyntacticType();
+	String dataSyntaxType = newDataThing.getSyntacticType();
+	// If, for example, we have a 'text/plain' being put into a l('text/plain') then
+	// we can reasonably create a new container with just the single element in
+	if (portSyntaxType != dataSyntaxType) {
+	    String portSetType = portSyntaxType.split("\\'")[0];
+	    String dataSetType = dataSyntaxType.split("\\'")[0];
+	    System.out.println("Set types are "+portSetType+" and "+dataSetType);
+	    // Get the number of 'l(' elements
+	    int portDimension = (portSetType.length())/2;
+	    int dataDimension = (dataSetType.length())/2;
+	    int encapsulationDifference = portDimension - dataDimension;
+	    System.out.println("Think this is a difference of "+encapsulationDifference+" ("+portDimension+"-"+dataDimension+")");
+	    Object theDataObject = newDataThing.getDataObject();
+	    while (encapsulationDifference > 0) {
+		encapsulationDifference--;
+		// While the dimensionality has not been reconciled create
+		// a new List container and put the current object in it.
+		List newList = new ArrayList();
+		newList.add(theDataObject);
+		theDataObject = newList;
+	    }
+	    this.theDataThing = new DataThing(theDataObject);
+	}
+	else {
+	    this.theDataThing = newDataThing;
+	}
 	// Copy any MIME types available from the markup object
 	// on the Scufl port into the MIME container in the
 	// DataThing
