@@ -86,7 +86,7 @@ import org.jdom.output.XMLOutputter;
  * COMMENT DataThingConstructionPanel
  * 
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover </a>
- * @version $Revision: 1.25 $
+ * @version $Revision: 1.26 $
  */
 public abstract class DataThingConstructionPanel extends JPanel implements ScuflUIComponent, ScuflModelEventListener
 {
@@ -337,8 +337,7 @@ public abstract class DataThingConstructionPanel extends JPanel implements Scufl
 				scrollPane.setPreferredSize(new Dimension(0, 0));
 				JToolBar toolbar = new JToolBar();
 				JButton loadInputDocButton = new JButton("Load Input Doc", ScuflIcons.openIcon);
-				JButton saveInputDocButton = new JButton("Save Input Doc", new ImageIcon(ClassLoader
-						.getSystemResource("org/embl/ebi/escience/scuflui/workbench/save.gif")));
+				JButton saveInputDocButton = new JButton("Save Input Doc", ScuflIcons.saveIcon);
 
 				loadInputDocButton.setToolTipText("Load Input Document");
 				loadInputDocButton.addActionListener(loadInputDocAction);
