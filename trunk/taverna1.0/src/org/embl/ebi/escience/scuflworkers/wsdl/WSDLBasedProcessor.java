@@ -156,7 +156,7 @@ public class WSDLBasedProcessor extends Processor implements java.io.Serializabl
 	    QName inputMessageQName = inputMessage.getQName();
 	    // Iterate over the message parts, creating appropriate Port implementations
 	    //System.out.println("Input ports...");
-	    for (Iterator i = inputMessage.getParts().values().iterator(); i.hasNext(); ) {
+	    for (Iterator i = inputMessage.getOrderedParts(null).iterator(); i.hasNext(); ) {
 		Part part = (Part)i.next();
 		try {
 		    System.out.println(part.getName());
