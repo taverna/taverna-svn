@@ -228,6 +228,9 @@ public class EnactorInvocation extends JPanel implements ScuflUIComponent {
 
     public void showResultTable()
     {
+	if (System.getProperty("taverna.resulttable.enable") == null) {
+	    return;
+	}
 	try {
 		int sizeLimit = 128000;
 		try
