@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<s:scufl xmlns:s="http://org.embl.ebi.escience/xscufl/0.1alpha" version="0.1" log="3">
+  <s:processor name="list_kegg_databases">
+    <s:arbitrarywsdl>
+      <s:wsdl>http://soap.genome.ad.jp/KEGG.wsdl</s:wsdl>
+      <s:operation>list_databases</s:operation>
+    </s:arbitrarywsdl>
+  </s:processor>
+  <s:link>
+    <s:input>kegg_dbs</s:input>
+    <s:output>list_kegg_databases:return</s:output>
+  </s:link>
+  <s:sink>
+    kegg_dbs
+    <s:metadata>
+      <s:mimeTypes />
+      <s:description />
+      <s:semanticType />
+    </s:metadata>
+  </s:sink>
+</s:scufl>
+
+
