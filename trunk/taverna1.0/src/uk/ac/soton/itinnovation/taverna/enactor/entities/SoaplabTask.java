@@ -24,9 +24,9 @@
 //      Created for Project :   MYGRID
 //      Dependencies        :
 //
-//      Last commit info    :   $Author: mereden $
-//                              $Date: 2003-04-25 14:57:09 $
-//                              $Revision: 1.3 $
+//      Last commit info    :   $Author: dmarvin $
+//                              $Date: 2003-05-07 20:15:56 $
+//                              $Revision: 1.4 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 
@@ -79,9 +79,11 @@ public class SoaplabTask extends ProcessorTask{
 				PortTask pT = (PortTask) inputs[i];				
 				//for now going to wait for all data inputs to be available, this must change for the special requirements for taverna.
 				//actually want to set data in jobs as it becomes available, so don't block, check if data available every so often
-				Part p = pT.getData();			
+				Part p = pT.getData();	
+				
 				Element e = (Element) p.getValue();
 				inputMap.put(p.getName(),e.getFirstChild().getNodeValue());
+				
 					
 			}
 			// Invoke the web service...
@@ -92,7 +94,6 @@ public class SoaplabTask extends ProcessorTask{
 			HashMap outputMap = new HashMap((Map)call.invoke(new Object[] { inputMap }));
 			//could also get some log info from service for the provenance using the describe method on the service
 
-		
 			//convert map content to array to speed things up a bit
 			Set set = outputMap.keySet();
 			String[] keys = new String[set.size()];
@@ -113,7 +114,7 @@ public class SoaplabTask extends ProcessorTask{
 				PortTask pT = (PortTask) outputs[i];
 				String pTName = pT.getScuflPort().getName();
 				for(int j=0;j<keys.length;j++) {					
-					if(pTName.equals(keys[j])) {
+				    if(pTName.equals(keys[j])) {
 						String type = null;
 						if(values[j] instanceof Boolean)
 							type = "boolean";
@@ -142,18 +143,19 @@ public class SoaplabTask extends ProcessorTask{
 						foundOutputItem = true;
 					}					
 				}
-				if(!foundOutputItem)
+				if(!foundOutputItem) {
 					foundAllOutput = false;
+					return new TaskStateMessage(getParentFlow().getID(),getID(),TaskStateMessage.FAILED,"Task failed since could not obtain output '" + pTName + "' from processor '" + proc.getName() + ", please check its links");
+				}
 			}
-			if(!foundAllOutput) {
-				return new TaskStateMessage(getParentFlow().getID(),getID(),TaskStateMessage.FAILED,"Task failed since could not obtain all required output from soaplab service");
-			}
+			
 			
 			//success
 			return new TaskStateMessage(getParentFlow().getID(), getID(), TaskStateMessage.COMPLETE, "Task finished successfully");
 		}
 		catch(Exception ex) {
 			logger.error("Error invoking soaplab service for task " +getID() ,ex);
+			
 			return new TaskStateMessage(getParentFlow().getID(),getID(),TaskStateMessage.FAILED,"Task " + getID() + " failed due to problem invoking soaplab service");
 		}
 	}

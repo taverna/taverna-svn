@@ -26,43 +26,42 @@
  Dependencies:        
 
  Last commit info:    $Author: dmarvin $
-                      $Date: 2003-04-18 20:41:41 $
-                      $Revision: 1.1 $
+                      $Date: 2003-05-07 20:15:56 $
+                      $Revision: 1.2 $
 
 =================================================================-->
 <!--
      Input data for emboss_soaplab.wsfl workflow
      01.10.2002 -->
 <dataset>
-   <data>
-      <ID>105</ID>
-      <name>seqret:sequence_usa</name>
-      <type>string</type>
-      <value><![CDATA[embl:xlrhodop]]></value>
-   </data>
-   <data>
-      <ID>106</ID>
-      <name>getorf:minsize</name>
-      <type>string</type>
-      <value><![CDATA[400]]></value>
-   </data>
-   <data>
-      <ID>107</ID>
-      <name>getorf:find</name>
-      <type>string</type>
-      <value><![CDATA[3]]></value>
-   </data>
-   <data>
-      <ID>108</ID>
-      <name>seqret2:sequence_usa</name>
-      <type>string</type>
-      <value><![CDATA[swallid:ops2_*]]></value>
-   </data>
-   <data>
-      <ID>109</ID>
-      <name>prophecy:type</name>
-      <type>string</type>
-      <value><![CDATA[G]]></value>
-   </data>
-
+	<data>
+		<ID>105</ID>
+		<name>sequenceusa</name>
+		<type>string</type>
+		<value><![CDATA[embl:xlrhodop]]></value>
+	</data>
+	<data>
+		<ID>106</ID>
+		<name>orfminsize</name>
+		<type>string</type>
+		<value><![CDATA[400]]></value>
+	</data>
+	<data>
+		<ID>107</ID>
+		<name>orffind</name>
+		<type>string</type>
+		<value><![CDATA[3]]></value>
+	</data>
+	<data>
+		<ID>108</ID>
+		<name>sequenceRelated</name>
+		<type>string</type>
+		<value><![CDATA[swallid:ops2_*]]></value>
+	</data>
+	<data>
+		<ID>109</ID>
+		<name>prophecyType</name>
+		<type>string</type>
+		<value><![CDATA[G]]></value>
+	</data>
 </dataset>

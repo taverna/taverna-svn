@@ -25,8 +25,8 @@
 //      Dependencies        :
 //
 //      Last commit info    :   $Author: dmarvin $
-//                              $Date: 2003-05-03 15:19:26 $
-//                              $Revision: 1.8 $
+//                              $Date: 2003-05-07 20:15:49 $
+//                              $Revision: 1.9 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 
@@ -87,33 +87,25 @@ public class XScuflDiGraphGenerator {
 			List inPorts = new ArrayList();
 			List outPorts = new ArrayList();
 			List processorTasks = new ArrayList();
-
+			Port[] sourcePorts = model.getWorkflowSourcePorts();
+			for(int i=0;i<sourcePorts.length;i++) {
+			    PortTask pT = getPortTask(flowID,outPorts,sourcePorts[i]);
+			    flowExtInPorts.add(pT);
+			    addToListIfNotThere(tasks,pT);
+			}
+			Port[] sinkPorts = model.getWorkflowSinkPorts();
+			for(int i=0;i<sinkPorts.length;i++) {
+			    PortTask pT = getPortTask(flowID,inPorts,sinkPorts[i]);
+			    flowExtOutPorts.add(pT);
+			    addToListIfNotThere(tasks,pT);
+			}
 			//create tasks for each processor
 			// changed by tmo - restructured and added talisman task
 			Processor[] processors = model.getProcessors();
 			for(int i=0;i<processors.length;i++){
 			    Processor theProcessor = processors[i];
 			    String id = flowID + ":Processor:" + theProcessor.getName();
-			    /*
-			    String serviceID = null;
-			    //note serviceID serves only to 
-			    if (theProcessor instanceof SoaplabProcessor) {
-				// A soaplab service is defined by the URL of its soaplab endpoint
-				serviceID = ((SoaplabProcessor)theProcessor).getEndpoint().toExternalForm();
-			    }
-			    else if (theProcessor instanceof TalismanProcessor) {
-				// A talisman service is defined by the URL of the script file
-				serviceID = ((TalismanProcessor)theProcessor).getTScriptURLObject().toExternalForm();
-			    }
-			    else if (theProcessor instanceof WSDLInvocationTask) {
-				// A general wsdl service defined by its wsdl, note that wsdl should provide the service endpoint 
-				serviceID = ((WSDLInvocationTask)theProcessor).get
-			    else {
-				throw new XScuflInvalidException("Processor '"+theProcessor.getName()+"' "+
-								 "cannot be understood by this version of the "+
-								 "Taverna enactor.");
-			    }
-			    */
+			    
 			    // Create the actual task to do the work of this processor.
 			    ProcessorTask serviceTask = TavernaTaskFactory.getConcreteTavernaTask(id,theProcessor);
 			    addToListIfNotThere(tasks,serviceTask);
@@ -135,10 +127,7 @@ public class XScuflDiGraphGenerator {
 			//each dataconstraint is a single node it has both input and output identifiers that have significance
 			//for a particular pair of linked services
 			DataConstraint[] dConstraints = model.getDataConstraints();
-			//ArrayList dataNodes = new ArrayList(dConstraints.length);
 			for(int i=0;i<dConstraints.length;i++) {
-				//DataNode dNode = new DataNode(dConstraints[i]);
-				//addToListIfNotThere(dataNodes,dNode);
 				//link up processors and external ports for this data constraint
 				PortTask source = getPortTask(flowID,outPorts,dConstraints[i].getSource());
 				PortTask sink = getPortTask(flowID,inPorts,dConstraints[i].getSink());
@@ -149,20 +138,21 @@ public class XScuflDiGraphGenerator {
 				addToListIfNotThere(tasks,source);
 				addToListIfNotThere(tasks,sink);
 
-				//find the source ProcessorTask
+				//find the source or sink ProcessorTask
 				Iterator iterator = processorTasks.iterator();
 				while(iterator.hasNext()) {
 					ProcessorTask pT = (ProcessorTask) iterator.next();
 					String procName = pT.getProcessor().getName();
 					if(procName.equals(source.getScuflPort().getProcessor().getName())) {
-						pT.addChild(source);
+					    pT.addChild(source);
 						source.addParent(pT);
 					}
 					if(procName.equals(sink.getScuflPort().getProcessor().getName())) {
-						pT.addParent(sink);
-						sink.addChild(pT);
+					    pT.addParent(sink);
+					    sink.addChild(pT);
 					}
-				}
+				}				
+				
 			}
 
 			//for the taverna enactor concurrency constraints allow control flow declaration between processors
@@ -193,6 +183,42 @@ public class XScuflDiGraphGenerator {
 			    controlledTask.addParent(controllerTask);
 			}
 			
+			/*
+			Port[] sourcePorts = model.getWorkflowSourcePorts();
+			//Might think should check length of this array but in fact it is conceivable to have a workflow that has no sources or sinks, it would act purely on 
+			//remote systems therefore checking the length of sourcePorts is non-zero is incorrect
+			for(int i=0;i<sourcePorts.length;i++) {
+			    PortTask source = getPortTask(flowID,flowExtInPorts,sourcePorts[i]);
+			    addToListIfNotThere(tasks,source);
+			    //find processorTasks that match
+			    Iterator iterator = processorTasks.iterator();
+			    while(iterator.hasNext()) {
+				ProcessorTask pT = (ProcessorTask) iterator.next();
+				String procName = pT.getProcessor().getName();
+				if(procName.equals(source.getScuflPort().getProcessor().getName())) {
+				    pT.addParent(source);
+				    source.addChild(pT);
+				}
+			    }
+			}
+			
+			Port[] sinkPorts = model.getWorkflowSinkPorts();
+			for(int i=0;i<sinkPorts.length;i++) {
+			    PortTask sink = getPortTask(flowID,flowExtInPorts,sinkPorts[i]);
+			    addToListIfNotThere(tasks,source);
+			    //find processorTasks that match
+			    Iterator iterator = processorTasks.iterator();
+			    while(iterator.hasNext()) {
+				ProcessorTask pT = (ProcessorTask) iterator.next();
+				String procName = pT.getProcessor().getName();
+				if(procName.equals(sink.getScuflPort().getProcessor().getName())) {
+				    pT.addParent(sink);
+				    source.addChild(pT);
+				}
+			    }
+			}
+			*/
+			/*
 			//get external ports 
 			Port[] externalPorts = model.getExternalPorts();
 			if(externalPorts.length == 0)
@@ -226,26 +252,22 @@ public class XScuflDiGraphGenerator {
 					}
 				}
 			}
-
+			*/
 			//set input and output nodes
+			List partList = input.getPartList();
 			Iterator iterator = flowExtInPorts.iterator();
 			while(iterator.hasNext()) {
 				PortTask pT = (PortTask) iterator.next();
 				graph.addInputNode(pT);
 				//load the data
-				Port port = pT.getScuflPort();
-				String portName = port.getName();
-				String parentProc = port.getProcessor().getName();
-				List partList = input.getPartList();
 				Iterator it = partList.iterator();
 				while(it.hasNext()) {
-					Part part = (Part) it.next();
-					String partName = part.getName();
-					String qualifiedName = parentProc + ":" + portName;
-					if(qualifiedName.equals(partName) || port.isAlias(partName)) {						
-					    pT.setData(new Part(-1,portName,part.getType(),part.getValue()));
-					}
-				}				
+				    Part part = (Part) it.next();
+				    String partName = part.getName();
+				    if(partName.equals(pT.getScuflPort().getName()))
+				       pT.setData(new Part(-1,pT.getScuflPort().getName(),part.getType(),part.getValue()));
+				}		
+								
 			}
 
 			iterator = flowExtOutPorts.iterator();

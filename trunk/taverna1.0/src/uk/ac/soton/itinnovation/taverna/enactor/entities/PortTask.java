@@ -25,9 +25,9 @@
 //      Created for Project :   MYGRID
 //      Dependencies        :
 //
-//      Last commit info    :   $Author: mereden $
-//                              $Date: 2003-04-25 14:57:09 $
-//                              $Revision: 1.5 $
+//      Last commit info    :   $Author: dmarvin $
+//                              $Date: 2003-05-07 20:15:56 $
+//                              $Revision: 1.6 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 
@@ -137,9 +137,9 @@ public class PortTask extends TavernaTask{
 		
 			//don't do anything, later versions may have persistence writing to do
 			//set data on child porttasks too
-			if(dataPacket==null)
-				msg = new TaskStateMessage(getParentFlow().getID(), getID(), TaskStateMessage.FAILED,"No data for port " + port.getName());
-			else {
+		    if(dataPacket==null) {
+			msg = new TaskStateMessage(getParentFlow().getID(), getID(), TaskStateMessage.FAILED,"No data for port " + port.getName() + ",please check its links");
+		    }	else {
 				GraphNode[] chds = getChildren();
 				for(int i=0;i<chds.length;i++) {
 					if(chds[i] instanceof PortTask) {
@@ -155,8 +155,8 @@ public class PortTask extends TavernaTask{
 			
 		}
 		catch(Exception ex) {
-			logger.error(ex);
-			msg = new TaskStateMessage(getParentFlow().getID(), getID(), TaskStateMessage.FAILED, ex.getMessage());
+		    logger.error(ex);
+		    msg = new TaskStateMessage(getParentFlow().getID(), getID(), TaskStateMessage.FAILED, ex.getMessage());
 		}
 		return msg;
 	}
