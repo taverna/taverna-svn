@@ -50,7 +50,8 @@ public class TestWSDLInvocationTask extends TestCase {
 							  "describe",
 							  "http://industry.ebi.ac.uk/soaplab/wsdl/edit__seqret__derived.wsdl",
 							  "edit__seqret",
-							  "describe");
+							  "describe",
+							    "rpc");
 		String id = "testTask";
 		//get the output ports 
 		DiGraph d = new DiGraph("testDigraph");

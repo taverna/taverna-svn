@@ -9,7 +9,7 @@ import org.apache.log4j.Logger;
 import org.embl.ebi.escience.scufl.Processor;
 import uk.ac.soton.itinnovation.taverna.enactor.broker.LogLevel;
 import uk.ac.soton.itinnovation.taverna.enactor.entities.ProcessorTask;
-import uk.ac.soton.itinnovation.taverna.enactor.entities.TaskExecutionException;
+import uk.ac.soton.itinnovation.taverna.enactor.entities.TaskExecutionException;import org.embl.ebi.escience.baclava.DataThing;
 
 // Utility Imports
 import java.util.HashMap;

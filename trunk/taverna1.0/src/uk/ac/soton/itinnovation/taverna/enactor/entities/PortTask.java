@@ -26,8 +26,8 @@
 //      Dependencies        :
 //
 //      Last commit info    :   $Author: mereden $
-//                              $Date: 2003-09-29 09:46:50 $
-//                              $Revision: 1.13 $
+//                              $Date: 2003-09-30 17:11:18 $
+//                              $Revision: 1.14 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 
@@ -37,7 +37,9 @@ import org.apache.log4j.Logger;
 import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.entities.graph.GraphNode;
 import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.eventservice.TaskStateMessage;
 import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.serviceprovidermanager.ServiceSelectionCriteria;
-import uk.ac.soton.itinnovation.mygrid.workflow.enactor.io.Part;
+import org.embl.ebi.escience.baclava.*;
+import org.embl.ebi.escience.scufl.*;
+
 
 
 
@@ -45,81 +47,75 @@ import uk.ac.soton.itinnovation.mygrid.workflow.enactor.io.Part;
 /**
  * GraphNode that represents a port on a Processor.
  */
-public class PortTask extends TavernaTask{
-	
-	private static Logger logger = Logger.getLogger(PortTask.class);
-
-	public static int IN = 0;
-	public static int OUT = 1;
-
-	private org.embl.ebi.escience.scufl.Port port; 
-	private int type;
-	private Part dataPacket = null;
-		
-	public PortTask(String id, org.embl.ebi.escience.scufl.Port port) {
-		super(id);
-		this.port = port;
-		if(port instanceof org.embl.ebi.escience.scufl.InputPort)
-			type = 0;
-		else 
-			type = 1;
+public class PortTask extends TavernaTask {
+    
+    private static Logger logger = Logger.getLogger(PortTask.class);
+    public static int IN = 0;
+    public static int OUT = 1;
+    
+    private Port thePort; 
+    private DataThing theDataThing = null;
+    
+    public PortTask(String id, Port port) {
+	super(id);
+	this.thePort = port;
+    }
+    
+    /**
+     * Obtains the type of this Port, either input (0) or output (1).
+     * @return type
+     */
+    public int type() {
+	if (this.thePort instanceof InputPort) {
+	    return PortTask.IN;
 	}
-
-	/**
-	 * Obtains the type of this Port, either input (0) or output (1).
-	 * @return type
-	 */
-	public int type() {
-		return type;
+	else {
+	    return PortTask.OUT;
 	}
-
-	/**
-	 * Obtains the original XScufl definition Port 
-	 * @return XScufl definition port
-	 */
-	public org.embl.ebi.escience.scufl.Port getScuflPort() {
-		return port;
-	}
-
-	/**
-	 * Checks to see if data is available on this port
-	 * @return true if available
-	 */
-	public boolean dataAvailable() {
-		if(dataPacket==null) {
-			return false;
-		}
-		else
-			return true;
-	}
-
-	/**
-	 * Blocking method that waits for data to arrive
-	 * and then supplies it
-	 * @return holder for data
-	 */
-	
-	public synchronized Part getData() {
-		return dataPacket;
-	}
-
-	/**
-	 * Sets a reference to the actual data holder
-	 * @param data holder for data
-	 */
-	public synchronized void setData(Part p) {
-		dataPacket = p;				
-	}
-
-	/**
+    }
+    
+    /**
+     * Obtains the original XScufl definition Port 
+     * @return XScufl definition port
+     */
+    public Port getScuflPort() {
+	return this.thePort;
+    }
+    
+    /**
+     * Checks to see if data is available on this port
+     * @return true if available
+     */
+    public boolean dataAvailable() {
+	return (theDataThing!=null);
+    }
+    
+    /**
+     * Blocking method that waits for data to arrive
+     * and then supplies it
+     * @return holder for data
+     */
+    public synchronized DataThing getData() {
+	return this.theDataThing;
+    }
+    
+    /**
+     * Sets a reference to the actual data holder
+     * @param newDataThing holder for data
+     */
+    public synchronized void setData(DataThing newDataThing) {
+	this.theDataThing = newDataThing;				
+    }
+    
+    /**
      * Forces class to clean itself up a bit.
      */
     public void cleanUpConcreteTask() {
-		port = null;
-		dataPacket = null;
-	}
-
-	/**
+	thePort = null;
+	theDataThing = null;
+    }
+    
+    /**
      * Retrieves the selection criteria associated with this task. This criteria
      * determines the service provider for a particular service.
      */
@@ -127,33 +123,45 @@ public class PortTask extends TavernaTask{
         return null;
     }
 
-	public TaskStateMessage doTask() {
-		TaskStateMessage msg = null;
-		try{
-			
-			//don't do anything, later versions may have persistence writing to do
-			//set data on child porttasks too
-		    if(dataPacket==null) {
-					msg = new TaskStateMessage(getParentFlow().getID(), getID(), TaskStateMessage.FAILED,"No data for port " + port.getName() + ",please check its links");
-		    }	else {
-				GraphNode[] chds = getChildren();
-				for(int i=0;i<chds.length;i++) {
-					if(chds[i] instanceof PortTask) {
-						PortTask pT = (PortTask) chds[i];
-						String portName = pT.getScuflPort().getName();
-						//want the part for this portname 
-						Part part = new Part(-1,portName,dataPacket.getType(),dataPacket.getTypedValue());
-						pT.setData(part);
-					}
-				}
-				msg = new TaskStateMessage(getParentFlow().getID(), getID(), TaskStateMessage.COMPLETE, "Task finished successfully");
-			}
-			
+    /**
+     * Transfer data from this port task into any child port tasks that are present, this
+     * is effectively pushing information from the output port to the input port; other
+     * processor implementations pull from the input port and push to the output port so
+     * this is the link inbetween two processors.
+     */
+    public TaskStateMessage doTask() {
+	TaskStateMessage msg = null;
+	try{
+	    //don't do anything, later versions may have persistence writing to do
+	    //set data on child porttasks too
+	    if(theDataThing == null) {
+		msg = new TaskStateMessage(getParentFlow().getID(), 
+					   getID(), 
+					   TaskStateMessage.FAILED,
+					   "No data for port " + thePort.getName() + ",please check its links");
+	    }	
+	    else {
+		GraphNode[] chds = getChildren();
+		for(int i=0;i<chds.length;i++) {
+		    if(chds[i] instanceof PortTask) {
+			PortTask childPortTask = (PortTask)chds[i];
+			childPortTask.setData(this.theDataThing);
+		    }
 		}
-		catch(Exception ex) {
-		    logger.error(ex);
-		    msg = new TaskStateMessage(getParentFlow().getID(), getID(), TaskStateMessage.FAILED, ex.getMessage());
-		}
-		return msg;
+		msg = new TaskStateMessage(getParentFlow().getID(), 
+					   getID(), 
+					   TaskStateMessage.COMPLETE, 
+					   "Task finished successfully");
+	    }
 	}
+	catch(Exception ex) {
+	    logger.error(ex);
+	    msg = new TaskStateMessage(getParentFlow().getID(), 
+				       getID(), 
+				       TaskStateMessage.FAILED, 
+				       ex.getMessage());
+	}
+	return msg;
+    }
+
 }

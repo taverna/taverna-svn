@@ -25,8 +25,8 @@
 //      Dependencies        :
 //
 //      Last commit info    :   $Author: mereden $
-//                              $Date: 2003-09-29 09:46:50 $
-//                              $Revision: 1.25 $
+//                              $Date: 2003-09-30 17:11:18 $
+//                              $Revision: 1.26 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 
@@ -41,8 +41,6 @@ import org.embl.ebi.escience.scufl.ScuflModel;
 import org.embl.ebi.escience.scufl.parser.XScuflFormatException;
 import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.entities.graph.DiGraph;
 import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.entities.graph.GraphNode;
-import uk.ac.soton.itinnovation.mygrid.workflow.enactor.io.Input;
-import uk.ac.soton.itinnovation.mygrid.workflow.enactor.io.Part;
 import uk.ac.soton.itinnovation.taverna.enactor.entities.PortTask;
 import uk.ac.soton.itinnovation.taverna.enactor.entities.ProcessorTask;
 import uk.ac.soton.itinnovation.taverna.enactor.entities.TavernaTaskFactory;
@@ -51,7 +49,9 @@ import uk.ac.soton.itinnovation.taverna.enactor.entities.TavernaTaskFactory;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.*;
 
+import org.embl.ebi.escience.baclava.*;
 
 
 
@@ -70,178 +70,167 @@ public class XScuflDiGraphGenerator {
      * for it.
      *
      * @param flowID gives the assigned identifier for this flow
-	 * @param model that contains all the information related to the XScufl definition.
-	 * @param input to the workflow
-	 * @param user identifier
+     * @param model that contains all the information related to the XScufl definition.
+     * @param input a map containing String->DataThing mappings
+     * @param user identifier
      * @return Workflow Enactor DiGraph
      */
-    public static DiGraph build(String flowID, ScuflModel model, Input input, String userID, String userCxt) throws XScuflFormatException, java.net.MalformedURLException {
+    public static DiGraph build(String flowID, ScuflModel model, Map input, String userID, String userCxt) throws XScuflFormatException, java.net.MalformedURLException {
         DiGraph graph = new DiGraph(model.toString());
-		try{
-						
-			List tasks = new ArrayList();
-			List flowExtInPorts = new ArrayList();
-			List flowExtOutPorts = new ArrayList();
-			List inPorts = new ArrayList();
-			List outPorts = new ArrayList();
-			List processorTasks = new ArrayList();
-			Port[] sourcePorts = model.getWorkflowSourcePorts();
-			for(int i=0;i<sourcePorts.length;i++) {
-			    PortTask pT = getPortTask(flowID,outPorts,sourcePorts[i]);
-			    flowExtInPorts.add(pT);
-			    addToListIfNotThere(tasks,pT);
-			}
-			Port[] sinkPorts = model.getWorkflowSinkPorts();
-			for(int i=0;i<sinkPorts.length;i++) {
-			    PortTask pT = getPortTask(flowID,inPorts,sinkPorts[i]);
-			    flowExtOutPorts.add(pT);
-			    addToListIfNotThere(tasks,pT);
-			}
-			//create tasks for each processor
-			
-			Processor[] processors = model.getProcessors();
-			for(int i=0;i<processors.length;i++){
-			    Processor theProcessor = processors[i];
-			    String id = flowID + ":Processor:" + theProcessor.getName();
-				
-				LogLevel logLevel = new LogLevel(theProcessor.getLogLevel());
-			    
-			    // Create the actual task to do the work of this processor.
-			    ProcessorTask serviceTask = TavernaTaskFactory.getConcreteTavernaTask(id,theProcessor,logLevel,userID,userCxt);
-			    addToListIfNotThere(tasks,serviceTask);
-			    processorTasks.add(serviceTask);
-			    
-			    // for each task generate the necessary input and output port nodes
-			    // djm
-			    //
-			    // Specifically, _only_ the necessary ones? - it seems to only create
-			    // port tasks for ports in the processor that are bound or external, 
-			    // which makes sense I guess. tmo@ebi.ac.uk, 27th april 2003
-				// this is initially the situation, it is unclear how to deal with unbound ports - the situation where
-				// processors may only need part of the inputs before kicking off. This requires further investigation
-				// and will in all likelihood lead to changes in the algorithm adopted here, but for now this is enough.
-				// I think I will actually double the number of 
-			}
-
-			//dataconstraints associate nodes based on linking ports between processors
-			//each dataconstraint is a single node it has both input and output identifiers that have significance
-			//for a particular pair of linked services
-			DataConstraint[] dConstraints = model.getDataConstraints();
-			for(int i=0;i<dConstraints.length;i++) {
-				//link up processors and external ports for this data constraint
-				PortTask source = getPortTask(flowID,outPorts,dConstraints[i].getSource());
-				PortTask sink = getPortTask(flowID,inPorts,dConstraints[i].getSink());
-				//tie them up
-				source.addChild(sink);
-				sink.addParent(source);
-				//some will already be distinguished as external input and output ports
-				addToListIfNotThere(tasks,source);
-				addToListIfNotThere(tasks,sink);
-
-				//find the source or sink ProcessorTask
-				Iterator iterator = processorTasks.iterator();
-				while(iterator.hasNext()) {
-					ProcessorTask pT = (ProcessorTask) iterator.next();
-					String procName = pT.getProcessor().getName();
-					if(procName.equals(source.getScuflPort().getProcessor().getName())) {
-					    pT.addChild(source);
-						source.addParent(pT);
-					}
-					if(procName.equals(sink.getScuflPort().getProcessor().getName())) {
-					    pT.addParent(sink);
-					    sink.addChild(pT);
-					}
-				}				
-				
-			}
-
-			//for the taverna enactor concurrency constraints allow control flow declaration between processors
-			
-			ConcurrencyConstraint[]conConstraints =  model.getConcurrencyConstraints();
-			for(int i=0;i<conConstraints.length;i++) {
-			    //validate that the state transition is supported
-			    if(!validConcurrencyConstraint(conConstraints[i]))
-				throw new XScuflFormatException("The concurrency constraint '" + conConstraints[i].getName() + "' uses a state transition that is not supported by the enactor");
-			    //want to get the source processor
-			    Processor controller = conConstraints[i].getControllingProcessor();
-			    Processor controlled = conConstraints[i].getTargetProcessor();
-			    ProcessorTask controllerTask = null;
-			    ProcessorTask controlledTask = null;
-			    Iterator itor = processorTasks.iterator();
-			    while(itor.hasNext()) {
-				ProcessorTask p = (ProcessorTask) itor.next();
-				if(p.getProcessor().getName().equals(controller.getName()))
-				    controllerTask = p;
-				else if(p.getProcessor().getName().equals(controlled.getName()))
-				    controlledTask = p;
-			    }
-			    if(controllerTask == null || controlledTask == null) {
-				throw new XScuflFormatException("Could not match processors within concurrency constraint '" + conConstraints[i].getName() + "' with actual processors in the ScuflModel");
-			    }
-			    //otherwise tie the two together as dependent
-			    controllerTask.addChild(controlledTask);
-			    controlledTask.addParent(controllerTask);
-			}
-			
-			//set input and output nodes
-			List partList = input.getPartList();
-			Iterator iterator = flowExtInPorts.iterator();
-			while(iterator.hasNext()) {
-				PortTask pT = (PortTask) iterator.next();
-				graph.addInputNode(pT);
-				//load the data
-				Iterator it = partList.iterator();
-				while(it.hasNext()) {
-				    Part part = (Part) it.next();
-				    String partName = part.getName();
-				    if(partName.equals(pT.getScuflPort().getName()))
-				       pT.setData(new Part(-1,pT.getScuflPort().getName(),part.getType(),part.getTypedValue()));
-				}		
-								
-			}
-			
-			//processors can have no inputs and / or no outputs
-			//and therefore are inputs or outputs to the graph
-			iterator = processorTasks.iterator();
-			while(iterator.hasNext()) {
-				ProcessorTask p = (ProcessorTask) iterator.next();
-				if(p.getNumberOfParents()==0)
-					//it has no inputs and therefore is an input node for the graph
-					graph.addInputNode(p);
-				if(p.getNumberOfChildren()==0)
-					//it has no outputs and therefore is an output node for the graph
-					graph.addOutputNode(p);
-
-			}
-			
-			iterator = flowExtOutPorts.iterator();
-			while(iterator.hasNext()) {
-				
-				PortTask pT = (PortTask) iterator.next();
-				graph.addOutputNode(pT);
-				
-			}
-			iterator = tasks.iterator();
-			GraphNode[] gnodes = new GraphNode[tasks.size()];
-
-			int count = 0;
-			while (iterator.hasNext()) {
-				GraphNode gn = (GraphNode) iterator.next();
-
-				gnodes[count++] = gn;
-			}
-			graph.setNodeList(gnodes);
+	try{
+	    
+	    List tasks = new ArrayList();
+	    List flowExtInPorts = new ArrayList();
+	    List flowExtOutPorts = new ArrayList();
+	    List inPorts = new ArrayList();
+	    List outPorts = new ArrayList();
+	    List processorTasks = new ArrayList();
+	    
+	    Port[] sourcePorts = model.getWorkflowSourcePorts();
+	    for(int i=0;i<sourcePorts.length;i++) {
+		PortTask pT = getPortTask(flowID,outPorts,sourcePorts[i]);
+		flowExtInPorts.add(pT);
+		addToListIfNotThere(tasks,pT);
+	    }
+	    
+	    Port[] sinkPorts = model.getWorkflowSinkPorts();
+	    for(int i=0;i<sinkPorts.length;i++) {
+		PortTask pT = getPortTask(flowID,inPorts,sinkPorts[i]);
+		flowExtOutPorts.add(pT);
+		addToListIfNotThere(tasks,pT);
+	    }
+	    
+	    //create tasks for each processor
+	    Processor[] processors = model.getProcessors();
+	    for(int i=0;i<processors.length;i++){
+		Processor theProcessor = processors[i];
+		String id = flowID + ":Processor:" + theProcessor.getName();
+		LogLevel logLevel = new LogLevel(theProcessor.getLogLevel());
+		// Create the actual task to do the work of this processor.
+		ProcessorTask serviceTask = TavernaTaskFactory.getConcreteTavernaTask(id,theProcessor,logLevel,userID,userCxt);
+		addToListIfNotThere(tasks,serviceTask);
+		processorTasks.add(serviceTask);
+	    }
+	    
+	    //dataconstraints associate nodes based on linking ports between processors
+	    //each dataconstraint is a single node it has both input and output identifiers that have significance
+	    //for a particular pair of linked services
+	    DataConstraint[] dConstraints = model.getDataConstraints();
+	    for(int i=0;i<dConstraints.length;i++) {
+		//link up processors and external ports for this data constraint
+		PortTask source = getPortTask(flowID,outPorts,dConstraints[i].getSource());
+		PortTask sink = getPortTask(flowID,inPorts,dConstraints[i].getSink());
+		//tie them up
+		source.addChild(sink);
+		sink.addParent(source);
+		//some will already be distinguished as external input and output ports
+		addToListIfNotThere(tasks,source);
+		addToListIfNotThere(tasks,sink);
+		//find the source or sink ProcessorTask
+		Iterator iterator = processorTasks.iterator();
+		while(iterator.hasNext()) {
+		    ProcessorTask pT = (ProcessorTask) iterator.next();
+		    String procName = pT.getProcessor().getName();
+		    if(procName.equals(source.getScuflPort().getProcessor().getName())) {
+			pT.addChild(source);
+			source.addParent(pT);
+		    }
+		    if(procName.equals(sink.getScuflPort().getProcessor().getName())) {
+			pT.addParent(sink);
+			sink.addChild(pT);
+		    }
+		}				
 		
-			
-			if (!checkRouteToAllNodes(processorTasks, graph.getInputNodes()))
-				throw new XScuflFormatException("Not all the processor nodes are accessible from input nodes");		
-		}		
-		catch(Exception ex) {
-			logger.error(ex);
-			throw new XScuflFormatException("Unrecognised error occured whilst generating workflow, please consult the logs");
+	    }
+	    
+	    // for the taverna enactor concurrency constraints allow control flow declaration between processors
+	    ConcurrencyConstraint[]conConstraints =  model.getConcurrencyConstraints();
+	    for(int i=0;i<conConstraints.length;i++) {
+		//validate that the state transition is supported
+		if(!validConcurrencyConstraint(conConstraints[i]))
+		    throw new XScuflFormatException("The concurrency constraint '" + 
+						    conConstraints[i].getName() + 
+						    "' uses a state transition that is not supported by the enactor");
+		//want to get the source processor
+		Processor controller = conConstraints[i].getControllingProcessor();
+		Processor controlled = conConstraints[i].getTargetProcessor();
+		ProcessorTask controllerTask = null;
+		ProcessorTask controlledTask = null;
+		Iterator itor = processorTasks.iterator();
+		while(itor.hasNext()) {
+		    ProcessorTask p = (ProcessorTask) itor.next();
+		    if(p.getProcessor().getName().equals(controller.getName()))
+			controllerTask = p;
+		    else if(p.getProcessor().getName().equals(controlled.getName()))
+			controlledTask = p;
 		}
-		return graph;
-		
+		if(controllerTask == null || controlledTask == null) {
+		    throw new XScuflFormatException("Could not match processors within concurrency constraint '" +
+						    conConstraints[i].getName() + 
+						    "' with actual processors in the ScuflModel");
+		}
+		//otherwise tie the two together as dependent
+		controllerTask.addChild(controlledTask);
+		controlledTask.addParent(controllerTask);
+	    }
+	    
+	    // set input and output nodes
+	    // Set these from the input map
+	    //List partList = input.getPartList();
+	    Iterator iterator = flowExtInPorts.iterator();
+	    while(iterator.hasNext()) {
+		PortTask pT = (PortTask)iterator.next();
+		graph.addInputNode(pT);
+		DataThing theInputDataThing = (DataThing)input.get(pT.getScuflPort().getName());
+		if (theInputDataThing != null) {
+		    pT.setData(theInputDataThing);
+		}
+		else {
+		    throw new XScuflFormatException("Unable to bind an input port to data, the input port name is "+pT.getScuflPort().getName());
+		}
+	    }
+	    
+	    // processors can have no inputs and / or no outputs
+	    // and therefore are inputs or outputs to the graph
+	    // *************************************************
+	    // This is for concurrency control only, they're not
+	    // actually inputs as far as I can tell in the sense
+	    // of having data passed through them.
+	    iterator = processorTasks.iterator();
+	    while(iterator.hasNext()) {
+		ProcessorTask p = (ProcessorTask) iterator.next();
+		if(p.getNumberOfParents()==0)
+		    //it has no inputs and therefore is an input node for the graph
+		    graph.addInputNode(p);
+		if(p.getNumberOfChildren()==0)
+		    //it has no outputs and therefore is an output node for the graph
+		    graph.addOutputNode(p);
+	    }
+	    
+	    iterator = flowExtOutPorts.iterator();
+	    while(iterator.hasNext()) {
+		PortTask pT = (PortTask) iterator.next();
+		graph.addOutputNode(pT);
+	    }
+	    
+	    iterator = tasks.iterator();
+	    GraphNode[] gnodes = new GraphNode[tasks.size()];
+	    int count = 0;
+	    while (iterator.hasNext()) {
+		GraphNode gn = (GraphNode) iterator.next();
+		gnodes[count++] = gn;
+	    }
+	    graph.setNodeList(gnodes);
+	    
+	    if (!checkRouteToAllNodes(processorTasks, graph.getInputNodes())) {
+		throw new XScuflFormatException("Not all the processor nodes are accessible from input nodes");		
+	    }		
+	}
+	catch(Exception ex) {
+	    logger.error(ex);
+	    throw new XScuflFormatException("Unrecognised error occured whilst generating workflow, please consult the logs");
+	}
+	return graph;
     }
 
     private static boolean validConcurrencyConstraint(ConcurrencyConstraint constraint) {
@@ -294,16 +283,16 @@ public class XScuflDiGraphGenerator {
 	
     private static boolean checkRouteToAllNodes(List processors, GraphNode[] inNodes) throws XScuflFormatException {
         boolean all = true;
-
+	
         try {
             Iterator iterator = processors.iterator();
-
+	    
             while (iterator.hasNext()) {
                 ProcessorTask activity = (ProcessorTask) iterator.next();
                 boolean foundActivity = false;
-
+		
                 for (int i = 0; i < inNodes.length; i++) {
-						
+		    
                     if (inNodes[i].getID().equals(activity.getID())) {
                         foundActivity = true;
                         break;
@@ -321,10 +310,10 @@ public class XScuflDiGraphGenerator {
             if (ex instanceof XScuflFormatException)
                 throw (XScuflFormatException) ex;
             else {
-				logger.error(ex);
-				throw new XScuflFormatException("The workflow is incomplete since some processors are not accessible when navigating from the start of the workflow, please check links");
-			}
-		}			
+		logger.error(ex);
+		throw new XScuflFormatException("The workflow is incomplete since some processors are not accessible when navigating from the start of the workflow, please check links");
+	    }
+	}			
     }
 	
     private static boolean checkDescendents(GraphNode gnode, String id) {

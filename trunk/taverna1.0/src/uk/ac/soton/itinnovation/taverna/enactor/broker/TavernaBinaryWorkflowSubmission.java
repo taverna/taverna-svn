@@ -25,22 +25,21 @@
 //      Dependencies        :
 //
 //      Last commit info    :   $Author: mereden $
-//                              $Date: 2003-09-29 09:46:50 $
-//                              $Revision: 1.7 $
+//                              $Date: 2003-09-30 17:11:18 $
+//                              $Revision: 1.8 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 package uk.ac.soton.itinnovation.taverna.enactor.broker;
 
 import org.embl.ebi.escience.scufl.ScuflModel;
-import uk.ac.soton.itinnovation.mygrid.workflow.enactor.io.Input;
-
+import java.util.*;
 
 
 
 public class TavernaBinaryWorkflowSubmission {
 
     private ScuflModel scuflModel;
-    private Input inputData;
+    private Map inputData;
     private String userID;
     private String userNamespaceCxt;
     private String notificationEmailAddress;
@@ -53,7 +52,7 @@ public class TavernaBinaryWorkflowSubmission {
      * @param userNamespaceCxt
      */
     public TavernaBinaryWorkflowSubmission(ScuflModel scuflModel,
-        Input inputData,
+        Map inputData,
         String userID,
         String userNamespaceCxt) {
         this.scuflModel = scuflModel;
@@ -71,10 +70,11 @@ public class TavernaBinaryWorkflowSubmission {
     }
 
     /**
-     * Retrieve the input data for the submission
+     * Retrieve the Map of String->DataThing as input
+     * to the subject of this submission.
      * @return input data
      */
-    public Input getInputData() {
+    public Map getInputData() {
         return inputData;
     }
 
