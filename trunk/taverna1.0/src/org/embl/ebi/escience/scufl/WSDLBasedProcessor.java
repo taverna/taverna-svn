@@ -128,7 +128,7 @@ public class WSDLBasedProcessor extends Processor implements java.io.Serializabl
 	Message inputMessage = theOperation.getInput().getMessage();
 	requestMessageName = inputMessage.getQName().getLocalPart();
 	// Iterate over the message parts, creating appropriate Port implementations
-	System.out.println("Input ports...");
+	//System.out.println("Input ports...");
 	for (Iterator i = inputMessage.getParts().values().iterator(); i.hasNext(); ) {
 	    Part part = (Part)i.next();
 	    try {
@@ -147,7 +147,7 @@ public class WSDLBasedProcessor extends Processor implements java.io.Serializabl
 	Message outputMessage = theOperation.getOutput().getMessage();
 	responseMessageName = outputMessage.getQName().getLocalPart();
 	// Iterate over the output parts, creating appropriate Port implementations
-	System.out.println("Output ports...");
+	//System.out.println("Output ports...");
 	for (Iterator i = outputMessage.getParts().values().iterator(); i.hasNext(); ) {
 	    Part part = (Part)i.next();
 	    try {
