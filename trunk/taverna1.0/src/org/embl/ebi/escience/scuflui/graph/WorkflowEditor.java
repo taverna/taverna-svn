@@ -19,6 +19,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
+import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.io.StringReader;
 import java.util.HashMap;
@@ -55,8 +56,11 @@ import org.jgraph.JGraph;
 import org.jgraph.event.GraphModelEvent;
 import org.jgraph.event.GraphModelListener;
 import org.jgraph.graph.DefaultCellViewFactory;
+import org.jgraph.graph.Edge;
+import org.jgraph.graph.EdgeView;
 import org.jgraph.graph.GraphConstants;
 import org.jgraph.graph.GraphLayoutCache;
+import org.jgraph.graph.PortView;
 import org.jgraph.graph.VertexView;
 import org.jgraph.graph.VertexRenderer;
 import java.awt.*;
@@ -120,6 +124,37 @@ public class WorkflowEditor extends JGraph implements ScuflUIComponent
 		layoutCache.setSelectsAllInsertedCells(false);
 		layoutCache.setFactory(new DefaultCellViewFactory()
 		{
+			protected EdgeView createEdgeView(Object cell)
+			{
+				return new EdgeView(cell)
+				{
+					public Point2D getPoint(int index)
+					{
+						Object obj = points.get(index);
+						if (obj instanceof PortView)
+						{
+							// Port Location Seen From This Edge
+							return ((PortView) obj).getLocation(this);
+						}
+						else if (obj instanceof VirtualNode)
+						{
+							return ((VirtualNode)obj).getPosition(); 
+						}
+						else if (obj instanceof CellView)
+						{
+							// Should not happen
+							Rectangle2D r = ((CellView) obj).getBounds();
+							return getAttributes().createPoint(r.getX(), r.getY());
+						}
+						else if (obj instanceof Point2D)
+							// Regular Point
+							return (Point2D) obj;
+						return null;
+
+					}
+				};
+			}
+
 			/*
 			 * @see org.jgraph.JGraph#createVertexView(org.jgraph.JGraph,
 			 *      org.jgraph.graph.CellMapper, java.lang.Object)
@@ -375,7 +410,7 @@ public class WorkflowEditor extends JGraph implements ScuflUIComponent
 			}
 		});
 		GraphConstants.SELECTION_STROKE = new BasicStroke(2, BasicStroke.CAP_ROUND,
-				BasicStroke.JOIN_ROUND, 1, new float[] { 4, 6 }, 0);
+				BasicStroke.JOIN_ROUND, 1, new float[] { 3, 6 }, 0);
 
 		new DropTarget(this, new DropTargetAdapter()
 		{

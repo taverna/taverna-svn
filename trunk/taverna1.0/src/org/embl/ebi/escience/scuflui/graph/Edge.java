@@ -6,18 +6,28 @@ package org.embl.ebi.escience.scuflui.graph;
 import java.util.HashMap;
 import java.util.Map;
 
-class RowEdge
+class Edge
 {
+	private int weight;
 	private Object source;
 	private Object target;
 	private Map attributes = new HashMap();
 
-	public RowEdge(Object source, Object target)
+	public Edge(Object source, Object target)
 	{
-		setSource(source);
-		setTarget(target);
+		this(source, target, 0);
 	}
 
+	public Edge(Object source, Object target, int weight)
+	{
+		assert source != null;
+		assert target != null;
+		setSource(source);
+		setTarget(target);
+		this.weight = weight;
+		assert(source != target): this;	
+	}
+	
 	public void setSource(Object node)
 	{
 		if(node == null)
@@ -58,6 +68,6 @@ class RowEdge
 	
 	public int getWeight()
 	{
-		return 0;
+		return weight;
 	}
 }

@@ -3,6 +3,7 @@
  */
 package org.embl.ebi.escience.scuflui.graph;
 
+import java.awt.Point;
 import java.awt.geom.Point2D;
 import java.util.HashMap;
 import java.util.Map;
@@ -11,13 +12,34 @@ import java.util.Map;
  * COMMENT
  * 
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover </a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
-public class VirtualNode extends Point2D
+public class VirtualNode
 {
-	private int x;
-	private int y;
+	private Point2D position = new Point();
 	private Map attributes = new HashMap();
+	protected Edge previous;
+	protected Edge next;
+
+	public Edge getNextEdge()
+	{
+		return next;
+	}
+
+	public void setNextEdge(Edge next)
+	{
+		this.next = next;
+	}
+
+	public Edge getPreviousEdge()
+	{
+		return previous;
+	}
+
+	public void setPreviousEdge(Edge previous)
+	{
+		this.previous = previous;
+	}
 
 	/**
 	 * 
@@ -31,34 +53,14 @@ public class VirtualNode extends Point2D
 	{
 		return attributes;
 	}
-	
-	/*
-	 * @see java.awt.geom.Point2D#getX()
-	 */
-	public double getX()
-	{
-		return x;
-	}
 
-	/*
-	 * @see java.awt.geom.Point2D#getY()
-	 */
-	public double getY()
-	{
-		return y;
-	}
-
-	/*
-	 * @see java.awt.geom.Point2D#setLocation(double, double)
-	 */
-	public void setLocation(double x, double y)
-	{
-		this.x = (int) x;
-		this.y = (int) y;
-	}
-	
 	public String toString()
 	{
 		return "VirtualNode";
-	}	
+	}
+
+	public Point2D getPosition()
+	{
+		return position;
+	}
 }

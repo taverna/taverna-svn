@@ -11,7 +11,7 @@ import org.jgraph.graph.GraphModel;
  * COMMENT 
  * 
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover</a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class LayoutConstants
 {
@@ -62,17 +62,17 @@ public class LayoutConstants
 		map.put(CUT_TIME_STAMP, timeStamp);
 	}
 	
-	public static RowEdge getLeftEdge(Map map)
+	public static Edge getLeftEdge(Map map)
 	{
-		return (RowEdge)map.get(LEFT_EDGE);
+		return (Edge)map.get(LEFT_EDGE);
 	}
 	
-	public static RowEdge getRightEdge(Map map)
+	public static Edge getRightEdge(Map map)
 	{
-		return (RowEdge)map.get(RIGHT_EDGE);
+		return (Edge)map.get(RIGHT_EDGE);
 	}
 	
-	public static void setLeftEdge(Map map, RowEdge edge)
+	public static void setLeftEdge(Map map, Edge edge)
 	{
 		if(map != null)
 		{
@@ -87,7 +87,7 @@ public class LayoutConstants
 		}		
 	}
 	
-	public static void setRightEdge(Map map, RowEdge edge)
+	public static void setRightEdge(Map map, Edge edge)
 	{
 		if(map != null)
 		{
