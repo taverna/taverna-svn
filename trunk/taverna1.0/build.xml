@@ -32,6 +32,7 @@
 			<include name="*.jar"/>
 		</fileset>
 		<!-- Also include our own source tree -->
+                <pathelement path="."/>
 		<pathelement path="${build.classes}"/>
 		<pathelement path="${build.src}"/>
 	</path>
@@ -205,7 +206,15 @@
 			<arg value="http://industry.ebi.ac.uk/soap/soaplab/AnalysisFactory"/>
 		    <classpath refid="compile-classpath"/>
 		</java>
-	</target> 
+	</target>
+
+	<!-- retsina GUI -->
+        <target name="retsina" depends="jar">
+                <java classname="uk.ac.mrc.hgmp.taverna.retsina.Retsina" fork="yes">
+                    <classpath refid="compile-classpath"/>
+                </java>
+        </target>
+ 
 	
 	<!-- Test the model, specifically the creation of soaplab nodes -->
 	<target name="test.soaplab" depends="jar">
