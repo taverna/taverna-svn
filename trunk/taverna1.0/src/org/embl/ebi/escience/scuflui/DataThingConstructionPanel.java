@@ -22,7 +22,9 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.InputStream;
@@ -34,6 +36,7 @@ import java.util.Collection;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import javax.swing.BorderFactory;
@@ -85,7 +88,7 @@ import org.jdom.output.XMLOutputter;
  * Panel to construct the input for a workflow.
  * 
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover </a>
- * @version $Revision: 1.31 $
+ * @version $Revision: 1.32 $
  */
 public abstract class DataThingConstructionPanel extends JPanel implements ScuflUIComponent, ScuflModelEventListener
 {
@@ -399,6 +402,11 @@ public abstract class DataThingConstructionPanel extends JPanel implements Scufl
 		{
 			this.thing = thing;
 		}
+		
+		public Port getPort()
+		{
+			return ((InputListNode)parent).getPort();
+		}
 
 		/*
 		 * (non-Javadoc)
@@ -596,6 +604,12 @@ public abstract class DataThingConstructionPanel extends JPanel implements Scufl
 			return portPanel;
 		}
 
+		public boolean isText()
+		{
+			System.out.println(port.getMetadata().getDisplayTypeList());
+			return port.getMetadata().getMIMETypeList().contains("text/plain");
+		}
+		
 		/*
 		 * @see java.lang.Object#toString()
 		 */
@@ -632,6 +646,7 @@ public abstract class DataThingConstructionPanel extends JPanel implements Scufl
 	{
 		private DataThing thing;
 		private JComponent panel;
+		private List mimeTypes;
 		JTextArea editor;
 		private ActionListener loadURLAction = new ActionListener()
 		{
@@ -644,6 +659,8 @@ public abstract class DataThingConstructionPanel extends JPanel implements Scufl
 					if (name != null)
 					{
 						InputStream is = new URL(name).openStream();
+						if(mimeTypes.contains("text/plain"))
+						{						
 						BufferedReader reader = new BufferedReader(new InputStreamReader(is));
 						StringBuffer sb = new StringBuffer();
 						String s = null;
@@ -653,6 +670,20 @@ public abstract class DataThingConstructionPanel extends JPanel implements Scufl
 							sb.append("\n");
 						}
 						editor.setText(sb.toString());
+						}
+						else
+						{
+							int input = 0;
+							ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
+							while((input = is.read()) != -1)
+							{
+								byteStream.write(input);
+							}
+							byteStream.flush();
+							setUserObject(byteStream.toByteArray());
+							panel = null;
+							updatePanel();
+						}						
 					}
 				}
 				catch (Exception ex)
@@ -668,26 +699,43 @@ public abstract class DataThingConstructionPanel extends JPanel implements Scufl
 			{
 				try
 				{
-					// TODO: Add support for binary file loading
 					int returnVal = fileChooser.showOpenDialog(DataThingConstructionPanel.this);
 					if (returnVal == JFileChooser.APPROVE_OPTION)
 					{
 						File file = fileChooser.getSelectedFile();
-						BufferedReader reader = new BufferedReader(new FileReader(file));
-						StringBuffer sb = new StringBuffer();
-						String s = null;
-						while ((s = reader.readLine()) != null)
+						if(mimeTypes.contains("text/plain"))
 						{
-							sb.append(s);
-							sb.append("\n");
+							BufferedReader reader = new BufferedReader(new FileReader(file));
+							StringBuffer sb = new StringBuffer();
+							String s = null;
+							while ((s = reader.readLine()) != null)
+							{
+								sb.append(s);
+								sb.append("\n");
+							}
+							editor.setText(sb.toString());
 						}
-						editor.setText(sb.toString());
+						else
+						{
+							int input = 0;
+							ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
+							FileInputStream fileInput = new FileInputStream(file);
+							while((input = fileInput.read()) != -1)
+							{
+								byteStream.write(input);
+							}
+							byteStream.flush();
+							setUserObject(byteStream.toByteArray());
+							panel = null;
+							updatePanel();
+						}
 					}
 				}
 				catch (Exception ex)
 				{
-					JOptionPane.showMessageDialog(null, "Problem opening content from web : \n" + ex.getMessage(),
+					JOptionPane.showMessageDialog(null, "Problem opening content from file : \n" + ex.getMessage(),
 							"Exception!", JOptionPane.ERROR_MESSAGE);
+					ex.printStackTrace();
 				}
 			}
 		};
@@ -713,9 +761,10 @@ public abstract class DataThingConstructionPanel extends JPanel implements Scufl
 			}
 		};
 
-		public InputDataThingNode(Object inputValue)
+		public InputDataThingNode(Object inputValue, List mimeTypes)
 		{
 			super(inputValue);
+			this.mimeTypes = mimeTypes;
 		}
 
 		public InputDataThingNode(DataThing thing)
@@ -731,7 +780,26 @@ public abstract class DataThingConstructionPanel extends JPanel implements Scufl
 		{
 			if (panel == null)
 			{
-				if (getUserObject() instanceof String)
+				JToolBar toolbar = new JToolBar();
+				JButton loadButton = new JButton("Load", ScuflIcons.openIcon);
+				JButton loadURLButton = new JButton("Load from URL", ScuflIcons.webIcon);
+				loadButton.setToolTipText("Load from File");
+				loadButton.addActionListener(loadFileAction);
+				loadURLButton.addActionListener(loadURLAction);
+				toolbar.setFloatable(false);
+				toolbar.setRollover(true);
+				toolbar.add(loadButton);
+				toolbar.add(loadURLButton);
+				if (store != null)
+				{
+					JButton loadLSIDButton = new JButton("Load LSID");
+					loadLSIDButton.addActionListener(loadLSIDAction);
+					toolbar.add(loadLSIDButton);
+				}
+				panel = new JPanel(new BorderLayout());
+				panel.add(toolbar, BorderLayout.NORTH);
+				
+				if (mimeTypes.contains("text/plain"))
 				{
 					editor = new JTextArea();
 					editor.setText((String) getUserObject());
@@ -755,39 +823,23 @@ public abstract class DataThingConstructionPanel extends JPanel implements Scufl
 							treeModel.nodeChanged(InputDataThingNode.this);
 						}
 					});
-					JToolBar toolbar = new JToolBar();
-					JButton loadButton = new JButton("Load", ScuflIcons.openIcon);
-					JButton loadURLButton = new JButton("Load from URL", ScuflIcons.webIcon);
-					loadButton.setToolTipText("Load from File");
-					loadButton.addActionListener(loadFileAction);
-					loadURLButton.addActionListener(loadURLAction);
-					toolbar.setFloatable(false);
-					toolbar.setRollover(true);
-					toolbar.add(loadButton);
-					toolbar.add(loadURLButton);
-					if (store != null)
-					{
-						JButton loadLSIDButton = new JButton("Load LSID");
-						loadLSIDButton.addActionListener(loadLSIDAction);
-						toolbar.add(loadLSIDButton);
-					}
+
 
 					JScrollPane scrollPane = new JScrollPane(editor);
 					scrollPane.setPreferredSize(new Dimension(0, 0));
 
-					panel = new JPanel(new BorderLayout());
 					panel.add(scrollPane, BorderLayout.CENTER);
-					panel.add(toolbar, BorderLayout.NORTH);
 
 				}
-				else if (thing != null)
+				else
 				{
 					RendererRegistry registry = RendererRegistry.instance();
-					RendererSPI renderer = registry.getRenderer(thing);
+					RendererSPI renderer = registry.getRenderer(getDataThing());
 					try
 					{
-						panel = new JScrollPane(renderer.getComponent(registry, thing));
-						panel.setPreferredSize(new Dimension(0, 0));
+						JScrollPane scrollPane = new JScrollPane(renderer.getComponent(registry, thing));
+						scrollPane.setPreferredSize(new Dimension(0, 0));
+						panel.add(scrollPane, BorderLayout.CENTER);
 					}
 					catch (RendererException e)
 					{
@@ -804,7 +856,12 @@ public abstract class DataThingConstructionPanel extends JPanel implements Scufl
 			DataThing newThing = DataThingFactory.bake(getUserObject());
 			if (thing != null)
 			{
+				newThing.getMetadata().setMIMETypes(mimeTypes);
 				newThing.copyMetadataFrom(thing);
+			}
+			else
+			{
+				newThing.getMetadata().setMIMETypes(mimeTypes);
 			}
 			thing = newThing;
 			return thing;
@@ -830,6 +887,11 @@ public abstract class DataThingConstructionPanel extends JPanel implements Scufl
 				{
 					summaryText = "<html><em>Click to edit...</em></html>";
 				}
+			}
+			else
+			{
+				DataThing thing = getDataThing();
+				summaryText = thing.getMostInterestingMIMETypeForObject(thing.getDataObject());
 			}
 			return summaryText;
 		}
@@ -916,12 +978,25 @@ public abstract class DataThingConstructionPanel extends JPanel implements Scufl
 	{
 		public void actionPerformed(ActionEvent e)
 		{
-			DefaultMutableTreeNode parent = (DefaultMutableTreeNode) portTree.getSelectionPath().getLastPathComponent();
-			if (parent instanceof InputDataThingNode)
+			InputListNode parent = null;
+			if (portTree.getSelectionPath().getLastPathComponent() instanceof InputDataThingNode)
 			{
-				parent = (DefaultMutableTreeNode) parent.getParent();
+				InputDataThingNode node = (InputDataThingNode)portTree.getSelectionPath().getLastPathComponent();
+				parent = (InputListNode) node.getParent();
 			}
-			InputDataThingNode newNode = new InputDataThingNode("Some input data goes here");
+			else
+			{
+				parent = (InputListNode) portTree.getSelectionPath().getLastPathComponent();
+			}
+			InputDataThingNode newNode;
+			if(parent.getPort().getMetadata().getMIMETypeList().contains("text/plain"))
+			{
+				newNode = new InputDataThingNode("Some input data goes here", parent.getPort().getMetadata().getMIMETypeList());
+			}
+			else
+			{
+				newNode = new InputDataThingNode(new byte[ 0 ], parent.getPort().getMetadata().getMIMETypeList());
+			}
 			parent.add(newNode);
 			treeModel.nodeStructureChanged(parent);
 			portTree.setSelectionPath(new TreePath(newNode.getPath()));
@@ -963,27 +1038,47 @@ public abstract class DataThingConstructionPanel extends JPanel implements Scufl
 			if (returnVal == JFileChooser.APPROVE_OPTION)
 			{
 				File[] files = fileChooser.getSelectedFiles();
-				DefaultMutableTreeNode parent = (DefaultMutableTreeNode) portTree.getSelectionPath()
-						.getLastPathComponent();
-				if (parent instanceof InputDataThingNode)
+				InputListNode parent = null;
+				if (portTree.getSelectionPath().getLastPathComponent() instanceof InputDataThingNode)
 				{
-					parent = (DefaultMutableTreeNode) parent.getParent();
+					InputDataThingNode node = (InputDataThingNode)portTree.getSelectionPath().getLastPathComponent();
+					parent = (InputListNode) node.getParent();
+				}
+				else
+				{
+					parent = (InputListNode) portTree.getSelectionPath().getLastPathComponent();
 				}
 				InputDataThingNode newNode = null;
 				for (int index = 0; index < files.length; index++)
 				{
 					try
 					{
-						BufferedReader reader = new BufferedReader(new FileReader(files[index]));
-						StringBuffer stringBuffer = new StringBuffer();
-						String string = null;
-						while ((string = reader.readLine()) != null)
+						if(parent.getPort().getMetadata().getMIMETypeList().contains("text/plain"))
 						{
-							stringBuffer.append(string);
-							stringBuffer.append("\n");
+							BufferedReader reader = new BufferedReader(new FileReader(files[index]));
+							StringBuffer stringBuffer = new StringBuffer();
+							String string = null;
+							while ((string = reader.readLine()) != null)
+							{
+								stringBuffer.append(string);
+								stringBuffer.append("\n");
+							}
+							newNode = new InputDataThingNode(stringBuffer.toString(), parent.getPort().getMetadata().getMIMETypeList());
+							parent.add(newNode);
 						}
-						newNode = new InputDataThingNode(stringBuffer.toString());
-						parent.add(newNode);
+						else
+						{
+							int input = 0;
+							ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
+							FileInputStream fileInput = new FileInputStream(files[index]);
+							while((input = fileInput.read()) != -1)
+							{
+								byteStream.write(input);
+							}
+							byteStream.flush();
+							newNode = new InputDataThingNode(byteStream.toByteArray(), parent.getPort().getMetadata().getMIMETypeList());
+							parent.add(newNode);							
+						}
 					}
 					catch (Exception exception)
 					{
@@ -1333,5 +1428,14 @@ public abstract class DataThingConstructionPanel extends JPanel implements Scufl
 	public void receiveModelEvent(ScuflModelEvent event)
 	{
 		updateModel();
+	}
+	
+	void updatePanel()
+	{
+		if (portTree.getSelectionPath().getLastPathComponent() instanceof PanelTreeNode)
+		{
+			PanelTreeNode node = (PanelTreeNode) portTree.getSelectionPath().getLastPathComponent();
+			splitter.setRightComponent(node.getPanel());
+		}
 	}
 }
