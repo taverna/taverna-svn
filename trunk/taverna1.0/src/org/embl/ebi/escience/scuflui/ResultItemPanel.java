@@ -52,14 +52,14 @@ public class ResultItemPanel extends JPanel {
 			    if (mimeTypes.matches(".*text/.*")) {
 				// Create a new text area
 				if (mimeTypes.matches(".*text/html.*")) {
-				    splitPane.setRightComponent(new JScrollPane(new JEditorPane("text/html","<pre>"+(String)theDataThing.getDataObject()+"</pre>")));
+				    splitPane.setRightComponent(new JScrollPane(new JEditorPane("text/html","<pre>"+(String)userObject+"</pre>")));
 				}
 				else if (mimeTypes.matches(".*text/rtf.*")) {
-				    splitPane.setRightComponent(new JScrollPane(new JEditorPane("text/rtf",(String)theDataThing.getDataObject())));
+				    splitPane.setRightComponent(new JScrollPane(new JEditorPane("text/rtf",(String)userObject)));
 				}
 				else {
 				    JTextArea theTextArea = new JTextArea();
-				    theTextArea.setText((String)theDataThing.getDataObject());
+				    theTextArea.setText((String)userObject);
 				    theTextArea.setFont(new Font("Monospaced",Font.PLAIN,12));
 				    splitPane.setRightComponent(new JScrollPane(theTextArea));
 				}

@@ -43,9 +43,9 @@ public class DataThingTreeNodeRenderer extends DefaultTreeCellRenderer {
 		setIcon(textIcon);
 		// If possible then show a textual representation as well as just the
 		// mime type
-		if (theDataThing.getDataObject() instanceof String) {
-		    String summaryText = (String)theDataThing.getDataObject();
-		    if (summaryText.length() > 30) {
+		if (userObject instanceof String) {
+		    String summaryText = (String)userObject;
+		    if (summaryText.length() > 100) {
 			summaryText = "<em>Click to view...</em>";
 		    }
 		    setText("<html><font color=\"#666666\">"+mimeTypes+"</font><br>"+
