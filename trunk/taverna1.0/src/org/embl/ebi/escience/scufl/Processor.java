@@ -772,7 +772,7 @@ public abstract class Processor implements Serializable {
 		}
 	    }
 	}
-	fireModelEvent(new ScuflModelEvent(this, "Removed a port"));
+	fireModelEvent(new ScuflModelRemoveEvent(this, the_port));
 
     }
 

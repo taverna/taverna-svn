@@ -339,7 +339,7 @@ public class ScuflModel
 	synchronized(this.processors) {
 	    this.processors.add(processor);
 	    processor.firingEvents = true;
-	    fireModelEvent(new ScuflModelEvent(processor, "Added processor '"+processor.getName()+"' to the model"));
+	    fireModelEvent(new ScuflModelAddEvent(this, processor));
 	}
     }
 
@@ -366,7 +366,7 @@ public class ScuflModel
 		destroyConcurrencyConstraint(cc[i]);
 	    }
 	}
-	fireModelEvent(new ScuflModelEvent(this, "Destroyed processor '"+the_processor.getName()+"'"));
+	fireModelEvent(new ScuflModelRemoveEvent(this, the_processor));
     }
 
     /**
@@ -374,7 +374,7 @@ public class ScuflModel
      */
     public void addDataConstraint(DataConstraint the_constraint) {
 	this.dataconstraints.add(the_constraint);
-	fireModelEvent(new ScuflModelEvent(this, "Added data constraint '"+the_constraint.getName()+"' to the model"));
+	fireModelEvent(new ScuflModelAddEvent(this, the_constraint));
     }
 
     /**
@@ -382,7 +382,7 @@ public class ScuflModel
      */
     public void destroyDataConstraint(DataConstraint the_constraint) {
 	this.dataconstraints.remove(the_constraint);
-	fireModelEvent(new ScuflModelEvent(this, "Removed data constraint '"+the_constraint.getName()+"'"));
+	fireModelEvent(new ScuflModelRemoveEvent(this, the_constraint));
     }
 
     /**
@@ -390,7 +390,7 @@ public class ScuflModel
      */
     public void addConcurrencyConstraint(ConcurrencyConstraint the_constraint) {
 	this.constraints.add(the_constraint);
-	fireModelEvent(new ScuflModelEvent(this, "Added concurrency constraint '"+the_constraint.getName()+"' to the model"));
+	fireModelEvent(new ScuflModelAddEvent(this, the_constraint));
     }
 
     /**
@@ -398,7 +398,7 @@ public class ScuflModel
      */
     public void destroyConcurrencyConstraint(ConcurrencyConstraint the_constraint) {
 	this.constraints.remove(the_constraint);
-	fireModelEvent(new ScuflModelEvent(this, "Removed concurrency constraint '"+the_constraint.getName()+"' to the model"));
+	fireModelEvent(new ScuflModelRemoveEvent(this, the_constraint));
     }
 
     /**
