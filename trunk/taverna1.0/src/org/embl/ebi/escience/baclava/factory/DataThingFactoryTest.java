@@ -28,7 +28,7 @@ public class DataThingFactoryTest {
 
     public static void main(String[] args) {
 	try {
-	    String[] theStringArray = {"hello","world","this","is","a","string","array"};
+	    String[] theStringArray = {"hello","world","string","array"};
 	    String theString = "Hello I am a string";
 	    byte[] theByteArray = theString.getBytes();
 	    String theXMLString = "<foo>bar</foo>";
