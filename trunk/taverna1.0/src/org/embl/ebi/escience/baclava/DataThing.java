@@ -10,6 +10,7 @@ import java.lang.ref.WeakReference;
 import javax.swing.ImageIcon;
 import org.embl.ebi.escience.baclava.factory.DataThingXMLFactory;
 import org.embl.ebi.escience.baclava.factory.DataThingFactory;
+import org.embl.ebi.escience.baclava.factory.DataThingTreeNode;
 import org.embl.ebi.escience.scufl.SemanticMarkup;
 
 // Utility Imports
@@ -563,6 +564,28 @@ public class DataThing {
 	}
 
     }
+
+		public DataThing drillAndSet(DataThing oldDT, String newData, int depth ){ 
+						if (depth>2 && (this.getDataObject() instanceof ArrayList)) return this.drillAndSet(oldDT,newData,depth--);
+						else if (depth==2 && (this.getDataObject() instanceof ArrayList)){
+										ArrayList dtList=((ArrayList)this.getDataObject());
+										for (int i=0; i<dtList.size();i++)
+														if (dtList.get(i).equals(oldDT.getDataObject())){
+																	 oldDT.setDataObject(new String(newData));
+																	 dtList.set(i,oldDT.getDataObject()); 
+																	 this.setDataObject(this.getDataObject());
+																	 return oldDT;
+														}
+						}
+						else {
+									this.setDataObject(new String(newData));
+									return this;
+						}
+						return null;
+		}
+										
+														
+
 
     /**
      * Drill into a collection, adding items to the list if we're at the desired depth,
