@@ -19,6 +19,7 @@ public class WorkflowDescription {
     private String text = "";
     private String lsid = "";
     private String author = "";
+    private String title = "";
 
     /**
      * Override the default constructor to set an LSID
@@ -31,6 +32,21 @@ public class WorkflowDescription {
 	if (p != null) {
 	    this.lsid = p.getID(LSIDProvider.WFDEFINITION);
 	}
+    }
+
+    /**
+     * Get a short descriptive name, not guaranteed to be
+     * unique, for this workflow.
+     */
+    public String getTitle() {
+	return this.title;
+    }
+
+    /**
+     * Set the title for this workflow
+     */
+    public void setTitle(String theTitle) {
+	this.title = theTitle;
     }
 
     /**
@@ -94,6 +110,7 @@ public class WorkflowDescription {
 	descriptionElement.setText(theDescription.getText());
 	descriptionElement.setAttribute("lsid",theDescription.getLSID());
 	descriptionElement.setAttribute("author",theDescription.getAuthor());
+	descriptionElement.setAttribute("title",theDescription.getTitle());
 	return descriptionElement;
     }
 
@@ -112,6 +129,7 @@ public class WorkflowDescription {
 	description.setText(theElement.getTextTrim());
 	description.setAuthor(theElement.getAttributeValue("author",""));
 	description.setLSID(theElement.getAttributeValue("lsid",""));
+	description.setTitle(theElement.getAttributeValue("title",""));
 	if (description.lsid.equals("")) {
 	    // Assign a new LSID by default from any configured assigning service
 	    LSIDProvider p = DataThing.SYSTEM_DEFAULT_LSID_PROVIDER;

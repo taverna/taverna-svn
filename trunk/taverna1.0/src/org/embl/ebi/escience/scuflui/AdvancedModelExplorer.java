@@ -315,7 +315,19 @@ public class AdvancedModelExplorer extends JPanel
 								    "Author"));
 	authorPanel.setLayout(new BorderLayout());
 	authorPanel.add(author, BorderLayout.CENTER);
-	//authorPanel.add(new JLabel("Workflow author"), BorderLayout.WEST);
+	
+	JTextField title = new JTextField(model.getDescription().getTitle());
+	JPanel titlePanel = new JPanel() {
+		public Dimension getMaximumSize() {
+		    return new Dimension(99999,50);
+		}
+	    };
+	titlePanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(),
+							       "Descriptive title"));
+	titlePanel.setLayout(new BorderLayout());
+	titlePanel.add(title, BorderLayout.CENTER);
+	
+
 	
 	JTextField lsid = new JTextField(model.getDescription().getLSID());
 	lsid.setEditable(false);
@@ -387,12 +399,42 @@ public class AdvancedModelExplorer extends JPanel
 			//
 		    }
 		}
+	    });	
+	title.getDocument().addDocumentListener(new DocumentListener() {
+		public void insertUpdate(DocumentEvent e) {
+		    try {
+			Document d = e.getDocument();
+			wd.setTitle(d.getText(0, d.getLength()));
+		    }
+		    catch (BadLocationException ble) {
+			//
+		    }
+		}
+		public void removeUpdate(DocumentEvent e) {
+		    try {
+			Document d = e.getDocument();
+			wd.setTitle(d.getText(0, d.getLength()));
+		    }
+		    catch (BadLocationException ble) {
+			//
+		    }
+		}
+		public void changedUpdate(DocumentEvent e) {
+		    try {
+			Document d = e.getDocument();
+			wd.setTitle(d.getText(0, d.getLength()));
+		    }
+		    catch (BadLocationException ble) {
+			//
+		    }
+		}
 	    });
 	description.setEditable(true);
 	description.setLineWrap(true);
 	description.setWrapStyleWord(true);
 	descriptionPanel.add(descriptionPane);
 	propertiesPanel.add(authorPanel);
+	propertiesPanel.add(titlePanel);
 	propertiesPanel.add(lsidPanel);
 	propertiesPanel.add(descriptionPanel);
 	tabs.setEnabledAt(1, true);
