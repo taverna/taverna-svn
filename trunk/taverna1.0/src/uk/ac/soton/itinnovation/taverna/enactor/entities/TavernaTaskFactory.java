@@ -24,30 +24,23 @@
 //      Created for Project :   MYGRID
 //      Dependencies        :
 //
-//      Last commit info    :   $Author: mereden $
-//                              $Date: 2003-04-17 15:21:48 $
-//                              $Revision: 1.3 $
+//      Last commit info    :   $Author: dmarvin $
+//                              $Date: 2003-04-18 20:41:40 $
+//                              $Revision: 1.4 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 
 package uk.ac.soton.itinnovation.taverna.enactor.entities;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
+
+//java imports
+import java.lang.reflect.*;
+
+//third party imports
 import org.apache.log4j.Logger;
+
+//local imports
 import org.embl.ebi.escience.scufl.Processor;
-
-import uk.ac.soton.itinnovation.taverna.enactor.entities.ProcessorTask;
-import uk.ac.soton.itinnovation.taverna.enactor.entities.UnsupportedTavernaProcessorException;
-import java.lang.Class;
-import java.lang.Exception;
-import java.lang.IllegalAccessException;
-import java.lang.IllegalArgumentException;
-import java.lang.InstantiationException;
-import java.lang.Object;
-import java.lang.String;
-
-
 
 /**
  * Creates the correct concrete task for a given WSDL identifier
@@ -66,21 +59,11 @@ public class TavernaTaskFactory {
         ProcessorTask pTask = null;
 		//obtain the class of this taskID, this could be shifted to configuration later
 		String taskClassName = null;
-		if(taskID.equals("http://industry.ebi.ac.uk/soap/soaplab/edit::seqret")) 
-			taskClassName = "uk.ac.soton.itinnovation.taverna.enactorentities.SeqretTask";
-		else if(taskID.equals("http://industry.ebi.ac.uk/soap/soaplab/nucleic_gene_finding::getorf"))
-			taskClassName = "uk.ac.soton.itinnovation.taverna.enactorentities.GetOrfTask";
-		else if(taskID.equals("http://industry.ebi.ac.uk/soap/soaplab/nucleic_translation::transeq"))
-			taskClassName = "uk.ac.soton.itinnovation.taverna.enactorentities.TranSeqTask";
-		else if(taskID.equals("http://industry.ebi.ac.uk/soap/soaplab/alignment_multiple::emma"))
-			taskClassName = "uk.ac.soton.itinnovation.taverna.enactorentities.EmmaSeqTask";
-		else if(taskID.equals("http://industry.ebi.ac.uk/soap/soaplab/nucleic_profiles::prophecy")) 
-			taskClassName = "uk.ac.soton.itinnovation.taverna.enactorentities.ProphecyTask";
-		else if(taskID.equals("http://industry.ebi.ac.uk/soap/soaplab/nucleic_profiles::prophet")) 
-			taskClassName = "uk.ac.soton.itinnovation.taverna.enactorentities.ProphetTask";
+		if(taskID.startsWith("http://industry.ebi.ac.uk/soap/soaplab/")) 
+			taskClassName = "uk.ac.soton.itinnovation.taverna.enactor.entities.SoaplabTask";
 		else {
-			logger.error("Don't know how to deal with processor with soaplab wsdl '" + taskID + "'");
-			throw new UnsupportedTavernaProcessorException("Don't know how to deal with processor with soaplab wsdl '" + taskID + "'");
+			logger.error("Don't know how to deal with processor with name '" + taskID + "'");
+			throw new UnsupportedTavernaProcessorException("Don't know how to deal with processor with name '" + taskID + "'");
 		}
 		try {
             
@@ -113,4 +96,5 @@ public class TavernaTaskFactory {
 		}
 		return pTask;
     }
+
 }

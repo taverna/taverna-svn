@@ -24,35 +24,40 @@
 //      Created for Project :   MYGRID
 //      Dependencies        :
 //
-//      Last commit info    :   $Author: mereden $
-//                              $Date: 2003-04-17 15:21:47 $
-//                              $Revision: 1.3 $
+//      Last commit info    :   $Author: dmarvin $
+//                              $Date: 2003-04-18 20:41:42 $
+//                              $Revision: 1.4 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 
 package uk.ac.soton.itinnovation.taverna.enactor.broker;
 
-import org.apache.log4j.Logger;
-import org.embl.ebi.escience.scufl.*;
+
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.net.URL;
+import java.util.StringTokenizer;
+
 import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.entities.graph.DiGraph;
 import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.entities.graph.GraphNode;
 import uk.ac.soton.itinnovation.mygrid.workflow.enactor.io.Input;
-import uk.ac.soton.itinnovation.taverna.enactor.entities.PortTask;
+import uk.ac.soton.itinnovation.mygrid.workflow.enactor.io.Part;
+import uk.ac.soton.itinnovation.taverna.enactor.entities.TavernaTask;
 import uk.ac.soton.itinnovation.taverna.enactor.entities.ProcessorTask;
+import uk.ac.soton.itinnovation.taverna.enactor.entities.PortTask;
 import uk.ac.soton.itinnovation.taverna.enactor.entities.TavernaTaskFactory;
 
-// Utility Imports
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
+import org.embl.ebi.escience.scufl.ScuflModel;
+import org.embl.ebi.escience.scufl.InputPort;
+import org.embl.ebi.escience.scufl.OutputPort;
+import org.embl.ebi.escience.scufl.Processor;
+import org.embl.ebi.escience.scufl.SoaplabProcessor;
+import org.embl.ebi.escience.scufl.Port; 
+import org.embl.ebi.escience.scufl.DataConstraint;
 
-// Network Imports
-import java.net.URL;
 
-import uk.ac.soton.itinnovation.taverna.enactor.broker.XScuflInvalidException;
-import java.lang.Exception;
-import java.lang.String;
-
+import org.apache.log4j.Logger;
 
 
 /**
@@ -85,32 +90,8 @@ public class XScuflDiGraphGenerator {
 			List inPorts = new ArrayList();
 			List outPorts = new ArrayList();
 			List processorTasks = new ArrayList();
-		   
-			//get the external input and output ports and assign to InPort and OutPort objects
-			Port[] externalPorts = model.getExternalPorts();
-			for(int i=0;i<externalPorts.length;i++) {
-				if(externalPorts[i] instanceof InputPort) {
-					//create ExtInPortTask for it
-					PortTask eInPort = getPortTask(flowID,inPorts,externalPorts[i]);
-					inPorts.add(eInPort);
-					flowExtInPorts.add(eInPort);
-					//set the input data
 
-					//make graph input node
-					graph.addInputNode(eInPort);				
-				}
-				else {
-					//create ExtOutPortTask for it
-					PortTask eOutPort = getPortTask(flowID,outPorts,externalPorts[i]);
-					outPorts.add(eOutPort);
-					flowExtOutPorts.add(eOutPort);
-					
-					//make graph output node
-					graph.addOutputNode(eOutPort);
-				}
-			}
-
-			//get the processors and create task for each
+			//create tasks for each processor
 			Processor[] processors = model.getProcessors();
 			ArrayList soapLabProcessors = new ArrayList();
 			for(int i=0;i<processors.length;i++){
@@ -124,23 +105,11 @@ public class XScuflDiGraphGenerator {
 				//Note following will make a network connection.
 				URL wsdlURI = sProcessor.getEndpoint();
 				String serviceID = wsdlURI.toExternalForm();
-				String id = flowID + ":" + sProcessor.getName();
+				String id = flowID + ":Processor:" + sProcessor.getName();
 				ProcessorTask serviceTask = TavernaTaskFactory.getConcreteTavernaTask(id,serviceID,sProcessor);
-				tasks.add(serviceTask);
+				addToListIfNotThere(tasks,serviceTask);
 				processorTasks.add(serviceTask);
-				//for each task generate the necessary input and output port nodes
-				Port[] inputPorts = sProcessor.getInputPorts();
-				for(int j=0;j<inputPorts.length;j++) {
-					PortTask inPort = getPortTask(flowID,inPorts,inputPorts[j]);
-					//add the inPort as a parent to the task
-					serviceTask.addParent(inPort);					
-				}
-				Port[] outputPorts = sProcessor.getOutputPorts();
-				for(int j=0;j<outputPorts.length;j++) {
-					PortTask outPort = getPortTask(flowID,outPorts,outputPorts[j]);
-					//add the outPort as a child to the task
-					serviceTask.addChild(outPort);					
-				}			
+				//for each task generate the necessary input and output port nodes				
 			}
 
 			//dataconstraints associate nodes based on linking ports between processors
@@ -158,10 +127,91 @@ public class XScuflDiGraphGenerator {
 				source.addChild(sink);
 				sink.addParent(source);
 				//some will already be distinguished as external input and output ports
-			}		
+				addToListIfNotThere(tasks,source);
+				addToListIfNotThere(tasks,sink);
+
+				//find the source ProcessorTask
+				Iterator iterator = processorTasks.iterator();
+				while(iterator.hasNext()) {
+					ProcessorTask pT = (ProcessorTask) iterator.next();
+					String procName = pT.getProcessor().getName();
+					if(procName.equals(source.getScuflPort().getProcessor().getName())) {
+						pT.addChild(source);
+						source.addParent(pT);
+					}
+					if(procName.equals(sink.getScuflPort().getProcessor().getName())) {
+						pT.addParent(sink);
+						sink.addChild(pT);
+					}
+				}
+			}
 			
-			//ready now to set nodeList for the DiGraph
-			Iterator iterator = tasks.iterator();
+			//get external ports 
+			Port[] externalPorts = model.getExternalPorts();
+			if(externalPorts.length == 0)
+				throw new XScuflInvalidException("There are no external ports defined for the XScufl workflow");
+			for(int i=0;i<externalPorts.length;i++) {
+				if(externalPorts[i] instanceof InputPort) {
+					PortTask source = getPortTask(flowID,flowExtInPorts,externalPorts[i]);
+					addToListIfNotThere(tasks,source);
+					//find processortasks that match
+					Iterator iterator = processorTasks.iterator();
+					while(iterator.hasNext()) {
+						ProcessorTask pT = (ProcessorTask) iterator.next();
+						String procName = pT.getProcessor().getName();
+						if(procName.equals(source.getScuflPort().getProcessor().getName())) {
+							pT.addParent(source);
+							source.addChild(pT);
+						}						
+					}
+				}
+				if(externalPorts[i] instanceof OutputPort) {
+					PortTask sink = getPortTask(flowID,flowExtOutPorts,externalPorts[i]);
+					addToListIfNotThere(tasks,sink);
+					Iterator iterator = processorTasks.iterator();
+					while(iterator.hasNext()) {
+						ProcessorTask pT = (ProcessorTask) iterator.next();
+						String procName = pT.getProcessor().getName();
+						if(procName.equals(sink.getScuflPort().getProcessor().getName())) {
+							pT.addChild(sink);
+							sink.addParent(pT);
+						}						
+					}
+				}
+			}
+
+			//set input and output nodes
+			Iterator iterator = flowExtInPorts.iterator();
+			while(iterator.hasNext()) {
+				PortTask pT = (PortTask) iterator.next();
+				graph.addInputNode(pT);
+				//load the data
+				Port port = pT.getScuflPort();
+				String portName = port.getName();
+				String parentProc = port.getProcessor().getName();
+				List partList = input.getPartList();
+				Iterator it = partList.iterator();
+				while(it.hasNext()) {
+					Part part = (Part) it.next();
+					String partName = part.getName();
+					StringTokenizer tokenizer = new StringTokenizer(partName,":");
+					String processorID = tokenizer.nextToken();
+					String prtName = tokenizer.nextToken();
+					if(processorID.equals(parentProc)&&prtName.equals(portName)) {						
+						pT.setData(new Part(-1,prtName,part.getType(),part.getValue()));
+					}
+				}
+				
+			}
+
+			iterator = flowExtOutPorts.iterator();
+			while(iterator.hasNext()) {
+				PortTask pT = (PortTask) iterator.next();
+				graph.addOutputNode(pT);
+				
+			}
+
+			iterator = tasks.iterator();
 			GraphNode[] gnodes = new GraphNode[tasks.size()];
 
 			int count = 0;
@@ -174,14 +224,13 @@ public class XScuflDiGraphGenerator {
 
 			
 			if (!checkRouteToAllNodes(processorTasks, graph.getInputNodes()))
-				throw new XScuflInvalidException("Some processors are not connected fully within the workflow, please check links");
-			
-			
-		}
+				throw new XScuflInvalidException("Not all the processor nodes are accessible from input nodes");		
+		}		
 		catch(Exception ex) {
 			//fix this!!!
 		}
 		return graph;
+		
     }
 
 	private static PortTask getPortTask(String flowID,List list,Port p) throws XScuflInvalidException{
@@ -192,7 +241,7 @@ public class XScuflDiGraphGenerator {
 				return pT;
 		}
 		//create a new one
-		String id = flowID + ":" + p.getProcessor().getName() + ":" + p.getName();
+		String id = flowID + ":" + ":PortTask:" + p.getProcessor().getName() + ":" + p.getName();
 		PortTask newPt = new PortTask(id,p);
 		list.add(newPt);
 		return newPt;
@@ -264,4 +313,6 @@ public class XScuflDiGraphGenerator {
             return false;
         }
     }
+	
 }
+

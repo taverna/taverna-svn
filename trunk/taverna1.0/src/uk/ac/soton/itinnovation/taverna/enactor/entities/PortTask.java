@@ -1,3 +1,4 @@
+
 ////////////////////////////////////////////////////////////////////////////////
 //
 // © University of Southampton IT Innovation Centre, 2002
@@ -24,36 +25,36 @@
 //      Created for Project :   MYGRID
 //      Dependencies        :
 //
-//      Last commit info    :   $Author: mereden $
-//                              $Date: 2003-04-17 15:21:48 $
-//                              $Revision: 1.3 $
+//      Last commit info    :   $Author: dmarvin $
+//                              $Date: 2003-04-18 20:41:39 $
+//                              $Revision: 1.4 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 
 package uk.ac.soton.itinnovation.taverna.enactor.entities;
 
 import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.entities.graph.GraphNode;
-import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.eventservice.TaskStateMessage;
 import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.serviceprovidermanager.ServiceSelectionCriteria;
+import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.eventservice.TaskStateMessage;
+
 import uk.ac.soton.itinnovation.mygrid.workflow.enactor.io.Input;
+import uk.ac.soton.itinnovation.mygrid.workflow.enactor.io.Part;
 
-import uk.ac.soton.itinnovation.taverna.enactor.entities.TavernaTask;
-import java.lang.InterruptedException;
-import java.lang.String;
-
-
+import org.apache.log4j.*;
 
 /**
  * GraphNode that represents a port on a Processor.
  */
 public class PortTask extends TavernaTask{
 	
+	private static Logger logger = Logger.getLogger(PortTask.class);
+
 	public static int IN = 0;
 	public static int OUT = 1;
 
 	private org.embl.ebi.escience.scufl.Port port; 
 	private int type;
-	private Input dataPacket = null;
+	private Part dataPacket = null;
 		
 	public PortTask(String id, org.embl.ebi.escience.scufl.Port port) {
 		super(id);
@@ -97,13 +98,8 @@ public class PortTask extends TavernaTask{
 	 * and then supplies it
 	 * @return holder for data
 	 */
-	public synchronized Input waitForData() {
-		while(dataPacket==null) {
-			try{
-				wait();
-			} catch(InterruptedException ex) {
-			}
-		}
+	
+	public synchronized Part getData() {
 		return dataPacket;
 	}
 
@@ -111,23 +107,18 @@ public class PortTask extends TavernaTask{
 	 * Sets a reference to the actual data holder
 	 * @param data holder for data
 	 */
-	public synchronized void setData(Input p) {
+	public synchronized void setData(Part p) {
 		dataPacket = p;
-		//set data on child porttasks too
-		GraphNode[] chds = getChildren();
-		for(int i=0;i<chds.length;i++) {
-			if(chds[i] instanceof PortTask) {
-				PortTask pT = (PortTask) chds[i];
-				pT.setData(p);
-			}
-		}
-		notifyAll();
+				
 	}
 
 	/**
      * Forces class to clean itself up a bit.
      */
-    public void cleanUpConcreteTask() {}
+    public void cleanUpConcreteTask() {
+		port = null;
+		dataPacket = null;
+	}
 
 	/**
      * Retrieves the selection criteria associated with this task. This criteria
@@ -138,7 +129,32 @@ public class PortTask extends TavernaTask{
     }
 
 	public TaskStateMessage doTask() {
-		//don't do anything, later versions may have persistence writing to do
-		return new TaskStateMessage(getParentFlow().getID(), getID(), TaskStateMessage.COMPLETE, "Task finished successfully");
+		TaskStateMessage msg = null;
+		try{
+		
+			//don't do anything, later versions may have persistence writing to do
+			//set data on child porttasks too
+			if(dataPacket==null)
+				msg = new TaskStateMessage(getParentFlow().getID(), getID(), TaskStateMessage.FAILED,"No data for port " + port.getName());
+			else {
+				GraphNode[] chds = getChildren();
+				for(int i=0;i<chds.length;i++) {
+					if(chds[i] instanceof PortTask) {
+						PortTask pT = (PortTask) chds[i];
+						String portName = pT.getScuflPort().getName();
+						//want the part for this portname 
+						Part part = new Part(-1,portName,dataPacket.getType(),dataPacket.getValue());
+						pT.setData(part);
+					}
+				}
+				msg = new TaskStateMessage(getParentFlow().getID(), getID(), TaskStateMessage.COMPLETE, "Task finished successfully");
+			}
+			
+		}
+		catch(Exception ex) {
+			logger.error(ex);
+			msg = new TaskStateMessage(getParentFlow().getID(), getID(), TaskStateMessage.FAILED, ex.getMessage());
+		}
+		return msg;
 	}
-} 
+}
