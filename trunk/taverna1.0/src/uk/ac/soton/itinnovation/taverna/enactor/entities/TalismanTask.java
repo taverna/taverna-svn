@@ -136,6 +136,6 @@ public class TalismanTask extends ProcessorTask {
 	 * overide this method and provide this information as an XML JDOM element
 	 */
 	public org.jdom.Element getProvenance() {
-		return new org.jdom.Element("talismanTriggerInvocation");
+		return new org.jdom.Element("TalismanTriggerInvocation");
 	}
 }

@@ -25,8 +25,8 @@
 //      Dependencies        :
 //
 //      Last commit info    :   $Author: dmarvin $
-//                              $Date: 2003-05-20 17:23:16 $
-//                              $Revision: 1.5 $
+//                              $Date: 2003-05-20 18:00:23 $
+//                              $Revision: 1.6 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 
@@ -293,15 +293,15 @@ public class TavernaFlowReceipt extends WSFlowReceipt {
 		//get the end provenance task or return empty string
 		Element prov = new Element("workflowProvenance",PROVENANCE_NAMESPACE);
 		//populate with flow level information
-		Element id = new Element("workflowID");
+		Element id = new Element("workflowID",PROVENANCE_NAMESPACE);
 		id.addContent(new Text(flow.getID()));
 		prov.addContent(id);
-		Element user = new Element("userID");
+		Element user = new Element("userID",PROVENANCE_NAMESPACE);
 		user.addContent(new Text(userID));
-		Element stat = new Element("workflowStatus");
+		Element stat = new Element("workflowStatus",PROVENANCE_NAMESPACE);
 		stat.addContent(new Text(translateFlowState(flow.getStatus())));
 		prov.addContent(stat);
-		Element processors = new Element("processorList");
+		Element processors = new Element("processorList",PROVENANCE_NAMESPACE);
 
 		TimePoint start = null;
 		TimePoint end = null;
@@ -318,24 +318,29 @@ public class TavernaFlowReceipt extends WSFlowReceipt {
 			}
 		}
 		if(start!=null) {
-			Element startTime = new Element("startTime");
+			Element startTime = new Element("startTime",PROVENANCE_NAMESPACE);
 			startTime.addContent(new Text(start.getShortString()));
 			prov.addContent(startTime);
 		}
 		if(end!=null) {
-			Element endTime = new Element("endTime");
+			Element endTime = new Element("endTime",PROVENANCE_NAMESPACE);
 			endTime.addContent(new Text(end.getShortString()));
 			prov.addContent(endTime);
 		}
 		prov.addContent(processors);
+
+		XMLOutputter xmlout = new XMLOutputter();
+		xmlout.setIndent(" ");
+		xmlout.setNewlines(true);
+		xmlout.setTextNormalize(false);
+		ret = xmlout.outputString(prov);
+
 		//put in processor provenance
 		if(ret==null) {
 			prov = new Element("workflowProvenance",PROVENANCE_NAMESPACE);
-			id = new Element("workflowID",flow.getID());
-			XMLOutputter xmlout = new XMLOutputter();
-			xmlout.setIndent(" ");
-			xmlout.setNewlines(true);
-			xmlout.setTextNormalize(false);
+			id = new Element("workflowID",PROVENANCE_NAMESPACE);
+			id.addContent(new Text(flow.getID()));
+			prov.addContent(id);
 			return (xmlout.outputString(prov));
 		}			
 
