@@ -38,9 +38,10 @@ public class SoaplabScavenger extends Scavenger {
 	super("Soaplab @ "+(base.endsWith("/")?base:base+"/"));
 	// Get the categories for this installation
 	try {
+	    boolean foundAnInstallation = false;
 	    if (!base.endsWith("/")) {
 		base = base + "/";
-// 		throw new RuntimeException("The url for soaplab should look like http://foo/bar/, see the faq for more information");
+		// throw new RuntimeException("The url for soaplab should look like http://foo/bar/, see the faq for more information");
 	    }
 	    String[] categories = null;
 	    Call call = (Call) new Service().createCall();
@@ -62,6 +63,7 @@ public class SoaplabScavenger extends Scavenger {
 			category.add(new DefaultMutableTreeNode(f));
 		    }
 		}
+		foundAnInstallation = true;
 	    } catch (Exception e) {
 		// Ignore
 	    }
@@ -83,6 +85,7 @@ public class SoaplabScavenger extends Scavenger {
 			category.add(new DefaultMutableTreeNode(f));
 		    }
 		}
+		foundAnInstallation = true;
 	    } catch (Exception e) {
 		// Do nothing
 	    }
@@ -92,9 +95,11 @@ public class SoaplabScavenger extends Scavenger {
 	    sce.initCause(e);
 	    throw sce;
 	}
-	
+	if (foundAnInstallation == false) {
+	    // Neither Soaplab nor Gowlab were found, probably a fault
+	    ScavengerCreationException sce = new ScavengerCreationException("Unable to locate a soaplab installation at \n"+base);
+	    throw sce;
+	}
     }
-
-    
 
 }

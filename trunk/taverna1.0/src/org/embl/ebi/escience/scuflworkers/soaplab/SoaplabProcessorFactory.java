@@ -59,21 +59,6 @@ public class SoaplabProcessorFactory extends ProcessorFactory {
     public String getEndpoint() {
 	return this.endpoint;
     }
-
-    /**
-     * Create a new SoaplabProcessor and add it to the model
-     */
-    /**
-       public Processor createProcessor(String name, ScuflModel model)
-       throws ProcessorCreationException,
-       DuplicateProcessorNameException {
-       Processor theProcessor = new SoaplabProcessor(model, name, this.endpoint);
-       if (model!=null) {
-       model.addProcessor(theProcessor);
-       }
-       return theProcessor;
-       }
-    */
     
     /**
      * Return a textual description of the factory
