@@ -25,6 +25,16 @@
 			</xs:all>
 		</xs:complexType>
 	</xs:element>
+	<xs:element name="workflow">
+		<xs:annotation>
+			<xs:documentation>A nested workflow based processor</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="xscufllocation"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
 	<xs:element name="condition">
 		<xs:annotation>
 			<xs:documentation>The gate condition that determines whether the target is allowed to change state</xs:documentation>
@@ -58,6 +68,11 @@
 			<xs:documentation>A processor:port or external port name that will consume the data from the link</xs:documentation>
 		</xs:annotation>
 	</xs:element>
+	<xs:element name="description" type="xs:string">
+		<xs:annotation>
+			<xs:documentation>Free text description, applies to the parent entity, either processor or workflow at present.</xs:documentation>
+		</xs:annotation>
+	</xs:element>
 	<xs:element name="link">
 		<xs:annotation>
 			<xs:documentation>A data link from a processor output to another processor input, or between an external source / sink and an internal processor</xs:documentation>
@@ -84,16 +99,25 @@
 			<xs:documentation>Name of the port type from which to extract the operation</xs:documentation>
 		</xs:annotation>
 	</xs:element>
+	<xs:element name="xscufllocation" type="xs:string">
+		<xs:annotation>
+			<xs:documentation>URL to a workflow definition in XScufl format</xs:documentation>
+		</xs:annotation>
+	</xs:element>
 	<xs:element name="processor">
 		<xs:annotation>
 			<xs:documentation>A processing entitiy within the workflow</xs:documentation>
 		</xs:annotation>
 		<xs:complexType>
-			<xs:choice>
-				<xs:element ref="talisman"/>
-				<xs:element ref="soaplabwsdl"/>
-				<xs:element ref="arbitrarywsdl"/>
-			</xs:choice>
+			<xs:sequence>
+				<xs:element ref="description" minOccurs="0"/>
+				<xs:choice>
+					<xs:element ref="soaplabwsdl"/>
+					<xs:element ref="workflow"/>
+					<xs:element ref="talisman"/>
+					<xs:element ref="arbitrarywsdl"/>
+				</xs:choice>
+			</xs:sequence>
 			<xs:attribute name="name" type="xs:string" use="required"/>
 			<xs:attribute name="log" type="xs:int" use="optional" default="0">
 				<xs:annotation>
