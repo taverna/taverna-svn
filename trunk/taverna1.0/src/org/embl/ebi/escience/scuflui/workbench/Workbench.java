@@ -15,6 +15,7 @@ import javax.swing.*;
 import org.embl.ebi.escience.scufl.ScuflModel;
 import org.embl.ebi.escience.scufl.parser.XScuflParser;
 import org.embl.ebi.escience.scufl.view.XScuflView;
+import org.embl.ebi.escience.scufl.view.DotView;
 import org.embl.ebi.escience.scuflui.DotTextArea;
 import org.embl.ebi.escience.scuflui.ScuflDiagram;
 import org.embl.ebi.escience.scuflui.ScuflModelExplorer;
@@ -103,6 +104,7 @@ public class Workbench extends JFrame {
 	try {
 	    ScavengerTree s = new ScavengerTree();
 	    s.addScavenger(new SoaplabScavenger("http://industry.ebi.ac.uk/soap/soaplab/"));
+	    s.addScavenger(new WSDLBasedScavenger("http://www.ebi.ac.uk/xembl/XEMBL.wsdl"));
 	    GenericUIComponentFrame scavenger = new GenericUIComponentFrame(workbench.model,
 									    s);
 	    scavenger.setSize(300,600);
@@ -192,6 +194,79 @@ public class Workbench extends JFrame {
 		}
 	    });
 	fileMenu.add(saveScufl);
+	
+	// Sub menu for the various dot save options
+	JMenu dotSubMenu = new JMenu("Save as Dot");
+	dotSubMenu.setIcon(saveIcon);
+	fileMenu.add(dotSubMenu);
+	
+	JMenuItem noPorts = new JMenuItem("No ports shown", saveIcon);
+	JMenuItem boundPorts = new JMenuItem("Bound ports only", saveIcon);
+	JMenuItem allPorts = new JMenuItem("All ports shown", saveIcon);
+	dotSubMenu.add(noPorts);
+	dotSubMenu.add(boundPorts);
+	dotSubMenu.add(allPorts);
+	noPorts.addActionListener(new ActionListener() {
+		public void actionPerformed(ActionEvent ae) {
+		    try {
+			int returnVal = fc.showSaveDialog(Workbench.this);
+			if (returnVal == JFileChooser.APPROVE_OPTION) {
+			    File file = fc.getSelectedFile();
+			    DotView dv = new DotView(Workbench.this.model);
+			    dv.setPortDisplay(DotView.NONE);
+			    PrintWriter out = new PrintWriter(new FileWriter(file));
+			    out.println(dv.getDot());
+			    Workbench.this.model.removeListener(dv);
+			    out.flush();
+			    out.close();
+			}
+		    }
+		    catch (Exception ex) {
+			throw new RuntimeException(ex.getMessage());
+		    }  
+		}
+	    });
+	boundPorts.addActionListener(new ActionListener() {
+		public void actionPerformed(ActionEvent ae) {
+		    try {
+			int returnVal = fc.showSaveDialog(Workbench.this);
+			if (returnVal == JFileChooser.APPROVE_OPTION) {
+			    File file = fc.getSelectedFile();
+			    DotView dv = new DotView(Workbench.this.model);
+			    dv.setPortDisplay(DotView.BOUND);
+			    PrintWriter out = new PrintWriter(new FileWriter(file));
+			    out.println(dv.getDot());
+			    Workbench.this.model.removeListener(dv);
+			    out.flush();
+			    out.close();
+			}
+		    }
+		    catch (Exception ex) {
+			throw new RuntimeException(ex.getMessage());
+		    }  
+		}
+	    });
+	allPorts.addActionListener(new ActionListener() {
+		public void actionPerformed(ActionEvent ae) {
+		    try {
+			int returnVal = fc.showSaveDialog(Workbench.this);
+			if (returnVal == JFileChooser.APPROVE_OPTION) {
+			    File file = fc.getSelectedFile();
+			    DotView dv = new DotView(Workbench.this.model);
+			    dv.setPortDisplay(DotView.ALL);
+			    PrintWriter out = new PrintWriter(new FileWriter(file));
+			    out.println(dv.getDot());
+			    Workbench.this.model.removeListener(dv);
+			    out.flush();
+			    out.close();
+			}
+		    }
+		    catch (Exception ex) {
+			throw new RuntimeException(ex.getMessage());
+		    }  
+		}
+	    });
+
 	JMenuItem clearModel = new JMenuItem("Reset model data", deleteIcon);
 	clearModel.addActionListener(new ActionListener() {
 		public void actionPerformed(ActionEvent e) {

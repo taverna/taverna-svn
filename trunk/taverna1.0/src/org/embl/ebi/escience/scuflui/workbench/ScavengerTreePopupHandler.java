@@ -62,43 +62,101 @@ public class ScavengerTreePopupHandler extends MouseAdapter {
     void doEvent(MouseEvent e) {
 	DefaultMutableTreeNode node = (DefaultMutableTreeNode)(scavenger.getPathForLocation(e.getX(), e.getY()).getLastPathComponent());
 	Object scuflObject = node.getUserObject();
-	if (scavenger.model != null && 
-	    scuflObject != null && 
-	    scuflObject instanceof ProcessorFactory) {
+	if (scuflObject != null) {
 	    
-	    JPopupMenu menu = new JPopupMenu();
-	    JMenuItem add = new JMenuItem("Add to model", Workbench.importIcon);
-	    final ProcessorFactory pf = (ProcessorFactory)scuflObject;
-	    add.addActionListener(new ActionListener() {
-		    public void actionPerformed(ActionEvent ae) {
-			String name = (String)JOptionPane.showInputDialog(null,
-									  "Name for the new processor?",
-									  "Name required",
-									  JOptionPane.QUESTION_MESSAGE,
-									  null,
-									  null,
-									  "");
-			if (name != null) {
-			    try {
-				pf.createProcessor(name, ScavengerTreePopupHandler.this.scavenger.model);
-			    }
-			    catch (ProcessorCreationException pce) {
-				JOptionPane.showMessageDialog(null,
-							      "Processor creation exception : \n"+pce.getMessage(),
-							      "Exception!",
-							      JOptionPane.ERROR_MESSAGE);
-			    }
-			    catch (DuplicateProcessorNameException dpne) {
-				JOptionPane.showMessageDialog(null,
-							      "Duplicate name : \n"+dpne.getMessage(),
-							      "Exception!",
-							      JOptionPane.ERROR_MESSAGE);
+	    if (scuflObject instanceof ProcessorFactory && scavenger.model != null) {
+		// Show the popup for adding new processors to the model
+		JPopupMenu menu = new JPopupMenu();
+		JMenuItem add = new JMenuItem("Add to model", Workbench.importIcon);
+		final ProcessorFactory pf = (ProcessorFactory)scuflObject;
+		add.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent ae) {
+			    String name = (String)JOptionPane.showInputDialog(null,
+									      "Name for the new processor?",
+									      "Name required",
+									      JOptionPane.QUESTION_MESSAGE,
+									      null,
+									      null,
+									      "");
+			    if (name != null) {
+				try {
+				    pf.createProcessor(name, ScavengerTreePopupHandler.this.scavenger.model);
+				}
+				catch (ProcessorCreationException pce) {
+				    JOptionPane.showMessageDialog(null,
+								  "Processor creation exception : \n"+pce.getMessage(),
+								  "Exception!",
+								  JOptionPane.ERROR_MESSAGE);
+				}
+				catch (DuplicateProcessorNameException dpne) {
+				    JOptionPane.showMessageDialog(null,
+								  "Duplicate name : \n"+dpne.getMessage(),
+								  "Exception!",
+								  JOptionPane.ERROR_MESSAGE);
+				}
 			    }
 			}
-		    }
-		});
-	    menu.add(add);
-	    menu.show(scavenger, e.getX(), e.getY());
+		    });
+		menu.add(add);
+		menu.show(scavenger, e.getX(), e.getY());
+	    }
+	    else if (scuflObject instanceof String) {
+		// Catch the click on the 'Available Processors' text to add
+		// a new scavenger
+		String choice = (String)scuflObject;
+		if (choice.equals("Available Processors")) {
+		    JPopupMenu menu = new JPopupMenu();
+		    JMenuItem addSoaplab = new JMenuItem("Add new Soaplab scavenger...", ScavengerTreeRenderer.soaplabIcon);
+		    JMenuItem addWSDL = new JMenuItem("Add new WSDL scavenger...", ScavengerTreeRenderer.wsdlIcon);
+		    menu.add(addSoaplab);
+		    menu.add(addWSDL);
+		    addSoaplab.addActionListener(new ActionListener() {
+			    public void actionPerformed(ActionEvent ae) {
+				String baseURL = (String)JOptionPane.showInputDialog(null,
+										     "Base location for your soaplab installation?",
+										     "Soaplab location",
+										     JOptionPane.QUESTION_MESSAGE,
+										     null,
+										     null,
+										     "http://");
+				if (baseURL!=null) {
+				    try {
+					ScavengerTreePopupHandler.this.scavenger.addScavenger(new SoaplabScavenger(baseURL));					
+				    }
+				    catch (ScavengerCreationException sce) {
+					JOptionPane.showMessageDialog(null,
+								      "Unable to create scavenger!\n"+sce.getMessage(),
+								      "Exception!",
+								      JOptionPane.ERROR_MESSAGE);
+				    }
+				}
+			    }
+			});
+		    addWSDL.addActionListener(new ActionListener() {
+			    public void actionPerformed(ActionEvent ae) {
+				String wsdlLocation = (String)JOptionPane.showInputDialog(null,
+											  "Address of the WSDL document?",
+											  "WSDL location",
+											  JOptionPane.QUESTION_MESSAGE,
+											  null,
+											  null,
+											  "http://");
+				if (wsdlLocation!=null) {
+				    try {
+					ScavengerTreePopupHandler.this.scavenger.addScavenger(new WSDLBasedScavenger(wsdlLocation));					
+				    }
+				    catch (ScavengerCreationException sce) {
+					JOptionPane.showMessageDialog(null,
+								      "Unable to create scavenger!\n"+sce.getMessage(),
+								      "Exception!",
+								      JOptionPane.ERROR_MESSAGE);
+				    }
+				}	
+			    }
+			});
+		    menu.show(scavenger, e.getX(), e.getY());
+		}
+	    }
 	}
     }
 

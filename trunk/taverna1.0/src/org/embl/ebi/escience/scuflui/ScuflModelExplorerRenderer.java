@@ -25,7 +25,7 @@ import java.lang.Object;
  */
 public class ScuflModelExplorerRenderer extends DefaultTreeCellRenderer {
     
-    protected static ImageIcon wsdlIcon, soaplabIcon, talismanIcon, inputIcon, outputIcon, inputPortIcon, outputPortIcon, dataLinkIcon, constraintIcon;
+    public static ImageIcon wsdlIcon, soaplabIcon, talismanIcon, inputIcon, outputIcon, inputPortIcon, outputPortIcon, dataLinkIcon, constraintIcon;
     
     static {
 	// Load the image files found in this package into the class.

@@ -42,6 +42,9 @@ public class ScavengerTreeRenderer extends ScuflModelExplorerRenderer {
 	    if (userObject instanceof SoaplabProcessorFactory) {
 		setIcon(soaplabIcon);
 	    }
+	    else if (userObject instanceof WSDLBasedProcessorFactory) {
+		setIcon(wsdlIcon);
+	    }
 	}
 	return this;
     }
