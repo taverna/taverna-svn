@@ -249,7 +249,7 @@ public class DotView implements ScuflModelEventListener, java.io.Serializable {
 		// Is a link from an internal source to a workflow sink
 		dot.append(" "+sourceProcessorName+":"+sourcePortName+"->WORKFLOWINTERNALSINK_"+sinkPortName+" [ \n");
 	    }
-	    dot.append("  label = \""+dc.getSource().getSyntacticType()+"\"");
+	    dot.append("  label = \""+dc.getSource().getSyntacticType()+"\\n"+dc.getSink().getSyntacticType()+"\"");
 	    dot.append(" ];\n");
 	}
 

@@ -96,7 +96,7 @@ public class EnactorInvocation extends JDialog {
 	    this.resultsText.setText(results);
 	}
 	catch (Exception ex) {
-	    this.resultsText.setText("No results available.");
+	    this.resultsText.setText("No results available : "+ex.toString());
 	}
     }
 
@@ -110,7 +110,7 @@ public class EnactorInvocation extends JDialog {
 	    this.provenanceText.setText(provenance);
 	}
 	catch (Exception ex) {
-	    this.provenanceText.setText("No provenance available.");
+	    this.provenanceText.setText("No provenance available : "+ex.toString());
 	}
     }
 
