@@ -108,7 +108,7 @@ public class LinkingMenus {
 	for (int i = 0; i < processors.length; i++) {
 	    // Get all the input ports for this processor
 	    InputPort[] inputs = processors[i].getInputPorts();
-	    if (inputs.length > 0) {
+	    if (inputs.length > 0 && processors[i] != sourcePort.getProcessor()) {
 		ImageIcon icon = null;
 		icon = org.embl.ebi.escience.scuflworkers.ProcessorHelper.getPreferredIcon(processors[i]);
 		JMenu processorMenu = new JMenu(processors[i].getName());
