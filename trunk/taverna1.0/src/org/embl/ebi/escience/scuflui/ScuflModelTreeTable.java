@@ -217,7 +217,37 @@ public class ScuflModelTreeTable extends JTreeTable
 	    // Edit on double click rather than the default triple
 	    if (e instanceof MouseEvent) {
 		MouseEvent me = (MouseEvent)e;
-		if (me.getClickCount() >= 2) {
+		if (me.getClickCount() == 1 && System.getProperties().getProperty("taverna.osxpresent") != null) {
+		    for (int counter = getColumnCount() - 1; counter >= 0;
+			 counter--) {
+			if (getColumnClass(counter) == TreeTableModel.class) {
+			    MouseEvent newME = new MouseEvent(tree, me.getID(),
+							      me.getWhen(), me.getModifiers(),
+							      me.getX() - getCellRect(0, counter, true).x,
+							      me.getY(), me.getClickCount(),
+							      me.isPopupTrigger());
+			    System.out.println(newME);
+			    tree.dispatchEvent(newME);
+			    
+			    Point p = new Point(me.getX(),me.getY());
+			    int row = rowAtPoint(p);
+			    int column = columnAtPoint(p);
+			    if (column == 0) {
+				boolean isExpanded = tree.isExpanded(tree.getPathForRow(row));
+				if (isExpanded == false) {
+				    tree.expandPath(tree.getPathForRow(row));
+				}
+				else {
+				    tree.collapsePath(tree.getPathForRow(row));
+				}
+			    }
+			    
+			    break;
+			}
+		    }
+		    
+		}
+		if (me.getClickCount() >= 3) {
 		    return true;
 		}
 	    }
