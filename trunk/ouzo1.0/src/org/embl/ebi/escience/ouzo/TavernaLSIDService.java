@@ -15,6 +15,8 @@ import org.embl.ebi.escience.baclava.store.*;
 
 import org.jdom.*;
 import org.jdom.output.*;
+import org.jdom.input.*;
+import org.apache.log4j.*;
 
 import java.util.*;
 import java.io.*;
@@ -35,9 +37,11 @@ public class TavernaLSIDService extends SimpleResolutionService {
      */
     private BaclavaDataService theDataService;
     
+    static Logger log = Logger.getLogger(TavernaLSIDService.class.getName());
+
 
     /**
-     * Initialize the service, will create a connection to
+     * initialize the service, will create a connection to
      * the real underlying data service.
      */
     public void initService(LSIDServiceConfig config) 
@@ -115,6 +119,7 @@ public class TavernaLSIDService extends SimpleResolutionService {
     private static final String RDF_NS = "http://www.w3.org/1999/02/22-rdf-syntax-ns#";
     private static final String DC_NS = "http://purl.org/dc/elements/1.1/";
     private static final String I3CP_NS= "urn:lsid:i3c.org:predicates:";
+    private static final String TAVERNA_PROVENANCE_NS = "urn:lsid:net.sf.taverna:predicates:";
     private static final String I3C_CONTENT= "urn:lsid:i3c.org:types:content";
     //private static final String I3C_SPROT= "urn:lsid:i3c.org:formats:sprot";
     //private static final String I3C_FASTA= "urn:lsid:i3c.org:formats:fasta";
@@ -135,6 +140,7 @@ public class TavernaLSIDService extends SimpleResolutionService {
 	result.append(" xmlns:rdf=\""+RDF_NS+"\"");
 	result.append(" xmlns:dc=\""+DC_NS+"\"");
 	result.append(" xmlns:i3cp=\""+I3CP_NS+"\"");
+	result.append(" xmlns:tavp=\""+TAVERNA_PROVENANCE_NS+"\"");
 	result.append(">\n");
 
 	// If the namespace is 'datathing' then set metadata appropriately
@@ -180,9 +186,19 @@ public class TavernaLSIDService extends SimpleResolutionService {
 	    result.append(additionalMetadata);
 	}
 	result.append("</rdf:RDF>");
-	System.out.println(result.toString());
-	InputStream metadataStream = new ByteArrayInputStream(result.toString().getBytes());
-	return new MetadataResponse(metadataStream, (long)10000);
+	try {
+	    XMLOutputter xo = new XMLOutputter();
+	    xo.setNewlines(true);
+	    xo.setIndent("  ");
+	    String provenance = xo.outputString(new SAXBuilder(false).build(new StringReader(result.toString())));
+	    log.debug("Returned provenance data : "+provenance);
+	    InputStream metadataStream = new ByteArrayInputStream(provenance.getBytes());
+	    return new MetadataResponse(metadataStream, null);
+	}
+	catch (JDOMException jde) {
+	    log.error("Error normalizing XML provenance!\n"+result.toString(),jde);
+	    return new MetadataResponse(new ByteArrayInputStream(("<rdf:RDF xmlns:rdf=\""+RDF_NS+"\"/>").getBytes()),null);
+	}
     }
     private void appendTripleResource(StringBuffer src, String subj, String pred, String obj) {
 	src.append("<rdf:Description rdf:about=\""+subj+"\">\n");
