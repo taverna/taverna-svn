@@ -13,6 +13,7 @@ martj.jar
 
 mysql-connector-java-3.0.10-stable-bin.jar
 ecp1_0beta.jar
+ensj-util.jar
 
 bsh-2.0b1.jar
 jdom-1.0.jar

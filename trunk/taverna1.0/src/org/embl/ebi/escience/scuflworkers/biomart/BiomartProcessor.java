@@ -63,7 +63,7 @@ public class BiomartProcessor extends Processor {
 	Attribute[] attributes = query.getAttributes();
 	for (int i = 0; i < attributes.length; i++) {
 	    String fieldName = attributes[i].getField();
-	    Port newPort = new InputPort(this, fieldName);
+	    Port newPort = new OutputPort(this, fieldName);
 	    newPort.setSyntacticType("l('text/plain')");
 	    addPort(newPort);
 	}

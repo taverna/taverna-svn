@@ -13,7 +13,11 @@ import org.ensembl.mart.lib.*;
 import org.embl.ebi.escience.scufl.*;
 import org.embl.ebi.escience.scufl.parser.XScuflFormatException;
 
-
+/**
+ * Handler to serialize the Biomart Query, Processor and ProcessorFactory
+ * classes to and from XML
+ * @author Tom Oinn
+ */
 public class BiomartXMLHandler implements XMLHandler {
     
     public static Namespace NAMESPACE = Namespace.getNamespace("biomart","http://org.embl.ebi.escience/xscufl-biomart/0.1alpha");
@@ -42,7 +46,7 @@ public class BiomartXMLHandler implements XMLHandler {
     public ProcessorFactory getFactory(Element specElement) {
 	Element martConfig = specElement.getChild("biomartconfig", NAMESPACE);
 	Element dsNameElement = specElement.getChild("biomartds", NAMESPACE);
-	Element queryElement = specElement.getChild("biomartquery", NAMESPACE);
+	Element queryElement = specElement.getChild("query", NAMESPACE);
 	// Ignores Query for now
 	return new BiomartProcessorFactory(getConfigBeanFromElement(martConfig),
 					   dsNameElement.getTextTrim());
@@ -60,7 +64,7 @@ public class BiomartXMLHandler implements XMLHandler {
 	Element biomart = processorNode.getChild("biomart", XScufl.XScuflNS);
 	Element martConfig = biomart.getChild("biomartconfig", NAMESPACE);
 	Element dsNameElement = biomart.getChild("biomartds", NAMESPACE);
-	Element queryElement = biomart.getChild("biomartquery", NAMESPACE);
+	Element queryElement = biomart.getChild("query", NAMESPACE);
 	Query q = null;
 	if (queryElement != null) {
 	    q = elementToQuery(queryElement);
@@ -130,7 +134,7 @@ public class BiomartXMLHandler implements XMLHandler {
     /**
      * Serialize a Query object to Element
      */
-    private Element queryToElement(Query q) {
+    Element queryToElement(Query q) {
 	Element e = new Element("query", NAMESPACE);
 	
 	// Do attributes

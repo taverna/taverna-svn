@@ -522,6 +522,13 @@
 		</java>
 	</target>
 
+	<!-- Test the biomart integration -->
+	<target name="test.mart" depends="java">
+		<java classname="org.embl.ebi.escience.scuflworkers.biomart.TestQuerySerializer" fork="no">
+			<classpath refid="run-classpath"/>
+		</java>	
+	</target>
+
 	<!-- Run arbitrary unit test -->
 	<target name="runtestunit" depends="jar">
 		<java classname="junit.textui.TestRunner" fork="true">
