@@ -14,10 +14,10 @@ public class ScuflGraphCell extends DefaultGraphCell {
     private static final int WIDTH = 50;
     private List inputPortList = new LinkedList();
     private List outputPortList = new LinkedList();
-    private static final int xCoordInput = 1140;
+    private static final int xCoordInput = -140;
     private int yCoordInput = 100;
     private int yCoordOutput = 100;
-    private static final int xCoordOutput = -140;
+    private static final int xCoordOutput = 1140;
     private static final int yIncrement = 160;
 
     public ScuflGraphCell() {
