@@ -26,8 +26,8 @@
 //      Dependencies        :
 //
 //      Last commit info    :   $Author: mereden $
-//                              $Date: 2003-10-10 17:42:51 $
-//                              $Revision: 1.18 $
+//                              $Date: 2003-10-31 15:55:13 $
+//                              $Revision: 1.19 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 
@@ -147,6 +147,8 @@ public class PortTask extends TavernaTask {
 	for (int i = 0; i < portMIMETypes.length; i++) {
 	    theDataThing.getMetadata().addMIMEType(portMIMETypes[i]);
 	}
+	// Copy any semantic markup into the markup object as well
+	theDataThing.getMetadata().setSemanticType(portMarkup.getSemanticType());
     }
     
     /**
