@@ -25,8 +25,8 @@
 //      Dependencies        :
 //
 //      Last commit info    :   $Author: mereden $
-//                              $Date: 2004-02-04 11:21:21 $
-//                              $Revision: 1.7 $
+//                              $Date: 2004-06-16 13:39:26 $
+//                              $Revision: 1.8 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 
@@ -39,6 +39,7 @@ import org.apache.log4j.Logger;
 import org.embl.ebi.escience.baclava.DataThing;
 import org.embl.ebi.escience.baclava.factory.DataThingFactory;
 import org.embl.ebi.escience.scufl.Processor;
+import org.embl.ebi.escience.scufl.OutputPort;
 import org.embl.ebi.escience.scuflworkers.ProcessorTaskWorker;
 import uk.ac.soton.itinnovation.taverna.enactor.entities.TaskExecutionException;
 
@@ -90,9 +91,27 @@ public class SoaplabTask implements ProcessorTaskWorker {
 	    URL soaplabWSDLURL = ((SoaplabProcessor) proc).getEndpoint();
 	    String soaplabWSDL = soaplabWSDLURL.toExternalForm();
 	    call.setTargetEndpointAddress(soaplabWSDLURL);
-	    call.setOperationName(new QName("runAndWaitFor"));
-	    HashMap outputMap = new HashMap((Map)call.invoke(new Object[] { soaplabInputMap }));
-	    //could also get some log info from service for the provenance using the describe method on the service
+	    
+	    // Invoke the job and wait for it to complete
+	    call.setOperationName(new QName("createAndRun"));
+	    String jobID = (String)call.invoke(new Object[] { soaplabInputMap });
+	    // Get the array of desired outputs to avoid pulling everything back
+	    OutputPort[] boundOutputs = this.proc.getBoundOutputPorts();
+	    String[] outputPortNames = new String[boundOutputs.length];
+	    for (int i = 0; i < outputPortNames.length; i++) {
+		outputPortNames[i] = boundOutputs[i].getName();
+		System.out.println("Adding output : "+outputPortNames[i]);
+	    }
+	    call.setOperationName(new QName("waitFor"));
+	    call.invoke(new Object[] { jobID });
+	    
+	    // Get the results required by downstream processors
+	    call.setOperationName(new QName("getSomeResults"));
+	    HashMap outputMap = new HashMap((Map)call.invoke(new Object[] { jobID, outputPortNames }));
+	    
+	    // Tell soaplab that we don't need this session any more
+	    call.setOperationName(new QName("destroy"));
+	    call.invoke(new Object[] { jobID });
 	    
 	    outMap = new HashMap();
 	    // Build the map of DataThing objects
