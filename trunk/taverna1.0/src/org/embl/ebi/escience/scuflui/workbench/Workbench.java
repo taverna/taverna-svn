@@ -17,10 +17,7 @@ import org.embl.ebi.escience.scufl.parser.XScuflParser;
 
 // IO Imports
 import java.io.File;
-
-import org.embl.ebi.escience.scuflui.workbench.DiagramFrame;
-import org.embl.ebi.escience.scuflui.workbench.ExplorerFrame;
-import org.embl.ebi.escience.scuflui.workbench.XScuflFrame;
+import org.embl.ebi.escience.scuflui.*;
 import java.lang.Exception;
 import java.lang.String;
 import java.lang.System;
@@ -40,18 +37,22 @@ public class Workbench extends JFrame {
 
     final JFileChooser fc = new JFileChooser();
 
+    /**
+     * Launch the model workbench, shows the default set of UI components
+     * in internal frames and waits for the user to load a model from file
+     */
     public static void main(String[] args) {
 	Workbench workbench = new Workbench();
 	// Add instances of all the components just for fun
-	XScuflFrame xscufl = new XScuflFrame(workbench.model);
+	GenericUIComponentFrame xscufl = new GenericUIComponentFrame(workbench.model, new XScuflTextArea());
 	xscufl.setSize(600,300);
 	xscufl.setLocation(50,50);
 	workbench.desktop.add(xscufl);
-	DiagramFrame diagram = new DiagramFrame(workbench.model);
+	GenericUIComponentFrame diagram = new GenericUIComponentFrame(workbench.model, new ScuflDiagram());
 	diagram.setSize(300,300);
 	diagram.setLocation(50,400);
 	workbench.desktop.add(diagram);
-	ExplorerFrame explorer = new ExplorerFrame(workbench.model);
+	GenericUIComponentFrame explorer = new GenericUIComponentFrame(workbench.model, new ScuflModelExplorer());
 	explorer.setSize(300,300);
 	explorer.setLocation(400,400);
 	workbench.desktop.add(explorer);
@@ -59,6 +60,12 @@ public class Workbench extends JFrame {
 	workbench.setVisible(true);
     }
 
+    /**
+     * Create a new top level application. This contains a menu bar and
+     * desktop pane which in turn acts as the container for the views
+     * and controllers. A single ScuflModel is shared between all these
+     * contained components.
+     */
     public Workbench() {
 	super("Scufl Workbench");
 	int inset = 50;
@@ -81,12 +88,15 @@ public class Workbench extends JFrame {
 	desktop = new JDesktopPane();
 	setContentPane(desktop);
 	setJMenuBar(createMenuBar());
-	
     }
     
+    /**
+     * Create the menus required by the application
+     */
     JMenuBar createMenuBar() {
 	JMenuBar menuBar = new JMenuBar();
-	// Menu to handle opening XScufl files
+
+	// Menu to handle opening XScufl files, clearing the model and saving
 	JMenu fileMenu = new JMenu("File");
 	JMenuItem openScufl = new JMenuItem("Import XScufl Definition");
 	openScufl.addActionListener(new ActionListener() {
@@ -105,13 +115,22 @@ public class Workbench extends JFrame {
 		}
 	    });
 	fileMenu.add(openScufl);
-	
+	JMenuItem clearModel = new JMenuItem("Reset model data");
+	clearModel.addActionListener(new ActionListener() {
+		public void actionPerformed(ActionEvent e) {
+		    Workbench.this.model.clear();
+		}
+	    });
+	fileMenu.add(clearModel);
+
+	// Menu to show different UI widgets
 	JMenu windowMenu = new JMenu("Views");
 	JMenuItem explorerView = new JMenuItem("Scufl Explorer");
 	explorerView.addActionListener(new ActionListener() {
 		public void actionPerformed(ActionEvent e) {
 		    // Show a scufl explorer panel
-		    Workbench.this.desktop.add(new ExplorerFrame(Workbench.this.model));
+		    Workbench.this.desktop.add(new GenericUIComponentFrame(Workbench.this.model,
+									   new ScuflModelExplorer()));
 		}
 	    });
 	windowMenu.add(explorerView);
@@ -119,7 +138,8 @@ public class Workbench extends JFrame {
 	diagramView.addActionListener(new ActionListener() {
 		public void actionPerformed(ActionEvent e) {
 		    // Show a scufl diagram panel
-		    Workbench.this.desktop.add(new DiagramFrame(Workbench.this.model));
+		    Workbench.this.desktop.add(new GenericUIComponentFrame(Workbench.this.model,
+									   new ScuflDiagram()));
 		}
 	    });
 	windowMenu.add(diagramView);
@@ -127,7 +147,8 @@ public class Workbench extends JFrame {
 	xscuflView.addActionListener(new ActionListener() {
 		public void actionPerformed(ActionEvent e) {
 		    // Show an XScufl panel
-		    Workbench.this.desktop.add(new XScuflFrame(Workbench.this.model));
+		    Workbench.this.desktop.add(new GenericUIComponentFrame(Workbench.this.model,
+									   new XScuflTextArea()));
 		}
 	    });
 	windowMenu.add(xscuflView);

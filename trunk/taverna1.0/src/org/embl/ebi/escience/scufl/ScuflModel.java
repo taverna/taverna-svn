@@ -107,6 +107,28 @@ public class ScuflModel
     }
 
     /**
+     * Clear the model, retaining any existing listeners but
+     * removing all model data.
+     */
+    public void clear() {
+	try {
+	    this.sinks = new InternalSinkPortHolder(this);
+	    this.sources = new InternalSourcePortHolder(this);
+	    this.dataconstraints = new ArrayList();
+	    this.constraints = new ArrayList();
+	    this.processors = new ArrayList();
+	    this.setLogLevel(0);	    
+	    fireModelEvent(new ScuflModelEvent(this, "Reset model to initial state."));
+	}
+	catch (ProcessorCreationException pce) {
+	    //
+	}
+	catch (DuplicateProcessorNameException dpne) {
+	    //
+	}
+    }
+
+    /**
      * Return all the ports that act as overal workflow inputs; 
      * in this case the workflow input ports are actually going
      * to be instances of OutputPort, this is because they act
