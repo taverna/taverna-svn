@@ -178,6 +178,34 @@
 			basedir="${workbench.dir}"/>
 	</target>
 
+	<!-- Build a macosx version of the workbench -->
+	<target name="mac" depends="jar">
+		<property name="workbench.dir" value="${build.dir}/${ant.project.name}-workbench-${project.version}.app/taverna-${project.version}.app"/>
+		<!-- Copy the workbench skeleton to the build directory -->
+		<copy todir="${workbench.dir}">
+		    <fileset dir="taverna.app"/>
+		</copy>
+		<!-- Copy the library files across to the app/Contents/Resources/Java directory -->
+		<copy todir="${workbench.dir}/Contents/Resources/Java">
+			<!-- List of libraries needeed by the workbench -->
+			<fileset dir="./lib" includesfile="./workbenchlibs.text"/>
+			<fileset dir="./devlib" includesfile="./workbenchlibs.text"/>
+			<fileset dir="${build.dir}">
+				<include name="${ant.project.name}-${project.version}.jar"/>
+			</fileset>
+		</copy>
+		<!-- Create a jar file of the config options from the workbench template -->
+		<jar destfile="${workbench.dir}/Contents/Resources/Java/conf.jar" update="no" basedir="./workbench/conf"/>
+		<!-- Copy the examples folder to the release -->
+		<copy todir="${workbench.dir}/../examples">
+			<fileset dir="./workbench/examples"/>
+		</copy>
+		
+		<!-- Zip up all the files for the release -->
+		<zip destfile="${build.dir}/${ant.project.name}-scuflworkbench-macosx-${project.version}.app.zip"
+			basedir="${workbench.dir}/.."/>
+	</target>
+
 	<!-- Prepare the source tree for compilation -->
 	<target name="prepare-src" depends="prepare">
 		<mkdir dir="${build.src}"/>

@@ -114,7 +114,7 @@ public class Workbench extends JFrame {
      * in internal frames and waits for the user to load a model from file
      */
     public static void main(String[] args) {
-	new SplashScreen(6000);
+	new SplashScreen(8000);
 	// Load the test ontology for the annotation of workflow
 	// source and sink ports
 	try {
