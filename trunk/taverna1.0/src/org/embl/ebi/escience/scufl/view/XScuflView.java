@@ -90,7 +90,7 @@ public class XScuflView implements ScuflModelEventListener, java.io.Serializable
     private void updateCachedView() {
 	// Create the XML document
 	Element root = new Element("scufl",scuflNS());
-	root.setAttribute("version","0.1");
+	root.setAttribute("version","0.2");
 	root.setAttribute("log",""+model.getLogLevel());
 	this.cachedDocument = new Document(root);
 	
@@ -116,7 +116,7 @@ public class XScuflView implements ScuflModelEventListener, java.io.Serializable
 	    processor.addContent(spec);
 	    // Do the iteration strategy if it exists
 	    IterationStrategy iterationStrategy = processors[i].getIterationStrategy();
-	    if (iterationStrategy != null) {
+	    if (iterationStrategy != null && processors[i].getInputPorts().length>0) {
 		processor.addContent(iterationStrategy.getElement());
 	    }
 	    // Do the templates
@@ -166,23 +166,23 @@ public class XScuflView implements ScuflModelEventListener, java.io.Serializable
 	    String sinkPortName = dc.getSink().getName();
 
 	    Element link = new Element("link",scuflNS());
-	    Element inputNode = new Element("input",scuflNS());
 	    if (dc.getSink().getProcessor() != model.getWorkflowSinkProcessor()) {
-		inputNode.setText(sinkProcessorName+":"+sinkPortName);
+		sinkPortName = sinkProcessorName+":"+sinkPortName;
 	    }
-	    else {
-		inputNode.setText(sinkPortName);
-	    }
-	    
-	    Element outputNode = new Element("output",scuflNS());
 	    if (dc.getSource().getProcessor() != model.getWorkflowSourceProcessor()) {
-		outputNode.setText(sourceProcessorName+":"+sourcePortName);
+		sourcePortName = sourceProcessorName+":"+sourcePortName;
 	    }
-	    else {
-		outputNode.setText(sourcePortName);
-	    }
-	    link.addContent(inputNode);
-	    link.addContent(outputNode);
+	    link.setAttribute("source",sourcePortName);
+	    link.setAttribute("sink",sinkPortName);
+
+	    Element inputNode = new Element("input",scuflNS());
+	    inputNode.setText(sinkPortName);
+	    	    
+	    Element outputNode = new Element("output",scuflNS());
+	    outputNode.setText(sourcePortName);
+	    
+	    //link.addContent(inputNode);
+	    //link.addContent(outputNode);
 	    root.addContent(link);
 	}
 	
@@ -191,14 +191,20 @@ public class XScuflView implements ScuflModelEventListener, java.io.Serializable
 	for (int i = 0; i<sources.length; i++) {
 	    Element sourceElement = new Element("source",scuflNS());
 	    sourceElement.setText(sources[i].getName());
-	    sourceElement.addContent(sources[i].getMetadata().getConfigurationElement());
+	    Element metadataElement = sources[i].getMetadata().getConfigurationElement();
+	    if (metadataElement.getChildren().isEmpty()==false) {
+		sourceElement.addContent(metadataElement);
+	    }
 	    root.addContent(sourceElement);
 	}
 	Port[] sinks = model.getWorkflowSinkProcessor().getPorts();
 	for (int i = 0; i < sinks.length; i++) {
 	    Element sinkElement = new Element("sink",scuflNS());
 	    sinkElement.setText(sinks[i].getName());
-	    sinkElement.addContent(sinks[i].getMetadata().getConfigurationElement());
+	    Element metadataElement = sinks[i].getMetadata().getConfigurationElement();
+	    if (metadataElement.getChildren().isEmpty()==false) {
+		sinkElement.addContent(metadataElement);
+	    }
 	    root.addContent(sinkElement);
 	}
 

@@ -299,9 +299,15 @@ public class ProcessorHelper {
 	    XMLHandler xh = (XMLHandler)xmlHandlerForTagName.get(tagName);
 	    if (xh != null) {
 		Element result = xh.elementForProcessor(p);
-		result.setAttribute("maxretries",Integer.toString(p.getRetries()));
-		result.setAttribute("retrydelay",Integer.toString(p.getRetryDelay()));
-		result.setAttribute("retrybackoff",Double.toString(p.getBackoff()));				    
+		if (p.getRetries()!=0) {
+		    result.setAttribute("maxretries",Integer.toString(p.getRetries()));
+		}
+		if (p.getRetryDelay()!=0) {
+		    result.setAttribute("retrydelay",Integer.toString(p.getRetryDelay()));
+		}
+		if (p.getBackoff()!=1.0) {
+		    result.setAttribute("retrybackoff",Double.toString(p.getBackoff()));
+		}				    
 		return result;
 	    }
 	}

@@ -251,23 +251,29 @@ public class SemanticMarkup {
 	Element topElement = new Element("metadata",XScufl.XScuflNS);
 	// Store MIME types
 	Element mimeTypeList = new Element("mimeTypes",XScufl.XScuflNS);
-	topElement.addContent(mimeTypeList);
 	synchronized(this.mimeTypeList) {
+	    boolean addedMIME = false;
 	    for (Iterator i = this.mimeTypeList.iterator(); i.hasNext(); ) {
 		Element typeElement = new Element("mimeType",XScufl.XScuflNS);
 		typeElement.setText((String)i.next());
 		mimeTypeList.addContent(typeElement);
 	    }
+	    if (addedMIME) {
+		topElement.addContent(mimeTypeList);
+	    }
 	}
 	// Store free text description
-	Element descriptionElement = new Element("description",XScufl.XScuflNS);
-	topElement.addContent(descriptionElement);
-	descriptionElement.setText(this.description);
+	if (this.description.equals("")==false) {
+	    Element descriptionElement = new Element("description",XScufl.XScuflNS);
+	    topElement.addContent(descriptionElement);
+	    descriptionElement.setText(this.description);
+	}
 	// Store semantic type, still as text for now
-	Element semanticTypeElement = new Element("semanticType",XScufl.XScuflNS);
-	topElement.addContent(semanticTypeElement);
-	semanticTypeElement.setText(this.semanticType);
-
+	if (this.semanticType.equals("")==false) {
+	    Element semanticTypeElement = new Element("semanticType",XScufl.XScuflNS);
+	    topElement.addContent(semanticTypeElement);
+	    semanticTypeElement.setText(this.semanticType);
+	}
 	return topElement;
     }
 

@@ -294,21 +294,32 @@ public class XScuflParser {
 	    List dataConstraintList = root.getChildren("link",namespace);
 	    for (Iterator i = dataConstraintList.iterator(); i.hasNext(); ) {
 		Element linkElement = (Element)i.next();
-		Element inputElement = linkElement.getChild("input",namespace);
-		Element outputElement = linkElement.getChild("output",namespace);
-		if (inputElement == null) {
-		    throw new XScuflFormatException("A data constraint must have an input child element");
+		String sourcePortName = null;
+		String sinkPortName = null;
+		try {
+		    Element inputElement = linkElement.getChild("input",namespace);
+		    Element outputElement = linkElement.getChild("output",namespace);
+		    if (inputElement == null) {
+			throw new XScuflFormatException("A data constraint must have an input child element");
+		    }
+		    if (outputElement == null) {
+			throw new XScuflFormatException("A data constraint must have an output child element");
+		    }
+		    sinkPortName = inputElement.getTextTrim();
+		    sourcePortName = outputElement.getTextTrim();
 		}
-		if (outputElement == null) {
-		    throw new XScuflFormatException("A data constraint must have an output child element");
+		catch (XScuflFormatException xfe) {
+		    sourcePortName = linkElement.getAttributeValue("source");
+		    sinkPortName = linkElement.getAttributeValue("sink");
+		    if (sourcePortName == null || sinkPortName == null) {
+			throw new XScuflFormatException("Neither nested elements nor attributes found defining the link, aborting parse.");
+		    }
 		}
-		String inputName = inputElement.getTextTrim();
-		String outputName = outputElement.getTextTrim();
 		if (usePrefix) {
-		    inputName = prefix+"_"+inputName;
-		    outputName = prefix+"_"+outputName;
+		    sinkPortName = prefix+"_"+sinkPortName;
+		    sourcePortName = prefix+"_"+sourcePortName;
 		}
-		model.addDataConstraint(new DataConstraint(model, outputName, inputName));
+		model.addDataConstraint(new DataConstraint(model, sourcePortName, sinkPortName));
 		
 		// End iterator over data constraints
 	    }
