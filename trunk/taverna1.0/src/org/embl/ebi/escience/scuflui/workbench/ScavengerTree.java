@@ -198,6 +198,7 @@ public class ScavengerTree extends JTree
 	wsdlURLList = System.getProperty("taverna.defaultwsdl");
 	soaplabDefaultURLList = System.getProperty("taverna.defaultsoaplab");
 	biomobyDefaultURLList = System.getProperty("taverna.defaultbiomoby");
+	webURLList = System.getProperty("taverna.defaultweb");
 	DragSource dragSource = DragSource.getDefaultDragSource();
 	dragSource.createDefaultDragGestureRecognizer(this,
 						      DnDConstants.ACTION_COPY_OR_MOVE,
@@ -266,7 +267,7 @@ public class ScavengerTree extends JTree
 	}
     }
 
-    String biomobyDefaultURLList, soaplabDefaultURLList, wsdlURLList;
+    String biomobyDefaultURLList, soaplabDefaultURLList, wsdlURLList, webURLList;
 
     class DefaultScavengerLoaderThread extends Thread {
 	
@@ -278,6 +279,19 @@ public class ScavengerTree extends JTree
 	}
 	
 	public void run() {
+
+	    // Do web scavenger based locations
+	    if (webURLList != null) {
+		String[] urls = webURLList.split("\\s*,\\s*");
+		for (int i = 0; i < urls.length; i++) {
+		    try {
+			scavengerTree.addScavenger(new WebScavenger(urls[i], (DefaultTreeModel)scavengerTree.getModel()));
+		    }
+		    catch (ScavengerCreationException sce) {
+			sce.printStackTrace();
+		    }
+		}
+	    }
 	    
 	    //String wsdlURLList = System.getProperty("taverna.defaultwsdl");
 	    if (wsdlURLList != null) {
