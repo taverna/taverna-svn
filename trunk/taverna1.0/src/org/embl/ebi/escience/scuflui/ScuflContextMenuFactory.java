@@ -10,11 +10,9 @@ import java.awt.event.ActionListener;
 import javax.swing.ImageIcon;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
-import org.embl.ebi.escience.scufl.DataConstraint;
-import org.embl.ebi.escience.scufl.Port;
-import org.embl.ebi.escience.scufl.Processor;
-import org.embl.ebi.escience.scufl.ScuflModel;
+import org.embl.ebi.escience.scufl.*;
 
+import org.embl.ebi.escience.scuflui.LinkingMenus;
 import org.embl.ebi.escience.scuflui.NoContextMenuFoundException;
 import java.lang.Class;
 import java.lang.ClassNotFoundException;
@@ -64,18 +62,15 @@ public class ScuflContextMenuFactory {
 	    return getProcessorMenu((Processor)theObject);
 	}
 	else if (theObject instanceof Port) {
-	    /**
-	     // Is the port a workflow source?
-	     Port thePort = (Port)theObject;
-	     if (thePort.isSource()) {
-	     theMenu.add(new JMenuItem("Workflow source port"));
-	     return theMenu;
-	     }
-	     else if (thePort.isSink()) {
-	     theMenu.add(new JMenuItem("Workflow sink port"));
-	     return theMenu;
-	     }
-	    */
+	    // Is the port a workflow source?
+	    Port thePort = (Port)theObject;
+	    if (thePort instanceof OutputPort) {
+		return LinkingMenus.linkFrom(thePort);
+	    }
+	    else if (thePort instanceof InputPort) {
+		//
+	    }
+	    
 	}
 	else if (theObject instanceof DataConstraint) {
 	    return getDataConstraintMenu((DataConstraint)theObject, model);
