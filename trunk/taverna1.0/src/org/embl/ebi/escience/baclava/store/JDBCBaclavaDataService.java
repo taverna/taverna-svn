@@ -371,7 +371,7 @@ public class JDBCBaclavaDataService implements BaclavaDataService {
 	Connection con = null;
 	try {
 	    con = getConnectionObject();
-	    PreparedStatement p = con.prepareStatement("SELECT UNIQUE m.rdfstring FROM metadata m, lsid2metadata l WHERE l.id = r.id AND l.lsid = ?");
+	    PreparedStatement p = con.prepareStatement("SELECT m.rdfstring FROM metadata m, lsid2metadata l WHERE l.id = m.id AND l.lsid = ?");
 	    p.setString(1, LSID);
 	    ResultSet rs = p.executeQuery();
 	    StringBuffer sb = new StringBuffer();
@@ -387,6 +387,7 @@ public class JDBCBaclavaDataService implements BaclavaDataService {
 	    }
 	}
 	catch (SQLException sqle) {
+	    sqle.printStackTrace();
 	    return null;
 	}
 	finally {
