@@ -8,6 +8,7 @@ import org.embl.ebi.escience.scuflworkers.wsdl.WSDLBasedProcessor;
 import org.embl.ebi.escience.scuflworkers.soaplab.SoaplabProcessor;
 import org.embl.ebi.escience.scuflworkers.biomoby.BiomobyProcessor;
 import org.embl.ebi.escience.scuflworkers.seqhound.SeqhoundProcessor;
+import org.embl.ebi.escience.scuflworkers.biomart.BiomartProcessor;
 
 /**
  * A utility class containing a single static method which
@@ -226,6 +227,14 @@ public class WorkflowSummaryAsHTML {
 			sb.append("<td bgcolor=\"#ffd200\">Biomoby</td>");
 			BiomobyProcessor bp = (BiomobyProcessor)p;
 			sb.append("<td><font color=\"purple\">"+bp.getServiceName()+"</font>&nbsp;in&nbsp;"+bp.getEndpoint().getFile()+"</td>");
+		    }
+		    else if (p instanceof BiomartProcessor) {
+			sb.append("<td bgcolor=\"d1eeed\" rowspan=\"2\">Biomart</td>");
+			BiomartProcessor bp = (BiomartProcessor)p;
+			sb.append("<td bgcolor=\"d1eeed\">Dataset Name</td>");
+			sb.append("<td bgcolor=\"d1eeed\">Processor</td>");
+			sb.append("</tr>");
+			sb.append("<tr><td>"+bp.getDataSourceName()+"</td>");
 		    }
 		    else {
 			sb.append("<td colspan=\"2\">Unknown&nbsp;type</td>");

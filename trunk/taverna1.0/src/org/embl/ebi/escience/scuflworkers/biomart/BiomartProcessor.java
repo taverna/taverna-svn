@@ -22,6 +22,10 @@ public class BiomartProcessor extends Processor {
     private Query query = null;
     private QueryListener queryListener;
 
+    public String getResourceHost() {
+	return info.dbHost;
+    }
+
     public BiomartProcessor(ScuflModel model,
 			    String processorName,
 			    BiomartConfigBean info, 
