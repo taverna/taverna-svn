@@ -1,6 +1,6 @@
 @echo off
 
-PATH=%PATH%;./bin/win32i386
+PATH=./bin/win32i386;%PATH%
 
 set OPTS=-Xms256m -Xmx512m
 
