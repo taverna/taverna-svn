@@ -45,11 +45,11 @@
 		<pathelement path="${build.src}"/>
 	</path>
 
-	<!-- AspectJ task -->
+	<!--
 	<taskdef name="ajc" classname="org.aspectj.tools.ant.taskdefs.Ajc">
-		<!-- declare classes needed to run the tasks and tools -->
 		<classpath refid="compile-classpath"/>
 	</taskdef>
+	-->
 
 	<!-- Import tidier task -->
 	<taskdef name="cleanimports" classname="com.tombrus.cleanImports.ant.CleanImports"> 
