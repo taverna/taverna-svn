@@ -5,8 +5,6 @@
  */
 package org.embl.ebi.escience.scufl.enactor.implementation;
 
-import uk.ac.soton.itinnovation.freefluo.main.FlowContext;
-
 import org.embl.ebi.escience.scufl.enactor.*;
 
 /**
@@ -19,12 +17,6 @@ import org.embl.ebi.escience.scufl.enactor.*;
 public class SimpleUserContext implements UserContext {
     
     private String personLSID, organizationLSID, experimentDesignLSID;
-    private static final String PERSON_KEY = "personLSID";
-    private static final String ORG_KEY = "organizationLSID";
-    private static final String EXP_KEY = "experimentLSID";
-    private static final String USERNAME_KEY = "username";
-    private static final String PASSWORD_KEY = "password";
-    
 
     public SimpleUserContext(String personLSID,
 			     String organizationLSID,
@@ -32,12 +24,6 @@ public class SimpleUserContext implements UserContext {
 	this.personLSID = personLSID;
 	this.organizationLSID = organizationLSID;
 	this.experimentDesignLSID = experimentDesignLSID;
-    }
-
-    public SimpleUserContext(FlowContext flowContext) {
-        this.personLSID = flowContext.get(PERSON_KEY);
-        this.organizationLSID = flowContext.get(ORG_KEY);
-        this.experimentDesignLSID = flowContext.get(EXP_KEY);
     }
     
     public String getPersonLSID() {
@@ -56,11 +42,4 @@ public class SimpleUserContext implements UserContext {
 	return new String[]{"",""};
     }
     
-    public FlowContext toFlowContext() {
-        FlowContext flowContext = new FlowContext();
-        flowContext.put(PERSON_KEY, personLSID);
-        flowContext.put(ORG_KEY, organizationLSID);
-        flowContext.put(EXP_KEY, experimentDesignLSID);
-        return flowContext;
-    }
 }
