@@ -48,6 +48,10 @@ public class SeqhoundTask implements ProcessorTaskWorker {
 			 targetClass.equals(Float.TYPE)) {
 		    targetObject = new Float((String)inputThing.getDataObject());
 		}
+		else if (targetClass.equals(Double.class) ||
+			 targetClass.equals(Float.TYPE)) {
+		    targetObject = new Double((String)inputThing.getDataObject());
+		}
 		else {
 		    throw new TaskExecutionException("Unable to generate input of type "+targetClass.toString()+" for input name "+inputName);
 		}
