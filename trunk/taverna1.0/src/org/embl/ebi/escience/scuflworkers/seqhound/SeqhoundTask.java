@@ -90,6 +90,20 @@ public class SeqhoundTask implements ProcessorTaskWorker {
 		    }
 		    targetObject = temp;
 		}
+		else if (targetClass.equals(double[].class)) {
+		    double[] temp = new double[inputList.size()];
+		    for (int j = 0; j < temp.length; j++) {
+			temp[j] = Double.parseDouble((String)inputList.get(j));
+		    }
+		    targetObject = temp;
+		}
+		else if (targetClass.equals(long[].class)) {
+		    long[] temp = new long[inputList.size()];
+		    for (int j = 0; j < temp.length; j++) {
+			temp[j] = Long.parseLong((String)inputList.get(j));
+		    }
+		    targetObject = temp;
+		}
 		else {
 		    throw new TaskExecutionException("Unable to generate array input of type "+
 						     targetClass.toString()+" for input name "+
@@ -101,6 +115,9 @@ public class SeqhoundTask implements ProcessorTaskWorker {
 	
 	try {
 	    Object result = processor.targetMethod.invoke(processor.seqhound, inputArray);
+	    if (result == null) {
+		throw new TaskExecutionException("SeqHound operation returned null, not allowed!");
+	    }
 	    // Do we have a simple type or an array being returned?
 	    Class resultClass = result.getClass();
 	    Map outputMap = new HashMap();
