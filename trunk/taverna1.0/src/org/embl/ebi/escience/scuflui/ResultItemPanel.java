@@ -15,6 +15,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import javax.swing.*;
+import javax.swing.tree.*;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import org.embl.ebi.escience.baclava.DataThing;
@@ -61,15 +62,17 @@ public class ResultItemPanel extends JPanel {
 
         // Construct the scrollable view of the structure
         // of the DataThing
-        final JTree structureTree = new JTree(DataThingTreeFactory.getTree(theDataThing)) {
-		public Dimension getMinimumSize() {
-		    return getPreferredSize();
-		}
+	TreeNode tn = DataThingTreeFactory.getTree(theDataThing);
+        final JTree structureTree = new JTree(tn) {
+		//public Dimension getMinimumSize() {
+		//    return getPreferredSize();
+		//}
 	    };
 	// Fix for look and feel problems with multiline labels.
 	structureTree.setRowHeight(0);
 	structureTree.setCellRenderer(DataThingTreeFactory.getRenderer());
-        new DataThingTreeTransferHandler(structureTree, DnDConstants.ACTION_COPY);
+        //structureTree.setModel(tm);
+	new DataThingTreeTransferHandler(structureTree, DnDConstants.ACTION_COPY);
 	String viewerHelp = "<h2>Result browser</h2>Click on items in the tree to the left of this panel to select them and show their values in this area. Right clicking on an item within the tree will allow you to select different rendering options that might be available, for example displaying an XML file as text or as a navigable tree.";
 	JEditorPane help = new JEditorPane("text/html",viewerHelp);
 	help.setPreferredSize(new Dimension(200,100));

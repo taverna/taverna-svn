@@ -44,4 +44,8 @@ public class DataThingTreeNode extends DefaultMutableTreeNode {
     {
         return nodeThing;
     }
+    
+    public String toString() {
+	return "DataThing Node";
+    }
 }

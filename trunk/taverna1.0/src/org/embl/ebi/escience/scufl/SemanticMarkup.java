@@ -163,17 +163,23 @@ public class SemanticMarkup {
 	    if (mimeType != null && mimeType.equals("") == false) {
             // fixme:
             //   mimeTypeList.contains(mimeType) may be more efficient [mrp]
-		for (Iterator i = this.mimeTypeList.iterator(); i.hasNext(); ) {
-            // fixme:
-            //   is it intended that we double-check each element is a string?
-            //   is this not checked out earlier? [mrp]
-		    if (((String)i.next()).equals(mimeType)) {
-			// Bail if we already have one
-			return;
+		String[] types = mimeType.split(",");
+		for (int j = 0; j < types.length; j++) {
+		    boolean foundType = false;
+		    for (Iterator i = this.mimeTypeList.iterator(); i.hasNext(); ) {
+			// fixme:
+			//   is it intended that we double-check each element is a string?
+			//   is this not checked out earlier? [mrp]
+			if (((String)i.next()).equals(types[j])) {
+			    // Bail if we already have one
+			    foundType = true;
+			}
+		    }
+		    if (!foundType) {
+			this.mimeTypeList.add(types[j]);
+			fireModelEvent();
 		    }
 		}
-		this.mimeTypeList.add(mimeType);
-		fireModelEvent();
 	    }
 	}
     }
