@@ -61,12 +61,49 @@ public class ResultTable extends JTable
 				if (cell != null)
 				{
 					if (selectedCell != null)
-					{
-						hasFocus = selectedCell == cell;
+					    {
+						// Check whether the selectedCell is the current one and set focus to true if
+						// so. We should also at this point set selected to true if any of the peer
+						// cells in that column have the same LSID
+						ResultThing selectedResult = (ResultThing)getValueAt(getSelectedRow(), getSelectedColumn());
+						String selectedLSID = selectedResult.getDataThing().getLSID(selectedResult.getDataThing().getDataObject());
+						if (getModel() instanceof ResultTableModel == false) {
+						    hasFocus = selectedCell == cell;
+						}
+						else {
+						    if (selectedCell == cell) {
+							hasFocus = true;
+						    }
+						    else {
+							// Look for peers
+							ResultThing currentResult = (ResultThing)getValueAt(row, column);
+							String currentLSID = currentResult.getDataThing().getLSID(currentResult.getDataThing().getDataObject());
+							hasFocus = (selectedLSID != null &&
+								    currentLSID != null &&
+								    selectedLSID.equals(currentLSID));
+						    }
+						}
+						// Really want to iterate over this and set selected to be true if
+						// the constraint applies to any cell with the same datathing lsid
+						// as the primary one.
 						isSelected = (selectedCell.startRow <= cell.startRow && selectedCell.endRow >= cell.startRow)
-								|| (selectedCell.startRow <= cell.endRow && selectedCell.endRow >= cell.endRow)
-								|| (cell.startRow <= selectedCell.startRow && cell.endRow >= selectedCell.endRow);
-					}
+						    || (selectedCell.startRow <= cell.endRow && selectedCell.endRow >= cell.endRow)
+						    || (cell.startRow <= selectedCell.startRow && cell.endRow >= selectedCell.endRow);
+						for (int i = 0; i < getModel().getRowCount() && isSelected == false; i++) {
+						    ResultTableCell currentCell = ((ResultTable)table).getCell(i, getSelectedColumn());
+						    ResultThing currentResult = (ResultThing)getValueAt(i, getSelectedColumn());
+						    if (currentResult != null) {
+							String currentLSID = currentResult.getDataThing().getLSID(currentResult.getDataThing().getDataObject());
+							if (currentLSID != null &&
+							    selectedLSID != null &&
+							    selectedLSID.equals(currentLSID)) {
+							    isSelected = (currentCell.startRow <= cell.startRow && currentCell.endRow >= cell.startRow)
+								|| (currentCell.startRow <= cell.endRow && currentCell.endRow >= cell.endRow)
+								|| (cell.startRow <= currentCell.startRow && cell.endRow >= currentCell.endRow);
+							}
+						    }
+						}
+					    }
 					if (!(cell.parent instanceof ResultTableColumn))
 					{
 						if (cell.parent.getCell(row - 1) == null)
