@@ -25,11 +25,17 @@ public class ScuflModel implements java.io.Serializable {
      */
     private ArrayList processors = new ArrayList();
     
-    /** The concurrency constraints defined by this workflow */
-    private ConcurrencyConstraint[] constraints;
+    /** 
+     * The concurrency constraints defined by this workflow, 
+     * ArrayList of ConcurrencyConstraint objects.
+     */
+    private ArrayList constraints = new ArrayList();
     
-    /** The data flow constraints defined by this workflow */
-    private DataConstraint[] dataconstraints;
+    /** 
+     * The data flow constraints defined by this workflow,
+     * ArrayList of DataConstraint objects.
+     */
+    private ArrayList dataconstraints = new ArrayList();
     
     /**
      * Return an array of the Processor objects
@@ -72,11 +78,19 @@ public class ScuflModel implements java.io.Serializable {
     }
 
     /**
+     * Add a data constraint to the model
+     */
+    public void addDataConstraint(DataConstraint the_constraint) {
+	this.dataconstraints.add(the_constraint);
+	fireModelEvent(new ScuflModelEvent(this, "Added data constraint '"+the_constraint.getName()+"' to the model"));
+    }
+
+    /**
      * Return an array of the concurrency constraints
      * defined within this workflow model
      */
     public ConcurrencyConstraint[] getConcurrencyConstraints() {
-	return this.constraints;
+	return (ConcurrencyConstraint[])(this.constraints.toArray(new ConcurrencyConstraint[0]));
     }
 
     /**
@@ -84,7 +98,7 @@ public class ScuflModel implements java.io.Serializable {
      * within this workflow model
      */
     public DataConstraint[] getDataConstraints() {
-	return this.dataconstraints;
+	return (DataConstraint[])(this.dataconstraints.toArray(new DataConstraint[0]));
     }
    
     /**
@@ -93,6 +107,41 @@ public class ScuflModel implements java.io.Serializable {
      */
     public void addListener(ScuflModelEventListener listener) {
 	this.listeners.add(listener);
+    }
+
+    /**
+     * Locate a given named port, the name is in the form
+     * [PROCESSOR]:[PORT], and is not case sensitive.
+     */
+    public Port locatePort(String port_specifier)
+	throws UnknownProcessorException,
+	       UnknownPortException,
+	       MalformedNameException {
+	String[] parts = port_specifier.split(":");
+	if (parts.length != 2) {
+	    throw new MalformedNameException("You must supply a name of the form [PROCESSOR]:[PORT] to the locate operation");
+	}
+	String processor_name = parts[0];
+	String port_name = parts[1];
+	
+	// Find the processor
+	Processor processor = locateProcessor(processor_name);
+	Port port = processor.locatePort(port_name);
+	return port;
+    }
+    
+    /**
+     * Locate a named processor
+     */
+    public Processor locateProcessor(String processor_name) 
+	throws UnknownProcessorException {
+	for (Iterator i = processors.iterator(); i.hasNext(); ) {
+	    Processor p = (Processor)i.next();
+	    if (p.getName().equalsIgnoreCase(processor_name)) {
+		return p;
+	    }
+	}
+	throw new UnknownProcessorException("Unable to locate processor with name '"+processor_name+"'");
     }
 
     /**

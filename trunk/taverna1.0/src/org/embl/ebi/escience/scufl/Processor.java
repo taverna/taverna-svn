@@ -6,6 +6,7 @@
 package org.embl.ebi.escience.scufl;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 
 /**
  * An abstract superclass of the various processor subtypes
@@ -80,6 +81,54 @@ public abstract class Processor implements java.io.Serializable {
      */
     public Port[] getPorts() {
 	return (Port[])(this.ports.toArray(new Port[0]));
+    }
+
+    /**
+     * Find a particular named port
+     */
+    public Port locatePort(String port_name) 
+	throws UnknownPortException {
+	for (Iterator i = ports.iterator(); i.hasNext(); ) {
+	    Port p = (Port)i.next();
+	    if (p.getName().equalsIgnoreCase(port_name)) {
+		return p;
+	    }
+	}
+	throw new UnknownPortException("Unable to find the port with name '"+port_name+"' in '"+getName()+"'");
+    }
+
+    /**
+     * Get an array containing only input ports
+     */
+    public InputPort[] getInputPorts() {
+	ArrayList temp = new ArrayList();
+	for (Iterator i = this.ports.iterator(); i.hasNext(); ) {
+	    try {
+		InputPort ip = (InputPort)i.next();
+		temp.add(ip);
+	    }
+	    catch (ClassCastException cce) {
+		//
+	    }
+	}
+	return (InputPort[])(temp.toArray(new InputPort[0]));
+    }
+    
+    /**
+     * Get an array containing only output ports
+     */
+    public OutputPort[] getOutputPorts() {
+	ArrayList temp = new ArrayList();
+	for (Iterator i = this.ports.iterator(); i.hasNext(); ) {
+	    try {
+		OutputPort op = (OutputPort)i.next();
+		temp.add(op);
+	    }
+	    catch (ClassCastException cce) {
+		//
+	    }
+	}
+	return (OutputPort[])(temp.toArray(new OutputPort[0]));
     }
 
     /**
