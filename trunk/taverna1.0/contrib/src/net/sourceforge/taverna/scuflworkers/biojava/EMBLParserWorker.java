@@ -1,8 +1,10 @@
 package net.sourceforge.taverna.scuflworkers.biojava;
 
 import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.PrintStream;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.NoSuchElementException;
@@ -13,17 +15,18 @@ import org.biojava.bio.BioException;
 import org.biojava.bio.seq.Sequence;
 import org.biojava.bio.seq.SequenceIterator;
 import org.biojava.bio.seq.io.SeqIOTools;
+import org.biojava.bio.seq.io.agave.AgaveWriter;
 import org.embl.ebi.escience.scuflworkers.java.LocalWorker;
 
 import uk.ac.soton.itinnovation.taverna.enactor.entities.TaskExecutionException;
 
 /**
- * This class
+ * This class parses an EMBL-based file.
  * 
  * Last edited by $Author: phidias $
  * 
  * @author Mark
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class EMBLParserWorker implements LocalWorker {
 
@@ -39,7 +42,8 @@ public class EMBLParserWorker implements LocalWorker {
         DataThingAdapter inAdapter = new DataThingAdapter(inputMap);
         String fileUrl = inAdapter.getString("fileUrl");
 
-        HashMap outputMap = new HashMap();
+        Map outputMap = new HashMap();
+        DataThingAdapter outAdapter = new DataThingAdapter(outputMap);
         try {
 
             //create a buffered reader to read the sequence file specified by
@@ -47,15 +51,20 @@ public class EMBLParserWorker implements LocalWorker {
             br = new BufferedReader(new FileReader(fileUrl));
 
             //read the SwissProt File
-            SequenceIterator sequences = SeqIOTools.readSwissprot(br);
-
+            
+            SequenceIterator sequences = SeqIOTools.readEmbl(br);
+            AgaveWriter writer = new AgaveWriter();
             //iterate through the sequences
-
+            ByteArrayOutputStream os = new ByteArrayOutputStream();
+            StringBuffer sb = new StringBuffer();
             while (sequences.hasNext()) {
                 Sequence seq = sequences.nextSequence();
-                //do stuff with the sequence
+                writer.writeSequence(seq, new PrintStream(os));
+                sb.append(os.toString());
+                System.out.println(os.toString());
             }
-
+            
+            outAdapter.putString("emblFile", sb.toString());
         } catch (FileNotFoundException ex) {
             throw new TaskExecutionException(ex);
         } catch (BioException ex) {

@@ -1,8 +1,11 @@
 package net.sourceforge.taverna.scuflworkers.biojava;
 
 import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.IOException;
+import java.io.PrintStream;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.NoSuchElementException;
@@ -13,6 +16,7 @@ import org.biojava.bio.BioException;
 import org.biojava.bio.seq.Sequence;
 import org.biojava.bio.seq.SequenceIterator;
 import org.biojava.bio.seq.io.SeqIOTools;
+import org.biojava.bio.seq.io.agave.AgaveWriter;
 import org.embl.ebi.escience.scuflworkers.java.LocalWorker;
 
 import uk.ac.soton.itinnovation.taverna.enactor.entities.TaskExecutionException;
@@ -23,7 +27,7 @@ import uk.ac.soton.itinnovation.taverna.enactor.entities.TaskExecutionException;
  * Last edited by $Author: phidias $
  * 
  * @author Mark
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class SwissProtParserWorker implements LocalWorker {
 
@@ -40,7 +44,8 @@ public class SwissProtParserWorker implements LocalWorker {
         String fileUrl = inAdapter.getString("fileUrl");
 
         
-        HashMap outputMap = new HashMap();
+        Map outputMap = new HashMap();
+        DataThingAdapter outAdapter = new DataThingAdapter(outputMap);
         try {
 
             //create a buffered reader to read the sequence file specified by
@@ -48,15 +53,22 @@ public class SwissProtParserWorker implements LocalWorker {
             br = new BufferedReader(new FileReader(fileUrl));
 
             //read the EMBL File
-            SequenceIterator sequences = SeqIOTools.readEmbl(br);
+            SequenceIterator sequences = SeqIOTools.readSwissprot(br);
 
+            //Prepare the writer
+            AgaveWriter writer = new AgaveWriter();
+            ByteArrayOutputStream os = new ByteArrayOutputStream();
+            StringBuffer sb = new StringBuffer();
+            PrintStream ps = new PrintStream(os);
+            
             //iterate through the sequences
-
             while (sequences.hasNext()) {
 
                 Sequence seq = sequences.nextSequence();
-                //do stuff with the sequence
+                writer.writeSequence(seq,ps);
+                sb.append(os.toString());
             }
+            outAdapter.putString("results", sb.toString());
 
         } catch (FileNotFoundException ex) {
             throw new TaskExecutionException(ex);
@@ -64,6 +76,8 @@ public class SwissProtParserWorker implements LocalWorker {
             throw new TaskExecutionException(ex);
         } catch (NoSuchElementException ex) {
             throw new TaskExecutionException(ex);
+        } catch (IOException io){
+            throw new TaskExecutionException(io);
         }
 
         return outputMap;
@@ -87,7 +101,7 @@ public class SwissProtParserWorker implements LocalWorker {
      * @see org.embl.ebi.escience.scuflworkers.java.LocalWorker#outputNames()
      */
     public String[] outputNames() {
-        return new String[]{"blastresults"};
+        return new String[]{"results"};
     }
 
     /**

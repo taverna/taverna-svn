@@ -1,9 +1,12 @@
 package net.sourceforge.taverna.scuflworkers.biojava;
 
 import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.IOException;
+import java.io.PrintStream;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.NoSuchElementException;
@@ -14,6 +17,7 @@ import org.biojava.bio.BioException;
 import org.biojava.bio.seq.Sequence;
 import org.biojava.bio.seq.SequenceIterator;
 import org.biojava.bio.seq.io.SeqIOTools;
+import org.biojava.bio.seq.io.agave.AgaveWriter;
 import org.embl.ebi.escience.scuflworkers.java.LocalWorker;
 
 import uk.ac.soton.itinnovation.taverna.enactor.entities.TaskExecutionException;
@@ -24,7 +28,7 @@ import uk.ac.soton.itinnovation.taverna.enactor.entities.TaskExecutionException;
  * Last edited by $Author: phidias $
  * 
  * @author Mark
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class GenBankParserWorker implements LocalWorker {
 
@@ -53,18 +57,24 @@ public class GenBankParserWorker implements LocalWorker {
             SequenceIterator sequences = SeqIOTools.readGenbank(br);
 
             //iterate through the sequences
-
+            ByteArrayOutputStream os = new ByteArrayOutputStream();
+            StringBuffer sb = new StringBuffer();
+            AgaveWriter writer = new AgaveWriter();
+            
             while (sequences.hasNext()) {
                 Sequence seq = sequences.nextSequence();
-                System.out.println(seq.toString());
-                outAdapter.putString("genbankdata",seq.toString());
+                writer.writeSequence(seq, new PrintStream(os));
+                sb.append(os.toString());
             }
+            outAdapter.putString("genbankdata",sb.toString());
         } catch (FileNotFoundException ex) {
             throw new TaskExecutionException(ex);
         } catch (BioException ex) {
             throw new TaskExecutionException(ex);
         } catch (NoSuchElementException ex) {
             throw new TaskExecutionException(ex);
+        } catch (IOException io){
+            throw new TaskExecutionException(io);
         }
 
         
