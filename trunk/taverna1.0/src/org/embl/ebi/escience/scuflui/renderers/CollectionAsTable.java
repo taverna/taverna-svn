@@ -81,7 +81,7 @@ public class CollectionAsTable
                 col.setHorizontalSrollable(true);
                 col.setVerticalScrollable(true);
                 col.setFinder(finder);
-                col.setName("Col " + count++ + "(" + colID.getName() + ")");
+                col.setName(colID.getName());
                 col.setRenderer(null); // use default renderer
                 columns.addColumn(col);
             }

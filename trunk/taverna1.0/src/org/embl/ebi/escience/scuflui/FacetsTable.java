@@ -402,6 +402,7 @@ public class FacetsTable
             if(exampleRow == null) {
                 return null;
             } else {
+                invariant();
                 return (DataThing) exampleRow.get(
                         columnModel.getColumnIndex(col));
             }
