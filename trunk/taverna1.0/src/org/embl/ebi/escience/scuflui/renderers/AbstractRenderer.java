@@ -45,7 +45,7 @@ public abstract class AbstractRenderer
    *
    * @author Matthew Pocock
    */
-  public abstract class ByMimeType
+  public abstract static class ByMimeType
           extends AbstractRenderer
   {
     protected ByMimeType(String name)

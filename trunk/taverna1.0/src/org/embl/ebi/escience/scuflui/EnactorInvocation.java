@@ -34,7 +34,10 @@ import java.lang.System;
 import java.lang.Thread;
 
 
-
+/**
+ * @author Tom Oinn
+ * @author Matthew Pocock
+ */
 public class EnactorInvocation extends JPanel implements ScuflUIComponent {
 
     public void attachToModel(ScuflModel theModel) {
@@ -75,58 +78,83 @@ public class EnactorInvocation extends JPanel implements ScuflUIComponent {
     public String getStatusText() {
 	return this.flowReceipt.getProgressReportXMLString();
     }
-    
-    /**
-     * Show the results in the text area
-     */
-    public void showResults() {
-	String results = "";
-	try {
-	    System.out.println("Getting results...");
-	    boolean gotResults = false;
-	    while (!gotResults) {
-		results = this.flowReceipt.getOutputXMLString();
-		if (results.equals("") == false) {
-		    gotResults = true;
-		}
-		else {
-		    Thread.sleep(1000);
-		}
-	    }
-	    this.tabs.add("Results",individualResults);
-	    /**
-	       this.tabs.add("Results as XML",resultsPanel);
-	       this.resultsText.setText(results);
-	       this.resultsText.setFont(new Font("Monospaced",Font.PLAIN,12));
-	       this.resultsText.setLineWrap(true);
-	       this.resultsText.setWrapStyleWord(true);
-	    */
-	    // Get the output map and create new result detail panes
-	    Map resultMap = this.flowReceipt.getOutput();
-	    JFileChooser chooser = new JFileChooser();
-	    chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-	    int returnVal = chooser.showSaveDialog(this);
-	    for (Iterator i = resultMap.keySet().iterator(); i.hasNext(); ) {
-		String resultName = (String)i.next();
-		DataThing resultValue = (DataThing)resultMap.get(resultName);
-		this.individualResults.add(resultName, new ResultItemPanel(resultValue));
-		try {
-		    if (returnVal == JFileChooser.APPROVE_OPTION) {
-			File f = chooser.getSelectedFile();
-			String name = resultName;
-			resultValue.writeToFileSystem(f, name);
-		    }
-		} 
-		catch (IOException ioe) {
-		    ioe.printStackTrace();
-		    //
-		}
-	    }
-	}
-	catch (Exception ex) {
-	    this.resultsText.setText("No results available : "+ex.toString());
-	}
+
+  /**
+   * Ensure that the results have been retrieved. This is code factored out
+   * from showResults().
+   */
+  protected void ensureGotResults()
+  {
+    // todo: surely we can re-write this to use synchronization rather than sleep?
+    String results = "";
+    try {
+      System.out.println("Getting results...");
+      boolean gotResults = false;
+      while (!gotResults) {
+        results = this.flowReceipt.getOutputXMLString();
+        if (results.equals("") == false) {
+          gotResults = true;
+        } else {
+          Thread.sleep(1000);
+        }
+      }
+    } catch (InterruptedException ie) {
+      // todo: ugly hack - I didn't want to change the logic just incase
+      // but shouldn't the try be close on the sleep()?
+      this.resultsText.setText("No results available : " + ie.toString());
     }
+  }
+
+  // todo: should this be public? We only call it here.
+  /**
+   * Show the results in the text area.
+   */
+  public void showResults() {
+    ensureGotResults();
+
+    this.tabs.add("Results",individualResults);
+
+    // Get the output map and create new result detail panes
+    Map resultMap = this.flowReceipt.getOutput();
+    for (Iterator i = resultMap.keySet().iterator(); i.hasNext(); ) {
+      String resultName = (String)i.next();
+      DataThing resultValue = (DataThing)resultMap.get(resultName);
+      this.individualResults.add(resultName, new ResultItemPanel(resultValue));
+    }
+  }
+
+  // todo: this should be the same level of access as showResults()
+  /**
+   * Save the results to a directory. This will display a dialog box to find
+   * the directory.
+   */
+  public void saveResults()
+  {
+    ensureGotResults();
+
+    this.tabs.add("Results", individualResults);
+
+    // Get the output map and create new result detail panes
+    Map resultMap = this.flowReceipt.getOutput();
+    JFileChooser chooser = new JFileChooser();
+    chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+    int returnVal = chooser.showSaveDialog(this);
+    for (Iterator i = resultMap.keySet().iterator(); i.hasNext();) {
+      String resultName = (String) i.next();
+      DataThing resultValue = (DataThing) resultMap.get(resultName);
+      try {
+        if (returnVal == JFileChooser.APPROVE_OPTION) {
+          File f = chooser.getSelectedFile();
+          String name = resultName;
+          resultValue.writeToFileSystem(f, name);
+        }
+      } catch (IOException ioe) {
+        // todo: ugly hack - how are we meant to be handling errors?
+        ioe.printStackTrace();
+        //
+      }
+    }
+  }
 
     /**
      * Show the current provenance of this invocation
@@ -134,7 +162,7 @@ public class EnactorInvocation extends JPanel implements ScuflUIComponent {
     public void showProvenance() {
 	String provenance = "";
 	try {
-	    
+
 	    provenance = this.flowReceipt.getProvenanceXMLString();
 	    //this.provenanceText.setFont(new Font("Monospaced",Font.PLAIN,12));
 	    //this.provenanceText.setLineWrap(true);
@@ -142,7 +170,7 @@ public class EnactorInvocation extends JPanel implements ScuflUIComponent {
 	    //this.provenanceText.setText(provenance);
 	    //this.tabs.add("Provenance Text", provenancePanel);
 	    this.tabs.add("Provenance Tree", new JScrollPane(new XMLTree(provenance)));
-	    
+
 	}
 	catch (Exception ex) {
 	    this.provenanceText.setText("No provenance available : "+ex.toString());
@@ -186,7 +214,7 @@ public class EnactorInvocation extends JPanel implements ScuflUIComponent {
 	setPreferredSize(new Dimension(100,100));
 	this.theModel = model;
 	this.flowReceipt = enactor.submitWorkflow(model, inputDataThings);
-	
+
     	// Create a tabbed pane for the status, results and provenance panels.
 	tabs = new JTabbedPane();
 	setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
@@ -195,7 +223,7 @@ public class EnactorInvocation extends JPanel implements ScuflUIComponent {
 	processorListPanel.setLayout(new BoxLayout(processorListPanel, BoxLayout.PAGE_AXIS));
 	processorListPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(),
 								      "Processor statii"));
-	
+
 	statusTableModel = new EnactorStatusTableModel(theModel);
 	final JTable processorTable = new JTable(statusTableModel);
 	// Add a listener to the table to allow the display of intermediate results
@@ -214,7 +242,7 @@ public class EnactorInvocation extends JPanel implements ScuflUIComponent {
 		    ListSelectionModel lsm = (ListSelectionModel)e.getSource();
 		    if (lsm.isSelectionEmpty()) {
 			//no rows are selected
-		    } 
+		    }
 		    else {
 			int selectedRow = lsm.getMinSelectionIndex();
 			// get the processor name
@@ -236,17 +264,17 @@ public class EnactorInvocation extends JPanel implements ScuflUIComponent {
 				DataThing value = (DataThing)intermediateResultMaps[1].get(name);
 				intermediateOutputs.add(name, new ResultItemPanel(value));
 			    }
-			    
-			    
+
+
 			}
 			catch (UnknownProcessorException upe) {
 			    //
 			}
 		    }
-		    
+
 		}
 	    });
-	
+
 
 
 
@@ -256,7 +284,7 @@ public class EnactorInvocation extends JPanel implements ScuflUIComponent {
 	JSplitPane statusSplitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT,
 						    scrollPane,
 						    intermediateResults);
-	
+
 	processorListPanel.add(statusSplitPane);
 	//processorListPanel.pack();
 	//processorListPanel.setPreferredSize(new Dimension(500,150));
@@ -271,7 +299,7 @@ public class EnactorInvocation extends JPanel implements ScuflUIComponent {
 	JScrollPane resultsScrollPane = new JScrollPane(resultsText);
 	resultsScrollPane.setPreferredSize(new Dimension(100,100));
 	resultsPanel.add(resultsScrollPane, BorderLayout.CENTER);
-	
+
 	//tabs.add(resultsPanel,"Results");
 
 	// Create a text area to show the provenance
@@ -288,6 +316,7 @@ public class EnactorInvocation extends JPanel implements ScuflUIComponent {
 	//individualResults = new JTabbedPane();
 	//tabs.add(individualResults, "Detail");
 
+      // todo: why show() rather than setVisible(true)?
 	//pack();
 	//setSize(new Dimension(600,300));
 	//setVisible(true);
@@ -296,13 +325,13 @@ public class EnactorInvocation extends JPanel implements ScuflUIComponent {
 	EnactorInvocationStatusThread s = new EnactorInvocationStatusThread(this);
 
     }
-}    
+}
 
 /**
  * Workflow run and poll
  */
 class EnactorInvocationStatusThread extends Thread {
-    
+
     boolean running = true;
     boolean abort = false;
     EnactorInvocation theEnactorInvocation;
@@ -337,7 +366,7 @@ class EnactorInvocationStatusThread extends Thread {
 	    // TODO - Tidy up this enactor run
 	}
     }
-    
+
     public void run() {
 	// TODO - Run the workflow
 	while (running) {
@@ -351,7 +380,7 @@ class EnactorInvocationStatusThread extends Thread {
 		// then set running to false which will drop us neatly out of the
 		// polling loop.
 		System.out.println("Polling...");
-		
+
 		try {
 		    String statusText = theEnactorInvocation.getStatusText();
 		    //System.out.println("Status document : "+statusText);
@@ -368,8 +397,9 @@ class EnactorInvocationStatusThread extends Thread {
 			running = false;
 			// Set the results display in the display panel
 			theEnactorInvocation.showResults();
-			theEnactorInvocation.showProvenance();			
+			theEnactorInvocation.showProvenance();
 			theEnactorInvocation.showProgressReport();
+      // theEnactorInvocation.saveResults(); - commented out as it's anoying MRP
 		    }
 		}
 		catch ( Exception e ) {
@@ -392,6 +422,6 @@ class EnactorInvocationStatusThread extends Thread {
 	else {
 	    // TODO - Show results
 	}
-    }    
+    }
 }
 
