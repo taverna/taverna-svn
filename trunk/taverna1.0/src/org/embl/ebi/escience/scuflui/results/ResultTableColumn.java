@@ -18,6 +18,7 @@ public class ResultTableColumn extends ResultTableCellCollection
 	private Collection sources = new ArrayList();
 	private Collection results = new HashSet();
 	protected ResultTableColumn previousColumn;
+	protected ResultTableColumn nextColumn;
 
 	public void addSource(ResultSource source)
 	{

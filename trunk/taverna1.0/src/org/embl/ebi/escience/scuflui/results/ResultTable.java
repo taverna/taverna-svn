@@ -29,48 +29,53 @@ public class ResultTable extends JTable
 	{
 		public void valueChanged(ResultTable table, ResultThing thing);
 	}
-	
+
 	public class ResultTableCellRenderer extends DefaultTableCellRenderer
 	{
-		/* (non-Javadoc)
+		/*
+		 * (non-Javadoc)
+		 * 
 		 * @see java.awt.Component#isOpaque()
 		 */
 		public boolean isOpaque()
 		{
 			return true;
 		}
-		
+
 		public Component getTableCellRendererComponent(JTable table, Object value,
-				boolean isSelected, boolean hasFocus, int row, int column)
+														boolean isSelected, boolean hasFocus,
+														int row, int column)
 		{
 			setIcon(null);
 			hasFocus = false;
-			ResultTableCell selectedCell = ((ResultTable)table).getSelectedCell();
+			boolean root = false;
+			boolean leaf = false;
+			ResultTableCell selectedCell = ((ResultTable) table).getSelectedCell();
 			setFont(table.getFont());
 
 			if (value != null)
 			{
-				//setBorder(BorderFactory.createMatteBorder(1, 0, 1, 0, Color.WHITE));
-				ResultTableCell cell = ((ResultTable) table).getCell(row, column);				
+				//setBorder(BorderFactory.createMatteBorder(1, 0, 1, 0,
+				// Color.WHITE));
+				ResultTableCell cell = ((ResultTable) table).getCell(row, column);
 				if (cell != null)
 				{
-					if(selectedCell != null)
+					if (selectedCell != null)
 					{
 						hasFocus = selectedCell == cell;
 						isSelected = (selectedCell.startRow <= cell.startRow && selectedCell.endRow >= cell.startRow)
-						|| (selectedCell.startRow <= cell.endRow && selectedCell.endRow >= cell.endRow) ||
-						(cell.startRow <= selectedCell.startRow && cell.endRow >= selectedCell.endRow);
+								|| (selectedCell.startRow <= cell.endRow && selectedCell.endRow >= cell.endRow)
+								|| (cell.startRow <= selectedCell.startRow && cell.endRow >= selectedCell.endRow);
 					}
-					if(!(cell.parent instanceof ResultTableColumn))
+					if (!(cell.parent instanceof ResultTableColumn))
 					{
 						if (cell.parent.getCell(row - 1) == null)
 						{
-							setIcon(UIManager.getIcon("Tree.expandedIcon"));
+							root = true;
 						}
 						else
 						{
-							setBorder(BorderFactory.createCompoundBorder(BorderFactory
-									.createMatteBorder(0, 12, 0, 0, getBackground()), getBorder()));
+							leaf = true;
 						}
 					}
 				}
@@ -78,10 +83,20 @@ public class ResultTable extends JTable
 			}
 			else
 			{
-				if(selectedCell != null)
+				if (selectedCell != null)
 				{
 					isSelected = row >= selectedCell.startRow && row <= selectedCell.endRow;
 				}
+			}
+			
+			setBorder(noFocusBorder);
+			if (root)
+			{
+				setIcon(UIManager.getIcon("Tree.expandedIcon"));
+			}
+			else
+			{
+				setIcon(null);
 			}
 			if (isSelected)
 			{
@@ -96,26 +111,28 @@ public class ResultTable extends JTable
 			if (hasFocus)
 			{
 				setBorder(UIManager.getBorder("Table.focusCellHighlightBorder"));
-				setBackground(new Color(202, 222, 254));					
+				setBackground(new Color(202, 222, 254));
 				if (table.isCellEditable(row, column))
 				{
 					super.setForeground(UIManager.getColor("Table.focusCellForeground"));
 					super.setBackground(UIManager.getColor("Table.focusCellBackground"));
 				}
 			}
-			else
+			if (leaf)
 			{
-				setBorder(noFocusBorder);
-			}			
+				setBorder(BorderFactory.createCompoundBorder(BorderFactory
+						.createMatteBorder(0, 12, 0, 0, getBackground()), getBorder()));
+
+			}
 			return this;
 		}
 	}
 
 	private Collection listeners = new HashSet();
-	
+
 	private ResultThing selectedResult = null;
 	private ResultTableCell selectedCell = null;
-	
+
 	public void addTableSelectionListener(TableSelectionListener listener)
 	{
 		listeners.add(listener);
@@ -124,45 +141,45 @@ public class ResultTable extends JTable
 	public void removeTableSelectionListener(TableSelectionListener listener)
 	{
 		listeners.remove(listener);
-	}	
-	
+	}
+
 	public ResultTableCell getSelectedCell()
 	{
 		return selectedCell;
 	}
-	
+
 	private void fireSelectionChange()
 	{
-		if((getModel() instanceof ResultTableModel))
+		if ((getModel() instanceof ResultTableModel))
 		{
-			ResultTableCell cell = getCell(getSelectedRow(), getSelectedColumn()); 
-			if(cell != selectedCell)
+			ResultTableCell cell = getCell(getSelectedRow(), getSelectedColumn());
+			if (cell != selectedCell)
 			{
-				selectedResult = (ResultThing)getValueAt(getSelectedRow(), getSelectedColumn());
+				selectedResult = (ResultThing) getValueAt(getSelectedRow(), getSelectedColumn());
 				selectedCell = cell;
 				Iterator listenerIterator = listeners.iterator();
-				while(listenerIterator.hasNext())
+				while (listenerIterator.hasNext())
 				{
-					TableSelectionListener listener = (TableSelectionListener)listenerIterator.next();
+					TableSelectionListener listener = (TableSelectionListener) listenerIterator
+							.next();
 					listener.valueChanged(this, selectedResult);
 				}
 			}
 		}
 	}
-	
-	
+
 	public void columnSelectionChanged(ListSelectionEvent e)
 	{
 		super.columnSelectionChanged(e);
 		fireSelectionChange();
 	}
-	
+
 	public void valueChanged(ListSelectionEvent e)
 	{
 		super.valueChanged(e);
-		fireSelectionChange();		
+		fireSelectionChange();
 	}
-	
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -187,7 +204,7 @@ public class ResultTable extends JTable
 		{
 			return ((ResultTableModel) getModel()).getColumn(column).getCell(row);
 		}
-		catch(Exception e)
+		catch (Exception e)
 		{
 			return null;
 		}

@@ -11,6 +11,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
+import javax.swing.JToolBar;
 
 import org.embl.ebi.escience.scufl.ScuflModel;
 import org.embl.ebi.escience.scufl.enactor.WorkflowInstance;
@@ -37,6 +38,10 @@ public class ResultTablePanel extends JPanel implements ResultTable.TableSelecti
 	{
 		setLayout(new BorderLayout());
 		resultTable = new ResultTable(model, workflowInstance);
+		
+		JToolBar toolbar = new JToolBar();
+		toolbar.setFloatable(false);
+		toolbar.setRollover(true);		
 		
 		JScrollPane pane = new JScrollPane();
 		pane.setViewportView(resultTable);
