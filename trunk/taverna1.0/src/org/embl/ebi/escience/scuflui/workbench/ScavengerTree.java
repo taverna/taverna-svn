@@ -165,7 +165,7 @@ public class ScavengerTree extends JTree
      * Add a new scavenger to the tree, firing appropriate
      * model events as we do.
      */
-    public void addScavenger(Scavenger theScavenger) {
+    public synchronized void addScavenger(Scavenger theScavenger) {
 	// Check to see we don't already have a scavenger with this name
 	String newName = theScavenger.getUserObject().toString();
 	for (Iterator i = scavengerList.iterator(); i.hasNext(); ) {
