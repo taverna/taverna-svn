@@ -43,28 +43,34 @@ public class TalismanTask extends ProcessorTask {
 			super(id,proc,l,userID,userCtx);
     }
     
-    protected java.util.Map execute(java.util.Map inputMap) throws TaskExecutionException {
+    protected java.util.Map execute(java.util.Map workflowInputMap) throws TaskExecutionException {
 	try{
 	    startTime =  new TimePoint();
-			TalismanProcessor theProcessor = (TalismanProcessor)proc;
-
+	    TalismanProcessor theProcessor = (TalismanProcessor)proc;
+	    
 	    // Get a map of the inputs, for each entry in the map the key is the
 	    // name of the port that the input came in on, the value is the value
 	    // of the input (obviously)
 	    // Map inputMap = new HashMap();
 	    // Parents are all PortTasks (I think?)
 	    /*
-			GraphNode[] inputs = getParents();
-	    for (int i = 0; i < inputs.length; i++) {
-				if(inputs[i] instanceof PortTask) {
-					PortTask pt = (PortTask)inputs[i];
-					Part p = pt.getData();
-					Element e = (Element)p.getValue();
-					inputMap.put(p.getName(),e.getFirstChild().getNodeValue());
-				}
-			
+	      GraphNode[] inputs = getParents();
+	      for (int i = 0; i < inputs.length; i++) {
+	      if(inputs[i] instanceof PortTask) {
+	      PortTask pt = (PortTask)inputs[i];
+	      Part p = pt.getData();
+	      Element e = (Element)p.getValue();
+	      inputMap.put(p.getName(),e.getFirstChild().getNodeValue());
+	      }
+	      
+	      }
+	    */
+	    Map inputMap = new HashMap();
+	    for (Iterator i = workflowInputMap.keySet().iterator(); i.hasNext(); ) {
+		String partName = (String)(i.next());
+		Part thePart = (Part)workflowInputMap.get(partName);
+		inputMap.put(thePart.getName(), thePart.getTypedValue());
 	    }
-			*/
 	    // Get a map of the output ports, keys are port names, values are
 	    // PortTask instances, used when we have named output and need to
 	    // set the port values.
