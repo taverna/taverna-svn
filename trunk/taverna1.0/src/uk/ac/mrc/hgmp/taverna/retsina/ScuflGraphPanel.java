@@ -15,9 +15,8 @@ import javax.swing.event.UndoableEditEvent;
 import org.embl.ebi.escience.scufl.DuplicateProcessorNameException;
 import org.embl.ebi.escience.scufl.Processor;
 import org.embl.ebi.escience.scufl.ProcessorCreationException;
-import org.embl.ebi.escience.scufl.ScuflModel;
-import org.embl.ebi.escience.scufl.ScuflModelEventPrinter;
 import org.embl.ebi.escience.scufl.SoaplabProcessor;
+import org.emboss.jemboss.gui.startup.ProgList;
 
 // Utility Imports
 import java.util.ArrayList;
@@ -57,15 +56,12 @@ public class ScuflGraphPanel extends JPanel
     // Actions which Change State
     protected Action undo, redo, remove, group,	ungroup, tofront, toback, cut, copy, paste;
 
-    // ScuflModel instance represented in this panel
-    private org.embl.ebi.escience.scufl.ScuflModel scuflModel;
-
     // Main Method
     public static void main(String[] args) 
     {
 	JFrame frame = new JFrame("Retsina application mode test");
 	frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-	frame.getContentPane().add(new ScuflGraphPanel(null));
+	frame.getContentPane().add(new ScuflGraphPanel(null,null));
 	frame.setSize(520, 390);
 	frame.show();
     }
@@ -77,17 +73,13 @@ public class ScuflGraphPanel extends JPanel
     * some other class when it requires to create
     * a new processor node in the graph representation.
     */
-    public ScuflGraphPanel(IScuflNodeCreator delegate) 
+    public ScuflGraphPanel(IScuflNodeCreator delegate, ProgList progs) 
     {
 	
 	this.creatorDelegate = delegate;
 	setLayout(new BorderLayout());
 
-        scuflModel = new ScuflModel();
-   	// Register a listener to print to stdout
-        scuflModel.addListener(new ScuflModelEventPrinter(null));
-
-	graph = new ScuflGraph(new ScuflGraphModel());
+	graph = new ScuflGraph(new ScuflGraphModel(),progs);
 	graph.setMarqueeHandler(new ScuflMarqueeHandler());
         graph.setBackground(new Color(153,153,255));
 	undoManager = new GraphUndoManager() 
@@ -121,33 +113,7 @@ public class ScuflGraphPanel extends JPanel
      * Insert a new Vertex at point.
      */
     public void insertCell(Point point, String group, String name) {
-
-        SoaplabProcessor processor = null;
-        String procName = name;
-        // Attempt to create a new SoaplabProcessor
-        try
-        {
-          processor = new SoaplabProcessor(scuflModel,procName,
-                       "http://industry.ebi.ac.uk/soap/soaplab/"+group+"::"+name);
-
-          scuflModel.addProcessor(processor);
-
-        } catch(ProcessorCreationException pce)
-        {
-          System.out.println("ProcessorCreationException addProcessor exception thrown");
-        }
-        catch(DuplicateProcessorNameException dpne)
-        {
-          System.out.println("DuplicateProcessorNameException addProcessor exception thrown");
-        }
-        catch(Exception exp)
-        {
-          System.out.println("addProcessor exception thrown");
-        }
-
-
-        System.out.println("Finished test : SoaplabProcessorCreation");
-        graph.insertCell(point,name,processor);
+        graph.insertCell(point,group,name);
     }
 
     /**

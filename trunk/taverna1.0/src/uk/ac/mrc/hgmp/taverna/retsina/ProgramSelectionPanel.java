@@ -29,14 +29,14 @@ public class ProgramSelectionPanel extends JPanel
   private ProgList progs;
 
   public ProgramSelectionPanel(String wossname,
-                               ScuflGraphPanel graphPanel)
+              ScuflGraphPanel graphPanel, ProgList progs,
+              JMenuBar progMenuBar)
   {
     super(new BorderLayout());
 
     this.graphPanel = graphPanel;
+    this.progs = progs;
 
-    JMenuBar progMenuBar = new JMenuBar();
-    progs = new ProgList(wossname,null,progMenuBar);
     int npG = progs.getNumPrimaryGroups();
     final int numProgs = progs.getNumProgs();
     final String allAcd[] = progs.getProgsList();

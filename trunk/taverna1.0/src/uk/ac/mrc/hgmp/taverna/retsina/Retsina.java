@@ -10,6 +10,7 @@ import java.awt.Color;
 import java.io.IOException;
 import javax.swing.*;
 import org.emboss.jemboss.JembossJarUtil;
+import org.emboss.jemboss.gui.startup.ProgList;
 
 import uk.ac.mrc.hgmp.taverna.retsina.ProgramSelectionPanel;
 import uk.ac.mrc.hgmp.taverna.retsina.ScuflGraphPanel;
@@ -52,7 +53,6 @@ public class Retsina extends JApplet
   public void init() 
   {
     String wossname = null;
-    ScuflGraphPanel graphPanel = new ScuflGraphPanel(null);
 
     setJMenuBar(createMenuBar());
     try
@@ -65,7 +65,11 @@ public class Retsina extends JApplet
       System.out.println("Failed to read wossname for menu construction");
     }
     
-    JPanel westPanel = new ProgramSelectionPanel(wossname,graphPanel);
+    JMenuBar progMenuBar = new JMenuBar();
+    ProgList progs = new ProgList(wossname,null,progMenuBar);
+    ScuflGraphPanel graphPanel = new ScuflGraphPanel(null,progs);
+    JPanel westPanel = new ProgramSelectionPanel(wossname,graphPanel,
+                                                 progs,progMenuBar);
     // Put the components in the content pane
     Container contentpane = getContentPane();
     contentpane.add(graphPanel,BorderLayout.CENTER);

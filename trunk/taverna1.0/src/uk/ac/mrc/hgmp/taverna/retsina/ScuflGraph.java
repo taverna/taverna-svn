@@ -26,6 +26,15 @@ import uk.ac.mrc.hgmp.taverna.retsina.ScuflGraphCell;
 import uk.ac.mrc.hgmp.taverna.retsina.ScuflInputPortView;
 import uk.ac.mrc.hgmp.taverna.retsina.ScuflOutputPort;
 import uk.ac.mrc.hgmp.taverna.retsina.ScuflOutputPortView;
+import org.emboss.jemboss.gui.startup.ProgList;
+
+import org.embl.ebi.escience.scufl.DuplicateProcessorNameException;
+import org.embl.ebi.escience.scufl.Processor;
+import org.embl.ebi.escience.scufl.ProcessorCreationException;
+import org.embl.ebi.escience.scufl.SoaplabProcessor;
+import org.embl.ebi.escience.scufl.ScuflModel;
+import org.embl.ebi.escience.scufl.ScuflModelEventPrinter;
+
 import java.lang.ClassCastException;
 import java.lang.Exception;
 import java.lang.Object;
@@ -44,10 +53,16 @@ public class ScuflGraph extends JGraph
  
     final Cursor cbusy = new Cursor(Cursor.WAIT_CURSOR);
     final Cursor cdone = new Cursor(Cursor.DEFAULT_CURSOR);
-   
+    // ScuflModel instance represented in this panel
+    private org.embl.ebi.escience.scufl.ScuflModel scuflModel;
+    private ProgList progs;
+
     // Construct the Graph using the Model as its Data Source
-    public ScuflGraph(GraphModel model) {
+    public ScuflGraph(GraphModel model, ProgList progs) 
+    {
 	super(model);
+ 
+        this.progs = progs;
 	// Use a Custom Marquee Handler
 	//setMarqueeHandler(new ScuflGraphPanel.ScuflMarqueeHandler());
 	// Tell the Graph to Select new Cells upon Insertion
@@ -60,6 +75,10 @@ public class ScuflGraph extends JGraph
 	setGridSize(6);
 	// Set the Tolerance to 2 Pixel
 	setTolerance(2);
+
+        scuflModel = new ScuflModel();
+        // Register a listener to print to stdout
+        scuflModel.addListener(new ScuflModelEventPrinter(null));
 
         setDropTarget(new DropTarget(this,this));
     }
@@ -96,17 +115,14 @@ public class ScuflGraph extends JGraph
     }
 
 
-    public void insertCell(Point point,String name)
-    {
-      insertCell(point,name,null);
-    }
-
     /**
     *  Add a program to the editor 
     */
-    public void insertCell(Point point,String name, Processor proc)
+    public void insertCell(Point point,String group,String name)
     {
         setCursor(cbusy);
+
+        Processor proc = addSoaplabProcessor(group,name);
         // Add user input parameters
     
         // Construct Vertex with no Label
@@ -155,6 +171,36 @@ public class ScuflGraph extends JGraph
         setCursor(cdone);
     }
 
+    public SoaplabProcessor addSoaplabProcessor(String group, String name)
+    {
+        SoaplabProcessor processor = null;
+        String procName = name;
+        // Attempt to create a new SoaplabProcessor
+        try
+        {
+          processor = new SoaplabProcessor(scuflModel,procName,
+                       "http://industry.ebi.ac.uk/soap/soaplab/"+group+"::"+name);
+
+          scuflModel.addProcessor(processor);
+
+        } catch(ProcessorCreationException pce)
+        {
+          System.out.println("ProcessorCreationException addProcessor exception thrown");
+        }
+        catch(DuplicateProcessorNameException dpne)
+        {
+          System.out.println("DuplicateProcessorNameException addProcessor exception thrown");        }
+        catch(Exception exp)
+        {
+          System.out.println("addProcessor exception thrown");
+        }
+
+
+        System.out.println("Finished test : SoaplabProcessorCreation");
+        return processor;
+    }
+
+
 
 // Drag 'n Drop
   protected static Border dropBorder = new BevelBorder(BevelBorder.LOWERED);
@@ -186,7 +232,9 @@ public class ScuflGraph extends JGraph
       {
         ProgNode dropS = (ProgNode) t.getTransferData(DataFlavor.stringFlavor);
         System.out.println("DROP DataFlavor.stringFlavor "+dropS.getProgramName());
-        insertCell(e.getLocation(),dropS.getProgramName());
+        String name = dropS.getProgramName();
+        String group = progs.getProgramGroup(name).toLowerCase().replace(':','_').replace(' ','_');
+        insertCell(e.getLocation(),group,name);
         e.dropComplete(true);
       }
       catch (Exception ex) {}
