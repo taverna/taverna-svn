@@ -28,13 +28,13 @@ import org.jgraph.graph.ParentMap;
 
 /**
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover </a>
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
 public class ScuflGraphModelChange implements GraphModelChange,
 		GraphModelEvent.ExecutableGraphChange
 {
 	private ScuflGraphModel model;
-	private Collection inserted = new ArrayList();
+	private Collection added = new ArrayList();
 	private Collection removed = new ArrayList();
 	private ConnectionSet connectionSet;
 	private Map attributes = new HashMap();
@@ -54,20 +54,33 @@ public class ScuflGraphModelChange implements GraphModelChange,
 	private List getRoots(ScuflModel scuflModel)
 	{
 		List newRoots = new ArrayList();
-		newRoots.addAll(Arrays.asList(scuflModel.getProcessors()));
 		Processor processor = scuflModel.getWorkflowSinkProcessor();
-		if(processor.getPorts().length != 0)
+		if (processor.getPorts().length != 0)
 		{
 			newRoots.add(processor);
 		}
 		processor = scuflModel.getWorkflowSourceProcessor();
-		if(processor.getPorts().length != 0)
+		if (processor.getPorts().length != 0)
 		{
 			newRoots.add(processor);
 		}
+		newRoots.addAll(Arrays.asList(scuflModel.getProcessors()));
 		newRoots.addAll(Arrays.asList(scuflModel.getConcurrencyConstraints()));
 		newRoots.addAll(Arrays.asList(scuflModel.getDataConstraints()));
 		return newRoots;
+	}
+	
+	private void addNode(Collection collection, Object node)
+	{
+		collection.add(node);
+		if(node instanceof Processor)
+		{
+			Port[] ports = ((Processor)node).getPorts();
+			for(int index = 0; index < ports.length; index++)
+			{
+				collection.add(ports[index]);
+			}				
+		}
 	}
 
 	/**
@@ -75,30 +88,26 @@ public class ScuflGraphModelChange implements GraphModelChange,
 	 */
 	public void calculateChanges(ScuflModelEvent event)
 	{
-		// TODO Also add new ports/children to inserted/removed		
+		// TODO Also add new ports/children to inserted/removed
 		Object source = event.getSource();
-		if(event instanceof ScuflModelRemoveEvent)
+		if (event instanceof ScuflModelRemoveEvent)
 		{
-			Object removedObject = ((ScuflModelRemoveEvent)event).getRemovedObject();
-			if(!model.isPort(removedObject))
+			Object removedObject = ((ScuflModelRemoveEvent) event).getRemovedObject();
+			addNode(removed, removedObject);
+			if (!model.isPort(removedObject) && removedObject instanceof Port
+					&& ((Port) removedObject).getProcessor().getPorts().length == 0)
 			{
-				removed.add(removedObject);
-				if(removedObject instanceof Port && ((Port)removedObject).getProcessor().getPorts().length == 0)
-				{
-					removed.add(((Port)removedObject).getProcessor());
-				}
+				removed.add(((Port) removedObject).getProcessor());
 			}
 		}
-		else if(event instanceof ScuflModelAddEvent)
+		else if (event instanceof ScuflModelAddEvent)
 		{
-			Object addedObject = ((ScuflModelAddEvent)event).getAddedObject();
-			if(!model.isPort(addedObject))
+			Object addedObject = ((ScuflModelAddEvent) event).getAddedObject();
+			addNode(added, addedObject);
+			if (!model.isPort(addedObject) && addedObject instanceof Port
+					&& model.contains(((Port) addedObject).getProcessor()))
 			{
-				inserted.add(addedObject);
-				if(addedObject instanceof Port && model.contains(((Port)addedObject).getProcessor()))
-				{
-					inserted.add(((Port)addedObject).getProcessor());
-				}				
+				added.add(((Port) addedObject).getProcessor());
 			}
 		}
 		else
@@ -107,34 +116,34 @@ public class ScuflGraphModelChange implements GraphModelChange,
 			{
 				List newRoots = getRoots((ScuflModel) source);
 				List roots = model.getRoots();
-				inserted.addAll(difference(roots, newRoots));
-				removed.addAll(difference(newRoots, roots));
-	
-				// if(connectionSet != null)
-				// {
-				// changed.addAll(connectionSet.getChangedEdges());
-				// }
+				Iterator difference = difference(roots, newRoots).iterator();
+				while(difference.hasNext())
+				{
+					addNode(added, difference.next());
+				}
+				difference = difference(newRoots, roots).iterator();
+				while(difference.hasNext())
+				{
+					addNode(removed, difference.next());
+				}
 			}
-			else if(source instanceof Processor)
+			else if (source instanceof Processor)
 			{
-				//TODO Change scufl event model to send actual add events
-				if(model.getRoots().contains(source))
+				// TODO Change scufl event model to send actual add events
+				if (model.contains(source))
 				{
 					changed.add(source);
 					ScuflModel scuflModel = model.getModel();
-					if(source == scuflModel.getWorkflowSinkProcessor() || source == scuflModel.getWorkflowSourceProcessor())
+					if (source != scuflModel.getWorkflowSinkProcessor()
+							&& source != scuflModel.getWorkflowSourceProcessor())
 					{
-						//TODO Check removed/added ports!
-					}
-					else
-					{
-						Processor processor = (Processor)source;
+						Processor processor = (Processor) source;
 						Map attrs = model.getAttributes(processor);
-						String name = (String)GraphConstants.getValue(attrs);
-						if(!name.equals(processor.getName()))
+						String name = (String) GraphConstants.getValue(attrs);
+						if (!name.equals(processor.getName()))
 						{
-							Map procAttr = (Map)attributes.get(processor);
-							if(procAttr == null)
+							Map procAttr = (Map) attributes.get(processor);
+							if (procAttr == null)
 							{
 								procAttr = new HashMap();
 								attributes.put(processor, procAttr);
@@ -145,11 +154,10 @@ public class ScuflGraphModelChange implements GraphModelChange,
 				}
 				else
 				{
-					inserted.add(source);
+					added.add(source);
 				}
 			}
 		}
-		//return changed;
 	}
 
 	/*
@@ -159,7 +167,7 @@ public class ScuflGraphModelChange implements GraphModelChange,
 	 */
 	public Object[] getInserted()
 	{
-		return inserted.toArray();
+		return added.toArray();
 	}
 
 	/*
@@ -266,7 +274,7 @@ public class ScuflGraphModelChange implements GraphModelChange,
 	 */
 	public boolean hasChanges()
 	{
-		return !inserted.isEmpty() || !removed.isEmpty();
+		return !added.isEmpty() || !removed.isEmpty();
 	}
 
 	/*
@@ -278,19 +286,19 @@ public class ScuflGraphModelChange implements GraphModelChange,
 	{
 		model.updateAttributes(attributes);
 
-		Iterator insertIterator = inserted.iterator();
+		Iterator insertIterator = added.iterator();
 		ConnectionSet cs = new ConnectionSet();
 		while (insertIterator.hasNext())
 		{
 			Object insertedObject = insertIterator.next();
-			attributes.put(insertedObject, model.nodeAdded(insertedObject, cs));
+			attributes.put(insertedObject, model.addNode(insertedObject, cs));
 		}
 
 		Iterator removeIterator = removed.iterator();
 		while (removeIterator.hasNext())
 		{
 			Object removedObject = removeIterator.next();
-			model.nodeRemoved(removedObject);
+			model.removeNode(removedObject);
 		}
 	}
 

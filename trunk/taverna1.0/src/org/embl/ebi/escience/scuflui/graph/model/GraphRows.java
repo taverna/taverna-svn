@@ -18,7 +18,7 @@ import org.jgraph.graph.GraphModel;
  * COMMENT
  * 
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover </a>
- * @version $Revision: 1.6 $
+ * @version $Revision: 1.7 $
  */
 public class GraphRows
 {
@@ -139,7 +139,7 @@ public class GraphRows
 			}
 			remove(node, oldRow.intValue());
 		}
-		//System.err.println("Set row " + row + ": " + node);
+		System.err.println("Set row " + row + ": " + node);
 		add(node, row);
 		calculateBounds(row);
 	}

@@ -50,7 +50,7 @@ import org.jgraph.graph.ParentMap;
 /**
  * 
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover </a>
- * @version $Revision: 1.6 $
+ * @version $Revision: 1.7 $
  */
 public class ScuflGraphModel implements GraphModel, GraphModelListener, ScuflUIComponent
 {
@@ -169,7 +169,13 @@ public class ScuflGraphModel implements GraphModel, GraphModelListener, ScuflUIC
 	{
 		if (node != null)
 		{
-			return (AttributeMap) attributes.get(node);
+			AttributeMap map = (AttributeMap)attributes.get(node);
+			if(map == null & contains(node))
+			{
+				map = new AttributeMap();
+				attributes.put(node, map);
+			}
+			return map;
 		}
 		return (AttributeMap) attributes.get(this);
 	}
@@ -182,7 +188,7 @@ public class ScuflGraphModel implements GraphModel, GraphModelListener, ScuflUIC
 		{
 			port = new DummyPort(node);
 			attrs.put(DUMMY_PORT, port);
-			createAttributes(port);
+			addAttributes(port);
 		}
 		return port;
 	}
@@ -191,20 +197,11 @@ public class ScuflGraphModel implements GraphModel, GraphModelListener, ScuflUIC
 	 * @param node
 	 * @return created AttributeMap
 	 */
-	private AttributeMap createAttributes(Object node)
+	private AttributeMap addAttributes(Object node)
 	{
 		AttributeMap map = getAttributes(node);
-		if(map == null)
-		{
-			map = new AttributeMap();
-			attributes.put(node, map);			
-		}
 		
-		if (node instanceof ScuflGraphModel)
-		{
-			// TODO Something
-		}
-		else if (node instanceof Processor)
+		if (node instanceof Processor)
 		{
 			Processor processor = (Processor) node;
 			if(processor == model.getWorkflowSourceProcessor())
@@ -732,7 +729,7 @@ public class ScuflGraphModel implements GraphModel, GraphModelListener, ScuflUIC
 		}
 	}
 
-	private void edgeAdded(Object port, Object edge)
+	private void addEdge(Object port, Object edge)
 	{
 		Map attrs = getAttributes(port);
 		Collection edges = (Collection) attrs.get(PORT_EDGES);
@@ -748,7 +745,7 @@ public class ScuflGraphModel implements GraphModel, GraphModelListener, ScuflUIC
 	 * @param port
 	 * @param constraint
 	 */
-	private void edgeRemoved(Object port, Object constraint)
+	private void removeEdge(Object port, Object constraint)
 	{
 		Map attrs = getAttributes(port);
 		if(attrs != null)
@@ -760,57 +757,35 @@ public class ScuflGraphModel implements GraphModel, GraphModelListener, ScuflUIC
 			}
 		}
 	}
-
+	
 	List getRoots()
 	{
 		return roots;
 	}
 	
-	Map nodeAdded(Object newNode, ConnectionSet cs)
+	Map addNode(Object newNode, ConnectionSet cs)
 	{
-		if(newNode instanceof Processor)
-		{
-			Port[] ports = ((Processor)newNode).getPorts();
-			for(int index = 0; index < ports.length; index++)
-			{
-				createAttributes(ports[index]);
-			}
-		}
-		else if (isEdge(newNode))
+		if (isEdge(newNode))
 		{
 			Object source = getSource(newNode);
 			Object target = getTarget(newNode);			
 			cs.connect(newNode, source, target);
-			edgeAdded(source, newNode);
-			edgeAdded(target, newNode);
+			addEdge(source, newNode);
+			addEdge(target, newNode);
 		}
-		else if (newNode instanceof Port)
+		if (!(newNode instanceof Port))
 		{
-			return createAttributes(newNode);
+			roots.add(newNode);			
 		}
-		roots.add(newNode);
-		return createAttributes(newNode);
+		return addAttributes(newNode);
 	}
 	
-	void nodeRemoved(Object node)
+	void removeNode(Object node)
 	{
-		if (node instanceof Processor)
+		if (isEdge(node))
 		{
-			// TODO Move port stuff to changed event
-			Port[] ports = ((Processor)node).getPorts();
-			for(int index = 0; index < ports.length; index++)
-			{
-				attributes.remove(ports[index]);
-			}
-		}
-		else if (isEdge(node))
-		{
-			edgeRemoved(getSource(node), node);
-			edgeRemoved(getTarget(node), node);
-		}
-		else if (node instanceof Port)
-		{
-			// TODO Something	
+			removeEdge(getSource(node), node);
+			removeEdge(getTarget(node), node);
 		}
 		roots.remove(node);
 	}
@@ -820,16 +795,17 @@ public class ScuflGraphModel implements GraphModel, GraphModelListener, ScuflUIC
 	 */
 	public void graphChanged(GraphModelEvent event)
 	{
-		//System.out.println("Graph changed");
-		if(event.getChange() instanceof GraphModelEvent.ExecutableGraphChange)
+		GraphModelEvent.GraphModelChange change = event.getChange();
+		if(change instanceof GraphModelEvent.ExecutableGraphChange)
 		{
-			((GraphModelEvent.ExecutableGraphChange)event.getChange()).execute();
-			if(roots.isEmpty())
-			{
-				attributes.clear();
-			}
+			((GraphModelEvent.ExecutableGraphChange)change).execute();
 		}
 		fireGraphChangedEvent(event);
+		Object[] removed = change.getRemoved();
+		for(int index = 0; index < removed.length; index++)
+		{
+			attributes.remove(removed[index]);
+		}
 	}
 
 	/* (non-Javadoc)
@@ -838,7 +814,7 @@ public class ScuflGraphModel implements GraphModel, GraphModelListener, ScuflUIC
 	public void attachToModel(ScuflModel model)
 	{
 		this.model = model;
-		createAttributes(this);
+		addAttributes(this);
 		reconciler = new ScuflModelReconciler(this);		
 	}
 
