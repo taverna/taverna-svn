@@ -132,16 +132,17 @@ public class SoaplabProcessor extends Processor implements java.io.Serializable 
 	    call = (Call)new Service().createCall();
 	    call.setTargetEndpointAddress(this.endpoint.toString());
 	    call.setOperationName(new QName("getResultSpec"));
-	    Map results = (Map)call.invoke(new Object[0]);
+	    Map[] results = (Map[])call.invoke(new Object[0]);
 	    // Iterate over the outputs
-	    for (Iterator i = results.keySet().iterator(); i.hasNext(); ) {
-		String output_name = (String)i.next();
+	    for (int i = 0; i<results.length; i++) {
+		Map output_spec = results[i];
+		String output_name = (String)output_spec.get("name");
+		String output_type = (String)output_spec.get("type");
 		// Check to see whether the output is either report or detailed_status, in 
 		// which cases we ignore it, this is soaplab metadata rather than application
 		// data.
 		if ((!output_name.equalsIgnoreCase("detailed_status")) 
 		    && (!output_name.equalsIgnoreCase("report"))) {
-		    String output_type = (String)results.get(output_name);
 		    Port new_port = new OutputPort(this, output_name);
 		    new_port.setSyntacticType(output_type);
 		    this.addPort(new_port);

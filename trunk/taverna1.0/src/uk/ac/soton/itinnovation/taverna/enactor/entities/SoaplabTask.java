@@ -24,9 +24,9 @@
 //      Created for Project :   MYGRID
 //      Dependencies        :
 //
-//      Last commit info    :   $Author: dmarvin $
-//                              $Date: 2003-04-18 20:41:40 $
-//                              $Revision: 1.1 $
+//      Last commit info    :   $Author: mereden $
+//                              $Date: 2003-04-25 13:30:55 $
+//                              $Revision: 1.2 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 
@@ -79,7 +79,7 @@ public class SoaplabTask extends ProcessorTask{
 			// Invoke the web service...
 			Call call = (Call) new Service().createCall();
 			call.setTargetEndpointAddress(((SoaplabProcessor) proc).getEndpoint());
-			call.setOperationName(new QName("waitFor"));
+			call.setOperationName(new QName("runAndWaitFor"));
 			call.setReturnType(new QName("apachesoap:Map"));
 			HashMap outputMap = new HashMap((Map)call.invoke(new Object[] { inputMap }));
 			//could also get some log info from service for the provenance using the describe method on the service
