@@ -21,8 +21,11 @@ import java.util.*;
  */
 public final class WorkbenchAuthenticator extends Authenticator {
     
-    final Map credentials = new HashMap();
-
+    // Map of host+port+prompt -> PasswordAuthentication (yuck)
+    // used to remember credentials when the user has asked for
+    // this behaviour.
+    private final Map credentials = new HashMap();
+    
     private JFrame hostFrame = null;
     
     public PasswordAuthentication getPasswordAuthentication() {
@@ -33,13 +36,25 @@ public final class WorkbenchAuthenticator extends Authenticator {
 	}
 	String port = getRequestingPort()+"";
 	String prompt = getRequestingPrompt();
+	PasswordAuthentication pa = (PasswordAuthentication)credentials.get(host+port+prompt);
+	if (pa != null) {
+	    // Return cached result
+	    return pa;
+	}
 	PasswordDialog pd = new PasswordDialog(this.hostFrame, true, "Password for "+host+", "+prompt+" required.");
+	if (pd.saveCredentials) {
+	    credentials.put(host+port+prompt,pd.result);
+	}
 	return pd.result;
     }
-
+    
     public WorkbenchAuthenticator(JFrame hostFrame) {
 	super();
 	this.hostFrame = hostFrame;
+    }
+    
+    public Map getStoredCredentials() {
+	return this.credentials;
     }
 
 }
@@ -48,7 +63,8 @@ class PasswordDialog extends JDialog {
     PasswordAuthentication result = null;
     JTextField user;
     JPasswordField password;
-
+    boolean saveCredentials = false;
+    
     public PasswordDialog(JFrame frame, boolean modal, String myMessage) {
 	super(frame, modal);
 	JPanel myPanel = new JPanel();
@@ -83,6 +99,21 @@ class PasswordDialog extends JDialog {
 		public void actionPerformed(ActionEvent ae) {
 		    result = null;
 		    setVisible(false);
+		}
+	    });
+	JPanel savePasswordPanel = new JPanel();
+	myPanel.add(savePasswordPanel, BorderLayout.NORTH);
+	JCheckBox savePassword = new JCheckBox("Save password",false);
+	savePasswordPanel.add(Box.createHorizontalGlue());
+	savePasswordPanel.add(savePassword);
+	savePassword.addItemListener(new ItemListener() {
+		public void itemStateChanged(ItemEvent e) {
+		    if (e.getStateChange() == ItemEvent.DESELECTED) {
+			saveCredentials = false;
+		    }
+		    else {
+			saveCredentials = true;
+		    }
 		}
 	    });
 	pack();
