@@ -182,12 +182,16 @@ public class WSDLBasedProcessor extends Processor implements java.io.Serializabl
      * Convert an XSD type into a Baclava type string
      */
     public String xsdTypeToInternalType(String xsdType) {
+	// System.out.println("Type conversion requested for "+xsdType);
 	// Can cope with String types and nested strings
 	if (xsdType.startsWith("ArrayOf_")) {
 	    return ("l("+xsdTypeToInternalType(xsdType.replaceFirst("ArrayOf_",""))+")");
 	}
 	else if (xsdType.startsWith("ArrayOf")) {
 	    return ("l("+xsdTypeToInternalType(xsdType.replaceFirst("ArrayOf",""))+")");
+	}
+	else if (xsdType.equalsIgnoreCase("base64")) {
+	    return "'application/octet-stream'";
 	}
 	else {
 	    return "'text/plain'";
