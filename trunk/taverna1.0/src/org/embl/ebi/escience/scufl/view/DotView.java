@@ -311,8 +311,14 @@ public class DotView implements ScuflModelEventListener, java.io.Serializable {
 		}
 	    }
 	    else if (dc.getSource().getProcessor() == model.getWorkflowSourceProcessor()) {
-		// Is a link from a workflow source to an internal sink
-		dot.append(q("WORKFLOWINTERNALSOURCE_"+sourcePortName)+"->"+q(sinkProcessorName)+":"+sinkPortName+" [ \n");
+		if (dc.getSink().getProcessor() == model.getWorkflowSinkProcessor()) {
+		    // Is a direct source to sink link
+		    dot.append(q("WORKFLOWINTERNALSOURCE_"+sourcePortName)+"->"+q("WORKFLOWINTERNALSINK_"+sinkPortName)+" [ \n");
+		}
+		else {
+		    // Is a link from a workflow source to an internal sink
+		    dot.append(q("WORKFLOWINTERNALSOURCE_"+sourcePortName)+"->"+q(sinkProcessorName)+":"+sinkPortName+" [ \n");
+		}
 	    }
 	    else if (dc.getSink().getProcessor() == model.getWorkflowSinkProcessor()) {
 		// Is a link from an internal source to a workflow sink
