@@ -94,14 +94,23 @@ public class ScuflGraph extends JGraph
 	// Set the Tolerance to 2 Pixel
 	setTolerance(2);
 
-        scuflModel = new ScuflModel();
-        // Register a listener to print to stdout
-        scuflModel.addListener(new ScuflModelEventPrinter(null));
-
-        scuflView = new XScuflView(scuflModel);
+        newScuflModel();
         setDropTarget(new DropTarget(this,this));
     }
  
+    /**
+     *
+     * Initialise the ScuflModel
+     *
+     */
+    public void newScuflModel()
+    {
+      scuflModel = new ScuflModel();
+      // Register a listener to print to stdout
+      scuflModel.addListener(new ScuflModelEventPrinter(null));
+      scuflView = new XScuflView(scuflModel);
+    }
+
     /**
      *
      * Load in a XScufl workflow
@@ -110,10 +119,6 @@ public class ScuflGraph extends JGraph
      */
     public void loadXScufl(String xscufl)
     {
-      scuflModel = new ScuflModel();
-      scuflModel.addListener(new ScuflModelEventPrinter(null));
-      scuflView = new XScuflView(scuflModel);
-
       // use xscufl to populate the ScuflModel
       try
       {
@@ -176,13 +181,24 @@ public class ScuflGraph extends JGraph
         System.out.println("**********************DataConstraint "+constraint);
         int ind1 = constraint.indexOf(":");
         int ind2 = constraint.indexOf("'");
-        String procName = constraint.substring(0,ind1);
-        String portName = constraint.substring(ind1+1,ind2);
+        if(ind2 < 0)
+          ind2 = constraint.indexOf("-");
+
+        if(ind1 < 0 || ind2 < 0 || ind1 > ind2)
+          continue;
+
+//      System.out.println("********************** ind1 ind2"+ind1+" "+ind2);
+        String procName = constraint.substring(0,ind1).trim();
+        String portName = constraint.substring(ind1+1,ind2).trim();
         Port pstart = getJGraphPort(procName,portName,cells);
+
+//      System.out.println("********************** procName "+procName);
         ind1 = constraint.indexOf("'",ind2+1);  
+        if(ind1 < 0)
+          ind1 = constraint.indexOf(">");
         ind2 = constraint.indexOf(":",ind1);
-        procName = constraint.substring(ind1+1,ind2);
-        portName = constraint.substring(ind2+1);
+        procName = constraint.substring(ind1+1,ind2).trim();
+        portName = constraint.substring(ind2+1).trim();
         Port pend = getJGraphPort(procName,portName,cells);
         if(pstart != null && pend != null)
           connect(pstart,pend);
@@ -389,6 +405,7 @@ public class ScuflGraph extends JGraph
     {
       scuflModel.destroyProcessor(processor);
     }
+
 
     /**
      * Get the XML text

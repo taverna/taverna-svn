@@ -58,6 +58,8 @@ public class ScuflGraphPanel extends JPanel
     protected Action undo, redo, remove, group,	ungroup; 
     protected Action tofront, toback, cut, copy, paste;
 
+    private ProgList progs;
+
     // Main Method
     public static void main(String[] args) 
     {
@@ -77,13 +79,13 @@ public class ScuflGraphPanel extends JPanel
     */
     public ScuflGraphPanel(IScuflNodeCreator delegate, ProgList progs) 
     {
-	
 	this.creatorDelegate = delegate;
+        this.progs = progs;
 	setLayout(new BorderLayout());
 
-	graph = new ScuflGraph(new ScuflGraphModel(),progs);
-	graph.setMarqueeHandler(new ScuflMarqueeHandler());
-        graph.setBackground(new Color(153,153,255));
+  	graph = new ScuflGraph(new ScuflGraphModel(),progs);
+  	graph.setMarqueeHandler(new ScuflMarqueeHandler());
+        graph.setBackground(new Color(173,173,255));
 
 	undoManager = new GraphUndoManager() 
         {
@@ -97,26 +99,65 @@ public class ScuflGraphPanel extends JPanel
         };
 	
 	// Register UndoManager with the Model
-	graph.getModel().addUndoableEditListener(undoManager);
+  	graph.getModel().addUndoableEditListener(undoManager);
 	
 	// Update ToolBar based on Selection Changes
-	graph.getSelectionModel().addGraphSelectionListener(this);
+  	graph.getSelectionModel().addGraphSelectionListener(this);
 	
 	// Listen for Delete Keystroke when the Graph has Focus
-	graph.addKeyListener(this);
+  	graph.addKeyListener(this);
 	
 	// Add a ToolBar & menu bar
 	add(createToolBar(), BorderLayout.NORTH);
 
 	// Add the Graph as Center Component
-	add(new JScrollPane(graph), BorderLayout.CENTER);
+  	add(new JScrollPane(graph), BorderLayout.CENTER);
     }
 
+    /**
+     *
+     * Remove existing processors and children and
+     * create a new ScuflModel.
+     * @param String xscufl
+     *
+     */
+    public void newWorkFlow()
+    {
+      // clear graph of old workflow
+      Object[] cells = graph.getRoots();
+      for(int i=0;i<cells.length;i++)
+      {
+        if(cells[i] instanceof ScuflGraphCell)
+        {
+          ScuflGraphCell cell = (ScuflGraphCell)cells[i];
+          cell.removeAllChildren();
+          graph.destroyProcessor(cell.getScuflProcessor());
+        }
+      }
+
+      graph.getModel().remove(cells);
+      graph.newScuflModel();
+    }
+
+    /**
+     *
+     * Load in a new XScufl workflow.
+     * @param String xscufl
+     *
+     */
     public void loadXScufl(String xscufl)
     {
+      newWorkFlow();
+      // load in new workflow
       graph.loadXScufl(xscufl);
     }
 
+     /**
+     *
+     * Get the XScufl description of the current workflow.
+     * @return String xscufl
+     *
+     */
     public String getXScufl()
     {
       return graph.getXScufl();
@@ -163,23 +204,6 @@ public class ScuflGraphPanel extends JPanel
                                   attributes, null, null, null);
     }
 
-    /**
-     * Insert a new Edge between source and target. The error
-     * checking here is done entirely within the ScuflGraphModel class,
-     * you don't need to put it in here.
-     */
-//  public void connect(Port source, Port target) 
-//  {
-//	ConnectionSet cs = new ConnectionSet();
-//	DefaultEdge edge = new DefaultEdge();
-//	cs.connect(edge, source, target);
-//	Map map = GraphConstants.createMap();
-//	GraphConstants.setLineEnd(map, GraphConstants.ARROW_TECHNICAL);
-//	Hashtable attributes = new Hashtable();
-//	attributes.put(edge, map);
-//	graph.getGraphLayoutCache().insert(new Object[]{edge}, 
-//                                  attributes, cs, null, null);
-//    }
     
     /**
      * Group the supplied cells together

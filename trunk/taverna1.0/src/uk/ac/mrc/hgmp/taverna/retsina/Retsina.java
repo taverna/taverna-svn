@@ -21,6 +21,10 @@ import org.emboss.jemboss.gui.startup.ProgList;
 import uk.ac.mrc.hgmp.taverna.retsina.ProgramSelectionPanel;
 import uk.ac.mrc.hgmp.taverna.retsina.ScuflGraphPanel;
 import uk.ac.mrc.hgmp.taverna.retsina.ScuflGraph;
+
+import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.broker.*;
+import uk.ac.soton.itinnovation.taverna.enactor.broker.TavernaWorkflowSubmission;
+import uk.ac.soton.itinnovation.taverna.enactor.broker.TavernaFlowReceipt;
 import java.lang.Exception;
 import java.lang.String;
 import java.lang.System;
@@ -97,8 +101,19 @@ public class Retsina extends JApplet
      JMenu fileMenu = new JMenu("File");
      fileMenu.setMnemonic(KeyEvent.VK_F);
 
-     JMenuItem loadXScufl = new JMenuItem("Load XScufl Example");
-     loadXScufl.addActionListener(new ActionListener()
+     JMenuItem newWorkFlow = new JMenuItem("New Workflow");
+     newWorkFlow.addActionListener(new ActionListener()
+     {
+       public void actionPerformed(ActionEvent e)
+       {
+         graphPanel.newWorkFlow();
+       }
+     });
+     fileMenu.add(newWorkFlow);
+     fileMenu.add(new JSeparator());
+
+     JMenuItem loadExampleXScufl = new JMenuItem("Load XScufl Example");
+     loadExampleXScufl.addActionListener(new ActionListener()
      {
        public void actionPerformed(ActionEvent e)
        {
@@ -111,6 +126,36 @@ public class Retsina extends JApplet
              sWriter.write(workflow.read());
            String xscufl = sWriter.toString();
            graphPanel.loadXScufl(xscufl);
+         }
+         catch(Exception exp){}
+       }
+     });
+     fileMenu.add(loadExampleXScufl);
+
+     JMenuItem loadXScufl = new JMenuItem("Load Workflow");
+     loadXScufl.addActionListener(new ActionListener()
+     {
+       public void actionPerformed(ActionEvent e)
+       {
+         try
+         {
+           SecurityManager sm = System.getSecurityManager();
+           System.setSecurityManager(null);
+           JFileChooser fc = new JFileChooser(System.getProperty("user.home"));
+           System.setSecurityManager(sm);
+           int returnVal = fc.showOpenDialog(fc);
+
+           if(returnVal == JFileChooser.APPROVE_OPTION)
+           {
+             File file = fc.getSelectedFile();
+             
+             BufferedInputStream workflow = new BufferedInputStream(new FileInputStream(file));
+             StringWriter sWriter = new StringWriter();
+             while(workflow.available()>0)
+               sWriter.write(workflow.read());
+             String xscufl = sWriter.toString();
+             graphPanel.loadXScufl(xscufl);
+           }
          }
          catch(Exception exp){}
        }
@@ -144,6 +189,7 @@ public class Retsina extends JApplet
      });
      fileMenu.add(saveXScufl);
 
+     fileMenu.add(new JSeparator());
      JMenuItem fileRunScufl = new JMenuItem("Run workflow");
      fileRunScufl.addActionListener(new ActionListener()
      {
@@ -153,7 +199,7 @@ public class Retsina extends JApplet
        }
      });
      fileMenu.add(fileRunScufl);
-
+     fileRunScufl.setEnabled(false);
 
      fileMenu.add(new JSeparator());
      JMenuItem fileMenuExit = new JMenuItem("Exit");
@@ -175,6 +221,7 @@ public class Retsina extends JApplet
      {
        public void actionPerformed(ActionEvent e)
        {
+         JFrame f = new JFrame("XScufl");
          JTextPane xscufl = new JTextPane();
          JPanel pscroll = new JPanel(new BorderLayout());
          JScrollPane rscroll = new JScrollPane(pscroll);
@@ -186,8 +233,11 @@ public class Retsina extends JApplet
          rscroll.setPreferredSize(new Dimension(400,180));
 
          xscufl.setCaretPosition(0);
-         jop.showMessageDialog(null,rscroll,"XScufl",
-                             JOptionPane.PLAIN_MESSAGE);
+         f.getContentPane().add(rscroll);
+         f.pack();
+         f.setVisible(true);
+//       jop.showMessageDialog(null,rscroll,"XScufl",
+//                           JOptionPane.PLAIN_MESSAGE);
        }
      });
      viewMenu.add(viewXScufl);
@@ -229,15 +279,89 @@ public class Retsina extends JApplet
 
    private void submitWorkFlow(ScuflGraph graph)
    {
-     String xscufl = graph.getXScufl();
-     System.out.println(xscufl);
-//   TavernaWorkflowSubmission submit = new TavernaWorkflowSubmission(
-//              xscufl,inputData,"TestTavernaFlowBroker",
-//              "http://www.hgmp.mrc.ac.uk/users");
-//   FlowBroker broker = FlowBrokerFactory.createFlowBroker(
-//              "uk.ac.soton.itinnovation.taverna.enactor.broker.TavernaFlowBroker");
-//   TavernaFlowReceipt receipt = (TavernaFlowReceipt)broker.submitFlow(submit);
 
+     try{
+          BufferedInputStream workflowspec = new BufferedInputStream(new FileInputStream("/people/tcarver/xx.scufl"));
+           BufferedInputStream inData = new BufferedInputStream(new FileInputStream("src/uk/ac/soton/itinnovation/taverna/enactor/broker/test/input.xml"));
+
+           StringWriter sWriter = new StringWriter();
+       while(workflowspec.available()>0) {
+         sWriter.write(workflowspec.read());
+       }
+       String wsflDefn = sWriter.toString();
+       sWriter = new StringWriter();
+       while(inData.available()>0) {
+         sWriter.write(inData.read());
+       }
+       String input = sWriter.toString();
+
+       System.out.println(" **************** HERE ****************");
+       System.out.println("\n\n"+graph.getXScufl());
+       TavernaWorkflowSubmission submit = new TavernaWorkflowSubmission(wsflDefn,input,"TestTavernaFlowBroker","http://www.it-innovation.soton.ac.uk/users");
+
+       FlowBroker broker = FlowBrokerFactory.createFlowBroker("uk.ac.soton.itinnovation.taverna.enactor.broker.TavernaFlowBroker");
+       TavernaFlowReceipt receipt = (TavernaFlowReceipt) broker.submitFlow(submit);
+       //poll for status every 500ms
+       boolean stop = false;
+       String status ="UNKNOWN";
+       while(!stop) {
+         //retrieve the status
+         status = receipt.getStatusString();
+         if(status.equals("COMPLETE") || status.equals("FAILED"))
+           stop = true;
+         try {
+           Thread.sleep(500);
+         }
+         catch(InterruptedException ex) {
+         }
+       }
+       if(status.equals("FAILED"))
+           System.out.println("Error message: " + receipt.getErrorMessage());
+       System.out.println("Emboss Workflow has finished with status: " + status); 
+        }
+        catch(Exception ex) {
+                ex.printStackTrace();
+        }
+   //try
+   //{
+       // As per:
+       // uk.ac.soton.itinnovation.taverna.enactor.broker.test.TestTavernaFlowBroker
+   //  String xscufl = graph.getXScufl();
+//     System.out.println(xscufl);
+   //  BufferedInputStream inData = new BufferedInputStream(new FileInputStream("src/uk/ac/soton/itinnovation/taverna/enactor/broker/test/input.xml"));
+
+   //  StringWriter sWriter = new StringWriter();
+  //   while(inData.available()>0) 
+   //    sWriter.write(inData.read());
+      
+   //  String inputData = sWriter.toString();
+   //  TavernaWorkflowSubmission submit = new TavernaWorkflowSubmission(
+  //                    xscufl,inputData,"TestTavernaFlowBroker",
+   //                   "http://www.it-innovation.soton.ac.uk/users");
+//                      "http://www.hgmp.mrc.ac.uk/users");
+  //   FlowBroker broker = FlowBrokerFactory.createFlowBroker(
+  //            "uk.ac.soton.itinnovation.taverna.enactor.broker.TavernaFlowBroker");
+  //   TavernaFlowReceipt receipt = (TavernaFlowReceipt)broker.submitFlow(submit);
+
+       //poll for status every 500ms
+  //   boolean stop = false;
+  //   String status ="UNKNOWN";
+  //   while(!stop) {
+  //     //retrieve the status
+  //     status = receipt.getStatusString();
+  //     if(status.equals("COMPLETE") || status.equals("FAILED"))
+  //       stop = true;
+  //     try {
+  //       Thread.sleep(500);
+  //     }
+  //     catch(InterruptedException ex) {
+  //     }
+  //   }
+  // }
+  // catch(Exception ex) 
+  // {
+  //   ex.printStackTrace();
+  // }   
    }
 
 }
