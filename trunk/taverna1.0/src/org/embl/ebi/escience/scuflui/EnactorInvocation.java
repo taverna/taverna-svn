@@ -122,10 +122,15 @@ public class EnactorInvocation extends JPanel implements ScuflUIComponent {
       System.out.println("Getting results...");
       boolean gotResults = false;
       while (!gotResults) {
-	results = this.workflowInstance.getOutputXMLString();
-        if (results.equals("") == false) {
-          gotResults = true;
-        } else {
+	  if (this.workflowInstance.getStatus().equalsIgnoreCase("Complete")) {
+	      gotResults = true;
+	  }
+	  
+	  //System.out.println(this.workflowInstance.getStatus());
+	  //results = this.workflowInstance.getOutputXMLString();
+	  //if (results.equals("") == false) {
+          //gotResults = true;
+        else {
           Thread.sleep(1000);
         }
       }
@@ -174,30 +179,32 @@ public class EnactorInvocation extends JPanel implements ScuflUIComponent {
    * Save the results to a directory. This will display a dialog box to find
    * the directory.
    */
-  public void saveResults()
-  {
-    ensureGotResults();
-    // Get the output map and create new result detail panes
-    Map resultMap = this.workflowInstance.getOutput();
-    JFileChooser chooser = new JFileChooser();
-    chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-    int returnVal = chooser.showSaveDialog(this);
-    for (Iterator i = resultMap.keySet().iterator(); i.hasNext();) {
-      String resultName = (String) i.next();
-      DataThing resultValue = (DataThing) resultMap.get(resultName);
-      try {
-        if (returnVal == JFileChooser.APPROVE_OPTION) {
-          File f = chooser.getSelectedFile();
-          String name = resultName;
-          resultValue.writeToFileSystem(f, name);
-        }
-      } catch (IOException ioe) {
-        // todo: ugly hack - how are we meant to be handling errors?
-        ioe.printStackTrace();
-        //
-      }
-    }
-  }
+    /**
+       public void saveResults()
+       {
+       ensureGotResults();
+       // Get the output map and create new result detail panes
+       Map resultMap = this.workflowInstance.getOutput();
+       JFileChooser chooser = new JFileChooser();
+       chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+       int returnVal = chooser.showSaveDialog(this);
+       for (Iterator i = resultMap.keySet().iterator(); i.hasNext();) {
+       String resultName = (String) i.next();
+       DataThing resultValue = (DataThing) resultMap.get(resultName);
+       try {
+       if (returnVal == JFileChooser.APPROVE_OPTION) {
+       File f = chooser.getSelectedFile();
+       String name = resultName;
+       resultValue.writeToFileSystem(f, name);
+       }
+       } catch (IOException ioe) {
+       // todo: ugly hack - how are we meant to be handling errors?
+       ioe.printStackTrace();
+       //
+       }
+       }
+       }
+    */
 
     /**
      * Show the current provenance of this invocation
@@ -205,13 +212,13 @@ public class EnactorInvocation extends JPanel implements ScuflUIComponent {
     public void showProvenance() {
 	String provenance = "";
 	try {
-	    provenance = this.workflowInstance.getProvenanceXMLString();
+	    //provenance = this.workflowInstance.getProvenanceXMLString();
 	    //this.provenanceText.setFont(new Font("Monospaced",Font.PLAIN,12));
 	    //this.provenanceText.setLineWrap(true);
 	    //this.provenanceText.setWrapStyleWord(true);
 	    //this.provenanceText.setText(provenance);
 	    //this.tabs.add("Provenance Text", provenancePanel);
-	    this.tabs.add("Provenance Tree", new JScrollPane(new XMLTree(provenance)));
+	    //this.tabs.add("Provenance Tree", new JScrollPane(new XMLTree(provenance)));
 
 	}
 	catch (Exception ex) {
@@ -222,7 +229,7 @@ public class EnactorInvocation extends JPanel implements ScuflUIComponent {
     public void showResultTable()
     {
 	try {
-	    this.tabs.add("Result Table", new JScrollPane(new ResultTablePanel(theModel, workflowInstance)));    	
+	    //this.tabs.add("Result Table", new JScrollPane(new ResultTablePanel(theModel, workflowInstance)));    	
 	}
 	catch (Exception e) {
 	    // The above can cause a NPE, we need to track this down
@@ -474,7 +481,7 @@ class EnactorInvocationStatusThread extends Thread {
 		    // System.out.println("Workflow status : "+workflowStatus);
 		    if (workflowStatus.equals("FAILED") ||
 			workflowStatus.equals("CANCELLED")) {
-			theEnactorInvocation.showProvenance();
+			//theEnactorInvocation.showProvenance();
 			theEnactorInvocation.showProgressReport();
 			running = false;
 			abort = true;
@@ -484,9 +491,9 @@ class EnactorInvocationStatusThread extends Thread {
 			// Set the results display in the display panel
 			theEnactorInvocation.showResults();
 			theEnactorInvocation.showResultTable();			
-			theEnactorInvocation.showProvenance();
+			// theEnactorInvocation.showProvenance();
 			theEnactorInvocation.showProgressReport();
-      // theEnactorInvocation.saveResults(); - commented out as it's anoying MRP
+			// theEnactorInvocation.saveResults(); - commented out as it's anoying MRP
 		    }
 		}
 		catch ( Exception e ) {

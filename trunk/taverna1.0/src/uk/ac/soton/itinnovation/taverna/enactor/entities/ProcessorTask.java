@@ -25,8 +25,8 @@
 //      Dependencies        :
 //
 //      Last commit info    :   $Author: mereden $
-//                              $Date: 2004-10-03 21:49:03 $
-//                              $Revision: 1.60 $
+//                              $Date: 2004-11-01 12:30:36 $
+//                              $Revision: 1.61 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 package uk.ac.soton.itinnovation.taverna.enactor.entities;
@@ -550,7 +550,9 @@ public class ProcessorTask extends AbstractTask {
 	// output collections, the values are sets of the LSIDs of the individual
 	// result items which have been used to compose these collections.
 	Map collectionStructure = new HashMap();
-
+	int totalIterations = rootNode.size();
+	Map lsidForNamedOutput = new HashMap();
+	
 	// Create the output container
 	Map outputMap = new HashMap();
 	for (Iterator i = getChildren().iterator(); i.hasNext();) {
@@ -558,10 +560,15 @@ public class ProcessorTask extends AbstractTask {
             if (task instanceof PortTask) {
 		PortTask outputPortTask = (PortTask) task;
 		// Create data things with array lists inside them.
-		DataThing outputThing = new DataThing(new ArrayList());
+		DataThing outputThing = new DataThing(new ArrayList(totalIterations));
 		// Assign an LSID to the root collection object
 		outputThing.fillLSIDValues();
 		String collectionLSID = outputThing.getLSID(outputThing.getDataObject());
+		// Hack - remove the LSID from this datathing and remember it, will reinsert
+		// after the iteration has completed. This is a workaround for a potentially
+		// expensive remove operation within the iteration loop
+		outputThing.getLSIDMap().remove(outputThing.getDataObject());
+		lsidForNamedOutput.put(outputPortTask.getScuflPort().getName(), collectionLSID);
 		//System.out.println("Got collection LSID : "+collectionLSID);
 		outputMap.put(outputPortTask.getScuflPort().getName(), outputThing);
 		// Create an entry in the collectionStructure map containing
@@ -594,9 +601,17 @@ public class ProcessorTask extends AbstractTask {
 	
 	// Do the iteration
 	int currentIteration = 0;
-	int totalIterations = rootNode.size();
+	
+	InvokingWithIteration event = new InvokingWithIteration(0, totalIterations);
+	eventList.add(event);
 	while (rootNode.hasNext()) {
-	    Map inputSet = (Map)rootNode.next();
+	    // Pick up a new set of input data from the iterator
+	    Map inputSet = null;
+	    int[] currentLocation = null;
+	    synchronized (rootNode) {
+		inputSet = (Map)rootNode.next();
+		currentLocation = rootNode.getCurrentLocation();
+	    }
 	    // Iterate over the set and add the LSIDs of inputs to the inputShredding map...
 	    for (Iterator i = inputSet.keySet().iterator(); i.hasNext(); ) {
 		String inputName = (String)i.next();
@@ -606,8 +621,10 @@ public class ProcessorTask extends AbstractTask {
 		Set shredding = (Set)inputShredding.get(primaryLSID);
 		shredding.add(inputThingLSID);
 	    }
-	    int[] currentLocation = rootNode.getCurrentLocation();
-	    eventList.add(new InvokingWithIteration(++currentIteration, totalIterations));
+	    //eventList.add(new InvokingWithIteration(++currentIteration, totalIterations));
+	    // Mark the current iteration
+	    event.setIterationNumber(""+(++currentIteration));
+	    // Run the process
 	    Map singleResultMap = invokeOnce(inputSet);
 	    // Fire a new ProcessCompletionEvent
 	    DISPATCHER.fireProcessCompleted(new ProcessCompletionEvent(true,
@@ -626,26 +643,38 @@ public class ProcessorTask extends AbstractTask {
 		if (outputMap.containsKey(outputName)) {
 		    DataThing targetThing = (DataThing)outputMap.get(outputName);
 		    //System.out.println(targetThing);
-		    targetThing.fillLSIDValues();
+		    //targetThing.fillLSIDValues();
 		    //System.out.println(targetThing);
 		    List targetList = (List)targetThing.getDataObject();
 		    //System.out.println("Target list has object ID "+targetList.hashCode());
 		    //targetList.add(dataObject);
+		    // Store the result into the appropriate output collection
 		    insertObjectInto(dataObject, targetList, currentLocation, targetThing);
 		    // Copy metadata from the original output into the new one, preserve LSID hopefully!
 		    targetThing.copyMetadataFrom(outputValue);
 		    // Get the LSID of the original output item
 		    //System.out.println(targetThing);
 		    //System.out.println(targetThing.getDataObject() == targetList);
-		    String originalLSID = targetThing.getLSID(dataObject);
-		    String collectionLSID = targetThing.getLSID(targetList);
+		    String originalLSID = outputValue.getLSID(dataObject);
+		    //String collectionLSID = targetThing.getLSID(targetList);
+		    String collectionLSID = (String)lsidForNamedOutput.get(outputName);
 		    //System.out.println("original : "+originalLSID+", collection : "+collectionLSID);
-		    ((Set)collectionStructure.get(collectionLSID)).add(originalLSID);
+		    synchronized(collectionStructure) {
+			((Set)collectionStructure.get(collectionLSID)).add(originalLSID);
+		    }
 		}
 		/// fix ends
 	    }
 	}
 	
+	// Fix up the LSIDs in the outputs
+	for (Iterator i = outputMap.keySet().iterator(); i.hasNext();) {
+	    String outputName = (String)i.next();
+	    DataThing outputThing = (DataThing)outputMap.get(outputName);
+	    String collectionLSID = (String)lsidForNamedOutput.get(outputName);
+	    outputThing.getLSIDMap().put(outputThing.getDataObject(), collectionLSID);
+	}
+
 	// Iterate over the inputShredding map and remove any keys which map to sets with
 	// only a single item where the item in the set is the same as the key (i.e. where
 	// the iteration structure has iterated over a single item repeatedly)
@@ -677,12 +706,18 @@ public class ProcessorTask extends AbstractTask {
      * but I'm fairly sure that this is implied by the calling context anyway.
      * The DataThing is supplied so that the LSID map can be correctly maintained
      */
-    private void insertObjectInto(Object o, List l, int[] position, DataThing theThing) {
+    private synchronized void insertObjectInto(Object o, List l, int[] position, DataThing theThing) {
 	List currentList = l;
-	String oldLSID = theThing.getLSID(l);
-	if (oldLSID != null) {
-	    theThing.getLSIDMap().remove(l);
-	}
+	// Does this get and set LSID logic slow the thing down? Seems like it shouldn't
+	// but we don't really need to do this once per iteration, should really be once
+	// per processor surely? Even if this isn't the source of the non constant time 
+	// cost for this method it should be moved out, has to help performance a bit.
+	// Should investigate what the costs are for the remove and containskey operations
+	// on the hashes. 
+	//String oldLSID = theThing.getLSID(l);
+	//if (oldLSID != null) {
+	//   theThing.getLSIDMap().remove(l);
+	//}
 	// Walk over the index array to find the enclosing collection
 	for (int i = 0; i<position.length-1; i++) {
 	    int index = position[i];
@@ -702,16 +737,24 @@ public class ProcessorTask extends AbstractTask {
 	int objectIndex = position[position.length-1];
 	// Check whether it's safe to just insert this item at the
 	// given position
-	try {
-	    currentList.add(objectIndex, o);
-	}
-	catch (IndexOutOfBoundsException ioobe) {
-	    // Just add onto the end
+	if (currentList.size() < objectIndex) {
 	    currentList.add(o);
 	}
-	if (oldLSID!=null) {
-	    theThing.setLSID(l, oldLSID);
+	else {
+	    currentList.add(objectIndex, o);
 	}
+	/**
+	   try {
+	   currentList.add(objectIndex, o);
+	   }
+	   catch (IndexOutOfBoundsException ioobe) {
+	   // Just add onto the end
+	   currentList.add(o);
+	   }
+	*/
+	//if (oldLSID!=null) {
+	//    theThing.setLSID(l, oldLSID);
+	//}
     }
 
     

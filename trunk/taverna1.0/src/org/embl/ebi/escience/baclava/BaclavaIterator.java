@@ -32,7 +32,8 @@ public class BaclavaIterator implements ResumableIterator {
     private Iterator indexIterator = indexList.iterator();
     private Iterator internalIterator = null;
     private int[] currentLocation = null;
-    
+    private DataThing parentThing = null;
+
     public BaclavaIterator(Collection c) {
 	this.underlyingCollection = c;
 	this.internalIterator = c.iterator();
@@ -42,6 +43,19 @@ public class BaclavaIterator implements ResumableIterator {
 	this(c);
 	this.indexList = indexList;
 	this.indexIterator = indexList.iterator();
+    }
+    
+    /**
+     * Construct an iterator from a list of non data thing objects,
+     * a reference to the parent DataThing which contains them and
+     * an explicit index list. This avoids the overhead of creating
+     * all the datathing objects at iterator construction time, something
+     * that was causing some serious performance issues, mostly because
+     * of the metadata copy operations
+     */
+    public BaclavaIterator(DataThing parent, Collection c, List indexList) {
+	this(c, indexList);
+	this.parentThing = parent;
     }
 
     public int[] getCurrentLocation() {
@@ -67,7 +81,15 @@ public class BaclavaIterator implements ResumableIterator {
 	    // Increment the current index
 	    currentLocation = (int[])indexIterator.next();
 	}
-	return this.internalIterator.next();
+	if (parentThing == null) {
+	    return this.internalIterator.next();
+	}
+	else {
+	    // Construct a new datathing on the fly and return it
+	    DataThing newThing = new DataThing(this.internalIterator.next());
+	    newThing.linkMetadataFrom(parentThing);
+	    return newThing;
+	}
     }
     
     public void remove() 

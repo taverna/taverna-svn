@@ -171,7 +171,8 @@ public class DataThing {
      * empty string if there is no such mapping
      */
     public String getLSID(Object target) {
-	return (lsid.get(target)!=null)?(String)(lsid.get(target)):"";
+	String lsidString = (String)lsid.get(target);
+	return (lsidString!=null)?lsidString:"";
     }
 
     /**
@@ -208,7 +209,12 @@ public class DataThing {
 	if (o == null) {
 	    throw new RuntimeException("Attempt to create a null data object, definitely not allowed!");
 	}
-	theDataObject = DataThingFactory.convertObject(o);
+	if (o instanceof ArrayList == false) {
+	    theDataObject = DataThingFactory.convertObject(o);
+	}
+	else {
+	    theDataObject = o;
+	}
 	myMarkup = new SemanticMarkup(this);
     }
 
@@ -363,6 +369,16 @@ public class DataThing {
 	lsid.putAll(source.lsid);
 	metadataMap.putAll(source.metadataMap);
     }
+    
+    /**
+     * Link the metadata of this object to the specified datathing,
+     * similar in effect to the copy operation above in most cases
+     * but doesn't deep copy the metadata.
+     */
+    public void linkMetadataFrom(DataThing source) {
+	this.lsid = source.lsid;
+	this.metadataMap = source.metadataMap;
+    }
 
     /**
      * Get the SemanticMarkup associated with an object
@@ -434,7 +450,12 @@ public class DataThing {
             List dataThingList = new ArrayList();
             for (Iterator i = ((Collection) theDataObject).iterator();
                  i.hasNext();) {
-                dataThingList.add(extractChild(i.next()));
+		DataThing newThing = new DataThing(i.next());
+		newThing.metadataMap = this.metadataMap;
+		newThing.myMarkup = new SemanticMarkup(this.myMarkup);
+		newThing.lsid = this.lsid;
+		dataThingList.add(newThing);
+                //dataThingList.add(extractChild(i.next()));
             }
             return dataThingList.iterator();
         } else {
@@ -492,14 +513,16 @@ public class DataThing {
 	    drill(iterationDepth, targetList, indexList, new int[0], (Collection)theDataObject);
 	    // Now iterate over the target list creating new DataThing objects from it
 	    List dataThingList = new ArrayList();
-	    for (Iterator i = targetList.iterator(); i.hasNext(); ) {
-		DataThing newThing = new DataThing(i.next());
-		// Copy any metadata into the new datathing
-		newThing.metadataMap.putAll(this.metadataMap);
-		newThing.lsid.putAll(this.lsid);
-		dataThingList.add(newThing);
-	    }
-	    return new BaclavaIterator(dataThingList, indexList);
+	    /**for (Iterator i = targetList.iterator(); i.hasNext(); ) {
+	       DataThing newThing = new DataThing(i.next());
+	       // Copy any metadata into the new datathing
+	       newThing.metadataMap.putAll(this.metadataMap);
+	       newThing.lsid.putAll(this.lsid);
+	       dataThingList.add(newThing);
+	       }
+	    */
+	    //return new BaclavaIterator(dataThingList, indexList);
+	    return new BaclavaIterator(this, targetList, indexList);
 	}
 	else {
 	    throw new IntrospectionException("Incompatible types for iterator, cannot extract "+type+" from "+getSyntacticType());
