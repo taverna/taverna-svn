@@ -106,7 +106,11 @@ public class DotView implements ScuflModelEventListener, java.io.Serializable {
 	}
 	return this.cachedRepresentation;
     }
-    
+    	
+    private String q(String name) {
+	return "\""+name+"\"";
+    }
+	
     /**
      * Generate the dot view
      */
@@ -189,7 +193,7 @@ public class DotView implements ScuflModelEventListener, java.io.Serializable {
 	   }
 	*/
 	
-
+		
 	// For each processor, create a named node
 	// Currently creates oval blobs per node,
 	// as and when I can get the dot manual to 
@@ -200,7 +204,7 @@ public class DotView implements ScuflModelEventListener, java.io.Serializable {
 	for (int i=0; i<processors.length; i++) {
 	    Processor p = processors[i];
 	    // Create the new node
-	    dot.append(" "+p.getName()+" [ \n");
+	    dot.append(" "+q(p.getName())+" [ \n");
 	    // Change the colour if this is a WSDLBasedProcessor (hack hack hack)
 	    dot.append("  fillcolor = \""+
 		       org.embl.ebi.escience.scuflworkers.ProcessorHelper.getPreferredColour(p)+
@@ -214,10 +218,10 @@ public class DotView implements ScuflModelEventListener, java.io.Serializable {
 		// Name of the node
 		if (this.portDisplay == DotView.ALL) {
 		    if (p.getAlternatesList().isEmpty()) {
-			dot.append("{"+p.getName()+(p.isOffline()?"":"")+"}|{");
+			dot.append("{"+p.getName()+"}|{");
 		    }
 		    else {
-			dot.append("{"+p.getName()+(p.isOffline()?"":"")+"\\n"+p.getAlternatesList().size()+" alternate");
+			dot.append("{"+p.getName()+"\\n"+p.getAlternatesList().size()+" alternate");
 		    if (p.getAlternatesList().size()!=1) {
 			dot.append("s");
 		    }
@@ -247,10 +251,10 @@ public class DotView implements ScuflModelEventListener, java.io.Serializable {
 		
 		if (this.portDisplay == DotView.BOUND) {
 		    if (p.getAlternatesList().isEmpty()) {
-			dot.append(p.getName()+(p.isOffline()?"":"")+"|");
+			dot.append(p.getName()+"|");
 		    }
 		    else {
-			dot.append(p.getName()+(p.isOffline()?"":"")+"\\n"+p.getAlternatesList().size()+" alternate");
+			dot.append(p.getName()+"\\n"+p.getAlternatesList().size()+" alternate");
 			if (p.getAlternatesList().size()!=1) {
 			    dot.append("s");
 			}
@@ -280,7 +284,7 @@ public class DotView implements ScuflModelEventListener, java.io.Serializable {
 	    else {
 		// Not generating the port view, just append the name of the
 		// node.
-		dot.append(p.getName()+(p.isOffline()?"":""));
+		dot.append(p.getName());
 	    }
 	    // Close the label
 	    dot.append("\"\n");
@@ -300,19 +304,19 @@ public class DotView implements ScuflModelEventListener, java.io.Serializable {
 	    if (dc.getSource().getProcessor() != model.getWorkflowSourceProcessor() && 
 		dc.getSink().getProcessor() != model.getWorkflowSinkProcessor()) {
 		if (this.portDisplay == DotView.ALL || this.portDisplay == DotView.BOUND) {
-		    dot.append(" "+sourceProcessorName+":"+sourcePortName+"->"+sinkProcessorName+":"+sinkPortName+" [ \n");
+		    dot.append(" "+q(sourceProcessorName)+":"+sourcePortName+"->"+q(sinkProcessorName)+":"+sinkPortName+" [ \n");
 		}
 		else {
-		    dot.append(" "+sourceProcessorName+"->"+sinkProcessorName+" [ \n");
+		    dot.append(" "+q(sourceProcessorName)+"->"+q(sinkProcessorName)+" [ \n");
 		}
 	    }
 	    else if (dc.getSource().getProcessor() == model.getWorkflowSourceProcessor()) {
 		// Is a link from a workflow source to an internal sink
-		dot.append(" WORKFLOWINTERNALSOURCE_"+sourcePortName+"->"+sinkProcessorName+":"+sinkPortName+" [ \n");
+		dot.append(q("WORKFLOWINTERNALSOURCE_"+sourcePortName)+"->"+q(sinkProcessorName)+":"+sinkPortName+" [ \n");
 	    }
 	    else if (dc.getSink().getProcessor() == model.getWorkflowSinkProcessor()) {
 		// Is a link from an internal source to a workflow sink
-		dot.append(" "+sourceProcessorName+":"+sourcePortName+"->WORKFLOWINTERNALSINK_"+sinkPortName+" [ \n");
+		dot.append(q(sourceProcessorName)+":"+sourcePortName+"->"+q("WORKFLOWINTERNALSINK_"+sinkPortName)+" [ \n");
 	    }
 	    if (displayTypes) {
 		dot.append("  label = \""+dc.getSource().getSyntacticType()+"\\n"+dc.getSink().getSyntacticType()+"\"");
@@ -332,7 +336,7 @@ public class DotView implements ScuflModelEventListener, java.io.Serializable {
 	dot.append("  fontcolor=\"black\"  \n");
 	dot.append("  rank=\"same\"\n");    
 	for (int i=0; i<sources.length; i++) {
-	    dot.append("  WORKFLOWINTERNALSOURCE_"+sources[i].getName()+" [\n");
+	    dot.append(q("WORKFLOWINTERNALSOURCE_"+sources[i].getName())+" [\n");
 	    if (this.portDisplay != DotView.NONE) {
 		dot.append("   shape=\"invtriangle\",\n");
 	    }
@@ -356,7 +360,7 @@ public class DotView implements ScuflModelEventListener, java.io.Serializable {
 	// ...then workflow sinks.
 	Port[] sinks = model.getWorkflowSinkProcessor().getPorts();
 	for (int i=0; i<sinks.length; i++) {
-	    dot.append("  WORKFLOWINTERNALSINK_"+sinks[i].getName()+" [\n");
+	    dot.append(q("WORKFLOWINTERNALSINK_"+sinks[i].getName())+" [\n");
 	    if (this.portDisplay != DotView.NONE) {
 		dot.append("   shape=\"triangle\",\n");
 	    }
@@ -388,7 +392,7 @@ public class DotView implements ScuflModelEventListener, java.io.Serializable {
 		dot.append("  label=\"coordination\"\n");
 		dot.append(" ]\n");
 		// Create the edge from controller to box
-		dot.append(" "+c.getControllingProcessor().getName()+"->constraint"+c.getName()+" [\n");
+		dot.append(" "+q(c.getControllingProcessor().getName())+"->"+q("constraint"+c.getName())+" [\n");
 		dot.append("  arrowhead=\"none\",\n");
 		dot.append("  arrowtail=\"dot\",\n");
 		dot.append("  color=\"gray\",\n");
@@ -396,7 +400,7 @@ public class DotView implements ScuflModelEventListener, java.io.Serializable {
 		dot.append("  label=\""+ConcurrencyConstraint.statusCodeToString(c.getControllerStateGuard())+"\"\n");
 		dot.append(" ]\n");
 		// Create the edge from box to target
-		dot.append(" constraint"+c.getName()+"->"+c.getTargetProcessor().getName()+" [\n");
+		dot.append(q("constraint"+c.getName())+"->"+q(c.getTargetProcessor().getName())+" [\n");
 		dot.append("  arrowhead=\"odot\",\n");
 		dot.append("  arrowtail=\"none\",\n");
 		dot.append("  color=\"gray\",\n");
@@ -409,7 +413,7 @@ public class DotView implements ScuflModelEventListener, java.io.Serializable {
 		dot.append(" ];\n");
 	    }
 	    else {
-		dot.append(" "+c.getControllingProcessor().getName()+"->"+c.getTargetProcessor().getName()+" [\n");
+		dot.append(" "+q(c.getControllingProcessor().getName())+"->"+q(c.getTargetProcessor().getName())+" [\n");
 		dot.append("  color=\"gray\",\n");
 		dot.append("  arrowhead=\"odot\",\n");
 		dot.append("  arrowtail=\"none\"\n");
