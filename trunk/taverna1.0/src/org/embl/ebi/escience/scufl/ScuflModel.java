@@ -86,6 +86,14 @@ public class ScuflModel implements java.io.Serializable {
     }
 
     /**
+     * Add a concurrency constraint to the model
+     */
+    public void addConcurrencyConstraint(ConcurrencyConstraint the_constraint) {
+	this.constraints.add(the_constraint);
+	fireModelEvent(new ScuflModelEvent(this, "Added concurrency constraint '"+the_constraint.getName()+"' to the model"));
+    }
+
+    /**
      * Return an array of the concurrency constraints
      * defined within this workflow model
      */

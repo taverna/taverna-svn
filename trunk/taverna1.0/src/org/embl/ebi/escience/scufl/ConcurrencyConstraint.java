@@ -11,4 +11,11 @@ package org.embl.ebi.escience.scufl;
  */
 public class ConcurrencyConstraint implements java.io.Serializable {
 
+    /**
+     * NOT IMPLEMENTED YET
+     */
+    public String getName() {
+	return "These aren't really implemented properly yet!";
+    }
+
 }
