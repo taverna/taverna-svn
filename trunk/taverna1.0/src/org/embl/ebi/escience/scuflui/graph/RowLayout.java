@@ -21,7 +21,7 @@ import org.jgraph.graph.GraphModel;
  * graph to be able to update as the graph changes.
  * 
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover </a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class RowLayout extends GraphSpanningTree
 {
@@ -267,6 +267,7 @@ public class RowLayout extends GraphSpanningTree
 			{
 				nodeChain.remove(index);
 				getRow(nodeRow).remove(obj);
+				// TODO Remove edges
 			}
 			else
 			{
