@@ -50,6 +50,16 @@ public class ResultItemPanel extends JPanel {
     final JFileChooser fc = new JFileChooser();
     final RendererRegistry renderers;
 
+		private boolean allowEditing=true;
+
+		public void setResultsEditing(boolean permitance){
+						allowEditing=permitance;
+		}
+
+		public final boolean getResultsEditing(){
+						return allowEditing;
+		}
+
     public ResultItemPanel(DataThing theDataThing)
     {
         this(theDataThing, RendererRegistry.instance());
@@ -115,22 +125,31 @@ public class ResultItemPanel extends JPanel {
 				JButton cmdEdit=new JButton("Change");
 				cmdEdit.addActionListener( new ActionListener(){
 					public void actionPerformed(ActionEvent ae) {
-						if (component instanceof javax.swing.text.JTextComponent)
-							theDataThing.setDataObject(new String(((javax.swing.text.JTextComponent)component).getText()));
-						else ;
-			 		//theDataThing.setDataObject(((javax.swing.JTable)component).getValueAt(0,0));
-					  //((DataThingTreeNode)tn).update(theDataThing);
-						structureTree.treeDidChange();
-						structureTree.update(structureTree.getGraphics());
-					//	structureTree.repaint(); 
-					//	splitPane.getLeftComponent().repaint();
-					//	splitPane.repaint();
+						if (component instanceof javax.swing.text.JTextComponent){
+								String oldData=(String)theDataThing.getDataObject();
+								String newData=((javax.swing.text.JTextComponent)component).getText();
+							  if (!oldData.equals(newData)){
+												//NOTE:Very temp. Needs more tests
+													theDataThing.setDataObject(new String(newData));
+													DefaultMutableTreeNode newTn = DataThingTreeFactory.getTree(theDataThing);
+													DefaultTreeModel tm=(DefaultTreeModel)structureTree.getModel();
+													tm.insertNodeInto((DefaultMutableTreeNode)tn,newTn,tn.getChildCount());
+													tm.setRoot(newTn);
+													tm.removeNodeFromParent((DefaultMutableTreeNode)tn);
+													tm.reload();
+													structureTree.update(structureTree.getGraphics());
+								}
+						}
+						else {
+										//TODO for other renderers 
+										//theDataThing.setDataObject(((javax.swing.JTable)component).getValueAt(0,0));
+						}	
 					}
 				});
 			  leftPanel.add(foo);
 				rightPanel.add(cmdEdit);
 				panel.add(leftPanel, BorderLayout.CENTER);
-				panel.add(rightPanel, BorderLayout.EAST);
+				if (getResultsEditing()) panel.add(rightPanel, BorderLayout.EAST);
 				panel.setPreferredSize(new Dimension(200,80));
                                 splitPane.setRightComponent(panel);
 				// Reset the widths of the split Pane to show the entire tree
@@ -247,23 +266,32 @@ public class ResultItemPanel extends JPanel {
 				    JButton cmdEdit=new JButton("Change"); 
 				    cmdEdit.addActionListener( new ActionListener(){
 					     public void actionPerformed(ActionEvent ae) { 
-							 if (component instanceof javax.swing.text.JTextComponent)
-								theDataThing.setDataObject(new String(((javax.swing.text.JTextComponent)component).getText()));
-							 else ;
-			 		//theDataThing.setDataObject(((javax.swing.JTable)component).getValueAt(0,0));
-					  //((DataThingTreeNode)tn).update(theDataThing);
-						structureTree.treeDidChange();
-						structureTree.update(structureTree.getGraphics());
-						//structureTree.repaint(); 
-						//splitPane.getLeftComponent().repaint();
-						//splitPane.repaint();
+									if (component instanceof javax.swing.text.JTextComponent){
+										String oldData=(String)theDataThing.getDataObject();
+										String newData=((javax.swing.text.JTextComponent)component).getText();
+							  		if (!oldData.equals(newData)){
+												//NOTE:Very temp. Needs more tests
+													theDataThing.setDataObject(new String(newData));
+													DefaultMutableTreeNode newTn = DataThingTreeFactory.getTree(theDataThing);
+													DefaultTreeModel tm=(DefaultTreeModel)structureTree.getModel();
+													tm.insertNodeInto((DefaultMutableTreeNode)tn,newTn,tn.getChildCount());
+													tm.setRoot(newTn);
+													tm.removeNodeFromParent((DefaultMutableTreeNode)tn);
+													tm.reload();
+													structureTree.update(structureTree.getGraphics());
+										}
+									}
+									else {
+										//TODO for other renderers 
+										//theDataThing.setDataObject(((javax.swing.JTable)component).getValueAt(0,0));
+									}
 					     }
 					});
 					panel.removeAll();
 					leftPanel.add(jp);
 					rightPanel.add(cmdEdit);
 					panel.add(leftPanel, BorderLayout.CENTER);
-					panel.add(rightPanel, BorderLayout.EAST);
+					if (getResultsEditing())panel.add(rightPanel, BorderLayout.EAST);
 					panel.setPreferredSize(new Dimension(200,80));
 
 				    splitPane.setRightComponent(panel);
@@ -286,5 +314,34 @@ public class ResultItemPanel extends JPanel {
         });
         add(splitPane, BorderLayout.CENTER);
     }
+
+		// VERY TEMP
+		// If expand is true, expands all nodes in the tree.
+// Otherwise, collapses all nodes in the tree.
+public void expandAll(JTree tree, boolean expand) {
+   TreeNode root = (TreeNode)tree.getModel().getRoot();
+
+   // Traverse tree from root
+   expandAll(tree, new TreePath(root), expand);
+}
+private void expandAll(JTree tree, TreePath parent, boolean expand) {
+   // Traverse children
+   TreeNode node = (TreeNode)parent.getLastPathComponent();
+   if (node.getChildCount() >= 0) {
+       for (java.util.Enumeration e=node.children(); e.hasMoreElements(); ) {
+           TreeNode n = (TreeNode)e.nextElement();
+           TreePath path = parent.pathByAddingChild(n);
+           expandAll(tree, path, expand);
+       }
+   }
+
+   // Expansion or collapse must be done bottom-up
+   if (expand) {
+       tree.expandPath(parent);
+   } else {
+       tree.collapsePath(parent);
+   }
+}
+
 
 }
