@@ -28,26 +28,29 @@ public class APIConsumerProcessor extends Processor {
 	    // If not static create an input for the subject to
 	    // be operated on.
 	    if (definition.isStatic == false) {
-		InputPort subjectInput = new InputPort(this, "object");
-		subjectInput.setSyntacticType("'foo/bar'");
-		addPort(subjectInput);
+		if (definition.isConstructor == false) {
+		    InputPort subjectInput = new InputPort(this, "object");
+		    subjectInput.setSyntacticType(definition.getTavernaObjectTypeString());
+		    addPort(subjectInput);
+		}
 		OutputPort subjectOutput = new OutputPort(this, "object");
-		subjectOutput.setSyntacticType("'foo/bar'");
+		subjectOutput.setSyntacticType(definition.getTavernaObjectTypeString());
 		addPort(subjectOutput);
 	    }
-
+	    
 	    // Add a return value port for non void operations
 	    if (definition.tName.equals("void") == false) {
 		OutputPort resultPort = new OutputPort(this, "result");
-		resultPort.setSyntacticType("'foo/bar'");
+		resultPort.setSyntacticType(definition.getTavernaOutputTypeString());
 		addPort(resultPort);
 	    }
 	    
 	    // Add input ports for parameters
+	    String[] tavernaOutputTypes = definition.getTavernaTypeStrings();
 	    for (int i = 0; i < definition.pNames.length; i++) {
 		// Create inputs...
 		InputPort pPort = new InputPort(this, definition.pNames[i]);
-		pPort.setSyntacticType("'foo/bar'");
+		pPort.setSyntacticType(tavernaOutputTypes[i]);
 		addPort(pPort);
 	    }
 
