@@ -8,12 +8,13 @@ import net.sourceforge.taverna.io.TransmitterException;
 import uk.ac.soton.itinnovation.taverna.enactor.entities.TaskExecutionException;
 
 /**
- * This class
+ * This class is used to fetch pubmed articles in XML form.  Use this
+ * worker only if you already know the pubmed id.
  * 
  * Last edited by $Author: phidias $
  * 
  * @author Mark
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class PubMedEFetchWorker extends AbstractEFetchWorker {
 
