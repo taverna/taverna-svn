@@ -13,6 +13,7 @@ import org.jdom.*;
 import org.jdom.output.*;
 import org.jdom.input.*;
 import java.io.*;
+import org.apache.log4j.*;
 
 /**
  * An implementation of the BaclavaDataService that backs its
@@ -21,7 +22,7 @@ import java.io.*;
  */
 public class JDBCBaclavaDataService implements BaclavaDataService, LSIDProvider {
     
-    private String connectionURL, username, password, defaultAuthority;
+    private String connectionURL, username, password, defaultAuthority, instanceID;
     private JDBCConnectionPool pool;
     
     private Object connectionSetLockObject = new Object();
@@ -29,6 +30,7 @@ public class JDBCBaclavaDataService implements BaclavaDataService, LSIDProvider 
 
     private int maxConnections = 5;
     
+    static Logger log = Logger.getLogger(JDBCBaclavaDataService.class.getName());
 
     /**
      * Create a new JDBC backed BaclavaDataService with
@@ -68,6 +70,11 @@ public class JDBCBaclavaDataService implements BaclavaDataService, LSIDProvider 
 	    catch (NumberFormatException nfe) {
 		//
 	    }
+	}
+	String object_id = super.toString();
+	StringTokenizer st = new StringTokenizer(object_id,"@",false);
+	while (st.hasMoreTokens()) {
+	    instanceID = st.nextToken();
 	}
 	pool = new JDBCConnectionPool(props.getProperty("taverna.datastore.jdbc.driver"),
 				      connectionURL,
@@ -129,6 +136,7 @@ public class JDBCBaclavaDataService implements BaclavaDataService, LSIDProvider 
     private void destroyTables() {
 	Connection con = null;
 	try {
+	    log.debug("Dropping tables...");
 	    con = pool.borrowConnection();
 
 	    Statement st = con.createStatement();
@@ -139,6 +147,7 @@ public class JDBCBaclavaDataService implements BaclavaDataService, LSIDProvider 
 	    st.executeUpdate("DROP TABLE IF EXISTS idcounter");
 	
 	    pool.returnConnection(con);
+	    log.debug("...finished dropping tables");
 	}
 	catch (Exception ex) {
 	    pool.returnConnection(con);
@@ -175,7 +184,7 @@ public class JDBCBaclavaDataService implements BaclavaDataService, LSIDProvider 
 	    s.close();
 	    con.commit();
 	    pool.returnConnection(con);
-	    return prefix+suffix;
+	    return prefix+suffix+instanceID;
 	}
 	catch (SQLException sqle) {
 	    sqle.printStackTrace();
@@ -342,6 +351,7 @@ public class JDBCBaclavaDataService implements BaclavaDataService, LSIDProvider 
      */
     public DataThing fetchDataThing(String LSID)
 	throws NoSuchLSIDException {
+	log.debug("Data request for "+LSID);
 	Connection con = null;
 	try {
 	    // DB ACCESS START ***************************************************
@@ -352,8 +362,10 @@ public class JDBCBaclavaDataService implements BaclavaDataService, LSIDProvider 
 	    String thingAsXML = null;
 	    if (rs.first() ==true) {
 		thingAsXML = rs.getString("thing");
+		log.debug("Found data object for LSID "+LSID);
 	    }
 	    else {
+		log.debug("No data found for "+LSID);
 		pool.returnConnection(con);
 		throw new NoSuchLSIDException();
 	    }
@@ -373,21 +385,26 @@ public class JDBCBaclavaDataService implements BaclavaDataService, LSIDProvider 
 	    //System.out.println("LSID to find is "+LSID);
 	    Object o = theThing.getDataObjectWithLSID(LSID);
 	    if (o == null) {
+		log.error("LSID "+LSID+" not found in retrieved data object, index broken!");
 		throw new NoSuchLSIDException();
 	    }
 	    if (o == theThing) {
+		log.debug(LSID+" is a root object, returning it");
 		return theThing;
 	    }
 	    else {
+		log.debug("Extracting "+LSID+" from data object and returning");
 		// Have to split the thing down and return the subthing
 		return theThing.extractChild(o);
 	    }
 	}
 	catch (SQLException sqle) {
+	    log.error("SQL Exception caught!",sqle);
 	    pool.returnConnection(con);
 	    sqle.printStackTrace();
 	}
 	catch (JDOMException jde) {
+	    log.error("JDOM Exception caught!",jde);
 	    pool.returnConnection(con);
 	    jde.printStackTrace();
 	}
@@ -402,6 +419,7 @@ public class JDBCBaclavaDataService implements BaclavaDataService, LSIDProvider 
      * Does the given LSID exist in a concrete form?
      */
     public boolean hasData(String suppliedLSID) {
+	log.debug("hasData request for LSID "+suppliedLSID);
 	String[] parts = suppliedLSID.split(":");
 	String namespace = parts[3];
 	String LSID = suppliedLSID;
@@ -421,25 +439,34 @@ public class JDBCBaclavaDataService implements BaclavaDataService, LSIDProvider 
 	    p.setString(1,LSID);
 	    ResultSet rs = p.executeQuery();
 	    boolean hasReference = rs.first();
+	    String refType = null;
+	    if (hasReference) {
+		refType = rs.getString("reftype");
+	    }
 	    rs.close();
 	    p.close();
 	    pool.returnConnection(con);
 	    // DB ACCESS END ****************************************
 	    if (hasReference == false) {
+		log.debug("hasData, LSID not found therefore false for LSID "+LSID);
 		return false;
 	    }
 	    // If the namespace was datathing then return true, this is enough
 	    if (namespace.equals("datathing")) {
+		log.debug("hasData returns true as "+LSID+" is a datathing");
 		return true;
 	    }
 	    else if (namespace.equals("raw")) {
-		if (rs.getString("reftype").equals("leaf")) {
+		if (refType.equals("leaf")) {
+		    log.debug("hasData returns true, "+LSID+" is a datathing leaf node");
 		    return true;
 		}
 	    }
+	    log.debug("hasData returns false, "+LSID+" is a collection");
 	    return false;
 	}
 	catch (Exception ex) {
+	    log.error("Exception!",ex);
 	    pool.returnConnection(con);
 	}
 	finally {
@@ -473,6 +500,7 @@ public class JDBCBaclavaDataService implements BaclavaDataService, LSIDProvider 
 	    return result;
 	}
 	catch (SQLException sqle) {
+	    log.error("SQL Exception in getMIMEType!",sqle);
 	    pool.returnConnection(con);
 	    sqle.printStackTrace();
 	    return null;
@@ -487,6 +515,7 @@ public class JDBCBaclavaDataService implements BaclavaDataService, LSIDProvider 
      * Get the metadata associated with this LSID
      */
     public String getMetadata(String LSID) {
+	log.debug("Metadata requested for LSID "+LSID);
 	Connection con = null;
 	try {
 	    con = pool.borrowConnection();
@@ -503,10 +532,24 @@ public class JDBCBaclavaDataService implements BaclavaDataService, LSIDProvider 
 		return null;
 	    }
 	    else {
+		// Result contains a string of XML, normalize it.
 		return result;
 	    }
+	    /**
+	       try {
+	       String provenance = new XMLOutputter().outputString(new SAXBuilder(false).build(new StringReader(result)));
+	       log.debug("Returning provenance : "+provenance);
+	       return provenance;
+	       }
+	       catch (JDOMException jde) {
+	       log.error("JDOM Exception when normalizing output provenance!\n\n"+result,jde);
+	       return null;
+	       }
+	       }
+	    */
 	}
 	catch (SQLException sqle) {
+	    log.error("SQLException when getting provenance!",sqle);
 	    pool.returnConnection(con);
 	    sqle.printStackTrace();
 	    return null;
@@ -529,15 +572,21 @@ public class JDBCBaclavaDataService implements BaclavaDataService, LSIDProvider 
 class JDBCConnectionPool extends ObjectPool {
     
     String driver, dsn, usr, pwd;
+    
+    static Logger log = Logger.getLogger(JDBCConnectionPool.class.getName());
 
     public Connection borrowConnection() {
-	return( ( Connection ) super.checkOut() );
+	log.debug("Thread "+Thread.currentThread().toString()+" requested connection.");
+	Connection con = (Connection)super.checkOut();
+	log.debug("Thread "+Thread.currentThread().toString()+" acquired connection.");
+	return con;
     }
     
     public void returnConnection( Connection c ) {
 	super.checkIn( c );
+	log.debug("Thread "+Thread.currentThread().toString()+" returned connection.");
     }
-
+    
     public JDBCConnectionPool( String driver, String dsn, 
 			       String usr, String pwd, int maxConnections ) {
 	try {

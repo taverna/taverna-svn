@@ -32,6 +32,14 @@ public class BaclavaIteratorNode extends DefaultMutableTreeNode implements Resum
     }
     
     /**
+     * Return the name that will be used as the key for any 
+     * maps that this iterator produces
+     */
+    public String getName() {
+	return this.name;
+    }
+    
+    /**
      * Wraps the output of the underlying iterator's
      * next() method into a Map with the key being
      * the name of this BaclavaIteratorNode

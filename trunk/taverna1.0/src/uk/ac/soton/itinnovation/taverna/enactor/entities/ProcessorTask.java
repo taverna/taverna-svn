@@ -25,8 +25,8 @@
 //      Dependencies        :
 //
 //      Last commit info    :   $Author: mereden $
-//                              $Date: 2004-03-11 17:20:38 $
-//                              $Revision: 1.42 $
+//                              $Date: 2004-03-12 17:09:02 $
+//                              $Revision: 1.43 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 package uk.ac.soton.itinnovation.taverna.enactor.entities;
@@ -177,7 +177,7 @@ public class ProcessorTask extends TavernaTask{
 	    eventList.add(new ServiceFailure());
 	    endTime = new TimePoint();
 	    faultCausingException = ex;
-	    logger.error(ex);
+	    logger.error(ex,ex);
 	    return new TaskStateMessage(getParentFlow().getID(), 
 					getID(), 
 					TaskStateMessage.FAILED, 
