@@ -46,7 +46,7 @@ public class WSDLBasedProcessorFactory implements ProcessorFactory {
     public void createProcessor(String name, ScuflModel model) 
 	throws ProcessorCreationException,
 	       DuplicateProcessorNameException {
-	Processor theProcessor = new WSDLBasedProcessor(model, name, this.wsdlLocation, this.portTypeName, this.operationName, this.operationStyle);
+	Processor theProcessor = new WSDLBasedProcessor(model, name, this.wsdlLocation, this.operationName);
 	model.addProcessor(theProcessor);
     }
 

@@ -47,11 +47,9 @@ public class TestWSDLInvocationTask extends TestCase {
 		
 		// Attempt to create a new WSDLBasedProcessor
 		Processor describe = new WSDLBasedProcessor(model,
-							  "describe",
-							  "http://industry.ebi.ac.uk/soaplab/wsdl/edit__seqret__derived.wsdl",
-							  "edit__seqret",
-							  "describe",
-							    "rpc");
+							    "describe",
+							    "http://industry.ebi.ac.uk/soaplab/wsdl/edit__seqret__derived.wsdl",
+							    "describe");
 		String id = "testTask";
 		//get the output ports 
 		DiGraph d = new DiGraph("testDigraph");

@@ -12,7 +12,7 @@ import javax.xml.namespace.*;
 import javax.wsdl.factory.WSDLFactory;
 import javax.wsdl.xml.WSDLReader;
 import org.embl.ebi.escience.scufl.*;
-import org.embl.ebi.escience.scufl.Port; // ambiguous with: javax.wsdl.Port 
+//import org.embl.ebi.escience.scufl.Port; // ambiguous with: javax.wsdl.Port 
 
 // Utility Imports
 import java.util.Iterator;
@@ -23,7 +23,32 @@ import java.util.Properties;
 // Network Imports
 import java.net.MalformedURLException;
 import java.net.URL;
+import org.apache.axis.Constants;
+import org.apache.axis.encoding.ser.SimpleDeserializer;
+import org.apache.axis.wsdl.gen.Parser;
+import org.apache.axis.wsdl.symbolTable.BaseType;
+import org.apache.axis.wsdl.symbolTable.BindingEntry;
+import org.apache.axis.wsdl.symbolTable.Parameter;
+import org.apache.axis.wsdl.symbolTable.Parameters;
+import org.apache.axis.wsdl.symbolTable.ServiceEntry;
+import org.apache.axis.wsdl.symbolTable.SymTabEntry;
+import org.apache.axis.wsdl.symbolTable.SymbolTable;
+import org.apache.axis.wsdl.symbolTable.TypeEntry;
 
+import javax.wsdl.Binding;
+import javax.wsdl.Operation;
+import javax.wsdl.Port;
+import javax.wsdl.Service;
+import javax.wsdl.extensions.soap.SOAPAddress;
+import javax.xml.namespace.QName;
+import javax.xml.rpc.Call;
+import javax.xml.rpc.encoding.Deserializer;
+import javax.xml.rpc.encoding.DeserializerFactory;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Vector;
 
 
 
@@ -35,205 +60,229 @@ import java.net.URL;
  */
 public class WSDLBasedProcessor extends Processor implements java.io.Serializable {
     
-    private String wsdlLocationString = null;
-    private String operationString = null;
-    private String portTypeString = null;
-    private String requestMessageName = null;
-    private String responseMessageName = null;
-    private String operationStyle = null;
-    private String targetEndpoint = null;
-
+    // Fields used by the configuration operations
+    // Output types and names
+    Vector outNames = new Vector();
+    Vector outTypes = new Vector();
+    // Input types and names
+    Vector inNames = new Vector();
+    Vector inTypes = new Vector();
+    // WSDL Parser
+    Parser wsdlParser = null;
+    // Call object to invoke this processor
+    Call call = null;
+    
+    private String wsdlLocation = null;
+    /**
+     * Get the WSDL location for this processor
+     */
     public String getWSDLLocation() {
-	return this.wsdlLocationString;
-    }
-    public String getOperationName() {
-	return this.operationString;
-    }
-    public String getPortTypeName() {
-	return this.portTypeString;
-    }
-    public String getRequestMessageName() {
-	return this.requestMessageName;
-    }
-    public String getResponseMessageName() {
-	return this.responseMessageName;
-    }
-    public String getOperationStyle() {
-	return this.operationStyle;
-    }
-    public String getTargetEndpoint() {
-	return this.targetEndpoint;
+	return this.wsdlLocation;
     }
     
+    private String operationName = null;
+    /**
+     * Get the operation name for this processor
+     */
+    public String getOperationName() {
+	return this.operationName;
+    }
+
     /**
      * Construct a new processor from the given WSDL definition
      * and operation name, delegates to superclass then instantiates
      * ports based on WSDL inspection.
      */
-    public WSDLBasedProcessor(ScuflModel model, String name, String wsdlLocation, String portTypeName, String operationName, String operationStyle)
+    public WSDLBasedProcessor(ScuflModel model, String name, String wsdlLocation, String operationName)
 	throws ProcessorCreationException,
 	       DuplicateProcessorNameException {
 	super(model, name);
-	
-	// Set members
-	this.wsdlLocationString = wsdlLocation;
-	this.operationString = operationName;
-	this.portTypeString = portTypeName;
-	
-	// is either 'rpc' or 'document' I think...
-	this.operationStyle = operationStyle;
-
-	// Attempt to construct a URL object
+	this.wsdlLocation = wsdlLocation;
+	this.operationName = operationName;
+	// Load the WSDL document
 	try {
-	    URL wsdlLocationURL = new URL(wsdlLocation);
+	    wsdlParser = new Parser();
+	    wsdlParser.run(wsdlLocation);
 	}
-	catch (MalformedURLException mue) {
-	    throw new ProcessorCreationException("The supplied URL '"+wsdlLocation+"' for the location of the WSDL file is not valid.");
-	}
-	// Get a WSDLReader
-	Definition theDefinition = null;
-	try {
-	    WSDLFactory wsdlf = WSDLFactory.newInstance();
-	    WSDLReader wsdlr = wsdlf.newWSDLReader();
-	    theDefinition = wsdlr.readWSDL(wsdlLocation);
-	}
-	catch (WSDLException wsdle) {
-	    throw new ProcessorCreationException("Unable to load the WSDL definition, underlying reason was "+wsdle.getMessage());
+	catch (Exception ex) {
+	    ProcessorCreationException pce = new ProcessorCreationException("Unable to load wsdl!");
+	    pce.initCause(ex);
+	    throw pce;
 	}
 
-	PortType portType = null;
-	// Iterate over the Service objects in the definition, then over Port objects within
-	// services until we find the particular Port containing the binding.
-	boolean found = false;
-	for (Iterator i = theDefinition.getServices().values().iterator(); i.hasNext() && !found; ) {
-	    Service s = (Service)i.next();
-	    // Iterate over Port objects within service
-	    for (Iterator j = s.getPorts().values().iterator(); j.hasNext() && !found; ) {
-		javax.wsdl.Port p = (javax.wsdl.Port)j.next();
-		Binding b = p.getBinding();
-		PortType pt = b.getPortType();
-		// Does this have the correct port type name?
-		if (pt.getQName().getLocalPart().equals(portTypeName)) {
-		    portType = pt;
-		    // Iterate over the extensibility elements for the port
-		    for (Iterator k = p.getExtensibilityElements().iterator(); k.hasNext(); ) {
-			ExtensibilityElement ee = (ExtensibilityElement)k.next();
-			if (ee instanceof SOAPAddress) {
-			    targetEndpoint = ((SOAPAddress)ee).getLocationURI();
+	// Set up input and output vectors and create the Call object
+	configureFor(operationName);
+	
+	// Build ports from the input and output vectors
+	try {
+	    for (int i = 0; i < outNames.size(); i++) {
+		String outName = (String)outNames.get(i);
+		OutputPort outputPort = new OutputPort(this, outName);
+		outputPort.setSyntacticType(xsdTypeToInternalType(((Parameter)outTypes.get(i)).getType().getQName().getLocalPart()));
+		addPort(outputPort);
+	    }
+	    for (int i = 0; i < inNames.size(); i++) {
+		String inName = (String)inNames.get(i);
+		InputPort inputPort = new InputPort(this, inName);
+		inputPort.setSyntacticType(xsdTypeToInternalType(((Parameter)inTypes.get(i)).getType().getQName().getLocalPart()));
+		addPort(inputPort);
+	    }
+	}
+	catch (DuplicatePortNameException dpne) {
+	    ProcessorCreationException pce = new ProcessorCreationException("Duplicate port names!");
+	    pce.initCause(dpne);
+	    throw pce;
+	}
+	catch (PortCreationException portce) {
+	    ProcessorCreationException pce = new ProcessorCreationException("Port creation failure!");
+	    pce.initCause(portce);
+	    throw pce;
+	}
+    }
+    
+    /**
+     * Load information from the WSDL parser to populate the input and 
+     * output vectors and create the Call object
+     */
+    private void configureFor(String operationName) 
+	throws ProcessorCreationException {
+	try {
+	    String portName = null;
+	    Service service = ((ServiceEntry)getSymTabEntry(null, ServiceEntry.class)).getService();
+	    Port port = selectPort(service.getPorts(), portName);
+	    portName = port.getName();
+	    Binding binding = port.getBinding();
+	    org.apache.axis.client.Service dpf = new org.apache.axis.client.Service(wsdlParser, service.getQName());
+	    this.call = dpf.createCall(QName.valueOf(portName), QName.valueOf(operationName));
+	    
+	    SymbolTable symbolTable = wsdlParser.getSymbolTable();
+	    BindingEntry bEntry = symbolTable.getBindingEntry(binding.getQName());
+	    
+	    // Iterate over the binding entry searching for the operation
+	    // specified in the argument to the invokeMethod call.
+	    Operation operation = null;
+	    Parameters parameters = null;
+	    for (Iterator i = bEntry.getParameters().keySet().iterator(); i.hasNext(); ) {
+		Operation o = (Operation) i.next();
+		if (o.getName().equals(operationName)) {
+		    operation = o;
+		    parameters = (Parameters) bEntry.getParameters().get(o);
+		    // Populate the input and output descriptions
+		    for (int j = 0; j < parameters.list.size(); j++) {
+			Parameter p = (Parameter) parameters.list.get(j);
+			if (p.getMode() == 1) {           // IN
+			    inNames.add(p.getQName().getLocalPart());
+			    inTypes.add(p);
+			} else if (p.getMode() == 2) {    // OUT
+			    outNames.add(p.getQName().getLocalPart());
+			    outTypes.add(p);
+			} else if (p.getMode() == 3) {    // INOUT
+			    inNames.add(p.getQName().getLocalPart());
+			    inTypes.add(p);
+			    outNames.add(p.getQName().getLocalPart());
+			    outTypes.add(p);
 			}
 		    }
-		    found = true;
+		    // Set output type
+		    if (parameters.returnParam != null) {
+			// Get the QName for the return Type
+			QName returnType = org.apache.axis.wsdl.toJava.Utils.getXSIType(parameters.returnParam);
+			QName returnQName = parameters.returnParam.getQName();
+			outNames.add(returnQName.getLocalPart());
+			outTypes.add((Parameter)parameters.returnParam);
+		    }
+		    // Break out of the loop	
+		    break;
 		}
 	    }
-	}
-	if (portType == null) {
-	    throw new ProcessorCreationException("Unable to locate portType '"+
-						 portTypeName+"' in '"+wsdlLocation+"'.");
-	}
-	if (targetEndpoint == null) {
-	    throw new ProcessorCreationException("Unable to locate the target endpoint for '"+
-						 portTypeName+"' in '"+wsdlLocation+"'.");
-	}
-	// Get the list of operations and search for one with local QName part
-	// equal to the supplied operationName
-	List operationList = portType.getOperations();
-	Operation theOperation = null;
-	for (Iterator i = operationList.iterator(); i.hasNext(); ) {
-	    Operation op = (Operation)i.next();
-	    if (op.getName().equals(operationName)) {
-		theOperation = op;
+	    if ((operation == null) || (parameters == null)) {
+		throw new RuntimeException(operationName + " was not found.");
 	    }
+	    
 	}
-	if (theOperation == null) {
-	    throw new ProcessorCreationException("Unable to locate operation with name '"+operationName+"' in portType '"+portTypeName+"'.");
+	catch (Exception e) {
+	    e.printStackTrace();
+	    ProcessorCreationException pce = new ProcessorCreationException("Problem initialising from wsdl...");
+	    pce.initCause(e);
+	    throw pce;
 	}
-	// Get the input and output objects, use these to create input and 
-	// output ports from the message parts.
-	Message inputMessage = theOperation.getInput().getMessage();
-	Message outputMessage = theOperation.getOutput().getMessage();
-	if (operationStyle.equals("rpc")) {
-	    // Do the inputs first...
-	    QName inputMessageQName = inputMessage.getQName();
-	    // Iterate over the message parts, creating appropriate Port implementations
-	    //System.out.println("Input ports...");
-	    for (Iterator i = inputMessage.getOrderedParts(null).iterator(); i.hasNext(); ) {
-		Part part = (Part)i.next();
-		try {
-		    System.out.println(part.getName());
-		    Port newInputPort = new InputPort(this, part.getName());
-		    newInputPort.setSyntacticType(xsdTypeToInternalType(part.getTypeName().getLocalPart()));
-		    this.addPort(newInputPort);
-		}
-		catch (DuplicatePortNameException dpne) {
-		    throw new ProcessorCreationException("Attempted to create a duplicate input port '"+part.getName()+"'.");
-		}
-		catch (PortCreationException pce) {
-		    throw new ProcessorCreationException("Problem creating input port : "+pce.getMessage());
-		}
-	    }
-	    // Then do the outputs
-	    // Iterate over the output parts, creating appropriate Port implementations
-	    //System.out.println("Output ports...");
-	    for (Iterator i = outputMessage.getParts().values().iterator(); i.hasNext(); ) {
-		Part part = (Part)i.next();
-		try {
-		    Port newOutputPort = new OutputPort(this, part.getName());
-		    newOutputPort.setSyntacticType(xsdTypeToInternalType(part.getTypeName().getLocalPart()));
-		    this.addPort(newOutputPort);
-		}
-		catch (DuplicatePortNameException dpne) {
-		    throw new ProcessorCreationException("Attempted to create a duplicate output port '"+part.getName()+"'.");
-		}
-		catch (PortCreationException pce) {
-		    throw new ProcessorCreationException("Problem creating output port : "+pce.getMessage());
-		}
-	    }
-	}
-	else {
-	    try {
-		if (inputMessage.getParts().isEmpty() == false) {
-		    Port newInputPort = new InputPort(this, "InputDocument");
-		    newInputPort.setSyntacticType("string");
-		    this.addPort(newInputPort);
-		}
-		if (outputMessage.getParts().isEmpty() == false) {
-		    Port newOutputPort = new OutputPort(this, "OutputDocument");
-		    newOutputPort.setSyntacticType("string");
-		    this.addPort(newOutputPort);
-		}
-	    }
-	    catch (Exception e) {
-		e.printStackTrace();
-	    }
-	}
-    
     }
 
+    /**
+     * Convert an XSD type into a Baclava type string
+     */
     public String xsdTypeToInternalType(String xsdType) {
 	// Can cope with String types and nested strings
 	if (xsdType.startsWith("ArrayOf_")) {
 	    return ("l("+xsdTypeToInternalType(xsdType.replaceFirst("ArrayOf_",""))+")");
 	}
 	else {
-	    if (xsdType.equalsIgnoreCase("xsd_string") || 
-		xsdType.equalsIgnoreCase("xsd:string") || 
-		xsdType.equalsIgnoreCase("string")) {
-		return "'text/plain'";
-	    }
+	    return "'text/plain'";
 	}
-	// Fall through
-	return xsdType;
     }
 
+    
+    
     /**
      * Get the properties for this processor for display purposes
      */
     public Properties getProperties() {
 	Properties props = new Properties();
-	props.put("WSDL Location",getWSDLLocation());
-	props.put("Port Type",getPortTypeName());
-	props.put("Operation",getOperationName());
-	props.put("Target Endpoint",getTargetEndpoint());
 	return props;
+    } 
+    
+    /**
+     * Method getSymTabEntry
+     * Search the symbol table for an entry with the specified
+     * class and optionally QName. If the QName is not specified
+     * then examine all entries.
+     */
+    public SymTabEntry getSymTabEntry(QName qname, Class cls) {
+        HashMap map = wsdlParser.getSymbolTable().getHashMap();
+        Iterator iterator = map.entrySet().iterator();
+
+        while (iterator.hasNext()) {
+            Map.Entry entry = (Map.Entry) iterator.next();
+            QName key = (QName) entry.getKey();
+            Vector v = (Vector) entry.getValue();
+
+            if ((qname == null) || qname.equals(qname)) {
+                for (int i = 0; i < v.size(); ++i) {
+                    SymTabEntry symTabEntry = (SymTabEntry) v.elementAt(i);
+
+                    if (cls.isInstance(symTabEntry)) {
+                        return symTabEntry;
+                    }
+                }
+            }
+        }
+        return null;
     }
+
+    /**
+     * Given a map of ports, iterate across it until either
+     * a port matching the portName parameter is found or until
+     * any port is found with a SOAPAddress extensibility element.
+     * Return null if no such port can be located.
+     */
+    public Port selectPort(Map ports, String portName) throws Exception {
+        Iterator valueIterator = ports.keySet().iterator();
+        while (valueIterator.hasNext()) {
+            String name = (String) valueIterator.next();
+            if ((portName == null) || (portName.length() == 0)) {
+                Port port = (Port) ports.get(name);
+                List list = port.getExtensibilityElements();
+		for (int i = 0; (list != null) && (i < list.size()); i++) {
+                    Object obj = list.get(i);
+                    if (obj instanceof SOAPAddress) {
+                        return port;
+                    }
+                }
+            } else if ((name != null) && name.equals(portName)) {
+                return (Port) ports.get(name);
+            }
+        }
+        return null;
+    }
+
 }

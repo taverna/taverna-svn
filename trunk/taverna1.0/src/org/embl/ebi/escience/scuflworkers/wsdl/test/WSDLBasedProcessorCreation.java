@@ -31,9 +31,8 @@ public class WSDLBasedProcessorCreation {
 	model.addProcessor(new WSDLBasedProcessor(model,
 						  "my_processor",
 						  "http://xml.nig.ac.jp/wsdl/Blast.wsdl",
-						  "Blast",
-						  "search",
-						  "rpc"));
+						  "search"
+						  ));
 	XScuflView view = new XScuflView(model);
 	System.out.println(view.getXMLText());
 	System.out.println("Finished test : WSDLBasedProcessorCreation");

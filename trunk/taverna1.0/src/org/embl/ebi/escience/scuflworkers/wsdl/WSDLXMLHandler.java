@@ -28,9 +28,9 @@ public class WSDLXMLHandler implements XMLHandler {
 	Element operation = new Element("operation",XScufl.XScuflNS);
 	Element style = new Element("style",XScufl.XScuflNS);
 	wsdl.setText(wsdlp.getWSDLLocation());
-	port.setText(wsdlp.getPortTypeName());
+	//port.setText(wsdlp.getPortTypeName());
 	operation.setText(wsdlp.getOperationName());
-	style.setText(wsdlp.getOperationStyle());
+	//style.setText(wsdlp.getOperationStyle());
 	spec.addContent(wsdl);
 	spec.addContent(port);
 	spec.addContent(operation);
@@ -51,7 +51,7 @@ public class WSDLXMLHandler implements XMLHandler {
 	if (styleElement != null) {
 	    operationStyle = styleElement.getTextTrim();
 	}
-	return new WSDLBasedProcessor(model, name, wsdlLocation, portTypeName, operationName, operationStyle);
+	return new WSDLBasedProcessor(model, name, wsdlLocation, operationName);
     }
 
 }

@@ -25,8 +25,8 @@
 //      Dependencies        :
 //
 //      Last commit info    :   $Author: mereden $
-//                              $Date: 2003-10-02 16:54:25 $
-//                              $Revision: 1.3 $
+//                              $Date: 2003-10-09 12:02:05 $
+//                              $Revision: 1.4 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 
@@ -80,52 +80,48 @@ public class WSDLInvocationTask extends ProcessorTask  {
     public Map execute(Map inputMap) throws TaskExecutionException {
 	try {
 	    WSDLBasedProcessor p = (WSDLBasedProcessor)proc;
-	    Map results = new HashMap();
-	    Service service = new Service();
-	    Call call = getCall();
-	    try {
-		call.setTargetEndpointAddress(new URL(p.getTargetEndpoint()));
-	    }
-	    catch (MalformedURLException mue) {
-		throw new TaskExecutionException("URL for service endpoint was malformed : "+mue.getMessage());
-	    }
-	    call.setOperationName(new QName(p.getOperationName()));
-	    Object[] args = new Object[p.getInputPorts().length];
-	    for (int i = 0; i < args.length; i++) {
-		DataThing theData = (DataThing)inputMap.get(p.getInputPorts()[i].getName());
-		Object theDataObject = theData.getDataObject();
-		// Check for the case of List of String and convert to a String[]
-		if (theDataObject instanceof List) {
-		    if (((List)theDataObject).isEmpty()) {
-			theDataObject = new String[0];
-		    }
-		    else {
-			Object firstItem = ((List)theDataObject).get(0);
-			if (firstItem instanceof String) {
-			    theDataObject = ((List)theDataObject).toArray(new String[0]);
+	    Vector outNames = p.outNames;
+	    synchronized (p.call) {
+		Call call = (org.apache.axis.client.Call)p.call;
+		Object[] args = new Object[p.getInputPorts().length];
+		for (int i = 0; i < args.length; i++) {
+		    DataThing theData = (DataThing)inputMap.get(p.getInputPorts()[i].getName());
+		    Object theDataObject = theData.getDataObject();
+		    // Check for the case of List of String and convert to a String[]
+		    if (theDataObject instanceof List) {
+			if (((List)theDataObject).isEmpty()) {
+			    theDataObject = new String[0];
+			}
+			else {
+			    Object firstItem = ((List)theDataObject).get(0);
+			    if (firstItem instanceof String) {
+				theDataObject = ((List)theDataObject).toArray(new String[0]);
+			    }
 			}
 		    }
+		    args[i] = theDataObject;
+		    if (args[i] == null) {
+			throw new TaskExecutionException("Null argument not allowed, check preceeding processors!");
+		    }
+		    System.out.println("Data thing for port "+p.getInputPorts()[i].getName());
+		    System.out.println(theData.getDataObject());
 		}
-		args[i] = theDataObject;
-		if (args[i] == null) {
-		    throw new TaskExecutionException("Null argument not allowed, check preceeding processors!");
+		
+		Object ret = call.invoke(args);
+		Map outputs = call.getOutputParams();
+		HashMap map = new HashMap();
+		for (int pos = 0; pos < p.outNames.size(); ++pos) {
+		    String name = (String)outNames.get(pos);
+		    Object value = outputs.get(name);
+		    if ((value == null) && (pos == 0)) {
+			map.put(name, makeThing(ret));
+		    }
+		    else {
+			map.put(name, makeThing(value));
+		    }
 		}
-		System.out.println("Data thing for port "+p.getInputPorts()[i].getName());
-		System.out.println(theData.getDataObject());
+		return map;
 	    }
-	    Object o = call.invoke(args);
-	    DataThing outputThing = null;
-	    if (o instanceof String[]) {
-		outputThing = DataThingFactory.bake((String[])o);
-	    }
-	    else if (o instanceof List) {
-		outputThing = DataThingFactory.bakeForSoaplab((List)o);
-	    }
-	    else {
-		outputThing = new DataThing(o);
-	    }
-	    results.put(p.getOutputPorts()[0].getName(), outputThing);
-	    return results;
 	}
 	catch (Exception ex) {
 	    ex.printStackTrace();
@@ -136,6 +132,29 @@ public class WSDLInvocationTask extends ProcessorTask  {
 	}
     }
     
+    private DataThing makeThing(Object o) {
+	if (o instanceof Number) {
+	    return DataThingFactory.bake(o.toString());
+	}
+	else if (o instanceof Number[]) {
+	    Number[] n = (Number[])o;
+	    String[] stringArray = new String[n.length];
+	    for (int i = 0; i < n.length; i++) {
+		stringArray[i] = n[i].toString();
+	    }
+	    return DataThingFactory.bake(stringArray);
+	}
+	else if (o instanceof String[]) {
+	    return DataThingFactory.bake((String[])o);
+	}
+	else if (o instanceof List) {
+	    return DataThingFactory.bakeForSoaplab((List)o);
+	}
+	else {
+	    return new DataThing(o);
+	}
+    }
+
     public void cleanUpConcreteTask() {
 	//
     }
