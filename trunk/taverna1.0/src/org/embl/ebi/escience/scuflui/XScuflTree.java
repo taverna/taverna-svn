@@ -59,7 +59,7 @@ public class XScuflTree extends JComponent
 		display.repaint();
 		doLayout();
 	    }
-	    catch (javax.xml.parsers.ParserConfigurationException pce) {
+	    catch (Exception e) {
 		removeAll();
 	    }
 	}

@@ -86,7 +86,7 @@ import org.jdom.output.XMLOutputter;
  * COMMENT DataThingConstructionPanel
  * 
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover </a>
- * @version $Revision: 1.27 $
+ * @version $Revision: 1.28 $
  */
 public abstract class DataThingConstructionPanel extends JPanel implements ScuflUIComponent, ScuflModelEventListener
 {
@@ -356,11 +356,10 @@ public abstract class DataThingConstructionPanel extends JPanel implements Scufl
 			}
 			try
 			{
-				XMLOutputter outputter = new XMLOutputter(Format.getCompactFormat());
-				scrollPane.setViewportView(new XMLTree(outputter.outputString(DataThingXMLFactory
-						.getDataDocument(bakeInputMap()))));
+				scrollPane.setViewportView(new XMLTree(DataThingXMLFactory
+						.getDataDocument(bakeInputMap())));
 			}
-			catch (ParserConfigurationException e)
+			catch (Exception e)
 			{
 				// TODO Handle ParserConfigurationException
 				e.printStackTrace();
@@ -400,7 +399,7 @@ public abstract class DataThingConstructionPanel extends JPanel implements Scufl
 
 		public InputListNode(DataThing thing)
 		{
-			setDataThing(thing);
+			this.thing = thing;
 		}
 
 		/*
@@ -516,6 +515,7 @@ public abstract class DataThingConstructionPanel extends JPanel implements Scufl
 			{
 				InputListNode child = new InputListNode(thing);
 				add(child);
+				child.setDataThing(thing);
 			}
 			else
 			{
