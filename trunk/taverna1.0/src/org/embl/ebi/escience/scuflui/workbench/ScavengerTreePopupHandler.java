@@ -117,7 +117,7 @@ public class ScavengerTreePopupHandler extends MouseAdapter {
 				    ProcessorFactory pf = (ProcessorFactory)i.next();
 				    TreeNode tnode = (TreeNode)j.next();
 				    if (pf.getDescription() == null) {
-					System.out.println("  fetching for "+pf.toString());
+					//System.out.println("  fetching for "+pf.toString());
 					try {
 					    String description = pf.createProcessor("foo",null).getDescription();
 					    //System.out.println(description);
@@ -126,9 +126,10 @@ public class ScavengerTreePopupHandler extends MouseAdapter {
 					}
 					catch (Exception ex) {
 					    pf.setDescription("<font color=\"red\">Cannot fetch description!</font>");
+					    ex.printStackTrace();
 					}
 					finally {
-					    tmodel.nodeStructureChanged(tnode);
+					    tmodel.nodeChanged(tnode);
 					}
 				    }
 				}
