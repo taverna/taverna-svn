@@ -25,6 +25,7 @@ public class DotView implements ScuflModelEventListener, java.io.Serializable {
     private String cachedRepresentation = null;
     private int portDisplay = DotView.NONE;
     private boolean displayTypes = true;
+    private boolean lralign = false;
 
     public static final int ALL = 0;
     public static final int BOUND = 1;
@@ -45,6 +46,17 @@ public class DotView implements ScuflModelEventListener, java.io.Serializable {
     }
 
     /**
+     * Define whether the graph should be top to bottom (false)
+     * or left to right (true)
+     */
+    public void setAlignment(boolean alignment) {
+	if (alignment != lralign) {
+	    cacheValid = false;
+	    this.lralign = alignment;
+	}
+    }
+
+    /**
      * Define whether we are looking at all,
      * none or only bound input output ports
      * in the view, using the DotView.ALL|BOUND|NONE
@@ -53,6 +65,9 @@ public class DotView implements ScuflModelEventListener, java.io.Serializable {
     public void setPortDisplay(int policy) {
 	this.cacheValid = false;
 	this.portDisplay = policy;
+	if (policy == ALL) {
+	    this.lralign = true;
+	}
     }
 
     /**
@@ -92,7 +107,7 @@ public class DotView implements ScuflModelEventListener, java.io.Serializable {
 	dot.append(" graph [             \n");
 	dot.append("  style=\"\"         \n");
 	// Only set left to right view if using port views
-	if (this.portDisplay == DotView.ALL) {
+	if (this.lralign) {
 	    dot.append("  rankdir=\"LR\"     \n");
 	}
 	dot.append(" ]                   \n"); 

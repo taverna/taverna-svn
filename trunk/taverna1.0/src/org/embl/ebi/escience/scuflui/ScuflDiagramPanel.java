@@ -25,8 +25,10 @@ public class ScuflDiagramPanel extends JPanel
     implements ScuflUIComponent {
     
     String[] displayPolicyStrings = { "All ports", "Bound ports", "No ports" };
+    String[] alignment = {"Vertical","Horizontal"};
     JButton saveAsDot, saveAsPNG, saveAsSVG;
     JComboBox displayPolicyChooser = new JComboBox(displayPolicyStrings);
+    JComboBox alignmentChooser = new JComboBox(alignment);
     ScuflDiagram diagram = new ScuflDiagram();
     JCheckBox typeDisplay = new JCheckBox("Show types",true);
     JCheckBox fitToWindow = new JCheckBox("Fit to window",false);
@@ -80,6 +82,7 @@ public class ScuflDiagramPanel extends JPanel
 	toolbar.add(typeDisplay);
 	toolbar.addSeparator();
 	toolbar.add(displayPolicyChooser);
+	toolbar.add(alignmentChooser);
 	toolbar.addSeparator();
 	toolbar.add(fitToWindow);
 	toolbar.add(Box.createHorizontalGlue());
@@ -93,6 +96,14 @@ public class ScuflDiagramPanel extends JPanel
 	displayPolicyChooser.addActionListener(new ActionListener() {
 		public void actionPerformed(ActionEvent e) {
 		    diagram.setPortDisplay(displayPolicyChooser.getSelectedIndex());
+		    ScuflDiagramPanel.this.doLayout();
+		    ScuflDiagramPanel.this.repaint();
+		}
+	    });
+	alignmentChooser.setSelectedIndex(0);
+	alignmentChooser.addActionListener(new ActionListener() {
+		public void actionPerformed(ActionEvent e) {
+		    diagram.setLRAlignment(alignmentChooser.getSelectedIndex()==0?false:true);
 		    ScuflDiagramPanel.this.doLayout();
 		    ScuflDiagramPanel.this.repaint();
 		}

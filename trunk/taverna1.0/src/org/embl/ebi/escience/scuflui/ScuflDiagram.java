@@ -55,8 +55,17 @@ public class ScuflDiagram extends JComponent
     private DotView dot;
     private BufferedImage image = null;
     private boolean fitToWindow = false;
+    private boolean lralign = false;
     private Timer updateTimer = null;
     private boolean listenToMouse = true;
+
+    public void setLRAlignment(boolean align) {
+	if (align != lralign) {
+	    lralign = align;
+	    this.dot.setAlignment(align);
+	    updateGraphic();
+	}
+    }
 
     public String getDot() {
 	return this.dot.getDot();
