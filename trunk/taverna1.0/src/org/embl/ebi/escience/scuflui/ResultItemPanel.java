@@ -8,6 +8,7 @@ package org.embl.ebi.escience.scuflui;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Component;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -73,6 +74,20 @@ public class ResultItemPanel extends JPanel {
 				    theTextArea.setText((String)userObject);
 				    theTextArea.setFont(new Font("Monospaced",Font.PLAIN,12));
 				    splitPane.setRightComponent(new JScrollPane(theTextArea));
+				}
+				// If text/xml then create a new split pane to show a tree version of it
+				if (mimeTypes.matches(".*text/xml.*")) {
+				    try {
+					Component originalComponent = splitPane.getRightComponent();
+					XMLTree xmlTreeDisplay = new XMLTree((String)userObject);
+					JSplitPane pane2 = new JSplitPane(JSplitPane.VERTICAL_SPLIT,
+									  new JScrollPane(xmlTreeDisplay),
+									  originalComponent);
+					splitPane.setRightComponent(pane2);
+				    }
+				    catch (Exception ex) {
+					// Probably not valid xml so don't do the display change
+				    }
 				}
 			    }
 			    else if (mimeTypes.matches(".*image/.*")) {
