@@ -24,6 +24,7 @@ import java.awt.Paint;
 import java.awt.GradientPaint;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.event.*;
 
 /**
  * JPanel subclass for an Attribute Page
@@ -103,6 +104,10 @@ class AttributeGroupEditor extends JPanel {
 	add(new ShadedLabel(title, ShadedLabel.TAVERNA_BLUE, true), BorderLayout.NORTH);
 	add(Box.createRigidArea(new Dimension(10,10)),
 	    BorderLayout.WEST);
+	add(Box.createRigidArea(new Dimension(10,10)),
+	    BorderLayout.EAST);
+	add(Box.createRigidArea(new Dimension(10,10)),
+	    BorderLayout.SOUTH);
 	AttributeCollection[] collections = group.getAttributeCollections();
 	JPanel cp = new JPanel();
 	cp.setLayout(new BoxLayout(cp, BoxLayout.PAGE_AXIS));
@@ -110,7 +115,7 @@ class AttributeGroupEditor extends JPanel {
 	    cp.add(new AttributeCollectionEditor(query, collections[i]));
 	}
 	cp.add(Box.createVerticalGlue());
-	JScrollPane sp = new JScrollPane(cp, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
+	JScrollPane sp = new JScrollPane(cp, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
 					 JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 	cp.setBackground(Color.WHITE);
 	sp.setBackground(Color.WHITE);
@@ -201,17 +206,22 @@ class SequenceGroupEditor extends JPanel {
 	String title = "Sequence export options.";
 	add(new ShadedLabel(title, ShadedLabel.TAVERNA_BLUE, true), BorderLayout.NORTH);
 	add(Box.createRigidArea(new Dimension(10,10)),
-	    BorderLayout.WEST);
-	JPanel sequencePanel = new JPanel();
+	    BorderLayout.WEST);	
+	add(Box.createRigidArea(new Dimension(10,10)),
+	    BorderLayout.EAST);
+	add(Box.createRigidArea(new Dimension(10,10)),
+	    BorderLayout.SOUTH);
+	JPanel sequencePanel = new SequenceEditor(query);
 	sequencePanel.setLayout(new BoxLayout(sequencePanel, BoxLayout.PAGE_AXIS));
 	sequencePanel.add(Box.createVerticalGlue());
-	JScrollPane sp = new JScrollPane(sequencePanel, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
+	JScrollPane sp = new JScrollPane(sequencePanel, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
 					 JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 	sequencePanel.setBackground(Color.WHITE);
 	sp.setBackground(Color.WHITE);
 	sp.setPreferredSize(new Dimension(0,0));
 	add(sp, BorderLayout.CENTER);
     }
+
     protected void paintComponent(Graphics g) {
 	final int width = getWidth();
 	final int height = getHeight();
@@ -222,4 +232,187 @@ class SequenceGroupEditor extends JPanel {
 	g2d.setPaint(oldPaint);
 	super.paintComponent(g);
     }
+}
+
+class SequenceEditor extends JPanel {
+
+    Query query;
+    JComboBox geneTranscriptSelect = new JComboBox(new String[]{
+	"None","Transcripts / Proteins","Genes"});
+    JComboBox sequenceOptionsSelect = new JComboBox();
+    final JTextArea fiveFlankLength = new JTextArea("1000");
+    final JTextArea threeFlankLength = new JTextArea("1000");
+    
+    // Options available for both genes and transcripts
+    String[] geneOptions = new String[]{"Gene sequence",
+					"Gene plus 5' and 3' flanks",
+					"Gene plus 5' flank",
+					"Gene plus 3' flank",
+					"5' upstream only",
+					"3' downstream only",
+					"Exon sequences",
+					"Exons plus 5' and 3' flanks",
+					"Exons plus 5' flanks",
+					"Exons plus 3' flanks"};
+    
+    // Options only available for transcripts
+    String[] transcriptOnlyOptions = new String[]{"5' UTR only",
+						  "5' UTR and upstream",
+						  "3' UTR only",
+						  "3' UTR and downstream",
+						  "cDNA sequence only",
+						  "Coding  equence only",
+						  "Peptide"};
+    
+    // Image names for each option type
+    String[] imageNames = new String[]{"gene_schematic_gene_only.gif",
+				       "gene_schematic_gene_5_3.gif",
+				       "gene_schematic_gene_5.gif",
+				       "gene_schematic_gene_3.gif",
+				       "gene_schematic_extent_5_only.gif",
+				       "gene_schematic_extent_3_only.gif",
+				       "gene_schematic_exons.gif",
+				       "gene_schematic_exons_5_3.gif",
+				       "gene_schematic_exons_5.gif",
+				       "gene_schematic_exons_3.gif",
+				       "gene_schematic_upstream_utr.gif",
+				       "gene_schematic_upstream_utr_5.gif",
+				       "gene_schematic_downstream_utr.gif",
+				       "gene_schematic_downstream_utr_3.gif",
+				       "gene_schematic_cdna.gif",
+				       "gene_schematic_coding.gif",
+				       "gene_schematic_coding_translation.gif"};
+    
+    boolean[] has3Flank = new boolean[]{false,true,false,true,false,true,false,true,false,true,false,false,false,true,false,false,false};
+    boolean[] has5Flank = new boolean[]{false,true,true,false,true,false,false,true,true,false,false,true,false,false,false,false,false};
+    
+    // Construct the entire list of options available when the 
+    // transcripts / proteins option is selected from the combobox
+    String[] transcriptOptions;
+    
+    SequenceEditor(Query query) {
+	super();
+	setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
+	this.query = query;
+	List transcriptOptionsList = new ArrayList(Arrays.asList(geneOptions));
+	transcriptOptionsList.addAll(Arrays.asList(transcriptOnlyOptions));
+	transcriptOptions = (String[])transcriptOptionsList.toArray(new String[0]);
+	
+	JPanel seqTypePanel = new JPanel(new BorderLayout());
+	seqTypePanel.add(new ShadedLabel("Type of sequence to fetch",ShadedLabel.TAVERNA_ORANGE, true),
+			 BorderLayout.NORTH);
+	seqTypePanel.add(geneTranscriptSelect,
+			 BorderLayout.CENTER);
+	seqTypePanel.setMaximumSize(new Dimension(6000,45));
+	add(seqTypePanel);
+	
+	// Change the options available when the sequence type is changed
+	final JComboBox sOptions = sequenceOptionsSelect;
+	geneTranscriptSelect.addActionListener(new ActionListener() {
+		public void actionPerformed(ActionEvent ae) {
+		    JComboBox source = (JComboBox)ae.getSource();
+		    int index = source.getSelectedIndex();
+		    if (index == 0) {
+			// Deselect and update query
+			sOptions.removeAllItems();
+			sOptions.setSelectedIndex(-1);
+			sOptions.setEnabled(false);
+		    }
+		    else if (index == 1) {
+			// Transcripts and proteins
+			sOptions.setEnabled(false);
+			sOptions.removeAllItems();
+			for (int i = 0; i < transcriptOptions.length; i++) {
+			    sOptions.addItem(transcriptOptions[i]);
+			}
+			sOptions.setSelectedIndex(-1);
+			sOptions.setEnabled(true);
+		    }
+		    else if (index == 2) {
+			// Genes
+			sOptions.setEnabled(false);
+			sOptions.removeAllItems();
+			for (int i = 0; i < geneOptions.length; i++) {
+			    sOptions.addItem(transcriptOptions[i]);
+			}
+			sOptions.setSelectedIndex(-1);
+			sOptions.setEnabled(true);
+		    }
+			
+		}
+	    });
+
+	JPanel optionsPanel = new JPanel(new BorderLayout());
+	optionsPanel.add(new ShadedLabel("Desired sequence options",ShadedLabel.TAVERNA_ORANGE, true),
+			 BorderLayout.NORTH);
+	optionsPanel.add(sequenceOptionsSelect);
+	optionsPanel.setMaximumSize(new Dimension(600,45));
+	add(optionsPanel);
+	
+	JPanel extentPanel = new JPanel(new BorderLayout());
+	extentPanel.setBackground(Color.WHITE);
+	extentPanel.add(new ShadedLabel("Extents", ShadedLabel.TAVERNA_ORANGE, true),
+			BorderLayout.NORTH);
+	JPanel internalExtentPanel = new JPanel();
+	internalExtentPanel.setBackground(Color.WHITE);
+	internalExtentPanel.setLayout(new GridLayout(1,3));
+	JLabel fiveLabel = new JLabel("5' flank");
+	fiveLabel.setOpaque(false);
+	fiveLabel.setBackground(Color.WHITE);
+	fiveLabel.setAlignmentX(Component.RIGHT_ALIGNMENT);
+	internalExtentPanel.add(fiveLabel);
+	
+	internalExtentPanel.add(fiveFlankLength);
+	JLabel threeLabel = new JLabel("3' flank");
+	threeLabel.setOpaque(false);
+	threeLabel.setBackground(Color.WHITE);
+	threeLabel.setAlignmentX(Component.RIGHT_ALIGNMENT);
+	internalExtentPanel.add(threeLabel);
+	internalExtentPanel.add(threeFlankLength);
+	extentPanel.add(internalExtentPanel, BorderLayout.CENTER);
+	extentPanel.setMaximumSize(new Dimension(600,45));
+	add(extentPanel);
+
+
+	JPanel imagePanel = new JPanel(new BorderLayout());
+	imagePanel.setBackground(Color.WHITE);
+	imagePanel.add(new ShadedLabel("Sequence glyph", ShadedLabel.TAVERNA_ORANGE, true),
+		       BorderLayout.NORTH);
+	final JPanel internalImage = new JPanel(new BorderLayout());
+	internalImage.setBackground(Color.WHITE);
+	imagePanel.add(internalImage, BorderLayout.CENTER);
+	
+	// Change the image when an option is selected and set the appropriate
+	// flanking options, also update the query.
+	sequenceOptionsSelect.addActionListener(new ActionListener() {
+		public void actionPerformed(ActionEvent ae) {
+		    fiveFlankLength.setEnabled(false);
+		    threeFlankLength.setEnabled(false);
+		    JComboBox source = (JComboBox)ae.getSource();
+		    int index = source.getSelectedIndex();
+		    if (source.isEnabled() && index > -1) {
+			String imageURL = "org/embl/ebi/escience/scuflworkers/biomart/config/glyphs/"+imageNames[index];
+			internalImage.removeAll();
+			internalImage.add(new JLabel(new ImageIcon(Thread.currentThread().getContextClassLoader().getResource(imageURL))),
+					  BorderLayout.CENTER);
+			fiveFlankLength.setEnabled(has5Flank[index]);
+			threeFlankLength.setEnabled(has3Flank[index]);
+		    }
+		    else {
+			internalImage.removeAll();
+		    }
+		    updateQuery();
+		}
+	    });
+	internalImage.setMaximumSize(new Dimension(250,70));
+	internalImage.setMinimumSize(new Dimension(250,70));
+	imagePanel.setMaximumSize(new Dimension(600,95));
+	add(imagePanel);
+    }
+    
+    // Called when the query needs to be updated from the UI
+    void updateQuery() {
+
+    }
+
 }
