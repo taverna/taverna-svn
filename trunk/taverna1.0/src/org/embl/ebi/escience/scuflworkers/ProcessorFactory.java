@@ -49,14 +49,14 @@ public abstract class ProcessorFactory {
     if(newProcessor == null) {
       throw new ProcessorCreationException("Failed to find processor for: " + wrapperElement);
     }
-    
+
 	    if (model != null) {
 		model.addProcessor(newProcessor);
 	    }
 	    return newProcessor;
 	}
 	catch (XScuflFormatException xfe) {
-	    throw new ProcessorCreationException("Invalid internal XML representation!");
+	    throw new ProcessorCreationException("Invalid internal XML representation!", xfe);
 	}
     };
 

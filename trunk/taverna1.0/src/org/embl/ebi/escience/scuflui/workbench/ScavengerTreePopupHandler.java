@@ -35,6 +35,8 @@ import org.embl.ebi.escience.scuflui.workbench.ScavengerCreationException;
 import org.embl.ebi.escience.scuflui.workbench.ScavengerTree;
 import org.embl.ebi.escience.scuflui.workbench.WebScavenger;
 import org.embl.ebi.escience.scuflui.workbench.Workbench;
+import org.apache.log4j.Logger;
+
 import java.lang.Class;
 import java.lang.Exception;
 import java.lang.Object;
@@ -47,6 +49,7 @@ import java.lang.String;
  * @author Tom Oinn
  */
 public class ScavengerTreePopupHandler extends MouseAdapter {
+  private static Logger LOG = Logger.getLogger(ProcessorFactory.class);
 
     private ScavengerTree scavenger;
 
@@ -189,14 +192,14 @@ public class ScavengerTreePopupHandler extends MouseAdapter {
 				pf.createProcessor(validName, ScavengerTreePopupHandler.this.scavenger.model);
 			    }
 			    catch (ProcessorCreationException pce) {
-            pce.printStackTrace(); // fixme: should be logged
+            LOG.error("Problen crating processor", pce);
 				 JOptionPane.showMessageDialog(null,
 								  "Processor creation exception : \n"+pce.getMessage(),
 								  "Exception!",
 								  JOptionPane.ERROR_MESSAGE);
 			    }
 			    catch (DuplicateProcessorNameException dpne) {
-            dpne.printStackTrace(); // fixme: should be logged
+            LOG.error("Problen crating processor", dpne);
 				JOptionPane.showMessageDialog(null,
 							      "Duplicate name : \n"+dpne.getMessage(),
 							      "Exception!",

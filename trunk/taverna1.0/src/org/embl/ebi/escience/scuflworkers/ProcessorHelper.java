@@ -24,6 +24,8 @@ import org.embl.ebi.escience.scuflworkers.ProcessorEditor;
 import org.embl.ebi.escience.scuflworkers.ProcessorTaskWorker;
 import org.embl.ebi.escience.scuflworkers.ScavengerHelper;
 import org.embl.ebi.escience.scuflworkers.XMLHandler;
+import org.apache.log4j.Logger;
+
 import java.lang.Class;
 import java.lang.ClassLoader;
 import java.lang.Exception;
@@ -57,6 +59,7 @@ import java.lang.System;
  * @author Tom Oinn
  */
 public class ProcessorHelper {
+  private static Logger LOG = Logger.getLogger(ProcessorHelper.class);
 
     static Map coloursForTagName = new HashMap();
     static Map tagNameForClassName = new HashMap();
@@ -71,102 +74,106 @@ public class ProcessorHelper {
 
     static ImageIcon unknownProcessorIcon;
 
-    static {
-	try {
-	    // Get the classloader for this class
-	    ClassLoader loader = ProcessorHelper.class.getClassLoader();
+  static {
+    try {
+      // Get the classloader for this class
+      ClassLoader loader = ProcessorHelper.class.getClassLoader();
 
-	    // Load the 'unknown processor' image icon
-	    unknownProcessorIcon = new ImageIcon(loader.getResource("org/embl/ebi/escience/scuflui/unknownprocessor.gif"));
-	    // Load up the values from any taverna.properties files located
-	    // by the class resource loader.
-	    Enumeration en = loader.getResources("taverna.properties");
-	    tavernaProperties = new Properties();
-	    while (en.hasMoreElements()) {
-		URL resourceURL = (URL)en.nextElement();
-		System.out.println("Loading resources from : "+resourceURL.toString());
-		tavernaProperties.load(resourceURL.openStream());
-	    }
-	    // Should now have a populated properties list, set up the various
-	    // static Map objects for the colours etc.
-	    // Iterate over all property keys
-	    for (Iterator i = tavernaProperties.keySet().iterator(); i.hasNext(); ) {
-		String key = (String)i.next();
-		String value = tavernaProperties.getProperty(key);
-		//System.out.println(key+" == "+value);
-		String[] keyElements = key.split("\\.");
-		// Detect the processor keys
-		if (keyElements.length == 4 && keyElements[1].equals("processor")) {
-		    String tagName = keyElements[2];
-		    // If this is the class name...
-		    // Form : taverna.processor.<TAGNAME>.class = <CLASSNAME>
-		    if (keyElements[3].equals("class")) {
-			// Store the class name <-> tag name mappings
-			tagNameForClassName.put(value,tagName);
-			classNameForTagName.put(tagName,value);
-		    }
-		    // Form : taverna.processor.<TAGNAME>.colour = <RENDERINGHINT_COLOUR>
-		    else if (keyElements[3].equals("colour")) {
-			// Configure default display colour for i.e. dot
-			coloursForTagName.put(tagName,value);
-		    }
-		    // Form : taverna.processor.<TAGNAME>.icon = <RENDERINGHINT_ICON>
-		    // *** NOW LOADS ON DEMAND ***
-		    //else if (keyElements[3].equals("icon")) {
-			// Fetch resource icon...
-		    //	iconForTagName.put(tagName,new ImageIcon(loader.getResource(value)));
-		    //}
-		    // Form : taverna.processor.<TAGNAME>.taskclass = <ENACTOR_TASK_CLASS>
-		    else if (keyElements[3].equals("taskclass")) {
-			// Configure the taverna task for the enactor to run this type of processor
-			taskClassForTagName.put(tagName, value);
-		    }
-		    // Form : taverna.processor.<TAGNAME>.xml = <XML_HANDLER_CLASS>
-		    else if (keyElements[3].equals("xml")) {
-			// Configure and instantiate the XML handler for this type of processor
-			String handlerClassName = value;
-			// Create an instance of the handler
-			Class handlerClass = Class.forName(handlerClassName);
-			XMLHandler xh = (XMLHandler)handlerClass.newInstance();
-			xmlHandlerForTagName.put(tagName, xh);
-		    }
-		    // Form : taverna.processor.<TAGNAME>.editor = <EDITOR_CLASS>
-		    else if (keyElements[3].equals("editor")) {
-			// Configure and create the processor editor handler
-			String editorClassName = value;
-			// Create an instance...
-			Class editorClass = Class.forName(editorClassName);
-			ProcessorEditor pe = (ProcessorEditor)editorClass.newInstance();
-			editorForTagName.put(tagName, pe);
-		    }
-		}
-		// Form : taverna.scavenger.<TAGNAME> = <SCAVENGERCLASS>
-		// Use the scavenger class as a key, as this allows us to have
-		// more than one scavenger per tag type. We have the tag type as
-		// a value in order that the rendering code can get the icon hint
-		// for the type being created.
-		keyElements = key.split("\\.",3);
-		if (keyElements.length == 3 && keyElements[1].equals("scavenger")) {
-		    // Get the set of scavenger creating classes
-		    String scavengerClassName = keyElements[2];
-		    String scavengerTagName = value;
-		    Object o = Class.forName(scavengerClassName).newInstance();
-		    if (o instanceof ScavengerHelper) {
-			tagNameForScavenger.put(scavengerClassName, scavengerTagName);
-		    }
-		    else if (o instanceof Scavenger) {
-			simpleScavengers.add(o);
-		    }
-		}
-	    }
-	}
-	catch (Exception e) {
-	    System.out.println("Error during initialisation for taverna properties! : "+e.getMessage());
-	    e.printStackTrace();
-	    // Don't exit, as this hides the stack trace etc!
-	    // System.exit(1);
-	}
+      // Load the 'unknown processor' image icon
+      unknownProcessorIcon = new ImageIcon(loader.getResource("org/embl/ebi/escience/scuflui/unknownprocessor.gif"));
+      // Load up the values from any taverna.properties files located
+      // by the class resource loader.
+      Enumeration en = loader.getResources("taverna.properties");
+      tavernaProperties = new Properties();
+      while (en.hasMoreElements()) {
+        URL resourceURL = (URL)en.nextElement();
+        LOG.warn("Loading resources from : "+resourceURL.toString());
+        tavernaProperties.load(resourceURL.openStream());
+      }
+      // Should now have a populated properties list, set up the various
+      // static Map objects for the colours etc.
+      // Iterate over all property keys
+      for (Iterator i = tavernaProperties.keySet().iterator(); i.hasNext(); ) {
+        String key = (String)i.next();
+        LOG.debug("key: " + key);
+        String value = tavernaProperties.getProperty(key);
+        LOG.debug("\t value: "+value);
+        String[] keyElements = key.split("\\.");
+        // Detect the processor keys
+        if (keyElements.length == 4 && keyElements[1].equals("processor")) {
+          String tagName = keyElements[2];
+          // If this is the class name...
+          // Form : taverna.processor.<TAGNAME>.class = <CLASSNAME>
+          LOG.debug("\ttag name: " + tagName);
+          if (keyElements[3].equals("class")) {
+            // Store the class name <-> tag name mappings
+            tagNameForClassName.put(value,tagName);
+            classNameForTagName.put(tagName,value);
+          }
+          // Form : taverna.processor.<TAGNAME>.colour = <RENDERINGHINT_COLOUR>
+          else if (keyElements[3].equals("colour")) {
+            // Configure default display colour for i.e. dot
+            coloursForTagName.put(tagName,value);
+          }
+          // Form : taverna.processor.<TAGNAME>.icon = <RENDERINGHINT_ICON>
+          // *** NOW LOADS ON DEMAND ***
+          //else if (keyElements[3].equals("icon")) {
+          // Fetch resource icon...
+          //	iconForTagName.put(tagName,new ImageIcon(loader.getResource(value)));
+          //}
+          // Form : taverna.processor.<TAGNAME>.taskclass = <ENACTOR_TASK_CLASS>
+          else if (keyElements[3].equals("taskclass")) {
+            // Configure the taverna task for the enactor to run this type of processor
+            taskClassForTagName.put(tagName, value);
+          }
+          // Form : taverna.processor.<TAGNAME>.xml = <XML_HANDLER_CLASS>
+          else if (keyElements[3].equals("xml")) {
+            // Configure and instantiate the XML handler for this type of processor
+            String handlerClassName = value;
+            // Create an instance of the handler
+            Class handlerClass = Class.forName(handlerClassName);
+            XMLHandler xh = (XMLHandler)handlerClass.newInstance();
+            xmlHandlerForTagName.put(tagName, xh);
+          }
+          // Form : taverna.processor.<TAGNAME>.editor = <EDITOR_CLASS>
+          else if (keyElements[3].equals("editor")) {
+            // Configure and create the processor editor handler
+            String editorClassName = value;
+            // Create an instance...
+            Class editorClass = Class.forName(editorClassName);
+            ProcessorEditor pe = (ProcessorEditor)editorClass.newInstance();
+            editorForTagName.put(tagName, pe);
+          }
+        }
+        // Form : taverna.scavenger.<TAGNAME> = <SCAVENGERCLASS>
+        // Use the scavenger class as a key, as this allows us to have
+        // more than one scavenger per tag type. We have the tag type as
+        // a value in order that the rendering code can get the icon hint
+        // for the type being created.
+        keyElements = key.split("\\.",3);
+        if (keyElements.length == 3 && keyElements[1].equals("scavenger")) {
+          // Get the set of scavenger creating classes
+          String scavengerClassName = keyElements[2];
+          String scavengerTagName = value;
+          Object o = Class.forName(scavengerClassName).newInstance();
+          if (o instanceof ScavengerHelper) {
+            tagNameForScavenger.put(scavengerClassName, scavengerTagName);
+          }
+          else if (o instanceof Scavenger) {
+            simpleScavengers.add(o);
+          }
+        }
+      }
+
+      LOG.debug("Populated xmlHanderForTagName: " + xmlHandlerForTagName);
     }
+    catch (Exception e) {
+      System.out.println("Error during initialisation for taverna properties! : "+e.getMessage());
+      e.printStackTrace();
+      // Don't exit, as this hides the stack trace etc!
+      // System.exit(1);
+    }
+  }
 
     /**
      * Return the set of instances of simple (null constructor)
@@ -360,13 +367,17 @@ public class ProcessorHelper {
     public static Processor loadProcessorFromXML(Element processorNode, ScuflModel model, String name)
             throws ProcessorCreationException, DuplicateProcessorNameException, XScuflFormatException {
       // Get the first available handler for this processor and use it to load
+      LOG.debug("Attempting to load processor for: " + processorNode);
       Processor loadedProcessor = null;
-      Iterator i = processorNode.getChildren().iterator();
-      for (; i.hasNext() && loadedProcessor==null; ) {
-        Element candidateElement = (Element)i.next();
+      for (Iterator i = processorNode.getChildren().iterator();
+           i.hasNext() && loadedProcessor==null; )
+      {
+        Element candidateElement = (Element) i.next();
         String elementName = candidateElement.getName();
-        XMLHandler xh = (XMLHandler)xmlHandlerForTagName.get(elementName);
+        XMLHandler xh = (XMLHandler) xmlHandlerForTagName.get(elementName);
+        LOG.debug("Possible help: " + candidateElement + " " + elementName + " -> " + xh);
         if (xh != null) {
+          // mrp: ouch - should we not be using candidateElement in place of processorNode?
           loadedProcessor = xh.loadProcessorFromXML(processorNode, model, name);
           // Loaded the processor, now configure from the inner spec element
           // for retry policy.
@@ -384,6 +395,7 @@ public class ProcessorHelper {
           }
         }
       }
+
       // Appended to the name so the alternate processor have at least
       // a local name. Doesn't really matter, just better than leaving
       // them blank.
@@ -392,7 +404,7 @@ public class ProcessorHelper {
         // Iterate over all alternate definitions and load them into the
         // processor as appropriate
         List l = processorNode.getChildren("alternate",XScufl.XScuflNS);
-        for (i = l.iterator(); i.hasNext(); ) {
+        for (Iterator i = l.iterator(); i.hasNext(); ) {
           Element alternateElement = (Element)i.next();
           Processor alternateProcessor = loadProcessorFromXML(alternateElement, null, "alternate"+alternateCount++);
           AlternateProcessor ap = new AlternateProcessor(alternateProcessor);
@@ -421,11 +433,16 @@ public class ProcessorHelper {
       if (loadedProcessor != null) {
         // Add the annotation templates
         List l = processorNode.getChildren("template", XScufl.XScuflNS);
-        for (i = l.iterator(); i.hasNext();) {
+        for (Iterator i = l.iterator(); i.hasNext();) {
           loadedProcessor.addAnnotationTemplate(new AnnotationTemplate((Element)i.next()));
         }
 
       }
+
+      if (loadedProcessor == null) {
+        LOG.warn("No processor found for element: " + processorNode);
+      }
+
       return loadedProcessor;
     }
 }
