@@ -121,6 +121,11 @@ public class Workbench extends JFrame {
 	
 	new SplashScreen(8000);
 	
+	// Create the workbench and define the authenticator before anything tries to 
+	// access the network
+	final Workbench workbench = new Workbench();
+	java.net.Authenticator.setDefault(new WorkbenchAuthenticator(workbench));
+
 	// Load the test ontology for the annotation of workflow
 	// source and sink ports
 	try {
@@ -138,8 +143,6 @@ public class Workbench extends JFrame {
 	    ex.printStackTrace();
 	}
 	
-	final Workbench workbench = new Workbench();
-	java.net.Authenticator.setDefault(new WorkbenchAuthenticator(workbench));
 	// Create a new implementation of the FrameCreator interface to create windows in the desktop
 	// Only do this if the property 'taverna.workbench.useinternalframes' is defined
 	if (System.getProperty("taverna.workbench.useinternalframes") != null) {
