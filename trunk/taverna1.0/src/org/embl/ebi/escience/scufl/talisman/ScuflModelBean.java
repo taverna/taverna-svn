@@ -41,6 +41,7 @@ public class ScuflModelBean implements Serializable {
     public ScuflModelBean() {
 	this.model = new ScuflModel();
 	this.dotView = new DotView(model);
+	this.dotView.setPortDisplay(DotView.BOUND);
 	this.xscuflView = new XScuflView(model);
     }
 
