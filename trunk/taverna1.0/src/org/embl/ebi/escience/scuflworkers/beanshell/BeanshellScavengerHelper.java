@@ -3,7 +3,7 @@
  * and is licensed under the GNU LGPL.
  * Copyright Tom Oinn, EMBL-EBI
  */
-package org.embl.ebi.escience.scuflworkers.stringconstant;
+package org.embl.ebi.escience.scuflworkers.beanshell;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -16,22 +16,22 @@ import org.embl.ebi.escience.scuflworkers.ScavengerHelper;
 
 
 /**
- * Helper for handling StringConstant scavengers.
+ * Helper for handling Beanshell scavengers.
  * @author Tom Oinn
  */
-public class StringConstantScavengerHelper implements ScavengerHelper {
+public class BeanshellScavengerHelper implements ScavengerHelper {
 
     public String getScavengerDescription() {
-	return "Add new String Constant scavenger...";
+	return "Add new Beanshell scavenger...";
     }
-
+    
     public ActionListener getListener(ScavengerTree theScavenger) {
 	final ScavengerTree s = theScavenger;
 	return new ActionListener() {
 		public void actionPerformed(ActionEvent ae) {
 		    String value = "edit me!";
 		    try {
-			s.addScavenger(new StringConstantScavenger(value));
+			s.addScavenger(new BeanshellScavenger());
 		    }
 		    catch (ScavengerCreationException sce) {
 			JOptionPane.showMessageDialog(null,

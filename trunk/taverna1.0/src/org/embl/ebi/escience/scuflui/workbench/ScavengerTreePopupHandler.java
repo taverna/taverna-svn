@@ -185,7 +185,7 @@ public class ScavengerTreePopupHandler extends MouseAdapter {
 										     "http://cvs.mygrid.org.uk/scufl/");
 				if (rootURL!=null) {
 				    try {
-					ScavengerTreePopupHandler.this.scavenger.addScavenger(new WebScavenger(rootURL));					
+					ScavengerTreePopupHandler.this.scavenger.addScavenger(new WebScavenger(rootURL, ScavengerTreePopupHandler.this.scavenger.treeModel));					
 				    }
 				    catch (ScavengerCreationException sce) {
 					JOptionPane.showMessageDialog(null,

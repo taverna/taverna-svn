@@ -43,7 +43,7 @@ public class ScavengerTree extends JTree
     /** 
      * The model that this scavenger will create processor for 
      */
-    protected ScuflModel model = null;
+    ScuflModel model = null;
     
     /**
      * The root node

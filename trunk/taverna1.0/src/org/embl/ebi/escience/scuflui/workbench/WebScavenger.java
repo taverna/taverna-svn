@@ -23,6 +23,8 @@ import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.input.SAXBuilder;
 
+import javax.swing.tree.*;
+
 // Network Imports
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -45,19 +47,37 @@ public class WebScavenger extends Scavenger {
 
     public static final String DISALLOW = "Disallow:";
         
-    public static void main(String[] args) throws Exception {
-	WebScavenger ws = new WebScavenger("fff");
-	String[] results = ws.search("http://homepages.cs.ncl.ac.uk/peter.li/home.formal/workflow_definitions/scufl/");
-	for (int i = 0; i < results.length; i++) {
-	    System.out.println(results[i]);
-	}
-    }
 
-    public WebScavenger(String initialURL) throws ScavengerCreationException {
+    private DefaultTreeModel treeModel = null;
+    private DefaultMutableTreeNode progressDisplayNode = new DefaultMutableTreeNode("Searching...");
+    
+    /**
+     * Creates a new web scavenger, starting the web
+     * crawl in a new thread and returning immediately
+     */
+    public WebScavenger(String initialURL, DefaultTreeModel model) throws ScavengerCreationException {
 	super("Web crawl @ "+initialURL);
+	treeModel = model;
+	add(progressDisplayNode);
 	// set default for URL access
-	URLConnection.setDefaultAllowUserInteraction(false);
-	getXScuflURLs(initialURL);
+	final String theURL = initialURL;
+	//URLConnection.setDefaultAllowUserInteraction(false);
+	Thread urlThread = new Thread() {
+		public void run() {
+		    try {
+			System.out.println("Created new thread...");
+			getXScuflURLs(theURL);
+			
+			remove(progressDisplayNode);
+			treeModel.nodeStructureChanged((TreeNode)(WebScavenger.this));
+			System.out.println("Done searching.");
+		    }
+		    catch (ScavengerCreationException sce) {
+			//
+		    }
+		}
+	    };
+	urlThread.start();
     }
     
     void getXScuflURLs(String initialURL) throws ScavengerCreationException {
@@ -150,7 +170,7 @@ public class WebScavenger extends Scavenger {
      * Return an array of strings of URLs of XScufl files found
      * by a web crawl from the initial URL.
      */
-    public String[] search(String initialURL) throws MalformedURLException {
+    private String[] search(String initialURL) throws MalformedURLException {
 	int numberSearched = 0;
 	int numberFound = 0;
 	Vector vectorMatches = new Vector();
@@ -167,6 +187,8 @@ public class WebScavenger extends Scavenger {
 	while (vectorToSearch.size() > 0) {
 	    // get the first element from the to be searched list
 	    strURL = (String)vectorToSearch.elementAt(0);
+	    progressDisplayNode.setUserObject("Examining : "+strURL);
+	    treeModel.nodeChanged(progressDisplayNode);
 	    URL url = new URL(strURL);
 	    // mark the URL as searched (we want this one way or the other)
 	    vectorToSearch.removeElementAt(0);
