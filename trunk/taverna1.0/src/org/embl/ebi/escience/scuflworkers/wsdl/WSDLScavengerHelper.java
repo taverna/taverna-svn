@@ -5,10 +5,15 @@
  */
 package org.embl.ebi.escience.scuflworkers.wsdl;
 
-import org.embl.ebi.escience.scuflworkers.*;
-import org.embl.ebi.escience.scuflui.workbench.*;
-import java.awt.event.*;
-import javax.swing.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import javax.swing.JOptionPane;
+import org.embl.ebi.escience.scuflui.workbench.ScavengerCreationException;
+import org.embl.ebi.escience.scuflui.workbench.ScavengerTree;
+import org.embl.ebi.escience.scuflworkers.ScavengerHelper;
+
+
+
 
 /**
  * Helper for handling WSDL scavengers.

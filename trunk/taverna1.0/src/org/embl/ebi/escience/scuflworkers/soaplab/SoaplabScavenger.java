@@ -5,12 +5,12 @@
  */
 package org.embl.ebi.escience.scuflworkers.soaplab;
 
-import org.embl.ebi.escience.scuflui.workbench.Scavenger;
-import org.embl.ebi.escience.scuflui.workbench.ScavengerCreationException;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.xml.namespace.QName;
 import org.apache.axis.client.Call;
 import org.apache.axis.client.Service;
+import org.embl.ebi.escience.scuflui.workbench.Scavenger;
+import org.embl.ebi.escience.scuflui.workbench.ScavengerCreationException;
 
 
 

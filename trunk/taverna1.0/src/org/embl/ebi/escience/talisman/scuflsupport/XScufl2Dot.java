@@ -13,7 +13,6 @@ import org.embl.ebi.escience.scufl.parser.XScuflParser;
 import org.embl.ebi.escience.scufl.view.DotView;
 import org.embl.ebi.escience.talisman.*;
 
-import java.lang.String;
 
 
 

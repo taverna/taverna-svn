@@ -26,8 +26,8 @@
 //      Dependencies        :
 //
 //      Last commit info    :   $Author: mereden $
-//                              $Date: 2003-09-11 15:52:34 $
-//                              $Revision: 1.10 $
+//                              $Date: 2003-09-12 13:25:41 $
+//                              $Revision: 1.11 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 
@@ -39,9 +39,6 @@ import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.eventservice.TaskSt
 import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.serviceprovidermanager.ServiceSelectionCriteria;
 import uk.ac.soton.itinnovation.mygrid.workflow.enactor.io.Part;
 
-import uk.ac.soton.itinnovation.taverna.enactor.entities.TavernaTask;
-import java.lang.Exception;
-import java.lang.String;
 
 
 

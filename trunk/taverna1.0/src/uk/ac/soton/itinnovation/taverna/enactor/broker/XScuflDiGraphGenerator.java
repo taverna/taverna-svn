@@ -25,8 +25,8 @@
 //      Dependencies        :
 //
 //      Last commit info    :   $Author: mereden $
-//                              $Date: 2003-09-11 15:52:34 $
-//                              $Revision: 1.22 $
+//                              $Date: 2003-09-12 13:25:41 $
+//                              $Revision: 1.23 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 
@@ -52,9 +52,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import uk.ac.soton.itinnovation.taverna.enactor.broker.LogLevel;
-import java.lang.Exception;
-import java.lang.String;
 
 
 

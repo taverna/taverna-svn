@@ -5,9 +5,9 @@
  */
 package org.embl.ebi.escience.scuflworkers.workflow;
 
+import javax.swing.tree.DefaultMutableTreeNode;
 import org.embl.ebi.escience.scuflui.workbench.Scavenger;
 import org.embl.ebi.escience.scuflui.workbench.ScavengerCreationException;
-import javax.swing.tree.DefaultMutableTreeNode;
 
 
 

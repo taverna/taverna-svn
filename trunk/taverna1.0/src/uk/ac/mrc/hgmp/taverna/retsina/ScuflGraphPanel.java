@@ -24,18 +24,6 @@ import java.util.Map;
 // Network Imports
 import java.net.URL;
 
-import uk.ac.mrc.hgmp.taverna.retsina.IScuflNodeCreator;
-import uk.ac.mrc.hgmp.taverna.retsina.ScuflGraph;
-import uk.ac.mrc.hgmp.taverna.retsina.ScuflGraphCell;
-import uk.ac.mrc.hgmp.taverna.retsina.ScuflGraphModel;
-import uk.ac.mrc.hgmp.taverna.retsina.ScuflInputPortView;
-import uk.ac.mrc.hgmp.taverna.retsina.ScuflOutputPortView;
-import uk.ac.mrc.hgmp.taverna.retsina.ScuflPort;
-import java.lang.Exception;
-import java.lang.Integer;
-import java.lang.Object;
-import java.lang.String;
-import java.lang.System;
 
 
 

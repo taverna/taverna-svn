@@ -5,8 +5,6 @@
  */
 package org.embl.ebi.escience.scuflworkers.wsdl;
 
-import org.embl.ebi.escience.scuflui.workbench.Scavenger;
-import org.embl.ebi.escience.scuflui.workbench.ScavengerCreationException;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.wsdl.Definition;
 import javax.wsdl.Operation;
@@ -14,6 +12,8 @@ import javax.wsdl.PortType;
 import javax.wsdl.WSDLException;
 import javax.wsdl.factory.WSDLFactory;
 import javax.wsdl.xml.WSDLReader;
+import org.embl.ebi.escience.scuflui.workbench.Scavenger;
+import org.embl.ebi.escience.scuflui.workbench.ScavengerCreationException;
 
 // Utility Imports
 import java.util.Iterator;

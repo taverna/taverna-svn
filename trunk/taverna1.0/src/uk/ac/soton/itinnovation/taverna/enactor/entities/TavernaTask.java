@@ -25,8 +25,8 @@
 //      Dependencies        :
 //
 //      Last commit info    :   $Author: mereden $
-//                              $Date: 2003-09-11 15:52:34 $
-//                              $Revision: 1.7 $
+//                              $Date: 2003-09-12 13:25:41 $
+//                              $Revision: 1.8 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 package uk.ac.soton.itinnovation.taverna.enactor.entities;
@@ -34,7 +34,6 @@ package uk.ac.soton.itinnovation.taverna.enactor.entities;
 import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.entities.Task;
 import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.entities.TimePoint;
 
-import java.lang.String;
 
 
 

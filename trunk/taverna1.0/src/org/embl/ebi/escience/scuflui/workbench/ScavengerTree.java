@@ -5,9 +5,6 @@
  */
 package org.embl.ebi.escience.scuflui.workbench;
 
-import org.embl.ebi.escience.scuflworkers.wsdl.WSDLBasedScavenger;
-import org.embl.ebi.escience.scuflworkers.talisman.TalismanScavenger;
-import org.embl.ebi.escience.scuflworkers.soaplab.SoaplabScavenger;
 import javax.swing.JTree;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
@@ -18,8 +15,11 @@ import org.embl.ebi.escience.scufl.Processor;
 import org.embl.ebi.escience.scufl.ScuflModel;
 import org.embl.ebi.escience.scuflui.ScuflUIComponent;
 import org.embl.ebi.escience.scuflworkers.soaplab.SoaplabProcessor;
+import org.embl.ebi.escience.scuflworkers.soaplab.SoaplabScavenger;
 import org.embl.ebi.escience.scuflworkers.talisman.TalismanProcessor;
+import org.embl.ebi.escience.scuflworkers.talisman.TalismanScavenger;
 import org.embl.ebi.escience.scuflworkers.wsdl.WSDLBasedProcessor;
+import org.embl.ebi.escience.scuflworkers.wsdl.WSDLBasedScavenger;
 
 // Utility Imports
 import java.util.ArrayList;

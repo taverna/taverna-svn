@@ -6,6 +6,8 @@
 package org.embl.ebi.escience.scuflui.workbench;
 
 import javax.swing.tree.DefaultMutableTreeNode;
+import org.embl.ebi.escience.scuflworkers.talisman.TalismanProcessorFactory;
+import org.embl.ebi.escience.scuflworkers.workflow.WorkflowProcessorFactory;
 
 // Utility Imports
 import java.util.StringTokenizer;
@@ -26,8 +28,6 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 
-import org.embl.ebi.escience.scuflworkers.talisman.TalismanProcessorFactory;
-import org.embl.ebi.escience.scuflworkers.workflow.WorkflowProcessorFactory;
 
 
 

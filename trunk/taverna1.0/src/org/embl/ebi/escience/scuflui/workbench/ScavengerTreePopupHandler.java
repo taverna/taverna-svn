@@ -5,15 +5,11 @@
  */
 package org.embl.ebi.escience.scuflui.workbench;
 
-import org.embl.ebi.escience.scuflworkers.wsdl.WSDLBasedScavenger;
-import org.embl.ebi.escience.scuflworkers.workflow.WorkflowScavenger;
-import org.embl.ebi.escience.scuflworkers.talisman.TalismanScavenger;
-import org.embl.ebi.escience.scuflworkers.soaplab.SoaplabScavenger;
-import org.embl.ebi.escience.scuflworkers.ProcessorFactory;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import javax.swing.ImageIcon;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
@@ -22,16 +18,17 @@ import org.embl.ebi.escience.scufl.DuplicateProcessorNameException;
 import org.embl.ebi.escience.scufl.ProcessorCreationException;
 import org.embl.ebi.escience.scufl.parser.XScuflParser;
 import org.embl.ebi.escience.scuflui.ScuflIcons;
-
-import java.util.*;
+import org.embl.ebi.escience.scuflworkers.ProcessorFactory;
 import org.embl.ebi.escience.scuflworkers.ProcessorHelper;
 import org.embl.ebi.escience.scuflworkers.ScavengerHelper;
-import javax.swing.*;
+import org.embl.ebi.escience.scuflworkers.workflow.WorkflowProcessorFactory;
+
+// Utility Imports
+import java.util.Iterator;
 
 // Network Imports
 import java.net.URL;
 
-import org.embl.ebi.escience.scuflworkers.workflow.WorkflowProcessorFactory;
 
 
 

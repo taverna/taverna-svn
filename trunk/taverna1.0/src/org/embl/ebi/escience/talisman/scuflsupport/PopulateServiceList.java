@@ -16,8 +16,6 @@ import org.embl.ebi.escience.talisman.*;
 // RMI Imports
 import java.rmi.RemoteException;
 
-import java.lang.Object;
-import java.lang.String;
 
 
 

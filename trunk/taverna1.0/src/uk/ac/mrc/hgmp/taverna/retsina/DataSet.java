@@ -9,7 +9,6 @@ package uk.ac.mrc.hgmp.taverna.retsina;
 // Utility Imports
 import java.util.Hashtable;
 
-import java.lang.String;
 
 
 

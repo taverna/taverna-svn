@@ -4,9 +4,11 @@
  * Copyright Tom Oinn, EMBL-EBI
  */
 package org.embl.ebi.escience.scuflworkers;
-import org.embl.ebi.escience.scuflui.workbench.*;
-import java.awt.event.*;
-import javax.swing.*;
+import java.awt.event.ActionListener;
+import org.embl.ebi.escience.scuflui.workbench.ScavengerTree;
+
+
+
 
 /**
  * Classes implementing this interface perform the role

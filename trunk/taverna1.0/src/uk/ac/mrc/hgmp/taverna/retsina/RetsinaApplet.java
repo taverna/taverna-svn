@@ -5,8 +5,6 @@ import javax.swing.JApplet;
 import javax.swing.JFrame;
 import org.embl.ebi.escience.scufl.ScuflModel;
 
-import uk.ac.mrc.hgmp.taverna.retsina.Retsina;
-import java.lang.String;
 
 
 

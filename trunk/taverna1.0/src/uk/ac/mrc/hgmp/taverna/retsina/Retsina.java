@@ -24,17 +24,6 @@ import java.io.*;
 // Network Imports
 import java.net.URL;
 
-import uk.ac.mrc.hgmp.taverna.retsina.ProgramSelectionPanel;
-import uk.ac.mrc.hgmp.taverna.retsina.ScuflGraph;
-import uk.ac.mrc.hgmp.taverna.retsina.ScuflGraphCell;
-import uk.ac.mrc.hgmp.taverna.retsina.ScuflGraphPanel;
-import java.lang.Exception;
-import java.lang.InterruptedException;
-import java.lang.Object;
-import java.lang.SecurityManager;
-import java.lang.String;
-import java.lang.System;
-import java.lang.Thread;
 
 
 

@@ -15,8 +15,8 @@
 //      Dependencies        :   
 //
 //      Last commit info    :   $Author: mereden $
-//                              $Date: 2003-09-11 15:52:34 $
-//                              $Revision: 1.5 $
+//                              $Date: 2003-09-12 13:25:41 $
+//                              $Revision: 1.6 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 
@@ -30,11 +30,6 @@ import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.eventservice.TaskSt
 import uk.ac.soton.itinnovation.taverna.enactor.entities.TavernaTask;
 import uk.ac.soton.itinnovation.taverna.enactor.monitor.TavernaTaskMonitor;
 
-import java.lang.Exception;
-import java.lang.IllegalArgumentException;
-import java.lang.Runnable;
-import java.lang.System;
-import java.lang.Thread;
 
 
 

@@ -21,11 +21,6 @@ import java.util.Map;
 // Network Imports
 import java.net.URL;
 
-import uk.ac.soton.itinnovation.taverna.enactor.entities.PortTask;
-import uk.ac.soton.itinnovation.taverna.enactor.entities.ProcessorTask;
-import uk.ac.soton.itinnovation.taverna.enactor.entities.TaskExecutionException;
-import java.lang.Exception;
-import java.lang.String;
 
 
 

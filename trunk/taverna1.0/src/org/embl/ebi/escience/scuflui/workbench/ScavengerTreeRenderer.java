@@ -5,13 +5,13 @@
  */
 package org.embl.ebi.escience.scuflui.workbench;
 
-import org.embl.ebi.escience.scuflworkers.ProcessorFactory;
 import java.awt.Component;
+import javax.swing.ImageIcon;
 import javax.swing.JTree;
 import javax.swing.tree.DefaultMutableTreeNode;
 import org.embl.ebi.escience.scuflui.ScuflModelExplorerRenderer;
+import org.embl.ebi.escience.scuflworkers.ProcessorFactory;
 import org.embl.ebi.escience.scuflworkers.ProcessorHelper;
-import javax.swing.*;
 
 
 
