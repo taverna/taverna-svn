@@ -1,8 +1,5 @@
 /*
  * Created on Jan 12, 2005
- *
- * TODO To change the template for this generated file go to
- * Window - Preferences - Java - Code Style - Code Templates
  */
 package org.embl.ebi.escience.scuflui.actions;
 
@@ -20,7 +17,7 @@ import org.embl.ebi.escience.scuflui.ScuflIcons;
  * COMMENT
  * 
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover </a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class AddInputAction extends ScuflModelAction
 {

@@ -103,6 +103,7 @@ public class WorkflowEditor extends JPanel implements ScuflUIComponent
 		graphModel = new ScuflGraphModel();
 		graph = new JGraph(graphModel);
 		graph.setAntiAliased(true);
+		graph.setAutoSizeOnValueChange(true);
 		graph.setBendable(true);
 		graph.setMoveable(false);
 		graph.setSizeable(false);
@@ -132,8 +133,8 @@ public class WorkflowEditor extends JPanel implements ScuflUIComponent
 		{
 			public void mouseWheelMoved(MouseWheelEvent e)
 			{
-				// TODO Zoom!
-				graph.setScale(graph.getScale() * (e.getWheelRotation() / 10.0));
+				// Zoom zoom
+				graph.setScale(graph.getScale() + (e.getWheelRotation() / 10.0));
 			}
 		});
 		graph.addMouseListener(new MouseAdapter()

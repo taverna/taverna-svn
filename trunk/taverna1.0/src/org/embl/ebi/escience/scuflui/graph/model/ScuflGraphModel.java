@@ -50,7 +50,7 @@ import org.jgraph.graph.ParentMap;
 /**
  * 
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover </a>
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
 public class ScuflGraphModel implements GraphModel, GraphModelListener, ScuflUIComponent
 {
@@ -224,12 +224,13 @@ public class ScuflGraphModel implements GraphModel, GraphModelListener, ScuflUIC
 			}
 			else
 			{
+				GraphConstants.setAutoSize(map, true);
 				GraphConstants.setValue(map, processor.getName());
 				GraphConstants.setBounds(map, new Rectangle(100, 20));
 				GraphConstants.setBackground(map, GraphColours.getColour(ProcessorHelper
 						.getPreferredColour(processor), Color.WHITE));
 				GraphConstants.setOpaque(map, true);
-				GraphConstants.setBorder(map, BorderFactory.createRaisedBevelBorder());
+				GraphConstants.setBorder(map, BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(Color.BLACK), BorderFactory.createEmptyBorder(1,6,1,6)));
 			}
 		}
 		else if (node instanceof Port)
@@ -237,6 +238,7 @@ public class ScuflGraphModel implements GraphModel, GraphModelListener, ScuflUIC
 			if(isPortOnWorkflowEdge(node))
 			{
 				// Port acting as graph node, as opposed to port
+				GraphConstants.setAutoSize(map, true);				
 				GraphConstants.setValue(map, node.toString());
 				GraphConstants.setBounds(map, new Rectangle(100, 20));				
 				if(node instanceof InputPort)
@@ -249,7 +251,7 @@ public class ScuflGraphModel implements GraphModel, GraphModelListener, ScuflUIC
 					GraphConstants.setBackground(map, GraphColours.getColour("skyblue", Color.WHITE));
 				}
 				GraphConstants.setOpaque(map, true);
-				GraphConstants.setBorder(map, BorderFactory.createRaisedBevelBorder());				
+				GraphConstants.setBorder(map, BorderFactory.createCompoundBorder(BorderFactory.createRaisedBevelBorder(), BorderFactory.createEmptyBorder(1,6,1,6)));				
 			}
 			GraphConstants.setDisconnectable(map, false);
 		}

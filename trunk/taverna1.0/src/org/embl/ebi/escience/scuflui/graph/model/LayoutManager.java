@@ -22,7 +22,7 @@ import org.jgraph.graph.GraphModel;
  * graph to be able to update as the graph changes.
  * 
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover </a>
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
 public class LayoutManager implements GraphModelListener
 {
@@ -50,23 +50,20 @@ public class LayoutManager implements GraphModelListener
 	private class TreeSet extends HashSet
 	{
 		private Object root;
-		
+
 		TreeSet(Object root)
 		{
 			this.root = root;
 		}
-		
+
 		Object getRoot()
 		{
 			return root;
 		}
 	}
-	
+
 	private static final String EDGE_PARENT = "tree edge parent";
 	private static final String TREE_SET = "tree set";
-	private static final String LOW = "low";
-	private static final String LIM = "lim";
-	// private static final String LAYOUT_MEDIAN = "layout median";
 
 	private GraphModel model;
 	private GraphRows rows;
@@ -89,14 +86,14 @@ public class LayoutManager implements GraphModelListener
 	 */
 	public void graphChanged(GraphModelEvent e)
 	{
-		if(model.getRootCount() == 0)
+		if (model.getRootCount() == 0)
 		{
 			rows.clear();
 			return;
 		}
 
 		List edges = new EdgeList();
-		
+
 		if (e.getChange().getRemoved() != null)
 		{
 			Object[] removed = e.getChange().getRemoved();
@@ -119,7 +116,11 @@ public class LayoutManager implements GraphModelListener
 					if (!model.contains(root))
 					{
 						rows.remove(root);
-						getTreeSet(root).remove(root);
+						Set treeSet = getTreeSet(root);
+						if (treeSet != null)
+						{
+							getTreeSet(root).remove(root);
+						}
 					}
 				}
 			}
@@ -141,7 +142,6 @@ public class LayoutManager implements GraphModelListener
 				}
 			}
 		}
-		
 
 		while (!edges.isEmpty())
 		{
@@ -196,21 +196,111 @@ public class LayoutManager implements GraphModelListener
 					}
 					else
 					{
-						if (rows.getRow(target) < rows.getMinimumRow(target))
+						int edgeLength = rows.getRow(target) - rows.getRow(source);
+						if (edgeLength < 1)
 						{
-							// TODO New tree edge. Find existing path and break.
-							// Use cut values here?
+							// TODO New tree edge. Find existing tree edge to replace.
+							//treeReplaceParent(source, target, edge);
+							
 							System.err.println("Must replace tree edge!");
 						}
-						else
+						else if (edgeLength > 1)
 						{
-							// Non-tree edge, so add as virtual node chain.
-							rows.addEdge(edge);
+							// Decide if this non-tree edge should be replaced
+							// by a tree edge in order to make the graph
+							// optimal.
+							Iterator path = getPath(source, target).iterator();
+							int lowestCut = Integer.MAX_VALUE;
+							Object cutEdge = null;
+							while (path.hasNext())
+							{
+								Object pathEdge = path.next();
+								int cut = getCutValue(pathEdge);
+								if (cut < lowestCut)
+								{
+									lowestCut = cut;
+									cutEdge = pathEdge;
+								}
+							}
+							if (lowestCut < 0)
+							{
+								Map attributes = model.getAttributes(edge);
+								attributes.remove(EDGE_PARENT);
+								treeAddEdge(source, target, cutEdge);
+								//treeReplaceEdge(cutEdge, edge);
+								//treeRemoveEdge(cutEdge);
+								//treeAddEdge(source, target, edge);
+							}
+							else
+							{
+								// Non-tree edge, so add as virtual node chain.
+								rows.addEdge(edge);
+							}
 						}
 					}
 				}
 			}
 		}
+	}
+
+	private int getCutValue(Object cutEdge)
+	{
+		// TODO Calculate cut values
+		Object parent = getParent(cutEdge);
+		Object child = GraphUtilities.getNeighbour(model, parent, cutEdge);
+		Set tailSet = new HashSet();
+		getTailSet(child, tailSet);
+		Iterator edges = DefaultGraphModel.getEdges(model, new Object[] { child }).iterator();
+		int cutValue = 0;
+		while (edges.hasNext())
+		{
+			Object edge = edges.next();
+			if (isTreeEdge(edge) && edge != cutEdge)
+			{
+				cutValue += getCutValue(edge) - 1;
+			}
+			else
+			{
+				if(child == GraphUtilities.getSourceNode(model, edge))
+				{
+					cutValue -= 1;
+				}
+				else
+				{
+					cutValue += 1;
+				}
+			}
+		}			
+		System.err.println(cutValue + " cut value for " + cutEdge);
+		return cutValue;
+	}
+
+	private Set getPath(Object node1, Object node2)
+	{
+		Set path = new HashSet();
+		Object tempNode = node1;
+		Object parentEdge;
+		while ((parentEdge = getParent(tempNode)) != null)
+		{
+			path.add(parentEdge);
+			tempNode = getParent(parentEdge);
+		}
+
+		tempNode = node2;
+		while ((parentEdge = getParent(tempNode)) != null)
+		{
+			if (path.contains(parentEdge))
+			{
+				path.remove(parentEdge);
+			}
+			else
+			{
+				path.add(parentEdge);
+			}
+			tempNode = getParent(parentEdge);
+		}
+
+		return path;
 	}
 
 	/**
@@ -252,13 +342,13 @@ public class LayoutManager implements GraphModelListener
 	private void setTreeSet(Object node, TreeSet treeSet)
 	{
 		Map parentAttr = model.getAttributes(node);
-		if(parentAttr != null)
+		if (parentAttr != null)
 		{
 			parentAttr.put(TREE_SET, treeSet);
 		}
 	}
 
-	private void addTailSet(Object node, Set tailSet)
+	private void getTailSet(Object node, Set tailSet)
 	{
 		tailSet.add(node);
 		Object parent = getParent(node);
@@ -268,31 +358,42 @@ public class LayoutManager implements GraphModelListener
 			Object edge = edges.next();
 			if (!edge.equals(parent) && isTreeEdge(edge))
 			{
-				addTailSet(GraphUtilities.getNeighbour(model, node, edge), tailSet);
+				getTailSet(GraphUtilities.getNeighbour(model, node, edge), tailSet);
 			}
 		}
 	}
 
-	 private int calculateLim(Object node, int currentLim)
+	private List getConnectingEdges(Set tree1, Set tree2)
 	{
-		int low = currentLim + 1;
-		Object parent = getParent(node);
-		Iterator edges = DefaultGraphModel.getEdges(model, new Object[] { node }).iterator();
-		while (edges.hasNext())
+		// Get all non-tree edges connecting the head and tail of this edge
+		List joiningEdges = new EdgeList();
+		for (int index = 0; index < model.getRootCount(); index++)
 		{
-			Object edge = edges.next();
-			if (!edge.equals(parent) && isTreeEdge(edge))
+			Object otherEdge = model.getRootAt(index);
+			if (model.isEdge(otherEdge))
 			{
-				Object neighbour = GraphUtilities.getNeighbour(model, node, edge);
-				currentLim = calculateLim(neighbour, currentLim);
-				low = Math.max(low, currentLim);
+				if (!isTreeEdge(otherEdge))
+				{
+					Object source = GraphUtilities.getSourceNode(model, otherEdge);
+					Object target = GraphUtilities.getTargetNode(model, otherEdge);
+					if (tree1.contains(source))
+					{
+						if (tree2.contains(target))
+						{
+							joiningEdges.add(otherEdge);
+						}
+					}
+					else if (tree2.contains(source))
+					{
+						if (tree1.contains(target))
+						{
+							joiningEdges.add(otherEdge);
+						}
+					}
+				}
 			}
 		}
-		int lim = currentLim + 1;
-		Map attributes = model.getAttributes(node);
-		attributes.put(LOW, new Integer(low));
-		attributes.put(LIM, new Integer(lim));
-		return lim;
+		return joiningEdges;
 	}
 
 	int getEdgeLength(Object edge)
@@ -417,46 +518,22 @@ public class LayoutManager implements GraphModelListener
 		System.err.println("Remove tree edge " + edge);
 		Object parent = getParent(edge);
 		Object tailParent = GraphUtilities.getNeighbour(model, parent, edge);
-		if(!model.contains(tailParent))
+		if (!model.contains(tailParent))
 			return;
-		// TODO Get lim/low on edge?
-		
+
+		Map attributes = model.getAttributes(tailParent);
+		attributes.remove(EDGE_PARENT);
+
 		TreeSet tailSet = new TreeSet(tailParent);
-		addTailSet(tailParent, tailSet);
-		TreeSet headSet = (TreeSet)getTreeSet(parent).clone();
+		getTailSet(tailParent, tailSet);
+		TreeSet headSet = (TreeSet) getTreeSet(parent).clone();
 		headSet.removeAll(tailSet);
 		// Get all non-tree edges connecting the head and tail of this edge
-		List joiningEdges = new EdgeList();
-		for (int index = 0; index < model.getRootCount(); index++)
-		{
-			Object otherEdge = model.getRootAt(index);
-			if (model.isEdge(otherEdge))
-			{
-				if (!isTreeEdge(otherEdge))
-				{
-					Object source = GraphUtilities.getSourceNode(model, otherEdge);
-					Object target = GraphUtilities.getTargetNode(model, otherEdge);
-					if (headSet.contains(source))
-					{
-						if (tailSet.contains(target))
-						{
-							joiningEdges.add(otherEdge);
-						}
-					}
-					else if(tailSet.contains(source))
-					{
-						if(headSet.contains(target))
-						{
-							joiningEdges.add(otherEdge);
-						}
-					}
-				}
-			}
-		}
-		
+		List joiningEdges = getConnectingEdges(headSet, tailSet);
 		if (joiningEdges.isEmpty())
 		{
-			// If there are no edges connecting the head and tail, then split into two trees
+			// If there are no edges connecting the head and tail, then split
+			// into two trees
 			normalize(headSet);
 			normalize(tailSet);
 		}
@@ -504,17 +581,17 @@ public class LayoutManager implements GraphModelListener
 	 * @param child
 	 * @param edge
 	 */
-	private void setParent(Object child, Object edge)
+	private void setParent(Object child, Object parent)
 	{
 		Map attributes = model.getAttributes(child);
 		Object currentParent = attributes.get(EDGE_PARENT);
-		if (currentParent != null && currentParent != edge)
+		if (parent != null && currentParent != null && currentParent != parent)
 		{
 			Object oldNode = getParent(currentParent);
 			Map edgeAttr = model.getAttributes(currentParent);
 			edgeAttr.put(EDGE_PARENT, child);
 			setParent(oldNode, currentParent);
 		}
-		attributes.put(EDGE_PARENT, edge);
+		attributes.put(EDGE_PARENT, parent);
 	}
 }

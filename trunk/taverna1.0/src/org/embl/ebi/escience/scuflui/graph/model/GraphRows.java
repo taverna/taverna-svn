@@ -3,6 +3,7 @@
  */
 package org.embl.ebi.escience.scuflui.graph.model;
 
+import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
@@ -11,6 +12,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.jgraph.graph.AttributeMap;
 import org.jgraph.graph.GraphConstants;
 import org.jgraph.graph.GraphModel;
 
@@ -18,13 +20,15 @@ import org.jgraph.graph.GraphModel;
  * COMMENT
  * 
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover </a>
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
 public class GraphRows
 {
 	private static final String ROW = "row";
 	private static int ITERATIONS = 20;
-	private static int ROW_HEIGHT = 40;
+	private static int ROW_HEIGHT = 45;
+	private static int X_SEPARATION = 10;
+	private static int GRAPH_EDGE = 10;
 
 	private GraphModel model;
 	private List rows = new ArrayList();
@@ -202,14 +206,31 @@ public class GraphRows
 	{
 		List nodes = (List) rows.get(row);
 		Map edits = new HashMap();
-		int y = row * ROW_HEIGHT + 10;
-		int x = 10;
+		int y = row * ROW_HEIGHT + GRAPH_EDGE;
+		int x = GRAPH_EDGE;
 		for (int index = 0; index < nodes.size(); index++)
 		{
 			Object node = nodes.get(index);
 			if (model.isEdge(node))
 			{
-				// TODO Something for edges
+				Map attributes = model.getAttributes(node);
+				if(attributes != null)
+				{
+					int lineMid = y + (ROW_HEIGHT / 2);
+					x += X_SEPARATION;
+					List points = GraphConstants.getPoints(attributes);
+					Point point = new Point(x, lineMid);
+					for(int index2 = 0; index2 < points.size(); index2++)
+					{
+						Point existingPoint = (Point)points.get(index2);
+						if(existingPoint.y > lineMid)
+						{
+							points.add(index2, point);
+							break;
+						}
+					}
+					x += X_SEPARATION;
+				}
 			}
 			else
 			{
@@ -227,7 +248,7 @@ public class GraphRows
 							GraphConstants.setBounds(newAttrs, bounds);
 							edits.put(node, newAttrs);
 						}
-						x += bounds.getWidth() + 20;
+						x += bounds.getWidth() + X_SEPARATION;
 					}
 				}
 			}

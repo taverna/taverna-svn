@@ -3,10 +3,13 @@
  */
 package org.embl.ebi.escience.scuflui.graph.model;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 
+import org.jgraph.JGraph;
 import org.jgraph.graph.DefaultGraphModel;
 import org.jgraph.graph.GraphModel;
 
@@ -14,10 +17,27 @@ import org.jgraph.graph.GraphModel;
  * COMMENT 
  * 
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover</a>
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
 public class GraphUtilities
 {
+	
+	/**
+	 * @return
+	 */
+	public static Set getAllEdges(GraphModel model)
+	{
+		List cells = DefaultGraphModel.getDescendants(model, (DefaultGraphModel.getRoots(model)));
+		if (cells != null)
+		{
+			Set result = new HashSet();
+			for (int index = 0; index < cells.size(); index++)
+				if (model.isEdge(cells.get(index)))
+					result.add(cells.get(index));
+			return result;
+		}
+		return null;
+	}	
 	
 	/**
 	 * @param model

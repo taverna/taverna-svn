@@ -4,11 +4,8 @@
 package org.embl.ebi.escience.scuflui.actions;
 
 import java.awt.event.ActionEvent;
-import java.awt.event.KeyEvent;
 import java.util.Collection;
 import java.util.Iterator;
-
-import javax.swing.KeyStroke;
 
 import org.embl.ebi.escience.scufl.ConcurrencyConstraint;
 import org.embl.ebi.escience.scufl.DataConstraint;
@@ -21,7 +18,7 @@ import org.embl.ebi.escience.scuflui.ScuflIcons;
  * COMMENT 
  * 
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover</a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class RemoveAction extends ScuflModelAction
 {
@@ -45,7 +42,6 @@ public class RemoveAction extends ScuflModelAction
 	 */
 	public void actionPerformed(ActionEvent e)
 	{
-		// TODO Auto-generated method stub
 		remove(modelObject);
 	}
 	
