@@ -33,7 +33,7 @@ public abstract class Processor implements java.io.Serializable {
     
     private String name = "";
     private String description = "";
-    private ArrayList ports = new ArrayList();
+    ArrayList ports = new ArrayList();
     private ScuflModel model = null;
 
     /**

@@ -30,10 +30,7 @@ import java.io.PrintWriter;
 import java.net.URL;
 
 import org.embl.ebi.escience.scuflui.workbench.GenericUIComponentFrame;
-import org.embl.ebi.escience.scuflui.workbench.ScavengerCreationException;
 import org.embl.ebi.escience.scuflui.workbench.ScavengerTree;
-import org.embl.ebi.escience.scuflui.workbench.SoaplabScavenger;
-import org.embl.ebi.escience.scuflui.workbench.WSDLBasedScavenger;
 import java.lang.Class;
 import java.lang.ClassNotFoundException;
 import java.lang.Exception;
@@ -106,19 +103,12 @@ public class Workbench extends JFrame {
 	explorer.setLocation(700,50);
 	workbench.desktop.add(explorer);
 
-	try {
-	    ScavengerTree s = new ScavengerTree();
-	    s.addScavenger(new SoaplabScavenger("http://industry.ebi.ac.uk/soap/soaplab/"));
-	    s.addScavenger(new WSDLBasedScavenger("http://www.ebi.ac.uk/xembl/XEMBL.wsdl"));
-	    GenericUIComponentFrame scavenger = new GenericUIComponentFrame(workbench.model,
-									    s);
-	    scavenger.setSize(300,600);
-	    scavenger.setLocation(700,400);
-	    workbench.desktop.add(scavenger);
-	}
-	catch (ScavengerCreationException sce) {
-	    throw new RuntimeException(sce.getMessage());
-	}
+	GenericUIComponentFrame scavenger = new GenericUIComponentFrame(workbench.model,
+									new ScavengerTree());
+	scavenger.setSize(300,600);
+	scavenger.setLocation(700,400);
+	workbench.desktop.add(scavenger);
+	
 	workbench.setVisible(true);
     }
 

@@ -10,14 +10,12 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+import java.awt.event.*;
 import java.awt.image.BufferedImage;
 import javax.imageio.ImageIO;
 import javax.imageio.ImageReader;
 import javax.imageio.stream.ImageInputStream;
+import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JComponent;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
@@ -33,6 +31,7 @@ import java.util.Iterator;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+import org.embl.ebi.escience.scuflui.ScuflIcons;
 import org.embl.ebi.escience.scuflui.ScuflUIComponent;
 import java.lang.Exception;
 import java.lang.Process;
@@ -55,6 +54,7 @@ public class ScuflDiagram extends JComponent
     private ScuflModel model;
     private DotView dot;
     private BufferedImage image = null;
+    private boolean fitToWindow = false;
     
     public ScuflDiagram() {
 	super();
@@ -99,11 +99,36 @@ public class ScuflDiagram extends JComponent
 				ScuflDiagram.this.setPortDisplay(DotView.ALL);
 			    }
 			});
+		    // Allow the user to select scaling
+		    menu.addSeparator();
+		    JCheckBoxMenuItem scale = new JCheckBoxMenuItem("Fit to window",ScuflIcons.zoomIcon,fitToWindow);
+		    menu.add(scale);
 		    
+		    scale.addItemListener(new ItemListener() {
+			    public void itemStateChanged(ItemEvent e) {
+				if (e.getStateChange() == ItemEvent.DESELECTED) {
+				    ScuflDiagram.this.setFitToWindow(false);
+				}
+				else if (e.getStateChange() == ItemEvent.SELECTED) {
+				    ScuflDiagram.this.setFitToWindow(true);
+				}
+			    }
+			});
+		    
+
 		    menu.show(ScuflDiagram.this, e.getX(), e.getY());
 		}
 	    });
 
+    }
+
+    /**
+     * Set whether the image should scale to the window or be displayed
+     * at its natural size with scrollbars
+     */
+    public void setFitToWindow(boolean fitToWindow) {
+	this.fitToWindow = fitToWindow;
+	updateGraphic();
     }
 
     /**
@@ -119,10 +144,10 @@ public class ScuflDiagram extends JComponent
     }
 
     public Dimension getMinimumSize() {
-	if (this.image != null) {
+	if (this.image != null && !fitToWindow) {
 	    return new Dimension(image.getWidth(), image.getHeight());
 	}
-	else return new Dimension(200,200);
+	else return super.getMinimumSize();
     }
     
     public Dimension getMaximumSize() {
@@ -140,9 +165,60 @@ public class ScuflDiagram extends JComponent
 	super.paint(g);
     }
 
+    int lastFrameHeight = -1;
+    int lastFrameWidth = -1;
+    int lastImageHeight = -1;
+    int lastImageWidth = -1;
+    double lastScaleFactor = 0.0;
+    java.awt.Image rescaledImage = null;
     public void paintComponent(Graphics g) {
 	if (this.image != null) {
-	    g.drawImage( image, 0, 0, image.getWidth(), image.getHeight(), null );
+	    if (fitToWindow == false) {
+		g.drawImage( image, 0, 0, image.getWidth(), image.getHeight(), null );
+	    }
+	    else {
+		if (getWidth() == lastFrameWidth && 
+		    getHeight() == lastFrameHeight && 
+		    image.getWidth() == lastImageWidth && 
+		    image.getHeight() == lastImageHeight) {
+		    // Repaint the previously scaled image, no need to resize it
+		    g.drawImage(rescaledImage, 0, 0, (int)(image.getWidth() * lastScaleFactor), 
+				(int)(image.getHeight() * lastScaleFactor), null);
+		}
+		else {
+		    double imageWidth = (double)(image.getWidth());
+		    double imageHeight = (double)(image.getHeight());
+		    double frameWidth = (double)getWidth();
+		    double frameHeight = (double)getHeight();
+		    double xscale = frameWidth / imageWidth;
+		    double yscale = frameHeight / imageHeight;
+		    // Get the smaller scale factor
+		    double scale = xscale < yscale ? xscale : yscale;
+		    lastFrameHeight = getHeight();
+		    lastFrameWidth = getWidth();
+		    lastImageHeight = image.getHeight();
+		    lastImageWidth = image.getWidth();
+		    lastScaleFactor = scale;
+		    
+		    // If the scale factor is greater than one then set it to one and draw the image normally
+		    if (scale > 1.0) {
+			scale = 1.0;
+			g.drawImage( image, 0, 0, image.getWidth(), image.getHeight(), null );
+		    }
+		    // Otherwise regenerate the scaled image and show it.
+		    else {
+			rescaledImage = this.image.getScaledInstance((int)(imageWidth * scale), 
+								     (int)(imageHeight * scale),
+								     java.awt.Image.SCALE_SMOOTH);
+			g.drawImage( rescaledImage, 0, 0, (int)(imageWidth * scale), (int)(imageHeight * scale), null);
+		    }
+		    lastFrameHeight = getHeight();
+		    lastFrameWidth = getWidth();
+		    lastImageHeight = image.getHeight();
+		    lastImageWidth = image.getWidth();
+		    lastScaleFactor = scale;
+		}
+	    }
 	}
     }
 
@@ -166,6 +242,10 @@ public class ScuflDiagram extends JComponent
 	}
     }
 
+    private void updateGraphic2() {
+	receiveModelEvent(null);
+    }
+
     private void updateGraphic() {
 	try {
 	    String dotText = this.dot.getDot();
@@ -179,6 +259,24 @@ public class ScuflDiagram extends JComponent
 	    ImageReader imageReader = (ImageReader)readers.next();
 	    imageReader.setInput(iis, false);
 	    this.image = imageReader.read(0);
+	    // If we're scaling the image to the window do the transforms here
+	    /**    if (fitToWindow) {
+		   /**
+		   double scale = 0.5;
+		   AffineTransform xform = AffineTransform.getScaleInstance(scale, scale);
+		   RenderingHints hints = new RenderingHints(RenderingHints.KEY_INTERPOLATION,
+		   RenderingHints.VALUE_INTERPOLATION_BICUBIC);
+		   AffineTransformOp op = new AffineTransformOp(xform, hints);
+		   BufferedImage temp = op.createCompatibleDestImage(this.image, this.image.getColorModel());
+		   this.image = op.filter(this.image);
+		   *
+		   java.awt.Image rescaledImage = this.image.getScaledInstance(500,500,java.awt.Image.SCALE_SMOOTH);
+		   
+		   this.image = new BufferedImage(500,500,BufferedImage.TYPE_INT_RGB);
+		   Graphics2D g2d = this.image.createGraphics();
+		   g2d.drawImage(rescaledImage,null,null);
+		   }
+	    */
 	    repaint();
 	}
 	catch (Exception e) {

@@ -12,6 +12,8 @@ import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 import org.embl.ebi.escience.scufl.Processor;
 import org.embl.ebi.escience.scufl.ScuflModel;
+import org.embl.ebi.escience.scufl.SoaplabProcessor;
+import org.embl.ebi.escience.scufl.TalismanProcessor;
 import org.embl.ebi.escience.scufl.WSDLBasedProcessor;
 import org.embl.ebi.escience.scuflui.ScuflUIComponent;
 
@@ -25,6 +27,8 @@ import org.embl.ebi.escience.scuflui.workbench.Scavenger;
 import org.embl.ebi.escience.scuflui.workbench.ScavengerCreationException;
 import org.embl.ebi.escience.scuflui.workbench.ScavengerTreePopupHandler;
 import org.embl.ebi.escience.scuflui.workbench.ScavengerTreeRenderer;
+import org.embl.ebi.escience.scuflui.workbench.SoaplabScavenger;
+import org.embl.ebi.escience.scuflui.workbench.TalismanScavenger;
 import org.embl.ebi.escience.scuflui.workbench.WSDLBasedScavenger;
 import java.lang.String;
 
@@ -90,14 +94,16 @@ public class ScavengerTree extends JTree
 
     /**
      * Examine the model, create any scavengers that would have been required
-     * to populate the model with its existing processors. Currently only bothers
-     * trying to find WSDL based scavengers
+     * to populate the model with its existing processors. Now handles all three
+     * processor types.
      */
     public void addScavengersFromModel() 
 	throws ScavengerCreationException {
 	if (this.model != null) {
 	    // Get all WSDL processors
 	    Map wsdlLocations = new HashMap();
+	    Map talismanLocations = new HashMap();
+	    Map soaplabInstallations = new HashMap();
 	    Processor[] p = model.getProcessors();
 	    for (int i = 0; i < p.length; i++) {
 		// If the processor is a WSDLBasedProcessor then get
@@ -105,6 +111,19 @@ public class ScavengerTree extends JTree
 		if (p[i] instanceof WSDLBasedProcessor) {
 		    String wsdlLocation = ((WSDLBasedProcessor)p[i]).getWSDLLocation();
 		    wsdlLocations.put(wsdlLocation,null);
+		}
+		else if (p[i] instanceof TalismanProcessor) {
+		    String tscriptLocation = ((TalismanProcessor)p[i]).getTScriptURL();
+		    talismanLocations.put(tscriptLocation,null);
+		}
+		else if (p[i] instanceof SoaplabProcessor) {
+		    String endpoint = ((SoaplabProcessor)p[i]).getEndpoint().toString();
+		    String[] parts = endpoint.split("/");
+		    String base = "";
+		    for (int j = 0; j < parts.length -1; j++) {
+			base = base + parts[j] + "/";
+		    }
+		    soaplabInstallations.put(base,null);
 		}
 	    }
 	    // Now iterate over all the wsdl locations found and
@@ -114,7 +133,14 @@ public class ScavengerTree extends JTree
 		String wsdlLocation = (String)i.next();
 		addScavenger(new WSDLBasedScavenger(wsdlLocation));
 	    }
-	    
+	    for (Iterator i = talismanLocations.keySet().iterator(); i.hasNext(); ) {
+		String tscriptURL = (String)i.next();
+		addScavenger(new TalismanScavenger(tscriptURL));
+	    }
+	    for (Iterator i = soaplabInstallations.keySet().iterator(); i.hasNext(); ) {
+		String base = (String)i.next();
+		addScavenger(new SoaplabScavenger(base));
+	    }
 	}
     }
 

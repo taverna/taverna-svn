@@ -10,6 +10,7 @@ import org.apache.axis.client.Call;
 import org.apache.axis.client.Service;
 
 // Utility Imports
+import java.util.ArrayList;
 import java.util.Map;
 
 // Network Imports
@@ -26,6 +27,7 @@ import org.embl.ebi.escience.scufl.Processor;
 import org.embl.ebi.escience.scufl.ProcessorCreationException;
 import org.embl.ebi.escience.scufl.ScuflModel;
 import org.embl.ebi.escience.scufl.ScuflModelEvent;
+import java.lang.NullPointerException;
 import java.lang.Object;
 import java.lang.String;
 
@@ -105,6 +107,8 @@ public class SoaplabProcessor extends Processor implements java.io.Serializable 
 	throws ProcessorCreationException,
 	       PortCreationException,
 	       DuplicatePortNameException {
+	// Wipe the existing port declarations
+	ports = new ArrayList();
 	try {
 
 	    // Do web service type stuff[tm]
@@ -154,6 +158,12 @@ public class SoaplabProcessor extends Processor implements java.io.Serializable 
 	}
 	catch (java.rmi.RemoteException re) {
 	    throw new ProcessorCreationException("Unable to call the get spec method : "+re.getMessage());
+	}
+	catch (NullPointerException npe) {
+	    // If we had a null pointer exception, go around again - this is a bug somewhere between axis and soaplab
+	    // that occasionally causes NPEs to happen in the first call or two to a given soaplab installation. It also
+	    // manifests in the Talisman soaplab clients.
+	    generatePorts();
 	}
     }
     
