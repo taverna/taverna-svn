@@ -140,7 +140,8 @@ public class ProgramSelectionPanel extends JPanel
           {
             if(p.equalsIgnoreCase(allAcd[k]))
             {
-              System.out.println(allAcd[k]);
+              graphPanel.insertCell(new Point(0,0),allAcd[k]);
+              System.out.println();
               break;
             }
           }

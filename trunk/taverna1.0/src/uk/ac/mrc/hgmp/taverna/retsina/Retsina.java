@@ -6,6 +6,11 @@ import javax.swing.*;
 
 import org.emboss.jemboss.JembossJarUtil;
 
+/**
+*
+* GUI front editor for a ScuflModel
+*
+*/
 public class Retsina extends JApplet 
 {
     
@@ -13,6 +18,7 @@ public class Retsina extends JApplet
   {
     Retsina retsinaPane = new Retsina();
     retsinaPane.init();
+
     JFrame frame = new JFrame("Retsina");
     frame.getContentPane().add(retsinaPane);
     frame.setSize(520, 450);
@@ -29,6 +35,7 @@ public class Retsina extends JApplet
     String wossname = null;
     ScuflGraphPanel graphPanel = new ScuflGraphPanel(null);
 
+    setJMenuBar(createMenuBar());
     try
     {
       JembossJarUtil jwoss = new JembossJarUtil("resources/wossname.jar");
@@ -45,5 +52,27 @@ public class Retsina extends JApplet
     contentpane.add(graphPanel,BorderLayout.CENTER);
     contentpane.add(westPanel, BorderLayout.WEST);
   } 
+
+  /**
+   * Create the menubar
+   */
+  public JMenuBar createMenuBar()
+  {
+     JMenuBar menuBar = new JMenuBar();
+     JMenu fileMenu = new JMenu("File");
+     fileMenu.setMnemonic(KeyEvent.VK_F);
+     JMenuItem fileMenuExit = new JMenuItem("Exit");
+     fileMenuExit.addActionListener(new ActionListener()
+     {
+       public void actionPerformed(ActionEvent e)
+       {
+         System.exit(0);
+       }
+     });
+     fileMenu.add(fileMenuExit);
+     menuBar.add(fileMenu);
+     return menuBar;
+   }
+
 }
 

@@ -15,8 +15,13 @@ import com.jgraph.event.GraphSelectionEvent;
 import com.jgraph.event.GraphSelectionListener;
 import com.jgraph.graph.*;
 
+import org.embl.ebi.escience.scufl.ScuflModel;
+import org.embl.ebi.escience.scufl.ScuflModelEventPrinter;
+import org.embl.ebi.escience.scufl.SoaplabProcessor;
+
 public class ScuflGraphPanel extends JPanel
-  implements GraphSelectionListener, KeyListener {
+       implements GraphSelectionListener, KeyListener 
+{
     
     // JGraph instance
     protected ScuflGraph graph;
@@ -30,17 +35,16 @@ public class ScuflGraphPanel extends JPanel
     // Actions which Change State
     protected Action undo, redo, remove, group,	ungroup, tofront, toback, cut, copy, paste;
 
+    // ScuflModel instance 
+    private org.embl.ebi.escience.scufl.ScuflModel scuflModel;
+
     // Main Method
-    public static void main(String[] args) {
-	// Construct Frame
+    public static void main(String[] args) 
+    {
 	JFrame frame = new JFrame("Retsina application mode test");
-	// Set Close Operation to Exit
 	frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-	// Add an Editor Panel
 	frame.getContentPane().add(new ScuflGraphPanel(null));
-	// Set Default Size
 	frame.setSize(520, 390);
-	// Show Frame
 	frame.show();
     }
     
@@ -51,13 +55,17 @@ public class ScuflGraphPanel extends JPanel
      * some other class when it requires to create
      * a new processor node in the graph representation.
      */
-    public ScuflGraphPanel(IScuflNodeCreator delegate) {
+    public ScuflGraphPanel(IScuflNodeCreator delegate) 
+    {
 	
 	this.creatorDelegate = delegate;
-
 	setLayout(new BorderLayout());
 
-	graph = new ScuflGraph(new ScuflModel());
+        scuflModel = new ScuflModel();
+   	// Register a listener to print to stdout
+        scuflModel.addListener(new ScuflModelEventPrinter(null));
+
+	graph = new ScuflGraph(new ScuflGraphModel());
 	graph.setMarqueeHandler(new ScuflMarqueeHandler());
 
 	undoManager = new GraphUndoManager() {
@@ -79,16 +87,28 @@ public class ScuflGraphPanel extends JPanel
 	// Listen for Delete Keystroke when the Graph has Focus
 	graph.addKeyListener(this);
 	
-	// Add a ToolBar
+	// Add a ToolBar & menu bar
 	add(createToolBar(), BorderLayout.NORTH);
-	
+
 	// Add the Graph as Center Component
 	add(new JScrollPane(graph), BorderLayout.CENTER);
-	
     }
 
 
     public void insertCell(Point point, String name) {
+
+        // Attempt to create a new SoaplabProcessor
+        try
+        {
+          scuflModel.addProcessor(new SoaplabProcessor(scuflModel,
+                       "my_processor",
+                       "http://industry.ebi.ac.uk/soap/soaplab/nucleic_gene_finding::"+name));
+        } catch(Exception pce)
+        {
+          System.out.println("addProcessor exception thrown");
+        }
+
+        System.out.println("Finished test : SoaplabProcessorCreation");
         graph.insertCell(point,name);
     }
 
@@ -97,7 +117,8 @@ public class ScuflGraphPanel extends JPanel
      * IScuflNodeCreator class to fetch the real information,
      * but doesn't at the moment.
      */
-    public void insert(Point point) {
+    public void insert(Point point) 
+    {
 	
 	// Construct Vertex with no Label
 	ScuflGraphCell vertex = new ScuflGraphCell("Test");
@@ -134,15 +155,16 @@ public class ScuflGraphPanel extends JPanel
 
     /**
      * Insert a new Edge between source and target. The error
-     * checking here is done entirely within the ScuflModel class,
+     * checking here is done entirely within the ScuflGraphModel class,
      * you don't need to put it in here.
      */
-    public void connect(Port source, Port target) {
+    public void connect(Port source, Port target) 
+    {
 	ConnectionSet cs = new ConnectionSet();
 	DefaultEdge edge = new DefaultEdge();
 	cs.connect(edge, source, target);
 	Map map = GraphConstants.createMap();
-	GraphConstants.setLineEnd(map, GraphConstants.ARROW_SIMPLE);
+	GraphConstants.setLineEnd(map, GraphConstants.ARROW_TECHNICAL);
 	Hashtable attributes = new Hashtable();
 	attributes.put(edge, map);
 	graph.getGraphLayoutCache().insert(new Object[]{edge}, attributes, cs, null, null);
@@ -474,6 +496,7 @@ public class ScuflGraphPanel extends JPanel
 	return menu;
     }
     
+
     /**
      * Create the toolbar
      */
@@ -497,12 +520,11 @@ public class ScuflGraphPanel extends JPanel
 		public void actionPerformed(ActionEvent e) {
 		    graph.setPortsVisible(!graph.isPortsVisible());
 		    URL connectUrl;
-		    if (graph.isPortsVisible()) {
-			connectUrl = getClass().getClassLoader().getResource("images/onnecton.gif");
-		    }
-		    else {
-			connectUrl = getClass().getClassLoader().getResource("images/onnectoff.gif");
-		    }
+		    if (graph.isPortsVisible()) 
+			connectUrl = getClass().getClassLoader().getResource("images/connecton.gif");
+		    else 
+			connectUrl = getClass().getClassLoader().getResource("images/connectoff.gif");
+		    
 		    ImageIcon connectIcon = new ImageIcon(connectUrl);
 		    putValue(SMALL_ICON, connectIcon);
 		}
