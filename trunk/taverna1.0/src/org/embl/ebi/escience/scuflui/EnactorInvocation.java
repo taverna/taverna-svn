@@ -283,15 +283,21 @@ public class EnactorInvocation extends JPanel implements ScuflUIComponent {
      */
     public EnactorInvocation(EnactorProxy enactor,
 			     ScuflModel model,
-			     Map inputDataThings)
+			     Map inputDataThings) 
+	throws WorkflowSubmissionException {
+	this(enactor.compileWorkflow(model, inputDataThings, EnactorInvocation.USERCONTEXT));
+    }
+    
+    /**
+     * Create new enactor panel from an existing workflow instance
+     */
+    public EnactorInvocation(WorkflowInstance instance) 
 	throws WorkflowSubmissionException {
 	super(new BorderLayout());
+	this.workflowInstance = instance;
+	this.theModel = instance.getWorkflowModel();
 	setPreferredSize(new Dimension(100,100));
-	this.theModel = model;
-	/**
-	 * TODO - get the user proxy object from somewhere!
-	 */
-	this.workflowInstance = enactor.compileWorkflow(model, inputDataThings, EnactorInvocation.USERCONTEXT);
+	
 	// Create a new toolbar for the save results option...
 	toolbar = new JToolBar("Invocation tools");
 	toolbar.setFloatable(false);
@@ -332,7 +338,7 @@ public class EnactorInvocation extends JPanel implements ScuflUIComponent {
 	final JTabbedPane intermediateOutputs = new JTabbedPane();
 	final JTabbedPane intermediateInputs = new JTabbedPane();
 	workflowEditor = new WorkflowEditor();
-	workflowEditor.attachToModel(model);
+	workflowEditor.attachToModel(theModel);
 	workflowEditor.updateStatus(getStatusText());
 	workflowEditor.setEnabled(false);
 	intermediateResults.add("Graph", new JScrollPane(workflowEditor));
