@@ -15,6 +15,7 @@ org.embl.ebi.escience.scuflworkers.java.ExtractImageLinks = net:Get image URLs f
 org.embl.ebi.escience.scuflworkers.java.FilterStringList = text:Filter list of strings by regex
 org.embl.ebi.escience.scuflworkers.java.RegularExpressionStringList = text:Filter list of strings extracting match to a regex
 org.embl.ebi.escience.scuflworkers.java.StringSetIntersection = text:String list intersection
+org.embl.ebi.escience.scuflworkers.java.StringSetDifference = text:String list difference
 org.embl.ebi.escience.scuflworkers.java.StringSetUnion = text:String list union
 org.embl.ebi.escience.scuflworkers.java.StringConcat = text:Concatenate two strings
 org.embl.ebi.escience.scuflworkers.java.TestAlwaysFailingProcessor = test:TEST - always fails
