@@ -368,7 +368,7 @@ public class ScuflModelTreeTable extends JTreeTable
 	    Port sourcePort = dc.getSource();
 	    lastInterestingProcessor = sourcePort.getProcessor();
 	}
-	((AbstractTableModel)(super.getModel())).fireTableDataChanged();
+	//((AbstractTableModel)(super.getModel())).fireTableDataChanged();
 	setDefaultExpansionState();
     }
     

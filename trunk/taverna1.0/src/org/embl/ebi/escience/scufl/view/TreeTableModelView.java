@@ -142,5 +142,8 @@ public class TreeTableModelView extends TreeModelView implements TreeTableModel 
 	    }
 	}
     }
+    public void receiveModelEvent(ScuflModelEvent event) {
+	super.receiveModelEvent(event);
+    }
     
 }

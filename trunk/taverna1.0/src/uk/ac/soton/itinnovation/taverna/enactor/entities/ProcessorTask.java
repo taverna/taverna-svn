@@ -25,8 +25,8 @@
 //      Dependencies        :
 //
 //      Last commit info    :   $Author: mereden $
-//                              $Date: 2004-06-07 11:01:33 $
-//                              $Revision: 1.50 $
+//                              $Date: 2004-06-09 07:49:19 $
+//                              $Revision: 1.51 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 package uk.ac.soton.itinnovation.taverna.enactor.entities;
@@ -172,7 +172,6 @@ public class ProcessorTask extends AbstractTask {
 	    complete();
 	}
 	catch (TaskExecutionException ex) {
-	    ex.printStackTrace();
 	    eventList.add(new ServiceFailure());
 	    faultCausingException = ex;
 	    logger.error(ex);
@@ -521,7 +520,7 @@ public class ProcessorTask extends AbstractTask {
 	    Map inputSet = (Map)rootNode.next();
 	    int[] currentLocation = rootNode.getCurrentLocation();
 	    eventList.add(new InvokingWithIteration(++currentIteration, totalIterations));
-	    Map singleResultMap = execute(inputSet);
+	    Map singleResultMap = invokeOnce(inputSet);
 	    // Iterate over the outputs
 	    for (Iterator l = singleResultMap.keySet().iterator(); l.hasNext(); ) {
 		String outputName = (String)l.next();
