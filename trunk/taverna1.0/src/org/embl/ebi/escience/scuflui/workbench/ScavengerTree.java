@@ -99,15 +99,18 @@ public class ScavengerTree extends JTree
 	// Get the node that was dragged
 	Point l = e.getDragOrigin();
 	TreePath dragSourcePath = getPathForLocation((int)l.getX(), (int)l.getY());
-	DefaultMutableTreeNode node = (DefaultMutableTreeNode)dragSourcePath.getLastPathComponent();
-	Object userObject = node.getUserObject();
-	if (userObject instanceof ProcessorFactory) {
-	    Element el = ((ProcessorFactory)userObject).getXMLFragment();
-	    FactorySpecFragment fsf = new FactorySpecFragment(el, node.toString());
-	    Transferable t = new SpecFragmentTransferable(fsf);
-	    e.startDrag(DragSource.DefaultCopyDrop,
-			t,
-			this);
+	if(dragSourcePath != null)
+	{
+		DefaultMutableTreeNode node = (DefaultMutableTreeNode)dragSourcePath.getLastPathComponent();
+		Object userObject = node.getUserObject();
+		if (userObject instanceof ProcessorFactory) {
+		    Element el = ((ProcessorFactory)userObject).getXMLFragment();
+		    FactorySpecFragment fsf = new FactorySpecFragment(el, node.toString());
+		    Transferable t = new SpecFragmentTransferable(fsf);
+		    e.startDrag(DragSource.DefaultCopyDrop,
+				t,
+				this);		
+		}
 	}
     }
     public void dragDropEnd(DragSourceDropEvent e) {
