@@ -31,7 +31,7 @@ import org.biomoby.shared.*;
  * processor implementation will contact Biomoby registry in order to
  * find the list of extant ports at creation time. <p>
  *
- * @version $Id: BiomobyProcessor.java,v 1.2 2004-04-05 12:17:32 mereden Exp $
+ * @version $Id: BiomobyProcessor.java,v 1.3 2004-04-06 10:59:18 mereden Exp $
  * @author Martin Senger
  */
 public class BiomobyProcessor extends Processor implements java.io.Serializable {
@@ -40,7 +40,9 @@ public class BiomobyProcessor extends Processor implements java.io.Serializable 
     private String mobyEndpoint = null;
     private Central worker = null;
     private MobyService mobyService = null;
-
+    private String serviceName = null;
+    private String authorityName = null;
+    
     /**
      * Construct a new processor with the given model and name,
      * delegates to the superclass.
@@ -53,7 +55,9 @@ public class BiomobyProcessor extends Processor implements java.io.Serializable 
 	       DuplicateProcessorNameException {
 	super (model, processorName);
 	this.mobyEndpoint = mobyEndpoint;
-
+	this.serviceName = serviceName;
+	this.authorityName = authorityName;
+	
 	// Find the service endpoint (by calling Moby registry)
 	try {
 	    worker = new CentralImpl (mobyEndpoint);
@@ -74,7 +78,6 @@ public class BiomobyProcessor extends Processor implements java.io.Serializable 
 								   serviceEndpoint + "'."));
 	    }
 	} catch (Exception e) {
-	    e.printStackTrace();
 	    if (e instanceof ProcessorCreationException) {
 		throw (ProcessorCreationException)e;
 	    }
@@ -186,9 +189,12 @@ public class BiomobyProcessor extends Processor implements java.io.Serializable 
 
     //
     protected String formatError (String msg) {
-	return ("Problems with service '" + mobyService.getName() +
-		"' provided by authority '" + mobyService.getAuthority() +
-		"' from Moby registry at " + mobyEndpoint +
-		": " + msg);
+	// Removed references to the authority, some errors
+	// were causing it to be null which in turn threw
+	// a NPE from here, breaking Taverna's error handlers
+	return ("Problems with service '" + serviceName +
+		"' provided by authority '" + authorityName +
+		"'\nfrom Moby registry at " + mobyEndpoint +
+		":\n\n" + msg);
     }
 }
