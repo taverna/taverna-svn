@@ -18,7 +18,7 @@ import org.jgraph.graph.GraphModel;
  * COMMENT
  * 
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover </a>
- * @version $Revision: 1.5 $
+ * @version $Revision: 1.6 $
  */
 public class GraphRows
 {
@@ -56,12 +56,18 @@ public class GraphRows
 		{
 			for (int index = 0; index < model.getChildCount(node); index++)
 			{
-				nodes.add(model.getChild(node, index));
+				if(!nodes.contains(model.getChild(node, index)))
+				{
+					nodes.add(model.getChild(node, index));
+				}
 			}
 		}
 		else
 		{
-			nodes.add(node);
+			if(!nodes.contains(node))
+			{
+				nodes.add(node);
+			}
 		}
 	}
 
@@ -122,11 +128,6 @@ public class GraphRows
 	 */
 	public void setRow(Object node, int row)
 	{
-		if (node == null)
-		{
-			// TODO Sort out why its setting null
-			return;
-		}
 		Map nodeAttributes = model.getAttributes(node);
 		Integer oldRow = (Integer) nodeAttributes.get(ROW);
 		nodeAttributes.put(ROW, new Integer(row));
@@ -138,7 +139,7 @@ public class GraphRows
 			}
 			remove(node, oldRow.intValue());
 		}
-		System.err.println("Set row " + row + ": " + node);
+		//System.err.println("Set row " + row + ": " + node);
 		add(node, row);
 		calculateBounds(row);
 	}
@@ -149,8 +150,20 @@ public class GraphRows
 	 */
 	private void remove(Object node, int row)
 	{
+		boolean removed = true;
 		List nodes = (List) rows.get(row);
-		if (nodes.remove(node))
+		if (GraphUtilities.isGroup(model, node))
+		{
+			for (int index = 0; index < model.getChildCount(node); index++)
+			{
+				removed = nodes.remove(model.getChild(node, index)) && removed;
+			}
+		}
+		else
+		{
+			removed = nodes.remove(node);
+		}
+		if (removed)
 		{
 			calculateBounds(row);
 			for (int index = rows.size() - 1; index > 0; index--)
@@ -175,6 +188,7 @@ public class GraphRows
 			// removeVirtualNodes((VirtualNode)input, row + 1);
 			// }
 			// }
+	
 		}
 	}
 
@@ -318,9 +332,9 @@ public class GraphRows
 		Object target = GraphUtilities.getTargetNode(model, edge);
 		int sourceRow = getRow(source);
 		int targetRow = getRow(target);
+		//System.err.println("Adding non-tree edge " + sourceRow + "-" + targetRow + ": " + edge);		
 		for (int index = sourceRow + 1; index < targetRow; index++)
 		{
-			System.err.println("Added non-tree edge " + sourceRow + "-" + targetRow + ": " + edge);
 			List nodes = (List) rows.get(index);
 			nodes.add(edge);
 		}

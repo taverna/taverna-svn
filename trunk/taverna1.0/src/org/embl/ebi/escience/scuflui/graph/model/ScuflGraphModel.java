@@ -50,7 +50,7 @@ import org.jgraph.graph.ParentMap;
 /**
  * 
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover </a>
- * @version $Revision: 1.5 $
+ * @version $Revision: 1.6 $
  */
 public class ScuflGraphModel implements GraphModel, GraphModelListener, ScuflUIComponent
 {
@@ -786,7 +786,7 @@ public class ScuflGraphModel implements GraphModel, GraphModelListener, ScuflUIC
 		}
 		else if (newNode instanceof Port)
 		{
-			// TODO!
+			return createAttributes(newNode);
 		}
 		roots.add(newNode);
 		return createAttributes(newNode);
@@ -820,10 +820,14 @@ public class ScuflGraphModel implements GraphModel, GraphModelListener, ScuflUIC
 	 */
 	public void graphChanged(GraphModelEvent event)
 	{
-		System.out.println("Graph changed");
+		//System.out.println("Graph changed");
 		if(event.getChange() instanceof GraphModelEvent.ExecutableGraphChange)
 		{
 			((GraphModelEvent.ExecutableGraphChange)event.getChange()).execute();
+			if(roots.isEmpty())
+			{
+				attributes.clear();
+			}
 		}
 		fireGraphChangedEvent(event);
 	}

@@ -7,6 +7,7 @@ import java.util.ArrayList;
 
 import javax.swing.SwingUtilities;
 
+import org.embl.ebi.escience.scufl.MinorScuflModelEvent;
 import org.embl.ebi.escience.scufl.ScuflModelEvent;
 import org.embl.ebi.escience.scufl.ScuflModelEventListener;
 import org.jgraph.event.GraphModelEvent;
@@ -18,7 +19,7 @@ import org.jgraph.event.GraphModelEvent;
  * configured duration of time.
  * 
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover </a>
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public class ScuflModelReconciler implements ScuflModelEventListener
 {
@@ -103,13 +104,16 @@ public class ScuflModelReconciler implements ScuflModelEventListener
 	 */
 	public void receiveModelEvent(ScuflModelEvent event)
 	{
-		synchronized(events)
+		if(!(event instanceof MinorScuflModelEvent))
 		{
-			events.add(event);
-		}
-		synchronized (reconciler)
-		{
-			reconciler.notify();
+			synchronized(events)
+			{
+				events.add(event);
+			}
+			synchronized (reconciler)
+			{
+				reconciler.notify();
+			}
 		}
 	}
 	
