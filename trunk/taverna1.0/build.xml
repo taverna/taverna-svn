@@ -43,6 +43,8 @@
 		<!-- Also include our own source tree -->
 		<pathelement path="${build.classes}"/>
 		<pathelement path="${build.src}"/>
+		<!-- ...and the workbench config file -->
+		<pathelement path="./workbench/conf"/>
 	</path>
 
 	<!--
@@ -356,6 +358,13 @@
 	<target name="test.iterator" depends="java">
 		<java classname="org.embl.ebi.escience.baclava.IteratorTest" fork="no">
 			<classpath refid="compile-classpath"/>
+		</java>
+	</target>
+	
+	<!-- Test the data thing iterator system -->
+	<target name="test.store" depends="java">
+		<java classname="org.embl.ebi.escience.baclava.store.test.JDBCStoreTest" fork="no">
+			<classpath refid="run-classpath"/>	
 		</java>
 	</target>
 

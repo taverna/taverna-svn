@@ -57,7 +57,7 @@ public class DataThing {
 	// a single static instance of the LSIDProvider
 	// implementation if such is found, otherwise leave
 	// it as null
-	String providerClassName = System.getProperty("taverna.lsidproviderclass");
+	String providerClassName = System.getProperty("taverna.lsid.providerclass");
 	if (providerClassName!=null) {
 	    try {
 		Class providerClass = Class.forName(providerClassName);
@@ -69,13 +69,13 @@ public class DataThing {
 	}
     }
 
-    public DataThing(DataThing other)
-    {
+    public DataThing(DataThing other) {
         this.theDataObject = other.theDataObject;
         this.metadataMap.putAll(other.metadataMap);
         this.myMarkup = new SemanticMarkup(other.myMarkup);
         this.lsid.putAll(other.lsid);
     }
+    
 
     /**
      * Construct a new DataThing from the supplied
@@ -83,7 +83,7 @@ public class DataThing {
      * DataThingXMLFactory for almost all the real
      * work here.
     */
-    DataThing(Element e) {
+    public DataThing(Element e) {
 	myMarkup = new SemanticMarkup(this);
 	theDataObject = DataThingXMLFactory.configureDataThing(e, this);
     }
@@ -154,6 +154,30 @@ public class DataThing {
      */
     public String getLSID(Object target) {
 	return (lsid.get(target)!=null)?(String)(lsid.get(target)):"";
+    }
+
+    /**
+     * Get the object with the supplied LSID or return
+     * null if there isn't one
+     */
+    public Object getDataObjectWithLSID(String LSID) {
+	for (Iterator i = lsid.keySet().iterator(); i.hasNext();) {
+	    Object key = i.next();
+	    Object value = lsid.get(key);
+	    //System.out.println("LSID value found : "+value);
+	    if (((String)value).equals(LSID)) {
+		return key;
+	    }
+	}
+	return null;
+    }
+
+    /**
+     * Return an array of all the LSIDs that this DataThing's 
+     * LSID map contains as values
+     */
+    public String[] getAllLSIDs() {
+	return (String[])lsid.values().toArray(new String[0]);
     }
 
     /**
@@ -345,6 +369,23 @@ public class DataThing {
     }
 
     /**
+     * Extract a child object as a DataThing. This assumes that
+     * the object referenced is actually within this DataThing
+     * object, behaviour is undefined otherwise. Although we could
+     * check this and impose it as a constraint the performance
+     * hit of traversing the entire original DataThing collection
+     * structure and doing potentially expensive equivalence
+     * computations is probably not worth it. Use with care.
+     * @return a view on an object contained within this DataThing
+     * as a new DataThing
+     */
+    public DataThing extractChild(Object child) {
+	DataThing result = new DataThing(this);
+	result.theDataObject = child;
+	return result;
+    }
+    
+    /**
      * Iterate over all imediate children.
      * If there are no children, return an iterator over nothing.
      * All children will be viewed as DataThing instances.
@@ -357,9 +398,7 @@ public class DataThing {
             List dataThingList = new ArrayList();
             for (Iterator i = ((Collection) theDataObject).iterator();
                  i.hasNext();) {
-                DataThing newThing = new DataThing(this);
-                newThing.theDataObject = i.next();
-                dataThingList.add(newThing);
+                dataThingList.add(extractChild(i.next()));
             }
             return dataThingList.iterator();
         } else {

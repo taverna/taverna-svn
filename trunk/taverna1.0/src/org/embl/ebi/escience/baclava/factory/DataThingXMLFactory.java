@@ -84,6 +84,11 @@ public class DataThingXMLFactory {
     public static Object configureDataThing(Element rootElement, DataThing theDataThing) {
 	// Configure semantic markup object for the DataThing
 	Element semanticMarkupElement = rootElement.getChild("metadata",XScufl.XScuflNS);
+	// Get the LSID for the entire datathing
+	String lsid = rootElement.getAttributeValue("lsid");
+	if (lsid != null) {
+	    theDataThing.setLSID(theDataThing, lsid);
+	}
 	if (semanticMarkupElement != null) {
 	    theDataThing.getMetadata().configureFromElement(semanticMarkupElement);
 	}
@@ -138,7 +143,7 @@ public class DataThingXMLFactory {
 	// back from the convertor.
 	String mimeMajorType = mimeHint.split("/")[0];
 	String encodedData = e.getChild("dataElementData",namespace).getTextTrim();
-	System.out.println(encodedData);
+	//System.out.println(encodedData);
 	byte[] decodedData = Base64.decode(encodedData);
 	Object result;
        	if (mimeMajorType.equals("text")) {
@@ -151,7 +156,10 @@ public class DataThingXMLFactory {
 	    SemanticMarkup m = theDataThing.getMetadataForObject(result, true);
 	    m.configureFromElement(metadataElement);
 	}
-	theDataThing.setLSID(result, e.getAttributeValue("lsid"));
+	String lsid = e.getAttributeValue("lsid");
+	if (lsid != null) {
+	    theDataThing.setLSID(result, lsid);
+	}
 	return result;
     }
 
@@ -186,7 +194,10 @@ public class DataThingXMLFactory {
 	    Element nextElement = (Element)i.next();
 	    result.add(objectForCollectionElement(nextElement, theDataThing, rootElement));
 	}
-	theDataThing.setLSID(result, e.getAttributeValue("lsid"));
+	String lsid = e.getAttributeValue("lsid");
+	if (lsid != null) {
+	    theDataThing.setLSID(result, lsid);
+	}	
 	return result;
     }
 
