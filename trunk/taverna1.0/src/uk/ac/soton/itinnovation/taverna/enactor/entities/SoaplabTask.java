@@ -25,8 +25,8 @@
 //      Dependencies        :
 //
 //      Last commit info    :   $Author: dmarvin $
-//                              $Date: 2003-06-03 12:46:48 $
-//                              $Revision: 1.10 $
+//                              $Date: 2003-06-04 10:10:59 $
+//                              $Revision: 1.11 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 
@@ -107,7 +107,7 @@ public class SoaplabTask extends ProcessorTask{
 			soaplabWSDL = soaplabWSDLURL.toExternalForm();
 			call.setTargetEndpointAddress(soaplabWSDLURL);
 			call.setOperationName(new QName("runAndWaitFor"));
-			call.setReturnType(new QName("apachesoap:Map"));
+			//call.setReturnType(new QName("apachesoap:Map"));
 			HashMap outputMap = new HashMap((Map)call.invoke(new Object[] { inputMap }));
 			//could also get some log info from service for the provenance using the describe method on the service
 

@@ -25,8 +25,8 @@
 //      Dependencies        :
 //
 //      Last commit info    :   $Author: dmarvin $
-//                              $Date: 2003-06-03 12:46:48 $
-//                              $Revision: 1.9 $
+//                              $Date: 2003-06-04 10:10:59 $
+//                              $Revision: 1.10 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 
@@ -76,7 +76,7 @@ public class WSDLInvocationTask extends ProcessorTask implements InvocationDescr
 	
 	public uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.eventservice.TaskStateMessage execute() {
 		try{
-			
+			startTime =  new TimePoint();
 			//want to siffle through the input ports and get input parts  
 			GraphNode[] inputs = getParents();
 			//want to create suitable input parts
@@ -133,7 +133,7 @@ public class WSDLInvocationTask extends ProcessorTask implements InvocationDescr
                     }
                 }
             }
-			
+			endTime = new TimePoint();
 			//success
 			return new TaskStateMessage(getParentFlow().getID(), getID(), TaskStateMessage.COMPLETE, "Task finished successfully");
 		}

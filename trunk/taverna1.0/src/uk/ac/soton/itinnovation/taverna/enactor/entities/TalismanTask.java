@@ -44,7 +44,8 @@ public class TalismanTask extends ProcessorTask {
     
     protected uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.eventservice.TaskStateMessage execute() {
 	try{
-	    TalismanProcessor theProcessor = (TalismanProcessor)proc;
+	    startTime =  new TimePoint();
+			TalismanProcessor theProcessor = (TalismanProcessor)proc;
 
 	    // Get a map of the inputs, for each entry in the map the key is the
 	    // name of the port that the input came in on, the value is the value
@@ -127,7 +128,7 @@ public class TalismanTask extends ProcessorTask {
 	    }
 
 	    // Done? I think so anyway.
-
+			endTime = new TimePoint();
 	    // Success
 	    return new TaskStateMessage(getParentFlow().getID(), getID(), TaskStateMessage.COMPLETE, "Task finished successfully");
 	}
