@@ -24,9 +24,9 @@
 //      Created for Project :   MYGRID
 //      Dependencies        :
 //
-//      Last commit info    :   $Author: dmarvin $
-//                              $Date: 2003-06-03 12:46:48 $
-//                              $Revision: 1.6 $
+//      Last commit info    :   $Author: mereden $
+//                              $Date: 2003-06-05 13:11:55 $
+//                              $Revision: 1.7 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 package uk.ac.soton.itinnovation.taverna.enactor.entities;
@@ -35,9 +35,14 @@ import org.embl.ebi.escience.scufl.Processor;
 import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.eventservice.TaskStateMessage;
 import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.serviceprovidermanager.ServiceSelectionCriteria;
 import uk.ac.soton.itinnovation.taverna.enactor.broker.LogLevel;
+import uk.ac.soton.itinnovation.mygrid.workflow.enactor.io.*;
+import uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.entities.graph.*;
+import java.util.*;
+
 
 // JDOM Imports
 import org.jdom.Element;
+import org.jdom.*;
 
 import uk.ac.soton.itinnovation.taverna.enactor.entities.TavernaTask;
 import java.lang.String;
@@ -45,64 +50,374 @@ import org.apache.log4j.Logger;
 
 
 public abstract class ProcessorTask extends TavernaTask{
-	protected static final String PROVENANCE_NAMESPACE = "http://www.it-innovation.soton.ac.uk/taverna/workflow/enactor/provenance";
-  protected Processor proc = null;
-	protected LogLevel logLevel = null;	
-	private Logger logger = Logger.getLogger(ProcessorTask.class);
-	/**
+    
+    protected static final String PROVENANCE_NAMESPACE = "http://www.it-innovation.soton.ac.uk/taverna/workflow/enactor/provenance";
+    protected Processor proc = null;
+    protected LogLevel logLevel = null;	
+    private Logger logger = Logger.getLogger(ProcessorTask.class);
+    
+    
+    /**
      * Default Constructor
      * @param id
      */
     public ProcessorTask(String id,Processor p,LogLevel l) {
         super(id);
-		proc = p;
-		this.logLevel = new LogLevel(l.getLevel());
+	proc = p;
+	this.logLevel = new LogLevel(l.getLevel());
     }
+    
 
     /**
      * Undertakes any special cancel processing required by Processor tasks
      */
-    public void cancelConcreteTask() {//no additional processing is undertaken, any running invocations are allowed to
+    public void cancelConcreteTask() {
+	//no additional processing is undertaken, any running invocations are allowed to
         //complete normally, any scheduled tasks are cancelled normally in core framework
     }  
-	
-	
-	/**
-	 * Retrieves the XScufl Processor object for this task
-	 * @return 
-	 */
-	public Processor getProcessor() {
-		return proc;
-	}
-	
-	public ServiceSelectionCriteria getServiceSelectionCriteria() {
-		return null;
-	}
-
-	/**
-	 * Retrieve provenance information for this task, concrete tasks should
-	 * overide this method and provide this information as an XML JDOM element
-	 */
-	public org.jdom.Element getProvenance() {
-		return new Element("processorExecution");
-	}
-
-	/**
-	 * Wrapper method to enable pre and post processing for actual service invocations
-	 */
-	public uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.eventservice.TaskStateMessage doTask() {
-		try{
-			//do any pre-processing here
-			return execute();
+    
+    
+    /**
+     * Retrieves the XScufl Processor object for this task
+     * @return 
+     */
+    public Processor getProcessor() {
+	return proc;
+    }
+    
+    public ServiceSelectionCriteria getServiceSelectionCriteria() {
+	return null;
+    }
+    
+    /**
+     * Retrieve provenance information for this task, concrete tasks should
+     * overide this method and provide this information as an XML JDOM element
+     */
+    public org.jdom.Element getProvenance() {
+	return new Element("processorExecution");
+    }
+    
+    
+    /**
+     * Wrapper method to enable pre and post processing for actual service invocations
+     */
+    public uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.eventservice.TaskStateMessage doTask() {
+	try {
+	    uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.eventservice.TaskStateMessage result;
+	    //do any pre-processing here
+	    
+	    // Check all the inputs, find any cardinality mismatches.
+	    Map inputInfoMap = new HashMap();
+	    GraphNode[] inputs = getParents();
+	    for (int i = 0; i < inputs.length; i++) {
+		if (inputs[i] instanceof PortTask) {
+		    PortTask pt = (PortTask)inputs[i];
+		    Part p = pt.getData();
+		    String name = p.getName();
+		    Object value = p.getValue();
+		    PartInfo pi = new PartInfo(p);
+		    inputInfoMap.put(name, pi);
 		}
-		catch (Exception ex){
-			logger.error(ex);
-			return new TaskStateMessage(getParentFlow().getID(), getID(), TaskStateMessage.FAILED, "Unrecognised dispatch failure for a task within the workflow.");
-		}	
-	}
+	    }
+	    
+	    // Get the output PortTask objects
+	    Map outputPortTaskMap = new HashMap();
+	    GraphNode[] outputs = getChildren();
+	    for (int i = 0; i < outputs.length; i++) {
+		if (outputs[i] instanceof PortTask) {
+		    PortTask pt = (PortTask)outputs[i];
+		    outputPortTaskMap.put(pt.getScuflPort().getName(),pt); 
+		}
+	    }
 
-	/**
-	 * Method that actually undertakes a service action. Should be implemented by concrete processors.
-	 */
-	protected abstract uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.eventservice.TaskStateMessage execute();
+	    InputSet is = new InputSet();
+	    // This is the interesting bit, we need to build a list of 
+	    // map objects where each map contains the set of named
+	    // inputs for a single invocation of the processor. We then
+	    // iterate over this list, configuring each instance of the
+	    // processor invocation, collecting the results into a similar
+	    // output map list. After all the invocations have completed
+	    // the ouput map list is used to populate the output port tasks
+	    // with the (potentially higher dimension) overall outputs.
+	    
+	    //... TODO - ADD PART ARRAYS TO INPUT SET HERE
+	    // Completely naive implementation that just puts the parts in as they
+	    // are without attempting to do any iteration at all
+	    for (Iterator i = inputInfoMap.keySet().iterator(); i.hasNext(); ) {
+		PartInfo pi = (PartInfo)inputInfoMap.get(i.next());
+		is.addSinglePart(pi.getPart());
+	    }
+	    
+	    List inputList = is.getCurrentState();
+	    List outputList = new ArrayList();
+	    
+	    // Iterate over all the maps in the input list
+	    
+	    for (int i = 0; i < inputList.size(); i++) {
+		Map inputMap = (Map)inputList.get(i);
+		// Invoke with the appropriate input map
+		// Put result parts in the output map.
+		
+		
+	    }
+
+	    // Check whether there was any iteration
+	    if (outputList.size() == 1) {
+		Map outputMap = (Map)outputList.get(0);
+		for (Iterator i = outputMap.keySet().iterator(); i.hasNext(); ) {
+		    Part p = (Part)outputMap.get(i.next());
+		    // TODO - put parts in the appropriate port tasks for output
+		    PortTask pt = (PortTask)outputPortTaskMap.get(p.getName());
+		    pt.setData(p);
+		}
+	    }
+	    else {
+		int outputSizes = outputList.size();
+		// Iterate over the different part names
+		Map firstOutputRow = (Map)outputList.get(0);
+		for (Iterator i = firstOutputRow.keySet().iterator(); i.hasNext(); ) {
+		    Part exemplarPart = (Part)firstOutputRow.get(i.next());
+		    String partName = exemplarPart.getName();
+		    // Add a '[]' to the part type
+		    String partType = exemplarPart.getType()+"[]";
+		    // Assemble the actual data array by iterating over all
+		    // the rows
+		    Object[] partData = new Object[outputSizes];
+		    for (int j = 0; j < outputSizes; j++) {
+			// Populate the partData array from the data 
+			// in each output part.
+			try {
+			    Map row = (Map)outputList.get(j);
+			    Part thePart = (Part)row.get(partName);
+			    Object data = thePart.getValue();
+			    partData[j] = data;
+			}
+			catch (Exception e) {
+			    // TODO - Return a fault code
+			}
+		    }
+		    // Now have an array populated with the appropriate data.
+		    // TODO - Create the Part object and put it into the appropriate output port task
+		    Part thePart = new Part(-1, partName, partType, partData);
+		    PortTask pt = (PortTask)outputPortTaskMap.get(thePart.getName());
+		    pt.setData(thePart);
+		}
+	    }
+
+	    return execute();
+
+	    //return result;
+	}
+	catch (Exception ex){
+	    logger.error(ex);
+	    return new TaskStateMessage(getParentFlow().getID(), 
+					getID(), 
+					TaskStateMessage.FAILED, 
+					"Unrecognised dispatch failure for a task within the workflow.");
+	}	
+    }
+    
+    
+    /**
+     * Method that actually undertakes a service action. Should be implemented by concrete processors.
+     */
+    protected abstract uk.ac.soton.itinnovation.mygrid.workflow.enactor.core.eventservice.TaskStateMessage execute();
+}
+/**
+ * Contains the current inner state of the input model
+ */
+class InputSet {
+
+    private List currentList;
+
+    public InputSet() {
+	this.currentList = new ArrayList();
+    }
+
+    public synchronized List getCurrentState() {
+	return this.currentList;
+    }
+    
+    /**
+     * Add a single item to the table, just adds it to each
+     * row in place without having to do the entire orthogonal
+     * copy and replace. Is otherwise identical in behaviour
+     * to the addOrthogonalArray called with a single element
+     * array
+     */
+    public void addSinglePart(Part newPart) {
+	if (currentList.size() == 0) {
+	    // Catch the empty list
+	    Map inputMap = new HashMap();
+	    inputMap.put(newPart.getName(), newPart);
+	    currentList.add(inputMap);
+	}
+	else {
+	    for (int i = 0; i < currentList.size(); i++) {
+		// Iterate over each row in the current list
+		// adding the single part to the map.
+		Map inputMap = (Map)currentList.get(i);
+		inputMap.put(newPart.getName(), newPart);
+	    }
+	}
+    }
+
+    /**
+     * Add a new column to the table, using the orthogonal
+     * join method to create new rows from the existing ones.
+     */
+    public void addOrthogonalArray(Part[] newParts) {
+	// Catch the first new inputs to this set
+	if (currentList.size() == 0) {
+	    for (int i = 0; i < newParts.length; i++) {
+		Map inputMap = new HashMap();
+		inputMap.put(newParts[i].getName(), newParts[i]);
+		currentList.add(inputMap);
+	    }
+	}
+	else {
+	    List newList = new ArrayList();
+	    // Iterate over each current map in the list
+	    for (int i = 0; i < currentList.size(); i++) {
+		Map currentInputMap = (Map)currentList.get(i);
+		// for each input term copy the existing map
+		// into a new one and add the new part to it
+		Map newInputMap = new HashMap();
+		for (int j = 0; j < newParts.length; j++) {
+		    // Copy the part references from the old
+		    // map into the new one...
+		    for (Iterator k = currentInputMap.keySet().iterator(); k.hasNext(); ) {
+			Part p = (Part)(currentInputMap.get(k.next()));
+			newInputMap.put(p.getName(), p);
+		    }
+		    // ...and add the new part as well
+		    newInputMap.put(newParts[j].getName(), newParts[j]);
+		    newList.add(newInputMap);
+		}
+	    }
+	    // Write the new list to the current list field 
+	    this.currentList = newList;
+	}
+    }
+    
+    /**
+     * Add a new column to the table assuming that the 
+     * array length is the same as the list length, just
+     * adding a new Part to each map.
+     */
+    public void addArray(Part[] newParts) {
+	if (newParts.length == currentList.size()) {
+	    // This is the only condition under which it's possible
+	    // to use this addition method
+	    for (int i = 0; i < newParts.length; i++) {
+		Map inputMap = (Map)currentList.get(i);
+		inputMap.put(newParts[i].getName(), newParts[i]);
+	    }
+	}
+	else {
+	    // Add the array using the orthogonal join method
+	    addOrthogonalArray(newParts);
+	}
+    }
+
+}
+
+
+/**
+ * Contains and extracts information about a supplied Part object including
+ * cardinality and dimensionality, basic type, name etc.
+ * tmo@ebi.ac.uk, 5th June 2003
+ */
+class PartInfo {
+    
+    Part thePart;
+    int dimension;
+    Class underlyingType;
+    int[] dimensionSizes;
+
+    /**
+     * Create a new PartInfo object about the specified Part
+     */
+    public PartInfo(Part thePart) throws DataParseException, JDOMException {
+	List dimensionSizeList = new ArrayList();
+	this.thePart = thePart;
+	
+	// Get the underlying dimensionality of the input type by
+	// counting the number of times we can get an array type
+	// out of it.
+	this.dimension = 0;
+	Object value = thePart.getValue();
+	while (value.getClass().isArray()) {
+	    this.dimension++;
+	    dimensionSizeList.add(new Integer(((Object[])value).length));
+	    value = ((Object[])value)[0];
+	}
+	this.underlyingType = value.getClass();
+	this.dimensionSizes = new int[dimensionSizeList.size()];
+	for (int i = 0; i < dimensionSizeList.size(); i++ ) {
+	    Integer integer = (Integer)dimensionSizeList.get(i);
+	    this.dimensionSizes[i] = integer.intValue();
+	}
+	    
+    }
+    
+    /**
+     * Get the part object
+     */
+    public Part getPart() {
+	return this.thePart;
+    }
+    
+    /**
+     * Get the dimensionality of the Part object used to create
+     * the PartInfo, this will be zero for non array types, 1 
+     * for single dimension arrays etc.
+     */
+    public int getDimension() {
+	return this.dimension;
+    }
+
+    /**
+     * Get the name of the underlying Part object
+     */
+    public String getDataName() {
+	return this.thePart.getName();
+    }
+
+    /**
+     * Get the value of the underlying Part object
+     */
+    public Object getDataValue() throws DataParseException, JDOMException {
+	return this.thePart.getValue();
+    }
+
+    /**
+     * Get the Class representing a single object
+     * within the (potentially higher dimensional)
+     * Part object
+     */
+    public Class getDataClass() {
+	return this.underlyingType;
+    }
+
+    /**
+     * Return a string representation of the information
+     * about this Part object for debug purposes.
+     */
+    public String toString() {
+	StringBuffer sb = new StringBuffer();
+	sb.append("Part info -------------\n");
+	sb.append("  name = "+getDataName()+"\n");
+	sb.append("  type = "+getDataClass().toString()+"\n");
+	sb.append("  dim  = "+getDimension()+"\n");
+	if (getDimension() > 0) {
+	    sb.append("  lens = ");
+	    for (int i = 0; i < getDimension(); i++) {
+		sb.append("["+dimensionSizes[i]+"]");
+	    }
+	    sb.append("\n");
+	}
+	return sb.toString();
+    }
+	
 }
