@@ -51,10 +51,10 @@ public class DataService {
      * Store a DataThing, returns true if the store proceeded
      * without any errors, false if an exception was thrown.
      */
-    public boolean storeDataThing(String stringifiedThing, boolean silent) {
+    public Boolean storeDataThing(String stringifiedThing, Boolean silent) {
 	try {
 	    // Build the DataThing from the stringified version
-	    DataThing theDataThing = null;
+	    DataThing theDataThing = null;	
 	    try {
 		SAXBuilder builder = new SAXBuilder(false);
 		Document doc = builder.build(new StringReader(stringifiedThing));
@@ -62,13 +62,13 @@ public class DataService {
 	    }
 	    catch (JDOMException jde) {
 		log.error("JDOM Exception thrown when attempting to parse\na DataThing as XML.",jde);
-		return false;
+		return new Boolean(false);
 	    }
-	    theService().storeDataThing(theDataThing, silent);
-	    return true;
+	    theService().storeDataThing(theDataThing, silent.booleanValue());
+	    return new Boolean(true);
 	}
 	catch (DuplicateLSIDException dle) {
-	    return false;
+	    return new Boolean(false);
 	}
     }
     
@@ -127,6 +127,22 @@ public class DataService {
      */
     public String getMetadata(String LSID) {
 	return theService().getMetadata(LSID);
+    }
+
+
+    /**
+     * If the data service is also an instance of LSIDProvider
+     * then expose this method
+     */
+    public String getID(String namespace) {
+	try {
+	    return ((LSIDProvider)theService()).getID(namespace);
+	}
+	catch (ClassCastException cce) {
+	    log.error("Attempt to user the LSIDProvider interface when\nthe underlying"+
+		      " data store isn't an implementation of it.",cce);
+	    return "";
+	}
     }
 
 }

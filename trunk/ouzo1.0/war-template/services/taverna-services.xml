@@ -13,6 +13,8 @@
 				<param name="taverna.datastore.jdbc.driver">com.mysql.jdbc.Driver</param>
 				<!-- The connection URL, the default assumes that you're using the local host -->
 				<param name="taverna.datastore.jdbc.url">jdbc:mysql://localhost/taverna</param>
+				<!-- Max number of connections, set to zero for unlimited -->
+				<param name="taverna.datastore.jdbc.pool.max">0</param>
 				<!-- User name and password for the data store -->
 				<param name="taverna.datastore.jdbc.user">taverna</param>
 				<param name="taverna.datastore.jdbc.password">taverna</param>
