@@ -126,11 +126,13 @@
 		    <fileset dir="workbench"/>
 		</copy>
 		<!-- Copy the required libraries into the lib subdirectory of the workbench -->
+		<!--
 		<copy todir="${workbench.dir}/resources">
                         <fileset dir="./resources">
                             <exclude name="**/CVS/**"/>
                         </fileset>
                 </copy>
+		-->
                 <copy todir="${workbench.dir}/images">
                         <fileset dir="./images"/>
                 </copy>
@@ -152,27 +154,7 @@
 		<mkdir dir="${build.classes}"/>
 		<copy todir="${build.src}" filtering="on">
 			<fileset dir="${src.dir}">
-				<include name="**/*.properties"/>
-				<include name="**/*.html"/>
-				<include name="**/*.xml"/>
-				<include name="**/*.text"/>
-				<include name="**/*.gif"/>
-				<include name="**/*.png"/>
-				<include name="**/*.rdfs"/>
-			</fileset>
-		</copy>
-		<!-- Use aspectj to prepare the source files -->
-		<!--
-		<ajc srcdir="${src.dir}"
-			 preprocess="true"
-			 workingdir="${build.src}">
-			<classpath refid="compile-classpath"/>
-		</ajc>
-		-->
-		<!-- Just copy the source files -->
-		<copy todir="${build.src}" filtering="on">
-			<fileset dir="${src.dir}">
-				<include name="**/*.java"/>
+				<exclude name="**/CVS/**"/>
 			</fileset>
 		</copy>
 	</target>
@@ -186,14 +168,9 @@
 		<!-- Copy over any configuration files that you might have -->
 		<copy todir="${build.classes}" filtering="on">
 			<fileset dir="${src.dir}">
-				<include name="**/*.properties"/>
-				<include name="**/*.xml"/>
-				<include name="**/*.html"/>
-				<include name="**/*.text"/>
-				<include name="**/*.gif"/>
-				<include name="**/*.png"/>
-				<include name="**/*.rdfs"/>
-			</fileset>
+				<exclude name="**/CVS/**"/>
+				<exclude name="**/*.java"/>
+            </fileset>
 		</copy>
 		<!-- Run the RMI Compiler on anything that looks like a remote class -->
 		<rmic base="${build.classes}" verify="true">
