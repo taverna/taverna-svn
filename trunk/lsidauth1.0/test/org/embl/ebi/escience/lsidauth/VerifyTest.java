@@ -14,12 +14,12 @@ public class VerifyTest extends TestCase {
 	LSIDAuth.init(sampleKey);
 	LSIDAuth auth = LSIDAuth.getInstance();
 	try {
-	    byte[] cryptedPassword = auth.createPassword("SecretPassword");
+	    String cryptedPassword = auth.createPassword("SecretPassword");
 	    assertTrue("Passwords don't match!",
-		       auth.comparePasswords(cryptedPassword,
+		       auth.comparePasswords(Base64.decode(cryptedPassword),
 					     "SecretPassword"));
 	    assertFalse("Passwords match!",
-			auth.comparePasswords(cryptedPassword,
+			auth.comparePasswords(Base64.decode(cryptedPassword),
 					      "AnotherSecretPassword"));
 	}
 	catch (Exception ex) {

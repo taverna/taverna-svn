@@ -23,7 +23,7 @@ public class IllegalAccessTest extends TestCase {
 	LSIDAuth oldAuth = LSIDAuth.getInstance();
 	LSIDAuth.init(sampleKey2);
 	try {
-	    byte[] cryptedPassword = oldAuth.createPassword("SecretPassword");
+	    String cryptedPassword = oldAuth.createPassword("SecretPassword");
 	    fail("Should have caused an exception from reuse of invalid instance.");
 	}
 	catch (Exception ex) {

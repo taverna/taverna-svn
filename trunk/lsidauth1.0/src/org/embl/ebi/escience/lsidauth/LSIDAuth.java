@@ -78,11 +78,11 @@ public final class LSIDAuth implements WSDLConstants {
      * a byte[] containing an encrypted password
      * which will then authenticate using the
      * comparePasswords method.
-     * @return byte[] containing the encrypted password   
+     * @return String containing the base64 encoded encrypted password   
      * @throws NoSuchAlgorithmException if the provider is not correctly installed
      * @throws InvalidKeyException if the key is invalid for some reason
      */
-    public byte[] createPassword(String password) 
+    public String createPassword(String password) 
 	throws NoSuchAlgorithmException, 
 	       InvalidKeyException {
 	// Check that this instance is still valid
@@ -106,7 +106,7 @@ public final class LSIDAuth implements WSDLConstants {
 	System.arraycopy(salt, 0, result, 0, salt.length);
 	System.arraycopy(digest, 0, result, salt.length, digest.length);
 	
-	return result;
+	return Base64.encodeBytes(result);
     }
     
     
@@ -234,7 +234,9 @@ public final class LSIDAuth implements WSDLConstants {
      * to locate the appropriate description element containing
      * the encrypted password
      * @param personLSID the LSID to query
-     * @return byte[] containing the encrypted password
+     * @return byte[] containing the encrypted password, actually
+     * fetches a base64 endoded string from the authority and decodes
+     * it before returning.
      * @throws Exception passed back to the calling method
      * as it's always going to be wrapped up in another
      * exception with this as the cause, nothing else should
@@ -260,7 +262,7 @@ public final class LSIDAuth implements WSDLConstants {
 	if (passwordElement == null) {
 	    throw new RuntimeException("Cannot find password element!");
 	}
-	return passwordElement.getTextTrim().getBytes("UTF8");
+	return Base64.decode(passwordElement.getTextTrim());
     }
     private static Namespace rdfNamespace = 
 	Namespace.getNamespace("rdf",
@@ -269,7 +271,7 @@ public final class LSIDAuth implements WSDLConstants {
 	Namespace.getNamespace("mygrid",
 			       "http://www.mygrid.org.uk/2004/auth/0.1#");
 
-
+        
     /**
      * Verifies the supplied cleartext password against the
      * supplied encrypted password using the previously

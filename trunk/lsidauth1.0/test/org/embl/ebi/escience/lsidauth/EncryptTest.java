@@ -15,7 +15,7 @@ public class EncryptTest extends TestCase {
 	LSIDAuth.init(sampleKey);
 	LSIDAuth auth = LSIDAuth.getInstance();
 	try {
-	    byte[] cryptedPass = auth.createPassword("SecretPassword");
+	    String cryptedPass = auth.createPassword("SecretPassword");
 	}
 	catch (Exception ex) {
 	    fail(ex.getMessage());
