@@ -47,7 +47,9 @@ import java.lang.String;
 public class ScuflModelTreeTable extends JTreeTable 
     implements ScuflModelEventListener,
 	       ScuflUIComponent,
-	       DropTargetListener {
+	       DropTargetListener,
+	       DragSourceListener,
+	       DragGestureListener {
     
     // The ScuflModel that this is a view / controller over
     ScuflModel model = null;
@@ -61,6 +63,11 @@ public class ScuflModelTreeTable extends JTreeTable
      */
     public ScuflModelTreeTable() {
 	super();
+	// Set up the drag listener
+	DragSource dragSource = DragSource.getDefaultDragSource();
+	dragSource.createDefaultDragGestureRecognizer(this,
+						      DnDConstants.ACTION_COPY_OR_MOVE,
+						      this);
 	// Set up the drop listener
 	new DropTarget(this, DnDConstants.ACTION_COPY_OR_MOVE, this);
 	setModel(treeModel);
@@ -77,9 +84,61 @@ public class ScuflModelTreeTable extends JTreeTable
 	ScuflModelExplorerRenderer renderer = new ScuflModelExplorerRenderer();
 	this.tree.setCellRenderer(renderer);
 	//this.addMouseMotionListener(new ScuflModelExplorerDragHandler(this.tree));
-	this.setDragEnabled(true);
+	//this.setDragEnabled(true);
     }
     
+    /**
+     * Recognize the drag gesture, allow if the tree column returns a processor
+     * node
+     */
+    public void dragGestureRecognized(DragGestureEvent e) {
+	Point p = e.getDragOrigin();
+	int x = (int)p.getX();
+	int y = (int)p.getY();
+	// Transform drag start coordinates into those of the
+	// tree component
+	for (int counter = getColumnCount() - 1; counter >= 0; counter--) {
+	    if (getColumnClass(counter) == TreeTableModel.class) {
+		x = x - getCellRect(0, counter, true).x;
+		break;
+	    }
+	}
+	// What node did the drag originate from?
+	TreePath dragFromPath = tree.getPathForLocation(x,y);
+	if (dragFromPath == null) {
+	    // No node dragged from
+	    return;
+	}	
+	DefaultMutableTreeNode node = (DefaultMutableTreeNode)dragFromPath.getLastPathComponent();
+	Object o = node.getUserObject();
+	if (o instanceof Processor) {
+	    Processor dragSource = (Processor)o;
+	    // Is it an alternate?
+	    if (dragSource.getModel() == null) {
+		return;
+	    }
+	    Element el = ProcessorHelper.elementForProcessor(dragSource);
+	    ProcessorSpecFragment psf = new ProcessorSpecFragment(el, dragSource.getName());
+	    Transferable t = new SpecFragmentTransferable(psf);
+	    e.startDrag(DragSource.DefaultCopyDrop, t, this);
+	}
+    }
+    public void dragDropEnd(DragSourceDropEvent e) {
+	//
+    }
+    public void dragEnter(DragSourceDragEvent e) {
+	//
+    }
+    public void dragExit(DragSourceEvent e) {
+	//
+    }
+    public void dragOver(DragSourceDragEvent e) {
+	//
+    }
+    public void dropActionChanged(DragSourceDragEvent e) {
+	//
+    }
+
     /**
      * The editor class is aware that the processor nodes should be edited by
      * using the getName method rather than toString to fetch their initial

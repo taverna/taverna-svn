@@ -141,6 +141,9 @@ public class ScavengerTree extends JTree
      */
     public ScavengerTree(boolean populate) {
 	super();
+	wsdlURLList = System.getProperty("taverna.defaultwsdl");
+	soaplabDefaultURLList = System.getProperty("taverna.defaultsoaplab");
+	biomobyDefaultURLList = System.getProperty("taverna.defaultbiomoby");
 	DragSource dragSource = DragSource.getDefaultDragSource();
 	dragSource.createDefaultDragGestureRecognizer(this,
 						      DnDConstants.ACTION_COPY_OR_MOVE,
@@ -203,6 +206,8 @@ public class ScavengerTree extends JTree
 	}
     }
 
+    String biomobyDefaultURLList, soaplabDefaultURLList, wsdlURLList;
+
     class DefaultScavengerLoaderThread extends Thread {
 	
 	ScavengerTree scavengerTree;
@@ -213,7 +218,7 @@ public class ScavengerTree extends JTree
 	}
 	
 	public void run() {
-	    String wsdlURLList = System.getProperty("taverna.defaultwsdl");
+	    //String wsdlURLList = System.getProperty("taverna.defaultwsdl");
 	    if (wsdlURLList != null) {
 		String[] urls = wsdlURLList.split("\\s*,\\s*");
 		for (int i = 0; i < urls.length; i++) {
@@ -225,7 +230,7 @@ public class ScavengerTree extends JTree
 		    }
 		}
 	    }
-	    String soaplabDefaultURLList = System.getProperty("taverna.defaultsoaplab");
+	    //String soaplabDefaultURLList = System.getProperty("taverna.defaultsoaplab");
 	    if (soaplabDefaultURLList != null) {
 		String[] urls = soaplabDefaultURLList.split("\\s*,\\s*");
 		for (int i = 0; i < urls.length; i++) {
@@ -238,7 +243,7 @@ public class ScavengerTree extends JTree
 		    }
 		}
 	    }
-	    String biomobyDefaultURLList = System.getProperty("taverna.defaultbiomoby");
+	    //String biomobyDefaultURLList = System.getProperty("taverna.defaultbiomoby");
 	    if (biomobyDefaultURLList != null) {
 		String[] urls = biomobyDefaultURLList.split("\\s*,\\s*");
 		for (int i = 0; i < urls.length; i++) {

@@ -93,6 +93,9 @@ public class Workbench extends JFrame {
 	    //
 	}
 
+	// Initialize the component SPI
+	UIComponentRegistry.instance();
+
 	// Initialize the proxy settings etc.
 	ResourceBundle rb = ResourceBundle.getBundle("mygrid");
         Properties sysProps = System.getProperties();

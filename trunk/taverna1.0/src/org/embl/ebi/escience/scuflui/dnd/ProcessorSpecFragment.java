@@ -16,8 +16,19 @@ import java.io.*;
  */
 public class ProcessorSpecFragment extends SpecFragment implements Serializable {
     
-    public ProcessorSpecFragment(Element element) {
+    private String name;
+
+    public ProcessorSpecFragment(Element element, String processorName) {
 	super(element);
+	this.name = processorName;
     }
- 
+    
+    /**
+     * Will contain the name in the workflow for the processor from
+     * which this spec fragment was derived
+     */
+    public String getProcessorName() {
+	return this.name;
+    }
+
 }
