@@ -6,37 +6,40 @@
 package org.embl.ebi.escience.scuflui;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.Font;
-import javax.swing.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.File;
+import java.io.IOException;
+import java.util.Iterator;
+import java.util.Map;
+
+import javax.swing.BorderFactory;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.JButton;
+import javax.swing.JFileChooser;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JSplitPane;
+import javax.swing.JTabbedPane;
+import javax.swing.JTable;
+import javax.swing.JTextArea;
+import javax.swing.JToolBar;
+import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+
 import org.embl.ebi.escience.baclava.DataThing;
 import org.embl.ebi.escience.scufl.ScuflModel;
 import org.embl.ebi.escience.scufl.UnknownProcessorException;
 import org.embl.ebi.escience.scufl.enactor.EnactorProxy;
-import org.embl.ebi.escience.scufl.enactor.WorkflowInstance;
 import org.embl.ebi.escience.scufl.enactor.UserContext;
+import org.embl.ebi.escience.scufl.enactor.WorkflowInstance;
 import org.embl.ebi.escience.scufl.enactor.WorkflowSubmissionException;
-import java.awt.event.*;
-import org.jdom.output.*;
 
 import uk.ac.soton.itinnovation.freefluo.main.InvalidInputException;
-
-// Utility Imports
-import java.util.Iterator;
-import java.util.Map;
-import java.io.*;
-
-import org.embl.ebi.escience.scuflui.EnactorStatusTableModel;
-import org.embl.ebi.escience.scuflui.ResultItemPanel;
-import org.embl.ebi.escience.scuflui.ScuflUIComponent;
-import org.embl.ebi.escience.scuflui.XMLTree;
-import java.lang.Exception;
-import java.lang.InterruptedException;
-import java.lang.String;
-import java.lang.System;
-import java.lang.Thread;
 
 
 /**
@@ -266,6 +269,13 @@ public class EnactorInvocation extends JPanel implements ScuflUIComponent {
 
 	statusTableModel = new EnactorStatusTableModel(theModel);
 	final JTable processorTable = new JTable(statusTableModel);
+	processorTable.setGridColor(new Color(235,235,235));
+	processorTable.setSelectionBackground(new Color(232,242,254));
+	processorTable.setSelectionForeground(Color.BLACK);	
+	processorTable.setIntercellSpacing(new Dimension(0, 1));
+	processorTable.setShowVerticalLines(false);
+	processorTable.getColumnModel().getColumn(0).setMaxWidth(30);
+	processorTable.getColumnModel().getColumn(0).setResizable(false);	
 	// Add a listener to the table to allow the display of intermediate results
 	JTabbedPane intermediateResults = new JTabbedPane();
 	final JTabbedPane intermediateOutputs = new JTabbedPane();
