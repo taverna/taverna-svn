@@ -21,6 +21,8 @@ import java.util.Map;
 // Network Imports
 import java.net.URL;
 
+import org.embl.ebi.escience.scufl.ScuflModel;
+import org.embl.ebi.escience.scuflui.ScuflUIComponent;
 import uk.ac.mrc.hgmp.taverna.retsina.IScuflNodeCreator;
 import uk.ac.mrc.hgmp.taverna.retsina.ScuflGraph;
 import uk.ac.mrc.hgmp.taverna.retsina.ScuflGraphCell;
@@ -37,7 +39,7 @@ import java.lang.System;
 
 
 public class ScuflGraphPanel extends JPanel
-       implements GraphSelectionListener, KeyListener 
+       implements GraphSelectionListener, KeyListener, ScuflUIComponent
 {
     
     // JGraph instance
@@ -546,7 +548,8 @@ public class ScuflGraphPanel extends JPanel
     /**
      * Create the toolbar
      */
-    public JToolBar createToolBar() {
+    public JToolBar createToolBar() 
+    {
 	JToolBar toolbar = new JToolBar();
 	toolbar.setFloatable(false);
 	
@@ -745,5 +748,32 @@ public class ScuflGraphPanel extends JPanel
 	    action.actionPerformed(e);
 	}
     }
+
+  // ScuflUIComponent
+  /**
+   * Directs the implementing component to bind to the
+   * specified ScuflModel instance, refresh its internal
+   * state from the model and commence listening to events,
+   * maintaining its state as these events dictate.
+   */
+  public void attachToModel(ScuflModel scuflModel)
+  {
+    graph.attachToModel(scuflModel);
+  }
+                                                                                                                
+  /**
+   * Directs the implementing component to detach from the
+   * model, set its internal state to some suitable blank
+   * (i.e. blank image, no text in a text field etc) and
+   * desist from listening to model events.
+   */
+  public void detachFromModel(){}
+                                                                                                                
+  /**
+   * Get the preferred name of this component, for titles
+   * in windows etc.
+   */
+  public String getName(){ return "Retsina"; }
+
 
 }

@@ -25,6 +25,7 @@ import org.embl.ebi.escience.scufl.*;
 import org.embl.ebi.escience.scufl.parser.XScuflFormatException;
 import org.embl.ebi.escience.scufl.parser.XScuflParser;
 import org.embl.ebi.escience.scufl.view.XScuflView;
+import org.embl.ebi.escience.scuflui.ScuflUIComponent;
 import org.emboss.jemboss.gui.startup.ProgList;
 
 // Utility Imports
@@ -49,7 +50,7 @@ import java.lang.System;
  * Mouse Button, which is Default) to add/remove point to/from an edge.
  */
 public class ScuflGraph extends JGraph 
-              implements DropTargetListener
+              implements DropTargetListener, ScuflUIComponent
 {
  
     final Cursor cbusy = new Cursor(Cursor.WAIT_CURSOR);
@@ -83,11 +84,10 @@ public class ScuflGraph extends JGraph
       // Set the Tolerance to 2 Pixel
       setTolerance(2);
 
-//      newScuflModel();
-      scuflModel = new ScuflModel();
+//    scuflModel = new ScuflModel();
       // Register a listener to print to stdout
-      scuflModel.addListener(new ScuflModelEventPrinter(null));
-      scuflView = new XScuflView(scuflModel);
+//    scuflModel.addListener(new ScuflModelEventPrinter(null));
+//    scuflView = new XScuflView(scuflModel);
 
       setDropTarget(new DropTarget(this,this));
 
@@ -551,7 +551,8 @@ public class ScuflGraph extends JGraph
         try
         {
           processor = new SoaplabProcessor(scuflModel,procName,
-                       "http://industry.ebi.ac.uk/soap/soaplab/"+group+"::"+name);
+                       "http://u.hgmp.mrc.ac.uk:8080/axis/services/"+group+"::"+name);
+//                     "http://industry.ebi.ac.uk/soap/soaplab/"+group+"::"+name);
 
           scuflModel.addProcessor(processor);
           System.out.println("Finished test : SoaplabProcessorCreation");
@@ -571,6 +572,41 @@ public class ScuflGraph extends JGraph
 //      System.out.println("Finished test : SoaplabProcessorCreation");
         return processor;
     }
+
+// ScuflUIComponent
+    /**
+     * Directs the implementing component to bind to the
+     * specified ScuflModel instance, refresh its internal
+     * state from the model and commence listening to events,
+     * maintaining its state as these events dictate.
+     */
+    public void attachToModel(ScuflModel scuflModel)
+    {
+      this.scuflModel = scuflModel;
+//    if(scuflModel == null)
+//    {
+//      System.out.println("CONSTRUCT ScuflModel");
+//      scuflModel = new ScuflModel();
+//    }
+
+      // Register a listener to print to stdout
+      scuflModel.addListener(new ScuflModelEventPrinter(null));
+      scuflView = new XScuflView(scuflModel);
+    }
+     
+    /**
+     * Directs the implementing component to detach from the
+     * model, set its internal state to some suitable blank
+     * (i.e. blank image, no text in a text field etc) and
+     * desist from listening to model events.
+     */
+    public void detachFromModel(){}
+ 
+    /**
+     * Get the preferred name of this component, for titles
+     * in windows etc.
+     */
+    public String getName(){ return "Retsina"; }
 
 
 
