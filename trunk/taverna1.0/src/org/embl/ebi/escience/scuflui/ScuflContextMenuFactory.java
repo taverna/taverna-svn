@@ -27,6 +27,8 @@ import org.embl.ebi.escience.scuflui.actions.AddInputAction;
 import org.embl.ebi.escience.scuflui.actions.AddOutputAction;
 import org.embl.ebi.escience.scuflui.actions.RemoveAction;
 
+import org.embl.ebi.escience.scuflui.processoractions.*;
+
 import java.lang.Exception;
 import java.lang.Object;
 import java.lang.String;
@@ -197,6 +199,21 @@ public class ScuflContextMenuFactory {
 	    theMenu.add(edit);
 	}
 
+	// Use the ProcessorActionSPI to add new items from there (will supercede the above code
+	// for editors as well when I get around to porting them across)
+	for (Iterator i = ProcessorActionRegistry.instance().getActions(processor).iterator(); i.hasNext();) {
+	    ProcessorActionSPI spi = (ProcessorActionSPI)i.next();
+	    JMenuItem item;
+	    if (spi.getIcon()!= null) {
+		item = new JMenuItem(spi.getDescription(), spi.getIcon());
+	    }
+	    else {
+		item = new JMenuItem(spi.getDescription());
+	    }
+	    item.addActionListener(spi.getListener(processor));
+	    theMenu.add(item);
+	}
+
 	//Add breakpoint to the processor.
 	final JMenuItem addBreakpoint = new JMenuItem("Add breakpoint", ScuflIcons.breakIcon);
 	addBreakpoint.addActionListener(new ActionListener() {
@@ -212,8 +229,12 @@ public class ScuflContextMenuFactory {
 		    theProcessor.rmvBreakpoint();
 		} 
 	});
-	if (theProcessor.hasBreakpoint())theMenu.add(rmvBreakpoint);
-	else theMenu.add(addBreakpoint);
+	if (theProcessor.hasBreakpoint()) {
+	    theMenu.add(rmvBreakpoint);
+	}
+	else {
+	    theMenu.add(addBreakpoint);
+	}
 	
 	JMenuItem block = new JMenu("Coordinate from");
 	block.setIcon(ScuflIcons.constraintIcon);
