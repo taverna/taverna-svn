@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<s:scufl xmlns:s="http://org.embl.ebi.escience/xscufl/0.1alpha" version="0.2" log="0">
+  <s:workflowdescription lsid="urn:lsid:www.mygrid.org.uk:operation:VI9FMF5HBQ12" author="Tom Oinn" title="Example of access to InterPro scan via GowLab">Uses a web application wrapper to access various interpro based tools at the EBI in conjunction with a couple of normal soaplab services.</s:workflowdescription>
+  <s:processor name="yeastinput">
+    <s:stringconstant>sec11</s:stringconstant>
+  </s:processor>
+  <s:processor name="proteinname">
+    <s:stringconstant>swallid:ops2_hemsa</s:stringconstant>
+  </s:processor>
+  <s:processor name="yeast">
+    <s:description>Yeast GRID is a database of genetic and physical interactions</s:description>
+    <s:soaplabwsdl>http://industry.ebi.ac.uk/soap/soaplab/testing::yeastgrid</s:soaplabwsdl>
+  </s:processor>
+  <s:processor name="seqret">
+    <s:description>Reads and writes (returns) sequences. In this case fetches the sequence for the ops2_HEMSA gene and passes it on to the various interpro scan methods</s:description>
+    <s:soaplabwsdl>http://industry.ebi.ac.uk/soap/soaplab/edit::seqret</s:soaplabwsdl>
+  </s:processor>
+  <s:processor name="iproscan_raw">
+    <s:description>InterProScan with output in TXT format, for protein</s:description>
+    <s:soaplabwsdl>http://industry.ebi.ac.uk/soap/soaplab/interproscan::proteinraw</s:soaplabwsdl>
+  </s:processor>
+  <s:processor name="iproscan_html">
+    <s:description>InterProScan with output in HTML, for protein</s:description>
+    <s:soaplabwsdl>http://industry.ebi.ac.uk/soap/soaplab/interproscan::proteinhtml</s:soaplabwsdl>
+  </s:processor>
+  <s:processor name="iproscan_table">
+    <s:description>InterProScan with output in TABLE format, for protein</s:description>
+    <s:soaplabwsdl>http://industry.ebi.ac.uk/soap/soaplab/interproscan::proteintable</s:soaplabwsdl>
+  </s:processor>
+  <s:processor name="iproscan_xml">
+    <s:description>InterProScan with output in XML, for protein</s:description>
+    <s:soaplabwsdl>http://industry.ebi.ac.uk/soap/soaplab/interproscan::proteinxml</s:soaplabwsdl>
+  </s:processor>
+  <s:link source="yeastinput:value" sink="yeast:keywords" />
+  <s:link source="yeast:result" sink="yeastoutput" />
+  <s:link source="proteinname:value" sink="seqret:sequence_usa" />
+  <s:link source="seqret:outseq" sink="sequence" />
+  <s:link source="seqret:outseq" sink="iproscan_html:sequence" />
+  <s:link source="seqret:outseq" sink="iproscan_raw:sequence" />
+  <s:link source="seqret:outseq" sink="iproscan_table:sequence" />
+  <s:link source="seqret:outseq" sink="iproscan_xml:sequence" />
+  <s:link source="iproscan_html:result" sink="ipro_html" />
+  <s:link source="iproscan_table:result" sink="ipro_table" />
+  <s:link source="iproscan_raw:result" sink="ipro_raw" />
+  <s:link source="iproscan_xml:result" sink="ipro_xml" />
+  <s:sink name="yeastoutput">
+    <s:metadata>
+      <s:mimeTypes>
+        <s:mimeType>text/xml</s:mimeType>
+        <s:mimeType>text/plain</s:mimeType>
+      </s:mimeTypes>
+    </s:metadata>
+  </s:sink>
+  <s:sink name="sequence" />
+  <s:sink name="ipro_html">
+    <s:metadata>
+      <s:mimeTypes>
+        <s:mimeType>text/html</s:mimeType>
+        <s:mimeType>text/plain</s:mimeType>
+      </s:mimeTypes>
+    </s:metadata>
+  </s:sink>
+  <s:sink name="ipro_table">
+    <s:metadata>
+      <s:mimeTypes>
+        <s:mimeType>text/html</s:mimeType>
+        <s:mimeType>text/plain</s:mimeType>
+      </s:mimeTypes>
+    </s:metadata>
+  </s:sink>
+  <s:sink name="ipro_raw" />
+  <s:sink name="ipro_xml">
+    <s:metadata>
+      <s:mimeTypes>
+        <s:mimeType>text/xml</s:mimeType>
+        <s:mimeType>text/plain</s:mimeType>
+      </s:mimeTypes>
+    </s:metadata>
+  </s:sink>
+</s:scufl>
+
+
