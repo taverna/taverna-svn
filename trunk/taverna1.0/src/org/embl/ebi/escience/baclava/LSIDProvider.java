@@ -13,10 +13,10 @@ package org.embl.ebi.escience.baclava;
  */
 public interface LSIDProvider {
     
-    public static final NamespaceEnumeration WFDEFINITION = new NamespaceEnumeration();
-    public static final NamespaceEnumeration WFINSTANCE = new NamespaceEnumeration();
-    public static final NamespaceEnumeration DATATHINGLEAF = new NamespaceEnumeration();
-    public static final NamespaceEnumeration DATATHINGCOLLECTION = new NamespaceEnumeration();
+    public static final NamespaceEnumeration WFDEFINITION = new NamespaceEnumeration("wfDefinition");
+    public static final NamespaceEnumeration WFINSTANCE = new NamespaceEnumeration("wfInstance");
+    public static final NamespaceEnumeration DATATHINGLEAF = new NamespaceEnumeration("dataItem");
+    public static final NamespaceEnumeration DATATHINGCOLLECTION = new NamespaceEnumeration("dataCollection");
     
     /**
      * Return a unique identifier to be used as an LSID
@@ -25,7 +25,13 @@ public interface LSIDProvider {
     public String getID(LSIDProvider.NamespaceEnumeration namespace);
 
     class NamespaceEnumeration {
-    //
+	private String desc = "";
+	public NamespaceEnumeration(String description) {
+	    this.desc = description;
+	}
+	public String toString() {
+	    return this.desc;
+	}
     }
 
 }

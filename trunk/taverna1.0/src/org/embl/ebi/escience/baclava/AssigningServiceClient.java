@@ -76,6 +76,7 @@ public class AssigningServiceClient implements LSIDProvider {
 		for (int i = 0; i < authorities.length; i++) {
 		    String authority = authorities[i][0];
 		    String namespace = authorities[i][1];
+		    System.out.println("Found auth = "+authority+" for ns = "+namespace);
 		    // Check whether the pair matches requirements for a namespace
 		    // we want to use, and store it if it does
 		    if (namespace.equals(wfdefinitionNS)) {
@@ -133,6 +134,11 @@ public class AssigningServiceClient implements LSIDProvider {
 		this.baseLSID = l.getLSIDPattern(authority,
 						 namespace,
 						 new Properties());
+		if (baseLSID.startsWith("urn:lsid")==false) {
+		    // Hack to cope with either interpretation of the LSID
+		    // assigning service specification
+		    baseLSID = "urn:lsid:"+authority+":"+namespace+":"+baseLSID;
+		}
 	    }
 	    catch (LSIDException le) {
 		log.error("Unable to fetch a base LSID",le);

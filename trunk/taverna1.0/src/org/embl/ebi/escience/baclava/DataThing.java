@@ -138,10 +138,10 @@ public class DataThing {
 	String lsidValue = (String)(lsid.get(o));
 	if (lsidValue == null || lsidValue.equals("")) {
 	    if (o instanceof Collection) {
-		lsid.put(o, provider.getID(LSIDProvider.DATATHINGLEAF));
+		lsid.put(o, provider.getID(LSIDProvider.DATATHINGCOLLECTION));
 	    }
 	    else {
-		lsid.put(o, provider.getID(LSIDProvider.DATATHINGCOLLECTION));
+		lsid.put(o, provider.getID(LSIDProvider.DATATHINGLEAF));
 	    }
 	}
 	if (o instanceof Collection) {
