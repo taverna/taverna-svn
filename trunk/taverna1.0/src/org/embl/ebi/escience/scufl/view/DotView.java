@@ -64,6 +64,10 @@ public class DotView implements ScuflModelEventListener {
 	dot.append(" ]                   \n"); 
 	
 	// For each processor, create a named node
+	// Currently creates oval blobs per node,
+	// as and when I can get the dot manual to 
+	// load I will modify this to use record types
+	// and to thereby show the port names.
 	Processor[] processors = model.getProcessors();
 	for (int i=0; i<processors.length; i++) {
 	    Processor p = processors[i];
