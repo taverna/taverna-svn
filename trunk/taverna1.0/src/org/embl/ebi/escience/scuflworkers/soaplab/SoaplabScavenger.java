@@ -39,24 +39,34 @@ public class SoaplabScavenger extends Scavenger {
 	// Get the categories for this installation
 	try {
 	    if (!base.endsWith("/")) {
-		throw new RuntimeException("The url for soaplab should look like http://foo/bar/, see the faq for more information");
+		base = base + "/";
+// 		throw new RuntimeException("The url for soaplab should look like http://foo/bar/, see the faq for more information");
 	    }
+	    String[] categories = null;
 	    Call call = (Call) new Service().createCall();
-	    call.setTargetEndpointAddress(base+"AnalysisFactory");
-	    call.setOperationName(new QName("getAvailableCategories"));
-	    String[] categories = (String[])(call.invoke(new Object[0]));
-	    // Iterate over all the categories, creating new child nodes
-	    for (int i = 0; i < categories.length; i++) {
-		DefaultMutableTreeNode category = new DefaultMutableTreeNode(categories[i]);
-		add(category);
-		call = (Call) new Service().createCall();
+	    try {
 		call.setTargetEndpointAddress(base+"AnalysisFactory");
-		call.setOperationName(new QName("getAvailableAnalysesInCategory"));
-		String[] services = (String[])(call.invoke(new String[]{categories[i]}));
-		// Iterate over the services
-		for (int j = 0; j < services.length; j++) {
-		    SoaplabProcessorFactory f = new SoaplabProcessorFactory(base, services[j]);
-		    category.add(new DefaultMutableTreeNode(f));
+		call.setOperationName(new QName("getAvailableCategories"));
+		categories = (String[])(call.invoke(new Object[0]));
+		// Iterate over all the categories, creating new child nodes
+		for (int i = 0; i < categories.length; i++) {
+		    DefaultMutableTreeNode category = new DefaultMutableTreeNode(categories[i]);
+		    add(category);
+		    call = (Call) new Service().createCall();
+		    call.setTargetEndpointAddress(base+"AnalysisFactory");
+		    call.setOperationName(new QName("getAvailableAnalysesInCategory"));
+		    String[] services = (String[])(call.invoke(new String[]{categories[i]}));
+		    // Iterate over the services
+		    for (int j = 0; j < services.length; j++) {
+			SoaplabProcessorFactory f = new SoaplabProcessorFactory(base, services[j]);
+			category.add(new DefaultMutableTreeNode(f));
+		    }
+		}
+	    } catch (Exception e) {
+		// ignore if AnalysisFactory service does not exist -
+		// there may still be a GowlabFactory
+		if (e.getMessage().indexOf ("CORBA.COMM_FAILURE") == -1) {
+		    throw e;
 		}
 	    }
 	    try {
@@ -77,9 +87,10 @@ public class SoaplabScavenger extends Scavenger {
 			category.add(new DefaultMutableTreeNode(f));
 		    }
 		}
-	    }
-	    catch (Exception e) {
-		// Was an old version of soaplab without the gowlab port
+	    } catch (Exception e) {
+		if (e.getMessage().indexOf ("CORBA.COMM_FAILURE") == -1) {
+		    throw e;
+		}
 	    }
 	}
 	catch (Exception e) {
