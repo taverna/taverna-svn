@@ -25,14 +25,14 @@
 //      Dependencies        :
 //
 //      Last commit info    :   $Author: mereden $
-//                              $Date: 2004-07-16 11:53:00 $
-//                              $Revision: 1.6 $
+//                              $Date: 2004-07-19 16:01:44 $
+//                              $Revision: 1.7 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 package org.embl.ebi.escience.scufl.enactor.implementation;
 
 import org.apache.log4j.Logger;
-import org.embl.ebi.escience.baclava.DataThing;
+import org.embl.ebi.escience.baclava.*;
 import org.embl.ebi.escience.baclava.factory.DataThingXMLFactory;
 import org.embl.ebi.escience.scufl.Processor;
 import org.embl.ebi.escience.scufl.provenance.process.ProcessEvent;
@@ -91,7 +91,8 @@ public class WorkflowInstanceImpl implements WorkflowInstance {
     private WorkflowState state;
     private HashSet stateListeners = new HashSet();
     private UserContext context = null;
-    
+    private static Map internalToLSID = new HashMap();
+
     /**
      * Constructor for this concrete instance of a flow receipt
      * @param engine - the enactment engine to use.
@@ -104,6 +105,18 @@ public class WorkflowInstanceImpl implements WorkflowInstance {
 	try {
 	    uk.ac.soton.itinnovation.freefluo.main.WorkflowInstance internalInstance = this.engine.getWorkflowInstance(workflowInstanceId);
 	    this.context = internalInstance.getUserContext();
+	    // If there's a global LSID provider configured then use
+	    // it to get an LSID for the workflow instance class and
+	    // store it.
+	    if (DataThing.SYSTEM_DEFAULT_LSID_PROVIDER != null) {
+		// Check whether we already have an LSID allocated!
+		String existingLSID = (String)internalToLSID.get(workflowInstanceId);
+		if (existingLSID == null) {
+		    LSIDProvider p = DataThing.SYSTEM_DEFAULT_LSID_PROVIDER;
+		    String instanceLSID = p.getID(LSIDProvider.WFINSTANCE);
+		    internalToLSID.put(workflowInstanceId, instanceLSID);
+		}
+	    }
 	}
 	catch (UnknownWorkflowInstanceException e) { 
 	    String errorMsg = "Error starting to run workflow instance with id " + workflowInstanceId; 
@@ -115,8 +128,20 @@ public class WorkflowInstanceImpl implements WorkflowInstance {
 
     /**
      * Return the workflow instance ID
+     * Modified to look in the global mapping to see whether
+     * an LSID has been assigned to this internal ID and if
+     * so return the LSID
      */
+    private String cachedLSID = null;
     public String getID() {
+	if (cachedLSID!=null) {
+	    return cachedLSID;
+	}
+	String LSID = (String)internalToLSID.get(workflowInstanceId);
+	if (LSID != null) {
+	    cachedLSID = LSID;
+	    return LSID;
+	}
 	return workflowInstanceId;
     }
 
@@ -168,11 +193,14 @@ public class WorkflowInstanceImpl implements WorkflowInstance {
             engine.run(workflowInstanceId, input);
 	    WorkflowEventDispatcher.DISPATCHER.fireWorkflowCreated(new WorkflowCreationEvent(this,input));
 	    // Add a new listener to handle and emit the workflow completion events
+	    final Map lsidMap = internalToLSID;
 	    addWorkflowStateListener(new WorkflowStateListener() {
 		    public void workflowStateChanged(WorkflowStateChangedEvent event) {
 			WorkflowEventDispatcher dispatcher = WorkflowEventDispatcher.DISPATCHER;
 			WorkflowState state = event.getWorkflowState();
 			if (state.isFinal()) {
+			    // Force caching of the LSID
+			    getID();
 			    // Have either completion, cancellation or failure
 			    if (state.equals(WorkflowState.CANCELLED) ||
 				state.equals(WorkflowState.FAILED)) {
@@ -181,6 +209,10 @@ public class WorkflowInstanceImpl implements WorkflowInstance {
 			    else if (state.equals(WorkflowState.COMPLETE)) {
 				dispatcher.fireWorkflowCompleted(new WorkflowCompletionEvent(WorkflowInstanceImpl.this));
 			    }
+			    // Remove the LSID mapping from the global map as the internal
+			    // ID will be recycled, don't want the LSID to be picked up as
+			    // well.
+			    lsidMap.remove(WorkflowInstanceImpl.this.workflowInstanceId);
 			}
 		    }
 		});

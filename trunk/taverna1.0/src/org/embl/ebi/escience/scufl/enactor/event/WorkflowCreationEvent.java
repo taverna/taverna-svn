@@ -33,7 +33,7 @@ public class WorkflowCreationEvent extends WorkflowInstanceEvent {
      */
     public String toString() {
 	StringBuffer sb = new StringBuffer();
-	sb.append("Workflow '"+this.workflowInstance.getID()+"' created with inputs\n");
+	sb.append("Workflow '"+this.workflowInstance.getID()+"' created with "+this.inputs.size()+" input"+(this.inputs.size()!=1?"s":"")+"\n");
 	for (Iterator i = this.inputs.keySet().iterator(); i.hasNext();) {
 	    String inputName = (String)i.next();
 	    DataThing inputValue = (DataThing)inputs.get(inputName);
@@ -42,12 +42,13 @@ public class WorkflowCreationEvent extends WorkflowInstanceEvent {
 	}
 	UserContext workflowContext = this.workflowInstance.getUserContext();
 	if (workflowContext == null) {
-	    sb.append("No context supplied\n");
+	    sb.append("No user context supplied\n");
 	}
 	else {
-	    sb.append("'Person'->"+workflowContext.getPersonLSID()+"\n");
-	    sb.append("'ExperimentDesign'->"+workflowContext.getExperimentDesignLSID()+"\n");
-	    sb.append("'Organization'->"+workflowContext.getOrganizationLSID()+"\n");
+	    sb.append("Workflow context :\n");
+	    sb.append("  'Person'->"+workflowContext.getPersonLSID()+"\n");
+	    sb.append("  'ExperimentDesign'->"+workflowContext.getExperimentDesignLSID()+"\n");
+	    sb.append("  'Organization'->"+workflowContext.getOrganizationLSID()+"\n");
 	}
 	return sb.toString();
     }
