@@ -1,5 +1,7 @@
 package org.embl.ebi.escience.scuflui.renderers;
 
+import org.apache.log4j.Logger;
+
 import javax.swing.*;
 import javax.imageio.stream.ImageInputStream;
 import javax.imageio.ImageIO;

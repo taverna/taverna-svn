@@ -6,7 +6,7 @@ import javax.swing.*;
  * SPI for rendering data by mime type.
  * <p>
  * Each jar providing implementations of this SPI should list them in
- * <code>META-INF/services/org.embl.ebi.escience.scuflui.renderers.MimeTypeRendererSPI
+ * <code>META-INF/services/org.embl.ebi.escience.scuflui.renderers.MimeTypeRendererSPI</code>
  *
  * @author Matthew Pocock
  */

@@ -1,6 +1,9 @@
 package org.embl.ebi.escience.scuflui.renderers;
 
 import org.apache.commons.discovery.tools.Service;
+import org.apache.commons.logging.Log;
+import org.apache.log4j.Logger;
+import org.apache.log4j.Priority;
 
 import java.util.List;
 import java.util.ArrayList;
@@ -12,11 +15,12 @@ import java.util.Iterator;
  * <p>
  * The <code>MimeTypeRendererRegistry</code> is a singleton class. An instance
  * can be obtained by calling <code>MimeTypeRendererRegistry.instance()</code>.
- * This instance can then be used 
+ * This instance can then be used
  *
  * @author Matthew Pocock
  */
 public class MimeTypeRendererRegistry {
+    private static Logger LOG = Logger.getLogger(MimeTypeRendererRegistry.class);
     private static MimeTypeRendererRegistry instance;
 
     public static synchronized MimeTypeRendererRegistry instance()
@@ -36,11 +40,15 @@ public class MimeTypeRendererRegistry {
      */
     private MimeTypeRendererRegistry()
     {
+        LOG.info("Loading all renderers");
         renderers = new ArrayList();
         Enumeration spe = Service.providers(MimeTypeRendererSPI.class);
         while(spe.hasMoreElements()) {
-            renderers.add(spe.nextElement());
+            MimeTypeRendererSPI spi = (MimeTypeRendererSPI) spe.nextElement();
+            LOG.info("\t" + spi.getName());
+            renderers.add(spi);
         }
+        LOG.info("Done");
     }
 
     /**
