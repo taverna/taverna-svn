@@ -28,7 +28,7 @@ import org.jgraph.graph.ParentMap;
 
 /**
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover </a>
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  */
 public class ScuflGraphModelChange implements GraphModelChange,
 		GraphModelEvent.ExecutableGraphChange
@@ -93,21 +93,27 @@ public class ScuflGraphModelChange implements GraphModelChange,
 		if (event instanceof ScuflModelRemoveEvent)
 		{
 			Object removedObject = ((ScuflModelRemoveEvent) event).getRemovedObject();
-			addNode(removed, removedObject);
 			if (!model.isPort(removedObject) && removedObject instanceof Port
 					&& ((Port) removedObject).getProcessor().getPorts().length == 0)
 			{
 				removed.add(((Port) removedObject).getProcessor());
 			}
+			else
+			{
+				addNode(removed, removedObject);				
+			}
 		}
 		else if (event instanceof ScuflModelAddEvent)
 		{
 			Object addedObject = ((ScuflModelAddEvent) event).getAddedObject();
-			addNode(added, addedObject);
 			if (!model.isPort(addedObject) && addedObject instanceof Port
-					&& model.contains(((Port) addedObject).getProcessor()))
+					&& !model.contains(((Port) addedObject).getProcessor()))
 			{
 				added.add(((Port) addedObject).getProcessor());
+			}
+			else
+			{
+				addNode(added, addedObject);				
 			}
 		}
 		else

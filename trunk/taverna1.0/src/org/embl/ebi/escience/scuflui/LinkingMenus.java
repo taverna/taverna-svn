@@ -12,13 +12,12 @@ import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 import org.embl.ebi.escience.scufl.*;
-import javax.swing.JLabel;
-import java.awt.Color;
 //import org.embl.ebi.escience.scuflui.workbench.GenericUIComponentFrame;
 //import org.embl.ebi.escience.scuflui.workbench.Workbench;
 
 import org.embl.ebi.escience.scuflui.ScuflIcons;
 import org.embl.ebi.escience.scuflui.ScuflSemanticMarkupEditor;
+import org.embl.ebi.escience.scuflui.actions.AddDataConstraintAction;
 /**
  * A static method to generate appropriate menu items
  * to link from ports in a Scufl model
@@ -87,20 +86,7 @@ public class LinkingMenus {
 	    theMenu.addSeparator();
 	}
 	for (int i = 0; i < wsp.length; i++) {
-	    JMenuItem wspitem = new JMenuItem(wsp[i].getName(), 
-					      ScuflIcons.outputIcon);
-	    final Port toPort = wsp[i];
-	    wspitem.addActionListener(new ActionListener() {
-		    public void actionPerformed(ActionEvent ae) {
-			try {
-			    model.addDataConstraint(new DataConstraint(model, fromPort, toPort));
-			}
-			catch (DataConstraintCreationException dcce) {
-			    //
-			}
-		    }
-		});
-	    workflowSinks.add(wspitem);
+	    workflowSinks.add(new AddDataConstraintAction(model, fromPort, wsp[i]));
 	}
 	theMenu.add(new ShadedLabel("Processors",ShadedLabel.TAVERNA_BLUE));
 	theMenu.addSeparator();

@@ -334,7 +334,7 @@ public class EnactorInvocation extends JPanel implements ScuflUIComponent {
 	workflowEditor = new WorkflowEditor();
 	workflowEditor.attachToModel(model);
 	workflowEditor.updateStatus(getStatusText());
-	workflowEditor.setReadOnly(true);
+	workflowEditor.setEnabled(false);
 	intermediateResults.add("Graph", new JScrollPane(workflowEditor));
 	intermediateResults.add("Intermediate inputs", intermediateInputs);
 	intermediateResults.add("Intermediate outputs", intermediateOutputs);

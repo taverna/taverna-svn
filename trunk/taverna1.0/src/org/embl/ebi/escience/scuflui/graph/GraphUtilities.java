@@ -1,7 +1,7 @@
 /*
  * Created on Dec 16, 2004
  */
-package org.embl.ebi.escience.scuflui.graph.model;
+package org.embl.ebi.escience.scuflui.graph;
 
 import java.util.HashSet;
 import java.util.Iterator;
@@ -15,7 +15,7 @@ import org.jgraph.graph.GraphModel;
  * COMMENT 
  * 
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover</a>
- * @version $Revision: 1.5 $
+ * @version $Revision: 1.1 $
  */
 public class GraphUtilities
 {

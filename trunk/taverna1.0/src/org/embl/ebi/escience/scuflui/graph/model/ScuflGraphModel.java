@@ -39,6 +39,7 @@ import org.embl.ebi.escience.scufl.ScuflModel;
 import org.embl.ebi.escience.scufl.SemanticMarkup;
 import org.embl.ebi.escience.scuflui.ScuflUIComponent;
 import org.embl.ebi.escience.scuflui.graph.GraphColours;
+import org.embl.ebi.escience.scuflui.graph.GraphUtilities;
 import org.embl.ebi.escience.scuflworkers.ProcessorHelper;
 import org.jgraph.event.GraphModelEvent;
 import org.jgraph.event.GraphModelListener;
@@ -51,7 +52,7 @@ import org.jgraph.graph.ParentMap;
 /**
  * 
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover </a>
- * @version $Revision: 1.8 $
+ * @version $Revision: 1.9 $
  */
 public class ScuflGraphModel implements GraphModel, GraphModelListener, ScuflUIComponent
 {
@@ -237,6 +238,7 @@ public class ScuflGraphModel implements GraphModel, GraphModelListener, ScuflUIC
 				GraphConstants.setBorder(map, new TitledBorder(new DottyBorder(Color.GRAY),
 						"Workflow Inputs"));
 				GraphConstants.setGroupBorder(map, 5);
+				GraphConstants.setEditable(map, false);				
 			}
 			else if (processor == model.getWorkflowSinkProcessor())
 			{
@@ -245,6 +247,7 @@ public class ScuflGraphModel implements GraphModel, GraphModelListener, ScuflUIC
 				GraphConstants.setBorder(map, new TitledBorder(new DottyBorder(Color.GRAY),
 						"Workflow Outputs"));
 				GraphConstants.setGroupBorder(map, 5);
+				GraphConstants.setEditable(map, false);				
 			}
 			else
 			{

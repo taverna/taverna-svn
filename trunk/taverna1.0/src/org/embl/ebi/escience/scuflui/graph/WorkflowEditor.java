@@ -4,7 +4,6 @@
 package org.embl.ebi.escience.scuflui.graph;
 
 import java.awt.BasicStroke;
-import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Insets;
 import java.awt.datatransfer.DataFlavor;
@@ -18,7 +17,6 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseMotionAdapter;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 import java.awt.geom.Rectangle2D;
@@ -32,7 +30,6 @@ import java.util.Map;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
-import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreeNode;
@@ -52,7 +49,6 @@ import org.embl.ebi.escience.scuflui.actions.RemoveAction;
 import org.embl.ebi.escience.scuflui.actions.ScuflModelAction;
 import org.embl.ebi.escience.scuflui.dnd.FactorySpecFragment;
 import org.embl.ebi.escience.scuflui.dnd.SpecFragmentTransferable;
-import org.embl.ebi.escience.scuflui.graph.model.LayoutManager;
 import org.embl.ebi.escience.scuflui.graph.model.ScuflGraphModel;
 import org.embl.ebi.escience.scuflworkers.ProcessorHelper;
 import org.jdom.Document;
@@ -69,11 +65,8 @@ import org.jgraph.graph.VertexView;
 /**
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover </a>
  */
-public class WorkflowEditor extends JPanel implements ScuflUIComponent
+public class WorkflowEditor extends JGraph implements ScuflUIComponent
 {
-	private ScuflGraphModel graphModel;
-	JGraph graph;
-
 	private class StartLinkAction extends ScuflModelAction
 	{
 		private Port port;
@@ -104,10 +97,80 @@ public class WorkflowEditor extends JPanel implements ScuflUIComponent
 		 */
 		public void actionPerformed(ActionEvent e)
 		{
-			// TODO Start adding link
-			port.getName();
+			((MarqueeHandler)getMarqueeHandler()).startEdge(WorkflowEditor.this, port);
 		}
+	}
 
+	/*
+	 * @see org.jgraph.JGraph#createVertexView(org.jgraph.JGraph,
+	 *      org.jgraph.graph.CellMapper, java.lang.Object)
+	 */
+	protected VertexView createVertexView(JGraph graph, CellMapper mapper, Object cell)
+	{
+		return new VertexView(cell, graph, mapper)
+		{
+			/*
+			 * @see org.jgraph.graph.AbstractCellView#updateGroupBounds()
+			 */
+			protected void updateGroupBounds()
+			{
+				// Note: Prevent infinite recursion by removing
+				// child edges that point to their parent.
+				CellView[] childViews = getChildViews();
+				LinkedList result = new LinkedList();
+				for (int i = 0; i < childViews.length; i++)
+				{
+					if (includeInGroupBounds(childViews[i]))
+					{
+						result.add(childViews[i]);
+					}
+				}
+				childViews = new CellView[result.size()];
+				result.toArray(childViews);
+				Rectangle2D r = getBounds(childViews);
+				if (GraphConstants.isOpaque(getAllAttributes()))
+				{
+					Insets insets = GraphConstants.getBorder(getAllAttributes()).getBorderInsets(
+							new JLabel());
+					r.setFrame(r.getX() - insets.left, r.getY() - insets.top, r.getWidth()
+							+ insets.left + insets.right, r.getHeight() + insets.top
+							+ insets.bottom);
+				}
+				groupBounds = r;
+			}
+
+			private boolean includeInGroupBounds(CellView view)
+			{
+				if (view instanceof EdgeView)
+				{
+					GraphModel model = graph.getModel();
+					EdgeView edgeView = (EdgeView) view;
+					if (edgeView.getCell() instanceof DefaultMutableTreeNode)
+					{
+						DefaultMutableTreeNode edge = (DefaultMutableTreeNode) edgeView.getCell();
+						if (model.getSource(edge) instanceof TreeNode)
+						{
+							TreeNode source = (TreeNode) model.getSource(edge);
+							if (((DefaultMutableTreeNode) source.getParent())
+									.isNodeDescendant(edge))
+							{
+								return false;
+							}
+						}
+						if (model.getTarget(edge) instanceof TreeNode)
+						{
+							TreeNode target = (TreeNode) model.getTarget(edge);
+							if (((DefaultMutableTreeNode) target.getParent())
+									.isNodeDescendant(edge))
+							{
+								return false;
+							}
+						}
+					}
+				}
+				return true;
+			}
+		};
 	}
 
 	/*
@@ -117,105 +180,37 @@ public class WorkflowEditor extends JPanel implements ScuflUIComponent
 	 */
 	public void attachToModel(final ScuflModel model)
 	{
-		setLayout(new BorderLayout());
-		graphModel = new ScuflGraphModel();
-		graph = new JGraph(graphModel)
-		{
-			/*
-			 * @see org.jgraph.JGraph#createVertexView(org.jgraph.JGraph, org.jgraph.graph.CellMapper, java.lang.Object)
-			 */
-			protected VertexView createVertexView(JGraph graph, CellMapper mapper, Object cell)
-			{
-				return new VertexView(cell, graph, mapper)
-				{
-					/*
-					 * @see org.jgraph.graph.AbstractCellView#updateGroupBounds()
-					 */
-					protected void updateGroupBounds()
-					{
-						// Note: Prevent infinite recursion by removing
-						// child edges that point to their parent.
-						CellView[] childViews = getChildViews();
-						LinkedList result = new LinkedList();
-						for (int i = 0; i < childViews.length; i++)
-							if (includeInGroupBounds(childViews[i]))
-								result.add(childViews[i]);
-						childViews = new CellView[result.size()];
-						result.toArray(childViews);
-						Rectangle2D r = getBounds(childViews);
-						if (GraphConstants.isOpaque(getAllAttributes())) {
-							Insets insets = GraphConstants.getBorder(getAllAttributes()).getBorderInsets(new JLabel());
-							r.setFrame(r.getX() - insets.left, r.getY() - insets.top, r
-									.getWidth()
-									+ insets.left + insets.right, r.getHeight() + insets.top + insets.bottom);
-						}
-						groupBounds = r;
-					}
-					
-					private boolean includeInGroupBounds(CellView view) {
-						if (view instanceof EdgeView) {
-							GraphModel model = graph.getModel();
-							EdgeView edgeView = (EdgeView) view;
-							if (edgeView.getCell() instanceof DefaultMutableTreeNode) {
-								DefaultMutableTreeNode edge = (DefaultMutableTreeNode) edgeView
-										.getCell();
-								if (model.getSource(edge) instanceof TreeNode) {
-									TreeNode source = (TreeNode) model.getSource(edge);
-									if (((DefaultMutableTreeNode) source.getParent())
-											.isNodeDescendant(edge)) {
-										return false;
-									}
-								}
-								if (model.getTarget(edge) instanceof TreeNode) {
-									TreeNode target = (TreeNode) model.getTarget(edge);
-									if (((DefaultMutableTreeNode) target.getParent())
-											.isNodeDescendant(edge)) {
-										return false;
-									}
-								}
-							}
-						}
-						return true;
-					}					
-				};
-			}
-		};
-		graph.setAntiAliased(true);
-		graph.setAutoSizeOnValueChange(true);
-		graph.setBendable(true);
-		graph.setMoveable(false);
-		graph.setSizeable(false);
-		graph.setGridColor(Color.WHITE);
-		graph.setLockedHandleColor(Color.BLUE);
-		graph.setHighlightColor(Color.BLUE);
-		graph.addKeyListener(new KeyAdapter()
+		setModel(new ScuflGraphModel());
+		setGraphLayoutCache(new LayoutManager(this));
+		setMarqueeHandler(new MarqueeHandler());
+		setAntiAliased(true);
+		setAutoSizeOnValueChange(true);
+		setBendable(true);
+		setMoveable(false);
+		setSizeable(false);
+		setGridColor(Color.WHITE);
+		setLockedHandleColor(Color.BLUE);
+		setHighlightColor(Color.BLUE);
+		addKeyListener(new KeyAdapter()
 		{
 			public void keyPressed(KeyEvent e)
 			{
-				if (e.getKeyCode() == KeyEvent.VK_DELETE && graph.isEditable())
+				if (e.getKeyCode() == KeyEvent.VK_DELETE && isEditable())
 				{
-					Object[] selected = graph.getSelectionCells();
-					graph.getModel().remove(selected);
+					Object[] selected = getSelectionCells();
+					getModel().remove(selected);
 				}
 			}
 		});
-		graph.addMouseMotionListener(new MouseMotionAdapter()
-		{
-			public void mouseMoved(MouseEvent e)
-			{
-				// TODO Update the edited edge, if any
-
-			}
-		});
-		graph.addMouseWheelListener(new MouseWheelListener()
+		addMouseWheelListener(new MouseWheelListener()
 		{
 			public void mouseWheelMoved(MouseWheelEvent e)
 			{
 				// Zoom zoom
-				graph.setScale(graph.getScale() + (e.getWheelRotation() / 10.0));
+				setScale(getScale() + (e.getWheelRotation() / 10.0));
 			}
 		});
-		graph.addMouseListener(new MouseAdapter()
+		addMouseListener(new MouseAdapter()
 		{
 			public void mousePressed(MouseEvent e)
 			{
@@ -229,9 +224,9 @@ public class WorkflowEditor extends JPanel implements ScuflUIComponent
 
 			private void showPopup(MouseEvent event)
 			{
-				if (event.isPopupTrigger() && graph.isEditable())
+				if (event.isPopupTrigger() && isEditable())
 				{
-					Object[] selected = graph.getSelectionCells();
+					Object[] selected = getSelectionCells();
 					if (selected != null)
 					{
 						if (selected.length == 1)
@@ -270,7 +265,7 @@ public class WorkflowEditor extends JPanel implements ScuflUIComponent
 											}
 											else
 											{
-												JMenu linkMenu = new JMenu("Add Link to...");
+												JMenu linkMenu = new JMenu("Start link from...");
 												linkMenu.setIcon(ScuflIcons.dataLinkIcon);
 												ports = processor.getInputPorts();
 												if (ports.length > 0)
@@ -340,7 +335,7 @@ public class WorkflowEditor extends JPanel implements ScuflUIComponent
 		GraphConstants.SELECTION_STROKE = new BasicStroke(2, BasicStroke.CAP_ROUND,
 				BasicStroke.JOIN_ROUND, 1, new float[] { 4, 6 }, 0);
 
-		new DropTarget(graph, new DropTargetAdapter()
+		new DropTarget(this, new DropTargetAdapter()
 		{
 			/*
 			 * @see java.awt.dnd.DropTargetListener#dragEnter(java.awt.dnd.DropTargetDragEvent)
@@ -348,7 +343,8 @@ public class WorkflowEditor extends JPanel implements ScuflUIComponent
 			public void dragEnter(DropTargetDragEvent dtde)
 			{
 				int action = dtde.getDropAction();
-				if (dtde.isDataFlavorSupported(SpecFragmentTransferable.factorySpecFragmentFlavor) && graph.isEditable())
+				if (dtde.isDataFlavorSupported(SpecFragmentTransferable.factorySpecFragmentFlavor)
+						&& isEditable())
 				{
 					dtde.acceptDrag(action);
 				}
@@ -367,7 +363,7 @@ public class WorkflowEditor extends JPanel implements ScuflUIComponent
 				{
 					DataFlavor f = SpecFragmentTransferable.factorySpecFragmentFlavor;
 					Transferable t = dtde.getTransferable();
-					if (dtde.isDataFlavorSupported(f) && graph.isEditable())
+					if (dtde.isDataFlavorSupported(f) && isEditable())
 					{
 						// Have something of type factorySpecFragmentFlavor;
 						FactorySpecFragment fsf = (FactorySpecFragment) t.getTransferData(f);
@@ -386,9 +382,7 @@ public class WorkflowEditor extends JPanel implements ScuflUIComponent
 				}
 			}
 		});
-		add(graph, BorderLayout.CENTER);
-		new LayoutManager(graphModel);
-		graphModel.attachToModel(model);
+		((ScuflGraphModel) getModel()).attachToModel(model);
 	}
 
 	/*
@@ -396,7 +390,7 @@ public class WorkflowEditor extends JPanel implements ScuflUIComponent
 	 */
 	public void detachFromModel()
 	{
-		graphModel.detachFromModel();
+		((ScuflGraphModel) getModel()).detachFromModel();
 	}
 
 	/*
@@ -407,12 +401,6 @@ public class WorkflowEditor extends JPanel implements ScuflUIComponent
 		return ScuflIcons.windowDiagram;
 	}
 
-	public void setReadOnly(boolean readOnly)
-	{
-		graph.setEditable(!readOnly);
-		graph.setEnabled(!readOnly);
-	}
-	
 	/*
 	 * @see java.awt.Component#getName()
 	 */
@@ -420,7 +408,7 @@ public class WorkflowEditor extends JPanel implements ScuflUIComponent
 	{
 		return "Workflow Editor (BETA)";
 	}
-	
+
 	public void updateStatus(String status)
 	{
 		Element processorList;
@@ -433,9 +421,10 @@ public class WorkflowEditor extends JPanel implements ScuflUIComponent
 			for (Iterator i = processorList.getChildren("processor").iterator(); i.hasNext();)
 			{
 				Element processorElement = (Element) i.next();
-				Processor processor = graphModel.getModel().locateProcessor(processorElement.getAttributeValue("name"));
+				Processor processor = ((ScuflGraphModel) getModel()).getModel().locateProcessor(
+						processorElement.getAttributeValue("name"));
 				Map attributes = graphModel.getAttributes(processor);
-				if(attributes != null)
+				if (attributes != null)
 				{
 					// Get the first child of the processor element.
 					List childElementList = processorElement.getChildren();
@@ -444,7 +433,7 @@ public class WorkflowEditor extends JPanel implements ScuflUIComponent
 						Element firstChildElement = (Element) childElementList.get(0);
 						Color statusColour = getStatusColour(firstChildElement.getName());
 						Color existing = GraphConstants.getBackground(attributes);
-						if(statusColour != existing)
+						if (statusColour != existing)
 						{
 							Map newColour = new HashMap();
 							GraphConstants.setBackground(newColour, statusColour);
@@ -453,7 +442,7 @@ public class WorkflowEditor extends JPanel implements ScuflUIComponent
 					}
 				}
 			}
-			if(!changes.isEmpty())
+			if (!changes.isEmpty())
 			{
 				graphModel.edit(changes, null, null, null);
 			}
@@ -480,5 +469,5 @@ public class WorkflowEditor extends JPanel implements ScuflUIComponent
 			return GraphColours.getColour("medium purple", Color.MAGENTA);
 		}
 		return GraphColours.getColour("light gray", Color.GRAY);
-	}	
+	}
 }

@@ -1,24 +1,25 @@
 /*
  * Created on Jan 4, 2005
  */
-package org.embl.ebi.escience.scuflui.graph.model;
+package org.embl.ebi.escience.scuflui.graph;
 
-import java.awt.Rectangle;
 import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.jgraph.graph.CellView;
+import org.jgraph.graph.DefaultGraphModel;
 import org.jgraph.graph.GraphConstants;
+import org.jgraph.graph.GraphLayoutCache;
 import org.jgraph.graph.GraphModel;
 
 /**
  * COMMENT
  * 
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover </a>
- * @version $Revision: 1.8 $
+ * @version $Revision: 1.1 $
  */
 public class GraphRows
 {
@@ -29,14 +30,16 @@ public class GraphRows
 	private static int GRAPH_EDGE = 10;
 
 	private GraphModel model;
+	private GraphLayoutCache layout;
 	private List rows = new ArrayList();
 
 	/**
 	 * @param model
 	 */
-	public GraphRows(GraphModel model)
+	public GraphRows(GraphModel model, GraphLayoutCache layout)
 	{
 		this.model = model;
+		this.layout = layout;
 	}
 
 	/**
@@ -216,8 +219,8 @@ public class GraphRows
 	 */
 	private void calculateBounds(int row)
 	{
+		// TODO Switch to cellviews?
 		List nodes = (List) rows.get(row);
-		Map edits = new HashMap();
 		int y = row * ROW_HEIGHT + GRAPH_EDGE;
 		int x = GRAPH_EDGE;
 		for (int index = 0; index < nodes.size(); index++)
@@ -254,20 +257,21 @@ public class GraphRows
 					{
 						if (x != bounds.getX() || y != bounds.getY())
 						{
-							bounds = new Rectangle(x, y, (int) bounds.getWidth(), (int) bounds
-									.getHeight());
-							Map newAttrs = new HashMap();
-							GraphConstants.setBounds(newAttrs, bounds);
-							edits.put(node, newAttrs);
+							bounds.setRect(x, y, bounds.getWidth(), bounds.getHeight());
+							CellView view = layout.getMapping(node, false);
+							view.update();
+							// TODO Easier way of updating edges?
+							Iterator edges = DefaultGraphModel.getEdges(model, new Object[] { node }).iterator();
+							while(edges.hasNext())
+							{
+								CellView edgeView = layout.getMapping(edges.next(), false);
+								edgeView.update();
+							}
 						}
 						x += bounds.getWidth() + X_SEPARATION;
 					}
 				}
 			}
-		}
-		if (!edits.isEmpty())
-		{
-			model.edit(edits, null, null, null);
 		}
 	}
 
