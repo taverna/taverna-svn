@@ -22,6 +22,11 @@ import org.embl.ebi.escience.scuflui.ScuflDiagram;
 import org.embl.ebi.escience.scuflui.ScuflModelExplorer;
 import org.embl.ebi.escience.scuflui.XScuflTextArea;
 
+// Utility Imports
+import java.util.Enumeration;
+import java.util.Properties;
+import java.util.ResourceBundle;
+
 // IO Imports
 import java.io.File;
 import java.io.FileWriter;
@@ -63,6 +68,15 @@ public class Workbench extends JFrame {
 	catch (ClassNotFoundException cnfe) {
 	    //
 	}
+	// Initialize the proxy settings etc.
+	ResourceBundle rb = ResourceBundle.getBundle("mygrid");
+        Properties sysProps = System.getProperties();
+        Enumeration keys = rb.getKeys();
+	while (keys.hasMoreElements()) {
+            String key = (String) keys.nextElement();
+            String value = (String) rb.getString(key);
+	    sysProps.put(key, value);
+        }
     }
 
     JDesktopPane desktop;

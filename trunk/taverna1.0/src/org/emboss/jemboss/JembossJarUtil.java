@@ -20,9 +20,22 @@
 
 package org.emboss.jemboss;
 
-import java.util.*;
-import java.util.zip.*;
-import java.io.*;
+// Utility Imports
+import java.util.Hashtable;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
+
+// IO Imports
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+
+import java.lang.ClassLoader;
+import java.lang.Exception;
+import java.lang.Integer;
+import java.lang.Object;
+import java.lang.String;
+
 
 
 /**

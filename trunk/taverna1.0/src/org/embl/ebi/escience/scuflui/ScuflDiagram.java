@@ -36,7 +36,6 @@ import org.embl.ebi.escience.scuflui.ScuflUIComponent;
 import java.lang.Exception;
 import java.lang.Process;
 import java.lang.Runtime;
-import java.lang.RuntimeException;
 import java.lang.String;
 
 
@@ -259,28 +258,11 @@ public class ScuflDiagram extends JComponent
 	    ImageReader imageReader = (ImageReader)readers.next();
 	    imageReader.setInput(iis, false);
 	    this.image = imageReader.read(0);
-	    // If we're scaling the image to the window do the transforms here
-	    /**    if (fitToWindow) {
-		   /**
-		   double scale = 0.5;
-		   AffineTransform xform = AffineTransform.getScaleInstance(scale, scale);
-		   RenderingHints hints = new RenderingHints(RenderingHints.KEY_INTERPOLATION,
-		   RenderingHints.VALUE_INTERPOLATION_BICUBIC);
-		   AffineTransformOp op = new AffineTransformOp(xform, hints);
-		   BufferedImage temp = op.createCompatibleDestImage(this.image, this.image.getColorModel());
-		   this.image = op.filter(this.image);
-		   *
-		   java.awt.Image rescaledImage = this.image.getScaledInstance(500,500,java.awt.Image.SCALE_SMOOTH);
-		   
-		   this.image = new BufferedImage(500,500,BufferedImage.TYPE_INT_RGB);
-		   Graphics2D g2d = this.image.createGraphics();
-		   g2d.drawImage(rescaledImage,null,null);
-		   }
-	    */
 	    repaint();
 	}
 	catch (Exception e) {
-	    throw new RuntimeException(e);
+	    // Do nothing
+	    // throw new RuntimeException(e);
 	}
     }
 
