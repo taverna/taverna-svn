@@ -148,7 +148,7 @@ public class Workbench extends JFrame {
 
 	GenericUIComponentFrame diagram = new GenericUIComponentFrame(workbench.model,
 								      new ScuflDiagramPanel());
-	diagram.setSize(500,500);
+	diagram.setSize(500,400);
 	diagram.setLocation(20,440);
 	workbench.desktop.add(diagram);
 	GenericUIComponentFrame explorer = new GenericUIComponentFrame(workbench.model,
@@ -159,7 +159,7 @@ public class Workbench extends JFrame {
 
 	GenericUIComponentFrame scavenger = new GenericUIComponentFrame(workbench.model,
 									new ScavengerTreePanel());
-	scavenger.setSize(300,820);
+	scavenger.setSize(300,720);
 	scavenger.setLocation(540,120);
 	workbench.desktop.add(scavenger);
 
