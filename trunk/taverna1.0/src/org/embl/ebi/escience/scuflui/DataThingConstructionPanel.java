@@ -90,7 +90,7 @@ import org.jdom.output.XMLOutputter;
  * COMMENT DataThingConstructionPanel
  * 
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover </a>
- * @version $Revision: 1.20 $
+ * @version $Revision: 1.21 $
  */
 public class DataThingConstructionPanel extends JPanel implements ScuflUIComponent, ScuflModelEventListener
 {
@@ -356,6 +356,7 @@ public class DataThingConstructionPanel extends JPanel implements ScuflUICompone
 
 				panel.add(scrollPane, BorderLayout.CENTER);
 				panel.add(toolbar, BorderLayout.NORTH);
+				panel.setPreferredSize(new Dimension(0,0));
 			}
 			try
 			{
