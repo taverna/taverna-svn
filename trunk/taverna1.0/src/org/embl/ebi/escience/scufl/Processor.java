@@ -61,6 +61,22 @@ public abstract class Processor implements java.io.Serializable {
     }
 
     /**
+     * Add an alternate processor to this processor definition
+     */
+    public void addAlternate(AlternateProcessor ap) {
+	this.alternates.add(ap);
+	fireModelEvent(new ScuflModelEvent(this, "Alternate added"));
+    }
+    
+    /**
+     * Delete an alternate processor from this processor definition
+     */
+    public void removeAlternate(AlternateProcessor ap) {
+	this.alternates.remove(ap);
+	fireModelEvent(new ScuflModelEvent(this, "Alternate removed"));
+    }
+
+    /**
      * Return the time in milliseconds after which
      * an instance of this processor should be regarded
      * as having failed with a timeout. If this value

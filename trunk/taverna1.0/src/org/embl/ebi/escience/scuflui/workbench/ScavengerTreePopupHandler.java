@@ -13,10 +13,12 @@ import javax.swing.ImageIcon;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
+import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
 import org.embl.ebi.escience.scufl.DuplicateProcessorNameException;
 import org.embl.ebi.escience.scufl.ProcessorCreationException;
 import org.embl.ebi.escience.scufl.parser.XScuflParser;
+import org.embl.ebi.escience.scufl.*;
 import org.embl.ebi.escience.scuflui.ScuflIcons;
 import org.embl.ebi.escience.scuflworkers.ProcessorFactory;
 import org.embl.ebi.escience.scuflworkers.ProcessorHelper;
@@ -81,10 +83,40 @@ public class ScavengerTreePopupHandler extends MouseAdapter {
 	if (scuflObject != null) {
 	    
 	    if (scuflObject instanceof ProcessorFactory && scavenger.model != null) {
+		final ProcessorFactory pf = (ProcessorFactory)scuflObject;
 		// Show the popup for adding new processors to the model
 		JPopupMenu menu = new JPopupMenu();
 		JMenuItem add = new JMenuItem("Add to model", Workbench.importIcon);
 		menu.add(add);
+		
+		// Prepare the 'add as alternate menu'
+		Processor[] processors = scavenger.model.getProcessors();
+		if (processors.length > 0) {
+		    JMenu processorList = new JMenu("Add as alternate to...");
+		    for (int i = 0; i < processors.length; i++) {
+			JMenuItem processorItem = new JMenuItem(processors[i].getName(), ProcessorHelper.getPreferredIcon(processors[i]));
+			processorList.add(processorItem);
+			final Processor theProcessor = processors[i];
+			processorItem.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent ae) {
+				    try {
+					int numberOfAlternates = theProcessor.getAlternatesArray().length;
+					AlternateProcessor alternate = new AlternateProcessor(pf.createProcessor("alternate"+(numberOfAlternates+1), null));
+					theProcessor.addAlternate(alternate);
+				    }
+				    catch (Exception ex) {
+					JOptionPane.showMessageDialog(null, 
+								      "Problem creating alternate : \n"+ex.getMessage(),
+								      "Exception!",
+								      JOptionPane.ERROR_MESSAGE);
+				    }
+				}
+				    
+			    });
+		    }
+		    menu.add(processorList);
+		}
+		
 		// If this is a workflow factory then we might as well give
 		// the user the option to import the complete workflow as 
 		// well as to wrap it in a processor
@@ -120,7 +152,6 @@ public class ScavengerTreePopupHandler extends MouseAdapter {
 			});
 		    menu.add(imp);
 		}
-		final ProcessorFactory pf = (ProcessorFactory)scuflObject;
 		add.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ae) {
 			    String name = (String)JOptionPane.showInputDialog(null,

@@ -37,22 +37,11 @@ public class ScuflModelExplorerRenderer extends DefaultTreeCellRenderer {
 					   expanded, leaf, row,
 					   hasFocus);
 	Object userObject = ((DefaultMutableTreeNode)value).getUserObject();
+	if (userObject instanceof AlternateProcessor) {
+	    userObject = ((AlternateProcessor)userObject).getProcessor();
+	}
 	if (userObject instanceof Processor) {
 	    setIcon(org.embl.ebi.escience.scuflworkers.ProcessorHelper.getPreferredIcon((Processor)userObject));
-	    /**
-	       if (userObject instanceof WSDLBasedProcessor) {
-	       setIcon(ScuflIcons.wsdlIcon);
-	       }
-	       else if (userObject instanceof TalismanProcessor) {
-	       setIcon(ScuflIcons.talismanIcon);
-	       }
-	       else if (userObject instanceof SoaplabProcessor) {
-	       setIcon(ScuflIcons.soaplabIcon);
-	       }
-	       else if (userObject instanceof WorkflowProcessor) {
-	       setIcon(ScuflIcons.workflowIcon);
-	       }
-	    */
 	}
 	else if (userObject instanceof ConcurrencyConstraint) {
 	    setIcon(ScuflIcons.constraintIcon);

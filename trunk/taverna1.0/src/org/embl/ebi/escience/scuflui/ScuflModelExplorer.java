@@ -186,6 +186,12 @@ public class ScuflModelExplorer extends JTree
 				DefaultMutableTreeNode portnode = new DefaultMutableTreeNode(ports[j]);
 				pnode.add(portnode);
 			    }
+			    // Add the alternates if any
+			    AlternateProcessor[] alternates = p[i].getAlternatesArray();
+			    for (int j = 0; j < alternates.length; j++) {
+				DefaultMutableTreeNode alternatenode = new DefaultMutableTreeNode(alternates[j]);
+				pnode.add(alternatenode);
+			    }
 			}	
 			
 			// Create a new node for data links

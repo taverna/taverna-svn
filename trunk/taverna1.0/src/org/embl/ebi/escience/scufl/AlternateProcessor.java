@@ -90,4 +90,11 @@ public class AlternateProcessor {
 	return this.outputMapping;
     }
 
+    /**
+     * Use the toString method of the underlying processor
+     */
+    public String toString() {
+	return this.alternate.toString();
+    }
+
 }
