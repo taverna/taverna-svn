@@ -20,10 +20,10 @@ ensj-util.jar
 bsh-2.0b1.jar
 jdom-1.0.jar
 commons-httpclient-2.0.jar
-axis-1.2-beta-3.jar
-axis-jaxrpc-1.2-beta-3.jar
-axis-saaj-1.2-beta-3.jar
-axis-wsdl4j-1.2-beta-3.jar
+axis-nightly-11.01.05.jar
+jaxrpc-nightly-11.01.05.jar
+saaj-nightly-11.01.05.jar
+wsdl4j-nightly-11.01.05.jar
 commons-discovery-0.2.jar
 commons-logging-1.0.4.jar
 log4j-1.2.8.jar
