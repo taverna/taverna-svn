@@ -89,7 +89,7 @@ import org.jdom.output.XMLOutputter;
  * COMMENT DataThingConstructionPanel
  * 
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover </a>
- * @version $Revision: 1.12 $
+ * @version $Revision: 1.13 $
  */
 public class DataThingConstructionPanel extends JPanel implements ScuflUIComponent, ScuflModelEventListener
 {
@@ -1063,9 +1063,17 @@ public class DataThingConstructionPanel extends JPanel implements ScuflUICompone
 					{
 						InputDataThingNode thingNode = (InputDataThingNode)node;
 						InputListNode parent = (InputListNode)thingNode.getParent();
+						if(parent == null)
+						{
+							newInputButton.setEnabled(false);
+							newListButton.setEnabled(false);							
+						}
+						else
+						{
+							newInputButton.setEnabled(canAddInputs(parent));
+							newListButton.setEnabled(canAddLists(parent));							
+						}
 						loadInputsButton.setEnabled(true);						
-						newInputButton.setEnabled(canAddInputs(parent));
-						newListButton.setEnabled(canAddLists(parent));
 						removeButton.setEnabled(true);
 					}
 				}
