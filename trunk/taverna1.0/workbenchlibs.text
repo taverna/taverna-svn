@@ -15,3 +15,6 @@ xercesImpl.jar
 xmlParserAPIs.jar
 dom4j.jar
 notification-processor.jar
+jmoby.jar
+alltools.jar
+xercesSamples.jar
