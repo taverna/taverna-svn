@@ -38,6 +38,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
@@ -88,7 +89,7 @@ import org.jdom.output.XMLOutputter;
  * Panel to construct the input for a workflow.
  * 
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover </a>
- * @version $Revision: 1.32 $
+ * @version $Revision: 1.33 $
  */
 public abstract class DataThingConstructionPanel extends JPanel implements ScuflUIComponent, ScuflModelEventListener
 {
@@ -408,6 +409,11 @@ public abstract class DataThingConstructionPanel extends JPanel implements Scufl
 			return ((InputListNode)parent).getPort();
 		}
 
+		public boolean isText()
+		{
+			return ((InputListNode)parent).isText();			
+		}
+		
 		/*
 		 * (non-Javadoc)
 		 * 
@@ -607,7 +613,15 @@ public abstract class DataThingConstructionPanel extends JPanel implements Scufl
 		public boolean isText()
 		{
 			System.out.println(port.getMetadata().getDisplayTypeList());
-			return port.getMetadata().getMIMETypeList().contains("text/plain");
+			for(int index = 0; index < port.getMetadata().getMIMETypeList().size(); index++)
+			{
+				String mimeType = (String)port.getMetadata().getMIMETypeList().get(index);
+				if(textPattern.matcher(mimeType).matches())
+				{
+					return true;
+				}
+			}
+			return false;			
 		}
 		
 		/*
@@ -659,7 +673,7 @@ public abstract class DataThingConstructionPanel extends JPanel implements Scufl
 					if (name != null)
 					{
 						InputStream is = new URL(name).openStream();
-						if(mimeTypes.contains("text/plain"))
+						if(isText())
 						{						
 						BufferedReader reader = new BufferedReader(new InputStreamReader(is));
 						StringBuffer sb = new StringBuffer();
@@ -703,7 +717,7 @@ public abstract class DataThingConstructionPanel extends JPanel implements Scufl
 					if (returnVal == JFileChooser.APPROVE_OPTION)
 					{
 						File file = fileChooser.getSelectedFile();
-						if(mimeTypes.contains("text/plain"))
+						if(isText())
 						{
 							BufferedReader reader = new BufferedReader(new FileReader(file));
 							StringBuffer sb = new StringBuffer();
@@ -799,7 +813,7 @@ public abstract class DataThingConstructionPanel extends JPanel implements Scufl
 				panel = new JPanel(new BorderLayout());
 				panel.add(toolbar, BorderLayout.NORTH);
 				
-				if (mimeTypes.contains("text/plain"))
+				if (isText())
 				{
 					editor = new JTextArea();
 					editor.setText((String) getUserObject());
@@ -867,6 +881,19 @@ public abstract class DataThingConstructionPanel extends JPanel implements Scufl
 			return thing;
 		}
 
+		public boolean isText()
+		{
+			for(int index = 0; index < mimeTypes.size(); index++)
+			{
+				String mimeType = (String)mimeTypes.get(index);
+				if(textPattern.matcher(mimeType).matches())
+				{
+					return true;
+				}
+			}
+			return false;
+		}
+		
 		public void setDataThing(DataThing thing)
 		{
 			this.thing = thing;
@@ -969,6 +996,8 @@ public abstract class DataThingConstructionPanel extends JPanel implements Scufl
 	JSplitPane splitter;
 	JTree portTree;
 
+	Pattern textPattern;
+	
 	JButton loadInputsButton;
 	JButton newInputButton;
 	JButton newListButton;
@@ -989,7 +1018,7 @@ public abstract class DataThingConstructionPanel extends JPanel implements Scufl
 				parent = (InputListNode) portTree.getSelectionPath().getLastPathComponent();
 			}
 			InputDataThingNode newNode;
-			if(parent.getPort().getMetadata().getMIMETypeList().contains("text/plain"))
+			if(parent.isText())
 			{
 				newNode = new InputDataThingNode("Some input data goes here", parent.getPort().getMetadata().getMIMETypeList());
 			}
@@ -1053,7 +1082,7 @@ public abstract class DataThingConstructionPanel extends JPanel implements Scufl
 				{
 					try
 					{
-						if(parent.getPort().getMetadata().getMIMETypeList().contains("text/plain"))
+						if(parent.isText())
 						{
 							BufferedReader reader = new BufferedReader(new FileReader(files[index]));
 							StringBuffer stringBuffer = new StringBuffer();
@@ -1136,6 +1165,8 @@ public abstract class DataThingConstructionPanel extends JPanel implements Scufl
 	 */
 	public void attachToModel(ScuflModel model)
 	{
+		textPattern = Pattern.compile(".*text/.*");		
+		
 		portTree = new JTree(treeModel);
 		portTree.setRowHeight(0);
 		portTree.setCellRenderer(new InputNodeRenderer());
