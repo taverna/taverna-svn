@@ -27,6 +27,8 @@ import org.apache.wsif.WSIFServiceFactory;
 import org.apache.wsif.providers.soap.apacheaxis.WSIFDynamicProvider_ApacheAxis;
 import org.apache.wsif.util.WSIFPluggableProviders;
 import org.apache.wsif.util.WSIFUtils;
+import org.apache.wsif.providers.ProviderUtils;
+
 
 /**
  * A processor based on an operation defined within 
@@ -293,10 +295,10 @@ public class WSDLBasedProcessor extends Processor implements java.io.Serializabl
      * Unwraps the top level part if this a wrapped DocLit message.
      */
     private void unWrapIfWrappedDocLit(List parts, String operationName, Definition def) throws WSIFException {
-	Part p = WSIFUtils.getWrappedDocLiteralPart(parts, operationName);
+	Part p = ProviderUtils.getWrapperPart(parts, operationName);
 	if (p != null) {
 	    //dpf.mapType(p.getTypeName(), org.w3c.dom.Element.class);
-	    List unWrappedParts = WSIFUtils.unWrapPart(p, def);
+	    List unWrappedParts = ProviderUtils.unWrapPart(p, def);
 	    parts.remove(p);
 	    parts.addAll(unWrappedParts);
 	}

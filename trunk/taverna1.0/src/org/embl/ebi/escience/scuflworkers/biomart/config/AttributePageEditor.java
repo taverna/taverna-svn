@@ -57,11 +57,23 @@ public class AttributePageEditor extends JPanel {
 	for (Iterator i = groupList.iterator(); i.hasNext();) {
 	    Object o = i.next();
 	    if (o instanceof AttributeGroup) {
+		// Generic Attribute Group
 		AttributeGroup ag = (AttributeGroup)o;
 		groups.add(ag.getDisplayName(), new AttributeGroupEditor(query, ag));
 	    }
+	    else if (o instanceof DSAttributeGroup) {
+		// Domain Specific Attribute Group
+		DSAttributeGroup ag = (DSAttributeGroup)o;
+		// Only handle hardcoded support for sequences at the moment
+		if (ag.getHandler().equalsIgnoreCase("sequence")) {
+		    groups.add(ag.getDisplayName(), new SequenceGroupEditor(query, ag));
+		}
+		else {
+		    System.out.println("Unknown domain specific attribute group "+o);
+		}
+	    }
 	    else {
-		System.out.println(o);
+		System.out.println("Unknown attribute page child type"+o);
 	    }
 	}
 	add(groups, BorderLayout.CENTER);
@@ -78,6 +90,7 @@ public class AttributePageEditor extends JPanel {
     }
 
 }
+
 class AttributeGroupEditor extends JPanel {
 
     AttributeGroupEditor(Query query, AttributeGroup group) {
@@ -87,7 +100,7 @@ class AttributeGroupEditor extends JPanel {
 	if (title == null) {
 	    title = group.getDisplayName();
 	}
-	add(new ShadedLabel(group.getDescription(), ShadedLabel.TAVERNA_BLUE, true), BorderLayout.NORTH);
+	add(new ShadedLabel(title, ShadedLabel.TAVERNA_BLUE, true), BorderLayout.NORTH);
 	add(Box.createRigidArea(new Dimension(10,10)),
 	    BorderLayout.WEST);
 	AttributeCollection[] collections = group.getAttributeCollections();
@@ -178,4 +191,35 @@ class AttributeCollectionEditor extends JPanel {
 	setMaximumSize(new Dimension(5000,rows*20+25));
     }
 
+}
+
+class SequenceGroupEditor extends JPanel {
+    
+    SequenceGroupEditor(Query query, DSAttributeGroup group) {
+	super(new BorderLayout());
+	setOpaque(false);
+	String title = "Sequence export options.";
+	add(new ShadedLabel(title, ShadedLabel.TAVERNA_BLUE, true), BorderLayout.NORTH);
+	add(Box.createRigidArea(new Dimension(10,10)),
+	    BorderLayout.WEST);
+	JPanel sequencePanel = new JPanel();
+	sequencePanel.setLayout(new BoxLayout(sequencePanel, BoxLayout.PAGE_AXIS));
+	sequencePanel.add(Box.createVerticalGlue());
+	JScrollPane sp = new JScrollPane(sequencePanel, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
+					 JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+	sequencePanel.setBackground(Color.WHITE);
+	sp.setBackground(Color.WHITE);
+	sp.setPreferredSize(new Dimension(0,0));
+	add(sp, BorderLayout.CENTER);
+    }
+    protected void paintComponent(Graphics g) {
+	final int width = getWidth();
+	final int height = getHeight();
+	Graphics2D g2d = (Graphics2D)g;
+	Paint oldPaint = g2d.getPaint();
+	g2d.setPaint(new GradientPaint(0, 0, ShadedLabel.TAVERNA_BLUE, width, 0, ShadedLabel.halfShade(ShadedLabel.TAVERNA_BLUE)));
+	g2d.fillRect(0, 0, width, height);
+	g2d.setPaint(oldPaint);
+	super.paintComponent(g);
+    }
 }
