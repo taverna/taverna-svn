@@ -89,7 +89,7 @@ import org.jdom.output.XMLOutputter;
  * Panel to construct the input for a workflow.
  * 
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover </a>
- * @version $Revision: 1.34 $
+ * @version $Revision: 1.35 $
  */
 public abstract class DataThingConstructionPanel extends JPanel implements ScuflUIComponent, ScuflModelEventListener
 {
@@ -785,6 +785,7 @@ public abstract class DataThingConstructionPanel extends JPanel implements Scufl
 		{
 			super(thing.getDataObject());
 			this.thing = thing;
+			this.mimeTypes = thing.getMetadata().getMIMETypeList();
 		}
 
 		/*
