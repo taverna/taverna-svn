@@ -100,6 +100,8 @@ public class ResultItemPanel extends JPanel {
 					Process dotProcess = Runtime.getRuntime().exec("dot -Tpng");
 					OutputStream out = dotProcess.getOutputStream();
 					out.write(dotText.getBytes());
+					out.flush();
+					out.close();
 					InputStream in = dotProcess.getInputStream();
 					ImageInputStream iis = ImageIO.createImageInputStream(in);
 					String suffix = "png";
@@ -108,7 +110,6 @@ public class ResultItemPanel extends JPanel {
 					imageReader.setInput(iis, false);
 					ImageIcon theImage = new ImageIcon(imageReader.read(0));
 					JPanel theImagePanel = new JPanel();
-					theImagePanel.add(new JLabel(theImage));
 					theImagePanel.add(new JLabel(theImage));
 					theImagePanel.setPreferredSize(new Dimension(theImage.getIconWidth(), theImage.getIconHeight()));
 					splitPane.setRightComponent(new JScrollPane(theImagePanel));
