@@ -51,7 +51,7 @@ import org.jgraph.graph.ParentMap;
 /**
  * 
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover </a>
- * @version $Revision: 1.18 $
+ * @version $Revision: 1.19 $
  */
 public class ScuflGraphModel implements GraphModel, GraphModelListener, ScuflUIComponent
 {
@@ -665,8 +665,11 @@ public class ScuflGraphModel implements GraphModel, GraphModelListener, ScuflUIC
 					// TODO Handle renaming of input/output ports?
 				}
 			}
-			updateAttributes(attributes);
-			fireGraphChangedEvent(new GraphModelEvent(this, new ScuflGraphAttributeChange(attributes)));
+			if(!attributes.isEmpty())
+			{
+				updateAttributes(attributes);
+				fireGraphChangedEvent(new GraphModelEvent(this, new ScuflGraphAttributeChange(attributes)));
+			}
 		}
 	}
 

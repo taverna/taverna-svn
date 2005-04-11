@@ -24,7 +24,7 @@ import org.jgraph.graph.GraphModel;
 
 /**
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover </a>
- * @version $Revision: 1.10 $
+ * @version $Revision: 1.11 $
  * 
  * TODO Change from center placed to left placed and use the port offset to fix it
  */
@@ -566,7 +566,7 @@ public class PositionLayout extends ModelSpanningTree
 		return "Position Tree";
 	}
 
-	protected Collection createInitialTree(Iterator unused)
+	protected List createInitialTree(Iterator unused)
 	{
 		Collections.sort(edges, new Comparator()
 		{
@@ -602,7 +602,7 @@ public class PositionLayout extends ModelSpanningTree
 				return edgeWeight2 - edgeWeight1;
 			}
 		});
-		Collection result = super.createInitialTree(edges.iterator());
+		List result = super.createInitialTree(edges.iterator());
 		edges.clear();
 		return result;
 	}

@@ -10,7 +10,6 @@ import org.jgraph.graph.GraphModel;
 
 public abstract class ModelSpanningTree extends GraphSpanningTree
 {
-	private static final String TREE_PARENT = " parent";	
 	private static final String TREE_SET = " set";	
 	
 	private static final String CUT_VALUE = "cut edge";
@@ -37,13 +36,6 @@ public abstract class ModelSpanningTree extends GraphSpanningTree
 		}
 		return model.getAttributes(node);
 	}	
-	
-	protected Object getTreeParent(Object node)
-	{
-		Map attributes = getAttributes(node);
-		assert attributes != null: this + ": " + node;
-		return attributes.get(this + TREE_PARENT);
-	}
 
 	protected Set getTreeSet(Object node)
 	{
@@ -56,40 +48,30 @@ public abstract class ModelSpanningTree extends GraphSpanningTree
 	{
 		Map attributes = getAttributes(edge);
 		assert attributes != null: this + ": " + edge;
-		attributes.remove(this + TREE_PARENT);
+		removeFromTree(attributes);
 	}
 
-	protected int getCutValue(Object treeEdge, String timeStamp)
+	protected Integer getCutValue(Object treeEdge, String timeStamp)
 	{
 		Map attributes = getAttributes(treeEdge);
 		assert attributes != null: this + ": " + treeEdge;
 		if (timeStamp.equals(attributes.get(CUT_TIME_STAMP)))
 		{
-			return ((Integer)attributes.get(CUT_VALUE)).intValue();
+			return ((Integer)attributes.get(CUT_VALUE));
 		}
-		int cutValue = super.getCutValue(treeEdge, timeStamp);
+		return null;
+	}
+	
+	protected void setCutValue(Object treeEdge, String timeStamp, int cutValue)
+	{
+		Map attributes = getAttributes(treeEdge);
+		assert attributes != null: this + ": " + treeEdge;
 		attributes.put(CUT_TIME_STAMP, timeStamp);
 		attributes.put(CUT_VALUE, new Integer(cutValue));
-		return cutValue;
-	}
-
-	protected void setTreeParent(Object child, Object parent)
-	{
-		// System.err.println("Set tree parent of " + child + " as " + parent);
-		Map attributes = getAttributes(child);
-		assert attributes != null;
-		assert parent != null;
-		Object currentParent = attributes.get(this + TREE_PARENT);
-		attributes.put(this + TREE_PARENT, parent);
-		if (parent != null && currentParent != null && currentParent != parent)
-		{
-			setTreeParent(currentParent, child);
-		}
-	}
+	}	
 	
 	protected void removeFromTree(Map attributes)
 	{
-		attributes.remove(this + TREE_PARENT);
 		attributes.remove(this + TREE_SET);		
 	}
 

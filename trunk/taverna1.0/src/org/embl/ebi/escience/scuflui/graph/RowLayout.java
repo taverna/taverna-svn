@@ -24,7 +24,7 @@ import org.jgraph.graph.GraphModel;
  * graph to be able to update as the graph changes.
  * 
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover </a>
- * @version $Revision: 1.9 $
+ * @version $Revision: 1.10 $
  */
 public class RowLayout extends ModelSpanningTree
 {
@@ -98,7 +98,7 @@ public class RowLayout extends ModelSpanningTree
 			}
 		}
 
-		Collection treeEdges = createInitialTree(edges.iterator());
+		List treeEdges = createInitialTree(edges.iterator());
 		optimiseTree(treeEdges);
 
 		// TODO Reduce crossovers here!	

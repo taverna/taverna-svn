@@ -15,7 +15,7 @@ import java.util.TreeSet;
 
 /**
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover </a>
- * @version $Revision: 1.9 $
+ * @version $Revision: 1.10 $
  */
 public abstract class GraphSpanningTree
 {
@@ -400,7 +400,7 @@ public abstract class GraphSpanningTree
 			direction = -1;
 		}
 
-		String text = "";
+		//String text = "";
 
 		Iterator edges = getEdges(node);
 		int cutValue = 0;
@@ -438,14 +438,14 @@ public abstract class GraphSpanningTree
 					{
 						value += getCutValue(edge, timeStamp).intValue() * -direction;
 					}
-					text += "[" + edge + "]";
+					//text += "[" + edge + "]";
 				}
 			}
 			cutValue += value;
-			text += value + " ";
+			//text += value + " ";
 		}
-		System.err.println(this + ": Cut " + cutValue + " for " + treeEdge + " = " + text
-				+ ", direction = " + direction + ", child = " + node);
+		//System.err.println(this + ": Cut " + cutValue + " for " + treeEdge + " = " + text
+		//		+ ", direction = " + direction + ", child = " + node);
 		setCutValue(treeEdge, timeStamp, cutValue);
 
 		if (cutValue < 0)
