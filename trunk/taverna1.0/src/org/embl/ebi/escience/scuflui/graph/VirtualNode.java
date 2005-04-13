@@ -13,7 +13,7 @@ import java.util.Map;
  * COMMENT
  * 
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover </a>
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  */
 public class VirtualNode
 {
@@ -118,5 +118,15 @@ public class VirtualNode
 				return true;
 			}
 		};
+	}
+
+	public boolean equals(Object obj)
+	{
+		if(obj instanceof VirtualNode)
+		{
+			VirtualNode node = (VirtualNode)obj;
+			return row == node.row && edge.equals(node.edge);
+		}
+		return false;
 	}
 }

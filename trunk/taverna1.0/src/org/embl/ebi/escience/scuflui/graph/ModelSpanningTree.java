@@ -3,6 +3,7 @@
  */
 package org.embl.ebi.escience.scuflui.graph;
 
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -41,7 +42,27 @@ public abstract class ModelSpanningTree extends GraphSpanningTree
 	{
 		Map attributes = getAttributes(node);
 		assert attributes != null: this + ": " + node;
-		return (Set) attributes.get(this + TREE_SET);
+		Set treeSet = (Set) attributes.get(this + TREE_SET);
+		if(treeSet == null)
+		{
+			treeSet = new HashSet();
+			treeSet.add(node);
+			attributes.put(this+TREE_SET, treeSet);
+		}
+		return treeSet;
+	}
+
+	protected Object getSource(Object edge)
+	{
+		// TODO Implement getSource
+		return null;
+	}
+
+	protected boolean isTreeEdge(Object edge)
+	{
+		Map attributes = getAttributes(edge);
+		assert attributes != null: this + ": " + edge;
+		return attributes.containsKey(this + TREE_SET);
 	}
 
 	protected void removeTreeEdge(Object edge)

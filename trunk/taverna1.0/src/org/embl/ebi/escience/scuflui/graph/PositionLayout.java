@@ -24,7 +24,7 @@ import org.jgraph.graph.GraphModel;
 
 /**
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover </a>
- * @version $Revision: 1.11 $
+ * @version $Revision: 1.12 $
  * 
  * TODO Change from center placed to left placed and use the port offset to fix it
  */
@@ -471,8 +471,14 @@ public class PositionLayout extends ModelSpanningTree
 		}
 		setNextEdgeSegment(source, edge, node.getTopEdge());
 		setPreviousEdgeSegment(target, edge, node.getBottomEdge());
-		edges.add(node.getTopEdge());
-		edges.add(node.getBottomEdge());
+		if(!edges.contains(node.getTopEdge()))
+		{
+			edges.add(node.getTopEdge());
+		}
+		if(!edges.contains(node.getBottomEdge()))
+		{
+			edges.add(node.getBottomEdge());
+		}
 		return node;
 	}
 

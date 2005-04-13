@@ -24,7 +24,7 @@ import org.jgraph.graph.GraphModel;
  * graph to be able to update as the graph changes.
  * 
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover </a>
- * @version $Revision: 1.10 $
+ * @version $Revision: 1.11 $
  */
 public class RowLayout extends ModelSpanningTree
 {
@@ -71,11 +71,7 @@ public class RowLayout extends ModelSpanningTree
 					if (!model.isPort(removed[index]))
 					{
 						remove(removed[index]);
-						Set treeSet = getTreeSet(GraphUtilities.getRoot(model, removed[index]));
-						if (treeSet != null)
-						{
-							treeSet.remove(removed[index]);
-						}
+						getTreeSet(GraphUtilities.getRoot(model, removed[index])).remove(removed[index]);
 					}
 				}
 			}
@@ -332,6 +328,7 @@ public class RowLayout extends ModelSpanningTree
 
 	private PositionLayout.Row getRow(int index)
 	{
+		assert index >= 0;
 		for (int size = rows.size(); size <= index; size++)
 		{
 			rows.add(positionLayout.new Row(size));
