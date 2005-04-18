@@ -15,7 +15,7 @@ import java.util.TreeSet;
 
 /**
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover </a>
- * @version $Revision: 1.11 $
+ * @version $Revision: 1.12 $
  */
 public abstract class GraphSpanningTree
 {
@@ -71,7 +71,7 @@ public abstract class GraphSpanningTree
 	 * @return the set of nodes of the spanning tree
 	 */
 	protected abstract Set getTreeSet(Object node);
-	
+
 	/**
 	 * @param edge
 	 * @return the minimum length of the given edge
@@ -109,7 +109,7 @@ public abstract class GraphSpanningTree
 		{
 			return;
 		}
-		//System.err.println(this + ": Move nodes " + nodes + " by " + change);
+		// System.err.println(this + ": Move nodes " + nodes + " by " + change);
 		Iterator iterator = nodes.iterator();
 		while (iterator.hasNext())
 		{
@@ -196,7 +196,7 @@ public abstract class GraphSpanningTree
 		tailSet.removeAll(headSet);
 
 		// Get all non-tree edges connecting the head and tail of this edge
-		return getReplacementEdges(edge, headSet, tailSet);
+		return getReplacementEdges(edge, headSet, tailSet, false);
 	}
 
 	/**
@@ -206,7 +206,7 @@ public abstract class GraphSpanningTree
 	 * @param tailSet
 	 * @return list of edges connecting the head and tail sets
 	 */
-	private Collection getReplacementEdges(Object replaceEdge, Set headSet, Set tailSet)
+	private Collection getReplacementEdges(Object replaceEdge, Set headSet, Set tailSet, boolean any)
 	{
 		Collection joiningEdges = new TreeSet(getComparator(replaceEdge));
 		Iterator nodes;
@@ -235,13 +235,13 @@ public abstract class GraphSpanningTree
 							joiningEdges.add(edge);
 						}
 					}
-					// else if (tailSet.contains(source))
-					// {
-					// if (headSet.contains(target))
-					// {
-					// joiningEdges.add(edge);
-					// }
-					// }
+					else if (any && tailSet.contains(source))
+					{
+						if (headSet.contains(target))
+						{
+							joiningEdges.add(edge);
+						}
+					}
 				}
 			}
 		}
@@ -255,7 +255,7 @@ public abstract class GraphSpanningTree
 	 */
 	protected void addTreeEdge(Object parent, Object child, Object edge)
 	{
-		//System.err.println(this + ": Add tree edge " + edge);
+		// System.err.println(this + ": Add tree edge " + edge);
 		Set tree1 = getTreeSet(parent);
 		Set tree2 = getTreeSet(child);
 
@@ -388,7 +388,7 @@ public abstract class GraphSpanningTree
 			direction = -1;
 		}
 
-		//String text = "";
+		// String text = "";
 
 		Iterator edges = getEdges(node);
 		int cutValue = 0;
@@ -426,14 +426,14 @@ public abstract class GraphSpanningTree
 					{
 						value += getCutValue(edge, timeStamp).intValue() * -direction;
 					}
-					//text += "[" + edge + "]";
+					// text += "[" + edge + "]";
 				}
 			}
 			cutValue += value;
-			//text += value + " ";
+			// text += value + " ";
 		}
-		//System.err.println(this + ": Cut " + cutValue + " for " + treeEdge + " = " + text
-		//		+ ", direction = " + direction + ", child = " + node);
+		// System.err.println(this + ": Cut " + cutValue + " for " + treeEdge + " = " + text
+		// + ", direction = " + direction + ", child = " + node);
 		setCutValue(treeEdge, timeStamp, cutValue);
 
 		if (cutValue < 0)
@@ -485,7 +485,7 @@ public abstract class GraphSpanningTree
 
 	protected void replaceTreeEdge(Object edge, Object replacementEdge)
 	{
-		System.err.println(this + ": Replace tree edge " + edge + " with " + replacementEdge);
+		// System.err.println(this + ": Replace tree edge " + edge + " with " + replacementEdge);
 
 		removeTreeEdge(edge);
 
@@ -511,10 +511,10 @@ public abstract class GraphSpanningTree
 		Set headSet = new HashSet();
 		getTailSet(tail, tailSet, edge);
 		headSet.addAll(getTreeSet(tail));
-		headSet.removeAll(headSet);
+		headSet.removeAll(tailSet);
 
 		// Get all non-tree edges connecting the head and tail of this edge
-		Collection joiningEdges = getReplacementEdges(edge, headSet, tailSet);
+		Collection joiningEdges = getReplacementEdges(edge, headSet, tailSet, true);
 		removeTreeEdge(edge);
 		if (joiningEdges.isEmpty())
 		{
@@ -522,7 +522,7 @@ public abstract class GraphSpanningTree
 			// split into two trees
 			normalizeTree(headSet);
 			normalizeTree(tailSet);
-			System.err.println(this + ": Remove tree edge " + edge);
+			// System.err.println(this + ": Remove tree edge " + edge);
 			return null;
 		}
 
@@ -536,8 +536,8 @@ public abstract class GraphSpanningTree
 			joinParent = joinChild;
 			joinChild = source;
 		}
-		System.err.println(this + ": Replace tree edge " + edge + " with " + replacement
-				+ " out of " + joiningEdges);
+		// System.err.println(this + ": Replace tree edge " + edge + " with " + replacement
+		// + " out of " + joiningEdges);
 		addTreeEdge(joinParent, joinChild, replacement);
 		return replacement;
 	}
@@ -551,11 +551,18 @@ public abstract class GraphSpanningTree
 		{
 			Object node = nodes.next();
 			setTreeSet(node, tree);
-			int rank = getRank(node);
-			if (rank < lowestRank)
+			try
 			{
-				lowestRank = rank;
-				lowestNode = node;
+				int rank = getRank(node);
+				if (rank < lowestRank)
+				{
+					lowestRank = rank;
+					lowestNode = node;
+				}
+			}
+			catch (NullPointerException e)
+			{
+				// Thrown if node isn't part of the graph now, so ignore it
 			}
 		}
 		if (lowestRank != Integer.MAX_VALUE && lowestRank > getMinimumRank(lowestNode))

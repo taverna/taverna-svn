@@ -24,7 +24,7 @@ import org.jgraph.graph.GraphModel;
  * graph to be able to update as the graph changes.
  * 
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover </a>
- * @version $Revision: 1.11 $
+ * @version $Revision: 1.12 $
  */
 public class RowLayout extends ModelSpanningTree
 {
@@ -64,7 +64,7 @@ public class RowLayout extends ModelSpanningTree
 			{
 				if (model.isEdge(removed[index]))
 				{
-					removeEdge(removed[index]);
+					replaceTreeEdge(removed[index]);
 				}
 				else
 				{
@@ -270,6 +270,11 @@ public class RowLayout extends ModelSpanningTree
 		Map attributes = getAttributes(node);
 		assert attributes != null;
 		Integer row = LayoutConstants.getRow(attributes);
+		Set treeSet = (Set) attributes.get(this + TREE_SET);
+		if(treeSet != null)
+		{
+			treeSet.remove(node);
+		}
 		assert row != null;
 		remove(node, row.intValue());
 	}
@@ -388,7 +393,7 @@ public class RowLayout extends ModelSpanningTree
 		Integer oldRank = LayoutConstants.getRow(attributes);
 		assert (oldRank != null);
 		int newRank = oldRank.intValue() + rankChange;
-		assert newRank >= getMinimumRank(node);
+		assert newRank >= getMinimumRank(node): "Tried shifting node " + node + " by " + rankChange;
 		LayoutConstants.setRow(attributes, newRank);
 		remove(node, oldRank.intValue());
 		getRow(newRank).add(node);

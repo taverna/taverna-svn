@@ -7,7 +7,6 @@ import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.AbstractList;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
@@ -24,7 +23,7 @@ import org.jgraph.graph.GraphModel;
 
 /**
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover </a>
- * @version $Revision: 1.12 $
+ * @version $Revision: 1.13 $
  * 
  * TODO Change from center placed to left placed and use the port offset to fix it
  */
@@ -564,7 +563,14 @@ public class PositionLayout extends ModelSpanningTree
 	protected void shiftRank(Object node, int rankChange)
 	{
 		// TODO Implement shiftRank
-		setRank(node, getRank(node) + rankChange);
+		try
+		{
+			setRank(node, getRank(node) + rankChange);
+		}
+		catch(NullPointerException e)
+		{
+			// Node does exist, do nothing
+		}
 	}
 
 	public String toString()

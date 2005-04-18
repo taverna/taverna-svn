@@ -11,10 +11,10 @@ import org.jgraph.graph.GraphModel;
 
 public abstract class ModelSpanningTree extends GraphSpanningTree
 {
-	private static final String TREE_SET = " set";	
+	protected static final String TREE_SET = " set";	
 	
-	private static final String CUT_VALUE = "cut edge";
-	private static final String CUT_TIME_STAMP = "cut time stamp";		
+	protected static final String CUT_VALUE = "cut edge";
+	protected static final String CUT_TIME_STAMP = "cut time stamp";		
 	
 	protected GraphModel model;
 	
