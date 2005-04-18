@@ -20,7 +20,7 @@ import org.jmol.viewer.Viewer;
 public class JMolRenderer extends AbstractRenderer.ByMimeType {
     
     public JMolRenderer() {
-	super("JMol");
+	super("Jmol");
     }
     
     public boolean isTerminal() {
