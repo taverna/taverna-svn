@@ -31,7 +31,8 @@ public class JMolRenderer extends AbstractRenderer.ByMimeType {
 			     Object userObject,
 			     String mimeType) {
 	if (userObject instanceof String) {
-	    if (mimeType.matches(".*chemical/x-pdb.*")) {
+	    if (mimeType.matches(".*chemical/x-pdb.*") ||
+		mimeType.matches(".*chemical/x-mdl-molfile.*")) {
 		return true;
 	    }
 	}
@@ -45,11 +46,19 @@ public class JMolRenderer extends AbstractRenderer.ByMimeType {
 	String coordinateText = (String)dataThing.getDataObject();
 	JmolSimpleViewer viewer = panel.getViewer();
 	viewer.openStringInline(coordinateText);
-	viewer.evalString(scriptString);
+	if (((JmolViewer)viewer).getAtomCount() > 300) {
+	    viewer.evalString(proteinScriptString);
+	}
+	else {
+	    viewer.evalString(scriptString);
+	}	
 	return panel;	
     }
     
-    static final String scriptString = "wireframe off; spacefill off; select protein; cartoon; colour structure; select ligand; spacefill; colour cpk; select dna; spacefill 0.4; wireframe on; colour cpk;";
+    static final String proteinScriptString = "wireframe off; spacefill off; select protein; cartoon; colour structure; select ligand; spacefill; colour cpk; select dna; spacefill 0.4; wireframe on; colour cpk;";
+
+    static final String scriptString = "select *; spacefill 0.4; wireframe 0.2; colour cpk;";
+    
 }    
 
 class JMolPanel extends JPanel {
