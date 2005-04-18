@@ -6,7 +6,7 @@
 <!-- Author: Martin Senger (senger@ebi.ac.uk)                              -->
 <!-- ===================================================================== -->
 
-<!-- $Id: analysis_metadata_2_html.xsl,v 1.1 2005-03-05 22:38:49 mereden Exp $ -->
+<!-- $Id: analysis_metadata_2_html.xsl,v 1.2 2005-04-18 14:53:34 mereden Exp $ -->
 
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
                 version="1.0">
@@ -32,8 +32,9 @@
     <td>
       <table border="0" cellspacing="2">
         <xsl:apply-templates select="description" mode="as-row"/>
-        <xsl:apply-templates select="analysis_extension/app_info/@*" mode="as-row"/>
+        <xsl:apply-templates select="analysis_extension/app_info/@*[local-name != 'help_URL']" mode="as-row"/>
         <xsl:apply-templates select="@*[local-name() != 'name']" mode="as-row"/>
+	<tr><td>Help URL</td><td><a href="{analysis_extension/app_info/@help_URL}"><xsl:value-of select="analysis_extension/app_info/@help_URL"/></a></td></tr>
       </table>
     </td></tr></table>
 
@@ -64,7 +65,7 @@
   </xsl:template>
 
   <!-- attributes and elements expressed as a (bold)name and value -->
-  <xsl:template match="@*|description|default|prompt|help" mode="as-row">
+  <xsl:template match="@*[local-name() != 'help_URL']|description|default|prompt|help" mode="as-row">
     <tr>
       <td valign="top" width="80"><em><xsl:value-of select="local-name()"/></em></td>
       <td><xsl:value-of select="."/></td>

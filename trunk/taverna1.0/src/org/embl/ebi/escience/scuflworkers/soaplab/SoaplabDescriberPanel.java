@@ -9,6 +9,7 @@ package org.embl.ebi.escience.scuflworkers.soaplab;
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
+import javax.swing.event.*;
 import org.embl.ebi.escience.scuflworkers.*;
 import org.embl.ebi.escience.scuflui.*;
 import org.embl.ebi.escience.scuflui.processoractions.*;
@@ -50,6 +51,20 @@ public class SoaplabDescriberPanel extends AbstractProcessorAction {
 	    setOpaque(false);
 	    setEditable(false);
 	    setPreferredSize(new Dimension(0,0));
+	    // Add a listener for hyperlinks in the metadata
+	    addHyperlinkListener(new HyperlinkListener() {
+		    public void hyperlinkUpdate(HyperlinkEvent r) {
+			try {
+			    if (r.getEventType() == 
+				HyperlinkEvent.EventType.ACTIVATED) {
+				ColJEditorPane.this.setPage(r.getURL());
+			    }
+			}
+			catch (Exception ex) {
+			    ex.printStackTrace();
+			}
+		    }
+		});
 	}
 	protected void paintComponent(Graphics g) {
 	    final int width = getWidth();
