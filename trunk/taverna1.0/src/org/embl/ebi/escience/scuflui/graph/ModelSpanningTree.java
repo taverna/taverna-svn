@@ -65,11 +65,14 @@ public abstract class ModelSpanningTree extends GraphSpanningTree
 		return attributes.containsKey(this + TREE_SET);
 	}
 
-	protected void removeTreeEdge(Object edge)
+	protected void removeEdge(Object edge)
 	{
-		Map attributes = getAttributes(edge);
-		assert attributes != null: this + ": " + edge;
-		removeFromTree(attributes);
+		if(isTreeEdge(edge))
+		{
+			Map attributes = getAttributes(edge);
+			assert attributes != null: this + ": " + edge;
+			removeFromTree(attributes);
+		}
 	}
 
 	protected Integer getCutValue(Object treeEdge, String timeStamp)

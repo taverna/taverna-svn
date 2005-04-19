@@ -23,7 +23,7 @@ import org.jgraph.graph.GraphModel;
 
 /**
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover </a>
- * @version $Revision: 1.13 $
+ * @version $Revision: 1.14 $
  * 
  * TODO Change from center placed to left placed and use the port offset to fix it
  */
@@ -490,13 +490,21 @@ public class PositionLayout extends ModelSpanningTree
 
 	public void removeIntermediateNode(Object source, Object target, Object edge)
 	{
-		// System.err.println("Remove intermediates between " + source + " & "
-		// +target);
-		IntermediateNode node = (IntermediateNode) getNextEdgeSegment(source, edge).getSource();
+		//System.err.println("Remove intermediates between " + source + " & " +target);
+		Edge intermediateEdge = getNextEdgeSegment(source, edge);
+		IntermediateNode node;
+		if(intermediateEdge == null)
+		{
+			intermediateEdge = getPreviousEdgeSegment(target, edge);
+		}
 		setNextEdgeSegment(source, edge, null);
-		setPreviousEdgeSegment(target, edge, null);
-		removeEdge(node.getTopEdge());
-		removeEdge(node.getBottomEdge());
+		setPreviousEdgeSegment(target, edge, null);		
+		if(intermediateEdge != null)
+		{
+			node = (IntermediateNode)intermediateEdge.getSource();
+			replaceEdge(node.getTopEdge());
+			replaceEdge(node.getBottomEdge());			
+		}
 	}
 
 	private void setNextEdgeSegment(Object source, Object edge, Edge nextEdge)
@@ -529,7 +537,8 @@ public class PositionLayout extends ModelSpanningTree
 		{
 			return view.getBounds();
 		}
-		return null;
+		throw new NullPointerException("No view for " + node);
+		//return null;
 	}
 
 	private Edge getPreviousEdgeSegment(Object previous, Object edge)

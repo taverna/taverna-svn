@@ -24,7 +24,7 @@ import org.jgraph.graph.GraphModel;
  * graph to be able to update as the graph changes.
  * 
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover </a>
- * @version $Revision: 1.12 $
+ * @version $Revision: 1.13 $
  */
 public class RowLayout extends ModelSpanningTree
 {
@@ -64,7 +64,7 @@ public class RowLayout extends ModelSpanningTree
 			{
 				if (model.isEdge(removed[index]))
 				{
-					replaceTreeEdge(removed[index]);
+					replaceEdge(removed[index]);
 				}
 				else
 				{
@@ -209,7 +209,7 @@ public class RowLayout extends ModelSpanningTree
 	
 	private void updateEdgeGraph(Object edge)
 	{
-		//System.err.println("Update " + edge);
+		//System.err.println(this + ": Update " + edge);
 		Object previousNode = getSource(edge);
 		int sourceRow = getRank(previousNode);
 		Object target = getTarget(edge);
@@ -311,7 +311,7 @@ public class RowLayout extends ModelSpanningTree
 
 	private void removeEdgeGraph(Object edge)
 	{
-		//System.err.println("Update " + edge);
+		//System.err.println(this+ ": Remove edge graph " + edge);
 		Object previousNode = getSource(edge);
 		Map attributes = getAttributes(edge);
 		List nodeChain = GraphConstants.getPoints(attributes);
@@ -323,12 +323,10 @@ public class RowLayout extends ModelSpanningTree
 		}
 	}
 
-	protected Object replaceTreeEdge(Object edge)
+	protected void replaceEdge(Object edge, Object replacementEdge)
 	{
-		// TODO Implement replaceTreeEdge
-		Object replacementEdge = super.replaceTreeEdge(edge);
+		super.replaceEdge(edge, replacementEdge);
 		updateEdgeGraph(edge);
-		return replacementEdge;
 	}
 
 	private PositionLayout.Row getRow(int index)
