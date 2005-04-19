@@ -22,6 +22,8 @@ import org.embl.ebi.escience.scuflworkers.talisman.TalismanScavenger;
 import org.embl.ebi.escience.scuflworkers.wsdl.WSDLBasedProcessor;
 import org.embl.ebi.escience.scuflworkers.wsdl.WSDLBasedScavenger;
 import org.embl.ebi.escience.scuflworkers.seqhound.SeqhoundScavenger;
+import org.embl.ebi.escience.scuflworkers.apiconsumer.APIConsumerScavenger;
+import java.net.URL;
 import org.embl.ebi.escience.scuflworkers.biomoby.*;
 
 import org.jdom.output.*;
@@ -309,6 +311,20 @@ public class ScavengerTree extends ExtendedJTree
 		    }
 		}
 	    } 
+
+	    // Find all apiconsumer.xml files in the classpath root and
+	    // load them as API Consumer scavengers
+	    try {
+		ClassLoader loader = Thread.currentThread().getContextClassLoader();
+		Enumeration en = loader.getResources("apiconsumer.xml");
+		while (en.hasMoreElements()) {
+		    URL resourceURL = (URL)en.nextElement();
+		    scavengerTree.addScavenger(new APIConsumerScavenger(resourceURL));
+		}
+	    }
+	    catch (Exception ex) {
+		ex.printStackTrace();
+	    }
 
 	    // Add the seqhound scavenger to the end of the list
 	    try {
