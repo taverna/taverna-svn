@@ -49,6 +49,40 @@ public class APIDescription {
     }
     
     /**
+     * Initialise from a set of ClassDoc objects searching
+     * for @taverna.consume tags in the constructor and method
+     * docs
+     */
+    public APIDescription(ClassDoc[] classes) {
+	this.name = "No name";
+	this.description = "No description";
+	for (int i = 0; i < classes.length; i++) {
+	    // Is there a top level @taverna.consume tag?
+	    boolean consumeAll = (classes[i].tags("@taverna.consume").length > 0);
+	    // Get all constructor docs...
+	    ConstructorDoc[] constructors = classes[i].constructors();
+	    for (int j = 0; j < constructors.length; j++) {
+		if (consumeAll || 
+		    constructors[j].tags("@taverna.consume").length > 0) {
+		    // Found the tag in the constructor or we're consuming
+		    // everything so it's irrelevant
+		    add(classes[i], constructors[j]);
+		}
+	    }
+	    // Same for all methods
+	    MethodDoc[] methods = classes[i].methods();
+	    for (int j = 0; j < methods.length; j++) {
+		if (consumeAll || 
+		    methods[j].tags("@taverna.consume").length > 0) {
+		    // Found the tag in the method or we're consuming
+		    // everything so it's irrelevant
+		    add(classes[i], methods[j]);
+		}
+	    }
+	}
+    }
+
+    /**
      * Add a pair of ClassDoc / MethodDoc to expose in the API
      */
     public void add(ClassDoc cd, MethodDoc md) {

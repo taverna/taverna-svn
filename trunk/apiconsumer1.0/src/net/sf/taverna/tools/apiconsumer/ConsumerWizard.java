@@ -38,12 +38,12 @@ import org.jdom.output.*;
 /**
  * The top level UI component for the consumer wizard
  * @author Tom Oinn
- * @version $Id: ConsumerWizard.java,v 1.1.1.1 2005-03-01 16:57:12 mereden Exp $
+ * @version $Id: ConsumerWizard.java,v 1.2 2005-04-19 11:56:35 mereden Exp $
  */
 public class ConsumerWizard extends JFrame {
 
     boolean running = true;
-    APIDescription description = new APIDescription();
+    APIDescription description;
     JFileChooser fc;
     
     public ConsumerWizard(ClassDoc[] classes) {
@@ -57,7 +57,8 @@ public class ConsumerWizard extends JFrame {
 	}
 	fc = new JFileChooser();
 	getContentPane().setLayout(new BorderLayout());
-
+	// Add any methods tagged with @taverna.consume to the APIDescription
+	description = new APIDescription(classes);
 	final ClassTree tree = new ClassTree(new ClassTreeModel(classes), description);
 	final ClassSummaryPane summary = new ClassSummaryPane();
 	final JTabbedPane tabs = new JTabbedPane();
@@ -66,8 +67,9 @@ public class ConsumerWizard extends JFrame {
 	JSplitPane pane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,
 					 new JScrollPane(tree),
 					 tabs);
-	tabs.addTab("Description",new JScrollPane(summary));
+	tabs.addTab("Summary",new JScrollPane(summary));
 	tabs.addTab("Methods", new JPanel());
+	tabs.addTab("API Description", new DescriptionPanel(description));
 	tabs.setEnabledAt(1, false);
 	pane.setDividerLocation(-1);
 	getContentPane().add(pane, BorderLayout.CENTER);	
