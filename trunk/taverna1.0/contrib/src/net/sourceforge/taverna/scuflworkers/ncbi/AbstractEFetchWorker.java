@@ -4,9 +4,10 @@ import java.net.MalformedURLException;
 import java.util.HashMap;
 import java.util.Map;
 
-import net.sourceforge.taverna.baclava.DataThingAdapter;
 import net.sourceforge.taverna.io.GetStreamProcessor;
 import net.sourceforge.taverna.io.GetStreamTransmitter;
+import net.sourceforge.taverna.io.PostStreamProcessor;
+import net.sourceforge.taverna.io.PostStreamTransmitter;
 import net.sourceforge.taverna.io.StreamProcessor;
 import net.sourceforge.taverna.io.StreamTransmitter;
 import net.sourceforge.taverna.io.TransmitterException;
@@ -21,7 +22,7 @@ import uk.ac.soton.itinnovation.taverna.enactor.entities.TaskExecutionException;
  * Last edited by $Author: phidias $
  * 
  * @author Mark
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public abstract class AbstractEFetchWorker implements LocalWorker {
 
@@ -98,9 +99,15 @@ public abstract class AbstractEFetchWorker implements LocalWorker {
      * @throws TransmitterException
      */
     protected Map transmit(Map transmitterMap) throws MalformedURLException, TransmitterException {
-        StreamTransmitter transmitter = new GetStreamTransmitter();
+        
+        // initialise the transmitter
+        int transmitterType = -1;
+        String tType = (String)transmitterMap.get("transmitterType");
+        transmitterType = (tType == null)?GET_TRANSMITTER:Integer.parseInt(tType);       
+        StreamTransmitter transmitter = getInstance(transmitterType);
         transmitter.setURL(url);
-        //DataThingAdapter adapter = new DataThingAdapter(transmitterMap);
+        
+        
         String outputFile = (String)transmitterMap.get("outputFile");
         String xslt = (String)transmitterMap.get("xslt");
         String retmode = (String)transmitterMap.get("retmode");
@@ -118,10 +125,34 @@ public abstract class AbstractEFetchWorker implements LocalWorker {
                 streamProcessor = new XSLTStreamProcessor((HashMap)outputMap,outputFile, xslt);
             }
         } else {// otherwise treat it as plain text.
-            streamProcessor = new GetStreamProcessor();
+            if (transmitterType == GET_TRANSMITTER){
+                streamProcessor = new GetStreamProcessor();
+            }else {
+                streamProcessor = new PostStreamProcessor();
+            }
         }
 
         return transmitter.transmit(transmitterMap, streamProcessor);
+    }
+    
+    /**
+     * This method gets an instance of the stream transmitter.
+     * @param transmitterType
+     * @return
+     */
+    protected StreamTransmitter getInstance(int transmitterType){
+        StreamTransmitter transmitter = null;
+        switch(transmitterType){
+        	case GET_TRANSMITTER:{
+        	    transmitter = new GetStreamTransmitter();
+        	    break;
+        	}
+        	case POST_TRANSMITTER:{
+        	    transmitter = new PostStreamTransmitter();
+        	    break;
+        	}
+        }
+        return transmitter;
     }
 
     /**
@@ -152,5 +183,9 @@ public abstract class AbstractEFetchWorker implements LocalWorker {
     public String[] outputTypes() {
         return new String[] { "'text/plain'" };
     }
+    
+    public static final int GET_TRANSMITTER = 1;
+    public static final int POST_TRANSMITTER = 2;
+    
 
 }
