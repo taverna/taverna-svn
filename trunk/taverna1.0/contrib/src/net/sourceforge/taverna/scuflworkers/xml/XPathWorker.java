@@ -4,24 +4,21 @@
  */
 package net.sourceforge.taverna.scuflworkers.xml;
 
-import java.io.IOException;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-
 import net.sourceforge.taverna.baclava.DataThingAdapter;
 
 import org.dom4j.Document;
 import org.dom4j.Node;
 import org.dom4j.io.SAXReader;
+import org.dom4j.io.XMLWriter;
 import org.embl.ebi.escience.baclava.factory.DataThingFactory;
 import org.embl.ebi.escience.scuflworkers.java.LocalWorker;
-import org.xml.sax.SAXException;
 
 import uk.ac.soton.itinnovation.taverna.enactor.entities.TaskExecutionException;
 
@@ -29,9 +26,12 @@ import uk.ac.soton.itinnovation.taverna.enactor.entities.TaskExecutionException;
  * This worker applies an arbitrary XPath expression to an XML document, and
  * returns a nodelist containing the nodes that match the XPath expression.
  * 
- * Last edited by: $Author: phidias $
  * @author mfortner
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
+ * 
+ * @tavinput xpath			The XPath expression used to extract data from the document.
+ * @tavinput xml-text		The XML text to be processed.
+ * @tavoutput nodelist		A String array containing the nodes that match the XPath expression.
  */
 public class XPathWorker implements LocalWorker {
     /*
@@ -62,16 +62,19 @@ public class XPathWorker implements LocalWorker {
             ArrayList outputList = new ArrayList();
            
             String val= null;
+            System.out.println("===============");
             for (Iterator iter = nodelist.iterator(); iter.hasNext();) {
                 Node element = (Node) iter.next();
-                val = element.getStringValue();
+              
                 if (val != null && !val.equals("")){
-                	outputList.add(val);
+                	outputList.add(element.asXML());
+                	System.out.println("value: "+element.asXML());
                 }
                 
             }
             String[] nodeArray = new String[outputList.size()];
             outputList.toArray(nodeArray);
+            
             outputMap.put("nodelist", DataThingFactory.bake(nodeArray));
             
         }catch (Throwable th){

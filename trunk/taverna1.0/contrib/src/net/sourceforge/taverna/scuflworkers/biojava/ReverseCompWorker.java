@@ -14,12 +14,15 @@ import org.embl.ebi.escience.scuflworkers.java.LocalWorker;
 import uk.ac.soton.itinnovation.taverna.enactor.entities.TaskExecutionException;
 
 /**
- * This class
+ * This processor takes a raw DNA sequence and returns the 
+ * reverse complement of the sequence.
  * 
- * Last edited by $Author: phidias $
  * 
  * @author Mark
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
+ * 
+ * @tavinput rawSeq  A raw sequence (not FASTA).
+ * @tavoutput revSeq  The reverse complement of the input sequence.
  */
 public class ReverseCompWorker implements LocalWorker {
 

@@ -12,12 +12,18 @@ import org.embl.ebi.escience.scuflworkers.java.LocalWorker;
 import uk.ac.soton.itinnovation.taverna.enactor.entities.TaskExecutionException;
 
 /**
- * This class gets a list of files on a local directory.
+ * This processor gets a list of files on a local directory.
  * 
  * Last edited by $Author: phidias $
  * 
  * @author Mark
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
+ * 
+ * @tavinput directory  The starting directory.
+ * @tavinput extension  The file extension to be used to select files.  The file list
+ *                      will contain only those files that have this extension.
+ * 
+ * @tavoutput filelist  The list of files matching the given extension.
  */
 public class FileListByExtTask implements LocalWorker {
     
@@ -38,7 +44,7 @@ public class FileListByExtTask implements LocalWorker {
        
        
        if (ext == null || ext.equals("")){
-           throw new TaskExecutionException("The 'ext' parameter cannot be null.  Please enter a valid file extension.");
+           throw new TaskExecutionException("The 'extension' parameter cannot be null.  Please enter a valid file extension.");
        }
        
        

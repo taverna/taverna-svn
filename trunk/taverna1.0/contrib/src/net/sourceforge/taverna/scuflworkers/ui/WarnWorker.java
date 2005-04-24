@@ -12,12 +12,18 @@ import org.embl.ebi.escience.scuflworkers.java.LocalWorker;
 import uk.ac.soton.itinnovation.taverna.enactor.entities.TaskExecutionException;
 
 /**
- * This class
- * 
- * Last edited by $Author: phidias $
+ * This processor displays a warning message to the user.  It should only be used
+ * with interactive workflows that are being run from Taverna.  Server-side
+ * or command-line workflows should not use this processor.
  * 
  * @author Mark
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
+ * 
+ * @tavinput message  The prompt message to be displayed.
+ * @tavinput title    The title for the title-bar of the dialog window.
+ * 
+ * @tavinput answer   The response from the user.  This is a dummy value since 
+ * 					  no response is allowed from the user.
  */
 public class WarnWorker extends AskWorker implements LocalWorker {
 

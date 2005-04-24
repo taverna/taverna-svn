@@ -15,12 +15,15 @@ import org.embl.ebi.escience.scuflworkers.java.LocalWorker;
 import uk.ac.soton.itinnovation.taverna.enactor.entities.TaskExecutionException;
 
 /**
- * This class reads a delimited text file.
- * 
- * Last edited by $Author: phidias $
+ * This file reads a delimited text file.
  * 
  * @author Mark
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
+ * 
+ * @tavinput fileurl	The fully qualified name of the text file to be read.
+ * @tavinput delimiter  The delimiter used to differentiate between the fields in a row of data.
+ * 
+ * @tavoutput dataArray  A two dimensional text array containing each row of data.
  */
 public class DelimitedFileReader implements LocalWorker {
 

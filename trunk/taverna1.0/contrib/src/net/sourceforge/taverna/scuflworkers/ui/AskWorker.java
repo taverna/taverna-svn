@@ -12,14 +12,18 @@ import org.embl.ebi.escience.scuflworkers.java.LocalWorker;
 import uk.ac.soton.itinnovation.taverna.enactor.entities.TaskExecutionException;
 
 /**
- * This class creates a Dialog for user input.  This class should
- * only be used in workflows for client-side applications.  Server
- * side applications should not require this level of interaction.
- * 
- * Last edited by $Author: phidias $
+ * This processor creates a Dialog with a text box for user input.  
+ * This processor should only be used in workflows for client-side 
+ * applications.  Server side applications should not require this 
+ * level of interaction.
  * 
  * @author Mark
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
+ * 
+ * @tavinput message  The prompt message to be displayed.
+ * @tavinput title    The title for the title-bar of the dialog window.
+ * 
+ * @tavinput answer   The response from the user.
  */
 public class AskWorker implements LocalWorker {
     

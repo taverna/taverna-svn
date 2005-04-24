@@ -23,13 +23,21 @@ import org.embl.ebi.escience.scuflworkers.java.LocalWorker;
 import uk.ac.soton.itinnovation.taverna.enactor.entities.TaskExecutionException;
 
 /**
- * This class allows the user to select a file.  File reading/parsing is performed
- * by other classes.
- * 
- * Last edited by $Author: phidias $
+ * This processor allows the user to select a file.  
+ * File reading/parsing is performed
+ * by other other processors.  It should only be used
+ * with interactive workflows that are being run from Taverna.  Server-side
+ * or command-line workflows should not use this processor.
  * 
  * @author Mark
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
+ * 
+ * @tavinput title				The title to be displayed in the titlebar of the dialog.
+ * @tavinput fileExtensions		An array of file extensions that you want to filter.  For example "GIF", "JPG", "JPEG"
+ * @tavinput fileExtLabels		An array of display text to be used to aid the user in selecting a filter. 
+ * 								For example, "Images (GIF)", "Images (JPG)","Images (JPEG)"
+ * 
+ * @tavoutput selectedFile		The file that the user selected.
  */
 public class SelectFileWorker implements LocalWorker {
     

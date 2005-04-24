@@ -16,12 +16,15 @@ import org.embl.ebi.escience.scuflworkers.java.LocalWorker;
 
 import uk.ac.soton.itinnovation.taverna.enactor.entities.TaskExecutionException;
 /**
- * This class reads an image file and places it in the output hash map.
- * 
- * Last edited by $Author: phidias $
+ * This processor reads an image file and places it in the output hash map.
  * 
  * @author Mark
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
+ * 
+ * @tavinput filename  The name of the binary image to be read (either a GIF, JPEG or PNG)
+ * @tavoutput image  A byte array containing the image data.
+ * @tavoutput height  The height of the image in pixels
+ * @tavoutput width   The width of the image in pixels
  */
 public class ImageReader implements LocalWorker {
 

@@ -22,12 +22,15 @@ import org.embl.ebi.escience.scuflworkers.java.LocalWorker;
 import uk.ac.soton.itinnovation.taverna.enactor.entities.TaskExecutionException;
 
 /**
- * This class
+ * This processor parses a SwissProt file and outputs the results
+ * in Agave XML format.
  * 
  * Last edited by $Author: phidias $
  * 
  * @author Mark
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
+ * 
+ * @tavinput  fileUrl
  */
 public class SwissProtParserWorker implements LocalWorker {
 

@@ -13,12 +13,16 @@ import org.embl.ebi.escience.scuflworkers.java.LocalWorker;
 import uk.ac.soton.itinnovation.taverna.enactor.entities.TaskExecutionException;
 
 /**
- * This class lists the files in a given subdirectory using a regular expression.
+ * This processor lists the files in a given subdirectory using a regular 
+ * expression.
  * 
- * Last edited by $Author: phidias $
  * 
  * @author Mark
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
+ * 
+ * @tavinput regex		A regular expression used to filter the file list.
+ * @tavinput directory  The directory to be searched.
+ * @tavinput filelist   The list of files matching the regular expression.
  */
 public class FileListByRegexTask implements LocalWorker {
 

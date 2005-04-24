@@ -13,13 +13,16 @@ import org.embl.ebi.escience.scuflworkers.java.LocalWorker;
 import uk.ac.soton.itinnovation.taverna.enactor.entities.TaskExecutionException;
 
 /**
- * This class reads text from a file specified by the "fileurl" attribute.
+ * This processor reads text from a file specified by the "fileurl" attribute.
  * and returns the results in the "filecontents" item in the outputMap.
  * 
- * Last edited by $Author: phidias $
+ * 
  * 
  * @author Mark
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
+ * 
+ * @tavinput fileurl		The complete path to the text file to be read.
+ * @tavoutput filecontents  The contents of the text file.
  */
 public class TextFileReader implements LocalWorker{
     

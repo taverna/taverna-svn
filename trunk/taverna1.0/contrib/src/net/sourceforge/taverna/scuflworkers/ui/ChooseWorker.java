@@ -12,12 +12,20 @@ import org.embl.ebi.escience.scuflworkers.java.LocalWorker;
 import uk.ac.soton.itinnovation.taverna.enactor.entities.TaskExecutionException;
 
 /**
- * This class allows the user to select an option from a list of radio buttons.
+ * This processor allows the user to select an option from a list of 
+ * radio buttons.  It should only be used
+ * with interactive workflows that are being run from Taverna.  Server-side
+ * or command-line workflows should not use this processor.
  * 
- * Last edited by $Author: phidias $
  * 
  * @author Mark
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
+ * 
+ * @tavinput title				The title to be displayed in the dialog box's titlebar
+ * @tavinput message			The prompt message to be displayed
+ * @tavinput selectionValues    An array of values to be displayed for the radio buttons.
+ * 
+ * @tavoutput answer			The user's selection.
  */
 public class ChooseWorker implements LocalWorker {
     

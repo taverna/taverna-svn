@@ -4,8 +4,11 @@
  */
 package net.sourceforge.taverna.scuflworkers.xml;
 
+import java.io.BufferedWriter;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.io.StringWriter;
 import java.util.HashMap;
 import java.util.Map;
@@ -23,91 +26,132 @@ import javax.xml.transform.stream.StreamSource;
 
 import net.sourceforge.taverna.baclava.DataThingAdapter;
 
-import org.embl.ebi.escience.baclava.DataThing;
 import org.embl.ebi.escience.scuflworkers.java.LocalWorker;
 
 import uk.ac.soton.itinnovation.taverna.enactor.entities.TaskExecutionException;
 
 /**
- * This class transforms an input document
- * Last edited by $Author: phidias $
+ * This processor transforms an input XML document into an output document. If
+ * an inFileURL is supplied, it will use the document located at the URL as
+ * input. If the xml-text is supplied, it will this in-memory XML document as
+ * input. If an outputFile url is supplied, the results will be written to the output
+ * document.
+ * 
  * @author mfortner
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
+ * 
+ * @tavinput xslFileURL The complete path to XSL file.
+ * @tavinput outFileURL The complete path to the output file. (optional)
+ * @tavinput inFileURL 	The complete path to the input file.
+ * @tavinput xml-text 	The XML text to be processed. (optional)
+ * @tavoutput outputStr A string containing the output text.  This is useful, if 
+ * 						you want to connect this processor to another and pass the results to it.
+ * 
  */
 public class XSLTWorker implements LocalWorker {
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.embl.ebi.escience.scuflworkers.java.LocalWorker#execute(java.util.Map)
 	 */
 	public Map execute(Map inputMap) throws TaskExecutionException {
-		
-	    DataThingAdapter inAdapter = new DataThingAdapter(inputMap);
-	    
-	    Map outputMap = new HashMap();
+
+		DataThingAdapter inAdapter = new DataThingAdapter(inputMap);
+
+		Map outputMap = new HashMap();
 		DataThingAdapter outAdapter = new DataThingAdapter(outputMap);
-		
-		
-		String xslFilename = inAdapter.getString("xslFileURL");	
+
+		String xslFilename = inAdapter.getString("xslFileURL");
 		String outFilename = inAdapter.getString("outFileURL");
 		String inFilename = inAdapter.getString("inFileURL");
-		
-        try {
-            // Create transformer factory
-            TransformerFactory factory = TransformerFactory.newInstance();
 
-            // Use the factory to create a template containing the xsl file
-            Templates template = factory.newTemplates(new StreamSource(
-                new FileInputStream(xslFilename)));
+		try {
+			// Create transformer factory
+			TransformerFactory factory = TransformerFactory.newInstance();
 
-            // Use the template to create a transformer
-            Transformer xformer = template.newTransformer();
+			// Use the factory to create a template containing the xsl file
+			Templates template = factory.newTemplates(new StreamSource(
+					new FileInputStream(xslFilename)));
 
-            // Prepare the input and output files
-            Source source = new StreamSource(new FileInputStream(inFilename));
-            StringWriter resultStr = new StringWriter();
-            Result result = new StreamResult(resultStr);
+			// Use the template to create a transformer
+			Transformer xformer = template.newTransformer();
 
-            // Apply the xsl file to the source file and write the result to the output file
-            xformer.transform(source, result);
-            outAdapter.putString("outputStr",resultStr.toString());
-            
-        } catch (FileNotFoundException e) {
-        } catch (TransformerConfigurationException e) {
-            // An error occurred in the XSL file
-        } catch (TransformerException e) {
-            // An error occurred while applying the XSL file
-            // Get location of error in input file
-            SourceLocator locator = e.getLocator();
-            int col = locator.getColumnNumber();
-            int line = locator.getLineNumber();
-            String publicId = locator.getPublicId();
-            String systemId = locator.getSystemId();
-        }
-    		
-		
+			// Prepare the input and output files
+			Source source = new StreamSource(new FileInputStream(inFilename));
+			StringWriter resultStr = new StringWriter();
+			Result result = new StreamResult(resultStr);
+
+			// Apply the xsl file to the source file and write the result to the
+			// output file
+			xformer.transform(source, result);
+			String outText = resultStr.toString();
+			outAdapter.putString("outputStr", outText);
+
+			if (outFilename != null && !outFilename.equals("")) {
+				try {
+
+					BufferedWriter out = new BufferedWriter(new FileWriter(
+							outFilename));
+
+					out.write(outText);
+					out.close();
+
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+
+		} catch (TransformerConfigurationException e) {
+			e.printStackTrace();
+		} catch (TransformerException e) {
+			// An error occurred while applying the XSL file
+			// Get location of error in input file
+			SourceLocator locator = e.getLocator();
+			int col = locator.getColumnNumber();
+			int line = locator.getLineNumber();
+			String publicId = locator.getPublicId();
+			String systemId = locator.getSystemId();
+		}
+
 		return outputMap;
 	}
-	/* (non-Javadoc)
+
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.embl.ebi.escience.scuflworkers.java.LocalWorker#inputNames()
 	 */
 	public String[] inputNames() {
-		return new String[]{"xslFileURL","outFileURL","inFileURL"};
+		return new String[] { "xslFileURL", "outFileURL", "inFileURL" };
 	}
-	/* (non-Javadoc)
+
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.embl.ebi.escience.scuflworkers.java.LocalWorker#inputTypes()
 	 */
 	public String[] inputTypes() {
-		return new String[]{"'text/plain'","'text/plain'","'text/plain'"};
+		return new String[] { "'text/plain'", "'text/plain'", "'text/plain'" };
 	}
-	/* (non-Javadoc)
+
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.embl.ebi.escience.scuflworkers.java.LocalWorker#outputNames()
 	 */
 	public String[] outputNames() {
-		return new String[]{"outputStr"};
+		return new String[] { "outputStr" };
 	}
-	/* (non-Javadoc)
+
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.embl.ebi.escience.scuflworkers.java.LocalWorker#outputTypes()
 	 */
 	public String[] outputTypes() {
-		return new String[]{"'text/xml'"};
+		return new String[] { "'text/xml'" };
 	}
 }

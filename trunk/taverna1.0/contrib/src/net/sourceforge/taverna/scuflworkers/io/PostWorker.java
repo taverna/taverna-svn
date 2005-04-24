@@ -20,10 +20,15 @@ import uk.ac.soton.itinnovation.taverna.enactor.entities.TaskExecutionException;
  * This class POSTs a collection of parameter names/values
  * and returns the resulting document.
  * 
- * Last edited by $Author: phidias $
  * 
  * @author Mark
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
+ * 
+ * @tavinput url			The base URL used to fetch the data.
+ * @tavinput paramnames		An array of parameter names.
+ * @tavinput paramvalues	An array of parameter values.
+ * 
+ * @tavoutput page			The contents of the page downloaded from the url.
  */
 public class PostWorker implements LocalWorker {
 
@@ -123,14 +128,14 @@ public class PostWorker implements LocalWorker {
      * @see org.embl.ebi.escience.scuflworkers.java.LocalWorker#inputNames()
      */
     public String[] inputNames() {
-        return new String[]{"paramnames","paramvalues"};
+        return new String[]{"paramnames","paramvalues", "url"};
     }
 
     /**
      * @see org.embl.ebi.escience.scuflworkers.java.LocalWorker#inputTypes()
      */
     public String[] inputTypes() {
-       return new String[]{"l('text/plain'), l('text/plain')"};
+       return new String[]{"l('text/plain'), l('text/plain')", "'text/plain'"};
     }
 
     /**

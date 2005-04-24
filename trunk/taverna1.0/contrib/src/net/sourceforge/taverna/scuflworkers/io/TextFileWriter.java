@@ -13,13 +13,14 @@ import org.embl.ebi.escience.scuflworkers.java.LocalWorker;
 import uk.ac.soton.itinnovation.taverna.enactor.entities.TaskExecutionException;
 
 /**
- * This class writes the "filecontents" out to the the url specified in the
- * "outputFile parameter".  Note that the outputMap is always empty.
- * 
- * Last edited by $Author: phidias $
- * 
+ * This processor writes the "filecontents" out to the the url specified in the
+ * "outputFile" parameter.  Note that the outputMap is always empty.
+
  * @author Mark
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
+ * 
+ * @tavinput  outputFile	A fully qualified path to the text file you want to create.
+ * @tavinput  filecontents  The contents of the file that you want written out.
  */
 public class TextFileWriter implements LocalWorker {
 

@@ -20,12 +20,19 @@ import org.embl.ebi.escience.scuflworkers.java.LocalWorker;
 import uk.ac.soton.itinnovation.taverna.enactor.entities.TaskExecutionException;
 
 /**
- * This class concatenates a series of text files.
+ * This processor concatenates a series of text files and saves
+ * the results into the output file.
  * 
  * Last edited by $Author: phidias $
  * 
  * @author Mark
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
+ * 
+ * @tavinput filelist  		An array of fully qualified filenames.
+ * @tavinput outputfile		The fully qualified name of the output file.
+ * @tavinput displayresults Indicates whether or not to make the concatenated text accessible
+ * 
+ * @tavoutput results		The concatenated text.
  */
 public class ConcatenateFileListWorker implements LocalWorker {
 

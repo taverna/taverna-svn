@@ -23,9 +23,23 @@ import uk.ac.soton.itinnovation.taverna.enactor.entities.TaskExecutionException;
 import com.sun.rowset.WebRowSetImpl;
 
 /**
- * This class executes prepared statements.
+ * This processor executes SQL prepared statements, and returns the results
+ * as an array of arrays.  It can also, optionally generate an XML representation
+ * of the results.
  * 
  * @author mfortner
+ * @version $Revision: 1.4 $
+ * 
+ * @tavinput url		The jdbc database URL.
+ * @tavinput driver		A fully qualified driver classname.
+ * @tavinput userid		The userid required for database access.
+ * @tavinput password	The password required for database access.
+ * @tavinput sql		The SQL statement to be executed.
+ * @tavinput params		A list of parameters that need to be bound to the query.
+ * @tavinput provideXml If set to "true", generate an XML representation of the results.  Defaults to "false".
+ * 
+ * @tavinput resultList	An array of arrays, containing the results.
+ * @tavinput xmlresults An XML representation of the results.
  */
 public class SQLQueryWorker implements LocalWorker {
 	/*
@@ -83,13 +97,14 @@ public class SQLQueryWorker implements LocalWorker {
 
 			ps = connection.prepareStatement(sql);
 
-			// bind the parameters to the prepared statement
+			// bind the parameters to the prepared statement & execute it.
 			for (int i = 0; i < params.length; i++) {
 				ps.setObject(i + 1, params[i]);
 			}
 			rs = ps.executeQuery();
 			ResultSetMetaData rsmd = rs.getMetaData();
-
+			
+			// if the provideXml flag is set, convert the results into XML.
 			if (provideXml) {
 				WebRowSet webrs = new WebRowSetImpl();
 				StringWriter sw = new StringWriter();
@@ -98,6 +113,7 @@ public class SQLQueryWorker implements LocalWorker {
 			}
 			int numCols = rsmd.getColumnCount();
 
+			// put the results into the results list.
 			while (rs.next()) {
 				ArrayList row = new ArrayList(numCols);
 				for (int i = 0; i < numCols; i++) {
@@ -171,6 +187,6 @@ public class SQLQueryWorker implements LocalWorker {
 	 * @see org.embl.ebi.escience.scuflworkers.java.LocalWorker#outputTypes()
 	 */
 	public String[] outputTypes() {
-		return new String[] { "l(l('text/plain')", "'text/plain'" };
+		return new String[] { "l(l('text/plain'))", "'text/plain'" };
 	}
 }

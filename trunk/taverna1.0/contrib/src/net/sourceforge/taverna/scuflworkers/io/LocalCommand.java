@@ -12,13 +12,15 @@ import org.embl.ebi.escience.scuflworkers.java.LocalWorker;
 import uk.ac.soton.itinnovation.taverna.enactor.entities.TaskExecutionException;
 
 /**
- * This class executes a commandline and returns the response 
+ * This processor executes a commandline and returns the response 
  * as a String.  Code borrowed from: http://www.javaworld.com/javaworld/jw-12-2000/jw-1229-traps.html
  * 
- * Last edited by $Author: phidias $
  * 
  * @author Mark
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
+ * 
+ * @tavinput command  The command to be executed.
+ * @tavoutput result  The text results returned by the command.
  */
 public class LocalCommand implements LocalWorker {
 

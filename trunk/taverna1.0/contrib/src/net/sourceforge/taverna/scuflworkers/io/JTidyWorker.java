@@ -14,12 +14,14 @@ import org.w3c.tidy.Tidy;
 import uk.ac.soton.itinnovation.taverna.enactor.entities.TaskExecutionException;
 
 /**
- * This class tidies up bad HTML and converts it into valid XHTML.
+ * This processor tidies up bad HTML and converts it into valid XHTML.
  * 
- * Last edited by $Author: phidias $
  * 
  * @author Mark
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
+ * 
+ * @tavinput inputHtml
+ * @tavoutput results
  */
 public class JTidyWorker implements LocalWorker {
 

@@ -13,12 +13,13 @@ import org.embl.ebi.escience.scuflworkers.java.LocalWorker;
 import uk.ac.soton.itinnovation.taverna.enactor.entities.TaskExecutionException;
 
 /**
- * This class exposes the Java environment variables as an XML document.
+ * This processor exposes the Java environment variables as an XML document.
  * 
- * Last edited by $Author: phidias $
  * 
  * @author Mark
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
+ * 
+ * @tavoutput properties An XML document containing the Java environment variables.
  */
 public class EnvVariableWorker implements LocalWorker {
 

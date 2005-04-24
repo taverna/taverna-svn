@@ -12,12 +12,18 @@ import org.embl.ebi.escience.scuflworkers.java.LocalWorker;
 import uk.ac.soton.itinnovation.taverna.enactor.entities.TaskExecutionException;
 
 /**
- * This class displays a JOptionPane with a given set of selections.
- * 
- * Last edited by $Author: phidias $
+ * This processor displays a dialog with a select box of options. It should only be used
+ * with interactive workflows that are being run from Taverna.  Server-side
+ * or command-line workflows should not use this processor.
  * 
  * @author Mark
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
+ * 
+ * @tavinput valueList  An array of values to be displayed.
+ * @tavinput message    A prompt message to be displayed.
+ * @tavinput title		The title to be displayed in the dialog's titlebar.
+
+ * @tavoutput answer	The selection that the user has made
  */
 public class SelectWorker implements LocalWorker{
 

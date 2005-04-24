@@ -25,9 +25,12 @@ import uk.ac.soton.itinnovation.taverna.enactor.entities.TaskExecutionException;
  * This worker applies an arbitrary XPath expression to an XML document, and
  * returns a nodelist containing the nodes that match the XPath expression.
  * 
- * Last edited by: $Author: phidias $
  * @author mfortner
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
+ * 
+ * @tavinput "xpath", "xml-text"
+ * 
+ * @tavoutput "nodelist", "nodelistAsXML" 
  */
 public class XPathTextWorker implements LocalWorker {
     /*
@@ -56,19 +59,28 @@ public class XPathTextWorker implements LocalWorker {
             
             // Process the elements in the nodelist
             ArrayList outputList = new ArrayList();
+            ArrayList outputXmlList = new ArrayList();
            
             String val= null;
+            String xmlVal = null;
             for (Iterator iter = nodelist.iterator(); iter.hasNext();) {
                 Node element = (Node) iter.next();
+                xmlVal = element.asXML();
                 val = element.getStringValue();
                 if (val != null && !val.equals("")){
                 	outputList.add(val);
+                	outputXmlList.add(xmlVal);
                 }
                 
             }
             String[] nodeArray = new String[outputList.size()];
             outputList.toArray(nodeArray);
+            
+            String[] valArray = new String[outputXmlList.size()];
+            outputXmlList.toArray(valArray);
+            
             outputMap.put("nodelist", DataThingFactory.bake(nodeArray));
+            outputMap.put("nodelistAsXML", DataThingFactory.bake(valArray));
     
         }catch (Throwable th){
         	throw new TaskExecutionException(th);
@@ -102,7 +114,7 @@ public class XPathTextWorker implements LocalWorker {
      * @see org.embl.ebi.escience.scuflworkers.java.LocalWorker#outputNames()
      */
     public String[] outputNames() {
-        return new String[] { "nodelist" };
+        return new String[] { "nodelist", "nodelistAsXML" };
     }
 
     /*
@@ -111,6 +123,6 @@ public class XPathTextWorker implements LocalWorker {
      * @see org.embl.ebi.escience.scuflworkers.java.LocalWorker#outputTypes()
      */
     public String[] outputTypes() {
-        return new String[] { "l('text/plain')" };
+        return new String[] { "l('text/plain')","l('text/plain')" };
     }
 }

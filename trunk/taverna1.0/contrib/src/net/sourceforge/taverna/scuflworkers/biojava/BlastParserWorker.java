@@ -19,13 +19,17 @@ import org.xml.sax.XMLReader;
 import uk.ac.soton.itinnovation.taverna.enactor.entities.TaskExecutionException;
 
 /**
- * This class parses blast results and returns an XML document containing the
+ * This processor parses BLAST results and returns an XML document containing the
  * results.
  * 
- * Last edited by $Author: phidias $
- * 
  * @author Mark
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
+ * 
+ * @tavinput fileUrl
+ * @tavinput strict
+ * 
+ * @tavoutput blastresults  XML-formatted BLAST results.
+ * 
  */
 public class BlastParserWorker implements LocalWorker {
     private XMLReader oParser;

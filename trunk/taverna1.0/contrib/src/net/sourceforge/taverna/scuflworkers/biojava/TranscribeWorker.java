@@ -15,13 +15,14 @@ import org.embl.ebi.escience.scuflworkers.java.LocalWorker;
 import uk.ac.soton.itinnovation.taverna.enactor.entities.TaskExecutionException;
 
 /**
- * This class takes a DNA sequence and transcribes it into 
+ * This processor takes a DNA sequence and transcribes it into 
  * an RNA sequence.
  * 
- * Last edited by $Author: phidias $
- * 
  * @author Mark
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
+ * 
+ * @tavinput dna_seq  A raw DNA sequence.
+ * @tavoutput rna_seq  A raw RNA sequence.
  */
 public class TranscribeWorker implements LocalWorker {
 

@@ -15,14 +15,15 @@ import org.embl.ebi.escience.baclava.DataThing;
 import org.embl.ebi.escience.scuflworkers.java.LocalWorker;
 
 import uk.ac.soton.itinnovation.taverna.enactor.entities.TaskExecutionException;
-
+//TODO: finish ImageWriter
 /**
- * This class writes images out to a file.
- * 
- * Last edited by $Author: phidias $
+ * This processor writes images out to a file.
  * 
  * @author Mark
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
+ * 
+ * @tavinput image  An image byte array.
+ * @tavoutput complete  A dummy value indicating that the write operation is complete.
  */
 public class ImageWriter implements LocalWorker {
 
@@ -64,6 +65,7 @@ public class ImageWriter implements LocalWorker {
         try {
             bufferedImage = ImageIO.read(new ByteArrayInputStream(imageArray));
             ImageIO.write(bufferedImage, imageType, outputFile);
+            outAdapter.putString("complete","true");
         } catch (IOException e) {
             throw new TaskExecutionException(e);
         }
@@ -89,16 +91,14 @@ public class ImageWriter implements LocalWorker {
      * @see org.embl.ebi.escience.scuflworkers.java.LocalWorker#outputNames()
      */
     public String[] outputNames() {
-        // TODO Auto-generated method stub
-        return null;
+        return new String[]{"complete"};
     }
 
     /**
      * @see org.embl.ebi.escience.scuflworkers.java.LocalWorker#outputTypes()
      */
     public String[] outputTypes() {
-        // TODO Auto-generated method stub
-        return null;
+        return new String[]{"'text/plain'"};
     }
 
 }

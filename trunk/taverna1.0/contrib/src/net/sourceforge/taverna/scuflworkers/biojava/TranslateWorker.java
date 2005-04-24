@@ -17,10 +17,11 @@ import uk.ac.soton.itinnovation.taverna.enactor.entities.TaskExecutionException;
 /**
  * This class translates a DNA sequence into a protein sequence.
  * 
- * Last edited by $Author: phidias $
- * 
  * @author Mark
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
+ * 
+ * @tavinput dna_seq A raw DNA sequence
+ * @tavoutput prot_seq  A raw protein sequence
  */
 public class TranslateWorker implements LocalWorker {
 
