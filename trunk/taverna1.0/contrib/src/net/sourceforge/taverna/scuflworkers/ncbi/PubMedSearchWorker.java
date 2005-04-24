@@ -17,9 +17,9 @@ import uk.ac.soton.itinnovation.taverna.enactor.entities.TaskExecutionException;
 /**
  * This class downloads PubMed records in XML format.  Since NCBI does
  * not currently support a pure XML 
- * Last Edited By: $Author: phidias $
+ * 
  * @author mfortner
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class PubMedSearchWorker extends AbstractNCBIWorker {
 	

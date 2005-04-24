@@ -11,10 +11,15 @@ import uk.ac.soton.itinnovation.taverna.enactor.entities.TaskExecutionException;
  * This class is used to fetch pubmed articles in XML form.  Use this
  * worker only if you already know the pubmed id.
  * 
- * Last edited by $Author: phidias $
- * 
  * @author Mark
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
+ * 
+ * @tavinput id			A comma-delimited list of PubMed IDs.
+ * @tavinput rettype	Indicates how complete the returned records should be: uilist, abstract, citation, medline, full  (journals only)
+ * @tavinput retmode	Indicates the document format in which the results should 
+ * 						be returned.  Select one of the following values: "xml", "html", "text", "asn.1"
+ * 
+ * @tavoutput outputText  An XML representation of the PubMed article
  */
 public class PubMedEFetchWorker extends AbstractEFetchWorker {
 
@@ -33,7 +38,13 @@ public class PubMedEFetchWorker extends AbstractEFetchWorker {
     public Map execute(Map inputMap) throws TaskExecutionException {
         DataThingAdapter inAdapter = new DataThingAdapter(inputMap);
         this.id = inAdapter.getString("id");
+		
+		String tempRetMode = inAdapter.getString("retmode");
+		this.retmode = (tempRetMode != null && !tempRetMode.equals(""))?tempRetMode:retmode;
 
+		String tempRetType = inAdapter.getString("rettype");
+		this.rettype = (tempRetType != null && !tempRetType.equals(""))?tempRetType:rettype;
+		
         transmitterMap.put("id", this.id);
         transmitterMap.put("db", this.db);
         transmitterMap.put("rettype", this.rettype);

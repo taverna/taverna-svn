@@ -12,7 +12,13 @@ import net.sourceforge.taverna.io.TransmitterException;
 import uk.ac.soton.itinnovation.taverna.enactor.entities.TaskExecutionException;
 
 /**
+ * This processor returns a GB Seq formatted record.
+ * 
  * @author mfortner
+ * @version $Revision: 1.2 $
+ * 
+ * @tavinput id  The nucleotide accession.
+ * @tavoutput outputText a GB Seq formatted record
  */
 public class NucleotideGBSeqWorker extends AbstractEFetchWorker {
 	

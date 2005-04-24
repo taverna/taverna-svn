@@ -14,19 +14,24 @@ import net.sourceforge.taverna.io.TransmitterException;
 import uk.ac.soton.itinnovation.taverna.enactor.entities.TaskExecutionException;
 
 /**
- * This class fetches a nucleotide sequence from NCBI and returns the results in
+ * This processor fetches a nucleotide sequence from NCBI and returns the results in
  * the TinySeqXML format.
  * 
  * Last edited by: $Author: phidias $
  * 
  * @author mfortner
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  * 
- * http://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=nucleotide&id=5&rettype=fasta&retmode=xml
+ * @tavinput id  The nucleotide accession.
+ * @tavoutput outputText a TinySeqXML formatted nucleotide record
  */
 public class NucleotideTinySeqXMLWorker extends AbstractEFetchWorker {
+//http://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=nucleotide&id=5&rettype=fasta&retmode=xml
 
-    public NucleotideTinySeqXMLWorker() {
+	/**
+	 * Constructor
+	 */
+	public NucleotideTinySeqXMLWorker() {
         this.db = "nucleotide";
         this.rettype = "fasta";
         this.retmode = "xml";

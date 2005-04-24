@@ -9,15 +9,21 @@ import net.sourceforge.taverna.io.TransmitterException;
 import uk.ac.soton.itinnovation.taverna.enactor.entities.TaskExecutionException;
 
 /**
- * This class
+ * This processor fetches an INSD formatted protein record
  * 
- * Last edited by $Author: phidias $
  * 
  * @author Mark
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
+ * 
+ * @tavinput id	The protein accession.
+ * @tavoutput outputText an INSD formatted protein record
  */
 public class ProteinINSDSeqXMLWorker extends AbstractEFetchWorker {
     
+	/**
+	 * Constructor
+	 *
+	 */
     public ProteinINSDSeqXMLWorker(){
 	    this.db="protein";
 	    this.retmode="xml";

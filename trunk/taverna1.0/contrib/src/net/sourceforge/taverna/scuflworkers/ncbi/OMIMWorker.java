@@ -15,12 +15,19 @@ import org.embl.ebi.escience.baclava.DataThing;
 import uk.ac.soton.itinnovation.taverna.enactor.entities.TaskExecutionException;
 
 /**
- * This class fetches an OMIM record from the NCBI database in XML format.
+ * This processor fetches an OMIM record from the NCBI database in XML format.
  * @author mfortner
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
+ * 
+ * @tavinput term  The search term.
+ * @tavoutput outputText an XML formatted OMIM record.
  */
 public class OMIMWorker extends AbstractNCBIWorker {
 	
+	/**
+	 * Constructor
+	 *
+	 */
 	public OMIMWorker(){
 		this.url = "http://www.ncbi.nlm.nih.gov/entrez/query.fcgi";
 		this.startTag = "&lt;Mim-entry&gt;";

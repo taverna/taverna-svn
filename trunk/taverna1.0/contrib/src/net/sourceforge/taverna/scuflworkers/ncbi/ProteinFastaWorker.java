@@ -8,12 +8,13 @@ import net.sourceforge.taverna.io.TransmitterException;
 import uk.ac.soton.itinnovation.taverna.enactor.entities.TaskExecutionException;
 
 /**
- * This class fetches a protein sequence in FASTA format.
- * 
- * Last edited by $Author: phidias $
+ * This processor fetches a protein sequence in FASTA format.
  * 
  * @author Mark
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
+ * 
+ * @tavinput id a protein accession
+ * @tavoutput outputText a FASTA-formatted sequence
  */
 public class ProteinFastaWorker extends AbstractEFetchWorker {
 

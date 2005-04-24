@@ -14,10 +14,9 @@ import net.sourceforge.taverna.io.StreamProcessor;
 /**
  * This class takes an input stream and writes the contents to a file.
  * 
- * Last edited by $Author: phidias $
  * 
  * @author Mark
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class FileStreamProcessor implements StreamProcessor {
     

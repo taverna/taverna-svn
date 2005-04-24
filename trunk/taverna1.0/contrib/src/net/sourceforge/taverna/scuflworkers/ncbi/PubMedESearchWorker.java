@@ -9,12 +9,25 @@ import net.sourceforge.taverna.io.TransmitterException;
 import uk.ac.soton.itinnovation.taverna.enactor.entities.TaskExecutionException;
 
 /**
- * This class searches for articles in PubMed.
+ * This processor searches for articles in PubMed and returns their IDs
+ * in XML format.
  * 
  * Last edited by $Author: phidias $
  * 
  * @author Mark
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
+ * 
+ * @tavinput term   The search term.
+ * @tavinput db		The database to be searched (default=pubmed).
+ * @tavinput field	The optional database field (affl, auth, ecno, jour, iss, mesh, majr, mhda, page, pdat, ptyp, si, subs, subh, tiab, word, titl, lang, uid, fltr, vol)
+ * @tavinput retstart  (x= sequential number of the first record retrieved - default=0 which will retrieve the first record) 
+ * @tavinput retmax		(y= number of items retrieved)
+ * @tavinput mindate The minimum date from which to begin the search.
+ * @tavinput maxdate The maximu date from which to end the search.
+ * @tavinput rettype count, uilist (default)
+ * 
+ * @tavoutput outputText a PubMed ID list in XML format. 
+
  */
 public class PubMedESearchWorker extends AbstractEFetchWorker {
     

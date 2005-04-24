@@ -12,9 +12,12 @@ import net.sourceforge.taverna.io.TransmitterException;
 import uk.ac.soton.itinnovation.taverna.enactor.entities.TaskExecutionException;
 
 /**
- * 
+ * This processor returns a INSD formatted nucleotide record
  * @author mfortner
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
+ * 
+ * @tavinput id  The nucleotide accession.
+ * @tavoutput outputText a INSD formatted nucleotide record
  */
 public class NucleotideINSDSeqXMLWorker extends AbstractEFetchWorker {
 	

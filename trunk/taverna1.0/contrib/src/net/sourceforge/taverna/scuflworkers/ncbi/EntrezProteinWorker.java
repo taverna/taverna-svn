@@ -15,9 +15,18 @@ import org.embl.ebi.escience.baclava.DataThing;
 import uk.ac.soton.itinnovation.taverna.enactor.entities.TaskExecutionException;
 
 /**
+ * This processor fetches an Entrez Protein record from NCBI.
  * 
  * @author mfortner
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
+ *
+ * @tavinput term			The search term (usually a protein name or id).
+ * @tavinput maxRecords		The maximum number of records to be returned.
+ * @tavinput outputFile		A complete path to the output file.
+ * @tavinput xslt			A complete path to the XSLT used to transform the results. (optional)
+ * 
+ * @tavoutput resultsXml	A string containing the resultant XML.
+
  */
 public class EntrezProteinWorker extends AbstractNCBIWorker {
 	

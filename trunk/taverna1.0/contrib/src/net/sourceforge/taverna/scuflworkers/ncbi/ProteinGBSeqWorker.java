@@ -17,9 +17,11 @@ import uk.ac.soton.itinnovation.taverna.enactor.entities.TaskExecutionException;
 /**
  * This class fetches protein data in GBSeq XML format.
  * 
- * Last edited by $Author: phidias $
  * @author mfortner
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
+ * 
+ * @tavinput id	The protein accession.
+ * @tavoutput outputText a GBSeq XML formatted record
  */
 public class ProteinGBSeqWorker extends AbstractEFetchWorker {
     

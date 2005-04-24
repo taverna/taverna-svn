@@ -15,9 +15,18 @@ import org.embl.ebi.escience.baclava.DataThing;
 import uk.ac.soton.itinnovation.taverna.enactor.entities.TaskExecutionException;
 
 /**
- * This class is responsible for fetching an Entrez Gene record in XML format.
+ * This processor is responsible for fetching an Entrez Gene record in XML format.
+ * It can also transform the resulting XML document.
+ * 
  * @author mfortner
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
+ * 
+ * @tavinput term			The search term (usually a gene name).
+ * @tavinput maxRecords		The maximum number of records to be returned.
+ * @tavinput outputFile		A complete path to the output file.
+ * @tavinput xslt			A complete path to the XSLT used to transform the results. (optional)
+ * 
+ * @tavoutput resultsXml	A string containing the resultant XML.
  */
 public class EntrezGeneWorker extends AbstractNCBIWorker {
 	
@@ -44,17 +53,7 @@ public class EntrezGeneWorker extends AbstractNCBIWorker {
         transmitterMap.put("db",this.originalDb);       
         transmitterMap.put("retmode","xml");
         transmitterMap.put("id",this.term);
-        //transmitterMap.put("CMD","Text");
-        //transmitterMap.put("cmd","Search");
-        //transmitterMap.put("cmd_current","search");
-        //transmitterMap.put("query_key",this.queryKey);
-        //transmitterMap.put("CrntRpt","DocSum");
-        //transmitterMap.put("doptcmdl","xml");
-        //transmitterMap.put("SUBMIT","y");
         
-        //transmitterMap.put("dopt",this.displayOption);
-        //transmitterMap.put("orig_db",this.originalDb);
-        //transmitterMap.put("disp_max",String.valueOf(this.maxRecords));		
 		
         try {
             outputMap = this.transmit(transmitterMap);

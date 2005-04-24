@@ -8,12 +8,13 @@ import net.sourceforge.taverna.io.TransmitterException;
 import uk.ac.soton.itinnovation.taverna.enactor.entities.TaskExecutionException;
 
 /**
- * This class fetches a protein in TinySeqXML format.
- * 
- * Last edited by $Author: phidias $
+ * This processor fetches a protein in TinySeqXML format.
  * 
  * @author Mark
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
+ * 
+ * @tavinput id	The protein accession.
+ * @tavoutput outputText a TinySeqXML format protein record
  */
 public class ProteinTinySeqXMLWorker extends AbstractEFetchWorker{
 
