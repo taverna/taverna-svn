@@ -29,7 +29,12 @@ public class SoaplabXMLHandler implements XMLHandler {
     public Element elementForProcessor(Processor p) {
 	SoaplabProcessor slp = (SoaplabProcessor)p;
 	Element spec = new Element("soaplabwsdl",XScufl.XScuflNS);
-	spec.setText(slp.getEndpoint().toString());
+	String endpointString = slp.getEndpoint().toString();
+	String[] split = endpointString.split("::");
+	if (split.length == 2) {
+	    endpointString = split[0]+"."+split[1];
+	}
+	spec.setText(endpointString);
 	if (slp.isPollingDefined()) {
 	    // Add attributes for polling...
 	    spec.setAttribute("interval",slp.getPollingInterval()+"");

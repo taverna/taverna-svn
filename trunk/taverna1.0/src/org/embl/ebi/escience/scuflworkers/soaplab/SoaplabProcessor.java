@@ -86,7 +86,9 @@ public class SoaplabProcessor extends Processor implements java.io.Serializable 
     public String getCategory() {
 	String[] app = endpoint.getPath().split("::");
 	if (app.length == 1) {
-	    return "";
+	    // Probably new style URL of form http://host.com/root/category.name
+	    String[] s = endpoint.getPath().split("\\.");
+	    return s[s.length - 2];
 	}
 	else {
 	    String[] pathbits = app[0].split("/");
@@ -111,7 +113,9 @@ public class SoaplabProcessor extends Processor implements java.io.Serializable 
     public String getAppName() {
 	String[] app = endpoint.getPath().split("::");
 	if (app.length == 1) {
-	    return "";
+	    // Probably new style URL of form http://host.com/root/category.name
+	    String[] s = endpoint.getPath().split("\\.");
+	    return s[s.length - 1];
 	}
 	else {
 	    return app[1];
@@ -127,14 +131,37 @@ public class SoaplabProcessor extends Processor implements java.io.Serializable 
 	throws ProcessorCreationException,
 	       DuplicateProcessorNameException {
 	super(model, name);
+	
+	// If this is an old style endpoint with the '::' rewrite it
+	String[] split = endpoint.split("::");
+	String theEndpoint = endpoint;
+	if (split.length == 2) {
+	    theEndpoint = split[0]+"."+split[1];
+	}
+	
 	// Set the endpoint, this then populates the ports appropriately
 	// from the returned parameters of the soap call.
 	try {
-	    String firstPart = endpoint.split("\\?")[0];
-	    setEndpoint(firstPart);
+	    String firstPart = theEndpoint.split("\\?")[0];
+	    try {
+		setEndpoint(firstPart);
+	    }
+	    catch (Exception e) {
+		triedNewForm = true;
+		StringBuffer sb = new StringBuffer();
+		split = firstPart.split("\\.");
+		for (int i = 0; i < split.length-1; i++) {
+		    sb.append(split[i]);
+		    if (i < split.length - 2) {
+			sb.append(".");
+		    }
+		}
+		sb.append("::"+split[split.length-1]);
+		setEndpoint(sb.toString());
+	    }
 	}
 	catch (MalformedURLException mue) {
-	    throw new ProcessorCreationException(name+": The supplied endpoint url was \n   malformed, endpoint was specified as '"+endpoint+"'");
+	    throw new ProcessorCreationException(name+": The supplied endpoint url was \n   malformed, endpoint was specified as '"+theEndpoint+"'");
 	}
     }
 
@@ -146,6 +173,8 @@ public class SoaplabProcessor extends Processor implements java.io.Serializable 
 	props.put("Soaplab URL",getEndpoint().toString());
 	return props;
     }
+
+    boolean triedNewForm = false;
 
     /**
      * Set the endpoint for this soaplab processor

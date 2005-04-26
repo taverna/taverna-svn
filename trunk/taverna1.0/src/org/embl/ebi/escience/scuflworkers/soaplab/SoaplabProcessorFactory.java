@@ -32,22 +32,32 @@ public class SoaplabProcessorFactory extends ProcessorFactory {
      * be concatenated to produce the endpoint URL.
      */
     public SoaplabProcessorFactory(String endpointbase, String applicationname) {
-	this.endpoint = endpointbase+applicationname;
-	String[] split = applicationname.split(":");
-	this.applicationname = split[split.length - 1];
-	setName(this.applicationname);
+	init(endpointbase+applicationname);
     }
     
     /**
      * Create a new factory with a single application endpoint parameter
      */
     public SoaplabProcessorFactory(String completeEndpoint) {
-	this.endpoint = completeEndpoint;
-	String[] split = this.endpoint.split(":");
-	this.applicationname = split[split.length - 1];
-	setName(this.applicationname);
+	init(completeEndpoint);
     }
 
+    private void init (String completeEndpoint) {
+	String[] split = completeEndpoint.split("::");
+	if (split.length == 2) {
+	    // Old form : http://foo.bar.com/root/category::analysisname	    
+	    this.applicationname = split[1];
+	    this.endpoint = split[0]+"."+split[1];
+	}
+	else {
+	    // New form : http://foo.bar.com/root/category.analysisname
+	    split = this.endpoint.split("\\.");
+	    this.applicationname = split[split.length - 1];
+	    this.endpoint = completeEndpoint;
+	}
+	setName(this.applicationname);
+    }
+    
     /**
      * Return the endpoint
      */

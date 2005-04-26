@@ -67,6 +67,7 @@ public class SoaplabScavenger extends Scavenger {
 		foundAnInstallation = true;
 	    } catch (Exception e) {
 		// Ignore
+		e.printStackTrace();
 	    }
 	    try {
 		call.setTargetEndpointAddress(base+"GowlabFactory");
@@ -88,6 +89,7 @@ public class SoaplabScavenger extends Scavenger {
 		}
 		foundAnInstallation = true;
 	    } catch (Exception e) {
+		e.printStackTrace();
 		// Do nothing
 	    }
 	}
