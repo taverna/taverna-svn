@@ -51,7 +51,7 @@ public class SoaplabProcessorFactory extends ProcessorFactory {
 	}
 	else {
 	    // New form : http://foo.bar.com/root/category.analysisname
-	    split = this.endpoint.split("\\.");
+	    split = completeEndpoint.split("\\.");
 	    this.applicationname = split[split.length - 1];
 	    this.endpoint = completeEndpoint;
 	}
