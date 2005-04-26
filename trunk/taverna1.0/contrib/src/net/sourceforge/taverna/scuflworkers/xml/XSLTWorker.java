@@ -25,6 +25,7 @@ import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
 import net.sourceforge.taverna.baclava.DataThingAdapter;
+import net.sourceforge.taverna.io.FileNameUtil;
 
 import org.embl.ebi.escience.scuflworkers.java.LocalWorker;
 
@@ -38,12 +39,14 @@ import uk.ac.soton.itinnovation.taverna.enactor.entities.TaskExecutionException;
  * document.
  * 
  * @author mfortner
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  * 
  * @tavinput xslFileURL The complete path to XSL file.
  * @tavinput outFileURL The complete path to the output file. (optional)
  * @tavinput inFileURL 	The complete path to the input file.
  * @tavinput xml-text 	The XML text to be processed. (optional)
+ * @tavinput outputExt  The output file extension.  Use this only if you want to add the extension to the 
+ * 						input filename and use it as the output file name.
  * @tavoutput outputStr A string containing the output text.  This is useful, if 
  * 						you want to connect this processor to another and pass the results to it.
  * 
@@ -64,6 +67,10 @@ public class XSLTWorker implements LocalWorker {
 		String xslFilename = inAdapter.getString("xslFileURL");
 		String outFilename = inAdapter.getString("outFileURL");
 		String inFilename = inAdapter.getString("inFileURL");
+		String ext = inAdapter.getString("outputExt");
+		if ((outFilename == null || outFilename.equals("")) && ext != null){
+			outFilename = FileNameUtil.replacePathExtension(inFilename,ext);
+		}
 
 		try {
 			// Create transformer factory
@@ -125,7 +132,7 @@ public class XSLTWorker implements LocalWorker {
 	 * @see org.embl.ebi.escience.scuflworkers.java.LocalWorker#inputNames()
 	 */
 	public String[] inputNames() {
-		return new String[] { "xslFileURL", "outFileURL", "inFileURL" };
+		return new String[] { "xslFileURL", "outFileURL", "inFileURL", "outputExt" };
 	}
 
 	/*
@@ -134,7 +141,7 @@ public class XSLTWorker implements LocalWorker {
 	 * @see org.embl.ebi.escience.scuflworkers.java.LocalWorker#inputTypes()
 	 */
 	public String[] inputTypes() {
-		return new String[] { "'text/plain'", "'text/plain'", "'text/plain'" };
+		return new String[] { "'text/plain'", "'text/plain'", "'text/plain'","'text/plain'"  };
 	}
 
 	/*
