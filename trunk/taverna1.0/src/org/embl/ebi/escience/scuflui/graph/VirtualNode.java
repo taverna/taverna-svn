@@ -13,7 +13,7 @@ import java.util.Map;
  * COMMENT
  * 
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover </a>
- * @version $Revision: 1.5 $
+ * @version $Revision: 1.6 $
  */
 public class VirtualNode
 {
@@ -66,9 +66,9 @@ public class VirtualNode
 		return position;
 	}
 	
-	public Rectangle2D getBounds()
+	public BoundingBox getBounds()
 	{
-		return new Rectangle2D()
+		return new BoundingBox()
 		{
 			public int outcode(double x, double y)
 			{
@@ -116,6 +116,16 @@ public class VirtualNode
 			public boolean isEmpty()
 			{
 				return true;
+			}
+
+			public void translate(int dx, int dy)
+			{
+				position.setLocation(position.getX() + dx, position.getY() + dy);
+			}
+
+			public void setPosition(int x, int y)
+			{
+				position.setLocation(x, y);	
 			}
 		};
 	}

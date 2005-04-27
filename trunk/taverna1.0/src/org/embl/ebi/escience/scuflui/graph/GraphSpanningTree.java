@@ -15,7 +15,7 @@ import java.util.TreeSet;
 
 /**
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover </a>
- * @version $Revision: 1.13 $
+ * @version $Revision: 1.14 $
  */
 public abstract class GraphSpanningTree
 {
@@ -44,27 +44,21 @@ public abstract class GraphSpanningTree
 	protected abstract int getEdgeWeight(Object edge);
 
 	/**
+	 * @param edge
+	 * @return the length of the given edge
+	 */
+	protected abstract int getEdgeLength(Object edge);
+
+	/**
 	 * @param node
 	 * @return the rank of the given node
 	 */
 	protected abstract int getRank(Object node);
 
 	/**
-	 * @param node
-	 * @return gets the minimum possible rank for the given node.
-	 */
-	protected abstract int getMinimumRank(Object node);
-
-	/**
 	 * @param edge
 	 */
 	protected abstract void addNonTreeEdge(Object edge);
-
-	/**
-	 * @param node
-	 * @return gets the maximum rank for the given node.
-	 */
-	protected abstract int getMaximumRank(Object node);
 
 	/**
 	 * @param node
@@ -91,19 +85,18 @@ public abstract class GraphSpanningTree
 	 */
 	protected void moveNodes(Set nodes, int change)
 	{
+		assert !nodes.isEmpty();
 		if (change == 0)
 		{
 			return;
 		}
-		// System.err.println(this + ": Move nodes " + nodes + " by " + change);
+		//System.err.println(this + ": Move nodes " + nodes + " by " + change);
 		Iterator iterator = nodes.iterator();
 		while (iterator.hasNext())
 		{
 			shiftRank(iterator.next(), change);
 		}
 	}
-
-	protected abstract void setRank(Object node, int rank);
 
 	protected abstract void shiftRank(Object node, int rankChange);
 
@@ -239,9 +232,9 @@ public abstract class GraphSpanningTree
 	 * @param child
 	 * @param edge
 	 */
-	protected void addTreeEdge(Object parent, Object child, Object edge)
+	protected boolean addTreeEdge(Object parent, Object child, Object edge)
 	{
-		//System.err.println(this + ": Add tree edge " + edge);
+		// System.err.println(this + ": Add tree edge " + edge);
 		Set tree1 = getTreeSet(parent);
 		Set tree2 = getTreeSet(child);
 
@@ -249,11 +242,17 @@ public abstract class GraphSpanningTree
 		{
 			if (parent == getSource(edge))
 			{
-				tightenEdge(edge, tree1, tree2);
+				if (!tightenEdge(edge, tree1, tree2))
+				{
+					return false;
+				}
 			}
 			else
 			{
-				tightenEdge(edge, tree2, tree1);
+				if (!tightenEdge(edge, tree2, tree1))
+				{
+					return false;
+				}
 			}
 
 			if (tree2.size() > tree1.size())
@@ -279,75 +278,91 @@ public abstract class GraphSpanningTree
 
 			if (parent == getSource(edge))
 			{
-				tightenEdge(edge, headSet, tailSet);
+				if (!tightenEdge(edge, headSet, tailSet))
+				{
+					return false;
+				}
 			}
 			else
 			{
-				tightenEdge(edge, tailSet, headSet);
+				if (!tightenEdge(edge, tailSet, headSet))
+				{
+					return false;
+				}
 			}
 		}
 		setTreeSet(edge, tree1);
 		assert isTreeEdge(edge) : edge;
+		return true;
 	}
+
+	private int getMaxRankMove(Set targetSet, boolean negative)
+	{
+		Iterator nodes = targetSet.iterator();
+		int move = Integer.MAX_VALUE;
+		while (nodes.hasNext())
+		{
+			Object node = nodes.next();
+			if (negative)
+			{
+				move = Math.min(move, getMaxRankMoveNegative(node));
+			}
+			else
+			{
+				move = Math.min(move, getMaxRankMovePositive(node));
+			}
+		}
+		if(negative)
+		{
+			move = -move;
+		}
+		return move;
+	}
+
+	protected abstract int getMaxRankMoveNegative(Object node);
+
+	protected abstract int getMaxRankMovePositive(Object node);
 
 	/**
 	 * Minimizes the length of a given edge.
 	 * 
 	 * @param edge
 	 */
-	protected void tightenEdge(Object edge, Set sourceSet, Set targetSet)
+	protected boolean tightenEdge(Object edge, Set sourceSet, Set targetSet)
 	{
 		assert (sourceSet != targetSet);
 		assert (sourceSet != null);
 		assert (targetSet != null);
-		Object source = getSource(edge);
-		Object target = getTarget(edge);
 
-		int sourceRow = getRank(source);
-		int sourceMinRow = getMinimumRank(source);
-		int targetRow = getRank(target);
-		int targetMinRow = getMinimumRank(target);
+		int edgeLength = getEdgeLength(edge);
 		int minimumEdgeLength = getMinimumEdgeLength(edge);
-
-		if (targetRow - sourceRow != minimumEdgeLength)
+		if (edgeLength != minimumEdgeLength)
 		{
-			if (sourceRow < sourceMinRow)
+			int sourceMove = 0;
+			int targetMove = 0;
+			int distance = edgeLength - minimumEdgeLength;
+			if (distance < 0)
 			{
-				int sourceMaxRow = getMaximumRank(source);
-				if (targetMinRow - sourceMaxRow > minimumEdgeLength)
-				{
-					replaceEdge(edge);
-					return;
-				}
-				// else
-				{
-					moveNodes(sourceSet, (targetRow - minimumEdgeLength) - sourceRow);
-				}
-			}
-			else if (targetRow < targetMinRow || targetMinRow <= sourceRow)
-			{
-				moveNodes(targetSet, (sourceRow + minimumEdgeLength) - targetRow);
+				// Edge too short, try to move source set away to compensate
+				sourceMove = Math.max(distance, getMaxRankMove(sourceSet, true));
+				targetMove = Math.min(sourceMove - distance, getMaxRankMove(targetSet, false));
 			}
 			else
 			{
-				int sourceMaxRow = getMaximumRank(source);
-				if (targetMinRow - sourceMaxRow > minimumEdgeLength)
-				{
-					replaceEdge(edge);
-					return;
-				}
-				if (sourceRow < sourceMaxRow)
-				{
-					moveNodes(sourceSet, (targetRow - minimumEdgeLength) - sourceRow);
-				}
-				else
-				{
-					moveNodes(targetSet, (sourceRow + minimumEdgeLength) - targetRow);
-				}
+				// Edge too long, try to move target set closer to compensate
+				targetMove = Math.max(-distance, getMaxRankMove(targetSet, true));
+				sourceMove = Math.min(distance + targetMove, getMaxRankMove(sourceSet, false));
 			}
+			if (sourceMove - targetMove != distance)
+			{
+				return false;
+			}
+			moveNodes(sourceSet, sourceMove);
+			moveNodes(targetSet, targetMove);
+			edgeLength = getEdgeLength(edge);
+			// assert getEdgeLength(edge) == minimumEdgeLength : edge;
 		}
-		// assert getRank(target) - getRank(source) ==
-		// getMinimumEdgeLength(edge): this + ": " + edge;
+		return true;
 	}
 
 	protected abstract Integer getCutValue(Object treeEdge, String timeStamp);
@@ -422,7 +437,7 @@ public abstract class GraphSpanningTree
 
 		if (cutValue < 0)
 		{
-			//System.err.println(this + ": Cut " + cutValue + " for " + treeEdge);			
+			// System.err.println(this + ": Cut " + cutValue + " for " + treeEdge);
 			return treeEdge;
 		}
 		return null;
@@ -455,7 +470,7 @@ public abstract class GraphSpanningTree
 						Collection replacements = getReplacementEdges(cutEdge);
 						if (!replacements.isEmpty())
 						{
-							replaceEdge(cutEdge, replacements.iterator().next());
+							replaceEdge(cutEdge, replacements);
 							// newEdges.add(replacements.iterator().next());
 							hasCutEdges = true;
 							timeStamp = "" + System.currentTimeMillis() + Math.random();
@@ -468,18 +483,27 @@ public abstract class GraphSpanningTree
 		}
 	}
 
-	protected void replaceEdge(Object edge, Object replacementEdge)
+	protected Object replaceEdge(Object edge, Collection replacementEdges)
 	{
-		//System.err.println(this + ": Replace tree edge " + edge + " with " + replacementEdge);
-
 		removeEdge(edge);
 
-		Object source = getSource(replacementEdge);
-		Object joinParent = source;
-		Object target = getTarget(replacementEdge);
-		Object joinChild = target;
+		Iterator replacements = replacementEdges.iterator();
+		while(replacements.hasNext())
+		{
+			Object replacementEdge = replacements.next();
+			
+			Object source = getSource(replacementEdge);
+			Object joinParent = source;
+			Object target = getTarget(replacementEdge);
+			Object joinChild = target;
 
-		addTreeEdge(joinParent, joinChild, replacementEdge);
+			if(addTreeEdge(joinParent, joinChild, replacementEdge))
+			{
+				//System.err.println(this + ": Replace tree edge " + edge + " with " + replacementEdge);
+				return replacementEdge;
+			}
+		}
+		return null;
 	}
 
 	/**
@@ -490,16 +514,19 @@ public abstract class GraphSpanningTree
 	 */
 	protected Object replaceEdge(Object edge)
 	{
-		if(isTreeEdge(edge))
+		if (isTreeEdge(edge))
 		{
 			Object tail = getTarget(edge);
-	
+
 			Set tailSet = new HashSet();
 			Set headSet = new HashSet();
 			getTailSet(tail, tailSet, edge);
 			headSet.addAll(getTreeSet(tail));
 			headSet.removeAll(tailSet);
-	
+			
+			assert !headSet.isEmpty(): edge;
+			assert !tailSet.isEmpty(): edge;
+
 			// Get all non-tree edges connecting the head and tail of this edge
 			Collection joiningEdges = getReplacementEdges(edge, headSet, tailSet, true);
 			if (joiningEdges.isEmpty())
@@ -508,16 +535,11 @@ public abstract class GraphSpanningTree
 				// split into two trees
 				normalizeTree(headSet);
 				normalizeTree(tailSet);
-				//System.err.println(this + ": Remove tree edge " + edge);
+				// System.err.println(this + ": Remove tree edge " + edge);
 				return null;
 			}
 
-			Object replacement = joiningEdges.iterator().next();
-			replaceEdge(edge, replacement);
-			
-			//System.err.println(this + ": Replace tree edge " + edge + " with " + replacement
-			// + " out of " + joiningEdges);
-			return replacement;
+			return replaceEdge(edge, joiningEdges);
 		}
 		removeEdge(edge);
 		return null;
@@ -525,51 +547,8 @@ public abstract class GraphSpanningTree
 
 	private void normalizeTree(Set tree)
 	{
-		Iterator nodes = tree.iterator();
-		int lowestRank = Integer.MAX_VALUE;
-		Object lowestNode = null;
-		while (nodes.hasNext())
-		{
-			Object node = nodes.next();
-			setTreeSet(node, tree);
-			try
-			{
-				int rank = getRank(node);
-				if (rank < lowestRank)
-				{
-					lowestRank = rank;
-					lowestNode = node;
-				}
-			}
-			catch (NullPointerException e)
-			{
-				// Thrown if node isn't part of the graph now, so ignore it
-				nodes.remove();
-			}
-		}
-		if (lowestRank != Integer.MAX_VALUE && lowestRank > getMinimumRank(lowestNode))
-		{
-			moveNodes(tree, getMinimumRank(lowestNode) - lowestRank);
-		}
+		moveNodes(tree, getMaxRankMove(tree, true));
 	}
-
-	//
-	// private int getMinimumTreeRank(Set tree)
-	// {
-	// Iterator nodes = tree.iterator();
-	// int lowestRank = Integer.MAX_VALUE;
-	// while (nodes.hasNext())
-	// {
-	// Object node = nodes.next();
-	// setTreeSet(node, tree);
-	// int rank = getRank(node) - getMinimumRank(node);
-	// if (rank < lowestRank)
-	// {
-	// lowestRank = rank;
-	// }
-	// }
-	// return lowestRank;
-	// }
 
 	/**
 	 * @param edge
@@ -588,40 +567,33 @@ public abstract class GraphSpanningTree
 			{
 				if (sourceTreeSet == null)
 				{
-					addTreeEdge(target, source, edge);
+					return addTreeEdge(target, source, edge);
 				}
 				else if (targetTreeSet == null)
 				{
-					addTreeEdge(source, target, edge);
+					return addTreeEdge(source, target, edge);
 				}
 				else
 				{
 					if (sourceTreeSet.size() > targetTreeSet.size())
 					{
-						addTreeEdge(source, target, edge);
+						return addTreeEdge(source, target, edge);
 					}
-					else
-					{
-						addTreeEdge(target, source, edge);
-					}
+					return addTreeEdge(target, source, edge);
 				}
 			}
-			else
+			// int edgeLength = getRank(target) - getRank(source);
+			// if (edgeLength < getMinimumEdgeLength(edge))
+			// {
+			// // TODO Need to break some other edge
+			// // Get path? Choose edge to remove?
+			// System.err.println("Edge " + edge + " less than min
+			// length!");
+			// addTreeEdge(source, target, edge);
+			// }
+			// else
 			{
-				int edgeLength = getRank(target) - getRank(source);
-				if (edgeLength < getMinimumEdgeLength(edge))
-				{
-					// TODO Need to break some other edge
-					// Get path? Choose edge to remove?
-					// System.err.println("Edge " + edge + " less than min
-					// length!");
-					// addTreeEdge(source, target, edge);
-				}
-				// else
-				{
-					addNonTreeEdge(edge);
-					return false;
-				}
+				return false;
 			}
 		}
 		return true;
@@ -642,6 +614,10 @@ public abstract class GraphSpanningTree
 			if (addEdge(edge))
 			{
 				treeEdges.add(edge);
+			}
+			else
+			{
+				addNonTreeEdge(edge);
 			}
 		}
 		return treeEdges;

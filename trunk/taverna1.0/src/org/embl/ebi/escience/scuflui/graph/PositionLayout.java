@@ -3,7 +3,6 @@
  */
 package org.embl.ebi.escience.scuflui.graph;
 
-import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.AbstractList;
 import java.util.ArrayList;
@@ -18,12 +17,11 @@ import java.util.Set;
 import org.jgraph.graph.CellMapper;
 import org.jgraph.graph.CellView;
 import org.jgraph.graph.DefaultGraphModel;
-import org.jgraph.graph.GraphConstants;
 import org.jgraph.graph.GraphModel;
 
 /**
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover </a>
- * @version $Revision: 1.14 $
+ * @version $Revision: 1.15 $
  * 
  * TODO Change from center placed to left placed and use the port offset to fix it
  */
@@ -32,74 +30,74 @@ public class PositionLayout extends ModelSpanningTree
 	class Row extends AbstractList
 	{
 		private ArrayList nodes = new ArrayList();
+		private int y = 0;
 
-		// private int rowIndex = -1;
+		// private int height = 0;
 
 		Row(int rowIndex)
 		{
-			// this.rowIndex = rowIndex;
+			y = rowIndex * (ROW_HEIGHT + Y_SEPARATION) + Y_SEPARATION;
 		}
 
 		public void add(int index, Object node)
 		{
-			// setY(node, (rowIndex * 40) + 10);
-			// if (index != 0)
-			// {
-			// Object left = get(index - 1);
-			// Edge edge = new Edge(left, node);
-			// setLeftEdge(node, edge);
-			// setRightEdge(left, edge);
-			//
-			// edges.add(edge);
-			// }
-			//
-			// if (index < size())
-			// {
-			// Object right = get(index + 1);
-			// Edge edge = new Edge(node, right);
-			// setLeftEdge(right, edge);
-			// setRightEdge(node, edge);
-			//
-			// edges.add(edge);
-			// }
-
 			nodes.add(index, node);
+			setInitialPosition(index, node);
 		}
 
 		protected void updateEdges()
 		{
-			if (size() > 0)
+			for (int index = 1; index < size(); index++)
 			{
-				getRank(get(0));
-				for (int index = 1; index < size(); index++)
-				{
-					Object left = get(index - 1);
-					Object right = get(index);
+				Object left = get(index - 1);
+				Object right = get(index);
 
-					Map leftAttributes = getAttributes(left);
-					Map rightAttributes = getAttributes(right);
-					Edge edge = LayoutConstants.getRightEdge(leftAttributes);
-					if (edge != null && edge.getTarget() != right)
+				Map leftAttributes = getAttributes(left);
+				Map rightAttributes = getAttributes(right);
+				Edge edge = LayoutConstants.getRightEdge(leftAttributes);
+				if (edge != null && edge.getTarget() != right)
+				{
+					removeEdge(edge);
+					edge = LayoutConstants.getRightEdge(rightAttributes);
+					if (edge != null && edge.getSource() != left)
 					{
 						removeEdge(edge);
-						edge = LayoutConstants.getRightEdge(rightAttributes);
-						if (edge != null && edge.getSource() != left)
-						{
-							removeEdge(edge);
-							edge = null;
-						}
-					}
-
-					if (edge == null)
-					{
-						edge = new Edge(left, right);
-						LayoutConstants.setLeftEdge(rightAttributes, edge);
-						LayoutConstants.setRightEdge(leftAttributes, edge);
-
-						edges.add(edge);
+						edge = null;
 					}
 				}
+
+				if (edge == null)
+				{
+					edge = new Edge(left, right);
+					LayoutConstants.setLeftEdge(rightAttributes, edge);
+					LayoutConstants.setRightEdge(leftAttributes, edge);
+
+					edges.add(edge);
+					setInitialPosition(index, right);
+				}
 			}
+		}
+
+		/*
+		 * @see org.embl.ebi.escience.scuflui.graph.GraphSpanningTree#moveNode(java.lang.Object,
+		 *      java.lang.Object, int)
+		 */
+		private void setInitialPosition(int index, Object node)
+		{
+			int x = X_SEPARATION;
+			int y = this.y;
+			if (index > 0)
+			{
+				BoundingBox bounds = getBounds(get(index - 1));
+				x = (int) bounds.getMaxX() + X_SEPARATION;
+			}
+
+			if (node instanceof VirtualNode)
+			{
+				y += ROW_HEIGHT / 2;
+			}
+
+			getBounds(node).setPosition(x,y);
 		}
 
 		private void setLeftEdge(Object node, Edge edge)
@@ -179,7 +177,8 @@ public class PositionLayout extends ModelSpanningTree
 	}
 
 	private static final int X_SEPARATION = 15;
-	private static final int ROW_HEIGHT = 45;
+	private static final int Y_SEPARATION = 15;
+	private static final int ROW_HEIGHT = 30;
 
 	protected List edges;
 
@@ -227,6 +226,7 @@ public class PositionLayout extends ModelSpanningTree
 	{
 		List list = new ArrayList();
 		Map attributes = getAttributes(node);
+		assert attributes != null : node;
 		Object edge = LayoutConstants.getLeftEdge(attributes);
 		if (edge != null)
 		{
@@ -279,98 +279,13 @@ public class PositionLayout extends ModelSpanningTree
 	}
 
 	/*
-	 * @see org.embl.ebi.escience.scuflui.graph.GraphSpanningTree#moveNode(java.lang.Object,
-	 *      java.lang.Object, int)
-	 */
-	protected void setRank(Object node, int x)
-	{
-		// assert x >= getMinimumRank(node) : this + ": Attempted to set " + node + " to " + x;
-		if (node instanceof VirtualNode)
-		{
-			Point2D point = ((VirtualNode) node).getPosition();
-			point.setLocation(x, ((VirtualNode) node).row * ROW_HEIGHT + 20);
-		}
-		else
-		{
-			CellView view = mapper.getMapping(node, false);
-			Map attributes = getAttributes(node);
-			assert attributes != null : node;
-			Integer row = LayoutConstants.getRow(attributes);
-			assert row != null : node;
-			int newY = (row.intValue() * ROW_HEIGHT) + 10;
-
-			if (view.isLeaf())
-			{
-				Rectangle2D rect = GraphConstants.getBounds(view.getAllAttributes());
-				assert rect != null : node;
-				int newX = x - ((int) rect.getWidth() / 2);
-				rect.setFrame(newX, newY, rect.getWidth(), rect.getHeight());
-			}
-			else
-			{
-				CellView[] children = view.getChildViews();
-				Rectangle2D rect = view.getBounds();
-				int newX = x - ((int) rect.getWidth() / 2);
-				int oldX = (int) rect.getX();
-				for (int index = 0; index < children.length; index++)
-				{
-					Rectangle2D childRect = GraphConstants.getBounds(children[index]
-							.getAllAttributes());
-					assert rect != null : model.getChild(node, index);
-					int childX = (int) childRect.getX() + (newX - oldX);
-					childRect.setFrame(childX, newY, childRect.getWidth(), childRect.getHeight());
-					children[index].update();
-				}
-			}
-			view.update();
-		}
-	}
-
-	/*
 	 * @see org.embl.ebi.escience.scuflui.graph.GraphSpanningTree#getRank(java.lang.Object)
 	 */
 	protected int getRank(Object node)
 	{
 		Rectangle2D rect = getBounds(node);
-		if (rect != null && rect.getX() >= X_SEPARATION)
-		{
-			return (int) rect.getX() + ((int) rect.getWidth() / 2);
-		}
-		int rank = getMinimumRank(node);
-		setRank(node, rank);
-		return rank;
-	}
-
-	/*
-	 * @see org.embl.ebi.escience.scuflui.graph.GraphSpanningTree#getMinimumRank(java.lang.Object)
-	 */
-	protected int getMinimumRank(Object node)
-	{
-		Map attributes = getAttributes(node);
-		assert attributes != null : node;
-		Edge leftEdge = LayoutConstants.getLeftEdge(attributes);
-		if (leftEdge != null)
-		{
-			Object leftNode = leftEdge.getSource();
-			return getMinimumRank(leftNode) + getMinimumEdgeLength(leftEdge);
-		}
-		return ((int) (getBounds(node).getWidth() / 2) + X_SEPARATION);
-	}
-
-	/*
-	 * @see org.embl.ebi.escience.scuflui.graph.GraphSpanningTree#getMaximumRank(java.lang.Object)
-	 */
-	protected int getMaximumRank(Object node)
-	{
-		Map attributes = getAttributes(node);
-		assert attributes != null : node;
-		Edge rightEdge = LayoutConstants.getRightEdge(attributes);
-		if (rightEdge != null)
-		{
-			Object rightNode = rightEdge.getSource();
-			return getRank(rightNode) - getMinimumEdgeLength(rightEdge);
-		}
-		return Integer.MAX_VALUE;
+		assert rect != null;
+		return (int) rect.getX();
 	}
 
 	/*
@@ -379,7 +294,6 @@ public class PositionLayout extends ModelSpanningTree
 	protected void addNonTreeEdge(Object edge)
 	{
 		// TODO Implement addNonTreeEdge
-
 	}
 
 	/*
@@ -392,43 +306,13 @@ public class PositionLayout extends ModelSpanningTree
 			Edge theEdge = (Edge) edge;
 			if (theEdge.getWeight() == 0)
 			{
-				Object leftNode = ((Edge) edge).getSource();
-				Object rightNode = ((Edge) edge).getTarget();
-				return ((int) (getBounds(leftNode).getWidth() / 2) + ((int) getBounds(rightNode)
-						.getWidth()) / 2)
-						+ X_SEPARATION;
+				Rectangle2D sourceRect = getBounds(getSource(edge));
+				Rectangle2D targetRect = getBounds(getTarget(edge));
+				return (int) (targetRect.getWidth() + sourceRect.getWidth()) / 2 + X_SEPARATION;
 			}
 		}
 		return 0;
 	}
-
-	// private void setY(Object node, int y)
-	// {
-	// if (node instanceof VirtualNode)
-	// {
-	// Point2D point = ((VirtualNode) node).getPosition();
-	// point.setLocation(point.getX(), y + 10);
-	// }
-	// else if (GraphUtilities.isGroup(model, node))
-	// {
-	// for (int index = 0; index < model.getChildCount(node); index++)
-	// {
-	// Map attributes = getAttributes(model.getChild(node, index));
-	// assert attributes != null : model.getChild(node, index);
-	// Rectangle2D rect = GraphConstants.getBounds(attributes);
-	// assert rect != null : model.getChild(node, index);
-	// rect.setFrame(rect.getX(), y, rect.getWidth(), rect.getHeight());
-	// }
-	// }
-	// else
-	// {
-	// Map attributes = getAttributes(node);
-	// assert attributes != null : node;
-	// Rectangle2D rect = GraphConstants.getBounds(attributes);
-	// assert rect != null : node;
-	// rect.setFrame(rect.getX(), y, rect.getWidth(), rect.getHeight());
-	// }
-	// }
 
 	private Edge getNextEdgeSegment(Object previous, Object edge)
 	{
@@ -470,11 +354,11 @@ public class PositionLayout extends ModelSpanningTree
 		}
 		setNextEdgeSegment(source, edge, node.getTopEdge());
 		setPreviousEdgeSegment(target, edge, node.getBottomEdge());
-		if(!edges.contains(node.getTopEdge()))
+		if (!edges.contains(node.getTopEdge()))
 		{
 			edges.add(node.getTopEdge());
 		}
-		if(!edges.contains(node.getBottomEdge()))
+		if (!edges.contains(node.getBottomEdge()))
 		{
 			edges.add(node.getBottomEdge());
 		}
@@ -490,20 +374,21 @@ public class PositionLayout extends ModelSpanningTree
 
 	public void removeIntermediateNode(Object source, Object target, Object edge)
 	{
-		//System.err.println("Remove intermediates between " + source + " & " +target);
+		// System.err.println("Remove intermediates between " + source + " & " +target);
 		Edge intermediateEdge = getNextEdgeSegment(source, edge);
 		IntermediateNode node;
-		if(intermediateEdge == null)
+		if (intermediateEdge == null)
 		{
 			intermediateEdge = getPreviousEdgeSegment(target, edge);
 		}
 		setNextEdgeSegment(source, edge, null);
-		setPreviousEdgeSegment(target, edge, null);		
-		if(intermediateEdge != null)
+		setPreviousEdgeSegment(target, edge, null);
+		if (intermediateEdge != null)
 		{
-			node = (IntermediateNode)intermediateEdge.getSource();
+			node = (IntermediateNode) intermediateEdge.getSource();
 			replaceEdge(node.getTopEdge());
-			replaceEdge(node.getBottomEdge());			
+			replaceEdge(node.getBottomEdge());
+			remove(node);
 		}
 	}
 
@@ -526,19 +411,92 @@ public class PositionLayout extends ModelSpanningTree
 		}
 	}
 
-	private Rectangle2D getBounds(Object node)
+	protected BoundingBox getBounds(Object node)
 	{
 		if (node instanceof VirtualNode)
 		{
 			return ((VirtualNode) node).getBounds();
 		}
-		CellView view = mapper.getMapping(node, false);
+		final CellView view = mapper.getMapping(node, false);
 		if (view != null)
 		{
-			return view.getBounds();
+			return new BoundingBox()
+			{
+				public void setPosition(int x, int y)
+				{
+					translate(x - (int)getX(), y - (int)getY());
+				}
+				
+				public void setRect(double x, double y, double w, double h)
+				{
+					view.getBounds().setRect(x, y, w, h);
+				}
+
+				public int outcode(double x, double y)
+				{
+					// TODO Implement outcode
+					return 0;
+				}
+
+				public boolean isEmpty()
+				{
+					// TODO Implement isEmpty
+					return false;
+				}
+
+				public double getY()
+				{
+					return view.getBounds().getY();
+				}
+
+				public double getX()
+				{
+					return view.getBounds().getX();
+				}
+
+				public double getWidth()
+				{
+					return view.getBounds().getWidth();
+				}
+
+				public double getHeight()
+				{
+					return view.getBounds().getHeight();
+				}
+
+				public Rectangle2D createUnion(Rectangle2D r)
+				{
+					// TODO Implement createUnion
+					return null;
+				}
+
+				public Rectangle2D createIntersection(Rectangle2D r)
+				{
+					// TODO Implement createIntersection
+					return null;
+				}
+
+				public void translate(int dx, int dy)
+				{
+					if (view.isLeaf())
+					{
+						view.getAllAttributes().translate(dx, dy);
+					}
+					else
+					{
+						CellView[] cells = view.getChildViews();
+						for (int index = 0; index < cells.length; index++)
+						{
+							CellView child = cells[index];
+							child.getAllAttributes().translate(dx, dy);
+							child.update();
+						}
+					}
+					view.update();
+				}
+			};
 		}
 		throw new NullPointerException("No view for " + node);
-		//return null;
 	}
 
 	private Edge getPreviousEdgeSegment(Object previous, Object edge)
@@ -571,14 +529,13 @@ public class PositionLayout extends ModelSpanningTree
 
 	protected void shiftRank(Object node, int rankChange)
 	{
-		// TODO Implement shiftRank
 		try
 		{
-			setRank(node, getRank(node) + rankChange);
+			getBounds(node).translate(rankChange, 0);
 		}
 		catch(NullPointerException e)
 		{
-			// Node does exist, do nothing
+			// No bounding box/view. Do nothing?
 		}
 	}
 
@@ -648,5 +605,51 @@ public class PositionLayout extends ModelSpanningTree
 				tightenEdge(edge, headSet, tailSet);
 			}
 		}
+	}
+
+	protected int getEdgeLength(Object edge)
+	{
+		// TODO Put in port offsets!
+		Rectangle2D sourceRect = getBounds(getSource(edge));
+		Rectangle2D targetRect = getBounds(getTarget(edge));
+		return (int) targetRect.getCenterX() - (int) sourceRect.getCenterX();
+	}
+
+	protected int getMaxRankMoveNegative(Object node)
+	{
+		Map attributes = getAttributes(node);
+		assert attributes != null : node;
+		Edge leftEdge = LayoutConstants.getLeftEdge(attributes);
+		if (leftEdge != null)
+		{
+			if (!isTreeEdge(leftEdge))
+			{
+				Object leftNode = leftEdge.getSource();
+				return getRank(node) - getRank(leftNode) + getMinimumEdgeLength(leftEdge)
+						+ X_SEPARATION;
+			}
+		}
+		else
+		{
+			return getRank(node) - X_SEPARATION;
+		}
+		return Integer.MAX_VALUE;
+	}
+
+	protected int getMaxRankMovePositive(Object node)
+	{
+		Map attributes = getAttributes(node);
+		assert attributes != null : node;
+		Edge rightEdge = LayoutConstants.getRightEdge(attributes);
+		if (rightEdge != null)
+		{
+			if (!isTreeEdge(rightEdge))
+			{
+				Object rightNode = rightEdge.getTarget();
+				return getRank(rightNode) - getRank(node) + getMinimumEdgeLength(rightNode)
+						+ X_SEPARATION;
+			}
+		}
+		return Integer.MAX_VALUE;
 	}
 }

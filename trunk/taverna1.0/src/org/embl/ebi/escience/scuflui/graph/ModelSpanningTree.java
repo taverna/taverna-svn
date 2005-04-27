@@ -65,6 +65,17 @@ public abstract class ModelSpanningTree extends GraphSpanningTree
 		return attributes.containsKey(this + TREE_SET);
 	}
 
+	protected void remove(Object node)
+	{
+		Map attributes = getAttributes(node);
+		assert attributes != null;
+		Set treeSet = (Set) attributes.get(this + TREE_SET);
+		if (treeSet != null)
+		{
+			treeSet.remove(node);
+		}
+	}	
+	
 	protected void removeEdge(Object edge)
 	{
 		if(isTreeEdge(edge))
