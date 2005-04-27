@@ -136,7 +136,7 @@ public class SoaplabDescriberPanel extends AbstractProcessorAction {
 		String summaryText = "<html><head>"+WorkflowSummaryAsHTML.STYLE_NOBG+"</head>"+transformedStream.toString()+"</html>";
 		JEditorPane metadataPane = new ColJEditorPane("text/html",summaryText);
 		metadataPane.setText(transformedStream.toString());
-		System.out.println(transformedStream.toString());
+		//System.out.println(transformedStream.toString());
 		JScrollPane jsp = new JScrollPane(metadataPane, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
 						  JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 		jsp.setPreferredSize(new Dimension(0,0));
