@@ -25,8 +25,8 @@
 //      Dependencies        :
 //
 //      Last commit info    :   $Author: mereden $
-//                              $Date: 2005-02-21 17:27:24 $
-//                              $Revision: 1.10 $
+//                              $Date: 2005-04-27 09:28:29 $
+//                              $Revision: 1.11 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 
@@ -125,8 +125,9 @@ public class SoaplabTask implements ProcessorTaskWorker {
 		    }
 		    call.setOperationName(new QName("getStatus"));
 		    String statusString = (String)call.invoke(new Object[] { jobID });
-		    if (statusString == "RUNNING" ||
-			statusString == "CREATED") {
+		    System.out.println("Polling, status is : "+statusString);
+		    if (statusString.equals("RUNNING") ||
+			statusString.equals("CREATED")) {
 			pollingInterval = (int)((double)pollingInterval * this.proc.getPollingBackoff());
 			if (pollingInterval > this.proc.getPollingIntervalMax()) {
 			    pollingInterval = this.proc.getPollingIntervalMax();
