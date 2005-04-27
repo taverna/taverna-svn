@@ -6,6 +6,10 @@ import java.io.StringReader;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.awt.Color;
+import java.awt.*;
+import java.awt.event.*;
+import org.jdom.output.*;
+import javax.swing.*;
 
 import javax.swing.JTree;
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -23,6 +27,10 @@ import org.jdom.JDOMException;
 import org.jdom.Parent;
 import org.jdom.Text;
 import org.jdom.input.SAXBuilder;
+
+import java.io.*;
+import java.util.prefs.*;
+
 
 /**
  * An extension of the javax.swing.JTree class, constructed with a String of XML
@@ -50,6 +58,9 @@ public class XMLTree extends JTree
 	}
 
 	int textSizeLimit = 1000;
+    final JFileChooser fc = new JFileChooser();
+
+    Element rootElement = null;
 
 	/**
 	 * Build a new XMLTree from the supplied String containing XML.
@@ -66,6 +77,25 @@ public class XMLTree extends JTree
 		revalidate();
 	}
 
+    public String getText() {
+	if (rootElement != null) {
+	    XMLOutputter xo = new XMLOutputter(Format.getPrettyFormat());
+	    return xo.outputString(rootElement);
+	}
+	else {
+	    return "";
+	}
+    }
+
+    public XMLTree(String text, boolean limit) throws IOException, JDOMException {
+	if (!limit) {
+	    textSizeLimit = -1;
+	}
+	Document document = new SAXBuilder(false).build(new StringReader(text));
+	init(document.getRootElement());
+	revalidate();
+    }
+
 	public XMLTree(Document document)
 	{
 		super();
@@ -75,6 +105,7 @@ public class XMLTree extends JTree
 
 	private void init(Content content)
 	{
+	    rootElement = (Element)content;
 		// Fix for platforms other than metal which can't otherwise
 		// cope with arbitrary size rows
 		setRowHeight(0);
@@ -181,6 +212,53 @@ public class XMLTree extends JTree
 			}
 		});
 		setAllNodesExpanded();
+
+		// Add a listener to present the 'save as text' option
+		addMouseListener(new MouseAdapter() {
+			public void mousePressed(MouseEvent e) {
+			    if (e.isPopupTrigger()) {
+				doEvent(e);
+			    }
+			}
+			public void mouseReleased(MouseEvent e) {
+			    if (e.isPopupTrigger()) {
+				doEvent(e);
+			    }
+			}
+			public void doEvent(MouseEvent e) {
+			    JPopupMenu menu = new JPopupMenu();
+			    JMenuItem item = new JMenuItem("Save as XML text");
+			    menu.add(item);
+			    item.addActionListener(new ActionListener() {
+				    public void actionPerformed(ActionEvent ae) {
+					try {
+					    Preferences prefs = Preferences.userNodeForPackage(AdvancedModelExplorer.class);
+					    String curDir = prefs.get("currentDir", System.getProperty("user.home"));
+					    fc.resetChoosableFileFilters();
+					    fc.setFileFilter(new ExtensionFileFilter(new String[]{"xml"}));
+					    fc.setCurrentDirectory(new File(curDir));
+					    int returnVal = fc.showSaveDialog(XMLTree.this);
+					    if (returnVal == JFileChooser.APPROVE_OPTION) {
+						prefs.put("currentDir", fc.getCurrentDirectory().toString());
+						File file = fc.getSelectedFile();
+						PrintWriter out = new PrintWriter(new FileWriter(file));
+						out.println(XMLTree.this.getText());
+						out.flush();
+						out.close();
+					    }
+					}
+					catch (Exception ex) {
+					    JOptionPane.showMessageDialog(XMLTree.this,
+									  "Problem saving XML : \n"+ex.getMessage(),
+									  "Error!",
+									  JOptionPane.ERROR_MESSAGE);
+					}
+				    }
+				});
+			    menu.show(XMLTree.this, e.getX(), e.getY());
+			}
+		    });
+
 	}
 
 	public void setAllNodesExpanded()

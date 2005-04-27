@@ -21,7 +21,11 @@ public class ServiceError extends ProcessEvent {
     
     public String getMessage() {
 	if (underlyingException!=null) {
-	    return underlyingException.getMessage();
+	    String message = underlyingException.getMessage();
+	    if (message.length() > 120) {
+		message = message.substring(0,120)+"...";
+	    }
+	    return message;
 	}
 	else {
 	    return "Unknown exception";

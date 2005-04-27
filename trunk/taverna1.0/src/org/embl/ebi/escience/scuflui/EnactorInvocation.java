@@ -46,7 +46,9 @@ import org.embl.ebi.escience.scuflui.results.ResultMapSaveRegistry;
 import org.embl.ebi.escience.scuflui.results.ResultMapSaveSPI;
 import org.embl.ebi.escience.scuflui.results.ResultTablePanel;
 import org.embl.ebi.escience.scufl.Processor;
-
+import org.syntax.jedit.JEditTextArea;
+import org.syntax.jedit.TextAreaDefaults;
+import org.syntax.jedit.tokenmarker.XMLTokenMarker;
 import uk.ac.soton.itinnovation.freefluo.main.InvalidInputException;
 
 
@@ -233,7 +235,13 @@ public class EnactorInvocation extends JPanel implements ScuflUIComponent{
 	String progressReport = "";
 	try {
 	    progressReport = this.workflowInstance.getProgressReportXMLString();
-	    this.tabs.add("Process report", new JScrollPane(new XMLTree(progressReport)));
+	    //JEditTextArea display = new JEditTextArea(new TextAreaDefaults());
+	    //display.setText(progressReport);
+	    //display.setTokenMarker(new XMLTokenMarker());
+	    //display.setEditable(false);
+	    //display.setPreferredSize(new Dimension(0,0));
+	    //this.tabs.add("Process report", display);
+	    this.tabs.add("Process report", new JScrollPane(new XMLTree(progressReport, false)));
 	}
 	catch (Exception ex) {
 	    //

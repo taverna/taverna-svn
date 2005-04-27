@@ -25,8 +25,8 @@
 //      Dependencies        :
 //
 //      Last commit info    :   $Author: mereden $
-//                              $Date: 2005-04-27 09:28:29 $
-//                              $Revision: 1.11 $
+//                              $Date: 2005-04-27 13:49:43 $
+//                              $Revision: 1.12 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 
@@ -138,6 +138,17 @@ public class SoaplabTask implements ProcessorTaskWorker {
 			polling = false;
 		    }		    
 		}
+	    }
+
+	    // Get the status code
+	    call.setOperationName(new QName("getStatus"));
+	    String statusString = (String)call.invoke(new Object[] { jobID });
+	    if (statusString.equals("TERMINATED_BY_ERROR")) {
+		// Get the report
+		call.setOperationName(new QName("getSomeResults"));
+		HashMap temp = new HashMap((Map)call.invoke(new Object[] { jobID, new String[]{"report"}}));
+		String reportText = (String)temp.get("report");
+		throw new TaskExecutionException("Soaplab call returned an error : "+reportText);
 	    }
 	    
 	    // Get the results required by downstream processors

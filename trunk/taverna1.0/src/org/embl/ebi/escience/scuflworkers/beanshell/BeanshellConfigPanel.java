@@ -48,6 +48,7 @@ import javax.swing.event.TableModelEvent;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableCellEditor;
+import javax.swing.JOptionPane;
 
 import org.embl.ebi.escience.baclava.DataThing;
 import org.embl.ebi.escience.scufl.DuplicatePortNameException;
@@ -384,7 +385,11 @@ public class BeanshellConfigPanel extends JPanel implements ScuflUIComponent,
 				}
 				catch (EvalError e1)
 				{
-					e1.printStackTrace();
+				    JOptionPane.showMessageDialog(BeanshellConfigPanel.this,
+								  "Script error : \n"+e1.getMessage(),
+								  "Script error",
+								  JOptionPane.ERROR_MESSAGE);
+				    e1.printStackTrace();
 				}
 			}
 		});
@@ -399,7 +404,7 @@ public class BeanshellConfigPanel extends JPanel implements ScuflUIComponent,
 		});
 
 		JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-		//buttonPanel.add(testScriptButton);
+		buttonPanel.add(testScriptButton);
 		buttonPanel.add(scriptUpdateButton);
 
 		JPanel scriptEditPanel = new JPanel(new BorderLayout());
