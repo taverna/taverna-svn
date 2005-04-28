@@ -38,6 +38,25 @@ import java.util.*;
  */
 public class ClassTree extends JTree {
     
+    private String pattern = "";
+
+    /**
+     * Set the highlight pattern
+     */
+    public void setPattern(String pattern) {
+	this.pattern = (pattern == null)?"":pattern;
+	if (getCellRenderer() instanceof Renderer) {
+	    Renderer renderer = (Renderer)getCellRenderer();
+	    if (pattern.equals("")) {
+		renderer.setPattern(null);
+	    }
+	    else {
+		renderer.setPattern(".*"+pattern.toLowerCase()+".*");
+	    }
+	    repaint();
+	}
+    }
+
     public ClassTree(ClassTreeModel model, APIDescription description) {
 	super(model);
 	putClientProperty("JTree.lineStyle", "Angled");
@@ -75,10 +94,34 @@ public class ClassTree extends JTree {
         }
     }
 
+    public void jumpToAndHighlight() {
+	setPattern(pattern);
+	if (pattern.equals("")) {
+	    setExpansion(true);
+	    return;
+	}
+	setExpansion(false);
+	ClassTreeModel treeModel = (ClassTreeModel)getModel();
+	DefaultMutableTreeNode rootNode = (DefaultMutableTreeNode)treeModel.getRoot(); 
+	Enumeration en = rootNode.depthFirstEnumeration();
+	while (en.hasMoreElements()) {
+	    DefaultMutableTreeNode theNode = (DefaultMutableTreeNode)en.nextElement();
+	    if (theNode.getUserObject().toString().toLowerCase().matches(".*"+pattern+".*")) {
+		TreePath path = new TreePath(treeModel.getPathToRoot(theNode));
+		makeVisible(path);
+	    }
+	}
+    }
+
     class Renderer extends DefaultTreeCellRenderer {
 	
 	ImageIcon leafIcon, folderExpanded, folderClosed;
 	APIDescription description;
+	String pattern = null;
+	
+	public void setPattern(String pattern) {
+	    this.pattern = pattern;
+	}
 
 	public Renderer(APIDescription theDescription) {
 	    super();
@@ -120,15 +163,18 @@ public class ClassTree extends JTree {
 		    if (cd.isAbstract()) {
 			className = className + "&nbsp;&lt;abstract&gt;";
 		    }
+		    boolean highlightInRed = (pattern != null 
+					      && pattern.equals("")==false 
+					      && userObject.toString().toLowerCase().matches(pattern));
 		    name.append("<html><body>");
-		    if (numberOfMethodsUsed > 0) {
+		    if (numberOfMethodsUsed > 0 && !highlightInRed) {
 			name.append("<font color=\"blue\">");
 		    }
-		    name.append(className);
+		    name.append((highlightInRed)?"<font color=\"red\">"+className+"</font>":className);
 		    if (numberOfMethodsUsed > 0) {
 			name.append("&nbsp;"+numberOfMethodsUsed);
 		    }
-		    if (numberOfMethodsUsed > 0) {
+		    if (numberOfMethodsUsed > 0 && !highlightInRed) {
 			name.append("</font>");
 		    }
 		    name.append("</body></html>");

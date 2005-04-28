@@ -34,11 +34,13 @@ import java.io.*;
 import java.util.prefs.*;
 import org.jdom.*;
 import org.jdom.output.*;
+//import javax.swing.text.DocumentListener;
+//import javax.swing.text.DocumentEvent;
 
 /**
  * The top level UI component for the consumer wizard
  * @author Tom Oinn
- * @version $Id: ConsumerWizard.java,v 1.2 2005-04-19 11:56:35 mereden Exp $
+ * @version $Id: ConsumerWizard.java,v 1.3 2005-04-28 10:41:09 mereden Exp $
  */
 public class ConsumerWizard extends JFrame {
 
@@ -63,9 +65,44 @@ public class ConsumerWizard extends JFrame {
 	final ClassSummaryPane summary = new ClassSummaryPane();
 	final JTabbedPane tabs = new JTabbedPane();
 	
+	// Create a text entry and listener to search the class tree
+	JPanel treePanel = new JPanel();
+	treePanel.setLayout(new BorderLayout());
+	treePanel.add(new JScrollPane(tree), BorderLayout.CENTER);
+	JPanel searchPanel = new JPanel();
+	searchPanel.setLayout(new BoxLayout(searchPanel, BoxLayout.LINE_AXIS));
+	treePanel.add(searchPanel, BorderLayout.NORTH);	
+	searchPanel.add(Box.createRigidArea(new Dimension(5,5)));
+	searchPanel.add(new JLabel("Search"));
+	searchPanel.add(Box.createRigidArea(new Dimension(5,5)));
+	final JTextField searchField = new JTextField();
+	searchPanel.add(searchField);
+	//searchPanel.add(Box.createRigidArea(new Dimension(5,5)));
+	//searchPanel.add(Box.createHorizontalGlue());
+	searchField.addActionListener(new ActionListener() {
+		public void actionPerformed(ActionEvent ae) {
+		    tree.setPattern(searchField.getText());
+		    tree.jumpToAndHighlight();
+		}
+	    });
+	searchField.getDocument().addDocumentListener(new DocumentListener() {
+		public void insertUpdate(DocumentEvent e) {
+		    checkStatus();
+		}
+		public void removeUpdate(DocumentEvent e) {
+		    checkStatus();
+		}
+		public void changedUpdate(DocumentEvent e) {
+		    checkStatus();
+		}
+		private void checkStatus() {
+		    String pattern = searchField.getText();
+		    tree.setPattern(pattern);
+		}
+	    });
 
 	JSplitPane pane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,
-					 new JScrollPane(tree),
+					 treePanel,
 					 tabs);
 	tabs.addTab("Summary",new JScrollPane(summary));
 	tabs.addTab("Methods", new JPanel());
