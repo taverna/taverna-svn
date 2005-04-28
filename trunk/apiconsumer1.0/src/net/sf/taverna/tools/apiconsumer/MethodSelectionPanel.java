@@ -121,18 +121,18 @@ public class MethodSelectionPanel extends JPanel {
 	    boxes[j++] = cb;
 	    constructorPanel.add(cb);
 	    column++;
-	    if (column == 3) {
+	    if (column == 1) {
 		column = 0;
 		rows++;
 	    }
 	}
 	if (column > 0) {
 	    rows++;
-	    for (int i = column; i < 3; i++) {
+	    for (int i = column; i < 1; i++) {
 		constructorPanel.add(new JLabel());
 	    }
 	}
-	constructorPanel.setLayout(new GridLayout(rows, 3));
+	constructorPanel.setLayout(new GridLayout(rows, 1));
 	constructorPanel.setMaximumSize(new Dimension(6000,15*rows));
 	constructorPanel.setOpaque(false);
 
