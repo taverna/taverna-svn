@@ -4,7 +4,7 @@ package net.sourceforge.taverna.io;
  * 
  * Last edited by $Author: phidias $
  * @author Mark
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class FileNameUtil {
 	
@@ -37,7 +37,7 @@ public class FileNameUtil {
 	public static String replaceExtension(String filename, String newExt){
 		String ext = getExtension(filename);
 		String newFilename = filename;
-		return newFilename.replace(ext, newExt);
+		return newFilename.replaceAll(ext, newExt);
 	}
 	
 	/**
@@ -49,7 +49,7 @@ public class FileNameUtil {
 	public static String replacePathExtension(String path, String newExt){
 		String ext = getExtensionFromPath(path);
 		String newFilename = path;
-		return newFilename.replace(ext, newExt);
+		return newFilename.replaceAll(ext, newExt);
 	}
 
 }
