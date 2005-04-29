@@ -3,7 +3,6 @@
  */
 package org.embl.ebi.escience.scuflui.graph.model;
 
-import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -29,7 +28,7 @@ import org.jgraph.graph.ParentMap;
 
 /**
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover </a>
- * @version $Revision: 1.10 $
+ * @version $Revision: 1.11 $
  */
 public class ScuflGraphModelChange implements GraphModelChange
 {
@@ -136,8 +135,8 @@ public class ScuflGraphModelChange implements GraphModelChange
 				assert !newName.equals(((ScuflModelRenameEvent)event).getOldName()): source;
 				GraphConstants.setValue(attrs, newName);
 				GraphConstants.setResize(attrs, true);
-				GraphConstants.setBounds(attrs, new Rectangle2D.Float());
-				changed.add(source);				
+				GraphConstants.setBounds(attrs, GraphConstants.getBounds(model.getAttributes(source)));
+				changed.add(source);
 			}
 		}
 		else

@@ -21,12 +21,22 @@ public class IntermediateNode extends VirtualNode
 		next = new Edge(this, target, weight);
 	}
 
-	public Edge getTopEdge()
+	public Object getSource()
+	{
+		return previous.getTarget();
+	}
+	
+	public Edge getSourceEdge()
 	{
 		return previous;
 	}
 	
-	public Edge getBottomEdge()
+	public Object getTarget()
+	{
+		return next.getTarget();
+	}
+	
+	public Edge getTargetEdge()
 	{
 		return next;
 	}

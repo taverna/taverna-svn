@@ -24,7 +24,7 @@ import org.jgraph.graph.GraphModel;
  * update as the graph changes.
  * 
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover </a>
- * @version $Revision: 1.14 $
+ * @version $Revision: 1.15 $
  */
 public class RowLayout extends ModelSpanningTree
 {
@@ -55,6 +55,17 @@ public class RowLayout extends ModelSpanningTree
 			return;
 		}
 
+		Iterator attributes = change.getAttributes().entrySet().iterator();
+		while (attributes.hasNext())
+		{
+			Entry entry = (Entry) attributes.next();
+			Map attrs = (Map) entry.getValue();
+			if (GraphConstants.getBounds(attrs) != null)
+			{
+				positionLayout.updateNode(entry.getKey());
+			}
+		}		
+		
 		Collection edges = new TreeSet(getComparator(null));
 
 		if (change.getRemoved() != null)
@@ -65,13 +76,14 @@ public class RowLayout extends ModelSpanningTree
 				if (model.isEdge(removed[index]))
 				{
 					replaceEdge(removed[index]);
+					removeEdge(removed[index]);
 				}
 				else
 				{
 					if (!model.isPort(removed[index]))
 					{
 						remove(removed[index]);
-						positionLayout.remove(removed[index]);
+						//positionLayout.remove(removed[index]);
 						getTreeSet(GraphUtilities.getRoot(model, removed[index])).remove(
 								removed[index]);
 					}
@@ -96,10 +108,9 @@ public class RowLayout extends ModelSpanningTree
 			}
 		}
 
-		List treeEdges = createInitialTree(edges.iterator());
+		List treeEdges = createInitialTree(edges);
 		optimiseTree(treeEdges);
 
-		// TODO Reduce crossovers here!
 		reduceCrossovers();
 
 		for (int index = 0; index < rows.size(); index++)
@@ -107,28 +118,32 @@ public class RowLayout extends ModelSpanningTree
 			getRow(index).updateEdges();
 		}
 
-		treeEdges = positionLayout.createInitialTree(positionLayout.edges.iterator());
+		treeEdges = positionLayout.createInitialTree(positionLayout.edges);
 		positionLayout.optimiseTree(treeEdges);
-
-		Iterator attributes = change.getAttributes().entrySet().iterator();
-		while (attributes.hasNext())
-		{
-			Entry entry = (Entry) attributes.next();
-			Map attrs = (Map) entry.getValue();
-			if (GraphConstants.getBounds(attrs) != null)
-			{
-				positionLayout.updateNode(entry.getKey());
-			}
-		}
 	}
 
 	private void reduceCrossovers()
 	{
-		// TODO Implement reduceCrossovers
-		for (int index = 1; index < rows.size(); index++)
+		for (int outer = 0; outer < 10; outer++)
 		{
-			// PositionLayout.Row row1 = getRow(index - 1);
-			// PositionLayout.Row row2 = getRow(index);
+			if (outer % 2 == 0)
+			{
+				for (int index = 1; index < rows.size(); index++)
+				{
+					PositionLayout.Row row1 = getRow(index - 1);
+					PositionLayout.Row row2 = getRow(index);
+					row1.sort(row2, true);
+				}
+			}
+			else
+			{
+				for (int index = rows.size() - 2; index > 0; index--)
+				{
+					PositionLayout.Row row1 = getRow(index + 1);
+					PositionLayout.Row row2 = getRow(index);
+					row1.sort(row2, false);
+				}
+			}
 		}
 	}
 
@@ -280,14 +295,13 @@ public class RowLayout extends ModelSpanningTree
 
 	protected void remove(Object node)
 	{
-		super.remove(node);
 		Map attributes = getAttributes(node);
 		assert attributes != null;
 		Integer row = LayoutConstants.getRow(attributes);
 		assert row != null;
 		remove(node, row.intValue());
-	}	
-	
+	}
+
 	/**
 	 * @param node
 	 * @param row
@@ -357,17 +371,9 @@ public class RowLayout extends ModelSpanningTree
 		updateEdgeGraph(edge);
 	}
 
-	/*
-	 * @see org.embl.ebi.escience.scuflui.graph.GraphSpanningTree#getMinimumEdgeLength(java.lang.Object)
-	 */
-	protected int getMinimumEdgeLength(Object edge)
-	{
-		return 1;
-	}
-
 	protected boolean tightenEdge(Object edge, Set sourceSet, Set targetSet)
 	{
-		if(super.tightenEdge(edge, sourceSet, targetSet))
+		if (super.tightenEdge(edge, sourceSet, targetSet))
 		{
 			updateEdgeGraph(edge);
 			return true;
@@ -398,11 +404,6 @@ public class RowLayout extends ModelSpanningTree
 		}
 	}
 
-	protected int getEdgeLength(Object edge)
-	{
-		return getRank(getTarget(edge)) - getRank(getSource(edge));
-	}
-
 	protected int getMaxRankMoveNegative(Object node)
 	{
 		int move = Integer.MAX_VALUE;
@@ -417,8 +418,7 @@ public class RowLayout extends ModelSpanningTree
 				hasParent = true;
 				if (!isTreeEdge(edge))
 				{
-					int parentRank = getRank(getSource(edge));
-					move = Math.min(move, rank - parentRank - getMinimumEdgeLength(edge));
+					move = Math.min(move, getSlack(edge));
 				}
 			}
 		}
@@ -432,17 +432,20 @@ public class RowLayout extends ModelSpanningTree
 	protected int getMaxRankMovePositive(Object node)
 	{
 		int move = Integer.MAX_VALUE;
-		int rank = getRank(node);
 		Iterator edges = getEdges(node);
 		while (edges.hasNext())
 		{
 			Object edge = edges.next();
 			if (getSource(edge).equals(node) && !isTreeEdge(edge))
 			{
-				int parentRank = getRank(getTarget(edge));
-				move = Math.min(move, parentRank - rank - getMinimumEdgeLength(edge));
+				move = Math.min(move, getSlack(edge));
 			}
 		}
 		return move;
+	}
+
+	protected int getSlack(Object edge)
+	{
+		return getRank(getTarget(edge)) - getRank(getSource(edge)) - 1;
 	}
 }
