@@ -37,14 +37,14 @@ public abstract class AbstractNCBIWorker implements LocalWorker {
 	 * values are used as keys in the inputMap.
 	 */
 	public String[] inputNames() {
-	    return new String[]{"term", "maxRecords","outputFile","xslt"};
+	    return new String[]{"term", "maxRecords","outputFile","xslt","ext"};
 	}
 	
 	/**
 	 * This method returns an array of input mimetypes.  
 	 */
 	public String[] inputTypes() {
-		return new String[]{"'text/plain'","'text/plain'","'text/plain'","'text/plain'"};
+		return new String[]{"'text/plain'","'text/plain'","'text/plain'","'text/plain'","'text/plain'"};
 	}
 	
 	/**
@@ -93,11 +93,17 @@ public abstract class AbstractNCBIWorker implements LocalWorker {
 		StreamTransmitter transmitter = new GetStreamTransmitter();
 		transmitter.setURL(this.url);
 		DataThingAdapter adapter = new DataThingAdapter(transmitterMap);
-		String outputFile = adapter.getString("outputFile");
+		DataThingAdapter inAdapter = new DataThingAdapter(inputMap);
+		String outputFile = inAdapter.getString("outputFile");
+		String ext = inAdapter.getString("ext");
+		System.out.println("ext: " + ext);
+		
+		System.out.println("======== outputFile: " + outputFile);
 		String xslt = adapter.getString("xslt");
 		System.out.println("xslt: " + xslt);
-		if (xslt == null){
-		    streamProcessor = new NCBIXMLStreamProcessor(outputMap, this.startTag, this.endTag);
+		if (xslt == null || xslt.equals("")){
+		    streamProcessor = new NCBIXMLStreamProcessor(outputMap, this.startTag, this.endTag, outputFile, ext);
+			
 		}else {
 		    System.out.println("Using XSLT Stream Processor");
 		    if (outputFile == null){

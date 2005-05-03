@@ -19,7 +19,7 @@ import uk.ac.soton.itinnovation.taverna.enactor.entities.TaskExecutionException;
  * It can also transform the resulting XML document.
  * 
  * @author mfortner
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  * 
  * @tavinput term			The search term (usually a gene name).
  * @tavinput maxRecords		The maximum number of records to be returned.
@@ -38,10 +38,11 @@ public class EntrezGeneWorker extends AbstractNCBIWorker {
 		this.originalDb = "gene";		
 	}
 
-	/* (non-Javadoc)
-	 * @see net.sourceforge.taverna.scuflworkers.ncbi.AbstractNCBIWorker#execute(java.util.Map)
+	/*
+	 * 
 	 */
 	public Map execute(Map inputMap) throws TaskExecutionException {
+		this.inputMap = inputMap;
 	    DataThingAdapter inAdapter = new DataThingAdapter(inputMap);
 	    
 	    this.term = inAdapter.getString("term");
@@ -53,6 +54,7 @@ public class EntrezGeneWorker extends AbstractNCBIWorker {
         transmitterMap.put("db",this.originalDb);       
         transmitterMap.put("retmode","xml");
         transmitterMap.put("id",this.term);
+		
         
 		
         try {

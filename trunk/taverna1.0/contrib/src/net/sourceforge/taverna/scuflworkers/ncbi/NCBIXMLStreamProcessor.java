@@ -20,7 +20,7 @@ import org.embl.ebi.escience.baclava.DataThing;
  * Last edited by $Author: phidias $
  * 
  * @author mfortner
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
 public class NCBIXMLStreamProcessor extends ReplacementStreamProcessor
         implements StreamProcessor {
@@ -32,6 +32,8 @@ public class NCBIXMLStreamProcessor extends ReplacementStreamProcessor
     protected Map outputMap = null;
     
     protected String outputFile = null;
+	
+	protected String ext = null;
     
     public NCBIXMLStreamProcessor(){
         
@@ -43,7 +45,7 @@ public class NCBIXMLStreamProcessor extends ReplacementStreamProcessor
      * @param filename
      *            The output filename
      */
-    public NCBIXMLStreamProcessor(Map outputMap, String startTag, String endTag) {
+    public NCBIXMLStreamProcessor(Map outputMap, String startTag, String endTag, String outputFile, String ext) {
         this.oldText = new String[] { "&lt;", "&gt;", "&quot;", "<b>", "</b>",
                 "<font color=\"#C00000\">", "</font>",
                 "<font color=\"#4040FF\">", "<font color=\"#C00000\">",
@@ -55,6 +57,8 @@ public class NCBIXMLStreamProcessor extends ReplacementStreamProcessor
         this.startTag = startTag;
         this.endTag = endTag;
         this.outputMap = outputMap;
+		this.outputFile = outputFile;
+		this.ext = ext;
     }
 
     /**
@@ -77,8 +81,14 @@ public class NCBIXMLStreamProcessor extends ReplacementStreamProcessor
         boolean startTagFound = false;
         boolean endTagFound = false;
         FileWriter fw = null;
+		System.out.println("EXT: " + this.ext);
+		String filename = (this.ext == null || this.ext.equals(""))?this.outputFile:this.outputFile + this.ext;
+		
+		
+		System.out.println("\n\n\n**** NCBIXMLStreamProcessor: outputFile: " + filename);
+		
         if (this.outputFile != null){
-            fw = new FileWriter(this.outputFile);            
+            fw = new FileWriter(filename);            
         }
 
         while ((str = in.readLine()) != null) {
