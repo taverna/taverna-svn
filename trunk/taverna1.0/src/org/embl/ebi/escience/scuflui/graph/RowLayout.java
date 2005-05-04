@@ -24,7 +24,7 @@ import org.jgraph.graph.GraphModel;
  * update as the graph changes.
  * 
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover </a>
- * @version $Revision: 1.15 $
+ * @version $Revision: 1.16 $
  */
 public class RowLayout extends ModelSpanningTree
 {
@@ -64,8 +64,8 @@ public class RowLayout extends ModelSpanningTree
 			{
 				positionLayout.updateNode(entry.getKey());
 			}
-		}		
-		
+		}
+
 		Collection edges = new TreeSet(getComparator(null));
 
 		if (change.getRemoved() != null)
@@ -83,7 +83,7 @@ public class RowLayout extends ModelSpanningTree
 					if (!model.isPort(removed[index]))
 					{
 						remove(removed[index]);
-						//positionLayout.remove(removed[index]);
+						// positionLayout.remove(removed[index]);
 						getTreeSet(GraphUtilities.getRoot(model, removed[index])).remove(
 								removed[index]);
 					}
@@ -249,7 +249,7 @@ public class RowLayout extends ModelSpanningTree
 			Object currentNode = GraphUtilities.getRoot(model, nodeChain.get(index));
 			int row = index + sourceRow;
 			int nodeRow = getRank(currentNode);
-			if (nodeRow < row || (nodeRow == targetRow && currentNode != target))
+			if (nodeRow < row || (nodeRow == targetRow && !currentNode.equals(target)))
 			{
 				nodeChain.remove(index);
 				getRow(nodeRow).remove(currentNode);
@@ -336,13 +336,20 @@ public class RowLayout extends ModelSpanningTree
 	{
 		// System.err.println(this+ ": Remove edge graph " + edge);
 		Object previousNode = getSource(edge);
+		Object target = getTarget(edge);
+		int sourceRow = getRank(previousNode);
 		Map attributes = getAttributes(edge);
 		List nodeChain = GraphConstants.getPoints(attributes);
 		for (int index = 1; index < nodeChain.size(); index++)
 		{
+			int row = index + sourceRow;
 			Object currentNode = GraphUtilities.getRoot(model, nodeChain.get(index));
 			positionLayout.removeIntermediateNode(previousNode, currentNode, edge);
 			previousNode = currentNode;
+			if (currentNode != target)
+			{
+				getRow(row).remove(currentNode);
+			}
 		}
 	}
 
@@ -391,7 +398,9 @@ public class RowLayout extends ModelSpanningTree
 		int newRank = oldRank.intValue() + rankChange;
 		LayoutConstants.setRow(attributes, newRank);
 		remove(node, oldRank.intValue());
+		assert !getRow(newRank).contains(node): node;
 		getRow(newRank).add(node);
+		assert getRow(newRank).contains(node): node;
 
 		Iterator edges = getEdges(node);
 		while (edges.hasNext())
@@ -404,7 +413,7 @@ public class RowLayout extends ModelSpanningTree
 		}
 	}
 
-	protected int getMaxRankMoveNegative(Object node)
+	protected int getMaxRankMoveNegative(Set set, Object node)
 	{
 		int move = Integer.MAX_VALUE;
 		int rank = getRank(node);
@@ -416,7 +425,7 @@ public class RowLayout extends ModelSpanningTree
 			if (getTarget(edge).equals(node))
 			{
 				hasParent = true;
-				if (!isTreeEdge(edge))
+				if (!isTreeEdge(edge) && !set.contains(getSource(edge)))
 				{
 					move = Math.min(move, getSlack(edge));
 				}
@@ -429,14 +438,14 @@ public class RowLayout extends ModelSpanningTree
 		return move;
 	}
 
-	protected int getMaxRankMovePositive(Object node)
+	protected int getMaxRankMovePositive(Set set, Object node)
 	{
 		int move = Integer.MAX_VALUE;
 		Iterator edges = getEdges(node);
 		while (edges.hasNext())
 		{
 			Object edge = edges.next();
-			if (getSource(edge).equals(node) && !isTreeEdge(edge))
+			if (getSource(edge).equals(node) && !isTreeEdge(edge) && !set.contains(getSource(edge)))
 			{
 				move = Math.min(move, getSlack(edge));
 			}

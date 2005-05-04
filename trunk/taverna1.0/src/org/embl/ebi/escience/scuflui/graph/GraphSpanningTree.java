@@ -15,7 +15,7 @@ import java.util.TreeSet;
 
 /**
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover </a>
- * @version $Revision: 1.15 $
+ * @version $Revision: 1.16 $
  */
 public abstract class GraphSpanningTree
 {
@@ -74,6 +74,37 @@ public abstract class GraphSpanningTree
 
 	protected abstract void removeEdge(Object edge);
 
+	protected Collection getTreePath(Object source, Object target, Object lastEdge)
+	{
+		Iterator edges = getEdges(source);
+		while (edges.hasNext())
+		{
+			Object edge = edges.next();
+			if (!edge.equals(lastEdge) && isTreeEdge(edge))
+			{
+				Object neighbour = getNeighbour(source, edge);
+				Collection result;
+				if (neighbour.equals(target))
+				{
+					result = new ArrayList();
+				}
+				else
+				{
+					result = getTreePath(neighbour, target, edge);
+				}
+				if (result != null)
+				{
+					if(getSource(edge).equals(source))
+					{
+						result.add(edge);
+					}
+					return result;
+				}
+			}
+		}
+		return null;
+	}
+
 	/**
 	 * @param nodes
 	 */
@@ -84,7 +115,7 @@ public abstract class GraphSpanningTree
 		{
 			return;
 		}
-		//System.err.println(this + ": Move nodes " + nodes + " by " + change);
+		// System.err.println(this + ": Move nodes " + nodes + " by " + change);
 		Iterator iterator = nodes.iterator();
 		while (iterator.hasNext())
 		{
@@ -95,7 +126,7 @@ public abstract class GraphSpanningTree
 			catch (NullPointerException e)
 			{
 				// Node no longer exists, ignore
-				System.err.println("Node doesn't exist");
+				//System.err.println("Node doesn't exist");
 			}
 		}
 	}
@@ -267,33 +298,34 @@ public abstract class GraphSpanningTree
 				return false;
 			}
 		}
-		setTreeSet(edge, sourceTree);
+		setTreeEdge(edge, true);
 		assert isTreeEdge(edge) : edge;
+		//System.err.println(this + ": Added tree edge " + edge);		
 		return true;
 	}
 
-	private int getMaxRankMove(Set targetSet, boolean negative)
+	private int getMaxRankMove(Set set, boolean negative)
 	{
-		Iterator nodes = targetSet.iterator();
+		Iterator nodes = set.iterator();
 		int move = Integer.MAX_VALUE;
-		while (nodes.hasNext())
+		while (nodes.hasNext() && move != 0)
 		{
 			Object node = nodes.next();
 			try
 			{
 				if (negative)
 				{
-					move = Math.min(move, getMaxRankMoveNegative(node));
+					move = Math.min(move, getMaxRankMoveNegative(set, node));
 				}
 				else
 				{
-					move = Math.min(move, getMaxRankMovePositive(node));
+					move = Math.min(move, getMaxRankMovePositive(set, node));
 				}
 			}
 			catch (NullPointerException e)
 			{
 				// Node doesn't exist, ignore
-				System.err.println("Node doesn't exist");
+				//System.err.println("Node doesn't exist");
 			}
 		}
 		if (negative)
@@ -303,9 +335,9 @@ public abstract class GraphSpanningTree
 		return move;
 	}
 
-	protected abstract int getMaxRankMoveNegative(Object node);
+	protected abstract int getMaxRankMoveNegative(Set set, Object node);
 
-	protected abstract int getMaxRankMovePositive(Object node);
+	protected abstract int getMaxRankMovePositive(Set set, Object node);
 
 	/**
 	 * Minimizes the length of a given edge.
@@ -327,7 +359,7 @@ public abstract class GraphSpanningTree
 			{
 				// Edge too short, try to move source set away to compensate
 				sourceMove = Math.max(slack, getMaxRankMove(sourceSet, true));
-				if(sourceMove != slack)
+				if (sourceMove != slack)
 				{
 					targetMove = Math.min(sourceMove - slack, getMaxRankMove(targetSet, false));
 				}
@@ -336,7 +368,7 @@ public abstract class GraphSpanningTree
 			{
 				// Edge too long, try to move target set closer to compensate
 				targetMove = Math.max(-slack, getMaxRankMove(targetSet, true));
-				if(targetMove != -slack)
+				if (targetMove != -slack)
 				{
 					sourceMove = Math.min(slack + targetMove, getMaxRankMove(sourceSet, false));
 				}
@@ -467,7 +499,8 @@ public abstract class GraphSpanningTree
 							Object replacement = replaceEdge(cutEdge, replacements);
 							if (replacement != null)
 							{
-								//System.err.println(this + ": Replaced tree edge " + cutEdge + " with " + replacement);
+								// System.err.println(this + ": Replaced tree edge " + cutEdge + "
+								// with " + replacement);
 								newEdges.add(replacement);
 								hasCutEdges = true;
 								timeStamp = "" + System.currentTimeMillis() + Math.random();
@@ -483,7 +516,7 @@ public abstract class GraphSpanningTree
 
 	protected Object replaceEdge(Object edge, Collection replacementEdges)
 	{
-		removeEdge(edge);
+		setTreeEdge(edge, false);
 
 		Iterator replacements = replacementEdges.iterator();
 		while (replacements.hasNext())
@@ -529,7 +562,7 @@ public abstract class GraphSpanningTree
 
 			return replaceEdge(edge, joiningEdges);
 		}
-		removeEdge(edge);
+		setTreeEdge(edge, false);
 		return null;
 	}
 
@@ -555,19 +588,17 @@ public abstract class GraphSpanningTree
 			{
 				return addTreeEdge(edge);
 			}
-			// int edgeLength = getRank(target) - getRank(source);
-			// if (edgeLength < getMinimumEdgeLength(edge))
-			// {
-			// // TODO Need to break some other edge
-			// // Get path? Choose edge to remove?
-			// System.err.println("Edge " + edge + " less than min
-			// length!");
-			// addTreeEdge(source, target, edge);
-			// }
-			// else
+			if(getSlack(edge) < 0)
 			{
-				return false;
+				Collection path = getTreePath(source, target, null);
+				Collection replace = new ArrayList();
+				replace.add(edge);
+				if(replaceEdge(path.iterator().next(), replace) != null)
+				{
+					return true;
+				}
 			}
+			return false;
 		}
 		return true;
 	}
@@ -591,7 +622,7 @@ public abstract class GraphSpanningTree
 				Object edge = edges.next();
 				if (addEdge(edge))
 				{
-					//System.err.println(this + ": Added tree edge " + edge);
+					// System.err.println(this + ": Added tree edge " + edge);
 					treeEdges.add(edge);
 					addedNew = true;
 					edges.remove();
@@ -613,4 +644,6 @@ public abstract class GraphSpanningTree
 	 * @return <code>true</code> if the edge forms part of the graph spanning tree
 	 */
 	protected abstract boolean isTreeEdge(Object edge);
+	
+	protected abstract void setTreeEdge(Object edge, boolean isTreeEdge);
 }

@@ -22,9 +22,8 @@ import org.jgraph.graph.GraphModel;
 
 /**
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover </a>
- * @version $Revision: 1.16 $
+ * @version $Revision: 1.17 $
  * 
- * TODO Change from center placed to left placed and use the port offset to fix it
  */
 public class PositionLayout extends ModelSpanningTree
 {
@@ -49,6 +48,7 @@ public class PositionLayout extends ModelSpanningTree
 		{
 			setInitialPosition(index, node);
 			nodes.add(index, node);
+			//System.err.println("Add node " + node + " to row " + ((y - Y_SEPARATION) / (ROW_HEIGHT + Y_SEPARATION)));			
 		}
 
 		protected void updateEdges()
@@ -128,8 +128,7 @@ public class PositionLayout extends ModelSpanningTree
 		public Object remove(int index)
 		{
 			Object node = nodes.remove(index);
-			// System.err.println("Remove node " + node + " from row " +
-			// rowIndex);
+			//System.err.println("Remove node " + node + " from row " + ((y - Y_SEPARATION) / (ROW_HEIGHT + Y_SEPARATION)));
 
 			Map attributes = getAttributes(node);
 			Edge leftEdge = LayoutConstants.getLeftEdge(attributes);
@@ -158,19 +157,9 @@ public class PositionLayout extends ModelSpanningTree
 				removeEdge(leftEdge);
 			}
 
-			removeFromTree(attributes);
+			setTreeSet(node, null);
 			LayoutConstants.setLeftEdge(attributes, null);
 			LayoutConstants.setRightEdge(attributes, null);
-
-			if (leftNode != null && rightNode != null)
-			{
-				Edge edge = new Edge(leftNode, rightNode);
-				setLeftEdge(rightNode, edge);
-				setRightEdge(leftNode, edge);
-
-				edges.add(edge);
-				// addEdge(edge);
-			}
 
 			return node;
 		}
@@ -446,9 +435,9 @@ public class PositionLayout extends ModelSpanningTree
 		if (intermediateEdge != null)
 		{
 			node = (IntermediateNode) intermediateEdge.getSource();
-			replaceEdge(node.getSourceEdge());
-			replaceEdge(node.getTargetEdge());
-			// remove(node);
+			removeEdge(node.getSourceEdge());
+			removeEdge(node.getTargetEdge());
+			// TODO remove(node);
 		}
 	}
 
@@ -588,16 +577,16 @@ public class PositionLayout extends ModelSpanningTree
 
 	protected void shiftRank(Object node, int rankChange)
 	{
-		if (rankChange < 0)
-		{
-			assert rankChange >= -getMaxRankMoveNegative(node) : node + ": " + rankChange + " < "
-					+ -getMaxRankMoveNegative(node);
-		}
-		else
-		{
-			assert rankChange <= getMaxRankMovePositive(node) : node + ": " + rankChange + " > "
-					+ getMaxRankMovePositive(node);
-		}
+//		if (rankChange < 0)
+//		{
+//			assert rankChange >= -getMaxRankMoveNegative(node) : node + ": " + rankChange + " < "
+//					+ -getMaxRankMoveNegative(node);
+//		}
+//		else
+//		{
+//			assert rankChange <= getMaxRankMovePositive(node) : node + ": " + rankChange + " > "
+//					+ getMaxRankMovePositive(node);
+//		}
 		try
 		{
 			getBounds(node).translate(rankChange, 0);
@@ -674,7 +663,7 @@ public class PositionLayout extends ModelSpanningTree
 		}
 	}
 
-	protected int getMaxRankMoveNegative(Object node)
+	protected int getMaxRankMoveNegative(Set set, Object node)
 	{
 		Map attributes = getAttributes(node);
 		assert attributes != null : node;
@@ -693,7 +682,7 @@ public class PositionLayout extends ModelSpanningTree
 		return Integer.MAX_VALUE;
 	}
 
-	protected int getMaxRankMovePositive(Object node)
+	protected int getMaxRankMovePositive(Set set, Object node)
 	{
 		Map attributes = getAttributes(node);
 		assert attributes != null : node;

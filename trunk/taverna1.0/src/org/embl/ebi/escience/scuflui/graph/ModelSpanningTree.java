@@ -11,7 +11,8 @@ import org.jgraph.graph.GraphModel;
 
 public abstract class ModelSpanningTree extends GraphSpanningTree
 {
-	protected static final String TREE_SET = " set";	
+	protected static final String TREE_SET = " set";
+	protected static final String TREE_EDGE = " edge";		
 	
 	protected static final String CUT_VALUE = "cut edge";
 	protected static final String CUT_TIME_STAMP = "cut time stamp";		
@@ -62,16 +63,15 @@ public abstract class ModelSpanningTree extends GraphSpanningTree
 	{
 		Map attributes = getAttributes(edge);
 		assert attributes != null: this + ": " + edge;
-		return attributes.containsKey(this + TREE_SET);
+		return attributes.containsKey(this + TREE_EDGE);
 	}
 	
 	protected void removeEdge(Object edge)
 	{
 		if(isTreeEdge(edge))
 		{
-			Map attributes = getAttributes(edge);
-			assert attributes != null: this + ": " + edge;
-			removeFromTree(attributes);
+			setTreeEdge(edge, false);
+			//System.err.println(this + ": Removed tree edge " + edge);
 		}
 	}
 
@@ -93,17 +93,32 @@ public abstract class ModelSpanningTree extends GraphSpanningTree
 		attributes.put(CUT_TIME_STAMP, timeStamp);
 		attributes.put(CUT_VALUE, new Integer(cutValue));
 	}	
-	
-	protected void removeFromTree(Map attributes)
-	{
-		attributes.remove(this + TREE_SET);		
-	}
 
 	protected void setTreeSet(Object node, Set treeSet)
 	{
 		Map attributes = getAttributes(node);
 		assert attributes != null: this;
-		assert treeSet != null: this + ": " + node;
-		attributes.put(this + TREE_SET, treeSet);
+		if(treeSet != null)
+		{
+			attributes.put(this + TREE_SET, treeSet);			
+		}
+		else
+		{
+			attributes.remove(this + TREE_SET);
+		}
+	}
+
+	protected void setTreeEdge(Object edge, boolean isTreeEdge)
+	{
+		Map attributes = getAttributes(edge);
+		assert attributes != null: this;
+		if(isTreeEdge)
+		{
+			attributes.put(this + TREE_EDGE, Boolean.TRUE);
+		}
+		else
+		{
+			attributes.remove(this + TREE_EDGE);
+		}
 	}
 }
