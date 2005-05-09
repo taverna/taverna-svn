@@ -212,9 +212,9 @@ public class WorkflowEditor extends JGraph implements ScuflUIComponent
 				};
 			}
 		});
-		//WorkflowEdgeRenderer edgeRenderer = new WorkflowEdgeRenderer();
-		//edgeRenderer.setTension((float)0.8);
-		//EdgeView.renderer = edgeRenderer;
+		WorkflowEdgeRenderer edgeRenderer = new WorkflowEdgeRenderer();
+		edgeRenderer.setTension((float)0.8);
+		EdgeView.renderer = edgeRenderer;
 		VertexView.renderer = new VertexRenderer()
 		{
 			// Change to non 1 value to show only part of the progress bar and
