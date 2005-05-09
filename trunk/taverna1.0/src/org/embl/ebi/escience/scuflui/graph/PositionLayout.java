@@ -6,7 +6,6 @@ package org.embl.ebi.escience.scuflui.graph;
 import java.awt.geom.Rectangle2D;
 import java.util.AbstractList;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
@@ -22,7 +21,7 @@ import org.jgraph.graph.GraphModel;
 
 /**
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover </a>
- * @version $Revision: 1.17 $
+ * @version $Revision: 1.18 $
  * 
  */
 public class PositionLayout extends ModelSpanningTree
@@ -48,7 +47,8 @@ public class PositionLayout extends ModelSpanningTree
 		{
 			setInitialPosition(index, node);
 			nodes.add(index, node);
-			//System.err.println("Add node " + node + " to row " + ((y - Y_SEPARATION) / (ROW_HEIGHT + Y_SEPARATION)));			
+			System.err.println("Add node " + node + " to row "
+					+ ((y - Y_SEPARATION) / (ROW_HEIGHT + Y_SEPARATION)));
 		}
 
 		protected void updateEdges()
@@ -78,7 +78,8 @@ public class PositionLayout extends ModelSpanningTree
 					LayoutConstants.setLeftEdge(rightAttributes, edge);
 					LayoutConstants.setRightEdge(leftAttributes, edge);
 
-					edges.add(edge);
+					assert !isRemoved(edge) : edge;
+					newEdges.add(edge);
 					setInitialPosition(index, right);
 				}
 			}
@@ -128,7 +129,8 @@ public class PositionLayout extends ModelSpanningTree
 		public Object remove(int index)
 		{
 			Object node = nodes.remove(index);
-			//System.err.println("Remove node " + node + " from row " + ((y - Y_SEPARATION) / (ROW_HEIGHT + Y_SEPARATION)));
+			System.err.println("Remove node " + node + " from row "
+					+ ((y - Y_SEPARATION) / (ROW_HEIGHT + Y_SEPARATION)));
 
 			Map attributes = getAttributes(node);
 			Edge leftEdge = LayoutConstants.getLeftEdge(attributes);
@@ -157,10 +159,9 @@ public class PositionLayout extends ModelSpanningTree
 				removeEdge(leftEdge);
 			}
 
-			setTreeSet(node, null);
 			LayoutConstants.setLeftEdge(attributes, null);
-			LayoutConstants.setRightEdge(attributes, null);
-
+			LayoutConstants.setRightEdge(attributes, null);			
+			
 			return node;
 		}
 
@@ -247,8 +248,6 @@ public class PositionLayout extends ModelSpanningTree
 	private static final int Y_SEPARATION = 15;
 	private static final int ROW_HEIGHT = 30;
 
-	protected List edges;
-
 	private CellMapper mapper;
 
 	/**
@@ -259,7 +258,6 @@ public class PositionLayout extends ModelSpanningTree
 	{
 		super(model);
 		this.mapper = mapper;
-		edges = new ArrayList();
 	}
 
 	/*
@@ -374,6 +372,7 @@ public class PositionLayout extends ModelSpanningTree
 
 	public IntermediateNode updateIntermediateNode(Object source, Object target, Object edge)
 	{
+		System.err.println(this + ": Update edge " + edge);
 		Edge nextEdge = getNextEdgeSegment(source, edge);
 		IntermediateNode node = null;
 		if (nextEdge != null)
@@ -392,6 +391,7 @@ public class PositionLayout extends ModelSpanningTree
 			node = (IntermediateNode) previousEdge.getSource();
 			if (!node.getSource().equals(source))
 			{
+				removeNode(node);
 				removeEdge(previousEdge);
 				removeEdge(node.getSourceEdge());
 				node = null;
@@ -403,22 +403,11 @@ public class PositionLayout extends ModelSpanningTree
 		}
 		setNextEdgeSegment(source, edge, node.getSourceEdge());
 		setPreviousEdgeSegment(target, edge, node.getTargetEdge());
-		if (!edges.contains(node.getSourceEdge()))
-		{
-			edges.add(node.getSourceEdge());
-		}
-		if (!edges.contains(node.getTargetEdge()))
-		{
-			edges.add(node.getTargetEdge());
-		}
+		assert !isRemoved(node.getSourceEdge()) : node.getSourceEdge();
+		newEdges.add(node.getSourceEdge());
+		assert !isRemoved(node.getTargetEdge()) : node.getTargetEdge();
+		newEdges.add(node.getTargetEdge());
 		return node;
-	}
-
-	protected void removeEdge(Object edge)
-	{
-		edges.remove(edge);
-		assert !edges.contains(edge) : this + ": " + edge;
-		super.removeEdge(edge);
 	}
 
 	public void removeIntermediateNode(Object source, Object target, Object edge)
@@ -435,9 +424,9 @@ public class PositionLayout extends ModelSpanningTree
 		if (intermediateEdge != null)
 		{
 			node = (IntermediateNode) intermediateEdge.getSource();
+			removeNode(node);			
 			removeEdge(node.getSourceEdge());
 			removeEdge(node.getTargetEdge());
-			// TODO remove(node);
 		}
 	}
 
@@ -483,7 +472,6 @@ public class PositionLayout extends ModelSpanningTree
 
 				public int outcode(double x, double y)
 				{
-					// TODO Implement outcode
 					return 0;
 				}
 
@@ -514,13 +502,11 @@ public class PositionLayout extends ModelSpanningTree
 
 				public Rectangle2D createUnion(Rectangle2D r)
 				{
-					// TODO Implement createUnion
 					return null;
 				}
 
 				public Rectangle2D createIntersection(Rectangle2D r)
 				{
-					// TODO Implement createIntersection
 					return null;
 				}
 
@@ -575,73 +561,25 @@ public class PositionLayout extends ModelSpanningTree
 		}
 	}
 
-	protected void shiftRank(Object node, int rankChange)
+	protected void shiftRank(Object node, int rankChange, Set set)
 	{
-//		if (rankChange < 0)
-//		{
-//			assert rankChange >= -getMaxRankMoveNegative(node) : node + ": " + rankChange + " < "
-//					+ -getMaxRankMoveNegative(node);
-//		}
-//		else
-//		{
-//			assert rankChange <= getMaxRankMovePositive(node) : node + ": " + rankChange + " > "
-//					+ getMaxRankMovePositive(node);
-//		}
 		try
 		{
-			getBounds(node).translate(rankChange, 0);
+			if (rankChange != 0)
+			{
+				getBounds(node).translate(rankChange, 0);
+			}
 		}
 		catch (NullPointerException e)
 		{
 			// No bounding box/view. Do nothing?
-			e.printStackTrace();
+			// System.err.println(this + ": Node " + node + " not found");
 		}
 	}
 
 	public String toString()
 	{
 		return "Position Tree";
-	}
-
-	protected List createInitialTree(Collection unused)
-	{
-		Collections.sort(edges, new Comparator()
-		{
-			public int compare(Object o1, Object o2)
-			{
-				if (o1 == o2)
-				{
-					return 0;
-				}
-
-				int edgeWeight1 = getEdgeWeight(o1);
-				if (edgeWeight1 == 0)
-				{
-					edgeWeight1 = 16;
-				}
-				int edgeWeight2 = getEdgeWeight(o2);
-				if (edgeWeight2 == 0)
-				{
-					edgeWeight2 = 16;
-				}
-
-				if (edgeWeight1 == edgeWeight2)
-				{
-					int targetRow1 = getRank(getTarget(o1));
-					int targetRow2 = getRank(getTarget(o2));
-
-					if (targetRow1 == targetRow2)
-					{
-						return o1.toString().compareTo(o2.toString());
-					}
-					return targetRow1 - targetRow2;
-				}
-				return edgeWeight2 - edgeWeight1;
-			}
-		});
-		List result = super.createInitialTree(edges);
-		edges.clear();
-		return result;
 	}
 
 	public void updateNode(Object node)
@@ -661,6 +599,53 @@ public class PositionLayout extends ModelSpanningTree
 				tightenEdge(edge, headSet, tailSet);
 			}
 		}
+	}
+
+	protected Comparator getComparator()
+	{
+		return new Comparator()
+		{
+			public int compare(Object o1, Object o2)
+			{
+				assert !isRemoved(o1) : o1;
+				assert !isRemoved(o2) : o2;
+				if (o1 == o2)
+				{
+					return 0;
+				}
+
+				int edgeWeight1 = getEdgeWeight(o1);
+				if (edgeWeight1 == 0)
+				{
+					edgeWeight1 = 16;
+				}
+				int edgeWeight2 = getEdgeWeight(o2);
+				if (edgeWeight2 == 0)
+				{
+					edgeWeight2 = 16;
+				}
+
+				if (edgeWeight1 == edgeWeight2)
+				{
+					try
+					{
+						int targetRow1 = getRank(getTarget(o1));
+						int targetRow2 = getRank(getTarget(o2));
+	
+						if (targetRow1 == targetRow2)
+						{
+							return o1.toString().compareTo(o2.toString());
+						}
+						return targetRow1 - targetRow2;					
+					}
+					catch(NullPointerException e)
+					{
+						System.err.println(this + ": Invalid edge, either " + o1 + " or " + o2);
+					}
+				}
+				return edgeWeight2 - edgeWeight1;
+			}
+		};
 	}
 
 	protected int getMaxRankMoveNegative(Set set, Object node)
@@ -699,49 +684,60 @@ public class PositionLayout extends ModelSpanningTree
 
 	protected int getSlack(Object edge)
 	{
-		Object source = getSource(edge);
-		Object target = getTarget(edge);
-		BoundingBox sourceRect = getBounds(source);
-		BoundingBox targetRect = getBounds(target);
-
-		int edgeLength = (int) (targetRect.getCenterX() - sourceRect.getCenterX());
-		int minimumEdgeLength = 0;
-
-		if (edge instanceof Edge)
+		try
 		{
-			Edge theEdge = (Edge) edge;
-			if (theEdge.getWeight() == 0)
+			Object source = getSource(edge);
+			Object target = getTarget(edge);
+			BoundingBox sourceRect = getBounds(source);
+			BoundingBox targetRect = getBounds(target);
+
+			int edgeLength = (int) (targetRect.getCenterX() - sourceRect.getCenterX());
+			int minimumEdgeLength = 0;
+
+			if (edge instanceof Edge)
 			{
-				minimumEdgeLength = (int) (targetRect.getWidth() + sourceRect.getWidth()) / 2
-						+ X_SEPARATION;
+				Edge theEdge = (Edge) edge;
+				if (theEdge.getWeight() == 0)
+				{
+					minimumEdgeLength = (int) (targetRect.getWidth() + sourceRect.getWidth()) / 2
+							+ X_SEPARATION;
+				}
+				else
+				{
+					// Use port locations if available
+					// if(source instanceof VirtualNode && !(target instanceof VirtualNode))
+					// {
+					// VirtualNode node = (VirtualNode)source;
+					// Object actualEdge = node.edge;
+					// target = model.getTarget(actualEdge);
+					// CellView view = mapper.getMapping(target, false);
+					// if(view instanceof PortView)
+					// {
+					// edgeLength = (int) (((PortView)view).getLocation(null).getX() -
+					// sourceRect.getCenterX());
+					// }
+					// }
+					// else if(target instanceof VirtualNode && !(source instanceof VirtualNode))
+					// {
+					// VirtualNode node = (VirtualNode)target;
+					// Object actualEdge = node.edge;
+					// source = model.getSource(actualEdge);
+					// CellView view = mapper.getMapping(source, false);
+					// if(view instanceof PortView)
+					// {
+					// edgeLength = (int) (targetRect.getCenterX() -
+					// ((PortView)view).getLocation(null).getX());
+					// }
+					// }
+				}
 			}
-			else
-			{
-				// Use port locations if available
-//				if(source instanceof VirtualNode && !(target instanceof VirtualNode))
-//				{
-//					VirtualNode node = (VirtualNode)source;
-//					Object actualEdge = node.edge;
-//					target = model.getTarget(actualEdge);
-//					CellView view = mapper.getMapping(target, false);
-//					if(view instanceof PortView)
-//					{
-//						edgeLength = (int) (((PortView)view).getLocation(null).getX() - sourceRect.getCenterX());						
-//					}
-//				}
-//				else if(target instanceof VirtualNode && !(source instanceof VirtualNode))
-//				{
-//					VirtualNode node = (VirtualNode)target;
-//					Object actualEdge = node.edge;
-//					source = model.getSource(actualEdge);
-//					CellView view = mapper.getMapping(source, false);
-//					if(view instanceof PortView)
-//					{
-//						edgeLength = (int) (targetRect.getCenterX() - ((PortView)view).getLocation(null).getX());
-//					}
-//				}				
-			}
+
+			return edgeLength - minimumEdgeLength;
 		}
-		return edgeLength - minimumEdgeLength;
+		catch (NullPointerException e)
+		{
+			System.err.println(this + ": Invalid edge " + edge);
+			return 0;
+		}
 	}
 }

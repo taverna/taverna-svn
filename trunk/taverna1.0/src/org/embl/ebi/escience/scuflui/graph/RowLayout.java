@@ -9,7 +9,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.TreeSet;
 import java.util.Map.Entry;
 
 import org.jgraph.event.GraphModelEvent;
@@ -24,7 +23,7 @@ import org.jgraph.graph.GraphModel;
  * update as the graph changes.
  * 
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover </a>
- * @version $Revision: 1.16 $
+ * @version $Revision: 1.17 $
  */
 public class RowLayout extends ModelSpanningTree
 {
@@ -51,7 +50,8 @@ public class RowLayout extends ModelSpanningTree
 		if (model.getRootCount() == 0)
 		{
 			rows.clear();
-			positionLayout.edges.clear();
+			newEdges.clear();			
+			positionLayout.newEdges.clear();
 			return;
 		}
 
@@ -66,8 +66,6 @@ public class RowLayout extends ModelSpanningTree
 			}
 		}
 
-		Collection edges = new TreeSet(getComparator(null));
-
 		if (change.getRemoved() != null)
 		{
 			Object[] removed = change.getRemoved();
@@ -75,18 +73,11 @@ public class RowLayout extends ModelSpanningTree
 			{
 				if (model.isEdge(removed[index]))
 				{
-					replaceEdge(removed[index]);
 					removeEdge(removed[index]);
 				}
-				else
+				else if (model.getParent(removed[index]) == null)
 				{
-					if (!model.isPort(removed[index]))
-					{
-						remove(removed[index]);
-						// positionLayout.remove(removed[index]);
-						getTreeSet(GraphUtilities.getRoot(model, removed[index])).remove(
-								removed[index]);
-					}
+					removeNode(removed[index]);
 				}
 			}
 		}
@@ -99,7 +90,8 @@ public class RowLayout extends ModelSpanningTree
 				if (model.isEdge(inserted[index]))
 				{
 					// TODO Check both ends aren't null
-					edges.add(inserted[index]);
+					assert !isRemoved(inserted[index]): inserted[index];
+					newEdges.add(inserted[index]);
 				}
 				else
 				{
@@ -108,7 +100,7 @@ public class RowLayout extends ModelSpanningTree
 			}
 		}
 
-		List treeEdges = createInitialTree(edges);
+		List treeEdges = createInitialTree();
 		optimiseTree(treeEdges);
 
 		reduceCrossovers();
@@ -118,7 +110,7 @@ public class RowLayout extends ModelSpanningTree
 			getRow(index).updateEdges();
 		}
 
-		treeEdges = positionLayout.createInitialTree(positionLayout.edges);
+		treeEdges = positionLayout.createInitialTree();
 		positionLayout.optimiseTree(treeEdges);
 	}
 
@@ -252,7 +244,7 @@ public class RowLayout extends ModelSpanningTree
 			if (nodeRow < row || (nodeRow == targetRow && !currentNode.equals(target)))
 			{
 				nodeChain.remove(index);
-				getRow(nodeRow).remove(currentNode);
+				removeNode(currentNode);
 				positionLayout.removeIntermediateNode(previousNode, currentNode, edge);
 			}
 			else
@@ -293,8 +285,9 @@ public class RowLayout extends ModelSpanningTree
 		return row;
 	}
 
-	protected void remove(Object node)
+	protected void removeNode(Object node)
 	{
+		super.removeNode(node);
 		Map attributes = getAttributes(node);
 		assert attributes != null;
 		Integer row = LayoutConstants.getRow(attributes);
@@ -337,18 +330,16 @@ public class RowLayout extends ModelSpanningTree
 		// System.err.println(this+ ": Remove edge graph " + edge);
 		Object previousNode = getSource(edge);
 		Object target = getTarget(edge);
-		int sourceRow = getRank(previousNode);
 		Map attributes = getAttributes(edge);
 		List nodeChain = GraphConstants.getPoints(attributes);
 		for (int index = 1; index < nodeChain.size(); index++)
 		{
-			int row = index + sourceRow;
 			Object currentNode = GraphUtilities.getRoot(model, nodeChain.get(index));
 			positionLayout.removeIntermediateNode(previousNode, currentNode, edge);
 			previousNode = currentNode;
 			if (currentNode != target)
 			{
-				getRow(row).remove(currentNode);
+				removeNode(currentNode);
 			}
 		}
 	}
@@ -388,10 +379,13 @@ public class RowLayout extends ModelSpanningTree
 		return false;
 	}
 
-	protected void shiftRank(Object node, int rankChange)
+	protected void shiftRank(Object node, int rankChange, Set set)
 	{
 		// System.err.println("Shift node " + node + " by " + rankChange);
-		assert (rankChange != 0);
+		if(rankChange == 0)
+		{
+			return;
+		}
 		Map attributes = getAttributes(node);
 		Integer oldRank = LayoutConstants.getRow(attributes);
 		assert (oldRank != null);
@@ -406,7 +400,7 @@ public class RowLayout extends ModelSpanningTree
 		while (edges.hasNext())
 		{
 			Object edge = edges.next();
-			if (!isTreeEdge(edge))
+			if (!isTreeEdge(edge) && (!set.contains(getSource(edge)) || !set.contains(getTarget(edge))))
 			{
 				updateEdgeGraph(edge);
 			}

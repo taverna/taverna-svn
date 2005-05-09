@@ -25,6 +25,30 @@ public abstract class ModelSpanningTree extends GraphSpanningTree
 		this.model = model;
 	}
 
+	
+	protected boolean isRemoved(Object edge)
+	{
+		Map attributes = getAttributes(edge);
+		assert attributes != null: this + ": " + edge;
+		return attributes.containsKey("removed");
+	}
+
+
+	protected void removeEdge(Object edge)
+	{
+		Map attributes = getAttributes(edge);
+		assert attributes != null: this;
+		attributes.put("removed", Boolean.TRUE);			
+		super.removeEdge(edge);
+	}
+
+	protected void removeNode(Object node)
+	{
+		Map attributes = getAttributes(node);
+		assert attributes != null: this;
+		attributes.put("removed", Boolean.TRUE);			
+	}
+	
 	protected Map getAttributes(Object node)
 	{
 		assert node != null: this;
@@ -53,26 +77,11 @@ public abstract class ModelSpanningTree extends GraphSpanningTree
 		return treeSet;
 	}
 
-	protected Object getSource(Object edge)
-	{
-		// TODO Implement getSource
-		return null;
-	}
-
 	protected boolean isTreeEdge(Object edge)
 	{
 		Map attributes = getAttributes(edge);
 		assert attributes != null: this + ": " + edge;
 		return attributes.containsKey(this + TREE_EDGE);
-	}
-	
-	protected void removeEdge(Object edge)
-	{
-		if(isTreeEdge(edge))
-		{
-			setTreeEdge(edge, false);
-			//System.err.println(this + ": Removed tree edge " + edge);
-		}
 	}
 
 	protected Integer getCutValue(Object treeEdge, String timeStamp)
