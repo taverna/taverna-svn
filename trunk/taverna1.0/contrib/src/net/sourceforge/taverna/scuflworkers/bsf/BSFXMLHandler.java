@@ -27,16 +27,16 @@ public class BSFXMLHandler implements XMLHandler {
 
     public Element elementForProcessor(Processor p) {
         BSFProcessor bp = (BSFProcessor) p;
-        Element spec = new Element("beanshell", XScufl.XScuflNS);
+        Element spec = new Element("bsf", XScufl.XScuflNS);
         // Script element
         Element script = new Element("scriptvalue", XScufl.XScuflNS);
         script.setText(bp.getScript());
         spec.addContent(script);
         // Input list
-        Element inputList = new Element("beanshellinputlist", XScufl.XScuflNS);
+        Element inputList = new Element("bsfinputlist", XScufl.XScuflNS);
         InputPort[] inputs = bp.getInputPorts();
         for (int i = 0; i < inputs.length; i++) {
-            Element inputElement = new Element("beanshellinput",
+            Element inputElement = new Element("bsfinput",
                     XScufl.XScuflNS);
             inputElement.setText(inputs[i].getName());
             if (inputs[i].getSyntacticType() != null)
@@ -46,10 +46,10 @@ public class BSFXMLHandler implements XMLHandler {
         }
         spec.addContent(inputList);
         // Output list
-        Element outputList = new Element("beanshelloutputlist", XScufl.XScuflNS);
+        Element outputList = new Element("bsfoutputlist", XScufl.XScuflNS);
         OutputPort[] outputs = bp.getOutputPorts();
         for (int i = 0; i < outputs.length; i++) {
-            Element outputElement = new Element("beanshelloutput",
+            Element outputElement = new Element("bsfoutput",
                     XScufl.XScuflNS);
             outputElement.setText(outputs[i].getName());
             if (outputs[i].getSyntacticType() != null)
@@ -66,7 +66,7 @@ public class BSFXMLHandler implements XMLHandler {
         if (bpf.getPrototype() != null) {
             return elementForProcessor(bpf.getPrototype());
         } else {
-            Element spec = new Element("beanshell", XScufl.XScuflNS);
+            Element spec = new Element("bsf", XScufl.XScuflNS);
             return spec;
         }
     }
@@ -95,7 +95,7 @@ public class BSFXMLHandler implements XMLHandler {
         BSFProcessor bp = new BSFProcessor(model, name, "",
                 new String[0], new String[0]);
         Element beanshell = processorNode
-                .getChild("bsfscript", XScufl.XScuflNS);
+                .getChild("bsf", XScufl.XScuflNS);
         Element scriptElement = beanshell.getChild("scriptvalue",
                 XScufl.XScuflNS);
         if (scriptElement != null) {
