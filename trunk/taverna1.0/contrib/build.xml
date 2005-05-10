@@ -1,4 +1,4 @@
-<project name="contrib" default="jar" basedir=".">
+<project name="contrib" default="build" basedir=".">
 	
 	<property file="build.properties"/>
     <path id="base-classpath">

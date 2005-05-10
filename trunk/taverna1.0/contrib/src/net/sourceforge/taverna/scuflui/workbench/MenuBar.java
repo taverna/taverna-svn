@@ -77,7 +77,7 @@ Help
  * Last edited by $Author: phidias $
  * 
  * @author Mark
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public class MenuBar extends JMenuBar {
     
@@ -151,6 +151,13 @@ public class MenuBar extends JMenuBar {
         menu.add(new JMenuItem(new WorkflowViewAction()));
         return menu;
         
+    }
+    
+    private JMenu createPublishMenu(){
+        JMenu menu = new JMenu("Publish");
+        menu.add(new JMenuItem());
+        
+        return menu;
     }
     
    
