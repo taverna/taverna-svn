@@ -91,7 +91,8 @@
 		<get src="http://www.ibiblio.org/maven/jdom/jars/jdom-1.0.jar" 
 		     dest="./netlib/jdom-1.0.jar" usetimestamp="yes"/>
 
-		<!-- Axis jar files -->		
+		<!-- Axis jar files -->
+		<!-- Old nightly builds, now using 1.2rc3 from ibiblio		
 		<get src="http://www.ebi.ac.uk/~tmo/mygrid/axis/11-Jan-2005/axis-nightly-11.01.05.jar" 
 		     dest="./netlib/axis-nightly-11.01.05.jar" usetimestamp="yes"/>
 		<get src="http://www.ebi.ac.uk/~tmo/mygrid/axis/11-Jan-2005/jaxrpc-nightly-11.01.05.jar" 
@@ -100,7 +101,16 @@
                      dest="./netlib/saaj-nightly-11.01.05.jar" usetimestamp="yes"/>
 		<get src="http://www.ebi.ac.uk/~tmo/mygrid/axis/11-Jan-2005/wsdl4j-nightly-11.01.05.jar" 
                      dest="./netlib/wsdl4j-nightly-11.01.05.jar" usetimestamp="yes"/>
-		     
+		-->     
+		<get src="http://www.ibiblio.org/pub/packages/maven/axis/jars/axis-1.2-RC3.jar"
+			 dest="./netlib/axis-1.2-RC3.jar" usetimestamp="yes"/>
+		<get src="http://www.ibiblio.org/pub/packages/maven/axis/jars/axis-jaxrpc-1.2-RC3.jar"
+			 dest="./netlib/axis-jaxrpc-1.2-RC3.jar" usetimestamp="yes"/>
+		<get src="http://www.ibiblio.org/pub/packages/maven/axis/jars/axis-saaj-1.2-RC3.jar"
+			 dest="./netlib/axis-saaj-1.2-RC3.jar" usetimestamp="yes"/>
+		<get src="http://www.ibiblio.org/pub/packages/maven/axis/jars/axis-wsdl4j-1.2-RC3.jar"
+			 dest="./netlib/axis-wsdl4j-1.2-RC3.jar" usetimestamp="yes"/>	  
+			 
 		<!-- Apache Commons -->
 		<get src="http://www.ibiblio.org/maven/commons-discovery/jars/commons-discovery-0.2.jar" 
 		     dest="./netlib/commons-discovery-0.2.jar" usetimestamp="yes"/>
