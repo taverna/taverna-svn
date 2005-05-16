@@ -404,9 +404,11 @@
 	</target>
 
 	<!-- Fetch seqhound metadata -->
-	<target name="seqhound">
+	<target name="seqhound" depends="prepare-src">
 	        <javadoc sourcefiles="../seqhound/src/org/blueprint/seqhound/SeqHound.java">
-		        <doclet name="org.embl.ebi.escience.scuflworkers.seqhound.SeqhoundMetadataDoclet" path="build/classes/"/>
+		        <doclet name="org.embl.ebi.escience.scuflworkers.seqhound.SeqhoundMetadataDoclet" path="build/classes/">
+			<path refid="compile-classpath"/>
+			</doclet>
 			<classpath refid="compile-classpath"/>
 			
 		</javadoc>

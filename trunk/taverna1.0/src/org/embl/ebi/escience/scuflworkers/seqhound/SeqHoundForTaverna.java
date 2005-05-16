@@ -37,7 +37,7 @@ public class SeqHoundForTaverna extends SeqHound {
      * <tr><td>jseqremcgi</td><td>/jseqhound/jseqrem</td><td>Path to the jseqrem cgi on the server</td></tr>
      * </table>
      */
-    public SeqHoundForTaverna(Properties config) {
+    public SeqHoundForTaverna(Properties config) throws IOException {
 	this.server = config.getProperty("server", "seqhound.blueprint.org");
 	this.jseqrem_server = config.getProperty("jseqremserver", "skinner.blueprint.org:8080");
 	this.slri_cgi_path = config.getProperty("cgi", "/cgi-bin/seqrem");
