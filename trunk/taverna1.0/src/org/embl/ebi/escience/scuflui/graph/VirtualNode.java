@@ -13,7 +13,7 @@ import java.util.Map;
  * COMMENT
  * 
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover </a>
- * @version $Revision: 1.6 $
+ * @version $Revision: 1.7 $
  */
 public class VirtualNode
 {
@@ -120,12 +120,8 @@ public class VirtualNode
 
 			public void translate(int dx, int dy)
 			{
+				//System.err.println(VirtualNode.this + ": Translate by " + dx + ", " + dy);
 				position.setLocation(position.getX() + dx, position.getY() + dy);
-			}
-
-			public void setPosition(int x, int y)
-			{
-				position.setLocation(x, y);	
 			}
 		};
 	}

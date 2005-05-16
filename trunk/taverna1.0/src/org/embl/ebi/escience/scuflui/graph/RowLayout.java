@@ -23,7 +23,7 @@ import org.jgraph.graph.GraphModel;
  * update as the graph changes.
  * 
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover </a>
- * @version $Revision: 1.17 $
+ * @version $Revision: 1.18 $
  */
 public class RowLayout extends ModelSpanningTree
 {
@@ -50,7 +50,7 @@ public class RowLayout extends ModelSpanningTree
 		if (model.getRootCount() == 0)
 		{
 			rows.clear();
-			newEdges.clear();			
+			newEdges.clear();
 			positionLayout.newEdges.clear();
 			return;
 		}
@@ -90,7 +90,7 @@ public class RowLayout extends ModelSpanningTree
 				if (model.isEdge(inserted[index]))
 				{
 					// TODO Check both ends aren't null
-					assert !isRemoved(inserted[index]): inserted[index];
+					assert !isRemoved(inserted[index]) : inserted[index];
 					newEdges.add(inserted[index]);
 				}
 				else
@@ -105,9 +105,10 @@ public class RowLayout extends ModelSpanningTree
 
 		reduceCrossovers();
 
+		int y = 0;
 		for (int index = 0; index < rows.size(); index++)
 		{
-			getRow(index).updateEdges();
+			y = getRow(index).updateEdges(y);
 		}
 
 		treeEdges = positionLayout.createInitialTree();
@@ -124,7 +125,7 @@ public class RowLayout extends ModelSpanningTree
 				{
 					PositionLayout.Row row1 = getRow(index - 1);
 					PositionLayout.Row row2 = getRow(index);
-					row1.sort(row2, true);
+					row2.sort(row1, false);
 				}
 			}
 			else
@@ -133,7 +134,7 @@ public class RowLayout extends ModelSpanningTree
 				{
 					PositionLayout.Row row1 = getRow(index + 1);
 					PositionLayout.Row row2 = getRow(index);
-					row1.sort(row2, false);
+					row2.sort(row1, true);
 				}
 			}
 		}
@@ -261,6 +262,7 @@ public class RowLayout extends ModelSpanningTree
 				previousNode = currentNode;
 			}
 		}
+		assert nodeChain.size() == (targetRow - sourceRow) + 1 : edge;
 		GraphConstants.setPoints(attributes, nodeChain);
 		CellView view = mapper.getMapping(edge, false);
 		if (view != null)
@@ -356,7 +358,7 @@ public class RowLayout extends ModelSpanningTree
 		assert index >= 0;
 		for (int size = rows.size(); size <= index; size++)
 		{
-			rows.add(positionLayout.new Row(index));
+			rows.add(positionLayout.new Row());
 		}
 		return (PositionLayout.Row) rows.get(index);
 	}
@@ -382,7 +384,7 @@ public class RowLayout extends ModelSpanningTree
 	protected void shiftRank(Object node, int rankChange, Set set)
 	{
 		// System.err.println("Shift node " + node + " by " + rankChange);
-		if(rankChange == 0)
+		if (rankChange == 0)
 		{
 			return;
 		}
@@ -392,17 +394,36 @@ public class RowLayout extends ModelSpanningTree
 		int newRank = oldRank.intValue() + rankChange;
 		LayoutConstants.setRow(attributes, newRank);
 		remove(node, oldRank.intValue());
-		assert !getRow(newRank).contains(node): node;
+		assert !getRow(newRank).contains(node) : node;
 		getRow(newRank).add(node);
-		assert getRow(newRank).contains(node): node;
+		assert getRow(newRank).contains(node) : node;
 
 		Iterator edges = getEdges(node);
 		while (edges.hasNext())
 		{
 			Object edge = edges.next();
-			if (!isTreeEdge(edge) && (!set.contains(getSource(edge)) || !set.contains(getTarget(edge))))
+			if (!isTreeEdge(edge))
 			{
-				updateEdgeGraph(edge);
+				Object source = getSource(edge);
+				if (!set.contains(source) || !set.contains(getTarget(edge)))
+				{
+					updateEdgeGraph(edge);
+				}
+				else
+				{
+					// Since both the source and target are in the set to move, also move all the
+					// virtual nodes on the edge. But, you only want to do it once, so do it when
+					// moving the source and not when moving the target.
+					if (node.equals(source))
+					{
+						Map edgeAttributes = getAttributes(edge);
+						List nodeChain = GraphConstants.getPoints(edgeAttributes);
+						for (int index = 1; index < nodeChain.size() - 1; index++)
+						{
+							shiftRank(nodeChain.get(index), rankChange, set);
+						}
+					}
+				}
 			}
 		}
 	}
@@ -439,7 +460,7 @@ public class RowLayout extends ModelSpanningTree
 		while (edges.hasNext())
 		{
 			Object edge = edges.next();
-			if (getSource(edge).equals(node) && !isTreeEdge(edge) && !set.contains(getSource(edge)))
+			if (getSource(edge).equals(node) && !isTreeEdge(edge) && !set.contains(getTarget(edge)))
 			{
 				move = Math.min(move, getSlack(edge));
 			}
@@ -449,6 +470,15 @@ public class RowLayout extends ModelSpanningTree
 
 	protected int getSlack(Object edge)
 	{
-		return getRank(getTarget(edge)) - getRank(getSource(edge)) - 1;
+		return (getRank(getTarget(edge)) - getRank(getSource(edge))) - 1;
+	}
+
+	protected boolean isValid(Object edge)
+	{
+		if (isTreeEdge(edge))
+		{
+			return getSlack(edge) == 0;
+		}
+		return getSlack(edge) >= 0;
 	}
 }

@@ -1,9 +1,12 @@
 package org.embl.ebi.escience.scuflui.graph;
 
-import org.jgraph.graph.*;
-import java.awt.*;
-import java.awt.geom.*;
-import java.util.*;
+import java.awt.Shape;
+import java.awt.geom.GeneralPath;
+import java.awt.geom.Point2D;
+
+import org.jgraph.graph.EdgeRenderer;
+import org.jgraph.graph.EdgeView;
+import org.jgraph.graph.GraphConstants;
 
 /**
  * A subclass of the EdgeRenderer which always routes

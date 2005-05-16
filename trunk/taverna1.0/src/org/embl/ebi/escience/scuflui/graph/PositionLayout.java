@@ -21,7 +21,7 @@ import org.jgraph.graph.GraphModel;
 
 /**
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover </a>
- * @version $Revision: 1.18 $
+ * @version $Revision: 1.19 $
  * 
  */
 public class PositionLayout extends ModelSpanningTree
@@ -29,14 +29,6 @@ public class PositionLayout extends ModelSpanningTree
 	class Row extends AbstractList
 	{
 		private ArrayList nodes = new ArrayList();
-		private int y = 0;
-
-		// private int height = 0;
-
-		Row(int rowIndex)
-		{
-			y = rowIndex * (ROW_HEIGHT + Y_SEPARATION) + Y_SEPARATION;
-		}
 
 		public Object set(int index, Object element)
 		{
@@ -45,14 +37,15 @@ public class PositionLayout extends ModelSpanningTree
 
 		public void add(int index, Object node)
 		{
-			setInitialPosition(index, node);
 			nodes.add(index, node);
-			System.err.println("Add node " + node + " to row "
-					+ ((y - Y_SEPARATION) / (ROW_HEIGHT + Y_SEPARATION)));
+			// System.err.println("Add node " + node + " to row "
+			// + ((y - Y_SEPARATION) / (ROW_HEIGHT + Y_SEPARATION)));
 		}
 
-		protected void updateEdges()
+		protected int updateEdges(int rowy)
 		{
+			int y = rowy + Y_SEPARATION;
+			int height = (int) getBounds(get(0)).getHeight();
 			for (int index = 1; index < size(); index++)
 			{
 				Object left = get(index - 1);
@@ -80,35 +73,30 @@ public class PositionLayout extends ModelSpanningTree
 
 					assert !isRemoved(edge) : edge;
 					newEdges.add(edge);
-					setInitialPosition(index, right);
 				}
+				height = (int) Math.max(height, getBounds(right).getHeight());
 			}
+			
+			Iterator nodes = this.nodes.iterator();
+			while (nodes.hasNext())
+			{
+				setInitialPosition(nodes.next(), y, height);
+			}
+			return y + height;
 		}
 
 		/*
 		 * @see org.embl.ebi.escience.scuflui.graph.GraphSpanningTree#moveNode(java.lang.Object,
 		 *      java.lang.Object, int)
 		 */
-		private void setInitialPosition(int index, Object node)
+		private void setInitialPosition(Object node, int y, int height)
 		{
-			int x = X_SEPARATION;
-			int y = this.y;
-			if (index > 0)
+			BoundingBox bounds = getBounds(node);
+			int dy = (int) ((y + (height - bounds.getHeight()) / 2) - bounds.getY());
+			if (dy != 0)
 			{
-				BoundingBox bounds = getBounds(get(index - 1));
-				x = (int) bounds.getMaxX() + X_SEPARATION;
+				bounds.translate(0, dy);
 			}
-
-			if (node instanceof VirtualNode)
-			{
-				y += 10;
-			}
-			else if (GraphUtilities.isGroup(model, node))
-			{
-				y -= 15;
-			}
-
-			getBounds(node).setPosition(x, y);
 		}
 
 		private void setLeftEdge(Object node, Edge edge)
@@ -129,8 +117,6 @@ public class PositionLayout extends ModelSpanningTree
 		public Object remove(int index)
 		{
 			Object node = nodes.remove(index);
-			System.err.println("Remove node " + node + " from row "
-					+ ((y - Y_SEPARATION) / (ROW_HEIGHT + Y_SEPARATION)));
 
 			Map attributes = getAttributes(node);
 			Edge leftEdge = LayoutConstants.getLeftEdge(attributes);
@@ -160,8 +146,8 @@ public class PositionLayout extends ModelSpanningTree
 			}
 
 			LayoutConstants.setLeftEdge(attributes, null);
-			LayoutConstants.setRightEdge(attributes, null);			
-			
+			LayoutConstants.setRightEdge(attributes, null);
+
 			return node;
 		}
 
@@ -177,7 +163,12 @@ public class PositionLayout extends ModelSpanningTree
 
 		public void sort(Row other, boolean next)
 		{
+			if (this.size() <= 1 || other.size() <= 1)
+			{
+				return;
+			}
 			// TODO Sort children at the same time
+
 			Iterator nodes = this.nodes.iterator();
 			while (nodes.hasNext())
 			{
@@ -220,12 +211,16 @@ public class PositionLayout extends ModelSpanningTree
 					{
 						if (node.equals(interNode.getSource()))
 						{
-							values.add(new Integer(other.indexOf(interNode.getTarget())));
+							int indexOf = other.indexOf(interNode.getTarget());
+							//assert indexOf != -1 : interNode;
+							values.add(new Integer(indexOf));
 						}
 					}
 					else if (node.equals(interNode.getTarget()))
 					{
-						values.add(new Integer(other.indexOf(interNode.getSource())));
+						int indexOf = other.indexOf(interNode.getSource());
+						//assert indexOf != -1 : interNode;
+						values.add(new Integer(indexOf));
 					}
 				}
 			}
@@ -238,6 +233,7 @@ public class PositionLayout extends ModelSpanningTree
 			{
 				median = (Integer) values.get(values.size() / 2);
 			}
+			//System.err.println(this + ": Median value of " + node + " = " + median);
 
 			getAttributes(node).put("Median_value", median);
 
@@ -245,8 +241,7 @@ public class PositionLayout extends ModelSpanningTree
 	}
 
 	private static final int X_SEPARATION = 15;
-	private static final int Y_SEPARATION = 15;
-	private static final int ROW_HEIGHT = 30;
+	private static final int Y_SEPARATION = 25;
 
 	private CellMapper mapper;
 
@@ -372,7 +367,7 @@ public class PositionLayout extends ModelSpanningTree
 
 	public IntermediateNode updateIntermediateNode(Object source, Object target, Object edge)
 	{
-		System.err.println(this + ": Update edge " + edge);
+		// System.err.println(this + ": Update edge " + edge);
 		Edge nextEdge = getNextEdgeSegment(source, edge);
 		IntermediateNode node = null;
 		if (nextEdge != null)
@@ -405,8 +400,10 @@ public class PositionLayout extends ModelSpanningTree
 		setPreviousEdgeSegment(target, edge, node.getTargetEdge());
 		assert !isRemoved(node.getSourceEdge()) : node.getSourceEdge();
 		newEdges.add(node.getSourceEdge());
+		assert newEdges.contains(node.getSourceEdge());
 		assert !isRemoved(node.getTargetEdge()) : node.getTargetEdge();
 		newEdges.add(node.getTargetEdge());
+		assert newEdges.contains(node.getTargetEdge());
 		return node;
 	}
 
@@ -424,7 +421,7 @@ public class PositionLayout extends ModelSpanningTree
 		if (intermediateEdge != null)
 		{
 			node = (IntermediateNode) intermediateEdge.getSource();
-			removeNode(node);			
+			removeNode(node);
 			removeEdge(node.getSourceEdge());
 			removeEdge(node.getTargetEdge());
 		}
@@ -460,11 +457,6 @@ public class PositionLayout extends ModelSpanningTree
 		{
 			return new BoundingBox()
 			{
-				public void setPosition(int x, int y)
-				{
-					translate(x - (int) getX(), y - (int) getY());
-				}
-
 				public void setRect(double x, double y, double w, double h)
 				{
 					view.getBounds().setRect(x, y, w, h);
@@ -512,6 +504,7 @@ public class PositionLayout extends ModelSpanningTree
 
 				public void translate(int dx, int dy)
 				{
+					// System.err.println(view.getCell() + ": Translate by " + dx + ", " + dy);
 					if (view.isLeaf())
 					{
 						view.getAllAttributes().translate(dx, dy);
@@ -615,35 +608,20 @@ public class PositionLayout extends ModelSpanningTree
 				}
 
 				int edgeWeight1 = getEdgeWeight(o1);
-				if (edgeWeight1 == 0)
-				{
-					edgeWeight1 = 16;
-				}
 				int edgeWeight2 = getEdgeWeight(o2);
-				if (edgeWeight2 == 0)
+				if ((edgeWeight1 == 0 || edgeWeight2 == 0) && edgeWeight1 != edgeWeight2)
 				{
-					edgeWeight2 = 16;
+					return edgeWeight1 - edgeWeight2;
 				}
 
-				if (edgeWeight1 == edgeWeight2)
+				int targetRow1 = getRank(getTarget(o1));
+				int targetRow2 = getRank(getTarget(o2));
+
+				if (targetRow1 == targetRow2)
 				{
-					try
-					{
-						int targetRow1 = getRank(getTarget(o1));
-						int targetRow2 = getRank(getTarget(o2));
-	
-						if (targetRow1 == targetRow2)
-						{
-							return o1.toString().compareTo(o2.toString());
-						}
-						return targetRow1 - targetRow2;					
-					}
-					catch(NullPointerException e)
-					{
-						System.err.println(this + ": Invalid edge, either " + o1 + " or " + o2);
-					}
+					return o1.toString().compareTo(o2.toString());
 				}
-				return edgeWeight2 - edgeWeight1;
+				return targetRow1 - targetRow2;
 			}
 		};
 	}
@@ -691,15 +669,15 @@ public class PositionLayout extends ModelSpanningTree
 			BoundingBox sourceRect = getBounds(source);
 			BoundingBox targetRect = getBounds(target);
 
-			int edgeLength = (int) (targetRect.getCenterX() - sourceRect.getCenterX());
-			int minimumEdgeLength = 0;
+			double edgeLength = targetRect.getCenterX() - sourceRect.getCenterX();
+			double minimumEdgeLength = 0;
 
 			if (edge instanceof Edge)
 			{
 				Edge theEdge = (Edge) edge;
 				if (theEdge.getWeight() == 0)
 				{
-					minimumEdgeLength = (int) (targetRect.getWidth() + sourceRect.getWidth()) / 2
+					minimumEdgeLength = (targetRect.getWidth() + sourceRect.getWidth()) / 2
 							+ X_SEPARATION;
 				}
 				else
@@ -732,12 +710,29 @@ public class PositionLayout extends ModelSpanningTree
 				}
 			}
 
-			return edgeLength - minimumEdgeLength;
+			return (int) (edgeLength - minimumEdgeLength);
 		}
 		catch (NullPointerException e)
 		{
 			System.err.println(this + ": Invalid edge " + edge);
 			return 0;
 		}
+	}
+
+	protected boolean isValid(Object edge)
+	{
+		if (isTreeEdge(edge))
+		{
+			return getSlack(edge) == 0;
+		}
+		if (edge instanceof Edge)
+		{
+			Edge theEdge = (Edge) edge;
+			if (theEdge.getWeight() == 0)
+			{
+				return getSlack(edge) >= 0;
+			}
+		}
+		return true;
 	}
 }

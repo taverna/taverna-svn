@@ -124,10 +124,13 @@ public abstract class ModelSpanningTree extends GraphSpanningTree
 		if(isTreeEdge)
 		{
 			attributes.put(this + TREE_EDGE, Boolean.TRUE);
+			assert isTreeEdge(edge) : edge;			
 		}
 		else
 		{
+			//System.err.println(this + ": Remove from tree " + edge);
 			attributes.remove(this + TREE_EDGE);
+			assert !isTreeEdge(edge) : edge;			
 		}
 	}
 }

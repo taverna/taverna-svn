@@ -9,7 +9,7 @@ import java.awt.geom.Rectangle2D;
  * COMMENT 
  * 
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover</a>
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public abstract class BoundingBox extends Rectangle2D
 {
@@ -24,8 +24,6 @@ public abstract class BoundingBox extends Rectangle2D
 	}
 
 	public abstract void translate(int dx, int dy);	
-	
-	public abstract void setPosition(int x, int y);
 	
 	public String toString()
 	{

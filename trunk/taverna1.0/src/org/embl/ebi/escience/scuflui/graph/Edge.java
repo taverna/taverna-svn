@@ -60,16 +60,16 @@ class Edge
 		}
 		target = node;
 	}
-
-	public boolean equals(Object obj)
-	{
-		if(obj instanceof Edge)
-		{
-			Edge edge = (Edge)obj;
-			return source.equals(edge.source) && target.equals(edge.target);
-		}
-		return false;
-	}
+//
+//	public boolean equals(Object obj)
+//	{
+//		if(obj instanceof Edge)
+//		{
+//			Edge edge = (Edge)obj;
+//			return source.equals(edge.source) && target.equals(edge.target);
+//		}
+//		return false;
+//	}
 
 	public String toString()
 	{
