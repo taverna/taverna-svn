@@ -1,0 +1,121 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<title>Untitled Document</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<style type="text/css">
+<!--
+body {
+	font-family: Arial, Helvetica, sans-serif;
+	text-align: justify;
+}
+-->
+</style>
+</head>
+
+<body>
+<h1>Taverna 2 Processor Model</h1>
+<p><a href="mailto:tmo@ebi.ac.uk">tmo@ebi.ac.uk</a>, 16th May 2005</p>
+<p>The concept of a Processor in Taverna 1 has been extended over the lifetime 
+  of that system to incorporate two extended features - implicit iteration and 
+  fault tolerance. These features were added in an ad hoc fashion to an existing 
+  process model rather than being designed in from the beginning which has led 
+  to several issues. The first is that the workflow enactment core is not aware 
+  of the iteration or fault tolerance. This lack of awareness between the layers 
+  in the execution stack leads to inefficient invocation (all iterations must 
+  complete before any child processes can start) and renders some features (dispatch 
+  of iterations to multiple processors) impossible to implement cleanly. This 
+  process model redesign is intended to provide the following features to the 
+  workflow core:</p>
+<ol>
+  <li><strong>Full support for process containment</strong>. The current workflow 
+    model allows for nested workflows but only by implementing a processor which 
+    happens to contain a workflow - there is no fundamental concept of process 
+    containment. By creating a tree like model of the process where child nodes 
+    are contained within parent processes we allow much more consistant reporting, 
+    error handling and provenance generation.</li>
+  <li><strong>Stream based enactment</strong>. The current model is entirely document 
+    centric, a decision which has led to generally intuitive behaviour for our 
+    target audience. We will maintain this model but allow the workflow enactor 
+    to stream partial iteration results. This is in contrast to the current behaviour 
+    - in Taverna 1 a simple chain of operations will, under iteration, require 
+    the iterations over the first operation to complete before the iterations 
+    over the second can start. The new model allows iterations to run as soon 
+    as data is available - we implement this by creating a concept of stack iterators, 
+    data is sent to a processor in an 'add input' message which the stack iterator 
+    then combines with any existing input messages in a manner similar to the 
+    current approach.</li>
+  <li><strong>Dynamic service selection</strong>. All current processor implementations 
+    point to a particular concrete service - rather than introduce more processors 
+    which perform runtime service binding in an ad hoc fashion we introduce the 
+    concept of service groups and service constructor functions along with dispatcher 
+    and invoker objects. This also replaces the concept of alternate processors 
+    - a processor group is the top level abstraction and consists of an ordered 
+    list of processors rather than the current model of a single primary and ordered 
+    list of alternates.</li>
+  <li><strong>Recursive invocation semantics</strong>. To allow simulation and 
+    parameter sweep style workflows we introduce a recursion behaviour to the 
+    invoker layer allowing recursion over a single operation within the workflow 
+    with feedback - by restricting this to a single operation rather than an arbitrary 
+    subgraph we maintain the intuitive 'everything you can express is valid' behaviour 
+    while the ability to specify process containment allows this to actually run 
+    over a workflow rather than a naive single process.</li>
+  <li><strong>Configurable binding and invocation</strong>. The dispatcher and 
+    invoker components described above are fully plugable, this moves the previous 
+    implicit error handling behaviour into an explicit stateful dispatcher component 
+    - by maintaining state the dispatcher can be a lot smarter about scheduling 
+    (can take advantage of the state of other similar operations in the same flow 
+    or of historical data from the managed operation). The dispatcher is preceeded 
+    by a configurable list of filtering components which winnow the available 
+    concrete services by some user configurable criteria before the dispatcher 
+    selects a service for each iteration.</li>
+  <li><strong>Backwards compatibility with Taverna 1</strong>. All existing workflows 
+    must behave as they currently do under the new architecture. Sensible default 
+    implementations for the various plugable components will replicate existing 
+    behaviours using the new mechanisms.</li>
+</ol>
+<p>The diagram below shows the various stages and software components in a single 
+  Taverna 2 process. The section on the left refers to the specification and resolution 
+  of the process whereas that on the right describes its invocation.</p>
+<p><img src="Processor-model.png" width="864" height="507"></p>
+<p>A data event in this context consists of a single Taverna DataThing object 
+  with associated LSID and MIME type metadata. The interface to DataThing is unlikely 
+  to change significantly although the implementation will be enhanced to allow 
+  backing stores other than system memory.</p>
+<p>At runtime each processor is presented with a map of named inputs corresponding 
+  to data links in the workflow model. For each input an Iteration / Aggregation 
+  module is created. This module accepts data events and either splits and emits 
+  finer grained events or waits for completion of the event stream and emits an 
+  aggregate depending on whether the type (collection structure) of the incoming 
+  events is coarser or finer than that desired.</p>
+<p>The Iteration Strategy Manager component is responsible for the combination 
+  of the events from the Iterator / Aggregator units into a queue of independant 
+  jobs. Each job consists of a map of named input DataThing objects of the type 
+  declared by the abstract processor and an array of integer indices into the 
+  target location within the result collections.</p>
+<p>The Job Dispatcher is responsible for removing jobs from the queue, allocating 
+  concrete service instances and passing pairs of job and service to the invoker. 
+  This involves resolution of the abstract operation group into a single concrete 
+  operation - it is at this stage that plugable service selection mechanisms are 
+  implemented such as shim insertion or reliability based selection. As the Job 
+  Dispatcher is stateful per process it can also perform tasks such as round robin 
+  dispatch of jobs to a set of concrete instances. The resolution process takes 
+  advantage of time limited caching - each node in the tree of concrete services 
+  can declare an expiry time - if the Job Dispatcher sees a node which has expired 
+  it requests re-resolution of the process tree from that point downwards. This 
+  allows long running iterations to dynamically inspect the state of the service 
+  world at invocation time rather than at the point the iteration started while 
+  remaining reasonably efficient.</p>
+<p>Process resolution is performed by recursively transforming any abstract operation 
+  into either another abstract operation (or set thereof) or into a concrete operation. 
+  This results in a tree of concrete operations for each abstract operation in 
+  the operation group where the leaf nodes are concrete operations that can be 
+  used in a single job invocation. The resolution mechanism is itself plugable 
+  and allows multiple levels of filtering after the initial tree composition stage.</p>
+<p>The Job Invoker is responsible for applying each job to a concrete service 
+  specified by the Job Dispatcher. This may involve re-scheduling the job by passing 
+  control back to the Job Dispatcher (for failover type semantics). Recursion 
+  is implemented by a configurable invoker and therefore happens per-iteration 
+  rather than per-processor.</p>
+</body>
+</html>
