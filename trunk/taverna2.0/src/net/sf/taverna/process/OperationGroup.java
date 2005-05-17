@@ -107,4 +107,22 @@ public class OperationGroup {
 	this.jobInvoker = newInvoker;
     }
 
+    /**
+     * Get the input ports - these are the high level group ports rather than
+     * those used per service, they may or may not correspond one to one with
+     * those in the individual concrete services that this operation group uses.
+     * Each concrete operation defines the mapping between the operation inputs
+     * and outputs and those in the operation group
+     */
+    public InputPort[] getInputPorts() {
+	return new InputPort[0];
+    }
+    
+    /**
+     * Get the output ports, see getInputPorts comment
+     */
+    public OutputPort[] getOutputPorts() {
+	return new OutputPort[0];
+    }
+
 }
