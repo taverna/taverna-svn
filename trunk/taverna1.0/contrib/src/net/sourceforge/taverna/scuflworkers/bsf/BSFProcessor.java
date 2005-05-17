@@ -28,6 +28,7 @@ import org.embl.ebi.escience.scufl.ScuflModelEvent;
 public class BSFProcessor extends Processor implements java.io.Serializable {
 
     private String theScript = "";
+	private String language = "";
 
     /**
      * Construct a new processor with the given model and name, delegates to the
@@ -83,8 +84,26 @@ public class BSFProcessor extends Processor implements java.io.Serializable {
     public String getScript() {
         return this.theScript;
     }
+	
+	
 
     /**
+	 * @return Returns the language.
+	 */
+	public String getLanguage() {
+		return language;
+	}
+	
+
+	/**
+	 * @param language The language to set.
+	 */
+	public void setLanguage(String language) {
+		this.language = language;
+	}
+	
+
+	/**
      * Get the properties for this processor for display purposes
      */
     public Properties getProperties() {

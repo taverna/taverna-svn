@@ -28,8 +28,11 @@ public class BSFXMLHandler implements XMLHandler {
     public Element elementForProcessor(Processor p) {
         BSFProcessor bp = (BSFProcessor) p;
         Element spec = new Element("bsf", XScufl.XScuflNS);
+		spec.setAttribute("language", bp.getLanguage());
+		
         // Script element
         Element script = new Element("scriptvalue", XScufl.XScuflNS);
+		
         script.setText(bp.getScript());
         spec.addContent(script);
         // Input list
@@ -67,6 +70,7 @@ public class BSFXMLHandler implements XMLHandler {
             return elementForProcessor(bpf.getPrototype());
         } else {
             Element spec = new Element("bsf", XScufl.XScuflNS);
+			spec.setAttribute("language","javascript");
             return spec;
         }
     }
@@ -96,6 +100,8 @@ public class BSFXMLHandler implements XMLHandler {
                 new String[0], new String[0]);
         Element beanshell = processorNode
                 .getChild("bsf", XScufl.XScuflNS);
+	
+		bp.setLanguage(beanshell.getAttributeValue("language"));
         Element scriptElement = beanshell.getChild("scriptvalue",
                 XScufl.XScuflNS);
         if (scriptElement != null) {

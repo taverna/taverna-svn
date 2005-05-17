@@ -380,6 +380,7 @@ public class BSFConfigPanel extends JPanel implements ScuflUIComponent,
 		ExtendedBSFManager bsfMgr = new ExtendedBSFManager();
 		Vector engineList = bsfMgr.getProcessorNameList();
 		scriptEngineSelect.setModel(new DefaultComboBoxModel(engineList));
+		scriptEngineSelect.setSelectedItem(this.processor.getLanguage());
 
 		JButton testScriptButton = new JButton("Test Script");
 		testScriptButton.addActionListener(new ActionListener()
@@ -404,6 +405,7 @@ public class BSFConfigPanel extends JPanel implements ScuflUIComponent,
 			public void actionPerformed(ActionEvent ae)
 			{
 				processor.setScript(scriptText.getText());
+				processor.setLanguage((String)scriptEngineSelect.getSelectedItem());
 			}
 		});
 
