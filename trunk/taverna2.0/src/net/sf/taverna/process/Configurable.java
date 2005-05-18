@@ -25,9 +25,25 @@
 package net.sf.taverna.process;
 
 /**
- * Manages the invocation of a single job within an iteration.
+ * Implementing classes store all their state in ConfigurationBean objects
+ * and may therefore be automagically serialized to and from the XML form
+ * used in the workflow definition
  * @author Tom Oinn
  */
-public abstract class JobInvoker implements Configurable {
+public interface Configurable {
+    
+    /**
+     * Configure from the specified ConfigurationBean object. All Operation,
+     * JobDispatcher and JobInvoker subclasses
+     * must have a default (void) constructor, the load and other frameworks will create
+     * it naively then configure to set up any specific properties.
+     */
+    public abstract void configure(ConfigurationBean config);
+    
+    /**
+     * Get the configuration bean used to define this Operation, JobDispatcher or JobInvoker's behaviour.
+     */
+    public abstract ConfigurationBean getConfiguration();
 
 }
+    

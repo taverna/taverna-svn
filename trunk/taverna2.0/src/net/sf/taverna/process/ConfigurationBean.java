@@ -25,9 +25,11 @@
 package net.sf.taverna.process;
 
 /**
- * Manages the invocation of a single job within an iteration.
+ * A marker interface denoting that the implementing class contains a
+ * java bean (with getFoo and setFoo method pairs) which holds configuration
+ * information for an Operation, JobDispatcher or JobInvoker
  * @author Tom Oinn
  */
-public abstract class JobInvoker implements Configurable {
+public interface ConfigurationBean {
 
 }

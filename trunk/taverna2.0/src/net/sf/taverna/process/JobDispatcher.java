@@ -29,6 +29,6 @@ package net.sf.taverna.process;
  * objects to be used by the JobInvoker.
  * @author Tom Oinn
  */
-public abstract class JobDispatcher {
+public abstract class JobDispatcher implements Configurable {
     
 }

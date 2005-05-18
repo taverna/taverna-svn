@@ -28,7 +28,7 @@ package net.sf.taverna.process;
  * Represents a single Operation, either concrete or abstract
  * @author Tom Oinn
  */
-public abstract class Operation {
+public abstract class Operation implements Configurable {
     
     /**
      * Will be set by the OperationTreeNode on construction
