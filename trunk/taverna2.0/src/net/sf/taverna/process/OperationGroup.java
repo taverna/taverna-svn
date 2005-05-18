@@ -26,6 +26,10 @@ package net.sf.taverna.process;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Enumeration;
+import java.util.SortedSet;
+import java.util.TreeSet;
+import java.util.Iterator;
 
 /**
  * The OperationGroup class represents an ordered list of Operation objects
@@ -54,10 +58,51 @@ public class OperationGroup {
     /**
      * Generates an array of trees of concrete operations where
      * each tree has an OperationTree with a root getUserObject value
-     * equal to the corresponding Operation in the OperationGroup 
+     * equal to the corresponding Operation in the OperationGroup.
+     * Synchronized on the operationTreeList
      */
-    public OperationTree[] resolve() {
-	return new OperationTree[0];
+    public OperationTree[] resolve() throws ResolutionException {
+	synchronized(operationTreeList) {
+	    OperationTree[] result = new OperationTree[operationTreeList.size()];
+	    for (Iterator i = operationTreeList.iterator(); i.hasNext();) {
+		OperationTree currentTree = (OperationTree)i.next();
+		// Collect any nodes that have expired, will remove their children later
+		SortedSet nodesToUpdate = new TreeSet();
+		Enumeration en = ((OperationTreeNode)currentTree.getRoot()).depthFirstEnumeration();
+		while (en.hasMoreElements()) {
+		    OperationTreeNode node = (OperationTreeNode)en.nextElement();
+		    if (node.isLeaf() == false && 
+			node.isValid() == false) {
+			nodesToUpdate.add(node);
+		    }
+		}
+		for (Iterator j = nodesToUpdate.iterator(); j.hasNext();) {
+		    // Remove all children of the expired node
+		    OperationTreeNode node = (OperationTreeNode)j.next();
+		    while(node.getChildCount() > 0) {
+			currentTree.removeNodeFromParent((OperationTreeNode)node.getChildAt(0));
+		    }
+		}
+		// Recursively call the resolve() method on each contained
+		// Operation object to build up the tree, adding nodes as we go
+		while (nodesToUpdate.isEmpty() == false) {
+		    // Pick the first node to update, resolve it, remove it from 
+		    // the update queue and add any non concrete children in its
+		    // place.
+		    OperationTreeNode node = (OperationTreeNode)nodesToUpdate.first();
+		    Operation[] newOperations = node.getOperation().resolve();
+		    for (int j = 0; j < newOperations.length; j++) {
+			OperationTreeNode newNode = new OperationTreeNode(newOperations[j]);
+			currentTree.insertNodeInto(newNode, node, j);
+			if (newNode.getOperation().isConcrete() == false) {
+			    nodesToUpdate.add(newNode);
+			}
+		    }
+		    nodesToUpdate.remove(node);
+		}
+	    }
+	    return result;	    
+	}
     }
 
     /**

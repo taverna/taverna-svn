@@ -28,10 +28,17 @@ import javax.swing.tree.DefaultTreeModel;
 import javax.swing.event.TreeModelListener;
 import javax.swing.event.TreeModelEvent;
 import java.util.Enumeration;
+import java.util.List;
+import java.util.ArrayList;
 
 /**
  * An OperationTree contains the resolved (partially or otherwise)
  * tree of Operation nodes.
+ * <ul>
+ * <li>$Author:</li>
+ * <li>$Date:</li>
+ * <li>$Revision:</li>
+ * </ul>
  * @author Tom Oinn
  */
 public class OperationTree extends DefaultTreeModel {
@@ -81,4 +88,24 @@ public class OperationTree extends DefaultTreeModel {
 	    });
     }
     
+    /**
+     * After an OperationTree has been resolved by the resolve() method in OperationGroup
+     * this method will return all Operations marked as concrete and contained within
+     * nodes in the OperationTree. This is synchronized on the OperationTree, the array
+     * is ordered by the depth first enumeration over the tree.
+     */ 
+    public Operation[] getConcreteOperations() {
+	synchronized(this) {
+	    List concreteOperations = new ArrayList();
+	    Enumeration en = ((OperationTreeNode)getRoot()).depthFirstEnumeration();
+	    while (en.hasMoreElements()) {
+		OperationTreeNode node = (OperationTreeNode)en.nextElement();
+		if (node.getOperation().isConcrete()) {
+		    concreteOperations.add(node.getOperation());
+		}
+	    }
+	    return (Operation[])concreteOperations.toArray(new Operation[0]);
+	}
+    }
+
 }
