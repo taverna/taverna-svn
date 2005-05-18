@@ -55,7 +55,9 @@ public class OperationGroup {
     JobInvoker jobInvoker;
     List filterList = new ArrayList();
     List operationTreeList = new ArrayList();
-
+    Date firstCacheExpiryTime = null;
+    boolean resolvedOnce = false;
+    
     /**
      * Generates an array of trees of concrete operations where
      * each tree has an OperationTree with a root getUserObject value
@@ -64,43 +66,59 @@ public class OperationGroup {
      */
     public OperationTree[] resolve() throws ResolutionException {
 	synchronized(operationTreeList) {
-	    for (Iterator i = operationTreeList.iterator(); i.hasNext();) {
-		OperationTree currentTree = (OperationTree)i.next();
-		// Collect any nodes that have expired, will remove their children later
-		SortedSet nodesToUpdate = new TreeSet();
-		Enumeration en = ((OperationTreeNode)currentTree.getRoot()).depthFirstEnumeration();
-		while (en.hasMoreElements()) {
-		    OperationTreeNode node = (OperationTreeNode)en.nextElement();
-		    if (node.isLeaf() == false && 
-			node.isValid() == false) {
-			nodesToUpdate.add(node);
-		    }
-		}
-		for (Iterator j = nodesToUpdate.iterator(); j.hasNext();) {
-		    // Remove all children of the expired node
-		    OperationTreeNode node = (OperationTreeNode)j.next();
-		    while(node.getChildCount() > 0) {
-			currentTree.removeNodeFromParent((OperationTreeNode)node.getChildAt(0));
-		    }
-		    // Reset the creation time on the expired node
-		    node.creationTime = new Date();
-		}
-		// Recursively call the resolve() method on each contained
-		// Operation object to build up the tree, adding nodes as we go
-		while (nodesToUpdate.isEmpty() == false) {
-		    // Pick the first node to update, resolve it, remove it from 
-		    // the update queue and add any non concrete children in its
-		    // place.
-		    OperationTreeNode node = (OperationTreeNode)nodesToUpdate.first();
-		    Operation[] newOperations = node.getOperation().resolve();
-		    for (int j = 0; j < newOperations.length; j++) {
-			OperationTreeNode newNode = new OperationTreeNode(newOperations[j]);
-			currentTree.insertNodeInto(newNode, node, j);
-			if (newNode.getOperation().isConcrete() == false) {
-			    nodesToUpdate.add(newNode);
+	    resolvedOnce = true;
+	    if (firstCacheExpiryTime == null ||
+		firstCacheExpiryTime.before(new Date())) {
+		for (Iterator i = operationTreeList.iterator(); i.hasNext();) {
+		    OperationTree currentTree = (OperationTree)i.next();
+		    // Collect any nodes that have expired, will remove their children later
+		    SortedSet nodesToUpdate = new TreeSet();
+		    Enumeration en = ((OperationTreeNode)currentTree.getRoot()).depthFirstEnumeration();
+		    while (en.hasMoreElements()) {
+			OperationTreeNode node = (OperationTreeNode)en.nextElement();
+			if (node.isLeaf() == false && 
+			    node.isValid() == false) {
+			    nodesToUpdate.add(node);
 			}
 		    }
-		    nodesToUpdate.remove(node);
+		    for (Iterator j = nodesToUpdate.iterator(); j.hasNext();) {
+			// Remove all children of the expired node
+			OperationTreeNode node = (OperationTreeNode)j.next();
+			while(node.getChildCount() > 0) {
+			    currentTree.removeNodeFromParent((OperationTreeNode)node.getChildAt(0));
+			}
+			// Reset the creation time on the expired node
+			node.creationTime = new Date();
+		    }
+		    // Recursively call the resolve() method on each contained
+		    // Operation object to build up the tree, adding nodes as we go
+		    while (nodesToUpdate.isEmpty() == false) {
+			// Pick the first node to update, resolve it, remove it from 
+			// the update queue and add any non concrete children in its
+			// place.
+			OperationTreeNode node = (OperationTreeNode)nodesToUpdate.first();
+			Operation[] newOperations = node.getOperation().resolve();
+			for (int j = 0; j < newOperations.length; j++) {
+			    OperationTreeNode newNode = new OperationTreeNode(newOperations[j]);
+			    currentTree.insertNodeInto(newNode, node, j);
+			    if (newNode.getOperation().isConcrete() == false) {
+				nodesToUpdate.add(newNode);
+			    }
+			}
+			// Check the expiry time on this node, if any. If there is one
+			// and it's less than the current firstCacheExpiryTime value then
+			// write it into that value - this keeps track of the minimum time
+			// until it's worth refreshing the cache.
+			if (node.getOperation().getExpiryTime() > -1) {		    
+			    Date nodeExpiryTime = new Date(node.getOperation().getExpiryTime() + 
+							   node.creationTime.getTime());
+			    if (firstCacheExpiryTime == null || 
+				nodeExpiryTime.before(firstCacheExpiryTime)) {
+				firstCacheExpiryTime = nodeExpiryTime;
+			    }
+			}
+			nodesToUpdate.remove(node);
+		    }
 		}
 	    }
 	    return (OperationTree[])operationTreeList.toArray(new OperationTree[0]);	    
