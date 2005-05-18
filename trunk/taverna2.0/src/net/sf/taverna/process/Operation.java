@@ -112,4 +112,18 @@ public abstract class Operation implements Configurable {
 	return new Object[0];
     }
 
+    /**
+     * Some operations may require interactive resolution. For example, you could define
+     * a generic shim operation which would then present the user with a set of
+     * appropriate shims and allow interactive selection of one which would then
+     * be stored. Returning true from this method denotes that the operation (which
+     * must be abstract for this to be meaningful) resolves only in an interactive
+     * environment and not in the workflow enactment stage (unless this occurs within a
+     * graphical interface which in the general case it won't). By default this method
+     * returns false.
+     */
+    public boolean resolutionIsInteractive() {
+	return false;
+    }
+
 }
