@@ -25,10 +25,25 @@
 package net.sf.taverna.process;
 
 /**
- * Removes nodes from an OperationTree instance according to some criteria
- * to leave only those leaf nodes which match
+ * Filters nodes within an OperationTree. Could be used to only allow
+ * the dispatcher to see nodes on your local network, only ones with
+ * a particular database underlying them etc. Most likely to be based
+ * on predicates over the resource descriptions but could be implemented
+ * in other ways.
  * @author Tom Oinn
  */
 public abstract class OperationFilter {
+    
+    /**
+     * Given an OperationTree and an OperationTreeNode within that tree
+     * return whether the node passes the constraint defined by this
+     * filter
+     */
+    public abstract boolean accept(OperationTree tree, OperationTreeNode node);
+
+    /**
+     * Return a display name for the filter
+     */
+    public abstract String getDisplayName();
 
 }
