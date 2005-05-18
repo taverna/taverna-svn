@@ -34,11 +34,6 @@ import java.util.ArrayList;
 /**
  * An OperationTree contains the resolved (partially or otherwise)
  * tree of Operation nodes.
- * <ul>
- * <li>$Author:</li>
- * <li>$Date:</li>
- * <li>$Revision:</li>
- * </ul>
  * @author Tom Oinn
  */
 public class OperationTree extends DefaultTreeModel {

@@ -29,10 +29,11 @@ import java.util.Date;
 
 /**
  * Represents a single node in the OperationTree, contains an Operation
- * as its userObject
+ * as its userObject. Implements comparable based on numeric comparison
+ * of the creation date, used in the resolution code.
  * @author Tom Oinn
  */
-public class OperationTreeNode extends DefaultMutableTreeNode {
+public class OperationTreeNode extends DefaultMutableTreeNode implements Comparable {
     
     Date creationTime;
 
@@ -75,4 +76,9 @@ public class OperationTreeNode extends DefaultMutableTreeNode {
 	return (currentDate.before(expiryDate));
     }
 
+    public int compareTo(Object o) {
+	OperationTreeNode otherNode = (OperationTreeNode)o;
+	return (int)(otherNode.creationTime.getTime() - this.creationTime.getTime());
+    }
+    
 }
