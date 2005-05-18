@@ -30,6 +30,7 @@ import java.util.Enumeration;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.Iterator;
+import java.util.Date;
 
 /**
  * The OperationGroup class represents an ordered list of Operation objects
@@ -63,7 +64,6 @@ public class OperationGroup {
      */
     public OperationTree[] resolve() throws ResolutionException {
 	synchronized(operationTreeList) {
-	    OperationTree[] result = new OperationTree[operationTreeList.size()];
 	    for (Iterator i = operationTreeList.iterator(); i.hasNext();) {
 		OperationTree currentTree = (OperationTree)i.next();
 		// Collect any nodes that have expired, will remove their children later
@@ -82,6 +82,8 @@ public class OperationGroup {
 		    while(node.getChildCount() > 0) {
 			currentTree.removeNodeFromParent((OperationTreeNode)node.getChildAt(0));
 		    }
+		    // Reset the creation time on the expired node
+		    node.creationTime = new Date();
 		}
 		// Recursively call the resolve() method on each contained
 		// Operation object to build up the tree, adding nodes as we go
@@ -101,7 +103,7 @@ public class OperationGroup {
 		    nodesToUpdate.remove(node);
 		}
 	    }
-	    return result;	    
+	    return (OperationTree[])operationTreeList.toArray(new OperationTree[0]);	    
 	}
     }
 
