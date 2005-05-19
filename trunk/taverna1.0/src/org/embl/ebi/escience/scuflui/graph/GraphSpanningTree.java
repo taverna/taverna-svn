@@ -15,7 +15,7 @@ import java.util.Set;
 
 /**
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover </a>
- * @version $Revision: 1.18 $
+ * @version $Revision: 1.19 $
  */
 public abstract class GraphSpanningTree
 {
@@ -265,9 +265,8 @@ public abstract class GraphSpanningTree
 			while (edges.hasNext())
 			{
 				Object edge = edges.next();
-				if (!edge.equals(replaceEdge) && !isTreeEdge(edge))
+				if (!edge.equals(replaceEdge) && !isTreeEdge(edge) && !isRemoved(edge))
 				{
-					assert !isRemoved(edge) : edge + ", " + node;
 					Object source = getSource(edge);
 					Object target = getTarget(edge);
 					if (headSet.contains(source) && !headSet.contains(target))
@@ -430,7 +429,7 @@ public abstract class GraphSpanningTree
 			}
 			moveNodes(sourceSet, sourceMove);
 			moveNodes(targetSet, targetMove);
-			assert getSlack(edge) == 0 : edge;
+			assert getSlack(edge) == 0 : edge + ": " + "sm=" + sourceMove + ", tm=" + targetMove + ", slack=" + getSlack(edge);
 		}
 		// System.err.println(this + ": Tightened tree edge " + edge);
 		return true;
@@ -508,7 +507,7 @@ public abstract class GraphSpanningTree
 
 		if (cutValue < 0)
 		{
-			// System.err.println(this + ": Cut " + cutValue + " for " + treeEdge);
+			//System.err.println(this + ": Cut " + cutValue + " for " + treeEdge);
 			return treeEdge;
 		}
 		return null;
@@ -559,8 +558,8 @@ public abstract class GraphSpanningTree
 							Object replacement = replaceEdge(cutEdge, replacements);
 							if (replacement != null)
 							{
-								// System.err.println(this + ": Replaced tree edge " + cutEdge
-								// + " with " + replacement);
+								//System.err.println(this + ": Replaced tree edge " + cutEdge
+								//+ " with " + replacement);
 								hasCutEdges = true;
 								timeStamp = "" + System.currentTimeMillis() + Math.random();
 								iterator.remove();

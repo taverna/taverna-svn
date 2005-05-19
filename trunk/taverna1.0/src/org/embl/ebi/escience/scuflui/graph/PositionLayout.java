@@ -21,7 +21,7 @@ import org.jgraph.graph.GraphModel;
 
 /**
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover </a>
- * @version $Revision: 1.19 $
+ * @version $Revision: 1.20 $
  * 
  */
 public class PositionLayout extends ModelSpanningTree
@@ -241,7 +241,7 @@ public class PositionLayout extends ModelSpanningTree
 	}
 
 	private static final int X_SEPARATION = 15;
-	private static final int Y_SEPARATION = 25;
+	private static final int Y_SEPARATION = 30;
 
 	private CellMapper mapper;
 
@@ -631,7 +631,7 @@ public class PositionLayout extends ModelSpanningTree
 		Map attributes = getAttributes(node);
 		assert attributes != null : node;
 		Edge leftEdge = LayoutConstants.getLeftEdge(attributes);
-		if (leftEdge != null)
+		if (leftEdge != null && !isRemoved(leftEdge))
 		{
 			if (!isTreeEdge(leftEdge))
 			{
@@ -650,7 +650,7 @@ public class PositionLayout extends ModelSpanningTree
 		Map attributes = getAttributes(node);
 		assert attributes != null : node;
 		Edge rightEdge = LayoutConstants.getRightEdge(attributes);
-		if (rightEdge != null)
+		if (rightEdge != null && !isRemoved(rightEdge))
 		{
 			if (!isTreeEdge(rightEdge))
 			{
@@ -662,6 +662,7 @@ public class PositionLayout extends ModelSpanningTree
 
 	protected int getSlack(Object edge)
 	{
+		assert !isRemoved(edge): edge;
 		try
 		{
 			Object source = getSource(edge);

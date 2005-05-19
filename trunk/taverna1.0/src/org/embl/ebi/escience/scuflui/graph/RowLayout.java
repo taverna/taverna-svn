@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.Map.Entry;
@@ -23,7 +24,7 @@ import org.jgraph.graph.GraphModel;
  * update as the graph changes.
  * 
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover </a>
- * @version $Revision: 1.18 $
+ * @version $Revision: 1.19 $
  */
 public class RowLayout extends ModelSpanningTree
 {
@@ -105,7 +106,7 @@ public class RowLayout extends ModelSpanningTree
 
 		reduceCrossovers();
 
-		int y = 0;
+		int y = -15;
 		for (int index = 0; index < rows.size(); index++)
 		{
 			y = getRow(index).updateEdges(y);
@@ -232,37 +233,43 @@ public class RowLayout extends ModelSpanningTree
 	{
 		// System.err.println(this + ": Update " + edge);
 		Object previousNode = getSource(edge);
+		
 		int sourceRow = getRank(previousNode);
-		Object target = getTarget(edge);
-		int targetRow = getRank(target);
+		int targetRow = getRank(getTarget(edge));
+		int currentRow = sourceRow + 1;
+		
 		Map attributes = getAttributes(edge);
 		List nodeChain = GraphConstants.getPoints(attributes);
-		for (int index = 1; index < nodeChain.size();)
+	
+		assert !(nodeChain.get(nodeChain.size() - 1) instanceof VirtualNode): edge + ": " + nodeChain;
+		
+		ListIterator nodes = nodeChain.listIterator(1);
+		while(nodes.hasNext())
 		{
-			Object currentNode = GraphUtilities.getRoot(model, nodeChain.get(index));
-			int row = index + sourceRow;
+			Object currentNode = GraphUtilities.getRoot(model, nodes.next());
 			int nodeRow = getRank(currentNode);
-			if (nodeRow < row || (nodeRow == targetRow && !currentNode.equals(target)))
+			if (currentNode instanceof VirtualNode && (nodeRow < currentRow || nodeRow >= targetRow))
 			{
-				nodeChain.remove(index);
+				nodes.remove();
 				removeNode(currentNode);
 				positionLayout.removeIntermediateNode(previousNode, currentNode, edge);
 			}
 			else
 			{
-				if (nodeRow > row)
+				if (nodeRow > currentRow)
 				{
-					VirtualNode node = new VirtualNode(row, edge);
+					nodes.previous();
+					VirtualNode node = new VirtualNode(currentRow, edge);
 					currentNode = node;
-					nodeChain.add(index, node);
-					getRow(row).add(node);
+					nodes.add(node);
+					getRow(currentRow).add(node);
 				}
 				positionLayout.updateIntermediateNode(previousNode, currentNode, edge);
-				index++;
+				currentRow++;
 				previousNode = currentNode;
 			}
 		}
-		assert nodeChain.size() == (targetRow - sourceRow) + 1 : edge;
+		assert nodeChain.size() == (targetRow - sourceRow) + 1 : edge + ": " + nodeChain + ": " + sourceRow + "-" + targetRow;
 		GraphConstants.setPoints(attributes, nodeChain);
 		CellView view = mapper.getMapping(edge, false);
 		if (view != null)
@@ -470,6 +477,7 @@ public class RowLayout extends ModelSpanningTree
 
 	protected int getSlack(Object edge)
 	{
+		assert !isRemoved(edge): edge;		
 		return (getRank(getTarget(edge)) - getRank(getSource(edge))) - 1;
 	}
 

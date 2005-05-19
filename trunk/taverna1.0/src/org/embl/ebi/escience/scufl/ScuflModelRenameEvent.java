@@ -7,27 +7,21 @@ package org.embl.ebi.escience.scufl;
  * COMMENT 
  * 
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover</a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class ScuflModelRenameEvent extends ScuflModelEvent
 {
 	String oldName;
-	String newName;
 	
 	/**
 	 * @param source
 	 * @param oldName
 	 */
-	public ScuflModelRenameEvent(Object source, String oldName, String newName)
+	public ScuflModelRenameEvent(Object source, String oldName)
 	{
 		super(source, "Renamed " + getClassName(source) + " " + oldName);
 	}
 	
-	public String getNewName()
-	{
-		return newName;
-	}
-
 	public String getOldName()
 	{
 		return oldName;

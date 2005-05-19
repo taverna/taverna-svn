@@ -198,7 +198,7 @@ public abstract class Processor implements Serializable {
 	    }
 	    String oldName = name;
 	    name = newName;
-	    fireModelEvent(new ScuflModelRenameEvent(this, oldName, newName));
+	    fireModelEvent(new ScuflModelRenameEvent(this, oldName));
 	}
     }
 

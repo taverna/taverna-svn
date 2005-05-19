@@ -213,7 +213,7 @@ public class WorkflowEditor extends JGraph implements ScuflUIComponent
 			}
 		});
 		WorkflowEdgeRenderer edgeRenderer = new WorkflowEdgeRenderer();
-		edgeRenderer.setTension((float)0.8);
+		edgeRenderer.setTension((float) 0.8);
 		EdgeView.renderer = edgeRenderer;
 		VertexView.renderer = new VertexRenderer()
 		{
@@ -222,10 +222,10 @@ public class WorkflowEditor extends JGraph implements ScuflUIComponent
 			// the remaining space coloured by processor type.
 			int progressBarDivide = 1;
 			int progress = -2;
-		        int workers = 0;
+			int workers = 0;
 			Color background2 = Color.WHITE;
 			Color background3 = Color.WHITE;
-		    Color background4 = Color.WHITE;
+			Color background4 = Color.WHITE;
 
 			public void paint(Graphics g)
 			{
@@ -250,10 +250,11 @@ public class WorkflowEditor extends JGraph implements ScuflUIComponent
 					g2d.setPaint(new GradientPaint(0, 0, background2, getWidth(), getHeight(),
 							org.embl.ebi.escience.scuflui.ShadedLabel.halfShade(background2)));
 					g2d.fillRect(newWidth, 0, remainingWidth, getHeight() / progressBarDivide);
-					if (completedWidth > 0) {
-					    g2d.setPaint(new GradientPaint(0,0,background4, getWidth(), getHeight(),
-									   org.embl.ebi.escience.scuflui.ShadedLabel.halfShade(background4)));
-					    g2d.fillRect(0,0,completedWidth, getHeight() / progressBarDivide);
+					if (completedWidth > 0)
+					{
+						g2d.setPaint(new GradientPaint(0, 0, background4, getWidth(), getHeight(),
+								org.embl.ebi.escience.scuflui.ShadedLabel.halfShade(background4)));
+						g2d.fillRect(0, 0, completedWidth, getHeight() / progressBarDivide);
 					}
 				}
 				else if (progress == -1)
@@ -279,12 +280,14 @@ public class WorkflowEditor extends JGraph implements ScuflUIComponent
 				{
 					progress = -2;
 				}
-				if (map.containsKey("workers")) {
-				    String wstring = (String)map.get("workers");
-				    workers = Integer.parseInt(wstring);
+				if (map.containsKey("workers"))
+				{
+					String wstring = (String) map.get("workers");
+					workers = Integer.parseInt(wstring);
 				}
-				else {
-				    workers = 0;
+				else
+				{
+					workers = 0;
 				}
 				if (map.containsKey("statuscolour1"))
 				{
@@ -302,11 +305,13 @@ public class WorkflowEditor extends JGraph implements ScuflUIComponent
 				{
 					background2 = Color.WHITE;
 				}
-				if (map.containsKey("statuscolour3")) {
-				    background4 = (Color)map.get("statuscolour3");
+				if (map.containsKey("statuscolour3"))
+				{
+					background4 = (Color) map.get("statuscolour3");
 				}
-				else {
-				    background4 = Color.WHITE;
+				else
+				{
+					background4 = Color.WHITE;
 				}
 			}
 		};
@@ -544,19 +549,20 @@ public class WorkflowEditor extends JGraph implements ScuflUIComponent
 
 	public void updateAutoSize(CellView view)
 	{
-		if(!view.isLeaf())
+		if (!view.isLeaf())
 		{
 			CellView[] children = view.getChildViews();
 			Rectangle2D rect = GraphConstants.getBounds(children[0].getAllAttributes());
 			double x = rect.getMaxX() + 10;
 			double y = rect.getY();
-			for(int index = 1; index < children.length; index++)
+			for (int index = 1; index < children.length; index++)
 			{
-				Rectangle2D childRect = GraphConstants.getBounds(children[index].getAllAttributes());
+				Rectangle2D childRect = GraphConstants
+						.getBounds(children[index].getAllAttributes());
 				childRect.setFrame(x, y, childRect.getWidth(), childRect.getHeight());
 				x += childRect.getWidth() + 10;
 				children[index].update();
-			}			
+			}
 		}
 		else
 		{
@@ -609,14 +615,15 @@ public class WorkflowEditor extends JGraph implements ScuflUIComponent
 										.getAttributeValue("IterationNumber"));
 								int iterationTotal = Integer.parseInt(firstChildElement
 										.getAttributeValue("IterationTotal"));
-								int activeWorkers = Integer.parseInt(firstChildElement.getAttributeValue("ActiveWorkers"));
+								int activeWorkers = Integer.parseInt(firstChildElement
+										.getAttributeValue("ActiveWorkers"));
 								int progress = (100 * iterationNumber) / iterationTotal;
 								int running = (100 * activeWorkers) / iterationTotal;
-								
-								//System.out.println("Progress : " + progress);
+
+								// System.out.println("Progress : " + progress);
 								Map newStuff = new HashMap();
 								newStuff.put("progress", progress + "");
-								newStuff.put("workers", running+"");
+								newStuff.put("workers", running + "");
 								// Iterations launched
 								newStuff.put("statuscolour1", GraphColours.getColour("gold",
 										Color.GREEN));
@@ -624,9 +631,8 @@ public class WorkflowEditor extends JGraph implements ScuflUIComponent
 								newStuff.put("statuscolour2", GraphColours.getColour(
 										"medium purple", Color.MAGENTA));
 								// Iterations completed
-								newStuff.put("statuscolour3", 
-									     GraphColours.getColour("medium sea green", 
-												    Color.GREEN));
+								newStuff.put("statuscolour3", GraphColours.getColour(
+										"medium sea green", Color.GREEN));
 								// GraphConstants.setBackground(newStuff,GraphColours.getColour("gold",
 								// Color.GREEN));
 								changes.put(processor, newStuff);

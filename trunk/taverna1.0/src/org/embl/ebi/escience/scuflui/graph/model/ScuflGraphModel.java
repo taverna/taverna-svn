@@ -51,7 +51,7 @@ import org.jgraph.graph.ParentMap;
 /**
  * 
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover </a>
- * @version $Revision: 1.19 $
+ * @version $Revision: 1.20 $
  */
 public class ScuflGraphModel implements GraphModel, GraphModelListener, ScuflUIComponent
 {
@@ -116,6 +116,11 @@ public class ScuflGraphModel implements GraphModel, GraphModelListener, ScuflUIC
 		public DummyPort(Object parent)
 		{
 			this.parent = parent;
+		}
+
+		public String toString()
+		{
+			return "DummyPort["+parent+"]";
 		}
 
 		/**
