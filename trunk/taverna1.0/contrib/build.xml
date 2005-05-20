@@ -157,10 +157,11 @@
 			<classpath refid="base-compile-classpath"/>
 		</javac>
 		<!-- Copy over any configuration files that you might have -->
-		<copy todir="${build.classes}" filtering="on">
-			<fileset dir="${src.dir}">
+		<copy todir="${contrib.classes}" filtering="on">
+			<fileset dir="${contrib.src}" >
 				<exclude name="**/CVS/**"/>
 				<exclude name="**/*.java"/>
+				<exclude name="**/*.html"/>
             </fileset>
 		</copy>
 	</target>
@@ -168,13 +169,17 @@
 	<!-- Create a jar of the classes and configuration files -->
 	<target name="jar" depends="java">
 		<copy file="${contrib.src}/META-INF/services/org.embl.ebi.escience.scuflworkers.java.LocalWorker" todir="${contrib.classes}/META-INF/services"/>
+		<copy file="${contrib.src}/META-INF/services/org.embl.ebi.escience.scuflui.renderers.RendererSPI" todir="${contrib.classes}/META-INF/services"/>
+
 		<echo>
 			${project.lib}
 		</echo>
 		<delete file="${project.lib}/contrib-${project.version}.jar"></delete>
 		<jar destfile="${project.lib}/contrib-${project.version}.jar" update="no">
-			<fileset dir="${contrib.classes}" includes="net/**/*.class"/>
+			<fileset dir="${contrib.classes}" includes="net/**/*.*"/>
+			<fileset dir="${contrib.classes}" includes="org/**/*.*"/>
 			<fileset dir="${contrib.classes}" includes="META-INF/services/org.embl.ebi.escience.scuflworkers.java.LocalWorker"/>
+			<fileset dir="${contrib.classes}" includes="META-INF/services/org.embl.ebi.escience.scuflui.renderers.RendererSPI"/>
 		</jar>
 	</target>
 	
