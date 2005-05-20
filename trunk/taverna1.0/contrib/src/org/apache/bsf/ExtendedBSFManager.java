@@ -14,7 +14,7 @@ import java.io.InputStream;
  * Last edited by $Author: phidias $
  * 
  * @author Mark
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public class ExtendedBSFManager extends BSFManager {
 	static Properties props = new Properties();
@@ -57,11 +57,10 @@ public class ExtendedBSFManager extends BSFManager {
 
 	}
 
+	/**
+	 * Constructor
+	 */
 	public ExtendedBSFManager() {
-		
-
-		
-		
 	}
 
 	/**
