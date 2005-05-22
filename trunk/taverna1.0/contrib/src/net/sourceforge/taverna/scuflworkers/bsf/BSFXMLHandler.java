@@ -109,7 +109,7 @@ public class BSFXMLHandler implements XMLHandler {
             bp.setScript(script);
         }
         // Handle inputs
-        Element inputList = beanshell.getChild("beanshellinputlist",
+        Element inputList = beanshell.getChild("bsfinputlist",
                 XScufl.XScuflNS);
         if (inputList != null) {
             for (Iterator i = inputList.getChildren().iterator(); i.hasNext();) {
@@ -132,7 +132,7 @@ public class BSFXMLHandler implements XMLHandler {
             }
         }
         // Handle outputs
-        Element outputList = beanshell.getChild("beanshelloutputlist",
+        Element outputList = beanshell.getChild("bsfoutputlist",
                 XScufl.XScuflNS);
         if (outputList != null) {
             for (Iterator i = outputList.getChildren().iterator(); i.hasNext();) {

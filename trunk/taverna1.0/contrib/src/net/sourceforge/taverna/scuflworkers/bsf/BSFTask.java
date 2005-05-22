@@ -9,12 +9,15 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
+import org.apache.bsf.BSFEngine;
+import org.apache.bsf.ExtendedBSFManager;
+import org.apache.bsf.ExtendedBSFDeclaredBean;
+import org.apache.bsf.util.CodeBuffer;
 import org.apache.log4j.Logger;
 import org.embl.ebi.escience.baclava.DataThing;
 import org.embl.ebi.escience.scufl.OutputPort;
 import org.embl.ebi.escience.scufl.Processor;
 import org.embl.ebi.escience.scuflworkers.ProcessorTaskWorker;
-import org.embl.ebi.escience.scuflworkers.java.LocalWorker;
 
 import uk.ac.soton.itinnovation.taverna.enactor.entities.ProcessorTask;
 import uk.ac.soton.itinnovation.taverna.enactor.entities.TaskExecutionException;
@@ -33,8 +36,14 @@ public class BSFTask implements ProcessorTaskWorker {
     private static final int INVOCATION_TIMEOUT = 0;
 
     private Processor proc;
+    
+    private BSFEngine engine;
+    
+    private Map inputBeanMap = new HashMap();
+    private Map outputBeanMap = new HashMap();
 
     private Interpreter interpreter = new Interpreter();
+    private ExtendedBSFManager mgr = new ExtendedBSFManager();
 
     public BSFTask(Processor p) {
         this.proc = p;
@@ -51,34 +60,67 @@ public class BSFTask implements ProcessorTaskWorker {
             String script = theProcessor.getScript();
             Map outputMap = new HashMap();
             OutputPort outputPorts[] = theProcessor.getOutputPorts();
-            synchronized (interpreter) {
+           
+            engine = mgr.loadScriptingEngine(theProcessor.getLanguage());
+            
+            
+            synchronized (engine) {
+            	engine.initialize(mgr,theProcessor.getLanguage(), null);
                 // set inputs
                 Iterator iinput = workflowInputMap.keySet().iterator();
                 while (iinput.hasNext()) {
                     String inputname = (String) iinput.next();
                     DataThing inputdt = (DataThing) workflowInputMap
                             .get(inputname);
-                    interpreter.set(inputname, inputdt.getDataObject());
+                    Object dataObj =inputdt.getDataObject(); 
+                    ExtendedBSFDeclaredBean bean = new ExtendedBSFDeclaredBean(inputname, dataObj, dataObj.getClass());
+                    inputBeanMap.put(inputname, bean); 
+                    engine.declareBean(bean);
+                    
+                    //interpreter.set(inputname, inputdt.getDataObject());
                 }
-                // run
-                Object result = interpreter.eval(script);
-                // get and clear outputs
+ 
+                
+                
+                // set outputs
                 for (int ioutput = 0; ioutput < outputPorts.length; ioutput++) {
-                    Object value = interpreter.get(outputPorts[ioutput]
-                            .getName());
-                    if (value != null) {
-                        outputMap.put(outputPorts[ioutput].getName(),
-                                new DataThing(value));
-                        // syntactic type?
-                    }
-                    interpreter.unset(outputPorts[ioutput].getName());
+                	
+                    String outputname = outputPorts[ioutput].getName();
+                    
+                    ExtendedBSFDeclaredBean outBean = new ExtendedBSFDeclaredBean(outputname,new String(), String.class );
+                    this.outputBeanMap.put(outputname, outBean);
+                    
+                    engine.declareBean(outBean);
+                    //interpreter.unset(outputPorts[ioutput].getName());
                 }
+                
+                
+                // execute the script
+                engine.exec(null, 0,0, script);
+                
+                // convert outputs to DataThings.
+                for (int ioutput = 0; ioutput < outputPorts.length; ioutput++) {
+                	
+                    String outputname = outputPorts[ioutput].getName();
+                    
+                    ExtendedBSFDeclaredBean outBean = (ExtendedBSFDeclaredBean)this.outputBeanMap.get(outputname);
+                    
+                    outputMap.put(outputname, new DataThing(outBean.bean));
+                    
+                }
+                
+                
+                
                 // clear inputs
                 iinput = workflowInputMap.keySet().iterator();
                 while (iinput.hasNext()) {
                     String inputname = (String) iinput.next();
-                    interpreter.unset(inputname);
+                    Object inObj = workflowInputMap.get(inputname);
+                    engine.undeclareBean(new ExtendedBSFDeclaredBean(inputname, inObj, inObj.getClass()));
+                    //interpreter.unset(inputname);
                 }
+                
+                
             }
             return outputMap;
         } catch (Exception ex) {
