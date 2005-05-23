@@ -24,6 +24,8 @@
 
 package net.sf.taverna.data;
 
+import javax.swing.tree.TreeNode;
+
 /**
  * Represents a single data item within a Taverna process flow. Allows
  * for implementations to back out the actual data storage i.e. to disk
@@ -40,11 +42,15 @@ package net.sf.taverna.data;
  * Similarly the getDepth method returns the number of levels below this node
  * the tree extends. For a leaf node this will be zero. A single data item
  * not contained within a collection will therefore have a getDepth of zero
- * and getIndex containing a zero length int[]
- *
+ * and getIndex containing a zero length int[]<p>
+ * This interface extends javax.swing.tree.TreeNode, most of the methods in
+ * this are trivial to implement as wrappers around the methods explicitly
+ * defined here. By forcing implementations to implement TreeNode as well
+ * the various UI aspects such as DataThing display in the result browser
+ * should be massively simplified. *
  * @author Tom Oinn
  */
-public interface DataThing {
+public interface DataThing extends TreeNode {
 
     /**
      * Returns an array of int values interpreted as
@@ -105,5 +111,4 @@ public interface DataThing {
      */
     public DataThing getRelated(int[] index) throws DataThingIndexException;
     
-
 }
