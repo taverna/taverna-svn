@@ -1,5 +1,8 @@
 package org.apache.bsf;
 
+import java.security.AccessController;
+import java.security.PrivilegedActionException;
+import java.security.PrivilegedExceptionAction;
 import java.util.Iterator;
 import java.util.Vector;
 import java.util.Properties;
@@ -14,7 +17,7 @@ import java.io.InputStream;
  * Last edited by $Author: phidias $
  * 
  * @author Mark
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  */
 public class ExtendedBSFManager extends BSFManager {
 	static Properties props = new Properties();
@@ -23,8 +26,8 @@ public class ExtendedBSFManager extends BSFManager {
 	static Map engineMap = new HashMap();
 	static Map abbrevMap = new HashMap();
 	static Map engineImplMap = new HashMap();
-	static {
-
+	public ExtendedBSFManager() {
+		super();
 		try {
 			InputStream is = ExtendedBSFManager.class
 					.getResourceAsStream("BSFManager.properties");
@@ -39,44 +42,25 @@ public class ExtendedBSFManager extends BSFManager {
 			String language = null;
 			String abbrev = null;
 			String[] entry = null;
-			try {
-				while (it.hasNext()) {
-					currKey = (String) it.next();
-					if (currKey.startsWith("bsf.engine")) {
-						engineName = currKey.substring("bsf.engine.".length());
-						entry = props.getProperty(currKey).split(",");
-						language = entry[0];
-						abbrev = entry[1];
-						engineMap.put(language, engineName);
 
-						registerScriptingEngine(engineName, language, entry);
-						Class engineClass;
+			while (it.hasNext()) {
+				currKey = (String) it.next();
+				if (currKey.startsWith("bsf.engine")) {
+					engineName = currKey.substring("bsf.engine.".length());
+					entry = props.getProperty(currKey).split(",");
+					language = entry[0];
+					abbrev = entry[1];
+					engineMap.put(language, engineName);
 
-						engineClass = Class.forName(engineName);
+					registerScriptingEngine(language,engineName, entry);
 
-						BSFEngine engineImpl = (BSFEngine) engineClass
-								.newInstance();
-						engineImplMap.put(language, engineImpl);
-
-					}
 				}
-			} catch (ClassNotFoundException e) {
-				e.printStackTrace();
-			} catch (InstantiationException e) {
-				e.printStackTrace();
-			} catch (IllegalAccessException e) {
-				e.printStackTrace();
 			}
+
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 
-	}
-
-	/**
-	 * Constructor
-	 */
-	public ExtendedBSFManager() {
 	}
 
 	/**
@@ -92,8 +76,43 @@ public class ExtendedBSFManager extends BSFManager {
 		return procList;
 	}
 	
-	public static BSFEngine getEngine(String language){
-		return (BSFEngine)engineImplMap.get(language);
-	}
+    /**
+     * Execute the given script of the given language.
+     *
+     * @param lang     language identifier
+     * @param source   (context info) the source of this expression
+     (e.g., filename)
+     * @param lineNo   (context info) the line number in source for expr
+     * @param columnNo (context info) the column number in source for expr
+     * @param script   the script to execute
+     *
+     * @exception BSFException if anything goes wrong while running the script
+     */
+    public void exec(String lang,
+                     String source,
+                     int lineNo,
+                     int columnNo,
+                     Object script)
+        throws BSFException {
+        final BSFEngine e = loadScriptingEngine(lang);
+        final String sourcef = source;
+        final int lineNof = lineNo, columnNof = columnNo;
+        final Object scriptf = script;
+
+        try {
+            AccessController.doPrivileged(new PrivilegedExceptionAction() {
+                    public Object run() throws Exception {
+                        e.exec(sourcef, lineNof, columnNof, scriptf);
+                        return null;
+                    }
+                });
+        }
+        catch (PrivilegedActionException prive) {
+        	prive.printStackTrace();
+            throw (BSFException) prive.getException();
+        }catch(Exception ex){
+        	ex.printStackTrace();
+        }
+    }
 
 }

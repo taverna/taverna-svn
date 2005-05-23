@@ -5,14 +5,15 @@
  */
 package net.sourceforge.taverna.scuflworkers.bsf;
 
+import java.awt.datatransfer.DataFlavor;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Vector;
 
 import org.apache.bsf.BSFEngine;
-import org.apache.bsf.ExtendedBSFManager;
 import org.apache.bsf.ExtendedBSFDeclaredBean;
-import org.apache.bsf.util.CodeBuffer;
+import org.apache.bsf.ExtendedBSFManager;
 import org.apache.log4j.Logger;
 import org.embl.ebi.escience.baclava.DataThing;
 import org.embl.ebi.escience.scufl.OutputPort;
@@ -41,6 +42,7 @@ public class BSFTask implements ProcessorTaskWorker {
     
     private Map inputBeanMap = new HashMap();
     private Map outputBeanMap = new HashMap();
+    private Vector beanVector = new Vector();
 
     private Interpreter interpreter = new Interpreter();
     private ExtendedBSFManager mgr = new ExtendedBSFManager();
@@ -58,14 +60,16 @@ public class BSFTask implements ProcessorTaskWorker {
         try {
             BSFProcessor theProcessor = (BSFProcessor) proc;
             String script = theProcessor.getScript();
+            String language = theProcessor.getLanguage();
             Map outputMap = new HashMap();
             OutputPort outputPorts[] = theProcessor.getOutputPorts();
-           
-            engine = mgr.loadScriptingEngine(theProcessor.getLanguage());
+            //mgr.initBSFDebugManager();
+            engine = mgr.loadScriptingEngine(language);
             
             
             synchronized (engine) {
-            	engine.initialize(mgr,theProcessor.getLanguage(), null);
+            	//engine.initialize(mgr,theProcessor.getLanguage(), null);
+            	
                 // set inputs
                 Iterator iinput = workflowInputMap.keySet().iterator();
                 while (iinput.hasNext()) {
@@ -73,9 +77,12 @@ public class BSFTask implements ProcessorTaskWorker {
                     DataThing inputdt = (DataThing) workflowInputMap
                             .get(inputname);
                     Object dataObj =inputdt.getDataObject(); 
-                    ExtendedBSFDeclaredBean bean = new ExtendedBSFDeclaredBean(inputname, dataObj, dataObj.getClass());
-                    inputBeanMap.put(inputname, bean); 
-                    engine.declareBean(bean);
+                    //ExtendedBSFDeclaredBean bean = new ExtendedBSFDeclaredBean(inputname, dataObj, dataObj.getClass());
+                    //inputBeanMap.put(inputname, bean); 
+                    //beanVector.add(bean);
+                    //engine.declareBean(bean);
+                    
+                    mgr.declareBean(inputname, dataObj,dataObj.getClass());
                     
                     //interpreter.set(inputname, inputdt.getDataObject());
                 }
@@ -86,31 +93,41 @@ public class BSFTask implements ProcessorTaskWorker {
                 for (int ioutput = 0; ioutput < outputPorts.length; ioutput++) {
                 	
                     String outputname = outputPorts[ioutput].getName();
+                    //DataFlavor flavor = outputPorts[ioutput].getTransferDataFlavors()[0];
+                    //Object outObj = outputPorts[ioutput].getTransferData(flavor);
+                    //ExtendedBSFDeclaredBean outBean = new ExtendedBSFDeclaredBean(outputname,new String(), String.class );
+                    //this.outputBeanMap.put(outputname, outBean);
+                    //beanVector.add(outBean);
+                    //engine.declareBean(outBean);
+                    //DataThing outObj = new DataThing("");
                     
-                    ExtendedBSFDeclaredBean outBean = new ExtendedBSFDeclaredBean(outputname,new String(), String.class );
-                    this.outputBeanMap.put(outputname, outBean);
-                    
-                    engine.declareBean(outBean);
+                    mgr.declareBean(outputname,new String(), String.class );
                     //interpreter.unset(outputPorts[ioutput].getName());
                 }
                 
                 
                 // execute the script
-                engine.exec(null, 0,0, script);
+                //engine.initialize(mgr, language,beanVector);
+                
+                Object r = mgr.eval(language,"testScript", 0,0, script);
+                
                 
                 // convert outputs to DataThings.
-                for (int ioutput = 0; ioutput < outputPorts.length; ioutput++) {
+               for (int ioutput = 0; ioutput < outputPorts.length; ioutput++) {
                 	
                     String outputname = outputPorts[ioutput].getName();
                     
-                    ExtendedBSFDeclaredBean outBean = (ExtendedBSFDeclaredBean)this.outputBeanMap.get(outputname);
+                    Object outBean =  mgr.lookupBean(outputname);
                     
-                    outputMap.put(outputname, new DataThing(outBean.bean));
+                    if (outBean != null){
+                    	outputMap.put(outputname, new DataThing(outBean));
+                    }
                     
                 }
+               outputMap.put("result",new DataThing(r));
                 
                 
-                
+                /*
                 // clear inputs
                 iinput = workflowInputMap.keySet().iterator();
                 while (iinput.hasNext()) {
@@ -118,12 +135,13 @@ public class BSFTask implements ProcessorTaskWorker {
                     Object inObj = workflowInputMap.get(inputname);
                     engine.undeclareBean(new ExtendedBSFDeclaredBean(inputname, inObj, inObj.getClass()));
                     //interpreter.unset(inputname);
-                }
+                }*/
                 
                 
             }
             return outputMap;
         } catch (Exception ex) {
+        	ex.printStackTrace();
             throw new TaskExecutionException("Error running bsf script: "
                     + ex);
         }
