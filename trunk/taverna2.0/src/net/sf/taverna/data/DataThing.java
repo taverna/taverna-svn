@@ -46,7 +46,7 @@ package net.sf.taverna.data;
  */
 public interface DataThing {
 
-    /*
+    /**
      * Returns an array of int values interpreted as
      * being the path of indices from the root to the node that this represents.
      * An empty array in this context means that the object is the root of the
@@ -54,7 +54,7 @@ public interface DataThing {
      */
     public int[] getIndex();
     
-    /*
+    /**
      * Returns the number of levels below this node
      * the tree extends. For a leaf node this will be zero. A single data item
      * not contained within a collection will therefore have a getDepth of zero
