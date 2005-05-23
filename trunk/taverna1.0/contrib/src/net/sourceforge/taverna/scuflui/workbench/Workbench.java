@@ -34,7 +34,7 @@ import org.embl.ebi.escience.scufl.parser.XScuflParser;
 import org.embl.ebi.escience.scufl.semantics.RDFSParser;
 import org.embl.ebi.escience.scuflui.AdvancedModelExplorer;
 import org.embl.ebi.escience.scuflui.ScavengerTreePanel;
-import org.embl.ebi.escience.scuflui.ScuflModelTreeTable;
+import org.embl.ebi.escience.scuflui.ScuflDiagramPanel;
 import org.embl.ebi.escience.scuflui.ScuflModelTreeTableContrib;
 import org.embl.ebi.escience.scuflui.ScuflUIComponent;
 import org.embl.ebi.escience.scuflui.UIComponentRegistry;
@@ -148,7 +148,8 @@ public class Workbench extends JFrame {
      */
     public static void main(String[] args) {
 
-        //new SplashScreen(8000);
+        JXSplash splash = new JXSplash(null, "org/embl/ebi/escience/scuflui/workbench/splashscreen.png",8000);
+
 
         // Load the test ontology for the annotation of workflow
         // source and sink ports
@@ -169,7 +170,8 @@ public class Workbench extends JFrame {
         }
 
         final Workbench workbench = new Workbench();
-
+        
+        
         // Create a new implementation of the FrameCreator interface to create
         // windows in the desktop
         // Only do this if the property 'taverna.workbench.useinternalframes' is
@@ -234,29 +236,16 @@ public class Workbench extends JFrame {
             }
         }
 
-        workbench.setVisible(true);
-        workbench.toFront();
-        
-        treePanel = new ScavengerTreePanel();
-        explorer = new AdvancedModelExplorer();
-        treeExplorer = new ScuflModelTreeTableContrib();
-        treeExplorer.attachToModel(model);
-        
-        treePanel = new ScavengerTreePanel();
-        treePanel.attachToModel(model);
-        
-        //diagram = new ScuflDiagramPanel();
-        editor = new WorkflowEditor();
-        editor.setEnabled(false);
-        editor.attachToModel(model);
-        
         
         //UIUtils.createFrame(model, diagram, 20, 440, 500, 400);
         
-        UIUtils.createFrame(model, editor ,20, 320, 500, 400);
-        UIUtils.createFrame(model, explorer, 20, 10, 500, 300);
-        UIUtils.createFrame(model, treePanel, 540, 10, 300, 720);
-        
+        UIUtils.createFrame(model, new ScuflDiagramPanel() ,20, 320, 500, 400);
+        UIUtils.createFrame(model, new AdvancedModelExplorer(), 20, 10, 500, 300);
+        UIUtils.createFrame(model, new ScavengerTreePanel(), 540, 10, 300, 720);
+
+        workbench.setVisible(true);
+        workbench.toFront();
+        splash.setVisible(false);
 
     }
 
@@ -303,7 +292,7 @@ public class Workbench extends JFrame {
             desktop = new ScrollableDesktopPane();
             setContentPane(new JScrollPane(desktop));
         }
-        setJMenuBar(createMenuBar());
+        setJMenuBar(new MenuBar());
 
         // Put the background image in
         if (background != null) {
@@ -363,69 +352,5 @@ public class Workbench extends JFrame {
         });
     }
 
-    /**
-     * Create the menus required by the application
-     */
-    JMenuBar createMenuBar() {
-
-        JMenuBar menuBar = new MenuBar();
-        /*
-         * 
-         * JMenu windowMenu = new JMenu("Tools and Workflow Invocation");
-         *  // Use the component SPI to discover appropriate components for this
-         * menu UIComponentRegistry registry = UIComponentRegistry.instance();
-         * for (Iterator i = registry.getComponents().keySet().iterator();
-         * i.hasNext();) { final String itemName = (String)i.next(); try { final
-         * Class itemClass =
-         * Class.forName((String)registry.getComponents().get(itemName)); final
-         * ImageIcon itemIcon = (ImageIcon)registry.getIcons().get(itemName);
-         * JMenuItem menuItem = null; if (itemIcon == null) { menuItem = new
-         * JMenuItem(itemName); } else { menuItem = new JMenuItem(itemName,
-         * itemIcon); } menuItem.addActionListener(new ActionListener() { public
-         * void actionPerformed(ActionEvent ae) { try { ScuflUIComponent thing =
-         * (ScuflUIComponent)itemClass.newInstance();
-         * UIUtils.createFrame(Workbench.this.model, thing, 100, 100, 400, 400);
-         * //GenericUIComponentFrame frame = new
-         * GenericUIComponentFrame(Workbench.this.model, thing);
-         * //frame.setSize(400,400); //Workbench.this.desktop.add(frame);
-         * //frame.moveToFront(); } catch (InstantiationException ie) { // }
-         * catch (IllegalAccessException iae) { // } } });
-         * windowMenu.add(menuItem); } catch (Exception ex) { // } }
-         * 
-         * JMenuItem thingBuilder = new JMenuItem("Run workflow",
-         * ScuflIcons.runIcon); thingBuilder.addActionListener(new
-         * ActionListener() { public void actionPerformed(ActionEvent e) { //
-         * Show a workflow input panel if there are workflow inputs, otherwise //
-         * construct a new enactor invocation and run immediately final
-         * ScuflModel theModel = Workbench.this.model; // Check whether we're in
-         * offline mode, if so then just chuck up an error if
-         * (theModel.isOffline()) { JOptionPane.showMessageDialog(null,
-         * "Workflow is currently offline, cannot be invoked.\n"+ "Deselect the
-         * 'offline' checkbox in the AME to set \n"+ "online mode in order to
-         * run this workflow.", "Offline, cannot invoke",
-         * JOptionPane.ERROR_MESSAGE); } else { if
-         * (theModel.getWorkflowSourcePorts().length != 0) {
-         * DataThingConstructionPanel thing = new DataThingConstructionPanel() {
-         * public void launchEnactorDisplay(Map inputObject) { try {
-         * UIUtils.createFrame(theModel, new
-         * EnactorInvocation(FreefluoEnactorProxy.getInstance(), theModel,
-         * inputObject), 100, 100, 600, 400); } catch
-         * (WorkflowSubmissionException wse) {
-         * JOptionPane.showMessageDialog(null, "Problem invoking workflow engine :
-         * \n"+wse.getMessage(), "Exception!", JOptionPane.ERROR_MESSAGE); } } };
-         * UIUtils.createFrame(theModel, thing, 100, 100, 600, 400); } else {
-         * try { // No inputs so launch the enactor directly
-         * UIUtils.createFrame(theModel, new
-         * EnactorInvocation(FreefluoEnactorProxy.getInstance(), theModel, new
-         * HashMap()), 100, 100, 600, 400); } catch (Exception ex) {
-         * ex.printStackTrace(); } } } } }); windowMenu.addSeparator();
-         * windowMenu.add(thingBuilder);
-         * 
-         * menuBar.add(windowMenu);
-         */
-
-        return menuBar;
-
-    }
 
 }
