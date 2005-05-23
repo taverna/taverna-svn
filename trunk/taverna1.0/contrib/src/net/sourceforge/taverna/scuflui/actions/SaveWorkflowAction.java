@@ -10,17 +10,20 @@ import javax.swing.Action;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 
+import net.sourceforge.taverna.scuflui.workbench.Workbench;
+
+import org.embl.ebi.escience.scufl.ScuflModel;
 import org.embl.ebi.escience.scufl.view.XScuflView;
 import org.embl.ebi.escience.scuflui.AdvancedModelExplorer;
 import org.embl.ebi.escience.scuflui.ExtensionFileFilter;
 
 /**
- * This class
+ * This class saves the workflow currently loaded in the Workbench.
  * 
  * Last edited by $Author: phidias $
  * 
  * @author Mark
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public class SaveWorkflowAction extends DefaultAction {
     
@@ -65,10 +68,11 @@ public class SaveWorkflowAction extends DefaultAction {
             if (returnVal == JFileChooser.APPROVE_OPTION) {
                 prefs.put("currentDir", fc.getCurrentDirectory().toString());
                 File file = fc.getSelectedFile();
-                //XScuflView xsv = new XScuflView(AdvancedModelExplorer.explorer.model);
+                ScuflModel model = Workbench.getModel();
+                XScuflView xsv = new XScuflView(model);
                 PrintWriter out = new PrintWriter(new FileWriter(file));
-                //out.println(xsv.getXMLText());
-                //explorer.model.removeListener(xsv);
+                out.println(xsv.getXMLText());
+                model.removeListener(xsv);
                 out.flush();
                 out.close();
             }
