@@ -46,7 +46,7 @@ public class AboutAction extends DefaultAction {
         ImageIcon img = new ImageIcon(AboutAction.class.getResource("/org/embl/ebi/escience/scuflui/workbench/splashscreen.png"));
         //Component obj =(Component)ae.getSource();
         final JInternalFrame iframe = new JInternalFrame("Taverna");
-        iframe.setLayout(new BorderLayout());
+        iframe.getContentPane().setLayout(new BorderLayout());
         iframe.getContentPane().add(new JButton(img), BorderLayout.CENTER);
         JButton okBtn = new JButton("OK");
         okBtn.addActionListener(new ActionListener(){

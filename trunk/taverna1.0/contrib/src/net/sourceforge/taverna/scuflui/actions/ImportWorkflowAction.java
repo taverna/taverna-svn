@@ -2,13 +2,20 @@ package net.sourceforge.taverna.scuflui.actions;
 
 import java.awt.event.ActionEvent;
 
+import javax.swing.JOptionPane;
+
+import net.sourceforge.taverna.scuflui.workbench.Workbench;
+
+import org.embl.ebi.escience.scufl.Processor;
+import org.embl.ebi.escience.scufl.ScuflModel;
+
 /**
  * This class imports a workflow into the cuccrent workflow.
  * 
  * Last edited by $Author: phidias $
  * 
  * @author Mark
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public class ImportWorkflowAction extends DefaultAction{
 
@@ -34,7 +41,24 @@ public class ImportWorkflowAction extends DefaultAction{
     }
     
     public void actionPerformed(ActionEvent ae){
-       //TODO: implement me 
+		ScuflModel targetModel = Workbench.model;
+		if (targetModel != null) {
+			try {
+				String name = targetModel
+						.getValidProcessorName("NestedWorkflow");
+				Processor p = new org.embl.ebi.escience.scuflworkers.workflow.WorkflowProcessor(
+						targetModel, name);
+				targetModel.addProcessor(p);
+			} catch (Exception ex) {
+				JOptionPane.showMessageDialog(
+						null,
+						"Unable to create blank subworkflow : \n"
+								+ ex.getMessage(), "Error",
+						JOptionPane.ERROR_MESSAGE);
+			}
+		}
+	
+
     }
 
 }

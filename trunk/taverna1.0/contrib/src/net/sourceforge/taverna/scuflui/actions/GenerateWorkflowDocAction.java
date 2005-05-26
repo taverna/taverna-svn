@@ -1,11 +1,13 @@
 package net.sourceforge.taverna.scuflui.actions;
 
+import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 
 import javax.swing.Action;
-import javax.swing.JOptionPane;
+import javax.swing.JDialog;
 
 import net.sourceforge.taverna.scuflui.workbench.Workbench;
+import net.sourceforge.taverna.scuflui.workbench.WorkflowHelpPanel;
 
 /**
  * This class generates the workflow documentation for a given directory.
@@ -13,16 +15,16 @@ import net.sourceforge.taverna.scuflui.workbench.Workbench;
  * Last edited by $Author: phidias $
  * 
  * @author Mark
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public class GenerateWorkflowDocAction extends DefaultAction {
     private static final String ACTION_COMMAND_KEY_ABOUT = "clear-workflow-command";
 
     private static final String NAME_ABOUT = "Generate Workflow Documentation";
-    private static final String SMALL_ICON_ABOUT = "org/embl/ebi/escience/scuflui/icons/generic/delete.gif";
-    private static final String LARGE_ICON_ABOUT = "org/embl/ebi/escience/scuflui/icons/generic/delete.gif";
+    private static final String SMALL_ICON_ABOUT = "etc/icons/gnome-mime-manpage24.png";
+    private static final String LARGE_ICON_ABOUT = "etc/icons/gnome-mime-manpage.png";
     private static final String SHORT_DESCRIPTION_ABOUT = "Generate Workflow Doc";
-    private static final String LONG_DESCRIPTION_ABOUT = "Generate Workflow Documentation in HTML";
+    private static final String LONG_DESCRIPTION_ABOUT = "Generate Workflow Documentation in HTML for a given directory";
     private static final int MNEMONIC_KEY_ABOUT = 'D';
     private static final Character ACCELERATOR_KEY =  new Character('D');
 
@@ -42,6 +44,13 @@ public class GenerateWorkflowDocAction extends DefaultAction {
     }
     
     public void actionPerformed(ActionEvent ae){
-       
+    	JDialog dialog = new JDialog();
+    	dialog.getContentPane().setLayout(new BorderLayout());
+    	
+    	WorkflowHelpPanel panel = new WorkflowHelpPanel();    	
+    	panel.convert2Html(Workbench.getModel());
+    	dialog.getContentPane().add(panel,BorderLayout.CENTER);
+    	dialog.setVisible(true);
+    	
     }
 }
