@@ -6,6 +6,7 @@
  */
 package net.sourceforge.taverna.scuflui.workbench;
 
+import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Toolkit;
 import java.awt.event.WindowAdapter;
@@ -22,7 +23,6 @@ import javax.swing.JDesktopPane;
 import javax.swing.JFrame;
 import javax.swing.JInternalFrame;
 import javax.swing.JLabel;
-import javax.swing.JMenuBar;
 import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.UIManager;
@@ -133,11 +133,6 @@ public class Workbench extends JFrame {
      * @author Mark
      */
     public static void clearModel(){
-        
-        //explorer.detachFromModel();
-        //treeExplorer.detachFromModel();
-        //diagram.detachFromModel();
-        //editor.detachFromModel();
         model.clear();
        
     }
@@ -149,7 +144,7 @@ public class Workbench extends JFrame {
     public static void main(String[] args) {
 
         JXSplash splash = new JXSplash(null, "org/embl/ebi/escience/scuflui/workbench/splashscreen.png",8000);
-
+        
 
         // Load the test ontology for the annotation of workflow
         // source and sink ports
@@ -170,7 +165,11 @@ public class Workbench extends JFrame {
         }
 
         final Workbench workbench = new Workbench();
-        
+        Toolbar toolbar = new Toolbar();
+        toolbar.setSize(workbench.getWidth(), 30);
+        toolbar.setLocation(0,0);
+        workbench.desktop.add(toolbar);
+
         
         // Create a new implementation of the FrameCreator interface to create
         // windows in the desktop
@@ -237,12 +236,9 @@ public class Workbench extends JFrame {
         }
 
         
-        //UIUtils.createFrame(model, diagram, 20, 440, 500, 400);
-        
-        UIUtils.createFrame(model, new ScuflDiagramPanel() ,20, 320, 500, 400);
-        UIUtils.createFrame(model, new AdvancedModelExplorer(), 20, 10, 500, 300);
-        UIUtils.createFrame(model, new ScavengerTreePanel(), 540, 10, 300, 720);
-
+        UIUtils.createFrame(model, new WorkflowEditor(),20, 360, 500, 400);
+        UIUtils.createFrame(model, new AdvancedModelExplorer(), 20, 40, 500, 300);
+        UIUtils.createFrame(model, new ScavengerTreePanel(), 540, 40, 300, 720);
         workbench.setVisible(true);
         workbench.toFront();
         splash.setVisible(false);
@@ -282,6 +278,8 @@ public class Workbench extends JFrame {
             public void windowClosing(WindowEvent e) {
                 System.exit(0);
             }
+            
+            
         });
 
         // Create the desktop pane and menu
