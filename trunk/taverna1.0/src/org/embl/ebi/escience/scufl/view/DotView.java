@@ -304,7 +304,7 @@ public class DotView implements ScuflModelEventListener, java.io.Serializable {
 	    if (dc.getSource().getProcessor() != model.getWorkflowSourceProcessor() && 
 		dc.getSink().getProcessor() != model.getWorkflowSinkProcessor()) {
 		if (this.portDisplay == DotView.ALL || this.portDisplay == DotView.BOUND) {
-		    dot.append(" "+q(sourceProcessorName)+":"+sourcePortName+"->"+q(sinkProcessorName)+":"+sinkPortName+" [ \n");
+		    dot.append(" "+q(sourceProcessorName)+":"+q(sourcePortName)+"->"+q(sinkProcessorName)+":"+q(sinkPortName)+" [ \n");
 		}
 		else {
 		    dot.append(" "+q(sourceProcessorName)+"->"+q(sinkProcessorName)+" [ \n");
@@ -317,12 +317,12 @@ public class DotView implements ScuflModelEventListener, java.io.Serializable {
 		}
 		else {
 		    // Is a link from a workflow source to an internal sink
-		    dot.append(q("WORKFLOWINTERNALSOURCE_"+sourcePortName)+"->"+q(sinkProcessorName)+":"+sinkPortName+" [ \n");
+		    dot.append(q("WORKFLOWINTERNALSOURCE_"+sourcePortName)+"->"+q(sinkProcessorName)+":"+q(sinkPortName)+" [ \n");
 		}
 	    }
 	    else if (dc.getSink().getProcessor() == model.getWorkflowSinkProcessor()) {
 		// Is a link from an internal source to a workflow sink
-		dot.append(q(sourceProcessorName)+":"+sourcePortName+"->"+q("WORKFLOWINTERNALSINK_"+sinkPortName)+" [ \n");
+		dot.append(q(sourceProcessorName)+":"+q(sourcePortName)+"->"+q("WORKFLOWINTERNALSINK_"+sinkPortName)+" [ \n");
 	    }
 	    if (displayTypes) {
 		dot.append("  label = \""+dc.getSource().getSyntacticType()+"\\n"+dc.getSink().getSyntacticType()+"\"");
