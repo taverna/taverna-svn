@@ -16,6 +16,9 @@ import uk.ac.soton.itinnovation.taverna.enactor.entities.TaskExecutionException;
 import uk.ac.soton.itinnovation.taverna.enactor.entities.ProcessorTask;
 
 import org.apache.axis.utils.*;
+import java.io.*;
+import java.util.ArrayList;
+import javax.activation.DataHandler;
 
 // Utility Imports
 import java.util.HashMap;
@@ -38,9 +41,11 @@ import org.apache.wsif.WSIFOperation;
 import org.apache.wsif.WSIFPort;
 import org.apache.wsif.WSIFService;
 import org.apache.wsif.WSIFServiceFactory;
-import org.apache.wsif.providers.soap.apacheaxis.WSIFDynamicProvider_ApacheAxis;
+import org.apache.wsif.providers.soap.apacheaxis.*;
 import org.apache.wsif.util.WSIFPluggableProviders;
 import org.apache.wsif.util.WSIFUtils;
+import org.apache.axis.attachments.*;
+import org.apache.axis.client.*;
 
 import org.w3c.dom.*;
 import javax.xml.transform.Transformer;
@@ -195,6 +200,25 @@ public class WSDLInvocationTask implements ProcessorTaskWorker {
 		    }
 		    resultMap.put(outputName, new DataThing(resultObject));
 		}
+		// Can we extract attachments here?
+		org.apache.axis.client.Call axisCall = ((WSIFOperation_ApacheAxis)operation).getDynamicWSIFPort().getCall();
+		List attachmentList = new ArrayList();
+		for (Iterator i = axisCall.getResponseMessage().getAttachments(); i.hasNext();) {
+		    AttachmentPart ap = (AttachmentPart)i.next();
+		    System.out.println("Found attachment filename : "+ap.getAttachmentFile());
+		    DataHandler dh = ap.getDataHandler();
+		    BufferedInputStream bis = new BufferedInputStream(dh.getInputStream());
+		    ByteArrayOutputStream bos = new ByteArrayOutputStream();
+		    int c;
+		    while((c = bis.read()) != -1) {
+			bos.write(c);
+		    }
+		    bis.close();
+		    bos.close();
+		    attachmentList.add(new String(bos.toByteArray()));
+		}
+		resultMap.put("attachmentList", new DataThing(attachmentList));
+		
 		return resultMap;
 	    }
 	    else {
