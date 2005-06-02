@@ -50,7 +50,7 @@ public class ServiceError extends ProcessEvent {
 	if (underlyingException != null) {
 	    boolean doneFullTrace = false;
 	    StringBuffer sb = new StringBuffer();
-	    Exception ex = underlyingException;
+	    Throwable ex = underlyingException;
 	    while (!doneFullTrace) {
 		sb.append(ex.getMessage()+"<br>");
 		StackTraceElement stack[] = ex.getStackTrace();
@@ -71,7 +71,7 @@ public class ServiceError extends ProcessEvent {
 		    sb.append("   "+className+"."+methodName+"(..) : line "+line+" &lt;"+fileName+"&gt;<br>");
 		}
 		if (ex.getCause()!=null) {
-		    ex = (Exception)ex.getCause();
+		    ex = (Throwable)ex.getCause();
 		    sb.append("<br>");
 		}
 		else {
