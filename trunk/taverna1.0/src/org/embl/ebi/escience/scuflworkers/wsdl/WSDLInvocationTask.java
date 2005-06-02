@@ -215,9 +215,26 @@ public class WSDLInvocationTask implements ProcessorTaskWorker {
 		    }
 		    bis.close();
 		    bos.close();
-		    attachmentList.add(new String(bos.toByteArray()));
+		    // Get the MIME type
+		    String mimeType = dh.getContentType();
+		    // if textual (i.e text/foo) then write to a string. Default to
+		    // a string unless the type is an image or explicit octet stream.
+		    if (mimeType.matches(".*image.*") ||
+			mimeType.matches(".*octet.*") ||
+			mimeType.matches(".*audio.*") ||
+			mimeType.matches(".*application/zip.*")) {
+			attachmentList.add(bos.toByteArray());
+		    }
+		    else {
+			attachmentList.add(new String(bos.toByteArray()));
+		    }
 		}
-		resultMap.put("attachmentList", new DataThing(attachmentList));
+		DataThing attachmentThing = new DataThing(attachmentList);
+		for (Iterator i = axisCall.getResponseMessage().getAttachments(); i.hasNext();) {
+		    String mimeType = ((AttachmentPart)i.next()).getDataHandler().getContentType();
+		    attachmentThing.getMetadata().addMIMEType(mimeType);
+		}
+		resultMap.put("attachmentList", attachmentThing);
 		
 		return resultMap;
 	    }

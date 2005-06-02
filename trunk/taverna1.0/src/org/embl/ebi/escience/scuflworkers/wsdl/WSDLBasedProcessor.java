@@ -226,7 +226,7 @@ public class WSDLBasedProcessor extends Processor implements java.io.Serializabl
 	    
 	    // Add an attachment output part
 	    OutputPort attachments = new OutputPort(this, "attachmentList");
-	    attachments.setSyntacticType("l('text/plain')");
+	    attachments.setSyntacticType("l('')");
 	    addPort(attachments);
 	    
 
