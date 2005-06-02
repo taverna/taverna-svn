@@ -67,6 +67,8 @@ public class EnactorInvocation extends JPanel implements ScuflUIComponent{
      */
     public static UserContext USERCONTEXT = null; 
 
+    String workflowStatusUpdateLock = "LOCK_1";
+
     public void attachToModel(ScuflModel theModel) {
 	//
     }
@@ -435,9 +437,18 @@ public class EnactorInvocation extends JPanel implements ScuflUIComponent{
 	final JTabbedPane intermediateOutputs = new JTabbedPane();
 	final JTabbedPane intermediateInputs = new JTabbedPane();
 	workflowEditor = new WorkflowEditor();
-	workflowEditor.attachToModel(theModel);
-	workflowEditor.updateStatus(getStatusText());
-	workflowEditor.setEnabled(false);
+	final ScuflModel workflowModel = theModel;
+	new Thread(){
+	    public void run() {
+		synchronized(workflowStatusUpdateLock) {
+		    workflowEditor.attachToModel(workflowModel);
+		    workflowEditor.updateStatus(getStatusText());
+		    workflowEditor.setEnabled(false);
+		}
+	    }
+	}.start();
+	//workflowEditor.updateStatus(getStatusText());
+	//workflowEditor.setEnabled(false);
 	intermediateResults.add("Graph", new JScrollPane(workflowEditor));
 	intermediateResults.add("Intermediate inputs", intermediateInputs);
 	intermediateResults.add("Intermediate outputs", intermediateOutputs);
@@ -543,7 +554,7 @@ public class EnactorInvocation extends JPanel implements ScuflUIComponent{
         }
 	EnactorInvocationStatusThread s = new EnactorInvocationStatusThread(this);
     }
-}
+
 
 /**
  * Workflow run and poll
@@ -604,7 +615,9 @@ class EnactorInvocationStatusThread extends Thread {
 		    String statusText = theEnactorInvocation.getStatusText();
 		    // System.out.println("Status document : "+statusText);
 		    String workflowStatus = theEnactorInvocation.getTableModel().update(statusText);
-		    theEnactorInvocation.workflowEditor.updateStatus(statusText);
+		    synchronized(workflowStatusUpdateLock) {
+			theEnactorInvocation.workflowEditor.updateStatus(statusText);
+		    }
 		    // System.out.println("Workflow status : "+workflowStatus);
 		    if ( workflowStatus.equals("CANCELLED") ) {
 			theEnactorInvocation.rmvProgressReport();
@@ -665,3 +678,4 @@ class EnactorInvocationStatusThread extends Thread {
     }
 }
 
+}
