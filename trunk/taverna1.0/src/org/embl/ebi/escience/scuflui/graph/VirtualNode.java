@@ -13,7 +13,7 @@ import java.util.Map;
  * COMMENT
  * 
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover </a>
- * @version $Revision: 1.7 $
+ * @version $Revision: 1.8 $
  */
 public class VirtualNode
 {
@@ -28,7 +28,6 @@ public class VirtualNode
 	{
 		this.edge = edge;
 		this.row = row;
-		LayoutConstants.setRow(attributes, row);		
 	}
 	
 	public Edge getNextEdge()
@@ -58,7 +57,7 @@ public class VirtualNode
 
 	public String toString()
 	{
-		return "VirtualNode[" + edge + ", " + row + "]";
+		return "Node[" + edge + ", " + row + "]";
 	}
 
 	public Point2D getPosition()

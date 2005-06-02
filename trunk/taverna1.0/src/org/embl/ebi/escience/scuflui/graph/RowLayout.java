@@ -12,6 +12,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Map.Entry;
 
+import org.embl.ebi.escience.scuflui.graph.PositionLayout.Row;
 import org.jgraph.event.GraphModelEvent;
 import org.jgraph.graph.CellMapper;
 import org.jgraph.graph.CellView;
@@ -24,7 +25,7 @@ import org.jgraph.graph.GraphModel;
  * update as the graph changes.
  * 
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover </a>
- * @version $Revision: 1.19 $
+ * @version $Revision: 1.20 $
  */
 public class RowLayout extends ModelSpanningTree
 {
@@ -101,6 +102,7 @@ public class RowLayout extends ModelSpanningTree
 			}
 		}
 
+		removeEdges();
 		List treeEdges = createInitialTree();
 		optimiseTree(treeEdges);
 
@@ -112,6 +114,7 @@ public class RowLayout extends ModelSpanningTree
 			y = getRow(index).updateEdges(y);
 		}
 
+		positionLayout.removeEdges();
 		treeEdges = positionLayout.createInitialTree();
 		positionLayout.optimiseTree(treeEdges);
 	}
@@ -136,41 +139,6 @@ public class RowLayout extends ModelSpanningTree
 					PositionLayout.Row row1 = getRow(index + 1);
 					PositionLayout.Row row2 = getRow(index);
 					row2.sort(row1, true);
-				}
-			}
-		}
-	}
-
-	/*
-	 * @see org.embl.ebi.escience.scuflui.graph.GraphSpanningTree#treeMoveNode(java.lang.Object,
-	 *      java.lang.Object, int)
-	 */
-	private void setRank(Object node, int row)
-	{
-		// System.err.println("Set row " + row + ": " + node );
-		Map attributes = getAttributes(node);
-		Integer oldRow = LayoutConstants.getRow(attributes);
-		LayoutConstants.setRow(attributes, row);
-		if (oldRow != null)
-		{
-			if (oldRow.intValue() == row)
-			{
-				return;
-			}
-			remove(node, oldRow.intValue());
-		}
-		assert row >= getStartingRank(node);
-		getRow(row).add(node);
-
-		if (oldRow != null)
-		{
-			Iterator edges = getEdges(node);
-			while (edges.hasNext())
-			{
-				Object edge = edges.next();
-				if (!isTreeEdge(edge))
-				{
-					updateEdgeGraph(edge);
 				}
 			}
 		}
@@ -214,14 +182,14 @@ public class RowLayout extends ModelSpanningTree
 	protected int getRank(Object node)
 	{
 		Map attributes = getAttributes(node);
-		Integer row = LayoutConstants.getRow(attributes);
+		PositionLayout.Row row = LayoutConstants.getRow(attributes);
 		if (row == null)
 		{
-			int newRank = getStartingRank(node);
-			setRank(node, newRank);
-			return newRank;
+			PositionLayout.Row newRank = getRow(getStartingRank(node));
+			newRank.add(node);
+			return newRank.getRow();
 		}
-		return row.intValue();
+		return row.getRow();
 	}
 
 	public String toString()
@@ -299,33 +267,9 @@ public class RowLayout extends ModelSpanningTree
 		super.removeNode(node);
 		Map attributes = getAttributes(node);
 		assert attributes != null;
-		Integer row = LayoutConstants.getRow(attributes);
+		PositionLayout.Row row = LayoutConstants.getRow(attributes);
 		assert row != null;
-		remove(node, row.intValue());
-	}
-
-	/**
-	 * @param node
-	 * @param row
-	 */
-	private void remove(Object node, int row)
-	{
-		boolean removed = true;
-		removed = getRow(row).remove(node);
-		if (removed)
-		{
-			for (int index = rows.size() - 1; index > 0; index--)
-			{
-				if (getRow(index).isEmpty())
-				{
-					rows.remove(index);
-				}
-				else
-				{
-					break;
-				}
-			}
-		}
+		row.remove(node);
 	}
 
 	protected void removeEdge(Object edge)
@@ -365,7 +309,7 @@ public class RowLayout extends ModelSpanningTree
 		assert index >= 0;
 		for (int size = rows.size(); size <= index; size++)
 		{
-			rows.add(positionLayout.new Row());
+			rows.add(positionLayout.new Row(index));
 		}
 		return (PositionLayout.Row) rows.get(index);
 	}
@@ -396,14 +340,13 @@ public class RowLayout extends ModelSpanningTree
 			return;
 		}
 		Map attributes = getAttributes(node);
-		Integer oldRank = LayoutConstants.getRow(attributes);
+		Row oldRank = LayoutConstants.getRow(attributes);
 		assert (oldRank != null);
-		int newRank = oldRank.intValue() + rankChange;
-		LayoutConstants.setRow(attributes, newRank);
-		remove(node, oldRank.intValue());
-		assert !getRow(newRank).contains(node) : node;
-		getRow(newRank).add(node);
-		assert getRow(newRank).contains(node) : node;
+		oldRank.remove(node);		
+		Row newRank = getRow(oldRank.getRow() + rankChange);
+		assert !newRank.contains(node) : node;
+		newRank.add(node);
+		assert newRank.contains(node) : node;
 
 		Iterator edges = getEdges(node);
 		while (edges.hasNext())

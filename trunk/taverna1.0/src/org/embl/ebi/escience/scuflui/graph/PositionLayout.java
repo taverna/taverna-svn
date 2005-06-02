@@ -21,14 +21,25 @@ import org.jgraph.graph.GraphModel;
 
 /**
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover </a>
- * @version $Revision: 1.20 $
+ * @version $Revision: 1.21 $
  * 
  */
 public class PositionLayout extends ModelSpanningTree
 {
 	class Row extends AbstractList
 	{
+		private int row;
 		private ArrayList nodes = new ArrayList();
+
+		public Row(int row)
+		{
+			this.row = row;
+		}
+
+		public int getRow()
+		{
+			return row;
+		}
 
 		public Object set(int index, Object element)
 		{
@@ -37,52 +48,62 @@ public class PositionLayout extends ModelSpanningTree
 
 		public void add(int index, Object node)
 		{
+			Map attributes = getAttributes(node);
+			LayoutConstants.setRow(attributes, this);
 			nodes.add(index, node);
-			// System.err.println("Add node " + node + " to row "
-			// + ((y - Y_SEPARATION) / (ROW_HEIGHT + Y_SEPARATION)));
 		}
 
 		protected int updateEdges(int rowy)
 		{
 			int y = rowy + Y_SEPARATION;
-			int height = (int) getBounds(get(0)).getHeight();
-			for (int index = 1; index < size(); index++)
+			if (size() > 0)
 			{
-				Object left = get(index - 1);
-				Object right = get(index);
-
-				Map leftAttributes = getAttributes(left);
-				Map rightAttributes = getAttributes(right);
-				Edge edge = LayoutConstants.getRightEdge(leftAttributes);
-				if (edge != null && edge.getTarget() != right)
+				int height = (int) getBounds(get(0)).getHeight();
+				for (int index = 1; index < size(); index++)
 				{
-					removeEdge(edge);
+					Object left = get(index - 1);
+					Object right = get(index);
+
+					Map leftAttributes = getAttributes(left);
+					Map rightAttributes = getAttributes(right);
+					Edge edge = LayoutConstants.getRightEdge(leftAttributes);
+					Edge correctEdge = edge;
+					if (edge != null && edge.getTarget() != right)
+					{
+						removeEdge(edge);
+						correctEdge = null;
+					}
+
 					edge = LayoutConstants.getRightEdge(rightAttributes);
 					if (edge != null && edge.getSource() != left)
 					{
 						removeEdge(edge);
-						edge = null;
 					}
+					else
+					{
+						correctEdge = edge;
+					}
+
+					if (correctEdge == null || isRemoved(correctEdge))
+					{
+						correctEdge = new Edge(left, right);
+						newEdges.add(correctEdge);
+					}
+					LayoutConstants.setLeftEdge(rightAttributes, correctEdge);
+					LayoutConstants.setRightEdge(leftAttributes, correctEdge);
+
+					height = (int) Math.max(height, getBounds(right).getHeight());
 				}
 
-				if (edge == null)
+				Iterator nodes = this.nodes.iterator();
+				while (nodes.hasNext())
 				{
-					edge = new Edge(left, right);
-					LayoutConstants.setLeftEdge(rightAttributes, edge);
-					LayoutConstants.setRightEdge(leftAttributes, edge);
-
-					assert !isRemoved(edge) : edge;
-					newEdges.add(edge);
+					setInitialPosition(nodes.next(), y, height);
 				}
-				height = (int) Math.max(height, getBounds(right).getHeight());
+
+				return y + height;
 			}
-			
-			Iterator nodes = this.nodes.iterator();
-			while (nodes.hasNext())
-			{
-				setInitialPosition(nodes.next(), y, height);
-			}
-			return y + height;
+			return 0;
 		}
 
 		/*
@@ -93,22 +114,32 @@ public class PositionLayout extends ModelSpanningTree
 		{
 			BoundingBox bounds = getBounds(node);
 			int dy = (int) ((y + (height - bounds.getHeight()) / 2) - bounds.getY());
-			if (dy != 0)
+			// int dx = 0;
+			// Map attributes = getAttributes(node);
+			// Edge leftEdge = LayoutConstants.getLeftEdge(attributes);
+			// if(leftEdge == null)
+			// {
+			// if(bounds.getX() < X_SEPARATION)
+			// {
+			// dx = (int) (X_SEPARATION - bounds.getX());
+			// }
+			// }
+			// else
+			// {
+			// BoundingBox leftBounds = getBounds(getSource(leftEdge));
+			// double edgeLength = bounds.getCenterX() - leftBounds.getCenterX();
+			// double minimumEdgeLength = (bounds.getWidth() + leftBounds.getWidth()) / 2
+			// + X_SEPARATION;
+			// if(edgeLength < minimumEdgeLength)
+			// {
+			// dx = (int) (minimumEdgeLength - edgeLength);
+			// }
+			// }
+
+			if (dy != 0 /* && dx != 0 */)
 			{
 				bounds.translate(0, dy);
 			}
-		}
-
-		private void setLeftEdge(Object node, Edge edge)
-		{
-			Map attributes = getAttributes(node);
-			LayoutConstants.setLeftEdge(attributes, edge);
-		}
-
-		private void setRightEdge(Object node, Edge edge)
-		{
-			Map attributes = getAttributes(node);
-			LayoutConstants.setRightEdge(attributes, edge);
 		}
 
 		/*
@@ -121,20 +152,6 @@ public class PositionLayout extends ModelSpanningTree
 			Map attributes = getAttributes(node);
 			Edge leftEdge = LayoutConstants.getLeftEdge(attributes);
 			Edge rightEdge = LayoutConstants.getRightEdge(attributes);
-			Object leftNode = null;
-			Object rightNode = null;
-			if (leftEdge != null)
-			{
-				leftNode = leftEdge.getSource();
-				setRightEdge(leftNode, null);
-			}
-
-			if (rightEdge != null)
-			{
-				rightNode = rightEdge.getTarget();
-				setLeftEdge(rightNode, null);
-			}
-
 			if (rightEdge != null)
 			{
 				removeEdge(rightEdge);
@@ -144,9 +161,6 @@ public class PositionLayout extends ModelSpanningTree
 			{
 				removeEdge(leftEdge);
 			}
-
-			LayoutConstants.setLeftEdge(attributes, null);
-			LayoutConstants.setRightEdge(attributes, null);
 
 			return node;
 		}
@@ -163,38 +177,37 @@ public class PositionLayout extends ModelSpanningTree
 
 		public void sort(Row other, boolean next)
 		{
-			if (this.size() <= 1 || other.size() <= 1)
-			{
-				return;
-			}
-			// TODO Sort children at the same time
-
 			Iterator nodes = this.nodes.iterator();
 			while (nodes.hasNext())
 			{
 				Object node = nodes.next();
 				calculateMedianValue(node, other, next);
-				// int childCount = model.getChildCount(node);
-				// for(int index = 0; index < childCount; index++)
-				// {
-				// Object child = model.getChild(node, index);
-				// calculateMedianValue(child, other, next);
-				// }
+				int childCount = model.getChildCount(node);
+				if(childCount > 0)
+				{
+					List children = new ArrayList();
+					int x = Integer.MAX_VALUE;
+					for(int index = 0; index < childCount; index++)
+					{
+						Object child = model.getChild(node, index);
+						children.add(child);
+						x = (int) Math.min(getBounds(child).getX(), x);
+						calculateMedianValue(child, other, next);
+					}
+					
+					Collections.sort(children, comparator);
+					
+					for(int index = 0; index < children.size(); index++)
+					{
+						Object child = children.get(index);
+						BoundingBox bounds = getBounds(child);
+						bounds.translate(x - (int)bounds.getX(), 0);
+						x += bounds.getWidth() + X_SEPARATION;
+					}					
+				}
 			}
 
-			Collections.sort(this, new Comparator()
-			{
-				public int compare(Object o1, Object o2)
-				{
-					Integer median1 = (Integer) getAttributes(o1).get("Median_value");
-					Integer median2 = (Integer) getAttributes(o2).get("Median_value");
-					if (median1.intValue() == -1 || median2.intValue() == -1)
-					{
-						return 0;
-					}
-					return median1.compareTo(median2);
-				}
-			});
+			Collections.sort(this, comparator);
 		}
 
 		private void calculateMedianValue(Object node, Row other, boolean next)
@@ -209,17 +222,17 @@ public class PositionLayout extends ModelSpanningTree
 					IntermediateNode interNode = (IntermediateNode) getSource(edge);
 					if (next)
 					{
-						if (node.equals(interNode.getSource()))
+						if (interNode.getSource().equals(GraphUtilities.getRoot(model, node)))
 						{
 							int indexOf = other.indexOf(interNode.getTarget());
-							//assert indexOf != -1 : interNode;
+							// assert indexOf != -1 : interNode;
 							values.add(new Integer(indexOf));
 						}
 					}
-					else if (node.equals(interNode.getTarget()))
+					else if (interNode.getTarget().equals(GraphUtilities.getRoot(model, node)))
 					{
 						int indexOf = other.indexOf(interNode.getSource());
-						//assert indexOf != -1 : interNode;
+						// assert indexOf != -1 : interNode;
 						values.add(new Integer(indexOf));
 					}
 				}
@@ -233,7 +246,7 @@ public class PositionLayout extends ModelSpanningTree
 			{
 				median = (Integer) values.get(values.size() / 2);
 			}
-			//System.err.println(this + ": Median value of " + node + " = " + median);
+			// System.err.println(this + ": Median value of " + node + " = " + median);
 
 			getAttributes(node).put("Median_value", median);
 
@@ -243,7 +256,20 @@ public class PositionLayout extends ModelSpanningTree
 	private static final int X_SEPARATION = 15;
 	private static final int Y_SEPARATION = 30;
 
-	private CellMapper mapper;
+	CellMapper mapper;
+	Comparator comparator = new Comparator()
+	{
+		public int compare(Object o1, Object o2)
+		{
+			Integer median1 = (Integer) getAttributes(o1).get("Median_value");
+			Integer median2 = (Integer) getAttributes(o2).get("Median_value");
+			if (median1.intValue() == -1 || median2.intValue() == -1)
+			{
+				return 0;
+			}
+			return median1.compareTo(median2);
+		}
+	};	
 
 	/**
 	 * @param model
@@ -395,15 +421,11 @@ public class PositionLayout extends ModelSpanningTree
 		if (node == null)
 		{
 			node = new IntermediateNode(edge, source, target);
+			newEdges.add(node.getSourceEdge());
+			newEdges.add(node.getTargetEdge());
 		}
 		setNextEdgeSegment(source, edge, node.getSourceEdge());
 		setPreviousEdgeSegment(target, edge, node.getTargetEdge());
-		assert !isRemoved(node.getSourceEdge()) : node.getSourceEdge();
-		newEdges.add(node.getSourceEdge());
-		assert newEdges.contains(node.getSourceEdge());
-		assert !isRemoved(node.getTargetEdge()) : node.getTargetEdge();
-		newEdges.add(node.getTargetEdge());
-		assert newEdges.contains(node.getTargetEdge());
 		return node;
 	}
 
@@ -446,7 +468,7 @@ public class PositionLayout extends ModelSpanningTree
 		}
 	}
 
-	protected BoundingBox getBounds(Object node)
+	protected BoundingBox getBounds(final Object node)
 	{
 		if (node instanceof VirtualNode)
 		{
@@ -507,7 +529,7 @@ public class PositionLayout extends ModelSpanningTree
 					// System.err.println(view.getCell() + ": Translate by " + dx + ", " + dy);
 					if (view.isLeaf())
 					{
-						view.getAllAttributes().translate(dx, dy);
+						model.getAttributes(node).translate(dx, dy);
 					}
 					else
 					{
@@ -515,11 +537,11 @@ public class PositionLayout extends ModelSpanningTree
 						for (int index = 0; index < cells.length; index++)
 						{
 							CellView child = cells[index];
-							child.getAllAttributes().translate(dx, dy);
-							child.update();
+							model.getAttributes(child.getCell()).translate(dx, dy);
+							child.refresh(model, mapper, false);
 						}
 					}
-					view.update();
+					view.refresh(model, mapper, false);
 				}
 			};
 		}
@@ -561,12 +583,13 @@ public class PositionLayout extends ModelSpanningTree
 			if (rankChange != 0)
 			{
 				getBounds(node).translate(rankChange, 0);
+				// System.err.println(this + " : Move by " + rankChange + " - " + node);
 			}
 		}
 		catch (NullPointerException e)
 		{
 			// No bounding box/view. Do nothing?
-			// System.err.println(this + ": Node " + node + " not found");
+			// System.err.println(this + ": Node " + node + " not moved");
 		}
 	}
 
@@ -614,6 +637,23 @@ public class PositionLayout extends ModelSpanningTree
 					return edgeWeight1 - edgeWeight2;
 				}
 
+				if ((edgeWeight1 == 0 && edgeWeight2 == 0))
+				{
+					Map attributes1 = getAttributes(getSource(o1));
+					Map attributes2 = getAttributes(getSource(o2));
+					Row row1 = LayoutConstants.getRow(attributes1);
+					Row row2 = LayoutConstants.getRow(attributes2);
+					assert row1 != null : getSource(o1);
+					assert row2 != null : getSource(o2);
+
+					int index1 = row1.indexOf(getSource(o1));
+					int index2 = row2.indexOf(getSource(o2));
+					assert index1 != -1 : getSource(o1);
+					assert index2 != -1 : getSource(o2);
+
+					return index2 - index1;
+				}
+
 				int targetRow1 = getRank(getTarget(o1));
 				int targetRow2 = getRank(getTarget(o2));
 
@@ -633,16 +673,13 @@ public class PositionLayout extends ModelSpanningTree
 		Edge leftEdge = LayoutConstants.getLeftEdge(attributes);
 		if (leftEdge != null && !isRemoved(leftEdge))
 		{
-			if (!isTreeEdge(leftEdge))
+			if (!set.contains(getSource(leftEdge)))
 			{
 				return getSlack(leftEdge);
 			}
+			return Integer.MAX_VALUE;
 		}
-		else
-		{
-			return getRank(node) - X_SEPARATION;
-		}
-		return Integer.MAX_VALUE;
+		return getRank(node) - X_SEPARATION;
 	}
 
 	protected int getMaxRankMovePositive(Set set, Object node)
@@ -652,7 +689,7 @@ public class PositionLayout extends ModelSpanningTree
 		Edge rightEdge = LayoutConstants.getRightEdge(attributes);
 		if (rightEdge != null && !isRemoved(rightEdge))
 		{
-			if (!isTreeEdge(rightEdge))
+			if (!set.contains(getTarget(rightEdge)))
 			{
 				return getSlack(rightEdge);
 			}
@@ -660,64 +697,72 @@ public class PositionLayout extends ModelSpanningTree
 		return Integer.MAX_VALUE;
 	}
 
+	protected void removeEdge(Object edge)
+	{
+		if(getEdgeWeight(edge) == 0)
+		{
+			Object leftNode = getSource(edge);
+			Object rightNode = getTarget(edge);
+			
+			Map leftAttributes = getAttributes(leftNode);
+			Map rightAttributes = getAttributes(rightNode);			
+			
+			LayoutConstants.setRightEdge(leftAttributes, null);
+			LayoutConstants.setLeftEdge(rightAttributes, null);			
+		}
+		super.removeEdge(edge);
+	}
+
 	protected int getSlack(Object edge)
 	{
-		assert !isRemoved(edge): edge;
-		try
+		assert !isRemoved(edge) : edge;
+		Object source = getSource(edge);
+		Object target = getTarget(edge);
+		BoundingBox sourceRect = getBounds(source);
+		BoundingBox targetRect = getBounds(target);
+
+		double edgeLength = targetRect.getCenterX() - sourceRect.getCenterX();
+		double minimumEdgeLength = 0;
+
+		if (edge instanceof Edge)
 		{
-			Object source = getSource(edge);
-			Object target = getTarget(edge);
-			BoundingBox sourceRect = getBounds(source);
-			BoundingBox targetRect = getBounds(target);
-
-			double edgeLength = targetRect.getCenterX() - sourceRect.getCenterX();
-			double minimumEdgeLength = 0;
-
-			if (edge instanceof Edge)
+			Edge theEdge = (Edge) edge;
+			if (theEdge.getWeight() == 0)
 			{
-				Edge theEdge = (Edge) edge;
-				if (theEdge.getWeight() == 0)
-				{
-					minimumEdgeLength = (targetRect.getWidth() + sourceRect.getWidth()) / 2
-							+ X_SEPARATION;
-				}
-				else
-				{
-					// Use port locations if available
-					// if(source instanceof VirtualNode && !(target instanceof VirtualNode))
-					// {
-					// VirtualNode node = (VirtualNode)source;
-					// Object actualEdge = node.edge;
-					// target = model.getTarget(actualEdge);
-					// CellView view = mapper.getMapping(target, false);
-					// if(view instanceof PortView)
-					// {
-					// edgeLength = (int) (((PortView)view).getLocation(null).getX() -
-					// sourceRect.getCenterX());
-					// }
-					// }
-					// else if(target instanceof VirtualNode && !(source instanceof VirtualNode))
-					// {
-					// VirtualNode node = (VirtualNode)target;
-					// Object actualEdge = node.edge;
-					// source = model.getSource(actualEdge);
-					// CellView view = mapper.getMapping(source, false);
-					// if(view instanceof PortView)
-					// {
-					// edgeLength = (int) (targetRect.getCenterX() -
-					// ((PortView)view).getLocation(null).getX());
-					// }
-					// }
-				}
+				minimumEdgeLength = (targetRect.getWidth() + sourceRect.getWidth()) / 2
+						+ X_SEPARATION;
 			}
+			else
+			{
+				// Use port locations if available
+				// if(source instanceof VirtualNode && !(target instanceof VirtualNode))
+				// {
+				// VirtualNode node = (VirtualNode)source;
+				// Object actualEdge = node.edge;
+				// target = model.getTarget(actualEdge);
+				// CellView view = mapper.getMapping(target, false);
+				// if(view instanceof PortView)
+				// {
+				// edgeLength = (int) (((PortView)view).getLocation(null).getX() -
+				// sourceRect.getCenterX());
+				// }
+				// }
+				// else if(target instanceof VirtualNode && !(source instanceof VirtualNode))
+				// {
+				// VirtualNode node = (VirtualNode)target;
+				// Object actualEdge = node.edge;
+				// source = model.getSource(actualEdge);
+				// CellView view = mapper.getMapping(source, false);
+				// if(view instanceof PortView)
+				// {
+				// edgeLength = (int) (targetRect.getCenterX() -
+				// ((PortView)view).getLocation(null).getX());
+				// }
+				// }
+			}
+		}
 
-			return (int) (edgeLength - minimumEdgeLength);
-		}
-		catch (NullPointerException e)
-		{
-			System.err.println(this + ": Invalid edge " + edge);
-			return 0;
-		}
+		return (int) (edgeLength - minimumEdgeLength);
 	}
 
 	protected boolean isValid(Object edge)

@@ -43,6 +43,6 @@ public class IntermediateNode extends VirtualNode
 
 	public String toString()
 	{
-		return "Intermediate node (" + previous.getTarget() + "+" + next.getTarget() + ")";
+		return "Intermediate node (" + previous.getTarget() + "<->" + next.getTarget() + ")";
 	}
 }

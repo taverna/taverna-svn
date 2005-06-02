@@ -9,7 +9,7 @@ import java.util.Map;
  * COMMENT 
  * 
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover</a>
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
 public class LayoutConstants
 {
@@ -18,14 +18,14 @@ public class LayoutConstants
 	
 	private static final String ROW = "row";		
 	
-	public static Integer getRow(Map map)
+	public static PositionLayout.Row getRow(Map map)
 	{
-		return (Integer)map.get(ROW);
+		return (PositionLayout.Row)map.get(ROW);
 	}
 	
-	public static void setRow(Map map, int row)
+	public static void setRow(Map map, PositionLayout.Row row)
 	{
-		map.put(ROW, new Integer(row));
+		map.put(ROW, row);
 	}
 	
 	public static Edge getLeftEdge(Map map)

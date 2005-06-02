@@ -17,6 +17,8 @@ public abstract class ModelSpanningTree extends GraphSpanningTree
 	protected static final String CUT_VALUE = "cut edge";
 	protected static final String CUT_TIME_STAMP = "cut time stamp";		
 	
+	protected static final String PREVIOUS_REPLACEMENT = "previous replacement";
+	
 	protected GraphModel model;
 	
 	public ModelSpanningTree(GraphModel model)
@@ -26,10 +28,26 @@ public abstract class ModelSpanningTree extends GraphSpanningTree
 	}
 
 	
+	protected Object getPreviousReplacement(Object edge)
+	{
+		Map attributes = getAttributes(edge);
+		assert attributes != null: this + ": No attributes for " + edge;
+		return attributes.get(PREVIOUS_REPLACEMENT);
+	}
+
+
+	protected void setPreviousReplacement(Object edge, Object replacementEdge)
+	{
+		Map attributes = getAttributes(edge);
+		assert attributes != null: this + ": No attributes for " + edge;
+		attributes.put(PREVIOUS_REPLACEMENT, replacementEdge);
+	}
+
+
 	protected boolean isRemoved(Object edge)
 	{
 		Map attributes = getAttributes(edge);
-		assert attributes != null: this + ": " + edge;
+		assert attributes != null: this + ": No attributes for " + edge;
 		return attributes.containsKey("removed");
 	}
 
@@ -37,15 +55,17 @@ public abstract class ModelSpanningTree extends GraphSpanningTree
 	protected void removeEdge(Object edge)
 	{
 		Map attributes = getAttributes(edge);
-		assert attributes != null: this;
-		attributes.put("removed", Boolean.TRUE);			
+		if(attributes != null)
+		{
+			attributes.put("removed", Boolean.TRUE);
+		}
 		super.removeEdge(edge);
 	}
 
 	protected void removeNode(Object node)
 	{
 		Map attributes = getAttributes(node);
-		assert attributes != null: this;
+		assert attributes != null: this + ": No attributes for " + node;
 		attributes.put("removed", Boolean.TRUE);			
 	}
 	
@@ -81,7 +101,7 @@ public abstract class ModelSpanningTree extends GraphSpanningTree
 	{
 		Map attributes = getAttributes(edge);
 		assert attributes != null: this + ": " + edge;
-		return attributes.containsKey(this + TREE_EDGE);
+		return attributes != null && attributes.containsKey(this + TREE_EDGE);
 	}
 
 	protected Integer getCutValue(Object treeEdge, String timeStamp)

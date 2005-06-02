@@ -125,49 +125,39 @@ public class WorkflowEditor extends JGraph implements ScuflUIComponent
 		layoutCache.setSelectsAllInsertedCells(false);
 		layoutCache.setFactory(new DefaultCellViewFactory()
 		{
-			protected PortView createPortView(Object port)
+			protected EdgeView createEdgeView(Object cell)
 			{
-				return new PortView(port)
+				return new EdgeView(cell)
 				{
-					protected Point2D getEdgePoint(EdgeView view, int index)
+					protected Point2D getPointLocation(int index)
 					{
-						Object obj = view.getPoints().get(index);
-						if (obj instanceof PortView)
+						Object obj = points.get(index);
+						if (obj instanceof Point2D)
 						{
-							VertexView vertex = (VertexView) ((CellView) obj).getParentView();
-							if (vertex != null)
-								return vertex.getCenterPoint();
+							return (Point2D) obj;
 						}
 						else if (obj instanceof VirtualNode)
 						{
 							return ((VirtualNode) obj).getPosition();
 						}
-						else if (obj instanceof CellView)
+						else if (obj instanceof PortView)
 						{
-							System.err.println("CellView!");
-							Rectangle2D r = ((CellView) obj).getBounds();
-							return getAttributes().createPoint(r.getX(), r.getY());
-						}
-						else if (obj instanceof Point2D)
-						{
-							// Regular Point
-							return (Point2D) obj;
+							VertexView vertex = (VertexView) ((CellView) obj).getParentView();
+							if (vertex != null)
+							{
+								return vertex.getCenterPoint();
+							}
 						}
 						return null;
 					}
-				};
-			}
 
-			protected EdgeView createEdgeView(Object cell)
-			{
-				return new EdgeView(cell)
-				{
 					public Point2D getPoint(int index)
 					{
 						Object obj = points.get(index);
 						if (obj instanceof PortView)
 						{
-							return ((PortView) obj).getLocation(this);
+							return ((PortView) obj).getLocation(this,
+									getPointLocation((index == 0) ? 1 : points.size() - 2));
 						}
 						else if (obj instanceof VirtualNode)
 						{
@@ -213,7 +203,7 @@ public class WorkflowEditor extends JGraph implements ScuflUIComponent
 			}
 		});
 		WorkflowEdgeRenderer edgeRenderer = new WorkflowEdgeRenderer();
-		edgeRenderer.setTension((float) 0.8);
+		edgeRenderer.setTension((float) 0.6);
 		EdgeView.renderer = edgeRenderer;
 		VertexView.renderer = new VertexRenderer()
 		{

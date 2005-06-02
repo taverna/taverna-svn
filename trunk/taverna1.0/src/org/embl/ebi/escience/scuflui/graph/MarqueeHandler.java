@@ -32,7 +32,7 @@ import org.jgraph.graph.VertexView;
  * COMMENT
  * 
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover </a>
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
 public class MarqueeHandler extends BasicMarqueeHandler
 {
@@ -183,7 +183,7 @@ public class MarqueeHandler extends BasicMarqueeHandler
 		}
 	}
 
-	public void overlay(Graphics g, boolean clear)
+	public void overlay(JGraph graph, Graphics g, boolean clear)
 	{
 		if (startPort != null && target != null)
 		{
@@ -248,7 +248,7 @@ public class MarqueeHandler extends BasicMarqueeHandler
 		}
 		else
 		{
-			super.overlay(g, clear);
+			super.overlay(graph, g, clear);
 		}
 	}
 
