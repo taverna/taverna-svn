@@ -23,7 +23,7 @@ import org.embl.ebi.escience.scuflui.ScuflIcons;
 import org.embl.ebi.escience.scuflworkers.ProcessorFactory;
 import org.embl.ebi.escience.scuflworkers.ProcessorHelper;
 import org.embl.ebi.escience.scuflworkers.ScavengerHelper;
-import org.embl.ebi.escience.scuflworkers.workflow.WorkflowProcessorFactory;
+import org.embl.ebi.escience.scuflworkers.workflow.*;
 
 // Utility Imports
 import java.util.Iterator;
@@ -149,25 +149,33 @@ public class ScavengerTreePopupHandler extends MouseAdapter {
 		test.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ae) {
 			    try {
-				final ScuflModel m = new ScuflModel();
-				Processor p = pf.createProcessor("processor",m);
-				//m.addProcessor(p);
-				// Iterate over all inputs and create workflow inputs, similarly for all outputs
-				InputPort[] ip = p.getInputPorts();
-				for (int i = 0; i < ip.length; i++) {
-				    String portName = ip[i].getName();
-				    OutputPort port = new OutputPort(m.getWorkflowSourceProcessor(), portName);
-				    m.getWorkflowSourceProcessor().addPort(port);
-				    m.addDataConstraint(new DataConstraint(m, port, ip[i]));
+				final ScuflModel m;				
+				if (pf instanceof WorkflowProcessorFactory) {
+				    WorkflowProcessor wp = (WorkflowProcessor)pf.createProcessor("processor",null);
+				    m = wp.getInternalModel();
 				}
-				OutputPort[] op = p.getOutputPorts();
-				for (int i = 0; i < op.length; i++) {
-				    String portName = op[i].getName();
-				    InputPort port = new InputPort(m.getWorkflowSinkProcessor(), portName);
-				    m.getWorkflowSinkProcessor().addPort(port);
-				    m.addDataConstraint(new DataConstraint(m, op[i], port));
+				else {
+				    m = new ScuflModel();
+				    Processor p = pf.createProcessor("processor",m);
+				    //m.addProcessor(p);
+				    // Iterate over all inputs and create workflow inputs, similarly for all outputs
+				    InputPort[] ip = p.getInputPorts();
+				    for (int i = 0; i < ip.length; i++) {
+					String portName = ip[i].getName();
+					OutputPort port = new OutputPort(m.getWorkflowSourceProcessor(), portName);
+					m.getWorkflowSourceProcessor().addPort(port);
+					m.addDataConstraint(new DataConstraint(m, port, ip[i]));
+				    }
+				    OutputPort[] op = p.getOutputPorts();
+				    for (int i = 0; i < op.length; i++) {
+					String portName = op[i].getName();
+					InputPort port = new InputPort(m.getWorkflowSinkProcessor(), portName);
+					m.getWorkflowSinkProcessor().addPort(port);
+					m.addDataConstraint(new DataConstraint(m, op[i], port));
+				    }
+				    // Should have now created a trivial single processor workflow or the directly loaded
+				    // more complex one.
 				}
-				// Should have now created a trivial single processor workflow...
 				if (m.getWorkflowSourcePorts().length != 0) {
 				    DataThingConstructionPanel thing = new DataThingConstructionPanel() {
 					    public void launchEnactorDisplay(Map inputObject) {
