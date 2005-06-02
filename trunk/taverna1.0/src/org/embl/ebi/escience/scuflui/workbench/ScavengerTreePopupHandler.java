@@ -212,7 +212,10 @@ public class ScavengerTreePopupHandler extends MouseAdapter {
 		menu.add(new ShadedLabel(pf.getName(), ShadedLabel.TAVERNA_GREEN));
 		menu.addSeparator();
 		menu.add(test);
-		
+	    }
+	    else {
+		menu.add(new ShadedLabel(scuflObject.toString(), ShadedLabel.TAVERNA_BLUE));
+		menu.addSeparator();
 	    }
 	    if (scuflObject instanceof ProcessorFactory && scavenger.model != null) {
 		final ProcessorFactory pf = (ProcessorFactory)scuflObject;
