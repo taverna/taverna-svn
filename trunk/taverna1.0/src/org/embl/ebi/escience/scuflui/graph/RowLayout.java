@@ -25,7 +25,7 @@ import org.jgraph.graph.GraphModel;
  * update as the graph changes.
  * 
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover </a>
- * @version $Revision: 1.20 $
+ * @version $Revision: 1.21 $
  */
 public class RowLayout extends ModelSpanningTree
 {
@@ -103,20 +103,23 @@ public class RowLayout extends ModelSpanningTree
 		}
 
 		removeEdges();
-		List treeEdges = createInitialTree();
-		optimiseTree(treeEdges);
-
-		reduceCrossovers();
-
-		int y = -15;
-		for (int index = 0; index < rows.size(); index++)
+		if(!newEdges.isEmpty())
 		{
-			y = getRow(index).updateEdges(y);
+			List treeEdges = createInitialTree();
+			optimiseTree(treeEdges);
+	
+			reduceCrossovers();
+	
+			int y = -15;
+			for (int index = 0; index < rows.size(); index++)
+			{
+				y = getRow(index).updateEdges(y);
+			}
+	
+			positionLayout.removeEdges();
+			treeEdges = positionLayout.createInitialTree();
+			positionLayout.optimiseTree(treeEdges);
 		}
-
-		positionLayout.removeEdges();
-		treeEdges = positionLayout.createInitialTree();
-		positionLayout.optimiseTree(treeEdges);
 	}
 
 	private void reduceCrossovers()

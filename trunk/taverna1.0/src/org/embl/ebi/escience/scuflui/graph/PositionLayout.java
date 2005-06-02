@@ -21,7 +21,7 @@ import org.jgraph.graph.GraphModel;
 
 /**
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover </a>
- * @version $Revision: 1.21 $
+ * @version $Revision: 1.22 $
  * 
  */
 public class PositionLayout extends ModelSpanningTree
@@ -74,7 +74,7 @@ public class PositionLayout extends ModelSpanningTree
 						correctEdge = null;
 					}
 
-					edge = LayoutConstants.getRightEdge(rightAttributes);
+					edge = LayoutConstants.getLeftEdge(rightAttributes);
 					if (edge != null && edge.getSource() != left)
 					{
 						removeEdge(edge);

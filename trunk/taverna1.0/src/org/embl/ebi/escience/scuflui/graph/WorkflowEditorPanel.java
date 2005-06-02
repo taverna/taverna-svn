@@ -39,7 +39,7 @@ import org.embl.ebi.escience.scuflui.actions.SaveWorkflowAction;
  * COMMENT
  * 
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover</a>
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public class WorkflowEditorPanel extends JPanel implements ScuflUIComponent
 {
@@ -128,7 +128,7 @@ public class WorkflowEditorPanel extends JPanel implements ScuflUIComponent
 		};
 		saveImage.putValue(Action.SHORT_DESCRIPTION, "Save image of workflow");
 		saveImage.putValue(Action.SMALL_ICON, ScuflIcons.outputIcon);
-		//toolbar.add(saveImage);
+		toolbar.add(saveImage);
 		toolbar.add(Box.createHorizontalGlue());
 		toolbar.add(new ResetAction(model));
 
