@@ -45,7 +45,11 @@ import java.lang.Exception;
 import java.lang.Object;
 import java.lang.String;
 import org.jdom.*;
-
+import org.embl.ebi.escience.scuflui.*;
+import org.embl.ebi.escience.baclava.*;
+import java.util.*;
+import org.embl.ebi.escience.scufl.enactor.*;
+import org.embl.ebi.escience.scufl.enactor.implementation.*;
 
 
 /**
@@ -138,11 +142,83 @@ public class ScavengerTreePopupHandler extends MouseAdapter {
 		    }
 		});
 
-
+	    // Add a magic rune to create a trivial workflow with only the select processor and enact it
+	    if (scuflObject instanceof ProcessorFactory) {
+		final ProcessorFactory pf = (ProcessorFactory)scuflObject;
+		JMenuItem test = new JMenuItem("Invoke", ScuflIcons.windowRun);
+		test.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent ae) {
+			    try {
+				final ScuflModel m = new ScuflModel();
+				Processor p = pf.createProcessor("processor",m);
+				//m.addProcessor(p);
+				// Iterate over all inputs and create workflow inputs, similarly for all outputs
+				InputPort[] ip = p.getInputPorts();
+				for (int i = 0; i < ip.length; i++) {
+				    String portName = ip[i].getName();
+				    OutputPort port = new OutputPort(m.getWorkflowSourceProcessor(), portName);
+				    m.getWorkflowSourceProcessor().addPort(port);
+				    m.addDataConstraint(new DataConstraint(m, port, ip[i]));
+				}
+				OutputPort[] op = p.getOutputPorts();
+				for (int i = 0; i < op.length; i++) {
+				    String portName = op[i].getName();
+				    InputPort port = new InputPort(m.getWorkflowSinkProcessor(), portName);
+				    m.getWorkflowSinkProcessor().addPort(port);
+				    m.addDataConstraint(new DataConstraint(m, op[i], port));
+				}
+				// Should have now created a trivial single processor workflow...
+				if (m.getWorkflowSourcePorts().length != 0) {
+				    DataThingConstructionPanel thing = new DataThingConstructionPanel() {
+					    public void launchEnactorDisplay(Map inputObject) {
+						try {
+						    UIUtils.createFrame(m, new EnactorInvocation(FreefluoEnactorProxy.getInstance(), 
+												 m,
+												 inputObject),
+									100, 100, 600, 400);
+						}
+						catch (WorkflowSubmissionException wse) {
+						    JOptionPane.showMessageDialog(null,
+										  "Problem invoking workflow engine : \n"+wse.getMessage(),
+										  "Exception!",
+										  JOptionPane.ERROR_MESSAGE);
+						}
+					    }
+					};
+				    UIUtils.createFrame(m, thing, 100, 100, 600, 400);
+				}
+				else {
+				    try {
+					// No inputs so launch the enactor directly
+					UIUtils.createFrame(m, new EnactorInvocation(FreefluoEnactorProxy.getInstance(), 
+										     m,
+										     new HashMap()),
+							    100, 100, 600, 400);
+				    }
+				    catch (Exception ex) {
+					ex.printStackTrace();
+				    }
+				}
+			    }
+			    catch (Exception ex) {
+				JOptionPane.showMessageDialog(null,
+							      "Unable to run operation : \n"+ex.getMessage(),
+							      "Exception!",
+							      JOptionPane.ERROR_MESSAGE);
+			    }
+			}
+			
+		    });
+		menu.add(new ShadedLabel(pf.getName(), ShadedLabel.TAVERNA_GREEN));
+		menu.addSeparator();
+		menu.add(test);
+		
+	    }
 	    if (scuflObject instanceof ProcessorFactory && scavenger.model != null) {
 		final ProcessorFactory pf = (ProcessorFactory)scuflObject;
 		// Show the popup for adding new processors to the model
 		JMenuItem add = new JMenuItem("Add to model", ScuflIcons.importIcon);
+		menu.addSeparator();
 		menu.add(add);
 		JMenuItem addWithName = new JMenuItem("Add to model with name...", ScuflIcons.importIcon);
 		menu.add(addWithName);
