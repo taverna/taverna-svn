@@ -67,7 +67,7 @@ public class EnactorInvocation extends JPanel implements ScuflUIComponent{
      */
     public static UserContext USERCONTEXT = null; 
 
-    String workflowStatusUpdateLock = "LOCK_1";
+    boolean workflowStatusUpdateReady = false;
 
     public void attachToModel(ScuflModel theModel) {
 	//
@@ -440,11 +440,10 @@ public class EnactorInvocation extends JPanel implements ScuflUIComponent{
 	final ScuflModel workflowModel = theModel;
 	new Thread(){
 	    public void run() {
-		synchronized(workflowStatusUpdateLock) {
-		    workflowEditor.attachToModel(workflowModel);
-		    workflowEditor.updateStatus(getStatusText());
-		    workflowEditor.setEnabled(false);
-		}
+		workflowEditor.attachToModel(workflowModel);
+		workflowEditor.updateStatus(getStatusText());
+		workflowEditor.setEnabled(false);
+		workflowStatusUpdateReady = true;
 	    }
 	}.start();
 	//workflowEditor.updateStatus(getStatusText());
@@ -615,7 +614,7 @@ class EnactorInvocationStatusThread extends Thread {
 		    String statusText = theEnactorInvocation.getStatusText();
 		    // System.out.println("Status document : "+statusText);
 		    String workflowStatus = theEnactorInvocation.getTableModel().update(statusText);
-		    synchronized(workflowStatusUpdateLock) {
+		    if (workflowStatusUpdateReady) {
 			theEnactorInvocation.workflowEditor.updateStatus(statusText);
 		    }
 		    // System.out.println("Workflow status : "+workflowStatus);
