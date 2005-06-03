@@ -13,7 +13,7 @@ import org.jgraph.graph.ParentMap;
 
 /**
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover</a>
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
 public class ScuflGraphAttributeChange implements GraphModelChange
 {
@@ -27,8 +27,10 @@ public class ScuflGraphAttributeChange implements GraphModelChange
 		super();
 		this.attributes = attributes;
 	}
-	
-	/* (non-Javadoc)
+
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.jgraph.event.GraphModelEvent.GraphModelChange#getInserted()
 	 */
 	public Object[] getInserted()
@@ -36,7 +38,9 @@ public class ScuflGraphAttributeChange implements GraphModelChange
 		return null;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.jgraph.event.GraphModelEvent.GraphModelChange#getRemoved()
 	 */
 	public Object[] getRemoved()
@@ -44,7 +48,9 @@ public class ScuflGraphAttributeChange implements GraphModelChange
 		return null;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.jgraph.event.GraphModelEvent.GraphModelChange#getPreviousAttributes()
 	 */
 	public Map getPreviousAttributes()
@@ -52,7 +58,9 @@ public class ScuflGraphAttributeChange implements GraphModelChange
 		return attributes;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.jgraph.event.GraphModelEvent.GraphModelChange#getPreviousConnectionSet()
 	 */
 	public ConnectionSet getPreviousConnectionSet()
@@ -60,7 +68,9 @@ public class ScuflGraphAttributeChange implements GraphModelChange
 		return null;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.jgraph.event.GraphModelEvent.GraphModelChange#getPreviousParentMap()
 	 */
 	public ParentMap getPreviousParentMap()
@@ -68,15 +78,20 @@ public class ScuflGraphAttributeChange implements GraphModelChange
 		return null;
 	}
 
-	/* (non-Javadoc)
-	 * @see org.jgraph.event.GraphModelEvent.GraphModelChange#putViews(org.jgraph.graph.GraphLayoutCache, org.jgraph.graph.CellView[])
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.jgraph.event.GraphModelEvent.GraphModelChange#putViews(org.jgraph.graph.GraphLayoutCache,
+	 *      org.jgraph.graph.CellView[])
 	 */
 	public void putViews(GraphLayoutCache view, CellView[] cellViews)
 	{
 		// Um...?
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.jgraph.event.GraphModelEvent.GraphModelChange#getViews(org.jgraph.graph.GraphLayoutCache)
 	 */
 	public CellView[] getViews(GraphLayoutCache view)
@@ -84,7 +99,9 @@ public class ScuflGraphAttributeChange implements GraphModelChange
 		return null;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.jgraph.event.GraphModelEvent.GraphViewChange#getSource()
 	 */
 	public Object getSource()
@@ -92,7 +109,9 @@ public class ScuflGraphAttributeChange implements GraphModelChange
 		return null;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.jgraph.event.GraphModelEvent.GraphViewChange#getChanged()
 	 */
 	public Object[] getChanged()
@@ -100,7 +119,9 @@ public class ScuflGraphAttributeChange implements GraphModelChange
 		return attributes.keySet().toArray();
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.jgraph.event.GraphModelEvent.GraphViewChange#getAttributes()
 	 */
 	public Map getAttributes()
@@ -108,7 +129,9 @@ public class ScuflGraphAttributeChange implements GraphModelChange
 		return attributes;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.jgraph.event.GraphModelEvent.GraphViewChange#getContext()
 	 */
 	public Object[] getContext()

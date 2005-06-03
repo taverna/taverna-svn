@@ -15,7 +15,7 @@ import org.jgraph.graph.GraphModel;
  * COMMENT
  * 
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover </a>
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public class GraphUtilities
 {
@@ -144,8 +144,8 @@ public class GraphUtilities
 	/**
 	 * @param model
 	 * @param node
-	 * @return <code>true</code> if <code>node</code> contains other nodes,
-	 *         <code>false</code> if it only contains ports or is empty.
+	 * @return <code>true</code> if <code>node</code> contains other nodes, <code>false</code>
+	 *         if it only contains ports or is empty.
 	 */
 	public static boolean isGroup(GraphModel model, Object node)
 	{

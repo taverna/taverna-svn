@@ -21,7 +21,7 @@ import org.jgraph.graph.GraphModel;
 
 /**
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover </a>
- * @version $Revision: 1.22 $
+ * @version $Revision: 1.23 $
  * 
  */
 public class PositionLayout extends ModelSpanningTree
@@ -183,27 +183,27 @@ public class PositionLayout extends ModelSpanningTree
 				Object node = nodes.next();
 				calculateMedianValue(node, other, next);
 				int childCount = model.getChildCount(node);
-				if(childCount > 0)
+				if (childCount > 0)
 				{
 					List children = new ArrayList();
 					int x = Integer.MAX_VALUE;
-					for(int index = 0; index < childCount; index++)
+					for (int index = 0; index < childCount; index++)
 					{
 						Object child = model.getChild(node, index);
 						children.add(child);
 						x = (int) Math.min(getBounds(child).getX(), x);
 						calculateMedianValue(child, other, next);
 					}
-					
+
 					Collections.sort(children, comparator);
-					
-					for(int index = 0; index < children.size(); index++)
+
+					for (int index = 0; index < children.size(); index++)
 					{
 						Object child = children.get(index);
 						BoundingBox bounds = getBounds(child);
-						bounds.translate(x - (int)bounds.getX(), 0);
+						bounds.translate(x - (int) bounds.getX(), 0);
 						x += bounds.getWidth() + X_SEPARATION;
-					}					
+					}
 				}
 			}
 
@@ -269,7 +269,7 @@ public class PositionLayout extends ModelSpanningTree
 			}
 			return median1.compareTo(median2);
 		}
-	};	
+	};
 
 	/**
 	 * @param model
@@ -699,16 +699,16 @@ public class PositionLayout extends ModelSpanningTree
 
 	protected void removeEdge(Object edge)
 	{
-		if(getEdgeWeight(edge) == 0)
+		if (getEdgeWeight(edge) == 0)
 		{
 			Object leftNode = getSource(edge);
 			Object rightNode = getTarget(edge);
-			
+
 			Map leftAttributes = getAttributes(leftNode);
-			Map rightAttributes = getAttributes(rightNode);			
-			
+			Map rightAttributes = getAttributes(rightNode);
+
 			LayoutConstants.setRightEdge(leftAttributes, null);
-			LayoutConstants.setLeftEdge(rightAttributes, null);			
+			LayoutConstants.setLeftEdge(rightAttributes, null);
 		}
 		super.removeEdge(edge);
 	}

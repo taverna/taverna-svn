@@ -14,8 +14,8 @@ import java.awt.*;
 import java.util.*;
 
 /**
- * This abstract class sets up and provides name-to-color and color-to-name
- * mappings and some associated class methods.
+ * This abstract class sets up and provides name-to-color and color-to-name mappings and some
+ * associated class methods.
  * 
  * @version 1.2, 12 Jun 2001; Copyright 1996 - 2001 by AT&T Corp.
  * @author <a href="mailto:john@research.att.com">John Mocenigo </a>, <a
@@ -716,12 +716,11 @@ public abstract class GraphColours
 	public static final Color defaultColor = getColour("black", null);
 
 	/**
-	 * Adds a color to the application color table. For search purposes, names
-	 * are canonicalized by converting to lower case and stripping
-	 * non-alphanumerics. A name must contains at least one alphabetic. Once in
-	 * the table, colors can be set by name, and names can be retrieved by color
-	 * (although a single color referred to by multiple names only causes the
-	 * retrieval of the last name mapped to that color).
+	 * Adds a color to the application color table. For search purposes, names are canonicalized by
+	 * converting to lower case and stripping non-alphanumerics. A name must contains at least one
+	 * alphabetic. Once in the table, colors can be set by name, and names can be retrieved by color
+	 * (although a single color referred to by multiple names only causes the retrieval of the last
+	 * name mapped to that color).
 	 * 
 	 * @param name
 	 *            the name to be used to reference the color.
@@ -759,9 +758,9 @@ public abstract class GraphColours
 	}
 
 	/*
-	 * attempts to read a string as numeric color: "#%2x%2x%2x" RGB
-	 * "#%2x%2x%2x%2x"RGBA "%lf,%lf,%lf" or "%lf %lf %lf" HSV 0.0 <= values <=
-	 * 1.0 returns null if it can't (e.g. if it's a color name)
+	 * attempts to read a string as numeric color: "#%2x%2x%2x" RGB "#%2x%2x%2x%2x"RGBA
+	 * "%lf,%lf,%lf" or "%lf %lf %lf" HSV 0.0 <= values <= 1.0 returns null if it can't (e.g. if
+	 * it's a color name)
 	 */
 	private static Color parseNumericColor(String value)
 	{
@@ -774,10 +773,10 @@ public abstract class GraphColours
 				return null;
 			// ignore alpha if any
 			return new Color(Integer.parseInt(v2.substring(1, 7), 16)); // this
-																		// is
-																		// the
-																		// easy
-																		// one!
+			// is
+			// the
+			// easy
+			// one!
 		}
 		else if (Character.isDigit(first) || first == '.')
 		{
@@ -852,11 +851,10 @@ public abstract class GraphColours
 	}
 
 	/**
-	 * Return the color in the color table with the given name. If the name is
-	 * parseable as a numeric color, use that Otherwise, If the color is not
-	 * found, the supplied default is returned. If the supplied default is null,
-	 * the class default is returned. The name search is case insensitive and
-	 * looks at alphanumerics only.
+	 * Return the color in the color table with the given name. If the name is parseable as a
+	 * numeric color, use that Otherwise, If the color is not found, the supplied default is
+	 * returned. If the supplied default is null, the class default is returned. The name search is
+	 * case insensitive and looks at alphanumerics only.
 	 * 
 	 * @param name
 	 *            the name of the color to be retrieved.
@@ -889,8 +887,8 @@ public abstract class GraphColours
 	 * @param color
 	 *            the color whose name is to be retrieved.
 	 * 
-	 * @return the color's (most recently entered) name, if it is in the color
-	 *         table, or its HSB value string otherwise.
+	 * @return the color's (most recently entered) name, if it is in the color table, or its HSB
+	 *         value string otherwise.
 	 */
 	public static String getColorName(Color color)
 	{

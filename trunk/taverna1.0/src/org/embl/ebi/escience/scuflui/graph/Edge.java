@@ -25,12 +25,12 @@ class Edge
 		setSource(source);
 		setTarget(target);
 		this.weight = weight;
-		assert(source != target): this;	
+		assert (source != target) : this;
 	}
-	
+
 	public void setSource(Object node)
 	{
-		if(node == null)
+		if (node == null)
 		{
 			throw new NullPointerException("Oi!");
 		}
@@ -41,41 +41,42 @@ class Edge
 	{
 		return source;
 	}
-	
+
 	public Map getAttributes()
 	{
 		return attributes;
 	}
-	
+
 	public Object getTarget()
 	{
 		return target;
 	}
-	
+
 	public void setTarget(Object node)
 	{
-		if(node == null)
+		if (node == null)
 		{
 			throw new NullPointerException("Oi!");
 		}
 		target = node;
 	}
-//
-//	public boolean equals(Object obj)
-//	{
-//		if(obj instanceof Edge)
-//		{
-//			Edge edge = (Edge)obj;
-//			return source.equals(edge.source) && target.equals(edge.target);
-//		}
-//		return false;
-//	}
+
+	//
+	// public boolean equals(Object obj)
+	// {
+	// if(obj instanceof Edge)
+	// {
+	// Edge edge = (Edge)obj;
+	// return source.equals(edge.source) && target.equals(edge.target);
+	// }
+	// return false;
+	// }
 
 	public String toString()
 	{
 		return source.toString() + "->" + target.toString();
 	}
-	
+
 	public int getWeight()
 	{
 		return weight;

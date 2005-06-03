@@ -13,7 +13,7 @@ import java.util.Map;
  * COMMENT
  * 
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover </a>
- * @version $Revision: 1.8 $
+ * @version $Revision: 1.9 $
  */
 public class VirtualNode
 {
@@ -29,7 +29,7 @@ public class VirtualNode
 		this.edge = edge;
 		this.row = row;
 	}
-	
+
 	public Edge getNextEdge()
 	{
 		return next;
@@ -64,7 +64,7 @@ public class VirtualNode
 	{
 		return position;
 	}
-	
+
 	public BoundingBox getBounds()
 	{
 		return new BoundingBox()
@@ -77,7 +77,7 @@ public class VirtualNode
 
 			public void setRect(double x, double y, double w, double h)
 			{
-				position.setLocation(x,y);				
+				position.setLocation(x, y);
 			}
 
 			public Rectangle2D createIntersection(Rectangle2D r)
@@ -119,7 +119,7 @@ public class VirtualNode
 
 			public void translate(int dx, int dy)
 			{
-				//System.err.println(VirtualNode.this + ": Translate by " + dx + ", " + dy);
+				// System.err.println(VirtualNode.this + ": Translate by " + dx + ", " + dy);
 				position.setLocation(position.getX() + dx, position.getY() + dy);
 			}
 		};
@@ -127,9 +127,9 @@ public class VirtualNode
 
 	public boolean equals(Object obj)
 	{
-		if(obj instanceof VirtualNode)
+		if (obj instanceof VirtualNode)
 		{
-			VirtualNode node = (VirtualNode)obj;
+			VirtualNode node = (VirtualNode) obj;
 			return row == node.row && edge.equals(node.edge);
 		}
 		return false;

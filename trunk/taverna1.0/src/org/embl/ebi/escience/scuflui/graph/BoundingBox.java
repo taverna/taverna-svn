@@ -6,10 +6,10 @@ package org.embl.ebi.escience.scuflui.graph;
 import java.awt.geom.Rectangle2D;
 
 /**
- * COMMENT 
+ * COMMENT
  * 
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover</a>
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
 public abstract class BoundingBox extends Rectangle2D
 {
@@ -23,10 +23,11 @@ public abstract class BoundingBox extends Rectangle2D
 		// TODO Implement BoundingBox constructor
 	}
 
-	public abstract void translate(int dx, int dy);	
-	
+	public abstract void translate(int dx, int dy);
+
 	public String toString()
 	{
-		return "BoundingBox[" + getX() + ", " + getY() + ", " + getWidth() + ", " + getHeight() + "]";
+		return "BoundingBox[" + getX() + ", " + getY() + ", " + getWidth() + ", " + getHeight()
+				+ "]";
 	}
 }

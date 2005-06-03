@@ -51,7 +51,7 @@ import org.jgraph.graph.ParentMap;
 /**
  * 
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover </a>
- * @version $Revision: 1.20 $
+ * @version $Revision: 1.21 $
  */
 public class ScuflGraphModel implements GraphModel, GraphModelListener, ScuflUIComponent
 {
@@ -120,7 +120,7 @@ public class ScuflGraphModel implements GraphModel, GraphModelListener, ScuflUIC
 
 		public String toString()
 		{
-			return "DummyPort["+parent+"]";
+			return "DummyPort[" + parent + "]";
 		}
 
 		/**
@@ -320,7 +320,7 @@ public class ScuflGraphModel implements GraphModel, GraphModelListener, ScuflUIC
 			List defaultPoints = new ArrayList();
 			defaultPoints.add(getSource(node));
 			defaultPoints.add(getTarget(node));
-			GraphConstants.setPoints(map, defaultPoints);			
+			GraphConstants.setPoints(map, defaultPoints);
 
 			GraphConstants.setLabelAlongEdge(map, false);
 			GraphConstants.setValue(map, "");
@@ -381,8 +381,7 @@ public class ScuflGraphModel implements GraphModel, GraphModelListener, ScuflUIC
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.jgraph.graph.GraphModel#acceptsSource(java.lang.Object,
-	 *      java.lang.Object)
+	 * @see org.jgraph.graph.GraphModel#acceptsSource(java.lang.Object, java.lang.Object)
 	 */
 	public boolean acceptsSource(Object edge, Object port)
 	{
@@ -398,8 +397,7 @@ public class ScuflGraphModel implements GraphModel, GraphModelListener, ScuflUIC
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.jgraph.graph.GraphModel#acceptsTarget(java.lang.Object,
-	 *      java.lang.Object)
+	 * @see org.jgraph.graph.GraphModel#acceptsTarget(java.lang.Object, java.lang.Object)
 	 */
 	public boolean acceptsTarget(Object edge, Object port)
 	{
@@ -488,8 +486,7 @@ public class ScuflGraphModel implements GraphModel, GraphModelListener, ScuflUIC
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.jgraph.graph.GraphModel#getIndexOfChild(java.lang.Object,
-	 *      java.lang.Object)
+	 * @see org.jgraph.graph.GraphModel#getIndexOfChild(java.lang.Object, java.lang.Object)
 	 */
 	public int getIndexOfChild(Object parent, Object child)
 	{
@@ -589,9 +586,9 @@ public class ScuflGraphModel implements GraphModel, GraphModelListener, ScuflUIC
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.jgraph.graph.GraphModel#insert(java.lang.Object[],
-	 *      java.util.Map, org.jgraph.graph.ConnectionSet,
-	 *      org.jgraph.graph.ParentMap, javax.swing.undo.UndoableEdit[])
+	 * @see org.jgraph.graph.GraphModel#insert(java.lang.Object[], java.util.Map,
+	 *      org.jgraph.graph.ConnectionSet, org.jgraph.graph.ParentMap,
+	 *      javax.swing.undo.UndoableEdit[])
 	 */
 	public void insert(Object[] cells, Map attributes, ConnectionSet cs, ParentMap pm,
 			UndoableEdit[] e)
@@ -638,9 +635,8 @@ public class ScuflGraphModel implements GraphModel, GraphModelListener, ScuflUIC
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.jgraph.graph.GraphModel#edit(java.util.Map,
-	 *      org.jgraph.graph.ConnectionSet, org.jgraph.graph.ParentMap,
-	 *      javax.swing.undo.UndoableEdit[])
+	 * @see org.jgraph.graph.GraphModel#edit(java.util.Map, org.jgraph.graph.ConnectionSet,
+	 *      org.jgraph.graph.ParentMap, javax.swing.undo.UndoableEdit[])
 	 */
 	public void edit(Map attributes, ConnectionSet cs, ParentMap pm, UndoableEdit[] e)
 	{
@@ -660,20 +656,21 @@ public class ScuflGraphModel implements GraphModel, GraphModelListener, ScuflUIC
 						map.remove(GraphConstants.VALUE);
 						map.remove(GraphConstants.BOUNDS);
 						map.remove(GraphConstants.RESIZE);
-						if(map.isEmpty())
+						if (map.isEmpty())
 						{
 							it.remove();
-						}						
+						}
 						Processor processor = (Processor) cell;
 						processor.setName(value.toString());
 					}
 					// TODO Handle renaming of input/output ports?
 				}
 			}
-			if(!attributes.isEmpty())
+			if (!attributes.isEmpty())
 			{
 				updateAttributes(attributes);
-				fireGraphChangedEvent(new GraphModelEvent(this, new ScuflGraphAttributeChange(attributes)));
+				fireGraphChangedEvent(new GraphModelEvent(this, new ScuflGraphAttributeChange(
+						attributes)));
 			}
 		}
 	}

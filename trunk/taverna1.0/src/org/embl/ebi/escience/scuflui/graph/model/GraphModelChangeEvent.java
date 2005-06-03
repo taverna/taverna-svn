@@ -17,10 +17,10 @@ import org.jgraph.graph.GraphModel;
 import org.jgraph.graph.ParentMap;
 
 /**
- * COMMENT 
+ * COMMENT
  * 
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover</a>
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
 public class GraphModelChangeEvent implements GraphModelChange
 {
@@ -40,30 +40,33 @@ public class GraphModelChangeEvent implements GraphModelChange
 	 * @param cs
 	 * @param attributes
 	 */
-	public GraphModelChangeEvent(GraphModel model, Object[] inserted, Object[] removed, ConnectionSet cs, Map attributes)
+	public GraphModelChangeEvent(GraphModel model, Object[] inserted, Object[] removed,
+			ConnectionSet cs, Map attributes)
 	{
 		super();
 		this.inserted = inserted;
 		this.removed = removed;
 		this.previousConnectionSet = cs;
 		this.previousAttributes = attributes;
-		
+
 		Collection changeList = new HashSet();
-		if(attributes != null)
+		if (attributes != null)
 		{
 			changeList.addAll(attributes.keySet());
 		}
-		if(cs != null)
+		if (cs != null)
 		{
 			changeList.addAll(cs.getChangedEdges());
 		}
 		changed = changeList.toArray();
-		
+
 		Collection ctx = DefaultGraphModel.getEdges(model, changed);
 		context = ctx.toArray();
 	}
-	
-	/* (non-Javadoc)
+
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.jgraph.event.GraphModelEvent.GraphModelChange#getInserted()
 	 */
 	public Object[] getInserted()
@@ -71,7 +74,9 @@ public class GraphModelChangeEvent implements GraphModelChange
 		return inserted;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.jgraph.event.GraphModelEvent.GraphModelChange#getRemoved()
 	 */
 	public Object[] getRemoved()
@@ -79,7 +84,9 @@ public class GraphModelChangeEvent implements GraphModelChange
 		return removed;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.jgraph.event.GraphModelEvent.GraphModelChange#getPreviousAttributes()
 	 */
 	public Map getPreviousAttributes()
@@ -87,7 +94,9 @@ public class GraphModelChangeEvent implements GraphModelChange
 		return previousAttributes;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.jgraph.event.GraphModelEvent.GraphModelChange#getPreviousConnectionSet()
 	 */
 	public ConnectionSet getPreviousConnectionSet()
@@ -95,7 +104,9 @@ public class GraphModelChangeEvent implements GraphModelChange
 		return previousConnectionSet;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.jgraph.event.GraphModelEvent.GraphModelChange#getPreviousParentMap()
 	 */
 	public ParentMap getPreviousParentMap()
@@ -103,19 +114,26 @@ public class GraphModelChangeEvent implements GraphModelChange
 		return null;
 	}
 
-	/* (non-Javadoc)
-	 * @see org.jgraph.event.GraphModelEvent.GraphModelChange#putViews(org.jgraph.graph.GraphLayoutCache, org.jgraph.graph.CellView[])
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.jgraph.event.GraphModelEvent.GraphModelChange#putViews(org.jgraph.graph.GraphLayoutCache,
+	 *      org.jgraph.graph.CellView[])
 	 */
-	public void putViews(GraphLayoutCache view, CellView[] views) {
+	public void putViews(GraphLayoutCache view, CellView[] views)
+	{
 		if (view != null && views != null)
 			cellViews.put(view, views);
 	}
 
-	public CellView[] getViews(GraphLayoutCache view) {
+	public CellView[] getViews(GraphLayoutCache view)
+	{
 		return (CellView[]) cellViews.get(view);
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.jgraph.event.GraphModelEvent.GraphViewChange#getSource()
 	 */
 	public Object getSource()
@@ -123,7 +141,9 @@ public class GraphModelChangeEvent implements GraphModelChange
 		return model;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.jgraph.event.GraphModelEvent.GraphViewChange#getChanged()
 	 */
 	public Object[] getChanged()
@@ -131,7 +151,9 @@ public class GraphModelChangeEvent implements GraphModelChange
 		return changed;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.jgraph.event.GraphModelEvent.GraphViewChange#getAttributes()
 	 */
 	public Map getAttributes()
@@ -139,7 +161,9 @@ public class GraphModelChangeEvent implements GraphModelChange
 		return previousAttributes;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.jgraph.event.GraphModelEvent.GraphViewChange#getContext()
 	 */
 	public Object[] getContext()

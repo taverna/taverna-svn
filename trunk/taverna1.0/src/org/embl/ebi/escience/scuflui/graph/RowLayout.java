@@ -25,7 +25,7 @@ import org.jgraph.graph.GraphModel;
  * update as the graph changes.
  * 
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover </a>
- * @version $Revision: 1.22 $
+ * @version $Revision: 1.23 $
  */
 public class RowLayout extends ModelSpanningTree
 {
@@ -103,23 +103,23 @@ public class RowLayout extends ModelSpanningTree
 		}
 
 		removeEdges();
-		if(!newEdges.isEmpty() || !positionLayout.newEdges.isEmpty())
+		if (!newEdges.isEmpty())
 		{
 			List treeEdges = createInitialTree();
 			optimiseTree(treeEdges);
-	
+
 			reduceCrossovers();
-	
-			int y = -15;
-			for (int index = 0; index < rows.size(); index++)
-			{
-				y = getRow(index).updateEdges(y);
-			}
-	
-			positionLayout.removeEdges();
-			treeEdges = positionLayout.createInitialTree();
-			positionLayout.optimiseTree(treeEdges);
 		}
+
+		int y = -15;
+		for (int index = 0; index < rows.size(); index++)
+		{
+			y = getRow(index).updateEdges(y);
+		}
+
+		positionLayout.removeEdges();
+		List treeEdges = positionLayout.createInitialTree();
+		positionLayout.optimiseTree(treeEdges);
 	}
 
 	private void reduceCrossovers()
@@ -204,22 +204,24 @@ public class RowLayout extends ModelSpanningTree
 	{
 		// System.err.println(this + ": Update " + edge);
 		Object previousNode = getSource(edge);
-		
+
 		int sourceRow = getRank(previousNode);
 		int targetRow = getRank(getTarget(edge));
 		int currentRow = sourceRow + 1;
-		
+
 		Map attributes = getAttributes(edge);
 		List nodeChain = GraphConstants.getPoints(attributes);
-	
-		assert !(nodeChain.get(nodeChain.size() - 1) instanceof VirtualNode): edge + ": " + nodeChain;
-		
+
+		assert !(nodeChain.get(nodeChain.size() - 1) instanceof VirtualNode) : edge + ": "
+				+ nodeChain;
+
 		ListIterator nodes = nodeChain.listIterator(1);
-		while(nodes.hasNext())
+		while (nodes.hasNext())
 		{
 			Object currentNode = GraphUtilities.getRoot(model, nodes.next());
 			int nodeRow = getRank(currentNode);
-			if (currentNode instanceof VirtualNode && (nodeRow < currentRow || nodeRow >= targetRow))
+			if (currentNode instanceof VirtualNode
+					&& (nodeRow < currentRow || nodeRow >= targetRow))
 			{
 				nodes.remove();
 				removeNode(currentNode);
@@ -240,7 +242,8 @@ public class RowLayout extends ModelSpanningTree
 				previousNode = currentNode;
 			}
 		}
-		assert nodeChain.size() == (targetRow - sourceRow) + 1 : edge + ": " + nodeChain + ": " + sourceRow + "-" + targetRow;
+		assert nodeChain.size() == (targetRow - sourceRow) + 1 : edge + ": " + nodeChain + ": "
+				+ sourceRow + "-" + targetRow;
 		GraphConstants.setPoints(attributes, nodeChain);
 		CellView view = mapper.getMapping(edge, false);
 		if (view != null)
@@ -345,7 +348,7 @@ public class RowLayout extends ModelSpanningTree
 		Map attributes = getAttributes(node);
 		Row oldRank = LayoutConstants.getRow(attributes);
 		assert (oldRank != null);
-		oldRank.remove(node);		
+		oldRank.remove(node);
 		Row newRank = getRow(oldRank.getRow() + rankChange);
 		assert !newRank.contains(node) : node;
 		newRank.add(node);
@@ -423,7 +426,7 @@ public class RowLayout extends ModelSpanningTree
 
 	protected int getSlack(Object edge)
 	{
-		assert !isRemoved(edge): edge;		
+		assert !isRemoved(edge) : edge;
 		return (getRank(getTarget(edge)) - getRank(getSource(edge))) - 1;
 	}
 

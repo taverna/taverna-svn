@@ -32,7 +32,7 @@ import org.jgraph.graph.VertexView;
  * COMMENT
  * 
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover </a>
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  */
 public class MarqueeHandler extends BasicMarqueeHandler
 {
@@ -116,59 +116,59 @@ public class MarqueeHandler extends BasicMarqueeHandler
 		}
 	}
 
-	
 	public void mouseDragged(MouseEvent e)
 	{
-		if(startPort != null)
+		if (startPort != null)
 		{
 			mouseMoved(e);
 		}
 		else
 		{
-			super.mouseDragged(e);			
+			super.mouseDragged(e);
 		}
 	}
-	
+
 	public void mousePressed(MouseEvent e)
 	{
-		if(startPort == null)
+		if (startPort == null)
 		{
 			super.mousePressed(e);
 		}
 	}
-	
+
 	public void mouseReleased(MouseEvent e)
 	{
 		if (startPort != null)
 		{
 			if (target instanceof VertexView)
 			{
-				if(((VertexView) target).getCell() instanceof Processor)
+				if (((VertexView) target).getCell() instanceof Processor)
 				{
-				Processor processor = (Processor) ((VertexView) target).getCell();
-				Port[] ports;
-				if (startPort instanceof InputPort)
-				{
-					ports = processor.getOutputPorts();
-				}
-				else
-				{
-					ports = processor.getInputPorts();
-				}
+					Processor processor = (Processor) ((VertexView) target).getCell();
+					Port[] ports;
+					if (startPort instanceof InputPort)
+					{
+						ports = processor.getOutputPorts();
+					}
+					else
+					{
+						ports = processor.getInputPorts();
+					}
 
-				JPopupMenu popupMenu = new JPopupMenu();
-				popupMenu.add(new ShadedLabel("Connect to...", ShadedLabel.TAVERNA_GREEN));
-				popupMenu.addSeparator();
-				for (int index = 0; index < ports.length; index++)
-				{
-					popupMenu.add(new AddDataConstraintAction(startPort.getProcessor().getModel(),
-							startPort, ports[index]));
+					JPopupMenu popupMenu = new JPopupMenu();
+					popupMenu.add(new ShadedLabel("Connect to...", ShadedLabel.TAVERNA_GREEN));
+					popupMenu.addSeparator();
+					for (int index = 0; index < ports.length; index++)
+					{
+						popupMenu.add(new AddDataConstraintAction(startPort.getProcessor()
+								.getModel(), startPort, ports[index]));
+					}
+					popupMenu.show(graph, e.getX(), e.getY());
 				}
-				popupMenu.show(graph, e.getX(), e.getY());
-				}
-				else if(((VertexView) target).getCell() instanceof Port)
+				else if (((VertexView) target).getCell() instanceof Port)
 				{
-					new AddDataConstraintAction(startPort.getProcessor().getModel(), startPort, (Port)((VertexView) target).getCell()).actionPerformed(null);
+					new AddDataConstraintAction(startPort.getProcessor().getModel(), startPort,
+							(Port) ((VertexView) target).getCell()).actionPerformed(null);
 				}
 			}
 			startPort = null;
@@ -214,7 +214,7 @@ public class MarqueeHandler extends BasicMarqueeHandler
 			if (startPort instanceof InputPort)
 			{
 				dst = start;
-				src = end;				
+				src = end;
 			}
 			else
 			{

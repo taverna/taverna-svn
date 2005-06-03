@@ -15,7 +15,7 @@ import java.util.Set;
 
 /**
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover </a>
- * @version $Revision: 1.21 $
+ * @version $Revision: 1.22 $
  */
 public abstract class GraphSpanningTree
 {
@@ -77,7 +77,7 @@ public abstract class GraphSpanningTree
 
 	protected void removeEdge(Object edge)
 	{
-		//System.err.println(this + ": Remove edge " + edge);
+		// System.err.println(this + ": Remove edge " + edge);
 		if (isTreeEdge(edge))
 		{
 			setTreeEdge(edge, false);
@@ -645,7 +645,7 @@ public abstract class GraphSpanningTree
 		newEdges.clear();
 
 		Collections.sort(edgeList, getComparator());
-		//System.err.println(this + ": Add edges " + edgeList);
+		// System.err.println(this + ": Add edges " + edgeList);
 
 		List treeEdges = new ArrayList();
 		Iterator edges = edgeList.iterator();
@@ -672,7 +672,7 @@ public abstract class GraphSpanningTree
 
 	protected void removeEdges()
 	{
-		//System.err.println(this + ": Remove edges " + removedEdges);
+		// System.err.println(this + ": Remove edges " + removedEdges);
 		Iterator removed = removedEdges.iterator();
 		while (removed.hasNext())
 		{

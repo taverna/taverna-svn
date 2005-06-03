@@ -28,7 +28,7 @@ import org.jgraph.graph.ParentMap;
 
 /**
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover </a>
- * @version $Revision: 1.11 $
+ * @version $Revision: 1.12 $
  */
 public class ScuflGraphModelChange implements GraphModelChange
 {
@@ -66,20 +66,20 @@ public class ScuflGraphModelChange implements GraphModelChange
 		}
 		newRoots.addAll(Arrays.asList(scuflModel.getProcessors()));
 		newRoots.addAll(Arrays.asList(scuflModel.getConcurrencyConstraints()));
-		newRoots.addAll(Arrays.asList(scuflModel.getDataConstraints()));			
+		newRoots.addAll(Arrays.asList(scuflModel.getDataConstraints()));
 		return newRoots;
 	}
-	
+
 	private void addNode(Collection collection, Object node)
 	{
 		collection.add(node);
-		if(node instanceof Processor)
+		if (node instanceof Processor)
 		{
-			Port[] ports = ((Processor)node).getPorts();
-			for(int index = 0; index < ports.length; index++)
+			Port[] ports = ((Processor) node).getPorts();
+			for (int index = 0; index < ports.length; index++)
 			{
 				collection.add(ports[index]);
-			}				
+			}
 		}
 	}
 
@@ -89,7 +89,7 @@ public class ScuflGraphModelChange implements GraphModelChange
 	public void calculateChanges(ScuflModelEvent event)
 	{
 		Object source = event.getSource();
-		newRoots = getRoots(model.getModel());		
+		newRoots = getRoots(model.getModel());
 		if (event instanceof ScuflModelRemoveEvent)
 		{
 			Object removedObject = ((ScuflModelRemoveEvent) event).getRemovedObject();
@@ -98,12 +98,12 @@ public class ScuflGraphModelChange implements GraphModelChange
 			{
 				removedObject = model.getParent(removedObject);
 			}
-			addNode(removed,removedObject);
+			addNode(removed, removedObject);
 			Object parent = model.getParent(removedObject);
-			if(parent != null)
+			if (parent != null)
 			{
 				changed.add(parent);
-			}				
+			}
 		}
 		else if (event instanceof ScuflModelAddEvent)
 		{
@@ -115,12 +115,12 @@ public class ScuflGraphModelChange implements GraphModelChange
 			}
 			addNode(added, addedObject);
 			Object parent = model.getParent(addedObject);
-			if(parent != null)
+			if (parent != null)
 			{
 				changed.add(parent);
 			}
 		}
-		else if(event instanceof ScuflModelRenameEvent)
+		else if (event instanceof ScuflModelRenameEvent)
 		{
 			if (model.contains(source))
 			{
@@ -130,12 +130,13 @@ public class ScuflGraphModelChange implements GraphModelChange
 					attrs = new HashMap();
 					attributes.put(source, attrs);
 				}
-				String newName = ((Processor)source).getName();
-				assert newName != null: source;
-				assert !newName.equals(((ScuflModelRenameEvent)event).getOldName()): source;
+				String newName = ((Processor) source).getName();
+				assert newName != null : source;
+				assert !newName.equals(((ScuflModelRenameEvent) event).getOldName()) : source;
 				GraphConstants.setValue(attrs, newName);
 				GraphConstants.setResize(attrs, true);
-				GraphConstants.setBounds(attrs, GraphConstants.getBounds(model.getAttributes(source)));
+				GraphConstants.setBounds(attrs, GraphConstants.getBounds(model
+						.getAttributes(source)));
 				changed.add(source);
 			}
 		}
@@ -145,12 +146,12 @@ public class ScuflGraphModelChange implements GraphModelChange
 			{
 				List roots = model.roots;
 				Iterator difference = difference(roots, newRoots).iterator();
-				while(difference.hasNext())
+				while (difference.hasNext())
 				{
 					addNode(added, difference.next());
 				}
 				difference = difference(newRoots, roots).iterator();
-				while(difference.hasNext())
+				while (difference.hasNext())
 				{
 					addNode(removed, difference.next());
 				}
@@ -266,8 +267,7 @@ public class ScuflGraphModelChange implements GraphModelChange
 	}
 
 	/**
-	 * @return <code>true</code> if the model has changed, <code>false</code>
-	 *         otherwise.
+	 * @return <code>true</code> if the model has changed, <code>false</code> otherwise.
 	 */
 	public boolean hasChanges()
 	{
@@ -285,7 +285,7 @@ public class ScuflGraphModelChange implements GraphModelChange
 		model.updateAttributes(attributes);
 
 		changed.addAll(added);
-		
+
 		Iterator addedIterator = added.iterator();
 		ConnectionSet cs = new ConnectionSet();
 		while (addedIterator.hasNext())

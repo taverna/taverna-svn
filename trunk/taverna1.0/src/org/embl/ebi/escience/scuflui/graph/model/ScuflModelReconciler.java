@@ -13,29 +13,28 @@ import org.embl.ebi.escience.scufl.ScuflModelEventListener;
 import org.jgraph.event.GraphModelEvent;
 
 /**
- * The reconciler listens to scufl model changes, it manages the received change
- * notifications in a queue folding neighboring or overlapping changes together.
- * Then passes on the changes after having waited for further changes for the
- * configured duration of time.
+ * The reconciler listens to scufl model changes, it manages the received change notifications in a
+ * queue folding neighboring or overlapping changes together. Then passes on the changes after
+ * having waited for further changes for the configured duration of time.
  * 
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover </a>
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
 public class ScuflModelReconciler implements ScuflModelEventListener
 {
 	private static final long waitTime = 200;
-	
+
 	ScuflGraphModel model;
-	ScuflGraphModelChange changes;	
+	ScuflGraphModelChange changes;
 	ArrayList events = new ArrayList();
 	private Thread reconciler = new Thread()
 	{
 		public void run()
 		{
-			while(true)
+			while (true)
 			{
-				while(events.isEmpty() && model != null)
-				{				
+				while (events.isEmpty() && model != null)
+				{
 					try
 					{
 						synchronized (this)
@@ -48,18 +47,18 @@ public class ScuflModelReconciler implements ScuflModelEventListener
 						e.printStackTrace();
 					}
 				}
-				if(model == null)
+				if (model == null)
 				{
 					return;
 				}
 
 				changes = new ScuflGraphModelChange(model);
-				while(!events.isEmpty())
+				while (!events.isEmpty())
 				{
 					ScuflModelEvent event;
-					synchronized(events)
+					synchronized (events)
 					{
-						event = (ScuflModelEvent)events.remove(0);
+						event = (ScuflModelEvent) events.remove(0);
 					}
 					changes.calculateChanges(event);
 					try
@@ -71,7 +70,7 @@ public class ScuflModelReconciler implements ScuflModelEventListener
 						e.printStackTrace();
 					}
 				}
-				if(changes.hasChanges())
+				if (changes.hasChanges())
 				{
 					SwingUtilities.invokeLater(new Runnable()
 					{
@@ -84,8 +83,7 @@ public class ScuflModelReconciler implements ScuflModelEventListener
 			}
 		}
 	};
-	
-	
+
 	/**
 	 * @param model
 	 */
@@ -96,7 +94,7 @@ public class ScuflModelReconciler implements ScuflModelEventListener
 		events.add(new ScuflModelEvent(model.getModel(), "Woo"));
 		reconciler.start();
 	}
-	
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -104,9 +102,9 @@ public class ScuflModelReconciler implements ScuflModelEventListener
 	 */
 	public void receiveModelEvent(ScuflModelEvent event)
 	{
-		if(!(event instanceof MinorScuflModelEvent))
+		if (!(event instanceof MinorScuflModelEvent))
 		{
-			synchronized(events)
+			synchronized (events)
 			{
 				events.add(event);
 			}
@@ -116,7 +114,7 @@ public class ScuflModelReconciler implements ScuflModelEventListener
 			}
 		}
 	}
-	
+
 	/**
 	 * 
 	 */
@@ -127,6 +125,6 @@ public class ScuflModelReconciler implements ScuflModelEventListener
 		synchronized (reconciler)
 		{
 			reconciler.notify();
-		}		
+		}
 	}
 }

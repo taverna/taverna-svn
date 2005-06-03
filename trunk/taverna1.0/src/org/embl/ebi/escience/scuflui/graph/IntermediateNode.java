@@ -9,11 +9,11 @@ public class IntermediateNode extends VirtualNode
 	{
 		super(0, edge);
 		int weight = 1;
-		if(source instanceof VirtualNode && target instanceof VirtualNode)
+		if (source instanceof VirtualNode && target instanceof VirtualNode)
 		{
 			weight = 8;
 		}
-		else if(target instanceof VirtualNode || source instanceof VirtualNode)
+		else if (target instanceof VirtualNode || source instanceof VirtualNode)
 		{
 			weight = 2;
 		}
@@ -25,17 +25,17 @@ public class IntermediateNode extends VirtualNode
 	{
 		return previous.getTarget();
 	}
-	
+
 	public Edge getSourceEdge()
 	{
 		return previous;
 	}
-	
+
 	public Object getTarget()
 	{
 		return next.getTarget();
 	}
-	
+
 	public Edge getTargetEdge()
 	{
 		return next;
