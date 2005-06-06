@@ -21,7 +21,7 @@ import org.jgraph.graph.GraphModel;
 
 /**
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover </a>
- * @version $Revision: 1.23 $
+ * @version $Revision: 1.24 $
  * 
  */
 public class PositionLayout extends ModelSpanningTree
@@ -606,13 +606,12 @@ public class PositionLayout extends ModelSpanningTree
 			Object edge = edges.next();
 			if (isTreeEdge(edge))
 			{
-				Set tailSet = new HashSet();
-				Set headSet = new HashSet();
+				Set sourceSet = new HashSet();
+				Set targetSet = new HashSet();
 
-				getTailSet(getTarget(edge), tailSet, edge);
-				getTailSet(getSource(edge), headSet, edge);
-				assert !headSet.isEmpty() : edge;
-				tightenEdge(edge, headSet, tailSet);
+				getEndSets(edge, sourceSet, targetSet);
+				
+				tightenEdge(edge, sourceSet, targetSet);
 			}
 		}
 	}

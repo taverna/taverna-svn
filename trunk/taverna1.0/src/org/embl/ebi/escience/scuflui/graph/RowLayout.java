@@ -25,7 +25,7 @@ import org.jgraph.graph.GraphModel;
  * update as the graph changes.
  * 
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover </a>
- * @version $Revision: 1.23 $
+ * @version $Revision: 1.24 $
  */
 public class RowLayout extends ModelSpanningTree
 {
@@ -185,6 +185,7 @@ public class RowLayout extends ModelSpanningTree
 	protected int getRank(Object node)
 	{
 		Map attributes = getAttributes(node);
+		assert attributes != null : node;
 		PositionLayout.Row row = LayoutConstants.getRow(attributes);
 		if (row == null)
 		{

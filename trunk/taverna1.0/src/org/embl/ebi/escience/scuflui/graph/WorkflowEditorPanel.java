@@ -39,7 +39,7 @@ import org.embl.ebi.escience.scuflui.actions.SaveWorkflowAction;
  * COMMENT
  * 
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover</a>
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  */
 public class WorkflowEditorPanel extends JPanel implements ScuflUIComponent
 {
@@ -74,7 +74,6 @@ public class WorkflowEditorPanel extends JPanel implements ScuflUIComponent
 		toolbar.add(new SaveWorkflowAction(model));
 		Action saveImage = new AbstractAction()
 		{
-
 			public void actionPerformed(ActionEvent e)
 			{
 				Preferences prefs = Preferences.userNodeForPackage(AdvancedModelExplorer.class);
@@ -91,16 +90,18 @@ public class WorkflowEditorPanel extends JPanel implements ScuflUIComponent
 					Object[] cells = editor.getRoots();
 					if (cells.length > 0)
 					{
+						int inset = 15;
 						Rectangle2D bounds = editor.getCellBounds(cells);
 						editor.toScreen(bounds);
-						bounds.setRect(0, 0, bounds.getWidth(), bounds.getHeight());
-						BufferedImage img = new BufferedImage((int) bounds.getWidth() + 15,
-								(int) bounds.getHeight() + 15, BufferedImage.TYPE_INT_ARGB);
+						BufferedImage img = new BufferedImage(
+								(int) bounds.getWidth() + (2 * inset), (int) bounds.getHeight()
+										+ (2 * inset), BufferedImage.TYPE_INT_ARGB);
 						Graphics2D graphics = img.createGraphics();
 						if (editor.isOpaque())
 						{
 							graphics.setColor(editor.getBackground());
 							graphics.fillRect(0, 0, img.getWidth(), img.getHeight());
+
 						}
 						else
 						{
@@ -109,6 +110,8 @@ public class WorkflowEditorPanel extends JPanel implements ScuflUIComponent
 							graphics.fillRect(0, 0, img.getWidth(), img.getHeight());
 							graphics.setComposite(AlphaComposite.SrcOver);
 						}
+						graphics.translate((int) (-bounds.getX() + inset),
+								(int) (-bounds.getY() + inset));
 						boolean tmp = editor.isDoubleBuffered();
 						editor.setDoubleBuffered(false);
 						editor.paint(graphics);
@@ -127,8 +130,8 @@ public class WorkflowEditorPanel extends JPanel implements ScuflUIComponent
 			}
 		};
 		saveImage.putValue(Action.SHORT_DESCRIPTION, "Save image of workflow");
-		saveImage.putValue(Action.SMALL_ICON, ScuflIcons.outputIcon);
-		//toolbar.add(saveImage);
+		saveImage.putValue(Action.SMALL_ICON, ScuflIcons.savePNGIcon);
+		toolbar.add(saveImage);
 		toolbar.add(Box.createHorizontalGlue());
 		toolbar.add(new ResetAction(model));
 

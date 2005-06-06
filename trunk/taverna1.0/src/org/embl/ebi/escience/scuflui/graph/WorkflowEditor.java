@@ -327,6 +327,7 @@ public class WorkflowEditor extends JGraph implements ScuflUIComponent
 		setGridColor(Color.WHITE);
 		setLockedHandleColor(Color.BLUE);
 		setHighlightColor(Color.BLUE);
+		setBackground(Color.WHITE);
 		addKeyListener(new KeyAdapter()
 		{
 			public void keyPressed(KeyEvent e)

@@ -51,7 +51,7 @@ import org.jgraph.graph.ParentMap;
 /**
  * 
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover </a>
- * @version $Revision: 1.21 $
+ * @version $Revision: 1.22 $
  */
 public class ScuflGraphModel implements GraphModel, GraphModelListener, ScuflUIComponent
 {
@@ -301,11 +301,6 @@ public class ScuflGraphModel implements GraphModel, GraphModelListener, ScuflUIC
 			GraphConstants.setPoints(map, defaultPoints);
 
 			GraphConstants.setLabelAlongEdge(map, false);
-			GraphConstants.setValue(map, "");
-
-			int center = GraphConstants.PERMILLE / 2;
-			Point labelPosition = new Point(center, center);
-			GraphConstants.setLabelPosition(map, labelPosition);
 		}
 		else if (node instanceof ConcurrencyConstraint)
 		{
@@ -323,11 +318,6 @@ public class ScuflGraphModel implements GraphModel, GraphModelListener, ScuflUIC
 			GraphConstants.setPoints(map, defaultPoints);
 
 			GraphConstants.setLabelAlongEdge(map, false);
-			GraphConstants.setValue(map, "");
-
-			int center = GraphConstants.PERMILLE / 2;
-			Point labelPosition = new Point(center, center);
-			GraphConstants.setLabelPosition(map, labelPosition);
 		}
 		return map;
 	}
