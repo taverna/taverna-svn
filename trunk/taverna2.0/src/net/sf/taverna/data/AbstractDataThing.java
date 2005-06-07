@@ -73,11 +73,11 @@ public abstract class AbstractDataThing implements DataThing {
      * node has no parent (i.e. getIndex().length == 0)
      */
     public TreeNode getParent() {
-	int nodeIndex = getIndex();
+	int[] nodeIndex = getIndex();
 	if (nodeIndex.length == 0) {
 	    return null;
 	}
-	int targetIndex = new int[nodeIndex.length - 1];
+	int[] targetIndex = new int[nodeIndex.length - 1];
 	for (int i = 0; i < targetIndex.length; i++) {
 	    targetIndex[i] = nodeIndex[i];
 	}
