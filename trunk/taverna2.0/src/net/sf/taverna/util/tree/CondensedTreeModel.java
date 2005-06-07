@@ -96,10 +96,10 @@ public class CondensedTreeModel extends DefaultTreeModel {
 		    newArray[i] = userObjects[i];
 		}
 		DefaultMutableTreeNode newChild = new DefaultMutableTreeNode(newArray);
-		insertNodeInto(newChild, node, 0);
+		insertNodeInto(newChild, node, getChildCount(node));
 		DefaultMutableTreeNode newLeaf = 
-		    new DefaultMutableTreeNode(userObjects[userObjects.length]);
-		insertNodeInto(newLeaf, newChild, 0);
+		    new DefaultMutableTreeNode(userObjects[userObjects.length - 1]);
+		insertNodeInto(newLeaf, newChild, getChildCount(newChild));
 		return newLeaf;
 	    }
 	    else {
@@ -113,7 +113,7 @@ public class CondensedTreeModel extends DefaultTreeModel {
 		// Not found so create and insert
 		DefaultMutableTreeNode newLeaf = 
 		    new DefaultMutableTreeNode(userObjects[0]);
-		insertNodeInto(newLeaf, node, 0);
+		insertNodeInto(newLeaf, node, getChildCount(node));
 		return newLeaf;
 	    }
 	}
@@ -147,7 +147,8 @@ public class CondensedTreeModel extends DefaultTreeModel {
 	    // we're trying to add a subset of the existing tree - highly unlikely
 	    // and almost certainly an error condition!
 	    if (matchingItems == userObjects.length) {
-		throw new RuntimeException("Tree structure error - cannot add a new node that also occurs in an existing node path");
+		throw new RuntimeException("Tree structure error - cannot add a new node "+
+					   "that also occurs in an existing node path");
 	    }
 	    // If we're here then we need to split the found node at the point where
 	    // things start failing to match. First get a set of all the current children...
@@ -209,7 +210,7 @@ public class CondensedTreeModel extends DefaultTreeModel {
 		objectList.add(node.getUserObject());
 	    }
 	}
-	objectList.add(((DefaultMutableTreeNode)treePath[treePath.length]).getUserObject());
+	objectList.add(((DefaultMutableTreeNode)treePath[treePath.length-1]).getUserObject());
 	return (Object[])objectList.toArray(new Object[0]);
     }
 
@@ -244,12 +245,26 @@ public class CondensedTreeModel extends DefaultTreeModel {
 	    for (Enumeration en = rootNode.depthFirstEnumeration(); en.hasMoreElements();) {
 		DefaultMutableTreeNode node = (DefaultMutableTreeNode)en.nextElement();
 		if (node.isLeaf()) {
-		    Object[] nodeObjects = getCondensedPath(node);
-		    sb.append(nodeObjects[0].toString());
-		    for (int i = 1; i < nodeObjects.length; i++) {
-			sb.append(":"+nodeObjects[i].toString());
+		    Object[] pathObjects = node.getUserObjectPath();
+		    for (int j = 1; j < pathObjects.length; j++) {
+			if (pathObjects[j] instanceof Object[]) {
+			    if (j>1) {
+				sb.append(",");
+			    }
+			    sb.append("[");
+			    Object[] nodeObjects = (Object[])pathObjects[j];
+			    for (int i = 0; i < nodeObjects.length; i++) {
+				if (i>0) {
+				    sb.append(".");
+				}
+				sb.append(nodeObjects[i].toString());
+			    }
+			    sb.append("]");
+			}
+			else {
+			    sb.append("->"+pathObjects[j].toString()+"\n");
+			}
 		    }
-		    sb.append("\n");
 		}
 	    }
 	    return sb.toString();

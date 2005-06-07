@@ -56,13 +56,7 @@
 	        <path refid="base-test-classpath"/>
 	</path>
 	
-    <!-- Check the current system classpath for JUnit -->
-    <available classpath="${java.class.path}"
-        classname="junit.framework.TestCase"
-        property="junit.present"/>
-
-
-	<!--
+  	<!--
 	<taskdef name="ajc" classname="org.aspectj.tools.ant.taskdefs.Ajc">
 		<classpath refid="compile-classpath"/>
 	</taskdef>
@@ -85,7 +79,7 @@
             <!-- JDom -->
 		<get src="http://www.ibiblio.org/maven/jdom/jars/jdom-1.0.jar" 
 		     dest="./netlib/jdom-1.0.jar" usetimestamp="yes"/>
-
+ 
 		<!-- Reset the compile classpath to include the newly fetched classes -->	
 		<path id="downloaded-libs">
 		        <fileset dir="./netlib">
@@ -104,6 +98,10 @@
 		        <path refid="base-test-classpath"/>
 			<path refid="downloaded-libs"/>
 		</path>	
+		<available classpath="${java.class.path}"
+        classname="junit.framework.TestCase"
+        property="junit.present"/>
+
 	</target>
 
 	<!-- Purge all fetched jar files -->
@@ -219,7 +217,7 @@
 	</target>
 
     <!-- Build tests -->
-    <target name="javac-tests" depends="prepare-test-src">
+    <target name="javac-tests" depends="prepare-test-src, java">
         <!-- Run javac to turn .java files into .class -->
         <javac
             debug="on"
@@ -229,7 +227,7 @@
             <classpath refid="compile-classpath"/>
         </javac>
         <!-- Copy over any configuration files that you might have -->
-        <copy todir="${build.classes}" filtering="on">
+        <copy todir="${build.test.classes}" filtering="on">
             <fileset dir="${test.src.dir}">
                 <exclude name="**/CVS/**"/>
                 <exclude name="**/*.java"/>
@@ -239,18 +237,15 @@
 
     <target name="run-tests" depends="javac-tests">
         <property name="test.subtree" value="**"/>
-<available classpath="${java.class.path}"
-        classname="junit.framework.TestCase"
-        property="${junit.present}"/>
+	<available classpathref="compile-classpath" classname="junit.framework.TestCase" property="junit.present"/>
         <echo message="JUnit present:           ${junit.present}"/>
         <echo message="Running tests:           ${test.subtree}"/>
-
-        <junit maxmemory="128m" printsummary="yes" haltonfailure="no" reloading="no">
+	<junit maxmemory="128m" printsummary="yes" haltonfailure="no" reloading="no">
             <formatter type="plain" usefile="true"/>
             <classpath>
-	      <path refid="test-classpath"/>
-	      <pathelement path="${java.class.path}"/>
-            </classpath>
+	      <path refid="compile-classpath"/>
+	      <pathelement path="${build.test.classes}"/>
+	    </classpath>
 	    <!-- The junit task doesn't support 'if' so we test for JUnit here -->
             <batchtest fork="no" todir="${reports.tests}" if="junit.present">
                 <fileset dir="${build.test.classes}">
