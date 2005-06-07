@@ -19,6 +19,7 @@ import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.Box;
 import javax.swing.ImageIcon;
+import javax.swing.JCheckBox;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -32,6 +33,7 @@ import org.embl.ebi.escience.scuflui.ScuflIcons;
 import org.embl.ebi.escience.scuflui.ScuflUIComponent;
 import org.embl.ebi.escience.scuflui.actions.LoadWebWorkflowAction;
 import org.embl.ebi.escience.scuflui.actions.LoadWorkflowAction;
+import org.embl.ebi.escience.scuflui.actions.OfflineToggleModel;
 import org.embl.ebi.escience.scuflui.actions.ResetAction;
 import org.embl.ebi.escience.scuflui.actions.SaveWorkflowAction;
 
@@ -39,7 +41,7 @@ import org.embl.ebi.escience.scuflui.actions.SaveWorkflowAction;
  * COMMENT
  * 
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover</a>
- * @version $Revision: 1.5 $
+ * @version $Revision: 1.6 $
  */
 public class WorkflowEditorPanel extends JPanel implements ScuflUIComponent
 {
@@ -59,19 +61,9 @@ public class WorkflowEditorPanel extends JPanel implements ScuflUIComponent
 	{
 		setLayout(new BorderLayout());
 
-		// Create the tool bar
-		JToolBar toolbar = new JToolBar();
-		toolbar.setFloatable(false);
-		toolbar.setRollover(true);
-		toolbar.setMaximumSize(new Dimension(2000, 30));
-		toolbar.setBorderPainted(true);
-
-		// Add options to load the workflow, import from web, save and reset
-		// These options were available from the workbench file menu previously
-		// but I think they're more intuitive here as buttons.
-		toolbar.add(new LoadWorkflowAction(model));
-		toolbar.add(new LoadWebWorkflowAction(model));
-		toolbar.add(new SaveWorkflowAction(model));
+		JCheckBox offline = new JCheckBox("Offline");
+		offline.setModel(new OfflineToggleModel(model));
+		
 		Action saveImage = new AbstractAction()
 		{
 			public void actionPerformed(ActionEvent e)
@@ -130,8 +122,21 @@ public class WorkflowEditorPanel extends JPanel implements ScuflUIComponent
 			}
 		};
 		saveImage.putValue(Action.SHORT_DESCRIPTION, "Save image of workflow");
-		saveImage.putValue(Action.SMALL_ICON, ScuflIcons.savePNGIcon);
+		saveImage.putValue(Action.SMALL_ICON, ScuflIcons.savePNGIcon);		
+		
+		// Create the tool bar
+		JToolBar toolbar = new JToolBar();
+		toolbar.setFloatable(false);
+		toolbar.setRollover(true);
+		toolbar.setMaximumSize(new Dimension(2000, 30));
+		toolbar.setBorderPainted(true);
+
+		toolbar.add(new LoadWorkflowAction(model));
+		toolbar.add(new LoadWebWorkflowAction(model));
+		toolbar.add(new SaveWorkflowAction(model));
 		toolbar.add(saveImage);
+		toolbar.addSeparator();
+		toolbar.add(offline);		
 		toolbar.add(Box.createHorizontalGlue());
 		toolbar.add(new ResetAction(model));
 

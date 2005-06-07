@@ -10,8 +10,6 @@ import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.PrintWriter;
@@ -52,11 +50,11 @@ import org.embl.ebi.escience.scufl.ScuflModel;
 import org.embl.ebi.escience.scufl.ScuflModelEvent;
 import org.embl.ebi.escience.scufl.ScuflModelEventListener;
 import org.embl.ebi.escience.scufl.SemanticMarkup;
-import org.embl.ebi.escience.scufl.SetOnlineException;
 import org.embl.ebi.escience.scufl.WorkflowDescription;
 import org.embl.ebi.escience.scufl.view.WorkflowSummaryAsHTML;
 import org.embl.ebi.escience.scuflui.actions.LoadWebWorkflowAction;
 import org.embl.ebi.escience.scuflui.actions.LoadWorkflowAction;
+import org.embl.ebi.escience.scuflui.actions.OfflineToggleModel;
 import org.embl.ebi.escience.scuflui.actions.ResetAction;
 import org.embl.ebi.escience.scuflui.actions.SaveWorkflowAction;
 
@@ -530,32 +528,7 @@ public class AdvancedModelExplorer extends JPanel implements ScuflUIComponent {
 	createNested.setPreferredSize(new Dimension(25,25));
 	
 	workOffline = new JCheckBox("Offline");
-	workOffline.setSelected(false);
-	workOffline.addItemListener(new ItemListener() {
-		public void itemStateChanged(ItemEvent e) {
-		    Object source = e.getItemSelectable();
-		    if (source == workOffline) {
-			try {
-			    if (e.getStateChange() == ItemEvent.DESELECTED) {
-				model.setOffline(false);
-			    }
-			    else {
-				model.setOffline(true);
-			    }
-			}
-			catch (SetOnlineException soe) {
-			    Throwable cause = soe.getCause();
-			    JOptionPane.showMessageDialog(AdvancedModelExplorer.this,
-							  "Unable to go online, correct the following errors " +
-							  "before retrying - workflow has been set to offline mode :\n\n" +
-							  cause.getMessage(),
-							  "Error going online",
-							  JOptionPane.ERROR_MESSAGE);
-			}
-		    }
-		}
-	    });
-	
+	workOffline.setModel(new OfflineToggleModel(model));
 	toolbar.add(new JLabel(" Load "));
 	toolbar.add(new LoadWorkflowAction(model));
 	toolbar.addSeparator();
