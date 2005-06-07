@@ -22,7 +22,7 @@ import org.embl.ebi.escience.scuflui.ScuflIcons;
  * COMMENT 
  * 
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover</a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class SaveWorkflowAction extends ScuflModelAction
 {
@@ -35,7 +35,8 @@ public class SaveWorkflowAction extends ScuflModelAction
 	{
 		super(model);
 		putValue(SMALL_ICON, ScuflIcons.saveIcon);
-		putValue(NAME, "Save Workflow...");
+		putValue(NAME, "Save");
+		putValue(SHORT_DESCRIPTION, "Save this workflow...");		
 	}
 
 	/*

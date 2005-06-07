@@ -16,7 +16,7 @@ import org.embl.ebi.escience.scuflui.ScuflIcons;
  * COMMENT
  * 
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover</a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class LoadWebWorkflowAction extends ScuflModelAction
 {
@@ -25,7 +25,7 @@ public class LoadWebWorkflowAction extends ScuflModelAction
 	{
 		super(model);
 		putValue(SMALL_ICON, ScuflIcons.openurlIcon);
-		putValue(NAME, "Load from web");
+		putValue(NAME, "Load from URL");
 		putValue(SHORT_DESCRIPTION, "Load a workflow from a URL...");
 	}
 
