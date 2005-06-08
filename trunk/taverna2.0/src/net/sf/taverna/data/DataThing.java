@@ -110,5 +110,11 @@ public interface DataThing extends TreeNode {
      * exist within the collection containing the target object.
      */
     public DataThing getRelated(int[] index) throws DataThingIndexException;
+
+    /**
+     * Returns a DataSemanticMarkup implementation containing metadata about
+     * this DataThing.
+     */
+    public DataSemanticMarkup getSemanticMarkup();
     
 }
