@@ -15,7 +15,7 @@ import java.util.Set;
 
 /**
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover </a>
- * @version $Revision: 1.23 $
+ * @version $Revision: 1.24 $
  */
 public abstract class GraphSpanningTree
 {
@@ -109,10 +109,7 @@ public abstract class GraphSpanningTree
 				}
 				if (result != null)
 				{
-					if (getSource(edge).equals(source))
-					{
-						result.add(edge);
-					}
+					result.add(edge);
 					return result;
 				}
 			}
@@ -283,10 +280,13 @@ public abstract class GraphSpanningTree
 		Set sourceTree = getTreeSet(getSource(edge));
 		Set targetTree = getTreeSet(getTarget(edge));
 
+		assert !isRemoved(getSource(edge)): edge;
+		assert !isRemoved(getTarget(edge)): edge;		
+		
 		if (!sourceTree.equals(targetTree))
 		{
-			assert !sourceTree.contains(getTarget(edge)) : sourceTree + ":" + targetTree;
-			assert !targetTree.contains(getSource(edge)) : sourceTree + ":" + targetTree;
+			assert !sourceTree.contains(getTarget(edge)) : edge;
+			assert !targetTree.contains(getSource(edge)) : edge;
 			if (!tightenEdge(edge, sourceTree, targetTree))
 			{
 				return false;
@@ -599,7 +599,6 @@ public abstract class GraphSpanningTree
 	 */
 	protected Object addEdge(Object edge)
 	{
-		// assert !isTreeEdge(edge) : edge;
 		assert !isRemoved(edge) : edge;
 		if (!isTreeEdge(edge))
 		{
@@ -623,7 +622,12 @@ public abstract class GraphSpanningTree
 				{
 					Collection replace = new ArrayList();
 					replace.add(edge);
-					Object result = replaceEdge(path.iterator().next(), replace);
+					Object result = null;
+					Iterator pathIterator = path.iterator();
+					while(result == null && pathIterator.hasNext())
+					{
+						result = replaceEdge(pathIterator.next(), replace);
+					}
 					return result;
 				}
 				if (addTreeEdge(edge))
@@ -692,7 +696,7 @@ public abstract class GraphSpanningTree
 				edges = edgeList.iterator();
 			}
 		}
-		edges = edgeList.iterator();		
+		
 		assert edgeList.isEmpty() : edgeList;
 		return treeEdges;
 	}

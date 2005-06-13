@@ -22,7 +22,7 @@ import org.jgraph.graph.PortView;
 
 /**
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover </a>
- * @version $Revision: 1.25 $
+ * @version $Revision: 1.26 $
  * 
  */
 public class PositionLayout extends ModelSpanningTree
@@ -182,6 +182,11 @@ public class PositionLayout extends ModelSpanningTree
 			while (nodes.hasNext())
 			{
 				Object node = nodes.next();
+				if (isRemoved(node))
+				{
+					nodes.remove();
+					continue;
+				}
 				calculateMedianValue(node, other, next);
 				int childCount = model.getChildCount(node);
 				if (childCount > 0)
@@ -245,12 +250,18 @@ public class PositionLayout extends ModelSpanningTree
 			}
 			else
 			{
-				median = (Integer) values.get(values.size() / 2);
+				if (values.size() > 2 && values.size() % 2 != 0)
+				{
+
+					median = new Integer(((Integer) values.get(values.size() / 2)).intValue()
+							+ ((Integer) values.get((values.size() / 2) + 1)).intValue() / 2);
+				}
+				else
+				{
+					median = (Integer) values.get(values.size() / 2);
+				}
 			}
-			// System.err.println(this + ": Median value of " + node + " = " + median);
-
 			getAttributes(node).put("Median_value", median);
-
 		}
 	}
 
@@ -611,7 +622,7 @@ public class PositionLayout extends ModelSpanningTree
 				Set targetSet = new HashSet();
 
 				getEndSets(edge, sourceSet, targetSet);
-				
+
 				tightenEdge(edge, sourceSet, targetSet);
 			}
 		}
@@ -625,6 +636,10 @@ public class PositionLayout extends ModelSpanningTree
 			{
 				assert !isRemoved(o1) : o1;
 				assert !isRemoved(o2) : o2;
+				assert !isRemoved(getSource(o1)) : o1;
+				assert !isRemoved(getTarget(o1)) : o1;
+				assert !isRemoved(getSource(o2)) : o2;
+				assert !isRemoved(getTarget(o2)) : o2;
 				if (o1 == o2)
 				{
 					return 0;
@@ -735,13 +750,13 @@ public class PositionLayout extends ModelSpanningTree
 			else
 			{
 				// Use port locations if available
-				if(!(target instanceof VirtualNode))
+				if (!(target instanceof VirtualNode))
 				{
-					IntermediateNode node = (IntermediateNode)source;
+					IntermediateNode node = (IntermediateNode) source;
 					Object actualEdge = node.edge;
-					
+
 					Object port = getPort(target, actualEdge);
-					PortView portView = (PortView)mapper.getMapping(port, false);
+					PortView portView = (PortView) mapper.getMapping(port, false);
 					edgeLength = portView.getLocation().getX() - node.position.getX();
 				}
 			}
@@ -749,15 +764,15 @@ public class PositionLayout extends ModelSpanningTree
 
 		return (int) (edgeLength - minimumEdgeLength);
 	}
-	
+
 	private Object getPort(Object node, Object edge)
 	{
-		if(!model.isPort(node))
+		if (!model.isPort(node))
 		{
-			for(int index = 0; index < model.getChildCount(node); index++)
+			for (int index = 0; index < model.getChildCount(node); index++)
 			{
 				Object result = getPort(model.getChild(node, index), edge);
-				if(result != null)
+				if (result != null)
 				{
 					return result;
 				}
@@ -765,9 +780,9 @@ public class PositionLayout extends ModelSpanningTree
 			return null;
 		}
 		Iterator edges = model.edges(node);
-		while(edges.hasNext())
+		while (edges.hasNext())
 		{
-			if(edge.equals(edges.next()))
+			if (edge.equals(edges.next()))
 			{
 				return node;
 			}

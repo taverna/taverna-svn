@@ -25,7 +25,7 @@ import org.jgraph.graph.GraphModel;
  * update as the graph changes.
  * 
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover </a>
- * @version $Revision: 1.24 $
+ * @version $Revision: 1.25 $
  */
 public class RowLayout extends ModelSpanningTree
 {
@@ -47,7 +47,7 @@ public class RowLayout extends ModelSpanningTree
 	 * 
 	 * @see org.jgraph.event.GraphModelListener#graphChanged(org.jgraph.event.GraphModelEvent)
 	 */
-	public void layout(GraphModelEvent.GraphModelChange change)
+	public synchronized void layout(GraphModelEvent.GraphModelChange change)
 	{
 		if (model.getRootCount() == 0)
 		{
@@ -272,6 +272,7 @@ public class RowLayout extends ModelSpanningTree
 	protected void removeNode(Object node)
 	{
 		super.removeNode(node);
+		positionLayout.removeNode(node);
 		Map attributes = getAttributes(node);
 		assert attributes != null;
 		PositionLayout.Row row = LayoutConstants.getRow(attributes);
@@ -394,7 +395,7 @@ public class RowLayout extends ModelSpanningTree
 		while (edges.hasNext())
 		{
 			Object edge = edges.next();
-			if (getTarget(edge).equals(node))
+			if (!isRemoved(edge) && getTarget(edge).equals(node))
 			{
 				hasParent = true;
 				if (!isTreeEdge(edge) && !set.contains(getSource(edge)))

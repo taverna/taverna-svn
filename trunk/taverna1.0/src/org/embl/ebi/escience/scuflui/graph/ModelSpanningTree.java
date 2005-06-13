@@ -4,6 +4,7 @@
 package org.embl.ebi.escience.scuflui.graph;
 
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
@@ -44,7 +45,10 @@ public abstract class ModelSpanningTree extends GraphSpanningTree
 	protected boolean isRemoved(Object edge)
 	{
 		Map attributes = getAttributes(edge);
-		assert attributes != null : this + ": No attributes for " + edge;
+		if(attributes == null)
+		{
+			return true;
+		}
 		return attributes.containsKey("removed");
 	}
 
@@ -63,6 +67,11 @@ public abstract class ModelSpanningTree extends GraphSpanningTree
 		Map attributes = getAttributes(node);
 		assert attributes != null : this + ": No attributes for " + node;
 		attributes.put("removed", Boolean.TRUE);
+		Iterator edges = getEdges(node);
+		while(edges.hasNext())
+		{
+			removeEdge(edges.next());
+		}
 	}
 
 	protected Map getAttributes(Object node)
@@ -96,7 +105,7 @@ public abstract class ModelSpanningTree extends GraphSpanningTree
 	protected boolean isTreeEdge(Object edge)
 	{
 		Map attributes = getAttributes(edge);
-		assert attributes != null : this + ": " + edge;
+		//assert attributes != null : this + ": " + edge;
 		return attributes != null && attributes.containsKey(this + TREE_EDGE);
 	}
 
