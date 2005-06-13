@@ -1,10 +1,8 @@
 package net.sourceforge.taverna.baclava;
 
-import java.awt.image.BufferedImage;
-import java.awt.image.Raster;
+import java.awt.Image;
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Map;
 
 import org.embl.ebi.escience.baclava.DataThing;
@@ -20,7 +18,7 @@ import org.embl.ebi.escience.baclava.factory.DataThingFactory;
  * Last edited by $Author: phidias $
  * 
  * @author Mark
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public class DataThingAdapter {
     
@@ -191,6 +189,30 @@ public class DataThingAdapter {
     public Serializable getSerializable(String key){
         DataThing val = (DataThing)map.get(key);
         return (Serializable)val.getDataObject();
+    }
+    
+    public Image getImage(String key){
+    	DataThing val = (DataThing)map.get(key);
+    	return (Image)val.getDataObject();
+    }
+    
+    public void putImage(String key, Image img){
+    	DataThing val = new DataThing(img);
+    	map.put(key, val);
+    }
+    
+    public void putDouble(String key, Double db){
+    	DataThing val= new DataThing(db);
+    	map.put(key, val);
+    }
+    
+    public Double getDouble(String key){
+    	DataThing val = (DataThing)map.get(key);
+    	return (Double)val.getDataObject();    	
+    }
+    
+    public double getDoubleVal (String key){
+    	return getDouble(key).doubleValue();
     }
     
 
