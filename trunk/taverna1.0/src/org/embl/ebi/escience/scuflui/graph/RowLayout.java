@@ -25,7 +25,7 @@ import org.jgraph.graph.GraphModel;
  * update as the graph changes.
  * 
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover </a>
- * @version $Revision: 1.25 $
+ * @version $Revision: 1.26 $
  */
 public class RowLayout extends ModelSpanningTree
 {
@@ -68,9 +68,10 @@ public class RowLayout extends ModelSpanningTree
 			}
 		}
 
-		if (change.getRemoved() != null)
+		Object[] removed = change.getRemoved();		
+		if (removed != null)
 		{
-			Object[] removed = change.getRemoved();
+			//System.err.println(Arrays.asList(removed));
 			for (int index = 0; index < removed.length; index++)
 			{
 				if (model.isEdge(removed[index]))
@@ -84,9 +85,9 @@ public class RowLayout extends ModelSpanningTree
 			}
 		}
 
-		if (change.getInserted() != null)
+		Object[] inserted = change.getInserted();		
+		if (inserted != null)
 		{
-			Object[] inserted = change.getInserted();
 			for (int index = 0; index < inserted.length; index++)
 			{
 				if (model.isEdge(inserted[index]))
@@ -204,6 +205,7 @@ public class RowLayout extends ModelSpanningTree
 	private void updateEdgeGraph(Object edge)
 	{
 		// System.err.println(this + ": Update " + edge);
+		assert isValid(edge): edge;
 		Object previousNode = getSource(edge);
 
 		int sourceRow = getRank(previousNode);
