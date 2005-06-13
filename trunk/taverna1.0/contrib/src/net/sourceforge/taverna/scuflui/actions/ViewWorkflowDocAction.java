@@ -8,12 +8,13 @@ import javax.swing.JOptionPane;
 import net.sourceforge.taverna.scuflui.workbench.Workbench;
 
 /**
- * This action opens the Workflow Documentation window.
+ * This action opens the Workflow Documentation window and transforms the 
+ * current workflow into HTML documentation.
  * 
  * Last edited by $Author: phidias $
  * 
  * @author Mark
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class ViewWorkflowDocAction extends DefaultAction {
     private static final String ACTION_COMMAND_KEY_ABOUT = "view-workflow-doc-command";

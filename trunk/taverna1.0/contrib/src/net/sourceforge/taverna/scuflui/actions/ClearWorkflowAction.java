@@ -6,6 +6,7 @@ import javax.swing.Action;
 import javax.swing.JOptionPane;
 
 import net.sourceforge.taverna.scuflui.workbench.Workbench;
+import net.sourceforge.taverna.scuflui.actions.DefaultAction;
 
 /**
  * This class clears the current workflow.
@@ -13,7 +14,7 @@ import net.sourceforge.taverna.scuflui.workbench.Workbench;
  * Last edited by $Author: phidias $
  * 
  * @author Mark
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class ClearWorkflowAction extends DefaultAction {
     private static final String ACTION_COMMAND_KEY_ABOUT = "clear-workflow-command";

@@ -13,6 +13,7 @@ import org.apache.batik.swing.JSVGCanvas;
 import org.embl.ebi.escience.baclava.DataThing;
 import org.embl.ebi.escience.scuflui.renderers.RendererException;
 import org.embl.ebi.escience.scuflui.renderers.RendererRegistry;
+import org.embl.ebi.escience.scuflui.renderers.RendererSPI;
 import org.embl.ebi.escience.scuflui.renderers.AbstractRenderer.ByPattern;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
@@ -23,9 +24,9 @@ import org.xml.sax.SAXException;
  * Last edited by $Author: phidias $
  * 
  * @author Mark
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
-public class SVGRenderer extends ByPattern {
+public class SVGRenderer extends ByPattern implements RendererSPI{
 
     /**
      * @param name
@@ -52,11 +53,13 @@ public class SVGRenderer extends ByPattern {
     public JComponent getComponent(RendererRegistry renderers, DataThing dataThing) throws RendererException {
         JSVGCanvas svgCanvas = new JSVGCanvas();
         //svgCanvas.setURI(f.toURL().toString());
-        
+		
         Object data = dataThing.getDataObject();
         String mimetype = dataThing.getSyntacticType();
+		System.out.println(" *** mimeType: " + mimetype);
         if(data instanceof String && data != null && !data.equals("")) {
-            if ("'image/svg+xml'".equals(mimetype)){
+            
+			if ("'image/svg+xml'".equals(mimetype)){
                 String svgContent = (String)data;
                 
                 DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
