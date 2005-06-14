@@ -105,6 +105,9 @@ public class XScuflView implements ScuflModelEventListener, java.io.Serializable
 	    if (processors[i].getWorkers() != processors[i].getDefaultWorkers()) {
 		processor.setAttribute("workers",""+processors[i].getWorkers());
 	    }
+	    if (processors[i].isBoring()) {
+		processor.setAttribute("boring","true");
+	    }
 	    // Only set the log level if it is zero or higher, negative values
 	    // implicitly mean 'inherit from model'
 	    if (processors[i].getRealLogLevel() > -1) {

@@ -442,7 +442,10 @@ class ProcessorLoaderThread extends Thread {
 						" for processor node '"+name+"'");
 	    }
 	    theProcessor.setLogLevel(log);
-	    
+	    String boring = processorNode.getAttributeValue("boring");
+	    if (boring != null) {
+		theProcessor.setBoring(true);
+	    }
 	    // Set number of worker threads if defined.
 	    if (workerThreads != null) {
 		int workers = Integer.parseInt(workerThreads);

@@ -22,7 +22,8 @@ import java.lang.String;
 public class StringConstantProcessor extends Processor implements java.io.Serializable {
 
     private String theStringValue = "";
-    
+    protected boring = true;
+
     /**
      * Construct a new processor with the given model and
      * name, delegates to the superclass.

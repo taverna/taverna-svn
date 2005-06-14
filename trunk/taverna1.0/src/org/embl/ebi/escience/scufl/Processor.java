@@ -42,6 +42,7 @@ public abstract class Processor implements Serializable {
     protected IterationStrategy iterationStrategy = null;
     public boolean firingEvents = false;
     private boolean breakpoint=false;
+    protected boolean boring = false;
     
 
     /**
@@ -51,6 +52,23 @@ public abstract class Processor implements Serializable {
      */
     public static String ENACTOR = "Local to enactor";
 
+    /**
+     * Is this processor boring? If so it shouldn't show up
+     * by default in the status display
+     */
+    public boolean isBoring() {
+	return this.boring;
+    }
+
+    /**
+     * Set whether this processor is boring
+     */
+    public void setBoring(boolean boring) {
+	if (boring != this.boring) {
+	    this.boring = boring;
+	    fireModelEvent(new MinorScuflModelEvent(this, "Boringness changed!"));
+	}
+    }
 
     /**
      * Allow subclasses to intercept requests to go offline and
