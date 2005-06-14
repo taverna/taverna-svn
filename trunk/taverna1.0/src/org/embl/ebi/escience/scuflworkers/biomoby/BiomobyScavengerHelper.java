@@ -20,7 +20,7 @@ import org.embl.ebi.escience.scuflworkers.biomoby.BiomobyScavenger;
 /**
  * Helper for handling Biomoby scavengers. <p>
  *
- * @version $Id: BiomobyScavengerHelper.java,v 1.2 2004-10-01 13:38:21 mereden Exp $
+ * @version $Id: BiomobyScavengerHelper.java,v 1.3 2005-06-14 10:14:22 marsenger Exp $
  * @author Martin Senger
  */
 public class BiomobyScavengerHelper implements ScavengerHelper {
@@ -35,7 +35,7 @@ public class BiomobyScavengerHelper implements ScavengerHelper {
 		public void actionPerformed(ActionEvent ae) {
 		    String baseURL = (String)JOptionPane.showInputDialog
 			(null,
-			 "Location (URL) of your Biooby central registry?",
+			 "Location (URL) of your Biomoby central registry?",
 			 "Biomoby location",
 			 JOptionPane.QUESTION_MESSAGE,
 			 null,
