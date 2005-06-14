@@ -10,7 +10,7 @@ import org.apache.commons.vfs.FileObject;
 import org.apache.commons.vfs.FileSystemException;
 import org.apache.commons.vfs.FileUtil;
 import org.apache.commons.vfs.VFS;
-import org.apache.commons.vfs.provider.webdav.WebDavFileSystem;
+//import org.apache.commons.vfs.provider.webdav.WebDavFileSystem;
 
 /**
  * This class represents a webdav workflow repository.
@@ -18,7 +18,7 @@ import org.apache.commons.vfs.provider.webdav.WebDavFileSystem;
  * Last edited by $Author: phidias $
  * 
  * @author Mark
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class WebDAVRepository extends AbstractRepository implements Repository {
 
