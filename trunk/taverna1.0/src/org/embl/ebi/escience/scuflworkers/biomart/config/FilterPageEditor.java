@@ -72,9 +72,6 @@ public class FilterPageEditor extends JPanel {
 		groups.add(groupName, fge);
 		filterGroupEditorList.add(fge);
 	    }
-	    else if (o instanceof DSFilterGroup) {
-		System.out.println("Unable to set filter UI for "+o);
-	    }
 	}
 	add(groups, BorderLayout.CENTER);
 	
@@ -192,7 +189,7 @@ public class FilterPageEditor extends JPanel {
 	    List filterDescriptions = fc.getFilterDescriptions();
 	    for (Iterator i = filterDescriptions.iterator(); i.hasNext();) {
 		Object o = i.next();
-		if (o instanceof FilterDescription) {
+		if (o instanceof FilterDescription && ((FilterDescription)o).getType()!=null) {
 		    FilterDescription fd = (FilterDescription)o;
 		    String filterType = fd.getType();
 		    JComponent filterEditor = null;
@@ -275,11 +272,15 @@ public class FilterPageEditor extends JPanel {
 	    
 	    public void push() {
 		System.out.println("Push to : "+optionPush.getRef());
-		getTargetEditor().setOptions(optionPush.getOptions());
+		if (getTargetEditor() != null) {
+		    getTargetEditor().setOptions(optionPush.getOptions());
+		}
 	    }
 
 	    public void remove() {
-		getTargetEditor().setOptions(null);
+		if (getTargetEditor() != null) {
+		    getTargetEditor().setOptions(null);
+		}
 	    }
 	    
 	}
@@ -541,8 +542,8 @@ public class FilterPageEditor extends JPanel {
 							newOption.getTableConstraintFromContext(),
 							newOption.getKeyFromContext(),
 							"=",
-							newOption.getValueFromContext(),
-							newOption.getHandlerFromContext());
+							newOption.getValueFromContext());
+							//newOption.getHandlerFromContext());
 		if (currentFilter == null) {
 		    query.addFilter(newFilter);
 		}
@@ -985,8 +986,8 @@ public class FilterPageEditor extends JPanel {
 								   o.getTableConstraintFromContext(),
 								   o.getKeyFromContext(),
 								   "=",
-								   o.getValue(),
-								   o.getHandlerFromContext());
+								   o.getValue());
+								   //o.getHandlerFromContext());
 				//System.out.println(newFilter);
 				query.addFilter(newFilter);
 			    }
@@ -1173,8 +1174,8 @@ public class FilterPageEditor extends JPanel {
 			    BooleanFilter newFilter = new BooleanFilter(settings.getFieldFromContext(),
 									settings.getTableConstraintFromContext(),
 									settings.getKeyFromContext(),
-									filterType,
-									settings.getHandlerFromContext());
+									filterType);
+									//settings.getHandlerFromContext());
 			    if (oldFilter != null) {
 				query.replaceFilter(oldFilter, newFilter);
 			    }
@@ -1204,8 +1205,8 @@ public class FilterPageEditor extends JPanel {
 				BooleanFilter newFilter = new BooleanFilter(oldFilter.getField(),
 									    oldFilter.getTableConstraint(),
 									    oldFilter.getKey(),
-									    requireFilterType,
-									    oldFilter.getHandler());
+									    requireFilterType);
+									    //oldFilter.getHandler());
 				query.replaceFilter(oldFilter, newFilter);
 				return;
 			    }
@@ -1218,8 +1219,8 @@ public class FilterPageEditor extends JPanel {
 				BooleanFilter newFilter = new BooleanFilter(settings.getFieldFromContext(),
 									    settings.getTableConstraintFromContext(),
 									    settings.getKeyFromContext(),
-									    requireFilterType,
-									    settings.getHandlerFromContext());
+									    requireFilterType);
+									    //settings.getHandlerFromContext());
 				query.addFilter(newFilter);
 			    }
 			}
@@ -1244,8 +1245,8 @@ public class FilterPageEditor extends JPanel {
 				BooleanFilter newFilter = new BooleanFilter(oldFilter.getField(),
 									    oldFilter.getTableConstraint(),
 									    oldFilter.getKey(),
-									    excludeFilterType,
-									    oldFilter.getHandler());
+									    excludeFilterType);
+				//oldFilter.getHandler());
 				query.replaceFilter(oldFilter, newFilter);
 				return;
 			    }
@@ -1258,8 +1259,8 @@ public class FilterPageEditor extends JPanel {
 				BooleanFilter newFilter = new BooleanFilter(settings.getFieldFromContext(),
 									    settings.getTableConstraintFromContext(),
 									    settings.getKeyFromContext(),
-									    excludeFilterType,
-									    settings.getHandlerFromContext());
+									    excludeFilterType);
+				//settings.getHandlerFromContext());
 				query.addFilter(newFilter);
 			    }
 			}
@@ -1401,8 +1402,8 @@ public class FilterPageEditor extends JPanel {
 							       fd.getTableConstraint(),
 							       fd.getKey(),
 							       fd.getLegalQualifiers(),
-							       field.getText(),
-							       fd.getHandlerFromContext());
+							       field.getText());
+			    //							       fd.getHandlerFromContext());
 			    if (existingFilter == null) {
 				// Create entirely new filter
 				query.addFilter(newFilter);

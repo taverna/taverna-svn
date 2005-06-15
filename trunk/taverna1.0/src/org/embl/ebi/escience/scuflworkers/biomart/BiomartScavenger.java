@@ -28,12 +28,13 @@ public class BiomartScavenger extends Scavenger {
 							   info.dbHost,
 							   info.dbPort,
 							   info.dbInstance,
+							   info.dbSchema,
 							   info.dbUser,
 							   info.dbPassword,
 							   1,
 							   info.dbDriver);
 	    DSConfigAdaptor adaptor = new DatabaseDSConfigAdaptor(ds, ds.getUser(), true, false, false);
-	    String[] dataSetNames = adaptor.getDatasetNames();
+	    String[] dataSetNames = adaptor.getDatasetNames(false);
 	    for (int i = 0; i < dataSetNames.length; i++) {
 		BiomartProcessorFactory bpf = new BiomartProcessorFactory(info, dataSetNames[i]);
 		//DatasetConfig dc = adaptor.getDatasetConfigByDatasetInternalName(dataSetNames[i], "default");

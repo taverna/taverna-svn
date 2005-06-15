@@ -57,8 +57,9 @@ public class BiomartTask implements ProcessorTaskWorker {
 								    filters[i].getTableConstraint(),
 								    filters[i].getKey(),
 								    filters[i].getQualifier(),
-								    filterValue,
-								    filters[i].getHandler());
+								    filterValue);
+
+			    //								    filters[i].getHandler());
 			    query.replaceFilter(filters[i], newFilter);
 			}
 		    }
@@ -68,8 +69,8 @@ public class BiomartTask implements ProcessorTaskWorker {
 			IDListFilter newFilter = new IDListFilter(filters[i].getField(),
 								  filters[i].getTableConstraint(),
 								  filters[i].getKey(),
-								  idArray,
-								  filters[i].getHandler());
+								  idArray);
+			//((IDListFilter)filters[i]).getHandler());
 			query.replaceFilter(filters[i], newFilter);
 		    }
 		}

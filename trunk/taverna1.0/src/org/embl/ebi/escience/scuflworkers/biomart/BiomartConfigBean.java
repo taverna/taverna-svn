@@ -5,21 +5,36 @@
  */
 package org.embl.ebi.escience.scuflworkers.biomart;
 
+import org.ensembl.mart.lib.DetailedDataSource;
+
+
 /**
  * Holds biomart configuration info
  * @author Tom Oinn
  */
 public class BiomartConfigBean {
     
-    String dbType, dbDriver, dbHost, dbPort, dbInstance, dbUser, dbPassword;
+    String dbType, dbDriver, dbHost, dbPort, dbInstance, dbUser, dbPassword, dbSchema;
     
+    public BiomartConfigBean(DetailedDataSource dds) {
+	this.dbType = dds.getDatabaseType();
+	this.dbDriver = dds.getJdbcDriverClassName();
+	this.dbHost = dds.getHost();
+	this.dbPort = dds.getPort();
+	this.dbInstance = dds.getDatabaseName();
+	this.dbUser = dds.getUser();
+	this.dbPassword = ((dds.getPassword() == null || dds.getPassword().equals("")) ? null : dds.getPassword());
+	this.dbSchema = dds.getSchema();
+    }
+
     public BiomartConfigBean(String dbType,
 			     String dbDriver,
 			     String dbHost,
 			     String dbPort,
 			     String dbInstance,
 			     String dbUser,
-			     String dbPassword) {
+			     String dbPassword,
+			     String schema) {
 	this.dbType = dbType;
 	this.dbDriver = dbDriver;
 	this.dbHost = dbHost;
@@ -27,6 +42,7 @@ public class BiomartConfigBean {
 	this.dbInstance = dbInstance;
 	this.dbUser = dbUser;
 	this.dbPassword = ((dbPassword == null || dbPassword.equals("")) ? null : dbPassword);
+	this.dbSchema = schema;
     }
     
     

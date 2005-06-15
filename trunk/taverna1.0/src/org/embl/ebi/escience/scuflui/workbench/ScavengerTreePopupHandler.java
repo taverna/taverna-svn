@@ -151,12 +151,12 @@ public class ScavengerTreePopupHandler extends MouseAdapter {
 			    try {
 				final ScuflModel m;				
 				if (pf instanceof WorkflowProcessorFactory) {
-				    WorkflowProcessor wp = (WorkflowProcessor)pf.createProcessor("processor",null);
+				    WorkflowProcessor wp = (WorkflowProcessor)pf.createProcessor(pf.getName(),null);
 				    m = wp.getInternalModel();
 				}
 				else {
 				    m = new ScuflModel();
-				    Processor p = pf.createProcessor("processor",m);
+				    Processor p = pf.createProcessor(pf.getName(),m);
 				    //m.addProcessor(p);
 				    // Iterate over all inputs and create workflow inputs, similarly for all outputs
 				    InputPort[] ip = p.getInputPorts();

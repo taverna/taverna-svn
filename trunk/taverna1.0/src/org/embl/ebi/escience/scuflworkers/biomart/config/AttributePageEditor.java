@@ -76,16 +76,19 @@ public class AttributePageEditor extends JPanel {
 		AttributeGroup ag = (AttributeGroup)o;
 		groups.add(ag.getDisplayName(), new AttributeGroupEditor(query, ag));
 	    }
-	    else if (o instanceof DSAttributeGroup) {
+	    else if (o instanceof AttributeGroup) {
 		// Domain Specific Attribute Group
-		DSAttributeGroup ag = (DSAttributeGroup)o;
+		AttributeGroup ag = (AttributeGroup)o;
 		// Only handle hardcoded support for sequences at the moment
-		if (ag.getHandler().equalsIgnoreCase("sequence")) {
-		    groups.add(ag.getDisplayName(), new SequenceGroupEditor(query, ag));
-		}
-		else {
+		/**
+		   if (ag.getHandler().equalsIgnoreCase("sequence")) {
+		   groups.add(ag.getDisplayName(), new SequenceGroupEditor(query, ag));
+		   }
+		   else {
+		*/
 		    System.out.println("Unknown domain specific attribute group "+o);
-		}
+		    /*}
+		     */
 	    }
 	    else {
 		System.out.println("Unknown attribute page child type"+o);
@@ -474,10 +477,10 @@ public class AttributePageEditor extends JPanel {
 	}
 
     }
-
+    /**
     class SequenceGroupEditor extends JPanel {
     
-	SequenceGroupEditor(Query query, DSAttributeGroup group) {
+	SequenceGroupEditor(Query query, AttributeGroup group) {
 	    super(new BorderLayout());
 	    setOpaque(false);
 	    String title = "Sequence export options.";
@@ -898,5 +901,6 @@ public class AttributePageEditor extends JPanel {
 	}
 
     }
+    */
 
 }

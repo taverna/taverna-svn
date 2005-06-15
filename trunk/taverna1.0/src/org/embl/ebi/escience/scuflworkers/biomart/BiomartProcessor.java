@@ -143,6 +143,7 @@ public class BiomartProcessor extends Processor {
 				       info.dbHost,
 				       info.dbPort,
 				       info.dbInstance,
+				       info.dbSchema,
 				       info.dbUser,
 				       info.dbPassword,
 				       10,

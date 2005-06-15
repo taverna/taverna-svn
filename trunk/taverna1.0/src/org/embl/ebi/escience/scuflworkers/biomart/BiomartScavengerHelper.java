@@ -86,13 +86,14 @@ class MartSpecificationPanel extends JPanel {
     //JTextField dbInstance = new JTextField("ensembl_mart_22_1");
     JTextField dbUser = new JTextField("anonymous");
     JPasswordField dbPassword = new JPasswordField();
+    JTextField dbSchema = new JTextField("...");
     
     public MartSpecificationPanel() {
 	super();
 	dbType.setEditable(true);
 	dbDriver.setEditable(true);
 	dbInstance.setEditable(true);
-	GridLayout layout = new GridLayout(8,2);
+	GridLayout layout = new GridLayout(9,2);
 	setLayout(layout);
 	add(new ShadedLabel("Database Type", ShadedLabel.TAVERNA_GREEN, true));
 	add(dbType);
@@ -108,6 +109,8 @@ class MartSpecificationPanel extends JPanel {
 	add(dbUser);
 	add(new ShadedLabel("Password", ShadedLabel.TAVERNA_BLUE, true));
 	add(dbPassword);
+	add(new ShadedLabel("Schema", ShadedLabel.TAVERNA_GREEN, true));
+	add(dbSchema);
 	setPreferredSize(new Dimension(400,200));
     }
 
@@ -138,6 +141,9 @@ class MartSpecificationPanel extends JPanel {
     public String getDBPassword() {
 	return new String(dbPassword.getPassword());
     }
+    public String getDBSchema() {
+	return dbSchema.getText();
+    }
     
     public BiomartConfigBean getInfoBean() {
 	return new BiomartConfigBean(getDBType(),
@@ -146,7 +152,8 @@ class MartSpecificationPanel extends JPanel {
 				     getDBPort(),
 				     getDBInstance(),
 				     getDBUser(),
-				     getDBPassword());
+				     getDBPassword(),
+				     getDBSchema());
     }
 
 }

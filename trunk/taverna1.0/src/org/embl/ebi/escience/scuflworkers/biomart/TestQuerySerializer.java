@@ -90,9 +90,9 @@ public class TestQuerySerializer {
     
 	//note there are different types of BooleanFilter
 	if (fdesc.getType(name).equals("boolean"))
-	    query.addFilter(new BooleanFilter(fdesc.getField(name), fdesc.getTableConstraint(name), fdesc.getKey(name), BooleanFilter.isNotNULL, null));
+	    query.addFilter(new BooleanFilter(fdesc.getField(name), fdesc.getTableConstraint(name), fdesc.getKey(name), BooleanFilter.isNotNULL));
 	else
-	    query.addFilter(new BooleanFilter(fdesc.getField(name), fdesc.getTableConstraint(name), fdesc.getKey(name), BooleanFilter.isNotNULL_NUM, null));
+	    query.addFilter(new BooleanFilter(fdesc.getField(name), fdesc.getTableConstraint(name), fdesc.getKey(name), BooleanFilter.isNotNULL_NUM));
     
 	// Serialize the Query object to XML
 	BiomartXMLHandler bxh = new BiomartXMLHandler();
