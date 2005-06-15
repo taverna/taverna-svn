@@ -17,7 +17,7 @@ import uk.ac.soton.itinnovation.taverna.enactor.entities.TaskExecutionException;
  * 
  * 
  * @author Mark
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  * 
  * @tavoutput properties An XML document containing the Java environment variables.
  */
@@ -56,7 +56,7 @@ public class EnvVariableWorker implements LocalWorker {
      */
     public String[] inputNames() {
         // TODO Auto-generated method stub
-        return null;
+        return new String[0];
     }
 
     /**
@@ -64,7 +64,7 @@ public class EnvVariableWorker implements LocalWorker {
      */
     public String[] inputTypes() {
         // TODO Auto-generated method stub
-        return null;
+        return new String[0];
     }
 
     /**
