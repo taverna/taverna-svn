@@ -31,6 +31,7 @@ public class ScuflDiagramPanel extends JPanel
     JComboBox alignmentChooser = new JComboBox(alignment);
     ScuflDiagram diagram = new ScuflDiagram();
     JCheckBox typeDisplay = new JCheckBox("Show types",false);
+    JCheckBox showBoring = new JCheckBox("Boring?",true);
     JCheckBox fitToWindow = new JCheckBox("Fit to window",true);
     static ImageIcon svgIcon,pngIcon,dotIcon;
     final JFileChooser fc;
@@ -90,6 +91,7 @@ public class ScuflDiagramPanel extends JPanel
 	toolbar.add(displayPolicyChooser);
 	toolbar.add(alignmentChooser);
 	toolbar.addSeparator();
+	toolbar.add(showBoring);
 	toolbar.add(fitToWindow);
 	toolbar.add(Box.createHorizontalGlue());
 	
@@ -125,6 +127,16 @@ public class ScuflDiagramPanel extends JPanel
 		    }
 		    else {
 			diagram.setDisplayTypes(true);
+		    }
+		}
+	    });
+	showBoring.addItemListener(new ItemListener() {
+		public void itemStateChanged(ItemEvent e) {
+		    if (e.getStateChange() == ItemEvent.DESELECTED) {
+			diagram.setBoring(false);
+		    }
+		    else {
+			diagram.setBoring(true);
 		    }
 		}
 	    });

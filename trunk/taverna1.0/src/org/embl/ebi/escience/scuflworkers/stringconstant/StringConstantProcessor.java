@@ -22,8 +22,7 @@ import java.lang.String;
 public class StringConstantProcessor extends Processor implements java.io.Serializable {
 
     private String theStringValue = "";
-    protected boolean boring = true;
-
+    
     /**
      * Construct a new processor with the given model and
      * name, delegates to the superclass.
@@ -32,8 +31,7 @@ public class StringConstantProcessor extends Processor implements java.io.Serial
 	throws ProcessorCreationException,
 	       DuplicateProcessorNameException {
 	super(model, name);
-	// Set the endpoint, this then populates the ports appropriately
-	// from the returned parameters of the soap call.
+	setBoring(true);
 	theStringValue = value;
 	// Create a single output port
 	try {

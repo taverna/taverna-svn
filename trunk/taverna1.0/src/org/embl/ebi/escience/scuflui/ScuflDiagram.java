@@ -70,6 +70,13 @@ public class ScuflDiagram extends JComponent
     public boolean getLRAlignment() {
 	return this.dot.getAlignment();
     }
+    
+    public void setBoring(boolean boring) {
+	if (boring != this.dot.getShowBoring()) {
+	    this.dot.setBoring(boring);
+	    updateGraphic();
+	}
+    }
 
     public String getDot() {
 	return this.dot.getDot();

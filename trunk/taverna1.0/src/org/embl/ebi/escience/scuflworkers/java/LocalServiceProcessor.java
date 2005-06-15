@@ -78,6 +78,7 @@ public class LocalServiceProcessor extends Processor {
 	}
 	catch (Exception e) {
 	    ProcessorCreationException pce = new ProcessorCreationException("Unable to instantiate processor for local service class "+workerClassName);
+	    e.printStackTrace();
 	    pce.initCause(e);
 	    throw pce;
 	}

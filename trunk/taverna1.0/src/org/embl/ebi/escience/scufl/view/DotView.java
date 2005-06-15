@@ -26,6 +26,7 @@ public class DotView implements ScuflModelEventListener, java.io.Serializable {
     private int portDisplay = DotView.NONE;
     private boolean displayTypes = true;
     private boolean lralign = false;
+    private boolean showBoring = true;
 
     public static final int ALL = 0;
     public static final int BOUND = 1;
@@ -55,13 +56,30 @@ public class DotView implements ScuflModelEventListener, java.io.Serializable {
 	    this.lralign = alignment;
 	}
     }
-    
+
     /**
      * Get the alignment, true is equivalent to left to 
      * right, false being top to bottom.
      */
     public boolean getAlignment() {
 	return this.lralign;
+    }
+
+    /**
+     * Define whether to show boring things in the diagram
+     */
+    public void setBoring(boolean showBoring) {
+	if (showBoring != this.showBoring) {
+	    cacheValid = false;
+	    this.showBoring = showBoring;
+	}
+    }
+    
+    /**
+     * Are we showing boring things?
+     */
+    public boolean getShowBoring() {
+	return this.showBoring;
     }
 
     /**
@@ -203,92 +221,94 @@ public class DotView implements ScuflModelEventListener, java.io.Serializable {
 	Processor[] processors = model.getProcessors();
 	for (int i=0; i<processors.length; i++) {
 	    Processor p = processors[i];
-	    // Create the new node
-	    dot.append(" "+q(p.getName())+" [ \n");
-	    // Change the colour if this is a WSDLBasedProcessor (hack hack hack)
-	    dot.append("  fillcolor = \""+
-		       org.embl.ebi.escience.scuflworkers.ProcessorHelper.getPreferredColour(p)+
-		       "\",\n");
-	    
-	    // Create the label...
-	    dot.append("  label = \"");
-	    
-	    // Are we generating port views?
-	    if (this.portDisplay == DotView.ALL || this.portDisplay == DotView.BOUND) {
-		// Name of the node
-		if (this.portDisplay == DotView.ALL) {
-		    if (p.getAlternatesList().isEmpty()) {
-			dot.append("{"+p.getName()+"}|{");
-		    }
-		    else {
-			dot.append("{"+p.getName()+"\\n"+p.getAlternatesList().size()+" alternate");
-		    if (p.getAlternatesList().size()!=1) {
-			dot.append("s");
-		    }
-		    dot.append("}|{");
-		    }
-		}
-		else {
-		    dot.append("{");
-		}
-		// List of inputs
-		Port[] inputs = null;
-		if (this.portDisplay == DotView.ALL) {
-		    inputs = p.getInputPorts();
-		}
-		else {
-		    inputs = p.getBoundInputPorts();
-		}
+	    if (!p.isBoring() || showBoring == true) {
+		// Create the new node
+		dot.append(" "+q(p.getName())+" [ \n");
+		// Change the colour if this is a WSDLBasedProcessor (hack hack hack)
+		dot.append("  fillcolor = \""+
+			   org.embl.ebi.escience.scuflworkers.ProcessorHelper.getPreferredColour(p)+
+			   "\",\n");
 		
-		dot.append("{");
-		for (int j = 0; j<inputs.length; j++) {
-		    dot.append("<"+inputs[j].getName()+">"+inputs[j].getName());
-		    if (j < (inputs.length-1)) {
-			dot.append("|");
-		    }
-		}
-		dot.append("}|");
+		// Create the label...
+		dot.append("  label = \"");
 		
-		if (this.portDisplay == DotView.BOUND) {
-		    if (p.getAlternatesList().isEmpty()) {
-			dot.append(p.getName()+"|");
-		    }
-		    else {
-			dot.append(p.getName()+"\\n"+p.getAlternatesList().size()+" alternate");
-			if (p.getAlternatesList().size()!=1) {
-			    dot.append("s");
+		// Are we generating port views?
+		if (this.portDisplay == DotView.ALL || this.portDisplay == DotView.BOUND) {
+		    // Name of the node
+		    if (this.portDisplay == DotView.ALL) {
+			if (p.getAlternatesList().isEmpty()) {
+			    dot.append("{"+p.getName()+"}|{");
 			}
-			dot.append("|");
+			else {
+			    dot.append("{"+p.getName()+"\\n"+p.getAlternatesList().size()+" alternate");
+			    if (p.getAlternatesList().size()!=1) {
+				dot.append("s");
+			    }
+			    dot.append("}|{");
+			}
 		    }
-		}
-
-		// List of outputs
-		Port[] outputs = null;
-		if (this.portDisplay == DotView.ALL) {
-		    outputs = p.getOutputPorts();
+		    else {
+			dot.append("{");
+		    }
+		    // List of inputs
+		    Port[] inputs = null;
+		    if (this.portDisplay == DotView.ALL) {
+			inputs = p.getInputPorts();
+		    }
+		    else {
+			inputs = p.getBoundInputPorts();
+		    }
+		    
+		    dot.append("{");
+		    for (int j = 0; j<inputs.length; j++) {
+			dot.append("<"+inputs[j].getName()+">"+inputs[j].getName());
+			if (j < (inputs.length-1)) {
+			    dot.append("|");
+			}
+		    }
+		    dot.append("}|");
+		    
+		    if (this.portDisplay == DotView.BOUND) {
+			if (p.getAlternatesList().isEmpty()) {
+			    dot.append(p.getName()+"|");
+			}
+			else {
+			    dot.append(p.getName()+"\\n"+p.getAlternatesList().size()+" alternate");
+			    if (p.getAlternatesList().size()!=1) {
+				dot.append("s");
+			    }
+			    dot.append("|");
+			}
+		    }
+		    
+		    // List of outputs
+		    Port[] outputs = null;
+		    if (this.portDisplay == DotView.ALL) {
+			outputs = p.getOutputPorts();
+		    }
+		    else {
+			outputs = p.getBoundOutputPorts();
+		    }
+		    dot.append("{");
+		    for (int j = 0; j<outputs.length; j++) {
+			dot.append("<"+outputs[j].getName()+">"+outputs[j].getName());
+			if (j < (outputs.length-1)) {
+			    dot.append("|");
+			}
+		    }
+		    dot.append("}");
+		    
+		    dot.append("}");
 		}
 		else {
-		    outputs = p.getBoundOutputPorts();
+		    // Not generating the port view, just append the name of the
+		    // node.
+		    dot.append(p.getName());
 		}
-		dot.append("{");
-		for (int j = 0; j<outputs.length; j++) {
-		    dot.append("<"+outputs[j].getName()+">"+outputs[j].getName());
-		    if (j < (outputs.length-1)) {
-			dot.append("|");
-		    }
-		}
-		dot.append("}");
-		
-		dot.append("}");
+		// Close the label
+		dot.append("\"\n");
+		dot.append(" ];\n");
 	    }
-	    else {
-		// Not generating the port view, just append the name of the
-		// node.
-		dot.append(p.getName());
-	    }
-	    // Close the label
-	    dot.append("\"\n");
-	    dot.append(" ];\n");
 	}
 
 	// For each data constraint, create an edge
@@ -301,33 +321,35 @@ public class DotView implements ScuflModelEventListener, java.io.Serializable {
 	    String sinkPortName = dc.getSink().getName();
 	    String sinkProcessorName = dc.getSink().getProcessor().getName();
 	    // If this is a normal internal link....
-	    if (dc.getSource().getProcessor() != model.getWorkflowSourceProcessor() && 
-		dc.getSink().getProcessor() != model.getWorkflowSinkProcessor()) {
-		if (this.portDisplay == DotView.ALL || this.portDisplay == DotView.BOUND) {
-		    dot.append(" "+q(sourceProcessorName)+":"+q(sourcePortName)+"->"+q(sinkProcessorName)+":"+q(sinkPortName)+" [ \n");
+	    if (showBoring == true || (dc.getSink().getProcessor().isBoring() == false && dc.getSource().getProcessor().isBoring() == false)) {
+		if (dc.getSource().getProcessor() != model.getWorkflowSourceProcessor() && 
+		    dc.getSink().getProcessor() != model.getWorkflowSinkProcessor()) {
+		    if (this.portDisplay == DotView.ALL || this.portDisplay == DotView.BOUND) {
+			dot.append(" "+q(sourceProcessorName)+":"+q(sourcePortName)+"->"+q(sinkProcessorName)+":"+q(sinkPortName)+" [ \n");
+		    }
+		    else {
+			dot.append(" "+q(sourceProcessorName)+"->"+q(sinkProcessorName)+" [ \n");
+		    }
 		}
-		else {
-		    dot.append(" "+q(sourceProcessorName)+"->"+q(sinkProcessorName)+" [ \n");
+		else if (dc.getSource().getProcessor() == model.getWorkflowSourceProcessor()) {
+		    if (dc.getSink().getProcessor() == model.getWorkflowSinkProcessor()) {
+			// Is a direct source to sink link
+			dot.append(q("WORKFLOWINTERNALSOURCE_"+sourcePortName)+"->"+q("WORKFLOWINTERNALSINK_"+sinkPortName)+" [ \n");
+		    }
+		    else {
+			// Is a link from a workflow source to an internal sink
+			dot.append(q("WORKFLOWINTERNALSOURCE_"+sourcePortName)+"->"+q(sinkProcessorName)+":"+q(sinkPortName)+" [ \n");
+		    }
 		}
-	    }
-	    else if (dc.getSource().getProcessor() == model.getWorkflowSourceProcessor()) {
-		if (dc.getSink().getProcessor() == model.getWorkflowSinkProcessor()) {
-		    // Is a direct source to sink link
-		    dot.append(q("WORKFLOWINTERNALSOURCE_"+sourcePortName)+"->"+q("WORKFLOWINTERNALSINK_"+sinkPortName)+" [ \n");
+		else if (dc.getSink().getProcessor() == model.getWorkflowSinkProcessor()) {
+		    // Is a link from an internal source to a workflow sink
+		    dot.append(q(sourceProcessorName)+":"+q(sourcePortName)+"->"+q("WORKFLOWINTERNALSINK_"+sinkPortName)+" [ \n");
 		}
-		else {
-		    // Is a link from a workflow source to an internal sink
-		    dot.append(q("WORKFLOWINTERNALSOURCE_"+sourcePortName)+"->"+q(sinkProcessorName)+":"+q(sinkPortName)+" [ \n");
+		if (displayTypes) {
+		    dot.append("  label = \""+dc.getSource().getSyntacticType()+"\\n"+dc.getSink().getSyntacticType()+"\"");
 		}
+		dot.append(" ];\n");
 	    }
-	    else if (dc.getSink().getProcessor() == model.getWorkflowSinkProcessor()) {
-		// Is a link from an internal source to a workflow sink
-		dot.append(q(sourceProcessorName)+":"+q(sourcePortName)+"->"+q("WORKFLOWINTERNALSINK_"+sinkPortName)+" [ \n");
-	    }
-	    if (displayTypes) {
-		dot.append("  label = \""+dc.getSource().getSyntacticType()+"\\n"+dc.getSink().getSyntacticType()+"\"");
-	    }
-	    dot.append(" ];\n");
 	}
 
 	// For each port in the external source and sink processors create a new input or output
@@ -387,43 +409,45 @@ public class DotView implements ScuflModelEventListener, java.io.Serializable {
 	ConcurrencyConstraint[] cc = model.getConcurrencyConstraints();
 	for (int i = 0; i < cc.length; i++) {
 	    ConcurrencyConstraint c = cc[i];
-	    if (this.portDisplay != DotView.NONE && displayTypes) {
-		// Create the box
-		dot.append(" constraint"+c.getName()+" [\n");
-		dot.append("  shape=\"rectangle\",\n");
-		dot.append("  fillcolor=\"white\",\n");
-		dot.append("  height=\"0\",\n");
-		dot.append("  width=\"0\",\n");
-		dot.append("  color=\"gray\",\n");
-		dot.append("  label=\"coordination\"\n");
-		dot.append(" ]\n");
-		// Create the edge from controller to box
-		dot.append(" "+q(c.getControllingProcessor().getName())+"->"+q("constraint"+c.getName())+" [\n");
-		dot.append("  arrowhead=\"none\",\n");
-		dot.append("  arrowtail=\"dot\",\n");
-		dot.append("  color=\"gray\",\n");
-		dot.append("  fontcolor=\"brown\",\n");
-		dot.append("  label=\""+ConcurrencyConstraint.statusCodeToString(c.getControllerStateGuard())+"\"\n");
-		dot.append(" ]\n");
-		// Create the edge from box to target
-		dot.append(q("constraint"+c.getName())+"->"+q(c.getTargetProcessor().getName())+" [\n");
-		dot.append("  arrowhead=\"odot\",\n");
-		dot.append("  arrowtail=\"none\",\n");
-		dot.append("  color=\"gray\",\n");
-		dot.append("  fontcolor=\"darkgreen\",\n");
-		String stateChangeLabel =
-		    "from:"+
-		    ConcurrencyConstraint.statusCodeToString(c.getTargetStateFrom())+"\\nto:"+
-		    ConcurrencyConstraint.statusCodeToString(c.getTargetStateTo());
-		dot.append("  label=\""+stateChangeLabel+"\"\n");
-		dot.append(" ];\n");
-	    }
-	    else {
-		dot.append(" "+q(c.getControllingProcessor().getName())+"->"+q(c.getTargetProcessor().getName())+" [\n");
-		dot.append("  color=\"gray\",\n");
-		dot.append("  arrowhead=\"odot\",\n");
-		dot.append("  arrowtail=\"none\"\n");
-		dot.append(" ];\n");
+	    if (showBoring == true || (!c.getControllingProcessor().isBoring() && !c.getTargetProcessor().isBoring())) {
+		if (this.portDisplay != DotView.NONE && displayTypes) {
+		    // Create the box
+		    dot.append(" constraint"+c.getName()+" [\n");
+		    dot.append("  shape=\"rectangle\",\n");
+		    dot.append("  fillcolor=\"white\",\n");
+		    dot.append("  height=\"0\",\n");
+		    dot.append("  width=\"0\",\n");
+		    dot.append("  color=\"gray\",\n");
+		    dot.append("  label=\"coordination\"\n");
+		    dot.append(" ]\n");
+		    // Create the edge from controller to box
+		    dot.append(" "+q(c.getControllingProcessor().getName())+"->"+q("constraint"+c.getName())+" [\n");
+		    dot.append("  arrowhead=\"none\",\n");
+		    dot.append("  arrowtail=\"dot\",\n");
+		    dot.append("  color=\"gray\",\n");
+		    dot.append("  fontcolor=\"brown\",\n");
+		    dot.append("  label=\""+ConcurrencyConstraint.statusCodeToString(c.getControllerStateGuard())+"\"\n");
+		    dot.append(" ]\n");
+		    // Create the edge from box to target
+		    dot.append(q("constraint"+c.getName())+"->"+q(c.getTargetProcessor().getName())+" [\n");
+		    dot.append("  arrowhead=\"odot\",\n");
+		    dot.append("  arrowtail=\"none\",\n");
+		    dot.append("  color=\"gray\",\n");
+		    dot.append("  fontcolor=\"darkgreen\",\n");
+		    String stateChangeLabel =
+			"from:"+
+			ConcurrencyConstraint.statusCodeToString(c.getTargetStateFrom())+"\\nto:"+
+			ConcurrencyConstraint.statusCodeToString(c.getTargetStateTo());
+		    dot.append("  label=\""+stateChangeLabel+"\"\n");
+		    dot.append(" ];\n");
+		}
+		else {
+		    dot.append(" "+q(c.getControllingProcessor().getName())+"->"+q(c.getTargetProcessor().getName())+" [\n");
+		    dot.append("  color=\"gray\",\n");
+		    dot.append("  arrowhead=\"odot\",\n");
+		    dot.append("  arrowtail=\"none\"\n");
+		    dot.append(" ];\n");
+		}
 	    }
 	}
 	
