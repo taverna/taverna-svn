@@ -198,6 +198,10 @@ public class WSDLInvocationTask implements ProcessorTaskWorker {
 			transformer.transform(source, new StreamResult(baos));
 			resultObject = baos.toString();
 		    }
+		    else if (resultObject instanceof Boolean ||
+			     resultObject instanceof Number) {
+			resultObject = resultObject.toString();
+		    }
 		    resultMap.put(outputName, new DataThing(resultObject));
 		}
 		// Can we extract attachments here?
