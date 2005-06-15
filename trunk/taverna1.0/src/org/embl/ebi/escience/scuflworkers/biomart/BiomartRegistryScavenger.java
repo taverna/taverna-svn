@@ -23,7 +23,7 @@ public class BiomartRegistryScavenger extends Scavenger {
     
     public BiomartRegistryScavenger(String registryURL)
 	throws ScavengerCreationException {
-	super(registryURL);
+	super("Biomart registry @ "+registryURL);
 	URL registryLocation;
 	try {
 	    registryLocation = new URL(registryURL);

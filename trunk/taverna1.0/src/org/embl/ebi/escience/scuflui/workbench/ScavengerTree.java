@@ -23,6 +23,7 @@ import org.embl.ebi.escience.scuflworkers.wsdl.WSDLBasedProcessor;
 import org.embl.ebi.escience.scuflworkers.wsdl.WSDLBasedScavenger;
 import org.embl.ebi.escience.scuflworkers.seqhound.SeqhoundScavenger;
 import org.embl.ebi.escience.scuflworkers.apiconsumer.APIConsumerScavenger;
+import org.embl.ebi.escience.scuflworkers.biomart.BiomartRegistryScavenger;
 import java.net.URL;
 import org.embl.ebi.escience.scuflworkers.biomoby.*;
 
@@ -211,6 +212,7 @@ public class ScavengerTree extends ExtendedJTree
 	soaplabDefaultURLList = System.getProperty("taverna.defaultsoaplab");
 	biomobyDefaultURLList = System.getProperty("taverna.defaultbiomoby");
 	webURLList = System.getProperty("taverna.defaultweb");
+	martRegistryList = System.getProperty("taverna.defaultmartregistry");
 	DragSource dragSource = DragSource.getDefaultDragSource();
 	dragSource.createDefaultDragGestureRecognizer(this,
 						      DnDConstants.ACTION_COPY_OR_MOVE,
@@ -247,7 +249,7 @@ public class ScavengerTree extends ExtendedJTree
 	}
     }
 
-    String biomobyDefaultURLList, soaplabDefaultURLList, wsdlURLList, webURLList;
+    String biomobyDefaultURLList, soaplabDefaultURLList, wsdlURLList, webURLList, martRegistryList;
 
     class DefaultScavengerLoaderThread extends Thread {
 	
@@ -273,6 +275,19 @@ public class ScavengerTree extends ExtendedJTree
 		}
 	    }
 	    
+	    // Do mart registries
+	    if (martRegistryList != null) {
+		String[] urls = martRegistryList.split("\\s*,\\s*");
+		for (int i = 0; i < urls.length; i++) {
+		    try {
+			scavengerTree.addScavenger(new BiomartRegistryScavenger(urls[i]));
+		    }
+		    catch (ScavengerCreationException sce) {
+			sce.printStackTrace();
+		    }
+		}
+	    }
+
 	    //String wsdlURLList = System.getProperty("taverna.defaultwsdl");
 	    if (wsdlURLList != null) {
 		String[] urls = wsdlURLList.split("\\s*,\\s*");
@@ -333,6 +348,13 @@ public class ScavengerTree extends ExtendedJTree
 	    catch (ScavengerCreationException sce) {
 		sce.printStackTrace();
 	    }
+	    try {
+		Thread.sleep(1000);
+	    }
+	    catch (InterruptedException ie) {
+		//
+	    }
+	    treeModel.reload();
 	    scavengerTree.setExpansion(true);
 	}
     }
