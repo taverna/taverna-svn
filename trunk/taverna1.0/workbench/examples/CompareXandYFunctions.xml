@@ -22,22 +22,6 @@ out.addAll(outputs);</s:scriptvalue>
       </s:beanshelloutputlist>
     </s:beanshell>
   </s:processor>
-  <s:processor name="GetUniqueIDs1">
-    <s:beanshell>
-      <s:scriptvalue>Set outputs = new HashSet();
-for (Iterator i = in.iterator(); i.hasNext();) {
-  outputs.add(i.next());
-}
-out = new ArrayList();
-out.addAll(outputs);</s:scriptvalue>
-      <s:beanshellinputlist>
-        <s:beanshellinput s:syntactictype="l('text/plain')">in</s:beanshellinput>
-      </s:beanshellinputlist>
-      <s:beanshelloutputlist>
-        <s:beanshelloutput s:syntactictype="l('text/plain')">out</s:beanshelloutput>
-      </s:beanshelloutputlist>
-    </s:beanshell>
-  </s:processor>
   <s:processor name="GenericSetOperations">
     <s:beanshell>
       <s:scriptvalue>List set1not2 = new ArrayList();
@@ -82,47 +66,30 @@ union.addAll(unionSet);</s:scriptvalue>
       </s:beanshelloutputlist>
     </s:beanshell>
   </s:processor>
+  <s:processor name="GetUniqueIDs1">
+    <s:beanshell>
+      <s:scriptvalue>Set outputs = new HashSet();
+for (Iterator i = in.iterator(); i.hasNext();) {
+  outputs.add(i.next());
+}
+out = new ArrayList();
+out.addAll(outputs);</s:scriptvalue>
+      <s:beanshellinputlist>
+        <s:beanshellinput s:syntactictype="l('text/plain')">in</s:beanshellinput>
+      </s:beanshellinputlist>
+      <s:beanshelloutputlist>
+        <s:beanshelloutput s:syntactictype="l('text/plain')">out</s:beanshelloutput>
+      </s:beanshelloutputlist>
+    </s:beanshell>
+  </s:processor>
   <s:processor name="Green">
     <s:stringconstant>chartreuse3</s:stringconstant>
   </s:processor>
   <s:processor name="Red">
     <s:stringconstant>crimson</s:stringconstant>
   </s:processor>
-  <s:processor name="GetYChromFunctions">
-    <s:biomart>
-      <biomart:biomartconfig xmlns:biomart="http://org.embl.ebi.escience/xscufl-biomart/0.1alpha" dbtype="mysql" dbdriver="com.mysql.jdbc.Driver" dbhost="martdb.ebi.ac.uk" dbport="3306" dbinstance="ensembl_mart_22_1" dbuser="anonymous" />
-      <biomart:biomartds xmlns:biomart="http://org.embl.ebi.escience/xscufl-biomart/0.1alpha">hsapiens_gene_ensembl</biomart:biomartds>
-      <biomart:query xmlns:biomart="http://org.embl.ebi.escience/xscufl-biomart/0.1alpha">
-        <biomart:attributes>
-          <biomart:fieldattribute field="display_id_list" key="transcript_id_key" constraint="hsapiens_gene_ensembl__xref_go__dm" uniquename="go_id" />
-        </biomart:attributes>
-        <biomart:filters>
-          <biomart:basicfilter field="chr_name" constraint="main" key="gene_id_key" qualifier="=" value="Y" />
-          <biomart:booleanfilter field="go_bool" constraint="main" key="gene_id_key" qualifier=" is not null" />
-        </biomart:filters>
-      </biomart:query>
-    </s:biomart>
-  </s:processor>
-  <s:processor name="GetXChromFunctions">
-    <s:biomart>
-      <biomart:biomartconfig xmlns:biomart="http://org.embl.ebi.escience/xscufl-biomart/0.1alpha" dbtype="mysql" dbdriver="com.mysql.jdbc.Driver" dbhost="martdb.ebi.ac.uk" dbport="3306" dbinstance="ensembl_mart_22_1" dbuser="anonymous" />
-      <biomart:biomartds xmlns:biomart="http://org.embl.ebi.escience/xscufl-biomart/0.1alpha">hsapiens_gene_ensembl</biomart:biomartds>
-      <biomart:query xmlns:biomart="http://org.embl.ebi.escience/xscufl-biomart/0.1alpha">
-        <biomart:attributes>
-          <biomart:fieldattribute field="display_id_list" key="transcript_id_key" constraint="hsapiens_gene_ensembl__xref_go__dm" uniquename="go_id" />
-        </biomart:attributes>
-        <biomart:filters>
-          <biomart:booleanfilter field="go_bool" constraint="main" key="gene_id_key" qualifier=" is not null" />
-          <biomart:basicfilter field="chr_name" constraint="main" key="gene_id_key" qualifier="=" value="X" />
-        </biomart:filters>
-      </biomart:query>
-    </s:biomart>
-  </s:processor>
   <s:processor name="Purple">
     <s:stringconstant>purple</s:stringconstant>
-  </s:processor>
-  <s:processor name="Yellow">
-    <s:stringconstant>gold</s:stringconstant>
   </s:processor>
   <s:processor name="GenericSetOperations1">
     <s:beanshell>
@@ -168,14 +135,8 @@ union.addAll(unionSet);</s:scriptvalue>
       </s:beanshelloutputlist>
     </s:beanshell>
   </s:processor>
-  <s:processor name="ShowOnlyUniqueTerms">
-    <s:stringconstant>true</s:stringconstant>
-  </s:processor>
   <s:processor name="Fail_if_false">
     <s:local>org.embl.ebi.escience.scuflworkers.java.FailIfFalse</s:local>
-  </s:processor>
-  <s:processor name="Fail_if_true">
-    <s:local>org.embl.ebi.escience.scuflworkers.java.FailIfTrue</s:local>
   </s:processor>
   <s:processor name="GetUniqueIDs2">
     <s:beanshell>
@@ -193,8 +154,14 @@ out.addAll(outputs);</s:scriptvalue>
       </s:beanshelloutputlist>
     </s:beanshell>
   </s:processor>
-  <s:processor name="PassAllTerms">
-    <s:local>org.embl.ebi.escience.scuflworkers.java.EchoList</s:local>
+  <s:processor name="ShowOnlyUniqueTerms">
+    <s:stringconstant>true</s:stringconstant>
+  </s:processor>
+  <s:processor name="Fail_if_true">
+    <s:local>org.embl.ebi.escience.scuflworkers.java.FailIfTrue</s:local>
+  </s:processor>
+  <s:processor name="Yellow">
+    <s:stringconstant>gold</s:stringconstant>
   </s:processor>
   <s:processor name="FlattenList">
     <s:local>org.embl.ebi.escience.scuflworkers.java.FlattenList</s:local>
@@ -202,13 +169,46 @@ out.addAll(outputs);</s:scriptvalue>
   <s:processor name="PassUniqueTerms">
     <s:local>org.embl.ebi.escience.scuflworkers.java.EchoList</s:local>
   </s:processor>
+  <s:processor name="PassAllTerms">
+    <s:local>org.embl.ebi.escience.scuflworkers.java.EchoList</s:local>
+  </s:processor>
+  <s:processor name="getCommonAncestors">
+    <s:arbitrarywsdl>
+      <s:wsdl>http://www.ebi.ac.uk/collab/mygrid/service1/goviz/GoViz.jws?wsdl</s:wsdl>
+      <s:operation>getAncestors</s:operation>
+    </s:arbitrarywsdl>
+  </s:processor>
+  <s:processor name="getUniqueAncestors">
+    <s:arbitrarywsdl>
+      <s:wsdl>http://www.ebi.ac.uk/collab/mygrid/service1/goviz/GoViz.jws?wsdl</s:wsdl>
+      <s:operation>getAncestors</s:operation>
+    </s:arbitrarywsdl>
+  </s:processor>
+  <s:processor name="showAnnotatedNonUnique">
+    <s:arbitrarywsdl>
+      <s:wsdl>http://www.ebi.ac.uk/collab/mygrid/service1/goviz/GoViz.jws?wsdl</s:wsdl>
+      <s:operation>markTerm</s:operation>
+    </s:arbitrarywsdl>
+  </s:processor>
   <s:processor name="showAnnotatedUnique">
     <s:arbitrarywsdl>
       <s:wsdl>http://www.ebi.ac.uk/collab/mygrid/service1/goviz/GoViz.jws?wsdl</s:wsdl>
       <s:operation>markTerm</s:operation>
     </s:arbitrarywsdl>
   </s:processor>
-  <s:processor name="showAnnotatedNonUnique">
+  <s:processor name="destroySession">
+    <s:arbitrarywsdl>
+      <s:wsdl>http://www.ebi.ac.uk/collab/mygrid/service1/goviz/GoViz.jws?wsdl</s:wsdl>
+      <s:operation>destroySession</s:operation>
+    </s:arbitrarywsdl>
+  </s:processor>
+  <s:processor name="getDot">
+    <s:arbitrarywsdl>
+      <s:wsdl>http://www.ebi.ac.uk/collab/mygrid/service1/goviz/GoViz.jws?wsdl</s:wsdl>
+      <s:operation>getDot</s:operation>
+    </s:arbitrarywsdl>
+  </s:processor>
+  <s:processor name="showUniqueToY">
     <s:arbitrarywsdl>
       <s:wsdl>http://www.ebi.ac.uk/collab/mygrid/service1/goviz/GoViz.jws?wsdl</s:wsdl>
       <s:operation>markTerm</s:operation>
@@ -226,48 +226,46 @@ out.addAll(outputs);</s:scriptvalue>
       <s:operation>createSession</s:operation>
     </s:arbitrarywsdl>
   </s:processor>
-  <s:processor name="getDot">
-    <s:arbitrarywsdl>
-      <s:wsdl>http://www.ebi.ac.uk/collab/mygrid/service1/goviz/GoViz.jws?wsdl</s:wsdl>
-      <s:operation>getDot</s:operation>
-    </s:arbitrarywsdl>
-  </s:processor>
-  <s:processor name="destroySession">
-    <s:arbitrarywsdl>
-      <s:wsdl>http://www.ebi.ac.uk/collab/mygrid/service1/goviz/GoViz.jws?wsdl</s:wsdl>
-      <s:operation>destroySession</s:operation>
-    </s:arbitrarywsdl>
-  </s:processor>
-  <s:processor name="getUniqueAncestors">
-    <s:arbitrarywsdl>
-      <s:wsdl>http://www.ebi.ac.uk/collab/mygrid/service1/goviz/GoViz.jws?wsdl</s:wsdl>
-      <s:operation>getAncestors</s:operation>
-    </s:arbitrarywsdl>
-  </s:processor>
-  <s:processor name="showUniqueToY">
-    <s:arbitrarywsdl>
-      <s:wsdl>http://www.ebi.ac.uk/collab/mygrid/service1/goviz/GoViz.jws?wsdl</s:wsdl>
-      <s:operation>markTerm</s:operation>
-    </s:arbitrarywsdl>
-  </s:processor>
   <s:processor name="addTerm">
     <s:arbitrarywsdl>
       <s:wsdl>http://www.ebi.ac.uk/collab/mygrid/service1/goviz/GoViz.jws?wsdl</s:wsdl>
       <s:operation>addTerm</s:operation>
     </s:arbitrarywsdl>
   </s:processor>
-  <s:processor name="getCommonAncestors">
-    <s:arbitrarywsdl>
-      <s:wsdl>http://www.ebi.ac.uk/collab/mygrid/service1/goviz/GoViz.jws?wsdl</s:wsdl>
-      <s:operation>getAncestors</s:operation>
-    </s:arbitrarywsdl>
+  <s:processor name="GetXChromFunctions">
+    <s:biomart>
+      <biomart:biomartconfig xmlns:biomart="http://org.embl.ebi.escience/xscufl-biomart/0.1alpha" dbtype="mysql" dbdriver="com.mysql.jdbc.Driver" dbhost="ensembldb.ensembl.org" dbport="3306" dbinstance="ensembl_mart_31" dbuser="anonymous" schema="ensembl_mart_31" />
+      <biomart:biomartds xmlns:biomart="http://org.embl.ebi.escience/xscufl-biomart/0.1alpha">hsapiens_gene_ensembl</biomart:biomartds>
+      <biomart:query xmlns:biomart="http://org.embl.ebi.escience/xscufl-biomart/0.1alpha">
+        <biomart:attributes>
+          <biomart:fieldattribute field="dbprimary_id" key="transcript_id_key" constraint="hsapiens_gene_ensembl__xref_go__dm" uniquename="go_id" />
+        </biomart:attributes>
+        <biomart:filters>
+          <biomart:basicfilter field="chr_name" constraint="main" key="gene_id_key" qualifier="=" value="X" />
+          <biomart:booleanfilter field="go_bool" constraint="main" key="gene_id_key" qualifier=" is not null" />
+        </biomart:filters>
+      </biomart:query>
+    </s:biomart>
   </s:processor>
-  <s:link source="GetYChromFunctions:go_id" sink="GetUniqueIDs:in" />
+  <s:processor name="GetYChromFunctions">
+    <s:biomart>
+      <biomart:biomartconfig xmlns:biomart="http://org.embl.ebi.escience/xscufl-biomart/0.1alpha" dbtype="mysql" dbdriver="com.mysql.jdbc.Driver" dbhost="ensembldb.ensembl.org" dbport="3306" dbinstance="ensembl_mart_31" dbuser="anonymous" schema="ensembl_mart_31" />
+      <biomart:biomartds xmlns:biomart="http://org.embl.ebi.escience/xscufl-biomart/0.1alpha">hsapiens_gene_ensembl</biomart:biomartds>
+      <biomart:query xmlns:biomart="http://org.embl.ebi.escience/xscufl-biomart/0.1alpha">
+        <biomart:attributes>
+          <biomart:fieldattribute field="dbprimary_id" key="transcript_id_key" constraint="hsapiens_gene_ensembl__xref_go__dm" uniquename="go_id" />
+        </biomart:attributes>
+        <biomart:filters>
+          <biomart:basicfilter field="chr_name" constraint="main" key="gene_id_key" qualifier="=" value="Y" />
+          <biomart:booleanfilter field="go_bool" constraint="main" key="gene_id_key" qualifier=" is not null" />
+        </biomart:filters>
+      </biomart:query>
+    </s:biomart>
+  </s:processor>
   <s:link source="createSession:createSessionReturn" sink="addTerm:sessionID" />
   <s:link source="createSession:createSessionReturn" sink="getDot:sessionID" />
   <s:link source="createSession:createSessionReturn" sink="destroySession:sessionID" />
   <s:link source="getDot:getDotReturn" sink="Graph" />
-  <s:link source="GetXChromFunctions:go_id" sink="GetUniqueIDs1:in" />
   <s:link source="GetUniqueIDs1:out" sink="GenericSetOperations:set1" />
   <s:link source="GetUniqueIDs:out" sink="GenericSetOperations:set2" />
   <s:link source="Red:value" sink="showUniqueToY:colour" />
@@ -294,6 +292,8 @@ out.addAll(outputs);</s:scriptvalue>
   <s:link source="createSession:createSessionReturn" sink="showAnnotatedUnique:sessionID" />
   <s:link source="GenericSetOperations1:set1not2" sink="showAnnotatedUnique:geneOntologyID" />
   <s:link source="Purple:value" sink="showAnnotatedUnique:colour" />
+  <s:link source="GetXChromFunctions:go_id" sink="GetUniqueIDs1:in" />
+  <s:link source="GetYChromFunctions:go_id" sink="GetUniqueIDs:in" />
   <s:sink name="Graph">
     <s:metadata>
       <s:mimeTypes>
