@@ -31,7 +31,7 @@ public class BiomartRegistryScavengerHelper implements ScavengerHelper {
 									       JOptionPane.QUESTION_MESSAGE,
 									       null,
 									       null,
-									       "http://");
+									       "http://www.ebi.ac.uk/~tmo/defaultMartRegistry.xml");
 		    if (baseURL!=null) {
 			new Thread() {
 			    public void run() {
