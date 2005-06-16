@@ -15,6 +15,7 @@ import org.ensembl.mart.lib.DetailedDataSource;
 public class BiomartConfigBean {
     
     String dbType, dbDriver, dbHost, dbPort, dbInstance, dbUser, dbPassword, dbSchema;
+    String registryURL = null;
     
     public BiomartConfigBean(DetailedDataSource dds) {
 	this.dbType = dds.getDatabaseType();
@@ -25,6 +26,10 @@ public class BiomartConfigBean {
 	this.dbUser = dds.getUser();
 	this.dbPassword = ((dds.getPassword() == null || dds.getPassword().equals("")) ? null : dds.getPassword());
 	this.dbSchema = dds.getSchema();
+    }
+
+    public void setRegistryURL(String registryURL) {
+	this.registryURL = registryURL;
     }
 
     public BiomartConfigBean(String dbType,

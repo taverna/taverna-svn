@@ -42,6 +42,7 @@ public class BiomartRegistryScavenger extends Scavenger {
 		Arrays.sort(datasetNames);
 		DetailedDataSource dds = as[i].getDataSource();
 		BiomartConfigBean info = new BiomartConfigBean(dds);
+		info.setRegistryURL(registryLocation.toString());
 		for (int j = 0; j < datasetNames.length; j++) {
 		    String dataset = datasetNames[j];
 		    DatasetConfigIterator configs = as[i].getDatasetConfigsByDataset(dataset);

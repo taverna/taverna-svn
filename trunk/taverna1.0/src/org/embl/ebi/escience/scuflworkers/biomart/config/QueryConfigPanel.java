@@ -11,7 +11,9 @@ import org.embl.ebi.escience.scuflworkers.*;
 import org.embl.ebi.escience.scuflworkers.biomart.*;
 import org.ensembl.mart.lib.*;
 import org.ensembl.mart.lib.config.*;
+import org.ensembl.mart.explorer.*;
 import javax.swing.*;
+import java.util.*;
 import java.awt.BorderLayout;
 import javax.swing.ImageIcon;
 
@@ -34,36 +36,26 @@ public class QueryConfigPanel extends JPanel
 	String dataSourceName = theProcessor.getDataSourceName();
 	Query query = theProcessor.getQuery();
 	try {
-	    /**
-	       DetailedDataSource ds = 
-	       new DetailedDataSource(info.dbType,
-	       info.dbHost,
-	       info.dbPort,
-	       info.dbInstance,
-	       info.dbUser,
-	       info.dbPassword,
-	       10,
-	       info.dbDriver);
-	       DSConfigAdaptor adaptor = new DatabaseDSConfigAdaptor(ds, ds.getUser(), 
-	       true, false, false);
-	       DatasetConfig config = adaptor.getDatasetConfigByDatasetInternalName(dataSourceName,
-	       "default");
-	    */
 	    DatasetConfig config = theProcessor.getDatasetConfig();
 	    JTabbedPane attributes = new JTabbedPane();
 	    AttributePage[] atPages = config.getAttributePages();
 	    boolean foundValidPage = false;
 	    for (int i = 0; i < atPages.length; i++) {
-		AttributePageEditor ape = new AttributePageEditor(query, atPages[i]);
-		attributes.add(atPages[i].getDisplayName(),ape);
-		if (ape.lastValid && !foundValidPage) {
-		    attributes.setSelectedComponent(ape);
-		    foundValidPage = true;
+		if (skipAttributePage(atPages[i]) == false) {
+		    AttributePageEditor ape = new AttributePageEditor(query, atPages[i], theProcessor);
+		    attributes.add(atPages[i].getDisplayName(),ape);
+		    if (ape.lastValid && !foundValidPage) {
+			attributes.setSelectedComponent(ape);
+			foundValidPage = true;
+		    }
 		}
 	    }
 	    JTabbedPane filters = new JTabbedPane();
 	    FilterPage[] fPages = config.getFilterPages();
 	    for (int i = 0; i < fPages.length; i++) {
+		if (fPages[i].getInternalName().equals("link_filters")) continue;
+		if (fPages[i].getHidden() != null && fPages[i].getHidden().equals("true")) continue;
+		if (fPages[i].getAttribute("hideDisplay") != null && fPages[i].getAttribute("hideDisplay").equals("true")) continue;
 		filters.add(fPages[i].getDisplayName(), new FilterPageEditor(query, fPages[i]));
 	    }
 	    tabs.add("Attributes",attributes);
@@ -75,6 +67,72 @@ public class QueryConfigPanel extends JPanel
 	}
     }
     
+    boolean skipAttributePage(AttributePage page) {
+	if (page.getHidden() != null && page.getHidden().equals("true")) return true;
+	if (page.getAttribute("hideDisplay") != null && page.getAttribute("hideDisplay").equals("true")) return true;
+	if (page.getInternalName().equals("structure")) return true;
+	boolean skip = false;
+	AdaptorManager manager = theProcessor.manager;
+	//we only support sequences with pointer attributes
+	if (!skip) {
+	    if (page.containsOnlyPointerAttributes()) {
+		AttributeGroup seqGroup = (AttributeGroup) page.getAttributeGroupByName("sequence");
+		
+		//skip if this does not contain a sequence group (non ensembl)
+		if (seqGroup == null)
+		    skip = true;
+		else {
+		    AttributeCollection seqCol = null;
+		    
+		    AttributeCollection[] cols = seqGroup.getAttributeCollections();
+		    for (int i = 0, n = cols.length; i < n; i++) {
+			AttributeCollection collection = cols[i];
+			if (collection.getInternalName().matches("\\w*seq_scope\\w*")) {
+			    seqCol = collection;
+			    break;
+			}
+		    }
+		    
+		    //skip if the sequence group does not contain a page called "seq_scope_type" (non ensembl)
+		    if (seqCol == null)
+			skip = true;
+		    
+		    if (!skip) {
+			//test for presence of sequence dataset
+			AttributeDescription seqDesc = (AttributeDescription) seqCol.getAttributeDescriptions().get(0);
+			String seqDataset = seqDesc.getInternalName().split("\\.")[0];
+			if (manager.getRootAdaptor().getNumDatasetConfigsByDataset(seqDataset) < 1) {
+			    skip = true;
+			}
+		    }
+		}
+		
+		if (!skip) {
+		    //test for ambiguous links
+		    AttributeGroup nonSeqGroup = null;
+		    List groups = page.getAttributeGroups();
+		    for (int i = 0, n = groups.size(); i < n; i++) {
+			AttributeGroup element = (AttributeGroup) groups.get(i);
+			if (!element.getInternalName().equals("sequence")) {
+			    nonSeqGroup = element;
+			    break;
+			}
+		    }
+		    
+		    //get the first attribute, and test its dataset to see if it is duplicated
+		    AttributeDescription firstAtt = (AttributeDescription) nonSeqGroup.getAttributeCollections()[0].getAttributeDescriptions().get(0);
+		    String dataset = firstAtt.getInternalName().split("\\.")[0];
+		    
+		    if (manager.getRootAdaptor().getNumDatasetConfigsByDataset(dataset) > 1) {
+			skip = true;
+		    }   
+		}
+	    }
+	}
+	return skip;
+
+    }
+
     public void attachToModel(ScuflModel theModel) {
 	//
     }

@@ -43,9 +43,11 @@ public class AttributePageEditor extends JPanel {
     private LockedPageMessage errorMessage;
     public boolean lastValid = false;
     static Map allDescs = new HashMap();
+    BiomartProcessor proc;
 
-    public AttributePageEditor(Query query, AttributePage page) {
+    public AttributePageEditor(Query query, AttributePage page, BiomartProcessor proc) {
 	super(new BorderLayout());
+	this.proc = proc;
 	//UIManager.put("CheckBox.background",  Color.WHITE);
 	this.query = query;
 	this.page = page;
@@ -193,6 +195,9 @@ public class AttributePageEditor extends JPanel {
      */
     public void jumpTo(AttributeDescription aDesc) {
 	String key = aDesc.getField()+aDesc.getKey()+aDesc.getTableConstraint();
+	if (aDesc.getInternalName().indexOf('.') > 0) {
+	    key = aDesc.getInternalName();
+	}
 	JCheckBox checkBox = (JCheckBox)checkBoxLocations.get(key);
 	if (checkBox != null) {
 	    Container lastComponent = checkBox;
@@ -343,7 +348,12 @@ public class AttributePageEditor extends JPanel {
 	    JPanel cp = new JPanel();
 	    cp.setLayout(new BoxLayout(cp, BoxLayout.PAGE_AXIS));
 	    for (int i = 0; i < collections.length; i++) {
-		cp.add(new AttributeCollectionEditor(query, collections[i]));
+		if (group.getInternalName().equals("sequence")) {
+		    //
+		}
+		else {
+		    cp.add(new AttributeCollectionEditor(query, collections[i]));
+		}
 	    }
 	    cp.add(Box.createVerticalGlue());
 	    JScrollPane sp = new JScrollPane(cp, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
@@ -387,7 +397,15 @@ public class AttributePageEditor extends JPanel {
 	    //attributePanel.setLayout(new GridLayout(rows,3));
 	    for (Iterator i = attributes.iterator(); i.hasNext();) {
 		final AttributeDescription desc = (AttributeDescription)i.next();
-		final String myID = desc.getField()+desc.getKey()+desc.getTableConstraint();
+		final String myID = (desc.getInternalName().indexOf('.')>0)?desc.getInternalName():(desc.getField() +
+		    (desc.getKey()==null?"":desc.getKey()) + 
+		    (desc.getTableConstraint()==null?"":desc.getTableConstraint()));
+		if (desc.getInternalName().indexOf('.') > 0) {
+		    desc.setDisplayName(proc.manager.getPointerAttribute(desc.getInternalName()).getDisplayName());
+		    desc.setField(desc.getInternalName());
+		    desc.setTableConstraint(desc.getInternalName());
+		    desc.setKey(desc.getInternalName());
+		}
 		allDescs.put(myID, desc);
 		JCheckBox cb = new JCheckBox(desc.getDisplayName());
 	    
@@ -407,14 +425,16 @@ public class AttributePageEditor extends JPanel {
 		    for (int j = 0; j < queryAttributes.length; j++) {
 			if (queryAttributes[j] instanceof FieldAttribute) {
 			    FieldAttribute f = (FieldAttribute)queryAttributes[j];
-			    String itsID = f.getField()+f.getKey()+f.getTableConstraint();
+			    String itsID = (f.getField().indexOf('.')>0)?f.getField():(f.getField() +
+										       (f.getKey()==null?"":f.getKey()) + 
+										       (f.getTableConstraint()==null?"":f.getTableConstraint())); 
 			    //System.out.println("  "+itsID);
 			    if (myID.equals(itsID)) {
 				cb.setSelected(true);
 			    }
 			}
 		    }
-
+		    
 		}
 		// Register a listener on the checkbox to add the specified
 		// attribute to the query or remove it based on the selection
@@ -427,9 +447,12 @@ public class AttributePageEditor extends JPanel {
 			    Attribute[] queryAttributes = query.getAttributes();
 			    for (int j = 0; j < queryAttributes.length; j++) {
 				if (queryAttributes[j] instanceof FieldAttribute) {
-				    FieldAttribute fa = (FieldAttribute)queryAttributes[j];
-				    if ((fa.getField()+fa.getKey()+fa.getTableConstraint()).equals(myID)) {
-					queryAttribute = fa;
+				    FieldAttribute f = (FieldAttribute)queryAttributes[j];
+				    String itsID = (f.getField().indexOf('.')>0)?f.getField():(f.getField() +
+											       (f.getKey()==null?"":f.getKey()) + 
+											       (f.getTableConstraint()==null?"":f.getTableConstraint())); 
+				    if (itsID.equals(myID)) {
+					queryAttribute = f;
 				    }
 				}
 			    }

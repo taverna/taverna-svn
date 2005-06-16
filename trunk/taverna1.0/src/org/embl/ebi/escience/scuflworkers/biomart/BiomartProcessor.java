@@ -8,7 +8,9 @@ package org.embl.ebi.escience.scuflworkers.biomart;
 import org.embl.ebi.escience.scufl.*;
 import org.ensembl.mart.lib.*;
 import org.ensembl.mart.lib.config.*;
+import org.ensembl.mart.explorer.*;
 import java.util.*;
+import java.net.*;
 
 /**
  * A processor representing an arbitrary query over a biomart
@@ -21,6 +23,7 @@ public class BiomartProcessor extends Processor {
     private String dataSourceName;
     private Query query = null;
     private QueryListener queryListener;
+    public AdaptorManager manager = null;
 
     public String getResourceHost() {
 	return info.dbHost;
@@ -148,12 +151,46 @@ public class BiomartProcessor extends Processor {
 				       info.dbPassword,
 				       10,
 				       info.dbDriver);
-	    DSConfigAdaptor adaptor = new DatabaseDSConfigAdaptor(ds, ds.getUser(), 
-								  true, false, false);
-	    DatasetConfigIterator configs = adaptor.getDatasetConfigsByDataset(dataSourceName);
-	    config = (DatasetConfig)configs.next();
+	    
 	    //config = adaptor.getDatasetConfigByDatasetInternalName(dataSourceName,
 	    //							   "default");
+	    if (info.registryURL != null) {
+		try {
+		    config = null;
+		    RegistryDSConfigAdaptor ra = new RegistryDSConfigAdaptor(new URL(info.registryURL), false, false, true);
+		    query.setAdaptor(ra);
+		    this.manager = new AdaptorManager(false);
+		    // Find the appropriate config within the registry adaptor
+		    DSConfigAdaptor[] as = ra.getLeafAdaptors();
+		    for (int i = 0; i < as.length; i++) {
+			manager.add(as[i]);
+			String[] datasetNames = as[i].getDatasetNames(false);
+			for (int j = 0; j < datasetNames.length; j++) {
+			    if (datasetNames[j].equalsIgnoreCase(dataSourceName)) {
+				DatasetConfigIterator configs = as[i].getDatasetConfigsByDataset(datasetNames[j]);
+				while (configs.hasNext()) {
+				    DatasetConfig c = (DatasetConfig)configs.next();
+				    if (c.getInternalName().toLowerCase().equals("default")) {
+					config = c;
+				    }
+				}
+			    }
+			}
+		    }
+		}
+		catch (MalformedURLException mue) {
+		    // Won't happen
+		}
+		catch (InvalidQueryException ieq) {
+		    ieq.printStackTrace();
+		}
+	    }
+	    else {
+		DSConfigAdaptor adaptor = new DatabaseDSConfigAdaptor(ds, ds.getUser(), 
+								      true, false, false);
+		DatasetConfigIterator configs = adaptor.getDatasetConfigsByDataset(dataSourceName);
+		config = (DatasetConfig)configs.next();
+	    }
 	    query.setDataSource(ds);
 	    query.setDataset(config.getDataset());
 	    query.setDatasetConfig(config);

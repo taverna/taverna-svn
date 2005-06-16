@@ -65,12 +65,17 @@ public class FilterPageEditor extends JPanel {
 	for (Iterator i = filterGroups.iterator(); i.hasNext();) {
 	    Object o = i.next();
 	    if (o instanceof FilterGroup) {
+		FilterGroup group = (FilterGroup)o;
+		if (group.getHidden() != null && group.getHidden().equals("true")) continue;
+		if (group.getDisplay() != null && group.getDisplay().equals("true")) continue;
+		if (group.getAttribute("hideDisplay") != null && group.getAttribute("hideDisplay").equals("true")) continue;
 		// Generic filter
-		FilterGroup fg = (FilterGroup)o;
-		String groupName = fg.getDisplayName();
-		FilterGroupEditor fge = new FilterGroupEditor(query, fg);
-		groups.add(groupName, fge);
-		filterGroupEditorList.add(fge);
+		String groupName = group.getDisplayName();
+		FilterGroupEditor fge = new FilterGroupEditor(query, group);
+		if (fge.widgets > 0) {
+		    groups.add(groupName, fge);
+		    filterGroupEditorList.add(fge);
+		}
 	    }
 	}
 	add(groups, BorderLayout.CENTER);
@@ -104,7 +109,7 @@ public class FilterPageEditor extends JPanel {
 	
 	Map internalNameToLeafEditor = new HashMap();
 	List listFilterList = new ArrayList();
-
+	int widgets = 0;
 	public FilterGroupEditor(Query query, FilterGroup fg) {
 	    super(new BorderLayout());
 	    setOpaque(false);
@@ -125,15 +130,18 @@ public class FilterPageEditor extends JPanel {
 	    filters.setBackground(Color.WHITE);
 	    FilterCollection[] collections = fg.getFilterCollections();
 	    for (int i = 0; i < collections.length; i++) {
-		FilterCollectionEditor fce = new FilterCollectionEditor(query, collections[i]);
-		filters.add(fce);
-		for (Iterator j = fce.internalNameToLeafEditor.values().iterator(); j.hasNext();) {
-		    Object o = j.next();
-		    if (o instanceof ListFilterEditor) {
-			listFilterList.add(o);
+		if (!skipCollection(collections[i])) {
+		    FilterCollectionEditor fce = new FilterCollectionEditor(query, collections[i]);
+		    filters.add(fce);
+		    widgets++;
+		    for (Iterator j = fce.internalNameToLeafEditor.values().iterator(); j.hasNext();) {
+			Object o = j.next();
+			if (o instanceof ListFilterEditor) {
+			    listFilterList.add(o);
+			}
 		    }
+		    internalNameToLeafEditor.putAll(fce.internalNameToLeafEditor);
 		}
-		internalNameToLeafEditor.putAll(fce.internalNameToLeafEditor);
 	    }
 	    JScrollPane sp = new JScrollPane(filters);
 	    sp.setBackground(Color.WHITE);
@@ -141,6 +149,13 @@ public class FilterPageEditor extends JPanel {
 	    filters.add(Box.createVerticalGlue());
 	    add(sp, BorderLayout.CENTER);
 	    
+	}
+
+	private boolean skipCollection(FilterCollection collection) {
+	    return ((collection.getHidden() != null && collection.getHidden().equals("true")) ||
+		    (collection.getAttribute("hideDisplay") != null && collection.getAttribute("hideDisplay").equals("true")) ||
+		    (collection.containsOnlyPointerFilters()) ||
+		    (collection.containsOnlyFilterListFilterUploadFilters()));
 	}
 
 	public void pushFilterOptions() {
