@@ -6,89 +6,7 @@
 &lt;li&gt;Yellow terms are those explicitly mapped in X&lt;/li&gt;
 &lt;li&gt;Green terms are those implied by terms mapped in both X and Y&lt;/li&gt;
 &lt;/ol&gt;</s:workflowdescription>
-  <s:processor name="GetUniqueIDs">
-    <s:beanshell>
-      <s:scriptvalue>Set outputs = new HashSet();
-for (Iterator i = in.iterator(); i.hasNext();) {
-  outputs.add(i.next());
-}
-out = new ArrayList();
-out.addAll(outputs);</s:scriptvalue>
-      <s:beanshellinputlist>
-        <s:beanshellinput s:syntactictype="l('text/plain')">in</s:beanshellinput>
-      </s:beanshellinputlist>
-      <s:beanshelloutputlist>
-        <s:beanshelloutput s:syntactictype="l('text/plain')">out</s:beanshelloutput>
-      </s:beanshelloutputlist>
-    </s:beanshell>
-  </s:processor>
-  <s:processor name="GenericSetOperations">
-    <s:beanshell>
-      <s:scriptvalue>List set1not2 = new ArrayList();
-List set2not1 = new ArrayList();
-List union = new ArrayList();
-List intersection = new ArrayList();
-
-Set set1set = new HashSet();
-set1set.addAll(set1);
-Set set2set = new HashSet();
-set2set.addAll(set2);
-Set unionSet = new HashSet();
-
-for (Iterator i = set2set.iterator(); i.hasNext(); ) {
-  Object item = i.next();
-  if (set1set.contains(item)) {
-    intersection.add(item);
-  }
-  else {
-    set2not1.add(item);
-  }
-}
-for (Iterator i = set1set.iterator(); i.hasNext(); ) {
-  Object item = i.next();
-  if (set2set.contains(item) == false) {
-    set1not2.add(item);
-  }
-}
-unionSet.addAll(set1set);
-unionSet.addAll(set2set);
-
-union.addAll(unionSet);</s:scriptvalue>
-      <s:beanshellinputlist>
-        <s:beanshellinput s:syntactictype="l('text/plain')">set1</s:beanshellinput>
-        <s:beanshellinput s:syntactictype="l('text/plain')">set2</s:beanshellinput>
-      </s:beanshellinputlist>
-      <s:beanshelloutputlist>
-        <s:beanshelloutput s:syntactictype="l('text/plain')">union</s:beanshelloutput>
-        <s:beanshelloutput s:syntactictype="l('text/plain')">intersection</s:beanshelloutput>
-        <s:beanshelloutput s:syntactictype="l('text/plain')">set1not2</s:beanshelloutput>
-        <s:beanshelloutput s:syntactictype="l('text/plain')">set2not1</s:beanshelloutput>
-      </s:beanshelloutputlist>
-    </s:beanshell>
-  </s:processor>
-  <s:processor name="GetUniqueIDs1">
-    <s:beanshell>
-      <s:scriptvalue>Set outputs = new HashSet();
-for (Iterator i = in.iterator(); i.hasNext();) {
-  outputs.add(i.next());
-}
-out = new ArrayList();
-out.addAll(outputs);</s:scriptvalue>
-      <s:beanshellinputlist>
-        <s:beanshellinput s:syntactictype="l('text/plain')">in</s:beanshellinput>
-      </s:beanshellinputlist>
-      <s:beanshelloutputlist>
-        <s:beanshelloutput s:syntactictype="l('text/plain')">out</s:beanshelloutput>
-      </s:beanshelloutputlist>
-    </s:beanshell>
-  </s:processor>
-  <s:processor name="Green">
-    <s:stringconstant>chartreuse3</s:stringconstant>
-  </s:processor>
-  <s:processor name="Red">
-    <s:stringconstant>crimson</s:stringconstant>
-  </s:processor>
-  <s:processor name="Purple">
+  <s:processor name="Purple" boring="true">
     <s:stringconstant>purple</s:stringconstant>
   </s:processor>
   <s:processor name="GenericSetOperations1">
@@ -135,9 +53,6 @@ union.addAll(unionSet);</s:scriptvalue>
       </s:beanshelloutputlist>
     </s:beanshell>
   </s:processor>
-  <s:processor name="Fail_if_false">
-    <s:local>org.embl.ebi.escience.scuflworkers.java.FailIfFalse</s:local>
-  </s:processor>
   <s:processor name="GetUniqueIDs2">
     <s:beanshell>
       <s:scriptvalue>Set outputs = new HashSet();
@@ -154,83 +69,108 @@ out.addAll(outputs);</s:scriptvalue>
       </s:beanshelloutputlist>
     </s:beanshell>
   </s:processor>
-  <s:processor name="ShowOnlyUniqueTerms">
-    <s:stringconstant>true</s:stringconstant>
-  </s:processor>
-  <s:processor name="Fail_if_true">
-    <s:local>org.embl.ebi.escience.scuflworkers.java.FailIfTrue</s:local>
-  </s:processor>
-  <s:processor name="Yellow">
-    <s:stringconstant>gold</s:stringconstant>
+  <s:processor name="GetUniqueIDs">
+    <s:beanshell>
+      <s:scriptvalue>Set outputs = new HashSet();
+for (Iterator i = in.iterator(); i.hasNext();) {
+  outputs.add(i.next());
+}
+out = new ArrayList();
+out.addAll(outputs);</s:scriptvalue>
+      <s:beanshellinputlist>
+        <s:beanshellinput s:syntactictype="l('text/plain')">in</s:beanshellinput>
+      </s:beanshellinputlist>
+      <s:beanshelloutputlist>
+        <s:beanshelloutput s:syntactictype="l('text/plain')">out</s:beanshelloutput>
+      </s:beanshelloutputlist>
+    </s:beanshell>
   </s:processor>
   <s:processor name="FlattenList">
     <s:local>org.embl.ebi.escience.scuflworkers.java.FlattenList</s:local>
   </s:processor>
+  <s:processor name="GetUniqueIDs1">
+    <s:beanshell>
+      <s:scriptvalue>Set outputs = new HashSet();
+for (Iterator i = in.iterator(); i.hasNext();) {
+  outputs.add(i.next());
+}
+out = new ArrayList();
+out.addAll(outputs);</s:scriptvalue>
+      <s:beanshellinputlist>
+        <s:beanshellinput s:syntactictype="l('text/plain')">in</s:beanshellinput>
+      </s:beanshellinputlist>
+      <s:beanshelloutputlist>
+        <s:beanshelloutput s:syntactictype="l('text/plain')">out</s:beanshelloutput>
+      </s:beanshelloutputlist>
+    </s:beanshell>
+  </s:processor>
+  <s:processor name="Green" boring="true">
+    <s:stringconstant>chartreuse3</s:stringconstant>
+  </s:processor>
+  <s:processor name="Fail_if_false" boring="true">
+    <s:local>org.embl.ebi.escience.scuflworkers.java.FailIfFalse</s:local>
+  </s:processor>
+  <s:processor name="Fail_if_true" boring="true">
+    <s:local>org.embl.ebi.escience.scuflworkers.java.FailIfTrue</s:local>
+  </s:processor>
+  <s:processor name="PassAllTerms" boring="true">
+    <s:local>org.embl.ebi.escience.scuflworkers.java.EchoList</s:local>
+  </s:processor>
+  <s:processor name="GenericSetOperations">
+    <s:beanshell>
+      <s:scriptvalue>List set1not2 = new ArrayList();
+List set2not1 = new ArrayList();
+List union = new ArrayList();
+List intersection = new ArrayList();
+
+Set set1set = new HashSet();
+set1set.addAll(set1);
+Set set2set = new HashSet();
+set2set.addAll(set2);
+Set unionSet = new HashSet();
+
+for (Iterator i = set2set.iterator(); i.hasNext(); ) {
+  Object item = i.next();
+  if (set1set.contains(item)) {
+    intersection.add(item);
+  }
+  else {
+    set2not1.add(item);
+  }
+}
+for (Iterator i = set1set.iterator(); i.hasNext(); ) {
+  Object item = i.next();
+  if (set2set.contains(item) == false) {
+    set1not2.add(item);
+  }
+}
+unionSet.addAll(set1set);
+unionSet.addAll(set2set);
+
+union.addAll(unionSet);</s:scriptvalue>
+      <s:beanshellinputlist>
+        <s:beanshellinput s:syntactictype="l('text/plain')">set1</s:beanshellinput>
+        <s:beanshellinput s:syntactictype="l('text/plain')">set2</s:beanshellinput>
+      </s:beanshellinputlist>
+      <s:beanshelloutputlist>
+        <s:beanshelloutput s:syntactictype="l('text/plain')">union</s:beanshelloutput>
+        <s:beanshelloutput s:syntactictype="l('text/plain')">intersection</s:beanshelloutput>
+        <s:beanshelloutput s:syntactictype="l('text/plain')">set1not2</s:beanshelloutput>
+        <s:beanshelloutput s:syntactictype="l('text/plain')">set2not1</s:beanshelloutput>
+      </s:beanshelloutputlist>
+    </s:beanshell>
+  </s:processor>
+  <s:processor name="Red" boring="true">
+    <s:stringconstant>crimson</s:stringconstant>
+  </s:processor>
+  <s:processor name="ShowOnlyUniqueTerms" boring="true">
+    <s:stringconstant>true</s:stringconstant>
+  </s:processor>
+  <s:processor name="Yellow" boring="true">
+    <s:stringconstant>gold</s:stringconstant>
+  </s:processor>
   <s:processor name="PassUniqueTerms">
     <s:local>org.embl.ebi.escience.scuflworkers.java.EchoList</s:local>
-  </s:processor>
-  <s:processor name="PassAllTerms">
-    <s:local>org.embl.ebi.escience.scuflworkers.java.EchoList</s:local>
-  </s:processor>
-  <s:processor name="getCommonAncestors">
-    <s:arbitrarywsdl>
-      <s:wsdl>http://www.ebi.ac.uk/collab/mygrid/service1/goviz/GoViz.jws?wsdl</s:wsdl>
-      <s:operation>getAncestors</s:operation>
-    </s:arbitrarywsdl>
-  </s:processor>
-  <s:processor name="getUniqueAncestors">
-    <s:arbitrarywsdl>
-      <s:wsdl>http://www.ebi.ac.uk/collab/mygrid/service1/goviz/GoViz.jws?wsdl</s:wsdl>
-      <s:operation>getAncestors</s:operation>
-    </s:arbitrarywsdl>
-  </s:processor>
-  <s:processor name="showAnnotatedNonUnique">
-    <s:arbitrarywsdl>
-      <s:wsdl>http://www.ebi.ac.uk/collab/mygrid/service1/goviz/GoViz.jws?wsdl</s:wsdl>
-      <s:operation>markTerm</s:operation>
-    </s:arbitrarywsdl>
-  </s:processor>
-  <s:processor name="showAnnotatedUnique">
-    <s:arbitrarywsdl>
-      <s:wsdl>http://www.ebi.ac.uk/collab/mygrid/service1/goviz/GoViz.jws?wsdl</s:wsdl>
-      <s:operation>markTerm</s:operation>
-    </s:arbitrarywsdl>
-  </s:processor>
-  <s:processor name="destroySession">
-    <s:arbitrarywsdl>
-      <s:wsdl>http://www.ebi.ac.uk/collab/mygrid/service1/goviz/GoViz.jws?wsdl</s:wsdl>
-      <s:operation>destroySession</s:operation>
-    </s:arbitrarywsdl>
-  </s:processor>
-  <s:processor name="getDot">
-    <s:arbitrarywsdl>
-      <s:wsdl>http://www.ebi.ac.uk/collab/mygrid/service1/goviz/GoViz.jws?wsdl</s:wsdl>
-      <s:operation>getDot</s:operation>
-    </s:arbitrarywsdl>
-  </s:processor>
-  <s:processor name="showUniqueToY">
-    <s:arbitrarywsdl>
-      <s:wsdl>http://www.ebi.ac.uk/collab/mygrid/service1/goviz/GoViz.jws?wsdl</s:wsdl>
-      <s:operation>markTerm</s:operation>
-    </s:arbitrarywsdl>
-  </s:processor>
-  <s:processor name="showCommon">
-    <s:arbitrarywsdl>
-      <s:wsdl>http://www.ebi.ac.uk/collab/mygrid/service1/goviz/GoViz.jws?wsdl</s:wsdl>
-      <s:operation>markTerm</s:operation>
-    </s:arbitrarywsdl>
-  </s:processor>
-  <s:processor name="createSession">
-    <s:arbitrarywsdl>
-      <s:wsdl>http://www.ebi.ac.uk/collab/mygrid/service1/goviz/GoViz.jws?wsdl</s:wsdl>
-      <s:operation>createSession</s:operation>
-    </s:arbitrarywsdl>
-  </s:processor>
-  <s:processor name="addTerm">
-    <s:arbitrarywsdl>
-      <s:wsdl>http://www.ebi.ac.uk/collab/mygrid/service1/goviz/GoViz.jws?wsdl</s:wsdl>
-      <s:operation>addTerm</s:operation>
-    </s:arbitrarywsdl>
   </s:processor>
   <s:processor name="GetXChromFunctions">
     <s:biomart>
@@ -261,6 +201,66 @@ out.addAll(outputs);</s:scriptvalue>
         </biomart:filters>
       </biomart:query>
     </s:biomart>
+  </s:processor>
+  <s:processor name="showCommon">
+    <s:arbitrarywsdl>
+      <s:wsdl>http://www.ebi.ac.uk/collab/mygrid/service1/goviz/GoViz.jws?wsdl</s:wsdl>
+      <s:operation>markTerm</s:operation>
+    </s:arbitrarywsdl>
+  </s:processor>
+  <s:processor name="destroySession">
+    <s:arbitrarywsdl>
+      <s:wsdl>http://www.ebi.ac.uk/collab/mygrid/service1/goviz/GoViz.jws?wsdl</s:wsdl>
+      <s:operation>destroySession</s:operation>
+    </s:arbitrarywsdl>
+  </s:processor>
+  <s:processor name="addTerm">
+    <s:arbitrarywsdl>
+      <s:wsdl>http://www.ebi.ac.uk/collab/mygrid/service1/goviz/GoViz.jws?wsdl</s:wsdl>
+      <s:operation>addTerm</s:operation>
+    </s:arbitrarywsdl>
+  </s:processor>
+  <s:processor name="showUniqueToY">
+    <s:arbitrarywsdl>
+      <s:wsdl>http://www.ebi.ac.uk/collab/mygrid/service1/goviz/GoViz.jws?wsdl</s:wsdl>
+      <s:operation>markTerm</s:operation>
+    </s:arbitrarywsdl>
+  </s:processor>
+  <s:processor name="showAnnotatedUnique">
+    <s:arbitrarywsdl>
+      <s:wsdl>http://www.ebi.ac.uk/collab/mygrid/service1/goviz/GoViz.jws?wsdl</s:wsdl>
+      <s:operation>markTerm</s:operation>
+    </s:arbitrarywsdl>
+  </s:processor>
+  <s:processor name="getUniqueAncestors">
+    <s:arbitrarywsdl>
+      <s:wsdl>http://www.ebi.ac.uk/collab/mygrid/service1/goviz/GoViz.jws?wsdl</s:wsdl>
+      <s:operation>getAncestors</s:operation>
+    </s:arbitrarywsdl>
+  </s:processor>
+  <s:processor name="showAnnotatedNonUnique">
+    <s:arbitrarywsdl>
+      <s:wsdl>http://www.ebi.ac.uk/collab/mygrid/service1/goviz/GoViz.jws?wsdl</s:wsdl>
+      <s:operation>markTerm</s:operation>
+    </s:arbitrarywsdl>
+  </s:processor>
+  <s:processor name="createSession" boring="true">
+    <s:arbitrarywsdl>
+      <s:wsdl>http://www.ebi.ac.uk/collab/mygrid/service1/goviz/GoViz.jws?wsdl</s:wsdl>
+      <s:operation>createSession</s:operation>
+    </s:arbitrarywsdl>
+  </s:processor>
+  <s:processor name="getDot">
+    <s:arbitrarywsdl>
+      <s:wsdl>http://www.ebi.ac.uk/collab/mygrid/service1/goviz/GoViz.jws?wsdl</s:wsdl>
+      <s:operation>getDot</s:operation>
+    </s:arbitrarywsdl>
+  </s:processor>
+  <s:processor name="getCommonAncestors">
+    <s:arbitrarywsdl>
+      <s:wsdl>http://www.ebi.ac.uk/collab/mygrid/service1/goviz/GoViz.jws?wsdl</s:wsdl>
+      <s:operation>getAncestors</s:operation>
+    </s:arbitrarywsdl>
   </s:processor>
   <s:link source="createSession:createSessionReturn" sink="addTerm:sessionID" />
   <s:link source="createSession:createSessionReturn" sink="getDot:sessionID" />
