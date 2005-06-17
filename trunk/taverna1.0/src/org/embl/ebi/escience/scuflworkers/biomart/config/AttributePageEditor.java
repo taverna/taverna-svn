@@ -28,6 +28,7 @@ import java.awt.Container;
 import java.awt.CardLayout;
 import java.awt.event.*;
 import javax.swing.event.*;
+import org.ensembl.mart.explorer.*;
 
 /**
  * JPanel subclass for an Attribute Page
@@ -77,20 +78,6 @@ public class AttributePageEditor extends JPanel {
 		// Generic Attribute Group
 		AttributeGroup ag = (AttributeGroup)o;
 		groups.add(ag.getDisplayName(), new AttributeGroupEditor(query, ag));
-	    }
-	    else if (o instanceof AttributeGroup) {
-		// Domain Specific Attribute Group
-		AttributeGroup ag = (AttributeGroup)o;
-		// Only handle hardcoded support for sequences at the moment
-		/**
-		   if (ag.getHandler().equalsIgnoreCase("sequence")) {
-		   groups.add(ag.getDisplayName(), new SequenceGroupEditor(query, ag));
-		   }
-		   else {
-		*/
-		    System.out.println("Unknown domain specific attribute group "+o);
-		    /*}
-		     */
 	    }
 	    else {
 		System.out.println("Unknown attribute page child type"+o);
@@ -349,7 +336,24 @@ public class AttributePageEditor extends JPanel {
 	    cp.setLayout(new BoxLayout(cp, BoxLayout.PAGE_AXIS));
 	    for (int i = 0; i < collections.length; i++) {
 		if (group.getInternalName().equals("sequence")) {
-		    //
+		    if (collections[i].getInternalName().matches("\\w*seq_scope\\w*")) {   
+			try {
+			    SequenceGroupWidget w = new SequenceGroupWidget(group.getDisplayName(), 
+									    group.getInternalName(), 
+									    query,
+									    null, 
+									    proc.getDatasetConfig(), 
+									    proc.manager);
+			    cp.add(w);
+			    containsSequence = true;
+			}
+			catch (Exception ex) {
+			    ex.printStackTrace();
+			}
+		    } else {
+			System.out.println(collections[i].getInternalName());
+			continue;
+		    }
 		}
 		else {
 		    cp.add(new AttributeCollectionEditor(query, collections[i]));
