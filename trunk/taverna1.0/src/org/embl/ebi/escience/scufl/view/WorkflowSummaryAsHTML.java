@@ -6,7 +6,7 @@ import org.embl.ebi.escience.scufl.*;
 import org.embl.ebi.escience.baclava.*;
 import org.embl.ebi.escience.scuflworkers.wsdl.WSDLBasedProcessor;
 import org.embl.ebi.escience.scuflworkers.soaplab.SoaplabProcessor;
-import org.embl.ebi.escience.scuflworkers.biomoby.BiomobyProcessor;
+import org.biomoby.client.taverna.plugin.BiomobyProcessor;
 import org.embl.ebi.escience.scuflworkers.seqhound.SeqhoundProcessor;
 import org.embl.ebi.escience.scuflworkers.biomart.BiomartProcessor;
 
