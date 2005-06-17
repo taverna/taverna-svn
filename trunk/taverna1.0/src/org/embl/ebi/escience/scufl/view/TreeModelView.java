@@ -128,10 +128,13 @@ public class TreeModelView extends DefaultTreeModel implements ScuflModelEventLi
 	clearNode(inputRootNode);
 	Port[] inputPorts = workflow.getWorkflowSourcePorts();
 	for (int i = 0; i < inputPorts.length; i++) {
-	    insertNodeInto(new DefaultMutableTreeNode(inputPorts[i]),
+	    DefaultMutableTreeNode newNode = new DefaultMutableTreeNode(inputPorts[i]);
+	    insertNodeInto(newNode,
 			   inputRootNode,
 			   i);
+	    nodeChanged(newNode);
 	}
+	nodeChanged(inputRootNode);
     }
     
     /**
@@ -141,10 +144,13 @@ public class TreeModelView extends DefaultTreeModel implements ScuflModelEventLi
 	clearNode(outputRootNode);
 	Port[] outputPorts = workflow.getWorkflowSinkPorts();
 	for (int i = 0; i < outputPorts.length; i++) {
-	    insertNodeInto(new DefaultMutableTreeNode(outputPorts[i]),
+	    DefaultMutableTreeNode newNode = new DefaultMutableTreeNode(outputPorts[i]);
+	    insertNodeInto(newNode,
 			   outputRootNode,
 			   i);
+	    nodeChanged(newNode);
 	}
+	nodeChanged(outputRootNode);
     }
     
     /**
@@ -252,6 +258,7 @@ public class TreeModelView extends DefaultTreeModel implements ScuflModelEventLi
 	while (parent.getChildCount() > 0) {
 	    removeNodeFromParent((MutableTreeNode)parent.getChildAt(0));
 	}
+	nodeChanged(parent);
     }
 
 }
