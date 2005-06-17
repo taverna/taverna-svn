@@ -96,7 +96,7 @@ public class ScuflModelExplorerRenderer extends NodeColouringRenderer {
 		    setText(thePort.getName()+" == "+originalPortName);
 		}
 		else {
-		    setText("<html>"+thePort.toString()+" <font color=\"#666666\">"+thePort.getSyntacticType()+"</font></html");
+		    setText("<html>"+thePort.toString()+" <font color=\"#666666\">"+thePort.getSyntacticType()+"</font></html>");
 		}
 	    }
 	}

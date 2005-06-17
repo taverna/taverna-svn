@@ -117,7 +117,16 @@ public abstract class ProcessorFactory {
     }
     
     public final String toString() {
-	return getName()+((getDescription()!=null)?" - <font color=\"green\">"+getDescription()+"</font>":"");
+	StringBuffer sb = new StringBuffer();
+	sb.append("<html>");
+	sb.append("<font color=\"black\">");
+	sb.append(getName());
+	if (getDescription() != null) {
+	    sb.append("</font> - <font color=\"green\">");
+	    sb.append(getDescription());
+	}
+	sb.append("</font></html>");
+	return sb.toString();
     }
 
 }
