@@ -174,7 +174,7 @@ union.addAll(unionSet);</s:scriptvalue>
   </s:processor>
   <s:processor name="GetXChromFunctions">
     <s:biomart>
-      <biomart:biomartconfig xmlns:biomart="http://org.embl.ebi.escience/xscufl-biomart/0.1alpha" dbtype="mysql" dbdriver="com.mysql.jdbc.Driver" dbhost="ensembldb.ensembl.org" dbport="3306" dbinstance="ensembl_mart_31" dbuser="anonymous" schema="ensembl_mart_31" />
+      <biomart:biomartconfig xmlns:biomart="http://org.embl.ebi.escience/xscufl-biomart/0.1alpha" dbtype="mysql" dbdriver="com.mysql.jdbc.Driver" dbhost="ensembldb.ensembl.org" dbport="3306" dbinstance="ensembl_mart_31" dbuser="anonymous" schema="ensembl_mart_31" registryLocation="http://www.ebi.ac.uk/~tmo/defaultMartRegistry.xml" />
       <biomart:biomartds xmlns:biomart="http://org.embl.ebi.escience/xscufl-biomart/0.1alpha">hsapiens_gene_ensembl</biomart:biomartds>
       <biomart:query xmlns:biomart="http://org.embl.ebi.escience/xscufl-biomart/0.1alpha">
         <biomart:attributes>
@@ -189,7 +189,7 @@ union.addAll(unionSet);</s:scriptvalue>
   </s:processor>
   <s:processor name="GetYChromFunctions">
     <s:biomart>
-      <biomart:biomartconfig xmlns:biomart="http://org.embl.ebi.escience/xscufl-biomart/0.1alpha" dbtype="mysql" dbdriver="com.mysql.jdbc.Driver" dbhost="ensembldb.ensembl.org" dbport="3306" dbinstance="ensembl_mart_31" dbuser="anonymous" schema="ensembl_mart_31" />
+      <biomart:biomartconfig xmlns:biomart="http://org.embl.ebi.escience/xscufl-biomart/0.1alpha" dbtype="mysql" dbdriver="com.mysql.jdbc.Driver" dbhost="ensembldb.ensembl.org" dbport="3306" dbinstance="ensembl_mart_31" dbuser="anonymous" registryLocation="http://www.ebi.ac.uk/~tmo/defaultMartRegistry.xml" schema="ensembl_mart_31" />
       <biomart:biomartds xmlns:biomart="http://org.embl.ebi.escience/xscufl-biomart/0.1alpha">hsapiens_gene_ensembl</biomart:biomartds>
       <biomart:query xmlns:biomart="http://org.embl.ebi.escience/xscufl-biomart/0.1alpha">
         <biomart:attributes>
