@@ -25,8 +25,8 @@ import org.embl.ebi.escience.scuflworkers.seqhound.SeqhoundScavenger;
 import org.embl.ebi.escience.scuflworkers.apiconsumer.APIConsumerScavenger;
 import org.embl.ebi.escience.scuflworkers.biomart.BiomartRegistryScavenger;
 import java.net.URL;
-import org.embl.ebi.escience.scuflworkers.biomoby.*;
-
+//import org.embl.ebi.escience.scuflworkers.biomoby.*;
+import org.biomoby.client.taverna.plugin.*;
 import org.jdom.output.*;
 
 // Utility Imports
@@ -319,7 +319,7 @@ public class ScavengerTree extends ExtendedJTree
 		for (int i = 0; i < urls.length; i++) {
 		    try {
 			System.out.println("Creating biomoby scavenger : '"+urls[i]+"'");
-			scavengerTree.addScavenger(new BiomobyScavenger(urls[i]));
+			scavengerTree.addScavenger(new BiomobyScavenger(urls[i], "http://biomoby.org/RESOURCES/MOBY-S/Objects"));
 		    }
 		    catch (ScavengerCreationException sce) {
 			sce.printStackTrace();
