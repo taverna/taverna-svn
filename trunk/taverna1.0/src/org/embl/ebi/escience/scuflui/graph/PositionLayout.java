@@ -22,7 +22,7 @@ import org.jgraph.graph.PortView;
 
 /**
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover </a>
- * @version $Revision: 1.26 $
+ * @version $Revision: 1.27 $
  * 
  */
 public class PositionLayout extends ModelSpanningTree
@@ -60,23 +60,16 @@ public class PositionLayout extends ModelSpanningTree
 			if (size() > 0)
 			{
 				int height = (int) getBounds(get(0)).getHeight();
-				for (int index = 1; index < size(); index++)
+				Object left = null;
+				Iterator nodes = iterator();
+				while (nodes.hasNext())
 				{
-					Object left = get(index - 1);
-					Object right = get(index);
-
-					Map leftAttributes = getAttributes(left);
+					Object right = nodes.next();
 					Map rightAttributes = getAttributes(right);
-					Edge edge = LayoutConstants.getRightEdge(leftAttributes);
-					Edge correctEdge = edge;
-					if (edge != null && edge.getTarget() != right)
-					{
-						removeEdge(edge);
-						correctEdge = null;
-					}
 
-					edge = LayoutConstants.getLeftEdge(rightAttributes);
-					if (edge != null && edge.getSource() != left)
+					Edge edge = LayoutConstants.getLeftEdge(rightAttributes);
+					Edge correctEdge = null;
+					if (edge != null && (left == null || edge.getSource() != left))
 					{
 						removeEdge(edge);
 					}
@@ -85,18 +78,34 @@ public class PositionLayout extends ModelSpanningTree
 						correctEdge = edge;
 					}
 
-					if (correctEdge == null || isRemoved(correctEdge))
+					if (left != null)
 					{
-						correctEdge = new Edge(left, right);
-						newEdges.add(correctEdge);
+						if (correctEdge == null || isRemoved(correctEdge))
+						{
+							correctEdge = new Edge(left, right);
+							newEdges.add(correctEdge);
+						}						
+						
+						Map leftAttributes = getAttributes(left);
+						LayoutConstants.setRightEdge(leftAttributes, correctEdge);
 					}
 					LayoutConstants.setLeftEdge(rightAttributes, correctEdge);
-					LayoutConstants.setRightEdge(leftAttributes, correctEdge);
 
+					if(!nodes.hasNext())
+					{
+						edge = LayoutConstants.getRightEdge(rightAttributes);
+						if(edge != null)
+						{
+							removeEdge(edge);
+							LayoutConstants.setRightEdge(rightAttributes, null);							
+						}
+					}
+					
 					height = (int) Math.max(height, getBounds(right).getHeight());
+					left = right;
 				}
 
-				Iterator nodes = this.nodes.iterator();
+				nodes = iterator();
 				while (nodes.hasNext())
 				{
 					setInitialPosition(nodes.next(), y, height);
