@@ -435,11 +435,11 @@ public class EnactorInvocation extends JPanel implements ScuflUIComponent{
 	final ScuflModel workflowModel = theModel;
 	new Thread(){
 	    public void run() {
-		workflowEditor.attachToModel(workflowModel);
+		workflowEditor.getScuflGraphModel().setShowBoring(false);
+    	workflowEditor.attachToModel(workflowModel);
 		workflowEditor.updateStatus(getStatusText());
 		workflowEditor.setEnabled(false);
 		workflowEditor.setEditable(false);
-		workflowEditor.getScuflGraphModel().setShowBoring(false);		
 		workflowStatusUpdateReady = true;
 	    }
 	}.start();
