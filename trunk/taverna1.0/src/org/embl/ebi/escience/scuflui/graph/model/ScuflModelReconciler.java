@@ -18,13 +18,11 @@ import org.jgraph.event.GraphModelEvent;
  * having waited for further changes for the configured duration of time.
  * 
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover </a>
- * @version $Revision: 1.5 $
+ * @version $Revision: 1.6 $
  */
 public class ScuflModelReconciler implements ScuflModelEventListener
 {
-	// Wait this for (milliseconds) to see if there are any more events
-	// Too high and the ui becomes unresponsive, too low and can currently cause problems
-	private static final long waitTime = 500;
+	private static final long waitTime = 100;
 
 	ScuflGraphModel model;
 	ScuflGraphModelChange changes;
@@ -62,7 +60,7 @@ public class ScuflModelReconciler implements ScuflModelEventListener
 					{
 						event = (ScuflModelEvent) events.remove(0);
 					}
-					changes.calculateChanges(event);
+					changes.addChanges(event);
 					try
 					{
 						sleep(waitTime);

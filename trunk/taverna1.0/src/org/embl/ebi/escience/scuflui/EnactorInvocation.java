@@ -8,20 +8,19 @@ package org.embl.ebi.escience.scuflui;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
-import java.util.Iterator;
-import java.util.Map;
-
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.Iterator;
+import java.util.Map;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
-import javax.swing.JPanel;
 import javax.swing.JLabel;
+import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTabbedPane;
@@ -33,22 +32,18 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
 import org.embl.ebi.escience.baclava.DataThing;
+import org.embl.ebi.escience.scufl.Processor;
 import org.embl.ebi.escience.scufl.ScuflModel;
 import org.embl.ebi.escience.scufl.UnknownProcessorException;
 import org.embl.ebi.escience.scufl.enactor.EnactorProxy;
 import org.embl.ebi.escience.scufl.enactor.UserContext;
 import org.embl.ebi.escience.scufl.enactor.WorkflowInstance;
 import org.embl.ebi.escience.scufl.enactor.WorkflowSubmissionException;
-import org.embl.ebi.escience.scufl.enactor.event.UserChangedDataEvent;
-import org.embl.ebi.escience.scufl.enactor.WorkflowEventListener;
 import org.embl.ebi.escience.scuflui.graph.WorkflowEditor;
 import org.embl.ebi.escience.scuflui.results.ResultMapSaveRegistry;
 import org.embl.ebi.escience.scuflui.results.ResultMapSaveSPI;
 import org.embl.ebi.escience.scuflui.results.ResultTablePanel;
-import org.embl.ebi.escience.scufl.Processor;
-import org.syntax.jedit.JEditTextArea;
-import org.syntax.jedit.TextAreaDefaults;
-import org.syntax.jedit.tokenmarker.XMLTokenMarker;
+
 import uk.ac.soton.itinnovation.freefluo.main.InvalidInputException;
 
 
@@ -443,6 +438,8 @@ public class EnactorInvocation extends JPanel implements ScuflUIComponent{
 		workflowEditor.attachToModel(workflowModel);
 		workflowEditor.updateStatus(getStatusText());
 		workflowEditor.setEnabled(false);
+		workflowEditor.setEditable(false);
+		workflowEditor.getScuflGraphModel().setShowBoring(false);		
 		workflowStatusUpdateReady = true;
 	    }
 	}.start();

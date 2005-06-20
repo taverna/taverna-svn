@@ -8,11 +8,11 @@ package org.embl.ebi.escience.scufl;
 // Utility Imports
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
 import java.io.*;
-import java.awt.datatransfer.*;
 
 import org.embl.ebi.escience.scufl.ConcurrencyConstraint;
 import org.embl.ebi.escience.scufl.DataConstraint;
@@ -245,12 +245,10 @@ public class ScuflModel
 	if (reportEvents == this.isFiringEvents) {
 	    return;
 	}
-	else {
-	    this.isFiringEvents = reportEvents;
-	    if (this.isFiringEvents) {
-		fireModelEvent(new ScuflModelEvent(this,"Event reporting re-enabled, forcing update", ScuflModelEvent.LOAD));
-	    }
-	}
+    this.isFiringEvents = reportEvents;
+    if (this.isFiringEvents) {
+	fireModelEvent(new ScuflModelEvent(this,"Event reporting re-enabled, forcing update", ScuflModelEvent.LOAD));
+    }
     }
 
     /**
@@ -362,27 +360,40 @@ public class ScuflModel
      * Destroy a processor, this also removes any data constraints
      * that have the processor as either a source or a sink.
      */
-    public void destroyProcessor(Processor the_processor) {
-	this.processors.remove(the_processor);
-	// Iterate over all the data constraints, remove any that
-	// refer to this processor.
-	DataConstraint[] constraints = getDataConstraints();
-	for (int i = 0; i < constraints.length; i++) {
-	    Processor source = constraints[i].getSource().getProcessor();
-	    Processor sink = constraints[i].getSink().getProcessor();
-	    if (source == the_processor || sink == the_processor) {
-		destroyDataConstraint(constraints[i]);
-	    }
+    public void destroyProcessor(Processor the_processor)
+	{
+		if(this.processors.remove(the_processor))
+		{
+		// Iterate over all the data constraints, remove any that
+		// refer to this processor.
+		HashSet removed = new HashSet();
+		DataConstraint[] dc = getDataConstraints();		
+		for (int i = 0; i < dc.length; i++)
+		{
+			Processor source = dc[i].getSource().getProcessor();
+			Processor sink = dc[i].getSink().getProcessor();
+			if (source == the_processor || sink == the_processor)
+			{
+				removed.add(dc[i]);
+				dataconstraints.remove(dc[i]);
+			}
+		}
+		ConcurrencyConstraint[] cc = getConcurrencyConstraints();
+		for (int i = 0; i < cc.length; i++)
+		{
+			if (the_processor == cc[i].getTargetProcessor()
+					|| the_processor == cc[i].getControllingProcessor())
+			{
+				removed.add(cc[i]);
+				constraints.remove(cc[i]);
+			}
+		}
+		String message = "Removed " + ScuflModelEvent.getClassName(the_processor) + " " + the_processor.getName() + ", and edges " + removed;
+		removed.add(the_processor);
+		
+		fireModelEvent(new ScuflModelRemoveEvent(this, removed, message));
+		}
 	}
-	ConcurrencyConstraint[] cc = getConcurrencyConstraints();
-	for (int i = 0; i < cc.length; i++) {
-	    if (the_processor == cc[i].getTargetProcessor() ||
-		the_processor == cc[i].getControllingProcessor()) {
-		destroyConcurrencyConstraint(cc[i]);
-	    }
-	}
-	fireModelEvent(new ScuflModelRemoveEvent(this, the_processor));
-    }
 
     /**
      * Add a data constraint to the model
@@ -396,8 +407,10 @@ public class ScuflModel
      * Remove a data constraint from the model
      */
     public void destroyDataConstraint(DataConstraint the_constraint) {
-	this.dataconstraints.remove(the_constraint);
+	if(this.dataconstraints.remove(the_constraint))
+	{
 	fireModelEvent(new ScuflModelRemoveEvent(this, the_constraint));
+	}
     }
 
     /**
@@ -412,8 +425,10 @@ public class ScuflModel
      * Remove a concurrency constraint from the model
      */
     public void destroyConcurrencyConstraint(ConcurrencyConstraint the_constraint) {
-	this.constraints.remove(the_constraint);
-	fireModelEvent(new ScuflModelRemoveEvent(this, the_constraint));
+	if(this.constraints.remove(the_constraint))
+	{
+		fireModelEvent(new ScuflModelRemoveEvent(this, the_constraint));
+	}
     }
 
     /**
@@ -484,7 +499,6 @@ public class ScuflModel
 	}
 	else if (parts.length == 1) {
 	    // Got a reference to an internal port
-	    Port port = null;
 	    String port_name = parts[0];
 	    try {
 		// Look for a source port
@@ -517,14 +531,11 @@ public class ScuflModel
 	}
 	else if (parts.length == 1) {
 	    // Got a reference to an internal port
-	    Port port = null;
 	    String port_name = parts[0];
 	    if (isInputPort) {
 		return this.sinks.locatePort(port_name);
 	    }
-	    else {
 		return this.sources.locatePort(port_name);
-	    }
 	}
 	throw new MalformedNameException("Couldn't resolve port name '"+port_specifier+"'.");
     }
@@ -570,7 +581,6 @@ public class ScuflModel
      * A thread subclass to notify listeners of an event
      */
     class NotifyThread extends Thread {
-	private ScuflModelEvent event;
 	private List listeners;
 	protected NotifyThread(ScuflModel model) {
 	    super();

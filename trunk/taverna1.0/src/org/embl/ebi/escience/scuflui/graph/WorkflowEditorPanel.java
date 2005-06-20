@@ -41,7 +41,7 @@ import org.embl.ebi.escience.scuflui.actions.SaveWorkflowAction;
  * COMMENT
  * 
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover</a>
- * @version $Revision: 1.6 $
+ * @version $Revision: 1.7 $
  */
 public class WorkflowEditorPanel extends JPanel implements ScuflUIComponent
 {
@@ -61,9 +61,12 @@ public class WorkflowEditorPanel extends JPanel implements ScuflUIComponent
 	{
 		setLayout(new BorderLayout());
 
+		editor = new WorkflowEditor();
+		editor.attachToModel(model);		
+		
 		JCheckBox offline = new JCheckBox("Offline");
 		offline.setModel(new OfflineToggleModel(model));
-		
+
 		Action saveImage = new AbstractAction()
 		{
 			public void actionPerformed(ActionEvent e)
@@ -122,8 +125,11 @@ public class WorkflowEditorPanel extends JPanel implements ScuflUIComponent
 			}
 		};
 		saveImage.putValue(Action.SHORT_DESCRIPTION, "Save image of workflow");
-		saveImage.putValue(Action.SMALL_ICON, ScuflIcons.savePNGIcon);		
-		
+		saveImage.putValue(Action.SMALL_ICON, ScuflIcons.savePNGIcon);
+
+		JCheckBox boring = new JCheckBox("Show Boring");
+		boring.setModel(editor.new ShowBoringModel());
+
 		// Create the tool bar
 		JToolBar toolbar = new JToolBar();
 		toolbar.setFloatable(false);
@@ -136,12 +142,10 @@ public class WorkflowEditorPanel extends JPanel implements ScuflUIComponent
 		toolbar.add(new SaveWorkflowAction(model));
 		toolbar.add(saveImage);
 		toolbar.addSeparator();
-		toolbar.add(offline);		
+		toolbar.add(offline);
+		toolbar.add(boring);
 		toolbar.add(Box.createHorizontalGlue());
 		toolbar.add(new ResetAction(model));
-
-		editor = new WorkflowEditor();
-		editor.attachToModel(model);
 
 		JScrollPane scrollPane = new JScrollPane(editor);
 		scrollPane.setPreferredSize(new Dimension(0, 0));

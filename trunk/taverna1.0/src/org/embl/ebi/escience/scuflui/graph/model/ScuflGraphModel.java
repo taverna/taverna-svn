@@ -35,6 +35,7 @@ import org.embl.ebi.escience.scufl.OutputPort;
 import org.embl.ebi.escience.scufl.Port;
 import org.embl.ebi.escience.scufl.Processor;
 import org.embl.ebi.escience.scufl.ScuflModel;
+import org.embl.ebi.escience.scufl.ScuflModelEvent;
 import org.embl.ebi.escience.scuflui.ScuflUIComponent;
 import org.embl.ebi.escience.scuflui.graph.GraphColours;
 import org.embl.ebi.escience.scuflui.graph.GraphUtilities;
@@ -50,7 +51,7 @@ import org.jgraph.graph.ParentMap;
 /**
  * 
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover </a>
- * @version $Revision: 1.23 $
+ * @version $Revision: 1.24 $
  */
 public class ScuflGraphModel implements GraphModel, GraphModelListener, ScuflUIComponent
 {
@@ -134,6 +135,7 @@ public class ScuflGraphModel implements GraphModel, GraphModelListener, ScuflUIC
 	private static final String PORT_EDGES = "port edges";
 	private static final String DUMMY_PORT = "dummy port";
 
+	private boolean showBoring = true;
 	private ScuflModel model;
 	private ScuflModelReconciler reconciler;
 	List roots = new ArrayList();
@@ -198,13 +200,7 @@ public class ScuflGraphModel implements GraphModel, GraphModelListener, ScuflUIC
 	{
 		if (node != null)
 		{
-			AttributeMap map = (AttributeMap) attributes.get(node);
-			if (map == null & contains(node))
-			{
-				map = new AttributeMap();
-				attributes.put(node, map);
-			}
-			return map;
+			return (AttributeMap) attributes.get(node);
 		}
 		return (AttributeMap) attributes.get(this);
 	}
@@ -229,6 +225,11 @@ public class ScuflGraphModel implements GraphModel, GraphModelListener, ScuflUIC
 	private AttributeMap addAttributes(Object node)
 	{
 		AttributeMap map = getAttributes(node);
+		if(map == null)
+		{
+			map = new AttributeMap();
+			attributes.put(node, map);
+		}
 
 		if (node instanceof Processor)
 		{
@@ -794,6 +795,11 @@ public class ScuflGraphModel implements GraphModel, GraphModelListener, ScuflUIC
 
 	Map addNode(Object newNode, ConnectionSet cs)
 	{
+		if(getParent(newNode) == null && !roots.contains(newNode))
+		{
+			roots.add(newNode);
+		}
+		Map attributes = addAttributes(newNode);
 		if (isEdge(newNode))
 		{
 			Object source = getSource(newNode);
@@ -802,11 +808,15 @@ public class ScuflGraphModel implements GraphModel, GraphModelListener, ScuflUIC
 			addEdge(source, newNode);
 			addEdge(target, newNode);
 		}
-		return addAttributes(newNode);
+		return attributes;
 	}
 
 	void removeNode(Object node)
 	{
+		if(getParent(node) == null)
+		{
+			roots.remove(node);
+		}		
 		if (isEdge(node))
 		{
 			removeEdge(getSource(node), node);
@@ -874,5 +884,29 @@ public class ScuflGraphModel implements GraphModel, GraphModelListener, ScuflUIC
 	public ImageIcon getIcon()
 	{
 		return null;
+	}
+
+	public boolean isShowingBoring()
+	{
+		return showBoring;
+	}
+	
+	/**
+	 * @param showBoring
+	 */
+	public void setShowBoring(boolean showBoring)
+	{
+		if(this.showBoring != showBoring)
+		{
+			this.showBoring = showBoring;
+
+			if(model != null)
+			{
+				ScuflGraphModelChange change = new ScuflGraphModelChange(this);
+				change.addChanges(new ScuflModelEvent(model, "Changed show boring"));
+				change.execute();			
+				graphChanged(new GraphModelEvent(model, change));
+			}
+		}
 	}
 }

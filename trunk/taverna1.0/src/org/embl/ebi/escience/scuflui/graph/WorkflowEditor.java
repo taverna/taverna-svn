@@ -17,6 +17,7 @@ import java.awt.dnd.DropTargetAdapter;
 import java.awt.dnd.DropTargetDragEvent;
 import java.awt.dnd.DropTargetDropEvent;
 import java.awt.event.ActionEvent;
+import java.awt.event.ItemEvent;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
@@ -32,8 +33,10 @@ import java.util.List;
 import java.util.Map;
 
 import javax.swing.ImageIcon;
+import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JMenu;
 import javax.swing.JPopupMenu;
+import javax.swing.JToggleButton;
 
 import org.embl.ebi.escience.scufl.InputPort;
 import org.embl.ebi.escience.scufl.Port;
@@ -107,7 +110,41 @@ public class WorkflowEditor extends JGraph implements ScuflUIComponent
 		}
 	}
 
+	public class ShowBoringModel extends JToggleButton.ToggleButtonModel
+	{
+		public boolean isSelected()
+		{
+			return getScuflGraphModel().isShowingBoring();
+		}
+
+		public void setSelected(boolean b)
+		{
+			getScuflGraphModel().setShowBoring(b);
+
+			// Send ChangeEvent
+			fireStateChanged();
+
+			// Send ItemEvent
+			fireItemStateChanged(new ItemEvent(this, ItemEvent.ITEM_STATE_CHANGED, this, this
+					.isSelected() ? ItemEvent.SELECTED : ItemEvent.DESELECTED));
+		}
+	}
+
 	RowLayout layoutManager;
+
+	/**
+	 * 
+	 */
+	public WorkflowEditor()
+	{
+		super();
+		setModel(new ScuflGraphModel());
+	}
+
+	public ScuflGraphModel getScuflGraphModel()
+	{
+		return (ScuflGraphModel) graphModel;
+	}
 
 	/*
 	 * (non-Javadoc)
@@ -116,8 +153,6 @@ public class WorkflowEditor extends JGraph implements ScuflUIComponent
 	 */
 	public void attachToModel(final ScuflModel model)
 	{
-		ScuflGraphModel graphModel = new ScuflGraphModel();
-		setModel(graphModel);
 		GraphLayoutCache layoutCache = getGraphLayoutCache();
 		layoutManager = new RowLayout(graphModel, layoutCache);
 		layoutCache.setAutoSizeOnValueChange(true);
@@ -449,8 +484,15 @@ public class WorkflowEditor extends JGraph implements ScuflUIComponent
 							JPopupMenu menu = new JPopupMenu();
 							menu.add(new ShadedLabel("Workflow", ShadedLabel.TAVERNA_GREEN));
 							menu.addSeparator();
-							menu.add(new AddInputAction(model));
-							menu.add(new AddOutputAction(model));
+							if (isEditable())
+							{
+								menu.add(new AddInputAction(model));
+								menu.add(new AddOutputAction(model));
+							}
+							JCheckBoxMenuItem menuItem = new JCheckBoxMenuItem("Show Boring");
+							menuItem.setModel(new ShowBoringModel());
+
+							menu.add(menuItem);
 							menu.show(WorkflowEditor.this, event.getX(), event.getY());
 						}
 					}
@@ -511,7 +553,7 @@ public class WorkflowEditor extends JGraph implements ScuflUIComponent
 				}
 			}
 		});
-		graphModel.attachToModel(model);
+		getScuflGraphModel().attachToModel(model);
 	}
 
 	/*
