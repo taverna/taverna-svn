@@ -23,6 +23,8 @@ public class BiomartProcessor extends Processor {
     static Map managerMap = new HashMap();
     // map of registry URL -> map of dsname -> dsconfig
     static Map configMap = new HashMap();
+    // map of registry URL -> RegistryDSConfigAdaptor
+    static Map registryMap = new HashMap();
     
     private BiomartConfigBean info;
     private String dataSourceName;
@@ -165,6 +167,8 @@ public class BiomartProcessor extends Processor {
 			System.out.println("Returning cached config and manager");
 			this.manager = (AdaptorManager)managerMap.get(info.registryURL);
 			this.config = (DatasetConfig)((Map)configMap.get(info.registryURL)).get(dataSourceName);
+			RegistryDSConfigAdaptor ra = (RegistryDSConfigAdaptor)registryMap.get(info.registryURL);
+			query.setAdaptor(ra);
 		    }
 		    else {
 			System.out.println("Generating config and manager");
@@ -173,6 +177,7 @@ public class BiomartProcessor extends Processor {
 			    config = null;
 			    RegistryDSConfigAdaptor ra = new RegistryDSConfigAdaptor(new URL(info.registryURL), false, false, true);
 			    query.setAdaptor(ra);
+			    registryMap.put(info.registryURL, ra);
 			    this.manager = new AdaptorManager(false);
 			    managerMap.put(info.registryURL, this.manager);
 			    Map configSetMap = new HashMap();

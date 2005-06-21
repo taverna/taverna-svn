@@ -25,9 +25,9 @@
 //      Created for Project :   MYGRID
 //      Dependencies        :
 //
-//      Last commit info    :   $Author: matskan $
-//                              $Date: 2005-04-05 16:01:07 $
-//                              $Revision: 1.35 $
+//      Last commit info    :   $Author: mereden $
+//                              $Date: 2005-06-21 13:03:54 $
+//                              $Revision: 1.36 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 
@@ -305,6 +305,7 @@ public class PortTask extends AbstractTask {
 	}
 	catch(Exception ex) {
 	    logger.error(ex);
+	    ex.printStackTrace();
 	    fail("Task " + getTaskId() + " in flow " + getFlow().getFlowId() + " failed.  " + ex.getMessage());
 	}
 	//System.out.println("Done : "+getScuflPort().getProcessor().getName()+"."+getScuflPort().getName());
