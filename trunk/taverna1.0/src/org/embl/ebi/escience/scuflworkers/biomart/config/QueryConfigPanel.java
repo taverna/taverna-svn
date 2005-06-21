@@ -40,6 +40,7 @@ public class QueryConfigPanel extends JPanel
 	    JTabbedPane attributes = new JTabbedPane();
 	    AttributePage[] atPages = config.getAttributePages();
 	    boolean foundValidPage = false;
+	    System.out.println("Found pages, adding valid ones");
 	    for (int i = 0; i < atPages.length; i++) {
 		if (skipAttributePage(atPages[i]) == false) {
 		    AttributePageEditor ape = new AttributePageEditor(query, atPages[i], theProcessor);
@@ -50,8 +51,10 @@ public class QueryConfigPanel extends JPanel
 		    }
 		}
 	    }
+	    System.out.println("Done");
 	    JTabbedPane filters = new JTabbedPane();
 	    FilterPage[] fPages = config.getFilterPages();
+	    System.out.println("Found filter pages");
 	    for (int i = 0; i < fPages.length; i++) {
 		if (fPages[i].getInternalName().equals("link_filters")) continue;
 		if (fPages[i].getHidden() != null && fPages[i].getHidden().equals("true")) continue;
@@ -101,9 +104,9 @@ public class QueryConfigPanel extends JPanel
 			//test for presence of sequence dataset
 			AttributeDescription seqDesc = (AttributeDescription) seqCol.getAttributeDescriptions().get(0);
 			String seqDataset = seqDesc.getInternalName().split("\\.")[0];
-			if (manager.getRootAdaptor().getNumDatasetConfigsByDataset(seqDataset) < 1) {
-			    skip = true;
-			}
+			//if (manager.getRootAdaptor().getNumDatasetConfigsByDataset(seqDataset) < 1) {
+			//    skip = true;
+			//}
 		    }
 		}
 		
@@ -123,9 +126,9 @@ public class QueryConfigPanel extends JPanel
 		    AttributeDescription firstAtt = (AttributeDescription) nonSeqGroup.getAttributeCollections()[0].getAttributeDescriptions().get(0);
 		    String dataset = firstAtt.getInternalName().split("\\.")[0];
 		    
-		    if (manager.getRootAdaptor().getNumDatasetConfigsByDataset(dataset) > 1) {
-			skip = true;
-		    }   
+		    //if (manager.getRootAdaptor().getNumDatasetConfigsByDataset(dataset) > 1) {
+		    //skip = true;
+		    //}   
 		}
 	    }
 	}

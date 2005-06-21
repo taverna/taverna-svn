@@ -18,7 +18,12 @@ import java.net.*;
  * @author Tom Oinn
  */
 public class BiomartProcessor extends Processor {
-
+    
+    // map of registry URL -> AdaptorManager
+    static Map managerMap = new HashMap();
+    // map of registry URL -> map of dsname -> dsconfig
+    static Map configMap = new HashMap();
+    
     private BiomartConfigBean info;
     private String dataSourceName;
     private Query query = null;
@@ -156,23 +161,40 @@ public class BiomartProcessor extends Processor {
 	    //							   "default");
 	    if (info.registryURL != null) {
 		try {
-		    config = null;
-		    RegistryDSConfigAdaptor ra = new RegistryDSConfigAdaptor(new URL(info.registryURL), false, false, true);
-		    query.setAdaptor(ra);
-		    this.manager = new AdaptorManager(false);
-		    // Find the appropriate config within the registry adaptor
-		    DSConfigAdaptor[] as = ra.getLeafAdaptors();
-		    for (int i = 0; i < as.length; i++) {
-			manager.add(as[i]);
-			String[] datasetNames = as[i].getDatasetNames(false);
-			for (int j = 0; j < datasetNames.length; j++) {
-			    if (datasetNames[j].equalsIgnoreCase(dataSourceName)) {
-				DatasetConfigIterator configs = as[i].getDatasetConfigsByDataset(datasetNames[j]);
-				while (configs.hasNext()) {
-				    DatasetConfig c = (DatasetConfig)configs.next();
-				    if (c.getInternalName().toLowerCase().equals("default")) {
-					config = c;
+		    if (managerMap.get(info.registryURL)!=null) {
+			System.out.println("Returning cached config and manager");
+			this.manager = (AdaptorManager)managerMap.get(info.registryURL);
+			this.config = (DatasetConfig)((Map)configMap.get(info.registryURL)).get(dataSourceName);
+		    }
+		    else {
+			System.out.println("Generating config and manager");
+			synchronized(managerMap) {
+			    // Not cached, must populate cache...
+			    config = null;
+			    RegistryDSConfigAdaptor ra = new RegistryDSConfigAdaptor(new URL(info.registryURL), false, false, true);
+			    query.setAdaptor(ra);
+			    this.manager = new AdaptorManager(false);
+			    managerMap.put(info.registryURL, this.manager);
+			    Map configSetMap = new HashMap();
+			    configMap.put(info.registryURL, configSetMap);
+			    // Find the appropriate config within the registry adaptor
+			    DSConfigAdaptor[] as = ra.getLeafAdaptors();
+			    for (int i = 0; i < as.length; i++) {
+				manager.add(as[i]);
+				String[] datasetNames = as[i].getDatasetNames(false);
+				for (int j = 0; j < datasetNames.length; j++) {
+				    DatasetConfigIterator configs = as[i].getDatasetConfigsByDataset(datasetNames[j]);
+				    while (configs.hasNext()) {
+					DatasetConfig c = (DatasetConfig)configs.next();
+					if (c.getInternalName().toLowerCase().equals("default") &&
+					    datasetNames[j].equalsIgnoreCase(dataSourceName)) {
+					    config = c;
+					}
+					if (c.getInternalName().toLowerCase().equals("default")) {
+					    configSetMap.put(datasetNames[j], c);
+					}
 				    }
+				    
 				}
 			    }
 			}
