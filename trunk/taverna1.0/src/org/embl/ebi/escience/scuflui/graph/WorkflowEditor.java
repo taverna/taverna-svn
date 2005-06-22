@@ -37,6 +37,7 @@ import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JMenu;
 import javax.swing.JPopupMenu;
 import javax.swing.JToggleButton;
+import javax.swing.UIManager;
 
 import org.embl.ebi.escience.scufl.InputPort;
 import org.embl.ebi.escience.scufl.Port;
@@ -61,10 +62,13 @@ import org.jdom.input.SAXBuilder;
 import org.jgraph.JGraph;
 import org.jgraph.event.GraphModelEvent;
 import org.jgraph.event.GraphModelListener;
+import org.jgraph.graph.CellHandle;
 import org.jgraph.graph.CellView;
 import org.jgraph.graph.DefaultCellViewFactory;
+import org.jgraph.graph.DefaultGraphModel;
 import org.jgraph.graph.EdgeView;
 import org.jgraph.graph.GraphConstants;
+import org.jgraph.graph.GraphContext;
 import org.jgraph.graph.GraphLayoutCache;
 import org.jgraph.graph.PortView;
 import org.jgraph.graph.VertexRenderer;
@@ -210,6 +214,18 @@ public class WorkflowEditor extends JGraph implements ScuflUIComponent
 						return null;
 
 					}
+
+					public CellHandle getHandle(GraphContext context)
+					{
+						return new EdgeHandle(this, context)
+						{
+							public void paint(Graphics g)
+							{
+								invalidate();
+								return;
+							}
+						};
+					}
 				};
 			}
 
@@ -258,36 +274,47 @@ public class WorkflowEditor extends JGraph implements ScuflUIComponent
 				Graphics2D g2d = (Graphics2D) g;
 				Paint oldPaint = g2d.getPaint();
 
-				g2d.setPaint(new GradientPaint(0, 0, getBackground(), getWidth(), getHeight(),
-						org.embl.ebi.escience.scuflui.ShadedLabel.halfShade(getBackground())));
-				g2d.fillRect(0, 0, getWidth(), getHeight());
-
-				if (progress > -1 && progress < 101)
+				if (!DefaultGraphModel.isGroup(getScuflGraphModel(), view.getCell()))
 				{
-					// progress is integer 0-100 where 0 is started, 100
-					// completed
-					int newWidth = ((getWidth() * progress) / 100);
-					int completedWidth = (getWidth() * (progress - workers)) / 100;
-					int remainingWidth = getWidth() - newWidth;
-					g2d.setPaint(new GradientPaint(0, 0, background3, getWidth(), getHeight(),
-							org.embl.ebi.escience.scuflui.ShadedLabel.halfShade(background3)));
-					g2d.fillRect(0, 0, newWidth, getHeight() / progressBarDivide);
-					g2d.setPaint(new GradientPaint(0, 0, background2, getWidth(), getHeight(),
-							org.embl.ebi.escience.scuflui.ShadedLabel.halfShade(background2)));
-					g2d.fillRect(newWidth, 0, remainingWidth, getHeight() / progressBarDivide);
-					if (completedWidth > 0)
+					g2d.setPaint(new GradientPaint(0, 0, getBackground(), getWidth(), getHeight(),
+							ShadedLabel.halfShade(getBackground())));
+					g2d.fillRect(0, 0, getWidth(), getHeight());
+
+					if (progress > -1 && progress < 101)
 					{
-						g2d.setPaint(new GradientPaint(0, 0, background4, getWidth(), getHeight(),
-								org.embl.ebi.escience.scuflui.ShadedLabel.halfShade(background4)));
-						g2d.fillRect(0, 0, completedWidth, getHeight() / progressBarDivide);
+						// progress is integer 0-100 where 0 is started, 100
+						// completed
+						int newWidth = ((getWidth() * progress) / 100);
+						int completedWidth = (getWidth() * (progress - workers)) / 100;
+						int remainingWidth = getWidth() - newWidth;
+						g2d.setPaint(new GradientPaint(0, 0, background3, getWidth(), getHeight(),
+								ShadedLabel.halfShade(background3)));
+						g2d.fillRect(0, 0, newWidth, getHeight() / progressBarDivide);
+						g2d.setPaint(new GradientPaint(0, 0, background2, getWidth(), getHeight(),
+								ShadedLabel.halfShade(background2)));
+						g2d.fillRect(newWidth, 0, remainingWidth, getHeight() / progressBarDivide);
+						if (completedWidth > 0)
+						{
+							g2d.setPaint(new GradientPaint(0, 0, background4, getWidth(),
+									getHeight(), ShadedLabel.halfShade(background4)));
+							g2d.fillRect(0, 0, completedWidth, getHeight() / progressBarDivide);
+						}
+					}
+					else if (progress == -1)
+					{
+						g2d.setPaint(new GradientPaint(0, 0, background3, getWidth(), getHeight(),
+								org.embl.ebi.escience.scuflui.ShadedLabel.halfShade(background3)));
+						g2d.fillRect(0, 0, getWidth(), getHeight() / progressBarDivide);
 					}
 				}
-				else if (progress == -1)
+
+				if (selected)
 				{
-					g2d.setPaint(new GradientPaint(0, 0, background3, getWidth(), getHeight(),
-							org.embl.ebi.escience.scuflui.ShadedLabel.halfShade(background3)));
-					g2d.fillRect(0, 0, getWidth(), getHeight() / progressBarDivide);
+					Color hl = getHighlightColor();
+					g2d.setPaint(new Color(hl.getRed(), hl.getGreen(), hl.getBlue(), 100));
+					g2d.fillRect(0, 0, getWidth(), getHeight());
 				}
+
 				g2d.setPaint(oldPaint);
 				super.paint(g);
 			}
@@ -359,10 +386,10 @@ public class WorkflowEditor extends JGraph implements ScuflUIComponent
 		setBendable(true);
 		setMoveable(false);
 		setSizeable(false);
-		setGridColor(Color.WHITE);
-		setLockedHandleColor(Color.BLUE);
-		setHighlightColor(Color.BLUE);
-		setBackground(Color.WHITE);
+		setGridVisible(false);
+		setHighlightColor(UIManager.getColor("Tree.selectionBackground"));
+		GraphConstants.SELECTION_STROKE = new BasicStroke(1, BasicStroke.CAP_ROUND,
+				BasicStroke.JOIN_ROUND);
 		addKeyListener(new KeyAdapter()
 		{
 			public void keyPressed(KeyEvent e)
@@ -503,9 +530,6 @@ public class WorkflowEditor extends JGraph implements ScuflUIComponent
 				}
 			}
 		});
-		GraphConstants.SELECTION_STROKE = new BasicStroke(2, BasicStroke.CAP_ROUND,
-				BasicStroke.JOIN_ROUND, 1, new float[] { 3, 6 }, 0);
-
 		new DropTarget(this, new DropTargetAdapter()
 		{
 			/*
@@ -553,6 +577,7 @@ public class WorkflowEditor extends JGraph implements ScuflUIComponent
 				}
 			}
 		});
+
 		getScuflGraphModel().attachToModel(model);
 	}
 
