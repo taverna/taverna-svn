@@ -22,7 +22,7 @@ import org.jgraph.graph.PortView;
 
 /**
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover </a>
- * @version $Revision: 1.27 $
+ * @version $Revision: 1.28 $
  * 
  */
 public class PositionLayout extends ModelSpanningTree
@@ -124,28 +124,6 @@ public class PositionLayout extends ModelSpanningTree
 		{
 			BoundingBox bounds = getBounds(node);
 			int dy = (int) ((y + (height - bounds.getHeight()) / 2) - bounds.getY());
-			// int dx = 0;
-			// Map attributes = getAttributes(node);
-			// Edge leftEdge = LayoutConstants.getLeftEdge(attributes);
-			// if(leftEdge == null)
-			// {
-			// if(bounds.getX() < X_SEPARATION)
-			// {
-			// dx = (int) (X_SEPARATION - bounds.getX());
-			// }
-			// }
-			// else
-			// {
-			// BoundingBox leftBounds = getBounds(getSource(leftEdge));
-			// double edgeLength = bounds.getCenterX() - leftBounds.getCenterX();
-			// double minimumEdgeLength = (bounds.getWidth() + leftBounds.getWidth()) / 2
-			// + X_SEPARATION;
-			// if(edgeLength < minimumEdgeLength)
-			// {
-			// dx = (int) (minimumEdgeLength - edgeLength);
-			// }
-			// }
-
 			if (dy != 0 /* && dx != 0 */)
 			{
 				bounds.translate(0, dy);

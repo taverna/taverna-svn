@@ -15,7 +15,7 @@ import java.util.Set;
 
 /**
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover </a>
- * @version $Revision: 1.24 $
+ * @version $Revision: 1.25 $
  */
 public abstract class GraphSpanningTree
 {
@@ -161,14 +161,14 @@ public abstract class GraphSpanningTree
 			while (edges.hasNext())
 			{
 				Object edge = edges.next();
-				if (edge != lastEdge && isTreeEdge(edge))
+				if (edge != lastEdge && isTreeEdge(edge) && !isRemoved(edge))
 				{
 					getSet(getNeighbour(node, edge), tailSet, edge);
 				}
 			}
 		}
 	}
-
+	
 	/**
 	 * @param node
 	 * @param edge

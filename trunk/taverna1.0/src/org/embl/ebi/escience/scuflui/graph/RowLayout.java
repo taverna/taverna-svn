@@ -25,7 +25,7 @@ import org.jgraph.graph.GraphModel;
  * update as the graph changes.
  * 
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover </a>
- * @version $Revision: 1.26 $
+ * @version $Revision: 1.27 $
  */
 public class RowLayout extends ModelSpanningTree
 {
@@ -68,10 +68,10 @@ public class RowLayout extends ModelSpanningTree
 			}
 		}
 
-		Object[] removed = change.getRemoved();		
+		Object[] removed = change.getRemoved();
 		if (removed != null)
 		{
-			//System.err.println(Arrays.asList(removed));
+			// System.err.println(Arrays.asList(removed));
 			for (int index = 0; index < removed.length; index++)
 			{
 				if (model.isEdge(removed[index]))
@@ -85,7 +85,7 @@ public class RowLayout extends ModelSpanningTree
 			}
 		}
 
-		Object[] inserted = change.getInserted();		
+		Object[] inserted = change.getInserted();
 		if (inserted != null)
 		{
 			for (int index = 0; index < inserted.length; index++)
@@ -205,7 +205,7 @@ public class RowLayout extends ModelSpanningTree
 	private void updateEdgeGraph(Object edge)
 	{
 		// System.err.println(this + ": Update " + edge);
-		assert isValid(edge): edge;
+		assert isValid(edge) : edge;
 		Object previousNode = getSource(edge);
 
 		int sourceRow = getRank(previousNode);
@@ -294,15 +294,18 @@ public class RowLayout extends ModelSpanningTree
 		Object previousNode = getSource(edge);
 		Object target = getTarget(edge);
 		Map attributes = getAttributes(edge);
-		List nodeChain = GraphConstants.getPoints(attributes);
-		for (int index = 1; index < nodeChain.size(); index++)
+		if (attributes != null)
 		{
-			Object currentNode = GraphUtilities.getRoot(model, nodeChain.get(index));
-			positionLayout.removeIntermediateNode(previousNode, currentNode, edge);
-			previousNode = currentNode;
-			if (currentNode != target)
+			List nodeChain = GraphConstants.getPoints(attributes);
+			for (int index = 1; index < nodeChain.size(); index++)
 			{
-				removeNode(currentNode);
+				Object currentNode = GraphUtilities.getRoot(model, nodeChain.get(index));
+				positionLayout.removeIntermediateNode(previousNode, currentNode, edge);
+				previousNode = currentNode;
+				if (currentNode != target)
+				{
+					removeNode(currentNode);
+				}
 			}
 		}
 	}
@@ -362,7 +365,7 @@ public class RowLayout extends ModelSpanningTree
 		while (edges.hasNext())
 		{
 			Object edge = edges.next();
-			if (!isTreeEdge(edge))
+			if (!isTreeEdge(edge) && !isRemoved(edge))
 			{
 				Object source = getSource(edge);
 				if (!set.contains(source) || !set.contains(getTarget(edge)))
