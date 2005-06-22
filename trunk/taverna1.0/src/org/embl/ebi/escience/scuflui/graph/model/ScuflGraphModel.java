@@ -3,14 +3,10 @@
  */
 package org.embl.ebi.escience.scuflui.graph.model;
 
-import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Graphics;
-import java.awt.Graphics2D;
 import java.awt.Rectangle;
-import java.awt.Stroke;
-import java.awt.geom.RoundRectangle2D;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -51,37 +47,10 @@ import org.jgraph.graph.ParentMap;
 /**
  * 
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover </a>
- * @version $Revision: 1.24 $
+ * @version $Revision: 1.25 $
  */
 public class ScuflGraphModel implements GraphModel, GraphModelListener, ScuflUIComponent
 {
-	private class DottyBorder extends LineBorder
-	{
-		/**
-		 * @param color
-		 */
-		public DottyBorder(Color color)
-		{
-			super(color);
-		}
-
-		public void paintBorder(Component c, Graphics g, int x, int y, int width, int height)
-		{
-			if (g instanceof Graphics2D)
-			{
-				Graphics2D graphics = (Graphics2D) g;
-				Stroke oldStroke = graphics.getStroke();
-				Color oldColor = graphics.getColor();
-				graphics.setStroke(new BasicStroke(thickness, BasicStroke.CAP_SQUARE,
-						BasicStroke.JOIN_MITER, 1, new float[] { 4, 6 }, 0));
-				graphics.setColor(lineColor);
-				graphics.draw(new RoundRectangle2D.Float(x, y, width, height, 4, 4));
-				graphics.setColor(oldColor);
-				graphics.setStroke(oldStroke);
-			}
-		}
-	}
-
 	private class RaisedBorder extends LineBorder
 	{
 		/**
@@ -231,29 +200,26 @@ public class ScuflGraphModel implements GraphModel, GraphModelListener, ScuflUIC
 			attributes.put(node, map);
 		}
 
+		GraphConstants.setValue(map, getValue(node));
 		if (node instanceof Processor)
 		{
 			Processor processor = (Processor) node;
 			if (processor == model.getWorkflowSourceProcessor())
 			{
-				// TODO Something
-				GraphConstants.setValue(map, "");
 				GraphConstants.setOpaque(map, true);
-				GraphConstants.setBorder(map, new TitledBorder(new DottyBorder(Color.GRAY),
-						"Workflow Inputs"));
+				GraphConstants.setBorder(map, new TitledBorder(new LineBorder(Color.GRAY),
+						"Inputs"));
 				GraphConstants.setEditable(map, false);
 			}
 			else if (processor == model.getWorkflowSinkProcessor())
 			{
-				GraphConstants.setValue(map, "");
 				GraphConstants.setOpaque(map, true);
-				GraphConstants.setBorder(map, new TitledBorder(new DottyBorder(Color.GRAY),
-						"Workflow Outputs"));
+				GraphConstants.setBorder(map, new TitledBorder(new LineBorder(Color.GRAY),
+						"Outputs"));
 				GraphConstants.setEditable(map, false);
 			}
 			else
 			{
-				GraphConstants.setValue(map, processor.getName());
 				GraphConstants.setBounds(map, new Rectangle(100, 20));
 				GraphConstants.setBackground(map, GraphColours.getColour(ProcessorHelper
 						.getPreferredColour(processor), Color.WHITE));
@@ -267,8 +233,6 @@ public class ScuflGraphModel implements GraphModel, GraphModelListener, ScuflUIC
 		{
 			if (isPortOnWorkflowEdge(node))
 			{
-				// Port acting as graph node, as opposed to port
-				GraphConstants.setValue(map, node.toString());
 				GraphConstants.setBounds(map, new Rectangle(100, 20));
 				if (node instanceof InputPort)
 				{
@@ -641,19 +605,16 @@ public class ScuflGraphModel implements GraphModel, GraphModelListener, ScuflUIC
 				Object value = GraphConstants.getValue(map);
 				if (value != null)
 				{
-					if (cell instanceof Processor)
+					Object result = valueForCellChanged(cell, value);
+					if(value.equals(result))
 					{
 						map.remove(GraphConstants.VALUE);
-						map.remove(GraphConstants.BOUNDS);
-						map.remove(GraphConstants.RESIZE);
-						if (map.isEmpty())
-						{
-							it.remove();
-						}
-						Processor processor = (Processor) cell;
-						processor.setName(value.toString());
 					}
-					// TODO Handle renaming of input/output ports?
+					else
+					{
+						GraphConstants.setValue(map, result);
+						GraphConstants.setResize(map, true);
+					}
 				}
 			}
 			if (!attributes.isEmpty())
@@ -908,5 +869,29 @@ public class ScuflGraphModel implements GraphModel, GraphModelListener, ScuflUIC
 				graphChanged(new GraphModelEvent(model, change));
 			}
 		}
+	}
+
+	public Object getValue(Object node)
+	{
+		if(node instanceof Processor)
+		{
+			return ((Processor)node).getName();
+		}
+		else if(node instanceof Port)
+		{
+			return ((Port)node).getName();
+		}
+		return "";
+	}
+
+	public Object valueForCellChanged(Object cell, Object newValue)
+	{
+		if (cell instanceof Processor)
+		{
+			Processor processor = (Processor) cell;
+			processor.setName(newValue.toString());
+			return processor.getName();
+		}
+		return null;
 	}
 }

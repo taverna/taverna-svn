@@ -15,7 +15,7 @@ import org.jgraph.graph.GraphModel;
  * COMMENT
  * 
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover </a>
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
 public class GraphUtilities
 {
@@ -107,7 +107,7 @@ public class GraphUtilities
 		while (it.hasNext())
 		{
 			Object edge = it.next();
-			if (!isGroup(model, edge))
+			if (!DefaultGraphModel.isGroup(model, edge))
 			{
 				Object target = model.getTarget(edge);
 				if (target == node || isParentOf(model, node, target))
@@ -130,7 +130,7 @@ public class GraphUtilities
 		while (it.hasNext())
 		{
 			Object edge = it.next();
-			if (!isGroup(model, edge))
+			if (!DefaultGraphModel.isGroup(model, edge))
 			{
 				Object source = model.getSource(edge);
 				Object parent = model.getParent(source);
@@ -139,21 +139,5 @@ public class GraphUtilities
 			}
 		}
 		return result;
-	}
-
-	/**
-	 * @param model
-	 * @param node
-	 * @return <code>true</code> if <code>node</code> contains other nodes, <code>false</code>
-	 *         if it only contains ports or is empty.
-	 */
-	public static boolean isGroup(GraphModel model, Object node)
-	{
-		for (int i = 0; i < model.getChildCount(node); i++)
-		{
-			if (!model.isPort(model.getChild(node, i)))
-				return true;
-		}
-		return false;
 	}
 }
