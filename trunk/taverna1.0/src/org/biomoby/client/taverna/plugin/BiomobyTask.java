@@ -19,7 +19,7 @@ import org.embl.ebi.escience.scufl.InputPort;
 import org.embl.ebi.escience.scufl.OutputPort;
 import org.embl.ebi.escience.scufl.Processor;
 import org.embl.ebi.escience.scuflworkers.ProcessorTaskWorker;
-import org.embl.ebi.escience.scuflworkers.biomoby.BiomobyProcessor;
+//import org.embl.ebi.escience.scuflworkers.biomoby.BiomobyProcessor;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.Namespace;
