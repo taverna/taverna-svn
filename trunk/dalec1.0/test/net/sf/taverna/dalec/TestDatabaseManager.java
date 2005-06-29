@@ -6,7 +6,7 @@ import org.biojava.bio.program.gff.GFFEntrySet;
 
 import java.io.File;
 
-import net.sf.taverna.dalec.exceptions.DatabaseAccessException;
+import net.sf.taverna.dalec.exceptions.UnableToAccessDatabaseException;
 
 /**
  * Test class for database manager
@@ -58,7 +58,7 @@ public class TestDatabaseManager
         {
             System.out.println("Test file 'null.gff' does not exist or is incorrect!");
         }
-        catch (DatabaseAccessException e)
+        catch (UnableToAccessDatabaseException e)
         {
             System.out.println("Unable to access DB");
         }

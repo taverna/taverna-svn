@@ -112,17 +112,17 @@
     <option name="HIDE_WARNINGS" value="false" />
   </component>
   <component name="FileEditorManager" split-orientation="vertical" split-proportion="0.5">
-    <first-group selected-file="file://$PROJECT_DIR$/src/net/sf/taverna/dalec/DatabaseManager.java">
+    <first-group selected-file="file://$PROJECT_DIR$/src/net/sf/taverna/dalec/exceptions/UnableToAccessDatabaseException.java">
       <entry file="file://$PROJECT_DIR$/src/net/sf/taverna/dalec/DalecManager.java" pinned="false">
         <provider selected="true" editor-type-id="text-editor">
-          <state line="45" column="50" selection-start="2107" selection-end="2107" vertical-scroll-proportion="0.23959647">
+          <state line="45" column="50" selection-start="2107" selection-end="2107" vertical-scroll-proportion="0.26243094">
             <folding />
           </state>
         </provider>
       </entry>
       <entry file="file://$PROJECT_DIR$/src/net/sf/taverna/dalec/DalecAnnotationSource.java" pinned="false">
         <provider selected="true" editor-type-id="text-editor">
-          <state line="33" column="13" selection-start="1556" selection-end="1556" vertical-scroll-proportion="-0.8032178">
+          <state line="33" column="13" selection-start="1556" selection-end="1556" vertical-scroll-proportion="-0.89640886">
             <folding>
               <element signature="imports" expanded="true" />
               <element signature="docComment;class#DalecAnnotationSource#0" expanded="false" />
@@ -134,7 +134,7 @@
       </entry>
       <entry file="file://$PROJECT_DIR$/src/net/sf/taverna/dalec/DatabaseManager.java" pinned="false">
         <provider selected="true" editor-type-id="text-editor">
-          <state line="105" column="92" selection-start="4526" selection-end="4526" vertical-scroll-proportion="1.6831683">
+          <state line="29" column="1" selection-start="1818" selection-end="1818" vertical-scroll-proportion="0.6809392">
             <folding>
               <element signature="imports" expanded="true" />
               <element signature="docComment;method#addNewResult#0;class#DatabaseManager#0" expanded="false" />
@@ -145,6 +145,13 @@
               <element signature="method#writeToFile#0;class#DatabaseManager#0" expanded="false" />
               <element signature="method#errorLogEntry#0;class#DatabaseManager#0" expanded="false" />
             </folding>
+          </state>
+        </provider>
+      </entry>
+      <entry file="file://$PROJECT_DIR$/src/net/sf/taverna/dalec/exceptions/UnableToAccessDatabaseException.java" pinned="false">
+        <provider selected="true" editor-type-id="text-editor">
+          <state line="7" column="13" selection-start="129" selection-end="129" vertical-scroll-proportion="0.16436464">
+            <folding />
           </state>
         </provider>
       </entry>
@@ -341,7 +348,7 @@
     <layout>
       <window_info id="CVS" active="false" anchor="bottom" auto_hide="false" internal_type="docked" type="docked" visible="false" weight="0.32941177" order="8" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="docked" type="docked" visible="false" weight="0.32941177" order="7" />
-      <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="docked" type="docked" visible="true" weight="0.19672132" order="0" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="docked" type="docked" visible="true" weight="0.06967213" order="0" />
       <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="docked" type="docked" visible="false" weight="0.32941177" order="1" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="docked" type="docked" visible="false" weight="0.25" order="1" />
       <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="docked" type="docked" visible="false" weight="0.32941177" order="8" />
@@ -350,7 +357,7 @@
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="docked" type="docked" visible="false" weight="0.25" order="1" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="docked" type="docked" visible="false" weight="0.36117646" order="2" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="docked" type="docked" visible="false" weight="0.25" order="2" />
-      <window_info id="CVS File View" active="false" anchor="right" auto_hide="false" internal_type="docked" type="docked" visible="false" weight="0.6303279" order="3" />
+      <window_info id="CVS File View" active="true" anchor="right" auto_hide="false" internal_type="docked" type="docked" visible="true" weight="0.6303279" order="3" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="docked" type="docked" visible="false" weight="0.4" order="4" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="sliding" type="sliding" visible="false" weight="0.4" order="0" />
       <window_info id="Web" active="false" anchor="left" auto_hide="false" internal_type="docked" type="docked" visible="false" weight="0.25" order="2" />
@@ -494,7 +501,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/net/sf/taverna/dalec/DalecAnnotationSource.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="33" column="13" selection-start="1556" selection-end="1556" vertical-scroll-proportion="-0.8032178">
+        <state line="33" column="13" selection-start="1556" selection-end="1556" vertical-scroll-proportion="-0.89640886">
           <folding>
             <element signature="imports" expanded="true" />
             <element signature="docComment;class#DalecAnnotationSource#0" expanded="false" />
@@ -504,32 +511,9 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/net/sf/taverna/dalec/DatabaseManager.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="105" column="92" selection-start="4526" selection-end="4526" vertical-scroll-proportion="1.6831683">
-          <folding>
-            <element signature="imports" expanded="true" />
-            <element signature="docComment;method#addNewResult#0;class#DatabaseManager#0" expanded="false" />
-            <element signature="docComment;method#fileExists#0;class#DatabaseManager#0" expanded="false" />
-            <element signature="method#fileExists#0;class#DatabaseManager#0" expanded="false" />
-            <element signature="method#getGFFEntry#0;class#DatabaseManager#0" expanded="false" />
-            <element signature="method#getPendingResults#0;class#DatabaseManager#0" expanded="false" />
-            <element signature="method#writeToFile#0;class#DatabaseManager#0" expanded="false" />
-            <element signature="method#errorLogEntry#0;class#DatabaseManager#0" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/net/sf/taverna/dalec/exceptions/DatabaseAccessException.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="7" column="19" selection-start="135" selection-end="135" vertical-scroll-proportion="0.15159236">
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/net/sf/taverna/dalec/DalecManager.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="45" column="50" selection-start="2107" selection-end="2107" vertical-scroll-proportion="0.23959647">
+        <state line="45" column="50" selection-start="2107" selection-end="2107" vertical-scroll-proportion="0.26243094">
           <folding />
         </state>
       </provider>
@@ -547,6 +531,29 @@
       <provider selected="true" editor-type-id="text-editor">
         <state line="15" column="13" selection-start="366" selection-end="366" vertical-scroll-proportion="-0.18935643">
           <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/net/sf/taverna/dalec/exceptions/UnableToAccessDatabaseException.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="7" column="13" selection-start="129" selection-end="129" vertical-scroll-proportion="0.16436464">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/net/sf/taverna/dalec/DatabaseManager.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="29" column="1" selection-start="1818" selection-end="1818" vertical-scroll-proportion="0.6809392">
+          <folding>
+            <element signature="imports" expanded="true" />
+            <element signature="docComment;method#addNewResult#0;class#DatabaseManager#0" expanded="false" />
+            <element signature="docComment;method#fileExists#0;class#DatabaseManager#0" expanded="false" />
+            <element signature="method#fileExists#0;class#DatabaseManager#0" expanded="false" />
+            <element signature="method#getGFFEntry#0;class#DatabaseManager#0" expanded="false" />
+            <element signature="method#getPendingResults#0;class#DatabaseManager#0" expanded="false" />
+            <element signature="method#writeToFile#0;class#DatabaseManager#0" expanded="false" />
+            <element signature="method#errorLogEntry#0;class#DatabaseManager#0" expanded="false" />
+          </folding>
         </state>
       </provider>
     </entry>

@@ -7,7 +7,7 @@ import org.biojava.bio.program.gff.GFFTools;
 import java.io.*;
 import java.util.*;
 
-import net.sf.taverna.dalec.exceptions.DatabaseAccessException;
+import net.sf.taverna.dalec.exceptions.UnableToAccessDatabaseException;
 
 /**
  * Files will be stored in this database as individual flat files, referenced by Filename in the format [String_ID].gff
@@ -103,7 +103,7 @@ public class DatabaseManager implements Runnable
         }
     }
 
-    public synchronized GFFEntrySet getGFFEntry(String seqID) throws DatabaseAccessException
+    public synchronized GFFEntrySet getGFFEntry(String seqID) throws UnableToAccessDatabaseException
     {
         try
         {
@@ -112,7 +112,7 @@ public class DatabaseManager implements Runnable
         }
         catch (Exception e)
         {
-            throw new DatabaseAccessException("Unable to read GFF file from database", e);
+            throw new UnableToAccessDatabaseException("Unable to read GFF file from database", e);
         }
     }
 
