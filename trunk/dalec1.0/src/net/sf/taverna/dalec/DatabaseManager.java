@@ -7,9 +7,22 @@ import org.biojava.bio.program.gff.GFFTools;
 import java.io.*;
 import java.util.*;
 
+import net.sf.taverna.dalec.exceptions.DatabaseAccessException;
+
 /**
  * Files will be stored in this database as individual flat files, referenced by Filename in the format [String_ID].gff
  * Files are kept in GFF format, requests to this database get back the record as a Biojava GFFRecord object.
+ * DatabaseManager is an implementation of runnable.  This means that an instance of DatabaseManager handles the
+ * submitting and retrieving of the data to the database, but can also be <code>run</code> to perform these actions
+ * automatically within a separate thread.  A client can either: <il>Call <code>getPendingResults()</code> to retrieve a
+ * list of all results yet to be written,</il> <il>Then call </code>writeToFile()</code> to write all pending results to
+ * the Database</il> Each method should be invoked in turn.  If a client is to use this "manual" method of writing
+ * results to the database, it should be considered that every workflow instance submits its results to DatabaseManager
+ * as they are generated, and that these results are retained in memory until written.  Alternatively, an instance of
+ * DatabaseManager can be run in a dedicated thread.  In this case, results are handled automatically, and are
+ * dynamically written to the database as they are generated.  If there are no pending results, DatabaseManager will
+ * wait until new results are submitted.  Otherwise, any instance of this class will run continuously whilst results
+ * need to be written to a file.
  *
  * @author Tony Burdett date: 20-Jun-2005
  */
@@ -28,13 +41,16 @@ public class DatabaseManager implements Runnable
     {
         try
         {
-            // continually grab results to an iterator and send to writeToFile
+            // continually run as long as thread isn't interrupted
             while (true)
             {
                 // wait if there are no results waiting to be written
                 while (resultsToWrite.isEmpty())
                 {
-                    resultsToWrite.wait();
+                    synchronized (resultsToWrite)
+                    {
+                        resultsToWrite.wait();
+                    }
                 }
                 // Otherwise, grab the pending results and write them to a file
                 writeToFile(getPendingResults());
@@ -42,8 +58,8 @@ public class DatabaseManager implements Runnable
         }
         catch (InterruptedException e)
         {
-            // TODO - exception handling in these cases
-
+            // Thread will normally run indefinitely unless interrupted,
+            // so if thread is interrupted, do nothing
         }
     }
 
@@ -56,6 +72,7 @@ public class DatabaseManager implements Runnable
      */
     public void addNewResult(GFFRecord result)
     {
+        //TODO - this assumes workflow output will be a single GFFRecord (entry set better???)
         synchronized (resultsToWrite)
         {
             resultsToWrite.add(result);
@@ -86,9 +103,17 @@ public class DatabaseManager implements Runnable
         }
     }
 
-    public synchronized GFFRecord getRecord(String seqID)
+    public synchronized GFFEntrySet getGFFEntry(String seqID) throws DatabaseAccessException
     {
-        return null;
+        try
+        {
+            GFFEntrySet gffe = GFFTools.readGFF(new File(dbLoc, seqID + ".gff"));
+            return gffe;
+        }
+        catch (Exception e)
+        {
+            throw new DatabaseAccessException("Unable to read GFF file from database", e);
+        }
     }
 
     public void addDatabaseListener(DatabaseListener listener)
@@ -96,24 +121,26 @@ public class DatabaseManager implements Runnable
         dbListeners.add(listener);
     }
 
-    private List getPendingResults()
+    public List getPendingResults()
     {
         synchronized (resultsToWrite)
         {
-            List results = new ArrayList();
-            results = resultsToWrite;
+            List results = new ArrayList(resultsToWrite);
             resultsToWrite.clear();
             return results;
         }
     }
 
-    private synchronized void writeToFile(List results)
+    public synchronized void writeToFile(List results)
     {
         Iterator it = results.iterator();
 
         // write the captured results to a file in GFF format, in the appropriate DB location
         while (it.hasNext())
         {
+            // TODO - check if this file already exists?
+            // Shouldn't be possible, as workflow wouldn't have beed executed if file existed already
+
             // Convert this GFF record into a GFF entry set ready to be written to file
             GFFRecord record = (GFFRecord) it.next();
             GFFEntrySet gffFileToWrite = new GFFEntrySet();
@@ -122,7 +149,8 @@ public class DatabaseManager implements Runnable
             // write the entry set to a file
             try
             {
-                GFFTools.writeGFF(dbLoc.getAbsolutePath() + record.getSeqName() + ".gff", gffFileToWrite);
+                if (!dbLoc.exists()) dbLoc.mkdirs();
+                GFFTools.writeGFF(new File(dbLoc, record.getSeqName() + ".gff"), gffFileToWrite);
                 // Once this file has been written, notify all listeners of a new entry
                 Iterator jt = dbListeners.iterator();
                 while (jt.hasNext())
@@ -147,6 +175,7 @@ public class DatabaseManager implements Runnable
 
         try
         {
+            if (!dbLoc.exists()) dbLoc.mkdirs();
             PrintWriter errLog = null;
             if (errFile.exists())
             {

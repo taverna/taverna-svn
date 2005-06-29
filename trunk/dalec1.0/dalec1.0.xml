@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<project name="dalec1.0" default="all">
+  
+  
+  <!-- Uncomment the following property if no tests compilation is needed -->
+  <!-- 
+  <property name="skip.tests" value="true"/>
+   -->
+  
+  <!-- Compiler options -->
+  
+  <property name="compiler.debug" value="on"/>
+  <property name="compiler.generate.no.warnings" value="off"/>
+  <property name="compiler.args" value=""/>
+  <property name="compiler.max.memory" value="128m"/>
+  <patternset id="compiler.excluded"/>
+  <patternset id="compiler.resources">
+    <include name="**/?*.properties"/>
+    <include name="**/?*.xml"/>
+    <include name="**/?*.gif"/>
+    <include name="**/?*.png"/>
+    <include name="**/?*.jpeg"/>
+    <include name="**/?*.jpg"/>
+    <include name="**/?*.html"/>
+    <include name="**/?*.dtd"/>
+    <include name="**/?*.tld"/>
+  </patternset>
+  <!-- JDK definitions -->
+  
+  <property name="jdk.home.java_version_1.5.0_03" value="C:/Program Files/Java/jdk1.5.0_03"/>
+  <path id="jdk.classpath.java_version_1.5.0_03">
+    <fileset dir="${jdk.home.java_version_1.5.0_03}">
+      <include name="jre/lib/charsets.jar"/>
+      <include name="jre/lib/deploy.jar"/>
+      <include name="jre/lib/javaws.jar"/>
+      <include name="jre/lib/jce.jar"/>
+      <include name="jre/lib/jsse.jar"/>
+      <include name="jre/lib/plugin.jar"/>
+      <include name="jre/lib/rt.jar"/>
+      <include name="jre/lib/ext/dnsns.jar"/>
+      <include name="jre/lib/ext/localedata.jar"/>
+      <include name="jre/lib/ext/servlet.jar"/>
+      <include name="jre/lib/ext/sunjce_provider.jar"/>
+      <include name="jre/lib/ext/sunpkcs11.jar"/>
+      <include name="../../../home/tony/documents/IdeaProjects/dalec1.0/lib/biojava-1.4pre1.jar"/>
+      <include name="../../../home/tony/documents/IdeaProjects/dalec1.0/lib/dazzle.jar"/>
+      <include name="../../../home/tony/documents/IdeaProjects/dalec1.0/lib/servlet.jar"/>
+      <include name="../../../home/tony/documents/IdeaProjects/dalec1.0/lib/taverna-1.2.jar"/>
+      <include name="../../../home/tony/documents/IdeaProjects/dalec1.0/lib/freefluo-taverna-exts.jar"/>
+      <include name="../../../home/tony/documents/IdeaProjects/dalec1.0/lib/freefluo.jar"/>
+      <include name="../../../home/tony/documents/IdeaProjects/dalec1.0/lib/jdom-1.0.jar"/>
+    </fileset>
+  </path>
+  
+  <property name="project.jdk.home" value="${jdk.home.java_version_1.5.0_03}"/>
+  <property name="project.jdk.classpath" value="jdk.classpath.java_version_1.5.0_03"/>
+  <!-- Project Libraries -->
+  <!-- Global Libraries -->
+  
+  
+  <dirname property="module.dalec1.0.basedir" file="${ant.file}"/>
+  
+  
+  <property name="module.jdk.home.dalec1.0" value="${project.jdk.home}"/>
+  <property name="module.jdk.classpath.dalec1.0" value="${project.jdk.classpath}"/>
+  
+  <property name="compiler.args.dalec1.0" value="${compiler.args}"/>
+  
+  <property name="dalec1.0.output.dir" value="${module.dalec1.0.basedir}/classes"/>
+  <property name="dalec1.0.testoutput.dir" value="${module.dalec1.0.basedir}/classes"/>
+  
+  <path id="dalec1.0.module.bootclasspath">
+    <!-- Paths to be included in compilation bootclasspath -->
+  </path>
+  
+  <path id="dalec1.0.module.classpath">
+    <path refid="${module.jdk.classpath.dalec1.0}"/>
+  </path>
+  
+  
+  <patternset id="excluded.from.module.dalec1.0"/>
+  
+  <patternset id="excluded.from.compilation.dalec1.0">
+    <patternset refid="excluded.from.module.dalec1.0"/>
+    <patternset refid="compiler.excluded"/>
+  </patternset>
+  
+  <path id="dalec1.0.module.sourcepath">
+    <dirset dir="${module.dalec1.0.basedir}">
+      <include name="src"/>
+    </dirset>
+  </path>
+  
+  <path id="dalec1.0.module.test.sourcepath">
+    <dirset dir="${module.dalec1.0.basedir}">
+      <include name="test"/>
+    </dirset>
+  </path>
+  
+  
+  <target name="compile.module.dalec1.0" depends="compile.module.dalec1.0.production,compile.module.dalec1.0.tests" description="compile module dalec1.0"/>
+  
+  <target name="compile.module.dalec1.0.production" description="compile module dalec1.0 production classes">
+    <mkdir dir="${dalec1.0.output.dir}"/>
+    <javac destdir="${dalec1.0.output.dir}" debug="${compiler.debug}" nowarn="${compiler.generate.no.warnings}" memoryMaximumSize="${compiler.max.memory}" fork="true" executable="${module.jdk.home.dalec1.0}/bin/javac">
+      <compilerarg line="${compiler.args.dalec1.0}"/>
+      <bootclasspath refid="dalec1.0.module.bootclasspath"/>
+      <classpath refid="dalec1.0.module.classpath"/>
+      <src refid="dalec1.0.module.sourcepath"/>
+      <patternset refid="excluded.from.compilation.dalec1.0"/>
+    </javac>
+    <copy todir="${dalec1.0.output.dir}">
+      <fileset dir="${module.dalec1.0.basedir}/src">
+        <patternset refid="compiler.resources"/>
+        <type type="file"/>
+        <patternset refid="excluded.from.compilation.dalec1.0"/>
+      </fileset>
+    </copy>
+  </target>
+  
+  <target name="compile.module.dalec1.0.tests" depends="compile.module.dalec1.0.production" description="compile module dalec1.0 test classes" unless="skip.tests">
+    <mkdir dir="${dalec1.0.testoutput.dir}"/>
+    <javac destdir="${dalec1.0.testoutput.dir}" debug="${compiler.debug}" nowarn="${compiler.generate.no.warnings}" memoryMaximumSize="${compiler.max.memory}" fork="true" executable="${module.jdk.home.dalec1.0}/bin/javac">
+      <compilerarg line="${compiler.args.dalec1.0}"/>
+      <classpath refid="dalec1.0.module.classpath"/>
+      <classpath location="${dalec1.0.output.dir}"/>
+      <src refid="dalec1.0.module.test.sourcepath"/>
+      <patternset refid="excluded.from.compilation.dalec1.0"/>
+    </javac>
+    <copy todir="${dalec1.0.testoutput.dir}">
+      <fileset dir="${module.dalec1.0.basedir}/test">
+        <patternset refid="compiler.resources"/>
+        <type type="file"/>
+        <patternset refid="excluded.from.compilation.dalec1.0"/>
+      </fileset>
+    </copy>
+  </target>
+  
+  <target name="clean.module.dalec1.0" description="cleanup module">
+    <delete dir="${dalec1.0.output.dir}"/>
+    <delete dir="${dalec1.0.testoutput.dir}"/>
+  </target>
+  
+  <target name="init" description="Build initialization">
+    <!-- Perform any build initialization in this target -->
+  </target>
+  
+  <target name="clean" depends="clean.module.dalec1.0" description="cleanup all"/>
+  
+  <target name="all" depends="init, clean, compile.module.dalec1.0" description="build all"/>
+</project>

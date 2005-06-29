@@ -49,6 +49,7 @@ public class DalecManager
             try
             {
                 XScuflParser.populate(new FileInputStream(xscuflFile), model, null);
+                System.out.println ("Model populated ok");
             }
             catch (XScuflFormatException e)
             {
@@ -95,11 +96,7 @@ public class DalecManager
             throw new WorkflowCreationException("A problem occurred whilst creating the workflow", e);
         }
 
-        // TODO - is this a necessary precaution, to have a dedicated thread to queue data outputs???
-        // then is permanently running to write these outputs to file; is it easier just to
-        // let listener handle this? ie. when workflow finished, call dbMan.writeToFile?
-
-        // Create a new DatabaseManager to handle the data outputs
+        // Create a new DatabaseManager to handle the data outputs - DatabaseManager is Runnable
         dbMan = new DatabaseManager(sequenceDBLocation);
 
         // register a new listener onto it, so we know when new entries are created
@@ -128,8 +125,8 @@ public class DalecManager
                 // Not concerned with this
             }
         });
-        // Now run a new thread for the databaseManager, so entries are created dynamically
-        (new Thread(dbMan)).run();
+        // Now start a new thread for the databaseManager, so entries are created dynamically
+        (new Thread(dbMan)).start();
 
         // create concurrent Threads so several copies of the workflow can be executed simultaneously
         // each thread compiles its own copy of workflow from 'model'
@@ -143,7 +140,7 @@ public class DalecManager
                     // Compile the workflow
                     try
                     {
-                        workflow = ((new FreefluoEnactorProxy()).compileWorkflow(model, null));
+                        workflow = (new FreefluoEnactorProxy()).compileWorkflow(model, null);
 
                         // Add WorkFlowStateListener so we can be notified of results
                         ((WorkflowInstanceImpl) workflow).addWorkflowStateListener(new WorkflowStateListener()
@@ -157,62 +154,67 @@ public class DalecManager
                                     Map output = workflow.getOutput();
                                     GFFRecord gffOut = (GFFRecord) output.get("GFFRecord");
                                     dbMan.addNewResult(gffOut);
-                                    // TODO - handle outputs correctly as GFFRecords?
+                                    // TODO - handle outputs as GFFRecords? or is GFFEntrySet better?
                                     // as this stands, unless a GFF record is the output from the workflow
                                     // and has the taverna output key value "GFFRecord", this will fall over!
                                 }
                             }
                         });
 
-                        // Now run forever as long as thread is not interrupted
-                        while (!Thread.currentThread().isInterrupted())
+                        // Now run forever indefinitely
+                        while (true)
                         {
-                            String jobID;
-                            DataThing job;
-                            Map inputs = new HashMap();
-
-                            // Continually request new jobs
-                            synchronized (jobList)
+                            try
                             {
-                                // Check to make sure there are pending jobs - otherwise just wait
-                                while (jobList.isEmpty())
-                                {
-                                    jobList.wait();
-                                }
+                                String jobID;
+                                DataThing job;
+                                Map inputs = new HashMap();
 
-                                jobID = (String) jobList.get(0);
-                                job = (DataThing) jobList.get(0);
-
-                                // So a new job is allocated - remove from the jobList and place into computeList
-                                jobList.remove(jobID);
-                                synchronized (computeList)
+                                // Continually request new jobs
+                                synchronized (jobList)
                                 {
-                                    computeList.add(jobID);
+                                    // Check to make sure there are pending jobs - otherwise just wait
+                                    while (jobList.isEmpty())
+                                    {
+                                        jobList.wait();
+                                    }
+
+                                    jobID = (String) jobList.get(0);
+                                    job = (DataThing) jobList.get(0);
+
+                                    // So a new job is allocated - remove from the jobList and place into computeList
+                                    jobList.remove(jobID);
+                                    synchronized (computeList)
+                                    {
+                                        computeList.add(jobID);
+                                    }
                                 }
+                                inputs.put(job, job);
+
+                                // do current job
+                                workflow.setInputs(inputs);
+                                workflow.run();
                             }
-                            inputs.put(job, job);
-
-                            // do current job
-                            workflow.setInputs(inputs);
-                            workflow.run();
+                            catch (InvalidInputException e)
+                            {
+                                // Log the fact that an InvalidInput was received - but then continue
+                            }
                         }
                         // TODO - recycling of workflows needed?
                         // Check this is ok; may not be possible to recycle workflows, in which case will need to
                         // recompile every time - and presumably add new listeners?
                     }
 
-                            // TODO - handle these exceptions...
+                    // Critical Exceptions
+                    // If can't submit a workflow, log the problem and interrupt this thread so it can be retried
                     catch (WorkflowSubmissionException e)
                     {
-                        // throw new WorkflowCreationException("Exception occurred within workflow submission", e);
-                    }
-                    catch (InvalidInputException e)
-                    {
-                        // throw new WorkflowCreationException("Exception occurred within workflow submission", e);
+
+                        Thread.currentThread().interrupt();
                     }
                     catch (InterruptedException e)
                     {
-                        // thread interrupted whilst waiting?
+
                     }
                 }
             };
@@ -221,7 +223,7 @@ public class DalecManager
         // So now all threads are created - so start them running
         for (int i = 0; i < workflowThreadPool.length; i++)
         {
-            workflowThreadPool[i].run();
+            workflowThreadPool[i].start();
         }
     }
 
@@ -288,5 +290,10 @@ public class DalecManager
                 return (jobList.contains(jobID) || computeList.contains(jobID));
             }
         }
+    }
+
+    private void logError (String probMessage, Throwable e)
+    {
+
     }
 }
