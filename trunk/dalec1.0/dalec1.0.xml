@@ -42,13 +42,6 @@
       <include name="jre/lib/ext/servlet.jar"/>
       <include name="jre/lib/ext/sunjce_provider.jar"/>
       <include name="jre/lib/ext/sunpkcs11.jar"/>
-      <include name="../../../home/tony/documents/IdeaProjects/dalec1.0/lib/biojava-1.4pre1.jar"/>
-      <include name="../../../home/tony/documents/IdeaProjects/dalec1.0/lib/dazzle.jar"/>
-      <include name="../../../home/tony/documents/IdeaProjects/dalec1.0/lib/servlet.jar"/>
-      <include name="../../../home/tony/documents/IdeaProjects/dalec1.0/lib/taverna-1.2.jar"/>
-      <include name="../../../home/tony/documents/IdeaProjects/dalec1.0/lib/freefluo-taverna-exts.jar"/>
-      <include name="../../../home/tony/documents/IdeaProjects/dalec1.0/lib/freefluo.jar"/>
-      <include name="../../../home/tony/documents/IdeaProjects/dalec1.0/lib/jdom-1.0.jar"/>
     </fileset>
   </path>
   
@@ -75,6 +68,13 @@
   
   <path id="dalec1.0.module.classpath">
     <path refid="${module.jdk.classpath.dalec1.0}"/>
+    <pathelement location="${module.dalec1.0.basedir}/lib/freefluo.jar"/>
+    <pathelement location="${module.dalec1.0.basedir}/lib/dazzle.jar"/>
+    <pathelement location="${module.dalec1.0.basedir}/lib/taverna-1.2.jar"/>
+    <pathelement location="${module.dalec1.0.basedir}/lib/jdom-1.0.jar"/>
+    <pathelement location="${module.dalec1.0.basedir}/lib/freefluo-taverna-exts.jar"/>
+    <pathelement location="${module.dalec1.0.basedir}/lib/servlet.jar"/>
+    <pathelement location="${module.dalec1.0.basedir}/lib/biojava-1.4pre1.jar"/>
   </path>
   
   

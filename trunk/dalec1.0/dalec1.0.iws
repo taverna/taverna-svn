@@ -112,17 +112,24 @@
     <option name="HIDE_WARNINGS" value="false" />
   </component>
   <component name="FileEditorManager" split-orientation="vertical" split-proportion="0.5">
-    <first-group selected-file="file://$PROJECT_DIR$/src/net/sf/taverna/dalec/exceptions/UnableToAccessDatabaseException.java">
+    <first-group selected-file="file://$PROJECT_DIR$/dalec1.0.xml">
       <entry file="file://$PROJECT_DIR$/src/net/sf/taverna/dalec/DalecManager.java" pinned="false">
         <provider selected="true" editor-type-id="text-editor">
-          <state line="45" column="50" selection-start="2107" selection-end="2107" vertical-scroll-proportion="0.26243094">
+          <state line="45" column="50" selection-start="2107" selection-end="2107" vertical-scroll-proportion="0.4857143">
+            <folding />
+          </state>
+        </provider>
+      </entry>
+      <entry file="file://$PROJECT_DIR$/dalec1.0.xml" pinned="false">
+        <provider selected="true" editor-type-id="text-editor">
+          <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
             <folding />
           </state>
         </provider>
       </entry>
       <entry file="file://$PROJECT_DIR$/src/net/sf/taverna/dalec/DalecAnnotationSource.java" pinned="false">
         <provider selected="true" editor-type-id="text-editor">
-          <state line="33" column="13" selection-start="1556" selection-end="1556" vertical-scroll-proportion="-0.89640886">
+          <state line="33" column="13" selection-start="1556" selection-end="1556" vertical-scroll-proportion="0.021656051">
             <folding>
               <element signature="imports" expanded="true" />
               <element signature="docComment;class#DalecAnnotationSource#0" expanded="false" />
@@ -134,7 +141,7 @@
       </entry>
       <entry file="file://$PROJECT_DIR$/src/net/sf/taverna/dalec/DatabaseManager.java" pinned="false">
         <provider selected="true" editor-type-id="text-editor">
-          <state line="29" column="1" selection-start="1818" selection-end="1818" vertical-scroll-proportion="0.6809392">
+          <state line="29" column="1" selection-start="1818" selection-end="1818" vertical-scroll-proportion="0.64025974">
             <folding>
               <element signature="imports" expanded="true" />
               <element signature="docComment;method#addNewResult#0;class#DatabaseManager#0" expanded="false" />
@@ -150,7 +157,7 @@
       </entry>
       <entry file="file://$PROJECT_DIR$/src/net/sf/taverna/dalec/exceptions/UnableToAccessDatabaseException.java" pinned="false">
         <provider selected="true" editor-type-id="text-editor">
-          <state line="7" column="13" selection-start="129" selection-end="129" vertical-scroll-proportion="0.16436464">
+          <state line="7" column="13" selection-start="129" selection-end="129" vertical-scroll-proportion="0.15159236">
             <folding />
           </state>
         </provider>
@@ -171,27 +178,27 @@
   <component name="J2EEProjectPane" />
   <component name="NamedScopeManager" />
   <component name="PackagesPane">
-    <expanded_node url="" module="dalec1.0" type="module" />
-    <expanded_node url="net.sf.taverna.dalec" module="dalec1.0" type="package" />
-    <expanded_node url="net.sf.taverna" module="dalec1.0" type="package" />
-    <expanded_node url="net.sf" module="dalec1.0" type="package" />
     <expanded_node url="net" module="dalec1.0" type="package" />
+    <expanded_node url="net.sf" module="dalec1.0" type="package" />
+    <expanded_node url="net.sf.taverna" module="dalec1.0" type="package" />
+    <expanded_node url="net.sf.taverna.dalec" module="dalec1.0" type="package" />
+    <expanded_node url="" module="dalec1.0" type="module" />
   </component>
   <component name="ProjectPane">
-    <expanded_node url="file://$PROJECT_DIR$/src/net/sf/taverna/dalec/exceptions" module="dalec1.0" type="directory" />
-    <expanded_node url="" module="dalec1.0" type="module" />
-    <expanded_node url="file://$PROJECT_DIR$/lib" module="dalec1.0" type="directory" />
+    <expanded_node url="file://$PROJECT_DIR$/test/net/sf/taverna" module="dalec1.0" type="directory" />
     <expanded_node url="file://$PROJECT_DIR$/src/net" module="dalec1.0" type="directory" />
     <expanded_node url="file://$PROJECT_DIR$/src/net/sf" module="dalec1.0" type="directory" />
     <expanded_node url="file://$PROJECT_DIR$/test/net" module="dalec1.0" type="directory" />
-    <expanded_node url="file://$PROJECT_DIR$" module="dalec1.0" type="directory" />
-    <expanded_node url="file://$PROJECT_DIR$/src/net/sf/taverna" module="dalec1.0" type="directory" />
-    <expanded_node url="file://$PROJECT_DIR$/test/net/sf/taverna" module="dalec1.0" type="directory" />
-    <expanded_node url="file://$PROJECT_DIR$/test/net/sf/taverna/dalec" module="dalec1.0" type="directory" />
-    <expanded_node url="file://$PROJECT_DIR$/src" module="dalec1.0" type="directory" />
-    <expanded_node url="file://$PROJECT_DIR$/src/net/sf/taverna/dalec" module="dalec1.0" type="directory" />
     <expanded_node url="file://$PROJECT_DIR$/test" module="dalec1.0" type="directory" />
+    <expanded_node url="file://$PROJECT_DIR$/src/net/sf/taverna/dalec/exceptions" module="dalec1.0" type="directory" />
+    <expanded_node url="file://$PROJECT_DIR$" module="dalec1.0" type="directory" />
+    <expanded_node url="file://$PROJECT_DIR$/src/net/sf/taverna/dalec" module="dalec1.0" type="directory" />
     <expanded_node url="file://$PROJECT_DIR$/test/net/sf" module="dalec1.0" type="directory" />
+    <expanded_node url="" module="dalec1.0" type="module" />
+    <expanded_node url="file://$PROJECT_DIR$/test/net/sf/taverna/dalec" module="dalec1.0" type="directory" />
+    <expanded_node url="file://$PROJECT_DIR$/src/net/sf/taverna" module="dalec1.0" type="directory" />
+    <expanded_node url="file://$PROJECT_DIR$/src" module="dalec1.0" type="directory" />
+    <expanded_node url="file://$PROJECT_DIR$/lib" module="dalec1.0" type="directory" />
   </component>
   <component name="ProjectView">
     <navigator currentView="ProjectPane" splitterProportion="0.5">
@@ -227,7 +234,7 @@
     <property name="vcs_file_view_treeWidth1" value="135" />
     <property name="GenerateAntBuildDialog.enableUiFormCompile" value="false" />
     <property name="vcs_file_view_flatOrder2" value="2" />
-    <property name="GenerateAntBuildDialog.backupFiles" value="true" />
+    <property name="GenerateAntBuildDialog.backupFiles" value="false" />
     <property name="vcs_file_view_treeWidth4" value="139" />
     <property name="GenerateAntBuildDialog.generateSingleFile" value="true" />
     <property name="vcs_file_view_treeOrder2" value="2" />
@@ -240,6 +247,30 @@
   </component>
   <component name="RunManager">
     <activeType name="Application" />
+    <configuration selected="false" default="true" type="Application" factoryName="Application">
+      <option name="MAIN_CLASS_NAME" />
+      <option name="VM_PARAMETERS" />
+      <option name="PROGRAM_PARAMETERS" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <module name="" />
+    </configuration>
+    <configuration selected="false" default="true" type="Applet" factoryName="Applet">
+      <module name="" />
+      <option name="MAIN_CLASS_NAME" />
+      <option name="HTML_FILE_NAME" />
+      <option name="HTML_USED" value="false" />
+      <option name="WIDTH" value="400" />
+      <option name="HEIGHT" value="300" />
+      <option name="POLICY_FILE" value="$APPLICATION_HOME_DIR$/bin/appletviewer.policy" />
+      <option name="VM_PARAMETERS" />
+    </configuration>
+    <configuration selected="false" default="true" type="Remote" factoryName="Remote">
+      <option name="USE_SOCKET_TRANSPORT" value="true" />
+      <option name="SERVER_MODE" value="false" />
+      <option name="SHMEM_ADDRESS" value="javadebug" />
+      <option name="HOST" value="localhost" />
+      <option name="PORT" value="5005" />
+    </configuration>
     <configuration selected="false" default="true" type="JUnit" factoryName="JUnit">
       <module name="" />
       <option name="PACKAGE_NAME" />
@@ -253,30 +284,6 @@
       <option name="TEST_SEARCH_SCOPE">
         <value defaultName="wholeProject" />
       </option>
-    </configuration>
-    <configuration selected="false" default="true" type="Application" factoryName="Application">
-      <option name="MAIN_CLASS_NAME" />
-      <option name="VM_PARAMETERS" />
-      <option name="PROGRAM_PARAMETERS" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
-      <module name="" />
-    </configuration>
-    <configuration selected="false" default="true" type="Remote" factoryName="Remote">
-      <option name="USE_SOCKET_TRANSPORT" value="true" />
-      <option name="SERVER_MODE" value="false" />
-      <option name="SHMEM_ADDRESS" value="javadebug" />
-      <option name="HOST" value="localhost" />
-      <option name="PORT" value="5005" />
-    </configuration>
-    <configuration selected="false" default="true" type="Applet" factoryName="Applet">
-      <module name="" />
-      <option name="MAIN_CLASS_NAME" />
-      <option name="HTML_FILE_NAME" />
-      <option name="HTML_USED" value="false" />
-      <option name="WIDTH" value="400" />
-      <option name="HEIGHT" value="300" />
-      <option name="POLICY_FILE" value="$APPLICATION_HOME_DIR$/bin/appletviewer.policy" />
-      <option name="VM_PARAMETERS" />
     </configuration>
     <configuration selected="false" default="false" name="TestDBMan" type="Application" factoryName="Application">
       <option name="MAIN_CLASS_NAME" value="net.sf.taverna.dalec.TestDatabaseManager" />
@@ -348,7 +355,7 @@
     <layout>
       <window_info id="CVS" active="false" anchor="bottom" auto_hide="false" internal_type="docked" type="docked" visible="false" weight="0.32941177" order="8" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="docked" type="docked" visible="false" weight="0.32941177" order="7" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="docked" type="docked" visible="true" weight="0.06967213" order="0" />
+      <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="docked" type="docked" visible="true" weight="0.2680328" order="0" />
       <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="docked" type="docked" visible="false" weight="0.32941177" order="1" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="docked" type="docked" visible="false" weight="0.25" order="1" />
       <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="docked" type="docked" visible="false" weight="0.32941177" order="8" />
@@ -357,7 +364,7 @@
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="docked" type="docked" visible="false" weight="0.25" order="1" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="docked" type="docked" visible="false" weight="0.36117646" order="2" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="docked" type="docked" visible="false" weight="0.25" order="2" />
-      <window_info id="CVS File View" active="true" anchor="right" auto_hide="false" internal_type="docked" type="docked" visible="true" weight="0.6303279" order="3" />
+      <window_info id="CVS File View" active="false" anchor="right" auto_hide="false" internal_type="docked" type="docked" visible="false" weight="0.6303279" order="3" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="docked" type="docked" visible="false" weight="0.4" order="4" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="sliding" type="sliding" visible="false" weight="0.4" order="0" />
       <window_info id="Web" active="false" anchor="left" auto_hide="false" internal_type="docked" type="docked" visible="false" weight="0.25" order="2" />
@@ -432,6 +439,14 @@
   <component name="antWorkspaceConfiguration">
     <option name="IS_AUTOSCROLL_TO_SOURCE" value="false" />
     <option name="FILTER_TARGETS" value="false" />
+    <buildFile url="file://$PROJECT_DIR$/dalec1.0.xml">
+      <antCommandLine value="" />
+      <runInBackground value="false" />
+      <targetFilters />
+      <treeView value="false" />
+      <verbose value="true" />
+      <viewClosedWhenNoErrors value="false" />
+    </buildFile>
   </component>
   <component name="editorHistoryManager">
     <entry file="file://$PROJECT_DIR$/test/net/sf/taverna/dalec/package.html">
@@ -483,38 +498,12 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/dalec1.0.xml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="-2.3442624">
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/test/net/sf/taverna/dalec/TestDalecAnnotationSource.java">
       <provider selected="true" editor-type-id="text-editor">
         <state line="31" column="0" selection-start="610" selection-end="610" vertical-scroll-proportion="0.6522277">
           <folding>
             <element signature="imports" expanded="true" />
           </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/net/sf/taverna/dalec/DalecAnnotationSource.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="33" column="13" selection-start="1556" selection-end="1556" vertical-scroll-proportion="-0.89640886">
-          <folding>
-            <element signature="imports" expanded="true" />
-            <element signature="docComment;class#DalecAnnotationSource#0" expanded="false" />
-            <element signature="docComment;method#setXScuflFile#0;class#DalecAnnotationSource#0" expanded="false" />
-            <element signature="docComment;method#setSequenceDBLocation#0;class#DalecAnnotationSource#0" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/net/sf/taverna/dalec/DalecManager.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="45" column="50" selection-start="2107" selection-end="2107" vertical-scroll-proportion="0.26243094">
-          <folding />
         </state>
       </provider>
     </entry>
@@ -534,16 +523,21 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/net/sf/taverna/dalec/exceptions/UnableToAccessDatabaseException.java">
+    <entry file="file://$PROJECT_DIR$/src/net/sf/taverna/dalec/DalecAnnotationSource.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="7" column="13" selection-start="129" selection-end="129" vertical-scroll-proportion="0.16436464">
-          <folding />
+        <state line="33" column="13" selection-start="1556" selection-end="1556" vertical-scroll-proportion="0.021656051">
+          <folding>
+            <element signature="imports" expanded="true" />
+            <element signature="docComment;class#DalecAnnotationSource#0" expanded="false" />
+            <element signature="docComment;method#setXScuflFile#0;class#DalecAnnotationSource#0" expanded="false" />
+            <element signature="docComment;method#setSequenceDBLocation#0;class#DalecAnnotationSource#0" expanded="false" />
+          </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/net/sf/taverna/dalec/DatabaseManager.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="29" column="1" selection-start="1818" selection-end="1818" vertical-scroll-proportion="0.6809392">
+        <state line="29" column="1" selection-start="1818" selection-end="1818" vertical-scroll-proportion="0.64025974">
           <folding>
             <element signature="imports" expanded="true" />
             <element signature="docComment;method#addNewResult#0;class#DatabaseManager#0" expanded="false" />
@@ -554,6 +548,27 @@
             <element signature="method#writeToFile#0;class#DatabaseManager#0" expanded="false" />
             <element signature="method#errorLogEntry#0;class#DatabaseManager#0" expanded="false" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/net/sf/taverna/dalec/exceptions/UnableToAccessDatabaseException.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="7" column="13" selection-start="129" selection-end="129" vertical-scroll-proportion="0.15159236">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/dalec1.0.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/net/sf/taverna/dalec/DalecManager.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="45" column="50" selection-start="2107" selection-end="2107" vertical-scroll-proportion="0.4857143">
+          <folding />
         </state>
       </provider>
     </entry>
