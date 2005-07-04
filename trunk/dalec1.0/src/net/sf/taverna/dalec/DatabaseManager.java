@@ -10,31 +10,41 @@ import java.util.*;
 import net.sf.taverna.dalec.exceptions.UnableToAccessDatabaseException;
 
 /**
- * Files will be stored in this database as individual flat files, referenced by Filename in the format [String_ID].gff
+ * Files will be stored in this database as individual flat files, referenced by Filename in the format $STRING_ID$.gff
  * Files are kept in GFF format, requests to this database get back the record as a Biojava GFFRecord object.
  * DatabaseManager is an implementation of runnable.  This means that an instance of DatabaseManager handles the
  * submitting and retrieving of the data to the database, but can also be <code>run</code> to perform these actions
- * automatically within a separate thread.  A client can either: <il>Call <code>getPendingResults()</code> to retrieve a
- * list of all results yet to be written,</il> <il>Then call </code>writeToFile()</code> to write all pending results to
- * the Database</il> Each method should be invoked in turn.  If a client is to use this "manual" method of writing
- * results to the database, it should be considered that every workflow instance submits its results to DatabaseManager
- * as they are generated, and that these results are retained in memory until written.  Alternatively, an instance of
- * DatabaseManager can be run in a dedicated thread.  In this case, results are handled automatically, and are
- * dynamically written to the database as they are generated.  If there are no pending results, DatabaseManager will
- * wait until new results are submitted.  Otherwise, any instance of this class will run continuously whilst results
- * need to be written to a file.
+ * automatically within a separate thread.  One file per sequence is held within the database.
+ * <p/>
+ * A client can either: <il>Call <code>getPendingResults()</code> to retrieve a list of all results yet to be
+ * written,</il> <il>Then call </code>writeToFile()</code> to write all pending results to the Database</il> Each method
+ * should be invoked in turn.
+ * <p/>
+ * If a client is to use this "manual" method of writing results to the database, it should be considered that every
+ * workflow instance submits its results to DatabaseManager as they are generated, and that these results are retained
+ * in memory until written.  Alternatively, an instance of DatabaseManager can be run in a dedicated thread.  In this
+ * case, results are handled automatically, and are dynamically written to the database as they are generated.  If there
+ * are no pending results, DatabaseManager will wait until new results are submitted.  Otherwise, any instance of this
+ * class will run continuously whilst results need to be written to a file.
  *
  * @author Tony Burdett date: 20-Jun-2005
  */
 public class DatabaseManager implements Runnable
 {
     private File dbLoc;
+    private boolean termRequest = false;
     private List resultsToWrite = new ArrayList();
     private List dbListeners = new ArrayList();
 
+    /**
+     * Constructor for DatabaseManager.  Simply creates a database home directory if it doesn't already exist.
+     *
+     * @param databaseLocation
+     */
     public DatabaseManager(File databaseLocation)
     {
         this.dbLoc = databaseLocation;
+        if (!dbLoc.exists()) dbLoc.mkdirs();
     }
 
     public void run()
@@ -58,9 +68,26 @@ public class DatabaseManager implements Runnable
         }
         catch (InterruptedException e)
         {
-            // Thread will normally run indefinitely unless interrupted,
-            // so if thread is interrupted, do nothing
+            // Thread will normally run indefinitely unless interrupted
+
+            // It is possible to request interruption of this DatabaseManager by calling haltActivity
+            if (termRequest)
+            {
+                // Thread has been stopped on request, so do nothing except set termRequest back to false;
+                termRequest = false;
+            }
+            else
+            {
+                // Some other scenario has caused this thread to terminate, attempt to restart?
+                DalecManager.logError(dbLoc, "Database was interrupted abnormally whilst running", e);
+            }
         }
+    }
+
+    public synchronized void haltActivity()
+    {
+        termRequest = true;
+        Thread.currentThread().interrupt();
     }
 
     /**
@@ -72,7 +99,7 @@ public class DatabaseManager implements Runnable
      */
     public void addNewResult(GFFRecord result)
     {
-        //TODO - this assumes workflow output will be a single GFFRecord (entry set better???)
+        //TODO - this assumes workflow output will be a single GFFRecord (entry set better???) - might need to parse workflow output
         synchronized (resultsToWrite)
         {
             resultsToWrite.add(result);
@@ -103,6 +130,15 @@ public class DatabaseManager implements Runnable
         }
     }
 
+    /**
+     * This method returns the Biojava object <code>GFFEntrySet</code> represented by this GFF file within the database.
+     * Calling classes should handle the extraction of sequence or annotation data from the <oode>GFFEntrySet</code>
+     *
+     * @param seqID
+     * @return GFFEntrySet the data held within the GFF file in biojava <code>GFFEntrySet</code> form
+     * @throws UnableToAccessDatabaseException
+     *
+     */
     public synchronized GFFEntrySet getGFFEntry(String seqID) throws UnableToAccessDatabaseException
     {
         try
@@ -116,11 +152,33 @@ public class DatabaseManager implements Runnable
         }
     }
 
+    /**
+     * Add a <code>DatabaseListener</code> to this database.  There is no limit on the number of listeners which can be
+     * registered to one database.
+     *
+     * @param listener a DatabaseListener
+     */
     public void addDatabaseListener(DatabaseListener listener)
     {
         dbListeners.add(listener);
     }
 
+    /**
+     * Returns a list of <code>DatabaseListeners</code> registered to this DatabaseManager
+     *
+     * @return
+     */
+    public List getDatabaseListener()
+    {
+        return dbListeners;
+    }
+
+    /**
+     * Returns a List of biojava <code>GFFRecords</code> rwepresenting all those records which have <i>yet to</i> be
+     * written to the database - they are held in an in-memory cache until they are written to disk.
+     *
+     * @return List pending results - those which have not yet been written to disk.
+     */
     public List getPendingResults()
     {
         synchronized (resultsToWrite)
@@ -131,6 +189,24 @@ public class DatabaseManager implements Runnable
         }
     }
 
+    /**
+     * Returns a file representing the path to the home directory of the database
+     *
+     * @return File Database Location
+     */
+    public File getDatabaseLocation()
+    {
+        return dbLoc;
+    }
+
+    /**
+     * This method writes all pending results (ie. those which are returned by calling <code>getPendingResults</code>)
+     * to disk.  This would normally be called automatically by the run method of an instance of this class, provided it
+     * has been Thread.start() has been called.  If not, or if this approach is not required, this method can be called
+     * manually.
+     *
+     * @param results A list of results which should be written to disk
+     */
     public synchronized void writeToFile(List results)
     {
         Iterator it = results.iterator();
@@ -149,7 +225,6 @@ public class DatabaseManager implements Runnable
             // write the entry set to a file
             try
             {
-                if (!dbLoc.exists()) dbLoc.mkdirs();
                 GFFTools.writeGFF(new File(dbLoc, record.getSeqName() + ".gff"), gffFileToWrite);
                 // Once this file has been written, notify all listeners of a new entry
                 Iterator jt = dbListeners.iterator();
@@ -160,40 +235,13 @@ public class DatabaseManager implements Runnable
             }
             catch (IOException e)
             {
-                // write an errorLogEntry if IO error - then continue
-                errorLogEntry(record.getSeqName(), e);
+                // notify listener that an entry failed as IO exception occured, then continue
+                Iterator jt = dbListeners.iterator();
+                while (jt.hasNext())
+                {
+                    ((DatabaseListener) jt.next()).databaseEntryFailed(record.getSeqName(), e);
+                }
             }
-        }
-    }
-
-    private synchronized void errorLogEntry(String seqID, Throwable e)
-    {
-        Calendar cal = new GregorianCalendar();
-        String date = (cal.get(Calendar.DAY_OF_MONTH) + "-" + (1 + cal.get(Calendar.MONTH)) + "-" + cal.get(Calendar.YEAR));
-
-        File errFile = new File(dbLoc, "." + date);
-
-        try
-        {
-            if (!dbLoc.exists()) dbLoc.mkdirs();
-            PrintWriter errLog = null;
-            if (errFile.exists())
-            {
-                errLog = new PrintWriter(new BufferedWriter(new FileWriter(errFile, true)));
-            }
-            else
-            {
-                errLog = new PrintWriter(new BufferedWriter(new FileWriter(errFile)));
-            }
-            errLog.println("**********Start of log entry**********");
-            errLog.println("Error occurred whilst processing sequence " + seqID);
-            e.printStackTrace(errLog);
-            errLog.println(e.getCause());
-            errLog.println("**********End of log entry**********");
-        }
-        catch (IOException e1)
-        {
-            e1.printStackTrace();
         }
     }
 }

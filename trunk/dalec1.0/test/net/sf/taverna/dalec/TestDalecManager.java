@@ -2,35 +2,54 @@ package net.sf.taverna.dalec;
 
 import net.sf.taverna.dalec.exceptions.WorkflowCreationException;
 import net.sf.taverna.dalec.exceptions.WaitWhileJobComputedException;
+import net.sf.taverna.dalec.exceptions.UnableToAccessDatabaseException;
 
 import java.io.File;
+
+import junit.framework.TestCase;
 
 /**
  * Javadocs go here.
  *
  * @author Tony Burdett date: 24-Jun-2005
  */
-public class TestDalecManager
+public class TestDalecManager extends TestCase
 {
-    public static void main(String[] args)
+    public DalecManager davrosCreate() throws WorkflowCreationException
     {
-        File xsFile = new File ("C:\\home\\tony\\documents\\dalec1.0\\workflow.xml");
+        File xsFile = new File("C:\\home\\tony\\documents\\dalec1.0\\workflow.xml");
 
         // Test constructor for Dalec Manager by creating a test workflow
         DalecManager davros = null;
+        davros = new DalecManager(xsFile, new File("C:\\home\\tony\\documents\\dalec1.0\\db"));
+        return davros;
+    }
+
+    public void testDavrosCreation()
+    {
+        DalecManager davros = null;
         try
         {
-            davros = new DalecManager(xsFile, new File ("C:\\home\\tony\\documents\\dalec1.0\\db"));
+            davros = davrosCreate();
         }
         catch (WorkflowCreationException e)
         {
-            System.out.println (e.getMessage());
-            System.out.println ("Caused by: " + e.getCause().toString());
-            e.getCause().printStackTrace();
+            // A workflow exception
         }
+        assertFalse(davros == null);
+    }
 
-        // Request a sequence - three scenarios are existing sequence, brand new sequence or resubmission of a sequence
-
+    public void testSequenceRequest()
+    {
+        DalecManager davros = null;
+        try
+        {
+            davros = davrosCreate();
+        }
+        catch (WorkflowCreationException e)
+        {
+            // A workflow exception
+        }
         // Request existing sequence
         try
         {
@@ -40,5 +59,14 @@ public class TestDalecManager
         {
             System.out.println ("This sequence is already being calculated");
         }
+        catch (UnableToAccessDatabaseException e)
+        {
+            System.out.println ("Unable to acess database");
+        }
+    }
+
+    public void testErrorLogging ()
+    {
+        DalecManager.logError(new File("C:\\home\\tony\\documents\\dalec1.0\\outputTest\\db"), "testSequence", new UnableToAccessDatabaseException());
     }
 }

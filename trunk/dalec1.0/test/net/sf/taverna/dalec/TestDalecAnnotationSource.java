@@ -8,25 +8,42 @@ import java.util.NoSuchElementException;
 import java.util.Set;
 import java.io.File;
 
+import junit.framework.TestCase;
+
 /**
  * Javadocs go here.
  *
  * @author Tony Burdett date: 28-Jun-2005
  */
-public class TestDalecAnnotationSource
+public class TestDalecAnnotationSource extends TestCase
 {
-    public static void main (String [] args)
+    public void testMapMasterSet ()
     {
-        // Test setMapMaster
 
-        // Test getMapMaster
+    }
 
-        // Test setXScuflFile
+    public void testMapMasterGet ()
+    {
 
-        // Test setSequenceDBLocation
+    }
 
-        // Test init
+    public void testXScuflFileSet ()
+    {
 
-        // Test getSequence
+    }
+
+    public void testSequenceDBLocationSet ()
+    {
+
+    }
+
+    public void testInit ()
+    {
+
+    }
+
+    public void testGetSequence ()
+    {
+
     }
 }

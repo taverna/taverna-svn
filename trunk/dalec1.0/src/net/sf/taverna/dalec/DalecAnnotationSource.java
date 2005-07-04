@@ -10,6 +10,7 @@ import java.util.Set;
 
 import net.sf.taverna.dalec.exceptions.WorkflowCreationException;
 import net.sf.taverna.dalec.exceptions.WaitWhileJobComputedException;
+import net.sf.taverna.dalec.exceptions.UnableToAccessDatabaseException;
 
 import javax.servlet.ServletContext;
 
@@ -19,15 +20,18 @@ import javax.servlet.ServletContext;
  * <p/>
  * <h3>Dalec Property Requirements</h3>
  * <p/>
- * Importantly for Dalec, the properties  specified in <code>dazzlecfg.xml</code>  should include: <li>The location of
- * the <code>.XScufl</code> format file used to construct the annotation workflow, and</li> <li>a location in which the
- * Dalec database should store its results.</li>
+ * Importantly for Dalec, the properties specified in <code>dazzlecfg.xml</code>  should include: <ul><li>The location
+ * of the <code>.XScufl</code> format file used to construct the annotation workflow, and</li> <li>a location in which
+ * the Dalec database should store its results.</li></ul>
  * <p/>
  * Note that, if the specified directory for the Dalec database does not exist, it will be created by Dalec.  Care
  * should be taken when setting this property, as large quantities of data could potentially be written to disk - a
- * single GFF format file record is stored for every query submitted to Dalec.  If you intend to permanently deploy
- * Dalec within a DAS server, adequate disk space will be needed to store the acquired results over time.
+ * single GFF format file record is stored for every sequence query submitted to Dalec.  If you intend to permanently
+ * deploy Dalec within a DAS server, ensure adequate disk space will be available and that write permissions are
+ * sufficient.
  * <p/>
+ * Once all properties are set and the <code>init()</code> method is called, an instance of DalecManager will be created
+ * ready to annotate submitted requests.
  *
  * @author Tony Burdett Date: 15-Jun-2005 Time: 10:58:08
  */
@@ -49,9 +53,8 @@ public class DalecAnnotationSource extends AbstractDataSource
         }
         catch (WorkflowCreationException e)
         {
-            throw new DataSourceException(e, "Unable to create workflow");
-
-            // TODO - some sensible response as to why this failed should go here
+            DalecManager.logError(seqDB, "workflow creation", e);
+            throw new DataSourceException(e, "Unable to create workflow - see error log for more information:\n\t\t - Errors are logged as a new text file, located in <YOUR_DB>/log/'.<DATE>.err");
         }
     }
 
@@ -66,6 +69,10 @@ public class DalecAnnotationSource extends AbstractDataSource
             // TODO - clever bit needed (!), how to return the "waiting" message to the client?
             return null; //or something else?
         }
+        catch (UnableToAccessDatabaseException e)
+        {
+            throw new DataSourceException(e, "A problem occurred whilst trying to access the database for the Dalec Annotation Source");
+        }
     }
 
     public String getDataSourceType()
@@ -78,6 +85,11 @@ public class DalecAnnotationSource extends AbstractDataSource
         return "1.0";
     }
 
+    /**
+     * Javabeans style method for setting the "MapMaster" URL for the reference server for this DataSource plugin.
+     *
+     * @param s A String representing the MapMaster URL.
+     */
     public void setMapMaster(String s)
     {
         this.mapMaster = s;
@@ -100,10 +112,10 @@ public class DalecAnnotationSource extends AbstractDataSource
     }
 
     /**
-     * Javabeans style method for setting the Database location used to store the output data for this
-     * instance of Dalec.
+     * Javabeans style method for setting the Database location used to store the output data for this instance of
+     * Dalec.
      *
-     * @param sequenceDBLocation    File representing the root direcotry of the database storage location.
+     * @param sequenceDBLocation File representing the root direcotry of the database storage location.
      */
     public void setSequenceDBLocation(File sequenceDBLocation)
     {
