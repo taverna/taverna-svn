@@ -27,6 +27,7 @@ package net.sf.taverna.ocula.ui;
 import javax.swing.JButton;
 import javax.swing.Icon;
 import java.awt.Dimension;
+import javax.swing.BorderFactory;
 
 /**
  * Trivial JButton subclass that allows configuration of the maximum
@@ -41,20 +42,23 @@ public class CompactJButton extends JButton {
 	setPreferredSize(new Dimension(width, height));
 	setMaximumSize(new Dimension(width, height));
 	setOpaque(false);
+	setBorder(BorderFactory.createEmptyBorder());
     }
     
     public CompactJButton(Icon icon, int width, int height) {
 	super(icon);
 	setPreferredSize(new Dimension(width, height));
 	setMaximumSize(new Dimension(width, height));
-	setOpaque(false);
+	setOpaque(false);	
+	setBorder(BorderFactory.createEmptyBorder());
     }
     
     public CompactJButton(String text, int width, int height) {
 	super(text);
 	setPreferredSize(new Dimension(width, height));
 	setMaximumSize(new Dimension(width, height));
-	setOpaque(false);
+	setOpaque(false);	
+	setBorder(BorderFactory.createEmptyBorder());
     }
 
 }
