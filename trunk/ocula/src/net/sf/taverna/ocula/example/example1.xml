@@ -1,0 +1,13 @@
+<page title="Simple example">
+  <header>
+    <require keys="addressBook"/>
+  </header>
+  <contents>
+    <frame name="People" icon="users">
+      <grid cols="3"/>
+      <script>
+        addressBook.getPeople()
+      </script>
+    </frame>
+  </contents>
+</page>

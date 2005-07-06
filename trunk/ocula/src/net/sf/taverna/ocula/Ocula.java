@@ -29,10 +29,12 @@ import java.awt.*;
 import java.util.*;
 import net.sf.taverna.ocula.ui.*;
 import net.sf.taverna.ocula.action.ActionRunner;
+import net.sf.taverna.ocula.renderer.RendererHandler;
 import net.sf.taverna.ocula.validation.*;
 import java.net.*;
 import java.io.*;
 import bsh.*;
+import org.jdom.Element;
 
 /**
  * Top level container for an instance of Ocula. This is initialized
@@ -44,6 +46,7 @@ public class Ocula extends JPanel {
     private Map context;
     JPanel mainPanel;
     private ActionRunner actionRunner;
+    private RendererHandler rendererHandler;
 
     /**
      * Construct an empty top level panel
@@ -52,6 +55,8 @@ public class Ocula extends JPanel {
 	buildUI();
 	setTitle("No page loaded");
 	context = new HashMap();
+	actionRunner = new ActionRunner(this);
+	rendererHandler = new RendererHandler(this);
     }
     
     /**
@@ -135,6 +140,34 @@ public class Ocula extends JPanel {
      */
     public void load(URL pageURL) throws PageValidationException, IOException {
 	Page p = new Page(pageURL);
+	setTitle(p.getTitle());
+	// Load the contents of the page (should do this _after_ running any page actions)
+	java.util.List contents = p.getContents();
+	mainPanel.removeAll();
+	mainPanel.revalidate();
+	for (Iterator i = contents.iterator(); i.hasNext();) {
+	    Element e = (Element)i.next();
+	    String name = e.getAttributeValue("name");
+	    Icon icon = Icons.getIcon(e.getAttributeValue("icon"));
+	    ResultSetPanel rsp = new ResultSetPanel(name, icon);
+	    mainPanel.add(rsp);
+	    mainPanel.revalidate();
+	    try {
+		Object result = evaluate(e.getChild("script").getTextTrim());
+		if (result instanceof Object[]) {
+		    Object[] array = (Object[])result;
+		    for (int j = 0; j < array.length; j++) {
+			rsp.getContents().add(rendererHandler.getRenderer(array[j]));
+			rsp.revalidate();
+		    }
+		}
+	    }
+	    catch (EvalError ee) {
+		rsp.getContents().setLayout(new BorderLayout());
+		rsp.getContents().add(new JLabel("<html><body><font color=\"red\">"+ee.getMessage()+"</font></body></html>"));
+		rsp.revalidate();
+	    }
+	}
     }
 
     /**

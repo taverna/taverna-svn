@@ -29,6 +29,7 @@ import javax.swing.JFrame;
 import java.awt.Dimension;
 import javax.swing.UIManager;
 import net.sf.taverna.ocula.ui.*;
+import java.net.URL;
 
 /**
  * Test the top level Ocula JPanel
@@ -66,11 +67,31 @@ public class OculaTest extends TestCase {
 	frame.setSize(new Dimension(200,200));
 	frame.setVisible(true);
 	try {
-	    Thread.sleep(10000);
+	    Thread.sleep(100);
 	}
 	catch (Exception ex) {
 	    //
 	}
+    }
+
+    public void testLoadExample() throws Exception {
+	try {
+	    UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+	}
+	catch (Exception e) { }
+	JFrame frame = new JFrame();
+	Ocula o = new Ocula();	
+	frame.getContentPane().add(o);
+	URL exampleURL = Thread.currentThread().getContextClassLoader().
+	    getResource("net/sf/taverna/ocula/example/example1.xml");
+	frame.setSize(new Dimension(400,400));
+	frame.setVisible(true);
+	o.load(exampleURL);
+	Thread.sleep(3000);
+	o.putContext("addressBook",new net.sf.taverna.ocula.example.PhoneBook());
+	o.load(exampleURL);
+	Thread.sleep(2000);
+		
     }
 
 }

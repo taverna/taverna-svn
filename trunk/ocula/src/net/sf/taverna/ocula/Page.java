@@ -113,9 +113,30 @@ public class Page {
 	InputStream is = pageLocation.openStream();
 	InputStreamReader isr = new InputStreamReader(is);
 	SAXBuilder builder = new SAXBuilder(false);
-	Document document = null;
-	document = builder.build(isr);
+	pageDefinition = builder.build(isr);
 	this.pageValid = true;
+    }
+
+    /**
+     * Return the List of Element objects within the &lt;contents> tag
+     */
+    public List getContents() {
+	if (this.pageValid == false) {
+	    return new ArrayList();
+	}
+	return pageDefinition.getRootElement().getChild("contents").getChildren();
+    }
+
+    /**
+     * Get the title of this page
+     */
+    public String getTitle() {
+	if (this.pageValid == false) {
+	    return "No page defined";
+	}
+	else {
+	    return pageDefinition.getRootElement().getAttributeValue("title","No title");
+	}
     }
 
 }
