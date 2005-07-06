@@ -42,7 +42,7 @@ import bsh.*;
 public class Ocula extends JPanel {
    
     private Map context;
-    private JPanel mainPanel;
+    JPanel mainPanel;
     private ActionRunner actionRunner;
 
     /**
@@ -63,7 +63,12 @@ public class Ocula extends JPanel {
 	add(toolbar, BorderLayout.PAGE_START);
 	mainPanel = new JPanel();
 	mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.PAGE_AXIS));
-	JPanel mainPanelContainer = new PaddedPanel("ocula.background", 8, new JScrollPane(mainPanel));
+	mainPanel.setOpaque(false);
+	JScrollPane jsp = new JScrollPane(mainPanel);
+	jsp.setOpaque(false);
+	jsp.getViewport().setOpaque(false);
+	jsp.setBorder(BorderFactory.createEmptyBorder());
+	JPanel mainPanelContainer = new PaddedPanel("ocula.background", 8, jsp);
 	add(mainPanelContainer, BorderLayout.CENTER);
     }
     

@@ -27,6 +27,8 @@ package net.sf.taverna.ocula;
 import junit.framework.TestCase;
 import javax.swing.JFrame;
 import java.awt.Dimension;
+import javax.swing.UIManager;
+import net.sf.taverna.ocula.ui.*;
 
 /**
  * Test the top level Ocula JPanel
@@ -52,8 +54,13 @@ public class OculaTest extends TestCase {
     }
 
     public void testUICreation() {
+	try {
+	    UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+	} catch (Exception e) { }
 	JFrame frame = new JFrame();
 	Ocula o = new Ocula();
+	o.mainPanel.add(new ResultSetPanel("A result", Icons.getIcon("components")));
+	o.mainPanel.add(new ResultSetPanel("Another sample result", Icons.getIcon("users")));
 	frame.getContentPane().add(o);
 	o.setTitle("Ocula test");
 	frame.setSize(new Dimension(200,200));
