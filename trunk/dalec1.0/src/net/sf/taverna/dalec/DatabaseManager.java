@@ -29,12 +29,12 @@ import net.sf.taverna.dalec.exceptions.UnableToAccessDatabaseException;
  *
  * @author Tony Burdett date: 20-Jun-2005
  */
-public class DatabaseManager implements Runnable
+public class DatabaseManager extends Thread implements Runnable
 {
     private File dbLoc;
-    private boolean termRequest = false;
     private List resultsToWrite = new ArrayList();
     private List dbListeners = new ArrayList();
+    private boolean terminated = false;
 
     /**
      * Constructor for DatabaseManager.  Simply creates a database home directory if it doesn't already exist.
@@ -52,16 +52,18 @@ public class DatabaseManager implements Runnable
         try
         {
             // continually run as long as thread isn't interrupted
-            while (true)
+            while (!terminated)
             {
                 // wait if there are no results waiting to be written
-                while (resultsToWrite.isEmpty())
+                while (resultsToWrite.isEmpty() && !terminated)
                 {
                     synchronized (resultsToWrite)
                     {
                         resultsToWrite.wait();
                     }
                 }
+                if (terminated) break;
+
                 // Otherwise, grab the pending results and write them to a file
                 writeToFile(getPendingResults());
             }
@@ -69,25 +71,19 @@ public class DatabaseManager implements Runnable
         catch (InterruptedException e)
         {
             // Thread will normally run indefinitely unless interrupted
-
-            // It is possible to request interruption of this DatabaseManager by calling haltActivity
-            if (termRequest)
-            {
-                // Thread has been stopped on request, so do nothing except set termRequest back to false;
-                termRequest = false;
-            }
-            else
-            {
-                // Some other scenario has caused this thread to terminate, attempt to restart?
-                DalecManager.logError(dbLoc, "Database was interrupted abnormally whilst running", e);
-            }
+            DalecManager.logError(dbLoc, "database activity", e);
         }
     }
 
-    public synchronized void haltActivity()
+    public void exterminate()
     {
-        termRequest = true;
-        Thread.currentThread().interrupt();
+        // set terminated to true to prevent new write job starting
+        terminated = true;
+        // this won't wake a waiting thread though, so notify any threads waiting on resultsToWrite
+        synchronized (resultsToWrite)
+        {
+            resultsToWrite.notifyAll();
+        }
     }
 
     /**
@@ -99,7 +95,7 @@ public class DatabaseManager implements Runnable
      */
     public void addNewResult(GFFRecord result)
     {
-        //TODO - this assumes workflow output will be a single GFFRecord (entry set better???) - might need to parse workflow output
+        //TODO - again, relates to handling of workflow outputs - what will be passed over to us here?
         synchronized (resultsToWrite)
         {
             resultsToWrite.add(result);
@@ -118,15 +114,18 @@ public class DatabaseManager implements Runnable
      */
     public synchronized boolean fileExists(String seqID)
     {
-        // This assumes files will be stored in a database by using the format "seqID.gff" - should be fine
-        File seqFile = new File(dbLoc, seqID + ".gff");
-        if (seqFile.exists())
+        synchronized (dbLoc)
         {
-            return true;
-        }
-        else
-        {
-            return false;
+            // This assumes files will be stored in a database by using the format "seqID.gff" - should be fine
+            File seqFile = new File(dbLoc, seqID + ".gff");
+            if (seqFile.exists())
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
     }
 
@@ -201,9 +200,16 @@ public class DatabaseManager implements Runnable
 
     /**
      * This method writes all pending results (ie. those which are returned by calling <code>getPendingResults</code>)
-     * to disk.  This would normally be called automatically by the run method of an instance of this class, provided it
-     * has been Thread.start() has been called.  If not, or if this approach is not required, this method can be called
-     * manually.
+     * to disk.  This would normally be called automatically by the <code>run()</code> method of an instance of this
+     * class, provided it has been <code>Thread.start()</code> has been called.
+     * <p/>
+     * If an implementation of Dalec is built where DatabaseManager is NOT to be used in a dynamic form - ie. no databse
+     * thread has been started, it is possible to call this method manually, to write all results to file.  However, it
+     * should be considered that this method performs NO checks to determine whether a file alreayd exists.
+     * <p/>
+     * It is assumed that any results which are pending a write-to-file operation do not exist within the database, as a
+     * check is performed to see if a file exists, is currently being annotated, or is awaiting a write-to-file
+     * operation, before the sequence is annotated by the workflow.
      *
      * @param results A list of results which should be written to disk
      */
@@ -214,32 +220,32 @@ public class DatabaseManager implements Runnable
         // write the captured results to a file in GFF format, in the appropriate DB location
         while (it.hasNext())
         {
-            // TODO - check if this file already exists?
-            // Shouldn't be possible, as workflow wouldn't have beed executed if file existed already
-
             // Convert this GFF record into a GFF entry set ready to be written to file
             GFFRecord record = (GFFRecord) it.next();
             GFFEntrySet gffFileToWrite = new GFFEntrySet();
             gffFileToWrite.add(record);
 
             // write the entry set to a file
-            try
+            synchronized (dbLoc)
             {
-                GFFTools.writeGFF(new File(dbLoc, record.getSeqName() + ".gff"), gffFileToWrite);
-                // Once this file has been written, notify all listeners of a new entry
-                Iterator jt = dbListeners.iterator();
-                while (jt.hasNext())
+                try
                 {
-                    ((DatabaseListener) jt.next()).databaseEntryCreated(record.getSeqName());
+                    GFFTools.writeGFF(new File(dbLoc, record.getSeqName() + ".gff"), gffFileToWrite);
+                    // Once this file has been written, notify all listeners of a new entry
+                    Iterator jt = dbListeners.iterator();
+                    while (jt.hasNext())
+                    {
+                        ((DatabaseListener) jt.next()).databaseEntryCreated(record.getSeqName());
+                    }
                 }
-            }
-            catch (IOException e)
-            {
-                // notify listener that an entry failed as IO exception occured, then continue
-                Iterator jt = dbListeners.iterator();
-                while (jt.hasNext())
+                catch (IOException e)
                 {
-                    ((DatabaseListener) jt.next()).databaseEntryFailed(record.getSeqName(), e);
+                    // notify listener that an entry failed as IO exception occured, then continue
+                    Iterator jt = dbListeners.iterator();
+                    while (jt.hasNext())
+                    {
+                        ((DatabaseListener) jt.next()).databaseEntryFailed(record.getSeqName(), e);
+                    }
                 }
             }
         }

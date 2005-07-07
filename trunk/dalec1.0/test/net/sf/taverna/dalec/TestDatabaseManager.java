@@ -24,6 +24,8 @@ public class TestDatabaseManager extends TestCase
         new DatabaseManager(new File(dbGenLoc, "db"));
 
         assertTrue("Database doesn't exist", dbGenLoc.exists());
+
+        System.gc();
     }
 
     public void testDbRun()
@@ -48,6 +50,60 @@ public class TestDatabaseManager extends TestCase
         }
 
         assertTrue("Thread is not waiting for jobs - status is" + thr.getState().toString(), thr.getState() == Thread.State.WAITING);
+
+        // set exterminate request
+        db.exterminate();
+        // Simple wait block to give "thr" time to start
+        synchronized (thr)
+        {
+            try
+            {
+                thr.wait(100);
+            }
+            catch (InterruptedException e)
+            {
+            }
+        }
+        // now check thread has exited
+        assertTrue(thr.getState().toString(), isStopped(thr));
+        System.gc();
+    }
+
+    public void testDBStop()
+    {
+        DatabaseManager db = new DatabaseManager(new File(dbGenLoc, "db"));
+
+        Thread thr = new Thread(db);
+        thr.start();
+
+        // Simple wait block to give "thr" time to start
+        synchronized (thr)
+        {
+            try
+            {
+                thr.wait(100);
+            }
+            catch (InterruptedException e)
+            {
+            }
+        }
+
+        // set exterminate request
+        db.exterminate();
+        // Simple wait block to give "thr" time to start
+        synchronized (thr)
+        {
+            try
+            {
+                thr.wait(100);
+            }
+            catch (InterruptedException e)
+            {
+            }
+        }
+        // now check thread has exited
+        assertTrue(thr.getState().toString(), isStopped(thr));
+        System.gc();
     }
 
     public void testAddJob()
@@ -107,57 +163,24 @@ public class TestDatabaseManager extends TestCase
         assertTrue("Sequence file doesn't exist", new File(dbGenLoc, "db\\testSequence.gff").exists());
 
         assertTrue("Sequence file doesn't match record", match(retrieved, record));
-    }
 
-    private boolean match(GFFRecord record1, GFFRecord record2)
-    {
-        // Do some matching - actually not totally comprehensive but will suffice for now
-        boolean match = true;
-        if (record1.getComment() == null && record2.getComment() == null)
-        {//match can stay true
-        }
-        else if (!record1.getComment().matches(record2.getComment()))
+        // set exterminate request
+        db.exterminate();
+        // now check thread has exited
+        // // Simple wait block to give "thr" time to start
+        synchronized (thr)
         {
-            match = false;
-            System.out.println("Comment match failed");
-            System.out.println("1: " + record1.getComment() + "; 2: " + record2.getComment());
+            try
+            {
+                thr.wait(100);
+            }
+            catch (InterruptedException e)
+            {
+            }
         }
-        if (record1.getEnd() != record2.getEnd())
-        {
-            match = false;
-            System.out.println("End match failed");
-            System.out.println("1: " + record1.getEnd() + "; 2: " + record2.getEnd());
-        }
-        if (record1.getFrame() != record2.getFrame())
-        {
-            match = false;
-            System.out.println("Frame match failed");
-            System.out.println("1: " + record1.getFrame() + "; 2: " + record2.getFrame());
-        }
-        if (record1.getScore() == 0 && record2.getScore() == 0)
-        {//match can stay true
-        }
-        else if (record1.getScore() != (record2.getScore()))
-        {
-            match = false;
-            System.out.println("Score match failed");
-            System.out.println("1: " + record1.getScore() + "; 2: " + record2.getScore());
-        }
-        if (!record1.getSeqName().matches(record2.getSeqName()))
-        {
-            match = false;
-            System.out.println("SeqName match failed");
-            System.out.println("1: " + record1.getSeqName() + "; 2: " + record2.getSeqName());
-        }
-
-        if (record1.getStart() != record2.getStart())
-        {
-            match = false;
-            System.out.println("Start match failed");
-            System.out.println("1: " + record1.getStart() + "; 2: " + record2.getStart());
-        }
-        return match;
-    }
+        assertTrue(thr.getState().toString(), isStopped(thr));
+        System.gc();
+     }
 
     public void testAddMultipleJobs()
     {
@@ -181,7 +204,7 @@ public class TestDatabaseManager extends TestCase
         }
 
         // Add 10 jobs
-        for (int i = 0; i < 10; i++)
+        for (int i = 10; i < 110; i++)
         {
             // create a SimpleGFFRecord with null or 0 values excpet sequence name
             SimpleGFFRecord gffr = new SimpleGFFRecord();
@@ -194,6 +217,19 @@ public class TestDatabaseManager extends TestCase
         {
             try
             {
+                thr.wait(1000);
+            }
+            catch (InterruptedException e)
+            {
+            }
+        }
+        // set exterminate request
+        db.exterminate();
+
+        synchronized (thr)
+        {
+            try
+            {
                 thr.wait(100);
             }
             catch (InterruptedException e)
@@ -202,10 +238,13 @@ public class TestDatabaseManager extends TestCase
         }
 
         // Check they all exist
-        for (int i = 0; i < 10; i++)
+        for (int i = 10; i < 110; i++)
         {
             assertTrue("File: seq" + i + ".gff doesn't exist", new File(dbGenLoc, "db\\seq" + i + ".gff").exists());
         }
+        // now check thread has exited
+        assertTrue(thr.getState().toString(), isStopped(thr));
+        System.gc();
     }
 
     public void testAddListener()
@@ -234,6 +273,8 @@ public class TestDatabaseManager extends TestCase
 
         // Check one listener is added
         assertFalse("Listener was not registered successfully", db.getDatabaseListener() == null);
+
+        System.gc();
     }
 
     public void testNotification()
@@ -305,20 +346,8 @@ public class TestDatabaseManager extends TestCase
             assertTrue((notified.get("seq" + i)).equals("created"));
         }
 
-
-    }
-
-    public void testDBStop()
-    {
-        boolean exception = false;
-
-        // New database with test directory
-        DatabaseManager db = new DatabaseManager(new File(dbGenLoc, "db"));
-
-        // Create thread and start it running
-        Thread thr = new Thread(db);
-        thr.start();
-
+        // set exterminate request
+        db.exterminate();
         // Simple wait block to give "thr" time to start
         synchronized (thr)
         {
@@ -330,22 +359,64 @@ public class TestDatabaseManager extends TestCase
             {
             }
         }
+        // now check thread has exited
+        assertTrue(thr.getState().toString(), isStopped(thr));
+        System.gc();
+     }
 
-        assertTrue("Thread should be waiting", thr.getState() == Thread.State.WAITING);
-
-        thr.interrupt();
-
-        try
-        {
-            thr.join();
+    private boolean match(GFFRecord record1, GFFRecord record2)
+    {
+        // Do some matching - actually not totally comprehensive but will suffice for now
+        boolean match = true;
+        if (record1.getComment() == null && record2.getComment() == null)
+        {//match can stay true
         }
-        catch (InterruptedException e)
+        else if (!record1.getComment().matches(record2.getComment()))
         {
-            exception = true;
+            match = false;
+            System.out.println("Comment match failed");
+            System.out.println("1: " + record1.getComment() + "; 2: " + record2.getComment());
+        }
+        if (record1.getEnd() != record2.getEnd())
+        {
+            match = false;
+            System.out.println("End match failed");
+            System.out.println("1: " + record1.getEnd() + "; 2: " + record2.getEnd());
+        }
+        if (record1.getFrame() != record2.getFrame())
+        {
+            match = false;
+            System.out.println("Frame match failed");
+            System.out.println("1: " + record1.getFrame() + "; 2: " + record2.getFrame());
+        }
+        if (record1.getScore() == 0 && record2.getScore() == 0)
+        {//match can stay true
+        }
+        else if (record1.getScore() != (record2.getScore()))
+        {
+            match = false;
+            System.out.println("Score match failed");
+            System.out.println("1: " + record1.getScore() + "; 2: " + record2.getScore());
+        }
+        if (!record1.getSeqName().matches(record2.getSeqName()))
+        {
+            match = false;
+            System.out.println("SeqName match failed");
+            System.out.println("1: " + record1.getSeqName() + "; 2: " + record2.getSeqName());
         }
 
-        assertFalse("An exception occurred", exception);
+        if (record1.getStart() != record2.getStart())
+        {
+            match = false;
+            System.out.println("Start match failed");
+            System.out.println("1: " + record1.getStart() + "; 2: " + record2.getStart());
+        }
+        System.gc();
+        return match;
+    }
 
-        assertTrue("Thread has not terminated", thr.getState() == Thread.State.TERMINATED);
+    private boolean isStopped (Thread thread)
+    {
+        return (thread.getState() == Thread.State.TERMINATED);
     }
 }

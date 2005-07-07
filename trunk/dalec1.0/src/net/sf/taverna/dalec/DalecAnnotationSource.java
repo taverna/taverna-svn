@@ -45,8 +45,6 @@ public class DalecAnnotationSource extends AbstractDataSource
 
     public void init(ServletContext servletContext) throws DataSourceException
     {
-        super.init(servletContext);
-
         try
         {
             davros = new DalecManager(xscuflFile, seqDB);
@@ -56,6 +54,28 @@ public class DalecAnnotationSource extends AbstractDataSource
             DalecManager.logError(seqDB, "workflow creation", e);
             throw new DataSourceException(e, "Unable to create workflow - see error log for more information:\n\t\t - Errors are logged as a new text file, located in <YOUR_DB>/log/'.<DATE>.err");
         }
+
+        // Now use normal init method
+        super.init(servletContext);
+    }
+
+    /**
+     * Specific destroy method for this Datasource.  The <code>destroy()</code> method specified in the abstract class
+     * <code>AbstractDataSource</code> by default does nothing.  However, Dalec is intended to run indefinitely,
+     * automatically spawning new threads to carry out workflow calculations and database entries.  These threads then
+     * remain active until interrupted.  Hence, if a DalecAnnotationSource is to be taken out of service, these threads
+     * must be terminated using this destroy method.
+     */
+    public void destroy()
+    {
+        // Call DalecManager.exterminate() which ceases all active threads
+        davros.exterminate();
+
+        // Now set all initialised values to null
+        mapMaster = null;
+        xscuflFile = null;
+        seqDB = null;
+        davros = null;
     }
 
     public Sequence getSequence(String seqID) throws DataSourceException, NoSuchElementException

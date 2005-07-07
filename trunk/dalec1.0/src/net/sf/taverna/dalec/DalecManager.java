@@ -6,6 +6,7 @@ import org.biojava.bio.symbol.SimpleSymbolList;
 import org.biojava.bio.symbol.Alphabet;
 import org.biojava.bio.Annotation;
 import org.biojava.bio.program.gff.GFFRecord;
+import org.biojava.bio.program.gff.SimpleGFFRecord;
 import org.embl.ebi.escience.scufl.parser.XScuflFormatException;
 import org.embl.ebi.escience.scufl.parser.XScuflParser;
 import org.embl.ebi.escience.scufl.*;
@@ -45,16 +46,25 @@ import uk.ac.soton.itinnovation.freefluo.main.InvalidInputException;
  */
 public class DalecManager
 {
+    /**
+     * Indicates whether this DalecManager is running or not (ie. whether <code>init()</code> has been called).  Returns
+     * true if running, false otherwise.
+     */
+    private DatabaseManager dbMan;
+    private ScuflModel model;
+
     private List jobList = new ArrayList();
     private List computeList = new ArrayList();
+
     private Thread[] workflowThreadPool = new Thread[4];
-    private DatabaseManager dbMan;
+    private Thread dbThread;
+    private boolean terminated = false;
 
     /**
-     * Constructor for class <code>DalecManager</code>.  This is a failry intensive step, as it involves the creation of
-     * several threads and compiles copies of the workflow, using the supplied <code>.Xscufl</code> file into each
-     * thread.  Each thread runs indefinitely, allowing jobs to be continually submitted to DalecManager and generating
-     * annotations as described by the supplied workflow.
+     * Constructor for class <code>DalecManager</code>.  When a new <code>DalecManager</code> is created, the database
+     * it will use is created using the <code>File</code> parameter passed to it.  The workflow file passed is compiled
+     * into a valid workflow, which will then be used to do annotations on sequences passed to Dalec by the client.  A
+     * <code>WorkflowCreationException</code> is thrown if problems are encountered in compliing the workflow.
      *
      * @param xscuflFile
      * @param sequenceDBLocation
@@ -62,14 +72,19 @@ public class DalecManager
      */
     public DalecManager(File xscuflFile, File sequenceDBLocation) throws WorkflowCreationException
     {
+        // Create a new DatabaseManager to handle the data outputs - DatabaseManager is Runnable
+        dbMan = new DatabaseManager(sequenceDBLocation);
+
         // grab Xscufl file and use it to populate the scufl model
-        final ScuflModel model = new ScuflModel();
+        model = new ScuflModel();
         try
         {
             try
             {
-                XScuflParser.populate(new FileInputStream(xscuflFile), model, null);
-                System.out.println("Model populated ok");
+                synchronized (model)
+                {
+                    XScuflParser.populate(new FileInputStream(xscuflFile), model, null);
+                }
             }
             catch (XScuflFormatException e)
             {
@@ -147,22 +162,27 @@ public class DalecManager
                 // Not concerned with this
             }
         });
+
         // Now start a new thread for the databaseManager, so entries are created dynamically
-        (new Thread(dbMan)).start();
+        dbThread = new Thread(dbMan, "Database_Thread");
+        dbThread.start();
 
         // create concurrent Threads so several copies of the workflow can be executed simultaneously
         // each thread compiles its own copy of workflow from 'model'
         for (int i = 0; i < workflowThreadPool.length; i++)
         {
-            workflowThreadPool[i] = new Thread()
+            workflowThreadPool[i] = new Thread("Workflow_Thread_" + i)
             {
                 public void run()
                 {
-                    final WorkflowInstance workflow;
                     // Compile the workflow
                     try
                     {
-                        workflow = (new FreefluoEnactorProxy()).compileWorkflow(model, null);
+                        final WorkflowInstance workflow;
+                        synchronized (model)
+                        {
+                            workflow = (new FreefluoEnactorProxy()).compileWorkflow(model, null);
+                        }
 
                         // Add WorkFlowStateListener so we can be notified of results
                         ((WorkflowInstanceImpl) workflow).addWorkflowStateListener(new WorkflowStateListener()
@@ -173,36 +193,41 @@ public class DalecManager
                                 // If workflow has finished current job, (ie. state.isFinal()) then send results to DB
                                 if (state.isFinal())
                                 {
+                                    // TODO - handling workflow outputs! Writing data to/from the database, need to parse correctly!
                                     Map output = workflow.getOutput();
-                                    GFFRecord gffOut = (GFFRecord) output.get("GFFRecord");
+                                    DataThing out = (DataThing) output.get("GFFRecord");
+
+                                    SimpleGFFRecord gffOut = new SimpleGFFRecord();
+                                    gffOut.setSeqName("mySeq");
+                                    gffOut.setSource(out.toString());
+
+                                    System.out.println("Results acquired, passing to dbMan");
                                     dbMan.addNewResult(gffOut);
-                                    // TODO - handle outputs as GFFRecords? or is GFFEntrySet better?
-                                    // as this stands, unless a GFF record is the output from the workflow
-                                    // and has the taverna output key value "GFFRecord", this will fall over!
                                 }
                             }
                         });
 
                         // Now run forever indefinitely
-                        while (true)
+                        while (!terminated)
                         {
+                            String jobID = null;
+                            DataThing job;
+                            Map inputs = new HashMap();
+
                             try
                             {
-                                String jobID;
-                                DataThing job;
-                                Map inputs = new HashMap();
-
                                 // Continually request new jobs
                                 synchronized (jobList)
                                 {
                                     // Check to make sure there are pending jobs - otherwise just wait
-                                    while (jobList.isEmpty())
+                                    while (jobList.isEmpty() && !terminated)
                                     {
                                         jobList.wait();
                                     }
+                                    if (terminated) break;
 
                                     jobID = (String) jobList.get(0);
-                                    job = (DataThing) jobList.get(0);
+                                    job = new DataThing(jobID);
 
                                     // So a new job is allocated - remove from the jobList and place into computeList
                                     jobList.remove(jobID);
@@ -211,7 +236,7 @@ public class DalecManager
                                         computeList.add(jobID);
                                     }
                                 }
-                                inputs.put(job, job);
+                                inputs.put("seqID", job);
 
                                 // do current job
                                 workflow.setInputs(inputs);
@@ -220,11 +245,13 @@ public class DalecManager
                             catch (InvalidInputException e)
                             {
                                 // Log the fact that an InvalidInput was received - but then continue
+                                logError(dbMan.getDatabaseLocation(), jobID, e.getCause());
                             }
                         }
-                        // TODO - recycling of workflows needed?
+
                         // Check this is ok; may not be possible to recycle workflows, in which case will need to
                         // recompile every time - and presumably add new listeners?
+                        // Seems that workflows CAN be reused - make SURE!!!
                     }
 
                             // Critical Exceptions
@@ -232,7 +259,6 @@ public class DalecManager
                     catch (WorkflowSubmissionException e)
                     {
 
-                        Thread.currentThread().interrupt();
                     }
                     catch (InterruptedException e)
                     {
@@ -274,6 +300,7 @@ public class DalecManager
         {
             // job is not in jobList at the moment - this means it has:
 
+            //TODO - this is where data is retrieved from database - convert GFF data to biojava sequence?
             // EITHER been done before and stored - so return the data
             if (dbMan.fileExists(seqID))
             {
@@ -287,7 +314,8 @@ public class DalecManager
                     logError(dbMan.getDatabaseLocation(), "Attempting to access database", e);
                     throw e;
                 }
-                // TODO - parse data from GFF file and compile a valid sequence object - this ISN'T a valid sequence object!!!
+
+                // this is a test, need to parse data correctly
                 return new SimpleSequence(new SimpleSymbolList(Alphabet.EMPTY_ALPHABET), seqID, seqID, Annotation.EMPTY_ANNOTATION);
             }
 
@@ -338,8 +366,8 @@ public class DalecManager
      * write to the database, thread interruptions or other anticipated problems.
      *
      * @param sequenceDBLocation The location of the Database - error log files are added to "$DB_LOC$/log/$ERR_FILE$"
-     * @param jobName A string describing the job being performed when the problem occurred
-     * @param e The throwable cause of the problem making an error log entry necessary.
+     * @param jobName            A string describing the job being performed when the problem occurred
+     * @param e                  The throwable cause of the problem making an error log entry necessary.
      */
     public synchronized static void logError(File sequenceDBLocation, String jobName, Throwable e)
     {
@@ -350,9 +378,6 @@ public class DalecManager
 
         // Files get created as <DB_LOCATION>/log/date.err so eg. /home/usr/myDB/log/01-01-2005.err
         File errFile = new File(sequenceDBLocation, "\\log\\" + date + ".err");
-
-        System.out.println("Path: " + errFile.getPath());
-
         try
         {
             PrintWriter errLog = null;
@@ -367,18 +392,66 @@ public class DalecManager
                 (new File(sequenceDBLocation, "\\log\\")).mkdirs();
                 errLog = new PrintWriter(new BufferedWriter(new FileWriter(errFile)));
             }
-            errLog.println("**********Start of new log entry**********");
-            errLog.println("Error occurred at " + time + ", whilst processing " + jobName);
+            errLog.println("Error occurred at " + time + ", whilst doing job: " + jobName);
             errLog.println(e.getMessage());
             errLog.println(e.getCause());
-            errLog.println("**********End of log entry**********");
+            errLog.println("---------------------------------------------------------------");
             errLog.println();
             errLog.close();
         }
         catch (IOException e1)
         {
-            System.out.println("Unable to write entry to error log file");
+            System.out.println("Unable to write entry to error log file due to an IOException");
+            e1.printStackTrace();
         }
 
+    }
+
+    /**
+     * Destroy-type method, used for halting all currently active threads controlled by <code>DalecManager</code>.  This
+     * method should be called when a DalecAnnotationSource is being taken out of service, as workflow threads and
+     * database threads wil continue to run otherwise.
+     */
+    public synchronized void exterminate()
+    {
+        // setting terminated prevents new jobs starting
+        terminated = true;
+        // this won't wake waiting threads though, so notify all threads which are waiting on jobList
+        synchronized (jobList)
+        {
+            jobList.notifyAll();
+        }
+        // call dbMan.exterminate which halts database thread
+        dbMan.exterminate();
+
+        System.out.print("Shutting down Dalec");
+        for (int i = 0; i < workflowThreadPool.length; i++)
+        {
+            do
+            {
+                System.out.print(".");
+                try
+                {
+                    this.wait(100);
+                }
+                catch (InterruptedException e)
+                {
+                    // do nothing
+                }
+            } while (workflowThreadPool[i].getState() != Thread.State.TERMINATED);
+        }
+        do
+        {
+            System.out.print(".");
+        } while (dbThread.getState() != Thread.State.TERMINATED);
+        // Set all initialised threads to null
+        for (int i = 0; i < workflowThreadPool.length; i++)
+        {
+            workflowThreadPool[i] = null;
+        }
+        dbThread = null;
+        // Run garbage collector
+        System.gc();
+        System.out.println("done");
     }
 }
