@@ -22,35 +22,33 @@
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-package net.sf.taverna.ocula.action;
+package net.sf.taverna.ocula.frame;
 
 import org.jdom.Element;
+
 import net.sf.taverna.ocula.Ocula;
-import bsh.EvalError;
 
 /**
- * Evaluate an expression and insert the result into the context
+ * Defines an action over the page state, especially the page context.
  * @author Tom Oinn
  */
-public class PutContextAction implements ActionSPI {
+public interface FrameSPI {
+
+    /**
+     * @return the element name that this frame is mapped to in the 
+     * definition language.
+     */
+    public String getElementName();
     
-    public String getElementName() {
-	return "put";
-    }
-    public void act(Ocula ocula, Element actionElement) throws ActionException {
-	String keyName = actionElement.getAttributeValue("key");
-	if (keyName == null) {
-	    throw new ActionException("Key attribute must not be null for the context put action");
-	}
-	String scriptString = actionElement.getTextTrim();
-	try {
-	    Object o = ocula.evaluate(scriptString);
-	    ocula.putContext(keyName, o);
-	}
-	catch (EvalError ee) {
-	    ActionException ae = new ActionException("Error when evaluating script");
-	    ae.initCause(ee);
-	    throw ae;
-	}
-    }
+    /**
+     * Consume the supplied element in the context of the Ocula instance
+     * and generate an instance of OculaFrame containing the results
+     * of the query defined in the element.<p/>
+     * No significant heavy lifting should be done in this method call,
+     * for those frame objects which represent queries over the context
+     * such queries must be done in their own thread, make the frames
+     * smart enough to handle this.
+     */
+    public OculaFrame makeFrame(Ocula ocula, Element element);
+    
 }

@@ -30,6 +30,8 @@ import java.util.*;
 import net.sf.taverna.ocula.ui.*;
 import net.sf.taverna.ocula.action.ActionRunner;
 import net.sf.taverna.ocula.renderer.RendererHandler;
+import net.sf.taverna.ocula.frame.FrameHandler;
+import net.sf.taverna.ocula.frame.OculaFrame;
 import net.sf.taverna.ocula.validation.*;
 import java.net.*;
 import java.io.*;
@@ -47,6 +49,7 @@ public class Ocula extends JPanel {
     JPanel mainPanel;
     private ActionRunner actionRunner;
     private RendererHandler rendererHandler;
+    private FrameHandler frameHandler;
 
     /**
      * Construct an empty top level panel
@@ -57,6 +60,7 @@ public class Ocula extends JPanel {
 	context = new HashMap();
 	actionRunner = new ActionRunner(this);
 	rendererHandler = new RendererHandler(this);
+	frameHandler = new FrameHandler(this);
     }
     
     /**
@@ -146,32 +150,34 @@ public class Ocula extends JPanel {
 	mainPanel.removeAll();
 	mainPanel.revalidate();
 	for (Iterator i = contents.iterator(); i.hasNext();) {
-	    Element e = (Element)i.next();
-	    String name = e.getAttributeValue("name");
-	    Icon icon = Icons.getIcon(e.getAttributeValue("icon"));
-	    ResultSetPanel rsp = new ResultSetPanel(name, icon);
-	    mainPanel.add(rsp);
-	    mainPanel.revalidate();
-	    try {
-		Object result = evaluate(e.getChild("script").getTextTrim());
-		if (result instanceof Object[]) {
-		    Object[] array = (Object[])result;
-		    for (int j = 0; j < array.length; j++) {
-			rsp.getContents().add(rendererHandler.getRenderer(array[j]));
-			rsp.revalidate();
-		    }
-		}
-	    }
-	    catch (EvalError ee) {
-		rsp.getContents().setLayout(new BorderLayout());
-		rsp.getContents().add(new JLabel("<html><body><font color=\"red\">"+ee.getMessage()+"</font></body></html>"));
-		rsp.revalidate();
+	    OculaFrame frame = frameHandler.getFrame((Element)i.next());
+	    if (frame != null) {
+		Component c = (Component)frame;
+		mainPanel.add(c);
+		mainPanel.revalidate();
 	    }
 	}
     }
+    
+    /**
+     * Return a reference to the instance's RendererHandler, used generally by the
+     * various frame creator objects to correctly populate their UIs.
+     */
+    public RendererHandler getRendererHandler() {
+	return this.rendererHandler;
+    }
 
     /**
-     * Evaluate an expression in terms of the current context using the Beanshell
+     * Evaluate an expression in terms of the current context using the Beanshell,
+     * the specified 'script' parameter has the static string 'returnValue =' 
+     * prepended to it and all context variables inserted into the environment. This
+     * is used as a shortcut allowing the script to be something like 'foo.getChildren()'
+     * where 'foo' is something in the context that has a 'getChildren()' method, the
+     * BeanShell allows untyped scripts like this which makes life a whole lot easier.
+     * For complex scripts where the task is to actually run some algorithm then fetch
+     * multiple results use the runScript method.
+     * @param script A valid script in BeanShell interpreted java
+     * @exception EvalError propogated from the BeanShell Interpreter
      */
     public Object evaluate(String script) throws EvalError {
 	script = "returnValue = "+script;
@@ -182,6 +188,27 @@ public class Ocula extends JPanel {
 	}
 	i.eval(script);
 	return i.get("returnValue");
+    }
+
+    /**
+     * Evaluate a BeanShell script, all context objects are inserted into the script
+     * context.
+     * @param script A valid script in BeanShell interpreted java
+     * @param extract Array of strings, each element in the array is a named object
+     * bound within the BeanShell interpreter which should be inserted into the
+     * context after the script has completed
+     * @exception EvalError propogated from the BeanShell Interpreter
+     */
+    public void runScript(String script, String[] extract) throws EvalError {
+	Interpreter i = new Interpreter();
+	for (Iterator contextIterator = context.keySet().iterator(); contextIterator.hasNext();) {
+	    String keyName = (String)contextIterator.next();
+	    i.set(keyName, context.get(keyName));
+	}
+	i.eval(script);
+	for (int j = 0; j < extract.length; j++) {
+	    context.put(extract[j], i.get(extract[j]));
+	}
     }
 
 }

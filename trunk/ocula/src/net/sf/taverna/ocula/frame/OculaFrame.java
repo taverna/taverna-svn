@@ -22,35 +22,16 @@
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-package net.sf.taverna.ocula.action;
-
-import org.jdom.Element;
-import net.sf.taverna.ocula.Ocula;
-import bsh.EvalError;
+package net.sf.taverna.ocula.frame;
 
 /**
- * Evaluate an expression and insert the result into the context
+ * Specifies selection and mouse callbacks for frames within an Ocula
+ * panel. Currently an empty marker interface but I imagine we might
+ * want to be able to add functionality like showing info about the
+ * object under the mouse, or the currently selected object in which
+ * case this kind of callback interface will be required.
  * @author Tom Oinn
  */
-public class PutContextAction implements ActionSPI {
-    
-    public String getElementName() {
-	return "put";
-    }
-    public void act(Ocula ocula, Element actionElement) throws ActionException {
-	String keyName = actionElement.getAttributeValue("key");
-	if (keyName == null) {
-	    throw new ActionException("Key attribute must not be null for the context put action");
-	}
-	String scriptString = actionElement.getTextTrim();
-	try {
-	    Object o = ocula.evaluate(scriptString);
-	    ocula.putContext(keyName, o);
-	}
-	catch (EvalError ee) {
-	    ActionException ae = new ActionException("Error when evaluating script");
-	    ae.initCause(ee);
-	    throw ae;
-	}
-    }
+public interface OculaFrame {
+
 }

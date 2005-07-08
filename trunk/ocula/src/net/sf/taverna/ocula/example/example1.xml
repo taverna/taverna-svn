@@ -3,11 +3,10 @@
     <require keys="addressBook"/>
   </header>
   <contents>
-    <frame name="People" icon="users">
-      <grid cols="3"/>
+    <grid name="People" icon="users" cols="3">
       <script>
         addressBook.getPeople()
       </script>
-    </frame>
+    </grid>
   </contents>
 </page>

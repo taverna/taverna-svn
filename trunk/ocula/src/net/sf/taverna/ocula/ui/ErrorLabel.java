@@ -22,35 +22,25 @@
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-package net.sf.taverna.ocula.action;
+package net.sf.taverna.ocula.ui;
 
-import org.jdom.Element;
-import net.sf.taverna.ocula.Ocula;
-import bsh.EvalError;
+import java.awt.*;
+import javax.swing.*;
 
 /**
- * Evaluate an expression and insert the result into the context
+ * Simple JLabel subclass with a big scary looking red cross to denote
+ * an error, pads with an empty two pixel border by default.
  * @author Tom Oinn
  */
-public class PutContextAction implements ActionSPI {
-    
-    public String getElementName() {
-	return "put";
+public class ErrorLabel extends JLabel {
+
+    /**
+     * Create an error message with the specified text
+     */
+    public ErrorLabel(String errorMessage) {
+	super(errorMessage, Icons.getIcon("errorlarge"), SwingConstants.LEFT);
+	setBorder(BorderFactory.createEmptyBorder(2,2,2,2));
+	setVerticalTextPosition(SwingConstants.TOP);
     }
-    public void act(Ocula ocula, Element actionElement) throws ActionException {
-	String keyName = actionElement.getAttributeValue("key");
-	if (keyName == null) {
-	    throw new ActionException("Key attribute must not be null for the context put action");
-	}
-	String scriptString = actionElement.getTextTrim();
-	try {
-	    Object o = ocula.evaluate(scriptString);
-	    ocula.putContext(keyName, o);
-	}
-	catch (EvalError ee) {
-	    ActionException ae = new ActionException("Error when evaluating script");
-	    ae.initCause(ee);
-	    throw ae;
-	}
-    }
+
 }

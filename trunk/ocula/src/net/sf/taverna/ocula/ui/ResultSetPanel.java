@@ -40,13 +40,13 @@ import java.util.*;
 public class ResultSetPanel extends JPanel {
 
     private JProgressBar progressBar;
-    private JPanel contentsPanel;
+    protected JPanel contentsPanel;
 
     public ResultSetPanel(String name, Icon icon) {
 	super(new BorderLayout());
 	setOpaque(false);
 
-	contentsPanel = new GridPanel(3);
+	contentsPanel = new JPanel();
 	contentsPanel.setBorder(BorderFactory.createLineBorder(ColourSet.getColour("ocula.panelbackground"),2));
 	contentsPanel.setBackground(Color.WHITE);
 	
@@ -79,7 +79,6 @@ public class ResultSetPanel extends JPanel {
 	progressPanel.add(Box.createRigidArea(new Dimension(4,4)));
 	progressPanel.add(progressBar);
 	progressPanel.add(Box.createHorizontalGlue());
-	progressBar.setIndeterminate(true);
 	return progressPanel;
     }
 
