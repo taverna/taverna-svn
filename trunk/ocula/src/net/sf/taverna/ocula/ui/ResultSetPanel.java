@@ -46,7 +46,7 @@ public class ResultSetPanel extends JPanel {
 	super(new BorderLayout());
 	setOpaque(false);
 
-	contentsPanel = new JPanel();
+	contentsPanel = new GridPanel(3);
 	contentsPanel.setBorder(BorderFactory.createLineBorder(ColourSet.getColour("ocula.panelbackground"),2));
 	contentsPanel.setBackground(Color.WHITE);
 	
