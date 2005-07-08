@@ -45,7 +45,7 @@ public interface ActionSPI {
      * information from the element that caused the action to be called
      * @throws ActionException if an exception is thrown during the
      * invocation of this particular action
-     * @param page the Page object this is acting on
+     * @param ocula the Ocula object this is acting on
      * @param element the Element in the definition that caused the
      * action in the first place
      */
