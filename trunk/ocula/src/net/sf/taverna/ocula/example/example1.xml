@@ -7,6 +7,10 @@
       <script>
         addressBook.getPeople()
       </script>
+      <doubleclick>
+        <put key="user">selectedObject</put>
+	<load url="example2.xml"/>
+      </doubleclick>
     </grid>
     <table name="People as table" icon="list">
       <script>

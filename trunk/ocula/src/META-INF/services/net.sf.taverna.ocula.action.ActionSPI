@@ -3,3 +3,4 @@ net.sf.taverna.ocula.action.ClearContextAction
 net.sf.taverna.ocula.action.RemoveContextKeyAction
 net.sf.taverna.ocula.action.PutContextAction
 net.sf.taverna.ocula.action.RunScriptAction
+net.sf.taverna.ocula.action.JumpToPageAction

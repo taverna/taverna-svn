@@ -25,7 +25,10 @@
 package net.sf.taverna.ocula;
 
 import javax.swing.*;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Component;
+import java.awt.Container;
+import java.awt.event.*;
 import java.util.*;
 import net.sf.taverna.ocula.ui.*;
 import net.sf.taverna.ocula.action.ActionRunner;
@@ -50,6 +53,12 @@ public class Ocula extends JPanel {
     private ActionRunner actionRunner;
     private RendererHandler rendererHandler;
     private FrameHandler frameHandler;
+    private URL currentURL = null;
+    private JButton backButton, forwardButton, reloadButton;
+
+    // Elements at position 0 are the most recent in each direction
+    private List history = new ArrayList();
+    private List future = new ArrayList();
 
     /**
      * Construct an empty top level panel
@@ -88,13 +97,58 @@ public class Ocula extends JPanel {
 	JToolBar bar = new JToolBar();
 	bar.setFloatable(false);
 	bar.setRollover(true);
-	JButton backButton = new CompactJButton(Icons.getIcon("back"), 26, 26);
+	backButton = new CompactJButton(Icons.getIcon("back"), 26, 26);
 	bar.add(backButton);
-	backButton.setEnabled(false);
-	JButton reloadButton = new CompactJButton(Icons.getIcon("reload"), 26, 26); 
+	backButton.addActionListener(new ActionListener() {
+		public void actionPerformed(ActionEvent ae) {
+		    URL working = currentURL;
+		    try {
+			load((URL)history.get(0));
+		    }
+		    catch (Exception ex) {
+			try {
+			    load(working);
+			}
+			catch (Exception ex2) {
+			    // Should never reach here, if we had a working page to jump
+			    // from we've just jumped back to it.
+			}
+		    }
+		}
+	    });
+	reloadButton = new CompactJButton(Icons.getIcon("reload"), 26, 26); 
 	bar.add(reloadButton);
-	JButton forwardButton = new CompactJButton(Icons.getIcon("forward"), 26, 26);
+	reloadButton.addActionListener(new ActionListener() {
+		public void actionPerformed(ActionEvent ae) {
+		    try {
+			load(currentURL);
+		    }
+		    catch (Exception ex) {
+			// Should never happen as we can only reload a
+			// valid page. Admittedly could happen if an 
+			// action has removed something from the context
+		    }
+		}
+	    });
+	forwardButton = new CompactJButton(Icons.getIcon("forward"), 26, 26);
 	bar.add(forwardButton);
+	forwardButton.addActionListener(new ActionListener() {
+		public void actionPerformed(ActionEvent ae) {
+		    URL working = currentURL;
+		    try {
+			load((URL)future.get(0));
+		    }
+		    catch (Exception ex) {
+			try {
+			    load(working);
+			}
+			catch (Exception ex2) {
+			    // Should never reach here, if we had a working page to jump
+			    // from we've just jumped back to it.
+			}
+		    }
+		}
+	    });
 	bar.add(Box.createHorizontalGlue());
 	JButton stopButton = new CompactJButton(Icons.getIcon("stop"), 26, 26);
 	bar.add(stopButton);
@@ -140,9 +194,61 @@ public class Ocula extends JPanel {
     }
 
     /**
+     * Set the enabled status of the history and future buttons
+     */
+    public void setHistoryButtons() {
+	if (history.isEmpty()) {
+	    backButton.setEnabled(false);
+	}
+	else {
+	    backButton.setEnabled(true);
+	}
+	if (future.isEmpty()) {
+	    forwardButton.setEnabled(false);
+	}
+	else {
+	    forwardButton.setEnabled(true);
+	}
+	if (currentURL == null) {
+	    reloadButton.setEnabled(false);
+	}
+	else {
+	    reloadButton.setEnabled(true);
+	}
+    }
+
+    /**
      * Set the current page location
      */
     public void load(URL pageURL) throws PageValidationException, IOException {
+	// Push the current URL into the history if appropriate
+	if (currentURL != null && currentURL.equals(pageURL) == false) {
+	    // If this new URL isn't the most recent page in the history
+	    // or the future, i.e. a step back and forward, then we nuke
+	    // the future (symbolic huh?)
+	    if (future.isEmpty()==false && ((URL)future.get(0)).equals(pageURL)) {
+		// moved one step into the future, push old page onto the history
+		// and remove the first page from the future as we're now on it
+		if (history.isEmpty() || ((URL)history.get(0)).equals(currentURL)==false) {
+		    history.add(0, currentURL);
+		}
+		future.remove(0);
+	    }
+	    else if (history.isEmpty()==false && ((URL)history.get(0)).equals(pageURL)) {
+		// moved one step back into the past
+		if (future.isEmpty() || ((URL)future.get(0)).equals(currentURL)==false) {
+		    future.add(0, currentURL);
+		}
+		history.remove(0);
+	    }
+	    else {
+		// New page we haven't seen before
+		future.clear();
+		history.add(0, currentURL);
+	    }
+	}		
+	currentURL = pageURL;
+	setHistoryButtons();
 	Page p = new Page(pageURL);
 	setTitle(p.getTitle());
 	// Load the contents of the page (should do this _after_ running any page actions)
@@ -165,6 +271,20 @@ public class Ocula extends JPanel {
      */
     public RendererHandler getRendererHandler() {
 	return this.rendererHandler;
+    }
+
+    /**
+     * Return a reference to the ActionRunner attached to this Ocula
+     */
+    public ActionRunner getActionRunner() {
+	return this.actionRunner;
+    }
+
+    /**
+     * Return a URL for the current page definition
+     */
+    public URL getCurrentURL() {
+	return this.currentURL;
     }
 
     /**

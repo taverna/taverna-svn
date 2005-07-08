@@ -26,10 +26,12 @@ package net.sf.taverna.ocula.frame;
 
 import net.sf.taverna.ocula.ui.*;
 import net.sf.taverna.ocula.Ocula;
+import net.sf.taverna.ocula.action.*;
 import org.apache.log4j.Logger;
 import javax.swing.*;
 import java.util.*;
 import java.awt.*;
+import java.awt.event.*;
 import org.jdom.Element;
 import bsh.EvalError;
 
@@ -43,7 +45,7 @@ import bsh.EvalError;
 public class GridFrameBuilder implements FrameSPI {
 
     private static Logger log = Logger.getLogger(GridFrameBuilder.class);
-
+ 
     public String getElementName() {
 	return "grid";
     }
@@ -58,6 +60,7 @@ public class GridFrameBuilder implements FrameSPI {
 	    iconName = "NoIcon";
 	}
 	Icon icon = Icons.getIcon(iconName);
+	final Element doubleClickElement = element.getChild("doubleclick");
 	int cols = 3;
 	try {
 	    String colValue = element.getAttributeValue("cols","3");
@@ -89,23 +92,41 @@ public class GridFrameBuilder implements FrameSPI {
 			result = ((Collection)result).toArray();
 		    }
 		    // Handle Object[]
+		    if (result instanceof Object[] == false) {
+			log.debug("Got "+result.toString()+" from call");
+			Object[] resultArray = new Object[1];
+			resultArray[0] = result;
+			result = resultArray;
+		    }
 		    if (result instanceof Object[]) {
 			Object[] array = (Object[])result;
 			for (int i = 0; i < array.length; i++) {
-			    gf.getContents().add(ocula.getRendererHandler().getRenderer(array[i]));
+			    final Object targetObject = array[i];
+			    JComponent component = ocula.getRendererHandler().getRenderer(targetObject);
+			    gf.getContents().add(component);
+			    // If there's a doubleclick action defined then register the appropriate
+			    // mouse listener...
+			    component.addMouseListener(new MouseAdapter() {
+				    public void mouseClicked(MouseEvent me) {
+					ocula.putContext("selectedObject",targetObject);
+					if (doubleClickElement != null && me.getClickCount() == 2) {
+					    log.debug("Double click");
+					    ocula.getActionRunner().runAction(doubleClickElement);
+					}
+					ocula.removeKey("selectedObject");
+				    }
+				});
 			    gf.revalidate();
 			}
-		    }
-		    // Handle single object
-		    else {
-			gf.getContents().add(ocula.getRendererHandler().getRenderer(result));
-			gf.revalidate();
 		    }
 		}
 		catch (EvalError ee) {
 		    gf.getContents().add(new ErrorLabel("<html><body>Can't fetch components.<p>See log output for more details.</body></html>"));
 		    gf.revalidate();
 		    log.error("Can't evaluate script", ee);
+		}
+		catch (Exception ex) {
+		    log.error("Unexpected exception!", ex);
 		}
 		gf.getProgressBar().setValue(100);
 		gf.getProgressBar().setIndeterminate(false);

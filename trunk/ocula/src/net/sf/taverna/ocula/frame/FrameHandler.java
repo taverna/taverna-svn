@@ -78,7 +78,7 @@ public class FrameHandler {
 	log.info("Building frame for "+e.getName());
 	OculaFrame of = fspi.makeFrame(ocula, e);
 	if (of instanceof Component) {
-	    return fspi.makeFrame(ocula, e);
+	    return of;
 	}
 	else {
 	    log.error("Ocula frame implementation "+of.getClass().toString()+
