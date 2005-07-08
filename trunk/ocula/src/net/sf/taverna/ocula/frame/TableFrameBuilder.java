@@ -134,6 +134,7 @@ public class TableFrameBuilder implements FrameSPI {
 			// Now have the array of object, just need to call the methods on them
 			// corresponding to the colScripts.
 			if (ScriptTableModel.this.panel != null) {
+			    ScriptTableModel.this.panel.getProgressBar().setIndeterminate(false);
 			    ScriptTableModel.this.panel.getProgressBar().setValue(0);
 			}
 			for (int i = 0; i < resultArray.length; i++) {
@@ -175,6 +176,8 @@ public class TableFrameBuilder implements FrameSPI {
 				add(new ErrorLabel("<html><body>Can't fetch components.<p>"+
 						   "See log output for more details.</body></html>"));
 			    ScriptTableModel.this.panel.revalidate();
+			    ScriptTableModel.this.panel.getProgressBar().setIndeterminate(false);
+			    ScriptTableModel.this.panel.getProgressBar().setValue(100);
 			}
 			log.error("Can't evaluate main table script", ee);
 		    }
