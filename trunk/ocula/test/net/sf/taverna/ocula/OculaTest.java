@@ -90,7 +90,7 @@ public class OculaTest extends TestCase {
 	Thread.sleep(3000);
 	o.putContext("addressBook",new net.sf.taverna.ocula.example.PhoneBook());
 	o.load(exampleURL);
-	Thread.sleep(2000);
+	Thread.sleep(20000);
 		
     }
 

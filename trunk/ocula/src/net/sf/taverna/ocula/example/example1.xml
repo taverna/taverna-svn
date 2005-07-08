@@ -8,5 +8,13 @@
         addressBook.getPeople()
       </script>
     </grid>
-  </contents>
+    <table name="People as table" icon="list">
+      <script>
+        addressBook.getPeople();
+      </script>
+      <column name="Name">value.getName()</column>
+      <column name="Country">value.getCountry()</column>
+      <column name="Phone">value.getPhone()</column>
+    </table>    
+  </contents>	
 </page>

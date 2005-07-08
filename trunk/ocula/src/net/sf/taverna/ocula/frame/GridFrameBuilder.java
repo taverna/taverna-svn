@@ -96,10 +96,16 @@ public class GridFrameBuilder implements FrameSPI {
 			    gf.revalidate();
 			}
 		    }
+		    // Handle single object
+		    else {
+			gf.getContents().add(ocula.getRendererHandler().getRenderer(result));
+			gf.revalidate();
+		    }
 		}
 		catch (EvalError ee) {
 		    gf.getContents().add(new ErrorLabel("<html><body>Can't fetch components.<p>See log output for more details.</body></html>"));
 		    gf.revalidate();
+		    log.error("Can't evaluate script", ee);
 		}
 		gf.getProgressBar().setValue(100);
 		gf.getProgressBar().setIndeterminate(false);
