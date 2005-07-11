@@ -128,6 +128,20 @@ public class Page {
     }
 
     /**
+     * Get the preload action list
+     */
+    public Element getInitActions() {
+	Element headerElement = pageDefinition.getRootElement().getChild("header");
+	if (headerElement != null) {
+	    Element preloadElement = headerElement.getChild("init");
+	    if (preloadElement != null) {
+		return preloadElement;
+	    }
+	}
+	return new Element("dummy");
+    }
+
+    /**
      * Get the title of this page
      */
     public String getTitle() {

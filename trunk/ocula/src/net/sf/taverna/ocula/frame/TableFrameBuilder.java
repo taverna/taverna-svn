@@ -29,7 +29,6 @@ import net.sf.taverna.ocula.Ocula;
 import org.apache.log4j.Logger;
 import javax.swing.*;
 import java.util.*;
-//import java.awt.*;
 import org.jdom.Element;
 import bsh.*;
 import java.awt.BorderLayout;
@@ -166,6 +165,13 @@ public class TableFrameBuilder implements FrameSPI {
 			}
 			if (ScriptTableModel.this.panel != null) {
 			    ScriptTableModel.this.panel.getProgressBar().setValue(100);
+			    try {
+				Thread.sleep(200);
+			    }
+			    catch (Exception ex) {
+				//
+			    }
+			    ScriptTableModel.this.panel.revalidate();
 			}
 		    }
 		    catch (EvalError ee) {

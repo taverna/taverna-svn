@@ -74,7 +74,7 @@ public class OculaTest extends TestCase {
 	}
     }
 
-    public void testLoadExample() throws Exception {
+    public void testLoadExampleWithFailure() throws Exception {
 	try {
 	    UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 	}
@@ -88,10 +88,39 @@ public class OculaTest extends TestCase {
 	frame.setVisible(true);
 	o.load(exampleURL);
 	Thread.sleep(3000);
+    }
+    
+    public void testLoadExampleWithInitContext() throws Exception {
+	try {
+	    UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+	}
+	catch (Exception e) { }
+	JFrame frame = new JFrame();
+	Ocula o = new Ocula();	
+	frame.getContentPane().add(o);
+	URL exampleURL = Thread.currentThread().getContextClassLoader().
+	    getResource("net/sf/taverna/ocula/example/example1.xml");
 	o.putContext("addressBook",new net.sf.taverna.ocula.example.PhoneBook());
+	frame.setSize(new Dimension(400,400));
+	frame.setVisible(true);
 	o.load(exampleURL);
-	Thread.sleep(20000);
-		
+	Thread.sleep(3000);
     }
 
+    public void testLoadExampleWithInitialAction() throws Exception {
+	try {
+	    UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+	}
+	catch (Exception e) { }
+	JFrame frame = new JFrame();
+	Ocula o = new Ocula();	
+	frame.getContentPane().add(o);
+	URL exampleURL = Thread.currentThread().getContextClassLoader().
+	    getResource("net/sf/taverna/ocula/example/example1a.xml");
+	frame.setSize(new Dimension(400,400));
+	frame.setVisible(true);
+	o.load(exampleURL);
+	Thread.sleep(3000);
+    }
+    
 }

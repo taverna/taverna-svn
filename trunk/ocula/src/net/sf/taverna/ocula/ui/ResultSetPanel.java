@@ -47,8 +47,8 @@ public class ResultSetPanel extends JPanel {
 	setOpaque(false);
 
 	contentsPanel = new JPanel();
-	contentsPanel.setBorder(BorderFactory.createLineBorder(ColourSet.getColour("ocula.panelbackground"),2));
-	contentsPanel.setBackground(Color.WHITE);
+	contentsPanel.setBorder(BorderFactory.createLineBorder(ColourSet.getColour("ocula.panelborder"),2));
+	contentsPanel.setBackground(ColourSet.getColour("ocula.panelbackground"));
 	
 	add(createLabelPanel(name, icon), BorderLayout.NORTH);
 	add(contentsPanel, BorderLayout.CENTER);
@@ -67,11 +67,11 @@ public class ResultSetPanel extends JPanel {
 
     private JPanel createProgressPanel() {
 	JPanel progressPanel = new JPanel();
-	progressPanel.setBackground(ColourSet.getColour("ocula.panelbackground"));
+	progressPanel.setBackground(ColourSet.getColour("ocula.panelborder"));
 	progressPanel.setMaximumSize(new Dimension(6000,25));
 	progressPanel.setLayout(new BoxLayout(progressPanel, BoxLayout.LINE_AXIS));
 	progressBar = new JProgressBar(JProgressBar.HORIZONTAL, 0, 100);
-	progressBar.setBackground(ColourSet.getColour("ocula.panelbackground"));
+	progressBar.setBackground(ColourSet.getColour("ocula.panelborder"));
 	progressBar.setOpaque(false);
 	progressBar.setMaximumSize(new Dimension(100,15));
 	progressBar.setPreferredSize(new Dimension(100,15));
@@ -87,7 +87,7 @@ public class ResultSetPanel extends JPanel {
 	labelPanel.setOpaque(false);
 	labelPanel.setLayout(new BoxLayout(labelPanel, BoxLayout.LINE_AXIS));
 	TitleLabel label = new TitleLabel(title, icon);
-	label.setBackground(ColourSet.getColour("ocula.panelbackground"));
+	label.setBackground(ColourSet.getColour("ocula.panelborder"));
 	label.setForeground(ColourSet.getColour("ocula.panelforeground"));
 	labelPanel.setMaximumSize(new Dimension(6000,20));
 	labelPanel.add(label);

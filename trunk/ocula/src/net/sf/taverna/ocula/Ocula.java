@@ -40,6 +40,7 @@ import java.net.*;
 import java.io.*;
 import bsh.*;
 import org.jdom.Element;
+import org.apache.log4j.Logger;
 
 /**
  * Top level container for an instance of Ocula. This is initialized
@@ -55,6 +56,7 @@ public class Ocula extends JPanel {
     private FrameHandler frameHandler;
     private URL currentURL = null;
     private JButton backButton, forwardButton, reloadButton;
+    public static Logger logger = Logger.getLogger(Ocula.class);
 
     // Elements at position 0 are the most recent in each direction
     private List history = new ArrayList();
@@ -251,6 +253,14 @@ public class Ocula extends JPanel {
 	setHistoryButtons();
 	Page p = new Page(pageURL);
 	setTitle(p.getTitle());
+	// Do pre-load actions
+	Element actions = p.getInitActions();
+	try {
+	    actionRunner.runAction(actions);
+	}
+	catch (Exception ex) {
+	    logger.error("Failed to run page pre-load actions",ex);
+	}
 	// Load the contents of the page (should do this _after_ running any page actions)
 	java.util.List contents = p.getContents();
 	mainPanel.removeAll();

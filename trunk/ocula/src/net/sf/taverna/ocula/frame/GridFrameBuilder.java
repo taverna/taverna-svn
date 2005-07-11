@@ -31,6 +31,7 @@ import org.apache.log4j.Logger;
 import javax.swing.*;
 import java.util.*;
 import java.awt.*;
+import java.util.List;
 import java.awt.event.*;
 import org.jdom.Element;
 import bsh.EvalError;
@@ -61,6 +62,7 @@ public class GridFrameBuilder implements FrameSPI {
 	}
 	Icon icon = Icons.getIcon(iconName);
 	final Element doubleClickElement = element.getChild("doubleclick");
+	final Element contextMenuElement = element.getChild("contextmenu");
 	int cols = 3;
 	try {
 	    String colValue = element.getAttributeValue("cols","3");
@@ -102,18 +104,62 @@ public class GridFrameBuilder implements FrameSPI {
 			Object[] array = (Object[])result;
 			for (int i = 0; i < array.length; i++) {
 			    final Object targetObject = array[i];
-			    JComponent component = ocula.getRendererHandler().getRenderer(targetObject);
+			    final JComponent component = ocula.getRendererHandler().getRenderer(targetObject);
 			    gf.getContents().add(component);
 			    // If there's a doubleclick action defined then register the appropriate
 			    // mouse listener...
 			    component.addMouseListener(new MouseAdapter() {
 				    public void mouseClicked(MouseEvent me) {
-					ocula.putContext("selectedObject",targetObject);
-					if (doubleClickElement != null && me.getClickCount() == 2) {
-					    log.debug("Double click");
-					    ocula.getActionRunner().runAction(doubleClickElement);
+					if (me.isPopupTrigger()) {
+					    popupMenu(me);
+					    return;
 					}
-					ocula.removeKey("selectedObject");
+					if (doubleClickElement != null && 
+					    me.getClickCount() == 2 && 
+					    me.isPopupTrigger() == false) {
+					    log.debug("Double click");
+					    ocula.putContext("selectedObject",targetObject);
+					    ocula.getActionRunner().runAction(doubleClickElement);
+					    ocula.removeKey("selectedObject");
+					}
+				    }
+				    public void mousePressed(MouseEvent me) {
+					if (me.isPopupTrigger()) {
+					    popupMenu(me);
+					}
+				    }
+				    public void mouseReleased(MouseEvent me) {
+					if (me.isPopupTrigger()) {
+					    popupMenu(me);
+					}
+				    }
+				    public void popupMenu(MouseEvent e) {
+					try {
+					    if (contextMenuElement != null) {
+						String menuTitle = contextMenuElement.getAttributeValue("title","No Title");
+						Icon menuIcon = Icons.getIcon(contextMenuElement.getAttributeValue("icon","NoIcon"));
+						List actions = contextMenuElement.getChildren();
+						OculaMenu menu = new OculaMenu(menuTitle, menuIcon);
+						for (Iterator j = actions.iterator(); j.hasNext();) {
+						    final Element actionElement = (Element)j.next();
+						    String actionElementName = actionElement.getAttributeValue("name","No Name");
+						    Icon actionElementIcon = Icons.getIcon(actionElement.getAttributeValue("icon","NoIcon"));
+						    JMenuItem item = new JMenuItem(actionElementName, actionElementIcon);
+						    item.addActionListener(new ActionListener() {
+							    public void actionPerformed(ActionEvent ae) {
+								ocula.putContext("selectedObject",targetObject);
+								ocula.getActionRunner().runAction(actionElement);
+								ocula.removeKey("selectedObject");
+							    }
+							});
+						    menu.add(item);
+						}
+						menu.show(component, e.getX(), e.getY());
+					    }
+					}
+					catch (Exception ex) {
+					    log.error("Exception in mousepressed handler", ex);
+					}
 				    }
 				});
 			    gf.revalidate();
@@ -144,8 +190,8 @@ public class GridFrameBuilder implements FrameSPI {
 	    super(name, icon);
 	    remove(contentsPanel);
 	    contentsPanel = new GridPanel(cols);
-	    contentsPanel.setBorder(BorderFactory.createLineBorder(ColourSet.getColour("ocula.panelbackground"),2));
-	    contentsPanel.setBackground(Color.WHITE);
+	    contentsPanel.setBorder(BorderFactory.createLineBorder(ColourSet.getColour("ocula.panelborder"),2));
+	    contentsPanel.setBackground(ColourSet.getColour("ocula.panelbackground"));
 	    add(contentsPanel, BorderLayout.CENTER);
 	}
     }

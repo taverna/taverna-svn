@@ -1,5 +1,10 @@
 <page title="Simple example">
-  <header/>
+  <header>
+  <!-- <require keys="addressBook"/> -->
+    <init>
+      <run extract="addressBook">import net.sf.taverna.ocula.example.*; addressBook = new PhoneBook();</run>
+    </init>
+  </header>
   <contents>
     <grid name="People" icon="users" cols="3">
       <script>
