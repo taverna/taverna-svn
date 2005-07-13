@@ -186,6 +186,9 @@ public class ResultItemPanel extends JPanel {
                             // and then log this
                             LOG.error("Problem loading renderer", re);
                           }
+			  catch (Throwable otherError) {
+			      LOG.error("Unexpected error occured during panel construction", otherError);
+			  }
                         }
                     }
                 }

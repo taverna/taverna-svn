@@ -345,7 +345,7 @@ public class WSDLBasedProcessor extends Processor implements java.io.Serializabl
             }
             // only limited number of types is supported
             // cheerfully ignoring schema namespace ...
-            String s = partType.getLocalPart();
+            String s = partType.getLocalPart().toLowerCase();
             if ("string".equals(s)) {
                 types[i] = String.class;
 	    } else if ("arrayof_xsd_string".equalsIgnoreCase(s) ||
@@ -413,6 +413,9 @@ public class WSDLBasedProcessor extends Processor implements java.io.Serializabl
 	}
 	else if (type.equals(org.w3c.dom.Element.class)) {
 	    return "'text/xml'";
+	}
+	else if (type.equals(byte[].class)) {
+	    return "'application/octet-stream'";
 	}
 	else {
 	    return "'text/plain'";
