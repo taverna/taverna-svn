@@ -3,16 +3,23 @@ package net.sf.taverna.dalec;
 import org.biojava.servlets.dazzle.datasource.AbstractDataSource;
 import org.biojava.servlets.dazzle.datasource.DataSourceException;
 import org.biojava.bio.seq.Sequence;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.w3c.dom.Document;
 
-import java.io.File;
+import java.io.*;
 import java.util.NoSuchElementException;
 import java.util.Set;
 
 import net.sf.taverna.dalec.exceptions.WorkflowCreationException;
 import net.sf.taverna.dalec.exceptions.WaitWhileJobComputedException;
 import net.sf.taverna.dalec.exceptions.UnableToAccessDatabaseException;
+import net.sf.taverna.dalec.exceptions.IncorrectlyNamedProcessorException;
 
 import javax.servlet.ServletContext;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.DocumentBuilder;
 
 /**
  * This class serves as a Dazzle datasource plugin for the Dalec annotation package.  In keeping with Dazzle datasource
@@ -41,9 +48,9 @@ public class DalecAnnotationSource extends AbstractDataSource
     private File xscuflFile;
     private File seqDB;
 
-    DalecManager davros;
+    private DalecManager davros;
 
-    public void init(ServletContext servletContext) throws DataSourceException
+    public void init(ServletContext ctx) throws DataSourceException
     {
         try
         {
@@ -52,11 +59,11 @@ public class DalecAnnotationSource extends AbstractDataSource
         catch (WorkflowCreationException e)
         {
             DalecManager.logError(seqDB, "workflow creation", e);
-            throw new DataSourceException(e, "Unable to create workflow - see error log for more information:\n\t\t - Errors are logged as a new text file, located in <YOUR_DB>/log/'.<DATE>.err");
+            throw new DataSourceException(e, "Unable to create workflow - see the error log file (" + seqDB.getAbsolutePath() + "log\\<DATE>.err) for more information.");
         }
 
         // Now use normal init method
-        super.init(servletContext);
+        super.init(ctx);
     }
 
     /**
@@ -78,11 +85,19 @@ public class DalecAnnotationSource extends AbstractDataSource
         davros = null;
     }
 
-    public Sequence getSequence(String seqID) throws DataSourceException, NoSuchElementException
+    public Sequence getSequence(String ref) throws DataSourceException, NoSuchElementException
     {
         try
         {
-            return davros.requestSequence(seqID);
+            if (davros.inputIsSequence())
+            {
+                String seq = fetchQuerySequence(ref);
+                return davros.requestSequence(seq);
+            }
+            else
+            {
+                return davros.requestSequence(ref);
+            }
         }
         catch (WaitWhileJobComputedException e)
         {
@@ -92,6 +107,10 @@ public class DalecAnnotationSource extends AbstractDataSource
         catch (UnableToAccessDatabaseException e)
         {
             throw new DataSourceException(e, "A problem occurred whilst trying to access the database for the Dalec Annotation Source");
+        }
+        catch (IncorrectlyNamedProcessorException e)
+        {
+            throw new DataSourceException(e, "This workflow does not conform to required Dalec protocols");
         }
     }
 
@@ -142,15 +161,135 @@ public class DalecAnnotationSource extends AbstractDataSource
         this.seqDB = sequenceDBLocation;
     }
 
-    public String getLandmarkVersion(String s) throws DataSourceException, NoSuchElementException
+    public String getLandmarkVersion(String ref) throws DataSourceException, NoSuchElementException
     {
-        // TODO - getLandmarkVersion()... what is expected here?
-        return null;
+        String version = null;
+
+        // formulate DAS query URL
+        String queryURL = getMapMaster() + "sequence?segment=" + ref;
+
+        // Build and parse XML doc
+        DocumentBuilder db = null;
+        Document doc = null;
+        try
+        {
+            db = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+            doc = db.parse(queryURL);
+        }
+        catch (Exception e)
+        {
+            // if an exception is thrown, determine whether it is due to access error or if this sequence doesn't exist
+            if (doc.getXmlVersion() != null)
+            {
+                // There is a valid XML doc for this sequence
+                throw new DataSourceException(e.getCause(), "Exception occurred whilst parsing document: " + queryURL);
+            }
+            else
+            {
+                throw new NoSuchElementException("The DAS query for " + queryURL + " returned no results");
+            }
+        }
+
+        // get relevant "SEQUENCE" element
+        Element currentElement = doc.getDocumentElement();
+        NodeList children = currentElement.getChildNodes();
+        for (int i = 0; i < children.getLength(); i++)
+        {
+            Node child = children.item(i);
+            if (child instanceof Element)
+            {
+                if (child.getNodeName() == "SEQUENCE")
+                {
+                    // get version info
+                    version = ((Element) child).getAttribute("version");
+                }
+            }
+        }
+        return version;
     }
 
     public Set getAllTypes()
     {
-        // TODO - getAllTypes()... what is expected here?
-        return null;
+        Set types = null;
+
+        // formulate DAS query URL
+        String queryURL = getMapMaster() + "types";
+
+        // Build and parse XML doc
+        DocumentBuilder db = null;
+        Document doc = null;
+        try
+        {
+            db = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+            doc = db.parse(queryURL);
+        }
+        catch (Exception e)
+        {
+            // if any exception is caught here, we can just return an empty set
+        }
+
+        Element currentElement = doc.getDocumentElement();
+        NodeList children = currentElement.getChildNodes();
+        for (int i = 0; i < children.getLength(); i++)
+        {
+            Node child = children.item(i);
+            if (child instanceof Element)
+            {
+                if (child.getNodeName() == "TYPE")
+                {
+                    // get version and types info
+                    types.add(((Element) child).getAttribute("id"));
+                }
+            }
+        }
+        return types;
+    }
+
+    private String fetchQuerySequence(String seqID) throws DataSourceException, NoSuchElementException
+    {
+        // Set up empty string for query sequence
+        String querySeq = null;
+
+        // formulate DAS query URL
+        String queryURL = getMapMaster() + "sequence?segment=" + seqID;
+
+        // Build and parse XML doc
+        DocumentBuilder db = null;
+        Document doc = null;
+        try
+        {
+            db = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+            doc = db.parse(queryURL);
+        }
+        catch (Exception e)
+        {
+            // if an exception is thrown, determine whether it is due to access error or if this sequence doesn't exist
+            if (doc.getXmlVersion() != null)
+            {
+                // There is a valid XML doc for this sequence
+                throw new DataSourceException(e.getCause(), "Exception occurred whilst parsing document: " + queryURL);
+            }
+            else
+            {
+                throw new NoSuchElementException("The DAS query for " + queryURL + " returned no results");
+            }
+        }
+
+        // get relevant "SEQUENCE" element
+        Element currentElement = doc.getDocumentElement();
+        NodeList children = currentElement.getChildNodes();
+        for (int i = 0; i < children.getLength(); i++)
+        {
+            Node child = children.item(i);
+            if (child instanceof Element)
+            {
+                if (child.getNodeName() == "SEQUENCE")
+                {
+                    // parse content to sequence string
+                    querySeq = child.getTextContent();
+                }
+            }
+        }
+        return querySeq;
     }
 }

@@ -7,7 +7,6 @@ package net.sf.taverna.dalec.exceptions;
  */
 public class UnableToAccessDatabaseException extends Throwable
 {
-
     public UnableToAccessDatabaseException()
     {
         super();

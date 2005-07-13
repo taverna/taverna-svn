@@ -5,7 +5,6 @@ import org.biojava.bio.seq.impl.SimpleSequence;
 import org.biojava.bio.symbol.SimpleSymbolList;
 import org.biojava.bio.symbol.Alphabet;
 import org.biojava.bio.Annotation;
-import org.biojava.bio.program.gff.GFFRecord;
 import org.biojava.bio.program.gff.SimpleGFFRecord;
 import org.embl.ebi.escience.scufl.parser.XScuflFormatException;
 import org.embl.ebi.escience.scufl.parser.XScuflParser;
@@ -22,6 +21,7 @@ import java.io.*;
 import net.sf.taverna.dalec.exceptions.WorkflowCreationException;
 import net.sf.taverna.dalec.exceptions.WaitWhileJobComputedException;
 import net.sf.taverna.dalec.exceptions.UnableToAccessDatabaseException;
+import net.sf.taverna.dalec.exceptions.IncorrectlyNamedProcessorException;
 import uk.ac.soton.itinnovation.freefluo.event.WorkflowStateListener;
 import uk.ac.soton.itinnovation.freefluo.event.WorkflowStateChangedEvent;
 import uk.ac.soton.itinnovation.freefluo.main.WorkflowState;
@@ -62,9 +62,18 @@ public class DalecManager
 
     /**
      * Constructor for class <code>DalecManager</code>.  When a new <code>DalecManager</code> is created, the database
-     * it will use is created using the <code>File</code> parameter passed to it.  The workflow file passed is compiled
-     * into a valid workflow, which will then be used to do annotations on sequences passed to Dalec by the client.  A
-     * <code>WorkflowCreationException</code> is thrown if problems are encountered in compliing the workflow.
+     * it will use is created using the <code>File</code> parameter passed to it.  A <code>DatabaseListener</code> is
+     * registered to the DatabaseManager, and a dedicated database thread is created and started to handle database
+     * entries as the results are generated from the workflow.
+     * <p/>
+     * The workflow file passed is used to populate a workflow model, which will then be used to compile workflows to do
+     * annotations on sequences passed to Dalec by the client.  A <code>WorkflowCreationException</code> is thrown if
+     * problems are encountered in populating the model.
+     * <p/>
+     * Once the model has been populated, several concurrent threads are started, containing copies of the wokflow
+     * model.  Each thread then compiles a working instance of the workflow.  Each thread then dynamically annotates
+     * submitted sequences as jobs are sent to DalecManager, sending the generated results to the instance of
+     * <code>DatabaseManager</code> to be entered into the database.
      *
      * @param xscuflFile
      * @param sequenceDBLocation
@@ -72,65 +81,6 @@ public class DalecManager
      */
     public DalecManager(File xscuflFile, File sequenceDBLocation) throws WorkflowCreationException
     {
-        // Create a new DatabaseManager to handle the data outputs - DatabaseManager is Runnable
-        dbMan = new DatabaseManager(sequenceDBLocation);
-
-        // grab Xscufl file and use it to populate the scufl model
-        model = new ScuflModel();
-        try
-        {
-            try
-            {
-                synchronized (model)
-                {
-                    XScuflParser.populate(new FileInputStream(xscuflFile), model, null);
-                }
-            }
-            catch (XScuflFormatException e)
-            {
-                throw new FileNotFoundException("Valid XScufl format File not found");
-            }
-            catch (ProcessorCreationException e)
-            {
-                // If this occurs, may just be a temp problem with the service
-                // Try 3 times before giving up!
-                int retry = 0;
-                boolean success = false;
-
-                while (retry < 3)
-                {
-                    // wait a while
-                    wait(1000);
-                    //retry to populate model
-                    try
-                    {
-                        XScuflParser.populate(new FileInputStream(xscuflFile), model, null);
-                        // successful if ProcessorCreationException isn't thrown again - so set succes to true and exit
-                        success = true;
-                        break;
-                    }
-                    catch (ProcessorCreationException f)
-                    {
-                        // Exception thrown again - increment retry and loop
-                        retry++;
-                    }
-                }
-                if (!success)
-                {
-                    // success is false, no processor created after 3 attempts so give up
-                    throw new WorkflowCreationException("Unable to create a processor", e);
-                }
-            }
-        }
-        catch (FileNotFoundException e)
-        {
-            throw new WorkflowCreationException("File not found", e);
-        }
-        catch (Exception e)
-        {
-            throw new WorkflowCreationException("A problem occurred whilst creating the workflow", e);
-        }
-
         // Create a new DatabaseManager to handle the data outputs - DatabaseManager is Runnable
         dbMan = new DatabaseManager(sequenceDBLocation);
 
@@ -167,6 +117,61 @@ public class DalecManager
         dbThread = new Thread(dbMan, "Database_Thread");
         dbThread.start();
 
+        // grab Xscufl file and use it to populate the scufl model
+        model = new ScuflModel();
+        try
+        {
+            try
+            {
+                synchronized (model)
+                {
+                    XScuflParser.populate(new FileInputStream(xscuflFile), model, null);
+                }
+            }
+            catch (XScuflFormatException e)
+            {
+                throw new FileNotFoundException("Valid XScufl format File not found");
+            }
+            catch (ProcessorCreationException e)
+            {
+                // If this occurs, may just be a temp problem with the service
+                // Try 3 times before giving up!
+                int retry = 0;
+                boolean success = false;
+
+                while (retry < 3 && !success)
+                {
+                    // wait a while
+                    wait(1000);
+                    //retry populating model
+                    try
+                    {
+                        XScuflParser.populate(new FileInputStream(xscuflFile), model, null);
+                        // successful if ProcessorCreationException isn't thrown again - so set succes to true and exit
+                        success = true;
+                    }
+                    catch (ProcessorCreationException f)
+                    {
+                        // Exception thrown again - increment retry and loop
+                        retry++;
+                    }
+                }
+                if (!success)
+                {
+                    // success is false, no processor created after 3 attempts so give up
+                    throw new WorkflowCreationException("Unable to create a processor", e);
+                }
+            }
+        }
+        catch (FileNotFoundException e)
+        {
+            throw new WorkflowCreationException("File not found", e);
+        }
+        catch (Exception e)
+        {
+            throw new WorkflowCreationException("A problem occurred whilst creating the workflow", e);
+        }
+
         // create concurrent Threads so several copies of the workflow can be executed simultaneously
         // each thread compiles its own copy of workflow from 'model'
         for (int i = 0; i < workflowThreadPool.length; i++)
@@ -175,94 +180,112 @@ public class DalecManager
             {
                 public void run()
                 {
-                    // Compile the workflow
                     try
                     {
-                        final WorkflowInstance workflow;
-                        synchronized (model)
-                        {
-                            workflow = (new FreefluoEnactorProxy()).compileWorkflow(model, null);
-                        }
-
-                        // Add WorkFlowStateListener so we can be notified of results
-                        ((WorkflowInstanceImpl) workflow).addWorkflowStateListener(new WorkflowStateListener()
-                        {
-                            public void workflowStateChanged(WorkflowStateChangedEvent event)
-                            {
-                                WorkflowState state = event.getWorkflowState();
-                                // If workflow has finished current job, (ie. state.isFinal()) then send results to DB
-                                if (state.isFinal())
-                                {
-                                    // TODO - handling workflow outputs! Writing data to/from the database, need to parse correctly!
-                                    Map output = workflow.getOutput();
-                                    DataThing out = (DataThing) output.get("GFFRecord");
-
-                                    SimpleGFFRecord gffOut = new SimpleGFFRecord();
-                                    gffOut.setSeqName("mySeq");
-                                    gffOut.setSource(out.toString());
-
-                                    System.out.println("Results acquired, passing to dbMan");
-                                    dbMan.addNewResult(gffOut);
-                                }
-                            }
-                        });
-
-                        // Now run forever indefinitely
+                        // Run indefinitely until terminated
                         while (!terminated)
                         {
                             String jobID = null;
                             DataThing job;
                             Map inputs = new HashMap();
 
+                            // Continually request new jobs
+                            synchronized (jobList)
+                            {
+                                // Check to make sure there are pending jobs - otherwise just wait
+                                while (jobList.isEmpty() && !terminated)
+                                {
+                                    jobList.wait();
+                                }
+                                if (terminated) break;
+
+                                // Gotten past wait and break operations so must have new job
+                                jobID = (String) jobList.get(0);
+                                job = new DataThing(jobID);
+
+                                // So a new job is allocated - remove from the jobList and place into computeList
+                                jobList.remove(jobID);
+                                synchronized (computeList)
+                                {
+                                    computeList.add(jobID);
+                                }
+                            }
+                            inputs.put("seqID", job); // now have our job set as an input
+
+                            // compile our workflow
                             try
                             {
-                                // Continually request new jobs
-                                synchronized (jobList)
+                                final WorkflowInstance workflow = (new FreefluoEnactorProxy()).compileWorkflow(model, null);
+
+                                // Add WorkFlowStateListener so we can be notified of results
+                                ((WorkflowInstanceImpl) workflow).addWorkflowStateListener(new WorkflowStateListener()
                                 {
-                                    // Check to make sure there are pending jobs - otherwise just wait
-                                    while (jobList.isEmpty() && !terminated)
+                                    public void workflowStateChanged(WorkflowStateChangedEvent event)
                                     {
-                                        jobList.wait();
+                                        WorkflowState state = event.getWorkflowState();
+                                        // If workflow has finished current job, (ie. state.isFinal()) then send results to DB
+                                        if (state.isFinal())
+                                        {
+                                            // TODO - handling workflow outputs! Writing data to/from the database, need to parse correctly!
+                                            Map output = workflow.getOutput();
+                                            DataThing out = (DataThing) output.get("GFFRecord");
+
+                                            SimpleGFFRecord gffOut = new SimpleGFFRecord();
+                                            gffOut.setSeqName(gffOut.getSeqName());
+                                            gffOut.setSource(out.toString());
+
+                                            System.out.print("*result DONE*");
+                                            dbMan.addNewResult(gffOut);
+                                            // notify this thread that workflow has finished
+                                            synchronized (workflow)
+                                            {
+                                                workflow.notify();
+                                            }
+                                        }
                                     }
-                                    if (terminated) break;
+                                });
 
-                                    jobID = (String) jobList.get(0);
-                                    job = new DataThing(jobID);
+                                // we have next job and a newly compiled workflow so set inputs and run this job
+                                System.out.println("Job: " + jobID + " being done by " + this.getName());
 
-                                    // So a new job is allocated - remove from the jobList and place into computeList
-                                    jobList.remove(jobID);
-                                    synchronized (computeList)
-                                    {
-                                        computeList.add(jobID);
-                                    }
-                                }
-                                inputs.put("seqID", job);
-
-                                // do current job
                                 workflow.setInputs(inputs);
                                 workflow.run();
+                                synchronized (workflow)
+                                {
+                                    // wait until this thread is notified that workflow has finished
+                                    workflow.wait();
+                                }
+                            }
+                            catch (WorkflowSubmissionException e)
+                            {
+                                // Couldn't submit workflow this time - log this problem
+                                logError(dbMan.getDatabaseLocation(), "Compiling workflow", e);
+
+                                // Now remove from computeList and put back into jobList -
+                                // this allows this job to be retried at a later time
+                                synchronized (computeList)
+                                {
+                                    computeList.remove(jobID);
+                                    synchronized (jobList)
+                                    {
+                                        jobList.add(jobID);
+                                    }
+                                }
                             }
                             catch (InvalidInputException e)
                             {
-                                // Log the fact that an InvalidInput was received - but then continue
-                                logError(dbMan.getDatabaseLocation(), jobID, e.getCause());
+                                // log the invalid input exception, but can still continue
+                                logError(dbMan.getDatabaseLocation(), "Starting workflow for input: " + jobID, e);
                             }
                         }
-
-                        // Check this is ok; may not be possible to recycle workflows, in which case will need to
-                        // recompile every time - and presumably add new listeners?
-                        // Seems that workflows CAN be reused - make SURE!!!
-                    }
-
-                            // Critical Exceptions
-                            // If can't submit a workflow, log the problem and interrupt this thread so it can be retried
-                    catch (WorkflowSubmissionException e)
-                    {
-
                     }
                     catch (InterruptedException e)
                     {
-
+                        // Thread has been externally interrupted whilst waiting - must close this thread
+                        if (this.isInterrupted())
+                        {
+                            logError(dbMan.getDatabaseLocation(), "Running workflow", e);
+                        }
                     }
                 }
             };
@@ -276,22 +299,70 @@ public class DalecManager
     }
 
     /**
+     * Destroy-type method, used for halting all currently active threads controlled by <code>DalecManager</code>.  This
+     * method should be called when a DalecAnnotationSource is being taken out of service, as workflow threads and
+     * database threads wil continue to run otherwise.
+     */
+    public synchronized void exterminate()
+    {
+        // setting terminated prevents new jobs starting
+        terminated = true;
+        // this won't wake waiting threads though, so notify all threads which are waiting on jobList
+        synchronized (jobList)
+        {
+            jobList.notifyAll();
+        }
+        // call dbMan.exterminate which halts database thread
+        dbMan.exterminate();
+
+        System.out.print("Dalec shutdown request: waiting for active threads to complete");
+        for (int i = 0; i < workflowThreadPool.length; i++)
+        {
+            do
+            {
+                System.out.print(".");
+                try
+                {
+                    this.wait(100);
+                }
+                catch (InterruptedException e)
+                {
+                    // do nothing
+                }
+            } while (workflowThreadPool[i].getState() != Thread.State.TERMINATED);
+        }
+        do
+        {
+            System.out.print(".");
+        } while (dbThread.getState() != Thread.State.TERMINATED);
+        // Set all initialised threads to null
+        for (int i = 0; i < workflowThreadPool.length; i++)
+        {
+            workflowThreadPool[i] = null;
+        }
+        dbThread = null;
+        // Run garbage collector
+        System.gc();
+        System.out.println("done");
+    }
+
+    /**
      * Request a Biojava <code>sequence</code> object containing annotation information, as evaluated by Dalec using the
      * specified <code>.XScufl</code> workflow.
      * <p/>
      * The sequence will be returned from the database if the annotation is completed.  If not, an exception is thrown
      * indicating that this sequence needs to be computed - the client should then try resubmitting the request.
      *
-     * @param seqID - String representing the ID of the sequence requested
+     * @param ref - String representing the ID of the sequence requested
      * @return a biojava sequence containing annotation information
      * @throws WaitWhileJobComputedException - If this sequence has been previously submitted and is to be calculated
      *                                       shortly.
      * @throws UnableToAccessDatabaseException
      *                                       - If there is a problem accessing the data held within the database.
      */
-    public Sequence requestSequence(String seqID) throws WaitWhileJobComputedException, UnableToAccessDatabaseException
+    public Sequence requestSequence(String ref) throws WaitWhileJobComputedException, UnableToAccessDatabaseException
     {
-        if (jobExists(seqID))
+        if (jobExists(ref))
         {
             // Use an exception here to notify DataSource that we are "waiting"
             throw new WaitWhileJobComputedException();
@@ -300,13 +371,13 @@ public class DalecManager
         {
             // job is not in jobList at the moment - this means it has:
 
-            //TODO - this is where data is retrieved from database - convert GFF data to biojava sequence?
             // EITHER been done before and stored - so return the data
-            if (dbMan.fileExists(seqID))
+            //TODO - this is where data is retrieved from database - convert GFF data to biojava sequence?
+            if (dbMan.fileExists(ref))
             {
                 try
                 {
-                    dbMan.getGFFEntry(seqID);
+                    dbMan.getGFFEntry(ref);
                 }
                 catch (UnableToAccessDatabaseException e)
                 {
@@ -316,46 +387,14 @@ public class DalecManager
                 }
 
                 // this is a test, need to parse data correctly
-                return new SimpleSequence(new SimpleSymbolList(Alphabet.EMPTY_ALPHABET), seqID, seqID, Annotation.EMPTY_ANNOTATION);
+                return new SimpleSequence(new SimpleSymbolList(Alphabet.EMPTY_ALPHABET), ref, ref, Annotation.EMPTY_ANNOTATION);
             }
 
             // OR it has never been done - so add to the job list and return a "waiting" message
             else
             {
-                submitJob(seqID);
+                submitJob(ref);
                 throw new WaitWhileJobComputedException();
-            }
-        }
-    }
-
-    private void submitJob(String inputID)
-    {
-        // Synchronized around jobList, prevents concurrent modification
-        synchronized (jobList)
-        {
-            if (jobList.isEmpty())
-            {
-                // When new job submitted, notifies all threads which are waiting when no outstanding jobs
-                jobList.add(inputID);
-                jobList.notifyAll();
-            }
-            else
-            {
-                // Otherwise just adds next jobs if not empty
-                jobList.add(inputID);
-            }
-        }
-    }
-
-    private synchronized boolean jobExists(String jobID)
-    {
-        // acquire locks on the jobList and computeList
-        synchronized (jobList)
-        {
-            synchronized (computeList)
-            {
-                // If jobID is present in neither list we return false - otherwise true
-                return (jobList.contains(jobID) || computeList.contains(jobID));
             }
         }
     }
@@ -404,54 +443,72 @@ public class DalecManager
             System.out.println("Unable to write entry to error log file due to an IOException");
             e1.printStackTrace();
         }
-
     }
 
     /**
-     * Destroy-type method, used for halting all currently active threads controlled by <code>DalecManager</code>.  This
-     * method should be called when a DalecAnnotationSource is being taken out of service, as workflow threads and
-     * database threads wil continue to run otherwise.
+     * Returns <code>true</code> if <code>DalecManager</code> is terminated, <code>false</code> otherwise.
+     *
+     * @return boolean terminated status
      */
-    public synchronized void exterminate()
+    public boolean getTerminatedStatus()
     {
-        // setting terminated prevents new jobs starting
-        terminated = true;
-        // this won't wake waiting threads though, so notify all threads which are waiting on jobList
+        return terminated;
+    }
+
+    /**
+     * Returns true if the input for this workflow is "raw" sequence, false if the input is in the form of a sequence
+     * ID
+     *
+     * @return
+     */
+    public boolean inputIsSequence() throws IncorrectlyNamedProcessorException
+    {
+        Port[] p = model.getWorkflowSourcePorts();
+        int i = 0;
+        while (i < p.length)
+        {
+            if (p[i].isSource() && p[i].getName() == "sequence")
+            {
+                return true;
+            }
+            else if (p[i].isSource() && p[i].getProcessor().getName() == "seqID")
+            {
+                return false;
+            }
+            i++;
+        }
+        throw new IncorrectlyNamedProcessorException("Unable to locate an input processor named \"sequence\" or \"seq_ID\" in this model");
+    }
+
+    private void submitJob(String inputID)
+    {
+        // Synchronized around jobList, prevents concurrent modification
         synchronized (jobList)
         {
-            jobList.notifyAll();
-        }
-        // call dbMan.exterminate which halts database thread
-        dbMan.exterminate();
-
-        System.out.print("Shutting down Dalec");
-        for (int i = 0; i < workflowThreadPool.length; i++)
-        {
-            do
+            if (jobList.isEmpty())
             {
-                System.out.print(".");
-                try
-                {
-                    this.wait(100);
-                }
-                catch (InterruptedException e)
-                {
-                    // do nothing
-                }
-            } while (workflowThreadPool[i].getState() != Thread.State.TERMINATED);
+                // When new job submitted, notifies all threads which are waiting when no outstanding jobs
+                jobList.add(inputID);
+                jobList.notifyAll();
+            }
+            else
+            {
+                // Otherwise just adds next jobs if not empty
+                jobList.add(inputID);
+            }
         }
-        do
+    }
+
+    private synchronized boolean jobExists(String jobID)
+    {
+        // acquire locks on the jobList and computeList
+        synchronized (jobList)
         {
-            System.out.print(".");
-        } while (dbThread.getState() != Thread.State.TERMINATED);
-        // Set all initialised threads to null
-        for (int i = 0; i < workflowThreadPool.length; i++)
-        {
-            workflowThreadPool[i] = null;
+            synchronized (computeList)
+            {
+                // If jobID is present in neither list we return false - otherwise true
+                return (jobList.contains(jobID) || computeList.contains(jobID));
+            }
         }
-        dbThread = null;
-        // Run garbage collector
-        System.gc();
-        System.out.println("done");
     }
 }

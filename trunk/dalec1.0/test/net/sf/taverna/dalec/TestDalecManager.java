@@ -5,6 +5,8 @@ import net.sf.taverna.dalec.exceptions.WaitWhileJobComputedException;
 import net.sf.taverna.dalec.exceptions.UnableToAccessDatabaseException;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.Iterator;
 
 import junit.framework.TestCase;
 import org.biojava.bio.seq.impl.SimpleSequence;
@@ -16,10 +18,9 @@ import org.biojava.bio.seq.impl.SimpleSequence;
  */
 public class TestDalecManager extends TestCase
 {
-    DalecManager davros;
-
-    public void construct()
+    private DalecManager construct()
     {
+        DalecManager davros = null;
         File xsFile = new File("C:\\home\\tony\\documents\\dalec1.0\\workflow.xml");
         try
         {
@@ -29,17 +30,18 @@ public class TestDalecManager extends TestCase
         {
             System.out.println("Encountered a WorkflowCreationException");
         }
+        return davros;
     }
 
-    public void testDavrosStartup()
+    public void testDavrosStartStop()
     {
-        System.out.println("Number of threads at start: " + Thread.activeCount());
+        // Build a new dalec
+        DalecManager dalec = construct();
 
-        // Build a new davros
-        if (davros == null) construct();
-
-        assertFalse(davros == null);
+        assertFalse(dalec == null);
         System.out.println("Dalec is active and running");
+
+        assertFalse(dalec.getTerminatedStatus());
 
         synchronized (this)
         {
@@ -53,15 +55,17 @@ public class TestDalecManager extends TestCase
             }
         }
 
-        System.out.println("Number of threads at end: " + Thread.activeCount());
-        davros.exterminate();
-        davros = null;
+        dalec.exterminate();
         System.gc();
+        assertTrue(dalec.getTerminatedStatus());
     }
 
     public void testNewSequenceRequest()
     {
-        if (davros == null) construct();
+        // Build a new dalec
+        DalecManager dalec = construct();
+
+        assertFalse(dalec.getTerminatedStatus());
 
         synchronized (this)
         {
@@ -75,10 +79,10 @@ public class TestDalecManager extends TestCase
             }
         }
 
-        // Request existing sequence
+        // Request new sequence
         try
         {
-            davros.requestSequence("embl:X13776\t");
+            dalec.requestSequence("embl:X13776");
         }
         catch (WaitWhileJobComputedException e)
         {
@@ -88,27 +92,6 @@ public class TestDalecManager extends TestCase
         {
             System.out.println("Unable to acess database");
         }
-
-        synchronized (this)
-        {
-            try
-            {
-                wait(15000);
-            }
-            catch (InterruptedException e)
-            {
-                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-            }
-        }
-
-        davros.exterminate();
-        davros = null;
-        System.gc();
-    }
-
-    public void testOldSequenceRequest()
-    {
-        if (davros == null) construct();
 
         synchronized (this)
         {
@@ -121,11 +104,27 @@ public class TestDalecManager extends TestCase
                 e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
             }
         }
+
+        dalec.exterminate();
+        System.gc();
+        assertTrue(dalec.getTerminatedStatus());
+    }
+
+    public void testOldSequenceRequest()
+    {
+        // Build a new dalec
+        DalecManager dalec = construct();
+
+        // Directly submit a dummy sequence to the Database
+        TestDatabaseManager tdm = new TestDatabaseManager();
+        tdm.testAddJob();
+        // have now added testSequence to the database
+
         try
         {
-            SimpleSequence seq = (SimpleSequence)davros.requestSequence("mySeq");
-            System.out.println ("Sequence name is: " + seq.getName());
-            System.out.println (seq.toString());
+            SimpleSequence seq = (SimpleSequence) dalec.requestSequence("testSequence");
+            System.out.println("Sequence name is: " + seq.getName());
+            System.out.println(seq.toString());
         }
         catch (WaitWhileJobComputedException e)
         {
@@ -136,9 +135,68 @@ public class TestDalecManager extends TestCase
             System.out.println("Unable to acess database");
         }
 
-        davros.exterminate();
-        davros = null;
+        dalec.exterminate();
         System.gc();
+        assertTrue(dalec.getTerminatedStatus());
+    }
+
+    public void testManyNewSequences()
+    {
+        ArrayList ids = new ArrayList();
+        ids.add("embl:X13776");
+        ids.add("embl:XLA566764");
+        ids.add("embl:XL43663");
+        ids.add("embl:XL43664");
+        ids.add("embl:XCCUR");
+        ids.add("embl:XLAF1163");
+
+        // Build a new dalec
+        DalecManager dalec = construct();
+
+        synchronized (this)
+        {
+            try
+            {
+                wait(1000);
+            }
+            catch (InterruptedException e)
+            {
+                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            }
+        }
+
+        // Request new sequences
+        for (Iterator it = ids.iterator(); it.hasNext();)
+        {
+            try
+            {
+                dalec.requestSequence((String) it.next());
+            }
+            catch (WaitWhileJobComputedException e)
+            {
+                System.out.println("This sequence is being calculated");
+            }
+            catch (UnableToAccessDatabaseException e)
+            {
+                System.out.println("Unable to acess database");
+            }
+        }
+
+        synchronized (this)
+        {
+            try
+            {
+                wait(20000);
+            }
+            catch (InterruptedException e)
+            {
+                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            }
+        }
+
+        dalec.exterminate();
+        System.gc();
+        assertTrue(dalec.getTerminatedStatus());
     }
 
     public void testErrorLogging()
