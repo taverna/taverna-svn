@@ -39,3 +39,4 @@ org.biomoby.client.taverna.plugin.ExtractMobyData = moby:Parse moby data - not w
 
 org.embl.ebi.escience.scuflworkers.java.FailIfTrue = conditional:Fail if true
 org.embl.ebi.escience.scuflworkers.java.FailIfFalse = conditional:Fail if false
+org.embl.ebi.escience.scuflworkers.java.ByteArrayToString = text:Byte[] to String

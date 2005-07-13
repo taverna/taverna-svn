@@ -368,7 +368,9 @@ public class WSDLBasedProcessor extends Processor implements java.io.Serializabl
                 types[i] = Integer.TYPE;
             } else if ("boolean".equals(s)) {
                 types[i] = Boolean.TYPE;
-            } else {
+	    } else if ("base64binary".equals(s)) {
+		types[i] = byte[].class;
+	    } else {
 		// Hmmm, interesting. This is therefore a type that we haven't seen before
 		// and need to fudge things by registering a new serializer and deserializer
 		// with the WSIFService instance.
