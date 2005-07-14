@@ -26,7 +26,7 @@ import uk.ac.soton.itinnovation.taverna.enactor.entities.TaskExecutionException;
  * returns a nodelist containing the nodes that match the XPath expression.
  * 
  * @author mfortner
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  * 
  * @tavinput "xpath", "xml-text"
  * 
@@ -52,7 +52,9 @@ public class XPathTextWorker implements LocalWorker {
             
             //List nodelist = xpathSelector.selectNodes(doc);
         	
-        	SAXReader reader = new SAXReader();
+        	SAXReader reader = new SAXReader(false);
+		reader.setIncludeInternalDTDDeclarations(false);
+		reader.setIncludeExternalDTDDeclarations(false);
         	
             Document document = reader.read(new StringReader(xmlText));
             List nodelist = document.selectNodes(xpathStr);
