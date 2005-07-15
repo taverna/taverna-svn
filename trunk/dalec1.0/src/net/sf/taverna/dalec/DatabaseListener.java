@@ -4,7 +4,8 @@ package net.sf.taverna.dalec;
  * Interface describing a DatabaseListener.  All implementing subclasses should describe methods for database entry
  * creation, failure and removal events.
  *
- * @author Tony Burdett date: 20-Jun-2005
+ * @version 1.0
+ * @author Tony Burdett
  */
 public interface DatabaseListener
 {

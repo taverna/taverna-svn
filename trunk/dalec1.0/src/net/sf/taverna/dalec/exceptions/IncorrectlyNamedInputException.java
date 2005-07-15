@@ -3,7 +3,8 @@ package net.sf.taverna.dalec.exceptions;
 /**
  * Javadocs go here.
  *
- * @author Tony Burdett date: 12-Jul-2005
+ * @version 1.0
+ * @author Tony Burdett
  */
 public class IncorrectlyNamedInputException extends BadWorkflowFormatException
 {

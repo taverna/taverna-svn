@@ -3,7 +3,8 @@ package net.sf.taverna.dalec.exceptions;
 /**
  * Javadocs go here.
  *
- * @author Tony Burdett date: 15-Jul-2005
+ * @version 1.0
+ * @author Tony Burdett
  */
 public class BadWorkflowFormatException extends Exception
 {

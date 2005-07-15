@@ -44,7 +44,8 @@ import javax.xml.parsers.DocumentBuilder;
  * Once all properties are set and the <code>init()</code> method is called, an instance of DalecManager will be created
  * ready to annotate submitted requests.
  *
- * @author Tony Burdett Date: 15-Jun-2005 Time: 10:58:08
+ * @version 1.0
+ * @author Tony Burdett
  */
 public class DalecAnnotationSource extends AbstractDataSource
 {
@@ -71,13 +72,16 @@ public class DalecAnnotationSource extends AbstractDataSource
     }
 
     /**
+     * Terminate all current activity for this datasource.
+     * <p/>
      * Dalec is intended to run indefinitely, automatically spawning new threads to carry out workflow calculations and
      * database entries.  These threads remain live, waiting for the submission of new jobs, until the
      * <code>destroy()</code> method is called.  When called, this method will remove all pending jobs, and allow any
-     * active threads to die once their current job has been completed. A DalecAnnotationSource can then be taken out of
-     * service. Note that this method will remove any jobs which have been submitted but not yet annotasted by the
-     * workflow.  Also, any jobs which <i>have</i> been annotated but not yet written to disk will be lost when this method is
-     * called.  Any jobs which have not been added to Dalec's database must be resubmitted when Dalec is restarted.
+     * active threads to die once their current job has been completed. A <code>DalecAnnotationSource</code> can then be
+     * taken out of service. Note that this method will remove any jobs which have been submitted but not yet annotasted
+     * by the workflow.  Also, any jobs which <i>have</i> been annotated but not yet written to disk will be lost when
+     * this method is called.  Any jobs which have not been added to Dalec's database must be resubmitted when Dalec is
+     * restarted.
      */
     public void destroy()
     {

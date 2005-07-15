@@ -7,7 +7,8 @@ import java.util.Map;
  * Dalec.  Any implementing class should describe a method to set the data to be used as an input, of the required
  * type.
  *
- * @author Tony Burdett date: 14-Jul-2005
+ * @version 1.0
+ * @author Tony Burdett
  */
 public interface WorkflowInput
 {
@@ -29,22 +30,22 @@ public interface WorkflowInput
     /**
      * Returns the named input processor
      *
-     * @return
+     * @return the input processor name
      */
     public String getProcessorName ();
 
     /**
-     * Returns the jobID set for this workflow.
+     * Returns the jobID set for this workflow input.
      *
-     * @return
+     * @return the jobID of this input
      */
     public String getJobID();
 
     /**
      * Returns a Map object containing the required inputs for any workflow - namely, the processor ID and the data to
-     * be submitted.
+     * be submitted, which should be as a DataThing Object.
      *
-     * @return
+     * @return A Map of workflow inputs held by this WorkflowInput
      */
     public Map getInput();
 }

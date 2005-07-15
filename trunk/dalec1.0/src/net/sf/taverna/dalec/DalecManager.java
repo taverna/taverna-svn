@@ -28,17 +28,20 @@ import uk.ac.soton.itinnovation.freefluo.main.InvalidInputException;
  * This class co-ordinates all the "hard work" for Dalec, including retaining the cache of jobs to waiting to be done,
  * handling data submission and data access, invoking the workflow, and returning annotation results.
  * <p/>
- * Normally, an instance of DalecManager would be created when the <code>init()</code> method is called on
- * DalecAnnotationSource.  When this happens, DalecManager runs through its normal start-up procedure, which involves
- * creating several threads for individual copies of the workflow (allowing several queries to be handled concurrently)
- * and creation of a new database (and a new instance of DatabaseManager) to permanently retain generated results.
+ * Normally, an instance of <code>DalecManager</code> would be created when the <code>init()</code> method is called on
+ * <code>DalecAnnotationSource</code>.  When this happens, <code>DalecManager</code> runs through its normal start-up
+ * procedure, which involves creating several threads for individual copies of the workflow (allowing several queries to
+ * be handled concurrently) and creation of a new database (and a new instance of <code>DatabaseManager</code>) to
+ * permanently retain generated results.
  * <p/>
  * When a new request is received from the DAS client, this request can be passed onto DalecManager by calling the
  * requestAnnotations() method. If the sequence requested has already been annotated by this server, the results are
- * returned. If no results exist, a NewJobSubmissionException is thrown.  Any calling class should handle this exception
- * by then submitting the sequence as a new job, calling the submitJob() method.
+ * returned. If no results exist, a <code>NewJobSubmissionException</code> is thrown.  Any calling class should handle
+ * this exception by then submitting the sequence as a new job, calling the <code>submitJob()</code> method.
  * <p/>
- * Author: Tony Burdett Date: 15-Jun-2005 Time: 13:49:29
+ *
+ * @author Tony Burdett
+ * @version 1.0
  */
 public class DalecManager
 {
@@ -54,9 +57,9 @@ public class DalecManager
 
     /**
      * Constructor for class <code>DalecManager</code>.  When a new <code>DalecManager</code> is created, the database
-     * it will use is created using the <code>File</code> parameter passed to it.  A <code>DatabaseListener</code> is
-     * registered to the DatabaseManager, and a dedicated database thread is created and started to handle database
-     * entries as the results are generated from the workflow.
+     * it will use is created using the <code>File</code> parameter passed to it.  A new <code>DatabaseManager</code> is
+     * created, a <code>DatabaseListener</code> is registered to it, and a dedicated database thread is started to
+     * handle database entries as the results are generated from the workflow.
      * <p/>
      * The workflow file passed is used to populate a workflow model, which will then be used to compile workflows to do
      * annotations on sequences passed to Dalec by the client.  A <code>WorkflowCreationException</code> is thrown if
@@ -64,7 +67,7 @@ public class DalecManager
      * <p/>
      * Once the model has been populated, several concurrent threads are started, containing copies of the wokflow
      * model.  Each thread then compiles a working instance of the workflow.  Each thread then dynamically annotates
-     * submitted sequences as jobs are sent to DalecManager, sending the generated results to the instance of
+     * submitted sequences as jobs are sent to DalecManager, sending the generated results to the
      * <code>DatabaseManager</code> to be entered into the database.
      *
      * @param xscuflFile         The XML file which represents the workflow to use for this DalecManager
@@ -274,8 +277,6 @@ public class DalecManager
                                 });
 
                                 // we have next job and a newly compiled workflow so set inputs and run this job
-                                System.out.println("Job: " + jobID + " being done by " + this.getName());
-
                                 workflow.setInputs(job.getInput());
                                 workflow.run();
                                 synchronized (workflow)
@@ -372,6 +373,7 @@ public class DalecManager
         // Run garbage collector
         System.gc();
         System.out.println("done");
+        terminated = true;
     }
 
     /**
@@ -379,8 +381,8 @@ public class DalecManager
      * the specified <code>.XScufl</code> workflow.
      * <p/>
      * The GFFEntrySet will be returned from the database, as long as the specified annotation is completed.  If not, an
-     * exception is thrown indicating that this sequence needs to be computed - the client should then call submitJob,
-     * to request an annotation for this sequence.
+     * exception is thrown indicating that this sequence needs to be computed - the client should then call
+     * <code>submitJob()</code>, to request an annotation for this sequence.
      *
      * @param ref String representing either the ID of the sequence requested
      * @return a biojava sequence containing annotation information
@@ -439,7 +441,7 @@ public class DalecManager
      * the workflow input is the sequence data to be annotated) or "seqID" (if the workflow takes an ID and then
      * performs some lookup operation before annotating the sequence).  Either approach is valid, however Dalec will not
      * accept a workflow which does not contain a source processor with one of these names. Likewise, a workflow which
-     * contains BOTH sequence and seqID source processors is not valid.
+     * contains both sequence <i>and</i> seqID source processors is not valid.
      *
      * @return Either "sequence" or "seqID", depending on how the source processor in this model is named
      * @throws IncorrectlyNamedInputException if the workflow does not contain one of the required processor names
@@ -475,6 +477,17 @@ public class DalecManager
         }
     }
 
+    /**
+     * Submit a job to be annotated.  This method should be called once it has been determined that a sequence has not
+     * previously been submitted for annotation.  No checks are performed for this here, so it is your responsiblity to
+     * do so - the easiest way to do this is to attempt a <code>requestSequence()</code> call, catch the
+     * <code>NewJobSubmissionException</code> and handle it by calling this method. The "job" which should be submitted
+     * is a <code>WorkflowInput</code> Object.  This Object wraps all the required information for submission to the
+     * workflow - the processor name, the ID of the sequence to be submitted (the ID being the form recognised by the
+     * reference server this sequence was acquired from) and the actual data to be fed into the workflow.
+     *
+     * @param input A <code>WorkflowInput</code> object containing the data to be submitted to the workflow.
+     */
     public void submitJob(WorkflowInput input)
     {
         synchronized (jobList)
@@ -498,7 +511,7 @@ public class DalecManager
      * exceptions which have occurred unusually, this is mainly io errors which occurred when attempting to read or
      * write to the database, thread interruptions or other anticipated problems.
      *
-     * @param sequenceDBLocation The location of the Database - error log files are added to $DB_LOC/log/$ERR_FILE"
+     * @param sequenceDBLocation The location of the Database - error log files are added here under ../log/{Date}.err
      * @param jobName            A string describing the job being performed when the problem occurred
      * @param exception          The throwable cause of the problem making an error log entry necessary.
      */
