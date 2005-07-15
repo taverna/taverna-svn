@@ -113,92 +113,18 @@
   </component>
   <component name="FileEditorManager" split-orientation="vertical" split-proportion="0.5">
     <first-group selected-file="file://$PROJECT_DIR$/src/net/sf/taverna/dalec/DalecManager.java">
-      <entry file="file://$PROJECT_DIR$/src/net/sf/taverna/dalec/DalecManager.java" pinned="false">
-        <provider selected="true" editor-type-id="text-editor">
-          <state line="473" column="59" selection-start="21635" selection-end="21635" vertical-scroll-proportion="1.1742984">
-            <folding>
-              <element signature="docComment;class#DalecManager#0" expanded="false" />
-              <element signature="docComment;field#dbMan#0;class#DalecManager#0" expanded="false" />
-              <element signature="docComment;method#DalecManager#0;class#DalecManager#0" expanded="false" />
-              <element signature="class#4717:5685" expanded="false" />
-            </folding>
-          </state>
-        </provider>
-      </entry>
-      <entry file="file://$PROJECT_DIR$/test/net/sf/taverna/dalec/TestDalecAnnotationSource.java" pinned="false">
-        <provider selected="true" editor-type-id="text-editor">
-          <state line="318" column="0" selection-start="11099" selection-end="11099" vertical-scroll-proportion="0.8788774">
-            <folding>
-              <element signature="imports" expanded="true" />
-              <element signature="class#1723:6244" expanded="false" />
-              <element signature="class#6574:11095" expanded="false" />
-            </folding>
-          </state>
-        </provider>
-      </entry>
       <entry file="file://$PROJECT_DIR$/src/net/sf/taverna/dalec/DalecAnnotationSource.java" pinned="false">
         <provider selected="true" editor-type-id="text-editor">
-          <state line="61" column="28" selection-start="2577" selection-end="2577" vertical-scroll-proportion="0.025110783">
-            <folding>
-              <element signature="imports" expanded="true" />
-              <element signature="docComment;class#DalecAnnotationSource#0" expanded="false" />
-            </folding>
-          </state>
-        </provider>
-      </entry>
-      <entry file="file://$PROJECT_DIR$/src/net/sf/taverna/dalec/DatabaseManager.java" pinned="false">
-        <provider selected="true" editor-type-id="text-editor">
-          <state line="50" column="5" selection-start="2406" selection-end="2406" vertical-scroll-proportion="0.52732646">
-            <folding>
-              <element signature="imports" expanded="true" />
-              <element signature="docComment;class#DatabaseManager#0" expanded="false" />
-              <element signature="docComment;method#DatabaseManager#0;class#DatabaseManager#0" expanded="false" />
-              <element signature="method#DatabaseManager#0;class#DatabaseManager#0" expanded="false" />
-              <element signature="method#exterminate#0;class#DatabaseManager#0" expanded="false" />
-              <element signature="docComment;method#addNewResult#0;class#DatabaseManager#0" expanded="false" />
-              <element signature="method#addNewResult#0;class#DatabaseManager#0" expanded="false" />
-              <element signature="docComment;method#fileExists#0;class#DatabaseManager#0" expanded="false" />
-              <element signature="method#fileExists#0;class#DatabaseManager#0" expanded="false" />
-              <element signature="docComment;method#getGFFEntry#0;class#DatabaseManager#0" expanded="false" />
-              <element signature="method#getGFFEntry#0;class#DatabaseManager#0" expanded="false" />
-              <element signature="docComment;method#addDatabaseListener#0;class#DatabaseManager#0" expanded="false" />
-              <element signature="method#addDatabaseListener#0;class#DatabaseManager#0" expanded="false" />
-              <element signature="docComment;method#getDatabaseListener#0;class#DatabaseManager#0" expanded="false" />
-              <element signature="method#getDatabaseListener#0;class#DatabaseManager#0" expanded="false" />
-              <element signature="docComment;method#getPendingResults#0;class#DatabaseManager#0" expanded="false" />
-              <element signature="method#getPendingResults#0;class#DatabaseManager#0" expanded="false" />
-              <element signature="docComment;method#getDatabaseLocation#0;class#DatabaseManager#0" expanded="false" />
-              <element signature="method#getDatabaseLocation#0;class#DatabaseManager#0" expanded="false" />
-              <element signature="docComment;method#writeToFile#0;class#DatabaseManager#0" expanded="false" />
-              <element signature="method#writeToFile#0;class#DatabaseManager#0" expanded="false" />
-            </folding>
-          </state>
-        </provider>
-      </entry>
-      <entry file="file://$PROJECT_DIR$/test/net/sf/taverna/dalec/TestDalecManager.java" pinned="false">
-        <provider selected="true" editor-type-id="text-editor">
-          <state line="24" column="0" selection-start="601" selection-end="686" vertical-scroll-proportion="0.025110783">
+          <state line="187" column="103" selection-start="7823" selection-end="7823" vertical-scroll-proportion="3.6475942">
             <folding />
           </state>
         </provider>
       </entry>
-      <entry file="file://$PROJECT_DIR$/test/net/sf/taverna/dalec/TestDatabaseManager.java" pinned="false">
+      <entry file="file://$PROJECT_DIR$/src/net/sf/taverna/dalec/DalecManager.java" pinned="false">
         <provider selected="true" editor-type-id="text-editor">
-          <state line="18" column="4" selection-start="428" selection-end="513" vertical-scroll-proportion="0.35155097">
+          <state line="172" column="16" selection-start="7945" selection-end="7945" vertical-scroll-proportion="-0.33289987">
             <folding>
-              <element signature="imports" expanded="true" />
-              <element signature="docComment;class#TestDatabaseManager#0" expanded="false" />
-              <element signature="method#testDBCreation#0;class#TestDatabaseManager#0" expanded="false" />
-              <element signature="method#testDbRun#0;class#TestDatabaseManager#0" expanded="false" />
-              <element signature="method#testDBStop#0;class#TestDatabaseManager#0" expanded="false" />
-              <element signature="method#testAddJob#0;class#TestDatabaseManager#0" expanded="false" />
-              <element signature="method#testAddMultipleJobs#0;class#TestDatabaseManager#0" expanded="false" />
-              <element signature="method#testAddListener#0;class#TestDatabaseManager#0" expanded="false" />
-              <element signature="class#6751:7166" expanded="false" />
-              <element signature="method#testNotification#0;class#TestDatabaseManager#0" expanded="false" />
-              <element signature="class#7734:8270" expanded="false" />
-              <element signature="method#match#0;class#TestDatabaseManager#0" expanded="false" />
-              <element signature="method#isStopped#0;class#TestDatabaseManager#0" expanded="false" />
+              <element signature="class#4487:5455" expanded="false" />
             </folding>
           </state>
         </provider>
@@ -219,27 +145,29 @@
   <component name="J2EEProjectPane" />
   <component name="NamedScopeManager" />
   <component name="PackagesPane">
-    <expanded_node url="net.sf.taverna.dalec" module="dalec1.0" type="package" />
     <expanded_node url="net" module="dalec1.0" type="package" />
+    <expanded_node url="net.sf.taverna.dalec" module="dalec1.0" type="package" />
+    <expanded_node url="" module="dalec1.0" type="module" />
     <expanded_node url="net.sf.taverna" module="dalec1.0" type="package" />
     <expanded_node url="net.sf" module="dalec1.0" type="package" />
-    <expanded_node url="" module="dalec1.0" type="module" />
   </component>
   <component name="ProjectPane">
-    <expanded_node url="file://$PROJECT_DIR$/src/net/sf/taverna/dalec/exceptions" module="dalec1.0" type="directory" />
-    <expanded_node url="file://$PROJECT_DIR$/lib" module="dalec1.0" type="directory" />
+    <expanded_node url="" module="dalec1.0" type="module" />
     <expanded_node url="file://$PROJECT_DIR$" module="dalec1.0" type="directory" />
-    <expanded_node url="file://$PROJECT_DIR$/src/net/sf/taverna" module="dalec1.0" type="directory" />
-    <expanded_node url="file://$PROJECT_DIR$/test/net/sf/taverna" module="dalec1.0" type="directory" />
+    <expanded_node url="file://$PROJECT_DIR$/src/net" module="dalec1.0" type="directory" />
     <expanded_node url="file://$PROJECT_DIR$/test/net/sf/taverna/dalec" module="dalec1.0" type="directory" />
     <expanded_node url="file://$PROJECT_DIR$/test/net" module="dalec1.0" type="directory" />
-    <expanded_node url="file://$PROJECT_DIR$/src/net/sf" module="dalec1.0" type="directory" />
+    <expanded_node url="file://$PROJECT_DIR$/lib" module="dalec1.0" type="directory" />
     <expanded_node url="file://$PROJECT_DIR$/src" module="dalec1.0" type="directory" />
-    <expanded_node url="" module="dalec1.0" type="module" />
-    <expanded_node url="file://$PROJECT_DIR$/test/net/sf" module="dalec1.0" type="directory" />
-    <expanded_node url="file://$PROJECT_DIR$/src/net" module="dalec1.0" type="directory" />
-    <expanded_node url="file://$PROJECT_DIR$/src/net/sf/taverna/dalec" module="dalec1.0" type="directory" />
+    <expanded_node url="file://$PROJECT_DIR$/src/net/sf/taverna/dalec/workflow" module="dalec1.0" type="directory" />
+    <expanded_node url="file://$PROJECT_DIR$/src/net/sf" module="dalec1.0" type="directory" />
+    <expanded_node url="file://$PROJECT_DIR$/src/net/sf/taverna/dalec/workflow/io" module="dalec1.0" type="directory" />
     <expanded_node url="file://$PROJECT_DIR$/test" module="dalec1.0" type="directory" />
+    <expanded_node url="file://$PROJECT_DIR$/test/net/sf" module="dalec1.0" type="directory" />
+    <expanded_node url="file://$PROJECT_DIR$/test/net/sf/taverna" module="dalec1.0" type="directory" />
+    <expanded_node url="file://$PROJECT_DIR$/src/net/sf/taverna/dalec/exceptions" module="dalec1.0" type="directory" />
+    <expanded_node url="file://$PROJECT_DIR$/src/net/sf/taverna/dalec" module="dalec1.0" type="directory" />
+    <expanded_node url="file://$PROJECT_DIR$/src/net/sf/taverna" module="dalec1.0" type="directory" />
   </component>
   <component name="ProjectView">
     <navigator currentView="ProjectPane" splitterProportion="0.5">
@@ -254,7 +182,7 @@
     </navigator>
   </component>
   <component name="PropertiesComponent">
-    <property name="vcs_file_view_treeWidth2" value="121" />
+    <property name="vcs_file_view_treeWidth2" value="122" />
     <property name="vcs_file_view_flatOrder1" value="1" />
     <property name="MemberChooser.copyJavadoc" value="false" />
     <property name="vcs_file_view_treeOrder4" value="4" />
@@ -264,7 +192,7 @@
     <property name="GoToClass.includeLibraries" value="false" />
     <property name="vcs_file_view_flatOrder3" value="3" />
     <property name="MemberChooser.showClasses" value="true" />
-    <property name="vcs_file_view_treeWidth0" value="257" />
+    <property name="vcs_file_view_treeWidth0" value="255" />
     <property name="GoToClass.toSaveIncludeLibraries" value="false" />
     <property name="vcs_file_view_treeOrder0" value="0" />
     <property name="vcs_file_view_flatOrder4" value="4" />
@@ -276,7 +204,7 @@
     <property name="GenerateAntBuildDialog.enableUiFormCompile" value="false" />
     <property name="vcs_file_view_flatOrder2" value="2" />
     <property name="GenerateAntBuildDialog.backupFiles" value="false" />
-    <property name="vcs_file_view_treeWidth4" value="124" />
+    <property name="vcs_file_view_treeWidth4" value="125" />
     <property name="GenerateAntBuildDialog.generateSingleFile" value="true" />
     <property name="vcs_file_view_treeOrder2" value="2" />
     <property name="vcs_file_view_flatWidth3" value="125" />
@@ -342,7 +270,7 @@
       <RunnerSettings RunnerId="Run" />
       <ConfigurationWrapper RunnerId="Run" />
     </configuration>
-    <configuration selected="false" default="false" name="TestDalecManager" type="JUnit" factoryName="JUnit">
+    <configuration selected="true" default="false" name="TestDalecManager" type="JUnit" factoryName="JUnit">
       <module name="dalec1.0" />
       <option name="PACKAGE_NAME" value="net.sf.taverna.dalec" />
       <option name="MAIN_CLASS_NAME" value="net.sf.taverna.dalec.TestDalecManager" />
@@ -364,7 +292,7 @@
       <ConfigurationWrapper RunnerId="Debug" />
       <ConfigurationWrapper RunnerId="Run" />
     </configuration>
-    <configuration selected="true" default="false" name="TestDalecAnnotationSource" type="JUnit" factoryName="JUnit">
+    <configuration selected="false" default="false" name="TestDalecAnnotationSource" type="JUnit" factoryName="JUnit">
       <module name="dalec1.0" />
       <option name="PACKAGE_NAME" value="net.sf.taverna.dalec" />
       <option name="MAIN_CLASS_NAME" value="net.sf.taverna.dalec.TestDalecAnnotationSource" />
@@ -432,14 +360,14 @@
     <layout>
       <window_info id="CVS" active="false" anchor="bottom" auto_hide="false" internal_type="docked" type="docked" visible="false" weight="0.32979977" order="8" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="docked" type="docked" visible="false" weight="0.3875147" order="7" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="docked" type="docked" visible="true" weight="0.20655738" order="0" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="docked" type="docked" visible="true" weight="0.06639344" order="0" />
       <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="docked" type="docked" visible="false" weight="0.32979977" order="1" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="docked" type="docked" visible="false" weight="0.25" order="1" />
       <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="docked" type="docked" visible="false" weight="0.32979977" order="8" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="docked" type="docked" visible="false" weight="0.4" order="6" />
       <window_info id="Dependency Viewer" active="false" anchor="bottom" auto_hide="false" internal_type="docked" type="docked" visible="false" weight="0.33" order="8" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="docked" type="docked" visible="false" weight="0.25" order="1" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="docked" type="docked" visible="false" weight="0.81861013" order="2" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="docked" type="docked" visible="false" weight="0.51943463" order="2" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="docked" type="docked" visible="false" weight="0.25" order="2" />
       <window_info id="CVS File View" active="true" anchor="right" auto_hide="false" internal_type="docked" type="docked" visible="true" weight="0.6303279" order="3" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="docked" type="docked" visible="false" weight="0.66548884" order="4" />
@@ -518,30 +446,34 @@
     <option name="FILTER_TARGETS" value="false" />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/src/net/sf/taverna/dalec/package.html">
+    <entry file="file://$PROJECT_DIR$/src/net/sf/taverna/dalec/workflow/io/WorkflowInput.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
+        <state line="11" column="17" selection-start="369" selection-end="369" vertical-scroll-proportion="-0.8957219">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/net/sf/taverna/dalec/exceptions/WorkflowCreationException.java">
+    <entry file="file://$PROJECT_DIR$/src/net/sf/taverna/dalec/workflow/io/SequenceIDWorkflowInput.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="7" column="13" selection-start="190" selection-end="190" vertical-scroll-proportion="0.15159236">
-          <folding />
+        <state line="1" column="0" selection-start="42" selection-end="42" vertical-scroll-proportion="0.021683674">
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/net/sf/taverna/dalec/exceptions/WaitWhileJobComputedException.java">
+    <entry file="file://$PROJECT_DIR$/src/net/sf/taverna/dalec/workflow/io/SequenceWorkflowInput.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="7" column="13" selection-start="129" selection-end="129" vertical-scroll-proportion="0.15159236">
-          <folding />
+        <state line="53" column="53" selection-start="1106" selection-end="1106" vertical-scroll-proportion="0.8022959">
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/net/sf/taverna/dalec/DatabaseListener.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="8" column="33" selection-start="274" selection-end="274" vertical-scroll-proportion="0.063197024">
+        <state line="8" column="17" selection-start="258" selection-end="258" vertical-scroll-proportion="0.06505102">
           <folding>
             <element signature="docComment;class#DatabaseListener#0" expanded="false" />
             <element signature="docComment;method#databaseEntryCreated#0;class#DatabaseListener#0" expanded="false" />
@@ -551,72 +483,45 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/build.xml">
+    <entry file="file://$PROJECT_DIR$/src/net/sf/taverna/dalec/exceptions/NewJobSubmissionException.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
+        <state line="7" column="13" selection-start="129" selection-end="129" vertical-scroll-proportion="0.15637319">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="jar://C:/Program Files/Java/jdk1.5.0_03/src.zip!/java/util/NoSuchElementException.java">
+    <entry file="file://$PROJECT_DIR$/src/net/sf/taverna/dalec/exceptions/IncorrectlyNamedInputException.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="21" column="6" selection-start="536" selection-end="536" vertical-scroll-proportion="0.3469388">
+        <state line="7" column="13" selection-start="129" selection-end="129" vertical-scroll-proportion="0.15637319">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/net/sf/taverna/dalec/exceptions/IncorrectlyNamedProcessorException.java">
+    <entry file="file://$PROJECT_DIR$/src/net/sf/taverna/dalec/exceptions/BadWorkflowFormatException.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="26" column="21" selection-start="574" selection-end="574" vertical-scroll-proportion="0.56377554">
+        <state line="7" column="13" selection-start="129" selection-end="129" vertical-scroll-proportion="0.15637319">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/net/sf/taverna/dalec/exceptions/WorkflowCreationException.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="7" column="13" selection-start="190" selection-end="190" vertical-scroll-proportion="0.15178572">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/net/sf/taverna/dalec/exceptions/UnableToAccessDatabaseException.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="7" column="39" selection-start="155" selection-end="155" vertical-scroll-proportion="0.15178572">
+        <state line="7" column="13" selection-start="129" selection-end="129" vertical-scroll-proportion="0.15178572">
           <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/net/sf/taverna/dalec/DalecManager.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="473" column="59" selection-start="21635" selection-end="21635" vertical-scroll-proportion="1.1742984">
-          <folding>
-            <element signature="docComment;class#DalecManager#0" expanded="false" />
-            <element signature="docComment;field#dbMan#0;class#DalecManager#0" expanded="false" />
-            <element signature="docComment;method#DalecManager#0;class#DalecManager#0" expanded="false" />
-            <element signature="class#4717:5685" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/test/net/sf/taverna/dalec/TestDalecAnnotationSource.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="318" column="0" selection-start="11099" selection-end="11099" vertical-scroll-proportion="0.8788774">
-          <folding>
-            <element signature="imports" expanded="true" />
-            <element signature="class#1723:6244" expanded="false" />
-            <element signature="class#6574:11095" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/net/sf/taverna/dalec/DalecAnnotationSource.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="61" column="28" selection-start="2577" selection-end="2577" vertical-scroll-proportion="0.025110783">
-          <folding>
-            <element signature="imports" expanded="true" />
-            <element signature="docComment;class#DalecAnnotationSource#0" expanded="false" />
-          </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/net/sf/taverna/dalec/DatabaseManager.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="50" column="5" selection-start="2406" selection-end="2406" vertical-scroll-proportion="0.52732646">
+        <state line="73" column="13" selection-start="3415" selection-end="3415" vertical-scroll-proportion="0.56377554">
           <folding>
-            <element signature="imports" expanded="true" />
             <element signature="docComment;class#DatabaseManager#0" expanded="false" />
             <element signature="docComment;method#DatabaseManager#0;class#DatabaseManager#0" expanded="false" />
             <element signature="method#DatabaseManager#0;class#DatabaseManager#0" expanded="false" />
@@ -626,46 +531,59 @@
             <element signature="docComment;method#fileExists#0;class#DatabaseManager#0" expanded="false" />
             <element signature="method#fileExists#0;class#DatabaseManager#0" expanded="false" />
             <element signature="docComment;method#getGFFEntry#0;class#DatabaseManager#0" expanded="false" />
-            <element signature="method#getGFFEntry#0;class#DatabaseManager#0" expanded="false" />
             <element signature="docComment;method#addDatabaseListener#0;class#DatabaseManager#0" expanded="false" />
             <element signature="method#addDatabaseListener#0;class#DatabaseManager#0" expanded="false" />
             <element signature="docComment;method#getDatabaseListener#0;class#DatabaseManager#0" expanded="false" />
             <element signature="method#getDatabaseListener#0;class#DatabaseManager#0" expanded="false" />
             <element signature="docComment;method#getPendingResults#0;class#DatabaseManager#0" expanded="false" />
-            <element signature="method#getPendingResults#0;class#DatabaseManager#0" expanded="false" />
             <element signature="docComment;method#getDatabaseLocation#0;class#DatabaseManager#0" expanded="false" />
             <element signature="method#getDatabaseLocation#0;class#DatabaseManager#0" expanded="false" />
             <element signature="docComment;method#writeToFile#0;class#DatabaseManager#0" expanded="false" />
-            <element signature="method#writeToFile#0;class#DatabaseManager#0" expanded="false" />
           </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/test/net/sf/taverna/dalec/TestDalecManager.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="24" column="0" selection-start="601" selection-end="686" vertical-scroll-proportion="0.025110783">
-          <folding />
+        <state line="90" column="23" selection-start="2557" selection-end="2557" vertical-scroll-proportion="1.9895968">
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/test/net/sf/taverna/dalec/TestDatabaseManager.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="18" column="4" selection-start="428" selection-end="513" vertical-scroll-proportion="0.35155097">
+        <state line="80" column="31" selection-start="2156" selection-end="2156" vertical-scroll-proportion="1.6775032">
           <folding>
             <element signature="imports" expanded="true" />
             <element signature="docComment;class#TestDatabaseManager#0" expanded="false" />
-            <element signature="method#testDBCreation#0;class#TestDatabaseManager#0" expanded="false" />
-            <element signature="method#testDbRun#0;class#TestDatabaseManager#0" expanded="false" />
-            <element signature="method#testDBStop#0;class#TestDatabaseManager#0" expanded="false" />
-            <element signature="method#testAddJob#0;class#TestDatabaseManager#0" expanded="false" />
-            <element signature="method#testAddMultipleJobs#0;class#TestDatabaseManager#0" expanded="false" />
-            <element signature="method#testAddListener#0;class#TestDatabaseManager#0" expanded="false" />
-            <element signature="class#6751:7166" expanded="false" />
-            <element signature="method#testNotification#0;class#TestDatabaseManager#0" expanded="false" />
-            <element signature="class#7734:8270" expanded="false" />
-            <element signature="method#match#0;class#TestDatabaseManager#0" expanded="false" />
-            <element signature="method#isStopped#0;class#TestDatabaseManager#0" expanded="false" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/net/sf/taverna/dalec/DalecManager.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="172" column="16" selection-start="7945" selection-end="7945" vertical-scroll-proportion="-0.33289987">
+          <folding>
+            <element signature="class#4487:5455" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/test/net/sf/taverna/dalec/TestDalecAnnotationSource.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="41" column="5" selection-start="1012" selection-end="1012" vertical-scroll-proportion="0.8636927">
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/net/sf/taverna/dalec/DalecAnnotationSource.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="187" column="103" selection-start="7823" selection-end="7823" vertical-scroll-proportion="3.6475942">
+          <folding />
         </state>
       </provider>
     </entry>

@@ -1,11 +1,10 @@
 package net.sf.taverna.dalec;
 
-import org.biojava.bio.seq.Sequence;
-import org.biojava.bio.seq.impl.SimpleSequence;
-import org.biojava.bio.symbol.SimpleSymbolList;
-import org.biojava.bio.symbol.Alphabet;
-import org.biojava.bio.Annotation;
-import org.biojava.bio.program.gff.SimpleGFFRecord;
+import org.biojava.bio.BioException;
+import org.biojava.bio.program.gff.GFFEntrySet;
+import org.biojava.bio.program.gff.GFFDocumentHandler;
+import org.biojava.bio.program.gff.GFFParser;
+import org.biojava.utils.ParserException;
 import org.embl.ebi.escience.scufl.parser.XScuflFormatException;
 import org.embl.ebi.escience.scufl.parser.XScuflParser;
 import org.embl.ebi.escience.scufl.*;
@@ -18,10 +17,8 @@ import org.embl.ebi.escience.baclava.DataThing;
 import java.util.*;
 import java.io.*;
 
-import net.sf.taverna.dalec.exceptions.WorkflowCreationException;
-import net.sf.taverna.dalec.exceptions.WaitWhileJobComputedException;
-import net.sf.taverna.dalec.exceptions.UnableToAccessDatabaseException;
-import net.sf.taverna.dalec.exceptions.IncorrectlyNamedProcessorException;
+import net.sf.taverna.dalec.exceptions.*;
+import net.sf.taverna.dalec.workflow.io.WorkflowInput;
 import uk.ac.soton.itinnovation.freefluo.event.WorkflowStateListener;
 import uk.ac.soton.itinnovation.freefluo.event.WorkflowStateChangedEvent;
 import uk.ac.soton.itinnovation.freefluo.main.WorkflowState;
@@ -29,27 +26,22 @@ import uk.ac.soton.itinnovation.freefluo.main.InvalidInputException;
 
 /**
  * This class co-ordinates all the "hard work" for Dalec, including retaining the cache of jobs to waiting to be done,
- * checking and handling concurrency, invoking the workflow, collecting and returning results.  DalecManager also
- * creates a new instance of DatabaseManager, allowing results to be compiled into a flat file database as they are
- * generated.
+ * handling data submission and data access, invoking the workflow, and returning annotation results.
  * <p/>
  * Normally, an instance of DalecManager would be created when the <code>init()</code> method is called on
  * DalecAnnotationSource.  When this happens, DalecManager runs through its normal start-up procedure, which involves
- * creating several threads for individual copies of the workflow to run in, allowing the handling of concurrent
- * queries, and creation of a new database (and a new instance of DatabaseManager) to output the results.
+ * creating several threads for individual copies of the workflow (allowing several queries to be handled concurrently)
+ * and creation of a new database (and a new instance of DatabaseManager) to permanently retain generated results.
  * <p/>
- * When a new request is received from the DAS client, the job can be added to the DalecManager by calling the
- * requestSequence() method. DalecManager then hadnles this request appropriately, whether this sequence is already
- * within the database or needs to be annotated 'on the fly'.
+ * When a new request is received from the DAS client, this request can be passed onto DalecManager by calling the
+ * requestAnnotations() method. If the sequence requested has already been annotated by this server, the results are
+ * returned. If no results exist, a NewJobSubmissionException is thrown.  Any calling class should handle this exception
+ * by then submitting the sequence as a new job, calling the submitJob() method.
  * <p/>
  * Author: Tony Burdett Date: 15-Jun-2005 Time: 13:49:29
  */
 public class DalecManager
 {
-    /**
-     * Indicates whether this DalecManager is running or not (ie. whether <code>init()</code> has been called).  Returns
-     * true if running, false otherwise.
-     */
     private DatabaseManager dbMan;
     private ScuflModel model;
 
@@ -75,8 +67,8 @@ public class DalecManager
      * submitted sequences as jobs are sent to DalecManager, sending the generated results to the instance of
      * <code>DatabaseManager</code> to be entered into the database.
      *
-     * @param xscuflFile
-     * @param sequenceDBLocation
+     * @param xscuflFile         The XML file which represents the workflow to use for this DalecManager
+     * @param sequenceDBLocation The path to the root directory of the sequence database to be used
      * @throws WorkflowCreationException
      */
     public DalecManager(File xscuflFile, File sequenceDBLocation) throws WorkflowCreationException
@@ -172,8 +164,7 @@ public class DalecManager
             throw new WorkflowCreationException("A problem occurred whilst creating the workflow", e);
         }
 
-        // create concurrent Threads so several copies of the workflow can be executed simultaneously
-        // each thread compiles its own copy of workflow from 'model'
+        // Each thread compiles its own copy of workflow from 'model'
         for (int i = 0; i < workflowThreadPool.length; i++)
         {
             workflowThreadPool[i] = new Thread("Workflow_Thread_" + i)
@@ -186,8 +177,7 @@ public class DalecManager
                         while (!terminated)
                         {
                             String jobID = null;
-                            DataThing job;
-                            Map inputs = new HashMap();
+                            WorkflowInput job;
 
                             // Continually request new jobs
                             synchronized (jobList)
@@ -199,18 +189,17 @@ public class DalecManager
                                 }
                                 if (terminated) break;
 
-                                // Gotten past wait and break operations so must have new job
-                                jobID = (String) jobList.get(0);
-                                job = new DataThing(jobID);
+                                // Must be jobs in jobList here
+                                job = (WorkflowInput) jobList.get(0);
+                                jobID = job.getJobID();
 
                                 // So a new job is allocated - remove from the jobList and place into computeList
-                                jobList.remove(jobID);
+                                jobList.remove(job);
                                 synchronized (computeList)
                                 {
-                                    computeList.add(jobID);
+                                    computeList.add(job);
                                 }
                             }
-                            inputs.put("seqID", job); // now have our job set as an input
 
                             // compile our workflow
                             try
@@ -226,20 +215,59 @@ public class DalecManager
                                         // If workflow has finished current job, (ie. state.isFinal()) then send results to DB
                                         if (state.isFinal())
                                         {
-                                            // TODO - handling workflow outputs! Writing data to/from the database, need to parse correctly!
-                                            Map output = workflow.getOutput();
-                                            DataThing out = (DataThing) output.get("GFFRecord");
-
-                                            SimpleGFFRecord gffOut = new SimpleGFFRecord();
-                                            gffOut.setSeqName(gffOut.getSeqName());
-                                            gffOut.setSource(out.toString());
-
-                                            System.out.print("*result DONE*");
-                                            dbMan.addNewResult(gffOut);
-                                            // notify this thread that workflow has finished
-                                            synchronized (workflow)
+                                            // TODO - Naming of output processor - "annotations" acceptable currently
+                                            if (workflow.getOutput().containsKey("annotations"))
                                             {
-                                                workflow.notify();
+                                                DataThing output = (DataThing) workflow.getOutput().get("annotations");
+
+                                                // output is a DataThing representing XML GFF data
+                                                String data = (String) output.getDataObject(); // should retrieve the string of XML data
+
+                                                // Set up the stuff for parsing GFF data
+                                                BufferedReader bReader = new BufferedReader(new StringReader(data));
+                                                GFFEntrySet gff = new GFFEntrySet();
+                                                GFFDocumentHandler handler = gff.getAddHandler();
+                                                GFFParser parser = new GFFParser();
+
+                                                // Now parse the data to the GFFEntrySet
+                                                try
+                                                {
+                                                    parser.parse(bReader, handler);
+                                                }
+                                                catch (IOException e)
+                                                {
+                                                    // Unable to read from specified source
+                                                    System.out.println("IOException");
+                                                }
+                                                catch (BioException e)
+                                                {
+                                                    // GFFParser threw an exception which couldn't be corrected
+                                                    System.out.println("BioException");
+                                                }
+                                                catch (ParserException e)
+                                                {
+                                                    // Unable to parse GFF data correctly from the specified source - probably due to workflow output being incorrectly formatted
+                                                    System.out.println("ParserException");
+                                                }
+
+                                                // gff should now be fully created GFFEntrySet: submit to database
+                                                dbMan.addNewResult(gff);
+
+                                                // notify this thread that workflow has finished
+                                                synchronized (workflow)
+                                                {
+                                                    workflow.notify();
+                                                }
+                                            }
+                                            else
+                                            {
+                                                // can't find correctly named output - log this error
+                                                logError(dbMan.getDatabaseLocation(), "Retrieving output from workflow", new Exception("No output processor named 'annotations'", new BadWorkflowFormatException()));
+                                                // and notify thread that we're done with this workflow
+                                                synchronized (workflow)
+                                                {
+                                                    workflow.notify();
+                                                }
                                             }
                                         }
                                     }
@@ -248,7 +276,7 @@ public class DalecManager
                                 // we have next job and a newly compiled workflow so set inputs and run this job
                                 System.out.println("Job: " + jobID + " being done by " + this.getName());
 
-                                workflow.setInputs(inputs);
+                                workflow.setInputs(job.getInput());
                                 workflow.run();
                                 synchronized (workflow)
                                 {
@@ -265,10 +293,10 @@ public class DalecManager
                                 // this allows this job to be retried at a later time
                                 synchronized (computeList)
                                 {
-                                    computeList.remove(jobID);
+                                    computeList.remove(job);
                                     synchronized (jobList)
                                     {
-                                        jobList.add(jobID);
+                                        jobList.add(job);
                                     }
                                 }
                             }
@@ -347,37 +375,37 @@ public class DalecManager
     }
 
     /**
-     * Request a Biojava <code>sequence</code> object containing annotation information, as evaluated by Dalec using the
-     * specified <code>.XScufl</code> workflow.
+     * Request a Biojava <code>GFFEntrySet</code> object containing annotation information, as evaluated by Dalec using
+     * the specified <code>.XScufl</code> workflow.
      * <p/>
-     * The sequence will be returned from the database if the annotation is completed.  If not, an exception is thrown
-     * indicating that this sequence needs to be computed - the client should then try resubmitting the request.
+     * The GFFEntrySet will be returned from the database, as long as the specified annotation is completed.  If not, an
+     * exception is thrown indicating that this sequence needs to be computed - the client should then call submitJob,
+     * to request an annotation for this sequence.
      *
-     * @param ref - String representing the ID of the sequence requested
+     * @param ref String representing either the ID of the sequence requested
      * @return a biojava sequence containing annotation information
-     * @throws WaitWhileJobComputedException - If this sequence has been previously submitted and is to be calculated
-     *                                       shortly.
+     * @throws NewJobSubmissionException - If this sequence has been previously submitted and is to be calculated
+     *                                   shortly.
      * @throws UnableToAccessDatabaseException
-     *                                       - If there is a problem accessing the data held within the database.
+     *                                   - If there is a problem accessing the data held within the database.
      */
-    public Sequence requestSequence(String ref) throws WaitWhileJobComputedException, UnableToAccessDatabaseException
+    public GFFEntrySet requestAnnotations(String ref) throws NewJobSubmissionException, UnableToAccessDatabaseException
     {
         if (jobExists(ref))
         {
             // Use an exception here to notify DataSource that we are "waiting"
-            throw new WaitWhileJobComputedException();
+            throw new NewJobSubmissionException();
         }
         else
         {
             // job is not in jobList at the moment - this means it has:
 
             // EITHER been done before and stored - so return the data
-            //TODO - this is where data is retrieved from database - convert GFF data to biojava sequence?
             if (dbMan.fileExists(ref))
             {
                 try
                 {
-                    dbMan.getGFFEntry(ref);
+                    return dbMan.getGFFEntry(ref);
                 }
                 catch (UnableToAccessDatabaseException e)
                 {
@@ -385,30 +413,96 @@ public class DalecManager
                     logError(dbMan.getDatabaseLocation(), "Attempting to access database", e);
                     throw e;
                 }
-
-                // this is a test, need to parse data correctly
-                return new SimpleSequence(new SimpleSymbolList(Alphabet.EMPTY_ALPHABET), ref, ref, Annotation.EMPTY_ANNOTATION);
             }
 
             // OR it has never been done - so add to the job list and return a "waiting" message
             else
             {
-                submitJob(ref);
-                throw new WaitWhileJobComputedException();
+                throw new NewJobSubmissionException();
+            }
+        }
+    }
+
+    /**
+     * Returns <code>true</code> if <code>DalecManager</code> is terminated, <code>false</code> otherwise.
+     *
+     * @return boolean terminated status
+     */
+    public boolean getTerminatedStatus()
+    {
+        return terminated;
+    }
+
+    /**
+     * Returns the source processor name for the ScuflModel held by this DalecManager.  Dalec requires that a source
+     * processor is specified for the sequence to be annotated.  This processor should be named either "sequence" (if
+     * the workflow input is the sequence data to be annotated) or "seqID" (if the workflow takes an ID and then
+     * performs some lookup operation before annotating the sequence).  Either approach is valid, however Dalec will not
+     * accept a workflow which does not contain a source processor with one of these names. Likewise, a workflow which
+     * contains BOTH sequence and seqID source processors is not valid.
+     *
+     * @return Either "sequence" or "seqID", depending on how the source processor in this model is named
+     * @throws IncorrectlyNamedInputException if the workflow does not contain one of the required processor names
+     */
+    public String getInputName() throws IncorrectlyNamedInputException
+    {
+        // TODO - Naming of input processors - "sequence" or "seqID" acceptable currently
+        String inputName = "";
+        Port[] p = model.getWorkflowSourcePorts();
+        for (int i = 0; i < p.length; i++)
+        {
+            if ((p[i].getName().matches("sequence") && inputName.matches("seqID")) || (p[i].getName().matches("seqID") && inputName.matches("sequence")))
+            {
+                // 2 named inputs, seqID AND sequence present - this is not valid
+                throw new IncorrectlyNamedInputException("Found source processors named 'sequence' AND 'seqID'in this model - not valid!");
+            }
+            else if (p[i].getName().matches("sequence"))
+            {
+                inputName = p[i].getName();
+            }
+            else if (p[i].getName().matches("seqID"))
+            {
+                inputName = p[i].getName();
+            }
+        }
+        if (inputName == null)
+        {
+            throw new IncorrectlyNamedInputException("Unable to locate a source processor named 'sequence' or 'seqID' in this model");
+        }
+        else
+        {
+            return inputName;
+        }
+    }
+
+    public void submitJob(WorkflowInput input)
+    {
+        synchronized (jobList)
+        {
+            if (jobList.isEmpty())
+            {
+                // When new job submitted, notifies all threads which are waiting when no outstanding jobs
+                jobList.add(input);
+                jobList.notifyAll();
+            }
+            else
+            {
+                // Otherwise just adds next jobs if not empty
+                jobList.add(input);
             }
         }
     }
 
     /**
      * Static method which can be called to add an entry to the error log for this database.  Simple text dump for any
-     * exceptions which have occurred unusually, this is mainly IO errors which occurred when attempting to read or
+     * exceptions which have occurred unusually, this is mainly io errors which occurred when attempting to read or
      * write to the database, thread interruptions or other anticipated problems.
      *
-     * @param sequenceDBLocation The location of the Database - error log files are added to "$DB_LOC$/log/$ERR_FILE$"
+     * @param sequenceDBLocation The location of the Database - error log files are added to $DB_LOC/log/$ERR_FILE"
      * @param jobName            A string describing the job being performed when the problem occurred
-     * @param e                  The throwable cause of the problem making an error log entry necessary.
+     * @param exception          The throwable cause of the problem making an error log entry necessary.
      */
-    public synchronized static void logError(File sequenceDBLocation, String jobName, Throwable e)
+    public synchronized static void logError(File sequenceDBLocation, String jobName, Throwable exception)
     {
         // Name files by todays date
         Calendar cal = new GregorianCalendar();
@@ -432,8 +526,8 @@ public class DalecManager
                 errLog = new PrintWriter(new BufferedWriter(new FileWriter(errFile)));
             }
             errLog.println("Error occurred at " + time + ", whilst doing job: " + jobName);
-            errLog.println(e.getMessage());
-            errLog.println(e.getCause());
+            errLog.println(exception.getMessage());
+            errLog.println(exception.getCause());
             errLog.println("---------------------------------------------------------------");
             errLog.println();
             errLog.close();
@@ -442,60 +536,6 @@ public class DalecManager
         {
             System.out.println("Unable to write entry to error log file due to an IOException");
             e1.printStackTrace();
-        }
-    }
-
-    /**
-     * Returns <code>true</code> if <code>DalecManager</code> is terminated, <code>false</code> otherwise.
-     *
-     * @return boolean terminated status
-     */
-    public boolean getTerminatedStatus()
-    {
-        return terminated;
-    }
-
-    /**
-     * Returns true if the input for this workflow is "raw" sequence, false if the input is in the form of a sequence
-     * ID
-     *
-     * @return
-     */
-    public boolean inputIsSequence() throws IncorrectlyNamedProcessorException
-    {
-        Port[] p = model.getWorkflowSourcePorts();
-        int i = 0;
-        while (i < p.length)
-        {
-            if (p[i].isSource() && p[i].getName() == "sequence")
-            {
-                return true;
-            }
-            else if (p[i].isSource() && p[i].getProcessor().getName() == "seqID")
-            {
-                return false;
-            }
-            i++;
-        }
-        throw new IncorrectlyNamedProcessorException("Unable to locate an input processor named \"sequence\" or \"seq_ID\" in this model");
-    }
-
-    private void submitJob(String inputID)
-    {
-        // Synchronized around jobList, prevents concurrent modification
-        synchronized (jobList)
-        {
-            if (jobList.isEmpty())
-            {
-                // When new job submitted, notifies all threads which are waiting when no outstanding jobs
-                jobList.add(inputID);
-                jobList.notifyAll();
-            }
-            else
-            {
-                // Otherwise just adds next jobs if not empty
-                jobList.add(inputID);
-            }
         }
     }
 

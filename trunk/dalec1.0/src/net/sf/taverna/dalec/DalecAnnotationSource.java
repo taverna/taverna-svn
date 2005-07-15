@@ -3,6 +3,9 @@ package net.sf.taverna.dalec;
 import org.biojava.servlets.dazzle.datasource.AbstractDataSource;
 import org.biojava.servlets.dazzle.datasource.DataSourceException;
 import org.biojava.bio.seq.Sequence;
+import org.biojava.bio.seq.ProteinTools;
+import org.biojava.bio.seq.impl.SimpleSequence;
+import org.biojava.bio.symbol.IllegalSymbolException;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -11,11 +14,11 @@ import org.w3c.dom.Document;
 import java.io.*;
 import java.util.NoSuchElementException;
 import java.util.Set;
+import java.util.HashSet;
 
-import net.sf.taverna.dalec.exceptions.WorkflowCreationException;
-import net.sf.taverna.dalec.exceptions.WaitWhileJobComputedException;
-import net.sf.taverna.dalec.exceptions.UnableToAccessDatabaseException;
-import net.sf.taverna.dalec.exceptions.IncorrectlyNamedProcessorException;
+import net.sf.taverna.dalec.exceptions.*;
+import net.sf.taverna.dalec.workflow.io.SequenceIDWorkflowInput;
+import net.sf.taverna.dalec.workflow.io.SequenceWorkflowInput;
 
 import javax.servlet.ServletContext;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -27,9 +30,10 @@ import javax.xml.parsers.DocumentBuilder;
  * <p/>
  * <h3>Dalec Property Requirements</h3>
  * <p/>
- * Importantly for Dalec, the properties specified in <code>dazzlecfg.xml</code>  should include: <ul><li>The location
- * of the <code>.XScufl</code> format file used to construct the annotation workflow, and</li> <li>a location in which
- * the Dalec database should store its results.</li></ul>
+ * Importantly for Dalec, the properties specified in <code>dazzlecfg.xml</code> should include: <ul><li>[XScuflFile]:
+ * the location of the <code>.XScufl</code> format file used to construct the annotation workflow,</li>
+ * <li>[SequenceDBLocation]: the filepath of the location in which the Dalec database should store its results,</li>
+ * <li>[MapMaster]: the path to the DAS reference server from which sequences will be annotated.</ul>
  * <p/>
  * Note that, if the specified directory for the Dalec database does not exist, it will be created by Dalec.  Care
  * should be taken when setting this property, as large quantities of data could potentially be written to disk - a
@@ -59,7 +63,7 @@ public class DalecAnnotationSource extends AbstractDataSource
         catch (WorkflowCreationException e)
         {
             DalecManager.logError(seqDB, "workflow creation", e);
-            throw new DataSourceException(e, "Unable to create workflow - see the error log file (" + seqDB.getAbsolutePath() + "log\\<DATE>.err) for more information.");
+            throw new DataSourceException(e, "Unable to create workflow - see the error log file (" + seqDB.getAbsolutePath() + "\\log\\<DATE>.err) for more information.");
         }
 
         // Now use normal init method
@@ -67,11 +71,13 @@ public class DalecAnnotationSource extends AbstractDataSource
     }
 
     /**
-     * Specific destroy method for this Datasource.  The <code>destroy()</code> method specified in the abstract class
-     * <code>AbstractDataSource</code> by default does nothing.  However, Dalec is intended to run indefinitely,
-     * automatically spawning new threads to carry out workflow calculations and database entries.  These threads then
-     * remain active until interrupted.  Hence, if a DalecAnnotationSource is to be taken out of service, these threads
-     * must be terminated using this destroy method.
+     * Dalec is intended to run indefinitely, automatically spawning new threads to carry out workflow calculations and
+     * database entries.  These threads remain live, waiting for the submission of new jobs, until the
+     * <code>destroy()</code> method is called.  When called, this method will remove all pending jobs, and allow any
+     * active threads to die once their current job has been completed. A DalecAnnotationSource can then be taken out of
+     * service. Note that this method will remove any jobs which have been submitted but not yet annotasted by the
+     * workflow.  Also, any jobs which <i>have</i> been annotated but not yet written to disk will be lost when this method is
+     * called.  Any jobs which have not been added to Dalec's database must be resubmitted when Dalec is restarted.
      */
     public void destroy()
     {
@@ -89,28 +95,57 @@ public class DalecAnnotationSource extends AbstractDataSource
     {
         try
         {
-            if (davros.inputIsSequence())
-            {
-                String seq = fetchQuerySequence(ref);
-                return davros.requestSequence(seq);
-            }
-            else
-            {
-                return davros.requestSequence(ref);
-            }
+            // Get annotations and build raw sequence
+            Sequence seq = ProteinTools.createProteinSequence(fetchQuerySequence(ref), ref);
+
+            // Now annotate this sequence with annotations from davros
+            davros.requestAnnotations(ref).getAnnotator().annotate(seq);
+            return seq;
         }
-        catch (WaitWhileJobComputedException e)
+        catch (NewJobSubmissionException e)
         {
+            // Newly submitted job - so make a new WorkflowInput and submit it to DalecManager
+            try
+            {
+                if (davros.getInputName().matches("sequence"))
+                {
+                    SequenceWorkflowInput input = new SequenceWorkflowInput();
+                    input.setProcessorName(davros.getInputName());
+                    input.setJobID(ref);
+                    input.setSequenceData(fetchQuerySequence(ref));
+                    davros.submitJob(input);
+                }
+                else if (davros.getInputName().matches("seqID"))
+                {
+                    SequenceIDWorkflowInput input = new SequenceIDWorkflowInput();
+                    input.setProcessorName(davros.getInputName());
+                    input.setJobID(ref);
+                    davros.submitJob(input);
+                }
+                else
+                {
+                    // Should be anything else, IncorrectlyNamedInputExcpetion would be thrown from getInputName()
+                }
+            }
+            catch (IncorrectlyNamedInputException e1)
+            {
+                throw new DataSourceException(e1);
+            }
+
             // TODO - clever bit needed (!), how to return the "waiting" message to the client?
-            return null; //or something else?
+            return new SimpleSequence(null, null, "Hang on, I'm working this out!", null); //test
         }
         catch (UnableToAccessDatabaseException e)
         {
             throw new DataSourceException(e, "A problem occurred whilst trying to access the database for the Dalec Annotation Source");
         }
-        catch (IncorrectlyNamedProcessorException e)
+        catch (IllegalSymbolException e)
         {
-            throw new DataSourceException(e, "This workflow does not conform to required Dalec protocols");
+            throw new DataSourceException(e, "Non-protein sequence or unknown symbol found");
+        }
+        catch (Exception e)
+        {
+            throw new DataSourceException(e, "A problem was encountered whilst trying to build the Sequence: " + ref);
         }
     }
 
@@ -126,6 +161,9 @@ public class DalecAnnotationSource extends AbstractDataSource
 
     /**
      * Javabeans style method for setting the "MapMaster" URL for the reference server for this DataSource plugin.
+     * Unlike many datasource plugins, Dalec does not have an 'inherent' reference server - rather, Dalec should be
+     * pointed at some DAS reference server to annotate the sequences held therein on request.  This method should be
+     * used to set that server.
      *
      * @param s A String representing the MapMaster URL.
      */
@@ -141,12 +179,13 @@ public class DalecAnnotationSource extends AbstractDataSource
 
     /**
      * Javabeans style method for setting the <code>.XScufl</code> file location used to construct the workflow for this
-     * instance of Dalec.
+     * instance of Dalec. A copy of the workflow .xscufl file should be placed on the server.
      *
      * @param xscuflFile File representing the location of the desried workflow <code>.XScufl</code> file.
      */
     public void setXScuflFile(File xscuflFile)
     {
+        // TODO - File or URI? File would mean saving workflow on server, which is probably best anyway
         this.xscuflFile = xscuflFile;
     }
 
@@ -154,10 +193,11 @@ public class DalecAnnotationSource extends AbstractDataSource
      * Javabeans style method for setting the Database location used to store the output data for this instance of
      * Dalec.
      *
-     * @param sequenceDBLocation File representing the root direcotry of the database storage location.
+     * @param sequenceDBLocation File representing the root directory of the database storage location.
      */
     public void setSequenceDBLocation(File sequenceDBLocation)
     {
+        // TODO - File or URI? URI is probably better...?
         this.seqDB = sequenceDBLocation;
     }
 
@@ -191,26 +231,23 @@ public class DalecAnnotationSource extends AbstractDataSource
         }
 
         // get relevant "SEQUENCE" element
-        Element currentElement = doc.getDocumentElement();
-        NodeList children = currentElement.getChildNodes();
-        for (int i = 0; i < children.getLength(); i++)
+        NodeList children = doc.getElementsByTagName("SEQUENCE");
+        if (children.getLength() != 1)
         {
-            Node child = children.item(i);
-            if (child instanceof Element)
-            {
-                if (child.getNodeName() == "SEQUENCE")
-                {
-                    // get version info
-                    version = ((Element) child).getAttribute("version");
-                }
-            }
+            // some error = more than one sequence tag for one sequence ID???
+        }
+        else
+        {
+            // pull out version info
+            Node child = children.item(0);
+            version = ((Element) child).getAttribute("version");
         }
         return version;
     }
 
     public Set getAllTypes()
     {
-        Set types = null;
+        Set types = new HashSet();
 
         // formulate DAS query URL
         String queryURL = getMapMaster() + "types";
@@ -228,28 +265,18 @@ public class DalecAnnotationSource extends AbstractDataSource
             // if any exception is caught here, we can just return an empty set
         }
 
-        Element currentElement = doc.getDocumentElement();
-        NodeList children = currentElement.getChildNodes();
-        for (int i = 0; i < children.getLength(); i++)
+        // Get elements representing "TYPE" data and add into HashSet
+        NodeList nodes = doc.getElementsByTagName("TYPE");
+        for (int i = 0; i < nodes.getLength(); i++)
         {
-            Node child = children.item(i);
-            if (child instanceof Element)
-            {
-                if (child.getNodeName() == "TYPE")
-                {
-                    // get version and types info
-                    types.add(((Element) child).getAttribute("id"));
-                }
-            }
+            Node typeNode = nodes.item(i);
+            types.add(((Element) typeNode).getAttribute("id"));
         }
         return types;
     }
 
     private String fetchQuerySequence(String seqID) throws DataSourceException, NoSuchElementException
     {
-        // Set up empty string for query sequence
-        String querySeq = null;
-
         // formulate DAS query URL
         String queryURL = getMapMaster() + "sequence?segment=" + seqID;
 
@@ -276,20 +303,33 @@ public class DalecAnnotationSource extends AbstractDataSource
         }
 
         // get relevant "SEQUENCE" element
-        Element currentElement = doc.getDocumentElement();
-        NodeList children = currentElement.getChildNodes();
-        for (int i = 0; i < children.getLength(); i++)
+        NodeList children = doc.getElementsByTagName("SEQUENCE");
+        if (children.getLength() == 1)
         {
-            Node child = children.item(i);
-            if (child instanceof Element)
+            Node child = children.item(0);
+            String rawSeq = child.getTextContent();
+
+            // Now we have querySeq - only problem is, contains newline chars!
+            char[] charSeq = rawSeq.toCharArray();
+            StringBuffer seq = new StringBuffer();
+            for (int i = 0; i < charSeq.length; i++)
             {
-                if (child.getNodeName() == "SEQUENCE")
+                if (charSeq[i] != '\n')
                 {
-                    // parse content to sequence string
-                    querySeq = child.getTextContent();
+                    seq.append(charSeq[i]);
+                }
+                else
+                {
+                    // ignore the newline char
                 }
             }
+            String querySeq = seq.toString().trim();
+            System.out.println(querySeq);
+            return querySeq;
         }
-        return querySeq;
+        else
+        {
+            throw new DataSourceException("More than one 'SEQUENCE' tag present in this XML document");
+        }
     }
 }

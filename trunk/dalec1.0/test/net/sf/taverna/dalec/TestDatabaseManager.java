@@ -2,6 +2,7 @@ package net.sf.taverna.dalec;
 
 import org.biojava.bio.program.gff.SimpleGFFRecord;
 import org.biojava.bio.program.gff.GFFRecord;
+import org.biojava.bio.program.gff.GFFEntrySet;
 
 import java.io.File;
 import java.util.HashMap;
@@ -16,140 +17,83 @@ import junit.framework.TestCase;
  */
 public class TestDatabaseManager extends TestCase
 {
-    final File dbGenLoc = new File("C:\\home\\tony\\documents\\dalec1.0\\outputTest\\");
+    DatabaseManager dm;
+    Thread dbThread;
 
-    public void testDBCreation()
+    protected void setUp()
     {
-        // New database with test directory
-        new DatabaseManager(new File(dbGenLoc, "db"));
+        dm = new DatabaseManager(new File("C:\\home\\tony\\documents\\dalec1.0\\outputTest\\db"));
+        dbThread = new Thread(dm);
 
-        assertTrue("Database doesn't exist", dbGenLoc.exists());
+        synchronized (dbThread)
+        {
+            dbThread.start();
+            try
+            {
+                dbThread.wait(1000); // give this thread an arbitrary amount of time to start up
+            }
+            catch (InterruptedException e)
+            {
+                // Don't really care about this
+            }
+        }
+    }
 
-        System.gc();
+    protected void tearDown()
+    {
+        try
+        {
+            dm.exterminate();
+            // need to wait till supplied jobs have finished
+            while (dbThread.getState() != Thread.State.TERMINATED)
+            {
+                // do nothing
+            }
+        }
+        finally
+        {
+            dbThread.interrupt();
+            dbThread = null;
+            System.gc();
+        }
     }
 
     public void testDbRun()
     {
-        // New database with test directory
-        DatabaseManager db = new DatabaseManager(new File(dbGenLoc, "db"));
-
-        // Create thread and start it running
-        Thread thr = new Thread(db);
-        thr.start();
-
-        // Simple wait block to give "thr" time to start
-        synchronized (thr)
+        synchronized (dbThread)
         {
-            try
-            {
-                thr.wait(100);
-            }
-            catch (InterruptedException e)
-            {
-            }
+            assertTrue("Thread is not waiting for jobs - status is " + dbThread.getState().toString(), dbThread.getState() == Thread.State.WAITING);
         }
-
-        assertTrue("Thread is not waiting for jobs - status is" + thr.getState().toString(), thr.getState() == Thread.State.WAITING);
-
-        // set exterminate request
-        db.exterminate();
-        // Simple wait block to give "thr" time to start
-        synchronized (thr)
-        {
-            try
-            {
-                thr.wait(100);
-            }
-            catch (InterruptedException e)
-            {
-            }
-        }
-        // now check thread has exited
-        assertTrue(thr.getState().toString(), isStopped(thr));
-        System.gc();
-    }
-
-    public void testDBStop()
-    {
-        DatabaseManager db = new DatabaseManager(new File(dbGenLoc, "db"));
-
-        Thread thr = new Thread(db);
-        thr.start();
-
-        // Simple wait block to give "thr" time to start
-        synchronized (thr)
-        {
-            try
-            {
-                thr.wait(100);
-            }
-            catch (InterruptedException e)
-            {
-            }
-        }
-
-        // set exterminate request
-        db.exterminate();
-        // Simple wait block to give "thr" time to start
-        synchronized (thr)
-        {
-            try
-            {
-                thr.wait(100);
-            }
-            catch (InterruptedException e)
-            {
-            }
-        }
-        // now check thread has exited
-        assertTrue(thr.getState().toString(), isStopped(thr));
-        System.gc();
     }
 
     public void testAddJob()
     {
         boolean exceptions = false;
 
-        // New database with test directory
-        DatabaseManager db = new DatabaseManager(new File(dbGenLoc, "db"));
-
-        // Create thread and start it running
-        Thread thr = new Thread(db);
-        thr.start();
-
-        // Simple wait block to give "thr" time to start
-        synchronized (thr)
-        {
-            try
-            {
-                thr.wait(100);
-            }
-            catch (InterruptedException e)
-            {
-            }
-        }
-
-        // If we add a dummy "null" GFFRecord it should get written
+        // If we add a dummy "null" GFFRecord to an new GFFEntrySet it should get written
+        GFFEntrySet gffe = new GFFEntrySet();
         SimpleGFFRecord record = new SimpleGFFRecord();
         record.setSeqName("testSequence");
-        db.addNewResult(record); // Empty GFFRecord
+        gffe.add(record);
+        dm.addNewResult(gffe); // Empty GFFRecord
 
-        // Simple wait block to give "thr" time to start
-        synchronized (thr)
+        // Give some time for record to be added
+        synchronized (dbThread)
         {
             try
             {
-                thr.wait(100);
+                dbThread.wait(1000);
             }
             catch (InterruptedException e)
             {
+                // Don't care about this
             }
         }
 
         GFFRecord retrieved = null;
         try
         {
-            retrieved = (GFFRecord) db.getGFFEntry(record.getSeqName()).lineIterator().next();
+            retrieved = (GFFRecord) dm.getGFFEntry(record.getSeqName()).lineIterator().next();
         }
         catch (UnableToAccessDatabaseException e)
         {
@@ -160,100 +104,49 @@ public class TestDatabaseManager extends TestCase
         assertFalse("An exception was thrown", exceptions);
 
         // Check file "testSequence.gff" exists and that it contains record equal to actual value.
-        assertTrue("Sequence file doesn't exist", new File(dbGenLoc, "db\\testSequence.gff").exists());
+        assertTrue("Sequence file doesn't exist", (new File(dm.getDatabaseLocation(), "testSequence.gff")).exists());
 
         assertTrue("Sequence file doesn't match record", match(retrieved, record));
-
-        // set exterminate request
-        db.exterminate();
-        // now check thread has exited
-        // // Simple wait block to give "thr" time to start
-        synchronized (thr)
-        {
-            try
-            {
-                thr.wait(100);
-            }
-            catch (InterruptedException e)
-            {
-            }
-        }
-        assertTrue(thr.getState().toString(), isStopped(thr));
-        System.gc();
-     }
+    }
 
     public void testAddMultipleJobs()
     {
-        // Create a new DB
-        DatabaseManager db = new DatabaseManager(new File(dbGenLoc, "db"));
-
-        // Start database thread running
-        Thread thr = new Thread(db);
-        thr.start();
-
-        // Simple wait block to give "thr" time to start
-        synchronized (thr)
-        {
-            try
-            {
-                thr.wait(500);
-            }
-            catch (InterruptedException e)
-            {
-            }
-        }
-
         // Add 10 jobs
         for (int i = 10; i < 110; i++)
         {
-            // create a SimpleGFFRecord with null or 0 values excpet sequence name
-            SimpleGFFRecord gffr = new SimpleGFFRecord();
-            gffr.setSeqName("seq" + i);
-            db.addNewResult(gffr);
+            // create SimpleGFFRecords with null or 0 values excpet sequence name
+            GFFEntrySet gffe = new GFFEntrySet();
+            SimpleGFFRecord record = new SimpleGFFRecord();
+            record.setSeqName("seq" + i);
+            gffe.add(record);
+
+            dm.addNewResult(gffe);
         }
 
-        // Simple wait block to give "thr" time to start
-        synchronized (thr)
+        // Give some time for record to be added
+        synchronized (dbThread)
         {
             try
             {
-                thr.wait(1000);
+                dbThread.wait(1000);
             }
             catch (InterruptedException e)
             {
-            }
-        }
-        // set exterminate request
-        db.exterminate();
-
-        synchronized (thr)
-        {
-            try
-            {
-                thr.wait(100);
-            }
-            catch (InterruptedException e)
-            {
+                // Don't care about this
             }
         }
 
         // Check they all exist
         for (int i = 10; i < 110; i++)
         {
-            assertTrue("File: seq" + i + ".gff doesn't exist", new File(dbGenLoc, "db\\seq" + i + ".gff").exists());
+            assertTrue("File: seq" + i + ".gff doesn't exist", (new File(dm.getDatabaseLocation(), "seq" + i + ".gff")).exists());
         }
-        // now check thread has exited
-        assertTrue(thr.getState().toString(), isStopped(thr));
-        System.gc();
     }
 
     public void testAddListener()
     {
-        // Create a new DB to check listener activity
-        DatabaseManager db = new DatabaseManager(new File(dbGenLoc, "db"));
-
         // register a new listener onto it, so we know when new entries are created
-        db.addDatabaseListener(new DatabaseListener()
+        dm.addDatabaseListener(new DatabaseListener()
         {
             public void databaseEntryCreated(String entryName)
             {
@@ -272,21 +165,18 @@ public class TestDatabaseManager extends TestCase
         });
 
         // Check one listener is added
-        assertFalse("Listener was not registered successfully", db.getDatabaseListener() == null);
+        assertNotNull("Listener was not registered successfully", dm.getDatabaseListener());
 
         System.gc();
     }
 
     public void testNotification()
     {
-        // Create a new DB to check listener activity
-        DatabaseManager db = new DatabaseManager(new File(dbGenLoc, "db"));
-
         // Create a hashmap to check notification events
         final HashMap notified = new HashMap();
 
         // register a new listener onto it, so we know when new entries are created
-        db.addDatabaseListener(new DatabaseListener()
+        dm.addDatabaseListener(new DatabaseListener()
         {
             public void databaseEntryCreated(String entryName)
             {
@@ -306,63 +196,45 @@ public class TestDatabaseManager extends TestCase
         });
 
         // Check one listener is added
-        assertFalse("Listener was not added successfully", db.getDatabaseListener() == null);
+        assertNotNull("Listener was not added successfully", dm.getDatabaseListener());
 
         // Add 10 jobs
         for (int i = 0; i < 10; i++)
         {
-            // create a SimpleGFFRecord with null or 0 values excpet sequence name
-            SimpleGFFRecord gffr = new SimpleGFFRecord();
-            gffr.setSeqName("seq" + i);
-            db.addNewResult(gffr);
+            // create SimpleGFFRecords with null or 0 values excpet sequence name
+            GFFEntrySet gffe = new GFFEntrySet();
+            SimpleGFFRecord record = new SimpleGFFRecord();
+            record.setSeqName("ListenerTestSeq" + i);
+            gffe.add(record);
+
+            dm.addNewResult(gffe);
         }
 
-        // Run database thread to add these jobs
-        // Start database thread running
-        Thread thr = new Thread(db);
-        thr.start();
-
-        // Wait a while to give DB time to add records
-        synchronized (thr)
+        // Give some time for record to be added
+        synchronized (dbThread)
         {
             try
             {
-                thr.wait(500);
+                dbThread.wait(1000);
             }
             catch (InterruptedException e)
             {
+                // Don't care about this
             }
         }
 
         // Check records exist
         for (int i = 0; i < 10; i++)
         {
-            assertTrue((new File(dbGenLoc, "db\\seq" + i + ".gff")).exists());
+            assertTrue("File: ListenerTestSeq" + i + ".gff doesn't exist", (new File(dm.getDatabaseLocation(), "ListenerTestSeq" + i + ".gff")).exists());
         }
 
         // Check notified 10 times
         for (int i = 0; i < 10; i++)
         {
-            assertTrue((notified.get("seq" + i)).equals("created"));
+            assertTrue((notified.get("ListenerTestSeq" + i)).equals("created"));
         }
-
-        // set exterminate request
-        db.exterminate();
-        // Simple wait block to give "thr" time to start
-        synchronized (thr)
-        {
-            try
-            {
-                thr.wait(100);
-            }
-            catch (InterruptedException e)
-            {
-            }
-        }
-        // now check thread has exited
-        assertTrue(thr.getState().toString(), isStopped(thr));
-        System.gc();
-     }
+    }
 
     private boolean match(GFFRecord record1, GFFRecord record2)
     {
@@ -413,10 +285,5 @@ public class TestDatabaseManager extends TestCase
         }
         System.gc();
         return match;
-    }
-
-    private boolean isStopped (Thread thread)
-    {
-        return (thread.getState() == Thread.State.TERMINATED);
     }
 }

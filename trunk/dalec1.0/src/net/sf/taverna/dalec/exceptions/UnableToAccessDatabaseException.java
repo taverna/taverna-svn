@@ -5,7 +5,7 @@ package net.sf.taverna.dalec.exceptions;
  *
  * @author Tony Burdett date: 24-Jun-2005
  */
-public class UnableToAccessDatabaseException extends Throwable
+public class UnableToAccessDatabaseException extends Exception
 {
     public UnableToAccessDatabaseException()
     {
