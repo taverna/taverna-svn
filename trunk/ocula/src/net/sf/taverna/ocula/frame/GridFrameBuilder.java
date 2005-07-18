@@ -188,11 +188,9 @@ public class GridFrameBuilder implements FrameSPI {
     class GridFrame extends ResultSetPanel implements OculaFrame {
 	public GridFrame(String name, Icon icon, int cols) {
 	    super(name, icon);
-	    remove(contentsPanel);
 	    contentsPanel = new GridPanel(cols);
-	    contentsPanel.setBorder(BorderFactory.createLineBorder(ColourSet.getColour("ocula.panelborder"),2));
-	    contentsPanel.setBackground(ColourSet.getColour("ocula.panelbackground"));
-	    add(contentsPanel, BorderLayout.CENTER);
+	    setContents(contentsPanel);
+	    setUpContents();
 	}
     }
     
