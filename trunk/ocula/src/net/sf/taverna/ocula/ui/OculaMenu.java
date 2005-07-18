@@ -29,7 +29,7 @@ import javax.swing.*;
 import javax.swing.border.*;
 
 /**
- * Subclass of JMenu with Ocula styling
+ * Subclass of JPopupMenu with Ocula styling
  * @author Tom Oinn
  */
 public class OculaMenu extends JPopupMenu {
