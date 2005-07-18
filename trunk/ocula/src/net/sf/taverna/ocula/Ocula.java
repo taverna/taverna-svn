@@ -155,6 +155,7 @@ public class Ocula extends JPanel {
 	JButton stopButton = new CompactJButton(Icons.getIcon("stop"), 26, 26);
 	bar.add(stopButton);
 	bar.setBackground(ColourSet.getColour("ocula.background"));
+	bar.setBorder(BorderFactory.createEmptyBorder(2, 2, 2, 2));
 	return bar;
     }
 
