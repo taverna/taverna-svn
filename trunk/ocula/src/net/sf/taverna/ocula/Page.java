@@ -118,7 +118,7 @@ public class Page {
     }
 
     /**
-     * Return the List of Element objects within the &lt;contents> tag
+     * Return the List of Element objects within the &lt;contents&gt; tag
      */
     public List getContents() {
 	if (this.pageValid == false) {
