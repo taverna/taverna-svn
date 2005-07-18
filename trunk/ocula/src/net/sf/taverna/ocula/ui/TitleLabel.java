@@ -50,7 +50,6 @@ public class TitleLabel extends JPanel {
 	add(Box.createHorizontalStrut(pad));
 	add(label);
 	add(Box.createHorizontalStrut(pad));
-	this.background = background;
     }
     
     public void setBackground(Color background) {
