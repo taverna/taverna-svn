@@ -89,7 +89,7 @@ import org.jdom.output.XMLOutputter;
  * Panel to construct the input for a workflow.
  * 
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover </a>
- * @version $Revision: 1.35 $
+ * @version $Revision: 1.36 $
  */
 public abstract class DataThingConstructionPanel extends JPanel implements ScuflUIComponent, ScuflModelEventListener
 {
@@ -582,7 +582,16 @@ public abstract class DataThingConstructionPanel extends JPanel implements Scufl
 				}
 				sb.append("</td></tr>\n");
 				sb.append("<tr><td bgcolor=\"#ddeeff\"><b>Syntactic type</b></td><td>");
-				sb.append(port.getSyntacticType());
+				String[] bits = port.getSyntacticType().split("'");
+				sb.append(bits[0]);
+				String[] types = port.getMetadata().getMIMETypes();
+				for (int k = 0; k < types.length; k++) {
+				    if (k > 0) {
+					sb.append(",");
+				    }
+				    sb.append(types[k]);
+				}
+				sb.append(bits[bits.length-1]);
 				sb.append("</td></tr>\n");
 				sb.append("<tr><td bgcolor=\"#ddeeff\"colspan=\"2\"><b>Description</b></td></tr>\n");
 				sb.append("<tr><td colspan=\"2\">");

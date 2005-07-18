@@ -257,6 +257,15 @@ public class SemanticMarkup implements Serializable {
      * this object in the method above
      */
     public Element getConfigurationElement() {
+	return getConfigurationElement(new ArrayList());
+    };
+
+    /**
+     * Emit an element that would be used to configure
+     * this object in the method above, do not emit mime
+     * types that occur within the supplied list.
+     */
+    public Element getConfigurationElement(List knownMIMETypes) {
 	Element topElement = new Element("metadata",XScufl.XScuflNS);
 	// Store MIME types
 	Element mimeTypeList = new Element("mimeTypes",XScufl.XScuflNS);
@@ -266,13 +275,16 @@ public class SemanticMarkup implements Serializable {
 		Element typeElement = new Element("mimeType",XScufl.XScuflNS);
 		String mimeType = (String)i.next();
 		typeElement.setText(mimeType);
-		mimeTypeList.addContent(typeElement);
-		if (mimeType.equalsIgnoreCase("text/plain") == false &&
-		    mimeType.equalsIgnoreCase("application/octet-stream") == false) {
-		    // Only set that we've added mime types if there are additional
-		    // types that could not be inferred from other information in
-		    // the model
+		boolean addMIME = true;
+		for (Iterator j = knownMIMETypes.iterator(); j.hasNext();) {
+		    String knownType = (String)j.next();
+		    if (mimeType.equalsIgnoreCase(knownType)) {
+			addMIME = false;
+		    }
+		}
+		if (addMIME) {
 		    addedMIME = true;
+		    mimeTypeList.addContent(typeElement);
 		}
 	    }
 	    if (addedMIME) {

@@ -18,6 +18,8 @@ import org.jdom.Namespace;
 import org.jdom.output.*;
 
 import java.lang.String;
+import java.util.List;
+import java.util.ArrayList;
 
 
 
@@ -201,7 +203,19 @@ public class XScuflView implements ScuflModelEventListener, java.io.Serializable
 	    Element sourceElement = new Element("source",scuflNS());
 	    //sourceElement.setText(sources[i].getName());
 	    sourceElement.setAttribute("name",sources[i].getName());
-	    Element metadataElement = sources[i].getMetadata().getConfigurationElement();
+	    // Find all attached ports and add their MIME types to a temp list
+	    List knownMIMEs = new ArrayList();
+	    for (int j = 0; j < dataconstraints.length; j++) {
+		DataConstraint dc = dataconstraints[j];
+		if (dc.getSource().getProcessor() == model.getWorkflowSourceProcessor()) {
+		    SemanticMarkup sinkMarkup = dc.getSink().getMetadata();
+		    String[] types = sinkMarkup.getMIMETypes();
+		    for (int k = 0; k < types.length; k++) {
+			knownMIMEs.add(types[k]);
+		    }
+		}
+	    }
+	    Element metadataElement = sources[i].getMetadata().getConfigurationElement(knownMIMEs);
 	    if (metadataElement.getChildren().isEmpty()==false) {
 		sourceElement.addContent(metadataElement);
 	    }
@@ -212,7 +226,18 @@ public class XScuflView implements ScuflModelEventListener, java.io.Serializable
 	    Element sinkElement = new Element("sink",scuflNS());
 	    //sinkElement.setText(sinks[i].getName());
 	    sinkElement.setAttribute("name",sinks[i].getName());
-	    Element metadataElement = sinks[i].getMetadata().getConfigurationElement();
+	    List knownMIMEs = new ArrayList();
+	    for (int j = 0; j < dataconstraints.length; j++) {
+		DataConstraint dc = dataconstraints[j];
+		if (dc.getSink().getProcessor() == model.getWorkflowSinkProcessor()) {
+		    SemanticMarkup sinkMarkup = dc.getSource().getMetadata();
+		    String[] types = sinkMarkup.getMIMETypes();
+		    for (int k = 0; k < types.length; k++) {
+			knownMIMEs.add(types[k]);
+		    }
+		}
+	    }
+	    Element metadataElement = sinks[i].getMetadata().getConfigurationElement(knownMIMEs);
 	    if (metadataElement.getChildren().isEmpty()==false) {
 		sinkElement.addContent(metadataElement);
 	    }
