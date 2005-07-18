@@ -1,5 +1,5 @@
 /*
- * Copyright 2005 Tom Oinn, EMBL-EBI
+ * Copyright 2005 Tom Oinn, EMBL-EBI and University of Manchester.
  *
  *  This file is part of Taverna.  Further information, and the
  *  latest version, can be found at http://taverna.sf.net
@@ -24,11 +24,16 @@
 
 package net.sf.taverna.ocula.ui;
 
-import java.awt.*;
-import javax.swing.*;
-import java.awt.geom.*;
-import java.awt.image.*;
-import java.util.*;
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+
+import javax.swing.BorderFactory;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.Icon;
+import javax.swing.JPanel;
+import javax.swing.JProgressBar;
+import javax.swing.border.Border;
 
 /**
  * Abstract superclass for result containers within Ocula. A result 
@@ -36,39 +41,42 @@ import java.util.*;
  * objects returned from a method call, most probably a method call
  * on one of the context objects but that's not defined here.
  * @author Tom Oinn
+ * @author Ismael Juma
  */
-public class ResultSetPanel extends JPanel {
+public class ResultSetPanel extends OculaPanel {
 
     private JProgressBar progressBar;
-    protected JPanel contentsPanel;
-
+    
     public ResultSetPanel(String name, Icon icon) {
-	super(new BorderLayout());
-	setOpaque(false);
-
-	contentsPanel = new JPanel();
-	contentsPanel.setBorder(BorderFactory.createLineBorder(ColourSet.getColour("ocula.panelborder"),2));
-	contentsPanel.setBackground(ColourSet.getColour("ocula.panelbackground"));
-	
+	super();
+	setUpContents();
 	add(createLabelPanel(name, icon), BorderLayout.NORTH);
-	add(contentsPanel, BorderLayout.CENTER);
 	add(createProgressPanel(), BorderLayout.SOUTH);
-	
-	setBorder(BorderFactory.createEmptyBorder(2,2,2,2));
-    }
-
-    public JPanel getContents() {
-	return this.contentsPanel;
     }
     
     public JProgressBar getProgressBar() {
 	return this.progressBar;
     }
+    
+    /**
+     * Configures the look of the contents area of the component.
+     */
+    protected void setUpContents() {
+	contentsPanel.setBackground(ColourSet
+		.getColour("ocula.panelbackground"));
+	contentsPanel.setOpaque(true);
+	Border border = BorderFactory.createCompoundBorder(BorderFactory
+		.createLineBorder(ColourSet.getColour("ocula.panelborder"), 2),
+		BorderFactory.createEmptyBorder(2, 2, 2, 2));
+	contentsPanel.setBorder(border);
+    }
+
 
     private JPanel createProgressPanel() {
 	JPanel progressPanel = new JPanel();
 	progressPanel.setBackground(ColourSet.getColour("ocula.panelborder"));
 	progressPanel.setMaximumSize(new Dimension(6000,25));
+	progressPanel.setPreferredSize(new Dimension(110, 20));
 	progressPanel.setLayout(new BoxLayout(progressPanel, BoxLayout.LINE_AXIS));
 	progressBar = new JProgressBar(JProgressBar.HORIZONTAL, 0, 100);
 	progressBar.setBackground(ColourSet.getColour("ocula.panelborder"));
