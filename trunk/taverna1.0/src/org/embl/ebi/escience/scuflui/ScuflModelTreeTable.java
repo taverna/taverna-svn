@@ -99,6 +99,7 @@ public class ScuflModelTreeTable extends JTreeTable
 	this.tree.setCellRenderer(renderer);
 	//this.addMouseMotionListener(new ScuflModelExplorerDragHandler(this.tree));
 	//this.setDragEnabled(true);
+	this.tree.setRowHeight(0);
     }
     
     /**
@@ -203,6 +204,15 @@ public class ScuflModelTreeTable extends JTreeTable
 		if (uo instanceof Processor) {
 		    String currentName = ((Processor)uo).getName();
 		    ((TreeTableTextField)getComponent()).setText(currentName);
+		}
+		else if (uo instanceof InputPort) {
+		    InputPort ip = (InputPort)uo;
+		    if (ip.hasDefaultValue() == false) {
+			((TreeTableTextField)getComponent()).setText("");
+		    }
+		    else {
+			((TreeTableTextField)getComponent()).setText(ip.getDefaultValue());
+		    }
 		}
 	    }
 	    ((TreeTableTextField)getComponent()).offset = offset;

@@ -96,7 +96,31 @@ public class ScuflModelExplorerRenderer extends NodeColouringRenderer {
 		    setText(thePort.getName()+" == "+originalPortName);
 		}
 		else {
-		    setText("<html>"+thePort.toString()+" <font color=\"#666666\">"+thePort.getSyntacticType()+"</font></html>");
+		    String toString = thePort.toString();
+		    String colour = null;
+		    String defaultText = "";
+		    if (thePort instanceof InputPort) {
+			InputPort ip = (InputPort)thePort;
+			boolean bound = ip.isBound();
+			boolean optional = ip.isOptional();
+			boolean hasdefault = ip.hasDefaultValue();
+			if (bound == false && hasdefault == false && optional == false) {
+			    colour = "red";
+			}
+			else if (bound == false && hasdefault == true) {
+			    colour = "green";
+			}
+			else if (bound == true && hasdefault == true) {
+			    colour = "purple";
+			}
+			else if (bound == false) {
+			    colour = "#888888";
+			}
+			if (colour != null) {
+			    toString = "<font color=\""+colour+"\">"+toString+"</font>";
+			}
+		    }
+		    setText("<html>"+toString+" <font color=\"#666666\">"+thePort.getSyntacticType()+"</font>"+defaultText+"</html>");
 		}
 	    }
 	}

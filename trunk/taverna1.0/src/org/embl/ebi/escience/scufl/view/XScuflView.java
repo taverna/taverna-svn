@@ -122,6 +122,25 @@ public class XScuflView implements ScuflModelEventListener, java.io.Serializable
 		de.setText(description);
 		processor.addContent(de);
 	    }
+	    // Set any default input values
+	    boolean addedDefault = false;
+	    Element defaultSet = new Element("defaults",scuflNS());
+	    InputPort[] ip = processors[i].getInputPorts();
+	    for (int j = 0; j < ip.length; j++) {
+		if (ip[j].hasDefaultValue()) {
+		    String portName = ip[j].getName();
+		    String defaultValue = ip[j].getDefaultValue();
+		    Element dv = new Element("default",scuflNS());
+		    dv.setAttribute("name",portName);
+		    dv.setText(defaultValue);
+		    defaultSet.addContent(dv);		    
+		    addedDefault = true;
+		}		
+	    }
+	    if (addedDefault) {
+		processor.addContent(defaultSet);
+	    }
+
 	    // Define the actual processor content
 	    Element spec = ProcessorHelper.elementForProcessor(processors[i]);
 	    processor.addContent(spec);

@@ -89,10 +89,12 @@ public class JTreeTable extends JTable {
 
 	// And update the height of the trees row to match that of
 	// the table.
+	
 	if (tree.getRowHeight() < 1) {
 	    // Metal looks better like this.
 	    setRowHeight(18);
 	}
+	
     }
 
     public JTreeTable(TreeTableModel treeTableModel) {

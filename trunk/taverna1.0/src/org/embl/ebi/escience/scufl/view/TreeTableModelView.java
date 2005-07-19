@@ -104,6 +104,15 @@ public class TreeTableModelView extends TreeModelView implements TreeTableModel 
 		    return true;
 		}
 	    }
+	    if (node.getUserObject() instanceof InputPort) {
+		InputPort ip = (InputPort)node.getUserObject();
+		if (ip.getProcessor().getModel() != null) {
+		    return true;
+		}
+		else {
+		    return false;
+		}
+	    }
 	    else {
 		return false;
 	    }
@@ -123,10 +132,17 @@ public class TreeTableModelView extends TreeModelView implements TreeTableModel 
 	else if (node.getUserObject() instanceof AlternateProcessor) {
 	    p = ((AlternateProcessor)node.getUserObject()).getProcessor();
 	}
-	if (p!=null) {
+	if (p!=null || (column == 0 && node.getUserObject() instanceof InputPort && 
+			((InputPort)node.getUserObject()).isSink() == false)) {
 	    switch (column) {
 	    case 0:
-		p.setName((String)value);
+		if (p != null) {
+		    p.setName((String)value);
+		}
+		else if (node.getUserObject() instanceof InputPort) {
+		    InputPort ip = (InputPort)node.getUserObject();
+		    ip.setDefaultValue((String)value);
+		}
 		return;
 	    case 1:
 		Integer retries = (Integer)value;

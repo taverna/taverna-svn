@@ -459,6 +459,22 @@ class ProcessorLoaderThread extends Thread {
 		description = de.getTextTrim();
 		theProcessor.setDescription(description);
 	    }
+	    // Get the default set if present
+	    Element ds = processorNode.getChild("defaults",namespace);
+	    if (ds!=null) {
+		for (Iterator i = ds.getChildren().iterator(); i.hasNext();) {
+		    Element defaultElement = (Element)i.next();
+		    String portName = defaultElement.getAttributeValue("name");
+		    String value = defaultElement.getTextTrim();
+		    try {
+			InputPort ip = (InputPort)theProcessor.locatePort(portName, true);
+			ip.setDefaultValue(value);
+		    }
+		    catch (UnknownPortException upe) {
+			throw new ProcessorCreationException("Cannot find port '"+portName+"' to set the default.");
+		    }
+		}
+	    }
 	    // Get the iteration strategy if present
 	    Element iterationStrategyElement = processorNode.getChild("iterationstrategy",namespace);
 	    if (iterationStrategyElement != null) {

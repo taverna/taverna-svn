@@ -25,8 +25,8 @@
 //      Dependencies        :
 //
 //      Last commit info    :   $Author: mereden $
-//                              $Date: 2005-03-23 15:57:27 $
-//                              $Revision: 1.69 $
+//                              $Date: 2005-07-19 14:29:45 $
+//                              $Revision: 1.70 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 package uk.ac.soton.itinnovation.taverna.enactor.entities;
@@ -439,6 +439,14 @@ public class ProcessorTask extends AbstractTask {
      */
     private Map runAndGenerateTemplates(ProcessorTaskWorker worker, Map inputMap) 
 	throws TaskExecutionException {
+	// Insert any input defaults with no bound values in the map
+	InputPort[] ip = activeProcessor.getInputPorts();
+	for (int i = 0; i < ip.length; i++) {
+	    if (ip[i].hasDefaultValue() && 
+		inputMap.containsKey(ip[i].getName()) == false) {
+		inputMap.put(ip[i].getName(), new DataThing(ip[i].getWrappedDefaultValue()));
+	    }
+	}
 	// Populate all LSIDs in the output map
 	//System.out.println(Thread.currentThread()+" invoking");
 	Map outputMap = worker.execute(inputMap, this);
