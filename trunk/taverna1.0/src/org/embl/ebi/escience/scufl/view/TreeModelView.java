@@ -9,7 +9,7 @@ import org.embl.ebi.escience.scufl.*;
 import javax.swing.*;
 import javax.swing.tree.*;
 import java.awt.datatransfer.*;
-//import org.embl.ebi.escience.scufl.view.tree.*;
+import java.util.*;
 
 /**
  * A TreeModel implementation used to represent a ScuflModel
@@ -75,7 +75,7 @@ public class TreeModelView extends DefaultTreeModel implements ScuflModelEventLi
 	    }
 	    else {
 		if (event instanceof MinorScuflModelEvent == false) {
-		    updateProcessorNode((Processor)source);
+		    generateProcessors();
 		}
 		return;
 	    }
@@ -88,7 +88,16 @@ public class TreeModelView extends DefaultTreeModel implements ScuflModelEventLi
 	    generateLinks();
 	    return;
 	}
-	generateInitialModel();
+	else if (source instanceof InputPort) {
+	    // Default value change
+	    generateProcessors();
+	    return;
+	}
+	generateInputs();
+	generateOutputs();
+	generateProcessors();
+	generateLinks();
+	generateConstraints();
     }
 
     /**
@@ -125,33 +134,102 @@ public class TreeModelView extends DefaultTreeModel implements ScuflModelEventLi
      * Clear the workflow input list and regenerate
      */
     private synchronized void generateInputs() {
-	clearNode(inputRootNode);
 	Port[] inputPorts = workflow.getWorkflowSourcePorts();
-	for (int i = 0; i < inputPorts.length; i++) {
-	    DefaultMutableTreeNode newNode = new DefaultMutableTreeNode(inputPorts[i]);
-	    insertNodeInto(newNode,
-			   inputRootNode,
-			   i);
-	    nodeChanged(newNode);
-	}
-	nodeChanged(inputRootNode);
+	updatePortList(inputRootNode, inputPorts, OutputPort.class);
     }
     
     /**
      * Clear the workflow output list and regenerate
      */
     private synchronized void generateOutputs() {
-	clearNode(outputRootNode);
 	Port[] outputPorts = workflow.getWorkflowSinkPorts();
-	for (int i = 0; i < outputPorts.length; i++) {
-	    DefaultMutableTreeNode newNode = new DefaultMutableTreeNode(outputPorts[i]);
-	    insertNodeInto(newNode,
-			   outputRootNode,
-			   i);
-	    nodeChanged(newNode);
-	}
-	nodeChanged(outputRootNode);
+	updatePortList(outputRootNode, outputPorts, InputPort.class);
     }
+
+    private void updatePortList(MutableTreeNode parent, Port[] ports, Class replacingClass) {
+	Set portNames = new HashSet();
+	int lastPortIndex = 0;
+	for (int i = 0; i < ports.length; i++) {
+	    portNames.add(ports[i].getName());
+	}
+	// Remove any output ports that no longer exist
+	Set nodesToRemove = new HashSet();
+	int tmp = 1;
+	for (Enumeration i = parent.children(); i.hasMoreElements();) {
+	    DefaultMutableTreeNode node = (DefaultMutableTreeNode)i.nextElement();
+	    if (node.getUserObject().getClass().equals(replacingClass)) {
+		Port p = (Port)node.getUserObject();
+		lastPortIndex = tmp;
+		if (portNames.contains(p.getName()) == false) {
+		    nodesToRemove.add(node);
+		}
+		else {
+		    portNames.remove(p.getName());
+		}
+	    }
+	    tmp++;
+	}
+	for (Iterator i = nodesToRemove.iterator(); i.hasNext();) {
+	    DefaultMutableTreeNode node = (DefaultMutableTreeNode)i.next();
+	    removeNodeFromParent(node);
+	    lastPortIndex--;
+	}
+	// Add any output ports that weren't there before
+	for (int i = 0; i < ports.length; i++) {
+	    if (portNames.contains(ports[i].getName())) {
+		DefaultMutableTreeNode newNode = new DefaultMutableTreeNode(ports[i]);
+		insertNodeInto(newNode,
+			       parent,
+			       lastPortIndex++);
+	    }
+	}
+    }
+
+    private void updateProcessorList(MutableTreeNode parent, Processor[] processors) {
+	Set processorNames = new HashSet();
+	int lastProcessorIndex = 0;
+	for (int i = 0; i < processors.length; i++) {
+	    processorNames.add(processors[i].getName());
+	}
+	// Remove any output ports that no longer exist
+	Set nodesToRemove = new HashSet();
+	int tmp = 1;
+	for (Enumeration i = parent.children(); i.hasMoreElements();) {
+	    DefaultMutableTreeNode node = (DefaultMutableTreeNode)i.nextElement();
+	    if (node.getUserObject() instanceof Processor) {
+		Processor p = (Processor)node.getUserObject();
+		lastProcessorIndex = tmp;
+		if (processorNames.contains(p.getName()) == false) {
+		    nodesToRemove.add(node);
+		}
+		else {
+		    processorNames.remove(p.getName());
+		}
+	    }
+	    tmp++;
+	}
+	for (Iterator i = nodesToRemove.iterator(); i.hasNext();) {
+	    DefaultMutableTreeNode node = (DefaultMutableTreeNode)i.next();
+	    removeNodeFromParent(node);
+	    lastProcessorIndex--;
+	}
+	// Add processor nodes that weren't there before
+	for (int i = 0; i < processors.length; i++) {
+	    if (processorNames.contains(processors[i].getName())) {
+		DefaultMutableTreeNode newNode = new DefaultMutableTreeNode(processors[i]);
+		insertNodeInto(newNode,
+			       parent,
+			       lastProcessorIndex++);
+	    }
+	}	
+	for (Enumeration i = parent.children(); i.hasMoreElements();) {
+	    DefaultMutableTreeNode node = (DefaultMutableTreeNode)i.nextElement();
+	    if (node.getUserObject() instanceof Processor) {
+		refreshProcessorNode(node);
+	    }
+	}
+    }
+
     
     /**
      * Clear the data link list and regenerate
@@ -183,70 +261,53 @@ public class TreeModelView extends DefaultTreeModel implements ScuflModelEventLi
      * Clear the processor list and regenerate
      */
     private synchronized void generateProcessors() {
-	clearNode(processorRootNode);
 	Processor[] processors = workflow.getProcessors();
-	for (int i = 0; i < processors.length; i++) {
-	    updateProcessorNode(processors[i]);
-	}
-    }
-
-    /**
-     * Update the given processor, or create a node for it if it
-     * doesn't already exist
-     */
-    private synchronized void updateProcessorNode(Processor p) {
-	MutableTreeNode processorNode = null;
-	for (int i = 0; i < processorRootNode.getChildCount() && processorNode == null; i++) {
-	    if (((DefaultMutableTreeNode)processorRootNode.getChildAt(i)).getUserObject()==p) {
-		processorNode = (MutableTreeNode)processorRootNode.getChildAt(i);
-	    }
-	}
-	// If the processorNode is null then create a new one
-	if (processorNode == null) {
-	    processorNode = new DefaultMutableTreeNode(p);
-	    insertNodeInto(processorNode, processorRootNode, processorRootNode.getChildCount());
-	}
-	// Clear the immediate children of this processor node
-	// and regenerate it
-	refreshProcessorNode((DefaultMutableTreeNode)processorNode);
+	updateProcessorList(processorRootNode, processors);
     }
     
     /**
      * Refresh the given processor node from the workflow model
      */
     private synchronized void refreshProcessorNode(DefaultMutableTreeNode processorNode) {
-	clearNode(processorNode);
-	Processor processor = (Processor)processorNode.getUserObject();
+	Processor processor = null;
+	if (processorNode.getUserObject() instanceof Processor) {
+	    processor = (Processor)processorNode.getUserObject();
+	}
+	else if (processorNode.getUserObject() instanceof AlternateProcessor) {
+	    processor = ((AlternateProcessor)processorNode.getUserObject()).getProcessor();
+	}
+	else {
+	    return;
+	}
 	InputPort[] inputs = processor.getInputPorts();
 	OutputPort[] outputs = processor.getOutputPorts();
-	for (int j = 0; j < inputs.length; j++) {
-	    insertNodeInto(new DefaultMutableTreeNode(inputs[j]),
-			   processorNode,
-			   j);
+	updatePortList(processorNode, outputs, OutputPort.class);
+	updatePortList(processorNode, inputs, InputPort.class);
+	// Do alternates if there are any
+	Set existingAlternates = new HashSet();
+	AlternateProcessor ap[] = processor.getAlternatesArray();
+	for (int i = 0; i < ap.length; i++) {
+	    existingAlternates.add(ap[i]);
 	}
-	for (int j = 0; j < outputs.length; j++) {
-	    insertNodeInto(new DefaultMutableTreeNode(outputs[j]),
-			   processorNode,
-			   j+inputs.length);
+	Set nodesToRemove = new HashSet();
+	for (Enumeration e = processorNode.children(); e.hasMoreElements();) {
+	    DefaultMutableTreeNode node = (DefaultMutableTreeNode)e.nextElement();
+	    if (node.getUserObject() instanceof AlternateProcessor) {
+		if (existingAlternates.contains(node.getUserObject()) == false) {
+		    nodesToRemove.add(node);
+		}
+		else {
+		    existingAlternates.remove(node.getUserObject());
+		}
+	    }
 	}
-	// Add the alternates
-	AlternateProcessor[] alternates = processor.getAlternatesArray();
-	for (int j = 0; j < alternates.length; j++) {
-	    MutableTreeNode alternateNode = new DefaultMutableTreeNode(alternates[j]);
-	    insertNodeInto(alternateNode, processorNode, j+inputs.length+outputs.length);
-	    // Add alternate ports to the alternate
-	    InputPort[] alternateInputs = alternates[j].getProcessor().getInputPorts();
-	    OutputPort[] alternateOutputs = alternates[j].getProcessor().getOutputPorts();
-	    for (int k = 0; k < alternateInputs.length; k++) {
-		insertNodeInto(new DefaultMutableTreeNode(alternateInputs[k]),
-			       alternateNode,
-			       k);
-	    }
-	    for (int k = 0; k < alternateOutputs.length; k++) {
-		insertNodeInto(new DefaultMutableTreeNode(alternateOutputs[k]),
-			       alternateNode,
-			       k+alternateInputs.length);
-	    }
+	for (Iterator i = nodesToRemove.iterator(); i.hasNext();) {
+	    removeNodeFromParent((DefaultMutableTreeNode)i.next());
+	}
+	for (Iterator i = existingAlternates.iterator(); i.hasNext();) {
+	    DefaultMutableTreeNode newNode = new DefaultMutableTreeNode(i.next());
+	    refreshProcessorNode(newNode);
+	    insertNodeInto(newNode, processorNode, processorNode.getChildCount());
 	}
     }
 
