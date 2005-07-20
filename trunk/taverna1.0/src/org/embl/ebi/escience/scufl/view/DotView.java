@@ -242,8 +242,13 @@ public class DotView implements ScuflModelEventListener, java.io.Serializable {
 	StringBuffer sb = new StringBuffer();
 	if (name != null) {
 	    sb.append("subgraph cluster_"+prefix+name+" {\n");
-	    sb.append(" label="+q(name)+",\n");
-	    sb.append(" fontname=\"Helvetica\", fontsize=\"10\", fontcolor=\"black\"\n\n");
+	    if (detail != BLOB) {
+		sb.append(" label="+q(name)+",\n");
+		sb.append(" fontname=\"Helvetica\", fontsize=\"10\", fontcolor=\"black\"\n\n");
+	    }
+	    else {
+		sb.append(" label=\"\",\n");
+	    }
 	    sb.append(" fillcolor=\""+fillColours[fill]+"\", style=\"filled\"\n");
 	}
 	Processor[] processors = model.getProcessors();
@@ -278,7 +283,7 @@ public class DotView implements ScuflModelEventListener, java.io.Serializable {
 		if (c.getTargetProcessor() instanceof WorkflowProcessor && expandWorkflow == true) {
 		    targetName = "cluster_"+targetName;
 		}
-		if (this.portDisplay != DotView.NONE && displayTypes) {
+		if (detail != DotView.NONE && detail != BLOB && displayTypes) {
 		    // Create the box
 		    sb.append(" "+q(constraintName)+" [\n");
 		    sb.append("  shape=\"rectangle\",\n");
@@ -376,10 +381,12 @@ public class DotView implements ScuflModelEventListener, java.io.Serializable {
 	    StringBuffer sb = new StringBuffer();
 	    sb.append(" subgraph cluster_"+prefix+"sinks {\n");
 	    sb.append("  style=\"dotted\"\n");
-	    sb.append("  label=\"Workflow Outputs\"\n");
-	    sb.append("  fontname=\"Helvetica\"\n");
-	    sb.append("  fontsize=\"10\"\n");	
-	    sb.append("  fontcolor=\"black\"  \n");
+	    if (detail != BLOB) {
+		sb.append("  label=\"Workflow Outputs\"\n");
+		sb.append("  fontname=\"Helvetica\"\n");
+		sb.append("  fontsize=\"10\"\n");	
+		sb.append("  fontcolor=\"black\"  \n");
+	    }
 	    sb.append("  rank=\"same\"\n");
 	    for (int i = 0; i < sinks.length; i++) {
 		sb.append(q(prefix+"WORKFLOWINTERNALSINK_"+sinks[i].getName())+" [\n");
@@ -388,6 +395,8 @@ public class DotView implements ScuflModelEventListener, java.io.Serializable {
 		}
 		else if (detail == BLOB) {
 		    sb.append("   shape=\"circle\",\n");
+		    sb.append("   width=\"0.3\",\n");
+		    sb.append("   height=\"0.3\",\n");
 		}
 		else {
 		    sb.append("   shape=\"house\",\n");
@@ -396,6 +405,9 @@ public class DotView implements ScuflModelEventListener, java.io.Serializable {
 		    sb.append("   label="+q(sinks[i].getName())+",\n");
 		    sb.append("   width=\"0\",\n");
 		    sb.append("   height=\"0\",\n");
+		}
+		else {
+		    sb.append("   label=\"\",\n");
 		}
 		
 		sb.append("   fillcolor=\"lightsteelblue2\"\n");
@@ -415,10 +427,12 @@ public class DotView implements ScuflModelEventListener, java.io.Serializable {
 	    StringBuffer sb = new StringBuffer();
 	    sb.append(" subgraph cluster_"+prefix+"sources {\n");
 	    sb.append("  style=\"dotted\"\n");
-	    sb.append("  label=\"Workflow Inputs\"\n");
-	    sb.append("  fontname=\"Helvetica\"\n");
-	    sb.append("  fontsize=\"10\"\n");	
-	    sb.append("  fontcolor=\"black\"  \n");
+	    if (detail != BLOB) {
+		sb.append("  label=\"Workflow Inputs\"\n");
+		sb.append("  fontname=\"Helvetica\"\n");
+		sb.append("  fontsize=\"10\"\n");	
+		sb.append("  fontcolor=\"black\"  \n");
+	    }
 	    sb.append("  rank=\"same\"\n");
 	    for (int i = 0; i < sources.length; i++) {
 		sb.append(q(prefix+"WORKFLOWINTERNALSOURCE_"+sources[i].getName())+" [\n");
@@ -427,6 +441,8 @@ public class DotView implements ScuflModelEventListener, java.io.Serializable {
 		}
 		else if (detail == BLOB) {
 		    sb.append("   shape=\"circle\",\n");
+		    sb.append("   width=\"0.3\",\n");
+		    sb.append("   height=\"0.3\",\n");
 		}
 		else {
 		    sb.append("   shape=\"invhouse\",\n");
@@ -436,7 +452,10 @@ public class DotView implements ScuflModelEventListener, java.io.Serializable {
 		    sb.append("   width=\"0\",\n");
 		    sb.append("   height=\"0\",\n");
 		}
-		
+		else {
+		    sb.append("   label=\"\",\n");
+		}
+
 		sb.append("   fillcolor=\"skyblue\"\n");
 		sb.append(" ]\n");
 	    }
@@ -464,6 +483,9 @@ public class DotView implements ScuflModelEventListener, java.io.Serializable {
 	if (detail == BLOB) {
 	    sb.append("  shape=\"circle\", \n");
 	    sb.append("  style=\"filled\"  \n");
+	    sb.append("  label=\"\"        \n");
+	    sb.append("   width=\"0.3\",\n");
+	    sb.append("   height=\"0.3\",\n"); 
 	}
 	else if (detail == NONE) {
 	    sb.append("  shape=\"box\",           \n");

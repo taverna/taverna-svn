@@ -24,7 +24,7 @@ import javax.swing.filechooser.*;
 public class ScuflDiagramPanel extends JPanel 
     implements ScuflUIComponent {
     
-    String[] displayPolicyStrings = { "All ports", "Bound ports", "No ports" };
+    String[] displayPolicyStrings = { "All ports", "Bound ports", "No ports", "Blobs" };
     String[] alignment = {"Vertical","Horizontal"};
     JButton saveAsDot, saveAsPNG, saveAsSVG;
     JComboBox displayPolicyChooser = new JComboBox(displayPolicyStrings);
