@@ -308,7 +308,7 @@ public class Ocula extends JPanel {
      * For complex scripts where the task is to actually run some algorithm then fetch
      * multiple results use the runScript method.
      * @param script A valid script in BeanShell interpreted java
-     * @exception EvalError propogated from the BeanShell Interpreter
+     * @exception EvalError propagated from the BeanShell Interpreter
      */
     public Object evaluate(String script) throws EvalError {
 	script = "returnValue = "+script;
@@ -328,7 +328,7 @@ public class Ocula extends JPanel {
      * @param extract Array of strings, each element in the array is a named object
      * bound within the BeanShell interpreter which should be inserted into the
      * context after the script has completed
-     * @exception EvalError propogated from the BeanShell Interpreter
+     * @exception EvalError propagated from the BeanShell Interpreter
      */
     public void runScript(String script, String[] extract) throws EvalError {
 	Interpreter i = new Interpreter();
