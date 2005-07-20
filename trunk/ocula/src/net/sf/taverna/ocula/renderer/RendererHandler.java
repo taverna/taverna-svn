@@ -72,6 +72,7 @@ public class RendererHandler {
 	for (Iterator i = renderers.iterator(); i.hasNext();) {
 	    RendererSPI rspi = (RendererSPI)i.next();
 	    if (rspi.canHandle(o, this.ocula)) {
+		log.debug("Getting renderer " + rspi.getClass());
 		return rspi.getRenderer(o, this.ocula);
 	    }
 	}
