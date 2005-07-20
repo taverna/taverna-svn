@@ -164,50 +164,66 @@ public class InputLayout implements LayoutManager {
     }
     
     public Dimension preferredLayoutSize(int type) {
-	int w = 0;
-	int h = 0;
-	Dimension d = null;
 	
 	switch (type) {
 	case BUTTON_TYPE:
-	    d = getMaximumDimension();
-	    w = d.width + hGap;
-	    h = d.height;
-	    return new Dimension(w * components.size() - hGap, h);
+	    return buttonsPreferredLayoutSize(type);
 	    
 	case COLUMN_TYPE:
-	    int dividerTotal = getDividerTotal();
-	    for (int i = 1, c = components.size(); i < c; i += cols) {
-		Component comp = (Component) components.get(i);
-		d = comp.getPreferredSize();
-		w = Math.max(w, d.width);
-		h += d.height + vGap;
-	    }
-	    w *= (cols / 2);
-	    h -= vGap;
-	    
-	    return new Dimension(dividerTotal + w, h);
+	    return columnsPreferredLayoutSize(type);
 	
 	case MULTI_LINE_TYPE:
-	    for (Iterator it = components.iterator(); it.hasNext(); ) {
-		Component comp = (Component) it.next();
-		d = comp.getPreferredSize();
-		w = Math.max(w, d.width);
-		h += d.height + vGap;
-	    }
-	    h -= vGap;
-	    return new Dimension(w, h);
+	    return multiLinePrefferredLayoutSize(type);
 	}
 	throw new IllegalArgumentException("Illegal type " + type);
 
     }
     
+    private Dimension buttonsPreferredLayoutSize(int type) {
+	Dimension d = getMaximumDimension();
+	int w = d.width + hGap;
+	int h = d.height;
+	return new Dimension(w * components.size() - hGap, h);
+    }
+    
+    private Dimension columnsPreferredLayoutSize(int type) {
+	int dividerTotal = getDividerTotal();
+	int w = 0;
+	int h = 0;
+	Dimension d = null;
+	for (int i = 1, c = components.size(); i < c; i += cols) {
+	    Component comp = (Component) components.get(i);
+	    d = comp.getPreferredSize();
+	    w = Math.max(w, d.width);
+	    h += d.height + vGap;
+	}
+	w *= (cols / 2);
+	h -= vGap;
+
+	return new Dimension(dividerTotal + w, h);
+    }
+    
+    private Dimension multiLinePrefferredLayoutSize(int type) {
+	int h = 0;
+	int w = 0;
+	Dimension d = null;
+	for (Iterator it = components.iterator(); it.hasNext();) {
+	    Component comp = (Component) it.next();
+	    d = comp.getPreferredSize();
+	    w = Math.max(w, d.width);
+	    h += d.height + vGap;
+	}
+	h -= vGap;
+	return new Dimension(w, h);
+    }
+    
     private Dimension getMaximumDimension() {
 	int w = 0;
 	int h = 0;
+	Dimension d = null;
 	for (Iterator it = components.iterator(); it.hasNext(); ) {
 	    Component comp = (Component) it.next();
-	    Dimension d = comp.getPreferredSize();
+	    d = comp.getPreferredSize();
 	    w = Math.max(w, d.width);
 	    h = Math.max(h, d.height);
 	}
@@ -262,61 +278,69 @@ public class InputLayout implements LayoutManager {
     }
     
     private int layoutComponents(int type, int x, int y, int w) {
-	int xx = 0;
-	int ww = 0;
 	switch (type) {
 	case MULTI_LINE_TYPE:
-	    for (Iterator it = components.iterator(); it.hasNext(); ) {
-		Component comp = (Component) it.next();
-		Dimension d = comp.getPreferredSize();
-		comp.setBounds(x, y, w, d.height);
-		y += d.height + vGap;
-	    }
-	    return y;
+	    return layoutMultiLine(type, x, y, w);
 	    
 	case COLUMN_TYPE:
-	    int totalDivider = getDividerTotal();
-	    ww = (w - totalDivider) / (cols / 2);
-	    //xx = 0;
-
-	    for (int i = 1, c = components.size(); i < c; i += cols) {
-		xx = x;
-		Dimension d = null;
-		for (int j = 0, k = 0; j < cols && (i + j < c); ++k, j += 2) {
-		    Component comp1 = (Component) components.get(i + j - 1);
-		    Component comp2 = (Component) components.get(i + j);
-		    d = comp2.getPreferredSize();
-		    comp1.setBounds(xx, y, dividers[k] - hGap, d.height);
-		    xx += dividers[k];
-		    comp2.setBounds(xx, y, ww, d.height);
-		    xx += hGap + ww;
-		}
-		y += d.height + vGap;
-	    }
-	    //y -= vGap;
-	    return y;
-
+	    return layoutColumns(type, x, y, w);
 	    
 	case BUTTON_TYPE:
-	    Dimension d = getMaximumDimension();
-	    ww = d.width * components.size() + hGap * (components.size() - 1);
-	    xx = x + Math.max(0, (w - ww) / 2);
-	    
-	    for (Iterator it = components.iterator(); it.hasNext(); ) {
-		Component comp = (Component) it.next();
-		comp.setBounds(xx, y, d.width, d.height);
-		xx += d.width + hGap;
-	    }
-	    return y + d.height + vGap;
+	    return layoutButtons(type, x, y, w);
 	}
 	
 	throw new IllegalArgumentException("Illegal type " + type);
     }
+    
+    private int layoutMultiLine(int type, int x, int y, int w) {
+	for (Iterator it = components.iterator(); it.hasNext();) {
+	    Component comp = (Component) it.next();
+	    Dimension d = comp.getPreferredSize();
+	    comp.setBounds(x, y, w, d.height);
+	    y += d.height + vGap;
+	}
+	return y;
+    }
+    
+    private int layoutColumns(int type, int x, int y, int w) {
+	int totalDivider = getDividerTotal();
+	int ww = (w - totalDivider) / (cols / 2);
+
+	for (int i = 1, c = components.size(); i < c; i += cols) {
+	    int xx = x;
+	    Dimension d = null;
+	    for (int j = 0, k = 0; j < cols && (i + j < c); ++k, j += 2) {
+		Component comp1 = (Component) components.get(i + j - 1);
+		Component comp2 = (Component) components.get(i + j);
+		d = comp2.getPreferredSize();
+		comp1.setBounds(xx, y, dividers[k] - hGap, d.height);
+		xx += dividers[k];
+		comp2.setBounds(xx, y, ww, d.height);
+		xx += hGap + ww;
+	    }
+	    y += d.height + vGap;
+	}
+	return y;
+    }
+    
+    private int layoutButtons(int type, int x, int y, int w) {
+	Dimension d = getMaximumDimension();
+	int ww = d.width * components.size() + hGap * (components.size() - 1);
+	int xx = x + Math.max(0, (w - ww) / 2);
+
+	for (Iterator it = components.iterator(); it.hasNext();) {
+	    Component comp = (Component) it.next();
+	    comp.setBounds(xx, y, d.width, d.height);
+	    xx += d.width + hGap;
+	}
+	return y + d.height + vGap;
+    }
 
     /**
-     * Gets the hGap property.
-     * @return hGap property.
-     */
+         * Gets the hGap property.
+         * 
+         * @return hGap property.
+         */
     public int getHGap() {
 	return hGap;
     }
