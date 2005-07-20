@@ -24,7 +24,20 @@
 
 package net.sf.taverna.ocula;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+
+import javax.swing.Icon;
+import javax.swing.JComponent;
+import javax.swing.JMenuItem;
+
+import net.sf.taverna.ocula.ui.Icons;
+import net.sf.taverna.ocula.ui.OculaMenu;
 
 import org.apache.log4j.Logger;
 import org.jdom.Element;
@@ -40,11 +53,13 @@ import bsh.EvalError;
  */
 public class Parser {
     private Logger log = Logger.getLogger(Parser.class);
+
     private Ocula ocula;
+
     public Parser(Ocula ocula) {
 	this.ocula = ocula;
     }
-    
+
     /**
      * Looks for the first "script" tag, executes it, and returns the result
      * as an array.
@@ -65,7 +80,7 @@ public class Parser {
 	}
 
 	ocula.evaluate(script);
-	
+
 	Object result = ocula.evaluate(script);
 	// Convert Collection to array
 	if (result instanceof Collection) {
@@ -79,5 +94,91 @@ public class Parser {
 	    result = resultArray;
 	}
 	return (Object[]) result;
+    }
+
+    public void parseDoubleClick(Element element, JComponent component,
+	    final Object targetObject) {
+	final Element doubleClickElement = element.getChild("doubleclick");
+	if (doubleClickElement == null) {
+	    return;
+	}
+	component.addMouseListener(new MouseAdapter() {
+	    public void mouseClicked(MouseEvent me) {
+		if (me.getClickCount() == 2 && me.isPopupTrigger() == false) {
+		    log.debug("Double click");
+		    ocula.putContext("selectedObject", targetObject);
+		    ocula.getActionRunner().runAction(doubleClickElement);
+		    ocula.removeKey("selectedObject");
+		}
+	    }
+	});
+    }
+
+    public void parseSingleClick() {
+
+    }
+
+    public void parseContextualMenu(Element element, final JComponent component,
+	    final Object targetObject) {
+	final Element contextMenuElement = element.getChild("contextmenu");
+	if (contextMenuElement == null) {
+	    return;
+	}
+	component.addMouseListener(new MouseAdapter() {
+	    public void mouseClicked(MouseEvent me) {
+		if (me.isPopupTrigger()) {
+		    popupMenu(me);
+		    return;
+		}
+	    }
+
+	    public void mousePressed(MouseEvent me) {
+		if (me.isPopupTrigger()) {
+		    popupMenu(me);
+		}
+	    }
+
+	    public void mouseReleased(MouseEvent me) {
+		if (me.isPopupTrigger()) {
+		    popupMenu(me);
+		}
+	    }
+
+	    public void popupMenu(MouseEvent e) {
+		try {
+		    String menuTitle = contextMenuElement.getAttributeValue(
+			    "title", "No Title");
+		    Icon menuIcon = Icons.getIcon(contextMenuElement
+			    .getAttributeValue("icon", "NoIcon"));
+		    List actions = contextMenuElement.getChildren();
+		    OculaMenu menu = new OculaMenu(menuTitle, menuIcon);
+		    for (Iterator j = actions.iterator(); j.hasNext();) {
+			final Element actionElement = (Element) j.next();
+			String actionElementName = actionElement
+				.getAttributeValue("name", "No Name");
+			Icon actionElementIcon = Icons.getIcon(actionElement
+				.getAttributeValue("icon", "NoIcon"));
+			JMenuItem item = new JMenuItem(actionElementName,
+				actionElementIcon);
+			item.addActionListener(new ActionListener() {
+			    public void actionPerformed(ActionEvent ae) {
+				ocula
+					.putContext("selectedObject",
+						targetObject);
+				ocula.getActionRunner()
+					.runAction(actionElement);
+				ocula.removeKey("selectedObject");
+			    }
+			});
+			menu.add(item);
+		    }
+		    menu.show(component, e.getX(), e.getY());
+		}
+
+		catch (Exception ex) {
+		    log.error("Exception in mousepressed handler", ex);
+		}
+	    }
+	});
     }
 }

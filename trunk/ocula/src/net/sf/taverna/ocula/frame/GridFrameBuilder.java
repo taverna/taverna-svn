@@ -1,5 +1,5 @@
 /*
- * Copyright 2005 Tom Oinn, EMBL-EBI
+ * Copyright 2005 Tom Oinn, EMBL-EBI and University of Manchester
  *
  *  This file is part of Taverna.  Further information, and the
  *  latest version, can be found at http://taverna.sf.net
@@ -54,6 +54,7 @@ import bsh.EvalError;
  * within the specified number of columns. Produces
  * subclasses of the ResultSetPanel from the ui package.
  * @author Tom Oinn
+ * @author Ismael Juma
  */
 public class GridFrameBuilder implements FrameSPI {
 
@@ -73,8 +74,6 @@ public class GridFrameBuilder implements FrameSPI {
 	    iconName = "NoIcon";
 	}
 	Icon icon = Icons.getIcon(iconName);
-	final Element doubleClickElement = element.getChild("doubleclick");
-	final Element contextMenuElement = element.getChild("contextmenu");
 	int cols = 3;
 	try {
 	    String colValue = element.getAttributeValue("cols","3");
@@ -87,10 +86,11 @@ public class GridFrameBuilder implements FrameSPI {
 	final Ocula ocula = o;
 	new Thread() {
 	    public void run() {
+		Parser parser = new Parser(ocula);
 		gf.getProgressBar().setValue(0);
 		gf.getProgressBar().setIndeterminate(true);
 		try {
-		    Object result = new Parser(ocula).parseScript(element);
+		    Object result = parser.parseScript(element);
 		    if (result instanceof Object[]) {
 			Object[] array = (Object[])result;
 			for (int i = 0; i < array.length; i++) {
@@ -99,66 +99,16 @@ public class GridFrameBuilder implements FrameSPI {
 			    gf.getContents().add(component);
 			    // If there's a doubleclick action defined then register the appropriate
 			    // mouse listener...
-			    component.addMouseListener(new MouseAdapter() {
-				    public void mouseClicked(MouseEvent me) {
-					if (me.isPopupTrigger()) {
-					    popupMenu(me);
-					    return;
-					}
-					if (doubleClickElement != null && 
-					    me.getClickCount() == 2 && 
-					    me.isPopupTrigger() == false) {
-					    log.debug("Double click");
-					    ocula.putContext("selectedObject",targetObject);
-					    ocula.getActionRunner().runAction(doubleClickElement);
-					    ocula.removeKey("selectedObject");
-					}
-				    }
-				    public void mousePressed(MouseEvent me) {
-					if (me.isPopupTrigger()) {
-					    popupMenu(me);
-					}
-				    }
-				    public void mouseReleased(MouseEvent me) {
-					if (me.isPopupTrigger()) {
-					    popupMenu(me);
-					}
-				    }
-				    public void popupMenu(MouseEvent e) {
-					try {
-					    if (contextMenuElement != null) {
-						String menuTitle = contextMenuElement.getAttributeValue("title","No Title");
-						Icon menuIcon = Icons.getIcon(contextMenuElement.getAttributeValue("icon","NoIcon"));
-						List actions = contextMenuElement.getChildren();
-						OculaMenu menu = new OculaMenu(menuTitle, menuIcon);
-						for (Iterator j = actions.iterator(); j.hasNext();) {
-						    final Element actionElement = (Element)j.next();
-						    String actionElementName = actionElement.getAttributeValue("name","No Name");
-						    Icon actionElementIcon = Icons.getIcon(actionElement.getAttributeValue("icon","NoIcon"));
-						    JMenuItem item = new JMenuItem(actionElementName, actionElementIcon);
-						    item.addActionListener(new ActionListener() {
-							    public void actionPerformed(ActionEvent ae) {
-								ocula.putContext("selectedObject",targetObject);
-								ocula.getActionRunner().runAction(actionElement);
-								ocula.removeKey("selectedObject");
-							    }
-							});
-						    menu.add(item);
-						}
-						menu.show(component, e.getX(), e.getY());
-					    }
-					}
-					catch (Exception ex) {
-					    log.error("Exception in mousepressed handler", ex);
-					}
-				    }
-				});
+			    parser.parseDoubleClick(element, component, targetObject);
+			    parser.parseContextualMenu(element, component, targetObject);
 			    gf.revalidate();
 			}
 		    }
 		}
 		catch (EvalError ee) {
-		    gf.getContents().add(new ErrorLabel("<html><body>Can't fetch components.<p>See log output for more details.</body></html>"));
+		    gf.getContents().add(new ErrorLabel("<html><body>Can't" +
+		    		" fetch components.<p>See log output for more" +
+		    		" details.</body></html>"));
 		    gf.revalidate();
 		    log.error("Can't evaluate script", ee);
 		}
