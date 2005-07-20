@@ -24,16 +24,28 @@
 
 package net.sf.taverna.ocula.frame;
 
-import net.sf.taverna.ocula.ui.*;
-import net.sf.taverna.ocula.Ocula;
-import net.sf.taverna.ocula.action.*;
-import org.apache.log4j.Logger;
-import javax.swing.*;
-import java.util.*;
-import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.util.Iterator;
 import java.util.List;
-import java.awt.event.*;
+
+import javax.swing.Icon;
+import javax.swing.JComponent;
+import javax.swing.JMenuItem;
+
+import net.sf.taverna.ocula.Ocula;
+import net.sf.taverna.ocula.Parser;
+import net.sf.taverna.ocula.ui.ErrorLabel;
+import net.sf.taverna.ocula.ui.GridPanel;
+import net.sf.taverna.ocula.ui.Icons;
+import net.sf.taverna.ocula.ui.OculaMenu;
+import net.sf.taverna.ocula.ui.ResultSetPanel;
+
+import org.apache.log4j.Logger;
 import org.jdom.Element;
+
 import bsh.EvalError;
 
 /**
@@ -51,7 +63,7 @@ public class GridFrameBuilder implements FrameSPI {
 	return "grid";
     }
 
-    public OculaFrame makeFrame(Ocula o, Element element) {
+    public OculaFrame makeFrame(Ocula o, final Element element) {
 	String name = element.getAttributeValue("name");
 	if (name == null) {
 	    name = "No Name";
@@ -73,33 +85,12 @@ public class GridFrameBuilder implements FrameSPI {
 	}
 	final GridFrame gf = new GridFrame(name, icon, cols);
 	final Ocula ocula = o;
-	Element scriptElement = element.getChild("script");
-	final String script;
-	if (scriptElement == null) {
-	    // Will fail at eval time but that's fine, that's
-	    // a checked exception and easier to deal with
-	    script = "";
-	}
-	else {
-	    script = scriptElement.getTextTrim();
-	}
 	new Thread() {
 	    public void run() {
 		gf.getProgressBar().setValue(0);
 		gf.getProgressBar().setIndeterminate(true);
 		try {
-		    Object result = ocula.evaluate(script);
-		    // Convert Collection to array
-		    if (result instanceof Collection) {
-			result = ((Collection)result).toArray();
-		    }
-		    // Handle Object[]
-		    if (result instanceof Object[] == false) {
-			log.debug("Got "+result.toString()+" from call");
-			Object[] resultArray = new Object[1];
-			resultArray[0] = result;
-			result = resultArray;
-		    }
+		    Object result = new Parser(ocula).parseScript(element);
 		    if (result instanceof Object[]) {
 			Object[] array = (Object[])result;
 			for (int i = 0; i < array.length; i++) {
