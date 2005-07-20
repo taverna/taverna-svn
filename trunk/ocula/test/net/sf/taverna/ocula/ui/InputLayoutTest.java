@@ -41,7 +41,7 @@ import junit.framework.TestCase;
 /**
  * Tests for InputLayout.
  * 
- * @author Ismael Juma <ismael@juma.me.uk>
+ * @author Ismael Juma (ismael@juma.me.uk)
  *
  */
 public class InputLayoutTest extends TestCase {

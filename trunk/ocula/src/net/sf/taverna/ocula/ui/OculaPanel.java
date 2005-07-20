@@ -33,7 +33,7 @@ import javax.swing.JPanel;
  * Superclass for containers within Ocula. This is a very simple swing component
  * that has the appropriate look.
  * 
- * @author Ismael Juma <ismael@juma.me.uk>
+ * @author Ismael Juma (ismael@juma.me.uk)
  */
 public class OculaPanel extends JPanel {
 
