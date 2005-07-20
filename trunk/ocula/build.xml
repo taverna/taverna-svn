@@ -112,8 +112,8 @@
 		<get src="http://www.ibiblio.org/maven/jdom/jars/jdom-1.0.jar" 
 		     dest="./netlib/jdom-1.0.jar" usetimestamp="yes"/>
 		<!-- Beanshell -->
-		<get src="http://www.ibiblio.org/maven/bsh/jars/bsh-2.0b1.jar"
-		     dest="./netlib/bsh-2.0b1.jar" usetimestamp="yes"/> 
+		<get src="http://www.beanshell.org/bsh-2.0b4.jar"
+		     dest="./netlib/bsh-2.0b4.jar" usetimestamp="yes"/> 
 		<!-- Apache Commons --> 
   		<get src="http://www.ibiblio.org/maven/commons-discovery/jars/commons-discovery-0.2.jar" 
 		     dest="./netlib/commons-discovery-0.2.jar" usetimestamp="yes" /> 
