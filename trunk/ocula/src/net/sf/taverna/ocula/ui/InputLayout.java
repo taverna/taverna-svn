@@ -29,13 +29,28 @@ import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.Insets;
 import java.awt.LayoutManager;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
+import javax.swing.AbstractButton;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 
 /**
- * This layout works by arranging items into pairs of columns. The following
- * description uses a 0-based index. Usually, the even columns will contain
- * JLabels and the odd ones will contain JTextFields. The width of the even
- * columns is set to the one of the widest JLabel of each column. The rest of
- * the width is distributed equally amongst the odd columns.
+ * This layout deals with 3 types of components. Each is treated differently.
+ * 
+ * JButtons are simply centered and given the same size.
+ * 
+ * JScrollPane and JPanel instances occupy the whole width available and their
+ * preferred height is respected.
+ * 
+ * Finally, JTextFields and JLabels are arranged into pairs of columns. The
+ * following description uses a 0-based index. Usually, the even columns will
+ * contain JLabels and the odd ones will contain JTextFields. The width of the
+ * even columns is set to the one of the widest JLabel of that column. The rest
+ * of the width is distributed equally amongst the odd columns. Note that the
+ * cols parameter is only relevant to JTextFields and JLabels.
  * 
  * @author Ismael Juma
  * 
@@ -44,21 +59,31 @@ public class InputLayout implements LayoutManager {
 
     private int[] dividers;
 
-    private static int defaultHGap = 10;
-    private static int defaultVGap = 5;
-    private static int defaultCols = 2;
+    private static final int MULTI_LINE_TYPE = 0;
+    private static final int BUTTON_TYPE = 1; 
+    private static final int COLUMN_TYPE = 2;
+    private static final int DEFAULT_H_GAP = 10;
+    private static final int DEFAULT_V_GAP = 5;
+    private static final int DEFAULT_COLS = 2;
     private int hGap;
 
     private int vGap;
 
     private int cols;
+    
+    /**
+     * This List is a container used by the layout manager to pass lists
+     * of components of the same type to different methods. It is not really
+     * necessary, but avoids having to create an ArrayList frequently.
+     */
+    private List components;
 
     /**
      * Creates an instance layout with the default values: 10 for hGap, 5 for
      * vGap and 2 columns.
      */
     public InputLayout() {
-	this(defaultHGap, defaultVGap, defaultCols);
+	this(DEFAULT_H_GAP, DEFAULT_V_GAP, DEFAULT_COLS);
     }
     
     /**
@@ -68,7 +93,7 @@ public class InputLayout implements LayoutManager {
      * even number.
      */
     public InputLayout(int cols) {
-	this(defaultHGap, defaultVGap, cols);
+	this(DEFAULT_H_GAP, DEFAULT_V_GAP, cols);
     }
 
     /**
@@ -93,6 +118,7 @@ public class InputLayout implements LayoutManager {
 	for (int i = 0; i < dividers.length; ++i) {
 	    dividers[i] = -1;
 	}
+	components = new ArrayList();
     }
 
     public void addLayoutComponent(String name, Component comp) {
@@ -102,23 +128,102 @@ public class InputLayout implements LayoutManager {
     }
 
     public Dimension preferredLayoutSize(Container parent) {
-	int dividerTotal = getDividerTotal(parent);
-
+	components.clear();
 	int w = 0;
 	int h = 0;
-	for (int i = 1, c = parent.getComponentCount(); i < c; i += cols) {
+	int type = -1;
+	
+	for (int i = 0, c = parent.getComponentCount(); i < c; ++i) {
 	    Component comp = parent.getComponent(i);
+	    int newType = getLayoutType(comp);
+	    
+	    if (i == 0) {
+		type = newType;
+	    }
+	    
+	    if (type != newType) {
+		Dimension d = preferredLayoutSize(type);
+		w = Math.max(w, d.width);
+		h += d.height + vGap;
+		components.clear();
+		type = newType;
+	    }
+	    
+	    components.add(comp);
+	}
+	
+	Dimension d = preferredLayoutSize(type);
+	w = Math.max(w, d.width);
+	h += d.height + vGap;
+	
+	h -= vGap;
+	
+	Insets insets = parent.getInsets();
+	return new Dimension(w + insets.left + insets.right, h
+		+ insets.top + insets.bottom);
+    }
+    
+    public Dimension preferredLayoutSize(int type) {
+	int w = 0;
+	int h = 0;
+	Dimension d = null;
+	
+	switch (type) {
+	case BUTTON_TYPE:
+	    d = getMaximumDimension();
+	    w = d.width + hGap;
+	    h = d.height;
+	    return new Dimension(w * components.size() - hGap, h);
+	    
+	case COLUMN_TYPE:
+	    int dividerTotal = getDividerTotal();
+	    for (int i = 1, c = components.size(); i < c; i += cols) {
+		Component comp = (Component) components.get(i);
+		d = comp.getPreferredSize();
+		w = Math.max(w, d.width);
+		h += d.height + vGap;
+	    }
+	    w *= (cols / 2);
+	    h -= vGap;
+	    
+	    return new Dimension(dividerTotal + w, h);
+	
+	case MULTI_LINE_TYPE:
+	    for (Iterator it = components.iterator(); it.hasNext(); ) {
+		Component comp = (Component) it.next();
+		d = comp.getPreferredSize();
+		w = Math.max(w, d.width);
+		h += d.height + vGap;
+	    }
+	    h -= vGap;
+	    return new Dimension(w, h);
+	}
+	throw new IllegalArgumentException("Illegal type " + type);
+
+    }
+    
+    private Dimension getMaximumDimension() {
+	int w = 0;
+	int h = 0;
+	for (Iterator it = components.iterator(); it.hasNext(); ) {
+	    Component comp = (Component) it.next();
 	    Dimension d = comp.getPreferredSize();
 	    w = Math.max(w, d.width);
-	    h += d.height + vGap;
+	    h = Math.max(h, d.height);
 	}
-	w *= (cols / 2);
-	h -= vGap;
-
-	Insets insets = parent.getInsets();
-	Dimension d = new Dimension(dividerTotal + w + insets.left + insets.right, h
-		+ insets.top + insets.bottom);
-	return d;
+	return new Dimension(w, h);
+    }
+    
+    private int getLayoutType(Component component) {
+	if (component instanceof AbstractButton) {
+	    return BUTTON_TYPE;
+	}
+	else if (component instanceof JPanel || component instanceof JScrollPane) {
+	    return MULTI_LINE_TYPE;
+	}
+	else {
+	    return COLUMN_TYPE;
+	}
     }
 
     public Dimension minimumLayoutSize(Container parent) {
@@ -126,29 +231,86 @@ public class InputLayout implements LayoutManager {
     }
 
     public void layoutContainer(Container parent) {
-	dividers = getDividers(parent);
-	int totalDivider = getDividerTotal(parent);
+	components.clear();
+	int type = -1;
+	
+	dividers = getDividers();
 
 	Insets insets = parent.getInsets();
-	int w = parent.getWidth() - insets.left - insets.right - totalDivider;
-	w /= (cols / 2);
-	int x = 0;
+	int w = parent.getWidth() - insets.left - insets.right;
+	int x = insets.left;
 	int y = insets.top;
-
-	for (int i = 1, c = parent.getComponentCount(); i < c; i += cols) {
-	    x = insets.left;
-	    Dimension d = null;
-	    for (int j = 0, k = 0; j < cols && (i + j < c) ; ++k, j += 2) {
-		Component comp1 = parent.getComponent(i + j - 1);
-		Component comp2 = parent.getComponent(i + j);
-		d = comp2.getPreferredSize();
-		comp1.setBounds(x, y, dividers[k] - hGap, d.height);
-		x += dividers[k];
-		comp2.setBounds(x, y, w, d.height);
-		x += hGap + w;
+	
+	for (int i = 0, c = parent.getComponentCount(); i < c; ++i) {
+	    Component comp = parent.getComponent(i);
+	    int newType = getLayoutType(comp);
+	    if (i == 0) {
+		type = newType;
 	    }
-	    y += d.height + vGap;
+	    
+	    if (type != newType) {
+		y = layoutComponents(type, x, y, w);
+		components.clear();
+		type = newType;
+	    }
+	    
+	    components.add(comp);
 	}
+	
+	y = layoutComponents(type, x, y, w);
+	components.clear();
+    }
+    
+    private int layoutComponents(int type, int x, int y, int w) {
+	int xx = 0;
+	int ww = 0;
+	switch (type) {
+	case MULTI_LINE_TYPE:
+	    for (Iterator it = components.iterator(); it.hasNext(); ) {
+		Component comp = (Component) it.next();
+		Dimension d = comp.getPreferredSize();
+		comp.setBounds(x, y, w, d.height);
+		y += d.height + vGap;
+	    }
+	    return y;
+	    
+	case COLUMN_TYPE:
+	    int totalDivider = getDividerTotal();
+	    ww = (w - totalDivider) / (cols / 2);
+	    //xx = 0;
+
+	    for (int i = 1, c = components.size(); i < c; i += cols) {
+		xx = x;
+		Dimension d = null;
+		for (int j = 0, k = 0; j < cols && (i + j < c); ++k, j += 2) {
+		    Component comp1 = (Component) components.get(i + j - 1);
+		    Component comp2 = (Component) components.get(i + j);
+		    d = comp2.getPreferredSize();
+		    comp1.setBounds(xx, y, dividers[k] - hGap, d.height);
+		    xx += dividers[k];
+		    comp2.setBounds(xx, y, ww, d.height);
+		    xx += hGap + ww;
+		}
+		y += d.height + vGap;
+	    }
+	    //y -= vGap;
+	    return y;
+
+	    
+	case BUTTON_TYPE:
+	    Dimension d = getMaximumDimension();
+	    ww = d.width * components.size() + hGap * (components.size() - 1);
+	    xx = x + Math.max(0, (w - ww) / 2);
+	    
+	    for (Iterator it = components.iterator(); it.hasNext(); ) {
+		Component comp = (Component) it.next();
+		comp.setBounds(xx, y, d.width, d.height);
+		xx += d.width + hGap;
+	    }
+	    return y + d.height + vGap;
+	}
+	
+	throw new IllegalArgumentException("Illegal type " + type);
     }
 
     /**
@@ -168,16 +330,9 @@ public class InputLayout implements LayoutManager {
     }
 
     protected int getDivider(int index) {
-	return dividers[index];
-    }
-
-    protected int getDivider(int index, Container parent) {
-	if (dividers[index] > 0)
-	    return dividers[index];
-
 	int divider = 0;
-	for (int i = cols * index / 2, c = parent.getComponentCount(); i < c; i += cols) {
-	    Component comp = parent.getComponent(i);
+	for (int i = cols * index / 2, c = components.size(); i < c; i += cols) {
+	    Component comp = (Component) components.get(i);
 	    Dimension d = comp.getPreferredSize();
 	    divider = Math.max(divider, d.width);
 	}
@@ -185,15 +340,15 @@ public class InputLayout implements LayoutManager {
 	return divider;
     }
     
-    protected int[] getDividers(Container parent) {
+    protected int[] getDividers() {
 	for (int i = 0; i < (cols / 2); ++i)
-	    dividers[i] = getDivider(i, parent);
+	    dividers[i] = getDivider(i);
 	
 	return dividers;
     }
     
-    protected int getDividerTotal(Container parent) {
-	dividers = getDividers(parent);
+    protected int getDividerTotal() {
+	dividers = getDividers();
 	int dividerTotal = 0;
 	for (int i = 0; i < (cols / 2); ++i) {
 	    dividerTotal += dividers[i];
@@ -202,4 +357,9 @@ public class InputLayout implements LayoutManager {
 	dividerTotal = dividerTotal + extraHGap;
 	return dividerTotal;
     }
+    
+    void setComponents(List components) {
+	this.components = components;
+    }
+    
 }
