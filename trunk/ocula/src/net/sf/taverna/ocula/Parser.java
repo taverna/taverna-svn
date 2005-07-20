@@ -36,7 +36,7 @@ import bsh.EvalError;
  * of the FrameBuilder classes. It helps maintain the code in a central place
  * and avoid duplication.
  * 
- * @author Ismael Juma <ismael@juma.me.uk>
+ * @author Ismael Juma (ismael@juma.me.uk)
  */
 public class Parser {
     private Logger log = Logger.getLogger(Parser.class);
