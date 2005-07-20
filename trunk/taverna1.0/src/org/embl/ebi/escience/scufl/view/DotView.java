@@ -390,7 +390,7 @@ public class DotView implements ScuflModelEventListener, java.io.Serializable {
 		    sb.append("   shape=\"circle\",\n");
 		}
 		else {
-		    sb.append("   shape=\"triangle\",\n");
+		    sb.append("   shape=\"house\",\n");
 		}	
 		if (detail != BLOB) {
 		    sb.append("   label="+q(sinks[i].getName())+",\n");
@@ -429,7 +429,7 @@ public class DotView implements ScuflModelEventListener, java.io.Serializable {
 		    sb.append("   shape=\"circle\",\n");
 		}
 		else {
-		    sb.append("   shape=\"triangle\",\n");
+		    sb.append("   shape=\"invhouse\",\n");
 		}	
 		if (detail != BLOB) {
 		    sb.append("   label="+q(sources[i].getName())+",\n");
@@ -437,7 +437,7 @@ public class DotView implements ScuflModelEventListener, java.io.Serializable {
 		    sb.append("   height=\"0\",\n");
 		}
 		
-		sb.append("   fillcolor=\"lightsteelblue2\"\n");
+		sb.append("   fillcolor=\"skyblue\"\n");
 		sb.append(" ]\n");
 	    }
 	    sb.append("}\n");
