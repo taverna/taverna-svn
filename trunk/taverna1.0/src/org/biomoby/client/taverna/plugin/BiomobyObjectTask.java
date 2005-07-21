@@ -47,7 +47,7 @@ public class BiomobyObjectTask implements ProcessorTaskWorker {
                 .getServiceName();
         HashMap outputMap = new HashMap();
         // would like to use the MobyObjectClass to generate a skeleton
-        MobyObjectClassNSImpl mo = new MobyObjectClassNSImpl();
+        MobyObjectClassNSImpl mo = new MobyObjectClassNSImpl(((BiomobyObjectProcessor) parentTask.getProcessor()).getCentral().getRegistryEndpoint());
         if (isPrimitiveType) {
             try {
                 DataThing inputThing;
