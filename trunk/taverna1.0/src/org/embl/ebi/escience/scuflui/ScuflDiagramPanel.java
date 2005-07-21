@@ -221,6 +221,10 @@ public class ScuflDiagramPanel extends JPanel
 	    }
 	    catch (Exception ex) {
 		ex.printStackTrace();
+		JOptionPane.showMessageDialog(null,
+					      "Problem saving diagram : \n"+ex.getMessage(),
+					      "Error!",
+					      JOptionPane.ERROR_MESSAGE);
 	    }
 	}
     }
