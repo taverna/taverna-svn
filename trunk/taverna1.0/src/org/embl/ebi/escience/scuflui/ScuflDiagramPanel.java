@@ -26,8 +26,9 @@ public class ScuflDiagramPanel extends JPanel
     implements ScuflUIComponent {
     
     String[] displayPolicyStrings = { "All ports", "Bound ports", "No ports", "Blobs" };
-    String[] saveTypes = { "dot", "png", "svg" };
-    String[] saveTypeNames = { "dot text", "PNG image", "SVG image" };
+    String[] saveTypes = { "dot", "png", "svg", "ps", "ps2" };
+    String[] saveExtensions = { "dot", "png", "svg", "ps", "ps" };
+    String[] saveTypeNames = { "dot text", "PNG bitmap", "scalable vector graphics", "postscript", "postscript for PDF"};
     String[] alignment = { "Top to bottom", "Left to right" };
 
     JComboBox displayPolicyChooser = new JComboBox(displayPolicyStrings);
@@ -142,10 +143,11 @@ public class ScuflDiagramPanel extends JPanel
 	// Create the save buttons
 	for (int i = 0; i < saveTypes.length; i++) {
 	    String type = saveTypes[i];
+	    String extension = saveExtensions[i];
 	    ImageIcon icon = new ImageIcon(ScuflDiagramPanel.class.getResource("icons/graphicalview/saveAs"+type.toUpperCase()+".png"));
 	    JButton saveButton = new JButton(icon);
 	    saveButton.setPreferredSize(new Dimension(25,25));   
-	    saveButton.addActionListener(new DotInvoker(type));
+	    saveButton.addActionListener(new DotInvoker(type, extension));
 	    saveButton.setToolTipText("Save as "+saveTypeNames[i]);
 	    toolbar.add(saveButton);
 	}
@@ -171,11 +173,13 @@ public class ScuflDiagramPanel extends JPanel
     
     class DotInvoker implements ActionListener {
 	String type = "dot";
+	String extension = "dot";
 	public DotInvoker() {
 	    //
 	}
-	public DotInvoker(String type) {
+	public DotInvoker(String type, String extension) {
 	    this.type = type;
+	    this.extension = extension;
 	}
 	public void actionPerformed(ActionEvent e) {
 	    try {
@@ -183,14 +187,14 @@ public class ScuflDiagramPanel extends JPanel
 		String curDir = prefs.get("currentDir", System.getProperty("user.home"));
 		fc.setCurrentDirectory(new File(curDir));
 		fc.resetChoosableFileFilters();
-		fc.setFileFilter(new ExtensionFileFilter(new String[]{type}));
+		fc.setFileFilter(new ExtensionFileFilter(new String[]{extension}));
 		int returnVal = fc.showSaveDialog(ScuflDiagramPanel.this);
 		if (returnVal == JFileChooser.APPROVE_OPTION) {
 		    prefs.put("currentDir", fc.getCurrentDirectory().toString());
 		    File file = fc.getSelectedFile();
 		    // Rewrite the file name if it doesn't end with the specified extension
-		    if (file.getName().endsWith("."+type) == false) {
-			file = new File(file.toURI().resolve(file.getName()+"."+type));
+		    if (file.getName().endsWith("."+extension) == false) {
+			file = new File(file.toURI().resolve(file.getName()+"."+extension));
 		    }
 		    if (type.equals("dot")) {
 			// Just write out the dot text, no processing required
