@@ -87,7 +87,7 @@ public class ActionRunner {
 		}
 	    }
 	    else {
-		log.warn("No action found for tag '"+action.getName());
+		log.warn("No action found for tag <" + action.getName() + ">");
 	    }
 	}
 	return exceptions;
