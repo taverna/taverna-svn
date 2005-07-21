@@ -4,7 +4,7 @@ import net.sf.taverna.dalec.exceptions.WorkflowCreationException;
 import net.sf.taverna.dalec.exceptions.NewJobSubmissionException;
 import net.sf.taverna.dalec.exceptions.UnableToAccessDatabaseException;
 import net.sf.taverna.dalec.exceptions.IncorrectlyNamedInputException;
-import net.sf.taverna.dalec.workflow.io.SequenceIDWorkflowInput;
+import net.sf.taverna.dalec.io.SequenceIDWorkflowInput;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -29,11 +29,27 @@ public class TestDalecManager extends TestCase
         try
         {
             dalec = new DalecManager(xsFile, new File("C:\\home\\tony\\documents\\dalec1.0\\outputTest\\db"));
-            System.out.println("Dalec is active");
+            System.out.println("TEST: Dalec is active");
         }
         catch (WorkflowCreationException e)
         {
             System.out.println("Encountered a WorkflowCreationException");
+        }
+    }
+
+    protected void calcDelay()
+    {
+        // allow time for jobs to complete before destroying
+        synchronized (this)
+        {
+            try
+            {
+                wait(20000);
+            }
+            catch (InterruptedException e)
+            {
+                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            }
         }
     }
 
@@ -50,35 +66,41 @@ public class TestDalecManager extends TestCase
         }
     }
 
-    public void testNewSequenceRequest()
+    public void testWrongWorkflow()
     {
-        System.out.println("Dalec is active and running");
+        File xsFile = new File("C:\\home\\tony\\documents\\dalec1.0\\wrongfile.xml"); // doesn't exist
 
-        assertFalse(dalec.getTerminatedStatus());
-
-        // Request new sequence
         try
         {
-            dalec.requestAnnotations("embl:X13776");
+            dalec = new DalecManager(xsFile, new File("C:\\home\\tony\\documents\\dalec1.0\\outputTest\\db"));
+            fail();
         }
-        catch (NewJobSubmissionException e)
+        catch (WorkflowCreationException e)
         {
-            try
-            {
-                System.out.println("This sequence is being calculated");
-                SequenceIDWorkflowInput input = new SequenceIDWorkflowInput();
-                input.setProcessorName(dalec.getInputName());
-                input.setJobID("embl:X13776");
-                dalec.submitJob(input);
-            }
-            catch (IncorrectlyNamedInputException e1)
-            {
-                e1.printStackTrace();
-            }
+            System.out.println("Workflow creation exception correctly thrown");
+        }
+        finally
+        {
+            assertFalse(dalec.getTerminatedStatus());
+        }
+    }
+
+    public void testNewNotOld()
+    {
+        assertFalse(dalec.getTerminatedStatus());
+
+        try
+        {
+            dalec.requestAnnotations("NoneExistentSequence");
+            fail();
         }
         catch (UnableToAccessDatabaseException e)
         {
-            System.out.println("Unable to acess database");
+            System.out.println("This shouldn't happen!");
+        }
+        catch (NewJobSubmissionException e)
+        {
+            System.out.println("Test passed - this sequence should be a new submission");
         }
     }
 
@@ -90,15 +112,13 @@ public class TestDalecManager extends TestCase
         tdm.testAddJob();
         tdm.tearDown();
         // have now added testSequence to the database
-
         try
         {
             GFFEntrySet gffe = dalec.requestAnnotations("testSequence");
             for (Iterator it = gffe.lineIterator(); it.hasNext();)
             {
                 GFFRecord record = (GFFRecord) it.next();
-                System.out.println("Sequence name: " + record.getSeqName());
-                System.out.println("Source:" + record.getSource());
+                System.out.println("TEST: GFF record " + record.toString());
             }
         }
         catch (NewJobSubmissionException e)
@@ -111,15 +131,47 @@ public class TestDalecManager extends TestCase
         }
     }
 
+    public void testNewSequenceRequest()
+    {
+        assertFalse(dalec.getTerminatedStatus());
+
+        // Request new sequence
+        try
+        {
+            dalec.requestAnnotations("embl:X13776");
+        }
+        catch (NewJobSubmissionException e)
+        {
+            try
+            {
+                System.out.println("TEST: This sequence is being calculated");
+                SequenceIDWorkflowInput input = new SequenceIDWorkflowInput();
+                input.setProcessorName(dalec.getInputName());
+                input.setJobID("embl:X13776\t");
+                dalec.submitJob(input);
+            }
+            catch (IncorrectlyNamedInputException e1)
+            {
+                e1.printStackTrace();
+            }
+        }
+        catch (UnableToAccessDatabaseException e)
+        {
+            System.out.println("Unable to acess database");
+        }
+
+        calcDelay();
+    }
+
     public void testManyNewSequences()
     {
         ArrayList ids = new ArrayList();
-        ids.add("embl:X13776");
-        ids.add("embl:XLA566764");
-        ids.add("embl:XL43663");
-        ids.add("embl:XL43664");
-        ids.add("embl:XCCUR");
-        ids.add("embl:XLAF1163");
+        ids.add("embl:X13776\t");
+        ids.add("embl:XLA566764\t");
+        ids.add("embl:XL43663\t");
+        ids.add("embl:XL43664\t");
+        ids.add("embl:XCCUR\t");
+        ids.add("embl:XLAF1163\t");
 
         // Request new sequences
         for (Iterator it = ids.iterator(); it.hasNext();)
@@ -133,7 +185,7 @@ public class TestDalecManager extends TestCase
             {
                 try
                 {
-                    System.out.println("This sequence is being calculated");
+                    System.out.println("TEST: This sequence is being calculated");
                     SequenceIDWorkflowInput input = new SequenceIDWorkflowInput();
                     input.setProcessorName(dalec.getInputName());
                     input.setJobID(nextSeq);
@@ -150,17 +202,7 @@ public class TestDalecManager extends TestCase
             }
         }
 
-        synchronized (this)
-        {
-            try
-            {
-                wait(20000);
-            }
-            catch (InterruptedException e)
-            {
-                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-            }
-        }
+        calcDelay();
     }
 
     public void testErrorLogging()

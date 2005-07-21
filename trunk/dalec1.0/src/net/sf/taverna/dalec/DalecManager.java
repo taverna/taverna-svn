@@ -1,10 +1,8 @@
 package net.sf.taverna.dalec;
 
-import org.biojava.bio.BioException;
 import org.biojava.bio.program.gff.GFFEntrySet;
 import org.biojava.bio.program.gff.GFFDocumentHandler;
 import org.biojava.bio.program.gff.GFFParser;
-import org.biojava.utils.ParserException;
 import org.embl.ebi.escience.scufl.parser.XScuflFormatException;
 import org.embl.ebi.escience.scufl.parser.XScuflParser;
 import org.embl.ebi.escience.scufl.*;
@@ -18,7 +16,7 @@ import java.util.*;
 import java.io.*;
 
 import net.sf.taverna.dalec.exceptions.*;
-import net.sf.taverna.dalec.workflow.io.WorkflowInput;
+import net.sf.taverna.dalec.io.WorkflowInput;
 import uk.ac.soton.itinnovation.freefluo.event.WorkflowStateListener;
 import uk.ac.soton.itinnovation.freefluo.event.WorkflowStateChangedEvent;
 import uk.ac.soton.itinnovation.freefluo.main.WorkflowState;
@@ -84,6 +82,7 @@ public class DalecManager
         {
             public void databaseEntryCreated(String entryName)
             {
+                System.out.println ("New entry created");
                 // when the File is entered into the database, we can remove it from the computeList
                 synchronized (computeList)
                 {
@@ -197,7 +196,7 @@ public class DalecManager
                                 jobID = job.getJobID();
 
                                 // So a new job is allocated - remove from the jobList and place into computeList
-                                jobList.remove(job);
+                                jobList.remove(0);
                                 synchronized (computeList)
                                 {
                                     computeList.add(job);
@@ -232,29 +231,18 @@ public class DalecManager
                                                 GFFDocumentHandler handler = gff.getAddHandler();
                                                 GFFParser parser = new GFFParser();
 
-                                                // Now parse the data to the GFFEntrySet
+                                                // Now parse the output data to GFFEntrySet, and submit to DB
                                                 try
                                                 {
                                                     parser.parse(bReader, handler);
+                                                    dbMan.addNewResult(gff);
                                                 }
-                                                catch (IOException e)
+                                                catch (Exception e)
                                                 {
-                                                    // Unable to read from specified source
-                                                    System.out.println("IOException");
+                                                    // Unable to parse GFF Data from workflow output
+                                                    logError(dbMan.getDatabaseLocation(), "Parsing GFF output from workflow", e);
+                                                    System.out.println("A sequence annotation failed - unable to parse output from workflow");
                                                 }
-                                                catch (BioException e)
-                                                {
-                                                    // GFFParser threw an exception which couldn't be corrected
-                                                    System.out.println("BioException");
-                                                }
-                                                catch (ParserException e)
-                                                {
-                                                    // Unable to parse GFF data correctly from the specified source - probably due to workflow output being incorrectly formatted
-                                                    System.out.println("ParserException");
-                                                }
-
-                                                // gff should now be fully created GFFEntrySet: submit to database
-                                                dbMan.addNewResult(gff);
 
                                                 // notify this thread that workflow has finished
                                                 synchronized (workflow)
@@ -282,7 +270,7 @@ public class DalecManager
                                 synchronized (workflow)
                                 {
                                     // wait until this thread is notified that workflow has finished
-                                    workflow.wait();
+                                    workflow.wait(100000);
                                 }
                             }
                             catch (WorkflowSubmissionException e)

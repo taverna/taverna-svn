@@ -269,7 +269,7 @@ public class DatabaseManager extends Thread implements Runnable
                     while (kt.hasNext())
                     {
                         DalecManager.logError(dbLoc, "GFF entry write-to-file", e);
-                        ((DatabaseListener) kt.next()).databaseEntryFailed(seqName, new Exception(e));
+                        ((DatabaseListener) kt.next()).databaseEntryFailed(seqName, e);
                     }
                 }
             }

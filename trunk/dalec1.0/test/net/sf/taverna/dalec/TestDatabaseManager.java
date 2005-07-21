@@ -24,10 +24,16 @@ public class TestDatabaseManager extends TestCase
     {
         dm = new DatabaseManager(new File("C:\\home\\tony\\documents\\dalec1.0\\outputTest\\db"));
         dbThread = new Thread(dm);
-
         synchronized (dbThread)
         {
             dbThread.start();
+        }
+    }
+
+    protected void writeDelay()
+    {
+        synchronized (dbThread)
+        {
             try
             {
                 dbThread.wait(1000); // give this thread an arbitrary amount of time to start up
@@ -58,6 +64,11 @@ public class TestDatabaseManager extends TestCase
         }
     }
 
+    public void testDBLocation ()
+    {
+        assertTrue (dm.getDatabaseLocation().equals(new File("C:\\home\\tony\\documents\\dalec1.0\\outputTest\\db")));
+    }
+
     public void testDbRun()
     {
         synchronized (dbThread)
@@ -75,20 +86,9 @@ public class TestDatabaseManager extends TestCase
         SimpleGFFRecord record = new SimpleGFFRecord();
         record.setSeqName("testSequence");
         gffe.add(record);
-        dm.addNewResult(gffe); // Empty GFFRecord
+        dm.addNewResult(gffe); // GFFEntrySet of one empty GFFRecord
 
-        // Give some time for record to be added
-        synchronized (dbThread)
-        {
-            try
-            {
-                dbThread.wait(1000);
-            }
-            catch (InterruptedException e)
-            {
-                // Don't care about this
-            }
-        }
+        writeDelay();
 
         GFFRecord retrieved = null;
         try
@@ -123,18 +123,7 @@ public class TestDatabaseManager extends TestCase
             dm.addNewResult(gffe);
         }
 
-        // Give some time for record to be added
-        synchronized (dbThread)
-        {
-            try
-            {
-                dbThread.wait(1000);
-            }
-            catch (InterruptedException e)
-            {
-                // Don't care about this
-            }
-        }
+        writeDelay();
 
         // Check they all exist
         for (int i = 10; i < 110; i++)
@@ -210,18 +199,7 @@ public class TestDatabaseManager extends TestCase
             dm.addNewResult(gffe);
         }
 
-        // Give some time for record to be added
-        synchronized (dbThread)
-        {
-            try
-            {
-                dbThread.wait(1000);
-            }
-            catch (InterruptedException e)
-            {
-                // Don't care about this
-            }
-        }
+        writeDelay();
 
         // Check records exist
         for (int i = 0; i < 10; i++)

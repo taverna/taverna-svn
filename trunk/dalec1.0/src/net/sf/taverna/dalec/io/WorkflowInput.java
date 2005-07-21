@@ -1,4 +1,4 @@
-package net.sf.taverna.dalec.workflow.io;
+package net.sf.taverna.dalec.io;
 
 import java.util.Map;
 

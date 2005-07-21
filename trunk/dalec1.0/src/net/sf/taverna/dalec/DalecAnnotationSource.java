@@ -17,8 +17,8 @@ import java.util.Set;
 import java.util.HashSet;
 
 import net.sf.taverna.dalec.exceptions.*;
-import net.sf.taverna.dalec.workflow.io.SequenceIDWorkflowInput;
-import net.sf.taverna.dalec.workflow.io.SequenceWorkflowInput;
+import net.sf.taverna.dalec.io.SequenceIDWorkflowInput;
+import net.sf.taverna.dalec.io.SequenceWorkflowInput;
 
 import javax.servlet.ServletContext;
 import javax.xml.parsers.DocumentBuilderFactory;

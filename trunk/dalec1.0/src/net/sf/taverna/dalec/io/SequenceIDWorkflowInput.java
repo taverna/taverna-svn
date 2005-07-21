@@ -1,6 +1,5 @@
-package net.sf.taverna.dalec.workflow.io;
+package net.sf.taverna.dalec.io;
 
-import org.embl.ebi.escience.baclava.DataThing;
 import org.embl.ebi.escience.baclava.factory.DataThingFactory;
 
 import java.util.Map;
@@ -12,11 +11,10 @@ import java.util.HashMap;
  * @version 1.0
  * @author Tony Burdett
  */
-public class SequenceWorkflowInput implements WorkflowInput
+public class SequenceIDWorkflowInput implements WorkflowInput
 {
     private String procName;
     private String jobID;
-    private String sequence;
 
     public void setProcessorName(String processorName)
     {
@@ -26,11 +24,6 @@ public class SequenceWorkflowInput implements WorkflowInput
     public void setJobID(String jobID)
     {
         this.jobID = jobID;
-    }
-
-    public void setSequenceData(String sequence)
-    {
-        this.sequence = sequence;
     }
 
     public String getProcessorName()
@@ -46,13 +39,13 @@ public class SequenceWorkflowInput implements WorkflowInput
     public Map getInput()
     {
         Map input = new HashMap();
-        if (procName == null || sequence == null)
+        if (procName == null || jobID == null)
         {
             throw new NullPointerException();
         }
         else
         {
-            input.put(procName, DataThingFactory.bake(sequence));
+            input.put(procName, DataThingFactory.bake(jobID));
             return input;
         }
     }
