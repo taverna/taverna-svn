@@ -85,9 +85,9 @@ public class XMLUtilities {
      *         namespaces namespaces.
      */
     public static String getMobyElement(Element xml, String objectType,
-            String articleName, String[] namespaces) {
+            String articleName, String[] namespaces, String mobyEndpoint) {
         Element element = null;
-        MobyObjectClassNSImpl moc = new MobyObjectClassNSImpl();
+        MobyObjectClassNSImpl moc = new MobyObjectClassNSImpl(mobyEndpoint);
         Element e = xml.getChild("mobyContent", MobyObjectClassNSImpl.MOBYNS);
         if (e != null) {
                 e = e.getChild("mobyData", MobyObjectClassNSImpl.MOBYNS);
@@ -133,7 +133,7 @@ public class XMLUtilities {
      * @return
      */
     public static String getMobyCollection(Element documentElement,
-            String objectType, String string, Object object) {
+            String objectType, String string, Object object, String mobyEndpoint) {
         /*
          * <moby:MOBY xmlns:moby='http://www.biomoby.org/moby'
          * xmlns='http://www.biomoby.org/moby'> <moby:mobyContent
@@ -146,7 +146,7 @@ public class XMLUtilities {
          * molecule.</moby:String> </moby:GO_Term> </moby:Simple>
          * </moby:Collection> </moby:mobyData> </moby:mobyContent> </moby:MOBY>
          */
-        MobyObjectClassNSImpl mo = new MobyObjectClassNSImpl();
+        MobyObjectClassNSImpl mo = new MobyObjectClassNSImpl(mobyEndpoint);
         Document doc = XMLUtilities.createDomDocument();
         Element root = new Element("MOBY", MobyObjectClassNSImpl.MOBYNS);
         Element content = new Element("mobyContent",
