@@ -24,6 +24,25 @@ import java.lang.Object;
  */
 public class ScuflModelExplorerRenderer extends NodeColouringRenderer {
     
+    private Object significantObject = null;
+
+    public void setSignificant(Object o) {
+	if (o == null) {
+	    significantObject = null;
+	    return;
+	}
+	if (o instanceof Port) {
+	    significantObject = o;
+	    return;
+	}
+	else if (o instanceof Processor && 
+		 ((Processor)o).getModel() != null) {
+	    significantObject = o;
+	    return;
+	}
+	significantObject = null;
+    }
+    
     /**
      * Create a new explorer renderer with no regular expression based
      * highlight operation
@@ -62,6 +81,37 @@ public class ScuflModelExplorerRenderer extends NodeColouringRenderer {
 	}
 	else if (userObject instanceof ConcurrencyConstraint) {
 	    setIcon(ScuflIcons.constraintIcon);
+	}
+	else if (userObject instanceof DataConstraint) {
+	    DataConstraint dc = (DataConstraint)userObject;
+	    if (significantObject != null) {
+		String colour = null;
+		if (significantObject instanceof Port) {
+		    Port p = (Port)significantObject;
+		    if (dc.getSource() == p) {
+			colour = "#ff44bb";
+		    }
+		    else if (dc.getSink() == p) {
+			colour = "#dd9922";
+		    }
+		}
+		else if (significantObject instanceof Processor) {
+		    Processor p = (Processor)significantObject;
+		    if (dc.getSource().getProcessor() == p) {
+			colour = "#ff44bb";
+		    }
+		    else if (dc.getSink().getProcessor() == p) {
+			colour = "#dd9922";
+		    }
+		}
+		if (colour != null) {
+		    setText("<html><font color=\""+colour+"\">"+dc.getName()+"</font></html>");
+		}
+	    }
+	    else {
+		setText(dc.getName());
+	    }
+	    setIcon(ScuflIcons.dataLinkIcon);
 	}
 	else if (userObject instanceof Port) {
 	    Port thePort = (Port)userObject;
@@ -123,9 +173,6 @@ public class ScuflModelExplorerRenderer extends NodeColouringRenderer {
 		    setText("<html>"+toString+" <font color=\"#666666\">"+thePort.getSyntacticType()+"</font>"+defaultText+"</html>");
 		}
 	    }
-	}
-	else if (userObject instanceof DataConstraint) {
-	    setIcon(ScuflIcons.dataLinkIcon);
 	}
 	else if (((DefaultMutableTreeNode)value).isLeaf()) {
 	    setIcon(ScuflIcons.folderClosedIcon);

@@ -95,11 +95,32 @@ public class ScuflModelTreeTable extends JTreeTable
 	this.addMouseListener(new ScuflModelExplorerPopupHandler(this));
 	// Show lines in the tree diagram
 	this.tree.putClientProperty("JTree.lineStyle","Angled");
-	ScuflModelExplorerRenderer renderer = new ScuflModelExplorerRenderer();
+	final ScuflModelExplorerRenderer renderer = new ScuflModelExplorerRenderer();
 	this.tree.setCellRenderer(renderer);
 	//this.addMouseMotionListener(new ScuflModelExplorerDragHandler(this.tree));
 	//this.setDragEnabled(true);
 	this.tree.setRowHeight(0);
+	getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+		public void valueChanged(ListSelectionEvent e) {
+		    if (e.getValueIsAdjusting()) {
+			return;
+		    }
+		    ListSelectionModel lsm = (ListSelectionModel)e.getSource();
+		    if (lsm.isSelectionEmpty()) {
+			renderer.setSignificant(null);
+		    }
+		    else {
+			int selectedRow = lsm.getMinSelectionIndex();
+			JTree tree = getTree();
+			DefaultMutableTreeNode node = 
+			    (DefaultMutableTreeNode)tree.
+			    getPathForRow(selectedRow).
+			    getLastPathComponent();
+			renderer.setSignificant(node.getUserObject());
+		    }
+		    repaint();
+		}
+	    });
     }
     
     /**
