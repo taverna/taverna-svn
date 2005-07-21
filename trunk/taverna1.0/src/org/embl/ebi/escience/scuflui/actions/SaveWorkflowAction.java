@@ -17,12 +17,13 @@ import org.embl.ebi.escience.scufl.view.XScuflView;
 import org.embl.ebi.escience.scuflui.AdvancedModelExplorer;
 import org.embl.ebi.escience.scuflui.ExtensionFileFilter;
 import org.embl.ebi.escience.scuflui.ScuflIcons;
+import java.net.URI;
 
 /**
  * COMMENT 
  * 
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover</a>
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public class SaveWorkflowAction extends ScuflModelAction
 {
@@ -56,6 +57,9 @@ public class SaveWorkflowAction extends ScuflModelAction
 		if (returnVal == JFileChooser.APPROVE_OPTION) {
 		    prefs.put("currentDir", fc.getCurrentDirectory().toString());
 		    File file = fc.getSelectedFile();
+		    if (file.getName().endsWith(".xml") == false) {
+			file = new File(file.toURI().resolve(file.getName()+".xml"));
+		    }
 		    XScuflView xsv = new XScuflView(model);
 		    PrintWriter out = new PrintWriter(new FileWriter(file));
 		    out.println(xsv.getXMLText());
