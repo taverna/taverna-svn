@@ -96,6 +96,17 @@ public class Parser {
 	return (Object[]) result;
     }
 
+    /**
+     * Parses the &lt;doubleclick&gt; tag and it adds the appropriate mouse
+     * listeners to the component received. When the listener is invoked,
+     * it adds targetObject to the context and runs the action in the
+     * doubleclick element. 
+     * 
+     * @param element Element containing a doubleclick element.
+     * @param component JComponent where the mouse listeners should be added.
+     * @param targetObject Object that should be added to the context before
+     * running the action.
+     */
     public void parseDoubleClick(Element element, JComponent component,
 	    final Object targetObject) {
 	final Element doubleClickElement = element.getChild("doubleclick");
@@ -114,11 +125,53 @@ public class Parser {
 	});
     }
 
-    public void parseSingleClick() {
-
+    /**
+     * Parses the &lt;click&gt; tag and it adds the appropriate mouse
+     * listeners to the component received. When the listener is invoked,
+     * it adds targetObject to the context and runs the action in the
+     * click element. 
+     * 
+     * @param element Element containing a click element.
+     * @param component JComponent where the mouse listeners should be added.
+     * @param targetObject Object that should be added to the context before
+     * running the action.
+     */
+    public void parseClick(Element element, final JComponent component,
+	    final Object targetObject) {
+	final Element clickElement = element.getChild("click");
+	if (clickElement == null) {
+	    log.debug("No <click> element");
+	    return;
+	}
+	component.addMouseListener(new MouseAdapter() {
+	    public void mouseClicked(MouseEvent me) {
+		if (me.isPopupTrigger() == false) {
+		    log.debug("Click");
+		    if (targetObject != null) {
+			ocula.putContext("selectedObject", targetObject);
+		    }
+		    ocula.getActionRunner().runAction(clickElement);
+		    
+		    if (targetObject != null) {
+			ocula.removeKey("selectedObject");
+		    }
+		}
+	    }
+	});
     }
 
-    public void parseContextualMenu(Element element, final JComponent component,
+    /**
+     * Parses the &lt;contextmenu&gt; tag and it adds the appropriate mouse
+     * listeners to the component received. When the listener is invoked,
+     * it adds targetObject to the context and it launches a popup menu
+     * with the actions specified.
+     * 
+     * @param element Element containing a doubleclick element.
+     * @param component JComponent where the mouse listeners should be added.
+     * @param targetObject Object that should be added to the context before
+     * running the action.
+     */
+    public void parseContextMenu(Element element, final JComponent component,
 	    final Object targetObject) {
 	final Element contextMenuElement = element.getChild("contextmenu");
 	if (contextMenuElement == null) {
@@ -162,11 +215,9 @@ public class Parser {
 				actionElementIcon);
 			item.addActionListener(new ActionListener() {
 			    public void actionPerformed(ActionEvent ae) {
-				ocula
-					.putContext("selectedObject",
+				ocula.putContext("selectedObject",
 						targetObject);
-				ocula.getActionRunner()
-					.runAction(actionElement);
+				ocula.getActionRunner().runAction(actionElement);
 				ocula.removeKey("selectedObject");
 			    }
 			});
