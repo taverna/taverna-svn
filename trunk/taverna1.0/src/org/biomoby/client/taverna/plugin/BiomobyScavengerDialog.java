@@ -18,7 +18,7 @@ import org.embl.ebi.escience.scuflui.ShadedLabel;
  */
 public class BiomobyScavengerDialog extends JPanel {
 
-    private JTextField registryEndpoint = new JTextField("http://mobycentral.cbr.nrc.ca/cgi-bin/MOBY05/mobycentral.pl");
+    private JTextField registryEndpoint = new JTextField("http://mobycentral.icapture.ubc.ca/cgi-bin/MOBY05/mobycentral.pl");
 
     private JTextField rdfLocation = new JTextField("http://biomoby.org/RESOURCES/MOBY-S/Objects");
 

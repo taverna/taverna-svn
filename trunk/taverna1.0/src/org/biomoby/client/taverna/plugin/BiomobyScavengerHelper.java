@@ -28,9 +28,9 @@ import org.embl.ebi.escience.scuflworkers.ScavengerHelper;
  */
 public class BiomobyScavengerHelper implements ScavengerHelper {
 
-    private String defaultResourceURL = "http://mobycentral.cbr.nrc.ca:8090/RESOURCES/MOBY-S/Objects";
+    private String defaultResourceURL = "http://mobycentral.icapture.ubc.ca:8090/RESOURCES/MOBY-S/Objects";
 
-    private String endpoint = "http://mobycentral.cbr.nrc.ca/cgi-bin/MOBY05/mobycentral.pl";
+    private String endpoint = "http://mobycentral.icapture.ubc.ca/cgi-bin/MOBY05/mobycentral.pl";
 
     public String getScavengerDescription() {
         return "Add new Biomoby scavenger...";
@@ -46,7 +46,7 @@ public ActionListener getListener(ScavengerTree theScavenger) {
                  * (String) JOptionPane .showInputDialog( null, "Location (URL)
                  * of your BioMoby central registry?", "Biomoby location",
                  * JOptionPane.QUESTION_MESSAGE, null, null,
-                 * "http://mobycentral.cbr.nrc.ca/cgi-bin/MOBY05/mobycentral.pl");
+                 * "http://mobycentral.icapture.ubc.ca/cgi-bin/MOBY05/mobycentral.pl");
                  * if (baseURL != null) { try { s.addScavenger(new
                  * BiomobyScavenger(baseURL,resourceURL)); } catch
                  * (ScavengerCreationException sce) {
