@@ -95,22 +95,33 @@ public class DotView implements ScuflModelEventListener, java.io.Serializable {
      * constants.
      */
     public void setPortDisplay(int policy) {
-	this.cacheValid = false;
-	this.portDisplay = policy;
-	if (policy == ALL) {
-	    this.lralign = true;
-	}
-	else {
-	    this.lralign = false;
+	if (policy != portDisplay) {
+	    cacheValid = false;
+	    portDisplay = policy;
+	    if (policy == ALL) {
+		this.lralign = true;
+	    }
+	    else {
+		this.lralign = false;
+	    }
 	}
     }
+    
+    public int getPortDisplay() {
+	return this.portDisplay;
+    }
+      
+
 
     /**
      * Determine whether to show labels on edges for
      * their types
      */
     public void setTypeLabelDisplay(boolean display) {
-	this.displayTypes = display;
+	if (display != this.displayTypes) {
+	    displayTypes = display;
+	    cacheValid = false;
+	}
     }
 
     /**
@@ -202,7 +213,10 @@ public class DotView implements ScuflModelEventListener, java.io.Serializable {
      * Set whether subworkflows should be expanded out
      */
     public void setExpandWorkflow(boolean e) {
-	this.expandWorkflow = e;
+	if (e != expandWorkflow) {
+	    this.expandWorkflow = e;
+	    this.cacheValid = false;
+	}
     }
     
     /**

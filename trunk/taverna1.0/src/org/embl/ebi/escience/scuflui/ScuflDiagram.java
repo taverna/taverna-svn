@@ -55,35 +55,15 @@ public class ScuflDiagram extends JComponent
     private DotView dot;
     private BufferedImage image = null;
     private boolean fitToWindow = false;
-    private boolean lralign = false;
     private Timer updateTimer = null;
     private boolean listenToMouse = true;
-
-    public void setLRAlignment(boolean align) {
-	if (align != lralign) {
-	    lralign = align;
-	    this.dot.setAlignment(align);
-	    updateGraphic();
-	}
-    }
-
-    public boolean getLRAlignment() {
-	return this.dot.getAlignment();
-    }
-    
-    public void setBoring(boolean boring) {
-	if (boring != this.dot.getShowBoring()) {
-	    this.dot.setBoring(boring);
-	    updateGraphic();
-	}
-    }
 
     public String getDot() {
 	return this.dot.getDot();
     }
 
-    public void disableMouseListener() {
-	listenToMouse = false;
+    public DotView getDotView() {
+	return this.dot;
     }
 
     public javax.swing.ImageIcon getIcon() {
@@ -94,83 +74,8 @@ public class ScuflDiagram extends JComponent
 	super();
 	setBackground(Color.white);
 	setOpaque(false);
-	// Create a popup menu handler
-	addMouseListener(new MouseAdapter() {
-		public void mousePressed(MouseEvent e) {
-		    if (e.isPopupTrigger()) {
-			doEvent(e);
-		    }
-		}
-		public void mouseReleased(MouseEvent e) {
-		    if (e.isPopupTrigger()) {
-			doEvent(e);
-		    }
-		}
-		void doEvent(MouseEvent e) {
-		    if (listenToMouse) {
-			JPopupMenu menu = new JPopupMenu();
-			JMenuItem title = new JMenuItem("Port display");
-			title.setEnabled(false);
-			menu.add(title);
-			menu.addSeparator();
-			JMenuItem none = new JMenuItem("No ports");
-			menu.add(none);
-			none.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent ae) {
-				    ScuflDiagram.this.setPortDisplay(DotView.NONE);
-				}
-			    });
-			JMenuItem bound = new JMenuItem("Bound ports only");
-			menu.add(bound);
-			bound.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent ae) {
-				    ScuflDiagram.this.setPortDisplay(DotView.BOUND);
-				}
-			    });
-			JMenuItem all = new JMenuItem("All ports");
-			menu.add(all);
-			all.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent ae) {
-				    ScuflDiagram.this.setPortDisplay(DotView.ALL);
-				}
-			    });
-			// Set whether labels are shown on edges
-			JCheckBoxMenuItem types = new JCheckBoxMenuItem("Show types", ScuflDiagram.this.dot.getTypeLabelDisplay());
-			menu.add(types);
-			types.addItemListener(new ItemListener() {
-				public void itemStateChanged(ItemEvent e) {
-				    if (e.getStateChange() == ItemEvent.DESELECTED) {
-					ScuflDiagram.this.setDisplayTypes(false);
-				    }
-				    else if (e.getStateChange() == ItemEvent.SELECTED) {
-					ScuflDiagram.this.setDisplayTypes(true);
-				    }
-				}
-			    });
-			// Allow the user to select scaling
-			menu.addSeparator();
-			JCheckBoxMenuItem scale = new JCheckBoxMenuItem("Fit to window",ScuflIcons.zoomIcon,fitToWindow);
-			menu.add(scale);
-			
-			scale.addItemListener(new ItemListener() {
-				public void itemStateChanged(ItemEvent e) {
-				    if (e.getStateChange() == ItemEvent.DESELECTED) {
-					ScuflDiagram.this.setFitToWindow(false);
-				    }
-				    else if (e.getStateChange() == ItemEvent.SELECTED) {
-					ScuflDiagram.this.setFitToWindow(true);
-				    }
-				}
-			    });
-			
-			
-			menu.show(ScuflDiagram.this, e.getX(), e.getY());
-		    }
-		}
-	    });
-
     }
-
+    
     /**
      * Set whether the image should scale to the window or be displayed
      * at its natural size with scrollbars
@@ -184,26 +89,12 @@ public class ScuflDiagram extends JComponent
 	//paintComponent(getGraphics());
     }
 
-    /**
-     * Set whether we're displaying the port types
-     */
-    public void setDisplayTypes(boolean displayTypes) {
-	if (this.dot != null) {
-	    this.dot.setTypeLabelDisplay(displayTypes);
-	    updateGraphic();
-	}
+    public boolean getFitToWindow() {
+	return this.fitToWindow;
     }
 
-    /**
-     * Change the port display setting, the default is to show
-     * bound ports, but the other options from DotView can be
-     * applied as well.
-     */
-    public void setPortDisplay(int portDisplayPolicy) {
-	if (this.dot != null) {
-	    this.dot.setPortDisplay(portDisplayPolicy);
-	    updateGraphic();
-	}
+    public void clearCachedImage() {
+	rescaledImage = null;
     }
 
     public Dimension getMinimumSize() {
@@ -352,7 +243,7 @@ public class ScuflDiagram extends JComponent
 
     private boolean triedImageFormatFix = false;
 
-    private void updateGraphic() {
+    void updateGraphic() {
 	try {
 	    String imageSuffix = System.getProperty("taverna.scufldiagram.imagetype","png");
 	    String dotText = this.dot.getDot();

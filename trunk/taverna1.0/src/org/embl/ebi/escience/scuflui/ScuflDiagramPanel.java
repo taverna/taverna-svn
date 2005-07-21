@@ -13,6 +13,7 @@ import java.util.*;
 import java.util.prefs.*;
 import java.io.*;
 import javax.swing.filechooser.*;
+import java.net.*;
 
 /**
  * Wraps a ScuflDiagram up in a JScrollPane and
@@ -25,32 +26,104 @@ public class ScuflDiagramPanel extends JPanel
     implements ScuflUIComponent {
     
     String[] displayPolicyStrings = { "All ports", "Bound ports", "No ports", "Blobs" };
-    String[] alignment = {"Vertical","Horizontal"};
-    JButton saveAsDot, saveAsPNG, saveAsSVG;
+    String[] saveTypes = { "dot", "png", "svg" };
+    String[] saveTypeNames = { "dot text", "PNG image", "SVG image" };
+    String[] alignment = { "Top to bottom", "Left to right" };
+
     JComboBox displayPolicyChooser = new JComboBox(displayPolicyStrings);
     JComboBox alignmentChooser = new JComboBox(alignment);
     ScuflDiagram diagram = new ScuflDiagram();
     JCheckBox typeDisplay = new JCheckBox("Show types",false);
     JCheckBox showBoring = new JCheckBox("Boring?",true);
     JCheckBox fitToWindow = new JCheckBox("Fit to window",true);
-    static ImageIcon svgIcon,pngIcon,dotIcon;
+
     final JFileChooser fc;
 
-    static {
-	try {
-	    Class c = Class.forName("org.embl.ebi.escience.scuflui.ScuflDiagramPanel");
-	    svgIcon = new ImageIcon(c.getResource("icons/graphicalview/saveAsSVG.png"));
-	    dotIcon = new ImageIcon(c.getResource("icons/graphicalview/saveAsDot.png"));
-	    pngIcon = new ImageIcon(c.getResource("icons/graphicalview/saveAsPNG.png"));
-
-	}
-	catch (Exception ex) {
-	    //
-	}
-    }
-    
     public javax.swing.ImageIcon getIcon() {
 	return ScuflIcons.windowDiagram;
+    }
+
+    JPopupMenu createMenu() {
+	JPopupMenu menu = new JPopupMenu();
+	menu.add(new ShadedLabel("Port detail", ShadedLabel.TAVERNA_BLUE));
+	menu.addSeparator();
+	ButtonGroup portButtonGroup = new ButtonGroup();
+	for (int i = 0; i < displayPolicyStrings.length; i++) {
+	    JRadioButtonMenuItem item = 
+		new JRadioButtonMenuItem(displayPolicyStrings[i]);
+	    item.setSelected(diagram.getDotView().getPortDisplay()==i);
+	    menu.add(item);
+	    portButtonGroup.add(item);
+	    final int j = i;
+	    item.addActionListener(new ActionListener() {
+		    public void actionPerformed(ActionEvent ae) {
+			diagram.getDotView().setPortDisplay(j);
+			updateDiagram();
+		    }
+		});
+	}	
+	menu.addSeparator();
+	menu.add(new ShadedLabel("Alignment", ShadedLabel.TAVERNA_GREEN));
+	menu.addSeparator();
+	ButtonGroup alignButtonGroup = new ButtonGroup();
+	for (int i = 0; i < alignment.length; i++) {
+	    JRadioButtonMenuItem item = 
+		new JRadioButtonMenuItem(alignment[i]);
+	    item.setSelected((diagram.getDotView().getAlignment()?1:0)==i);
+	    menu.add(item);
+	    alignButtonGroup.add(item);
+	    final boolean b = (i == 1);
+	    item.addActionListener(new ActionListener() {
+		    public void actionPerformed(ActionEvent ae) {
+			diagram.getDotView().setAlignment(b);
+			updateDiagram();
+		    }
+		});
+	}	
+	menu.addSeparator();
+	menu.add(new ShadedLabel("Features", ShadedLabel.TAVERNA_ORANGE));
+	menu.addSeparator();
+	JCheckBoxMenuItem types = new JCheckBoxMenuItem("Show types");
+	types.setSelected(diagram.getDotView().getTypeLabelDisplay());
+	types.addItemListener(new ItemListener() {
+		public void itemStateChanged(ItemEvent e) {
+		    diagram.getDotView().setTypeLabelDisplay(e.getStateChange() == ItemEvent.SELECTED);
+		    updateDiagram();
+		}
+	    });
+	menu.add(types);
+	JCheckBoxMenuItem boring = new JCheckBoxMenuItem("Show boring entities");
+	boring.setSelected(diagram.getDotView().getShowBoring());
+	boring.addItemListener(new ItemListener() {
+		public void itemStateChanged(ItemEvent e) {
+		    diagram.getDotView().setBoring(e.getStateChange() == ItemEvent.SELECTED);
+		    updateDiagram();
+		}
+	    });
+	menu.add(boring);
+	JCheckBoxMenuItem inline = new JCheckBoxMenuItem("Expand nested workflows");
+	inline.setSelected(diagram.getDotView().getExpandWorkflow());
+	inline.addItemListener(new ItemListener() {
+		public void itemStateChanged(ItemEvent e) {
+		    diagram.getDotView().setExpandWorkflow(e.getStateChange() == ItemEvent.SELECTED);
+		    updateDiagram();
+		}
+	    });
+	menu.add(inline);
+	JCheckBoxMenuItem scale = new JCheckBoxMenuItem("Fit to window");
+	scale.setSelected(diagram.getFitToWindow());
+	scale.addItemListener(new ItemListener() {
+		public void itemStateChanged(ItemEvent e) {
+		    diagram.setFitToWindow(e.getStateChange() == ItemEvent.SELECTED);
+		}
+	    });
+	menu.add(scale);
+	return menu;
+    }
+    public void updateDiagram() {
+	diagram.updateGraphic();
+	doLayout();
+	repaint();
     }
 
     public ScuflDiagramPanel() {
@@ -59,188 +132,95 @@ public class ScuflDiagramPanel extends JPanel
 	
 	// Create the diagram
 	JScrollPane diagramPane = new JScrollPane(diagram);
-	// Prevent the diagram poping up its menu
-	diagram.disableMouseListener();
 	diagramPane.setPreferredSize(new Dimension(0,0));
 	diagramPane.getViewport().setBackground(java.awt.Color.WHITE);
 	add(diagramPane, BorderLayout.CENTER);
-	// Default to no ports shown
-	diagram.setPortDisplay(2);
-	// Default to resize to fit
-	diagram.setDisplayTypes(false);
-	// Default to no types shown
 	diagram.setFitToWindow(true);
 	
-	// Create the save buttons
-	saveAsDot = new JButton(dotIcon);
-	saveAsDot.setPreferredSize(new Dimension(25,25));
-	saveAsSVG = new JButton(svgIcon);
-	saveAsSVG.setPreferredSize(new Dimension(25,25));
-	saveAsPNG = new JButton(pngIcon);
-	saveAsPNG.setPreferredSize(new Dimension(25,25));
-	
-	// Create the tool bar
 	JToolBar toolbar = new JToolBar();
 	toolbar.add(new JLabel("Save as "));
-	toolbar.add(saveAsDot);
-	toolbar.add(saveAsPNG);
-	toolbar.add(saveAsSVG);
+	// Create the save buttons
+	for (int i = 0; i < saveTypes.length; i++) {
+	    String type = saveTypes[i];
+	    ImageIcon icon = new ImageIcon(ScuflDiagramPanel.class.getResource("icons/graphicalview/saveAs"+type.toUpperCase()+".png"));
+	    JButton saveButton = new JButton(icon);
+	    saveButton.setPreferredSize(new Dimension(25,25));   
+	    saveButton.addActionListener(new DotInvoker(type));
+	    saveButton.setToolTipText("Save as "+saveTypeNames[i]);
+	    toolbar.add(saveButton);
+	}
+	
 	toolbar.addSeparator();
-	toolbar.add(typeDisplay);
-	toolbar.addSeparator();
-	toolbar.add(displayPolicyChooser);
-	toolbar.add(alignmentChooser);
-	toolbar.addSeparator();
-	toolbar.add(showBoring);
-	toolbar.add(fitToWindow);
+
+	final JButton configure = new JButton("Configure diagram", ScuflIcons.editIcon);
+	configure.addActionListener(new ActionListener() {
+		public void actionPerformed(ActionEvent ae) {
+		    JPopupMenu menu = createMenu();
+		    menu.show(configure, 0, configure.getHeight());
+		}
+	    });
+	toolbar.add(configure);
 	toolbar.add(Box.createHorizontalGlue());
 	
 	toolbar.setFloatable(false);
 	toolbar.setRollover(true);
 	toolbar.setMaximumSize(new Dimension(2000,30));
-	
-	// Create the action listeners
-	displayPolicyChooser.setSelectedIndex(2);
-	displayPolicyChooser.addActionListener(new ActionListener() {
-		public void actionPerformed(ActionEvent e) {
-		    diagram.setPortDisplay(displayPolicyChooser.getSelectedIndex());
-		    // Read the new alignment from the diagram, some port settings
-		    // may change this and we need to listen otherwise we end up
-		    // with an inconsistant ui
-		    alignmentChooser.setSelectedIndex(diagram.getLRAlignment()?1:0);
-		    ScuflDiagramPanel.this.doLayout();
-		    ScuflDiagramPanel.this.repaint();
-		}
-	    });
-	alignmentChooser.setSelectedIndex(0);
-	alignmentChooser.addActionListener(new ActionListener() {
-		public void actionPerformed(ActionEvent e) {
-		    diagram.setLRAlignment(alignmentChooser.getSelectedIndex()==0?false:true);
-		    ScuflDiagramPanel.this.doLayout();
-		    ScuflDiagramPanel.this.repaint();
-		}
-	    });
-	typeDisplay.addItemListener(new ItemListener() {
-		public void itemStateChanged(ItemEvent e) {
-		    if (e.getStateChange() == ItemEvent.DESELECTED) {
-			diagram.setDisplayTypes(false);
-		    }
-		    else {
-			diagram.setDisplayTypes(true);
-		    }
-		}
-	    });
-	showBoring.addItemListener(new ItemListener() {
-		public void itemStateChanged(ItemEvent e) {
-		    if (e.getStateChange() == ItemEvent.DESELECTED) {
-			diagram.setBoring(false);
-		    }
-		    else {
-			diagram.setBoring(true);
-		    }
-		}
-	    });
-	fitToWindow.addItemListener(new ItemListener() {
-		public void itemStateChanged(ItemEvent e) {
-		    if (e.getStateChange() == ItemEvent.DESELECTED) {
-			diagram.setFitToWindow(false);
-		    }
-		    else {
-			diagram.setFitToWindow(true);
-		    }
-		}
-	    });
-	
-	// And the ones for the save buttons...
-	saveAsDot.addActionListener(new ActionListener() {
-		public void actionPerformed(ActionEvent e) {
-		    try {
-			Preferences prefs = Preferences.userNodeForPackage(ScuflDiagramPanel.class);
-			String curDir = prefs.get("currentDir", System.getProperty("user.home"));
-			fc.setCurrentDirectory(new File(curDir));
-			fc.resetChoosableFileFilters();
-			fc.setFileFilter(new ExtensionFileFilter(new String[]{"dot"}));
-			int returnVal = fc.showSaveDialog(ScuflDiagramPanel.this);
-			if (returnVal == JFileChooser.APPROVE_OPTION) {
-			    prefs.put("currentDir", fc.getCurrentDirectory().toString());
-			    File file = fc.getSelectedFile();
-			    PrintWriter out = new PrintWriter(new FileWriter(file));
-			    out.println(diagram.getDot());
-			    out.flush();
-			    out.close();
-			}
-		    }
-		    catch (Exception ex) {
-			//
-		    }
-		}
-	    });
-	saveAsPNG.addActionListener(new ActionListener() {
-		public void actionPerformed(ActionEvent e) {
-		    try {
-			Preferences prefs = Preferences.userNodeForPackage(ScuflDiagramPanel.class);
-			String curDir = prefs.get("currentDir", System.getProperty("user.home"));
-			fc.setCurrentDirectory(new File(curDir));
-			fc.resetChoosableFileFilters();
-			fc.setFileFilter(new ExtensionFileFilter(new String[]{"png"}));
-			int returnVal = fc.showSaveDialog(ScuflDiagramPanel.this);
-			if (returnVal == JFileChooser.APPROVE_OPTION) {
-			    prefs.put("currentDir", fc.getCurrentDirectory().toString());
-			    File file = fc.getSelectedFile();
-			    FileOutputStream fos = new FileOutputStream(file);
-			    // Invoke DOT to get the SVG document as a byte stream
-			    String dotLocation = System.getProperty("taverna.dotlocation");
-			    if (dotLocation == null) {
-				dotLocation = "dot";
-			    }
-			    Process dotProcess = Runtime.getRuntime().exec(new String[]{dotLocation,"-Tpng"});
-			    OutputStream dotOut = dotProcess.getOutputStream();
-			    dotOut.write(diagram.getDot().getBytes());
-			    dotOut.flush();
-			    dotOut.close();
-			    new StreamCopier(dotProcess.getInputStream(), fos).start();
-			}
-		    }
-		    catch (Exception ex) {
-			ex.printStackTrace();
-		    }
-		}
-	    });
-	saveAsSVG.addActionListener(new ActionListener() {
-		public void actionPerformed(ActionEvent e) {
-		    try {
-			Preferences prefs = Preferences.userNodeForPackage(ScuflDiagramPanel.class);
-			String curDir = prefs.get("currentDir", System.getProperty("user.home"));
-			fc.setCurrentDirectory(new File(curDir));
-			fc.resetChoosableFileFilters();
-			fc.setFileFilter(new ExtensionFileFilter(new String[]{"svg"}));
-			int returnVal = fc.showSaveDialog(ScuflDiagramPanel.this);
-			if (returnVal == JFileChooser.APPROVE_OPTION) {
-			    prefs.put("currentDir", fc.getCurrentDirectory().toString());
-			    File file = fc.getSelectedFile();
-			    FileOutputStream fos = new FileOutputStream(file);
-			    // Invoke DOT to get the SVG document as a byte stream
-			    String dotLocation = System.getProperty("taverna.dotlocation");
-			    if (dotLocation == null) {
-				dotLocation = "dot";
-			    }
-			    Process dotProcess = Runtime.getRuntime().exec(new String[]{dotLocation,"-Tsvg"});
-			    OutputStream dotOut = dotProcess.getOutputStream();
-			    dotOut.write(diagram.getDot().getBytes());
-			    dotOut.flush();
-			    dotOut.close();
-			    new StreamCopier(dotProcess.getInputStream(), fos).start();
-			}
-		    }
-		    catch (Exception ex) {
-			ex.printStackTrace();
-		    }
-		}
-	    });
 	fc = new JFileChooser();
 	add(toolbar, BorderLayout.PAGE_START);
     }
     
+    class DotInvoker implements ActionListener {
+	String type = "dot";
+	public DotInvoker() {
+	    //
+	}
+	public DotInvoker(String type) {
+	    this.type = type;
+	}
+	public void actionPerformed(ActionEvent e) {
+	    try {
+		Preferences prefs = Preferences.userNodeForPackage(ScuflDiagramPanel.class);
+		String curDir = prefs.get("currentDir", System.getProperty("user.home"));
+		fc.setCurrentDirectory(new File(curDir));
+		fc.resetChoosableFileFilters();
+		fc.setFileFilter(new ExtensionFileFilter(new String[]{type}));
+		int returnVal = fc.showSaveDialog(ScuflDiagramPanel.this);
+		if (returnVal == JFileChooser.APPROVE_OPTION) {
+		    prefs.put("currentDir", fc.getCurrentDirectory().toString());
+		    File file = fc.getSelectedFile();
+		    // Rewrite the file name if it doesn't end with the specified extension
+		    if (file.getName().endsWith("."+type) == false) {
+			file = new File(file.toURI().resolve(file.getName()+"."+type));
+		    }
+		    if (type.equals("dot")) {
+			// Just write out the dot text, no processing required
+			PrintWriter out = new PrintWriter(new FileWriter(file));
+			out.println(diagram.getDot());
+			out.flush();
+			out.close();
+		    }
+		    else {
+			FileOutputStream fos = new FileOutputStream(file);
+			// Invoke DOT to get the SVG document as a byte stream
+			String dotLocation = System.getProperty("taverna.dotlocation");
+			if (dotLocation == null) {
+			    dotLocation = "dot";
+			}
+			Process dotProcess = Runtime.getRuntime().exec(new String[]{dotLocation,"-T"+type});
+			OutputStream dotOut = dotProcess.getOutputStream();
+			dotOut.write(diagram.getDot().getBytes());
+			dotOut.flush();
+			dotOut.close();
+			new StreamCopier(dotProcess.getInputStream(), fos).start();
+		    }	
+		}
+	    }
+	    catch (Exception ex) {
+		ex.printStackTrace();
+	    }
+	}
+    }
+
     class StreamCopier extends Thread {
 	InputStream is;
 	OutputStream os;
@@ -266,10 +246,8 @@ public class ScuflDiagramPanel extends JPanel
 
     public void attachToModel(ScuflModel model) {
 	diagram.attachToModel(model);
-	diagram.setPortDisplay(displayPolicyChooser.getSelectedIndex());
-	diagram.setLRAlignment(alignmentChooser.getSelectedIndex()==0?false:true);
-	diagram.setFitToWindow(true);
-	diagram.setDisplayTypes(false);
+	diagram.getDotView().setPortDisplay(2);
+	diagram.getDotView().setTypeLabelDisplay(false);
     }
 
     public void detachFromModel() {
