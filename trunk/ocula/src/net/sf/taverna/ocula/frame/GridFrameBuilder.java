@@ -100,7 +100,7 @@ public class GridFrameBuilder implements FrameSPI {
 			    // If there's a doubleclick action defined then register the appropriate
 			    // mouse listener...
 			    parser.parseDoubleClick(element, component, targetObject);
-			    parser.parseContextualMenu(element, component, targetObject);
+			    parser.parseContextMenu(element, component, targetObject);
 			    gf.revalidate();
 			}
 		    }
