@@ -9,7 +9,7 @@ package org.embl.ebi.escience.scufl;
  * Represents a data dependancy between two processors
  * @author Tom Oinn
  */
-public class DataConstraint implements java.io.Serializable {
+public class DataConstraint implements java.io.Serializable, Comparable {
 
     private ScuflModel model;
     private InputPort sink;
@@ -107,7 +107,7 @@ public class DataConstraint implements java.io.Serializable {
 	else {
 	    to = this.sink.getProcessor().getName()+":"+this.sink.getName();
 	}
-	return from+"->"+to;
+	return from+"-"+to;
     }
 
     /**
@@ -115,6 +115,20 @@ public class DataConstraint implements java.io.Serializable {
      */
     public String toString() {
 	return this.getName();
+    }
+
+    /**
+     * Use the toString as the comparable
+     */
+    public int compareTo(Object o) {
+	DataConstraint dc2 = (DataConstraint)o;
+	if (source.isSource() && dc2.getSource().isSource() ==false) {
+	    return -1;
+	}
+	if (sink.isSink() && dc2.getSink().isSink() == false) {
+	    return 1;
+	}
+	return toString().compareTo(dc2.toString());
     }
 
 }

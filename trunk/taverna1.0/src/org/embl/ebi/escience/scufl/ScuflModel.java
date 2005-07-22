@@ -30,7 +30,7 @@ import java.lang.String;
 import java.lang.Thread;
 import org.embl.ebi.escience.scufl.view.*;
 import org.embl.ebi.escience.scufl.parser.*;
-
+import java.util.Arrays;
 
 
 /**
@@ -444,7 +444,9 @@ public class ScuflModel
      * within this workflow model
      */
     public DataConstraint[] getDataConstraints() {
-	return (DataConstraint[])(this.dataconstraints.toArray(new DataConstraint[0]));
+	DataConstraint[] result = (DataConstraint[])(this.dataconstraints.toArray(new DataConstraint[0]));
+	Arrays.sort(result);
+	return result;
     }
 
     /**
