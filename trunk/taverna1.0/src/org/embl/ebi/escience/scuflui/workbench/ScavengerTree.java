@@ -21,6 +21,7 @@ import org.embl.ebi.escience.scuflworkers.talisman.TalismanProcessor;
 import org.embl.ebi.escience.scuflworkers.talisman.TalismanScavenger;
 import org.embl.ebi.escience.scuflworkers.wsdl.WSDLBasedProcessor;
 import org.embl.ebi.escience.scuflworkers.wsdl.WSDLBasedScavenger;
+import org.embl.ebi.escience.scuflworkers.workflow.WorkflowProcessor;
 import org.embl.ebi.escience.scuflworkers.seqhound.SeqhoundScavenger;
 import org.embl.ebi.escience.scuflworkers.apiconsumer.APIConsumerScavenger;
 import org.embl.ebi.escience.scuflworkers.biomart.BiomartRegistryScavenger;
@@ -358,7 +359,7 @@ public class ScavengerTree extends ExtendedJTree
 	    scavengerTree.setExpansion(true);
 	}
     }
-
+    
     /**
      * Examine the model, create any scavengers that would have been required
      * to populate the model with its existing processors. Now handles all three
@@ -367,12 +368,18 @@ public class ScavengerTree extends ExtendedJTree
     public void addScavengersFromModel() 
 	throws ScavengerCreationException {
 	if (this.model != null) {
+	    addScavengersFromModel(this.model);
+	}
+    }
+    private void addScavengersFromModel(ScuflModel theModel) 
+	throws ScavengerCreationException {
+	if (theModel != null) {
 	    // Get all WSDL processors
 	    Map wsdlLocations = new HashMap();
 	    Map talismanLocations = new HashMap();
 	    Map soaplabInstallations = new HashMap();
 	    Set biomobyCentralLocations = new HashSet();
-	    Processor[] p = model.getProcessors();
+	    Processor[] p = theModel.getProcessors();
 	    for (int i = 0; i < p.length; i++) {
 		// If the processor is a WSDLBasedProcessor then get
 		// the wsdl location and add it to the map.
@@ -397,6 +404,10 @@ public class ScavengerTree extends ExtendedJTree
 		    String mobyCentralLocation = ((BiomobyProcessor)p[i]).getMobyEndpoint();
 		    biomobyCentralLocations.add(mobyCentralLocation);
 		}
+		// Recurse into nested workflows
+		else if (p[i] instanceof WorkflowProcessor) {
+		    addScavengersFromModel(((WorkflowProcessor)p[i]).getInternalModel());
+	    }
 	    }
 	    // Now iterate over all the wsdl locations found and
 	    // create new WSDL scavengers, adding them to the 
