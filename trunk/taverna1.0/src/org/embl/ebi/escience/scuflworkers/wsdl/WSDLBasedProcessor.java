@@ -69,6 +69,22 @@ public class WSDLBasedProcessor extends Processor implements java.io.Serializabl
     }
 
     /**
+     * Use a static synchronized cache to avoid re-loading and parsing WSDL files
+     * where possible within a single Taverna instance
+     */
+    public static synchronized Definition getDefinition(String wsdlLocation) throws Exception {
+	if (defMap.containsKey(wsdlLocation)) {
+	    return (Definition)defMap.get(wsdlLocation);
+	}
+	else {
+	    Definition def = WSIFUtils.readWSDL(null, wsdlLocation);
+	    defMap.put(wsdlLocation, def);
+	    return def;
+	}
+    }
+    private static Map defMap = new HashMap();
+
+    /**
      * Construct a new processor from the given WSDL definition
      * and operation name, delegates to superclass then instantiates
      * ports based on WSDL inspection.
@@ -89,7 +105,7 @@ public class WSDLBasedProcessor extends Processor implements java.io.Serializabl
 						       new WSIFDynamicProvider_ApacheAxis());
 	Definition def = null;
 	try {
-	    def = WSIFUtils.readWSDL(null, wsdlLocation);
+	    def = getDefinition(wsdlLocation);
 	}
 	catch (Exception ex) {
 	    ProcessorCreationException pce = new ProcessorCreationException(procName+": Unable to load wsdl at " +

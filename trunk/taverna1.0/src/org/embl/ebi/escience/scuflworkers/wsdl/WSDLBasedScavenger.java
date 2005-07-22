@@ -57,12 +57,10 @@ public class WSDLBasedScavenger extends Scavenger {
 	// Get a WSDLReader
 	Definition theDefinition = null;
 	try {
-	    WSDLFactory wsdlf = WSDLFactory.newInstance();
-	    WSDLReader wsdlr = wsdlf.newWSDLReader();
-	    theDefinition = wsdlr.readWSDL(wsdlLocation);
+	    theDefinition = WSDLBasedProcessor.getDefinition(wsdlLocation);
 	}
-	catch (WSDLException wsdle) {
-	    throw new ScavengerCreationException("Unable to load the WSDL definition, underlying reason was "+wsdle.getMessage());
+	catch (Exception ex) {
+	    throw new ScavengerCreationException("Unable to load the WSDL definition, underlying reason was "+ex.getMessage());
 	}
 	// Iterate over bindings
 	Map bindingMap = theDefinition.getBindings();
