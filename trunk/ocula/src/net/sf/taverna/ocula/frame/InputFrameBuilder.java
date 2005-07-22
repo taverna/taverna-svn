@@ -50,7 +50,8 @@ public class InputFrameBuilder extends AbstractInputFrameBuilder {
     }
     
     /**
-     * Creates a subclass of ResultSetPanel that uses InputLayout.
+     * Creates a subclass of ResultSetPanel that uses InputLayout and implements
+     * OculaFrame.
      */
     protected OculaPanel createInputFrame() {
 	return new InputFrame(name, icon, cols);
@@ -90,7 +91,7 @@ public class InputFrameBuilder extends AbstractInputFrameBuilder {
 }
 
 /**
- * Simple subclass of ResultSetPanel that implements OculaFrame and uses the
+ * Simple subclass of ResultSetPanel that implements OculaFrame and uses
  * InputLayout.
  * 
  * @author Ismael Juma (ismael@juma.me.uk)
