@@ -9,7 +9,6 @@ import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Iterator;
@@ -23,7 +22,6 @@ import org.biomoby.client.ui.graphical.applets.shared.Household;
 import org.biomoby.shared.Central;
 import org.embl.ebi.escience.scuflui.workbench.Scavenger;
 import org.embl.ebi.escience.scuflui.workbench.ScavengerCreationException;
-//import org.embl.ebi.escience.scuflworkers.biomoby.BiomobyProcessorFactory;
 
 import com.hp.hpl.jena.mem.ModelMem;
 import com.hp.hpl.jena.rdf.model.Model;
@@ -34,7 +32,7 @@ import com.hp.hpl.jena.rdf.model.StmtIterator;
  * A Scavenger that knows how to get all the Biomoby services from a specified
  * Biomoby Central Registry. <p>
  * 
- * @version $Id: BiomobyScavenger.java,v 1.1 2005-06-17 14:17:38 mereden Exp $
+ * @version $Id: BiomobyScavenger.java,v 1.2 2005-07-25 19:41:58 edwardkawas Exp $
  * @author Martin Senger
  */
 public class BiomobyScavenger extends Scavenger {
@@ -54,30 +52,35 @@ public class BiomobyScavenger extends Scavenger {
         // get list of services and their authorities
         try {
             Central worker = new CentralImpl(base);
-            Map names = worker.getServiceNames();
-
-            Hashtable byAuthority = new Hashtable();
+            Map names = worker.getServiceNamesByAuthority();
+            
+            /*Hashtable byAuthority = new Hashtable();
             for (Iterator it = names.entrySet().iterator(); it.hasNext();) {
                 Map.Entry entry = (Map.Entry) it.next();
-                String serviceName = (String) entry.getKey();
-                String authorityName = (String) entry.getValue();
+                String authorityName = (String) entry.getKey();
+                String[] serviceName = (String[]) entry.getValue();
                 Vector services;
                 if (byAuthority.containsKey(authorityName))
                     services = (Vector) byAuthority.get(authorityName);
                 else
                     services = new Vector();
-                services.addElement(serviceName);
+                for (int i = 0; i < serviceName.length; i++) {
+                    services.addElement(serviceName[i]);    
+                }
+                
                 byAuthority.put(authorityName, services);
-            }
+            }*/
 
-            for (Enumeration en = byAuthority.keys(); en.hasMoreElements();) {
-                String authorityName = (String) en.nextElement();
-                Vector v = (Vector) byAuthority.get(authorityName);
+            ArrayList list = new ArrayList(names.keySet());
+            Collections.sort(list);
+            for (Iterator iterator = list.iterator(); iterator.hasNext();) {
+                String authorityName = (String) iterator.next();
+                String[] authorities = (String[]) names.get(authorityName);
                 DefaultMutableTreeNode authority = new DefaultMutableTreeNode(
                         authorityName);
                 add(authority);
-                for (Enumeration en2 = v.elements(); en2.hasMoreElements();) {
-                    String serviceName = (String) en2.nextElement();
+                for (int i = 0; i < authorities.length; i++) {
+                    String serviceName = (String) authorities[i];
                     BiomobyProcessorFactory f = new BiomobyProcessorFactory(
                             base, authorityName, serviceName);
                     authority.add(new DefaultMutableTreeNode(f));
@@ -126,30 +129,34 @@ public class BiomobyScavenger extends Scavenger {
         // get list of services and their authorities
         try {
             Central worker = new CentralImpl(base);
-            Map names = worker.getServiceNames();
+            Map names = worker.getServiceNamesByAuthority();
 
             Hashtable byAuthority = new Hashtable();
             for (Iterator it = names.entrySet().iterator(); it.hasNext();) {
                 Map.Entry entry = (Map.Entry) it.next();
-                String serviceName = (String) entry.getKey();
-                String authorityName = (String) entry.getValue();
+                String authorityName = (String) entry.getKey();
+                String[] serviceName = (String[]) entry.getValue();
                 Vector services;
                 if (byAuthority.containsKey(authorityName))
                     services = (Vector) byAuthority.get(authorityName);
                 else
                     services = new Vector();
-                services.addElement(serviceName);
+                for (int i = 0; i < serviceName.length; i++) {
+                    services.addElement(serviceName[i]);    
+                }
                 byAuthority.put(authorityName, services);
             }
 
-            for (Enumeration en = byAuthority.keys(); en.hasMoreElements();) {
-                String authorityName = (String) en.nextElement();
-                Vector v = (Vector) byAuthority.get(authorityName);
+            ArrayList list = new ArrayList(names.keySet());
+            Collections.sort(list);
+            for (Iterator iterator = list.iterator(); iterator.hasNext();) {
+                String authorityName = (String) iterator.next();
+                String[] authorities = (String[]) names.get(authorityName);
                 DefaultMutableTreeNode authority = new DefaultMutableTreeNode(
                         authorityName);
                 add(authority);
-                for (Enumeration en2 = v.elements(); en2.hasMoreElements();) {
-                    String serviceName = (String) en2.nextElement();
+                for (int i = 0; i < authorities.length; i++) {
+                    String serviceName = (String) authorities[i];
                     BiomobyProcessorFactory f = new BiomobyProcessorFactory(
                             base, authorityName, serviceName);
                     authority.add(new DefaultMutableTreeNode(f));
