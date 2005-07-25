@@ -33,7 +33,7 @@ import org.embl.ebi.escience.scufl.ScuflModelEvent;
  * processor implementation will contact Biomoby registry in order to
  * find the list of extant ports at creation time. <p>
  *
- * @version $Id: BiomobyProcessor.java,v 1.1 2005-06-17 14:17:38 mereden Exp $
+ * @version $Id: BiomobyProcessor.java,v 1.2 2005-07-25 19:38:35 edwardkawas Exp $
  * @author Martin Senger
  */
 public class BiomobyProcessor extends Processor implements java.io.Serializable {
@@ -218,6 +218,7 @@ public class BiomobyProcessor extends Processor implements java.io.Serializable 
 
         // inputs TODO - find a better way to deal with collections
         MobyData[] serviceInputs = this.mobyService.getPrimaryInputs();
+        boolean isInputCollection = false;
         for (int x = 0; x < serviceInputs.length; x++) {
             if (serviceInputs[x] instanceof MobyPrimaryDataSimple) {
                 MobyPrimaryDataSimple simple = (MobyPrimaryDataSimple)serviceInputs[x];
@@ -234,6 +235,7 @@ public class BiomobyProcessor extends Processor implements java.io.Serializable 
                 this.addPort(inPort);
             } else {
                 // collection of items
+                isInputCollection = true;
                 MobyPrimaryDataSet collection = (MobyPrimaryDataSet)serviceInputs[x];
                 String collectionName = collection.getName();
                 if (collectionName.equals(""))
@@ -242,16 +244,18 @@ public class BiomobyProcessor extends Processor implements java.io.Serializable 
                 for (int y = 0; y < simples.length; y++) {
                     
                     Port inPort = new InputPort(this, simples[y].getDataType().getName() + "(Collection - '" + collectionName + "')");
-                    inPort.setSyntacticType("'text/xml'");
+                    inPort.setSyntacticType("l('text/xml')");
                     this.addPort(inPort);
                 }
             }
         }
-        Port input_port = new InputPort(this, "input");
-        input_port.setSyntacticType("'text/xml'");
+        Port input_port = new InputPort (this, "input");
+    	input_port.setSyntacticType (isInputCollection? "l('text/xml')" : "'text/xml'");
         this.addPort(input_port);
+        
         // outputs
         MobyData[] serviceOutputs = this.mobyService.getPrimaryOutputs();
+        boolean isOutputCollection = false;
         for (int x = 0; x < serviceOutputs.length; x++) {
             if (serviceOutputs[x] instanceof MobyPrimaryDataSimple) {
                 MobyPrimaryDataSimple simple = (MobyPrimaryDataSimple)serviceOutputs[x];
@@ -267,6 +271,7 @@ public class BiomobyProcessor extends Processor implements java.io.Serializable 
                 outPort.setSyntacticType("'text/xml'");
                 this.addPort(outPort);
             } else {
+                isOutputCollection = true;
                 // collection of items
                 MobyPrimaryDataSet collection = (MobyPrimaryDataSet)serviceOutputs[x];
                 String collectionName = collection.getName();
@@ -275,14 +280,14 @@ public class BiomobyProcessor extends Processor implements java.io.Serializable 
                 MobyPrimaryDataSimple[] simples = collection.getElements();
                 for (int y = 0; y < simples.length; y++) {
                     Port outPort = new OutputPort(this, simples[y].getDataType().getName() + "(Collection - '" + collectionName + "')");
-                    outPort.setSyntacticType("'text/xml'");
+                    outPort.setSyntacticType("l('text/xml')");
                     this.addPort(outPort);
                 }
             }
         }
         
         Port output_port = new OutputPort(this, "output");
-        output_port.setSyntacticType("'text/xml'");
+        output_port.setSyntacticType (isOutputCollection ? "l('text/xml')" : "'text/xml'");
         this.addPort(output_port);
     }
 
