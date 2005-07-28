@@ -316,7 +316,7 @@ public class ProcessorHelper {
 	String className = p.getClass().getName();
 	String tagName = (String)tagNameForClassName.get(className);
 	if (tagName != null) {
-	    ImageIcon icon = (ImageIcon)iconForTagName.get(tagName);
+	    ImageIcon icon = getIconForTagName(tagName);
 	    if (icon != null) {
 		return icon;
 	    }

@@ -5,6 +5,7 @@ import org.apache.commons.discovery.tools.SPInterface;
 import org.apache.commons.discovery.resource.ClassLoaders;
 import org.apache.log4j.Logger;
 import org.embl.ebi.escience.baclava.DataThing;
+import org.embl.ebi.escience.scuflui.workbench.PluginManager;
 
 // Utility Imports
 import java.util.*;
@@ -28,6 +29,10 @@ public class UIComponentRegistry {
 	return instance;
     }
     
+    public static void forceReload() {
+	instance.loadInstances(UIComponentRegistry.class.getClassLoader());
+    }
+
     public UIComponentRegistry() {
 	components = new HashMap();
 	icons = new HashMap();
@@ -36,17 +41,28 @@ public class UIComponentRegistry {
     public void loadInstances(ClassLoader classLoader) {
 	log.info("Loading all UI components");
 	SPInterface spiIF = new SPInterface(ScuflUIComponent.class);
+	ClassLoader[] plugins = PluginManager.getPluginClassLoaders();
 	ClassLoaders loaders = new ClassLoaders();
 	loaders.put(classLoader);
+	for (int i = 0; i < plugins.length; i++) {
+	    loaders.put(plugins[i]);
+	}
+	
+	System.out.println("Searching for plugins...");
 	Enumeration spe = Service.providers(spiIF, loaders);
 	while (spe.hasMoreElements()) {
 	    ScuflUIComponent component = (ScuflUIComponent)spe.nextElement();
 	    String componentClassName = component.getClass().getName();
 	    String componentDisplayName = component.getName();
-	    components.put(componentDisplayName,
-			   componentClassName);
-	    icons.put(componentDisplayName,
-		      component.getIcon());
+	    try {
+		components.put(componentDisplayName,
+			       componentClassName);
+		icons.put(componentDisplayName,
+			  component.getIcon());
+	    }
+	    catch (RuntimeException re) {
+		//
+	    }
 	}
 	log.info("Done");
     }

@@ -36,26 +36,26 @@ public class BiomobyScavengerHelper implements ScavengerHelper {
         return "Add new Biomoby scavenger...";
     }
 
-public ActionListener getListener(ScavengerTree theScavenger) {
+    public ActionListener getListener(ScavengerTree theScavenger) {
         final ScavengerTree s = theScavenger;
         return new ActionListener() {
-            public void actionPerformed(ActionEvent ae) {
-                /*
-                 * String resourceURL =
-                 * "http://biomoby.org/RESOURCES/MOBY-S/Objects"; String baseURL =
-                 * (String) JOptionPane .showInputDialog( null, "Location (URL)
-                 * of your BioMoby central registry?", "Biomoby location",
-                 * JOptionPane.QUESTION_MESSAGE, null, null,
-                 * "http://mobycentral.icapture.ubc.ca/cgi-bin/MOBY05/mobycentral.pl");
-                 * if (baseURL != null) { try { s.addScavenger(new
-                 * BiomobyScavenger(baseURL,resourceURL)); } catch
-                 * (ScavengerCreationException sce) {
-                 * JOptionPane.showMessageDialog(null, "Unable to create
-                 * scavenger!\n" + sce.getMessage(), "Exception!",
-                 * JOptionPane.ERROR_MESSAGE); } }
-                 */
-                final JDialog dialog = new JDialog(Workbench.workbench,
-                        "Add Your Custom BioMoby Registry & Object RDF", true);
+		public void actionPerformed(ActionEvent ae) {
+		    /*
+		     * String resourceURL =
+		     * "http://biomoby.org/RESOURCES/MOBY-S/Objects"; String baseURL =
+		     * (String) JOptionPane .showInputDialog( null, "Location (URL)
+		     * of your BioMoby central registry?", "Biomoby location",
+		     * JOptionPane.QUESTION_MESSAGE, null, null,
+		     * "http://mobycentral.icapture.ubc.ca/cgi-bin/MOBY05/mobycentral.pl");
+		     * if (baseURL != null) { try { s.addScavenger(new
+		     * BiomobyScavenger(baseURL,resourceURL)); } catch
+		     * (ScavengerCreationException sce) {
+		     * JOptionPane.showMessageDialog(null, "Unable to create
+		     * scavenger!\n" + sce.getMessage(), "Exception!",
+		     * JOptionPane.ERROR_MESSAGE); } }
+		     */
+		    final JDialog dialog = new JDialog(s.getContainingFrame(),
+						       "Add Your Custom BioMoby Registry & Object RDF", true);
                 final BiomobyScavengerDialog msp = new BiomobyScavengerDialog();
                 dialog.getContentPane().add(msp);
                 JButton accept = new JButton("Okay");

@@ -26,7 +26,7 @@ public class BiomartScavengerHelper implements ScavengerHelper {
 	final ScavengerTree s = theScavenger;
 	return new ActionListener() {
 		public void actionPerformed(ActionEvent ae) {
-		    final JDialog dialog = new JDialog(Workbench.workbench,
+		    final JDialog dialog = new JDialog(s.getContainingFrame(),
 						       "Configure Biomart Datasource",
 						       true);
 		    final MartSpecificationPanel msp = new MartSpecificationPanel();

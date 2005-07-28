@@ -20,6 +20,20 @@ import javax.swing.tree.*;
 public class ExtendedJTree extends JTree {
 
     private String pattern = "";
+
+    /**
+     * Traverse up the component heirarchy to find a Frame instance and return
+     * the first one we can see. Returns null if there's no Frame in the parent
+     * list for this component
+     */
+    public Frame getContainingFrame() {
+	Container result = getParent();
+	while (result != null && 
+	       result instanceof Frame == false) {
+	    result = result.getParent();
+	}
+	return (Frame)result;
+    }
     
     /**
      * Set the pattern to highlight
