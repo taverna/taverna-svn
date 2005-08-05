@@ -93,18 +93,19 @@ public class InputLayout implements LayoutManager {
      * even number.
      */
     public InputLayout(int cols) {
-	this(DEFAULT_H_GAP, DEFAULT_V_GAP, cols);
+	this(cols, DEFAULT_H_GAP, DEFAULT_V_GAP);
     }
 
     /**
      * Creates an instance of the layout with the values supplied by the user.
+     * @param cols Number of columns. This number must be an even number.
      * @param hGap Gap between each column.
      * @param vGap Gap between each row.
-     * @param cols Number of columns. This number must be an even number.
      */
-    public InputLayout(int hGap, int vGap, int cols) {
+    public InputLayout(int cols, int hGap, int vGap) {
 	if (cols  % 2 != 0) {
-	    throw new IllegalArgumentException("cols must be an even number.");
+	    throw new IllegalArgumentException("cols must be an even number. It" +
+	    		" currently is: " + cols + ".");
 	}
 	
 	if (hGap < 0 || vGap < 0) {
