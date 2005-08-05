@@ -24,11 +24,13 @@
 
 package net.sf.taverna.ocula.frame;
 
+import java.awt.Dimension;
 import java.util.Iterator;
 import java.util.List;
 
 import javax.swing.JButton;
 import javax.swing.JComponent;
+import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
@@ -57,9 +59,13 @@ public abstract class AbstractInputFrameBuilder implements FrameSPI {
     
     protected Ocula ocula;
     protected Element element;
-    protected int cols;
+    protected int cols = 2;
     protected Parser parser;
     protected Object result;
+
+    protected int hGap = -1;
+
+    protected int vGap = -1;
     
     /**
      * Factory method that allows subclasses the decide what object is used
@@ -117,6 +123,14 @@ public abstract class AbstractInputFrameBuilder implements FrameSPI {
 		log.debug("button element found.");
 		processButton(e, oculaPanel);
 	    }
+	    
+	    else if(e.getName().equals("separator")) {
+		log.debug("separator element found.");
+		processSeparator(e, oculaPanel);
+	    }
+	    else {
+		//TODO Error handling here
+	    }
 	}
 	
 	oculaPanel.getContents().revalidate();
@@ -141,6 +155,12 @@ public abstract class AbstractInputFrameBuilder implements FrameSPI {
 	oculaPanel.getContents().add(component);
     }   
 
+    /**
+     * Processes the label attribute of &lt;text&gt;.
+     * @param textElement &lt;text&gt; element.
+     * @param oculaPanel panel where any error message should be displayed
+     * @return JComponent that renders the label attribute.
+     */
     private JComponent processLabel(Element textElement, OculaPanel oculaPanel) {
 	String value = textElement.getAttributeValue("label");
 	//If there is no label attribute, we set the label to an empty string.
@@ -204,6 +224,37 @@ public abstract class AbstractInputFrameBuilder implements FrameSPI {
     }
     
     /**
+     * Processes the &lt;separator&gt; elemenet. At the moment, it simply adds
+     * an empty panel with the height given by the 'height' attribute. Other
+     * capabilities may be added in the future.
+     * @param separatorElement
+     * @param panel
+     */
+    private void processSeparator(Element separatorElement, OculaPanel panel) {
+	String heightString = separatorElement.getAttributeValue("height", "5");
+	if (heightString == null) {
+	    //We fall back to the default of 5 in this case
+	    log.warn("Separator does not have a height attribute.");
+	}
+	int height = 0;
+	try {
+	    height = Integer.parseInt(heightString);
+	    JPanel newPanel = new JPanel();
+	    newPanel.setOpaque(false);
+	    newPanel.setPreferredSize(new Dimension(0, height));
+	    panel.getContents().add(newPanel);
+	}
+	catch(NumberFormatException nfe) {
+	    panel.getContents().add(new ErrorLabel("<html><body>The height" +
+		    "attribute of <separator> must be a number</body></html>"));
+	    panel.revalidate();
+	    log.error("The height attribute of <separator> must be a number, " +
+		    heightString);
+	}
+	
+    }
+    
+    /**
      * Processes a &lt;script&gt; element and returns the result of the script.
      * If an exception is thrown, it shows an error message and writes
      * the details to the log.
@@ -238,11 +289,20 @@ public abstract class AbstractInputFrameBuilder implements FrameSPI {
     protected void processElement() {
 	parser = new Parser(ocula);
 	String colsString = element.getAttributeValue("cols");
-	if (colsString == null) {
-	    return;
-	}
+	String hGapString = element.getAttributeValue("hGap");
+	String vGapString = element.getAttributeValue("vGap");
+	//TODO Be able to parse hGap by itself and vGap by itself
 	try {
-	    cols = Integer.parseInt(colsString);
+	    if (colsString != null) {
+		cols = Integer.parseInt(colsString);
+	    }
+	    if (hGapString != null) {
+		hGap = Integer.parseInt(hGapString);
+	    }
+	    
+	    if (vGapString != null) {
+		vGap = Integer.parseInt(vGapString);
+	    }
 	}
 	catch (NumberFormatException nfe) {
 	    log.error("cols + [" + colsString + "] attribute must hold a number");
