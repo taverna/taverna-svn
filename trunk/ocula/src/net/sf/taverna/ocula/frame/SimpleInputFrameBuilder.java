@@ -24,8 +24,6 @@
 
 package net.sf.taverna.ocula.frame;
 
-import javax.swing.JPanel;
-
 import net.sf.taverna.ocula.ui.InputLayout;
 import net.sf.taverna.ocula.ui.OculaPanel;
 
@@ -49,7 +47,10 @@ public class SimpleInputFrameBuilder extends AbstractInputFrameBuilder {
      * OculaFrame.
      */
     protected OculaPanel createInputFrame() {
-	return new SimpleInputFrame(cols);
+	if (hGap < 0 || vGap < 0) {
+	    return new SimpleInputFrame(cols);    
+	}
+	return new SimpleInputFrame(cols, hGap, vGap);
     }
     
     /**
@@ -71,8 +72,11 @@ public class SimpleInputFrameBuilder extends AbstractInputFrameBuilder {
 class SimpleInputFrame extends OculaPanel implements OculaFrame	{
     public SimpleInputFrame(int cols) {
 	super();
-	JPanel panel = new JPanel(new InputLayout());
-	setContents(panel);
-	setUpContents();
+	contentsPanel.setLayout(new InputLayout(cols));
+    }
+    
+    public SimpleInputFrame(int cols, int hGap, int vGap) {
+	super();
+	contentsPanel.setLayout(new InputLayout(cols, hGap, vGap));
     }
 }
