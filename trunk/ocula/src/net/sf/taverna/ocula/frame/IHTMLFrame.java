@@ -31,8 +31,22 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 
 interface IHTMLFrame	{
+    
+    /**
+     * Loads the HTML page located in <code>urlString</code> and renders it
+     * in the frame.
+     * @param urlString Location of the HTML page.
+     * @throws IOException for a <code>null</code> or invalid page specification
+     *         or an exception from the stream being read.
+     * @throws MalformedURLException if the string is not a valid URL.
+     */
     public void setPage(String urlString) throws IOException,
     	MalformedURLException;
     
+    /**
+     * Sets the text of this frame to the specified content and renders it
+     * in the frame.
+     * @param htmlString The content to be set. This should be valid HTML.
+     */
     public void setText(String htmlString);
 }
