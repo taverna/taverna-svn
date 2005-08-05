@@ -30,7 +30,7 @@ package net.sf.taverna.ocula.frame;
 import java.io.IOException;
 import java.net.MalformedURLException;
 
-interface IHtmlFrame	{
+interface IHTMLFrame	{
     public void setPage(String urlString) throws IOException,
     	MalformedURLException;
     
