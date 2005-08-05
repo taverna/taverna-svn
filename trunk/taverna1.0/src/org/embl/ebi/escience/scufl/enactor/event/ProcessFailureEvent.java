@@ -7,18 +7,22 @@ package org.embl.ebi.escience.scufl.enactor.event;
 
 import org.embl.ebi.escience.scufl.Processor;
 import org.embl.ebi.escience.scufl.enactor.WorkflowInstance;
+import java.util.Map;
 
 public class ProcessFailureEvent extends WorkflowInstanceEvent {
 
     private Exception cause;
     private Processor processor;
-    
+    private Map inputs;
+
     public ProcessFailureEvent(WorkflowInstance workflow,
 			       Processor processor,
-			       Exception cause) {
+			       Exception cause,
+			       Map inputs) {
 	super(workflow);
 	this.processor = processor;
 	this.cause = cause;
+	this.inputs = inputs;
     }
 
     public Exception getCause() {
@@ -35,6 +39,10 @@ public class ProcessFailureEvent extends WorkflowInstanceEvent {
 	sb.append(cause.toString());
 	sb.append("\n");
 	return sb.toString();
+    }
+
+    public Map getInputMap() {
+	return this.inputs;
     }
 
 }

@@ -25,8 +25,8 @@
 //      Dependencies        :
 //
 //      Last commit info    :   $Author: mereden $
-//                              $Date: 2005-07-19 14:29:45 $
-//                              $Revision: 1.70 $
+//                              $Date: 2005-08-05 09:53:16 $
+//                              $Revision: 1.71 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 package uk.ac.soton.itinnovation.taverna.enactor.entities;
@@ -221,9 +221,19 @@ public class ProcessorTask extends AbstractTask {
 	    faultCausingException = ex;
 	    logger.error(ex);
 	    fail("Task " + getTaskId() + " in flow " + getFlow().getFlowId() + " failed.  " + ex.getMessage());
+	    Map inputMap = new HashMap();
+	    for (Iterator i = getParents().iterator(); i.hasNext();) {
+		Task task = (Task) i.next();
+		if (task instanceof PortTask) {
+		    PortTask inputPortTask = (PortTask) task;
+		    DataThing dataThing = inputPortTask.getData();
+		    String portName = inputPortTask.getScuflPort().getName();
+		    inputMap.put(portName, dataThing);
+		}
+	    }
 	    DISPATCHER.fireProcessFailed(new ProcessFailureEvent(workflowInstance,
 								 activeProcessor,
-								 ex));
+								 ex, inputMap));
 	}	
     }
 
