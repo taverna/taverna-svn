@@ -54,7 +54,10 @@ public class InputFrameBuilder extends AbstractInputFrameBuilder {
      * OculaFrame.
      */
     protected OculaPanel createInputFrame() {
-	return new InputFrame(name, icon, cols);
+	if (hGap < 0 || vGap < 0) {
+	    return new InputFrame(name, icon, cols);
+	}
+	return new InputFrame(name, icon, cols, hGap, vGap);
     }
     
     /**
@@ -102,5 +105,11 @@ class InputFrame extends ResultSetPanel implements OculaFrame {
 	super(name, icon);
 	contentsPanel.setLayout(new InputLayout(cols));
     }
+    
+    public InputFrame(String name, Icon icon, int cols, int hGap, int vGap) {
+	super(name, icon);
+	contentsPanel.setLayout(new InputLayout(cols, hGap, vGap));
+    }
+    
 
 }
