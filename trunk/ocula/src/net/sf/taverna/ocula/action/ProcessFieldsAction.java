@@ -28,8 +28,8 @@ package net.sf.taverna.ocula.action;
  * An action that processes the &lt;text&gt; elements of an &lt;input&gt;
  * element. It does this by creating a Map and passing this to the appropriate
  * callback. The keys of the Map are the names of the %lt;text&gt; element
- * and the values are the text contained in the element when this action was 
- * invoked
+ * and the values are the text contained in the field when this action was 
+ * invoked.
  * 
  * @author Ismael Juma (ismael@juma.me.uk)
  */
@@ -53,33 +53,33 @@ public class ProcessFieldsAction extends AbstractInputAction	{
 	return "processfields";
     }
 
+    /**
+     * Reads the values in the text fields specified by the &lt;processfields&gt;
+     * element and passes them inside a HashMap to an object that implements
+     * the {@link Processor} interface. The keys of the HashMap are the names
+     * of the &lt;text&gt; element.
+     * @param ocula Ocula instance that contains the appropriate context.
+     * @param element &lt;processfields&gt; element.
+     */
     public void act(Ocula ocula, Element element) throws ActionException	{
 	super.act(ocula, element);
-	Element targetObjectElement = element.getChild("target");
+	String target = element.getAttributeValue("target");
 	
-	if (targetObjectElement == null) {
-	    log.error("<target> does not exist.");
-	    return;
-	}
-	String methodName = targetObjectElement.getAttributeValue("method");
-	String objectKey = targetObjectElement.getAttributeValue("object");
-	if (objectKey == null) {
-	    throw new ActionException("<targetobject> must have a valid key of" +
-	    		"an object in the context");
-	}
-	if (methodName == null) {
-	    throw new ActionException("<targetobject> must have a valid method" +
-	    		"attribute");
-	}
 	ocula.putContext("fields", nameTextMap);
+	ocula.putContext("ocula", ocula);
+	log.debug("Calling process(fields, ocula)");
 	try {
-	    ocula.runScript(objectKey + "." + methodName + "(fields)", new String[0]);
+	    ocula.runScript(target + ".process(fields, ocula)", new String[0]);
 	}
 	catch(EvalError ee) {
 	    ActionException ae = new ActionException(
 	    "Error when evaluating script");
 	    ae.initCause(ee);
 	    throw ae;
+	}
+	finally {
+	    ocula.removeKey("fields");
+	    ocula.removeKey("ocula");
 	}
     }
     
