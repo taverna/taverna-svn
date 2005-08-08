@@ -25,9 +25,11 @@
 package net.sf.taverna.ocula;
 
 import javax.swing.*;
+
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Container;
+import java.awt.Font;
 import java.awt.event.*;
 import java.util.*;
 import net.sf.taverna.ocula.ui.*;
@@ -66,12 +68,27 @@ public class Ocula extends JPanel {
      * Construct an empty top level panel
      */
     public Ocula() {
+	//TODO Consider adding the top-level JFrame to an instance of this class
+	//to allow the receivers of ocula to manipulate the top-level frame.
+	setDefaults();
 	buildUI();
 	setTitle("No page loaded");
 	context = new HashMap();
 	actionRunner = new ActionRunner(this);
 	rendererHandler = new RendererHandler(this);
 	frameHandler = new FrameHandler(this);
+    }
+    
+    /**
+     * Sets application-wide defaults for user interface elements.
+     */
+    private void setDefaults() {
+	// Experimenting with not using bold elements for Button and Label
+	// fonts.
+	Font font = (Font) UIManager.get("Label.font");
+	UIManager.put("Label.font", font.deriveFont(Font.PLAIN));
+	font = (Font) UIManager.get("Button.font");
+	UIManager.put("Button.font", font.deriveFont(Font.PLAIN));
     }
     
     /**
@@ -99,7 +116,9 @@ public class Ocula extends JPanel {
 	JToolBar bar = new JToolBar();
 	bar.setFloatable(false);
 	bar.setRollover(true);
-	backButton = new CompactJButton(Icons.getIcon("back"), 26, 26);
+	int toolBarButtonHeight = 26;
+	int toolBarButtonWidth = 26;
+	backButton = new CompactJButton(Icons.getIcon("back"), toolBarButtonWidth, toolBarButtonHeight);
 	bar.add(backButton);
 	backButton.addActionListener(new ActionListener() {
 		public void actionPerformed(ActionEvent ae) {
@@ -118,7 +137,7 @@ public class Ocula extends JPanel {
 		    }
 		}
 	    });
-	reloadButton = new CompactJButton(Icons.getIcon("reload"), 26, 26); 
+	reloadButton = new CompactJButton(Icons.getIcon("reload"), toolBarButtonWidth, toolBarButtonHeight); 
 	bar.add(reloadButton);
 	reloadButton.addActionListener(new ActionListener() {
 		public void actionPerformed(ActionEvent ae) {
@@ -132,7 +151,7 @@ public class Ocula extends JPanel {
 		    }
 		}
 	    });
-	forwardButton = new CompactJButton(Icons.getIcon("forward"), 26, 26);
+	forwardButton = new CompactJButton(Icons.getIcon("forward"), toolBarButtonWidth, toolBarButtonHeight);
 	bar.add(forwardButton);
 	forwardButton.addActionListener(new ActionListener() {
 		public void actionPerformed(ActionEvent ae) {
@@ -152,7 +171,8 @@ public class Ocula extends JPanel {
 		}
 	    });
 	bar.add(Box.createHorizontalGlue());
-	JButton stopButton = new CompactJButton(Icons.getIcon("stop"), 26, 26);
+	JButton stopButton = new CompactJButton(Icons.getIcon("stop"),
+		toolBarButtonWidth, toolBarButtonHeight);
 	bar.add(stopButton);
 	bar.setBackground(ColourSet.getColour("ocula.background"));
 	bar.setBorder(BorderFactory.createEmptyBorder(2, 2, 2, 2));
@@ -319,6 +339,17 @@ public class Ocula extends JPanel {
 	}
 	i.eval(script);
 	return i.get("returnValue");
+    }
+    
+    /**
+     * Gets a value from the context. This may be useful to check if a certain
+     * key is already being used.
+     * @param key key whose associated value is to be returned.
+     * @return the value associated with the key or null if no value is
+     * associated with the given key. 
+     */
+    public Object getContext(String key) {
+	return context.get(key);
     }
 
     /**
