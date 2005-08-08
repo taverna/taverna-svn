@@ -43,9 +43,9 @@ public class PersonRenderer implements RendererSPI {
     public JComponent getRenderer(Object object, Ocula ocula) {
 	Person p = (Person)object;
 	JLabel personLabel = new JLabel(Icons.getIcon("users"));
-	personLabel.setText("<html><body>"+p.getName()+"<br>"+
+	personLabel.setText("<html><body><b>"+p.getName()+"<br>"+
 			    p.getCountry()+"<br>"+p.getPhone()+
-			    "</body></html>");
+			    "</b></body></html>");
 	return personLabel;
     }
 
