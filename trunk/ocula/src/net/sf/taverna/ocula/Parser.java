@@ -82,6 +82,11 @@ public class Parser {
 	ocula.evaluate(script);
 
 	Object result = ocula.evaluate(script);
+	
+	// Return an empty array if the result is null
+	if (result == null) {
+	    return new Object[0];
+	}
 	// Convert Collection to array
 	if (result instanceof Collection) {
 	    result = ((Collection) result).toArray();
