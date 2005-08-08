@@ -21,10 +21,9 @@
 			</button>
 			<button name="Submit">
 				<click>
-					<processfields mode="explicit">
-						<!-- A method that takes a Map that has the name of the
-							fields as the key and their text as the value -->
-						<target object="inputHandler" method="submit" />
+				<!-- the target attribute takes the key of an object in the default
+					context. This object must implement the Processor interface. -->
+					<processfields mode="explicit" target="inputHandler">
 						<name>firstNameField</name>
 						<name>lastNameField</name>
 						<name>emailField</name>

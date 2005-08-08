@@ -26,15 +26,18 @@ package net.sf.taverna.ocula.example;
 import java.util.Iterator;
 import java.util.Map;
 
+import net.sf.taverna.ocula.Ocula;
+import net.sf.taverna.ocula.action.Processor;
+
 /**
  * Simple class used by the InputExample.
  * 
  * @author Ismael Juma (ismael@juma.me.uk)
  *
  */
-public class InputHandler {
+public class InputHandler implements Processor	{
 
-    public void submit(Map nameText) {
+    public void process(Map nameText, Ocula ocula) {
 	for (Iterator it = nameText.keySet().iterator(); it.hasNext(); ) {
 	    String key = (String) it.next();
 	    String value = (String) nameText.get(key);
