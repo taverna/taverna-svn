@@ -27,7 +27,6 @@ package net.sf.taverna.ocula;
 import junit.framework.TestCase;
 import javax.swing.JFrame;
 import java.awt.Dimension;
-import javax.swing.UIManager;
 import net.sf.taverna.ocula.ui.*;
 import java.net.URL;
 
@@ -55,9 +54,6 @@ public class OculaTest extends TestCase {
     }
 
     public void testUICreation() {
-	try {
-	    UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-	} catch (Exception e) { }
 	JFrame frame = new JFrame();
 	Ocula o = new Ocula();
 	o.mainPanel.add(new ResultSetPanel("A result", Icons.getIcon("components")));
@@ -75,10 +71,6 @@ public class OculaTest extends TestCase {
     }
 
     public void testLoadExampleWithFailure() throws Exception {
-	try {
-	    UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-	}
-	catch (Exception e) { }
 	JFrame frame = new JFrame();
 	Ocula o = new Ocula();	
 	frame.getContentPane().add(o);
@@ -91,10 +83,6 @@ public class OculaTest extends TestCase {
     }
     
     public void testLoadExampleWithInitContext() throws Exception {
-	try {
-	    UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-	}
-	catch (Exception e) { }
 	JFrame frame = new JFrame();
 	Ocula o = new Ocula();	
 	frame.getContentPane().add(o);
@@ -108,10 +96,6 @@ public class OculaTest extends TestCase {
     }
 
     public void testLoadExampleWithInitialAction() throws Exception {
-	try {
-	    UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-	}
-	catch (Exception e) { }
 	JFrame frame = new JFrame();
 	Ocula o = new Ocula();	
 	frame.getContentPane().add(o);
@@ -122,5 +106,4 @@ public class OculaTest extends TestCase {
 	o.load(exampleURL);
 	Thread.sleep(3000);
     }
-    
 }
