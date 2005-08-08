@@ -47,6 +47,8 @@ public abstract class AbstractInputAction implements ActionSPI {
      * Checks the mode attribute of the element, and then calls the appropriate
      * method, either doAllAction or doExplicitAction. If no mode is specified,
      * then doAllAction is called.
+     * @param ocula Ocula instance that contains the appropriate context.
+     * @param element The type of element allowed is specified by subclasses.
      */
     public void act(Ocula ocula, Element element) throws ActionException {
 
