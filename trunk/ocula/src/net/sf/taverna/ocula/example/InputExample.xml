@@ -32,6 +32,8 @@
 			</button>
 		</input>
 		<simpleinput>
+			<!-- Introduces a panel with the given height -->
+			<separator height="5" />
 			<!-- One script can optionally be run here to retrieve data that can be
 				used in the text tags and labels below. Only the first one will be run.-->
 			<script>repository.getPersonDocument();</script>
