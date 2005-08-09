@@ -142,17 +142,17 @@ public abstract class AbstractInputFrameBuilder implements FrameSPI {
      * 
      */
     private void processButton(Element buttonElement, OculaPanel oculaPanel)	{
-	JComponent component = null;
+	JButton button = null;
 	Object targetObject = processScript(buttonElement, oculaPanel);
 	if (targetObject == null) {
 	    String text = buttonElement.getAttributeValue("name");
-	    component = new JButton(text);
-	    parser.parseClick(buttonElement, component, null);
+	    button = new JButton(text);
+	    parser.parseAction(buttonElement, button, null);
 	}
 	else {
-	    component = new JButton((String) targetObject);   
+	    button = new JButton((String) targetObject);   
 	}
-	oculaPanel.getContents().add(component);
+	oculaPanel.getContents().add(button);
     }   
 
     /**
