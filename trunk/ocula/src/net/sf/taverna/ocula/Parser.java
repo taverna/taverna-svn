@@ -33,6 +33,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import javax.swing.Icon;
+import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JMenuItem;
 
@@ -148,6 +149,7 @@ public class Parser {
 	    log.debug("No <click> element");
 	    return;
 	}
+	log.debug("Adding a mouse listener.");
 	component.addMouseListener(new MouseAdapter() {
 	    public void mouseClicked(MouseEvent me) {
 		if (me.isPopupTrigger() == false) {
@@ -233,6 +235,42 @@ public class Parser {
 
 		catch (Exception ex) {
 		    log.error("Exception in mousepressed handler", ex);
+		}
+	    }
+	});
+    }
+    
+    /**
+     * Parses the &lt;action&gt; tag and it adds the appropriate action
+     * listener to the button received. When the listener is invoked,
+     * it adds targetObject to the context and runs the action in the
+     * action element.
+     * 
+     * @param element Element containing an action element.
+     * @param component JButton where the action listener should be added.
+     * @param targetObject Object that should be added to the context before
+     * running the action.
+     */
+    public void parseAction(Element element, final JButton button, final
+	    Object targetObject) {
+	final Element actionElement = element.getChild("action");
+	
+	if (actionElement == null) {
+	    log.debug("No <action> element");
+	    return;
+	}
+	
+	log.debug("Adding an action listener.");
+	button.addActionListener(new ActionListener() {
+	    public void actionPerformed(ActionEvent e) {
+		log.debug("Action");
+		if (targetObject != null) {
+		    ocula.putContext("selectedObject", targetObject);
+		}
+		ocula.getActionRunner().runAction(actionElement);
+		
+		if (targetObject != null) {
+		    ocula.removeKey("selectedObject");
 		}
 	    }
 	});
