@@ -48,7 +48,7 @@ public class InputLayoutTest extends TestCase {
 
     JFrame frame;
     ResultSetPanel panel;
-    InputLayout dialogLayout;
+    InputLayout inputLayout;
     JLabel userNameLabel;
     JTextField userNameField;
     JLabel passwordLabel;
@@ -69,7 +69,7 @@ public class InputLayoutTest extends TestCase {
 	frame = new JFrame();
 	frame.setSize(400, 400);
 	panel = new ResultSetPanel("Login", Icons.getIcon("password.png"));
-	userNameLabel = new JLabel("User name");
+	userNameLabel = new JLabel("User name:");
 	userNameField = new JTextField();
 	passwordLabel = new JLabel("Password:");
 	passwordField = new JPasswordField();
@@ -86,14 +86,14 @@ public class InputLayoutTest extends TestCase {
     }
     public void testDividerWith2Cols() {
 	cols = 2;
-	dialogLayout = new InputLayout(hGap, vGap, cols);
-	panel.getContents().setLayout(dialogLayout);
+	inputLayout = new InputLayout(cols, hGap, vGap);
+	panel.getContents().setLayout(inputLayout);
 	frame.getContentPane().add(panel);
 	int width = userNameLabel.getPreferredSize().width;
 	addFourItems();
 	int correctDivider = width + hGap;
-	dialogLayout.setComponents(Arrays.asList(panel.getContents().getComponents()));
-	int actualDivider = dialogLayout.getDivider(0);
+	inputLayout.setComponents(Arrays.asList(panel.getContents().getComponents()));
+	int actualDivider = inputLayout.getDivider(0);
 	String errorMessage = "Actual divider is " + actualDivider + ", the " +
 			"correct one is " + correctDivider;
 	assertTrue(errorMessage, actualDivider == correctDivider);
@@ -101,17 +101,17 @@ public class InputLayoutTest extends TestCase {
     
     public void testDividerWith4Cols() {
 	cols = 4;
-	dialogLayout = new InputLayout(hGap, vGap, cols);
-	panel.getContents().setLayout(dialogLayout);
+	inputLayout = new InputLayout(cols, hGap, vGap);
+	panel.getContents().setLayout(inputLayout);
 	frame.getContentPane().add(panel);
 	int[] widths = new int[2];
 	widths[0] = firstNameLabel.getPreferredSize().width;
 	widths[1] = lastNameLabel.getPreferredSize().width;
 	addEightItems();
-	dialogLayout.setComponents(Arrays.asList(panel.getContents().getComponents()));
+	inputLayout.setComponents(Arrays.asList(panel.getContents().getComponents()));
 	for (int i = 0; i < 2; ++i) {
 	    int correctDivider = widths[i] + hGap;
-	    int actualDivider = dialogLayout.getDivider(i);
+	    int actualDivider = inputLayout.getDivider(i);
 	    String errorMessage = "[" + i + "] Actual divider is "
 		    + actualDivider + ", the correct one is "
 		    + correctDivider;
@@ -121,8 +121,8 @@ public class InputLayoutTest extends TestCase {
     
     public void testPreferredLayoutSizeWith2Cols() {
 	cols = 2;
-	dialogLayout = new InputLayout(hGap, vGap, cols);
-	panel.getContents().setLayout(dialogLayout);
+	inputLayout = new InputLayout(cols, hGap, vGap);
+	panel.getContents().setLayout(inputLayout);
 	frame.getContentPane().add(panel);
 	Insets insets = panel.getContents().getInsets();
 	int correctHeight = (passwordField.getPreferredSize().height * 2) + vGap
@@ -131,15 +131,15 @@ public class InputLayoutTest extends TestCase {
 		insets.left + insets.right + userNameField.getPreferredSize().width;
 	addFourItems();
 	Dimension correctSize = new Dimension(correctWidth, correctHeight);
-	Dimension actualSize = dialogLayout.preferredLayoutSize(panel.getContents());
+	Dimension actualSize = inputLayout.preferredLayoutSize(panel.getContents());
 	String errorMessage = "Actual size: " +  actualSize + ", correct size: " + correctSize;
 	assertTrue(errorMessage, actualSize.equals(correctSize));
     }
     
     public void testPreferredLayoutSizeWith4Cols() {
 	cols = 4;
-	dialogLayout = new InputLayout(hGap, vGap, cols);
-	panel.getContents().setLayout(dialogLayout);
+	inputLayout = new InputLayout(cols, hGap, vGap);
+	panel.getContents().setLayout(inputLayout);
 	frame.getContentPane().add(panel);
 	Insets insets = panel.getContents().getInsets();
 	int correctHeight = (passwordField.getPreferredSize().height * 2) + vGap
@@ -152,15 +152,15 @@ public class InputLayoutTest extends TestCase {
 		insets.right;
 	addEightItems();
 	Dimension correctSize = new Dimension(correctWidth, correctHeight);
-	Dimension actualSize = dialogLayout.preferredLayoutSize(panel.getContents());
+	Dimension actualSize = inputLayout.preferredLayoutSize(panel.getContents());
 	String errorMessage = "Actual size: " +  actualSize + ", correct size: " + correctSize;
 	assertTrue(errorMessage, actualSize.equals(correctSize));
     }
     
     public void testLayoutContainerWith2Cols() {
 	cols = 2;
-	dialogLayout = new InputLayout(hGap, vGap, cols);
-	panel.getContents().setLayout(dialogLayout);
+	inputLayout = new InputLayout(cols, hGap, vGap);
+	panel.getContents().setLayout(inputLayout);
 	frame.getContentPane().add(panel);
 	addFourItems();
 	Insets insets = panel.getContents().getInsets();
@@ -184,8 +184,8 @@ public class InputLayoutTest extends TestCase {
     
     public void testLayoutContainerWith4ColsAnd6Items() {
 	cols = 4;
-	dialogLayout = new InputLayout(hGap, vGap, cols);
-	panel.getContents().setLayout(dialogLayout);
+	inputLayout = new InputLayout(cols, hGap, vGap);
+	panel.getContents().setLayout(inputLayout);
 	frame.getContentPane().add(panel);
 	addSixItems();
 	Insets insets = panel.getContents().getInsets();
@@ -220,8 +220,8 @@ public class InputLayoutTest extends TestCase {
     
     public void testLayoutContainerWith4ColsAnd8Items() {
 	cols = 4;
-	dialogLayout = new InputLayout(hGap, vGap, cols);
-	panel.getContents().setLayout(dialogLayout);
+	inputLayout = new InputLayout(cols, hGap, vGap);
+	panel.getContents().setLayout(inputLayout);
 	frame.getContentPane().add(panel);
 	addEightItems();
 	Insets insets = panel.getContents().getInsets();
@@ -260,8 +260,8 @@ public class InputLayoutTest extends TestCase {
     
     public void testButtonsLayout() {
 	cols = 4;
-	dialogLayout = new InputLayout(hGap, vGap, cols);
-	panel.getContents().setLayout(dialogLayout);
+	inputLayout = new InputLayout(cols, hGap, vGap);
+	panel.getContents().setLayout(inputLayout);
 	frame.getContentPane().add(panel);
 	Insets insets = panel.getContents().getInsets();
 	addButtons();
@@ -286,8 +286,8 @@ public class InputLayoutTest extends TestCase {
     
     public void testJPanelLayout() {
 	cols = 4;
-	dialogLayout = new InputLayout(hGap, vGap, cols);
-	panel.getContents().setLayout(dialogLayout);
+	inputLayout = new InputLayout(cols, hGap, vGap);
+	panel.getContents().setLayout(inputLayout);
 	frame.getContentPane().add(panel);
 	Insets insets = panel.getContents().getInsets();
 	addButtons();
@@ -308,7 +308,7 @@ public class InputLayoutTest extends TestCase {
     public void testIllegalColsNumber() {
 	cols = 3;
 	try {
-	    dialogLayout = new InputLayout(hGap, vGap, cols);
+	    inputLayout = new InputLayout(cols, hGap, vGap);
 	}
 	catch(IllegalArgumentException iae) {
 	    return;
@@ -319,7 +319,7 @@ public class InputLayoutTest extends TestCase {
     public void testIllegalVGap() {
 	vGap = -1;
 	try {
-	    dialogLayout = new InputLayout(hGap, vGap, cols);
+	    inputLayout = new InputLayout(cols, hGap, vGap);
 	}
 	catch(IllegalArgumentException iae) {
 	    return;
@@ -330,7 +330,7 @@ public class InputLayoutTest extends TestCase {
     public void testIllegalHGap() {
 	hGap = -1;
 	try {
-	    dialogLayout = new InputLayout(hGap, vGap, cols);
+	    inputLayout = new InputLayout(cols, hGap, vGap);
 	}
 	catch(IllegalArgumentException iae) {
 	    return;
