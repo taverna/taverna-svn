@@ -15,12 +15,12 @@
 			<text name="countryField" label="Country" />
 			<!-- the text of the button -->
 			<button name="Clear">
-				<click>
+				<action>
 					<clear mode="all" />
-				</click>
+				</action>
 			</button>
 			<button name="Submit">
-				<click>
+				<action>
 				<!-- the target attribute takes the key of an object in the default
 					context. This object must implement the Processor interface. -->
 					<processfields mode="explicit" target="inputHandler">
@@ -28,7 +28,7 @@
 						<name>lastNameField</name>
 						<name>emailField</name>
 					</processfields>
-				</click>
+				</action>
 			</button>
 		</input>
 		<simpleinput>
