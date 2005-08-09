@@ -291,22 +291,40 @@ public abstract class AbstractInputFrameBuilder implements FrameSPI {
 	String colsString = element.getAttributeValue("cols");
 	String hGapString = element.getAttributeValue("hGap");
 	String vGapString = element.getAttributeValue("vGap");
-	//TODO Be able to parse hGap by itself and vGap by itself
 	try {
 	    if (colsString != null) {
 		cols = Integer.parseInt(colsString);
 	    }
+	}
+	catch (NumberFormatException nfe) {
+	    logNumberFormatException("cols", colsString);
+	}
+	try {
 	    if (hGapString != null) {
 		hGap = Integer.parseInt(hGapString);
 	    }
-	    
+	}
+	catch (NumberFormatException nfe) {
+	    logNumberFormatException("hGap", hGapString);
+	}
+	try {
 	    if (vGapString != null) {
 		vGap = Integer.parseInt(vGapString);
 	    }
 	}
 	catch (NumberFormatException nfe) {
-	    log.error("cols + [" + colsString + "] attribute must hold a number");
+	    logNumberFormatException("vGap", vGapString);
 	}
     }
     
+    /**
+     * Logs an error in cases where an attribute that expects a number receives
+     * something else.
+     * @param attributeName the name of the attribute in the element.
+     * @param notNumber the String that was received instead of a number.
+     */
+    private void logNumberFormatException(String attributeName, String notNumber) {
+	log.error(attributeName + "[" + notNumber + "] attribute must hold a number." +
+		"Using default.");
+    }
 }
