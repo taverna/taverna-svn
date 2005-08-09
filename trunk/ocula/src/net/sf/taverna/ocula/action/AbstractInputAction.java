@@ -75,7 +75,8 @@ public abstract class AbstractInputAction implements ActionSPI {
 	    throws ActionException {
 	log.debug("Selected mode: all");
 	Element parent = element;
-	while (parent.getName().equals("input") == false) {
+	while (parent.getName().equals("simpleinput") == false &&
+		parent.getName().equals("input") == false) {
 	    parent = parent.getParentElement();
 	}
 	List textChildren = parent.getChildren("text");
