@@ -20,4 +20,8 @@ public class InputTest extends TestCase {
 	Thread.sleep(3000);
     }
     
+    public static void main(String[] args) throws Exception {
+	new InputTest().testInputExample();
+    }
+    
 }
