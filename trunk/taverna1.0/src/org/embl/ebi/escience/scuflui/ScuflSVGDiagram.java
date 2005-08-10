@@ -136,6 +136,7 @@ public class ScuflSVGDiagram extends JComponent
     }
 
     synchronized void updateGraphic() {
+	updateTimer.cancel();
 	try {
 	    svgCanvas.setSVGDocument(getSVG(getDot()));
 	    pane.revalidate();
@@ -149,6 +150,8 @@ public class ScuflSVGDiagram extends JComponent
 	catch (Exception other) {
 	    other.printStackTrace();	    
 	}
+	updateTimer = new Timer();
+	updateTimer.schedule(new UpdateTimer(), (long)0, (long)2000);
     }
 
     static SAXSVGDocumentFactory docFactory = null;
@@ -167,12 +170,14 @@ public class ScuflSVGDiagram extends JComponent
 	Process dotProcess = Runtime.getRuntime().exec(new String[]{dotLocation,"-Tsvg"});
 	StreamDevourer devourer = new StreamDevourer(dotProcess.getInputStream());
 	devourer.start();
-	OutputStream out = new BufferedOutputStream(dotProcess.getOutputStream());
-	out.write(dotText.getBytes());
+	// Must create an error devourer otherwise stderr fills up and the process stalls!
+	StreamDevourer errorDevourer = new StreamDevourer(dotProcess.getErrorStream());
+	errorDevourer.start();
+	PrintWriter out = new PrintWriter(dotProcess.getOutputStream(), true);
+	out.print(dotText);
 	out.flush();
 	out.close();
-	System.out.println(devourer.blockOnOutput());
-	return docFactory.createSVGDocument("http://taverna.sf.net/diagram/generated.svg", new StringReader(devourer.toString()));
+	return docFactory.createSVGDocument("http://taverna.sf.net/diagram/generated.svg", new StringReader(devourer.blockOnOutput()));
     }
 
     class StreamDevourer extends Thread {
@@ -197,10 +202,11 @@ public class ScuflSVGDiagram extends JComponent
 	    this.output = new ByteArrayOutputStream();
 	}
 	public void run() {
+	    //System.out.println("Stream devourer running...");
 	    try {
 		String line = null;
 		while ((line = br.readLine()) != null && line.endsWith("</svg>") == false) {
-		    System.out.println(line);
+		    //System.out.println(line);
 		    output.write(line.getBytes());
 		}
 		if (line != null) {
@@ -211,6 +217,7 @@ public class ScuflSVGDiagram extends JComponent
 	    catch (IOException ioe) {
 		ioe.printStackTrace();
 	    }
+	    //System.out.println("Stream devourer exiting.");
 	}
     }
 

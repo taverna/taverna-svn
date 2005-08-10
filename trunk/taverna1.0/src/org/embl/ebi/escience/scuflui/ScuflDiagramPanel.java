@@ -217,6 +217,7 @@ public class ScuflDiagramPanel extends JPanel
 			dotOut.write(diagram.getDot().getBytes());
 			dotOut.flush();
 			dotOut.close();
+			new StreamDevourer(dotProcess.getErrorStream()).start();
 			new StreamCopier(dotProcess.getInputStream(), fos).start();
 		    }	
 		}
@@ -253,6 +254,48 @@ public class ScuflDiagramPanel extends JPanel
 	    }
 	}
     }
+
+    class StreamDevourer extends Thread {
+	BufferedReader br;
+	ByteArrayOutputStream output;
+	public String toString() {
+	    return output.toString();
+	}
+	public String blockOnOutput() {
+	    try {
+		this.join();
+		return output.toString();
+	    }
+	    catch (InterruptedException ie) {
+		ie.printStackTrace();
+		return "Interrupted!";
+	    }
+	}
+	public StreamDevourer(InputStream is) {
+	    super();
+	    this.br = new BufferedReader(new InputStreamReader(is));	    
+	    this.output = new ByteArrayOutputStream();
+	}
+	public void run() {
+	    //System.out.println("Stream devourer running...");
+	    try {
+		String line = null;
+		while ((line = br.readLine()) != null && line.endsWith("</svg>") == false) {
+		    //System.out.println(line);
+		    output.write(line.getBytes());
+		}
+		if (line != null) {
+		    output.write(line.getBytes());
+		}
+		br.close();
+	    }
+	    catch (IOException ioe) {
+		ioe.printStackTrace();
+	    }
+	    //System.out.println("Stream devourer exiting.");
+	}
+    }
+
 
     public void attachToModel(ScuflModel model) {
 	diagram.attachToModel(model);
