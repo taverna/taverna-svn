@@ -64,8 +64,7 @@ public class InputFrameBuilder extends AbstractInputFrameBuilder {
      * In addition to the superclass method's functionality, it also processes
      * the "icon" and "name" attributes of the &lt;input&gt; element.
      */
-    protected void processElement() {
-	super.processElement();
+    protected boolean processElement() {
 	name = element.getAttributeValue("name");
 	if (name == null) {
 	    name = "No Name";
@@ -76,6 +75,7 @@ public class InputFrameBuilder extends AbstractInputFrameBuilder {
 	}
 	
 	icon = Icons.getIcon(iconName);
+	return super.processElement();
     }
     
     /**
