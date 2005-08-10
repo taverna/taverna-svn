@@ -39,6 +39,7 @@ public class ErrorLabel extends JLabel {
      */
     public ErrorLabel(String errorMessage) {
 	super(errorMessage, Icons.getIcon("errorlarge"), SwingConstants.LEFT);
+	setFont(getFont().deriveFont(Font.BOLD));
 	setBorder(BorderFactory.createEmptyBorder(2,2,2,2));
 	setVerticalTextPosition(SwingConstants.TOP);
     }
