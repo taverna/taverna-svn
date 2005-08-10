@@ -9,24 +9,30 @@
 	</header>
 	<contents>
 		<input name="Personal Information" icon="password" cols="4">
-			<text name="firstNameField" label="First Name" />
-			<text name="lastNameField" label="Last Name" />
-			<text name="emailField" label="Email address" />
+			<text name="nameField" label="Name" />
+			<text name="phoneField" label="Phone" />
+			<text name="emailField" label="Email" />
 			<text name="countryField" label="Country" />
 			<!-- the text of the button -->
 			<button name="Clear">
 				<action>
+					<!-- The "all" mode clears all the fields. You may also
+					specify "explicit" if you want to clear only some
+					fields. -->
 					<clear mode="all" />
 				</action>
 			</button>
 			<button name="Submit">
 				<action>
 				<!-- the target attribute takes the key of an object in the default
-					context. This object must implement the Processor interface. -->
+					context. This object must implement the Processor interface.
+					By using explicit mode, you specify which fields you want
+					to process. You may also use "all" to process all of the
+					fields within the <input> or <simpleinput> -->
 					<processfields mode="explicit" target="inputHandler">
-						<name>firstNameField</name>
-						<name>lastNameField</name>
-						<name>emailField</name>
+						<name>nameField</name>
+						<name>phoneField</name>
+						<name>countryField</name>
 					</processfields>
 				</action>
 			</button>
