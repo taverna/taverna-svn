@@ -60,27 +60,89 @@ public class ExtendedJTree extends JTree {
      */
     public void setExpansion(boolean expand) {
 	synchronized (getModel()) {
+	    setLargeModel(true);
+	    boolean scrolling = getScrollsOnExpand();
+	    setScrollsOnExpand(false);
+	    setRowHeight(-1);
+	    if (getCellRenderer() instanceof NodeColouringRenderer) {
+		((NodeColouringRenderer)getCellRenderer()).setPlain(true);
+	    }
 	    TreeNode root = (TreeNode)getModel().getRoot();
-	    expandAll(this, new TreePath(root), expand);
+	    if (expand) {
+		// If the parent is a scrollpane then remove the component
+		// and add it after we've finished resizing everything
+		Component c = getParent();
+		System.out.println(c.getClass().toString());
+		if (c instanceof JViewport) {
+		    ((JViewport)c).remove(this);
+		}
+		expandAll(this, new TreePath(root));
+		if (c instanceof JViewport) {
+		    ((JViewport)c).add(this);
+		    //c.revalidate();
+		}
+	    }
+	    else {
+		collapseAll(this, new TreePath(root));
+	    }
+	    // Reinstate the old renderer and repaint the tree
+	    if (getCellRenderer() instanceof NodeColouringRenderer) {
+		((NodeColouringRenderer)getCellRenderer()).setPlain(false);
+		repaint();
+	    }
+	    //setRowHeight(-1);
+	    setScrollsOnExpand(scrolling);
+	    //repaint();
 	}
     }
-    private static void expandAll(JTree tree, TreePath parent, boolean expand) {
+    private static void collapseAll(JTree tree, TreePath parent) {
         // Traverse children
         TreeNode node = (TreeNode)parent.getLastPathComponent();
         if (node.getChildCount() >= 0) {
             for (Enumeration e=node.children(); e.hasMoreElements(); ) {
                 TreeNode n = (TreeNode)e.nextElement();
                 TreePath path = parent.pathByAddingChild(n);
-                expandAll(tree, path, expand);
+                collapseAll(tree, path);
             }
         }
-	// Expansion or collapse must be done bottom-up
-        if (expand) {
-            tree.expandPath(parent);
-        } else {
-            tree.collapsePath(parent);
-        }
+	tree.collapsePath(parent);
     }
+
+    private static void expandAll(JTree tree, TreePath parent) {
+	TreeNode node = (TreeNode)parent.getLastPathComponent();
+	if (node.isLeaf() && tree.isVisible(parent) == false) {
+	    tree.makeVisible(parent);
+	}
+	else {
+	    for (Enumeration en = node.children(); en.hasMoreElements(); ) {
+		TreeNode child = (TreeNode)en.nextElement();
+		expandAll(tree, parent.pathByAddingChild(child));
+	    }
+	}
+    }
+    /**
+     // Check whether all children are leaf nodes, if so then we expand this
+     // path, if not then recurse into all children.
+     boolean allLeaves = true;
+     for (Enumeration en = node.children(); en.hasMoreElements() && allLeaves; ) {
+     TreeNode child = (TreeNode)en.nextElement();
+     if (child.isLeaf() == false) {
+     allLeaves = false;
+     }
+     }
+     if (allLeaves) {
+     tree.expandPath(parent);
+     }
+     else {
+     for (Enumeration en = node.children(); en.hasMoreElements(); ) {
+     TreeNode child = (TreeNode)en.nextElement();
+     if (child.isLeaf() == false) {
+     expandAll(tree, parent.pathByAddingChild(child));
+     }
+     }
+     }
+     }
+    */
 
     public void jumpToAndHighlight() {
 	// Set the colouring rule

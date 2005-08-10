@@ -291,11 +291,13 @@ public class DotView implements ScuflModelEventListener, java.io.Serializable {
 		String constraintName = prefix+"CONSTRAINT"+c.getName();
 		String controllerName = prefix+c.getControllingProcessor().getName();
 		if (c.getControllingProcessor() instanceof WorkflowProcessor && expandWorkflow == true) {
-		    controllerName = "cluster_"+controllerName;
+		    //controllerName = "cluster_"+controllerName;
+		    controllerName = controllerName+"WORKFLOWINTERNALSINKCONTROL";
 		}
 		String targetName = prefix+c.getTargetProcessor().getName();
 		if (c.getTargetProcessor() instanceof WorkflowProcessor && expandWorkflow == true) {
-		    targetName = "cluster_"+targetName;
+		    //targetName = "cluster_"+targetName;
+		    targetName = targetName+"WORKFLOWINTERNALSOURCECONTROL";
 		}
 		if (detail != DotView.NONE && detail != BLOB && displayTypes) {
 		    // Create the box
@@ -402,6 +404,13 @@ public class DotView implements ScuflModelEventListener, java.io.Serializable {
 		sb.append("  fontcolor=\"black\"  \n");
 	    }
 	    sb.append("  rank=\"same\"\n");
+	    sb.append(q(prefix+"WORKFLOWINTERNALSINKCONTROL")+" [\n");
+	    sb.append("  shape=\"invtriangle\",\n");
+	    sb.append("  width=\"0.2\",\n");
+	    sb.append("  height=\"0.2\",\n");
+	    sb.append("  fillcolor=\"chartreuse3\",\n");
+	    sb.append("  label=\"\"\n");
+	    sb.append(" ]\n");
 	    for (int i = 0; i < sinks.length; i++) {
 		sb.append(q(prefix+"WORKFLOWINTERNALSINK_"+sinks[i].getName())+" [\n");
 		if (detail == NONE) {
@@ -448,6 +457,13 @@ public class DotView implements ScuflModelEventListener, java.io.Serializable {
 		sb.append("  fontcolor=\"black\"  \n");
 	    }
 	    sb.append("  rank=\"same\"\n");
+	    sb.append(q(prefix+"WORKFLOWINTERNALSOURCECONTROL")+" [\n");
+	    sb.append("  shape=\"triangle\",\n");
+	    sb.append("  width=\"0.2\",\n");
+	    sb.append("  height=\"0.2\",\n");
+	    sb.append("  fillcolor=\"brown1\"\n");
+	    sb.append("  label=\"\"\n");
+	    sb.append(" ]\n");
 	    for (int i = 0; i < sources.length; i++) {
 		sb.append(q(prefix+"WORKFLOWINTERNALSOURCE_"+sources[i].getName())+" [\n");
 		if (detail == NONE) {

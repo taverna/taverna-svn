@@ -208,45 +208,48 @@ public class ScavengerTree extends ExtendedJTree
      */
     public ScavengerTree(boolean populate) {
 	super();
-	setRowHeight(0);
-	wsdlURLList = System.getProperty("taverna.defaultwsdl");
-	soaplabDefaultURLList = System.getProperty("taverna.defaultsoaplab");
-	biomobyDefaultURLList = System.getProperty("taverna.defaultbiomoby");
-	webURLList = System.getProperty("taverna.defaultweb");
-	martRegistryList = System.getProperty("taverna.defaultmartregistry");
-	DragSource dragSource = DragSource.getDefaultDragSource();
-	dragSource.createDefaultDragGestureRecognizer(this,
-						      DnDConstants.ACTION_COPY_OR_MOVE,
-						      this);
-	new DropTarget(this, DnDConstants.ACTION_COPY_OR_MOVE, this);
-	scavengerList = new ArrayList();
-	root = new DefaultMutableTreeNode("Available Processors");
-	treeModel = (DefaultTreeModel)this.getModel();
-	treeModel.setRoot(this.root);
-	putClientProperty("JTree.lineStyle","Angled");
-	getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
-	ScavengerTreeRenderer renderer = new ScavengerTreeRenderer();
-	this.setCellRenderer(renderer);
-	this.addMouseListener(new ScavengerTreePopupHandler(this));
-	// Add the simple scavengers, should such exist, but only
-	// do this if the populate flag is set to true.
-	if (populate) {
-	    Set simpleScavengers = ProcessorHelper.getSimpleScavengerSet();
-	    if (simpleScavengers.isEmpty() == false) {
-		DefaultMutableTreeNode t = new DefaultMutableTreeNode("Local Services");
-		this.treeModel.insertNodeInto(t, 
-					      (MutableTreeNode)this.treeModel.getRoot(),
-					      this.treeModel.getChildCount(this.treeModel.getRoot()));
-		for (Iterator i = simpleScavengers.iterator(); i.hasNext(); ) {
-		    Scavenger s = (Scavenger)i.next();
-		    this.treeModel.insertNodeInto(s,t,this.treeModel.getChildCount(t));
+	synchronized(this.getModel()) {
+	    setRowHeight(0);
+	    wsdlURLList = System.getProperty("taverna.defaultwsdl");
+	    soaplabDefaultURLList = System.getProperty("taverna.defaultsoaplab");
+	    biomobyDefaultURLList = System.getProperty("taverna.defaultbiomoby");
+	    webURLList = System.getProperty("taverna.defaultweb");
+	    martRegistryList = System.getProperty("taverna.defaultmartregistry");
+	    DragSource dragSource = DragSource.getDefaultDragSource();
+	    dragSource.createDefaultDragGestureRecognizer(this,
+							  DnDConstants.ACTION_COPY_OR_MOVE,
+							  this);
+	    new DropTarget(this, DnDConstants.ACTION_COPY_OR_MOVE, this);
+	    scavengerList = new ArrayList();
+	    root = new DefaultMutableTreeNode("Available Processors");
+	    treeModel = (DefaultTreeModel)this.getModel();
+	    treeModel.setRoot(this.root);
+	    putClientProperty("JTree.lineStyle","Angled");
+	    getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
+	    ScavengerTreeRenderer renderer = new ScavengerTreeRenderer();
+	    this.setCellRenderer(renderer);
+	    this.addMouseListener(new ScavengerTreePopupHandler(this));
+	    // Add the simple scavengers, should such exist, but only
+	    // do this if the populate flag is set to true.
+	    if (populate) {
+		Set simpleScavengers = ProcessorHelper.getSimpleScavengerSet();
+		if (simpleScavengers.isEmpty() == false) {
+		    DefaultMutableTreeNode t = new DefaultMutableTreeNode("Local Services");
+		    this.treeModel.insertNodeInto(t, 
+						  (MutableTreeNode)this.treeModel.getRoot(),
+						  this.treeModel.getChildCount(this.treeModel.getRoot()));
+		    for (Iterator i = simpleScavengers.iterator(); i.hasNext(); ) {
+			Scavenger s = (Scavenger)i.next();
+			treeModel.insertNodeInto(s,t,treeModel.getChildCount(t));
+			treeModel.nodeStructureChanged(t);
+		    }
 		}
+		// Add the default soaplab installation if this is defined
+		new DefaultScavengerLoaderThread(this);
 	    }
-	    // Add the default soaplab installation if this is defined
-	    new DefaultScavengerLoaderThread(this);
-	}
-	else {
-	    setExpansion(true);
+	    else {
+		setExpansion(true);
+	    }
 	}
     }
 
@@ -262,101 +265,102 @@ public class ScavengerTree extends ExtendedJTree
 	}
 	
 	public void run() {
-
-	    // Do web scavenger based locations
-	    if (webURLList != null) {
-		String[] urls = webURLList.split("\\s*,\\s*");
-		for (int i = 0; i < urls.length; i++) {
-		    try {
-			scavengerTree.addScavenger(new WebScavenger(urls[i], (DefaultTreeModel)scavengerTree.getModel()));
-		    }
-		    catch (ScavengerCreationException sce) {
-			sce.printStackTrace();
-		    }
-		}
-	    }
-	    
-	    // Do mart registries
-	    if (martRegistryList != null) {
-		String[] urls = martRegistryList.split("\\s*,\\s*");
-		for (int i = 0; i < urls.length; i++) {
-		    try {
-			scavengerTree.addScavenger(new BiomartRegistryScavenger(urls[i]));
-		    }
-		    catch (ScavengerCreationException sce) {
-			sce.printStackTrace();
+	    synchronized(this.scavengerTree.getModel()) {
+		// Do web scavenger based locations
+		if (webURLList != null) {
+		    String[] urls = webURLList.split("\\s*,\\s*");
+		    for (int i = 0; i < urls.length; i++) {
+			try {
+			    scavengerTree.addScavenger(new WebScavenger(urls[i], (DefaultTreeModel)scavengerTree.getModel()));
+			}
+			catch (ScavengerCreationException sce) {
+			    sce.printStackTrace();
+			}
 		    }
 		}
-	    }
-
-	    //String wsdlURLList = System.getProperty("taverna.defaultwsdl");
-	    if (wsdlURLList != null) {
-		String[] urls = wsdlURLList.split("\\s*,\\s*");
-		for (int i = 0; i < urls.length; i++) {
-		    try {
-			scavengerTree.addScavenger(new WSDLBasedScavenger(urls[i]));
-		    }
-		    catch (ScavengerCreationException sce) {
-			sce.printStackTrace();
-		    }
-		}
-	    }
-	    //String soaplabDefaultURLList = System.getProperty("taverna.defaultsoaplab");
-	    if (soaplabDefaultURLList != null) {
-		String[] urls = soaplabDefaultURLList.split("\\s*,\\s*");
-		for (int i = 0; i < urls.length; i++) {
-		    try {
-			System.out.println("Creating soaplab scavenger : '"+urls[i]+"'");
-			scavengerTree.addScavenger(new SoaplabScavenger(urls[i]));
-		    }
-		    catch (ScavengerCreationException sce) {
-			sce.printStackTrace();
+		
+		// Do mart registries
+		if (martRegistryList != null) {
+		    String[] urls = martRegistryList.split("\\s*,\\s*");
+		    for (int i = 0; i < urls.length; i++) {
+			try {
+			    scavengerTree.addScavenger(new BiomartRegistryScavenger(urls[i]));
+			}
+			catch (ScavengerCreationException sce) {
+			    sce.printStackTrace();
+			}
 		    }
 		}
-	    }
-	    //String biomobyDefaultURLList = System.getProperty("taverna.defaultbiomoby");
-	    if (biomobyDefaultURLList != null) {
-		String[] urls = biomobyDefaultURLList.split("\\s*,\\s*");
-		for (int i = 0; i < urls.length; i++) {
-		    try {
-			System.out.println("Creating biomoby scavenger : '"+urls[i]+"'");
-			scavengerTree.addScavenger(new BiomobyScavenger(urls[i], "http://biomoby.org/RESOURCES/MOBY-S/Objects"));
-		    }
-		    catch (ScavengerCreationException sce) {
-			sce.printStackTrace();
+		
+		//String wsdlURLList = System.getProperty("taverna.defaultwsdl");
+		if (wsdlURLList != null) {
+		    String[] urls = wsdlURLList.split("\\s*,\\s*");
+		    for (int i = 0; i < urls.length; i++) {
+			try {
+			    scavengerTree.addScavenger(new WSDLBasedScavenger(urls[i]));
+			}
+			catch (ScavengerCreationException sce) {
+			    sce.printStackTrace();
+			}
 		    }
 		}
-	    } 
-
-	    // Find all apiconsumer.xml files in the classpath root and
-	    // load them as API Consumer scavengers
-	    try {
-		ClassLoader loader = Thread.currentThread().getContextClassLoader();
-		Enumeration en = loader.getResources("apiconsumer.xml");
-		while (en.hasMoreElements()) {
-		    URL resourceURL = (URL)en.nextElement();
-		    scavengerTree.addScavenger(new APIConsumerScavenger(resourceURL));
+		//String soaplabDefaultURLList = System.getProperty("taverna.defaultsoaplab");
+		if (soaplabDefaultURLList != null) {
+		    String[] urls = soaplabDefaultURLList.split("\\s*,\\s*");
+		    for (int i = 0; i < urls.length; i++) {
+			try {
+			    System.out.println("Creating soaplab scavenger : '"+urls[i]+"'");
+			    scavengerTree.addScavenger(new SoaplabScavenger(urls[i]));
+			}
+			catch (ScavengerCreationException sce) {
+			    sce.printStackTrace();
+			}
+		    }
 		}
+		//String biomobyDefaultURLList = System.getProperty("taverna.defaultbiomoby");
+		if (biomobyDefaultURLList != null) {
+		    String[] urls = biomobyDefaultURLList.split("\\s*,\\s*");
+		    for (int i = 0; i < urls.length; i++) {
+			try {
+			    System.out.println("Creating biomoby scavenger : '"+urls[i]+"'");
+			    scavengerTree.addScavenger(new BiomobyScavenger(urls[i], "http://biomoby.org/RESOURCES/MOBY-S/Objects"));
+			}
+			catch (ScavengerCreationException sce) {
+			    sce.printStackTrace();
+			}
+		    }
+		} 
+		
+		// Find all apiconsumer.xml files in the classpath root and
+		// load them as API Consumer scavengers
+		try {
+		    ClassLoader loader = Thread.currentThread().getContextClassLoader();
+		    Enumeration en = loader.getResources("apiconsumer.xml");
+		    while (en.hasMoreElements()) {
+			URL resourceURL = (URL)en.nextElement();
+			scavengerTree.addScavenger(new APIConsumerScavenger(resourceURL));
+		    }
+		}
+		catch (Exception ex) {
+		    ex.printStackTrace();
+		}
+		
+		// Add the seqhound scavenger to the end of the list
+		try {
+		    scavengerTree.addScavenger(new SeqhoundScavenger());
+		}
+		catch (ScavengerCreationException sce) {
+		    sce.printStackTrace();
+		}
+		try {
+		    Thread.sleep(1000);
+		}
+		catch (InterruptedException ie) {
+		    //
+		}
+		treeModel.reload();
+		scavengerTree.setExpansion(true);
 	    }
-	    catch (Exception ex) {
-		ex.printStackTrace();
-	    }
-
-	    // Add the seqhound scavenger to the end of the list
-	    try {
-		scavengerTree.addScavenger(new SeqhoundScavenger());
-	    }
-	    catch (ScavengerCreationException sce) {
-		sce.printStackTrace();
-	    }
-	    try {
-		Thread.sleep(1000);
-	    }
-	    catch (InterruptedException ie) {
-		//
-	    }
-	    treeModel.reload();
-	    scavengerTree.setExpansion(true);
 	}
     }
     
@@ -367,8 +371,10 @@ public class ScavengerTree extends ExtendedJTree
      */
     public void addScavengersFromModel() 
 	throws ScavengerCreationException {
-	if (this.model != null) {
-	    addScavengersFromModel(this.model);
+	synchronized (this.getModel()) {
+	    if (this.model != null) {
+		addScavengersFromModel(this.model);
+	    }
 	}
     }
     private void addScavengersFromModel(ScuflModel theModel) 
@@ -435,24 +441,27 @@ public class ScavengerTree extends ExtendedJTree
      * Add a new scavenger to the tree, firing appropriate
      * model events as we do.
      */
-    public synchronized void addScavenger(Scavenger theScavenger) {
-	// Check to see we don't already have a scavenger with this name
-	String newName = theScavenger.getUserObject().toString();
-	for (Iterator i = scavengerList.iterator(); i.hasNext(); ) {
-	    String name = (String)i.next();
-	    if (name.equals(newName)) {
-		// Exit if we already have a scavenger by that name
-		return;
+    public void addScavenger(Scavenger theScavenger) {
+	synchronized (getModel()) {
+	    // Check to see we don't already have a scavenger with this name
+	    String newName = theScavenger.getUserObject().toString();
+	    for (Iterator i = scavengerList.iterator(); i.hasNext(); ) {
+		String name = (String)i.next();
+		if (name.equals(newName)) {
+		    // Exit if we already have a scavenger by that name
+		    return;
+		}
 	    }
+	    this.scavengerList.add(theScavenger.getUserObject().toString());
+	    treeModel.insertNodeInto(theScavenger, 
+				     (MutableTreeNode)this.treeModel.getRoot(),
+				     this.treeModel.getChildCount(this.treeModel.getRoot()));
+	    treeModel.nodeStructureChanged((TreeNode)treeModel.getRoot());
+	    // Set the visibility sensibly so that the root node
+	    // is expanded and visible
+	    TreePath path = new TreePath(this.root);
+	    expandPath(path);
 	}
-	this.scavengerList.add(theScavenger.getUserObject().toString());
-	this.treeModel.insertNodeInto(theScavenger, 
-				      (MutableTreeNode)this.treeModel.getRoot(),
-				      this.treeModel.getChildCount(this.treeModel.getRoot()));
-	// Set the visibility sensibly so that the root node
-	// is expanded and visible
-	TreePath path = new TreePath(this.root);
-	expandPath(path);
     }
     
     /**

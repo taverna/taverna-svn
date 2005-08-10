@@ -44,3 +44,21 @@ jedit-syntax-2.2.2.jar
 
 jstyx-0.03.jar
 tl-netty2-1.7.3.jar
+
+batik-awt-util-1.6.jar
+batik-bridge-1.6.jar
+batik-css-1.6.jar
+batik-dom-1.6.jar
+batik-ext-1.6.jar
+batik-extension-1.6.jar
+batik-gui-util-1.6.jar
+batik-gvt-1.6.jar
+batik-parser-1.6.jar
+batik-rasterizer-1.6.jar
+batik-script-1.6.jar
+batik-svg-dom-1.6.jar
+batik-svggen-1.6.jar
+batik-swing-1.6.jar
+batik-transcoder-1.6.jar
+batik-util-1.6.jar
+batik-xml-1.6.jar

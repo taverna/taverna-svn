@@ -142,6 +142,12 @@ public class Workbench extends JFrame {
 	}
 	
 	// Show default starting set of windows
+	try {
+	    Thread.sleep(2000);
+	}
+	catch (InterruptedException ie) {
+	    //
+	}
 	UIUtils.createFrame(workbench.model, new ScuflDiagramPanel(), 20, 440, 500, 400);
 	UIUtils.createFrame(workbench.model, new AdvancedModelExplorer(), 20, 120, 500, 300);
 	UIUtils.createFrame(workbench.model, new ScavengerTreePanel(), 540, 120, 300, 720);

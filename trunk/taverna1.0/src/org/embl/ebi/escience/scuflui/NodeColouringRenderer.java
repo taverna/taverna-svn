@@ -29,11 +29,17 @@ public class NodeColouringRenderer extends DefaultTreeCellRenderer {
     public void setPattern(String pattern) {
 	this.pattern = pattern;
     }
-
+    
     public NodeColouringRenderer() {
 	super();
     }
-        
+    
+    private boolean plain = false;
+
+    public void setPlain(boolean plain) {
+	this.plain = plain;
+    }
+
     /**
      * Create a new renderer which marks nodes that have text matching
      * the regular expression in red
@@ -69,16 +75,21 @@ public class NodeColouringRenderer extends DefaultTreeCellRenderer {
 	String stringRepresentation = userObject.toString();
 	// Strip out any <font></font><html></html> tags
 	String stripped = stringRepresentation.replaceAll("</{0,1}font[^>]*>","").replaceAll("</{0,1}html>","");
-	if (pattern != null && stripped.toLowerCase().matches(pattern)) {
-	    setText("<html><font color=\"red\">"+stripped+"</font></html>");
-	}
-	else if (userObject.toString().indexOf("<") > -1 && userObject.toString().indexOf("<html>") == -1) {
-	    setText("<html><font color=\"black\">"+userObject.toString()+"</font></html>");
+	if (plain) {
+	    setText(stripped);
 	}
 	else {
-	    setText(userObject.toString());
+	    if (pattern != null && stripped.toLowerCase().matches(pattern)) {
+		setText("<html><font color=\"red\">"+stripped+"</font></html>");
+	    }
+	    else if (userObject.toString().indexOf("<") > -1 && userObject.toString().indexOf("<html>") == -1) {
+		setText("<html><font color=\"black\">"+userObject.toString()+"</font></html>");
+	    }
+	    else {
+		setText(userObject.toString());
+	    }
 	}
-	
 	return this;
+	    
     }
 }

@@ -151,6 +151,41 @@
 		<get src="http://www.ibiblio.org/maven/mysql/jars/mysql-connector-java-3.0.10-stable-bin.jar" 
 		     dest="./netlib/mysql-connector-java-3.0.10-stable-bin.jar" usetimestamp="yes"/>
 		
+		<!-- Batik 1.6 for the SVG based graph display -->
+		<get src="http://www.ibiblio.org/maven/batik/jars/batik-awt-util-1.6.jar" 
+		     dest="./netlib/batik-awt-util-1.6.jar" usetimestamp="yes"/>
+		<get src="http://www.ibiblio.org/maven/batik/jars/batik-bridge-1.6.jar" 
+                     dest="./netlib/batik-bridge-1.6.jar" usetimestamp="yes"/>
+		<get src="http://www.ibiblio.org/maven/batik/jars/batik-css-1.6.jar" 
+                     dest="./netlib/batik-css-1.6.jar" usetimestamp="yes"/>
+		<get src="http://www.ibiblio.org/maven/batik/jars/batik-dom-1.6.jar" 
+                     dest="./netlib/batik-dom-1.6.jar" usetimestamp="yes"/>
+		<get src="http://www.ibiblio.org/maven/batik/jars/batik-ext-1.6.jar" 
+                     dest="./netlib/batik-ext-1.6.jar" usetimestamp="yes"/>
+		<get src="http://www.ibiblio.org/maven/batik/jars/batik-extension-1.6.jar" 
+                     dest="./netlib/batik-extension-1.6.jar" usetimestamp="yes"/>
+		<get src="http://www.ibiblio.org/maven/batik/jars/batik-gui-util-1.6.jar" 
+                     dest="./netlib/batik-gui-util-1.6.jar" usetimestamp="yes"/>
+		<get src="http://www.ibiblio.org/maven/batik/jars/batik-gvt-1.6.jar" 
+                     dest="./netlib/batik-gvt-1.6.jar" usetimestamp="yes"/>
+		<get src="http://www.ibiblio.org/maven/batik/jars/batik-parser-1.6.jar" 
+                     dest="./netlib/batik-parser-1.6.jar" usetimestamp="yes"/>
+		<get src="http://www.ibiblio.org/maven/batik/jars/batik-rasterizer-1.6.jar" 
+                     dest="./netlib/batik-rasterizer-1.6.jar" usetimestamp="yes"/>
+		<get src="http://www.ibiblio.org/maven/batik/jars/batik-script-1.6.jar"  
+                     dest="./netlib/batik-script-1.6.jar" usetimestamp="yes"/>
+		<get src="http://www.ibiblio.org/maven/batik/jars/batik-svg-dom-1.6.jar" 
+                     dest="./netlib/batik-svg-dom-1.6.jar" usetimestamp="yes"/>
+		<get src="http://www.ibiblio.org/maven/batik/jars/batik-svggen-1.6.jar" 
+                     dest="./netlib/batik-svggen-1.6.jar" usetimestamp="yes"/>
+		<get src="http://www.ibiblio.org/maven/batik/jars/batik-swing-1.6.jar" 
+                     dest="./netlib/batik-swing-1.6.jar" usetimestamp="yes"/>
+		<get src="http://www.ibiblio.org/maven/batik/jars/batik-transcoder-1.6.jar" 
+                     dest="./netlib/batik-transcoder-1.6.jar" usetimestamp="yes"/>
+		<get src="http://www.ibiblio.org/maven/batik/jars/batik-util-1.6.jar" 
+                     dest="./netlib/batik-util-1.6.jar" usetimestamp="yes"/>
+		<get src="http://www.ibiblio.org/maven/batik/jars/batik-xml-1.6.jar" 
+                     dest="./netlib/batik-xml-1.6.jar" usetimestamp="yes"/>
 
 		<!-- Reset the compile classpath to include the newly fetched classes -->	
 		<path id="downloaded-libs">

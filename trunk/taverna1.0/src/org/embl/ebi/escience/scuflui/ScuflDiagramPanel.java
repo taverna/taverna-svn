@@ -33,7 +33,7 @@ public class ScuflDiagramPanel extends JPanel
 
     JComboBox displayPolicyChooser = new JComboBox(displayPolicyStrings);
     JComboBox alignmentChooser = new JComboBox(alignment);
-    ScuflDiagram diagram = new ScuflDiagram();
+    ScuflSVGDiagram diagram = new ScuflSVGDiagram();
     JCheckBox typeDisplay = new JCheckBox("Show types",false);
     JCheckBox showBoring = new JCheckBox("Boring?",true);
     JCheckBox fitToWindow = new JCheckBox("Fit to window",true);
@@ -111,14 +111,16 @@ public class ScuflDiagramPanel extends JPanel
 		}
 	    });
 	menu.add(inline);
-	JCheckBoxMenuItem scale = new JCheckBoxMenuItem("Fit to window");
-	scale.setSelected(diagram.getFitToWindow());
-	scale.addItemListener(new ItemListener() {
-		public void itemStateChanged(ItemEvent e) {
-		    diagram.setFitToWindow(e.getStateChange() == ItemEvent.SELECTED);
-		}
-	    });
-	menu.add(scale);
+	/**
+	   JCheckBoxMenuItem scale = new JCheckBoxMenuItem("Fit to window");
+	   scale.setSelected(diagram.getFitToWindow());
+	   scale.addItemListener(new ItemListener() {
+	   public void itemStateChanged(ItemEvent e) {
+	   diagram.setFitToWindow(e.getStateChange() == ItemEvent.SELECTED);
+	   }
+	   });
+	   menu.add(scale);
+	*/
 	return menu;
     }
     public void updateDiagram() {
@@ -136,7 +138,7 @@ public class ScuflDiagramPanel extends JPanel
 	diagramPane.setPreferredSize(new Dimension(0,0));
 	diagramPane.getViewport().setBackground(java.awt.Color.WHITE);
 	add(diagramPane, BorderLayout.CENTER);
-	diagram.setFitToWindow(true);
+	//diagram.setFitToWindow(true);
 	
 	JToolBar toolbar = new JToolBar();
 	toolbar.add(new JLabel("Save as "));
