@@ -23,11 +23,12 @@
  */
 package net.sf.taverna.ocula.example;
 
-import java.util.Iterator;
 import java.util.Map;
 
 import net.sf.taverna.ocula.Ocula;
 import net.sf.taverna.ocula.action.Processor;
+
+import org.apache.log4j.Logger;
 
 /**
  * Simple class used by the InputExample.
@@ -37,11 +38,22 @@ import net.sf.taverna.ocula.action.Processor;
  */
 public class InputHandler implements Processor	{
 
+    private static Logger log = Logger.getLogger(InputHandler.class);
+    
     public void process(Map nameText, Ocula ocula) {
-	for (Iterator it = nameText.keySet().iterator(); it.hasNext(); ) {
-	    String key = (String) it.next();
-	    String value = (String) nameText.get(key);
-	    System.out.println("TextField '" + key + "' has value '" + value + "'");
+	String name = (String) nameText.get("nameField");
+	String country = (String) nameText.get("countryField");
+	String phone = (String) nameText.get("phoneField");
+	Person person = new Person(name, country, phone);
+	ocula.putContext("user", person);
+	try {
+	ocula.load(Thread.currentThread().getContextClassLoader().
+		    getResource("net/sf/taverna/ocula/example/example2.xml"));
+	}
+	// In a real app something appropriate should be to deal
+	// with these exceptions. Here we just write it to the log.
+	catch(Exception e) {
+	    log.error("Error loading page", e);
 	}
     }
 }
