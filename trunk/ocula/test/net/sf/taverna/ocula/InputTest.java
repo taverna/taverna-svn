@@ -24,11 +24,6 @@ public class InputTest extends TestCase {
 	setUp("net/sf/taverna/ocula/example/InputExample.xml");
     }
     
-    public static void main(String[] args) throws Exception {
-	//new InputTest().testMalformedScript();
-	new InputTest().testUnsupportedElement();
-    }
-    
     public void testMalformedScript() throws Exception{
 	setUp("net/sf/taverna/ocula/MalformedInputScript.xml");
     }
