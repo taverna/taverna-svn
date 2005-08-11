@@ -32,12 +32,12 @@ import javax.swing.JFrame;
 import junit.framework.TestCase;
 
 /**
- * Simple example of HTMLFrame and SimpleHTMLFrame usage.
+ * Simple test of HTMLFrame and SimpleHTMLFrame.
  * 
  * @author Ismael Juma (ismael@juma.me.uk)
  *
  */
-public class HTMLExample extends TestCase	{
+public class HTMLTest extends TestCase	{
     public void testHTMLExample() throws Exception {
 	JFrame frame = new JFrame();
 	Ocula o = new Ocula(frame);
@@ -48,9 +48,5 @@ public class HTMLExample extends TestCase	{
 	frame.setVisible(true);
 	o.load(exampleURL);
 	Thread.sleep(5000);
-    }
-    
-    public static void main(String[] args) throws Exception	{
-	new HTMLExample().testHTMLExample();
     }
 }
