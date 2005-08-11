@@ -49,4 +49,13 @@ interface IHTMLFrame	{
      * @param htmlString The content to be set. This should be valid HTML.
      */
     public void setText(String htmlString);
+    
+    /**
+     * Sets the preferred width of the IHTMLFrame. Due to the fact that Swing
+     * does not support setting the preferred width without setting the
+     * preferred height, the implementations of this should make an effort
+     * to retrieve the current preferred height after a page has been loaded. 
+     * @param width the value to set the preferred width.
+     */
+    public void setPreferredWidth(int width);
 }
