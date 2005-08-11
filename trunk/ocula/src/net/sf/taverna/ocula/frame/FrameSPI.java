@@ -29,7 +29,9 @@ import org.jdom.Element;
 import net.sf.taverna.ocula.Ocula;
 
 /**
- * Defines an action over the page state, especially the page context.
+ * Self-contained panels that are responsible for dealing
+ * with things like the layout and certain aspects of the appearance of their
+ * components.
  * @author Tom Oinn
  */
 public interface FrameSPI {
