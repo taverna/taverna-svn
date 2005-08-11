@@ -161,7 +161,7 @@ public class ScuflSVGDiagram extends JComponent
 	docFactory = new SAXSVGDocumentFactory(parser);
     }
 
-    SVGDocument getSVG(String dotText) throws IOException {
+    public static SVGDocument getSVG(String dotText) throws IOException {
 	String dotLocation = System.getProperty("taverna.dotlocation");
 	if (dotLocation == null) {
 	    dotLocation = "dot";
@@ -178,47 +178,6 @@ public class ScuflSVGDiagram extends JComponent
 	out.flush();
 	out.close();
 	return docFactory.createSVGDocument("http://taverna.sf.net/diagram/generated.svg", new StringReader(devourer.blockOnOutput()));
-    }
-
-    class StreamDevourer extends Thread {
-	BufferedReader br;
-	ByteArrayOutputStream output;
-	public String toString() {
-	    return output.toString();
-	}
-	public String blockOnOutput() {
-	    try {
-		this.join();
-		return output.toString();
-	    }
-	    catch (InterruptedException ie) {
-		ie.printStackTrace();
-		return "Interrupted!";
-	    }
-	}
-	public StreamDevourer(InputStream is) {
-	    super();
-	    this.br = new BufferedReader(new InputStreamReader(is));	    
-	    this.output = new ByteArrayOutputStream();
-	}
-	public void run() {
-	    //System.out.println("Stream devourer running...");
-	    try {
-		String line = null;
-		while ((line = br.readLine()) != null && line.endsWith("</svg>") == false) {
-		    //System.out.println(line);
-		    output.write(line.getBytes());
-		}
-		if (line != null) {
-		    output.write(line.getBytes());
-		}
-		br.close();
-	    }
-	    catch (IOException ioe) {
-		ioe.printStackTrace();
-	    }
-	    //System.out.println("Stream devourer exiting.");
-	}
     }
 
 }

@@ -8,6 +8,7 @@ import javax.imageio.ImageIO;
 import javax.imageio.ImageReader;
 import javax.imageio.stream.ImageInputStream;
 import javax.swing.*;
+import org.embl.ebi.escience.scuflui.*;
 
 // Utility Imports
 import java.util.Iterator;
@@ -21,6 +22,12 @@ import java.io.IOException;
 import java.util.Iterator;
 import java.util.regex.Pattern;
 import java.awt.*;
+import org.apache.batik.swing.*;
+import org.apache.batik.swing.gvt.*;
+import org.apache.batik.swing.svg.*;
+import org.apache.batik.dom.svg.*;
+import org.apache.batik.util.*;
+import org.w3c.dom.svg.*;
 
 /**
  *
@@ -57,32 +64,14 @@ public class TextXGraphviz
     {
         String dotText = (String) dataThing.getDataObject();
         try {
-	    String dotLocation = System.getProperty("taverna.dotlocation");
-	    if (dotLocation == null) {
-		dotLocation = "dot";
-	    }
-	    // Pick up gif, jpg or whatever alternate format for
-	    // the graphviz renderer from the properties already
-	    // defined by the workbench diagram.
-	    String imageSuffix = System.getProperty("taverna.scufldiagram.imagetype","png");
-            Process dotProcess = Runtime.getRuntime().exec(new String[]{dotLocation,"-T"+imageSuffix});
-            OutputStream out = dotProcess.getOutputStream();
-            out.write(dotText.getBytes());
-            out.flush();
-            out.close();
-            InputStream in = dotProcess.getInputStream();
-            ImageInputStream iis = ImageIO.createImageInputStream(in);
-            String suffix = "png";
-            Iterator readers = ImageIO.getImageReadersBySuffix(suffix);
-            ImageReader imageReader = (ImageReader) readers.next();
-            imageReader.setInput(iis, false);
-            ImageIcon theImage = new ImageIcon(imageReader.read(0));
-            JPanel theImagePanel = new JPanel();
-            theImagePanel.add(new JLabel(theImage));
-            theImagePanel.setPreferredSize(
-                    new Dimension(theImage.getIconWidth(), theImage.getIconHeight()));
-            return theImagePanel;
-        } catch (IOException ioe) {
+	    SVGDocument doc = ScuflSVGDiagram.getSVG(dotText);
+	    JSVGCanvas canvas = new JSVGCanvas();
+	    canvas.setSVGDocument(doc);
+	    JSVGScrollPane pane = new JSVGScrollPane(canvas);
+	    pane.setPreferredSize(new Dimension(0,0));
+	    return pane;
+	}
+	catch (IOException ioe) {
             throw new RendererException("Could not render dot text", ioe);
         }
     }
