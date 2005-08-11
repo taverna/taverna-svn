@@ -7,3 +7,4 @@ org.embl.ebi.escience.scuflui.BlankScavengerTreePanel
 org.embl.ebi.escience.scuflui.XScuflTree
 org.embl.ebi.escience.scuflui.EnactorEventMonitor
 org.embl.ebi.escience.scuflui.graph.WorkflowEditorPanel
+org.embl.ebi.escience.scuflui.BlankScavenberTreePanel

@@ -618,7 +618,7 @@ public class ScuflModel
 		    }
 		    for (int i = 0; i < events.length; i++) {
 			System.out.println(events[i].toString());
-			for (Iterator j = listeners.iterator(); j.hasNext();) {
+			for (Iterator j = new ArrayList(listeners).iterator(); j.hasNext();) {
 			    ScuflModelEventListener l = (ScuflModelEventListener)j.next();
 			    try {
 				l.receiveModelEvent(events[i]);

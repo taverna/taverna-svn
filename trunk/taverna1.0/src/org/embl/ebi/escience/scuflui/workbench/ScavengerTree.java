@@ -209,7 +209,8 @@ public class ScavengerTree extends ExtendedJTree
     public ScavengerTree(boolean populate) {
 	super();
 	synchronized(this.getModel()) {
-	    setRowHeight(0);
+	    setRowHeight(18);
+	    setLargeModel(true);
 	    wsdlURLList = System.getProperty("taverna.defaultwsdl");
 	    soaplabDefaultURLList = System.getProperty("taverna.defaultsoaplab");
 	    biomobyDefaultURLList = System.getProperty("taverna.defaultbiomoby");
@@ -456,7 +457,7 @@ public class ScavengerTree extends ExtendedJTree
 	    treeModel.insertNodeInto(theScavenger, 
 				     (MutableTreeNode)this.treeModel.getRoot(),
 				     this.treeModel.getChildCount(this.treeModel.getRoot()));
-	    treeModel.nodeStructureChanged((TreeNode)treeModel.getRoot());
+	    treeModel.nodeStructureChanged(theScavenger);
 	    // Set the visibility sensibly so that the root node
 	    // is expanded and visible
 	    TreePath path = new TreePath(this.root);

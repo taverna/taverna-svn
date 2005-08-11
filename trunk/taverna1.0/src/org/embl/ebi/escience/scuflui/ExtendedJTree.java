@@ -60,10 +60,9 @@ public class ExtendedJTree extends JTree {
      */
     public void setExpansion(boolean expand) {
 	synchronized (getModel()) {
-	    setLargeModel(true);
 	    boolean scrolling = getScrollsOnExpand();
 	    setScrollsOnExpand(false);
-	    setRowHeight(-1);
+	    //setRowHeight(-1);
 	    if (getCellRenderer() instanceof NodeColouringRenderer) {
 		((NodeColouringRenderer)getCellRenderer()).setPlain(true);
 	    }
@@ -71,16 +70,16 @@ public class ExtendedJTree extends JTree {
 	    if (expand) {
 		// If the parent is a scrollpane then remove the component
 		// and add it after we've finished resizing everything
-		Component c = getParent();
-		System.out.println(c.getClass().toString());
-		if (c instanceof JViewport) {
-		    ((JViewport)c).remove(this);
-		}
+		//Component c = getParent();
+		//System.out.println(c.getClass().toString());
+		//if (c instanceof JViewport) {
+		//    ((JViewport)c).remove(this);
+		//}
 		expandAll(this, new TreePath(root));
-		if (c instanceof JViewport) {
-		    ((JViewport)c).add(this);
+		//if (c instanceof JViewport) {
+		//    ((JViewport)c).add(this);
 		    //c.revalidate();
-		}
+		//}
 	    }
 	    else {
 		collapseAll(this, new TreePath(root));
