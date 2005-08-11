@@ -32,7 +32,7 @@ import java.net.URL;
 import javax.swing.Icon;
 import javax.swing.JEditorPane;
 
-import net.sf.taverna.ocula.ui.HtmlPane;
+import net.sf.taverna.ocula.ui.HTMLPane;
 import net.sf.taverna.ocula.ui.Icons;
 import net.sf.taverna.ocula.ui.OculaPanel;
 import net.sf.taverna.ocula.ui.ResultSetPanel;
@@ -106,7 +106,7 @@ public class HTMLFrameBuilder extends AbstractHTMLFrameBuilder implements FrameS
 	public HTMLFrame(String name, Icon icon) {
 	    super(name, icon);
 	    contentsPanel.setLayout(new BorderLayout());
-	    htmlPane = new HtmlPane();
+	    htmlPane = new HTMLPane();
 	    contentsPanel.add(htmlPane, BorderLayout.CENTER);
 	}
 
@@ -119,5 +119,10 @@ public class HTMLFrameBuilder extends AbstractHTMLFrameBuilder implements FrameS
 	public void setText(String contents) {
 	    htmlPane.setText(contents);
 	}
+	
+	public void setPreferredWidth(final int width) {
+	    AbstractHTMLFrameBuilder.setPreferredWidth(htmlPane, this, width);
+	}
+	
     }
 }

@@ -31,7 +31,7 @@ import java.net.URL;
 
 import javax.swing.JEditorPane;
 
-import net.sf.taverna.ocula.ui.HtmlPane;
+import net.sf.taverna.ocula.ui.HTMLPane;
 import net.sf.taverna.ocula.ui.OculaPanel;
 
 /**
@@ -69,7 +69,7 @@ public class SimpleHTMLFrameBuilder extends AbstractHTMLFrameBuilder implements
 	protected JEditorPane htmlPane;
 	
 	public SimpleHTMLFrame() {
-	    htmlPane = new HtmlPane();
+	    htmlPane = new HTMLPane();
 	    getContents().setLayout(new BorderLayout());
 	    getContents().add(htmlPane, BorderLayout.CENTER);
 	}
@@ -82,6 +82,10 @@ public class SimpleHTMLFrameBuilder extends AbstractHTMLFrameBuilder implements
 
 	public void setText(String contents) {
 	    htmlPane.setText(contents);
+	}
+	
+	public void setPreferredWidth(final int width) {
+	    AbstractHTMLFrameBuilder.setPreferredWidth(htmlPane, this, width);
 	}
     }
  
