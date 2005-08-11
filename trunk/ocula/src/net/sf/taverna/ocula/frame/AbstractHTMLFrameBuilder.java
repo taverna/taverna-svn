@@ -24,9 +24,15 @@
 
 package net.sf.taverna.ocula.frame;
 
+import java.awt.Dimension;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.io.IOException;
 import java.net.MalformedURLException;
 
+import javax.swing.JComponent;
+import javax.swing.JEditorPane;
+import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
 import net.sf.taverna.ocula.Ocula;
@@ -56,9 +62,12 @@ public abstract class AbstractHTMLFrameBuilder implements FrameSPI {
     private int mode = INLINE;
 
     protected Element element;
+    
+    protected Ocula ocula;
 
     public OculaFrame makeFrame(Ocula o, final Element element) {
 	this.element = element;
+	this.ocula = o;
 	processElement();
 	return makeView();
     }
@@ -117,6 +126,9 @@ public abstract class AbstractHTMLFrameBuilder implements FrameSPI {
      *          queue.
      */
     protected void loadView(final IHTMLFrame frame, final Runnable r) {
+	// We set the preferred width to be the size of the JFrame - 50, to
+	// allow the panel to fit within the JFrame.
+	frame.setPreferredWidth(ocula.getParentFrame().getSize().width - 50);
 	if (mode == EXTERNAL) {
 	    loadViewExternal(frame, r);
 	}
@@ -136,8 +148,7 @@ public abstract class AbstractHTMLFrameBuilder implements FrameSPI {
     protected void loadViewExternal(IHTMLFrame frame, Runnable r) {
 	Element urlElement = element.getChild("url");
 	if (urlElement == null) {
-	    log
-		    .error("'external' mode specified, but no <url> element present.");
+	    log.error("'external' mode specified, but no <url> element present.");
 	}
 	try {
 	    frame.setPage(urlElement.getValue());
@@ -169,5 +180,36 @@ public abstract class AbstractHTMLFrameBuilder implements FrameSPI {
 		}
 	    }
 	}.start();
+    }
+    
+    /**
+     * Helper method that sets the preferred width of a JEditorPane and a 
+     * JPanel (which usually contains the JEditorPane). Since Swing does not
+     * support setting the preferred width without setting the preferred height,
+     * this method waits until a page property change occurs, retrieves the
+     * preferred height and then using the provided value for preferred width,
+     * sets a new preferred size.
+     * 
+     * @param htmlPane JEditorPane whose preferred width must be changed.
+     * @param panel JPanel whose preferred width must be changed.
+     * @param width new preferred width.
+     */
+    protected static void setPreferredWidth(JEditorPane htmlPane,
+	    final JPanel panel, final int width) {
+	htmlPane.addPropertyChangeListener("page", new PropertyChangeListener() {
+	    public void propertyChange(PropertyChangeEvent evt) {
+		JComponent src = (JComponent) evt.getSource();
+		Dimension preferredSize = src.getPreferredSize();
+		// TODO This is a bit hacky. For some reason, if we don't change
+		// the preferred height, the bottom part of the page gets
+		// clipped. Adding 100 seems to work, but this requires more
+		// testing and if possible a cleaner solution.
+		preferredSize.height += 100;
+		preferredSize.width = width;
+		src.setPreferredSize(preferredSize);
+		panel.setPreferredSize(preferredSize);
+		panel.revalidate();
+	    }
+	});
     }
 }
