@@ -34,8 +34,9 @@ import javax.swing.JEditorPane;
  * @author Ismael Juma (ismael@juma.me.uk)
  *
  */
-public final class HtmlPane extends JEditorPane {
-	public HtmlPane() {
+public final class HTMLPane extends JEditorPane {
+
+	public HTMLPane() {
 	    super();
 	    setContentType("text/html");
 	    setOpaque(false);
