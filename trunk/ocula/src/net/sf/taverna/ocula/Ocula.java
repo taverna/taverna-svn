@@ -51,6 +51,7 @@ import org.apache.log4j.Logger;
  */
 public class Ocula extends JPanel {
    
+    private JFrame parentFrame;
     private Map context;
     JPanel mainPanel;
     private ActionRunner actionRunner;
@@ -66,10 +67,10 @@ public class Ocula extends JPanel {
 
     /**
      * Construct an empty top level panel
+     * @param parentFrame This JFrame where ocula is placed.
      */
-    public Ocula() {
-	//TODO Consider adding the top-level JFrame to an instance of this class
-	//to allow the receivers of ocula to manipulate the top-level frame.
+    public Ocula(JFrame parentFrame) {
+	this.parentFrame = parentFrame;
 	setDefaults();
 	buildUI();
 	setTitle("No page loaded");
@@ -77,6 +78,13 @@ public class Ocula extends JPanel {
 	actionRunner = new ActionRunner(this);
 	rendererHandler = new RendererHandler(this);
 	frameHandler = new FrameHandler(this);
+    }
+    
+    /**
+     * Gets the JFrame that this instance of Ocula belongs to.
+     */
+    public JFrame getParentFrame() {
+	return parentFrame;
     }
     
     /**
