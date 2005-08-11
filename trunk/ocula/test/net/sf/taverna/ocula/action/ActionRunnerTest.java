@@ -36,13 +36,13 @@ import java.util.List;
 public class ActionRunnerTest extends TestCase {
 
     public void testCreation() {
-	Ocula o = new Ocula();
+	Ocula o = new Ocula(null);
 	ActionRunner a = new ActionRunner(o);
     }
 
     public void testEmptyActionBlock() {
 	Element e = new Element("test");
-	Ocula o = new Ocula();
+	Ocula o = new Ocula(null);
 	ActionRunner a = new ActionRunner(o);
 	a.runAction(e);
     }
@@ -52,7 +52,7 @@ public class ActionRunnerTest extends TestCase {
 	Element waitActionElement = new Element("wait");
 	waitActionElement.setAttribute("time","500");
 	e.addContent(waitActionElement);
-	Ocula o = new Ocula();
+	Ocula o = new Ocula(null);
 	ActionRunner a = new ActionRunner(o);
 	List errors = a.runAction(e);
 	assertTrue("Should be no errors here", errors.size() == 0);
@@ -63,7 +63,7 @@ public class ActionRunnerTest extends TestCase {
 	Element waitActionElement = new Element("wait");
 	//waitActionElement.setAttribute("time","500");
 	e.addContent(waitActionElement);
-	Ocula o = new Ocula();
+	Ocula o = new Ocula(null);
 	ActionRunner a = new ActionRunner(o);
 	List errors = a.runAction(e);
 	assertTrue("Should be one error from this call", errors.size() == 1);

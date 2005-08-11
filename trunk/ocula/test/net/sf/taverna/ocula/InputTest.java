@@ -11,7 +11,7 @@ public class InputTest extends TestCase {
     
     private void setUp(String exampleURLString) throws Exception	{
 	JFrame frame = new JFrame();
-	Ocula o = new Ocula();
+	Ocula o = new Ocula(frame);
 	frame.getContentPane().add(o);
 	URL exampleURL = Thread.currentThread().getContextClassLoader().
 	    getResource(exampleURLString);

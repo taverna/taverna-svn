@@ -19,8 +19,8 @@ public class InputActionTest extends TestCase	{
     private Ocula o;
     
     private void setUpFrame() throws Exception {
-	o = new Ocula();
 	frame = new JFrame();
+	o = new Ocula(frame);
 	frame.getContentPane().add(o);
 	frame.setSize(new Dimension(400,300));
 	URL exampleURL = Thread.currentThread().getContextClassLoader().

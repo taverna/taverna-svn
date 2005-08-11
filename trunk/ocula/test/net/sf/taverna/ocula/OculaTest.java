@@ -37,25 +37,25 @@ import java.net.URL;
 public class OculaTest extends TestCase {
     
     public void testCreation() {
-	Ocula o = new Ocula();
+	Ocula o = new Ocula(null);
     }
 
     public void testSetTitle() {
 	JFrame f = new JFrame();
-	Ocula o = new Ocula();
+	Ocula o = new Ocula(f);
 	f.getContentPane().add(o);
 	o.setTitle("test title");
 	assertTrue(f.getTitle().equals("test title"));
     }
 
     public void testSetTitleWithNoParent() {
-	Ocula o = new Ocula();
+	Ocula o = new Ocula(null);
 	o.setTitle("test title");
     }
 
     public void testUICreation() {
 	JFrame frame = new JFrame();
-	Ocula o = new Ocula();
+	Ocula o = new Ocula(frame);
 	o.mainPanel.add(new ResultSetPanel("A result", Icons.getIcon("components")));
 	o.mainPanel.add(new ResultSetPanel("Another sample result", Icons.getIcon("users")));
 	frame.getContentPane().add(o);
@@ -72,7 +72,7 @@ public class OculaTest extends TestCase {
 
     public void testLoadExampleWithFailure() throws Exception {
 	JFrame frame = new JFrame();
-	Ocula o = new Ocula();	
+	Ocula o = new Ocula(frame);	
 	frame.getContentPane().add(o);
 	URL exampleURL = Thread.currentThread().getContextClassLoader().
 	    getResource("net/sf/taverna/ocula/example/example1.xml");
@@ -84,7 +84,7 @@ public class OculaTest extends TestCase {
     
     public void testLoadExampleWithInitContext() throws Exception {
 	JFrame frame = new JFrame();
-	Ocula o = new Ocula();	
+	Ocula o = new Ocula(frame);	
 	frame.getContentPane().add(o);
 	URL exampleURL = Thread.currentThread().getContextClassLoader().
 	    getResource("net/sf/taverna/ocula/example/example1.xml");
@@ -97,7 +97,7 @@ public class OculaTest extends TestCase {
 
     public void testLoadExampleWithInitialAction() throws Exception {
 	JFrame frame = new JFrame();
-	Ocula o = new Ocula();	
+	Ocula o = new Ocula(frame);	
 	frame.getContentPane().add(o);
 	URL exampleURL = Thread.currentThread().getContextClassLoader().
 	    getResource("net/sf/taverna/ocula/example/example1a.xml");
