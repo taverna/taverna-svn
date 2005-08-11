@@ -1,0 +1,19 @@
+<page title="Simple example">
+	<header />
+	<contents>
+		<!-- A frame that renders HTML. The difference between this and the
+		simplehtmlframe is that this one has a header (with name and icon), a
+		progress bar and it has its own background. The type determines whether
+		the HTML is supplied inline or it should be fetched from a URL.
+		Stylesheets can also be used in the inline mode as usual. -->
+		<htmlframe name="Google" icon="users" type="external">
+			<url>http://www.google.com</url>
+		</htmlframe>
+		<!-- A frame that renders HTML. -->
+		<simplehtmlframe type="inline">
+			<html>
+				<body><b>Some</b> <i>random</i> <H1> text </H1> here</body>
+			</html>
+		</simplehtmlframe>
+	</contents>
+</page>
