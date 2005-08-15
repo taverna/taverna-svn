@@ -33,6 +33,7 @@ public class DotView implements ScuflModelEventListener, java.io.Serializable {
     public static final int BOUND = 1;
     public static final int NONE = 2;
     public static final int BLOB = 3;
+    public static final int NAMEDBLOB = 4;
 
     /**
      * Construct the view and attach it to the 
@@ -156,6 +157,8 @@ public class DotView implements ScuflModelEventListener, java.io.Serializable {
 	dot.append("digraph scufl_graph {\n");
 	dot.append(" graph [             \n");
 	dot.append("  style=\"\"         \n");
+	dot.append("  labeljust=\"left\"\n");
+	dot.append("  clusterrank=\"local\"\n");
 	if (System.getProperty("taverna.scufldiagram.ranksep") != null) {
 	    dot.append("  ranksep=\""+System.getProperty("taverna.scufldiagram.ranksep")+"\"\n");
 	}
@@ -257,13 +260,14 @@ public class DotView implements ScuflModelEventListener, java.io.Serializable {
 	if (name != null) {
 	    sb.append("subgraph cluster_"+prefix+name+" {\n");
 	    if (detail != BLOB) {
-		sb.append(" label="+q(name)+",\n");
-		sb.append(" fontname=\"Helvetica\", fontsize=\"10\", fontcolor=\"black\"\n\n");
+		sb.append(" label="+q(name)+"\n");
+		sb.append(" fontname=\"Helvetica\"\n fontsize=\"10\"\n fontcolor=\"black\"\n\n");
 	    }
 	    else {
-		sb.append(" label=\"\",\n");
+		sb.append(" label=\"\"\n");
 	    }
-	    sb.append(" fillcolor=\""+fillColours[fill]+"\", style=\"filled\"\n");
+	    sb.append(" clusterrank=\"local\"\n");
+	    sb.append(" fillcolor=\""+fillColours[fill]+"\"\n style=\"filled\"\n");
 	}
 	Processor[] processors = model.getProcessors();
 	for (int i = 0; i < processors.length; i++) {
@@ -365,7 +369,12 @@ public class DotView implements ScuflModelEventListener, java.io.Serializable {
 		    toName = q(sinkProcessorName+"WORKFLOWINTERNALSOURCE_"+sinkPortName);
 		}
 		else {
-		    toName = q(sinkProcessorName)+":"+q(sinkPortName);
+		    if (detail == BOUND || detail == ALL) {
+			toName = q(sinkProcessorName)+":"+q(sinkPortName);
+		    }
+		    else {
+			toName = q(sinkProcessorName);
+		    }
 		}
 		String fromName;
 		if (dc.getSource().getProcessor() == model.getWorkflowSourceProcessor()) {
@@ -376,7 +385,12 @@ public class DotView implements ScuflModelEventListener, java.io.Serializable {
 		    fromName = q(sourceProcessorName+"WORKFLOWINTERNALSINK_"+sourcePortName);
 		}
 		else {
-		    fromName = q(sourceProcessorName)+":"+q(sourcePortName);
+		    if (detail == BOUND || detail == ALL) {
+			fromName = q(sourceProcessorName)+":"+q(sourcePortName);
+		    }
+		    else {
+			fromName = q(sourceProcessorName);
+		    }
 		}
 		sb.append(" "+fromName+"->"+toName+" [ \n");
 		if (displayTypes) {
@@ -397,11 +411,14 @@ public class DotView implements ScuflModelEventListener, java.io.Serializable {
 	    StringBuffer sb = new StringBuffer();
 	    sb.append(" subgraph cluster_"+prefix+"sinks {\n");
 	    sb.append("  style=\"dotted\"\n");
-	    if (detail != BLOB) {
+	    if (detail != BLOB && detail != NAMEDBLOB) {
 		sb.append("  label=\"Workflow Outputs\"\n");
 		sb.append("  fontname=\"Helvetica\"\n");
 		sb.append("  fontsize=\"10\"\n");	
 		sb.append("  fontcolor=\"black\"  \n");
+	    }
+	    else {
+		sb.append("  label=\"\"\n");
 	    }
 	    sb.append("  rank=\"same\"\n");
 	    sb.append(q(prefix+"WORKFLOWINTERNALSINKCONTROL")+" [\n");
@@ -413,7 +430,7 @@ public class DotView implements ScuflModelEventListener, java.io.Serializable {
 	    sb.append(" ]\n");
 	    for (int i = 0; i < sinks.length; i++) {
 		sb.append(q(prefix+"WORKFLOWINTERNALSINK_"+sinks[i].getName())+" [\n");
-		if (detail == NONE) {
+		if (detail == NONE || detail == NAMEDBLOB) {
 		    sb.append("   shape=\"box\",\n");
 		}
 		else if (detail == BLOB) {
@@ -450,11 +467,14 @@ public class DotView implements ScuflModelEventListener, java.io.Serializable {
 	    StringBuffer sb = new StringBuffer();
 	    sb.append(" subgraph cluster_"+prefix+"sources {\n");
 	    sb.append("  style=\"dotted\"\n");
-	    if (detail != BLOB) {
+	    if (detail != BLOB && detail != NAMEDBLOB) {
 		sb.append("  label=\"Workflow Inputs\"\n");
 		sb.append("  fontname=\"Helvetica\"\n");
 		sb.append("  fontsize=\"10\"\n");	
 		sb.append("  fontcolor=\"black\"  \n");
+	    }
+	    else {
+		sb.append("  label=\"\"\n");
 	    }
 	    sb.append("  rank=\"same\"\n");
 	    sb.append(q(prefix+"WORKFLOWINTERNALSOURCECONTROL")+" [\n");
@@ -466,7 +486,7 @@ public class DotView implements ScuflModelEventListener, java.io.Serializable {
 	    sb.append(" ]\n");
 	    for (int i = 0; i < sources.length; i++) {
 		sb.append(q(prefix+"WORKFLOWINTERNALSOURCE_"+sources[i].getName())+" [\n");
-		if (detail == NONE) {
+		if (detail == NONE || detail == NAMEDBLOB) {
 		    sb.append("   shape=\"box\",\n");
 		}
 		else if (detail == BLOB) {
@@ -510,7 +530,7 @@ public class DotView implements ScuflModelEventListener, java.io.Serializable {
 	// Set colour
 	sb.append("  fillcolor=\""+colour+"\",\n");
 	
-	if (detail == BLOB) {
+	if (detail == BLOB || detail == NAMEDBLOB) {
 	    sb.append("  shape=\"circle\", \n");
 	    sb.append("  style=\"filled\"  \n");
 	    sb.append("  label=\"\"        \n");
@@ -530,7 +550,7 @@ public class DotView implements ScuflModelEventListener, java.io.Serializable {
 	    sb.append("  style=\"filled\",\n");
 	}
 	// Generate the label if this is not a blob
-	if (detail != BLOB) {
+	if (detail != BLOB && detail != NAMEDBLOB) {
 	    if (detail == NONE) {
 		sb.append("  label=\""+p.getName()+"\"\n");
 	    }

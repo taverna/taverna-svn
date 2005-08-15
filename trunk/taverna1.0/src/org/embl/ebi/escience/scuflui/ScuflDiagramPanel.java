@@ -25,7 +25,7 @@ import java.net.*;
 public class ScuflDiagramPanel extends JPanel 
     implements ScuflUIComponent {
     
-    String[] displayPolicyStrings = { "All ports", "Bound ports", "No ports", "Blobs" };
+    String[] displayPolicyStrings = { "All ports", "Bound ports", "No ports", "Blobs", "Blobs + Names"};
     String[] saveTypes = { "dot", "png", "svg", "ps", "ps2" };
     String[] saveExtensions = { "dot", "png", "svg", "ps", "ps" };
     String[] saveTypeNames = { "dot text", "PNG bitmap", "scalable vector graphics", "postscript", "postscript for PDF"};
