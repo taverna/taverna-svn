@@ -39,6 +39,8 @@ import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.methods.multipart.*;
 import org.apache.commons.httpclient.params.HttpMethodParams;
 
+import org.embl.ebi.escience.baclava.factory.DataThingXMLFactory;
+
 /**
  * Implementation of InteractionService based on a remote set
  * of Servlets using the HTTP transport.<p>
@@ -51,6 +53,8 @@ import org.apache.commons.httpclient.params.HttpMethodParams;
  * request data and metadata can be POSTed to in multipart form</em></li>
  * <li>/status - <em>Status handler servlet used to fetch interaction
  * request status for a previously submitted request</em></li>
+ * <li>/results - <em>Result handler capable of streaming a serialized
+ * Map of DataThing objects back to the proxy</em></li>
  * </ul>
  * @author Tom Oinn
  */
@@ -58,9 +62,19 @@ public class HTTPInteractionServiceProxy implements InteractionService {
     
     static Logger log = Logger.getLogger(HTTPInteractionServiceProxy.class);
     static Map proxyCache = new HashMap();
-    
+    static HttpClient client;
+
     private InteractionPattern[] patterns = null;
     private URL baseURL = null;
+
+    /**
+     * Set up the HttpClient singleton
+     */
+    static {
+	client = new HttpClient();
+	client.getHttpConnectionManager().
+	    getParams().setConnectionTimeout(5000);
+    }
 
     /**
      * Get a connection to the interaction service at the specified
@@ -157,9 +171,6 @@ public class HTTPInteractionServiceProxy implements InteractionService {
 	    Part[] parts = { new StringPart("metadata", requestMetadata),
 			     new FilePart("data", new ByteArrayPartSource("data",request.getData())) };
 	    post.setRequestEntity(new MultipartRequestEntity(parts, post.getParams()));
-	    HttpClient client = new HttpClient();
-	    client.getHttpConnectionManager().
-		getParams().setConnectionTimeout(5000);
 	    int status = client.executeMethod(post);
 	    if (status == HttpStatus.SC_OK) {
 		log.info("Submitted request...");
@@ -217,14 +228,12 @@ public class HTTPInteractionServiceProxy implements InteractionService {
      * ID - removes such events from the server in the process.
      */
     InteractionStatus[] getNewEventsForID(String requestID) {
+	PostMethod post = null;
 	try {
 	    URL statusURL = new URL(baseURL, "status");
-	    PostMethod post = new PostMethod(statusURL.toString());
+	    post = new PostMethod(statusURL.toString());
 	    Part[] parts = { new StringPart("id", requestID) };
 	    post.setRequestEntity(new MultipartRequestEntity(parts, post.getParams()));
-	    HttpClient client = new HttpClient();
-	    client.getHttpConnectionManager().
-		getParams().setConnectionTimeout(5000);
 	    int status = client.executeMethod(post);
 	    if (status == HttpStatus.SC_OK) {
 		log.info("requested status...");
@@ -242,6 +251,20 @@ public class HTTPInteractionServiceProxy implements InteractionService {
 	    List eventObjectList = new ArrayList();
 	    for (Iterator i = eventElementList.iterator(); i.hasNext();) {
 		// TODO - create InteractionStatus objects here
+		Element eventElement = (Element)i.next();
+		if (eventElement.getName().equals("timeout")) {
+		    eventObjectList.add(new InteractionTimedOutEvent());
+		}
+		else if (eventElement.getName().equals("failure")) {
+		    eventObjectList.add(new InteractionFailedEvent());
+		}
+		else if (eventElement.getName().equals("rejected")) {
+		    eventObjectList.add(new InteractionRejectedEvent());
+		}
+		else if (eventElement.getName().equals("completed")) {
+		    eventObjectList.
+			add(new InteractionCompletionEvent(getResultObject(requestID)));
+		}		
 	    }
 	    return (InteractionStatus[])eventObjectList.toArray(new InteractionStatus[0]);
 	}
@@ -249,8 +272,50 @@ public class HTTPInteractionServiceProxy implements InteractionService {
 	    log.error("Failed to get new events", ex);
 	    return new InteractionStatus[0];
 	}
+	finally {
+	    // Release the HTTP connection whether it worked or not
+	    if (post != null) {
+		post.releaseConnection();
+	    }
+	}
     }
 
+    /**
+     * Connect to the results servlet and get the XML document containing any
+     * results from the interaction process.
+     */
+    Map getResultObject(String requestID) {
+	PostMethod post = null;
+	try {
+	    URL resultsURL = new URL(baseURL, "results");
+	    post = new PostMethod(resultsURL.toString());
+	    Part[] parts = { new StringPart("id", requestID) };
+	    post.setRequestEntity(new MultipartRequestEntity(parts, post.getParams()));
+	    int status = client.executeMethod(post);
+	    if (status == HttpStatus.SC_OK) {
+		log.info("fetched results okay...");
+	    }
+	    else {
+		throw new Exception("Unable to fetch results, error was " +
+				    HttpStatus.getStatusText(status));
+	    }
+	    // Construct a JDOM Document from the stream
+	    SAXBuilder sb = new SAXBuilder();
+	    Document responseDoc = sb.build(post.getResponseBodyAsStream());
+	    // Use the DataThingFactory to build a Map of DataThing objects
+	    return DataThingXMLFactory.parseDataDocument(responseDoc);
+	}
+	catch (Exception ex) {
+	    log.error("Error fetching results",ex);
+	    return new HashMap();
+	}
+	finally {
+	    if (post != null) {
+		post.releaseConnection();
+	    }
+	}
+    }
+    
     /**
      * Return the hostname that this class is proxying
      */
@@ -450,6 +515,17 @@ public class HTTPInteractionServiceProxy implements InteractionService {
 	}
     }
 
+    /**
+     * Timeout message
+     */
+    class InteractionTimedOutEvent implements TerminalInteractionStatus {
+	public int getStatusCode() {
+	    return TerminalInteractionStatus.TIMEOUT;
+	}
+	public Object getResultData() {
+	    return null;
+	}
+    }
 
     /**
      * Simple implementation of the InteractionPattern interface

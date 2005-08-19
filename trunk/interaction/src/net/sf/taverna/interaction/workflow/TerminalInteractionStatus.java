@@ -34,12 +34,17 @@ public interface TerminalInteractionStatus extends InteractionStatus {
     /**
      * Interaction completed successfuly
      */
-    public static int COMPLETED = 0;
+    public static int COMPLETED = 1;
 
     /**
      * Interaction failed due to problems with the service
      */
-    public static int FAILED = 0;
+    public static int FAILED = 2;
+
+    /**
+     * Interaction timed out
+     */
+    public static int TIMEOUT = 3;
     
     /**
      * Return a Object corresponding to the result data, if 

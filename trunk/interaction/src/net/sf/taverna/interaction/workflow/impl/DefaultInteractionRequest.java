@@ -48,6 +48,8 @@ public class DefaultInteractionRequest implements InteractionRequest {
      * @param pattern The interaction pattern to use
      * @param email Valid email address for the person to be contacted
      * @param inputData Map of name -> DataThing object to use as input
+     * @param expiryTime Time at which the request should be regarded as
+     * having expired
      * @return an InteractionRequest object that can be submitted to
      * an InteractionService
      */
