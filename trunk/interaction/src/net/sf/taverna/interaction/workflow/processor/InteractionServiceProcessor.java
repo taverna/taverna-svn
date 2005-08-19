@@ -39,6 +39,7 @@ public class InteractionServiceProcessor extends Processor {
     
     private String baseURL, patternName;
     private InteractionPattern pattern = null;
+    private InteractionService service = null;
 
     /**
      * Create a new processor, connecting to the InteractionService
@@ -65,9 +66,8 @@ public class InteractionServiceProcessor extends Processor {
 	catch (MalformedURLException mue) {
 	    throw new ProcessorCreationException("Can't connect, bad URL "+mue.getMessage());
 	}
-	InteractionService is = 
-	    HTTPInteractionServiceProxy.connectTo(baseURLObject);
-	InteractionPattern[] patterns = is.getInteractionPatterns();
+	service = HTTPInteractionServiceProxy.connectTo(baseURLObject);
+	InteractionPattern[] patterns = service.getInteractionPatterns();
 	// Locate a pattern with the specified name
 	for (int i = 0; i < patterns.length; i++) {
 	    if (patterns[i].getName().equals(patternName)) {
@@ -127,6 +127,22 @@ public class InteractionServiceProcessor extends Processor {
      */
     public InteractionPattern getInteractionPattern() {
 	return this.pattern;
+    }
+
+    /**
+     * Return the interaction server proxy that this processor used to
+     * discover its interaction pattern
+     */
+    public InteractionService getInteractionService() {
+	return this.service;
+    }
+
+    /**
+     * Return the lifetime of this request in milliseconds, currently
+     * hardcoded to one day.
+     */
+    public long getRequestLifetime() {
+	return (long)(1000 * 60 * 60 * 24);
     }
 
     public Properties getProperties() {

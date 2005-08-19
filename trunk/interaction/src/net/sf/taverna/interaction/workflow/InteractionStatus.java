@@ -25,33 +25,8 @@
 package net.sf.taverna.interaction.workflow;
 
 /**
- * Returned by the InteractionService proxy when an InteractionRequest
- * object is submitted. Allows registration of callbacks to handle
- * submission state changes
- * @author Tom Oinn
+ * Represents the state of a workflow interaction
  */
-public interface InteractionReceipt {
-    
-    /**
-     * Register a new listener, all previous events receieved by
-     * this InteractionReceipt will be replayed to the listener
-     * before any new ones are processed
-     */
-    public void addInteractionStateListener(InteractionStateListener listener);
-
-    /**
-     * Get the InteractionRequest that generated this InteractionReceipt
-     */
-    public InteractionRequest getRequest();
-
-    /**
-     * Get the InteractionService proxy that is handling this receipt
-     */
-    public InteractionService getService();
-
-    /**
-     * Get the status of this interaction request
-     */
-    public InteractionStatus getInteractionStatus();
-
+public interface InteractionStatus {
+            
 }

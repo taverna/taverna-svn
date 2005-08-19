@@ -24,34 +24,35 @@
 
 package net.sf.taverna.interaction.workflow;
 
-/**
- * Returned by the InteractionService proxy when an InteractionRequest
- * object is submitted. Allows registration of callbacks to handle
- * submission state changes
- * @author Tom Oinn
- */
-public interface InteractionReceipt {
+public interface TerminalInteractionStatus extends InteractionStatus {
+
+    /**
+     * Interaction was rejected by the receipient
+     */
+    public static int REJECTED = 0;
     
     /**
-     * Register a new listener, all previous events receieved by
-     * this InteractionReceipt will be replayed to the listener
-     * before any new ones are processed
+     * Interaction completed successfuly
      */
-    public void addInteractionStateListener(InteractionStateListener listener);
+    public static int COMPLETED = 0;
 
     /**
-     * Get the InteractionRequest that generated this InteractionReceipt
+     * Interaction failed due to problems with the service
      */
-    public InteractionRequest getRequest();
-
+    public static int FAILED = 0;
+    
     /**
-     * Get the InteractionService proxy that is handling this receipt
+     * Return a Object corresponding to the result data, if 
+     * any, from the interaction service. The exact type of
+     * the Object returned will depend on the interaction
+     * service implementation, in the default case this
+     * is a Map of DataThing objects
      */
-    public InteractionService getService();
-
+    public Object getResultData();
+        
     /**
-     * Get the status of this interaction request
+     * Returns one of the constant codes defined in this interface
      */
-    public InteractionStatus getInteractionStatus();
-
+    public int getStatusCode();
+    
 }
