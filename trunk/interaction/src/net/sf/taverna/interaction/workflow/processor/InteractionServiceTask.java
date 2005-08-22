@@ -141,6 +141,12 @@ public class InteractionServiceTask implements ProcessorTaskWorker {
 		    // Fine, we've been woken up by the callback thread
 		}
 	    }
+
+	    TerminalInteractionStatus status = 
+		(TerminalInteractionStatus)receipt.getInteractionStatus();
+	    if (status.getStatusCode() != TerminalInteractionStatus.COMPLETED) {
+		throw new TaskExecutionException("Interaction receipt returned but failed.");
+	    }
 	    
 	    return new HashMap();
 	}

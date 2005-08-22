@@ -262,15 +262,25 @@ public class HTTPInteractionServiceProxy implements InteractionService {
 		    eventObjectList.add(new InteractionRejectedEvent());
 		}
 		else if (eventElement.getName().equals("completed")) {
-		    eventObjectList.
-			add(new InteractionCompletionEvent(getResultObject(requestID)));
-		}		
+		    try {
+			Map result = getResultObject(requestID);
+			if (result != null) {
+			    eventObjectList.add(new InteractionCompletionEvent(result));
+			}
+			else {
+			    eventObjectList.add(new InteractionFailedEvent());
+			}
+		    }
+		    catch (Exception ex) {
+			eventObjectList.add(new InteractionFailedEvent());
+		    }
+		}
 	    }
 	    return (InteractionStatus[])eventObjectList.toArray(new InteractionStatus[0]);
 	}
 	catch (Exception ex) {
 	    log.error("Failed to get new events", ex);
-	    return new InteractionStatus[0];
+	    return new InteractionStatus[] { new InteractionFailedEvent() };
 	}
 	finally {
 	    // Release the HTTP connection whether it worked or not
@@ -307,7 +317,7 @@ public class HTTPInteractionServiceProxy implements InteractionService {
 	}
 	catch (Exception ex) {
 	    log.error("Error fetching results",ex);
-	    return new HashMap();
+	    return null;
 	}
 	finally {
 	    if (post != null) {
@@ -376,7 +386,8 @@ public class HTTPInteractionServiceProxy implements InteractionService {
 			for (int i = 0; i < statii.length; i++) {
 			    pushMessage(statii[i]);
 			}
-			if (statii[statii.length - 1] instanceof TerminalInteractionStatus) {
+			if (statii.length > 0 && 
+			    statii[statii.length - 1] instanceof TerminalInteractionStatus) {
 			    // Cancel this task if the last event is a terminal one
 			    timer.cancel();
 			}

@@ -1,0 +1,35 @@
+<!-- Webapp definition for the interaction service -->
+<!-- Tom Oinn, tmo@ebi.ac.uk, 22nd August 2005     -->
+<web-app>
+
+  <!-- Handles interaction service request submission, mapped to /submit -->
+  <servlet>
+    <display-name>Interaction service submission servlet</display-name>
+    <!-- Force init when the application server starts -->
+    <load-on-startup>0</load-on-startup>
+    <servlet-name>SubmitServlet</servlet-name>
+    <servlet-class>net.sf.taverna.interaction.server.http.SubmitServlet</servlet-class>
+    <!-- Define where the server should place temporary data files -->
+    <init-param>
+      <param-name>temp_location</param-name>
+      <param-value>C:\interaction</param-value>
+    </init-param>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>SubmitServlet</servlet-name>
+    <url-pattern>/submit</url-pattern>
+  </servlet-mapping>
+
+  <!-- Provides status information, mapped to /status -->
+  <servlet>
+    <display-name>Interaction service status servlet</display-name>
+    <load-on-startup>1</load-on-startup>
+    <servlet-name>StatusServlet</servlet-name>
+    <servlet-class>net.sf.taverna.interaction.server.http.StatusServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>StatusServlet</servlet-name>
+    <url-pattern>/status</url-pattern>
+  </servlet-mapping>
+
+</web-app>

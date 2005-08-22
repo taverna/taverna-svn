@@ -355,5 +355,29 @@
 			<classpath refid="compile-classpath"/>
 		</javadoc>
 	</target>
+
+	<!-- Build web application archive -->
+	<target name="war" depends="jar" description="Build web application">
+	        <mkdir dir="${build.dir}/war"/>
+		<mkdir dir="${build.dir}/war/WEB-INF"/>
+		<mkdir dir="${build.dir}/war/WEB-INF/lib"/>
+		<copy todir="${build.dir}/war/WEB-INF/lib">
+		        <fileset dir="${build.dir}">
+			        <include name="*.jar"/>
+			</fileset>
+			<fileset dir="./lib">
+			        <include name="*.jar"/>
+			</fileset>
+			<fileset dir="./netlib">
+			        <include name="*.jar"/>
+				<exclude name="servlet-api-2.4.jar"/>
+			</fileset>
+		</copy>
+		<copy file="web.xml" tofile="${build.dir}/war/WEB-INF/web.xml"/>
+		<copy file="patterns.xml" tofile="${build.dir}/war/patterns.xml"/>
+		<jar destfile="${build.dir}/${project.name}-${project.version}.war"
+		     basedir="${build.dir}/war"
+		     update="no"/>
+	</target>
 	
 </project>
