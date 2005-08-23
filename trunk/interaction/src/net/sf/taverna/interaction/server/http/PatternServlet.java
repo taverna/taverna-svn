@@ -53,6 +53,7 @@ public class PatternServlet extends HttpServlet {
     public void doGet(HttpServletRequest request,
 		      HttpServletResponse response)
 	throws ServletException {
+	SubmitServlet.getServer().setBaseURL(request.getServletPath());
 	try {
 	    Document patternDoc = PatternRegistry.getPatternsAsXML();
 	    XMLOutputter xo = new XMLOutputter(Format.getPrettyFormat());

@@ -26,11 +26,14 @@ package net.sf.taverna.interaction.server;
 
 import org.apache.commons.fileupload.*;
 import java.io.*;
+import java.net.*;
 import java.util.*;
 import org.jdom.*;
 import org.jdom.input.*;
 import org.jdom.output.*;
 import org.apache.log4j.Logger;
+import javax.mail.*;
+import javax.mail.internet.*;
 
 /**
  * This class, used as a singleton by the various servlets, handles
@@ -42,12 +45,16 @@ public class InteractionServer {
     private File repository;
     private Map statusMap;
     private static Logger log = Logger.getLogger(InteractionServer.class);
-    
+    private String mailHost, mailFrom;
+    private URL baseURL = null;
+
     /**
      * Create a new InteractionServer with the specified directory
      * to use as space for indices and temporary data
      */
-    public InteractionServer(File repository) {
+    public InteractionServer(File repository, String smtpHost, String mailFrom) {
+	this.mailHost = mailHost;
+	this.mailFrom = mailFrom;
 	if (repository.exists() == false) {
 	    log.error("Specified repository doesn't exist");
 	}
@@ -68,7 +75,7 @@ public class InteractionServer {
 		}
 	    }, (long)0, (long)(1000 * 60));
     }
-        
+    
     /**
      * Get the InteractionState object for the specified job ID
      */
@@ -84,6 +91,44 @@ public class InteractionServer {
     }
 
     /**
+     * Set the base URL for this interaction server, needed for
+     * the construction of callback URLs in the email messages
+     * sent on interaction submissions
+     */
+    public void setBaseURL(String stringURL) {
+	try {
+	    if (this.baseURL != null) {
+		this.baseURL = new URL(stringURL);
+		log.debug("Set base URL to '"+stringURL+"'");
+	    }
+	}
+	catch (MalformedURLException mue) {
+	    log.error("Unable to assemble base URL", mue);
+	}
+    }
+
+    /**
+     * Send the email invitation to interact with the specified session
+     */
+    public void sendEmail(InteractionState state) {
+	Properties mailProps = System.getProperties();
+	mailProps.put("mail.smtp.host",this.mailHost);
+	try {
+	    Session session = Session.getDefaultInstance(mailProps, null);
+	    MimeMessage message = new MimeMessage(session);
+	    message.setFrom(new InternetAddress(this.mailFrom));
+	    message.addRecipient(Message.RecipientType.TO,
+				 new InternetAddress(state.getEmail()));
+	    message.setSubject("Taverna interaction request");
+	    String body = state.getMessageBody(baseURL);
+	    Transport.send(message);	    
+	}
+	catch (Exception ex) {
+	    log.error("Cannot send invitation email", ex);
+	}	
+    }
+
+    /**
      * Create a new interaction request
      */
     public String createInteractionRequest(String metadata,
@@ -96,6 +141,7 @@ public class InteractionServer {
 	    if (state != null) {
 		String jobID = state.getID();
 		statusMap.put(jobID, state);
+		sendEmail(state);
 		return jobID;
 	    }
 	    else {

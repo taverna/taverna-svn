@@ -70,13 +70,18 @@ public class SubmitServlet extends HttpServlet {
 	    log.error("Temp location must point to a directory.");
 	    return;
 	}
-	this.server = new InteractionServer(new File(tempLocation));
+	String mailHost = sc.getInitParameter("smtp_host");
+	String mailFrom = sc.getInitParameter("mail_from");
+	this.server = new InteractionServer(new File(tempLocation),
+					    mailHost,
+					    mailFrom);
 	log.debug("Created InteractionServer singleton with temp location of '"+tempLocation+"'.");
     }
 
     public void doPost(HttpServletRequest request,
 		       HttpServletResponse response)
 	throws ServletException {
+	server.setBaseURL(request.getServletPath());
 	String jobID = null;
 	try {
 	    FileItem dataItem = null;

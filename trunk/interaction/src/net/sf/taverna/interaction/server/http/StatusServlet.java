@@ -53,6 +53,7 @@ public class StatusServlet extends HttpServlet {
     public void doPost(HttpServletRequest request,
 		       HttpServletResponse response)
 	throws ServletException {
+	SubmitServlet.getServer().setBaseURL(request.getServletPath());
 	String jobID = null;
 	try {
 	    boolean isMultipart = FileUpload.isMultipartContent(request);

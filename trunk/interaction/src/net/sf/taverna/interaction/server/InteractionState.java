@@ -30,6 +30,7 @@ import org.jdom.output.*;
 import org.jdom.input.*;
 import org.apache.log4j.Logger;
 import java.io.*;
+import java.net.*;
 import org.apache.commons.fileupload.*;
 
 /**
@@ -71,6 +72,7 @@ public class InteractionState {
 	}
 	return result;
     }
+
     /**
      * Given a repository use the supplied jobID to resurrect this
      * InteractionState
@@ -176,6 +178,23 @@ public class InteractionState {
      */
     public Date getExpiry() {
 	return this.expiry;
+    }
+
+    /**
+     * Return the target email to interact with
+     */
+    public String getEmail() {
+	return this.email;
+    }
+
+    /**
+     * Create the body of an invitation email, use the
+     * specified URL as the base of this interaction 
+     * service installation in case we need to generate
+     * links back to the server within the mail
+     */
+    public String getMessageBody(URL baseURL) {
+	return "message body...";
     }
 
     /**
