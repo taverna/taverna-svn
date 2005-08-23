@@ -62,6 +62,13 @@ public class PatternRegistry {
      * found then return null
      */
     public static ServerInteractionPattern patternForName(String patternName) {
+	for (Iterator i = patterns.iterator(); i.hasNext();) {
+	    ServerInteractionPattern sip = 
+		(ServerInteractionPattern)i.next();
+	    if (sip.getName().equals(patternName)) {
+		return sip;
+	    }
+	}
 	return null;
     }
 

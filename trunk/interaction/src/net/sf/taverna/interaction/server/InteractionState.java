@@ -194,25 +194,7 @@ public class InteractionState {
      * links back to the server within the mail
      */
     public String getMessageBody(URL baseURL) {
-	return "message body...";
-    }
-
-    /**
-     * Return a handler capable of unmarshalling the on disk
-     * form of the interaction input data into whatever format
-     * the client side interaction code requires
-     */
-    public RequestDataHandlerSPI getRequestHandler() {
-	return null;
-    }
-
-    /**
-     * Return a handler capable of marshalling responses from
-     * the client side interaction code and creating a server
-     * side results file in the appropriate format
-     */
-    public ResultDataHandlerSPI getResultDataHandler() {
-	return null;
+	return this.pattern.getMessageBody(baseURL, getID());
     }
     
     /**
@@ -225,7 +207,8 @@ public class InteractionState {
     }
     
     /**
-     * Get a file handle to which results should be written
+     * Get a file handle to which results should be written, delete
+     * the file if it exists.
      */
     public File getResultsFile() throws IOException {
 	File resultsFile = new File(repository, jobID+"-results.xml");
@@ -239,7 +222,6 @@ public class InteractionState {
 	return resultsFile;
     }
     
-
     /**
      * Complete this interaction
      */

@@ -25,6 +25,7 @@
 package net.sf.taverna.interaction.server;
 
 import net.sf.taverna.interaction.workflow.InteractionPattern;
+import java.net.URL;
 
 /**
  * Extends the base InteractionPattern interface and adds the various
@@ -33,5 +34,15 @@ import net.sf.taverna.interaction.workflow.InteractionPattern;
  * @author Tom Oinn
  */
 public interface ServerInteractionPattern extends InteractionPattern {
+    
+    /**
+     * Generate a new invitation message for this interaction pattern
+     * @param baseURL the URL to the first servlet called within this
+     * installation, should hopefully mean that URLs can be created
+     * for callback webpages, applets, jnlp files etc.
+     * @param id the interaction request ID
+     */
+    public String getMessageBody(URL baseURL, String id);
+
 
 }
