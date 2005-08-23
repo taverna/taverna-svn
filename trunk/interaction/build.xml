@@ -376,7 +376,7 @@
 		</copy>
 		<copy file="webapp.log4j.properties" tofile="${build.dir}/war/WEB-INF/classes/log4j.properties"/>
 		<copy file="web.xml" tofile="${build.dir}/war/WEB-INF/web.xml"/>
-		<copy file="patterns.xml" tofile="${build.dir}/war/patterns.xml"/>
+		<!--<copy file="patterns.xml" tofile="${build.dir}/war/patterns.xml"/>-->
 		<jar destfile="${build.dir}/${project.name}-${project.version}.war"
 		     basedir="${build.dir}/war"
 		     update="no"/>

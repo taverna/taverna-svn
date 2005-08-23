@@ -32,4 +32,16 @@
     <url-pattern>/status</url-pattern>
   </servlet-mapping>
 
+  <!-- Dynamic generation of the patterns.xml -->
+  <servlet>
+    <display-name>Interaction service dynamic pattern metadata</display-name>
+    <load-on-startup>1</load-on-startup>
+    <servlet-name>PatternServlet</servlet-name>
+    <servlet-class>net.sf.taverna.interaction.server.http.PatternServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>PatternServlet</servlet-name>
+    <url-pattern>/patterns.xml</url-pattern>
+  </servlet-mapping>
+
 </web-app>

@@ -57,13 +57,13 @@ public class InteractionState {
 	}
 	File[] entries = repository.listFiles(new FileFilter() {
 		public boolean accept(File pathname) {
-		    return (pathname.getName().endsWith("-request.xml"));
+		    return (pathname.getName().endsWith("-metadata.xml"));
 		}
 	    });
 	log.debug("Found "+entries.length+" saved interaction states in "+repository.toString());
 	InteractionState[] result = new InteractionState[entries.length];
 	for (int i = 0; i < entries.length; i++) {
-	    String jobID = entries[i].getName().replaceAll("-request\\.xml","");
+	    String jobID = entries[i].getName().replaceAll("-metadata\\.xml","");
 	    log.debug("  "+jobID);
 	    InteractionState state = new InteractionState(jobID, repository);
 	    state.fetchEventState();
