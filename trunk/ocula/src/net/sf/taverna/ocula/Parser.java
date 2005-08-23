@@ -123,9 +123,15 @@ public class Parser {
 	    public void mouseClicked(MouseEvent me) {
 		if (me.getClickCount() == 2 && me.isPopupTrigger() == false) {
 		    log.debug("Double click");
-		    ocula.putContext("selectedObject", targetObject);
+		    if (targetObject != null) {
+			ocula.putContext("selectedObject", targetObject);
+		    }
+		    ocula.putContext("event", me);
 		    ocula.getActionRunner().runAction(doubleClickElement);
-		    ocula.removeKey("selectedObject");
+		    if (targetObject != null) {
+			ocula.removeKey("selectedObject");
+		    }
+		    ocula.removeKey("event");
 		}
 	    }
 	});
@@ -157,11 +163,13 @@ public class Parser {
 		    if (targetObject != null) {
 			ocula.putContext("selectedObject", targetObject);
 		    }
+		    ocula.putContext("event", me);
 		    ocula.getActionRunner().runAction(clickElement);
 		    
 		    if (targetObject != null) {
 			ocula.removeKey("selectedObject");
 		    }
+		    ocula.removeKey("event");
 		}
 	    }
 	});
@@ -222,10 +230,16 @@ public class Parser {
 				actionElementIcon);
 			item.addActionListener(new ActionListener() {
 			    public void actionPerformed(ActionEvent ae) {
-				ocula.putContext("selectedObject",
-						targetObject);
+				if (targetObject != null) {
+				    ocula.putContext("selectedObject",
+					    targetObject);
+				}
+				ocula.putContext("event", ae);
 				ocula.getActionRunner().runAction(actionElement);
-				ocula.removeKey("selectedObject");
+				if (targetObject != null) {
+				    ocula.removeKey("selectedObject");
+				}
+				ocula.removeKey("event");
 			    }
 			});
 			menu.add(item);
@@ -267,11 +281,13 @@ public class Parser {
 		if (targetObject != null) {
 		    ocula.putContext("selectedObject", targetObject);
 		}
+		ocula.putContext("event", e);
 		ocula.getActionRunner().runAction(actionElement);
 		
 		if (targetObject != null) {
 		    ocula.removeKey("selectedObject");
 		}
+		ocula.removeKey("event");
 	    }
 	});
     }
