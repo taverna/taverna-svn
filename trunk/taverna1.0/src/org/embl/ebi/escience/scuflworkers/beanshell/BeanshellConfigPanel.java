@@ -673,7 +673,9 @@ public class BeanshellConfigPanel extends JPanel implements ScuflUIComponent,
 
 	public void attachToModel(ScuflModel theModel)
 	{
+	    if (theModel != null) {
 		theModel.addListener(this);
+	    }
 	}
 
 	public void detachFromModel()
