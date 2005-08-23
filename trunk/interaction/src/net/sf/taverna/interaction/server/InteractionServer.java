@@ -60,6 +60,13 @@ public class InteractionServer {
 	for (int i = 0; i < states.length; i++) {
 	    statusMap.put(states[i].getID(), states[i]);
 	}
+	// Create a new Timer to run the expiry method every minute
+	Timer timer = new Timer();
+	timer.schedule(new TimerTask() {
+		public void run() {
+		    InteractionServer.this.removeExpiredSessions();
+		}
+	    }, (long)0, (long)(1000 * 60));
     }
         
     /**
