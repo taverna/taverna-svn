@@ -39,121 +39,84 @@ import org.apache.log4j.Logger;
  */
 public class InteractionServer {
     
-    private File temp;
-    private int count = 0;
-    private Map statusMap = new HashMap();
+    private File repository;
+    private Map statusMap;
     private static Logger log = Logger.getLogger(InteractionServer.class);
     
     /**
      * Create a new InteractionServer with the specified directory
      * to use as space for indices and temporary data
      */
-    public InteractionServer(File tempLocation) {
-	this.temp = tempLocation;
+    public InteractionServer(File repository) {
+	if (repository.exists() == false) {
+	    log.error("Specified repository doesn't exist");
+	}
+	if (repository.isDirectory() == false) {
+	    log.error("Repository must be a directory");
+	}
+	this.repository = repository;
+	this.statusMap = new HashMap();
+	InteractionState[] states = InteractionState.getPreviousStates(repository);
+	for (int i = 0; i < states.length; i++) {
+	    statusMap.put(states[i].getID(), states[i]);
+	}
+    }
+        
+    /**
+     * Get the InteractionState object for the specified job ID
+     */
+    public InteractionState getInteraction(String jobID) {
+	return (InteractionState)statusMap.get(jobID);
     }
     
     /**
-     * Get a unique ID within this InteractionServer instance
+     * Get all keys for interaction jobs within this server
      */
-    private synchronized String getID() {
-	return new Date().getTime()+"-"+(count++);
+    public Set getCurrentJobs() {
+	return this.statusMap.keySet();
     }
-    
-    /**
-     * Get the PendingInteraction object for the specified job ID
-     */
-    public PendingInteraction getInteraction(String jobID) {
-	return (PendingInteraction)statusMap.get(jobID);
-    }
-    
+
     /**
      * Create a new interaction request
      */
     public String createInteractionRequest(String metadata,
 					   FileItem data) {
-	String jobID = getID();
-	
-	try {
-	    // Write the intput data to a file
-	    File inputDataFile = new File(temp, jobID+"-input.xml");
-	    inputDataFile.createNewFile();
-	    data.write(inputDataFile);
-	    
-	    // Write metadata to a file as well
-	    File metadataFile = new File(temp, jobID+"-request.xml");
-	    metadataFile.createNewFile();
-	    PrintWriter out = new PrintWriter(new FileWriter(metadataFile));
-	    out.println(metadata);
-	    out.flush();
-	    out.close();
-	    
-	    // Parse the metadata document
-	    SAXBuilder builder = new SAXBuilder(false);
-	    Document metadataDoc = builder.build(new StringReader(metadata));
+	synchronized (statusMap) {
+	    InteractionState state = 
+		InteractionState.createInteractionState(repository,
+							data,
+							metadata);
+	    if (state != null) {
+		String jobID = state.getID();
+		statusMap.put(jobID, state);
+		return jobID;
+	    }
+	    else {
+		return null;
+	    }
 	}
-	catch (JDOMException jde) {
-	    log.error(jde);
-	}
-	catch (IOException ioe) {
-	    log.error(ioe);
-	}
-	catch (Exception ex) {
-	    log.error(ex);
-	}
-	
-	PendingInteraction pi = new PendingInteraction(jobID);
-	statusMap.put(jobID, pi);
-	
-	return jobID;
     }
-	
-    /**
-     * Holds metadata about a current interaction job
-     */
-    public class PendingInteraction {
-	
-	private List eventList = new ArrayList();
 
-	public PendingInteraction(String jobID) {
-	    
-	}
-	
-	public void complete() {
-	    addEvent("completed");
-	}
-	
-	public void fail() {
-	    addEvent("failure");
-	}
-	
-	public void reject() {
-	    addEvent("rejected");
-	}
-	
-	public void timeout() {
-	    addEvent("timeout");
-	}
-	
-	private void addEvent(Object o) {
-	    synchronized(eventList) {
-		eventList.add(o);
-	    }
-	}
-	
-	/**
-	 * Return a JDOM document containing all the unsent events
-	 */
-	public Document getUnsentEvents() {
-	    synchronized(eventList) {
-		Element rootElement = new Element("events");
-		for (Iterator i = eventList.iterator(); i.hasNext();) {
-		    String eventString = (String)i.next();
-		    rootElement.addContent(new Element(eventString));
+    /**
+     * Run the expiry test, remove all requests that
+     * have expired
+     */
+    public void removeExpiredSessions() {
+	long currentTime = new Date().getTime();
+	List sessionIDsToRemove = new ArrayList();
+	synchronized (statusMap) {
+	    for (Iterator i = statusMap.values().iterator(); i.hasNext();) {
+		InteractionState state = (InteractionState)i.next();
+		if (state.getExpiry().getTime() < currentTime) {
+		    sessionIDsToRemove.add(state.getID());
 		}
-		eventList.clear();
-		return new Document(rootElement);
 	    }
-	}
+	    for (Iterator i = sessionIDsToRemove.iterator(); i.hasNext();) {
+		String id = (String)i.next();
+		statusMap.remove(id);
+		InteractionState.destroyState(id, repository); 
+	    }
+	}	
     }
 
 }

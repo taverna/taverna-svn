@@ -77,7 +77,7 @@ public class StatusServlet extends HttpServlet {
 	}
 	try {
 	    Document statusDoc = SubmitServlet.getServer().
-		getInteraction(jobID).getUnsentEvents();
+		getInteraction(jobID).getUnsentEvents(true);
 	    XMLOutputter xo = new XMLOutputter(Format.getPrettyFormat());
 	    String status = xo.outputString(statusDoc);
 	    PrintWriter out = response.getWriter();

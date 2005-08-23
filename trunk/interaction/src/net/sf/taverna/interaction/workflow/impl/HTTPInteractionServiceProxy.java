@@ -333,7 +333,7 @@ public class HTTPInteractionServiceProxy implements InteractionService {
 	return this.baseURL.getHost();
     }
     
-    static Element elementForRequest(InteractionRequest r) {
+    public static Element elementForRequest(InteractionRequest r) {
 	Element requestElement = new Element("request");
 	Element patternElement = new Element("pattern");
 	patternElement.setAttribute("name", r.getPattern().getName());
