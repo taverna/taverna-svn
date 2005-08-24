@@ -103,6 +103,10 @@
 		     dest="./netlib/commons-logging-1.0.4.jar" usetimestamp="yes" /> 
 		<get src="http://www.ibiblio.org/maven/commons-httpclient/jars/commons-httpclient-3.0-rc3.jar" 
 		     dest="./netlib/commons-httpclient-3.0-rc3.jar" usetimestamp="yes" /> 
+		<get src="http://www.ibiblio.org/maven/commons-io/jars/commons-io-1.0.jar"
+		     dest="./netlib/commons-io-1.0.jar" usetimestamp="yes" />
+		<get src="http://www.ibiblio.org/maven/commons-codec/jars/commons-codec-1.3.jar"
+		     dest="./netlib/commons-codec-1.3.jar" usetimestamp="yes" />
 		<!-- Log4j --> 
 		<get src="http://www.ibiblio.org/maven/log4j/jars/log4j-1.2.9.jar" 
 		     dest="./netlib/log4j-1.2.9.jar" usetimestamp="yes" /> 
