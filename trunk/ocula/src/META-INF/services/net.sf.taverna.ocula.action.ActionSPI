@@ -6,3 +6,4 @@ net.sf.taverna.ocula.action.RunScriptAction
 net.sf.taverna.ocula.action.JumpToPageAction
 net.sf.taverna.ocula.action.ClearFieldsAction
 net.sf.taverna.ocula.action.ProcessFieldsAction
+net.sf.taverna.ocula.action.ReloadFrameAction
