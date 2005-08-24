@@ -341,6 +341,18 @@ public class InteractionState {
 		     i.hasNext();) {
 		    Element e = (Element)i.next();
 		    unsentEvents.add(e.getName());
+		    if (e.getName().equals("timeout")) {
+			currentState = TIMEOUT;
+		    }
+		    else if (e.getName().equals("rejected")) {
+			currentState = REJECTED;
+		    }
+		    else if (e.getName().equals("failure")) {
+			currentState = FAILED;
+		    }
+		    else if (e.getName().equals("completed")) {
+			currentState = COMPLETED;
+		    }
 		}
 	    }
 	}
