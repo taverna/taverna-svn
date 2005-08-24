@@ -25,6 +25,8 @@
 package net.sf.taverna.interaction.server;
 
 import net.sf.taverna.interaction.workflow.InteractionPattern;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.net.URL;
 
 /**
@@ -44,5 +46,26 @@ public interface ServerInteractionPattern extends InteractionPattern {
      */
     public String getMessageBody(URL baseURL, String id);
 
+    /**
+     * Handle request for interaction input data, this method is passed
+     * the HttpServletRequest / Response objects from any GET or POST
+     * request to the datafetch servlet along with the InteractionState
+     * and InteractionServer objects for context
+     */
+    public void handleInputDownload(HttpServletRequest request,
+				    HttpServletResponse response,
+				    InteractionState state,
+				    InteractionServer server);
+    
+    /**
+     * Handle result upload from the client side interaction code,
+     * should message the state object appropriately if this corresponds
+     * to either successful or failed completion
+     */
+    public void handleResultUpload(HttpServletRequest request,
+				   HttpServletResponse response,
+				   InteractionState state,
+				   InteractionServer server);
+    
 
 }

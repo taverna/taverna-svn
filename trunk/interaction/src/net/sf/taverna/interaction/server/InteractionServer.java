@@ -84,6 +84,13 @@ public class InteractionServer {
     }
     
     /**
+     * Get the repository location for this InteractionServer
+     */
+    public File getRepository() {
+	return this.repository;
+    }
+
+    /**
      * Get all keys for interaction jobs within this server
      */
     public Set getCurrentJobs() {
