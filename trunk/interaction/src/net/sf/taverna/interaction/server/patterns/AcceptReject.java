@@ -24,7 +24,7 @@
 
 package net.sf.taverna.interaction.server.patterns;
 
-import net.sf.taverna.interaction.server.ServerInteractionPattern;
+import net.sf.taverna.interaction.server.AbstractServerInteractionPattern;
 import java.net.URL;
 import java.net.MalformedURLException;
 
@@ -32,26 +32,8 @@ import java.net.MalformedURLException;
  * Simple pattern, user accepts or rejects a single item of data
  * @author Tom Oinn
  */
-public class AcceptReject implements ServerInteractionPattern {
+public class AcceptReject extends AbstractServerInteractionPattern {
 
-    public String getName() {
-	return "base.AcceptReject";
-    }
-    public String[] getInputNames() {
-	return new String[]{"data"};
-    }
-    public String[] getInputTypes() {
-	return new String[]{"'text/plain'"};
-    }
-    public String getDescription() {
-	return "Accept or reject a single item of data.";
-    }
-    public String[] getOutputNames() {
-	return new String[]{"decision"};
-    }
-    public String[] getOutputTypes() {
-	return new String[]{"'text/plain'"};
-    }   
     public String getMessageBody(URL baseURL, String id) {
 	StringBuffer sb = new StringBuffer();
 	sb.append("Interaction request for the accept / reject interaction pattern.");
