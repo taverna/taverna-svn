@@ -86,7 +86,7 @@ public class TableFrameBuilder implements FrameSPI {
 	
 	String key = element.getAttributeValue("key");
 	if (key != null) {
-	    o.putFrameAndElement(key, new FrameAndElement(rsp, element));
+	    o.putContext(key, new FrameAndElement(rsp, element));
 	}
 	
 	Parser parser = new Parser(o);
