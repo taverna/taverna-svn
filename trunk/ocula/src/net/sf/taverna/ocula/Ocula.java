@@ -24,25 +24,45 @@
 
 package net.sf.taverna.ocula;
 
-import javax.swing.*;
-
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.Font;
-import java.awt.event.*;
-import java.util.*;
-import net.sf.taverna.ocula.ui.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.IOException;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+
+import javax.swing.BorderFactory;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JToolBar;
+import javax.swing.UIManager;
+
 import net.sf.taverna.ocula.action.ActionRunner;
-import net.sf.taverna.ocula.renderer.RendererHandler;
 import net.sf.taverna.ocula.frame.FrameHandler;
 import net.sf.taverna.ocula.frame.OculaFrame;
-import net.sf.taverna.ocula.validation.*;
-import java.net.*;
-import java.io.*;
-import bsh.*;
-import org.jdom.Element;
+import net.sf.taverna.ocula.renderer.RendererHandler;
+import net.sf.taverna.ocula.ui.ColourSet;
+import net.sf.taverna.ocula.ui.CompactJButton;
+import net.sf.taverna.ocula.ui.Icons;
+import net.sf.taverna.ocula.ui.PaddedPanel;
+import net.sf.taverna.ocula.validation.PageValidationException;
+
 import org.apache.log4j.Logger;
+import org.jdom.Element;
+
+import bsh.EvalError;
+import bsh.Interpreter;
 
 /**
  * Top level container for an instance of Ocula. This is initialized
@@ -78,6 +98,15 @@ public class Ocula extends JPanel {
 	actionRunner = new ActionRunner(this);
 	rendererHandler = new RendererHandler(this);
 	frameHandler = new FrameHandler(this);
+    }
+    
+    /**
+     * Gets the panel that contains all the frames of the page.
+     * 
+     * @return JPanel containing the frames of the page.
+     */
+    public JPanel getMainPanel() {
+	return mainPanel;
     }
     
     /**
@@ -305,6 +334,14 @@ public class Ocula extends JPanel {
     }
     
     /**
+     * Returns a reference to the instance's FrameHandler. Useful to callers
+     * that need to create a frame from an Element.
+     */
+    public FrameHandler getFrameHandler() {
+	return this.frameHandler;
+    }
+    
+    /**
      * Return a reference to the instance's RendererHandler, used generally by the
      * various frame creator objects to correctly populate their UIs.
      */
@@ -359,7 +396,23 @@ public class Ocula extends JPanel {
     public Object getContext(String key) {
 	return context.get(key);
     }
+    
+    /**
+     * Returns an iterator over the elements in the set of keys of the context.
+     * @return Iterator over a set of Strings.
+     */
+    public Iterator getContextKeySetIterator() {
+	return context.keySet().iterator();
+    }
 
+    /**
+     * Provides callers with the ability to gain exclusive access to the
+     * default context. Usually used with a synchronize block.
+     */
+    public Object getContextMutex() {
+	return context;
+    }
+    
     /**
      * Evaluate a BeanShell script, all context objects are inserted into the script
      * context.
