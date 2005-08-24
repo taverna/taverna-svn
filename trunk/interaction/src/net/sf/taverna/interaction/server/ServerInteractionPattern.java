@@ -27,6 +27,7 @@ package net.sf.taverna.interaction.server;
 import net.sf.taverna.interaction.workflow.InteractionPattern;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.ServletException;
 import java.net.URL;
 
 /**
@@ -55,7 +56,8 @@ public interface ServerInteractionPattern extends InteractionPattern {
     public void handleInputDownload(HttpServletRequest request,
 				    HttpServletResponse response,
 				    InteractionState state,
-				    InteractionServer server);
+				    InteractionServer server)
+	throws ServletException;
     
     /**
      * Handle result upload from the client side interaction code,
@@ -65,7 +67,8 @@ public interface ServerInteractionPattern extends InteractionPattern {
     public void handleResultUpload(HttpServletRequest request,
 				   HttpServletResponse response,
 				   InteractionState state,
-				   InteractionServer server);
+				   InteractionServer server)
+	throws ServletException;
     
 
 }

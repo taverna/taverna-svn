@@ -66,4 +66,28 @@
     <url-pattern>/patterns.xml</url-pattern>
   </servlet-mapping>
 
+  <!-- Interface for interaction client code to fetch input data, mapped to /client/download -->
+  <servlet>
+    <display-name>Interaction client data download servlet</display-name>
+    <load-on-startup>2</load-on-startup>
+    <servlet-name>ClientDownloadServlet</servlet-name>
+    <servlet-class>net.sf.taverna.interaction.server.http.ClientDownloadServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>ClientDownloadServlet</servlet-name>
+    <url-pattern>/client/download</url-pattern>
+  </servlet-mapping>
+
+  <!-- Interface for interaction client code to upload result data, mapped to /client/upload -->
+  <servlet>
+    <display-name>Interaction client data upload servlet</display-name>
+    <load-on-startup>2</load-on-startup>
+    <servlet-name>ClientUploadServlet</servlet-name>
+    <servlet-class>net.sf.taverna.interaction.server.http.ClientUploadServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>ClientUploadServlet</servlet-name>
+    <url-pattern>/client/upload</url-pattern>
+  </servlet-mapping>
+  
 </web-app>

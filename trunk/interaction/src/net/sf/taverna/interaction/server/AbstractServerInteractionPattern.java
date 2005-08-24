@@ -31,6 +31,7 @@ import org.jdom.input.*;
 import org.apache.log4j.Logger;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.ServletException;
 import org.apache.commons.fileupload.*;
 import org.apache.commons.io.IOUtil;
 
@@ -139,7 +140,8 @@ public abstract class AbstractServerInteractionPattern
     public void handleInputDownload(HttpServletRequest request,
 				    HttpServletResponse response,
 				    InteractionState state,
-				    InteractionServer server) {
+				    InteractionServer server) 
+	throws ServletException {
 	try {
 	    response.setContentType("text/xml");
 	    File dataFile = new File(server.getRepository(),
@@ -173,7 +175,8 @@ public abstract class AbstractServerInteractionPattern
     public void handleResultUpload(HttpServletRequest request,
 				   HttpServletResponse response,
 				   InteractionState state,
-				   InteractionServer server) {
+				   InteractionServer server) 
+	throws ServletException {
 	try {
 	    boolean isMultipart = FileUpload.isMultipartContent(request);
 	    if (!isMultipart) {
