@@ -37,7 +37,7 @@ public final class FrameAndElement {
      * @param element The Element from which the OculaFrame was created.
      */
     public FrameAndElement(OculaFrame frame, Element element) {
-	if (frame != null || element != null) {
+	if (frame == null || element == null) {
 	    throw new IllegalArgumentException("frame and element must not be " +
 	    		"null.");
 	}
