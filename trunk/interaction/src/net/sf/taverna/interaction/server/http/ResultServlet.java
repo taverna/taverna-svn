@@ -33,27 +33,25 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import java.io.*;
-import org.jdom.output.*;
-import org.jdom.*;
 
 import org.apache.log4j.Logger;
 import org.apache.commons.fileupload.*;
+import org.apache.commons.io.IOUtil;
 
 import java.util.*;
 
 /**
- * Fetches the XML status document containing all unsent events for
- * the specified Job ID POSTed to it
+ * Fetch the result document for the session ID specified in the 'id'
+ * parameter to the POST request
  * @author Tom Oinn
  */
-public class StatusServlet extends HttpServlet {
+public class ResultServlet extends HttpServlet {
     
-    private static Logger log = Logger.getLogger(StatusServlet.class);
-    
+    private static Logger log = Logger.getLogger(ResultServlet.class);
+
     public void doPost(HttpServletRequest request,
 		       HttpServletResponse response)
 	throws ServletException {
-	SubmitServlet.getServer().setBaseURL(request.getServletPath());
 	String jobID = null;
 	try {
 	    boolean isMultipart = FileUpload.isMultipartContent(request);
@@ -76,28 +74,34 @@ public class StatusServlet extends HttpServlet {
 	if (jobID == null) {
 	    throw new ServletException("Job ID must be specified as the 'id' parameter in the POST request");
 	}
+	log.debug("Fetching results for '"+jobID+"'");
+	InteractionServer server = SubmitServlet.getServer();
+	InteractionState state = server.getInteraction(jobID);
+	if (state == null) {
+	    log.error("Attempt to retrieve results for state '"+jobID+"' but it doesn't exist!");
+	    throw new ServletException("No such state on the server!");
+	}
+	if (state.getState() != InteractionState.COMPLETED) {
+	    log.error("Interaction '"+jobID+"' isn't in state COMPLETED, can't fetch results.");
+	    throw new ServletException("Can't fetch results, this session isn't finished.");
+	}
 	try {
-	    Document statusDoc = SubmitServlet.getServer().
-		getInteraction(jobID).getUnsentEvents(true);
-	    XMLOutputter xo = new XMLOutputter(Format.getPrettyFormat());
-	    String status = xo.outputString(statusDoc);
-	    PrintWriter out = response.getWriter();
+	    File resultsFile = new File(server.getRepository(),
+					jobID+"-results.xml");
+	    FileInputStream fis = new FileInputStream(resultsFile);
 	    response.setContentType("text/xml");
-	    out.write(status);
+	    PrintWriter out = response.getWriter();
+	    IOUtil.copy(fis, out);
 	    out.flush();
-	    // If the state is a terminal non-complete one then remove
-	    // this session from the server, there's no longer any reason
-	    // to have it there.
-	    int interactionState = SubmitServlet.getServer().
-		getInteraction(jobID).getState();
-	    if (interactionState != InteractionState.WAITING &&
-		interactionState != InteractionState.COMPLETED) {
-		SubmitServlet.getServer().removeSession(jobID);
-	    }
+	    out.close();
+	    // Got to here, this means we've sent the results off safely
+	    // so destroy the session on the server
+	    server.removeSession(jobID);
 	}
 	catch (IOException ioe) {
-	    log.error(ioe);
+	    log.error("Unable to read from results file for '"+jobID+"'");
+	    throw new ServletException(ioe);
 	}
     }
-
+    
 }

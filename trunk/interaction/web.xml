@@ -2,7 +2,7 @@
 <!-- Tom Oinn, tmo@ebi.ac.uk, 22nd August 2005     -->
 <web-app>
 
-  <!-- Handles interaction service request submission, mapped to /submit -->
+  <!-- Handles interaction service request submission, mapped to /workflow/submit -->
   <servlet>
     <display-name>Interaction service submission servlet</display-name>
     <!-- Force init when the application server starts -->
@@ -27,10 +27,10 @@
   </servlet>
   <servlet-mapping>
     <servlet-name>SubmitServlet</servlet-name>
-    <url-pattern>/submit</url-pattern>
+    <url-pattern>/workflow/submit</url-pattern>
   </servlet-mapping>
 
-  <!-- Provides status information, mapped to /status -->
+  <!-- Provides status information, mapped to /workflow/status -->
   <servlet>
     <display-name>Interaction service status servlet</display-name>
     <load-on-startup>1</load-on-startup>
@@ -39,7 +39,19 @@
   </servlet>
   <servlet-mapping>
     <servlet-name>StatusServlet</servlet-name>
-    <url-pattern>/status</url-pattern>
+    <url-pattern>/workflow/status</url-pattern>
+  </servlet-mapping>
+
+  <!-- Provides result document from interaction server to workflow, mapped to /workflow/results -->
+  <servlet>
+    <display-name>Interaction service results servlet</display-name>
+    <load-on-startup>1</load-on-startup>
+    <servlet-name>ResultServlet</servlet-name>
+    <servlet-class>net.sf.taverna.interaction.server.http.ResultServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>ResultServlet</servlet-name>
+    <url-pattern>/workflow/results</url-pattern>
   </servlet-mapping>
 
   <!-- Dynamic generation of the patterns.xml -->

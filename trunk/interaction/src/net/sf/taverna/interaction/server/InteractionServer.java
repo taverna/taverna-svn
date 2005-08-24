@@ -71,7 +71,7 @@ public class InteractionServer {
 	Timer timer = new Timer();
 	timer.schedule(new TimerTask() {
 		public void run() {
-		    InteractionServer.this.removeExpiredSessions();
+		    InteractionServer.this.expireSessions();
 		}
 	    }, (long)0, (long)(1000 * 60));
     }
@@ -158,25 +158,34 @@ public class InteractionServer {
     }
 
     /**
-     * Run the expiry test, remove all requests that
-     * have expired
+     * Run the expiry test, message all sessions that have expired
      */
-    public void removeExpiredSessions() {
+    public void expireSessions() {
 	long currentTime = new Date().getTime();
-	List sessionIDsToRemove = new ArrayList();
 	synchronized (statusMap) {
 	    for (Iterator i = statusMap.values().iterator(); i.hasNext();) {
 		InteractionState state = (InteractionState)i.next();
 		if (state.getExpiry().getTime() < currentTime) {
-		    sessionIDsToRemove.add(state.getID());
+		    state.timeout();
 		}
 	    }
-	    for (Iterator i = sessionIDsToRemove.iterator(); i.hasNext();) {
-		String id = (String)i.next();
-		statusMap.remove(id);
-		InteractionState.destroyState(id, repository); 
-	    }
 	}	
+    }
+
+    /**
+     * Remove a state from this server
+     */
+    public void removeSession(String id) {
+	synchronized (statusMap) {
+	    InteractionState state = 
+		(InteractionState)statusMap.get(id);
+	    if (state != null) {
+		// Remove from the map
+		statusMap.remove(id);
+		// Destroy the on disk session
+		InteractionState.destroyState(id, repository);
+	    }
+	}
     }
 
 }

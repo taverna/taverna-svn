@@ -49,11 +49,11 @@ import org.embl.ebi.escience.baclava.factory.DataThingXMLFactory;
  * <ul>
  * <li>/patterns.xml - <em>XML file containing all the patterns this
  * interaction server supports</em></li>
- * <li>/submit - <em>Submission handler servlet to which interaction
+ * <li>/workflow/submit - <em>Submission handler servlet to which interaction
  * request data and metadata can be POSTed to in multipart form</em></li>
- * <li>/status - <em>Status handler servlet used to fetch interaction
+ * <li>/workflow/status - <em>Status handler servlet used to fetch interaction
  * request status for a previously submitted request</em></li>
- * <li>/results - <em>Result handler capable of streaming a serialized
+ * <li>/workflow/results - <em>Result handler capable of streaming a serialized
  * Map of DataThing objects back to the proxy</em></li>
  * </ul>
  * @author Tom Oinn
@@ -156,7 +156,7 @@ public class HTTPInteractionServiceProxy implements InteractionService {
 	throws SubmissionException {
 	try {
 	    // URL to submit the request to by POST
-	    URL submitURL = new URL(baseURL, "submit");
+	    URL submitURL = new URL(baseURL, "workflow/submit");
 	    
 	    // Build the request metadata document
 	    XMLOutputter xo = new XMLOutputter(Format.getPrettyFormat());
@@ -230,7 +230,7 @@ public class HTTPInteractionServiceProxy implements InteractionService {
     InteractionStatus[] getNewEventsForID(String requestID) {
 	PostMethod post = null;
 	try {
-	    URL statusURL = new URL(baseURL, "status");
+	    URL statusURL = new URL(baseURL, "workflow/status");
 	    post = new PostMethod(statusURL.toString());
 	    Part[] parts = { new StringPart("id", requestID) };
 	    post.setRequestEntity(new MultipartRequestEntity(parts, post.getParams()));
@@ -297,7 +297,7 @@ public class HTTPInteractionServiceProxy implements InteractionService {
     Map getResultObject(String requestID) {
 	PostMethod post = null;
 	try {
-	    URL resultsURL = new URL(baseURL, "results");
+	    URL resultsURL = new URL(baseURL, "workflow/results");
 	    post = new PostMethod(resultsURL.toString());
 	    Part[] parts = { new StringPart("id", requestID) };
 	    post.setRequestEntity(new MultipartRequestEntity(parts, post.getParams()));

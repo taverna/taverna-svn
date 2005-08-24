@@ -46,6 +46,13 @@ public class InteractionState {
     private Date expiry;
     private String email;
     private ServerInteractionPattern pattern;
+    private int currentState = InteractionState.WAITING;
+
+    public static int REJECTED = 0;
+    public static int COMPLETED = 1;
+    public static int FAILED = 2;
+    public static int TIMEOUT = 3;
+    public static int WAITING = 4;
 
     /**
      * Scan the specified directory for the state files created by
@@ -150,6 +157,12 @@ public class InteractionState {
 	return new Date().getTime()+"-"+(count++);
     }
     
+    /**
+     * Get the state of this interaction
+     */
+    public int getState() {
+	return this.currentState;
+    }
 
     /**
      * Remove all files for the given Job ID
@@ -226,6 +239,7 @@ public class InteractionState {
      * Complete this interaction
      */
     public void complete() {
+	currentState = COMPLETED;
 	addEvent("completed");
     }
     
@@ -233,6 +247,7 @@ public class InteractionState {
      * Fail this interaction
      */
     public void fail() {
+	currentState = FAILED;
 	addEvent("failure");
     }
     
@@ -240,6 +255,7 @@ public class InteractionState {
      * User rejected interaction
      */
     public void reject() {
+	currentState = REJECTED;
 	addEvent("rejected");
     }
     
@@ -247,6 +263,7 @@ public class InteractionState {
      * Interaction timed out
      */
     public void timeout() {
+	currentState = TIMEOUT;
 	addEvent("timeout");
     }
 	
