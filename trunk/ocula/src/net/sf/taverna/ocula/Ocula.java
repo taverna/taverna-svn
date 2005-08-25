@@ -46,6 +46,7 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JToolBar;
+import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 
 import net.sf.taverna.ocula.action.ActionRunner;
@@ -326,9 +327,13 @@ public class Ocula extends JPanel {
 	for (Iterator i = contents.iterator(); i.hasNext();) {
 	    OculaFrame frame = frameHandler.getFrame((Element)i.next());
 	    if (frame != null) {
-		Component c = (Component)frame;
-		mainPanel.add(c);
-		mainPanel.revalidate();
+		final Component c = (Component)frame;
+		SwingUtilities.invokeLater(new Runnable() {
+		    public void run() {
+			mainPanel.add(c);
+			mainPanel.revalidate();
+		    }
+		});
 	    }
 	}
     }
