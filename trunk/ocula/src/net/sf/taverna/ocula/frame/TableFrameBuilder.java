@@ -34,6 +34,7 @@ import java.util.List;
 
 import javax.swing.Icon;
 import javax.swing.JTable;
+import javax.swing.SwingUtilities;
 import javax.swing.event.TableModelEvent;
 import javax.swing.table.AbstractTableModel;
 
@@ -81,7 +82,7 @@ public class TableFrameBuilder implements FrameSPI {
 	    columnNames.add(colDef.getAttributeValue("name","NoName"));
 	    columnScripts.add(colDef.getTextTrim());
 	}
-	TableFrame rsp = new TableFrame(name, Icons.getIcon(iconName));
+	final TableFrame rsp = new TableFrame(name, Icons.getIcon(iconName));
 	rsp.getContents().setLayout(new BorderLayout());
 	
 	String key = element.getAttributeValue("key");
@@ -91,18 +92,23 @@ public class TableFrameBuilder implements FrameSPI {
 	
 	Parser parser = new Parser(o);
 	Object[] targetObjects = null;
+	rsp.getProgressBar().setIndeterminate(true);
 	try {
 	    targetObjects = parser.parseScript(element);
 	}
 	catch (EvalError ee) {
 		if (rsp != null) {
-		    rsp.getContents().removeAll();
-		    rsp.getContents().add(new ErrorLabel("<html><body>Can't" +
-		    		"fetch components.<p>"+
-		    		"See log output for more details.</body></html>"));
-		    rsp.revalidate();
-		    rsp.getProgressBar().setIndeterminate(false);
-		    rsp.getProgressBar().setValue(100);
+		    SwingUtilities.invokeLater(new Runnable() {
+			public void run() {
+			    rsp.getContents().removeAll();
+			    rsp.getContents().add(new ErrorLabel("<html><body>Can't" +
+			    		"fetch components.<p>"+
+			    		"See log output for more details.</body></html>"));
+			    rsp.getProgressBar().setIndeterminate(false);
+			    rsp.getProgressBar().setValue(100);
+			    rsp.revalidate();
+			}
+		    });
 		}
 		log.error("Can't evaluate main table script", ee);
 	}
@@ -140,7 +146,7 @@ public class TableFrameBuilder implements FrameSPI {
 	String script;
 	Ocula ocula;
 	List tableData;
-	ResultSetPanel panel;
+	final ResultSetPanel panel;
 	final Object[] targetObjects;
 	
 	public ScriptTableModel(Ocula o, ResultSetPanel panel,
@@ -155,16 +161,17 @@ public class TableFrameBuilder implements FrameSPI {
 	    tableData = new ArrayList();
 	    new Thread() {
 		public void run() {
-		    if (ScriptTableModel.this.panel != null) {
-			ScriptTableModel.this.panel.getProgressBar().setIndeterminate(true);
-		    }
 		    try {
 			
 			// Now have the array of object, just need to call the methods on them
 			// corresponding to the colScripts.
 			if (ScriptTableModel.this.panel != null) {
-			    ScriptTableModel.this.panel.getProgressBar().setIndeterminate(false);
-			    ScriptTableModel.this.panel.getProgressBar().setValue(0);
+			    SwingUtilities.invokeLater(new Runnable() {
+				public void run() {
+				    ScriptTableModel.this.panel.getProgressBar().setIndeterminate(false);
+				    ScriptTableModel.this.panel.getProgressBar().setValue(0);    
+				}
+			    });
 			}
 			for (int i = 0; i < targetObjects.length; i++) {
 			    Object[] row = new Object[ScriptTableModel.this.colScripts.length];
@@ -201,8 +208,13 @@ public class TableFrameBuilder implements FrameSPI {
 									ScriptTableModel.this.rows);
 			    ScriptTableModel.this.rows++;
 			    if (ScriptTableModel.this.panel != null) {
-				ScriptTableModel.this.panel.getProgressBar().setValue((100*(i+1))/targetObjects.length);
-				ScriptTableModel.this.panel.revalidate();
+				final int m = i;
+				SwingUtilities.invokeLater(new Runnable() {
+				    public void run() {
+					ScriptTableModel.this.panel.getProgressBar().setValue((100*(m+1))/targetObjects.length);
+					ScriptTableModel.this.panel.revalidate();
+				    }
+				});
 			    } 
 			}
 			if (sortColumn != null) {
@@ -210,26 +222,28 @@ public class TableFrameBuilder implements FrameSPI {
 			}
 			ScriptTableModel.this.fireTableChanged(new TableModelEvent(ScriptTableModel.this));
 			if (ScriptTableModel.this.panel != null) {
-			    ScriptTableModel.this.panel.getProgressBar().setValue(100);
-			    try {
-				Thread.sleep(200);
-			    }
-			    catch (Exception ex) {
-				//
-			    }
-			    ScriptTableModel.this.panel.revalidate();
+			    SwingUtilities.invokeLater(new Runnable() {
+				public void run() {
+				    ScriptTableModel.this.panel.getProgressBar().setValue(100);
+				    ScriptTableModel.this.panel.revalidate();
+				}
+			    });
 			}
 		    }
 		    catch (EvalError ee) {
 			// Failed to evaluate the script, results in an empty table model
 			if (ScriptTableModel.this.panel != null) {
-			    ScriptTableModel.this.panel.getContents().removeAll();
-			    ScriptTableModel.this.panel.getContents().
-				add(new ErrorLabel("<html><body>Can't fetch components.<p>"+
-						   "See log output for more details.</body></html>"));
-			    ScriptTableModel.this.panel.revalidate();
-			    ScriptTableModel.this.panel.getProgressBar().setIndeterminate(false);
-			    ScriptTableModel.this.panel.getProgressBar().setValue(100);
+			    SwingUtilities.invokeLater(new Runnable() {
+				public void run() {
+				    ScriptTableModel.this.panel.getContents().removeAll();
+				    ScriptTableModel.this.panel.getContents().
+					add(new ErrorLabel("<html><body>Can't fetch components.<p>"+
+							   "See log output for more details.</body></html>"));
+				    ScriptTableModel.this.panel.revalidate();
+				    ScriptTableModel.this.panel.getProgressBar().setIndeterminate(false);
+				    ScriptTableModel.this.panel.getProgressBar().setValue(100);    
+				}
+			    });
 			}
 			log.error("Can't evaluate main table script", ee);
 		    }
