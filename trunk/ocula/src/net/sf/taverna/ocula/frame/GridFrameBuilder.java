@@ -26,6 +26,7 @@ package net.sf.taverna.ocula.frame;
 
 import javax.swing.Icon;
 import javax.swing.JComponent;
+import javax.swing.SwingUtilities;
 
 import net.sf.taverna.ocula.Ocula;
 import net.sf.taverna.ocula.Parser;
@@ -80,11 +81,21 @@ public class GridFrameBuilder implements FrameSPI {
 	    o.putContext(key, new FrameAndElement(gf, element));
 	}
 	final Ocula ocula = o;
+	SwingUtilities.invokeLater(new Runnable() {
+	    public void run() {
+		gf.getProgressBar().setValue(0);
+		gf.getProgressBar().setIndeterminate(true);
+	    }
+	});
+	final Runnable stopProgressBar = new Runnable() {
+	    public void run() {
+		gf.getProgressBar().setValue(100);
+		gf.getProgressBar().setIndeterminate(false);
+	    }
+	};
 	new Thread() {
 	    public void run() {
 		Parser parser = new Parser(ocula);
-		gf.getProgressBar().setValue(0);
-		gf.getProgressBar().setIndeterminate(true);
 		try {
 		    Object result = parser.parseScript(element);
 		    if (result instanceof Object[]) {
@@ -111,8 +122,7 @@ public class GridFrameBuilder implements FrameSPI {
 		catch (Exception ex) {
 		    log.error("Unexpected exception!", ex);
 		}
-		gf.getProgressBar().setValue(100);
-		gf.getProgressBar().setIndeterminate(false);
+		SwingUtilities.invokeLater(stopProgressBar);
 	    }
 	}.start();
 	return gf;
