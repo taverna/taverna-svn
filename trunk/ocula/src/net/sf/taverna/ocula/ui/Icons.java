@@ -67,7 +67,7 @@ public abstract class Icons {
 	}
 	for (int i = 0; i < suffixes.length; i++) {
 	    URL resourceURL = Thread.currentThread().getContextClassLoader().
-		getResource("net/sf/taverna/ocula/ui/icons/"+name+".png");
+		getResource("net/sf/taverna/ocula/ui/icons/"+name+"."+suffixes[i]);
 	    if (resourceURL != null) {
 		icon = new ImageIcon(resourceURL);
 		iconCache.put(name, icon);
