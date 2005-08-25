@@ -62,9 +62,13 @@ public class Page {
 	}
 	catch (IOException ioe) {
 	    log.info("IOException when loading page", ioe);
+	    throw ioe;
 	}
 	catch (JDOMException jde) {
 	    log.info("JDOM Exception when loading page", jde);
+	    IOException ioe = new IOException();
+	    ioe.initCause(ioe);
+	    throw ioe;
 	}
     }
     
