@@ -1,9 +1,11 @@
 package net.sf.taverna.ocula.frame;
 
 import java.awt.Component;
+import java.awt.Dimension;
 import java.util.Iterator;
 
 import javax.swing.BorderFactory;
+import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.Icon;
 import javax.swing.SwingUtilities;
@@ -39,10 +41,15 @@ public class CompoundFrameBuilder implements FrameSPI {
 	    OculaFrame frame = ocula.getFrameHandler().getFrame(
 		    (Element) i.next());
 	    if (frame != null) {
+		final boolean hasNext = i.hasNext();
 		final Component c = (Component) frame;
 		SwingUtilities.invokeLater(new Runnable() {
 		    public void run() {
 			cf.getContents().add(c);
+			if (hasNext) {
+			    Component box = Box.createRigidArea(new Dimension(5, 5));
+			    cf.getContents().add(box);
+			}
 		    }
 		});
 	    }
