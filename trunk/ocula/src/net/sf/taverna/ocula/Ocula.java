@@ -388,9 +388,12 @@ public class Ocula extends JPanel {
     public Object evaluate(String script) throws EvalError {
 	script = "returnValue = "+script;
 	Interpreter i = new Interpreter();
-	for (Iterator contextIterator = context.keySet().iterator(); contextIterator.hasNext();) {
-	    String keyName = (String)contextIterator.next();
-	    i.set(keyName, context.get(keyName));
+	synchronized (context) {
+	    for (Iterator contextIterator = context.keySet().iterator(); contextIterator
+		    .hasNext();) {
+		String keyName = (String) contextIterator.next();
+		i.set(keyName, context.get(keyName));
+	    }
 	}
 	i.eval(script);
 	return i.get("returnValue");
@@ -434,13 +437,18 @@ public class Ocula extends JPanel {
      */
     public void runScript(String script, String[] extract) throws EvalError {
 	Interpreter i = new Interpreter();
-	for (Iterator contextIterator = context.keySet().iterator(); contextIterator.hasNext();) {
-	    String keyName = (String)contextIterator.next();
-	    i.set(keyName, context.get(keyName));
+	synchronized (context) {
+	    for (Iterator contextIterator = context.keySet().iterator(); contextIterator
+		    .hasNext();) {
+		String keyName = (String) contextIterator.next();
+		i.set(keyName, context.get(keyName));
+	    }
 	}
 	i.eval(script);
-	for (int j = 0; j < extract.length; j++) {
-	    context.put(extract[j], i.get(extract[j]));
+	synchronized (context) {
+	    for (int j = 0; j < extract.length; j++) {
+		context.put(extract[j], i.get(extract[j]));
+	    }
 	}
     }
 
