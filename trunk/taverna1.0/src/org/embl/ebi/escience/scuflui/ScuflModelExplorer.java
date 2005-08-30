@@ -47,6 +47,8 @@ public class ScuflModelExplorer extends JTree
      */
     public ScuflModelExplorer() {
 	super();
+	setLargeModel(true);
+	setRowHeight(18);
 	setModel(treeModel);
 	// Only allow single selection (not really important but...)
 	this.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);

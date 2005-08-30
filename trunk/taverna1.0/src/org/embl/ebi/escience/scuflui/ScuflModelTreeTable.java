@@ -99,7 +99,7 @@ public class ScuflModelTreeTable extends JTreeTable
 	this.tree.setCellRenderer(renderer);
 	//this.addMouseMotionListener(new ScuflModelExplorerDragHandler(this.tree));
 	//this.setDragEnabled(true);
-	this.tree.setRowHeight(0);
+	//this.tree.setRowHeight(0);
 	getSelectionModel().addListSelectionListener(new ListSelectionListener() {
 		public void valueChanged(ListSelectionEvent e) {
 		    if (e.getValueIsAdjusting()) {
