@@ -27,6 +27,7 @@ package net.sf.taverna.ocula;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Container;
+import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -327,10 +328,14 @@ public class Ocula extends JPanel {
 	for (Iterator i = contents.iterator(); i.hasNext();) {
 	    OculaFrame frame = frameHandler.getFrame((Element)i.next());
 	    if (frame != null) {
+		final boolean hasNext = i.hasNext();
 		final Component c = (Component)frame;
 		SwingUtilities.invokeLater(new Runnable() {
 		    public void run() {
 			mainPanel.add(c);
+			if (hasNext) {
+			    mainPanel.add(Box.createRigidArea(new Dimension(10, 10)));
+			}
 			mainPanel.revalidate();
 		    }
 		});
