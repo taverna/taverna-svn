@@ -4,3 +4,4 @@ net.sf.taverna.ocula.frame.InputFrameBuilder
 net.sf.taverna.ocula.frame.SimpleInputFrameBuilder
 net.sf.taverna.ocula.frame.HTMLFrameBuilder
 net.sf.taverna.ocula.frame.SimpleHTMLFrameBuilder
+net.sf.taverna.ocula.frame.CompoundFrameBuilder
