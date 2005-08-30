@@ -41,13 +41,23 @@ import javax.servlet.http.*;
 import java.util.*;
 
 /**
- * Simple pattern, user accepts or rejects a single item of data
+ * Simple pattern, user accepts or rejects a single item of data. It does
+ * this directly within the email response rather than requiring some external
+ * server or set of jsp, this is probably the simplest possible interaction
+ * pattern and is included more as an example than anything else.
  * @author Tom Oinn
  */
 public class AcceptReject extends AbstractServerInteractionPattern {
 
     private static Logger log = Logger.getLogger(AcceptReject.class);
 
+    /**
+     * Constructs an email body consisting of a copy of the interaction
+     * data specified as an input in the workflow along with two links,
+     * both to the upload servlet in GET mode with different values for
+     * the 'response' parameter, this will be processed by the handleResultUpload
+     * method in this class.
+     */
     public String getMessageBody(URL baseURL, InteractionState state) {
 	StringBuffer sb = new StringBuffer();
 	log.debug("Base URL is "+baseURL);
@@ -68,7 +78,16 @@ public class AcceptReject extends AbstractServerInteractionPattern {
 	}
 	return sb.toString();
     }
-
+    
+    /**
+     * This interaction pattern uploads the results in the form of a GET 
+     * query to the upload servlet. This is then passed onto this method
+     * which pulls out the 'response' parameter, bakes it into a DataThing
+     * and writes the Map containing the single DataThing object (with a
+     * key of 'decision' as per the metadata for this pattern) into the
+     * <ID>-results.xml file in the server repository. It then messages the 
+     * state object to signal completion of the interaction.
+     */
     public void handleResultUpload(HttpServletRequest request,
 				   HttpServletResponse response,
 				   InteractionState state,
