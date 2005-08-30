@@ -4,7 +4,7 @@
 <!-- In most cases you will not need to edit anything in this    -->
 <!-- file, it contains targets to build code, instrument for     -->
 <!-- JCoverage, build javadoc and run unit tests with JUnit.     -->
-<project name="Generic build template" default="all" basedir=".">
+<project name="ocula" default="all" basedir=".">
 
 	<!-- These directories are pretty standard, you probably     -->
 	<!-- don't want to change them                               -->
