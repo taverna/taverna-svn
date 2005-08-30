@@ -24,6 +24,11 @@
       <param-name>mail_from</param-name>
       <param-value>tmo@ebi.ac.uk</param-value>
     </init-param>
+    <!-- Base URL from which to assemble callback URLs -->
+    <init-param>
+      <param-name>base_url</param-name>
+      <param-value>http://ogre.dhcp.ebi.ac.uk:8080/InteractionServer-0.1/</param-value>
+    </init-param>
   </servlet>
   <servlet-mapping>
     <servlet-name>SubmitServlet</servlet-name>

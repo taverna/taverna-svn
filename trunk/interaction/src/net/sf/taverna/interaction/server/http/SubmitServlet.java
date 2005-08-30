@@ -31,6 +31,7 @@ import javax.servlet.ServletConfig;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpUtils;
 
 import java.io.*;
 
@@ -75,13 +76,19 @@ public class SubmitServlet extends HttpServlet {
 	this.server = new InteractionServer(new File(tempLocation),
 					    mailHost,
 					    mailFrom);
+	try {
+	    server.setBaseURL(sc.getInitParameter("base_url"));
+	}
+	catch (Throwable ex) {
+	    log.debug("Base URL not defined, will try to guess from requests.");
+	}
 	log.debug("Created InteractionServer singleton with temp location of '"+tempLocation+"'.");
     }
 
     public void doPost(HttpServletRequest request,
 		       HttpServletResponse response)
 	throws ServletException {
-	server.setBaseURL(request.getServletPath());
+	server.setBaseURL(HttpUtils.getRequestURL(request).toString());
 	String jobID = null;
 	try {
 	    FileItem dataItem = null;

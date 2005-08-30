@@ -207,7 +207,7 @@ public class InteractionState {
      * links back to the server within the mail
      */
     public String getMessageBody(URL baseURL) {
-	return this.pattern.getMessageBody(baseURL, getID());
+	return this.pattern.getMessageBody(baseURL, this);
     }
     
     /**
@@ -268,6 +268,23 @@ public class InteractionState {
     }
 	
     /**
+     * Get an in memory JDOM document representation of the
+     * data for this request
+     * @return the document, or null if an error occurs
+     */
+    public Document getInputDocument() {
+	try {
+	    SAXBuilder builder = new SAXBuilder();
+	    File dataFile = new File(repository, jobID+"-input.xml");
+	    return builder.build(new FileInputStream(dataFile));
+	}
+	catch (Exception ex) {
+	    log.error("Unable to fetch data document for request '"+getID()+"'");
+	    return null;
+	}
+    }
+
+    /**
      * Return a JDOM document containing all the unsent events
      * @param clear If true then remove all items from the list
      * after returning it, if false then leave the current state
@@ -289,6 +306,7 @@ public class InteractionState {
 	    return new Document(rootElement);
 	}
     }
+
     /**
      * Push an event onto the queue and write the state to disk
      */
@@ -298,6 +316,7 @@ public class InteractionState {
 	    writeEventState();
 	}
     }
+
     /**
      * Write the event state to disk
      */
@@ -323,6 +342,7 @@ public class InteractionState {
 	    }
 	}
     }
+
     /**
      * Fetch the event state from disk
      */

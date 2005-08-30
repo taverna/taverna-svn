@@ -25,8 +25,20 @@
 package net.sf.taverna.interaction.server.patterns;
 
 import net.sf.taverna.interaction.server.AbstractServerInteractionPattern;
+import net.sf.taverna.interaction.server.InteractionState;
+import net.sf.taverna.interaction.server.InteractionServer;
 import java.net.URL;
 import java.net.MalformedURLException;
+import org.jdom.*;
+import org.jdom.input.*;
+import org.jdom.output.*;
+import org.embl.ebi.escience.baclava.*;
+import org.embl.ebi.escience.baclava.factory.*;
+import org.apache.log4j.Logger;
+import java.io.*;
+import javax.servlet.*;
+import javax.servlet.http.*;
+import java.util.*;
 
 /**
  * Simple pattern, user accepts or rejects a single item of data
@@ -34,18 +46,66 @@ import java.net.MalformedURLException;
  */
 public class AcceptReject extends AbstractServerInteractionPattern {
 
-    public String getMessageBody(URL baseURL, String id) {
+    private static Logger log = Logger.getLogger(AcceptReject.class);
+
+    public String getMessageBody(URL baseURL, InteractionState state) {
 	StringBuffer sb = new StringBuffer();
-	sb.append("Interaction request for the accept / reject interaction pattern.");
-	
+	log.debug("Base URL is "+baseURL);
 	try {
-	    URL targetURL = new URL(baseURL,"interactionApplet?id="+id);
-	    sb.append("\n\n"+targetURL.toString()+"\n");
+	    URL acceptURL = new URL(baseURL, "client/upload?id="+state.getID()+"&response=accept");
+	    URL rejectURL = new URL(baseURL, "client/upload?id="+state.getID()+"&response=reject");
+	    Document doc = state.getInputDocument();
+	    Map dataThings = DataThingXMLFactory.parseDataDocument(doc);
+	    DataThing text = (DataThing)dataThings.get("data");
+	    String data = (String)text.getDataObject();
+	    sb.append("Interaction request for the accept / reject interaction pattern, the workflow designer has requested that you either accept or reject the following text : ");
+	    sb.append("\n\n" + data + "\n\n");
+	    sb.append(" Accept : "+acceptURL.toString()+"\n");
+	    sb.append(" Reject : "+acceptURL.toString()+"\n");
 	}
 	catch (MalformedURLException mue) {
-	    //
+	    log.error("Couldn't create context URLs, very strange!", mue);
 	}
 	return sb.toString();
+    }
+
+    public void handleResultUpload(HttpServletRequest request,
+				   HttpServletResponse response,
+				   InteractionState state,
+				   InteractionServer server) 
+	throws ServletException {
+	try {
+	    File resultsFile = new File(server.getRepository(),
+					state.getID()+"-results.xml");
+	    resultsFile.createNewFile();
+	    FileOutputStream fos = new FileOutputStream(resultsFile);
+	    Map dataThingMap = new HashMap();
+	    String result = request.getParameter("response");
+	    if (result == null) {
+		log.error("No response value, failing the interaction.");
+		state.fail();
+		return;
+	    }
+	    dataThingMap.put("decision", new DataThing(result));
+	    Document doc = DataThingXMLFactory.getDataDocument(dataThingMap);
+	    XMLOutputter xo = new XMLOutputter(Format.getPrettyFormat());
+	    xo.output(doc, fos);
+	    fos.flush();
+	    fos.close();
+	    state.complete();
+	}
+	catch (Exception ex) {
+	    log.error("Exception thrown handling upload, failing interaction.", ex);
+	    state.fail();
+	     try {
+		response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, 
+				   ex.getMessage());
+	    }
+	    catch (Exception ex2) {
+		//
+	    }
+	    return;
+	}
     }
 
 }

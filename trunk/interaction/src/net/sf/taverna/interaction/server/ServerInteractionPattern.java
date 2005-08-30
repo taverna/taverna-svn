@@ -43,9 +43,9 @@ public interface ServerInteractionPattern extends InteractionPattern {
      * @param baseURL the URL to the first servlet called within this
      * installation, should hopefully mean that URLs can be created
      * for callback webpages, applets, jnlp files etc.
-     * @param id the interaction request ID
+     * @param state the interaction state for this request
      */
-    public String getMessageBody(URL baseURL, String id);
+    public String getMessageBody(URL baseURL, InteractionState state);
 
     /**
      * Handle request for interaction input data, this method is passed

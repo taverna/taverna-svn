@@ -31,6 +31,7 @@ import javax.servlet.ServletConfig;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpUtils;
 
 import java.io.*;
 import org.jdom.output.*;
@@ -53,7 +54,7 @@ public class StatusServlet extends HttpServlet {
     public void doPost(HttpServletRequest request,
 		       HttpServletResponse response)
 	throws ServletException {
-	SubmitServlet.getServer().setBaseURL(request.getServletPath());
+	SubmitServlet.getServer().setBaseURL(HttpUtils.getRequestURL(request).toString());
 	String jobID = null;
 	try {
 	    boolean isMultipart = FileUpload.isMultipartContent(request);

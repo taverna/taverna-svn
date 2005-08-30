@@ -53,7 +53,7 @@ public class InteractionServer {
      * to use as space for indices and temporary data
      */
     public InteractionServer(File repository, String smtpHost, String mailFrom) {
-	this.mailHost = mailHost;
+	this.mailHost = smtpHost;
 	this.mailFrom = mailFrom;
 	if (repository.exists() == false) {
 	    log.error("Specified repository doesn't exist");
@@ -104,7 +104,11 @@ public class InteractionServer {
      */
     public void setBaseURL(String stringURL) {
 	try {
-	    if (this.baseURL != null) {
+	    if (this.baseURL == null) {
+		log.debug("Call to set base URL to '"+stringURL+"'");
+		stringURL = stringURL.replaceAll("client/.*","");
+		stringURL = stringURL.replaceAll("workflow/.*","");
+		log.debug("Stripped to '"+stringURL+"'");
 		this.baseURL = new URL(stringURL);
 		log.debug("Set base URL to '"+stringURL+"'");
 	    }
@@ -118,9 +122,10 @@ public class InteractionServer {
      * Send the email invitation to interact with the specified session
      */
     public void sendEmail(InteractionState state) {
-	Properties mailProps = System.getProperties();
-	mailProps.put("mail.smtp.host",this.mailHost);
+	log.debug("About to send email for '"+state.getID()+"'");
 	try {
+	    Properties mailProps = System.getProperties();
+	    mailProps.put("mail.smtp.host",this.mailHost);
 	    Session session = Session.getDefaultInstance(mailProps, null);
 	    MimeMessage message = new MimeMessage(session);
 	    message.setFrom(new InternetAddress(this.mailFrom));
@@ -128,9 +133,11 @@ public class InteractionServer {
 				 new InternetAddress(state.getEmail()));
 	    message.setSubject("Taverna interaction request");
 	    String body = state.getMessageBody(baseURL);
+	    message.setText(body);
 	    Transport.send(message);	    
+	    log.debug("Sent successfuly");
 	}
-	catch (Exception ex) {
+	catch (Throwable ex) {
 	    log.error("Cannot send invitation email", ex);
 	}	
     }
@@ -149,9 +156,11 @@ public class InteractionServer {
 		String jobID = state.getID();
 		statusMap.put(jobID, state);
 		sendEmail(state);
+		log.debug("Returning state ID '"+jobID+"'");
 		return jobID;
 	    }
 	    else {
+		log.error("State was null");
 		return null;
 	    }
 	}
