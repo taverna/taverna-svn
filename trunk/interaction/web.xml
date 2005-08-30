@@ -1,5 +1,11 @@
 <!-- Webapp definition for the interaction service -->
 <!-- Tom Oinn, tmo@ebi.ac.uk, 22nd August 2005     -->
+
+<!-- Configure your installation by editing the    -->
+<!-- init-param tags for the submit servlet, this  -->
+<!-- is then loaded on container startup and used  -->
+<!-- to configure everything else.                 -->
+
 <web-app>
 
   <!-- Handles interaction service request submission, mapped to /workflow/submit -->
