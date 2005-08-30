@@ -261,7 +261,7 @@ public class Parser {
      * action element.
      * 
      * @param element Element containing an action element.
-     * @param component JButton where the action listener should be added.
+     * @param button JButton where the action listener should be added.
      * @param targetObject Object that should be added to the context before
      * running the action.
      */
