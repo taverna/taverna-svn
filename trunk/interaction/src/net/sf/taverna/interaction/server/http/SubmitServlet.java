@@ -73,14 +73,14 @@ public class SubmitServlet extends HttpServlet {
 	}
 	String mailHost = sc.getInitParameter("smtp_host");
 	String mailFrom = sc.getInitParameter("mail_from");
-	this.server = new InteractionServer(new File(tempLocation),
-					    mailHost,
-					    mailFrom);
+	server = new InteractionServer(new File(tempLocation),
+				       mailHost,
+				       mailFrom);
 	try {
 	    server.setBaseURL(sc.getInitParameter("base_url"));
 	}
 	catch (Throwable ex) {
-	    log.debug("Base URL not defined, will try to guess from requests.");
+	    log.debug("Base URL not defined, will try to guess from requests.", ex);
 	}
 	log.debug("Created InteractionServer singleton with temp location of '"+tempLocation+"'.");
     }
