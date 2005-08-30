@@ -80,8 +80,6 @@ public class Parser {
 	    script = scriptElement.getTextTrim();
 	}
 
-	ocula.evaluate(script);
-
 	Object result = ocula.evaluate(script);
 	
 	// Return an empty array if the result is null
