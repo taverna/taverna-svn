@@ -19,7 +19,7 @@
 					<!-- The "all" mode clears all the fields. You may also
 					specify "explicit" if you want to clear only some
 					fields. -->
-					<clear mode="all" />
+					<clearfields mode="all" />
 				</action>
 			</button>
 			<button name="Submit">

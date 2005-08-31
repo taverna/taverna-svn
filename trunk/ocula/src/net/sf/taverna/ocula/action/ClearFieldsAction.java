@@ -45,7 +45,7 @@ public class ClearFieldsAction extends AbstractInputAction {
      * This class will process &lt;clear&gt; elements.
      */
     public String getElementName() {
-	return "clear";
+	return "clearfields";
     }
     
     /**
