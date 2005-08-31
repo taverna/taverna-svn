@@ -37,6 +37,11 @@ public class CompoundFrameBuilder implements FrameSPI {
 	String iconName = element.getAttributeValue("icon", "NoIcon");
 	Icon icon = Icons.getIcon(iconName);
 	final CompoundFrame cf = new CompoundFrame(name, icon);
+	SwingUtilities.invokeLater(new Runnable() {
+	    public void run() {
+		cf.getProgressBar().setIndeterminate(true);
+	    }
+	});
 	for (Iterator i = element.getChildren().iterator(); i.hasNext();) {
 	    OculaFrame frame = ocula.getFrameHandler().getFrame(
 		    (Element) i.next());
@@ -54,6 +59,12 @@ public class CompoundFrameBuilder implements FrameSPI {
 		});
 	    }
 	}
+	SwingUtilities.invokeLater(new Runnable() {
+	    public void run() {
+		cf.getProgressBar().setIndeterminate(false);
+		cf.getProgressBar().setValue(100);
+	    }
+	});
 	return cf;
     }
     
