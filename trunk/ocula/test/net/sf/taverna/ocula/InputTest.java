@@ -47,7 +47,7 @@ public class InputTest extends TestCase {
 	frame.setSize(new Dimension(400,300));
 	frame.setVisible(true);
 	o.load(exampleURL);
-	Thread.sleep(3000);
+	Thread.sleep(1000);
     }
     public void testInputExample() throws Exception{
 	setUp("net/sf/taverna/ocula/example/InputExample.xml");
