@@ -54,6 +54,7 @@ public class CompoundFrameBuilder implements FrameSPI {
 			if (hasNext) {
 			    Component box = Box.createRigidArea(new Dimension(5, 5));
 			    cf.getContents().add(box);
+			    cf.getContents().revalidate();
 			}
 		    }
 		});
