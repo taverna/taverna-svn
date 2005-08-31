@@ -322,25 +322,30 @@ public class Ocula extends JPanel {
 	    logger.error("Failed to run page pre-load actions",ex);
 	}
 	// Load the contents of the page (should do this _after_ running any page actions)
-	java.util.List contents = p.getContents();
-	mainPanel.removeAll();
-	mainPanel.revalidate();
-	for (Iterator i = contents.iterator(); i.hasNext();) {
-	    OculaFrame frame = frameHandler.getFrame((Element)i.next());
-	    if (frame != null) {
-		final boolean hasNext = i.hasNext();
-		final Component c = (Component)frame;
-		SwingUtilities.invokeLater(new Runnable() {
-		    public void run() {
+	final java.util.List contents = p.getContents();
+	SwingUtilities.invokeLater(new Runnable() {
+	    public void run() {
+		mainPanel.removeAll();
+		mainPanel.revalidate();
+		for (Iterator i = contents.iterator(); i.hasNext();) {
+		    OculaFrame frame = frameHandler
+			    .getFrame((Element) i.next());
+		    if (frame != null) {
+			final boolean hasNext = i.hasNext();
+			final Component c = (Component) frame;
+
 			mainPanel.add(c);
 			if (hasNext) {
-			    mainPanel.add(Box.createRigidArea(new Dimension(10, 10)));
+			    mainPanel.add(Box.createRigidArea(new Dimension(10,
+				    10)));
 			}
 			mainPanel.revalidate();
+
 		    }
-		});
+		}
 	    }
-	}
+	});
+	
     }
     
     /**
