@@ -71,7 +71,7 @@ public class AcceptReject extends AbstractServerInteractionPattern {
 	    sb.append("Interaction request for the accept / reject interaction pattern, the workflow designer has requested that you either accept or reject the following text : ");
 	    sb.append("\n\n" + data + "\n\n");
 	    sb.append(" Accept : "+acceptURL.toString()+"\n");
-	    sb.append(" Reject : "+acceptURL.toString()+"\n");
+	    sb.append(" Reject : "+rejectURL.toString()+"\n");
 	}
 	catch (MalformedURLException mue) {
 	    log.error("Couldn't create context URLs, very strange!", mue);
