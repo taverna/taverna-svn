@@ -53,20 +53,49 @@ public class WorkflowSummaryAsHTML {
 	sb.append("</style>");
 	STYLE_NOBG = sb.toString();
     }
-
+    
+    private static String nameFor(Map names, Processor p) {
+	for (Iterator i = names.keySet().iterator(); i.hasNext();) {
+	    String name = (String)i.next();
+	    Processor proc = (Processor)names.get(name);
+	    if (proc == p) {
+		return name;
+	    }
+	}
+	return "Not found";	
+    }
+    
     public static String getSummary(ScuflModel model) {
-	Processor[] processors = model.getProcessors();
+	//Processor[] processors = model.getProcessors();
 	Map resources = new HashMap();
-	for (int i = 0; i<processors.length; i++) {
-	    String resourceHost = processors[i].getResourceHost();
+	// Create a map of name -> processor including all nested workflows
+	Map names = new HashMap();
+	model.collectAllProcessors(names, null);
+	/**for (int i = 0; i<processors.length; i++) {
+	   String resourceHost = processors[i].getResourceHost();
+	   if (resourceHost != Processor.ENACTOR) {
+	   if (resources.containsKey(resourceHost) == false) {
+	   resources.put(resourceHost, new ArrayList());
+	   }
+	   java.util.List processorForResource = (java.util.List)resources.get(resourceHost);
+	   processorForResource.add(processors[i]);
+	   }
+	   }
+	*/
+
+	for (Iterator i = names.keySet().iterator(); i.hasNext();) {
+	    String procName = (String)i.next();
+	    Processor p = (Processor)names.get(procName);
+	    String resourceHost = p.getResourceHost();
 	    if (resourceHost != Processor.ENACTOR) {
 		if (resources.containsKey(resourceHost) == false) {
 		    resources.put(resourceHost, new ArrayList());
 		}
-		java.util.List processorForResource = (java.util.List)resources.get(resourceHost);
-		processorForResource.add(processors[i]);
+		List processorForResource = (List)resources.get(resourceHost);
+		processorForResource.add(p);
 	    }
 	}
+	
 	StringBuffer sb = new StringBuffer();
 	sb.append("<html><head>");
 	sb.append(WorkflowSummaryAsHTML.STYLE);
@@ -119,7 +148,7 @@ public class WorkflowSummaryAsHTML {
 		    operationToProcessorName.put(operationName, new HashSet());
 		}
 		Set processorNames = (Set)operationToProcessorName.get(operationName);
-		processorNames.add(wp[j].getName());
+		processorNames.add(nameFor(names, wp[j]));
 	    }
 	    for (Iterator j = wsLocations.keySet().iterator(); j.hasNext();) {
 		// Top level iterator over all service locations.
@@ -168,7 +197,7 @@ public class WorkflowSummaryAsHTML {
 		    nameToProcessorNames.put(appName, new HashSet());
 		}
 		Set processorNames = (Set)nameToProcessorNames.get(appName);
-		processorNames.add(sp[j].getName());
+		processorNames.add(nameFor(names, sp[j]));
 	    }
 	    for (Iterator j = soaplabLocations.keySet().iterator(); j.hasNext(); ) {
 		String location = (String)j.next();
@@ -216,7 +245,7 @@ public class WorkflowSummaryAsHTML {
 		    nameToProcessorNames.put(methodName, new HashSet());
 		}
 		Set processorNames = (Set)nameToProcessorNames.get(methodName);
-		processorNames.add(sq[j].getName());
+		processorNames.add(nameFor(names, sq[j]));
 	    }
 	    for (Iterator j = seqhoundLocations.keySet().iterator(); j.hasNext(); ) {
 		String location = (String)j.next();
@@ -266,7 +295,7 @@ public class WorkflowSummaryAsHTML {
 		    else {
 			sb.append("<td colspan=\"2\">Unknown&nbsp;type</td>");
 		    }
-		    sb.append("<td>"+p.getName()+"</td>");
+		    sb.append("<td>"+nameFor(names,p)+"</td>");
 		    sb.append("</tr>\n");
 		}
 	    }

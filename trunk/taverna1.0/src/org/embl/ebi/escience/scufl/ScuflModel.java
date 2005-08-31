@@ -13,6 +13,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
 import java.io.*;
+import java.util.Map;
 
 import org.embl.ebi.escience.scufl.ConcurrencyConstraint;
 import org.embl.ebi.escience.scufl.DataConstraint;
@@ -26,6 +27,7 @@ import org.embl.ebi.escience.scufl.ScuflModelEvent;
 import org.embl.ebi.escience.scufl.ScuflModelEventListener;
 import org.embl.ebi.escience.scufl.UnknownPortException;
 import org.embl.ebi.escience.scufl.UnknownProcessorException;
+import org.embl.ebi.escience.scuflworkers.workflow.WorkflowProcessor;
 import java.lang.String;
 import java.lang.Thread;
 import org.embl.ebi.escience.scufl.view.*;
@@ -337,6 +339,35 @@ public class ScuflModel
      */
     public Processor[] getProcessors() {
 	return (Processor[])(this.processors.toArray(new Processor[0]));
+    }
+
+    /**
+     * Crawl down the workflow locating all processors and expanding 
+     * nested workflow processors recursively to get a complete list
+     * of all (non workflow) processors in the workflow. Consumes a Map
+     * to which the new processors are added as values, the key being
+     * the name of the processor in local scope with the prefix specified.
+     */
+    public void collectAllProcessors(Map target, String prefix) {
+	Processor[] p = getProcessors();
+	for (int i = 0; i < p.length; i++) {
+	    if (p[i] instanceof WorkflowProcessor == false) {
+		if (prefix == null) {
+		    target.put(p[i].getName(), p[i]);
+		}
+		else {
+		    target.put(prefix + "." + p[i].getName(), p[i]);
+		}		
+	    }
+	    else {
+		String newPrefix = p[i].getName();
+		if (prefix != null) {
+		    newPrefix = prefix + "." + newPrefix;
+		}
+		WorkflowProcessor wp = (WorkflowProcessor)p[i];
+		wp.getInternalModel().collectAllProcessors(target, newPrefix);
+	    }
+	}
     }
 
     /**
