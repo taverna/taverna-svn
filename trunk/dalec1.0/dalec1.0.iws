@@ -180,7 +180,7 @@
       <file leaf-file-name="TestDalecManager.java" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/test/net/sf/taverna/dalec/TestDalecManager.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="200" column="22" selection-start="5603" selection-end="5603" vertical-scroll-proportion="0.6432225">
+            <state line="200" column="22" selection-start="5603" selection-end="5603" vertical-scroll-proportion="0.5869565">
               <folding />
             </state>
           </provider>
@@ -338,6 +338,24 @@
       </PATH_ELEMENT>
       <PATH_ELEMENT>
         <option name="myItemId" value="PsiDirectory:C:\home\tony\documents\IdeaProjects\dalec1.0\test\net\sf\taverna\dalec" />
+        <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+      </PATH_ELEMENT>
+    </PATH>
+    <PATH>
+      <PATH_ELEMENT>
+        <option name="myItemId" value="dalec1.0.ipr" />
+        <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+      </PATH_ELEMENT>
+      <PATH_ELEMENT>
+        <option name="myItemId" value="dalec1.0" />
+        <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewModuleNode" />
+      </PATH_ELEMENT>
+      <PATH_ELEMENT>
+        <option name="myItemId" value="PsiDirectory:C:\home\tony\documents\IdeaProjects\dalec1.0" />
+        <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+      </PATH_ELEMENT>
+      <PATH_ELEMENT>
+        <option name="myItemId" value="PsiDirectory:C:\home\tony\documents\IdeaProjects\dalec1.0\taverna" />
         <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
       </PATH_ELEMENT>
     </PATH>
@@ -782,7 +800,7 @@
     <layout>
       <window_info id="CVS" active="false" anchor="bottom" auto_hide="false" internal_type="docked" type="docked" visible="false" weight="0.32979977" order="8" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="docked" type="docked" visible="false" weight="0.38705882" order="7" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="docked" type="docked" visible="true" weight="0.19281046" order="0" />
+      <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="docked" type="docked" visible="true" weight="0.19281046" order="0" />
       <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="docked" type="docked" visible="false" weight="0.32979977" order="1" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="docked" type="docked" visible="false" weight="0.25" order="1" />
       <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="docked" type="docked" visible="false" weight="0.32979977" order="8" />
@@ -793,7 +811,7 @@
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="docked" type="docked" visible="false" weight="0.25" order="1" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="docked" type="docked" visible="false" weight="0.87058824" order="2" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="docked" type="docked" visible="false" weight="0.25" order="2" />
-      <window_info id="File View" active="true" anchor="right" auto_hide="false" internal_type="docked" type="docked" visible="true" weight="0.40604576" order="3" />
+      <window_info id="File View" active="false" anchor="right" auto_hide="false" internal_type="docked" type="docked" visible="true" weight="0.40604576" order="3" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="docked" type="docked" visible="false" weight="0.66548884" order="4" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="sliding" type="sliding" visible="false" weight="0.4" order="0" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="docked" type="docked" visible="false" weight="0.32941177" order="8" />
@@ -963,13 +981,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/test/net/sf/taverna/dalec/TestDalecManager.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="200" column="22" selection-start="5603" selection-end="5603" vertical-scroll-proportion="0.6432225">
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/net/sf/taverna/dalec/DalecManager.java">
       <provider selected="true" editor-type-id="text-editor">
         <state line="43" column="13" selection-start="2367" selection-end="2367" vertical-scroll-proportion="0.02173913">
@@ -1018,6 +1029,13 @@
             <element signature="docComment;method#makeDummySequence#0;class#DalecAnnotationSource#0" expanded="false" />
             <element signature="method#makeDummySequence#0;class#DalecAnnotationSource#0" expanded="false" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/test/net/sf/taverna/dalec/TestDalecManager.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="200" column="22" selection-start="5603" selection-end="5603" vertical-scroll-proportion="0.5869565">
+          <folding />
         </state>
       </provider>
     </entry>
