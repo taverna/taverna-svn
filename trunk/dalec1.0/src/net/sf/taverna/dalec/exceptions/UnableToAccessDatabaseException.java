@@ -1,10 +1,11 @@
 package net.sf.taverna.dalec.exceptions;
 
 /**
- * Javadocs go here.
+ * An UnableToAccessDatabaseException is thrown whenever the designated database cannot be accessed, for any reason.
+ * The underlying cause (most likely an IOException) will be wrapped within this exception.
  *
- * @version 1.0
  * @author Tony Burdett
+ * @version 1.0
  */
 public class UnableToAccessDatabaseException extends Exception
 {

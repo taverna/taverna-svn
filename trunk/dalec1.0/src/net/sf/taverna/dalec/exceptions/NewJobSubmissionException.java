@@ -1,25 +1,27 @@
 package net.sf.taverna.dalec.exceptions;
 
 /**
- * Javadocs go here.
+ * A NewJobSubmissionException is thrown by an instance of <code>DalecManager</code> when an annotation is requested
+ * which does not yet exist in the database.  This exception is handled in such a way that the query sequence is then
+ * submitted to the workflow enactor for annotation.
  *
- * @version 1.0
  * @author Tony Burdett
+ * @version 1.0
  */
 public class NewJobSubmissionException extends Exception
 {
-    public NewJobSubmissionException ()
+    public NewJobSubmissionException()
     {
         super();
     }
 
-    public NewJobSubmissionException (String errorMsg)
+    public NewJobSubmissionException(String errorMsg)
     {
-        super (errorMsg);
+        super(errorMsg);
     }
 
-    public NewJobSubmissionException (String errorMsg, Exception e)
+    public NewJobSubmissionException(String errorMsg, Exception e)
     {
-        super (errorMsg, e);
+        super(errorMsg, e);
     }
 }

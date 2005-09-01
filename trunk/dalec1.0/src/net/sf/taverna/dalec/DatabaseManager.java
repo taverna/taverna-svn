@@ -35,7 +35,7 @@ import net.sf.taverna.dalec.exceptions.BadWorkflowFormatException;
  * @author Tony Burdett
  * @version 1.0
  */
-public class DatabaseManager extends Thread implements Runnable
+public class DatabaseManager implements Runnable
 {
     private File dbLoc;
     private List resultsToWrite = new ArrayList();
@@ -43,7 +43,7 @@ public class DatabaseManager extends Thread implements Runnable
     private boolean terminated = false;
 
     /**
-     * Constructor for DatabaseManager.  Simply creates a database home directory if it doesn't already exist.
+     * Constructor for DatabaseManager.  Simply creates the database root directory if it doesn't already exist.
      *
      * @param databaseLocation A <code>File</code> representing the path to the root directory of the database
      */
@@ -53,6 +53,17 @@ public class DatabaseManager extends Thread implements Runnable
         if (!dbLoc.exists()) dbLoc.mkdirs();
     }
 
+    /**
+     * This method 'activates' the DatabaseManager within a new thread.  As <code>DatabaseManager</code> is an
+     * implementation of <code>Runnable</code> this <code>run()</code> method is used whenever
+     * <code>DatabaseManager</code> is used in the construction of a new Thread, "<code>database_thread</code>" for
+     * example. While there are pending results set on the DatabaseManager, a <code>database_thread</code> will
+     * continually write these results to disk, creating a new GFF format file for every sequence.  If there are no
+     * results currently pending, the <code>database_thread</code> will sit idle, waiting for new results to be added.
+     * Then when new results are added, the thread is woken up. Once the <code>run()</code> method is called, any
+     * instance of <code>DatabaseManager</code> will remain active until the <code>exterminate()</code> method is called
+     * or the thread is somehow interrupted.
+     */
     public void run()
     {
         try

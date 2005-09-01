@@ -82,7 +82,7 @@ public class DalecManager
         {
             public void databaseEntryCreated(String entryName)
             {
-                System.out.println ("New entry created");
+                System.out.println("New entry created");
                 // when the File is entered into the database, we can remove it from the computeList
                 synchronized (computeList)
                 {
@@ -115,45 +115,45 @@ public class DalecManager
         model = new ScuflModel();
         try
         {
-            try
+            synchronized (model)
             {
-                synchronized (model)
+                try
                 {
                     XScuflParser.populate(new FileInputStream(xscuflFile), model, null);
                 }
-            }
-            catch (XScuflFormatException e)
-            {
-                throw new FileNotFoundException("Valid XScufl format File not found");
-            }
-            catch (ProcessorCreationException e)
-            {
-                // If this occurs, may just be a temp problem with the service
-                // Try 3 times before giving up!
-                int retry = 0;
-                boolean success = false;
-
-                while (retry < 3 && !success)
+                catch (XScuflFormatException e)
                 {
-                    // wait a while
-                    wait(1000);
-                    //retry populating model
-                    try
-                    {
-                        XScuflParser.populate(new FileInputStream(xscuflFile), model, null);
-                        // successful if ProcessorCreationException isn't thrown again - so set succes to true and exit
-                        success = true;
-                    }
-                    catch (ProcessorCreationException f)
-                    {
-                        // Exception thrown again - increment retry and loop
-                        retry++;
-                    }
+                    throw new FileNotFoundException("Valid XScufl format File not found");
                 }
-                if (!success)
+                catch (ProcessorCreationException e)
                 {
-                    // success is false, no processor created after 3 attempts so give up
-                    throw new WorkflowCreationException("Unable to create a processor", e);
+                    // If this occurs, may just be a temp problem with the service
+                    // Try 3 times before giving up!
+                    int retry = 0;
+                    boolean success = false;
+
+                    while (retry < 3 && !success)
+                    {
+                        // wait a while
+                        model.wait(1000);
+                        //retry populating model
+                        try
+                        {
+                            XScuflParser.populate(new FileInputStream(xscuflFile), model, null);
+                            // successful if ProcessorCreationException isn't thrown again - so set succes to true and exit
+                            success = true;
+                        }
+                        catch (ProcessorCreationException f)
+                        {
+                            // Exception thrown again - increment retry and loop
+                            retry++;
+                        }
+                    }
+                    if (!success)
+                    {
+                        // success is false, no processor created after 3 attempts so give up
+                        throw new WorkflowCreationException("Unable to create a processor", e);
+                    }
                 }
             }
         }
@@ -240,7 +240,7 @@ public class DalecManager
                                                 catch (Exception e)
                                                 {
                                                     // Unable to parse GFF Data from workflow output
-                                                    logError(dbMan.getDatabaseLocation(), "Parsing GFF output from workflow", e);
+                                                    logError(dbMan.getDatabaseLocation(), "Parsing GFF output from workflow", e.getCause());
                                                     System.out.println("A sequence annotation failed - unable to parse output from workflow");
                                                 }
 
@@ -316,11 +316,12 @@ public class DalecManager
     }
 
     /**
-     * Destroy-type method, used for halting all currently active threads controlled by <code>DalecManager</code>.  This
+     * Destroy-type method, used for halting all currently active threads controlled by <code>DalecManager</code>. This
      * method should be called when a DalecAnnotationSource is being taken out of service, as workflow threads and
      * database threads wil continue to run otherwise.
      */
-    public synchronized void exterminate()
+    public synchronized void exterminate
+            ()
     {
         // setting terminated prevents new jobs starting
         terminated = true;
@@ -379,7 +380,9 @@ public class DalecManager
      * @throws UnableToAccessDatabaseException
      *                                   - If there is a problem accessing the data held within the database.
      */
-    public GFFEntrySet requestAnnotations(String ref) throws NewJobSubmissionException, UnableToAccessDatabaseException
+    public GFFEntrySet requestAnnotations
+            (String
+                    ref) throws NewJobSubmissionException, UnableToAccessDatabaseException
     {
         if (jobExists(ref))
         {
@@ -418,7 +421,8 @@ public class DalecManager
      *
      * @return boolean terminated status
      */
-    public boolean getTerminatedStatus()
+    public boolean getTerminatedStatus
+            ()
     {
         return terminated;
     }
@@ -434,7 +438,8 @@ public class DalecManager
      * @return Either "sequence" or "seqID", depending on how the source processor in this model is named
      * @throws IncorrectlyNamedInputException if the workflow does not contain one of the required processor names
      */
-    public String getInputName() throws IncorrectlyNamedInputException
+    public String getInputName
+            () throws IncorrectlyNamedInputException
     {
         // TODO - Naming of input processors - "sequence" or "seqID" acceptable currently
         String inputName = "";
@@ -476,7 +481,9 @@ public class DalecManager
      *
      * @param input A <code>WorkflowInput</code> object containing the data to be submitted to the workflow.
      */
-    public void submitJob(WorkflowInput input)
+    public void submitJob
+            (WorkflowInput
+                    input)
     {
         synchronized (jobList)
         {
@@ -503,7 +510,11 @@ public class DalecManager
      * @param jobName            A string describing the job being performed when the problem occurred
      * @param exception          The throwable cause of the problem making an error log entry necessary.
      */
-    public synchronized static void logError(File sequenceDBLocation, String jobName, Throwable exception)
+    public synchronized static void logError
+            (File
+                    sequenceDBLocation, String
+                    jobName, Throwable
+                    exception)
     {
         // Name files by todays date
         Calendar cal = new GregorianCalendar();
@@ -540,7 +551,9 @@ public class DalecManager
         }
     }
 
-    private synchronized boolean jobExists(String jobID)
+    private synchronized boolean jobExists
+            (String
+                    jobID)
     {
         // acquire locks on the jobList and computeList
         synchronized (jobList)

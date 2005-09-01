@@ -6,6 +6,12 @@ import org.biojava.bio.seq.Sequence;
 import org.biojava.bio.seq.ProteinTools;
 import org.biojava.bio.seq.impl.SimpleSequence;
 import org.biojava.bio.symbol.IllegalSymbolException;
+import org.biojava.bio.symbol.DummySymbolList;
+import org.biojava.bio.BioException;
+import org.biojava.bio.Annotation;
+import org.biojava.bio.program.gff.SimpleGFFRecord;
+import org.biojava.bio.program.gff.GFFEntrySet;
+import org.biojava.utils.ChangeVetoException;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -44,8 +50,8 @@ import javax.xml.parsers.DocumentBuilder;
  * Once all properties are set and the <code>init()</code> method is called, an instance of DalecManager will be created
  * ready to annotate submitted requests.
  *
- * @version 1.0
  * @author Tony Burdett
+ * @version 1.0
  */
 public class DalecAnnotationSource extends AbstractDataSource
 {
@@ -55,6 +61,16 @@ public class DalecAnnotationSource extends AbstractDataSource
 
     private DalecManager davros;
 
+
+    /**
+     * Implementation of the <code>init()</code> method specified by <code>DazzleDataSource</code>.  In this case, the
+     * main purpose of this method is to create a new <code>DalecManager</code>, so all annotation and database
+     * retrieval tasks can be delegated, and handled "on-the-fly".
+     *
+     * @param ctx The servlet context
+     * @throws DataSourceException if this DataSource cannot enter service.  This is most likely to be due to a
+     *                             worokflow comilation problem in Dalec.
+     */
     public void init(ServletContext ctx) throws DataSourceException
     {
         try
@@ -95,6 +111,17 @@ public class DalecAnnotationSource extends AbstractDataSource
         davros = null;
     }
 
+    /**
+     * Return the fully annotated sequence.  Unlike most Dazzle datasources, when this method is called the information
+     * may or may not be held within the database backing this datasource.  The difference is that most datasources
+     * would throw a NoSuchElementException if we requested a non-existent sequence, but with Dalec such sequences are
+     * submitted to the workflow to be annotated "on-the-fly". ???
+     *
+     * @param ref The DAS reference server identifier for the sequence requested
+     * @return The fully annotated Sequence
+     * @throws DataSourceException    If there is a problem acquiring the requested Sequence
+     * @throws NoSuchElementException If the sequence requested does not exist on the Reference Server
+     */
     public Sequence getSequence(String ref) throws DataSourceException, NoSuchElementException
     {
         try
@@ -119,25 +146,23 @@ public class DalecAnnotationSource extends AbstractDataSource
                     input.setSequenceData(fetchQuerySequence(ref));
                     davros.submitJob(input);
                 }
-                else if (davros.getInputName().matches("seqID"))
+                else  // if (davros.getInputName().matches("seqID")) - must be true else exception is thrown
                 {
                     SequenceIDWorkflowInput input = new SequenceIDWorkflowInput();
                     input.setProcessorName(davros.getInputName());
                     input.setJobID(ref);
                     davros.submitJob(input);
                 }
-                else
-                {
-                    // Should be anything else, IncorrectlyNamedInputExcpetion would be thrown from getInputName()
-                }
+
+                // Return a sequence which explains annotations are being done
+                return makeDummySequence();
+
+                // TODO - set an 'incomplete = true' flag to return to DAS clients?
             }
             catch (IncorrectlyNamedInputException e1)
             {
-                throw new DataSourceException(e1);
+                throw new DataSourceException("Workflow contains no 'seqID' or 'sequence' input processor");
             }
-
-            // TODO - clever bit needed (!), how to return the "waiting" message to the client?
-            return new SimpleSequence(null, null, "Hang on, I'm working this out!", null); //test
         }
         catch (UnableToAccessDatabaseException e)
         {
@@ -147,9 +172,13 @@ public class DalecAnnotationSource extends AbstractDataSource
         {
             throw new DataSourceException(e, "Non-protein sequence or unknown symbol found");
         }
-        catch (Exception e)
+        catch (BioException e)
         {
-            throw new DataSourceException(e, "A problem was encountered whilst trying to build the Sequence: " + ref);
+            throw new DataSourceException(e, "Illegal alphabet or other failure while annotating sequence with the GFF entry retrieved");
+        }
+        catch (ChangeVetoException e)
+        {
+            throw new DataSourceException(e, "Sequence won't allow annotation or annotation vetoed");
         }
     }
 
@@ -185,24 +214,23 @@ public class DalecAnnotationSource extends AbstractDataSource
      * Javabeans style method for setting the <code>.XScufl</code> file location used to construct the workflow for this
      * instance of Dalec. A copy of the workflow .xscufl file should be placed on the server.
      *
-     * @param xscuflFile File representing the location of the desried workflow <code>.XScufl</code> file.
+     * @param xscuflFilename String representing the path to the location of the desired workflow <code>.XScufl</code> file.
      */
-    public void setXScuflFile(File xscuflFile)
+    public void setXScuflFile(String xscuflFilename)
     {
-        // TODO - File or URI? File would mean saving workflow on server, which is probably best anyway
-        this.xscuflFile = xscuflFile;
+        this.xscuflFile = new File (xscuflFilename);
     }
 
     /**
      * Javabeans style method for setting the Database location used to store the output data for this instance of
      * Dalec.
      *
-     * @param sequenceDBLocation File representing the root directory of the database storage location.
+     * @param sequenceDBLocation String representing the path to the URL of the database storage location.
      */
-    public void setSequenceDBLocation(File sequenceDBLocation)
+    public void setSequenceDBLocation(String sequenceDBLocation)
     {
-        // TODO - File or URI? URI is probably better...?
-        this.seqDB = sequenceDBLocation;
+        // TODO - refactor DB access to use URL rather than File locations - across all classes
+        this.seqDB = new File (sequenceDBLocation);
     }
 
     public String getLandmarkVersion(String ref) throws DataSourceException, NoSuchElementException
@@ -335,5 +363,34 @@ public class DalecAnnotationSource extends AbstractDataSource
         {
             throw new DataSourceException("More than one 'SEQUENCE' tag present in this XML document");
         }
+    }
+
+    /**
+     * Make a dummy sequence, which isn't a real sequence but contains some notes explaining that this sequence has been
+     * submitted to Dalec and is being calculated.
+     */
+    private Sequence makeDummySequence()
+    {
+        // Make a dummy GFFEntrySet with one record with a human readable explanation to wait
+        SimpleGFFRecord dummyRecord = new SimpleGFFRecord();
+        dummyRecord.setSeqName("Unannotated Sequence");
+        dummyRecord.setFeature("All features are being evaluated");
+        dummyRecord.setComment("***ANNOTATIONS BEING EVALUATED BY DALEC*** Please wait while the annotations for this sequence are being calculated.  Resubmit your request shortly.");
+        GFFEntrySet dummyEntry = new GFFEntrySet();
+        dummyEntry.add(dummyRecord);
+
+        // Make a sequence containing this dummy record as the only feature
+        Sequence dummySeq = new SimpleSequence(new DummySymbolList(ProteinTools.getTAlphabet(), 0), dummyRecord.getSeqName(), dummyRecord.getSeqName(), Annotation.EMPTY_ANNOTATION);
+        try
+        {
+            dummyEntry.getAnnotator().annotate(dummySeq);
+        }
+        catch (Exception e)
+        {
+            // shouldn't ever occur as sequence and annotations are correctly built, above.
+        }
+
+        // Return this duumy sequence - only purpose is to show human readable info saying that we're working it out!
+        return dummySeq;
     }
 }

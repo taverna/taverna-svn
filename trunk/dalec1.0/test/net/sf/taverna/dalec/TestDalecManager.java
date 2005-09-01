@@ -33,7 +33,7 @@ public class TestDalecManager extends TestCase
         }
         catch (WorkflowCreationException e)
         {
-            System.out.println("Encountered a WorkflowCreationException");
+            fail();
         }
     }
 
@@ -48,7 +48,7 @@ public class TestDalecManager extends TestCase
             }
             catch (InterruptedException e)
             {
-                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                fail();
             }
         }
     }
@@ -77,7 +77,7 @@ public class TestDalecManager extends TestCase
         }
         catch (WorkflowCreationException e)
         {
-            System.out.println("Workflow creation exception correctly thrown");
+            fail();
         }
         finally
         {
@@ -91,12 +91,12 @@ public class TestDalecManager extends TestCase
 
         try
         {
-            dalec.requestAnnotations("NoneExistentSequence");
+            dalec.requestAnnotations("Non-existent sequence");
             fail();
         }
         catch (UnableToAccessDatabaseException e)
         {
-            System.out.println("This shouldn't happen!");
+            fail();
         }
         catch (NewJobSubmissionException e)
         {
@@ -152,7 +152,7 @@ public class TestDalecManager extends TestCase
             }
             catch (IncorrectlyNamedInputException e1)
             {
-                e1.printStackTrace();
+                fail();
             }
         }
         catch (UnableToAccessDatabaseException e)
@@ -198,7 +198,7 @@ public class TestDalecManager extends TestCase
             }
             catch (UnableToAccessDatabaseException e)
             {
-                System.out.println("Unable to acess database");
+                fail();
             }
         }
 

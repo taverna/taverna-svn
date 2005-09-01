@@ -1,10 +1,12 @@
 package net.sf.taverna.dalec.exceptions;
 
 /**
- * Javadocs go here.
+ * A standard Exception class.  A BadWorkflowFormatException should be thrown whenever Dalec attempts to use a submitted
+ * workflow which does not conform to certain required standards, such as input and output processor naming conventions.
+ * See the user documentation for more details.
  *
- * @version 1.0
  * @author Tony Burdett
+ * @version 1.0
  */
 public class BadWorkflowFormatException extends Exception
 {

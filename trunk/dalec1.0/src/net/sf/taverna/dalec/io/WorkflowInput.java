@@ -3,12 +3,12 @@ package net.sf.taverna.dalec.io;
 import java.util.Map;
 
 /**
- * A generic workflow input interface. Contains some methods which are used to set and return required fields for use in
- * Dalec.  Any implementing class should describe a method to set the data to be used as an input, of the required
- * type.
+ * A generic workflow input interface, <code>WorkflowInput</code> contains methods which are used to set and return
+ * required fields for use in Dalec.  Any implementing class should describe a method to set the data to be used as an
+ * input, of the required type.
  *
- * @version 1.0
  * @author Tony Burdett
+ * @version 1.0
  */
 public interface WorkflowInput
 {
@@ -32,7 +32,7 @@ public interface WorkflowInput
      *
      * @return the input processor name
      */
-    public String getProcessorName ();
+    public String getProcessorName();
 
     /**
      * Returns the jobID set for this workflow input.
