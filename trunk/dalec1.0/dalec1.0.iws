@@ -123,7 +123,7 @@
       <file leaf-file-name="DalecAnnotationSource.java" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/net/sf/taverna/dalec/DalecAnnotationSource.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="55" column="13" selection-start="2528" selection-end="2528" vertical-scroll-proportion="0.021197008">
+            <state line="55" column="13" selection-start="2528" selection-end="2528" vertical-scroll-proportion="0.02173913">
               <folding>
                 <element signature="docComment;class#DalecAnnotationSource#0" expanded="false" />
                 <element signature="docComment;method#init#0;class#DalecAnnotationSource#0" expanded="false" />
@@ -153,7 +153,7 @@
       <file leaf-file-name="DalecManager.java" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/net/sf/taverna/dalec/DalecManager.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="43" column="13" selection-start="2367" selection-end="2367" vertical-scroll-proportion="0.021197008">
+            <state line="43" column="13" selection-start="2367" selection-end="2367" vertical-scroll-proportion="0.02173913">
               <folding>
                 <element signature="docComment;class#DalecManager#0" expanded="false" />
                 <element signature="docComment;method#DalecManager#0;class#DalecManager#0" expanded="false" />
@@ -169,7 +169,7 @@
       <file leaf-file-name="build.xml" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/build.xml">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="209" column="51" selection-start="11331" selection-end="11331" vertical-scroll-proportion="0.250918">
+            <state line="209" column="51" selection-start="11331" selection-end="11331" vertical-scroll-proportion="0.29283887">
               <folding>
                 <element signature="tag#target#4;tag#project#0" expanded="false" />
                 <element signature="tag#target#5;tag#project#0" expanded="false" />
@@ -462,18 +462,18 @@
     </navigator>
   </component>
   <component name="PropertiesComponent">
-    <property name="vcs_file_view_treeWidth2" value="73" />
+    <property name="vcs_file_view_treeWidth2" value="76" />
     <property name="vcs_file_view_flatOrder1" value="1" />
     <property name="MemberChooser.copyJavadoc" value="false" />
     <property name="vcs_file_view_treeOrder4" value="4" />
     <property name="GoToFile.includeJavaFiles" value="false" />
-    <property name="GenerateAntBuildDialog.forceTargetJdk" value="true" />
     <property name="vcs_file_view_flatWidth2" value="83" />
+    <property name="GenerateAntBuildDialog.forceTargetJdk" value="true" />
     <property name="vcs_file_view_flatWidth5" value="84" />
     <property name="GoToClass.includeLibraries" value="false" />
     <property name="vcs_file_view_flatOrder3" value="3" />
     <property name="MemberChooser.showClasses" value="true" />
-    <property name="vcs_file_view_treeWidth0" value="222" />
+    <property name="vcs_file_view_treeWidth0" value="225" />
     <property name="GoToClass.toSaveIncludeLibraries" value="false" />
     <property name="vcs_file_view_treeOrder0" value="0" />
     <property name="RunManagerConfig.showSettingsBeforeRunnig" value="true" />
@@ -483,15 +483,15 @@
     <property name="vcs_file_view_flatOrder5" value="5" />
     <property name="vcs_file_view_treeOrder3" value="3" />
     <property name="vcs_file_view_flatWidth4" value="84" />
-    <property name="vcs_file_view_treeWidth1" value="70" />
+    <property name="vcs_file_view_treeWidth1" value="73" />
     <property name="GenerateAntBuildDialog.enableUiFormCompile" value="false" />
     <property name="vcs_file_view_flatOrder2" value="2" />
     <property name="GenerateAntBuildDialog.backupFiles" value="false" />
-    <property name="vcs_file_view_treeWidth4" value="67" />
-    <property name="GenerateAntBuildDialog.generateSingleFile" value="true" />
+    <property name="vcs_file_view_treeWidth4" value="70" />
     <property name="vcs_file_view_treeOrder2" value="2" />
+    <property name="GenerateAntBuildDialog.generateSingleFile" value="true" />
     <property name="vcs_file_view_flatWidth3" value="83" />
-    <property name="vcs_file_view_treeWidth3" value="68" />
+    <property name="vcs_file_view_treeWidth3" value="71" />
     <property name="vcs_file_view_flatOrder0" value="0" />
     <property name="vcs_file_view_flatWidth0" value="83" />
     <property name="vcs_file_view_treeOrder1" value="1" />
@@ -501,18 +501,128 @@
     <option name="SHOW_DIALOG" value="true" />
   </component>
   <component name="RecentsManager" />
-  <component name="RestoreUpdateTree" />
+  <component name="RestoreUpdateTree">
+    <UpdateInfo date="02/09/05 14:49" ActionInfo="Update">
+      <UpdatedFiles>
+        <FILE-GROUP>
+          <option name="myUpdateName" value="Updated from server" />
+          <option name="myStatusName" value="Changed on server" />
+          <option name="mySupportsDeletion" value="false" />
+          <option name="myCanBeAbsent" value="false" />
+          <option name="myId" value="CHANGED_ON_SERVER" />
+          <FILE-GROUP>
+            <option name="myUpdateName" value="Updated" />
+            <option name="myStatusName" value="Changed" />
+            <option name="mySupportsDeletion" value="false" />
+            <option name="myCanBeAbsent" value="false" />
+            <option name="myId" value="UPDATED" />
+          </FILE-GROUP>
+          <FILE-GROUP>
+            <option name="myUpdateName" value="Created" />
+            <option name="myStatusName" value="Created" />
+            <option name="mySupportsDeletion" value="false" />
+            <option name="myCanBeAbsent" value="false" />
+            <option name="myId" value="CREATED" />
+          </FILE-GROUP>
+          <FILE-GROUP>
+            <option name="myUpdateName" value="Deleted" />
+            <option name="myStatusName" value="Deleted" />
+            <option name="mySupportsDeletion" value="false" />
+            <option name="myCanBeAbsent" value="true" />
+            <option name="myId" value="REMOVED_FROM_REPOSITORY" />
+          </FILE-GROUP>
+          <FILE-GROUP>
+            <option name="myUpdateName" value="Restored" />
+            <option name="myStatusName" value="Will be restored" />
+            <option name="mySupportsDeletion" value="false" />
+            <option name="myCanBeAbsent" value="false" />
+            <option name="myId" value="RESTORED" />
+          </FILE-GROUP>
+        </FILE-GROUP>
+        <FILE-GROUP>
+          <option name="myUpdateName" value="Modified" />
+          <option name="myStatusName" value="Modified" />
+          <option name="mySupportsDeletion" value="false" />
+          <option name="myCanBeAbsent" value="false" />
+          <option name="myId" value="MODIFIED" />
+          <PATH>C:\home\tony\documents\IdeaProjects\dalec1.0\dalec1.0.iws</PATH>
+        </FILE-GROUP>
+        <FILE-GROUP>
+          <option name="myUpdateName" value="Merged with conflicts" />
+          <option name="myStatusName" value="Will be merged with conflicts" />
+          <option name="mySupportsDeletion" value="false" />
+          <option name="myCanBeAbsent" value="false" />
+          <option name="myId" value="MERGED_WITH_CONFLICTS" />
+        </FILE-GROUP>
+        <FILE-GROUP>
+          <option name="myUpdateName" value="Merged" />
+          <option name="myStatusName" value="Will be merged" />
+          <option name="mySupportsDeletion" value="false" />
+          <option name="myCanBeAbsent" value="false" />
+          <option name="myId" value="MERGED" />
+        </FILE-GROUP>
+        <FILE-GROUP>
+          <option name="myUpdateName" value="Not in repository" />
+          <option name="myStatusName" value="Not in repository" />
+          <option name="mySupportsDeletion" value="true" />
+          <option name="myCanBeAbsent" value="false" />
+          <option name="myId" value="UNKNOWN" />
+        </FILE-GROUP>
+        <FILE-GROUP>
+          <option name="myUpdateName" value="Locally added" />
+          <option name="myStatusName" value="Locally added" />
+          <option name="mySupportsDeletion" value="false" />
+          <option name="myCanBeAbsent" value="false" />
+          <option name="myId" value="LOCALLY_ADDED" />
+          <PATH>C:\home\tony\documents\IdeaProjects\dalec1.0\.cvsignore</PATH>
+        </FILE-GROUP>
+        <FILE-GROUP>
+          <option name="myUpdateName" value="Locally removed" />
+          <option name="myStatusName" value="Locally removed" />
+          <option name="mySupportsDeletion" value="false" />
+          <option name="myCanBeAbsent" value="false" />
+          <option name="myId" value="LOCALLY_REMOVED" />
+        </FILE-GROUP>
+        <FILE-GROUP>
+          <option name="myUpdateName" value="Unknown" />
+          <option name="myStatusName" value="Unknown" />
+          <option name="mySupportsDeletion" value="false" />
+          <option name="myCanBeAbsent" value="false" />
+          <option name="myId" value="UNKNOWN_TYPE" />
+        </FILE-GROUP>
+        <FILE-GROUP>
+          <option name="myUpdateName" value="Locally modified removed from server" />
+          <option name="myStatusName" value="Locally modified removed from server" />
+          <option name="mySupportsDeletion" value="false" />
+          <option name="myCanBeAbsent" value="false" />
+          <option name="myId" value="MOD_REMOVED_FROM_SERVER" />
+        </FILE-GROUP>
+        <FILE-GROUP>
+          <option name="myUpdateName" value="Locally removed modified on server" />
+          <option name="myStatusName" value="Locally removed modified on server" />
+          <option name="mySupportsDeletion" value="false" />
+          <option name="myCanBeAbsent" value="false" />
+          <option name="myId" value="LOCALLY_REMOVED_MODIFIED_ON_SERVER" />
+        </FILE-GROUP>
+        <FILE-GROUP>
+          <option name="myUpdateName" value="Created by second party" />
+          <option name="myStatusName" value="Created by second party" />
+          <option name="mySupportsDeletion" value="true" />
+          <option name="myCanBeAbsent" value="false" />
+          <option name="myId" value="CREATED_BY_SECOND_PARTY" />
+        </FILE-GROUP>
+        <FILE-GROUP>
+          <option name="myUpdateName" value="Binary file has to be merged" />
+          <option name="myStatusName" value="Binary file has to be merged" />
+          <option name="mySupportsDeletion" value="false" />
+          <option name="myCanBeAbsent" value="false" />
+          <option name="myId" value="BINARY_MERGED" />
+        </FILE-GROUP>
+      </UpdatedFiles>
+    </UpdateInfo>
+  </component>
   <component name="RunManager">
     <activeType name="JUnit" />
-    <configuration selected="false" default="true" type="Application" factoryName="Application">
-      <option name="MAIN_CLASS_NAME" />
-      <option name="VM_PARAMETERS" />
-      <option name="PROGRAM_PARAMETERS" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
-      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
-      <option name="ALTERNATIVE_JRE_PATH" />
-      <module name="" />
-    </configuration>
     <configuration selected="false" default="true" type="JUnit" factoryName="JUnit">
       <module name="" />
       <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
@@ -529,6 +639,13 @@
         <value defaultName="wholeProject" />
       </option>
     </configuration>
+    <configuration selected="false" default="true" type="Remote" factoryName="Remote">
+      <option name="USE_SOCKET_TRANSPORT" value="true" />
+      <option name="SERVER_MODE" value="false" />
+      <option name="SHMEM_ADDRESS" value="javadebug" />
+      <option name="HOST" value="localhost" />
+      <option name="PORT" value="5005" />
+    </configuration>
     <configuration selected="false" default="true" type="Applet" factoryName="Applet">
       <module name="" />
       <option name="MAIN_CLASS_NAME" />
@@ -541,12 +658,14 @@
       <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
       <option name="ALTERNATIVE_JRE_PATH" />
     </configuration>
-    <configuration selected="false" default="true" type="Remote" factoryName="Remote">
-      <option name="USE_SOCKET_TRANSPORT" value="true" />
-      <option name="SERVER_MODE" value="false" />
-      <option name="SHMEM_ADDRESS" value="javadebug" />
-      <option name="HOST" value="localhost" />
-      <option name="PORT" value="5005" />
+    <configuration selected="false" default="true" type="Application" factoryName="Application">
+      <option name="MAIN_CLASS_NAME" />
+      <option name="VM_PARAMETERS" />
+      <option name="PROGRAM_PARAMETERS" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
+      <option name="ALTERNATIVE_JRE_PATH" />
+      <module name="" />
     </configuration>
     <configuration selected="false" default="false" name="TestDatabaseManager" type="JUnit" factoryName="JUnit">
       <module name="dalec1.0" />
@@ -581,14 +700,14 @@
       <option name="TEST_SEARCH_SCOPE">
         <value defaultName="wholeProject" />
       </option>
-      <RunnerSettings RunnerId="Run" />
       <RunnerSettings RunnerId="Debug">
         <option name="DEBUG_PORT" value="1450" />
         <option name="TRANSPORT" value="0" />
         <option name="LOCAL" value="false" />
       </RunnerSettings>
-      <ConfigurationWrapper RunnerId="Run" />
+      <RunnerSettings RunnerId="Run" />
       <ConfigurationWrapper RunnerId="Debug" />
+      <ConfigurationWrapper RunnerId="Run" />
     </configuration>
     <configuration selected="false" default="false" name="TestDalecAnnotationSource" type="JUnit" factoryName="JUnit">
       <module name="dalec1.0" />
@@ -656,7 +775,7 @@
     <layout>
       <window_info id="CVS" active="false" anchor="bottom" auto_hide="false" internal_type="docked" type="docked" visible="false" weight="0.32979977" order="8" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="docked" type="docked" visible="false" weight="0.38705882" order="7" />
-      <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="docked" type="docked" visible="true" weight="0.19934641" order="0" />
+      <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="docked" type="docked" visible="true" weight="0.20261438" order="0" />
       <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="docked" type="docked" visible="false" weight="0.32941177" order="1" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="docked" type="docked" visible="false" weight="0.25" order="1" />
       <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="docked" type="docked" visible="false" weight="0.32979977" order="8" />
@@ -667,7 +786,7 @@
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="docked" type="docked" visible="false" weight="0.25" order="1" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="docked" type="docked" visible="false" weight="0.87058824" order="2" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="docked" type="docked" visible="false" weight="0.25" order="2" />
-      <window_info id="File View" active="false" anchor="right" auto_hide="false" internal_type="docked" type="docked" visible="false" weight="0.42892158" order="3" />
+      <window_info id="File View" active="false" anchor="right" auto_hide="false" internal_type="docked" type="docked" visible="true" weight="0.42892158" order="3" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="docked" type="docked" visible="false" weight="0.66548884" order="4" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="sliding" type="sliding" visible="false" weight="0.4" order="0" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="docked" type="docked" visible="false" weight="0.32941177" order="8" />
@@ -832,9 +951,40 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/test/net/sf/taverna/dalec/TestDalecManager.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="200" column="22" selection-start="5603" selection-end="5603" vertical-scroll-proportion="0.88154614">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/build.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="209" column="51" selection-start="11331" selection-end="11331" vertical-scroll-proportion="0.29283887">
+          <folding>
+            <element signature="tag#target#4;tag#project#0" expanded="false" />
+            <element signature="tag#target#5;tag#project#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/net/sf/taverna/dalec/DalecManager.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="43" column="13" selection-start="2367" selection-end="2367" vertical-scroll-proportion="0.02173913">
+          <folding>
+            <element signature="docComment;class#DalecManager#0" expanded="false" />
+            <element signature="docComment;method#DalecManager#0;class#DalecManager#0" expanded="false" />
+            <element signature="class#4472:5497" expanded="false" />
+            <element signature="method#databaseEntryCreated#0;class#4472:5497" expanded="false" />
+            <element signature="method#databaseEntryFailed#0;class#4472:5497" expanded="false" />
+            <element signature="method#databaseEntryRemoved#0;class#4472:5497" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/src/net/sf/taverna/dalec/DalecAnnotationSource.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="55" column="13" selection-start="2528" selection-end="2528" vertical-scroll-proportion="0.021197008">
+        <state line="55" column="13" selection-start="2528" selection-end="2528" vertical-scroll-proportion="0.02173913">
           <folding>
             <element signature="docComment;class#DalecAnnotationSource#0" expanded="false" />
             <element signature="docComment;method#init#0;class#DalecAnnotationSource#0" expanded="false" />
@@ -856,37 +1006,6 @@
             <element signature="method#fetchQuerySequence#0;class#DalecAnnotationSource#0" expanded="false" />
             <element signature="docComment;method#makeDummySequence#0;class#DalecAnnotationSource#0" expanded="false" />
             <element signature="method#makeDummySequence#0;class#DalecAnnotationSource#0" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/test/net/sf/taverna/dalec/TestDalecManager.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="200" column="22" selection-start="5603" selection-end="5603" vertical-scroll-proportion="0.88154614">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/net/sf/taverna/dalec/DalecManager.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="43" column="13" selection-start="2367" selection-end="2367" vertical-scroll-proportion="0.021197008">
-          <folding>
-            <element signature="docComment;class#DalecManager#0" expanded="false" />
-            <element signature="docComment;method#DalecManager#0;class#DalecManager#0" expanded="false" />
-            <element signature="class#4472:5497" expanded="false" />
-            <element signature="method#databaseEntryCreated#0;class#4472:5497" expanded="false" />
-            <element signature="method#databaseEntryFailed#0;class#4472:5497" expanded="false" />
-            <element signature="method#databaseEntryRemoved#0;class#4472:5497" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/build.xml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="209" column="51" selection-start="11331" selection-end="11331" vertical-scroll-proportion="0.250918">
-          <folding>
-            <element signature="tag#target#4;tag#project#0" expanded="false" />
-            <element signature="tag#target#5;tag#project#0" expanded="false" />
           </folding>
         </state>
       </provider>
