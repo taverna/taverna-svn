@@ -12,7 +12,7 @@
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="Dalec Library" level="project" />
-    <orderEntry type="library" name="Taverna Libraries" level="project" />
+    <orderEntry type="library" name="Taverna Library" level="project" />
     <orderEntryProperties />
   </component>
 </module>
