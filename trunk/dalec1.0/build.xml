@@ -202,7 +202,7 @@
     </target>
 
     <!-- make the jar file -->
-    <target name="dalec.jar">
+    <target name="dalec.jar" depends="compile.dalec1.0">
         <jar destfile="${lib.dir}\dalec-1.0.jar" basedir="${classes.dir}" excludes="**\Test*.jar" />
     </target>
 
@@ -223,7 +223,7 @@
         </copy>
         <copy todir="${webapp.dir}" file="${basedir}\deployment\dazzlecfg.xml" />
         <copy todir="${webapp.dir}" file="${basedir}\deployment\welcome.html" />
-        <copy todir="$webapp.dir}\WEB-INF" file="${basedir}\deployment\web.xml" />
+        <copy todir="${webapp.dir}\WEB-INF" file="${basedir}\deployment\web.xml" />
     </target>
 
     <!-- clean up the source directory -->
