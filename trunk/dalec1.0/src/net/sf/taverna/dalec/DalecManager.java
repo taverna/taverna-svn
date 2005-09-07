@@ -380,9 +380,7 @@ public class DalecManager
      * @throws UnableToAccessDatabaseException
      *                                   - If there is a problem accessing the data held within the database.
      */
-    public GFFEntrySet requestAnnotations
-            (String
-                    ref) throws NewJobSubmissionException, UnableToAccessDatabaseException
+    public GFFEntrySet requestAnnotations(String ref) throws NewJobSubmissionException, UnableToAccessDatabaseException
     {
         if (jobExists(ref))
         {

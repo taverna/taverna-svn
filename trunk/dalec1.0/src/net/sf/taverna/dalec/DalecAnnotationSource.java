@@ -374,7 +374,7 @@ public class DalecAnnotationSource extends AbstractDataSource
         // Make a dummy GFFEntrySet with one record with a human readable explanation to wait
         SimpleGFFRecord dummyRecord = new SimpleGFFRecord();
         dummyRecord.setSeqName("Unannotated Sequence");
-        dummyRecord.setFeature("All features are being evaluated");
+        dummyRecord.setFeature("Features are being evaluated");
         dummyRecord.setComment("***ANNOTATIONS BEING EVALUATED BY DALEC*** Please wait while the annotations for this sequence are being calculated.  Resubmit your request shortly.");
         GFFEntrySet dummyEntry = new GFFEntrySet();
         dummyEntry.add(dummyRecord);
