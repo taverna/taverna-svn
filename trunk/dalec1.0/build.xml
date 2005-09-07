@@ -236,5 +236,10 @@
 
     <target name="init" depends="fetch.jars, make.webapp" description="Build initialization" />
 
-    <target name="main" depends="clean, init, compile.dalec1.0" description="build all"/>
+    <target name="run.configurator" depends="clean, init, compile.dalec1.0" description="Build and start configurator utility">
+        <ant antfile="config-build.xml" />
+    </target>
+
+
+    <target name="main" depends="clean, init, compile.dalec1.0, run.configurator" description="build all"/>
 </project>
