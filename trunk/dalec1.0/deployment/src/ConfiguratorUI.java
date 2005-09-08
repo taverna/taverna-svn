@@ -1,3 +1,5 @@
+import com.sun.java.swing.plaf.windows.WindowsLookAndFeel;
+
 import javax.swing.*;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.event.ListSelectionListener;
@@ -9,8 +11,10 @@ import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.awt.*;
 
+
 /**
  * Created by IntelliJ IDEA. User: Tony Burdett Date: 04-Sep-2005 Time: 11:31:41 To change this template use File |
+ * <p/>
  * Settings | File Templates.
  */
 public class ConfiguratorUI
@@ -24,15 +28,19 @@ public class ConfiguratorUI
     public static void main(String[] args)
     {
         JFrame dcf = new DalecConfigFrame();
+        String wlaf = "com.sun.java.swing.plaf.windows.WindowsLookAndFeel";
+        try
+        {
+            UIManager.setLookAndFeel(wlaf);
+            SwingUtilities.updateComponentTreeUI(dcf);
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        }
+
         dcf.setVisible(true);
         dcf.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
-//        ConfiguratorFrame.setLayout(new BorderLayout());
-//
-//        ConfiguratorFrame.add(panel);
-//        ConfiguratorFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-//        ConfiguratorFrame.setSize(400, 400);
-//        ConfiguratorFrame.setVisible(true);
     }
 
     private static class DalecConfigFrame extends JFrame
@@ -41,7 +49,8 @@ public class ConfiguratorUI
         {
             // set some appearance stuff
             setTitle("Dalec Configurator");
-            setSize(550, 250);
+            setSize(550, 300);
+            setLocationRelativeTo(null);
 
             // configure the LIST display properties
             LIST.setFixedCellWidth(400);
@@ -77,8 +86,9 @@ public class ConfiguratorUI
                     {
                         String dalecName = (String) LIST.getSelectedValue();
                         // pop up the remove dialog - are you sure? plus OK / Cancel
-                        JDialog removeDialog = new RemoveDalecDialog(DalecConfigFrame.this, DLM.getDalecByName(dalecName));
-                        removeDialog.setVisible(true);
+//                        JDialog removeDialog = new RemoveDalecDialog(DalecConfigFrame.this, DLM.getDalecByName(dalecName));
+//                        removeDialog.setVisible(true);
+                        popupRemoveBox(DLM.getDalecByName(dalecName));
                     }
                     catch (NullPointerException e1)
                     {
@@ -138,10 +148,20 @@ public class ConfiguratorUI
             buttonPanel.add(editButton);
             buttonPanel.add(doneButton);
             buttonPanel.setLayout(new FlowLayout(FlowLayout.RIGHT));
-
             // add the LIST and buttons to the frame
-            add(listPanel, BorderLayout.NORTH);
+            add(new JLabel("<html><br><p><font size=4><i>&nbsp;&nbsp;Configure Dalecs exposed by this DAS server:<i></font></p><br></html>"), BorderLayout.NORTH);
+            add(listPanel, BorderLayout.CENTER);
             add(buttonPanel, BorderLayout.SOUTH);
+        }
+
+        private static void popupRemoveBox(final Dalec dalecToRemove)
+        {
+            String message = "Are you sure you want to remove the Dalec \"" + (String) dalecToRemove.getAttributes().get(Dalec.NAME) + "\" ?";
+            int response = JOptionPane.showConfirmDialog(null, message, "Remove Dalec", JOptionPane.OK_CANCEL_OPTION);
+            if (response == JOptionPane.OK_OPTION)
+            {
+                DLM.removeElement(dalecToRemove);
+            }
         }
     }
 
@@ -152,6 +172,7 @@ public class ConfiguratorUI
             for (Iterator it = dalecsList.iterator(); it.hasNext();)
             {
                 Dalec dalec = (Dalec) it.next();
+
                 addElement(dalec);
             }
         }
@@ -201,34 +222,80 @@ public class ConfiguratorUI
         private AddDalecDialog(JFrame owner)
         {
             super(owner, "Add a new Dalec", true);
-            setSize(600, 250);
-
+            setSize(700, 250);
+            setLocationRelativeTo(null);
             // set up all boxes for adding Dalec data
             inputPanel = new JPanel();
-            inputPanel.setLayout(new GridLayout(5, 3, 3, 3));
+            inputPanel.setLayout(new GridBagLayout());
 
-            NAME.setColumns(50);
-            addField("Name (should be unique): ", NAME);
-            inputPanel.add(new JLabel(""));
+            GridBagConstraints labelCons = new GridBagConstraints();
+            labelCons.weightx = 0;
+            labelCons.weighty = 100;
+            labelCons.gridx = 0;
+            labelCons.gridy = 0;
+            labelCons.gridwidth = 1;
+            labelCons.gridheight = 1;
+            labelCons.anchor = GridBagConstraints.EAST;
+            labelCons.insets = new Insets(3,10,3,3);
 
-            DESCRIPTION.setColumns(50);
-            addField("Description: ", DESCRIPTION);
-            inputPanel.add(new JLabel(""));
+            GridBagConstraints boxCons = new GridBagConstraints();
+            boxCons.weightx = 100;
+            boxCons.weighty = 100;
+            boxCons.gridx = 1;
+            boxCons.gridy = 0;
+            boxCons.gridwidth = 2;
+            boxCons.gridheight = 1;
+            boxCons.fill = GridBagConstraints.HORIZONTAL;
+            boxCons.insets = new Insets(3,3,3,3);
 
-            MAP.setColumns(50);
-            addField("MapMaster (corresponds to reference server to annotate): ", MAP);
-            inputPanel.add(new JLabel(""));
+            GridBagConstraints boxAndButtonCons = new GridBagConstraints();
+            boxAndButtonCons.weightx = 100;
+            boxAndButtonCons.weighty = 100;
+            boxAndButtonCons.gridx = 1;
+            boxAndButtonCons.gridy = 3;
+            boxAndButtonCons.gridwidth = 1;
+            boxAndButtonCons.gridheight = 1;
+            boxAndButtonCons.fill = GridBagConstraints.HORIZONTAL;
+            boxAndButtonCons.insets = new Insets(3,3,3,3);
 
-            XSCUFL.setColumns(50);
-            addFieldWithBrowseButton("Workflow File (.xscufl format): ", XSCUFL, true);
+            GridBagConstraints buttonCons = new GridBagConstraints();
+            buttonCons.weightx = 0;
+            buttonCons.weighty = 0;
+            buttonCons.gridx = 2;
+            buttonCons.gridy = 3;
+            buttonCons.gridwidth = 2;
+            buttonCons.gridheight = 1;
+            buttonCons.insets = new Insets(3,3,3,10);
 
-            DBFIELD.setColumns(50);
-            addFieldWithBrowseButton("Database root location: ", DBFIELD, false);
+            inputPanel.add(new JLabel("Name (should be unique): "), labelCons);
+            inputPanel.add(NAME, boxCons);
+            labelCons.gridy = 1;
+            boxCons.gridy = 1;
+
+            inputPanel.add(new JLabel("Descriptions: "), labelCons);
+            inputPanel.add(DESCRIPTION, boxCons);
+            labelCons.gridy = 2;
+            boxCons.gridy = 2;
+
+            inputPanel.add(new JLabel("MapMaster (corresponds to reference server to annotate): "), labelCons);
+            inputPanel.add(MAP, boxCons);
+            labelCons.gridy = 3;
+
+            inputPanel.add(new JLabel("Workflow File (.xscufl format): "), labelCons);
+            inputPanel.add(XSCUFL, boxAndButtonCons);
+            inputPanel.add(makeBrowseButton(XSCUFL, true), buttonCons);
+            labelCons.gridy = 4;
+            boxAndButtonCons.gridy = 4;
+            buttonCons.gridy = 4;
+
+            inputPanel.add(new JLabel("Database root location: "), labelCons);
+            inputPanel.add(DBFIELD, boxAndButtonCons);
+            inputPanel.add(makeBrowseButton(DBFIELD, false), buttonCons);
+
 
             JButton okButton = new JButton("OK");
             okButton.addActionListener(new ActionListener()
             {
-
                 public void actionPerformed(ActionEvent e)
                 {
                     Dalec dalec = new Dalec();
@@ -246,7 +313,6 @@ public class ConfiguratorUI
             JButton canxButton = new JButton("Cancel");
             canxButton.addActionListener(new ActionListener()
             {
-
                 public void actionPerformed(ActionEvent e)
                 {
                     // just close the window
@@ -266,34 +332,84 @@ public class ConfiguratorUI
         private AddDalecDialog(JFrame owner, final Dalec editingDalec)
         {
             super(owner, "Add a new Dalec", true);
-            setSize(600, 250);
-
+            setSize(700, 250);
+            setLocationRelativeTo(null);
             // set up all boxes for adding Dalec data
             inputPanel = new JPanel();
-            inputPanel.setLayout(new GridLayout(5, 3, 3, 3));
+            inputPanel.setLayout(new GridBagLayout());
 
-            NAME.setColumns(50);
-            addField("Name (should be unique): ", NAME, (String) editingDalec.getAttributes().get(Dalec.NAME));
-            inputPanel.add(new JLabel(""));
+            GridBagConstraints labelCons = new GridBagConstraints();
+            labelCons.weightx = 0;
+            labelCons.weighty = 100;
+            labelCons.gridx = 0;
+            labelCons.gridy = 0;
+            labelCons.gridwidth = 1;
+            labelCons.gridheight = 1;
+            labelCons.anchor = GridBagConstraints.EAST;
+            labelCons.insets = new Insets(3,10,3,3);
 
-            DESCRIPTION.setColumns(50);
-            addField("Description: ", DESCRIPTION, (String) editingDalec.getAttributes().get(Dalec.DESCRIPTION));
-            inputPanel.add(new JLabel(""));
+            GridBagConstraints boxCons = new GridBagConstraints();
+            boxCons.weightx = 100;
+            boxCons.weighty = 100;
+            boxCons.gridx = 1;
+            boxCons.gridy = 0;
+            boxCons.gridwidth = 2;
+            boxCons.gridheight = 1;
+            boxCons.fill = GridBagConstraints.HORIZONTAL;
+            boxCons.insets = new Insets(3,3,3,3);
 
-            MAP.setColumns(50);
-            addField("MapMaster (corresponds to reference server to annotate): ", MAP, (String) editingDalec.getAttributes().get(Dalec.MAPMASTER));
-            inputPanel.add(new JLabel(""));
+            GridBagConstraints boxAndButtonCons = new GridBagConstraints();
+            boxAndButtonCons.weightx = 100;
+            boxAndButtonCons.weighty = 100;
+            boxAndButtonCons.gridx = 1;
+            boxAndButtonCons.gridy = 3;
+            boxAndButtonCons.gridwidth = 1;
+            boxAndButtonCons.gridheight = 1;
+            boxAndButtonCons.fill = GridBagConstraints.HORIZONTAL;
+            boxAndButtonCons.insets = new Insets(3,3,3,3);
 
-            XSCUFL.setColumns(50);
-            addFieldWithBrowseButton("Workflow File (.xscufl format): ", XSCUFL, true, (String) editingDalec.getAttributes().get(Dalec.XSCUFLFILE));
+            GridBagConstraints buttonCons = new GridBagConstraints();
+            buttonCons.weightx = 0;
+            buttonCons.weighty = 0;
+            buttonCons.gridx = 2;
+            buttonCons.gridy = 3;
+            buttonCons.gridwidth = 2;
+            buttonCons.gridheight = 1;
+            buttonCons.insets = new Insets(3,3,3,10);
 
-            DBFIELD.setColumns(50);
-            addFieldWithBrowseButton("Database root location: ", DBFIELD, false, (String) editingDalec.getAttributes().get(Dalec.DBLOCATION));
+            inputPanel.add(new JLabel("Name (should be unique): "), labelCons);
+            inputPanel.add(NAME, boxCons);
+            NAME.setText((String) editingDalec.getAttributes().get(Dalec.NAME));
+            labelCons.gridy = 1;
+            boxCons.gridy = 1;
+
+            inputPanel.add(new JLabel("Descriptions: "), labelCons);
+            inputPanel.add(DESCRIPTION, boxCons);
+            DESCRIPTION.setText((String) editingDalec.getAttributes().get(Dalec.DESCRIPTION));
+            labelCons.gridy = 2;
+            boxCons.gridy = 2;
+
+            inputPanel.add(new JLabel("MapMaster (corresponds to reference server to annotate): "), labelCons);
+            inputPanel.add(MAP, boxCons);
+            MAP.setText((String) editingDalec.getAttributes().get(Dalec.MAPMASTER));
+            labelCons.gridy = 3;
+
+            inputPanel.add(new JLabel("Workflow File (.xscufl format): "), labelCons);
+            inputPanel.add(XSCUFL, boxAndButtonCons);
+            inputPanel.add(makeBrowseButton(XSCUFL, true), buttonCons);
+            XSCUFL.setText((String) editingDalec.getAttributes().get(Dalec.MAPMASTER));
+            labelCons.gridy = 4;
+            boxAndButtonCons.gridy = 4;
+            buttonCons.gridy = 4;
+
+            inputPanel.add(new JLabel("Database root location: "), labelCons);
+            inputPanel.add(DBFIELD, boxAndButtonCons);
+            DBFIELD.setText((String) editingDalec.getAttributes().get(Dalec.DBLOCATION));
+            inputPanel.add(makeBrowseButton(DBFIELD, false), buttonCons);
 
             JButton okButton = new JButton("OK");
             okButton.addActionListener(new ActionListener()
             {
-
                 public void actionPerformed(ActionEvent e)
                 {
                     Dalec dalec = new Dalec();
@@ -302,10 +418,16 @@ public class ConfiguratorUI
                     dalec.setMapMaster(MAP.getText());
                     dalec.setXScuflFile(XSCUFL.getText());
                     dalec.setDBLocation(DBFIELD.getText());
-
                     // now remove the old dalec and add the new one to the LIST model
                     DLM.removeElement(editingDalec);
                     DLM.addElement(dalec);
+                    // now remove all set values
+                    NAME.setText(null);
+                    DESCRIPTION.setText(null);
+                    MAP.setText(null);
+                    XSCUFL.setText(null);
+                    DBFIELD.setText(null);
+                    // close the window
                     setVisible(false);
                 }
             });
@@ -313,10 +435,15 @@ public class ConfiguratorUI
             JButton canxButton = new JButton("Cancel");
             canxButton.addActionListener(new ActionListener()
             {
-
                 public void actionPerformed(ActionEvent e)
                 {
-                    // just close the window
+                    // remove all set values
+                    NAME.setText(null);
+                    DESCRIPTION.setText(null);
+                    MAP.setText(null);
+                    XSCUFL.setText(null);
+                    DBFIELD.setText(null);
+                    // close the window
                     setVisible(false);
                 }
             });
@@ -329,17 +456,8 @@ public class ConfiguratorUI
             add(buttonPanel, BorderLayout.SOUTH);
         }
 
-        public static void addField(String label, JTextField textField)
+        public static JButton makeBrowseButton (final JTextField textField, final boolean workflowFile)
         {
-            // add the label and the text box
-            inputPanel.add(new JLabel(label));
-            inputPanel.add(textField);
-        }
-
-        public static void addFieldWithBrowseButton(String label, final JTextField textField, final boolean workflowFile)
-        {
-            addField(label, textField);
-            // add a button to open the file chooser dialog
             JButton browseButton = new JButton("Browse");
             browseButton.addActionListener(new ActionListener()
             {
@@ -372,100 +490,11 @@ public class ConfiguratorUI
                     if (result == JFileChooser.APPROVE_OPTION)
                     {
                         textField.setText(fileBrowser.getSelectedFile().getPath());
-
                         // add Dalec to LIST model
                     }
                 }
             });
-
-            inputPanel.add(browseButton);
-        }
-
-        public static void addField(String label, JTextField textField, String defaultValue)
-        {
-            // add the label and the text box
-            inputPanel.add(new JLabel(label));
-            inputPanel.add(textField);
-            textField.setText(defaultValue);
-        }
-
-        public static void addFieldWithBrowseButton(String label, final JTextField textField, final boolean workflowFile, String defaultValue)
-        {
-            addField(label, textField);
-            // add a button to open the file chooser dialog
-            JButton browseButton = new JButton("Browse");
-            browseButton.addActionListener(new ActionListener()
-            {
-                public void actionPerformed(ActionEvent e)
-                {
-                    JFileChooser fileBrowser = new JFileChooser(new File("."));
-
-                    if (workflowFile)
-                    {
-                        fileBrowser.setFileFilter(new FileFilter()
-                        {
-                            public boolean accept(File f)
-                            {
-                                return (f.getName().toLowerCase().endsWith(".xml") || f.isDirectory());
-                            }
-
-                            public String getDescription()
-                            {
-                                return "Workflow Files (*.xml)";
-                            }
-                        });
-                    }
-                    else
-                    {
-                        fileBrowser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-                    }
-
-                    int result = fileBrowser.showOpenDialog(inputPanel);
-
-                    if (result == JFileChooser.APPROVE_OPTION)
-                    {
-                        textField.setText(fileBrowser.getSelectedFile().getPath());
-
-                        // add Dalec to LIST model
-                    }
-                }
-            });
-
-            inputPanel.add(browseButton);
-            textField.setText(defaultValue);
-        }
-    }
-
-    private static class RemoveDalecDialog extends JDialog
-    {
-        private RemoveDalecDialog(JFrame owner, final Dalec dalecToRemove)
-        {
-            super(owner, "Remove Dalecs", true);
-            setSize(300, 150);
-
-            add(new JLabel("Are you sure you want to remove " + (String) dalecToRemove.getAttributes().get(Dalec.NAME) + "?"), BorderLayout.CENTER);
-
-            JPanel buttons = new JPanel();
-            JButton ok = new JButton("OK");
-            ok.addActionListener(new ActionListener()
-            {
-                public void actionPerformed(ActionEvent e)
-                {
-                    DLM.removeElement(dalecToRemove);
-                    setVisible(false);
-                }
-            });
-            JButton cancel = new JButton("Cancel");
-            cancel.addActionListener(new ActionListener()
-            {
-                public void actionPerformed(ActionEvent e)
-                {
-                    setVisible(false);
-                }
-            });
-            buttons.add(ok);
-            buttons.add(cancel);
-            add(buttons, BorderLayout.SOUTH);
+            return browseButton;
         }
     }
 }
