@@ -1,5 +1,3 @@
-import com.sun.java.swing.plaf.windows.WindowsLookAndFeel;
-
 import javax.swing.*;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.event.ListSelectionListener;
@@ -85,9 +83,6 @@ public class ConfiguratorUI
                     try
                     {
                         String dalecName = (String) LIST.getSelectedValue();
-                        // pop up the remove dialog - are you sure? plus OK / Cancel
-//                        JDialog removeDialog = new RemoveDalecDialog(DalecConfigFrame.this, DLM.getDalecByName(dalecName));
-//                        removeDialog.setVisible(true);
                         popupRemoveBox(DLM.getDalecByName(dalecName));
                     }
                     catch (NullPointerException e1)
@@ -397,7 +392,7 @@ public class ConfiguratorUI
             inputPanel.add(new JLabel("Workflow File (.xscufl format): "), labelCons);
             inputPanel.add(XSCUFL, boxAndButtonCons);
             inputPanel.add(makeBrowseButton(XSCUFL, true), buttonCons);
-            XSCUFL.setText((String) editingDalec.getAttributes().get(Dalec.MAPMASTER));
+            XSCUFL.setText((String) editingDalec.getAttributes().get(Dalec.XSCUFLFILE));
             labelCons.gridy = 4;
             boxAndButtonCons.gridy = 4;
             buttonCons.gridy = 4;
