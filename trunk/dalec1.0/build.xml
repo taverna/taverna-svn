@@ -86,6 +86,8 @@
     <property name="test.dir" value="${basedir}/test"/>
     <property name="docs.dir" value="${basedir}/docs"/>
     <property name="webapp.dir" value="${basedir}/dalec-webapp"/>
+    <property environment="env"/>
+    <property name="tomcat.src" value="${env.TOMCAT_HOME}"/>
 
     <path id="dalec.classpath">
         <path refid="library.dalec_library.classpath"/>
@@ -147,14 +149,14 @@
 
     <!-- retrieve jars from taverna source lib via CVS -->
     <target name="fetch.taverna-lib.jars" description="retrieve taverna jars from CVS repository">
-        <mkdir dir="${taverna-lib.dir}" />
+        <mkdir dir="${taverna-lib.dir}"/>
         <cvs cvsRoot=":pserver:anonymous@cvs.sourceforge.net:/cvsroot/taverna"
-            package="taverna1.0/lib"
-            dest="${taverna-lib.dir}" />
+             package="taverna1.0/lib"
+             dest="${taverna-lib.dir}"/>
         <copy todir="${taverna-lib.dir}">
-            <fileset dir="${taverna-lib.dir}/taverna1.0/lib" includes="**/*.jar" />
+            <fileset dir="${taverna-lib.dir}/taverna1.0/lib" includes="**/*.jar"/>
         </copy>
-        <delete dir="${taverna-lib.dir}/taverna1.0" />
+        <delete dir="${taverna-lib.dir}/taverna1.0"/>
     </target>
 
     <!-- retrieve ibiblio jars -->
@@ -203,41 +205,68 @@
 
     <!-- make the jar file -->
     <target name="dalec.jar" depends="compile.dalec1.0">
-        <jar destfile="${lib.dir}\dalec-1.0.jar" basedir="${classes.dir}" excludes="**\Test*.jar" />
+        <jar destfile="${lib.dir}\dalec-1.0.jar" basedir="${classes.dir}" excludes="**\Test*.jar"/>
     </target>
 
     <!-- make the web-app structure -->
-    <target name="make.webapp" depends="dalec.jar">
-        <mkdir dir="${webapp.dir}" />
-        <mkdir dir="${webapp.dir}\WEB-INF\lib" />
+    <target name="make.webapp" depends="dalec.jar, edit.existing.webapp, make.default.webapp" />
+
+    <target name="webapp.exists">
+        <condition property="das.war.exists">
+            <available file="${tomcat.src}\webapp\das.war"/>
+        </condition>
+    </target>
+
+    <!-- Edit an old webapp if it existed before -->
+    <target name="edit.existing.webapp" depends="webapp.exists" if="${das.war.exists}">
+        <mkdir dir="${webapp.dir}"/>
+        <unwar src="${tomcat.src}\webapp\das.war" dest="${webapp.dir}" />
         <copy todir="${webapp.dir}\WEB-INF\lib">
             <fileset dir="${lib.dir}">
-                <include name="**\*.jar" />
+                <include name="**\*.jar"/>
             </fileset>
             <fileset dir="${taverna-lib.dir}">
-                <include name="**\*.jar" />
+                <include name="**\*.jar"/>
             </fileset>
             <fileset dir="${taverna-netlib.dir}">
-                <include name="**\*.jar" />
+                <include name="**\*.jar"/>
             </fileset>
         </copy>
-        <copy todir="${webapp.dir}" file="${basedir}\deployment\dazzlecfg.xml" />
-        <copy todir="${webapp.dir}" file="${basedir}\deployment\welcome.html" />
-        <copy todir="${webapp.dir}\WEB-INF" file="${basedir}\deployment\web.xml" />
+    </target>
+
+    <!-- Make a new default webapp if there isn't one already -->
+    <target name="make.default.webapp" depends="webapp.exists" unless="$das.war.exists}">
+        <mkdir dir="${webapp.dir}"/>
+        <mkdir dir="${webapp.dir}\WEB-INF\lib"/>
+        <copy todir="${webapp.dir}\WEB-INF\lib">
+            <fileset dir="${lib.dir}">
+                <include name="**\*.jar"/>
+            </fileset>
+            <fileset dir="${taverna-lib.dir}">
+                <include name="**\*.jar"/>
+            </fileset>
+            <fileset dir="${taverna-netlib.dir}">
+                <include name="**\*.jar"/>
+            </fileset>
+        </copy>
+        <copy todir="${webapp.dir}" file="${basedir}\deployment\dazzlecfg.xml"/>
+        <copy todir="${webapp.dir}" file="${basedir}\deployment\welcome.html"/>
+        <copy todir="${webapp.dir}\WEB-INF" file="${basedir}\deployment\web.xml"/>
     </target>
 
     <!-- clean up the source directory -->
     <target name="clean" description="cleanup Dalec1.0">
         <delete dir="${classes.dir}"/>
-        <delete dir="${taverna-netlib.dir}" />
-        <delete dir="${taverna-lib.dir}" />
-        <delete dir="${webapp.dir}" />
+        <delete dir="${taverna-netlib.dir}"/>
+        <delete dir="${taverna-lib.dir}"/>
+        <delete dir="${webapp.dir}"/>
     </target>
 
-    <target name="init" depends="fetch.jars, make.webapp" description="Build initialization" />
+    <target name="init" depends="fetch.jars, make.webapp" description="Build initialization"/>
 
-    <target name="run.configurator" depends="clean, init, compile.dalec1.0" description="Build and start configurator utility">
-        <ant antfile="config-build.xml" />
+    <target name="run.configurator" depends="clean, init, compile.dalec1.0, make.webapp"
+            description="Build and start configurator utility">
+        <ant antfile="config-build.xml"/>
     </target>
 
 
