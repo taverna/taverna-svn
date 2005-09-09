@@ -26,19 +26,18 @@ public class ConfiguratorUI
     public static void main(String[] args)
     {
         JFrame dcf = new DalecConfigFrame();
-        String wlaf = "com.sun.java.swing.plaf.windows.WindowsLookAndFeel";
         try
         {
-            UIManager.setLookAndFeel(wlaf);
+            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
             SwingUtilities.updateComponentTreeUI(dcf);
+            dcf.setVisible(true);
+            dcf.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         }
         catch (Exception e)
         {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            Exception e1 = new Exception("An error occurred whilst trying to open the Dalec Configurator", e.getCause());
+            e1.printStackTrace();
         }
-
-        dcf.setVisible(true);
-        dcf.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     }
 
     private static class DalecConfigFrame extends JFrame
@@ -231,7 +230,7 @@ public class ConfiguratorUI
             labelCons.gridwidth = 1;
             labelCons.gridheight = 1;
             labelCons.anchor = GridBagConstraints.EAST;
-            labelCons.insets = new Insets(3,10,3,3);
+            labelCons.insets = new Insets(3, 10, 3, 3);
 
             GridBagConstraints boxCons = new GridBagConstraints();
             boxCons.weightx = 100;
@@ -241,7 +240,7 @@ public class ConfiguratorUI
             boxCons.gridwidth = 2;
             boxCons.gridheight = 1;
             boxCons.fill = GridBagConstraints.HORIZONTAL;
-            boxCons.insets = new Insets(3,3,3,3);
+            boxCons.insets = new Insets(3, 3, 3, 3);
 
             GridBagConstraints boxAndButtonCons = new GridBagConstraints();
             boxAndButtonCons.weightx = 100;
@@ -251,7 +250,7 @@ public class ConfiguratorUI
             boxAndButtonCons.gridwidth = 1;
             boxAndButtonCons.gridheight = 1;
             boxAndButtonCons.fill = GridBagConstraints.HORIZONTAL;
-            boxAndButtonCons.insets = new Insets(3,3,3,3);
+            boxAndButtonCons.insets = new Insets(3, 3, 3, 3);
 
             GridBagConstraints buttonCons = new GridBagConstraints();
             buttonCons.weightx = 0;
@@ -260,7 +259,7 @@ public class ConfiguratorUI
             buttonCons.gridy = 3;
             buttonCons.gridwidth = 2;
             buttonCons.gridheight = 1;
-            buttonCons.insets = new Insets(3,3,3,10);
+            buttonCons.insets = new Insets(3, 3, 3, 10);
 
             inputPanel.add(new JLabel("Name (should be unique): "), labelCons);
             inputPanel.add(NAME, boxCons);
@@ -341,7 +340,7 @@ public class ConfiguratorUI
             labelCons.gridwidth = 1;
             labelCons.gridheight = 1;
             labelCons.anchor = GridBagConstraints.EAST;
-            labelCons.insets = new Insets(3,10,3,3);
+            labelCons.insets = new Insets(3, 10, 3, 3);
 
             GridBagConstraints boxCons = new GridBagConstraints();
             boxCons.weightx = 100;
@@ -351,7 +350,7 @@ public class ConfiguratorUI
             boxCons.gridwidth = 2;
             boxCons.gridheight = 1;
             boxCons.fill = GridBagConstraints.HORIZONTAL;
-            boxCons.insets = new Insets(3,3,3,3);
+            boxCons.insets = new Insets(3, 3, 3, 3);
 
             GridBagConstraints boxAndButtonCons = new GridBagConstraints();
             boxAndButtonCons.weightx = 100;
@@ -361,7 +360,7 @@ public class ConfiguratorUI
             boxAndButtonCons.gridwidth = 1;
             boxAndButtonCons.gridheight = 1;
             boxAndButtonCons.fill = GridBagConstraints.HORIZONTAL;
-            boxAndButtonCons.insets = new Insets(3,3,3,3);
+            boxAndButtonCons.insets = new Insets(3, 3, 3, 3);
 
             GridBagConstraints buttonCons = new GridBagConstraints();
             buttonCons.weightx = 0;
@@ -370,7 +369,7 @@ public class ConfiguratorUI
             buttonCons.gridy = 3;
             buttonCons.gridwidth = 2;
             buttonCons.gridheight = 1;
-            buttonCons.insets = new Insets(3,3,3,10);
+            buttonCons.insets = new Insets(3, 3, 3, 10);
 
             inputPanel.add(new JLabel("Name (should be unique): "), labelCons);
             inputPanel.add(NAME, boxCons);
@@ -451,7 +450,7 @@ public class ConfiguratorUI
             add(buttonPanel, BorderLayout.SOUTH);
         }
 
-        public static JButton makeBrowseButton (final JTextField textField, final boolean workflowFile)
+        public static JButton makeBrowseButton(final JTextField textField, final boolean workflowFile)
         {
             JButton browseButton = new JButton("Browse");
             browseButton.addActionListener(new ActionListener()
