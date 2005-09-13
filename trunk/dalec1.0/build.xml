@@ -87,7 +87,6 @@
     <property name="docs.dir" value="${basedir}/docs"/>
     <property name="webapp.dir" value="${basedir}/dalec-webapp"/>
     <property environment="env"/>
-    <property name="tomcat.src" value="${env.TOMCAT_HOME}"/>
 
     <path id="dalec.classpath">
         <path refid="library.dalec_library.classpath"/>
@@ -208,19 +207,27 @@
         <jar destfile="${lib.dir}\dalec-1.0.jar" basedir="${classes.dir}" excludes="**\Test*.jar"/>
     </target>
 
+    <!-- make the Javadocs -->
+    <target name="javadocs">
+        <mkdir dir="${docs.dir}\api" />
+        <javadoc destdir="${docs.dir}\api" windowtitle="Dalec-1.0 Javadocs" linksource="true">
+            <packageset dir="${src.dir}" />
+        </javadoc>
+    </target>
+
     <!-- make the web-app structure -->
     <target name="make.webapp" depends="dalec.jar, edit.existing.webapp, make.default.webapp" />
 
     <target name="webapp.exists">
         <condition property="das.war.exists">
-            <available file="${tomcat.src}\webapp\das.war"/>
+            <available file="${env.TOMCAT_HOME}\webapp\das.war"/>
         </condition>
     </target>
 
     <!-- Edit an old webapp if it existed before -->
     <target name="edit.existing.webapp" depends="webapp.exists" if="${das.war.exists}">
         <mkdir dir="${webapp.dir}"/>
-        <unwar src="${tomcat.src}\webapp\das.war" dest="${webapp.dir}" />
+        <unwar src="${env.TOMCAT_HOME}\webapp\das.war" dest="${webapp.dir}" />
         <copy todir="${webapp.dir}\WEB-INF\lib">
             <fileset dir="${lib.dir}">
                 <include name="**\*.jar"/>
@@ -260,6 +267,11 @@
         <delete dir="${taverna-netlib.dir}"/>
         <delete dir="${taverna-lib.dir}"/>
         <delete dir="${webapp.dir}"/>
+    </target>
+
+    <!-- test the installed package -->
+    <target name="test" depends="init, compile.dalec1.0, run.configurator">
+
     </target>
 
     <target name="init" depends="fetch.jars, make.webapp" description="Build initialization"/>

@@ -6,10 +6,10 @@ import java.util.Map;
 import java.util.HashMap;
 
 /**
- * <code>SequenceWorkflowInput</code> is an implementation of the WorkflowInput interface which sets the input type as
- * raw Sequence information.  Whenever a workflow is specified which takes an unannotated sequence as its input, this
- * type of input should be used.  This class takes the raw sequence and constructs a <code>DataThing</code> object from
- * it, also wrapping the processor name and the job ID.
+ * <code>SequenceWorkflowInput</code> is an implementation of the <code>WorkflowInput</code> interface which sets the
+ * input type as raw sequence information.  Whenever a workflow is specified which takes an unannotated sequence as its
+ * input, this type of input should be used.  This class takes the raw sequence and constructs a <code>DataThing</code>
+ * object from it, also wrapping the processor name and the job ID.
  *
  * @author Tony Burdett
  * @version 1.0

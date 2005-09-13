@@ -1,24 +1,18 @@
 <!--
- 
-  Example configuration file for the Dazzle servlet.
 
-  Please check all paths and URIs before deploying this on
-  your own server.
+Sample configuration file for Dalec, taken from the Dazzle config setup.
 
-  Information of configuring and deploying Dazzle can
-  be found at:
+Any additional dazzle datasources can be set here, along with any number of dalec datasources.
 
-      http://www.biojava.org/dazzle/
+This file is automatically set and updated by the configuration utility, which will also deploy Dalec automatically.
+If you are unsure about the contents of this file run this utility.
 
-  Alternatively, questions can be mailed to:
+For more information on Dazzle, see http://www.biojava.org/dazzle/
 
-      Thomas Down <td2@sanger.ac.uk>
-
-  -->
+-->
 
 <dazzle xmlns="http://www.biojava.org/2000/dazzle">
     <!-- Test reference server -->
-
     <datasource id="test" jclass="org.biojava.servlets.dazzle.datasource.EmblDataSource">
         <string name="name" value="Test seqs"/>
         <string name="description" value="Test set for promoter-finding software"/>
@@ -28,25 +22,12 @@
         <string name="stylesheet" value="test.style"/>
     </datasource>
 
-    <!-- Test annotation server.  Note that the mapMaster property must
-be changed to match your reference server -->
-
-    <datasource id="tss" jclass="org.biojava.servlets.dazzle.datasource.GFFAnnotationSource">
-        <string name="name" value="TSS"/>
-        <string name="description" value="Transcription start sites"/>
-        <string name="version" value="default"/>
-        <string name="fileName" value="fickett-tss.gff"/>
-        <boolean name="dotVersions" value="true"/>
-        <string name="mapMaster" value="http://localhost:8080/das/test/"/>
-
-        <string name="stylesheet" value="tss.style"/>
-    </datasource>
-
+    <!-- Test dalec annotation source -->
     <datasource id="dalec-test" jclass="net.sf.taverna.dalec.DalecAnnotationSource">
         <string name="name" value="dalec-test"/>
         <string name="description" value="Test annotation source for dalec"/>
-        <string name="mapMaster" value="Some mapMaster goes here" />
-        <string name="xscuflFile" value="dalecTestWorkflow.xml" />
-        <string name="dbLocation" value="database" />
+        <string name="mapMaster" value="Some mapMaster goes here"/>
+        <string name="xscuflFile" value="dalecTestWorkflow.xml"/>
+        <string name="dbLocation" value="database"/>
     </datasource>
 </dazzle>

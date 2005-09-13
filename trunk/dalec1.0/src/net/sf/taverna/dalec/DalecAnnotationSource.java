@@ -32,20 +32,24 @@ import javax.xml.parsers.DocumentBuilder;
 
 /**
  * This class serves as a Dazzle datasource plugin for the Dalec annotation package.  In keeping with Dazzle datasource
- * protocols, properties can be set within the <code>dazzlecfg.xml</code> file.
+ * protocols, properties can be set within the <code>dazzlecfg.xml</code> file.  Dazzle can be configured to serve up
+ * multiple datasources, so it is possible to have multiple Dalec datasources (multiple Dalecs) per Dazzle
+ * implementation.  Dalecs can be configured using the Dalec configurator tool (see user docs).
  * <p/>
  * <h3>Dalec Property Requirements</h3>
  * <p/>
- * Importantly for Dalec, the properties specified in <code>dazzlecfg.xml</code> should include: <ul><li>[XScuflFile]:
- * the location of the <code>.XScufl</code> format file used to construct the annotation workflow,</li>
- * <li>[SequenceDBLocation]: the filepath of the location in which the Dalec database should store its results,</li>
- * <li>[MapMaster]: the path to the DAS reference server from which sequences will be annotated.</ul>
+ * Importantly for Dalec, the properties specified in <code>dazzlecfg.xml</code> should include: <ul> <li>[name]: the
+ * name of the Dalec, which should be unique </li> <li>[description]: a description of this Dalec </li>
+ * <li>[xscuflFile]: the location of the <code>.XScufl</code> format file used to construct the annotation
+ * workflow,</li> <li>[MapMaster]: the path to the DAS reference server from which sequences will be annotated.</li>
+ * <li>[dbLocation]: the full path to the root directory of the databse filestore, in which the Dalec database should
+ * store its results</li> </ul>
  * <p/>
  * Note that, if the specified directory for the Dalec database does not exist, it will be created by Dalec.  Care
  * should be taken when setting this property, as large quantities of data could potentially be written to disk - a
  * single GFF format file record is stored for every sequence query submitted to Dalec.  If you intend to permanently
- * deploy Dalec within a DAS server, ensure adequate disk space will be available and that write permissions are
- * sufficient.
+ * deploy Dalec, the databse filestore should be monitored regularly, adequate disk space should be available and that
+ * write permissions are sufficient.
  * <p/>
  * Once all properties are set and the <code>init()</code> method is called, an instance of DalecManager will be created
  * ready to annotate submitted requests.
@@ -60,7 +64,6 @@ public class DalecAnnotationSource extends AbstractDataSource
     private File seqDB;
 
     private DalecManager davros;
-
 
     /**
      * Implementation of the <code>init()</code> method specified by <code>DazzleDataSource</code>.  In this case, the
@@ -114,8 +117,11 @@ public class DalecAnnotationSource extends AbstractDataSource
     /**
      * Return the fully annotated sequence.  Unlike most Dazzle datasources, when this method is called the information
      * may or may not be held within the database backing this datasource.  The difference is that most datasources
-     * would throw a NoSuchElementException if we requested a non-existent sequence, but with Dalec such sequences are
-     * submitted to the workflow to be annotated "on-the-fly". ???
+     * would throw a <code>NoSuchElementException</code> if we requested a non-existent sequence, but with Dalec such
+     * sequences are submitted to the workflow to be annotated "on-the-fly". In this scenario, a "dummy" sequence is
+     * returned, which contains a single annotation over the length of the sequence, labelled with a description
+     * "Features are being evaluated".  This allows a client to return this dummy sequence, and a request shouldbe
+     * resubmitted after allowing time for the sequence to be fully annotated by the workflow.
      *
      * @param ref The DAS reference server identifier for the sequence requested
      * @return The fully annotated Sequence
@@ -214,11 +220,12 @@ public class DalecAnnotationSource extends AbstractDataSource
      * Javabeans style method for setting the <code>.XScufl</code> file location used to construct the workflow for this
      * instance of Dalec. A copy of the workflow .xscufl file should be placed on the server.
      *
-     * @param xscuflFilename String representing the path to the location of the desired workflow <code>.XScufl</code> file.
+     * @param xscuflFilename String representing the path to the location of the desired workflow <code>.XScufl</code>
+     *                       file.
      */
     public void setXScuflFile(String xscuflFilename)
     {
-        this.xscuflFile = new File (xscuflFilename);
+        this.xscuflFile = new File(xscuflFilename);
     }
 
     /**
@@ -230,7 +237,7 @@ public class DalecAnnotationSource extends AbstractDataSource
     public void setSequenceDBLocation(String sequenceDBLocation)
     {
         // TODO - refactor DB access to use URL rather than File locations - across all classes
-        this.seqDB = new File (sequenceDBLocation);
+        this.seqDB = new File(sequenceDBLocation);
     }
 
     public String getLandmarkVersion(String ref) throws DataSourceException, NoSuchElementException
@@ -307,6 +314,14 @@ public class DalecAnnotationSource extends AbstractDataSource
         return types;
     }
 
+    /**
+     * Private method to retrieve a query sequence, if the ID was supplied
+     *
+     * @param seqID
+     * @return
+     * @throws DataSourceException
+     * @throws NoSuchElementException
+     */
     private String fetchQuerySequence(String seqID) throws DataSourceException, NoSuchElementException
     {
         // formulate DAS query URL

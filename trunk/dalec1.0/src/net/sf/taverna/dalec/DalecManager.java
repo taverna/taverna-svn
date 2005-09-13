@@ -23,7 +23,7 @@ import uk.ac.soton.itinnovation.freefluo.main.WorkflowState;
 import uk.ac.soton.itinnovation.freefluo.main.InvalidInputException;
 
 /**
- * This class co-ordinates all the "hard work" for Dalec, including retaining the cache of jobs to waiting to be done,
+ * This class co-ordinates all the "hard work" for Dalec, including retaining the cache of jobs waiting to be done,
  * handling data submission and data access, invoking the workflow, and returning annotation results.
  * <p/>
  * Normally, an instance of <code>DalecManager</code> would be created when the <code>init()</code> method is called on
@@ -33,9 +33,10 @@ import uk.ac.soton.itinnovation.freefluo.main.InvalidInputException;
  * permanently retain generated results.
  * <p/>
  * When a new request is received from the DAS client, this request can be passed onto DalecManager by calling the
- * requestAnnotations() method. If the sequence requested has already been annotated by this server, the results are
- * returned. If no results exist, a <code>NewJobSubmissionException</code> is thrown.  Any calling class should handle
- * this exception by then submitting the sequence as a new job, calling the <code>submitJob()</code> method.
+ * <code>requestAnnotations()</code> method. If the sequence requested has already been annotated by this server, the
+ * results are returned. If no results exist, a <code>NewJobSubmissionException</code> is thrown.  Any calling class
+ * should handle this exception by then submitting the sequence as a new job, calling the <code>submitJob()</code>
+ * method.
  * <p/>
  *
  * @author Tony Burdett
@@ -320,8 +321,7 @@ public class DalecManager
      * method should be called when a DalecAnnotationSource is being taken out of service, as workflow threads and
      * database threads wil continue to run otherwise.
      */
-    public synchronized void exterminate
-            ()
+    public synchronized void exterminate()
     {
         // setting terminated prevents new jobs starting
         terminated = true;
@@ -375,10 +375,10 @@ public class DalecManager
      *
      * @param ref String representing either the ID of the sequence requested
      * @return a biojava sequence containing annotation information
-     * @throws NewJobSubmissionException - If this sequence has been previously submitted and is to be calculated
+     * @throws NewJobSubmissionException if this sequence has been previously submitted and is to be calculated
      *                                   shortly.
      * @throws UnableToAccessDatabaseException
-     *                                   - If there is a problem accessing the data held within the database.
+     *                                   if there is a problem accessing the data held within the database.
      */
     public GFFEntrySet requestAnnotations(String ref) throws NewJobSubmissionException, UnableToAccessDatabaseException
     {
@@ -419,8 +419,7 @@ public class DalecManager
      *
      * @return boolean terminated status
      */
-    public boolean getTerminatedStatus
-            ()
+    public boolean getTerminatedStatus()
     {
         return terminated;
     }
@@ -436,8 +435,7 @@ public class DalecManager
      * @return Either "sequence" or "seqID", depending on how the source processor in this model is named
      * @throws IncorrectlyNamedInputException if the workflow does not contain one of the required processor names
      */
-    public String getInputName
-            () throws IncorrectlyNamedInputException
+    public String getInputName() throws IncorrectlyNamedInputException
     {
         // TODO - Naming of input processors - "sequence" or "seqID" acceptable currently
         String inputName = "";
@@ -479,9 +477,7 @@ public class DalecManager
      *
      * @param input A <code>WorkflowInput</code> object containing the data to be submitted to the workflow.
      */
-    public void submitJob
-            (WorkflowInput
-                    input)
+    public void submitJob(WorkflowInput input)
     {
         synchronized (jobList)
         {
@@ -508,11 +504,7 @@ public class DalecManager
      * @param jobName            A string describing the job being performed when the problem occurred
      * @param exception          The throwable cause of the problem making an error log entry necessary.
      */
-    public synchronized static void logError
-            (File
-                    sequenceDBLocation, String
-                    jobName, Throwable
-                    exception)
+    public synchronized static void logError(File sequenceDBLocation, String jobName, Throwable exception)
     {
         // Name files by todays date
         Calendar cal = new GregorianCalendar();
@@ -549,9 +541,14 @@ public class DalecManager
         }
     }
 
-    private synchronized boolean jobExists
-            (String
-                    jobID)
+    /**
+     * Private method uses to determine whether a given job exists (i.e. it is present within the jobList, or is
+     * currently being computed)
+     *
+     * @param jobID
+     * @return true if the job exists, false otherwise
+     */
+    private synchronized boolean jobExists(String jobID)
     {
         // acquire locks on the jobList and computeList
         synchronized (jobList)

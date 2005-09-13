@@ -8,9 +8,11 @@
     <property name="compiler.max.memory" value="128m"/>
 
     <property name="webapp.dir" value="${basedir}/dalec-webapp"/>
-    <property name="configUI.dir" value="${basedir}/deployment" />
-    <property name="configUI.src.dir" value="${configUI.dir}/src"/>
-    <property name="configUI.classes.dir" value="${configUI.dir}/classes"/>
+    <property name="deployment.dir" value="${basedir}/deployment" />
+    <property name="configUI.src.dir" value="${deployment.dir}/src"/>
+    <property name="configUI.classes.dir" value="${deployment.dir}/classes"/>
+
+    <property environment="env" />
 
     <patternset id="ignored.files">
         <exclude name="**/CVS/**"/>
@@ -35,22 +37,23 @@
     </target>
 
     <target name="make.jar" depends="compile">
-        <jar destfile="${configUI.dir}/configUI.jar" basedir="${configUI.classes.dir}" update="true"/>
+        <jar destfile="${basedir}/configUI.jar" basedir="${configUI.classes.dir}" update="true">
+            <manifest>
+                <attribute name="Main-Class" value="ConfiguratorUI" />
+            </manifest>
+        </jar>
     </target>
 
-    <target name="start.configurator" depends="compile">
-        <java classname="ConfiguratorUI" fork="true">
-            <classpath refid="configUI.classpath"/>
-        </java>
+    <target name="start.configurator" depends="compile, make.jar">
+        <java jar="configUI.jar" fork="true" />
     </target>
 
     <target name="make.war" depends="start.configurator">
-        <war destfile="${configUI.dir}/das.war" basedir="${webapp.dir}" webxml="${webapp.dir}/WEB-INF/web.xml" update="true"/>
+        <war destfile="${deployment.dir}/das.war" basedir="${webapp.dir}" webxml="${webapp.dir}/WEB-INF/web.xml" update="true"/>
     </target>
 
-    <!-- Change this to the %TOMCAT-HOME%/webapp dir -->
     <target name="deploy" depends="make.war">
-        <!--  copy file="das.war" tofile="tomcat_home\das.war" / -->
+        <copy file="${deployment.dir}/das.war" tofile="${env.TOMCAT_HOME}/webapps/das.war" />
     </target>
 
     <target name="main" depends="compile, start.configurator, make.jar, make.war, deploy"/>

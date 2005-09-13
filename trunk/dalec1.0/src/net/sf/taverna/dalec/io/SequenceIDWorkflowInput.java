@@ -6,7 +6,7 @@ import java.util.Map;
 import java.util.HashMap;
 
 /**
- * An implementation of <code>WorkflowINput</code> which uses the sequence ID (with respect to the DAS Reference Server)
+ * An implementation of <code>WorkflowInput</code> which uses the sequence ID (with respect to the DAS Reference Server)
  * as an input.  This means that the client does not need to pass any sequence information, but can set the sequence ID
  * as the input using the <code>setJobID</code> method.  The job ID field will be used as both the required jobID
  * <i>and</i> the input data.
