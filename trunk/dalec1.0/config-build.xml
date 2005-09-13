@@ -26,6 +26,12 @@
         <dirset dir="${configUI.classes.dir}"/>
     </path>
 
+    <target name="clean">
+        <delete dir="${configUI.classes.dir}" />
+        <delete file="${basedir}/configUI.jar" />
+        <delete file="${deployment.dir}/das.war" />
+    </target>
+
     <!--   -->
     <target name="compile">
         <mkdir dir="${configUI.classes.dir}"/>

@@ -227,6 +227,9 @@
     <!-- Edit an old webapp if it existed before -->
     <target name="edit.existing.webapp" depends="webapp.exists" if="${das.war.exists}">
         <mkdir dir="${webapp.dir}"/>
+        <copy tofile="${basedir}\deployment\das.old" >
+            <fileset file="${env.TOMCAT_HOME}\webapp\das.war" />
+        </copy>
         <unwar src="${env.TOMCAT_HOME}\webapp\das.war" dest="${webapp.dir}" />
         <copy todir="${webapp.dir}\WEB-INF\lib">
             <fileset dir="${lib.dir}">
