@@ -143,6 +143,30 @@ public class InteractionServer {
     }
 
     /**
+     * Get the mailfrom address
+     */
+    public String getMailFrom() {
+	return this.mailFrom;
+    }
+
+    /**
+     * Get the base URL as a string
+     */
+    public String getBaseURLString() {
+	if (this.baseURL == null) {
+	    return "Not defined!";
+	}
+	return this.baseURL.toString();
+    }
+
+    /**
+     * Get the address of the SMTP relay
+     */
+    public String getSMTPRelayAddress() {
+	return this.mailHost;
+    }
+
+    /**
      * Create a new interaction request
      */
     public String createInteractionRequest(String metadata,

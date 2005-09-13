@@ -73,6 +73,20 @@ public class PatternRegistry {
     }
 
     /**
+     * Get a string array of all the names for interaction patterns 
+     * within this registry
+     */
+    public static String[] getPatternNames() {
+	List names = new ArrayList();
+	for (Iterator i = patterns.iterator(); i.hasNext();) {
+	    ServerInteractionPattern sip = 
+		(ServerInteractionPattern)i.next();
+	    names.add(sip.getName());
+	}
+	return (String[])names.toArray(new String[0]);
+    }
+
+    /**
      * Return an XML Document containing all known patterns in 
      * a form suited to be consumed by the Taverna scavenger
      */

@@ -52,7 +52,7 @@ public class SubmitServlet extends HttpServlet {
     private static Logger log = Logger.getLogger(SubmitServlet.class);
     private static InteractionServer server = null;
     
-    static InteractionServer getServer() throws ServletException {
+    public static InteractionServer getServer() throws ServletException {
 	if (server != null) {
 	    return server;
 	}
