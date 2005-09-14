@@ -1,1 +1,1 @@
-ant -buildfile config-build.xml
+ant -buildfile build.xml run.configurator

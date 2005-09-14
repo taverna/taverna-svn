@@ -2,7 +2,6 @@
 <project name="dalec-config" default="main">
 
     <!-- Compiler options -->
-
     <property name="compiler.debug" value="on"/>
     <property name="compiler.generate.no.warnings" value="off"/>
     <property name="compiler.max.memory" value="128m"/>
@@ -26,13 +25,15 @@
         <dirset dir="${configUI.classes.dir}"/>
     </path>
 
+    <!-- Clean up the existing directory -->
     <target name="clean">
         <delete dir="${configUI.classes.dir}" />
         <delete file="${basedir}/configUI.jar" />
+        <delete dir="${deployment.dir}/classes" />
         <delete file="${deployment.dir}/das.war" />
     </target>
 
-    <!--   -->
+    <!-- Compile the source for the configUI -->
     <target name="compile">
         <mkdir dir="${configUI.classes.dir}"/>
         <javac destdir="${configUI.classes.dir}" debug="${compiler.debug}" nowarn="${compiler.generate.no.warnings}"
@@ -42,6 +43,7 @@
         </javac>
     </target>
 
+    <!-- Make the configUI utility into an executable jar file -->
     <target name="make.jar" depends="compile">
         <jar destfile="${basedir}/configUI.jar" basedir="${configUI.classes.dir}" update="true">
             <manifest>
@@ -50,17 +52,21 @@
         </jar>
     </target>
 
+    <!-- Run the configUI utility -->
     <target name="start.configurator" depends="compile, make.jar">
         <java jar="configUI.jar" fork="true" />
     </target>
 
+    <!-- Package the webapp directory into a war file -->
     <target name="make.war" depends="start.configurator">
-        <war destfile="${deployment.dir}/das.war" basedir="${webapp.dir}" webxml="${webapp.dir}/WEB-INF/web.xml" update="true"/>
+        <war destfile="${deployment.dir}/das.war" basedir="${webapp.dir}" webxml="${deployment.dir}/web.xml" update="true"/>
     </target>
 
+    <!-- Deploy the webapp by copying das.war into the Tomcat webapp directory -->
     <target name="deploy" depends="make.war">
         <copy file="${deployment.dir}/das.war" tofile="${env.TOMCAT_HOME}/webapps/das.war" />
     </target>
 
+    <!-- Compile and execute the configurator, deploy as a webapp -->
     <target name="main" depends="compile, start.configurator, make.jar, make.war, deploy"/>
 </project>

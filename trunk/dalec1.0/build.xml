@@ -209,28 +209,29 @@
 
     <!-- make the Javadocs -->
     <target name="javadocs">
-        <mkdir dir="${docs.dir}\api" />
+        <mkdir dir="${docs.dir}\api"/>
         <javadoc destdir="${docs.dir}\api" windowtitle="Dalec-1.0 Javadocs" linksource="true">
-            <packageset dir="${src.dir}" />
+            <packageset dir="${src.dir}"/>
         </javadoc>
     </target>
 
     <!-- make the web-app structure -->
-    <target name="make.webapp" depends="dalec.jar, edit.existing.webapp, make.default.webapp" />
+    <target name="make.webapp" depends="dalec.jar, edit.existing.webapp, make.default.webapp"/>
 
     <target name="webapp.exists">
         <condition property="das.war.exists">
-            <available file="${env.TOMCAT_HOME}\webapp\das.war"/>
+            <available file="${env.TOMCAT_HOME}\webapps\das.war" />
         </condition>
     </target>
 
     <!-- Edit an old webapp if it existed before -->
-    <target name="edit.existing.webapp" depends="webapp.exists" if="${das.war.exists}">
+    <target name="edit.existing.webapp" depends="webapp.exists" if="das.war.exists">
+        <echo message="das.war already exists = ${das.war.exists}"/>
         <mkdir dir="${webapp.dir}"/>
-        <copy tofile="${basedir}\deployment\das.old" >
-            <fileset file="${env.TOMCAT_HOME}\webapp\das.war" />
+        <copy tofile="${basedir}\deployment\das.old">
+            <fileset file="${env.TOMCAT_HOME}\webapps\das.war"/>
         </copy>
-        <unwar src="${env.TOMCAT_HOME}\webapp\das.war" dest="${webapp.dir}" />
+        <unwar src="${env.TOMCAT_HOME}\webapps\das.war" dest="${webapp.dir}"/>
         <copy todir="${webapp.dir}\WEB-INF\lib">
             <fileset dir="${lib.dir}">
                 <include name="**\*.jar"/>
@@ -245,7 +246,8 @@
     </target>
 
     <!-- Make a new default webapp if there isn't one already -->
-    <target name="make.default.webapp" depends="webapp.exists" unless="$das.war.exists}">
+    <target name="make.default.webapp" depends="webapp.exists" unless="das.war.exists">
+        <echo message="das.war already exists = ${das.war.exists}"/>
         <mkdir dir="${webapp.dir}"/>
         <mkdir dir="${webapp.dir}\WEB-INF\lib"/>
         <copy todir="${webapp.dir}\WEB-INF\lib">
@@ -261,7 +263,6 @@
         </copy>
         <copy todir="${webapp.dir}" file="${basedir}\deployment\dazzlecfg.xml"/>
         <copy todir="${webapp.dir}" file="${basedir}\deployment\welcome.html"/>
-        <copy todir="${webapp.dir}\WEB-INF" file="${basedir}\deployment\web.xml"/>
     </target>
 
     <!-- clean up the source directory -->
@@ -270,6 +271,8 @@
         <delete dir="${taverna-netlib.dir}"/>
         <delete dir="${taverna-lib.dir}"/>
         <delete dir="${webapp.dir}"/>
+        <delete file="${lib.dir}\dalec.jar"/>
+        <ant antfile="config-build.xml" target="clean"/>
     </target>
 
     <!-- test the installed package -->
@@ -279,11 +282,11 @@
 
     <target name="init" depends="fetch.jars, make.webapp" description="Build initialization"/>
 
-    <target name="run.configurator" depends="clean, init, compile.dalec1.0, make.webapp"
+    <!-- Run the configurator utility build file -->
+    <target name="run.configurator" depends="make.webapp"
             description="Build and start configurator utility">
         <ant antfile="config-build.xml"/>
     </target>
-
 
     <target name="main" depends="clean, init, compile.dalec1.0, run.configurator" description="build all"/>
 </project>
