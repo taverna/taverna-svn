@@ -11,6 +11,7 @@ AppUpdatesURL=http://www.ebi.ac.uk
 DefaultDirName={pf}\Dalec
 DefaultGroupName=Dalec
 OutputBaseFilename=Install-dalec-1.0
+OutputDir=binary
 Compression=lzma
 SolidCompression=yes
 
@@ -28,7 +29,6 @@ Source: "deployment\src\*"; DestDir: "{app}\deployment\src"; Flags: ignoreversio
 Source: "deployment\*.xml"; DestDir: "{app}\deployment\"; Flags: ignoreversion
 Source: "deployment\*.html"; DestDir: "{app}\deployment\"; Flags: ignoreversion
 Source: "docs\*"; DestDir: "{app}\docs"; Flags: ignoreversion recursesubdirs createallsubdirs
-Source: "lib\*"; DestDir: "{app}\lib"; Flags: ignoreversion
 Source: "dalec-webapp\*"; DestDir: "{app}\webapp"; Flags: ignoreversion recursesubdirs createallsubdirs
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
