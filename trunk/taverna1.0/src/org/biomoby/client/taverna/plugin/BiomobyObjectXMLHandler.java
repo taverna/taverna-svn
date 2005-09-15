@@ -28,18 +28,27 @@ public class BiomobyObjectXMLHandler implements XMLHandler {
     
     final static String DESCRIPTION = "description";
 
+    /* (non-Javadoc)
+     * @see org.embl.ebi.escience.scuflworkers.XMLHandler#elementForProcessor(org.embl.ebi.escience.scufl.Processor)
+     */
     public Element elementForProcessor(Processor p) {
         BiomobyObjectProcessor bmproc = (BiomobyObjectProcessor) p;
         return getElement(bmproc.getMobyEndpoint(), bmproc.getServiceName(),
                 bmproc.getAuthorityName());
     }
 
+    /* (non-Javadoc)
+     * @see org.embl.ebi.escience.scuflworkers.XMLHandler#elementForFactory(org.embl.ebi.escience.scuflworkers.ProcessorFactory)
+     */
     public Element elementForFactory(ProcessorFactory pf) {
         BiomobyObjectProcessorFactory bpf = (BiomobyObjectProcessorFactory) pf;
         return getElement(bpf.getMobyEndpoint(), bpf.getServiceName(), bpf
                 .getAuthorityName());
     }
 
+    /*
+     * 
+     */
     private Element getElement(String mobyEndpoint, String serviceName,
             String authorityName) {
         Element spec = new Element(MOBY_SPEC, XScufl.XScuflNS);
@@ -61,6 +70,9 @@ public class BiomobyObjectXMLHandler implements XMLHandler {
         return spec;
     }
 
+    /* (non-Javadoc)
+     * @see org.embl.ebi.escience.scuflworkers.XMLHandler#getFactory(org.jdom.Element)
+     */
     public ProcessorFactory getFactory(Element specElement) {
         Element mobyEndpointElement = specElement.getChild(MOBY_ENDPOINT,
                 XScufl.XScuflNS);
@@ -78,6 +90,9 @@ public class BiomobyObjectXMLHandler implements XMLHandler {
                 serviceName);
     }
 
+    /* (non-Javadoc)
+     * @see org.embl.ebi.escience.scuflworkers.XMLHandler#loadProcessorFromXML(org.jdom.Element, org.embl.ebi.escience.scufl.ScuflModel, java.lang.String)
+     */
     public Processor loadProcessorFromXML(Element processorNode,
             ScuflModel model, String processorName)
             throws ProcessorCreationException, DuplicateProcessorNameException,
@@ -100,4 +115,5 @@ public class BiomobyObjectXMLHandler implements XMLHandler {
         return new BiomobyObjectProcessor(model, processorName, authorityName,
                 serviceName, mobyEndpoint);
     }
+
 }

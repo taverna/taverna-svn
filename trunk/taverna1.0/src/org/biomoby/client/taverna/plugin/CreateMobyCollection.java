@@ -5,7 +5,6 @@
  */
 package org.biomoby.client.taverna.plugin;
 import java.io.ByteArrayInputStream;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -136,7 +135,7 @@ public class CreateMobyCollection implements LocalWorker {
 
         Map results = new HashMap();
         results.put("mobyCollection", new DataThing(mobyOutputString));
-        CreateMobySimple.arrayList = new ArrayList();
+        //CreateMobySimple.arrayList = new ArrayList();
         return results;
 
     }

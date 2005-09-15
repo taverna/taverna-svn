@@ -15,14 +15,25 @@ public class BiomobyObjectProcessorFactory extends ProcessorFactory {
 
     private String authorityName;
 
+    /**
+     * 
+     * @return the mobycentral registry endpoint used by this processor
+     */
     public String getMobyEndpoint() {
         return this.mobyEndpoint;
     }
-
+    /**
+     * 
+     * @return the name of the Moby datatype
+     */
     public String getServiceName() {
         return this.serviceName;
     }
 
+    /**
+     * 
+     * @return the authority name. Not really used.
+     */
     public String getAuthorityName() {
         return this.authorityName;
     }

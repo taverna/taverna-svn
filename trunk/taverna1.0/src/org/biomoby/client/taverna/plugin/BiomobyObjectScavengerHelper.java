@@ -18,6 +18,7 @@ import org.embl.ebi.escience.scuflworkers.ScavengerHelper;
 
 /**
  * Helper for handling Biomoby scavengers. <p>
+ * @deprecated
  */
 public class BiomobyObjectScavengerHelper implements ScavengerHelper {
 

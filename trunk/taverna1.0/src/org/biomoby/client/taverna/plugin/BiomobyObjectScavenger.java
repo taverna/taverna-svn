@@ -26,6 +26,7 @@ import com.hp.hpl.jena.rdf.model.StmtIterator;
 /**
  * A Scavenger that knows how to get all the Biomoby objects from a
  * specified Biomoby RESOURCES script. <p>
+ * @deprecated
  */
 public class BiomobyObjectScavenger extends Scavenger {
 

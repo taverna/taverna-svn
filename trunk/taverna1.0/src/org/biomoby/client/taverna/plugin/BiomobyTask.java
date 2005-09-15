@@ -1,7 +1,7 @@
 /*
- * This file is a component of the Taverna project,
- * and is licensed under the GNU LGPL.
- * Copyright Martin Senger, EMBL-EBI & Edward Kawas, The BioMoby Project
+ * This file is a component of the Taverna project, and is licensed under the
+ * GNU LGPL. Copyright Martin Senger, EMBL-EBI & Edward Kawas, The BioMoby
+ * Project
  */
 package org.biomoby.client.taverna.plugin;
 
@@ -48,7 +48,7 @@ public class BiomobyTask implements ProcessorTaskWorker {
 
     public Map execute(Map inputMap, ProcessorTask parentTask)
             throws TaskExecutionException {
-  	
+
         if (inputMap.containsKey("input")) {
             // input port takes precedence over other ports
             try {
@@ -63,12 +63,14 @@ public class BiomobyTask implements ProcessorTaskWorker {
                     }
                 }
                 if (myInput == null)
-                    throw new TaskExecutionException("The port 'input' was not specified correctly.");
+                    throw new TaskExecutionException(
+                            "The port 'input' was not specified correctly.");
                 String inputType = myInput.getSyntacticType();
                 // If this is 'text/xml' then the biomoby service consumes
-                // a simple and there is no processing to do as that's what we have
+                // a simple and there is no processing to do as that's what we
+                // have
                 // If this is l('text/xml') biomoby expects a collection but
-                // we have a java List of simples - need to convert this into 
+                // we have a java List of simples - need to convert this into
                 // a biomoby collection document
 
                 String inputXML = null;
@@ -84,14 +86,15 @@ public class BiomobyTask implements ProcessorTaskWorker {
                     Element data = new Element("mobyData", mobyNS);
                     data.setAttribute("queryID", "a1", mobyNS);
                     content.addContent(data);
-                    Element collectionElement = new Element("Collection", mobyNS);
+                    Element collectionElement = new Element("Collection",
+                            mobyNS);
                     collectionElement.setAttribute("articleName", "", mobyNS);
-                    // It is this collection element that's going to acquire the simples
+                    // It is this collection element that's going to acquire the
+                    // simples
                     for (Iterator i = simpleInputs.iterator(); i.hasNext();) {
                         Element el = (Element) i.next();
-                        Element mobyDataElement = el
-                                .getChild("mobyContent", mobyNS).getChild(
-                                        "mobyData", mobyNS);
+                        Element mobyDataElement = el.getChild("mobyContent",
+                                mobyNS).getChild("mobyData", mobyNS);
                         // Remove the single 'Simple' child from this...
                         Element simpleElement = (Element) mobyDataElement
                                 .getChildren().get(0);
@@ -100,14 +103,14 @@ public class BiomobyTask implements ProcessorTaskWorker {
                     }
                     XMLOutputter xo = new XMLOutputter(Format.getPrettyFormat());
                     inputXML = xo.outputString(new Document(root));
-                    // Iterate and create the collection, 
+                    // Iterate and create the collection,
                     // ....inputXML = collectionThing
                 }
 
                 // do the task and populate outputXML
                 String methodName = ((BiomobyProcessor) proc).getServiceName();
-                String serviceEndpoint = ((BiomobyProcessor) proc).getEndpoint()
-                        .toExternalForm();
+                String serviceEndpoint = ((BiomobyProcessor) proc)
+                        .getEndpoint().toExternalForm();
                 String outputXML = new CentralImpl(serviceEndpoint,
                         "http://biomoby.org/").call(methodName, inputXML);
                 Map outputMap = new HashMap();
@@ -126,19 +129,19 @@ public class BiomobyTask implements ProcessorTaskWorker {
 
                 if (outputType.equals("'text/xml'")) {
                     outputMap.put("output", new DataThing(outputXML));
-                    processOutputPorts(outputXML, outputMap);  
+                    processOutputPorts(outputXML, outputMap);
                 } else {
                     List outputList = new ArrayList();
                     // Drill into the output xml document creating
                     // a list of strings containing simple types
                     // add them to the outputList
 
-                    // This is in the 'outputXML'		
+                    // This is in the 'outputXML'
                     // --------------------------
                     //        <?xml version="1.0" encoding="UTF-8"?>
                     //        <moby:MOBY xmlns:moby="http://www.biomoby.org/moby">
                     //          <moby:mobyContent>
-                    //           <moby:mobyData  queryID='b1'>
+                    //           <moby:mobyData queryID='b1'>
                     //               <Collection articleName="mySequenceCollection">
                     //                  <Simple>
                     //                   <Object namespace="Genbank/gi" id="163483"/>
@@ -175,28 +178,30 @@ public class BiomobyTask implements ProcessorTaskWorker {
                     Document doc = saxBuilder.build(new InputSource(
                             new StringReader(outputXML)));
                     Element mobyElement = doc.getRootElement();
-                    Element mobyDataElement = mobyElement.getChild("mobyContent",
-                            mobyNS).getChild("mobyData", mobyNS);
+                    Element mobyDataElement = mobyElement.getChild(
+                            "mobyContent", mobyNS).getChild("mobyData", mobyNS);
 
                     Element collectionElement = mobyDataElement.getChild(
                             "Collection", mobyNS);
                     if (collectionElement != null) {
                         List simpleElements = new ArrayList(collectionElement
                                 .getChildren());
-                        for (Iterator i = simpleElements.iterator(); i.hasNext();) {
+                        for (Iterator i = simpleElements.iterator(); i
+                                .hasNext();) {
                             Element simpleElement = (Element) i.next();
 
                             Element newRoot = new Element("MOBY", mobyNS);
                             Element newMobyContent = new Element("mobyContent",
                                     mobyNS);
                             newRoot.addContent(newMobyContent);
-                            Element newMobyData = new Element("mobyData", mobyNS);
+                            Element newMobyData = new Element("mobyData",
+                                    mobyNS);
                             newMobyData.setAttribute("queryID", "a1", mobyNS);
                             newMobyContent.addContent(newMobyData);
                             newMobyData.addContent(simpleElement.detach());
                             XMLOutputter xo = new XMLOutputter();
-                            String outputItemString = xo.outputString(new Document(
-                                    newRoot));
+                            String outputItemString = xo
+                                    .outputString(new Document(newRoot));
                             outputList.add(outputItemString);
                         }
                     }
@@ -204,7 +209,7 @@ public class BiomobyTask implements ProcessorTaskWorker {
                     // Return the list (may be empty)
                     outputMap.put("output", new DataThing(outputList));
                     // TODO think of how to output a list (collection)
-                    
+
                 }
                 return outputMap;
 
@@ -254,27 +259,45 @@ public class BiomobyTask implements ProcessorTaskWorker {
                     if (!name.equalsIgnoreCase("input")) {
                         DataThing inputThing = (DataThing) inputMap.get(name);
                         // TODO check for null?
-                        inputXML = (String) inputThing.getDataObject();
-                        Document d = XMLUtilities.getDOMDocument(inputXML);
-                        List list = d.getRootElement().getChild("mobyContent",
-                                MobyObjectClassNSImpl.MOBYNS).getChild(
-                                "mobyData", MobyObjectClassNSImpl.MOBYNS)
-                                .getChildren("Simple",
-                                        MobyObjectClassNSImpl.MOBYNS);
-                        for (Iterator i = list.iterator(); i.hasNext();) {
-                            Element nino = (Element) i.next();
-                            i.remove();
-                            mobyData.addContent(nino.detach());
-                        }
-                        // process collections now
-                        list = d.getRootElement().getChild("mobyContent",
-                                MobyObjectClassNSImpl.MOBYNS).getChild(
-                                "mobyData", MobyObjectClassNSImpl.MOBYNS)
-                                .getChildren("Collection",
-                                        MobyObjectClassNSImpl.MOBYNS);
-
-                        for (Iterator i = list.iterator(); i.hasNext();) {
-                            mobyData.addContent(((Element) i.next()).detach());
+                        if (!inputThing.getSyntacticType().toString()
+                                .startsWith("l(")) {
+                            // no list, we have a Simple!
+                            inputXML = (String) inputThing.getDataObject();
+                            Document d = XMLUtilities.getDOMDocument(inputXML);
+                            List list = d.getRootElement()
+                                    .getChild("mobyContent",
+                                            MobyObjectClassNSImpl.MOBYNS)
+                                    .getChild("mobyData",
+                                            MobyObjectClassNSImpl.MOBYNS)
+                                    .getChildren("Simple",
+                                            MobyObjectClassNSImpl.MOBYNS);
+                            for (Iterator i = list.iterator(); i.hasNext();) {
+                                Element nino = (Element) i.next();
+                                i.remove();
+                                mobyData.addContent(nino.detach());
+                            }
+                        } else {
+                            // this is a Collection!
+                            for (Iterator it = inputThing.childIterator(); it
+                                    .hasNext();) {
+                                DataThing dt = (DataThing) it.next();
+                                inputXML = (String) dt.getDataObject();
+                                Document d = XMLUtilities
+                                        .getDOMDocument(inputXML);
+                                // process collections now
+                                List list = d.getRootElement().getChild(
+                                        "mobyContent",
+                                        MobyObjectClassNSImpl.MOBYNS).getChild(
+                                        "mobyData",
+                                        MobyObjectClassNSImpl.MOBYNS)
+                                        .getChildren("Collection",
+                                                MobyObjectClassNSImpl.MOBYNS);
+                                for (Iterator i = list.iterator(); i.hasNext();) {
+                                    Element colEl = (Element) i.next();
+                                    i.remove();
+                                    mobyData.addContent(colEl.detach());
+                                }
+                            }
                         }
                     }
                 }
@@ -283,11 +306,12 @@ public class BiomobyTask implements ProcessorTaskWorker {
                 String methodName = ((BiomobyProcessor) proc).getServiceName();
                 String serviceEndpoint = ((BiomobyProcessor) proc)
                         .getEndpoint().toExternalForm();
-                //System.out.println("Mobycentral soap call\r\n"
-                // + new MobyObjectClassNSImpl().toString(root));
+//                System.out.println("Mobycentral soap call\r\n"
+//                 + new MobyObjectClassNSImpl(((BiomobyProcessor) proc).getMobyEndpoint()).toString(root));
                 String outputXML = new CentralImpl(serviceEndpoint,
                         "http://biomoby.org/").call(methodName,
-                        new MobyObjectClassNSImpl(((BiomobyProcessor) proc).getMobyEndpoint()).toString(root));
+                        new MobyObjectClassNSImpl(((BiomobyProcessor) proc)
+                                .getMobyEndpoint()).toString(root));
                 //System.out.println("Mobycentral sent me\r\n" + outputXML);
                 Map outputMap = new HashMap();
                 outputMap.put("output", new DataThing(outputXML));
@@ -337,7 +361,8 @@ public class BiomobyTask implements ProcessorTaskWorker {
                         String objectType = name
                                 .substring(0, name.indexOf("("));
                         String mobyCollection = XMLUtilities.getMobyCollection(
-                                documentElement, objectType, "", null, ((BiomobyProcessor) proc).getMobyEndpoint());
+                                documentElement, objectType, "", null,
+                                ((BiomobyProcessor) proc).getMobyEndpoint());
                         if (mobyCollection != null)
                             outputMap.put(name, new DataThing(mobyCollection));
                     } else {
@@ -348,7 +373,8 @@ public class BiomobyTask implements ProcessorTaskWorker {
                         String artName = name.substring(name.indexOf("'") + 1,
                                 name.indexOf("'"));
                         String mobyCollection = XMLUtilities.getMobyCollection(
-                                documentElement, objectType, artName, null, ((BiomobyProcessor) proc).getMobyEndpoint());
+                                documentElement, objectType, artName, null,
+                                ((BiomobyProcessor) proc).getMobyEndpoint());
                         if (mobyCollection != null)
                             outputMap.put(name, new DataThing(mobyCollection));
                     }
@@ -359,9 +385,11 @@ public class BiomobyTask implements ProcessorTaskWorker {
                         // a name
                         String objectType = name
                                 .substring(0, name.indexOf("("));
-                        //System.out.println(""+new MobyObjectClassNSImpl().toString(documentElement));
+                        //System.out.println(""+new
+                        // MobyObjectClassNSImpl().toString(documentElement));
                         String mobySimple = XMLUtilities.getMobyElement(
-                                documentElement, objectType, "", null, ((BiomobyProcessor) proc).getMobyEndpoint());
+                                documentElement, objectType, "", null,
+                                ((BiomobyProcessor) proc).getMobyEndpoint());
                         if (mobySimple != null)
                             outputMap.put(name, new DataThing(mobySimple));
                     } else {
@@ -372,7 +400,8 @@ public class BiomobyTask implements ProcessorTaskWorker {
                         String artName = name.substring(name.indexOf("(") + 1,
                                 name.indexOf(")"));
                         String mobySimple = XMLUtilities.getMobyElement(
-                                documentElement, objectType, artName, null, ((BiomobyProcessor) proc).getMobyEndpoint());
+                                documentElement, objectType, artName, null,
+                                ((BiomobyProcessor) proc).getMobyEndpoint());
                         if (mobySimple != null)
                             outputMap.put(name, new DataThing(mobySimple));
                     }

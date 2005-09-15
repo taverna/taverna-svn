@@ -7,6 +7,7 @@ package org.biomoby.client.taverna.plugin;
 
 import java.awt.GridLayout;
 
+import javax.swing.Box;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
@@ -20,8 +21,10 @@ public class BiomobyScavengerDialog extends JPanel {
 
     private JTextField registryEndpoint = new JTextField("http://mobycentral.icapture.ubc.ca/cgi-bin/MOBY05/mobycentral.pl");
 
-    private JTextField rdfLocation = new JTextField("http://biomoby.org/RESOURCES/MOBY-S/Objects");
-
+    /**
+     * Default constructor.
+     *
+     */
     public BiomobyScavengerDialog() {
         super();
         GridLayout layout = new GridLayout(3, 2);
@@ -29,20 +32,17 @@ public class BiomobyScavengerDialog extends JPanel {
         add(new ShadedLabel("Location (URL) of your BioMoby central registry: ", ShadedLabel.TAVERNA_BLUE, true));
         registryEndpoint.setToolTipText("BioMoby Services will be retrieved from the endpoint that you specify here!");
         add(registryEndpoint);
-        add(new ShadedLabel("Location (URL) of your BioMoby Object RDF Document: ", ShadedLabel.TAVERNA_GREEN, true));
-        rdfLocation.setToolTipText("BioMoby Objects will be retrieved from the RDF document specified here!");
-        add(rdfLocation);
+        add(Box.createHorizontalGlue());add(Box.createHorizontalGlue());
         setPreferredSize(this.getPreferredSize());
         setMinimumSize(this.getPreferredSize());
         setMaximumSize(this.getPreferredSize());
     }
 
+    /**
+     * 
+     * @return the string representation of the BioMoby Registry endpoint
+     */
     public String getRegistryEndpoint() {
         return registryEndpoint.getText();
     }
-
-    public String getRDFLocation() {
-        return rdfLocation.getText();
-    }
-
 }

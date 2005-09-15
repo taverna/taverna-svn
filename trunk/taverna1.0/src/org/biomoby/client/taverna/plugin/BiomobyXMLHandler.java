@@ -13,14 +13,12 @@ import org.embl.ebi.escience.scufl.XScufl;
 import org.embl.ebi.escience.scufl.parser.XScuflFormatException;
 import org.embl.ebi.escience.scuflworkers.ProcessorFactory;
 import org.embl.ebi.escience.scuflworkers.XMLHandler;
-//import org.embl.ebi.escience.scuflworkers.biomoby.BiomobyProcessor;
-//import org.embl.ebi.escience.scuflworkers.biomoby.BiomobyProcessorFactory;
 import org.jdom.Element;
 
 /**
  * Handles XML store and load for the biomoby processor. <p>
  *
- * @version $Id: BiomobyXMLHandler.java,v 1.1 2005-06-17 14:17:38 mereden Exp $
+ * @version $Id: BiomobyXMLHandler.java,v 1.2 2005-09-15 23:24:59 edwardkawas Exp $
  * @author Martin Senger
  */
 public class BiomobyXMLHandler implements XMLHandler {

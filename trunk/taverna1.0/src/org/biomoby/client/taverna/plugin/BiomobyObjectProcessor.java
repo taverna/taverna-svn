@@ -1,7 +1,6 @@
 /*
- * This file is a component of the Taverna project,
- * and is licensed under the GNU LGPL.
- * Edward Kawas, The BioMoby Project
+ * This file is a component of the Taverna project, and is licensed under the
+ * GNU LGPL. Edward Kawas, The BioMoby Project
  */
 package org.biomoby.client.taverna.plugin;
 
@@ -11,12 +10,16 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Properties;
 
+import javax.swing.JOptionPane;
+
 import org.biomoby.client.CentralImpl;
 import org.biomoby.shared.Central;
 import org.biomoby.shared.MobyDataType;
 import org.biomoby.shared.MobyException;
 import org.biomoby.shared.MobyRelationship;
 import org.biomoby.shared.NoSuccessException;
+import org.embl.ebi.escience.scufl.DataConstraint;
+import org.embl.ebi.escience.scufl.DataConstraintCreationException;
 import org.embl.ebi.escience.scufl.DuplicatePortNameException;
 import org.embl.ebi.escience.scufl.DuplicateProcessorNameException;
 import org.embl.ebi.escience.scufl.InputPort;
@@ -27,6 +30,7 @@ import org.embl.ebi.escience.scufl.Processor;
 import org.embl.ebi.escience.scufl.ProcessorCreationException;
 import org.embl.ebi.escience.scufl.ScuflModel;
 import org.embl.ebi.escience.scufl.ScuflModelEvent;
+import org.embl.ebi.escience.scufl.UnknownPortException;
 
 public class BiomobyObjectProcessor extends Processor implements Serializable {
 
@@ -64,6 +68,27 @@ public class BiomobyObjectProcessor extends Processor implements Serializable {
                 //
             }
         }
+        createDataLinks(this, true);
+    }
+
+    public BiomobyObjectProcessor(ScuflModel model, String processorName,
+            String authorityName, String serviceName, String mobyEndpoint,
+            boolean prompt) throws ProcessorCreationException,
+            DuplicateProcessorNameException {
+        super(model, processorName);
+        this.mobyEndpoint = mobyEndpoint;
+        this.serviceName = serviceName;
+        this.authorityName = authorityName;
+        if (!this.isOffline()) {
+            init();
+        } else {
+            try {
+                this.endpoint = new URL("http://unknown.host.org/UnknownHost");
+            } catch (MalformedURLException mue) {
+                //
+            }
+        }
+        createDataLinks(this, prompt);
     }
 
     /**
@@ -83,13 +108,16 @@ public class BiomobyObjectProcessor extends Processor implements Serializable {
         }
     }
 
-    void init() throws ProcessorCreationException {
+    /*
+     *  
+     */
+    private void init() throws ProcessorCreationException {
         // Find the service endpoint (by calling Moby registry)
         try {
             if (mobyObject == null) {
                 worker = new CentralImpl(mobyEndpoint);
                 mobyObject = worker.getDataType(this.serviceName);
-                setEndpoint("http://biomoby.org/RESOURCES/MOBY-S/Objects#");
+                setEndpoint(mobyEndpoint);
             }
 
         } catch (Exception e) {
@@ -196,7 +224,7 @@ public class BiomobyObjectProcessor extends Processor implements Serializable {
         input_port = new InputPort(this, "id");
         input_port.setSyntacticType("'text/plain'");
         this.addPort(input_port);
-        
+
         input_port = new InputPort(this, "article name");
         input_port.setSyntacticType("'text/plain'");
         this.addPort(input_port);
@@ -291,21 +319,21 @@ public class BiomobyObjectProcessor extends Processor implements Serializable {
             // port name == DataType(articleName)
             name = name + "(" + relationship.getName() + ")";
             switch (relationship.getRelationshipType()) {
-                case (Central.iHAS): {
-                    // TODO - not really supported
-                    input_port = new InputPort(this, name);
-                    input_port.setSyntacticType("'text/xml)");
-                    this.addPort(input_port);
-                    break;
-                }
-                case (Central.iHASA): {
-                    input_port = new InputPort(this, name);
-                    input_port.setSyntacticType("'text/xml'");
-                    this.addPort(input_port);
-                    break;
-                }
-                default:
-                    break;
+            case (Central.iHAS): {
+                // TODO - not really supported
+                input_port = new InputPort(this, name);
+                input_port.setSyntacticType("'text/xml)");
+                this.addPort(input_port);
+                break;
+            }
+            case (Central.iHASA): {
+                input_port = new InputPort(this, name);
+                input_port.setSyntacticType("'text/xml'");
+                this.addPort(input_port);
+                break;
+            }
+            default:
+                break;
             }
         }
     }
@@ -347,7 +375,11 @@ public class BiomobyObjectProcessor extends Processor implements Serializable {
     }
 
     /**
-     * TODO - place brief description here. <p><b>PRE:</b> <p><b>POST:</b>
+     * TODO - place brief description here.
+     * <p>
+     * <b>PRE: </b>
+     * <p>
+     * <b>POST: </b>
      * 
      * @return
      */
@@ -362,4 +394,73 @@ public class BiomobyObjectProcessor extends Processor implements Serializable {
             }
     }
 
+    /*
+     * method that given a BiomobyObjectProcessor, iterates throught the input
+     * ports and if a 'complex' processor exists at the port, adds the processor
+     * (and its more complex sub components as well) to the workflow. This
+     * method is useful because moby datatype processors are sometimes composed
+     * of many sub components and adding them automatically to the workflow can
+     * be time saving and very helpful.
+     */
+    private void createDataLinks(Processor bop, boolean prompt) {
+        if (prompt) {
+            int answer = JOptionPane
+                    .showConfirmDialog(
+                            null,
+                            "Would you like to add all of the subcomponents for the processor that was just added to the workflow? Data links would be added.");
+            if (answer == JOptionPane.NO_OPTION
+                    || answer == JOptionPane.CANCEL_OPTION) {
+                return;
+            }
+        }
+        if (bop instanceof BiomobyObjectProcessor) {
+            BiomobyObjectProcessor processor = (BiomobyObjectProcessor) bop;
+            ScuflModel scuflModel = processor.getModel();
+            InputPort[] ports = processor.getInputPorts();
+            for (int i = 0; i < ports.length; i++) {
+                InputPort p = ports[i];
+                // ignore article name, id, namespace, value
+                if (p.getName().equals("namespace") || p.getName().equals("id")
+                        || p.getName().equals("article name")
+                        || p.getName().equals("value")) {
+                    continue;
+                }
+                String portName = p.getName();
+                String datatype = portName.split("\\(")[0];
+                Processor subComponentProcessor;
+                try {
+                    subComponentProcessor = new BiomobyObjectProcessor(
+                            scuflModel, scuflModel
+                                    .getValidProcessorName(datatype), "",
+                            datatype, processor.getMobyEndpoint(), false);
+                    scuflModel.addProcessor(subComponentProcessor);
+                    scuflModel.addDataConstraint(new DataConstraint(scuflModel,
+                            subComponentProcessor.locatePort("mobyData"), p));
+                } catch (ProcessorCreationException pce) {
+                    JOptionPane.showMessageDialog(null,
+                            "Processor creation exception : \n"
+                                    + pce.getMessage(), "Exception!",
+                            JOptionPane.ERROR_MESSAGE);
+                    return;
+                } catch (DuplicateProcessorNameException dpne) {
+                    JOptionPane.showMessageDialog(null, "Duplicate name : \n"
+                            + dpne.getMessage(), "Exception!",
+                            JOptionPane.ERROR_MESSAGE);
+                    return;
+                }catch (DataConstraintCreationException ex) {
+                    JOptionPane.showMessageDialog(null,
+                            "Data Link creation exception : \n"
+                                    + ex.getMessage(), "Exception!",
+                            JOptionPane.ERROR_MESSAGE);
+                    return;
+                } catch (UnknownPortException ex) {
+                    JOptionPane.showMessageDialog(null,
+                            "Unknown Port Exception : \n" + ex.getMessage(),
+                            "Exception!", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+                //createDataLinks(subComponentProcessor, false);
+            }
+        }
+    }
 }

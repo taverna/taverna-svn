@@ -20,6 +20,8 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import org.biomoby.client.CentralImpl;
 import org.biomoby.client.ui.graphical.applets.shared.Household;
 import org.biomoby.shared.Central;
+import org.biomoby.shared.MobyException;
+import org.biomoby.shared.MobyResourceRef;
 import org.embl.ebi.escience.scuflui.workbench.Scavenger;
 import org.embl.ebi.escience.scuflui.workbench.ScavengerCreationException;
 
@@ -32,14 +34,14 @@ import com.hp.hpl.jena.rdf.model.StmtIterator;
  * A Scavenger that knows how to get all the Biomoby services from a specified
  * Biomoby Central Registry. <p>
  * 
- * @version $Id: BiomobyScavenger.java,v 1.2 2005-07-25 19:41:58 edwardkawas Exp $
+ * @version $Id: BiomobyScavenger.java,v 1.3 2005-09-15 23:24:59 edwardkawas Exp $
  * @author Martin Senger
  */
 public class BiomobyScavenger extends Scavenger {
 
     private static final long serialVersionUID = 3545233648191289400L;
 
-    private String defaultResourceURL = "http://biomoby.org/RESOURCES/MOBY-S/Objects";
+    private String defaultResourceURL = null; // use MOBY api call instead
 
     /**
      * Create a new Biomoby scavenger, the base parameter should be the base URL
@@ -54,23 +56,6 @@ public class BiomobyScavenger extends Scavenger {
             Central worker = new CentralImpl(base);
             Map names = worker.getServiceNamesByAuthority();
             
-            /*Hashtable byAuthority = new Hashtable();
-            for (Iterator it = names.entrySet().iterator(); it.hasNext();) {
-                Map.Entry entry = (Map.Entry) it.next();
-                String authorityName = (String) entry.getKey();
-                String[] serviceName = (String[]) entry.getValue();
-                Vector services;
-                if (byAuthority.containsKey(authorityName))
-                    services = (Vector) byAuthority.get(authorityName);
-                else
-                    services = new Vector();
-                for (int i = 0; i < serviceName.length; i++) {
-                    services.addElement(serviceName[i]);    
-                }
-                
-                byAuthority.put(authorityName, services);
-            }*/
-
             ArrayList list = new ArrayList(names.keySet());
             Collections.sort(list);
             for (Iterator iterator = list.iterator(); iterator.hasNext();) {
@@ -97,11 +82,6 @@ public class BiomobyScavenger extends Scavenger {
             DefaultMutableTreeNode objectRootNode = new DefaultMutableTreeNode(
                     "MOBY Objects");
             insert(objectRootNode, 0);
-            //TODO create a tree of Objects using RDF - PREFERED METHOD
-            // Only works for mobycentral, since mobycentral currently serves
-            // this RDF
-            // Would like to make this take in a url of where to retrieve the
-            // RDF
             String string = "Object";
             BiomobyObjectProcessorFactory f = new BiomobyObjectProcessorFactory(
                     base, "", string);
@@ -171,19 +151,36 @@ public class BiomobyScavenger extends Scavenger {
         }
 
         try {
+            
             DefaultMutableTreeNode objectRootNode = new DefaultMutableTreeNode(
                     "MOBY Objects");
             insert(objectRootNode, 0);
-            //TODO create a tree of Objects using RDF - PREFERED METHOD
-            // Only works for mobycentral, since mobycentral currently serves
-            // this RDF
-            // Would like to make this take in a url of where to retrieve the
-            // RDF
-            String string = "Object";
             BiomobyObjectProcessorFactory f = new BiomobyObjectProcessorFactory(
-                    base, "", string);
+                    base, "", "Object");
             DefaultMutableTreeNode root = new DefaultMutableTreeNode(f);
             objectRootNode.add(root);
+            // get the Moby Object rdf location from mobycentral via api call
+            try {
+                Central central = new CentralImpl(
+                        base);
+                MobyResourceRef mrr[] = central
+                        .getResourceRefs();
+                defaultResourceURL = null;
+                for (int x = 0; x < mrr.length; x++) {
+                    MobyResourceRef ref = mrr[x];
+                    if (!ref.getResourceName().equals("Object"))
+                        continue;
+                    defaultResourceURL = ref.getResourceLocation()
+                            .toExternalForm();
+                    break;
+                }
+
+                if (defaultResourceURL == null)
+                    throw new MobyException(
+                            "Could not retrieve the location of the Moby Datatype RDF Document from the given endpoint "
+                                    + base);
+            } catch (MobyException e) {}
+            
             HashMap hashmap = createHomes(defaultResourceURL);
             fillSubTree(root,
                     ((Household) hashmap.get("Object")).getChildren(), hashmap,

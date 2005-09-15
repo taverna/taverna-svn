@@ -33,7 +33,7 @@ import org.embl.ebi.escience.scufl.ScuflModelEvent;
  * processor implementation will contact Biomoby registry in order to
  * find the list of extant ports at creation time. <p>
  *
- * @version $Id: BiomobyProcessor.java,v 1.2 2005-07-25 19:38:35 edwardkawas Exp $
+ * @version $Id: BiomobyProcessor.java,v 1.3 2005-09-15 23:24:59 edwardkawas Exp $
  * @author Martin Senger
  */
 public class BiomobyProcessor extends Processor implements java.io.Serializable {
@@ -98,7 +98,7 @@ public class BiomobyProcessor extends Processor implements java.io.Serializable 
         }
     }
 
-    void init() throws ProcessorCreationException {
+   private void init() throws ProcessorCreationException {
         // Find the service endpoint (by calling Moby registry)
         try {
             if (mobyService == null) {
@@ -206,9 +206,6 @@ public class BiomobyProcessor extends Processor implements java.io.Serializable 
     /**
      * Use the endpoint data to create new ports and attach them to
      * the processor.
-     *
-     * TBD better - for now just take that every service eats a string
-     * and produces a string... (MS)
      */
     public void generatePorts() throws ProcessorCreationException,
             PortCreationException, DuplicatePortNameException {
@@ -326,6 +323,10 @@ public class BiomobyProcessor extends Processor implements java.io.Serializable 
                 + "'\nfrom Moby registry at " + mobyEndpoint + ":\n\n" + msg);
     }
 
+    /**
+     * 
+     * @return the instance of org.biomoby.shared.Central
+     */
     public Central getCentralWorker() {
         return worker;
     }

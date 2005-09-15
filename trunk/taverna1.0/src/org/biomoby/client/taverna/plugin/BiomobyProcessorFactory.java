@@ -14,7 +14,7 @@ import org.embl.ebi.escience.scuflworkers.ProcessorFactory;
  * Implementation of ProcessorFactory that creates
  * BiomobyProcessor nodes. <p>
  *
- * @version $Id: BiomobyProcessorFactory.java,v 1.1 2005-06-17 14:17:38 mereden Exp $
+ * @version $Id: BiomobyProcessorFactory.java,v 1.2 2005-09-15 23:24:59 edwardkawas Exp $
  * @author Martin Senger
  */
 public class BiomobyProcessorFactory extends ProcessorFactory {
@@ -25,14 +25,26 @@ public class BiomobyProcessorFactory extends ProcessorFactory {
 
     private String authorityName;
 
+    /**
+     * 
+     * @return the mobycentral registry endpoint
+     */
     public String getMobyEndpoint() {
         return this.mobyEndpoint;
     }
 
+    /**
+     * 
+     * @return the name of the service
+     */
     public String getServiceName() {
         return this.serviceName;
     }
 
+    /**
+     * 
+     * @return the moby service instance authority's name
+     */
     public String getAuthorityName() {
         return this.authorityName;
     }
