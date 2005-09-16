@@ -18,6 +18,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Iterator;
 import java.util.Arrays;
+import java.math.*;
 
 import java.lang.reflect.*;
 
@@ -79,6 +80,52 @@ public class APIConsumerTask implements ProcessorTaskWorker {
 	return inputClasses;
     }
 
+    private static void translateNumericTypes(Object[] objects, Class[] classes) {
+	for (int i = 0; i < objects.length; i++) {
+	    Class target = classes[i];
+	    if (Number.class.isAssignableFrom(target)) {
+		if (objects[i] instanceof String) {
+		    // If the input is a numeric type and the actual object
+		    // is a string we need to parse the string into the appropriate
+		    // numeric wrapper type
+		    String string = (String)objects[i];
+		    Number number = null;
+		    if (target.equals(BigDecimal.class)) {
+			number = new BigDecimal(string);
+		    }
+		    else if (target.equals(BigInteger.class)) {
+			number = new BigInteger(string);
+		    }
+		    else if (target.equals(Byte.class) ||
+			     target.equals(byte.class)) {
+			number = new Byte(string);
+		    }
+		    else if (target.equals(Double.class) ||
+			     target.equals(double.class)) {
+			number = new Double(string);
+		    }
+		    else if (target.equals(Float.class) ||
+			     target.equals(float.class)) {
+			number = new Float(string);
+		    }
+		    else if (target.equals(Integer.class) ||
+			     target.equals(int.class)) {
+			number = new Integer(string);
+		    }
+		    else if (target.equals(Long.class) ||
+			     target.equals(long.class)) {
+			number = new Long(string);
+		    }
+		    else if (target.equals(Short.class) ||
+			     target.equals(short.class)) {
+			number = new Short(string);
+		    }
+		    objects[i] = number;
+		}
+	    }
+	}
+    }
+
     public Map execute(Map input, 
 		       ProcessorTask parentTask) 
 	throws TaskExecutionException {
@@ -134,6 +181,7 @@ public class APIConsumerTask implements ProcessorTaskWorker {
 	    }
 
 	    Object[] inputObjects = inputObjects(input);
+	    translateNumericTypes(inputObjects, inputClasses);
 
 	    // Invoke the method
 	    Object resultObject;
