@@ -151,7 +151,7 @@ public class ScavengerTreePopupHandler extends MouseAdapter {
 			    try {
 				final ScuflModel m;				
 				if (pf instanceof WorkflowProcessorFactory) {
-				    WorkflowProcessor wp = (WorkflowProcessor)pf.createProcessor("workflow",null);
+				    WorkflowProcessor wp = (WorkflowProcessor)pf.createProcessor("workflow",new ScuflModel());
 				    m = wp.getInternalModel();
 				}
 				else {
@@ -213,6 +213,7 @@ public class ScavengerTreePopupHandler extends MouseAdapter {
 							      "Unable to run operation : \n"+ex.getMessage(),
 							      "Exception!",
 							      JOptionPane.ERROR_MESSAGE);
+				ex.printStackTrace();
 			    }
 			}
 			
