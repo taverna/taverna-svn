@@ -1,0 +1,396 @@
+<!-- Tom Oinn (tmo@ebi.ac.uk) 26th June 2005                     -->
+<!-- General project template, edit build.properties to suit     -->
+
+<!-- In most cases you will not need to edit anything in this    -->
+<!-- file, it contains targets to build code, instrument for     -->
+<!-- JCoverage, build javadoc and run unit tests with JUnit.     -->
+<project name="Taverna Workflow Repository" default="all" basedir=".">
+
+	<!-- These directories are pretty standard, you probably     -->
+	<!-- don't want to change them                               -->
+	<property file="build.properties"/>
+	<property name="src.dir" value="./src"/>
+    	<property name="test.src.dir" value="./test"/>
+	<property name="build.dir" value="./build"/>
+    	<property name="reports.tests" value="${build.dir}/reports"/>
+	<property name="build.src" value="${build.dir}/src"/>
+	<property name="build.classes" value="${build.dir}/classes"/>
+    	<property name="build.test.src" value="${build.dir}/test_src"/>
+    	<property name="build.test.classes" value="${build.dir}/test_classes"/>
+	<property name="build.javadocs" value="${build.dir}/api"/>
+	<property name="build.compiler" value="modern"/>
+    	<property name="build.test.src" value="${build.dir}/test_src"/>
+    	<property name="build.test.classes" value="${build.dir}/test_classes"/>
+	<property name="build.instrumented" value="${build.dir}/instrumented_classes"/>
+
+     	<path id="base-classpath">
+		<!-- Jar files used when building or running the project go here -->
+		<fileset dir="./lib">
+			<include name="*.jar"/>
+		</fileset>
+	      <!-- Also include our own source tree -->
+            <pathelement path="."/>
+		<pathelement path="${build.classes}"/>
+		<pathelement path="${build.src}"/>
+   	</path>
+	<path id="base-compile-classpath">
+		<path refid="base-classpath"/>
+		<!-- Jar files that are only used when building the project go here -->
+		<fileset dir="./devlib">
+			<include name="*.jar"/>
+		</fileset>
+    	</path>
+	<path id="base-run-classpath">
+		<path refid="base-classpath"/>
+	      <pathelement path="./workbench/conf"/>
+	</path>
+	<path id="base-test-classpath">
+	    	<path refid="base-run-classpath"/>
+		<path refid="${java.class.path}"/>
+		<pathelement path="${build.text.classes}"/>
+	</path>
+	<path id="compile-classpath">
+		<path refid="base-compile-classpath"/>
+	</path>
+	<path id="run-classpath">
+	    	<path refid="base-run-classpath"/>
+	</path>
+	<path id="test-classpath">
+		<path refid="base-test-classpath"/>
+	</path>
+	
+	<!-- Doxygen task -->
+	<taskdef name="doxygen" classname="org.doxygen.tools.DoxygenTask">
+		<!-- Declare classes needed to run the task -->
+		<classpath refid="compile-classpath"/>
+	</taskdef>
+
+	<!-- Version class generator task -->
+	<taskdef name="jreleaseinfo" 
+	         classname="ch.oscg.jreleaseinfo.anttask.JReleaseInfoAntTask">
+	        <classpath refid="compile-classpath"/>
+	</taskdef>
+
+	<!-- JCoverage task -->
+	<taskdef resource="tasks.properties">
+	        <classpath refid="compile-classpath"/>
+	</taskdef>
+	
+	<!-- JUnit override -->
+	<taskdef name="junit"
+	         classname="org.apache.tools.ant.taskdefs.optional.junit.JUnitTask">
+		<classpath refid="compile-classpath"/>
+	</taskdef>
+	<taskdef name="junitreport"
+	         classname="org.apache.tools.ant.taskdefs.optional.junit.XMLResultAggregator">
+		<classpath refid="compile-classpath"/>
+	</taskdef>
+
+	<!-- Compile the code, build jar, build javadoc and run tests -->
+	<target name="all" depends="jar,javadoc,test" 
+	        description="Build jar, reports and javadoc"/>
+
+	<!-- Fetch .jar files -->
+	<target name="fetchjars" description="Fetch 3rd party jars from the internet">
+	        <mkdir dir="./netlib"/>
+		<!-- JDom -->
+		<get src="http://www.ibiblio.org/maven/jdom/jars/jdom-1.0.jar" 
+		     dest="./netlib/jdom-1.0.jar" usetimestamp="yes"/>
+		<!-- Apache Commons --> 
+  		<get src="http://www.ibiblio.org/maven/commons-discovery/jars/commons-discovery-0.2.jar" 
+		     dest="./netlib/commons-discovery-0.2.jar" usetimestamp="yes" /> 
+		<get src="http://www.ibiblio.org/maven/commons-logging/jars/commons-logging-1.0.4.jar" 
+		     dest="./netlib/commons-logging-1.0.4.jar" usetimestamp="yes" /> 
+		<get src="http://www.ibiblio.org/maven/commons-httpclient/jars/commons-httpclient-3.0-rc3.jar" 
+		     dest="./netlib/commons-httpclient-3.0-rc3.jar" usetimestamp="yes" /> 
+		<get src="http://www.ibiblio.org/maven/commons-io/jars/commons-io-SNAPSHOT.jar"
+		     dest="./netlib/commons-io-SNAPSHOT.jar" usetimestamp="yes" />
+		<get src="http://www.ibiblio.org/maven/commons-codec/jars/commons-codec-1.3.jar"
+		     dest="./netlib/commons-codec-1.3.jar" usetimestamp="yes" />
+		<get src="http://www.ibiblio.org/maven/commons-fileupload/jars/commons-fileupload-1.0.jar"
+		     dest="./netlib/commons-fileupload-1.0.jar" usetimestamp="yes" />
+		<!-- Log4j --> 
+		<get src="http://www.ibiblio.org/maven/log4j/jars/log4j-1.2.9.jar" 
+		     dest="./netlib/log4j-1.2.9.jar" usetimestamp="yes" /> 
+		<!-- JUnit --> 
+  		<get src="http://www.ibiblio.org/maven/junit/jars/junit-3.8.jar" 
+		     dest="./netlib/junit-3.8.jar" usetimestamp="yes" /> 
+		<!-- Servlet APIs -->
+		<get src="http://www.ibiblio.org/maven/javax.servlet/jars/servlet-api-2.4.jar"
+		     dest="./netlib/servlet-api-2.4.jar" usetimestamp="yes" />
+		<!-- Reset the compile classpath to include the newly fetched classes -->	
+		<path id="downloaded-libs">
+			<fileset dir="./netlib">
+				<include name="*.jar"/>
+			</fileset>
+		</path>
+		<path id="compile-classpath">
+		        <path refid="base-compile-classpath"/>
+			<path refid="downloaded-libs"/>
+		</path>	
+		<path id="run-classpath">
+			<path refid="base-run-classpath"/>
+			<path refid="downloaded-libs"/>
+		</path>
+		<path id="test-classpath">
+		        <path refid="base-test-classpath"/>
+			<path refid="downloaded-libs"/>
+		</path>	
+		<available classpath="${java.class.path}"
+        		     classname="junit.framework.TestCase"
+        		     property="junit.present"/>
+	</target>
+
+	<!-- Purge all fetched jar files -->
+	<target name="purgejars" description="Remove 3rd party jars">
+		<delete dir="./netlib"/>
+	</target>
+
+	<!-- Run doxygen -->
+	<target name="doxygen" depends="prepare" description="Run Doxygen (must install doxygen first!)">
+		<mkdir dir="${build.dir}/doxygen"/>
+		<!-- Run doxygen, with output specialized for java -->
+		<doxygen
+			outputDirectory="${build.dir}/doxygen"
+			input="${src.dir}"
+			recursive="yes"
+			generateLatex="false"
+			projectNumber="${project.version}"
+			projectName="Generated Doxygen Docs for ${project.name}"
+			generateTreeview="test"
+			optimizeOutputJava="yes"
+			haveDot="yes"
+			ignoreVersion="yes"
+			sourceBrowser="yes"/>
+	</target>
+
+	<!-- Clean the build -->
+	<target name="clean">
+		<delete dir="${build.dir}"/>
+		<delete file="./jcoverage.ser"/>
+	</target>
+
+	<!-- Trivial setup -->
+	<target name="prepare" depends="">
+		<mkdir dir="${build.dir}"/>
+		<mkdir dir="${reports.tests}"/>
+		<mkdir dir="netlib"/>
+		<path id="downloaded-libs">
+		        <fileset dir="./netlib">
+			       <include name="*.jar"/>
+			</fileset>
+		</path>
+		<path id="compile-classpath">
+		        <path refid="base-compile-classpath"/>
+			<path refid="downloaded-libs"/>
+		</path>	
+		<path id="run-classpath">
+		<path refid="base-run-classpath"/>
+			<path refid="downloaded-libs"/>
+		</path>
+		<path id="test-classpath">
+		        <path refid="base-test-classpath"/>
+			<path refid="downloaded-libs"/>
+		</path>	
+	</target>
+
+	<!-- Prepare the source tree for compilation -->
+	<target name="prepare-src" depends="prepare">
+		<mkdir dir="${build.src}"/>
+		<mkdir dir="${build.classes}"/>
+		<copy todir="${build.src}" filtering="on">
+			<fileset dir="${src.dir}">
+				<exclude name="**/CVS/**"/>
+			</fileset>
+		</copy>
+		<!-- Autogenerate the version information -->
+		<jreleaseinfo targetDir="${build.src}"
+		              className="RepositoryReleaseInfo"
+			        packageName="net.sf.taverna.repository"
+			        project="${project.name}"
+			        version="${project.version}"
+			        withViewer="false"/>
+	</target>
+
+    	<!-- Prepare the test source tree for compilation -->
+    	<target name="prepare-test-src" depends="prepare">
+        	<mkdir dir="${build.test.src}"/>
+        	<mkdir dir="${build.test.classes}"/>
+        	<copy todir="${build.test.src}" filtering="on">
+            	<fileset dir="${test.src.dir}">
+                	<exclude name="**/CVS/**"/>
+			<exclude name="**/package.html"/>
+            	</fileset>
+        	</copy>
+	</target>
+
+	<!-- Compile the source files -->
+	<target name="java" depends="prepare-src">
+		<!-- Run javac to turn .java files into .class -->
+		<javac debug="on"
+            	 srcdir="${build.src}"
+            	 destdir="${build.classes}"
+            	 source="1.4"
+		 deprecation="on">
+			<classpath refid="compile-classpath"/>
+		</javac>
+		<!-- Copy over any configuration files that you might have -->
+		<copy todir="${build.classes}" filtering="on">
+			<fileset dir="${src.dir}">
+				<exclude name="**/CVS/**"/>
+				<exclude name="**/*.java"/>
+				<exclude name="**/package.html"/>
+		</fileset>
+		</copy>
+		<!-- Run the RMI Compiler on anything that looks like a remote class -->
+		<rmic base="${build.classes}" verify="true">
+			<classpath refid="compile-classpath"/>
+		</rmic>
+	</target>
+
+	<!-- Create a jar of the classes and configuration files -->
+	<target name="jar" depends="java" description="Build jar file">
+		<jar destfile="${build.dir}/${project.name}-${project.version}.jar" basedir="${build.classes}" update="no"/>
+	</target>
+
+    	<!-- Build tests -->
+    	<target name="javac-tests" depends="prepare-test-src, instrument">
+        	<!-- Run javac to turn .java files into .class -->
+        	<javac debug="on"
+            	 srcdir="${build.test.src}"
+            	 destdir="${build.test.classes}"
+            	 source="1.4">
+            	<classpath refid="compile-classpath"/>
+        	</javac>
+        	<!-- Copy over any configuration files that you might have -->
+        	<copy todir="${build.test.classes}" filtering="on">
+            	<fileset dir="${test.src.dir}">
+                	<exclude name="**/CVS/**"/>
+                	<exclude name="**/*.java"/>
+            	</fileset>
+        	</copy>
+    	</target>
+	
+	<!-- Build java files with instrumentation, copy across         -->
+	<!-- any resources to the instrumented file directory. Does not -->
+	<!-- instrument anything mathing *ReleaseInfo or *Exception     -->
+	<target name="instrument" depends="java">
+	        <instrument todir="${build.instrumented}">
+		        <fileset dir="${build.classes}">
+			        <include name="**/*.class"/>
+				<exclude name="**/*ReleaseInfo.class"/>
+				<exclude name="**/*Exception.class"/>
+			</fileset>
+			<classpath refid="compile-classpath"/>
+		</instrument>
+		<copy todir="${build.instrumented}">
+		        <fileset dir="${build.classes}">
+			        <exclude name="**/*.class"/>
+			</fileset>
+			<fileset dir="${build.classes}">
+			        <include name="**/*ReleaseInfo.class"/>
+				<include name="**/*Exception.class"/>
+			</fileset>
+		</copy>
+	</target>
+
+	<!-- Run all unit tests and generate coverage and results reports -->
+    	<target name="test" depends="javac-tests" 
+	        description="Run tests and coverage analysis">
+		<property name="test.subtree" value="**"/>
+		<path id="test-classpath">
+		        <pathelement path="${build.instrumented}"/>
+			<fileset dir="./lib">
+			        <include name="*.jar"/>
+			</fileset>
+			<fileset dir="./netlib">
+			        <include name="*.jar"/>
+			</fileset>
+			<fileset dir="./devlib">
+			        <include name="*.jar"/>
+			</fileset>
+	      		<pathelement path="${build.test.classes}"/>
+		</path>
+		<available classpathref="compile-classpath" 
+			     classname="junit.framework.TestCase" 
+			     property="junit.present"/>
+        	<echo message="JUnit present: ${junit.present}"/>
+        	<echo message="Running tests: ${test.subtree}"/>
+		<junit maxmemory="128m" printsummary="yes" haltonfailure="no" reloading="no">
+		<formatter type="xml" usefile="true"/>
+            	<classpath refid="test-classpath"/>
+	    	<!-- The junit task doesn't support 'if' so we test for JUnit here -->
+            	<batchtest fork="yes" todir="${reports.tests}" if="junit.present">
+                		<fileset dir="${build.test.classes}">
+					<include name="${test.subtree}/*Test.class"/>
+					<include name="${test.subtree}/*TestSuite.class"/>
+					<exclude name="**/Abstract*Test.class"/>
+                		</fileset>
+            	</batchtest>
+		</junit>
+		<!-- Enforce coverage metrics -->
+		<check branch="80" line="80">
+		        <classpath refid="test-classpath"/>
+		</check>
+		<!-- Output coverage report as HTML -->
+		<report srcdir="${src.dir}" destdir="${reports.tests}/coverage">
+		        <classpath refid="test-classpath"/>
+		</report>
+		<!-- Generate aggregate test report from XML files -->
+		<junitreport todir="${reports.tests}">
+		        <fileset dir="${reports.tests}">
+			        <include name="TEST-*.xml"/>
+			</fileset>
+			<report format="frames" todir="${reports.tests}/html"/>
+		</junitreport>
+		<delete file="./jcoverage.ser"/>
+    	</target>
+	
+	<!-- Build javadocs -->
+	<target name="javadoc" depends="prepare-src" description="Build javadoc for the project">
+		<mkdir dir="${build.javadocs}"/>
+		<javadoc windowtitle="${project.name} Java Classes"
+			   destdir="${build.javadocs}"
+			   linksource="yes"
+			   breakiterator="yes"
+			   sourcepath="${build.src}"
+			   doctitle="&lt;h1>${project.name} Java API Documentation&lt;/h1>"
+			   packagenames="*"
+			   source="1.4"
+			   version="true">
+			<classpath refid="compile-classpath"/>
+		</javadoc>
+	</target>
+
+	<!-- Build web application archive -->
+	<target name="war" depends="jar" description="Build web application">
+	        <mkdir dir="${build.dir}/war"/>
+		<mkdir dir="${build.dir}/war/WEB-INF"/>
+		<mkdir dir="${build.dir}/war/WEB-INF/lib"/>
+		<mkdir dir="${build.dir}/war/WEB-INF/classes"/>
+		<copy todir="${build.dir}/war/WEB-INF/lib">
+		        <fileset dir="${build.dir}">
+			        <include name="*.jar"/>
+			</fileset>
+			<fileset dir="./lib">
+			        <include name="*.jar"/>
+			</fileset>
+			<fileset dir="./netlib">
+			        <include name="*.jar"/>
+				<exclude name="servlet-api-2.4.jar"/>
+			</fileset>
+		</copy>
+		<copy file="webapp.log4j.properties" tofile="${build.dir}/war/WEB-INF/classes/log4j.properties"/>
+		<copy file="web.xml" tofile="${build.dir}/war/WEB-INF/web.xml"/>
+		<!-- copy across the contents of the 'docs' folder as well -->
+		<copy todir="${build.dir}/war">
+		        <fileset dir="./docs">
+			        <exclude name="**/CVS/**"/>
+			</fileset>
+		</copy>
+		<jar destfile="${build.dir}/${project.name}-${project.version}.war"
+		     basedir="${build.dir}/war"
+		     update="no"/>
+	</target>
+	
+</project>
