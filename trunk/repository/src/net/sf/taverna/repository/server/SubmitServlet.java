@@ -39,7 +39,7 @@ import org.embl.ebi.escience.scufl.*;
 import org.embl.ebi.escience.scufl.parser.*;
 
 import java.util.*;
-
+import java.net.*;
 
 /**
  * Servlet to handle submission of a workflow script to the repository
@@ -64,8 +64,9 @@ public class SubmitServlet extends HttpServlet {
 	    log.error("Must define a repository location in the web.xml file.");
 	    return;
 	}
+	String dotLocation = sc.getInitParameter("dot");
 	File f = new File(location);
-	repository = new Repository(f);
+	repository = new Repository(f, dotLocation);
 	log.debug("Created Repository singleton with temp location of '"+location+"'.");
     }
 
@@ -115,6 +116,22 @@ public class SubmitServlet extends HttpServlet {
 	    log.error("Unable to parse uploaded workflow", e);
 	    throw new ServletException("Can't parse workflow", e);
 	}
-    }    
+    }
+
+    public void doGet(HttpServletRequest request,
+		       HttpServletResponse response)
+	throws ServletException {
+	try {
+	    String url = request.getParameter("workflowURL");
+	    ScuflModel model = new ScuflModel();
+	    XScuflParser.populate(new URL(url).openStream(), model, null);
+	    repository.submitWorkflow(model);
+	    response.sendRedirect("index.jsp");
+	}
+	catch (Exception e) {
+	    log.error("Unable to parse uploaded workflow", e);
+	    throw new ServletException("Can't parse workflow", e);
+	}
+    }
 
 }

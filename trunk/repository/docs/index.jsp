@@ -20,8 +20,8 @@
 <h3>Basic Service Settings</h3>
 <table width="95%" border="1" cellspacing="0" cellpadding="2">
   <tr>
-    <th width="200" bgcolor="#FFCC66"><div align="left">Property</div></th>
-    <th bgcolor="#FFCC66"><div align="left">Value</div></th>
+    <th width="200" bgcolor="#FFE271"><div align="left">Property</div></th>
+    <th bgcolor="#FFE271"><div align="left">Value</div></th>
   </tr>
   <tr>
     <td>Repository&nbsp;location</td>
@@ -41,14 +41,18 @@
 		ScuflModelInfo info = models[i];
   %>
   <tr bgcolor="#CCFFCC">
-    <th><div align="left">Title : <% out.println(info.getTitle()); %></div></th>
-    <th><div align="left">Author : <% out.println(info.getAuthor()); %></div></th>
+    <th colspan="2" valign="top" bgcolor="#D4D4E9"><div align="left">Title :<em> 
+      <% out.println(info.getTitle()); %>
+    </em></div></th>
+    <th valign="top" bgcolor="#D5D5E9"><div align="left">Author :<em> 
+      <% out.println(info.getAuthor()); %>
+    </em></div></th>
   </tr>
 
   <tr bgcolor="#FFFFCC">
-    <th colspan="2"><div align="left">Description</div></th>
+    <td rowspan="2" valign="top" bgcolor="white"><a href="data?type=image&id=<%= info.getID() %>"><img border="0" src="data?type=thumb&id=<%= info.getID() %>"></a></td><th height="25" colspan="2" bgcolor="#FFE271"><div align="left">Description<em> <a href="data?type=summary&id=<%= info.getID() %>">full summary</a> <a href="data?type=definition&id=<%= info.getID() %>">xml definition</a> </em></div></th>
   </tr>
-  <tr><td colspan="2">
+  <tr><td colspan="2" valign="top">
     <span class="style1">
     <% out.println(info.getDescription()); %>
     </span></td>
@@ -60,6 +64,11 @@
   Use the browse button to locate a workflow to upload from your machine  
   <input type="file" name="workflow">
   <input type="submit" name="Submit" value="Submit">
+</form><br/>
+<form name="form2" method="get" action="submit">
+  Alternatively you can enter the URL to a workflow definition on the web here 
+  <input type="text" name="workflowURL">
+  <input type="submit" name="Submit2" value="Submit">
 </form>
 <p>&nbsp; </p>
 </body>
