@@ -68,7 +68,15 @@ public class BiomobyObjectProcessor extends Processor implements Serializable {
                 //
             }
         }
-        createDataLinks(this, true);
+//        System.out.println(serviceName);
+//        if (this.serviceName.equalsIgnoreCase("Object") 
+//                || this.serviceName.equalsIgnoreCase("String") 
+//                || this.serviceName.equalsIgnoreCase("Integer") 
+//                || this.serviceName.equalsIgnoreCase("DateTime")) {
+//            return;
+//        } else {
+//            createDataLinks(this, true);
+//        }
     }
 
     public BiomobyObjectProcessor(ScuflModel model, String processorName,
@@ -407,7 +415,7 @@ public class BiomobyObjectProcessor extends Processor implements Serializable {
             int answer = JOptionPane
                     .showConfirmDialog(
                             null,
-                            "Would you like to add all of the subcomponents for the processor that was just added to the workflow? Data links would be added.");
+                            "Would you like to add all of the subcomponents for the processor '" + bop.getName() + "' that was just added to the workflow? Data links would be added.");
             if (answer == JOptionPane.NO_OPTION
                     || answer == JOptionPane.CANCEL_OPTION) {
                 return;
