@@ -42,7 +42,7 @@ import uk.ac.soton.itinnovation.freefluo.main.InvalidInputException;
  * @author Tony Burdett
  * @version 1.0
  */
-public class DalecManager
+public class  DalecManager
 {
     private DatabaseManager dbMan;
     private ScuflModel model;
