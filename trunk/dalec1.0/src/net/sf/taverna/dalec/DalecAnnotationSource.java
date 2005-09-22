@@ -142,7 +142,7 @@ public class DalecAnnotationSource extends AbstractDataSource
         {
             try
             {
-                createWorkflowInput(ref);
+                davros.submitJob(createWorkflowInput(ref));
                 return makeDummySequence();
             }
             catch (IncorrectlyNamedInputException e1)
@@ -302,9 +302,10 @@ public class DalecAnnotationSource extends AbstractDataSource
     {
         // Make a dummy GFFEntrySet with one record with a human readable explanation to wait
         SimpleGFFRecord dummyRecord = new SimpleGFFRecord();
-        dummyRecord.setSeqName("Unannotated Sequence");
-        dummyRecord.setFeature("Features are being evaluated");
-        dummyRecord.setComment("***ANNOTATIONS BEING EVALUATED BY DALEC*** Please wait while the annotations for this sequence are being calculated.  Resubmit your request shortly.");
+        dummyRecord.setSeqName("Dalec Unannotated Sequence");
+        dummyRecord.setFeature("***ANNOTATIONS BEING EVALUATED BY DALEC*** Please wait while the annotations for this sequence are being calculated.  Resubmit your request shortly.");
+        dummyRecord.setComment("features are currently being evaluated");
+        dummyRecord.setSource("Dalec1.0");
         GFFEntrySet dummyEntry = new GFFEntrySet();
         dummyEntry.add(dummyRecord);
 
@@ -427,9 +428,7 @@ public class DalecAnnotationSource extends AbstractDataSource
                     // ignore the newline char
                 }
             }
-            String querySeq = seq.toString().trim();
-            System.out.println(querySeq);
-            return querySeq;
+            return seq.toString().trim();
         }
         else
         {

@@ -22,7 +22,7 @@ public class TestDatabaseManager extends TestCase
 
     protected void setUp()
     {
-        dm = new DatabaseManager(new File("C:\\home\\tony\\documents\\dalec1.0\\outputTest\\db"));
+        dm = new DatabaseManager(new File("outputTest\\database"));
         dbThread = new Thread(dm);
         synchronized (dbThread)
         {
@@ -66,7 +66,7 @@ public class TestDatabaseManager extends TestCase
 
     public void testDBLocation ()
     {
-        assertTrue (dm.getDatabaseLocation().equals(new File("C:\\home\\tony\\documents\\dalec1.0\\outputTest\\db")));
+        assertTrue (dm.getDatabaseLocation().equals(new File("outputTest\\database")));
     }
 
     public void testDbRun()

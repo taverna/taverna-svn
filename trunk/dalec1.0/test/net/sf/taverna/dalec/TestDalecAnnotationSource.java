@@ -2,9 +2,12 @@ package net.sf.taverna.dalec;
 
 import org.biojava.servlets.dazzle.datasource.DataSourceException;
 import org.biojava.bio.seq.Sequence;
+import org.biojava.bio.seq.Feature;
+import org.biojava.bio.Annotation;
 
 import java.util.Set;
 import java.util.Iterator;
+import java.util.Map;
 
 import junit.framework.TestCase;
 
@@ -44,16 +47,38 @@ public class TestDalecAnnotationSource extends TestCase
         }
     }
 
+    protected void calcDelay()
+    {
+        // allow time for jobs to complete before destroying
+        synchronized (this)
+        {
+            try
+            {
+                wait(5000);
+            }
+            catch (InterruptedException e)
+            {
+                fail();
+            }
+        }
+    }
+
     public void testGetSequence() throws DataSourceException
     {
         Sequence seq = dalec.getSequence("O35502");
-
-        Set keys = seq.getAnnotation().keys();
-
-        for (Iterator it = keys.iterator(); it.hasNext();)
+        System.out.println("Sequence acquired is: " + seq.getName());
+        System.out.println("It contains the following feature(s)...");
+        int count=1;
+        for (Iterator it=seq.features(); it.hasNext();)
         {
-            System.out.println ("Annotation keys present: " + (String)it.next());
+            System.out.println("Feature " + count + ":");
+            Feature f = (Feature)it.next();
+            System.out.println("\tLocation: " + f.getLocation().getMin() + "..." + f.getLocation().getMax());
+            System.out.println("\tType: " + f.getType());
+            System.out.println("\tSource: " + f.getSource());
         }
+
+        calcDelay();
     }
 
     public void testGetAllTypes()

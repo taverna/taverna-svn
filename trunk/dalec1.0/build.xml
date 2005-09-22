@@ -281,7 +281,14 @@
         <delete dir="${taverna-netlib.dir}"/>
         <delete dir="${taverna-lib.dir}"/>
         <delete dir="${webapp.dir}"/>
-        <delete file="${lib.dir}\dalec.jar"/>
+        <delete file="${lib.dir}\dalec-1.0.jar"/>
+        <delete file="${lib.dir}/biojava-1.4.jar" />
+        <delete file="${lib.dir}/bytecode-0.92.jar" />
+        <delete file="${lib.dir}/commons-cli.jar" />
+        <delete file="${lib.dir}/commons-collections-2.1.jar" />
+        <delete file="${lib.dir}/commons-dbcp-1.1.jar" />
+        <delete file="${lib.dir}/commons-pool-1.1.jar" />
+
         <ant antfile="config-build.xml" target="clean"/>
     </target>
 

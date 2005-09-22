@@ -218,7 +218,6 @@ public class DalecManager
                                         // If workflow has finished current job, (ie. state.isFinal()) then send results to DB
                                         if (state.isFinal())
                                         {
-                                            // TODO - Naming of output processor - "annotations" acceptable currently
                                             if (workflow.getOutput().containsKey("annotations"))
                                             {
                                                 DataThing output = (DataThing) workflow.getOutput().get("annotations");
@@ -241,7 +240,7 @@ public class DalecManager
                                                 catch (Exception e)
                                                 {
                                                     // Unable to parse GFF Data from workflow output
-                                                    logError(dbMan.getDatabaseLocation(), "Parsing GFF output from workflow", e.getCause());
+                                                    logError(dbMan.getDatabaseLocation(), "Parsing GFF output from workflow", e);
                                                     System.out.println("A sequence annotation failed - unable to parse output from workflow");
                                                 }
 
@@ -535,7 +534,14 @@ public class DalecManager
             }
             errLog.println("Error occurred at " + time + ", whilst doing job: " + jobName);
             errLog.println(exception.getMessage());
-            errLog.println(exception.getCause());
+            if (exception.getCause() != null)
+            {
+                errLog.println(exception.getCause());
+            }
+            else
+            {
+                errLog.println(exception.getStackTrace()[0]);
+            }
             errLog.println("---------------------------------------------------------------");
             errLog.println();
             errLog.close();
