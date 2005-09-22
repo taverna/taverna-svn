@@ -143,7 +143,7 @@
         </copy>
     </target>
 
-    <target name="fetch.jars" depends="fetch.taverna-lib.jars, fetch.taverna-netlib.jars"
+    <target name="fetch.jars" depends="fetch.biojava.jars, fetch.taverna-lib.jars, fetch.taverna-netlib.jars"
             description="retrieve required jar files from the web"/>
 
     <!-- retrieve jars from taverna source lib via CVS -->
@@ -200,6 +200,16 @@
              dest="${taverna-netlib.dir}/poi-2.0-final-20040126.jar" usetimestamp="yes"/>
         <get src="http://www.ibiblio.org/maven/mysql/jars/mysql-connector-java-3.0.10-stable-bin.jar"
              dest="${taverna-netlib.dir}/mysql-connector-java-3.0.10-stable-bin.jar" usetimestamp="yes"/>
+    </target>
+
+    <!-- retriev biojava and dazzle jars -->
+    <target name="fetch.biojava.jars" description="retrieve all jars compulsory for biojava and dazzle">
+        <get src="http://www.biojava.org/download/binaries/biojava-1.4.jar" dest="${lib.dir}/biojava-1.4.jar" />
+        <get src="http://www.biojava.org/download/binaries/bytecode-0.92.jar" dest="${lib.dir}/bytecode-0.92.jar" />
+        <get src="http://www.biojava.org/download/binaries/commons-cli.jar" dest="${lib.dir}/commons-cli.jar" />
+        <get src="http://www.biojava.org/download/binaries/commons-collections-2.1.jar" dest="${lib.dir}/commons-collections-2.1.jar" />
+        <get src="http://www.biojava.org/download/binaries/commons-dbcp-1.1.jar" dest="${lib.dir}/commons-dbcp-1.1.jar" />
+        <get src="http://www.biojava.org/download/binaries/commons-pool-1.1.jar" dest="${lib.dir}/commons-pool-1.1.jar" />
     </target>
 
     <!-- make the jar file -->

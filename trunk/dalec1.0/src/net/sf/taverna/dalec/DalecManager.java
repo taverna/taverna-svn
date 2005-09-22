@@ -42,7 +42,7 @@ import uk.ac.soton.itinnovation.freefluo.main.InvalidInputException;
  * @author Tony Burdett
  * @version 1.0
  */
-public class  DalecManager
+public class DalecManager
 {
     private DatabaseManager dbMan;
     private ScuflModel model;
@@ -266,7 +266,7 @@ public class  DalecManager
                                 });
 
                                 // we have next job and a newly compiled workflow so set inputs and run this job
-                                workflow.setInputs(job.getInput());
+                                workflow.setInputs(job.getInputs());
                                 workflow.run();
                                 synchronized (workflow)
                                 {
@@ -425,46 +425,52 @@ public class  DalecManager
     }
 
     /**
-     * Returns the source processor name for the ScuflModel held by this DalecManager.  Dalec requires that a source
-     * processor is specified for the sequence to be annotated.  This processor should be named either "sequence" (if
-     * the workflow input is the sequence data to be annotated) or "seqID" (if the workflow takes an ID and then
-     * performs some lookup operation before annotating the sequence).  Either approach is valid, however Dalec will not
-     * accept a workflow which does not contain a source processor with one of these names. Likewise, a workflow which
-     * contains both sequence <i>and</i> seqID source processors is not valid.
+     * Returns the list of source processor names for the ScuflModel held by this DalecManager.  Dalec needs to know the
+     * source processors for the workflow being used in order to pass the correct <code>WorkflowInput</code> to the
+     * workflow.  Source processors should be named appropriately - for more info on processor naming see
+     * <code>DalecAnnotationSource</code>.
      *
-     * @return Either "sequence" or "seqID", depending on how the source processor in this model is named
-     * @throws IncorrectlyNamedInputException if the workflow does not contain one of the required processor names
+     * @return The list of input processors in thie workflow contained by this DalecManager
      */
-    public String getInputName() throws IncorrectlyNamedInputException
+    public List getInputs()
     {
-        // TODO - Naming of input processors - "sequence" or "seqID" acceptable currently
-        String inputName = "";
-        Port[] p = model.getWorkflowSourcePorts();
+        ArrayList inputs = new ArrayList();
+        Port [] p = model.getWorkflowSourcePorts();
         for (int i = 0; i < p.length; i++)
         {
-            if ((p[i].getName().matches("sequence") && inputName.matches("seqID")) || (p[i].getName().matches("seqID") && inputName.matches("sequence")))
-            {
-                // 2 named inputs, seqID AND sequence present - this is not valid
-                throw new IncorrectlyNamedInputException("Found source processors named 'sequence' AND 'seqID'in this model - not valid!");
-            }
-            else if (p[i].getName().matches("sequence"))
-            {
-                inputName = p[i].getName();
-            }
-            else if (p[i].getName().matches("seqID"))
-            {
-                inputName = p[i].getName();
-            }
+            inputs.add(p[i].getName());
         }
-        if (inputName == null)
-        {
-            throw new IncorrectlyNamedInputException("Unable to locate a source processor named 'sequence' or 'seqID' in this model");
-        }
-        else
-        {
-            return inputName;
-        }
+        return inputs;
     }
+//        // Old method for checking inputs - naming is not handled here anymore
+//        String inputName = "";
+//        Port[] p = model.getWorkflowSourcePorts();
+//        for (int i = 0; i < p.length; i++)
+//        {
+//
+//            if ((p[i].getName().matches("sequence") && inputName.matches("seqID")) || (p[i].getName().matches("seqID") && inputName.matches("sequence")))
+//            {
+//                // 2 named inputs, seqID AND sequence present - this is not valid
+//                throw new IncorrectlyNamedInputException("Found source processors named 'sequence' AND 'seqID'in this model - not valid!");
+//            }
+//            else if (p[i].getName().matches("sequence"))
+//            {
+//                inputName = p[i].getName();
+//            }
+//            else if (p[i].getName().matches("seqID"))
+//            {
+//                inputName = p[i].getName();
+//            }
+//        }
+//        if (inputName == null)
+//        {
+//            throw new IncorrectlyNamedInputException("Unable to locate a source processor named 'sequence' or 'seqID' in this model");
+//        }
+//        else
+//        {
+//            return inputName;
+//        }
+//    }
 
     /**
      * Submit a job to be annotated.  This method should be called once it has been determined that a sequence has not

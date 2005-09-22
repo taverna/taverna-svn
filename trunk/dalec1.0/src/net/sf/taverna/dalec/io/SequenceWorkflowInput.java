@@ -10,42 +10,43 @@ import java.util.HashMap;
  * input type as raw sequence information.  Whenever a workflow is specified which takes an unannotated sequence as its
  * input, this type of input should be used.  This class takes the raw sequence and constructs a <code>DataThing</code>
  * object from it, also wrapping the processor name and the job ID.
+ * <p/>
+ * This should be used fro workflows which have two input processors, named "seqID" for the sequenceID (which should be
+ * the same as the jobID) and "sequence" for the raw sequence string.
  *
  * @author Tony Burdett
  * @version 1.0
  */
 public class SequenceWorkflowInput implements WorkflowInput
 {
-    private String procName;
-    private String jobID;
-    private String sequence;
+    private static final String SEQUENCE = "sequence";
+    private static final String SEQ_ID = "seqID";
 
-    public void setProcessorName(String processorName)
-    {
-        this.procName = processorName;
-    }
+    private HashMap inputItems = new HashMap();
+    private String jobID;
 
     public void setJobID(String jobID)
     {
         this.jobID = jobID;
+        inputItems.put(SEQ_ID, jobID);
     }
 
     /**
      * This method is used to set the raw sequence information which is to be used in the workflow.  Any calling class
-     * should always set this before calling the <code>getInput()</code> method, otherwise a NullPointerException will
+     * should always set this before calling the <code>getInputs()</code> method, otherwise a NullPointerException will
      * be thrown.
      *
      * @param sequence The string representing the raw sequence to be annotated.  Whitespace, tabs and newline
      *                 characters are not allowed.
      */
-    public void setSequenceData(String sequence)
+    public void setSequence(String sequence)
     {
-        this.sequence = sequence;
+        inputItems.put(SEQUENCE, sequence);
     }
 
-    public String getProcessorName()
+    public Map getInputMappings()
     {
-        return procName;
+        return inputItems;
     }
 
     public String getJobID()
@@ -53,17 +54,21 @@ public class SequenceWorkflowInput implements WorkflowInput
         return jobID;
     }
 
-    public Map getInput()
+    public Map getInputs()
     {
         Map input = new HashMap();
-        if (procName == null || sequence == null)
+
+        String sequence = (String) inputItems.get(SEQUENCE);
+        String seqID = (String) inputItems.get(SEQ_ID);
+        if (sequence != null && seqID != null)
         {
-            throw new NullPointerException();
+            input.put(SEQUENCE, DataThingFactory.bake(sequence));
+            input.put(SEQ_ID, DataThingFactory.bake(seqID));
+            return input;
         }
         else
         {
-            input.put(procName, DataThingFactory.bake(sequence));
-            return input;
+            throw new NullPointerException("No sequence has been set");
         }
     }
 }

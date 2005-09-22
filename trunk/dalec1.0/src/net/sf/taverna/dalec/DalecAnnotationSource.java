@@ -18,13 +18,12 @@ import org.w3c.dom.NodeList;
 import org.w3c.dom.Document;
 
 import java.io.*;
-import java.util.NoSuchElementException;
-import java.util.Set;
-import java.util.HashSet;
+import java.util.*;
 
 import net.sf.taverna.dalec.exceptions.*;
-import net.sf.taverna.dalec.io.SequenceIDWorkflowInput;
+import net.sf.taverna.dalec.io.WorkflowInput;
 import net.sf.taverna.dalec.io.SequenceWorkflowInput;
+import net.sf.taverna.dalec.io.SequenceIDWorkflowInput;
 
 import javax.servlet.ServletContext;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -141,29 +140,10 @@ public class DalecAnnotationSource extends AbstractDataSource
         }
         catch (NewJobSubmissionException e)
         {
-            // Newly submitted job - so make a new WorkflowInput and submit it to DalecManager
             try
             {
-                if (davros.getInputName().matches("sequence"))
-                {
-                    SequenceWorkflowInput input = new SequenceWorkflowInput();
-                    input.setProcessorName(davros.getInputName());
-                    input.setJobID(ref);
-                    input.setSequenceData(fetchQuerySequence(ref));
-                    davros.submitJob(input);
-                }
-                else  // if (davros.getInputName().matches("seqID")) - must be true else exception is thrown
-                {
-                    SequenceIDWorkflowInput input = new SequenceIDWorkflowInput();
-                    input.setProcessorName(davros.getInputName());
-                    input.setJobID(ref);
-                    davros.submitJob(input);
-                }
-
-                // Return a sequence which explains annotations are being done
+                createWorkflowInput(ref);
                 return makeDummySequence();
-
-                // TODO - set an 'incomplete = true' flag to return to DAS clients?
             }
             catch (IncorrectlyNamedInputException e1)
             {
@@ -315,6 +295,83 @@ public class DalecAnnotationSource extends AbstractDataSource
     }
 
     /**
+     * Make a dummy sequence, which isn't a real sequence but contains some notes explaining that this sequence has been
+     * submitted to Dalec and is being calculated.
+     */
+    protected Sequence makeDummySequence()
+    {
+        // Make a dummy GFFEntrySet with one record with a human readable explanation to wait
+        SimpleGFFRecord dummyRecord = new SimpleGFFRecord();
+        dummyRecord.setSeqName("Unannotated Sequence");
+        dummyRecord.setFeature("Features are being evaluated");
+        dummyRecord.setComment("***ANNOTATIONS BEING EVALUATED BY DALEC*** Please wait while the annotations for this sequence are being calculated.  Resubmit your request shortly.");
+        GFFEntrySet dummyEntry = new GFFEntrySet();
+        dummyEntry.add(dummyRecord);
+
+        // Make a sequence containing this dummy record as the only feature
+        Sequence dummySeq = new SimpleSequence(new DummySymbolList(ProteinTools.getTAlphabet(), 0), dummyRecord.getSeqName(), dummyRecord.getSeqName(), Annotation.EMPTY_ANNOTATION);
+        try
+        {
+            dummyEntry.getAnnotator().annotate(dummySeq);
+        }
+        catch (Exception e)
+        {
+            // shouldn't ever occur as sequence and annotations are correctly built, above.
+        }
+
+        // Return this dummy sequence - only purpose is to show human readable info saying that we're working it out!
+        return dummySeq;
+    }
+
+    /**
+     * Create a <code>WorkflowInput</code> object which wraps all the data needed to be submitted to a workflow, along
+     * with correctly named processor names.  Dalec currently recognises two types of workflows.  The first type has a
+     * single input processor named "seqID" which accepts a sequence identifier which the workflow then looks up itself.
+     * The second type is a workflow with two inputs, one being seqID (which in this case need not necessarily be a
+     * unique identifier) and the other being "sequence", accepting the raw sequence data to be annotated.
+     * <p/>
+     * Additional types of workflow inputs can easily be added by implementing the <code>WorkflowInput</code> interface
+     * to describe an object wrapping all the data needed for a specific workflow, and then overriding this method to
+     * provide the means to create a WorkflowInput of the new type if the workflow supplied requires it.
+     *
+     * @param ref the sequenceID
+     * @return A new WorkflowInput object of appropriate type
+     * @throws IncorrectlyNamedInputException If Dalec does not recognise the pattern of input processors in the
+     *                                        supplied workflow
+     * @throws DataSourceException            If there is a problem acquiring the requested Sequence
+     */
+    protected WorkflowInput createWorkflowInput(String ref) throws IncorrectlyNamedInputException, DataSourceException
+    {
+        // create WorkflowInput objects for any known set of input processors
+        WorkflowInput input;
+
+        List inputNames = davros.getInputs();
+        int numProcs = inputNames.size();
+
+        if (numProcs == 2 && inputNames.contains("sequence") && inputNames.contains("seqID"))
+        {
+            // This is a legal workflow type - 2 processors, contains sequence and seqID input processors
+            SequenceWorkflowInput thisInput = new SequenceWorkflowInput();
+            thisInput.setJobID(ref);
+            thisInput.setSequence(fetchQuerySequence(ref));
+            input = thisInput;
+        }
+        else if (numProcs == 1 && inputNames.contains("seqID"))
+        {
+            // Legal workflow type - 1 processor, seqID processor only
+            SequenceIDWorkflowInput thisInput = new SequenceIDWorkflowInput();
+            thisInput.setJobID(ref);
+            input = thisInput;
+        }
+        else
+        {
+            throw new IncorrectlyNamedInputException("No recognised input processor set found in this workflow");
+        }
+
+        return input;
+    }
+
+    /**
      * Private method to retrieve a query sequence, if the ID was supplied
      *
      * @param seqID
@@ -378,34 +435,5 @@ public class DalecAnnotationSource extends AbstractDataSource
         {
             throw new DataSourceException("More than one 'SEQUENCE' tag present in this XML document");
         }
-    }
-
-    /**
-     * Make a dummy sequence, which isn't a real sequence but contains some notes explaining that this sequence has been
-     * submitted to Dalec and is being calculated.
-     */
-    private Sequence makeDummySequence()
-    {
-        // Make a dummy GFFEntrySet with one record with a human readable explanation to wait
-        SimpleGFFRecord dummyRecord = new SimpleGFFRecord();
-        dummyRecord.setSeqName("Unannotated Sequence");
-        dummyRecord.setFeature("Features are being evaluated");
-        dummyRecord.setComment("***ANNOTATIONS BEING EVALUATED BY DALEC*** Please wait while the annotations for this sequence are being calculated.  Resubmit your request shortly.");
-        GFFEntrySet dummyEntry = new GFFEntrySet();
-        dummyEntry.add(dummyRecord);
-
-        // Make a sequence containing this dummy record as the only feature
-        Sequence dummySeq = new SimpleSequence(new DummySymbolList(ProteinTools.getTAlphabet(), 0), dummyRecord.getSeqName(), dummyRecord.getSeqName(), Annotation.EMPTY_ANNOTATION);
-        try
-        {
-            dummyEntry.getAnnotator().annotate(dummySeq);
-        }
-        catch (Exception e)
-        {
-            // shouldn't ever occur as sequence and annotations are correctly built, above.
-        }
-
-        // Return this duumy sequence - only purpose is to show human readable info saying that we're working it out!
-        return dummySeq;
     }
 }

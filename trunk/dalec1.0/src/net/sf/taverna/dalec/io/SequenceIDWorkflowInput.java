@@ -10,6 +10,8 @@ import java.util.HashMap;
  * as an input.  This means that the client does not need to pass any sequence information, but can set the sequence ID
  * as the input using the <code>setJobID</code> method.  The job ID field will be used as both the required jobID
  * <i>and</i> the input data.
+ * <p/>
+ * This should only be used for workflows which have a single input processor named "seqID"
  *
  * @author Tony Burdett
  * @version 1.0
@@ -19,19 +21,17 @@ public class SequenceIDWorkflowInput implements WorkflowInput
     private String procName;
     private String jobID;
 
-    public void setProcessorName(String processorName)
-    {
-        this.procName = processorName;
-    }
-
     public void setJobID(String jobID)
     {
+        this.procName = "seqID";
         this.jobID = jobID;
     }
 
-    public String getProcessorName()
+    public Map getInputMappings()
     {
-        return procName;
+        Map inputItems = new HashMap();
+        inputItems.put(procName, jobID);
+        return inputItems;
     }
 
     public String getJobID()
@@ -39,17 +39,17 @@ public class SequenceIDWorkflowInput implements WorkflowInput
         return jobID;
     }
 
-    public Map getInput()
+    public Map getInputs()
     {
         Map input = new HashMap();
-        if (procName == null || jobID == null)
-        {
-            throw new NullPointerException();
-        }
-        else
+        if (procName != null && jobID != null)
         {
             input.put(procName, DataThingFactory.bake(jobID));
             return input;
+        }
+        else
+        {
+            throw new NullPointerException();
         }
     }
 }

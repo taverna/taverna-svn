@@ -3,7 +3,6 @@ package net.sf.taverna.dalec;
 import net.sf.taverna.dalec.exceptions.WorkflowCreationException;
 import net.sf.taverna.dalec.exceptions.NewJobSubmissionException;
 import net.sf.taverna.dalec.exceptions.UnableToAccessDatabaseException;
-import net.sf.taverna.dalec.exceptions.IncorrectlyNamedInputException;
 import net.sf.taverna.dalec.io.SequenceIDWorkflowInput;
 
 import java.io.File;
@@ -142,18 +141,10 @@ public class TestDalecManager extends TestCase
         }
         catch (NewJobSubmissionException e)
         {
-            try
-            {
-                System.out.println("TEST: This sequence is being calculated");
-                SequenceIDWorkflowInput input = new SequenceIDWorkflowInput();
-                input.setProcessorName(dalec.getInputName());
-                input.setJobID("embl:X13776\t");
-                dalec.submitJob(input);
-            }
-            catch (IncorrectlyNamedInputException e1)
-            {
-                fail();
-            }
+            System.out.println("TEST: This sequence is being calculated");
+            SequenceIDWorkflowInput input = new SequenceIDWorkflowInput();
+            input.setJobID("embl:X13776\t");
+            dalec.submitJob(input);
         }
         catch (UnableToAccessDatabaseException e)
         {
@@ -183,18 +174,10 @@ public class TestDalecManager extends TestCase
             }
             catch (NewJobSubmissionException e)
             {
-                try
-                {
                     System.out.println("TEST: This sequence is being calculated");
                     SequenceIDWorkflowInput input = new SequenceIDWorkflowInput();
-                    input.setProcessorName(dalec.getInputName());
                     input.setJobID(nextSeq);
                     dalec.submitJob(input);
-                }
-                catch (IncorrectlyNamedInputException e1)
-                {
-                    e1.printStackTrace();
-                }
             }
             catch (UnableToAccessDatabaseException e)
             {

@@ -21,9 +21,11 @@ public class TestDalecAnnotationSource extends TestCase
     {
         dalec = new DalecAnnotationSource();
 
+        dalec.setName("Dalec_test");
+        dalec.setDescription("test annotation source for dalec");
         dalec.setMapMaster("http://www.ebi.ac.uk/das-srv/uniprot/das/aristotle/");
-        dalec.setXScuflFile("C:\\home\\tony\\documents\\dalec1.0\\workflow.xml");
-        dalec.setSequenceDBLocation("C:\\home\\tony\\documents\\dalec1.0\\outputTest\\");
+        dalec.setXScuflFile("dalecTestWorkflow.xml");
+        dalec.setSequenceDBLocation("outputTest\\database");
 
         // Use null ServletContext, don't need it
         dalec.init(null);
