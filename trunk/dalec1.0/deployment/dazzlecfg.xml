@@ -24,7 +24,7 @@ For more information on Dazzle, see http://www.biojava.org/dazzle/
 
     <!-- Test dalec annotation source -->
     <datasource id="dalec-test" jclass="net.sf.taverna.dalec.DalecAnnotationSource">
-        <string name="mapMaster" value="http://www.ebi.ac.uk/das-srv/uniprot/das"/>
+        <string name="mapMaster" value="http://www.ebi.ac.uk/das-srv/uniprot/das/aristotle/"/>
         <string name="sequenceDBLocation" value="*SPECIFY A DATABASE*"/>
         <string name="xscuflFile" value="*SPECIFY A WORKFLOW FILE*"/>
         <string name="description" value="Test annotation source for dalec"/>

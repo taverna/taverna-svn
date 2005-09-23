@@ -299,11 +299,6 @@
         <delete file="${lib.dir}/commons-pool-1.1.jar" />
     </target>
 
-    <!-- test the installed package -->
-    <target name="test" depends="init, compile.dalec1.0, run.configurator">
-
-    </target>
-
     <target name="init" depends="fetch.jars, make.webapp" description="Build initialization"/>
 
     <!-- Run the configurator utility build file -->
