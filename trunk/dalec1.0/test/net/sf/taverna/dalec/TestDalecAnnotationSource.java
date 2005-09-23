@@ -3,11 +3,8 @@ package net.sf.taverna.dalec;
 import org.biojava.servlets.dazzle.datasource.DataSourceException;
 import org.biojava.bio.seq.Sequence;
 import org.biojava.bio.seq.Feature;
-import org.biojava.bio.Annotation;
 
-import java.util.Set;
 import java.util.Iterator;
-import java.util.Map;
 
 import junit.framework.TestCase;
 
@@ -27,7 +24,7 @@ public class TestDalecAnnotationSource extends TestCase
         dalec.setName("Dalec_test");
         dalec.setDescription("test annotation source for dalec");
         dalec.setMapMaster("http://www.ebi.ac.uk/das-srv/uniprot/das/aristotle/");
-        dalec.setXScuflFile("dalecTestWorkflow.xml");
+        dalec.setXscuflFile("dalecTestWorkflow.xml");
         dalec.setSequenceDBLocation("outputTest\\database");
 
         // Use null ServletContext, don't need it

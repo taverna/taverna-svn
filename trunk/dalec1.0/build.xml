@@ -273,23 +273,28 @@
         </copy>
         <copy todir="${webapp.dir}" file="${basedir}\deployment\dazzlecfg.xml"/>
         <copy todir="${webapp.dir}" file="${basedir}\deployment\welcome.html"/>
+        <copy todir="${webapp.dir}" file="${basedir}\deployment\dalec.style" />
     </target>
 
     <!-- clean up the source directory -->
-    <target name="clean" description="cleanup Dalec1.0">
+    <target name="clean" depends="default.clean, clean.fetched.jars" description="cleanup Dalec1.0" />
+
+    <target name="default.clean" description="cleanup all file operations, not including fetching of external jars">
         <delete dir="${classes.dir}"/>
-        <delete dir="${taverna-netlib.dir}"/>
-        <delete dir="${taverna-lib.dir}"/>
         <delete dir="${webapp.dir}"/>
         <delete file="${lib.dir}\dalec-1.0.jar"/>
+        <ant antfile="config-build.xml" target="clean"/>
+    </target>
+
+    <target name="clean.fetched.jars" description="delete all fetched jars">
+        <delete dir="${taverna-netlib.dir}"/>
+        <delete dir="${taverna-lib.dir}"/>
         <delete file="${lib.dir}/biojava-1.4.jar" />
         <delete file="${lib.dir}/bytecode-0.92.jar" />
         <delete file="${lib.dir}/commons-cli.jar" />
         <delete file="${lib.dir}/commons-collections-2.1.jar" />
         <delete file="${lib.dir}/commons-dbcp-1.1.jar" />
         <delete file="${lib.dir}/commons-pool-1.1.jar" />
-
-        <ant antfile="config-build.xml" target="clean"/>
     </target>
 
     <!-- test the installed package -->
@@ -304,6 +309,8 @@
             description="Build and start configurator utility">
         <ant antfile="config-build.xml"/>
     </target>
+
+    <target name="build.without.fetch" depends="default.clean, make.webapp, compile.dalec1.0, run.configurator" />
 
     <target name="main" depends="clean, init, compile.dalec1.0, run.configurator" description="build all"/>
 </project>

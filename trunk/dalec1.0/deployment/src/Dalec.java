@@ -7,48 +7,51 @@ import java.util.HashMap;
  */
 public class Dalec
 {
-    public static final String VERSION = "version";
     public static final String NAME = "name";
     public static final String DESCRIPTION = "description";
     public static final String MAPMASTER = "mapMaster";
     public static final String XSCUFLFILE = "xscuflFile";
-    public static final String DBLOCATION = "dbLocation";
+    public static final String DBLOCATION = "sequenceDBLocation";
+
+    public static final String VERSION = "version";
+    public static final String STYLESHEET = "stylesheet";
 
     private Map attribs;
 
-    public Dalec ()
+    public Dalec()
     {
-        attribs = new HashMap ();
+        attribs = new HashMap();
         // set attributes for dalec which don't change & don't need configuring
         attribs.put(VERSION, "default");
+        attribs.put(STYLESHEET, "dalec.style");
     }
 
-    public void setName (String name)
+    public void setName(String name)
     {
         attribs.put(NAME, name);
     }
 
-    public void setDescription (String description)
+    public void setDescription(String description)
     {
         attribs.put(DESCRIPTION, description);
     }
 
-    public void setMapMaster (String mapMaster)
+    public void setMapMaster(String mapMaster)
     {
         attribs.put(MAPMASTER, mapMaster);
     }
 
-    public void setXScuflFile (String xscuflFile)
+    public void setXScuflFile(String xscuflFile)
     {
         attribs.put(XSCUFLFILE, xscuflFile);
     }
 
-    public void setDBLocation (String sequenceDBLocation)
+    public void setDBLocation(String sequenceDBLocation)
     {
         attribs.put(DBLOCATION, sequenceDBLocation);
     }
 
-    public Map getAttributes ()
+    public Map getAttributes()
     {
         return attribs;
     }

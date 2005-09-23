@@ -201,9 +201,8 @@ public class DalecAnnotationSource extends AbstractDataSource
      * instance of Dalec. A copy of the workflow .xscufl file should be placed on the server.
      *
      * @param xscuflFilename String representing the path to the location of the desired workflow <code>.XScufl</code>
-     *                       file.
      */
-    public void setXScuflFile(String xscuflFilename)
+    public void setXscuflFile(String xscuflFilename)
     {
         this.xscuflFile = new File(xscuflFilename);
     }
