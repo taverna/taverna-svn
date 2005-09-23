@@ -24,10 +24,12 @@ For more information on Dazzle, see http://www.biojava.org/dazzle/
 
     <!-- Test dalec annotation source -->
     <datasource id="dalec-test" jclass="net.sf.taverna.dalec.DalecAnnotationSource">
-        <string name="name" value="dalec-test"/>
+        <string name="mapMaster" value="http://www.ebi.ac.uk/das-srv/uniprot/das"/>
+        <string name="sequenceDBLocation" value="*SPECIFY A DATABASE*"/>
+        <string name="xscuflFile" value="*SPECIFY A WORKFLOW FILE*"/>
         <string name="description" value="Test annotation source for dalec"/>
-        <string name="mapMaster" value="Some mapMaster goes here"/>
-        <string name="xscuflFile" value="dalecTestWorkflow.xml"/>
-        <string name="dbLocation" value="database"/>
+        <string name="name" value="dalec-test"/>
+        <string name="stylesheet" value="dalec.style"/>
+        <string name="version" value="default"/>
     </datasource>
 </dazzle>

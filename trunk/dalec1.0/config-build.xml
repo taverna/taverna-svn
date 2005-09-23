@@ -45,7 +45,7 @@
 
     <!-- Make the configUI utility into an executable jar file -->
     <target name="make.jar" depends="compile">
-        <jar destfile="${basedir}/configUI.jar" basedir="${configUI.classes.dir}" update="true">
+        <jar destfile="${webapp.dir}/configUI.jar" basedir="${configUI.classes.dir}" update="true">
             <manifest>
                 <attribute name="Main-Class" value="ConfiguratorUI" />
             </manifest>
@@ -54,7 +54,7 @@
 
     <!-- Run the configUI utility -->
     <target name="start.configurator" depends="compile, make.jar">
-        <java jar="configUI.jar" fork="true" />
+        <java dir="${webapp.dir}" jar="${webapp.dir}/configUI.jar" fork="true" />
     </target>
 
     <!-- Package the webapp directory into a war file -->

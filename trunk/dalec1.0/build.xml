@@ -274,6 +274,8 @@
         <copy todir="${webapp.dir}" file="${basedir}\deployment\dazzlecfg.xml"/>
         <copy todir="${webapp.dir}" file="${basedir}\deployment\welcome.html"/>
         <copy todir="${webapp.dir}" file="${basedir}\deployment\dalec.style" />
+        <copy todir="${webapp.dir}" file="${basedir}\deployment\test.embl" />
+        <copy todir="${webapp.dir}" file="${basedir}\deployment\test.style" />
     </target>
 
     <!-- clean up the source directory -->

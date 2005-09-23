@@ -17,7 +17,7 @@ import java.awt.*;
  */
 public class ConfiguratorUI
 {
-    private static final String DAZZLECFG = "dalec-webapp\\dazzlecfg.xml";
+    private static final String DAZZLECFG = "dazzlecfg.xml";
     private static final DalecConfig DALECCONFIG = new DalecConfig(new File(DAZZLECFG));
 
     private static final DalecListModel DLM = new DalecListModel(DALECCONFIG.getDalecs());
