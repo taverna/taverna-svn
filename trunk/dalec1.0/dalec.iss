@@ -28,6 +28,8 @@ Source: "*.xml"; DestDir: "{app}"; Flags: ignoreversion
 Source: "deployment\src\*"; DestDir: "{app}\deployment\src"; Flags: ignoreversion recursesubdirs createallsubdirs
 Source: "deployment\*.xml"; DestDir: "{app}\deployment\"; Flags: ignoreversion
 Source: "deployment\*.html"; DestDir: "{app}\deployment\"; Flags: ignoreversion
+Source: "deployment\*.style"; DestDir: "{app}\deployment\"; Flags: ignoreversion
+Source: "deployment\test.embl"; DestDir: "{app}\deployment\"; Flags: ignoreversion
 Source: "docs\*"; DestDir: "{app}\docs"; Flags: ignoreversion recursesubdirs createallsubdirs
 Source: "dalec-webapp\*"; DestDir: "{app}\webapp"; Flags: ignoreversion recursesubdirs createallsubdirs
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
