@@ -107,7 +107,7 @@ public class InfernoTask implements ProcessorTaskWorker {
 	    if (inputMap.containsKey("refIn")) {
 		ensureFalse(definedInput);
 		// Set a URL to read data to stdin from
-		CStyxFile urlFile = new CStyxFile(session, processor.getService()+"/"+instanceID+"/io/inurl");
+		CStyxFile urlFile = new CStyxFile(session, processor.getService()+"/instances/"+instanceID+"/io/in/inurl");
 		StyxFileOutputStream urlOut = new StyxFileOutputStream(urlFile);
 		BufferedWriter bufUrlOut = new BufferedWriter(new StyxFileOutputStreamWriter(urlOut));
 		// Get the URL value from the datathing in the input
@@ -124,7 +124,7 @@ public class InfernoTask implements ProcessorTaskWorker {
 	    if (inputMap.containsKey("params")) {
 		String parameterString = (String)((DataThing)inputMap.get("params")).getDataObject();
 		
-		CStyxFile ctlFile = new CStyxFile(session, processor.getService()+"/"+instanceID+"/params");
+		CStyxFile ctlFile = new CStyxFile(session, processor.getService()+"/instances/"+instanceID+"/params");
 		StyxFileOutputStream ctlOut = new StyxFileOutputStream(ctlFile);
 		BufferedWriter bufCtlOut = new BufferedWriter(new StyxFileOutputStreamWriter(ctlOut));
 		bufCtlOut.write(parameterString);
@@ -135,7 +135,7 @@ public class InfernoTask implements ProcessorTaskWorker {
 	    }
 	    
 	    // Start the service
-	    CStyxFile ctlFile = new CStyxFile(session, processor.getService()+"/"+instanceID+"/ctl");
+	    CStyxFile ctlFile = new CStyxFile(session, processor.getService()+"/instances/"+instanceID+"/ctl");
 	    StyxFileOutputStream ctlOut = new StyxFileOutputStream(ctlFile);
 	    BufferedWriter bufCtlOut = new BufferedWriter(new StyxFileOutputStreamWriter(ctlOut));
 	    bufCtlOut.write("start");
@@ -146,7 +146,7 @@ public class InfernoTask implements ProcessorTaskWorker {
 
 	    if (inputMap.containsKey("stringIn") ||
 		inputMap.containsKey("binaryIn")) {
-		CStyxFile inFile = new CStyxFile(session, processor.getService()+"/"+instanceID+"/io/in");
+		CStyxFile inFile = new CStyxFile(session, processor.getService()+"/instances/"+instanceID+"/io/in/stdin");
 		StyxFileOutputStream valueOut = new StyxFileOutputStream(inFile);
 		if (inputMap.containsKey("stringIn")) {
 		    // Send the value of the stringIn input into the /io/in file
@@ -181,17 +181,17 @@ public class InfernoTask implements ProcessorTaskWorker {
 
 	    // Write the base URL out
 	    String baseURL = "styx://"+processor.getHost()+":"+processor.getPort()+"/"+
-		processor.getService()+"/"+instanceID+"/";
+		processor.getService()+"/instances/"+instanceID+"/";
 	    results.put("baseURL", new DataThing(baseURL));
 	    if (returnRef) {
-		results.put("refStdOut", new DataThing(baseURL+"io/out"));
-		results.put("refStdErr", new DataThing(baseURL+"io/err"));
+		results.put("refStdOut", new DataThing(baseURL+"io/out/stdout"));
+		results.put("refStdErr", new DataThing(baseURL+"io/out/stderr"));
 		System.out.println("Returned references");
 		session.close();
 	    }
 	    else if (returnString | returnBytes) {
 		// Return actual value
-		CStyxFile resultFile = new CStyxFile(session, processor.getService()+"/"+instanceID+"/io/out");
+		CStyxFile resultFile = new CStyxFile(session, processor.getService()+"/instances/"+instanceID+"/io/out/stdout");
 
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		// Read bytes from the file directly
