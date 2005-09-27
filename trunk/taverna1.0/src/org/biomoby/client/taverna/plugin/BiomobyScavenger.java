@@ -34,7 +34,7 @@ import com.hp.hpl.jena.rdf.model.StmtIterator;
  * A Scavenger that knows how to get all the Biomoby services from a specified
  * Biomoby Central Registry. <p>
  * 
- * @version $Id: BiomobyScavenger.java,v 1.3 2005-09-15 23:24:59 edwardkawas Exp $
+ * @version $Id: BiomobyScavenger.java,v 1.4 2005-09-27 13:52:07 edwardkawas Exp $
  * @author Martin Senger
  */
 public class BiomobyScavenger extends Scavenger {
@@ -47,7 +47,7 @@ public class BiomobyScavenger extends Scavenger {
      * Create a new Biomoby scavenger, the base parameter should be the base URL
      * of the Biomoby Central Registry.
      */
-    public BiomobyScavenger(String base, String resourceURL)
+    protected BiomobyScavenger(String base, String resourceURL)
             throws ScavengerCreationException {
         super("Biomoby @ " + base);
 
