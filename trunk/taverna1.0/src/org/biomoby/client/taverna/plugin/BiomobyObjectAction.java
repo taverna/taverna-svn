@@ -30,6 +30,7 @@ import javax.swing.ToolTipManager;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.MutableTreeNode;
 import javax.swing.tree.TreePath;
+import javax.swing.tree.TreeSelectionModel;
 
 import org.biomoby.client.CentralImpl;
 import org.biomoby.shared.Central;
@@ -487,6 +488,8 @@ public class BiomobyObjectAction extends AbstractProcessorAction {
             public void mouseExited(MouseEvent me) {
             }
         });
+        tree.getSelectionModel().setSelectionMode(
+                TreeSelectionModel.SINGLE_TREE_SELECTION);
         return new JScrollPane(tree);
     }
 
