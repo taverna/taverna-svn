@@ -47,6 +47,8 @@ import java.util.*;
  */
 public abstract class AbstractClientServlet extends HttpServlet {
 
+    private static Logger log = Logger.getLogger(AbstractClientServlet.class);
+    
     public final void doPost(HttpServletRequest request,
 			     HttpServletResponse response)
 	throws ServletException {
@@ -68,13 +70,16 @@ public abstract class AbstractClientServlet extends HttpServlet {
 		jobID = request.getParameter("id");
 	    }
 	    if (jobID == null) {
+		log.error("Unable to locate a job id in the POSTed request");
 		throw new ServletException("No job ID specified in POST request, failing");
 	    }
 	    InteractionServer server = SubmitServlet.getServer();
 	    InteractionState state = server.getInteraction(jobID);
 	    if (state == null) {
+		log.error("No extant state for id '"+jobID+"'");
 		throw new ServletException("No interaction state for id '"+jobID+"'");
-	    }
+	    }	
+	    log.debug("Delegating POST request for '"+jobID+"' to "+getClass().toString()+".handleRequest(..)");
 	    handleRequest(request, response, state, server);
 	}
 	catch (Exception ex) {
@@ -92,13 +97,16 @@ public abstract class AbstractClientServlet extends HttpServlet {
 	throws ServletException {
 	String jobID = request.getParameter("id");
 	if (jobID == null) {
+	    log.error("Unable to locate a job ID in the GET request.");
 	    throw new ServletException("No job ID specified in GET request, failing");
 	}
 	InteractionServer server = SubmitServlet.getServer();
 	InteractionState state = server.getInteraction(jobID);
-	if (state == null) {
+	if (state == null) {		
+	    log.error("No extant state for id '"+jobID+"'");
 	    throw new ServletException("No interaction state for id '"+jobID+"'");
 	}
+	log.debug("Delegating GET request for '"+jobID+"' to "+getClass().toString()+".handleRequest(..)");
 	handleRequest(request, response, state, server);
     }
     
