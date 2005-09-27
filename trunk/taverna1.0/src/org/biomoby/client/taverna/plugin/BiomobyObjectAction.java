@@ -137,6 +137,8 @@ public class BiomobyObjectAction extends AbstractProcessorAction {
 
                             DefaultMutableTreeNode node = (DefaultMutableTreeNode) tree
                                     .getLastSelectedPathComponent();
+                            if (node == null)
+                                return;
                             final String selectedService = node.toString();
                             // ensure that the last selected item is a service!
                             if (!selectedService.equals(path

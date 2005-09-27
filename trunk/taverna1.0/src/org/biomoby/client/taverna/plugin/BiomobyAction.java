@@ -280,6 +280,8 @@ public class BiomobyAction extends AbstractProcessorAction {
                             // we have a simple input
                             DefaultMutableTreeNode node = (DefaultMutableTreeNode) tree
                                     .getLastSelectedPathComponent();
+                            if (node == null)
+                                return;
                             final String selectedObject = node.toString();
                             // ensure that the last selected item is an object!
                             if (!selectedObject.equals(path
