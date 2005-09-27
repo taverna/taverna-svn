@@ -96,8 +96,13 @@ public class BiomobyObjectProcessor extends Processor implements Serializable {
                 //
             }
         }
-        if (model != null)
-            createDataLinks(this, prompt);
+        if (model != null) {
+            String callingClassName = 
+                sun.reflect.Reflection.getCallerClass(4).getName();
+            //System.out.println("Called by: " + callingClassName);
+            if (!callingClassName.equals("org.embl.ebi.escience.scufl.parser.ProcessorLoaderThread"))
+                createDataLinks(this, prompt);            
+        }
     }
 
     /**
