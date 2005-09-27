@@ -1,1 +1,1 @@
-set CP=%CP%;%1
+set CLASSPATH=%CLASSPATH%;%1
