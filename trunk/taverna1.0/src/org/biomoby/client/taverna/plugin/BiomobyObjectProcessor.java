@@ -68,15 +68,15 @@ public class BiomobyObjectProcessor extends Processor implements Serializable {
                 //
             }
         }
-        System.out.println(serviceName);
-        if (this.serviceName.equalsIgnoreCase("Object")
-                || this.serviceName.equalsIgnoreCase("String")
-                || this.serviceName.equalsIgnoreCase("Integer")
-                || this.serviceName.equalsIgnoreCase("DateTime")) {
-            return;
-        } else {
-            createDataLinks(this, true);
-        }
+        if (model != null)
+            if (this.serviceName.equalsIgnoreCase("Object")
+                    || this.serviceName.equalsIgnoreCase("String")
+                    || this.serviceName.equalsIgnoreCase("Integer")
+                    || this.serviceName.equalsIgnoreCase("DateTime")) {
+                return;
+            } else {
+                createDataLinks(this, true);
+            }
     }
 
     public BiomobyObjectProcessor(ScuflModel model, String processorName,
@@ -96,7 +96,8 @@ public class BiomobyObjectProcessor extends Processor implements Serializable {
                 //
             }
         }
-        createDataLinks(this, prompt);
+        if (model != null)
+            createDataLinks(this, prompt);
     }
 
     /**
@@ -424,6 +425,8 @@ public class BiomobyObjectProcessor extends Processor implements Serializable {
         if (bop instanceof BiomobyObjectProcessor) {
             BiomobyObjectProcessor processor = (BiomobyObjectProcessor) bop;
             ScuflModel scuflModel = processor.getModel();
+            if (scuflModel == null)
+                return;
             InputPort[] ports = processor.getInputPorts();
             for (int i = 0; i < ports.length; i++) {
                 InputPort p = ports[i];
