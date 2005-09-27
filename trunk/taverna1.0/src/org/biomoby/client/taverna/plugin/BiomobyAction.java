@@ -23,12 +23,17 @@ import javax.swing.JTree;
 import javax.swing.ToolTipManager;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreePath;
+import javax.swing.tree.TreeSelectionModel;
 
+import org.biomoby.client.CentralImpl;
 import org.biomoby.shared.Central;
 import org.biomoby.shared.MobyData;
+import org.biomoby.shared.MobyDataType;
+import org.biomoby.shared.MobyException;
 import org.biomoby.shared.MobyNamespace;
 import org.biomoby.shared.MobyPrimaryDataSet;
 import org.biomoby.shared.MobyPrimaryDataSimple;
+import org.biomoby.shared.NoSuccessException;
 import org.embl.ebi.escience.scufl.DuplicateProcessorNameException;
 import org.embl.ebi.escience.scufl.Processor;
 import org.embl.ebi.escience.scufl.ProcessorCreationException;
@@ -340,12 +345,30 @@ public class BiomobyAction extends AbstractProcessorAction {
                                     ScuflUIComponent c = new MobyPanel(
                                     //TODO create a valid description
                                             selectedObject,
-                                            "A BioMoby Object Description", "");
+                                            "A BioMoby Object Description", createDataDescription(selectedObject.split("\\(")[0], ((BiomobyProcessor) theproc)
+                                                        .getMobyEndpoint()));
                                     UIUtils.createFrame((ScuflModel) null, c,
                                             (int) loc.getWidth(), (int) loc
                                                     .getHeight(), (int) size
                                                     .getWidth(), (int) size
                                                     .getHeight());
+                                }
+
+                                private String createDataDescription(String dataName, String mobyEndpoint) {
+                                    MobyDataType data;
+                                    try {
+                                        Central central = new CentralImpl(
+                                                mobyEndpoint);
+                                        data = central.getDataType(dataName);
+
+                                    } catch (MobyException e) {
+                                        return "Couldn't retrieve a description on the BioMoby service '"
+                                                + dataName + "'";
+                                    } catch (NoSuccessException e) {
+                                        return "Couldn't retrieve a description on the BioMoby service '"
+                                        + dataName + "'";
+                                    }
+                                    return data.toString();
                                 }
                             });
                             // add the components to the menu
@@ -372,6 +395,8 @@ public class BiomobyAction extends AbstractProcessorAction {
             public void mouseExited(MouseEvent me) {
             }
         });
+        tree.getSelectionModel().setSelectionMode(
+                TreeSelectionModel.SINGLE_TREE_SELECTION);
         return new JScrollPane(tree);
     }
 
