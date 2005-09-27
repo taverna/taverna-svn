@@ -107,12 +107,12 @@ public class InfernoTask implements ProcessorTaskWorker {
 	    if (inputMap.containsKey("refIn")) {
 		ensureFalse(definedInput);
 		// Set a URL to read data to stdin from
-		CStyxFile urlFile = new CStyxFile(session, processor.getService()+"/instances/"+instanceID+"/io/in/inurl");
+		CStyxFile urlFile = new CStyxFile(session, processor.getService()+"/instances/"+instanceID+"/io/in/stdin");
 		StyxFileOutputStream urlOut = new StyxFileOutputStream(urlFile);
 		BufferedWriter bufUrlOut = new BufferedWriter(new StyxFileOutputStreamWriter(urlOut));
 		// Get the URL value from the datathing in the input
 		String inputURL = (String)((DataThing)inputMap.get("refIn")).getDataObject();
-		bufUrlOut.write(inputURL);
+		bufUrlOut.write("readfrom "+inputURL);
 		bufUrlOut.flush();
 		bufUrlOut.close();
 		definedInput = true;
