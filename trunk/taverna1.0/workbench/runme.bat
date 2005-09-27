@@ -8,4 +8,4 @@ set CLASSPATH=.;./resources;./conf
 for %%i in ("lib\*.jar") do call catenv.bat %%i
 for %%i in ("plugins\*.jar") do call catenv.bat %%i
 
-java %OPTS% -classpath %CLASSPATH% -ea org.embl.ebi.escience.scuflui.workbench.Workbench
+java %OPTS% -ea org.embl.ebi.escience.scuflui.workbench.Workbench
