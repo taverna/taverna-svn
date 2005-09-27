@@ -113,7 +113,7 @@ public class BiomobyObjectXMLHandler implements XMLHandler {
         String authorityName = authorityNameElement.getTextTrim();
 
         return new BiomobyObjectProcessor(model, processorName, authorityName,
-                serviceName, mobyEndpoint);
+                serviceName, mobyEndpoint, false);
     }
 
 }

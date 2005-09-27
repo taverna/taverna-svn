@@ -68,15 +68,15 @@ public class BiomobyObjectProcessor extends Processor implements Serializable {
                 //
             }
         }
-//        System.out.println(serviceName);
-//        if (this.serviceName.equalsIgnoreCase("Object") 
-//                || this.serviceName.equalsIgnoreCase("String") 
-//                || this.serviceName.equalsIgnoreCase("Integer") 
-//                || this.serviceName.equalsIgnoreCase("DateTime")) {
-//            return;
-//        } else {
-//            createDataLinks(this, true);
-//        }
+        System.out.println(serviceName);
+        if (this.serviceName.equalsIgnoreCase("Object")
+                || this.serviceName.equalsIgnoreCase("String")
+                || this.serviceName.equalsIgnoreCase("Integer")
+                || this.serviceName.equalsIgnoreCase("DateTime")) {
+            return;
+        } else {
+            createDataLinks(this, true);
+        }
     }
 
     public BiomobyObjectProcessor(ScuflModel model, String processorName,
@@ -239,8 +239,6 @@ public class BiomobyObjectProcessor extends Processor implements Serializable {
 
         try {
             MobyDataType datatype = worker.getDataType(serviceName);
-            // TODO this doesnt work properly
-            // need to propagate the isa up to Object to get all of the has/hasa
             MobyRelationship[] relations = datatype.getChildren();
             processRelationships(relations);
             String parent = "Object";
@@ -415,7 +413,9 @@ public class BiomobyObjectProcessor extends Processor implements Serializable {
             int answer = JOptionPane
                     .showConfirmDialog(
                             null,
-                            "Would you like to add all of the subcomponents for the processor '" + bop.getName() + "' that was just added to the workflow? Data links would be added.");
+                            "Would you like to add all of the subcomponents for the processor '"
+                                    + bop.getName()
+                                    + "' that was just added to the workflow? Data links would be added.");
             if (answer == JOptionPane.NO_OPTION
                     || answer == JOptionPane.CANCEL_OPTION) {
                 return;
@@ -455,7 +455,7 @@ public class BiomobyObjectProcessor extends Processor implements Serializable {
                             + dpne.getMessage(), "Exception!",
                             JOptionPane.ERROR_MESSAGE);
                     return;
-                }catch (DataConstraintCreationException ex) {
+                } catch (DataConstraintCreationException ex) {
                     JOptionPane.showMessageDialog(null,
                             "Data Link creation exception : \n"
                                     + ex.getMessage(), "Exception!",
