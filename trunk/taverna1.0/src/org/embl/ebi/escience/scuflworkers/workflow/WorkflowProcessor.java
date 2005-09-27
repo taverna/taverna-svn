@@ -91,6 +91,7 @@ public class WorkflowProcessor extends Processor implements java.io.Serializable
 						 +definitionURL+"'");
 	}
 	catch (Exception e) {
+	    e.printStackTrace();
 	    throw new ProcessorCreationException("The workflow processor '"+name+
 						 "' caused an exception :\n"+e.getMessage()+
 						 "\n during creation. The exception had type :\n"+
