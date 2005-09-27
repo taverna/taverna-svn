@@ -324,7 +324,7 @@ public class ScavengerTree extends ExtendedJTree
 		    for (int i = 0; i < urls.length; i++) {
 			try {
 			    System.out.println("Creating biomoby scavenger : '"+urls[i]+"'");
-			    scavengerTree.addScavenger(new BiomobyScavenger(urls[i], "http://biomoby.org/RESOURCES/MOBY-S/Objects"));
+			    scavengerTree.addScavenger(new BiomobyScavenger(urls[i]));
 			}
 			catch (ScavengerCreationException sce) {
 			    sce.printStackTrace();
