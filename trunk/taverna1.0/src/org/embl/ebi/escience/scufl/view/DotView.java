@@ -303,7 +303,7 @@ public class DotView implements ScuflModelEventListener, java.io.Serializable {
 		    //targetName = "cluster_"+targetName;
 		    targetName = targetName+"WORKFLOWINTERNALSOURCECONTROL";
 		}
-		if (detail != DotView.NONE && detail != BLOB && displayTypes) {
+		if (detail != DotView.NONE && detail != BLOB && detail != NAMEDBLOB && displayTypes) {
 		    // Create the box
 		    sb.append(" "+q(constraintName)+" [\n");
 		    sb.append("  shape=\"rectangle\",\n");
@@ -394,7 +394,13 @@ public class DotView implements ScuflModelEventListener, java.io.Serializable {
 		}
 		sb.append(" "+fromName+"->"+toName+" [ \n");
 		if (displayTypes) {
-		    sb.append("  label = \""+dc.getSource().getSyntacticType()+"\\n"+dc.getSink().getSyntacticType()+"\"");
+		    if (dc.getSource().getSyntacticType().equals(dc.getSink().getSyntacticType())) {
+			sb.append("  label = \""+dc.getSource().getSyntacticType()+"\"");
+		    }
+		    else {
+			sb.append("  label = \""+dc.getSource().getSyntacticType()+"\\n"+dc.getSink().getSyntacticType()+"\"");
+			sb.append("  fontcolor = \"red\"");
+		    }
 		}
 		sb.append(" ];\n");
 	    }
@@ -529,15 +535,46 @@ public class DotView implements ScuflModelEventListener, java.io.Serializable {
 	sb.append(name + " [ \n");
 	// Set colour
 	sb.append("  fillcolor=\""+colour+"\",\n");
-	
-	if (detail == BLOB || detail == NAMEDBLOB) {
+	boolean interesting = false;
+
+	if (detail == NAMEDBLOB) {
+	    // A named blob node is interesting if it has either no inputs or no outputs
+	    // and only interesting if it is not flagged as boring (!)
+	    boolean incoming = false;
+	    boolean outgoing = false;
+	    if (p.getBoundInputPorts().length != 0) {
+		incoming = true;
+	    }
+	    if (p.getBoundOutputPorts().length != 0) {
+		outgoing = true;
+	    }
+	    if (incoming == false) {
+		ConcurrencyConstraint[] cc = model.getConcurrencyConstraints();
+		for (int i = 0; i < cc.length && incoming == false; i++) {
+		    if (cc[i].getTargetProcessor() == p) {
+			incoming = true;
+		    }
+		}		
+	    }
+	    if (outgoing == false) {
+		ConcurrencyConstraint[] cc = model.getConcurrencyConstraints();
+		for (int i = 0; i < cc.length && outgoing == false; i++) {
+		    if (cc[i].getControllingProcessor() == p) {
+			outgoing = true;
+		    }
+		}
+	    }	    
+	    interesting = ((incoming == false || outgoing == false) &&
+			   p.isBoring() == false);
+	}
+	if (detail == BLOB || (detail == NAMEDBLOB && !interesting)) {
 	    sb.append("  shape=\"circle\", \n");
 	    sb.append("  style=\"filled\"  \n");
 	    sb.append("  label=\"\"        \n");
 	    sb.append("   width=\"0.3\",\n");
 	    sb.append("   height=\"0.3\",\n"); 
 	}
-	else if (detail == NONE) {
+	else if (detail == NONE || (detail == NAMEDBLOB && interesting)) {
 	    sb.append("  shape=\"box\",           \n");
 	    sb.append("  style=\"filled\",\n");
 	    sb.append("  height=\"0\",            \n");
@@ -550,8 +587,8 @@ public class DotView implements ScuflModelEventListener, java.io.Serializable {
 	    sb.append("  style=\"filled\",\n");
 	}
 	// Generate the label if this is not a blob
-	if (detail != BLOB && detail != NAMEDBLOB) {
-	    if (detail == NONE) {
+	if (interesting || (detail != BLOB && detail != NAMEDBLOB)) {
+	    if (detail == NONE || (detail == NAMEDBLOB && interesting)) {
 		sb.append("  label=\""+p.getName()+"\"\n");
 	    }
 	    else {
