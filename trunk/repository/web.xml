@@ -40,5 +40,16 @@
     <servlet-name>DataServlet</servlet-name>
     <url-pattern>/data</url-pattern>
   </servlet-mapping>
+
+  <!-- Servlet to handle incoming workflow invocation requests -->
+  <servlet>
+    <display-name>Workflow invocation servlet</display-name>
+    <servlet-name>InvocationServlet</servlet-name>
+    <servlet-class>net.sf.taverna.repository.server.InvocationServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>InvocationServlet</servlet-name>
+    <url-pattern>/invoke</url-pattern>
+  </servlet-mapping>
     
 </web-app>
