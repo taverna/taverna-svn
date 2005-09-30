@@ -32,7 +32,8 @@ public class JMolRenderer extends AbstractRenderer.ByMimeType {
 			     String mimeType) {
 	if (userObject instanceof String) {
 	    if (mimeType.matches(".*chemical/x-pdb.*") ||
-		mimeType.matches(".*chemical/x-mdl-molfile.*")) {
+		mimeType.matches(".*chemical/x-mdl-molfile.*") ||
+		mimeType.matches(".*chemical/x-cml.*")) {
 		return true;
 	    }
 	}
