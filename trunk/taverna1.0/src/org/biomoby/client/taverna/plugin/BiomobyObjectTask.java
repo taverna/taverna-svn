@@ -149,15 +149,15 @@ public class BiomobyObjectTask implements ProcessorTaskWorker {
                                     .getAttributeValue("id", MobyObjectClassNSImpl.MOBYNS);
                             Element _child = mo.getObject(mobyObjectElement,
                                     type, articleName);
-                            Element _newChild = mo.createObject(type, _ns, _id,
-                                    articleName);
-                            _newChild.setText(valueElement
-                                    .getText());
-                            _newChild.addContent(_child.cloneContent());
+//                            Element _newChild = mo.createObject(type, _ns, _id,
+//                                    articleName);
+//                            _newChild.setText(valueElement
+//                                    .getText());
+//                            _newChild.addContent(_child.cloneContent());
                             // import and replace the node
                             mobyObjectElement.removeContent(
                                     _child);
-                            mobyObjectElement.addContent(_newChild.detach());
+                            mobyObjectElement.addContent(valueElement.detach());
                         }
                     }
                 }
