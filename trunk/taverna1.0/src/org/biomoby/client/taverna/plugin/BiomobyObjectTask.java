@@ -79,7 +79,6 @@ public class BiomobyObjectTask implements ProcessorTaskWorker {
                 String mobyDataString = mo.toString(XMLUtilities
                         .createMobyDataElementWrapper(mo.toSimple(
                                 mobyObjectElement, article)));
-               //System.out.println("Moby Object created as:\r\n" + mobyDataString);
                 outputMap.put("mobyData", new DataThing(mobyDataString));
 
             } catch (Exception ex) {
@@ -115,7 +114,6 @@ public class BiomobyObjectTask implements ProcessorTaskWorker {
 
                 Element mobyObjectElement = mo.createObject(objectName,
                         namespace, id, "");
-
                 // using the inputs, iterate through and fill in data
                 for (int x = 0; x < inputPorts.length; x++) {
                     String portName = inputPorts[x].getName();
@@ -150,23 +148,22 @@ public class BiomobyObjectTask implements ProcessorTaskWorker {
                             String _id = valueElement
                                     .getAttributeValue("id", MobyObjectClassNSImpl.MOBYNS);
                             Element _child = mo.getObject(mobyObjectElement,
-                                    articleName);
+                                    type, articleName);
                             Element _newChild = mo.createObject(type, _ns, _id,
                                     articleName);
                             _newChild.setText(valueElement
                                     .getText());
+                            _newChild.addContent(_child.cloneContent());
                             // import and replace the node
                             mobyObjectElement.removeContent(
                                     _child);
                             mobyObjectElement.addContent(_newChild.detach());
-                            // System.out.println(mo.toString(_child));
                         }
                     }
                 }
                 String mobyDataString = mo.toString(XMLUtilities
                         .createMobyDataElementWrapper(mo.toSimple(
                                 mobyObjectElement, article)));
-                //System.out.println("Moby Object created as:\r\n" + mobyDataString);
                 outputMap.put("mobyData", new DataThing(mobyDataString));
 
             } catch (Exception ex) {
