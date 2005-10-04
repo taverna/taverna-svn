@@ -12,6 +12,7 @@ import java.util.List;
 
 import org.biomoby.shared.MobyException;
 import org.biomoby.shared.mobyxml.jdom.MobyObjectClassNSImpl;
+import org.biomoby.shared.mobyxml.jdom.jDomUtilities;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.JDOMException;
@@ -67,7 +68,7 @@ public class XMLUtilities {
 
     /**
      * 
-     * Takes in a org.w3c.dom.Element and performs a search for tag with a given
+     * Takes in a jDom Element and performs a search for tag with a given
      * objectType, articleName and possible namespaces <p><b>PRE: xml is valid
      * XML and was returned by a Moby service</b> <p><b>POST: The sought after
      * element is returned.</b>
@@ -86,34 +87,12 @@ public class XMLUtilities {
      */
     public static String getMobyElement(Element xml, String objectType,
             String articleName, String[] namespaces, String mobyEndpoint) {
-        Element element = null;
         MobyObjectClassNSImpl moc = new MobyObjectClassNSImpl(mobyEndpoint);
-        Element e = xml.getChild("mobyContent", MobyObjectClassNSImpl.MOBYNS);
+        Element e = jDomUtilities.getElement(objectType, xml);
+        // TODO check namespaces, etc.
         if (e != null) {
-                e = e.getChild("mobyData", MobyObjectClassNSImpl.MOBYNS);
-                if (e != null){
-                    e = e.getChild(
-                        "Simple", MobyObjectClassNSImpl.MOBYNS);
-                }
+        	return moc.toString(moc.toSimple(e, ""));
         }
-        List list;
-        if (e != null) {
-            list = e.getChildren();
-            // TODO - make this method work Element elementToFind =
-            // moc.getObject(xml, objectType, articleName);
-            /*
-             * if (elementToFind != null) { return
-             * moc.toString(createMobyDataElementWrapper(moc.toSimple(elementToFind,
-             * ""))); }
-             */
-            if (list.size() == 1) {
-                String str = moc.toString(createMobyDataElementWrapper(moc.toSimple(
-                        (Element) list.get(0), "")));
-                //System.out.println("returning:\r\n"  + str);
-                return str;
-            }
-        }
-
         return "<?xml version=\'1.0\' encoding=\'UTF-8\'?><moby:MOBY xmlns:moby=\'http://www.biomoby.org/moby\' xmlns=\'http://www.biomoby.org/moby\'><moby:mobyContent moby:authority=\'\'><moby:mobyData moby:queryID=\'a1\'/></moby:mobyContent></moby:MOBY>";
     }
 
@@ -134,18 +113,6 @@ public class XMLUtilities {
      */
     public static String getMobyCollection(Element documentElement,
             String objectType, String string, Object object, String mobyEndpoint) {
-        /*
-         * <moby:MOBY xmlns:moby='http://www.biomoby.org/moby'
-         * xmlns='http://www.biomoby.org/moby'> <moby:mobyContent
-         * moby:authority='illuminae.com'> <moby:mobyData moby:queryID='a1'>
-         * <moby:Collection moby:articleName='GO_terms_from_keywords'>
-         * <moby:Simple> <moby:GO_Term namespace='GO' id='0016301'> <moby:String
-         * namespace='' id='' articleName='Term'>kinase activity</moby:String>
-         * <moby:String namespace='' id='' articleName='Definition'>Catalysis of
-         * the transfer of a phosphate group, usually from ATP, to a substrate
-         * molecule.</moby:String> </moby:GO_Term> </moby:Simple>
-         * </moby:Collection> </moby:mobyData> </moby:mobyContent> </moby:MOBY>
-         */
         MobyObjectClassNSImpl mo = new MobyObjectClassNSImpl(mobyEndpoint);
         Document doc = XMLUtilities.createDomDocument();
         Element root = new Element("MOBY", MobyObjectClassNSImpl.MOBYNS);
@@ -185,14 +152,3 @@ public class XMLUtilities {
         return mo.toString(root);
     }
 }
-/*
- * <moby:MOBY xmlns:moby='http://www.biomoby.org/moby'
- * xmlns='http://www.biomoby.org/moby'> <moby:mobyContent
- * moby:authority='illuminae.com'> <moby:mobyData moby:queryID='a1'/>
- * </moby:mobyContent> </moby:MOBY>
- * 
- * <moby:MOBY xmlns:moby="http://www.biomoby.org/moby"> <moby:mobyContent>
- * <moby:mobyData moby:queryID="a1"> <moby:Simple moby:articleName="">
- * <moby:Integer moby:articleName="" moby:id="12345" moby:namespace="ncbi_gi">10</moby:Integer>
- * </moby:Simple> </moby:mobyData> </moby:mobyContent> </moby:MOBY>
- */
