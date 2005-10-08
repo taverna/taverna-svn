@@ -371,7 +371,7 @@ public class BiomobyTask implements ProcessorTaskWorker {
                         String objectType = name
                                 .substring(0, name.indexOf("'"));
                         String artName = name.substring(name.indexOf("'") + 1,
-                                name.indexOf("'"));
+                                name.lastIndexOf("'")); // modified
                         String mobyCollection = XMLUtilities.getMobyCollection(
                                 documentElement, objectType, artName, null,
                                 ((BiomobyProcessor) proc).getMobyEndpoint());
