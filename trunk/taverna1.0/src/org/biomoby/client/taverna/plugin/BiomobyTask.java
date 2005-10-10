@@ -312,7 +312,6 @@ public class BiomobyTask implements ProcessorTaskWorker {
                         "http://biomoby.org/").call(methodName,
                         new MobyObjectClassNSImpl(((BiomobyProcessor) proc)
                                 .getMobyEndpoint()).toString(root));
-                //System.out.println("Mobycentral sent me\r\n" + outputXML);
                 Map outputMap = new HashMap();
                 outputMap.put("output", new DataThing(outputXML));
                 processOutputPorts(outputXML, outputMap);
@@ -361,7 +360,7 @@ public class BiomobyTask implements ProcessorTaskWorker {
                         String objectType = name
                                 .substring(0, name.indexOf("("));
                         String mobyCollection = XMLUtilities.getMobyCollection(
-                                documentElement, objectType, "", null,
+                                documentElement, objectType, "",
                                 ((BiomobyProcessor) proc).getMobyEndpoint());
                         if (mobyCollection != null)
                             outputMap.put(name, new DataThing(mobyCollection));
@@ -373,7 +372,7 @@ public class BiomobyTask implements ProcessorTaskWorker {
                         String artName = name.substring(name.indexOf("'") + 1,
                                 name.lastIndexOf("'")); // modified
                         String mobyCollection = XMLUtilities.getMobyCollection(
-                                documentElement, objectType, artName, null,
+                                documentElement, objectType, artName,
                                 ((BiomobyProcessor) proc).getMobyEndpoint());
                         if (mobyCollection != null)
                             outputMap.put(name, new DataThing(mobyCollection));

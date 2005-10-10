@@ -13,6 +13,7 @@ import java.util.List;
 import org.biomoby.shared.MobyException;
 import org.biomoby.shared.mobyxml.jdom.MobyObjectClassNSImpl;
 import org.biomoby.shared.mobyxml.jdom.jDomUtilities;
+import org.jdom.Attribute;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.JDOMException;
@@ -88,10 +89,11 @@ public class XMLUtilities {
     public static String getMobyElement(Element xml, String objectType,
             String articleName, String[] namespaces, String mobyEndpoint) {
         MobyObjectClassNSImpl moc = new MobyObjectClassNSImpl(mobyEndpoint);
-        Element e = jDomUtilities.getElement(objectType, xml);
+        Element e = jDomUtilities.getElement(objectType, xml, new String[]{"articleName="+ articleName});
         // TODO check namespaces, etc.
         if (e != null) {
-        	return moc.toString(createMobyDataElementWrapper(moc.toSimple(e, "")));
+        	if (e.getAttributeValue("articleName", MobyObjectClassNSImpl.MOBYNS).equals(articleName))
+        		return moc.toString(createMobyDataElementWrapper(moc.toSimple(e, "")));
         }
         return "<?xml version=\'1.0\' encoding=\'UTF-8\'?><moby:MOBY xmlns:moby=\'http://www.biomoby.org/moby\' xmlns=\'http://www.biomoby.org/moby\'><moby:mobyContent moby:authority=\'\'><moby:mobyData moby:queryID=\'a1\'/></moby:mobyContent></moby:MOBY>";
     }
@@ -107,12 +109,12 @@ public class XMLUtilities {
      * 
      * @param documentElement
      * @param objectType
-     * @param string
-     * @param object
+     * @param articleName
+     * @param mobyEndpoint
      * @return
      */
     public static String getMobyCollection(Element documentElement,
-            String objectType, String string, Object object, String mobyEndpoint) {
+            String objectType, String articleName, String mobyEndpoint) {
         MobyObjectClassNSImpl mo = new MobyObjectClassNSImpl(mobyEndpoint);
         Document doc = XMLUtilities.createDomDocument();
         Element root = new Element("MOBY", MobyObjectClassNSImpl.MOBYNS);
@@ -130,8 +132,17 @@ public class XMLUtilities {
         if (e != null) {
                 e = e.getChild("mobyData", MobyObjectClassNSImpl.MOBYNS);
                 if (e != null){
-                    e = e.getChild(
-                        "Collection", MobyObjectClassNSImpl.MOBYNS);
+                    List children = e.getChildren("Collection", MobyObjectClassNSImpl.MOBYNS);
+                    for (Iterator x = children.iterator(); x.hasNext();) {
+                    	Object o = x.next();
+                    	if (o instanceof Element) {
+                    		Element child = (Element)o;
+                    		if (child.getAttributeValue("articleName", MobyObjectClassNSImpl.MOBYNS).equals(articleName)) {
+                    			e = child;
+                    			mobyCollection.setAttribute((Attribute)child.getAttribute("articleName", MobyObjectClassNSImpl.MOBYNS).clone());
+                    		}
+                    	}
+                    }
                 }
         }
         List list = e.getChildren("Simple",
@@ -151,4 +162,44 @@ public class XMLUtilities {
         }
         return mo.toString(root);
     }
+    
+    //////////////
+    static String s = "<?xml version=\'1.0\' encoding=\'UTF-8\'?>\r\n" + 
+    		"        <moby:MOBY xmlns:moby=\'http://www.biomoby.org/moby\' xmlns=\'http://www.biomoby.org/moby\'>\r\n" + 
+    		"			<moby:mobyContent moby:authority=\'illuminae.com\'>\r\n" + 
+    		"				<moby:serviceNotes>\r\n" + 
+    		"					This takes the HTML output from the public GeneMark HMM server and extracts the fasta protein content from it as a collection of FASTA_AA objets\r\n" + 
+    		"				</moby:serviceNotes>\r\n" + 
+    		"				<moby:mobyData moby:queryID=\'a1\'>\r\n" + 
+    		"					<moby:Collection moby:articleName=\'fasta_output\'>\r\n" + 
+    		"						<moby:Simple>\r\n" + 
+    		"							<FASTA_AA namespace=\'aaa\' id=\'bbb\'>\r\n" + 
+    		"								<![CDATA[\r\n" + 
+    		"									> gene_1|GeneMark.hmm|690_aa MGRSHFVIFIILLNLLQILDPSFSLPLCTDSRAPFQQKTPLAFCSYNGTSCCNSTDDKQL QTQFNAMNISDPGCASLVKSVICAMCDKFSAELFRTDSVPRELPILCNSTTSENSNKSSQ TKNDFCSKVWTTCQNVSIISSPFAASVKSNSTKLTDLWKSQIDFCNEFGGASGVGSVCFA GEPVSLNSTTPISPPGGLCLEKIGNGSYINMVAHPDGSSRAFFSNQQGKIWLATIPAVDS GKLLDLDESSPFLDLIDEVHFDTELGMMGIAFHPKFSQNGRFFVSFNCDKQAWPGCGGRC SCNSDIDCDPSKLPSDSGSQPCQYQAVIAEFTASGSQPTQAKTASPKEVRRIFTMGLPFT GHHGGQILFGPRDGYLYFMMGDGGGIGDPYNFSQNKKSLLGKIIRLDIDSTSSVEEITKL GLWGNYSIPKDNPYAEDKELQPEIWALGMRNPWRCSFDSARPSYFMCADVGQDKFEEVNI ISKGGNYGWNEYEGPYLYTPSKSPGGNKSMSSINPIFPVMGYNHSDVNKNGGSASITGGY FYRSMTDPCMHGRYLFADLYAGFMWAGTENPEDSGTFNTSQISFNCAQKSPIDCTSVPGS SVPALGYIFSYGEDNNKDMYILASSGVYRVVRPSRCKYTCAKENSSAVDDDIPSSPPPAS PPSAAIMLTGSYSNFVVILMSLILMLTSWL\r\n" + 
+    		"								]]>\r\n" + 
+    		"							</FASTA_AA>\r\n" + 
+    		"						</moby:Simple>\r\n" + 
+    		"						<moby:Simple>\r\n" + 
+    		"							<FASTA_AA namespace=\'\' id=\'\'>\r\n" + 
+    		"								<![CDATA[\r\n" + 
+    		"									> gene_2|GeneMark.hmm|553_aa MTSNDGFSGILKSAKEAFEVGKKFWKELELYKKEVGSIVESNKTEECPHSISISGSEFLG KGRMMVLPCGLTLGSHITVVGKPRRAHQERDPKISLLREGQFLMVSQFMMELQGLKTVDG EDPPRILHFNPRLSGDWSGKPMIEQNTCYRMQWGTAQRCDGWRSRDDEETVDGQVKCEKW IRDNDTNHSEQSKASWWLNRLVGRKKKVDFDWPFPFSEDRLFVLTLSAGFEGYHVNVDGR HVTSFPYRIGFALEDATGLSLNGDIDVDSVFAASLPTTHPSFAPQRHLDMSNRWKTPPLL DQPVDLFIGILSAGNHFAERMAIRRSWLQHQLIKSSNVVARFFVALHARKDINVELKKEA QFFGDIVIVPFMDNYDLVVLKTVAICEYGVHVAFAKNIMKCDDDTFVRVDAVIKEINKIP ENRSLYVGNINYYHKPLRNGKWAVTYEEWPEEDYPPYANGPGYIISSAIANFVVSEFDNH KLKLFKMEDVSMGMWVEKFNSSSRPVQYVHSLKFSQSGCVDDYYTAHYQSPRQMICMWNK LQQLGRPQCCNMR\r\n" + 
+    		"								]]>\r\n" + 
+    		"							</FASTA_AA>\r\n" + 
+    		"						</moby:Simple>\r\n" + 
+    		"					</moby:Collection>\r\n" + 
+    		"					<moby:Collection moby:articleName=\'eddie\'>\r\n" + 
+    		"						<moby:Simple>\r\n" + 
+    		"							<FASTA_AA namespace=\'\' id=\'\'>\r\n" + 
+    		"								<![CDATA[\r\n" + 
+    		"									> gene_1|GeneMark.hmm|690_aa MGRSHFVIFIILLNLLQILDPSFSLPLCTDSRAPFQQKTPLAFCSYNGTSCCNSTDDKQL QTQFNAMNISDPGCASLVKSVICAMCDKFSAELFRTDSVPRELPILCNSTTSENSNKSSQ TKNDFCSKVWTTCQNVSIISSPFAASVKSNSTKLTDLWKSQIDFCNEFGGASGVGSVCFA GEPVSLNSTTPISPPGGLCLEKIGNGSYINMVAHPDGSSRAFFSNQQGKIWLATIPAVDS GKLLDLDESSPFLDLIDEVHFDTELGMMGIAFHPKFSQNGRFFVSFNCDKQAWPGCGGRC SCNSDIDCDPSKLPSDSGSQPCQYQAVIAEFTASGSQPTQAKTASPKEVRRIFTMGLPFT GHHGGQILFGPRDGYLYFMMGDGGGIGDPYNFSQNKKSLLGKIIRLDIDSTSSVEEITKL GLWGNYSIPKDNPYAEDKELQPEIWALGMRNPWRCSFDSARPSYFMCADVGQDKFEEVNI ISKGGNYGWNEYEGPYLYTPSKSPGGNKSMSSINPIFPVMGYNHSDVNKNGGSASITGGY FYRSMTDPCMHGRYLFADLYAGFMWAGTENPEDSGTFNTSQISFNCAQKSPIDCTSVPGS SVPALGYIFSYGEDNNKDMYILASSGVYRVVRPSRCKYTCAKENSSAVDDDIPSSPPPAS PPSAAIMLTGSYSNFVVILMSLILMLTSWL\r\n" + 
+    		"								]]>\r\n" + 
+    		"							</FASTA_AA>\r\n" + 
+    		"						</moby:Simple>\r\n" + 
+    		"					</moby:Collection>\r\n" + 
+    		"				</moby:mobyData>\r\n" + 
+    		"			</moby:mobyContent>\r\n" + 
+    		"		</moby:MOBY>";
+    public static void main(String[] args) {
+		System.out.println(XMLUtilities.getMobyCollection(XMLUtilities.getDOMDocument(s).getRootElement(),"FASTA_AA","fasta_output","" ));
+	}
 }
