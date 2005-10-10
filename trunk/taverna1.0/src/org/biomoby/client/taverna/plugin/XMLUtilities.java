@@ -92,8 +92,7 @@ public class XMLUtilities {
         Element e = jDomUtilities.getElement(objectType, xml, new String[]{"articleName="+ (articleName == null ? "" : articleName)});
         // TODO check namespaces, etc.
         if (e != null) {
-        	if (e.getAttributeValue("articleName", MobyObjectClassNSImpl.MOBYNS).equals(articleName))
-        		return moc.toString(createMobyDataElementWrapper(moc.toSimple(e, "")));
+        	return moc.toString(createMobyDataElementWrapper(moc.toSimple(e, "")));
         }
         return "<?xml version=\'1.0\' encoding=\'UTF-8\'?><moby:MOBY xmlns:moby=\'http://www.biomoby.org/moby\' xmlns=\'http://www.biomoby.org/moby\'><moby:mobyContent moby:authority=\'\'><moby:mobyData moby:queryID=\'a1\'/></moby:mobyContent></moby:MOBY>";
     }
