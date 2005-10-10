@@ -89,7 +89,7 @@ public class XMLUtilities {
     public static String getMobyElement(Element xml, String objectType,
             String articleName, String[] namespaces, String mobyEndpoint) {
         MobyObjectClassNSImpl moc = new MobyObjectClassNSImpl(mobyEndpoint);
-        Element e = jDomUtilities.getElement(objectType, xml, new String[]{"articleName="+ articleName});
+        Element e = jDomUtilities.getElement(objectType, xml, new String[]{"articleName="+ (articleName == null ? "" : articleName)});
         // TODO check namespaces, etc.
         if (e != null) {
         	if (e.getAttributeValue("articleName", MobyObjectClassNSImpl.MOBYNS).equals(articleName))
@@ -187,7 +187,7 @@ public class XMLUtilities {
     		"							</FASTA_AA>\r\n" + 
     		"						</moby:Simple>\r\n" + 
     		"					</moby:Collection>\r\n" + 
-    		"					<moby:Collection moby:articleName=\'eddie\'>\r\n" + 
+    		"					<moby:Collection moby:articleName=\'fasta_output\'>\r\n" + 
     		"						<moby:Simple>\r\n" + 
     		"							<FASTA_AA namespace=\'\' id=\'\'>\r\n" + 
     		"								<![CDATA[\r\n" + 
