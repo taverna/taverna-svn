@@ -91,6 +91,7 @@ public class XMLUtilities {
         MobyObjectClassNSImpl moc = new MobyObjectClassNSImpl(mobyEndpoint);
         Element e = jDomUtilities.getElement(objectType, xml, new String[]{"articleName="+ (articleName == null ? "" : articleName)});
         // TODO check namespaces, etc.
+        System.out.println("getMobyElement: " + articleName + " " + moc.toString(e));
         if (e != null) {
         	return moc.toString(createMobyDataElementWrapper(moc.toSimple(e, "")));
         }
