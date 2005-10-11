@@ -111,10 +111,11 @@ public class BiomobyTask implements ProcessorTaskWorker {
                 String methodName = ((BiomobyProcessor) proc).getServiceName();
                 String serviceEndpoint = ((BiomobyProcessor) proc)
                         .getEndpoint().toExternalForm();
+                System.out.println(this.proc.getName() + " " + inputXML);
                 String outputXML = new CentralImpl(serviceEndpoint,
                         "http://biomoby.org/").call(methodName, inputXML);
                 Map outputMap = new HashMap();
-
+                
                 OutputPort myOutput = null;
                 OutputPort[] myOutputs = proc.getOutputPorts();
                 for (int i = 0; i < myOutputs.length; i++) {
@@ -368,9 +369,10 @@ public class BiomobyTask implements ProcessorTaskWorker {
                         // we have an article name, so extract it and do the
                         // same as above
                         String objectType = name
-                                .substring(0, name.indexOf("'"));
+                                .substring(0, name.indexOf("("));
                         String artName = name.substring(name.indexOf("'") + 1,
                                 name.lastIndexOf("'")); // modified
+                        System.out.println("COllection: " + this.proc.getName() + " " + artName + " " + objectType + " " + name);
                         String mobyCollection = XMLUtilities.getMobyCollection(
                                 documentElement, objectType, artName,
                                 ((BiomobyProcessor) proc).getMobyEndpoint());
@@ -405,7 +407,6 @@ public class BiomobyTask implements ProcessorTaskWorker {
                             outputMap.put(name, new DataThing(mobySimple));
                     }
                 }
-
             }
         }
     }

@@ -89,9 +89,8 @@ public class XMLUtilities {
     public static String getMobyElement(Element xml, String objectType,
             String articleName, String[] namespaces, String mobyEndpoint) {
         MobyObjectClassNSImpl moc = new MobyObjectClassNSImpl(mobyEndpoint);
-        Element e = jDomUtilities.getElement(objectType, xml, new String[]{"articleName="+ (articleName == null ? "" : articleName)});
+        Element e = jDomUtilities.getElement(objectType, xml, new String[]{"articleName="+ ((articleName == null) ? "" : articleName)});
         // TODO check namespaces, etc.
-        System.out.println("getMobyElement: " + articleName + " " + moc.toString(e));
         if (e != null) {
         	return moc.toString(createMobyDataElementWrapper(moc.toSimple(e, "")));
         }
@@ -164,41 +163,41 @@ public class XMLUtilities {
     }
     
     //////////////
-    static String s = "<?xml version=\'1.0\' encoding=\'UTF-8\'?>\r\n" + 
-    		"        <moby:MOBY xmlns:moby=\'http://www.biomoby.org/moby\' xmlns=\'http://www.biomoby.org/moby\'>\r\n" + 
-    		"			<moby:mobyContent moby:authority=\'illuminae.com\'>\r\n" + 
-    		"				<moby:serviceNotes>\r\n" + 
-    		"					This takes the HTML output from the public GeneMark HMM server and extracts the fasta protein content from it as a collection of FASTA_AA objets\r\n" + 
-    		"				</moby:serviceNotes>\r\n" + 
-    		"				<moby:mobyData moby:queryID=\'a1\'>\r\n" + 
-    		"					<moby:Collection moby:articleName=\'fasta_output\'>\r\n" + 
-    		"						<moby:Simple>\r\n" + 
-    		"							<FASTA_AA namespace=\'aaa\' id=\'bbb\'>\r\n" + 
-    		"								<![CDATA[\r\n" + 
-    		"									> gene_1|GeneMark.hmm|690_aa MGRSHFVIFIILLNLLQILDPSFSLPLCTDSRAPFQQKTPLAFCSYNGTSCCNSTDDKQL QTQFNAMNISDPGCASLVKSVICAMCDKFSAELFRTDSVPRELPILCNSTTSENSNKSSQ TKNDFCSKVWTTCQNVSIISSPFAASVKSNSTKLTDLWKSQIDFCNEFGGASGVGSVCFA GEPVSLNSTTPISPPGGLCLEKIGNGSYINMVAHPDGSSRAFFSNQQGKIWLATIPAVDS GKLLDLDESSPFLDLIDEVHFDTELGMMGIAFHPKFSQNGRFFVSFNCDKQAWPGCGGRC SCNSDIDCDPSKLPSDSGSQPCQYQAVIAEFTASGSQPTQAKTASPKEVRRIFTMGLPFT GHHGGQILFGPRDGYLYFMMGDGGGIGDPYNFSQNKKSLLGKIIRLDIDSTSSVEEITKL GLWGNYSIPKDNPYAEDKELQPEIWALGMRNPWRCSFDSARPSYFMCADVGQDKFEEVNI ISKGGNYGWNEYEGPYLYTPSKSPGGNKSMSSINPIFPVMGYNHSDVNKNGGSASITGGY FYRSMTDPCMHGRYLFADLYAGFMWAGTENPEDSGTFNTSQISFNCAQKSPIDCTSVPGS SVPALGYIFSYGEDNNKDMYILASSGVYRVVRPSRCKYTCAKENSSAVDDDIPSSPPPAS PPSAAIMLTGSYSNFVVILMSLILMLTSWL\r\n" + 
-    		"								]]>\r\n" + 
-    		"							</FASTA_AA>\r\n" + 
-    		"						</moby:Simple>\r\n" + 
-    		"						<moby:Simple>\r\n" + 
-    		"							<FASTA_AA namespace=\'\' id=\'\'>\r\n" + 
-    		"								<![CDATA[\r\n" + 
-    		"									> gene_2|GeneMark.hmm|553_aa MTSNDGFSGILKSAKEAFEVGKKFWKELELYKKEVGSIVESNKTEECPHSISISGSEFLG KGRMMVLPCGLTLGSHITVVGKPRRAHQERDPKISLLREGQFLMVSQFMMELQGLKTVDG EDPPRILHFNPRLSGDWSGKPMIEQNTCYRMQWGTAQRCDGWRSRDDEETVDGQVKCEKW IRDNDTNHSEQSKASWWLNRLVGRKKKVDFDWPFPFSEDRLFVLTLSAGFEGYHVNVDGR HVTSFPYRIGFALEDATGLSLNGDIDVDSVFAASLPTTHPSFAPQRHLDMSNRWKTPPLL DQPVDLFIGILSAGNHFAERMAIRRSWLQHQLIKSSNVVARFFVALHARKDINVELKKEA QFFGDIVIVPFMDNYDLVVLKTVAICEYGVHVAFAKNIMKCDDDTFVRVDAVIKEINKIP ENRSLYVGNINYYHKPLRNGKWAVTYEEWPEEDYPPYANGPGYIISSAIANFVVSEFDNH KLKLFKMEDVSMGMWVEKFNSSSRPVQYVHSLKFSQSGCVDDYYTAHYQSPRQMICMWNK LQQLGRPQCCNMR\r\n" + 
-    		"								]]>\r\n" + 
-    		"							</FASTA_AA>\r\n" + 
-    		"						</moby:Simple>\r\n" + 
-    		"					</moby:Collection>\r\n" + 
-    		"					<moby:Collection moby:articleName=\'fasta_output\'>\r\n" + 
-    		"						<moby:Simple>\r\n" + 
-    		"							<FASTA_AA namespace=\'\' id=\'\'>\r\n" + 
-    		"								<![CDATA[\r\n" + 
-    		"									> gene_1|GeneMark.hmm|690_aa MGRSHFVIFIILLNLLQILDPSFSLPLCTDSRAPFQQKTPLAFCSYNGTSCCNSTDDKQL QTQFNAMNISDPGCASLVKSVICAMCDKFSAELFRTDSVPRELPILCNSTTSENSNKSSQ TKNDFCSKVWTTCQNVSIISSPFAASVKSNSTKLTDLWKSQIDFCNEFGGASGVGSVCFA GEPVSLNSTTPISPPGGLCLEKIGNGSYINMVAHPDGSSRAFFSNQQGKIWLATIPAVDS GKLLDLDESSPFLDLIDEVHFDTELGMMGIAFHPKFSQNGRFFVSFNCDKQAWPGCGGRC SCNSDIDCDPSKLPSDSGSQPCQYQAVIAEFTASGSQPTQAKTASPKEVRRIFTMGLPFT GHHGGQILFGPRDGYLYFMMGDGGGIGDPYNFSQNKKSLLGKIIRLDIDSTSSVEEITKL GLWGNYSIPKDNPYAEDKELQPEIWALGMRNPWRCSFDSARPSYFMCADVGQDKFEEVNI ISKGGNYGWNEYEGPYLYTPSKSPGGNKSMSSINPIFPVMGYNHSDVNKNGGSASITGGY FYRSMTDPCMHGRYLFADLYAGFMWAGTENPEDSGTFNTSQISFNCAQKSPIDCTSVPGS SVPALGYIFSYGEDNNKDMYILASSGVYRVVRPSRCKYTCAKENSSAVDDDIPSSPPPAS PPSAAIMLTGSYSNFVVILMSLILMLTSWL\r\n" + 
-    		"								]]>\r\n" + 
-    		"							</FASTA_AA>\r\n" + 
-    		"						</moby:Simple>\r\n" + 
-    		"					</moby:Collection>\r\n" + 
-    		"				</moby:mobyData>\r\n" + 
-    		"			</moby:mobyContent>\r\n" + 
-    		"		</moby:MOBY>";
+    static String s = "<?xml version=\'1.0\' encoding=\'UTF-8\'?><moby:MOBY xmlns:moby=\'http://www.biomoby.org/moby\' xmlns=\'http://www.biomoby.org/moby\'><moby:mobyContent moby:authority=\'illuminae.com\'><moby:serviceNotes>This takes the HTML output from the public GeneMark HMM server and extracts the fasta protein content from it as a collection of FASTA_AA objets</moby:serviceNotes>\r\n" + 
+    		"        <moby:mobyData moby:queryID=\'a1\'>\r\n" + 
+    		"            <moby:Collection moby:articleName=\'fasta_output\'>\r\n" + 
+    		"                <moby:Simple><FASTA_AA namespace=\'\' id=\'\'><![CDATA[>gene_1|GeneMark.hmm|690_aa\r\n" + 
+    		"MGRSHFVIFIILLNLLQILDPSFSLPLCTDSRAPFQQKTPLAFCSYNGTSCCNSTDDKQL\r\n" + 
+    		"QTQFNAMNISDPGCASLVKSVICAMCDKFSAELFRTDSVPRELPILCNSTTSENSNKSSQ\r\n" + 
+    		"TKNDFCSKVWTTCQNVSIISSPFAASVKSNSTKLTDLWKSQIDFCNEFGGASGVGSVCFA\r\n" + 
+    		"GEPVSLNSTTPISPPGGLCLEKIGNGSYINMVAHPDGSSRAFFSNQQGKIWLATIPAVDS\r\n" + 
+    		"GKLLDLDESSPFLDLIDEVHFDTELGMMGIAFHPKFSQNGRFFVSFNCDKQAWPGCGGRC\r\n" + 
+    		"SCNSDIDCDPSKLPSDSGSQPCQYQAVIAEFTASGSQPTQAKTASPKEVRRIFTMGLPFT\r\n" + 
+    		"GHHGGQILFGPRDGYLYFMMGDGGGIGDPYNFSQNKKSLLGKIIRLDIDSTSSVEEITKL\r\n" + 
+    		"GLWGNYSIPKDNPYAEDKELQPEIWALGMRNPWRCSFDSARPSYFMCADVGQDKFEEVNI\r\n" + 
+    		"ISKGGNYGWNEYEGPYLYTPSKSPGGNKSMSSINPIFPVMGYNHSDVNKNGGSASITGGY\r\n" + 
+    		"FYRSMTDPCMHGRYLFADLYAGFMWAGTENPEDSGTFNTSQISFNCAQKSPIDCTSVPGS\r\n" + 
+    		"SVPALGYIFSYGEDNNKDMYILASSGVYRVVRPSRCKYTCAKENSSAVDDDIPSSPPPAS\r\n" + 
+    		"PPSAAIMLTGSYSNFVVILMSLILMLTSWL\r\n" + 
+    		"\r\n" + 
+    		"]]></FASTA_AA></moby:Simple>\r\n" + 
+    		"<moby:Simple><FASTA_AA namespace=\'\' id=\'\'><![CDATA[>gene_2|GeneMark.hmm|553_aa\r\n" + 
+    		"MTSNDGFSGILKSAKEAFEVGKKFWKELELYKKEVGSIVESNKTEECPHSISISGSEFLG\r\n" + 
+    		"KGRMMVLPCGLTLGSHITVVGKPRRAHQERDPKISLLREGQFLMVSQFMMELQGLKTVDG\r\n" + 
+    		"EDPPRILHFNPRLSGDWSGKPMIEQNTCYRMQWGTAQRCDGWRSRDDEETVDGQVKCEKW\r\n" + 
+    		"IRDNDTNHSEQSKASWWLNRLVGRKKKVDFDWPFPFSEDRLFVLTLSAGFEGYHVNVDGR\r\n" + 
+    		"HVTSFPYRIGFALEDATGLSLNGDIDVDSVFAASLPTTHPSFAPQRHLDMSNRWKTPPLL\r\n" + 
+    		"DQPVDLFIGILSAGNHFAERMAIRRSWLQHQLIKSSNVVARFFVALHARKDINVELKKEA\r\n" + 
+    		"QFFGDIVIVPFMDNYDLVVLKTVAICEYGVHVAFAKNIMKCDDDTFVRVDAVIKEINKIP\r\n" + 
+    		"ENRSLYVGNINYYHKPLRNGKWAVTYEEWPEEDYPPYANGPGYIISSAIANFVVSEFDNH\r\n" + 
+    		"KLKLFKMEDVSMGMWVEKFNSSSRPVQYVHSLKFSQSGCVDDYYTAHYQSPRQMICMWNK\r\n" + 
+    		"LQQLGRPQCCNMR\r\n" + 
+    		"\r\n" + 
+    		"]]></FASTA_AA></moby:Simple>\r\n" + 
+    		"\r\n" + 
+    		"            </moby:Collection>\r\n" + 
+    		"        </moby:mobyData>\r\n" + 
+    		"        </moby:mobyContent></moby:MOBY>";
     public static void main(String[] args) {
 		System.out.println(XMLUtilities.getMobyCollection(XMLUtilities.getDOMDocument(s).getRootElement(),"FASTA_AA","fasta_output","" ));
 	}
