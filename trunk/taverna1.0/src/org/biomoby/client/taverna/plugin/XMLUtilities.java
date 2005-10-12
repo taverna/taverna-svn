@@ -100,13 +100,15 @@ public class XMLUtilities {
 	public static String getMobyElement(Element xml, String objectType,
 			String articleName, String[] namespaces, String mobyEndpoint) {
 		MobyObjectClassNSImpl moc = new MobyObjectClassNSImpl(mobyEndpoint);
-		Element e = jDomUtilities.getElement(objectType, xml,
+		Element e = jDomUtilities.getElement("Simple", xml,
 				new String[] { "articleName="
 						+ ((articleName == null) ? "" : articleName) });
 		// TODO check namespaces, etc.
 		if (e != null) {
+			if ((e = jDomUtilities.getElement(objectType, e, new String[] { "articleName="
+						+ ((articleName == null) ? "" : articleName) })) != null)
 			return moc.toString(createMobyDataElementWrapper(moc
-					.toSimple(e, "")));
+					.toSimple(e, articleName)));
 		}
 		return "<?xml version=\'1.0\' encoding=\'UTF-8\'?><moby:MOBY xmlns:moby=\'http://www.biomoby.org/moby\' xmlns=\'http://www.biomoby.org/moby\'><moby:mobyContent moby:authority=\'\'><moby:mobyData moby:queryID=\'a1\'/></moby:mobyContent></moby:MOBY>";
 	}
