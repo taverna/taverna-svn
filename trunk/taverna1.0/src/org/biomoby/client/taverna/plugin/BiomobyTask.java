@@ -5,6 +5,7 @@
  */
 package org.biomoby.client.taverna.plugin;
 
+import java.io.ByteArrayInputStream;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -15,7 +16,12 @@ import java.util.Map;
 import org.apache.log4j.Logger;
 import org.biomoby.client.CentralImpl;
 import org.biomoby.shared.MobyException;
+import org.biomoby.shared.data.MobyContentInstance;
+import org.biomoby.shared.data.MobyDataUtils;
 import org.biomoby.shared.mobyxml.jdom.MobyObjectClassNSImpl;
+import org.biomoby.shared.parser.MobyJob;
+import org.biomoby.shared.parser.MobyPackage;
+import org.biomoby.shared.parser.MobyParser;
 import org.embl.ebi.escience.baclava.DataThing;
 import org.embl.ebi.escience.scufl.InputPort;
 import org.embl.ebi.escience.scufl.OutputPort;
@@ -48,7 +54,6 @@ public class BiomobyTask implements ProcessorTaskWorker {
 
     public Map execute(Map inputMap, ProcessorTask parentTask)
             throws TaskExecutionException {
-
         if (inputMap.containsKey("input")) {
             // input port takes precedence over other ports
             try {
@@ -73,6 +78,7 @@ public class BiomobyTask implements ProcessorTaskWorker {
                 // we have a java List of simples - need to convert this into
                 // a biomoby collection document
                 String inputXML = null;
+                
                 if (inputType.equals("'text/xml'")) {
                     inputXML = (String) inputThing.getDataObject();
                 } else {
