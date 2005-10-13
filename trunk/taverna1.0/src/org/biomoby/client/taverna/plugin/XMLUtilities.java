@@ -96,18 +96,32 @@ public class XMLUtilities {
 	 * @return String representation of the Element in question with tag name
 	 *         objectType, article name articleName, and list of possible
 	 *         namespaces namespaces.
+	 * @throws MobyException 
 	 */
 	public static String getMobyElement(Element xml, String objectType,
-			String articleName, String[] namespaces, String mobyEndpoint) {
+			String articleName, String[] namespaces, String mobyEndpoint) throws MobyException {
 		MobyObjectClassNSImpl moc = new MobyObjectClassNSImpl(mobyEndpoint);
-		Element e = jDomUtilities.getElement("Simple", xml,
+		Element e = null;
+		try {
+		e = jDomUtilities.getElement("Simple", xml,
 				new String[] { "articleName="
 						+ ((articleName == null) ? "" : articleName) });
+		} catch (NullPointerException npe) {
+			// couldnt find the element try looking for the actual element
+			List list = jDomUtilities.listChildren(xml, objectType, new ArrayList());
+			// if you find one, return the first one
+			if (list.size() > 0)
+				return moc.toString(createMobyDataElementWrapper(moc
+						.toSimple((Element)list.get(0), articleName)));
+			else
+				throw new MobyException("Couldn't find the element named " + objectType + " with article name " + articleName + System.getProperty("line.separator") + ". Please check with service provider to ensure that the moby service outputs what it is advertised to output.");
+		}
 		// TODO check namespaces, etc.
 		if (e != null) {
-			if ((e = jDomUtilities.getElement(objectType, e, new String[] { "articleName=" })) != null)
-			return moc.toString(createMobyDataElementWrapper(moc
-					.toSimple(e, articleName)));
+			e = jDomUtilities.getElement(objectType, e, new String[] {"articleName="});
+			if (e != null)
+				return moc.toString(createMobyDataElementWrapper(moc
+						.toSimple(e, articleName)));
 		}
 		return "<?xml version=\'1.0\' encoding=\'UTF-8\'?><moby:MOBY xmlns:moby=\'http://www.biomoby.org/moby\' xmlns=\'http://www.biomoby.org/moby\'><moby:mobyContent moby:authority=\'\'><moby:mobyData moby:queryID=\'a1\'/></moby:mobyContent></moby:MOBY>";
 	}
@@ -263,6 +277,7 @@ public class XMLUtilities {
 
 	public static List createMobySimpleListFromCollection(String xml,
 			String mobyEndpoint) {
+		
 		ArrayList arrayList = new ArrayList();
 		if (xml == null)
 			return arrayList;
@@ -328,143 +343,113 @@ public class XMLUtilities {
 		}
 		return arrayList;
 	}
+	
+	/**
+	 * 
+	 * @param elements list is a list of items to append to a moby message
+	 * @return a string representing the moby message
+	 */
+	public static Element createMultipleInvocationMessageFromList(List elements) {
+		Element root = null;
+		Document doc = new Document();
+		doc.setBaseURI(MobyObjectClassNSImpl.MOBYNS.getURI());
+		// got a document, now need to create mobyData
+		root = new Element("MOBY", MobyObjectClassNSImpl.MOBYNS);
+		doc.setRootElement(root);
+		Element mobyContent = new Element("mobyContent",
+				MobyObjectClassNSImpl.MOBYNS);
+		int count = 0;
+		for (Iterator iter = elements.iterator(); iter.hasNext();) {
+			String str = (String) iter.next();
+			Document d = getDOMDocument(str);
+			Element mobyData = new Element("mobyData", MobyObjectClassNSImpl.MOBYNS);
+			mobyData.setAttribute("queryID", "a"+count++, MobyObjectClassNSImpl.MOBYNS);
+			mobyData.addContent(d.getRootElement().getChild("mobyContent", MobyObjectClassNSImpl.MOBYNS).getChild("mobyData", MobyObjectClassNSImpl.MOBYNS).cloneContent());
+			mobyContent.addContent(mobyData);
+		}
+		root.addContent(mobyContent);
+		return root;
+	}
 	// ////////////
-	static String s = "<?xml version=\'1.0\' encoding=\'UTF-8\'?><moby:MOBY xmlns:moby=\'http://www.biomoby.org/moby\' xmlns=\'http://www.biomoby.org/moby\'><moby:mobyContent moby:authority=\'illuminae.com\'><moby:serviceNotes>This takes the HTML output from the public GeneMark HMM server and extracts the fasta protein content from it as a collection of FASTA_AA objets</moby:serviceNotes>\r\n"
-			+ "        <moby:mobyData moby:queryID=\'a1\'>\r\n"
-			+ "            <moby:Collection moby:articleName=\'fasta_output\'>\r\n"
-			+ "                <moby:Simple><FASTA_AA namespace=\'\' id=\'\'><![CDATA[>gene_1|GeneMark.hmm|690_aa\r\n"
-			+ "MGRSHFVIFIILLNLLQILDPSFSLPLCTDSRAPFQQKTPLAFCSYNGTSCCNSTDDKQL\r\n"
-			+ "QTQFNAMNISDPGCASLVKSVICAMCDKFSAELFRTDSVPRELPILCNSTTSENSNKSSQ\r\n"
-			+ "TKNDFCSKVWTTCQNVSIISSPFAASVKSNSTKLTDLWKSQIDFCNEFGGASGVGSVCFA\r\n"
-			+ "GEPVSLNSTTPISPPGGLCLEKIGNGSYINMVAHPDGSSRAFFSNQQGKIWLATIPAVDS\r\n"
-			+ "GKLLDLDESSPFLDLIDEVHFDTELGMMGIAFHPKFSQNGRFFVSFNCDKQAWPGCGGRC\r\n"
-			+ "SCNSDIDCDPSKLPSDSGSQPCQYQAVIAEFTASGSQPTQAKTASPKEVRRIFTMGLPFT\r\n"
-			+ "GHHGGQILFGPRDGYLYFMMGDGGGIGDPYNFSQNKKSLLGKIIRLDIDSTSSVEEITKL\r\n"
-			+ "GLWGNYSIPKDNPYAEDKELQPEIWALGMRNPWRCSFDSARPSYFMCADVGQDKFEEVNI\r\n"
-			+ "ISKGGNYGWNEYEGPYLYTPSKSPGGNKSMSSINPIFPVMGYNHSDVNKNGGSASITGGY\r\n"
-			+ "FYRSMTDPCMHGRYLFADLYAGFMWAGTENPEDSGTFNTSQISFNCAQKSPIDCTSVPGS\r\n"
-			+ "SVPALGYIFSYGEDNNKDMYILASSGVYRVVRPSRCKYTCAKENSSAVDDDIPSSPPPAS\r\n"
-			+ "PPSAAIMLTGSYSNFVVILMSLILMLTSWL\r\n"
-			+ "\r\n"
-			+ "]]></FASTA_AA></moby:Simple>\r\n"
-			+ "<moby:Simple><FASTA_AA namespace=\'\' id=\'\'><![CDATA[>gene_2|GeneMark.hmm|553_aa\r\n"
-			+ "MTSNDGFSGILKSAKEAFEVGKKFWKELELYKKEVGSIVESNKTEECPHSISISGSEFLG\r\n"
-			+ "KGRMMVLPCGLTLGSHITVVGKPRRAHQERDPKISLLREGQFLMVSQFMMELQGLKTVDG\r\n"
-			+ "EDPPRILHFNPRLSGDWSGKPMIEQNTCYRMQWGTAQRCDGWRSRDDEETVDGQVKCEKW\r\n"
-			+ "IRDNDTNHSEQSKASWWLNRLVGRKKKVDFDWPFPFSEDRLFVLTLSAGFEGYHVNVDGR\r\n"
-			+ "HVTSFPYRIGFALEDATGLSLNGDIDVDSVFAASLPTTHPSFAPQRHLDMSNRWKTPPLL\r\n"
-			+ "DQPVDLFIGILSAGNHFAERMAIRRSWLQHQLIKSSNVVARFFVALHARKDINVELKKEA\r\n"
-			+ "QFFGDIVIVPFMDNYDLVVLKTVAICEYGVHVAFAKNIMKCDDDTFVRVDAVIKEINKIP\r\n"
-			+ "ENRSLYVGNINYYHKPLRNGKWAVTYEEWPEEDYPPYANGPGYIISSAIANFVVSEFDNH\r\n"
-			+ "KLKLFKMEDVSMGMWVEKFNSSSRPVQYVHSLKFSQSGCVDDYYTAHYQSPRQMICMWNK\r\n"
-			+ "LQQLGRPQCCNMR\r\n"
-			+ "\r\n"
-			+ "]]></FASTA_AA></moby:Simple>\r\n"
-			+ "\r\n"
-			+ "            </moby:Collection>\r\n"
-			+ "            <moby:Collection moby:articleName=\'fasta_output\'>\r\n"
-			+ "                <moby:Simple><FASTA_AA namespace=\'\' id=\'\'><![CDATA[>gene_1|GeneMark.hmm|690_aa\r\n"
-			+ "MGRSHFVIFIILLNLLQILDPSFSLPLCTDSRAPFQQKTPLAFCSYNGTSCCNSTDDKQL\r\n"
-			+ "QTQFNAMNISDPGCASLVKSVICAMCDKFSAELFRTDSVPRELPILCNSTTSENSNKSSQ\r\n"
-			+ "TKNDFCSKVWTTCQNVSIISSPFAASVKSNSTKLTDLWKSQIDFCNEFGGASGVGSVCFA\r\n"
-			+ "GEPVSLNSTTPISPPGGLCLEKIGNGSYINMVAHPDGSSRAFFSNQQGKIWLATIPAVDS\r\n"
-			+ "GKLLDLDESSPFLDLIDEVHFDTELGMMGIAFHPKFSQNGRFFVSFNCDKQAWPGCGGRC\r\n"
-			+ "SCNSDIDCDPSKLPSDSGSQPCQYQAVIAEFTASGSQPTQAKTASPKEVRRIFTMGLPFT\r\n"
-			+ "GHHGGQILFGPRDGYLYFMMGDGGGIGDPYNFSQNKKSLLGKIIRLDIDSTSSVEEITKL\r\n"
-			+ "GLWGNYSIPKDNPYAEDKELQPEIWALGMRNPWRCSFDSARPSYFMCADVGQDKFEEVNI\r\n"
-			+ "ISKGGNYGWNEYEGPYLYTPSKSPGGNKSMSSINPIFPVMGYNHSDVNKNGGSASITGGY\r\n"
-			+ "FYRSMTDPCMHGRYLFADLYAGFMWAGTENPEDSGTFNTSQISFNCAQKSPIDCTSVPGS\r\n"
-			+ "SVPALGYIFSYGEDNNKDMYILASSGVYRVVRPSRCKYTCAKENSSAVDDDIPSSPPPAS\r\n"
-			+ "PPSAAIMLTGSYSNFVVILMSLILMLTSWL\r\n"
-			+ "\r\n"
-			+ "]]></FASTA_AA></moby:Simple>\r\n"
-			+ "<moby:Simple><FASTA_AA namespace=\'\' id=\'\'><![CDATA[>gene_2|GeneMark.hmm|553_aa\r\n"
-			+ "MTSNDGFSGILKSAKEAFEVGKKFWKELELYKKEVGSIVESNKTEECPHSISISGSEFLG\r\n"
-			+ "KGRMMVLPCGLTLGSHITVVGKPRRAHQERDPKISLLREGQFLMVSQFMMELQGLKTVDG\r\n"
-			+ "EDPPRILHFNPRLSGDWSGKPMIEQNTCYRMQWGTAQRCDGWRSRDDEETVDGQVKCEKW\r\n"
-			+ "IRDNDTNHSEQSKASWWLNRLVGRKKKVDFDWPFPFSEDRLFVLTLSAGFEGYHVNVDGR\r\n"
-			+ "HVTSFPYRIGFALEDATGLSLNGDIDVDSVFAASLPTTHPSFAPQRHLDMSNRWKTPPLL\r\n"
-			+ "DQPVDLFIGILSAGNHFAERMAIRRSWLQHQLIKSSNVVARFFVALHARKDINVELKKEA\r\n"
-			+ "QFFGDIVIVPFMDNYDLVVLKTVAICEYGVHVAFAKNIMKCDDDTFVRVDAVIKEINKIP\r\n"
-			+ "ENRSLYVGNINYYHKPLRNGKWAVTYEEWPEEDYPPYANGPGYIISSAIANFVVSEFDNH\r\n"
-			+ "KLKLFKMEDVSMGMWVEKFNSSSRPVQYVHSLKFSQSGCVDDYYTAHYQSPRQMICMWNK\r\n"
-			+ "LQQLGRPQCCNMR\r\n"
-			+ "\r\n"
-			+ "]]></FASTA_AA></moby:Simple>\r\n"
-			+ "\r\n"
-			+ "            </moby:Collection>\r\n"
-			+ "        </moby:mobyData>\r\n"
-			+ "        <moby:mobyData moby:queryID=\'a2\'>\r\n"
-			+ "            <moby:Collection moby:articleName=\'fasta_output\'>\r\n"
-			+ "                <moby:Simple><FASTA_AA namespace=\'\' id=\'\'><![CDATA[>gene_1|GeneMark.hmm|690_aa\r\n"
-			+ "MGRSHFVIFIILLNLLQILDPSFSLPLCTDSRAPFQQKTPLAFCSYNGTSCCNSTDDKQL\r\n"
-			+ "QTQFNAMNISDPGCASLVKSVICAMCDKFSAELFRTDSVPRELPILCNSTTSENSNKSSQ\r\n"
-			+ "TKNDFCSKVWTTCQNVSIISSPFAASVKSNSTKLTDLWKSQIDFCNEFGGASGVGSVCFA\r\n"
-			+ "GEPVSLNSTTPISPPGGLCLEKIGNGSYINMVAHPDGSSRAFFSNQQGKIWLATIPAVDS\r\n"
-			+ "GKLLDLDESSPFLDLIDEVHFDTELGMMGIAFHPKFSQNGRFFVSFNCDKQAWPGCGGRC\r\n"
-			+ "SCNSDIDCDPSKLPSDSGSQPCQYQAVIAEFTASGSQPTQAKTASPKEVRRIFTMGLPFT\r\n"
-			+ "GHHGGQILFGPRDGYLYFMMGDGGGIGDPYNFSQNKKSLLGKIIRLDIDSTSSVEEITKL\r\n"
-			+ "GLWGNYSIPKDNPYAEDKELQPEIWALGMRNPWRCSFDSARPSYFMCADVGQDKFEEVNI\r\n"
-			+ "ISKGGNYGWNEYEGPYLYTPSKSPGGNKSMSSINPIFPVMGYNHSDVNKNGGSASITGGY\r\n"
-			+ "FYRSMTDPCMHGRYLFADLYAGFMWAGTENPEDSGTFNTSQISFNCAQKSPIDCTSVPGS\r\n"
-			+ "SVPALGYIFSYGEDNNKDMYILASSGVYRVVRPSRCKYTCAKENSSAVDDDIPSSPPPAS\r\n"
-			+ "PPSAAIMLTGSYSNFVVILMSLILMLTSWL\r\n"
-			+ "\r\n"
-			+ "]]></FASTA_AA></moby:Simple>\r\n"
-			+ "<moby:Simple><FASTA_AA namespace=\'\' id=\'\'><![CDATA[>gene_2|GeneMark.hmm|553_aa\r\n"
-			+ "MTSNDGFSGILKSAKEAFEVGKKFWKELELYKKEVGSIVESNKTEECPHSISISGSEFLG\r\n"
-			+ "KGRMMVLPCGLTLGSHITVVGKPRRAHQERDPKISLLREGQFLMVSQFMMELQGLKTVDG\r\n"
-			+ "EDPPRILHFNPRLSGDWSGKPMIEQNTCYRMQWGTAQRCDGWRSRDDEETVDGQVKCEKW\r\n"
-			+ "IRDNDTNHSEQSKASWWLNRLVGRKKKVDFDWPFPFSEDRLFVLTLSAGFEGYHVNVDGR\r\n"
-			+ "HVTSFPYRIGFALEDATGLSLNGDIDVDSVFAASLPTTHPSFAPQRHLDMSNRWKTPPLL\r\n"
-			+ "DQPVDLFIGILSAGNHFAERMAIRRSWLQHQLIKSSNVVARFFVALHARKDINVELKKEA\r\n"
-			+ "QFFGDIVIVPFMDNYDLVVLKTVAICEYGVHVAFAKNIMKCDDDTFVRVDAVIKEINKIP\r\n"
-			+ "ENRSLYVGNINYYHKPLRNGKWAVTYEEWPEEDYPPYANGPGYIISSAIANFVVSEFDNH\r\n"
-			+ "KLKLFKMEDVSMGMWVEKFNSSSRPVQYVHSLKFSQSGCVDDYYTAHYQSPRQMICMWNK\r\n"
-			+ "LQQLGRPQCCNMR\r\n"
-			+ "\r\n"
-			+ "]]></FASTA_AA></moby:Simple>\r\n"
-			+ "\r\n"
-			+ "            </moby:Collection>\r\n"
-			+ "            <moby:Collection moby:articleName=\'fasta_output\'>\r\n"
-			+ "                <moby:Simple><FASTA_AA namespace=\'\' id=\'\'><![CDATA[>gene_1|GeneMark.hmm|690_aa\r\n"
-			+ "MGRSHFVIFIILLNLLQILDPSFSLPLCTDSRAPFQQKTPLAFCSYNGTSCCNSTDDKQL\r\n"
-			+ "QTQFNAMNISDPGCASLVKSVICAMCDKFSAELFRTDSVPRELPILCNSTTSENSNKSSQ\r\n"
-			+ "TKNDFCSKVWTTCQNVSIISSPFAASVKSNSTKLTDLWKSQIDFCNEFGGASGVGSVCFA\r\n"
-			+ "GEPVSLNSTTPISPPGGLCLEKIGNGSYINMVAHPDGSSRAFFSNQQGKIWLATIPAVDS\r\n"
-			+ "GKLLDLDESSPFLDLIDEVHFDTELGMMGIAFHPKFSQNGRFFVSFNCDKQAWPGCGGRC\r\n"
-			+ "SCNSDIDCDPSKLPSDSGSQPCQYQAVIAEFTASGSQPTQAKTASPKEVRRIFTMGLPFT\r\n"
-			+ "GHHGGQILFGPRDGYLYFMMGDGGGIGDPYNFSQNKKSLLGKIIRLDIDSTSSVEEITKL\r\n"
-			+ "GLWGNYSIPKDNPYAEDKELQPEIWALGMRNPWRCSFDSARPSYFMCADVGQDKFEEVNI\r\n"
-			+ "ISKGGNYGWNEYEGPYLYTPSKSPGGNKSMSSINPIFPVMGYNHSDVNKNGGSASITGGY\r\n"
-			+ "FYRSMTDPCMHGRYLFADLYAGFMWAGTENPEDSGTFNTSQISFNCAQKSPIDCTSVPGS\r\n"
-			+ "SVPALGYIFSYGEDNNKDMYILASSGVYRVVRPSRCKYTCAKENSSAVDDDIPSSPPPAS\r\n"
-			+ "PPSAAIMLTGSYSNFVVILMSLILMLTSWL\r\n"
-			+ "\r\n"
-			+ "]]></FASTA_AA></moby:Simple>\r\n"
-			+ "<moby:Simple><FASTA_AA namespace=\'\' id=\'\'><![CDATA[>gene_2|GeneMark.hmm|553_aa\r\n"
-			+ "MTSNDGFSGILKSAKEAFEVGKKFWKELELYKKEVGSIVESNKTEECPHSISISGSEFLG\r\n"
-			+ "KGRMMVLPCGLTLGSHITVVGKPRRAHQERDPKISLLREGQFLMVSQFMMELQGLKTVDG\r\n"
-			+ "EDPPRILHFNPRLSGDWSGKPMIEQNTCYRMQWGTAQRCDGWRSRDDEETVDGQVKCEKW\r\n"
-			+ "IRDNDTNHSEQSKASWWLNRLVGRKKKVDFDWPFPFSEDRLFVLTLSAGFEGYHVNVDGR\r\n"
-			+ "HVTSFPYRIGFALEDATGLSLNGDIDVDSVFAASLPTTHPSFAPQRHLDMSNRWKTPPLL\r\n"
-			+ "DQPVDLFIGILSAGNHFAERMAIRRSWLQHQLIKSSNVVARFFVALHARKDINVELKKEA\r\n"
-			+ "QFFGDIVIVPFMDNYDLVVLKTVAICEYGVHVAFAKNIMKCDDDTFVRVDAVIKEINKIP\r\n"
-			+ "ENRSLYVGNINYYHKPLRNGKWAVTYEEWPEEDYPPYANGPGYIISSAIANFVVSEFDNH\r\n"
-			+ "KLKLFKMEDVSMGMWVEKFNSSSRPVQYVHSLKFSQSGCVDDYYTAHYQSPRQMICMWNK\r\n"
-			+ "LQQLGRPQCCNMR\r\n"
-			+ "\r\n"
-			+ "]]></FASTA_AA></moby:Simple>\r\n"
-			+ "\r\n"
-			+ "            </moby:Collection>\r\n"
-			+ "        </moby:mobyData>\r\n"
-			+ "        </moby:mobyContent></moby:MOBY>";
+	static String s = "<?xml version=\'1.0\' encoding=\'UTF-8\'?><moby:MOBY xmlns:moby=\'http://www.biomoby.org/moby\' xmlns=\'http://www.biomoby.org/moby\'><moby:mobyContent moby:authority=\'illuminae.com\'><moby:serviceNotes>This is a wrapper around the publicly available GMHMM server at http://opal.biology.gatech.edu/GeneMark/eukhmm.cgi</moby:serviceNotes>\r\n" + 
+			"        <moby:mobyData moby:queryID=\'a1\'>\r\n" + 
+			"            <moby:Simple moby:articleName=\'html_output\'><text-html namespace=\'\' id=\'\'><![CDATA[<?xml version=\"1.0\" encoding=\"iso-8859-1\"?>\r\n" + 
+			"<!DOCTYPE html\r\n" + 
+			"	PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\"\r\n" + 
+			"	 \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">\r\n" + 
+			"<html xmlns=\"http://www.w3.org/1999/xhtml\" lang=\"en-US\" xml:lang=\"en-US\"><head><title>Eukaryotic GeneMark.hmm</title>\r\n" + 
+			"<link rev=\"made\" href=\"mailto:john%40amber.biology.gatech.edu\" />\r\n" + 
+			"</head><body bgcolor=\"white\"><br><font face=\"Verdana,Arial,Helvetica\"><b><font size=+1>Eukaryotic GeneMark.hmm</font></b> <font size=-2><a href=\"eukhmm.cgi\">(Reload this page)</a></font></font><table callpadding=\"0\"><tr valign=\"top\"><td><font face=\"Verdana,Arial,Helvetica\"><b>Reference:</b></font></td><td><font face=\"Verdana,Arial,Helvetica\">Borodovsky M. and Lukashin A. (unpublished)<br></td></tr><table><table callpadding=\"0\"><tr valign=\"top\"><td><font face=\"Verdana,Arial,Helvetica\"><tr><td colspan=\"2\"><font face=\"Verdana,Arial,Helvetica\"><a href=\"plant_accuracy.html\">Accuracy comparison</a></td></tr></table><tr><td colspan=\"2\"><font face=\"Verdana,Arial,Helvetica\"><br><font color=\"red\">UPDATE November 2004. </font>Eukaryotic GeneMark.hmm models have been updated for the following species:<br> O. sativa (Rice)<br>A. thaliana<br>C. elegans<br>C. reinhardtii<br>D. melanogaster<br><br><font size=\"-1\"><a href=\"eukhmm_history.html\">Listing of previous updates</a></font></font></td></tr></table><hr /><h1>Result of last submittal:</h1><H4><A NAME=\"hmm\">GeneMark.hmm Listing</A> </H4><H4>Go to: <A HREF=\"#prot\">GeneMark.hmm Protein Translations</A></H4><H4>Go to: <A HREF=\"#sub\">Job Submittal</A></H4>\r\n" + 
+			"<PRE>\r\n" + 
+			"Eukariotyc GeneMark.hmm version 3.3\r\n" + 
+			"Sequence name: Thu Oct 13 12:01:01 EDT 2005\r\n" + 
+			"Sequence length: 1009 bp\r\n" + 
+			"G+C content: 56.79%\r\n" + 
+			"Matrices file: /home/genmark/euk_ghm.matrices/athaliana_hmm3.0mod\r\n" + 
+			"Thu Oct 13 12:01:02 2005\r\n" + 
+			"\r\n" + 
+			"\r\n" + 
+			"Predicted genes/exons\r\n" + 
+			"\r\n" + 
+			"Gene Exon Strand Exon           Exon Range         Exon      Start/End\r\n" + 
+			"  #    #         Type                             Length       Frame\r\n" + 
+			"\r\n" + 
+			"\r\n" + 
+			"  1   1  -  Single            174        941        768          3 1\r\n" + 
+			"\r\n" + 
+			">gene_1|GeneMark.hmm|255_aa\r\n" + 
+			"MASSSAVNPRTILGIPLDSGRCSVAGNGIIYPRDVSRDPGEDCGLLGDITAQAGYKAGHT\r\n" + 
+			"VDSILAIHQAVKGASRITLASSTNSVSSSAHHGGLHSGAPVGGAGAGGVVHGGQVSLLQG\r\n" + 
+			"LGQLPIGLCPAPACDVAGRVVSQDGSRLWQNTQLDIAVEGSTLGQAQHGDVVTCSHVVAV\r\n" + 
+			"PGWMHHDLLHADVLLGAIVLAQVVVSQHHTEGHLAIHTVSRCHHPLLFDEGASTGVIPGT\r\n" + 
+			"SRLVLEGNLRGPRIL\r\n" + 
+			"\r\n" + 
+			"</PRE><BR>\r\n" + 
+			"<H4><A NAME=\"prot\">GeneMark.hmm Protein Translations</A></H4><H4>Go to: <A HREF=\"#hmm\">GeneMark.hmm Listing</A></H4>\r\n" + 
+			"<H4>Go to: <A HREF=\"#sub\">Job Submittal</A></H4><BR>\r\n" + 
+			"<PRE>\r\n" + 
+			"</PRE><HR>\r\n" + 
+			"<form method=\"post\" action=\"/GeneMark/eukhmm.cgi\" enctype=\"multipart/form-data\">\r\n" + 
+			"<table border=\"0\" width=\"100%\"><tr><td bgcolor=\"#A0B8C8\"><font face=\"Verdana,Arial,Helvetica\">Input Sequence</font></td></tr><tr><td><font face=\"Verdana,Arial,Helvetica\">Title (optional):\r\n" + 
+			"<a href=\"eukhmm_instructions.html#title\"><img src=\"images/info.gif\" height=10 width=10 border=0></a><br><input type=\"text\" name=\"title\"  size=\"77\" maxlength=\"80\" /><br><br>Sequence:<a href=\"eukhmm_instructions.html#title\"><img src=\"images/info.gif\" height=10 width=10 border=0></a><br><textarea name=\"sequence\" rows=\"10\" cols=\"62\">&gt;gi|163483|gb|M80838.1|BOVPANPRO B.taurus prepreproelastase I mRNA, complete cds GGGCGTGGCAACATGCTGCGCTTGCTGGTGTTCACCTCTCTCGTCCTTTATGGACACAGCACCCAGGACTTTCCAGAAACCAACGCCCGGGTAGTTGGAGGGACTGCGGTCTCAAAGAATTCTTGGCCCTCTCAGATTTCCCTCCAGTACAAGTCTGGAAGTTCCTGGTATCACACCTGTGGAGGCACCCTCATCAAACAGAAGTGGGTGATGACAGCGGCTCACTGTGTGGATAGCCAAATGACCTTCCGTGTGGTGCTGGGAGACCACAACCTGAGCCAGAACGATGGCACCGAGCAGTACATCAGCGTGCAGAAGATCGTGGTGCATCCATCCTGGAACAGCAACAACGTGGCTGCAGGTTACGACATCGCCGTGCTGCGCCTGGCCCAGAGTGCTACCCTCAACAGCTATGTCCAGCTGGGTGTTCTGCCACAGTCGGGAACCATCCTGGCTAACAACACGCCCTGCTACATCACAGGCTGGGGCAGGACTAAGACCAATGGGCAGCTGGCCCAGACCCTGCAGCAGGCTTACCTGCCCTCCGTGGACTACGCCACCTGCTCCAGCTCCTCCTACTGGGGCTCCACTGTGAAGACCACCATGGTGTGCGCTGGAGGAGACGGAGTTCGTGCTGGATGCCAGGGTGATTCTGGAGGCCCCCTTCACTGCTTGGTGAATGGCCAGTATGCTGTCCACGGTGTGACCAGCTTTGTATCCAGCCTGGGCTGTAATGTCTCCAAGAAGCCCACAGTCTTCACCCGGGTCTCTGCTTACATCTCTTGGATAAATAATGCCATTGCCAGCAACTGAACATCTTCCTGAGTCCAGTGGTATTCCCAAGATGGTTCTGGGATTGACAGCAGAACTTGAGGCCATCAAGGAAAAAACCAGTCTAAGAGACTATTGAGCCAGATGTGGAAAAGCAAATAAAATCGAATATATGT</textarea><br><br>Sequence File upload:<a href=\"eukhmm_instructions.html#title\"><img src=\"images/info.gif\" height=10 width=10 border=0></a><br><input type=\"file\" name=\"seq_file\"  size=\"50\" maxlength=\"120\" /><br><br><font face=\"Verdana,Arial,Helvetica\">Species:<a href=\"eukhmm_instructions.html#species#title\"><img src=\"images/info.gif\" height=10 width=10 border=0></a><select name=\"org\" size=\"1\">\r\n" + 
+			"<option value=\"H.sapiens\">H.sapiens</option>\r\n" + 
+			"<option value=\"C.elegans\">C.elegans</option>\r\n" + 
+			"<option value=\"D.melanogaster\">D.melanogaster</option>\r\n" + 
+			"<option selected=\"selected\" value=\"A.thaliana\">A.thaliana</option>\r\n" + 
+			"<option value=\"C.reinhardtii\">C.reinhardtii</option>\r\n" + 
+			"<option value=\"G.gallus\">G.gallus</option>\r\n" + 
+			"<option value=\"O.sativa\">O.sativa</option>\r\n" + 
+			"<option value=\"Z.mays\">Z.mays</option>\r\n" + 
+			"<option value=\"T.aestivum\">T.aestivum</option>\r\n" + 
+			"<option value=\"H.vulgare\">H.vulgare</option>\r\n" + 
+			"<option value=\"M.musculus\">M.musculus</option>\r\n" + 
+			"</select><p></font><tr><td bgcolor=\"#A0B8C8\"><font face=\"Verdana,Arial,Helvetica\">Output Options</font></td></tr><tr><td valign=\"top\" width=\"100%\"><font face=\"Verdana,Arial,Helvetica\">Email Address: <font size=\"-1\">(required for graphical output or sequences longer than 400000 bp)</font><a href=\"eukhmm_instructions.html#graph\"><img src=\"images/info.gif\" height=10 width=10 border=0></a><br><input type=\"text\" name=\"address\"  size=\"31\" maxlength=\"100\" /><br><br /><input type=\"checkbox\" name=\"pdf\" value=\"1\" checked=\"checked\" /> Generate PDF graphics (screen)<br><input type=\"checkbox\" name=\"postscript\" value=\"1\" /> Generate PostScript graphics (email)<a href=\"eukhmm_instructions.html#graph\"><img src=\"images/info.gif\" height=10 width=10 border=0></a><br /><input type=\"checkbox\" name=\"gmlst\" value=\"1\" /> Print GeneMark 2.4 predictions in addition to GeneMark.hmm predictions<a href=\"eukhmm_instructions.html#graph\"><img src=\"images/info.gif\" height=10 width=10 border=0></a><br /><input type=\"checkbox\" name=\"protein\" value=\"1\" checked=\"checked\" /> Translate predicted genes into protein<a href=\"eukhmm_instructions.html#graph\"><img src=\"images/info.gif\" height=10 width=10 border=0></a></font><br><br></td></tr><tr><td bgcolor=\"#A0B8C8\"><table border=\"0\"><tr><td width=\"50%\"><font face=\"Verdana,Arial,Helvetica\">Run</font></td><td><input type=\"reset\" name=\"Default\" value=\"Default\" />&nbsp;<input type=\"submit\" name=\"Action\" value=\"Start GeneMark.hmm\" /></td></tr></table></td></tr></table><div><input type=\"hidden\" name=\".cgifields\" value=\"protein\"  /><input type=\"hidden\" name=\".cgifields\" value=\"postscript\"  /><input type=\"hidden\" name=\".cgifields\" value=\"org\"  /><input type=\"hidden\" name=\".cgifields\" value=\"gmlst\"  /><input type=\"hidden\" name=\".cgifields\" value=\"pdf\"  /></div></form><HR><font face=\"Verdana,Arial,Helvetica\">\r\n" + 
+			"Web pages maintained by\r\n" + 
+			"<A HREF=\"mailto:gte851w@prism.gatech.edu\">GeneMark administrator, <i>gte851w@prism.gatech.edu</i></A>. Please send any suggestions for improvements or problems to the web page maintainer.</font></font> \r\n" + 
+			"</body></html>\r\n" + 
+			"\r\n" + 
+			"]]></text-html></moby:Simple>\r\n" + 
+			"        </moby:mobyData>\r\n" + 
+			"        </moby:mobyContent></moby:MOBY>";
 
 	public static void main(String[] args) throws Exception {
-
-		System.out.println(XMLUtilities.createMobySimpleListFromCollection(s, null));
-//		System.out.println(XMLUtilities.getMobyCollection(XMLUtilities
-//				.getDOMDocument(s).getRootElement(), "FASTA_AA",
-//				"fasta_output", ""));
+		MobyObjectClassNSImpl mo = new MobyObjectClassNSImpl(null);
+		SAXBuilder builder = new SAXBuilder();
+        // Create the document
+        Document doc = null;
+        try {
+            doc = builder.build(new StringReader(s));
+        } catch (JDOMException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+		//System.out.println(XMLUtilities.createMobySimpleListFromCollection(s, null));
+		Element sim = jDomUtilities.getElement("Simple",doc.getRootElement(),new String[]{"articleName=html_output"});
+		System.out.println(mo.toString(sim));
+		
+		Element element = jDomUtilities.getElement("text-html",sim,new String[]{"articleName="});
+		System.out.println(mo.toString(element));
+		
 	}
 }
