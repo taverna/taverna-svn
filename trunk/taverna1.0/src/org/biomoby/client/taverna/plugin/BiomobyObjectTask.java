@@ -24,7 +24,7 @@ public class BiomobyObjectTask implements ProcessorTaskWorker {
 
     private static Logger logger = Logger.getLogger(BiomobyTask.class);
 
-    private static final int INVOCATION_TIMEOUT = 0;
+    //private static final int INVOCATION_TIMEOUT = 0;
 
     private Processor proc;
 
@@ -70,7 +70,7 @@ public class BiomobyObjectTask implements ProcessorTaskWorker {
                 }
 
                 Element mobyObjectElement = mo.createObject(objectName,
-                        namespace, id, "");
+                        namespace, id, article);
 
                 inputThing = (DataThing) inputMap.get("value");
                 String value = (String) inputThing.getDataObject();
@@ -78,7 +78,7 @@ public class BiomobyObjectTask implements ProcessorTaskWorker {
 
                 String mobyDataString = mo.toString(XMLUtilities
                         .createMobyDataElementWrapper(mo.toSimple(
-                                mobyObjectElement, article)));
+                                mobyObjectElement, "")));
                 outputMap.put("mobyData", new DataThing(mobyDataString));
 
             } catch (Exception ex) {
@@ -113,7 +113,7 @@ public class BiomobyObjectTask implements ProcessorTaskWorker {
                 }
 
                 Element mobyObjectElement = mo.createObject(objectName,
-                        namespace, id, "");
+                        namespace, id, article);
                 // using the inputs, iterate through and fill in data
                 for (int x = 0; x < inputPorts.length; x++) {
                     String portName = inputPorts[x].getName();
