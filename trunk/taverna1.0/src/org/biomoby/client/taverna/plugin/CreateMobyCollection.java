@@ -116,7 +116,7 @@ public class CreateMobyCollection implements LocalWorker {
                                     "Could not build the XML. Make sure that the simples are valid XML.");
                         }
                         Element tempElement = (doc.getRootElement().getChild("mobyContent", mobyNS)).getChild("mobyData", mobyNS).getChild("Simple", mobyNS);
-                        
+                        tempElement.setAttribute("articleName", "", mobyNS);
                         mobyCollection.addContent(tempElement.detach());
                     }
                 }
