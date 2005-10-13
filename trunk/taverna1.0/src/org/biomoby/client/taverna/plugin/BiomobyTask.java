@@ -172,18 +172,25 @@ public class BiomobyTask implements ProcessorTaskWorker {
                             // no list, we have a Simple!
                             inputXML = (String) inputThing.getDataObject();
                             Document d = XMLUtilities.getDOMDocument(inputXML);
-                            List list = d.getRootElement()
-                                    .getChild("mobyContent",
-                                            MobyObjectClassNSImpl.MOBYNS)
-                                    .getChild("mobyData",
-                                            MobyObjectClassNSImpl.MOBYNS)
-                                    .getChildren("Simple",
-                                            MobyObjectClassNSImpl.MOBYNS);
-                            for (Iterator i = list.iterator(); i.hasNext();) {
-                                Element nino = (Element) i.next();
-                                i.remove();
-                                mobyData.addContent(nino.detach());
-                            }
+                            
+                            // check whether we have a collection of datatypes rather than a single simple
+                            List simpleCollection = XMLUtilities.createMobySimpleListFromCollection(inputXML, ((BiomobyProcessor) proc).getMobyEndpoint());
+                            if (simpleCollection.size() == 0) {
+                            List list = d.getRootElement().getChild(
+										"mobyContent",
+										MobyObjectClassNSImpl.MOBYNS).getChild(
+										"mobyData",
+										MobyObjectClassNSImpl.MOBYNS)
+										.getChildren("Simple",
+												MobyObjectClassNSImpl.MOBYNS);
+								for (Iterator i = list.iterator(); i.hasNext();) {
+									Element nino = (Element) i.next();
+									i.remove();
+									mobyData.addContent(nino.detach());
+								}
+							} else {
+								root = XMLUtilities.createMultipleInvocationMessageFromList(simpleCollection);
+							}
                         } else {
                             // this is a Collection!
                             for (Iterator it = inputThing.childIterator(); it
@@ -348,7 +355,7 @@ public class BiomobyTask implements ProcessorTaskWorker {
 		}
 	}
 
-    private void processOutputPorts(String outputXML, Map outputMap) {
+    private void processOutputPorts(String outputXML, Map outputMap) throws MobyException {
         // fill in the supplementary moby object ports
         OutputPort[] outputPorts = proc.getBoundOutputPorts();
         Document doc = XMLUtilities.getDOMDocument(outputXML);
