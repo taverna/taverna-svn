@@ -35,7 +35,7 @@ org.embl.ebi.escience.scuflworkers.java.EmitLotsOfStrings = test:Create lots of 
 org.embl.ebi.escience.scuflworkers.java.TestSometimesFails = test:Echo with occasional failure
 #org.embl.ebi.escience.scuflworkers.java.GetLSIDValue = lsid:Resolve LSID Data
 org.biomoby.client.taverna.plugin.CreateMobyCollection = moby:Create a moby collection
-org.biomoby.client.taverna.plugin.ExtractMobyCollections = moby:Extract simples from a collection
+#org.biomoby.client.taverna.plugin.ExtractMobyCollections = moby:Extract simples from a collection
 org.biomoby.client.taverna.plugin.ExtractMobyData = moby:Parse moby data - not working!
 
 org.embl.ebi.escience.scuflworkers.java.FailIfTrue = conditional:Fail if true
