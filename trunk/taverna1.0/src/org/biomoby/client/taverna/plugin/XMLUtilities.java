@@ -105,8 +105,7 @@ public class XMLUtilities {
 						+ ((articleName == null) ? "" : articleName) });
 		// TODO check namespaces, etc.
 		if (e != null) {
-			if ((e = jDomUtilities.getElement(objectType, e, new String[] { "articleName="
-						+ ((articleName == null) ? "" : articleName) })) != null)
+			if ((e = jDomUtilities.getElement(objectType, e, new String[] { "articleName=" })) != null)
 			return moc.toString(createMobyDataElementWrapper(moc
 					.toSimple(e, articleName)));
 		}

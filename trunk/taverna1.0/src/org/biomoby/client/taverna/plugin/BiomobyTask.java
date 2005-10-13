@@ -5,7 +5,7 @@
  */
 package org.biomoby.client.taverna.plugin;
 
-import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -16,12 +16,7 @@ import java.util.Map;
 import org.apache.log4j.Logger;
 import org.biomoby.client.CentralImpl;
 import org.biomoby.shared.MobyException;
-import org.biomoby.shared.data.MobyContentInstance;
-import org.biomoby.shared.data.MobyDataUtils;
 import org.biomoby.shared.mobyxml.jdom.MobyObjectClassNSImpl;
-import org.biomoby.shared.parser.MobyJob;
-import org.biomoby.shared.parser.MobyPackage;
-import org.biomoby.shared.parser.MobyParser;
 import org.embl.ebi.escience.baclava.DataThing;
 import org.embl.ebi.escience.scufl.InputPort;
 import org.embl.ebi.escience.scufl.OutputPort;
@@ -29,6 +24,7 @@ import org.embl.ebi.escience.scufl.Processor;
 import org.embl.ebi.escience.scuflworkers.ProcessorTaskWorker;
 import org.jdom.Document;
 import org.jdom.Element;
+import org.jdom.JDOMException;
 import org.jdom.Namespace;
 import org.jdom.input.SAXBuilder;
 import org.jdom.output.Format;
@@ -42,7 +38,7 @@ public class BiomobyTask implements ProcessorTaskWorker {
 
     private static Logger logger = Logger.getLogger(BiomobyTask.class);
 
-    private static final int INVOCATION_TIMEOUT = 0;
+    //private static final int INVOCATION_TIMEOUT = 0;
 
     private Processor proc;
 
@@ -119,103 +115,10 @@ public class BiomobyTask implements ProcessorTaskWorker {
                 String outputXML = new CentralImpl(serviceEndpoint,
                         "http://biomoby.org/").call(methodName, inputXML);
                 Map outputMap = new HashMap();
-                
-                OutputPort myOutput = null;
-                OutputPort[] myOutputs = proc.getOutputPorts();
-                for (int i = 0; i < myOutputs.length; i++) {
-                    if (myOutputs[i].getName().equalsIgnoreCase("output"))
-                        myOutput = myOutputs[i];
-                }
-                if (myOutput == null)
-                    throw new TaskExecutionException("output port is invalid.");
-                String outputType = myOutput.getSyntacticType();
-                //System.out.println(outputXML);
-                // Will be either 'text/xml' or l('text/xml')
-
-                if (outputType.equals("'text/xml'")) {
-                    outputMap.put("output", new DataThing(outputXML));
-                    processOutputPorts(outputXML, outputMap);
-                } else {
-                    List outputList = new ArrayList();
-                    // Drill into the output xml document creating
-                    // a list of strings containing simple types
-                    // add them to the outputList
-
-                    // This is in the 'outputXML'
-                    // --------------------------
-                    //        <?xml version="1.0" encoding="UTF-8"?>
-                    //        <moby:MOBY xmlns:moby="http://www.biomoby.org/moby">
-                    //          <moby:mobyContent>
-                    //           <moby:mobyData queryID='b1'>
-                    //               <Collection articleName="mySequenceCollection">
-                    //                  <Simple>
-                    //                   <Object namespace="Genbank/gi" id="163483"/>
-                    //                  </Simple>
-                    //                  <Simple>
-                    //                   <Object namespace="Genbank/gi" id="244355"/>
-                    //                  </Simple>
-                    //                  <Simple>
-                    //                   <Object namespace="Genbank/gi" id="533253"/>
-                    //                  </Simple>
-                    //                  <Simple>
-                    //                   <Object namespace="Genbank/gi" id="745290"/>
-                    //                  </Simple>
-                    //                </Collection>
-                    //           </moby:mobyData>
-                    //          </moby:mobyContent>
-                    //        </moby:MOBY>
-
-                    // And this is what I want to create - several times:
-                    // --------------------------------------------------
-                    //        <?xml version="1.0" encoding="UTF-8"?>
-                    //        <moby:MOBY xmlns:moby="http://www.biomoby.org/moby">
-                    //           <moby:mobyContent>
-                    //               <moby:mobyData queryID='a1'>
-                    //                    <Simple articleName=''>
-                    //                       <Object namespace="Genbank/gi" id="163483"/>
-                    //                    </Simple>
-                    //               </moby:mobyData>
-                    //           </moby:mobyContent>
-                    //        </moby:MOBY>
-
-                    // Create a DOM document from the resulting XML
-                    SAXBuilder saxBuilder = new SAXBuilder();
-                    Document doc = saxBuilder.build(new InputSource(
-                            new StringReader(outputXML)));
-                    Element mobyElement = doc.getRootElement();
-                    Element mobyDataElement = mobyElement.getChild(
-                            "mobyContent", mobyNS).getChild("mobyData", mobyNS);
-
-                    Element collectionElement = mobyDataElement.getChild(
-                            "Collection", mobyNS);
-                    if (collectionElement != null) {
-                        List simpleElements = new ArrayList(collectionElement
-                                .getChildren());
-                        for (Iterator i = simpleElements.iterator(); i
-                                .hasNext();) {
-                            Element simpleElement = (Element) i.next();
-
-                            Element newRoot = new Element("MOBY", mobyNS);
-                            Element newMobyContent = new Element("mobyContent",
-                                    mobyNS);
-                            newRoot.addContent(newMobyContent);
-                            Element newMobyData = new Element("mobyData",
-                                    mobyNS);
-                            newMobyData.setAttribute("queryID", "a1", mobyNS);
-                            newMobyContent.addContent(newMobyData);
-                            newMobyData.addContent(simpleElement.detach());
-                            XMLOutputter xo = new XMLOutputter();
-                            String outputItemString = xo
-                                    .outputString(new Document(newRoot));
-                            outputList.add(outputItemString);
-                        }
-                    }
-
-                    // Return the list (may be empty)
-                    outputMap.put("output", new DataThing(outputList));
-                    // TODO think of how to output a list (collection)
-
-                }
+                // goes through and creates the port 'output'
+                processOutputPort(outputXML, outputMap);
+                // create the other ports
+                processOutputPorts(outputXML, outputMap);
                 return outputMap;
 
             } catch (MobyException ex) {
@@ -318,7 +221,8 @@ public class BiomobyTask implements ProcessorTaskWorker {
                         new MobyObjectClassNSImpl(((BiomobyProcessor) proc)
                                 .getMobyEndpoint()).toString(root));
                 Map outputMap = new HashMap();
-                outputMap.put("output", new DataThing(outputXML));
+                // goes through and creates the port 'output'
+                processOutputPort(outputXML, outputMap);
                 processOutputPorts(outputXML, outputMap);
                 return outputMap;
 
@@ -345,6 +249,104 @@ public class BiomobyTask implements ProcessorTaskWorker {
             }
         }
     }
+
+	private void processOutputPort(String outputXML, Map outputMap) throws TaskExecutionException, JDOMException, IOException {
+		OutputPort myOutput = null;
+		OutputPort[] myOutputs = proc.getOutputPorts();
+		for (int i = 0; i < myOutputs.length; i++) {
+		    if (myOutputs[i].getName().equalsIgnoreCase("output"))
+		        myOutput = myOutputs[i];
+		}
+		if (myOutput == null)
+		    throw new TaskExecutionException("output port is invalid.");
+		String outputType = myOutput.getSyntacticType();
+		//System.out.println(outputXML);
+		// Will be either 'text/xml' or l('text/xml')
+
+		if (outputType.equals("'text/xml'")) {
+		    outputMap.put("output", new DataThing(outputXML));
+		} else {
+		    List outputList = new ArrayList();
+		    // Drill into the output xml document creating
+		    // a list of strings containing simple types
+		    // add them to the outputList
+
+		    // This is in the 'outputXML'
+		    // --------------------------
+		    //        <?xml version="1.0" encoding="UTF-8"?>
+		    //        <moby:MOBY xmlns:moby="http://www.biomoby.org/moby">
+		    //          <moby:mobyContent>
+		    //           <moby:mobyData queryID='b1'>
+		    //               <Collection articleName="mySequenceCollection">
+		    //                  <Simple>
+		    //                   <Object namespace="Genbank/gi" id="163483"/>
+		    //                  </Simple>
+		    //                  <Simple>
+		    //                   <Object namespace="Genbank/gi" id="244355"/>
+		    //                  </Simple>
+		    //                  <Simple>
+		    //                   <Object namespace="Genbank/gi" id="533253"/>
+		    //                  </Simple>
+		    //                  <Simple>
+		    //                   <Object namespace="Genbank/gi" id="745290"/>
+		    //                  </Simple>
+		    //                </Collection>
+		    //           </moby:mobyData>
+		    //          </moby:mobyContent>
+		    //        </moby:MOBY>
+
+		    // And this is what I want to create - several times:
+		    // --------------------------------------------------
+		    //        <?xml version="1.0" encoding="UTF-8"?>
+		    //        <moby:MOBY xmlns:moby="http://www.biomoby.org/moby">
+		    //           <moby:mobyContent>
+		    //               <moby:mobyData queryID='a1'>
+		    //                    <Simple articleName=''>
+		    //                       <Object namespace="Genbank/gi" id="163483"/>
+		    //                    </Simple>
+		    //               </moby:mobyData>
+		    //           </moby:mobyContent>
+		    //        </moby:MOBY>
+
+		    // Create a DOM document from the resulting XML
+		    SAXBuilder saxBuilder = new SAXBuilder();
+		    Document doc = saxBuilder.build(new InputSource(
+		            new StringReader(outputXML)));
+		    Element mobyElement = doc.getRootElement();
+		    Element mobyDataElement = mobyElement.getChild(
+		            "mobyContent", mobyNS).getChild("mobyData", mobyNS);
+
+		    Element collectionElement = mobyDataElement.getChild(
+		            "Collection", mobyNS);
+		    if (collectionElement != null) {
+		        List simpleElements = new ArrayList(collectionElement
+		                .getChildren());
+		        for (Iterator i = simpleElements.iterator(); i
+		                .hasNext();) {
+		            Element simpleElement = (Element) i.next();
+
+		            Element newRoot = new Element("MOBY", mobyNS);
+		            Element newMobyContent = new Element("mobyContent",
+		                    mobyNS);
+		            newRoot.addContent(newMobyContent);
+		            Element newMobyData = new Element("mobyData",
+		                    mobyNS);
+		            newMobyData.setAttribute("queryID", "a1", mobyNS);
+		            newMobyContent.addContent(newMobyData);
+		            newMobyData.addContent(simpleElement.detach());
+		            XMLOutputter xo = new XMLOutputter();
+		            String outputItemString = xo
+		                    .outputString(new Document(newRoot));
+		            outputList.add(outputItemString);
+		        }
+		    }
+
+		    // Return the list (may be empty)
+		    outputMap.put("output", new DataThing(outputList));
+		    // TODO think of how to output a list (collection)
+
+		}
+	}
 
     private void processOutputPorts(String outputXML, Map outputMap) {
         // fill in the supplementary moby object ports
