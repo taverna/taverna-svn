@@ -67,10 +67,6 @@ import java.lang.System;
 public class Workbench extends JFrame {
 
     static {
-	// Set the native look and feel for whatever platform we're on
-	try {
-	    UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-	} catch (Exception e) { }
 	// Initialize the proxy settings etc.
 	ResourceBundle rb = ResourceBundle.getBundle("mygrid");
         Properties sysProps = System.getProperties();
@@ -80,6 +76,15 @@ public class Workbench extends JFrame {
             String value = (String) rb.getString(key);
 	    sysProps.put(key, value);
         }
+	// Set the native look and feel for whatever platform we're on
+	try {
+	    if (System.getProperty("taverna.workbench.themeclass") == null) {
+		UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+	    }
+	    else {
+		UIManager.setLookAndFeel(System.getProperty("taverna.workbench.themeclass"));
+	    }
+	} catch (Exception e) { }
     }
 
     /**
