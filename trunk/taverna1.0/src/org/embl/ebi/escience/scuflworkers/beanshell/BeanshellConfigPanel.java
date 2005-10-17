@@ -683,10 +683,14 @@ public class BeanshellConfigPanel extends JPanel implements ScuflUIComponent,
 		//
 	}
 
-	public String getName()
-	{
-		return "Configuring beanshell for " + processor.getName();
+    public String getName() {
+	if (processor == null) {
+	    return "Beanshell config panel for unknown processor";
 	}
+	else {
+	    return "Configuring beanshell for " + processor.getName();
+	}
+    }
 
 	public ImageIcon getIcon()
 	{
