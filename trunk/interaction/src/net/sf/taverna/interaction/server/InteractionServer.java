@@ -47,6 +47,7 @@ public class InteractionServer {
     private static Logger log = Logger.getLogger(InteractionServer.class);
     private String mailHost, mailFrom;
     private URL baseURL = null;
+    private boolean useHTML = false;
 
     /**
      * Create a new InteractionServer with the specified directory
@@ -76,6 +77,21 @@ public class InteractionServer {
 	    }, (long)0, (long)(1000 * 60));
     }
     
+    /**
+     * Call this to enable the sending of HTML mail including wrapping
+     * all messages in &lt;html>&lt;body>..&lt;/body>&lt;/html> tags.
+     */
+    public void enableHTML() {
+	this.useHTML = true;
+    }
+
+    /**
+     * Is the server sending HTML mail?
+     */
+    public boolean isUsingHTML() {
+	return this.useHTML;
+    }
+
     /**
      * Get the InteractionState object for the specified job ID
      */
@@ -133,6 +149,9 @@ public class InteractionServer {
 				 new InternetAddress(state.getEmail()));
 	    message.setSubject("Taverna interaction request");
 	    String body = state.getMessageBody(baseURL);
+	    if (useHTML) {
+		body = "<html><body>"+body+"</body></html>";
+	    }
 	    message.setText(body);
 	    Transport.send(message);	    
 	    log.debug("Sent successfuly");

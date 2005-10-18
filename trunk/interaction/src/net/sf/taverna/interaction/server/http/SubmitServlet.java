@@ -77,6 +77,15 @@ public class SubmitServlet extends HttpServlet {
 				       mailHost,
 				       mailFrom);
 	try {
+	    if (sc.getInitParameter("use_html").equals("true")) {
+		server.enableHTML();
+	    }
+	}
+	catch (Throwable ex) {
+	    log.debug("Not using HTML");
+	}
+
+	try {
 	    server.setBaseURL(sc.getInitParameter("base_url"));
 	}
 	catch (Throwable ex) {
