@@ -6,11 +6,14 @@ import java.io.OutputStream;
 import java.io.StringReader;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Properties;
 
+import javax.xml.transform.OutputKeys;
 import javax.xml.transform.stream.StreamSource;
 
 import net.sf.saxon.Configuration;
 import net.sf.saxon.om.DocumentInfo;
+import net.sf.saxon.om.SequenceIterator;
 import net.sf.saxon.query.DynamicQueryContext;
 import net.sf.saxon.query.QueryResult;
 import net.sf.saxon.query.StaticQueryContext;
@@ -29,7 +32,7 @@ import uk.ac.soton.itinnovation.taverna.enactor.entities.TaskExecutionException;
  * Last edited by $Author: phidias $
  * 
  * @author Mark
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public class XQueryWorker implements LocalWorker {
 
@@ -54,12 +57,27 @@ public class XQueryWorker implements LocalWorker {
             DocumentInfo docInfo = staticContext.buildDocument(doc);
             context.setContextNode(docInfo);
             
+            
+            // create output buffer
             OutputStream outputStream = new ByteArrayOutputStream();
             BufferedOutputStream buff = new BufferedOutputStream(outputStream);
             StringBuffer sb = new StringBuffer();
-            QueryResult.serializeSequence(exp.iterator(context), config,buff,null);
-            System.out.println(buff.toString());
             
+            // create output properties
+            Properties props = new Properties();
+            props.setProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
+            props.setProperty(OutputKeys.INDENT, "yes");
+            props.setProperty(OutputKeys.STANDALONE, "yes");
+            props.setProperty(OutputKeys.METHOD,"text");
+
+            DynamicQueryContext dynamicContext = new DynamicQueryContext(config);
+            dynamicContext.setContextNode(docInfo);
+            SequenceIterator iter = exp.iterator(dynamicContext);
+            QueryResult.serializeSequence(iter, config, buff, props);
+            
+            //QueryResult.serializeSequence(exp.iterator(context), config,buff,null);
+            //System.out.println(buff.toString());
+            outAdapter.putString("outputText", buff.toString());
         } catch (XPathException e) {
             throw new TaskExecutionException(e);
         }

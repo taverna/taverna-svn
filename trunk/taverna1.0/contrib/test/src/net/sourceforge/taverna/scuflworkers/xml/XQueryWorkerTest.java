@@ -15,13 +15,14 @@ import org.embl.ebi.escience.scuflworkers.java.LocalWorker;
  * Last edited by $Author: phidias $
  * 
  * @author Mark
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class XQueryWorkerTest extends AbstractXmlWorkerTest {
       
     
     
     public void testExecute() throws Exception{
+    	// fetch a protein sequence needed for testing.
         LocalWorker protworker = new ProteinGBSeqWorker();
         
         Map inputMap = new HashMap();
@@ -33,12 +34,13 @@ public class XQueryWorkerTest extends AbstractXmlWorkerTest {
         String results = outAdapter.getString("outputText");      
         System.out.println(results);
         
+        // create an XQueryWorker and run a query
         LocalWorker worker = new XQueryWorker();
-        HashMap xqInputMap = new HashMap();
+        Map xqInputMap = new HashMap();
         DataThingAdapter xqInAdapter = new DataThingAdapter(xqInputMap);
         
-        inAdapter.putString("script","//GBReference");
-        inAdapter.putString("inputdocText",results);
+        xqInAdapter.putString("script","//GBReference");
+        xqInAdapter.putString("inputdocText",results);
         
         Map xqOutput = worker.execute(xqInputMap);
         DataThingAdapter xqOutAdapter = new DataThingAdapter(xqOutput);
