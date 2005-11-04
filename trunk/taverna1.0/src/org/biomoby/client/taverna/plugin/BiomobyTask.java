@@ -93,7 +93,8 @@ public class BiomobyTask implements ProcessorTaskWorker {
                     // It is this collection element that's going to acquire the
                     // simples
                     for (Iterator i = simpleInputs.iterator(); i.hasNext();) {
-                        Element el = (Element) i.next();
+                        String s = (String)i.next();
+                    	Element el = XMLUtilities.getDOMDocument(s).getRootElement();
                         Element mobyDataElement = el.getChild("mobyContent",
                                 mobyNS).getChild("mobyData", mobyNS);
                         // Remove the single 'Simple' child from this...
