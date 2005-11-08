@@ -13,6 +13,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
 import javax.swing.tree.*;
 import java.util.*;
+import javax.swing.*;
 import org.embl.ebi.escience.scufl.*;
 //import org.embl.ebi.escience.scuflui.workbench.GenericUIComponentFrame;
 //import org.embl.ebi.escience.scuflui.workbench.Workbench;
@@ -152,23 +153,56 @@ public class ScuflContextMenuFactory {
 		    }
 		}
 		final InputPort ip = (InputPort)thePort;
-		int mergeMode = ip.getMergeMode();
-		String mergeString = (mergeMode==InputPort.MERGE)?"Merge links":"Select first link";
+
+		// Add menu items to specify merge behaviour, whether to merge the incoming links
+		// or perform the pre 1.3.1 default of a non deterministic selection
 		theMenu.addSeparator();
-		theMenu.add(new ShadedLabel("Mode : "+mergeString, ShadedLabel.TAVERNA_BLUE));
+		theMenu.add(new ShadedLabel("Incoming links...", ShadedLabel.TAVERNA_BLUE));
 		theMenu.addSeparator();
-		JMenuItem toggleMergeMode = new JMenuItem("Change");
-		toggleMergeMode.addActionListener(new ActionListener() {
+		
+		final ButtonGroup mergeGroup = new ButtonGroup();
+		JRadioButtonMenuItem mergeItem = new JRadioButtonMenuItem("Merge all data");
+		mergeItem.setSelected(ip.getMergeMode() == InputPort.MERGE);
+		mergeItem.setActionCommand("merge");
+		JRadioButtonMenuItem selectItem = new JRadioButtonMenuItem("Select first link");
+		selectItem.setSelected(ip.getMergeMode() == InputPort.NDSELECT);
+		selectItem.setActionCommand("select");
+		mergeGroup.add(mergeItem);
+		mergeGroup.add(selectItem);
+		theMenu.add(mergeItem);
+		theMenu.add(selectItem);
+		ActionListener listener = new ActionListener() {
 			public void actionPerformed(ActionEvent ae) {
-			    if (ip.getMergeMode() == InputPort.MERGE) {
-				ip.setMergeMode(InputPort.NDSELECT);
-			    }
-			    else {
+			    if (ae.getActionCommand().equals("merge")) {
 				ip.setMergeMode(InputPort.MERGE);
 			    }
+			    else {
+				ip.setMergeMode(InputPort.NDSELECT);
+			    }
 			}
-		    });
-		theMenu.add(toggleMergeMode);
+		    };
+		mergeItem.addActionListener(listener);
+		selectItem.addActionListener(listener);
+		
+		/**
+		   int mergeMode = ip.getMergeMode();
+		   String mergeString = (mergeMode==InputPort.MERGE)?"Merge links":"Select first link";
+		   theMenu.addSeparator();
+		   theMenu.add(new ShadedLabel("Mode : "+mergeString, ShadedLabel.TAVERNA_BLUE));
+		   theMenu.addSeparator();
+		   JMenuItem toggleMergeMode = new JMenuItem("Change");
+		   toggleMergeMode.addActionListener(new ActionListener() {
+		   public void actionPerformed(ActionEvent ae) {
+		   if (ip.getMergeMode() == InputPort.MERGE) {
+		   ip.setMergeMode(InputPort.NDSELECT);
+		   }
+		   else {
+		   ip.setMergeMode(InputPort.MERGE);
+		   }
+		   }
+		   });
+		   theMenu.add(toggleMergeMode);
+		*/
 		return theMenu;
 	    }
 	    

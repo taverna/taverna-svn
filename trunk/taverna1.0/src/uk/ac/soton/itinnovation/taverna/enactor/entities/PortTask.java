@@ -26,8 +26,8 @@
 //      Dependencies        :
 //
 //      Last commit info    :   $Author: mereden $
-//                              $Date: 2005-11-08 13:00:49 $
-//                              $Revision: 1.37 $
+//                              $Date: 2005-11-08 13:33:50 $
+//                              $Revision: 1.38 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 
@@ -159,7 +159,7 @@ public class PortTask extends AbstractTask {
 	// If this is an input port and we're already going to be wrapping this item into a list
 	// because the merge mode is set to MERGE rather than NDSELECT we can reduce the encapsulation
 	// difference by one.
-	if (getScuflPort instanceof InputPort) {
+	if (getScuflPort() instanceof InputPort) {
 	    if (((InputPort)getScuflPort()).getMergeMode() == InputPort.MERGE) {
 		encapsulationDifference--;
 	    }
