@@ -26,8 +26,8 @@
 //      Dependencies        :
 //
 //      Last commit info    :   $Author: mereden $
-//                              $Date: 2005-06-21 13:03:54 $
-//                              $Revision: 1.36 $
+//                              $Date: 2005-11-08 13:00:49 $
+//                              $Revision: 1.37 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 
@@ -132,7 +132,14 @@ public class PortTask extends AbstractTask {
      */
     public synchronized void setData(DataThing newDataThing, boolean forced) {
 	if (!forced && dataAvailable()) {
-	    return;
+	    if (getScuflPort() instanceof InputPort) {
+		if (((InputPort)getScuflPort()).getMergeMode() == InputPort.NDSELECT) {
+		    return;
+		}
+	    }
+	    else {
+		return;
+	    }
 	}
 	//System.out.println("Pushing data into port task "+getScuflPort().getProcessor().getName()+"."+getScuflPort().getName());
 	// Check whether the new data is a lower dimension than
@@ -149,6 +156,14 @@ public class PortTask extends AbstractTask {
 	int portDimension = (portSetType.length())/2;
 	int dataDimension = (dataSetType.length())/2;
 	int encapsulationDifference = portDimension - dataDimension;
+	// If this is an input port and we're already going to be wrapping this item into a list
+	// because the merge mode is set to MERGE rather than NDSELECT we can reduce the encapsulation
+	// difference by one.
+	if (getScuflPort instanceof InputPort) {
+	    if (((InputPort)getScuflPort()).getMergeMode() == InputPort.MERGE) {
+		encapsulationDifference--;
+	    }
+	}
 	////System.out.println("Think this is a difference of "+encapsulationDifference+" ("+portDimension+"-"+dataDimension+")");
 	if (encapsulationDifference > 0) {
 	    String[] lsidWrapArray = new String[encapsulationDifference];
@@ -162,15 +177,15 @@ public class PortTask extends AbstractTask {
 		newList.add(theDataObject);
 		theDataObject = newList;
 	    }
-	    this.theDataThing = new DataThing(theDataObject);
-	    this.theDataThing.copyMetadataFrom(newDataThing);	
+	    DataThing newThing = new DataThing(theDataObject);
+	    newThing.copyMetadataFrom(newDataThing);	
 	    // Fully populate the dataThing with LSID values if it doesn't already have them
-	    this.theDataThing.fillLSIDValues();
+	    newThing.fillLSIDValues();
 	    // Emit an event corresponding to the wrapping operation.
 	    String originalLSID = newDataThing.getLSID(newDataThing.getDataObject());
-	    List l = (List)this.theDataThing.getDataObject();
+	    List l = (List)newThing.getDataObject();
 	    for (int i = 0; i < lsidWrapArray.length; i++) {
-		lsidWrapArray[i] = this.theDataThing.getLSID(l);
+		lsidWrapArray[i] = newThing.getLSID(l);
 		try {
 		    l = (List)l.get(0);
 		}
@@ -181,12 +196,23 @@ public class PortTask extends AbstractTask {
 	    WorkflowEventDispatcher.DISPATCHER.fireCollectionConstructed(new CollectionConstructionEvent(workflowInstance,
 													 lsidWrapArray,
 													 originalLSID));
+	    newDataThing = newThing;
+	}
+	// At this point the datathing has been reconciled to be the appropriate collection type or higher
+	if (getScuflPort() instanceof InputPort && 
+	    ((InputPort)getScuflPort()).getMergeMode()==InputPort.MERGE) {
+	    if (this.theDataThing == null) {
+		this.theDataThing = new DataThing(new ArrayList());
+	    }
+	    ((List)(this.theDataThing.getDataObject())).add(newDataThing.getDataObject());
+	    this.theDataThing.copyMetadataFrom(newDataThing);
 	}
 	else {
 	    this.theDataThing = newDataThing;	
-	    // Fully populate the dataThing with LSID values if it doesn't already have them
-	    this.theDataThing.fillLSIDValues();
 	}
+	// Fully populate the dataThing with LSID values if it doesn't already have them
+	this.theDataThing.fillLSIDValues();
+	
 	// Copy any MIME types available from the markup object
 	// on the Scufl port into the MIME container in the
 	// DataThing. This will only happen on input ports as 
@@ -236,18 +262,21 @@ public class PortTask extends AbstractTask {
 	}
 	if (getScuflPort() instanceof InputPort) {
 	    // This is an input
-	    Collection parents = getParents();
-	    Set removeMe = new HashSet();
-	    if (parents.size() > 1) {
-		for (Iterator i = parents.iterator(); i.hasNext(); ) {
-		    PortTask port = (PortTask)i.next();
-		    if (port.dataAvailable() == false) {
-			removeMe.add(port);
+	    // Remove all parent links if we're in select mode rather than merge
+	    if (((InputPort)getScuflPort()).getMergeMode() == InputPort.NDSELECT) {
+		Collection parents = getParents();
+		Set removeMe = new HashSet();
+		if (parents.size() > 1) {
+		    for (Iterator i = parents.iterator(); i.hasNext(); ) {
+			PortTask port = (PortTask)i.next();
+			if (port.dataAvailable() == false) {
+			    removeMe.add(port);
+			}
 		    }
 		}
-	    }
-	    for (Iterator i = removeMe.iterator(); i.hasNext();) {
-		getParents().remove(i.next());
+		for (Iterator i = removeMe.iterator(); i.hasNext();) {
+		    getParents().remove(i.next());
+		}
 	    }
 	}
 	/**

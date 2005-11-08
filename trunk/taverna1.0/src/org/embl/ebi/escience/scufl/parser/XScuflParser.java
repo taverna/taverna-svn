@@ -307,6 +307,13 @@ public class XScuflParser {
 	    for (Iterator i = sinkList.iterator(); i.hasNext(); ) {
 		Element sinkElement = (Element)i.next();
 		String portName = sinkElement.getAttributeValue("name");
+		String mergeModeString = sinkElement.getAttributeValue("mode");
+		int mergeMode = InputPort.NDSELECT;
+		if (mergeModeString != null) {
+		    if (mergeModeString.equals("merge")) {
+			mergeMode = InputPort.MERGE;
+		    }
+		}
 		if (portName == null) {
 		    portName = sinkElement.getTextTrim();
 		}
@@ -315,6 +322,7 @@ public class XScuflParser {
 			portName = prefix+"_"+portName;
 		    }
 		    InputPort sinkPort = new InputPort(sinkHolder, portName);
+		    sinkPort.setMergeMode(mergeMode);
 		    Element configurationElement = sinkElement.getChild("metadata", namespace);
 		    if (configurationElement != null) {
 			sinkPort.getMetadata().configureFromElement(configurationElement);
@@ -458,6 +466,19 @@ class ProcessorLoaderThread extends Thread {
 	    if (de!=null) {
 		description = de.getTextTrim();
 		theProcessor.setDescription(description);
+	    }
+	    for (Iterator i = processorNode.getChildren("mergemode",namespace).iterator(); i.hasNext();) {
+		Element inputBehaviourElement = (Element)i.next();
+		String inputName = inputBehaviourElement.getAttributeValue("input");
+		String inputMode = inputBehaviourElement.getAttributeValue("mode");
+		InputPort[] ports = theProcessor.getInputPorts();
+		for (int j = 0; j < ports.length; j++) {
+		    if (ports[j].getName().equals(inputName)) {
+			if (inputMode.equals("merge")) {
+			    ports[j].setMergeMode(InputPort.MERGE);
+			}
+		    }
+		}
 	    }
 	    // Get the default set if present
 	    Element ds = processorNode.getChild("defaults",namespace);

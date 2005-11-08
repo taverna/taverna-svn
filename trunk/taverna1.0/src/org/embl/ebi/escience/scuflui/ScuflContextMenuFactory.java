@@ -116,9 +116,12 @@ public class ScuflContextMenuFactory {
 		return LinkingMenus.linkFrom(thePort);
 	    }
 	    else if (thePort instanceof InputPort) {
+		// Workflow sink or processor inputs have the option to toggle between NDSELECT and MERGE 
+		// operation when there's more than one input link to the port
+		JPopupMenu theMenu = new JPopupMenu();
+
 		// If this is a workflow sink, give the option to remove it.
 		if (thePort.getProcessor() == model.getWorkflowSinkProcessor()) {
-		    JPopupMenu theMenu = new JPopupMenu();
 		    theMenu.add(new ShadedLabel("Workflow Output : "+thePort.getName(), ShadedLabel.TAVERNA_GREEN));
 		    final Port sinkPort = thePort;
 		    theMenu.addSeparator();
@@ -132,23 +135,41 @@ public class ScuflContextMenuFactory {
 		    theMenu.add(edit);
 		    theMenu.addSeparator();
 		    theMenu.add(new RemoveAction(model, sinkPort));
-		    return theMenu;
 		}
-		else if (thePort.getProcessor().getModel() != null &&
-			 ((InputPort)thePort).hasDefaultValue()) {
-		    JPopupMenu theMenu = new JPopupMenu();
+		else {
 		    theMenu.add(new ShadedLabel("Input port : "+thePort.getName(), ShadedLabel.TAVERNA_GREEN));
-		    final InputPort ip = (InputPort)thePort;
-		    JMenuItem removeDefault = new JMenuItem("Remove default '"+ip.getDefaultValue()+"'", ScuflIcons.editIcon);
-		    removeDefault.addActionListener(new ActionListener() {
-			    public void actionPerformed(ActionEvent ae) {
-				ip.setDefaultValue(null);
-			    }
-			});
-		    theMenu.add(removeDefault);
-		    return theMenu;
+		    if (thePort.getProcessor().getModel() != null &&
+			((InputPort)thePort).hasDefaultValue()) {
+			theMenu.add(new ShadedLabel("Input port : "+thePort.getName(), ShadedLabel.TAVERNA_GREEN));
+			final InputPort ip = (InputPort)thePort;
+			JMenuItem removeDefault = new JMenuItem("Remove default '"+ip.getDefaultValue()+"'", ScuflIcons.editIcon);
+			removeDefault.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent ae) {
+				    ip.setDefaultValue(null);
+				}
+			    });
+			theMenu.add(removeDefault);
+		    }
 		}
-		
+		final InputPort ip = (InputPort)thePort;
+		int mergeMode = ip.getMergeMode();
+		String mergeString = (mergeMode==InputPort.MERGE)?"Merge links":"Select first link";
+		theMenu.addSeparator();
+		theMenu.add(new ShadedLabel("Mode : "+mergeString, ShadedLabel.TAVERNA_BLUE));
+		theMenu.addSeparator();
+		JMenuItem toggleMergeMode = new JMenuItem("Change");
+		toggleMergeMode.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent ae) {
+			    if (ip.getMergeMode() == InputPort.MERGE) {
+				ip.setMergeMode(InputPort.NDSELECT);
+			    }
+			    else {
+				ip.setMergeMode(InputPort.MERGE);
+			    }
+			}
+		    });
+		theMenu.add(toggleMergeMode);
+		return theMenu;
 	    }
 	    
 	}

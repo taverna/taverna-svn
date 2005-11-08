@@ -18,9 +18,40 @@ public class InputPort extends Port implements Serializable, Transferable {
     final public static DataFlavor FLAVOR =
 	new DataFlavor(InputPort.class, "Input Port");
     static DataFlavor[] flavors = { FLAVOR };
+
+    /** 
+     * Non deterministic single select mode for multiple input links
+     * where the first link to populate the port with data 'wins' and
+     * removes all other links to prevent blocking. This is the default
+     * behaviour mode for input ports
+     */
+    public static int NDSELECT = 0;
+    /**
+     * Combine mode for multiple input links where each distinct input
+     * from all upstream links is inserted into a list, ordering is 
+     * currently not defined
+     */
+    public static int MERGE = 1;
+
+    private int mergeMode = InputPort.NDSELECT;
     private String defaultValue;
     private boolean isOptional = false;
     String[] cv = null;
+
+    /**
+     * Return the current merge mode for this input port
+     */
+    public int getMergeMode() {
+	return this.mergeMode;
+    }
+
+    /**
+     * Set the merge mode for this input port, this value must
+     * currently be one of InputPort.NDSELECT or InputPort.MERGE
+     */
+    public void setMergeMode(int mode) {
+	this.mergeMode = mode;
+    }
 
     /**
      * Does this input port have a default value?

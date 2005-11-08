@@ -144,6 +144,17 @@ public class XScuflView implements ScuflModelEventListener, java.io.Serializable
 	    // Define the actual processor content
 	    Element spec = ProcessorHelper.elementForProcessor(processors[i]);
 	    processor.addContent(spec);
+	    // Set the merge modes on the ports that have modes other than InputPort.NDSELECT,
+	    // currently only applied to InputPort.MERGE
+	    InputPort[] inputs = processors[i].getInputPorts();
+	    for (int j = 0; j < inputs.length; j++) {
+		if (inputs[j].getMergeMode() != InputPort.NDSELECT) {
+		    Element mergeModeElement = new Element("mergemode", XScufl.XScuflNS);
+		    mergeModeElement.setAttribute("input",inputs[j].getName());
+		    mergeModeElement.setAttribute("mode","merge");
+		    processor.addContent(mergeModeElement);
+		}
+	    }
 	    // Do the iteration strategy if it exists
 	    IterationStrategy iterationStrategy = processors[i].getIterationStrategy();
 	    if (iterationStrategy != null && processors[i].getInputPorts().length>0) {
@@ -240,9 +251,14 @@ public class XScuflView implements ScuflModelEventListener, java.io.Serializable
 	    }
 	    root.addContent(sourceElement);
 	}
-	Port[] sinks = model.getWorkflowSinkProcessor().getPorts();
+	InputPort[] sinks = model.getWorkflowSinkProcessor().getInputPorts();
 	for (int i = 0; i < sinks.length; i++) {
 	    Element sinkElement = new Element("sink",scuflNS());
+	    if (sinks[i].getMergeMode() != InputPort.NDSELECT) {
+		if (sinks[i].getMergeMode() == InputPort.MERGE) {
+		    sinkElement.setAttribute("mode","merge");
+		}
+	    }
 	    //sinkElement.setText(sinks[i].getName());
 	    sinkElement.setAttribute("name",sinks[i].getName());
 	    List knownMIMEs = new ArrayList();
