@@ -141,7 +141,7 @@ public class ScuflContextMenuFactory {
 		    theMenu.add(new ShadedLabel("Input port : "+thePort.getName(), ShadedLabel.TAVERNA_GREEN));
 		    if (thePort.getProcessor().getModel() != null &&
 			((InputPort)thePort).hasDefaultValue()) {
-			theMenu.add(new ShadedLabel("Input port : "+thePort.getName(), ShadedLabel.TAVERNA_GREEN));
+			//theMenu.add(new ShadedLabel("Input port : "+thePort.getName(), ShadedLabel.TAVERNA_GREEN));
 			final InputPort ip = (InputPort)thePort;
 			JMenuItem removeDefault = new JMenuItem("Remove default '"+ip.getDefaultValue()+"'", ScuflIcons.editIcon);
 			removeDefault.addActionListener(new ActionListener() {
