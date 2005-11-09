@@ -42,7 +42,10 @@ import org.jdom.output.XMLOutputter;
 
 /**
  * Implementation of the ServerInteractionPattern for Genome flatfiles (such as 
- * EMBL, Genbank, GFF etc.). This Pattern supports 
+ * EMBL, Genbank, GFF etc.). This Pattern supports launching of a modified version 
+ * of Artemis via Java Web Start for manipulation of flatfiles. Uploaded data includes:
+ * Accept or Reject, Manual changes (yes / no in case of Accept), Modified data and comments 
+ * from the Expert Reviewer.   
  *  
  * @author andersl
  * 

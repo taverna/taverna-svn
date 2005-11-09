@@ -14,9 +14,8 @@ import org.jdom.filter.ElementFilter;
 /**
  * An empty well-formed JNLP XML document for launching a Java Web Start Application,
  * including all the required root elements. It's main purpose is to provide and interface
- * to creating new JNLP documents. Does not support multiple platforms or applets.
- * 
- * <a href="http://java.sun.com/j2se/1.5.0/docs/guide/javaws/developersguide/syntax.html#information">
+ * to creating new JNLP documents. Does not support multiple platforms or applets. 
+ * <a href="http://java.sun.com/j2se/1.5.0/docs/guide/javaws/developersguide/syntax.html">
  * More information about the JNLP syntax.</a>  
  *   
  * @author andersl
@@ -35,6 +34,11 @@ public abstract class JNLPDocument extends org.jdom.Document {
     private Element resources = new Element("resources");
 
     private Element application_desc = new Element("application-desc");
+    
+    /**
+     * Create an empty well-formed JNLP XML document for launching a Java Web Start Application,
+     * including all the required root elements.
+     */
 
     public JNLPDocument() {
         super();
@@ -48,42 +52,42 @@ public abstract class JNLPDocument extends org.jdom.Document {
     }
 
     /**
-     * @return Returns the application-desc element.
+     * Returns the application-desc element.
      */
     public Element getApplication_desc() {
         return this.application_desc;
     }
 
     /**
-     * @return Returns the information element.
+     * Returns the information element.
      */
     public Element getInformation() {
         return this.information;
     }
 
     /**
-     * @return Returns the resources element.
+     * Returns the resources element.
      */
     public Element getResources() {
         return this.resources;
     }
 
     /**
-     * @return Returns the security element.
+     * Returns the security element.
      */
     public Element getSecurity() {
         return this.security;
     }
 
     /**
-     * Whether or not the application declares a requirement of all-permissions
+     * Returns whether or not the application declares a requirement of all-permissions
      */
     public boolean hasAllPermissions() {
         return (security.getChild("all-permissions") != null);
     }
 
     /**
-     * Whether or not the application may run offline 
+     * Returns whether or not the application may run offline 
      */
     public boolean offlineAllowed() {
         return (information.getChild("offline-allowed") != null);
@@ -108,7 +112,10 @@ public abstract class JNLPDocument extends org.jdom.Document {
     }
 
     /**
-     * Set the Location (URL) of this JNLP document
+     * Set the Self Location (URL) of this JNLP document
+     * (Note: this is not strictly required and may lead
+     * to problems with caching of dynamically generated
+     * JNLPS such as this one when used.
      */
     public void setSelfLocation(String url) {
         root.setAttribute("href", url);
@@ -145,6 +152,9 @@ public abstract class JNLPDocument extends org.jdom.Document {
         new_element.addContent(description);
         information.addContent(new_element);
     }
+    /**
+     * Add a vendor element with the name of the vendor of the application launched  
+     */
 
     public void addVendor(String vendor) {
         Element new_element = new Element("vendor");
