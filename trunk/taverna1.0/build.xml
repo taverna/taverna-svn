@@ -92,24 +92,16 @@
 		     dest="./netlib/jdom-1.0.jar" usetimestamp="yes"/>
 
 		<!-- Axis jar files -->
-		<!-- Old nightly builds, now using 1.2rc3 from ibiblio		
-		<get src="http://www.ebi.ac.uk/~tmo/mygrid/axis/11-Jan-2005/axis-nightly-11.01.05.jar" 
-		     dest="./netlib/axis-nightly-11.01.05.jar" usetimestamp="yes"/>
-		<get src="http://www.ebi.ac.uk/~tmo/mygrid/axis/11-Jan-2005/jaxrpc-nightly-11.01.05.jar" 
-                     dest="./netlib/jaxrpc-nightly-11.01.05.jar" usetimestamp="yes"/>
-		<get src="http://www.ebi.ac.uk/~tmo/mygrid/axis/11-Jan-2005/saaj-nightly-11.01.05.jar" 
-                     dest="./netlib/saaj-nightly-11.01.05.jar" usetimestamp="yes"/>
-		<get src="http://www.ebi.ac.uk/~tmo/mygrid/axis/11-Jan-2005/wsdl4j-nightly-11.01.05.jar" 
-                     dest="./netlib/wsdl4j-nightly-11.01.05.jar" usetimestamp="yes"/>
-		-->     
-		<get src="http://www.ibiblio.org/pub/packages/maven/axis/jars/axis-1.2-RC3.jar"
-			 dest="./netlib/axis-1.2-RC3.jar" usetimestamp="yes"/>
-		<get src="http://www.ibiblio.org/pub/packages/maven/axis/jars/axis-jaxrpc-1.2-RC3.jar"
-			 dest="./netlib/axis-jaxrpc-1.2-RC3.jar" usetimestamp="yes"/>
-		<get src="http://www.ibiblio.org/pub/packages/maven/axis/jars/axis-saaj-1.2-RC3.jar"
-			 dest="./netlib/axis-saaj-1.2-RC3.jar" usetimestamp="yes"/>
-		<get src="http://www.ibiblio.org/pub/packages/maven/axis/jars/axis-wsdl4j-1.2-RC3.jar"
-			 dest="./netlib/axis-wsdl4j-1.2-RC3.jar" usetimestamp="yes"/>	  
+		<get src="http://www.ibiblio.org/pub/packages/maven/axis/jars/axis-1.3.jar"
+			 dest="./netlib/axis-1.3.jar" usetimestamp="yes"/>
+		<get src="http://www.ibiblio.org/pub/packages/maven/axis/jars/axis-jaxrpc-1.3.jar"
+			 dest="./netlib/axis-jaxrpc-1.3.jar" usetimestamp="yes"/>
+		<get src="http://www.ibiblio.org/pub/packages/maven/axis/jars/axis-saaj-1.3.jar"
+			 dest="./netlib/axis-saaj-1.3.jar" usetimestamp="yes"/>
+		<get src="http://www.ibiblio.org/pub/packages/maven/axis/jars/axis-schema-1.3.jar"
+		         dest="./netlib/axis-schema-1.3.jar" usetimestamp="yes"/>
+		<get src="http://www.ibiblio.org/pub/packages/maven/axis/jars/axis-wsdl4j-1.2-RC1.jar"
+			 dest="./netlib/axis-wsdl4j-1.2-RC1.jar" usetimestamp="yes"/>	  
 			 
 		<!-- Apache Commons -->
 		<get src="http://www.ibiblio.org/maven/commons-discovery/jars/commons-discovery-0.2.jar" 
@@ -148,8 +140,8 @@
 		     dest="./netlib/poi-2.0-final-20040126.jar" usetimestamp="yes"/>
 
 		<!-- mySQL connector for biomart -->
-		<get src="http://www.ibiblio.org/maven/mysql/jars/mysql-connector-java-3.0.10-stable-bin.jar" 
-		     dest="./netlib/mysql-connector-java-3.0.10-stable-bin.jar" usetimestamp="yes"/>
+		<get src="http://www.ibiblio.org/maven/mysql/jars/mysql-connector-java-3.0.10.jar" 
+		     dest="./netlib/mysql-connector-java-3.0.10.jar" usetimestamp="yes"/>
 		
 		<!-- Batik 1.6 for the SVG based graph display -->
 		<get src="http://www.ibiblio.org/maven/batik/jars/batik-awt-util-1.6.jar" 
