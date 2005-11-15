@@ -36,7 +36,7 @@ import java.io.*;
 
 import org.apache.log4j.Logger;
 import org.apache.commons.fileupload.*;
-import org.apache.commons.io.IOUtil;
+import org.apache.commons.io.IOUtils;
 
 import java.util.*;
 
@@ -91,7 +91,7 @@ public class ResultServlet extends HttpServlet {
 	    FileInputStream fis = new FileInputStream(resultsFile);
 	    response.setContentType("text/xml");
 	    PrintWriter out = response.getWriter();
-	    IOUtil.copy(fis, out);
+	    IOUtils.copy(fis, out);
 	    out.flush();
 	    out.close();
 	    // Got to here, this means we've sent the results off safely

@@ -33,7 +33,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.ServletException;
 import org.apache.commons.fileupload.*;
-import org.apache.commons.io.IOUtil;
+import org.apache.commons.io.IOUtils;
 
 /**
  * Partial implementation of the ServerInteractionPattern interface
@@ -148,7 +148,7 @@ public abstract class AbstractServerInteractionPattern
 				     state.getID()+"-input.xml");
 	    FileInputStream fis = new FileInputStream(dataFile);
 	    PrintWriter writer = response.getWriter();
-	    IOUtil.copy(fis, writer);
+	    IOUtils.copy(fis, writer);
 	    fis.close();
 	    writer.flush();
 	    writer.close();

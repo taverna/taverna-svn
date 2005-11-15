@@ -31,7 +31,6 @@ import javax.servlet.ServletConfig;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpUtils;
 
 import java.io.*;
 
@@ -97,7 +96,7 @@ public class SubmitServlet extends HttpServlet {
     public void doPost(HttpServletRequest request,
 		       HttpServletResponse response)
 	throws ServletException {
-	server.setBaseURL(HttpUtils.getRequestURL(request).toString());
+	server.setBaseURL(request.getRequestURL().toString());
 	String jobID = null;
 	try {
 	    FileItem dataItem = null;
