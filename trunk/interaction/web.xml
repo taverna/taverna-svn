@@ -6,6 +6,10 @@
 <!-- is then loaded on container startup and used  -->
 <!-- to configure everything else.                 -->
 
+<!DOCTYPE web-app
+    PUBLIC "-//Sun Microsystems, Inc.//DTD Web Application 2.2//EN"
+    "http://java.sun.com/j2ee/dtds/web-app_2.2.dtd">
+
 <web-app>
 
   <!-- Handles interaction service request submission, mapped to /workflow/submit -->
