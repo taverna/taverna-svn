@@ -10,10 +10,8 @@
 
   <!-- Handles interaction service request submission, mapped to /workflow/submit -->
   <servlet>
+    <servlet-name>SubmitServlet</servlet-name>    
     <display-name>Interaction service submission servlet</display-name>
-    <!-- Force init when the application server starts -->
-    <load-on-startup>0</load-on-startup>
-    <servlet-name>SubmitServlet</servlet-name>
     <servlet-class>net.sf.taverna.interaction.server.http.SubmitServlet</servlet-class>
     <!-- Define where the server should place temporary data files -->
     <init-param>
@@ -35,67 +33,75 @@
       <param-name>base_url</param-name>
       <param-value>http://ogre.dhcp.ebi.ac.uk:8080/InteractionServer-0.1/</param-value>
     </init-param>
+    <!-- Set to true to enable wrapping of emails in html body tags -->
+    <init-param>
+      <param-name>use_html</param-name>
+      <param-value>false</param-value>
+    </init-param>
+    <load-on-startup>0</load-on-startup>
   </servlet>
+
+  <!-- Provides status information, mapped to /workflow/status -->
+  <servlet>    
+    <servlet-name>StatusServlet</servlet-name>
+    <display-name>Interaction service status servlet</display-name>
+    <servlet-class>net.sf.taverna.interaction.server.http.StatusServlet</servlet-class>
+    <load-on-startup>1</load-on-startup>
+  </servlet>
+
+  <!-- Provides result document from interaction server to workflow, mapped to /workflow/results -->
+  <servlet>
+    <servlet-name>ResultServlet</servlet-name>
+    <display-name>Interaction service results servlet</display-name> 
+    <servlet-class>net.sf.taverna.interaction.server.http.ResultServlet</servlet-class>
+    <load-on-startup>1</load-on-startup>
+  </servlet>
+
+  <!-- Dynamic generation of the patterns.xml -->
+  <servlet>    
+    <servlet-name>PatternServlet</servlet-name>
+    <display-name>Interaction service dynamic pattern metadata</display-name>
+    <servlet-class>net.sf.taverna.interaction.server.http.PatternServlet</servlet-class>
+    <load-on-startup>1</load-on-startup>
+  </servlet>
+ 
+  <!-- Interface for interaction client code to fetch input data, mapped to /client/download -->
+  <servlet>    
+    <servlet-name>ClientDownloadServlet</servlet-name>
+    <display-name>Interaction client data download servlet</display-name>    
+    <servlet-class>net.sf.taverna.interaction.server.http.ClientDownloadServlet</servlet-class>
+    <load-on-startup>2</load-on-startup>
+  </servlet>
+
+  <!-- Interface for interaction client code to upload result data, mapped to /client/upload -->
+  <servlet>    
+    <servlet-name>ClientUploadServlet</servlet-name>
+    <display-name>Interaction client data upload servlet</display-name>
+    <servlet-class>net.sf.taverna.interaction.server.http.ClientUploadServlet</servlet-class>    
+    <load-on-startup>2</load-on-startup>
+  </servlet>
+
+  <!-- Servlet mappings -->
   <servlet-mapping>
     <servlet-name>SubmitServlet</servlet-name>
     <url-pattern>/workflow/submit</url-pattern>
   </servlet-mapping>
-
-  <!-- Provides status information, mapped to /workflow/status -->
-  <servlet>
-    <display-name>Interaction service status servlet</display-name>
-    <load-on-startup>1</load-on-startup>
-    <servlet-name>StatusServlet</servlet-name>
-    <servlet-class>net.sf.taverna.interaction.server.http.StatusServlet</servlet-class>
-  </servlet>
   <servlet-mapping>
     <servlet-name>StatusServlet</servlet-name>
     <url-pattern>/workflow/status</url-pattern>
   </servlet-mapping>
-
-  <!-- Provides result document from interaction server to workflow, mapped to /workflow/results -->
-  <servlet>
-    <display-name>Interaction service results servlet</display-name>
-    <load-on-startup>1</load-on-startup>
-    <servlet-name>ResultServlet</servlet-name>
-    <servlet-class>net.sf.taverna.interaction.server.http.ResultServlet</servlet-class>
-  </servlet>
   <servlet-mapping>
     <servlet-name>ResultServlet</servlet-name>
     <url-pattern>/workflow/results</url-pattern>
   </servlet-mapping>
-
-  <!-- Dynamic generation of the patterns.xml -->
-  <servlet>
-    <display-name>Interaction service dynamic pattern metadata</display-name>
-    <load-on-startup>1</load-on-startup>
-    <servlet-name>PatternServlet</servlet-name>
-    <servlet-class>net.sf.taverna.interaction.server.http.PatternServlet</servlet-class>
-  </servlet>
   <servlet-mapping>
     <servlet-name>PatternServlet</servlet-name>
     <url-pattern>/patterns.xml</url-pattern>
   </servlet-mapping>
-
-  <!-- Interface for interaction client code to fetch input data, mapped to /client/download -->
-  <servlet>
-    <display-name>Interaction client data download servlet</display-name>
-    <load-on-startup>2</load-on-startup>
-    <servlet-name>ClientDownloadServlet</servlet-name>
-    <servlet-class>net.sf.taverna.interaction.server.http.ClientDownloadServlet</servlet-class>
-  </servlet>
   <servlet-mapping>
     <servlet-name>ClientDownloadServlet</servlet-name>
     <url-pattern>/client/download</url-pattern>
   </servlet-mapping>
-
-  <!-- Interface for interaction client code to upload result data, mapped to /client/upload -->
-  <servlet>
-    <display-name>Interaction client data upload servlet</display-name>
-    <load-on-startup>2</load-on-startup>
-    <servlet-name>ClientUploadServlet</servlet-name>
-    <servlet-class>net.sf.taverna.interaction.server.http.ClientUploadServlet</servlet-class>
-  </servlet>
   <servlet-mapping>
     <servlet-name>ClientUploadServlet</servlet-name>
     <url-pattern>/client/upload</url-pattern>
