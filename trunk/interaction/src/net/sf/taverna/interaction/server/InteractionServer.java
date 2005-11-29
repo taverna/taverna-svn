@@ -69,7 +69,7 @@ public class InteractionServer {
 	    statusMap.put(states[i].getID(), states[i]);
 	}
 	// Create a new Timer to run the expiry method every minute
-	Timer timer = new Timer();
+	Timer timer = new Timer(true);
 	timer.schedule(new TimerTask() {
 		public void run() {
 		    InteractionServer.this.expireSessions();
