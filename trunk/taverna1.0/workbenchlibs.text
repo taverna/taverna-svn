@@ -26,7 +26,7 @@ bsh-2.0b1.jar
 jdom-1.0.jar
 commons-httpclient-3.0-rc3.jar
 
-axis-1.4-svn-1.12.05.jar
+axis-1.4-svn-1.12.05-patched.jar
 axis-saaj-1.3.jar
 wsdl4j-1.5.1.jar
 axis-jaxrpc-1.3.jar
