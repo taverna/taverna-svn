@@ -92,16 +92,18 @@
 		     dest="./netlib/jdom-1.0.jar" usetimestamp="yes"/>
 
 		<!-- Axis jar files -->
+		<!--
 		<get src="http://www.ibiblio.org/pub/packages/maven/axis/jars/axis-1.3.jar"
 			 dest="./netlib/axis-1.3.jar" usetimestamp="yes"/>
+			 -->
 		<get src="http://www.ibiblio.org/pub/packages/maven/axis/jars/axis-jaxrpc-1.3.jar"
 			 dest="./netlib/axis-jaxrpc-1.3.jar" usetimestamp="yes"/>
 		<get src="http://www.ibiblio.org/pub/packages/maven/axis/jars/axis-saaj-1.3.jar"
 			 dest="./netlib/axis-saaj-1.3.jar" usetimestamp="yes"/>
 		<get src="http://www.ibiblio.org/pub/packages/maven/axis/jars/axis-schema-1.3.jar"
 		         dest="./netlib/axis-schema-1.3.jar" usetimestamp="yes"/>
-		<get src="http://www.ibiblio.org/pub/packages/maven/axis/jars/axis-wsdl4j-1.2-RC1.jar"
-			 dest="./netlib/axis-wsdl4j-1.2-RC1.jar" usetimestamp="yes"/>	  
+		<get src="http://www.ibiblio.org/maven/wsdl4j/jars/wsdl4j-1.5.1.jar"
+			 dest="./netlib/wsdl4j-1.5.1.jar" usetimestamp="yes"/>	  
 			 
 		<!-- Apache Commons -->
 		<get src="http://www.ibiblio.org/maven/commons-discovery/jars/commons-discovery-0.2.jar" 
