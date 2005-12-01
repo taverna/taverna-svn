@@ -41,4 +41,4 @@ case "`uname`" in
   CYGWIN*) CLASSP=`cygpath --path --type windows $CLASSP`;;
 esac
 
-java -classpath $CLASSP -Djava.protocol.handler.pkgs=uk.ac.rdg.resc.jstyx.client -Dtaverna.scrollDesktop -Dtaverna.home=$TAVERNA_HOME -ea org.embl.ebi.escience.scuflui.workbench.Workbench
+java -classpath $CLASSP -Djava.protocol.handler.pkgs=uk.ac.rdg.resc.jstyx.client -Dtaverna.home=$TAVERNA_HOME -ea org.embl.ebi.escience.scuflui.workbench.Workbench
