@@ -5,7 +5,7 @@ import org.apache.commons.discovery.tools.SPInterface;
 import org.apache.commons.discovery.resource.ClassLoaders;
 import org.apache.log4j.Logger;
 import org.embl.ebi.escience.baclava.DataThing;
-import org.embl.ebi.escience.scuflui.workbench.PluginManager;
+import org.embl.ebi.escience.scuflui.workbench.WorkbenchLauncher;
 
 // Utility Imports
 import java.util.*;
@@ -24,13 +24,13 @@ public class UIComponentRegistry {
     public static synchronized UIComponentRegistry instance() {
 	if (instance == null) {
 	    instance = new UIComponentRegistry();
-	    instance.loadInstances(UIComponentRegistry.class.getClassLoader());
+	    instance.loadInstances(WorkbenchLauncher.LOADER);
 	}
 	return instance;
     }
     
     public static void forceReload() {
-	instance.loadInstances(UIComponentRegistry.class.getClassLoader());
+	instance.loadInstances(WorkbenchLauncher.LOADER);
     }
 
     public UIComponentRegistry() {
@@ -41,14 +41,8 @@ public class UIComponentRegistry {
     public void loadInstances(ClassLoader classLoader) {
 	log.info("Loading all UI components");
 	SPInterface spiIF = new SPInterface(ScuflUIComponent.class);
-	ClassLoader[] plugins = PluginManager.getPluginClassLoaders();
 	ClassLoaders loaders = new ClassLoaders();
 	loaders.put(classLoader);
-	for (int i = 0; i < plugins.length; i++) {
-	    loaders.put(plugins[i]);
-	}
-	
-	System.out.println("Searching for plugins...");
 	Enumeration spe = Service.providers(spiIF, loaders);
 	while (spe.hasMoreElements()) {
 	    ScuflUIComponent component = (ScuflUIComponent)spe.nextElement();

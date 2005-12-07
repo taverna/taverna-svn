@@ -35,9 +35,9 @@ public class DataThingTreeNodeRenderer extends DefaultTreeCellRenderer {
     static ImageIcon textIcon, binaryIcon, imageIcon;
     static {
 	try {
-	    textIcon = new ImageIcon(ClassLoader.getSystemResource("org/embl/ebi/escience/baclava/icons/text.png"));
-	    imageIcon = new ImageIcon(ClassLoader.getSystemResource("org/embl/ebi/escience/baclava/icons/image.png"));
-	    binaryIcon = new ImageIcon(ClassLoader.getSystemResource("org/embl/ebi/escience/baclava/icons/application.png"));
+	    textIcon = new ImageIcon(DataThingTreeNodeRenderer.class.getClassLoader().getResource("org/embl/ebi/escience/baclava/icons/text.png"));
+	    imageIcon = new ImageIcon(DataThingTreeNodeRenderer.class.getClassLoader().getResource("org/embl/ebi/escience/baclava/icons/image.png"));
+	    binaryIcon = new ImageIcon(DataThingTreeNodeRenderer.class.getClassLoader().getResource("org/embl/ebi/escience/baclava/icons/application.png"));
 	}
 	catch (Exception ex) {
 	    ex.printStackTrace();

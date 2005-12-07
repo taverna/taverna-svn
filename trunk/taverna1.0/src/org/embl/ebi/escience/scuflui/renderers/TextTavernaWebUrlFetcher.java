@@ -19,7 +19,7 @@ public class TextTavernaWebUrlFetcher
     public TextTavernaWebUrlFetcher()
     {
         super("Web URL Fetcher",
-              new ImageIcon(ClassLoader.getSystemResource(
+              new ImageIcon(TextTavernaWebUrlFetcher.class.getClassLoader().getResource(
                 "org/embl/ebi/escience/baclava/icons/text.png")),
               Pattern.compile(".*text/x-taverna-web-url.*"));
     }

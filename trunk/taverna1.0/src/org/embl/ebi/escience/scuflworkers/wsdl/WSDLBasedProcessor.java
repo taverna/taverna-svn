@@ -294,7 +294,10 @@ public class WSDLBasedProcessor extends Processor implements java.io.Serializabl
      */
     WSIFOperation getWSIFOperation() throws WSIFException {
 	synchronized(port) {
-	    return port.createOperation(operationName, inputName, outputName);
+	    //return port.createOperation(operationName, inputName, outputName);
+	    WSIFOperation op = port.createOperation(operationName);
+	    System.out.println("Created operation : "+op.toString());
+	    return op;
 	}
     }
     

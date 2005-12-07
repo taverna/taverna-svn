@@ -23,7 +23,7 @@ public class Text
     public Text()
     {
         super("Text",
-              new ImageIcon(ClassLoader.getSystemResource(
+              new ImageIcon(Text.class.getClassLoader().getResource(
                       "org/embl/ebi/escience/baclava/icons/text.png")),
               Pattern.compile(".*text/.*"));
     }

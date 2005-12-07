@@ -16,7 +16,7 @@ public class TextRtf
     public TextRtf()
     {
         super("RTF",
-              new ImageIcon(ClassLoader.getSystemResource(
+              new ImageIcon(TextRtf.class.getClassLoader().getResource(
                 "org/embl/ebi/escience/baclava/icons/text.png")),
               Pattern.compile(".*text/rtf.*"));
     }

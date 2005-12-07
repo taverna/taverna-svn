@@ -16,7 +16,7 @@ public class Image
 {
     public Image() {
         super("Image",
-              new ImageIcon(ClassLoader.getSystemResource(
+              new ImageIcon(Image.class.getClassLoader().getResource(
                 "org/embl/ebi/escience/baclava/icons/image.png")),
               Pattern.compile(".*image/.*"));
     }

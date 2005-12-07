@@ -26,13 +26,9 @@ cd "$saveddir"
 TAVERNA_HOME=`cd "$TAVERNA_HOME" && pwd`
 
 
-CLASSP=$TAVERNA_HOME/resources:$TAVERNA_HOME/conf
+CLASSP=$TAVERNA_HOME/resources:$TAVERNA_HOME/conf:$TAVERNA_HOME/taverna-1.3.1-launcher.jar
 
-for i in $TAVERNA_HOME/lib/*.jar
-do
-  CLASSP=$CLASSP:$i
-done
-for i in $TAVERNA_HOME/plugins/*.jar
+for i in $TAVERNA_HOME/libext/*.jar
 do
   CLASSP=$CLASSP:$i
 done
@@ -41,4 +37,4 @@ case "`uname`" in
   CYGWIN*) CLASSP=`cygpath --path --type windows $CLASSP`;;
 esac
 
-java -classpath $CLASSP -Djava.protocol.handler.pkgs=uk.ac.rdg.resc.jstyx.client -Dtaverna.home=$TAVERNA_HOME -ea org.embl.ebi.escience.scuflui.workbench.Workbench
+java -classpath $CLASSP -Djava.protocol.handler.pkgs=uk.ac.rdg.resc.jstyx.client -Dtaverna.home=$TAVERNA_HOME -ea org.embl.ebi.escience.scuflui.workbench.WorkbenchLauncher

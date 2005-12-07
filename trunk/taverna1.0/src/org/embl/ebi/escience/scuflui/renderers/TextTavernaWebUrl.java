@@ -17,7 +17,7 @@ public class TextTavernaWebUrl
     public TextTavernaWebUrl()
     {
         super("Web URL",
-              new ImageIcon(ClassLoader.getSystemResource(
+              new ImageIcon(TextTavernaWebUrl.class.getClassLoader().getResource(
                 "org/embl/ebi/escience/baclava/icons/text.png")),
               Pattern.compile(".*text/x-taverna-web-url.*"));
     }

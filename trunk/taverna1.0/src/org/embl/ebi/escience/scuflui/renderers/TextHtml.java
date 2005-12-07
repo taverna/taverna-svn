@@ -23,7 +23,7 @@ public class TextHtml
     public TextHtml()
     {
         super("HTML",
-              new ImageIcon(ClassLoader.getSystemResource(
+              new ImageIcon(TextHtml.class.getClassLoader().getResource(
                 "org/embl/ebi/escience/baclava/icons/text.png")),
               Pattern.compile(".*text/html.*"));
     }

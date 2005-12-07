@@ -154,6 +154,12 @@ public class WSDLInvocationTask implements ProcessorTaskWorker {
 			   System.out.println(baos.toString());
 			*/
 		    }
+		    else if (c.equals(String[].class)) {
+			// Should have a collection of String here
+			System.out.println("Building string[]");
+			List l = (List)inputObject.getDataObject();
+			value = (String[])l.toArray(new String[0]);
+		    }
 		    else {
 			// If the datathing contains a string and the service wants something else...
 			if (inputObject.getDataObject() instanceof String) {
@@ -182,6 +188,7 @@ public class WSDLInvocationTask implements ProcessorTaskWorker {
 	    boolean respOK = operation.executeRequestResponseOperation(input, output, fault);
 	    
 	    if (respOK) {
+		//if (true){
 		// Operation succeeded - extract output parts
 		Map resultMap = new HashMap();
 		for (int i = 0; i < processor.outNames.length; i++) {
@@ -247,6 +254,7 @@ public class WSDLInvocationTask implements ProcessorTaskWorker {
 		StringBuffer errorMessage = new StringBuffer();
 		errorMessage.append("Error from WSIF based invocation :\n");
 		for (Iterator i = fault.getPartNames(); i.hasNext();) {
+		    errorMessage.append("*");
 		    String name = (String)i.next();
 		    errorMessage.append(fault.getObjectPart(name).toString());
 		    if (i.hasNext()) {

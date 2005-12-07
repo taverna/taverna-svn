@@ -23,7 +23,7 @@ public class TextXml
     public TextXml()
     {
         super("XML",
-              new ImageIcon(ClassLoader.getSystemResource(
+              new ImageIcon(TextXml.class.getClassLoader().getResource(
                 "org/embl/ebi/escience/baclava/icons/text.png")),
               Pattern.compile(".*text/xml.*"));
     }

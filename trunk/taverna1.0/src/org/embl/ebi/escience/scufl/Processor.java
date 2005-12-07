@@ -21,7 +21,7 @@ import java.util.regex.Pattern;
  * An abstract superclass of the various processor subtypes
  * @author Tom Oinn
  */
-public abstract class Processor implements Serializable {
+public abstract class Processor implements Serializable, IProcessor {
 
     private String name = "";
     private String description = "";
@@ -44,14 +44,6 @@ public abstract class Processor implements Serializable {
     private boolean breakpoint=false;
     protected boolean boring = false;
     
-
-    /**
-     * A string representing a resource location within the enactor
-     * JVM. This is the case, for example, for the simple string
-     * operations and the local service processors.
-     */
-    public static String ENACTOR = "Local to enactor";
-
     /**
      * Is this processor boring? If so it shouldn't show up
      * by default in the status display

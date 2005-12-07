@@ -40,7 +40,7 @@ public class TextXGraphviz
     public TextXGraphviz()
     {
         super("X-Graphviz",
-              new ImageIcon(ClassLoader.getSystemResource(
+              new ImageIcon(TextXGraphviz.class.getClassLoader().getResource(
                 "org/embl/ebi/escience/baclava/icons/text.png")),
               Pattern.compile(".*text/x-graphviz.*"));
     }

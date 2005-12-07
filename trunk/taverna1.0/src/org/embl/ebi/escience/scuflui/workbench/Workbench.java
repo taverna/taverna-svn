@@ -28,6 +28,7 @@ import org.embl.ebi.escience.scuflui.EnactorLaunchPanel;
 import org.embl.ebi.escience.scuflui.ScuflDiagram;
 import org.embl.ebi.escience.scuflui.ScuflModelExplorer;
 import org.embl.ebi.escience.scuflui.XScuflTextArea;
+import org.embl.ebi.escience.scuflui.renderers.*;
 
 // Utility Imports
 import java.util.Enumeration;
@@ -96,15 +97,18 @@ public class Workbench extends JFrame {
 	new SplashScreen(8000);
 
 	// Set up the plugin classloader system
-	if (System.getProperty("taverna.home") == null) {
-	    System.out.println("Warning, taverna.home not set, will probably be"+
-			       " unable to locate any of the plugins!.");
-	}
-	else {
-	    PluginManager.init(new File(System.getProperty("taverna.home")));
-	}
+	/**
+	   if (System.getProperty("taverna.home") == null) {
+	   System.out.println("Warning, taverna.home not set, will probably be"+
+	   " unable to locate any of the plugins!.");
+	   }
+	   else {
+	   PluginManager.init(new File(System.getProperty("taverna.home")));
+	   }
+	*/
 	// Initialize the UI component registry
 	UIComponentRegistry.instance();
+	RendererRegistry.instance();
 	
 	// Create the workbench and define the authenticator before anything tries to 
 	// access the network
