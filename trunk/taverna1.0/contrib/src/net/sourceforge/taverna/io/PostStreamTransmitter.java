@@ -11,15 +11,16 @@ import net.iharder.Base64;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpException;
 import org.apache.commons.httpclient.methods.PostMethod;
+import org.apache.commons.httpclient.HostConfiguration;
 
 /**
  * This class uses an HTTP POST method to transmit data to a URL,
  * and to return the results in a map.
  * 
- * Last edited by $Author: phidias $
+ * Last edited by $Author: mereden $
  * 
  * @author Mark
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public class PostStreamTransmitter extends AbstractStreamTransmitter {
 
@@ -67,10 +68,11 @@ public class PostStreamTransmitter extends AbstractStreamTransmitter {
                 }
             }
 
+	    HostConfiguration config = new HostConfiguration();
+	    config.setHost(host, port);
             HttpClient client = new HttpClient();
-           
-            client.startSession(host, port);
-            client.executeMethod(method);
+	    client.setHostConfiguration(config);
+	    client.executeMethod(method);
             
             outputMap = streamProcessor.processStream(method.getResponseBodyAsStream());
             

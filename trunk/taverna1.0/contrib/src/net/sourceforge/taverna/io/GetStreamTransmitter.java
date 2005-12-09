@@ -11,6 +11,7 @@ import net.iharder.Base64;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpException;
 import org.apache.commons.httpclient.methods.GetMethod;
+import org.apache.commons.httpclient.HostConfiguration;
 
 
 
@@ -18,10 +19,10 @@ import org.apache.commons.httpclient.methods.GetMethod;
  * This class uses an HTTP GET to send data to a URL endpoint, and returns
  * the result
  * 
- * Last edited by $Author: phidias $
+ * Last edited by $Author: mereden $
  * 
  * @author Mark
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class GetStreamTransmitter extends AbstractStreamTransmitter {
 
@@ -64,10 +65,11 @@ public class GetStreamTransmitter extends AbstractStreamTransmitter {
                 }
             }
             
-
+	    HostConfiguration config = new HostConfiguration();
+	    config.setHost(host, port);
             HttpClient client = new HttpClient();
-           
-            client.startSession(host, port);
+	    client.setHostConfiguration(config);
+            //client.startSession(host, port);
             client.executeMethod(method);
             
             outputMap = streamProcessor.processStream(method.getResponseBodyAsStream());
