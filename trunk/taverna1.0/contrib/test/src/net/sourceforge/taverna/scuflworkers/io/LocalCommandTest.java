@@ -12,7 +12,7 @@ import net.sourceforge.taverna.baclava.DataThingAdapter;
  * Last edited by $Author: phidias $
  * 
  * @author Mark
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class LocalCommandTest extends TestCase {
 
@@ -22,7 +22,8 @@ public class LocalCommandTest extends TestCase {
         Map inputMap = new HashMap();
         DataThingAdapter inAdapter = new DataThingAdapter(inputMap);
         inAdapter.putString("command","dir");
-        
+        inAdapter.putStringArray("args",new String[]{"/B"});
+         
         Map outputMap = cmd.execute(inputMap);
         DataThingAdapter outAdapter = new DataThingAdapter(outputMap);
         

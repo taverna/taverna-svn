@@ -2,7 +2,10 @@ package net.sourceforge.taverna.scuflworkers.io;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import net.sourceforge.taverna.baclava.DataThingAdapter;
@@ -17,9 +20,10 @@ import uk.ac.soton.itinnovation.taverna.enactor.entities.TaskExecutionException;
  * 
  * 
  * @author Mark
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  * 
  * @tavinput command  The command to be executed.
+ * @tavinput args	  A list of  arguments to be passed to the command.
  * @tavoutput result  The text results returned by the command.
  */
 public class LocalCommand implements LocalWorker {
@@ -33,6 +37,7 @@ public class LocalCommand implements LocalWorker {
         DataThingAdapter outAdapter = new DataThingAdapter(outputMap);
 
         String cmd = inAdapter.getString("command");
+        String[] args = inAdapter.getStringArray("args");
         if (cmd == null || cmd.equals("")){
             throw new TaskExecutionException("The 'command' port cannot be null.");
         }
@@ -50,8 +55,20 @@ public class LocalCommand implements LocalWorker {
                 cmdArray = new String[]{cmd};
             }
             
-            proc = rt.exec(cmdArray);
+            // concatenate the arrays
+            int argSize = cmdArray.length + args.length;
+            ArrayList appArray = new ArrayList(argSize);
+            for (int i=0; i < cmdArray.length; i++){
+            	appArray.add(cmdArray[i]);
+            }
             
+            for(int i=0; i < args.length; i++){
+            	appArray.add(args[i]);
+            }
+            
+        	String[] applist = new String[argSize];
+            appArray.toArray(applist);
+            proc = rt.exec(applist);
             
             //Get the input stream and read from it
             InputStream in = proc.getInputStream();
@@ -75,14 +92,14 @@ public class LocalCommand implements LocalWorker {
      * @see org.embl.ebi.escience.scuflworkers.java.LocalWorker#inputNames()
      */
     public String[] inputNames() {
-        return new String[]{"command"};
+        return new String[]{"command","args"};
     }
 
     /**
      * @see org.embl.ebi.escience.scuflworkers.java.LocalWorker#inputTypes()
      */
     public String[] inputTypes() {
-        return new String[]{"'text/plain'"};
+        return new String[]{"'text/plain'","l('text/plain')"};
     }
 
     /**
