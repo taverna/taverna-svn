@@ -3,6 +3,7 @@ import javax.swing.filechooser.FileFilter;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.event.ListSelectionEvent;
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.awt.event.ActionListener;
@@ -17,6 +18,7 @@ import java.awt.*;
  */
 public class ConfiguratorUI
 {
+//    private static final String DAZZLECFG = "dalec-webapp" + File.separator + "dazzlecfg.xml";
     private static final String DAZZLECFG = "dazzlecfg.xml";
     private static final DalecConfig DALECCONFIG = new DalecConfig(new File(DAZZLECFG));
 
@@ -95,11 +97,11 @@ public class ConfiguratorUI
             {
                 public void actionPerformed(ActionEvent e)
                 {
-                    // pop up a copy of the add Dalec dialog box but fill in the details already
+                    // pop up a copy of the add DalecModel dialog box but fill in the details already
                     try
                     {
                         String name = LIST.getSelectedValue().toString();
-                        Dalec dalec = DLM.getDalecByName(name);
+                        DalecModel dalec = DLM.getDalecByName(name);
 
                         JDialog editDialog = new AddDalecDialog(DalecConfigFrame.this, dalec);
                         editDialog.setVisible(true);
@@ -120,10 +122,13 @@ public class ConfiguratorUI
                         DALECCONFIG.clearDalecs();
                         for (Iterator it = DLM.getDalecs().iterator(); it.hasNext();)
                         {
-                            Dalec d = (Dalec) it.next();
+                            DalecModel d = (DalecModel) it.next();
                             DALECCONFIG.addDalec(d);
                         }
                         DALECCONFIG.writeXML();
+
+                        // now XML is written, archive and deploy webapp
+                        archiveAndDeploy();
                     }
                     catch (NullPointerException e1)
                     {
@@ -148,9 +153,9 @@ public class ConfiguratorUI
             add(buttonPanel, BorderLayout.SOUTH);
         }
 
-        private static void popupRemoveBox(final Dalec dalecToRemove)
+        private static void popupRemoveBox(final DalecModel dalecToRemove)
         {
-            String message = "Are you sure you want to remove the Dalec \"" + (String) dalecToRemove.getAttributes().get(Dalec.NAME) + "\" ?";
+            String message = "Are you sure you want to remove the Dalec \"" + (String) dalecToRemove.getAttributes().get(DalecModel.NAME) + "\" ?";
             int response = JOptionPane.showConfirmDialog(null, message, "Remove Dalec", JOptionPane.OK_CANCEL_OPTION);
             if (response == JOptionPane.OK_OPTION)
             {
@@ -165,7 +170,7 @@ public class ConfiguratorUI
         {
             for (Iterator it = dalecsList.iterator(); it.hasNext();)
             {
-                Dalec dalec = (Dalec) it.next();
+                DalecModel dalec = (DalecModel) it.next();
 
                 addElement(dalec);
             }
@@ -174,16 +179,16 @@ public class ConfiguratorUI
         public Object getElementAt(int index)
         {
             // return the name so the JList displays dalec names
-            return ((Dalec) get(index)).getAttributes().get(Dalec.NAME);
+            return ((DalecModel) get(index)).getAttributes().get(DalecModel.NAME);
         }
 
-        public Dalec getDalecByName(String dalecName)
+        public DalecModel getDalecByName(String dalecName)
         {
-            Dalec d = null;
+            DalecModel d = null;
             for (int i = 0; i < size(); i++)
             {
-                d = (Dalec) get(i);
-                String name = (String) d.getAttributes().get(Dalec.NAME);
+                d = (DalecModel) get(i);
+                String name = (String) d.getAttributes().get(DalecModel.NAME);
                 if (name.matches(dalecName))
                 {
                     break;
@@ -197,7 +202,7 @@ public class ConfiguratorUI
             ArrayList dalecsList = new ArrayList();
             for (int i = 0; i < size(); i++)
             {
-                dalecsList.add((Dalec) get(i));
+                dalecsList.add((DalecModel) get(i));
             }
             return dalecsList;
         }
@@ -215,10 +220,10 @@ public class ConfiguratorUI
 
         private AddDalecDialog(JFrame owner)
         {
-            super(owner, "Add a new Dalec", true);
+            super(owner, "Add a new DalecModel", true);
             setSize(700, 250);
             setLocationRelativeTo(null);
-            // set up all boxes for adding Dalec data
+            // set up all boxes for adding DalecModel data
             inputPanel = new JPanel();
             inputPanel.setLayout(new GridBagLayout());
 
@@ -292,7 +297,7 @@ public class ConfiguratorUI
             {
                 public void actionPerformed(ActionEvent e)
                 {
-                    Dalec dalec = new Dalec();
+                    DalecModel dalec = new DalecModel();
                     dalec.setName(NAME.getText());
                     dalec.setDescription(DESCRIPTION.getText());
                     dalec.setMapMaster(MAP.getText());
@@ -320,15 +325,15 @@ public class ConfiguratorUI
 
             add(inputPanel);
             add(buttonPanel, BorderLayout.SOUTH);
-            // create a new Dalec and add to LIST model
+            // create a new DalecModel and add to LIST model
         }
 
-        private AddDalecDialog(JFrame owner, final Dalec editingDalec)
+        private AddDalecDialog(JFrame owner, final DalecModel editingDalec)
         {
-            super(owner, "Add a new Dalec", true);
+            super(owner, "Add a new DalecModel", true);
             setSize(700, 250);
             setLocationRelativeTo(null);
-            // set up all boxes for adding Dalec data
+            // set up all boxes for adding DalecModel data
             inputPanel = new JPanel();
             inputPanel.setLayout(new GridBagLayout());
 
@@ -373,32 +378,32 @@ public class ConfiguratorUI
 
             inputPanel.add(new JLabel("Name (should be unique): "), labelCons);
             inputPanel.add(NAME, boxCons);
-            NAME.setText((String) editingDalec.getAttributes().get(Dalec.NAME));
+            NAME.setText((String) editingDalec.getAttributes().get(DalecModel.NAME));
             labelCons.gridy = 1;
             boxCons.gridy = 1;
 
             inputPanel.add(new JLabel("Descriptions: "), labelCons);
             inputPanel.add(DESCRIPTION, boxCons);
-            DESCRIPTION.setText((String) editingDalec.getAttributes().get(Dalec.DESCRIPTION));
+            DESCRIPTION.setText((String) editingDalec.getAttributes().get(DalecModel.DESCRIPTION));
             labelCons.gridy = 2;
             boxCons.gridy = 2;
 
             inputPanel.add(new JLabel("MapMaster (corresponds to reference server to annotate): "), labelCons);
             inputPanel.add(MAP, boxCons);
-            MAP.setText((String) editingDalec.getAttributes().get(Dalec.MAPMASTER));
+            MAP.setText((String) editingDalec.getAttributes().get(DalecModel.MAPMASTER));
             labelCons.gridy = 3;
 
             inputPanel.add(new JLabel("Workflow File (.xscufl format): "), labelCons);
             inputPanel.add(XSCUFL, boxAndButtonCons);
             inputPanel.add(makeBrowseButton(XSCUFL, true), buttonCons);
-            XSCUFL.setText((String) editingDalec.getAttributes().get(Dalec.XSCUFLFILE));
+            XSCUFL.setText((String) editingDalec.getAttributes().get(DalecModel.XSCUFLFILE));
             labelCons.gridy = 4;
             boxAndButtonCons.gridy = 4;
             buttonCons.gridy = 4;
 
             inputPanel.add(new JLabel("Database root location: "), labelCons);
             inputPanel.add(DBFIELD, boxAndButtonCons);
-            DBFIELD.setText((String) editingDalec.getAttributes().get(Dalec.DBLOCATION));
+            DBFIELD.setText((String) editingDalec.getAttributes().get(DalecModel.DBLOCATION));
             inputPanel.add(makeBrowseButton(DBFIELD, false), buttonCons);
 
             JButton okButton = new JButton("OK");
@@ -406,7 +411,7 @@ public class ConfiguratorUI
             {
                 public void actionPerformed(ActionEvent e)
                 {
-                    Dalec dalec = new Dalec();
+                    DalecModel dalec = new DalecModel();
                     dalec.setName(NAME.getText());
                     dalec.setDescription(DESCRIPTION.getText());
                     dalec.setMapMaster(MAP.getText());
@@ -484,11 +489,30 @@ public class ConfiguratorUI
                     if (result == JFileChooser.APPROVE_OPTION)
                     {
                         textField.setText(fileBrowser.getSelectedFile().getPath());
-                        // add Dalec to LIST model
+                        // add DalecModel to LIST model
                     }
                 }
             });
             return browseButton;
+        }
+    }
+
+    private static void archiveAndDeploy()
+    {
+        File baseDir = new File ("dalec-webapp");
+//        File archive = new File (System.getenv("TOMCAT_HOME") + File.separator + "webapps" + File.separator + "das.war");
+        new File("archive").mkdir();
+        File archive = new File ("archive" + File.separator + "das.war");
+
+        DalecArchiver da = new DalecArchiver(archive, baseDir);
+        try
+        {
+            System.out.println(archive.getAbsolutePath());
+            da.createArchive();
+        }
+        catch (IOException e)
+        {
+            System.out.println("Unable to create archive");
         }
     }
 }

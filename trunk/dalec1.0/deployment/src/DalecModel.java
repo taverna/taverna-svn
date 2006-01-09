@@ -5,7 +5,7 @@ import java.util.HashMap;
  * Created by IntelliJ IDEA. User: Tony Burdett Date: 04-Sep-2005 Time: 12:44:22 To change this template use File |
  * Settings | File Templates.
  */
-public class Dalec
+public class DalecModel
 {
     public static final String NAME = "name";
     public static final String DESCRIPTION = "description";
@@ -18,7 +18,7 @@ public class Dalec
 
     private Map attribs;
 
-    public Dalec()
+    public DalecModel()
     {
         attribs = new HashMap();
         // set attributes for dalec which don't change & don't need configuring

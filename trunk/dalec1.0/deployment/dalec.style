@@ -3,7 +3,7 @@
 <DASSTYLE>
   <STYLESHEET>
     <CATEGORY id="default">
-      <TYPE id="Dalec">
+      <TYPE id="DalecModel">
         <GLYPH>
 	  <TICK>
 	    <HEIGHT>15</HEIGHT>

@@ -44,13 +44,13 @@ public class DalecConfig
             NodeList datasources = dazzle.getElementsByTagName(DATASOURCE_TAG_NAME);
             for (int i = 0; i < datasources.getLength(); i++)
             {
-                // get the attribute for this datasource to check if it is a Dalec source
+                // get the attribute for this datasource to check if it is a DalecModel source
                 Node datasource = datasources.item(i);
                 Node jclass = datasource.getAttributes().getNamedItem("jclass");
                 if (jclass.getNodeValue().equals("net.sf.taverna.dalec.DalecAnnotationSource"))
                 {
-                    // datasource is a dalec datasource, so create a new Dalec
-                    Dalec dalec = new Dalec();
+                    // datasource is a dalec datasource, so create a new DalecModel
+                    DalecModel dalec = new DalecModel();
 
                     // get all the children - these will be string elements describing dalec params
                     NodeList children = datasource.getChildNodes();
@@ -64,30 +64,30 @@ public class DalecConfig
                             if (next.getTagName().equals("string"))
                             {
                                 Node nameAttrib = next.getAttributes().getNamedItem("name");
-                                if (nameAttrib.getNodeValue().equals(Dalec.NAME))
+                                if (nameAttrib.getNodeValue().equals(DalecModel.NAME))
                                 {
                                     dalec.setName(children.item(j).getAttributes().getNamedItem("value").getNodeValue());
                                 }
-                                else if (nameAttrib.getNodeValue().equals(Dalec.DESCRIPTION))
+                                else if (nameAttrib.getNodeValue().equals(DalecModel.DESCRIPTION))
                                 {
                                     dalec.setDescription(children.item(j).getAttributes().getNamedItem("value").getNodeValue());
                                 }
-                                else if (nameAttrib.getNodeValue().equals(Dalec.MAPMASTER))
+                                else if (nameAttrib.getNodeValue().equals(DalecModel.MAPMASTER))
                                 {
                                     dalec.setMapMaster(children.item(j).getAttributes().getNamedItem("value").getNodeValue());
                                 }
-                                else if (nameAttrib.getNodeValue().equals(Dalec.XSCUFLFILE))
+                                else if (nameAttrib.getNodeValue().equals(DalecModel.XSCUFLFILE))
                                 {
                                     dalec.setXScuflFile(children.item(j).getAttributes().getNamedItem("value").getNodeValue());
                                 }
-                                else if (nameAttrib.getNodeValue().equals(Dalec.DBLOCATION))
+                                else if (nameAttrib.getNodeValue().equals(DalecModel.DBLOCATION))
                                 {
                                     dalec.setDBLocation(children.item(j).getAttributes().getNamedItem("value").getNodeValue());
                                 }
                             }
                         }
                     }
-                    // add this new Dalec to the arraylist
+                    // add this new DalecModel to the arraylist
                     dalecs.add(dalec);
                 }
             }
@@ -114,12 +114,12 @@ public class DalecConfig
         return dalecs;
     }
 
-    public void addDalec(Dalec dalecToAdd)
+    public void addDalec(DalecModel dalecToAdd)
     {
         // create a new datasource element for our new dalec
         Element dalecElement = dazzleDoc.createElement(DATASOURCE_TAG_NAME);
         // set attributes on the dalec element
-        dalecElement.setAttribute("id", (String) dalecToAdd.getAttributes().get(Dalec.NAME));
+        dalecElement.setAttribute("id", (String) dalecToAdd.getAttributes().get(DalecModel.NAME));
         dalecElement.setAttribute("jclass", "net.sf.taverna.dalec.DalecAnnotationSource");
 
         // get all the dalec attributes, we will need a child node for each one
@@ -146,13 +146,13 @@ public class DalecConfig
         NodeList datasources = dazzleDoc.getElementsByTagName(DATASOURCE_TAG_NAME);
         for (int i = 0; i < datasources.getLength(); i++)
         {
-            // get the attribute for this datasource to check if it is a Dalec source
+            // get the attribute for this datasource to check if it is a DalecModel source
             Node datasource = datasources.item(i);
             Node jclass = datasource.getAttributes().getNamedItem("jclass");
 
             if (jclass.getNodeValue().equals("net.sf.taverna.dalec.DalecAnnotationSource"))
             {
-                // if we have an existing Dalec annotation source, remove it from the document
+                // if we have an existing DalecModel annotation source, remove it from the document
                 elementsToRemove.add(datasource);
             }
         }

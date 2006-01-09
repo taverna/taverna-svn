@@ -220,7 +220,7 @@
     <!-- make the Javadocs -->
     <target name="javadocs">
         <mkdir dir="${docs.dir}\api"/>
-        <javadoc destdir="${docs.dir}\api" windowtitle="Dalec-1.0 Javadocs" linksource="true">
+        <javadoc destdir="${docs.dir}\api" windowtitle="DalecModel-1.0 Javadocs" linksource="true">
             <packageset dir="${src.dir}"/>
         </javadoc>
     </target>
