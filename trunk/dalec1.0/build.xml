@@ -79,7 +79,9 @@
     <dirname property="dalec1.0.basedir" file="${ant.file}"/>
 
     <property name="src.dir" value="${basedir}/src"/>
+    <property name="configUI.src.dir" value="${basedir}/src/net/sf/taverna/dalec/configurator"/>
     <property name="classes.dir" value="${basedir}/classes"/>
+    <property name="configUI.classes.dir" value="net/sf/taverna/dalec/configurator"/>
     <property name="lib.dir" value="${basedir}/lib"/>
     <property name="taverna-lib.dir" value="${basedir}/taverna-lib"/>
     <property name="taverna-netlib.dir" value="${basedir}/taverna-netlib"/>
@@ -162,65 +164,105 @@
     <target name="fetch.taverna-netlib.jars"
             description="retrieve additional taverna jars from ibiblio">
         <mkdir dir="${taverna-netlib.dir}"/>
-        <get src="http://www.ibiblio.org/maven/bsh/jars/bsh-2.0b1.jar" dest="${taverna-netlib.dir}/bsh-2.0b1.jar"
+        <get src="http://www.ibiblio.org/maven/bsh/jars/bsh-2.0b1.jar"
+             dest="${taverna-netlib.dir}/bsh-2.0b1.jar"
              usetimestamp="yes"/>
-        <get src="http://www.ibiblio.org/maven/jdom/jars/jdom-1.0.jar" dest="${taverna-netlib.dir}/jdom-1.0.jar"
+        <get src="http://www.ibiblio.org/maven/jdom/jars/jdom-1.0.jar"
+             dest="${taverna-netlib.dir}/jdom-1.0.jar"
              usetimestamp="yes"/>
-        <get src="http://www.ibiblio.org/pub/packages/maven/axis/jars/axis-1.2-RC3.jar"
+        <get src="http://www.ibiblio.org/maven/axis/jars/axis-1.2-RC3.jar"
              dest="${taverna-netlib.dir}/axis-1.2-RC3.jar"
              usetimestamp="yes"/>
-        <get src="http://www.ibiblio.org/pub/packages/maven/axis/jars/axis-jaxrpc-1.2-RC3.jar"
-             dest="${taverna-netlib.dir}/axis-jaxrpc-1.2-RC3.jar" usetimestamp="yes"/>
-        <get src="http://www.ibiblio.org/pub/packages/maven/axis/jars/axis-saaj-1.2-RC3.jar"
-             dest="${taverna-netlib.dir}/axis-saaj-1.2-RC3.jar" usetimestamp="yes"/>
-        <get src="http://www.ibiblio.org/pub/packages/maven/axis/jars/axis-wsdl4j-1.2-RC3.jar"
-             dest="${taverna-netlib.dir}/axis-wsdl4j-1.2-RC3.jar" usetimestamp="yes"/>
-        <get src="http://www.ibiblio.org/maven/commons-discovery/jars/commons-discovery-0.2.jar"
-             dest="${taverna-netlib.dir}/commons-discovery-0.2.jar" usetimestamp="yes"/>
-        <get src="http://www.ibiblio.org/maven/commons-logging/jars/commons-logging-1.0.4.jar"
-             dest="${taverna-netlib.dir}/commons-logging-1.0.4.jar" usetimestamp="yes"/>
-        <get src="http://www.ibiblio.org/maven/commons-httpclient/jars/commons-httpclient-2.0.jar"
-             dest="${taverna-netlib.dir}/commons-httpclient-2.0.jar" usetimestamp="yes"/>
-        <get src="http://www.ibiblio.org/maven/log4j/jars/log4j-1.2.8.jar" dest="${taverna-netlib.dir}/log4j-1.2.8.jar"
+        <get src="http://www.ibiblio.org/maven/axis/jars/axis-jaxrpc-1.2-RC3.jar"
+             dest="${taverna-netlib.dir}/axis-jaxrpc-1.2-RC3.jar"
              usetimestamp="yes"/>
-        <get src="http://www.ibiblio.org/maven/dom4j/jars/dom4j-1.5.jar" dest="${taverna-netlib.dir}/dom4j-1.5.jar"
+        <get src="http://www.ibiblio.org/maven/axis/jars/axis-saaj-1.2-RC3.jar"
+             dest="${taverna-netlib.dir}/axis-saaj-1.2-RC3.jar"
+             usetimestamp="yes"/>
+        <get src="http://www.ibiblio.org/maven/axis/jars/axis-wsdl4j-1.2-RC3.jar"
+             dest="${taverna-netlib.dir}/axis-wsdl4j-1.2-RC3.jar"
+             usetimestamp="yes"/>
+        <get src="http://www.ibiblio.org/maven/commons-discovery/jars/commons-discovery-0.2.jar"
+             dest="${taverna-netlib.dir}/commons-discovery-0.2.jar"
+             usetimestamp="yes"/>
+        <get src="http://www.ibiblio.org/maven/commons-logging/jars/commons-logging-1.0.4.jar"
+             dest="${taverna-netlib.dir}/commons-logging-1.0.4.jar"
+             usetimestamp="yes"/>
+        <get src="http://www.ibiblio.org/maven/commons-httpclient/jars/commons-httpclient-2.0.jar"
+             dest="${taverna-netlib.dir}/commons-httpclient-2.0.jar"
+             usetimestamp="yes"/>
+        <get src="http://www.ibiblio.org/maven/log4j/jars/log4j-1.2.8.jar"
+             dest="${taverna-netlib.dir}/log4j-1.2.8.jar"
+             usetimestamp="yes"/>
+        <get src="http://www.ibiblio.org/maven/dom4j/jars/dom4j-1.5.jar"
+             dest="${taverna-netlib.dir}/dom4j-1.5.jar"
              usetimestamp="yes"/>
         <get src="http://www.ibiblio.org/maven/xerces/jars/xmlParserAPIs-2.2.1.jar"
-             dest="${taverna-netlib.dir}/xmlParserAPIs-2.2.1.jar" usetimestamp="yes"/>
+             dest="${taverna-netlib.dir}/xmlParserAPIs-2.2.1.jar"
+             usetimestamp="yes"/>
         <get src="http://www.ibiblio.org/maven/xerces/jars/xercesImpl-2.6.2.jar"
              dest="${taverna-netlib.dir}/xercesImpl-2.6.2.jar"
              usetimestamp="yes"/>
         <get src="http://www.ibiblio.org/maven/concurrent/jars/concurrent-1.3.4.jar"
-             dest="${taverna-netlib.dir}/concurrent-1.3.4.jar" usetimestamp="yes"/>
-        <get src="http://www.ibiblio.org/maven/servletapi/jars/servlet-api-2.4-20040521.jar"
-             dest="${taverna-netlib.dir}/servlet-api-2.4-20040521.jar" usetimestamp="yes"/>
-        <get src="http://www.ibiblio.org/maven/junit/jars/junit-3.8.jar" dest="${taverna-netlib.dir}/junit-3.8.jar"
+             dest="${taverna-netlib.dir}/concurrent-1.3.4.jar"
+             usetimestamp="yes"/>
+        <get src="http://www.ibiblio.org/maven/servletapi/jars/servlet-api-2.4.jar"
+             dest="${taverna-netlib.dir}/servlet-api-2.4-20040521.jar"
+             usetimestamp="yes"/>
+        <get src="http://www.ibiblio.org/maven/junit/jars/junit-3.8.jar"
+             dest="${taverna-netlib.dir}/junit-3.8.jar"
              usetimestamp="yes"/>
         <get src="http://www.ibiblio.org/maven/poi/jars/poi-2.0-final-20040126.jar"
-             dest="${taverna-netlib.dir}/poi-2.0-final-20040126.jar" usetimestamp="yes"/>
-        <get src="http://www.ibiblio.org/maven/mysql/jars/mysql-connector-java-3.0.10-stable-bin.jar"
-             dest="${taverna-netlib.dir}/mysql-connector-java-3.0.10-stable-bin.jar" usetimestamp="yes"/>
+             dest="${taverna-netlib.dir}/poi-2.0-final-20040126.jar"
+             usetimestamp="yes"/>
+        <get src="http://www.ibiblio.org/maven/mysql/jars/mysql-connector-java-3.0.10.jar"
+             dest="${taverna-netlib.dir}/mysql-connector-java-3.0.10-stable-bin.jar"
+             usetimestamp="yes"/>
     </target>
 
-    <!-- retriev biojava and dazzle jars -->
+    <!-- retrieve biojava and dazzle jars -->
     <target name="fetch.biojava.jars" description="retrieve all jars compulsory for biojava and dazzle">
-        <get src="http://www.biojava.org/download/binaries/biojava-1.4.jar" dest="${lib.dir}/biojava-1.4.jar" />
-        <get src="http://www.biojava.org/download/binaries/bytecode-0.92.jar" dest="${lib.dir}/bytecode-0.92.jar" />
-        <get src="http://www.biojava.org/download/binaries/commons-cli.jar" dest="${lib.dir}/commons-cli.jar" />
-        <get src="http://www.biojava.org/download/binaries/commons-collections-2.1.jar" dest="${lib.dir}/commons-collections-2.1.jar" />
-        <get src="http://www.biojava.org/download/binaries/commons-dbcp-1.1.jar" dest="${lib.dir}/commons-dbcp-1.1.jar" />
-        <get src="http://www.biojava.org/download/binaries/commons-pool-1.1.jar" dest="${lib.dir}/commons-pool-1.1.jar" />
+        <get src="http://www.biojava.org/download/binaries/biojava-1.4.jar"
+             dest="${lib.dir}/biojava-1.4.jar"
+             usetimestamp="yes"/>
+        <get src="http://www.biojava.org/download/binaries/bytecode-0.92.jar"
+             dest="${lib.dir}/bytecode-0.92.jar"
+             usetimestamp="yes"/>
+        <get src="http://www.biojava.org/download/binaries/commons-cli.jar"
+             dest="${lib.dir}/commons-cli.jar"
+             usetimestamp="yes"/>
+        <get src="http://www.biojava.org/download/binaries/commons-collections-2.1.jar"
+             dest="${lib.dir}/commons-collections-2.1.jar"
+             usetimestamp="yes"/>
+        <get src="http://www.biojava.org/download/binaries/commons-dbcp-1.1.jar"
+             dest="${lib.dir}/commons-dbcp-1.1.jar"
+             usetimestamp="yes"/>
+        <get src="http://www.biojava.org/download/binaries/commons-pool-1.1.jar"
+             dest="${lib.dir}/commons-pool-1.1.jar"
+             usetimestamp="yes"/>
     </target>
 
-    <!-- make the jar file -->
+    <!-- make the dalec jar file -->
     <target name="dalec.jar" depends="compile.dalec1.0">
-        <jar destfile="${lib.dir}\dalec-1.0.jar" basedir="${classes.dir}" excludes="**\Test*.jar"/>
+        <jar destfile="${lib.dir}\dalec-1.0.jar" basedir="${classes.dir}"
+             excludes="${configUI.classes.dir}\**\*.class"/>
+    </target>
+
+    <!-- Make the configUI utility into an executable jar file -->
+    <target name="configurator.jar" depends="compile.dalec1.0" description="Constructing Configurator.jar">
+        <jar destfile="configurator.jar" basedir="${classes.dir}" includes="${configUI.classes.dir}\**\*.class"
+             update="true">
+            <manifest>
+                <attribute name="Main-Class" value="net.sf.taverna.dalec.configurator.ConfiguratorUI"/>
+            </manifest>
+        </jar>
     </target>
 
     <!-- make the Javadocs -->
     <target name="javadocs">
         <mkdir dir="${docs.dir}\api"/>
-        <javadoc destdir="${docs.dir}\api" windowtitle="DalecModel-1.0 Javadocs" linksource="true">
+        <javadoc destdir="${docs.dir}\api" windowtitle="net.sf.taverna.dalec.configurator.DalecModel-1.0 Javadocs"
+                 linksource="true">
             <packageset dir="${src.dir}"/>
         </javadoc>
     </target>
@@ -230,7 +272,7 @@
 
     <target name="webapp.exists">
         <condition property="das.war.exists">
-            <available file="${env.TOMCAT_HOME}\webapps\das.war" />
+            <available file="${env.TOMCAT_HOME}\webapps\das.war"/>
         </condition>
     </target>
 
@@ -271,43 +313,48 @@
                 <include name="**\*.jar"/>
             </fileset>
         </copy>
+        <copy todir="${webapp.dir}\WEB-INF" file="${basedir}\deployment\web.xml" />
         <copy todir="${webapp.dir}" file="${basedir}\deployment\dazzlecfg.xml"/>
         <copy todir="${webapp.dir}" file="${basedir}\deployment\welcome.html"/>
-        <copy todir="${webapp.dir}" file="${basedir}\deployment\dalec.style" />
-        <copy todir="${webapp.dir}" file="${basedir}\deployment\test.embl" />
-        <copy todir="${webapp.dir}" file="${basedir}\deployment\test.style" />
+        <copy todir="${webapp.dir}" file="${basedir}\deployment\dalec.style"/>
+        <copy todir="${webapp.dir}" file="${basedir}\deployment\test.embl"/>
+        <copy todir="${webapp.dir}" file="${basedir}\deployment\test.style"/>
     </target>
 
     <!-- clean up the source directory -->
-    <target name="clean" depends="default.clean, clean.fetched.jars" description="cleanup Dalec1.0" />
+    <target name="clean" depends="default.clean, clean.fetched.jars" description="cleanup Dalec1.0"/>
 
     <target name="default.clean" description="cleanup all file operations, not including fetching of external jars">
         <delete dir="${classes.dir}"/>
         <delete dir="${webapp.dir}"/>
         <delete file="${lib.dir}\dalec-1.0.jar"/>
-        <ant antfile="config-build.xml" target="clean"/>
+        <delete file="configurator.jar"/>
     </target>
 
     <target name="clean.fetched.jars" description="delete all fetched jars">
         <delete dir="${taverna-netlib.dir}"/>
         <delete dir="${taverna-lib.dir}"/>
-        <delete file="${lib.dir}/biojava-1.4.jar" />
-        <delete file="${lib.dir}/bytecode-0.92.jar" />
-        <delete file="${lib.dir}/commons-cli.jar" />
-        <delete file="${lib.dir}/commons-collections-2.1.jar" />
-        <delete file="${lib.dir}/commons-dbcp-1.1.jar" />
-        <delete file="${lib.dir}/commons-pool-1.1.jar" />
+        <delete file="${lib.dir}/biojava-1.4.jar"/>
+        <delete file="${lib.dir}/bytecode-0.92.jar"/>
+        <delete file="${lib.dir}/commons-cli.jar"/>
+        <delete file="${lib.dir}/commons-collections-2.1.jar"/>
+        <delete file="${lib.dir}/commons-dbcp-1.1.jar"/>
+        <delete file="${lib.dir}/commons-pool-1.1.jar"/>
     </target>
 
     <target name="init" depends="fetch.jars, make.webapp" description="Build initialization"/>
 
-    <!-- Run the configurator utility build file -->
-    <target name="run.configurator" depends="make.webapp"
-            description="Build and start configurator utility">
-        <ant antfile="config-build.xml"/>
+    <target name="construct.skeleton" depends="make.webapp" description="Construct the webapp from existing jar files"/>
+
+    <!-- Run the configUI utility -->
+    <target name="run.configurator" depends="configurator.jar">
+        <java jar="configurator.jar" fork="true"/>
     </target>
 
-    <target name="build.without.fetch" depends="default.clean, make.webapp, compile.dalec1.0, run.configurator" />
+    <target name="build.without.fetch" depends="default.clean, make.webapp, compile.dalec1.0, run.configurator"/>
 
-    <target name="main" depends="clean, init, compile.dalec1.0, run.configurator" description="build all"/>
+    <target name="main.with.clean" depends="clean, init, compile.dalec1.0, run.configurator"
+            description="clean-up then build"/>
+
+    <target name="main" depends="init, run.configurator" description="build all"/>
 </project>

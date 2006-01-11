@@ -33,7 +33,7 @@ try
             gffr.setStrand(StrandedFeature.UNKNOWN);
             gffr.setScore('.');
             gffr.setFrame(GFFTools.NO_FRAME);
-            gffr.setComment("	; This is a DalecModel test annotation that contains no real annotation information");
+            gffr.setComment("	; This is a net.sf.taverna.dalec.configurator.DalecModel test annotation that contains no real annotation information");
 
             // now add the annotation to an entry set
             GFFEntrySet gffe = new GFFEntrySet();

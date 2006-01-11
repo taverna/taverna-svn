@@ -3,7 +3,7 @@
 <DASSTYLE>
   <STYLESHEET>
     <CATEGORY id="default">
-      <TYPE id="DalecModel">
+      <TYPE id="net.sf.taverna.dalec.configurator.DalecModel">
         <GLYPH>
 	  <TICK>
 	    <HEIGHT>15</HEIGHT>
