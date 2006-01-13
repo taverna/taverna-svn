@@ -212,8 +212,11 @@
         <get src="http://www.ibiblio.org/maven/junit/jars/junit-3.8.jar"
              dest="${taverna-netlib.dir}/junit-3.8.jar"
              usetimestamp="yes"/>
-        <get src="http://www.ibiblio.org/maven/poi/jars/poi-2.0-final-20040126.jar"
+<!--        <get src="http://www.ibiblio.org/maven/poi/jars/poi-2.0-final-20040126.jar"
              dest="${taverna-netlib.dir}/poi-2.0-final-20040126.jar"
+             usetimestamp="yes"/> -->
+        <get src="http://www.ibiblio.org/maven/poi/jars/poi-2.5.1.jar"
+             dest="${taverna-netlib.dir}/poi-2.5.1.jar"
              usetimestamp="yes"/>
         <get src="http://www.ibiblio.org/maven/mysql/jars/mysql-connector-java-3.0.10.jar"
              dest="${taverna-netlib.dir}/mysql-connector-java-3.0.10-stable-bin.jar"
@@ -284,6 +287,7 @@
             <fileset file="${env.TOMCAT_HOME}\webapps\das.war"/>
         </copy>
         <unwar src="${env.TOMCAT_HOME}\webapps\das.war" dest="${webapp.dir}"/>
+        <delete dir="${webapp.dir}\META-INF" />
         <copy todir="${webapp.dir}\WEB-INF\lib">
             <fileset dir="${lib.dir}">
                 <include name="**\*.jar"/>

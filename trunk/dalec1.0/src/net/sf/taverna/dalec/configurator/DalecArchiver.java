@@ -42,6 +42,8 @@ public class DalecArchiver
             files[i] = (File) fileArray.get(i);
         }
 
+        JarOutputStream jarOutput = null;
+        byte data[] = new byte[0];
         Manifest manifest = createManifest();
         if (!jarFile.exists())
         {
@@ -49,10 +51,10 @@ public class DalecArchiver
         }
 
         // Set up the output stream
-        JarOutputStream jarOutput = new JarOutputStream(new BufferedOutputStream(new FileOutputStream(jarFile)), manifest);
+        jarOutput = new JarOutputStream(new BufferedOutputStream(new FileOutputStream(jarFile)), manifest);
 
         // Create a byte array to buffer data being read
-        byte data[] = new byte[buffer];
+        data = new byte[buffer];
 
         // Enter every file in the array into the jar file
         for (int i = 0; i < files.length; i++)
@@ -68,13 +70,30 @@ public class DalecArchiver
                     entryName = entryName.substring(1);
                 }
 
+                BufferedInputStream input = null;
                 // Create a JarEntry (named relative to the current root directory)
                 JarEntry je = new JarEntry(entryName);
                 // Set the JarOutputStream ready to write this je
-                jarOutput.putNextEntry(je);
+                try
+                {
+                    jarOutput.putNextEntry(je);
+                }
+                catch (IOException e)
+                {
+                    System.out.println("Can't add jar entry: " + je.getName());
+                    throw e;
+                }
 
                 // Create a new input stream for this file using the given buffer size
-                BufferedInputStream input = new BufferedInputStream(new FileInputStream(f), buffer);
+                try
+                {
+                    input = new BufferedInputStream(new FileInputStream(f), buffer);
+                }
+                catch (FileNotFoundException e)
+                {
+                    System.out.println("Unable to read from file: " + f.getName());
+                    throw e;
+                }
 
                 // While data can still be read, read it into the data array and then write it into the jar file
                 int count;
