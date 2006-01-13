@@ -20,15 +20,50 @@ import java.awt.*;
  */
 public class ConfiguratorUI
 {
+    private static final File ROOTDIR = new File("dalec-webapp");
     private static final String DAZZLECFG = "dalec-webapp" + File.separator + "dazzlecfg.xml";
-//    private static final String DAZZLECFG = "dazzlecfg.xml";
     private static final DalecConfig DALECCONFIG = new DalecConfig(new File(DAZZLECFG));
 
     private static final DalecListModel DLM = new DalecListModel(DALECCONFIG.getDalecs());
     private static final JList LIST = new JList(DLM);
 
+    private static DalecArchiver da;
+
     public static void main(String[] args)
     {
+        File dasFile;
+        // check that TOMCAT_HOME exists
+        if (System.getenv("TOMCAT_HOME") == null)
+        {
+            // TOMCAT_HOME not defined - need to generate an error message
+            System.err.println("No TOMCAT_HOME variable defined - unable to check for existing das.war file");
+            System.err.println("Also, the archived webapp will be saved as deployment\\das.war");
+
+            dasFile = new File("deployment" + File.separator + "das.war");
+            da = new DalecArchiver(dasFile, ROOTDIR);
+        }
+        else
+        {
+            // use the tomcat webapps dir to define the location to archive files to
+            dasFile = new File(System.getenv("TOMCAT_HOME") + File.separator + "webapps" + File.separator + "das.war");
+            da = new DalecArchiver(dasFile, ROOTDIR);
+
+            // Pre-existing das.war archive - so retrieve and unpack to the dalec-webapp dir
+            if (dasFile.exists())
+            {
+                // unpack the existing archive
+                try
+                {
+                    da.inflateArchive();
+                }
+                catch (IOException e)
+                {
+                    System.err.println("das.war exists - but cannot be accessed");
+                }
+            }
+        }
+
+        // Now we can set up the UI
         JFrame dcf = new DalecConfigFrame();
         try
         {
@@ -505,20 +540,14 @@ public class ConfiguratorUI
      */
     private static void archiveAndDeploy()
     {
-        File baseDir = new File("dalec-webapp");
-        File archive = new File (System.getenv("TOMCAT_HOME") + File.separator + "webapps" + File.separator + "das.war");
-//        new File("archive").mkdir();
-//        File archive = new File("archive" + File.separator + "das.war");
-
-        DalecArchiver da = new DalecArchiver(archive, baseDir);
+        // pack all files in the baseDir (dalec-webapp) to the archive
         try
         {
-            System.out.println("Writing to archive: " + archive.getAbsolutePath());
             da.createArchive();
         }
         catch (IOException e)
         {
-            System.out.println("Unable to create archive");
+            System.err.println("Unable to create archive");
         }
     }
 }

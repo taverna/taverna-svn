@@ -4,6 +4,7 @@ import java.io.*;
 import java.util.jar.Manifest;
 import java.util.jar.JarOutputStream;
 import java.util.jar.JarEntry;
+import java.util.jar.JarInputStream;
 import java.util.ArrayList;
 
 /**
@@ -17,7 +18,6 @@ public class DalecArchiver
     private static int buffer = 2048;
 
     private File jarFile;
-    private File[] files;
 
     private File rootDir;
 
@@ -25,14 +25,6 @@ public class DalecArchiver
     {
         this.jarFile = jarFile;
         this.rootDir = baseDir;
-
-        ArrayList fileArray = new ArrayList();
-        addFiles(fileArray, baseDir);
-        files = new File[fileArray.size()];
-        for (int i = 0; i < files.length; i++)
-        {
-            files[i] = (File) fileArray.get(i);
-        }
     }
 
     public void setBufferSize(int bufferSize)
@@ -42,15 +34,22 @@ public class DalecArchiver
 
     public void createArchive() throws IOException
     {
+        ArrayList fileArray = new ArrayList();
+        addFiles(fileArray, rootDir);
+        File[] files = new File[fileArray.size()];
+        for (int i = 0; i < files.length; i++)
+        {
+            files[i] = (File) fileArray.get(i);
+        }
+
         Manifest manifest = createManifest();
-        if(!jarFile.exists())
+        if (!jarFile.exists())
         {
             jarFile.getParentFile().mkdirs();
         }
 
         // Set up the output stream
-        FileOutputStream fileOutput = new FileOutputStream(jarFile);
-        JarOutputStream jarOutput = new JarOutputStream(new BufferedOutputStream(fileOutput), manifest);
+        JarOutputStream jarOutput = new JarOutputStream(new BufferedOutputStream(new FileOutputStream(jarFile)), manifest);
 
         // Create a byte array to buffer data being read
         byte data[] = new byte[buffer];
@@ -93,13 +92,39 @@ public class DalecArchiver
         // Close the JarOutputStream and FileOutputStream
         jarOutput.finish();
         jarOutput.close();
-        fileOutput.flush();
-        fileOutput.close();
     }
 
-    public File getArchive()
+    public void inflateArchive() throws IOException
     {
-        return jarFile;
+        // create the input stream for the jar file
+        JarInputStream jarInput = new JarInputStream(new FileInputStream(jarFile));
+        BufferedInputStream input = new BufferedInputStream(jarInput, buffer);
+
+        // get the next entry
+        JarEntry nextEntry = jarInput.getNextJarEntry();
+        while (nextEntry != null)
+        {
+            // create the output stream for the current entry
+            BufferedOutputStream output = new BufferedOutputStream(new FileOutputStream(new File(rootDir, nextEntry.getName())));
+
+            // Create a byte array to buffer data being read
+            byte data[] = new byte[buffer];
+
+            int count;
+            while ((count = input.read(data, 0, buffer)) != -1)
+            {
+                output.write(data, 0, count);
+            }
+
+            // Now close this file stream
+            output.flush();
+            output.close();
+
+            // get next entry
+            nextEntry = jarInput.getNextJarEntry();
+        }
+
+        jarInput.close();
     }
 
     private void addFiles(ArrayList files, File f)
