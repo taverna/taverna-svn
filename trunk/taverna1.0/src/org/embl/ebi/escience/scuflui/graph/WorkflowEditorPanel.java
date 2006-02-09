@@ -31,7 +31,6 @@ import org.embl.ebi.escience.scuflui.AdvancedModelExplorer;
 import org.embl.ebi.escience.scuflui.ExtensionFileFilter;
 import org.embl.ebi.escience.scuflui.ScuflIcons;
 import org.embl.ebi.escience.scuflui.ScuflUIComponent;
-import org.embl.ebi.escience.scuflui.actions.LoadWebWorkflowAction;
 import org.embl.ebi.escience.scuflui.actions.LoadWorkflowAction;
 import org.embl.ebi.escience.scuflui.actions.OfflineToggleModel;
 import org.embl.ebi.escience.scuflui.actions.ResetAction;
@@ -41,7 +40,7 @@ import org.embl.ebi.escience.scuflui.actions.SaveWorkflowAction;
  * COMMENT
  * 
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover</a>
- * @version $Revision: 1.7 $
+ * @version $Revision: 1.8 $
  */
 public class WorkflowEditorPanel extends JPanel implements ScuflUIComponent
 {
@@ -137,8 +136,7 @@ public class WorkflowEditorPanel extends JPanel implements ScuflUIComponent
 		toolbar.setMaximumSize(new Dimension(2000, 30));
 		toolbar.setBorderPainted(true);
 
-		toolbar.add(new LoadWorkflowAction(model));
-		toolbar.add(new LoadWebWorkflowAction(model));
+		toolbar.add(new LoadWorkflowAction(model));		
 		toolbar.add(new SaveWorkflowAction(model));
 		toolbar.add(saveImage);
 		toolbar.addSeparator();

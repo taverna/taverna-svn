@@ -7,6 +7,9 @@ package org.embl.ebi.escience.baclava.store;
 
 import org.embl.ebi.escience.baclava.*;
 import org.embl.ebi.escience.baclava.factory.*;
+import org.embl.ebi.escience.scufl.ScuflModel;
+import org.embl.ebi.escience.scufl.view.XScuflView;
+
 import java.sql.*;
 import java.util.*;
 import org.jdom.*;
@@ -108,6 +111,11 @@ public class JDBCBaclavaDataService implements BaclavaDataService, LSIDProvider 
 			     "                    mimetype CHAR(200),"+
 			     "                    PRIMARY KEY(lsid)) TYPE = InnoDB;");
 	    st.executeUpdate("CREATE TABLE IF NOT EXISTS idcounter (count INT UNSIGNED NOT NULL) TYPE = InnoDB;");
+	    st.executeUpdate("CREATE TABLE IF NOT EXISTS workflow  (id INT UNSIGNED NOT NULL AUTO_INCREMENT," + 
+	    		 "												lsid CHAR(200) NOT NULL, " +
+	    		 "	                                            title CHAR(200) NOT NULL," +	
+	    		 "												author CHAR(200) NOT NULL," +
+	    		 "												workflow TEXT NOT NULL, PRIMARY KEY(id)) TYPE=InnoDB");	
 	    
 	    pool.returnConnection(con);
 	}	
@@ -145,6 +153,7 @@ public class JDBCBaclavaDataService implements BaclavaDataService, LSIDProvider 
 	    st.executeUpdate("DROP TABLE IF EXISTS metadata");
 	    st.executeUpdate("DROP TABLE IF EXISTS lsid2metadata");
 	    st.executeUpdate("DROP TABLE IF EXISTS idcounter");
+	    st.executeUpdate("DROP TABLE IF EXISTS workflow");
 	
 	    pool.returnConnection(con);
 	    log.debug("...finished dropping tables");
@@ -415,6 +424,8 @@ public class JDBCBaclavaDataService implements BaclavaDataService, LSIDProvider 
 	}
 	throw new NoSuchLSIDException();
     }
+    
+    
 
     
     /**
@@ -568,6 +579,110 @@ public class JDBCBaclavaDataService implements BaclavaDataService, LSIDProvider 
      */
     public boolean hasMetadata(String LSID) {
 	return (getMetadata(LSID)!=null);
+    }
+    
+    /**
+     * Stores a workflow xml representation to the database, together with its title, and lsid     *
+     * Overwrites an existing workflow if it already exists with a given lsid
+     */
+    public void storeWorkflow(ScuflModel model)
+    {	
+    	Connection con = null;    	    	
+    	PreparedStatement pstmt=null;
+    	
+    	String LSID = model.getDescription().getLSID();
+    	String title = model.getDescription().getTitle();
+    	String author = model.getDescription().getAuthor();
+    	
+    	String xml=new XScuflView(model).getXMLText();
+    	    	
+    	try
+    	{
+    		boolean exists=hasWorkflow(LSID);
+    		con=pool.borrowConnection();    		
+    		if (exists)
+    		{
+    			pstmt=con.prepareStatement("UPDATE workflow SET title=?, workflow=?, author=? WHERE lsid=?");    			
+    		}
+    		else
+    		{
+    			pstmt=con.prepareStatement("INSERT INTO workflow (title,workflow,author,lsid) VALUES (?,?,?,?)");    			
+    		}
+    		pstmt.setString(1,title);
+			pstmt.setString(2,xml);
+			pstmt.setString(3,author);
+			pstmt.setString(4,LSID);
+			
+    		pstmt.executeUpdate(); 
+    		con.commit();    		
+    	}
+    	catch(SQLException e)
+    	{
+    		log.error("SQLException when storing workflow for LSID="+LSID,e);
+    	}
+    	finally
+    	{
+    		if (con!=null) pool.returnConnection(con);
+    		if (pstmt!=null)
+    		{
+				try {
+					pstmt.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+    		}    		
+    	}    	
+    }
+    
+    public boolean hasWorkflow(String LSID)
+    {
+    	return (fetchWorkflow(LSID)!=null);
+    }
+    
+    public String fetchWorkflow(String LSID)
+    {
+    	Connection con = null;
+    	PreparedStatement pstmt = null;
+    	ResultSet rst = null;
+    	String result=null;
+    	
+    	try
+    	{
+    		con=pool.borrowConnection();
+    		pstmt = con.prepareStatement("SELECT workflow FROM workflow WHERE lsid=?");
+    		pstmt.setString(1,LSID);
+    		rst=pstmt.executeQuery();
+    		if (rst.next())
+    		{
+    			result = rst.getString("workflow");
+    		}
+    	}
+    	catch(SQLException e)
+    	{
+    		log.error("SQLException when getting workflow for LSID="+LSID,e);
+    	}
+    	finally
+    	{
+    		if (con!=null) pool.returnConnection(con);
+    		if (pstmt!=null)
+    		{
+				try {
+					pstmt.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+    		}
+    		if (rst!=null)
+    		{
+				try {
+					rst.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+    		}
+    	}
+    	
+    	return result;
     }
 }
 

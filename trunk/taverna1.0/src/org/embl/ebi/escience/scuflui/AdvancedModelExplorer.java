@@ -52,7 +52,6 @@ import org.embl.ebi.escience.scufl.ScuflModelEventListener;
 import org.embl.ebi.escience.scufl.SemanticMarkup;
 import org.embl.ebi.escience.scufl.WorkflowDescription;
 import org.embl.ebi.escience.scufl.view.WorkflowSummaryAsHTML;
-import org.embl.ebi.escience.scuflui.actions.LoadWebWorkflowAction;
 import org.embl.ebi.escience.scuflui.actions.LoadWorkflowAction;
 import org.embl.ebi.escience.scuflui.actions.OfflineToggleModel;
 import org.embl.ebi.escience.scuflui.actions.ResetAction;
@@ -531,10 +530,7 @@ public class AdvancedModelExplorer extends JPanel implements ScuflUIComponent {
 	workOffline.setModel(new OfflineToggleModel(model));
 	toolbar.add(new JLabel(" Load "));
 	toolbar.add(new LoadWorkflowAction(model));
-	toolbar.addSeparator();
-	toolbar.add(new JLabel("Load from web "));
-	toolbar.add(new LoadWebWorkflowAction(model));
-	toolbar.addSeparator();
+	toolbar.addSeparator();	
 	
 	toolbar.add(new JLabel("Save "));
 	toolbar.add(new SaveWorkflowAction(model));

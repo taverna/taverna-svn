@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 //
-// © University of Southampton IT Innovation Centre, 2002
+// ï¿½ University of Southampton IT Innovation Centre, 2002
 //
 // Copyright in this library belongs to the IT Innovation Centre of
 // 2 Venture Road, Chilworth Science Park, Southampton SO16 7NP, UK.
@@ -24,9 +24,9 @@
 //      Created for Project :   MYGRID
 //      Dependencies        :
 //
-//      Last commit info    :   $Author: mereden $
-//                              $Date: 2005-08-05 09:53:16 $
-//                              $Revision: 1.71 $
+//      Last commit info    :   $Author: sowen70 $
+//                              $Date: 2006-02-09 12:13:15 $
+//                              $Revision: 1.72 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 package uk.ac.soton.itinnovation.taverna.enactor.entities;
@@ -91,20 +91,8 @@ public class ProcessorTask extends AbstractTask {
     private static WorkflowEventDispatcher DISPATCHER = WorkflowEventDispatcher.DISPATCHER;
     int activeWorkers = 0;
 
-    static BaclavaDataService STORE = null;
-    static {
-	String storageClassName = System.getProperty("taverna.datastore.class");
-	if (storageClassName!=null) {
-	    try {
-		      Class c = Class.forName(storageClassName);
-		      STORE = (BaclavaDataService)c.newInstance();
-	    }
-	    catch (Exception ex) {
-		//System.out.println("Unable to initialize data store class : "+storageClassName);
-		ex.printStackTrace();
-	    }
-	}
-    }
+    static BaclavaDataService STORE = BaclavaDataServiceFactory.getStore();
+    
 
     // The processor from which the task to be invoked
     // should be derived
