@@ -7,9 +7,6 @@ package org.embl.ebi.escience.baclava.store;
 
 import org.embl.ebi.escience.baclava.*;
 import org.embl.ebi.escience.baclava.factory.*;
-import org.embl.ebi.escience.scufl.ScuflModel;
-import org.embl.ebi.escience.scufl.view.XScuflView;
-
 import java.sql.*;
 import java.util.*;
 import org.jdom.*;
@@ -116,6 +113,12 @@ public class JDBCBaclavaDataService implements BaclavaDataService, LSIDProvider 
 	    		 "	                                            title CHAR(200) NOT NULL," +	
 	    		 "												author CHAR(200) NOT NULL," +
 	    		 "												workflow TEXT NOT NULL, PRIMARY KEY(id)) TYPE=InnoDB");	
+        st.executeUpdate("CREATE TABLE IF NOT EXISTS data (id INT UNSIGNED NOT NULL AUTO_INCREMENT,"+
+                "                                       data TEXT NOT NULL,"+
+                "                                       PRIMARY KEY(id)) TYPE = InnoDB;");
+        st.executeUpdate("CREATE TABLE IF NOT EXISTS lsid2data (lsid CHAR(200) NOT NULL,"+
+                "                                          id INT UNSIGNED NOT NULL REFERENCES data(id)"+
+                "                                          ) TYPE = InnoDB;");
 	    
 	    pool.returnConnection(con);
 	}	
@@ -154,6 +157,8 @@ public class JDBCBaclavaDataService implements BaclavaDataService, LSIDProvider 
 	    st.executeUpdate("DROP TABLE IF EXISTS lsid2metadata");
 	    st.executeUpdate("DROP TABLE IF EXISTS idcounter");
 	    st.executeUpdate("DROP TABLE IF EXISTS workflow");
+        st.executeUpdate("DROP TABLE IF EXISTS data");
+        st.executeUpdate("DROP TABLE IF EXISTS lsid2data");
 	
 	    pool.returnConnection(con);
 	    log.debug("...finished dropping tables");
@@ -264,17 +269,36 @@ public class JDBCBaclavaDataService implements BaclavaDataService, LSIDProvider 
 	
     }
 
+    /**
+     * Finds all the child elements that are dataElements.
+     * 
+     * @param the Element to search
+     * @return all the child elements that are dataElements
+     */
+    private Element[] findDataElements(Element element) {
+    	List elements = new ArrayList();
+    	Iterator dataElements = element.getChildren("dataElement", DataThingXMLFactory.namespace).iterator();
+    	while (dataElements.hasNext()) {
+            elements.add((Element) dataElements.next());
+    	}
+    	Iterator collectionElements = element.getChildren("partialOrder", DataThingXMLFactory.namespace).iterator();
+    	while (collectionElements.hasNext()) {
+    		Element collectionElement = (Element) collectionElements.next();
+    		Element itemListElement = collectionElement.getChild("itemList", DataThingXMLFactory.namespace);
+    		elements.addAll(Arrays.asList(findDataElements(itemListElement)));
+    	}
+    	return (Element[]) elements.toArray(new Element[elements.size()]);
+   }
     
     /**
      * Store the specified data object
      */
     public void storeDataThing(DataThing theDataThing, boolean silent)
 	throws DuplicateLSIDException {	    
-	// Get the string version of the DataThing object
+	// Get the XML version of the DataThing object
 	// from the XML factory
-	Document doc = new Document(DataThingXMLFactory.getElement(theDataThing));
-	XMLOutputter xo = new XMLOutputter(Format.getPrettyFormat());
-	String xmlRepresentation = xo.outputString(doc);
+    Element element = DataThingXMLFactory.getElement(theDataThing);
+    Element[] dataElements = findDataElements(element);
 	// Find all the LSIDs that this document contains
 	Map lsidMap = theDataThing.getLSIDMap();
 	// Obtain a connection
@@ -282,6 +306,32 @@ public class JDBCBaclavaDataService implements BaclavaDataService, LSIDProvider 
 	try {
 	    synchronized(writeLockObject) {
 		boolean addedAtLeastOneMapping = false;
+		for (int i = 0; i < dataElements.length; i++) {
+		    Element dataElementData = dataElements[i].getChild("dataElementData", DataThingXMLFactory.namespace);
+
+            // Store the raw data from each dataElement in the 'data' table and
+		    PreparedStatement st = con.prepareStatement("INSERT INTO data (data) VALUES (?)");
+			st.setString(1, dataElementData.getTextTrim());
+			st.executeUpdate();	    
+			ResultSet generatedKeys = st.getGeneratedKeys();
+            generatedKeys.first();
+            int rowStoringData = generatedKeys.getInt(1);
+			st.close();
+			
+            // Store the lsid->data mapping in the lsid2data table
+			st = con.prepareStatement("INSERT INTO lsid2data (lsid, id) VALUES (?,?)");
+            st.setString(1, dataElements[i].getAttributeValue("lsid"));
+            st.setInt(2, rowStoringData);
+            st.executeUpdate();     
+            st.close();
+            
+			dataElements[i].removeChild("dataElementData", DataThingXMLFactory.namespace);
+		}
+        // Get the string version of the XML element
+		Document doc = new Document(element);
+		XMLOutputter xo = new XMLOutputter(Format.getPrettyFormat());
+		String xmlRepresentation = xo.outputString(doc);
+        
 		PreparedStatement st = con.prepareStatement("INSERT INTO datathings (thing) VALUES (?)");
 		st.setString(1,xmlRepresentation);
 		st.executeUpdate();	    
@@ -377,8 +427,6 @@ public class JDBCBaclavaDataService implements BaclavaDataService, LSIDProvider 
 		pool.returnConnection(con);
 		throw new NoSuchLSIDException();
 	    }
-	    pool.returnConnection(con);
-	    // DB ACCESS END ******************************************************
 
 	    // Parse the XML and get the DataThing that was
 	    // originally submitted, although we may have
@@ -387,7 +435,32 @@ public class JDBCBaclavaDataService implements BaclavaDataService, LSIDProvider 
 	    //System.out.println("Found a data thing as XML : \n\n"+thingAsXML);
 	    SAXBuilder builder = new SAXBuilder(false);
 	    Document doc = builder.build(new StringReader(thingAsXML));
-	    DataThing theThing = new DataThing(doc.getRootElement());
+        // Retrieve the data and for each dataElement and add a dataElementData
+	    Element element = doc.getRootElement();
+	    Element[] dataElements = findDataElements(element);
+	    for (int i = 0; i < dataElements.length; i++) {
+            PreparedStatement st1 = con.prepareStatement("SELECT id FROM lsid2data WHERE lsid=?");
+            st1.setString(1, dataElements[i].getAttributeValue("lsid"));
+            ResultSet result1 = st1.executeQuery();
+            result1.first();
+            int id = result1.getInt(1);
+            st1.close();
+
+		    PreparedStatement st2 = con.prepareStatement("SELECT data FROM data WHERE id=?");
+            st2.setInt(1, id);
+		    ResultSet result2 = st2.executeQuery();
+			result2.first();
+			String data = result2.getString(1);
+			st2.close();
+
+            Element dataElementData = new Element("dataElementData", DataThingXMLFactory.namespace);
+            dataElementData.setText(data);
+			dataElements[i].addContent(dataElementData);
+	    }
+	    
+	    pool.returnConnection(con);
+	    // DB ACCESS END ******************************************************
+	    DataThing theThing = new DataThing(element);
 	    //System.out.println(theThing);
 	    // Was the LSID for the dataThing itself?
 	    //System.out.println("LSID to find is "+LSID);
@@ -424,8 +497,6 @@ public class JDBCBaclavaDataService implements BaclavaDataService, LSIDProvider 
 	}
 	throw new NoSuchLSIDException();
     }
-    
-    
 
     
     /**
@@ -579,110 +650,6 @@ public class JDBCBaclavaDataService implements BaclavaDataService, LSIDProvider 
      */
     public boolean hasMetadata(String LSID) {
 	return (getMetadata(LSID)!=null);
-    }
-    
-    /**
-     * Stores a workflow xml representation to the database, together with its title, and lsid     *
-     * Overwrites an existing workflow if it already exists with a given lsid
-     */
-    public void storeWorkflow(ScuflModel model)
-    {	
-    	Connection con = null;    	    	
-    	PreparedStatement pstmt=null;
-    	
-    	String LSID = model.getDescription().getLSID();
-    	String title = model.getDescription().getTitle();
-    	String author = model.getDescription().getAuthor();
-    	
-    	String xml=new XScuflView(model).getXMLText();
-    	    	
-    	try
-    	{
-    		boolean exists=hasWorkflow(LSID);
-    		con=pool.borrowConnection();    		
-    		if (exists)
-    		{
-    			pstmt=con.prepareStatement("UPDATE workflow SET title=?, workflow=?, author=? WHERE lsid=?");    			
-    		}
-    		else
-    		{
-    			pstmt=con.prepareStatement("INSERT INTO workflow (title,workflow,author,lsid) VALUES (?,?,?,?)");    			
-    		}
-    		pstmt.setString(1,title);
-			pstmt.setString(2,xml);
-			pstmt.setString(3,author);
-			pstmt.setString(4,LSID);
-			
-    		pstmt.executeUpdate(); 
-    		con.commit();    		
-    	}
-    	catch(SQLException e)
-    	{
-    		log.error("SQLException when storing workflow for LSID="+LSID,e);
-    	}
-    	finally
-    	{
-    		if (con!=null) pool.returnConnection(con);
-    		if (pstmt!=null)
-    		{
-				try {
-					pstmt.close();
-				} catch (SQLException e) {
-					e.printStackTrace();
-				}
-    		}    		
-    	}    	
-    }
-    
-    public boolean hasWorkflow(String LSID)
-    {
-    	return (fetchWorkflow(LSID)!=null);
-    }
-    
-    public String fetchWorkflow(String LSID)
-    {
-    	Connection con = null;
-    	PreparedStatement pstmt = null;
-    	ResultSet rst = null;
-    	String result=null;
-    	
-    	try
-    	{
-    		con=pool.borrowConnection();
-    		pstmt = con.prepareStatement("SELECT workflow FROM workflow WHERE lsid=?");
-    		pstmt.setString(1,LSID);
-    		rst=pstmt.executeQuery();
-    		if (rst.next())
-    		{
-    			result = rst.getString("workflow");
-    		}
-    	}
-    	catch(SQLException e)
-    	{
-    		log.error("SQLException when getting workflow for LSID="+LSID,e);
-    	}
-    	finally
-    	{
-    		if (con!=null) pool.returnConnection(con);
-    		if (pstmt!=null)
-    		{
-				try {
-					pstmt.close();
-				} catch (SQLException e) {
-					e.printStackTrace();
-				}
-    		}
-    		if (rst!=null)
-    		{
-				try {
-					rst.close();
-				} catch (SQLException e) {
-					e.printStackTrace();
-				}
-    		}
-    	}
-    	
-    	return result;
     }
 }
 
