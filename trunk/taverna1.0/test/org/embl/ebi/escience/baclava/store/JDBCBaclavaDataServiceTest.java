@@ -1,5 +1,9 @@
 package org.embl.ebi.escience.baclava.store;
 
+import java.io.ByteArrayInputStream;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Enumeration;
@@ -10,42 +14,22 @@ import junit.framework.TestCase;
 import org.embl.ebi.escience.baclava.DataThing;
 import org.embl.ebi.escience.baclava.StupidLSIDProvider;
 import org.embl.ebi.escience.baclava.factory.DataThingXMLFactory;
+import org.embl.ebi.escience.scufl.ScuflModel;
+import org.embl.ebi.escience.scufl.parser.XScuflParser;
+import org.embl.ebi.escience.scufl.view.XScuflView;
+import org.embl.ebi.escience.testhelpers.DatabaseAwareTestCase;
+import org.embl.ebi.escience.testhelpers.WorkflowFactory;
 
-public class JDBCBaclavaDataServiceTest extends TestCase {
-    private JDBCBaclavaDataService dataService;
-	
-	public static void main(String[] args) {
-		junit.textui.TestRunner.run(JDBCBaclavaDataServiceTest.class);
-	}
-
-	public JDBCBaclavaDataServiceTest(String arg0) {
-		super(arg0);
-	}
-
-	protected void setUp() throws Exception {
-        // Initialize the proxy settings etc.
-        ResourceBundle rb = ResourceBundle.getBundle("mygrid");
-            Properties sysProps = System.getProperties();
-            Enumeration keys = rb.getKeys();
-        while (keys.hasMoreElements()) {
-            String key = (String) keys.nextElement();
-            String value = (String) rb.getString(key);
-            sysProps.put(key, value);
-        }
-        dataService = new JDBCBaclavaDataService();
-        dataService.reinit();
-        DataThing.SYSTEM_DEFAULT_LSID_PROVIDER = new StupidLSIDProvider();
-	}
-
-	protected void tearDown() throws Exception {
-        dataService = null;
-	}
+public class JDBCBaclavaDataServiceTest extends DatabaseAwareTestCase {
+    	
 
 	/*
 	 * Test method for 'JDBCBaclavaDataService.storeDataThing(DataThing)'
      * and 'JDBCBaclavaDataService.fetchDataThing(String)'
 	 */
 	public final void testStoreAndFetchDataThing() throws Exception {
+		JDBCBaclavaDataService dataService=getDataService();
+		
         String simpleData = "test string";
         DataThing dataThing = new DataThing(simpleData);
         dataThing.fillLSIDValues();
@@ -85,6 +69,69 @@ public class JDBCBaclavaDataServiceTest extends TestCase {
         fetchedThing = dataService.fetchDataThing("4");
         fetchedData = fetchedThing.getDataObject();
         assertEquals(collectionData, fetchedData);
+	}
+	
+	public void testStoreWorkflow() throws Exception
+	{
+		JDBCBaclavaDataService store = getDataService();
+		ScuflModel model = WorkflowFactory.getSimpleWorkflowModel();
+		store.storeWorkflow(model);
+		
+		Connection con=getConnection();
+		ResultSet rst = null;
+		PreparedStatement pstmt = null;
+		
+		try
+		{
+			pstmt = con.prepareStatement("SELECT * FROM workflow WHERE lsid=?");
+			pstmt.setString(1,model.getDescription().getLSID());
+			rst = pstmt.executeQuery();
+			if (rst.next())
+			{
+				assertEquals("Title should be 'simple workflow'","simple workflow",rst.getString("title"));
+				assertEquals("Author should be 'tester'","tester",rst.getString("author"));
+				assertEquals("ID should be 1",1,rst.getInt("id"));
+				assertEquals("XML is invalid",new XScuflView(model).getXMLText(),rst.getString("workflow"));
+				
+				
+				if (rst.next())
+				{
+					fail("There should only be one record for this given lsid");
+				}
+			}
+			else
+			{
+				fail("No records returned from database");
+			}
+			
+		}
+		catch(Exception e)
+		{
+			throw e;
+		}
+		finally
+		{
+			if (rst!=null) rst.close();
+			if (pstmt!=null) pstmt.close();
+			con.close();
+		}								
+	}
+	
+	public void testFetchWorkflow() throws Exception
+	{
+		JDBCBaclavaDataService store = getDataService();
+		ScuflModel model = WorkflowFactory.getSimpleWorkflowModel();
+		store.storeWorkflow(model);
+		String xml=store.fetchWorkflow(model.getDescription().getLSID());
+		
+		ScuflModel fetchedModel=new ScuflModel();
+		ByteArrayInputStream instr = new ByteArrayInputStream(xml.getBytes());
+		XScuflParser.populate(instr,fetchedModel,null);
+		
+		assertEquals("Title is wrong","simple workflow",fetchedModel.getDescription().getTitle());
+		assertEquals("Author is wrong","tester",fetchedModel.getDescription().getAuthor());
+		assertEquals("LSID is wrong",model.getDescription().getLSID(),fetchedModel.getDescription().getLSID());
+		assertEquals("An invalid number of Processors",model.getProcessors().length,fetchedModel.getProcessors().length);		
 	}
 
 }
