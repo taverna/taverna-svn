@@ -197,16 +197,15 @@ public class DataThingXMLFactory {
 	    result = new HashSet();
 	}
 	
-	for (Iterator i = itemListElement.getChildren("dataElement",namespace).iterator(); 
-	     i.hasNext(); ) {
-	    // Iterate over any dataElement declarations
-	    result.add(objectForDataElement((Element)i.next(), theDataThing, rootElement));
-	}
-	for (Iterator i = itemListElement.getChildren("partialOrder",namespace).iterator();
-	     i.hasNext(); ) {
-	    // Iterate over any nested partial orders
-	    Element nextElement = (Element)i.next();
-	    result.add(objectForCollectionElement(nextElement, theDataThing, rootElement));
+	for (Iterator i = itemListElement.getChildren().iterator(); i.hasNext(); ) {
+		Element childElement = (Element)i.next();
+		if (childElement.getNamespace().equals(namespace)) {
+			if (childElement.getName().equals("dataElement")) {
+			    result.add(objectForDataElement(childElement, theDataThing, rootElement));
+			} else if (childElement.getName().equals("partialOrder")) {
+			    result.add(objectForCollectionElement(childElement, theDataThing, rootElement));				
+			}
+		}
 	}
 	String lsid = e.getAttributeValue("lsid");
 	if (lsid != null) {
