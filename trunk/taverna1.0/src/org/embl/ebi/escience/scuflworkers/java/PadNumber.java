@@ -45,7 +45,7 @@ public class PadNumber implements LocalWorker {
 	String input = (String)((DataThing)(inputs.get("input"))).getDataObject();
 	int targetLength = 7;
 	if (inputs.containsKey("targetlength")) {
-	    targetLength = Integer.parseInt((String)((DataThing)(inputs.get("regex"))).getDataObject());
+	    targetLength = Integer.parseInt((String)((DataThing)(inputs.get("targetlength"))).getDataObject());
 	}
 	int currentLength = input.length();
 	while (input.length() < targetLength) {
