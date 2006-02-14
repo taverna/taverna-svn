@@ -18,8 +18,7 @@ public abstract class DatabaseAwareTestCase extends PropertiesAwareTestCase
 		super.setUp();
 		System.getProperties().setProperty("taverna.datastore.jdbc.url","jdbc:mysql://localhost/tavernatest");
 		dataService=new JDBCBaclavaDataService();
-		dataService.reinit();
-		DataThing.SYSTEM_DEFAULT_LSID_PROVIDER = new StupidLSIDProvider();
+		dataService.reinit();		
 	}
 	
 	protected void tearDown() throws Exception 
@@ -33,8 +32,7 @@ public abstract class DatabaseAwareTestCase extends PropertiesAwareTestCase
 		
 		String url = System.getProperties().getProperty("taverna.datastore.jdbc.url");
 		String username = System.getProperties().getProperty("taverna.datastore.jdbc.user");
-		String password = System.getProperties().getProperty("taverna.datastore.jdbc.password");
-		String driver = System.getProperties().getProperty("taverna.datastore.jdbc.driver");
+		String password = System.getProperties().getProperty("taverna.datastore.jdbc.password");		
 		
 		return DriverManager.getConnection(url,username,password);		
 	}	

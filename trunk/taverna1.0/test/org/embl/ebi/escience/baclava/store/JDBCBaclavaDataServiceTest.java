@@ -23,6 +23,13 @@ import org.embl.ebi.escience.testhelpers.WorkflowFactory;
 public class JDBCBaclavaDataServiceTest extends DatabaseAwareTestCase {
     	
 
+	
+	protected void setUp() throws Exception 
+	{		
+		super.setUp();
+		DataThing.SYSTEM_DEFAULT_LSID_PROVIDER = new StupidLSIDProvider();
+	}
+
 	/*
 	 * Test method for 'JDBCBaclavaDataService.storeDataThing(DataThing)'
      * and 'JDBCBaclavaDataService.fetchDataThing(String)'
