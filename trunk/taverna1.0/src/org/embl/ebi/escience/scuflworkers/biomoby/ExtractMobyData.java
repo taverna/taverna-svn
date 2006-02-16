@@ -5,12 +5,21 @@
  */
 package org.embl.ebi.escience.scuflworkers.biomoby;
 
+import java.io.IOException;
+import java.io.StringReader;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+
 import org.embl.ebi.escience.baclava.DataThing;
-import org.jdom.*;
-import java.io.*;
-import org.jdom.input.*;
-import java.util.*;
-import org.embl.ebi.escience.scuflworkers.java.*;
+import org.embl.ebi.escience.scuflworkers.java.LocalWorker;
+import org.jdom.Document;
+import org.jdom.Element;
+import org.jdom.JDOMException;
+import org.jdom.Namespace;
+import org.jdom.input.SAXBuilder;
+
 import uk.ac.soton.itinnovation.taverna.enactor.entities.TaskExecutionException;
 
 /**
@@ -107,9 +116,23 @@ public class ExtractMobyData implements LocalWorker {
 	    if (namespaceValue == null) {
 		namespaceValue = mobyDataElement.getAttributeValue("namespace",mobyNS,"");
 	    }
+	    String valueValue = null;
+		List childList = mobyDataElement.getChildren();
+		for (Iterator it = childList.iterator(); it.hasNext();) {
+			Object o = it.next();
+			if (o instanceof Element) {
+				Element oe = (Element) o;
+				valueValue = oe.getTextTrim();
+			}
+		}
 	    results.put("id",new DataThing(idValue));
 	    results.put("namespace",new DataThing(namespaceValue));
-	    results.put("value",new DataThing(mobyDataElement.getTextTrim()));
+	    if (valueValue == null)
+			results.put("value", new DataThing(mobyDataElement
+					.getTextTrim()));
+		else
+			results.put("value", new DataThing(valueValue));
+
 	    results.put("type",new DataThing(mobyDataElement.getName()));
 	    System.out.println("Returning parsed results");
 	}
