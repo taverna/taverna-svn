@@ -12,9 +12,42 @@ import org.embl.ebi.escience.scufl.enactor.event.*;
 import org.embl.ebi.escience.scufl.enactor.implementation.*;
 import org.embl.ebi.escience.scufl.parser.XScuflParser;
 
+/**
+ * Test case that provides the ability to more easily test workflows. 
+ */
 
 public class WorkflowTestCase extends AcceptanceTestCase 
 {			
+
+	private String progressReportXMLString;
+	
+	
+	
+	public void setUp() {
+		progressReportXMLString="";
+		super.setUp();
+	}	
+	
+	/**
+	 * Provides access to the Progress Report, after executeWorkflow has been invoked.
+	 * @return
+	 */
+	public String getProgressReportXMLString()
+	{
+		return progressReportXMLString;
+	}
+
+	/**
+	 * Executes a given workflow and returns the output Map.
+	 * Workflow is identified by workflow, which relates to a directory in /test/data/workflows, and within there an xml file with the same
+	 * name (appended with .xml). i.e. /test/data/workflows/<workflow>/<workflow>.xml
+	 * listener is the WorkflowEventListener that is applied to WorkflowEventDispatcher.DISPATCHER. A default listener is available from defaultWorkflowListener
+	 * @param workflow
+	 * @param inputs
+	 * @param listener
+	 * @return Map holding the outputs resulting from executing the workflow
+	 * @throws Exception
+	 */
 
 	protected Map executeWorkflow(String workflow,Map inputs,WorkflowEventListener listener) throws Exception
 	{		
@@ -35,12 +68,21 @@ public class WorkflowTestCase extends AcceptanceTestCase
         
         if (status.equals("FAILED")) fail("Workflow: "+workflow+" failed to run.");
         
+        progressReportXMLString=workflowInstance.getProgressReportXMLString();
+        
         return workflowInstance.getOutput();               
         							
 	}	
 	
 	
-	
+	/**
+	 * Opens and parses xml representing a ScuflModel. This xml is stored in a file that must be in the form and location of
+	 * /test/data/workflows/<workflow>/<workflow>.xml
+	 * Relies on the property $taverna.home being set in able to find the location of the files.
+	 * @param workflowName
+	 * @return
+	 * @throws Exception
+	 */
 	protected ScuflModel openModel(String workflowName) throws Exception
 	{
 		ScuflModel model = new ScuflModel();	
@@ -54,6 +96,10 @@ public class WorkflowTestCase extends AcceptanceTestCase
 		return model;
 	}
 	
+	/**
+	 * Provides a simple WorkflowEventListener. Should a WorkflowFailureEvent take place, this is recorded via the AcceptanceAssertions.fail method.
+	 * @return
+	 */
 	protected WorkflowEventListener defaultWorkflowEventListener()
 	{
 		return new WorkflowEventAdapter() {
@@ -66,6 +112,14 @@ public class WorkflowTestCase extends AcceptanceTestCase
         };
 	}
 	
+	/**
+	 * Executes the workflow using the given inputs, and compares any outputs with the expectedOutputs.
+	 * Any difference will be recorded as an error.
+	 * @param workflow
+	 * @param inputs
+	 * @param expectedOutputs
+	 * @throws Exception
+	 */
 	protected void performTest(String workflow,Map inputs,Map expectedOutputs) throws Exception
 	{
 			
@@ -84,6 +138,13 @@ public class WorkflowTestCase extends AcceptanceTestCase
 		}
 	}
 	
+	/**
+	 * Returns a String input data stored in a file /test/data/workflows/<workflow>/inputs/<datafile>
+	 * @param workflow
+	 * @param dataFile
+	 * @return
+	 * @throws Exception
+	 */
 	protected String readInputDataFromFile(String workflow,String dataFile) throws Exception
 	{		
 		String home = System.getProperty("taverna.home");
@@ -99,14 +160,21 @@ public class WorkflowTestCase extends AcceptanceTestCase
 		
 		while((line=reader.readLine())!=null)
 		{
-			if (result.length()>0) result+="\n";
 			result+=line;
+			result+="\n";
 		}
 		
 		return result;
 		
 	}
 	
+	/**
+	 * Returns a String output data stored in a file /test/data/workflows/<workflow>/outputs/<datafile>
+	 * @param workflow
+	 * @param dataFile
+	 * @return
+	 * @throws Exception
+	 */
 	protected String readOutputDataFromFile(String workflow,String dataFile) throws Exception
 	{		
 		String home = System.getProperty("taverna.home");
@@ -121,9 +189,9 @@ public class WorkflowTestCase extends AcceptanceTestCase
 		String result="";
 		
 		while((line=reader.readLine())!=null)
-		{
-			if (result.length()>0) result+="\n";
+		{			
 			result+=line;
+			result+="\n";
 		}
 		
 		return result;

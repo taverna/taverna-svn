@@ -8,7 +8,6 @@ import java.util.Map;
 import org.embl.ebi.escience.baclava.DataThing;
 import org.embl.ebi.escience.baclava.factory.DataThingFactory;
 import org.embl.ebi.escience.testhelpers.acceptance.WorkflowTestCase;
-import org.jdom.Element;
 
 
 public class WorkflowTest extends WorkflowTestCase
@@ -51,20 +50,18 @@ public class WorkflowTest extends WorkflowTestCase
 		
 		if (ok)
 		{
-			data=readOutputDataFromFile("genscan_shim_example2","cds.text").substring(0,100);
+			data=readOutputDataFromFile("genscan_shim_example2","cds.text");
 			DataThing thing = (DataThing)outputs.get("cds");
-			assertTrue("cds results dont match",((String)thing.getDataObject()).startsWith(data));
+			assertEquals("cds results dont match",data,thing.getDataObject());			
 			
-			data=readOutputDataFromFile("genscan_shim_example2","genscan_report.text").substring(0,100);
+			data=readOutputDataFromFile("genscan_shim_example2","genscan_report.text");
 			thing = (DataThing)outputs.get("genscan_report");
-			assertTrue("genscan_report results dont match",((String)thing.getDataObject()).startsWith(data));
+			assertEquals("genscan_report results dont match",data,thing.getDataObject());
 			
-			data=readOutputDataFromFile("genscan_shim_example2","peptides.text").substring(0,100);
+			data=readOutputDataFromFile("genscan_shim_example2","peptides.text");
 			thing = (DataThing)outputs.get("peptides");
-			assertTrue("peptides results dont match",((String)thing.getDataObject()).startsWith(data));
-									
-		}
-		
+			assertEquals("peptides results dont match",data,thing.getDataObject());								
+		}		
 	}
 	
 	
@@ -110,7 +107,13 @@ public class WorkflowTest extends WorkflowTestCase
 		{
 			DataThing thing = (DataThing)outputs.get("seq");					
 			String type = thing.getSyntacticType();
-			assertEquals("Syntactic type is incorrect","'text/plain,chemical/x-embl-dl-nucleotide'",type);			
+			assertEquals("Syntactic type is incorrect","'text/plain,chemical/x-embl-dl-nucleotide'",type);
+			
+			String data = (String)thing.getDataObject();
+			String expected = readOutputDataFromFile("SeqVistaRendering","seq.text");
+			System.out.println("***** "+data.length()+", "+expected.length());
+			assertEquals("data stored in seq.text does not match output",expected,data);
+			
 		}
 	}
 				
