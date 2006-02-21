@@ -9,7 +9,7 @@ public abstract class PropertiesAwareTestCase extends TestCase
 {
 	protected void setUp() throws Exception 
 	{
-		ResourceBundle bundle=ResourceBundle.getBundle("mygrid");
+		ResourceBundle bundle=ResourceBundle.getBundle("mygridtest");
 		Enumeration keys=bundle.getKeys();
 		while(keys.hasMoreElements())
 		{

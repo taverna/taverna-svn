@@ -15,8 +15,7 @@ public abstract class DatabaseAwareTestCase extends PropertiesAwareTestCase
 	
 	protected void setUp() throws Exception 
 	{		
-		super.setUp();
-		System.getProperties().setProperty("taverna.datastore.jdbc.url","jdbc:mysql://localhost/tavernatest");
+		super.setUp();		
 		dataService=new JDBCBaclavaDataService();
 		dataService.reinit();		
 	}
