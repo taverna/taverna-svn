@@ -47,6 +47,18 @@ public class WSDLBasedProcessorTest extends TestCase
 		{
 			assertTrue("incorrect exception thrown, should have been ProcessorCreationException",e instanceof ProcessorCreationException);			
 		}
-	}		
+	}
+	
+	public void testDocumentPortType() throws Exception
+	{
+		Processor processor = new WSDLBasedProcessor(null,"test","http://eutils.ncbi.nlm.nih.gov/entrez/eutils/soap/eutils.wsdl","run_eGquery");
+		
+		assertEquals("invalid name","test",processor.getName());
+		assertEquals("incorrect number of outputs",2,processor.getOutputPorts().length);
+		assertEquals("incorrect output port name","attachmentList",processor.getOutputPorts()[0].getName());
+		assertEquals("incorrect output port name","parameters",processor.getOutputPorts()[1].getName());
+		assertEquals("incorrect output port syntactic type","'text/xml'",processor.getOutputPorts()[1].getSyntacticType());
+		
+	}
 	
 }
