@@ -1,9 +1,9 @@
 package org.embl.ebi.escience.scuflworkers.wsdl.parser;
 
-import junit.framework.TestCase;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
-import org.embl.ebi.escience.scuflworkers.wsdl.parser.WSDLParser.ArrayTypeDescriptor;
+import junit.framework.TestCase;
 
 public class WSDLParserTest extends TestCase 
 {
@@ -167,4 +167,5 @@ public class WSDLParserTest extends TestCase
 		
 		assertEquals("wrong type","BIVRecord",typeDesc.getType());				
 	}			
+	
 }
