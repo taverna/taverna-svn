@@ -167,25 +167,50 @@ public class BiomobyTask implements ProcessorTaskWorker {
                     String name = inputPorts[x].getName();
                     if (!name.equalsIgnoreCase("input")) {
                         DataThing inputThing = (DataThing) inputMap.get(name);
+                        // need the article name for the simple element
+                        String art_name = "";
+                        if (name.indexOf("(") >= 0 && name.indexOf(")") >= 0)
+                        	art_name = name.substring(name.indexOf("(")+1, name.indexOf(")"));
+                        
                         // TODO check for null?
                         if (!inputThing.getSyntacticType().toString()
                                 .startsWith("l(")) {
                             // no list, we have a Simple!
                             inputXML = (String) inputThing.getDataObject();
                             Document d = XMLUtilities.getDOMDocument(inputXML);
-                            
                             // check whether we have a collection of datatypes rather than a single simple
                             List simpleCollection = XMLUtilities.createMobySimpleListFromCollection(inputXML, ((BiomobyProcessor) proc).getMobyEndpoint());
                             if (simpleCollection.size() == 0) {
-                            List list = d.getRootElement().getChild(
+                            	Element mc = d.getRootElement().getChild(
+												"mobyContent",
+												MobyObjectClassNSImpl.MOBYNS);
+								if (mc == null)
+									mc = d.getRootElement().getChild(
+											"mobyContent");
+								
+								Element md = mc.getChild(
+												"mobyData",
+												MobyObjectClassNSImpl.MOBYNS);
+								if (md == null)
+									md = mc.getChild(
+											"mobyData");
+								List list = md.getChildren("Simple",
+												MobyObjectClassNSImpl.MOBYNS);
+								if (list == null)
+									list = md.getChildren("Simple");
+								
+                            /*List list = d.getRootElement().getChild(
 										"mobyContent",
 										MobyObjectClassNSImpl.MOBYNS).getChild(
 										"mobyData",
 										MobyObjectClassNSImpl.MOBYNS)
 										.getChildren("Simple",
-												MobyObjectClassNSImpl.MOBYNS);
+												MobyObjectClassNSImpl.MOBYNS);*/
 								for (Iterator i = list.iterator(); i.hasNext();) {
 									Element nino = (Element) i.next();
+									// TODO rename the simple to what is expected by the service
+									if (!art_name.equals(""))
+										nino.setAttribute("articleName", art_name);
 									i.remove();
 									mobyData.addContent(nino.detach());
 								}
@@ -382,6 +407,7 @@ public class BiomobyTask implements ProcessorTaskWorker {
                     } else {
                         // we have an article name, so extract it and do the
                         // same as above
+                    	System.out.println(outputXML);
                         String objectType = name
                                 .substring(0, name.indexOf("("));
                         String artName = name.substring(name.indexOf("'") + 1,
