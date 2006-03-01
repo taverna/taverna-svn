@@ -196,7 +196,7 @@ public class BiomobyTask implements ProcessorTaskWorker {
 											"mobyData");
 								List list = md.getChildren("Simple",
 												MobyObjectClassNSImpl.MOBYNS);
-								if (list == null)
+								if (list == null || list.isEmpty())
 									list = md.getChildren("Simple");
 								
                             /*List list = d.getRootElement().getChild(
@@ -208,7 +208,7 @@ public class BiomobyTask implements ProcessorTaskWorker {
 												MobyObjectClassNSImpl.MOBYNS);*/
 								for (Iterator i = list.iterator(); i.hasNext();) {
 									Element nino = (Element) i.next();
-									// TODO rename the simple to what is expected by the service
+									// rename the simple to what is expected by the service
 									if (!art_name.equals(""))
 										nino.setAttribute("articleName", art_name);
 									i.remove();
@@ -226,16 +226,42 @@ public class BiomobyTask implements ProcessorTaskWorker {
                                 Document d = XMLUtilities
                                         .getDOMDocument(inputXML);
                                 // process collections now
-                                List list = d.getRootElement().getChild(
+                         
+                                Element mc = d.getRootElement().getChild(
+                                        "mobyContent",
+                                        MobyObjectClassNSImpl.MOBYNS);
+                                if (mc == null)
+                                	mc = d.getRootElement().getChild(
+                                            "mobyContent");
+                                
+                                Element md = mc.getChild(
+                                        "mobyData",
+                                        MobyObjectClassNSImpl.MOBYNS);
+                                if (md == null)
+                                	md = mc.getChild(
+                                            "mobyData");
+                                
+                                List list = md.getChildren("Collection",
+                                                MobyObjectClassNSImpl.MOBYNS);
+                                if (list == null || list.isEmpty()) 
+                                	list = md.getChildren("Collection");
+                                /*List list = d.getRootElement().getChild(
                                         "mobyContent",
                                         MobyObjectClassNSImpl.MOBYNS).getChild(
                                         "mobyData",
                                         MobyObjectClassNSImpl.MOBYNS)
                                         .getChildren("Collection",
-                                                MobyObjectClassNSImpl.MOBYNS);
+                                                MobyObjectClassNSImpl.MOBYNS);*/
+                                
+                                // parse out the article name for the collection
+                                art_name = "";
+                                if (name.indexOf("'") >= 0 && name.indexOf("'") >= 0)
+                                	art_name = name.substring(name.indexOf("'")+1, name.indexOf("'"));
                                 for (Iterator i = list.iterator(); i.hasNext();) {
                                     Element colEl = (Element) i.next();
                                     i.remove();
+                                    if (!art_name.equals(""))
+                                    	colEl.setAttribute("articleName", art_name);
                                     mobyData.addContent(colEl.detach());
                                 }
                             }
@@ -407,7 +433,6 @@ public class BiomobyTask implements ProcessorTaskWorker {
                     } else {
                         // we have an article name, so extract it and do the
                         // same as above
-                    	System.out.println(outputXML);
                         String objectType = name
                                 .substring(0, name.indexOf("("));
                         String artName = name.substring(name.indexOf("'") + 1,
