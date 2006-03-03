@@ -7,12 +7,7 @@ package org.embl.ebi.escience.scufl;
 
 // Utility Imports
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
+import java.util.*;
 import java.util.regex.Pattern;
 
 
@@ -195,7 +190,7 @@ public abstract class Processor implements Serializable, IProcessor {
 	    return;
 	}
 	try {
-	    Processor testExists = model.locateProcessor(newName);
+	    model.locateProcessor(newName);
 	    return;
 	}
 	catch (UnknownProcessorException upe) {
@@ -573,8 +568,7 @@ public abstract class Processor implements Serializable, IProcessor {
 	    }
 	    else {
 		AlternateProcessor ap = getAlternateDescription();
-		Map inputMapping = ap.getInputMapping();
-		Map outputMapping = ap.getOutputMapping();
+		Map inputMapping = ap.getInputMapping();		
 		// This is an alternate processor
 		InputPort[] parentInputs = parentProcessor.getBoundInputPorts();
 		List resultList = new ArrayList();
@@ -636,8 +630,7 @@ public abstract class Processor implements Serializable, IProcessor {
 	    }
 	    else {
 		// This is an alternate processor		
-		AlternateProcessor ap = getAlternateDescription();
-		Map inputMapping = ap.getInputMapping();
+		AlternateProcessor ap = getAlternateDescription();		
 		Map outputMapping = ap.getOutputMapping();
 		OutputPort[] parentOutputs = parentProcessor.getBoundOutputPorts();
 		List resultList = new ArrayList();

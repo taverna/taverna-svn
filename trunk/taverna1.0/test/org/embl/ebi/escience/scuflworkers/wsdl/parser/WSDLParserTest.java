@@ -3,6 +3,8 @@ package org.embl.ebi.escience.scuflworkers.wsdl.parser;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.wsdl.Operation;
+
 import junit.framework.TestCase;
 
 public class WSDLParserTest extends TestCase 
@@ -13,9 +15,9 @@ public class WSDLParserTest extends TestCase
 		WSDLParser parser = new WSDLParser("http://eutils.ncbi.nlm.nih.gov/entrez/eutils/soap/eutils_lite.wsdl");
 		List operations = parser.getOperations();
 		assertEquals("wrong number of operations found (wsdl may have changed)",12,operations.size());
-		WSDLParser.WSDLOperation op = (WSDLParser.WSDLOperation)operations.get(0);
+		Operation op = (Operation)operations.get(0);
 		assertEquals("wrong name for first operation","run_eGquery",op.getName());
-		assertEquals("wrong style","document",op.getStyle());
+		assertEquals("wrong style","document",parser.getStyle());
 	}
 	
 	public void testGetOperationParameters() throws Exception
@@ -166,6 +168,22 @@ public class WSDLParserTest extends TestCase
 		typeDesc=arrayTypeDesc.getElementType();
 		
 		assertEquals("wrong type","BIVRecord",typeDesc.getType());				
-	}			
+	}		
+	
+	public void testGoVizNoOutputs() throws Exception
+	{
+		WSDLParser parser=new WSDLParser("http://www.ebi.ac.uk/collab/mygrid/service1/goviz/GoViz.jws?wsdl");
+		List inputs = new ArrayList();
+		List outputs = new ArrayList();
+		parser.getOperationParameters("destroySession",inputs,outputs);
+		
+		assertEquals("wrong number of inputs",1,inputs.size());
+		assertEquals("wrong number of outputs",0,outputs.size());
+		
+		WSDLParser.TypeDescriptor typeDesc = (WSDLParser.TypeDescriptor)inputs.get(0);
+		assertTrue("input should be BaseType",typeDesc instanceof WSDLParser.BaseTypeDescriptor);
+		assertEquals("wrong name","sessionID",typeDesc.getName());
+		assertEquals("wrong type","string",typeDesc.getType());
+	}
 	
 }

@@ -1,10 +1,7 @@
 package org.embl.ebi.escience.scuflworkers.wsdl.parser;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import javax.wsdl.Binding;
 import javax.wsdl.Definition;
@@ -25,6 +22,8 @@ import org.apache.axis.wsdl.symbolTable.Parameter;
 import org.apache.axis.wsdl.symbolTable.Parameters;
 import org.apache.axis.wsdl.symbolTable.SymbolTable;
 import org.apache.axis.wsdl.symbolTable.TypeEntry;
+import org.apache.wsif.providers.soap.apacheaxis.WSIFDynamicProvider_ApacheAxis;
+import org.apache.wsif.util.WSIFPluggableProviders;
 import org.xml.sax.SAXException;
 
 import com.ibm.wsdl.extensions.soap.SOAPBindingImpl;
@@ -39,9 +38,22 @@ import com.ibm.wsdl.extensions.soap.SOAPBindingImpl;
 public class WSDLParser {
 	private String wsdlLocation;
 
-	private SymbolTable symbolTable;
-
-	private List operations;
+	/**
+	 * Cache for SymbolTable to remove the need for reprocessing each time.
+	 */
+	private static Map symbolTableMap = Collections.synchronizedMap(new HashMap());
+	
+	/**
+	 * Cache for operations, to remove the need for reprocessing each time.
+	 */
+	private static Map operationMap = Collections.synchronizedMap(new HashMap());
+	
+	private static Map bindingMap = Collections.synchronizedMap(new HashMap());
+	
+	private static Map styleMap = Collections.synchronizedMap(new HashMap());
+	
+	private static Map portTypeMap = Collections.synchronizedMap(new HashMap());
+	
 
 	/**
 	 * Constructor which takes the location of the base wsdl file, and begins to
@@ -56,18 +68,27 @@ public class WSDLParser {
 	 */
 	public WSDLParser(String wsdlLocation) throws ParserConfigurationException,
 			WSDLException, IOException, SAXException {
+		
 		this.wsdlLocation = wsdlLocation;
-		this.symbolTable = new SymbolTable(new NoopFactory()
-				.getBaseTypeMapping(), true, false, false);
-		symbolTable.populate(wsdlLocation);
-		this.operations = determineOperations();
+		
+		WSIFPluggableProviders.overrideDefaultProvider("http://schemas.xmlsoap.org/wsdl/soap/",
+				new WSIFDynamicProvider_ApacheAxis());
+		
+		if (!symbolTableMap.containsKey(wsdlLocation))
+		{
+			SymbolTable symbolTable = new SymbolTable(new NoopFactory()
+					.getBaseTypeMapping(), true, false, false);
+			symbolTable.populate(wsdlLocation);			
+			symbolTableMap.put(wsdlLocation,symbolTable);
+			operationMap.put(wsdlLocation,determineOperations());
+		}
 	}
 
 	/**
 	 * @return a list of WSDLOperations for all operations for this service,
 	 */
 	public List getOperations() {
-		return this.operations;
+		return (List)operationMap.get(getWSDLLocation());
 	}
 
 	/**
@@ -76,12 +97,28 @@ public class WSDLParser {
 	public String getWSDLLocation() {
 		return wsdlLocation;
 	}
+		
 
 	/**
 	 * @return the Definition for this service
 	 */
 	public Definition getDefinition() {
-		return symbolTable.getDefinition();
+		return getSymbolTable().getDefinition();
+	}
+	
+	public Binding getBinding()
+	{
+		return (Binding)bindingMap.get(getWSDLLocation());
+	}
+	
+	public String getStyle()
+	{
+		return (String)styleMap.get(getWSDLLocation());
+	}
+	
+	public PortType getPortType()
+	{
+		return (PortType)portTypeMap.get(getWSDLLocation());
 	}
 
 	/**
@@ -100,21 +137,24 @@ public class WSDLParser {
 	 */
 	public void getOperationParameters(String operationName, List inputs,
 			List outputs) throws UnknownOperationException, IOException {
-		WSDLOperation operation = getOperation(operationName);
+		Operation operation = getOperation(operationName);
 		if (operation == null) {
 			throw new UnknownOperationException("operation called "
 					+ operationName + " does not exist for this wsdl");
-		}
-
-		Parameters parameters = symbolTable.getOperationParameters(operation
-				.getOperation(), "", new BindingEntry(operation.getBinding()));
+		}		
+		
+		Parameters parameters = getSymbolTable().getOperationParameters(operation
+				, "", new BindingEntry(getBinding()));
 
 		for (Iterator iterator = parameters.list.iterator(); iterator.hasNext();) {
 			Parameter param = (Parameter) iterator.next();
 			inputs.add(processParameter(param));
 
 		}
-		outputs.add(processParameter(parameters.returnParam));
+		if (parameters.returnParam!=null)
+		{
+			outputs.add(processParameter(parameters.returnParam));
+		}
 	}
 
 	/**
@@ -126,12 +166,12 @@ public class WSDLParser {
 	 * @throws UnknowOperationException
 	 *             if no operation matches the name
 	 */
-	public WSDLOperation getOperation(String operationName)
+	public Operation getOperation(String operationName)
 			throws UnknownOperationException {
-		WSDLOperation result = null;
+		Operation result = null;
 
 		for (Iterator iterator = getOperations().iterator(); iterator.hasNext();) {
-			WSDLOperation op = (WSDLOperation) iterator.next();
+			Operation op = (Operation) iterator.next();
 			if (op.getName().equals(operationName)) {
 				result = op;
 				break;
@@ -142,24 +182,33 @@ public class WSDLParser {
 					+ operationName + " exists");
 		return result;
 	}
+	
+	private SymbolTable getSymbolTable()
+	{
+		return (SymbolTable)symbolTableMap.get(getWSDLLocation());
+	}
 
 	private List determineOperations() {
 		List result = new ArrayList();
-		Map bindings = symbolTable.getDefinition().getBindings();
+		Map bindings = getSymbolTable().getDefinition().getBindings();
 		for (Iterator iterator = bindings.values().iterator(); iterator
 				.hasNext();) {
 			Binding binding = (Binding) iterator.next();
 			List extensibilityElementList = binding.getExtensibilityElements();
 			for (Iterator k = extensibilityElementList.iterator(); k.hasNext();) {
 				ExtensibilityElement ee = (ExtensibilityElement) k.next();
-				if (ee instanceof SOAPBindingImpl) {
+				if (ee instanceof SOAPBindingImpl) {					
 					SOAPBinding soapBinding = (SOAPBinding) ee;
 					PortType portType = binding.getPortType();
+					
+					bindingMap.put(getWSDLLocation(),binding);
+					styleMap.put(getWSDLLocation(),soapBinding.getStyle());									
+					portTypeMap.put(getWSDLLocation(),portType);
+					
 					for (Iterator opIterator = portType.getOperations()
 							.iterator(); opIterator.hasNext();) {
 						Operation op = (Operation) opIterator.next();
-						result.add(new WSDLOperation(op, binding, portType,
-								soapBinding.getStyle()));
+						result.add(op);
 					}
 				}
 			}
@@ -249,54 +298,13 @@ public class WSDLParser {
 		result.setType(type.getQName().getLocalPart());
 		return result;
 	}
-
-	/**
-	 * Value class to hold information about a particular webservice operation
-	 * 
-	 */
-	class WSDLOperation {
-		private Operation operation;
-
-		private Binding binding;
-
-		private PortType portType;
-
-		private String style;
-
-		public WSDLOperation(Operation operation, Binding binding,
-				PortType portType, String style) {
-			this.operation = operation;
-			this.binding = binding;
-			this.portType = portType;
-			this.style = style;
-		}
-
-		public Binding getBinding() {
-			return binding;
-		}
-
-		public String getName() {
-			return operation.getName();
-		}
-
-		public Operation getOperation() {
-			return operation;
-		}
-
-		public PortType getPortType() {
-			return portType;
-		}
-
-		public String getStyle() {
-			return style;
-		}
-	}
+		
 
 	/**
 	 * A TypeDescriptor that specifically describes a complex type
 	 * 
 	 */
-	class ComplexTypeDescriptor extends TypeDescriptor {
+	public class ComplexTypeDescriptor extends TypeDescriptor {
 		private List elements = new ArrayList();
 
 		public List getElements() {
@@ -308,7 +316,7 @@ public class WSDLParser {
 	 * A TypeDescriptor that specifically describes an array type
 	 * 
 	 */
-	class ArrayTypeDescriptor extends TypeDescriptor {
+	public class ArrayTypeDescriptor extends TypeDescriptor {
 		private TypeDescriptor elementType;
 
 		public TypeDescriptor getElementType() {
@@ -325,7 +333,7 @@ public class WSDLParser {
 	 * base64binary)
 	 * 
 	 */
-	class BaseTypeDescriptor extends TypeDescriptor {
+	public class BaseTypeDescriptor extends TypeDescriptor {
 
 	}
 
@@ -333,7 +341,7 @@ public class WSDLParser {
 	 * Base class for all descriptors for type
 	 * 
 	 */
-	class TypeDescriptor {
+	public class TypeDescriptor {
 		private String name;
 
 		private String type;
