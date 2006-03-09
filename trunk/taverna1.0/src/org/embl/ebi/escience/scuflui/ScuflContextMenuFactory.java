@@ -108,7 +108,7 @@ public class ScuflContextMenuFactory {
 				// Workflow sink or processor inputs have the option to toggle
 				// between NDSELECT and MERGE
 				// operation when there's more than one input link to the port
-				JPopupMenu theMenu = new JPopupMenu();
+				final JPopupMenu theMenu = new JPopupMenu();
 
 				// If this is a workflow sink, give the option to remove it.
 				if (thePort.getProcessor() == model.getWorkflowSinkProcessor()) {
@@ -198,8 +198,9 @@ public class ScuflContextMenuFactory {
 								if (name != null) {
 									splitter.setUpInputs(ip);
 									LocalServiceProcessor processor = new LocalServiceProcessor(model, model
-											.getValidProcessorName(name), splitter);
+											.getValidProcessorName(name), splitter);																																												
 									model.addProcessor(processor);
+									model.addDataConstraint(new DataConstraint(model,processor.getOutputPorts()[0],ip));
 								}
 							} catch (Exception e) {
 								e.printStackTrace();
