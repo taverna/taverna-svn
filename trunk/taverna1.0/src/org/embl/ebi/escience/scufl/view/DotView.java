@@ -370,7 +370,7 @@ public class DotView implements ScuflModelEventListener, java.io.Serializable {
 		}
 		else {
 		    if (detail == BOUND || detail == ALL) {
-			toName = q(sinkProcessorName)+":"+q(sinkPortName);
+			toName = q(sinkProcessorName)+":"+q("i"+sinkPortName);
 		    }
 		    else {
 			toName = q(sinkProcessorName);
@@ -386,7 +386,7 @@ public class DotView implements ScuflModelEventListener, java.io.Serializable {
 		}
 		else {
 		    if (detail == BOUND || detail == ALL) {
-			fromName = q(sourceProcessorName)+":"+q(sourcePortName);
+			fromName = q(sourceProcessorName)+":"+q("o"+sourcePortName);
 		    }
 		    else {
 			fromName = q(sourceProcessorName);
@@ -615,7 +615,7 @@ public class DotView implements ScuflModelEventListener, java.io.Serializable {
 		    if (i > 0) {
 			sb.append("|");
 		    }
-		    sb.append("<"+inputs[i].getName()+">"+inputs[i].getName());
+		    sb.append("<i"+inputs[i].getName()+">"+inputs[i].getName());
 		}
 		sb.append("}|");
 		// Show display name
@@ -628,7 +628,7 @@ public class DotView implements ScuflModelEventListener, java.io.Serializable {
 		    if (i > 0) {
 			sb.append("|");
 		    }
-		    sb.append("<"+outputs[i].getName()+">"+outputs[i].getName());
+		    sb.append("<o"+outputs[i].getName()+">"+outputs[i].getName());
 		}
 		sb.append("}}");
 		sb.append("\"\n");
