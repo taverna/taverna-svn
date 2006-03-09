@@ -41,6 +41,8 @@ public class WSDLBasedProcessor extends Processor implements java.io.Serializabl
 	String[] inNames, outNames;
 	Class[] inTypes, outTypes;	
 	
+	WSDLParser parser = null;
+	
 	public WSDLBasedProcessor(ScuflModel model, String procName, String wsdlLocation, String operationName)
 	throws ProcessorCreationException,
 	DuplicateProcessorNameException {
@@ -78,9 +80,7 @@ public class WSDLBasedProcessor extends Processor implements java.io.Serializabl
 		this.operationName = operationName;
 		if (this.isOffline()) {
 			return;
-		}				
-		
-		WSDLParser parser = null;
+		}								
 		
 		try
 		{
@@ -155,9 +155,9 @@ public class WSDLBasedProcessor extends Processor implements java.io.Serializabl
 	{
 		for (int i=0;i<names.length;i++)
 		{
-			WSDLParser.TypeDescriptor descriptor = (WSDLParser.TypeDescriptor)params.get(i);
+			TypeDescriptor descriptor = (TypeDescriptor)params.get(i);
 			names[i]=descriptor.getName();
-			if (descriptor instanceof WSDLParser.ComplexTypeDescriptor)
+			if (descriptor instanceof ComplexTypeDescriptor)
 			{
 				types[i]=org.w3c.dom.Element.class;
 			}
@@ -211,6 +211,11 @@ public class WSDLBasedProcessor extends Processor implements java.io.Serializabl
 		props.put("operation",getOperationName());
 		return props;
 	} 
+	
+	public WSDLParser getParser()
+	{
+		return parser;
+	}
 	
 	
 	/**

@@ -27,27 +27,27 @@ public class WSDLParserTest extends TestCase
 		List outputs = new ArrayList();
 		parser.getOperationParameters("doFasta",inputs,outputs);
 		assertEquals("wrong number of inputs",2,inputs.size());
-		assertTrue("wrong class type for descriptor - should be ComplexTypeDescriptor",inputs.get(0) instanceof WSDLParser.ComplexTypeDescriptor);
-		assertEquals("wrong type","inputParams",((WSDLParser.TypeDescriptor)inputs.get(0)).getType());
-		assertEquals("wrong name","params",((WSDLParser.TypeDescriptor)inputs.get(0)).getName());		
+		assertTrue("wrong class type for descriptor - should be ComplexTypeDescriptor",inputs.get(0) instanceof ComplexTypeDescriptor);
+		assertEquals("wrong type","inputParams",((TypeDescriptor)inputs.get(0)).getType());
+		assertEquals("wrong name","params",((TypeDescriptor)inputs.get(0)).getName());		
 		
-		List inputParamsElements = ((WSDLParser.ComplexTypeDescriptor)inputs.get(0)).getElements();
+		List inputParamsElements = ((ComplexTypeDescriptor)inputs.get(0)).getElements();
 		
 		assertEquals("wrong number of elements",18,inputParamsElements.size());
 		
-		assertEquals("wrong name for first element","program",((WSDLParser.TypeDescriptor)inputParamsElements.get(0)).getName());
-		assertEquals("wrong name for last element","email",((WSDLParser.TypeDescriptor)inputParamsElements.get(17)).getName());
-		assertEquals("wrong type for first element","string",((WSDLParser.TypeDescriptor)inputParamsElements.get(0)).getType());
-		assertEquals("wrong type for last element","string",((WSDLParser.TypeDescriptor)inputParamsElements.get(17)).getType());
+		assertEquals("wrong name for first element","program",((TypeDescriptor)inputParamsElements.get(0)).getName());
+		assertEquals("wrong name for last element","email",((TypeDescriptor)inputParamsElements.get(17)).getName());
+		assertEquals("wrong type for first element","string",((TypeDescriptor)inputParamsElements.get(0)).getType());
+		assertEquals("wrong type for last element","string",((TypeDescriptor)inputParamsElements.get(17)).getType());
 		
-		assertTrue("wrong class type for descriptor - should be TypeDescriptor",inputs.get(1) instanceof WSDLParser.TypeDescriptor);
-		assertEquals("wrong type","base64Binary",((WSDLParser.TypeDescriptor)inputs.get(1)).getType());
-		assertEquals("wrong name","content",((WSDLParser.TypeDescriptor)inputs.get(1)).getName());
+		assertTrue("wrong class type for descriptor - should be TypeDescriptor",inputs.get(1) instanceof TypeDescriptor);
+		assertEquals("wrong type","base64Binary",((TypeDescriptor)inputs.get(1)).getType());
+		assertEquals("wrong name","content",((TypeDescriptor)inputs.get(1)).getName());
 		
 		assertEquals("wrong number of outputs",1,outputs.size());
-		assertTrue("wrong class type for descriptor - should be TypeDescriptor",outputs.get(0) instanceof WSDLParser.TypeDescriptor);
-		assertEquals("wrong type","base64Binary",((WSDLParser.TypeDescriptor)outputs.get(0)).getType());
-		assertEquals("wrong name","result",((WSDLParser.TypeDescriptor)outputs.get(0)).getName());
+		assertTrue("wrong class type for descriptor - should be TypeDescriptor",outputs.get(0) instanceof TypeDescriptor);
+		assertEquals("wrong type","base64Binary",((TypeDescriptor)outputs.get(0)).getType());
+		assertEquals("wrong name","result",((TypeDescriptor)outputs.get(0)).getName());
 						
 	}
 	
@@ -59,25 +59,25 @@ public class WSDLParserTest extends TestCase
 		parser.getOperationParameters("run_eInfo",inputs,outputs);
 		assertEquals("wrong number of inputs",1,inputs.size());
 		assertEquals("wrong number of outputs",1,outputs.size());
-		assertTrue("input should be complex",inputs.get(0) instanceof WSDLParser.ComplexTypeDescriptor);
-		WSDLParser.ComplexTypeDescriptor complexTypeDesc = (WSDLParser.ComplexTypeDescriptor)inputs.get(0);
+		assertTrue("input should be complex",inputs.get(0) instanceof ComplexTypeDescriptor);
+		ComplexTypeDescriptor complexTypeDesc = (ComplexTypeDescriptor)inputs.get(0);
 		assertEquals("wrong name","parameters",complexTypeDesc.getName());
 		assertEquals("wrong number of elements",3,complexTypeDesc.getElements().size());
 		
-		WSDLParser.TypeDescriptor typeDesc = (WSDLParser.TypeDescriptor) complexTypeDesc.getElements().get(0);
+		TypeDescriptor typeDesc = (TypeDescriptor) complexTypeDesc.getElements().get(0);
 		
 		assertEquals("wrong name","db",typeDesc.getName());
 		assertEquals("wrong type","string",typeDesc.getType());
 		assertTrue("db should be optional",typeDesc.isOptional());
 		assertFalse("db should not be unbounded",typeDesc.isUnbounded());
 		
-		typeDesc = (WSDLParser.TypeDescriptor) complexTypeDesc.getElements().get(1);
+		typeDesc = (TypeDescriptor) complexTypeDesc.getElements().get(1);
 		assertEquals("wrong name","tool",typeDesc.getName());
 		assertEquals("wrong type","string",typeDesc.getType());
 		assertTrue("tool should be optional",typeDesc.isOptional());
 		assertFalse("tool should not be unbounded",typeDesc.isUnbounded());
 		
-		typeDesc = (WSDLParser.TypeDescriptor) complexTypeDesc.getElements().get(2);
+		typeDesc = (TypeDescriptor) complexTypeDesc.getElements().get(2);
 		assertEquals("wrong name","email",typeDesc.getName());
 		assertEquals("wrong type","string",typeDesc.getType());
 		assertTrue("email should be optional",typeDesc.isOptional());
@@ -95,34 +95,34 @@ public class WSDLParserTest extends TestCase
 		assertEquals("wrong number of inputs",1,inputs.size());
 		assertEquals("wrong number of outputs",1,outputs.size());
 		
-		assertEquals("wrong name for input","bid",((WSDLParser.TypeDescriptor)inputs.get(0)).getName());
-		assertEquals("wrong type for input","int",((WSDLParser.TypeDescriptor)inputs.get(0)).getType());
+		assertEquals("wrong name for input","bid",((TypeDescriptor)inputs.get(0)).getName());
+		assertEquals("wrong type for input","int",((TypeDescriptor)inputs.get(0)).getType());
 		
-		assertEquals("wrong name for output","BIVComplex",((WSDLParser.TypeDescriptor)outputs.get(0)).getName());
-		assertEquals("wrong type for output","BIVComplex",((WSDLParser.TypeDescriptor)outputs.get(0)).getType());
-		assertTrue("wrong descriptor class for output", outputs.get(0) instanceof WSDLParser.ComplexTypeDescriptor);
+		assertEquals("wrong name for output","BIVComplex",((TypeDescriptor)outputs.get(0)).getName());
+		assertEquals("wrong type for output","BIVComplex",((TypeDescriptor)outputs.get(0)).getType());
+		assertTrue("wrong descriptor class for output", outputs.get(0) instanceof ComplexTypeDescriptor);
 		
-		WSDLParser.ComplexTypeDescriptor typeDesc = (WSDLParser.ComplexTypeDescriptor)outputs.get(0);
+		ComplexTypeDescriptor typeDesc = (ComplexTypeDescriptor)outputs.get(0);
 		assertEquals("wrong number of inner elements",3,typeDesc.getElements().size());
-		assertEquals("wrong name for first element","bid",((WSDLParser.TypeDescriptor)typeDesc.getElements().get(0)).getName());
-		assertEquals("wrong name for 2nd element","spokeModel",((WSDLParser.TypeDescriptor)typeDesc.getElements().get(1)).getName());
-		assertEquals("wrong name for 3rd element","subunit",((WSDLParser.TypeDescriptor)typeDesc.getElements().get(2)).getName());
+		assertEquals("wrong name for first element","bid",((TypeDescriptor)typeDesc.getElements().get(0)).getName());
+		assertEquals("wrong name for 2nd element","spokeModel",((TypeDescriptor)typeDesc.getElements().get(1)).getName());
+		assertEquals("wrong name for 3rd element","subunit",((TypeDescriptor)typeDesc.getElements().get(2)).getName());
 		
-		assertTrue("3rd element should be instance of ArrayTypeDescriptor",typeDesc.getElements().get(2) instanceof WSDLParser.ArrayTypeDescriptor);		
-		WSDLParser.ArrayTypeDescriptor arrayTypeDesc = (WSDLParser.ArrayTypeDescriptor)typeDesc.getElements().get(2);
+		assertTrue("3rd element should be instance of ArrayTypeDescriptor",typeDesc.getElements().get(2) instanceof ArrayTypeDescriptor);		
+		ArrayTypeDescriptor arrayTypeDesc = (ArrayTypeDescriptor)typeDesc.getElements().get(2);
 		
 		assertEquals("wrong type for 3rd element","BIVMolecule",arrayTypeDesc.getType());
 		
-		typeDesc=(WSDLParser.ComplexTypeDescriptor)arrayTypeDesc.getElementType();
+		typeDesc=(ComplexTypeDescriptor)arrayTypeDesc.getElementType();
 		
 		assertEquals("wrong type for 3rd element","BIVMolecule",typeDesc.getType());
 		
 		assertEquals("wrong number of elements in nested complex type",7,typeDesc.getElements().size());
-		assertEquals("wrong name for first element","id",((WSDLParser.TypeDescriptor)typeDesc.getElements().get(0)).getName());
-		assertEquals("wrong type for first element","int",((WSDLParser.TypeDescriptor)typeDesc.getElements().get(0)).getType());
+		assertEquals("wrong name for first element","id",((TypeDescriptor)typeDesc.getElements().get(0)).getName());
+		assertEquals("wrong type for first element","int",((TypeDescriptor)typeDesc.getElements().get(0)).getType());
 		
-		assertEquals("wrong name for last element","smid-hits",((WSDLParser.TypeDescriptor)typeDesc.getElements().get(6)).getName());
-		assertEquals("wrong type for last element","int",((WSDLParser.TypeDescriptor)typeDesc.getElements().get(6)).getType());	
+		assertEquals("wrong name for last element","smid-hits",((TypeDescriptor)typeDesc.getElements().get(6)).getName());
+		assertEquals("wrong type for last element","int",((TypeDescriptor)typeDesc.getElements().get(6)).getType());	
 	}
 	
 	public void testSimpleTypes() throws Exception
@@ -132,9 +132,9 @@ public class WSDLParserTest extends TestCase
 		List outputs = new ArrayList();
 		parser.getOperationParameters("BIVGetRecord",inputs,outputs);
 		assertEquals("wrong number of inputs",1,inputs.size());
-		assertTrue("should not be base type",inputs.get(0) instanceof WSDLParser.BaseTypeDescriptor);
-		assertEquals("wrong name","bid",((WSDLParser.TypeDescriptor)inputs.get(0)).getName());
-		assertEquals("wrong type","int",((WSDLParser.TypeDescriptor)inputs.get(0)).getType());		
+		assertTrue("should not be base type",inputs.get(0) instanceof BaseTypeDescriptor);
+		assertEquals("wrong name","bid",((TypeDescriptor)inputs.get(0)).getName());
+		assertEquals("wrong type","int",((TypeDescriptor)inputs.get(0)).getType());		
 	}
 	
 	
@@ -145,23 +145,23 @@ public class WSDLParserTest extends TestCase
 		List outputs = new ArrayList();
 		parser.getOperationParameters("BIVGetRecords",inputs,outputs);
 		assertEquals("wrong number of inputs",1,inputs.size());		
-		assertTrue("input should be of AArrayTypeDescriptor",inputs.get(0) instanceof WSDLParser.ArrayTypeDescriptor);
+		assertTrue("input should be of AArrayTypeDescriptor",inputs.get(0) instanceof ArrayTypeDescriptor);
 		
-		WSDLParser.ArrayTypeDescriptor arrayTypeDesc = (WSDLParser.ArrayTypeDescriptor)inputs.get(0);
+		ArrayTypeDescriptor arrayTypeDesc = (ArrayTypeDescriptor)inputs.get(0);
 		
 		assertEquals("wrong name","ids",arrayTypeDesc.getName());
 		assertEquals("wrong type","ArrayOf_xsd_int",arrayTypeDesc.getType());
 				
 		
-		WSDLParser.TypeDescriptor typeDesc = arrayTypeDesc.getElementType();
+		TypeDescriptor typeDesc = arrayTypeDesc.getElementType();
 		
-		assertTrue("element should be of type BaseTypeDescriptor",typeDesc instanceof WSDLParser.BaseTypeDescriptor);
+		assertTrue("element should be of type BaseTypeDescriptor",typeDesc instanceof BaseTypeDescriptor);
 		assertEquals("wrong type","int",typeDesc.getType());
 		
 		assertEquals("wrong number of outputs",1,outputs.size());
-		assertTrue("output should be of ArrayTypeDescriptor",outputs.get(0) instanceof WSDLParser.ArrayTypeDescriptor);
+		assertTrue("output should be of ArrayTypeDescriptor",outputs.get(0) instanceof ArrayTypeDescriptor);
 		
-		arrayTypeDesc = (WSDLParser.ArrayTypeDescriptor)outputs.get(0);
+		arrayTypeDesc = (ArrayTypeDescriptor)outputs.get(0);
 		assertEquals("wrong name","BIVRecords",arrayTypeDesc.getName());
 		assertEquals("wrong type","ArrayOfBIVRecord",arrayTypeDesc.getType());
 		
@@ -180,8 +180,8 @@ public class WSDLParserTest extends TestCase
 		assertEquals("wrong number of inputs",1,inputs.size());
 		assertEquals("wrong number of outputs",0,outputs.size());
 		
-		WSDLParser.TypeDescriptor typeDesc = (WSDLParser.TypeDescriptor)inputs.get(0);
-		assertTrue("input should be BaseType",typeDesc instanceof WSDLParser.BaseTypeDescriptor);
+		TypeDescriptor typeDesc = (TypeDescriptor)inputs.get(0);
+		assertTrue("input should be BaseType",typeDesc instanceof BaseTypeDescriptor);
 		assertEquals("wrong name","sessionID",typeDesc.getName());
 		assertEquals("wrong type","string",typeDesc.getType());
 	}
