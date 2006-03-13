@@ -96,7 +96,7 @@ public class ScuflModelTreeTable extends JTreeTable implements ScuflModelEventLi
 		new DropTarget(this, DnDConstants.ACTION_COPY_OR_MOVE, this);
 		setModel(treeModel);
 		TableColumnModel columnModel = getColumnModel();
-		
+
 		for (int i = 1; i < 6; i++) {
 			TableColumn c = columnModel.getColumn(i);
 			// c.sizeWidthToFit();
@@ -454,10 +454,14 @@ public class ScuflModelTreeTable extends JTreeTable implements ScuflModelEventLi
 		} else if (event.getSource() instanceof DataConstraint) {
 			DataConstraint dc = (DataConstraint) (event.getSource());
 			Port sourcePort = dc.getSource();
-			lastInterestingProcessor = sourcePort.getProcessor();
+			// the way that xml splitters are added together with their
+			// DataConstraint causes display problems
+			// if its expanded immediately, so this suppresses this if its type 'text/xml'.
+			if (!sourcePort.getSyntacticType().equals("'text/xml'"))
+				lastInterestingProcessor = sourcePort.getProcessor();
 		}
 		// ((AbstractTableModel)(super.getModel())).fireTableDataChanged();
-		// setDefaultExpansionState();
+		setDefaultExpansionState();
 		repaint();
 	}
 

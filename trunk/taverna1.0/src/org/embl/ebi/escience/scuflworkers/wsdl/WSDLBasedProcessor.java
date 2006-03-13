@@ -19,260 +19,187 @@ import org.apache.wsif.util.WSIFUtils;
 import org.embl.ebi.escience.scufl.*;
 import org.embl.ebi.escience.scuflworkers.wsdl.parser.*;
 
-
 /**
- * A processor based on an operation defined within 
- * a WSDL file accessible to the class at construction
- * time. 
+ * A processor based on an operation defined within a WSDL file accessible to
+ * the class at construction time.
  * 
  * @author Tom Oinn
  */
 
 public class WSDLBasedProcessor extends Processor implements java.io.Serializable {
-	
+
 	public int getMaximumWorkers() {
 		return 10;
 	}
-		
+
 	WSIFPort port = null;
-	
-	String operationName = null;	
+
+	String operationName = null;
+
 	String wsdlLocation = null;
+
 	String[] inNames, outNames;
-	Class[] inTypes, outTypes;	
-	
+
+	Class[] inTypes, outTypes;
+
 	WSDLParser parser = null;
-	
+
 	public WSDLBasedProcessor(ScuflModel model, String procName, String wsdlLocation, String operationName)
-	throws ProcessorCreationException,
-	DuplicateProcessorNameException {
+			throws ProcessorCreationException, DuplicateProcessorNameException {
 		this(model, procName, wsdlLocation, operationName, null);
 	}
-	
+
 	/**
-	 * Use a static synchronized cache to avoid re-loading and parsing WSDL files
-	 * where possible within a single Taverna instance
+	 * Use a static synchronized cache to avoid re-loading and parsing WSDL
+	 * files where possible within a single Taverna instance
 	 */
 	public static synchronized Definition getDefinition(String wsdlLocation) throws Exception {
 		if (defMap.containsKey(wsdlLocation)) {
-			return (Definition)defMap.get(wsdlLocation);
-		}
-		else {
+			return (Definition) defMap.get(wsdlLocation);
+		} else {
 			Definition def = WSIFUtils.readWSDL(null, wsdlLocation);
 			defMap.put(wsdlLocation, def);
 			return def;
-		}		
+		}
 	}
+
 	private static Map defMap = new HashMap();
-	
+
 	/**
-	 * Construct a new processor from the given WSDL definition
-	 * and operation name, delegates to superclass then instantiates
-	 * ports based on WSDL inspection.
+	 * Construct a new processor from the given WSDL definition and operation
+	 * name, delegates to superclass then instantiates ports based on WSDL
+	 * inspection.
 	 */
-	
-	public WSDLBasedProcessor(ScuflModel model, String procName, String wsdlLocation, String operationName, QName portTypeName)
-	throws ProcessorCreationException,
-	DuplicateProcessorNameException {
+
+	public WSDLBasedProcessor(ScuflModel model, String procName, String wsdlLocation, String operationName,
+			QName portTypeName) throws ProcessorCreationException, DuplicateProcessorNameException {
 		super(model, procName);
-		
+
 		this.wsdlLocation = wsdlLocation;
 		this.operationName = operationName;
 		if (this.isOffline()) {
 			return;
-		}								
-		
-		try
-		{
-			parser = new WSDLParser(wsdlLocation);
 		}
-		catch(Exception e)
-		{
-			ProcessorCreationException pce = new ProcessorCreationException(procName+": Unable to load wsdl at " +
-					wsdlLocation);
+
+		try {
+			parser = new WSDLParser(wsdlLocation);
+		} catch (Exception e) {
+			ProcessorCreationException pce = new ProcessorCreationException(procName + ": Unable to load wsdl at "
+					+ wsdlLocation);
 			pce.initCause(e);
 			pce.printStackTrace();
 			throw pce;
-		}										
-		
+		}
+
 		// Configure to use axis then read the WSDL
 		WSIFPluggableProviders.overrideDefaultProvider("http://schemas.xmlsoap.org/wsdl/soap/",
 				new WSIFDynamicProvider_ApacheAxis());
 		Definition def = parser.getDefinition();
-		
-		ArrayList inputs=new ArrayList();
-		ArrayList outputs=new ArrayList();
-		
-		try
-		{
-			parser.getOperationParameters(operationName,inputs,outputs);
-			
-			//Service service = WSIFUtils.selectService(def,null,null);
-			WSIFServiceFactory factory = WSIFServiceFactory.newInstance();			
+
+		ArrayList inputs = new ArrayList();
+		ArrayList outputs = new ArrayList();
+
+		try {
+			parser.getOperationParameters(operationName, inputs, outputs);
+
+			// Service service = WSIFUtils.selectService(def,null,null);
+			WSIFServiceFactory factory = WSIFServiceFactory.newInstance();
 			port = factory.getService(def).getPort();
-			
+
 			inNames = new String[inputs.size()];
 			inTypes = new Class[inputs.size()];
-			
-			outNames = new String[outputs.size()];			
+
+			outNames = new String[outputs.size()];
 			outTypes = new Class[outputs.size()];
-			
-			retrieveSignature(inputs,inNames,inTypes);
-			retrieveSignature(outputs,outNames,outTypes);
-			
-			for (int i=0;i<inNames.length;i++)
-			{									
+
+			TypeDescriptor.retrieveSignature(inputs, inNames, inTypes);
+			TypeDescriptor.retrieveSignature(outputs, outNames, outTypes);
+
+			for (int i = 0; i < inNames.length; i++) {
 				InputPort inputPort = new InputPort(this, inNames[i]);
-				inputPort.setSyntacticType(translateJavaType(inTypes[i]));
+				inputPort.setSyntacticType(TypeDescriptor.translateJavaType(inTypes[i]));
 				addPort(inputPort);
 			}
-			
-//			 Add an attachment output part
+
+			// Add an attachment output part
 			OutputPort attachments = new OutputPort(this, "attachmentList");
 			attachments.setSyntacticType("l('')");
 			addPort(attachments);
-			
-			for (int i=0;i<outNames.length;i++)
-			{
-				OutputPort outputPort = new OutputPort(this,outNames[i]);
-				outputPort.setSyntacticType(translateJavaType(outTypes[i]));
+
+			for (int i = 0; i < outNames.length; i++) {
+				OutputPort outputPort = new OutputPort(this, outNames[i]);
+				outputPort.setSyntacticType(TypeDescriptor.translateJavaType(outTypes[i]));
 				addPort(outputPort);
 			}
-		}
-		catch(UnknownOperationException e)
-		{
-			throw new ProcessorCreationException(procName+": Unable to locate operation "+operationName+" in WSDL at "+wsdlLocation);
-		}
-		catch(Exception e)
-		{
-			ProcessorCreationException ex=new ProcessorCreationException("Unable to process operation "+operationName+" in WSDL at "+wsdlLocation);
+		} catch (UnknownOperationException e) {
+			throw new ProcessorCreationException(procName + ": Unable to locate operation " + operationName
+					+ " in WSDL at " + wsdlLocation);
+		} catch (Exception e) {
+			ProcessorCreationException ex = new ProcessorCreationException("Unable to process operation "
+					+ operationName + " in WSDL at " + wsdlLocation);
 			ex.initCause(e);
 			throw ex;
-		}				
-	}
-	
-	private void retrieveSignature(List params,String [] names, Class [] types)
-	{
-		for (int i=0;i<names.length;i++)
-		{
-			TypeDescriptor descriptor = (TypeDescriptor)params.get(i);
-			names[i]=descriptor.getName();
-			if (descriptor instanceof ComplexTypeDescriptor)
-			{
-				types[i]=org.w3c.dom.Element.class;
-			}
-			else
-			{
-				String s = descriptor.getType().toLowerCase();
-				if ("string".equals(s)) {
-					types[i] = String.class;
-				} else if ("arrayof_xsd_string".equalsIgnoreCase(s) ||
-						"arrayofstring".equalsIgnoreCase(s) ||
-						"arrayof_soapenc_string".equalsIgnoreCase(s)) {
-					types[i] = String[].class;					
-					
-				} else if ("double".equals(s)) {
-					types[i] = Double.TYPE;
-				} else if ("float".equals(s)) {
-					types[i] = Float.TYPE;
-				} else if ("int".equals(s)) {
-					types[i] = Integer.TYPE;
-				} else if ("boolean".equals(s)) {
-					types[i] = Boolean.TYPE;
-				} else if ("base64binary".equals(s)) {
-					types[i] = byte[].class;
-				} else {					
-					types[i] = org.w3c.dom.Element.class;										
-				}
-			}
 		}
 	}
-			
-	
+
 	/**
-	 * Build a single use WSIFOperation object. This should only be used
-	 * for a single invocation of the target service!
+	 * Build a single use WSIFOperation object. This should only be used for a
+	 * single invocation of the target service!
 	 */
 	WSIFOperation getWSIFOperation() throws WSIFException {
-		synchronized(port) {			
+		synchronized (port) {
 			WSIFOperation op = port.createOperation(operationName);
-			System.out.println("Created operation : "+op.toString());
+			System.out.println("Created operation : " + op.toString());
 			return op;
 		}
 	}
-	
-	
+
 	/**
 	 * Get the properties for this processor for display purposes
 	 */
 	public Properties getProperties() {
 		Properties props = new Properties();
-		props.put("wsdlLocation",getWSDLLocation());
-		props.put("operation",getOperationName());
+		props.put("wsdlLocation", getWSDLLocation());
+		props.put("operation", getOperationName());
 		return props;
-	} 
-	
-	public WSDLParser getParser()
-	{
+	}
+
+	public WSDLParser getParser() {
 		return parser;
 	}
-	
-	
+
 	/**
 	 * Get the WSDL location for this processor
 	 */
 	public String getWSDLLocation() {
 		return this.wsdlLocation;
 	}
-	
-	
+
 	/**
 	 * Get the target endpoint for this processor
 	 */
 	public String getResourceHost() {
 		if (port instanceof WSIFPort_ApacheAxis) {
-			URL endpoint = ((WSIFPort_ApacheAxis)port).getEndPoint();
+			URL endpoint = ((WSIFPort_ApacheAxis) port).getEndPoint();
 			return endpoint.getHost();
-		}
-		else {
+		} else {
 			return "Unknown";
 		}
 	}
-	
+
 	String getTargetEndpoint() {
 		if (port instanceof WSIFPort_ApacheAxis) {
-			return ((WSIFPort_ApacheAxis)port).getEndPoint().toString();
-		}
-		else {
+			return ((WSIFPort_ApacheAxis) port).getEndPoint().toString();
+		} else {
 			return "Unknown";
 		}
 	}
-	
+
 	/**
 	 * Get the operation name for this processor
 	 */
 	public String getOperationName() {
 		return this.operationName;
 	}
-				
-	
-	/** 
-	 * Translate a java type into a taverna type string
-	 */
-	static String translateJavaType(Class type) {
-		if (type.equals(String[].class)) {
-			return "l('text/plain')";
-		}
-		else if (type.equals(org.w3c.dom.Element.class)) {
-			return "'text/xml'";
-		}
-		else if (type.equals(byte[].class)) {
-			return "'application/octet-stream'";
-		}
-		else {
-			return "'text/plain'";
-		}
-	}		
-	
-}
 
+}

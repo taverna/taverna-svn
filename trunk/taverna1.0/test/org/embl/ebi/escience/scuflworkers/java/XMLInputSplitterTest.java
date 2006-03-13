@@ -1,11 +1,13 @@
 package org.embl.ebi.escience.scuflworkers.java;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
 import junit.framework.TestCase;
 
 import org.embl.ebi.escience.baclava.DataThing;
+import org.embl.ebi.escience.baclava.factory.DataThingFactory;
 import org.embl.ebi.escience.scufl.ScuflModel;
 import org.embl.ebi.escience.scuflworkers.wsdl.WSDLBasedProcessor;
 
@@ -24,6 +26,7 @@ public class XMLInputSplitterTest extends TestCase {
 	 * 
 	 * @throws Exception
 	 */
+
 	public void testSplitter() throws Exception {
 		XMLInputSplitter splitter = new XMLInputSplitter();
 		ScuflModel model = new ScuflModel();
@@ -59,5 +62,45 @@ public class XMLInputSplitterTest extends TestCase {
 
 		assertEquals("output is incorrect", "<eSpellRequest><db>a database</db><tool>a tool</tool></eSpellRequest>",
 				outputString);
+	}
+
+	public void testArrayTypes() throws Exception {
+		XMLInputSplitter splitter = new XMLInputSplitter();
+		ScuflModel model = new ScuflModel();
+		WSDLBasedProcessor processor = new WSDLBasedProcessor(model, "testProc",
+				"http://www.ebi.ac.uk/ws/WSFasta.wsdl", "runFasta");
+		splitter.setUpInputs(processor.getInputPorts()[1]);
+
+		assertEquals("wrong number of inputs", 1, splitter.inputNames().length);
+		assertEquals("wrong number of types", 1, splitter.inputTypes().length);
+
+		assertEquals("wrong name", "WSArrayofData", splitter.inputNames()[0]);
+		assertEquals("wrong type", "l('text/xml')", splitter.inputTypes()[0]);
+
+		assertEquals("wrong name", "output", splitter.outputNames()[0]);
+		assertEquals("wrong type", "'text/xml'", splitter.outputTypes()[0]);
+
+		ArrayList ins = new ArrayList();
+
+		ins.add("<data><type>type1</type><content>content1</content></data>");
+		ins.add("<data><type>type2</type><content>content2</content></data>");
+
+		DataThing input = DataThingFactory.bake(ins);
+
+		Map inputMap = new HashMap();
+		inputMap.put("WSArrayofData", input);
+
+		Map outputMap = splitter.execute(inputMap);
+
+		DataThing output = (DataThing) outputMap.get("output");
+		assertNotNull("'output' did not exist in output map", output);
+
+		String xmlOutput = output.getDataObject().toString();
+
+		assertEquals(
+				"output xml is wrong",
+				"<WSArrayofData><data><type>type1</type><content>content1</content></data><data><type>type2</type><content>content2</content></data></WSArrayofData>",
+				xmlOutput);
+
 	}
 }

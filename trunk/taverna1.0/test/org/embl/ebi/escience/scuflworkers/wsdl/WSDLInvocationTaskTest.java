@@ -20,6 +20,7 @@ public class WSDLInvocationTaskTest extends TestCase
 		assertNotNull("no attachmentlist",result.get("attachmentList"));		
 	}
 	
+	/* Commented out for now, because the service isn't working half the time.
 	public void testExecute2() throws Exception
 	{
 		Processor processor = new WSDLBasedProcessor(null,"serviceAlive","http://soap.bind.ca/wsdl/bind.wsdl","isServiceAlive");
@@ -31,4 +32,5 @@ public class WSDLInvocationTaskTest extends TestCase
 		assertTrue("incorrect result, should be true or false.",isAlive.equalsIgnoreCase("true")||isAlive.equalsIgnoreCase("false"));		
 		assertNotNull("no attachmentlist",result.get("attachmentList"));		
 	}
+	*/
 }

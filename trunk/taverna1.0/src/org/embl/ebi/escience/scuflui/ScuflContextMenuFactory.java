@@ -18,12 +18,25 @@ import javax.swing.JPopupMenu;
 import javax.swing.JRadioButtonMenuItem;
 import javax.swing.tree.DefaultMutableTreeNode;
 
-import org.embl.ebi.escience.scufl.*;
-import org.embl.ebi.escience.scuflui.actions.*;
-import org.embl.ebi.escience.scuflui.processoractions.*;
-import org.embl.ebi.escience.scuflworkers.*;
-import org.embl.ebi.escience.scuflworkers.java.*;
-import org.embl.ebi.escience.scuflworkers.wsdl.*;
+import org.embl.ebi.escience.scufl.AlternateProcessor;
+import org.embl.ebi.escience.scufl.ConcurrencyConstraint;
+import org.embl.ebi.escience.scufl.DataConstraint;
+import org.embl.ebi.escience.scufl.InputPort;
+import org.embl.ebi.escience.scufl.MinorScuflModelEvent;
+import org.embl.ebi.escience.scufl.OutputPort;
+import org.embl.ebi.escience.scufl.Port;
+import org.embl.ebi.escience.scufl.Processor;
+import org.embl.ebi.escience.scufl.ScuflModel;
+import org.embl.ebi.escience.scufl.ScuflModelEvent;
+import org.embl.ebi.escience.scuflui.actions.AddInputAction;
+import org.embl.ebi.escience.scuflui.actions.AddOutputAction;
+import org.embl.ebi.escience.scuflui.actions.RemoveAction;
+import org.embl.ebi.escience.scuflui.processoractions.ProcessorActionRegistry;
+import org.embl.ebi.escience.scuflui.processoractions.ProcessorActionSPI;
+import org.embl.ebi.escience.scuflworkers.ProcessorEditor;
+import org.embl.ebi.escience.scuflworkers.ProcessorHelper;
+import org.embl.ebi.escience.scuflworkers.java.LocalServiceProcessor;
+import org.embl.ebi.escience.scuflworkers.java.XMLInputSplitter;
 
 /**
  * A static factory method to return an instance of JPopupMenu that is
@@ -175,7 +188,7 @@ public class ScuflContextMenuFactory {
 				mergeItem.addActionListener(listener);
 				selectItem.addActionListener(listener);
 
-				if (ip.getSyntacticType().equals("'text/xml'") && ip.getProcessor() instanceof WSDLBasedProcessor) {
+				if (XMLInputSplitter.isSplittable(ip)) {
 					theMenu.addSeparator();
 					JMenuItem xmlHelperItem = new JMenuItem("Add XML splitter.");
 					JMenuItem xmlHelperItemWithName = new JMenuItem("Add XML splitter with name");
@@ -198,9 +211,11 @@ public class ScuflContextMenuFactory {
 								if (name != null) {
 									splitter.setUpInputs(ip);
 									LocalServiceProcessor processor = new LocalServiceProcessor(model, model
-											.getValidProcessorName(name), splitter);																																												
+											.getValidProcessorName(name), splitter);
 									model.addProcessor(processor);
-									model.addDataConstraint(new DataConstraint(model,processor.getOutputPorts()[0],ip));
+									model
+											.addDataConstraint(new DataConstraint(model, processor.getOutputPorts()[0],
+													ip));
 								}
 							} catch (Exception e) {
 								e.printStackTrace();
