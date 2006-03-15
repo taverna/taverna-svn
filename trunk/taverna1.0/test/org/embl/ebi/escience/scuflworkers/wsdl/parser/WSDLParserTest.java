@@ -182,4 +182,10 @@ public class WSDLParserTest extends TestCase {
 		assertEquals("wrong type", "string", typeDesc.getType());
 	}
 
+	public void testGetOperationDocumentation() throws Exception
+	{
+		WSDLParser parser = new WSDLParser("http://services.serkoonline.com/serkoservices2.asmx?WSDL");
+		String doc = parser.getOperationDocumentation("Login");
+		assertTrue("this service should contain some documentation, and it should contain the word 'password'",doc.indexOf("password")!=-1);				
+	}
 }

@@ -42,18 +42,17 @@ public class WSDLParser {
 	 * Cache for SymbolTable to remove the need for reprocessing each time.
 	 */
 	private static Map symbolTableMap = Collections.synchronizedMap(new HashMap());
-	
+
 	/**
 	 * Cache for operations, to remove the need for reprocessing each time.
 	 */
 	private static Map operationMap = Collections.synchronizedMap(new HashMap());
-	
+
 	private static Map bindingMap = Collections.synchronizedMap(new HashMap());
-	
+
 	private static Map styleMap = Collections.synchronizedMap(new HashMap());
-	
+
 	private static Map portTypeMap = Collections.synchronizedMap(new HashMap());
-	
 
 	/**
 	 * Constructor which takes the location of the base wsdl file, and begins to
@@ -66,21 +65,19 @@ public class WSDLParser {
 	 * @throws IOException
 	 * @throws SAXException
 	 */
-	public WSDLParser(String wsdlLocation) throws ParserConfigurationException,
-			WSDLException, IOException, SAXException {
-		
+	public WSDLParser(String wsdlLocation) throws ParserConfigurationException, WSDLException, IOException,
+			SAXException {
+
 		this.wsdlLocation = wsdlLocation;
-		
+
 		WSIFPluggableProviders.overrideDefaultProvider("http://schemas.xmlsoap.org/wsdl/soap/",
 				new WSIFDynamicProvider_ApacheAxis());
-		
-		if (!symbolTableMap.containsKey(wsdlLocation))
-		{
-			SymbolTable symbolTable = new SymbolTable(new NoopFactory()
-					.getBaseTypeMapping(), true, false, false);
-			symbolTable.populate(wsdlLocation);			
-			symbolTableMap.put(wsdlLocation,symbolTable);
-			operationMap.put(wsdlLocation,determineOperations());
+
+		if (!symbolTableMap.containsKey(wsdlLocation)) {
+			SymbolTable symbolTable = new SymbolTable(new NoopFactory().getBaseTypeMapping(), true, false, false);
+			symbolTable.populate(wsdlLocation);
+			symbolTableMap.put(wsdlLocation, symbolTable);
+			operationMap.put(wsdlLocation, determineOperations());
 		}
 	}
 
@@ -88,7 +85,7 @@ public class WSDLParser {
 	 * @return a list of WSDLOperations for all operations for this service,
 	 */
 	public List getOperations() {
-		return (List)operationMap.get(getWSDLLocation());
+		return (List) operationMap.get(getWSDLLocation());
 	}
 
 	/**
@@ -97,7 +94,6 @@ public class WSDLParser {
 	public String getWSDLLocation() {
 		return wsdlLocation;
 	}
-		
 
 	/**
 	 * @return the Definition for this service
@@ -105,20 +101,17 @@ public class WSDLParser {
 	public Definition getDefinition() {
 		return getSymbolTable().getDefinition();
 	}
-	
-	public Binding getBinding()
-	{
-		return (Binding)bindingMap.get(getWSDLLocation());
+
+	public Binding getBinding() {
+		return (Binding) bindingMap.get(getWSDLLocation());
 	}
-	
-	public String getStyle()
-	{
-		return (String)styleMap.get(getWSDLLocation());
+
+	public String getStyle() {
+		return (String) styleMap.get(getWSDLLocation());
 	}
-	
-	public PortType getPortType()
-	{
-		return (PortType)portTypeMap.get(getWSDLLocation());
+
+	public PortType getPortType() {
+		return (PortType) portTypeMap.get(getWSDLLocation());
 	}
 
 	/**
@@ -135,26 +128,44 @@ public class WSDLParser {
 	 *             if no operation matches the name
 	 * @throws IOException
 	 */
-	public void getOperationParameters(String operationName, List inputs,
-			List outputs) throws UnknownOperationException, IOException {
+	public void getOperationParameters(String operationName, List inputs, List outputs)
+			throws UnknownOperationException, IOException {
 		Operation operation = getOperation(operationName);
 		if (operation == null) {
-			throw new UnknownOperationException("operation called "
-					+ operationName + " does not exist for this wsdl");
-		}		
-		
-		Parameters parameters = getSymbolTable().getOperationParameters(operation
-				, "", new BindingEntry(getBinding()));
+			throw new UnknownOperationException("operation called " + operationName + " does not exist for this wsdl");
+		}
+
+		Parameters parameters = getSymbolTable().getOperationParameters(operation, "", new BindingEntry(getBinding()));
 
 		for (Iterator iterator = parameters.list.iterator(); iterator.hasNext();) {
 			Parameter param = (Parameter) iterator.next();
 			inputs.add(processParameter(param));
 
 		}
-		if (parameters.returnParam!=null)
-		{
+		if (parameters.returnParam != null) {
 			outputs.add(processParameter(parameters.returnParam));
 		}
+	}
+
+	/**
+	 * Provides the documentation for the given operation name, or returns an
+	 * empty string if no documentation is provided by the WSDL.
+	 * 
+	 * @param operationName
+	 * @return
+	 * @throws UnknownOperationException
+	 */
+	public String getOperationDocumentation(String operationName) throws UnknownOperationException {
+		String result = "";
+
+		Operation operation = getOperation(operationName);
+		if (operation.getDocumentationElement() != null) {
+			if (operation.getDocumentationElement().getFirstChild() != null) {
+				result = operation.getDocumentationElement().getFirstChild().getNodeValue();
+			}
+		}
+
+		return result;
 	}
 
 	/**
@@ -166,8 +177,7 @@ public class WSDLParser {
 	 * @throws UnknowOperationException
 	 *             if no operation matches the name
 	 */
-	public Operation getOperation(String operationName)
-			throws UnknownOperationException {
+	public Operation getOperation(String operationName) throws UnknownOperationException {
 		Operation result = null;
 
 		for (Iterator iterator = getOperations().iterator(); iterator.hasNext();) {
@@ -178,35 +188,31 @@ public class WSDLParser {
 			}
 		}
 		if (result == null)
-			throw new UnknownOperationException("No operation named: "
-					+ operationName + " exists");
+			throw new UnknownOperationException("No operation named: " + operationName + " exists");
 		return result;
 	}
-	
-	private SymbolTable getSymbolTable()
-	{
-		return (SymbolTable)symbolTableMap.get(getWSDLLocation());
+
+	private SymbolTable getSymbolTable() {
+		return (SymbolTable) symbolTableMap.get(getWSDLLocation());
 	}
 
 	private List determineOperations() {
 		List result = new ArrayList();
 		Map bindings = getSymbolTable().getDefinition().getBindings();
-		for (Iterator iterator = bindings.values().iterator(); iterator
-				.hasNext();) {
+		for (Iterator iterator = bindings.values().iterator(); iterator.hasNext();) {
 			Binding binding = (Binding) iterator.next();
 			List extensibilityElementList = binding.getExtensibilityElements();
 			for (Iterator k = extensibilityElementList.iterator(); k.hasNext();) {
 				ExtensibilityElement ee = (ExtensibilityElement) k.next();
-				if (ee instanceof SOAPBindingImpl) {					
+				if (ee instanceof SOAPBindingImpl) {
 					SOAPBinding soapBinding = (SOAPBinding) ee;
 					PortType portType = binding.getPortType();
-					
-					bindingMap.put(getWSDLLocation(),binding);
-					styleMap.put(getWSDLLocation(),soapBinding.getStyle());									
-					portTypeMap.put(getWSDLLocation(),portType);
-					
-					for (Iterator opIterator = portType.getOperations()
-							.iterator(); opIterator.hasNext();) {
+
+					bindingMap.put(getWSDLLocation(), binding);
+					styleMap.put(getWSDLLocation(), soapBinding.getStyle());
+					portTypeMap.put(getWSDLLocation(), portType);
+
+					for (Iterator opIterator = portType.getOperations().iterator(); opIterator.hasNext();) {
 						Operation op = (Operation) opIterator.next();
 						result.add(op);
 					}
@@ -230,8 +236,7 @@ public class WSDLParser {
 		if (type instanceof CollectionType) {
 			result = constructArrayType(type);
 			result.setType(type.getRefType().getQName().getLocalPart());
-		} else if (type instanceof DefinedType
-				|| type instanceof DefinedElement) {
+		} else if (type instanceof DefinedType || type instanceof DefinedElement) {
 			if (type.getComponentType() == null) {
 				if (type instanceof DefinedElement) {
 					result = constructComplexType((DefinedElement) type);
@@ -298,7 +303,5 @@ public class WSDLParser {
 		result.setType(type.getQName().getLocalPart());
 		return result;
 	}
-		
 
-	
 }

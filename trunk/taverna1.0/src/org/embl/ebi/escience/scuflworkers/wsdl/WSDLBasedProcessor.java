@@ -101,6 +101,7 @@ public class WSDLBasedProcessor extends Processor implements java.io.Serializabl
 
 		try {
 			parser.getOperationParameters(operationName, inputs, outputs);
+			setDescription(parser.getOperationDocumentation(operationName));
 
 			// Service service = WSIFUtils.selectService(def,null,null);
 			WSIFServiceFactory factory = WSIFServiceFactory.newInstance();
