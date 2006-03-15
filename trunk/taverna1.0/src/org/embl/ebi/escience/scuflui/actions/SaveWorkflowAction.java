@@ -29,7 +29,7 @@ import org.embl.ebi.escience.scuflui.ScuflIcons;
  * COMMENT
  * 
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover</a>
- * @version $Revision: 1.5 $
+ * @version $Revision: 1.6 $
  */
 public class SaveWorkflowAction extends ScuflModelAction {
 	final JFileChooser fc = new JFileChooser();
@@ -39,9 +39,22 @@ public class SaveWorkflowAction extends ScuflModelAction {
 	 */
 	public SaveWorkflowAction(ScuflModel model) {
 		super(model);
-		putValue(SMALL_ICON, ScuflIcons.saveIcon);
+		boolean jdbcStore = isDatabaseAware();
+		if (jdbcStore)
+		{
+			putValue(SMALL_ICON, ScuflIcons.saveMenuIcon);
+		}
+		else
+		{
+			putValue(SMALL_ICON, ScuflIcons.saveIcon);
+		}
 		putValue(NAME, "Save");
 		putValue(SHORT_DESCRIPTION, "Save this workflow...");
+	}
+
+	private boolean isDatabaseAware() {
+		BaclavaDataService store = BaclavaDataServiceFactory.getStore();
+		return (store != null && store instanceof JDBCBaclavaDataService);		
 	}
 
 	/*
@@ -49,14 +62,13 @@ public class SaveWorkflowAction extends ScuflModelAction {
 	 */
 	public void actionPerformed(ActionEvent e) {
 		// Save to XScufl
-		try {
-			final BaclavaDataService store = BaclavaDataServiceFactory.getStore();
-			boolean jdbcStore = (store != null && store instanceof JDBCBaclavaDataService);
-			if (!jdbcStore) {
+		try {			
+			if (!isDatabaseAware()) {
 				saveToFile();
 			} else {
-				JPopupMenu menu = new JPopupMenu("Load");
+				JPopupMenu menu = new JPopupMenu("Save");
 				JMenuItem fromFile = new JMenuItem("Save to a file");
+				fromFile.setIcon(ScuflIcons.saveIcon);
 				fromFile.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
 						try {
@@ -70,10 +82,11 @@ public class SaveWorkflowAction extends ScuflModelAction {
 				menu.add(fromFile);
 
 				JMenuItem fromWeb = new JMenuItem("Save to the database");
+				fromWeb.setIcon(ScuflIcons.databaseIcon);
 				fromWeb.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
 						try {
-							saveToDatabase((JDBCBaclavaDataService) store);
+							saveToDatabase((JDBCBaclavaDataService)BaclavaDataServiceFactory.getStore());
 						} catch (Exception ex) {
 							JOptionPane.showMessageDialog(null, "Problem saving workflow : \n" + ex.getMessage(),
 									"Error!", JOptionPane.ERROR_MESSAGE);
