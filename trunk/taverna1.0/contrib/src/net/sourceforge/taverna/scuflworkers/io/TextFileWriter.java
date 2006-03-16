@@ -17,10 +17,11 @@ import uk.ac.soton.itinnovation.taverna.enactor.entities.TaskExecutionException;
  * "outputFile" parameter.  Note that the outputMap is always empty.
 
  * @author Mark
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  * 
  * @tavinput  outputFile	A fully qualified path to the text file you want to create.
  * @tavinput  filecontents  The contents of the file that you want written out.
+ * @tavoutput outputFile    The contents of the file (the same as the filecontents parameter).
  */
 public class TextFileWriter implements LocalWorker {
 
@@ -50,6 +51,7 @@ public class TextFileWriter implements LocalWorker {
             BufferedWriter out = new BufferedWriter(new FileWriter(fileName));
             out.write(filecontents);
             out.close();
+            outputAdapter.putString("outputFile", filecontents);
 
         } catch (IOException io) {
             throw new TaskExecutionException(io);
