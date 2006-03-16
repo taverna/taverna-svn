@@ -8,6 +8,7 @@ package org.embl.ebi.escience.scuflworkers.rserv;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -71,7 +72,7 @@ public class RservTask implements ProcessorTaskWorker {
 	 * InvocationTargetException is thrown, the stacktrace is printed and null
 	 * is added to the results.
 	 */
-	public static List map(String method_name, Iterable iterable, Object obj) {
+	public static List map(String method_name, Collection iterable, Object obj) {
 		Method method = getMethod(method_name, obj);
 		return map(method, iterable, obj);
 	}
@@ -87,7 +88,7 @@ public class RservTask implements ProcessorTaskWorker {
 	 * InvocationTargetException is thrown, the stacktrace is printed and null
 	 * is added to the results.
 	 */
-	public static List map(Method method, Iterable iterable, Object obj) {
+	public static List map(Method method, Collection iterable, Object obj) {
 		Iterator it = iterable.iterator();
 		List results = new ArrayList();
 		Object[] parameters = new Object[1];
