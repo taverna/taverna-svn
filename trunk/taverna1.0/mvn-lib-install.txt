@@ -23,3 +23,4 @@ mvn install:install-file -Dfile=lib/talisman1.4.5.11.jar -DgroupId=mygrid -Darti
 mvn install:install-file -Dfile=lib/tl-netty2-1.7.3.jar -DgroupId=mygrid -DartifactId=tl-netty2 -Dversion=1.7.3 -Dpackaging=jar -DgeneratePom=true
 mvn install:install-file -Dfile=lib/wsif-svn-1.12.05-patched.jar -DgroupId=mygrid -DartifactId=wsif -Dversion=svn-1.12.05-patched -Dpackaging=jar -DgeneratePom=true
 mvn install:install-file -Dfile=lib/Jmol.jar -DgroupId=mygrid -DartifactId=Jmol -Dversion=NO-VERSION -Dpackaging=jar -DgeneratePom=true
+mvn install:install-file -Dfile=lib/JRclient-RE817.jar -DgroupId=mygrid -DartifactId=JRclient -Dversion=RE817 -Dpackaging=jar -DgeneratePom=true
