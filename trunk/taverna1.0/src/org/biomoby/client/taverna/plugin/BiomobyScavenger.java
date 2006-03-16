@@ -29,12 +29,15 @@ import com.hp.hpl.jena.mem.ModelMem;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.rdf.model.StmtIterator;
+import com.hp.hpl.jena.vocabulary.RDF;
+import com.hp.hpl.jena.vocabulary.RDFS;
+import com.ibm.lsid.LSID;
 
 /**
  * A Scavenger that knows how to get all the Biomoby services from a specified
  * Biomoby Central Registry. <p>
  * 
- * @version $Id: BiomobyScavenger.java,v 1.4 2005-09-27 13:52:07 edwardkawas Exp $
+ * @version $Id: BiomobyScavenger.java,v 1.5 2006-03-16 14:51:58 edwardkawas Exp $
  * @author Martin Senger
  */
 public class BiomobyScavenger extends Scavenger {
@@ -217,10 +220,24 @@ public class BiomobyScavenger extends Scavenger {
 
                 String sub = stmt.getSubject().getURI();
                 String obj = stmt.getObject().toString();
-                if (sub != null)
-                    sub = sub.substring(sub.indexOf("#") + 1, sub.length());
-                if (obj != null)
-                    obj = obj.substring(obj.indexOf("#") + 1, obj.length());
+                if (sub != null) {
+					try {
+						if (sub.indexOf("#") > 0)
+							sub = sub.substring(sub.indexOf("#") + 1, sub.length());
+						LSID lsid = new LSID(sub);
+						sub = lsid.getObject();
+					} catch (Exception e) {
+					}
+				}
+				if (obj!= null) {
+					if (obj.indexOf("#") > 0)
+						obj = obj.substring(obj.indexOf("#") + 1, obj.length());
+					try {
+						LSID lsid = new LSID(obj);
+						obj = lsid.getObject();
+					} catch (Exception e) {
+					}
+				}
 
                 if (stmt.getPredicate().getURI().indexOf("subClassOf") > 0) {
                     //System.out.println(obj);
