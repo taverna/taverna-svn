@@ -23,7 +23,7 @@ import java.io.IOException;
 /**
  * A collection of static methods to build DataThings
  * from various other Java object types.
- * @author Tom Oinn
+ * @author Tom Oinn 
  */
 public class DataThingFactory {
     public static DataThing fetchFromURL(URL url)

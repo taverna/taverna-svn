@@ -1,16 +1,18 @@
 package org.embl.ebi.escience.testhelpers.acceptance;
 
-import java.io.*;
-import java.io.InputStream;
-import java.util.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.net.URL;
+import java.util.Iterator;
+import java.util.Map;
 
 import org.embl.ebi.escience.baclava.DataThing;
-import org.embl.ebi.escience.scufl.ScuflModel;
-import org.embl.ebi.escience.scufl.enactor.*;
-import org.embl.ebi.escience.scufl.enactor.WorkflowInstance;
-import org.embl.ebi.escience.scufl.enactor.event.*;
-import org.embl.ebi.escience.scufl.enactor.implementation.*;
-import org.embl.ebi.escience.scufl.parser.XScuflParser;
+import org.embl.ebi.escience.scufl.enactor.WorkflowEventAdapter;
+import org.embl.ebi.escience.scufl.enactor.WorkflowEventListener;
+import org.embl.ebi.escience.scufl.enactor.event.UserChangedDataEvent;
+import org.embl.ebi.escience.scufl.enactor.event.WorkflowFailureEvent;
+import org.embl.ebi.escience.scufl.tools.WorkflowLauncher;
 
 /**
  * Test case that provides the ability to more easily test workflows. 
@@ -51,49 +53,23 @@ public class WorkflowTestCase extends AcceptanceTestCase
 
 	protected Map executeWorkflow(String workflow,Map inputs,WorkflowEventListener listener) throws Exception
 	{		
-		ScuflModel model = openModel(workflow);	
-		if (listener!=null) 
-			WorkflowEventDispatcher.DISPATCHER.addListener(listener);        
-               
-        EnactorProxy enactor = FreefluoEnactorProxy.getInstance();                      
-        WorkflowInstance workflowInstance = enactor.compileWorkflow(model, inputs, null);
-        workflowInstance.run();
-        String status=workflowInstance.getStatus();
-        
-        while(!status.equals("COMPLETE") && !status.equals("FAILED"))
-        {
-        	status=workflowInstance.getStatus();        	
-        	Thread.sleep(2000);
-        } 
-        
-        if (status.equals("FAILED")) fail("Workflow: "+workflow+" failed to run.");
-        
-        progressReportXMLString=workflowInstance.getProgressReportXMLString();
-        
-        return workflowInstance.getOutput();               
-        							
-	}	
+		WorkflowLauncher launcher = new WorkflowLauncher(new URL("file:"+workflowFilename(workflow)));
+		
+		
+		Map outputs=launcher.execute(inputs,defaultWorkflowEventListener());
+		progressReportXMLString=launcher.getProgressReportXML();
+		
+		return outputs;        						
+	}				
 	
-	
-	/**
-	 * Opens and parses xml representing a ScuflModel. This xml is stored in a file that must be in the form and location of
-	 * /test/data/workflows/<workflow>/<workflow>.xml
-	 * Relies on the property $taverna.home being set in able to find the location of the files.
-	 * @param workflowName
-	 * @return
-	 * @throws Exception
-	 */
-	protected ScuflModel openModel(String workflowName) throws Exception
+	protected String workflowFilename(String workflow) throws Exception
 	{
-		ScuflModel model = new ScuflModel();	
 		String home = System.getProperty("taverna.home");
 		if (home==null) 
 		{
 			throw new Exception("Unable to open workflow - taverna.home is not set.");
 		}
-		InputStream stream=new FileInputStream(new File(home,"/test/data/workflows/"+workflowName+"/"+workflowName+".xml"));
-		XScuflParser.populate(stream,model,null);		
-		return model;
+		return (home + "/test/data/workflows/"+workflow+"/"+workflow+".xml");
 	}
 	
 	/**
@@ -135,7 +111,7 @@ public class WorkflowTestCase extends AcceptanceTestCase
 				DataThing thing = (DataThing)output.get(outputName);
 				assertEquals("output does not match",expectedOutputs.get(outputName),thing.getDataObject());
 			}			
-		}
+		}		
 	}
 	
 	/**
