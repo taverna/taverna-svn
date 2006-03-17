@@ -371,131 +371,183 @@
       <groupId>mygrid</groupId>
       <artifactId>activation</artifactId>
       <version>NO-VERSION</version>
+      <scope>system</scope>
+      <systemPath>${basedir}/lib/activation.jar</systemPath>
     </dependency>
     <dependency>
       <groupId>mygrid</groupId>
       <artifactId>alltools2</artifactId>
       <version>NO-VERSION</version>
+      <scope>system</scope>
+      <systemPath>${basedir}/lib/alltools2.jar</systemPath>
     </dependency>
     <dependency>
       <groupId>mygrid</groupId>
       <artifactId>antlr</artifactId>
       <version>NO-VERSION</version>
+      <scope>system</scope>
+      <systemPath>${basedir}/lib/antlr.jar</systemPath>
     </dependency>
     <dependency>
       <groupId>mygrid</groupId>
       <artifactId>axis</artifactId>
       <version>1.4-svn-1.12.05-patched</version>
+      <scope>system</scope>
+      <systemPath>${basedir}/lib/axis-1.4-svn-1.12.05-patched.jar</systemPath>
     </dependency>
     <dependency>
       <groupId>mygrid</groupId>
       <artifactId>ecp</artifactId>
       <version>1_0beta</version>
+      <scope>system</scope>
+      <systemPath>${basedir}/lib/ecp1_0beta.jar</systemPath>
     </dependency>
     <dependency>
       <groupId>mygrid</groupId>
       <artifactId>ensj-util</artifactId>
       <version>NO-VERSION</version>
+      <scope>system</scope>
+      <systemPath>${basedir}/lib/ensj-util.jar</systemPath>
     </dependency>
     <dependency>
       <groupId>mygrid</groupId>
       <artifactId>freefluo-taverna-exts</artifactId>
       <version>NO-VERSION</version>
+      <scope>system</scope>
+      <systemPath>${basedir}/lib/freefluo-taverna-exts.jar</systemPath>
     </dependency>
     <dependency>
       <groupId>mygrid</groupId>
       <artifactId>freefluo</artifactId>
       <version>NO-VERSION</version>
+      <scope>system</scope>
+      <systemPath>${basedir}/lib/freefluo.jar</systemPath>
     </dependency>
     <dependency>
       <groupId>mygrid</groupId>
       <artifactId>icu4j</artifactId>
       <version>NO-VERSION</version>
+      <scope>system</scope>
+      <systemPath>${basedir}/lib/icu4j.jar</systemPath>
     </dependency>
     <dependency>
       <groupId>mygrid</groupId>
       <artifactId>jakarta-oro</artifactId>
       <version>2.0.5</version>
+      <scope>system</scope>
+      <systemPath>${basedir}/lib/jakarta-oro-2.0.5.jar</systemPath>
     </dependency>
     <dependency>
       <groupId>mygrid</groupId>
       <artifactId>jedit-syntax</artifactId>
       <version>2.2.2</version>
+      <scope>system</scope>
+      <systemPath>${basedir}/lib/jedit-syntax-2.2.2.jar</systemPath>
     </dependency>
     <dependency>
       <groupId>mygrid</groupId>
       <artifactId>jena</artifactId>
       <version>NO-VERSION</version>
+      <scope>system</scope>
+      <systemPath>${basedir}/lib/jena.jar</systemPath>
     </dependency>
     <dependency>
       <groupId>mygrid</groupId>
       <artifactId>jgraph</artifactId>
       <version>NO-VERSION</version>
+      <scope>system</scope>
+      <systemPath>${basedir}/lib/jgraph.jar</systemPath>
     </dependency>
     <dependency>
       <groupId>mygrid</groupId>
       <artifactId>jmoby</artifactId>
       <version>NO-VERSION</version>
+      <scope>system</scope>
+      <systemPath>${basedir}/lib/jmoby.jar</systemPath>
     </dependency>
     <dependency>
       <groupId>mygrid</groupId>
       <artifactId>jstyx</artifactId>
       <version>0.03</version>
+      <scope>system</scope>
+      <systemPath>${basedir}/lib/jstyx-0.03.jar</systemPath>
     </dependency>
     <dependency>
       <groupId>mygrid</groupId>
       <artifactId>lsid-client</artifactId>
       <version>1.1</version>
+      <scope>system</scope>
+      <systemPath>${basedir}/lib/lsid-client-1.1.jar</systemPath>
     </dependency>
     <dependency>
       <groupId>mygrid</groupId>
       <artifactId>mail</artifactId>
       <version>NO-VERSION</version>
+      <scope>system</scope>
+      <systemPath>${basedir}/lib/mail.jar</systemPath>
     </dependency>
     <dependency>
       <groupId>mygrid</groupId>
       <artifactId>martj</artifactId>
       <version>NO-VERSION</version>
+      <scope>system</scope>
+      <systemPath>${basedir}/lib/martj.jar</systemPath>
     </dependency>
     <dependency>
       <groupId>mygrid</groupId>
       <artifactId>notification-processor</artifactId>
       <version>NO-VERSION</version>
+      <scope>system</scope>
+      <systemPath>${basedir}/lib/notification-processor.jar</systemPath>
     </dependency>
     <dependency>
       <groupId>mygrid</groupId>
       <artifactId>seqhound</artifactId>
       <version>3.0</version>
+      <scope>system</scope>
+      <systemPath>${basedir}/lib/seqhound-3.0.jar</systemPath>
     </dependency>
     <dependency>
       <groupId>mygrid</groupId>
       <artifactId>seqvista-hacked</artifactId>
       <version>NO-VERSION</version>
+      <scope>system</scope>
+      <systemPath>${basedir}/lib/seqvista-hacked.jar</systemPath>
     </dependency>
     <dependency>
       <groupId>mygrid</groupId>
       <artifactId>talisman</artifactId>
       <version>1.4.5.11</version>
+      <scope>system</scope>
+      <systemPath>${basedir}/lib/talisman1.4.5.11.jar</systemPath>
     </dependency>
     <dependency>
       <groupId>mygrid</groupId>
       <artifactId>tl-netty2</artifactId>
       <version>1.7.3</version>
+      <scope>system</scope>
+      <systemPath>${basedir}/lib/tl-netty2-1.7.3.jar</systemPath>
     </dependency>
     <dependency>
       <groupId>mygrid</groupId>
       <artifactId>wsif</artifactId>
       <version>svn-1.12.05-patched</version>
+      <scope>system</scope>
+      <systemPath>${basedir}/lib/wsif-svn-1.12.05-patched.jar</systemPath>
     </dependency>
     <dependency>
       <groupId>mygrid</groupId>
       <artifactId>Jmol</artifactId>
       <version>NO-VERSION</version>
+      <scope>system</scope>
+      <systemPath>${basedir}/lib/Jmol.jar</systemPath>
     </dependency>
     <dependency>
       <groupId>mygrid</groupId>
       <artifactId>JRclient</artifactId>
       <version>RE817</version>
+      <scope>system</scope>
+      <systemPath>${basedir}/lib/JRclient-RE817.jar</systemPath>
     </dependency>
     <!-- JDK tools -->
     <dependency>
