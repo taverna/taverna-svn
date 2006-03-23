@@ -142,13 +142,10 @@ public class BiomobyObjectTask implements ProcessorTaskWorker {
                                                     "mobyData", MobyObjectClassNSImpl.MOBYNS)
                                                     .getChild("Simple",
                                                             MobyObjectClassNSImpl.MOBYNS).getChild(type, mobyNS));
-                            // create a new node and copy ns, id, articleName,
-                            // and text content to the node
-                            String _ns = valueElement.getAttributeValue("namespace", MobyObjectClassNSImpl.MOBYNS);
-                            String _id = valueElement
-                                    .getAttributeValue("id", MobyObjectClassNSImpl.MOBYNS);
+
                             Element _child = mo.getObject(mobyObjectElement,
                                     type, articleName);
+                            valueElement.setAttribute("articleName", articleName, mobyNS);
 //                            Element _newChild = mo.createObject(type, _ns, _id,
 //                                    articleName);
 //                            _newChild.setText(valueElement
