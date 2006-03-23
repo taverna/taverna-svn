@@ -22,6 +22,7 @@ import org.apache.axis.wsdl.symbolTable.Parameter;
 import org.apache.axis.wsdl.symbolTable.Parameters;
 import org.apache.axis.wsdl.symbolTable.SymbolTable;
 import org.apache.axis.wsdl.symbolTable.TypeEntry;
+import org.apache.log4j.Logger;
 import org.apache.wsif.providers.soap.apacheaxis.WSIFDynamicProvider_ApacheAxis;
 import org.apache.wsif.util.WSIFPluggableProviders;
 import org.xml.sax.SAXException;
@@ -38,6 +39,8 @@ import com.ibm.wsdl.extensions.soap.SOAPBindingImpl;
 public class WSDLParser {
 	private String wsdlLocation;
 
+	private static Logger logger = Logger.getLogger(WSDLParser.class);
+
 	/**
 	 * Cache for SymbolTable to remove the need for reprocessing each time.
 	 */
@@ -53,6 +56,8 @@ public class WSDLParser {
 	private static Map styleMap = Collections.synchronizedMap(new HashMap());
 
 	private static Map portTypeMap = Collections.synchronizedMap(new HashMap());
+
+	private Map cachedComplexTypes = Collections.synchronizedMap(new HashMap());
 
 	/**
 	 * Constructor which takes the location of the base wsdl file, and begins to
@@ -143,8 +148,19 @@ public class WSDLParser {
 
 		}
 		if (parameters.returnParam != null) {
-			outputs.add(processParameter(parameters.returnParam));
+			if (parameters.returnParam.getType().isBaseType())
+				outputs.add(processParameter(parameters.returnParam));
+			else
+			{
+				ComplexTypeDescriptor complex=new ComplexTypeDescriptor();
+				complex.setName(parameters.returnParam.getName());
+				complex.setType(parameters.returnParam.getType().getQName().getLocalPart());
+				outputs.add(complex);
+			}
+				
 		}
+		
+		cachedComplexTypes.clear();
 	}
 
 	/**
@@ -239,7 +255,11 @@ public class WSDLParser {
 		} else if (type instanceof DefinedType || type instanceof DefinedElement) {
 			if (type.getComponentType() == null) {
 				if (type instanceof DefinedElement) {
-					result = constructComplexType((DefinedElement) type);
+					if (type.isBaseType()) {
+						result = constructBaseType((DefinedElement) type);
+					} else {
+						result = constructComplexType((DefinedElement) type);
+					}
 				} else {
 					result = constructComplexType((DefinedType) type);
 				}
@@ -249,16 +269,30 @@ public class WSDLParser {
 		} else {
 			result = constructBaseType(type);
 		}
-
+		
 		return result;
 	}
 
 	private ComplexTypeDescriptor constructComplexType(DefinedElement type) {
+		
 		ComplexTypeDescriptor result = new ComplexTypeDescriptor();
-		result.setType(type.getQName().getLocalPart());
-		List containedElements = type.getRefType().getContainedElements();
-		if (containedElements != null) {
-			result.getElements().addAll(constructElements(containedElements));
+
+		if (cachedComplexTypes.get(type.getQName().toString()) != null) {
+			result = (ComplexTypeDescriptor) cachedComplexTypes.get(type.getQName().toString());
+		} else {
+			logger.debug("Constructing complex type: " + type.getQName().getLocalPart());
+			// caching the type is not really to improve performance, but is
+			// to handle types that contain elements that reference
+			// itself or another parent. Without the caching, this could lead to infinate
+			// recursion.
+			if (cachedComplexTypes.get(type.getQName().toString()) == null)
+				cachedComplexTypes.put(type.getQName().toString(), result);
+
+			result.setType(type.getQName().getLocalPart());
+			List containedElements = type.getRefType().getContainedElements();
+			if (containedElements != null) {
+				result.getElements().addAll(constructElements(containedElements));
+			}
 		}
 
 		return result;
@@ -298,9 +332,20 @@ public class WSDLParser {
 		return result;
 	}
 
-	private TypeDescriptor constructBaseType(TypeEntry type) {
-		TypeDescriptor result = new BaseTypeDescriptor();
+	private BaseTypeDescriptor constructBaseType(TypeEntry type) {
+		BaseTypeDescriptor result = new BaseTypeDescriptor();
 		result.setType(type.getQName().getLocalPart());
+		return result;
+	}
+
+	private BaseTypeDescriptor constructBaseType(DefinedElement type) {
+		BaseTypeDescriptor result = null;
+		if (type.getRefType() == null) {
+			result = constructBaseType((TypeEntry) type);
+		} else {
+			result = new BaseTypeDescriptor();
+			result.setType(type.getRefType().getQName().getLocalPart());
+		}
 		return result;
 	}
 
