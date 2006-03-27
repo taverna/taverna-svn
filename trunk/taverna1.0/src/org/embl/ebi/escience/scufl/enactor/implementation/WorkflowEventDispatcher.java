@@ -5,12 +5,24 @@
  */
 package org.embl.ebi.escience.scufl.enactor.implementation;
 
-import org.embl.ebi.escience.scufl.enactor.*;
-import org.embl.ebi.escience.scufl.enactor.event.*;
-import org.apache.commons.discovery.tools.Service;
-import org.apache.commons.discovery.tools.SPInterface;
+import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.Iterator;
+import java.util.List;
+
 import org.apache.commons.discovery.resource.ClassLoaders;
-import java.util.*;
+import org.apache.commons.discovery.tools.SPInterface;
+import org.apache.commons.discovery.tools.Service;
+import org.embl.ebi.escience.scufl.enactor.WorkflowEventListener;
+import org.embl.ebi.escience.scufl.enactor.event.CollectionConstructionEvent;
+import org.embl.ebi.escience.scufl.enactor.event.IterationCompletionEvent;
+import org.embl.ebi.escience.scufl.enactor.event.ProcessCompletionEvent;
+import org.embl.ebi.escience.scufl.enactor.event.ProcessFailureEvent;
+import org.embl.ebi.escience.scufl.enactor.event.UserChangedDataEvent;
+import org.embl.ebi.escience.scufl.enactor.event.WorkflowCompletionEvent;
+import org.embl.ebi.escience.scufl.enactor.event.WorkflowCreationEvent;
+import org.embl.ebi.escience.scufl.enactor.event.WorkflowFailureEvent;
+import org.embl.ebi.escience.scufl.enactor.event.WorkflowInstanceEvent;
 
 /**
  * The dispatcher class for workflow events, create one of

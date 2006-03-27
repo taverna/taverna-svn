@@ -13,11 +13,13 @@ public class IterationCompletionEvent extends WorkflowInstanceEvent {
     
     private Processor processor;
     private Map structureMapping, inputShredding, inputMap, outputMap;
+    private List associatedCompletionEvents;
 
     public IterationCompletionEvent(Map structureMapping,
 				    Map inputShredding,
 				    WorkflowInstance wf,
 				    Processor activeProcessor,
+				    List associatedCompletionEvents,
 				    Map inputs,
 				    Map outputs) {
 	super(wf);
@@ -25,10 +27,22 @@ public class IterationCompletionEvent extends WorkflowInstanceEvent {
 	this.inputShredding = inputShredding;
 	this.processor = activeProcessor;
 	this.inputMap = inputs;
-	this.outputMap = outputs;
+	this.outputMap = outputs;	
+	this.associatedCompletionEvents=associatedCompletionEvents;
     }
     
+    
     /**
+     * Returns a List containing all the ProcessCompletionEvents that occured during the iterations
+     * 
+     */
+    public List getAssociatedCompletionEvents() {
+		return associatedCompletionEvents;
+	}
+
+
+
+	/**
      * Return a map containing information about the collections built
      * by this iteration. The keys in the map are the top level LSID
      * values for the collections produced by the iterations (one collection
