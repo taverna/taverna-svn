@@ -25,14 +25,15 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: WorkflowLauncher.java,v $
- * Revision           $Revision: 1.3 $
+ * Revision           $Revision: 1.4 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-03-27 11:03:11 $
+ * Last modified on   $Date: 2006-03-27 14:49:51 $
  *               by   $Author: sowen70 $
  * Created on 16-Mar-2006
  *****************************************************************/
 package org.embl.ebi.escience.scufl.tools;
 
+import java.awt.event.WindowEvent;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -60,6 +61,14 @@ import org.embl.ebi.escience.scufl.enactor.UserContext;
 import org.embl.ebi.escience.scufl.enactor.WorkflowEventListener;
 import org.embl.ebi.escience.scufl.enactor.WorkflowInstance;
 import org.embl.ebi.escience.scufl.enactor.WorkflowSubmissionException;
+import org.embl.ebi.escience.scufl.enactor.event.CollectionConstructionEvent;
+import org.embl.ebi.escience.scufl.enactor.event.IterationCompletionEvent;
+import org.embl.ebi.escience.scufl.enactor.event.ProcessCompletionEvent;
+import org.embl.ebi.escience.scufl.enactor.event.ProcessFailureEvent;
+import org.embl.ebi.escience.scufl.enactor.event.UserChangedDataEvent;
+import org.embl.ebi.escience.scufl.enactor.event.WorkflowCompletionEvent;
+import org.embl.ebi.escience.scufl.enactor.event.WorkflowCreationEvent;
+import org.embl.ebi.escience.scufl.enactor.event.WorkflowFailureEvent;
 import org.embl.ebi.escience.scufl.enactor.implementation.FreefluoEnactorProxy;
 import org.embl.ebi.escience.scufl.enactor.implementation.WorkflowEventDispatcher;
 import org.embl.ebi.escience.scufl.parser.XScuflFormatException;
@@ -251,20 +260,50 @@ public class WorkflowLauncher {
 			WorkflowEventDispatcher.DISPATCHER.addListener(workflowEventListener);
 		}
 
-		EnactorProxy enactor = FreefluoEnactorProxy.getInstance();
-		WorkflowInstance workflowInstance = enactor.compileWorkflow(model, inputs, userContext);
-		try {
-			workflowInstance.run();
-			String status = workflowInstance.getStatus();
+		EnactorProxy enactor = FreefluoEnactorProxy.getInstance();		
+		final WorkflowInstance workflowInstance = enactor.compileWorkflow(model, inputs, userContext);
+		
+		final Object lock=new Object();
+		
+		WorkflowEventListener completionListener = new WorkflowEventListener()
+		{
 
-			while (!status.equals("COMPLETE") && !status.equals("FAILED")) {
-				status = workflowInstance.getStatus();
-				try {
-					Thread.sleep(2000);
-				} catch (InterruptedException e) {
-					e.printStackTrace();
+			public void collectionConstructed(CollectionConstructionEvent e) {}
+			public void dataChanged(UserChangedDataEvent e) {}
+			public void processCompleted(ProcessCompletionEvent e) {}
+			public void processCompletedWithIteration(IterationCompletionEvent e) {}
+			public void processFailed(ProcessFailureEvent e) {}
+			public void workflowCompleted(WorkflowCompletionEvent e) {
+				if (e.getWorkflowInstance()==workflowInstance)
+				{
+					synchronized(lock)
+					{
+						lock.notifyAll();
+					}
 				}
 			}
+			public void workflowCreated(WorkflowCreationEvent e) {}
+			public void workflowFailed(WorkflowFailureEvent e) {
+				synchronized(lock)
+				{
+					lock.notifyAll();
+				}
+			}
+		};
+		
+		WorkflowEventDispatcher.DISPATCHER.addListener(completionListener);
+		
+		try {
+			workflowInstance.run();
+			synchronized(lock)
+			{
+				try
+				{
+					lock.wait();
+				}
+				catch(InterruptedException e){}
+			}
+			
 		} catch (InvalidInputException e) {
 			throw e;
 		} finally {
