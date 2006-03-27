@@ -50,7 +50,7 @@ public class ExtractMobyCollections implements LocalWorker {
             throw new TaskExecutionException(
                     "In order to parse a collection, one has to be submitted!");
         }
-        List list = XMLUtilities.createMobySimpleListFromCollection(xml, null);
+        List list = XMLUtilities.createMobySimpleListFromCollection(xml, null,"");
         
         Map results = new HashMap();
         results.put("mobyData", new DataThing(list));
