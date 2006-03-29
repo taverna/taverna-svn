@@ -1,0 +1,424 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<s:scufl xmlns:s="http://org.embl.ebi.escience/xscufl/0.1alpha" version="0.2" log="0">
+  <s:workflowdescription lsid="urn:lsid:www.mygrid.org.uk:operation:11SDZ55U6L4" author="Tom Oinn" title="Compare functions of genes on human Y chromosome to those on X">Uses biomart over the current Ensembl human genome data set to extract all gene ontology terms allocated to genes on X and Y chromosomes. Shows the context of all those uniquely mapped to Y (so not mapped or implied by mappings to X) and colour codes as follows : &lt;ol&gt;
+&lt;li&gt;Terms shown in purple are those explicitly mapped to genes on the Y chromosome and neither explicitly nor implicitly mapped to any on X&lt;/li&gt;
+&lt;li&gt;Terms in red are those implied by those in purple and not explicitly or implicity mapped to any genes in X&lt;/li&gt;
+&lt;li&gt;Yellow terms are those explicitly mapped in X&lt;/li&gt;
+&lt;li&gt;Green terms are those implied by terms mapped in both X and Y&lt;/li&gt;
+&lt;/ol&gt;</s:workflowdescription>
+  <s:processor name="Purple" boring="true">
+    <s:stringconstant>purple</s:stringconstant>
+  </s:processor>
+  <s:processor name="GenericSetOperations1">
+    <s:beanshell>
+      <s:scriptvalue>List set1not2 = new ArrayList();
+List set2not1 = new ArrayList();
+List union = new ArrayList();
+List intersection = new ArrayList();
+
+Set set1set = new HashSet();
+set1set.addAll(set1);
+Set set2set = new HashSet();
+set2set.addAll(set2);
+Set unionSet = new HashSet();
+
+for (Iterator i = set2set.iterator(); i.hasNext(); ) {
+  Object item = i.next();
+  if (set1set.contains(item)) {
+    intersection.add(item);
+  }
+  else {
+    set2not1.add(item);
+  }
+}
+for (Iterator i = set1set.iterator(); i.hasNext(); ) {
+  Object item = i.next();
+  if (set2set.contains(item) == false) {
+    set1not2.add(item);
+  }
+}
+unionSet.addAll(set1set);
+unionSet.addAll(set2set);
+
+union.addAll(unionSet);</s:scriptvalue>
+      <s:beanshellinputlist>
+        <s:beanshellinput s:syntactictype="l('text/plain')">set1</s:beanshellinput>
+        <s:beanshellinput s:syntactictype="l('text/plain')">set2</s:beanshellinput>
+      </s:beanshellinputlist>
+      <s:beanshelloutputlist>
+        <s:beanshelloutput s:syntactictype="l('text/plain')">union</s:beanshelloutput>
+        <s:beanshelloutput s:syntactictype="l('text/plain')">intersection</s:beanshelloutput>
+        <s:beanshelloutput s:syntactictype="l('text/plain')">set1not2</s:beanshelloutput>
+        <s:beanshelloutput s:syntactictype="l('text/plain')">set2not1</s:beanshelloutput>
+      </s:beanshelloutputlist>
+    </s:beanshell>
+  </s:processor>
+  <s:processor name="GetUniqueIDs2">
+    <s:beanshell>
+      <s:scriptvalue>Set outputs = new HashSet();
+for (Iterator i = in.iterator(); i.hasNext();) {
+  outputs.add(i.next());
+}
+out = new ArrayList();
+out.addAll(outputs);</s:scriptvalue>
+      <s:beanshellinputlist>
+        <s:beanshellinput s:syntactictype="l('text/plain')">in</s:beanshellinput>
+      </s:beanshellinputlist>
+      <s:beanshelloutputlist>
+        <s:beanshelloutput s:syntactictype="l('text/plain')">out</s:beanshelloutput>
+      </s:beanshelloutputlist>
+    </s:beanshell>
+  </s:processor>
+  <s:processor name="GetUniqueIDs">
+    <s:beanshell>
+      <s:scriptvalue>Set outputs = new HashSet();
+for (Iterator i = in.iterator(); i.hasNext();) {
+  outputs.add(i.next());
+}
+out = new ArrayList();
+out.addAll(outputs);</s:scriptvalue>
+      <s:beanshellinputlist>
+        <s:beanshellinput s:syntactictype="l('text/plain')">in</s:beanshellinput>
+      </s:beanshellinputlist>
+      <s:beanshelloutputlist>
+        <s:beanshelloutput s:syntactictype="l('text/plain')">out</s:beanshelloutput>
+      </s:beanshelloutputlist>
+    </s:beanshell>
+  </s:processor>
+  <s:processor name="FlattenList">
+    <s:local>org.embl.ebi.escience.scuflworkers.java.FlattenList</s:local>
+  </s:processor>
+  <s:processor name="GetUniqueIDs1">
+    <s:beanshell>
+      <s:scriptvalue>Set outputs = new HashSet();
+for (Iterator i = in.iterator(); i.hasNext();) {
+  outputs.add(i.next());
+}
+out = new ArrayList();
+out.addAll(outputs);</s:scriptvalue>
+      <s:beanshellinputlist>
+        <s:beanshellinput s:syntactictype="l('text/plain')">in</s:beanshellinput>
+      </s:beanshellinputlist>
+      <s:beanshelloutputlist>
+        <s:beanshelloutput s:syntactictype="l('text/plain')">out</s:beanshelloutput>
+      </s:beanshelloutputlist>
+    </s:beanshell>
+  </s:processor>
+  <s:processor name="Green" boring="true">
+    <s:stringconstant>chartreuse3</s:stringconstant>
+  </s:processor>
+  <s:processor name="Fail_if_false" boring="true">
+    <s:local>org.embl.ebi.escience.scuflworkers.java.FailIfFalse</s:local>
+  </s:processor>
+  <s:processor name="Fail_if_true" boring="true">
+    <s:local>org.embl.ebi.escience.scuflworkers.java.FailIfTrue</s:local>
+  </s:processor>
+  <s:processor name="PassAllTerms" boring="true">
+    <s:local>org.embl.ebi.escience.scuflworkers.java.EchoList</s:local>
+  </s:processor>
+  <s:processor name="GenericSetOperations">
+    <s:beanshell>
+      <s:scriptvalue>List set1not2 = new ArrayList();
+List set2not1 = new ArrayList();
+List union = new ArrayList();
+List intersection = new ArrayList();
+
+Set set1set = new HashSet();
+set1set.addAll(set1);
+Set set2set = new HashSet();
+set2set.addAll(set2);
+Set unionSet = new HashSet();
+
+for (Iterator i = set2set.iterator(); i.hasNext(); ) {
+  Object item = i.next();
+  if (set1set.contains(item)) {
+    intersection.add(item);
+  }
+  else {
+    set2not1.add(item);
+  }
+}
+for (Iterator i = set1set.iterator(); i.hasNext(); ) {
+  Object item = i.next();
+  if (set2set.contains(item) == false) {
+    set1not2.add(item);
+  }
+}
+unionSet.addAll(set1set);
+unionSet.addAll(set2set);
+
+union.addAll(unionSet);</s:scriptvalue>
+      <s:beanshellinputlist>
+        <s:beanshellinput s:syntactictype="l('text/plain')">set1</s:beanshellinput>
+        <s:beanshellinput s:syntactictype="l('text/plain')">set2</s:beanshellinput>
+      </s:beanshellinputlist>
+      <s:beanshelloutputlist>
+        <s:beanshelloutput s:syntactictype="l('text/plain')">union</s:beanshelloutput>
+        <s:beanshelloutput s:syntactictype="l('text/plain')">intersection</s:beanshelloutput>
+        <s:beanshelloutput s:syntactictype="l('text/plain')">set1not2</s:beanshelloutput>
+        <s:beanshelloutput s:syntactictype="l('text/plain')">set2not1</s:beanshelloutput>
+      </s:beanshelloutputlist>
+    </s:beanshell>
+  </s:processor>
+  <s:processor name="Red" boring="true">
+    <s:stringconstant>crimson</s:stringconstant>
+  </s:processor>
+  <s:processor name="ShowOnlyUniqueTerms" boring="true">
+    <s:stringconstant>true</s:stringconstant>
+  </s:processor>
+  <s:processor name="Yellow" boring="true">
+    <s:stringconstant>gold</s:stringconstant>
+  </s:processor>
+  <s:processor name="PassUniqueTerms">
+    <s:local>org.embl.ebi.escience.scuflworkers.java.EchoList</s:local>
+  </s:processor>
+  <s:processor name="GetXChromFunctions">
+    <s:biomart>
+      <biomart:biomartconfig xmlns:biomart="http://org.embl.ebi.escience/xscufl-biomart/0.1alpha" dbtype="mysql" dbdriver="com.mysql.jdbc.Driver" dbhost="ensembldb.ensembl.org" dbport="3306" dbinstance="ensembl_mart_31" dbuser="anonymous" schema="ensembl_mart_31" registryLocation="http://www.ebi.ac.uk/~tmo/defaultMartRegistry.xml" />
+      <biomart:biomartds xmlns:biomart="http://org.embl.ebi.escience/xscufl-biomart/0.1alpha">hsapiens_gene_ensembl</biomart:biomartds>
+      <biomart:query xmlns:biomart="http://org.embl.ebi.escience/xscufl-biomart/0.1alpha">
+        <biomart:attributes>
+          <biomart:fieldattribute field="dbprimary_id" key="transcript_id_key" constraint="hsapiens_gene_ensembl__xref_go__dm" uniquename="go_id" />
+        </biomart:attributes>
+        <biomart:filters>
+          <biomart:basicfilter field="chr_name" constraint="main" key="gene_id_key" qualifier="=" value="X" />
+          <biomart:booleanfilter field="go_bool" constraint="main" key="gene_id_key" qualifier=" is not null" />
+        </biomart:filters>
+      </biomart:query>
+    </s:biomart>
+  </s:processor>
+  <s:processor name="GetYChromFunctions">
+    <s:biomart>
+      <biomart:biomartconfig xmlns:biomart="http://org.embl.ebi.escience/xscufl-biomart/0.1alpha" dbtype="mysql" dbdriver="com.mysql.jdbc.Driver" dbhost="ensembldb.ensembl.org" dbport="3306" dbinstance="ensembl_mart_31" dbuser="anonymous" registryLocation="http://www.ebi.ac.uk/~tmo/defaultMartRegistry.xml" schema="ensembl_mart_31" />
+      <biomart:biomartds xmlns:biomart="http://org.embl.ebi.escience/xscufl-biomart/0.1alpha">hsapiens_gene_ensembl</biomart:biomartds>
+      <biomart:query xmlns:biomart="http://org.embl.ebi.escience/xscufl-biomart/0.1alpha">
+        <biomart:attributes>
+          <biomart:fieldattribute field="dbprimary_id" key="transcript_id_key" constraint="hsapiens_gene_ensembl__xref_go__dm" uniquename="go_id" />
+        </biomart:attributes>
+        <biomart:filters>
+          <biomart:basicfilter field="chr_name" constraint="main" key="gene_id_key" qualifier="=" value="Y" />
+          <biomart:booleanfilter field="go_bool" constraint="main" key="gene_id_key" qualifier=" is not null" />
+        </biomart:filters>
+      </biomart:query>
+    </s:biomart>
+  </s:processor>
+  <s:processor name="showCommon">
+    <s:arbitrarywsdl>
+      <s:wsdl>http://www.ebi.ac.uk/collab/mygrid/service1/goviz/GoViz.jws?wsdl</s:wsdl>
+      <s:operation>markTerm</s:operation>
+    </s:arbitrarywsdl>
+  </s:processor>
+  <s:processor name="destroySession">
+    <s:arbitrarywsdl>
+      <s:wsdl>http://www.ebi.ac.uk/collab/mygrid/service1/goviz/GoViz.jws?wsdl</s:wsdl>
+      <s:operation>destroySession</s:operation>
+    </s:arbitrarywsdl>
+  </s:processor>
+  <s:processor name="addTerm">
+    <s:arbitrarywsdl>
+      <s:wsdl>http://www.ebi.ac.uk/collab/mygrid/service1/goviz/GoViz.jws?wsdl</s:wsdl>
+      <s:operation>addTerm</s:operation>
+    </s:arbitrarywsdl>
+  </s:processor>
+  <s:processor name="showUniqueToY">
+    <s:arbitrarywsdl>
+      <s:wsdl>http://www.ebi.ac.uk/collab/mygrid/service1/goviz/GoViz.jws?wsdl</s:wsdl>
+      <s:operation>markTerm</s:operation>
+    </s:arbitrarywsdl>
+  </s:processor>
+  <s:processor name="showAnnotatedUnique">
+    <s:arbitrarywsdl>
+      <s:wsdl>http://www.ebi.ac.uk/collab/mygrid/service1/goviz/GoViz.jws?wsdl</s:wsdl>
+      <s:operation>markTerm</s:operation>
+    </s:arbitrarywsdl>
+  </s:processor>
+  <s:processor name="getUniqueAncestors">
+    <s:arbitrarywsdl>
+      <s:wsdl>http://www.ebi.ac.uk/collab/mygrid/service1/goviz/GoViz.jws?wsdl</s:wsdl>
+      <s:operation>getAncestors</s:operation>
+    </s:arbitrarywsdl>
+  </s:processor>
+  <s:processor name="showAnnotatedNonUnique">
+    <s:arbitrarywsdl>
+      <s:wsdl>http://www.ebi.ac.uk/collab/mygrid/service1/goviz/GoViz.jws?wsdl</s:wsdl>
+      <s:operation>markTerm</s:operation>
+    </s:arbitrarywsdl>
+  </s:processor>
+  <s:processor name="createSession" boring="true">
+    <s:arbitrarywsdl>
+      <s:wsdl>http://www.ebi.ac.uk/collab/mygrid/service1/goviz/GoViz.jws?wsdl</s:wsdl>
+      <s:operation>createSession</s:operation>
+    </s:arbitrarywsdl>
+  </s:processor>
+  <s:processor name="getDot">
+    <s:arbitrarywsdl>
+      <s:wsdl>http://www.ebi.ac.uk/collab/mygrid/service1/goviz/GoViz.jws?wsdl</s:wsdl>
+      <s:operation>getDot</s:operation>
+    </s:arbitrarywsdl>
+  </s:processor>
+  <s:processor name="getCommonAncestors">
+    <s:arbitrarywsdl>
+      <s:wsdl>http://www.ebi.ac.uk/collab/mygrid/service1/goviz/GoViz.jws?wsdl</s:wsdl>
+      <s:operation>getAncestors</s:operation>
+    </s:arbitrarywsdl>
+  </s:processor>
+  <s:link source="createSession:createSessionReturn" sink="addTerm:sessionID" />
+  <s:link source="createSession:createSessionReturn" sink="getDot:sessionID" />
+  <s:link source="createSession:createSessionReturn" sink="destroySession:sessionID" />
+  <s:link source="getDot:getDotReturn" sink="Graph" />
+  <s:link source="GetUniqueIDs1:out" sink="GenericSetOperations:set1" />
+  <s:link source="GetUniqueIDs:out" sink="GenericSetOperations:set2" />
+  <s:link source="Red:value" sink="showUniqueToY:colour" />
+  <s:link source="createSession:createSessionReturn" sink="showUniqueToY:sessionID" />
+  <s:link source="createSession:createSessionReturn" sink="showCommon:sessionID" />
+  <s:link source="Green:value" sink="showCommon:colour" />
+  <s:link source="GenericSetOperations:set2not1" sink="getUniqueAncestors:geneOntologyID" />
+  <s:link source="getUniqueAncestors:getAncestorsReturn" sink="showUniqueToY:geneOntologyID" />
+  <s:link source="GenericSetOperations:intersection" sink="getCommonAncestors:geneOntologyID" />
+  <s:link source="getCommonAncestors:getAncestorsReturn" sink="FlattenList:inputlist" />
+  <s:link source="FlattenList:outputlist" sink="GetUniqueIDs2:in" />
+  <s:link source="GetUniqueIDs2:out" sink="showCommon:geneOntologyID" />
+  <s:link source="PassAllTerms:outputlist" sink="addTerm:geneOntologyID" />
+  <s:link source="PassUniqueTerms:outputlist" sink="addTerm:geneOntologyID" />
+  <s:link source="GetUniqueIDs:out" sink="PassAllTerms:inputlist" />
+  <s:link source="ShowOnlyUniqueTerms:value" sink="Fail_if_true:test" />
+  <s:link source="ShowOnlyUniqueTerms:value" sink="Fail_if_false:test" />
+  <s:link source="GenericSetOperations:set2not1" sink="PassUniqueTerms:inputlist" />
+  <s:link source="GetUniqueIDs:out" sink="GenericSetOperations1:set1" />
+  <s:link source="FlattenList:outputlist" sink="GenericSetOperations1:set2" />
+  <s:link source="GenericSetOperations1:intersection" sink="showAnnotatedNonUnique:geneOntologyID" />
+  <s:link source="createSession:createSessionReturn" sink="showAnnotatedNonUnique:sessionID" />
+  <s:link source="Yellow:value" sink="showAnnotatedNonUnique:colour" />
+  <s:link source="createSession:createSessionReturn" sink="showAnnotatedUnique:sessionID" />
+  <s:link source="GenericSetOperations1:set1not2" sink="showAnnotatedUnique:geneOntologyID" />
+  <s:link source="Purple:value" sink="showAnnotatedUnique:colour" />
+  <s:link source="GetXChromFunctions:go_id" sink="GetUniqueIDs1:in" />
+  <s:link source="GetYChromFunctions:go_id" sink="GetUniqueIDs:in" />
+  <s:sink name="Graph">
+    <s:metadata>
+      <s:mimeTypes>
+        <s:mimeType>text/x-graphviz</s:mimeType>
+        <s:mimeType>text/plain</s:mimeType>
+      </s:mimeTypes>
+    </s:metadata>
+  </s:sink>
+  <s:coordination name="destroySession_BLOCKON_getDot">
+    <s:condition>
+      <s:state>Completed</s:state>
+      <s:target>getDot</s:target>
+    </s:condition>
+    <s:action>
+      <s:target>destroySession</s:target>
+      <s:statechange>
+        <s:from>Scheduled</s:from>
+        <s:to>Running</s:to>
+      </s:statechange>
+    </s:action>
+  </s:coordination>
+  <s:coordination name="markTerm1_BLOCKON_addTerm">
+    <s:condition>
+      <s:state>Completed</s:state>
+      <s:target>addTerm</s:target>
+    </s:condition>
+    <s:action>
+      <s:target>showUniqueToY</s:target>
+      <s:statechange>
+        <s:from>Scheduled</s:from>
+        <s:to>Running</s:to>
+      </s:statechange>
+    </s:action>
+  </s:coordination>
+  <s:coordination name="showCommon_BLOCKON_showUniqueToY">
+    <s:condition>
+      <s:state>Completed</s:state>
+      <s:target>showUniqueToY</s:target>
+    </s:condition>
+    <s:action>
+      <s:target>showCommon</s:target>
+      <s:statechange>
+        <s:from>Scheduled</s:from>
+        <s:to>Running</s:to>
+      </s:statechange>
+    </s:action>
+  </s:coordination>
+  <s:coordination name="PassAllTerms_BLOCKON_Fail_if_true">
+    <s:condition>
+      <s:state>Completed</s:state>
+      <s:target>Fail_if_true</s:target>
+    </s:condition>
+    <s:action>
+      <s:target>PassAllTerms</s:target>
+      <s:statechange>
+        <s:from>Scheduled</s:from>
+        <s:to>Running</s:to>
+      </s:statechange>
+    </s:action>
+  </s:coordination>
+  <s:coordination name="PassCommonTerms_BLOCKON_Fail_if_false">
+    <s:condition>
+      <s:state>Completed</s:state>
+      <s:target>Fail_if_false</s:target>
+    </s:condition>
+    <s:action>
+      <s:target>PassUniqueTerms</s:target>
+      <s:statechange>
+        <s:from>Scheduled</s:from>
+        <s:to>Running</s:to>
+      </s:statechange>
+    </s:action>
+  </s:coordination>
+  <s:coordination name="showAnnotatedNonUnique_BLOCKON_showCommon">
+    <s:condition>
+      <s:state>Completed</s:state>
+      <s:target>showCommon</s:target>
+    </s:condition>
+    <s:action>
+      <s:target>showAnnotatedNonUnique</s:target>
+      <s:statechange>
+        <s:from>Scheduled</s:from>
+        <s:to>Running</s:to>
+      </s:statechange>
+    </s:action>
+  </s:coordination>
+  <s:coordination name="getDot_BLOCKON_showAnnotatedNonUnique">
+    <s:condition>
+      <s:state>Completed</s:state>
+      <s:target>showAnnotatedNonUnique</s:target>
+    </s:condition>
+    <s:action>
+      <s:target>getDot</s:target>
+      <s:statechange>
+        <s:from>Scheduled</s:from>
+        <s:to>Running</s:to>
+      </s:statechange>
+    </s:action>
+  </s:coordination>
+  <s:coordination name="showAnnotatedUnique_BLOCKON_showCommon">
+    <s:condition>
+      <s:state>Completed</s:state>
+      <s:target>showCommon</s:target>
+    </s:condition>
+    <s:action>
+      <s:target>showAnnotatedUnique</s:target>
+      <s:statechange>
+        <s:from>Scheduled</s:from>
+        <s:to>Running</s:to>
+      </s:statechange>
+    </s:action>
+  </s:coordination>
+  <s:coordination name="getDot_BLOCKON_showAnnotatedUnique">
+    <s:condition>
+      <s:state>Completed</s:state>
+      <s:target>showAnnotatedUnique</s:target>
+    </s:condition>
+    <s:action>
+      <s:target>getDot</s:target>
+      <s:statechange>
+        <s:from>Scheduled</s:from>
+        <s:to>Running</s:to>
+      </s:statechange>
+    </s:action>
+  </s:coordination>
+</s:scufl>
+
+
