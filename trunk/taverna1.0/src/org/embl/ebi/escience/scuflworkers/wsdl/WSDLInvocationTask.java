@@ -69,11 +69,11 @@ public class WSDLInvocationTask implements ProcessorTaskWorker {
 				// Check whether the input port has been flagged as text/xml
 				// and create a DOM Node if so
 				if (c.equals(org.w3c.dom.Element.class)) {
-					try {
-						System.out.println("Trying to create dom...");
+					try {						
 						// create a new Document
 						DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
 						String dataObject = (String) inputObject.getDataObject();
+						logger.debug("Creating dom for XML:"+dataObject);						
 						Document doc = builder.parse(new ByteArrayInputStream(dataObject.getBytes()));
 						value = doc.getDocumentElement();
 					} catch (Exception ex) {
@@ -83,7 +83,7 @@ public class WSDLInvocationTask implements ProcessorTaskWorker {
 					}					
 				} else if (c.equals(String[].class)) {
 					// Should have a collection of String here
-					System.out.println("Building string[]");
+					logger.info("Building string[]");
 					List l = (List) inputObject.getDataObject();
 					value = (String[]) l.toArray(new String[0]);
 				} else {
