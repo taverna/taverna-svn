@@ -25,8 +25,8 @@
 //      Dependencies        :
 //
 //      Last commit info    :   $Author: dturi $
-//                              $Date: 2006-04-06 15:32:43 $
-//                              $Revision: 1.17 $
+//                              $Date: 2006-04-06 15:40:33 $
+//                              $Revision: 1.18 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 package org.embl.ebi.escience.scufl.enactor.implementation;
@@ -94,6 +94,16 @@ public class WorkflowInstanceImpl implements WorkflowInstance {
      * @exception WorkflowSubmitInvalidException
      *                thrown by the superclass
      */
+    /**
+     * Constructor for this concrete instance of a flow receipt
+     * 
+     * @param engine -
+     *            the enactment engine to use.
+     * @param workflowInstanceId -
+     *            the unique Id for the workflow instance
+     * @exception WorkflowSubmitInvalidException
+     *                thrown by the superclass
+     */
     public WorkflowInstanceImpl(Engine engine, ScuflModel scuflModel,
             String workflowInstanceId) {
         this.workflowModel = scuflModel;
@@ -108,13 +118,16 @@ public class WorkflowInstanceImpl implements WorkflowInstance {
             // store it.
             if (DataThing.SYSTEM_DEFAULT_LSID_PROVIDER != null) {
                 // Check whether we already have an LSID allocated!
-                String existingLSID = (String) internalToLSID
-                        .get(workflowInstanceId);
+                String lsidKey = scuflModel.getDescription().getLSID()
+                        + workflowInstanceId;
+                String existingLSID = (String) internalToLSID.get(lsidKey);
                 if (existingLSID == null) {
                     LSIDProvider p = DataThing.SYSTEM_DEFAULT_LSID_PROVIDER;
                     String instanceLSID = p.getID(LSIDProvider.WFINSTANCE);
-                    internalToLSID.put(workflowInstanceId, instanceLSID);
-                }
+                    internalToLSID.put(lsidKey, instanceLSID);
+                    workflowInstanceId = instanceLSID;
+                } else
+                    workflowInstanceId = existingLSID;
             }
         } catch (UnknownWorkflowInstanceException e) {
             String errorMsg = "Error starting to run workflow instance with id "
@@ -144,7 +157,9 @@ public class WorkflowInstanceImpl implements WorkflowInstance {
         if (cachedLSID != null) {
             return cachedLSID;
         }
-        String LSID = (String) internalToLSID.get(workflowInstanceId);
+        String lsidKey = workflowModel.getDescription().getLSID()
+                + workflowInstanceId;
+        String LSID = (String) internalToLSID.get(lsidKey);
         if (LSID != null) {
             cachedLSID = LSID;
             return LSID;
