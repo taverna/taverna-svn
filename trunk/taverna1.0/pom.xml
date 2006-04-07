@@ -36,6 +36,29 @@
       <timezone>0</timezone>
     </developer>
   </developers>
+    <!-- JDK tools 
+U    As in http://maven.apache.org/general.html  "How do I include tools.jar"
+    -->
+  <profiles>
+    <profile>
+      <id>default-tools.jar</id>
+      <activation>
+        <property>
+          <name>java.vendor</name>
+          <value>Sun Microsystems Inc.</value>
+        </property>
+      </activation>
+      <dependencies>
+        <dependency>
+          <groupId>com.sun</groupId>
+          <artifactId>tools</artifactId>
+          <version>1.4.2</version>
+          <scope>system</scope>
+          <systemPath>${java.home}/../lib/tools.jar</systemPath>
+        </dependency>
+      </dependencies>
+    </profile>
+  </profiles>
   <scm>
     <!--<connection>scm:cvs:pserver:anonymous@cvs.sourceforge.net:/cvsroot/taverna:taverna1.0</connection>-->
     <connection>scm:cvs:ext:${sfusername}@cvs.sourceforge.net:/cvsroot/taverna:taverna1.0</connection>
@@ -548,14 +571,6 @@
       <version>RE817</version>
       <scope>system</scope>
       <systemPath>${basedir}/lib/JRclient-RE817.jar</systemPath>
-    </dependency>
-    <!-- JDK tools -->
-    <dependency>
-      <groupId>java</groupId>
-      <artifactId>tools</artifactId>
-      <version>1.5</version>
-      <scope>system</scope>
-      <systemPath>${java.home}/../lib/tools.jar</systemPath>
     </dependency>
   </dependencies>
   <reporting>
