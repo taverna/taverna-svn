@@ -12,6 +12,8 @@ import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -132,18 +134,14 @@ public class BeanshellConfigPanel extends JPanel implements ScuflUIComponent,
 			}
 		}
 
-		/**
-		 * @param syntacticType
-		 * @return
-		 */
+		
+		// FIXME: Move to a more general class
 		private int getListDepth(String syntacticType)
 		{
-			int index;
-			int depth = 0;
-			String temp = syntacticType;
-			while ((index = temp.indexOf("l(")) > -1)
+			int depth = 0;			
+			while ((syntacticType.startsWith("l(")))
 			{
-				temp = temp.substring(2);
+				syntacticType = syntacticType.substring(2);
 				depth++;
 			}
 			return depth;
@@ -182,7 +180,8 @@ public class BeanshellConfigPanel extends JPanel implements ScuflUIComponent,
 				getPorts()[rowIndex].setSyntacticType(getSyntacticType(listCount, mimeType));
 			}
 		}
-
+        
+		// FIXME: Move to a more general class
 		private String getSyntacticType(int listDepth, String mimeType)
 		{
 			if(listDepth == 0)
@@ -213,6 +212,7 @@ public class BeanshellConfigPanel extends JPanel implements ScuflUIComponent,
 			}
 		}
 
+		// FIXME: Move to a more general class
 		private String getPrintableType(String syntacticType)
 		{
 			int start = syntacticType.indexOf('\'') + 1;
@@ -240,14 +240,10 @@ public class BeanshellConfigPanel extends JPanel implements ScuflUIComponent,
 				{
 					setText("a");
 				}
-				else
-				{
-					String text = "a list of";
-					for (int index = 1; index < depth; index++)
-					{
-						text = text + " lists of";
-					}
-					setText(text);
+				else if (depth == 1) { 
+					setText("a list of");
+                } else { 					
+					setText(depth + "-deep list of");
 				}	
 			}
 			else
@@ -283,12 +279,6 @@ public class BeanshellConfigPanel extends JPanel implements ScuflUIComponent,
 			spinner.addChangeListener(renderer);			
 		}		
 		
-		/*
-		 * (non-Javadoc)
-		 * 
-		 * @see javax.swing.table.TableCellEditor#getTableCellEditorComponent(javax.swing.JTable,
-		 *      java.lang.Object, boolean, int, int)
-		 */
 		public Component getTableCellEditorComponent(JTable table, Object value,
 				boolean isSelected, int row, int column)
 		{
@@ -299,11 +289,6 @@ public class BeanshellConfigPanel extends JPanel implements ScuflUIComponent,
 			return spinner;
 		}
 
-		/*
-		 * (non-Javadoc)
-		 * 
-		 * @see javax.swing.CellEditor#getCellEditorValue()
-		 */
 		public Object getCellEditorValue()
 		{
 			return spinner.getValue();
@@ -372,7 +357,16 @@ public class BeanshellConfigPanel extends JPanel implements ScuflUIComponent,
 		scriptText.setTokenMarker(new JavaTokenMarker());
 		scriptText.setCaretPosition(0);
 		scriptText.setPreferredSize(new Dimension(0, 0));
+		scriptText.addFocusListener(new FocusListener() {
+			public void focusGained(FocusEvent e) {
+			}
+			public void focusLost(FocusEvent e) {
+				processor.setScript(scriptText.getText());
+			}		
+		});
 
+		JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+		
 		JButton testScriptButton = new JButton("Test Script");
 		testScriptButton.addActionListener(new ActionListener()
 		{
@@ -393,7 +387,9 @@ public class BeanshellConfigPanel extends JPanel implements ScuflUIComponent,
 				}
 			}
 		});
+		buttonPanel.add(testScriptButton);
 
+		/*  //Done by focusLost event on scriptText instead 
 		JButton scriptUpdateButton = new JButton("Save Script Changes", ScuflIcons.saveIcon);
 		scriptUpdateButton.addActionListener(new ActionListener()
 		{
@@ -402,10 +398,9 @@ public class BeanshellConfigPanel extends JPanel implements ScuflUIComponent,
 				processor.setScript(scriptText.getText());
 			}
 		});
-
-		JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-		buttonPanel.add(testScriptButton);
 		buttonPanel.add(scriptUpdateButton);
+		*/
+		
 
 		JPanel scriptEditPanel = new JPanel(new BorderLayout());
 		scriptEditPanel.add(scriptText, BorderLayout.CENTER);
