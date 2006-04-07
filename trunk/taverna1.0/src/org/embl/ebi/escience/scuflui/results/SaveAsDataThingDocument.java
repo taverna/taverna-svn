@@ -73,7 +73,7 @@ public class SaveAsDataThingDocument implements ResultMapSaveSPI {
 			    String xmlString = xo.outputString(doc);
 			    File f = jfc.getSelectedFile();
 			    PrintWriter out = new PrintWriter(new FileWriter(f));
-			    out.println(xmlString);
+			    out.print(xmlString);
 			    out.flush();
 			    out.close();
 			}

@@ -29,7 +29,7 @@ import org.embl.ebi.escience.scuflui.ScuflIcons;
  * COMMENT
  * 
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover</a>
- * @version $Revision: 1.6 $
+ * @version $Revision: 1.7 $
  */
 public class SaveWorkflowAction extends ScuflModelAction {
 	final JFileChooser fc = new JFileChooser();
@@ -141,7 +141,7 @@ public class SaveWorkflowAction extends ScuflModelAction {
 			}
 			XScuflView xsv = new XScuflView(model);
 			PrintWriter out = new PrintWriter(new FileWriter(file));
-			out.println(xsv.getXMLText());
+			out.print(xsv.getXMLText());
 			model.removeListener(xsv);
 			out.flush();
 			out.close();

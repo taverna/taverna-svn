@@ -242,7 +242,7 @@ public class XMLTree extends JTree
 						prefs.put("currentDir", fc.getCurrentDirectory().toString());
 						File file = fc.getSelectedFile();
 						PrintWriter out = new PrintWriter(new FileWriter(file));
-						out.println(XMLTree.this.getText());
+						out.print(XMLTree.this.getText());
 						out.flush();
 						out.close();
 					    }
