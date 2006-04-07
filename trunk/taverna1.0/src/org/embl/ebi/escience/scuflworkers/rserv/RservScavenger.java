@@ -10,6 +10,7 @@ import org.embl.ebi.escience.scuflui.workbench.ScavengerCreationException;
 
 /**
  * A scavenger that knows how to create Rserv processors
+ * 
  * @author Stian Soiland
  */
 public class RservScavenger extends Scavenger {

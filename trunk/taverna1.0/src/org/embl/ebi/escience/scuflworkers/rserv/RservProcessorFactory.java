@@ -16,7 +16,6 @@ public class RservProcessorFactory extends ProcessorFactory {
 
 	private RservProcessor prototype = null;
 
-
 	public RservProcessorFactory() {
 		setName("R script");
 	}
@@ -31,7 +30,7 @@ public class RservProcessorFactory extends ProcessorFactory {
 	}
 
 	public String getProcessorDescription() {
-		return "Run R/S scripts through Rserv";
+		return "Run R/S scripts through Rserve";
 	}
 
 	public Class getProcessorClass() {

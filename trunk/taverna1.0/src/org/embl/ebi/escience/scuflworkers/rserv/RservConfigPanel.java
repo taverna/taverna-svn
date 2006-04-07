@@ -27,8 +27,10 @@ import javax.swing.DefaultCellEditor;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
+import javax.swing.JLabel;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
+import javax.swing.JPasswordField;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
@@ -61,7 +63,7 @@ import org.syntax.jedit.tokenmarker.JavaTokenMarker;
  * @author Stian Soiland, Tom Oinn, Chris Greenhalgh, Kevin Glover
  */
 public class RservConfigPanel extends JPanel implements ScuflUIComponent,
-		ScuflModelEventListener {
+		ScuflModelEventListener, FocusListener {
 	private abstract class PortTableModel extends AbstractTableModel {
 		protected abstract Port[] getPorts();
 
@@ -148,6 +150,14 @@ public class RservConfigPanel extends JPanel implements ScuflUIComponent,
 
 	JTextField addOutputField;
 
+	JTextField hostname;
+
+	JTextField port;
+
+	JTextField username;
+
+	JPasswordField password;
+
 	Action deletePortAction = new AbstractAction("Delete Port",
 			ScuflIcons.deleteIcon) {
 		public void actionPerformed(ActionEvent e) {
@@ -180,33 +190,42 @@ public class RservConfigPanel extends JPanel implements ScuflUIComponent,
 	 * Create a new rserv configuration panel applying to the processor
 	 * specified in the constructor
 	 */
-	public RservConfigPanel(RservProcessor bp) {
+	public RservConfigPanel(RservProcessor rp) {
 		super(new BorderLayout());
+		initialize();
 		setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
-		this.processor = bp;
+		this.processor = rp;
 
 		scriptText = new JEditTextArea(new TextAreaDefaults());
 		scriptText.setText(processor.getScript());
 		scriptText.setTokenMarker(new JavaTokenMarker());
 		scriptText.setCaretPosition(0);
 		scriptText.setPreferredSize(new Dimension(0, 0));
-		scriptText.addFocusListener(new FocusListener() {
-			public void focusGained(FocusEvent e) {
-			}
+		scriptText.addFocusListener(this);
 
-			public void focusLost(FocusEvent e) {
-				// Maybe a bit overkill to save every time focus is lost..
-				// but I couldn't find any simple way to listen for
-				// "on change" either.. This is anyway better than forcing
-				// people to press a "Save" button --Stian
-				if (!processor.getScript().equals(scriptText.getText())) {
-					processor.setScript(scriptText.getText());
-				}
-			}
-		});
+		// Create and populate the connection info panel.
+		JPanel connectionBorderPanel = new JPanel(new BorderLayout());
+		connectionBorderPanel.setPreferredSize(new Dimension(0, 0));
 
-		JPanel scriptEditPanel = new JPanel(new BorderLayout());
-		scriptEditPanel.add(scriptText, BorderLayout.CENTER);
+		JPanel connectionPanel = new JPanel(new GridLayout(4, 2));
+		connectionBorderPanel.add(connectionPanel, BorderLayout.CENTER);
+		connectionPanel.setPreferredSize(new Dimension(0, 0));
+
+		hostname = new JTextField(rp.getHostname(), 25);
+		addField(connectionPanel, "Hostname", hostname);
+
+		port = new JTextField();
+		if (rp.getPort() > 0) {
+			// 0 == default == ""
+			port.setText(Integer.toString(rp.getPort()));
+		}
+		addField(connectionPanel, "Port", port);
+
+		username = new JTextField(rp.getUsername(), 12);
+		addField(connectionPanel, "Username", username);
+
+		password = new JPasswordField(rp.getPassword(), 12);
+		addField(connectionPanel, "Password", password);
 
 		// Panel to edit the input ports
 		JPanel portEditPanel = new JPanel(new GridLayout(0, 1));
@@ -251,8 +270,8 @@ public class RservConfigPanel extends JPanel implements ScuflUIComponent,
 		inputTable.setShowVerticalLines(false);
 		inputTable.setShowHorizontalLines(false);
 		inputTable.getInputMap().put(
-			(KeyStroke) deletePortAction.getValue(Action.ACCELERATOR_KEY),
-			"DELETE_PORT");
+				(KeyStroke) deletePortAction.getValue(Action.ACCELERATOR_KEY),
+				"DELETE_PORT");
 		inputTable.getActionMap().put("DELETE_PORT", deletePortAction);
 		inputTable.addMouseListener(tableMouseListener);
 		inputTable.setPreferredSize(new Dimension(0, 0));
@@ -263,20 +282,22 @@ public class RservConfigPanel extends JPanel implements ScuflUIComponent,
 		inputTable.setDefaultEditor(String.class, new DefaultCellEditor(
 				inputTypesCombo));
 		inputTable.setDefaultRenderer(Port.class,
-			new DefaultTableCellRenderer() {
-				public Component getTableCellRendererComponent(JTable table,
-						Object value, boolean isSelected, boolean hasFocus,
-						int row, int column) {
-					setIcon(ScuflIcons.inputPortIcon);
-					return super.getTableCellRendererComponent(table, value,
-						isSelected, hasFocus, row, column);
-				}
-			});
+				new DefaultTableCellRenderer() {
+					public Component getTableCellRendererComponent(
+							JTable table, Object value, boolean isSelected,
+							boolean hasFocus, int row, int column) {
+						setIcon(ScuflIcons.inputPortIcon);
+						return super.getTableCellRendererComponent(table,
+								value, isSelected, hasFocus, row, column);
+					}
+				});
 
 		JPanel inputTablePanel = new JPanel(new BorderLayout());
 		inputTablePanel.add(inputTable, BorderLayout.CENTER);
 		JScrollPane inputPane = new JScrollPane(inputTablePanel);
 		inputPane.setPreferredSize(new Dimension(0, 0));
+
+		addInputField = new JTextField();
 
 		ActionListener addInputAction = new ActionListener() {
 			public void actionPerformed(ActionEvent ae) {
@@ -298,7 +319,6 @@ public class RservConfigPanel extends JPanel implements ScuflUIComponent,
 		addInputButton.addActionListener(addInputAction);
 		addInputButton.setEnabled(false);
 
-		addInputField = new JTextField();
 		addInputField.addActionListener(addInputAction);
 		addInputField.getDocument().addDocumentListener(new DocumentListener() {
 			private void checkName() {
@@ -318,6 +338,25 @@ public class RservConfigPanel extends JPanel implements ScuflUIComponent,
 			}
 		});
 
+		DocumentListener docListener = new DocumentListener() {
+			private void checkName() {
+				addInputButton.setEnabled(isValidName(addInputField.getText()));
+			}
+
+			public void changedUpdate(DocumentEvent e) {
+				checkName();
+			}
+
+			public void insertUpdate(DocumentEvent e) {
+				checkName();
+			}
+
+			public void removeUpdate(DocumentEvent e) {
+				checkName();
+			}
+		};
+		addInputField.getDocument().addDocumentListener(docListener);
+
 		JPanel inputFieldPanel = new JPanel(new BorderLayout());
 		inputFieldPanel.setBorder(BorderFactory.createEmptyBorder(3, 0, 0, 0));
 		inputFieldPanel.add(addInputButton, BorderLayout.LINE_START);
@@ -325,18 +364,45 @@ public class RservConfigPanel extends JPanel implements ScuflUIComponent,
 
 		// Input edit panel
 		JPanel inputEditPanel = new JPanel(new BorderLayout());
-		inputEditPanel.setBorder(BorderFactory.createTitledBorder(
-			BorderFactory.createEtchedBorder(), "Inputs"));
+		inputEditPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory
+				.createEtchedBorder(), "Inputs"));
 		inputEditPanel.add(inputPane, BorderLayout.CENTER);
 		inputEditPanel.add(inputFieldPanel, BorderLayout.SOUTH);
 		portEditPanel.add(inputEditPanel);
 
 		JTabbedPane tabbedPane = new JTabbedPane();
-		tabbedPane.addTab("Script", scriptEditPanel);
+		tabbedPane.addTab("Script", scriptText);
 		tabbedPane.addTab("Ports", portEditPanel);
+		tabbedPane.addTab("Connection", connectionBorderPanel);
 		add(tabbedPane);
 
 		setVisible(true);
+	}
+
+	/**
+	 * This method initializes this
+	 * 
+	 */
+	private void initialize() {
+		this.setSize(new java.awt.Dimension(732, 366));
+
+	}
+
+	/*
+	 * Add a JTextField to a JPanel, with an attached label added first. The
+	 * size is set to 0,0 on both (shrink), and "this" is set as a focusListener
+	 * on the field
+	 */
+	protected void addField(JPanel panel, String labelString, JTextField field) {
+		JLabel label = new JLabel(labelString, JLabel.TRAILING);
+		label.setPreferredSize(new Dimension(0, 0));
+		field.setPreferredSize(new Dimension(0, 0));
+		panel.add(label);
+		label.setLabelFor(field);
+		field.addFocusListener(this);
+		// FIXME: Not i18n compatible to use label as identifier (like the rest
+		// of Taverna)
+		panel.add(field);
 	}
 
 	public void attachToModel(ScuflModel theModel) {
@@ -376,5 +442,47 @@ public class RservConfigPanel extends JPanel implements ScuflUIComponent,
 			return true;
 		}
 		return false;
+	}
+
+	public void focusGained(FocusEvent e) {
+	}
+
+	public void focusLost(FocusEvent event) {
+		Object source = event.getSource();
+		if (source == scriptText) {
+			processor.setScript(scriptText.getText());
+		}
+		if (source == hostname) {
+			processor.setHostname(hostname.getText());
+		}
+		if (source == username) {
+			processor.setUsername(username.getText());
+		}
+		if (source == password) {
+			char[] pass = password.getPassword();
+			processor.setPassword(String.valueOf(pass));
+		}
+		if (source == port) {
+			int portNumber;
+			try {
+				portNumber = Integer.parseInt(port.getText());
+			} catch (NumberFormatException ex) {
+				portNumber = 0;
+			}
+			try {
+				processor.setPort(portNumber);
+				if (portNumber == 0) {
+					port.setText("");
+				} else {
+					port.setText(Integer.toString(portNumber));
+				}
+			} catch (IllegalArgumentException ex) {
+				// TODO: Show error message on port > 65535
+				processor.setPort(0);
+				port.setText("");
+				return;
+			}
+		}
+
 	}
 }

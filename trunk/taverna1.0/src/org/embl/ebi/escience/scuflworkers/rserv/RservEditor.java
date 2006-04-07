@@ -13,11 +13,12 @@ import org.embl.ebi.escience.scuflui.UIUtils;
 import org.embl.ebi.escience.scuflworkers.ProcessorEditor;
 
 /**
- * An editor for the rserv processor, allows the 
- * script to be defined and input and output ports
- * added or removed.
+ * An editor for the rserv processor, allows the script to be defined and input
+ * and output ports added or removed.
+ * 
  * @author Tom Oinn
  */
+// FIXME: This is the very same class as BeanshellEditor !
 public class RservEditor implements ProcessorEditor {
 
 	public ActionListener getListener(Processor theProcessor) {
@@ -27,16 +28,14 @@ public class RservEditor implements ProcessorEditor {
 				// If the workbench is present then create and display a new
 				// panel to configure the script engine.
 				UIUtils.createFrame(bp.getModel(), new RservConfigPanel(bp),
-					100, 100, 400, 500);
+						100, 100, 400, 500);
 				/**
-				 if (Workbench.workbench != null) {
-				 GenericUIComponentFrame thing = new GenericUIComponentFrame(Workbench.workbench.model,
-				 new RservConfigPanel(bp));
-				 thing.setSize(400,500);
-				 thing.setLocation(100,100);
-				 Workbench.workbench.desktop.add(thing);
-				 thing.moveToFront();
-				 }
+				 * if (Workbench.workbench != null) { GenericUIComponentFrame
+				 * thing = new
+				 * GenericUIComponentFrame(Workbench.workbench.model, new
+				 * RservConfigPanel(bp)); thing.setSize(400,500);
+				 * thing.setLocation(100,100);
+				 * Workbench.workbench.desktop.add(thing); thing.moveToFront(); }
 				 */
 			}
 		};

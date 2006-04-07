@@ -8,12 +8,17 @@
 
 package org.embl.ebi.escience.scuflworkers.rserv;
 
-import org.embl.ebi.escience.scufl.*;
-
-// Utility Imports
 import java.util.Properties;
 
-import java.lang.String;
+import org.embl.ebi.escience.scufl.DuplicatePortNameException;
+import org.embl.ebi.escience.scufl.DuplicateProcessorNameException;
+import org.embl.ebi.escience.scufl.OutputPort;
+import org.embl.ebi.escience.scufl.Port;
+import org.embl.ebi.escience.scufl.PortCreationException;
+import org.embl.ebi.escience.scufl.Processor;
+import org.embl.ebi.escience.scufl.ProcessorCreationException;
+import org.embl.ebi.escience.scufl.ScuflModel;
+import org.embl.ebi.escience.scufl.ScuflModelEvent;
 
 /**
  * A processor that uses the Rserv scripting engine to allow R (the free version
@@ -25,12 +30,17 @@ import java.lang.String;
  */
 public class RservProcessor extends Processor implements java.io.Serializable {
 
-	private String theScript = "";
+	private String script = "";
+	// Rserv connection info -- null/0 means use default values
+	private String hostname = null; 
+	private int port = 0;
+	private String username = null;
+	private String password = null;
 
 	
 	public RservProcessor(ScuflModel model, String name)
 			throws ProcessorCreationException, DuplicateProcessorNameException {
-		super(model, name);
+		this(model, name, "", new String[0]);
 	}
 
 	/**
@@ -44,7 +54,7 @@ public class RservProcessor extends Processor implements java.io.Serializable {
 		super(model, name);
 		// Create appropriate inputs and outputs from the arrays
 		try {
-			this.theScript = script;
+			this.script = script;
 			// Iterate over inputs...
 			for (int i = 0; i < inputs.length; i++) {
 				Port p = new RservInputPort(this, inputs[i]);
@@ -52,7 +62,7 @@ public class RservProcessor extends Processor implements java.io.Serializable {
 				addPort(p);
 			}
 			Port p = new OutputPort(this, "value");
-			p.setSyntacticType("l('text/plain')");
+			p.setSyntacticType("l('text/plain')");            
 			addPort(p);
 		} catch (DuplicatePortNameException dpne) {
 			throw new ProcessorCreationException(
@@ -69,12 +79,11 @@ public class RservProcessor extends Processor implements java.io.Serializable {
 	/**
 	 * Set the script
 	 */
-	public void setScript(String theScript) {
-		if (theScript != null) {
-			this.theScript = theScript;
-		} else {
-			this.theScript = "";
+	public void setScript(String script) {
+		if (script == null) {
+			script = "";
 		}
+		this.script = script;
 		fireModelEvent(new ScuflModelEvent(this, "Script modified"));
 	}
 
@@ -82,7 +91,7 @@ public class RservProcessor extends Processor implements java.io.Serializable {
 	 * Get the script
 	 */
 	public String getScript() {
-		return this.theScript;
+		return this.script;
 	}
 
 	/**
@@ -93,5 +102,61 @@ public class RservProcessor extends Processor implements java.io.Serializable {
 		props.put("Script", "See configurator for more information");
 		return props;
 	}
+
+	public String getHostname() {
+		if (hostname == null) {
+			return "";
+		}
+		return hostname;
+	}
+
+	public void setHostname(String hostname) {
+		if (hostname != null && hostname.equals("")) {
+			hostname = null;
+		}
+		this.hostname = hostname;
+	}
+
+	public String getPassword() {
+		if (password == null) {
+			return "";
+		}
+		return password;
+	}
+
+	public void setPassword(String password) {
+		if (password != null && password.equals("")) {
+			password = null;
+		}
+		this.password = password;
+	}
+
+	public int getPort() {
+		return port;
+	}
+
+	public void setPort(int port) {
+		// 0 is allowed for us, it means "Use default port"
+		if (port < 0 || port > 65535) {
+			throw new IllegalArgumentException("Port number must be in range 1-65535");
+		}
+		this.port = port;
+	}
+
+	public String getUsername() {
+		if (username == null) {
+			return "";
+		}
+		return username;
+	}
+
+	public void setUsername(String username) {
+		if (username != null && username.equals("")) {
+			username = null;
+		}
+		this.username = username;
+	}
+	
+
 
 }
