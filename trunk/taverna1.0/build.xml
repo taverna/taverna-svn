@@ -288,6 +288,39 @@
 			basedir="${workbench.dir}"/>
 	</target>
 
+	<!-- Run dependency analysis on workbench libraries -->
+	<target name="dep">
+	   <property name="workbench.dir" value="${build.dir}/${ant.project.name}-workbench-${project.version}"/>
+
+	   <mkdir dir="${build.dir}/analysistemp"/>
+	   <copy todir="${build.dir}/analysistemp">
+	                <fileset dir="${workbench.dir}/lib">
+			   <include name="*.jar"/>
+			</fileset>
+			<fileset dir="${workbench.dir}/libext">
+			   <include name="*.jar"/>
+			</fileset>
+			<fileset dir="${build.dir}">
+			        <include name="${ant.project.name}-${project.version}-launcher.jar"/>
+			</fileset>
+	   </copy>
+	   <taskdef name="jaranalyzer" classname="com.kirkk.analyzer.textui.JarAnalyzerTask">
+	      <classpath>
+	         <pathelement path="./jaranalyzer/jaranalyzer-1.0.jar"/>
+		 <pathelement path="./jaranalyzer/lib/bcel-5.1.jar"/>
+		 <pathelement path="./jaranalyser/lib/jakarta-regexp-1.3.jar"/>
+		 <pathelement path="./jaranalyzer/lib"/>
+	      </classpath>
+	   </taskdef>
+	   <jaranalyzer srcdir="${build.dir}/analysistemp" destfile="${build.dir}/analysistemp/appdependencies.grph" 
+                        summaryclass="com.kirkk.analyzer.textui.DOTSummary" />			
+	   <exec executable="dot" >
+	      <arg line="-Tsvg -Nshape=box -Nstyle=filled -Nfontsize=12 -Nwidth=0 -Nheight=0 ${build.dir}/analysistemp/appdependencies.grph -o ${build.dir}/staticdependencies.svg"/>
+	   </exec>
+           <delete dir="${build.dir}/analysistemp"/>
+	</target>
+
+
 	<!-- Prepare the source tree for compilation -->
 	<target name="prepare-src" depends="prepare">
 		<mkdir dir="${build.src}"/>
@@ -435,174 +468,6 @@
 		</javadoc>
 	</target>
 
-	<!-- Test the scufl parser -->
-	<target name="test.parser" depends="jar">
-	    <java classname="org.embl.ebi.escience.taverna.ScuflParser">
-		    <arg value="http://www.ebi.ac.uk/~tmo/scuflexample.text"/>
-			<classpath refid="compile-classpath"/>
-		</java>
-    </target>
-
-	<!-- retsina GUI -->
-        <target name="retsina" depends="jar">
-                <java classname="uk.ac.mrc.hgmp.taverna.retsina.RetsinaApplet" fork="yes">
-                    <classpath refid="compile-classpath"/>
-                </java>
-        </target>
-
-
-	<!-- Test the model, specifically the creation of soaplab nodes -->
-	<target name="test.soaplab" depends="jar">
-	    <java classname="org.embl.ebi.escience.scufl.test.SoaplabProcessorCreation" fork="yes">
-		    <classpath refid="compile-classpath"/>
-		</java>
-	</target>
-
-	<!-- Test the creation of talisman processor nodes -->
-	<target name="test.talisman" depends="jar">
-	        <java classname="org.embl.ebi.escience.scufl.test.TalismanProcessorCreation" fork="yes">
-		    <classpath refid="compile-classpath"/>
-		</java>
-	</target>
-	<!-- Test the creation of arbitrarywsdl processor nodes -->
-	<target name="test.wsdl" depends="jar">
-	        <java classname="org.embl.ebi.escience.scufl.test.WSDLBasedProcessorCreation" fork="yes">
-		    <classpath refid="compile-classpath"/>
-		</java>
-	</target>
-
-	<!-- Test the XScufl parser -->
-	<target name="test.xscuflparser" depends="jar">
-	    <java classname="org.embl.ebi.escience.scufl.parser.test.XScuflParserTest" fork="yes">
-		    <classpath refid="run-classpath"/>
-		</java>
-	</target>
-
-	<!-- Test the Scufl to XScufl convertor -->
-	<target name="test.scuflparser" depends="jar">
-	    <java classname="org.embl.ebi.escience.scufl.parser.test.Scufl2XScuflParserTest" fork="yes">
-		    <classpath refid="compile-classpath"/>
-		</java>
-	</target>
-
-	<!-- Test the dot view -->
-	<target name="test.dotview">
-		<java classname="org.embl.ebi.escience.scufl.view.test.DotViewTest" fork="yes">
-		    <classpath refid="compile-classpath"/>
-		</java>
-	</target>
-
-	<!-- Test the XScufl view -->
-	<target name="test.xscuflview" depends="jar">
-		<java classname="org.embl.ebi.escience.scufl.view.test.XScuflViewTest" fork="yes">
-		    <classpath refid="compile-classpath"/>
-		</java>
-	</target>
-
-        <!-- Generate the dot views from my hybrid workflow -->
-        <target name="test.tools.hybrid">
-                <java classname="org.embl.ebi.escience.scufl.tools.XScufl2Dot" fork="yes">
-                    <arg line="hybridworkflow/workflow.xml"/>
-		    <arg line="hybridworkflow/workflow.none.dot"/>
-                    <arg line="none"/>
-                    <classpath refid="compile-classpath"/>
-                </java>
-		<java classname="org.embl.ebi.escience.scufl.tools.XScufl2Dot" fork="yes">
-                    <arg line="hybridworkflow/workflow.xml"/>
-		    <arg line="hybridworkflow/workflow.bound.dot"/>
-                    <arg line="bound"/>
-                    <classpath refid="compile-classpath"/>
-                </java>
-		<java classname="org.embl.ebi.escience.scufl.tools.XScufl2Dot" fork="yes">
-                    <arg line="hybridworkflow/workflow.xml"/>
-		    <arg line="hybridworkflow/workflow.all.dot"/>
-                    <arg line="all"/>
-                    <classpath refid="compile-classpath"/>
-                </java>
-        </target>
-
-	<!-- Run the XScufl to Dot tool -->
-	<target name="tools.dot">
-		<java classname="org.embl.ebi.escience.scufl.tools.XScufl2Dot" fork="yes">
-			<arg line="${file}"/>
-			<arg line="${outfile}"/>
-			<arg line="${ports}"/>
-			<classpath refid="compile-classpath"/>
-		</java>
-	</target>
-
-	<!-- Run the tree model viewer -->
-	<target name="tools.tree">
-	        <java classname="org.embl.ebi.escience.scuflui.ScuflModelExplorerDemo" fork="yes">
-		        <arg value="${file}"/>
-			<classpath refid="compile-classpath"/>
-		</java>
-	</target>
-
-    <!-- Run the diagram viewer -->
-	<target name="tools.diagram">
-	        <java classname="org.embl.ebi.escience.scuflui.ScuflDiagramDemo" fork="yes">
-		        <arg value="${file}"/>
-			<classpath refid="compile-classpath"/>
-		</java>
-	</target>
-
-    <!-- Run the component demo -->
-	<target name="tools.demo">
-	        <java classname="org.embl.ebi.escience.scuflui.ComponentDemo" fork="yes">
-		    <arg value="${file}"/>
-			<classpath refid="compile-classpath"/>
-		</java>
-	</target>
-
-	<!-- Run the workbench -->
-	<target name="tools.workbench">
-		<java classname="org.embl.ebi.escience.scuflui.workbench.Workbench" fork="yes">
-		        <arg value="${file}"/>
-		   	<classpath refid="compile-classpath"/>
-		</java>
-	</target>
-
-        <!-- Examine the taverna resource bundle -->
-        <target name="test.rdfs" depends="java">
-		<java classname="org.embl.ebi.escience.scufl.semantics.ParserTest" fork="yes">
-			<classpath refid="compile-classpath"/>
-		</java>
-	</target>
-
-	<!-- Test the data thing type system -->
-	<target name="test.datathing" depends="java">
-		<java classname="org.embl.ebi.escience.baclava.factory.DataThingFactoryTest" fork="no">
-			<classpath refid="compile-classpath"/>
-		</java>
-	</target>
-	<!-- Test the data thing iterator system -->
-	<target name="test.iterator" depends="java">
-		<java classname="org.embl.ebi.escience.baclava.IteratorNodeTests" fork="no">
-			<classpath refid="compile-classpath"/>
-		</java>
-	</target>	
-	<!-- Test the data thing iterator UI -->
-	<target name="test.iteratorui" depends="java">
-		<java classname="org.embl.ebi.escience.baclava.iteratorui.IteratorJTree" fork="no">
-			<classpath refid="compile-classpath"/>
-		</java>
-	</target>
-
-	<!-- Test the data thing iterator system -->
-	<target name="test.store" depends="java">
-		<java classname="org.embl.ebi.escience.baclava.store.test.JDBCStoreTest" fork="no">
-			<classpath refid="run-classpath"/>
-		</java>
-	</target>
-
-	<!-- Test the biomart integration -->
-	<target name="test.mart" depends="java">
-		<java classname="org.embl.ebi.escience.scuflworkers.biomart.TestQuerySerializer" fork="no">
-			<classpath refid="run-classpath"/>
-		</java>	
-	</target>
-
 	<!-- Run arbitrary unit test -->
 	<target name="runtestunit" depends="jar">
 		<java classname="junit.textui.TestRunner" fork="true">
@@ -618,4 +483,5 @@
 			<sysproperty key="chainsaw.port" value="4445"/>
 		</java>
 	</target>
+
 </project>
