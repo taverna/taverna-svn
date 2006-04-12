@@ -8,17 +8,15 @@ import javax.swing.AbstractAction;
 import org.embl.ebi.escience.scufl.ScuflModel;
 
 /**
- * COMMENT 
+ * COMMENT
  * 
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover</a>
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
-public abstract class ScuflModelAction extends AbstractAction
-{
+public abstract class ScuflModelAction extends AbstractAction {
 	protected ScuflModel model;
-	
-	protected ScuflModelAction(ScuflModel model)
-	{
+
+	protected ScuflModelAction(ScuflModel model) {
 		this.model = model;
 	}
 }

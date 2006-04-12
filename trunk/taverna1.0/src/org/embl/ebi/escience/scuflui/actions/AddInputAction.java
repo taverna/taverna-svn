@@ -17,15 +17,13 @@ import org.embl.ebi.escience.scuflui.ScuflIcons;
  * COMMENT
  * 
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover </a>
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
-public class AddInputAction extends ScuflModelAction
-{
+public class AddInputAction extends ScuflModelAction {
 	/**
 	 * @param model
 	 */
-	public AddInputAction(ScuflModel model)
-	{
+	public AddInputAction(ScuflModel model) {
 		super(model);
 		putValue(SMALL_ICON, ScuflIcons.inputIcon);
 		putValue(NAME, "Create New Input...");
@@ -36,28 +34,25 @@ public class AddInputAction extends ScuflModelAction
 	 * 
 	 * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
 	 */
-	public void actionPerformed(ActionEvent e)
-	{
+	public void actionPerformed(ActionEvent e) {
 		String name = (String) JOptionPane.showInputDialog(null,
-				"Name for the new workflow input?", "Name required", JOptionPane.QUESTION_MESSAGE,
-				null, null, "");
-		if (name != null)
-		{
-			try
-			{
-				model.getWorkflowSourceProcessor().addPort(
-						new OutputPort(model.getWorkflowSourceProcessor(), name));
+				"Name for the new workflow input?", "Name required",
+				JOptionPane.QUESTION_MESSAGE, null, null, "");
+		if (name != null) {
+			try {
+				model.getWorkflowSourceProcessor()
+						.addPort(
+								new OutputPort(model
+										.getWorkflowSourceProcessor(), name));
 				model.forceUpdate();
-			}
-			catch (PortCreationException pce)
-			{
-				JOptionPane.showMessageDialog(null, "Port creation exception : \n"
-						+ pce.getMessage(), "Exception!", JOptionPane.ERROR_MESSAGE);
-			}
-			catch (DuplicatePortNameException dpne)
-			{
-				JOptionPane.showMessageDialog(null, "Duplicate name : \n" + dpne.getMessage(),
+			} catch (PortCreationException pce) {
+				JOptionPane.showMessageDialog(null,
+						"Port creation exception : \n" + pce.getMessage(),
 						"Exception!", JOptionPane.ERROR_MESSAGE);
+			} catch (DuplicatePortNameException dpne) {
+				JOptionPane.showMessageDialog(null, "Duplicate name : \n"
+						+ dpne.getMessage(), "Exception!",
+						JOptionPane.ERROR_MESSAGE);
 			}
 		}
 	}

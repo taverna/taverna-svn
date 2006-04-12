@@ -13,48 +13,40 @@ import org.embl.ebi.escience.scufl.ScuflModel;
 import org.embl.ebi.escience.scuflui.ScuflIcons;
 
 /**
- * COMMENT 
+ * COMMENT
  * 
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover</a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
-public class AddDataConstraintAction extends ScuflModelAction
-{
+public class AddDataConstraintAction extends ScuflModelAction {
 	private Port source;
+
 	private Port target;
-	
+
 	/**
 	 * @param model
 	 */
-	public AddDataConstraintAction(ScuflModel model, Port start, Port end)
-	{
+	public AddDataConstraintAction(ScuflModel model, Port start, Port end) {
 		super(model);
-		if(end instanceof InputPort)
-		{
+		if (end instanceof InputPort) {
 			this.source = start;
-			this.target = end;			
+			this.target = end;
 			putValue(SMALL_ICON, ScuflIcons.inputIcon);
-		}
-		else
-		{
+		} else {
 			this.source = end;
-			this.target = start;			
+			this.target = start;
 			putValue(SMALL_ICON, ScuflIcons.outputIcon);
 		}
-		putValue(NAME, end.getName());		
+		putValue(NAME, end.getName());
 	}
 
 	/*
 	 * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
 	 */
-	public void actionPerformed(ActionEvent e)
-	{
-	    try
-		{
+	public void actionPerformed(ActionEvent e) {
+		try {
 			model.addDataConstraint(new DataConstraint(model, source, target));
-		}
-		catch (DataConstraintCreationException e1)
-		{
+		} catch (DataConstraintCreationException e1) {
 			// TODO Handle DataConstraintCreationException
 			e1.printStackTrace();
 		}

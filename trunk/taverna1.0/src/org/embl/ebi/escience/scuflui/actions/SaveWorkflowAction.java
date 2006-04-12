@@ -29,7 +29,7 @@ import org.embl.ebi.escience.scuflui.ScuflIcons;
  * COMMENT
  * 
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover</a>
- * @version $Revision: 1.7 $
+ * @version $Revision: 1.8 $
  */
 public class SaveWorkflowAction extends ScuflModelAction {
 	final JFileChooser fc = new JFileChooser();
@@ -40,12 +40,9 @@ public class SaveWorkflowAction extends ScuflModelAction {
 	public SaveWorkflowAction(ScuflModel model) {
 		super(model);
 		boolean jdbcStore = isDatabaseAware();
-		if (jdbcStore)
-		{
+		if (jdbcStore) {
 			putValue(SMALL_ICON, ScuflIcons.saveMenuIcon);
-		}
-		else
-		{
+		} else {
 			putValue(SMALL_ICON, ScuflIcons.saveIcon);
 		}
 		putValue(NAME, "Save");
@@ -54,7 +51,7 @@ public class SaveWorkflowAction extends ScuflModelAction {
 
 	private boolean isDatabaseAware() {
 		BaclavaDataService store = BaclavaDataServiceFactory.getStore();
-		return (store != null && store instanceof JDBCBaclavaDataService);		
+		return (store != null && store instanceof JDBCBaclavaDataService);
 	}
 
 	/*
@@ -62,7 +59,7 @@ public class SaveWorkflowAction extends ScuflModelAction {
 	 */
 	public void actionPerformed(ActionEvent e) {
 		// Save to XScufl
-		try {			
+		try {
 			if (!isDatabaseAware()) {
 				saveToFile();
 			} else {
@@ -74,8 +71,10 @@ public class SaveWorkflowAction extends ScuflModelAction {
 						try {
 							saveToFile();
 						} catch (Exception ex) {
-							JOptionPane.showMessageDialog(null, "Problem saving workflow : \n" + ex.getMessage(),
-									"Error!", JOptionPane.ERROR_MESSAGE);
+							JOptionPane.showMessageDialog(null,
+									"Problem saving workflow : \n"
+											+ ex.getMessage(), "Error!",
+									JOptionPane.ERROR_MESSAGE);
 						}
 					}
 				});
@@ -86,10 +85,13 @@ public class SaveWorkflowAction extends ScuflModelAction {
 				fromWeb.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
 						try {
-							saveToDatabase((JDBCBaclavaDataService)BaclavaDataServiceFactory.getStore());
+							saveToDatabase((JDBCBaclavaDataService) BaclavaDataServiceFactory
+									.getStore());
 						} catch (Exception ex) {
-							JOptionPane.showMessageDialog(null, "Problem saving workflow : \n" + ex.getMessage(),
-									"Error!", JOptionPane.ERROR_MESSAGE);
+							JOptionPane.showMessageDialog(null,
+									"Problem saving workflow : \n"
+											+ ex.getMessage(), "Error!",
+									JOptionPane.ERROR_MESSAGE);
 						}
 
 					}
@@ -100,8 +102,8 @@ public class SaveWorkflowAction extends ScuflModelAction {
 
 			}
 		} catch (Exception ex) {
-			JOptionPane.showMessageDialog(null, "Problem saving workflow : \n" + ex.getMessage(), "Error!",
-					JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(null, "Problem saving workflow : \n"
+					+ ex.getMessage(), "Error!", JOptionPane.ERROR_MESSAGE);
 		}
 
 	}
@@ -110,9 +112,11 @@ public class SaveWorkflowAction extends ScuflModelAction {
 	 * Saves the workflow to the database. Queries whether a stored workflow
 	 * should be overwritten if one already exists for that LSID
 	 */
-	protected void saveToDatabase(JDBCBaclavaDataService store) throws Exception {
+	protected void saveToDatabase(JDBCBaclavaDataService store)
+			throws Exception {
 		if (store.hasWorkflow(model.getDescription().getLSID())) {
-			int res = JOptionPane.showConfirmDialog(null, "Overwrite Existing Workflow for this LSID?");
+			int res = JOptionPane.showConfirmDialog(null,
+					"Overwrite Existing Workflow for this LSID?");
 			if (res == JOptionPane.YES_OPTION) {
 				store.storeWorkflow(model);
 			}
@@ -126,8 +130,10 @@ public class SaveWorkflowAction extends ScuflModelAction {
 	 */
 	protected void saveToFile() throws Exception {
 
-		Preferences prefs = Preferences.userNodeForPackage(AdvancedModelExplorer.class);
-		String curDir = prefs.get("currentDir", System.getProperty("user.home"));
+		Preferences prefs = Preferences
+				.userNodeForPackage(AdvancedModelExplorer.class);
+		String curDir = prefs
+				.get("currentDir", System.getProperty("user.home"));
 		fc.setDialogTitle("Save Workflow");
 		fc.resetChoosableFileFilters();
 		fc.setFileFilter(new ExtensionFileFilter(new String[] { "xml" }));

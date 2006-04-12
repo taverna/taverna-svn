@@ -28,7 +28,7 @@ import org.embl.ebi.escience.scuflui.ScuflIcons;
  * COMMENT
  * 
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover</a>
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  */
 public class LoadWorkflowAction extends ScuflModelAction {
 	final JFileChooser fc = new JFileChooser();
@@ -86,20 +86,26 @@ public class LoadWorkflowAction extends ScuflModelAction {
 	 * Select a workflow from the database and opens it
 	 */
 	protected void loadFromDatabase(JDBCBaclavaDataService store) {
-		String LSID = (String) JOptionPane.showInputDialog(null, "Enter the LSID", "Workflow LSID",
+		String LSID = (String) JOptionPane.showInputDialog(null,
+				"Enter the LSID", "Workflow LSID",
 				JOptionPane.QUESTION_MESSAGE, null, null, "");
 		if (LSID != null) {
 			String xml = store.fetchWorkflow(LSID);
 			if (xml == null) {
-				JOptionPane.showMessageDialog(null, "Cannot find workflow for LSID " + LSID + " in the database.",
-						"Error!", JOptionPane.ERROR_MESSAGE);
+				JOptionPane.showMessageDialog(null,
+						"Cannot find workflow for LSID " + LSID
+								+ " in the database.", "Error!",
+						JOptionPane.ERROR_MESSAGE);
 			} else {
-				ByteArrayInputStream instr = new ByteArrayInputStream(xml.getBytes());
+				ByteArrayInputStream instr = new ByteArrayInputStream(xml
+						.getBytes());
 				try {
 					XScuflParser.populate(instr, model, null);
 				} catch (Exception e) {
-					JOptionPane.showMessageDialog(null, "Problem opening workflow from the database : \n"
-							+ e.getMessage(), "Error!", JOptionPane.ERROR_MESSAGE);
+					JOptionPane.showMessageDialog(null,
+							"Problem opening workflow from the database : \n"
+									+ e.getMessage(), "Error!",
+							JOptionPane.ERROR_MESSAGE);
 				}
 			}
 		}
@@ -110,14 +116,18 @@ public class LoadWorkflowAction extends ScuflModelAction {
 	 */
 	protected void loadFromWeb() {
 		try {
-			String name = (String) JOptionPane.showInputDialog(null, "Enter the URL of a workflow definition to load",
-					"Workflow URL", JOptionPane.QUESTION_MESSAGE, null, null, "http://");
+			String name = (String) JOptionPane.showInputDialog(null,
+					"Enter the URL of a workflow definition to load",
+					"Workflow URL", JOptionPane.QUESTION_MESSAGE, null, null,
+					"http://");
 			if (name != null) {
-				XScuflParser.populate((new URL(name)).openStream(), model, null);
+				XScuflParser
+						.populate((new URL(name)).openStream(), model, null);
 			}
 		} catch (Exception ex) {
-			JOptionPane.showMessageDialog(null, "Problem opening workflow from web : \n" + ex.getMessage(), "Error!",
-					JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(null,
+					"Problem opening workflow from web : \n" + ex.getMessage(),
+					"Error!", JOptionPane.ERROR_MESSAGE);
 		}
 	}
 
@@ -126,7 +136,8 @@ public class LoadWorkflowAction extends ScuflModelAction {
 	 */
 	protected void loadFromFile() {
 		Preferences prefs = Preferences.userNodeForPackage(ScuflIcons.class);
-		String curDir = prefs.get("currentDir", System.getProperty("user.home"));
+		String curDir = prefs
+				.get("currentDir", System.getProperty("user.home"));
 		fc.setDialogTitle("Open Workflow");
 		fc.resetChoosableFileFilters();
 		fc.setFileFilter(new ExtensionFileFilter(new String[] { "xml" }));
@@ -141,7 +152,8 @@ public class LoadWorkflowAction extends ScuflModelAction {
 					try {
 						// todo: does the update need running in the AWT thread?
 						// perhaps this thread should be spawned in populate?
-						XScuflParser.populate(file.toURL().openStream(), model, null);
+						XScuflParser.populate(file.toURL().openStream(), model,
+								null);
 					} catch (Exception ex) {
 						JOptionPane
 								.showMessageDialog(
@@ -159,8 +171,7 @@ public class LoadWorkflowAction extends ScuflModelAction {
 
 	/*
 	 * public void actionPerformed(ActionEvent e) { // Load an XScufl definition
-	 * here
-	 *  }
+	 * here }
 	 */
 
 }
