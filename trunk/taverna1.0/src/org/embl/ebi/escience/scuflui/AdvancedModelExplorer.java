@@ -613,7 +613,7 @@ public class AdvancedModelExplorer extends JPanel implements ScuflUIComponent {
 		explorer.attachToModel(theModel);
 		listener = new ScuflModelEventListener() {
 			public void receiveModelEvent(ScuflModelEvent event) {
-				if (event instanceof ScuflModelEvent
+				if (event != null
 						&& event.getSource() == AdvancedModelExplorer.this.model) {
 					boolean currentOfflineStatus = AdvancedModelExplorer.this.model
 							.isOffline();
