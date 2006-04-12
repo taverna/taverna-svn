@@ -55,8 +55,7 @@ public class ScuflSemanticMarkupEditor extends JPanel implements
 	 * Build a new markup editor attached to the particular SemanticMarkup
 	 * object.
 	 */
-	public ScuflSemanticMarkupEditor(SemanticMarkup m) {
-
+	public ScuflSemanticMarkupEditor(SemanticMarkup m) {		
 		super(new BorderLayout());
 		setPreferredSize(new Dimension(100, 100));
 		setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
@@ -252,9 +251,14 @@ public class ScuflSemanticMarkupEditor extends JPanel implements
 		//
 	}
 
-	public String getName() {
+	public String getName() {		
+		if (theMetadata == null) {				
+			// getName could be called during super() call.. :((
+			return "Uninitialized markup editor";
+		}					
 		return "Markup editor for " + theMetadata.getSubject().toString();
 	}
+	
 
 	/**
 	 * If the 'searchRegex' parameter is not null then choose the icon based on
