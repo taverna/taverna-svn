@@ -19,35 +19,34 @@ import java.lang.Exception;
 import java.lang.String;
 import java.lang.System;
 
-
-
 /**
- * Demos the interaction between the views, model and controllers
- * defined within this package.
+ * Demos the interaction between the views, model and controllers defined within
+ * this package.
+ * 
  * @author Tom Oinn
  */
 public class ComponentDemo {
 
-    public static void main(String[] args) throws Exception {
-	ScuflModel model = new ScuflModel();
-	String filename = args[0];
-	File inputFile = new File(filename);
-	XScuflParser.populate(inputFile.toURL().openStream(), model, null);
-	// Create a tree view
-	ScuflModelExplorerDemo tree = new ScuflModelExplorerDemo();
-	// Exit the application when the tree is closed
-	tree.addWindowListener(new WindowAdapter() {
-		public void windowClosing(WindowEvent e) {
-		    System.exit(0);
-		}
-	    });
-	tree.explorer.attachToModel(model);
-	tree.pack();
-	tree.setVisible(true);
-	ScuflDiagramDemo diagram = new ScuflDiagramDemo();
-	diagram.diagram.attachToModel(model);
-	diagram.pack();
-	diagram.setVisible(true);
-    }
+	public static void main(String[] args) throws Exception {
+		ScuflModel model = new ScuflModel();
+		String filename = args[0];
+		File inputFile = new File(filename);
+		XScuflParser.populate(inputFile.toURL().openStream(), model, null);
+		// Create a tree view
+		ScuflModelExplorerDemo tree = new ScuflModelExplorerDemo();
+		// Exit the application when the tree is closed
+		tree.addWindowListener(new WindowAdapter() {
+			public void windowClosing(WindowEvent e) {
+				System.exit(0);
+			}
+		});
+		tree.explorer.attachToModel(model);
+		tree.pack();
+		tree.setVisible(true);
+		ScuflDiagramDemo diagram = new ScuflDiagramDemo();
+		diagram.diagram.attachToModel(model);
+		diagram.pack();
+		diagram.setVisible(true);
+	}
 
 }

@@ -6,17 +6,16 @@
 package org.embl.ebi.escience.scuflui;
 
 /**
- * A trivial subclass of the scavenger panel which
- * starts off blank
+ * A trivial subclass of the scavenger panel which starts off blank
  */
 public class BlankScavengerTreePanel extends ScavengerTreePanel {
-    
-    public BlankScavengerTreePanel() {
-	super(false);
-    }
 
-    public String getName() {
-	return "Available services (no defaults)";
-    }
+	public BlankScavengerTreePanel() {
+		super(false);
+	}
+
+	public String getName() {
+		return "Available services (no defaults)";
+	}
 
 }

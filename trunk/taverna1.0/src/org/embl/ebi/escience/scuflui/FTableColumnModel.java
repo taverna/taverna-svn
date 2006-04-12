@@ -11,167 +11,146 @@ import java.beans.PropertyChangeEvent;
 /**
  * The table model for a FacetsTable. This encapsulates which columns are
  * present in the table,
- *
+ * 
  * @author Matthew Pocock
  */
-public class FTableColumnModel
-{
-    private static final Logger LOG = Logger.getLogger(FTableColumnModel.class);
-    private final List listeners;
-    private final PropertyChangeListener changeForwarder;
-    private final List columns;
+public class FTableColumnModel {
+	private static final Logger LOG = Logger.getLogger(FTableColumnModel.class);
 
-    public FTableColumnModel()
-    {
-        this.listeners = new ArrayList();
-        this.changeForwarder = new ChangeForwarder();
-        this.columns = new ArrayList();
-    }
+	private final List listeners;
 
-    public void addColumn(FTableColumn col)
-    {
-        columns.add(col);
-        col.addPropertyChangeListener(changeForwarder);
-        fireColumnAdded(columns.size() - 1);
-    }
+	private final PropertyChangeListener changeForwarder;
 
-    public void addColumn(int to, FTableColumn col)
-    {
-        columns.add(to, col);
-        col.addPropertyChangeListener(changeForwarder);
-        fireColumnAdded(to);
-    }
+	private final List columns;
 
-    public void removeColumn(FTableColumn col)
-    {
-        col.removePropertyChangeListener(changeForwarder);
-        int from = columns.indexOf(col);
-        columns.remove(col);
-        fireColumnRemoved(from);
-    }
+	public FTableColumnModel() {
+		this.listeners = new ArrayList();
+		this.changeForwarder = new ChangeForwarder();
+		this.columns = new ArrayList();
+	}
 
-    public void removeColumn(int indx)
-    {
-        columns.remove(indx);
-        fireColumnRemoved(indx);
-    }
+	public void addColumn(FTableColumn col) {
+		columns.add(col);
+		col.addPropertyChangeListener(changeForwarder);
+		fireColumnAdded(columns.size() - 1);
+	}
 
-    public void moveColumn(int from, int to)
-    {
-        FTableColumn col = (FTableColumn) columns.remove(from);
-        columns.add(to, col);
-        fireColumnMoved(from, to);
-    }
+	public void addColumn(int to, FTableColumn col) {
+		columns.add(to, col);
+		col.addPropertyChangeListener(changeForwarder);
+		fireColumnAdded(to);
+	}
 
-    public void addFTableColumnModelListener(
-            FTableColumnModelListener listener)
-    {
-        synchronized (listeners) {
-            listeners.add(listener);
-        }
-    }
+	public void removeColumn(FTableColumn col) {
+		col.removePropertyChangeListener(changeForwarder);
+		int from = columns.indexOf(col);
+		columns.remove(col);
+		fireColumnRemoved(from);
+	}
 
-    public void removeFTableColumnModelListener(
-            FTableColumnModelListener listener)
-    {
-        synchronized (listeners) {
-            listeners.remove(listener);
-        }
-    }
+	public void removeColumn(int indx) {
+		columns.remove(indx);
+		fireColumnRemoved(indx);
+	}
 
-    public Iterator columnIterator()
-    {
-        return columns.iterator();
-    }
+	public void moveColumn(int from, int to) {
+		FTableColumn col = (FTableColumn) columns.remove(from);
+		columns.add(to, col);
+		fireColumnMoved(from, to);
+	}
 
-    public FTableColumn getColumn(int indx)
-    {
-        return (FTableColumn) columns.get(indx);
-    }
+	public void addFTableColumnModelListener(FTableColumnModelListener listener) {
+		synchronized (listeners) {
+			listeners.add(listener);
+		}
+	}
 
-    public int getColumnCount()
-    {
-        return columns.size();
-    }
+	public void removeFTableColumnModelListener(
+			FTableColumnModelListener listener) {
+		synchronized (listeners) {
+			listeners.remove(listener);
+		}
+	}
 
-    public int getColumnIndex(FTableColumn col)
-    {
-        return columns.indexOf(col);
-    }
+	public Iterator columnIterator() {
+		return columns.iterator();
+	}
 
-    protected void fireColumnAdded(int to)
-    {
-        FTableColumnModelEvent evt = new FTableColumnModelEvent(
-                this, -1, to, null);
-        List local;
-        synchronized (listeners) {
-            local = new ArrayList(listeners);
-        }
+	public FTableColumn getColumn(int indx) {
+		return (FTableColumn) columns.get(indx);
+	}
 
-        for(Iterator i = local.iterator(); i.hasNext(); ) {
-            FTableColumnModelListener l = (FTableColumnModelListener) i.next();
-            l.columnAdded(evt);
-        }
-    }
+	public int getColumnCount() {
+		return columns.size();
+	}
 
-    protected void fireColumnRemoved(int from)
-    {
-        FTableColumnModelEvent evt = new FTableColumnModelEvent(
-                this, from, -1, null);
-        List local;
-        synchronized (listeners) {
-            local = new ArrayList(listeners);
-        }
+	public int getColumnIndex(FTableColumn col) {
+		return columns.indexOf(col);
+	}
 
-        for (Iterator i = local.iterator(); i.hasNext();) {
-            FTableColumnModelListener l = (FTableColumnModelListener) i.next();
-            l.columnRemoved(evt);
-        }
-    }
+	protected void fireColumnAdded(int to) {
+		FTableColumnModelEvent evt = new FTableColumnModelEvent(this, -1, to,
+				null);
+		List local;
+		synchronized (listeners) {
+			local = new ArrayList(listeners);
+		}
 
+		for (Iterator i = local.iterator(); i.hasNext();) {
+			FTableColumnModelListener l = (FTableColumnModelListener) i.next();
+			l.columnAdded(evt);
+		}
+	}
 
-    protected void fireColumnMoved(int from, int to)
-    {
-        FTableColumnModelEvent evt = new FTableColumnModelEvent(
-                this, from, to, null);
-        List local;
-        synchronized (listeners) {
-            local = new ArrayList(listeners);
-        }
+	protected void fireColumnRemoved(int from) {
+		FTableColumnModelEvent evt = new FTableColumnModelEvent(this, from, -1,
+				null);
+		List local;
+		synchronized (listeners) {
+			local = new ArrayList(listeners);
+		}
 
-        for (Iterator i = local.iterator(); i.hasNext();) {
-            FTableColumnModelListener l = (FTableColumnModelListener) i.next();
-            l.columnMoved(evt);
-        }
-    }
+		for (Iterator i = local.iterator(); i.hasNext();) {
+			FTableColumnModelListener l = (FTableColumnModelListener) i.next();
+			l.columnRemoved(evt);
+		}
+	}
 
+	protected void fireColumnMoved(int from, int to) {
+		FTableColumnModelEvent evt = new FTableColumnModelEvent(this, from, to,
+				null);
+		List local;
+		synchronized (listeners) {
+			local = new ArrayList(listeners);
+		}
 
-    protected void fireColumnChanged(PropertyChangeEvent pce)
-    {
-        FTableColumnModelEvent evt = new FTableColumnModelEvent(
-                this, -1, columns.indexOf(pce.getSource()), pce);
-        LOG.info("PCE: " + evt);
-        if(evt.getToIndex() == -1) {
-            LOG.info("The source object may be wrong");
-        }
-        List local;
-        synchronized (listeners) {
-            local = new ArrayList(listeners);
-        }
+		for (Iterator i = local.iterator(); i.hasNext();) {
+			FTableColumnModelListener l = (FTableColumnModelListener) i.next();
+			l.columnMoved(evt);
+		}
+	}
 
-        for (Iterator i = local.iterator(); i.hasNext();) {
-            FTableColumnModelListener l = (FTableColumnModelListener) i.next();
-            l.columnChanged(evt);
-        }
-    }
+	protected void fireColumnChanged(PropertyChangeEvent pce) {
+		FTableColumnModelEvent evt = new FTableColumnModelEvent(this, -1,
+				columns.indexOf(pce.getSource()), pce);
+		LOG.info("PCE: " + evt);
+		if (evt.getToIndex() == -1) {
+			LOG.info("The source object may be wrong");
+		}
+		List local;
+		synchronized (listeners) {
+			local = new ArrayList(listeners);
+		}
 
+		for (Iterator i = local.iterator(); i.hasNext();) {
+			FTableColumnModelListener l = (FTableColumnModelListener) i.next();
+			l.columnChanged(evt);
+		}
+	}
 
-    private class ChangeForwarder
-            implements PropertyChangeListener
-    {
-        public void propertyChange(PropertyChangeEvent evt)
-        {
-            fireColumnChanged(evt);
-        }
-    }
+	private class ChangeForwarder implements PropertyChangeListener {
+		public void propertyChange(PropertyChangeEvent evt) {
+			fireColumnChanged(evt);
+		}
+	}
 }

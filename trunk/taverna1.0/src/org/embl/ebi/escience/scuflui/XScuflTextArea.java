@@ -14,84 +14,80 @@ import org.embl.ebi.escience.scufl.view.XScuflView;
 import org.embl.ebi.escience.scuflui.ScuflUIComponent;
 import java.lang.String;
 
-
-
 /**
- * A swing component that provides a textual view of the
- * xscufl corresponding to a given ScuflModel instance
+ * A swing component that provides a textual view of the xscufl corresponding to
+ * a given ScuflModel instance
+ * 
  * @author Tom Oinn
  */
-public class XScuflTextArea extends JTextArea
-    implements ScuflModelEventListener,
-	       ScuflUIComponent {
-    
-    private XScuflView xscufl = null;
-    private ScuflModel model = null;
+public class XScuflTextArea extends JTextArea implements
+		ScuflModelEventListener, ScuflUIComponent {
 
-    public XScuflTextArea() {
-	super();
-	setLineWrap(true);
-	setWrapStyleWord(true);
-	setEditable(false);
-    }
+	private XScuflView xscufl = null;
 
-    public void attachToModel(ScuflModel model) {
-	if (this.model == null) {
-	    this.xscufl = new XScuflView(model);
-	    model.addListener(this);
-	    updateText();
-	}
-    }
-    
-    public void detachFromModel() {
-	if (this.model != null) {
-	    model.removeListener(this);
-	    model.removeListener(xscufl);
-	    this.model = null;
-	    this.xscufl = null;
-	    updateText();
-	}
-    }
+	private ScuflModel model = null;
 
-    private void updateText() {
-	if (this.xscufl != null) {
-	    setText(xscufl.getXMLText());
+	public XScuflTextArea() {
+		super();
+		setLineWrap(true);
+		setWrapStyleWord(true);
+		setEditable(false);
 	}
-	else {
-	    setText(null);
-	}
-	repaint();
-    }
 
-    private int updateStatus = 0;
-    public void receiveModelEvent(ScuflModelEvent event) {
-	if (updateStatus == 0) {
-	    updateStatus = 1;
-	    while (updateStatus != 0) {
-		updateText();
-		if (updateStatus == 2) {
-		    updateStatus = 1;
+	public void attachToModel(ScuflModel model) {
+		if (this.model == null) {
+			this.xscufl = new XScuflView(model);
+			model.addListener(this);
+			updateText();
 		}
-		else {
-		    updateStatus = 0;
+	}
+
+	public void detachFromModel() {
+		if (this.model != null) {
+			model.removeListener(this);
+			model.removeListener(xscufl);
+			this.model = null;
+			this.xscufl = null;
+			updateText();
 		}
-	    }
 	}
-	else {
-	    updateStatus = 2;
+
+	private void updateText() {
+		if (this.xscufl != null) {
+			setText(xscufl.getXMLText());
+		} else {
+			setText(null);
+		}
+		repaint();
 	}
-    }
-    
-    public javax.swing.ImageIcon getIcon() {
-	return ScuflIcons.xmlNodeIcon;
-    }
 
-    /**
-     * A name for this component
-     */
-    public String getName() {
-	return "Workflow XML preview";
-    }
+	private int updateStatus = 0;
 
+	public void receiveModelEvent(ScuflModelEvent event) {
+		if (updateStatus == 0) {
+			updateStatus = 1;
+			while (updateStatus != 0) {
+				updateText();
+				if (updateStatus == 2) {
+					updateStatus = 1;
+				} else {
+					updateStatus = 0;
+				}
+			}
+		} else {
+			updateStatus = 2;
+		}
+	}
+
+	public javax.swing.ImageIcon getIcon() {
+		return ScuflIcons.xmlNodeIcon;
+	}
+
+	/**
+	 * A name for this component
+	 */
+	public String getName() {
+		return "Workflow XML preview";
+	}
 
 }

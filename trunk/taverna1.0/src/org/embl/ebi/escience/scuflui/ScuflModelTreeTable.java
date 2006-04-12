@@ -72,8 +72,9 @@ import org.jdom.Element;
  * 
  * @author Tom Oinn
  */
-public class ScuflModelTreeTable extends JTreeTable implements ScuflModelEventListener, ScuflUIComponent,
-		DropTargetListener, DragSourceListener, DragGestureListener {
+public class ScuflModelTreeTable extends JTreeTable implements
+		ScuflModelEventListener, ScuflUIComponent, DropTargetListener,
+		DragSourceListener, DragGestureListener {
 
 	// The ScuflModel that this is a view / controller over
 	ScuflModel model = null;
@@ -91,7 +92,8 @@ public class ScuflModelTreeTable extends JTreeTable implements ScuflModelEventLi
 		super();
 		// Set up the drag listener
 		DragSource dragSource = DragSource.getDefaultDragSource();
-		dragSource.createDefaultDragGestureRecognizer(this, DnDConstants.ACTION_COPY_OR_MOVE, this);
+		dragSource.createDefaultDragGestureRecognizer(this,
+				DnDConstants.ACTION_COPY_OR_MOVE, this);
 		// Set up the drop listener
 		new DropTarget(this, DnDConstants.ACTION_COPY_OR_MOVE, this);
 		setModel(treeModel);
@@ -105,7 +107,8 @@ public class ScuflModelTreeTable extends JTreeTable implements ScuflModelEventLi
 			c.setMinWidth(50);
 			c.setPreferredWidth(50);
 		}
-		setDefaultEditor(TreeTableModel.class, new ScuflModelTreeTableCellEditor());
+		setDefaultEditor(TreeTableModel.class,
+				new ScuflModelTreeTableCellEditor());
 		JCheckBox jcbox = new JCheckBox();
 		jcbox.setOpaque(true);
 		jcbox.setBackground(getSelectionBackground());
@@ -122,24 +125,27 @@ public class ScuflModelTreeTable extends JTreeTable implements ScuflModelEventLi
 		// ScuflModelExplorerDragHandler(this.tree));
 		// this.setDragEnabled(true);
 		// this.tree.setRowHeight(0);
-		getSelectionModel().addListSelectionListener(new ListSelectionListener() {
-			public void valueChanged(ListSelectionEvent e) {
-				if (e.getValueIsAdjusting()) {
-					return;
-				}
-				ListSelectionModel lsm = (ListSelectionModel) e.getSource();
-				if (lsm.isSelectionEmpty()) {
-					renderer.setSignificant(null);
-				} else {
-					int selectedRow = lsm.getMinSelectionIndex();
-					JTree tree = getTree();
-					DefaultMutableTreeNode node = (DefaultMutableTreeNode) tree.getPathForRow(selectedRow)
-							.getLastPathComponent();
-					renderer.setSignificant(node.getUserObject());
-				}
-				repaint();
-			}
-		});
+		getSelectionModel().addListSelectionListener(
+				new ListSelectionListener() {
+					public void valueChanged(ListSelectionEvent e) {
+						if (e.getValueIsAdjusting()) {
+							return;
+						}
+						ListSelectionModel lsm = (ListSelectionModel) e
+								.getSource();
+						if (lsm.isSelectionEmpty()) {
+							renderer.setSignificant(null);
+						} else {
+							int selectedRow = lsm.getMinSelectionIndex();
+							JTree tree = getTree();
+							DefaultMutableTreeNode node = (DefaultMutableTreeNode) tree
+									.getPathForRow(selectedRow)
+									.getLastPathComponent();
+							renderer.setSignificant(node.getUserObject());
+						}
+						repaint();
+					}
+				});
 	}
 
 	/**
@@ -164,7 +170,8 @@ public class ScuflModelTreeTable extends JTreeTable implements ScuflModelEventLi
 			// No node dragged from
 			return;
 		}
-		DefaultMutableTreeNode node = (DefaultMutableTreeNode) dragFromPath.getLastPathComponent();
+		DefaultMutableTreeNode node = (DefaultMutableTreeNode) dragFromPath
+				.getLastPathComponent();
 		Object o = node.getUserObject();
 		if (o instanceof Processor) {
 			Processor dragSource = (Processor) o;
@@ -173,7 +180,8 @@ public class ScuflModelTreeTable extends JTreeTable implements ScuflModelEventLi
 				return;
 			}
 			Element el = ProcessorHelper.elementForProcessor(dragSource);
-			ProcessorSpecFragment psf = new ProcessorSpecFragment(el, dragSource.getName());
+			ProcessorSpecFragment psf = new ProcessorSpecFragment(el,
+					dragSource.getName());
 			Transferable t = new SpecFragmentTransferable(psf);
 			e.startDrag(DragSource.DefaultCopyDrop, t, this);
 		}
@@ -210,8 +218,10 @@ public class ScuflModelTreeTable extends JTreeTable implements ScuflModelEventLi
 			super(new TreeTableTextField());
 		}
 
-		public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int r, int c) {
-			Component component = super.getTableCellEditorComponent(table, value, isSelected, r, c);
+		public Component getTableCellEditorComponent(JTable table,
+				Object value, boolean isSelected, int r, int c) {
+			Component component = super.getTableCellEditorComponent(table,
+					value, isSelected, r, c);
 			JTree t = getTree();
 			boolean rv = t.isRootVisible();
 			int offsetRow = rv ? r : r - 1;
@@ -222,8 +232,8 @@ public class ScuflModelTreeTable extends JTreeTable implements ScuflModelEventLi
 				Object node = t.getPathForRow(offsetRow).getLastPathComponent();
 				boolean isExpanded = t.isExpanded(t.getPathForRow(offsetRow));
 				boolean isLeaf = t.getModel().isLeaf(node);
-				Component renderer = tcr.getTreeCellRendererComponent(t, node, true, isExpanded, isLeaf, offsetRow,
-						true);
+				Component renderer = tcr.getTreeCellRendererComponent(t, node,
+						true, isExpanded, isLeaf, offsetRow, true);
 				Icon icon = ((JLabel) renderer).getIcon();
 				// if (t.getModel().isLeaf(node))
 				// icon = ((DefaultTreeCellRenderer)tcr).getLeafIcon();
@@ -232,7 +242,8 @@ public class ScuflModelTreeTable extends JTreeTable implements ScuflModelEventLi
 				// else
 				// icon = ((DefaultTreeCellRenderer)tcr).getClosedIcon();
 				if (icon != null) {
-					offset += ((DefaultTreeCellRenderer) tcr).getIconTextGap() + icon.getIconWidth();
+					offset += ((DefaultTreeCellRenderer) tcr).getIconTextGap()
+							+ icon.getIconWidth();
 				}
 				Object uo = ((DefaultMutableTreeNode) node).getUserObject();
 				if (uo instanceof Processor) {
@@ -243,7 +254,8 @@ public class ScuflModelTreeTable extends JTreeTable implements ScuflModelEventLi
 					if (ip.hasDefaultValue() == false) {
 						((TreeTableTextField) getComponent()).setText("");
 					} else {
-						((TreeTableTextField) getComponent()).setText(ip.getDefaultValue());
+						((TreeTableTextField) getComponent()).setText(ip
+								.getDefaultValue());
 					}
 				}
 			}
@@ -259,13 +271,16 @@ public class ScuflModelTreeTable extends JTreeTable implements ScuflModelEventLi
 			// Edit on double click rather than the default triple
 			if (e instanceof MouseEvent) {
 				MouseEvent me = (MouseEvent) e;
-				if (me.getClickCount() == 1 && System.getProperties().getProperty("taverna.osxpresent") != null) {
+				if (me.getClickCount() == 1
+						&& System.getProperties().getProperty(
+								"taverna.osxpresent") != null) {
 					for (int counter = getColumnCount() - 1; counter >= 0; counter--) {
 						if (getColumnClass(counter) == TreeTableModel.class) {
-							MouseEvent newME = new MouseEvent(tree, me.getID(), me.getWhen(), me.getModifiers(), me
-									.getX()
-									- getCellRect(0, counter, true).x, me.getY(), me.getClickCount(), me
-									.isPopupTrigger());
+							MouseEvent newME = new MouseEvent(tree, me.getID(),
+									me.getWhen(), me.getModifiers(), me.getX()
+											- getCellRect(0, counter, true).x,
+									me.getY(), me.getClickCount(), me
+											.isPopupTrigger());
 							System.out.println(newME);
 							tree.dispatchEvent(newME);
 
@@ -273,7 +288,8 @@ public class ScuflModelTreeTable extends JTreeTable implements ScuflModelEventLi
 							int row = rowAtPoint(p);
 							int column = columnAtPoint(p);
 							if (column == 0) {
-								boolean isExpanded = tree.isExpanded(tree.getPathForRow(row));
+								boolean isExpanded = tree.isExpanded(tree
+										.getPathForRow(row));
 								if (isExpanded == false) {
 									tree.expandPath(tree.getPathForRow(row));
 								} else {
@@ -304,7 +320,8 @@ public class ScuflModelTreeTable extends JTreeTable implements ScuflModelEventLi
 			Transferable t = e.getTransferable();
 			if (e.isDataFlavorSupported(f)) {
 				// Have something of type factorySpecFragmentFlavor;
-				FactorySpecFragment fsf = (FactorySpecFragment) t.getTransferData(f);
+				FactorySpecFragment fsf = (FactorySpecFragment) t
+						.getTransferData(f);
 				// System.out.println("Drop of "+fsf.getFactoryNodeName());
 				// Get the tree path which the drop has landed on, if there is
 				// one.
@@ -321,16 +338,21 @@ public class ScuflModelTreeTable extends JTreeTable implements ScuflModelEventLi
 					}
 				}
 				TreePath path = tree.getPathForLocation(x, y);
-				if (path != null && path.getPathCount() > 2
-						&& ((DefaultMutableTreeNode) path.getPathComponent(2)).getUserObject() instanceof Processor) {
-					DefaultMutableTreeNode node = (DefaultMutableTreeNode) path.getPathComponent(2);
+				if (path != null
+						&& path.getPathCount() > 2
+						&& ((DefaultMutableTreeNode) path.getPathComponent(2))
+								.getUserObject() instanceof Processor) {
+					DefaultMutableTreeNode node = (DefaultMutableTreeNode) path
+							.getPathComponent(2);
 					System.out.println(node.toString());
 					Processor target = (Processor) node.getUserObject();
 					Element wrapperElement = new Element("wrapper");
 					wrapperElement.addContent(fsf.getElement());
-					Processor alternateProcessor = ProcessorHelper.loadProcessorFromXML(wrapperElement, null,
-							"alternate");
-					AlternateProcessor ap = new AlternateProcessor(alternateProcessor);
+					Processor alternateProcessor = ProcessorHelper
+							.loadProcessorFromXML(wrapperElement, null,
+									"alternate");
+					AlternateProcessor ap = new AlternateProcessor(
+							alternateProcessor);
 					target.addAlternate(ap);
 					// Top level processor nodes are always located at
 					// Workflow/Processors/<NAME>
@@ -341,11 +363,14 @@ public class ScuflModelTreeTable extends JTreeTable implements ScuflModelEventLi
 				} else {
 					System.out.println("No node under the drop.");
 					// Just add the node to the model as a new processor
-					String validName = model.getValidProcessorName(fsf.getFactoryNodeName());
+					String validName = model.getValidProcessorName(fsf
+							.getFactoryNodeName());
 					Element wrapperElement = new Element("wrapper");
 					wrapperElement.addContent(fsf.getElement());
 
-					Processor newProcessor = ProcessorHelper.loadProcessorFromXML(wrapperElement, model, validName);
+					Processor newProcessor = ProcessorHelper
+							.loadProcessorFromXML(wrapperElement, model,
+									validName);
 					model.addProcessor(newProcessor);
 				}
 				e.acceptDrop(DnDConstants.ACTION_COPY_OR_MOVE);
@@ -399,7 +424,8 @@ public class ScuflModelTreeTable extends JTreeTable implements ScuflModelEventLi
 					TreeNode n = (TreeNode) e.nextElement();
 					TreePath path = parent.pathByAddingChild(n);
 					if (((DefaultMutableTreeNode) n).getUserObject() instanceof Processor) {
-						Processor p = (Processor) (((DefaultMutableTreeNode) n).getUserObject());
+						Processor p = (Processor) (((DefaultMutableTreeNode) n)
+								.getUserObject());
 
 						if (p == lastInterestingProcessor) {
 							pathToSelect = path;
@@ -456,7 +482,8 @@ public class ScuflModelTreeTable extends JTreeTable implements ScuflModelEventLi
 			Port sourcePort = dc.getSource();
 			// the way that xml splitters are added together with their
 			// DataConstraint causes display problems
-			// if its expanded immediately, so this suppresses this if its type 'text/xml'.
+			// if its expanded immediately, so this suppresses this if its type
+			// 'text/xml'.
 			if (!sourcePort.getSyntacticType().equals("'text/xml'"))
 				lastInterestingProcessor = sourcePort.getProcessor();
 		}
@@ -481,13 +508,16 @@ public class ScuflModelTreeTable extends JTreeTable implements ScuflModelEventLi
 			setHorizontalAlignment(SwingConstants.CENTER);
 		}
 
-		public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected,
-				boolean hasFocus, int row, int column) {
+		public Component getTableCellRendererComponent(JTable table,
+				Object value, boolean isSelected, boolean hasFocus, int row,
+				int column) {
 			if (value != null) {
 				setSelected(((Boolean) value).booleanValue());
 				if (isSelected) {
-					setForeground(ScuflModelTreeTable.this.getSelectionForeground());
-					setBackground(ScuflModelTreeTable.this.getSelectionBackground());
+					setForeground(ScuflModelTreeTable.this
+							.getSelectionForeground());
+					setBackground(ScuflModelTreeTable.this
+							.getSelectionBackground());
 				} else {
 					setForeground(ScuflModelTreeTable.this.getForeground());
 					setBackground(ScuflModelTreeTable.this.getBackground());
@@ -497,14 +527,17 @@ public class ScuflModelTreeTable extends JTreeTable implements ScuflModelEventLi
 			JLabel label = new JLabel("");
 			label.setOpaque(true);
 			if (isSelected) {
-				label.setForeground(ScuflModelTreeTable.this.getSelectionForeground());
-				label.setBackground(ScuflModelTreeTable.this.getSelectionBackground());
+				label.setForeground(ScuflModelTreeTable.this
+						.getSelectionForeground());
+				label.setBackground(ScuflModelTreeTable.this
+						.getSelectionBackground());
 			} else {
 				label.setForeground(ScuflModelTreeTable.this.getForeground());
 				label.setBackground(ScuflModelTreeTable.this.getBackground());
 			}
 			if (hasFocus) {
-				label.setBorder(UIManager.getBorder("Table.focusCellHighlightBorder"));
+				label.setBorder(UIManager
+						.getBorder("Table.focusCellHighlightBorder"));
 			} else {
 				label.setBorder(null);
 			}

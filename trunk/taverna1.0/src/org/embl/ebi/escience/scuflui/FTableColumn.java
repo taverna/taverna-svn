@@ -10,159 +10,138 @@ import java.beans.PropertyChangeListener;
 /**
  * A Java Bean that represents the data associated with a single column in a
  * FacetsTable.
- *
+ * 
  * @author Matthew Pocock
  */
-public final class FTableColumn
-{
-    private final PropertyChangeSupport pcSupport;
-    private final PropertyChangeListener forwarder;
+public final class FTableColumn {
+	private final PropertyChangeSupport pcSupport;
 
-    private String name;
-    private FacetFinderSPI finder;
-    private RendererSPI renderer;
-    private FacetFinderSPI.ColumnID colID;
-    private boolean horizontalSrollable;
-    private boolean verticalScrollable;
+	private final PropertyChangeListener forwarder;
 
-    public FTableColumn()
-    {
-        pcSupport = new PropertyChangeSupport(this);
-        forwarder = new PropertyChangeListener() {
-            public void propertyChange(PropertyChangeEvent evt)
-            {
-                pcSupport.firePropertyChange(new PropertyChangeEvent(
-                        FTableColumn.this, null, null, null));
-            }
-        };
-    }
+	private String name;
 
-    public FTableColumn(String name,
-                  FacetFinderSPI finder,
-                  RendererSPI renderer,
-                  FacetFinderSPI.ColumnID colID,
-                  boolean rowSrollable,
-                  boolean colScrollable)
-    {
-        this();
+	private FacetFinderSPI finder;
 
-        this.name = name;
-        this.finder = finder;
-        this.renderer = renderer;
-        setColID(colID);
-        this.horizontalSrollable = rowSrollable;
-        this.verticalScrollable = colScrollable;
-    }
+	private RendererSPI renderer;
 
-    public String getName()
-    {
-        return name;
-    }
+	private FacetFinderSPI.ColumnID colID;
 
-    public void setName(String name)
-    {
-        PropertyChangeEvent pce = new PropertyChangeEvent(
-                this, "name", this.name, name);
-        this.name = name;
-        pcSupport.firePropertyChange(pce);
-    }
+	private boolean horizontalSrollable;
 
-    public FacetFinderSPI getFinder()
-    {
-        return finder;
-    }
+	private boolean verticalScrollable;
 
-    public void setFinder(FacetFinderSPI finder)
-    {
-        PropertyChangeEvent pce = new PropertyChangeEvent(
-                this, "finder", this.finder, finder);
-        this.finder = finder;
-        pcSupport.firePropertyChange(pce);
-    }
+	public FTableColumn() {
+		pcSupport = new PropertyChangeSupport(this);
+		forwarder = new PropertyChangeListener() {
+			public void propertyChange(PropertyChangeEvent evt) {
+				pcSupport.firePropertyChange(new PropertyChangeEvent(
+						FTableColumn.this, null, null, null));
+			}
+		};
+	}
 
-    public RendererSPI getRenderer()
-    {
-        return renderer;
-    }
+	public FTableColumn(String name, FacetFinderSPI finder,
+			RendererSPI renderer, FacetFinderSPI.ColumnID colID,
+			boolean rowSrollable, boolean colScrollable) {
+		this();
 
-    public void setRenderer(RendererSPI renderer)
-    {
-        PropertyChangeEvent pce = new PropertyChangeEvent(
-                this, "renderer", this.renderer, renderer);
-        this.renderer = renderer;
-        pcSupport.firePropertyChange(pce);
-    }
+		this.name = name;
+		this.finder = finder;
+		this.renderer = renderer;
+		setColID(colID);
+		this.horizontalSrollable = rowSrollable;
+		this.verticalScrollable = colScrollable;
+	}
 
-    public FacetFinderSPI.ColumnID getColID()
-    {
-        return colID;
-    }
+	public String getName() {
+		return name;
+	}
 
-    public void setColID(FacetFinderSPI.ColumnID colID)
-    {
-        PropertyChangeEvent pce = new PropertyChangeEvent(
-                this, "colID", this.colID, colID);
-        if(this.colID != null) {
-            this.colID.removePropertyChangeListener(forwarder);
-        }
-        this.colID = colID;
-        if(this.colID != null) {
-            this.colID.addPropertyChangeListener(forwarder);
-        }
-        pcSupport.firePropertyChange(pce);
-    }
+	public void setName(String name) {
+		PropertyChangeEvent pce = new PropertyChangeEvent(this, "name",
+				this.name, name);
+		this.name = name;
+		pcSupport.firePropertyChange(pce);
+	}
 
-    public boolean isHorizontalSrollable()
-    {
-        return horizontalSrollable;
-    }
+	public FacetFinderSPI getFinder() {
+		return finder;
+	}
 
-    public void setHorizontalSrollable(boolean horizontalSrollable)
-    {
-        PropertyChangeEvent pce = new PropertyChangeEvent(
-                this,
-                "horizontalScrollable",
-                new Boolean(this.horizontalSrollable),
-                new Boolean(horizontalSrollable));
-        this.horizontalSrollable = horizontalSrollable;
-        pcSupport.firePropertyChange(pce);
-    }
+	public void setFinder(FacetFinderSPI finder) {
+		PropertyChangeEvent pce = new PropertyChangeEvent(this, "finder",
+				this.finder, finder);
+		this.finder = finder;
+		pcSupport.firePropertyChange(pce);
+	}
 
-    public boolean isVerticalScrollable()
-    {
-        return verticalScrollable;
-    }
+	public RendererSPI getRenderer() {
+		return renderer;
+	}
 
-    public void setVerticalScrollable(boolean verticalScrollable)
-    {
-        PropertyChangeEvent pce = new PropertyChangeEvent(
-                this,
-                "verticalScrollable",
-                new Boolean(this.verticalScrollable),
-                new Boolean(verticalScrollable));
-        this.verticalScrollable = verticalScrollable;
-        pcSupport.firePropertyChange(pce);
-    }
+	public void setRenderer(RendererSPI renderer) {
+		PropertyChangeEvent pce = new PropertyChangeEvent(this, "renderer",
+				this.renderer, renderer);
+		this.renderer = renderer;
+		pcSupport.firePropertyChange(pce);
+	}
 
-    public void addPropertyChangeListener(
-				PropertyChangeListener listener) {
-        pcSupport.addPropertyChangeListener(listener);
-    }
+	public FacetFinderSPI.ColumnID getColID() {
+		return colID;
+	}
 
-    public void removePropertyChangeListener(
-				PropertyChangeListener listener) {
-        pcSupport.removePropertyChangeListener(listener);
-    }
+	public void setColID(FacetFinderSPI.ColumnID colID) {
+		PropertyChangeEvent pce = new PropertyChangeEvent(this, "colID",
+				this.colID, colID);
+		if (this.colID != null) {
+			this.colID.removePropertyChangeListener(forwarder);
+		}
+		this.colID = colID;
+		if (this.colID != null) {
+			this.colID.addPropertyChangeListener(forwarder);
+		}
+		pcSupport.firePropertyChange(pce);
+	}
 
-    public void addPropertyChangeListener(
-				String propertyName,
-				PropertyChangeListener listener) {
-        pcSupport.addPropertyChangeListener(propertyName, listener);
-    }
+	public boolean isHorizontalSrollable() {
+		return horizontalSrollable;
+	}
 
-    public void removePropertyChangeListener(
-				String propertyName,
-				PropertyChangeListener listener) {
-        pcSupport.removePropertyChangeListener(propertyName, listener);
-    }
+	public void setHorizontalSrollable(boolean horizontalSrollable) {
+		PropertyChangeEvent pce = new PropertyChangeEvent(this,
+				"horizontalScrollable", new Boolean(this.horizontalSrollable),
+				new Boolean(horizontalSrollable));
+		this.horizontalSrollable = horizontalSrollable;
+		pcSupport.firePropertyChange(pce);
+	}
+
+	public boolean isVerticalScrollable() {
+		return verticalScrollable;
+	}
+
+	public void setVerticalScrollable(boolean verticalScrollable) {
+		PropertyChangeEvent pce = new PropertyChangeEvent(this,
+				"verticalScrollable", new Boolean(this.verticalScrollable),
+				new Boolean(verticalScrollable));
+		this.verticalScrollable = verticalScrollable;
+		pcSupport.firePropertyChange(pce);
+	}
+
+	public void addPropertyChangeListener(PropertyChangeListener listener) {
+		pcSupport.addPropertyChangeListener(listener);
+	}
+
+	public void removePropertyChangeListener(PropertyChangeListener listener) {
+		pcSupport.removePropertyChangeListener(listener);
+	}
+
+	public void addPropertyChangeListener(String propertyName,
+			PropertyChangeListener listener) {
+		pcSupport.addPropertyChangeListener(propertyName, listener);
+	}
+
+	public void removePropertyChangeListener(String propertyName,
+			PropertyChangeListener listener) {
+		pcSupport.removePropertyChangeListener(propertyName, listener);
+	}
 }

@@ -31,7 +31,6 @@ import org.jdom.input.SAXBuilder;
 import java.io.*;
 import java.util.prefs.*;
 
-
 /**
  * An extension of the javax.swing.JTree class, constructed with a String of XML
  * and used to display the XML structure as an interactive tree. Derived from
@@ -47,20 +46,18 @@ import java.util.prefs.*;
  * @author Tom Oinn
  * @author Kevin Glover
  */
-public class XMLTree extends JTree
-{
-	private class XMLNode extends DefaultMutableTreeNode
-	{
-		public XMLNode(Content userObject)
-		{
+public class XMLTree extends JTree {
+	private class XMLNode extends DefaultMutableTreeNode {
+		public XMLNode(Content userObject) {
 			super(userObject);
 		}
 	}
 
 	int textSizeLimit = 1000;
-    final JFileChooser fc = new JFileChooser();
 
-    Element rootElement = null;
+	final JFileChooser fc = new JFileChooser();
+
+	Element rootElement = null;
 
 	/**
 	 * Build a new XMLTree from the supplied String containing XML.
@@ -69,76 +66,71 @@ public class XMLTree extends JTree
 	 * @throws IOException
 	 * @throws JDOMException
 	 */
-	public XMLTree(String text) throws IOException, JDOMException
-	{
+	public XMLTree(String text) throws IOException, JDOMException {
 		super();
 		Document document = new SAXBuilder(false).build(new StringReader(text));
 		init(document.getRootElement());
 		revalidate();
 	}
 
-    public String getText() {
-	if (rootElement != null) {
-	    XMLOutputter xo = new XMLOutputter(Format.getPrettyFormat());
-	    return xo.outputString(rootElement);
+	public String getText() {
+		if (rootElement != null) {
+			XMLOutputter xo = new XMLOutputter(Format.getPrettyFormat());
+			return xo.outputString(rootElement);
+		} else {
+			return "";
+		}
 	}
-	else {
-	    return "";
-	}
-    }
 
-    public XMLTree(String text, boolean limit) throws IOException, JDOMException {
-	if (!limit) {
-	    textSizeLimit = -1;
+	public XMLTree(String text, boolean limit) throws IOException,
+			JDOMException {
+		if (!limit) {
+			textSizeLimit = -1;
+		}
+		Document document = new SAXBuilder(false).build(new StringReader(text));
+		init(document.getRootElement());
+		revalidate();
 	}
-	Document document = new SAXBuilder(false).build(new StringReader(text));
-	init(document.getRootElement());
-	revalidate();
-    }
 
-	public XMLTree(Document document)
-	{
+	public XMLTree(Document document) {
 		super();
 		init(document.getRootElement());
 		revalidate();
 	}
 
-	private void init(Content content)
-	{
-	    rootElement = (Element)content;
+	private void init(Content content) {
+		rootElement = (Element) content;
 		// Fix for platforms other than metal which can't otherwise
 		// cope with arbitrary size rows
 		setRowHeight(0);
-		getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
+		getSelectionModel().setSelectionMode(
+				TreeSelectionModel.SINGLE_TREE_SELECTION);
 		setShowsRootHandles(true);
 		setEditable(false);
 		setModel(new DefaultTreeModel(createTreeNode(content)));
-		setCellRenderer(new DefaultTreeCellRenderer()
-		{
-		    
-		    public Color getBackgroundNonSelectionColor() {
-			return null;
-		    }
+		setCellRenderer(new DefaultTreeCellRenderer() {
 
-		    public Color getBackground() {
-			return null;
-		    }
+			public Color getBackgroundNonSelectionColor() {
+				return null;
+			}
+
+			public Color getBackground() {
+				return null;
+			}
 
 			/*
 			 * @see javax.swing.tree.TreeCellRenderer#getTreeCellRendererComponent(javax.swing.JTree,
 			 *      java.lang.Object, boolean, boolean, boolean, int, boolean)
 			 */
-			public Component getTreeCellRendererComponent(JTree tree, Object value, boolean sel,
-															boolean expanded, boolean leaf,
-															int row, boolean hasFocus)
-			{
-				super.getTreeCellRendererComponent(tree, value, sel, expanded, leaf, row, hasFocus);
+			public Component getTreeCellRendererComponent(JTree tree,
+					Object value, boolean sel, boolean expanded, boolean leaf,
+					int row, boolean hasFocus) {
+				super.getTreeCellRendererComponent(tree, value, sel, expanded,
+						leaf, row, hasFocus);
 				setOpaque(false);
-				if (value instanceof XMLNode)
-				{
+				if (value instanceof XMLNode) {
 					XMLNode node = (XMLNode) value;
-					if (node.getUserObject() instanceof Element)
-					{
+					if (node.getUserObject() instanceof Element) {
 						setIcon(ScuflIcons.xmlNodeIcon);
 						Element element = (Element) node.getUserObject();
 						StringBuffer nameBuffer = new StringBuffer("<html>"
@@ -149,65 +141,61 @@ public class XMLTree extends JTree
 						// way to get the actual xmlns declarations that are
 						// part of an element through jdom. Also, please note,
 						// theres no namespace handling at all for attributes...
-						if (element.getParent() instanceof Element)
-						{
+						if (element.getParent() instanceof Element) {
 							Element parent = (Element) element.getParent();
-							if (parent.getNamespace(element.getNamespacePrefix()) == null)
-							{
-								nameBuffer.append(" <font color=\"purple\">xmlns:"
-										+ element.getNamespacePrefix()
-										+ "</font>=\"<font color=\"green\">"
-										+ element.getNamespaceURI() + "</font>\"");
+							if (parent.getNamespace(element
+									.getNamespacePrefix()) == null) {
+								nameBuffer
+										.append(" <font color=\"purple\">xmlns:"
+												+ element.getNamespacePrefix()
+												+ "</font>=\"<font color=\"green\">"
+												+ element.getNamespaceURI()
+												+ "</font>\"");
 							}
-						}
-						else
-						{
+						} else {
 							nameBuffer.append(" <font color=\"purple\">xmlns:"
 									+ element.getNamespacePrefix()
 									+ "</font>=\"<font color=\"green\">"
 									+ element.getNamespaceURI() + "</font>\"");
 						}
 
-						Iterator attributes = element.getAttributes().iterator();
-						while (attributes.hasNext())
-						{
+						Iterator attributes = element.getAttributes()
+								.iterator();
+						while (attributes.hasNext()) {
 							Attribute attribute = (Attribute) attributes.next();
 							String name = attribute.getName().trim();
 							String attributeValue = attribute.getValue().trim();
-							if (attributeValue != null)
-							{
-								if (attributeValue.length() > 0)
-								{
-									if (addedAnAttribute)
-									{
+							if (attributeValue != null) {
+								if (attributeValue.length() > 0) {
+									if (addedAnAttribute) {
 										nameBuffer.append(",");
 									}
 									addedAnAttribute = true;
-									nameBuffer.append(" <font color=\"purple\">" + name
-											+ "</font>=\"<font color=\"green\">" + attributeValue
-											+ "</font>\"");
+									nameBuffer
+											.append(" <font color=\"purple\">"
+													+ name
+													+ "</font>=\"<font color=\"green\">"
+													+ attributeValue
+													+ "</font>\"");
 								}
 							}
 						}
 
 						nameBuffer.append("</html>");
 						setText(nameBuffer.toString());
-					}
-					else if (node.getUserObject() instanceof Text)
-					{
+					} else if (node.getUserObject() instanceof Text) {
 						setIcon(ScuflIcons.leafIcon);
 						Text text = (Text) node.getUserObject();
 						String name = text.getText();
-						if (textSizeLimit > -1 && name.length() > textSizeLimit)
-						{
+						if (textSizeLimit > -1 && name.length() > textSizeLimit) {
 							name = name.substring(0, textSizeLimit) + "...";
 						}
 						setText("<html><pre><font color=\"blue\">"
-								+ name.replaceAll("<br>", "\n").replaceAll("<", "&lt;")
-								+ "</font></pre></html>");
+								+ name.replaceAll("<br>", "\n").replaceAll("<",
+										"&lt;") + "</font></pre></html>");
 					}
 				}
-				setBackground(new Color(0,0,0,0));
+				setBackground(new Color(0, 0, 0, 0));
 				return this;
 			}
 		});
@@ -216,112 +204,102 @@ public class XMLTree extends JTree
 		// Add a listener to present the 'save as text' option
 		addMouseListener(new MouseAdapter() {
 			public void mousePressed(MouseEvent e) {
-			    if (e.isPopupTrigger()) {
-				doEvent(e);
-			    }
+				if (e.isPopupTrigger()) {
+					doEvent(e);
+				}
 			}
+
 			public void mouseReleased(MouseEvent e) {
-			    if (e.isPopupTrigger()) {
-				doEvent(e);
-			    }
+				if (e.isPopupTrigger()) {
+					doEvent(e);
+				}
 			}
+
 			public void doEvent(MouseEvent e) {
-			    JPopupMenu menu = new JPopupMenu();
-			    JMenuItem item = new JMenuItem("Save as XML text");
-			    menu.add(item);
-			    item.addActionListener(new ActionListener() {
-				    public void actionPerformed(ActionEvent ae) {
-					try {
-					    Preferences prefs = Preferences.userNodeForPackage(AdvancedModelExplorer.class);
-					    String curDir = prefs.get("currentDir", System.getProperty("user.home"));
-					    fc.resetChoosableFileFilters();
-					    fc.setFileFilter(new ExtensionFileFilter(new String[]{"xml"}));
-					    fc.setCurrentDirectory(new File(curDir));
-					    int returnVal = fc.showSaveDialog(XMLTree.this);
-					    if (returnVal == JFileChooser.APPROVE_OPTION) {
-						prefs.put("currentDir", fc.getCurrentDirectory().toString());
-						File file = fc.getSelectedFile();
-						PrintWriter out = new PrintWriter(new FileWriter(file));
-						out.print(XMLTree.this.getText());
-						out.flush();
-						out.close();
-					    }
+				JPopupMenu menu = new JPopupMenu();
+				JMenuItem item = new JMenuItem("Save as XML text");
+				menu.add(item);
+				item.addActionListener(new ActionListener() {
+					public void actionPerformed(ActionEvent ae) {
+						try {
+							Preferences prefs = Preferences
+									.userNodeForPackage(AdvancedModelExplorer.class);
+							String curDir = prefs.get("currentDir", System
+									.getProperty("user.home"));
+							fc.resetChoosableFileFilters();
+							fc.setFileFilter(new ExtensionFileFilter(
+									new String[] { "xml" }));
+							fc.setCurrentDirectory(new File(curDir));
+							int returnVal = fc.showSaveDialog(XMLTree.this);
+							if (returnVal == JFileChooser.APPROVE_OPTION) {
+								prefs.put("currentDir", fc
+										.getCurrentDirectory().toString());
+								File file = fc.getSelectedFile();
+								PrintWriter out = new PrintWriter(
+										new FileWriter(file));
+								out.print(XMLTree.this.getText());
+								out.flush();
+								out.close();
+							}
+						} catch (Exception ex) {
+							JOptionPane
+									.showMessageDialog(XMLTree.this,
+											"Problem saving XML : \n"
+													+ ex.getMessage(),
+											"Error!", JOptionPane.ERROR_MESSAGE);
+						}
 					}
-					catch (Exception ex) {
-					    JOptionPane.showMessageDialog(XMLTree.this,
-									  "Problem saving XML : \n"+ex.getMessage(),
-									  "Error!",
-									  JOptionPane.ERROR_MESSAGE);
-					}
-				    }
 				});
-			    menu.show(XMLTree.this, e.getX(), e.getY());
+				menu.show(XMLTree.this, e.getX(), e.getY());
 			}
-		    });
+		});
 
 	}
 
-	public void setAllNodesExpanded()
-	{
-		synchronized (this.getModel())
-		{
+	public void setAllNodesExpanded() {
+		synchronized (this.getModel()) {
 			expandAll(this, new TreePath(this.getModel().getRoot()), true);
 		}
 	}
 
-	private void expandAll(JTree tree, TreePath parent, boolean expand)
-	{
-		synchronized (this.getModel())
-		{
+	private void expandAll(JTree tree, TreePath parent, boolean expand) {
+		synchronized (this.getModel()) {
 			// Traverse children
 			// Ignores nodes who's userObject is a Processor type to
 			// avoid overloading the UI with nodes at startup.
 			TreeNode node = (TreeNode) parent.getLastPathComponent();
-			if (node.getChildCount() >= 0)
-			{
-				for (Enumeration e = node.children(); e.hasMoreElements();)
-				{
+			if (node.getChildCount() >= 0) {
+				for (Enumeration e = node.children(); e.hasMoreElements();) {
 					TreeNode n = (TreeNode) e.nextElement();
 					TreePath path = parent.pathByAddingChild(n);
 					expandAll(tree, path, expand);
 				}
 			}
 			// Expansion or collapse must be done bottom-up
-			if (expand)
-			{
+			if (expand) {
 				tree.expandPath(parent);
-			}
-			else
-			{
+			} else {
 				tree.collapsePath(parent);
 			}
 		}
 	}
 
-	public void setTextNodeSizeLimit(int sizeLimit)
-	{
+	public void setTextNodeSizeLimit(int sizeLimit) {
 		textSizeLimit = sizeLimit;
 	}
 
-	private XMLNode createTreeNode(Content content)
-	{
+	private XMLNode createTreeNode(Content content) {
 		XMLNode node = new XMLNode(content);
-		if (content instanceof Parent)
-		{
+		if (content instanceof Parent) {
 			Parent parent = (Parent) content;
 			Iterator children = parent.getContent().iterator();
-			while (children.hasNext())
-			{
+			while (children.hasNext()) {
 				Object child = children.next();
-				if (child instanceof Element)
-				{
+				if (child instanceof Element) {
 					node.add(createTreeNode((Content) child));
-				}
-				else if (textSizeLimit != 0 && child instanceof Text)
-				{
+				} else if (textSizeLimit != 0 && child instanceof Text) {
 					Text text = (Text) child;
-					if (!text.getTextNormalize().equals(""))
-					{
+					if (!text.getTextNormalize().equals("")) {
 						node.add(createTreeNode(text));
 					}
 				}
