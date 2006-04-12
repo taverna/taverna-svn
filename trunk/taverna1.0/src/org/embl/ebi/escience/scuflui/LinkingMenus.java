@@ -7,16 +7,18 @@ package org.embl.ebi.escience.scuflui;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+
 import javax.swing.ImageIcon;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
-import org.embl.ebi.escience.scufl.*;
-// import org.embl.ebi.escience.scuflui.workbench.GenericUIComponentFrame;
-// import org.embl.ebi.escience.scuflui.workbench.Workbench;
 
-import org.embl.ebi.escience.scuflui.ScuflIcons;
-import org.embl.ebi.escience.scuflui.ScuflSemanticMarkupEditor;
+import org.embl.ebi.escience.scufl.DataConstraint;
+import org.embl.ebi.escience.scufl.DataConstraintCreationException;
+import org.embl.ebi.escience.scufl.InputPort;
+import org.embl.ebi.escience.scufl.Port;
+import org.embl.ebi.escience.scufl.Processor;
+import org.embl.ebi.escience.scufl.ScuflModel;
 import org.embl.ebi.escience.scuflui.actions.AddDataConstraintAction;
 
 /**

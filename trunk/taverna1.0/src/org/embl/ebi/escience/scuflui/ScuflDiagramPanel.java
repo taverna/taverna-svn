@@ -5,15 +5,36 @@
  */
 package org.embl.ebi.escience.scuflui;
 
-import java.awt.*;
-import java.awt.event.*;
-import javax.swing.*;
-import org.embl.ebi.escience.scufl.*;
-import java.util.*;
-import java.util.prefs.*;
-import java.io.*;
-import javax.swing.filechooser.*;
-import java.net.*;
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
+import java.io.OutputStream;
+import java.io.PrintWriter;
+import java.util.prefs.Preferences;
+
+import javax.swing.Box;
+import javax.swing.ButtonGroup;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JCheckBoxMenuItem;
+import javax.swing.JComboBox;
+import javax.swing.JFileChooser;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
+import javax.swing.JRadioButtonMenuItem;
+import javax.swing.JScrollPane;
+import javax.swing.JToolBar;
+
+import org.embl.ebi.escience.scufl.ScuflModel;
 
 /**
  * Wraps a ScuflDiagram up in a JScrollPane and provides a toolbar to alter port

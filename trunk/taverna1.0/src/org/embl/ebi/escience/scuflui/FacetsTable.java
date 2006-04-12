@@ -1,18 +1,39 @@
 package org.embl.ebi.escience.scuflui;
 
-import org.embl.ebi.escience.scuflui.facets.FacetFinderSPI;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Dialog;
+import java.awt.Dimension;
+import java.awt.Frame;
+import java.awt.event.ActionEvent;
+import java.awt.event.HierarchyEvent;
+import java.awt.event.HierarchyListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.beans.PropertyChangeEvent;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+
+import javax.swing.AbstractAction;
+import javax.swing.JComponent;
+import javax.swing.JLabel;
+import javax.swing.JMenu;
+import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
+import javax.swing.JScrollPane;
+
+import org.apache.log4j.Logger;
+import org.embl.ebi.escience.baclava.DataThing;
 import org.embl.ebi.escience.scuflui.facets.FacetFinderRegistry;
+import org.embl.ebi.escience.scuflui.facets.FacetFinderSPI;
 import org.embl.ebi.escience.scuflui.renderers.RendererRegistry;
 import org.embl.ebi.escience.scuflui.renderers.RendererSPI;
-import org.embl.ebi.escience.baclava.DataThing;
-import org.apache.log4j.Logger;
-
-import javax.swing.*;
-import java.util.*;
-import java.util.List;
-import java.awt.*;
-import java.awt.event.*;
-import java.beans.PropertyChangeEvent;
 
 /**
  * A tabular display of data using FacetFinders to decompose the information

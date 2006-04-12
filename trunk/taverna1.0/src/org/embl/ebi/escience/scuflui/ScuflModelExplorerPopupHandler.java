@@ -9,21 +9,15 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+
+import javax.swing.JComponent;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
-import javax.swing.tree.*;
-import javax.swing.*;
+import javax.swing.JTree;
 import javax.swing.tree.DefaultMutableTreeNode;
-import org.embl.ebi.escience.scufl.Processor;
-import org.embl.ebi.escience.scufl.*;
-import org.embl.ebi.escience.scufl.view.*;
-// import org.embl.ebi.escience.scuflui.workbench.*;
 
-import org.embl.ebi.escience.scuflui.NoContextMenuFoundException;
-import org.embl.ebi.escience.scuflui.ScuflContextMenuFactory;
-import org.embl.ebi.escience.scuflui.ScuflModelExplorer;
-import org.embl.ebi.escience.scuflui.ScuflProcessorInfo;
-import java.lang.Object;
+import org.embl.ebi.escience.scufl.Processor;
+import org.embl.ebi.escience.scufl.view.TreeModelView;
 
 /**
  * A class to handle popup menus on nodes on the ScuflModelExplorer tree

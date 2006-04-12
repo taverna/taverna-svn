@@ -5,11 +5,31 @@
  */
 package org.embl.ebi.escience.scuflui;
 
-import java.awt.*;
-import javax.swing.*;
-import java.awt.event.*;
-import javax.swing.border.*;
-import org.embl.ebi.escience.scufl.*;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+import javax.swing.BorderFactory;
+import javax.swing.BoxLayout;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JComponent;
+import javax.swing.JEditorPane;
+import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
+import javax.swing.ListCellRenderer;
+
+import org.embl.ebi.escience.scufl.AnnotationTemplate;
+import org.embl.ebi.escience.scufl.OutputPort;
+import org.embl.ebi.escience.scufl.Port;
+import org.embl.ebi.escience.scufl.Processor;
+import org.embl.ebi.escience.scufl.ScuflModel;
+import org.embl.ebi.escience.scufl.ScuflModelEvent;
 
 /**
  * An editor for the AnnotationTemplate objects associated with a given

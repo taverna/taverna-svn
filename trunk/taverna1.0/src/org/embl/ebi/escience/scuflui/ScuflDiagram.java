@@ -10,35 +10,26 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
-import java.awt.event.*;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.Iterator;
+import java.util.Timer;
+import java.util.TimerTask;
+
 import javax.imageio.ImageIO;
 import javax.imageio.ImageReader;
 import javax.imageio.stream.ImageInputStream;
-import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JComponent;
-import javax.swing.JMenuItem;
-import javax.swing.JPopupMenu;
+import javax.swing.JOptionPane;
+
 import org.embl.ebi.escience.scufl.ScuflModel;
 import org.embl.ebi.escience.scufl.ScuflModelEvent;
 import org.embl.ebi.escience.scufl.ScuflModelEventListener;
 import org.embl.ebi.escience.scufl.view.DotView;
-
-// Utility Imports
-import java.util.Iterator;
-
-// IO Imports
-import java.io.*;
-
-import org.embl.ebi.escience.scuflui.ScuflIcons;
-import org.embl.ebi.escience.scuflui.ScuflUIComponent;
-import java.lang.Exception;
-import java.lang.Process;
-import java.lang.Runtime;
-import java.lang.String;
-import java.util.*;
-import javax.swing.JOptionPane;
 
 /**
  * A view on a ScuflModel that uses a native installation of the dot tool to

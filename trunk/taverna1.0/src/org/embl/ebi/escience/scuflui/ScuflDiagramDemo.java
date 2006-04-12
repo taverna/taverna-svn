@@ -8,18 +8,13 @@ package org.embl.ebi.escience.scuflui;
 import java.awt.Color;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import javax.swing.JFrame;
-import javax.swing.JScrollPane;
-import org.embl.ebi.escience.scufl.ScuflModel;
-import org.embl.ebi.escience.scufl.parser.XScuflParser;
-
-// IO Imports
 import java.io.File;
 
-import org.embl.ebi.escience.scuflui.ScuflDiagram;
-import java.lang.Exception;
-import java.lang.String;
-import java.lang.System;
+import javax.swing.JFrame;
+import javax.swing.JScrollPane;
+
+import org.embl.ebi.escience.scufl.ScuflModel;
+import org.embl.ebi.escience.scufl.parser.XScuflParser;
 
 /**
  * Demonstrates the functionality of the ScuflDiagram class

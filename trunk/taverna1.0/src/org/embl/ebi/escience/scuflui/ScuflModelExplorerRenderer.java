@@ -6,14 +6,18 @@
 package org.embl.ebi.escience.scuflui;
 
 import java.awt.Component;
+
 import javax.swing.JTree;
 import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.DefaultTreeCellRenderer;
-import org.embl.ebi.escience.scufl.*;
 
-import org.embl.ebi.escience.scuflui.ScuflIcons;
-
-import java.lang.Object;
+import org.embl.ebi.escience.scufl.AlternateProcessor;
+import org.embl.ebi.escience.scufl.ConcurrencyConstraint;
+import org.embl.ebi.escience.scufl.DataConstraint;
+import org.embl.ebi.escience.scufl.InputPort;
+import org.embl.ebi.escience.scufl.OutputPort;
+import org.embl.ebi.escience.scufl.Port;
+import org.embl.ebi.escience.scufl.Processor;
+import org.embl.ebi.escience.scufl.ScuflModel;
 
 /**
  * A cell renderer that paints the appropriate icons depending on the component

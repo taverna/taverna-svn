@@ -7,26 +7,19 @@ package org.embl.ebi.escience.scuflui;
 
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.io.File;
+import java.util.Enumeration;
+
 import javax.swing.JFrame;
 import javax.swing.JScrollPane;
 import javax.swing.JTree;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
+
 import org.embl.ebi.escience.scufl.Processor;
 import org.embl.ebi.escience.scufl.ScuflModel;
 import org.embl.ebi.escience.scufl.parser.XScuflParser;
-
-// Utility Imports
-import java.util.Enumeration;
-
-// IO Imports
-import java.io.File;
-
-import org.embl.ebi.escience.scuflui.ScuflModelExplorer;
-import java.lang.Exception;
-import java.lang.String;
-import java.lang.System;
 
 /**
  * A demo of the ScuflModelExplorer component

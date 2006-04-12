@@ -6,14 +6,10 @@
 package org.embl.ebi.escience.scuflui;
 
 import java.awt.Component;
+
 import javax.swing.JTree;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeCellRenderer;
-import org.embl.ebi.escience.scufl.*;
-
-import org.embl.ebi.escience.scuflui.ScuflIcons;
-
-import java.lang.Object;
 
 /**
  * A cell renderer that has a highlight field which will colour nodes in red if

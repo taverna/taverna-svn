@@ -5,32 +5,22 @@
  */
 package org.embl.ebi.escience.scuflui;
 
-import javax.swing.ImageIcon;
-import javax.swing.table.AbstractTableModel;
-import org.embl.ebi.escience.scufl.Processor;
-import org.embl.ebi.escience.scufl.ScuflModel;
-
-// Utility Imports
+import java.io.IOException;
+import java.io.StringReader;
 import java.util.Iterator;
 import java.util.List;
 
-// IO Imports
-import java.io.StringReader;
-import java.io.IOException;
+import javax.swing.ImageIcon;
+import javax.swing.table.AbstractTableModel;
 
-// JDOM Imports
+import org.embl.ebi.escience.scufl.Processor;
+import org.embl.ebi.escience.scufl.ScuflModel;
 import org.jdom.Attribute;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.JDOMException;
 import org.jdom.Namespace;
 import org.jdom.input.SAXBuilder;
-
-import java.lang.Class;
-import java.lang.Exception;
-import java.lang.Object;
-import java.lang.String;
-import java.lang.StringBuffer;
 
 /**
  * A Swing table model implementation that can be constructed from a ScuflModel

@@ -5,14 +5,7 @@
  */
 package org.embl.ebi.escience.scuflui;
 
-import java.awt.*;
-import java.awt.event.*;
-import javax.swing.*;
-import org.embl.ebi.escience.scufl.*;
-import java.util.*;
-import java.util.prefs.*;
-import java.io.*;
-import javax.swing.filechooser.*;
+import java.io.File;
 
 /**
  * A FileFilter implementation that can be configured to show only specific file

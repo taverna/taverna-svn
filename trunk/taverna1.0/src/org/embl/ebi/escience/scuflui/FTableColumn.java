@@ -1,11 +1,11 @@
 package org.embl.ebi.escience.scuflui;
 
-import org.embl.ebi.escience.scuflui.facets.FacetFinderSPI;
-import org.embl.ebi.escience.scuflui.renderers.RendererSPI;
-
-import java.beans.PropertyChangeSupport;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
+
+import org.embl.ebi.escience.scuflui.facets.FacetFinderSPI;
+import org.embl.ebi.escience.scuflui.renderers.RendererSPI;
 
 /**
  * A Java Bean that represents the data associated with a single column in a

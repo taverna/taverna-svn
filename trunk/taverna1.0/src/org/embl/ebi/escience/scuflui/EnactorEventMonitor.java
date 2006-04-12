@@ -6,22 +6,21 @@
 package org.embl.ebi.escience.scuflui;
 
 import javax.swing.JTextArea;
+
 import org.embl.ebi.escience.scufl.ScuflModel;
 import org.embl.ebi.escience.scufl.ScuflModelEvent;
 import org.embl.ebi.escience.scufl.ScuflModelEventListener;
-import org.embl.ebi.escience.scufl.view.XScuflView;
-
-import org.embl.ebi.escience.scuflui.ScuflUIComponent;
-import java.lang.String;
-
-import org.embl.ebi.escience.scufl.enactor.implementation.*;
-
-import org.embl.ebi.escience.scufl.enactor.*;
-import org.embl.ebi.escience.scufl.enactor.event.*;
-import org.apache.commons.discovery.tools.Service;
-import org.apache.commons.discovery.tools.SPInterface;
-import org.apache.commons.discovery.resource.ClassLoaders;
-import java.util.*;
+import org.embl.ebi.escience.scufl.enactor.WorkflowEventAdapter;
+import org.embl.ebi.escience.scufl.enactor.WorkflowEventListener;
+import org.embl.ebi.escience.scufl.enactor.event.CollectionConstructionEvent;
+import org.embl.ebi.escience.scufl.enactor.event.IterationCompletionEvent;
+import org.embl.ebi.escience.scufl.enactor.event.ProcessCompletionEvent;
+import org.embl.ebi.escience.scufl.enactor.event.ProcessFailureEvent;
+import org.embl.ebi.escience.scufl.enactor.event.UserChangedDataEvent;
+import org.embl.ebi.escience.scufl.enactor.event.WorkflowCompletionEvent;
+import org.embl.ebi.escience.scufl.enactor.event.WorkflowCreationEvent;
+import org.embl.ebi.escience.scufl.enactor.event.WorkflowFailureEvent;
+import org.embl.ebi.escience.scufl.enactor.implementation.WorkflowEventDispatcher;
 
 /**
  * Prints events from the enactor as they occur, to be used for debugging.

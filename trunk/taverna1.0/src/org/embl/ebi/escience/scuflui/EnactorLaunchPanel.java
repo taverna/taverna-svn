@@ -9,9 +9,27 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import javax.swing.*;
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.URL;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.prefs.Preferences;
+
+import javax.swing.BorderFactory;
+import javax.swing.BoxLayout;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JFileChooser;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
 import javax.swing.border.Border;
+
 import org.embl.ebi.escience.baclava.factory.DataThingFactory;
 import org.embl.ebi.escience.baclava.factory.DataThingXMLFactory;
 import org.embl.ebi.escience.scufl.Port;
@@ -20,31 +38,9 @@ import org.embl.ebi.escience.scufl.ScuflModelEvent;
 import org.embl.ebi.escience.scufl.ScuflModelEventListener;
 import org.embl.ebi.escience.scufl.enactor.EnactorProxy;
 import org.embl.ebi.escience.scufl.enactor.implementation.FreefluoEnactorProxy;
-
-// Utility Imports
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.prefs.Preferences;
-
-// IO Imports
-import java.io.File;
-import java.io.InputStream;
-
-// JDOM Imports
 import org.jdom.Document;
-import org.jdom.output.*;
-
-// Network Imports
-import java.net.URL;
-
-import org.embl.ebi.escience.scuflui.EnactorInvocation;
-import org.embl.ebi.escience.scuflui.ScuflIcons;
-import org.embl.ebi.escience.scuflui.ScuflUIComponent;
-import java.lang.Exception;
-import java.lang.String;
-import java.lang.StringBuffer;
-import java.lang.System;
+import org.jdom.output.Format;
+import org.jdom.output.XMLOutputter;
 
 /**
  * A JPanel subclass that contains the appropriate input fields and controls to

@@ -5,22 +5,38 @@
  */
 package org.embl.ebi.escience.scuflui;
 
-import org.embl.ebi.escience.scufl.*;
-import org.embl.ebi.escience.scufl.view.*;
-
-import java.awt.*;
-import java.awt.event.*;
-import java.io.*;
-import javax.swing.*;
-import java.util.*;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringReader;
 import java.util.Timer;
+import java.util.TimerTask;
 
-import org.apache.batik.swing.*;
-import org.apache.batik.swing.gvt.*;
-import org.apache.batik.swing.svg.*;
-import org.apache.batik.dom.svg.*;
-import org.apache.batik.util.*;
-import org.w3c.dom.svg.*;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.ImageIcon;
+import javax.swing.JComponent;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+
+import org.apache.batik.dom.svg.SAXSVGDocumentFactory;
+import org.apache.batik.swing.JSVGCanvas;
+import org.apache.batik.swing.JSVGScrollPane;
+import org.apache.batik.swing.gvt.GVTTreeRendererAdapter;
+import org.apache.batik.swing.gvt.GVTTreeRendererEvent;
+import org.apache.batik.swing.svg.GVTTreeBuilderAdapter;
+import org.apache.batik.swing.svg.GVTTreeBuilderEvent;
+import org.apache.batik.swing.svg.SVGDocumentLoaderAdapter;
+import org.apache.batik.swing.svg.SVGDocumentLoaderEvent;
+import org.apache.batik.util.XMLResourceDescriptor;
+import org.embl.ebi.escience.scufl.ScuflModel;
+import org.embl.ebi.escience.scufl.ScuflModelEvent;
+import org.embl.ebi.escience.scufl.ScuflModelEventListener;
+import org.embl.ebi.escience.scufl.view.DotView;
+import org.w3c.dom.svg.SVGDocument;
 
 /**
  * An SVG based version of the ScuflDiagram

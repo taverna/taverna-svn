@@ -5,18 +5,38 @@
  */
 package org.embl.ebi.escience.scuflui;
 
-import java.awt.*;
-import java.awt.event.*;
-import javax.swing.*;
-import org.embl.ebi.escience.scufl.*;
-import java.util.*;
-import java.util.prefs.*;
-import java.io.*;
-import javax.swing.filechooser.*;
-import javax.swing.text.*;
-import javax.swing.event.*;
-import javax.swing.tree.*;
-import org.embl.ebi.escience.scuflui.workbench.*;
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+import java.io.File;
+import java.util.Enumeration;
+
+import javax.swing.Box;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextField;
+import javax.swing.JToolBar;
+import javax.swing.JTree;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
+import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.TreeNode;
+import javax.swing.tree.TreePath;
+
+import org.embl.ebi.escience.scufl.ScuflModel;
+import org.embl.ebi.escience.scufl.ScuflModelEvent;
+import org.embl.ebi.escience.scufl.ScuflModelEventListener;
+import org.embl.ebi.escience.scuflui.workbench.FileDrop;
+import org.embl.ebi.escience.scuflui.workbench.FileScavenger;
+import org.embl.ebi.escience.scuflui.workbench.ScavengerCreationException;
+import org.embl.ebi.escience.scuflui.workbench.ScavengerTree;
 
 /**
  * Wraps a ScavengerTree to provide a toolbar including a search by regular

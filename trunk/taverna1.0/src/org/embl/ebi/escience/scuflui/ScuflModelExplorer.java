@@ -5,22 +5,19 @@
  */
 package org.embl.ebi.escience.scuflui;
 
+import java.util.Enumeration;
+
 import javax.swing.JTree;
 import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
-import org.embl.ebi.escience.scufl.*;
-import org.embl.ebi.escience.scufl.view.*;
 
-// Utility Imports
-import java.util.Enumeration;
-
-import org.embl.ebi.escience.scuflui.ScuflModelExplorerPopupHandler;
-import org.embl.ebi.escience.scuflui.ScuflModelExplorerRenderer;
-import org.embl.ebi.escience.scuflui.ScuflUIComponent;
-import java.lang.String;
+import org.embl.ebi.escience.scufl.Processor;
+import org.embl.ebi.escience.scufl.ScuflModel;
+import org.embl.ebi.escience.scufl.ScuflModelEvent;
+import org.embl.ebi.escience.scufl.ScuflModelEventListener;
+import org.embl.ebi.escience.scufl.view.TreeModelView;
 
 /**
  * A swing component that provides an expandable tree view of the constituent

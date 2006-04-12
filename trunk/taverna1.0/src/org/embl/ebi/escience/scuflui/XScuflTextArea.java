@@ -6,13 +6,11 @@
 package org.embl.ebi.escience.scuflui;
 
 import javax.swing.JTextArea;
+
 import org.embl.ebi.escience.scufl.ScuflModel;
 import org.embl.ebi.escience.scufl.ScuflModelEvent;
 import org.embl.ebi.escience.scufl.ScuflModelEventListener;
 import org.embl.ebi.escience.scufl.view.XScuflView;
-
-import org.embl.ebi.escience.scuflui.ScuflUIComponent;
-import java.lang.String;
 
 /**
  * A swing component that provides a textual view of the xscufl corresponding to

@@ -7,9 +7,6 @@ package org.embl.ebi.escience.scuflui;
 
 import javax.swing.ImageIcon;
 
-import java.lang.Class;
-import java.lang.ClassNotFoundException;
-
 /**
  * A container for the various icons used by the Scufl ui components
  * 

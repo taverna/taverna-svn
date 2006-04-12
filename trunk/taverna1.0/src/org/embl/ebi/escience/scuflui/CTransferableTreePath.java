@@ -1,6 +1,9 @@
 package org.embl.ebi.escience.scuflui;
 
-import java.awt.datatransfer.*;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.Transferable;
+import java.awt.datatransfer.UnsupportedFlavorException;
+
 import javax.swing.tree.TreePath;
 
 /**

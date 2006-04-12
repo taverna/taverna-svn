@@ -12,23 +12,33 @@ import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import javax.swing.*;
+import java.util.Enumeration;
+
+import javax.swing.BorderFactory;
+import javax.swing.BoxLayout;
+import javax.swing.DefaultListModel;
+import javax.swing.JButton;
+import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTabbedPane;
+import javax.swing.JTextArea;
+import javax.swing.JTextField;
+import javax.swing.JTree;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
-import javax.swing.tree.*;
+import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeCellRenderer;
+import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.TreeCellRenderer;
+import javax.swing.tree.TreeNode;
+import javax.swing.tree.TreePath;
+
 import org.embl.ebi.escience.scufl.ScuflModel;
 import org.embl.ebi.escience.scufl.SemanticMarkup;
 import org.embl.ebi.escience.scufl.semantics.RDFSClassHolder;
 import org.embl.ebi.escience.scufl.semantics.RDFSParser;
-
-// Utility Imports
-import java.util.Enumeration;
-
-import org.embl.ebi.escience.scuflui.ScuflIcons;
-import org.embl.ebi.escience.scuflui.ScuflUIComponent;
-import java.lang.ClassCastException;
-import java.lang.Object;
-import java.lang.String;
 
 /**
  * A JPanel that allows editing of the semantic markup object passed into its

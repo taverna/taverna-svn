@@ -10,17 +10,22 @@ import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import javax.swing.*;
-import javax.swing.border.Border;
-import org.embl.ebi.escience.scufl.Processor;
-
-// Utility Imports
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Properties;
 
-import java.lang.Object;
-import java.lang.String;
+import javax.swing.BorderFactory;
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JDialog;
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.JTextArea;
+import javax.swing.border.Border;
+
+import org.embl.ebi.escience.scufl.Processor;
 
 /**
  * A JDialog that shows information about a specific Processor object in the

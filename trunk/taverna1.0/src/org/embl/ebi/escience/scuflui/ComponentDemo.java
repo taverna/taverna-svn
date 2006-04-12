@@ -7,17 +7,10 @@ package org.embl.ebi.escience.scuflui;
 
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import org.embl.ebi.escience.scufl.ScuflModel;
-import org.embl.ebi.escience.scufl.parser.XScuflParser;
-
-// IO Imports
 import java.io.File;
 
-import org.embl.ebi.escience.scuflui.ScuflDiagramDemo;
-import org.embl.ebi.escience.scuflui.ScuflModelExplorerDemo;
-import java.lang.Exception;
-import java.lang.String;
-import java.lang.System;
+import org.embl.ebi.escience.scufl.ScuflModel;
+import org.embl.ebi.escience.scufl.parser.XScuflParser;
 
 /**
  * Demos the interaction between the views, model and controllers defined within

@@ -5,13 +5,31 @@
  */
 package org.embl.ebi.escience.scuflui;
 
-import java.awt.*;
-import java.awt.event.*;
-import javax.swing.*;
-import javax.swing.event.*;
-import javax.swing.tree.*;
-import java.util.*;
-import org.embl.ebi.escience.scufl.*;
+import java.awt.Dimension;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.Enumeration;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Set;
+
+import javax.swing.BoxLayout;
+import javax.swing.JButton;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JToolBar;
+import javax.swing.SwingConstants;
+import javax.swing.event.TreeSelectionEvent;
+import javax.swing.event.TreeSelectionListener;
+import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.MutableTreeNode;
+import javax.swing.tree.TreePath;
+
+import org.embl.ebi.escience.scufl.CrossNode;
+import org.embl.ebi.escience.scufl.DotNode;
+import org.embl.ebi.escience.scufl.IterationStrategy;
+import org.embl.ebi.escience.scufl.LeafNode;
 
 /**
  * A control panel for the iteration tree editor allowing the user to manipulate

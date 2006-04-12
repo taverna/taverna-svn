@@ -1,12 +1,12 @@
 package org.embl.ebi.escience.scuflui;
 
-import org.apache.log4j.Logger;
-
-import java.util.List;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.Iterator;
-import java.beans.PropertyChangeListener;
-import java.beans.PropertyChangeEvent;
+import java.util.List;
+
+import org.apache.log4j.Logger;
 
 /**
  * The table model for a FacetsTable. This encapsulates which columns are

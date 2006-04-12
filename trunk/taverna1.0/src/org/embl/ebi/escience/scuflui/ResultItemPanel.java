@@ -6,41 +6,53 @@
 package org.embl.ebi.escience.scuflui;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.dnd.*;
-import java.awt.event.*;
+import java.awt.dnd.DnDConstants;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import javax.swing.*;
-import javax.swing.tree.*;
-import javax.swing.event.TreeSelectionEvent;
-import javax.swing.event.TreeSelectionListener;
-import org.embl.ebi.escience.baclava.DataThing;
-import org.embl.ebi.escience.baclava.factory.*;
-import org.embl.ebi.escience.baclava.factory.DataThingTreeFactory;
-import org.embl.ebi.escience.baclava.factory.DataThingTreeNode;
-import org.embl.ebi.escience.scuflui.renderers.RendererRegistry;
-import org.embl.ebi.escience.scuflui.renderers.RendererSPI;
-import org.embl.ebi.escience.scuflui.renderers.RendererException;
-import org.embl.ebi.escience.scufl.enactor.WorkflowInstance;
-import org.embl.ebi.escience.scufl.enactor.implementation.WorkflowEventDispatcher;
-import org.embl.ebi.escience.scufl.enactor.event.*;
-
-import org.apache.log4j.Logger;
-
-// Utility Imports
-import java.util.Iterator;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.prefs.Preferences;
 
-// IO Imports
-import java.io.*;
+import javax.swing.AbstractAction;
+import javax.swing.JButton;
+import javax.swing.JComponent;
+import javax.swing.JEditorPane;
+import javax.swing.JFileChooser;
+import javax.swing.JMenu;
+import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
+import javax.swing.JScrollPane;
+import javax.swing.JSplitPane;
+import javax.swing.JTree;
+import javax.swing.event.TreeSelectionEvent;
+import javax.swing.event.TreeSelectionListener;
+import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.TreeNode;
+import javax.swing.tree.TreePath;
 
-import java.lang.Object;
-import java.lang.String;
+import org.apache.log4j.Logger;
+import org.embl.ebi.escience.baclava.DataThing;
+import org.embl.ebi.escience.baclava.factory.DataThingTreeFactory;
+import org.embl.ebi.escience.baclava.factory.DataThingTreeNode;
+import org.embl.ebi.escience.baclava.factory.DataThingTreeTransferHandler;
+import org.embl.ebi.escience.scufl.enactor.WorkflowInstance;
+import org.embl.ebi.escience.scufl.enactor.event.UserChangedDataEvent;
+import org.embl.ebi.escience.scufl.enactor.implementation.WorkflowEventDispatcher;
+import org.embl.ebi.escience.scuflui.renderers.RendererException;
+import org.embl.ebi.escience.scuflui.renderers.RendererRegistry;
+import org.embl.ebi.escience.scuflui.renderers.RendererSPI;
 
 /**
  * A JPanel to represent a single result DataThing to the user at the end of the

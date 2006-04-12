@@ -5,11 +5,9 @@
  */
 package org.embl.ebi.escience.scuflui;
 
-import org.embl.ebi.escience.scufl.ScuflModel;
-
 import javax.swing.ImageIcon;
 
-import java.lang.String;
+import org.embl.ebi.escience.scufl.ScuflModel;
 
 /**
  * The interface implemented by all Scufl UI widgets specifying how they bind

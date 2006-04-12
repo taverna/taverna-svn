@@ -5,8 +5,17 @@
  */
 package org.embl.ebi.escience.scuflui;
 
-import java.awt.*;
-import javax.swing.*;
+import java.awt.Color;
+import java.awt.FlowLayout;
+import java.awt.GradientPaint;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.Paint;
+
+import javax.swing.Box;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.SwingConstants;
 
 /**
  * A JLabel like component with a shaded background

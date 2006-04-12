@@ -1,16 +1,24 @@
 package org.embl.ebi.escience.scuflui;
 
+import java.awt.Color;
 import java.awt.Component;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.io.StringReader;
 import java.util.Enumeration;
 import java.util.Iterator;
-import java.awt.Color;
-import java.awt.*;
-import java.awt.event.*;
-import org.jdom.output.*;
-import javax.swing.*;
+import java.util.prefs.Preferences;
 
+import javax.swing.JFileChooser;
+import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
+import javax.swing.JPopupMenu;
 import javax.swing.JTree;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeCellRenderer;
@@ -27,9 +35,8 @@ import org.jdom.JDOMException;
 import org.jdom.Parent;
 import org.jdom.Text;
 import org.jdom.input.SAXBuilder;
-
-import java.io.*;
-import java.util.prefs.*;
+import org.jdom.output.Format;
+import org.jdom.output.XMLOutputter;
 
 /**
  * An extension of the javax.swing.JTree class, constructed with a String of XML

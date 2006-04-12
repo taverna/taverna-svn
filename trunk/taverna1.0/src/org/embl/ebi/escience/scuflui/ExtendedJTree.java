@@ -5,17 +5,15 @@
  */
 package org.embl.ebi.escience.scuflui;
 
-import java.awt.*;
-import java.awt.event.*;
-import javax.swing.*;
-import org.embl.ebi.escience.scufl.*;
-import java.util.*;
-import java.util.prefs.*;
-import java.io.*;
-import javax.swing.filechooser.*;
-import javax.swing.text.*;
-import javax.swing.event.*;
-import javax.swing.tree.*;
+import java.awt.Container;
+import java.awt.Frame;
+import java.util.Enumeration;
+
+import javax.swing.JTree;
+import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.TreeNode;
+import javax.swing.tree.TreePath;
 
 public class ExtendedJTree extends JTree {
 
