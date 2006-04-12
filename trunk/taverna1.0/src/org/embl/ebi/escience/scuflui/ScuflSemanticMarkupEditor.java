@@ -12,6 +12,8 @@ import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 import java.util.Enumeration;
 
 import javax.swing.BorderFactory;
@@ -182,21 +184,26 @@ public class ScuflSemanticMarkupEditor extends JPanel implements
 		JPanel descriptionPanel = new JPanel(new BorderLayout());
 		descriptionPanel.setPreferredSize(new Dimension(400, 400));
 		descriptionPanel.setBorder(BorderFactory.createTitledBorder(
-				BorderFactory.createEtchedBorder(), "Edit Description"));
+				BorderFactory.createEtchedBorder(), "Edit Description"));		
 		final JTextArea descriptionText = new JTextArea(theMetadata
-				.getDescription());
-		JScrollPane descriptionPane = new JScrollPane(descriptionText);
+				.getDescription());				
+		JScrollPane descriptionPane = new JScrollPane(descriptionText);		
 		descriptionPanel.add(descriptionPane, BorderLayout.CENTER);
-		JButton descriptionUpdateButton = new JButton("Update");
-		descriptionUpdateButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent ae) {
+		descriptionText.addFocusListener(new FocusListener() {
+			public void focusGained(FocusEvent e) {
+				// Make sure it is updated in case several windows of these
+				// metadata are open and the description has been changed from
+				// one of the others.
+				// FIXME: Do this as an event on theMetadata.
+				descriptionText.setText(theMetadata.getDescription());
+			}
+			public void focusLost(FocusEvent e) {
 				theMetadata.setDescription(descriptionText.getText());
 			}
-		});
-		descriptionPanel.add(descriptionUpdateButton, BorderLayout.SOUTH);
+		});		
 		tabbedPane.addTab("Description", descriptionPanel);
 
-		// A panel to show the MIME mappings...
+		// A panel to show the MIME mappings
 		JPanel topLevelMimePanel = new JPanel(new BorderLayout());
 		JPanel mimePanel = new JPanel(new BorderLayout());
 		topLevelMimePanel.add(mimePanel, BorderLayout.CENTER);
