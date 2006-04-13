@@ -14,6 +14,7 @@ public class WorkflowFailureEvent extends WorkflowInstanceEvent {
 	}
 
 	public String toString() {
-		return "Workflow '" + workflowInstance.getID() + "' failed or cancelled\n";
+		return "Workflow '" + workflowInstance.getID()
+				+ "' failed or cancelled\n";
 	}
 }

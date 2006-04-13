@@ -11,38 +11,40 @@ import java.util.Map;
 
 public class ProcessFailureEvent extends WorkflowInstanceEvent {
 
-    private Exception cause;
-    private Processor processor;
-    private Map inputs;
+	private Exception cause;
 
-    public ProcessFailureEvent(WorkflowInstance workflow,
-			       Processor processor,
-			       Exception cause,
-			       Map inputs) {
-	super(workflow);
-	this.processor = processor;
-	this.cause = cause;
-	this.inputs = inputs;
-    }
+	private Processor processor;
 
-    public Exception getCause() {
-	return this.cause;
-    }
-    
-    public Processor getProcessor() {
-	return this.processor;
-    }
+	private Map inputs;
 
-    public String toString() {
-	StringBuffer sb = new StringBuffer();
-	sb.append("Processor '"+processor.getName()+"' failed, cause :\n  ");
-	sb.append(cause.toString());
-	sb.append("\n");
-	return sb.toString();
-    }
+	public ProcessFailureEvent(WorkflowInstance workflow, Processor processor,
+			Exception cause, Map inputs) {
+		super(workflow);
+		this.processor = processor;
+		this.cause = cause;
+		this.inputs = inputs;
+	}
 
-    public Map getInputMap() {
-	return this.inputs;
-    }
+	public Exception getCause() {
+		return this.cause;
+	}
+
+	public Processor getProcessor() {
+		return this.processor;
+	}
+
+	public String toString() {
+		StringBuffer sb = new StringBuffer();
+		sb
+				.append("Processor '" + processor.getName()
+						+ "' failed, cause :\n  ");
+		sb.append(cause.toString());
+		sb.append("\n");
+		return sb.toString();
+	}
+
+	public Map getInputMap() {
+		return this.inputs;
+	}
 
 }

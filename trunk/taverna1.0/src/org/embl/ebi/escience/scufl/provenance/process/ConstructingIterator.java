@@ -9,29 +9,29 @@ import org.embl.ebi.escience.scufl.*;
 import org.jdom.*;
 
 /**
- * Event corresponding to the generation of an implicit
- * iterator.
+ * Event corresponding to the generation of an implicit iterator.
+ * 
  * @author Tom Oinn
  */
 public class ConstructingIterator extends ProcessEvent {
-    
-    private IterationStrategy theStrategy = null;
 
-    public ConstructingIterator(IterationStrategy strategy) {
-	super();
-	theStrategy = strategy;
-    }
+	private IterationStrategy theStrategy = null;
 
-    public ConstructingIterator() {
-	super();
-    }
-    
-    public Element eventElement() {
-	Element e = super.eventTopLevelElement();
-	if (theStrategy != null) {
-	    e.addContent(theStrategy.getElement());
+	public ConstructingIterator(IterationStrategy strategy) {
+		super();
+		theStrategy = strategy;
 	}
-	return e;
-    }
+
+	public ConstructingIterator() {
+		super();
+	}
+
+	public Element eventElement() {
+		Element e = super.eventTopLevelElement();
+		if (theStrategy != null) {
+			e.addContent(theStrategy.getElement());
+		}
+		return e;
+	}
 
 }

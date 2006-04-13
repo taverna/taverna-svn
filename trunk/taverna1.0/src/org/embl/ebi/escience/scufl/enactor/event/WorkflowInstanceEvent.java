@@ -9,14 +9,14 @@ import org.embl.ebi.escience.scufl.enactor.*;
 
 public class WorkflowInstanceEvent {
 
-    protected WorkflowInstanceEvent(WorkflowInstance workflow) {
-	this.workflowInstance = workflow;
-    }
+	protected WorkflowInstanceEvent(WorkflowInstance workflow) {
+		this.workflowInstance = workflow;
+	}
 
-    protected WorkflowInstance workflowInstance;
+	protected WorkflowInstance workflowInstance;
 
-    public WorkflowInstance getWorkflowInstance() {
-	return this.workflowInstance;
-    }
+	public WorkflowInstance getWorkflowInstance() {
+		return this.workflowInstance;
+	}
 
 }

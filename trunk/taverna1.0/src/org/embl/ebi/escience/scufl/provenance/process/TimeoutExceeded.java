@@ -7,10 +7,11 @@ package org.embl.ebi.escience.scufl.provenance.process;
 
 /**
  * Event corresponding to an invocation timout
+ * 
  * @author Tom Oinn
  */
 public class TimeoutExceeded extends ProcessEvent {
-    
-    // No detail here
-    
+
+	// No detail here
+
 }

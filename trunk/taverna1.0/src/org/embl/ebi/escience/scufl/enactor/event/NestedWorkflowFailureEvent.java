@@ -25,10 +25,10 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: NestedWorkflowFailureEvent.java,v $
- * Revision           $Revision: 1.1 $
+ * Revision           $Revision: 1.2 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-03-22 15:19:32 $
- *               by   $Author: sowen70 $
+ * Last modified on   $Date: 2006-04-13 10:15:52 $
+ *               by   $Author: stain $
  * Created on 22-Mar-2006
  *****************************************************************/
 package org.embl.ebi.escience.scufl.enactor.event;
@@ -42,7 +42,8 @@ public class NestedWorkflowFailureEvent extends ProcessFailureEvent {
 
 	private WorkflowInstance nestedWorkflow = null;
 
-	public NestedWorkflowFailureEvent(WorkflowInstance workflow, Processor processor, Exception cause, Map inputs,
+	public NestedWorkflowFailureEvent(WorkflowInstance workflow,
+			Processor processor, Exception cause, Map inputs,
 			WorkflowInstance nestedWorkflow) {
 		super(workflow, processor, cause, inputs);
 		this.nestedWorkflow = nestedWorkflow;

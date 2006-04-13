@@ -6,12 +6,13 @@
 package org.embl.ebi.escience.scufl.provenance.process;
 
 /**
- * Event corresponding to the start of the invocation
- * process in the absence of implicit iteration
+ * Event corresponding to the start of the invocation process in the absence of
+ * implicit iteration
+ * 
  * @author Tom Oinn
  */
 public class Invoking extends ProcessEvent {
-    
-    //
-    
+
+	//
+
 }

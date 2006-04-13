@@ -6,10 +6,11 @@
 package org.embl.ebi.escience.scufl.provenance.process;
 
 /**
- * Event corresponding to failure to invoke due to a
- * non reconcilable data type mismatch.
+ * Event corresponding to failure to invoke due to a non reconcilable data type
+ * mismatch.
+ * 
  * @author Tom Oinn
  */
 public class DataMismatchError extends ProcessEvent {
-    // No detail here yet
+	// No detail here yet
 }

@@ -25,10 +25,10 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: NestedWorkflowCompletionEvent.java,v $
- * Revision           $Revision: 1.1 $
+ * Revision           $Revision: 1.2 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-03-22 15:19:32 $
- *               by   $Author: sowen70 $
+ * Last modified on   $Date: 2006-04-13 10:15:52 $
+ *               by   $Author: stain $
  * Created on 22-Mar-2006
  *****************************************************************/
 package org.embl.ebi.escience.scufl.enactor.event;
@@ -41,8 +41,9 @@ import org.embl.ebi.escience.scufl.enactor.WorkflowInstance;
 public class NestedWorkflowCompletionEvent extends ProcessCompletionEvent {
 	private WorkflowInstance nestedWorkflowInstance = null;
 
-	public NestedWorkflowCompletionEvent(boolean isIterating, Map inputs, Map outputs, Processor proc,
-			WorkflowInstance workflow, WorkflowInstance nestedWorkflow) {
+	public NestedWorkflowCompletionEvent(boolean isIterating, Map inputs,
+			Map outputs, Processor proc, WorkflowInstance workflow,
+			WorkflowInstance nestedWorkflow) {
 		super(isIterating, inputs, outputs, proc, workflow);
 		nestedWorkflowInstance = nestedWorkflow;
 	}
