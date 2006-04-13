@@ -251,11 +251,11 @@ public class ScuflModelTreeTable extends JTreeTable implements
 					((TreeTableTextField) getComponent()).setText(currentName);
 				} else if (uo instanceof InputPort) {
 					InputPort ip = (InputPort) uo;
-					if (ip.hasDefaultValue() == false) {
-						((TreeTableTextField) getComponent()).setText("");
-					} else {
+					if (ip.hasDefaultValue()) {
 						((TreeTableTextField) getComponent()).setText(ip
-								.getDefaultValue());
+								.getDefaultValue());						
+					} else {
+						((TreeTableTextField) getComponent()).setText("");						
 					}
 				}
 			}
