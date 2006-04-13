@@ -6,21 +6,7 @@
 package org.embl.ebi.escience.scufl;
 
 // Utility Imports
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.io.*;
-import java.awt.datatransfer.*;
-
-import org.embl.ebi.escience.scufl.DuplicatePortNameException;
-import org.embl.ebi.escience.scufl.InternalSinkPortHolder;
-import org.embl.ebi.escience.scufl.InternalSourcePortHolder;
-import org.embl.ebi.escience.scufl.PortCreationException;
-import org.embl.ebi.escience.scufl.Processor;
-import org.embl.ebi.escience.scufl.ScuflModelEvent;
-import org.embl.ebi.escience.scufl.SemanticMarkup;
-import java.lang.RuntimeException;
-import java.lang.String;
+import java.io.Serializable;
 
 /**
  * An abstract superclass of all processor ports
@@ -39,8 +25,7 @@ public abstract class Port implements Serializable {
 
 	/**
 	 * Create a new port (obviously you can't actually construct this because
-	 * it's abstract. Names must match [a-zA-Z_0-9]. Lies lies lies, I removed
-	 * that bit because it was breaking EMBOSS. tmo
+	 * it's abstract. Names should match [a-zA-Z_0-9]. 
 	 */
 	public Port(Processor processor, String name)
 			throws DuplicatePortNameException, PortCreationException {
@@ -60,8 +45,7 @@ public abstract class Port implements Serializable {
 					"Refusing to create a port with name ''");
 		}
 		// Commented out - was failing with certain soaplab EMBOSS services
-		// which had names
-		// like foo-2
+		// which had names like foo-2
 		// tmo 30th May 2003
 		/**
 		 * if (Pattern.matches("\\w++",name) == false) { throw new
@@ -102,23 +86,44 @@ public abstract class Port implements Serializable {
 	}
 
 	/**
-	 * Set the name of the port - should only ever be called on workflow sink or
-	 * source ports, will have no effect on others The new name must match '\w+'
+	 * Check if port name is editable, ie. that setName() will have an effect.
+	 * Only workflow sink or source ports are normally editable.
+	 * 
+	 * @return true if setName() will set the name.
+	 */
+	public boolean isNameEditable() {
+		ScuflModel model = this.processor.getModel();
+		if (model == null)
+			return false;
+		// TODO: Why not use isSource() and isSink() ?
+		if (model.getWorkflowSinkProcessor() == this.processor)
+			return true;
+		if (model.getWorkflowSourceProcessor() == this.processor)
+			return true;
+		return false;
+	}
+
+	/**
+	 * Set the name of the port.
+	 * 
+	 * Should only ever be called on workflow sink or source ports, will have no
+	 * effect on others.
+	 * 
+	 * The new name must match the regular expression <pre>\w+</pre>
+	 * 
+	 * @see isNameEditable()
 	 */
 	public void setName(String name) {
-		if (this.processor.getModel() != null
-				&& (this.processor == this.processor.getModel()
-						.getWorkflowSinkProcessor() || this.processor == this.processor
-						.getModel().getWorkflowSourceProcessor())) {
-			if (name.equals(this.name)) {
-				// Ignore
-			} else {
-				if (name.matches("\\w+")) {
-					this.name = name;
-					fireModelEvent(new MinorScuflModelEvent(this,
-							"Port name changed to " + name));
-				}
-			}
+		if (!isNameEditable()) {
+			return;
+		}
+		if (name.equals(this.name)) {
+			return; // ignore
+		}
+		if (name.matches("\\w+")) {
+			this.name = name;
+			fireModelEvent(new MinorScuflModelEvent(this,
+					"Port name changed to " + name));
 		}
 	}
 
