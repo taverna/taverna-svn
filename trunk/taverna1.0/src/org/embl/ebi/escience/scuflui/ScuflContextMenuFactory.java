@@ -33,6 +33,7 @@ import org.embl.ebi.escience.scuflui.actions.AddOutputAction;
 import org.embl.ebi.escience.scuflui.actions.EditMetadataAction;
 import org.embl.ebi.escience.scuflui.actions.RemoveAction;
 import org.embl.ebi.escience.scuflui.actions.RenameAction;
+import org.embl.ebi.escience.scuflui.actions.SetDefaultValueAction;
 import org.embl.ebi.escience.scuflui.processoractions.ProcessorActionRegistry;
 import org.embl.ebi.escience.scuflui.processoractions.ProcessorActionSPI;
 import org.embl.ebi.escience.scuflworkers.ProcessorEditor;
@@ -159,6 +160,10 @@ public class ScuflContextMenuFactory {
 						theMenu.add(new RenameAction(model, thePort));
 						// FIXME: Check also isRemovable !
 						theMenu.add(new RemoveAction(model, thePort));
+					}
+					if (thePort.getProcessor().getModel() != null) {
+						theMenu.add(new SetDefaultValueAction(model,
+								(InputPort) thePort));
 					}
 					if (thePort.getProcessor().getModel() != null
 							&& ((InputPort) thePort).hasDefaultValue()) {
