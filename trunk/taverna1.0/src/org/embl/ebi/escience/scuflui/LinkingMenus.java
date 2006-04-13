@@ -20,6 +20,9 @@ import org.embl.ebi.escience.scufl.Port;
 import org.embl.ebi.escience.scufl.Processor;
 import org.embl.ebi.escience.scufl.ScuflModel;
 import org.embl.ebi.escience.scuflui.actions.AddDataConstraintAction;
+import org.embl.ebi.escience.scuflui.actions.EditMetadataAction;
+import org.embl.ebi.escience.scuflui.actions.RemoveAction;
+import org.embl.ebi.escience.scuflui.actions.RenameAction;
 
 /**
  * A static method to generate appropriate menu items to link from ports in a
@@ -38,28 +41,14 @@ public class LinkingMenus {
 		final Port fromPort = sourcePort;
 		final ScuflModel model = sourcePort.getProcessor().getModel();
 		JPopupMenu theMenu = new JPopupMenu("Possible targets");
-		// Is this a workflow source? If so give the option to delete it
+		// Is this a workflow source? If so give the option to delete/rename it
 		if (fromPort.getProcessor() == model.getWorkflowSourceProcessor()) {
 			theMenu.add(new ShadedLabel("Workflow Input : "
-					+ sourcePort.getName(), ShadedLabel.TAVERNA_GREEN));
-			theMenu.addSeparator();
-			JMenuItem delete = new JMenuItem("Remove from model",
-					ScuflIcons.deleteIcon);
-			delete.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent ae) {
-					fromPort.getProcessor().removePort(fromPort);
-				}
-			});
-			theMenu.add(delete);
-			JMenuItem edit = new JMenuItem("Edit metadata...",
-					ScuflIcons.editIcon);
-			edit.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent ae) {
-					UIUtils.createFrame(model, new ScuflSemanticMarkupEditor(
-							fromPort.getMetadata()), 100, 100, 400, 600);
-				}
-			});
-			theMenu.add(edit);
+					+ sourcePort.getName(), ShadedLabel.TAVERNA_GREEN));			
+			theMenu.add(new RenameAction(model, fromPort));
+			theMenu.add(new RemoveAction(model, fromPort));
+			theMenu.addSeparator();			
+			theMenu.add(new EditMetadataAction(model, fromPort));					
 			theMenu.addSeparator();
 			theMenu.add(new ShadedLabel("Connect to...",
 					ShadedLabel.TAVERNA_ORANGE));
