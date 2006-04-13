@@ -22,7 +22,7 @@ public class ScuflIcons {
 			windowRun, windowScavenger, windowInput, windowDiagram,
 			windowExplorer, saveIcon, importIcon, openurlIcon, pauseIcon,
 			playIcon, stopIcon, breakIcon, rbreakIcon, tickIcon, nullIcon,
-			openMenuIcon, saveMenuIcon, databaseIcon;
+			openMenuIcon, saveMenuIcon, databaseIcon, renameIcon;
 
 	static {
 		// Load the image files found in this package into the class.
@@ -94,6 +94,8 @@ public class ScuflIcons {
 			rbreakIcon = new ImageIcon(c
 					.getResource("icons/generic/rbreak.gif"));
 			tickIcon = new ImageIcon(c.getResource("icons/generic/tick.gif"));
+			renameIcon = new ImageIcon(c
+					.getResource("icons/generic/rename.png"));
 			databaseIcon = new ImageIcon(c
 					.getResource("icons/generic/database.gif"));
 			nullIcon = new ImageIcon(new java.awt.image.BufferedImage(1, 1,
