@@ -78,5 +78,9 @@ public class RservInputPort extends InputPort {
 		}
 		this.javaType = type_name;
 	}
+	
+	public boolean isNameEditable() {
+		return true;
+	}
 
 }
