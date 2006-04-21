@@ -1,9 +1,16 @@
 <assembly>
-  <id>zip</id>
+  <id>workbench</id>
   <formats>
     <format>zip</format>
   </formats>
   <fileSets>
+    <fileSet>
+      <directory>lib</directory>
+      <outputDirectory>/lib</outputDirectory>
+      <includes>
+        <include>*.jar</include>
+      </includes>
+    </fileSet>
     <fileSet>
       <directory>target</directory>
       <outputDirectory>/lib</outputDirectory>
@@ -22,12 +29,29 @@
       </includes>
     </fileSet>
     <fileSet>
-      <directory>workbench/</directory>
+      <directory>workbench</directory>
       <outputDirectory>/</outputDirectory>
+    </fileSet>
+    <!-- contrib jars
+    <fileSet>
+      <directory>contrib/lib</directory>
+      <outputDirectory>/lib</outputDirectory>
       <includes>
-        <include>**</include>
+        <include>*.jar</include>
       </includes>
     </fileSet>
+    <fileSet>
+      <directory>contrib/target</directory>
+      <outputDirectory>/lib</outputDirectory>
+      <includes>
+        <include>contrib.jar</include>
+      </includes>
+    </fileSet>
+    <fileSet>
+      <directory>contrib/examples</directory>
+      <outputDirectory>/examples</outputDirectory>
+    </fileSet>
+    -->
   </fileSets>
   <dependencySets>
     <dependencySet>
