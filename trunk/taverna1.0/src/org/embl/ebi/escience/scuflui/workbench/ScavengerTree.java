@@ -377,7 +377,9 @@ public class ScavengerTree extends ExtendedJTree implements ScuflUIComponent,
 					//
 				}
 				treeModel.reload();
-				scavengerTree.setExpansion(true);
+				// FIXME: Make this a user setable property. By default now we
+				// don't expand the full scavenger tree, as it is too massive
+				// scavengerTree.setExpansion(true);
 			}
 		}
 	}
