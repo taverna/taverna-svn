@@ -33,7 +33,7 @@ import org.embl.ebi.escience.scufl.ScuflModelEvent;
  * processor implementation will contact Biomoby registry in order to
  * find the list of extant ports at creation time. <p>
  *
- * @version $Id: BiomobyProcessor.java,v 1.3 2005-09-15 23:24:59 edwardkawas Exp $
+ * @version $Id: BiomobyProcessor.java,v 1.4 2006-04-24 21:19:56 edwardkawas Exp $
  * @author Martin Senger
  */
 public class BiomobyProcessor extends Processor implements java.io.Serializable {
@@ -73,8 +73,17 @@ public class BiomobyProcessor extends Processor implements java.io.Serializable 
                 //
             }
         }
+        
     }
-
+    
+    /*
+     *  (non-Javadoc)
+     * @see org.embl.ebi.escience.scufl.IProcessor#getMaximumWorkers()
+     */
+    public int getMaximumWorkers() {
+    	return 10;
+    }
+    
     /**
      * Construct a new processor with the given model and name,
      * delegates to the superclass.
@@ -239,10 +248,11 @@ public class BiomobyProcessor extends Processor implements java.io.Serializable 
                     collectionName = "MobyCollection";
                 MobyPrimaryDataSimple[] simples = collection.getElements();
                 for (int y = 0; y < simples.length; y++) {
-                    
+                    // collection port
                     Port inPort = new InputPort(this, simples[y].getDataType().getName() + "(Collection - '" + collectionName + "')");
                     inPort.setSyntacticType("l('text/xml')");
                     this.addPort(inPort);
+                    
                 }
             }
         }
@@ -277,6 +287,10 @@ public class BiomobyProcessor extends Processor implements java.io.Serializable 
                 MobyPrimaryDataSimple[] simples = collection.getElements();
                 for (int y = 0; y < simples.length; y++) {
                     Port outPort = new OutputPort(this, simples[y].getDataType().getName() + "(Collection - '" + collectionName + "')");
+                    outPort.setSyntacticType("l('text/xml')");
+                    this.addPort(outPort);
+                    
+                    outPort = new OutputPort(this, simples[y].getDataType().getName() + "(Collection - '" + collectionName + "' As Simples)");
                     outPort.setSyntacticType("l('text/xml')");
                     this.addPort(outPort);
                 }

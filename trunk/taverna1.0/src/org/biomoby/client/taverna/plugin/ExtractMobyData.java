@@ -122,22 +122,22 @@ public class ExtractMobyData implements LocalWorker {
 						mobyNS, "");
 			}
 
-			String valueValue = null;
+			StringBuffer sbuffer = new StringBuffer();
 			List childList = mobyDataElement.getChildren();
 			for (Iterator it = childList.iterator(); it.hasNext();) {
 				Object o = it.next();
 				if (o instanceof Element) {
 					Element oe = (Element) o;
-					valueValue = oe.getText();
+					sbuffer.append(oe.getText()+System.getProperty("line.separator"));
 				}
 			}
 			results.put("id", new DataThing(idValue));
 			results.put("namespace", new DataThing(namespaceValue));
-			if (valueValue == null)
+			if (sbuffer.toString().equals(""))
 				results.put("value", new DataThing(mobyDataElement
 						.getTextTrim()));
 			else
-				results.put("value", new DataThing(valueValue));
+				results.put("value", new DataThing(sbuffer.toString()));
 			results.put("type", new DataThing(mobyDataElement.getName()));
 			System.out.println("Returning parsed results");
 		}

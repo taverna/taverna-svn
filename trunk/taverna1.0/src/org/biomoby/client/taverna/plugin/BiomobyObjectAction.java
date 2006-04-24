@@ -53,6 +53,16 @@ import org.embl.ebi.escience.scuflui.processoractions.AbstractProcessorAction;
 
 public class BiomobyObjectAction extends AbstractProcessorAction {
 
+	private boolean searchParentTypes = false;
+	
+	public BiomobyObjectAction(boolean searchParentTypes) {
+		super();
+		this.searchParentTypes = searchParentTypes;
+	}
+	
+	public BiomobyObjectAction() {
+		super();
+	}
     /* (non-Javadoc)
      * @see org.embl.ebi.escience.scuflui.processoractions.AbstractProcessorAction#getComponent(org.embl.ebi.escience.scufl.Processor)
      */
@@ -82,7 +92,7 @@ public class BiomobyObjectAction extends AbstractProcessorAction {
         template.setInputs(new MobyData[] { data });
         MobyService[] services = null;
         try {
-            services = central.findService(template, null, true, false);
+            services = central.findService(template, null, true, this.searchParentTypes);
         } catch (MobyException e) {
             return new JTree(new String[] { "Error finding services",
                     "TODO: create a better Error" });
@@ -98,7 +108,7 @@ public class BiomobyObjectAction extends AbstractProcessorAction {
         template.setOutputs(new MobyData[] { data });
         services = null;
         try {
-            services = central.findService(template, null, true, false);
+            services = central.findService(template, null, true, this.searchParentTypes);
         } catch (MobyException e) {
             return new JTree(new String[] { "Error finding services",
                     "TODO: create a better Error" });
@@ -266,8 +276,8 @@ public class BiomobyObjectAction extends AbstractProcessorAction {
                                             .getPrimaryInputs();
                                     Vector primaryDataSimples = new Vector();
                                     Vector primaryDataSets = new Vector();
-                                    MobyData[] secondaries = service
-                                            .getSecondaryInputs();
+//TODO                                    MobyData[] secondaries = service
+//                                            .getSecondaryInputs();
                                     for (int x = 0; x < data.length; x++) {
                                         if (data[x] instanceof MobyPrimaryDataSimple)
                                             primaryDataSimples.add(data[x]);
@@ -465,8 +475,8 @@ public class BiomobyObjectAction extends AbstractProcessorAction {
                                     return sb.toString();
                                 }
                             });
-                            // add the components to the menu
-                            menu.add(new JLabel("Add to workflow (BETA)... ",
+                            // add the components to the menus
+                            menu.add(new JLabel("Add to workflow ... ",
                                     JLabel.CENTER));
                             menu.add(new JSeparator());
                             menu.add(item);

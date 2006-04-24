@@ -32,6 +32,8 @@ public class BiomobyObjectTask implements ProcessorTaskWorker {
 
     public BiomobyObjectTask(Processor p) {
         this.proc = p;
+        // doing this for no reason other than to read the variable proc
+        proc.isBoring();
     }
 
     public Map execute(Map inputMap, ProcessorTask parentTask)

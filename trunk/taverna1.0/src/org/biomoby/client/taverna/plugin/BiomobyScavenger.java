@@ -29,15 +29,14 @@ import com.hp.hpl.jena.mem.ModelMem;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.rdf.model.StmtIterator;
-import com.hp.hpl.jena.vocabulary.RDF;
-import com.hp.hpl.jena.vocabulary.RDFS;
+
 import com.ibm.lsid.LSID;
 
 /**
  * A Scavenger that knows how to get all the Biomoby services from a specified
  * Biomoby Central Registry. <p>
  * 
- * @version $Id: BiomobyScavenger.java,v 1.5 2006-03-16 14:51:58 edwardkawas Exp $
+ * @version $Id: BiomobyScavenger.java,v 1.6 2006-04-24 21:22:49 edwardkawas Exp $
  * @author Martin Senger
  */
 public class BiomobyScavenger extends Scavenger {

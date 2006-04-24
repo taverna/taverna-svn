@@ -5,8 +5,6 @@
  */
 package org.biomoby.client.taverna.plugin;
 
-import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
@@ -21,8 +19,8 @@ import java.util.Vector;
 import org.apache.log4j.Logger;
 import org.biomoby.client.CentralImpl;
 import org.biomoby.shared.MobyException;
+import org.biomoby.shared.Utils;
 import org.biomoby.shared.mobyxml.jdom.MobyObjectClassNSImpl;
-import org.biomoby.shared.mobyxml.jdom.jDomUtilities;
 import org.embl.ebi.escience.baclava.DataThing;
 import org.embl.ebi.escience.scufl.InputPort;
 import org.embl.ebi.escience.scufl.OutputPort;
@@ -42,9 +40,11 @@ import uk.ac.soton.itinnovation.taverna.enactor.entities.TaskExecutionException;
 
 public class BiomobyTask implements ProcessorTaskWorker {
 
+	private static final boolean DEBUG = false;
+
 	private static Logger logger = Logger.getLogger(BiomobyTask.class);
 
-	private boolean DEBUG = false;
+	private static int qCounter = 0;
 
 	// private static final int INVOCATION_TIMEOUT = 0;
 
@@ -57,12 +57,31 @@ public class BiomobyTask implements ProcessorTaskWorker {
 	}
 
 	public Map execute(Map inputMap, ProcessorTask parentTask) throws TaskExecutionException {
-
-		if (DEBUG)
+		if (DEBUG) {
 			try {
-				System.setOut(new PrintStream(new FileOutputStream(new File("biomobyDebug.rtf"), true)));
-			} catch (FileNotFoundException e) {
+				System.setOut(new PrintStream(new FileOutputStream("out.rtf", true)));
+			} catch (Exception e) {
+
 			}
+		}
+
+		if (DEBUG) {
+			System.out.println("Service " + proc.getName());
+			for (Iterator it = inputMap.keySet().iterator(); it.hasNext();) {
+				String key = (String) it.next();
+				if (((DataThing) inputMap.get(key)).getDataObject() instanceof String) {
+					System.out.println("key " + key + "has value of\n"
+							+ ((DataThing) inputMap.get(key)).getDataObject());
+					continue;
+				} else if (((DataThing) inputMap.get(key)).getDataObject() instanceof List) {
+					List list = (List) ((DataThing) inputMap.get(key)).getDataObject();
+					for (Iterator it2 = list.iterator(); it2.hasNext();) {
+						System.out.println("List key " + key + "has value of\n" + it2.next());
+					}
+				}
+			}
+			System.out.println("Printing of ports complete.");
+		}
 
 		if (inputMap.containsKey("input")) {
 			// input port takes precedence over other ports
@@ -99,7 +118,7 @@ public class BiomobyTask implements ProcessorTaskWorker {
 					Element content = new Element("mobyContent", mobyNS);
 					root.addContent(content);
 					Element data = new Element("mobyData", mobyNS);
-					data.setAttribute("queryID", "a1", mobyNS);
+					data.setAttribute("queryID", "d" + qCounter++, mobyNS);
 					content.addContent(data);
 					Element collectionElement = new Element("Collection", mobyNS);
 					collectionElement.setAttribute("articleName", "", mobyNS);
@@ -152,303 +171,274 @@ public class BiomobyTask implements ProcessorTaskWorker {
 				throw tee;
 			}
 		} else {
-			// input port takes precedence over other ports
+			// now try other named ports
 			try {
+
+				InputPort myInput = null;
+				InputPort[] myInputs = proc.getBoundInputPorts();
 				String inputXML = null;
-				InputPort[] inputPorts = proc.getBoundInputPorts();
-				// create the main xml element that we will add
-				// simples/collections too
-				Document doc = XMLUtilities.createDomDocument();
-				Element root = new Element("MOBY", MobyObjectClassNSImpl.MOBYNS);
-				Element content = new Element("mobyContent", MobyObjectClassNSImpl.MOBYNS);
+				Element root = new Element("MOBY", XMLUtilities.MOBY_NS);
+				Element content = new Element("mobyContent", XMLUtilities.MOBY_NS);
 				root.addContent(content);
-				doc.addContent(root);
-
-				int totalMobyData = 1;
-				// list of mobyData jDom elements
-				Vector mobyDatas = new Vector();
-				// get the mobyData blocks
-				for (int i = 0; i < inputPorts.length; i++) {
-					String name = inputPorts[i].getName();
-					// only process 'named' ports
-					if (name.equalsIgnoreCase("input"))
+				int totalMobyDatas = 0;
+				Vector mobyDatas = new Vector(); // list of mobyData element
+				for (int i = 0; i < myInputs.length; i++) {
+					if (myInputs[i].getName().equalsIgnoreCase("input")) {
 						continue;
+					}
+					myInput = myInputs[i];
+					if (myInput == null)
+						throw new TaskExecutionException("The port '" + myInputs[i].getName()
+								+ "' was not specified correctly.");
+					// the port name
+					String portName = myInput.getName();
+					// the article name
+					String articleName = "";
+					String type = portName;
+					if (portName.indexOf("(") >= 0 && portName.indexOf(")") > 0) {
+						articleName = portName.substring(portName.indexOf("(") + 1, portName
+								.indexOf(")"));
 
-					DataThing inputThing = (DataThing) inputMap.get(name);
-					// extract the article name of the input
-					String art_name = "";
-					if (name.indexOf("(") >= 0 && name.indexOf(")") >= 0) {
-						art_name = name.substring(name.indexOf("(") + 1, name.indexOf(")"));
+						if (articleName.indexOf("'") >= 0 && articleName.lastIndexOf("'") > 0)
+							articleName = articleName.substring(articleName.indexOf("'") + 1,
+									articleName.lastIndexOf("'"));
+
+						type = portName.substring(0, portName.indexOf("("));
 					}
 
-					if (!inputThing.getSyntacticType().startsWith("l(")) {
-						// simple data type
+					String inputType = myInput.getSyntacticType();
+					DataThing inputThing = (DataThing) inputMap.get(portName);
+					if (!inputType.startsWith("l(")) {
 						inputXML = (String) inputThing.getDataObject();
-						Document inputDocument = XMLUtilities.getDOMDocument(inputXML);
+						Element inputElement = null;
+						try {
+							inputElement = XMLUtilities.getDOMDocument(inputXML).getRootElement();
 
-						List simpleCollection = XMLUtilities.createMobySimpleListFromCollection(
-								inputXML, ((BiomobyProcessor) proc).getMobyEndpoint(), art_name);
-
-						if (simpleCollection.isEmpty()) {
-							// pure 'simples' were passed in as input
-							if (XMLUtilities.isMultipleInvokationMessage(inputDocument
-									.getRootElement())) {
-								// multiple invokation message
-								List list = XMLUtilities
-										.getSingleInvokationsFromMultipleInvokationMessage(inputDocument
-												.getRootElement());
-								if (list == null || list.isEmpty()) {
-									continue;
-								}
-								totalMobyData *= list.size();
-								// go through and rename the article name
-								for (Iterator it = list.iterator(); it.hasNext();) {
-									Element md = (Element) it.next();
-									boolean useNS = true;
-									Element sim = md.getChild("Simple", mobyNS);
-									if (sim == null) {
-										useNS = false;
-										sim = md.getChild("Simple");
+						} catch (MobyException e) {
+							throw new TaskExecutionException(XMLUtilities.newline
+									+ "There was an error parsing the input XML:"
+									+ XMLUtilities.newline + Utils.format(inputXML, 3)
+									+ XMLUtilities.newline + e.getLocalizedMessage());
+						}
+						// determine whether we have a multiple invocation
+						// message
+						if (XMLUtilities.isMultipleInvocationMessage(inputElement)) {
+							// multiple invocations
+							Element[] invocations = XMLUtilities
+									.getSingleInvokationsFromMultipleInvokations(inputElement);
+							ArrayList list = new ArrayList();
+							for (int j = 0; j < invocations.length; j++) {
+								Element[] elements = XMLUtilities
+										.getListOfCollections(invocations[j]);
+								if (elements.length == 0) {
+									// single simple
+									inputElement = XMLUtilities.renameSimple(articleName, type,
+											invocations[j]);
+									Element md = XMLUtilities.extractMobyData(inputElement);
+									list.add(md);
+								} else {
+									// collection of simples => create multiple
+									// invocation message
+									String queryID = XMLUtilities.getQueryID(invocations[j]);
+									Element[] simples = XMLUtilities
+											.getSimplesFromCollection(invocations[j]);
+									for (int k = 0; k < simples.length; k++) {
+										Element wrappedSimple = XMLUtilities
+												.createMobyDataElementWrapper(simples[k]);
+										XMLUtilities.renameSimple(articleName, type, wrappedSimple);
+										XMLUtilities.setQueryID(wrappedSimple, queryID + "_+_"
+												+ XMLUtilities.getQueryID(wrappedSimple));
+										list.add(XMLUtilities.extractMobyData(wrappedSimple));
 									}
-									if (sim == null)
-										continue;
-									if (useNS)
-										sim.setAttribute("articleName", art_name, mobyNS);
-									else
-										sim.setAttribute("articleName", art_name);
 								}
-								mobyDatas.add(list);
-							} else {
-								// single invokation
-								Element oldMOBY = inputDocument.getRootElement();
-								Element oldContent = oldMOBY.getChild("mobyContent", mobyNS);
-								if (oldContent == null)
-									oldContent = oldMOBY.getChild("mobyContent");
-								Element mobyData = oldContent.getChild("mobyData", mobyNS);
-								if (mobyData == null)
-									mobyData = oldContent.getChild("mobyData");
-
-								// if mobyData is null, we cant go on
-								if (mobyData == null)
-									throw new TaskExecutionException("The input " + name
-											+ " was not a well formed moby message.");
-								// rename the article name
-								Element child = mobyData.getChild("Simple", mobyNS);
-								boolean useNS = true;
-								if (child == null) {
-									child = mobyData.getChild("Simple");
-									useNS = false;
-								}
-								if (child == null) {
-									child = mobyData.getChild("Collection", mobyNS);
-									useNS = true;
-								}
-								if (child == null) {
-									child = mobyData.getChild("Collection");
-									useNS = false;
-								}
-								if (child != null) {
-									if (useNS)
-										child.setAttribute("articleName", art_name, mobyNS);
-									else
-										child.setAttribute("articleName", art_name);
-								}
-								ArrayList list = new ArrayList();
-								list.add(mobyData);
-								mobyDatas.add(list);
 							}
-						} else {
-							Element MOBY = XMLUtilities
-									.createMultipleInvocationMessageFromList(simpleCollection);
-							// MOBY is a full message with multiple invokations
-							List list = XMLUtilities
-									.getSingleInvokationsFromMultipleInvokationMessage(MOBY);
-							if (list == null || list.isEmpty()) {
-
+							if (list.isEmpty())
 								continue;
-							}
-							totalMobyData *= list.size();
-							// go through and rename the article name
-							for (Iterator it = list.iterator(); it.hasNext();) {
-								Element md = (Element) it.next();
-								Element child = md.getChild("Simple", mobyNS);
-								boolean useNS = true;
-								if (child == null) {
-									child = md.getChild("Simple");
-									useNS = false;
-								}
-								if (child == null) {
-									child = md.getChild("Collection", mobyNS);
-									useNS = true;
-								}
-								if (child == null) {
-									child = md.getChild("Collection");
-									useNS = false;
-								}
-								if (child != null) {
-									if (useNS)
-										child.setAttribute("articleName", art_name, mobyNS);
-									else
-										child.setAttribute("articleName", art_name);
-								}
-							}
+							if (totalMobyDatas < 1)
+								totalMobyDatas = 1;
+							totalMobyDatas *= list.size();
 							mobyDatas.add(list);
+						} else {
+							// single invocation
+							// is this a collection
+							Element[] elements = XMLUtilities.getListOfCollections(inputElement);
+							if (elements.length == 0) {
+								// single simple
+								inputElement = XMLUtilities.renameSimple(articleName, type,
+										inputElement);
+								ArrayList list = new ArrayList();
+								Element md = XMLUtilities.extractMobyData(inputElement);
+								list.add(md);
+								mobyDatas.add(list);
+								if (totalMobyDatas < 1)
+									totalMobyDatas = 1;
+							} else {
+								// collection of simples => create multiple
+								// invocation message
+								String queryID = XMLUtilities.getQueryID(inputElement);
+								Element[] simples = XMLUtilities
+										.getSimplesFromCollection(inputElement);
+
+								ArrayList list = new ArrayList();
+								for (int j = 0; j < simples.length; j++) {
+									Element wrappedSimple = XMLUtilities
+											.createMobyDataElementWrapper(simples[j]);
+									XMLUtilities.renameSimple(articleName, type, wrappedSimple);
+									XMLUtilities.setQueryID(wrappedSimple, queryID + "_+_"
+											+ XMLUtilities.getQueryID(wrappedSimple));
+									list.add(XMLUtilities.extractMobyData(wrappedSimple));
+								}
+								if (list.isEmpty())
+									continue;
+								mobyDatas.add(list);
+								if (totalMobyDatas < 1)
+									totalMobyDatas = 1 * list.size();
+								else {
+									totalMobyDatas *= list.size();
+								}
+							}
+
 						}
 					} else {
-						// collection
+						// we have a collection!
 
-						// set up the collection article name
-						art_name = "";
-						if (name.indexOf("'") >= 0 && name.lastIndexOf("'") >= 0) {
-							art_name = name.substring(name.indexOf("'") + 1, name.lastIndexOf("'"));
-						}
-						List listCol = (List) inputThing.getDataObject();
-						if (!listCol.isEmpty()) {
-							inputXML = (String) listCol.get(0);
-							if (DEBUG)
-								System.out.println("305:" + listCol.size() + "\n" + inputXML + " "
-										+ proc.getName());
-						} else {
-							if (DEBUG)
-								System.out.println("307: empty input list obtained." + " "
-										+ proc.getName());
-						}
-						Document inputDocument = XMLUtilities.getDOMDocument(inputXML);
-						if (XMLUtilities
-								.isMultipleInvokationMessage(inputDocument.getRootElement())) {
-							// multiple invocation
-							List list = XMLUtilities
-									.getSingleInvokationsFromMultipleInvokationMessage(inputDocument
-											.getRootElement());
-							if (list == null || list.isEmpty()) {
-								continue;
+						// inputThing is a list of Strings
+						List list = (List) inputThing.getDataObject();
+						/* need this map in cases where simples are passed into a service
+						 * that wants a collection. each simple is then added into the same collection
+						 */
+						Map collectionMap = new HashMap();
+						for (Iterator it = list.iterator(); it.hasNext();) {
+							Element inputElement = null;
+							try {
+								inputElement = XMLUtilities.getDOMDocument((String) it.next())
+										.getRootElement();
+
+							} catch (MobyException e) {
+								throw new TaskExecutionException(XMLUtilities.newline
+										+ "There was an error parsing the input XML:"
+										+ XMLUtilities.newline + Utils.format(inputXML, 3)
+										+ XMLUtilities.newline + e.getLocalizedMessage());
 							}
-
-							boolean areAllSimples = XMLUtilities.areAllSimples(list);
-							if (areAllSimples) {
-								// create a single collection containing all the
-								// simples in the mobyData block
-								Element newMobyData = new Element("mobyData", mobyNS);
-								newMobyData.setAttribute("queryID", "amalgamated", mobyNS);
-								Element collectionE = new Element("Collection", mobyNS);
-								collectionE.setAttribute("articleName", art_name, mobyNS);
-								newMobyData.addContent(collectionE);
-
-								for (Iterator it = list.iterator(); it.hasNext();) {
-									Element md = (Element) it.next();
-
-									if (md != null) {
-										if (!md.getChildren("Simple").isEmpty()
-												|| !md.getChildren("Simple", mobyNS).isEmpty()) {
-
-											collectionE.addContent(md.cloneContent());
-										}
+							// determine whether we have a multiple invocation
+							// message
+							if (XMLUtilities.isMultipleInvocationMessage(inputElement)) {
+								// multiple invocations (update totalMobyDatas)
+								Element[] invocations = XMLUtilities
+										.getSingleInvokationsFromMultipleInvokations(inputElement);
+								ArrayList mdList = new ArrayList();
+								for (int j = 0; j < invocations.length; j++) {
+									Element[] elements = XMLUtilities
+											.getListOfCollections(invocations[j]);
+									if (elements.length == 0) {
+										// simple was passed in - wrap it
+										Element collection = XMLUtilities
+												.extractMobyData(invocations[j]);
+										collection = XMLUtilities
+												.createMobyDataElementWrapper(collection,
+														XMLUtilities.getQueryID(invocations[j]));
+										collection = XMLUtilities.renameCollection(articleName,
+												collection);
+										collection = XMLUtilities
+												.createMobyDataElementWrapper(collection,
+														XMLUtilities.getQueryID(invocations[j]));
+										mdList.add(XMLUtilities.extractMobyData(collection));
+									} else {
+										// collection passed in (always 1 passed
+										// in)
+										Element collection = invocations[j];
+										collection = XMLUtilities.renameCollection(articleName,
+												collection);
+										collection = XMLUtilities
+												.createMobyDataElementWrapper(collection,
+														XMLUtilities.getQueryID(invocations[j]));
+										mdList.add(XMLUtilities.extractMobyData(collection));
 									}
 								}
-								ArrayList al = new ArrayList();
-								al.add(newMobyData);
-								mobyDatas.add(al);
+								if (mdList.isEmpty())
+									continue;
+
+								mobyDatas.add(mdList);
+								if (totalMobyDatas < 1)
+									totalMobyDatas = 1;
+								totalMobyDatas *= mdList.size();
 							} else {
-								// create multiple invocations for the
-								// collections
-								totalMobyData *= list.size();
-								for (Iterator it = list.iterator(); it.hasNext();) {
-									Element md = (Element) it.next();
-									Element child = md.getChild("Collection", mobyNS);
-									boolean useNS = true;
-									if (child == null) {
-										child = md.getChild("Collection");
-										useNS = false;
+								// single invocation
+								Element[] elements = XMLUtilities
+										.getListOfCollections(inputElement);
+								if (elements.length == 0) {
+									// simple was passed in so wrap it
+									Element collection = new Element("Collection",
+											XMLUtilities.MOBY_NS);
+									collection.addContent(XMLUtilities
+											.extractMobyData(inputElement).cloneContent());
+									collection = XMLUtilities.createMobyDataElementWrapper(
+											collection, XMLUtilities.getQueryID(inputElement));
+									collection = XMLUtilities.renameCollection(articleName,
+											collection);
+									collection = XMLUtilities.createMobyDataElementWrapper(
+											collection, XMLUtilities.getQueryID(inputElement));
+									if (collectionMap.containsKey(articleName)) {
+										//add the simple to a pre-existing collection
+										ArrayList mdList = (ArrayList)collectionMap.remove(articleName);
+										mdList.add(XMLUtilities.extractMobyData(collection));
+										collectionMap.put(articleName, mdList);
+									} else {
+										// new collection - add element and increment count
+										ArrayList mdList = new ArrayList();
+										mdList.add(XMLUtilities.extractMobyData(collection));
+										collectionMap.put(articleName, mdList);
+										//totalMobyDatas++;
+										if (totalMobyDatas < 1)
+											totalMobyDatas = 1;
 									}
-									if (child != null) {
-										if (useNS)
-											child.setAttribute("articleName", art_name, mobyNS);
-										else
-											child.setAttribute("articleName", art_name);
-									}
-								}
-								mobyDatas.add(list);
-							}
-
-						} else {
-							List list = XMLUtilities
-									.getSingleInvokationsFromMultipleInvokationMessage(inputDocument
-											.getRootElement());
-							if (list == null || list.isEmpty()) {
-								continue;
-							}
-
-							boolean areAllSimples = XMLUtilities.areAllSimples(list);
-
-							// single invocation
-							if (DEBUG)
-								System.out.println("Collection SIM:\n" + inputXML + " "
-										+ proc.getName() + " " + areAllSimples);
-
-							if (areAllSimples) {
-								Element md = inputDocument.getRootElement().getChild("mobyContent",
-										mobyNS);
-								if (md == null)
-									md = inputDocument.getRootElement().getChild("mobyContent");
-
-								if (md.getChild("mobyData", mobyNS) != null)
-									md = md.getChild("mobyData", mobyNS);
-								else
-									md = md.getChild("mobyData");
-
-								Element newMd = new Element("mobyData", mobyNS);
-								Element newCol = new Element("Collection", mobyNS);
-								newMd.addContent(newCol);
-								newCol.setAttribute("articleName", art_name, mobyNS);
-								newCol.addContent(md.cloneContent());
-								if (DEBUG)
-									System.out.println("Collection SIM FINISHED:\n"
-											+ new XMLOutputter().outputString(newMd) + " 396 "
-											+ proc.getName());
-								ArrayList al = new ArrayList();
-								al.add(newMd);
-								mobyDatas.add(al);
-							} else {
-
-								Element md = inputDocument.getRootElement().getChild("mobyContent",
-										mobyNS);
-								if (md == null)
-									md = inputDocument.getRootElement().getChild("mobyContent");
-
-								if (md.getChild("mobyData", mobyNS) != null)
-									md = md.getChild("mobyData", mobyNS);
-								else
-									md = md.getChild("mobyData");
-
-								// set the article name
-								if (md.getChild("Collection", mobyNS) != null) {
-									if (md.getChild("Collection", mobyNS).getAttribute(
-											"articleName") != null)
-										md.getChild("Collection", mobyNS).setAttribute(
-												"articleName", art_name);
-									else
-										md.getChild("Collection", mobyNS).setAttribute(
-												"articleName", art_name, mobyNS);
+									//mobyDatas.add(mdList);
+									//totalMobyDatas++;
 								} else {
-									if (md.getChild("Collection").getAttribute("articleName") != null)
-										md.getChild("Collection").setAttribute("articleName",
-												art_name);
-									else
-										md.getChild("Collection", mobyNS).setAttribute(
-												"articleName", art_name, mobyNS);
+									// we have a collection
+									Element collection = inputElement;
+									collection = XMLUtilities.renameCollection(articleName,
+											collection);
+									ArrayList mdList = new ArrayList();
+									collection = XMLUtilities.createMobyDataElementWrapper(
+											collection, XMLUtilities.getQueryID(inputElement));
+									mdList.add(XMLUtilities.extractMobyData(collection));
+									if (DEBUG) {
+										System.out
+												.println("***********SIM_COLLECTION_IN****************");
+										System.out.println(new XMLOutputter(Format
+												.getPrettyFormat()).outputString(collection));
+										System.out
+												.println("***********SIM_COLLECTION_IN****************");
+									}
+									mobyDatas.add(mdList);
+									if (totalMobyDatas < 1)
+										totalMobyDatas = 1;
+									
 								}
-								if (DEBUG)
-									System.out.println("Collection SIM FINISHED:\n"
-											+ new XMLOutputter().outputString(md) + " "
-											+ proc.getName());
-								ArrayList al = new ArrayList();
-								al.add(md);
-								mobyDatas.add(al);
-							}
+							} // end if MIM
+						} // end iteration over inputThing list
+						Iterator collectionIterator = collectionMap.keySet().iterator();
+						while (collectionIterator.hasNext()) {
+							String key = (String)collectionIterator.next();
+							List theList = (List)collectionMap.get(key);
+							theList = XMLUtilities.mergeCollections(theList, key);
+							mobyDatas.add(theList);
 						}
+					}					
+				}
 
+				if (DEBUG) {
+					System.out.println("Before MobyData aggregation");
+					for (Iterator itr = mobyDatas.iterator(); itr.hasNext();) {
+						List eList = (List) itr.next();
+						for (int x = 0; x < eList.size(); x++) {
+							System.out.println(new XMLOutputter(Format.getPrettyFormat())
+									.outputString((Element) eList.get(x)));
+						}
 					}
-				} // end for loop
+					System.out.println("******* End ******");
+				}
 				/*
 				 * ports have been processed -> vector contains a list of all
 				 * the different types of inputs with their article names set
@@ -456,39 +446,73 @@ public class BiomobyTask implements ProcessorTaskWorker {
 				 * there are totalMobyData number of invocations in the output
 				 * moby message
 				 */
-				Element[] mds = new Element[totalMobyData];
+				if (DEBUG) {
+					System.out.println("TotalMobyDatas: " + totalMobyDatas);
+				}
+				Element[] mds = new Element[totalMobyDatas];
 				// initialize the mobydata blocks
 				for (int x = 0; x < mds.length; x++) {
-					mds[x] = new Element("mobyData", MobyObjectClassNSImpl.MOBYNS);
-					mds[x].setAttribute("queryID", "a" + x, MobyObjectClassNSImpl.MOBYNS);
+					mds[x] = new Element("mobyData", XMLUtilities.MOBY_NS);
+					String queryID = "";
 					// add the content
 					for (Iterator iter = mobyDatas.iterator(); iter.hasNext();) {
 						ArrayList list = (ArrayList) iter.next();
 						int index = x % list.size();
-						mds[x].addContent(((Element) list.get(index)).cloneContent());
+						Element next = ((Element) list.get(index));
+						queryID += "_" + XMLUtilities.getQueryID(next);
+						mds[x].addContent(next.cloneContent());
+
 					}
+					// remove the first _
+					if (queryID != null && queryID.length() > 1)
+						queryID = queryID.substring(1);
+					mds[x].setAttribute("queryID", queryID, XMLUtilities.MOBY_NS);
 					content.addContent(mds[x].detach());
 				}
-
+				if (DEBUG) {
+					System.out.println("After MobyData aggregation");
+					System.out.println(new XMLOutputter(Format.getPrettyFormat())
+							.outputString(root));
+					System.out.println("******* End ******");
+				}
 				// do the task and populate outputXML
+
 				String methodName = ((BiomobyProcessor) proc).getServiceName();
 				String serviceEndpoint = ((BiomobyProcessor) proc).getEndpoint().toExternalForm();
-				System.out.println("Mobycentral soap call\n"
-						+ new MobyObjectClassNSImpl(((BiomobyProcessor) proc).getMobyEndpoint())
-								.toString(root) + " " + proc.getName());
 
-				String outputXML = new CentralImpl(serviceEndpoint, "http://biomoby.org/").call(
-						methodName, new MobyObjectClassNSImpl(((BiomobyProcessor) proc)
-								.getMobyEndpoint()).toString(root));
-				if (DEBUG)
-					System.out.println("Mobycentral soap call returned\n" + " " + proc.getName()
-							+ outputXML);
+				String serviceInput = new XMLOutputter(Format.getPrettyFormat()).outputString(root);
+				String[] invocations = XMLUtilities
+						.getSingleInvokationsFromMultipleInvokations(serviceInput);
+				// going to iterate over all invocations so that messages with
+				// many mobyData blocks dont timeout.
+				// TODO how can i represent this stuff better so that Taverna
+				// can iterate over it for me
+				System.out.println("Total invocations " + invocations.length);
+				if (invocations.length > 0)
+					System.out.print("\tinvocation 00");
+				for (int inCount = 0; inCount < invocations.length; inCount++) {
+
+					// System.out.print("invocation " + (inCount + 1) + " of " +
+					// invocations.length);
+					System.out.print(((inCount + 1) % 10 == 0 ? "\b\b" + (inCount + 1) : "\b"
+							+ (inCount + 1) % 10));
+					if (DEBUG)
+						System.out.println("input:\n" + invocations[inCount]);
+					if (!XMLUtilities.isEmpty(invocations[inCount]))
+						invocations[inCount] = new CentralImpl(serviceEndpoint,
+								"http://biomoby.org/").call(methodName, invocations[inCount]);
+					if (DEBUG)
+						System.out.println("output:\n" + invocations[inCount]);
+				}
+				System.out.println();
+				String outputXML = XMLUtilities.createMultipleInvokations(invocations);
+
 				Map outputMap = new HashMap();
 				// goes through and creates the port 'output'
 				processOutputPort(outputXML, outputMap);
+				// create the other ports
 				processOutputPorts(outputXML, outputMap);
 				return outputMap;
-
 			} catch (MobyException ex) {
 				// a MobyException should be already reasonably formatted
 				logger.error("Error invoking biomoby service for biomoby. A MobyException caught",
@@ -576,7 +600,19 @@ public class BiomobyTask implements ProcessorTaskWorker {
 			Element mobyDataElement = mobyElement.getChild("mobyContent", mobyNS).getChild(
 					"mobyData", mobyNS);
 
-			Element collectionElement = mobyDataElement.getChild("Collection", mobyNS);
+			Element collectionElement = null;
+			try {
+				collectionElement = mobyDataElement.getChild("Collection", mobyNS);
+			} catch (Exception e) {
+				System.err.println("There was a problem processing the output port.\n" + outputXML);
+				try {
+					outputList.add(new XMLOutputter(Format.getPrettyFormat())
+							.outputString(XMLUtilities.createMobyDataWrapper(XMLUtilities
+									.getQueryID(outputXML))));
+				} catch (MobyException me) {
+
+				}
+			}
 			if (collectionElement != null) {
 				List simpleElements = new ArrayList(collectionElement.getChildren());
 				for (Iterator i = simpleElements.iterator(); i.hasNext();) {
@@ -586,9 +622,14 @@ public class BiomobyTask implements ProcessorTaskWorker {
 					Element newMobyContent = new Element("mobyContent", mobyNS);
 					newRoot.addContent(newMobyContent);
 					Element newMobyData = new Element("mobyData", mobyNS);
-					newMobyData.setAttribute("queryID", "a1", mobyNS);
 					newMobyContent.addContent(newMobyData);
 					newMobyData.addContent(simpleElement.detach());
+					try {
+						XMLUtilities.setQueryID(newRoot, XMLUtilities.getQueryID(outputXML) + "_+_"
+								+ XMLUtilities.getQueryID(newRoot));
+					} catch (MobyException e) {
+						newMobyData.setAttribute("queryID", "a1", mobyNS);
+					}
 					XMLOutputter xo = new XMLOutputter();
 					String outputItemString = xo.outputString(new Document(newRoot));
 					outputList.add(outputItemString);
@@ -597,247 +638,206 @@ public class BiomobyTask implements ProcessorTaskWorker {
 
 			// Return the list (may be empty)
 			outputMap.put("output", new DataThing(outputList));
-			// TODO think of how to output a list (collection)
-
 		}
 	}
 
 	private void processOutputPorts(String outputXML, Map outputMap) throws MobyException {
-		if (DEBUG)
-			System.out.println("Process outputs:\n" + outputXML);
-		// fill in the supplementary moby object ports
-		OutputPort[] outputPorts = proc.getBoundOutputPorts();
-		Document doc = XMLUtilities.getDOMDocument(outputXML);
+		OutputPort[] outputPorts = proc.getOutputPorts(); // used to be
+		// boundOutputPorts
+		boolean isMIM = XMLUtilities.isMultipleInvocationMessage(outputXML);
 		for (int x = 0; x < outputPorts.length; x++) {
 			String name = outputPorts[x].getName();
 			if (!name.equalsIgnoreCase("output")) {
-				// join the data to the output port by parsing outputXML
-				// 'empty' ports will have empty skeleton
-				Element documentElement = doc.getRootElement();
-				if (name.indexOf("(Collection - '") > 0) {
-					boolean isMIM = (XMLUtilities.isMultipleInvokationMessage(documentElement));
-
-					// process a collection
+				if (outputPorts[x].getSyntacticType().startsWith("l(")) {
+					// collection - list of strings
+					String articleName = "";
 					if (name.indexOf("MobyCollection") > 0) {
-						// parse out the MyCollection because this object doesnt
-						// have
-						// a name
-						String objectType = name.substring(0, name.indexOf("("));
-
-						if (!isMIM) {
-							String mobyCollection = XMLUtilities.getMobyCollection(documentElement,
-									objectType, "", ((BiomobyProcessor) proc).getMobyEndpoint());
-							if (mobyCollection != null)
-								outputMap.put(name, new DataThing(mobyCollection));
-						} else {
-							// multiple invokation message
-							List list = XMLUtilities
-									.getSingleInvokationsFromMultipleInvokationMessage(documentElement);
-							int queryIDCount = 0;
-							// create the main MOBY element
-							Element newRoot = new Element("MOBY", mobyNS);
-							Element newMobyContent = new Element("mobyContent", mobyNS);
-							newRoot.addContent(newMobyContent);
-							for (Iterator listIterator = list.iterator(); listIterator.hasNext();) {
-								Element md = (Element) listIterator.next();
-								Element MOBYwrap = new Element("MOBY");
-								Element contentWrap = new Element("mobyContent");
-								contentWrap.addContent(md.detach());
-								MOBYwrap.addContent(contentWrap);
-								String mobyCollection = XMLUtilities
-										.getMobyCollection(MOBYwrap, objectType, "",
-												((BiomobyProcessor) proc).getMobyEndpoint());
-								Document collectionDOM = XMLUtilities
-										.getDOMDocument(mobyCollection);
-								Element oldMOBY = collectionDOM.getRootElement();
-								if (oldMOBY == null)
-									continue;
-								Element oldContent = oldMOBY.getChild("mobyContent", mobyNS);
-								if (oldContent == null)
-									oldContent = oldMOBY.getChild("mobyContent");
-								if (oldContent == null)
-									continue;
-								Element oldMD = oldContent.getChild("mobyData");
-								if (oldMD == null)
-									oldMD = oldContent.getChild("mobyData", mobyNS);
-								if (oldMD == null)
-									continue;
-
-								Element newMobyData = new Element("mobyData", mobyNS);
-								newMobyData.setAttribute("queryID", "a" + queryIDCount++, mobyNS);
-								newMobyContent.addContent(newMobyData);
-								// remove everythnig below the mobyContent
-								newMobyData.addContent(oldMD.cloneContent());
-							}
-							XMLOutputter xo = new XMLOutputter();
-							String outputItemString = xo.outputString(new Document(newRoot));
-							outputMap.put(name, new DataThing(outputItemString));
-						}
+						// un-named collection -> ignore it as it is illegal
+						// in the api
+						// TODO could throw exception
+						
+						List innerList = new ArrayList();
+						outputMap.put(name, new DataThing(innerList));
+						continue;
 					} else {
-						// we have an article name, so extract it and do the
-						// same as above
-						String objectType = name.substring(0, name.indexOf("("));
-						String artName = name.substring(name.indexOf("'") + 1, name
-								.lastIndexOf("'")); // modified
-
-						if (!isMIM) {
-
-							String mobyCollection = XMLUtilities.getMobyCollection(documentElement,
-									objectType, artName, ((BiomobyProcessor) proc)
-											.getMobyEndpoint());
-							if (mobyCollection != null)
-								outputMap.put(name, new DataThing(mobyCollection));
-						} else {
-							// multiple invokation message
-							List list = XMLUtilities
-									.getSingleInvokationsFromMultipleInvokationMessage(documentElement);
-							int queryIDCount = 0;
-							// create the main MOBY element
-							Element newRoot = new Element("MOBY", mobyNS);
-							Element newMobyContent = new Element("mobyContent", mobyNS);
-							newRoot.addContent(newMobyContent);
-							for (Iterator listIterator = list.iterator(); listIterator.hasNext();) {
-								Element md = (Element) listIterator.next();
-								// create a collectionELement from the dom and
-								// add it to md
-								Element MOBYwrap = new Element("MOBY");
-								Element contentWrap = new Element("mobyContent");
-								contentWrap.addContent(md.detach());
-								MOBYwrap.addContent(contentWrap);
-								String mobyCollection = XMLUtilities.getMobyCollection(MOBYwrap,
-										objectType, artName, ((BiomobyProcessor) proc)
-												.getMobyEndpoint());
-								if (mobyCollection == null)
-									continue;
-								Document collectionDOM = XMLUtilities
-										.getDOMDocument(mobyCollection);
-								Element oldMOBY = collectionDOM.getRootElement();
-								if (oldMOBY == null)
-									continue;
-								Element oldContent = oldMOBY.getChild("mobyContent", mobyNS);
-								if (oldContent == null)
-									oldContent = oldMOBY.getChild("mobyContent");
-								if (oldContent == null)
-									continue;
-								Element oldMD = oldContent.getChild("mobyData");
-								if (oldMD == null)
-									oldMD = oldContent.getChild("mobyData", mobyNS);
-								if (oldMD == null)
-									continue;
-
-								Element newMobyData = new Element("mobyData", mobyNS);
-								newMobyData.setAttribute("queryID", "a" + queryIDCount++, mobyNS);
-								newMobyContent.addContent(newMobyData);
-								// remove everythnig below the mobyContent
-								newMobyData.addContent(oldMD.cloneContent());
+						articleName = name.substring(name.indexOf("'") + 1, name.lastIndexOf("'"));
+						if (name.indexOf("' As Simples)") > 0) {
+							// list of simples wanted
+							if (isMIM) {
+								String[] invocations = XMLUtilities
+										.getSingleInvokationsFromMultipleInvokations(outputXML);
+								
+								List innerList = new ArrayList();
+								for (int i = 0; i < invocations.length; i++) {
+									try {
+										String collection = XMLUtilities.getWrappedCollection(
+												articleName, invocations[i]);
+										String[] simples = XMLUtilities.getSimplesFromCollection(articleName, collection);
+										for (int j = 0; j < simples.length; j++) {
+											innerList.add(XMLUtilities.createMobyDataElementWrapper(simples[j], XMLUtilities.getQueryID(collection)+"_+_s"+qCounter++));
+										}
+									} catch (MobyException e) {
+										// collection didnt exist, so put an
+										// empty
+										// mobyData
+										// TODO keep the original wrapper
+										String qID = XMLUtilities.getQueryID(invocations[i]);
+										Element empty = XMLUtilities.createMobyDataWrapper(qID);
+										XMLOutputter output = new XMLOutputter(Format
+												.getPrettyFormat());
+										innerList.add(output.outputString(empty));
+									}
+								}
+								outputMap.put(name, new DataThing(innerList));
+							} else {
+								// process the single invocation and put string
+								// into
+								// a
+								// list
+								try {
+									
+									List innerList = new ArrayList();
+									String collection = XMLUtilities.getWrappedCollection(
+											articleName, outputXML);
+									
+									String[] simples = XMLUtilities.getSimplesFromCollection(articleName, collection);
+									for (int i = 0; i < simples.length; i++) {
+										innerList.add(XMLUtilities.createMobyDataElementWrapper(simples[i], XMLUtilities.getQueryID(collection)+"_+_s"+qCounter++));
+									}
+									
+									outputMap.put(name, new DataThing(innerList));
+								} catch (MobyException e) {
+									// TODO keep the original wrapper
+									List innerList = new ArrayList();
+									// simple didnt exist, so put an empty
+									// mobyData
+									String qID = XMLUtilities.getQueryID(outputXML);
+									Element empty = XMLUtilities.createMobyDataWrapper(qID);
+									XMLOutputter output = new XMLOutputter(Format.getPrettyFormat());
+									innerList.add(output.outputString(empty));
+									outputMap.put(name, new DataThing(innerList));
+								}
 							}
-							XMLOutputter xo = new XMLOutputter();
-							String outputItemString = xo.outputString(new Document(newRoot));
-							if (DEBUG)
-								System.out.println("processOUTPUTS() MIM of Collection:\n"
-										+ outputItemString);
-							outputMap.put(name, new DataThing(outputItemString));
+						} else {
+							if (isMIM) {
+								// process each invocation and then merge them
+								// into
+								// a
+								// single string
+								String[] invocations = XMLUtilities
+										.getSingleInvokationsFromMultipleInvokations(outputXML);
+								
+								List innerList = new ArrayList();
+								for (int i = 0; i < invocations.length; i++) {
+									try {
+										String collection = XMLUtilities.getWrappedCollection(
+												articleName, invocations[i]);
+										innerList.add(collection);
+									} catch (MobyException e) {
+										// collection didnt exist, so put an
+										// empty
+										// mobyData
+										// TODO keep the original wrapper
+										String qID = XMLUtilities.getQueryID(invocations[i]);
+										Element empty = XMLUtilities.createMobyDataWrapper(qID);
+										XMLOutputter output = new XMLOutputter(Format
+												.getPrettyFormat());
+										innerList.add(output.outputString(empty));
+									}
+								}
+								
+								outputMap.put(name, new DataThing(innerList));
+							} else {
+
+								try {
+									
+									List innerList = new ArrayList();
+									String collection = XMLUtilities.getWrappedCollection(
+											articleName, outputXML);
+									innerList.add(collection);
+									outputMap.put(name, new DataThing(innerList));
+								} catch (MobyException e) {
+									// TODO keep the original wrapper
+									List innerList = new ArrayList();
+									// simple didnt exist, so put an empty
+									// mobyData
+									String qID = XMLUtilities.getQueryID(outputXML);
+									Element empty = XMLUtilities.createMobyDataWrapper(qID);
+									XMLOutputter output = new XMLOutputter(Format.getPrettyFormat());
+									innerList.add(output.outputString(empty));
+									outputMap.put(name, new DataThing(innerList));
+								}
+							}
 						}
 					}
 				} else {
-					// process simples
-					// process multiple invokations
+					// simple - single string
+					if (name.indexOf("_ANON_") > 0) {
+						// un-named simple -> ignore it as it is illegal in the
+						// api
+						// TODO could throw exception
 
-					boolean isMIM = (XMLUtilities.isMultipleInvokationMessage(documentElement));
-
-					if (name.indexOf("(_ANON_)") > 0) {
-						// extract the datatype
-						String objectType = name.substring(0, name.indexOf("("));
-						if (!isMIM) {
-							String mobySimple = XMLUtilities.getMobyElement(documentElement,
-									objectType, "", null, ((BiomobyProcessor) proc)
-											.getMobyEndpoint());
-							if (mobySimple != null)
-								outputMap.put(name, new DataThing(mobySimple));
-						} else {
-							// we have a multiple invokation message
-							// list of mobyData elements
-							List list = XMLUtilities
-									.getSingleInvokationsFromMultipleInvokationMessage(documentElement);
-							int queryIDCount = 0;
-							// create the main MOBY element
-							Element newRoot = new Element("MOBY", mobyNS);
-							Element newMobyContent = new Element("mobyContent", mobyNS);
-							newRoot.addContent(newMobyContent);
-							for (Iterator listIterator = list.iterator(); listIterator.hasNext();) {
-								Element md = (Element) listIterator.next();
-								Element simpleElement = jDomUtilities.getElement("Simple", md,
-										new String[] { "articleName=" });
-								if (simpleElement == null)
-									continue;
-
-								if (simpleElement.getChild(objectType, mobyNS) == null)
-									if (simpleElement.getChild(objectType) == null)
-										continue;
-								Element newMobyData = new Element("mobyData", mobyNS);
-								newMobyData.setAttribute("queryID", "a" + queryIDCount++, mobyNS);
-								newMobyContent.addContent(newMobyData);
-								newMobyData.addContent(simpleElement.detach());
-							}
-							XMLOutputter xo = new XMLOutputter();
-							String outputItemString = xo.outputString(new Document(newRoot));
-							outputMap.put(name, new DataThing(outputItemString));
-
-						}
+						String empty = new XMLOutputter().outputString(XMLUtilities
+								.createMobyDataWrapper(XMLUtilities.getQueryID(outputXML)));
+						List innerList = new ArrayList();
+						innerList.add(empty);
+						outputMap.put(name, new DataThing(innerList));
+						continue;
 					} else {
-						// we have an article name, so extract it and do the
-						// same as above
+						String articleName = name.substring(name.indexOf("(") + 1, name
+								.indexOf(")"));
 						String objectType = name.substring(0, name.indexOf("("));
-						String artName = name.substring(name.indexOf("(") + 1, name.indexOf(")"));
+						if (isMIM) {
 
-						if (!isMIM) {
+							String[] invocations = XMLUtilities
+									.getSingleInvokationsFromMultipleInvokations(outputXML);
+							
+							ArrayList innerList = new ArrayList();
 
-							String mobySimple = XMLUtilities.getMobyElement(documentElement,
-									objectType, artName, null, ((BiomobyProcessor) proc)
-											.getMobyEndpoint());
-							if (mobySimple != null)
-								outputMap.put(name, new DataThing(mobySimple));
+							for (int i = 0; i < invocations.length; i++) {
+								try {
+									String simple = XMLUtilities.getWrappedSimple(articleName,
+											objectType, invocations[i], ((BiomobyProcessor) proc)
+													.getMobyEndpoint());
+									innerList.add(simple);
+								} catch (MobyException e) {
+									// simple didnt exist, so put an empty
+									// mobyData
+									// TODO keep the original wrapper
+									String qID = XMLUtilities.getQueryID(invocations[i]);
+									Element empty = XMLUtilities.createMobyDataWrapper(qID);
+									XMLOutputter output = new XMLOutputter(Format.getPrettyFormat());
+									// invocations[i] =
+									// output.outputString(empty);
+									innerList.add(output.outputString(empty));
+								}
+							}
+							outputMap.put(name, new DataThing(innerList));
 						} else {
-							// we have a multiple invokation message
-							// list of mobyData elements
-							List list = XMLUtilities
-									.getSingleInvokationsFromMultipleInvokationMessage(documentElement);
-							int queryIDCount = 0;
-							// create the main MOBY element
-							Element newRoot = new Element("MOBY", mobyNS);
-							Element newMobyContent = new Element("mobyContent", mobyNS);
-							newRoot.addContent(newMobyContent);
-							for (Iterator listIterator = list.iterator(); listIterator.hasNext();) {
-								Element md = (Element) listIterator.next();
-								Element simpleElement = jDomUtilities.getElement("Simple", md,
-										new String[] { "articleName=" + artName });
-								if (simpleElement == null)
-									continue;
-
-								if (simpleElement.getChild(objectType, mobyNS) == null)
-									if (simpleElement.getChild(objectType) == null)
-										continue;
-								Element newMobyData = new Element("mobyData", mobyNS);
-								newMobyData.setAttribute("queryID", "a" + queryIDCount++, mobyNS);
-								newMobyContent.addContent(newMobyData);
-								newMobyData.addContent(simpleElement.detach());
+							// process the single invocation and put into a
+							// string
+							try {
+								String simple = XMLUtilities.getWrappedSimple(articleName,
+										objectType, outputXML, ((BiomobyProcessor) proc)
+												.getMobyEndpoint());
+								ArrayList innerList = new ArrayList();
+								innerList.add(simple);
+								outputMap.put(name, new DataThing(innerList));
+							} catch (MobyException e) {
+								// simple didnt exist, so put an empty mobyData
+								// TODO keep the original wrapper
+								String qID = XMLUtilities.getQueryID(outputXML);
+								Element empty = XMLUtilities.createMobyDataWrapper(qID);
+								XMLOutputter output = new XMLOutputter(Format.getPrettyFormat());
+								ArrayList innerList = new ArrayList();
+								innerList.add(output.outputString(empty));
+								outputMap.put(name, new DataThing(innerList));
 							}
-							if (newMobyContent.getChildren().isEmpty()) {
-								Element e = new Element("mobyData", mobyNS);
-								e.setAttribute("queryID", "e1", mobyNS);
-								newMobyContent.addContent(e.detach());
-							}
-							XMLOutputter xo = new XMLOutputter();
-							String outputItemString = xo.outputString(new Document(newRoot));
-							System.out.println("processOUTPUTS() MIM of simple:\n"
-									+ outputItemString);
-							outputMap.put(name, new DataThing(outputItemString));
 						}
 					}
 				}
 			}
 		}
-		System.out.println(outputMap);
 	}
 
 }
