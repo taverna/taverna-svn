@@ -25,15 +25,14 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: WorkflowLauncher.java,v $
- * Revision           $Revision: 1.5 $
+ * Revision           $Revision: 1.6 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-04-13 10:15:52 $
- *               by   $Author: stain $
+ * Last modified on   $Date: 2006-04-27 15:42:33 $
+ *               by   $Author: dturi $
  * Created on 16-Mar-2006
  *****************************************************************/
 package org.embl.ebi.escience.scufl.tools;
 
-import java.awt.event.WindowEvent;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -56,7 +55,6 @@ import org.embl.ebi.escience.scufl.ScuflModel;
 import org.embl.ebi.escience.scufl.UnknownPortException;
 import org.embl.ebi.escience.scufl.UnknownProcessorException;
 import org.embl.ebi.escience.scufl.enactor.EnactorProxy;
-
 import org.embl.ebi.escience.scufl.enactor.UserContext;
 import org.embl.ebi.escience.scufl.enactor.WorkflowEventListener;
 import org.embl.ebi.escience.scufl.enactor.WorkflowInstance;
@@ -84,333 +82,354 @@ import uk.ac.soton.itinnovation.freefluo.main.InvalidInputException;
  */
 
 public class WorkflowLauncher {
-	private ScuflModel model;
+    private ScuflModel model;
 
-	private UserContext userContext;
+    private UserContext userContext;
 
-	private String progressReportXML;
+    private String progressReportXML;
 
-	/**
-	 * Set <code>userContext</code> and instantiate the WorkflowLauncher,
-	 * constructing an instance of the ScuflModel from the XML provided by the
-	 * given input stream.
-	 * 
-	 * @param xmlStream
-	 * @param userContext
-	 *            a {@link UserContext}
-	 * @throws ProcessorCreationException
-	 * @throws DataConstraintCreationException
-	 * @throws UnknownProcessorException
-	 * @throws UnknownPortException
-	 * @throws DuplicateProcessorNameException
-	 * @throws MalformedNameException
-	 * @throws ConcurrencyConstraintCreationException
-	 * @throws DuplicateConcurrencyConstraintNameException
-	 * @throws XScuflFormatException
-	 */
-	public WorkflowLauncher(InputStream xmlStream, UserContext userContext)
-			throws ProcessorCreationException, DataConstraintCreationException,
-			UnknownProcessorException, UnknownPortException,
-			DuplicateProcessorNameException, MalformedNameException,
-			ConcurrencyConstraintCreationException,
-			DuplicateConcurrencyConstraintNameException, XScuflFormatException {
-		model = openWorkflowModel(xmlStream);
-		this.userContext = userContext;
-	}
+    /**
+     * Set <code>userContext</code> and instantiate the WorkflowLauncher,
+     * constructing an instance of the ScuflModel from the XML provided by the
+     * given input stream.
+     * 
+     * @param xmlStream
+     * @param userContext
+     *            a {@link UserContext}
+     * @throws ProcessorCreationException
+     * @throws DataConstraintCreationException
+     * @throws UnknownProcessorException
+     * @throws UnknownPortException
+     * @throws DuplicateProcessorNameException
+     * @throws MalformedNameException
+     * @throws ConcurrencyConstraintCreationException
+     * @throws DuplicateConcurrencyConstraintNameException
+     * @throws XScuflFormatException
+     */
+    public WorkflowLauncher(InputStream xmlStream, UserContext userContext)
+            throws ProcessorCreationException, DataConstraintCreationException,
+            UnknownProcessorException, UnknownPortException,
+            DuplicateProcessorNameException, MalformedNameException,
+            ConcurrencyConstraintCreationException,
+            DuplicateConcurrencyConstraintNameException, XScuflFormatException {
+        model = openWorkflowModel(xmlStream);
+        this.userContext = userContext;
+    }
 
-	/**
-	 * Set <code>userContext</code> and instantiate the WorkflowLauncher,
-	 * constructing an instance of the ScuflModel from the XML provided by the
-	 * given input stream.
-	 * 
-	 * @param xmlStream
-	 * @throws ProcessorCreationException
-	 * @throws DataConstraintCreationException
-	 * @throws UnknownProcessorException
-	 * @throws UnknownPortException
-	 * @throws DuplicateProcessorNameException
-	 * @throws MalformedNameException
-	 * @throws ConcurrencyConstraintCreationException
-	 * @throws DuplicateConcurrencyConstraintNameException
-	 * @throws XScuflFormatException
-	 */
-	public WorkflowLauncher(InputStream xmlStream)
-			throws ProcessorCreationException, DataConstraintCreationException,
-			UnknownProcessorException, UnknownPortException,
-			DuplicateProcessorNameException, MalformedNameException,
-			ConcurrencyConstraintCreationException,
-			DuplicateConcurrencyConstraintNameException, XScuflFormatException {
-		this(xmlStream, null);
-	}
+    /**
+     * Set <code>userContext</code> and instantiate the WorkflowLauncher,
+     * constructing an instance of the ScuflModel from the XML provided by the
+     * given input stream.
+     * 
+     * @param xmlStream
+     * @throws ProcessorCreationException
+     * @throws DataConstraintCreationException
+     * @throws UnknownProcessorException
+     * @throws UnknownPortException
+     * @throws DuplicateProcessorNameException
+     * @throws MalformedNameException
+     * @throws ConcurrencyConstraintCreationException
+     * @throws DuplicateConcurrencyConstraintNameException
+     * @throws XScuflFormatException
+     */
+    public WorkflowLauncher(InputStream xmlStream)
+            throws ProcessorCreationException, DataConstraintCreationException,
+            UnknownProcessorException, UnknownPortException,
+            DuplicateProcessorNameException, MalformedNameException,
+            ConcurrencyConstraintCreationException,
+            DuplicateConcurrencyConstraintNameException, XScuflFormatException {
+        this(xmlStream, null);
+    }
 
-	/**
-	 * Instantiate the WorkflowLauncher, constructing an instance of the
-	 * ScuflModel from the XML in the provided url
-	 * 
-	 * @param xmlFilename
-	 * @param userContext
-	 *            a {@link UserContext}
-	 * @throws FileNotFoundException
-	 * @throws ProcessorCreationException
-	 * @throws DataConstraintCreationException
-	 * @throws UnknownProcessorException
-	 * @throws UnknownPortException
-	 * @throws DuplicateProcessorNameException
-	 * @throws MalformedNameException
-	 * @throws ConcurrencyConstraintCreationException
-	 * @throws DuplicateConcurrencyConstraintNameException
-	 * @throws XScuflFormatException
-	 */
-	public WorkflowLauncher(URL url, UserContext userContext)
-			throws FileNotFoundException, ProcessorCreationException,
-			IOException, DataConstraintCreationException,
-			UnknownProcessorException, UnknownPortException,
-			DuplicateProcessorNameException, MalformedNameException,
-			ConcurrencyConstraintCreationException,
-			DuplicateConcurrencyConstraintNameException, XScuflFormatException {
-		this(url.openStream(), userContext);
-	}
+    /**
+     * Instantiate the WorkflowLauncher, constructing an instance of the
+     * ScuflModel from the XML in the provided url
+     * 
+     * @param xmlFilename
+     * @param userContext
+     *            a {@link UserContext}
+     * @throws FileNotFoundException
+     * @throws ProcessorCreationException
+     * @throws DataConstraintCreationException
+     * @throws UnknownProcessorException
+     * @throws UnknownPortException
+     * @throws DuplicateProcessorNameException
+     * @throws MalformedNameException
+     * @throws ConcurrencyConstraintCreationException
+     * @throws DuplicateConcurrencyConstraintNameException
+     * @throws XScuflFormatException
+     */
+    public WorkflowLauncher(URL url, UserContext userContext)
+            throws FileNotFoundException, ProcessorCreationException,
+            IOException, DataConstraintCreationException,
+            UnknownProcessorException, UnknownPortException,
+            DuplicateProcessorNameException, MalformedNameException,
+            ConcurrencyConstraintCreationException,
+            DuplicateConcurrencyConstraintNameException, XScuflFormatException {
+        this(url.openStream(), userContext);
+    }
 
-	/**
-	 * Instantiate the WorkflowLauncher, constructing an instance of the
-	 * ScuflModel from the XML in the provided url
-	 * 
-	 * @param xmlFilename
-	 * @throws FileNotFoundException
-	 * @throws ProcessorCreationException
-	 * @throws DataConstraintCreationException
-	 * @throws UnknownProcessorException
-	 * @throws UnknownPortException
-	 * @throws DuplicateProcessorNameException
-	 * @throws MalformedNameException
-	 * @throws ConcurrencyConstraintCreationException
-	 * @throws DuplicateConcurrencyConstraintNameException
-	 * @throws XScuflFormatException
-	 */
-	public WorkflowLauncher(URL url) throws FileNotFoundException,
-			ProcessorCreationException, IOException,
-			DataConstraintCreationException, UnknownProcessorException,
-			UnknownPortException, DuplicateProcessorNameException,
-			MalformedNameException, ConcurrencyConstraintCreationException,
-			DuplicateConcurrencyConstraintNameException, XScuflFormatException {
-		this(url, null);
-	}
+    /**
+     * Instantiate the WorkflowLauncher, constructing an instance of the
+     * ScuflModel from the XML in the provided url
+     * 
+     * @param xmlFilename
+     * @throws FileNotFoundException
+     * @throws ProcessorCreationException
+     * @throws DataConstraintCreationException
+     * @throws UnknownProcessorException
+     * @throws UnknownPortException
+     * @throws DuplicateProcessorNameException
+     * @throws MalformedNameException
+     * @throws ConcurrencyConstraintCreationException
+     * @throws DuplicateConcurrencyConstraintNameException
+     * @throws XScuflFormatException
+     */
+    public WorkflowLauncher(URL url) throws FileNotFoundException,
+            ProcessorCreationException, IOException,
+            DataConstraintCreationException, UnknownProcessorException,
+            UnknownPortException, DuplicateProcessorNameException,
+            MalformedNameException, ConcurrencyConstraintCreationException,
+            DuplicateConcurrencyConstraintNameException, XScuflFormatException {
+        this(url, null);
+    }
 
-	/**
-	 * Instantiate the WorkflowLauncher with a direct reference to the
-	 * ScuflModel to be executed.
-	 * 
-	 * @param model
-	 *            a {@link ScuflModel}
-	 */
-	public WorkflowLauncher(ScuflModel model) {
-		this.model = model;
-	}
+    /**
+     * Instantiate the WorkflowLauncher with a direct reference to the
+     * ScuflModel to be executed.
+     * 
+     * @param model
+     *            a {@link ScuflModel}
+     */
+    public WorkflowLauncher(ScuflModel model) {
+        this.model = model;
+    }
 
-	/**
-	 * Instantiate the WorkflowLauncher with a direct reference to the
-	 * ScuflModel to be executed, together with a UserContext for the user
-	 * executing this model.
-	 * 
-	 * @param model
-	 *            a {@link ScuflModel}
-	 * @param userContext
-	 *            a {@link UserContext}
-	 */
-	public WorkflowLauncher(ScuflModel model, UserContext userContext) {
-		this.model = model;
-		this.userContext = userContext;
-	}
+    /**
+     * Instantiate the WorkflowLauncher with a direct reference to the
+     * ScuflModel to be executed, together with a UserContext for the user
+     * executing this model.
+     * 
+     * @param model
+     *            a {@link ScuflModel}
+     * @param userContext
+     *            a {@link UserContext}
+     */
+    public WorkflowLauncher(ScuflModel model, UserContext userContext) {
+        this.model = model;
+        this.userContext = userContext;
+    }
 
-	private ScuflModel openWorkflowModel(InputStream xmlStream)
-			throws ProcessorCreationException, DataConstraintCreationException,
-			UnknownProcessorException, UnknownPortException,
-			DuplicateProcessorNameException, MalformedNameException,
-			ConcurrencyConstraintCreationException,
-			DuplicateConcurrencyConstraintNameException, XScuflFormatException {
-		ScuflModel model = new ScuflModel();
-		XScuflParser.populate(xmlStream, model, null);
-		return model;
-	}
+    private ScuflModel openWorkflowModel(InputStream xmlStream)
+            throws ProcessorCreationException, DataConstraintCreationException,
+            UnknownProcessorException, UnknownPortException,
+            DuplicateProcessorNameException, MalformedNameException,
+            ConcurrencyConstraintCreationException,
+            DuplicateConcurrencyConstraintNameException, XScuflFormatException {
+        ScuflModel model = new ScuflModel();
+        XScuflParser.populate(xmlStream, model, null);
+        return model;
+    }
 
-	protected ScuflModel getModel() {
-		return model;
-	}
+    protected ScuflModel getModel() {
+        return model;
+    }
 
-	/**
-	 * Provides access to the progress report after the workflow has be executed
-	 * 
-	 * @return progress report
-	 */
-	public String getProgressReportXML() {
-		return progressReportXML;
-	}
+    /**
+     * Provides access to the progress report after the workflow has be executed
+     * 
+     * @return progress report
+     */
+    public String getProgressReportXML() {
+        return progressReportXML;
+    }
 
-	public Map execute(Map inputs) throws WorkflowSubmissionException,
-			InvalidInputException {
-		return this.execute(inputs, null);
-	}
+    public Map execute(Map inputs) throws WorkflowSubmissionException,
+            InvalidInputException {
+        EnactorProxy enactor = FreefluoEnactorProxy.getInstance();
+        final WorkflowInstance workflowInstance = enactor.compileWorkflow(
+                model, inputs, userContext);
 
-	/**
-	 * Executes the workflow with the provided inputs (which is a Map of
-	 * DataThings) and <code>userContext</code>. Returns the outputs of the
-	 * workflow (which is also a Map of DataThings). A workflowEventListener can
-	 * be provided to allow handling of events as the workflow is executed, or
-	 * can be ommitted by passing 'null'
-	 * 
-	 * @param inputs
-	 * @param workflowEventListener
-	 * @return
-	 * @throws WorkflowSubmissionException
-	 * @throws InvalidInputException
-	 * @see org.embl.ebi.escience.baclava.DataThing
-	 * @see org.embl.ebi.escience.scufl.enactor.WorkflowEventListener
-	 */
-	public Map execute(Map inputs, WorkflowEventListener workflowEventListener)
-			throws WorkflowSubmissionException, InvalidInputException {
+        final Object lock = new Object();
 
-		if (workflowEventListener != null) {
-			WorkflowEventDispatcher.DISPATCHER
-					.addListener(workflowEventListener);
-		}
+        WorkflowEventListener completionListener = new WorkflowEventListener() {
 
-		EnactorProxy enactor = FreefluoEnactorProxy.getInstance();
-		final WorkflowInstance workflowInstance = enactor.compileWorkflow(
-				model, inputs, userContext);
+            public void collectionConstructed(CollectionConstructionEvent e) {
+            }
 
-		final Object lock = new Object();
+            public void dataChanged(UserChangedDataEvent e) {
+            }
 
-		WorkflowEventListener completionListener = new WorkflowEventListener() {
+            public void processCompleted(ProcessCompletionEvent e) {
+            }
 
-			public void collectionConstructed(CollectionConstructionEvent e) {
-			}
+            public void processCompletedWithIteration(IterationCompletionEvent e) {
+            }
 
-			public void dataChanged(UserChangedDataEvent e) {
-			}
+            public void processFailed(ProcessFailureEvent e) {
+            }
 
-			public void processCompleted(ProcessCompletionEvent e) {
-			}
+            public void workflowCompleted(WorkflowCompletionEvent e) {
+                if (e.getWorkflowInstance() == workflowInstance) {
+                    synchronized (lock) {
+                        lock.notifyAll();
+                    }
+                }
+            }
 
-			public void processCompletedWithIteration(IterationCompletionEvent e) {
-			}
+            public void workflowCreated(WorkflowCreationEvent e) {
+            }
 
-			public void processFailed(ProcessFailureEvent e) {
-			}
+            public void workflowFailed(WorkflowFailureEvent e) {
+                synchronized (lock) {
+                    lock.notifyAll();
+                }
+            }
+        };
 
-			public void workflowCompleted(WorkflowCompletionEvent e) {
-				if (e.getWorkflowInstance() == workflowInstance) {
-					synchronized (lock) {
-						lock.notifyAll();
-					}
-				}
-			}
+        WorkflowEventDispatcher.DISPATCHER.addListener(completionListener);
 
-			public void workflowCreated(WorkflowCreationEvent e) {
-			}
+        try {
+            workflowInstance.run();
+            synchronized (lock) {
+                try {
+                    lock.wait();
+                } catch (InterruptedException e) {
+                }
+            }
 
-			public void workflowFailed(WorkflowFailureEvent e) {
-				synchronized (lock) {
-					lock.notifyAll();
-				}
-			}
-		};
+        } catch (InvalidInputException e) {
+            throw e;
+        } finally {
+            progressReportXML = workflowInstance.getProgressReportXMLString();
+        }
 
-		WorkflowEventDispatcher.DISPATCHER.addListener(completionListener);
+        return workflowInstance.getOutput();
+    }
 
-		try {
-			workflowInstance.run();
-			synchronized (lock) {
-				try {
-					lock.wait();
-				} catch (InterruptedException e) {
-				}
-			}
+    /**
+     * Executes the workflow with the provided inputs (which is a Map of
+     * DataThings) and <code>userContext</code>. Returns the outputs of the
+     * workflow (which is also a Map of DataThings). An array of
+     * workflowEventListeners can be provided to allow handling of events as the
+     * workflow is executed.
+     * 
+     * @param inputs
+     * @param workflowEventListeners
+     * @return
+     * @throws WorkflowSubmissionException
+     * @throws InvalidInputException
+     * @see org.embl.ebi.escience.baclava.DataThing
+     * @see org.embl.ebi.escience.scufl.enactor.WorkflowEventListener
+     */
+    public Map execute(Map inputs,
+            WorkflowEventListener[] workflowEventListeners)
+            throws WorkflowSubmissionException, InvalidInputException {
+        for (int i = 0; i < workflowEventListeners.length; i++) {
+            WorkflowEventDispatcher.DISPATCHER
+                    .addListener(workflowEventListeners[i]);
+        }
 
-		} catch (InvalidInputException e) {
-			throw e;
-		} finally {
-			progressReportXML = workflowInstance.getProgressReportXMLString();
-		}
+        return execute(inputs);
+    }
 
-		return workflowInstance.getOutput();
-	}
+    /**
+     * Executes the workflow with the provided inputs (which is a Map of
+     * DataThings) and <code>userContext</code>. Returns the outputs of the
+     * workflow (which is also a Map of DataThings). A workflowEventListener can
+     * be provided to allow handling of events as the workflow is executed.
+     * 
+     * @param inputs
+     * @param workflowEventListener
+     * @return
+     * @throws WorkflowSubmissionException
+     * @throws InvalidInputException
+     * @see org.embl.ebi.escience.baclava.DataThing
+     * @see org.embl.ebi.escience.scufl.enactor.WorkflowEventListener
+     */
+    public Map execute(Map inputs, WorkflowEventListener workflowEventListener)
+            throws WorkflowSubmissionException, InvalidInputException {
+        WorkflowEventDispatcher.DISPATCHER.addListener(workflowEventListener);
+        return execute(inputs);
 
-	/**
-	 * Allows a workflow to be executed stand-alone. Usage: <workflowURL> [<inputName>
-	 * <inputDataURL>] ...
-	 * 
-	 * @param args
-	 */
-	public static void main(String args[]) {
-		Map inputs = new HashMap();
-		Map outputs = null;
+    }
 
-		if (args.length % 2 != 1) {
-			System.err
-					.print("Usage: <workflowFilename> [<inputName> <inputDataURL>] ...");
-			System.exit(-1);
-		}
+    /**
+     * Allows a workflow to be executed stand-alone. Usage: <workflowURL> [<inputName>
+     * <inputDataURL>] ...
+     * 
+     * @param args
+     */
+    public static void main(String args[]) {
+        Map inputs = new HashMap();
+        Map outputs = null;
 
-		try {
-			URL workflowURL = new URL(args[0]);
+        if (args.length % 2 != 1) {
+            System.err
+                    .print("Usage: <workflowFilename> [<inputName> <inputDataURL>] ...");
+            System.exit(-1);
+        }
 
-			if (args.length > 1) {
-				for (int i = 1; i < args.length; i += 2) {
-					String inputName = args[i];
-					inputs.put(inputName, loadDataThing(new URL(args[i + 1])));
-				}
-			}
+        try {
+            URL workflowURL = new URL(args[0]);
 
-			WorkflowLauncher launcher = new WorkflowLauncher(workflowURL);
-			try {
-				outputs = launcher.execute(inputs, null);
-			} catch (Exception e) {
-				System.err.println("Error executing workflow: "
-						+ e.getMessage());
-			}
+            if (args.length > 1) {
+                for (int i = 1; i < args.length; i += 2) {
+                    String inputName = args[i];
+                    inputs.put(inputName, loadDataThing(new URL(args[i + 1])));
+                }
+            }
 
-			saveResults(outputs, workflowURL, launcher.getProgressReportXML());
+            WorkflowLauncher launcher = new WorkflowLauncher(workflowURL);
+            try {
+                outputs = launcher.execute(inputs);
+            } catch (Exception e) {
+                System.err.println("Error executing workflow: "
+                        + e.getMessage());
+            }
 
-		} catch (Exception e) {
-			System.err.println("Error executing workflow: " + e.getMessage());
-		}
-		System.exit(0);
-	}
+            saveResults(outputs, workflowURL, launcher.getProgressReportXML());
 
-	private static void saveResults(Map outputs, URL workflowURL,
-			String progressReport) throws IOException {
-		String workflowOutputDir = "";
-		if (workflowURL.getFile().lastIndexOf(File.separatorChar) != -1) {
-			workflowOutputDir = workflowURL.getFile().substring(
-					workflowURL.getFile().lastIndexOf(File.separatorChar) + 1);
-		} else {
-			workflowOutputDir = workflowURL.getFile();
-		}
-		workflowOutputDir += "_output";
+        } catch (Exception e) {
+            System.err.println("Error executing workflow: " + e.getMessage());
+        }
+        System.exit(0);
+    }
 
-		if (outputs != null) {
-			for (Iterator iterator = outputs.keySet().iterator(); iterator
-					.hasNext();) {
-				String outputName = (String) iterator.next();
-				DataThing thing = (DataThing) outputs.get(outputName);
-				DataThing.writeObjectToFileSystem(new File(workflowOutputDir),
-						outputName, thing.getDataObject(), "");
-			}
-		}
-		DataThing.writeObjectToFileSystem(new File(workflowOutputDir),
-				"progressReport", progressReport, ".xml");
-	}
+    private static void saveResults(Map outputs, URL workflowURL,
+            String progressReport) throws IOException {
+        String workflowOutputDir = "";
+        if (workflowURL.getFile().lastIndexOf(File.separatorChar) != -1) {
+            workflowOutputDir = workflowURL.getFile().substring(
+                    workflowURL.getFile().lastIndexOf(File.separatorChar) + 1);
+        } else {
+            workflowOutputDir = workflowURL.getFile();
+        }
+        workflowOutputDir += "_output";
 
-	private static DataThing loadDataThing(URL dataURL) throws Exception {
-		String line;
-		String data = "";
-		BufferedReader reader = new BufferedReader(new InputStreamReader(
-				dataURL.openStream()));
-		while ((line = reader.readLine()) != null) {
-			data += line;
-			data += "\n";
-		}
+        if (outputs != null) {
+            for (Iterator iterator = outputs.keySet().iterator(); iterator
+                    .hasNext();) {
+                String outputName = (String) iterator.next();
+                DataThing thing = (DataThing) outputs.get(outputName);
+                DataThing.writeObjectToFileSystem(new File(workflowOutputDir),
+                        outputName, thing.getDataObject(), "");
+            }
+        }
+        DataThing.writeObjectToFileSystem(new File(workflowOutputDir),
+                "progressReport", progressReport, ".xml");
+    }
 
-		return new DataThing(data);
-	}
+    private static DataThing loadDataThing(URL dataURL) throws Exception {
+        String line;
+        String data = "";
+        BufferedReader reader = new BufferedReader(new InputStreamReader(
+                dataURL.openStream()));
+        while ((line = reader.readLine()) != null) {
+            data += line;
+            data += "\n";
+        }
+
+        return new DataThing(data);
+    }
 }
