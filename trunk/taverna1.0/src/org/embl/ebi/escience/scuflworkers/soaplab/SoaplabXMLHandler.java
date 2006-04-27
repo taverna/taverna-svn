@@ -62,7 +62,7 @@ public class SoaplabXMLHandler implements XMLHandler {
 				.getChild("soaplabwsdl", XScufl.XScuflNS);
 		String endpoint = soaplab.getTextTrim();
 		try {
-			URL endpointURL = new URL(endpoint);
+			new URL(endpoint);
 		} catch (MalformedURLException mue) {
 			throw new XScuflFormatException(
 					"The url specified for the soaplab endpoint for '" + name

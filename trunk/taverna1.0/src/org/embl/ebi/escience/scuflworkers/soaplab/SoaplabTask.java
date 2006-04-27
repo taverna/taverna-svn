@@ -25,8 +25,8 @@
 //      Dependencies        :
 //
 //      Last commit info    :   $Author: stain $
-//                              $Date: 2006-04-26 12:43:46 $
-//                              $Revision: 1.13 $
+//                              $Date: 2006-04-27 10:56:17 $
+//                              $Revision: 1.14 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 
@@ -90,9 +90,8 @@ public class SoaplabTask implements ProcessorTaskWorker {
 
 			// Invoke the web service...
 			Call call = (Call) new Service().createCall();
-			call.setTimeout(new Integer(0));
-			URL soaplabWSDLURL = ((SoaplabProcessor) proc).getEndpoint();
-			String soaplabWSDL = soaplabWSDLURL.toExternalForm();
+			call.setTimeout(new Integer(INVOCATION_TIMEOUT));
+			URL soaplabWSDLURL = proc.getEndpoint();
 			call.setTargetEndpointAddress(soaplabWSDLURL);
 
 			// Invoke the job and wait for it to complete
@@ -107,7 +106,7 @@ public class SoaplabTask implements ProcessorTaskWorker {
 				System.out.println("Adding output : " + outputPortNames[i]);
 			}
 
-			if (this.proc.isPollingDefined() == false) {
+			if (!this.proc.isPollingDefined()) {
 				// If we're not polling then use this behaviour
 				call.setOperationName(new QName("waitFor"));
 				call.invoke(new Object[] { jobID });
