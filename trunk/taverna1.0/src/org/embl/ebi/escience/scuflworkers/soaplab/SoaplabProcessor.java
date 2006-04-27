@@ -6,23 +6,27 @@
 
 package org.embl.ebi.escience.scuflworkers.soaplab;
 
-import javax.xml.namespace.QName;
-import org.apache.axis.client.Call;
-import org.apache.axis.client.Service;
-import org.embl.ebi.escience.scufl.*;
-
-// Utility Imports
+import java.io.Serializable;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.Properties;
 
-// Network Imports
-import java.net.MalformedURLException;
-import java.net.URL;
+import javax.xml.rpc.ServiceException;
 
-import java.lang.NullPointerException;
-import java.lang.Object;
-import java.lang.String;
+import org.embl.ebi.escience.scufl.DuplicatePortNameException;
+import org.embl.ebi.escience.scufl.DuplicateProcessorNameException;
+import org.embl.ebi.escience.scufl.InputPort;
+import org.embl.ebi.escience.scufl.OutputPort;
+import org.embl.ebi.escience.scufl.Port;
+import org.embl.ebi.escience.scufl.PortCreationException;
+import org.embl.ebi.escience.scufl.Processor;
+import org.embl.ebi.escience.scufl.ProcessorCreationException;
+import org.embl.ebi.escience.scufl.ScuflModel;
+import org.embl.ebi.escience.scufl.ScuflModelEvent;
+import org.embl.ebi.escience.utils.Soap;
 
 /**
  * A processor based on the Soaplab web service around the EMBOSS tools. This
@@ -33,7 +37,7 @@ import java.lang.String;
  * 
  * @author Tom Oinn
  */
-public class SoaplabProcessor extends Processor implements java.io.Serializable {
+public class SoaplabProcessor extends Processor implements Serializable {
 
 	private URL endpoint = null;
 
@@ -85,10 +89,9 @@ public class SoaplabProcessor extends Processor implements java.io.Serializable 
 			// Probably new style URL of form http://host.com/root/category.name
 			String[] s = endpoint.getPath().split("\\.");
 			return s[s.length - 2];
-		} else {
-			String[] pathbits = app[0].split("/");
-			return pathbits[pathbits.length - 1];
 		}
+		String[] pathbits = app[0].split("/");
+		return pathbits[pathbits.length - 1];
 	}
 
 	// Get the installation path of the soaplab server
@@ -111,9 +114,8 @@ public class SoaplabProcessor extends Processor implements java.io.Serializable 
 			// Probably new style URL of form http://host.com/root/category.name
 			String[] s = endpoint.getPath().split("\\.");
 			return s[s.length - 1];
-		} else {
-			return app[1];
 		}
+		return app[1];
 	}
 
 	/**
@@ -175,8 +177,8 @@ public class SoaplabProcessor extends Processor implements java.io.Serializable 
 	void setEndpoint(String specifier) throws MalformedURLException,
 			ProcessorCreationException {
 		URL new_endpoint = new URL(specifier);
-		if (this.endpoint != null) {
-			if (this.endpoint.equals(new_endpoint) == false) {
+		if (endpoint != null) {
+			if (endpoint.equals(new_endpoint) == false) {
 				fireModelEvent(new ScuflModelEvent(this,
 						"Service endpoint changed to '" + specifier + "'"));
 			} else {
@@ -187,7 +189,7 @@ public class SoaplabProcessor extends Processor implements java.io.Serializable 
 			fireModelEvent(new ScuflModelEvent(this,
 					"Service endpoint set to '" + specifier + "'"));
 		}
-		this.endpoint = new_endpoint;
+		endpoint = new_endpoint;
 		try {
 			if (this.isOffline() == false) {
 				generatePorts();
@@ -211,26 +213,23 @@ public class SoaplabProcessor extends Processor implements java.io.Serializable 
 	 */
 	public void getDescriptionText() throws ProcessorCreationException {
 		try {
-			Call call = (Call) new Service().createCall();
-			call.setTargetEndpointAddress(this.endpoint.toString());
-			call.setOperationName(new QName("getAnalysisType"));
-			Map info = (Map) call.invoke(new Object[0]);
+			Map info = (Map) Soap.callWebService(endpoint.toString(),
+					"getAnalysisType");
 			// Get the description element from the map
 			String description = (String) info.get("description");
 			if (description != null) {
 				setDescription(description);
 			}
-		} catch (javax.xml.rpc.ServiceException se) {
+		} catch (ServiceException se) {
 			throw new ProcessorCreationException(
 					getName()
 							+ ": Unable to create a new call to connect to\n   soaplab, error was : "
 							+ se.getMessage());
-		} catch (java.rmi.RemoteException re) {
+		} catch (RemoteException re) {
 			throw new ProcessorCreationException(
 					getName()
 							+ ": Unable to call the get description method\n   for XScufl processor "
-							+ getName() + "\nendpoint : "
-							+ this.endpoint.toString()
+							+ getName() + "\nendpoint : " + endpoint.toString()
 							+ "\n   Remote exception message "
 							+ re.getMessage());
 		}
@@ -247,14 +246,9 @@ public class SoaplabProcessor extends Processor implements java.io.Serializable 
 		// Wipe the existing port declarations
 		ports = new ArrayList();
 		try {
-
 			// Do web service type stuff[tm]
-			Call call = (Call) new Service().createCall();
-			call.setTargetEndpointAddress(this.endpoint.toString());
-
-			// Get inputs
-			call.setOperationName(new QName("getInputSpec"));
-			Map inputs[] = (Map[]) call.invoke(new Object[0]);
+			Map[] inputs = (Map[]) Soap.callWebService(endpoint.toString(),
+					"getInputSpec");
 			// Iterate over the inputs
 			for (int i = 0; i < inputs.length; i++) {
 				Map input_spec = inputs[i];
@@ -278,10 +272,8 @@ public class SoaplabProcessor extends Processor implements java.io.Serializable 
 			}
 
 			// Get outputs
-			call = (Call) new Service().createCall();
-			call.setTargetEndpointAddress(this.endpoint.toString());
-			call.setOperationName(new QName("getResultSpec"));
-			Map[] results = (Map[]) call.invoke(new Object[0]);
+			Map[] results = (Map[]) Soap.callWebService(endpoint.toString(),
+					"getResultSpec");
 			// Iterate over the outputs
 			for (int i = 0; i < results.length; i++) {
 				Map output_spec = results[i];
@@ -310,16 +302,16 @@ public class SoaplabProcessor extends Processor implements java.io.Serializable 
 				}
 			}
 
-		} catch (javax.xml.rpc.ServiceException se) {
+		} catch (ServiceException se) {
 			throw new ProcessorCreationException(
 					getName()
 							+ ": Unable to create a new call to connect\n   to soaplab, error was : "
 							+ se.getMessage());
-		} catch (java.rmi.RemoteException re) {
+		} catch (RemoteException re) {
 			throw new ProcessorCreationException(
 					getName()
 							+ ": Unable to call the get spec method for\n   endpoint : "
-							+ this.endpoint.toString()
+							+ endpoint.toString()
 							+ "\n   Remote exception message "
 							+ re.getMessage());
 		} catch (NullPointerException npe) {
@@ -336,7 +328,7 @@ public class SoaplabProcessor extends Processor implements java.io.Serializable 
 	 * Get the URL for this endpoint
 	 */
 	public URL getEndpoint() {
-		return this.endpoint;
+		return endpoint;
 	}
 
 }
