@@ -6,27 +6,27 @@
 package org.embl.ebi.escience.baclava;
 
 /**
- * Thrown when metadata is requested for an object,
- * no empty metadata element is defined and there
- * is no data stored.
+ * Thrown when metadata is requested for an object, no empty metadata element is
+ * defined and there is no data stored.
+ * 
  * @author Tom Oinn
  */
 public class NoMetadataFoundException extends RuntimeException {
-    
-    public NoMetadataFoundException() {
-	super();
-    }
-    
-    public NoMetadataFoundException(String message) {
-	super(message);
-    }
-    
-    public NoMetadataFoundException(String message, Exception cause) {
-	super(message, cause);
-    }
 
-    public NoMetadataFoundException(Exception cause) {
-	super(cause);
-    }
+	public NoMetadataFoundException() {
+		super();
+	}
+
+	public NoMetadataFoundException(String message) {
+		super(message);
+	}
+
+	public NoMetadataFoundException(String message, Exception cause) {
+		super(message, cause);
+	}
+
+	public NoMetadataFoundException(Exception cause) {
+		super(cause);
+	}
 
 }

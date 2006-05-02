@@ -13,8 +13,10 @@ import java.awt.datatransfer.*;
  * 
  * @author <a href="mailto:bleh">Kevin Glover</a>
  */
-public class Flavours
-{
-	public static final DataFlavor LSID_FLAVOUR = new DataFlavor("text/lsid", "An LSID!");	
-	public static final DataFlavor DATATHING_FLAVOUR = new DataFlavor("text/dataThing", "A DataThing");
+public class Flavours {
+	public static final DataFlavor LSID_FLAVOUR = new DataFlavor("text/lsid",
+			"An LSID!");
+
+	public static final DataFlavor DATATHING_FLAVOUR = new DataFlavor(
+			"text/dataThing", "A DataThing");
 }

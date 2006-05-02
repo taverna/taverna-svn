@@ -6,13 +6,13 @@
 package org.embl.ebi.escience.baclava.store;
 
 /**
- * Thrown by a BaclavaDataService implementation when
- * a storage request containing LSIDs that already exist
- * in the data store is made.
+ * Thrown by a BaclavaDataService implementation when a storage request
+ * containing LSIDs that already exist in the data store is made.
+ * 
  * @author Tom Oinn
  */
 public class DuplicateLSIDException extends Exception {
 
-    //
+	//
 
 }

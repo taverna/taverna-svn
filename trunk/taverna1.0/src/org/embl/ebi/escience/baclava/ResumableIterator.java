@@ -10,16 +10,16 @@ import java.util.Collection;
 import java.util.Iterator;
 
 /**
- * Specifies an Iterator that can be reset to some
- * initial starting condition
+ * Specifies an Iterator that can be reset to some initial starting condition
+ * 
  * @author Tom Oinn
  */
 public interface ResumableIterator extends Iterator {
-    
-    public void reset();
-    
-    public int size();
 
-    public int[] getCurrentLocation();
+	public void reset();
+
+	public int size();
+
+	public int[] getCurrentLocation();
 
 }
