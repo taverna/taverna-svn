@@ -11,12 +11,13 @@ import java.util.*;
 
 /**
  * A processor which fails if the test input matches the string 'false'
+ * 
  * @author Tom Oinn
  */
 public class FailIfFalse extends FailIfTrue implements LocalWorker {
 
-    public FailIfFalse() {
-	super("false");
-    }
+	public FailIfFalse() {
+		super("false");
+	}
 
 }
