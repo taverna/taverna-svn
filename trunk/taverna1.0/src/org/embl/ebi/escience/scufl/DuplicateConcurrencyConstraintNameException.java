@@ -6,14 +6,15 @@
 package org.embl.ebi.escience.scufl;
 
 /**
- * Thrown by the constructor of the ConcurrencyConstraint class when
- * a duplicate name is added to a particular ScuflModel
+ * Thrown by the constructor of the ConcurrencyConstraint class when a duplicate
+ * name is added to a particular ScuflModel
+ * 
  * @author Tom Oinn
  */
 public class DuplicateConcurrencyConstraintNameException extends Exception {
 
-    public DuplicateConcurrencyConstraintNameException(String the_message) {
-	super(the_message);
-    }
+	public DuplicateConcurrencyConstraintNameException(String the_message) {
+		super(the_message);
+	}
 
 }

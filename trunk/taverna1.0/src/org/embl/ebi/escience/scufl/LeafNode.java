@@ -9,10 +9,11 @@ import javax.swing.tree.*;
 
 /**
  * A leaf node in an iterator tree model
+ * 
  * @author Tom Oinn
  */
 public class LeafNode extends DefaultMutableTreeNode {
-    public LeafNode(String name) {
-	super(name);
-    }
+	public LeafNode(String name) {
+		super(name);
+	}
 }

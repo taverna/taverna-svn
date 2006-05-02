@@ -6,20 +6,20 @@
 package org.embl.ebi.escience.scufl;
 
 /**
- * Thrown from the model when there is a problem going
- * from offline to online mode - normally this is 
- * a similar problem to the workflow load but I guess
+ * Thrown from the model when there is a problem going from offline to online
+ * mode - normally this is a similar problem to the workflow load but I guess
  * there could be additional factors.
+ * 
  * @author Tom Oinn
  */
 public class SetOnlineException extends Exception {
 
-    public SetOnlineException() {
-	//
-    }
-    
-    public SetOnlineException(String message) {
-	super(message);
-    }
+	public SetOnlineException() {
+		//
+	}
+
+	public SetOnlineException(String message) {
+		super(message);
+	}
 
 }

@@ -6,14 +6,15 @@
 package org.embl.ebi.escience.scufl;
 
 /**
- * Thrown by the constructor of the Processor class when
- * a duplicate name is added to a particular ScuflModel
+ * Thrown by the constructor of the Processor class when a duplicate name is
+ * added to a particular ScuflModel
+ * 
  * @author Tom Oinn
  */
 public class DuplicateProcessorNameException extends Exception {
 
-    public DuplicateProcessorNameException(String the_message) {
-	super(the_message);
-    }
+	public DuplicateProcessorNameException(String the_message) {
+		super(the_message);
+	}
 
 }

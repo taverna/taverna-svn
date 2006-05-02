@@ -6,12 +6,13 @@
 package org.embl.ebi.escience.scufl;
 
 /**
- * Implementors can respond to ScuflModelEvent messages,
- * and may register themselves with a ScuflModel.
+ * Implementors can respond to ScuflModelEvent messages, and may register
+ * themselves with a ScuflModel.
+ * 
  * @author Tom Oinn
  */
 public interface ScuflModelEventListener {
 
-    public void receiveModelEvent(ScuflModelEvent event);
+	public void receiveModelEvent(ScuflModelEvent event);
 
 }

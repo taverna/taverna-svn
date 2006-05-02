@@ -25,7 +25,7 @@ public abstract class Port implements Serializable {
 
 	/**
 	 * Create a new port (obviously you can't actually construct this because
-	 * it's abstract. Names should match [a-zA-Z_0-9]. 
+	 * it's abstract. Names should match [a-zA-Z_0-9].
 	 */
 	public Port(Processor processor, String name)
 			throws DuplicatePortNameException, PortCreationException {
@@ -109,7 +109,11 @@ public abstract class Port implements Serializable {
 	 * Should only ever be called on workflow sink or source ports, will have no
 	 * effect on others.
 	 * 
-	 * The new name must match the regular expression <pre>\w+</pre>
+	 * The new name must match the regular expression
+	 * 
+	 * <pre>
+	 * \w+
+	 * </pre>
 	 * 
 	 * @see isNameEditable()
 	 */

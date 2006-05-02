@@ -6,14 +6,14 @@
 package org.embl.ebi.escience.scufl;
 
 /**
- * Thrown by the Processor classes when then can't find a 
- * particular named port.
+ * Thrown by the Processor classes when then can't find a particular named port.
+ * 
  * @author Tom Oinn
  */
 public class UnknownPortException extends Exception {
 
-    public UnknownPortException(String the_message) {
-	super(the_message);
-    }
+	public UnknownPortException(String the_message) {
+		super(the_message);
+	}
 
 }

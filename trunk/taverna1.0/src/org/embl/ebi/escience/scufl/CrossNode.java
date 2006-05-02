@@ -9,10 +9,11 @@ import javax.swing.tree.*;
 
 /**
  * A cross product node in an iterator tree model
+ * 
  * @author Tom Oinn
  */
 public class CrossNode extends DefaultMutableTreeNode {
-    public CrossNode() {
-	//
-    }
+	public CrossNode() {
+		//
+	}
 }

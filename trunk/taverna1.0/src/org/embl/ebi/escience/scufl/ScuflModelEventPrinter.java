@@ -14,38 +14,36 @@ import java.lang.Object;
 import java.lang.String;
 import java.lang.System;
 
-
-
 /**
- * Trivially implements the ScuflModelEventListener
- * by printing a textual representation of incoming
- * events to a given PrintStream
+ * Trivially implements the ScuflModelEventListener by printing a textual
+ * representation of incoming events to a given PrintStream
+ * 
  * @author Tom Oinn
  */
-public class ScuflModelEventPrinter implements ScuflModelEventListener, java.io.Serializable {
+public class ScuflModelEventPrinter implements ScuflModelEventListener,
+		java.io.Serializable {
 
-    private PrintStream writer = null;
+	private PrintStream writer = null;
 
-    /**
-     * The listener will print events out onto the supplied
-     * PrintWriter. If null, this defaults to the stdout.
-     */
-    public ScuflModelEventPrinter(PrintStream the_writer) {
-	if (the_writer == null) {
-	    this.writer = System.out;
+	/**
+	 * The listener will print events out onto the supplied PrintWriter. If
+	 * null, this defaults to the stdout.
+	 */
+	public ScuflModelEventPrinter(PrintStream the_writer) {
+		if (the_writer == null) {
+			this.writer = System.out;
+		} else {
+			this.writer = the_writer;
+		}
 	}
-	else {
-	    this.writer = the_writer;
-	}
-    }
 
-    /**
-     * Implements ScuflModelEventListener
-     */
-    public void receiveModelEvent(ScuflModelEvent event) {
-	String source = ((Object)(event.getSource())).toString();
-	String message = event.getMessage();
-	writer.println("Event from "+source+" : "+message);
-    }
+	/**
+	 * Implements ScuflModelEventListener
+	 */
+	public void receiveModelEvent(ScuflModelEvent event) {
+		String source = ((Object) (event.getSource())).toString();
+		String message = event.getMessage();
+		writer.println("Event from " + source + " : " + message);
+	}
 
 }

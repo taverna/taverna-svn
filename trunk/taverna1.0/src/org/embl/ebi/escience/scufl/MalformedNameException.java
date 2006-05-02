@@ -6,15 +6,15 @@
 package org.embl.ebi.escience.scufl;
 
 /**
- * Thrown by the locatePort method in ScuflModel when 
- * the supplied name doesn't conform to the naming
- * rules.
+ * Thrown by the locatePort method in ScuflModel when the supplied name doesn't
+ * conform to the naming rules.
+ * 
  * @author Tom Oinn
  */
 public class MalformedNameException extends Exception {
 
-    public MalformedNameException(String the_message) {
-	super(the_message);
-    }
+	public MalformedNameException(String the_message) {
+		super(the_message);
+	}
 
 }

@@ -6,20 +6,20 @@
 package org.embl.ebi.escience.scufl;
 
 /**
- * Implementing Scufl objects can have log level
- * information bound to them
+ * Implementing Scufl objects can have log level information bound to them
+ * 
  * @author Tom Oinn
  */
 public interface LogAwareComponent {
-    
-    /**
-     * Set the log level for this component
-     */
-    public void setLogLevel(int level);
-    
-    /**
-     * Get the log level for this component
-     */
-    public int getLogLevel();
+
+	/**
+	 * Set the log level for this component
+	 */
+	public void setLogLevel(int level);
+
+	/**
+	 * Get the log level for this component
+	 */
+	public int getLogLevel();
 
 }

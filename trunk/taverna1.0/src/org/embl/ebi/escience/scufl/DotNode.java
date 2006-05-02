@@ -9,10 +9,11 @@ import javax.swing.tree.*;
 
 /**
  * A dot product node in an iterator tree model
+ * 
  * @author Tom Oinn
  */
 public class DotNode extends DefaultMutableTreeNode {
-    public DotNode() {
-	//
-    }
+	public DotNode() {
+		//
+	}
 }
