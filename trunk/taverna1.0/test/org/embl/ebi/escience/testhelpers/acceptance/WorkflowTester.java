@@ -5,12 +5,23 @@ import java.io.FilenameFilter;
 
 import junit.extensions.jfunc.JFuncSuite;
 import junit.extensions.jfunc.textui.JFuncRunner;
+import junit.framework.Test;
+
+import org.apache.log4j.Logger;
 
 public class WorkflowTester {
 
-	/**
-	 * @param args
-	 */
+	private static Logger logger = Logger.getLogger(WorkflowTester.class);
+	
+	public static Test suite() {		
+		String home = System.getProperty("taverna.home");
+		if (home==null) {
+			logger.fatal("Unable to open workflow - taverna.home is not set.");
+			return null;			
+		}		
+		return examineDirectories(new File(home + "/test/data/workflows/"));
+	}
+	
 	public static void main(String[] args) {
 		if (args.length < 1 || args[0] == "-h" || args[0] == "--help") {
 			System.out.println("Usage: WorkflowTester <directory>");
@@ -67,7 +78,11 @@ public class WorkflowTester {
 		if (matches.length > 0) {
 			// We found a workflow!			
 			WorkflowTest test = (WorkflowTest) suite.getTestProxy(new WorkflowTest());
-			test.testWorkflow(directory);			
+			try {
+				test.testWorkflow(directory);
+			} catch (Exception e) {
+				logger.error("Could not build test case", e);
+			}			
 		} else {
 			// Check out any subdirs
 			File[] subdirs = directory.listFiles();			

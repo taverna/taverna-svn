@@ -258,7 +258,7 @@ public class WorkflowTest extends FuncTestCase {
 
 	private static Logger logger = Logger.getLogger(WorkflowTest.class);
 
-	public void testWorkflow(File workflowDir) {
+	public void testWorkflow(File workflowDir) throws WorkflowSubmissionException, InvalidInputException {
 		File workflowFile = new File(workflowDir, workflowDir.getName()
 				+ ".xml");
 		File outputDir = new File(workflowDir, "outputs");
@@ -285,10 +285,10 @@ public class WorkflowTest extends FuncTestCase {
 		} catch (InvalidInputException ex) {
 			// We did something wrong with the input ports
 			fail(ex.getMessage());
-			return;
+			throw ex;
 		} catch (WorkflowSubmissionException ex) {
 			fail(ex.getMessage());
-			return;
+			throw ex;
 		}
 		checkOutputs(outputs, outputMatchers);
 	}
