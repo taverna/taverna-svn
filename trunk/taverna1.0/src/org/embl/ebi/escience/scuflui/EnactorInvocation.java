@@ -31,6 +31,7 @@ import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
+import org.apache.log4j.Logger;
 import org.embl.ebi.escience.baclava.DataThing;
 import org.embl.ebi.escience.scufl.Processor;
 import org.embl.ebi.escience.scufl.ScuflModel;
@@ -52,6 +53,8 @@ import uk.ac.soton.itinnovation.freefluo.main.InvalidInputException;
  */
 public class EnactorInvocation extends JPanel implements ScuflUIComponent {
 
+	private static Logger logger = Logger.getLogger(EnactorInvocation.class);
+	
 	/**
 	 * A not particularly elegant way of setting the user context from Kevin's
 	 * MIR browser plugin. If this is set to non null it will be passed through
@@ -73,7 +76,7 @@ public class EnactorInvocation extends JPanel implements ScuflUIComponent {
 			workflowEditor.detachFromModel();
 			workflowInstance.cancelExecution();
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("Could not detach", e);			
 		}
 	}
 
@@ -148,7 +151,7 @@ public class EnactorInvocation extends JPanel implements ScuflUIComponent {
 		// sleep?
 		String results = "";
 		try {
-			System.out.println("Getting results...");
+			logger.debug("Getting results");			
 			boolean gotResults = false;
 			while (!gotResults) {
 				if (this.workflowInstance.getStatus().equalsIgnoreCase(
@@ -156,7 +159,7 @@ public class EnactorInvocation extends JPanel implements ScuflUIComponent {
 					gotResults = true;
 				}
 
-				// System.out.println(this.workflowInstance.getStatus());
+				// logger.debug(this.workflowInstance.getStatus());
 				// results = this.workflowInstance.getOutputXMLString();
 				// if (results.equals("") == false) {
 				// gotResults = true;
@@ -216,9 +219,9 @@ public class EnactorInvocation extends JPanel implements ScuflUIComponent {
 			int sizeLimit = 128000;
 			try {
 				sizeLimit = Integer.parseInt(System
-						.getProperty("taverna.resulttable.sizelimit"));
-			} catch (Exception e) {
-				e.printStackTrace();
+					.getProperty("taverna.resulttable.sizelimit"));
+			} catch (NumberFormatException ex) {
+				logger.error("Could not set taverna.resulttable.sizelimit", ex);
 			}
 			if (workflowInstance.getProvenanceXMLString().length() < sizeLimit) {
 				this.tabs.add("Result Table", new JScrollPane(
@@ -227,7 +230,7 @@ public class EnactorInvocation extends JPanel implements ScuflUIComponent {
 		} catch (Exception e) {
 			// The above can cause a NPE, we need to track this down
 			// FIXME
-			e.printStackTrace();
+			logger.error(e);			
 		}
 	}
 
@@ -457,11 +460,16 @@ public class EnactorInvocation extends JPanel implements ScuflUIComponent {
 				} else {
 					int selectedRow = lsm.getMinSelectionIndex();
 					// get the processor name
-					try {
 						String processorName = (String) statusTableModel
 								.getValueAt(selectedRow, 1);
-						Map[] intermediateResultMaps = EnactorInvocation.this.workflowInstance
-								.getIntermediateResultsForProcessor(processorName);
+						Map[] intermediateResultMaps;
+						try {
+							intermediateResultMaps = EnactorInvocation.this.workflowInstance
+									.getIntermediateResultsForProcessor(processorName);
+						} catch (UnknownProcessorException ex) {
+							logger.error("Unknown processor " + processorName, ex);
+							return;
+						}
 						// Clear the tabs
 						intermediateInputs.removeAll();
 						intermediateOutputs.removeAll();
@@ -487,9 +495,7 @@ public class EnactorInvocation extends JPanel implements ScuflUIComponent {
 							intermediateOutputs.add(name, rip);
 						}
 
-					} catch (UnknownProcessorException upe) {
-						//
-					}
+
 				}
 
 			}
@@ -608,19 +614,25 @@ public class EnactorInvocation extends JPanel implements ScuflUIComponent {
 					// then set running to false which will drop us neatly out
 					// of the
 					// polling loop.
-					// System.out.println("Polling...");
+					// logger.debug("Polling...");
 
 					try {
 						String statusText = theEnactorInvocation
 								.getStatusText();
-						// System.out.println("Status document : "+statusText);
-						String workflowStatus = theEnactorInvocation
-								.getTableModel().update(statusText);
+						// logger.debug("Status document : "+statusText);
+						String workflowStatus;
+						try {
+							workflowStatus = theEnactorInvocation
+									.getTableModel().update(statusText);
+						} catch (InvalidStatusReportException e) {
+							logger.error("Could not get workflow status", e);
+							continue; // loop and try again
+						}
 						if (workflowStatusUpdateReady) {
 							theEnactorInvocation.workflowEditor
 									.updateStatus(statusText);
 						}
-						// System.out.println("Workflow status :
+						// logger.debug("Workflow status :
 						// "+workflowStatus);
 						if (workflowStatus.equals("CANCELLED")) {
 							theEnactorInvocation.rmvProgressReport();
@@ -659,9 +671,7 @@ public class EnactorInvocation extends JPanel implements ScuflUIComponent {
 									.setText("<html><font color=\"green\">Running</font></html>");
 						}
 					} catch (Exception e) {
-						e.printStackTrace();
-						// System.out.println(e.getMessage());
-						// Status message not available I guess
+						logger.error("Error while invoking", e);																
 					}
 					if (running) {
 						Thread.sleep(2000);

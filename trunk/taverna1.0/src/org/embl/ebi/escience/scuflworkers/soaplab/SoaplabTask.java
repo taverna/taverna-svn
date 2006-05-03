@@ -25,8 +25,8 @@
 //      Dependencies        :
 //
 //      Last commit info    :   $Author: stain $
-//                              $Date: 2006-04-27 10:56:17 $
-//                              $Revision: 1.14 $
+//                              $Date: 2006-05-03 09:32:29 $
+//                              $Revision: 1.15 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 
@@ -103,7 +103,7 @@ public class SoaplabTask implements ProcessorTaskWorker {
 			String[] outputPortNames = new String[boundOutputs.length];
 			for (int i = 0; i < outputPortNames.length; i++) {
 				outputPortNames[i] = boundOutputs[i].getName();
-				System.out.println("Adding output : " + outputPortNames[i]);
+				logger.debug("Adding output : " + outputPortNames[i]);
 			}
 
 			if (!this.proc.isPollingDefined()) {
@@ -126,7 +126,7 @@ public class SoaplabTask implements ProcessorTaskWorker {
 					call.setOperationName(new QName("getStatus"));
 					String statusString = (String) call
 							.invoke(new Object[] { jobID });
-					System.out.println("Polling, status is : " + statusString);
+					logger.info("Polling, status is : " + statusString);
 					if (statusString.equals("RUNNING")
 							|| statusString.equals("CREATED")) {
 						pollingInterval = (int) ((double) pollingInterval * this.proc

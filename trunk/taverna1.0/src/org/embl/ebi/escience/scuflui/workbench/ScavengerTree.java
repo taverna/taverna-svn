@@ -5,54 +5,64 @@
  */
 package org.embl.ebi.escience.scuflui.workbench;
 
-import javax.swing.JTree;
+import java.awt.Point;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.Transferable;
+import java.awt.dnd.DnDConstants;
+import java.awt.dnd.DragGestureEvent;
+import java.awt.dnd.DragGestureListener;
+import java.awt.dnd.DragSource;
+import java.awt.dnd.DragSourceDragEvent;
+import java.awt.dnd.DragSourceDropEvent;
+import java.awt.dnd.DragSourceEvent;
+import java.awt.dnd.DragSourceListener;
+import java.awt.dnd.DropTarget;
+import java.awt.dnd.DropTargetDragEvent;
+import java.awt.dnd.DropTargetDropEvent;
+import java.awt.dnd.DropTargetEvent;
+import java.awt.dnd.DropTargetListener;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.MutableTreeNode;
-import javax.swing.tree.*;
+import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
+
+import org.apache.log4j.Logger;
+import org.biomoby.client.taverna.plugin.BiomobyProcessor;
+import org.biomoby.client.taverna.plugin.BiomobyScavenger;
 import org.embl.ebi.escience.scufl.Processor;
 import org.embl.ebi.escience.scufl.ScuflModel;
+import org.embl.ebi.escience.scuflui.ExtendedJTree;
+import org.embl.ebi.escience.scuflui.ScuflIcons;
 import org.embl.ebi.escience.scuflui.ScuflUIComponent;
+import org.embl.ebi.escience.scuflui.dnd.FactorySpecFragment;
+import org.embl.ebi.escience.scuflui.dnd.ProcessorSpecFragment;
+import org.embl.ebi.escience.scuflui.dnd.SpecFragmentTransferable;
+import org.embl.ebi.escience.scuflworkers.ProcessorFactory;
 import org.embl.ebi.escience.scuflworkers.ProcessorHelper;
+import org.embl.ebi.escience.scuflworkers.apiconsumer.APIConsumerScavenger;
+import org.embl.ebi.escience.scuflworkers.biomart.BiomartRegistryScavenger;
+import org.embl.ebi.escience.scuflworkers.seqhound.SeqhoundScavenger;
 import org.embl.ebi.escience.scuflworkers.soaplab.SoaplabProcessor;
 import org.embl.ebi.escience.scuflworkers.soaplab.SoaplabScavenger;
 import org.embl.ebi.escience.scuflworkers.talisman.TalismanProcessor;
 import org.embl.ebi.escience.scuflworkers.talisman.TalismanScavenger;
+import org.embl.ebi.escience.scuflworkers.workflow.WorkflowProcessor;
 import org.embl.ebi.escience.scuflworkers.wsdl.WSDLBasedProcessor;
 import org.embl.ebi.escience.scuflworkers.wsdl.WSDLBasedScavenger;
-import org.embl.ebi.escience.scuflworkers.workflow.WorkflowProcessor;
-import org.embl.ebi.escience.scuflworkers.seqhound.SeqhoundScavenger;
-import org.embl.ebi.escience.scuflworkers.apiconsumer.APIConsumerScavenger;
-import org.embl.ebi.escience.scuflworkers.biomart.BiomartRegistryScavenger;
-import java.net.URL;
-// import org.embl.ebi.escience.scuflworkers.biomoby.*;
-import org.biomoby.client.taverna.plugin.*;
-import org.jdom.output.*;
-
-// Utility Imports
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Set;
-import java.util.HashSet;
-import java.util.Enumeration;
-import java.util.List;
-
-import org.embl.ebi.escience.scuflui.*;
-import org.embl.ebi.escience.scuflui.workbench.Scavenger;
-import org.embl.ebi.escience.scuflui.workbench.ScavengerCreationException;
-import org.embl.ebi.escience.scuflui.workbench.ScavengerTreePopupHandler;
-import org.embl.ebi.escience.scuflui.workbench.ScavengerTreeRenderer;
-import org.embl.ebi.escience.scuflui.dnd.*;
-import java.awt.dnd.*;
-import java.awt.datatransfer.*;
-import org.jdom.*;
-import java.lang.String;
-import org.embl.ebi.escience.scuflworkers.*;
-import java.awt.*;
-import java.io.File;
+import org.jdom.Attribute;
+import org.jdom.Element;
+import org.jdom.output.XMLOutputter;
 
 /**
  * A JTree subclass showing available processors from some set of external
@@ -64,6 +74,8 @@ import java.io.File;
 public class ScavengerTree extends ExtendedJTree implements ScuflUIComponent,
 		DragSourceListener, DragGestureListener, DropTargetListener {
 
+	private static Logger logger = Logger.getLogger(ScavengerTree.class);
+	
 	/**
 	 * The model that this scavenger will create processor for
 	 */
@@ -268,7 +280,7 @@ public class ScavengerTree extends ExtendedJTree implements ScuflUIComponent,
 			webURLList, martRegistryList;
 
 	class DefaultScavengerLoaderThread extends Thread {
-
+		
 		ScavengerTree scavengerTree;
 
 		public DefaultScavengerLoaderThread(ScavengerTree scavengerTree) {
@@ -287,7 +299,7 @@ public class ScavengerTree extends ExtendedJTree implements ScuflUIComponent,
 									urls[i], (DefaultTreeModel) scavengerTree
 											.getModel()));
 						} catch (ScavengerCreationException sce) {
-							sce.printStackTrace();
+							logger.error(sce);							
 						}
 					}
 				}
@@ -301,7 +313,7 @@ public class ScavengerTree extends ExtendedJTree implements ScuflUIComponent,
 									.addScavenger(new BiomartRegistryScavenger(
 											urls[i]));
 						} catch (ScavengerCreationException sce) {
-							sce.printStackTrace();
+							logger.error(sce);
 						}
 					}
 				}
@@ -315,7 +327,7 @@ public class ScavengerTree extends ExtendedJTree implements ScuflUIComponent,
 							scavengerTree.addScavenger(new WSDLBasedScavenger(
 									urls[i]));
 						} catch (ScavengerCreationException sce) {
-							sce.printStackTrace();
+							logger.error(sce);							
 						}
 					}
 				}
@@ -325,12 +337,12 @@ public class ScavengerTree extends ExtendedJTree implements ScuflUIComponent,
 					String[] urls = soaplabDefaultURLList.split("\\s*,\\s*");
 					for (int i = 0; i < urls.length; i++) {
 						try {
-							System.out.println("Creating soaplab scavenger : '"
+							logger.debug("Creating soaplab scavenger : '"
 									+ urls[i] + "'");
 							scavengerTree.addScavenger(new SoaplabScavenger(
 									urls[i]));
 						} catch (ScavengerCreationException sce) {
-							sce.printStackTrace();
+							logger.error(sce);
 						}
 					}
 				}
@@ -340,12 +352,12 @@ public class ScavengerTree extends ExtendedJTree implements ScuflUIComponent,
 					String[] urls = biomobyDefaultURLList.split("\\s*,\\s*");
 					for (int i = 0; i < urls.length; i++) {
 						try {
-							System.out.println("Creating biomoby scavenger : '"
+							logger.debug("Creating biomoby scavenger : '"
 									+ urls[i] + "'");
 							scavengerTree.addScavenger(new BiomobyScavenger(
 									urls[i]));
 						} catch (ScavengerCreationException sce) {
-							sce.printStackTrace();
+							logger.error(sce);							
 						}
 					}
 				}
@@ -362,14 +374,14 @@ public class ScavengerTree extends ExtendedJTree implements ScuflUIComponent,
 								resourceURL));
 					}
 				} catch (Exception ex) {
-					ex.printStackTrace();
+					logger.error(ex);					
 				}
 
 				// Add the seqhound scavenger to the end of the list
 				try {
 					scavengerTree.addScavenger(new SeqhoundScavenger());
 				} catch (ScavengerCreationException sce) {
-					sce.printStackTrace();
+					logger.error(sce);					
 				}
 				try {
 					Thread.sleep(1000);

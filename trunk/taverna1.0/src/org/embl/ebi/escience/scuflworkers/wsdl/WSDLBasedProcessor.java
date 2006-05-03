@@ -11,6 +11,7 @@ import java.util.*;
 import javax.wsdl.Definition;
 import javax.xml.namespace.QName;
 
+import org.apache.log4j.Logger;
 import org.apache.wsif.*;
 import org.apache.wsif.providers.soap.apacheaxis.WSIFDynamicProvider_ApacheAxis;
 import org.apache.wsif.providers.soap.apacheaxis.WSIFPort_ApacheAxis;
@@ -32,6 +33,8 @@ public class WSDLBasedProcessor extends Processor implements java.io.Serializabl
 		return 10;
 	}
 
+	private static Logger logger = Logger.getLogger(WSDLBasedProcessor.class);
+	
 	WSIFPort port = null;
 
 	String operationName = null;
@@ -87,7 +90,7 @@ public class WSDLBasedProcessor extends Processor implements java.io.Serializabl
 			ProcessorCreationException pce = new ProcessorCreationException(procName + ": Unable to load wsdl at "
 					+ wsdlLocation);
 			pce.initCause(e);
-			pce.printStackTrace();
+			logger.error(pce);			
 			throw pce;
 		}
 
@@ -149,8 +152,8 @@ public class WSDLBasedProcessor extends Processor implements java.io.Serializabl
 	 */
 	WSIFOperation getWSIFOperation() throws WSIFException {
 		synchronized (port) {
-			WSIFOperation op = port.createOperation(operationName);
-			System.out.println("Created operation : " + op.toString());
+			WSIFOperation op = port.createOperation(operationName);			
+			logger.debug("Created operation : " + op.toString());
 			return op;
 		}
 	}

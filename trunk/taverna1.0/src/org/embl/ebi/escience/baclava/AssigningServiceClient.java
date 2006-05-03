@@ -91,7 +91,7 @@ public class AssigningServiceClient implements LSIDProvider {
 				for (int i = 0; i < authorities.length; i++) {
 					String authority = authorities[i][0];
 					String namespace = authorities[i][1];
-					System.out.println("Found auth = " + authority
+					log.debug("Found auth = " + authority
 							+ " for ns = " + namespace);
 					// Check whether the pair matches requirements for a
 					// namespace

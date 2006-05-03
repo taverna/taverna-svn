@@ -32,10 +32,12 @@ import org.apache.batik.swing.svg.GVTTreeBuilderEvent;
 import org.apache.batik.swing.svg.SVGDocumentLoaderAdapter;
 import org.apache.batik.swing.svg.SVGDocumentLoaderEvent;
 import org.apache.batik.util.XMLResourceDescriptor;
+import org.apache.log4j.Logger;
 import org.embl.ebi.escience.scufl.ScuflModel;
 import org.embl.ebi.escience.scufl.ScuflModelEvent;
 import org.embl.ebi.escience.scufl.ScuflModelEventListener;
 import org.embl.ebi.escience.scufl.view.DotView;
+import org.embl.ebi.escience.scuflworkers.wsdl.WSDLInvocationTask;
 import org.w3c.dom.svg.SVGDocument;
 
 /**
@@ -46,6 +48,8 @@ import org.w3c.dom.svg.SVGDocument;
 public class ScuflSVGDiagram extends JComponent implements
 		ScuflModelEventListener, ScuflUIComponent {
 
+	private static Logger logger = Logger.getLogger(ScuflSVGDiagram.class);
+	
 	private ScuflModel model;
 
 	private DotView dot;
@@ -168,10 +172,10 @@ public class ScuflSVGDiagram extends JComponent implements
 			JOptionPane.showMessageDialog(ScuflSVGDiagram.this, ioe
 					.getMessage(), "Error!", JOptionPane.ERROR_MESSAGE);
 		} catch (Exception other) {
-			other.printStackTrace();
+			logger.error("Could not update graphics", other);			
 		}
-		updateTimer = new Timer();
-		updateTimer.schedule(new UpdateTimer(), (long) 0, (long) 2000);
+		updateTimer = new Timer();		
+		updateTimer.schedule(new UpdateTimer(), 0, 2000);
 	}
 
 	static SAXSVGDocumentFactory docFactory = null;
@@ -186,7 +190,7 @@ public class ScuflSVGDiagram extends JComponent implements
 		if (dotLocation == null) {
 			dotLocation = "dot";
 		}
-		System.out.println("Invoking dot...");
+		logger.debug("Invoking dot...");
 		Process dotProcess = Runtime.getRuntime().exec(
 				new String[] { dotLocation, "-Tsvg" });
 		StreamDevourer devourer = new StreamDevourer(dotProcess

@@ -24,9 +24,9 @@
 //      Created for Project :   MYGRID
 //      Dependencies        :
 //
-//      Last commit info    :   $Author: sowen70 $
-//                              $Date: 2006-03-27 11:03:11 $
-//                              $Revision: 1.74 $
+//      Last commit info    :   $Author: stain $
+//                              $Date: 2006-05-03 09:32:28 $
+//                              $Revision: 1.75 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 package uk.ac.soton.itinnovation.taverna.enactor.entities;
@@ -252,10 +252,9 @@ public class ProcessorTask extends AbstractTask {
 			// completed successfully"
 			complete();
 		} catch (Exception ex) {
-			eventList.add(new ServiceFailure());
-			ex.printStackTrace();
+			eventList.add(new ServiceFailure());					
 			faultCausingException = ex;
-			logger.error(ex);
+			logger.error("Failure while executing task " + getTaskId(), ex);
 			fail("Task " + getTaskId() + " in flow " + getFlow().getFlowId() + " failed.  " + ex.getMessage());
 			Map inputMap = new HashMap();
 			for (Iterator i = getParents().iterator(); i.hasNext();) {
@@ -335,8 +334,7 @@ public class ProcessorTask extends AbstractTask {
 							//
 						} catch (Exception e) {
 							logger.error("Exception thrown while trying to store a datathing,\n"
-									+ "disabling further stores.",e);
-							e.printStackTrace();
+									+ "disabling further stores.",e);							
 							STORE = null;
 						}
 					}
@@ -480,7 +478,7 @@ public class ProcessorTask extends AbstractTask {
 				} catch (TaskExecutionException t) {
 					eventList.add(new ServiceError(t));
 				} catch (Exception ex) {
-					ex.printStackTrace();
+					logger.error(ex);					
 				}
 			}
 		}
@@ -734,10 +732,10 @@ public class ProcessorTask extends AbstractTask {
 							activeWorkers--;
 							active[position] = false;
 						} catch (TaskExecutionException tee) {
-							tee.printStackTrace();
+							logger.error(tee);							
 							exception[0] = tee;
 						} catch (Throwable e) {
-							e.printStackTrace();
+							logger.error(e);							
 						} finally {
 							logger.info(Thread.currentThread() + " completed");
 							active[position] = false;

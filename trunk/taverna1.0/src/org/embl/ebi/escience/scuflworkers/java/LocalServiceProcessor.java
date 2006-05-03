@@ -114,7 +114,7 @@ public class LocalServiceProcessor extends Processor {
 				String[] mimeTypes = ((theImplementation.outputTypes()[i]
 						.split("\\'"))[1]).split(",");
 				for (int j = 0; j < mimeTypes.length; j++) {
-					System.out.println(mimeTypes[j]);
+					logger.debug("Mime type " + mimeTypes[j]);
 					m.addMIMEType(mimeTypes[j]);
 				}
 				addPort(p);

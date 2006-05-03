@@ -12,6 +12,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.log4j.Logger;
 import org.embl.ebi.escience.baclava.DataThing;
 import org.embl.ebi.escience.scuflworkers.java.LocalWorker;
 import org.jdom.Document;
@@ -20,6 +21,7 @@ import org.jdom.JDOMException;
 import org.jdom.Namespace;
 import org.jdom.input.SAXBuilder;
 
+import uk.ac.soton.itinnovation.taverna.enactor.entities.ProcessorTask;
 import uk.ac.soton.itinnovation.taverna.enactor.entities.TaskExecutionException;
 
 /**
@@ -29,6 +31,8 @@ import uk.ac.soton.itinnovation.taverna.enactor.entities.TaskExecutionException;
  */
 public class ExtractMobyData implements LocalWorker {
 
+	private Logger logger = Logger.getLogger(ProcessorTask.class);
+	
 	Namespace mobyNS = CreateMobyData.mobyNS;
 
 	public String[] inputNames() {
@@ -49,7 +53,7 @@ public class ExtractMobyData implements LocalWorker {
 	}
 
 	public Map execute(Map inputs) throws TaskExecutionException {
-		System.out.println("Entering moby parse stage");
+		logger.debug("Entering moby parse stage");
 		// Must contain a single input called mobydata, if not
 		// then complain
 		if (inputs.containsKey("mobydata") == false) {
@@ -96,8 +100,7 @@ public class ExtractMobyData implements LocalWorker {
 			if (mobySimple != null)
 				// Get the first immediate child of the <moby:Simple>
 				mobyDataElement = (Element) mobySimple.getChildren().get(0);
-		} catch (NullPointerException npe) {
-			// npe.printStackTrace();
+		} catch (NullPointerException npe) {			
 			throw new TaskExecutionException(
 					"Unexpected structure within moby data, check the input XML.");
 		}
@@ -109,7 +112,7 @@ public class ExtractMobyData implements LocalWorker {
 			results.put("namespace", new DataThing(""));
 			results.put("value", new DataThing(""));
 			results.put("type", new DataThing(""));
-			System.out.println("Returning an empty result");
+			logger.debug("Returning an empty result");
 		} else {
 			String idValue, namespaceValue;
 			idValue = mobyDataElement.getAttributeValue("id");
@@ -138,8 +141,8 @@ public class ExtractMobyData implements LocalWorker {
 						.getTextTrim()));
 			else
 				results.put("value", new DataThing(sbuffer.toString()));
-			results.put("type", new DataThing(mobyDataElement.getName()));
-			System.out.println("Returning parsed results");
+			results.put("type", new DataThing(mobyDataElement.getName()));			
+			logger.debug("Returning parsed results");
 		}
 		return results;
 	}

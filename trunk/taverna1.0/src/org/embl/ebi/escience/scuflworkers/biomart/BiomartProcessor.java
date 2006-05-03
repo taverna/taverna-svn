@@ -5,6 +5,7 @@
  */
 package org.embl.ebi.escience.scuflworkers.biomart;
 
+import org.apache.log4j.Logger;
 import org.embl.ebi.escience.scufl.*;
 import org.ensembl.mart.lib.*;
 import org.ensembl.mart.lib.config.*;
@@ -19,6 +20,8 @@ import java.net.*;
  */
 public class BiomartProcessor extends Processor {
     
+	private static Logger logger = Logger.getLogger(BiomartProcessor.class);
+	
     // map of registry URL -> AdaptorManager
     static Map managerMap = new HashMap();
     // map of registry URL -> map of dsname -> dsconfig
@@ -88,7 +91,7 @@ public class BiomartProcessor extends Processor {
 			buildInputPortsFromQuery();
 		    }
 		    catch (Exception ex) {
-			ex.printStackTrace();
+			logger.error(ex);
 		    }
 		}
 		private void update() {
@@ -96,7 +99,7 @@ public class BiomartProcessor extends Processor {
 			buildPortsFromQuery();
 		    }
 		    catch (Exception ex) {
-			ex.printStackTrace();
+		    	logger.error(ex);			
 		    }
 		}
 	    };
@@ -164,14 +167,14 @@ public class BiomartProcessor extends Processor {
 	    if (info.registryURL != null) {
 		try {
 		    if (managerMap.get(info.registryURL)!=null) {
-			System.out.println("Returning cached config and manager");
+			logger.debug("Returning cached config and manager");
 			this.manager = (AdaptorManager)managerMap.get(info.registryURL);
 			this.config = (DatasetConfig)((Map)configMap.get(info.registryURL)).get(dataSourceName);
 			RegistryDSConfigAdaptor ra = (RegistryDSConfigAdaptor)registryMap.get(info.registryURL);
 			query.setAdaptor(ra);
 		    }
 		    else {
-			System.out.println("Generating config and manager");
+			logger.debug("Generating config and manager");
 			synchronized(managerMap) {
 			    // Not cached, must populate cache...
 			    config = null;
@@ -207,9 +210,10 @@ public class BiomartProcessor extends Processor {
 		}
 		catch (MalformedURLException mue) {
 		    // Won't happen
+			logger.fatal(mue);
 		}
 		catch (InvalidQueryException ieq) {
-		    ieq.printStackTrace();
+		    logger.error(ieq);
 		}
 	    }
 	    else {
