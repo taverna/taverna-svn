@@ -15,6 +15,7 @@ import java.util.Properties;
 import java.io.*;
 import java.util.Map;
 
+import org.apache.log4j.Logger;
 import org.embl.ebi.escience.scufl.ConcurrencyConstraint;
 import org.embl.ebi.escience.scufl.DataConstraint;
 import org.embl.ebi.escience.scufl.DuplicateProcessorNameException;
@@ -41,6 +42,8 @@ import java.util.Arrays;
  */
 public class ScuflModel implements Serializable, LogAwareComponent {
 
+	private static Logger logger = Logger.getLogger(ScuflModel.class);
+	
 	/**
 	 * Set to true if the workflow definition is being loaded in offline mode,
 	 * i.e. no network activity
@@ -83,15 +86,12 @@ public class ScuflModel implements Serializable, LogAwareComponent {
 					try {
 						XScuflParser.populate(xscuflText, this, null);
 					} catch (Exception e) {
-						System.out.println("--------------------------");
-						e.printStackTrace();
-						System.out.println("--------------------------");
-
+						logger.fatal(e);
 					}
 					SetOnlineException soe = new SetOnlineException(
 							"Unable to go online.");
 					soe.initCause(ex);
-					soe.printStackTrace();
+					logger.error("Unable to go online");					
 					throw soe;
 				}
 			}
@@ -119,7 +119,7 @@ public class ScuflModel implements Serializable, LogAwareComponent {
 			XScuflParser.populate(xscuflText, newModel, null);
 			return newModel;
 		} catch (Exception upe) {
-			System.out.println("Achtung! Model not cloned!!!");
+			logger.warn("Model not cloned");			
 			return this;
 		}
 
@@ -328,7 +328,9 @@ public class ScuflModel implements Serializable, LogAwareComponent {
 	 * Return an array of the Processor objects defined by this workflow model
 	 */
 	public Processor[] getProcessors() {
-		return (Processor[]) (this.processors.toArray(new Processor[0]));
+		synchronized(this.processors) {
+			return (Processor[]) (this.processors.toArray(new Processor[0]));
+		}
 	}
 
 	/**
@@ -605,7 +607,7 @@ public class ScuflModel implements Serializable, LogAwareComponent {
 				setDaemon(true);
 			} catch (Exception ex) {
 				// Should never happen!
-				ex.printStackTrace();
+				logger.fatal(ex);				
 			}
 			this.listeners = model.listeners;
 			this.start();
@@ -630,7 +632,7 @@ public class ScuflModel implements Serializable, LogAwareComponent {
 						pendingEventList.clear();
 					}
 					for (int i = 0; i < events.length; i++) {
-						System.out.println(events[i].toString());
+						logger.debug(events[i]);											
 						for (Iterator j = new ArrayList(listeners).iterator(); j
 								.hasNext();) {
 							ScuflModelEventListener l = (ScuflModelEventListener) j
@@ -638,7 +640,7 @@ public class ScuflModel implements Serializable, LogAwareComponent {
 							try {
 								l.receiveModelEvent(events[i]);
 							} catch (Throwable ex) {
-								ex.printStackTrace();
+								logger.error(ex);								
 							}
 						}
 					}
