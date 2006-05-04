@@ -2,7 +2,11 @@ freefluo.jar
 freefluo-taverna-exts.jar
 talisman1.4.5.11.jar
 notification-processor.jar
+jmoby-dashboard.jar
+jmoby-others.jar
 jmoby.jar
+commons-lang-2.1.jar
+jcalendar.jar
 antlr.jar
 icu4j.jar
 jakarta-oro-2.0.5.jar

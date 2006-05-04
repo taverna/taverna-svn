@@ -18,6 +18,9 @@ import java.util.Vector;
 
 import org.apache.log4j.Logger;
 import org.biomoby.client.CentralImpl;
+import org.biomoby.client.taverna.plugin.BiomobyProcessor;
+import org.biomoby.client.taverna.plugin.ConfigureMobyServiceAction;
+import org.biomoby.service.dashboard.data.ParametersTable;
 import org.biomoby.shared.MobyException;
 import org.biomoby.shared.Utils;
 import org.biomoby.shared.mobyxml.jdom.MobyObjectClassNSImpl;
@@ -467,8 +470,18 @@ public class BiomobyTask implements ProcessorTaskWorker {
 					if (queryID != null && queryID.length() > 1)
 						queryID = queryID.substring(1);
 					mds[x].setAttribute("queryID", queryID, XMLUtilities.MOBY_NS);
+					// if secondarys exist add them here
+					if (((BiomobyProcessor)this.proc).containsSecondaries()) {
+						ParametersTable pt = ((BiomobyProcessor)this.proc).getParameterTable();
+						Element[] parameters = null;
+						parameters = ((BiomobyProcessor)this.proc).getParameterTable().toXML();
+						for (int i = 0; i < parameters.length; i++) {
+							mds[x].addContent((parameters[i]).detach());
+						}
+					}
 					content.addContent(mds[x].detach());
 				}
+				
 				if (DEBUG) {
 					System.out.println("After MobyData aggregation");
 					System.out.println(new XMLOutputter(Format.getPrettyFormat())
@@ -483,10 +496,9 @@ public class BiomobyTask implements ProcessorTaskWorker {
 				String serviceInput = new XMLOutputter(Format.getPrettyFormat()).outputString(root);
 				String[] invocations = XMLUtilities
 						.getSingleInvokationsFromMultipleInvokations(serviceInput);
+				//System.out.println(serviceInput);
 				// going to iterate over all invocations so that messages with
 				// many mobyData blocks dont timeout.
-				// TODO how can i represent this stuff better so that Taverna
-				// can iterate over it for me
 				System.out.println("Total invocations " + invocations.length);
 				if (invocations.length > 0)
 					System.out.print("\tinvocation 00");
@@ -504,7 +516,6 @@ public class BiomobyTask implements ProcessorTaskWorker {
 					if (DEBUG)
 						System.out.println("output:\n" + invocations[inCount]);
 				}
-				System.out.println();
 				String outputXML = XMLUtilities.createMultipleInvokations(invocations);
 
 				Map outputMap = new HashMap();

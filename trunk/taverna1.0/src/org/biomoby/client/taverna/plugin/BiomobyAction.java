@@ -292,7 +292,7 @@ public class BiomobyAction extends AbstractProcessorAction {
 								&& path.getParentPath().getLastPathComponent().toString()
 										.startsWith("Inputs")
 								&& !path.getLastPathComponent().toString()
-										.startsWith("Collection(")) {
+										.startsWith("Collection(") && !path.getLastPathComponent().toString().equals(" None ")) {
 							// we have a simple input
 							DefaultMutableTreeNode node = (DefaultMutableTreeNode) tree
 									.getLastSelectedPathComponent();
@@ -408,7 +408,7 @@ public class BiomobyAction extends AbstractProcessorAction {
 							// show the window
 							menu.show(me.getComponent(), me.getX(), me.getY());
 
-						} else if (path.getParentPath().toString().indexOf("Outputs") >= 0) {
+						} else if (path.getParentPath().toString().indexOf("Outputs") >= 0 && path.getLastPathComponent().toString().indexOf(" None ") == -1) {
 							DefaultMutableTreeNode node = (DefaultMutableTreeNode) tree
 									.getLastSelectedPathComponent();
 							if (node == null)
@@ -423,9 +423,6 @@ public class BiomobyAction extends AbstractProcessorAction {
 									.toString()).indexOf("Outputs") > 0)
 									|| (path.toString().indexOf("Collection") < 0)) {
 								final JPopupMenu menu = new JPopupMenu();
-								// Create and add a menu item for adding to the
-								// item
-								// to the workflow
 								JMenuItem item = new JMenuItem("Find Services that Consume "
 										+ selectedObject + " - brief search");
 								item
