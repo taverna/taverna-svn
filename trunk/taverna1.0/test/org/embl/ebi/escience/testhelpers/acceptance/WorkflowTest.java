@@ -19,7 +19,16 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.log4j.Logger;
 import org.embl.ebi.escience.baclava.DataThing;
+import org.embl.ebi.escience.scufl.ConcurrencyConstraintCreationException;
+import org.embl.ebi.escience.scufl.DataConstraintCreationException;
+import org.embl.ebi.escience.scufl.DuplicateConcurrencyConstraintNameException;
+import org.embl.ebi.escience.scufl.DuplicateProcessorNameException;
+import org.embl.ebi.escience.scufl.MalformedNameException;
+import org.embl.ebi.escience.scufl.ProcessorCreationException;
+import org.embl.ebi.escience.scufl.UnknownPortException;
+import org.embl.ebi.escience.scufl.UnknownProcessorException;
 import org.embl.ebi.escience.scufl.enactor.WorkflowSubmissionException;
+import org.embl.ebi.escience.scufl.parser.XScuflFormatException;
 import org.embl.ebi.escience.scufl.tools.WorkflowLauncher;
 import org.embl.ebi.escience.utils.SimpleFile;
 import org.w3c.dom.Document;
@@ -32,8 +41,8 @@ import uk.ac.soton.itinnovation.freefluo.main.InvalidInputException;
  * 
  * Test that a workflow runs and that the outputs are as expected.
  * 
- * @author Stian Soiland 
- *
+ * @author Stian Soiland
+ * 
  */
 public class WorkflowTest extends FuncTestCase {
 
@@ -41,7 +50,7 @@ public class WorkflowTest extends FuncTestCase {
 	 * A converter for use when reading from a file. Use with readFiles().
 	 * 
 	 * @author Stian Soiland
-	 *
+	 * 
 	 */
 	interface Converter {
 		/**
@@ -60,7 +69,7 @@ public class WorkflowTest extends FuncTestCase {
 
 	/**
 	 * Wrap as DataThing instances.
-	 *
+	 * 
 	 */
 	class DataThingConverter implements Converter {
 		public Object convert(File file, String content) {
@@ -104,10 +113,9 @@ public class WorkflowTest extends FuncTestCase {
 			return null;
 		}
 	}
-	
 
 	/**
-	 * Interface for matching the output from a workflow. 
+	 * Interface for matching the output from a workflow.
 	 * 
 	 * @author Stian Soiland
 	 * 
@@ -118,7 +126,8 @@ public class WorkflowTest extends FuncTestCase {
 		 * check values.
 		 * 
 		 * @param other
-		 *            The DataThing returned for the output that is to be matched
+		 *            The DataThing returned for the output that is to be
+		 *            matched
 		 */
 		public void testMatching(DataThing other);
 	}
@@ -258,7 +267,14 @@ public class WorkflowTest extends FuncTestCase {
 
 	private static Logger logger = Logger.getLogger(WorkflowTest.class);
 
-	public void testWorkflow(File workflowDir) throws WorkflowSubmissionException, InvalidInputException {
+	public void testWorkflow(File workflowDir)
+			throws WorkflowSubmissionException, InvalidInputException,
+			ProcessorCreationException, DataConstraintCreationException,
+			UnknownProcessorException, UnknownPortException,
+			DuplicateProcessorNameException, MalformedNameException,
+			ConcurrencyConstraintCreationException,
+			DuplicateConcurrencyConstraintNameException, XScuflFormatException,
+			FileNotFoundException {
 		File workflowFile = new File(workflowDir, workflowDir.getName()
 				+ ".xml");
 		File outputDir = new File(workflowDir, "outputs");
@@ -266,30 +282,11 @@ public class WorkflowTest extends FuncTestCase {
 		Map inputs = readFiles(inputDir, new DataThingConverter());
 		Map outputMatchers = readFiles(outputDir, new MatcherConverter());
 		InputStream workflowStream;
-		try {
-			workflowStream = new FileInputStream(workflowFile);
-		} catch (FileNotFoundException e) {
-			System.err.println("Could not open workflow: " + workflowFile);
-			return;
-		}
+		workflowStream = new FileInputStream(workflowFile);
 		WorkflowLauncher launcher;
-		try {
-			launcher = new WorkflowLauncher(workflowStream);
-		} catch (Exception ex) {
-			fail(ex.toString());
-			return;
-		}
+		launcher = new WorkflowLauncher(workflowStream);
 		Map outputs;
-		try {
-			outputs = launcher.execute(inputs);
-		} catch (InvalidInputException ex) {
-			// We did something wrong with the input ports
-			fail(ex.getMessage());
-			throw ex;
-		} catch (WorkflowSubmissionException ex) {
-			fail(ex.getMessage());
-			throw ex;
-		}
+		outputs = launcher.execute(inputs);
 		checkOutputs(outputs, outputMatchers);
 	}
 
