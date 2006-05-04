@@ -49,6 +49,7 @@ public class WorkflowTester {
 		}
 		JFuncSuite suite = examineDirectories(directory);		
 		JFuncRunner.run(suite);
+		System.exit(0);
 	}
 	
 	/**
