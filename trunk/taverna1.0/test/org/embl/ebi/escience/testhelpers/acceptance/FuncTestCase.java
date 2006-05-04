@@ -8,7 +8,16 @@ import junit.extensions.jfunc.JFuncTestCase;
  * @author Stian Soiland
  *
  */
-public class FuncTestCase extends JFuncTestCase {
+abstract public class FuncTestCase extends JFuncTestCase {
+	
+	public FuncTestCase() {
+		super("testNothing");
+		this.setFatal(false);
+	}
+
+	public void testNothing() {
+		fail("Testcase is not supposed to be run.");
+	}
 	
 	/**
 	 * Assert that the string matches the regular expression pattern

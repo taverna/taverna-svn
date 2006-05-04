@@ -27,7 +27,16 @@ import org.embl.ebi.escience.scufl.MalformedNameException;
 import org.embl.ebi.escience.scufl.ProcessorCreationException;
 import org.embl.ebi.escience.scufl.UnknownPortException;
 import org.embl.ebi.escience.scufl.UnknownProcessorException;
+import org.embl.ebi.escience.scufl.enactor.WorkflowEventListener;
 import org.embl.ebi.escience.scufl.enactor.WorkflowSubmissionException;
+import org.embl.ebi.escience.scufl.enactor.event.CollectionConstructionEvent;
+import org.embl.ebi.escience.scufl.enactor.event.IterationCompletionEvent;
+import org.embl.ebi.escience.scufl.enactor.event.ProcessCompletionEvent;
+import org.embl.ebi.escience.scufl.enactor.event.ProcessFailureEvent;
+import org.embl.ebi.escience.scufl.enactor.event.UserChangedDataEvent;
+import org.embl.ebi.escience.scufl.enactor.event.WorkflowCompletionEvent;
+import org.embl.ebi.escience.scufl.enactor.event.WorkflowCreationEvent;
+import org.embl.ebi.escience.scufl.enactor.event.WorkflowFailureEvent;
 import org.embl.ebi.escience.scufl.parser.XScuflFormatException;
 import org.embl.ebi.escience.scufl.tools.WorkflowLauncher;
 import org.embl.ebi.escience.utils.SimpleFile;
@@ -46,6 +55,28 @@ import uk.ac.soton.itinnovation.freefluo.main.InvalidInputException;
  */
 public class WorkflowTest extends FuncTestCase {
 
+	 class TestListener implements WorkflowEventListener {
+			public void workflowFailed(WorkflowFailureEvent e) {
+				fail("Workflow failed: " +	 e.getWorkflowInstance().getErrorMessage());				
+			}
+			public void processFailed(ProcessFailureEvent e) {
+				fail("Process " + e.getProcessor() + " failed: " + e.getCause());						
+			}
+			public void dataChanged(UserChangedDataEvent e) {
+			}
+			public void collectionConstructed(CollectionConstructionEvent e) {
+			}
+			public void workflowCompleted(WorkflowCompletionEvent e) {
+			}
+			public void processCompleted(ProcessCompletionEvent e) {
+			}
+			public void processCompletedWithIteration(IterationCompletionEvent e) {
+			}
+			public void workflowCreated(WorkflowCreationEvent e) {
+			}			
+	 }
+
+	
 	/**
 	 * A converter for use when reading from a file. Use with readFiles().
 	 * 
@@ -286,7 +317,7 @@ public class WorkflowTest extends FuncTestCase {
 		WorkflowLauncher launcher;
 		launcher = new WorkflowLauncher(workflowStream);
 		Map outputs;
-		outputs = launcher.execute(inputs);
+		outputs = launcher.execute(inputs, new TestListener());
 		checkOutputs(outputs, outputMatchers);
 	}
 
@@ -371,5 +402,6 @@ public class WorkflowTest extends FuncTestCase {
 		}
 		return inputs;
 	}
+
 
 }

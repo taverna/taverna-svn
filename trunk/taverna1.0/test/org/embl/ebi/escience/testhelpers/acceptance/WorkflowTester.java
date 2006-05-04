@@ -16,10 +16,16 @@ public class WorkflowTester {
 
 	public static Test suite() throws Exception {
 		TestSuite suite = new TestSuite();
+		suite.setName("Workflow tests found in classpath");
 		String path = System.getProperty("java.class.path");
 		String[] paths = path.split(File.pathSeparator);
 		for (int i = 0; i < paths.length; i++) {
-			suite.addTest(examineDirectories(new File(paths[i])));
+			File folder = new File(paths[i]);
+			JFuncSuite subsuite = examineDirectories(folder);
+			subsuite.setName(folder.toString());
+			if (subsuite.testCount() > 0) {
+				suite.addTest(subsuite);
+			}			
 		}
 		return suite;
 	}
@@ -53,7 +59,7 @@ public class WorkflowTester {
 			System.err.println("Not a directory: " + directory);
 			System.exit(2);
 		}
-		JFuncSuite suite = examineDirectories(directory);
+		JFuncSuite suite = examineDirectories(directory);		
 		JFuncRunner.run(suite);
 		System.exit(0);
 	}
@@ -71,7 +77,9 @@ public class WorkflowTester {
 	 * @return A TestSuite of all WorkflowTest
 	 */
 	public static JFuncSuite examineDirectories(File directory) {
+		
 		JFuncSuite suite = new JFuncSuite();
+		suite.setName(directory.getName());
 		// See if we find directory/directory.xml here, which should be a
 		// workflow
 		final String workflowName = directory.getName() + ".xml";
@@ -99,7 +107,10 @@ public class WorkflowTester {
 				if (!subdirs[i].isDirectory()) {
 					continue;
 				}
-				suite.addTest(examineDirectories(subdirs[i]));
+				JFuncSuite subsuite = examineDirectories(subdirs[i]);
+				if (subsuite.testCount() > 0) {
+					suite.addTest(subsuite);
+				}
 			}
 		}
 		return suite;
