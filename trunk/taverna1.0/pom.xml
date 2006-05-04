@@ -572,6 +572,20 @@ U    As in http://maven.apache.org/general.html  "How do I include tools.jar"
       <scope>system</scope>
       <systemPath>${basedir}/lib/JRclient-RE817.jar</systemPath>
     </dependency>
+    <dependency>
+      <groupId>mygrid</groupId>
+      <artifactId>jfunc</artifactId>
+      <version>1.1</version>
+      <scope>system</scope>
+      <systemPath>${basedir}/lib/jfunc.jar</systemPath>
+    </dependency>
+    <dependency>
+      <groupId>mygrid</groupId>
+      <artifactId>jcfe</artifactId>
+      <version>1.1.200108201911</version>
+      <scope>system</scope>
+      <systemPath>${basedir}/lib/jcfe.jar</systemPath>
+    </dependency>
   </dependencies>
   <reporting>
     <plugins>
