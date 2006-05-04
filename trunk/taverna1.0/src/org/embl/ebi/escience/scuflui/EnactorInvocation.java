@@ -147,25 +147,18 @@ public class EnactorInvocation extends JPanel implements ScuflUIComponent {
 	 * from showResults().
 	 */
 	protected void ensureGotResults() {
-		// todo: surely we can re-write this to use synchronization rather than
-		// sleep?
-		String results = "";
 		try {
 			logger.debug("Getting results");			
-			boolean gotResults = false;
-			while (!gotResults) {
+			while (true) {
 				if (this.workflowInstance.getStatus().equalsIgnoreCase(
 						"Complete")) {
-					gotResults = true;
+					break;
 				}
-
 				// logger.debug(this.workflowInstance.getStatus());
 				// results = this.workflowInstance.getOutputXMLString();
 				// if (results.equals("") == false) {
-				// gotResults = true;
-				else {
-					Thread.sleep(1000);
-				}
+				// break;
+				Thread.sleep(1000);
 			}
 		} catch (InterruptedException ie) {
 			// todo: ugly hack - I didn't want to change the logic just incase
@@ -321,7 +314,7 @@ public class EnactorInvocation extends JPanel implements ScuflUIComponent {
 		processorListPanel.setLayout(new BoxLayout(processorListPanel,
 				BoxLayout.PAGE_AXIS));
 		processorListPanel.setBorder(BorderFactory.createTitledBorder(
-				BorderFactory.createEtchedBorder(), "Processor statii"));
+				BorderFactory.createEtchedBorder(), "Processor statii"));		
 
 		statusTableModel = new EnactorStatusTableModel(theModel);
 		final JTable processorTable = new JTable(statusTableModel);
@@ -500,11 +493,10 @@ public class EnactorInvocation extends JPanel implements ScuflUIComponent {
 
 			}
 		});
-
-		// processorTable.setPreferredScrollableViewportSize(new
-		// Dimension(500,100));
+		
 		JScrollPane scrollPane = new JScrollPane(processorTable);
 		scrollPane.setPreferredSize(new Dimension(500, 200));
+		intermediateResults.setPreferredSize(new Dimension(0,0));
 		JSplitPane statusSplitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT,
 				scrollPane, intermediateResults);
 
