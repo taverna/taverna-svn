@@ -2,6 +2,7 @@ package org.embl.ebi.escience.testhelpers.acceptance;
 
 import java.io.File;
 import java.io.FilenameFilter;
+import java.io.IOException;
 
 import junit.extensions.jfunc.JFuncSuite;
 import junit.extensions.jfunc.textui.JFuncRunner;
@@ -25,7 +26,7 @@ public class WorkflowTester {
 			subsuite.setName(folder.toString());
 			if (subsuite.testCount() > 0) {
 				suite.addTest(subsuite);
-			}			
+			}
 		}
 		return suite;
 	}
@@ -59,7 +60,7 @@ public class WorkflowTester {
 			System.err.println("Not a directory: " + directory);
 			System.exit(2);
 		}
-		JFuncSuite suite = examineDirectories(directory);		
+		JFuncSuite suite = examineDirectories(directory);
 		JFuncRunner.run(suite);
 		System.exit(0);
 	}
@@ -76,9 +77,15 @@ public class WorkflowTester {
 	 *            Base directory for workflows to be tested
 	 * @return A TestSuite of all WorkflowTest
 	 */
-	public static JFuncSuite examineDirectories(File directory) {
-		
+	public static JFuncSuite examineDirectories(File directory) {			
 		JFuncSuite suite = new JFuncSuite();
+		try {
+			// So that .. and such gets their real names
+			directory = directory.getCanonicalFile();
+		} catch (IOException e) {
+			logger.error("Could not resolve path " + directory, e);
+			return suite;
+		}		
 		suite.setName(directory.getName());
 		// See if we find directory/directory.xml here, which should be a
 		// workflow
