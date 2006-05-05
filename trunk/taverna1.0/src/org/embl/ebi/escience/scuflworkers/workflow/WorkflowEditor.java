@@ -7,13 +7,17 @@ package org.embl.ebi.escience.scuflworkers.workflow;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import javax.swing.JOptionPane;
-import org.embl.ebi.escience.scufl.*;
-import org.embl.ebi.escience.scuflui.*;
-import org.embl.ebi.escience.scuflworkers.ProcessorEditor;
-import org.embl.ebi.escience.scuflui.workbench.*;
-import javax.swing.JSplitPane;
+
 import javax.swing.ImageIcon;
+import javax.swing.JSplitPane;
+
+import org.embl.ebi.escience.scufl.Processor;
+import org.embl.ebi.escience.scufl.ScuflModel;
+import org.embl.ebi.escience.scuflui.AdvancedModelExplorer;
+import org.embl.ebi.escience.scuflui.ScuflDiagramPanel;
+import org.embl.ebi.escience.scuflui.ScuflUIComponent;
+import org.embl.ebi.escience.scuflui.UIUtils;
+import org.embl.ebi.escience.scuflworkers.ProcessorEditor;
 
 /**
  * Creates a new AdvancedModelExplorer within the desktop pane
@@ -64,8 +68,11 @@ public class WorkflowEditor implements ProcessorEditor {
 	    return explorer.getIcon();
 	}
 	public String getName() {
-	    return "Nested workflow editor for : "+wp.getName();
+		if (wp == null) {
+			return "Nested workflow editor";
+		}
+		return "Nested workflow editor for: " + wp.getName();
 	}
     }
 }
-	    
+   
