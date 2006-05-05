@@ -38,6 +38,7 @@ import org.embl.ebi.escience.scufl.enactor.event.WorkflowCompletionEvent;
 import org.embl.ebi.escience.scufl.enactor.event.WorkflowCreationEvent;
 import org.embl.ebi.escience.scufl.enactor.event.WorkflowFailureEvent;
 import org.embl.ebi.escience.scufl.parser.XScuflFormatException;
+import org.embl.ebi.escience.scufl.tools.Lang;
 import org.embl.ebi.escience.scufl.tools.WorkflowLauncher;
 import org.embl.ebi.escience.utils.SimpleFile;
 import org.w3c.dom.Document;
@@ -55,28 +56,35 @@ import uk.ac.soton.itinnovation.freefluo.main.InvalidInputException;
  */
 public class WorkflowTest extends FuncTestCase {
 
-	 class TestListener implements WorkflowEventListener {
-			public void workflowFailed(WorkflowFailureEvent e) {
-				fail("Workflow failed: " +	 e.getWorkflowInstance().getErrorMessage());				
-			}
-			public void processFailed(ProcessFailureEvent e) {
-				fail("Process " + e.getProcessor() + " failed: " + e.getCause());						
-			}
-			public void dataChanged(UserChangedDataEvent e) {
-			}
-			public void collectionConstructed(CollectionConstructionEvent e) {
-			}
-			public void workflowCompleted(WorkflowCompletionEvent e) {
-			}
-			public void processCompleted(ProcessCompletionEvent e) {
-			}
-			public void processCompletedWithIteration(IterationCompletionEvent e) {
-			}
-			public void workflowCreated(WorkflowCreationEvent e) {
-			}			
-	 }
+	class TestListener implements WorkflowEventListener {
+		public void workflowFailed(WorkflowFailureEvent e) {
+			fail("Workflow failed: "
+					+ e.getWorkflowInstance().getErrorMessage());
+		}
 
-	
+		public void processFailed(ProcessFailureEvent e) {
+			fail("Process " + e.getProcessor() + " failed: " + e.getCause());
+		}
+
+		public void dataChanged(UserChangedDataEvent e) {
+		}
+
+		public void collectionConstructed(CollectionConstructionEvent e) {
+		}
+
+		public void workflowCompleted(WorkflowCompletionEvent e) {
+		}
+
+		public void processCompleted(ProcessCompletionEvent e) {
+		}
+
+		public void processCompletedWithIteration(IterationCompletionEvent e) {
+		}
+
+		public void workflowCreated(WorkflowCreationEvent e) {
+		}
+	}
+
 	/**
 	 * A converter for use when reading from a file. Use with readFiles().
 	 * 
@@ -189,6 +197,9 @@ public class WorkflowTest extends FuncTestCase {
 		}
 
 		public String convertToString(Object other) {
+			if (other.getClass().isArray()) {
+				other = Lang.asObjectList(other);
+			}
 			if (!(other instanceof Collection)) {
 				return other.toString();
 			}
@@ -402,6 +413,5 @@ public class WorkflowTest extends FuncTestCase {
 		}
 		return inputs;
 	}
-
 
 }
