@@ -49,7 +49,7 @@ public class ScuflSVGDiagram extends JComponent implements
 		ScuflModelEventListener, ScuflUIComponent {
 
 	private static Logger logger = Logger.getLogger(ScuflSVGDiagram.class);
-	
+
 	private ScuflModel model;
 
 	private DotView dot;
@@ -172,9 +172,9 @@ public class ScuflSVGDiagram extends JComponent implements
 			JOptionPane.showMessageDialog(ScuflSVGDiagram.this, ioe
 					.getMessage(), "Error!", JOptionPane.ERROR_MESSAGE);
 		} catch (Exception other) {
-			logger.error("Could not update graphics", other);			
+			logger.error("Could not update graphics", other);
 		}
-		updateTimer = new Timer();		
+		updateTimer = new Timer();
 		updateTimer.schedule(new UpdateTimer(), 0, 2000);
 	}
 

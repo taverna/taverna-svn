@@ -57,7 +57,7 @@ public class ScuflSemanticMarkupEditor extends JPanel implements
 	 * Build a new markup editor attached to the particular SemanticMarkup
 	 * object.
 	 */
-	public ScuflSemanticMarkupEditor(SemanticMarkup m) {		
+	public ScuflSemanticMarkupEditor(SemanticMarkup m) {
 		super(new BorderLayout());
 		setPreferredSize(new Dimension(100, 100));
 		setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
@@ -184,10 +184,10 @@ public class ScuflSemanticMarkupEditor extends JPanel implements
 		JPanel descriptionPanel = new JPanel(new BorderLayout());
 		descriptionPanel.setPreferredSize(new Dimension(400, 400));
 		descriptionPanel.setBorder(BorderFactory.createTitledBorder(
-				BorderFactory.createEtchedBorder(), "Edit Description"));		
+				BorderFactory.createEtchedBorder(), "Edit Description"));
 		final JTextArea descriptionText = new JTextArea(theMetadata
-				.getDescription());				
-		JScrollPane descriptionPane = new JScrollPane(descriptionText);		
+				.getDescription());
+		JScrollPane descriptionPane = new JScrollPane(descriptionText);
 		descriptionPanel.add(descriptionPane, BorderLayout.CENTER);
 		descriptionText.addFocusListener(new FocusListener() {
 			public void focusGained(FocusEvent e) {
@@ -197,10 +197,11 @@ public class ScuflSemanticMarkupEditor extends JPanel implements
 				// FIXME: Do this as an event on theMetadata.
 				descriptionText.setText(theMetadata.getDescription());
 			}
+
 			public void focusLost(FocusEvent e) {
 				theMetadata.setDescription(descriptionText.getText());
 			}
-		});		
+		});
 		tabbedPane.addTab("Description", descriptionPanel);
 
 		// A panel to show the MIME mappings
@@ -258,14 +259,13 @@ public class ScuflSemanticMarkupEditor extends JPanel implements
 		//
 	}
 
-	public String getName() {		
-		if (theMetadata == null) {				
+	public String getName() {
+		if (theMetadata == null) {
 			// getName could be called during super() call.. :((
 			return "Uninitialized markup editor";
-		}					
+		}
 		return "Markup editor for " + theMetadata.getSubject().toString();
 	}
-	
 
 	/**
 	 * If the 'searchRegex' parameter is not null then choose the icon based on

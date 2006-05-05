@@ -44,11 +44,11 @@ public class LinkingMenus {
 		// Is this a workflow source? If so give the option to delete/rename it
 		if (fromPort.getProcessor() == model.getWorkflowSourceProcessor()) {
 			theMenu.add(new ShadedLabel("Workflow Input : "
-					+ sourcePort.getName(), ShadedLabel.TAVERNA_GREEN));			
+					+ sourcePort.getName(), ShadedLabel.TAVERNA_GREEN));
 			theMenu.add(new RenameAction(model, fromPort));
 			theMenu.add(new RemoveAction(model, fromPort));
-			theMenu.addSeparator();			
-			theMenu.add(new EditMetadataAction(model, fromPort));					
+			theMenu.addSeparator();
+			theMenu.add(new EditMetadataAction(model, fromPort));
 			theMenu.addSeparator();
 			theMenu.add(new ShadedLabel("Connect to...",
 					ShadedLabel.TAVERNA_ORANGE));

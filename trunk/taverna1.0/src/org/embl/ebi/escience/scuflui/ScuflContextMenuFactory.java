@@ -146,11 +146,11 @@ public class ScuflContextMenuFactory {
 				if (thePort.getProcessor() == model.getWorkflowSinkProcessor()) {
 					theMenu.add(new ShadedLabel("Workflow Output : "
 							+ thePort.getName(), ShadedLabel.TAVERNA_GREEN));
-					final Port sinkPort = thePort;										
+					final Port sinkPort = thePort;
 					theMenu.add(new RenameAction(model, sinkPort));
 					theMenu.add(new RemoveAction(model, sinkPort));
 					theMenu.addSeparator();
-					theMenu.add(new EditMetadataAction(model, sinkPort));					
+					theMenu.add(new EditMetadataAction(model, sinkPort));
 					theMenu.addSeparator();
 				} else {
 					theMenu.add(new ShadedLabel("Input port : "

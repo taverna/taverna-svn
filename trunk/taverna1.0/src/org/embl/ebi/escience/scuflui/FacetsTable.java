@@ -99,7 +99,7 @@ public class FacetsTable extends JPanel {
 		this.finders = FacetFinderRegistry.instance();
 		this.renderers = RendererRegistry.instance();
 		setOpaque(true); // required to make sure bits of the rendering
-							// aren't
+		// aren't
 		// left behind
 		setBackground(Color.WHITE);
 		resizeAndValidate();
@@ -120,7 +120,7 @@ public class FacetsTable extends JPanel {
 		}
 		setBackground(Color.WHITE);
 		setOpaque(true); // required to make sure bits of the rendering
-							// aren't
+		// aren't
 		// left behind
 		resizeAndValidate();
 	}

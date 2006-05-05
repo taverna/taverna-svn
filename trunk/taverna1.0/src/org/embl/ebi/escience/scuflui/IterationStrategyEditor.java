@@ -60,7 +60,8 @@ public class IterationStrategyEditor extends JTree implements
 	private BufferedImage imgGhost; // The 'drag image'
 
 	private Point ptOffset = new Point(); // Where, in the drag image, the
-											// mouse was clicked
+
+	// mouse was clicked
 
 	private IterationStrategy strategy;
 
@@ -162,13 +163,13 @@ public class IterationStrategyEditor extends JTree implements
 				this, path.getLastPathComponent(), false, isExpanded(path),
 				getModel().isLeaf(path.getLastPathComponent()), 0, false);
 		lbl.setSize((int) raPath.getWidth(), (int) raPath.getHeight()); // <--
-																		// The
-																		// layout
-																		// manager
-																		// would
-																		// normally
-																		// do
-																		// this
+		// The
+		// layout
+		// manager
+		// would
+		// normally
+		// do
+		// this
 
 		// Get a buffered image of the selection for dragging a ghost image
 		imgGhost = new BufferedImage((int) raPath.getWidth(), (int) raPath
@@ -176,9 +177,9 @@ public class IterationStrategyEditor extends JTree implements
 		Graphics2D g2 = imgGhost.createGraphics();
 		// Ask the cell renderer to paint itself into the BufferedImage
 		g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC, 0.5f)); // Make
-																				// the
-																				// image
-																				// ghostlike
+		// the
+		// image
+		// ghostlike
 		lbl.paint(g2);
 		// Now paint a gradient UNDER the ghosted JLabel text (but not under the
 		// icon if any)
@@ -286,7 +287,7 @@ public class IterationStrategyEditor extends JTree implements
 					_nLeftRight = 0; // Reset left/right movement trend
 					if (isRootPath(_pathLast))
 						return; // Do nothing if we are hovering over the root
-								// node
+					// node
 					if (isExpanded(_pathLast))
 						collapsePath(_pathLast);
 					else
@@ -338,8 +339,8 @@ public class IterationStrategyEditor extends JTree implements
 			// own drag image
 			if (!DragSource.isDragImageSupported()) {
 				paintImmediately(_raGhost.getBounds()); // Rub out the last
-														// ghost image and cue
-														// line
+				// ghost image and cue
+				// line
 				// And remember where we are about to draw the new ghost image
 				_raGhost.setRect(pt.x - ptOffset.x, pt.y - ptOffset.y, imgGhost
 						.getWidth(), imgGhost.getHeight());
@@ -352,7 +353,7 @@ public class IterationStrategyEditor extends JTree implements
 			TreePath path = getClosestPathForLocation(pt.x, pt.y);
 			if (!(path == _pathLast)) {
 				_nLeftRight = 0; // We've moved up or down, so reset
-									// left/right movement trend
+				// left/right movement trend
 				_pathLast = path;
 				_timerHover.restart();
 			}
@@ -403,7 +404,7 @@ public class IterationStrategyEditor extends JTree implements
 
 		public void drop(DropTargetDropEvent e) {
 			_timerHover.stop(); // Prevent hover timer from doing an unwanted
-								// expandPath or collapsePath
+			// expandPath or collapsePath
 			if (!isDropAcceptable(e)) {
 				e.rejectDrop();
 				IterationStrategyEditor.this.repaint();
@@ -612,10 +613,10 @@ public class IterationStrategyEditor extends JTree implements
 		// bottom, just return the first or last row respectively.
 
 		nRow = (pt.y + raOuter.y <= AUTOSCROLL_MARGIN) // Is row at top of
-														// screen?
+				// screen?
 				? (nRow <= 0 ? 0 : nRow - 1) // Yes, scroll up one row
 				: (nRow < getRowCount() - 1 ? nRow + 1 : nRow); // No, scroll
-																// down one row
+		// down one row
 
 		scrollRowToVisible(nRow);
 	}

@@ -54,7 +54,7 @@ import uk.ac.soton.itinnovation.freefluo.main.InvalidInputException;
 public class EnactorInvocation extends JPanel implements ScuflUIComponent {
 
 	private static Logger logger = Logger.getLogger(EnactorInvocation.class);
-	
+
 	/**
 	 * A not particularly elegant way of setting the user context from Kevin's
 	 * MIR browser plugin. If this is set to non null it will be passed through
@@ -76,7 +76,7 @@ public class EnactorInvocation extends JPanel implements ScuflUIComponent {
 			workflowEditor.detachFromModel();
 			workflowInstance.cancelExecution();
 		} catch (Exception e) {
-			logger.error("Could not detach", e);			
+			logger.error("Could not detach", e);
 		}
 	}
 
@@ -148,7 +148,7 @@ public class EnactorInvocation extends JPanel implements ScuflUIComponent {
 	 */
 	protected void ensureGotResults() {
 		try {
-			logger.debug("Getting results");			
+			logger.debug("Getting results");
 			while (true) {
 				if (this.workflowInstance.getStatus().equalsIgnoreCase(
 						"Complete")) {
@@ -212,7 +212,7 @@ public class EnactorInvocation extends JPanel implements ScuflUIComponent {
 			int sizeLimit = 128000;
 			try {
 				sizeLimit = Integer.parseInt(System
-					.getProperty("taverna.resulttable.sizelimit"));
+						.getProperty("taverna.resulttable.sizelimit"));
 			} catch (NumberFormatException ex) {
 				logger.error("Could not set taverna.resulttable.sizelimit", ex);
 			}
@@ -223,7 +223,7 @@ public class EnactorInvocation extends JPanel implements ScuflUIComponent {
 		} catch (Exception e) {
 			// The above can cause a NPE, we need to track this down
 			// FIXME
-			logger.error(e);			
+			logger.error(e);
 		}
 	}
 
@@ -314,7 +314,7 @@ public class EnactorInvocation extends JPanel implements ScuflUIComponent {
 		processorListPanel.setLayout(new BoxLayout(processorListPanel,
 				BoxLayout.PAGE_AXIS));
 		processorListPanel.setBorder(BorderFactory.createTitledBorder(
-				BorderFactory.createEtchedBorder(), "Processor statii"));		
+				BorderFactory.createEtchedBorder(), "Processor statii"));
 
 		statusTableModel = new EnactorStatusTableModel(theModel);
 		final JTable processorTable = new JTable(statusTableModel);
@@ -453,50 +453,49 @@ public class EnactorInvocation extends JPanel implements ScuflUIComponent {
 				} else {
 					int selectedRow = lsm.getMinSelectionIndex();
 					// get the processor name
-						String processorName = (String) statusTableModel
-								.getValueAt(selectedRow, 1);
-						Map[] intermediateResultMaps;
-						try {
-							intermediateResultMaps = EnactorInvocation.this.workflowInstance
-									.getIntermediateResultsForProcessor(processorName);
-						} catch (UnknownProcessorException ex) {
-							logger.error("Unknown processor " + processorName, ex);
-							return;
-						}
-						// Clear the tabs
-						intermediateInputs.removeAll();
-						intermediateOutputs.removeAll();
-						// Do the inputs
-						for (Iterator i = intermediateResultMaps[0].keySet()
-								.iterator(); i.hasNext();) {
-							String name = (String) i.next();
-							DataThing value = (DataThing) intermediateResultMaps[0]
-									.get(name);
-							ResultItemPanel rip = new ResultItemPanel(value,
-									workflowInstance);
-							intermediateInputs.add(name, rip);
-						}
-						// And the outputs
-						for (Iterator i = intermediateResultMaps[1].keySet()
-								.iterator(); i.hasNext();) {
-							String name = (String) i.next();
-							DataThing value = (DataThing) intermediateResultMaps[1]
-									.get(name);
-							ResultItemPanel rip = new ResultItemPanel(value,
-									workflowInstance);
-							rip.setSelectedPort(processorName, name);
-							intermediateOutputs.add(name, rip);
-						}
-
+					String processorName = (String) statusTableModel
+							.getValueAt(selectedRow, 1);
+					Map[] intermediateResultMaps;
+					try {
+						intermediateResultMaps = EnactorInvocation.this.workflowInstance
+								.getIntermediateResultsForProcessor(processorName);
+					} catch (UnknownProcessorException ex) {
+						logger.error("Unknown processor " + processorName, ex);
+						return;
+					}
+					// Clear the tabs
+					intermediateInputs.removeAll();
+					intermediateOutputs.removeAll();
+					// Do the inputs
+					for (Iterator i = intermediateResultMaps[0].keySet()
+							.iterator(); i.hasNext();) {
+						String name = (String) i.next();
+						DataThing value = (DataThing) intermediateResultMaps[0]
+								.get(name);
+						ResultItemPanel rip = new ResultItemPanel(value,
+								workflowInstance);
+						intermediateInputs.add(name, rip);
+					}
+					// And the outputs
+					for (Iterator i = intermediateResultMaps[1].keySet()
+							.iterator(); i.hasNext();) {
+						String name = (String) i.next();
+						DataThing value = (DataThing) intermediateResultMaps[1]
+								.get(name);
+						ResultItemPanel rip = new ResultItemPanel(value,
+								workflowInstance);
+						rip.setSelectedPort(processorName, name);
+						intermediateOutputs.add(name, rip);
+					}
 
 				}
 
 			}
 		});
-		
+
 		JScrollPane scrollPane = new JScrollPane(processorTable);
 		scrollPane.setPreferredSize(new Dimension(500, 200));
-		intermediateResults.setPreferredSize(new Dimension(0,0));
+		intermediateResults.setPreferredSize(new Dimension(0, 0));
 		JSplitPane statusSplitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT,
 				scrollPane, intermediateResults);
 
@@ -663,7 +662,7 @@ public class EnactorInvocation extends JPanel implements ScuflUIComponent {
 									.setText("<html><font color=\"green\">Running</font></html>");
 						}
 					} catch (Exception e) {
-						logger.error("Error while invoking", e);																
+						logger.error("Error while invoking", e);
 					}
 					if (running) {
 						Thread.sleep(2000);

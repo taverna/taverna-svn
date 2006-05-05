@@ -35,7 +35,7 @@ public class CArrowImage extends BufferedImage {
 
 	public CArrowImage(int nWidth, int nHeight, int nArrowDirection) {
 		super(nWidth, nHeight, TYPE_INT_ARGB_PRE); // Set the width, height and
-													// image type
+		// image type
 
 		Map map = new HashMap();
 		map.put(RenderingHints.KEY_ANTIALIASING,
@@ -45,7 +45,7 @@ public class CArrowImage extends BufferedImage {
 		RenderingHints hints = new RenderingHints(map);
 
 		Graphics2D g2 = this.createGraphics(); // Create a graphics context for
-												// this buffered image
+		// this buffered image
 		g2.setRenderingHints(hints);
 
 		float h = getHeight();

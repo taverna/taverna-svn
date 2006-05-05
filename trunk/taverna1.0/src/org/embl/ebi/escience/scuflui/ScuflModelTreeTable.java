@@ -78,8 +78,7 @@ public class ScuflModelTreeTable extends JTreeTable implements
 		DragSourceListener, DragGestureListener {
 
 	private static Logger logger = Logger.getLogger(ScuflModelTreeTable.class);
-		
-	
+
 	// The ScuflModel that this is a view / controller over
 	ScuflModel model = null;
 
@@ -257,9 +256,9 @@ public class ScuflModelTreeTable extends JTreeTable implements
 					InputPort ip = (InputPort) uo;
 					if (ip.hasDefaultValue()) {
 						((TreeTableTextField) getComponent()).setText(ip
-								.getDefaultValue());						
+								.getDefaultValue());
 					} else {
-						((TreeTableTextField) getComponent()).setText("");						
+						((TreeTableTextField) getComponent()).setText("");
 					}
 				}
 			}
@@ -285,7 +284,7 @@ public class ScuflModelTreeTable extends JTreeTable implements
 											- getCellRect(0, counter, true).x,
 									me.getY(), me.getClickCount(), me
 											.isPopupTrigger());
-							logger.debug(newME);							
+							logger.debug(newME);
 							tree.dispatchEvent(newME);
 
 							Point p = new Point(me.getX(), me.getY());
