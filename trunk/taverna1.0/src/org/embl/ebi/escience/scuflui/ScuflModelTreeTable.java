@@ -48,6 +48,7 @@ import javax.swing.tree.TreeCellRenderer;
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 
+import org.apache.log4j.Logger;
 import org.embl.ebi.escience.scufl.AlternateProcessor;
 import org.embl.ebi.escience.scufl.DataConstraint;
 import org.embl.ebi.escience.scufl.InputPort;
@@ -76,6 +77,9 @@ public class ScuflModelTreeTable extends JTreeTable implements
 		ScuflModelEventListener, ScuflUIComponent, DropTargetListener,
 		DragSourceListener, DragGestureListener {
 
+	private static Logger logger = Logger.getLogger(ScuflModelTreeTable.class);
+		
+	
 	// The ScuflModel that this is a view / controller over
 	ScuflModel model = null;
 
@@ -281,7 +285,7 @@ public class ScuflModelTreeTable extends JTreeTable implements
 											- getCellRect(0, counter, true).x,
 									me.getY(), me.getClickCount(), me
 											.isPopupTrigger());
-							System.out.println(newME);
+							logger.debug(newME);							
 							tree.dispatchEvent(newME);
 
 							Point p = new Point(me.getX(), me.getY());
@@ -322,7 +326,7 @@ public class ScuflModelTreeTable extends JTreeTable implements
 				// Have something of type factorySpecFragmentFlavor;
 				FactorySpecFragment fsf = (FactorySpecFragment) t
 						.getTransferData(f);
-				// System.out.println("Drop of "+fsf.getFactoryNodeName());
+				// logger.debug("Drop of "+fsf.getFactoryNodeName());
 				// Get the tree path which the drop has landed on, if there is
 				// one.
 				Point p = e.getLocation();
@@ -344,7 +348,7 @@ public class ScuflModelTreeTable extends JTreeTable implements
 								.getUserObject() instanceof Processor) {
 					DefaultMutableTreeNode node = (DefaultMutableTreeNode) path
 							.getPathComponent(2);
-					System.out.println(node.toString());
+					logger.debug(node);
 					Processor target = (Processor) node.getUserObject();
 					Element wrapperElement = new Element("wrapper");
 					wrapperElement.addContent(fsf.getElement());
@@ -361,7 +365,7 @@ public class ScuflModelTreeTable extends JTreeTable implements
 					// then we've been dragged into a processor and should
 					// create an alternate.
 				} else {
-					System.out.println("No node under the drop.");
+					logger.debug("No node under the drop.");
 					// Just add the node to the model as a new processor
 					String validName = model.getValidProcessorName(fsf
 							.getFactoryNodeName());
