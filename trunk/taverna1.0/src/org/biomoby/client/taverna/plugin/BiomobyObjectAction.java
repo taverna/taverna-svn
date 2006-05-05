@@ -132,10 +132,11 @@ public class BiomobyObjectAction extends AbstractProcessorAction {
             }
 
             public void mousePressed(MouseEvent me) {
+            	mouseReleased(me);
             }
 
             public void mouseReleased(MouseEvent me) {
-                if (me.isPopupTrigger()) // right click, show popup menu
+                if (me.isPopupTrigger()\) // right click, show popup menu
                 {
                     TreePath path = tree.getPathForLocation(me.getX(), me
                             .getY());

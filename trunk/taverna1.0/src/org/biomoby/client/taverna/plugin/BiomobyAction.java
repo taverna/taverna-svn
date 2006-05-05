@@ -181,6 +181,7 @@ public class BiomobyAction extends AbstractProcessorAction {
 			}
 
 			public void mousePressed(MouseEvent me) {
+				mouseReleased(me);
 			}
 
 			public void mouseReleased(MouseEvent me) {
