@@ -18,6 +18,7 @@ import java.util.Vector;
 import org.embl.ebi.escience.baclava.DataThing;
 import org.embl.ebi.escience.scufl.InputPort;
 import org.embl.ebi.escience.scufl.Processor;
+import org.embl.ebi.escience.scufl.tools.Lang;
 import org.embl.ebi.escience.scuflworkers.ProcessorTaskWorker;
 import org.rosuda.JRclient.REXP;
 import org.rosuda.JRclient.RSrvException;
@@ -39,77 +40,7 @@ public class RservTask implements ProcessorTaskWorker {
 	public RservTask(Processor p) {
 		this.proc = (RservProcessor) p;
 	}
-
-	// TODO: Move getMethod() and map() to something.Utils
-	/*
-	 * Find method by name. Almost like Class.getMethod() - but ignore parameter
-	 * matching and return first match. If obj is not a Class instance,
-	 * obj.getClass() will be searched. If the method is not found, null is
-	 * returned.
-	 */
-	public static Method getMethod(String method_name, Object obj) {
-		Class theClass;
-		if (obj instanceof Class) {
-			theClass = (Class) obj;
-		} else {
-			theClass = obj.getClass();
-		}
-		Method[] methods = theClass.getMethods();
-		for (int i = 0; i < methods.length; i++) {
-			if (methods[i].getName().equals(method_name)) {
-				return methods[i];
-			}
-		}
-		return null;
-	}
-
-	// TODO: Make a map() where obj is set to element, as to do element.method()
-	// with no arguments
-	/*
-	 * Map method to each element in iterable. The method_name is looked up in
-	 * obj as by getMethod(). Return a List of method(element) for each element.
-	 * 
-	 * Note that if IllegalArgumentException. IllegalAccessException or
-	 * InvocationTargetException is thrown, the stacktrace is printed and null
-	 * is added to the results.
-	 */
-	public static List map(String method_name, Collection iterable, Object obj) {
-		Method method = getMethod(method_name, obj);
-		return map(method, iterable, obj);
-	}
-
-	/*
-	 * Map method to each element in iterable. Return a List of method(element)
-	 * for each element.
-	 * 
-	 * If parameter obj is specified, it is the object in which the method
-	 * belongs (this), otherwise method must be static.
-	 * 
-	 * Note that if IllegalArgumentException. IllegalAccessException or
-	 * InvocationTargetException is thrown, the stacktrace is printed and null
-	 * is added to the results.
-	 */
-	public static List map(Method method, Collection iterable, Object obj) {
-		Iterator it = iterable.iterator();
-		List results = new ArrayList();
-		Object[] parameters = new Object[1];
-		while (it.hasNext()) {
-			parameters[0] = it.next();
-			Object res = null;
-			try {
-				res = method.invoke(obj, parameters);
-			} catch (IllegalArgumentException e) {
-				e.printStackTrace();
-			} catch (IllegalAccessException e) {
-				e.printStackTrace();
-			} catch (InvocationTargetException e) {
-				e.printStackTrace();
-			}
-			results.add(res);
-		}
-		return results;
-	}
-
+	
 	/*
 	 * Convert REXP to suitable (list of) strings so to be outputted as
 	 * l('text/plain')
@@ -136,7 +67,7 @@ public class RservTask implements ProcessorTaskWorker {
 			// Recursively call ourself for each element in the vector and
 			// return the List of
 			// results.
-			return map("rexpToJava", vec, this);
+			return Lang.map("rexpToJava", vec, this);
 		} else {
 			// This should handle INT and DOUBLE and BOOL and STR,
 			// and possibly other weird stuff, according to JRclient source
