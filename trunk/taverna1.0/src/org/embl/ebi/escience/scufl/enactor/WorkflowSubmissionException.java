@@ -5,13 +5,15 @@
  */
 package org.embl.ebi.escience.scufl.enactor;
 
+import org.embl.ebi.escience.scufl.ScuflException;
+
 /**
  * Thrown when an error occurs during workflow submission, wraps the real
  * exception using the standard exception chaining mechanism
  * 
  * @author Tom Oinn
  */
-public class WorkflowSubmissionException extends Exception {
+public class WorkflowSubmissionException extends ScuflException {
 	public WorkflowSubmissionException() {
 		super();
 	}

@@ -11,7 +11,7 @@ package org.embl.ebi.escience.scufl;
  * 
  * @author Tom Oinn
  */
-public class DuplicateProcessorNameException extends Exception {
+public class DuplicateProcessorNameException extends ScuflException {
 
 	public DuplicateProcessorNameException(String the_message) {
 		super(the_message);

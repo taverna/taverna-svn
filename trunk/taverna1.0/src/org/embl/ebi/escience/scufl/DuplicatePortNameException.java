@@ -11,7 +11,7 @@ package org.embl.ebi.escience.scufl;
  * 
  * @author Tom Oinn
  */
-public class DuplicatePortNameException extends Exception {
+public class DuplicatePortNameException extends ScuflException {
 
 	public DuplicatePortNameException(String the_message) {
 		super(the_message);

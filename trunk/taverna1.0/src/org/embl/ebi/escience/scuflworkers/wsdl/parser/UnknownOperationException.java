@@ -1,6 +1,8 @@
 package org.embl.ebi.escience.scuflworkers.wsdl.parser;
 
-public class UnknownOperationException extends Exception 
+import org.embl.ebi.escience.scufl.ScuflException;
+
+public class UnknownOperationException extends ScuflException 
 {
 	UnknownOperationException(String val)
 	{

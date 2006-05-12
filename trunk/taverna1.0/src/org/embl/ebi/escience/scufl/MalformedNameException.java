@@ -11,7 +11,7 @@ package org.embl.ebi.escience.scufl;
  * 
  * @author Tom Oinn
  */
-public class MalformedNameException extends Exception {
+public class MalformedNameException extends ScuflException {
 
 	public MalformedNameException(String the_message) {
 		super(the_message);

@@ -12,7 +12,7 @@ package org.embl.ebi.escience.scufl;
  * 
  * @author Tom Oinn
  */
-public class SetOnlineException extends Exception {
+public class SetOnlineException extends ScuflException {
 
 	public SetOnlineException() {
 		//

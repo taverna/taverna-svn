@@ -11,7 +11,7 @@ package org.embl.ebi.escience.scufl;
  * 
  * @author Tom Oinn
  */
-public class ProcessorCreationException extends Exception {
+public class ProcessorCreationException extends ScuflException {
 	public ProcessorCreationException() {
 	}
 

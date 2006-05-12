@@ -11,7 +11,7 @@ package org.embl.ebi.escience.scufl;
  * 
  * @author Tom Oinn
  */
-public class ConcurrencyConstraintCreationException extends Exception {
+public class ConcurrencyConstraintCreationException extends ScuflException {
 
 	public ConcurrencyConstraintCreationException(String the_message) {
 		super(the_message);

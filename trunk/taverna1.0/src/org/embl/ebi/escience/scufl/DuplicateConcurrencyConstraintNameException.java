@@ -11,7 +11,7 @@ package org.embl.ebi.escience.scufl;
  * 
  * @author Tom Oinn
  */
-public class DuplicateConcurrencyConstraintNameException extends Exception {
+public class DuplicateConcurrencyConstraintNameException extends ScuflException {
 
 	public DuplicateConcurrencyConstraintNameException(String the_message) {
 		super(the_message);

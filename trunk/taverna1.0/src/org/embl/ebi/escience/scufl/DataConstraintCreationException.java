@@ -11,7 +11,7 @@ package org.embl.ebi.escience.scufl;
  * 
  * @author Tom Oinn
  */
-public class DataConstraintCreationException extends Exception {
+public class DataConstraintCreationException extends ScuflException {
 
 	public DataConstraintCreationException(String the_message) {
 		super(the_message);

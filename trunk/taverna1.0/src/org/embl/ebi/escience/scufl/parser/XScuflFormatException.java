@@ -5,12 +5,14 @@
  */
 package org.embl.ebi.escience.scufl.parser;
 
+import org.embl.ebi.escience.scufl.ScuflException;
+
 /**
  * Thrown by the ScuflModel when it can't find a particular named processor.
  * 
  * @author Tom Oinn
  */
-public class XScuflFormatException extends Exception {
+public class XScuflFormatException extends ScuflException {
 
 	public XScuflFormatException(String the_message) {
 		super(the_message);

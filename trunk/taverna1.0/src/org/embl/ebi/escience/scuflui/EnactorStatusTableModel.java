@@ -14,6 +14,7 @@ import javax.swing.ImageIcon;
 import javax.swing.table.AbstractTableModel;
 
 import org.embl.ebi.escience.scufl.Processor;
+import org.embl.ebi.escience.scufl.ScuflException;
 import org.embl.ebi.escience.scufl.ScuflModel;
 import org.jdom.Attribute;
 import org.jdom.Document;
@@ -284,7 +285,7 @@ public class EnactorStatusTableModel extends AbstractTableModel {
 /**
  * An exception to represent an invalid status report
  */
-class InvalidStatusReportException extends Exception {
+class InvalidStatusReportException extends ScuflException {
 
 	public InvalidStatusReportException(String message) {
 		super(message);

@@ -10,7 +10,7 @@ package org.embl.ebi.escience.scufl;
  * 
  * @author Tom Oinn
  */
-public class UnknownPortException extends Exception {
+public class UnknownPortException extends ScuflException {
 
 	public UnknownPortException(String the_message) {
 		super(the_message);

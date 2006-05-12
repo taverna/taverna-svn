@@ -11,7 +11,7 @@ package org.embl.ebi.escience.scufl;
  * 
  * @author Tom Oinn
  */
-public class PortCreationException extends Exception {
+public class PortCreationException extends ScuflException {
 
 	public PortCreationException(String the_message) {
 		super(the_message);

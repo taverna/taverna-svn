@@ -5,6 +5,8 @@
  */
 package org.embl.ebi.escience.scufl.enactor;
 
+import org.embl.ebi.escience.scufl.ScuflException;
+
 /**
  * Thrown when a client attempts to reconnect to a workflow instance that is
  * either unknown or that has security constraints which result in the client
@@ -12,7 +14,7 @@ package org.embl.ebi.escience.scufl.enactor;
  * 
  * @author Tom Oinn
  */
-public class UnknownWorkflowInstanceException extends Exception {
+public class UnknownWorkflowInstanceException extends ScuflException {
 	public UnknownWorkflowInstanceException() {
 		super();
 	}
