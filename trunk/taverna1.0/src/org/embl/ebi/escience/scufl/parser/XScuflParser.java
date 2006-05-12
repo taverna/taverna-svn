@@ -248,7 +248,7 @@ public class XScuflParser {
 		// throw back any of the exceptions it contains in the main thread.
 		// Seems to
 		// work okay and is a big optimisation at load time.
-		if (holder.exceptionList.isEmpty() == false) {
+		if (! holder.exceptionList.isEmpty()) {
 			// Re-enable events before exiting the method.
 			model.setEventStatus(true);
 			// Build the message
