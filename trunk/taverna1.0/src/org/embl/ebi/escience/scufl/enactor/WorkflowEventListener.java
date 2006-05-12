@@ -12,6 +12,8 @@ import org.embl.ebi.escience.scufl.enactor.event.*;
  * of an enactor instance including but not limited to workflow creation and
  * process reports
  * 
+ * @see WorkflowEventAdapter
+ * 
  * @author Tom Oinn
  */
 public interface WorkflowEventListener {
