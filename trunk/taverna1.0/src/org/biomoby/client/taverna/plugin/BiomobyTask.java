@@ -61,29 +61,21 @@ public class BiomobyTask implements ProcessorTaskWorker {
 
 	public Map execute(Map inputMap, ProcessorTask parentTask) throws TaskExecutionException {
 		if (DEBUG) {
-			try {
-				System.setOut(new PrintStream(new FileOutputStream("out.rtf", true)));
-			} catch (Exception e) {
-
-			}
-		}
-
-		if (DEBUG) {
-			System.out.println("Service " + proc.getName());
+			logger.debug("Service " + proc.getName());
 			for (Iterator it = inputMap.keySet().iterator(); it.hasNext();) {
 				String key = (String) it.next();
 				if (((DataThing) inputMap.get(key)).getDataObject() instanceof String) {
-					System.out.println("key " + key + "has value of\n"
+					logger.debug("key " + key + "has value of\n"
 							+ ((DataThing) inputMap.get(key)).getDataObject());
 					continue;
 				} else if (((DataThing) inputMap.get(key)).getDataObject() instanceof List) {
 					List list = (List) ((DataThing) inputMap.get(key)).getDataObject();
 					for (Iterator it2 = list.iterator(); it2.hasNext();) {
-						System.out.println("List key " + key + "has value of\n" + it2.next());
+						logger.debug("List key " + key + "has value of\n" + it2.next());
 					}
 				}
 			}
-			System.out.println("Printing of ports complete.");
+			logger.debug("Printing of ports complete.");
 		}
 
 		if (inputMap.containsKey("input")) {
@@ -407,12 +399,10 @@ public class BiomobyTask implements ProcessorTaskWorker {
 											collection, XMLUtilities.getQueryID(inputElement));
 									mdList.add(XMLUtilities.extractMobyData(collection));
 									if (DEBUG) {
-										System.out
-												.println("***********SIM_COLLECTION_IN****************");
-										System.out.println(new XMLOutputter(Format
+										logger.debug("***********SIM_COLLECTION_IN****************");
+										logger.debug(new XMLOutputter(Format
 												.getPrettyFormat()).outputString(collection));
-										System.out
-												.println("***********SIM_COLLECTION_IN****************");
+										logger.debug("***********SIM_COLLECTION_IN****************");
 									}
 									mobyDatas.add(mdList);
 									if (totalMobyDatas < 1)
@@ -432,15 +422,15 @@ public class BiomobyTask implements ProcessorTaskWorker {
 				}
 
 				if (DEBUG) {
-					System.out.println("Before MobyData aggregation");
+					logger.debug("Before MobyData aggregation");
 					for (Iterator itr = mobyDatas.iterator(); itr.hasNext();) {
 						List eList = (List) itr.next();
 						for (int x = 0; x < eList.size(); x++) {
-							System.out.println(new XMLOutputter(Format.getPrettyFormat())
+							logger.debug(new XMLOutputter(Format.getPrettyFormat())
 									.outputString((Element) eList.get(x)));
 						}
 					}
-					System.out.println("******* End ******");
+					logger.debug("******* End ******");
 				}
 				/*
 				 * ports have been processed -> vector contains a list of all
@@ -450,7 +440,7 @@ public class BiomobyTask implements ProcessorTaskWorker {
 				 * moby message
 				 */
 				if (DEBUG) {
-					System.out.println("TotalMobyDatas: " + totalMobyDatas);
+					logger.debug("TotalMobyDatas: " + totalMobyDatas);
 				}
 				Element[] mds = new Element[totalMobyDatas];
 				// initialize the mobydata blocks
@@ -483,10 +473,10 @@ public class BiomobyTask implements ProcessorTaskWorker {
 				}
 				
 				if (DEBUG) {
-					System.out.println("After MobyData aggregation");
-					System.out.println(new XMLOutputter(Format.getPrettyFormat())
+					logger.debug("After MobyData aggregation");
+					logger.debug(new XMLOutputter(Format.getPrettyFormat())
 							.outputString(root));
-					System.out.println("******* End ******");
+					logger.debug("******* End ******");
 				}
 				// do the task and populate outputXML
 
@@ -496,25 +486,25 @@ public class BiomobyTask implements ProcessorTaskWorker {
 				String serviceInput = new XMLOutputter(Format.getPrettyFormat()).outputString(root);
 				String[] invocations = XMLUtilities
 						.getSingleInvokationsFromMultipleInvokations(serviceInput);
-				//System.out.println(serviceInput);
+				//logger.debug(serviceInput);
 				// going to iterate over all invocations so that messages with
 				// many mobyData blocks dont timeout.
-				System.out.println("Total invocations " + invocations.length);
+				logger.debug("Total invocations " + invocations.length);
 				if (invocations.length > 0)
-					System.out.print("\tinvocation 00");
+					logger.debug("invocation 00");
 				for (int inCount = 0; inCount < invocations.length; inCount++) {
 
-					// System.out.print("invocation " + (inCount + 1) + " of " +
+					// logger.debug("invocation " + (inCount + 1) + " of " +
 					// invocations.length);
-					System.out.print(((inCount + 1) % 10 == 0 ? "\b\b" + (inCount + 1) : "\b"
+					logger.debug(((inCount + 1) % 10 == 0 ? "\b\b" + (inCount + 1) : "\b"
 							+ (inCount + 1) % 10));
 					if (DEBUG)
-						System.out.println("input:\n" + invocations[inCount]);
+						logger.debug("input:\n" + invocations[inCount]);
 					if (!XMLUtilities.isEmpty(invocations[inCount]))
 						invocations[inCount] = new CentralImpl(serviceEndpoint,
 								"http://biomoby.org/").call(methodName, invocations[inCount]);
 					if (DEBUG)
-						System.out.println("output:\n" + invocations[inCount]);
+						logger.debug("output:\n" + invocations[inCount]);
 				}
 				String outputXML = XMLUtilities.createMultipleInvokations(invocations);
 
@@ -556,7 +546,7 @@ public class BiomobyTask implements ProcessorTaskWorker {
 		if (myOutput == null)
 			throw new TaskExecutionException("output port is invalid.");
 		String outputType = myOutput.getSyntacticType();
-		// System.out.println(outputXML);
+		// logger.debug(outputXML);
 		// Will be either 'text/xml' or l('text/xml')
 
 		if (outputType.equals("'text/xml'")) {
@@ -615,13 +605,13 @@ public class BiomobyTask implements ProcessorTaskWorker {
 			try {
 				collectionElement = mobyDataElement.getChild("Collection", mobyNS);
 			} catch (Exception e) {
-				System.err.println("There was a problem processing the output port.\n" + outputXML);
+				logger.warn("There was a problem processing the output port.\n" + outputXML);
 				try {
 					outputList.add(new XMLOutputter(Format.getPrettyFormat())
 							.outputString(XMLUtilities.createMobyDataWrapper(XMLUtilities
 									.getQueryID(outputXML))));
 				} catch (MobyException me) {
-
+					logger.debug(me);
 				}
 			}
 			if (collectionElement != null) {
