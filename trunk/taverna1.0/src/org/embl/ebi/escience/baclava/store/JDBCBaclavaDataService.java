@@ -913,7 +913,8 @@ abstract class ObjectPool {
         if (currentObjects < maxObjects || maxObjects == 0) {
             // no objects available, create a new one
             o = create();
-            locked.put(o, new Long(now));
+            if (o != null)
+                locked.put(o, new Long(now));
             return (o);
         } else {
             throw new Exception("Pool too big, refusing to grow");
@@ -921,6 +922,8 @@ abstract class ObjectPool {
     }
 
     synchronized void checkIn(Object o) {
+        if (o == null)
+            return;
         locked.remove(o);
         unlocked.put(o, new Long(System.currentTimeMillis()));
     }
