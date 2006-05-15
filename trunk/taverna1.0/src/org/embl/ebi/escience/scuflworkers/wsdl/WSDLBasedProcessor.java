@@ -6,19 +6,33 @@
 package org.embl.ebi.escience.scuflworkers.wsdl;
 
 import java.net.URL;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Properties;
 
 import javax.wsdl.Definition;
+import javax.wsdl.WSDLException;
 import javax.xml.namespace.QName;
 
 import org.apache.log4j.Logger;
-import org.apache.wsif.*;
+import org.apache.wsif.WSIFException;
+import org.apache.wsif.WSIFOperation;
+import org.apache.wsif.WSIFPort;
+import org.apache.wsif.WSIFServiceFactory;
 import org.apache.wsif.providers.soap.apacheaxis.WSIFDynamicProvider_ApacheAxis;
 import org.apache.wsif.providers.soap.apacheaxis.WSIFPort_ApacheAxis;
 import org.apache.wsif.util.WSIFPluggableProviders;
 import org.apache.wsif.util.WSIFUtils;
-import org.embl.ebi.escience.scufl.*;
-import org.embl.ebi.escience.scuflworkers.wsdl.parser.*;
+import org.embl.ebi.escience.scufl.DuplicateProcessorNameException;
+import org.embl.ebi.escience.scufl.InputPort;
+import org.embl.ebi.escience.scufl.OutputPort;
+import org.embl.ebi.escience.scufl.Processor;
+import org.embl.ebi.escience.scufl.ProcessorCreationException;
+import org.embl.ebi.escience.scufl.ScuflModel;
+import org.embl.ebi.escience.scuflworkers.wsdl.parser.TypeDescriptor;
+import org.embl.ebi.escience.scuflworkers.wsdl.parser.UnknownOperationException;
+import org.embl.ebi.escience.scuflworkers.wsdl.parser.WSDLParser;
 
 /**
  * A processor based on an operation defined within a WSDL file accessible to
@@ -29,12 +43,14 @@ import org.embl.ebi.escience.scuflworkers.wsdl.parser.*;
 
 public class WSDLBasedProcessor extends Processor implements java.io.Serializable {
 
+	private static final long serialVersionUID = 6669263809722072508L;
+
 	public int getMaximumWorkers() {
 		return 10;
 	}
 
 	private static Logger logger = Logger.getLogger(WSDLBasedProcessor.class);
-	
+
 	WSIFPort port = null;
 
 	String operationName = null;
@@ -47,6 +63,8 @@ public class WSDLBasedProcessor extends Processor implements java.io.Serializabl
 
 	WSDLParser parser = null;
 
+	private static Map defMap = new HashMap();
+
 	public WSDLBasedProcessor(ScuflModel model, String procName, String wsdlLocation, String operationName)
 			throws ProcessorCreationException, DuplicateProcessorNameException {
 		this(model, procName, wsdlLocation, operationName, null);
@@ -55,8 +73,10 @@ public class WSDLBasedProcessor extends Processor implements java.io.Serializabl
 	/**
 	 * Use a static synchronized cache to avoid re-loading and parsing WSDL
 	 * files where possible within a single Taverna instance
+	 * 
+	 * @throws WSDLException
 	 */
-	public static synchronized Definition getDefinition(String wsdlLocation) throws Exception {
+	public static Definition getDefinition(String wsdlLocation) throws WSDLException {
 		if (defMap.containsKey(wsdlLocation)) {
 			return (Definition) defMap.get(wsdlLocation);
 		} else {
@@ -66,7 +86,16 @@ public class WSDLBasedProcessor extends Processor implements java.io.Serializabl
 		}
 	}
 
-	private static Map defMap = new HashMap();
+	/**
+	 * Provides the javax.wsdl.Definition for WSDL this Processor is associated
+	 * with.
+	 * 
+	 * @return Definition
+	 * @throws WSDLException
+	 */
+	public Definition getDefinition() throws WSDLException {
+		return WSDLBasedProcessor.getDefinition(wsdlLocation);
+	}
 
 	/**
 	 * Construct a new processor from the given WSDL definition and operation
@@ -90,7 +119,7 @@ public class WSDLBasedProcessor extends Processor implements java.io.Serializabl
 			ProcessorCreationException pce = new ProcessorCreationException(procName + ": Unable to load wsdl at "
 					+ wsdlLocation);
 			pce.initCause(e);
-			logger.error(pce);			
+			logger.error(pce);
 			throw pce;
 		}
 
@@ -106,7 +135,6 @@ public class WSDLBasedProcessor extends Processor implements java.io.Serializabl
 			parser.getOperationParameters(operationName, inputs, outputs);
 			setDescription(parser.getOperationDocumentation(operationName));
 
-			// Service service = WSIFUtils.selectService(def,null,null);
 			WSIFServiceFactory factory = WSIFServiceFactory.newInstance();
 			port = factory.getService(def).getPort();
 
@@ -150,9 +178,9 @@ public class WSDLBasedProcessor extends Processor implements java.io.Serializabl
 	 * Build a single use WSIFOperation object. This should only be used for a
 	 * single invocation of the target service!
 	 */
-	WSIFOperation getWSIFOperation() throws WSIFException {
+	public WSIFOperation getWSIFOperation() throws WSIFException {
 		synchronized (port) {
-			WSIFOperation op = port.createOperation(operationName);			
+			WSIFOperation op = port.createOperation(operationName);
 			logger.debug("Created operation : " + op.toString());
 			return op;
 		}
@@ -168,6 +196,10 @@ public class WSDLBasedProcessor extends Processor implements java.io.Serializabl
 		return props;
 	}
 
+	/**
+	 * Provides access to the WSDLParser that represents the WSDL of the service this processor acts upon
+	 * @return WSDLParser
+	 */
 	public WSDLParser getParser() {
 		return parser;
 	}
@@ -182,7 +214,7 @@ public class WSDLBasedProcessor extends Processor implements java.io.Serializabl
 	/**
 	 * Get the target endpoint for this processor
 	 */
-	public String getResourceHost() {
+	public String getResourceHost() {		
 		if (port instanceof WSIFPort_ApacheAxis) {
 			URL endpoint = ((WSIFPort_ApacheAxis) port).getEndPoint();
 			return endpoint.getHost();
@@ -191,6 +223,10 @@ public class WSDLBasedProcessor extends Processor implements java.io.Serializabl
 		}
 	}
 
+	/**
+	 * 
+	 * @return a String representation of the URL for the endpoint of the service associated with this processor.
+	 */
 	String getTargetEndpoint() {
 		if (port instanceof WSIFPort_ApacheAxis) {
 			return ((WSIFPort_ApacheAxis) port).getEndPoint().toString();

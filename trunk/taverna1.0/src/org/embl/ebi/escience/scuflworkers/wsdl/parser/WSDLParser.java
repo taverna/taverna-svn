@@ -1,15 +1,24 @@
 package org.embl.ebi.escience.scuflworkers.wsdl.parser;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 import javax.wsdl.Binding;
+import javax.wsdl.BindingOperation;
 import javax.wsdl.Definition;
+import javax.wsdl.Import;
 import javax.wsdl.Operation;
+import javax.wsdl.Part;
 import javax.wsdl.PortType;
 import javax.wsdl.WSDLException;
 import javax.wsdl.extensions.ExtensibilityElement;
 import javax.wsdl.extensions.soap.SOAPBinding;
+import javax.wsdl.extensions.soap.SOAPBody;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.axis.wsdl.gen.NoopFactory;
@@ -28,6 +37,7 @@ import org.apache.wsif.util.WSIFPluggableProviders;
 import org.xml.sax.SAXException;
 
 import com.ibm.wsdl.extensions.soap.SOAPBindingImpl;
+import com.ibm.wsdl.extensions.soap.SOAPOperationImpl;
 
 /**
  * A Parser for processing WSDL files to determine information about available
@@ -59,6 +69,8 @@ public class WSDLParser {
 
 	private Map cachedComplexTypes = Collections.synchronizedMap(new HashMap());
 
+	private Map bindingOperations = Collections.synchronizedMap(new HashMap());
+
 	/**
 	 * Constructor which takes the location of the base wsdl file, and begins to
 	 * process it
@@ -84,6 +96,7 @@ public class WSDLParser {
 			symbolTableMap.put(wsdlLocation, symbolTable);
 			operationMap.put(wsdlLocation, determineOperations());
 		}
+
 	}
 
 	/**
@@ -111,6 +124,10 @@ public class WSDLParser {
 		return (Binding) bindingMap.get(getWSDLLocation());
 	}
 
+	/**
+	 * 
+	 * @return the style, i.e. document or rpc
+	 */
 	public String getStyle() {
 		return (String) styleMap.get(getWSDLLocation());
 	}
@@ -122,7 +139,6 @@ public class WSDLParser {
 	/**
 	 * Populates the lists for inputs and outputs, with TypeDescriptors for the
 	 * parameters that the service requires or responds with respectively.
-	 * //TODO needs modifying to handle overloaded operations
 	 * 
 	 * @param operationName
 	 * @param inputs
@@ -144,23 +160,133 @@ public class WSDLParser {
 
 		for (Iterator iterator = parameters.list.iterator(); iterator.hasNext();) {
 			Parameter param = (Parameter) iterator.next();
-			inputs.add(processParameter(param));
+			if (param.getMode() == Parameter.IN)
+			{
+				TypeDescriptor typeDescriptor = processParameter(param);
+				if (typeDescriptor instanceof ComplexTypeDescriptor && getStyle().equals("document"))
+				{
+					//for document based, if operation requires no parameters the param still exists (representing the operation) but with empty inner elements
+					if (((ComplexTypeDescriptor)typeDescriptor).getElements().size()>0)
+					{
+						inputs.add(typeDescriptor);
+					}
+				}
+				else
+				{
+					inputs.add(typeDescriptor);
+				}
+			}
+			else if (param.getMode() == Parameter.OUT)
+				outputs.add(processParameter(param));
+			else if (param.getMode() == Parameter.INOUT) {
+				inputs.add(processParameter(param));
+				outputs.add(processParameter(param));
+			}
 
 		}
 		if (parameters.returnParam != null) {
 			if (parameters.returnParam.getType().isBaseType())
 				outputs.add(processParameter(parameters.returnParam));
-			else
-			{
-				ComplexTypeDescriptor complex=new ComplexTypeDescriptor();
+			else {
+				ComplexTypeDescriptor complex = new ComplexTypeDescriptor();
 				complex.setName(parameters.returnParam.getName());
 				complex.setType(parameters.returnParam.getType().getQName().getLocalPart());
 				outputs.add(complex);
 			}
-				
+
 		}
-		
+
 		cachedComplexTypes.clear();
+	}
+
+	/**
+	 * returns the namespace uri for the given operation name, throws
+	 * UnknownOperationException if the operationName is not matched to one
+	 * described by the WSDL
+	 * 
+	 * @param operationName
+	 * @return
+	 * @throws UnknownOperationException
+	 */
+	public String getOperationNamespaceURI(String operationName) throws UnknownOperationException {
+
+		String result = null;
+		if (getStyle().equals("document")) {
+			try {
+				// this lovely line of code gets the correct namespace ....
+				result = ((Part) getBindingOperation(operationName).getOperation().getInput().getMessage()
+						.getOrderedParts(null).get(0)).getElementName().getNamespaceURI();
+			} catch (Exception e) {
+				// .... but this gets a good approximation if the above fails
+				result = getDefinition().getTargetNamespace();
+			}
+		} else {
+			BindingOperation binding = getBindingOperation(operationName);
+			List extElements = binding.getBindingInput().getExtensibilityElements();
+			if (extElements != null && extElements.size() > 0) {
+				SOAPBody body = (SOAPBody) extElements.get(0);
+				result = body.getNamespaceURI();
+			} else {
+				extElements = binding.getBindingOutput().getExtensibilityElements();
+				if (extElements != null && extElements.size() > 0) {
+					SOAPBody body = (SOAPBody) extElements.get(0);
+					result = body.getNamespaceURI();
+				}
+			}
+
+			if (result == null) {
+				// as a fall back, this almost always gives the right namespace
+				result = getDefinition().getTargetNamespace();
+			}
+		}
+
+		return result;
+	}
+
+	/**
+	 * Returns either literal or encoded, describing the 'use' for this
+	 * operation
+	 * 
+	 * @param operationName
+	 * @return
+	 * @throws UnknownOperationException
+	 */
+	public String getUse(String operationName) throws UnknownOperationException {
+		String result = null;
+
+		BindingOperation binding = getBindingOperation(operationName);
+		List extElements = binding.getBindingInput().getExtensibilityElements();
+		if (extElements != null && extElements.size() > 0) {
+			SOAPBody body = (SOAPBody) extElements.get(0);
+			result = body.getUse();
+		} else {
+			extElements = binding.getBindingOutput().getExtensibilityElements();
+			if (extElements != null && extElements.size() > 0) {
+				SOAPBody body = (SOAPBody) extElements.get(0);
+				result = body.getUse();
+			}
+		}
+
+		return result;
+	}
+
+	/**
+	 * Returns the actionURI for the given operation
+	 * 
+	 * @param operationName
+	 * @return
+	 * @throws UnknownOperationException
+	 */
+	public String getSOAPActionURI(String operationName) throws UnknownOperationException {
+		String result = null;
+		BindingOperation op = getBindingOperation(operationName);
+		List elements = op.getExtensibilityElements();
+		for (Iterator elIterator = elements.iterator(); elIterator.hasNext();) {
+			SOAPOperationImpl extension = (SOAPOperationImpl) elIterator.next();
+			result = extension.getSoapActionURI();
+			break;
+		}
+		return result;
 	}
 
 	/**
@@ -235,7 +361,69 @@ public class WSDLParser {
 				}
 			}
 		}
+		
+		Map imports = getSymbolTable().getDefinition().getImports();
+		if (imports!=null && imports.size()>0)
+		{
+			result.addAll(processImports(imports));
+		}
 
+		return result;
+	}
+	
+	private List processImports(Map imports)
+	{
+		List result=new ArrayList();
+		
+		for (Iterator iterator=imports.values().iterator();iterator.hasNext();)
+		{
+			List list=(List)iterator.next();
+			for (Iterator importIterator=list.iterator();importIterator.hasNext();)
+			{
+				Import imp = (Import)importIterator.next();
+				Map bindings=imp.getDefinition().getBindings();
+				for (Iterator bindingsIterator = bindings.values().iterator(); bindingsIterator.hasNext();) {
+					Binding binding = (Binding) bindingsIterator.next();
+					List extensibilityElementList = binding.getExtensibilityElements();
+					for (Iterator k = extensibilityElementList.iterator(); k.hasNext();) {
+						ExtensibilityElement ee = (ExtensibilityElement) k.next();
+						if (ee instanceof SOAPBindingImpl) {
+							SOAPBinding soapBinding = (SOAPBinding) ee;
+							PortType portType = binding.getPortType();
+
+							bindingMap.put(getWSDLLocation(), binding);
+							styleMap.put(getWSDLLocation(), soapBinding.getStyle());
+							portTypeMap.put(getWSDLLocation(), portType);
+
+							for (Iterator opIterator = portType.getOperations().iterator(); opIterator.hasNext();) {
+								Operation op = (Operation) opIterator.next();
+								result.add(op);
+							}
+						}
+					}
+				}
+				
+			}
+		}
+				
+		return result;
+	}
+
+	private BindingOperation getBindingOperation(String operationName) throws UnknownOperationException {
+		BindingOperation result = (BindingOperation) bindingOperations.get(operationName);
+		if (result == null) {
+			List bindings = getBinding().getBindingOperations();
+			for (Iterator iterator = bindings.iterator(); iterator.hasNext();) {
+				BindingOperation bindingOperation = (BindingOperation) iterator.next();
+				if (bindingOperation.getOperation().getName().equals(operationName)) {
+					result = bindingOperation;
+					bindingOperations.put(operationName, result);
+					break;
+				}
+			}
+		}
+		if (result == null)
+			throw new UnknownOperationException("Can't find binding operation for '" + operationName + "'");
 		return result;
 	}
 
@@ -269,12 +457,12 @@ public class WSDLParser {
 		} else {
 			result = constructBaseType(type);
 		}
-		
+		result.setQName(type.getQName());
 		return result;
 	}
 
 	private ComplexTypeDescriptor constructComplexType(DefinedElement type) {
-		
+
 		ComplexTypeDescriptor result = new ComplexTypeDescriptor();
 
 		if (cachedComplexTypes.get(type.getQName().toString()) != null) {
@@ -283,7 +471,8 @@ public class WSDLParser {
 			logger.debug("Constructing complex type: " + type.getQName().getLocalPart());
 			// caching the type is not really to improve performance, but is
 			// to handle types that contain elements that reference
-			// itself or another parent. Without the caching, this could lead to infinate
+			// itself or another parent. Without the caching, this could lead to
+			// infinate
 			// recursion.
 			if (cachedComplexTypes.get(type.getQName().toString()) == null)
 				cachedComplexTypes.put(type.getQName().toString(), result);

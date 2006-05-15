@@ -5,19 +5,23 @@
  */
 package org.embl.ebi.escience.scuflworkers.wsdl;
 
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.*;
+import java.util.Iterator;
+import java.util.List;
 
 import javax.swing.tree.DefaultMutableTreeNode;
-import javax.wsdl.*;
-import javax.wsdl.extensions.ExtensibilityElement;
-import javax.wsdl.extensions.soap.SOAPBinding;
+import javax.wsdl.Operation;
+import javax.wsdl.PortType;
+import javax.wsdl.WSDLException;
+import javax.xml.parsers.ParserConfigurationException;
 
+import org.apache.log4j.Logger;
 import org.embl.ebi.escience.scuflui.workbench.Scavenger;
 import org.embl.ebi.escience.scuflui.workbench.ScavengerCreationException;
-
-import com.ibm.wsdl.extensions.soap.SOAPBindingImpl;
+import org.embl.ebi.escience.scuflworkers.wsdl.parser.WSDLParser;
+import org.xml.sax.SAXException;
 
 /**
  * A Scavenger that knows how to inspect a given wsdl document for all available
@@ -26,6 +30,10 @@ import com.ibm.wsdl.extensions.soap.SOAPBindingImpl;
  * @author Tom Oinn
  */
 public class WSDLBasedScavenger extends Scavenger {
+
+	private static final long serialVersionUID = 5281708181579790512L;
+
+	private static Logger logger = Logger.getLogger(WSDLBasedScavenger.class);
 
 	/**
 	 * Create a new WSDLBased scavenger, the single parameter should be
@@ -42,51 +50,48 @@ public class WSDLBasedScavenger extends Scavenger {
 			throw new ScavengerCreationException("Unable to parse the supplied URL '" + wsdlLocation + "', error was "
 					+ mue.getMessage());
 		}
-		// Get a WSDLReader
-		Definition theDefinition = null;
+
 		try {
-			theDefinition = WSDLBasedProcessor.getDefinition(wsdlLocation);
-		} catch (Exception ex) {
-			throw new ScavengerCreationException("Unable to load the WSDL definition, underlying reason was "
-					+ ex.getMessage());
-		}
-		// Iterate over bindings
-		Map bindingMap = theDefinition.getBindings();
-		for (Iterator j = bindingMap.values().iterator(); j.hasNext();) {
-			Binding theBinding = (Binding) j.next();
-			List extensibilityElementList = theBinding.getExtensibilityElements();
-			for (Iterator k = extensibilityElementList.iterator(); k.hasNext();) {
-				ExtensibilityElement ee = (ExtensibilityElement) k.next();
-				// Look for a soap binding, which indicates that this binding is
-				// interesting.
-				if (ee instanceof SOAPBindingImpl) {
-					SOAPBinding sb = (SOAPBinding) ee;
-					// Found the soap binding so add the new scavengers
-					PortType thePortType = theBinding.getPortType();
-					String portTypeName = thePortType.getQName().getLocalPart();
-					String name = "";
-					if (sb.getStyle().equals("document")) {
-						name = "porttype: " + portTypeName + " [<font color=\"red\">DOCUMENT</font>]";
-					} else {
-						name = "porttype: " + portTypeName + " [<font color=\"green\">" + sb.getStyle().toUpperCase()
-								+ "</font>]";
-					}
-					DefaultMutableTreeNode portTypeNode = new DefaultMutableTreeNode(name);
-					add(portTypeNode);
-					// Iterate over all the operation names
-					List operationList = thePortType.getOperations();
-					for (Iterator i = operationList.iterator(); i.hasNext();) {
-						Operation op = (Operation) i.next();
-						String operationName = op.getName();
-						WSDLBasedProcessorFactory wpf = new WSDLBasedProcessorFactory(wsdlLocation, operationName,
-								thePortType.getQName());
-						DefaultMutableTreeNode operationNode = new DefaultMutableTreeNode(wpf);
-						portTypeNode.add(operationNode);
-					}
-				}
+			WSDLParser parser = new WSDLParser(wsdlLocation);
+			List operations = parser.getOperations();
+			String style = parser.getStyle();
+			PortType portType = parser.getPortType();
+			String portTypeName = portType.getQName().getLocalPart();
+			String name = "";
+
+			if (style.equals("document")) {
+				name = "porttype: " + portTypeName + " [<font color=\"red\">DOCUMENT</font>]";
+			} else {
+				name = "porttype: " + portTypeName + " [<font color=\"green\">" + style.toUpperCase() + "</font>]";
 			}
+			DefaultMutableTreeNode portTypeNode = new DefaultMutableTreeNode(name);
+			add(portTypeNode);
+			// Iterate over all the operation names
+			for (Iterator i = operations.iterator(); i.hasNext();) {
+				Operation op = (Operation) i.next();
+				String operationName = op.getName();
+				WSDLBasedProcessorFactory wpf = new WSDLBasedProcessorFactory(wsdlLocation, operationName, portType
+						.getQName());
+				DefaultMutableTreeNode operationNode = new DefaultMutableTreeNode(wpf);
+				portTypeNode.add(operationNode);
+			}
+
+		} catch (SAXException e) {
+			logger.error("SAXException parsing wsdl:" + wsdlLocation);
+			throw new ScavengerCreationException("Unable to load the WSDL definition, underlying reason was "
+					+ e.getMessage());
+		} catch (ParserConfigurationException e) {
+			logger.error("ParserConfigurationException parsing wsdl:" + wsdlLocation);
+			throw new ScavengerCreationException("Unable to load the WSDL definition, underlying reason was "
+					+ e.getMessage());
+		} catch (WSDLException e) {
+			logger.error("WSDLException parsing wsdl:" + wsdlLocation);
+			throw new ScavengerCreationException("Unable to load the WSDL definition, underlying reason was "
+					+ e.getMessage());
+		} catch (IOException e) {
+			logger.error("IOException parsing wsdl:" + wsdlLocation);
+			throw new ScavengerCreationException("Unable to load the WSDL definition, underlying reason was "
+					+ e.getMessage());
 		}
-
 	}
-
 }

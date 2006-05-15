@@ -18,6 +18,13 @@ public class WSDLParserTest extends TestCase {
 		assertEquals("wrong style", "document", parser.getStyle());
 	}
 
+	public void testGetActionURI() throws Exception
+	{
+		WSDLParser parser = new WSDLParser("http://eutils.ncbi.nlm.nih.gov/entrez/eutils/soap/eutils_lite.wsdl");
+		String actionURI=parser.getSOAPActionURI("run_eInfo");
+		assertEquals("action uri is wrong","einfo",actionURI);
+	}
+	
 	public void testGetOperationParameters() throws Exception {
 		WSDLParser parser = new WSDLParser("http://www.ebi.ac.uk/ws/WSFasta.wsdl");
 		List inputs = new ArrayList();
@@ -191,4 +198,33 @@ public class WSDLParserTest extends TestCase {
 		String doc = parser.getOperationDocumentation("Login");
 		assertTrue("this service should contain some documentation, and it should contain the word 'password'",doc.indexOf("password")!=-1);				
 	}
+	
+	public void testGetUseEncoded() throws Exception
+	{
+		WSDLParser parser = new WSDLParser("http://soap.bind.ca/wsdl/bind.wsdl");
+		String use=parser.getUse("BIVGetRecords");
+		assertEquals("use should be encoded","encoded",use);
+	}
+	
+	public void testGetUseLiteral() throws Exception
+	{
+		WSDLParser parser = new WSDLParser("http://eutils.ncbi.nlm.nih.gov/entrez/eutils/soap/eutils_lite.wsdl");
+		String use=parser.getUse("run_eInfo");
+		assertEquals("use should be literal","literal",use);
+	}
+	
+	public void testGetOperationNamespace() throws Exception
+	{
+		WSDLParser parser = new WSDLParser("http://www.freewebs.com/jimmy_cheng/CurrencyExchangeService.wsdl");
+		String operationNamespace=parser.getOperationNamespaceURI("getRate");
+		assertEquals("operation namespace is wrong","urn:xmethods-CurrencyExchange",operationNamespace);		
+	}
+	
+	public void testGetOperationNamespace2() throws Exception
+	{
+		WSDLParser parser = new WSDLParser("http://eutils.ncbi.nlm.nih.gov/entrez/eutils/soap/eutils_lite.wsdl");
+		String operationNamespace=parser.getOperationNamespaceURI("run_eInfo");
+		assertEquals("operation namespace is wrong","http://www.ncbi.nlm.nih.gov/soap/eutils/einfo",operationNamespace);		
+	}
+	
 }

@@ -1,7 +1,0 @@
-<!-- Comments are ignored by the matcher. -->
-<WSArrayofData><data><type>type_one</type><content       ><!--  and so
-are whitespace within comments or tags. Whitespace within elements are
-NOT ignored.-->content_one</content></data><data><type>type_two</type><content>content_two</content></data><data><type>type_three</type><content>content_three</content></data><data><type>type_four</type><content>content_four</content></data></WSArrayofData>
-
-
-<!-- Blank lines in beginning or end is OK, though -->

@@ -60,7 +60,7 @@ public class XMLInputSplitterTest extends TestCase {
 		DataThing outputThing = (DataThing) outputMap.get("output");
 		String outputString = outputThing.getDataObject().toString();
 
-		assertEquals("output is incorrect", "<eSpellRequest><db>a database</db><tool>a tool</tool></eSpellRequest>",
+		assertEquals("output is incorrect", "<parameters><db>a database</db><tool>a tool</tool></parameters>",
 				outputString);
 	}
 
@@ -94,13 +94,63 @@ public class XMLInputSplitterTest extends TestCase {
 
 		DataThing output = (DataThing) outputMap.get("output");
 		assertNotNull("'output' did not exist in output map", output);
-
-		String xmlOutput = output.getDataObject().toString();
-
-		assertEquals(
-				"output xml is wrong",
-				"<WSArrayofData><data><type>type1</type><content>content1</content></data><data><type>type2</type><content>content2</content></data></WSArrayofData>",
-				xmlOutput);
-
+		
+		assertTrue("output should be a string",output.getDataObject() instanceof String);
+		
+		assertEquals("<WSArrayofData><data><type>type1</type><content>content1</content></data><data><type>type2</type><content>content2</content></data></WSArrayofData>",output.getDataObject().toString());
+		
 	}
+	
+	public void testOrderPreserved() throws Exception
+	{
+		XMLInputSplitter splitter = new XMLInputSplitter();
+		ScuflModel model = new ScuflModel();
+		WSDLBasedProcessor processor = new WSDLBasedProcessor(model, "testProc",
+				"http://eutils.ncbi.nlm.nih.gov/entrez/eutils/soap/eutils_lite.wsdl", "run_eSpell");
+		splitter.setUpInputs(processor.getInputPorts()[0]);
+		
+		Map inputMap = new HashMap();
+		inputMap.put("tool", new DataThing("a tool"));
+		inputMap.put("email", new DataThing("an email"));
+		inputMap.put("db", new DataThing("a database"));
+		
+		Map outputMap=splitter.execute(inputMap);
+		DataThing output = (DataThing) outputMap.get("output");
+		
+		assertNotNull("'output' did not exist in output map", output);
+		String xmlOutput = output.getDataObject().toString();
+		assertTrue("xml returned is unexpected, element order should be same as defined by the webservice",xmlOutput.indexOf("<db>a database</db><tool>a tool</tool><email>an email</email>")!=-1);
+		
+	}
+		
+	
+	public void testOrderPreserved2() throws Exception
+	{
+		XMLInputSplitter splitter = new XMLInputSplitter();
+		ScuflModel model = new ScuflModel();
+		WSDLBasedProcessor processor = new WSDLBasedProcessor(model, "testProc",
+				"http://discover.nci.nih.gov/gominer/xfire/GMService?wsdl", "getReport");
+		splitter.setUpInputs(processor.getInputPorts()[0]);
+		
+		Map inputMap = new HashMap();
+		inputMap.put("in0",new DataThing(new String[] {"0"}));
+		inputMap.put("in1",new DataThing(new String[] {"1"}));
+		inputMap.put("in6",new DataThing("true"));
+		inputMap.put("in2",new DataThing("2"));		
+		inputMap.put("in4",new DataThing("4"));
+		inputMap.put("in5",new DataThing("true"));		
+		inputMap.put("in7",new DataThing("true"));
+		inputMap.put("in3",new DataThing("3"));
+		
+		Map outputMap=splitter.execute(inputMap);
+		DataThing output = (DataThing) outputMap.get("output");
+		
+		assertNotNull("'output' did not exist in output map", output);
+		String xmlOutput = output.getDataObject().toString();
+		
+		assertTrue("xml returned is unexpected, element order should be same as defined by the webservice",xmlOutput.indexOf("<in0><item>0</item></in0><in1><item>1</item></in1><in2>2</in2><in3>3</in3><in4>4</in4><in5>true</in5><in6>true</in6><in7>true</in7>")!=-1);		
+		
+	}
+	
+	
 }

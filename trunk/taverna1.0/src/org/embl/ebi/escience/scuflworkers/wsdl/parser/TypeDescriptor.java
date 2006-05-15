@@ -2,6 +2,8 @@ package org.embl.ebi.escience.scuflworkers.wsdl.parser;
 
 import java.util.List;
 
+import javax.xml.namespace.QName;
+
 /**
  * Base class for all descriptors for type
  * 
@@ -14,6 +16,16 @@ public class TypeDescriptor {
 	private boolean optional;
 
 	private boolean unbounded;
+
+	QName qname;
+
+	public QName getQName() {
+		return qname;
+	}
+
+	public void setQName(QName qname) {
+		this.qname = qname;
+	}
 
 	public String getName() {
 		return name;

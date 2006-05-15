@@ -1,0 +1,1 @@
+<WSArrayofData><data><type>type_one</type><content>content_one</content></data><data><type>type_two</type><content>content_two</content></data><data><type>type_three</type><content>content_three</content></data><data><type>type_four</type><content>content_four</content></data></WSArrayofData>

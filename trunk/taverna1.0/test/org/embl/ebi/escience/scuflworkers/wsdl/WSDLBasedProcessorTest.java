@@ -51,7 +51,7 @@ public class WSDLBasedProcessorTest extends TestCase
 	
 	public void testDocumentPortType() throws Exception
 	{
-		Processor processor = new WSDLBasedProcessor(null,"test","http://eutils.ncbi.nlm.nih.gov/entrez/eutils/soap/eutils.wsdl","run_eGquery");
+		Processor processor = new WSDLBasedProcessor(null,"test","http://eutils.ncbi.nlm.nih.gov/entrez/eutils/soap/eutils_lite.wsdl","run_eGquery");
 		
 		assertEquals("invalid name","test",processor.getName());
 		assertEquals("incorrect number of outputs",2,processor.getOutputPorts().length);

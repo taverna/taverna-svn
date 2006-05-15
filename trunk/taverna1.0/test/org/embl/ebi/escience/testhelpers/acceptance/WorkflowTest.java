@@ -1,6 +1,5 @@
 package org.embl.ebi.escience.testhelpers.acceptance;
 
-import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -13,11 +12,6 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-
-import org.apache.log4j.Logger;
 import org.embl.ebi.escience.baclava.DataThing;
 import org.embl.ebi.escience.scufl.ConcurrencyConstraintCreationException;
 import org.embl.ebi.escience.scufl.DataConstraintCreationException;
@@ -41,8 +35,6 @@ import org.embl.ebi.escience.scufl.parser.XScuflFormatException;
 import org.embl.ebi.escience.scufl.tools.Lang;
 import org.embl.ebi.escience.scufl.tools.WorkflowLauncher;
 import org.embl.ebi.escience.utils.SimpleFile;
-import org.w3c.dom.Document;
-import org.xml.sax.SAXException;
 
 import uk.ac.soton.itinnovation.freefluo.main.InvalidInputException;
 
@@ -54,8 +46,8 @@ import uk.ac.soton.itinnovation.freefluo.main.InvalidInputException;
  * @author Stian Soiland
  * 
  */
-public class WorkflowTest extends FuncTestCase {
-
+public class WorkflowTest extends FuncTestCase {	
+	
 	class TestListener implements WorkflowEventListener {
 		public void workflowFailed(WorkflowFailureEvent e) {
 			fail("Workflow failed: "
@@ -142,10 +134,7 @@ public class WorkflowTest extends FuncTestCase {
 			}
 			if (name.endsWith(".regex")) {
 				return new RegexMatcher(content);
-			}
-			if (name.endsWith(".xml")) {
-				return new XMLMatcher(content);
-			}
+			}			
 			if (name.endsWith(".any")) {
 				return new AnyMatcher();
 			}
@@ -246,68 +235,7 @@ public class WorkflowTest extends FuncTestCase {
 		public void testMatchesString(String other) {
 			assertMatches(pattern, other);
 		}
-	}
-
-	/**
-	 * Match XML documents. Documents will have to be parsable. Comments will be
-	 * ignored, but not whitespace within the document.
-	 * 
-	 */
-	class XMLMatcher extends FlatStringMatcher {
-		String matchXML;
-
-		Document match;
-
-		public XMLMatcher(String xml) {
-			matchXML = xml;
-			match = stringToDocument(xml);
-			if (match == null) {
-				fail("Not valid XML match " + xml);
-			}
-		}
-
-		public void testMatchesString(String otherString) {
-			Document other = stringToDocument(otherString);
-			if (other == null) {
-				fail("Not valid XML " + otherString);
-				return;
-			}
-			if (match == null) {
-				return;
-			}
-
-			assertTrue("Expected XML [[" + matchXML + "]] but got [["
-					+ otherString + "]]", match.isEqualNode(other));
-		}
-
-		Document stringToDocument(String xml) {
-			DocumentBuilderFactory factory = DocumentBuilderFactory
-					.newInstance();
-			factory.setIgnoringComments(true);
-			factory.setIgnoringElementContentWhitespace(true);
-			DocumentBuilder builder;
-			try {
-				builder = factory.newDocumentBuilder();
-			} catch (ParserConfigurationException e) {
-				logger.error("Could not create XML builder", e);
-				return null;
-			}
-			Document doc;
-			try {
-				doc = builder.parse(new ByteArrayInputStream(xml.getBytes()));
-			} catch (SAXException e) {
-				logger.error("Could not parse XML", e);
-				return null;
-			} catch (IOException e) {
-				logger.error("Could not read XML", e);
-				return null;
-			}
-			doc.normalize();
-			return doc;
-		}
-	}
-
-	private static Logger logger = Logger.getLogger(WorkflowTest.class);
+	}	
 
 	public void testWorkflow(File workflowDir)
 			throws WorkflowSubmissionException, InvalidInputException,

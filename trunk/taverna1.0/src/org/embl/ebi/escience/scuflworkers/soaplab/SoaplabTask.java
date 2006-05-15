@@ -24,9 +24,9 @@
 //      Created for Project :   MYGRID
 //      Dependencies        :
 //
-//      Last commit info    :   $Author: stain $
-//                              $Date: 2006-05-03 09:32:29 $
-//                              $Revision: 1.15 $
+//      Last commit info    :   $Author: sowen70 $
+//                              $Date: 2006-05-15 13:52:34 $
+//                              $Revision: 1.16 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 
@@ -169,9 +169,10 @@ public class SoaplabTask implements ProcessorTaskWorker {
 				String parameterName = (String) i.next();
 				Object outputObject = outputMap.get(parameterName);
 				DataThing outputThing = null;
-				logger.debug("Soaplab : parameter '" + parameterName
-						+ "' has type '" + outputObject.getClass().getName()
-						+ "'");
+				if (logger.isDebugEnabled())
+					logger.debug("Soaplab : parameter '" + parameterName
+							+ "' has type '" + outputObject.getClass().getName()
+							+ "'");
 				if (outputObject instanceof String[]) {
 					outputThing = DataThingFactory
 							.bake((String[]) outputObject);

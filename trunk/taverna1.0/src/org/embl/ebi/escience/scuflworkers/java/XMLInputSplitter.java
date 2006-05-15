@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.embl.ebi.escience.baclava.DataThing;
+import org.embl.ebi.escience.baclava.factory.DataThingFactory;
 import org.embl.ebi.escience.scufl.InputPort;
 import org.embl.ebi.escience.scufl.XScufl;
 import org.embl.ebi.escience.scuflworkers.wsdl.WSDLBasedProcessor;
@@ -78,8 +79,7 @@ public class XMLInputSplitter implements LocalWorker, XMLExtensible {
 			if (input.getProcessor() instanceof WSDLBasedProcessor) {
 				result = true;
 			} else if (input.getProcessor() instanceof LocalServiceProcessor) {
-				LocalServiceProcessor processor = (LocalServiceProcessor) input
-						.getProcessor();
+				LocalServiceProcessor processor = (LocalServiceProcessor) input.getProcessor();
 				if (processor.getWorker() instanceof XMLInputSplitter) {
 					result = true;
 				}
@@ -96,14 +96,12 @@ public class XMLInputSplitter implements LocalWorker, XMLExtensible {
 	 */
 	public void setUpInputs(InputPort portToSplit) {
 		if (portToSplit.getProcessor() instanceof WSDLBasedProcessor) {
-			WSDLBasedProcessor proc = (WSDLBasedProcessor) portToSplit
-					.getProcessor();
+			WSDLBasedProcessor proc = (WSDLBasedProcessor) portToSplit.getProcessor();
 			WSDLParser parser = proc.getParser();
 			List inputs = new ArrayList();
 			List outputs = new ArrayList();
 			try {
-				parser.getOperationParameters(proc.getOperationName(), inputs,
-						outputs);
+				parser.getOperationParameters(proc.getOperationName(), inputs, outputs);
 				for (Iterator it = inputs.iterator(); it.hasNext();) {
 					TypeDescriptor desc = (TypeDescriptor) it.next();
 					if (desc.getName().equalsIgnoreCase(portToSplit.getName())) {
@@ -115,15 +113,13 @@ public class XMLInputSplitter implements LocalWorker, XMLExtensible {
 				e.printStackTrace();
 			}
 		} else if (portToSplit.getProcessor() instanceof LocalServiceProcessor) {
-			LocalServiceProcessor processor = (LocalServiceProcessor) portToSplit
-					.getProcessor();
+			LocalServiceProcessor processor = (LocalServiceProcessor) portToSplit.getProcessor();
 			if (processor.getWorker() instanceof XMLInputSplitter) {
-				XMLInputSplitter splitter = (XMLInputSplitter) processor
-						.getWorker();
+				XMLInputSplitter splitter = (XMLInputSplitter) processor.getWorker();
 				TypeDescriptor workerDesc = splitter.typeDescriptor;
 				if (workerDesc instanceof ComplexTypeDescriptor) {
-					for (Iterator iterator = ((ComplexTypeDescriptor) workerDesc)
-							.getElements().iterator(); iterator.hasNext();) {
+					for (Iterator iterator = ((ComplexTypeDescriptor) workerDesc).getElements().iterator(); iterator
+							.hasNext();) {
 						TypeDescriptor desc = (TypeDescriptor) iterator.next();
 						if (desc.getName().equals(portToSplit.getName())) {
 							typeDescriptor = desc;
@@ -131,8 +127,7 @@ public class XMLInputSplitter implements LocalWorker, XMLExtensible {
 						}
 					}
 				} else if (workerDesc instanceof ArrayTypeDescriptor) {
-					typeDescriptor = ((ArrayTypeDescriptor) workerDesc)
-							.getElementType();
+					typeDescriptor = ((ArrayTypeDescriptor) workerDesc).getElementType();
 				}
 			}
 		}
@@ -146,37 +141,76 @@ public class XMLInputSplitter implements LocalWorker, XMLExtensible {
 	 */
 	public Map execute(Map inputMap) throws TaskExecutionException {
 		Map result = new HashMap();
-		Element outputElement = new Element(this.typeDescriptor.getType());
+
+		Element outputElement = (this.typeDescriptor.getName().length() > 0 ? new Element(this.typeDescriptor.getName())
+				: new Element(this.typeDescriptor.getType()));
 		try {
-			for (Iterator iterator = inputMap.keySet().iterator(); iterator
-					.hasNext();) {
-				String key = (String) iterator.next();
-				DataThing thing = (DataThing) inputMap.get(key);
-				Object dataObject = thing.getDataObject();
+			if (typeDescriptor instanceof ComplexTypeDescriptor) {
+				ComplexTypeDescriptor complexDescriptor = (ComplexTypeDescriptor) typeDescriptor;
+				for (Iterator inputIterator = complexDescriptor.getElements().iterator(); inputIterator.hasNext();) {
+					TypeDescriptor elementType = (TypeDescriptor) inputIterator.next();
+					String key = elementType.getName();
+					DataThing thing = (DataThing) inputMap.get(key);
+					if (thing != null) {
+						Object dataObject = thing.getDataObject();
 
-				if (dataObject instanceof List) {
-					for (Iterator itemIterator = ((List) dataObject).iterator(); itemIterator
-							.hasNext();) {
-						Object itemObject = itemIterator.next();
-						Element dataElement = buildElementFromObject(key,
-								itemObject);
-						outputElement.addContent(dataElement);
+						if (dataObject instanceof List) {
+							Element arrayElement = buildElementFromObject(key, "");
+							for (Iterator itemIterator = ((List) dataObject).iterator(); itemIterator.hasNext();) {
+
+								Object itemObject = itemIterator.next();
+								Element dataElement = buildElementFromObject("item", itemObject);
+								arrayElement.addContent(dataElement);
+							}
+							outputElement.addContent(arrayElement);
+						} else {
+							Element dataElement = buildElementFromObject(key, dataObject);
+							outputElement.addContent(dataElement);
+						}
 					}
-				} else {
-					Element dataElement = buildElementFromObject(key,
-							dataObject);
-					outputElement.addContent(dataElement);
 				}
+				
+				XMLOutputter outputter = new XMLOutputter();
+				String xmlText = outputter.outputString(outputElement);
+				DataThing outputThing = new DataThing(xmlText);
+				result.put(outputNames[0], outputThing);
+				
+			} else {
+				for (Iterator iterator = inputMap.keySet().iterator(); iterator.hasNext();) {
+					String key = (String) iterator.next();
+					DataThing thing = (DataThing) inputMap.get(key);
+					if (thing != null) {
+						Object dataObject = thing.getDataObject();
 
+						if (dataObject instanceof List) {
+							Element dataElement=buildElementFromObject(key,"");
+							for (Iterator listIterator=((List)dataObject).iterator();listIterator.hasNext();)
+							{
+								Element itemElement=buildElementFromObject(key,listIterator.next());
+								dataElement.addContent(itemElement);
+							}
+							XMLOutputter outputter = new XMLOutputter();
+							String xmlText = outputter.outputString(dataElement);
+							DataThing outputThing = DataThingFactory.bake(xmlText);
+							result.put(outputNames[0], outputThing);
+						}
+						else
+						{
+							Element dataElement = buildElementFromObject(key, dataObject);
+							outputElement.addContent(dataElement);							
+							XMLOutputter outputter = new XMLOutputter();
+							String xmlText = outputter.outputString(outputElement);
+							DataThing outputThing = DataThingFactory.bake(xmlText);
+							result.put(outputNames[0], outputThing);
+						}
+
+					}
+				}
 			}
+
 		} catch (Exception e) {
 			throw new TaskExecutionException("Problem executing task.", e);
-		}
-
-		XMLOutputter outputter = new XMLOutputter();
-		String xmlText = outputter.outputString(outputElement);
-		DataThing outputThing = new DataThing(xmlText);
-		result.put(outputNames[0], outputThing);
+		}		
 
 		return result;
 
@@ -208,14 +242,15 @@ public class XMLInputSplitter implements LocalWorker, XMLExtensible {
 		return result;
 	}
 
-	private Element buildElementFromObject(String key, Object dataObject)
-			throws JDOMException, IOException {
+	private Element buildElementFromObject(String key, Object dataObject) throws JDOMException, IOException {
 		Element dataElement = new Element(key);
 		if (isXMLInput(key)) {
 			String xml = dataObject.toString();
-			Document doc = new SAXBuilder().build(new StringReader(xml));
-			dataElement = doc.getRootElement();
-			dataElement.detach();
+			if (xml.length() > 0) {
+				Document doc = new SAXBuilder().build(new StringReader(xml));
+				dataElement = doc.getRootElement();
+				dataElement.detach();
+			}
 		} else {
 			dataElement.setText(dataObject.toString());
 		}
@@ -224,8 +259,7 @@ public class XMLInputSplitter implements LocalWorker, XMLExtensible {
 
 	private void defineFromTypeDescriptor() {
 		if (typeDescriptor instanceof ComplexTypeDescriptor) {
-			List elements = ((ComplexTypeDescriptor) typeDescriptor)
-					.getElements();
+			List elements = ((ComplexTypeDescriptor) typeDescriptor).getElements();
 			inputNames = new String[elements.size()];
 			inputTypes = new String[elements.size()];
 			Class[] types = new Class[elements.size()];
@@ -235,7 +269,7 @@ public class XMLInputSplitter implements LocalWorker, XMLExtensible {
 			}
 		} else if (typeDescriptor instanceof ArrayTypeDescriptor) {
 			inputNames = new String[] { typeDescriptor.getType() };
-			inputTypes = new String[] { "l('text/xml')" };
+			inputTypes = new String[] { "l('text/xml')" };			
 		}
 	}
 
@@ -255,20 +289,16 @@ public class XMLInputSplitter implements LocalWorker, XMLExtensible {
 		if (element.getName().equalsIgnoreCase("complextype")) {
 			ComplexTypeDescriptor desc = new ComplexTypeDescriptor();
 			Element elements = element.getChild("elements", XScufl.XScuflNS);
-			for (Iterator iterator = elements.getChildren().iterator(); iterator
-					.hasNext();) {
+			for (Iterator iterator = elements.getChildren().iterator(); iterator.hasNext();) {
 				Element childElement = (Element) iterator.next();
-				desc.getElements().add(
-						buildTypeDescriptorFromElement(childElement));
+				desc.getElements().add(buildTypeDescriptorFromElement(childElement));
 			}
 			result = desc;
 		} else if (element.getName().equalsIgnoreCase("arraytype")) {
 			result = new ArrayTypeDescriptor();
-			Element elementType = element.getChild("elementtype",
-					XScufl.XScuflNS);
-			((ArrayTypeDescriptor) result)
-					.setElementType(buildTypeDescriptorFromElement((Element) elementType
-							.getChildren().get(0)));
+			Element elementType = element.getChild("elementtype", XScufl.XScuflNS);
+			((ArrayTypeDescriptor) result).setElementType(buildTypeDescriptorFromElement((Element) elementType
+					.getChildren().get(0)));
 		} else if (element.getName().equalsIgnoreCase("basetype")) {
 			result = new BaseTypeDescriptor();
 
@@ -276,21 +306,16 @@ public class XMLInputSplitter implements LocalWorker, XMLExtensible {
 
 		result.setName(element.getAttributeValue("name"));
 		result.setType(element.getAttributeValue("typename"));
-		result.setOptional(element.getAttributeValue("optional")
-				.equalsIgnoreCase("true"));
-		result.setUnbounded(element.getAttributeValue("unbounded")
-				.equalsIgnoreCase("true"));
+		result.setOptional(element.getAttributeValue("optional").equalsIgnoreCase("true"));
+		result.setUnbounded(element.getAttributeValue("unbounded").equalsIgnoreCase("true"));
 		return result;
 	}
 
 	private void populateElement(Element element, TypeDescriptor descriptor) {
-		element.setAttribute("optional", String
-				.valueOf(descriptor.isOptional()));
-		element.setAttribute("unbounded", String.valueOf(descriptor
-				.isUnbounded()));
+		element.setAttribute("optional", String.valueOf(descriptor.isOptional()));
+		element.setAttribute("unbounded", String.valueOf(descriptor.isUnbounded()));
 		element.setAttribute("typename", descriptor.getType());
-		element.setAttribute("name", descriptor.getName() == null ? ""
-				: descriptor.getName());
+		element.setAttribute("name", descriptor.getName() == null ? "" : descriptor.getName());
 	}
 
 	private Element constructElementForArrayType(ArrayTypeDescriptor descriptor) {
@@ -298,13 +323,9 @@ public class XMLInputSplitter implements LocalWorker, XMLExtensible {
 		populateElement(result, descriptor);
 		Element elementType = new Element("elementtype", XScufl.XScuflNS);
 		if (descriptor.getElementType() instanceof ComplexTypeDescriptor) {
-			elementType
-					.addContent(constructElementForComplexType((ComplexTypeDescriptor) descriptor
-							.getElementType()));
+			elementType.addContent(constructElementForComplexType((ComplexTypeDescriptor) descriptor.getElementType()));
 		} else if (descriptor.getElementType() instanceof ArrayTypeDescriptor) {
-			elementType
-					.addContent(constructElementForArrayType((ArrayTypeDescriptor) descriptor
-							.getElementType()));
+			elementType.addContent(constructElementForArrayType((ArrayTypeDescriptor) descriptor.getElementType()));
 		} else if (descriptor.getElementType() instanceof BaseTypeDescriptor) {
 			Element element = new Element("basetype", XScufl.XScuflNS);
 			populateElement(element, descriptor.getElementType());
@@ -314,13 +335,11 @@ public class XMLInputSplitter implements LocalWorker, XMLExtensible {
 		return result;
 	}
 
-	private Element constructElementForComplexType(
-			ComplexTypeDescriptor descriptor) {
+	private Element constructElementForComplexType(ComplexTypeDescriptor descriptor) {
 		Element result = new Element("complextype", XScufl.XScuflNS);
 		populateElement(result, descriptor);
 		Element elements = new Element("elements", XScufl.XScuflNS);
-		for (Iterator iterator = descriptor.getElements().iterator(); iterator
-				.hasNext();) {
+		for (Iterator iterator = descriptor.getElements().iterator(); iterator.hasNext();) {
 			TypeDescriptor desc = (TypeDescriptor) iterator.next();
 			Element element = null;
 			if (desc instanceof ComplexTypeDescriptor) {

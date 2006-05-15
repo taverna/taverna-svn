@@ -114,6 +114,10 @@
 		     dest="./netlib/commons-httpclient-3.0-rc4.jar" usetimestamp="yes"/>
 		<get src="http://www.ibiblio.org/maven/commons-codec/jars/commons-codec-1.2.jar"
 		     dest="./netlib/commons-codec-1.2.jar" usetimestamp="yes"/>
+		<get src="http://www.ibiblio.org/maven/commons-io/jars/commons-io-1.2.jar"
+				     dest="./netlib/commons-io-1.2.jar" usetimestamp="yes"/>
+			<get src="http://www.ibiblio.org/maven/commons-lang/jars/commons-lang-2.1.jar"
+					     dest="./netlib/commons-lang-2.1.jar" usetimestamp="yes"/>
 
 		<!-- Log4j -->
 		<get src="http://www.ibiblio.org/maven/log4j/jars/log4j-1.2.8.jar" 
@@ -317,7 +321,7 @@
 	   <exec executable="dot" >
 	      <arg line="-Tsvg -Nshape=box -Nstyle=filled -Nfontsize=12 -Nwidth=0 -Nheight=0 ${build.dir}/analysistemp/appdependencies.grph -o ${build.dir}/staticdependencies.svg"/>
 	   </exec>
-           <delete dir="${build.dir}/analysistemp"/>
+           <!--<delete dir="${build.dir}/analysistemp"/>-->
 	</target>
 
 

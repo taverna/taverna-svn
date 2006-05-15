@@ -245,7 +245,7 @@ public class WorkflowProcessor extends Processor implements java.io.Serializable
 	public Properties getProperties() {
 		Properties props = new Properties();
 		String definitionURL2 = getDefinitionURL();
-		if (definitionURL2!=null){
+		if (definitionURL2 != null) {
 			props.put("XScufl URL", definitionURL2);
 		}
 		return props;
