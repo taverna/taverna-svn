@@ -18,13 +18,12 @@ public class WSDLParserTest extends TestCase {
 		assertEquals("wrong style", "document", parser.getStyle());
 	}
 
-	public void testGetActionURI() throws Exception
-	{
+	public void testGetActionURI() throws Exception {
 		WSDLParser parser = new WSDLParser("http://eutils.ncbi.nlm.nih.gov/entrez/eutils/soap/eutils_lite.wsdl");
-		String actionURI=parser.getSOAPActionURI("run_eInfo");
-		assertEquals("action uri is wrong","einfo",actionURI);
+		String actionURI = parser.getSOAPActionURI("run_eInfo");
+		assertEquals("action uri is wrong", "einfo", actionURI);
 	}
-	
+
 	public void testGetOperationParameters() throws Exception {
 		WSDLParser parser = new WSDLParser("http://www.ebi.ac.uk/ws/WSFasta.wsdl");
 		List inputs = new ArrayList();
@@ -106,7 +105,6 @@ public class WSDLParserTest extends TestCase {
 		assertEquals("wrong type for output", "BIVComplex", ((TypeDescriptor) outputs.get(0)).getType());
 		assertTrue("wrong descriptor class for output", outputs.get(0) instanceof ComplexTypeDescriptor);
 
-		/* Commented out, outputs are currently unparsed
 		ComplexTypeDescriptor typeDesc = (ComplexTypeDescriptor) outputs.get(0);
 		assertEquals("wrong number of inner elements", 3, typeDesc.getElements().size());
 		assertEquals("wrong name for first element", "bid", ((TypeDescriptor) typeDesc.getElements().get(0)).getName());
@@ -132,7 +130,6 @@ public class WSDLParserTest extends TestCase {
 		assertEquals("wrong name for last element", "smid-hits", ((TypeDescriptor) typeDesc.getElements().get(6))
 				.getName());
 		assertEquals("wrong type for last element", "int", ((TypeDescriptor) typeDesc.getElements().get(6)).getType());
-		*/
 	}
 
 	public void testSimpleTypes() throws Exception {
@@ -165,16 +162,16 @@ public class WSDLParserTest extends TestCase {
 		assertEquals("wrong type", "int", typeDesc.getType());
 
 		assertEquals("wrong number of outputs", 1, outputs.size());
-		
-//		assertTrue("output should be of ArrayTypeDescriptor", outputs.get(0) instanceof ArrayTypeDescriptor);
-//
-//		arrayTypeDesc = (ArrayTypeDescriptor) outputs.get(0);
-//		assertEquals("wrong name", "BIVRecords", arrayTypeDesc.getName());
-//		assertEquals("wrong type", "ArrayOfBIVRecord", arrayTypeDesc.getType());
-//
-//		typeDesc = arrayTypeDesc.getElementType();
-//
-//		assertEquals("wrong type", "BIVRecord", typeDesc.getType());
+
+		assertTrue("output should be of ArrayTypeDescriptor", outputs.get(0) instanceof ArrayTypeDescriptor);
+
+		arrayTypeDesc = (ArrayTypeDescriptor) outputs.get(0);
+		assertEquals("wrong name", "BIVRecords", arrayTypeDesc.getName());
+		assertEquals("wrong type", "ArrayOfBIVRecord", arrayTypeDesc.getType());
+
+		typeDesc = arrayTypeDesc.getElementType();
+
+		assertEquals("wrong type", "BIVRecord", typeDesc.getType());
 	}
 
 	public void testGoVizNoOutputs() throws Exception {
@@ -192,39 +189,59 @@ public class WSDLParserTest extends TestCase {
 		assertEquals("wrong type", "string", typeDesc.getType());
 	}
 
-	public void testGetOperationDocumentation() throws Exception
-	{
+	public void testGetOperationDocumentation() throws Exception {
 		WSDLParser parser = new WSDLParser("http://services.serkoonline.com/serkoservices2.asmx?WSDL");
 		String doc = parser.getOperationDocumentation("Login");
-		assertTrue("this service should contain some documentation, and it should contain the word 'password'",doc.indexOf("password")!=-1);				
+		assertTrue("this service should contain some documentation, and it should contain the word 'password'", doc
+				.indexOf("password") != -1);
 	}
-	
-	public void testGetUseEncoded() throws Exception
-	{
+
+	public void testGetUseEncoded() throws Exception {
 		WSDLParser parser = new WSDLParser("http://soap.bind.ca/wsdl/bind.wsdl");
-		String use=parser.getUse("BIVGetRecords");
-		assertEquals("use should be encoded","encoded",use);
+		String use = parser.getUse("BIVGetRecords");
+		assertEquals("use should be encoded", "encoded", use);
 	}
-	
-	public void testGetUseLiteral() throws Exception
-	{
+
+	public void testGetUseLiteral() throws Exception {
 		WSDLParser parser = new WSDLParser("http://eutils.ncbi.nlm.nih.gov/entrez/eutils/soap/eutils_lite.wsdl");
-		String use=parser.getUse("run_eInfo");
-		assertEquals("use should be literal","literal",use);
+		String use = parser.getUse("run_eInfo");
+		assertEquals("use should be literal", "literal", use);
 	}
-	
-	public void testGetOperationNamespace() throws Exception
-	{
+
+	public void testGetOperationNamespace() throws Exception {
 		WSDLParser parser = new WSDLParser("http://www.freewebs.com/jimmy_cheng/CurrencyExchangeService.wsdl");
-		String operationNamespace=parser.getOperationNamespaceURI("getRate");
-		assertEquals("operation namespace is wrong","urn:xmethods-CurrencyExchange",operationNamespace);		
+		String operationNamespace = parser.getOperationNamespaceURI("getRate");
+		assertEquals("operation namespace is wrong", "urn:xmethods-CurrencyExchange", operationNamespace);
 	}
-	
-	public void testGetOperationNamespace2() throws Exception
-	{
+
+	public void testGetOperationNamespace2() throws Exception {
 		WSDLParser parser = new WSDLParser("http://eutils.ncbi.nlm.nih.gov/entrez/eutils/soap/eutils_lite.wsdl");
-		String operationNamespace=parser.getOperationNamespaceURI("run_eInfo");
-		assertEquals("operation namespace is wrong","http://www.ncbi.nlm.nih.gov/soap/eutils/einfo",operationNamespace);		
+		String operationNamespace = parser.getOperationNamespaceURI("run_eInfo");
+		assertEquals("operation namespace is wrong", "http://www.ncbi.nlm.nih.gov/soap/eutils/einfo",
+				operationNamespace);
 	}
-	
+
+	public void testHugeOutputFromEFetch() throws Exception {
+		WSDLParser parser = new WSDLParser("http://eutils.ncbi.nlm.nih.gov/entrez/eutils/soap/eutils.wsdl");
+		List inputs = new ArrayList();
+		List outputs = new ArrayList();
+		parser.getOperationParameters("run_eFetch", inputs, outputs);
+
+		assertEquals("wrong number of outputs", 1, outputs.size());
+		assertTrue("output should be ComplexTypeDescriptor", outputs.get(0) instanceof ComplexTypeDescriptor);
+
+		ComplexTypeDescriptor desc = (ComplexTypeDescriptor) outputs.get(0);
+		assertEquals("wrong name for output", "parameters", desc.getName());
+		assertEquals("wrong type for output", "eFetchResult", desc.getType());
+		assertEquals("unexpected inner element", "GBSet", ((TypeDescriptor) desc.getElements().get(7)).getName());
+		assertEquals("unexpected inner element", "Bioseq-set", ((TypeDescriptor) desc.getElements().get(8)).getName());
+		assertEquals("unexpected inner element", "TSeqSet", ((TypeDescriptor) desc.getElements().get(6)).getName());
+
+		assertTrue("wrong type for inner element", desc.getElements().get(8) instanceof ComplexTypeDescriptor);
+		desc = (ComplexTypeDescriptor) desc.getElements().get(8);
+
+		assertEquals("unexpected inner element", "Bioseq-set_id", ((TypeDescriptor) desc.getElements().get(0))
+				.getName());
+	}
+
 }

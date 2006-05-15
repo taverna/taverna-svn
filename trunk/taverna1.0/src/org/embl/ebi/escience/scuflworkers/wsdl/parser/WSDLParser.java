@@ -185,15 +185,7 @@ public class WSDLParser {
 
 		}
 		if (parameters.returnParam != null) {
-			if (parameters.returnParam.getType().isBaseType())
-				outputs.add(processParameter(parameters.returnParam));
-			else {
-				ComplexTypeDescriptor complex = new ComplexTypeDescriptor();
-				complex.setName(parameters.returnParam.getName());
-				complex.setType(parameters.returnParam.getType().getQName().getLocalPart());
-				outputs.add(complex);
-			}
-
+			outputs.add(processParameter(parameters.returnParam));			
 		}
 
 		cachedComplexTypes.clear();
@@ -468,13 +460,12 @@ public class WSDLParser {
 		if (cachedComplexTypes.get(type.getQName().toString()) != null) {
 			result = (ComplexTypeDescriptor) cachedComplexTypes.get(type.getQName().toString());
 		} else {
-			logger.debug("Constructing complex type: " + type.getQName().getLocalPart());
+			logger.debug("Constructing complex type (from DefinedElement): " + type.getQName().getLocalPart());			
 			// caching the type is not really to improve performance, but is
 			// to handle types that contain elements that reference
 			// itself or another parent. Without the caching, this could lead to
 			// infinate
-			// recursion.
-			if (cachedComplexTypes.get(type.getQName().toString()) == null)
+			// recursion.			
 				cachedComplexTypes.put(type.getQName().toString(), result);
 
 			result.setType(type.getQName().getLocalPart());
@@ -489,12 +480,20 @@ public class WSDLParser {
 
 	private ComplexTypeDescriptor constructComplexType(DefinedType type) {
 		ComplexTypeDescriptor result = new ComplexTypeDescriptor();
-		result.setType(type.getQName().getLocalPart());
-		List containedElements = type.getContainedElements();
-		if (containedElements != null) {
-			result.getElements().addAll(constructElements(containedElements));
+		
+		if (cachedComplexTypes.get(type.getQName().toString()) != null) {
+			result = (ComplexTypeDescriptor) cachedComplexTypes.get(type.getQName().toString());
+		} 
+		else
+		{
+			logger.debug("Constructing complex type (from DefinedType): " + type.getQName().getLocalPart());			
+			result.setType(type.getQName().getLocalPart());
+			cachedComplexTypes.put(type.getQName().toString(), result);
+			List containedElements = type.getContainedElements();
+			if (containedElements != null) {
+				result.getElements().addAll(constructElements(containedElements));									
+			}
 		}
-
 		return result;
 	}
 
