@@ -67,6 +67,7 @@ import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 
+import org.apache.log4j.Logger;
 import org.embl.ebi.escience.baclava.DataThing;
 import org.embl.ebi.escience.baclava.factory.DataThingFactory;
 import org.embl.ebi.escience.baclava.factory.DataThingXMLFactory;
@@ -89,10 +90,13 @@ import org.jdom.output.XMLOutputter;
  * Panel to construct the input for a workflow.
  * 
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover </a>
- * @version $Revision: 1.37 $
+ * @version $Revision: 1.38 $
  */
 public abstract class DataThingConstructionPanel extends JPanel implements
 		ScuflUIComponent, ScuflModelEventListener {
+	
+	private static Logger logger = Logger.getLogger(DataThingConstructionPanel.class);
+	
 	private interface PanelTreeNode {
 		public JComponent getPanel();
 
@@ -187,7 +191,7 @@ public abstract class DataThingConstructionPanel extends JPanel implements
 				dtde.rejectDrop();
 				dtde.dropComplete(false);
 			} catch (Exception e) {
-				System.out.println(e);
+				logger.warn("Could not accept drop", e);				
 				dtde.rejectDrop();
 				dtde.dropComplete(false);
 			}
@@ -280,8 +284,10 @@ public abstract class DataThingConstructionPanel extends JPanel implements
 						// fileChooser.getFileFilter();
 						FileWriter fileWriter = new FileWriter(file);
 						BufferedWriter writer = new BufferedWriter(fileWriter);
+						//XMLOutputter outputter = new XMLOutputter(Format
+						//		.getCompactFormat());
 						XMLOutputter outputter = new XMLOutputter(Format
-								.getCompactFormat());
+								.getPrettyFormat());
 						BufferedReader reader = new BufferedReader(
 								new StringReader(
 										outputter
@@ -575,7 +581,7 @@ public abstract class DataThingConstructionPanel extends JPanel implements
 		}
 
 		public boolean isText() {
-			System.out.println(port.getMetadata().getDisplayTypeList());
+			logger.debug(port.getMetadata().getDisplayTypeList());
 			for (int index = 0; index < port.getMetadata().getMIMETypeList()
 					.size(); index++) {
 				String mimeType = (String) port.getMetadata().getMIMETypeList()
@@ -1051,9 +1057,8 @@ public abstract class DataThingConstructionPanel extends JPanel implements
 				Class c = Class.forName(storageClassName);
 				store = (BaclavaDataService) c.newInstance();
 			} catch (Exception ex) {
-				System.out.println("Unable to initialize data store class : "
-						+ storageClassName);
-				ex.printStackTrace();
+				logger.error("Unable to initialize data store class : "
+						+ storageClassName, ex);				
 			}
 		}
 	}
