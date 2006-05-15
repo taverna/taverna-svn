@@ -5,6 +5,7 @@
  */
 package org.embl.ebi.escience.baclava.factory;
 
+import org.apache.log4j.Logger;
 import org.embl.ebi.escience.baclava.Base64;
 import org.embl.ebi.escience.baclava.DataThing;
 import org.embl.ebi.escience.baclava.NoMetadataFoundException;
@@ -20,10 +21,6 @@ import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.Namespace;
 
-import java.lang.Object;
-import java.lang.String;
-import java.lang.System;
-
 /**
  * Performs the creation of XML elements from DataThing objects and the
  * configuration of existing DataThing objects from an XML representation.
@@ -31,6 +28,8 @@ import java.lang.System;
  * @author Tom Oinn
  */
 public class DataThingXMLFactory {
+
+	private static Logger logger = Logger.getLogger(DataThingXMLFactory.class);
 
 	/**
 	 * The namespace used in the XML representation of a DataThing object
@@ -148,7 +147,6 @@ public class DataThingXMLFactory {
 		String mimeMajorType = mimeHint.split("/")[0];
 		String encodedData = e.getChild("dataElementData", namespace)
 				.getTextTrim();
-		// System.out.println(encodedData);
 		byte[] decodedData = Base64.decode(encodedData);
 		Object result;
 		if (mimeMajorType.equals("text")) {
@@ -162,8 +160,7 @@ public class DataThingXMLFactory {
 				result = (Object) in.readObject();
 				in.close();
 			} catch (Exception ex) {
-				System.out.println("Failed to deserialize java object type");
-				ex.printStackTrace();
+				logger.error("Failed to deserialize java object type", ex);
 				result = new String("Unable to decode " + mimeHint);
 			}
 		} else {
@@ -304,14 +301,14 @@ public class DataThingXMLFactory {
 					oos.writeObject(o);
 					theBytes = bos.toByteArray();
 				} catch (Exception ex) {
-					System.out.println("Error serializing "
-							+ o.getClass().getName());
+					logger.error("Error serializing " + o.getClass().getName());
 					ex.printStackTrace();
 				}
 			}
 			// Convert to base64
-			System.out.println("Size of binary data is " + theBytes.length
-					+ " bytes.");
+			logger
+					.info("Size of binary data is " + theBytes.length
+							+ " bytes.");
 			realDataElement.setText(Base64.encodeBytes(theBytes));
 			dataElement.addContent(realDataElement);
 			return dataElement;
