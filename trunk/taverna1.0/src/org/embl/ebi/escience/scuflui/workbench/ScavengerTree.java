@@ -388,6 +388,10 @@ public class ScavengerTree extends ExtendedJTree implements ScuflUIComponent,
 				} catch (InterruptedException ie) {
 					//
 				}
+				// I want to disable the reload() as it collapse the tree, even though
+				// the user had started exploring it at this point. But I don't know
+				// what is the effect of not reload-ing, the API says it should
+				// be called when the TreeModel has been modified. --Stian				
 				treeModel.reload();
 				// FIXME: Make this a user setable property. By default now we
 				// don't expand the full scavenger tree, as it is too massive
