@@ -13,6 +13,8 @@ import org.embl.ebi.escience.scufl.ScuflException;
  * @author Tom Oinn
  */
 public class XScuflFormatException extends ScuflException {
+	
+	private static final long serialVersionUID = -7557424386012201728L;
 
 	public XScuflFormatException(String the_message) {
 		super(the_message);
