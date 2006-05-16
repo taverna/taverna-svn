@@ -71,7 +71,7 @@ public class MobyParseDatatypeTask implements ProcessorTaskWorker {
 					// this should never happen because outputs from services
 					// with multiple invocations are broken down into a list of
 					// single invocations.
-					System.out.println("MIM not implemented yet");
+					logger.debug("MIM not implemented yet");
 
 				} else {
 					if (XMLUtilities.isCollection(inputXML)) {
@@ -155,7 +155,7 @@ public class MobyParseDatatypeTask implements ProcessorTaskWorker {
 						// with multiple invocations are broken down into a list
 						// of
 						// single invocations.
-						System.out.println("MIM not implemented yet");
+						logger.debug("MIM not implemented yet");
 
 					} else {
 						if (XMLUtilities.isCollection(inputXML)) {
