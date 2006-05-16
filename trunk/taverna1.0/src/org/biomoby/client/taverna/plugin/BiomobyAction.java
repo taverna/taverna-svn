@@ -29,6 +29,7 @@ import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 
 import org.biomoby.client.CentralImpl;
+import org.biomoby.client.taverna.plugin.MobyParseDatatypeProcessor;
 import org.biomoby.shared.Central;
 import org.biomoby.shared.MobyData;
 import org.biomoby.shared.MobyDataType;
@@ -64,7 +65,7 @@ public class BiomobyAction extends AbstractProcessorAction {
 	public JComponent getComponent(Processor processor) {
 		// variables i need
 		BiomobyProcessor theProcessor = (BiomobyProcessor) processor;
-		//Central central = theProcessor.getCentralWorker();
+		// Central central = theProcessor.getCentralWorker();
 		final Processor theproc = processor;
 		final String endpoint = ((BiomobyProcessor) processor).getMobyEndpoint();
 		final ScuflModel scuflModel = processor.getModel();
@@ -203,8 +204,16 @@ public class BiomobyAction extends AbstractProcessorAction {
 							if (!selectedObject.equals(path.getLastPathComponent().toString()))
 								return;
 							String collectionName = "";
-							if (path.getParentPath().getLastPathComponent().toString().indexOf("('") > 0 && path.getParentPath().getLastPathComponent().toString().indexOf("')") > 0) {
-								collectionName = path.getParentPath().getLastPathComponent().toString().substring(path.getParentPath().getLastPathComponent().toString().indexOf("('")+2, path.getParentPath().getLastPathComponent().toString().indexOf("')"));
+							if (path.getParentPath().getLastPathComponent().toString()
+									.indexOf("('") > 0
+									&& path.getParentPath().getLastPathComponent().toString()
+											.indexOf("')") > 0) {
+								collectionName = path.getParentPath().getLastPathComponent()
+										.toString().substring(
+												path.getParentPath().getLastPathComponent()
+														.toString().indexOf("('") + 2,
+												path.getParentPath().getLastPathComponent()
+														.toString().indexOf("')"));
 							}
 							final String theCollectionName = collectionName;
 							final JPopupMenu menu = new JPopupMenu();
@@ -215,7 +224,7 @@ public class BiomobyAction extends AbstractProcessorAction {
 							item
 									.setIcon(getIcon("org/biomoby/client/ui/graphical/applets/img/toolbarButtonGraphics/general/Add24.gif"));
 							item.addActionListener(new ActionListener() {
-								//private boolean added = false;
+								// private boolean added = false;
 
 								public void actionPerformed(ActionEvent ae) {
 									String defaultName = selectedObject;
@@ -244,8 +253,11 @@ public class BiomobyAction extends AbstractProcessorAction {
 									try {
 										if (scuflModel != null) {
 											Port theServiceport = null;
-											theServiceport = theproc.locatePort(defaultName
-													+ "(Collection - '" + (theCollectionName.equals("") ? "MobyCollection" : theCollectionName) + "')");
+											theServiceport = theproc
+													.locatePort(defaultName
+															+ "(Collection - '"
+															+ (theCollectionName.equals("") ? "MobyCollection"
+																	: theCollectionName) + "')");
 											if (theServiceport == null)
 												return;
 											scuflModel.addDataConstraint(new DataConstraint(
@@ -255,10 +267,10 @@ public class BiomobyAction extends AbstractProcessorAction {
 											System.out.println("Null model");
 										}
 									} catch (DataConstraintCreationException dcce) {
-										//dcce.printStackTrace();
+										// dcce.printStackTrace();
 										return;
 									} catch (UnknownPortException e) {
-										//e.printStackTrace();
+										// e.printStackTrace();
 										return;
 									}
 								}
@@ -293,7 +305,8 @@ public class BiomobyAction extends AbstractProcessorAction {
 								&& path.getParentPath().getLastPathComponent().toString()
 										.startsWith("Inputs")
 								&& !path.getLastPathComponent().toString()
-										.startsWith("Collection(") && !path.getLastPathComponent().toString().equals(" None ")) {
+										.startsWith("Collection(")
+								&& !path.getLastPathComponent().toString().equals(" None ")) {
 							// we have a simple input
 							DefaultMutableTreeNode node = (DefaultMutableTreeNode) tree
 									.getLastSelectedPathComponent();
@@ -312,7 +325,7 @@ public class BiomobyAction extends AbstractProcessorAction {
 							item
 									.setIcon(getIcon("org/biomoby/client/ui/graphical/applets/img/toolbarButtonGraphics/general/Add24.gif"));
 							item.addActionListener(new ActionListener() {
-								//private boolean added = false;
+								// private boolean added = false;
 
 								public void actionPerformed(ActionEvent ae) {
 									String defaultName = selectedObject;
@@ -337,13 +350,15 @@ public class BiomobyAction extends AbstractProcessorAction {
 												JOptionPane.ERROR_MESSAGE);
 										return;
 									}
-									
+
 									try {
 										if (scuflModel != null) {
 											Port theServiceport = null;
-											String inputPortName = selectedObject.replaceAll("'","");
+											String inputPortName = selectedObject.replaceAll("'",
+													"");
 											if (inputPortName.indexOf("()") > 0)
-												inputPortName = inputPortName.replaceAll("\\(\\)","\\(_ANON_\\)");
+												inputPortName = inputPortName.replaceAll("\\(\\)",
+														"\\(_ANON_\\)");
 											theServiceport = theproc.locatePort(inputPortName);
 											if (theServiceport == null)
 												return;
@@ -354,10 +369,10 @@ public class BiomobyAction extends AbstractProcessorAction {
 											System.out.println("Null model");
 										}
 									} catch (DataConstraintCreationException dcce) {
-										//dcce.printStackTrace();
+										// dcce.printStackTrace();
 										return;
 									} catch (UnknownPortException e) {
-										//e.printStackTrace();
+										// e.printStackTrace();
 										return;
 									}
 								}
@@ -409,7 +424,8 @@ public class BiomobyAction extends AbstractProcessorAction {
 							// show the window
 							menu.show(me.getComponent(), me.getX(), me.getY());
 
-						} else if (path.getParentPath().toString().indexOf("Outputs") >= 0 && path.getLastPathComponent().toString().indexOf(" None ") == -1) {
+						} else if (path.getParentPath().toString().indexOf("Outputs") >= 0
+								&& path.getLastPathComponent().toString().indexOf(" None ") == -1) {
 							DefaultMutableTreeNode node = (DefaultMutableTreeNode) tree
 									.getLastSelectedPathComponent();
 							if (node == null)
@@ -454,7 +470,7 @@ public class BiomobyAction extends AbstractProcessorAction {
 
 									}
 								});
-								
+
 								JMenuItem item2 = new JMenuItem("Find Services that Consume "
 										+ selectedObject + " - semantic search");
 								item2
@@ -485,11 +501,108 @@ public class BiomobyAction extends AbstractProcessorAction {
 
 									}
 								});
+
+								// string may be needed to extract the
+								// collection article name
+								final String potentialCollectionString = path.getParentPath()
+										.getLastPathComponent().toString();
+								final boolean isCollection = potentialCollectionString
+										.indexOf("Collection('") >= 0;
+
+								JMenuItem item3 = new JMenuItem("Add parser for " + selectedObject
+										+ " to the workflow");
+								item3
+										.setIcon(getIcon("org/biomoby/client/ui/graphical/applets/img/toolbarButtonGraphics/general/Cut24.gif"));
+								item3.addActionListener(new ActionListener() {
+
+									public void actionPerformed(ActionEvent ae) {
+										// you would like to search for
+										// selectedObject
+										try {
+											String name = selectedObject;
+											if (name.indexOf("(") > 0)
+												name = name.substring(0, name.indexOf("("));
+											String workflowName = theproc.getModel()
+													.getValidProcessorName(
+															"Parse Moby Data(" + name + ")");
+											String articlename = "";
+											if (isCollection) {
+												articlename = potentialCollectionString
+														.substring(potentialCollectionString
+																.indexOf("('") + 2,
+																potentialCollectionString
+																		.lastIndexOf("'"));
+											} else {
+												articlename = selectedObject.substring(
+														selectedObject.indexOf("'") + 1,
+														selectedObject.lastIndexOf("'"));
+											}
+											Processor parser;
+											try {
+												parser = new MobyParseDatatypeProcessor(scuflModel,
+														workflowName, name, articlename,
+														((BiomobyProcessor) theproc)
+																.getMobyEndpoint());
+												scuflModel.addProcessor(parser);
+											} catch (ProcessorCreationException pce) {
+												JOptionPane.showMessageDialog(null,
+														"Processor creation exception : \n"
+																+ pce.getMessage(), "Exception!",
+														JOptionPane.ERROR_MESSAGE);
+												return;
+											} catch (DuplicateProcessorNameException dpne) {
+												JOptionPane.showMessageDialog(null,
+														"Duplicate name : \n" + dpne.getMessage(),
+														"Exception!", JOptionPane.ERROR_MESSAGE);
+												return;
+											}
+
+											try {
+												if (scuflModel != null) {
+													Port theServiceport = null;
+													if (isCollection)
+														theServiceport = theproc
+																.locatePort(name
+																		+ "(Collection - '"
+																		+ (articlename.equals("") ? "MobyCollection"
+																				: articlename)
+																		+ "')");
+													else
+														theServiceport = theproc.locatePort(name
+																+ "(" + articlename + ")");
+													if (theServiceport == null)
+														return;
+													scuflModel
+															.addDataConstraint(new DataConstraint(
+																	scuflModel,
+																	theServiceport,parser.getInputPorts()[0]));
+												} else {
+													System.out.println("Null model");
+												}
+											} catch (DataConstraintCreationException dcce) {
+												// dcce.printStackTrace();
+												return;
+											} catch (UnknownPortException e) {
+												// e.printStackTrace();
+												return;
+											}
+											
+										} catch (Exception e) {
+											e.printStackTrace();
+										}
+
+									}
+								});
+
 								menu.add(new JLabel("Moby Service Discovery ... ", JLabel.CENTER));
 								menu.add(new JSeparator());
 								menu.add(item);
 								menu.add(new JSeparator());
 								menu.add(item2);
+								menu.add(new JLabel("Parse Moby Data ... ", JLabel.CENTER));
+								menu.add(new JSeparator());
+								menu.add(item3);
+
 								menu.show(me.getComponent(), me.getX(), me.getY());
 							}
 						}
@@ -508,8 +621,9 @@ public class BiomobyAction extends AbstractProcessorAction {
 	}
 
 	private class SimpleFrame extends JPanel implements ScuflUIComponent {
-		
+
 		private static final long serialVersionUID = -6611234116434482238L;
+
 		Processor processor = null;
 
 		public SimpleFrame(Component c, Processor p) {
