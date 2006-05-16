@@ -90,7 +90,7 @@ import org.jdom.output.XMLOutputter;
  * Panel to construct the input for a workflow.
  * 
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover </a>
- * @version $Revision: 1.39 $
+ * @version $Revision: 1.40 $
  */
 public abstract class DataThingConstructionPanel extends JPanel implements
 		ScuflUIComponent, ScuflModelEventListener {
@@ -260,7 +260,7 @@ public abstract class DataThingConstructionPanel extends JPanel implements
 							DataThing thing = (DataThing) inputMap.get(portNode
 									.toString());
 							if (thing == null) {
-								logger.error("Missing input " + portNode);
+								logger.error("Could not load input document, missing input " + portNode);
 								JOptionPane.showMessageDialog(null,
 										"Could not load input document.\n" +
 										"Input document is missing input port '"
