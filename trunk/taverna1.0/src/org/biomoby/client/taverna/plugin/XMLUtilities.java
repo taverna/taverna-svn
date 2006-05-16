@@ -99,6 +99,8 @@ public class XMLUtilities {
 		Element temp = element;
 		String queryID = "";
 
+		Element serviceNotes = getServiceNotes(element);
+
 		// if the current elements name isnt MOBY, see if its direct child is
 		if (!element.getName().equals("MOBY")) {
 			if (element.getChild("MOBY") != null)
@@ -160,7 +162,7 @@ public class XMLUtilities {
 		int index = 0;
 		for (Iterator it = list.iterator(); it.hasNext();) {
 			Element next = (Element) it.next();
-			elements[index++] = createMobyDataElementWrapper(next, queryID);
+			elements[index++] = createMobyDataElementWrapper(next, queryID, serviceNotes);
 		}
 		return elements;
 	}
@@ -214,6 +216,8 @@ public class XMLUtilities {
 	public static Element[] getListOfCollections(Element element) throws MobyException {
 		Element temp = element;
 		String queryID = "";
+
+		Element serviceNotes = getServiceNotes(element);
 
 		// if the current elements name isnt MOBY, see if its direct child is
 		if (!element.getName().equals("MOBY")) {
@@ -276,7 +280,7 @@ public class XMLUtilities {
 		int index = 0;
 		for (Iterator it = list.iterator(); it.hasNext();) {
 			Element next = (Element) it.next();
-			elements[index++] = createMobyDataElementWrapper(next, queryID);
+			elements[index++] = createMobyDataElementWrapper(next, queryID, serviceNotes);
 		}
 		return elements;
 	}
@@ -553,8 +557,9 @@ public class XMLUtilities {
 	public static Element getWrappedSimple(String name, String type, Element element,
 			String endpoint) throws MobyException {
 		String queryID = getQueryID(element);
+		Element serviceNotes = getServiceNotes(element);
 		Element simple = getSimple(name, type, element, endpoint);
-		return createMobyDataElementWrapper(simple, queryID);
+		return createMobyDataElementWrapper(simple, queryID, serviceNotes);
 	}
 
 	/**
@@ -668,7 +673,8 @@ public class XMLUtilities {
 	public static Element getWrappedCollection(String name, Element element) throws MobyException {
 		String queryID = getQueryID(element);
 		Element collection = getCollection(name, element);
-		return createMobyDataElementWrapper(collection, queryID);
+		Element serviceNotes = getServiceNotes(element);
+		return createMobyDataElementWrapper(collection, queryID, serviceNotes);
 	}
 
 	/**
@@ -729,7 +735,11 @@ public class XMLUtilities {
 			return new Element[] {};
 		Vector vector = new Vector();
 		for (Iterator it = list.iterator(); it.hasNext();) {
-			vector.add(it.next());
+			Object o = it.next();
+			if (o instanceof Element) {
+				((Element) o).setAttribute("articleName", name, MOBY_NS);
+			}
+			vector.add(o);
 		}
 		Element[] elements = new Element[vector.size()];
 		vector.copyInto(elements);
@@ -829,6 +839,7 @@ public class XMLUtilities {
 			throws MobyException {
 		String queryID = getQueryID(element);
 		Element collection = getCollection(name, element);
+		Element serviceNotes = getServiceNotes(element);
 		List list = collection.getChildren("Simple");
 		if (list.isEmpty())
 			list = collection.getChildren("Simple", MOBY_NS);
@@ -837,7 +848,7 @@ public class XMLUtilities {
 		Vector vector = new Vector();
 		for (Iterator it = list.iterator(); it.hasNext();) {
 			Element e = (Element) it.next();
-			e = createMobyDataElementWrapper(e, queryID + "_split" + queryCount++);
+			e = createMobyDataElementWrapper(e, queryID + "_split" + queryCount++, serviceNotes);
 			vector.add(e);
 		}
 		Element[] elements = new Element[vector.size()];
@@ -873,6 +884,7 @@ public class XMLUtilities {
 	public static Element[] getSingleInvokationsFromMultipleInvokations(Element element)
 			throws MobyException {
 		Element e = element;
+		Element serviceNotes = getServiceNotes(element);
 		if (e.getChild("MOBY") != null) {
 			e = e.getChild("MOBY");
 		} else if (e.getChild("MOBY", MOBY_NS) != null) {
@@ -896,6 +908,8 @@ public class XMLUtilities {
 		for (Iterator it = invocations.iterator(); it.hasNext();) {
 			Element MOBY = new Element("MOBY", MOBY_NS);
 			Element mobyContent = new Element("mobyContent", MOBY_NS);
+			if (serviceNotes != null)
+				mobyContent.addContent(serviceNotes.detach());
 			Element mobyData = new Element("mobyData", MOBY_NS);
 			Element next = (Element) it.next();
 			String queryID = next.getAttributeValue("queryID", MOBY_NS);
@@ -1081,6 +1095,7 @@ public class XMLUtilities {
 			throws MobyException {
 		Element mobyData = extractMobyData(element);
 		String queryID = getQueryID(element);
+		Element serviceNotes = getServiceNotes(element);
 		Element simple = mobyData.getChild("Simple");
 		if (simple == null)
 			simple = mobyData.getChild("Simple", MOBY_NS);
@@ -1089,7 +1104,7 @@ public class XMLUtilities {
 		simple.removeAttribute("articleName");
 		simple.removeAttribute("articleName", MOBY_NS);
 		simple.setAttribute("articleName", newName, MOBY_NS);
-		return createMobyDataElementWrapper(simple, queryID);
+		return createMobyDataElementWrapper(simple, queryID, serviceNotes);
 	}
 
 	/**
@@ -1107,17 +1122,22 @@ public class XMLUtilities {
 	 * 
 	 * @param element
 	 * @param queryID
+	 * @param serviceNotes
 	 * @return
 	 * @throws MobyException
 	 */
-	public static Element createMobyDataElementWrapper(Element element, String queryID)
-			throws MobyException {
+	public static Element createMobyDataElementWrapper(Element element, String queryID,
+			Element serviceNotes) throws MobyException {
 		Element MOBY = new Element("MOBY", MOBY_NS);
 		Element mobyContent = new Element("mobyContent", MOBY_NS);
 		Element mobyData = new Element("mobyData", MOBY_NS);
 		mobyData.setAttribute("queryID", queryID, MOBY_NS);
 		MOBY.addContent(mobyContent);
 		mobyContent.addContent(mobyData);
+		// add the serviceNotes if they exist
+		if (serviceNotes != null)
+			mobyContent.addContent(serviceNotes.detach());
+
 		if (element != null) {
 			if (element.getName().equals("Simple")) {
 				Element simple = new Element("Simple", MOBY_NS);
@@ -1141,9 +1161,12 @@ public class XMLUtilities {
 		return MOBY;
 	}
 
-	public static Element createMobyDataWrapper(String queryID) throws MobyException {
+	public static Element createMobyDataWrapper(String queryID, Element serviceNotes)
+			throws MobyException {
 		Element MOBY = new Element("MOBY", MOBY_NS);
 		Element mobyContent = new Element("mobyContent", MOBY_NS);
+		if (serviceNotes != null)
+			mobyContent.addContent(serviceNotes.detach());
 		Element mobyData = new Element("mobyData", MOBY_NS);
 		mobyData.setAttribute("queryID", queryID, MOBY_NS);
 		MOBY.addContent(mobyContent);
@@ -1168,7 +1191,8 @@ public class XMLUtilities {
 	 * @throws MobyException
 	 */
 	public static Element createMobyDataElementWrapper(Element element) throws MobyException {
-		return createMobyDataElementWrapper(element, "a" + queryCount++);
+		Element serviceNotes = getServiceNotes(element);
+		return createMobyDataElementWrapper(element, "a" + queryCount++, serviceNotes);
 	}
 
 	/**
@@ -1182,8 +1206,9 @@ public class XMLUtilities {
 			throws MobyException {
 		if (xml == null)
 			return null;
+		Element serviceNotes = getServiceNotes(getDOMDocument(xml).getRootElement());
 		Element element = createMobyDataElementWrapper(getDOMDocument(xml).getRootElement(),
-				queryID);
+				queryID, serviceNotes);
 		XMLOutputter outputter = new XMLOutputter(Format.getPrettyFormat());
 		return (element == null ? null : outputter.outputString(element));
 	}
@@ -1197,8 +1222,13 @@ public class XMLUtilities {
 	public static Element createMultipleInvokations(Element[] elements) throws MobyException {
 		Element MOBY = new Element("MOBY", MOBY_NS);
 		Element mobyContent = new Element("mobyContent", MOBY_NS);
-
+		Element serviceNotes = null;
 		for (int i = 0; i < elements.length; i++) {
+			if (serviceNotes == null) {
+				serviceNotes = getServiceNotes(elements[i]);
+				if (serviceNotes != null)
+					mobyContent.addContent(serviceNotes.detach());
+			}
 			Element mobyData = new Element("mobyData", MOBY_NS);
 			Element md = extractMobyData(elements[i]);
 			String queryID = getQueryID(elements[i]);
@@ -1306,10 +1336,11 @@ public class XMLUtilities {
 	/**
 	 * 
 	 * @param theList
-	 *            a list of Elements that represent collections (wrapped in a MobyData tag
+	 *            a list of Elements that represent collections (wrapped in a
+	 *            MobyData tag
 	 * @return a list containing a single collection that contains all of the
 	 *         simples in the collections in theList
-	 * @throws MobyException 
+	 * @throws MobyException
 	 * 
 	 */
 	public static List mergeCollections(List theList, String name) throws MobyException {
@@ -1320,7 +1351,7 @@ public class XMLUtilities {
 		String queryID = "";
 		for (Iterator iter = theList.iterator(); iter.hasNext();) {
 			Element mobyData = (Element) iter.next();
-			queryID+=getQueryID(mobyData);
+			queryID += getQueryID(mobyData);
 			Element collection = mobyData.getChild("Collection");
 			if (collection == null)
 				collection = mobyData.getChild("Collection", MOBY_NS);
@@ -1329,8 +1360,61 @@ public class XMLUtilities {
 			mainCollection.addContent(collection.cloneContent());
 		}
 		theList = new ArrayList();
-		theList.add(extractMobyData(createMobyDataElementWrapper(mainCollection, queryID)));
+		theList.add(extractMobyData(createMobyDataElementWrapper(mainCollection, queryID, null)));
 		return theList;
+	}
+
+	/**
+	 * 
+	 * @param element
+	 *            a full moby message (root element called MOBY) and may be
+	 *            prefixed
+	 * @return the serviceNotes element if it exists, null otherwise.
+	 */
+	public static Element getServiceNotes(Element element) {
+		Element serviceNotes = null;
+		Element mobyContent = element.getChild("mobyContent");
+		if (mobyContent == null)
+			mobyContent = element.getChild("mobyContent", MOBY_NS);
+
+		// should throw exception?
+		if (mobyContent == null)
+			return serviceNotes;
+
+		serviceNotes = mobyContent.getChild("serviceNotes");
+		if (serviceNotes == null)
+			serviceNotes = mobyContent.getChild("serviceNotes", MOBY_NS);
+		// note: servicenotes may be null
+		return serviceNotes;
+	}
+
+	/**
+	 * 
+	 * @param xml
+	 *            a full moby message (root element called MOBY) and may be
+	 *            prefixed
+	 * @return the serviceNotes element as a string if it exists, null
+	 *         otherwise.
+	 */
+	public static String getServiceNotes(String xml) {
+		try {
+			Element e = getServiceNotes(getDOMDocument(xml).getRootElement());
+			if (e == null)
+				return null;
+			XMLOutputter out = new XMLOutputter(Format.getPrettyFormat());
+			return out.outputString(e);
+		} catch (MobyException ex) {
+			return null;
+		}
+	}
+	
+	public static Element getServiceNotesAsElement(String xml) {
+		try {
+			Element e = getServiceNotes(getDOMDocument(xml).getRootElement());
+			return e;
+		} catch (MobyException ex) {
+			return null;
+		}
 	}
 
 	/*
