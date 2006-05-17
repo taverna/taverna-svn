@@ -40,6 +40,7 @@ import org.embl.ebi.escience.scuflworkers.ProcessorEditor;
 import org.embl.ebi.escience.scuflworkers.ProcessorHelper;
 import org.embl.ebi.escience.scuflworkers.java.LocalServiceProcessor;
 import org.embl.ebi.escience.scuflworkers.java.XMLInputSplitter;
+import org.embl.ebi.escience.scuflworkers.java.XMLOutputSplitter;
 
 /**
  * A static factory method to return an instance of JPopupMenu that is
@@ -135,134 +136,10 @@ public class ScuflContextMenuFactory {
 			// Is the port a workflow source?
 			// Port thePort = (Port)theObject;
 			if (thePort instanceof OutputPort) {
-				return LinkingMenus.linkFrom(thePort);
+				JPopupMenu theMenu = createMenuForOutputPort(model,(OutputPort)thePort);
+				return theMenu;
 			} else if (thePort instanceof InputPort) {
-				// Workflow sink or processor inputs have the option to toggle
-				// between NDSELECT and MERGE
-				// operation when there's more than one input link to the port
-				final JPopupMenu theMenu = new JPopupMenu();
-
-				// If this is a workflow sink, give the option to remove it.
-				if (thePort.getProcessor() == model.getWorkflowSinkProcessor()) {
-					theMenu.add(new ShadedLabel("Workflow Output : "
-							+ thePort.getName(), ShadedLabel.TAVERNA_GREEN));
-					final Port sinkPort = thePort;
-					theMenu.add(new RenameAction(model, sinkPort));
-					theMenu.add(new RemoveAction(model, sinkPort));
-					theMenu.addSeparator();
-					theMenu.add(new EditMetadataAction(model, sinkPort));
-					theMenu.addSeparator();
-				} else {
-					theMenu.add(new ShadedLabel("Input port : "
-							+ thePort.getName(), ShadedLabel.TAVERNA_GREEN));
-					if (thePort.isNameEditable()) {
-						// ie. dynamic ports from Rserve and its like
-						theMenu.add(new RenameAction(model, thePort));
-						// FIXME: Check also isRemovable !
-						theMenu.add(new RemoveAction(model, thePort));
-					}
-					if (thePort.getProcessor().getModel() != null) {
-						theMenu.add(new SetDefaultValueAction(model,
-								(InputPort) thePort));
-					}
-					if (thePort.getProcessor().getModel() != null
-							&& ((InputPort) thePort).hasDefaultValue()) {
-						// theMenu.add(new ShadedLabel("Input port :
-						// "+thePort.getName(), ShadedLabel.TAVERNA_GREEN));
-						final InputPort ip = (InputPort) thePort;
-						JMenuItem removeDefault = new JMenuItem(
-								"Remove default '" + ip.getDefaultValue() + "'",
-								ScuflIcons.editIcon);
-						removeDefault.addActionListener(new ActionListener() {
-							public void actionPerformed(ActionEvent ae) {
-								ip.setDefaultValue(null);
-							}
-						});
-						theMenu.add(removeDefault);
-					}
-				}
-				final InputPort ip = (InputPort) thePort;
-
-				// Add menu items to specify merge behaviour, whether to merge
-				// the incoming links
-				// or perform the pre 1.3.1 default of a non deterministic
-				// selection
-				theMenu.addSeparator();
-				theMenu.add(new ShadedLabel("Incoming links...",
-						ShadedLabel.TAVERNA_BLUE));
-				theMenu.addSeparator();
-
-				final ButtonGroup mergeGroup = new ButtonGroup();
-				JRadioButtonMenuItem mergeItem = new JRadioButtonMenuItem(
-						"Merge all data");
-				mergeItem.setSelected(ip.getMergeMode() == InputPort.MERGE);
-				mergeItem.setActionCommand("merge");
-				JRadioButtonMenuItem selectItem = new JRadioButtonMenuItem(
-						"Select first link");
-				selectItem.setSelected(ip.getMergeMode() == InputPort.NDSELECT);
-				selectItem.setActionCommand("select");
-				mergeGroup.add(mergeItem);
-				mergeGroup.add(selectItem);
-				theMenu.add(mergeItem);
-				theMenu.add(selectItem);
-				ActionListener listener = new ActionListener() {
-					public void actionPerformed(ActionEvent ae) {
-						if (ae.getActionCommand().equals("merge")) {
-							ip.setMergeMode(InputPort.MERGE);
-						} else {
-							ip.setMergeMode(InputPort.NDSELECT);
-						}
-					}
-				};
-				mergeItem.addActionListener(listener);
-				selectItem.addActionListener(listener);
-
-				if (XMLInputSplitter.isSplittable(ip)) {
-					theMenu.addSeparator();
-					JMenuItem xmlHelperItem = new JMenuItem("Add XML splitter.");
-					JMenuItem xmlHelperItemWithName = new JMenuItem(
-							"Add XML splitter with name");
-					theMenu.add(xmlHelperItem);
-					theMenu.add(xmlHelperItemWithName);
-					ActionListener xmlHelperListener = new ActionListener() {
-						public void actionPerformed(ActionEvent ae) {
-							try {
-								XMLInputSplitter splitter = new XMLInputSplitter();
-								String name = "";
-								if (ae.getActionCommand().indexOf("name") != -1) {
-									name = (String) JOptionPane
-											.showInputDialog(
-													null,
-													"Name for the new processor?",
-													"Name required",
-													JOptionPane.QUESTION_MESSAGE,
-													null, null, "");
-									if (name != null) {
-										name = model
-												.getValidProcessorName(name);
-									}
-								} else {
-									name = ip.getName() + "XML";
-								}
-								if (name != null) {
-									splitter.setUpInputs(ip);
-									LocalServiceProcessor processor = new LocalServiceProcessor(
-											model,
-											model.getValidProcessorName(name),
-											splitter);
-									model.addProcessor(processor);
-									model.addDataConstraint(new DataConstraint(
-											model,
-											processor.getOutputPorts()[0], ip));
-								}
-							} catch (Exception e) {
-								e.printStackTrace();
-							}
-						}
-					};
-					xmlHelperItem.addActionListener(xmlHelperListener);
-					xmlHelperItemWithName.addActionListener(xmlHelperListener);
-				}
+				final JPopupMenu theMenu = createMenuForInputPort(model, (InputPort)thePort);
 				return theMenu;
 			}
 
@@ -295,6 +172,196 @@ public class ScuflContextMenuFactory {
 		throw new NoContextMenuFoundException(
 				"Didn't know how to create a context menu for a "
 						+ theObject.getClass().toString());
+	}
+
+	private static JPopupMenu createMenuForOutputPort(final ScuflModel model,final OutputPort theOutputPort) {		
+		JPopupMenu theMenu = LinkingMenus.linkFrom(theOutputPort);
+		if (XMLOutputSplitter.isSplittable(theOutputPort))
+		{
+			addXMLOutputSplitterMenuItem(model, theMenu, theOutputPort);
+		}
+		return theMenu;
+	}
+
+	private static JPopupMenu createMenuForInputPort(final ScuflModel model, final InputPort theInputPort) {
+		// Workflow sink or processor inputs have the option to toggle
+		// between NDSELECT and MERGE
+		// operation when there's more than one input link to the port
+		final JPopupMenu theMenu = new JPopupMenu();
+
+		// If this is a workflow sink, give the option to remove it.
+		if (theInputPort.getProcessor() == model.getWorkflowSinkProcessor()) {
+			theMenu.add(new ShadedLabel("Workflow Output : "
+					+ theInputPort.getName(), ShadedLabel.TAVERNA_GREEN));
+			final Port sinkPort = theInputPort;
+			theMenu.add(new RenameAction(model, sinkPort));
+			theMenu.add(new RemoveAction(model, sinkPort));
+			theMenu.addSeparator();
+			theMenu.add(new EditMetadataAction(model, sinkPort));
+			theMenu.addSeparator();
+		} else {
+			theMenu.add(new ShadedLabel("Input port : "
+					+ theInputPort.getName(), ShadedLabel.TAVERNA_GREEN));
+			if (theInputPort.isNameEditable()) {
+				// ie. dynamic ports from Rserve and its like
+				theMenu.add(new RenameAction(model, theInputPort));
+				// FIXME: Check also isRemovable !
+				theMenu.add(new RemoveAction(model, theInputPort));
+			}
+			if (theInputPort.getProcessor().getModel() != null) {
+				theMenu.add(new SetDefaultValueAction(model,
+						(InputPort) theInputPort));
+			}
+			if (theInputPort.getProcessor().getModel() != null
+					&& ((InputPort) theInputPort).hasDefaultValue()) {
+				// theMenu.add(new ShadedLabel("Input port :
+				// "+thePort.getName(), ShadedLabel.TAVERNA_GREEN));
+				final InputPort ip = (InputPort) theInputPort;
+				JMenuItem removeDefault = new JMenuItem(
+						"Remove default '" + ip.getDefaultValue() + "'",
+						ScuflIcons.editIcon);
+				removeDefault.addActionListener(new ActionListener() {
+					public void actionPerformed(ActionEvent ae) {
+						ip.setDefaultValue(null);
+					}
+				});
+				theMenu.add(removeDefault);
+			}
+		}		
+
+		// Add menu items to specify merge behaviour, whether to merge
+		// the incoming links
+		// or perform the pre 1.3.1 default of a non deterministic
+		// selection
+		theMenu.addSeparator();
+		theMenu.add(new ShadedLabel("Incoming links...",
+				ShadedLabel.TAVERNA_BLUE));
+		theMenu.addSeparator();
+
+		final ButtonGroup mergeGroup = new ButtonGroup();
+		JRadioButtonMenuItem mergeItem = new JRadioButtonMenuItem(
+				"Merge all data");
+		mergeItem.setSelected(theInputPort.getMergeMode() == InputPort.MERGE);
+		mergeItem.setActionCommand("merge");
+		JRadioButtonMenuItem selectItem = new JRadioButtonMenuItem(
+				"Select first link");
+		selectItem.setSelected(theInputPort.getMergeMode() == InputPort.NDSELECT);
+		selectItem.setActionCommand("select");
+		mergeGroup.add(mergeItem);
+		mergeGroup.add(selectItem);
+		theMenu.add(mergeItem);
+		theMenu.add(selectItem);
+		ActionListener listener = new ActionListener() {
+			public void actionPerformed(ActionEvent ae) {
+				if (ae.getActionCommand().equals("merge")) {
+					theInputPort.setMergeMode(InputPort.MERGE);
+				} else {
+					theInputPort.setMergeMode(InputPort.NDSELECT);
+				}
+			}
+		};
+		mergeItem.addActionListener(listener);
+		selectItem.addActionListener(listener);
+
+		if (XMLInputSplitter.isSplittable(theInputPort)) {
+			addXMLInputSplitterMenuItem(model, theMenu, theInputPort);
+		}
+		return theMenu;
+	}
+
+	private static void addXMLOutputSplitterMenuItem(final ScuflModel model, final JPopupMenu theMenu, final OutputPort outputPort)
+	{
+		theMenu.addSeparator();
+		JMenuItem xmlHelperItem = new JMenuItem("Add XML splitter.");
+		JMenuItem xmlHelperItemWithName = new JMenuItem(
+				"Add XML splitter with name");
+		theMenu.add(xmlHelperItem);
+		theMenu.add(xmlHelperItemWithName);
+		ActionListener xmlHelperListener = new ActionListener() {
+			public void actionPerformed(ActionEvent ae) {
+				try {
+					XMLOutputSplitter splitter = new XMLOutputSplitter();
+					String name = "";
+					if (ae.getActionCommand().indexOf("name") != -1) {
+						name = (String) JOptionPane
+								.showInputDialog(
+										null,
+										"Name for the new processor?",
+										"Name required",
+										JOptionPane.QUESTION_MESSAGE,
+										null, null, "");
+						if (name != null) {
+							name = model
+									.getValidProcessorName(name);
+						}
+					} else {
+						name = outputPort.getName() + "XML";
+					}
+					if (name != null) {
+						splitter.setUpOutputs(outputPort);
+						LocalServiceProcessor processor = new LocalServiceProcessor(
+								model,
+								model.getValidProcessorName(name),
+								splitter);
+						model.addProcessor(processor);
+						model.addDataConstraint(new DataConstraint(
+								model,
+								outputPort , processor.getInputPorts()[0]));
+					}
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		};
+		xmlHelperItem.addActionListener(xmlHelperListener);
+		xmlHelperItemWithName.addActionListener(xmlHelperListener);
+	}
+	
+	private static void addXMLInputSplitterMenuItem(final ScuflModel model, final JPopupMenu theMenu, final InputPort inputPort) {
+		theMenu.addSeparator();
+		JMenuItem xmlHelperItem = new JMenuItem("Add XML splitter.");
+		JMenuItem xmlHelperItemWithName = new JMenuItem(
+				"Add XML splitter with name");
+		theMenu.add(xmlHelperItem);
+		theMenu.add(xmlHelperItemWithName);
+		ActionListener xmlHelperListener = new ActionListener() {
+			public void actionPerformed(ActionEvent ae) {
+				try {
+					XMLInputSplitter splitter = new XMLInputSplitter();
+					String name = "";
+					if (ae.getActionCommand().indexOf("name") != -1) {
+						name = (String) JOptionPane
+								.showInputDialog(
+										null,
+										"Name for the new processor?",
+										"Name required",
+										JOptionPane.QUESTION_MESSAGE,
+										null, null, "");
+						if (name != null) {
+							name = model
+									.getValidProcessorName(name);
+						}
+					} else {
+						name = inputPort.getName() + "XML";
+					}
+					if (name != null) {
+						splitter.setUpInputs(inputPort);
+						LocalServiceProcessor processor = new LocalServiceProcessor(
+								model,
+								model.getValidProcessorName(name),
+								splitter);
+						model.addProcessor(processor);
+						model.addDataConstraint(new DataConstraint(
+								model,
+								processor.getOutputPorts()[0], inputPort));
+					}
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		};
+		xmlHelperItem.addActionListener(xmlHelperListener);
+		xmlHelperItemWithName.addActionListener(xmlHelperListener);
 	}
 
 	private static JPopupMenu getDataConstraintMenu(DataConstraint dc,

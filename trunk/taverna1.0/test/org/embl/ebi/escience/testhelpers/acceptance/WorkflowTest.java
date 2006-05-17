@@ -237,6 +237,7 @@ public class WorkflowTest extends FuncTestCase {
 		}
 	}	
 
+	
 	public void testWorkflow(File workflowDir)
 			throws WorkflowSubmissionException, InvalidInputException,
 			ProcessorCreationException, DataConstraintCreationException,
@@ -259,6 +260,7 @@ public class WorkflowTest extends FuncTestCase {
 		outputs = launcher.execute(inputs, new TestListener());
 		checkOutputs(outputs, outputMatchers);
 	}
+	
 
 	protected void checkOutputs(Map outputs, Map outputMatchers) {
 		Set outputSet = outputs.keySet();

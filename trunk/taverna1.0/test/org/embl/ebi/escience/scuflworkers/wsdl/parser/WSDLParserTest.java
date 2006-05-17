@@ -1,6 +1,5 @@
 package org.embl.ebi.escience.scuflworkers.wsdl.parser;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.wsdl.Operation;
@@ -26,9 +25,9 @@ public class WSDLParserTest extends TestCase {
 
 	public void testGetOperationParameters() throws Exception {
 		WSDLParser parser = new WSDLParser("http://www.ebi.ac.uk/ws/WSFasta.wsdl");
-		List inputs = new ArrayList();
-		List outputs = new ArrayList();
-		parser.getOperationParameters("doFasta", inputs, outputs);
+
+		List inputs = parser.getOperationInputParameters("doFasta");
+		List outputs = parser.getOperationOutputParameters("doFasta");
 		assertEquals("wrong number of inputs", 2, inputs.size());
 		assertTrue("wrong class type for descriptor - should be ComplexTypeDescriptor",
 				inputs.get(0) instanceof ComplexTypeDescriptor);
@@ -59,9 +58,9 @@ public class WSDLParserTest extends TestCase {
 
 	public void testComplexTypeFromImport() throws Exception {
 		WSDLParser parser = new WSDLParser("http://eutils.ncbi.nlm.nih.gov/entrez/eutils/soap/eutils_lite.wsdl");
-		List inputs = new ArrayList();
-		List outputs = new ArrayList();
-		parser.getOperationParameters("run_eInfo", inputs, outputs);
+
+		List inputs = parser.getOperationInputParameters("run_eInfo");
+		List outputs = parser.getOperationOutputParameters("run_eInfo");
 		assertEquals("wrong number of inputs", 1, inputs.size());
 		assertEquals("wrong number of outputs", 1, outputs.size());
 		assertTrue("input should be complex", inputs.get(0) instanceof ComplexTypeDescriptor);
@@ -91,9 +90,9 @@ public class WSDLParserTest extends TestCase {
 
 	public void testNestedComplexTypes() throws Exception {
 		WSDLParser parser = new WSDLParser("http://soap.bind.ca/wsdl/bind.wsdl");
-		List inputs = new ArrayList();
-		List outputs = new ArrayList();
-		parser.getOperationParameters("BIVGetComplexRecord", inputs, outputs);
+
+		List inputs = parser.getOperationInputParameters("BIVGetComplexRecord");
+		List outputs = parser.getOperationOutputParameters("BIVGetComplexRecord");
 
 		assertEquals("wrong number of inputs", 1, inputs.size());
 		assertEquals("wrong number of outputs", 1, outputs.size());
@@ -134,9 +133,8 @@ public class WSDLParserTest extends TestCase {
 
 	public void testSimpleTypes() throws Exception {
 		WSDLParser parser = new WSDLParser("http://soap.bind.ca/wsdl/bind.wsdl");
-		List inputs = new ArrayList();
-		List outputs = new ArrayList();
-		parser.getOperationParameters("BIVGetRecord", inputs, outputs);
+
+		List inputs = parser.getOperationInputParameters("BIVGetRecord");
 		assertEquals("wrong number of inputs", 1, inputs.size());
 		assertTrue("should not be base type", inputs.get(0) instanceof BaseTypeDescriptor);
 		assertEquals("wrong name", "bid", ((TypeDescriptor) inputs.get(0)).getName());
@@ -145,9 +143,9 @@ public class WSDLParserTest extends TestCase {
 
 	public void testArrayType() throws Exception {
 		WSDLParser parser = new WSDLParser("http://soap.bind.ca/wsdl/bind.wsdl");
-		List inputs = new ArrayList();
-		List outputs = new ArrayList();
-		parser.getOperationParameters("BIVGetRecords", inputs, outputs);
+
+		List inputs = parser.getOperationInputParameters("BIVGetRecords");
+		List outputs = parser.getOperationOutputParameters("BIVGetRecords");
 		assertEquals("wrong number of inputs", 1, inputs.size());
 		assertTrue("input should be of AArrayTypeDescriptor", inputs.get(0) instanceof ArrayTypeDescriptor);
 
@@ -176,9 +174,9 @@ public class WSDLParserTest extends TestCase {
 
 	public void testGoVizNoOutputs() throws Exception {
 		WSDLParser parser = new WSDLParser("http://www.ebi.ac.uk/collab/mygrid/service1/goviz/GoViz.jws?wsdl");
-		List inputs = new ArrayList();
-		List outputs = new ArrayList();
-		parser.getOperationParameters("destroySession", inputs, outputs);
+
+		List inputs = parser.getOperationInputParameters("destroySession");
+		List outputs = parser.getOperationOutputParameters("destroySession");
 
 		assertEquals("wrong number of inputs", 1, inputs.size());
 		assertEquals("wrong number of outputs", 0, outputs.size());
@@ -223,9 +221,7 @@ public class WSDLParserTest extends TestCase {
 
 	public void testHugeOutputFromEFetch() throws Exception {
 		WSDLParser parser = new WSDLParser("http://eutils.ncbi.nlm.nih.gov/entrez/eutils/soap/eutils.wsdl");
-		List inputs = new ArrayList();
-		List outputs = new ArrayList();
-		parser.getOperationParameters("run_eFetch", inputs, outputs);
+		List outputs = parser.getOperationOutputParameters("run_eFetch");
 
 		assertEquals("wrong number of outputs", 1, outputs.size());
 		assertTrue("output should be ComplexTypeDescriptor", outputs.get(0) instanceof ComplexTypeDescriptor);

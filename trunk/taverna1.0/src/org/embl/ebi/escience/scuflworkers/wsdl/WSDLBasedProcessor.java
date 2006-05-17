@@ -6,8 +6,8 @@
 package org.embl.ebi.escience.scuflworkers.wsdl;
 
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
@@ -128,11 +128,9 @@ public class WSDLBasedProcessor extends Processor implements java.io.Serializabl
 				new WSIFDynamicProvider_ApacheAxis());
 		Definition def = parser.getDefinition();
 
-		ArrayList inputs = new ArrayList();
-		ArrayList outputs = new ArrayList();
-
 		try {
-			parser.getOperationParameters(operationName, inputs, outputs);
+			List inputs = parser.getOperationInputParameters(operationName);
+			List outputs = parser.getOperationOutputParameters(operationName);
 			setDescription(parser.getOperationDocumentation(operationName));
 
 			WSIFServiceFactory factory = WSIFServiceFactory.newInstance();
@@ -197,7 +195,9 @@ public class WSDLBasedProcessor extends Processor implements java.io.Serializabl
 	}
 
 	/**
-	 * Provides access to the WSDLParser that represents the WSDL of the service this processor acts upon
+	 * Provides access to the WSDLParser that represents the WSDL of the service
+	 * this processor acts upon
+	 * 
 	 * @return WSDLParser
 	 */
 	public WSDLParser getParser() {
@@ -214,7 +214,7 @@ public class WSDLBasedProcessor extends Processor implements java.io.Serializabl
 	/**
 	 * Get the target endpoint for this processor
 	 */
-	public String getResourceHost() {		
+	public String getResourceHost() {
 		if (port instanceof WSIFPort_ApacheAxis) {
 			URL endpoint = ((WSIFPort_ApacheAxis) port).getEndPoint();
 			return endpoint.getHost();
@@ -225,7 +225,8 @@ public class WSDLBasedProcessor extends Processor implements java.io.Serializabl
 
 	/**
 	 * 
-	 * @return a String representation of the URL for the endpoint of the service associated with this processor.
+	 * @return a String representation of the URL for the endpoint of the
+	 *         service associated with this processor.
 	 */
 	String getTargetEndpoint() {
 		if (port instanceof WSIFPort_ApacheAxis) {

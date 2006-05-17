@@ -135,23 +135,20 @@ public class WSDLParser {
 	public PortType getPortType() {
 		return (PortType) portTypeMap.get(getWSDLLocation());
 	}
-
+	
 	/**
-	 * Populates the lists for inputs and outputs, with TypeDescriptors for the
-	 * parameters that the service requires or responds with respectively.
+	 * Returns a List of the TypeDescriptors representing the parameters for the inputs to the service 
 	 * 
 	 * @param operationName
-	 * @param inputs
-	 *            List of TypeDescriptor
-	 * @param outputs
-	 *            List of TypeDescriptor
+	 * @return List of TypeDescriptor 
 	 * @throws UnknownOperationException
 	 *             if no operation matches the name
 	 * @throws IOException
 	 */
-	public void getOperationParameters(String operationName, List inputs, List outputs)
+	public List getOperationInputParameters(String operationName)
 			throws UnknownOperationException, IOException {
 		Operation operation = getOperation(operationName);
+		List result=new ArrayList();
 		if (operation == null) {
 			throw new UnknownOperationException("operation called " + operationName + " does not exist for this wsdl");
 		}
@@ -168,28 +165,59 @@ public class WSDLParser {
 					//for document based, if operation requires no parameters the param still exists (representing the operation) but with empty inner elements
 					if (((ComplexTypeDescriptor)typeDescriptor).getElements().size()>0)
 					{
-						inputs.add(typeDescriptor);
+						result.add(typeDescriptor);
 					}
 				}
 				else
 				{
-					inputs.add(typeDescriptor);
+					result.add(typeDescriptor);
 				}
-			}
-			else if (param.getMode() == Parameter.OUT)
-				outputs.add(processParameter(param));
+			}			
 			else if (param.getMode() == Parameter.INOUT) {
-				inputs.add(processParameter(param));
-				outputs.add(processParameter(param));
+				result.add(processParameter(param));				
+			}
+
+		}				
+
+		cachedComplexTypes.clear();
+		return result;
+	}
+	
+	/**
+	 * Returns a List of the TypeDescriptors representing the parameters for the outputs of the service 
+	 * 
+	 * @param operationName
+	 * @return List of TypeDescriptor 
+	 * @throws UnknownOperationException
+	 *             if no operation matches the name
+	 * @throws IOException
+	 */
+	public List getOperationOutputParameters(String operationName)
+			throws UnknownOperationException, IOException {
+		Operation operation = getOperation(operationName);
+		List result=new ArrayList();
+		if (operation == null) {
+			throw new UnknownOperationException("operation called " + operationName + " does not exist for this wsdl");
+		}
+
+		Parameters parameters = getSymbolTable().getOperationParameters(operation, "", new BindingEntry(getBinding()));
+
+		for (Iterator iterator = parameters.list.iterator(); iterator.hasNext();) {
+			Parameter param = (Parameter) iterator.next();			
+			if (param.getMode() == Parameter.OUT)
+				result.add(processParameter(param));
+			else if (param.getMode() == Parameter.INOUT) {				
+				result.add(processParameter(param));
 			}
 
 		}
 		if (parameters.returnParam != null) {
-			outputs.add(processParameter(parameters.returnParam));			
+			result.add(processParameter(parameters.returnParam));			
 		}
 
 		cachedComplexTypes.clear();
-	}
+		return result;
+	}	
 
 	/**
 	 * returns the namespace uri for the given operation name, throws

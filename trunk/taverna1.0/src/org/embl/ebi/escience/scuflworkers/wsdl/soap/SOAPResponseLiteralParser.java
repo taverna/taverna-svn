@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: SOAPResponseLiteralParser.java,v $
- * Revision           $Revision: 1.1 $
+ * Revision           $Revision: 1.2 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-05-15 13:52:34 $
+ * Last modified on   $Date: 2006-05-17 14:33:01 $
  *               by   $Author: sowen70 $
  * Created on 05-May-2006
  *****************************************************************/
@@ -40,7 +40,6 @@ import java.util.Map;
 
 import org.apache.axis.message.SOAPBodyElement;
 import org.apache.axis.utils.XMLUtils;
-import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.log4j.Logger;
 import org.embl.ebi.escience.baclava.DataThing;
 import org.w3c.dom.Element;
@@ -82,16 +81,7 @@ public class SOAPResponseLiteralParser implements SOAPResponseParser {
 		Element dom = rpcElement.getAsDOM();
 
 		String outputName = getOutputName();
-		String xml = XMLUtils.ElementToString(dom);
-		xml = StringEscapeUtils.unescapeXml(xml); // to resolve escped xml in
-													// Text nodes, which some
-													// services seem to like to
-													// do.
-
-		// remove any xml declarations that may be hidden within the document,
-		// causing parsing errors later
-		xml = xml.replaceAll("<\\?.*?>", "");
-		xml = xml.replaceAll("<\\!DOCTYPE.*?>", "");
+		String xml = XMLUtils.ElementToString(dom);		
 
 		result.put(outputName, new DataThing(xml));
 

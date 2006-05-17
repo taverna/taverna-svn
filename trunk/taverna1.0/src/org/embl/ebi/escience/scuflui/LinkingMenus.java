@@ -16,6 +16,7 @@ import javax.swing.JPopupMenu;
 import org.embl.ebi.escience.scufl.DataConstraint;
 import org.embl.ebi.escience.scufl.DataConstraintCreationException;
 import org.embl.ebi.escience.scufl.InputPort;
+import org.embl.ebi.escience.scufl.OutputPort;
 import org.embl.ebi.escience.scufl.Port;
 import org.embl.ebi.escience.scufl.Processor;
 import org.embl.ebi.escience.scufl.ScuflModel;
@@ -37,7 +38,7 @@ public class LinkingMenus {
 	 * could be linked to. Currently doesn't pay any heed to the typing and just
 	 * shows all possible sinks.
 	 */
-	public static JPopupMenu linkFrom(Port sourcePort) {
+	public static JPopupMenu linkFrom(OutputPort sourcePort) {
 		final Port fromPort = sourcePort;
 		final ScuflModel model = sourcePort.getProcessor().getModel();
 		JPopupMenu theMenu = new JPopupMenu("Possible targets");
@@ -59,25 +60,11 @@ public class LinkingMenus {
 					ShadedLabel.TAVERNA_GREEN));
 			theMenu.addSeparator();
 		}
-		// JMenuItem title = new JMenuItem("Link '"+sourcePort.getName()+"'
-		// to...");
-		// title.setEnabled(false);
-		// theMenu.add(title);
 
 		Port[] wsp = model.getWorkflowSinkPorts();
 		Processor[] processors = sourcePort.getProcessor().getModel()
 				.getProcessors();
-
-		/**
-		 * JLabel heading = new JLabel("<html><body><b>Link <font
-		 * color=\"purple\">"+sourcePort.getName()+"</font> to...</b></body></html>");
-		 * heading.setBackground(Color.WHITE); heading.setOpaque(true);
-		 * theMenu.add(heading);
-		 */
-		/**
-		 * theMenu.add(new ShadedLabel("Link to...",
-		 * ShadedLabel.TAVERNA_ORANGE)); theMenu.addSeparator();
-		 */
+		
 		JMenu workflowSinks = new JMenu("Workflow outputs");
 		workflowSinks.setIcon(ScuflIcons.outputIcon);
 

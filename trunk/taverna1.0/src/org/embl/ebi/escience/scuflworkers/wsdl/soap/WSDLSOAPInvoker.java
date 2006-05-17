@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: WSDLSOAPInvoker.java,v $
- * Revision           $Revision: 1.1 $
+ * Revision           $Revision: 1.2 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-05-15 13:52:34 $
+ * Last modified on   $Date: 2006-05-17 14:33:01 $
  *               by   $Author: sowen70 $
  * Created on 07-Apr-2006
  *****************************************************************/
@@ -181,9 +181,7 @@ public class WSDLSOAPInvoker {
 
 		String operationName = getProcessor().getOperationName();
 
-		List inputs = new ArrayList();
-		List outputs = new ArrayList();
-		getProcessor().getParser().getOperationParameters(operationName, inputs, outputs);
+		List inputs = getProcessor().getParser().getOperationInputParameters(operationName);
 
 		Map namespaceMappings = generateNamespaceMappings(inputs);
 		String operationNamespace = getOperationNamespace();

@@ -60,7 +60,7 @@ public class WSDLBasedScavenger extends Scavenger {
 			String name = "";
 
 			if (style.equals("document")) {
-				name = "porttype: " + portTypeName + " [<font color=\"red\">DOCUMENT</font>]";
+				name = "porttype: " + portTypeName + " [<font color=\"blue\">DOCUMENT</font>]";
 			} else {
 				name = "porttype: " + portTypeName + " [<font color=\"green\">" + style.toUpperCase() + "</font>]";
 			}

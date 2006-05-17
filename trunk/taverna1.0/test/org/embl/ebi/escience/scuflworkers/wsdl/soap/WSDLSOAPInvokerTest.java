@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: WSDLSOAPInvokerTest.java,v $
- * Revision           $Revision: 1.1 $
+ * Revision           $Revision: 1.2 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-05-15 13:52:34 $
+ * Last modified on   $Date: 2006-05-17 14:33:00 $
  *               by   $Author: sowen70 $
  * Created on 04-May-2006
  *****************************************************************/
@@ -45,23 +45,20 @@ import org.embl.ebi.escience.scufl.ProcessorCreationException;
 import org.embl.ebi.escience.scuflworkers.wsdl.WSDLBasedProcessor;
 
 public class WSDLSOAPInvokerTest extends TestCase {
-	
+
 	private static Logger logger = Logger.getLogger(WSDLSOAPInvokerTest.class);
 
 	public void testPrimitive() throws Exception {
-		
-		WSDLBasedProcessor processor=null;
-		try
-		{
+
+		WSDLBasedProcessor processor = null;
+		try {
 			processor = new WSDLBasedProcessor(null, "procName", "http://soap.genome.jp/KEGG.wsdl",
-			"get_pathways_by_genes");											
-		}
-		catch(ProcessorCreationException e)
-		{			
+					"get_pathways_by_genes");
+		} catch (ProcessorCreationException e) {
 			logger.error("Unable to connect to serivce in testComplexDocStyle, skipping test");
-			return; //don't fail because the service is unavailable
+			return; // don't fail because the service is unavailable
 		}
-		
+
 		WSDLSOAPInvoker invoker = new WSDLSOAPInvoker(processor);
 
 		String[] inputs = { "eco:b0077", "eco:b0078" };
@@ -82,20 +79,17 @@ public class WSDLSOAPInvokerTest extends TestCase {
 	}
 
 	public void testComplexDocStyle() throws Exception {
-		
-		WSDLBasedProcessor processor=null;
-		try
-		{
+
+		WSDLBasedProcessor processor = null;
+		try {
 			processor = new WSDLBasedProcessor(null, "procName",
-					"http://eutils.ncbi.nlm.nih.gov/entrez/eutils/soap/eutils_lite.wsdl", "run_eInfo");			
-						
-		}
-		catch(ProcessorCreationException e)
-		{			
+					"http://eutils.ncbi.nlm.nih.gov/entrez/eutils/soap/eutils_lite.wsdl", "run_eInfo");
+
+		} catch (ProcessorCreationException e) {
 			logger.error("Unable to connect to serivce in testComplexDocStyle, skipping test");
-			return; //don't fail because the service is unavailable
+			return; // don't fail because the service is unavailable
 		}
-		
+
 		WSDLSOAPInvoker invoker = new WSDLSOAPInvoker(processor);
 
 		String input = "<eInfoRequest><db>pubmed</db></eInfoRequest>";
@@ -120,20 +114,17 @@ public class WSDLSOAPInvokerTest extends TestCase {
 	}
 
 	public void testComplexMultiRef() throws Exception {
-		
-		WSDLBasedProcessor processor=null;
-		try
-		{
-			processor = new WSDLBasedProcessor(null, "procName",
-					"http://genex.hgu.mrc.ac.uk/axis/services/ma?wsdl", "whatGeneInStage");			
-						
-		}
-		catch(ProcessorCreationException e)
-		{			
+
+		WSDLBasedProcessor processor = null;
+		try {
+			processor = new WSDLBasedProcessor(null, "procName", "http://genex.hgu.mrc.ac.uk/axis/services/ma?wsdl",
+					"whatGeneInStage");
+
+		} catch (ProcessorCreationException e) {
 			logger.error("Unable to connect to serivce in testComplexMultiRef, skipping test");
-			return; //don't fail because the service is unavailable
+			return; // don't fail because the service is unavailable
 		}
-				
+
 		WSDLSOAPInvoker invoker = new WSDLSOAPInvoker(processor);
 
 		Map inputs = new HashMap();
@@ -150,26 +141,23 @@ public class WSDLSOAPInvokerTest extends TestCase {
 		assertNotNull("output should contain an entry with key 'whatGeneInStageReturn'", thing);
 
 		assertEquals("output type should be of type String", String.class, thing.getDataObject().getClass());
-		
-		assertTrue("invalid start to xml",thing.getDataObject().toString().startsWith("<whatGeneInStageReturn>"));
-		assertTrue("invalid end to xml",thing.getDataObject().toString().endsWith("</whatGeneInStageReturn>"));
+
+		assertTrue("invalid start to xml", thing.getDataObject().toString().startsWith("<whatGeneInStageReturn>"));
+		assertTrue("invalid end to xml", thing.getDataObject().toString().endsWith("</whatGeneInStageReturn>"));
 	}
-	
+
 	public void testComplexEmptyMultiRef() throws Exception {
-		
-		WSDLBasedProcessor processor=null;
-		try
-		{
-			processor = new WSDLBasedProcessor(null, "procName",
-					"http://genex.hgu.mrc.ac.uk/axis/services/ma?wsdl", "whatGeneInStage");
-						
-		}
-		catch(ProcessorCreationException e)
-		{			
+
+		WSDLBasedProcessor processor = null;
+		try {
+			processor = new WSDLBasedProcessor(null, "procName", "http://genex.hgu.mrc.ac.uk/axis/services/ma?wsdl",
+					"whatGeneInStage");
+
+		} catch (ProcessorCreationException e) {
 			logger.error("Unable to connect to serivce in testComplexEmptyMultiRef, skipping test");
-			return; //don't fail because the service is unavailable
+			return; // don't fail because the service is unavailable
 		}
-				
+
 		WSDLSOAPInvoker invoker = new WSDLSOAPInvoker(processor);
 
 		Map inputs = new HashMap();
@@ -186,84 +174,73 @@ public class WSDLSOAPInvokerTest extends TestCase {
 		assertNotNull("output should contain an entry with key 'whatGeneInStageReturn'", thing);
 
 		assertEquals("output type should be of type String", String.class, thing.getDataObject().getClass());
-		
-		assertEquals("incorrect xml","<whatGeneInStageReturn/>",thing.getDataObject().toString());
+
+		assertEquals("incorrect xml", "<whatGeneInStageReturn/>", thing.getDataObject().toString());
 	}
 
 	// The following services were found at http://www.xmethods.org/
 	// and can be tested via that site.
-	
-	public void testSOAPEncoded() throws Exception
-	{
-		WSDLBasedProcessor processor=null;
-		try
-		{
+
+	public void testSOAPEncoded() throws Exception {
+		WSDLBasedProcessor processor = null;
+		try {
 			processor = new WSDLBasedProcessor(null, "procName",
-					"http://www.claudehussenet.com/ws/services/Anagram.wsdl", "getRandomizeAnagram");			
-		}
-		catch(ProcessorCreationException e)
-		{			
+					"http://www.claudehussenet.com/ws/services/Anagram.wsdl", "getRandomizeAnagram");
+		} catch (ProcessorCreationException e) {
 			logger.error("Unable to connect to serivce in testSOAPEncoded, skipping test");
-			return; //don't fail because the service is unavailable
+			return; // don't fail because the service is unavailable
 		}
-		
+
 		WSDLSOAPInvoker invoker = new WSDLSOAPInvoker(processor);
 		Map output = invoker.invoke(new HashMap());
-		assertEquals("should be 2 elements",2,output.size());		
-		DataThing outputThing = (DataThing)output.get("Result");		
-		assertNotNull("there should be a result of name 'Result'",outputThing);		
-		assertEquals("output data should be ArrayList",ArrayList.class,outputThing.getDataObject().getClass());				
+		assertEquals("should be 2 elements", 2, output.size());
+		DataThing outputThing = (DataThing) output.get("Result");
+		assertNotNull("there should be a result of name 'Result'", outputThing);
+		assertEquals("output data should be ArrayList", ArrayList.class, outputThing.getDataObject().getClass());
 	}
-	
-	//a service I found that is has an unexpected operation namespace, and is dependant on parameter order
-	public void testStrictOrderandOperationNamespace() throws Exception
-	{
-		WSDLBasedProcessor processor=null;
-		try
-		{
+
+	// a service I found that is has an unexpected operation namespace, and is
+	// dependant on parameter order
+	public void testStrictOrderandOperationNamespace() throws Exception {
+		WSDLBasedProcessor processor = null;
+		try {
 			processor = new WSDLBasedProcessor(null, "procName",
 					"http://www.freewebs.com/jimmy_cheng/CurrencyExchangeService.wsdl", "getRate");
-		}
-		catch(ProcessorCreationException e)
-		{			
+		} catch (ProcessorCreationException e) {
 			logger.error("Unable to connect to serivce in testStringOrderAndOperationNamespace, skipping test");
-			return; //don't fail because the service is unavailable
+			return; // don't fail because the service is unavailable
 		}
 		WSDLSOAPInvoker invoker = new WSDLSOAPInvoker(processor);
 		Map inputMap = new HashMap();
 		inputMap.put("country1", new DataThing("UK"));
 		inputMap.put("country2", new DataThing("France"));
-		
-		Map output=invoker.invoke(inputMap);
-		
-		assertEquals("should be 2 elements",2,output.size());		
-		DataThing outputThing = (DataThing)output.get("Result");		
-		assertNotNull("there should be a result of name 'Result'",outputThing);
-		
-		float result=Float.parseFloat(outputThing.getDataObject().toString());
-		
-		//today, for correct result was 0.9ish, but 0.1 if the wrong way round.
-		assertTrue("Looks like parameters have been sent the wrong way (or the economy has crashed!)",result>0.5);				
+
+		Map output = invoker.invoke(inputMap);
+
+		assertEquals("should be 2 elements", 2, output.size());
+		DataThing outputThing = (DataThing) output.get("Result");
+		assertNotNull("there should be a result of name 'Result'", outputThing);
+
+		float result = Float.parseFloat(outputThing.getDataObject().toString());
+
+		// today, for correct result was 0.9ish, but 0.1 if the wrong way round.
+		assertTrue("Looks like parameters have been sent the wrong way (or the economy has crashed!)", result > 0.5);
 	}
-	
-	public void testDocumentNamespace() throws Exception
-	{
-		WSDLBasedProcessor processor=null;
-		try
-		{
+
+	public void testDocumentNamespace() throws Exception {
+		WSDLBasedProcessor processor = null;
+		try {
 			processor = new WSDLBasedProcessor(null, "procName",
 					"http://www.oorsprong.org/websamples.countryinfo/CountryInfoService.wso?WSDL", "CapitalCity");
-		}
-		catch(ProcessorCreationException e)
-		{			
+		} catch (ProcessorCreationException e) {
 			logger.error("Unable to connect to serivce in testDocumentNamespace, skipping test");
-			return; //don't fail because the service is unavailable
+			return; // don't fail because the service is unavailable
 		}
 		WSDLSOAPInvoker invoker = new WSDLSOAPInvoker(processor);
-		Map inputMap=new HashMap();
-		inputMap.put("parameters",new DataThing("<parameters><sCountryISOCode>FR</sCountryISOCode></parameters>"));
-		
-		Map output = invoker.invoke(inputMap);
+		Map inputMap = new HashMap();
+		inputMap.put("parameters", new DataThing("<parameters><sCountryISOCode>FR</sCountryISOCode></parameters>"));
+
+		invoker.invoke(inputMap);
 	}
-		
+
 }

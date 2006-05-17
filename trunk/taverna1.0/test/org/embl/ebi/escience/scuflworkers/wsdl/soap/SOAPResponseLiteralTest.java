@@ -24,10 +24,10 @@
  ****************************************************************
  * Source code information
  * -----------------------
- * Filename           $RCSfile: SOAPResponseDocumentTest.java,v $
+ * Filename           $RCSfile: SOAPResponseLiteralTest.java,v $
  * Revision           $Revision: 1.1 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-05-15 13:52:34 $
+ * Last modified on   $Date: 2006-05-17 14:33:00 $
  *               by   $Author: sowen70 $
  * Created on 11-May-2006
  *****************************************************************/
@@ -48,9 +48,10 @@ import org.w3c.dom.Document;
 
 import junit.framework.TestCase;
 
-public class SOAPResponseDocumentTest extends TestCase {
+public class SOAPResponseLiteralTest extends TestCase {
 	
-	public void testXMLInTextNodes() throws Exception
+	
+	public void testLiteralParserResultInTextBlock() throws Exception
 	{		
 		List response = new ArrayList();
 		String xml="<testResponse><out>&lt;data name=&quot;a&quot;&gt;some data&lt;/data&gt;&lt;data name=&quot;b&quot;&gt;some more data&lt;/data&gt;</out></testResponse>";
@@ -75,13 +76,13 @@ public class SOAPResponseDocumentTest extends TestCase {
 		assertNotNull("there should be an output named 'testReponse'",testResponse);
 		assertEquals("output data should be a string", String.class, testResponse.getDataObject().getClass());
 		
-		assertEquals("xml is wrong","<testResponse><out><data name=\"a\">some data</data><data name=\"b\">some more data</data></out></testResponse>",testResponse.getDataObject().toString());				
-	}
+		assertEquals("xml is wrong","<testResponse><out>&lt;data name=&quot;a&quot;&gt;some data&lt;/data&gt;&lt;data name=&quot;b&quot;&gt;some more data&lt;/data&gt;</out></testResponse>",testResponse.getDataObject().toString());				
+	}	
 	
-	public void testStripOutDeclarations() throws Exception //strip out <?xml .../> and <!DOCTYPE../>
-	{
+	public void testLiteralParser() throws Exception
+	{		
 		List response = new ArrayList();
-		String xml="<testResponse><out>"+ StringEscapeUtils.escapeXml("<?xml version=\"1.0\"><!DOCTYPE bob SYSTEM><data>some data</data>") + "</out></testResponse>";
+		String xml="<testResponse><out><data name=\"a\">some data</data><data name=\"b\">some more data</data></out></testResponse>";
 		DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
 		Document doc = builder.parse(new ByteArrayInputStream(xml.getBytes()));
 
@@ -103,7 +104,7 @@ public class SOAPResponseDocumentTest extends TestCase {
 		assertNotNull("there should be an output named 'testReponse'",testResponse);
 		assertEquals("output data should be a string", String.class, testResponse.getDataObject().getClass());
 		
-		assertEquals("xml is wrong","<testResponse><out><data>some data</data></out></testResponse>",testResponse.getDataObject().toString());
+		assertEquals("xml is wrong","<testResponse><out><data name=\"a\">some data</data><data name=\"b\">some more data</data></out></testResponse>",testResponse.getDataObject().toString());				
 	}
 
 }

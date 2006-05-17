@@ -1,5 +1,6 @@
 package org.embl.ebi.escience.scuflworkers.java;
 
+import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -10,6 +11,8 @@ import org.embl.ebi.escience.baclava.DataThing;
 import org.embl.ebi.escience.baclava.factory.DataThingFactory;
 import org.embl.ebi.escience.scufl.ScuflModel;
 import org.embl.ebi.escience.scuflworkers.wsdl.WSDLBasedProcessor;
+import org.jdom.input.SAXBuilder;
+import org.jdom.output.XMLOutputter;
 
 /**
  * Tests the XMLInputSplitter local worker, which is used for splitting complex
@@ -62,6 +65,58 @@ public class XMLInputSplitterTest extends TestCase {
 
 		assertEquals("output is incorrect", "<parameters><db>a database</db><tool>a tool</tool></parameters>",
 				outputString);
+	}
+	
+	public void testProvideXML() throws Exception
+	{
+		XMLInputSplitter splitter = new XMLInputSplitter();
+		ScuflModel model = new ScuflModel();
+		WSDLBasedProcessor processor = new WSDLBasedProcessor(model, "testProc",
+				"http://eutils.ncbi.nlm.nih.gov/entrez/eutils/soap/eutils_lite.wsdl", "run_eSpell");
+		splitter.setUpInputs(processor.getInputPorts()[0]);
+		
+		String xml=new XMLOutputter().outputString(splitter.provideXML());
+		assertEquals(eInfoXML(),xml);
+	}
+	
+	public void testConsumeXML() throws Exception
+	{
+		XMLInputSplitter splitter = new XMLInputSplitter();
+		splitter.consumeXML(new SAXBuilder().build(new StringReader(eInfoXML())).getRootElement());
+		
+		assertEquals("wrong number of inputs", 4, splitter.inputNames().length);
+		assertEquals("wrong number of types", 4, splitter.inputTypes().length);
+
+		assertEquals("wrong name", "db", splitter.inputNames()[0]);
+		assertEquals("wrong name", "term", splitter.inputNames()[1]);
+		assertEquals("wrong name", "tool", splitter.inputNames()[2]);
+		assertEquals("wrong name", "email", splitter.inputNames()[3]);
+
+		assertEquals("wrong type", "'text/plain'", splitter.inputTypes()[0]);
+		assertEquals("wrong type", "'text/plain'", splitter.inputTypes()[1]);
+		assertEquals("wrong type", "'text/plain'", splitter.inputTypes()[2]);
+		assertEquals("wrong type", "'text/plain'", splitter.inputTypes()[3]);
+
+		assertEquals("wrong number of outputs", 1, splitter.outputNames().length);
+		assertEquals("wrong name", "output", splitter.outputNames()[0]);
+		assertEquals("wrong type", "'text/xml'", splitter.outputTypes()[0]);
+
+		Map inputMap = new HashMap();
+		inputMap.put("db", new DataThing("a database"));
+		inputMap.put("tool", new DataThing("a tool"));
+
+		Map outputMap = splitter.execute(inputMap);
+
+		DataThing outputThing = (DataThing) outputMap.get("output");
+		String outputString = outputThing.getDataObject().toString();
+
+		assertEquals("output is incorrect", "<parameters><db>a database</db><tool>a tool</tool></parameters>",
+				outputString);
+	}
+	
+	private String eInfoXML()
+	{
+		return "<s:extensions xmlns:s=\"http://org.embl.ebi.escience/xscufl/0.1alpha\"><s:complextype optional=\"false\" unbounded=\"false\" typename=\"eSpellRequest\" name=\"parameters\"><s:elements><s:basetype optional=\"true\" unbounded=\"false\" typename=\"string\" name=\"db\" /><s:basetype optional=\"true\" unbounded=\"false\" typename=\"string\" name=\"term\" /><s:basetype optional=\"true\" unbounded=\"false\" typename=\"string\" name=\"tool\" /><s:basetype optional=\"true\" unbounded=\"false\" typename=\"string\" name=\"email\" /></s:elements></s:complextype></s:extensions>";
 	}
 
 	public void testArrayTypes() throws Exception {

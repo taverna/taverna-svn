@@ -24,10 +24,10 @@
  ****************************************************************
  * Source code information
  * -----------------------
- * Filename           $RCSfile: SOAPResponseRPCTest.java,v $
+ * Filename           $RCSfile: SOAPResponseEncodedTest.java,v $
  * Revision           $Revision: 1.1 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-05-15 13:52:34 $
+ * Last modified on   $Date: 2006-05-17 14:33:00 $
  *               by   $Author: sowen70 $
  * Created on 08-May-2006
  *****************************************************************/
@@ -47,7 +47,7 @@ import org.w3c.dom.Document;
 
 import junit.framework.TestCase;
 
-public class SOAPResponseRPCTest extends TestCase 
+public class SOAPResponseEncodedTest extends TestCase 
 {
 	public void testSimpleRPC() throws Exception
 	{
