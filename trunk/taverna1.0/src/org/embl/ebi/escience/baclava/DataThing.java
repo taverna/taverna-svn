@@ -6,32 +6,35 @@
 package org.embl.ebi.escience.baclava;
 
 import java.beans.IntrospectionException;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
+import java.io.Serializable;
 import java.lang.ref.WeakReference;
-import javax.swing.ImageIcon;
-import org.embl.ebi.escience.baclava.factory.DataThingXMLFactory;
-import org.embl.ebi.escience.baclava.factory.DataThingFactory;
-import org.embl.ebi.escience.baclava.factory.DataThingTreeNode;
-import org.embl.ebi.escience.scufl.SemanticMarkup;
-
-// Utility Imports
-import java.util.*;
-
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+import java.util.Set;
 
-import java.io.*;
+import javax.swing.ImageIcon;
 
-// JDOM Imports
+import org.embl.ebi.escience.baclava.factory.DataThingFactory;
+import org.embl.ebi.escience.baclava.factory.DataThingXMLFactory;
+import org.embl.ebi.escience.scufl.SemanticMarkup;
 import org.jdom.Element;
-
-import org.embl.ebi.escience.baclava.BaclavaIterator;
-import org.embl.ebi.escience.baclava.LSIDProvider;
-import org.embl.ebi.escience.baclava.NoMetadataFoundException;
-import java.lang.ArrayIndexOutOfBoundsException;
-import java.lang.ClassLoader;
-import java.lang.Object;
-import java.lang.RuntimeException;
-import java.lang.String;
-import java.lang.StringBuffer;
 
 /**
  * A simple wrapper around an arbitrary Collection object which allows lookup
@@ -308,71 +311,67 @@ public class DataThing implements Cloneable, Serializable {
 					return "s('null')";
 				}
 				return "l('null')";
+			}
+			// Pull the first object out of the collection and recurse
+			Object innerObject = ((Collection) o).iterator().next();
+			if (o instanceof Set) {
+				return ("s(" + getSyntacticTypeForObject(innerObject) + ")");
+			} else if (o instanceof List) {
+				return ("l(" + getSyntacticTypeForObject(innerObject) + ")");
+			}
+			// No idea what the collection is, return the most general
+			// type constructor for a partial order
+			return ("p(" + getSyntacticTypeForObject(innerObject) + ")");
+		}
+		// Not a collection, first see if there is any metadata
+		// associated with the object that we can use to determine
+		// the mime types
+		try {
+			SemanticMarkup markup = getMetadataForObject(o, false);
+			List mimeTypeList = markup.getMIMETypeList();
+			if (mimeTypeList.isEmpty()) {
+				// If there is no MIME information in the markup object
+				// then we have to revert to guesswork.
+				throw new NoMetadataFoundException();
+			}
+			// Return a comma seperated list of MIME types within
+			// single quotes.
+			StringBuffer sb = new StringBuffer();
+			sb.append("'");
+			for (Iterator i = mimeTypeList.iterator(); i.hasNext();) {
+				String mimeType = (String) i.next();
+				sb.append(mimeType);
+				if (i.hasNext()) {
+					sb.append(",");
+				}
+			}
+			sb.append("'");
+			return sb.toString();
+		} catch (NoMetadataFoundException nmfe) {
+			StringBuffer sb = new StringBuffer();
+			// Try to annotate with mime types based on data object type
+			if (o instanceof String) {
+				getMetadata().addMIMEType("text/plain");
+			} else if (o instanceof byte[]) {
+				getMetadata().addMIMEType("application/octet-stream");
 			} else {
-				// Pull the first object out of the collection and recurse
-				Object innerObject = ((Collection) o).iterator().next();
-				if (o instanceof Set) {
-					return ("s(" + getSyntacticTypeForObject(innerObject) + ")");
-				} else if (o instanceof List) {
-					return ("l(" + getSyntacticTypeForObject(innerObject) + ")");
-				}
-				// No idea what the collection is, return the most general
-				// type constructor for a partial order
-				return ("p(" + getSyntacticTypeForObject(innerObject) + ")");
+				// Special magic MIME type for Java class
+				// Destroy all existing mime types first if this is the
+				// case!
+				getMetadata().clearMIMETypes();
+				getMetadata().addMIMEType("java/" + o.getClass().getName());
 			}
-		} else {
-			// Not a collection, first see if there is any metadata
-			// associated with the object that we can use to determine
-			// the mime types
-			try {
-				SemanticMarkup markup = getMetadataForObject(o, false);
-				List mimeTypeList = markup.getMIMETypeList();
-				if (mimeTypeList.isEmpty()) {
-					// If there is no MIME information in the markup object
-					// then we have to revert to guesswork.
-					throw new NoMetadataFoundException();
-				} else {
-					// Return a comma seperated list of MIME types within
-					// single quotes.
-					StringBuffer sb = new StringBuffer();
-					sb.append("'");
-					for (Iterator i = mimeTypeList.iterator(); i.hasNext();) {
-						String mimeType = (String) i.next();
-						sb.append(mimeType);
-						if (i.hasNext()) {
-							sb.append(",");
-						}
-					}
-					sb.append("'");
-					return sb.toString();
+			for (Iterator i = getMetadata().getMIMETypeList().iterator(); i
+					.hasNext();) {
+				sb.append((String) i.next());
+				if (i.hasNext()) {
+					sb.append(",");
 				}
-			} catch (NoMetadataFoundException nmfe) {
-				StringBuffer sb = new StringBuffer();
-				// Try to annotate with mime types based on data object type
-				if (o instanceof String) {
-					getMetadata().addMIMEType("text/plain");
-				} else if (o instanceof byte[]) {
-					getMetadata().addMIMEType("application/octet-stream");
-				} else {
-					// Special magic MIME type for Java class
-					// Destroy all existing mime types first if this is the
-					// case!
-					getMetadata().clearMIMETypes();
-					getMetadata().addMIMEType("java/" + o.getClass().getName());
-				}
-				for (Iterator i = getMetadata().getMIMETypeList().iterator(); i
-						.hasNext();) {
-					sb.append((String) i.next());
-					if (i.hasNext()) {
-						sb.append(",");
-					}
-				}
-
-				// Try to annotate with mime types based on data object type
-				String specifiedMIMETypes = sb.toString();
-				return ("'" + specifiedMIMETypes + "'");
 			}
 
+			// Try to annotate with mime types based on data object type
+			String specifiedMIMETypes = sb.toString();
+			return ("'" + specifiedMIMETypes + "'");
 		}
 	}
 
@@ -411,17 +410,15 @@ public class DataThing implements Cloneable, Serializable {
 		// (SemanticMarkup)((WeakReference)metadataMap.get(theObject)).get();
 		if (ref != null) {
 			return (SemanticMarkup) ref.get();
-		} else {
-			if (supplyDefault == false) {
-				throw new NoMetadataFoundException("No metadata available");
-			} else {
-				// Create a new markup object and store
-				// it bound to the object specified
-				SemanticMarkup theMarkup = new SemanticMarkup(theObject);
-				this.metadataMap.put(theObject, new WeakReference(theMarkup));
-				return theMarkup;
-			}
 		}
+		if (supplyDefault == false) {
+			throw new NoMetadataFoundException("No metadata available");
+		}
+		// Create a new markup object and store
+		// it bound to the object specified
+		SemanticMarkup theMarkup = new SemanticMarkup(theObject);
+		this.metadataMap.put(theObject, new WeakReference(theMarkup));
+		return theMarkup;
 	}
 
 	/**
@@ -469,9 +466,8 @@ public class DataThing implements Cloneable, Serializable {
 				// dataThingList.add(extractChild(i.next()));
 			}
 			return dataThingList.iterator();
-		} else {
-			return Collections.EMPTY_LIST.iterator();
 		}
+		return Collections.EMPTY_LIST.iterator();
 	}
 
 	/**
@@ -532,7 +528,6 @@ public class DataThing implements Cloneable, Serializable {
 					(Collection) theDataObject);
 			// Now iterate over the target list creating new DataThing objects
 			// from it
-			List dataThingList = new ArrayList();
 			/**
 			 * for (Iterator i = targetList.iterator(); i.hasNext(); ) {
 			 * DataThing newThing = new DataThing(i.next()); // Copy any
@@ -542,11 +537,10 @@ public class DataThing implements Cloneable, Serializable {
 			 */
 			// return new BaclavaIterator(dataThingList, indexList);
 			return new BaclavaIterator(this, targetList, indexList);
-		} else {
-			throw new IntrospectionException(
-					"Incompatible types for iterator, cannot extract " + type
-							+ " from " + getSyntacticType());
 		}
+		throw new IntrospectionException(
+				"Incompatible types for iterator, cannot extract " + type
+						+ " from " + getSyntacticType());
 
 	}
 
