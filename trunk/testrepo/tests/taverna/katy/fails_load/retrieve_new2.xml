@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<s:scufl xmlns:s="http://org.embl.ebi.escience/xscufl/0.1alpha" version="0.2" log="0">
+  <s:workflowdescription lsid="urn:lsid:www.mygrid.org.uk:operation:BPGLNQHGKA19" author="" title="" />
+  <s:processor name="retrieveData">
+    <s:arbitrarywsdl>
+      <s:wsdl>http://rpc103.cs.man.ac.uk:8080/dicom-repository/services/DicomStorePortType?wsdl</s:wsdl>
+      <s:operation>retrieveData</s:operation>
+    </s:arbitrarywsdl>
+  </s:processor>
+  <s:processor name="performQuery">
+    <s:arbitrarywsdl>
+      <s:wsdl>http://rpc103.cs.man.ac.uk:8080/dicomPatientQuery/services/PatientQueryPortType?wsdl</s:wsdl>
+      <s:operation>performQuery</s:operation>
+    </s:arbitrarywsdl>
+  </s:processor>
+  <s:processor name="wsdl_address" boring="true">
+    <s:stringconstant>http://rpc103.cs.man.ac.uk:8080/kave/services/KAVEPortType</s:stringconstant>
+  </s:processor>
+  <s:processor name="toFile">
+    <s:local>net.sourceforge.taverna.scuflworkers.io.TextFileWriter</s:local>
+  </s:processor>
+  <s:processor name="Byte___to_String">
+    <s:local>org.embl.ebi.escience.scuflworkers.java.ByteArrayToString</s:local>
+  </s:processor>
+  <s:processor name="Split_string_into_string_list_by_regular_expression">
+    <s:local>org.embl.ebi.escience.scuflworkers.java.SplitByRegex</s:local>
+  </s:processor>
+  <s:processor name="regex" boring="true">
+    <s:stringconstant>urn:lsid:www.mygrid.org.uk:mias_dicom:</s:stringconstant>
+  </s:processor>
+  <s:processor name="Merge_string_list_to_string">
+    <s:local>org.embl.ebi.escience.scuflworkers.java.StringListMerge</s:local>
+  </s:processor>
+  <s:processor name="empty" boring="true">
+    <s:stringconstant />
+  </s:processor>
+  <s:link source="issuerID" sink="performQuery:issuerId" />
+  <s:link source="patientID" sink="performQuery:patientId" />
+  <s:link source="Byte___to_String:string" sink="toFile:filecontents" />
+  <s:link source="Merge_string_list_to_string:concatenated" sink="toFile:outputFile" />
+  <s:link source="Split_string_into_string_list_by_regular_expression:split" sink="Merge_string_list_to_string:stringlist" />
+  <s:link source="empty:value" sink="Merge_string_list_to_string:seperator" />
+  <s:link source="Split_string_into_string_list_by_regular_expression:split" sink="split_bit" />
+  <s:link source="performQuery:performQueryReturn" sink="Split_string_into_string_list_by_regular_expression:string" />
+  <s:link source="performQuery:performQueryReturn" sink="retrieveData:lsid" />
+  <s:link source="regex:value" sink="Split_string_into_string_list_by_regular_expression:regex" />
+  <s:link source="retrieveData:retrieveDataReturn" sink="Byte___to_String:bytes" />
+  <s:link source="toFile:outputFile" sink="data_file" />
+  <s:link source="wsdl_address:value" sink="performQuery:wsdlUrl" />
+  <s:link source="retrieveData:retrieveDataReturn" sink="intermediate" />
+  <s:source name="patientID" />
+  <s:source name="issuerID" />
+  <s:sink name="data_file">
+    <s:metadata>
+      <s:mimeTypes>
+        <s:mimeType>application/dicom</s:mimeType>
+        <s:mimeType>image/png</s:mimeType>
+      </s:mimeTypes>
+    </s:metadata>
+  </s:sink>
+  <s:sink name="intermediate">
+    <s:metadata>
+      <s:mimeTypes>
+        <s:mimeType>image/png</s:mimeType>
+      </s:mimeTypes>
+    </s:metadata>
+  </s:sink>
+  <s:sink name="split_bit" />
+</s:scufl>
+
+

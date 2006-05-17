@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<s:scufl xmlns:s="http://org.embl.ebi.escience/xscufl/0.1alpha" version="0.1" log="3">
+  <s:processor name="showdb">
+    <s:description>Displays information on the currently available databases</s:description>
+    <s:soaplabwsdl>http://industry.ebi.ac.uk/soap/soaplab/display::showdb</s:soaplabwsdl>
+  </s:processor>
+  <s:link>
+    <s:input>results</s:input>
+    <s:output>showdb:outfile</s:output>
+  </s:link>
+  <s:sink>
+    results
+    <s:metadata>
+      <s:mimeTypes />
+      <s:description>Information about the databases accessible by the EMBOSS services in SoapLab</s:description>
+      <s:semanticType>http://www.mygrid.org.uk/ontology#bioinformatics_domain_concept</s:semanticType>
+    </s:metadata>
+  </s:sink>
+</s:scufl>
+
+

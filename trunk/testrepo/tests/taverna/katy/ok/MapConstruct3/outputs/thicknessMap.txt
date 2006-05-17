@@ -1,0 +1,1 @@
+/disk1/newsoaplab/bone_thickness/TWilliams/Code/new/log_fileThick.txt

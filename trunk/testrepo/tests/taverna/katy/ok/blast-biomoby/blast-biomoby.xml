@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<s:scufl xmlns:s="http://org.embl.ebi.escience/xscufl/0.1alpha" version="0.2" log="0">
+  <s:workflowdescription lsid="urn:lsid:www.mygrid.org.uk:operation:8R9IQZ1IKN2" author="" title="" />
+  <s:processor name="AA_Namespace" boring="true">
+    <s:description>Namespace</s:description>
+    <s:stringconstant>AGI_LocusCode</s:stringconstant>
+  </s:processor>
+  <s:processor name="AA_Length" boring="true">
+    <s:description>length</s:description>
+    <s:stringconstant>537</s:stringconstant>
+  </s:processor>
+  <s:processor name="AA_Sequence" boring="true">
+    <s:stringconstant>IRLVLAGLSLISAASAYALHEQEKNFVFRDYVHSEIE</s:stringconstant>
+  </s:processor>
+  <s:processor name="AA_Id" boring="true">
+    <s:description>id</s:description>
+    <s:stringconstant>At3g44880</s:stringconstant>
+  </s:processor>
+  <s:processor name="Integer">
+    <s:description>an int</s:description>
+    <s:biomobyobject>
+      <s:mobyEndpoint>http://mobycentral.icapture.ubc.ca/cgi-bin/MOBY05/mobycentral.pl</s:mobyEndpoint>
+      <s:serviceName>Integer</s:serviceName>
+      <s:authorityName />
+    </s:biomobyobject>
+  </s:processor>
+  <s:processor name="String">
+    <s:description>a string</s:description>
+    <s:biomobyobject>
+      <s:mobyEndpoint>http://mobycentral.icapture.ubc.ca/cgi-bin/MOBY05/mobycentral.pl</s:mobyEndpoint>
+      <s:serviceName>String</s:serviceName>
+      <s:authorityName />
+    </s:biomobyobject>
+  </s:processor>
+  <s:processor name="GenericSequence">
+    <s:description>Represents any molecule that can be described as a 'Sequence', including nucleotide (DNA, RNA, other), amino acid, or any other molecule with a sequence.  This is most useful for cases where it is not known what specific type of molecule will be represented in the object.</s:description>
+    <s:biomobyobject>
+      <s:mobyEndpoint>http://mobycentral.icapture.ubc.ca/cgi-bin/MOBY05/mobycentral.pl</s:mobyEndpoint>
+      <s:serviceName>GenericSequence</s:serviceName>
+      <s:authorityName />
+    </s:biomobyobject>
+  </s:processor>
+  <s:processor name="MIPSBlastBetterE13">
+    <s:description>executes blast against MAtDB Arabidopsis protein coding genes with a cutoff E-value of E=1e-13</s:description>
+    <s:biomobywsdl>
+      <s:mobyEndpoint>http://mobycentral.icapture.ubc.ca/cgi-bin/MOBY05/mobycentral.pl</s:mobyEndpoint>
+      <s:serviceName>MIPSBlastBetterE13</s:serviceName>
+      <s:authorityName>mips.gsf.de</s:authorityName>
+    </s:biomobywsdl>
+  </s:processor>
+  <s:link source="AA_Id:value" sink="GenericSequence:id" />
+  <s:link source="AA_Length:value" sink="Integer:value" />
+  <s:link source="AA_Namespace:value" sink="GenericSequence:namespace" />
+  <s:link source="AA_Sequence:value" sink="String:value" />
+  <s:link source="GenericSequence:mobyData" sink="MIPSBlastBetterE13:GenericSequence(GenericSequence)" />
+  <s:link source="Integer:mobyData" sink="GenericSequence:Integer(Length)" />
+  <s:link source="MIPSBlastBetterE13:WU_BLAST_Text(WU_BLAST_Text)" sink="blast_report" />
+  <s:link source="String:mobyData" sink="GenericSequence:String(SequenceString)" />
+  <s:sink name="blast_report" />
+</s:scufl>
+
+

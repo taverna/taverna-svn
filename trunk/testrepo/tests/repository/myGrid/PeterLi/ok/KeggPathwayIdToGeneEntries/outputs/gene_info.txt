@@ -1,0 +1,1410 @@
+ENTRY       b0721             CDS       E.coli
+NAME        sdhC, cybA, cybL, dhsC
+DEFINITION  succinate dehydrogenase, cytochrome b556 [EC:1.3.99.1]
+ORTHOLOG    KO: K00241  succinate dehydrogenase cytochrome b-556 subunit
+PATHWAY     PATH: eco00020  Citrate cycle (TCA cycle)
+            PATH: eco00190  Oxidative phosphorylation
+            PATH: eco00632  Benzoate degradation via CoA ligation
+            PATH: eco00650  Butanoate metabolism
+            PATH: eco00720  Reductive carboxylate cycle (CO2 fixation)
+POSITION    754400..754789
+MOTIF       Pfam: Sdh_cyt
+            PROSITE: SDH_CYT_1 SDH_CYT_2
+DBLINKS     Wisconsin: b0721
+            Colibri: sdhC
+            RegulonDB: b0721
+            NCBI-GI: 16128696
+            NCBI-GeneID: 945316
+            UniProt: P69054
+CODON_USAGE       T               C               A               G
+          T   4   5   0   0   1   6   1   0   2   0   1   0   0   0   0   3
+          C   4   4   1   6   2   1   0   0   1   2   2   1   0   3   0   1
+          A   4   7   2   6   1   4   1   1   2   0   5   0   0   2   2   0
+          G   4   5   2   4   2   1   2   5   1   1   4   1   5   4   1   0
+AASEQ       129
+            MIRNVKKQRPVNLDLQTIRFPITAIASILHRVSGVITFVAVGILLWLLGTSLSSPEGFEQ
+            ASAIMGSFFVKFIMWGILTALAYHVVVGIRHMMMDFGYLEETFEAGKRSAKISFVITVVL
+            SLLAGVLVW
+NTSEQ       390
+            atgataagaaatgtgaaaaaacaaagacctgttaatctggacctacagaccatccggttc
+            cccatcacggcgatagcgtccattctccatcgcgtttccggtgtgatcacctttgttgca
+            gtgggcatcctgctgtggcttctgggtaccagcctctcttcccctgaaggtttcgagcaa
+            gcttccgcgattatgggcagcttcttcgtcaaatttatcatgtggggcatccttaccgct
+            ctggcgtatcacgtcgtcgtaggtattcgccacatgatgatggattttggctatctggaa
+            gaaacattcgaagcgggtaaacgctccgccaaaatctcctttgttattactgtcgtgctt
+            tcacttctcgcaggagtcctcgtatggtaa
+///
+ENTRY       b0722             CDS       E.coli
+NAME        sdhD, cybS, dhsD
+DEFINITION  succinate dehydrogenase, hydrophobic subunit [EC:1.3.99.1]
+ORTHOLOG    KO: K00242  succinate dehydrogenase hydrophobic membrane anchor
+            protein
+PATHWAY     PATH: eco00020  Citrate cycle (TCA cycle)
+            PATH: eco00190  Oxidative phosphorylation
+            PATH: eco00632  Benzoate degradation via CoA ligation
+            PATH: eco00650  Butanoate metabolism
+            PATH: eco00720  Reductive carboxylate cycle (CO2 fixation)
+POSITION    754783..755130
+MOTIF       Pfam: Sdh_cyt
+DBLINKS     Wisconsin: b0722
+            Colibri: sdhD
+            RegulonDB: b0722
+            NCBI-GI: 16128697
+            NCBI-GeneID: 945322
+            UniProt: P0AC44
+CODON_USAGE       T               C               A               G
+          T   2   7   1   3   2   1   0   0   3   3   0   0   0   0   1   4
+          C   0   2   0  10   0   0   0   1   2   0   1   1   0   3   0   0
+          A   3   7   0   4   0   5   1   1   1   1   2   0   1   1   0   0
+          G   5   4   2   8   4   3   2   2   1   1   1   1   3   3   2   0
+AASEQ       115
+            MVSNASALGRNGVHDFILVRATAIVLTLYIIYMVGFFATSGELTYEVWIGFFASAFTKVF
+            TLLALFSILIHAWIGMWQVLTDYVKPLALRLMLQLVIVVALVVYVIYGFVVVWGV
+NTSEQ       348
+            atggtaagcaacgcctccgcattaggacgcaatggcgtacatgatttcatcctcgttcgc
+            gctaccgctatcgtcctgacgctctacatcatttatatggtcggttttttcgctaccagt
+            ggcgagctgacatatgaagtctggatcggtttcttcgcctctgcgttcaccaaagtgttc
+            accctgctggcgctgttttctatcttgatccatgcctggatcggcatgtggcaggtgttg
+            accgactacgttaaaccgctggctttgcgcctgatgctgcaactggtgattgtcgttgca
+            ctggtggtttacgtgatttatggattcgttgtggtgtggggtgtgtga
+///
+ENTRY       b0723             CDS       E.coli
+NAME        sdhA, dhsA
+DEFINITION  succinate dehydrogenase, catalytic and NAD/flavoprotein subunit
+            [EC:1.3.99.1]
+ORTHOLOG    KO: K00239  succinate dehydrogenase flavoprotein subunit
+PATHWAY     PATH: eco00020  Citrate cycle (TCA cycle)
+            PATH: eco00190  Oxidative phosphorylation
+            PATH: eco00632  Benzoate degradation via CoA ligation
+            PATH: eco00650  Butanoate metabolism
+            PATH: eco00720  Reductive carboxylate cycle (CO2 fixation)
+POSITION    755130..756896
+MOTIF       Pfam: Pyr_redox FAD_binding_2 Succ_DH_flav_C
+            PROSITE: FRD_SDH_FAD_BINDING
+DBLINKS     Wisconsin: b0723
+            Colibri: sdhA
+            RegulonDB: b0723
+            NCBI-GI: 16128698
+            NCBI-GeneID: 945402
+            UniProt: P0AC41
+CODON_USAGE       T               C               A               G
+          T   5  14   0   3   6  10   0   7  11   3   1   0   7   4   0   7
+          C   3   5   0  40   0   0   4  20   7  12   5  16  25  13   1   0
+          A  12  13   0  17   5  24   0   4   5  20  21   1   0   6   1   0
+          G  14   8   4  15   7  11  13  25  21  11  29  14  26  26   2   5
+AASEQ       588
+            MKLPVREFDAVVIGAGGAGMRAALQISQSGQTCALLSKVFPTRSHTVSAQGGITVALGNT
+            HEDNWEWHMYDTVKGSDYIGDQDAIEYMCKTGPEAILELEHMGLPFSRLDDGRIYQRPFG
+            GQSKNFGGEQAARTAAAADRTGHALLHTLYQQNLKNHTTIFSEWYALDLVKNQDGAVVGC
+            TALCIETGEVVYFKARATVLATGGAGRIYQSTTNAHINTGDGVGMAIRAGVPVQDMEMWQ
+            FHPTGIAGAGVLVTEGCRGEGGYLLNKHGERFMERYAPNAKDLAGRDVVARSIMIEIREG
+            RGCDGPWGPHAKLKLDHLGKEVLESRLPGILELSRTFAHVDPVKEPIPVIPTCHYMMGGI
+            PTKVTGQALTVNEKGEDVVVPGLFAVGEIACVSVHGANRLGGNSLLDLVVFGRAAGLHLQ
+            ESIAEQGALRDASESDVEASLDRLNRWNNNRNGEDPVAIRKALQECMQHNFSVFREGDAM
+            AKGLEQLKVIRERLKNARLDDTSSEFNTQRVECLELDNLMETAYATAVSANFRTESRGAH
+            SRFDFPDRDDENWLCHSLYLPESESMTRRSVNMEPKLRPAFPPKIRTY
+NTSEQ       1767
+            atgaaattgccagtcagagaatttgatgcagttgtgattggtgccggtggcgcaggtatg
+            cgcgcggcgctgcaaatttcccagagcggccagacctgtgcgctgctctctaaagtcttc
+            ccgacccgttcccataccgtttctgcgcaaggcggcattaccgttgcgctgggtaatacc
+            catgaagataactgggaatggcatatgtacgacaccgtgaaagggtcggactatatcggt
+            gaccaggacgcgattgaatatatgtgtaaaaccgggccggaagcgattctggaactcgaa
+            cacatgggcctgccgttctcgcgtctcgatgatggtcgtatctatcaacgtccgtttggc
+            ggtcagtcgaaaaacttcggcggcgagcaggcggcacgcactgcggcagcagctgaccgt
+            accggtcacgcactgttgcacacgctttatcagcagaacctgaaaaaccacaccaccatt
+            ttctccgagtggtatgcgctggatctggtgaaaaaccaggatggcgcggtggtgggttgt
+            accgcactgtgcatcgaaaccggtgaagtggtttatttcaaagcccgcgctaccgtgctg
+            gcgactggcggagcagggcgtatttatcagtccaccaccaacgcccacattaacaccggc
+            gacggtgtcggcatggctatccgtgccggcgtaccggtgcaggatatggaaatgtggcag
+            ttccacccgaccggcattgccggtgcgggcgtactggtcaccgaaggttgccgtggtgaa
+            ggcggttatctgctgaacaaacatggcgaacgttttatggagcgttatgcgccgaacgcc
+            aaagacctggcgggccgtgacgtggttgcgcgttccatcatgatcgaaatccgtgaaggt
+            cgcggctgtgatggtccgtgggggccacacgcgaaactgaaactcgatcacctgggtaaa
+            gaagttctcgaatcccgtctgccgggtatcctggagctttcccgtaccttcgctcacgtc
+            gatccggtgaaagagccgattccggttatcccaacctgtcactacatgatgggcggtatt
+            ccgaccaaagttaccggtcaggcactgactgtgaatgagaaaggcgaagatgtggttgtt
+            ccgggactgtttgccgttggtgaaatcgcttgtgtatcggtacacggcgctaaccgtctg
+            ggcggcaactcgctgctggacctggtggtctttggtcgcgcggcaggtctgcatctgcaa
+            gagtctatcgccgagcagggcgcactgcgcgatgccagcgagtctgatgttgaagcgtct
+            ctggatcgcctgaaccgctggaacaataatcgtaacggtgaagatccggtggcgatccgt
+            aaagcgctgcaagaatgtatgcagcataacttctcggtcttccgtgaaggtgatgcgatg
+            gcgaaagggcttgagcagttgaaagtgatccgcgagcgtctgaaaaatgcccgtctggat
+            gacacttccagcgagttcaacacccagcgcgttgagtgcctggaactggataacctgatg
+            gaaacggcgtatgcaacggctgtttctgccaacttccgtaccgaaagccgtggcgcgcat
+            agccgcttcgacttcccggatcgtgatgatgaaaactggctgtgccactccctgtatctg
+            ccagagtcggaatccatgacgcgccgaagcgtcaacatggaaccgaaactgcgcccggca
+            ttcccgccgaagattcgtacttactaa
+///
+ENTRY       b0724             CDS       E.coli
+NAME        sdhB, dhsB
+DEFINITION  succinate dehydrogenase, Fe-S protein [EC:1.3.99.1]
+ORTHOLOG    KO: K00240  succinate dehydrogenase iron-sulfur protein
+PATHWAY     PATH: eco00020  Citrate cycle (TCA cycle)
+            PATH: eco00190  Oxidative phosphorylation
+            PATH: eco00632  Benzoate degradation via CoA ligation
+            PATH: eco00650  Butanoate metabolism
+            PATH: eco00720  Reductive carboxylate cycle (CO2 fixation)
+POSITION    756912..757628
+MOTIF       Pfam: Fer2
+            PROSITE: 4FE4S_FERREDOXIN
+DBLINKS     Wisconsin: b0724
+            Colibri: sdhB
+            RegulonDB: b0724
+            NCBI-GI: 16128699
+            NCBI-GeneID: 945300
+            UniProt: P07014
+CODON_USAGE       T               C               A               G
+          T   2   6   3   6   2   2   2   3   6   2   1   0   7   4   0   2
+          C   1   5   1  11   1   2   3  11   2   1   4   5   5  11   0   0
+          A   8   6   0   9   1   4   0   1   6   6   4   7   2   5   1   0
+          G   1   1   3   4   2   2   5   5  12   6   5   6   7   5   2   2
+AASEQ       238
+            MRLEFSIYRYNPDVDDAPRMQDYTLEADEGRDMMLLDALIQLKEKDPSLSFRRSCREGVC
+            GSDGLNMNGKNGLACITPISALNQPGKKIVIRPLPGLPVIRDLVVDMGQFYAQYEKIKPY
+            LLNNGQNPPAREHLQMPEQREKLDGLYECILCACCSTSCPSFWWNPDKFIGPAGLLAAYR
+            FLIDSRDTETDSRLDGLSDAFSVFRCHSIMNCVSVCPKGLNPTRAIGHIKSMLLQRNA
+NTSEQ       717
+            atgagactcgagttttcaatttatcgctataacccggatgttgatgatgctccgcgtatg
+            caggattacaccctggaagcggatgaaggtcgcgacatgatgctgctggatgcgcttatc
+            cagctaaaagagaaagatcccagcctgtcgttccgccgctcctgccgtgaaggtgtgtgc
+            ggttccgacggtctgaacatgaacggcaagaatggtctggcctgtattaccccgatttcg
+            gcactcaaccagccgggcaagaagattgtgattcgcccgctgccaggtttaccggtgatc
+            cgcgatttggtggtagacatgggacaattctatgcgcaatatgagaaaattaagccttac
+            ctgttgaataatggacaaaatccgccagctcgcgagcatttacagatgccagagcagcgc
+            gaaaaactcgacgggctgtatgaatgtattctctgcgcatgttgttcaacctcttgtccg
+            tctttctggtggaatcccgataagtttatcggcccggcaggcttgttagcggcatatcgt
+            ttcctgattgatagccgtgataccgagactgacagccgcctcgacggtttgagtgatgca
+            ttcagcgtattccgctgtcacagcatcatgaactgcgtcagtgtatgtccgaaggggctg
+            aacccgacgcgcgccatcggccatatcaagtcgatgttgttgcaacgtaatgcgtaa
+///
+ENTRY       b4151             CDS       E.coli
+NAME        frdD
+DEFINITION  fumarate reductase, anaerobic, membrane anchor polypeptide
+            [EC:1.3.99.1]
+ORTHOLOG    KO: K00247  fumarate reductase subunit D
+PATHWAY     PATH: eco00020  Citrate cycle (TCA cycle)
+            PATH: eco00190  Oxidative phosphorylation
+            PATH: eco00632  Benzoate degradation via CoA ligation
+            PATH: eco00650  Butanoate metabolism
+            PATH: eco00720  Reductive carboxylate cycle (CO2 fixation)
+            PATH: eco02020  Two-component system - General
+            PATH: eco02021  Two-component system - Organism-specific
+POSITION    complement(4377030..4377389)
+MOTIF       Pfam: Fumarate_red_D
+DBLINKS     Wisconsin: b4151
+            Colibri: frdD
+            RegulonDB: b4151
+            NCBI-GI: 16131976
+            NCBI-GeneID: 948668
+            UniProt: P0A8Q3
+CODON_USAGE       T               C               A               G
+          T   1   7   1   1   1   0   0   0   0   2   1   0   1   0   0   4
+          C   0   1   0  15   1   0   3   4   0   5   0   1   2   2   0   0
+          A   5   6   0   6   0   0   2   1   2   0   2   1   0   3   0   0
+          G   5   2   3   2   2   2   0   6   2   1   1   1   8   2   0   2
+AASEQ       119
+            MINPNPKRSDEPVFWGLFGAGGMWSAIIAPVMILLVGILLPLGLFPGDALSYERVLAFAQ
+            SFIGRVFLFLMIVLPLWCGLHRMHHAMHDLKIHVPAGKWVFYGLAAILTVVTLIGVVTI
+NTSEQ       360
+            atgattaatccaaatccaaagcgttctgacgaaccggtattctggggcctcttcggggcc
+            ggtggtatgtggagcgccatcattgcgccggtgatgatcctgctggtgggtattctgctg
+            ccactggggttgtttccgggtgatgcgctgagctacgagcgcgttctggcgttcgcgcag
+            agcttcattggtcgcgtattcctgttcctgatgatcgttctgccgctgtggtgtggttta
+            caccgtatgcaccacgcgatgcacgatctgaaaatccacgtacctgcgggcaaatgggtt
+            ttctacggtctggctgctatcctgacagttgtcacgctgattggtgtcgttacaatctaa
+///
+ENTRY       b4152             CDS       E.coli
+NAME        frdC
+DEFINITION  fumarate reductase, anaerobic, membrane anchor polypeptide
+            [EC:1.3.99.1]
+ORTHOLOG    KO: K00246  fumarate reductase subunit C
+PATHWAY     PATH: eco00020  Citrate cycle (TCA cycle)
+            PATH: eco00190  Oxidative phosphorylation
+            PATH: eco00632  Benzoate degradation via CoA ligation
+            PATH: eco00650  Butanoate metabolism
+            PATH: eco00720  Reductive carboxylate cycle (CO2 fixation)
+            PATH: eco02020  Two-component system - General
+            PATH: eco02021  Two-component system - Organism-specific
+POSITION    complement(4377400..4377795)
+MOTIF       Pfam: Fumarate_red_C
+DBLINKS     Wisconsin: b4152
+            Colibri: frdC
+            RegulonDB: b4152
+            NCBI-GI: 16131977
+            NCBI-GeneID: 948680
+            UniProt: P0A8Q0
+CODON_USAGE       T               C               A               G
+          T   6   3   1   1   0   1   0   0   2   2   1   0   0   0   0   7
+          C   0   1   0  11   0   0   3   6   0   1   1   0   1   2   0   1
+          A   5   7   0   4   3   4   0   3   2   2  10   0   1   1   0   0
+          G   4   1   4   3   2   5   2   5   0   2   5   1   0   2   2   1
+AASEQ       131
+            MTTKRKPYVRPMTSTWWKKLPFYRFYMLREGTAVPAVWFSIELIFGLFALKNGPEAWAGF
+            VDFLQNPVIVIINLITLAAALLHTKTWFELAPKAANIIVKDEKMGPEPIIKSLWAVTVVA
+            TIVILFVALYW
+NTSEQ       396
+            atgacgactaaacgtaaaccgtatgtacggccaatgacgtccacctggtggaaaaaattg
+            ccgttttatcgcttttacatgctgcgcgaaggcacggcggttccggctgtgtggttcagc
+            attgaactgattttcgggctgtttgccctgaaaaatggcccggaagcctgggcgggattc
+            gtcgactttttacaaaacccggttatcgtgatcattaacctgatcactctggcggcagct
+            ctgctgcacaccaaaacctggtttgaactggcaccgaaagcggccaatatcattgtaaaa
+            gacgaaaaaatgggaccagagccaattatcaaaagtctctgggcggtaactgtggttgcc
+            accatcgtaatcctgtttgttgccctgtactggtaa
+///
+ENTRY       b4153             CDS       E.coli
+NAME        frdB, fnr
+DEFINITION  fumarate reductase, anaerobic, Fe-S subunit [EC:1.3.99.1]
+ORTHOLOG    KO: K00245  fumarate reductase iron-sulfur protein
+PATHWAY     PATH: eco00020  Citrate cycle (TCA cycle)
+            PATH: eco00190  Oxidative phosphorylation
+            PATH: eco00632  Benzoate degradation via CoA ligation
+            PATH: eco00650  Butanoate metabolism
+            PATH: eco00720  Reductive carboxylate cycle (CO2 fixation)
+            PATH: eco02020  Two-component system - General
+            PATH: eco02021  Two-component system - Organism-specific
+POSITION    complement(4377806..4378540)
+MOTIF       Pfam: Fer2 Fer4
+            PROSITE: 2FE2S_FERREDOXIN 4FE4S_FERREDOXIN
+DBLINKS     Wisconsin: b4153
+            Colibri: frdB
+            RegulonDB: b4153
+            NCBI-GI: 16131978
+            NCBI-GeneID: 948666
+            UniProt: P0AC47
+CODON_USAGE       T               C               A               G
+          T   2   7   2   2   0   5   1   1   5   6   1   0   4   7   0   2
+          C   1   0   0  12   1   0   3  10   2   4   0   9   4   6   0   0
+          A   5   9   0   9   3   8   0   1   0  13  10   4   2   5   0   0
+          G   2   4   2   6   4   3   5  12   8   6   9   4   7   7   0   0
+AASEQ       244
+            MAEMKNLKIEVVRYNPEVDTAPHSAFYEVPYDATTSLLDALGYIKDNLAPDLSYRWSCRM
+            AICGSCGMMVNNVPKLACKTFLRDYTDGMKVEALANFPIERDLVVDMTHFIESLEAIKPY
+            IIGNSRTADQGTNIQTPAQMAKYHQFSGCINCGLCYAACPQFGLNPEFIGPAAITLAHRY
+            NEDSRDHGKKERMAQLNSQNGVWSCTFVGYCSEVCPKHVDPAAAIQQGKVESSKDFLIAT
+            LKPR
+NTSEQ       735
+            atggctgagatgaaaaacctgaaaattgaggtggtgcgctataacccggaagtcgatacc
+            gcaccgcatagcgcattctatgaagtgccttatgacgcaactacctcattactggatgcg
+            ctgggctacatcaaagacaacctggcaccggacctgagctaccgctggtcctgccgtatg
+            gcgatttgtggttcctgcggcatgatggttaacaacgtgccaaaactggcatgtaaaacc
+            ttcctgcgtgattacaccgacggtatgaaggttgaagcgttagctaacttcccgattgaa
+            cgcgatctggtggtcgatatgacccacttcatcgaaagtctggaagcgatcaaaccgtac
+            atcatcggcaactcccgcaccgcggatcagggtactaacatccagaccccggcgcagatg
+            gcgaagtatcaccagttctccggttgcatcaactgtggtttgtgctacgccgcgtgcccg
+            cagtttggcctgaacccagagttcatcggtccggctgccattacgctggcgcatcgttat
+            aacgaagatagccgcgaccacggtaagaaggagcgtatggcgcagttgaacagccagaac
+            ggcgtatggagctgtactttcgtgggctactgctccgaagtctgcccgaaacacgtcgat
+            ccggctgcggccattcagcagggcaaagtagaaagttcgaaagactttcttatcgcgacc
+            ctgaaaccacgctaa
+///
+ENTRY       b4154             CDS       E.coli
+NAME        frdA
+DEFINITION  fumarate reductase, anaerobic, catalytic and NAD/flavoprotein
+            subunit [EC:1.3.99.1]
+ORTHOLOG    KO: K00244  fumarate reductase flavoprotein subunit
+PATHWAY     PATH: eco00020  Citrate cycle (TCA cycle)
+            PATH: eco00190  Oxidative phosphorylation
+            PATH: eco00632  Benzoate degradation via CoA ligation
+            PATH: eco00650  Butanoate metabolism
+            PATH: eco00720  Reductive carboxylate cycle (CO2 fixation)
+            PATH: eco02020  Two-component system - General
+            PATH: eco02021  Two-component system - Organism-specific
+POSITION    complement(4378533..4380341)
+MOTIF       Pfam: Pyr_redox FAD_binding_2 Succ_DH_flav_C
+            PROSITE: FRD_SDH_FAD_BINDING
+DBLINKS     Wisconsin: b4154
+            Colibri: frdA
+            RegulonDB: b4154
+            NCBI-GI: 16131979
+            NCBI-GeneID: 948667
+            UniProt: P00363
+CODON_USAGE       T               C               A               G
+          T   3  17   1   2   4   8   1   0   7  10   0   0   4   6   1   7
+          C   1   5   2  37   0   0   6  16   6  15   7  15  22  16   0   0
+          A   9  14   0  20   6  22   2   6   6  17  18   9   0   7   0   0
+          G  16  10   6  10  11  14  17  19  20  15  34  10  28  35   2   1
+AASEQ       602
+            MQTFQADLAIVGAGGAGLRAAIAAAQANPNAKIALISKVYPMRSHTVAAEGGSAAVAQDH
+            DSFEYHFHDTVAGGDWLCEQDVVDYFVHHCPTEMTQLELWGCPWSRRPDGSVNVRRFGGM
+            KIERTWFAADKTGFHMLHTLFQTSLQFPQIQRFDEHFVLDILVDDGHVRGLVAMNMMEGT
+            LVQIRANAVVMATGGAGRVYRYNTNGGIVTGDGMGMALSHGVPLRDMEFVQYHPTGLPGS
+            GILMTEGCRGEGGILVNKNGYRYLQDYGMGPETPLGEPKNKYMELGPRDKVSQAFWHEWR
+            KGNTISTPRGDVVYLDLRHLGEKKLHERLPFICELAKAYVGVDPVKEPIPVRPTAHYTMG
+            GIETDQNCETRIKGLFAVGECSSVGLHGANRLGSNSLAELVVFGRLAGEQATERAATAGN
+            GNEAAIEAQAAGVEQRLKDLVNQDGGENWAKIRDEMGLAMEEGCGIYRTPELMQKTIDKL
+            AELQERFKRVRITDTSSVFNTDLLYTIELGHGLNVAECMAHSAMARKESRGAHQRLDEGC
+            TERDDVNFLKHTLAFRDADGTTRLEYSDVKITTLPPAKRVYGGEADAADKAEAANKKEKA
+            NG
+NTSEQ       1809
+            gtgcaaacctttcaagccgatcttgccattgtaggcgccggtggcgcgggattacgtgct
+            gcaattgctgccgcgcaggcaaatccgaatgcaaaaatcgcactaatctcaaaagtatac
+            ccgatgcgtagccataccgttgctgcagaagggggctccgccgctgtcgcgcaggatcat
+            gacagcttcgaatatcactttcacgatacagtagcgggtggcgactggttgtgtgagcag
+            gatgtcgtggattatttcgtccaccactgcccaaccgaaatgacccaactggaactgtgg
+            ggatgcccatggagccgtcgcccggatggtagcgtcaacgtacgtcgcttcggcggcatg
+            aaaatcgagcgcacctggttcgccgccgataagaccggcttccatatgctgcacacgctg
+            ttccagacctctctgcaattcccgcagatccagcgttttgacgaacatttcgtgctggat
+            attctggttgatgatggtcatgttcgcggcctggtagcaatgaacatgatggaaggcacg
+            ctggtgcagatccgtgctaacgcggtcgttatggctactggcggtgcgggtcgcgtttat
+            cgttacaacaccaacggcggcatcgttaccggtgacggtatgggtatggcgctaagccac
+            ggcgttccgctgcgtgacatggaattcgttcagtatcacccaaccggtctgccaggttcc
+            ggtatcctgatgaccgaaggttgccgcggtgaaggcggtattctggtcaacaaaaatggc
+            taccgttatctgcaagattacggcatgggcccggaaactccgctgggcgagccgaaaaac
+            aaatatatggaactgggtccacgcgacaaagtctctcaggccttctggcacgaatggcgt
+            aaaggcaacaccatctccacgccgcgtggcgatgtggtttatctcgacttgcgtcacctc
+            ggcgagaaaaaactgcatgaacgtctgccgttcatctgcgaactggcgaaagcgtacgtt
+            ggcgtcgatccggttaaagaaccgattccggtacgtccgaccgcacactacaccatgggc
+            ggtatcgaaaccgatcagaactgtgaaacccgcattaaaggtctgttcgccgtgggtgaa
+            tgttcctctgttggtctgcacggtgcaaaccgtctgggttctaactccctggcggaactg
+            gtggtcttcggccgtctggccggtgaacaagcgacagagcgtgcagcaactgccggtaat
+            ggcaacgaagcggcaattgaagcgcaggcagctggcgttgaacaacgtctgaaagatctg
+            gttaaccaggatggcggcgaaaactgggcgaagatccgcgacgaaatgggcctggctatg
+            gaagaaggctgcggtatctaccgtacgccggaactgatgcagaaaaccatcgacaagctg
+            gcagagctgcaggaacgcttcaagcgcgtgcgcatcaccgacacttccagcgtgttcaac
+            accgacctgctctacaccattgaactgggccacggtctgaacgttgctgaatgtatggcg
+            cactccgcaatggcacgtaaagagtcccgcggcgcgcaccagcgtctggacgaaggttgc
+            accgagcgtgacgacgtcaacttcctcaaacacaccctcgccttccgcgatgctgatggc
+            acgactcgcctggagtacagcgacgtgaagattactacgctgccgccagctaaacgcgtt
+            tacggtggcgaagcggatgcagccgataaggcggaagcagccaataagaaggagaaggcg
+            aatggctga
+///
+ENTRY       b0116             CDS       E.coli
+NAME        lpdA, dhl
+DEFINITION  dihydrolipoamide dehydrogenase [EC:1.8.1.4]
+ORTHOLOG    KO: K00382  dihydrolipoamide dehydrogenase
+PATHWAY     PATH: eco00010  Glycolysis / Gluconeogenesis
+            PATH: eco00020  Citrate cycle (TCA cycle)
+            PATH: eco00260  Glycine, serine and threonine metabolism
+            PATH: eco00620  Pyruvate metabolism
+POSITION    127912..129336
+MOTIF       Pfam: FAD_binding_3 Pyr_redox Pyr_redox_dim
+            PROSITE: PYRIDINE_REDOX_1
+DBLINKS     Wisconsin: b0116
+            Colibri: lpdA
+            RegulonDB: b0116
+            NCBI-GI: 16128109
+            NCBI-GeneID: 944854
+            UniProt: P0A9P0
+CODON_USAGE       T               C               A               G
+          T   2  12   1   0   5   4   1   0   3   5   1   0   2   3   0   4
+          C   2   1   0  30   1   2   2  16   1  12   2   6  11   4   0   0
+          A   9  30   0  10   6  19   0   1   1  13  31   8   1   3   0   0
+          G  16   8   8  13  14   8  15  13   6  19  33   6  31  18   0   2
+AASEQ       474
+            MSTEIKTQVVVLGAGPAGYSAAFRCADLGLETVIVERYNTLGGVCLNVGCIPSKALLHVA
+            KVIEEAKALAEHGIVFGEPKTDIDKIRTWKEKVINQLTGGLAGMAKGRKVKVVNGLGKFT
+            GANTLEVEGENGKTVINFDNAIIAAGSRPIQLPFIPHEDPRIWDSTDALELKEVPERLLV
+            MGGGIIGLEMGTVYHALGSQIDVVEMFDQVIPAADKDIVKVFTKRISKKFNLMLETKVTA
+            VEAKEDGIYVTMEGKKAPAEPQRYDAVLVAIGRVPNGKNLDAGKAGVEVDDRGFIRVDKQ
+            LRTNVPHIFAIGDIVGQPMLAHKGVHEGHVAAEVIAGKKHYFDPKVIPSIAYTEPEVAWV
+            GLTEKEAKEKGISYETATFPWAASGRAIASDCADGMTKLIFDKESHRVIGGAIVGTNGGE
+            LLGEIGLAIEMGCDAEDIALTIHAHPTLHESVGLAAEVFEGSITDLPNPKAKKK
+NTSEQ       1425
+            atgagtactgaaatcaaaactcaggtcgtggtacttggggcaggccccgcaggttactcc
+            gctgccttccgttgcgctgatttaggtctggaaaccgtaatcgtagaacgttacaacacc
+            cttggcggtgtttgcctgaacgtcggctgtatcccttctaaagcactgctgcacgtagca
+            aaagttatcgaagaagccaaagcgctggctgaacacggtatcgtcttcggcgaaccgaaa
+            accgatatcgacaagattcgtacctggaaagagaaagtgatcaatcagctgaccggtggt
+            ctggctggtatggcgaaaggccgcaaagtcaaagtggtcaacggtctgggtaaattcacc
+            ggggctaacaccctggaagttgaaggtgagaacggcaaaaccgtgatcaacttcgacaac
+            gcgatcattgcagcgggttctcgcccgatccaactgccgtttattccgcatgaagatccg
+            cgtatctgggactccactgacgcgctggaactgaaagaagtaccagaacgcctgctggta
+            atgggtggcggtatcatcggtctggaaatgggcaccgtttaccacgcgctgggttcacag
+            attgacgtggttgaaatgttcgaccaggttatcccggcagctgacaaagacatcgttaaa
+            gtcttcaccaagcgtatcagcaagaaattcaacctgatgctggaaaccaaagttaccgcc
+            gttgaagcgaaagaagacggcatttatgtgacgatggaaggcaaaaaagcacccgctgaa
+            ccgcagcgttacgacgccgtgctggtagcgattggtcgtgtgccgaacggtaaaaacctc
+            gacgcaggcaaagcaggcgtggaagttgacgaccgtggtttcatccgcgttgacaaacag
+            ctgcgtaccaacgtaccgcacatctttgctatcggcgatatcgtcggtcaaccgatgctg
+            gcacacaaaggtgttcacgaaggtcacgttgccgctgaagttatcgccggtaagaaacac
+            tacttcgatccgaaagttatcccgtccatcgcctataccgaaccagaagttgcatgggtg
+            ggtctgactgagaaagaagcgaaagagaaaggcatcagctatgaaaccgccaccttcccg
+            tgggctgcttctggtcgtgctatcgcttccgactgcgcagacggtatgaccaagctgatt
+            ttcgacaaagaatctcaccgtgtgatcggtggtgcgattgtcggtactaacggcggcgag
+            ctgctgggtgaaatcggcctggcaatcgaaatgggttgtgatgctgaagacatcgcactg
+            accatccacgcgcacccgactctgcacgagtctgtgggcctggcggcagaagtgttcgaa
+            ggtagcattaccgacctgccgaacccgaaagcgaagaagaagtaa
+///
+ENTRY       b0726             CDS       E.coli
+NAME        sucA, lys, met, lys+met
+DEFINITION  2-oxoglutarate decarboxylase, component of the 2-oxoglutarate
+            dehydrogenase complex, thiamin-binding [EC:1.2.4.2]
+ORTHOLOG    KO: K00164  2-oxoglutarate dehydrogenase E1 component
+PATHWAY     PATH: eco00020  Citrate cycle (TCA cycle)
+            PATH: eco00310  Lysine degradation
+            PATH: eco00380  Tryptophan metabolism
+POSITION    757929..760730
+MOTIF       Pfam: E1_dh Transket_pyr
+DBLINKS     Wisconsin: b0726
+            Colibri: sucA
+            RegulonDB: b0726
+            NCBI-GI: 16128701
+            NCBI-GeneID: 945303
+            UniProt: P0AFG3
+CODON_USAGE       T               C               A               G
+          T   8  31   4   5  21  11   3   8  12  19   1   0   4   6   0  14
+          C   6  15   0  53   4   0   3  37   9  25  13  41  31  23   0   1
+          A   9  23   1  25   4  26   1  11   6  30  33  11   0  14   1   0
+          G  25  10   8  26  12  24  14  27  24  28  44  22  30  27   2   8
+AASEQ       933
+            MQNSALKAWLDSSYLSGANQSWIEQLYEDFLTDPDSVDANWRSTFQQLPGTGVKPDQFHS
+            QTREYFRRLAKDASRYSSTISDPDTNVKQVKVLQLINAYRFRGHQHANLDPLGLWQQDKV
+            ADLDPSFHDLTEADFQETFNVGSFASGKETMKLGELLEALKQTYCGPIGAEYMHITSTEE
+            KRWIQQRIESGRATFNSEEKKRFLSELTAAEGLERYLGAKFPGAKRFSLEGGDALIPMLK
+            EMIRHAGNSGTREVVLGMAHRGRLNVLVNVLGKKPQDLFDEFAGKHKEHLGTGDVKYHMG
+            FSSDFQTDGGLVHLALAFNPSHLEIVSPVVIGSVRARLDRLDEPSSNKVLPITIHGDAAV
+            TGQGVVQETLNMSKARGYEVGGTVRIVINNQVGFTTSNPLDARSTPYCTDIGKMVQAPIF
+            HVNADDPEAVAFVTRLALDFRNTFKRDVFIDLVCYRRHGHNEADEPSATQPLMYQKIKKH
+            PTPRKIYADKLEQEKVATLEDATEMVNLYRDALDAGDCVVAEWRPMNMHSFTWSPYLNHE
+            WDEEYPNKVEMKRLQELAKRISTVPEAVEMQSRVAKIYGDRQAMAAGEKLFDWGGAENLA
+            YATLVDEGIPVRLSGEDSGRGTFFHRHAVIHNQSNGSTYTPLQHIHNGQGAFRVWDSVLS
+            EEAVLAFEYGYATAEPRTLTIWEAQFGDFANGAQVVIDQFISSGEQKWGRMCGLVMLLPH
+            GYEGQGPEHSSARLERYLQLCAEQNMQVCVPSTPAQVYHMLRRQALRGMRRPLVVMSPKS
+            LLRHPLAVSSLEELANGTFLPAIGEIDELDPKGVKRVVMCSGKVYYDLLEQRRKNNQHDV
+            AIVRIEQLYPFPHKAMQEVLQQFAHVKDFVWCQEEPLNQGAWYCSQHHFREVIPFGASLR
+            YAGRPASASPAVGYMSVHQKQQQDLVNDALNVE
+NTSEQ       2802
+            atgcagaacagcgctttgaaagcctggttggactcttcttacctctctggcgcaaaccag
+            agctggatagaacagctctatgaagacttcttaaccgatcctgactcggttgacgctaac
+            tggcgttcgacgttccagcagttacctggtacgggagtcaaaccggatcaattccactct
+            caaacgcgtgaatatttccgccgcctggcgaaagacgcttcacgttactcttcaacgatc
+            tccgaccctgacaccaatgtgaagcaggttaaagtcctgcagctcattaacgcataccgc
+            ttccgtggtcaccagcatgcgaatctcgatccgctgggactgtggcagcaagataaagtg
+            gccgatctggatccgtctttccacgatctgaccgaagcagacttccaggagaccttcaac
+            gtcggttcatttgccagcggcaaagaaaccatgaaactcggcgagctgctggaagccctc
+            aagcaaacctactgcggcccgattggtgccgagtatatgcacattaccagcaccgaagaa
+            aaacgctggatccaacagcgtatcgagtctggtcgcgcgactttcaatagcgaagagaaa
+            aaacgcttcttaagcgaactgaccgccgctgaaggtcttgaacgttacctcggcgcaaaa
+            ttccctggcgcaaaacgcttctcgctggaaggcggtgacgcgttaatcccgatgcttaaa
+            gagatgatccgccacgctggcaacagcggcacccgcgaagtggttctcgggatggcgcac
+            cgtggtcgtctgaacgtgctggtgaacgtgctgggtaaaaaaccgcaagacttgttcgac
+            gagttcgccggtaaacataaagaacacctcggcacgggtgacgtgaaataccacatgggc
+            ttctcgtctgacttccagaccgatggcggcctggtgcacctggcgctggcgtttaacccg
+            tctcaccttgagattgtaagcccggtagttatcggttctgttcgtgcccgtctggacaga
+            cttgatgagccgagcagcaacaaagtgctgccaatcaccatccacggtgacgccgcagtg
+            accgggcagggcgtggttcaggaaaccctgaacatgtcgaaagcgcgtggttatgaagtt
+            ggcggtacggtacgtatcgttatcaacaaccaggttggtttcaccacctctaatccgctg
+            gatgcccgttctacgccgtactgtactgatatcggtaagatggttcaggccccgattttc
+            cacgttaacgcggacgatccggaagccgttgcctttgtgacccgtctggcgctcgatttc
+            cgtaacacctttaaacgtgatgtcttcatcgacctggtgtgctaccgccgtcacggccac
+            aacgaagccgacgagccgagcgcaacccagccgctgatgtatcagaaaatcaaaaaacat
+            ccgacaccgcgcaaaatctacgctgacaagctggagcaggaaaaagtggcgacgctggaa
+            gatgccaccgagatggttaacctgtaccgcgatgcgctggatgctggcgattgcgtagtg
+            gcagagtggcgtccgatgaacatgcactctttcacctggtcgccgtacctcaaccacgaa
+            tgggacgaagagtacccgaacaaagttgagatgaagcgcctgcaggagctggcgaaacgc
+            atcagcacggtgccggaagcagttgaaatgcagtctcgcgttgccaagatttatggcgat
+            cgccaggcgatggctgccggtgagaaactgttcgactggggcggtgcggaaaacctcgct
+            tacgccacgctggttgatgaaggcattccggttcgcctgtcgggtgaagactccggtcgc
+            ggtaccttcttccaccgccacgcggtgatccacaaccagtctaacggttccacttacacg
+            ccgctgcaacatatccataacgggcagggcgcgttccgtgtctgggactccgtactgtct
+            gaagaagcagtgctggcgtttgaatatggttatgccaccgcagaaccacgcactctgacc
+            atctgggaagcgcagttcggtgacttcgccaacggtgcgcaggtggttatcgaccagttc
+            atctcctctggcgaacagaaatggggccggatgtgtggtctggtgatgttgctgccgcac
+            ggttacgaagggcaggggccggagcactcctccgcgcgtctggaacgttatctgcaactt
+            tgtgctgagcaaaacatgcaggtttgcgtaccgtctaccccggcacaggtttaccacatg
+            ctgcgtcgtcaggcgctgcgcgggatgcgtcgtccgctggtcgtgatgtcgccgaaatcc
+            ctgctgcgtcatccgctggcggtttccagcctcgaagaactggcgaacggcaccttcctg
+            ccagccatcggtgaaatcgacgagcttgatccgaagggcgtgaagcgcgtagtgatgtgt
+            tctggtaaggtttattacgacctgctggaacagcgtcgtaagaacaatcaacacgatgtc
+            gccattgtgcgtatcgagcaactctacccgttcccgcataaagcgatgcaggaagtgttg
+            cagcagtttgctcacgtcaaggattttgtctggtgccaggaagagccgctcaaccagggc
+            gcatggtactgcagccagcatcatttccgtgaagtgattccgtttggggcttctctgcgt
+            tatgcaggccgcccggcctccgcctctccggcggtagggtatatgtccgttcaccagaaa
+            cagcaacaagatctggttaatgacgcgctgaacgtcgaataa
+///
+ENTRY       b0727             CDS       E.coli
+NAME        sucB, lys, met
+DEFINITION  2-oxoglutarate dehydrogenase (dihydrolipoyltranssuccinase E2
+            component) [EC:2.3.1.61]
+ORTHOLOG    KO: K00658  2-oxoglutarate dehydrogenase E2 component
+            (dihydrolipoamide succinyltransferase)
+PATHWAY     PATH: eco00020  Citrate cycle (TCA cycle)
+            PATH: eco00310  Lysine degradation
+POSITION    760745..761962
+MOTIF       Pfam: Biotin_lipoyl E3_binding 2-oxoacid_dh
+            PROSITE: LIPOYL
+DBLINKS     Wisconsin: b0727
+            Colibri: sucB
+            RegulonDB: b0727
+            NCBI-GI: 16128702
+            NCBI-GeneID: 945307
+            UniProt: P0AFG6
+CODON_USAGE       T               C               A               G
+          T   2   6   1   1   7   7   1   0   1   6   0   1   0   0   0   1
+          C   1   2   0  36   2   1   0  18   2   5   3   6  19   7   0   0
+          A   5  14   0  13   4  11   1   8   2  11  20   5   2   7   0   0
+          G   7   8   8  14   8   9  10  17  16  11  24   8  15  12   0   0
+AASEQ       405
+            MSSVDILVPDLPESVADATVATWHKKPGDAVVRDEVLVEIETDKVVLEVPASADGILDAV
+            LEDEGTTVTSRQILGRLREGNSAGKETSAKSEEKASTPAQRQQASLEEQNNDALSPAIRR
+            LLAEHNLDASAIKGTGVGGRLTREDVEKHLAKAPAKESAPAAAAPAAQPALAARSEKRVP
+            MTRLRKRVAERLLEAKNSTAMLTTFNEVNMKPIMDLRKQYGEAFEKRHGIRLGFMSFYVK
+            AVVEALKRYPEVNASIDGDDVVYHNYFDVSMAVSTPRGLVTPVLRDVDTLGMADIEKKIK
+            ELAVKGRDGKLTVEDLTGGNFTITNGGVFGSLMSTPIINPPQSAILGMHAIKDRPMAVNG
+            QVEILPMMYLALSYDHRLIDGRESVGFLVTIKELLEDPTRLLLDV
+NTSEQ       1218
+            atgagtagcgtagatattctggtccctgacctgcctgaatccgtagccgatgccaccgtc
+            gcaacctggcataaaaaacccggcgacgcagtcgtacgtgatgaagtgctggtagaaatc
+            gaaactgacaaagtggtactggaagtaccggcatcagcagacggcattctggatgcggtt
+            ctggaagatgaaggtacaacggtaacgtctcgtcagatccttggtcgcctgcgtgaaggc
+            aacagcgccggtaaagaaaccagcgccaaatctgaagagaaagcgtccactccggcgcaa
+            cgccagcaggcgtctctggaagagcaaaacaacgatgcgttaagcccggcgatccgtcgc
+            ctgctggctgaacacaatctcgacgccagcgccattaaaggcaccggtgtgggtggtcgt
+            ctgactcgtgaagatgtggaaaaacatctggcgaaagccccggcgaaagagtctgctccg
+            gcagcggctgctccggcggcgcaaccggctctggctgcacgtagtgaaaaacgtgtcccg
+            atgactcgcctgcgtaagcgtgtggcagagcgtctgctggaagcgaaaaactccaccgcc
+            atgctgaccacgttcaacgaagtcaacatgaagccgattatggatctgcgtaagcagtac
+            ggtgaagcgtttgaaaaacgccacggcatccgtctgggctttatgtccttctacgtgaaa
+            gcggtggttgaagccctgaaacgttacccggaagtgaacgcttctatcgacggcgatgac
+            gtggtttaccacaactatttcgacgtcagcatggcggtttctacgccgcgcggcctggtg
+            acgccggttctgcgtgatgtcgataccctcggcatggcagacatcgagaagaaaatcaaa
+            gagctggcagtcaaaggccgtgacggcaagctgaccgttgaagatctgaccggtggtaac
+            ttcaccatcaccaacggtggtgtgttcggttccctgatgtctacgccgatcatcaacccg
+            ccgcagagcgcaattctgggtatgcacgctatcaaagatcgtccgatggcggtgaatggt
+            caggttgagatcctgccgatgatgtacctggcgctgtcctacgatcaccgtctgatcgat
+            ggtcgcgaatccgtgggcttcctggtaacgatcaaagagttgctggaagatccgacgcgt
+            ctgctgctggacgtgtag
+///
+ENTRY       b0728             CDS       E.coli
+NAME        sucC
+DEFINITION  succinyl-CoA synthetase, beta subunit [EC:6.2.1.5]
+ORTHOLOG    KO: K01903  succinyl-CoA synthetase beta chain
+PATHWAY     PATH: eco00020  Citrate cycle (TCA cycle)
+            PATH: eco00640  Propanoate metabolism
+            PATH: eco00660  C5-Branched dibasic acid metabolism
+            PATH: eco00720  Reductive carboxylate cycle (CO2 fixation)
+POSITION    762237..763403
+MOTIF       Pfam: GARS_B ATP-grasp Ligase_CoA
+            PROSITE: SUCCINYL_COA_LIG_3
+DBLINKS     Wisconsin: b0728
+            Colibri: sucC
+            RegulonDB: b0728
+            NCBI-GI: 16128703
+            NCBI-GeneID: 945312
+            UniProt: P0A836
+CODON_USAGE       T               C               A               G
+          T   3   8   2   1   1   2   1   1   6   1   1   0   3   2   0   3
+          C   3   4   0  28   1   0   1  12   2   3   3  14  10   7   0   0
+          A   5  18   0   8   4   7   1   3   2  14  22   2   1   2   0   0
+          G  18   3   7  10  10  10  15  12   7  14  24   4  18  23   1   1
+AASEQ       388
+            MNLHEYQAKQLFARYGLPAPVGYACTTPREAEEAASKIGAGPWVVKCQVHAGGRGKAGGV
+            KVVNSKEDIRAFAENWLGKRLVTYQTDANGQPVNQILVEAATDIAKELYLGAVVDRSSRR
+            VVFMASTEGGVEIEKVAEETPHLIHKVALDPLTGPMPYQGRELAFKLGLEGKLVQQFTKI
+            FMGLATIFLERDLALIEINPLVITKQGDLICLDGKLGADGNALFRQPDLREMRDQSQEDP
+            REAQAAQWELNYVALDGNIGCMVNGAGLAMGTMDIVKLHGGEPANFLDVGGGATKERVTE
+            AFKIILSDDKVKAVLVNIFGGIVRCDLIADGIIGAVAEVGVNVPVVVRLEGNNAELGAKK
+            LADSGLNIIAAKGLTDAAQQVVAAVEGK
+NTSEQ       1167
+            atgaacttacatgaatatcaggcaaaacaactttttgcccgctatggcttaccagcaccg
+            gtgggttatgcctgtactactccgcgcgaagcagaagaagccgcttcaaaaatcggtgcc
+            ggtccgtgggtagtgaaatgtcaggttcacgctggtggccgcggtaaagcgggcggtgtg
+            aaagttgtaaacagcaaagaagacatccgtgcttttgcagaaaactggctgggcaagcgt
+            ctggtaacgtatcaaacagatgccaatggccaaccggttaaccagattctggttgaagca
+            gcgaccgatatcgctaaagagctgtatctcggtgccgttgttgaccgtagttcccgtcgt
+            gtggtctttatggcctccaccgaaggcggcgtggaaatcgaaaaagtggcggaagaaact
+            ccgcacctgatccataaagttgcgcttgatccgctgactggcccgatgccgtatcaggga
+            cgcgagctggcgttcaaactgggtctggaaggtaaactggttcagcagttcaccaaaatc
+            ttcatgggcctggcgaccattttcctggagcgcgacctggcgttgatcgaaatcaacccg
+            ctggtcatcaccaaacagggcgatctgatttgcctcgacggcaaactgggcgctgacggc
+            aacgcactgttccgccagcctgatctgcgcgaaatgcgtgaccagtcgcaggaagatccg
+            cgtgaagcacaggctgcacagtgggaactgaactacgttgcgctggacggtaacatcggt
+            tgtatggttaacggcgcaggtctggcgatgggtacgatggacatcgttaaactgcacggc
+            ggcgaaccggctaacttccttgacgttggcggcggcgcaaccaaagaacgtgtaaccgaa
+            gcgttcaaaatcatcctctctgacgacaaagtgaaagccgttctggttaacatcttcggc
+            ggtatcgttcgttgcgacctgatcgctgacggtatcatcggcgcggtagcagaagtgggt
+            gttaacgtaccggtcgtggtacgtctggaaggtaacaacgccgaactcggcgcgaagaaa
+            ctggctgacagcggcctgaatattattgcagcaaaaggtctgacggatgcagctcagcag
+            gttgttgccgcagtggaggggaaataa
+///
+ENTRY       b0729             CDS       E.coli
+NAME        sucD
+DEFINITION  succinyl-CoA synthetase, alpha subunit [EC:6.2.1.5]
+ORTHOLOG    KO: K01902  succinyl-CoA synthetase alpha chain
+PATHWAY     PATH: eco00020  Citrate cycle (TCA cycle)
+            PATH: eco00640  Propanoate metabolism
+            PATH: eco00660  C5-Branched dibasic acid metabolism
+            PATH: eco00720  Reductive carboxylate cycle (CO2 fixation)
+POSITION    763403..764272
+MOTIF       Pfam: CoA_binding Ligase_CoA
+            PROSITE: SUCCINYL_COA_LIG_1 SUCCINYL_COA_LIG_2
+DBLINKS     Wisconsin: b0729
+            Colibri: sucD
+            RegulonDB: b0729
+            NCBI-GI: 16128704
+            NCBI-GeneID: 945314
+            UniProt: P0AGE9
+CODON_USAGE       T               C               A               G
+          T   2   6   1   0   2   4   1   1   1   5   1   0   1   4   0   0
+          C   0   2   0  11   1   0   4  10   0   6   0   7   4   1   0   0
+          A   7  23   0   7   8  15   1   2   0   4  19   3   0   3   0   0
+          G  12   1   2   9   8   7   7   7   7   4  15   3  19  19   0   3
+AASEQ       289
+            MSILIDKNTKVICQGFTGSQGTFHSEQAIAYGTKMVGGVTPGKGGTTHLGLPVFNTVREA
+            VAATGATASVIYVPAPFCKDSILEAIDAGIKLIITITEGIPTLDMLTVKVKLDEAGVRMI
+            GPNCPGVITPGECKIGIQPGHIHKPGKVGIVSRSGTLTYEAVKQTTDYGFGQSTCVGIGG
+            DPIPGSNFIDILEMFEKDPQTEAIVMIGEIGGSAEEEAAAYIKEHVTKPVVGYIAGVTAP
+            KGKRMGHAGAIIAGGKGTADEKFAALEAAGVKTVRSLADIGEALKTVLK
+NTSEQ       870
+            atgtccattttaatcgataaaaacaccaaggttatctgccagggctttaccggtagccag
+            gggactttccactcagaacaggccattgcatacggcactaaaatggttggcggcgtaacc
+            ccaggtaaaggcggcaccacccacctcggcctgccggtgttcaacaccgtgcgtgaagcc
+            gttgctgccactggcgctaccgcttctgttatctacgtaccagcaccgttctgcaaagac
+            tccattctggaagccatcgacgcaggcatcaaactgattatcaccatcactgaaggcatc
+            ccgacgctggatatgctgaccgtgaaagtgaagctggatgaagcaggcgttcgtatgatc
+            ggcccgaactgcccaggcgttatcactccgggtgaatgcaaaatcggtatccagcctggt
+            cacattcacaaaccgggtaaagtgggtatcgtttcccgttccggtacactgacctatgaa
+            gcggttaaacagaccacggattacggtttcggtcagtcgacctgtgtcggtatcggcggt
+            gacccgatcccgggctctaactttatcgacattctcgaaatgttcgaaaaagatccgcag
+            accgaagcgatcgtgatgatcggtgagatcggcggtagcgctgaagaagaagcagctgcg
+            tacatcaaagagcacgttaccaagccagttgtgggttacatcgctggtgtgactgcgccg
+            aaaggcaaacgtatgggccacgcgggtgccatcattgccggtgggaaagggactgcggat
+            gagaaattcgctgctctggaagccgcaggcgtgaaaaccgttcgcagcctggcggatatc
+            ggtgaagcactgaaaactgttctgaaataa
+///
+ENTRY       b1136             CDS       E.coli
+NAME        icdA, icdE
+DEFINITION  e14 prophage; isocitrate dehydrogenase, specific for NADP+
+            [EC:1.1.1.42]
+ORTHOLOG    KO: K00031  isocitrate dehydrogenase
+PATHWAY     PATH: eco00020  Citrate cycle (TCA cycle)
+            PATH: eco00480  Glutathione metabolism
+            PATH: eco00720  Reductive carboxylate cycle (CO2 fixation)
+POSITION    1194346..1195596
+MOTIF       Pfam: Iso_dh
+            PROSITE: IDH_IMDH
+DBLINKS     Wisconsin: b1136
+            Colibri: icdA
+            RegulonDB: b1136
+            NCBI-GI: 16129099
+            NCBI-GeneID: 945702
+            UniProt: P08200
+CODON_USAGE       T               C               A               G
+          T   4   6   1   0   5   3   1   2   8   7   1   0   4   2   0   6
+          C   1   3   0  26   6   0   2  12   1   4   3   8  12   5   0   0
+          A  17  20   0  13   6  11   1   0   2  13  26   5   1   1   0   0
+          G  14   4   6   6   8  12   9   9   9  16  26   9  22  15   2   1
+AASEQ       416
+            MESKVVVPAQGKKITLQNGKLNVPENPIIPYIEGDGIGVDVTPAMLKVVDAAVEKAYKGE
+            RKISWMEIYTGEKSTQVYGQDVWLPAETLDLIREYRVAIKGPLTTPVGGGIRSLNVALRQ
+            ELDLYICLRPVRYYQGTPSPVKHPELTDMVIFRENSEDIYAGIEWKADSADAEKVIKFLR
+            EEMGVKKIRFPEHCGIGIKPCSEEGTKRLVRAAIEYAIANDRDSVTLVHKGNIMKFTEGA
+            FKDWGYQLAREEFGGELIDGGPWLKVKNPNTGKEIVIKDVIADAFLQQILLRPAEYDVIA
+            CMNLNGDYISDALAAQVGGIGIAPGANIGDECALFEATHGTAPKYAGQDKVNPGSIILSA
+            EMMLRHMGWTEAADLIVKGMEGAINAKTVTYDFERLMDGAKLLKCSEFGDAIIENM
+NTSEQ       1251
+            atggaaagtaaagtagttgttccggcacaaggcaagaagatcaccctgcaaaacggcaaa
+            ctcaacgttcctgaaaatccgattatcccttacattgaaggtgatggaatcggtgtagat
+            gtaaccccagccatgctgaaagtggtcgacgctgcagtcgagaaagcctataaaggcgag
+            cgtaaaatctcctggatggaaatttacaccggtgaaaaatccacacaggtttatggtcag
+            gacgtctggctgcctgctgaaactcttgatctgattcgtgaatatcgcgttgccattaaa
+            ggtccgctgaccactccggttggtggcggtattcgctctctgaacgttgccctgcgccag
+            gaactggatctctacatctgcctgcgtccggtacgttactatcagggcactccaagcccg
+            gttaaacaccctgaactgaccgatatggttatcttccgtgaaaactcggaagacatttat
+            gcgggtatcgaatggaaagcagactctgccgacgccgagaaagtgattaaattcctgcgt
+            gaagagatgggggtgaagaaaattcgcttcccggaacattgtggtatcggtattaagccg
+            tgttcggaagaaggcaccaaacgtctggttcgtgcagcgatcgaatacgcaattgctaac
+            gatcgtgactctgtgactctggtgcacaaaggcaacatcatgaagttcaccgaaggagcg
+            tttaaagactggggctaccagctggcgcgtgaagagtttggcggtgaactgatcgacggt
+            ggcccgtggctgaaagttaaaaacccgaacactggcaaagagatcgtcattaaagacgtg
+            attgctgatgcattcctgcaacagatcctgctgcgtccggctgaatatgatgttatcgcc
+            tgtatgaacctgaacggtgactacatttctgacgccctggcagcgcaggttggcggtatc
+            ggtatcgcccctggtgcaaacatcggtgacgaatgcgccctgtttgaagccacccacggt
+            actgcgccgaaatatgccggtcaggacaaagtaaatcctggctctattattctctccgct
+            gagatgatgctgcgccacatgggttggaccgaagcggctgacttaattgttaaaggtatg
+            gaaggcgcaatcaacgcgaaaaccgtaacctatgacttcgagcgtctgatggatggcgct
+            aaactgctgaaatgttcagagtttggtgacgcgatcatcgaaaacatgtaa
+///
+ENTRY       b0118             CDS       E.coli
+NAME        acnB, yacJ, yacI
+DEFINITION  aconitate hydrase B [EC:4.2.1.3]
+ORTHOLOG    KO: K01682  aconitate hydratase 2
+PATHWAY     PATH: eco00020  Citrate cycle (TCA cycle)
+            PATH: eco00630  Glyoxylate and dicarboxylate metabolism
+            PATH: eco00720  Reductive carboxylate cycle (CO2 fixation)
+POSITION    131615..134212
+MOTIF       Pfam: Aconitase_2_N Aconitase
+            PROSITE: ACONITASE_1 ACONITASE_2
+DBLINKS     Wisconsin: b0118
+            Colibri: acnB
+            RegulonDB: b0118
+            NCBI-GI: 16128111
+            NCBI-GeneID: 944864
+            UniProt: P36683
+CODON_USAGE       T               C               A               G
+          T   5  24   2   3  15  12   1   4   6  15   1   0   6   4   0   8
+          C   6   1   2  74   5   5   8  36   4  11   5  20  31   8   0   0
+          A  19  28   0  22  10  29   1   7   3  28  39  10   2   2   0   0
+          G  16  13   9  21  17  20  16  44  32  23  41  16  39  34   0   3
+AASEQ       865
+            MLEEYRKHVAERAAEGIAPKPLDANQMAALVELLKNPPAGEEEFLLDLLTNRVPPGVDEA
+            AYVKAGFLAAIAKGEAKSPLLTPEKAIELLGTMQGGYNIHPLIDALDDAKLAPIAAKALS
+            HTLLMFDNFYDVEEKAKAGNEYAKQVMQSWADAEWFLNRPALAEKLTVTVFKVTGETNTD
+            DLSPAPDAWSRPDIPLHALAMLKNAREGIEPDQPGVVGPIKQIEALQQKGFPLAYVGDVV
+            GTGSSRKSATNSVLWFMGDDIPHVPNKRGGGLCLGGKIAPIFFNTMEDAGALPIEVDVSN
+            LNMGDVIDVYPYKGEVRNHETGELLATFELKTDVLIDEVRAGGRIPLIIGRGLTTKAREA
+            LGLPHSDVFRQAKDVAESDRGFSLAQKMVGRACGVKGIRPGAYCEPKMTSVGSQDTTGPM
+            TRDELKDLACLGFSADLVMQSFCHTAAYPKPVDVNTHHTLPDFIMNRGGVSLRPGDGVIH
+            SWLNRMLLPDTVGTGGDSHTRFPIGISFPAGSGLVAFAAATGVMPLDMPESVLVRFKGKM
+            QPGITLRDLVHAIPLYAIKQGLLTVEKKGKKNIFSGRILEIEGLPDLKVEQAFELTDASA
+            ERSAAGCTIKLNKEPIIEYLNSNIVLLKWMIAEGYGDRRTLERRIQGMEKWLANPELLEA
+            DADAEYAAVIDIDLADIKEPILCAPNDPDDARPLSAVQGEKIDEVFIGSCMTNIGHFRAA
+            GKLLDAHKGQLPTRLWVAPPTRMDAAQLTEEGYYSVFGKSGARIEIPGCSLCMGNQARVA
+            DGATVVSTSTRNFPNRLGTGANVFLASAELAAVAALIGKLPTPEEYQTYVAQVDKTAVDT
+            YRYLNFNQLSQYTEKADGVIFQTAV
+NTSEQ       2598
+            gtgctagaagaataccgtaagcacgtagctgagcgtgccgctgaggggattgcgcccaaa
+            cccctggatgcaaaccaaatggccgcacttgtagagctgctgaaaaacccgcccgcgggc
+            gaagaagaattcctgttagatctgttaaccaaccgtgttcccccaggcgtcgatgaagcc
+            gcctatgtcaaagcaggcttcctggctgctatcgcgaaaggcgaagccaaatcccctctg
+            ctgactccggaaaaagccatcgaactgctgggcaccatgcagggtggttacaacattcat
+            ccgctgatcgacgcgctggatgatgccaaactggcacctattgctgccaaagcactttct
+            cacacgctgctgatgttcgataacttctatgacgtagaagagaaagcgaaagcaggcaac
+            gaatatgcgaagcaggttatgcagtcctgggcggatgccgaatggttcctgaatcgcccg
+            gcgctggctgaaaaactgaccgttactgtcttcaaagtcactggcgaaactaacaccgat
+            gacctttctccggcaccggatgcgtggtcacgcccggatatcccactgcacgcgctggcg
+            atgctgaaaaacgcccgtgaaggtattgagccagaccagcctggtgttgttggtccgatc
+            aagcaaatcgaagctctgcaacagaaaggtttcccgctggcgtacgtcggtgacgttgtg
+            ggtacgggttcttcgcgtaaatccgccactaactccgttctgtggtttatgggcgatgat
+            attccacatgtgccgaacaaacgcggcggtggtttgtgcctcggcggtaaaattgcaccc
+            atcttctttaacacgatggaagacgcgggtgcactgccaatcgaagtcgacgtctctaac
+            ctgaacatgggcgacgtgattgacgtttacccgtacaaaggtgaagtgcgtaaccacgaa
+            accggcgaactgctggcgaccttcgaactgaaaaccgacgtgctgattgatgaagtgcgt
+            gctggtggccgtattccgctgattatcgggcgtggcctgaccaccaaagcgcgtgaagca
+            cttggtctgccgcacagtgatgtgttccgtcaggcgaaagatgtcgctgagagcgatcgc
+            ggcttctcgctggcgcaaaaaatggtaggccgtgcctgtggcgtgaaaggcattcgtccg
+            ggcgcgtactgtgaaccgaaaatgacttctgtaggttcccaggacaccaccggcccgatg
+            acccgtgatgaactgaaagacctggcgtgcctgggcttctcggctgacctggtgatgcag
+            tctttctgccacaccgcggcgtatccgaagccagttgacgtgaacacgcaccacacgctg
+            ccggacttcattatgaaccgtggcggtgtgtcgctgcgtccgggtgacggcgtcattcac
+            tcctggctgaaccgtatgctgctgccggataccgtcggtaccggtggtgactcccatacc
+            cgtttcccgatcggtatctctttcccggcgggttctggtctggtggcgtttgctgccgca
+            actggcgtaatgccgcttgatatgccggaatccgttctggtgcgcttcaaaggcaaaatg
+            cagccgggcatcaccctgcgcgatctggtacacgctattccgctgtatgcgatcaaacaa
+            ggtctgctgaccgttgagaagaaaggcaagaaaaacatcttctctggccgcatcctggaa
+            attgaaggtctgccggatctgaaagttgagcaggcctttgagctaaccgatgcgtccgcc
+            gagcgttctgccgctggttgtaccatcaagctgaacaaagaaccgatcatcgaatacctg
+            aactctaacatcgtcctgctgaagtggatgatcgcggaaggttacggcgatcgtcgtacc
+            ctggaacgtcgtattcagggcatggaaaaatggctggcgaatcctgagctgctggaagcc
+            gatgcagatgcggaatacgcggcagtgatcgacatcgatctggcggatattaaagagcca
+            atcctgtgtgctccgaacgacccggatgacgcgcgtccgctgtctgcggtacagggtgag
+            aagatcgacgaagtgtttatcggttcctgcatgaccaacatcggtcacttccgtgctgcg
+            ggtaaactgctggatgcgcataaaggtcagttgccgacccgcctgtgggtggcaccgcca
+            acccgtatggacgccgcacagttgaccgaagaaggctactacagcgtcttcggtaagagt
+            ggtgcgcgtatcgagatccctggctgttccctgtgtatgggtaaccaggcgcgtgtggcg
+            gacggtgcaacggtggtttccacctctacccgtaacttcccgaaccgtctgggtactggc
+            gcgaatgtcttcctggcttctgcggaactggcggctgttgcggcgctgattggcaaactg
+            ccgacgccggaagagtaccagacctacgtggcgcaggtagataaaacagccgttgatact
+            taccgttatctgaacttcaaccagctttctcagtacaccgagaaagccgatggggtgatt
+            ttccagactgcggtttaa
+///
+ENTRY       b1276             CDS       E.coli
+NAME        acnA, acn
+DEFINITION  aconitate hydrase 1 [EC:4.2.1.3]
+ORTHOLOG    KO: K01681  aconitate hydratase 1
+PATHWAY     PATH: eco00020  Citrate cycle (TCA cycle)
+            PATH: eco00630  Glyoxylate and dicarboxylate metabolism
+            PATH: eco00720  Reductive carboxylate cycle (CO2 fixation)
+POSITION    1333855..1336530
+MOTIF       Pfam: Aconitase Aconitase_C
+            PROSITE: ACONITASE_1 ACONITASE_2
+DBLINKS     Wisconsin: b1276
+            Colibri: acnA
+            RegulonDB: b1276
+            NCBI-GI: 16129237
+            NCBI-GeneID: 946724
+            UniProt: P25516
+CODON_USAGE       T               C               A               G
+          T  14   9  10   9   6   6   8  14  18  11   1   0   4   3   0  13
+          C   7  12   6  40   8   6  12  24  11   7  10  17  20  19   5   6
+          A  25  17   1  25   7  27   8  12  10  23  33  10   8   9   0   1
+          G  23  18  10  22   9  22  22  24  38  19  42  13  23  34   8  13
+AASEQ       891
+            MSSTLREASKDTLQAKDKTYHYYSLPLAAKSLGDITRLPKSLKVLLENLLRWQDGNSVTE
+            EDIHALAGWLKNAHADREIAYRPARVLMQDFTGVPAVVDLAAMREAVKRLGGDTAKVNPL
+            SPVDLVIDHSVTVDRFGDDEAFEENVRLEMERNHERYVFLKWGKQAFSRFSVVPPGTGIC
+            HQVNLEYLGKAVWSELQDGEWIAYPDTLVGTDSHTTMINGLGVLGWGVGGIEAEAAMLGQ
+            PVSMLIPDVVGFKLTGKLREGITATDLVLTVTQMLRKHGVVGKFVEFYGDGLDSLPLADR
+            ATIANMSPEYGATCGFFPIDAVTLDYMRLSGRSEDQVELVEKYAKAQGMWRNPGDEPIFT
+            STLELDMNDVEASLAGPKRPQDRVALPDVPKAFAASNELEVNATHKDRQPVDYVMNGHQY
+            QLPDGAVVIAAITSCTNTSNPSVLMAAGLLAKKAVTLGLKRQPWVKASLAPGSKVVSDYL
+            AKAKLTPYLDELGFNLVGYGCTTCIGNSGPLPDPIETAIKKSDLTVGAVLSGNRNFEGRI
+            HPLVKTNWLASPPLVVAYALAGNMNINLASEPIGHDRKGDPVYLKDIWPSAQEIARAVEQ
+            VSTEMFRKEYAEVFEGTAEWKGINVTRSDTYGWQEDSTYIRLSPFFDEMQATPAPVEDIH
+            GARILAMLGDSVTTDHISPAGSIKPDSPAGRYLQGRGVERKDFNSYGSRRGNHEVMMRGT
+            FANIRIRNEMVPGVEGGMTRHLPDSDVVSIYDAAMRYKQEQTPLAVIAGKEYGSGSSRDW
+            AAKGPRLLGIRVVIAESFERIHRSNLIGMGILPLEFPQGVTRKTLGLTGEEKIDIGDLQN
+            LQPGATVPVTLTRADGSQEVVPCRCRIDTATELTYYQNDGILHYVIRNMLK
+NTSEQ       2676
+            atgtcgtcaaccctacgagaagccagtaaggacacgttgcaggccaaagataaaacttac
+            cactactacagcctgccgcttgctgctaaatcactgggcgatatcacccgtctacccaag
+            tcactcaaagttttgctcgaaaacctgctgcgctggcaggatggtaactcggttaccgaa
+            gaggatatccacgcgctggcaggatggctgaaaaatgcccatgctgaccgtgaaattgcc
+            taccgcccggcaagggtgctgatgcaggactttaccggcgtacctgccgttgttgatctg
+            gcggcaatgcgcgaagcggttaaacgcctcggcggcgatactgcaaaggttaacccgctc
+            tcaccggtcgacctggtcattgaccactcggtgaccgtcgatcgttttggtgatgatgag
+            gcatttgaagaaaacgtacgcctggaaatggagcgcaaccacgaacgttatgtgttcctg
+            aaatggggaaagcaagcgttcagtcggtttagcgtcgtgccgccaggcacaggcatttgc
+            catcaggttaacctcgaatatctcggcaaagcagtgtggagtgaattgcaggacggtgaa
+            tggattgcttatccggatacactcgttggtactgactcgcacaccaccatgatcaacggc
+            cttggcgtgctggggtggggcgttggtgggatcgaagcagaagccgcaatgttaggccag
+            ccggtttccatgcttatcccggatgtagtgggcttcaaacttaccggaaaattacgtgaa
+            ggtattaccgccacagacctggttctcactgttacccaaatgctgcgcaaacatggcgtg
+            gtggggaaattcgtcgaattttatggtgatggtctggattcactaccgttggcggatcgc
+            gccaccattgccaatatgtcgccagaatatggtgccacctgtggcttcttcccaatcgat
+            gctgtaaccctcgattacatgcgtttaagcgggcgcagcgaagatcaggtcgagttggtc
+            gaaaaatatgccaaagcgcagggcatgtggcgtaacccgggcgatgaaccaatttttacc
+            agtacgttagaactggatatgaatgacgttgaagcgagcctggcagggcctaaacgccca
+            caggatcgcgttgcactgcccgatgtaccaaaagcatttgccgccagtaacgaactggaa
+            gtgaatgccacgcataaagatcgccagccggtcgattatgttatgaacggacatcagtat
+            cagttacctgatggcgctgtggtcattgctgcgataacctcgtgcaccaacacctctaac
+            ccaagtgtgctgatggccgcaggcttgctggcgaaaaaagccgtaactctgggcctcaag
+            cggcaaccatgggtcaaagcgtcgctggcaccgggttcgaaagtcgtttctgattatctg
+            gcaaaagcgaaactgacaccgtatctcgacgaactggggtttaaccttgtgggatacggt
+            tgtaccacctgtattggtaactctgggccgctgcccgatcctatcgaaacggcaatcaaa
+            aaaagcgatttaaccgtcggtgcggtgctgtccggcaaccgtaactttgaaggccgtatc
+            catccgctggttaaaactaactggctggcctcgccgccgctggtggttgcctatgcgctg
+            gcgggaaatatgaatatcaacctggcttctgagcctatcggccatgatcgcaaaggcgat
+            ccggtttatctgaaagatatctggccatcggcacaagaaattgcccgtgcggtagaacaa
+            gtctccacagaaatgttccgcaaagagtacgcagaagtttttgaaggcacagcagagtgg
+            aagggaattaacgtcacacgatccgatacctacggttggcaggaggactcaacctatatt
+            cgcttatcgcctttctttgatgaaatgcaggcaacaccagcaccagtggaagatattcac
+            ggtgcgcggatcctcgcaatgctgggggattcagtcaccactgaccatatctctccggcg
+            ggcagtattaagcccgacagcccagcgggtcgatatctacaaggtcggggtgttgagcga
+            aaagactttaactcctacggttcgcggcgtggtaaccatgaagtgatgatgcgcggcacc
+            ttcgccaatattcgcatccgtaatgaaatggtgcctggcgttgaaggggggatgacgcgg
+            catttacctgacagcgacgtagtctctatttatgatgctgcgatgcgctataagcaggag
+            caaacgccgctggcggtgattgccgggaaagagtatggatcaggctccagtcgtgactgg
+            gcggcaaaaggtccgcgtctgcttggtattcgtgtggtgattgccgaatcgtttgaacga
+            attcaccgttcgaatttaattggcatgggcatcctgccgctggaatttccgcaaggcgta
+            acgcgtaaaacgttagggctaaccggggaagagaagattgatattggcgatctgcaaaac
+            ctacaacccggcgcgacggttccggtgacgcttacgcgcgcggatggtagccaggaagtc
+            gtaccctgccgttgtcgtatcgacaccgcgacggagttgacctactaccagaacgacggc
+            attttgcattatgtcattcgtaatatgttgaagtaa
+///
+ENTRY       b0615             CDS       E.coli
+NAME        citF, ybdV
+DEFINITION  citrate lyase alpha chain [EC:4.1.3.6 2.8.3.10]
+ORTHOLOG    KO: K01037  citrate CoA-transferase
+            KO: K01643  citrate lyase alpha chain
+PATHWAY     PATH: eco00020  Citrate cycle (TCA cycle)
+            PATH: eco00720  Reductive carboxylate cycle (CO2 fixation)
+            PATH: eco02020  Two-component system - General
+POSITION    complement(647262..648794)
+MOTIF       Pfam: AcetylCoA_hydro CitF
+DBLINKS     Wisconsin: b0615
+            Colibri: citF
+            RegulonDB: b0615
+            NCBI-GI: 16128598
+            NCBI-GeneID: 945230
+            UniProt: P75726
+CODON_USAGE       T               C               A               G
+          T   2  11   1   1   6  12   0   6   3   5   1   0   1   7   0   3
+          C   5   3   0  36   1   1   4  11   6   8   7  15  19  15   1   1
+          A  16  14   1  10   2  19   2   3   6  14  14   3   2   9   0   0
+          G  14  10   8  17  11  13  10  18  17  15  26   3  17  25   0   0
+AASEQ       510
+            MTQKIEQSQRQERVAAWNRRAECDLAAFQNSPKQTYQAEKARDRKLCANLEEAIRRSGLQ
+            DGMTVSFHHAFRGGDLTVNMVMDVIAKMGFKNLTLASSSLSDCHAPLVEHIRQGVVTRIY
+            TSGLRGPLAEEISRGLLAEPVQIHSHGGRVHLVQSGELNIDVAFLGVPSCDEFGNANGYT
+            GKACCGSLGYAIVDADNAKQVVMLTEELLPYPHNPASIEQDQVDLIVKVDRVGDAAKIGA
+            GATRMTTNPRELLIARSAADVIVNSGYFKEGFSMQTGTGGASLAVTRFLEDKMRSRDIRA
+            DFALGGITATMVDLHEKGLIRKLLDVQSFDSHAAQSLARNPNHIEISANQYANWGSKGAS
+            VDRLDVVVLSALEIDTQFNVNVLTGSDGVLRGASGGHCDTAIASALSIIVAPLVRGRIPT
+            LVDNVLTCITPGSSVDILVTDHGIAVNPARPELAERLQEAGIKVVSIEWLRERARLLTGE
+            PQPIEFTDRVVAVVRYRDGSVIDVVHQVKE
+NTSEQ       1533
+            atgacgcagaaaattgaacaatctcaacgacaagaacgggtagcggcctggaatcgtcgc
+            gctgaatgcgatcttgccgctttccagaactcgccaaagcaaacctaccaggctgaaaaa
+            gcgcgcgatcgcaaactgtgcgccaacctggaagaagcgattcgtcgctctggtttacag
+            gacggcatgacggtttccttccatcacgctttccgtggcggtgacctgaccgtcaatatg
+            gtgatggacgtcatcgcgaagatgggctttaaaaacctgaccctggcgtccagctccctg
+            agtgattgccatgcgccgctggtagaacacattcgccagggcgtggttacccgcatttat
+            acctccggcctgcgtggtccactggcggaagagatctcccgtggtctgctggcagaaccg
+            gtgcagatccactctcacggcggtcgtgtgcatctggtacagagcggcgaactgaatatc
+            gacgtggctttcctcggcgtcccgtcctgtgatgaattcggtaatgccaacggctacacc
+            ggtaaagcctgctgcggctccctcggctatgcaatagttgatgccgacaacgcaaaacag
+            gtcgtgatgcttaccgaagaactgctgccttatccgcataatccggcaagcattgagcaa
+            gatcaggttgatttgatcgtcaaagttgaccgcgttggcgatgctgcaaaaatcggcgct
+            ggcgcgacccgtatgaccactaacccgcgcgaactgcttattgcccgtagcgctgcggat
+            gtgattgtcaactctggctacttcaaagaaggtttctccatgcaaaccggcaccggcggc
+            gcatcgctggcggtaacccgtttcctggaagacaaaatgcgtagccgcgatattcgcgcc
+            gacttcgcccttggcggtattaccgcgacgatggttgacctgcacgaaaaaggtctgatc
+            cgcaaactgctggatgtgcagagctttgacagccatgctgcgcaatcgctggcccgtaac
+            cccaatcacatcgaaatcagcgccaaccagtacgctaactggggttcgaaaggcgcatcg
+            gttgatcgtctcgacgtggtggtactgagcgcgctggaaattgacacccagttcaacgtt
+            aacgtgctgaccggctctgacggcgtactgcgtggtgcttccggtggtcactgcgatacc
+            gcgattgcctctgcgctttccatcatcgtcgcgccgctggtacgcggtcgtattccgact
+            ctggtggataacgtactgacctgcatcaccccaggctccagtgtcgatattctggtcaca
+            gaccacggtatcgcagttaacccggcacgtccggaactggcagaacgtctgcaggaagcg
+            ggcattaaagtggtttccattgagtggctgcgcgaacgtgcgcgtctgctgaccggtgaa
+            ccacagccgattgaattcacagaccgcgtcgttgccgttgtgcgttaccgcgatggctcg
+            gtgatcgatgttgtgcatcaggtgaaggaataa
+///
+ENTRY       b0616             CDS       E.coli
+NAME        citE, ybdW
+DEFINITION  citrate lyase beta chain (acyl lyase subunit) [EC:4.1.3.6 4.1.3.34]
+ORTHOLOG    KO: K01660  citryl-CoA lyase
+            KO: K01644  citrate lyase beta chain
+PATHWAY     PATH: eco00020  Citrate cycle (TCA cycle)
+            PATH: eco00720  Reductive carboxylate cycle (CO2 fixation)
+            PATH: eco02020  Two-component system - General
+POSITION    complement(648805..649713)
+DBLINKS     Wisconsin: b0616
+            Colibri: citE
+            RegulonDB: b0616
+            NCBI-GI: 90111153
+            NCBI-GeneID: 945406
+            UniProt: P0A9I1
+CODON_USAGE       T               C               A               G
+          T   4   3   0   4   2  11   0   2   3   3   1   0   2   0   0   1
+          C   1   5   0  22   1   1   0   8   1   5   4   6  11  17   0   0
+          A   9  10   0   6   2   9   1   0   1   9   8   1   0   3   0   0
+          G   7   5   2   9   8  16   6   9  10   9  23   2   9   8   2   1
+AASEQ       302
+            MISASLQQRKTRTRRSMLFVPGANAAMVSNSFIYPADALMFDLEDSVALREKDTARRMVY
+            HALQHPLYRDIETIVRVNALDSEWGVNDLEAVVRGGADVVRLPKTDTAQDVLDIEKEILR
+            IEKACGREPGSTGLLAAIESPLGITRAVEIAHASERLIGIALGAEDYVRNLRTERSPEGT
+            ELLFARCSILQAARSAGIQAFDTVYSDANNEAGFLQEAAHIKQLGFDGKSLINPRQIDLL
+            HNLYAPTQKEVDHARRVVEAAEAAAREGLGVVSLNGKMVDGPVIDRARLVLSRAELSGIR
+            EE
+NTSEQ       909
+            atgatttccgcttcgctgcaacaacgtaaaactcgcacccgccgcagcatgttgtttgtg
+            cctggtgccaatgccgcgatggtcagcaactccttcatctacccggctgatgccctgatg
+            tttgacctcgaagactccgtagcattgcgtgaaaaagacaccgcccgccgcatggtttac
+            cacgcgctgcaacatccgctgtatcgcgatattgaaaccattgtgcgtgtcaacgcgctg
+            gattccgaatggggtgttaacgacctggaagccgtcgttcgcggtggtgcggacgttgtg
+            cgtctgccgaaaaccgataccgctcaggatgttctggatattgaaaaagagatcctgcgt
+            atcgaaaaagcctgtggtcgtgaacccggcagcaccggcctgctggcggcgattgaatct
+            ccgctggggattacccgcgcagtggaaatcgctcacgcttccgagcgtttgatcggtatc
+            gccctcggtgcagaagactatgtgcgcaacctgcgtacagaacgctccccggaaggaact
+            gaactgctgttcgcacgctgttccattttgcaggccgcgcgctctgcgggtattcaggcg
+            ttcgataccgtctattccgacgctaacaacgaagccggatttctgcaagaagccgcccac
+            atcaaacagctgggctttgacggcaaatcgctgatcaacccgcgtcagattgatctgctg
+            cacaacctctacgcaccgacccagaaagaagtggatcacgcccgccgcgtcgtagaagcc
+            gctgaagccgccgctcgcgaaggcctcggcgtggtttccctgaacggcaagatggtggac
+            ggtccggttatcgatcgcgcccgtctggtgctctcccgtgcagaactttccggcatccgc
+            gaagaataa
+///
+ENTRY       b0617             CDS       E.coli
+NAME        citD, ybdX
+DEFINITION  citrate lyase acyl carrier protein (gamma chain) [EC:4.1.3.6]
+ORTHOLOG    KO: K01646  citrate lyase gamma chain
+PATHWAY     PATH: eco00020  Citrate cycle (TCA cycle)
+            PATH: eco00720  Reductive carboxylate cycle (CO2 fixation)
+            PATH: eco02020  Two-component system - General
+POSITION    complement(649710..650006)
+MOTIF       Pfam: MdcD CitD
+DBLINKS     Wisconsin: b0617
+            Colibri: citD
+            RegulonDB: b0617
+            NCBI-GI: 16128600
+            NCBI-GeneID: 945415
+            UniProt: P69330
+CODON_USAGE       T               C               A               G
+          T   1   0   1   0   1   0   0   0   0   1   0   0   0   2   1   1
+          C   1   2   0   8   0   1   2   1   0   0   2   4   1   5   1   0
+          A   3   4   2   2   0   3   0   1   2   2   3   0   0   3   0   0
+          G   3   1   1   2   1   5   5   0   6   4   1   3   1   4   0   1
+AASEQ       98
+            MKINQPAVAGTLESGDVMIRIAPLDTQDIDLQINSSVEKQFGDAIRTTILDVLARYNVRG
+            VQLNVDDKGALDCILRARLEALLARASGIPALPWEDCQ
+NTSEQ       297
+            atgaaaataaaccagcccgccgttgcaggcacccttgagtctggggatgtgatgatacgc
+            atcgccccactcgatacgcaggatatcgacctgcaaatcaatagcagcgttgagaaacag
+            tttggcgatgcaattcgcaccaccattctggacgttctcgcccgctacaacgtgcgcggc
+            gtacagctgaatgtcgatgacaaaggcgcactggactgcattttacgtgcacgactggaa
+            gccctgctggcacgcgccagcggtatcccggctctgccatgggaggattgccaatga
+///
+ENTRY       b1611             CDS       E.coli
+NAME        fumC
+DEFINITION  fumarase C (fumarate hydratase Class II) [EC:4.2.1.2]
+ORTHOLOG    KO: K01679  fumarate hydratase
+PATHWAY     PATH: eco00020  Citrate cycle (TCA cycle)
+            PATH: eco00720  Reductive carboxylate cycle (CO2 fixation)
+POSITION    complement(1683209..1684612)
+MOTIF       Pfam: Lyase_1
+            PROSITE: FUMARATE_LYASES
+DBLINKS     Wisconsin: b1611
+            Colibri: fumC
+            RegulonDB: b1611
+            NCBI-GI: 16129569
+            NCBI-GeneID: 946147
+            UniProt: P05042
+CODON_USAGE       T               C               A               G
+          T   7   4   6   6   2   5   4   5   3   1   1   0   4   3   0   5
+          C   5   6   2  27   3   1   3  12   7   8   7  11   9   9   1   2
+          A  11  11   0  18   4  11   5   5  11  15  21   3   5   7   0   0
+          G   5   7   6  11   7  13  11  26  12   7  21  12   8  13   3  10
+AASEQ       467
+            MNTVRSEKDSMGAIDVPADKLWGAQTQRSLEHFRISTEKMPTSLIHALALTKRAAAKVNE
+            DLGLLSEEKASAIRQAADEVLAGQHDDEFPLAIWQTGSGTQSNMNMNEVLANRASELLGG
+            VRGMERKVHPNDDVNKSQSSNDVFPTAMHVAALLALRKQLIPQLKTLTQTLNEKSRAFAD
+            IVKIGRTHLQDATPLTLGQEISGWVAMLEHNLKHIEYSLPHVAELALGGTAVGTGLNTHP
+            EYARRVADELAVITCAPFVTAPNKFEALATCDALVQAHGALKGLAASLMKIANDVRWLAS
+            GPRCGIGEISIPENEPGSSIMPGKVNPTQCEALTMLCCQVMGNDVAINMGGASGNFELNV
+            FRPMVIHNFLQSVRLLADGMESFNKHCAVGIEPNRERINQLLNESLMLVTALNTHIGYDK
+            AAEIAKKAHKEGLTLKAAALALGYLSEAEFDSWVRPEQMVGSMKAGR
+NTSEQ       1404
+            atgaatacagtacgcagcgaaaaagattcgatgggggcgattgatgtcccggcagataag
+            ctgtggggcgcacaaactcaacgctcgctggagcatttccgcatttcgacggagaaaatg
+            cccacctcactgattcatgcgctggcgctaaccaagcgtgcagcggcaaaagttaatgaa
+            gatttaggcttgttgtctgaagagaaagcgagcgccattcgtcaggcggcggatgaagta
+            ctggcaggacagcatgacgacgaattcccgctggctatctggcagaccggctccggcacg
+            caaagtaacatgaacatgaacgaagtgctggctaaccgggccagtgaattactcggcggt
+            gtgcgcgggatggaacgtaaagttcaccctaacgacgacgtgaacaaaagccaaagttcc
+            aacgatgtctttccgacggcgatgcacgttgcggcgctgctggcgctgcgcaagcaactc
+            attcctcagcttaaaaccctgacacagacactgaatgagaaatcccgtgcttttgccgat
+            atcgtcaaaattggtcgtactcacttgcaggatgccacgccgttaacgctggggcaggag
+            atttccggctgggtagcgatgctcgagcataatctcaaacatatcgaatacagcctgcct
+            cacgtagcggaactggctcttggcggtacagcggtgggtactggactaaatacccatccg
+            gagtatgcgcgtcgcgtagcagatgaactggcagtcattacctgtgcaccgtttgttacc
+            gcgccgaacaaatttgaagcgctggcgacctgtgatgccctggttcaggcgcacggcgcg
+            ttgaaagggttggctgcgtcactgatgaaaatcgccaatgatgtccgctggctggcctct
+            ggcccgcgctgcggaattggtgaaatctcaatcccggaaaatgagccgggcagctcaatc
+            atgccggggaaagtgaacccaacacagtgtgaggcattaaccatgctctgctgtcaggtg
+            atggggaacgacgtggcgatcaacatggggggcgcttccggtaactttgaactgaacgtc
+            ttccgtccaatggtgatccacaatttcctgcaatcggtgcgcttgctggcagatggcatg
+            gaaagttttaacaaacactgcgcagtgggtattgaaccgaatcgtgagcgaatcaatcaa
+            ttactcaatgaatcgctgatgctggtgactgcgcttaacacccacattggttatgacaaa
+            gccgccgagatcgccaaaaaagcgcataaagaagggctgaccttaaaagctgcggccctt
+            gcgctggggtatcttagcgaagccgagtttgacagctgggtacggccagaacagatggtc
+            ggcagtatgaaagccgggcgttaa
+///
+ENTRY       b1612             CDS       E.coli
+NAME        fumA
+DEFINITION  fumarase A (fumarate hydratase class I), aerobic isozyme
+            [EC:4.2.1.2]
+ORTHOLOG    KO: K01676  fumarate hydratase, class I
+PATHWAY     PATH: eco00020  Citrate cycle (TCA cycle)
+            PATH: eco00720  Reductive carboxylate cycle (CO2 fixation)
+POSITION    complement(1684755..1686401)
+MOTIF       Pfam: Fumerase Fumerase_C
+            PROSITE: FUMARATE_LYASES
+DBLINKS     Wisconsin: b1612
+            Colibri: fumA
+            RegulonDB: b1612
+            NCBI-GI: 16129570
+            NCBI-GeneID: 946826
+            UniProt: P0AC33
+CODON_USAGE       T               C               A               G
+          T   6  10   3   5   6   5   1   5  16  10   1   0   6   3   0   3
+          C   8   5   1  29   2   3   7  15   5   7   9  20   9  12   0   2
+          A  12  18   1  11   4  10   2  11  10  11  34   4   3   5   0   0
+          G   9   6   3  11   6  12   5  29  21   8  30   8  23  15   7   6
+AASEQ       548
+            MSNKPFHYQAPFPLKKDDTEYYLLTSEHVSVSEFEGQEILKVAPEALTLLARQAFHDASF
+            MLRPAHQQQVADILRDPEASENDKYVALQFLRNSDIAAKGVLPTCQDTGTAIIVGKKGQR
+            VWTGGGDEAALARGVYNTYIEDNLRYSQNAPLDMYKEVNTGTNLPAQIDLYAVDGDEYKF
+            LCIAKGGGSANKTYLYQETKALLTPGKLKNYLVEKMRTLGTAACPPYHIAFVIGGTSAET
+            NLKTVKLASAKYYDELPTEGNEHGQAFRDVELEKELLIEAQNLGLGAQFGGKYFAHDIRV
+            IRLPRHGASCPVGMGVSCSADRNIKAKINRQGIWIEKLEHNPGKYIPEELRKAGEGEAVR
+            VDLNRPMKEILAQLSQYPVSTRLSLNGTIIVGRDIAHAKLKERMDNGEGLPQYIKDHPIY
+            YAGPAKTPEGYASGSLGPTTAGRMDSYVDQLQAQGGSMIMLAKGNRSQQVTDACKKHGGF
+            YLGSIGGPAAVLAQGSIKSLECVEYPELGMEAIWKIEVEDFPAFILVDDKGNDFFQQIQL
+            TQCTRCVK
+NTSEQ       1647
+            atgtcaaacaaaccctttcattatcaggctccttttccactcaaaaaagatgatactgag
+            tattacctgctaaccagcgaacacgttagcgtatctgaatttgaagggcaggagattttg
+            aaagtcgcacccgaagcgttaactctgttggcgcgccaggcgtttcatgatgcgtcgttc
+            atgctgcgtccggcgcaccaacaacaggtggccgacattctgcgtgacccggaggccagc
+            gaaaatgataaatatgtggcgctgcaattcctgcgtaactccgacatcgcggcgaaaggc
+            gttctgccaacctgtcaggataccggcaccgcgattattgttggtaaaaaagggcagcgt
+            gtatggaccggtggtggtgatgaagcggcgctggcgcgcggtgtctataacacttatatc
+            gaagataatctgcgctactcgcaaaacgcgccgctggatatgtataaagaagtgaatacc
+            ggcaccaatctgccagcgcagatcgatctttatgccgttgatggcgacgaatacaaattc
+            ctctgtatcgccaaaggtggtggttcggcaaacaagacgtatctctatcaggaaaccaaa
+            gcgttactgacgccggggaaactgaaaaattacctggttgagaagatgcgcacgctgggt
+            acggcggcctgtcctccgtatcatattgcgttcgttattggtggaacttctgcagaaacg
+            aaccttaaaacggtgaaactggcttccgcgaaatactatgatgaactgccaacggaaggg
+            aatgagcacggtcaggcgttccgcgatgtggaactggaaaaagaattgctgatcgaagcg
+            caaaatcttggtctgggtgcgcagtttggtggtaaatacttcgctcacgacatccgcgtg
+            attcgcctgccacgtcacggcgcatcctgcccggtcggtatgggcgtctcctgctctgct
+            gaccgtaatatcaaagcgaagatcaaccgtcaggggatctggatcgaaaaactggaacat
+            aatccaggcaaatatatcccggaagagctgcgcaaagcgggagaaggcgaagcggtgcgc
+            gttgaccttaaccgtccgatgaaagagatcctcgcacagttgtcgcagtatcccgtttct
+            acacgcttatcgcttaacggcacgattatcgtcggtcgtgatattgctcacgccaaactg
+            aaagagcggatggataacggtgaagggctgccgcagtacatcaaagatcatccgatttac
+            tacgcgggtccggccaaaacgccggaaggttatgcctccggttctcttggcccaacgacc
+            gccggacggatggattcttatgtcgatcaactgcaagcgcagggcggaagtatgatcatg
+            ctggcgaaaggcaaccgcagccagcaggtgacggatgcctgtaaaaaacacggcggcttc
+            taccttggcagtatcggtggtccggccgctgtattggcgcagggaagtattaagagcctg
+            gaatgtgttgaatatccggaactgggaatggaagccatctggaaaattgaagtggaagat
+            ttcccggcgtttatccttgtggatgataaaggaaatgacttcttccagcagatacaactc
+            acacaatgcacccgctgtgtgaaataa
+///
+ENTRY       b4122             CDS       E.coli
+NAME        fumB
+DEFINITION  fumarase B (fumarate hydratase class I), anaerobic isozyme
+            [EC:4.2.1.2]
+ORTHOLOG    KO: K01676  fumarate hydratase, class I
+PATHWAY     PATH: eco00020  Citrate cycle (TCA cycle)
+            PATH: eco00720  Reductive carboxylate cycle (CO2 fixation)
+POSITION    complement(4343703..4345349)
+MOTIF       Pfam: Fumerase Fumerase_C
+            PROSITE: FUMARATE_LYASES
+DBLINKS     Wisconsin: b4122
+            Colibri: fumB
+            RegulonDB: b4122
+            NCBI-GI: 16131948
+            NCBI-GeneID: 948642
+            UniProt: P14407
+CODON_USAGE       T               C               A               G
+          T   6  11   2   1   3   8   4   3   8  18   1   0   1   8   0   3
+          C   7   9   1  31   3   2   7  15   4  11   7  23   6   9   1   0
+          A   8  23   0  11   6  19   0   4   2  19  33   5   1   6   1   0
+          G   7  11   4   8   6  15   7  25  14  15  28   8  18  30   0   2
+AASEQ       548
+            MSNKPFIYQAPFPMGKDNTEYYLLTSDYVSVADFDGETILKVEPEALTLLAQQAFHDASF
+            MLRPAHQKQVAAILHDPEASENDKYVALQFLRNSEIAAKGVLPTCQDTGTAIIVGKKGQR
+            VWTGGGDEETLSKGVYNTYIEDNLRYSQNAALDMYKEVNTGTNLPAQIDLYAVDGDEYKF
+            LCVAKGGGSANKTYLYQETKALLTPGKLKNFLVEKMRTLGTAACPPYHIAFVIGGTSAET
+            NLKTVKLASAHYYDELPTEGNEHGQAFRDVQLEQELLEEAQKLGLGAQFGGKYFAHDIRV
+            IRLPRHGASCPVGMGVSCSADRNIKAKINREGIWIEKLEHNPGQYIPQELRQAGEGEAVK
+            VDLNRPMKEILAQLSQYPVSTRLSLTGTIIVGRDIAHAKLKELIDAGKELPQYIKDHPIY
+            YAGPAKTPAGYPSGSLGPTTAGRMDSYVDLLQSHGGSMIMLAKGNRSQQVTDACHKHGGF
+            YLGSIGGPAAVLAQQSIKHLECVAYPELGMEAIWKIEVEDFPAFILVDDKGNDFFQQIVN
+            KQCANCTK
+NTSEQ       1647
+            atgtcaaacaaaccctttatctaccaggcacctttcccgatggggaaagacaataccgaa
+            tactatctactcacttccgattacgttagcgttgccgacttcgacggcgaaaccatcctg
+            aaagtggaaccagaagccctgaccctgctggcgcagcaagcctttcacgacgcttctttt
+            atgctccgcccggcacaccagaaacaggttgcggctattcttcacgatccagaagccagc
+            gaaaacgacaagtacgtggcgctgcaattcttaagaaactccgaaatcgccgccaaaggc
+            gtgctgccgacctgccaggataccggcaccgcgatcatcgtcggtaaaaaaggccagcgc
+            gtgtggaccggcggcggtgatgaagaaacgctgtcgaaaggcgtctataacacctatatc
+            gaagataacctgcgctattcacagaatgcggcgctggacatgtacaaagaggtcaacacc
+            ggcactaacctgcctgcgcaaatcgacctgtacgcggtagatggcgatgagtacaaattc
+            ctttgcgttgcgaaaggcggcggctctgccaacaaaacgtatctctaccaggaaaccaaa
+            gccctgctgactcccggcaaactgaaaaacttcctcgtcgagaaaatgcgtaccctcggt
+            actgcagcctgcccgccgtaccatatcgcgtttgtgattggcggtacgtctgcggaaacc
+            aacctgaaaaccgtcaagttagcaagcgctcactattacgatgaactgccgacggaaggg
+            aacgaacatggtcaggcgttccgcgatgtccagctggaacaggaactgctggaagaggcc
+            cagaaactcggtcttggcgcgcagtttggcggtaaatacttcgcgcacgacattcgcgtt
+            atccgtctgccacgtcacggcgcatcctgcccggtcggcatgggcgtctcctgctccgct
+            gaccgtaacattaaagcgaaaatcaaccgcgaaggtatctggatcgaaaaactggaacac
+            aacccaggccagtacattccacaagaactgcgccaggccggtgaaggcgaagcggtgaaa
+            gttgaccttaaccgcccgatgaaagagatcctcgcccagctttcgcaatacccggtatcc
+            actcgtttgtcgctcaccggcaccattatcgtgggccgagatattgcacacgccaagctg
+            aaagagctgattgacgccggtaaagaacttccgcagtacatcaaagatcacccgatctac
+            tacgcgggtccggcgaaaacccctgccggttatccatcaggttcacttggcccaaccacc
+            gcaggccgtatggactcctacgtggatctgctgcaatcccacggcggcagcatgatcatg
+            ctggcgaaaggtaaccgcagtcagcaggttaccgacgcgtgtcataaacacggcggcttc
+            tacctcggtagcatcggcggtccggcggcggtactggcgcagcagagcatcaagcatctg
+            gagtgcgtcgcttatccggagctgggtatggaagctatctggaaaatcgaagtagaagat
+            ttcccggcgtttatcctggtcgatgacaaaggtaacgacttcttccagcaaatcgtcaac
+            aaacagtgcgcgaactgcactaagtaa
+///
+ENTRY       b0720             CDS       E.coli
+NAME        gltA, gluT, icdB
+DEFINITION  citrate synthase [EC:2.3.3.1]
+ORTHOLOG    KO: K01647  citrate synthase
+PATHWAY     PATH: eco00020  Citrate cycle (TCA cycle)
+            PATH: eco00630  Glyoxylate and dicarboxylate metabolism
+POSITION    complement(752408..753691)
+MOTIF       Pfam: Citrate_synt
+            PROSITE: CITRATE_SYNTHASE
+DBLINKS     Wisconsin: b0720
+            Colibri: gltA
+            RegulonDB: b0720
+            NCBI-GI: 16128695
+            NCBI-GeneID: 945323
+            UniProt: P0ABH7
+CODON_USAGE       T               C               A               G
+          T   8  14   0   1   7   7   3   4   6  10   1   0   4   3   0   3
+          C   0   4   0  30   2   0   3  14   5  10   1   7  16   8   0   0
+          A  15  13   0  19   5  16   3   4   6  11  18   5   1   3   0   0
+          G   9   3   1   7   9   8   7  13  15  12  22   4  17   8   2   1
+AASEQ       427
+            MADTKAKLTLNGDTAVELDVLKGTLGQDVIDIRTLGSKGVFTFDPGFTSTASCESKITFI
+            DGDEGILLHRGFPIDQLATDSNYLEVCYILLNGEKPTQEQYDEFKTTVTRHTMIHEQITR
+            LFHAFRRDSHPMAVMCGITGALAAFYHDSLDVNNPRHREIAAFRLLSKMPTMAAMCYKYS
+            IGQPFVYPRNDLSYAGNFLNMMFSTPCEPYEVNPILERAMDRILILHADHEQNASTSTVR
+            TAGSSGANPFACIAAGIASLWGPAHGGANEAALKMLEEISSVKHIPEFVRRAKDKNDSFR
+            LMGFGHRVYKNYDPRATVMRETCHEVLKELGTKDDLLEVAMELENIALNDPYFIEKKLYP
+            NVDFYSGIILKAMGIPSSMFTVIFAMARTVGWIAHWSEMHSDGMKIARPRQLYTGYEKRD
+            FKSDIKR
+NTSEQ       1284
+            atggctgatacaaaagcaaaactcaccctcaacggggatacagctgttgaactggatgtg
+            ctgaaaggcacgctgggtcaagatgttattgatatccgtactctcggttcaaaaggtgtg
+            ttcacctttgacccaggcttcacttcaaccgcatcctgcgaatctaaaattacttttatt
+            gatggtgatgaaggtattttgctgcaccgcggtttcccgatcgatcagctggcgaccgat
+            tctaactacctggaagtttgttacatcctgctgaatggtgaaaaaccgactcaggaacag
+            tatgacgaatttaaaactacggtgacccgtcataccatgatccacgagcagattacccgt
+            ctgttccatgctttccgtcgcgactcgcatccaatggcagtcatgtgtggtattaccggc
+            gcgctggcggcgttctatcacgactcgctggatgttaacaatcctcgtcaccgtgaaatt
+            gccgcgttccgcctgctgtcgaaaatgccgaccatggccgcgatgtgttacaagtattcc
+            attggtcagccatttgtttacccgcgcaacgatctctcctacgccggtaacttcctgaat
+            atgatgttctccacgccgtgcgaaccgtatgaagttaatccgattctggaacgtgctatg
+            gaccgtattctgatcctgcacgctgaccatgaacagaacgcctctacctccaccgtgcgt
+            accgctggctcttcgggtgcgaacccgtttgcctgtatcgcagcaggtattgcttcactg
+            tggggacctgcgcacggcggtgctaacgaagcggcgctgaaaatgctggaagaaatcagc
+            tccgttaaacacattccggaatttgttcgtcgtgcgaaagacaaaaatgattctttccgc
+            ctgatgggcttcggtcaccgcgtgtacaaaaattacgacccgcgcgccaccgtaatgcgt
+            gaaacctgccatgaagtgctgaaagagctgggcacgaaggatgacctgctggaagtggct
+            atggagctggaaaacatcgcgctgaacgacccgtactttatcgagaagaaactgtacccg
+            aacgtcgatttctactctggtatcatcctgaaagcgatgggtattccgtcttccatgttc
+            accgtcattttcgcaatggcacgtaccgttggctggatcgcccactggagcgaaatgcac
+            agtgacggtatgaagattgcccgtccgcgtcagctgtatacaggatatgaaaaacgcgac
+            tttaaaagcgatatcaagcgttaa
+///
+ENTRY       b0801             CDS       E.coli
+NAME        ybiC
+DEFINITION  putative dehydrogenase [EC:1.1.1.37]
+ORTHOLOG    KO: K00025  malate dehydrogenase
+PATHWAY     PATH: eco00020  Citrate cycle (TCA cycle)
+            PATH: eco00620  Pyruvate metabolism
+            PATH: eco00630  Glyoxylate and dicarboxylate metabolism
+            PATH: eco00710  Carbon fixation
+            PATH: eco00720  Reductive carboxylate cycle (CO2 fixation)
+POSITION    835574..836659
+MOTIF       Pfam: Ldh_2
+DBLINKS     Wisconsin: b0801
+            Colibri: ybiC
+            RegulonDB: b0801
+            NCBI-GI: 16128769
+            NCBI-GeneID: 945412
+            UniProt: P30178
+CODON_USAGE       T               C               A               G
+          T  10   6   4   5   1   2   1   4   1   3   1   0   6   2   0   6
+          C   5   2   2   8   1   2   4  13  15   5   3  17   4   7   0   2
+          A  14   8   0   9   1   9   0   8   3   8  10   2   4   7   0   0
+          G   5   7   3   7   3  15   8  21  14   2  12   8  12  12   1   7
+AASEQ       361
+            MESGHRFDAQTLHSFIQAVFRQMGSEEQEAKLVADHLIAANLAGHDSHGIGMIPSYVRSW
+            SQGHLQINHHAKTVKEAGAAVTLDGDRAFGQVAAHEAMALGIEKAHQHGIAAVALHNSHH
+            IGRIGYWAEQCAAAGFVSIHFVSVVGIPMVAPFHGRDSRFGTNPFCVVFPRKDNFPLLLD
+            YATSAIAFGKTRVAWHKGVPVPPGCLIDVNGVPTTNPAVMQESPLGSLLTFAEHKGYALA
+            AMCEILGGALSGGKTTHQETLQTSPDAILNCMTTIIINPELFGAPDCNAQTEAFAEWVKA
+            SPHDDDKPILLPGEWEVNTRRERQKQGIPLDAGSWQAICDAARQIGMPEETLQAFCQQLA
+            S
+NTSEQ       1086
+            atggaaagtggtcatcgctttgatgctcagacgctgcacagttttattcaggctgtattt
+            cgtcagatgggtagcgaggaacaagaagcgaaattagttgccgatcatttaatcgcggca
+            aacctggcagggcatgattcacatggtattggcatgatcccaagctatgtacgctcctgg
+            agtcaggggcacctgcaaattaaccatcatgccaaaaccgttaaagaggcgggggcggcg
+            gtcacgctcgatggcgatcgcgcatttggtcaggtcgcggcacatgaagcgatggcgctg
+            gggattgagaaagcgcatcagcacggtattgccgccgtggcgctacataactcgcatcat
+            atcggccgtatcggttactgggcggagcagtgtgcagcggcggggtttgtctctatccac
+            tttgttagcgtggtcggtattccaatggtcgcgccgttccacggtcgcgacagccgcttt
+            ggcaccaatccgttctgtgtggttttccctcgtaaagataatttcccgctgttgcttgat
+            tacgccaccagcgccattgcatttggcaaaacccgcgtcgcctggcataaaggcgtcccc
+            gtgccgccaggttgcctgattgacgttaacggcgtgccgacgaccaatccggcggtaatg
+            caggagtcgccgttgggttcgctgttgacctttgccgaacataaaggctacgcccttgca
+            gcgatgtgtgaaattcttggcggggcgctttccggcggtaaaacgacgcatcaggaaacg
+            ttacaaaccagtcccgatgccattcttaactgcatgaccactatcatcatcaacccggaa
+            ctcttcggcgcgccggattgtaacgcgcagaccgaagcctttgccgagtgggtgaaagcc
+            tcgccgcatgatgatgataagccgattttgctaccgggcgagtgggaagtgaacacgcgt
+            cgcgaacggcagaagcaggggattccactggatgcgggaagctggcaggccatttgtgat
+            gcagcgcggcagattggtatgccggaagagacgttgcaggctttctgtcagcagttagcc
+            agctaa
+///
+ENTRY       b3236             CDS       E.coli
+NAME        mdh
+DEFINITION  malate dehydrogenase [EC:1.1.1.37]
+ORTHOLOG    KO: K00026  malate dehydrogenase
+PATHWAY     PATH: eco00020  Citrate cycle (TCA cycle)
+            PATH: eco00620  Pyruvate metabolism
+            PATH: eco00630  Glyoxylate and dicarboxylate metabolism
+            PATH: eco00710  Carbon fixation
+            PATH: eco00720  Reductive carboxylate cycle (CO2 fixation)
+POSITION    complement(3381352..3382290)
+MOTIF       Pfam: DapB_N Ldh_1_N Ldh_1_C
+            PROSITE: MDH
+DBLINKS     Wisconsin: b3236
+            Colibri: mdh
+            RegulonDB: b3236
+            NCBI-GI: 16131126
+            NCBI-GeneID: 947854
+            UniProt: P61889
+CODON_USAGE       T               C               A               G
+          T   6   4   1   0   9   2   3   0   2   2   1   0   1   2   0   0
+          C   2   2   1  27   3   1   2   7   1   1   4  10   7   1   0   0
+          A   7  10   0   4   5  10   1   2   1  10  18   3   1   2   0   0
+          G  18   5   2   9   9   6  10  10   9   3  17   3  17  18   0   1
+AASEQ       312
+            MKVAVLGAAGGIGQALALLLKTQLPSGSELSLYDIAPVTPGVAVDLSHIPTAVKIKGFSG
+            EDATPALEGADVVLISAGVARKPGMDRSDLFNVNAGIVKNLVQQVAKTCPKACIGIITNP
+            VNTTVAIAAEVLKKAGVYDKNKLFGVTTLDIIRSNTFVAELKGKQPGEVEVPVIGGHSGV
+            TILPLLSQVPGVSFTEQEVADLTKRIQNAGTEVVEAKAGGGSATLSMGQAAARFGLSLVR
+            ALQGEQGVVECAYVEGDGQYARFFSQPLLLGKNGVEERKSIGTLSAFEQNALEGMLDTLK
+            KDIALGEEFVNK
+NTSEQ       939
+            atgaaagtcgcagtcctcggcgctgctggcggtattggccaggcgcttgcactactgtta
+            aaaacccaactgccttcaggttcagaactctctctgtatgatatcgctccagtgactccc
+            ggtgtggctgtcgatctgagccatatccctactgctgtgaaaatcaaaggtttttctggt
+            gaagatgcgactccggcgctggaaggcgcagatgtcgttcttatctctgcaggcgtagcg
+            cgtaaaccgggtatggatcgttccgacctgtttaacgttaacgccggcatcgtgaaaaac
+            ctggtacagcaagttgcgaaaacctgcccgaaagcgtgcattggtattatcactaacccg
+            gttaacaccacagttgcaattgctgctgaagtgctgaaaaaagccggtgtttatgacaaa
+            aacaaactgttcggcgttaccacgctggatatcattcgttccaacacctttgttgcggaa
+            ctgaaaggcaaacagccaggcgaagttgaagtgccggttattggcggtcactctggtgtt
+            accattctgccgctgctgtcacaggttcctggcgttagttttaccgagcaggaagtggct
+            gatctgaccaaacgcatccagaacgcgggtactgaagtggttgaagcgaaggccggtggc
+            gggtctgcaaccctgtctatgggccaggcagctgcacgttttggtctgtctctggttcgt
+            gcactgcagggcgaacaaggcgttgtcgaatgtgcctacgttgaaggcgacggtcagtac
+            gcccgtttcttctctcaaccgctgctgctgggtaaaaacggcgtggaagagcgtaaatct
+            atcggtaccctgagcgcatttgaacagaacgcgctggaaggtatgctggatacgctgaag
+            aaagatatcgccctgggcgaagagttcgttaataagtaa
+///
+ENTRY       b3403             CDS       E.coli
+NAME        pckA
+DEFINITION  phosphoenolpyruvate carboxykinase [EC:4.1.1.49]
+ORTHOLOG    KO: K01610  phosphoenolpyruvate carboxykinase (ATP)
+PATHWAY     PATH: eco00020  Citrate cycle (TCA cycle)
+            PATH: eco00620  Pyruvate metabolism
+            PATH: eco00710  Carbon fixation
+POSITION    3530840..3532462
+MOTIF       Pfam: PEPCK_ATP
+            PROSITE: PEPCK_ATP
+DBLINKS     Wisconsin: b3403
+            Colibri: pckA
+            RegulonDB: b3403
+            NCBI-GI: 16131280
+            NCBI-GeneID: 945667
+            UniProt: P22259
+CODON_USAGE       T               C               A               G
+          T   8  20   1   3   6   8   2   5   8   9   1   0   1   4   0   9
+          C   4   7   0  31   3   0   5  19   3   6   2  13  13   9   0   0
+          A   7  20   0  11  15  27   1   2   3  24  26   8   1   3   0   1
+          G  13   6   3  10  10  11   6  18  22  16  23   7  17  27   0   3
+AASEQ       540
+            MRVNNGLTPQELEAYGISDVHDIVYNPSYDLLYQEELDPSLTGYERGVLTNLGAVAVDTG
+            IFTGRSPKDKYIVRDDTTRDTFWWADKGKGKNDNKPLSPETWQHLKGLVTRQLSGKRLFV
+            VDAFCGANPDTRLSVRFITEVAWQAHFVKNMFIRPSDEELAGFKPDFIVMNGAKCTNPQW
+            KEQGLNSENFVAFNLTERMQLIGGTWYGGEMKKGMFSMMNYLLPLKGIASMHCSANVGEK
+            GDVAVFFGLSGTGKTTLSTDPKRRLIGDDEHGWDDDGVFNFEGGCYAKTIKLSKEAEPEI
+            YNAIRRDALLENVTVREDGTIDFDDGSKTENTRVSYPIYHIDNIVKPVSKAGHATKVIFL
+            TADAFGVLPPVSRLTADQTQYHFLSGFTAKLAGTERGITEPTPTFSACFGAAFLSLHPTQ
+            YAEVLVKRMQAAGAQAYLVNTGWNGTGKRISIKDTRAIIDAILNGSLDNAETFTLPMFNL
+            AIPTELPGVDTKILDPRNTYASPEQWQEKAETLAKLFIDNFDKYTDTPAGAALVAAGPKL
+NTSEQ       1623
+            atgcgcgttaacaatggtttgaccccgcaagaactcgaggcttatggtatcagtgacgta
+            catgatatcgtttacaacccaagctacgacctgctgtatcaggaagagctcgatccgagc
+            ctgacaggttatgagcgcggggtgttaactaatctgggtgccgttgccgtcgataccggg
+            atcttcaccggtcgttcaccaaaagataagtatatcgtccgtgacgataccactcgcgat
+            actttctggtgggcagacaaaggcaaaggtaagaacgacaacaaacctctctctccggaa
+            acctggcagcatctgaaaggcctggtgaccaggcagctttccggcaaacgtctgttcgtt
+            gtcgacgctttctgtggtgcgaacccggatactcgtctttccgtccgtttcatcaccgaa
+            gtggcctggcaggcgcattttgtcaaaaacatgtttattcgcccgagcgatgaagaactg
+            gcaggtttcaaaccagactttatcgttatgaacggcgcgaagtgcactaacccgcagtgg
+            aaagaacagggtctcaactccgaaaacttcgtggcgtttaacctgaccgagcgcatgcag
+            ctgattggcggcacctggtacggcggcgaaatgaagaaagggatgttctcgatgatgaac
+            tacctgctgccgctgaaaggtatcgcttctatgcactgctccgccaacgttggtgagaaa
+            ggcgatgttgcggtgttcttcggcctttccggcaccggtaaaaccaccctttccaccgac
+            ccgaaacgtcgcctgattggcgatgacgaacacggctgggacgatgacggcgtgtttaac
+            ttcgaaggcggctgctacgcaaaaactatcaagctgtcgaaagaagcggaacctgaaatc
+            tacaacgctatccgtcgtgatgcgttgctggaaaacgtcaccgtgcgtgaagatggcact
+            atcgactttgatgatggttcaaaaaccgagaacacccgcgtttcttatccgatctatcac
+            atcgataacattgttaagccggtttccaaagcgggccacgcgactaaggttatcttcctg
+            actgctgatgctttcggcgtgttgccgccggtttctcgcctgactgccgatcaaacccag
+            tatcacttcctctctggcttcaccgccaaactggccggtactgagcgtggcatcaccgaa
+            ccgacgccaaccttctccgcttgcttcggcgcggcattcctgtcgctgcacccgactcag
+            tacgcagaagtgctggtgaaacgtatgcaggcggcgggcgcgcaggcttatctggttaac
+            actggctggaacggcactggcaaacgtatctcgattaaagatacccgcgccattatcgac
+            gccatcctcaacggttcgctggataatgcagaaaccttcactctgccgatgtttaacctg
+            gcgatcccaaccgaactgccgggcgtagacacgaagattctcgatccgcgtaacacctac
+            gcttctccggaacagtggcaggaaaaagccgaaaccctggcgaaactgtttatcgacaac
+            ttcgataaatacaccgacacccctgcgggtgccgcgctggtagcggctggtccgaaactg
+            taa
+///

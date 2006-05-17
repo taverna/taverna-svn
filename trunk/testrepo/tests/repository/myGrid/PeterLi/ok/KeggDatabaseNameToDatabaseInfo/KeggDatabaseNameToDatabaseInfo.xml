@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<s:scufl xmlns:s="http://org.embl.ebi.escience/xscufl/0.1alpha" version="0.1" log="3">
+  <s:processor name="dbinfo">
+    <s:arbitrarywsdl>
+      <s:wsdl>http://soap.genome.ad.jp/KEGG.wsdl</s:wsdl>
+      <s:operation>dbinfo</s:operation>
+    </s:arbitrarywsdl>
+  </s:processor>
+  <s:link>
+    <s:input>dbinfo:dbname</s:input>
+    <s:output>database_name</s:output>
+  </s:link>
+  <s:link>
+    <s:input>database_info</s:input>
+    <s:output>dbinfo:return</s:output>
+  </s:link>
+  <s:source>
+    database_name
+    <s:metadata>
+      <s:mimeTypes />
+      <s:description />
+      <s:semanticType />
+    </s:metadata>
+  </s:source>
+  <s:sink>
+    database_info
+    <s:metadata>
+      <s:mimeTypes />
+      <s:description />
+      <s:semanticType />
+    </s:metadata>
+  </s:sink>
+</s:scufl>
+
+

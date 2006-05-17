@@ -1,0 +1,5 @@
+% Generate a seed registration transform based on the bone surface
+addpath /disk1/newsoaplab/bone_thickness/TWilliams/Code/new
+% Creates load T_z013LB1.mat
+cd /disk1/newsoaplab/bone_thickness/TWilliams/Code/Data/Transforms
+build_seed_transforms({'/disk1/newsoaplab/bone_thickness/TWilliams/Code/Data/Surfaces/CorrBone'});;

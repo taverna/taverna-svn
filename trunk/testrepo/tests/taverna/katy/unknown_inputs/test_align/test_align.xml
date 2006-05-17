@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<s:scufl xmlns:s="http://org.embl.ebi.escience/xscufl/0.1alpha" version="0.2" log="0">
+  <s:workflowdescription lsid="urn:lsid:www.mygrid.org.uk:operation:1R3W6HJ8CG101" author="" title="" />
+  <s:processor name="GetFasta">
+    <s:description>The FASTA format is widely used in bioinformatics community;
+ it consists of a definition line, new line followed by a
+ sequence terminated by a second new line.</s:description>
+    <s:seqhound>
+      <s:method>SHoundGetFasta</s:method>
+      <s:server>seqhound.blueprint.org</s:server>
+      <s:jseqremserver>skinner.blueprint.org:8080</s:jseqremserver>
+      <s:path>/cgi-bin/seqrem</s:path>
+      <s:jseqrempath>/jseqhound/jseqrem</s:jseqrempath>
+    </s:seqhound>
+  </s:processor>
+  <s:processor name="emma">
+    <s:description>Multiple alignment program - interface to
+                  ClustalW program</s:description>
+    <s:soaplabwsdl>http://www.ebi.ac.uk/soaplab/services/alignment_multiple.emma</s:soaplabwsdl>
+  </s:processor>
+  <s:link source="fasta_seqs" sink="GetFasta:gi" />
+  <s:link source="GetFasta:result" sink="emma:sequence_direct_data" />
+  <s:link source="GetFasta:result" sink="fasta_seqs" />
+  <s:link source="emma:outseq" sink="alignment" />
+  <s:source name="fasta_seqs" />
+  <s:sink name="fasta_seqs" />
+  <s:sink name="alignment" />
+</s:scufl>
+
+

@@ -1,0 +1,250 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<s:scufl xmlns:s="http://org.embl.ebi.escience/xscufl/0.1alpha" version="0.2" log="0">
+  <s:workflowdescription lsid="urn:lsid:www.mygrid.org.uk:operation:BYHF8X3XKX22" author="ernst" title="compareAGIsFoundByKeywordandSimilarityandPhytoprot">-retrieves all Protein sequences related to the given AGI_Locus code and Blasts them against MIPS Arabidopsis proteins.The AGI-Codes are then extracted from the Blast results and given back.
+-retrieves all AGI_LocusCodes related to a given Keyword and gives them back.
+- retrieves all AGI_LocusCodes related to a given PHYTOPROT_CLUSTER_Id and gives them back
+- compares the AGI_Codes found for a Keyword to the AGI_Codes found by Similarity and gives back Intersection, Union and Difference
+compares the AGI_Codes found for a Keyword to the AGI_Codes found by Phytoprote and gives back Intersection, Union and Difference</s:workflowdescription>
+  <s:processor name="Namespace" boring="true">
+    <s:stringconstant>Global_Keyword</s:stringconstant>
+  </s:processor>
+  <s:processor name="ID1" boring="true">
+    <s:stringconstant>At1g31540</s:stringconstant>
+  </s:processor>
+  <s:processor name="ID" boring="true">
+    <s:stringconstant>disease</s:stringconstant>
+  </s:processor>
+  <s:processor name="Parse_moby_data1">
+    <s:local>org.embl.ebi.escience.scuflworkers.biomoby.ExtractMobyData</s:local>
+  </s:processor>
+  <s:processor name="Namespace1" boring="true">
+    <s:stringconstant>AGI_LocusCode</s:stringconstant>
+  </s:processor>
+  <s:processor name="Regex" boring="true">
+    <s:stringconstant>A[Tt][0-9][Gg][0-9]{5,5}</s:stringconstant>
+  </s:processor>
+  <s:processor name="Create_moby_data1">
+    <s:local>org.embl.ebi.escience.scuflworkers.biomoby.CreateMobyData</s:local>
+  </s:processor>
+  <s:processor name="Cluster_Id" boring="true">
+    <s:stringconstant>2</s:stringconstant>
+  </s:processor>
+  <s:processor name="replace_G_by_g">
+    <s:beanshell>
+      <s:scriptvalue>java.util.regex.Pattern p = java.util.regex.Pattern.compile("G");
+
+java.util.regex.Matcher m = p.matcher(in);
+
+StringBuffer outb = new StringBuffer();
+
+if(m.find()){
+    outb.append(m.replaceFirst("g"));
+}
+
+out = outb.toString();</s:scriptvalue>
+      <s:beanshellinputlist>
+        <s:beanshellinput s:syntactictype="'text/plain'">in</s:beanshellinput>
+      </s:beanshellinputlist>
+      <s:beanshelloutputlist>
+        <s:beanshelloutput s:syntactictype="'text/plain'">out</s:beanshelloutput>
+      </s:beanshelloutputlist>
+    </s:beanshell>
+  </s:processor>
+  <s:processor name="ExtractMatchingRegex">
+    <s:beanshell>
+      <s:scriptvalue>ArrayList matches = new ArrayList();
+java.util.regex.Pattern p = java.util.regex.Pattern.compile(regex);
+
+java.util.regex.Matcher m = p.matcher(in);
+
+while(m.find()){
+    matches.add(m.group());
+}</s:scriptvalue>
+      <s:beanshellinputlist>
+        <s:beanshellinput s:syntactictype="'text/plain'">in</s:beanshellinput>
+        <s:beanshellinput s:syntactictype="'text/plain'">regex</s:beanshellinput>
+      </s:beanshellinputlist>
+      <s:beanshelloutputlist>
+        <s:beanshelloutput s:syntactictype="'text/plain'">matches</s:beanshelloutput>
+      </s:beanshelloutputlist>
+    </s:beanshell>
+  </s:processor>
+  <s:processor name="replace_T_by_t">
+    <s:beanshell>
+      <s:scriptvalue>java.util.regex.Pattern p = java.util.regex.Pattern.compile("T");
+
+java.util.regex.Matcher m = p.matcher(in);
+
+StringBuffer outb = new StringBuffer();
+
+if(m.find()){
+    outb.append(m.replaceFirst("t"));
+}
+
+out = outb.toString();</s:scriptvalue>
+      <s:beanshellinputlist>
+        <s:beanshellinput s:syntactictype="'text/plain'">in</s:beanshellinput>
+      </s:beanshellinputlist>
+      <s:beanshelloutputlist>
+        <s:beanshelloutput s:syntactictype="'text/plain'">out</s:beanshelloutput>
+      </s:beanshelloutputlist>
+    </s:beanshell>
+  </s:processor>
+  <s:processor name="Create_moby_data">
+    <s:local>org.embl.ebi.escience.scuflworkers.biomoby.CreateMobyData</s:local>
+  </s:processor>
+  <s:processor name="Parse_moby_data">
+    <s:local>org.embl.ebi.escience.scuflworkers.biomoby.ExtractMobyData</s:local>
+  </s:processor>
+  <s:processor name="Create_moby_data2">
+    <s:local>org.embl.ebi.escience.scuflworkers.biomoby.CreateMobyData</s:local>
+  </s:processor>
+  <s:processor name="CountAGI_Codes">
+    <s:beanshell>
+      <s:scriptvalue>int count = 0;
+java.util.regex.Pattern p = java.util.regex.Pattern.compile(regex);
+
+java.util.regex.Matcher m = p.matcher(in);
+
+while(m.find()){
+    count +=1;
+}</s:scriptvalue>
+      <s:beanshellinputlist>
+        <s:beanshellinput s:syntactictype="'text/plain'">regex</s:beanshellinput>
+        <s:beanshellinput s:syntactictype="'text/plain'">in</s:beanshellinput>
+      </s:beanshellinputlist>
+      <s:beanshelloutputlist>
+        <s:beanshelloutput s:syntactictype="'text/plain'">count</s:beanshelloutput>
+      </s:beanshelloutputlist>
+    </s:beanshell>
+  </s:processor>
+  <s:processor name="Space" boring="true">
+    <s:stringconstant />
+  </s:processor>
+  <s:processor name="Intersection_Keyword_AND_Similarity">
+    <s:local>org.embl.ebi.escience.scuflworkers.java.StringSetIntersection</s:local>
+  </s:processor>
+  <s:processor name="Difference_Keyword_NOT_Similarity">
+    <s:local>org.embl.ebi.escience.scuflworkers.java.StringSetDifference</s:local>
+  </s:processor>
+  <s:processor name="Intersection_Similarity_AND_Phytoprot">
+    <s:local>org.embl.ebi.escience.scuflworkers.java.StringSetIntersection</s:local>
+  </s:processor>
+  <s:processor name="Difference_Keyword_NOT_Phytoprot">
+    <s:local>org.embl.ebi.escience.scuflworkers.java.StringSetDifference</s:local>
+  </s:processor>
+  <s:processor name="Intersection_Keyword_AND_Similarity_AND_Phytoprot">
+    <s:local>org.embl.ebi.escience.scuflworkers.java.StringSetIntersection</s:local>
+  </s:processor>
+  <s:processor name="Intersection_Keyword_AND_Phytoprot">
+    <s:local>org.embl.ebi.escience.scuflworkers.java.StringSetIntersection</s:local>
+  </s:processor>
+  <s:processor name="Difference_Similarity_NOT_Phytoprot">
+    <s:local>org.embl.ebi.escience.scuflworkers.java.StringSetDifference</s:local>
+  </s:processor>
+  <s:processor name="Namespace2" boring="true">
+    <s:stringconstant>PHYTOPROT_CLUSTER_Id</s:stringconstant>
+  </s:processor>
+  <s:processor name="Merge_string_list_to_string">
+    <s:local>org.embl.ebi.escience.scuflworkers.java.StringListMerge</s:local>
+  </s:processor>
+  <s:processor name="getMIPSArabidopsisProteinSequence">
+    <s:description>retrieves a collection of MIPS Arabidopsis protein sequences related to a given Keyword or AGI-Code from MAtDB (e.g."wuschel", "At2g42410").</s:description>
+    <s:biomobywsdl>
+      <s:mobyEndpoint>http://mips.gsf.de/cgi-bin/proj/planet/moby/MOBY-Central.pl</s:mobyEndpoint>
+      <s:serviceName>getMIPSArabidopsisProteinSequence</s:serviceName>
+      <s:authorityName>mips.gsf.de</s:authorityName>
+    </s:biomobywsdl>
+  </s:processor>
+  <s:processor name="getAGILocusCodes">
+    <s:description>returns a collection of AGI_LocusCodes which are somehow related to a given Keyword in their MAtDB annotation (e.g. "wuschel")</s:description>
+    <s:biomobywsdl>
+      <s:mobyEndpoint>http://mips.gsf.de/cgi-bin/proj/planet/moby/MOBY-Central.pl</s:mobyEndpoint>
+      <s:serviceName>getAGILocusCodes</s:serviceName>
+      <s:authorityName>mips.gsf.de</s:authorityName>
+    </s:biomobywsdl>
+  </s:processor>
+  <s:processor name="PhytoprotGetByClusterID">
+    <s:description>Access to Phytoprot's clusters by Cluster ID</s:description>
+    <s:biomobywsdl>
+      <s:mobyEndpoint>http://mobycentral.icapture.ubc.ca/cgi-bin/MOBY05/mobycentral.pl</s:mobyEndpoint>
+      <s:serviceName>PhytoprotGetByClusterID</s:serviceName>
+      <s:authorityName>genoplante-info.infobiogen.fr</s:authorityName>
+    </s:biomobywsdl>
+  </s:processor>
+  <s:processor name="MIPSBlastBetterE13">
+    <s:description>executes blast against MAtDB Arabidopsis protein coding genes with a cutoff E-value of E=1e-13</s:description>
+    <s:biomobywsdl>
+      <s:mobyEndpoint>http://mobycentral.icapture.ubc.ca/cgi-bin/MOBY05/mobycentral.pl</s:mobyEndpoint>
+      <s:serviceName>MIPSBlastBetterE13</s:serviceName>
+      <s:authorityName>mips.gsf.de</s:authorityName>
+    </s:biomobywsdl>
+  </s:processor>
+  <s:processor name="extractAGILocusCodes">
+    <s:description>parses AGI-LocusCodes out of Blast Results or any text-xml or text-formatted  (output sorted by alphabet)</s:description>
+    <s:biomobywsdl>
+      <s:mobyEndpoint>http://mobycentral.icapture.ubc.ca/cgi-bin/MOBY05/mobycentral.pl</s:mobyEndpoint>
+      <s:serviceName>extractAGILocusCodes</s:serviceName>
+      <s:authorityName>mips.gsf.de</s:authorityName>
+    </s:biomobywsdl>
+  </s:processor>
+  <s:link source="Cluster_Id:value" sink="Create_moby_data2:id" />
+  <s:link source="Create_moby_data1:mobydata" sink="getMIPSArabidopsisProteinSequence:input" />
+  <s:link source="Create_moby_data2:mobydata" sink="PhytoprotGetByClusterID:input" />
+  <s:link source="Create_moby_data:mobydata" sink="getAGILocusCodes:input" />
+  <s:link source="Intersection_Keyword_AND_Similarity_AND_Phytoprot:intersection" sink="Merge_string_list_to_string:stringlist" />
+  <s:link source="MIPSBlastBetterE13:output" sink="extractAGILocusCodes:input" />
+  <s:link source="Merge_string_list_to_string:concatenated" sink="CountAGI_Codes:in" />
+  <s:link source="PhytoprotGetByClusterID:output" sink="ExtractMatchingRegex:in" />
+  <s:link source="extractAGILocusCodes:output" sink="Parse_moby_data1:mobydata" />
+  <s:link source="getMIPSArabidopsisProteinSequence:output" sink="MIPSBlastBetterE13:input" />
+  <s:link source="CountAGI_Codes:count" sink="count_Intersection_Key_Simi_Phytoprot" />
+  <s:link source="Parse_moby_data1:id" sink="Difference_Similarity_NOT_Phytoprot:list1" />
+  <s:link source="Regex:value" sink="CountAGI_Codes:regex" />
+  <s:link source="Space:value" sink="Merge_string_list_to_string:seperator" />
+  <s:link source="replace_G_by_g:out" sink="Difference_Similarity_NOT_Phytoprot:list2" />
+  <s:link source="Difference_Keyword_NOT_Phytoprot:difference" sink="Diff Keyword NOT Phytoprot" />
+  <s:link source="Difference_Keyword_NOT_Similarity:difference" sink="Diff Keyword NOT Similarity" />
+  <s:link source="Difference_Similarity_NOT_Phytoprot:difference" sink="Diff Similarity NOT Phytoprot" />
+  <s:link source="ExtractMatchingRegex:matches" sink="replace_T_by_t:in" />
+  <s:link source="ID1:value" sink="Create_moby_data1:id" />
+  <s:link source="ID:value" sink="Create_moby_data:id" />
+  <s:link source="Intersection_Keyword_AND_Similarity:intersection" sink="Intersection_Keyword_AND_Similarity_AND_Phytoprot:list1" />
+  <s:link source="Parse_moby_data1:id" sink="Intersection_Similarity_AND_Phytoprot:list1" />
+  <s:link source="Parse_moby_data:id" sink="Difference_Keyword_NOT_Phytoprot:list1" />
+  <s:link source="replace_G_by_g:out" sink="Difference_Keyword_NOT_Phytoprot:list2" />
+  <s:link source="replace_G_by_g:out" sink="Intersection_Similarity_AND_Phytoprot:list2" />
+  <s:link source="Intersection_Keyword_AND_Phytoprot:intersection" sink="Intersection Keyword AND Phytoprot" />
+  <s:link source="Intersection_Keyword_AND_Similarity:intersection" sink="Intersection Keyword and Similarity" />
+  <s:link source="Intersection_Keyword_AND_Similarity_AND_Phytoprot:intersection" sink="Intersection Keyword AND Similarity AND Phytoprot" />
+  <s:link source="Intersection_Similarity_AND_Phytoprot:intersection" sink="Intersection Similarity AND Phytoprot" />
+  <s:link source="Namespace1:value" sink="Create_moby_data1:namespace" />
+  <s:link source="Namespace2:value" sink="Create_moby_data2:namespace" />
+  <s:link source="Namespace:value" sink="Create_moby_data:namespace" />
+  <s:link source="Parse_moby_data:id" sink="Intersection_Keyword_AND_Phytoprot:list1" />
+  <s:link source="replace_G_by_g:out" sink="Intersection_Keyword_AND_Phytoprot:list2" />
+  <s:link source="replace_G_by_g:out" sink="Intersection_Keyword_AND_Similarity_AND_Phytoprot:list2" />
+  <s:link source="Parse_moby_data1:id" sink="AGICodes by Similarity" />
+  <s:link source="Parse_moby_data1:id" sink="Difference_Keyword_NOT_Similarity:list2" />
+  <s:link source="Parse_moby_data1:id" sink="Intersection_Keyword_AND_Similarity:list2" />
+  <s:link source="Parse_moby_data:id" sink="AGICodes by Keyword" />
+  <s:link source="Parse_moby_data:id" sink="Difference_Keyword_NOT_Similarity:list1" />
+  <s:link source="Parse_moby_data:id" sink="Intersection_Keyword_AND_Similarity:list1" />
+  <s:link source="Regex:value" sink="ExtractMatchingRegex:regex" />
+  <s:link source="getAGILocusCodes:output" sink="Parse_moby_data:mobydata" />
+  <s:link source="replace_G_by_g:out" sink="AGICodes by Phytoprot" />
+  <s:link source="replace_T_by_t:out" sink="replace_G_by_g:in" />
+  <s:sink name="AGICodes by Phytoprot" />
+  <s:sink name="Intersection Keyword and Similarity" />
+  <s:sink name="AGICodes by Keyword" />
+  <s:sink name="AGICodes by Similarity" />
+  <s:sink name="Diff Keyword NOT Similarity" />
+  <s:sink name="Intersection Keyword AND Similarity AND Phytoprot" />
+  <s:sink name="Intersection Keyword AND Phytoprot" />
+  <s:sink name="Intersection Similarity AND Phytoprot" />
+  <s:sink name="Diff Keyword NOT Phytoprot" />
+  <s:sink name="Diff Similarity NOT Phytoprot" />
+  <s:sink name="count_Intersection_Key_Simi_Phytoprot" />
+</s:scufl>
+
+

@@ -1,0 +1,880 @@
+<?xml version='1.0' encoding='ISO-8859-1'?>
+<!DOCTYPE rdf:RDF [
+	 <!ENTITY rdf 'http://www.w3.org/1999/02/22-rdf-syntax-ns#'>
+	 <!ENTITY a 'http://www.w3.org/2000/01/rdf-schema#'>
+]>
+<rdf:RDF xmlns:rdf="&rdf;"  xmlns:a="&a;">
+<a:Class rdf:about="http://www.mygrid.org.uk/ontology#BLAST_report"
+	 a:comment="">
+	<a:subClassOf rdf:resource="http://www.mygrid.org.uk/ontology#bioinformatics_report"/>
+</a:Class>
+<a:Class rdf:about="http://www.mygrid.org.uk/ontology#Entrez_GenBank_protein"
+	 a:comment="">
+	<a:subClassOf rdf:resource="http://www.mygrid.org.uk/ontology#protein_sequence_database"/>
+</a:Class>
+<a:Class rdf:about="http://www.mygrid.org.uk/ontology#GenBank_record"
+	 a:comment="">
+	<a:subClassOf rdf:resource="http://www.mygrid.org.uk/ontology#bioinformatics_record"/>
+</a:Class>
+<a:Class rdf:about="http://www.mygrid.org.uk/ontology#gene_prediction_algorithm"
+	 a:comment="">
+	<a:subClassOf rdf:resource="http://www.mygrid.org.uk/ontology#bioinformatics_algorithm"/>
+</a:Class>
+<a:Class rdf:about="http://www.mygrid.org.uk/ontology#hidden_markov_model"
+	 a:comment="">
+	<a:subClassOf rdf:resource="http://www.mygrid.org.uk/ontology#bioinformatics_algorithm"/>
+</a:Class>
+<a:Class rdf:about="http://www.mygrid.org.uk/ontology#pairwise_sequence_alignment_report"
+	 a:comment="">
+	<a:subClassOf rdf:resource="http://www.mygrid.org.uk/ontology#sequence_alignment_report"/>
+</a:Class>
+<a:Class rdf:about="http://www.mygrid.org.uk/ontology#phylogenetic_algorithm"
+	 a:comment="">
+	<a:subClassOf rdf:resource="http://www.mygrid.org.uk/ontology#bioinformatics_algorithm"/>
+</a:Class>
+<a:Class rdf:about="http://www.mygrid.org.uk/ontology#predicting"
+	 a:comment="">
+	<a:subClassOf rdf:resource="http://www.mygrid.org.uk/ontology#bioinformatics_task"/>
+</a:Class>
+<a:Class rdf:about="http://www.mygrid.org.uk/ontology#2D_alignment_quality_graph_plot"
+	 a:comment="">
+	<a:subClassOf rdf:resource="http://www.mygrid.org.uk/ontology#bioinformatics_diagram"/>
+</a:Class>
+<a:Class rdf:about="http://www.mygrid.org.uk/ontology#3D_plot_of_Gene_Ontology_lattice"
+	 a:comment="">
+	<a:subClassOf rdf:resource="http://www.mygrid.org.uk/ontology#bioinformatics_diagram"/>
+</a:Class>
+<a:Class rdf:about="http://www.mygrid.org.uk/ontology#ABI_graph_plot"
+	 a:comment="">
+	<a:subClassOf rdf:resource="http://www.mygrid.org.uk/ontology#bioinformatics_diagram"/>
+</a:Class>
+<a:Class rdf:about="http://www.mygrid.org.uk/ontology#ABI_sequence_trace"
+	 a:comment="">
+	<a:subClassOf rdf:resource="http://www.mygrid.org.uk/ontology#bioinformatics_graph"/>
+</a:Class>
+<a:Class rdf:about="http://www.mygrid.org.uk/ontology#Affymetrix_probe_set_id"
+	 a:comment="">
+	<a:subClassOf rdf:resource="http://www.mygrid.org.uk/ontology#nucleotide_sequence_unique_identifier"/>
+</a:Class>
+<a:Class rdf:about="http://www.mygrid.org.uk/ontology#Basic_Local_Alignment_Search_Tool"
+	 a:comment="">
+	<a:subClassOf rdf:resource="http://www.mygrid.org.uk/ontology#bioinformatics_application"/>
+</a:Class>
+<a:Class rdf:about="http://www.mygrid.org.uk/ontology#DDBJ"
+	 a:comment="">
+	<a:subClassOf rdf:resource="http://www.mygrid.org.uk/ontology#nucleotide_sequence_database"/>
+</a:Class>
+<a:Class rdf:about="http://www.mygrid.org.uk/ontology#DNA_sequence"
+	 a:comment="">
+	<a:subClassOf rdf:resource="http://www.mygrid.org.uk/ontology#nucleotide_sequence"/>
+</a:Class>
+<a:Class rdf:about="http://www.mygrid.org.uk/ontology#EMBL_nucleotide_sequence_database"
+	 a:comment="">
+	<a:subClassOf rdf:resource="http://www.mygrid.org.uk/ontology#nucleotide_sequence_database"/>
+</a:Class>
+<a:Class rdf:about="http://www.mygrid.org.uk/ontology#EMBL_nucleotide_sequence_id"
+	 a:comment="">
+	<a:subClassOf rdf:resource="http://www.mygrid.org.uk/ontology#nucleotide_sequence_unique_identifier"/>
+</a:Class>
+<a:Class rdf:about="http://www.mygrid.org.uk/ontology#EMBL_record"
+	 a:comment="">
+	<a:subClassOf rdf:resource="http://www.mygrid.org.uk/ontology#bioinformatics_record"/>
+</a:Class>
+<a:Class rdf:about="http://www.mygrid.org.uk/ontology#EMBL_record_accession_number"
+	 a:comment="">
+	<a:subClassOf rdf:resource="http://www.mygrid.org.uk/ontology#bioinformatics_record_id"/>
+</a:Class>
+<a:Class rdf:about="http://www.mygrid.org.uk/ontology#EMBOSS"
+	 a:comment="">
+	<a:subClassOf rdf:resource="http://www.mygrid.org.uk/ontology#bioinformatics_application"/>
+</a:Class>
+<a:Class rdf:about="http://www.mygrid.org.uk/ontology#EMBOSS_bioinformatics_record_id"
+	 a:comment="">
+	<a:subClassOf rdf:resource="http://www.mygrid.org.uk/ontology#bioinformatics_record_id"/>
+</a:Class>
+<a:Class rdf:about="http://www.mygrid.org.uk/ontology#Ensembl"
+	 a:comment="">
+	<a:subClassOf rdf:resource="http://www.mygrid.org.uk/ontology#bioinformatics_database"/>
+</a:Class>
+<a:Class rdf:about="http://www.mygrid.org.uk/ontology#Ensembl_record"
+	 a:comment="">
+	<a:subClassOf rdf:resource="http://www.mygrid.org.uk/ontology#bioinformatics_record"/>
+</a:Class>
+<a:Class rdf:about="http://www.mygrid.org.uk/ontology#Enzyme_Classification_id"
+	 a:comment="">
+	<a:subClassOf rdf:resource="http://www.mygrid.org.uk/ontology#enzyme_group_id"/>
+</a:Class>
+<a:Class rdf:about="http://www.mygrid.org.uk/ontology#FSSP"
+	 a:comment="">
+	<a:subClassOf rdf:resource="http://www.mygrid.org.uk/ontology#bioinformatics_database"/>
+</a:Class>
+<a:Class rdf:about="http://www.mygrid.org.uk/ontology#FlyBase"
+	 a:comment="">
+	<a:subClassOf rdf:resource="http://www.mygrid.org.uk/ontology#bioinformatics_database"/>
+</a:Class>
+<a:Class rdf:about="http://www.mygrid.org.uk/ontology#FlyBase_record"
+	 a:comment="">
+	<a:subClassOf rdf:resource="http://www.mygrid.org.uk/ontology#bioinformatics_record"/>
+</a:Class>
+<a:Class rdf:about="http://www.mygrid.org.uk/ontology#GenBank_gene_id_GI"
+	 a:comment="">
+	<a:subClassOf rdf:resource="http://www.mygrid.org.uk/ontology#bioinformatics_record_id"/>
+</a:Class>
+<a:Class rdf:about="http://www.mygrid.org.uk/ontology#Genbank_nucleotide_sequence_database"
+	 a:comment="">
+	<a:subClassOf rdf:resource="http://www.mygrid.org.uk/ontology#nucleotide_sequence_database"/>
+</a:Class>
+<a:Class rdf:about="http://www.mygrid.org.uk/ontology#Gene_Ontology_term_id"
+	 a:comment="">
+	<a:subClassOf rdf:resource="http://www.mygrid.org.uk/ontology#bioinformatics_identifier"/>
+</a:Class>
+<a:Class rdf:about="http://www.mygrid.org.uk/ontology#HGVbase"
+	 a:comment="">
+	<a:subClassOf rdf:resource="http://www.mygrid.org.uk/ontology#bioinformatics_database"/>
+</a:Class>
+<a:Class rdf:about="http://www.mygrid.org.uk/ontology#HGVbase_record"
+	 a:comment="">
+	<a:subClassOf rdf:resource="http://www.mygrid.org.uk/ontology#bioinformatics_record"/>
+</a:Class>
+<a:Class rdf:about="http://www.mygrid.org.uk/ontology#HGVbase_record_id"
+	 a:comment="">
+	<a:subClassOf rdf:resource="http://www.mygrid.org.uk/ontology#bioinformatics_record_id"/>
+</a:Class>
+<a:Class rdf:about="http://www.mygrid.org.uk/ontology#InterPro"
+	 a:comment="">
+	<a:subClassOf rdf:resource="http://www.mygrid.org.uk/ontology#bioinformatics_database"/>
+</a:Class>
+<a:Class rdf:about="http://www.mygrid.org.uk/ontology#InterPro_match_report"
+	 a:comment="">
+	<a:subClassOf rdf:resource="http://www.mygrid.org.uk/ontology#bioinformatics_report"/>
+</a:Class>
+<a:Class rdf:about="http://www.mygrid.org.uk/ontology#InterPro_protein_family_id"
+	 a:comment="">
+	<a:subClassOf rdf:resource="http://www.mygrid.org.uk/ontology#protein_group_id"/>
+</a:Class>
+<a:Class rdf:about="http://www.mygrid.org.uk/ontology#InterPro_record"
+	 a:comment="">
+	<a:subClassOf rdf:resource="http://www.mygrid.org.uk/ontology#bioinformatics_record"/>
+</a:Class>
+<a:Class rdf:about="http://www.mygrid.org.uk/ontology#LocusLink_record"
+	 a:comment="">
+	<a:subClassOf rdf:resource="http://www.mygrid.org.uk/ontology#bioinformatics_record"/>
+</a:Class>
+<a:Class rdf:about="http://www.mygrid.org.uk/ontology#LocusLink_record_id"
+	 a:comment="">
+	<a:subClassOf rdf:resource="http://www.mygrid.org.uk/ontology#bioinformatics_record_id"/>
+</a:Class>
+<a:Class rdf:about="http://www.mygrid.org.uk/ontology#MEDLINE_citation"
+	 a:comment="">
+	<a:subClassOf rdf:resource="http://www.mygrid.org.uk/ontology#bioinformatics_record"/>
+</a:Class>
+<a:Class rdf:about="http://www.mygrid.org.uk/ontology#MEDLINE_reference_id"
+	 a:comment="">
+	<a:subClassOf rdf:resource="http://www.mygrid.org.uk/ontology#bioinformatics_record_id"/>
+</a:Class>
+<a:Class rdf:about="http://www.mygrid.org.uk/ontology#MSPcrunch_report"
+	 a:comment="">
+	<a:subClassOf rdf:resource="http://www.mygrid.org.uk/ontology#bioinformatics_report"/>
+</a:Class>
+<a:Class rdf:about="http://www.mygrid.org.uk/ontology#Needleman_and_Wunsch_global_sequence_alignment_algorithm"
+	 a:comment="">
+	<a:subClassOf rdf:resource="http://www.mygrid.org.uk/ontology#sequence_alignment_algorithm"/>
+</a:Class>
+<a:Class rdf:about="http://www.mygrid.org.uk/ontology#OMIM_record"
+	 a:comment="">
+	<a:subClassOf rdf:resource="http://www.mygrid.org.uk/ontology#bioinformatics_record"/>
+</a:Class>
+<a:Class rdf:about="http://www.mygrid.org.uk/ontology#OMIM_record_id"
+	 a:comment="">
+	<a:subClassOf rdf:resource="http://www.mygrid.org.uk/ontology#bioinformatics_record_id"/>
+</a:Class>
+<a:Class rdf:about="http://www.mygrid.org.uk/ontology#PDB"
+	 a:comment="">
+	<a:subClassOf rdf:resource="http://www.mygrid.org.uk/ontology#bioinformatics_database"/>
+</a:Class>
+<a:Class rdf:about="http://www.mygrid.org.uk/ontology#PDB_record"
+	 a:comment="">
+	<a:subClassOf rdf:resource="http://www.mygrid.org.uk/ontology#bioinformatics_record"/>
+</a:Class>
+<a:Class rdf:about="http://www.mygrid.org.uk/ontology#PDB_record_id"
+	 a:comment="">
+	<a:subClassOf rdf:resource="http://www.mygrid.org.uk/ontology#bioinformatics_record_id"/>
+</a:Class>
+<a:Class rdf:about="http://www.mygrid.org.uk/ontology#PIR"
+	 a:comment="">
+	<a:subClassOf rdf:resource="http://www.mygrid.org.uk/ontology#protein_sequence_database"/>
+</a:Class>
+<a:Class rdf:about="http://www.mygrid.org.uk/ontology#PRINTS"
+	 a:comment="">
+	<a:subClassOf rdf:resource="http://www.mygrid.org.uk/ontology#bioinformatics_database"/>
+</a:Class>
+<a:Class rdf:about="http://www.mygrid.org.uk/ontology#Pfam"
+	 a:comment="">
+	<a:subClassOf rdf:resource="http://www.mygrid.org.uk/ontology#bioinformatics_database"/>
+</a:Class>
+<a:Class rdf:about="http://www.mygrid.org.uk/ontology#ProDom"
+	 a:comment="">
+	<a:subClassOf rdf:resource="http://www.mygrid.org.uk/ontology#bioinformatics_database"/>
+</a:Class>
+<a:Class rdf:about="http://www.mygrid.org.uk/ontology#ProSite"
+	 a:comment="">
+	<a:subClassOf rdf:resource="http://www.mygrid.org.uk/ontology#bioinformatics_database"/>
+</a:Class>
+<a:Class rdf:about="http://www.mygrid.org.uk/ontology#REBASE_database"
+	 a:comment="">
+	<a:subClassOf rdf:resource="http://www.mygrid.org.uk/ontology#bioinformatics_database"/>
+</a:Class>
+<a:Class rdf:about="http://www.mygrid.org.uk/ontology#RNA_sequence"
+	 a:comment="">
+	<a:subClassOf rdf:resource="http://www.mygrid.org.uk/ontology#nucleotide_sequence"/>
+</a:Class>
+<a:Class rdf:about="http://www.mygrid.org.uk/ontology#SRS_bioinformatics_record_id"
+	 a:comment="">
+	<a:subClassOf rdf:resource="http://www.mygrid.org.uk/ontology#bioinformatics_record_id"/>
+</a:Class>
+<a:Class rdf:about="http://www.mygrid.org.uk/ontology#SWISS-PROT"
+	 a:comment="">
+	<a:subClassOf rdf:resource="http://www.mygrid.org.uk/ontology#protein_sequence_database"/>
+</a:Class>
+<a:Class rdf:about="http://www.mygrid.org.uk/ontology#SWISS-PROT_accession_number"
+	 a:comment="">
+	<a:subClassOf rdf:resource="http://www.mygrid.org.uk/ontology#bioinformatics_record_id"/>
+</a:Class>
+<a:Class rdf:about="http://www.mygrid.org.uk/ontology#SWISS-PROT_protein_sequence_id"
+	 a:comment="">
+	<a:subClassOf rdf:resource="http://www.mygrid.org.uk/ontology#bioinformatics_record_id"/>
+</a:Class>
+<a:Class rdf:about="http://www.mygrid.org.uk/ontology#SWISS-PROT_record"
+	 a:comment="">
+	<a:subClassOf rdf:resource="http://www.mygrid.org.uk/ontology#bioinformatics_record"/>
+</a:Class>
+<a:Class rdf:about="http://www.mygrid.org.uk/ontology#Smith-Waterman_sequence_alignment_algorithm"
+	 a:comment="">
+	<a:subClassOf rdf:resource="http://www.mygrid.org.uk/ontology#sequence_alignment_algorithm"/>
+</a:Class>
+<a:Class rdf:about="http://www.mygrid.org.uk/ontology#TREMBL"
+	 a:comment="">
+	<a:subClassOf rdf:resource="http://www.mygrid.org.uk/ontology#protein_sequence_database"/>
+</a:Class>
+<a:Class rdf:about="http://www.mygrid.org.uk/ontology#UniGene_cluster_id"
+	 a:comment="">
+	<a:subClassOf rdf:resource="http://www.mygrid.org.uk/ontology#bioinformatics_record_id"/>
+</a:Class>
+<a:Class rdf:about="http://www.mygrid.org.uk/ontology#UniGene_record"
+	 a:comment="">
+	<a:subClassOf rdf:resource="http://www.mygrid.org.uk/ontology#bioinformatics_record"/>
+</a:Class>
+<a:Class rdf:about="http://www.mygrid.org.uk/ontology#aligning"
+	 a:comment="">
+	<a:subClassOf rdf:resource="http://www.mygrid.org.uk/ontology#bioinformatics_task"/>
+</a:Class>
+<a:Class rdf:about="http://www.mygrid.org.uk/ontology#alignment_quality_graph"
+	 a:comment="">
+	<a:subClassOf rdf:resource="http://www.mygrid.org.uk/ontology#bioinformatics_graph"/>
+</a:Class>
+<a:Class rdf:about="http://www.mygrid.org.uk/ontology#bioinformatics_algorithm"
+	 a:comment="">
+	<a:subClassOf rdf:resource="http://www.mygrid.org.uk/ontology#bioinformatics_concept"/>
+</a:Class>
+<a:Class rdf:about="http://www.mygrid.org.uk/ontology#bioinformatics_application"
+	 a:comment="">
+	<a:subClassOf rdf:resource="http://www.mygrid.org.uk/ontology#bioinformatics_concept"/>
+</a:Class>
+<a:Class rdf:about="http://www.mygrid.org.uk/ontology#bioinformatics_concept"
+	 a:comment=""/>
+<a:Class rdf:about="http://www.mygrid.org.uk/ontology#bioinformatics_data"
+	 a:comment="">
+	<a:subClassOf rdf:resource="http://www.mygrid.org.uk/ontology#bioinformatics_concept"/>
+</a:Class>
+<a:Class rdf:about="http://www.mygrid.org.uk/ontology#bioinformatics_database"
+	 a:comment="">
+	<a:subClassOf rdf:resource="http://www.mygrid.org.uk/ontology#bioinformatics_concept"/>
+</a:Class>
+<a:Class rdf:about="http://www.mygrid.org.uk/ontology#bioinformatics_diagram"
+	 a:comment="">
+	<a:subClassOf rdf:resource="http://www.mygrid.org.uk/ontology#bioinformatics_concept"/>
+</a:Class>
+<a:Class rdf:about="http://www.mygrid.org.uk/ontology#bioinformatics_graph"
+	 a:comment="">
+	<a:subClassOf rdf:resource="http://www.mygrid.org.uk/ontology#bioinformatics_data"/>
+</a:Class>
+<a:Class rdf:about="http://www.mygrid.org.uk/ontology#bioinformatics_identifier"
+	 a:comment="">
+	<a:subClassOf rdf:resource="http://www.mygrid.org.uk/ontology#bioinformatics_metadata"/>
+</a:Class>
+<a:Class rdf:about="http://www.mygrid.org.uk/ontology#bioinformatics_metadata"
+	 a:comment="">
+	<a:subClassOf rdf:resource="http://www.mygrid.org.uk/ontology#bioinformatics_concept"/>
+</a:Class>
+<a:Class rdf:about="http://www.mygrid.org.uk/ontology#bioinformatics_record"
+	 a:comment="">
+	<a:subClassOf rdf:resource="http://www.mygrid.org.uk/ontology#bioinformatics_data"/>
+</a:Class>
+<a:Class rdf:about="http://www.mygrid.org.uk/ontology#bioinformatics_record_id"
+	 a:comment="">
+	<a:subClassOf rdf:resource="http://www.mygrid.org.uk/ontology#bioinformatics_identifier"/>
+</a:Class>
+<a:Class rdf:about="http://www.mygrid.org.uk/ontology#bioinformatics_report"
+	 a:comment="">
+	<a:subClassOf rdf:resource="http://www.mygrid.org.uk/ontology#bioinformatics_data"/>
+</a:Class>
+<a:Class rdf:about="http://www.mygrid.org.uk/ontology#bioinformatics_task"
+	 a:comment="">
+	<a:subClassOf rdf:resource="http://www.mygrid.org.uk/ontology#bioinformatics_concept"/>
+</a:Class>
+<a:Class rdf:about="http://www.mygrid.org.uk/ontology#biological_entity_data_unique_persistent_ID"
+	 a:comment="">
+	<a:subClassOf rdf:resource="http://www.mygrid.org.uk/ontology#bioinformatics_metadata"/>
+</a:Class>
+<a:Class rdf:about="http://www.mygrid.org.uk/ontology#biological_sequence"
+	 a:comment="">
+	<a:subClassOf rdf:resource="http://www.mygrid.org.uk/ontology#sequence"/>
+</a:Class>
+<a:Class rdf:about="http://www.mygrid.org.uk/ontology#biological_sequence_alignment_data"
+	 a:comment="">
+	<a:subClassOf rdf:resource="http://www.mygrid.org.uk/ontology#bioinformatics_data"/>
+</a:Class>
+<a:Class rdf:about="http://www.mygrid.org.uk/ontology#biological_sequence_id"
+	 a:comment="">
+	<a:subClassOf rdf:resource="http://www.mygrid.org.uk/ontology#bioinformatics_identifier"/>
+</a:Class>
+<a:Class rdf:about="http://www.mygrid.org.uk/ontology#blastn"
+	 a:comment="">
+	<a:subClassOf rdf:resource="http://www.mygrid.org.uk/ontology#Basic_Local_Alignment_Search_Tool"/>
+</a:Class>
+<a:Class rdf:about="http://www.mygrid.org.uk/ontology#blastp"
+	 a:comment="">
+	<a:subClassOf rdf:resource="http://www.mygrid.org.uk/ontology#Basic_Local_Alignment_Search_Tool"/>
+</a:Class>
+<a:Class rdf:about="http://www.mygrid.org.uk/ontology#blastx"
+	 a:comment="">
+	<a:subClassOf rdf:resource="http://www.mygrid.org.uk/ontology#Basic_Local_Alignment_Search_Tool"/>
+</a:Class>
+<a:Class rdf:about="http://www.mygrid.org.uk/ontology#calculating"
+	 a:comment="">
+	<a:subClassOf rdf:resource="http://www.mygrid.org.uk/ontology#bioinformatics_task"/>
+</a:Class>
+<a:Class rdf:about="http://www.mygrid.org.uk/ontology#consensus_sequence"
+	 a:comment="">
+	<a:subClassOf rdf:resource="http://www.mygrid.org.uk/ontology#sequence"/>
+</a:Class>
+<a:Class rdf:about="http://www.mygrid.org.uk/ontology#displaying"
+	 a:comment="">
+	<a:subClassOf rdf:resource="http://www.mygrid.org.uk/ontology#bioinformatics_task"/>
+</a:Class>
+<a:Class rdf:about="http://www.mygrid.org.uk/ontology#distinguishing"
+	 a:comment="">
+	<a:subClassOf rdf:resource="http://www.mygrid.org.uk/ontology#bioinformatics_task"/>
+</a:Class>
+<a:Class rdf:about="http://www.mygrid.org.uk/ontology#enzyme_group_id"
+	 a:comment="">
+	<a:subClassOf rdf:resource="http://www.mygrid.org.uk/ontology#bioinformatics_identifier"/>
+</a:Class>
+<a:Class rdf:about="http://www.mygrid.org.uk/ontology#est_human"
+	 a:comment="">
+	<a:subClassOf rdf:resource="http://www.mygrid.org.uk/ontology#bioinformatics_database"/>
+</a:Class>
+<a:Class rdf:about="http://www.mygrid.org.uk/ontology#expressed_sequence_tag"
+	 a:comment="">
+	<a:subClassOf rdf:resource="http://www.mygrid.org.uk/ontology#spliced_nucleotide_sequence"/>
+</a:Class>
+<a:Class rdf:about="http://www.mygrid.org.uk/ontology#filtering"
+	 a:comment="">
+	<a:subClassOf rdf:resource="http://www.mygrid.org.uk/ontology#bioinformatics_task"/>
+</a:Class>
+<a:Class rdf:about="http://www.mygrid.org.uk/ontology#forward_primer_sequence"
+	 a:comment="">
+	<a:subClassOf rdf:resource="http://www.mygrid.org.uk/ontology#primer_sequence"/>
+</a:Class>
+<a:Class rdf:about="http://www.mygrid.org.uk/ontology#gapped_aligning"
+	 a:comment="">
+	<a:subClassOf rdf:resource="http://www.mygrid.org.uk/ontology#aligning"/>
+</a:Class>
+<a:Class rdf:about="http://www.mygrid.org.uk/ontology#gene_expression_profile"
+	 a:comment="">
+	<a:subClassOf rdf:resource="http://www.mygrid.org.uk/ontology#bioinformatics_graph"/>
+</a:Class>
+<a:Class rdf:about="http://www.mygrid.org.uk/ontology#genome_nucleotide_sequence"
+	 a:comment="">
+	<a:subClassOf rdf:resource="http://www.mygrid.org.uk/ontology#nucleotide_sequence"/>
+</a:Class>
+<a:Class rdf:about="http://www.mygrid.org.uk/ontology#global_aligning"
+	 a:comment="">
+	<a:subClassOf rdf:resource="http://www.mygrid.org.uk/ontology#aligning"/>
+</a:Class>
+<a:Class rdf:about="http://www.mygrid.org.uk/ontology#grouping"
+	 a:comment="">
+	<a:subClassOf rdf:resource="http://www.mygrid.org.uk/ontology#bioinformatics_task"/>
+</a:Class>
+<a:Class rdf:about="http://www.mygrid.org.uk/ontology#inserting"
+	 a:comment="">
+	<a:subClassOf rdf:resource="http://www.mygrid.org.uk/ontology#bioinformatics_task"/>
+</a:Class>
+<a:Class rdf:about="http://www.mygrid.org.uk/ontology#joining"
+	 a:comment="">
+	<a:subClassOf rdf:resource="http://www.mygrid.org.uk/ontology#bioinformatics_task"/>
+</a:Class>
+<a:Class rdf:about="http://www.mygrid.org.uk/ontology#local_aligning"
+	 a:comment="">
+	<a:subClassOf rdf:resource="http://www.mygrid.org.uk/ontology#aligning"/>
+</a:Class>
+<a:Class rdf:about="http://www.mygrid.org.uk/ontology#location"
+	 a:comment="">
+	<a:subClassOf rdf:resource="http://www.mygrid.org.uk/ontology#bioinformatics_data"/>
+</a:Class>
+<a:Class rdf:about="http://www.mygrid.org.uk/ontology#manipulating"
+	 a:comment="">
+	<a:subClassOf rdf:resource="http://www.mygrid.org.uk/ontology#bioinformatics_task"/>
+</a:Class>
+<a:Class rdf:about="http://www.mygrid.org.uk/ontology#merging"
+	 a:comment="">
+	<a:subClassOf rdf:resource="http://www.mygrid.org.uk/ontology#bioinformatics_task"/>
+</a:Class>
+<a:Class rdf:about="http://www.mygrid.org.uk/ontology#multiple_local_aligning"
+	 a:comment="">
+	<a:subClassOf rdf:resource="http://www.mygrid.org.uk/ontology#local_aligning"/>
+</a:Class>
+<a:Class rdf:about="http://www.mygrid.org.uk/ontology#multiple_sequence_alignment_report"
+	 a:comment="">
+	<a:subClassOf rdf:resource="http://www.mygrid.org.uk/ontology#sequence_alignment_report"/>
+</a:Class>
+<a:Class rdf:about="http://www.mygrid.org.uk/ontology#nucleotide_sequence"
+	 a:comment="">
+	<a:subClassOf rdf:resource="http://www.mygrid.org.uk/ontology#biological_sequence"/>
+</a:Class>
+<a:Class rdf:about="http://www.mygrid.org.uk/ontology#nucleotide_sequence_database"
+	 a:comment="">
+	<a:subClassOf rdf:resource="http://www.mygrid.org.uk/ontology#sequence_database"/>
+</a:Class>
+<a:Class rdf:about="http://www.mygrid.org.uk/ontology#nucleotide_sequence_feature_diagram"
+	 a:comment="">
+	<a:subClassOf rdf:resource="http://www.mygrid.org.uk/ontology#bioinformatics_diagram"/>
+</a:Class>
+<a:Class rdf:about="http://www.mygrid.org.uk/ontology#nucleotide_sequence_feature_report"
+	 a:comment="">
+	<a:subClassOf rdf:resource="http://www.mygrid.org.uk/ontology#bioinformatics_report"/>
+</a:Class>
+<a:Class rdf:about="http://www.mygrid.org.uk/ontology#nucleotide_sequence_location"
+	 a:comment="">
+	<a:subClassOf rdf:resource="http://www.mygrid.org.uk/ontology#location"/>
+</a:Class>
+<a:Class rdf:about="http://www.mygrid.org.uk/ontology#nucleotide_sequence_unique_identifier"
+	 a:comment="">
+	<a:subClassOf rdf:resource="http://www.mygrid.org.uk/ontology#biological_sequence_id"/>
+</a:Class>
+<a:Class rdf:about="http://www.mygrid.org.uk/ontology#pairwise_global_aligning"
+	 a:comment="">
+	<a:subClassOf rdf:resource="http://www.mygrid.org.uk/ontology#global_aligning"/>
+</a:Class>
+<a:Class rdf:about="http://www.mygrid.org.uk/ontology#pairwise_local_aligning"
+	 a:comment="">
+	<a:subClassOf rdf:resource="http://www.mygrid.org.uk/ontology#local_aligning"/>
+</a:Class>
+<a:Class rdf:about="http://www.mygrid.org.uk/ontology#parsing"
+	 a:comment="">
+	<a:subClassOf rdf:resource="http://www.mygrid.org.uk/ontology#bioinformatics_task"/>
+</a:Class>
+<a:Class rdf:about="http://www.mygrid.org.uk/ontology#phylogenetic_tree"
+	 a:comment="">
+	<a:subClassOf rdf:resource="http://www.mygrid.org.uk/ontology#bioinformatics_data"/>
+</a:Class>
+<a:Class rdf:about="http://www.mygrid.org.uk/ontology#primer3"
+	 a:comment="">
+	<a:subClassOf rdf:resource="http://www.mygrid.org.uk/ontology#bioinformatics_application"/>
+</a:Class>
+<a:Class rdf:about="http://www.mygrid.org.uk/ontology#primer_report"
+	 a:comment="">
+	<a:subClassOf rdf:resource="http://www.mygrid.org.uk/ontology#bioinformatics_report"/>
+</a:Class>
+<a:Class rdf:about="http://www.mygrid.org.uk/ontology#primer_sequence"
+	 a:comment="">
+	<a:subClassOf rdf:resource="http://www.mygrid.org.uk/ontology#nucleotide_sequence"/>
+</a:Class>
+<a:Class rdf:about="http://www.mygrid.org.uk/ontology#primer_sequence_location"
+	 a:comment="">
+	<a:subClassOf rdf:resource="http://www.mygrid.org.uk/ontology#location"/>
+</a:Class>
+<a:Class rdf:about="http://www.mygrid.org.uk/ontology#probe"
+	 a:comment="">
+	<a:subClassOf rdf:resource="http://www.mygrid.org.uk/ontology#nucleotide_sequence"/>
+</a:Class>
+<a:Class rdf:about="http://www.mygrid.org.uk/ontology#protein_expression_profile"
+	 a:comment="">
+	<a:subClassOf rdf:resource="http://www.mygrid.org.uk/ontology#bioinformatics_graph"/>
+</a:Class>
+<a:Class rdf:about="http://www.mygrid.org.uk/ontology#protein_group_id"
+	 a:comment="">
+	<a:subClassOf rdf:resource="http://www.mygrid.org.uk/ontology#bioinformatics_identifier"/>
+</a:Class>
+<a:Class rdf:about="http://www.mygrid.org.uk/ontology#protein_sequence"
+	 a:comment="">
+	<a:subClassOf rdf:resource="http://www.mygrid.org.uk/ontology#biological_sequence"/>
+</a:Class>
+<a:Class rdf:about="http://www.mygrid.org.uk/ontology#protein_sequence_database"
+	 a:comment="">
+	<a:subClassOf rdf:resource="http://www.mygrid.org.uk/ontology#sequence_database"/>
+</a:Class>
+<a:Class rdf:about="http://www.mygrid.org.uk/ontology#reading_frame"
+	 a:comment="">
+	<a:subClassOf rdf:resource="http://www.mygrid.org.uk/ontology#nucleotide_sequence"/>
+</a:Class>
+<a:Class rdf:about="http://www.mygrid.org.uk/ontology#removing"
+	 a:comment="">
+	<a:subClassOf rdf:resource="http://www.mygrid.org.uk/ontology#bioinformatics_task"/>
+</a:Class>
+<a:Class rdf:about="http://www.mygrid.org.uk/ontology#restriction_enzyme_report"
+	 a:comment="">
+	<a:subClassOf rdf:resource="http://www.mygrid.org.uk/ontology#bioinformatics_report"/>
+</a:Class>
+<a:Class rdf:about="http://www.mygrid.org.uk/ontology#retrieving"
+	 a:comment="">
+	<a:subClassOf rdf:resource="http://www.mygrid.org.uk/ontology#bioinformatics_task"/>
+</a:Class>
+<a:Class rdf:about="http://www.mygrid.org.uk/ontology#reverse_primer_sequence"
+	 a:comment="">
+	<a:subClassOf rdf:resource="http://www.mygrid.org.uk/ontology#primer_sequence"/>
+</a:Class>
+<a:Class rdf:about="http://www.mygrid.org.uk/ontology#searching"
+	 a:comment="">
+	<a:subClassOf rdf:resource="http://www.mygrid.org.uk/ontology#bioinformatics_task"/>
+</a:Class>
+<a:Class rdf:about="http://www.mygrid.org.uk/ontology#sequence"
+	 a:comment="">
+	<a:subClassOf rdf:resource="http://www.mygrid.org.uk/ontology#bioinformatics_data"/>
+</a:Class>
+<a:Class rdf:about="http://www.mygrid.org.uk/ontology#sequence_alignment_algorithm"
+	 a:comment="">
+	<a:subClassOf rdf:resource="http://www.mygrid.org.uk/ontology#bioinformatics_algorithm"/>
+</a:Class>
+<a:Class rdf:about="http://www.mygrid.org.uk/ontology#sequence_alignment_dot_plot"
+	 a:comment="">
+	<a:subClassOf rdf:resource="http://www.mygrid.org.uk/ontology#bioinformatics_diagram"/>
+</a:Class>
+<a:Class rdf:about="http://www.mygrid.org.uk/ontology#sequence_alignment_report"
+	 a:comment="">
+	<a:subClassOf rdf:resource="http://www.mygrid.org.uk/ontology#bioinformatics_report"/>
+</a:Class>
+<a:Class rdf:about="http://www.mygrid.org.uk/ontology#sequence_database"
+	 a:comment="">
+	<a:subClassOf rdf:resource="http://www.mygrid.org.uk/ontology#bioinformatics_database"/>
+</a:Class>
+<a:Class rdf:about="http://www.mygrid.org.uk/ontology#single_nucleotide_polymorphism"
+	 a:comment="">
+	<a:subClassOf rdf:resource="http://www.mygrid.org.uk/ontology#nucleotide_sequence"/>
+</a:Class>
+<a:Class rdf:about="http://www.mygrid.org.uk/ontology#single_nucleotide_polymorphism_location"
+	 a:comment="">
+	<a:subClassOf rdf:resource="http://www.mygrid.org.uk/ontology#location"/>
+</a:Class>
+<a:Class rdf:about="http://www.mygrid.org.uk/ontology#spliced_cDNA"
+	 a:comment="">
+	<a:subClassOf rdf:resource="http://www.mygrid.org.uk/ontology#spliced_nucleotide_sequence"/>
+</a:Class>
+<a:Class rdf:about="http://www.mygrid.org.uk/ontology#spliced_mRNA"
+	 a:comment="">
+	<a:subClassOf rdf:resource="http://www.mygrid.org.uk/ontology#spliced_nucleotide_sequence"/>
+</a:Class>
+<a:Class rdf:about="http://www.mygrid.org.uk/ontology#spliced_nucleotide_sequence"
+	 a:comment="">
+	<a:subClassOf rdf:resource="http://www.mygrid.org.uk/ontology#nucleotide_sequence"/>
+</a:Class>
+<a:Class rdf:about="http://www.mygrid.org.uk/ontology#splitting"
+	 a:comment="">
+	<a:subClassOf rdf:resource="http://www.mygrid.org.uk/ontology#bioinformatics_task"/>
+</a:Class>
+<a:Class rdf:about="http://www.mygrid.org.uk/ontology#summarising"
+	 a:comment="">
+	<a:subClassOf rdf:resource="http://www.mygrid.org.uk/ontology#bioinformatics_task"/>
+</a:Class>
+<a:Class rdf:about="http://www.mygrid.org.uk/ontology#tblastn"
+	 a:comment="">
+	<a:subClassOf rdf:resource="http://www.mygrid.org.uk/ontology#Basic_Local_Alignment_Search_Tool"/>
+</a:Class>
+<a:Class rdf:about="http://www.mygrid.org.uk/ontology#tblastx"
+	 a:comment="">
+	<a:subClassOf rdf:resource="http://www.mygrid.org.uk/ontology#Basic_Local_Alignment_Search_Tool"/>
+</a:Class>
+<a:Class rdf:about="http://www.mygrid.org.uk/ontology#threshold_graph_of_local_alignment_score"
+	 a:comment="">
+	<a:subClassOf rdf:resource="http://www.mygrid.org.uk/ontology#bioinformatics_graph"/>
+</a:Class>
+<a:Class rdf:about="http://www.mygrid.org.uk/ontology#translating"
+	 a:comment="">
+	<a:subClassOf rdf:resource="http://www.mygrid.org.uk/ontology#bioinformatics_task"/>
+</a:Class>
+<a:Class rdf:about="http://www.mygrid.org.uk/ontology#word_match_sequence_alignment_algorithm"
+	 a:comment="">
+	<a:subClassOf rdf:resource="http://www.mygrid.org.uk/ontology#sequence_alignment_algorithm"/>
+</a:Class>
+
+
+
+<a:Class rdf:about="http://www.mygrid.org.uk/ontology#model_organism"
+	 a:comment="">
+	<a:subClassOf rdf:resource="http://www.mygrid.org.uk/ontology#bioinformatics_concept"/>
+</a:Class>
+
+
+<a:Class rdf:about="http://www.mygrid.org.uk/ontology#Arabidopsis_thaliana"
+	 a:comment="">
+	<a:subClassOf rdf:resource="http://www.mygrid.org.uk/ontology#model_organism"/>
+</a:Class>
+
+<a:Class rdf:about="http://www.mygrid.org.uk/ontology#Escherichia_coli"
+	 a:comment="">
+	<a:subClassOf rdf:resource="http://www.mygrid.org.uk/ontology#model_organism"/>
+</a:Class>
+
+<a:Class rdf:about="http://www.mygrid.org.uk/ontology#Pneumocystis_carinii"
+	 a:comment="">
+	<a:subClassOf rdf:resource="http://www.mygrid.org.uk/ontology#model_organism"/>
+</a:Class>
+	 
+<a:Class rdf:about="http://www.mygrid.org.uk/ontology#Bos_taurus"
+	 a:comment="">
+	<a:subClassOf rdf:resource="http://www.mygrid.org.uk/ontology#model_organism"/>
+</a:Class>
+	 
+<a:Class rdf:about="http://www.mygrid.org.uk/ontology#Hepatitis_C_virus"
+	 a:comment="">
+	<a:subClassOf rdf:resource="http://www.mygrid.org.uk/ontology#model_organism"/>
+</a:Class>
+
+<a:Class rdf:about="http://www.mygrid.org.uk/ontology#Rattus_norvegicus"
+	 a:comment="">
+	<a:subClassOf rdf:resource="http://www.mygrid.org.uk/ontology#model_organism"/>
+</a:Class>
+
+<a:Class rdf:about="http://www.mygrid.org.uk/ontology#Caenorhabditis_elegans"
+	 a:comment="">
+	<a:subClassOf rdf:resource="http://www.mygrid.org.uk/ontology#model_organism"/>
+</a:Class>
+
+<a:Class rdf:about="http://www.mygrid.org.uk/ontology#Homo_sapiens"
+	 a:comment="Human">
+	<a:subClassOf rdf:resource="http://www.mygrid.org.uk/ontology#model_organism"/>
+</a:Class>
+	
+<a:Class rdf:about="http://www.mygrid.org.uk/ontology#Saccharomyces_cerevisiae"
+	 a:comment="">
+	<a:subClassOf rdf:resource="http://www.mygrid.org.uk/ontology#model_organism"/>
+</a:Class>
+	 
+<a:Class rdf:about="http://www.mygrid.org.uk/ontology#Chlamydomonas_reinhardtii"
+	 a:comment="">
+	<a:subClassOf rdf:resource="http://www.mygrid.org.uk/ontology#model_organism"/>
+</a:Class>	 
+	 
+
+<a:Class rdf:about="http://www.mygrid.org.uk/ontology#Mus_musculus"
+	 a:comment="">
+	<a:subClassOf rdf:resource="http://www.mygrid.org.uk/ontology#model_organism"/>
+</a:Class>	 
+
+<a:Class rdf:about="http://www.mygrid.org.uk/ontology#Schizosaccharomyces_pombe"
+	 a:comment="">
+	<a:subClassOf rdf:resource="http://www.mygrid.org.uk/ontology#model_organism"/>
+</a:Class>	 
+	 
+<a:Class rdf:about="http://www.mygrid.org.uk/ontology#Danio_rerio"
+	 a:comment="Zebra fish">
+	<a:subClassOf rdf:resource="http://www.mygrid.org.uk/ontology#model_organism"/>
+</a:Class>	 
+	
+<a:Class rdf:about="http://www.mygrid.org.uk/ontology#Mycoplasma_pneumoniae"
+	 a:comment="">
+	<a:subClassOf rdf:resource="http://www.mygrid.org.uk/ontology#model_organism"/>
+</a:Class>	 
+	 
+<a:Class rdf:about="http://www.mygrid.org.uk/ontology#Takifugu_rubripes"
+	 a:comment="">
+	<a:subClassOf rdf:resource="http://www.mygrid.org.uk/ontology#model_organism"/>
+</a:Class>	 
+	 
+<a:Class rdf:about="http://www.mygrid.org.uk/ontology#Dictyostelium_discoideum"
+	 a:comment="">
+	<a:subClassOf rdf:resource="http://www.mygrid.org.uk/ontology#model_organism"/>
+</a:Class>	 
+	 
+<a:Class rdf:about="http://www.mygrid.org.uk/ontology#Oryza_sativa"
+	 a:comment="">
+	<a:subClassOf rdf:resource="http://www.mygrid.org.uk/ontology#model_organism"/>
+</a:Class>	 
+	 
+<a:Class rdf:about="http://www.mygrid.org.uk/ontology#Xenopus_laevis"
+	 a:comment="">
+	<a:subClassOf rdf:resource="http://www.mygrid.org.uk/ontology#model_organism"/>
+</a:Class>	 
+	 
+<a:Class rdf:about="http://www.mygrid.org.uk/ontology#Drosophila_melanogaster"
+	 a:comment="fruit fly">
+	<a:subClassOf rdf:resource="http://www.mygrid.org.uk/ontology#model_organism"/>
+</a:Class>	 
+	 
+<a:Class rdf:about="http://www.mygrid.org.uk/ontology#Plasmodium_falciparum"
+	 a:comment="">
+	<a:subClassOf rdf:resource="http://www.mygrid.org.uk/ontology#model_organism"/>
+</a:Class>	
+
+<a:Class rdf:about="http://www.mygrid.org.uk/ontology#Zea_mays"
+	 a:comment="">
+	<a:subClassOf rdf:resource="http://www.mygrid.org.uk/ontology#model_organism"/>
+</a:Class>
+
+<a:Class rdf:about="http://www.mygrid.org.uk/ontology#method"/>
+<a:Class rdf:about="http://www.mygrid.org.uk/ontology#service"/>
+<a:Class rdf:about="http://www.mygrid.org.uk/ontology#operation"/>
+
+<a:Class rdf:about="http://www.mygrid.org.uk/ontology#application"/>
+
+<a:Class rdf:about="http://www.mygrid.org.uk/ontology#parameter"/>
+
+<a:Class rdf:about="http://www.mygrid.org.uk/ontology#operationtask"/>
+
+<a:Class rdf:about="http://www.mygrid.org.uk/ontology#resource"/>
+
+<a:Class rdf:about="http://www.mygrid.org.uk/ontology#resourceContent"/>
+
+<a:Class rdf:about="http://www.mygrid.org.uk/ontology#organisation"/>
+
+
+<rdf:Property rdf:about="http://www.mygrid.org.uk/ontology#hasOperation">
+	<a:range rdf:resource="http://www.mygrid.org.uk/ontology#operation"/>
+	<a:domain rdf:resource="http://www.mygrid.org.uk/ontology#service"/>
+</rdf:Property>
+
+<rdf:Property rdf:about="http://www.mygrid.org.uk/ontology#name" />
+
+<rdf:Property rdf:about="http://www.mygrid.org.uk/ontology#description" />
+
+<rdf:Property rdf:about="http://www.mygrid.org.uk/ontology#locationURI">
+	<a:domain rdf:resource="http://www.mygrid.org.uk/ontology#service"/>
+</rdf:Property>
+
+
+<rdf:Property rdf:about="http://www.mygrid.org.uk/ontology#hasParameterType">
+	<a:domain rdf:resource="http://www.mygrid.org.uk/ontology#parameter"/>
+</rdf:Property>
+
+<rdf:Property rdf:about="http://www.mygrid.org.uk/ontology#hasDefaultValue">
+	<a:domain rdf:resource="http://www.mygrid.org.uk/ontology#parameter"/>
+	<a:range rdf:resource="http://www.w3.org/2001/XMLSchema#string" /> 
+</rdf:Property>
+
+<rdf:Property rdf:about="http://www.mygrid.org.uk/ontology#hasFormat">
+	<a:domain rdf:resource="http://www.mygrid.org.uk/ontology#parameter"/>
+	<a:range rdf:resource="http://www.w3.org/2001/XMLSchema#anyURI" /> 
+</rdf:Property>
+
+<rdf:Property rdf:about="http://www.mygrid.org.uk/ontology#hasServiceType">
+	<a:domain rdf:resource="http://www.mygrid.org.uk/ontology#service"/>
+	<a:range rdf:resource="http://www.w3.org/2001/XMLSchema#string" /> 
+</rdf:Property>
+
+
+<rdf:Property rdf:about="http://www.mygrid.org.uk/ontology#hasServiceDescriptionLocation">
+	<a:domain rdf:resource="http://www.mygrid.org.uk/ontology#service"/>
+	<a:range rdf:resource="http://www.w3.org/2001/XMLSchema#anyURI" /> 
+</rdf:Property>
+
+
+<rdf:Property rdf:about="http://www.mygrid.org.uk/ontology#hasOrganisationDescriptionText">
+    <a:subPropertyOf rdf:resource="http://www.mygrid.org.uk/ontology#description" />
+	<a:domain rdf:resource="http://www.mygrid.org.uk/ontology#organisation"/>
+	<a:range rdf:resource="http://www.w3.org/2001/XMLSchema#string" /> 
+</rdf:Property>
+
+<rdf:Property rdf:about="http://www.mygrid.org.uk/ontology#hasOrganisationNameText">
+    <a:subPropertyOf rdf:resource="http://www.mygrid.org.uk/ontology#name" />
+	<a:domain rdf:resource="http://www.mygrid.org.uk/ontology#organisation"/>
+	<a:range rdf:resource="http://www.w3.org/2001/XMLSchema#string" /> 
+</rdf:Property>
+
+<rdf:Property rdf:about="http://www.mygrid.org.uk/ontology#hasParameterDescriptionText">
+	<a:domain rdf:resource="http://www.mygrid.org.uk/ontology#parameter"/>
+	<a:range rdf:resource="http://www.w3.org/2001/XMLSchema#string" /> 
+</rdf:Property>
+
+<rdf:Property rdf:about="http://www.mygrid.org.uk/ontology#hasParameterNameText">
+    <a:subPropertyOf rdf:resource="http://www.mygrid.org.uk/ontology#name" />
+	<a:domain rdf:resource="http://www.mygrid.org.uk/ontology#parameter"/>
+	<a:range rdf:resource="http://www.w3.org/2001/XMLSchema#string" /> 
+</rdf:Property>
+
+
+
+<rdf:Property rdf:about="http://www.mygrid.org.uk/ontology#hasServiceDescriptionText">
+    <a:subPropertyOf rdf:resource="http://www.mygrid.org.uk/ontology#description" />
+	<a:domain rdf:resource="http://www.mygrid.org.uk/ontology#service"/>
+	<a:range rdf:resource="http://www.w3.org/2001/XMLSchema#string" /> 
+</rdf:Property>
+
+<rdf:Property rdf:about="http://www.mygrid.org.uk/ontology#hasServiceNameText">
+    <a:subPropertyOf rdf:resource="http://www.mygrid.org.uk/ontology#name" />
+	<a:domain rdf:resource="http://www.mygrid.org.uk/ontology#service"/>
+	<a:range rdf:resource="http://www.w3.org/2001/XMLSchema#string" /> 
+</rdf:Property>
+
+
+<rdf:Property rdf:about="http://www.mygrid.org.uk/ontology#hasOperationDescriptionText">
+    <a:subPropertyOf rdf:resource="http://www.mygrid.org.uk/ontology#description" />
+	<a:domain rdf:resource="http://www.mygrid.org.uk/ontology#operation"/>
+	<a:range rdf:resource="http://www.w3.org/2001/XMLSchema#string" /> 
+</rdf:Property>
+
+<rdf:Property rdf:about="http://www.mygrid.org.uk/ontology#hasOperationNameText">
+    <a:subPropertyOf rdf:resource="http://www.mygrid.org.uk/ontology#name" />
+	<a:domain rdf:resource="http://www.mygrid.org.uk/ontology#operation"/>
+	<a:range rdf:resource="http://www.w3.org/2001/XMLSchema#string" /> 
+</rdf:Property>
+
+
+<rdf:Property rdf:about="http://www.mygrid.org.uk/ontology#inputParameter">
+	<a:range rdf:resource="http://www.mygrid.org.uk/ontology#parameter"/>
+	<a:domain rdf:resource="http://www.mygrid.org.uk/ontology#operation"/>
+</rdf:Property>
+
+<rdf:Property rdf:about="http://www.mygrid.org.uk/ontology#isConfiguration">
+	<a:domain rdf:resource="http://www.mygrid.org.uk/ontology#parameter"/>
+	<a:range rdf:resource="http://www.w3.org/2001/XMLSchema#boolean" /> 
+</rdf:Property>
+
+<rdf:Property rdf:about="http://www.mygrid.org.uk/ontology#isFunctionOf">
+	<a:range rdf:resource="http://www.mygrid.org.uk/ontology#application"/>
+	<a:domain rdf:resource="http://www.mygrid.org.uk/ontology#operation"/>
+</rdf:Property>
+
+
+<rdf:Property rdf:about="http://www.mygrid.org.uk/ontology#outputParameter">
+	<a:range rdf:resource="http://www.mygrid.org.uk/ontology#parameter"/>
+	<a:domain rdf:resource="http://www.mygrid.org.uk/ontology#operation"/>
+</rdf:Property>
+
+
+<rdf:Property rdf:about="http://www.mygrid.org.uk/ontology#performsTask">
+	<a:range rdf:resource="http://www.mygrid.org.uk/ontology#operationtask"/>
+	<a:domain rdf:resource="http://www.mygrid.org.uk/ontology#operation"/>
+</rdf:Property>
+
+<rdf:Property rdf:about="http://www.mygrid.org.uk/ontology#providedBy">
+	<a:range rdf:resource="http://www.mygrid.org.uk/ontology#organisation"/>
+	<a:domain rdf:resource="http://www.mygrid.org.uk/ontology#service"/>
+</rdf:Property>
+
+<rdf:Property rdf:about="http://www.mygrid.org.uk/ontology#usesMethod">
+	<a:range rdf:resource="http://www.mygrid.org.uk/ontology#method"/>
+	<a:domain rdf:resource="http://www.mygrid.org.uk/ontology#operation"/>
+</rdf:Property>
+
+<rdf:Property rdf:about="http://www.mygrid.org.uk/ontology#usesResource">
+	<a:range rdf:resource="http://www.mygrid.org.uk/ontology#resource"/>
+	<a:domain rdf:resource="http://www.mygrid.org.uk/ontology#operation"/>
+</rdf:Property>
+
+<rdf:Property rdf:about="http://www.mygrid.org.uk/ontology#hasResourceContent">
+	<a:range rdf:resource="http://www.mygrid.org.uk/ontology#resourceContent"/>
+	<a:domain rdf:resource="http://www.mygrid.org.uk/ontology#operation"/>
+</rdf:Property>
+
+
+</rdf:RDF>

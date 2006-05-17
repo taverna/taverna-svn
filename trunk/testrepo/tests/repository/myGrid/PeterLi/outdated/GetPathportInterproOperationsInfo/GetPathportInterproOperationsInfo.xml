@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<s:scufl xmlns:s="http://org.embl.ebi.escience/xscufl/0.1alpha" version="0.1" log="0">
+  <s:processor name="interpro">
+    <s:arbitrarywsdl>
+      <s:wsdl>http://www.vbi.vt.edu/~pathport/services/wsdls/interproscan.wsdl </s:wsdl>
+      <s:operation>aboutOperations</s:operation>
+    </s:arbitrarywsdl>
+  </s:processor>
+  <s:link>
+    <s:input>results</s:input>
+    <s:output>interpro:aboutOperationsReturn</s:output>
+  </s:link>
+  <s:sink>
+    results
+    <s:metadata>
+      <s:mimeTypes />
+      <s:description />
+      <s:semanticType />
+    </s:metadata>
+  </s:sink>
+</s:scufl>
+
+

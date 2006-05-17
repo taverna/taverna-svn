@@ -1,0 +1,237 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<s:scufl xmlns:s="http://org.embl.ebi.escience/xscufl/0.1alpha" version="0.2" log="0">
+  <s:workflowdescription lsid="urn:lsid:www.mygrid.org.uk:operation:B5Y2B9L0RB12" author="Tom Oinn" title="Example of analysis using EMBOSS and BioMart">Starts by fetching all gene IDs from Ensembl corresponding to human genes on chromosome 22 implicated in known diseases and with homologous genes in rat and mouse. For each of these gene IDs it fetches the 200bp after the five prime end of the genomic sequence in each organism and performs a multiple alignment of the sequences using the EMBOSS tool 'emma' (a wrapper around ClustalW). Returns PNG images of the multiple alignment along with three columns containing the human, rat and mouse gene IDs used in each case.</s:workflowdescription>
+  <s:processor name="GetUniqueHomolog">
+    <s:beanshell>
+      <s:scriptvalue>List HSOut = new ArrayList();
+List RatOut = new ArrayList();
+List MouseOut = new ArrayList();
+
+Map hsToMouse = new HashMap();
+Iterator j = MouseGeneIDs.iterator();
+for (Iterator i = HSGeneIDs.iterator(); i.hasNext();) {
+  String id = (String)i.next();
+  hsToMouse.put(id, j.next());
+}
+Map hsToRat = new HashMap();
+j = RatGeneIDs.iterator();
+for (Iterator i = HSGeneIDs.iterator(); i.hasNext();) {
+  String id = (String)i.next();
+  hsToRat.put(id, j.next());
+}
+
+// Build the unique outputs
+for (Iterator i = hsToRat.keySet().iterator(); i.hasNext();) {
+  String hsID = (String)i.next();
+  String ratID = (String)hsToRat.get(hsID);
+  // Remove version number
+  // ratID = (ratID.split("."))[0];
+  String mouseID = (String)hsToMouse.get(hsID);
+  // Remove version number
+  //mouseId = (mouseID.split("."))[0];
+  if (ratID != null &amp;&amp; mouseID != null &amp;&amp; ratID.equals("")==false &amp;&amp; mouseID.equals("")==false) {
+    HSOut.add(hsID);
+    RatOut.add(ratID.split("\\.")[0]);
+    MouseOut.add(mouseID.split("\\.")[0]);
+  }
+}</s:scriptvalue>
+      <s:beanshellinputlist>
+        <s:beanshellinput s:syntactictype="l('text/plain')">HSGeneIDs</s:beanshellinput>
+        <s:beanshellinput s:syntactictype="l('text/plain')">MouseGeneIDs</s:beanshellinput>
+        <s:beanshellinput s:syntactictype="l('text/plain')">RatGeneIDs</s:beanshellinput>
+      </s:beanshellinputlist>
+      <s:beanshelloutputlist>
+        <s:beanshelloutput s:syntactictype="l('text/plain')">HSOut</s:beanshelloutput>
+        <s:beanshelloutput s:syntactictype="l('text/plain')">RatOut</s:beanshelloutput>
+        <s:beanshelloutput s:syntactictype="l('text/plain')">MouseOut</s:beanshelloutput>
+      </s:beanshelloutputlist>
+    </s:beanshell>
+  </s:processor>
+  <s:processor name="FlattenImageList">
+    <s:local>org.embl.ebi.escience.scuflworkers.java.FlattenList</s:local>
+  </s:processor>
+  <s:processor name="CreateFasta">
+    <s:beanshell>
+      <s:scriptvalue>fasta = "&gt;Human\n"+hsSeq+"\n&gt;Mouse\n"+mmSeq+"\n&gt;Rat\n"+rnSeq;</s:scriptvalue>
+      <s:beanshellinputlist>
+        <s:beanshellinput s:syntactictype="'text/plain'">hsSeq</s:beanshellinput>
+        <s:beanshellinput s:syntactictype="'text/plain'">mmSeq</s:beanshellinput>
+        <s:beanshellinput s:syntactictype="'text/plain'">rnSeq</s:beanshellinput>
+      </s:beanshellinputlist>
+      <s:beanshelloutputlist>
+        <s:beanshelloutput s:syntactictype="'text/plain'">fasta</s:beanshelloutput>
+      </s:beanshelloutputlist>
+    </s:beanshell>
+    <s:iterationstrategy>
+      <i:dot xmlns:i="http://org.embl.ebi.escience/xscufliteration/0.1beta10">
+        <i:iterator name="rnSeq" />
+        <i:iterator name="mmSeq" />
+        <i:iterator name="hsSeq" />
+      </i:dot>
+    </s:iterationstrategy>
+  </s:processor>
+  <s:processor name="hsapiens_gene_ensembl">
+    <s:description>Fetch disease genes with homologues in mouse, get the rat IDs as well. Note that this therefore results in rows in the output with empty rat gene IDs as the current XML ui definition doesn't allow us to define more than one species specific filter (hopefully this will be fixed). This is corrected by the downstream beanshell script which removes these empty rows.</s:description>
+    <s:biomart>
+      <biomart:biomartconfig xmlns:biomart="http://org.embl.ebi.escience/xscufl-biomart/0.1alpha" dbtype="mysql" dbdriver="com.mysql.jdbc.Driver" dbhost="ensembldb.ensembl.org" dbport="3306" dbinstance="ensembl_mart_31" dbuser="anonymous" registryLocation="http://www.ebi.ac.uk/~tmo/defaultMartRegistry.xml" schema="ensembl_mart_31" />
+      <biomart:biomartds xmlns:biomart="http://org.embl.ebi.escience/xscufl-biomart/0.1alpha">hsapiens_gene_ensembl</biomart:biomartds>
+      <biomart:query xmlns:biomart="http://org.embl.ebi.escience/xscufl-biomart/0.1alpha">
+        <biomart:attributes>
+          <biomart:fieldattribute field="homol_stable_id_v" key="gene_id_key" constraint="hsapiens_gene_ensembl__homologs_mmusculus__dm" uniquename="mouse_ensembl_id" />
+          <biomart:fieldattribute field="homol_stable_id_v" key="gene_id_key" constraint="hsapiens_gene_ensembl__homologs_rnorvegicus__dm" uniquename="rat_ensembl_id" />
+          <biomart:fieldattribute field="gene_stable_id" key="gene_id_key" constraint="main" uniquename="gene_stable_id" />
+        </biomart:attributes>
+        <biomart:filters>
+          <biomart:basicfilter field="chr_name" constraint="main" key="gene_id_key" qualifier="=" value="22" />
+          <biomart:booleanfilter field="disease_gene_bool" constraint="main" key="gene_id_key" qualifier=" is not null" />
+          <biomart:booleanfilter field="mmusculus_homolog_bool" constraint="main" key="gene_id_key" qualifier=" is not null" />
+        </biomart:filters>
+      </biomart:query>
+    </s:biomart>
+  </s:processor>
+  <s:processor name="getHSsequence">
+    <s:biomart>
+      <biomart:biomartconfig xmlns:biomart="http://org.embl.ebi.escience/xscufl-biomart/0.1alpha" dbtype="mysql" dbdriver="com.mysql.jdbc.Driver" dbhost="ensembldb.ensembl.org" dbport="3306" dbinstance="ensembl_mart_31" dbuser="anonymous" registryLocation="http://www.ebi.ac.uk/~tmo/defaultMartRegistry.xml" schema="ensembl_mart_31" />
+      <biomart:biomartds xmlns:biomart="http://org.embl.ebi.escience/xscufl-biomart/0.1alpha">hsapiens_gene_ensembl</biomart:biomartds>
+      <biomart:query xmlns:biomart="http://org.embl.ebi.escience/xscufl-biomart/0.1alpha">
+        <biomart:attributes>
+          <biomart:fieldattribute field="hsapiens_gene_ensembl_structure.gene_stable_id" key="hsapiens_gene_ensembl_structure.gene_stable_id" constraint="hsapiens_gene_ensembl_structure.gene_stable_id" uniquename="hsapiens_gene_ensembl_structure.gene_stable_id" />
+        </biomart:attributes>
+        <biomart:filters>
+          <biomart:idlistfilter field="gene_stable_id" constraint="main" key="gene_id_key">
+            <biomart:idlistitem id="foo" />
+          </biomart:idlistfilter>
+        </biomart:filters>
+        <biomart:sequence seqdesc="hsapiens_genomic_sequence.coding_gene_flank" fiveprime="200" threeprime="0" />
+      </biomart:query>
+    </s:biomart>
+  </s:processor>
+  <s:processor name="getRNsequence">
+    <s:biomart>
+      <biomart:biomartconfig xmlns:biomart="http://org.embl.ebi.escience/xscufl-biomart/0.1alpha" dbtype="mysql" dbdriver="com.mysql.jdbc.Driver" dbhost="ensembldb.ensembl.org" dbport="3306" dbinstance="ensembl_mart_31" dbuser="anonymous" registryLocation="http://www.ebi.ac.uk/~tmo/defaultMartRegistry.xml" schema="ensembl_mart_31" />
+      <biomart:biomartds xmlns:biomart="http://org.embl.ebi.escience/xscufl-biomart/0.1alpha">rnorvegicus_gene_ensembl</biomart:biomartds>
+      <biomart:query xmlns:biomart="http://org.embl.ebi.escience/xscufl-biomart/0.1alpha">
+        <biomart:attributes>
+          <biomart:fieldattribute field="rnorvegicus_gene_ensembl_structure.gene_stable_id" key="rnorvegicus_gene_ensembl_structure.gene_stable_id" constraint="rnorvegicus_gene_ensembl_structure.gene_stable_id" uniquename="rnorvegicus_gene_ensembl_structure.gene_stable_id" />
+        </biomart:attributes>
+        <biomart:filters>
+          <biomart:idlistfilter field="gene_stable_id" constraint="main" key="gene_id_key">
+            <biomart:idlistitem id="foo" />
+          </biomart:idlistfilter>
+        </biomart:filters>
+        <biomart:sequence seqdesc="rnorvegicus_genomic_sequence.coding_gene_flank" fiveprime="200" threeprime="0" />
+      </biomart:query>
+    </s:biomart>
+  </s:processor>
+  <s:processor name="getMMsequence">
+    <s:biomart>
+      <biomart:biomartconfig xmlns:biomart="http://org.embl.ebi.escience/xscufl-biomart/0.1alpha" dbtype="mysql" dbdriver="com.mysql.jdbc.Driver" dbhost="ensembldb.ensembl.org" dbport="3306" dbinstance="ensembl_mart_31" dbuser="anonymous" registryLocation="http://www.ebi.ac.uk/~tmo/defaultMartRegistry.xml" schema="ensembl_mart_31" />
+      <biomart:biomartds xmlns:biomart="http://org.embl.ebi.escience/xscufl-biomart/0.1alpha">mmusculus_gene_ensembl</biomart:biomartds>
+      <biomart:query xmlns:biomart="http://org.embl.ebi.escience/xscufl-biomart/0.1alpha">
+        <biomart:attributes>
+          <biomart:fieldattribute field="mmusculus_gene_ensembl_structure.gene_stable_id" key="mmusculus_gene_ensembl_structure.gene_stable_id" constraint="mmusculus_gene_ensembl_structure.gene_stable_id" uniquename="mmusculus_gene_ensembl_structure.gene_stable_id" />
+        </biomart:attributes>
+        <biomart:filters>
+          <biomart:idlistfilter field="gene_stable_id" constraint="main" key="gene_id_key">
+            <biomart:idlistitem id="foo" />
+          </biomart:idlistfilter>
+        </biomart:filters>
+        <biomart:sequence seqdesc="mmusculus_genomic_sequence.coding_gene_flank" fiveprime="200" threeprime="0" />
+      </biomart:query>
+    </s:biomart>
+  </s:processor>
+  <s:processor name="seqret" workers="5">
+    <s:description>Reads and writes (returns) sequences</s:description>
+    <s:soaplabwsdl>http://www.ebi.ac.uk/soaplab/services/edit.seqret</s:soaplabwsdl>
+  </s:processor>
+  <s:processor name="plot" workers="5">
+    <s:description>Displays aligned sequences, with colouring and boxing</s:description>
+    <s:soaplabwsdl>http://www.ebi.ac.uk/soaplab/services/alignment_multiple.prettyplot</s:soaplabwsdl>
+  </s:processor>
+  <s:processor name="emma" workers="5">
+    <s:description>Multiple alignment program - interface to ClustalW program</s:description>
+    <s:soaplabwsdl>http://www.ebi.ac.uk/soaplab/services/alignment_multiple.emma</s:soaplabwsdl>
+  </s:processor>
+  <s:processor name="mmusculus_gene_ensembl">
+    <s:biomart>
+      <biomart:biomartconfig xmlns:biomart="http://org.embl.ebi.escience/xscufl-biomart/0.1alpha" dbtype="mysql" dbdriver="com.mysql.jdbc.Driver" dbhost="ensembldb.ensembl.org" dbport="3306" dbinstance="ensembl_mart_35" dbuser="anonymous" registryLocation="http://www.ebi.ac.uk/~tmo/defaultMartRegistry.xml" schema="ensembl_mart_35" />
+      <biomart:biomartds xmlns:biomart="http://org.embl.ebi.escience/xscufl-biomart/0.1alpha">mmusculus_gene_ensembl</biomart:biomartds>
+      <biomart:query xmlns:biomart="http://org.embl.ebi.escience/xscufl-biomart/0.1alpha">
+        <biomart:attributes>
+          <biomart:fieldattribute field="gene_stable_id" key="gene_id_key" constraint="main" uniquename="gene_stable_id_1" />
+          <biomart:fieldattribute field="dbprimary_id" key="transcript_id_key" constraint="mmusculus_gene_ensembl__xref_go__dm" uniquename="go_id" />
+          <biomart:fieldattribute field="description" key="transcript_id_key" constraint="mmusculus_gene_ensembl__xref_go__dm" uniquename="go_description" />
+        </biomart:attributes>
+        <biomart:filters>
+          <biomart:basicfilter field="chr_name" constraint="main" key="gene_id_key" qualifier="=" value="11" />
+          <biomart:booleanfilter field="scerevisiae_homolog_bool" constraint="main" key="gene_id_key" qualifier=" is not null" />
+        </biomart:filters>
+      </biomart:query>
+    </s:biomart>
+  </s:processor>
+  <s:processor name="scerevisiae_gene_ensembl">
+    <s:biomart>
+      <biomart:biomartconfig xmlns:biomart="http://org.embl.ebi.escience/xscufl-biomart/0.1alpha" dbtype="mysql" dbdriver="com.mysql.jdbc.Driver" dbhost="ensembldb.ensembl.org" dbport="3306" dbinstance="ensembl_mart_35" dbuser="anonymous" registryLocation="http://www.ebi.ac.uk/~tmo/defaultMartRegistry.xml" schema="ensembl_mart_35" />
+      <biomart:biomartds xmlns:biomart="http://org.embl.ebi.escience/xscufl-biomart/0.1alpha">scerevisiae_gene_ensembl</biomart:biomartds>
+      <biomart:query xmlns:biomart="http://org.embl.ebi.escience/xscufl-biomart/0.1alpha">
+        <biomart:attributes>
+          <biomart:fieldattribute field="scerevisiae_gene_ensembl_structure.gene_stable_id" key="scerevisiae_gene_ensembl_structure.gene_stable_id" constraint="scerevisiae_gene_ensembl_structure.gene_stable_id" uniquename="scerevisiae_gene_ensembl_structure.gene_stable_id" />
+        </biomart:attributes>
+        <biomart:filters>
+          <biomart:idlistfilter field="gene_stable_id" constraint="main" key="gene_id_key">
+            <biomart:idlistitem id="foo" />
+          </biomart:idlistfilter>
+        </biomart:filters>
+        <biomart:sequence seqdesc="scerevisiae_genomic_sequence.peptide" fiveprime="0" threeprime="0" />
+      </biomart:query>
+    </s:biomart>
+  </s:processor>
+  <s:processor name="uniprot">
+    <s:biomart>
+      <biomart:biomartconfig xmlns:biomart="http://org.embl.ebi.escience/xscufl-biomart/0.1alpha" dbtype="mysql" dbdriver="com.mysql.jdbc.Driver" dbhost="martdb.ebi.ac.uk" dbport="3306" dbinstance="uniprot_mart_17" dbuser="anonymous" registryLocation="http://www.ebi.ac.uk/~tmo/defaultMartRegistry.xml" schema="uniprot_mart_17" />
+      <biomart:biomartds xmlns:biomart="http://org.embl.ebi.escience/xscufl-biomart/0.1alpha">uniprot</biomart:biomartds>
+      <biomart:query xmlns:biomart="http://org.embl.ebi.escience/xscufl-biomart/0.1alpha" />
+    </s:biomart>
+  </s:processor>
+  <s:link source="CreateFasta:fasta" sink="seqret:sequence_direct_data" />
+  <s:link source="GetUniqueHomolog:HSOut" sink="getHSsequence:gene_stable_id_filter" />
+  <s:link source="GetUniqueHomolog:MouseOut" sink="getMMsequence:gene_stable_id_filter" />
+  <s:link source="GetUniqueHomolog:RatOut" sink="getRNsequence:gene_stable_id_filter" />
+  <s:link source="getHSsequence:sequenceexport" sink="CreateFasta:hsSeq" />
+  <s:link source="getMMsequence:sequenceexport" sink="CreateFasta:mmSeq" />
+  <s:link source="getRNsequence:sequenceexport" sink="CreateFasta:rnSeq" />
+  <s:link source="hsapiens_gene_ensembl:gene_stable_id" sink="GetUniqueHomolog:HSGeneIDs" />
+  <s:link source="hsapiens_gene_ensembl:mouse_ensembl_id" sink="GetUniqueHomolog:MouseGeneIDs" />
+  <s:link source="hsapiens_gene_ensembl:rat_ensembl_id" sink="GetUniqueHomolog:RatGeneIDs" />
+  <s:link source="mmusculus_gene_ensembl:gene_stable_id_1" sink="scerevisiae_gene_ensembl:gene_stable_id_filter" />
+  <s:link source="FlattenImageList:outputlist" sink="outputPlot" />
+  <s:link source="GetUniqueHomolog:HSOut" sink="HSapIDs" />
+  <s:link source="GetUniqueHomolog:MouseOut" sink="MMusIDs" />
+  <s:link source="GetUniqueHomolog:RatOut" sink="RNorIDs" />
+  <s:link source="emma:outseq" sink="plot:sequences_direct_data" />
+  <s:link source="mmusculus_gene_ensembl:gene_stable_id_1" sink="YeastSequences" />
+  <s:link source="mmusculus_gene_ensembl:go_description" sink="goDescriptions" />
+  <s:link source="mmusculus_gene_ensembl:go_id" sink="goIDs" />
+  <s:link source="plot:Graphics_in_PNG" sink="FlattenImageList:inputlist" />
+  <s:link source="scerevisiae_gene_ensembl:sequenceexport" sink="yeast_out" />
+  <s:link source="seqret:outseq" sink="emma:sequence_direct_data" />
+  <s:sink name="outputPlot">
+    <s:metadata>
+      <s:mimeTypes>
+        <s:mimeType>image/png</s:mimeType>
+        <s:mimeType>application/octet-stream</s:mimeType>
+      </s:mimeTypes>
+      <s:description>The array of png images returned from the plot processor</s:description>
+      <s:semanticType>http://www.mygrid.org.uk/ontology#domain_concept</s:semanticType>
+    </s:metadata>
+  </s:sink>
+  <s:sink name="HSapIDs" />
+  <s:sink name="MMusIDs" />
+  <s:sink name="RNorIDs" />
+  <s:sink name="YeastSequences" />
+  <s:sink name="goDescriptions" />
+  <s:sink name="goIDs" />
+  <s:sink name="yeast_out" />
+</s:scufl>
+
+
