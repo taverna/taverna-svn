@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: SOAPResponseEncodedMultiRefParser.java,v $
- * Revision           $Revision: 1.1 $
+ * Revision           $Revision: 1.2 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-05-15 13:52:34 $
+ * Last modified on   $Date: 2006-05-18 13:50:19 $
  *               by   $Author: sowen70 $
  * Created on 05-May-2006
  *****************************************************************/
@@ -48,11 +48,14 @@ import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 
 /**
- * A SOAPResponseParser responsible for responses that are fragmented into seperate referenced blocks of XML - Multiref format.
- * It trys to resolve each reference to the corresponding multiref element, eventually generating a single XML document.
- * Cyclic references are not allows, and lead to a CyclicReferenceException
+ * A SOAPResponseParser responsible for responses that are fragmented into
+ * seperate referenced blocks of XML - Multiref format. It trys to resolve each
+ * reference to the corresponding multiref element, eventually generating a
+ * single XML document. Cyclic references are not allows, and lead to a
+ * CyclicReferenceException
+ * 
  * @author sowen
- *
+ * 
  */
 
 public class SOAPResponseEncodedMultiRefParser extends SOAPResponseEncodedParser {
@@ -68,12 +71,14 @@ public class SOAPResponseEncodedMultiRefParser extends SOAPResponseEncodedParser
 	}
 
 	/**
-	 * Expects a list of XML SOAPBodyElement fragements, with the first being the root, and transforms this into a single XML document.
-	 * Cyclic references lead to a CyclicReferenceException being thrown.
-	 * XML namespaces are removed, leading to easier to read XML.
+	 * Expects a list of XML SOAPBodyElement fragements, with the first being
+	 * the root, and transforms this into a single XML document. Cyclic
+	 * references lead to a CyclicReferenceException being thrown. XML
+	 * namespaces are removed, leading to easier to read XML.
 	 * 
-	 * @param response - List of XML SOAPBodyElement fragments.
-	 */	
+	 * @param response -
+	 *            List of XML SOAPBodyElement fragments.
+	 */
 	public Map parse(List response) throws Exception, CyclicReferenceException {
 		Map result = new HashMap();
 		generateRefMap(response);
@@ -83,12 +88,22 @@ public class SOAPResponseEncodedMultiRefParser extends SOAPResponseEncodedParser
 		for (Iterator iterator = outputNames.iterator(); iterator.hasNext();) {
 			String outputName = (String) iterator.next();
 			if (!outputName.equals("attachmentList")) {
-				Node outputNode = (Node) mainBody.getElementsByTagName(outputName).item(0);
+				// first try using body namespace ...
+				Node outputNode = (Node) mainBody.getElementsByTagNameNS(mainBody.getNamespaceURI(), outputName)
+						.item(0);
+				// ... and if that doesn't work, try without namespace
+				if (outputNode == null) {
+					outputNode = (Node) mainBody.getElementsByTagName(outputName).item(0);
+				}
 				if (outputNode != null) {
 					expandNode(outputNode, new ArrayList());
-					if (stripAttributes)
+					String xml;
+					if (stripAttributes) {
 						stripAttributes(outputNode);
-					String xml = XMLUtils.ElementToString((Element) outputNode);
+						outputNode = (Node) removeNamespace(outputName, (Element) outputNode);
+					}
+					xml = XMLUtils.ElementToString((Element) outputNode);
+
 					result.put(outputName, new DataThing(xml));
 				} else {
 					logger.error("No element for output name: " + outputName);
@@ -101,8 +116,9 @@ public class SOAPResponseEncodedMultiRefParser extends SOAPResponseEncodedParser
 
 	/**
 	 * Generates a map of each multiref element, mapped to its ID.
+	 * 
 	 * @param response
-	 * @throws Exception  
+	 * @throws Exception
 	 */
 	private void generateRefMap(List response) throws Exception {
 		Map result = new HashMap();
@@ -119,7 +135,9 @@ public class SOAPResponseEncodedMultiRefParser extends SOAPResponseEncodedParser
 	}
 
 	/**
-	 * Expands any references to other fragments within each multiref fragment, resulting in all multiref fragments being fully expanded.
+	 * Expands any references to other fragments within each multiref fragment,
+	 * resulting in all multiref fragments being fully expanded.
+	 * 
 	 * @throws CyclicReferenceException
 	 */
 	private void expandRefMap() throws CyclicReferenceException {

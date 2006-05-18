@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: WSDLSOAPInvokerTest.java,v $
- * Revision           $Revision: 1.2 $
+ * Revision           $Revision: 1.3 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-05-17 14:33:00 $
+ * Last modified on   $Date: 2006-05-18 13:50:18 $
  *               by   $Author: sowen70 $
  * Created on 04-May-2006
  *****************************************************************/
@@ -49,7 +49,7 @@ public class WSDLSOAPInvokerTest extends TestCase {
 	private static Logger logger = Logger.getLogger(WSDLSOAPInvokerTest.class);
 
 	public void testPrimitive() throws Exception {
-
+		
 		WSDLBasedProcessor processor = null;
 		try {
 			processor = new WSDLBasedProcessor(null, "procName", "http://soap.genome.jp/KEGG.wsdl",
@@ -79,7 +79,7 @@ public class WSDLSOAPInvokerTest extends TestCase {
 	}
 
 	public void testComplexDocStyle() throws Exception {
-
+		
 		WSDLBasedProcessor processor = null;
 		try {
 			processor = new WSDLBasedProcessor(null, "procName",
@@ -114,7 +114,7 @@ public class WSDLSOAPInvokerTest extends TestCase {
 	}
 
 	public void testComplexMultiRef() throws Exception {
-
+		
 		WSDLBasedProcessor processor = null;
 		try {
 			processor = new WSDLBasedProcessor(null, "procName", "http://genex.hgu.mrc.ac.uk/axis/services/ma?wsdl",
@@ -145,9 +145,28 @@ public class WSDLSOAPInvokerTest extends TestCase {
 		assertTrue("invalid start to xml", thing.getDataObject().toString().startsWith("<whatGeneInStageReturn>"));
 		assertTrue("invalid end to xml", thing.getDataObject().toString().endsWith("</whatGeneInStageReturn>"));
 	}
+	
+	public void testMultirefWithOutputNamespaced() throws Exception
+	{
+		WSDLBasedProcessor processor = null;
+		try {
+			processor = new WSDLBasedProcessor(null, "procName", "http://www.broad.mit.edu/webservices/genecruiser/services/Annotation?wsdl",
+					"getDatabasesWithDetails");
+
+		} catch (ProcessorCreationException e) {
+			logger.error("Unable to connect to serivce in testMultirefWithOutputNamespaced, skipping test");
+			return; // don't fail because the service is unavailable
+		}
+		
+		WSDLSOAPInvoker invoker = new WSDLSOAPInvoker(processor);
+		
+		Map output = invoker.invoke(new HashMap());
+		
+		assertNotNull("no result returned",output.get("getDatabasesWithDetailsReturn"));
+	}
 
 	public void testComplexEmptyMultiRef() throws Exception {
-
+		
 		WSDLBasedProcessor processor = null;
 		try {
 			processor = new WSDLBasedProcessor(null, "procName", "http://genex.hgu.mrc.ac.uk/axis/services/ma?wsdl",
@@ -182,6 +201,7 @@ public class WSDLSOAPInvokerTest extends TestCase {
 	// and can be tested via that site.
 
 	public void testSOAPEncoded() throws Exception {
+		
 		WSDLBasedProcessor processor = null;
 		try {
 			processor = new WSDLBasedProcessor(null, "procName",
@@ -202,6 +222,7 @@ public class WSDLSOAPInvokerTest extends TestCase {
 	// a service I found that is has an unexpected operation namespace, and is
 	// dependant on parameter order
 	public void testStrictOrderandOperationNamespace() throws Exception {
+		
 		WSDLBasedProcessor processor = null;
 		try {
 			processor = new WSDLBasedProcessor(null, "procName",
@@ -228,6 +249,7 @@ public class WSDLSOAPInvokerTest extends TestCase {
 	}
 
 	public void testDocumentNamespace() throws Exception {
+		
 		WSDLBasedProcessor processor = null;
 		try {
 			processor = new WSDLBasedProcessor(null, "procName",

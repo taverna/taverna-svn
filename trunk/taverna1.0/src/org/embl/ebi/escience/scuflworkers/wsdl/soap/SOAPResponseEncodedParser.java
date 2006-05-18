@@ -25,32 +25,41 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: SOAPResponseEncodedParser.java,v $
- * Revision           $Revision: 1.1 $
+ * Revision           $Revision: 1.2 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-05-15 13:52:34 $
+ * Last modified on   $Date: 2006-05-18 13:50:19 $
  *               by   $Author: sowen70 $
  * Created on 08-May-2006
  *****************************************************************/
 package org.embl.ebi.escience.scuflworkers.wsdl.soap;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+
 import org.apache.axis.message.SOAPBodyElement;
 import org.apache.axis.utils.XMLUtils;
 import org.apache.log4j.Logger;
 import org.embl.ebi.escience.baclava.DataThing;
+import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
+import org.xml.sax.SAXException;
 
 /**
- * SOAPResponseParser responsible for parsing SOAP responses from RPC/encoded based service, but that are not
- * fragmented to multiref documents.
+ * SOAPResponseParser responsible for parsing SOAP responses from RPC/encoded
+ * based service, but that are not fragmented to multiref documents.
+ * 
  * @author sowen
- *
+ * 
  */
 
 public class SOAPResponseEncodedParser implements SOAPResponseParser {
@@ -64,11 +73,12 @@ public class SOAPResponseEncodedParser implements SOAPResponseParser {
 	public SOAPResponseEncodedParser(List outputNames) {
 		this.outputNames = outputNames;
 	}
-		
 
 	/**
-	 * Parses the response into a single XML document, which is placed in the outputMap together with the given output name.
-	 * Namespaces and other attributes are stripped out according to stripAttributes.
+	 * Parses the response into a single XML document, which is placed in the
+	 * outputMap together with the given output name. Namespaces and other
+	 * attributes are stripped out according to stripAttributes.
+	 * 
 	 * @param List
 	 * @return Map
 	 */
@@ -80,11 +90,20 @@ public class SOAPResponseEncodedParser implements SOAPResponseParser {
 		for (Iterator iterator = outputNames.iterator(); iterator.hasNext();) {
 			String outputName = (String) iterator.next();
 			if (!outputName.equals("attachmentList")) {
-				Node outputNode = (Node) mainBody.getElementsByTagName(outputName).item(0);
+				// first try using body namespace ...
+				Node outputNode = (Node) mainBody.getElementsByTagNameNS(mainBody.getNamespaceURI(), outputName)
+						.item(0);
+				// ... and if that doesn't work, try without namespace
+				if (outputNode == null) {
+					outputNode = (Node) mainBody.getElementsByTagName(outputName).item(0);
+				}
 				if (outputNode != null) {
-					if (stripAttributes)
+					String xml;
+					if (stripAttributes) {
 						stripAttributes(outputNode);
-					String xml = XMLUtils.ElementToString((Element) outputNode);
+						outputNode = (Node) removeNamespace(outputName, (Element) outputNode);
+					}
+					xml = XMLUtils.ElementToString((Element) outputNode);
 					result.put(outputName, new DataThing(xml));
 				} else {
 					logger.error("No element for output name: " + outputName);
@@ -93,6 +112,31 @@ public class SOAPResponseEncodedParser implements SOAPResponseParser {
 		}
 
 		return result;
+	}
+
+	/**
+	 * Removes the namespace from the surrounding element that represents the
+	 * outputName. E.g. converts <ns1:element xmlns:ns1="http://someurl">...</ns1:element>
+	 * to <element>...</element>
+	 * 
+	 * @param outputName
+	 * @param element
+	 * @return
+	 * @throws ParserConfigurationException 
+	 * @throws IOException 
+	 * @throws SAXException 
+	 */
+	protected Element removeNamespace(String outputName, Element element) throws ParserConfigurationException, SAXException, IOException {
+		String xml;		
+		String innerXML = XMLUtils.getInnerXMLString(element);
+		if (innerXML != null) {
+			xml = "<" + outputName + ">" + innerXML + "</" + outputName + ">";
+		} else {
+			xml = "<" + outputName + " />";
+		}
+		DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+		Document doc = builder.parse(new ByteArrayInputStream(xml.getBytes()));
+		return doc.getDocumentElement();
 	}
 
 	protected void stripAttributes(Node node) {
@@ -114,12 +158,14 @@ public class SOAPResponseEncodedParser implements SOAPResponseParser {
 				child = child.getNextSibling();
 			}
 		}
+
 	}
 
-
 	/**
-	 * determines whether attributes in the resulting XML should be stripped out, including namespace definitions, leading
-	 * to XML that is much easier to read.
+	 * determines whether attributes in the resulting XML should be stripped
+	 * out, including namespace definitions, leading to XML that is much easier
+	 * to read.
+	 * 
 	 * @param stripAttributes
 	 */
 	public void setStripAttributes(boolean stripAttributes) {
