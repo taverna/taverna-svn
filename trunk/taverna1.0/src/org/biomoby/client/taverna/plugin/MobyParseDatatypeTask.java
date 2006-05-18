@@ -37,8 +37,6 @@ public class MobyParseDatatypeTask implements ProcessorTaskWorker {
 
 	private static Logger logger = Logger.getLogger(MobyParseDatatypeTask.class);
 
-	private static final int INVOCATION_TIMEOUT = 0;
-
 	private MobyParseDatatypeProcessor proc;
 
 	/**
@@ -286,6 +284,7 @@ public class MobyParseDatatypeTask implements ProcessorTaskWorker {
 		} else {
 			parseString = parseString.substring(proc.getArticleNameUsedByService().length() + 1);
 			articles = parseString.split("_'");
+			if (!isPrimitive(simElement.getName()))
 			for (int i = 0; i < articles.length; i++) {
 				nextArtName = articles[i];
 				if (nextArtName.startsWith("'"))
@@ -348,6 +347,7 @@ public class MobyParseDatatypeTask implements ProcessorTaskWorker {
 				parseString = parseString
 						.substring(proc.getArticleNameUsedByService().length() + 1);
 				articles = parseString.split("_'");
+				if (!isPrimitive(simElement.getName()))
 				for (int j = 0; j < articles.length; j++) {
 					nextArtName = articles[j];
 					if (nextArtName.startsWith("'"))
@@ -456,5 +456,12 @@ public class MobyParseDatatypeTask implements ProcessorTaskWorker {
 				return (Element) o;
 		}
 		return e;
+	}
+	
+	private boolean isPrimitive(String name) {
+		if (name.equals("Integer") || name.equals("String") || name.equals("Float")
+				|| name.equals("DateTime") || name.equals("Boolean"))
+			return true;
+		return false;
 	}
 }
