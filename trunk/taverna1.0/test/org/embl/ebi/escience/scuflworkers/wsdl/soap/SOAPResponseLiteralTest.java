@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: SOAPResponseLiteralTest.java,v $
- * Revision           $Revision: 1.1 $
+ * Revision           $Revision: 1.2 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-05-17 14:33:00 $
+ * Last modified on   $Date: 2006-05-18 15:27:41 $
  *               by   $Author: sowen70 $
  * Created on 11-May-2006
  *****************************************************************/
@@ -42,7 +42,6 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.apache.axis.message.SOAPBodyElement;
-import org.apache.commons.lang.StringEscapeUtils;
 import org.embl.ebi.escience.baclava.DataThing;
 import org.w3c.dom.Document;
 

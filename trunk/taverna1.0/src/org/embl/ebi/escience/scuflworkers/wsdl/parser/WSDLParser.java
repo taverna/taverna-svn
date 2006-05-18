@@ -19,6 +19,7 @@ import javax.wsdl.WSDLException;
 import javax.wsdl.extensions.ExtensibilityElement;
 import javax.wsdl.extensions.soap.SOAPBinding;
 import javax.wsdl.extensions.soap.SOAPBody;
+import javax.xml.namespace.QName;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.axis.wsdl.gen.NoopFactory;
@@ -475,9 +476,35 @@ public class WSDLParser {
 				result = constructArrayType(type);
 			}
 		} else {
-			result = constructBaseType(type);
+			if (type.getQName().getLocalPart().equals("Map"))
+			{
+				//axis treats Map as a base type, Taverna doesn't.
+				result = constructMapType(type);
+			}
+			else
+			{
+				result = constructBaseType(type);
+			}
 		}
 		result.setQName(type.getQName());
+		return result;
+	}
+	
+	private ArrayTypeDescriptor constructMapType(TypeEntry type)
+	{
+		ArrayTypeDescriptor result = new ArrayTypeDescriptor();
+		TypeEntry mapItem=getSymbolTable().getType(type.getItemQName());
+		if (mapItem==null)
+		{
+			mapItem=getSymbolTable().getType(new QName(type.getQName().getNamespaceURI(),"mapItem"));
+		}
+		
+		result.setElementType(constructType(mapItem));				
+		
+		result.setQName(type.getQName());		
+		result.setType(type.getQName().getLocalPart());
+		
+										
 		return result;
 	}
 
@@ -555,6 +582,7 @@ public class WSDLParser {
 	}
 
 	private BaseTypeDescriptor constructBaseType(DefinedElement type) {
+		
 		BaseTypeDescriptor result = null;
 		if (type.getRefType() == null) {
 			result = constructBaseType((TypeEntry) type);
