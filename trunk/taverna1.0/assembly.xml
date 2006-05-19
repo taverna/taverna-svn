@@ -32,7 +32,7 @@
       <directory>workbench</directory>
       <outputDirectory>/</outputDirectory>
     </fileSet>
-    <!-- contrib jars
+    <!-- contrib jars -->
     <fileSet>
       <directory>contrib/lib</directory>
       <outputDirectory>/lib</outputDirectory>
@@ -44,14 +44,13 @@
       <directory>contrib/target</directory>
       <outputDirectory>/lib</outputDirectory>
       <includes>
-        <include>contrib.jar</include>
+        <include>*.jar</include>
       </includes>
     </fileSet>
     <fileSet>
       <directory>contrib/examples</directory>
       <outputDirectory>/examples</outputDirectory>
     </fileSet>
-    -->
   </fileSets>
   <dependencySets>
     <dependencySet>
