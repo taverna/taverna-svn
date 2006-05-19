@@ -85,7 +85,7 @@ public class WSDLBasedScavenger extends Scavenger {
 			throw new ScavengerCreationException("Unable to load the WSDL definition, underlying reason was "
 					+ e.getMessage());
 		} catch (WSDLException e) {
-			logger.error("WSDLException parsing wsdl:" + wsdlLocation);
+			logger.error("WSDLException parsing wsdl:" + wsdlLocation + "," + e.getMessage());
 			throw new ScavengerCreationException("Unable to load the WSDL definition, underlying reason was "
 					+ e.getMessage());
 		} catch (IOException e) {

@@ -1,12 +1,17 @@
 package org.embl.ebi.escience.scuflworkers.wsdl.parser;
 
+import java.io.IOException;
 import java.util.List;
 
 import javax.wsdl.Operation;
 
 import junit.framework.TestCase;
 
+import org.apache.log4j.Logger;
+
 public class WSDLParserTest extends TestCase {
+
+	private static Logger logger = Logger.getLogger(WSDLParser.class);
 
 	public void testGetOperations() throws Exception {
 		WSDLParser parser = new WSDLParser("http://eutils.ncbi.nlm.nih.gov/entrez/eutils/soap/eutils_lite.wsdl");
@@ -219,7 +224,7 @@ public class WSDLParserTest extends TestCase {
 				operationNamespace);
 	}
 
-	public void testHugeOutputFromEFetch() throws Exception {
+	public void testHugeOutputFromEFetch() throws Exception {		
 		WSDLParser parser = new WSDLParser("http://eutils.ncbi.nlm.nih.gov/entrez/eutils/soap/eutils.wsdl");
 		List outputs = parser.getOperationOutputParameters("run_eFetch");
 
@@ -238,6 +243,20 @@ public class WSDLParserTest extends TestCase {
 
 		assertEquals("unexpected inner element", "Bioseq-set_id", ((TypeDescriptor) desc.getElements().get(0))
 				.getName());
+	}
+
+	public void testSetCorrectNamespaceForXSDBasetype() throws Exception {
+
+		try {
+			WSDLParser parser = new WSDLParser("http://biowulf.bu.edu/clover/glamwsdl");
+			List inputs = parser.getOperationInputParameters("help");
+			TypeDescriptor type = (TypeDescriptor) inputs.get(0);
+			assertEquals("wrong namespace for base type string", "http://www.w3.org/2001/XMLSchema", type
+					.getNamespaceURI());
+		} catch (IOException e) {
+			logger.error("IOException reading WSDL for testSetCorrectNamespaceForBasetype, test skipped", e);
+		}
+
 	}
 
 }

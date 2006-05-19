@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: TypeDescriptorTest.java,v $
- * Revision           $Revision: 1.1 $
+ * Revision           $Revision: 1.2 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-05-17 14:33:01 $
+ * Last modified on   $Date: 2006-05-19 11:51:06 $
  *               by   $Author: sowen70 $
  * Created on 17-May-2006
  *****************************************************************/
@@ -35,6 +35,8 @@ package org.embl.ebi.escience.scuflworkers.wsdl.parser;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.xml.namespace.QName;
 
 import junit.framework.TestCase;
 
@@ -62,7 +64,7 @@ public class TypeDescriptorTest extends TestCase {
 		
 		assertEquals("AnArray",names[0]);
 		assertEquals(String[].class,types[0]);		
-	}
+	}	
 	
 	//	array of strings, but type for array is defined as string
 	// (which is logically warped, but some wsdl's describe their string arrays this way).

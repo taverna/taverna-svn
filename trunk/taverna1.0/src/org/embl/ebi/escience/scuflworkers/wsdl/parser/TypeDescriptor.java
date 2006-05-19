@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: TypeDescriptor.java,v $
- * Revision           $Revision: 1.4 $
+ * Revision           $Revision: 1.5 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-05-17 14:33:01 $
+ * Last modified on   $Date: 2006-05-19 11:51:06 $
  *               by   $Author: sowen70 $
  * Created on March-2006
  *****************************************************************/
@@ -52,12 +52,13 @@ public class TypeDescriptor {
 
 	QName qname;
 
-	public QName getQName() {
-		return qname;
+	public String getNamespaceURI()
+	{
+		return qname.getNamespaceURI();
 	}
 
 	public void setQName(QName qname) {
-		this.qname = qname;
+		this.qname = qname;		
 	}
 
 	public String getName() {

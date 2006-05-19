@@ -136,20 +136,20 @@ public class WSDLParser {
 	public PortType getPortType() {
 		return (PortType) portTypeMap.get(getWSDLLocation());
 	}
-	
+
 	/**
-	 * Returns a List of the TypeDescriptors representing the parameters for the inputs to the service 
+	 * Returns a List of the TypeDescriptors representing the parameters for the
+	 * inputs to the service
 	 * 
 	 * @param operationName
-	 * @return List of TypeDescriptor 
+	 * @return List of TypeDescriptor
 	 * @throws UnknownOperationException
 	 *             if no operation matches the name
 	 * @throws IOException
 	 */
-	public List getOperationInputParameters(String operationName)
-			throws UnknownOperationException, IOException {
+	public List getOperationInputParameters(String operationName) throws UnknownOperationException, IOException {
 		Operation operation = getOperation(operationName);
-		List result=new ArrayList();
+		List result = new ArrayList();
 		if (operation == null) {
 			throw new UnknownOperationException("operation called " + operationName + " does not exist for this wsdl");
 		}
@@ -158,45 +158,41 @@ public class WSDLParser {
 
 		for (Iterator iterator = parameters.list.iterator(); iterator.hasNext();) {
 			Parameter param = (Parameter) iterator.next();
-			if (param.getMode() == Parameter.IN)
-			{
+			if (param.getMode() == Parameter.IN) {
 				TypeDescriptor typeDescriptor = processParameter(param);
-				if (typeDescriptor instanceof ComplexTypeDescriptor && getStyle().equals("document"))
-				{
-					//for document based, if operation requires no parameters the param still exists (representing the operation) but with empty inner elements
-					if (((ComplexTypeDescriptor)typeDescriptor).getElements().size()>0)
-					{
+				if (typeDescriptor instanceof ComplexTypeDescriptor && getStyle().equals("document")) {
+					// for document based, if operation requires no parameters
+					// the param still exists (representing the operation) but
+					// with empty inner elements
+					if (((ComplexTypeDescriptor) typeDescriptor).getElements().size() > 0) {
 						result.add(typeDescriptor);
 					}
-				}
-				else
-				{
+				} else {
 					result.add(typeDescriptor);
 				}
-			}			
-			else if (param.getMode() == Parameter.INOUT) {
-				result.add(processParameter(param));				
+			} else if (param.getMode() == Parameter.INOUT) {
+				result.add(processParameter(param));
 			}
 
-		}				
+		}
 
 		cachedComplexTypes.clear();
 		return result;
 	}
-	
+
 	/**
-	 * Returns a List of the TypeDescriptors representing the parameters for the outputs of the service 
+	 * Returns a List of the TypeDescriptors representing the parameters for the
+	 * outputs of the service
 	 * 
 	 * @param operationName
-	 * @return List of TypeDescriptor 
+	 * @return List of TypeDescriptor
 	 * @throws UnknownOperationException
 	 *             if no operation matches the name
 	 * @throws IOException
 	 */
-	public List getOperationOutputParameters(String operationName)
-			throws UnknownOperationException, IOException {
+	public List getOperationOutputParameters(String operationName) throws UnknownOperationException, IOException {
 		Operation operation = getOperation(operationName);
-		List result=new ArrayList();
+		List result = new ArrayList();
 		if (operation == null) {
 			throw new UnknownOperationException("operation called " + operationName + " does not exist for this wsdl");
 		}
@@ -204,21 +200,21 @@ public class WSDLParser {
 		Parameters parameters = getSymbolTable().getOperationParameters(operation, "", new BindingEntry(getBinding()));
 
 		for (Iterator iterator = parameters.list.iterator(); iterator.hasNext();) {
-			Parameter param = (Parameter) iterator.next();			
+			Parameter param = (Parameter) iterator.next();
 			if (param.getMode() == Parameter.OUT)
 				result.add(processParameter(param));
-			else if (param.getMode() == Parameter.INOUT) {				
+			else if (param.getMode() == Parameter.INOUT) {
 				result.add(processParameter(param));
 			}
 
 		}
 		if (parameters.returnParam != null) {
-			result.add(processParameter(parameters.returnParam));			
+			result.add(processParameter(parameters.returnParam));
 		}
 
 		cachedComplexTypes.clear();
 		return result;
-	}	
+	}
 
 	/**
 	 * returns the namespace uri for the given operation name, throws
@@ -382,27 +378,23 @@ public class WSDLParser {
 				}
 			}
 		}
-		
+
 		Map imports = getSymbolTable().getDefinition().getImports();
-		if (imports!=null && imports.size()>0)
-		{
+		if (imports != null && imports.size() > 0) {
 			result.addAll(processImports(imports));
 		}
 
 		return result;
 	}
-	
-	private List processImports(Map imports)
-	{
-		List result=new ArrayList();
-		
-		for (Iterator iterator=imports.values().iterator();iterator.hasNext();)
-		{
-			List list=(List)iterator.next();
-			for (Iterator importIterator=list.iterator();importIterator.hasNext();)
-			{
-				Import imp = (Import)importIterator.next();
-				Map bindings=imp.getDefinition().getBindings();
+
+	private List processImports(Map imports) {
+		List result = new ArrayList();
+
+		for (Iterator iterator = imports.values().iterator(); iterator.hasNext();) {
+			List list = (List) iterator.next();
+			for (Iterator importIterator = list.iterator(); importIterator.hasNext();) {
+				Import imp = (Import) importIterator.next();
+				Map bindings = imp.getDefinition().getBindings();
 				for (Iterator bindingsIterator = bindings.values().iterator(); bindingsIterator.hasNext();) {
 					Binding binding = (Binding) bindingsIterator.next();
 					List extensibilityElementList = binding.getExtensibilityElements();
@@ -423,10 +415,10 @@ public class WSDLParser {
 						}
 					}
 				}
-				
+
 			}
 		}
-				
+
 		return result;
 	}
 
@@ -476,35 +468,29 @@ public class WSDLParser {
 				result = constructArrayType(type);
 			}
 		} else {
-			if (type.getQName().getLocalPart().equals("Map"))
-			{
-				//axis treats Map as a base type, Taverna doesn't.
+			if (type.getQName().getLocalPart().equals("Map")) {
+				// axis treats Map as a base type, Taverna doesn't.
 				result = constructMapType(type);
-			}
-			else
-			{
+			} else {
 				result = constructBaseType(type);
 			}
 		}
-		result.setQName(type.getQName());
+
 		return result;
 	}
-	
-	private ArrayTypeDescriptor constructMapType(TypeEntry type)
-	{
+
+	private ArrayTypeDescriptor constructMapType(TypeEntry type) {
 		ArrayTypeDescriptor result = new ArrayTypeDescriptor();
-		TypeEntry mapItem=getSymbolTable().getType(type.getItemQName());
-		if (mapItem==null)
-		{
-			mapItem=getSymbolTable().getType(new QName(type.getQName().getNamespaceURI(),"mapItem"));
+		TypeEntry mapItem = getSymbolTable().getType(type.getItemQName());
+		if (mapItem == null) {
+			mapItem = getSymbolTable().getType(new QName(type.getQName().getNamespaceURI(), "mapItem"));
 		}
-		
-		result.setElementType(constructType(mapItem));				
-		
-		result.setQName(type.getQName());		
+
+		result.setElementType(constructType(mapItem));
+
+		result.setQName(type.getQName());
 		result.setType(type.getQName().getLocalPart());
-		
-										
+
 		return result;
 	}
 
@@ -515,15 +501,16 @@ public class WSDLParser {
 		if (cachedComplexTypes.get(type.getQName().toString()) != null) {
 			result = (ComplexTypeDescriptor) cachedComplexTypes.get(type.getQName().toString());
 		} else {
-			logger.debug("Constructing complex type (from DefinedElement): " + type.getQName().getLocalPart());			
+			logger.debug("Constructing complex type (from DefinedElement): " + type.getQName().getLocalPart());
 			// caching the type is not really to improve performance, but is
 			// to handle types that contain elements that reference
 			// itself or another parent. Without the caching, this could lead to
 			// infinate
-			// recursion.			
-				cachedComplexTypes.put(type.getQName().toString(), result);
+			// recursion.
+			cachedComplexTypes.put(type.getQName().toString(), result);
 
 			result.setType(type.getQName().getLocalPart());
+			result.setQName(type.getQName());
 			List containedElements = type.getRefType().getContainedElements();
 			if (containedElements != null) {
 				result.getElements().addAll(constructElements(containedElements));
@@ -535,19 +522,18 @@ public class WSDLParser {
 
 	private ComplexTypeDescriptor constructComplexType(DefinedType type) {
 		ComplexTypeDescriptor result = new ComplexTypeDescriptor();
-		
+
 		if (cachedComplexTypes.get(type.getQName().toString()) != null) {
 			result = (ComplexTypeDescriptor) cachedComplexTypes.get(type.getQName().toString());
-		} 
-		else
-		{
-			logger.debug("Constructing complex type (from DefinedType): " + type.getQName().getLocalPart());			
+		} else {
+			logger.debug("Constructing complex type (from DefinedType): " + type.getQName().getLocalPart());
 			result.setType(type.getQName().getLocalPart());
 			cachedComplexTypes.put(type.getQName().toString(), result);
 			List containedElements = type.getContainedElements();
 			if (containedElements != null) {
-				result.getElements().addAll(constructElements(containedElements));									
+				result.getElements().addAll(constructElements(containedElements));
 			}
+			result.setQName(type.getQName());
 		}
 		return result;
 	}
@@ -571,6 +557,7 @@ public class WSDLParser {
 		ArrayTypeDescriptor result = new ArrayTypeDescriptor();
 		result.setElementType(constructType(type.getRefType()));
 		result.setType(type.getQName().getLocalPart());
+		result.setQName(type.getQName());
 
 		return result;
 	}
@@ -578,17 +565,19 @@ public class WSDLParser {
 	private BaseTypeDescriptor constructBaseType(TypeEntry type) {
 		BaseTypeDescriptor result = new BaseTypeDescriptor();
 		result.setType(type.getQName().getLocalPart());
+		result.setQName(type.getQName());
 		return result;
 	}
 
 	private BaseTypeDescriptor constructBaseType(DefinedElement type) {
-		
+
 		BaseTypeDescriptor result = null;
 		if (type.getRefType() == null) {
 			result = constructBaseType((TypeEntry) type);
 		} else {
 			result = new BaseTypeDescriptor();
 			result.setType(type.getRefType().getQName().getLocalPart());
+			result.setQName(type.getRefType().getQName());
 		}
 		return result;
 	}

@@ -9,6 +9,5 @@ public class BaseTypeDescriptor extends TypeDescriptor {
 
 	public void setType(String type) {
 		super.setType(type.toLowerCase());
-	}
-
+	}			
 }

@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: WSDLSOAPInvoker.java,v $
- * Revision           $Revision: 1.3 $
+ * Revision           $Revision: 1.4 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-05-18 13:50:19 $
+ * Last modified on   $Date: 2006-05-19 11:51:06 $
  *               by   $Author: sowen70 $
  * Created on 07-Apr-2006
  *****************************************************************/
@@ -212,7 +212,7 @@ public class WSDLSOAPInvoker {
 					else
 						el = XMLUtils.StringToElement("", inputName, "");
 
-					String ns = (String) namespaceMappings.get(descriptor.getQName().getNamespaceURI());
+					String ns = (String) namespaceMappings.get(descriptor.getNamespaceURI());
 					if (ns != null) {
 						el.setAttribute("xsi:type", ns + ":" + descriptor.getType());
 					}
@@ -303,7 +303,7 @@ public class WSDLSOAPInvoker {
 
 		}
 
-		String ns = (String) namespaceMappings.get(elementType.getQName().getNamespaceURI());
+		String ns = (String) namespaceMappings.get(elementType.getNamespaceURI());
 		if (ns != null) {
 			String elementNS = ns + ":" + elementType.getType() + "[" + size + "]";
 			el.setAttribute("soapenc:arrayType", elementNS);
@@ -418,7 +418,7 @@ public class WSDLSOAPInvoker {
 	 * @return
 	 */
 	private int mapNamespace(TypeDescriptor descriptor, Map namespaceMap, int nsCount) {
-		String namespace = descriptor.getQName().getNamespaceURI();
+		String namespace = descriptor.getNamespaceURI();
 		if (!namespaceMap.containsKey(namespace)) {
 			namespaceMap.put(namespace, "ns" + nsCount);
 			nsCount++;
