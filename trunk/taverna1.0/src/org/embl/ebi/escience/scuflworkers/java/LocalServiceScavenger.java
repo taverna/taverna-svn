@@ -5,27 +5,18 @@
  */
 package org.embl.ebi.escience.scuflworkers.java;
 
+import java.net.URL;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Properties;
+
+import javax.swing.tree.DefaultMutableTreeNode;
+
+import org.apache.log4j.Logger;
 import org.embl.ebi.escience.scuflui.workbench.Scavenger;
 import org.embl.ebi.escience.scuflui.workbench.ScavengerCreationException;
-
-// Utility Imports
-import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Properties;
-import java.util.*;
-import javax.swing.tree.*;
-
-// Network Imports
-import java.net.URL;
-
-import org.embl.ebi.escience.scuflworkers.java.LocalServiceProcessorFactory;
-import org.apache.log4j.Logger;
-
-import java.lang.ClassLoader;
-import java.lang.Exception;
-import java.lang.String;
 
 /**
  * A scavenger that can create new LocalServiceProcessor nodes. <p/> This uses
@@ -37,17 +28,18 @@ import java.lang.String;
  * @author Matthew Pocock
  */
 public class LocalServiceScavenger extends Scavenger {
+
+	private static final long serialVersionUID = -901978754221092069L;
+
 	private static Logger LOG = Logger.getLogger(LocalServiceScavenger.class);
 
 	private static Map workerList = new HashMap();
 
 	static {
 		try {
-			LOG.warn("Loading LocalWorker implementations");
-			Enumeration en = LocalServiceScavenger.class
-					.getClassLoader()
-					.getResources(
-							"META-INF/services/org.embl.ebi.escience.scuflworkers.java.LocalWorker");
+			LOG.info("Loading LocalWorker implementations");
+			Enumeration en = LocalServiceScavenger.class.getClassLoader().getResources(
+					"META-INF/services/org.embl.ebi.escience.scuflworkers.java.LocalWorker");
 			Properties tavernaProperties = new Properties();
 			while (en.hasMoreElements()) {
 				URL resourceURL = (URL) en.nextElement();
@@ -56,8 +48,7 @@ public class LocalServiceScavenger extends Scavenger {
 			}
 
 			// Iterate over the available local properties
-			for (Iterator i = tavernaProperties.keySet().iterator(); i
-					.hasNext();) {
+			for (Iterator i = tavernaProperties.keySet().iterator(); i.hasNext();) {
 				String className = (String) i.next();
 				String description = (String) tavernaProperties.get(className);
 				String[] split = description.split(":");
@@ -66,13 +57,11 @@ public class LocalServiceScavenger extends Scavenger {
 					category = split[0];
 					description = split[1];
 				}
-				LOG.debug("Worker: " + className + " category: " + category
-						+ " desc: " + description);
-				workerList.put((String) tavernaProperties.get(className),
-						new Scavenger(new LocalServiceProcessorFactory(
-								className, description)));
+				LOG.debug("Worker: " + className + " category: " + category + " desc: " + description);
+				workerList.put((String) tavernaProperties.get(className), new Scavenger(
+						new LocalServiceProcessorFactory(className, description)));
 			}
-			LOG.warn("Loaded: " + workerList);
+			LOG.info("Loaded: " + workerList);
 		} catch (Exception e) {
 			LOG.error("Failure in initialization of LocalWorker scavenger", e);
 		}
