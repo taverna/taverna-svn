@@ -1,335 +1,215 @@
-/**
- * This file is a component of the Taverna project,
- * and is licensed under the GNU LGPL.
- * Copyright Tom Oinn, EMBL-EBI
- */
+/*
+ * Copyright (C) 2003 The University of Manchester 
+ *
+ * Modifications to the initial code base are copyright of their
+ * respective authors, or their employers as appropriate.  Authorship
+ * of the modifications may be determined from the ChangeLog placed at
+ * the end of this file.
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public License
+ * as published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
+ * USA.
+ *
+ ****************************************************************
+ * Source code information
+ * -----------------------
+ * Filename           $RCSfile: BiomartProcessor.java,v $
+ * Revision           $Revision: 1.20 $
+ * Release status     $State: Exp $
+ * Last modified on   $Date: 2006-05-19 13:55:22 $
+ *               by   $Author: davidwithers $
+ * Created on 17-Mar-2006
+ *****************************************************************/
 package org.embl.ebi.escience.scuflworkers.biomart;
 
-import org.apache.log4j.Logger;
-import org.embl.ebi.escience.scufl.*;
-import org.ensembl.mart.lib.*;
-import org.ensembl.mart.lib.config.*;
-import org.ensembl.mart.explorer.*;
-import java.util.*;
-import java.net.*;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Properties;
+import java.util.Set;
+
+import org.biomart.martservice.MartQuery;
+import org.biomart.martservice.query.Attribute;
+import org.biomart.martservice.query.Filter;
+import org.biomart.martservice.query.QueryListener;
+import org.embl.ebi.escience.scufl.DuplicatePortNameException;
+import org.embl.ebi.escience.scufl.DuplicateProcessorNameException;
+import org.embl.ebi.escience.scufl.InputPort;
+import org.embl.ebi.escience.scufl.MinorScuflModelEvent;
+import org.embl.ebi.escience.scufl.OutputPort;
+import org.embl.ebi.escience.scufl.Port;
+import org.embl.ebi.escience.scufl.PortCreationException;
+import org.embl.ebi.escience.scufl.Processor;
+import org.embl.ebi.escience.scufl.ProcessorCreationException;
+import org.embl.ebi.escience.scufl.ScuflModel;
+import org.embl.ebi.escience.scufl.UnknownPortException;
 
 /**
- * A processor representing an arbitrary query over a biomart
- * data store
+ * 
  * @author Tom Oinn
+ * @author David Withers
  */
 public class BiomartProcessor extends Processor {
-    
-	private static Logger logger = Logger.getLogger(BiomartProcessor.class);
-	
-    // map of registry URL -> AdaptorManager
-    static Map managerMap = new HashMap();
-    // map of registry URL -> map of dsname -> dsconfig
-    static Map configMap = new HashMap();
-    // map of registry URL -> RegistryDSConfigAdaptor
-    static Map registryMap = new HashMap();
-    
-    private BiomartConfigBean info;
-    private String dataSourceName;
-    private Query query = null;
-    private QueryListener queryListener;
-    public AdaptorManager manager = null;
+	private MartQuery query;
 
-    public String getResourceHost() {
-	return info.dbHost;
-    }
+	private QueryListener queryListener;
 
-    public BiomartProcessor(ScuflModel model,
-			    String processorName,
-			    BiomartConfigBean info, 
-			    String dataSourceName,
-			    Query query)
-	throws ProcessorCreationException,
-	       DuplicateProcessorNameException {
-	super(model, processorName);
-	this.info = info;
-	this.dataSourceName = dataSourceName;
-	this.query = query;
-	try {
-	    buildPortsFromQuery();
-	    buildInputPortsFromQuery();
-	}
-	catch (Exception ex) {
-	    ProcessorCreationException pce = new ProcessorCreationException("Can't build output ports");
-	    pce.initCause(ex);
-	    throw pce;
-	}
-	// Register a query change listener to trap changes to the query object and
-	// fire them off as minor model events
-	queryListener = new QueryAdaptor() {
-		public void attributeAdded(Query sourceQuery, int index, Attribute attribute) {
-		    update();
-		}
-		public void attributeRemoved(Query sourceQuery, int index, Attribute attribute) {
-		    update();
-		}
-		public void sequenceDescriptionChanged(Query sourceQuery, 
-						       SequenceDescription sd1, 
-						       SequenceDescription sd2) {
-		    if ((sd1 == null && sd2 != null) ||
-			(sd1 != null && sd2 == null)) {
-			// Only update if there's either a removed sequence or a newly placed one
-			update();
-		    }
-		}
-		public void filterAdded(Query sourceQuery, int index, Filter filter) {
-		    updateInputs();
-		}
-		public void filterRemoved(Query sourceQuery, int index, Filter filter) {
-		    updateInputs();
-		}
-		public void filterChanged(Query sourceQuery, int index, Filter oldFilter, Filter newFilter) {
-		    pingModel();
-		}
-		private void updateInputs() {
-		    try {
+	/**
+     * @param model
+     * @param name
+     * @throws ProcessorCreationException
+     * @throws DuplicateProcessorNameException
+     */
+	public BiomartProcessor(ScuflModel model, String processorName,
+			MartQuery query) throws ProcessorCreationException,
+			DuplicateProcessorNameException {
+		super(model, processorName);
+		this.query = query;
+
+		try {
+			// query.getMartService().calculateLinks();
+			buildOutputPortsFromQuery();
 			buildInputPortsFromQuery();
-		    }
-		    catch (Exception ex) {
-			logger.error(ex);
-		    }
+		} catch (Exception ex) {
+			ProcessorCreationException pce = new ProcessorCreationException(
+					"Can't build output ports");
+			pce.initCause(ex);
+			throw pce;
 		}
-		private void update() {
-		    try {
-			buildPortsFromQuery();
-		    }
-		    catch (Exception ex) {
-		    	logger.error(ex);			
-		    }
-		}
-	    };
-	query.addQueryChangeListener(queryListener);
-	
-    }
-    
-    protected void finalize() throws Throwable {
-	query.removeQueryChangeListener(queryListener);
-    }
 
-    public BiomartConfigBean getConfig() {
-	return this.info;
-    }
-
-    public String getDataSourceName() {
-	return this.dataSourceName;
-    }
-    
-    public Query getQuery() {
-	return this.query;
-    }
-
-    Query getFullyPopulatedQuery() throws ConfigurationException {
-	synchronized(query) {
-	    if (this.query.getDataSource() != null) {
-		return getQuery();
-	    }
-	    else {
-		initQuery();
-		return getQuery();
-	    }
-	}
-    }
-    
-    public DatasetConfig getDatasetConfig() throws ConfigurationException {
-	synchronized(query) {
-	    if (config != null) {
-		return config;
-	    }
-	    else {
-		initQuery();
-		return config;
-	    }
-	}
-    }
-    
-    DatasetConfig config = null;
-
-    void initQuery() throws ConfigurationException {
-	synchronized(query) {
-	    DetailedDataSource ds = 
-		new DetailedDataSource(info.dbType,
-				       info.dbHost,
-				       info.dbPort,
-				       info.dbInstance,
-				       info.dbSchema,
-				       info.dbUser,
-				       info.dbPassword,
-				       10,
-				       info.dbDriver);
-	    
-	    //config = adaptor.getDatasetConfigByDatasetInternalName(dataSourceName,
-	    //							   "default");
-	    if (info.registryURL != null) {
-		try {
-		    if (managerMap.get(info.registryURL)!=null) {
-			logger.debug("Returning cached config and manager");
-			this.manager = (AdaptorManager)managerMap.get(info.registryURL);
-			this.config = (DatasetConfig)((Map)configMap.get(info.registryURL)).get(dataSourceName);
-			RegistryDSConfigAdaptor ra = (RegistryDSConfigAdaptor)registryMap.get(info.registryURL);
-			query.setAdaptor(ra);
-		    }
-		    else {
-			logger.debug("Generating config and manager");
-			synchronized(managerMap) {
-			    // Not cached, must populate cache...
-			    config = null;
-			    RegistryDSConfigAdaptor ra = new RegistryDSConfigAdaptor(new URL(info.registryURL), false, false, true);
-			    query.setAdaptor(ra);
-			    registryMap.put(info.registryURL, ra);
-			    this.manager = new AdaptorManager(false);
-			    managerMap.put(info.registryURL, this.manager);
-			    Map configSetMap = new HashMap();
-			    configMap.put(info.registryURL, configSetMap);
-			    // Find the appropriate config within the registry adaptor
-			    DSConfigAdaptor[] as = ra.getLeafAdaptors();
-			    for (int i = 0; i < as.length; i++) {
-				manager.add(as[i]);
-				String[] datasetNames = as[i].getDatasetNames(false);
-				for (int j = 0; j < datasetNames.length; j++) {
-				    DatasetConfigIterator configs = as[i].getDatasetConfigsByDataset(datasetNames[j]);
-				    while (configs.hasNext()) {
-					DatasetConfig c = (DatasetConfig)configs.next();
-					if (c.getInternalName().toLowerCase().equals("default") &&
-					    datasetNames[j].equalsIgnoreCase(dataSourceName)) {
-					    config = c;
-					}
-					if (c.getInternalName().toLowerCase().equals("default")) {
-					    configSetMap.put(datasetNames[j], c);
-					}
-				    }
-				    
-				}
-			    }
+		// Register a query change listener to trap changes to the query object
+		// and fire them off as minor model events
+		queryListener = new QueryListener() {
+			public void attributeAdded(Attribute attribute) {
+				updateOutputs();
 			}
-		    }
-		}
-		catch (MalformedURLException mue) {
-		    // Won't happen
-			logger.fatal(mue);
-		}
-		catch (InvalidQueryException ieq) {
-		    logger.error(ieq);
-		}
-	    }
-	    else {
-		DSConfigAdaptor adaptor = new DatabaseDSConfigAdaptor(ds, ds.getUser(), 
-								      true, false, false);
-		DatasetConfigIterator configs = adaptor.getDatasetConfigsByDataset(dataSourceName);
-		config = (DatasetConfig)configs.next();
-	    }
-	    query.setDataSource(ds);
-	    query.setDataset(config.getDataset());
-	    query.setDatasetConfig(config);
-	    query.setMainTables(config.getStarBases());
-	    query.setPrimaryKeys(config.getPrimaryKeys());
-	}
-    }
-    
-    public Properties getProperties() {
-	return new Properties();
-    }
-    
-    void pingModel() {
-	fireModelEvent(new MinorScuflModelEvent(this, "Filter attributes changed"));
-    }
 
-    private void buildInputPortsFromQuery() 
-	throws PortCreationException,
-	       DuplicatePortNameException {
-	Filter[] filters = query.getFilters();
-	Set filterNames = new HashSet();
-	for (int i = 0; i < filters.length; i++) {
-	    if (filters[i] instanceof BasicFilter) {
-		if (filters[i].getValue() != null) {
-		    String fieldName = filters[i].getField();
-		    filterNames.add(fieldName+"_filter");
-		    try {
-			locatePort(fieldName+"_filter");
-		    }
-		    catch (UnknownPortException upe) {
-			Port newPort = new InputPort(this, fieldName+"_filter");
-			newPort.setSyntacticType("'text/plain'");
-			addPort(newPort);
-		    }
-		}
-	    }
-	    else if (filters[i] instanceof IDListFilter) {
-		String fieldName = filters[i].getField();
-		filterNames.add(fieldName+"_filter");
-		try {
-		    locatePort(fieldName+"_filter");
-		}
-		catch (UnknownPortException upe) {
-		    Port newPort = new InputPort(this, fieldName+"_filter");
-		    newPort.setSyntacticType("l('text/plain')");
-		    addPort(newPort);
-		}
-	    }
-	}
-	InputPort[] currentInputs = getInputPorts();
-	for (int i = 0; i < currentInputs.length; i++) {
-	    Port inputPort = currentInputs[i];
-	    if (filterNames.contains(inputPort.getName()) == false) {
-		removePort(inputPort);
-	    }
-	}
-    }
+			public void attributeRemoved(Attribute attribute) {
+				updateOutputs();
+			}
 
-    private void buildPortsFromQuery()
-	throws PortCreationException,
-	       DuplicatePortNameException {
-	Attribute[] attributes = query.getAttributes();
-	Set attributeNames = new HashSet();
-	// Create new ports corresponding to attributes
-	for (int i = 0; i < attributes.length; i++) {
-	    if (attributes[i] instanceof FieldAttribute) {
-		String fieldName = ((FieldAttribute)attributes[i]).getUniqueName();
-		attributeNames.add(fieldName);
-		try {
-		    locatePort(fieldName);
-		}
-		catch (UnknownPortException upe) {
-		    Port newPort = new OutputPort(this, fieldName);
-		    newPort.setSyntacticType("l('text/plain')");
-		    addPort(newPort);
-		}
-	    }
-	}
-	// Create new port for the sequence if defined
-	String sequencePortName = "sequenceexport";
-	if (query.getSequenceDescription() != null) {
-	    attributeNames.add(sequencePortName);
-	    // Try to find the sequence port
-	    OutputPort sequencePort = null;
-	    try {
-		sequencePort = (OutputPort)locatePort(sequencePortName);
-		// Exists, move it to the end of the output port list
-		if (ports.indexOf(sequencePort) < ports.size()-1) {
-		    ports.remove(sequencePort);
-		    ports.add(sequencePort);
-		    fireModelEvent(new ScuflModelEvent(this, "Shifted sequence output to end of port list"));
-		}
-	    }
-	    catch (UnknownPortException upe) {
-		Port newPort = new OutputPort(this, sequencePortName);
-		newPort.setSyntacticType("l('text/plain')");
-		addPort(newPort);
-	    }
+			public void filterAdded(Filter filter) {
+				updateInputs();
+			}
+
+			public void filterRemoved(Filter filter) {
+				updateInputs();
+			}
+
+			public void filterChanged(Filter filter) {
+				pingModel();
+			}
+
+			private void updateInputs() {
+				try {
+					buildInputPortsFromQuery();
+				} catch (Exception ex) {
+					ex.printStackTrace();
+				}
+			}
+
+			private void updateOutputs() {
+				try {
+					buildOutputPortsFromQuery();
+				} catch (Exception ex) {
+					ex.printStackTrace();
+				}
+			}
+		};
+		query.getQuery().addQueryListener(queryListener);
 	}
 
-	// Remove any ports which don't have attributes with corresponding field names
-	OutputPort[] ports = getOutputPorts();
-	for (int i = 0; i < ports.length; i++) {
-	    Port outputPort = ports[i];
-	    if (attributeNames.contains(outputPort.getName()) == false) {
-		removePort(outputPort);
-	    }
+	protected void finalize() throws Throwable {
+		query.getQuery().removeQueryListener(queryListener);
 	}
-    }
-    
+
+	/*
+     * (non-Javadoc)
+     * 
+     * @see org.embl.ebi.escience.scufl.Processor#getProperties()
+     */
+	public Properties getProperties() {
+		return new Properties();
+	}
+
+	public MartQuery getQuery() {
+		return query;
+	}
+
+	void pingModel() {
+		fireModelEvent(new MinorScuflModelEvent(this, "Filter values changed"));
+	}
+
+	private void buildInputPortsFromQuery() throws PortCreationException,
+			DuplicatePortNameException {
+		List filters = query.getQuery().getFilters();
+		Set filterNames = new HashSet();
+		// Create new input ports corresponding to filters
+		for (Iterator iter = filters.iterator(); iter.hasNext();) {
+			Filter filter = (Filter) iter.next();
+			String name = filter.getQualifiedName();
+			String value = filter.getName();
+			filterNames.add(name + "_filter");
+			try {
+				locatePort(name + "_filter");
+			} catch (UnknownPortException upe) {
+				Port newPort = new InputPort(this, name + "_filter");
+				if (value.indexOf(",") != -1) {
+					newPort.setSyntacticType("l('text/plain')");
+				} else {
+					newPort.setSyntacticType("'text/plain'");
+				}
+				addPort(newPort);
+			}
+		}
+		// Remove any ports which don't have filters with corresponding
+		// names
+		InputPort[] currentInputs = getInputPorts();
+		for (int i = 0; i < currentInputs.length; i++) {
+			Port inputPort = currentInputs[i];
+			if (filterNames.contains(inputPort.getName()) == false) {
+				removePort(inputPort);
+			}
+		}
+	}
+
+	private void buildOutputPortsFromQuery() throws PortCreationException,
+			DuplicatePortNameException {
+		List attributes = query.getQuery().getAttributes();
+		Set attributeNames = new HashSet();
+		// Create new output ports corresponding to attributes
+		for (Iterator iter = attributes.iterator(); iter.hasNext();) {
+			Attribute attribute = (Attribute) iter.next();
+			String name = attribute.getQualifiedName();
+			attributeNames.add(name);
+			try {
+				locatePort(name);
+			} catch (UnknownPortException upe) {
+				Port newPort = new OutputPort(this, name);
+				newPort.setSyntacticType("l('text/plain')");
+				addPort(newPort);
+			}
+		}
+		// Remove any ports which don't have attributes with corresponding
+		// names
+		OutputPort[] ports = getOutputPorts();
+		for (int i = 0; i < ports.length; i++) {
+			Port outputPort = ports[i];
+			if (attributeNames.contains(outputPort.getName()) == false) {
+				removePort(outputPort);
+			}
+		}
+	}
+
 }

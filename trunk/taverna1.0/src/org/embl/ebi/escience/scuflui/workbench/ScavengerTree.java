@@ -51,7 +51,7 @@ import org.embl.ebi.escience.scuflui.dnd.SpecFragmentTransferable;
 import org.embl.ebi.escience.scuflworkers.ProcessorFactory;
 import org.embl.ebi.escience.scuflworkers.ProcessorHelper;
 import org.embl.ebi.escience.scuflworkers.apiconsumer.APIConsumerScavenger;
-import org.embl.ebi.escience.scuflworkers.biomart.BiomartRegistryScavenger;
+import org.embl.ebi.escience.scuflworkers.biomart.BiomartScavenger;
 import org.embl.ebi.escience.scuflworkers.seqhound.SeqhoundScavenger;
 import org.embl.ebi.escience.scuflworkers.soaplab.SoaplabProcessor;
 import org.embl.ebi.escience.scuflworkers.soaplab.SoaplabScavenger;
@@ -310,9 +310,10 @@ public class ScavengerTree extends ExtendedJTree implements ScuflUIComponent,
 					for (int i = 0; i < urls.length; i++) {
 						try {
 							scavengerTree
-									.addScavenger(new BiomartRegistryScavenger(
+									.addScavenger(new BiomartScavenger(
 											urls[i]));
 						} catch (ScavengerCreationException sce) {
+							sce.printStackTrace();
 							logger.error(sce);
 						}
 					}

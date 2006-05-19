@@ -339,7 +339,7 @@ public class WorkflowSummaryAsHTML {
 						sb.append("<td bgcolor=\"d1eeed\">Processor</td>");
 						sb.append("</tr>");
 						sb
-								.append("<tr><td>" + bp.getDataSourceName()
+								.append("<tr><td>" + bp.getQuery().getMartService().getLocation()
 										+ "</td>");
 					} else {
 						sb.append("<td colspan=\"2\">Unknown&nbsp;type</td>");
