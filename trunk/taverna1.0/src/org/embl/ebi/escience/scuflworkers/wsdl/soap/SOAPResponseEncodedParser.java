@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: SOAPResponseEncodedParser.java,v $
- * Revision           $Revision: 1.2 $
+ * Revision           $Revision: 1.3 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-05-18 13:50:19 $
+ * Last modified on   $Date: 2006-05-19 10:09:17 $
  *               by   $Author: sowen70 $
  * Created on 08-May-2006
  *****************************************************************/
@@ -89,29 +89,39 @@ public class SOAPResponseEncodedParser implements SOAPResponseParser {
 
 		for (Iterator iterator = outputNames.iterator(); iterator.hasNext();) {
 			String outputName = (String) iterator.next();
-			if (!outputName.equals("attachmentList")) {
-				// first try using body namespace ...
-				Node outputNode = (Node) mainBody.getElementsByTagNameNS(mainBody.getNamespaceURI(), outputName)
-						.item(0);
-				// ... and if that doesn't work, try without namespace
-				if (outputNode == null) {
-					outputNode = (Node) mainBody.getElementsByTagName(outputName).item(0);
+
+			Node outputNode = getOutputNode(mainBody, outputName);
+			if (outputNode != null) {
+				String xml;
+				if (stripAttributes) {
+					stripAttributes(outputNode);
+					outputNode = (Node) removeNamespace(outputName, (Element) outputNode);
 				}
-				if (outputNode != null) {
-					String xml;
-					if (stripAttributes) {
-						stripAttributes(outputNode);
-						outputNode = (Node) removeNamespace(outputName, (Element) outputNode);
-					}
-					xml = XMLUtils.ElementToString((Element) outputNode);
-					result.put(outputName, new DataThing(xml));
-				} else {
-					logger.error("No element for output name: " + outputName);
-				}
+				xml = XMLUtils.ElementToString((Element) outputNode);
+				result.put(outputName, new DataThing(xml));
+			} else {
+				logger.error("No element for output name: " + outputName);
 			}
+
 		}
 
 		return result;
+	}
+
+	protected Node getOutputNode(Element mainBody, String outputName) {
+		// first try using body namespace ...
+		Node outputNode = (Node) mainBody.getElementsByTagNameNS(mainBody.getNamespaceURI(), outputName).item(0);
+		// ... and if that doesn't work, try without namespace
+		if (outputNode == null) {
+			outputNode = (Node) mainBody.getElementsByTagName(outputName).item(0);
+		}
+		if (outputNode == null) { // if still null, and there is only 1
+			// output, take the first child
+			if (outputNames.size() == 1 && mainBody.getChildNodes().getLength() == 1) {
+				outputNode = mainBody.getFirstChild();
+			}
+		}
+		return outputNode;
 	}
 
 	/**
@@ -122,12 +132,13 @@ public class SOAPResponseEncodedParser implements SOAPResponseParser {
 	 * @param outputName
 	 * @param element
 	 * @return
-	 * @throws ParserConfigurationException 
-	 * @throws IOException 
-	 * @throws SAXException 
+	 * @throws ParserConfigurationException
+	 * @throws IOException
+	 * @throws SAXException
 	 */
-	protected Element removeNamespace(String outputName, Element element) throws ParserConfigurationException, SAXException, IOException {
-		String xml;		
+	protected Element removeNamespace(String outputName, Element element) throws ParserConfigurationException,
+			SAXException, IOException {
+		String xml;
 		String innerXML = XMLUtils.getInnerXMLString(element);
 		if (innerXML != null) {
 			xml = "<" + outputName + ">" + innerXML + "</" + outputName + ">";

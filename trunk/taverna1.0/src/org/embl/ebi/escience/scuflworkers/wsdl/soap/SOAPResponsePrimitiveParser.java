@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: SOAPResponsePrimitiveParser.java,v $
- * Revision           $Revision: 1.1 $
+ * Revision           $Revision: 1.2 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-05-15 13:52:34 $
+ * Last modified on   $Date: 2006-05-19 10:09:17 $
  *               by   $Author: sowen70 $
  * Created on 05-May-2006
  *****************************************************************/
@@ -40,6 +40,7 @@ import java.util.Map;
 
 import org.apache.axis.message.RPCElement;
 import org.apache.axis.message.RPCParam;
+import org.apache.log4j.Logger;
 import org.embl.ebi.escience.baclava.factory.DataThingFactory;
 
 /**
@@ -53,25 +54,48 @@ import org.embl.ebi.escience.baclava.factory.DataThingFactory;
 
 public class SOAPResponsePrimitiveParser implements SOAPResponseParser {
 
+	private static Logger logger = Logger.getLogger(SOAPResponsePrimitiveParser.class);
+
+	private List outputNames;
+
+	public SOAPResponsePrimitiveParser(List outputNames) {
+		this.outputNames = outputNames;
+	}
+
 	/**
 	 * Parses each SOAPBodyElement for the primitive type, and places it in the
 	 * output Map
 	 */
 	public Map parse(List response) throws Exception {
 		Map result = new HashMap();
+		int c = 0;
 
-		for (Iterator iterator = response.iterator(); iterator.hasNext();) {
-			RPCElement responseElement = (RPCElement) iterator.next();
-			List params = responseElement.getParams();
+		if (response.size() > 1)
+			logger.error("More than one element to the response Vector when parsing for primitive types:" + response);
+		RPCElement responseElement = (RPCElement) response.get(0);
+		List params = responseElement.getParams();
 
-			for (Iterator paramIterator = params.iterator(); paramIterator.hasNext();) {
-				RPCParam param = (RPCParam) paramIterator.next();
-				String name = param.getName();
-				Object value = param.getObjectValue();
-				result.put(name, DataThingFactory.bake(value));
+		if (params.size() != outputNames.size())
+			logger.error("Different number of output parameters to outputs expected.");
+
+		for (Iterator paramIterator = params.iterator(); paramIterator.hasNext();) {
+			RPCParam param = (RPCParam) paramIterator.next();
+			Object value = param.getObjectValue();
+			// use the param name if it matches the outputname list,
+			// otherwise use the defined output name.
+			// Outputs should come back in the order of the outputNames
+			// as this is specified in the WSDL (only an issue for multiple
+			// outputs which is very rare, and is going to be documented as
+			// unrecommended for Taverna).
+			if (outputNames.contains(param.getName())) {
+				result.put(param.getName(), DataThingFactory.bake(value));
+			} else {
+				result.put(outputNames.get(c), DataThingFactory.bake(value));
 			}
+			c++;
 		}
 
 		return result;
 	}
+
 }

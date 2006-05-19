@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: SOAPResponseMultiRefTest.java,v $
- * Revision           $Revision: 1.2 $
+ * Revision           $Revision: 1.3 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-05-18 13:50:18 $
+ * Last modified on   $Date: 2006-05-19 10:09:17 $
  *               by   $Author: sowen70 $
  * Created on 08-May-2006
  *****************************************************************/
@@ -43,7 +43,6 @@ import javax.xml.parsers.DocumentBuilderFactory;
 
 import junit.framework.TestCase;
 
-import org.apache.axis.message.RPCElement;
 import org.apache.axis.message.SOAPBodyElement;
 import org.embl.ebi.escience.baclava.DataThing;
 import org.w3c.dom.Document;
@@ -52,7 +51,7 @@ public class SOAPResponseMultiRefTest extends TestCase {
 
 	public void testMultiRef() throws Exception {
 		List outputNames = new ArrayList();
-		outputNames.add("attachmentList");
+
 		outputNames.add("getPersonReturn");
 
 		List response = new ArrayList();
@@ -86,11 +85,10 @@ public class SOAPResponseMultiRefTest extends TestCase {
 						.toString());
 
 	}
-	
-	public void testMultiRefReturnNamespaced() throws Exception
-	{
+
+	public void testMultiRefReturnNamespaced() throws Exception {
 		List outputNames = new ArrayList();
-		outputNames.add("attachmentList");
+
 		outputNames.add("getPersonReturn");
 
 		List response = new ArrayList();
@@ -126,7 +124,7 @@ public class SOAPResponseMultiRefTest extends TestCase {
 
 	public void testNestedReferences() throws Exception {
 		List outputNames = new ArrayList();
-		outputNames.add("attachmentList");
+
 		outputNames.add("result");
 
 		String xml1 = "<response><result><creatures href=\"#id0\"/></result></response>";

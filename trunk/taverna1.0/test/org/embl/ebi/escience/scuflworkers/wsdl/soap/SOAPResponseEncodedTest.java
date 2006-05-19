@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: SOAPResponseEncodedTest.java,v $
- * Revision           $Revision: 1.1 $
+ * Revision           $Revision: 1.2 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-05-17 14:33:00 $
+ * Last modified on   $Date: 2006-05-19 10:09:17 $
  *               by   $Author: sowen70 $
  * Created on 08-May-2006
  *****************************************************************/
@@ -47,21 +47,19 @@ import org.w3c.dom.Document;
 
 import junit.framework.TestCase;
 
-public class SOAPResponseEncodedTest extends TestCase 
-{
-	public void testSimpleRPC() throws Exception
-	{
+public class SOAPResponseEncodedTest extends TestCase {
+	public void testSimpleRPC() throws Exception {
 		List outputNames = new ArrayList();
-		outputNames.add("attachmentList");
+
 		outputNames.add("whatGeneInStageReturn");
 
 		String xml1 = "<ns1:whatGeneInStageResponse soapenv:encodingStyle=\"http://schemas.xmlsoap.org/soap/encoding/\" xmlns:ns1=\"urn:hgu.webservice.services\" xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\"><whatGeneInStageReturn soapenc:arrayType=\"ns2:GeneExpressedQueryShortDetails[0]\" xsi:type=\"soapenc:Array\" xmlns:ns2=\"http://SubmissionQuery.WSDLGenerated.hgu\" xmlns:soapenc=\"http://schemas.xmlsoap.org/soap/encoding/\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"><agene xsi:type=\"string\">a gene</agene></whatGeneInStageReturn></ns1:whatGeneInStageResponse>";
-		
+
 		List response = new ArrayList();
 
 		DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
 		Document doc = builder.parse(new ByteArrayInputStream(xml1.getBytes()));
-		response.add(new SOAPBodyElement(doc.getDocumentElement()));		
+		response.add(new SOAPBodyElement(doc.getDocumentElement()));
 
 		SOAPResponseEncodedParser parser = new SOAPResponseEncodedParser(outputNames);
 
@@ -77,9 +75,8 @@ public class SOAPResponseEncodedTest extends TestCase
 
 		assertEquals("output data should be a string", String.class, result.getDataObject().getClass());
 
-		assertEquals(
-				"incorrect xml content in output",
-				"<whatGeneInStageReturn><agene>a gene</agene></whatGeneInStageReturn>",
-				result.getDataObject().toString());
+		assertEquals("incorrect xml content in output",
+				"<whatGeneInStageReturn><agene>a gene</agene></whatGeneInStageReturn>", result.getDataObject()
+						.toString());
 	}
 }

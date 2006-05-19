@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: SOAPResponseLiteralTest.java,v $
- * Revision           $Revision: 1.2 $
+ * Revision           $Revision: 1.3 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-05-18 15:27:41 $
+ * Last modified on   $Date: 2006-05-19 10:09:17 $
  *               by   $Author: sowen70 $
  * Created on 11-May-2006
  *****************************************************************/
@@ -48,62 +48,65 @@ import org.w3c.dom.Document;
 import junit.framework.TestCase;
 
 public class SOAPResponseLiteralTest extends TestCase {
-	
-	
-	public void testLiteralParserResultInTextBlock() throws Exception
-	{		
+
+	public void testLiteralParserResultInTextBlock() throws Exception {
 		List response = new ArrayList();
-		String xml="<testResponse><out>&lt;data name=&quot;a&quot;&gt;some data&lt;/data&gt;&lt;data name=&quot;b&quot;&gt;some more data&lt;/data&gt;</out></testResponse>";
+		String xml = "<testResponse><out>&lt;data name=&quot;a&quot;&gt;some data&lt;/data&gt;&lt;data name=&quot;b&quot;&gt;some more data&lt;/data&gt;</out></testResponse>";
 		DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
 		Document doc = builder.parse(new ByteArrayInputStream(xml.getBytes()));
 
 		response.add(new SOAPBodyElement(doc.getDocumentElement()));
-		
-		List outputNames=new ArrayList();
-		outputNames.add("attachmentList");
+
+		List outputNames = new ArrayList();
+
 		outputNames.add("testResponse");
-		
-		SOAPResponseLiteralParser parser=new SOAPResponseLiteralParser(outputNames);
-		
-		Map outputMap=parser.parse(response);
-		
+
+		SOAPResponseLiteralParser parser = new SOAPResponseLiteralParser(outputNames);
+
+		Map outputMap = parser.parse(response);
+
 		assertNotNull("no output map returned", outputMap);
 		assertEquals("map should contain 1 element", 1, outputMap.size());
-		
-		DataThing testResponse=(DataThing)outputMap.get("testResponse");
-		
-		assertNotNull("there should be an output named 'testReponse'",testResponse);
+
+		DataThing testResponse = (DataThing) outputMap.get("testResponse");
+
+		assertNotNull("there should be an output named 'testReponse'", testResponse);
 		assertEquals("output data should be a string", String.class, testResponse.getDataObject().getClass());
-		
-		assertEquals("xml is wrong","<testResponse><out>&lt;data name=&quot;a&quot;&gt;some data&lt;/data&gt;&lt;data name=&quot;b&quot;&gt;some more data&lt;/data&gt;</out></testResponse>",testResponse.getDataObject().toString());				
-	}	
-	
-	public void testLiteralParser() throws Exception
-	{		
+
+		assertEquals(
+				"xml is wrong",
+				"<testResponse><out>&lt;data name=&quot;a&quot;&gt;some data&lt;/data&gt;&lt;data name=&quot;b&quot;&gt;some more data&lt;/data&gt;</out></testResponse>",
+				testResponse.getDataObject().toString());
+	}
+
+	public void testLiteralParser() throws Exception {
 		List response = new ArrayList();
-		String xml="<testResponse><out><data name=\"a\">some data</data><data name=\"b\">some more data</data></out></testResponse>";
+		String xml = "<testResponse><out><data name=\"a\">some data</data><data name=\"b\">some more data</data></out></testResponse>";
 		DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
 		Document doc = builder.parse(new ByteArrayInputStream(xml.getBytes()));
 
 		response.add(new SOAPBodyElement(doc.getDocumentElement()));
-		
-		List outputNames=new ArrayList();
+
+		List outputNames = new ArrayList();
 		outputNames.add("attachmentList");
 		outputNames.add("testResponse");
-		
-		SOAPResponseLiteralParser parser=new SOAPResponseLiteralParser(outputNames);
-		
-		Map outputMap=parser.parse(response);
-		
+
+		SOAPResponseLiteralParser parser = new SOAPResponseLiteralParser(outputNames);
+
+		Map outputMap = parser.parse(response);
+
 		assertNotNull("no output map returned", outputMap);
 		assertEquals("map should contain 1 element", 1, outputMap.size());
-		
-		DataThing testResponse=(DataThing)outputMap.get("testResponse");
-		
-		assertNotNull("there should be an output named 'testReponse'",testResponse);
+
+		DataThing testResponse = (DataThing) outputMap.get("testResponse");
+
+		assertNotNull("there should be an output named 'testReponse'", testResponse);
 		assertEquals("output data should be a string", String.class, testResponse.getDataObject().getClass());
-		
-		assertEquals("xml is wrong","<testResponse><out><data name=\"a\">some data</data><data name=\"b\">some more data</data></out></testResponse>",testResponse.getDataObject().toString());				
+
+		assertEquals(
+				"xml is wrong",
+				"<testResponse><out><data name=\"a\">some data</data><data name=\"b\">some more data</data></out></testResponse>",
+				testResponse.getDataObject().toString());
 	}
 
 }

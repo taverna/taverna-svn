@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: SOAPResponseEncodedMultiRefParser.java,v $
- * Revision           $Revision: 1.2 $
+ * Revision           $Revision: 1.3 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-05-18 13:50:19 $
+ * Last modified on   $Date: 2006-05-19 10:09:17 $
  *               by   $Author: sowen70 $
  * Created on 05-May-2006
  *****************************************************************/
@@ -87,28 +87,22 @@ public class SOAPResponseEncodedMultiRefParser extends SOAPResponseEncodedParser
 
 		for (Iterator iterator = outputNames.iterator(); iterator.hasNext();) {
 			String outputName = (String) iterator.next();
-			if (!outputName.equals("attachmentList")) {
-				// first try using body namespace ...
-				Node outputNode = (Node) mainBody.getElementsByTagNameNS(mainBody.getNamespaceURI(), outputName)
-						.item(0);
-				// ... and if that doesn't work, try without namespace
-				if (outputNode == null) {
-					outputNode = (Node) mainBody.getElementsByTagName(outputName).item(0);
-				}
-				if (outputNode != null) {
-					expandNode(outputNode, new ArrayList());
-					String xml;
-					if (stripAttributes) {
-						stripAttributes(outputNode);
-						outputNode = (Node) removeNamespace(outputName, (Element) outputNode);
-					}
-					xml = XMLUtils.ElementToString((Element) outputNode);
 
-					result.put(outputName, new DataThing(xml));
-				} else {
-					logger.error("No element for output name: " + outputName);
+			Node outputNode = getOutputNode(mainBody, outputName);
+			if (outputNode != null) {
+				expandNode(outputNode, new ArrayList());
+				String xml;
+				if (stripAttributes) {
+					stripAttributes(outputNode);
+					outputNode = (Node) removeNamespace(outputName, (Element) outputNode);
 				}
+				xml = XMLUtils.ElementToString((Element) outputNode);
+
+				result.put(outputName, new DataThing(xml));
+			} else {
+				logger.error("No element for output name: " + outputName);
 			}
+
 		}
 
 		return result;

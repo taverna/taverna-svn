@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: WSDLSOAPInvokerTest.java,v $
- * Revision           $Revision: 1.3 $
+ * Revision           $Revision: 1.4 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-05-18 13:50:18 $
+ * Last modified on   $Date: 2006-05-19 10:09:17 $
  *               by   $Author: sowen70 $
  * Created on 04-May-2006
  *****************************************************************/
@@ -263,6 +263,27 @@ public class WSDLSOAPInvokerTest extends TestCase {
 		inputMap.put("parameters", new DataThing("<parameters><sCountryISOCode>FR</sCountryISOCode></parameters>"));
 
 		invoker.invoke(inputMap);
+	}
+	
+	//can't always assume the return will be nested in a tag named the same as the output message part.
+	public void testEncodedDifferentOutputName() throws Exception
+	{
+		WSDLBasedProcessor processor = null;
+		try {
+			processor = new WSDLBasedProcessor(null, "procName",
+					"http://biowulf.bu.edu/zlab/promoser/promoser.wsdl", "help");
+		} catch (ProcessorCreationException e) {
+			logger.error("Unable to connect to serivce in testEncodedDifferentOutputName, skipping test");
+			return; // don't fail because the service is unavailable
+		}
+		WSDLSOAPInvoker invoker = new WSDLSOAPInvoker(processor);
+		Map output=invoker.invoke(new HashMap());
+		
+		assertNotNull("missing output",output.get("helpResponseSoapMsg"));
+		
+		DataThing thing = (DataThing)output.get("helpResponseSoapMsg");
+		
+		assertTrue("unexpected output contents",thing.getDataObject().toString().startsWith("Usage:"));
 	}
 
 }
