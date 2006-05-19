@@ -89,7 +89,7 @@ public class ProcessorHelper {
       tavernaProperties = new Properties();
       while (en.hasMoreElements()) {
         URL resourceURL = (URL)en.nextElement();
-        LOG.warn("Loading resources from : "+resourceURL.toString());
+        LOG.info("Loading resources from : "+resourceURL.toString());
         tavernaProperties.load(resourceURL.openStream());
       }
       // Should now have a populated properties list, set up the various
