@@ -6,32 +6,29 @@
 package org.embl.ebi.escience.scuflworkers;
 
 import java.lang.reflect.Constructor;
+import java.net.URL;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+import java.util.Set;
+
 import javax.swing.ImageIcon;
-import org.embl.ebi.escience.scufl.*;
+
+import org.apache.log4j.Logger;
+import org.embl.ebi.escience.scufl.AlternateProcessor;
+import org.embl.ebi.escience.scufl.AnnotationTemplate;
+import org.embl.ebi.escience.scufl.DuplicateProcessorNameException;
+import org.embl.ebi.escience.scufl.Processor;
+import org.embl.ebi.escience.scufl.ProcessorCreationException;
+import org.embl.ebi.escience.scufl.ScuflModel;
+import org.embl.ebi.escience.scufl.XScufl;
 import org.embl.ebi.escience.scufl.parser.XScuflFormatException;
 import org.embl.ebi.escience.scuflui.workbench.Scavenger;
-
-// Utility Imports
-import java.util.*;
-
-// JDOM Imports
 import org.jdom.Element;
-
-// Network Imports
-import java.net.URL;
-
-import org.embl.ebi.escience.scuflworkers.ProcessorEditor;
-import org.embl.ebi.escience.scuflworkers.ProcessorTaskWorker;
-import org.embl.ebi.escience.scuflworkers.ScavengerHelper;
-import org.embl.ebi.escience.scuflworkers.XMLHandler;
-import org.apache.log4j.Logger;
-
-import java.lang.Class;
-import java.lang.ClassLoader;
-import java.lang.Exception;
-import java.lang.Object;
-import java.lang.String;
-import java.lang.System;
 
 /**
  * Provides rendering and other hints for different processor implementations,
@@ -42,11 +39,11 @@ import java.lang.System;
  * is shown below :
  * 
  * <pre>
- *   taverna.processor.soaplabwsdl.class = org.embl.ebi.escience.scuflworkers.soaplab.SoaplabProcessor
- *   taverna.processor.soaplabwsdl.xml = org.embl.ebi.escience.scuflworkers.soaplab.SoaplabXMLHandler
- *   taverna.processor.soaplabwsdl.colour = lightgoldenrodyellow
- *   taverna.processor.soaplabwsdl.icon = org/embl/ebi/escience/scuflui/soaplab.gif
- *   taverna.processor.soaplabwsdl.taskclass = uk.ac.soton.itinnovation.taverna.enactor.entities.SoaplabTask
+ *    taverna.processor.soaplabwsdl.class = org.embl.ebi.escience.scuflworkers.soaplab.SoaplabProcessor
+ *    taverna.processor.soaplabwsdl.xml = org.embl.ebi.escience.scuflworkers.soaplab.SoaplabXMLHandler
+ *    taverna.processor.soaplabwsdl.colour = lightgoldenrodyellow
+ *    taverna.processor.soaplabwsdl.icon = org/embl/ebi/escience/scuflui/soaplab.gif
+ *    taverna.processor.soaplabwsdl.taskclass = uk.ac.soton.itinnovation.taverna.enactor.entities.SoaplabTask
  * </pre>
  * 
  * To load additional processor types for enactment and display within the
@@ -193,10 +190,7 @@ public class ProcessorHelper {
 
 			LOG.debug("Populated xmlHanderForTagName: " + xmlHandlerForTagName);
 		} catch (Exception e) {
-			System.out
-					.println("Error during initialisation for taverna properties! : "
-							+ e.getMessage());
-			e.printStackTrace();
+			LOG.fatal("Error during initialisation for taverna properties!", e);
 			// Don't exit, as this hides the stack trace etc!
 			// System.exit(1);
 		}
@@ -226,13 +220,14 @@ public class ProcessorHelper {
 	public static String getTaskClassName(Processor p) {
 		String className = p.getClass().getName();
 		String tagName = (String) tagNameForClassName.get(className);
-		if (tagName != null) {
-			String taskClassName = (String) taskClassForTagName.get(tagName);
-			if (taskClassName != null) {
-				return taskClassName;
-			}
+		if (tagName == null) {
+			return null;
 		}
-		return null;
+		String taskClassName = (String) taskClassForTagName.get(tagName);
+		if (taskClassName == null) {
+			return null;
+		}
+		return taskClassName;
 	}
 
 	/**
@@ -244,22 +239,23 @@ public class ProcessorHelper {
 	 */
 	public static ProcessorTaskWorker getTaskWorker(Processor p) {
 		String taskClassName = getTaskClassName(p);
-		if (taskClassName != null) {
-			// Assume there is a constructor that takes a single processor
-			// as its argument
-			try {
-				Class[] constructorClasses = new Class[] { Processor.class };
-				Class taskClass = Class.forName(taskClassName);
-				Constructor taskConstructor = taskClass
-						.getConstructor(constructorClasses);
-				ProcessorTaskWorker taskWorker = (ProcessorTaskWorker) taskConstructor
-						.newInstance(new Object[] { p });
-				return taskWorker;
-			} catch (Exception ex) {
-				ex.printStackTrace();
-			}
+		if (taskClassName == null) {
+			return null;
 		}
-		return null;
+		// Assume there is a constructor that takes a single processor
+		// as its argument
+		try {
+			Class[] constructorClasses = new Class[] { Processor.class };
+			Class taskClass = Class.forName(taskClassName);
+			Constructor taskConstructor = taskClass
+					.getConstructor(constructorClasses);
+			ProcessorTaskWorker taskWorker = (ProcessorTaskWorker) taskConstructor
+					.newInstance(new Object[] { p });
+			return taskWorker;
+		} catch (Exception ex) {
+			LOG.error("Could not get task worker " + taskClassName, ex);
+			return null;
+		}
 	}
 
 	/**
@@ -267,7 +263,7 @@ public class ProcessorHelper {
 	 * index for the other categories such as icons.
 	 */
 	public static String getTagNameForClassName(String className) {
-		// System.out.println("Request for tag name for : "+className);
+		// LOG.debug("Request for tag name for : "+className);
 		return (String) tagNameForClassName.get(className);
 	}
 
@@ -312,13 +308,12 @@ public class ProcessorHelper {
 			}
 		}
 
-		// System.out.println("Request for icon for : "+tagName);
+		// LOG.debug("Request for icon for : "+tagName);
 		ImageIcon icon = (ImageIcon) iconForTagName.get(tagName);
 		if (icon == null) {
 			return unknownProcessorIcon;
-		} else {
-			return icon;
 		}
+		return icon;
 	}
 
 	/**
@@ -380,34 +375,35 @@ public class ProcessorHelper {
 	public static Element elementForProcessor(Processor p, boolean decorations) {
 		String className = p.getClass().getName();
 		String tagName = (String) tagNameForClassName.get(className);
-		if (tagName != null) {
-			XMLHandler xh = (XMLHandler) xmlHandlerForTagName.get(tagName);
-			if (xh != null) {
-				Element result = xh.elementForProcessor(p);
-				if (decorations) {
-					if (p.getRetries() != 0) {
-						result.setAttribute("maxretries", Integer.toString(p
-								.getRetries()));
-					}
-					if (p.getRetryDelay() != 0) {
-						result.setAttribute("retrydelay", Integer.toString(p
-								.getRetryDelay()));
-					}
-					if (p.getBackoff() != 1.0) {
-						result.setAttribute("retrybackoff", Double.toString(p
-								.getBackoff()));
-					}
-					if (p.getCritical() != false) {
-						result.setAttribute("critical", "" + p.getCritical());
-					}
-					if (p.hasBreakpoint()) {
-						result.setAttribute("breakpoint", "true");
-					}
-				}
-				return result;
+		if (tagName == null) {
+			return null;
+		}
+		XMLHandler xh = (XMLHandler) xmlHandlerForTagName.get(tagName);
+		if (xh == null) {
+			return null;
+		}
+		Element result = xh.elementForProcessor(p);
+		if (decorations) {
+			if (p.getRetries() != 0) {
+				result.setAttribute("maxretries", Integer.toString(p
+						.getRetries()));
+			}
+			if (p.getRetryDelay() != 0) {
+				result.setAttribute("retrydelay", Integer.toString(p
+						.getRetryDelay()));
+			}
+			if (p.getBackoff() != 1.0) {
+				result.setAttribute("retrybackoff", Double.toString(p
+						.getBackoff()));
+			}
+			if (p.getCritical()) {
+				result.setAttribute("critical", "" + p.getCritical());
+			}
+			if (p.hasBreakpoint()) {
+				result.setAttribute("breakpoint", "true");
 			}
 		}
-		return null;
+		return result;
 	}
 
 	/**
@@ -421,9 +417,8 @@ public class ProcessorHelper {
 		XMLHandler xh = (XMLHandler) xmlHandlerForTagName.get(tagName);
 		if (xh == null) {
 			return null;
-		} else {
-			return xh.getFactory(specNode);
 		}
+		return xh.getFactory(specNode);
 	}
 
 	/**
@@ -441,99 +436,91 @@ public class ProcessorHelper {
 			Element candidateElement = (Element) i.next();
 			String elementName = candidateElement.getName();
 			XMLHandler xh = (XMLHandler) xmlHandlerForTagName.get(elementName);
+			if (xh == null) {
+				continue;
+			}
 			LOG.debug("Possible help: " + candidateElement + " " + elementName
 					+ " -> " + xh);
-			if (xh != null) {
-				// mrp: ouch - should we not be using candidateElement in place
-				// of processorNode?
-				loadedProcessor = xh.loadProcessorFromXML(processorNode, model,
-						name);
-				// Loaded the processor, now configure from the inner spec
-				// element
-				// for retry policy.
-				String maxRetryString = candidateElement
-						.getAttributeValue("maxretries");
-				if (maxRetryString != null) {
-					loadedProcessor
-							.setRetries(Integer.parseInt(maxRetryString));
-				}
-				String retryDelayString = candidateElement
-						.getAttributeValue("retrydelay");
-				if (retryDelayString != null) {
-					loadedProcessor.setRetryDelay(Integer
-							.parseInt(retryDelayString));
-				}
-				String retryBackoffString = candidateElement
-						.getAttributeValue("retrybackoff");
-				if (retryBackoffString != null) {
-					loadedProcessor.setBackoff(Double
-							.parseDouble(retryBackoffString));
-				}
-				String critical = candidateElement
-						.getAttributeValue("critical");
-				if (critical != null) {
-					loadedProcessor.setCritical((new Boolean(critical)
-							.booleanValue()));
-				}
-				String breakpoint = candidateElement
-						.getAttributeValue("breakpoint");
-				if (breakpoint != null) {
-					if ((new Boolean(breakpoint).booleanValue()))
-						loadedProcessor.addBreakpoint();
-				}
+			// mrp: ouch - should we not be using candidateElement in place
+			// of processorNode?
+			loadedProcessor = xh.loadProcessorFromXML(processorNode, model,
+					name);
+			// Loaded the processor, now configure from the inner spec
+			// element for retry policy.
+			String maxRetryString = candidateElement
+					.getAttributeValue("maxretries");
+			if (maxRetryString != null) {
+				loadedProcessor.setRetries(Integer.parseInt(maxRetryString));
 			}
+			String retryDelayString = candidateElement
+					.getAttributeValue("retrydelay");
+			if (retryDelayString != null) {
+				loadedProcessor.setRetryDelay(Integer
+						.parseInt(retryDelayString));
+			}
+			String retryBackoffString = candidateElement
+					.getAttributeValue("retrybackoff");
+			if (retryBackoffString != null) {
+				loadedProcessor.setBackoff(Double
+						.parseDouble(retryBackoffString));
+			}
+			String critical = candidateElement.getAttributeValue("critical");
+			if (critical != null) {
+				loadedProcessor.setCritical((new Boolean(critical)
+						.booleanValue()));
+			}
+			String breakpoint = candidateElement
+					.getAttributeValue("breakpoint");
+			if (breakpoint != null) {
+				if ((new Boolean(breakpoint).booleanValue()))
+					loadedProcessor.addBreakpoint();
+			}
+		}
+		if (loadedProcessor == null) {
+			LOG.warn("No processor found for element: " + processorNode);
+			return null;
 		}
 
 		// Appended to the name so the alternate processor have at least
 		// a local name. Doesn't really matter, just better than leaving
 		// them blank.
 		int alternateCount = 1;
-		if (loadedProcessor != null) {
-			// Iterate over all alternate definitions and load them into the
-			// processor as appropriate
-			List l = processorNode.getChildren("alternate", XScufl.XScuflNS);
-			for (Iterator i = l.iterator(); i.hasNext();) {
-				Element alternateElement = (Element) i.next();
-				Processor alternateProcessor = loadProcessorFromXML(
-						alternateElement, null, "alternate" + alternateCount++);
-				AlternateProcessor ap = new AlternateProcessor(
-						alternateProcessor);
-				// Sort out the input mapping
-				List inputMapping = alternateElement.getChildren("inputmap",
-						XScufl.XScuflNS);
-				for (Iterator j = inputMapping.iterator(); j.hasNext();) {
-					Element inputMapItem = (Element) j.next();
-					String key = inputMapItem.getAttributeValue("key");
-					String value = inputMapItem.getAttributeValue("value");
-					ap.getInputMapping().put(key, value);
-				}
-				// ..and the output mapping. See the javadoc
-				// for the AlternateProcessor class for more
-				// details about the mapping functionality.
-				List outputMapping = alternateElement.getChildren("outputmap",
-						XScufl.XScuflNS);
-				for (Iterator j = outputMapping.iterator(); j.hasNext();) {
-					Element outputMapItem = (Element) j.next();
-					String key = outputMapItem.getAttributeValue("key");
-					String value = outputMapItem.getAttributeValue("value");
-					ap.getOutputMapping().put(key, value);
-				}
-				loadedProcessor.addAlternate(ap);
+		// Iterate over all alternate definitions and load them into the
+		// processor as appropriate
+		List alternates = processorNode.getChildren("alternate", XScufl.XScuflNS);
+		for (Iterator i = alternates.iterator(); i.hasNext();) {
+			Element alternateElement = (Element) i.next();
+			Processor alternateProcessor = loadProcessorFromXML(
+					alternateElement, null, "alternate" + alternateCount++);
+			AlternateProcessor ap = new AlternateProcessor(alternateProcessor);
+			// Sort out the input mapping
+			List inputMapping = alternateElement.getChildren("inputmap",
+					XScufl.XScuflNS);
+			for (Iterator j = inputMapping.iterator(); j.hasNext();) {
+				Element inputMapItem = (Element) j.next();
+				String key = inputMapItem.getAttributeValue("key");
+				String value = inputMapItem.getAttributeValue("value");
+				ap.getInputMapping().put(key, value);
 			}
-
-		}
-		if (loadedProcessor != null) {
-			// Add the annotation templates
-			List l = processorNode.getChildren("template", XScufl.XScuflNS);
-			for (Iterator i = l.iterator(); i.hasNext();) {
-				loadedProcessor.addAnnotationTemplate(new AnnotationTemplate(
-						(Element) i.next()));
+			// ..and the output mapping. See the javadoc
+			// for the AlternateProcessor class for more
+			// details about the mapping functionality.
+			List outputMapping = alternateElement.getChildren("outputmap",
+					XScufl.XScuflNS);
+			for (Iterator j = outputMapping.iterator(); j.hasNext();) {
+				Element outputMapItem = (Element) j.next();
+				String key = outputMapItem.getAttributeValue("key");
+				String value = outputMapItem.getAttributeValue("value");
+				ap.getOutputMapping().put(key, value);
 			}
-
+			loadedProcessor.addAlternate(ap);
 		}
 
-		if (loadedProcessor == null) {
-			LOG.warn("No processor found for element: " + processorNode);
+		// Add the annotation templates
+		List templates = processorNode.getChildren("template", XScufl.XScuflNS);
+		for (Iterator i = templates.iterator(); i.hasNext();) {
+			loadedProcessor.addAnnotationTemplate(new AnnotationTemplate(
+					(Element) i.next()));
 		}
 
 		return loadedProcessor;
