@@ -57,6 +57,7 @@ import org.embl.ebi.escience.scuflui.renderers.RendererRegistry;
  * workflows
  * 
  * @author Tom Oinn
+ * @author Stuart Owen
  */
 public class Workbench extends JFrame {
 
@@ -152,7 +153,7 @@ public class Workbench extends JFrame {
 				500, 400);
 		UIUtils.createFrame(workbench.model, new AdvancedModelExplorer(), 20,
 				120, 500, 300);
-		UIUtils.createFrame(workbench.model, new ScavengerTreePanel(true), 540,
+		UIUtils.createFrame(workbench.model, new ScavengerTreePanel(), 540,
 				120, 300, 720);
 
 	}

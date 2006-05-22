@@ -43,6 +43,7 @@ import org.embl.ebi.escience.scuflui.workbench.ScavengerTree;
  * expression within the tree option.
  * 
  * @author Tom Oinn
+ * @author Stuart Owen
  */
 public class ScavengerTreePanel extends JPanel implements ScuflUIComponent {
 
@@ -73,13 +74,8 @@ public class ScavengerTreePanel extends JPanel implements ScuflUIComponent {
 			}
 		}
 	};
-
-	public ScavengerTreePanel() {
-		this(false);
-	}
-
-	public ScavengerTreePanel(boolean populated) {
-		super();
+	
+	private void initialise(boolean populated) {
 		setLayout(new BorderLayout());
 		// To avoid double horisontal scrollbars, let the treePane be in charge
 		this.setPreferredSize(new Dimension(0, 0));
@@ -175,7 +171,18 @@ public class ScavengerTreePanel extends JPanel implements ScuflUIComponent {
 				}
 			}
 		});
-
+	}
+	
+	protected boolean populate()
+	{
+		return true;
+	}
+	
+	public void attachToModel(ScuflModel model) {
+		initialise(populate());
+		this.model = model;
+		tree.attachToModel(model);
+		model.addListener(eventListener);
 	}
 
 	// FIXME Move to general class
@@ -242,11 +249,7 @@ public class ScavengerTreePanel extends JPanel implements ScuflUIComponent {
 
 	private ScuflModel model = null;
 
-	public void attachToModel(ScuflModel model) {
-		this.model = model;
-		tree.attachToModel(model);
-		model.addListener(eventListener);
-	}
+	
 
 	public void detachFromModel() {
 		model.removeListener(eventListener);
