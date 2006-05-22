@@ -73,7 +73,7 @@
 	</target>
 
 	<!-- Trivial setup -->
-	<target name="prepare" depends="">
+	<target name="prepare" depends="fetchjars">
 		<mkdir dir="${build.dir}"/>
 		<mkdir dir="${reports.tests}"/>
 		<mkdir dir="../netlib"/>

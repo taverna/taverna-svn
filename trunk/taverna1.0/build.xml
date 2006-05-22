@@ -261,7 +261,7 @@
 	</target>
 
 	<!-- Build the workbench binary distribution -->
-	<target name="workbench" depends="jar">
+	<target name="workbench" depends="jar">		
 	    <property name="workbench.dir" value="${build.dir}/${ant.project.name}-workbench-${project.version}"/>
 	    <!-- Copy the workbench skeleton to the build directory -->
 		<copy todir="${workbench.dir}">
@@ -356,7 +356,7 @@
     </target>
 
 	<!-- Compile the source files -->
-	<target name="java" depends="prepare-src">
+	<target name="java" depends="prepare-src,fetchjars">		
 		<!-- Run javac to turn .java files into .class -->
 		<javac
             debug="on"
