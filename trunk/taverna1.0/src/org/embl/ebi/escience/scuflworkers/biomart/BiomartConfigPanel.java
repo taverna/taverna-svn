@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: BiomartConfigPanel.java,v $
- * Revision           $Revision: 1.1 $
+ * Revision           $Revision: 1.2 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-05-19 13:55:22 $
+ * Last modified on   $Date: 2006-05-22 13:56:28 $
  *               by   $Author: davidwithers $
  * Created on 17-Mar-2006
  *****************************************************************/
@@ -54,6 +54,7 @@ import org.embl.ebi.escience.scuflui.ScuflUIComponent;
 import org.embl.ebi.escience.scuflworkers.ProcessorHelper;
 
 /**
+ * A panel containing a the Biomart configuration UI.
  * 
  * @author David Withers
  */
@@ -61,6 +62,12 @@ public class BiomartConfigPanel extends JPanel implements ScuflUIComponent {
 
 	private BiomartProcessor biomartProcessor;
 
+	/**
+     * Creates a component for configuring a Biomart query.
+     * 
+     * @param biomartProcessor
+     * @throws MartServiceException
+     */
 	public BiomartConfigPanel(BiomartProcessor biomartProcessor)
 			throws MartServiceException {
 		this.biomartProcessor = biomartProcessor;
@@ -77,11 +84,15 @@ public class BiomartConfigPanel extends JPanel implements ScuflUIComponent {
 		add(queryConfigUIFactory.getDatasetConfigUI(), BorderLayout.NORTH);
 	}
 
+	/**
+     * For testing the martservice without the workbench
+     * 
+     * @param args
+     */
 	public static void main(String[] args) {
 		try {
 			MartService martService = new MartService(
 					"http://www.biomart.org/biomart/martservice");
-			martService.calculateLinks();
 			MartDataset dataset = null;
 			MartDataset[] datasets = martService.getDatasets();
 			for (int i = 0; i < datasets.length; i++) {
@@ -123,8 +134,7 @@ public class BiomartConfigPanel extends JPanel implements ScuflUIComponent {
      * @see org.embl.ebi.escience.scuflui.ScuflUIComponent#attachToModel(org.embl.ebi.escience.scufl.ScuflModel)
      */
 	public void attachToModel(ScuflModel model) {
-		// TODO Auto-generated method stub
-
+		// nothing to do
 	}
 
 	/*
@@ -133,8 +143,7 @@ public class BiomartConfigPanel extends JPanel implements ScuflUIComponent {
      * @see org.embl.ebi.escience.scuflui.ScuflUIComponent#detachFromModel()
      */
 	public void detachFromModel() {
-		// TODO Auto-generated method stub
-
+		// nothing to do
 	}
 
 	/*

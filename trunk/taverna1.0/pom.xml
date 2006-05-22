@@ -189,7 +189,7 @@
       <groupId>commons-logging</groupId>
       <artifactId>commons-logging</artifactId>
       <version>1.0.4</version>
-    </dependency>    
+    </dependency>
     <dependency>
       <groupId>commons-httpclient</groupId>
       <artifactId>commons-httpclient</artifactId>
@@ -452,9 +452,16 @@
     <dependency>
       <groupId>mygrid</groupId>
       <artifactId>martj</artifactId>
-      <version>0.4-martservice</version>
+      <version>0.4</version>
       <scope>system</scope>
-      <systemPath>${basedir}/lib/martj-0.4-martservice.jar</systemPath>
+      <systemPath>${basedir}/lib/martj-0.4.jar</systemPath>
+    </dependency>
+    <dependency>
+      <groupId>org.biomart</groupId>
+      <artifactId>martservice</artifactId>
+      <version>0.4</version>
+      <scope>system</scope>
+      <systemPath>${basedir}/lib/martservice-0.4.jar</systemPath>
     </dependency>
     <dependency>
       <groupId>mygrid</groupId>
