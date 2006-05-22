@@ -86,6 +86,7 @@ public class WSDLParser {
 	public WSDLParser(String wsdlLocation) throws ParserConfigurationException, WSDLException, IOException,
 			SAXException {
 
+		logger.info("Initialising WSDLParser for "+wsdlLocation);
 		this.wsdlLocation = wsdlLocation;
 
 		WSIFPluggableProviders.overrideDefaultProvider("http://schemas.xmlsoap.org/wsdl/soap/",

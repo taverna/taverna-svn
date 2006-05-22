@@ -73,6 +73,8 @@ import org.jdom.output.XMLOutputter;
  */
 public class ScavengerTree extends ExtendedJTree implements ScuflUIComponent,
 		DragSourceListener, DragGestureListener, DropTargetListener {
+	
+	private static final long serialVersionUID = -5395001232451125620L;
 
 	private static Logger logger = Logger.getLogger(ScavengerTree.class);
 	
@@ -215,7 +217,7 @@ public class ScavengerTree extends ExtendedJTree implements ScuflUIComponent,
 	 * Default constructor, equivalent to calling with populate set to 'true'
 	 */
 	public ScavengerTree() {
-		this(true);
+		this(false);
 	}
 
 	/**

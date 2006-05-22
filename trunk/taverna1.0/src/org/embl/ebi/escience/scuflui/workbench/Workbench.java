@@ -5,58 +5,52 @@
  */
 package org.embl.ebi.escience.scuflui.workbench;
 
+import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.awt.*;
-import javax.swing.*;
+import java.io.File;
+import java.net.URL;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Properties;
+import java.util.ResourceBundle;
+
+import javax.swing.ImageIcon;
+import javax.swing.JComponent;
+import javax.swing.JDesktopPane;
+import javax.swing.JFrame;
+import javax.swing.JInternalFrame;
+import javax.swing.JLabel;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
+import javax.swing.JScrollPane;
+import javax.swing.UIManager;
 import javax.swing.event.InternalFrameAdapter;
 import javax.swing.event.InternalFrameEvent;
 
-import java.util.*;
 import org.embl.ebi.escience.scufl.ScuflModel;
-import org.embl.ebi.escience.scufl.enactor.implementation.*;
+import org.embl.ebi.escience.scufl.enactor.WorkflowSubmissionException;
+import org.embl.ebi.escience.scufl.enactor.implementation.FreefluoEnactorProxy;
 import org.embl.ebi.escience.scufl.parser.XScuflParser;
 import org.embl.ebi.escience.scufl.semantics.RDFSParser;
-import org.embl.ebi.escience.scufl.view.DotView;
-import org.embl.ebi.escience.scufl.view.XScuflView;
-import org.embl.ebi.escience.scuflui.DotTextArea;
-import org.embl.ebi.escience.scuflui.EnactorLaunchPanel;
-import org.embl.ebi.escience.scuflui.ScuflDiagram;
-import org.embl.ebi.escience.scuflui.ScuflModelExplorer;
-import org.embl.ebi.escience.scuflui.XScuflTextArea;
-import org.embl.ebi.escience.scuflui.renderers.*;
-
-// Utility Imports
-import java.util.Enumeration;
-import java.util.Properties;
-import java.util.ResourceBundle;
-import java.util.prefs.Preferences;
-
-// IO Imports
-import java.io.File;
-import java.io.FileWriter;
-import java.io.PrintWriter;
-
-// Network Imports
-import java.net.URL;
-
-import org.embl.ebi.escience.scuflui.workbench.FileDrop;
-import org.embl.ebi.escience.scuflui.workbench.ScavengerTree;
-import org.embl.ebi.escience.scuflui.workbench.ScrollableDesktopPane;
-import org.embl.ebi.escience.scuflui.workbench.SplashScreen;
-import org.embl.ebi.escience.scuflui.*;
-import org.embl.ebi.escience.scufl.enactor.*;
-import java.lang.Class;
-import java.lang.ClassLoader;
-import java.lang.ClassNotFoundException;
-import java.lang.Exception;
-import java.lang.RuntimeException;
-import java.lang.String;
-import java.lang.System;
+import org.embl.ebi.escience.scuflui.AdvancedModelExplorer;
+import org.embl.ebi.escience.scuflui.DataThingConstructionPanel;
+import org.embl.ebi.escience.scuflui.EnactorInvocation;
+import org.embl.ebi.escience.scuflui.ScavengerTreePanel;
+import org.embl.ebi.escience.scuflui.ScuflDiagramPanel;
+import org.embl.ebi.escience.scuflui.ScuflIcons;
+import org.embl.ebi.escience.scuflui.ScuflUIComponent;
+import org.embl.ebi.escience.scuflui.UIComponentRegistry;
+import org.embl.ebi.escience.scuflui.UIUtils;
+import org.embl.ebi.escience.scuflui.renderers.RendererRegistry;
 
 /**
  * A sample workbench application to allow editing and visualization of Scufl
@@ -158,7 +152,7 @@ public class Workbench extends JFrame {
 				500, 400);
 		UIUtils.createFrame(workbench.model, new AdvancedModelExplorer(), 20,
 				120, 500, 300);
-		UIUtils.createFrame(workbench.model, new ScavengerTreePanel(), 540,
+		UIUtils.createFrame(workbench.model, new ScavengerTreePanel(true), 540,
 				120, 300, 720);
 
 	}

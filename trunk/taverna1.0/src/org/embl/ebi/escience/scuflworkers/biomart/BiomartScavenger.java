@@ -25,10 +25,10 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: BiomartScavenger.java,v $
- * Revision           $Revision: 1.5 $
+ * Revision           $Revision: 1.6 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-05-19 13:55:22 $
- *               by   $Author: davidwithers $
+ * Last modified on   $Date: 2006-05-22 10:49:41 $
+ *               by   $Author: sowen70 $
  * Created on 17-Mar-2006
  *****************************************************************/
 package org.embl.ebi.escience.scuflworkers.biomart;
@@ -39,6 +39,7 @@ import java.util.Arrays;
 
 import javax.swing.tree.DefaultMutableTreeNode;
 
+import org.apache.log4j.Logger;
 import org.biomart.martservice.MartDataset;
 import org.biomart.martservice.MartQuery;
 import org.biomart.martservice.MartRegistry;
@@ -53,9 +54,14 @@ import org.embl.ebi.escience.scuflui.workbench.ScavengerCreationException;
  */
 public class BiomartScavenger extends Scavenger {
 
+	private static Logger logger=Logger.getLogger(BiomartScavenger.class);
+	
 	public BiomartScavenger(String registryURL)
 			throws ScavengerCreationException {
 		super("Biomart service @ " + registryURL);
+		
+		logger.info("Initialising Biomart Scavenger for URL:"+registryURL);
+		
 		URL registryLocation;
 		try {
 			registryLocation = new URL(getBiomartServiceLocation(registryURL));

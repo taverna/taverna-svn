@@ -49,7 +49,7 @@ public class UIComponentRegistry {
 		loaders.put(classLoader);
 		Enumeration spe = Service.providers(spiIF, loaders);
 		while (spe.hasMoreElements()) {
-			ScuflUIComponent component = (ScuflUIComponent) spe.nextElement();
+			ScuflUIComponent component = (ScuflUIComponent) spe.nextElement();			
 			String componentClassName = component.getClass().getName();
 			String componentDisplayName = component.getName();
 			try {

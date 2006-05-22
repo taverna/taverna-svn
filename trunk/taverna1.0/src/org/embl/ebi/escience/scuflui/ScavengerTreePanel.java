@@ -75,7 +75,7 @@ public class ScavengerTreePanel extends JPanel implements ScuflUIComponent {
 	};
 
 	public ScavengerTreePanel() {
-		this(true);
+		this(false);
 	}
 
 	public ScavengerTreePanel(boolean populated) {
