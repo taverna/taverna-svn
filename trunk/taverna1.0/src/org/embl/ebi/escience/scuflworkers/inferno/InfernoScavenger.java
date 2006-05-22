@@ -5,30 +5,13 @@
  */
 package org.embl.ebi.escience.scuflworkers.inferno;
 
-import org.embl.ebi.escience.scuflworkers.*;
-import org.embl.ebi.escience.scufl.*;
+import javax.swing.tree.DefaultMutableTreeNode;
+
 import org.embl.ebi.escience.scuflui.workbench.Scavenger;
 import org.embl.ebi.escience.scuflui.workbench.ScavengerCreationException;
 
-import java.net.URL;
-import java.net.InetSocketAddress;
-
-import javax.swing.tree.*;
-
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.BufferedReader;
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.IOException;
-
-import uk.ac.rdg.resc.jstyx.client.StyxConnection;
 import uk.ac.rdg.resc.jstyx.client.CStyxFile;
-import uk.ac.rdg.resc.jstyx.client.StyxFileInputStream;
-import uk.ac.rdg.resc.jstyx.client.StyxFileInputStreamReader;
-import uk.ac.rdg.resc.jstyx.client.StyxFileOutputStream;
-import uk.ac.rdg.resc.jstyx.client.StyxFileOutputStreamWriter;
-import uk.ac.rdg.resc.jstyx.StyxException;
+import uk.ac.rdg.resc.jstyx.client.StyxConnection;
 
 /**
  * Collects the various services within a specified SGS container
@@ -60,10 +43,9 @@ public class InfernoScavenger extends Scavenger {
 				add(new DefaultMutableTreeNode(ipf));
 			}
 			session.close();
+		} catch (ScavengerCreationException ex) {
+			throw ex;
 		} catch (Exception ex) {
-			if (ex instanceof ScavengerCreationException) {
-				throw (ScavengerCreationException) ex;
-			}
 			ScavengerCreationException sce = new ScavengerCreationException(
 					"Unable to create inferno scavenger : " + ex.getMessage());
 			sce.initCause(ex);

@@ -5,34 +5,29 @@
  */
 package org.embl.ebi.escience.scuflworkers.inferno;
 
-import org.embl.ebi.escience.scufl.*;
-import org.embl.ebi.escience.baclava.DataThing;
-import org.embl.ebi.escience.scuflworkers.ProcessorTaskWorker;
-import uk.ac.soton.itinnovation.taverna.enactor.entities.*;
-import uk.ac.soton.itinnovation.freefluo.core.task.*;
-
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.BufferedReader;
+import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
-import java.io.BufferedOutputStream;
-import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 
-import java.net.URL;
-import java.nio.*;
+import org.embl.ebi.escience.baclava.DataThing;
+import org.embl.ebi.escience.scufl.Processor;
+import org.embl.ebi.escience.scuflworkers.ProcessorTaskWorker;
 
-import uk.ac.rdg.resc.jstyx.client.StyxConnection;
 import uk.ac.rdg.resc.jstyx.client.CStyxFile;
+import uk.ac.rdg.resc.jstyx.client.StyxConnection;
 import uk.ac.rdg.resc.jstyx.client.StyxFileInputStream;
 import uk.ac.rdg.resc.jstyx.client.StyxFileInputStreamReader;
 import uk.ac.rdg.resc.jstyx.client.StyxFileOutputStream;
 import uk.ac.rdg.resc.jstyx.client.StyxFileOutputStreamWriter;
-import uk.ac.rdg.resc.jstyx.StyxException;
-
-import java.util.*;
+import uk.ac.soton.itinnovation.freefluo.core.task.Task;
+import uk.ac.soton.itinnovation.taverna.enactor.entities.PortTask;
+import uk.ac.soton.itinnovation.taverna.enactor.entities.ProcessorTask;
+import uk.ac.soton.itinnovation.taverna.enactor.entities.TaskExecutionException;
 
 /**
  * Invokes a single operation within an Inferno SGS
@@ -286,7 +281,7 @@ public class InfernoTask implements ProcessorTaskWorker {
 	}
 
 	static void ensureFalse(boolean flag) throws TaskExecutionException {
-		if (flag == true) {
+		if (flag) {
 			throw new TaskExecutionException(
 					"Input may consist of at most one of url, string value or binary value");
 		}

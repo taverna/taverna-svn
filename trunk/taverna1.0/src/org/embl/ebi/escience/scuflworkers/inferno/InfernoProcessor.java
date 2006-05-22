@@ -5,9 +5,15 @@
  */
 package org.embl.ebi.escience.scuflworkers.inferno;
 
-import org.embl.ebi.escience.scufl.*;
-
 import java.util.Properties;
+
+import org.embl.ebi.escience.scufl.DuplicateProcessorNameException;
+import org.embl.ebi.escience.scufl.InputPort;
+import org.embl.ebi.escience.scufl.OutputPort;
+import org.embl.ebi.escience.scufl.Processor;
+import org.embl.ebi.escience.scufl.ProcessorCreationException;
+import org.embl.ebi.escience.scufl.ScuflException;
+import org.embl.ebi.escience.scufl.ScuflModel;
 
 /**
  * Processor corresponding to a single instance of an SGS based streaming
@@ -85,10 +91,10 @@ public class InfernoProcessor extends Processor {
 			outputBinary.setSyntacticType("'application/octet-stream'");
 			addPort(outputBinary);
 
-		} catch (DuplicatePortNameException dpne) {
-			// will never happen, hardcoded ports
-		} catch (PortCreationException pce) {
-			// will never happen, hardcoded ports
+		} catch (ScuflException ex) {
+			// should never happen, hardcoded ports
+			throw new ProcessorCreationException(
+					"Unable to create inferno processor", ex);
 		}
 	}
 

@@ -7,7 +7,9 @@ package org.embl.ebi.escience.scuflworkers.inferno;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+
 import javax.swing.JOptionPane;
+
 import org.embl.ebi.escience.scuflui.workbench.ScavengerCreationException;
 import org.embl.ebi.escience.scuflui.workbench.ScavengerTree;
 import org.embl.ebi.escience.scuflworkers.ScavengerHelper;
@@ -31,31 +33,32 @@ public class InfernoScavengerHelper implements ScavengerHelper {
 						"Location of SGS in the form <host>:<port>",
 						"SGS Location", JOptionPane.QUESTION_MESSAGE, null,
 						null, "localhost:8080");
-				if (location != null) {
-					try {
-						String[] parts = location.split(":");
-						if (parts.length != 2) {
-							throw new ScavengerCreationException(
-									"Location must be in the form <host>:<port>");
-						}
-						int port;
-						String host;
-						try {
-							port = Integer.parseInt(parts[1]);
-							host = parts[0];
-						} catch (NumberFormatException nfe) {
-							throw new ScavengerCreationException(
-									"Port must be a valid integer i.e. 8080");
-						}
-						s.addScavenger(new InfernoScavenger(host, port));
-					} catch (ScavengerCreationException sce) {
-						JOptionPane.showMessageDialog(null,
-								"Unable to create scavenger!\n"
-										+ sce.getMessage(), "Exception!",
-								JOptionPane.ERROR_MESSAGE);
+				if (location == null) {
+					return;
+				}
+				try {
+					String[] parts = location.split(":");
+					if (parts.length != 2) {
+						throw new ScavengerCreationException(
+								"Location must be in the form <host>:<port>");
 					}
+					int port;
+					String host;
+					try {
+						port = Integer.parseInt(parts[1]);
+						host = parts[0];
+					} catch (NumberFormatException nfe) {
+						throw new ScavengerCreationException(
+								"Port must be a valid integer i.e. 8080");
+					}
+					s.addScavenger(new InfernoScavenger(host, port));
+				} catch (ScavengerCreationException sce) {
+					JOptionPane.showMessageDialog(null,
+							"Unable to create scavenger!\n" + sce.getMessage(),
+							"Exception!", JOptionPane.ERROR_MESSAGE);
 				}
 			}
+
 		};
 	}
 }
