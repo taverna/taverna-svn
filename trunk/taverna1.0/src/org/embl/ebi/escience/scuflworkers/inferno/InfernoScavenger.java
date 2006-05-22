@@ -32,44 +32,43 @@ import uk.ac.rdg.resc.jstyx.StyxException;
 
 /**
  * Collects the various services within a specified SGS container
+ * 
  * @author Tom Oinn
  */
 public class InfernoScavenger extends Scavenger {
 
-    /**
-     * Create a new inferno scavenger with the specified
-     * host and port
-     */
-    public InfernoScavenger(String host, int port)
-	throws ScavengerCreationException {
-	super("Styx @ "+host+":"+port);
-	try {
-	    StyxConnection session = new StyxConnection(host, port);
-	    //session.connect();
-	    CStyxFile directory = new CStyxFile(session, "/");
-	    if (directory.isDirectory() == false) {
-		throw new ScavengerCreationException("Root isn't a directory, bad!");
-	    }
-	    CStyxFile[] services = directory.getChildren();
-	    for (int i = 0; i < services.length; i++) {
-		CStyxFile serviceNode = services[i];
-		String serviceName = serviceNode.getName();
-		InfernoProcessorFactory ipf =
-		    new InfernoProcessorFactory(host, port, serviceName);
-		add(new DefaultMutableTreeNode(ipf));
-	    }
-	    session.close();
+	/**
+	 * Create a new inferno scavenger with the specified host and port
+	 */
+	public InfernoScavenger(String host, int port)
+			throws ScavengerCreationException {
+		super("Styx @ " + host + ":" + port);
+		try {
+			StyxConnection session = new StyxConnection(host, port);
+			// session.connect();
+			CStyxFile directory = new CStyxFile(session, "/");
+			if (directory.isDirectory() == false) {
+				throw new ScavengerCreationException(
+						"Root isn't a directory, bad!");
+			}
+			CStyxFile[] services = directory.getChildren();
+			for (int i = 0; i < services.length; i++) {
+				CStyxFile serviceNode = services[i];
+				String serviceName = serviceNode.getName();
+				InfernoProcessorFactory ipf = new InfernoProcessorFactory(host,
+						port, serviceName);
+				add(new DefaultMutableTreeNode(ipf));
+			}
+			session.close();
+		} catch (Exception ex) {
+			if (ex instanceof ScavengerCreationException) {
+				throw (ScavengerCreationException) ex;
+			}
+			ScavengerCreationException sce = new ScavengerCreationException(
+					"Unable to create inferno scavenger : " + ex.getMessage());
+			sce.initCause(ex);
+			throw sce;
+		}
 	}
-	catch (Exception ex) {
-	    if (ex instanceof ScavengerCreationException) {
-		throw (ScavengerCreationException)ex;
-	    }
-	    ScavengerCreationException sce = 
-		new ScavengerCreationException("Unable to create inferno scavenger : "+
-					       ex.getMessage());
-	    sce.initCause(ex);
-	    throw sce;
-	}
-    }
 
 }

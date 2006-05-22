@@ -9,41 +9,42 @@ import org.embl.ebi.escience.scuflworkers.ProcessorFactory;
 
 /**
  * Holds the data required to create an SGS based processor
+ * 
  * @author Tom Oinn
  */
 public class InfernoProcessorFactory extends ProcessorFactory {
 
-    private String host;
-    private int port;
-    private String service;
-    
-    public String getHost() {
-	return this.host;
-    }
+	private String host;
 
-    public int getPort() {
-	return this.port;
-    }
+	private int port;
 
-    public String getService() {
-	return this.service;
-    }
+	private String service;
 
-    public InfernoProcessorFactory(String host,
-				   int port,
-				   String service) {
-	this.host = host;
-	this.port = port;
-	this.service = service;
-	setName(service);
-    }
-    
-    public String getProcessorDescription() {
-	return "Processor based on an Inferno SGS streaming service";
-    }
+	public String getHost() {
+		return this.host;
+	}
 
-    public Class getProcessorClass() {
-	return org.embl.ebi.escience.scuflworkers.inferno.InfernoProcessor.class;
-    }
+	public int getPort() {
+		return this.port;
+	}
+
+	public String getService() {
+		return this.service;
+	}
+
+	public InfernoProcessorFactory(String host, int port, String service) {
+		this.host = host;
+		this.port = port;
+		this.service = service;
+		setName(service);
+	}
+
+	public String getProcessorDescription() {
+		return "Processor based on an Inferno SGS streaming service";
+	}
+
+	public Class getProcessorClass() {
+		return org.embl.ebi.escience.scuflworkers.inferno.InfernoProcessor.class;
+	}
 
 }
