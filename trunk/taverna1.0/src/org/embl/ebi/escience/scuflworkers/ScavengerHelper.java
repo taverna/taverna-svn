@@ -6,9 +6,8 @@
 package org.embl.ebi.escience.scuflworkers;
 
 import java.awt.event.ActionListener;
-import org.embl.ebi.escience.scuflui.workbench.ScavengerTree;
 
-import java.lang.String;
+import org.embl.ebi.escience.scuflui.workbench.ScavengerTree;
 
 /**
  * Classes implementing this interface perform the role of creating an

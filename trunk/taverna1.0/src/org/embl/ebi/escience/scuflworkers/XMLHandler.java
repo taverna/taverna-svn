@@ -5,11 +5,7 @@ import org.embl.ebi.escience.scufl.Processor;
 import org.embl.ebi.escience.scufl.ProcessorCreationException;
 import org.embl.ebi.escience.scufl.ScuflModel;
 import org.embl.ebi.escience.scufl.parser.XScuflFormatException;
-
-// JDOM Imports
 import org.jdom.Element;
-
-import java.lang.String;
 
 /**
  * Specifies the two methods that individual worker handlers must implement to

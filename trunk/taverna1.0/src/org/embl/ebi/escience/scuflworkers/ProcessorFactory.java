@@ -9,10 +9,7 @@ import org.embl.ebi.escience.scufl.DuplicateProcessorNameException;
 import org.embl.ebi.escience.scufl.Processor;
 import org.embl.ebi.escience.scufl.ProcessorCreationException;
 import org.embl.ebi.escience.scufl.ScuflModel;
-import org.embl.ebi.escience.scufl.parser.*;
-
-import java.lang.Class;
-import java.lang.String;
+import org.embl.ebi.escience.scufl.parser.XScuflFormatException;
 import org.jdom.Element;
 
 /**

@@ -6,9 +6,8 @@
 package org.embl.ebi.escience.scuflworkers;
 
 import java.awt.event.ActionListener;
-import org.embl.ebi.escience.scufl.Processor;
 
-import java.lang.String;
+import org.embl.ebi.escience.scufl.Processor;
 
 /**
  * Classes implementing this perform in place editing of a particular processor
