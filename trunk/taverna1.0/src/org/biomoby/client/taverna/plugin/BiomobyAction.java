@@ -566,10 +566,10 @@ public class BiomobyAction extends AbstractProcessorAction {
 																		+ "(Collection - '"
 																		+ (articlename.equals("") ? "MobyCollection"
 																				: articlename)
-																		+ "')");
+																		+ "')", false);
 													else
 														theServiceport = theproc.locatePort(name
-																+ "(" + articlename + ")");
+																+ "(" + articlename + ")", false);
 													if (theServiceport == null)
 														return;
 													scuflModel
