@@ -52,6 +52,13 @@ public abstract class Port implements Serializable {
 		 * PortCreationException("Name contains an invalid character,\n"+ "names
 		 * must match [a-zA-Z_0-9]."); }
 		 */
+		// In the XScufl links to/from input/outputports are just named as
+		// "myport", while links with ports within a processor are named as
+		// "myproc:myport". By allowing ":" in the name could add an input port
+		// called "myproc:myport" and create havoc.
+		if (name.contains(":")) {
+			throw new PortCreationException("Illegal port name " + name);			
+		}
 
 		// Scan through the list of ports defined within
 		// the parent processor and check that the name
