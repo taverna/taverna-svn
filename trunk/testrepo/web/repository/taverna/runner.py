@@ -16,15 +16,21 @@ POLL_PERIOD=0.1
 # a kill -9 will be tried
 KILL_9_TIMEOUT=0.5
 
-JAVA="java"
-JAVA_OPTS=["-Xms64m", "-Xmx64m", "-Djava.awt.headless=true"]
+
+
 LAUNCHER_CLASS="org.embl.ebi.escience.scufl.tools.WorkflowLauncher"
+
+CMD = ["java", "-Xms64m", "-Xmx64m", "-Djava.awt.headless=true",
+       "-Dtaverna.home=/local/stain/download/taverna-1.3.cvs.2005.05.19",
+       "-Dtaverna.path=/local/stain/repository/executer-1.3.1.jar",
+       "-Dtaverna.main=net.sf.taverna.tools.WorkflowExecuter",
+       "-jar", "/local/stain/repository/launcher-1.3.1.jar"]
 
 def utf8open(file, mode="r"):
     return codecs.open(file, mode, encoding="utf8", errors="ignore")
 
 class WorkflowExecuter(object):
-    def __init__(self, workflow_data, inputs=None, timeout=60):
+    def __init__(self, workflow_data, inputs=None, timeout=60, cmd=None):
         """Execute the Taverna workflow.
 
         parameters:
@@ -36,15 +42,18 @@ class WorkflowExecuter(object):
 
             timeout -- terminate workflow execution if using more than
             the specified seconds, default is 60
-        
+
+            cmd -- (optional) full list of command line options for
+            executing the WorkflowExecuter. By default CMD will be run.
         """
         if inputs is None:
             inputs = {}
         old_dir = os.curdir
         try:
-            cmd = [JAVA]
-            cmd.extend(JAVA_OPTS)
-            cmd.append(LAUNCHER_CLASS)
+            if cmd is None:
+                cmd = list(CMD)
+            else:   
+                cmd = list(cmd) # Copy, since we'll modify the list
             self.run_dir = tempfile.mkdtemp(prefix="taverna")
             os.chdir(self.run_dir)
             workflow_file = "workflow.xml"
@@ -79,15 +88,12 @@ class WorkflowExecuter(object):
                 self.report = utf8open(progressReport).read()
             if os.path.isfile(outputdoc):
                 self.outputdoc = utf8open(outputdoc).read()
-            #    self.outputs = self.parse_output(self.outputdoc)
             if os.path.isdir(output_dir):
                 self.outputs = self.read_outputs(output_dir)
         finally:
             os.chdir(old_dir)
             #shutil.rmtree(self.run_dir, ignore_errors=True)
     
-    def parse_output(self, output):
-        pass 
         
     def read_outputs(self, output_dir):
         outputs = {}

@@ -14,7 +14,8 @@ class NS(object):
 
 class XSCUFL(NS):
     NS = "http://org.embl.ebi.escience/xscufl/0.1alpha"
-    tags = "sink source workflowdescription metadata mimeTypes mimeType"
+    tags = """sink source workflowdescription metadata mimeTypes mimeType
+              processor"""
 
 class BACLAVA(NS):
     NS = "http://org.embl.ebi.escience/baclava/0.1alpha"

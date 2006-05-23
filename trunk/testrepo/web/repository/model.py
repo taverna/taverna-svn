@@ -16,6 +16,8 @@ class Workflow(SQLObject):
     data = StringCol()
     description = StringCol()
     tests = MultipleJoin("WorkflowTest", joinColumn="workflow_id")
+    # Requires this version of taverna
+    taverna = StringCol(length=20, default=None)
 
 
 class WorkflowTest(SQLObject):
@@ -45,6 +47,8 @@ class WorkflowTestOutput(SQLObject):
 class WorkflowTestRun(SQLObject):
     workflow_test = ForeignKey("WorkflowTest")
     run_date = DateTimeCol(default=datetime.now)
+    taverna = StringCol(length=20)
+    java = StringCol(length=20)
     return_code = IntCol()
     stdout = StringCol()
     stderr = StringCol()
@@ -123,8 +127,8 @@ class Permission(SQLObject):
                                  alternateMethodName="by_permission_name" )
     description = UnicodeCol( length=255 )
     
-    groups = RelatedJoin( "Group",
-                        intermediateTable="group_permission",
+    groups = RelatedJoin("Group",
+                         intermediateTable="group_permission",
                          joinColumn="permission_id", 
                          otherColumn="group_id" )
 

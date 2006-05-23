@@ -51,7 +51,8 @@
         <td class="error error$errors">$errors</td>
         <td class="passed" py:content="' '.join(passed)">tests passed</td>
         <td class="workflow"><a href="${tg.url('/test_run/%s' % run.id)}"
-             py:content="'%s #%s' % (name, run.id)">
+             py:content="'%s %s %s %s' % (name, run.taverna, run.java,
+             run.run_date.strftime('%Y-%m-%d'))">
              Workflow name</a></td>
        </tr>
     </table>
