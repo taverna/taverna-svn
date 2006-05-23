@@ -170,6 +170,8 @@ public class MobyParseDatatypeProcessor extends Processor implements java.io.Ser
 		// list contains the output ports i have to create
 		for (Iterator it = list.iterator(); it.hasNext();) {
 			String portName = (String) it.next();
+			if (portName.equals(this.articleNameUsedByService+"_id") || portName.equals(this.articleNameUsedByService+"_ns"))
+				continue;
 			Port outputPort = new OutputPort(this, portName);
 			outputPort.setSyntacticType("'text/plain'");
 			this.addPort(outputPort);
@@ -197,6 +199,11 @@ public class MobyParseDatatypeProcessor extends Processor implements java.io.Ser
 
 		if (!dt.getParentName().equals("Object")) {
 			flattenChildType(dt.getParentName(), central, currentName, list);
+		} else {
+			list
+			.add(currentName + "_id");
+			list
+			.add(currentName + "_ns");
 		}
 
 		MobyRelationship[] relations = dt.getChildren();
@@ -204,10 +211,17 @@ public class MobyParseDatatypeProcessor extends Processor implements java.io.Ser
 			MobyRelationship relation = relations[i];
 			switch (relation.getRelationshipType()) {
 			case CentralImpl.iHAS: {
-				if (isPrimitive(relation.getDataTypeName()))
+				if (isPrimitive(relation.getDataTypeName())) {
 					list
 							.add(currentName + (currentName.equals("") ? "" : "_'")
 									+ relation.getName() + (currentName.equals("") ? "" : "'"));
+					list
+					.add(currentName + (currentName.equals("") ? "" : "_'")
+							+ relation.getName() + (currentName.equals("") ? "" : "'")+"_id");
+					list
+					.add(currentName + (currentName.equals("") ? "" : "_'")
+							+ relation.getName() + (currentName.equals("") ? "" : "'")+"_ns");
+				}
 				else {
 					flattenChildType(relation.getDataTypeName(), central, currentName
 							+ (currentName.equals("") ? "" : "_'") + relation.getName() + (currentName.equals("") ? "" : "'"), list);
@@ -215,10 +229,17 @@ public class MobyParseDatatypeProcessor extends Processor implements java.io.Ser
 			}
 				break;
 			case CentralImpl.iHASA: {
-				if (isPrimitive(relation.getDataTypeName()))
+				if (isPrimitive(relation.getDataTypeName())) {
 					list
 							.add(currentName + (currentName.equals("") ? "" : "_'")
 									+ relation.getName()+ (currentName.equals("") ? "" : "'"));
+					list
+					.add(currentName + (currentName.equals("") ? "" : "_'")
+							+ relation.getName() + (currentName.equals("") ? "" : "'")+"_id");
+					list
+					.add(currentName + (currentName.equals("") ? "" : "_'")
+							+ relation.getName() + (currentName.equals("") ? "" : "'")+"_ns");
+				}
 				else {
 
 					flattenChildType(relation.getDataTypeName(), central, currentName

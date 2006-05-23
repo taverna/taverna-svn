@@ -15,6 +15,8 @@ import org.embl.ebi.escience.scufl.Processor;
 import org.embl.ebi.escience.scufl.OutputPort;
 import org.embl.ebi.escience.scuflworkers.ProcessorTaskWorker;
 import org.jdom.Element;
+import org.jdom.output.Format;
+import org.jdom.output.XMLOutputter;
 
 import uk.ac.soton.itinnovation.taverna.enactor.entities.TaskExecutionException;
 import uk.ac.soton.itinnovation.taverna.enactor.entities.ProcessorTask;
@@ -96,6 +98,24 @@ public class MobyParseDatatypeTask implements ProcessorTaskWorker {
 									// empty
 								}
 								output.put("id", new DataThing(inputs));
+							} else if (outPort.getName().endsWith("_ns")) {
+								ArrayList inputs = new ArrayList();
+								try {
+									processChildNsFromSimples(simples, inputs, outPort.getName());
+								} catch (MobyException me) {
+									// swallow it. most likely the message was
+									// empty
+								}
+								output.put(outPort.getName(), new DataThing(inputs));
+							} else if (outPort.getName().endsWith("_id")) {
+								ArrayList inputs = new ArrayList();
+								try {
+									processChildIdFromSimples(simples, inputs, outPort.getName());
+								} catch (MobyException me) {
+									// swallow it. most likely the message was
+									// empty
+								}
+								output.put(outPort.getName(), new DataThing(inputs));
 							} else {
 								ArrayList inputs = new ArrayList();
 								String outputName = outPort.getName();
@@ -120,6 +140,16 @@ public class MobyParseDatatypeTask implements ProcessorTaskWorker {
 									// empty
 								}
 
+							} else if (outPort.getName().endsWith("_ns")) {
+								try {
+									processChildNsFromSimple(output, inputXML, outPort.getName());
+								} catch (MobyException me) {
+								}
+							} else if (outPort.getName().endsWith("_id")) {
+								try {
+									processChildIdFromSimple(output, inputXML,outPort.getName());
+								} catch (MobyException me) {
+								}
 							} else if (outPort.getName().equals("id")) {
 								try {
 									processIdFromSimple(output, inputXML);
@@ -175,6 +205,28 @@ public class MobyParseDatatypeTask implements ProcessorTaskWorker {
 									else
 										holder.put("namespace", inputs);
 
+								} else if (outPort.getName().endsWith("_ns")) {
+									ArrayList inputs = new ArrayList();
+									try {
+										processChildNsFromSimples(simples, inputs, outPort.getName());
+									} catch (MobyException me) {
+
+									}
+									if (holder.containsKey(outPort.getName()))
+										((ArrayList)holder.get(outPort.getName())).addAll(inputs);
+									else
+										holder.put(outPort.getName(), inputs);
+								}  else if (outPort.getName().endsWith("_id")) {
+									ArrayList inputs = new ArrayList();
+									try {
+										processChildIdFromSimples(simples, inputs, outPort.getName());
+									} catch (MobyException me) {
+
+									}
+									if (holder.containsKey(outPort.getName()))
+										((ArrayList)holder.get(outPort.getName())).addAll(inputs);
+									else
+										holder.put(outPort.getName(), inputs);
 								} else if (outPort.getName().equals("id")) {
 									ArrayList inputs = new ArrayList();
 									try {
@@ -221,6 +273,22 @@ public class MobyParseDatatypeTask implements ProcessorTaskWorker {
 								} else if (outPort.getName().equals("id")) {
 									try {
 										processIdFromSimple(tMap, inputXML);
+									} catch (MobyException me) {
+										// swallow it. most likely the message
+										// was
+										// empty
+									}
+								} else if (outPort.getName().endsWith("_ns")) {
+									try {
+										processChildNsFromSimple(tMap, inputXML, outPort.getName());
+									} catch (MobyException me) {
+										// swallow it. most likely the message
+										// was
+										// empty
+									}
+								} else if (outPort.getName().endsWith("_id")) {
+									try {
+										processChildIdFromSimple(tMap, inputXML, outPort.getName());
 									} catch (MobyException me) {
 										// swallow it. most likely the message
 										// was
@@ -463,5 +531,222 @@ public class MobyParseDatatypeTask implements ProcessorTaskWorker {
 				|| name.equals("DateTime") || name.equals("Boolean"))
 			return true;
 		return false;
+	}
+	private void processChildNsFromSimple(HashMap map, String inputXML, String portName) throws MobyException {
+		String simple = XMLUtilities.getSimple(proc.getArticleNameUsedByService(), proc
+				.getDatatypeName(), inputXML, proc.getRegistryEndpoint());
+		Element simElement = XMLUtilities.getDOMDocument(simple).getRootElement();
+		Element child = null;
+		String[] path = portName.split("_");
+		// expect it to be at least 3 => simple articlename, child relation name, and id | ns
+		if (path.length < 3) {
+			// put empty string
+			map.put(portName, new DataThing(""));
+			return;
+		}
+		if (simElement.getChildren().size() == 0) {
+			// put empty string
+			map.put(portName, new DataThing(""));
+			return;
+		}
+		
+		for (int x = 0; x < simElement.getChildren().size(); x++) {
+			Object o = simElement.getChildren().get(x);
+			if (o instanceof Element) {
+				child = (Element)o;
+				break;
+			}
+		}
+		if (child == null) {
+			map.put(portName, new DataThing(""));
+			return;
+		}
+		
+		// now extract the element we want
+		String match = new XMLOutputter(Format.getPrettyFormat()).outputString(child);
+		for (int x = 1; x < path.length-1; x++) {
+			String currentArtName = path[x];
+			if (currentArtName.startsWith("'"))
+				currentArtName = currentArtName.substring(1);
+			if (currentArtName.endsWith("'"))
+				currentArtName = currentArtName.substring(0, currentArtName.length() - 1);
+			match = XMLUtilities.getDirectChildByArticleName(match, currentArtName);
+			if (match == null) {
+				map.put(portName, new DataThing(""));
+				return;
+			}
+		}
+		// now match contains the xml that has the element that we want
+		child = XMLUtilities.getDOMDocument(match).getRootElement();
+		String ns = "";
+		ns = child.getAttributeValue("namespace");
+		if (ns == null)
+			ns = child.getAttributeValue("namespace", XMLUtilities.MOBY_NS);
+		map.put(portName, new DataThing(ns == null ? "" : ns));
+	}
+	private void processChildNsFromSimples(String[] simples, ArrayList list, String portName) throws MobyException{
+		for (int i = 0; i < simples.length; i++) {
+			String simple = simples[i];
+			Element simElement = XMLUtilities.getDOMDocument(simple).getRootElement();
+			Element child = null;
+			String[] path = portName.split("_");
+			// expect it to be at least 3 => simple articlename, child relation name, and id | ns
+			if (path.length < 3) {
+				// put empty string
+				list.add("");
+				continue;
+			}
+			if (simElement.getChildren().size() == 0) {
+				// put empty string
+				list.add("");
+				continue;
+			}
+			
+			for (int x = 0; x < simElement.getChildren().size(); x++) {
+				Object o = simElement.getChildren().get(x);
+				if (o instanceof Element) {
+					child = (Element)o;
+					break;
+				}
+			}
+			if (child == null) {
+				list.add("");
+				continue;
+			}
+			
+			// now extract the element we want
+			String match = new XMLOutputter(Format.getPrettyFormat()).outputString(child);
+			for (int x = 1; x < path.length-1; x++) {
+				String currentArtName = path[x];
+				if (currentArtName.startsWith("'"))
+					currentArtName = currentArtName.substring(1);
+				if (currentArtName.endsWith("'"))
+					currentArtName = currentArtName.substring(0, currentArtName.length() - 1);
+				match = XMLUtilities.getDirectChildByArticleName(match, currentArtName);
+				if (match == null) {
+					list.add("");
+					continue;
+				}
+			}
+			// now match contains the xml that has the element that we want
+			child = XMLUtilities.getDOMDocument(match).getRootElement();
+			String ns = "";
+			ns = child.getAttributeValue("namespace");
+			if (ns == null)
+				ns = child.getAttributeValue("namespace", XMLUtilities.MOBY_NS);
+			list.add(ns == null ? "" : ns);
+		}
+	}
+	/*
+	 * extracts the id from a child element
+	 */
+	private void processChildIdFromSimple(HashMap map, String inputXML, final String portName) throws MobyException {
+		String simple = XMLUtilities.getSimple(proc.getArticleNameUsedByService(), proc
+				.getDatatypeName(), inputXML, proc.getRegistryEndpoint());
+		Element simElement = XMLUtilities.getDOMDocument(simple).getRootElement();
+		Element child = null;
+		String[] path = portName.split("_");
+		// expect it to be at least 3 => simple articlename, child relation name, and id | ns
+		if (path.length < 3) {
+			// put empty string
+			map.put(portName, new DataThing(""));
+			return;
+		}
+		if (simElement.getChildren().size() == 0) {
+			// put empty string
+			map.put(portName, new DataThing(""));
+			return;
+		}
+		
+		for (int x = 0; x < simElement.getChildren().size(); x++) {
+			Object o = simElement.getChildren().get(x);
+			if (o instanceof Element) {
+				child = (Element)o;
+				break;
+			}
+		}
+		if (child == null) {
+			map.put(portName, new DataThing(""));
+			return;
+		}
+		
+		// now extract the element we want
+		String match = new XMLOutputter(Format.getPrettyFormat()).outputString(child);
+		for (int x = 1; x < path.length-1; x++) {
+			String currentArtName = path[x];
+			if (currentArtName.startsWith("'"))
+				currentArtName = currentArtName.substring(1);
+			if (currentArtName.endsWith("'"))
+				currentArtName = currentArtName.substring(0, currentArtName.length() - 1);
+			match = XMLUtilities.getDirectChildByArticleName(match, currentArtName);
+			if (match == null) {
+				map.put(portName, new DataThing(""));
+				return;
+			}
+		}
+		// now match contains the xml that has the element that we want
+		child = XMLUtilities.getDOMDocument(match).getRootElement();
+		String id = "";
+		id = child.getAttributeValue("id");
+		if (id == null)
+			id = child.getAttributeValue("id", XMLUtilities.MOBY_NS);
+		map.put(portName, new DataThing(id == null ? "" : id));
+	}
+	
+	/*
+	 * extracts the id from a child element
+	 */
+	private void processChildIdFromSimples(String[] simples, ArrayList list, String portName) throws MobyException{
+		for (int i = 0; i < simples.length; i++) {
+			String simple = simples[i];
+			Element simElement = XMLUtilities.getDOMDocument(simple).getRootElement();
+			Element child = null;
+			String[] path = portName.split("_");
+			// expect it to be at least 3 => simple articlename, child relation name, and id | ns
+			if (path.length < 3) {
+				// put empty string
+				list.add("");
+				continue;
+			}
+			if (simElement.getChildren().size() == 0) {
+				// put empty string
+				list.add("");
+				continue;
+			}
+			
+			for (int x = 0; x < simElement.getChildren().size(); x++) {
+				Object o = simElement.getChildren().get(x);
+				if (o instanceof Element) {
+					child = (Element)o;
+					break;
+				}
+			}
+			if (child == null) {
+				list.add("");
+				continue;
+			}
+			
+			// now extract the element we want
+			String match = new XMLOutputter(Format.getPrettyFormat()).outputString(child);
+			for (int x = 1; x < path.length-1; x++) {
+				String currentArtName = path[x];
+				if (currentArtName.startsWith("'"))
+					currentArtName = currentArtName.substring(1);
+				if (currentArtName.endsWith("'"))
+					currentArtName = currentArtName.substring(0, currentArtName.length() - 1);
+				match = XMLUtilities.getDirectChildByArticleName(match, currentArtName);
+				if (match == null) {
+					list.add("");
+					continue;
+				}
+			}
+			// now match contains the xml that has the element that we want
+			child = XMLUtilities.getDOMDocument(match).getRootElement();
+			String id = "";
+			id = child.getAttributeValue("id");
+			if (id == null)
+				id = child.getAttributeValue("id", XMLUtilities.MOBY_NS);
+			list.add(id == null ? "" : id);
+		}
 	}
 }

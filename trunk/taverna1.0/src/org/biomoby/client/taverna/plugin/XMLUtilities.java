@@ -1258,8 +1258,8 @@ public class XMLUtilities {
 
 	/**
 	 * 
-	 * @param element
-	 * @return
+	 * @param element an Element
+	 * @return true if the element represents a full moby message, false otherwise.
 	 * @throws MobyException
 	 */
 	public static boolean isWrapped(Element element) throws MobyException {
@@ -1273,8 +1273,8 @@ public class XMLUtilities {
 
 	/**
 	 * 
-	 * @param xml
-	 * @return
+	 * @param xml a string of xml
+	 * @return true if the xml is a full moby message
 	 * @throws MobyException
 	 */
 	public static boolean isWrapped(String xml) throws MobyException {
@@ -1284,9 +1284,9 @@ public class XMLUtilities {
 
 	/**
 	 * 
-	 * @param element
-	 * @return
-	 * @throws MobyException
+	 * @param element an Element
+	 * @return true if the element contains a moby collection, false otherwise.
+	 * @throws MobyException if xml is invalid
 	 */
 	public static boolean isCollection(Element element) throws MobyException {
 		try {
@@ -1299,15 +1299,21 @@ public class XMLUtilities {
 
 	/**
 	 * 
-	 * @param xml
-	 * @return
-	 * @throws MobyException
+	 * @param xml a string of xml
+	 * @return true if the xml contains a moby collection, false otherwise.
+	 * @throws MobyException if xml is invalid
 	 */
 	public static boolean isCollection(String xml) throws MobyException {
 		Element element = getDOMDocument(xml).getRootElement();
 		return isCollection(element);
 	}
 
+
+	/**
+	 * 
+	 * @param xml a string of xml to check for emptiness
+	 * @return true if the element is empty, false otherwise.
+	 */
 	public static boolean isEmpty(String xml) {
 		try {
 			return isEmpty(getDOMDocument(xml).getRootElement());
@@ -1316,6 +1322,11 @@ public class XMLUtilities {
 		}
 	}
 
+	/**
+	 * 
+	 * @param xml an element to check for emptiness
+	 * @return true if the element is empty, false otherwise.
+	 */
 	public static boolean isEmpty(Element xml) {
 		try {
 			Element e = extractMobyData(xml);
@@ -1407,7 +1418,15 @@ public class XMLUtilities {
 			return null;
 		}
 	}
-	
+
+	/**
+	 * 
+	 * @param xml
+	 *            a full moby message (root element called MOBY) and may be
+	 *            prefixed
+	 * @return the serviceNotes element if it exists, null
+	 *         otherwise.
+	 */
 	public static Element getServiceNotesAsElement(String xml) {
 		try {
 			Element e = getServiceNotes(getDOMDocument(xml).getRootElement());
@@ -1421,5 +1440,51 @@ public class XMLUtilities {
 	 * messages if the document didnt contain any simples, collections, etc then
 	 * why not send return the old message?
 	 */
+
+
+	/**
+	 * 
+	 * @param element the xml element
+	 * @param articleName the name of the child to extract
+	 * @return an element that represents the direct child or null if it wasnt found.
+	 */
+	public static Element getDirectChildByArticleName(Element element, String articleName) {
+		List list = element.getChildren();
+		for (Iterator iter = list.iterator(); iter.hasNext();) {
+			Object object = iter.next();
+			if (object instanceof Element) {
+				Element child = (Element) object;
+				if (child.getAttributeValue("articleName") != null) {
+					if (child.getAttributeValue("articleName").equals(articleName))
+						return child;
+				} else if (child.getAttributeValue("articleName", MOBY_NS) != null) {
+					if (child.getAttributeValue("articleName", MOBY_NS).equals(articleName)) {
+						return child;
+					}
+				}
+			}
+
+		}
+		return null;
+
+	}
+
+	/**
+	 * 
+	 * @param xml the string of xml
+	 * @param articleName the name of the child to extract
+	 * @return an xml string that represents the direct child or null if it wasnt found.
+	 */
+	public static String getDirectChildByArticleName(String xml, String articleName) {
+		try {
+		Element e = getDirectChildByArticleName(getDOMDocument(xml).getRootElement(), articleName);
+		if (e == null)
+			return null;
+		XMLOutputter out = new XMLOutputter(Format.getPrettyFormat());
+		return out.outputString(e);
+		} catch (MobyException me) {
+			return null;
+		}
+	}
 
 }
