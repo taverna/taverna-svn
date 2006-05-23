@@ -139,8 +139,7 @@ public abstract class Port implements Serializable {
 	}
 
 	/**
-	 * Set the syntactic type of the port, only visible within this package by
-	 * default.
+	 * Set the syntactic type of the port
 	 */
 	public void setSyntacticType(String new_type) {
 		if (new_type.equals(this.syntacticType) == false) {
