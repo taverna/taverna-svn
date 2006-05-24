@@ -56,7 +56,7 @@ public abstract class Port implements Serializable {
 		// "myport", while links with ports within a processor are named as
 		// "myproc:myport". By allowing ":" in the name could add an input port
 		// called "myproc:myport" and create havoc.
-		if (name.contains(":")) {
+		if (name.indexOf(":") > -1) {
 			throw new PortCreationException("Illegal port name " + name);			
 		}
 
