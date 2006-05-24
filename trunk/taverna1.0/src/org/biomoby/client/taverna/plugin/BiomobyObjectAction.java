@@ -33,6 +33,7 @@ import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 
 import org.biomoby.client.CentralImpl;
+import org.biomoby.client.taverna.plugin.BiomobyProcessorFactory;
 import org.biomoby.shared.Central;
 import org.biomoby.shared.MobyData;
 import org.biomoby.shared.MobyDataType;
@@ -43,7 +44,12 @@ import org.biomoby.shared.MobyPrimaryDataSimple;
 import org.biomoby.shared.MobyService;
 import org.biomoby.shared.data.MobyDataInstance;
 import org.biomoby.shared.data.MobyDataObject;
+import org.embl.ebi.escience.scufl.DataConstraint;
+import org.embl.ebi.escience.scufl.DataConstraintCreationException;
 import org.embl.ebi.escience.scufl.DuplicateProcessorNameException;
+import org.embl.ebi.escience.scufl.InputPort;
+import org.embl.ebi.escience.scufl.OutputPort;
+import org.embl.ebi.escience.scufl.Port;
 import org.embl.ebi.escience.scufl.Processor;
 import org.embl.ebi.escience.scufl.ProcessorCreationException;
 import org.embl.ebi.escience.scufl.ScuflModel;
@@ -54,10 +60,16 @@ import org.embl.ebi.escience.scuflui.processoractions.AbstractProcessorAction;
 public class BiomobyObjectAction extends AbstractProcessorAction {
 
 	private boolean searchParentTypes = false;
-	
+	private Port outputPort = null;
 	public BiomobyObjectAction(boolean searchParentTypes) {
 		super();
 		this.searchParentTypes = searchParentTypes;
+	}
+	
+	public BiomobyObjectAction(Port outputPort, boolean searchParentTypes) {
+		super();
+		this.searchParentTypes = searchParentTypes;
+		this.outputPort = outputPort;
 	}
 	
 	public BiomobyObjectAction() {
@@ -170,18 +182,15 @@ public class BiomobyObjectAction extends AbstractProcessorAction {
                                     String defaultName = selectedService;
                                     String validName = theproc.getModel()
                                             .getValidProcessorName(defaultName);
+                                    Processor bpf = null;
                                     try {
-                                        new BiomobyProcessorFactory(
+                                        bpf = new BiomobyProcessorFactory(
                                                 ((BiomobyObjectProcessor) theproc)
                                                         .getMobyEndpoint(),
                                                 selectedAuthority,
                                                 selectedService)
                                                 .createProcessor(validName,
                                                         theproc.getModel());
-//                                        theproc.getModel().addProcessor(
-//                                        new BiomobyProcessor(theproc.getModel(),validName,selectedAuthority, selectedService,
-//                                                ((BiomobyObjectProcessor) theproc)
-//                                                        .getMobyEndpoint()));
                                     } catch (ProcessorCreationException pce) {
                                         JOptionPane.showMessageDialog(null,
                                                 "Processor creation exception : \n"
@@ -196,6 +205,21 @@ public class BiomobyObjectAction extends AbstractProcessorAction {
                                                 "Exception!",
                                                 JOptionPane.ERROR_MESSAGE);
                                         return;
+                                    }
+                                    //bpf is not null
+                                    if (outputPort != null) {
+                                    	InputPort inputPorts[] = bpf.getInputPorts();
+                                    	int index = 0;
+                                    	if (inputPorts.length == 2) {
+                                    		if (!inputPorts[1].getName().equals("input"))
+                                    			index = 1;
+                                    	} else
+                                    		return;
+                                    	try {
+                                    	theproc.getModel().addDataConstraint(new DataConstraint(theproc.getModel(), outputPort, inputPorts[index]));
+                                    	} catch (DataConstraintCreationException dcee) {}
+                                    } else {
+                                    	// this action invoked on a datatype
                                     }
                                 }
                             });

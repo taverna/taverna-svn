@@ -444,6 +444,11 @@ public class BiomobyAction extends AbstractProcessorAction {
 										+ selectedObject + " - brief search");
 								item
 										.setIcon(getIcon("org/biomoby/client/ui/graphical/applets/img/toolbarButtonGraphics/general/Information24.gif"));
+								final String potentialCollectionString = path.getParentPath()
+										.getLastPathComponent().toString();
+								final boolean isCollection = potentialCollectionString
+										.indexOf("Collection('") >= 0;
+
 								item.addActionListener(new ActionListener() {
 
 									public void actionPerformed(ActionEvent ae) {
@@ -453,11 +458,44 @@ public class BiomobyAction extends AbstractProcessorAction {
 											String name = selectedObject;
 											if (name.indexOf("(") > 0)
 												name = name.substring(0, name.indexOf("("));
+											String articlename = "";
+											if (isCollection) {
+												articlename = potentialCollectionString
+														.substring(potentialCollectionString
+																.indexOf("('") + 2,
+																potentialCollectionString
+																		.lastIndexOf("'"));
+											} else {
+												articlename = selectedObject.substring(
+														selectedObject.indexOf("'") + 1,
+														selectedObject.lastIndexOf("'"));
+											}
+
 											BiomobyObjectProcessor bop = new BiomobyObjectProcessor(
 													scuflModel, scuflModel
 															.getValidProcessorName(name),
 													new MobyDataType(name), endpoint);
-											BiomobyObjectAction boa = new BiomobyObjectAction(false);
+											Port theServiceport = null;
+
+											try {
+											if (isCollection)
+												theServiceport = theproc
+														.locatePort(
+																name
+																		+ "(Collection - '"
+																		+ (articlename
+																				.equals("") ? "MobyCollection"
+																				: articlename)
+																		+ "')", false);
+											else
+												theServiceport = theproc.locatePort(name
+														+ "(" + articlename + ")", false);
+											} catch (Exception except) {}
+											BiomobyObjectAction boa = null;
+											if (theServiceport == null)
+												boa = new BiomobyObjectAction(false);
+											else
+												boa = new BiomobyObjectAction(theServiceport, false);
 											Component c = boa.getComponent(bop);
 											Dimension loc = BiomobyAction.this.getFrameLocation();
 											Dimension size = BiomobyAction.this.getFrameSize();
@@ -484,11 +522,44 @@ public class BiomobyAction extends AbstractProcessorAction {
 											String name = selectedObject;
 											if (name.indexOf("(") > 0)
 												name = name.substring(0, name.indexOf("("));
+											String articlename = "";
+											if (isCollection) {
+												articlename = potentialCollectionString
+														.substring(potentialCollectionString
+																.indexOf("('") + 2,
+																potentialCollectionString
+																		.lastIndexOf("'"));
+											} else {
+												articlename = selectedObject.substring(
+														selectedObject.indexOf("'") + 1,
+														selectedObject.lastIndexOf("'"));
+											}
 											BiomobyObjectProcessor bop = new BiomobyObjectProcessor(
 													scuflModel, scuflModel
 															.getValidProcessorName(name),
 													new MobyDataType(name), endpoint);
-											BiomobyObjectAction boa = new BiomobyObjectAction(true);
+											Port theServiceport = null;
+											try {
+											if (isCollection)
+												theServiceport = theproc
+														.locatePort(
+																name
+																		+ "(Collection - '"
+																		+ (articlename
+																				.equals("") ? "MobyCollection"
+																				: articlename)
+																		+ "')", false);
+											else
+												theServiceport = theproc.locatePort(name
+														+ "(" + articlename + ")", false);
+											} catch (Exception except) {}
+											BiomobyObjectAction boa = null;
+											
+											if (theServiceport == null)
+												boa = new BiomobyObjectAction(true);
+											else
+												boa = new BiomobyObjectAction(theServiceport, true);
+											
 											Component c = boa.getComponent(bop);
 											Dimension loc = BiomobyAction.this.getFrameLocation();
 											Dimension size = BiomobyAction.this.getFrameSize();
@@ -504,10 +575,12 @@ public class BiomobyAction extends AbstractProcessorAction {
 
 								// string may be needed to extract the
 								// collection article name
-								final String potentialCollectionString = path.getParentPath()
-										.getLastPathComponent().toString();
-								final boolean isCollection = potentialCollectionString
-										.indexOf("Collection('") >= 0;
+								// final String potentialCollectionString =
+								// path.getParentPath()
+								// .getLastPathComponent().toString();
+								// final boolean isCollection =
+								// potentialCollectionString
+								// .indexOf("Collection('") >= 0;
 
 								JMenuItem item3 = new JMenuItem("Add parser for " + selectedObject
 										+ " to the workflow");
@@ -562,11 +635,13 @@ public class BiomobyAction extends AbstractProcessorAction {
 													Port theServiceport = null;
 													if (isCollection)
 														theServiceport = theproc
-																.locatePort(name
-																		+ "(Collection - '"
-																		+ (articlename.equals("") ? "MobyCollection"
-																				: articlename)
-																		+ "')", false);
+																.locatePort(
+																		name
+																				+ "(Collection - '"
+																				+ (articlename
+																						.equals("") ? "MobyCollection"
+																						: articlename)
+																				+ "')", false);
 													else
 														theServiceport = theproc.locatePort(name
 																+ "(" + articlename + ")", false);
@@ -574,8 +649,8 @@ public class BiomobyAction extends AbstractProcessorAction {
 														return;
 													scuflModel
 															.addDataConstraint(new DataConstraint(
-																	scuflModel,
-																	theServiceport,parser.getInputPorts()[0]));
+																	scuflModel, theServiceport,
+																	parser.getInputPorts()[0]));
 												} else {
 													System.out.println("Null model");
 												}
@@ -586,7 +661,7 @@ public class BiomobyAction extends AbstractProcessorAction {
 												// e.printStackTrace();
 												return;
 											}
-											
+
 										} catch (Exception e) {
 											e.printStackTrace();
 										}
