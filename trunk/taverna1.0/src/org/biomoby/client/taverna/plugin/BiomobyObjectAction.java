@@ -219,7 +219,16 @@ public class BiomobyObjectAction extends AbstractProcessorAction {
                                     	theproc.getModel().addDataConstraint(new DataConstraint(theproc.getModel(), outputPort, inputPorts[index]));
                                     	} catch (DataConstraintCreationException dcee) {}
                                     } else {
-                                    	// this action invoked on a datatype
+                                    	InputPort inputPorts[] = bpf.getInputPorts();
+                                    	int index = 0;
+                                    	if (inputPorts.length == 2) {
+                                    		if (!inputPorts[1].getName().equals("input"))
+                                    			index = 1;
+                                    	} else
+                                    		return;
+                                    	try {
+                                    	theproc.getModel().addDataConstraint(new DataConstraint(theproc.getModel(), theproc.getOutputPorts()[0], inputPorts[index]));
+                                    	} catch (DataConstraintCreationException dcee) {}
                                     }
                                 }
                             });
