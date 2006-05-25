@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: TypeDescriptor.java,v $
- * Revision           $Revision: 1.5 $
+ * Revision           $Revision: 1.6 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-05-19 11:51:06 $
+ * Last modified on   $Date: 2006-05-25 08:20:23 $
  *               by   $Author: sowen70 $
  * Created on March-2006
  *****************************************************************/
@@ -50,15 +50,14 @@ public class TypeDescriptor {
 
 	private boolean unbounded;
 
-	QName qname;
+	private String namespaceURI="";	
 
-	public String getNamespaceURI()
-	{
-		return qname.getNamespaceURI();
+	public String getNamespaceURI() {
+		return namespaceURI;
 	}
 
-	public void setQName(QName qname) {
-		this.qname = qname;		
+	public void setNamespaceURI(String namespaceURI) {
+		this.namespaceURI = namespaceURI;
 	}
 
 	public String getName() {
@@ -150,5 +149,5 @@ public class TypeDescriptor {
 				types[i] = org.w3c.dom.Element.class;
 			}
 		}
-	}
+	}		
 }

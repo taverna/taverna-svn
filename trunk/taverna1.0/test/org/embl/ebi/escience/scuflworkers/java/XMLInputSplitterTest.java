@@ -116,7 +116,8 @@ public class XMLInputSplitterTest extends TestCase {
 	
 	private String eInfoXML()
 	{
-		return "<s:extensions xmlns:s=\"http://org.embl.ebi.escience/xscufl/0.1alpha\"><s:complextype optional=\"false\" unbounded=\"false\" typename=\"eSpellRequest\" name=\"parameters\"><s:elements><s:basetype optional=\"true\" unbounded=\"false\" typename=\"string\" name=\"db\" /><s:basetype optional=\"true\" unbounded=\"false\" typename=\"string\" name=\"term\" /><s:basetype optional=\"true\" unbounded=\"false\" typename=\"string\" name=\"tool\" /><s:basetype optional=\"true\" unbounded=\"false\" typename=\"string\" name=\"email\" /></s:elements></s:complextype></s:extensions>";
+		return "<s:extensions xmlns:s=\"http://org.embl.ebi.escience/xscufl/0.1alpha\"><s:complextype optional=\"false\" unbounded=\"false\" typename=\"eSpellRequest\" name=\"parameters\" namespaceURI=\"http://www.ncbi.nlm.nih.gov/soap/eutils/espell\"><s:elements><s:basetype optional=\"true\" unbounded=\"false\" typename=\"string\" name=\"db\" namespaceURI=\"http://www.w3.org/2001/XMLSchema\" /><s:basetype optional=\"true\" unbounded=\"false\" typename=\"string\" name=\"term\" namespaceURI=\"http://www.w3.org/2001/XMLSchema\" /><s:basetype optional=\"true\" unbounded=\"false\" typename=\"string\" name=\"tool\" namespaceURI=\"http://www.w3.org/2001/XMLSchema\" /><s:basetype optional=\"true\" unbounded=\"false\" typename=\"string\" name=\"email\" namespaceURI=\"http://www.w3.org/2001/XMLSchema\" /></s:elements></s:complextype></s:extensions>";
+			   
 	}
 
 	public void testArrayTypes() throws Exception {

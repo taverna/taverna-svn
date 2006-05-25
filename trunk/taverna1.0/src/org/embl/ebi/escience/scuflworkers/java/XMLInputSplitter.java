@@ -7,6 +7,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.log4j.Logger;
 import org.embl.ebi.escience.baclava.DataThing;
 import org.embl.ebi.escience.baclava.factory.DataThingFactory;
 import org.embl.ebi.escience.scufl.InputPort;
@@ -33,6 +34,9 @@ import uk.ac.soton.itinnovation.taverna.enactor.entities.TaskExecutionException;
  */
 
 public class XMLInputSplitter implements LocalWorker, XMLExtensible {
+	
+	private static Logger logger = Logger.getLogger(XMLInputSplitter.class);
+	
 	private String[] inputNames = {};
 
 	private String[] inputTypes = {};
@@ -157,7 +161,7 @@ public class XMLInputSplitter implements LocalWorker, XMLExtensible {
 					}
 				}
 			} catch (Exception e) {
-				e.printStackTrace();
+				logger.error("Exception thrown splitting inputs",e);
 			}
 		} else if (portToSplit.getProcessor() instanceof LocalServiceProcessor) {
 			LocalServiceProcessor processor = (LocalServiceProcessor) portToSplit.getProcessor();

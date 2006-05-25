@@ -489,7 +489,7 @@ public class WSDLParser {
 
 		result.setElementType(constructType(mapItem));
 
-		result.setQName(type.getQName());
+		result.setNamespaceURI(type.getQName().getNamespaceURI());
 		result.setType(type.getQName().getLocalPart());
 
 		return result;
@@ -511,7 +511,7 @@ public class WSDLParser {
 			cachedComplexTypes.put(type.getQName().toString(), result);
 
 			result.setType(type.getQName().getLocalPart());
-			result.setQName(type.getQName());
+			result.setNamespaceURI(type.getQName().getNamespaceURI());
 			List containedElements = type.getRefType().getContainedElements();
 			if (containedElements != null) {
 				result.getElements().addAll(constructElements(containedElements));
@@ -534,7 +534,7 @@ public class WSDLParser {
 			if (containedElements != null) {
 				result.getElements().addAll(constructElements(containedElements));
 			}
-			result.setQName(type.getQName());
+			result.setNamespaceURI(type.getQName().getNamespaceURI());
 		}
 		return result;
 	}
@@ -558,7 +558,7 @@ public class WSDLParser {
 		ArrayTypeDescriptor result = new ArrayTypeDescriptor();
 		result.setElementType(constructType(type.getRefType()));
 		result.setType(type.getQName().getLocalPart());
-		result.setQName(type.getQName());
+		result.setNamespaceURI(type.getQName().getNamespaceURI());
 
 		return result;
 	}
@@ -566,7 +566,7 @@ public class WSDLParser {
 	private BaseTypeDescriptor constructBaseType(TypeEntry type) {
 		BaseTypeDescriptor result = new BaseTypeDescriptor();
 		result.setType(type.getQName().getLocalPart());
-		result.setQName(type.getQName());
+		result.setNamespaceURI(type.getQName().getNamespaceURI());
 		return result;
 	}
 
@@ -578,7 +578,7 @@ public class WSDLParser {
 		} else {
 			result = new BaseTypeDescriptor();
 			result.setType(type.getRefType().getQName().getLocalPart());
-			result.setQName(type.getRefType().getQName());
+			result.setNamespaceURI(type.getRefType().getQName().getNamespaceURI());
 		}
 		return result;
 	}
