@@ -246,7 +246,7 @@ public class ScuflContextMenuFactory {
 	private static void addXMLOutputSplitterMenuItem(final ScuflModel model, final JPopupMenu theMenu,
 			final OutputPort outputPort) {
 		theMenu.addSeparator();
-		JMenuItem xmlHelperItem = new JMenuItem("Add XML splitter.");
+		JMenuItem xmlHelperItem = new JMenuItem("Add XML splitter");
 		JMenuItem xmlHelperItemWithName = new JMenuItem("Add XML splitter with name");
 		theMenu.add(xmlHelperItem);
 		theMenu.add(xmlHelperItemWithName);
@@ -292,7 +292,7 @@ public class ScuflContextMenuFactory {
 	private static void addXMLInputSplitterMenuItem(final ScuflModel model, final JPopupMenu theMenu,
 			final InputPort inputPort) {
 		theMenu.addSeparator();
-		JMenuItem xmlHelperItem = new JMenuItem("Add XML splitter.");
+		JMenuItem xmlHelperItem = new JMenuItem("Add XML splitter");
 		JMenuItem xmlHelperItemWithName = new JMenuItem("Add XML splitter with name");
 		theMenu.add(xmlHelperItem);
 		theMenu.add(xmlHelperItemWithName);
