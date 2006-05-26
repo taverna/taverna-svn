@@ -2,15 +2,15 @@
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>uk.org.mygrid</groupId>
-  <artifactId>mygrid</artifactId>
+  <artifactId>taverna</artifactId>
   <version>1.3-SNAPSHOT</version>
   <packaging>pom</packaging>
-    <name>Taverna</name>
+  <name>Taverna</name>
   <modules>
     <module>.</module>
     <module>contrib</module>
+    <module>launcher</module>
   </modules>
-  <url>http://www.mygrid.org.uk</url>
   <issueManagement>
     <system>sourceforge</system>
     <url>https://sourceforge.net/projects/mygrid-uk</url>
@@ -41,13 +41,65 @@
     </developer>
   </developers>
   <scm>
-    <!--<connection>scm:cvs:pserver:anonymous@cvs.sourceforge.net:/cvsroot/taverna:taverna1.0</connection>-->
-    <connection>scm:cvs:ext:${sfusername}@cvs.sourceforge.net:/cvsroot/taverna:taverna1.0</connection>
-    <developerConnection>scm:cvs:ext:${sfusername}@cvs.sourceforge.net:/cvsroot/taverna:taverna1.0</developerConnection>
-    <url>http://cvs.sourceforge.net/viewcvs.py/taverna/taverna1.0/</url>
+    <connection>scm:cvs:pserver:anonymous@taverna.cvs.sourceforge.net:/cvsroot/taverna:taverna1.0</connection>
+    <url>http://taverna.cvs.sourceforge.net/taverna/taverna1.0/</url>
   </scm>
   <organization>
     <name>University of Manchester</name>
     <url>http://www.manchester.ac.uk</url>
   </organization>
+  <build>
+    <plugins>
+      <plugin>
+        <artifactId>maven-assembly-plugin</artifactId>
+        <configuration>
+          <descriptor>src/main/assembly/assembly.xml</descriptor>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+  <!-- Ready for when the myGrid repository is set up
+  <repositories>
+    <repository>
+      <id>mygrid-repository</id>
+      <name>myGrid Repository</name>
+      <url>http://www.mygrid.org.uk/maven/repository</url>
+    </repository>
+  </repositories>
+  -->
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>uk.org.mygrid</groupId>
+        <artifactId>taverna-workbench</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+     </dependencies>
+   </dependencyManagement>
+  <reporting>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-project-info-reports-plugin</artifactId>
+        <reportSets>
+          <reportSet>
+            <reports>
+              <!--<report>dependencies</report>-->
+              <report>project-team</report>
+              <report>mailing-list</report>
+              <report>cim</report>
+              <report>issue-tracking</report>
+              <report>license</report>
+              <report>scm</report>
+            </reports>
+          </reportSet>
+        </reportSets>
+      </plugin>
+      <plugin>
+         <groupId>org.codehaus.mojo</groupId>
+         <artifactId>taglist-maven-plugin</artifactId>
+         <version>2.0-beta-1</version>
+      </plugin>
+   </plugins>
+  </reporting>
 </project>
