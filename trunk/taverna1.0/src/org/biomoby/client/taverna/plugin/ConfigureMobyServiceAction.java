@@ -69,20 +69,13 @@ public class ConfigureMobyServiceAction extends AbstractProcessorAction {
 	 * @see org.embl.ebi.escience.scuflui.processoractions.AbstractProcessorAction#getComponent(org.embl.ebi.escience.scufl.Processor)
 	 */
 
-	private BiomobyProcessor bp = null;
-
-	private ParametersTable table = null;
-
 	public JComponent getComponent(Processor processor) {
 		// variables i need
-		if (this.bp == null)
-			this.bp = (BiomobyProcessor) processor;
-		if (table != null)
-			return this.table.scrollable();
+		BiomobyProcessor bp = (BiomobyProcessor) processor;
+
 		String serviceName = bp.getMobyService().getName();
 		String description = bp.getDescription();
-		this.table = bp.getParameterTable();
-		return this.table.scrollable();
+		return bp.getParameterTable().scrollable();
 	}
 
 	public void frameClosing() {
