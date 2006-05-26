@@ -25,10 +25,10 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: BiomartConfigPanel.java,v $
- * Revision           $Revision: 1.2 $
+ * Revision           $Revision: 1.3 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-05-22 13:56:28 $
- *               by   $Author: davidwithers $
+ * Last modified on   $Date: 2006-05-26 08:46:22 $
+ *               by   $Author: stain $
  * Created on 17-Mar-2006
  *****************************************************************/
 package org.embl.ebi.escience.scuflworkers.biomart;
@@ -156,7 +156,11 @@ public class BiomartConfigPanel extends JPanel implements ScuflUIComponent {
 	}
 
 	public String getName() {
-		return biomartProcessor.getQuery().getMartDataset().getDisplayName();
+		try {
+			return biomartProcessor.getQuery().getMartDataset().getDisplayName();
+		} catch (NullPointerException ex) {
+			return "Unconfigured Biomart processor";
+		}
 	}
 
 }
