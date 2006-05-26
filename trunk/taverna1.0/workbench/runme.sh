@@ -26,7 +26,8 @@ cd "$saveddir"
 TAVERNA_HOME=`cd "$TAVERNA_HOME" && pwd`
 
 
-CLASSP=$TAVERNA_HOME/resources:$TAVERNA_HOME/conf:$TAVERNA_HOME/taverna-1.3.2-RC1-launcher.jar
+LAUNCHER=$(echo $TAVERNA_HOME/taverna-*-launcher.jar)
+CLASSP=$TAVERNA_HOME/resources:$TAVERNA_HOME/conf:$LAUNCHER
 
 for i in $TAVERNA_HOME/libext/*.jar
 do
