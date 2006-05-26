@@ -28,13 +28,13 @@ public class UIComponentRegistry {
 	public static synchronized UIComponentRegistry instance() {
 		if (instance == null) {
 			instance = new UIComponentRegistry();
-			instance.loadInstances(WorkbenchLauncher.LOADER);
+			instance.loadInstances();
 		}
 		return instance;
 	}
 
 	public static void forceReload() {
-		instance.loadInstances(WorkbenchLauncher.LOADER);
+		instance.loadInstances();
 	}
 
 	public UIComponentRegistry() {
@@ -42,7 +42,8 @@ public class UIComponentRegistry {
 		icons = new HashMap();
 	}
 
-	public void loadInstances(ClassLoader classLoader) {
+	public void loadInstances() {
+		ClassLoader classLoader = UIComponentRegistry.class.getClassLoader();
 		log.info("Loading all UI components");
 		SPInterface spiIF = new SPInterface(ScuflUIComponent.class);
 		ClassLoaders loaders = new ClassLoaders();
