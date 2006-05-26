@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: XMLOutputSplitter.java,v $
- * Revision           $Revision: 1.2 $
+ * Revision           $Revision: 1.3 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-05-25 08:20:23 $
+ * Last modified on   $Date: 2006-05-26 08:53:50 $
  *               by   $Author: sowen70 $
  * Created on 16-May-2006
  *****************************************************************/
@@ -61,15 +61,16 @@ import org.jdom.output.XMLOutputter;
 import uk.ac.soton.itinnovation.taverna.enactor.entities.TaskExecutionException;
 
 /**
- * A LocalWorker that facilitates in extracting information from the inner elements of an XML output
- * from a SOAP based service that returns a complex type. Information stored within deeper elements can
- * be retreived by adding additional XMLOutputSplitters.
+ * A LocalWorker that facilitates in extracting information from the inner
+ * elements of an XML output from a SOAP based service that returns a complex
+ * type. Information stored within deeper elements can be retreived by adding
+ * additional XMLOutputSplitters.
  * 
  * @author sowen
- *
+ * 
  */
 public class XMLOutputSplitter implements LocalWorker, XMLExtensible {
-	
+
 	private static Logger logger = Logger.getLogger(XMLInputSplitter.class);
 
 	private String[] inputNames = { "input" };
@@ -103,6 +104,18 @@ public class XMLOutputSplitter implements LocalWorker, XMLExtensible {
 	}
 
 	/**
+	 * Returns true if the given port maps to a complex type whose data
+	 * structure contains cyclic references
+	 * 
+	 * @param port
+	 * @return
+	 */
+	public boolean doesTypeContainCyclicReferences(OutputPort port) {
+		TypeDescriptor td = getTypeDescriptor(port);
+		return TypeDescriptor.isCyclic(td);
+	}
+
+	/**
 	 * Determines whether the given output port supports being splitted
 	 * 
 	 * @param input
@@ -125,46 +138,55 @@ public class XMLOutputSplitter implements LocalWorker, XMLExtensible {
 	}
 
 	/**
-	 * Sets up the outputs for the worker based on the type descriptions of the OutputPort provided.
+	 * Sets up the outputs for the worker based on the type descriptions of the
+	 * OutputPort provided.
+	 * 
 	 * @param portToSplit
 	 */
 	public void setUpOutputs(OutputPort portToSplit) {
-		if (portToSplit.getProcessor() instanceof WSDLBasedProcessor) {
-			WSDLBasedProcessor proc = (WSDLBasedProcessor) portToSplit.getProcessor();
-			WSDLParser parser = proc.getParser();
-			try {
-				List outputs = parser.getOperationOutputParameters(proc.getOperationName());
-				for (Iterator it = outputs.iterator(); it.hasNext();) {
-					TypeDescriptor desc = (TypeDescriptor) it.next();
-					if (desc.getName().equalsIgnoreCase(portToSplit.getName())) {
-						typeDescriptor = desc;
-						break;
-					}
-				}
-			} catch (Exception e) {
-				logger.error("Exception thrown splitting outputs",e);
-			}
-		} else if (portToSplit.getProcessor() instanceof LocalServiceProcessor) {
-			LocalServiceProcessor processor = (LocalServiceProcessor) portToSplit.getProcessor();
-			if (processor.getWorker() instanceof XMLOutputSplitter) {
-				XMLOutputSplitter splitter = (XMLOutputSplitter) processor.getWorker();
-				TypeDescriptor workerDesc = splitter.typeDescriptor;
-				if (workerDesc instanceof ComplexTypeDescriptor) {
-					for (Iterator iterator = ((ComplexTypeDescriptor) workerDesc).getElements().iterator(); iterator
-							.hasNext();) {
-						TypeDescriptor desc = (TypeDescriptor) iterator.next();
-						if (desc.getName().equals(portToSplit.getName())) {
+		TypeDescriptor typeDescriptor = getTypeDescriptor(portToSplit);
+		if (typeDescriptor != null)
+			defineFromTypeDescriptor();
+	}
+
+	private TypeDescriptor getTypeDescriptor(OutputPort portToSplit) {
+		if (typeDescriptor == null) {
+			if (portToSplit.getProcessor() instanceof WSDLBasedProcessor) {
+				WSDLBasedProcessor proc = (WSDLBasedProcessor) portToSplit.getProcessor();
+				WSDLParser parser = proc.getParser();
+				try {
+					List outputs = parser.getOperationOutputParameters(proc.getOperationName());
+					for (Iterator it = outputs.iterator(); it.hasNext();) {
+						TypeDescriptor desc = (TypeDescriptor) it.next();
+						if (desc.getName().equalsIgnoreCase(portToSplit.getName())) {
 							typeDescriptor = desc;
 							break;
 						}
 					}
-				} else if (workerDesc instanceof ArrayTypeDescriptor) {
-					typeDescriptor = ((ArrayTypeDescriptor) workerDesc).getElementType();
+				} catch (Exception e) {
+					logger.error("Exception thrown splitting outputs", e);
+				}
+			} else if (portToSplit.getProcessor() instanceof LocalServiceProcessor) {
+				LocalServiceProcessor processor = (LocalServiceProcessor) portToSplit.getProcessor();
+				if (processor.getWorker() instanceof XMLOutputSplitter) {
+					XMLOutputSplitter splitter = (XMLOutputSplitter) processor.getWorker();
+					TypeDescriptor workerDesc = splitter.typeDescriptor;
+					if (workerDesc instanceof ComplexTypeDescriptor) {
+						for (Iterator iterator = ((ComplexTypeDescriptor) workerDesc).getElements().iterator(); iterator
+								.hasNext();) {
+							TypeDescriptor desc = (TypeDescriptor) iterator.next();
+							if (desc.getName().equals(portToSplit.getName())) {
+								typeDescriptor = desc;
+								break;
+							}
+						}
+					} else if (workerDesc instanceof ArrayTypeDescriptor) {
+						typeDescriptor = ((ArrayTypeDescriptor) workerDesc).getElementType();
+					}
 				}
 			}
 		}
-		if (typeDescriptor != null)
-			defineFromTypeDescriptor();
+		return typeDescriptor;
 	}
 
 	private void defineFromTypeDescriptor() {
@@ -206,14 +228,16 @@ public class XMLOutputSplitter implements LocalWorker, XMLExtensible {
 	public Element provideXML() {
 		return XMLSplitterSerialisationHelper.typeDescriptorToExtensionXML(typeDescriptor);
 	}
-	
+
 	/**
-	 * Takes an XML input, and peels away the first layer and populates the outputs
-	 * with the children of this layer. If a child holds a primitive value then the output
-	 * for this field is simply populated, for complex types the xml is passed forward to that
-	 * output. For arrays, an ArrayList is populated.
-	 * Outputs that are not present in the incoming XML are either populated with an empty text value,
-	 * or an empty XML element for the output name if it is a complex type. Arrays are populated as an empty array.
+	 * Takes an XML input, and peels away the first layer and populates the
+	 * outputs with the children of this layer. If a child holds a primitive
+	 * value then the output for this field is simply populated, for complex
+	 * types the xml is passed forward to that output. For arrays, an ArrayList
+	 * is populated. Outputs that are not present in the incoming XML are either
+	 * populated with an empty text value, or an empty XML element for the
+	 * output name if it is a complex type. Arrays are populated as an empty
+	 * array.
 	 */
 	public Map execute(Map inputMap) throws TaskExecutionException {
 		DataThing inputThing = (DataThing) inputMap.get(inputNames[0]);
@@ -238,12 +262,9 @@ public class XMLOutputSplitter implements LocalWorker, XMLExtensible {
 					if (result.get(outputNames[i]) == null) {
 						if (outputTypes[i].equals("'text/xml'")) {
 							result.put(outputNames[i], new DataThing("<" + outputNames[i] + " />"));
-						}
-						else if (outputTypes[i].startsWith("l('"))
-						{
+						} else if (outputTypes[i].startsWith("l('")) {
 							result.put(outputNames[i], DataThingFactory.bake(new ArrayList()));
-						}
-						else {
+						} else {
 							result.put(outputNames[i], new DataThing(""));
 						}
 

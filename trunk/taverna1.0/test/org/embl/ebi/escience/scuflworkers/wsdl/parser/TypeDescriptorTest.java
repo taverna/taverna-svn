@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: TypeDescriptorTest.java,v $
- * Revision           $Revision: 1.2 $
+ * Revision           $Revision: 1.3 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-05-19 11:51:06 $
+ * Last modified on   $Date: 2006-05-26 08:53:50 $
  *               by   $Author: sowen70 $
  * Created on 17-May-2006
  *****************************************************************/
@@ -36,83 +36,138 @@ package org.embl.ebi.escience.scuflworkers.wsdl.parser;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.xml.namespace.QName;
-
 import junit.framework.TestCase;
 
 public class TypeDescriptorTest extends TestCase {
 
-	//array of strings
-	public void testRetrieveSignitureForArrayDescriptor()
-	{
+	// array of strings
+	public void testRetrieveSignitureForArrayDescriptor() {
 		ArrayTypeDescriptor desc = new ArrayTypeDescriptor();
 		desc.setName("AnArray");
 		desc.setType("arrayofstring");
-		
-		BaseTypeDescriptor base=new BaseTypeDescriptor();
+
+		BaseTypeDescriptor base = new BaseTypeDescriptor();
 		base.setName("");
 		base.setType("string");
-		
+
 		desc.setElementType(base);
-		
-		String [] names = new String[1];
-		Class [] types = new Class[1];
-		
+
+		String[] names = new String[1];
+		Class[] types = new Class[1];
+
 		List params = new ArrayList();
 		params.add(desc);
-		TypeDescriptor.retrieveSignature(params,names,types);
-		
-		assertEquals("AnArray",names[0]);
-		assertEquals(String[].class,types[0]);		
-	}	
-	
-	//	array of strings, but type for array is defined as string
-	// (which is logically warped, but some wsdl's describe their string arrays this way).
-	public void testRetrieveSignitureForArrayDescriptor3()
-	{
+		TypeDescriptor.retrieveSignature(params, names, types);
+
+		assertEquals("AnArray", names[0]);
+		assertEquals(String[].class, types[0]);
+	}
+
+	// array of strings, but type for array is defined as string
+	// (which is logically warped, but some wsdl's describe their string arrays
+	// this way).
+	public void testRetrieveSignitureForArrayDescriptor3() {
 		ArrayTypeDescriptor desc = new ArrayTypeDescriptor();
 		desc.setName("AnArray");
 		desc.setType("string");
-		
-		BaseTypeDescriptor base=new BaseTypeDescriptor();
+
+		BaseTypeDescriptor base = new BaseTypeDescriptor();
 		base.setName("");
 		base.setType("string");
-		
+
 		desc.setElementType(base);
-		
-		String [] names = new String[1];
-		Class [] types = new Class[1];
-		
+
+		String[] names = new String[1];
+		Class[] types = new Class[1];
+
 		List params = new ArrayList();
 		params.add(desc);
-		TypeDescriptor.retrieveSignature(params,names,types);
-		
-		assertEquals("AnArray",names[0]);
-		assertEquals(String[].class,types[0]);		
+		TypeDescriptor.retrieveSignature(params, names, types);
+
+		assertEquals("AnArray", names[0]);
+		assertEquals(String[].class, types[0]);
 	}
-	
-	//array of complex types
-	public void testRetrieveSignitureForArrayDescriptor2()
-	{
+
+	// array of complex types
+	public void testRetrieveSignitureForArrayDescriptor2() {
 		ArrayTypeDescriptor desc = new ArrayTypeDescriptor();
 		desc.setName("AnArray");
 		desc.setType("complextype");
-		
-		ComplexTypeDescriptor complex=new ComplexTypeDescriptor();
+
+		ComplexTypeDescriptor complex = new ComplexTypeDescriptor();
 		complex.setName("complex");
 		complex.setType("complextype");
-		
+
 		desc.setElementType(complex);
-		
-		String [] names = new String[1];
-		Class [] types = new Class[1];
-		
+
+		String[] names = new String[1];
+		Class[] types = new Class[1];
+
 		List params = new ArrayList();
 		params.add(desc);
-		TypeDescriptor.retrieveSignature(params,names,types);
-		
-		assertEquals("AnArray",names[0]);
-		assertEquals(org.w3c.dom.Element.class,types[0]);		
+		TypeDescriptor.retrieveSignature(params, names, types);
+
+		assertEquals("AnArray", names[0]);
+		assertEquals(org.w3c.dom.Element.class, types[0]);
 	}
-	
+
+	public void testForCyclicTrue() {
+		ComplexTypeDescriptor a = new ComplexTypeDescriptor();
+		a.setName("a");
+		a.setType("outertype");
+
+		ComplexTypeDescriptor b = new ComplexTypeDescriptor();
+		b.setName("b");
+		b.setType("middletype");
+
+		ComplexTypeDescriptor c = new ComplexTypeDescriptor();
+		c.setName("c");
+		c.setType("innertype");
+
+		a.getElements().add(b);
+		b.getElements().add(c);
+		c.getElements().add(a);
+
+		assertTrue("should be identified as cyclic", TypeDescriptor.isCyclic(a));
+	}
+
+	public void testForCyclicTrueWithArray() {
+		ComplexTypeDescriptor a = new ComplexTypeDescriptor();
+		a.setName("a");
+		a.setType("outertype");
+
+		ArrayTypeDescriptor b = new ArrayTypeDescriptor();
+		b.setName("b");
+		b.setType("arraytype");
+
+		ComplexTypeDescriptor c = new ComplexTypeDescriptor();
+		c.setName("c");
+		c.setType("innertype");
+
+		a.getElements().add(b);
+		b.setElementType(c);
+		c.getElements().add(a);
+
+		assertTrue("should be identified as cyclic", TypeDescriptor.isCyclic(a));
+	}
+
+	public void testForCyclicFalse() {
+		ComplexTypeDescriptor a = new ComplexTypeDescriptor();
+		a.setName("a");
+		a.setType("person");
+
+		ComplexTypeDescriptor b = new ComplexTypeDescriptor();
+		b.setName("b");
+		b.setType("name");
+
+		ComplexTypeDescriptor c = new ComplexTypeDescriptor();
+		c.setName("c");
+		c.setType("age");
+
+		a.getElements().add(b);
+		a.getElements().add(c);
+
+		assertFalse("should be not identified as cyclic", TypeDescriptor.isCyclic(a));
+	}
+
 }

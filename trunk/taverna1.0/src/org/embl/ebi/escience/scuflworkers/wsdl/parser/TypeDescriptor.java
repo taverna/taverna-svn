@@ -25,14 +25,16 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: TypeDescriptor.java,v $
- * Revision           $Revision: 1.6 $
+ * Revision           $Revision: 1.7 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-05-25 08:20:23 $
+ * Last modified on   $Date: 2006-05-26 08:53:50 $
  *               by   $Author: sowen70 $
  * Created on March-2006
  *****************************************************************/
 package org.embl.ebi.escience.scuflworkers.wsdl.parser;
 
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import javax.xml.namespace.QName;
@@ -50,14 +52,22 @@ public class TypeDescriptor {
 
 	private boolean unbounded;
 
-	private String namespaceURI="";	
+	private QName qname;
 
-	public String getNamespaceURI() {
-		return namespaceURI;
+	public QName getQname() {
+		if (qname != null)
+			return qname;
+		else {
+			return new QName("{}" + type);
+		}
 	}
 
-	public void setNamespaceURI(String namespaceURI) {
-		this.namespaceURI = namespaceURI;
+	public void setQname(QName qname) {
+		this.qname = qname;
+	}
+
+	public String getNamespaceURI() {
+		return getQname().getNamespaceURI();
 	}
 
 	public String getName() {
@@ -149,5 +159,70 @@ public class TypeDescriptor {
 				types[i] = org.w3c.dom.Element.class;
 			}
 		}
-	}		
+	}
+
+	/**
+	 * Determines whether the descriptor describes a data structure that is
+	 * cyclic, i.e. contains inner elements that contain references to outer
+	 * elements, leading to a state of infinate recursion.
+	 * 
+	 * @param descriptor
+	 * @return
+	 */
+	public static boolean isCyclic(TypeDescriptor descriptor) {
+		boolean result = false;
+		if (!(descriptor instanceof BaseTypeDescriptor)) {
+			if (descriptor instanceof ComplexTypeDescriptor) {
+				result = testForCyclic((ComplexTypeDescriptor) descriptor, new ArrayList());
+			} else {
+				result = testForCyclic((ArrayTypeDescriptor) descriptor, new ArrayList());
+			}
+		}
+		return result;
+	}
+
+	private static boolean testForCyclic(ComplexTypeDescriptor descriptor, List parents) {
+		boolean result = false;
+		String descKey = descriptor.getQname().toString();
+		if (parents.contains(descKey))
+			result = true;
+		else {
+			parents.add(descKey);
+			List elements = descriptor.getElements();
+			for (Iterator iterator = elements.iterator(); iterator.hasNext();) {
+				TypeDescriptor elementDescriptor = (TypeDescriptor) iterator.next();
+				if (elementDescriptor instanceof ComplexTypeDescriptor) {
+					result = testForCyclic((ComplexTypeDescriptor) elementDescriptor, parents);
+				} else if (elementDescriptor instanceof ArrayTypeDescriptor) {
+					result = testForCyclic((ArrayTypeDescriptor) elementDescriptor, parents);
+				}
+
+				if (result)
+					break;
+			}
+
+			parents.remove(descKey);
+		}
+		return result;
+	}
+
+	private static boolean testForCyclic(ArrayTypeDescriptor descriptor, List parents) {
+		boolean result = false;
+		String descKey = descriptor.getQname().toString();
+		if (parents.contains(descKey))
+			result = true;
+		else {
+			parents.add(descKey);
+
+			TypeDescriptor elementDescriptor = (TypeDescriptor) descriptor.getElementType();
+			if (elementDescriptor instanceof ComplexTypeDescriptor) {
+				result = testForCyclic((ComplexTypeDescriptor) elementDescriptor, parents);
+			} else if (elementDescriptor instanceof ArrayTypeDescriptor) {
+				result = testForCyclic((ArrayTypeDescriptor) elementDescriptor, parents);
+			}
+
+			parents.remove(descKey);
+		}
+		return result;
+	}
 }

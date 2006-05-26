@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: XMLSplitterSerialisationHelperTest.java,v $
- * Revision           $Revision: 1.1 $
+ * Revision           $Revision: 1.2 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-05-25 08:20:24 $
+ * Last modified on   $Date: 2006-05-26 08:53:50 $
  *               by   $Author: sowen70 $
  * Created on 24-May-2006
  *****************************************************************/
@@ -36,81 +36,84 @@ package org.embl.ebi.escience.scuflworkers.java;
 import java.io.StringReader;
 import java.util.List;
 
+import javax.xml.namespace.QName;
+
 import org.embl.ebi.escience.scuflworkers.wsdl.parser.ComplexTypeDescriptor;
 import org.embl.ebi.escience.scuflworkers.wsdl.parser.TypeDescriptor;
 import org.jdom.Element;
 import org.jdom.input.SAXBuilder;
 import org.jdom.output.XMLOutputter;
 
-
 import junit.framework.TestCase;
 
 public class XMLSplitterSerialisationHelperTest extends TestCase {
 
-	public void testCyclicToElement() throws Exception
-	{
-		ComplexTypeDescriptor a=new ComplexTypeDescriptor();
+	public void testCyclicToElement() throws Exception {
+		ComplexTypeDescriptor a = new ComplexTypeDescriptor();
 		a.setName("a");
 		a.setType("typename");
-		a.setNamespaceURI("namespace");
-		
-		ComplexTypeDescriptor b=new ComplexTypeDescriptor();
+		a.setQname(new QName("{namespace}typename"));
+
+		ComplexTypeDescriptor b = new ComplexTypeDescriptor();
 		b.setName("b");
 		b.setType("typename2");
-		b.setNamespaceURI("namespace");
-		
+		b.setQname(new QName("{namespace}typename2"));
+
 		a.getElements().add(b);
-		
+
 		b.getElements().add(a);
-		
-		Element el=XMLSplitterSerialisationHelper.typeDescriptorToExtensionXML(a);
-		
-		String xml=new XMLOutputter().outputString(el);
-		
-		assertEquals("unexpected xml","<s:extensions xmlns:s=\"http://org.embl.ebi.escience/xscufl/0.1alpha\"><s:complextype optional=\"false\" unbounded=\"false\" typename=\"typename\" name=\"a\" namespaceURI=\"namespace\"><s:elements><s:complextype optional=\"false\" unbounded=\"false\" typename=\"typename2\" name=\"b\" namespaceURI=\"namespace\"><s:elements><s:complextype id=\"complex:namespace:typename\" /></s:elements></s:complextype></s:elements></s:complextype></s:extensions>",xml);											
+
+		Element el = XMLSplitterSerialisationHelper.typeDescriptorToExtensionXML(a);
+
+		String xml = new XMLOutputter().outputString(el);
+
+		assertEquals(
+				"unexpected xml",
+				"<s:extensions xmlns:s=\"http://org.embl.ebi.escience/xscufl/0.1alpha\"><s:complextype optional=\"false\" unbounded=\"false\" typename=\"typename\" name=\"a\" qname=\"{namespace}typename\"><s:elements><s:complextype optional=\"false\" unbounded=\"false\" typename=\"typename2\" name=\"b\" qname=\"{namespace}typename2\"><s:elements><s:complextype id=\"{namespace}typename\" /></s:elements></s:complextype></s:elements></s:complextype></s:extensions>",
+				xml);
+
 	}
-	
-	public void testCyclicToElement2() throws Exception
-	{
-		ComplexTypeDescriptor a=new ComplexTypeDescriptor();
+
+	public void testCyclicToElement2() throws Exception {
+		ComplexTypeDescriptor a = new ComplexTypeDescriptor();
 		a.setName("a");
 		a.setType("typename");
-		a.setNamespaceURI("namespace");
-		
-		a.getElements().add(a);				
-		
-		Element el=XMLSplitterSerialisationHelper.typeDescriptorToExtensionXML(a);
-		
-		String xml=new XMLOutputter().outputString(el);
-		
-		assertEquals("unexpected xml","<s:extensions xmlns:s=\"http://org.embl.ebi.escience/xscufl/0.1alpha\"><s:complextype optional=\"false\" unbounded=\"false\" typename=\"typename\" name=\"a\" namespaceURI=\"namespace\"><s:elements><s:complextype id=\"complex:namespace:typename\" /></s:elements></s:complextype></s:extensions>",xml);											
+		a.setQname(new QName("{namespace}typename"));
+
+		a.getElements().add(a);
+
+		Element el = XMLSplitterSerialisationHelper.typeDescriptorToExtensionXML(a);
+
+		String xml = new XMLOutputter().outputString(el);
+
+		assertEquals(
+				"unexpected xml",
+				"<s:extensions xmlns:s=\"http://org.embl.ebi.escience/xscufl/0.1alpha\"><s:complextype optional=\"false\" unbounded=\"false\" typename=\"typename\" name=\"a\" qname=\"{namespace}typename\"><s:elements><s:complextype id=\"{namespace}typename\" /></s:elements></s:complextype></s:extensions>",
+				xml);
 	}
-	
-	public void testCyclicFromElement() throws Exception
-	{
-		String xml="<s:extensions xmlns:s=\"http://org.embl.ebi.escience/xscufl/0.1alpha\"><s:complextype optional=\"false\" unbounded=\"false\" typename=\"typename\" name=\"a\" namespaceURI=\"namespace\"><s:elements><s:complextype optional=\"false\" unbounded=\"false\" typename=\"typename2\" name=\"b\" namespaceURI=\"namespace\"><s:elements><s:complextype id=\"complex:namespace:typename\" /></s:elements></s:complextype></s:elements></s:complextype></s:extensions>";
-		Element el=new SAXBuilder().build(new StringReader(xml)).getRootElement();
-		
-		TypeDescriptor a=XMLSplitterSerialisationHelper.extensionXMLToTypeDescriptor(el);
-		
-		assertTrue("wrong type",a instanceof ComplexTypeDescriptor);
-		assertEquals("wrong name","a",a.getName());
-		
-		List a_elements=((ComplexTypeDescriptor)a).getElements();
-		
-		assertEquals("should be only 1 element",1,a_elements.size());
-		
-		TypeDescriptor b=(TypeDescriptor)a_elements.get(0);
-		
-		assertTrue("wrong type",b instanceof ComplexTypeDescriptor);
-		
-		List b_elements=((ComplexTypeDescriptor)b).getElements();
-		
-		assertEquals("should be only 1 element",1,b_elements.size());
-		
-		assertEquals("b should contain a reference to a",a,b_elements.get(0));
-		
-		
+
+	public void testCyclicFromElement() throws Exception {
+		String xml = "<s:extensions xmlns:s=\"http://org.embl.ebi.escience/xscufl/0.1alpha\"><s:complextype optional=\"false\" unbounded=\"false\" typename=\"typename\" name=\"a\" qname=\"{namespace}typename\"><s:elements><s:complextype id=\"{namespace}typename\" /></s:elements></s:complextype></s:extensions>";
+		Element el = new SAXBuilder().build(new StringReader(xml)).getRootElement();
+
+		TypeDescriptor a = XMLSplitterSerialisationHelper.extensionXMLToTypeDescriptor(el);
+
+		assertTrue("wrong type", a instanceof ComplexTypeDescriptor);
+		assertEquals("wrong name", "a", a.getName());
+
+		List a_elements = ((ComplexTypeDescriptor) a).getElements();
+
+		assertEquals("should be only 1 element", 1, a_elements.size());
+
+		TypeDescriptor b = (TypeDescriptor) a_elements.get(0);
+
+		assertTrue("wrong type", b instanceof ComplexTypeDescriptor);
+
+		List b_elements = ((ComplexTypeDescriptor) b).getElements();
+
+		assertEquals("should be only 1 element", 1, b_elements.size());
+
+		assertEquals("b should contain a reference to a", a, b_elements.get(0));
 	}
 
 }

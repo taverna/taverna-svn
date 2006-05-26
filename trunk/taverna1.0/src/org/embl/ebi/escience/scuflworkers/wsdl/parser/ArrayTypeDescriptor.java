@@ -14,4 +14,13 @@ public class ArrayTypeDescriptor extends TypeDescriptor {
 	public void setElementType(TypeDescriptor elementType) {
 		this.elementType = elementType;
 	}
+
+	public String getName() {
+		String name = super.getName();
+		if (name == null) {
+			return "ArrayOf" + getElementType().getType();
+		}
+		return name;
+	}
+
 }

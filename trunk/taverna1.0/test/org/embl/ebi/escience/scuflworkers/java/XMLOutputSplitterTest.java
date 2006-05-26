@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: XMLOutputSplitterTest.java,v $
- * Revision           $Revision: 1.2 $
+ * Revision           $Revision: 1.3 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-05-25 08:20:24 $
+ * Last modified on   $Date: 2006-05-26 08:53:50 $
  *               by   $Author: sowen70 $
  * Created on 16-May-2006
  *****************************************************************/
@@ -218,46 +218,42 @@ public class XMLOutputSplitterTest extends TestCase {
 		splitter.consumeXML(new SAXBuilder().build(new StringReader(eInfoProcessorXML())).getRootElement());
 
 		Map inputMap = new HashMap();
-		inputMap.put("input", new DataThing(
-				"<eInfoResult><DbInfo><info>some info</info></DbInfo></eInfoResult>"));
+		inputMap.put("input", new DataThing("<eInfoResult><DbInfo><info>some info</info></DbInfo></eInfoResult>"));
 
 		Map outputMap = splitter.execute(inputMap);
 		assertNotNull(outputMap.get("DbList"));
 		DataThing thingy = (DataThing) outputMap.get("DbList");
 		assertEquals("<DbList />", thingy.getDataObject().toString());
-		
+
 		assertNotNull(outputMap.get("ERROR"));
 		thingy = (DataThing) outputMap.get("ERROR");
 		assertEquals("", thingy.getDataObject().toString());
 	}
-	
-	public void testEmptyOutputsForArray() throws Exception
-	{
-		String procXML="<s:extensions xmlns:s=\"http://org.embl.ebi.escience/xscufl/0.1alpha\"><s:complextype optional=\"false\" unbounded=\"false\" typename=\"eInfoResult\" name=\"parameters\"><s:elements><s:arraytype optional=\"true\" unbounded=\"true\" typename=\"arrayofstring\" name=\"AnArray\"><s:elementtype><s:basetype optional=\"false\" unbounded=\"false\" typename=\"string\" name=\"\" /></s:elementtype></s:arraytype></s:elements></s:complextype></s:extensions>";
+
+	public void testEmptyOutputsForArray() throws Exception {
+		String procXML = "<s:extensions xmlns:s=\"http://org.embl.ebi.escience/xscufl/0.1alpha\"><s:complextype optional=\"false\" unbounded=\"false\" typename=\"eInfoResult\" name=\"parameters\"><s:elements><s:arraytype optional=\"true\" unbounded=\"true\" typename=\"arrayofstring\" name=\"AnArray\"><s:elementtype><s:basetype optional=\"false\" unbounded=\"false\" typename=\"string\" name=\"\" /></s:elementtype></s:arraytype></s:elements></s:complextype></s:extensions>";
 		XMLOutputSplitter splitter = new XMLOutputSplitter();
 		splitter.consumeXML(new SAXBuilder().build(new StringReader(procXML)).getRootElement());
-		
-		assertEquals("wrong number of outputs",1,splitter.outputNames().length);
-		assertEquals("wrong output name","AnArray",splitter.outputNames()[0]);
-		assertEquals("wrong output type, should be array","l('text/plain')",splitter.outputTypes()[0]);
+
+		assertEquals("wrong number of outputs", 1, splitter.outputNames().length);
+		assertEquals("wrong output name", "AnArray", splitter.outputNames()[0]);
+		assertEquals("wrong output type, should be array", "l('text/plain')", splitter.outputTypes()[0]);
 		Map inputMap = new HashMap();
-		inputMap.put("input", new DataThing(
-				"<eInfoResult />"));
+		inputMap.put("input", new DataThing("<eInfoResult />"));
 
 		Map outputMap = splitter.execute(inputMap);
-		
+
 		assertNotNull(outputMap.get("AnArray"));
 		DataThing thingy = (DataThing) outputMap.get("AnArray");
 		assertTrue(thingy.getDataObject() instanceof List);
-		
-		List list=(List)thingy.getDataObject();
-		assertEquals(0,list.size());
-		
+
+		List list = (List) thingy.getDataObject();
+		assertEquals(0, list.size());
+
 	}
 
 	private String eInfoProcessorXML() {
-		return "<s:extensions xmlns:s=\"http://org.embl.ebi.escience/xscufl/0.1alpha\"><s:complextype optional=\"false\" unbounded=\"false\" typename=\"eInfoResult\" name=\"parameters\" namespaceURI=\"http://www.ncbi.nlm.nih.gov/soap/eutils/einfo\"><s:elements><s:basetype optional=\"true\" unbounded=\"false\" typename=\"string\" name=\"ERROR\" namespaceURI=\"http://www.w3.org/2001/XMLSchema\" /><s:complextype optional=\"true\" unbounded=\"false\" typename=\"DbListType\" name=\"DbList\" namespaceURI=\"http://www.ncbi.nlm.nih.gov/soap/eutils/einfo\"><s:elements><s:arraytype optional=\"true\" unbounded=\"true\" typename=\"string\" name=\"DbName\" namespaceURI=\"http://www.w3.org/2001/XMLSchema\"><s:elementtype><s:basetype optional=\"false\" unbounded=\"false\" typename=\"string\" name=\"\" namespaceURI=\"http://www.w3.org/2001/XMLSchema\" /></s:elementtype></s:arraytype></s:elements></s:complextype><s:complextype optional=\"true\" unbounded=\"false\" typename=\"DbInfoType\" name=\"DbInfo\" namespaceURI=\"http://www.ncbi.nlm.nih.gov/soap/eutils/einfo\"><s:elements><s:basetype optional=\"false\" unbounded=\"false\" typename=\"string\" name=\"DbName\" namespaceURI=\"http://www.w3.org/2001/XMLSchema\" /><s:basetype optional=\"false\" unbounded=\"false\" typename=\"string\" name=\"MenuName\" namespaceURI=\"http://www.w3.org/2001/XMLSchema\" /><s:basetype optional=\"false\" unbounded=\"false\" typename=\"string\" name=\"Description\" namespaceURI=\"http://www.w3.org/2001/XMLSchema\" /><s:basetype optional=\"false\" unbounded=\"false\" typename=\"string\" name=\"Count\" namespaceURI=\"http://www.w3.org/2001/XMLSchema\" /><s:basetype optional=\"false\" unbounded=\"false\" typename=\"string\" name=\"LastUpdate\" namespaceURI=\"http://www.w3.org/2001/XMLSchema\" /><s:arraytype optional=\"false\" unbounded=\"false\" typename=\"FieldListType\" name=\"FieldList\" namespaceURI=\"http://www.ncbi.nlm.nih.gov/soap/eutils/einfo\"><s:elementtype><s:complextype optional=\"false\" unbounded=\"false\" typename=\"FieldType\" name=\"\" namespaceURI=\"http://www.ncbi.nlm.nih.gov/soap/eutils/einfo\"><s:elements><s:basetype optional=\"false\" unbounded=\"false\" typename=\"string\" name=\"Name\" namespaceURI=\"http://www.w3.org/2001/XMLSchema\" /><s:basetype optional=\"false\" unbounded=\"false\" typename=\"string\" name=\"Description\" namespaceURI=\"http://www.w3.org/2001/XMLSchema\" /><s:basetype optional=\"false\" unbounded=\"false\" typename=\"string\" name=\"TermCount\" namespaceURI=\"http://www.w3.org/2001/XMLSchema\" /><s:basetype optional=\"false\" unbounded=\"false\" typename=\"string\" name=\"IsDate\" namespaceURI=\"http://www.w3.org/2001/XMLSchema\" /><s:basetype optional=\"false\" unbounded=\"false\" typename=\"string\" name=\"IsNumerical\" namespaceURI=\"http://www.w3.org/2001/XMLSchema\" /><s:basetype optional=\"false\" unbounded=\"false\" typename=\"string\" name=\"SingleToken\" namespaceURI=\"http://www.w3.org/2001/XMLSchema\" /><s:basetype optional=\"false\" unbounded=\"false\" typename=\"string\" name=\"Hierarchy\" namespaceURI=\"http://www.w3.org/2001/XMLSchema\" /></s:elements></s:complextype></s:elementtype></s:arraytype><s:arraytype optional=\"true\" unbounded=\"false\" typename=\"LinkListType\" name=\"LinkList\" namespaceURI=\"http://www.ncbi.nlm.nih.gov/soap/eutils/einfo\"><s:elementtype><s:complextype optional=\"false\" unbounded=\"false\" typename=\"LinkType\" name=\"\" namespaceURI=\"http://www.ncbi.nlm.nih.gov/soap/eutils/einfo\"><s:elements><s:basetype optional=\"false\" unbounded=\"false\" typename=\"string\" name=\"Name\" namespaceURI=\"http://www.w3.org/2001/XMLSchema\" /><s:basetype optional=\"false\" unbounded=\"false\" typename=\"string\" name=\"Menu\" namespaceURI=\"http://www.w3.org/2001/XMLSchema\" /><s:basetype optional=\"false\" unbounded=\"false\" typename=\"string\" name=\"Description\" namespaceURI=\"http://www.w3.org/2001/XMLSchema\" /><s:basetype optional=\"false\" unbounded=\"false\" typename=\"string\" name=\"DbTo\" namespaceURI=\"http://www.w3.org/2001/XMLSchema\" /></s:elements></s:complextype></s:elementtype></s:arraytype></s:elements></s:complextype></s:elements></s:complextype></s:extensions>";
-		
+		return "<s:extensions xmlns:s=\"http://org.embl.ebi.escience/xscufl/0.1alpha\"><s:complextype optional=\"false\" unbounded=\"false\" typename=\"eInfoResult\" name=\"parameters\" qname=\"{http://www.ncbi.nlm.nih.gov/soap/eutils/einfo}eInfoResult\"><s:elements><s:basetype optional=\"true\" unbounded=\"false\" typename=\"string\" name=\"ERROR\" qname=\"{http://www.w3.org/2001/XMLSchema}string\" /><s:complextype optional=\"true\" unbounded=\"false\" typename=\"DbListType\" name=\"DbList\" qname=\"{http://www.ncbi.nlm.nih.gov/soap/eutils/einfo}DbListType\"><s:elements><s:arraytype optional=\"true\" unbounded=\"true\" typename=\"string\" name=\"DbName\" qname=\"{http://www.w3.org/2001/XMLSchema}string[0,unbounded]\"><s:elementtype><s:basetype optional=\"false\" unbounded=\"false\" typename=\"string\" name=\"\" qname=\"{http://www.w3.org/2001/XMLSchema}string\" /></s:elementtype></s:arraytype></s:elements></s:complextype><s:complextype optional=\"true\" unbounded=\"false\" typename=\"DbInfoType\" name=\"DbInfo\" qname=\"{http://www.ncbi.nlm.nih.gov/soap/eutils/einfo}DbInfoType\"><s:elements><s:basetype optional=\"false\" unbounded=\"false\" typename=\"string\" name=\"DbName\" qname=\"{http://www.w3.org/2001/XMLSchema}string\" /><s:basetype optional=\"false\" unbounded=\"false\" typename=\"string\" name=\"MenuName\" qname=\"{http://www.w3.org/2001/XMLSchema}string\" /><s:basetype optional=\"false\" unbounded=\"false\" typename=\"string\" name=\"Description\" qname=\"{http://www.w3.org/2001/XMLSchema}string\" /><s:basetype optional=\"false\" unbounded=\"false\" typename=\"string\" name=\"Count\" qname=\"{http://www.w3.org/2001/XMLSchema}string\" /><s:basetype optional=\"false\" unbounded=\"false\" typename=\"string\" name=\"LastUpdate\" qname=\"{http://www.w3.org/2001/XMLSchema}string\" /><s:arraytype optional=\"false\" unbounded=\"false\" typename=\"FieldListType\" name=\"FieldList\" qname=\"{http://www.ncbi.nlm.nih.gov/soap/eutils/einfo}FieldListType\"><s:elementtype><s:complextype optional=\"false\" unbounded=\"false\" typename=\"FieldType\" name=\"\" qname=\"{http://www.ncbi.nlm.nih.gov/soap/eutils/einfo}FieldType\"><s:elements><s:basetype optional=\"false\" unbounded=\"false\" typename=\"string\" name=\"Name\" qname=\"{http://www.w3.org/2001/XMLSchema}string\" /><s:basetype optional=\"false\" unbounded=\"false\" typename=\"string\" name=\"Description\" qname=\"{http://www.w3.org/2001/XMLSchema}string\" /><s:basetype optional=\"false\" unbounded=\"false\" typename=\"string\" name=\"TermCount\" qname=\"{http://www.w3.org/2001/XMLSchema}string\" /><s:basetype optional=\"false\" unbounded=\"false\" typename=\"string\" name=\"IsDate\" qname=\"{http://www.w3.org/2001/XMLSchema}string\" /><s:basetype optional=\"false\" unbounded=\"false\" typename=\"string\" name=\"IsNumerical\" qname=\"{http://www.w3.org/2001/XMLSchema}string\" /><s:basetype optional=\"false\" unbounded=\"false\" typename=\"string\" name=\"SingleToken\" qname=\"{http://www.w3.org/2001/XMLSchema}string\" /><s:basetype optional=\"false\" unbounded=\"false\" typename=\"string\" name=\"Hierarchy\" qname=\"{http://www.w3.org/2001/XMLSchema}string\" /></s:elements></s:complextype></s:elementtype></s:arraytype><s:arraytype optional=\"true\" unbounded=\"false\" typename=\"LinkListType\" name=\"LinkList\" qname=\"{http://www.ncbi.nlm.nih.gov/soap/eutils/einfo}LinkListType\"><s:elementtype><s:complextype optional=\"false\" unbounded=\"false\" typename=\"LinkType\" name=\"\" qname=\"{http://www.ncbi.nlm.nih.gov/soap/eutils/einfo}LinkType\"><s:elements><s:basetype optional=\"false\" unbounded=\"false\" typename=\"string\" name=\"Name\" qname=\"{http://www.w3.org/2001/XMLSchema}string\" /><s:basetype optional=\"false\" unbounded=\"false\" typename=\"string\" name=\"Menu\" qname=\"{http://www.w3.org/2001/XMLSchema}string\" /><s:basetype optional=\"false\" unbounded=\"false\" typename=\"string\" name=\"Description\" qname=\"{http://www.w3.org/2001/XMLSchema}string\" /><s:basetype optional=\"false\" unbounded=\"false\" typename=\"string\" name=\"DbTo\" qname=\"{http://www.w3.org/2001/XMLSchema}string\" /></s:elements></s:complextype></s:elementtype></s:arraytype></s:elements></s:complextype></s:elements></s:complextype></s:extensions>";
 	}
 
 }
