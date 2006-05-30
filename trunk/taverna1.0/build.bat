@@ -1,1 +1,1 @@
-ant -buildfile build.xml -logfile build_report.text all
+mvn -f parent-pom.xml package assembly:directory

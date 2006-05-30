@@ -1,1 +1,1 @@
-ant clean
+mvn -f parent-pom.xml clean
