@@ -16,6 +16,7 @@ import org.embl.ebi.escience.scuflworkers.ScavengerHelper;
  * Helper for handling WSDL scavengers.
  * 
  * @author Tom Oinn
+ * @author Stuart Owen
  */
 public class WSDLScavengerHelper implements ScavengerHelper {
 
@@ -27,15 +28,24 @@ public class WSDLScavengerHelper implements ScavengerHelper {
 		final ScavengerTree s = theScavenger;
 		return new ActionListener() {
 			public void actionPerformed(ActionEvent ae) {
-				String wsdlLocation = (String) JOptionPane.showInputDialog(null, "Address of the WSDL document?",
+				final String wsdlLocation = (String) JOptionPane.showInputDialog(null, "Address of the WSDL document?",
 						"WSDL location", JOptionPane.QUESTION_MESSAGE, null, null, "http://");
 				if (wsdlLocation != null) {
-					try {
-						s.addScavenger(new WSDLBasedScavenger(wsdlLocation));
-					} catch (ScavengerCreationException sce) {
-						JOptionPane.showMessageDialog(null, "Unable to create scavenger!\n" + sce.getMessage(),
-								"Exception!", JOptionPane.ERROR_MESSAGE);
-					}
+					Runnable r = new Runnable() {
+						public void run() {
+							if (s.getParent() != null)
+								s.getParentPanel().startProgressBar("Processing WSDL");
+							try {
+								s.addScavenger(new WSDLBasedScavenger(wsdlLocation));
+							} catch (ScavengerCreationException sce) {
+								JOptionPane.showMessageDialog(null, "Unable to create scavenger!\n" + sce.getMessage(),
+										"Exception!", JOptionPane.ERROR_MESSAGE);
+							}
+							if (s.getParent() != null)
+								s.getParentPanel().stopProgressBar();
+						}
+					};
+					new Thread(r).start();
 				}
 			}
 		};

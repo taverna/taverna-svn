@@ -19,10 +19,12 @@ import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JProgressBar;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.JToolBar;
 import javax.swing.JTree;
+import javax.swing.border.Border;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -49,9 +51,11 @@ public class ScavengerTreePanel extends JPanel implements ScuflUIComponent {
 
 	ScavengerTree tree;
 
-	JTextField regex = null;
+	JTextField regex = null;	
 
 	JButton find;
+	
+	JProgressBar progBar=null;
 
 	JCheckBox watchLoads = new JCheckBox("Watch loads", true);
 
@@ -75,11 +79,32 @@ public class ScavengerTreePanel extends JPanel implements ScuflUIComponent {
 		}
 	};
 	
+	public void startProgressBar(String text)
+	{		
+		progBar.setString(text);
+		progBar.setStringPainted(true);
+		progBar.setVisible(true);
+	}
+	
+	public void stopProgressBar()
+	{
+		progBar.setVisible(false);
+	}
+	
 	private void initialise(boolean populated) {
 		setLayout(new BorderLayout());
 		// To avoid double horisontal scrollbars, let the treePane be in charge
 		this.setPreferredSize(new Dimension(0, 0));
-		tree = new ScavengerTree(populated);
+		
+		progBar=new JProgressBar();
+		progBar.setIndeterminate(true);
+		progBar.setVisible(false);		
+		//JPanel progPanel=new JPanel();		
+		//progPanel.add(progBar,BorderLayout.CENTER);
+		add(progBar,BorderLayout.PAGE_END);
+		
+		tree = new ScavengerTree(populated,this);		
+		
 		JScrollPane treePane = new JScrollPane(tree);
 		treePane.setPreferredSize(new Dimension(0, 0));
 		add(treePane, BorderLayout.CENTER);
@@ -98,7 +123,9 @@ public class ScavengerTreePanel extends JPanel implements ScuflUIComponent {
 		toolbar.addSeparator();
 		toolbar.add(watchLoads);
 		toolbar.add(Box.createHorizontalGlue());
-		add(toolbar, BorderLayout.PAGE_START);
+		add(toolbar, BorderLayout.PAGE_START);									
+		
+		
 		// Add the filedrop to the toolbar, we can't add it to the main
 		// panel because that's already looking out for drag and drop events
 		// from the explorer

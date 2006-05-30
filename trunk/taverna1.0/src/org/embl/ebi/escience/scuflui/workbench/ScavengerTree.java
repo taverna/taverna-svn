@@ -43,6 +43,7 @@ import org.biomoby.client.taverna.plugin.BiomobyScavenger;
 import org.embl.ebi.escience.scufl.Processor;
 import org.embl.ebi.escience.scufl.ScuflModel;
 import org.embl.ebi.escience.scuflui.ExtendedJTree;
+import org.embl.ebi.escience.scuflui.ScavengerTreePanel;
 import org.embl.ebi.escience.scuflui.ScuflIcons;
 import org.embl.ebi.escience.scuflui.ScuflUIComponent;
 import org.embl.ebi.escience.scuflui.dnd.FactorySpecFragment;
@@ -71,13 +72,19 @@ import org.jdom.output.XMLOutputter;
  * 
  * @author Tom Oinn
  */
-public class ScavengerTree extends ExtendedJTree implements ScuflUIComponent,
-		DragSourceListener, DragGestureListener, DropTargetListener {
-	
+public class ScavengerTree extends ExtendedJTree implements ScuflUIComponent, DragSourceListener, DragGestureListener,
+		DropTargetListener {
+
 	private static final long serialVersionUID = -5395001232451125620L;
 
 	private static Logger logger = Logger.getLogger(ScavengerTree.class);
-	
+
+	private ScavengerTreePanel parentPanel = null;
+
+	public ScavengerTreePanel getParentPanel() {
+		return parentPanel;
+	}
+
 	/**
 	 * The model that this scavenger will create processor for
 	 */
@@ -117,11 +124,9 @@ public class ScavengerTree extends ExtendedJTree implements ScuflUIComponent,
 	public void dragGestureRecognized(DragGestureEvent e) {
 		// Get the node that was dragged
 		Point l = e.getDragOrigin();
-		TreePath dragSourcePath = getPathForLocation((int) l.getX(), (int) l
-				.getY());
+		TreePath dragSourcePath = getPathForLocation((int) l.getX(), (int) l.getY());
 		if (dragSourcePath != null) {
-			DefaultMutableTreeNode node = (DefaultMutableTreeNode) dragSourcePath
-					.getLastPathComponent();
+			DefaultMutableTreeNode node = (DefaultMutableTreeNode) dragSourcePath.getLastPathComponent();
 			Object userObject = node.getUserObject();
 			if (userObject instanceof ProcessorFactory) {
 				Element el = ((ProcessorFactory) userObject).getXMLFragment();
@@ -174,8 +179,7 @@ public class ScavengerTree extends ExtendedJTree implements ScuflUIComponent,
 			DataFlavor f = SpecFragmentTransferable.processorSpecFragmentFlavor;
 			Transferable t = e.getTransferable();
 			if (e.isDataFlavorSupported(f)) {
-				ProcessorSpecFragment psf = (ProcessorSpecFragment) t
-						.getTransferData(f);
+				ProcessorSpecFragment psf = (ProcessorSpecFragment) t.getTransferData(f);
 				XMLOutputter xo = new XMLOutputter();
 				// Remove the various fault tolerance etc attributes
 				Element processorElement = psf.getElement();
@@ -185,21 +189,16 @@ public class ScavengerTree extends ExtendedJTree implements ScuflUIComponent,
 					processorElement.removeAttribute(att);
 				}
 				String searchString = xo.outputString(psf.getElement());
-				DefaultMutableTreeNode rootNode = (DefaultMutableTreeNode) treeModel
-						.getRoot();
+				DefaultMutableTreeNode rootNode = (DefaultMutableTreeNode) treeModel.getRoot();
 				Enumeration en = rootNode.depthFirstEnumeration();
 				while (en.hasMoreElements()) {
-					DefaultMutableTreeNode theNode = (DefaultMutableTreeNode) en
-							.nextElement();
+					DefaultMutableTreeNode theNode = (DefaultMutableTreeNode) en.nextElement();
 					Object o = theNode.getUserObject();
 					if (o instanceof ProcessorFactory) {
-						String compare = xo.outputString(((ProcessorFactory) o)
-								.getXMLFragment());
+						String compare = xo.outputString(((ProcessorFactory) o).getXMLFragment());
 						if (searchString.equals(compare)) {
-							String selectedProcessorString = theNode
-									.getUserObject().toString().toLowerCase();
-							TreePath path = new TreePath(treeModel
-									.getPathToRoot(theNode));
+							String selectedProcessorString = theNode.getUserObject().toString().toLowerCase();
+							TreePath path = new TreePath(treeModel.getPathToRoot(theNode));
 							setExpansion(false);
 							setPattern(selectedProcessorString);
 							makeVisible(path);
@@ -214,59 +213,45 @@ public class ScavengerTree extends ExtendedJTree implements ScuflUIComponent,
 	}
 
 	/**
-	 * Default constructor, equivalent to calling with populate set to 'true'
-	 */
-	public ScavengerTree() {
-		this(false);
-	}
-
-	/**
 	 * Create a new scavenger tree, if the boolean 'populate' flag is true then
 	 * load the default service set from the system properties, otherwise start
 	 * with a completely blank panel.
 	 */
-	public ScavengerTree(boolean populate) {
+	public ScavengerTree(boolean populate, ScavengerTreePanel parentPanel) {
 		super();
 		synchronized (this.getModel()) {
+			this.parentPanel = parentPanel;
 			setRowHeight(18);
 			setLargeModel(true);
 			wsdlURLList = System.getProperty("taverna.defaultwsdl");
-			soaplabDefaultURLList = System
-					.getProperty("taverna.defaultsoaplab");
-			biomobyDefaultURLList = System
-					.getProperty("taverna.defaultbiomoby");
+			soaplabDefaultURLList = System.getProperty("taverna.defaultsoaplab");
+			biomobyDefaultURLList = System.getProperty("taverna.defaultbiomoby");
 			webURLList = System.getProperty("taverna.defaultweb");
-			martRegistryList = System
-					.getProperty("taverna.defaultmartregistry");
+			martRegistryList = System.getProperty("taverna.defaultmartregistry");
 			DragSource dragSource = DragSource.getDefaultDragSource();
-			dragSource.createDefaultDragGestureRecognizer(this,
-					DnDConstants.ACTION_COPY_OR_MOVE, this);
+			dragSource.createDefaultDragGestureRecognizer(this, DnDConstants.ACTION_COPY_OR_MOVE, this);
 			new DropTarget(this, DnDConstants.ACTION_COPY_OR_MOVE, this);
 			scavengerList = new ArrayList();
 			root = new DefaultMutableTreeNode("Available Processors");
 			treeModel = (DefaultTreeModel) this.getModel();
 			treeModel.setRoot(this.root);
 			putClientProperty("JTree.lineStyle", "Angled");
-			getSelectionModel().setSelectionMode(
-					TreeSelectionModel.SINGLE_TREE_SELECTION);
+			getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
 			ScavengerTreeRenderer renderer = new ScavengerTreeRenderer();
 			this.setCellRenderer(renderer);
 			this.addMouseListener(new ScavengerTreePopupHandler(this));
 			// Add the simple scavengers, should such exist, but only
 			// do this if the populate flag is set to true.
+
 			if (populate) {
 				Set simpleScavengers = ProcessorHelper.getSimpleScavengerSet();
 				if (simpleScavengers.isEmpty() == false) {
-					DefaultMutableTreeNode t = new DefaultMutableTreeNode(
-							"Local Services");
-					this.treeModel.insertNodeInto(t,
-							(MutableTreeNode) this.treeModel.getRoot(),
-							this.treeModel.getChildCount(this.treeModel
-									.getRoot()));
+					DefaultMutableTreeNode t = new DefaultMutableTreeNode("Local Services");
+					this.treeModel.insertNodeInto(t, (MutableTreeNode) this.treeModel.getRoot(), this.treeModel
+							.getChildCount(this.treeModel.getRoot()));
 					for (Iterator i = simpleScavengers.iterator(); i.hasNext();) {
 						Scavenger s = (Scavenger) i.next();
-						treeModel.insertNodeInto(s, t, treeModel
-								.getChildCount(t));
+						treeModel.insertNodeInto(s, t, treeModel.getChildCount(t));
 						treeModel.nodeStructureChanged(t);
 					}
 				}
@@ -278,11 +263,10 @@ public class ScavengerTree extends ExtendedJTree implements ScuflUIComponent,
 		}
 	}
 
-	String biomobyDefaultURLList, soaplabDefaultURLList, wsdlURLList,
-			webURLList, martRegistryList;
+	String biomobyDefaultURLList, soaplabDefaultURLList, wsdlURLList, webURLList, martRegistryList;
 
 	class DefaultScavengerLoaderThread extends Thread {
-		
+
 		ScavengerTree scavengerTree;
 
 		public DefaultScavengerLoaderThread(ScavengerTree scavengerTree) {
@@ -292,16 +276,17 @@ public class ScavengerTree extends ExtendedJTree implements ScuflUIComponent,
 
 		public void run() {
 			synchronized (this.scavengerTree.getModel()) {
+				if (getParentPanel() != null)
+					getParentPanel().startProgressBar("Populating service list");
 				// Do web scavenger based locations
 				if (webURLList != null) {
 					String[] urls = webURLList.split("\\s*,\\s*");
 					for (int i = 0; i < urls.length; i++) {
 						try {
-							scavengerTree.addScavenger(new WebScavenger(
-									urls[i], (DefaultTreeModel) scavengerTree
-											.getModel()));
+							scavengerTree.addScavenger(new WebScavenger(urls[i], (DefaultTreeModel) scavengerTree
+									.getModel()));
 						} catch (ScavengerCreationException sce) {
-							logger.error(sce);							
+							logger.error(sce);
 						}
 					}
 				}
@@ -311,9 +296,7 @@ public class ScavengerTree extends ExtendedJTree implements ScuflUIComponent,
 					String[] urls = martRegistryList.split("\\s*,\\s*");
 					for (int i = 0; i < urls.length; i++) {
 						try {
-							scavengerTree
-									.addScavenger(new BiomartScavenger(
-											urls[i]));
+							scavengerTree.addScavenger(new BiomartScavenger(urls[i]));
 						} catch (ScavengerCreationException sce) {
 							sce.printStackTrace();
 							logger.error(sce);
@@ -327,10 +310,9 @@ public class ScavengerTree extends ExtendedJTree implements ScuflUIComponent,
 					String[] urls = wsdlURLList.split("\\s*,\\s*");
 					for (int i = 0; i < urls.length; i++) {
 						try {
-							scavengerTree.addScavenger(new WSDLBasedScavenger(
-									urls[i]));
+							scavengerTree.addScavenger(new WSDLBasedScavenger(urls[i]));
 						} catch (ScavengerCreationException sce) {
-							logger.error(sce);							
+							logger.error(sce);
 						}
 					}
 				}
@@ -340,10 +322,8 @@ public class ScavengerTree extends ExtendedJTree implements ScuflUIComponent,
 					String[] urls = soaplabDefaultURLList.split("\\s*,\\s*");
 					for (int i = 0; i < urls.length; i++) {
 						try {
-							logger.debug("Creating soaplab scavenger : '"
-									+ urls[i] + "'");
-							scavengerTree.addScavenger(new SoaplabScavenger(
-									urls[i]));
+							logger.debug("Creating soaplab scavenger : '" + urls[i] + "'");
+							scavengerTree.addScavenger(new SoaplabScavenger(urls[i]));
 						} catch (ScavengerCreationException sce) {
 							logger.error(sce);
 						}
@@ -355,12 +335,10 @@ public class ScavengerTree extends ExtendedJTree implements ScuflUIComponent,
 					String[] urls = biomobyDefaultURLList.split("\\s*,\\s*");
 					for (int i = 0; i < urls.length; i++) {
 						try {
-							logger.debug("Creating biomoby scavenger : '"
-									+ urls[i] + "'");
-							scavengerTree.addScavenger(new BiomobyScavenger(
-									urls[i]));
+							logger.debug("Creating biomoby scavenger : '" + urls[i] + "'");
+							scavengerTree.addScavenger(new BiomobyScavenger(urls[i]));
 						} catch (ScavengerCreationException sce) {
-							logger.error(sce);							
+							logger.error(sce);
 						}
 					}
 				}
@@ -368,37 +346,39 @@ public class ScavengerTree extends ExtendedJTree implements ScuflUIComponent,
 				// Find all apiconsumer.xml files in the classpath root and
 				// load them as API Consumer scavengers
 				try {
-					ClassLoader loader = Thread.currentThread()
-							.getContextClassLoader();
+					ClassLoader loader = Thread.currentThread().getContextClassLoader();
 					Enumeration en = loader.getResources("apiconsumer.xml");
 					while (en.hasMoreElements()) {
 						URL resourceURL = (URL) en.nextElement();
-						scavengerTree.addScavenger(new APIConsumerScavenger(
-								resourceURL));
+						scavengerTree.addScavenger(new APIConsumerScavenger(resourceURL));
 					}
 				} catch (Exception ex) {
-					logger.error(ex);					
+					logger.error(ex);
 				}
 
 				// Add the seqhound scavenger to the end of the list
 				try {
 					scavengerTree.addScavenger(new SeqhoundScavenger());
 				} catch (ScavengerCreationException sce) {
-					logger.error(sce);					
+					logger.error(sce);
 				}
 				try {
 					Thread.sleep(1000);
 				} catch (InterruptedException ie) {
 					//
 				}
-				// I want to disable the reload() as it collapse the tree, even though
-				// the user had started exploring it at this point. But I don't know
+				// I want to disable the reload() as it collapse the tree, even
+				// though
+				// the user had started exploring it at this point. But I don't
+				// know
 				// what is the effect of not reload-ing, the API says it should
-				// be called when the TreeModel has been modified. --Stian				
+				// be called when the TreeModel has been modified. --Stian
 				treeModel.reload();
 				// FIXME: Make this a user setable property. By default now we
 				// don't expand the full scavenger tree, as it is too massive
 				// scavengerTree.setExpansion(true);
+				if (getParentPanel() != null)
+					getParentPanel().stopProgressBar();
 			}
 		}
 	}
@@ -416,9 +396,9 @@ public class ScavengerTree extends ExtendedJTree implements ScuflUIComponent,
 		}
 	}
 
-	private void addScavengersFromModel(ScuflModel theModel)
-			throws ScavengerCreationException {
+	private void addScavengersFromModel(ScuflModel theModel) throws ScavengerCreationException {
 		if (theModel != null) {
+
 			// Get all WSDL processors
 			Map wsdlLocations = new HashMap();
 			Map talismanLocations = new HashMap();
@@ -429,16 +409,13 @@ public class ScavengerTree extends ExtendedJTree implements ScuflUIComponent,
 				// If the processor is a WSDLBasedProcessor then get
 				// the wsdl location and add it to the map.
 				if (p[i] instanceof WSDLBasedProcessor) {
-					String wsdlLocation = ((WSDLBasedProcessor) p[i])
-							.getWSDLLocation();
+					String wsdlLocation = ((WSDLBasedProcessor) p[i]).getWSDLLocation();
 					wsdlLocations.put(wsdlLocation, null);
 				} else if (p[i] instanceof TalismanProcessor) {
-					String tscriptLocation = ((TalismanProcessor) p[i])
-							.getTScriptURL();
+					String tscriptLocation = ((TalismanProcessor) p[i]).getTScriptURL();
 					talismanLocations.put(tscriptLocation, null);
 				} else if (p[i] instanceof SoaplabProcessor) {
-					String endpoint = ((SoaplabProcessor) p[i]).getEndpoint()
-							.toString();
+					String endpoint = ((SoaplabProcessor) p[i]).getEndpoint().toString();
 					String[] parts = endpoint.split("/");
 					String base = "";
 					for (int j = 0; j < parts.length - 1; j++) {
@@ -446,14 +423,12 @@ public class ScavengerTree extends ExtendedJTree implements ScuflUIComponent,
 					}
 					soaplabInstallations.put(base, null);
 				} else if (p[i] instanceof BiomobyProcessor) {
-					String mobyCentralLocation = ((BiomobyProcessor) p[i])
-							.getMobyEndpoint();
+					String mobyCentralLocation = ((BiomobyProcessor) p[i]).getMobyEndpoint();
 					biomobyCentralLocations.add(mobyCentralLocation);
 				}
 				// Recurse into nested workflows
 				else if (p[i] instanceof WorkflowProcessor) {
-					addScavengersFromModel(((WorkflowProcessor) p[i])
-							.getInternalModel());
+					addScavengersFromModel(((WorkflowProcessor) p[i]).getInternalModel());
 				}
 			}
 			// Now iterate over all the wsdl locations found and
@@ -463,13 +438,11 @@ public class ScavengerTree extends ExtendedJTree implements ScuflUIComponent,
 				String wsdlLocation = (String) i.next();
 				addScavenger(new WSDLBasedScavenger(wsdlLocation));
 			}
-			for (Iterator i = talismanLocations.keySet().iterator(); i
-					.hasNext();) {
+			for (Iterator i = talismanLocations.keySet().iterator(); i.hasNext();) {
 				String tscriptURL = (String) i.next();
 				addScavenger(new TalismanScavenger(tscriptURL));
 			}
-			for (Iterator i = soaplabInstallations.keySet().iterator(); i
-					.hasNext();) {
+			for (Iterator i = soaplabInstallations.keySet().iterator(); i.hasNext();) {
 				String base = (String) i.next();
 				addScavenger(new SoaplabScavenger(base));
 			}
@@ -477,6 +450,7 @@ public class ScavengerTree extends ExtendedJTree implements ScuflUIComponent,
 				String mobyCentralLocation = (String) i.next();
 				addScavenger(new BiomobyScavenger(mobyCentralLocation));
 			}
+
 		}
 	}
 
@@ -496,9 +470,8 @@ public class ScavengerTree extends ExtendedJTree implements ScuflUIComponent,
 				}
 			}
 			this.scavengerList.add(theScavenger.getUserObject().toString());
-			treeModel.insertNodeInto(theScavenger,
-					(MutableTreeNode) this.treeModel.getRoot(), this.treeModel
-							.getChildCount(this.treeModel.getRoot()));
+			treeModel.insertNodeInto(theScavenger, (MutableTreeNode) this.treeModel.getRoot(), this.treeModel
+					.getChildCount(this.treeModel.getRoot()));
 			treeModel.nodeStructureChanged(theScavenger);
 			// Set the visibility sensibly so that the root node
 			// is expanded and visible
