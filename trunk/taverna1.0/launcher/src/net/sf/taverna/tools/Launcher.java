@@ -127,8 +127,16 @@ public class Launcher {
 				return;
 			}
 			System.setProperty("taverna.home", bootDir.toString());
-
 		}
+		
+		if (System.getProperty("taverna.dotlocation") == null
+				&& System.getProperty("os.name").toLowerCase().indexOf(
+						"windows") > -1) {
+			// We bundle the win32 dot.exe with Taverna
+			File tavernaHome = new File(System.getProperty("taverna.home"));
+			File dotLocation = new File(tavernaHome, "bin\\win32i386\\dot.exe");
+			System.setProperty("taverna.dotlocation", dotLocation.toString());
+		}		
 		String mainClass = System.getProperty("taverna.main");
 		if (mainClass == null) {
 			mainClass = "org.embl.ebi.escience.scuflui.workbench.Workbench";
