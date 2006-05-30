@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: BiomartProcessorFactory.java,v $
- * Revision           $Revision: 1.3 $
+ * Revision           $Revision: 1.4 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-05-19 13:55:22 $
+ * Last modified on   $Date: 2006-05-30 16:41:22 $
  *               by   $Author: davidwithers $
  * Created on 17-Mar-2006
  *****************************************************************/
@@ -45,7 +45,7 @@ public class BiomartProcessorFactory extends ProcessorFactory {
 
 	public BiomartProcessorFactory(MartQuery query) {
 		this.query = query;
-		setName(query.getMartDataset().getDisplayName());
+		setName(query.getMartDataset().getName());
 	}
 
 	/**
