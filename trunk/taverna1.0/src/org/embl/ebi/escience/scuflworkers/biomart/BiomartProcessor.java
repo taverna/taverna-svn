@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: BiomartProcessor.java,v $
- * Revision           $Revision: 1.20 $
+ * Revision           $Revision: 1.21 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-05-19 13:55:22 $
+ * Last modified on   $Date: 2006-05-30 16:43:33 $
  *               by   $Author: davidwithers $
  * Created on 17-Mar-2006
  *****************************************************************/
@@ -75,6 +75,7 @@ public class BiomartProcessor extends Processor {
 			MartQuery query) throws ProcessorCreationException,
 			DuplicateProcessorNameException {
 		super(model, processorName);
+		setDescription(query.getMartDataset().getDisplayName());
 		this.query = query;
 
 		try {
@@ -159,13 +160,12 @@ public class BiomartProcessor extends Processor {
 		for (Iterator iter = filters.iterator(); iter.hasNext();) {
 			Filter filter = (Filter) iter.next();
 			String name = filter.getQualifiedName();
-			String value = filter.getName();
 			filterNames.add(name + "_filter");
 			try {
 				locatePort(name + "_filter");
 			} catch (UnknownPortException upe) {
 				Port newPort = new InputPort(this, name + "_filter");
-				if (value.indexOf(",") != -1) {
+				if (filter.isList()) {
 					newPort.setSyntacticType("l('text/plain')");
 				} else {
 					newPort.setSyntacticType("'text/plain'");

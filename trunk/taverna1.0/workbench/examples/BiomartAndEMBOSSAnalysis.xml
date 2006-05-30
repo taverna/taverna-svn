@@ -76,7 +76,7 @@ for (Iterator i = hsToRat.keySet().iterator(); i.hasNext();) {
         </biomart:MartDataset>
         <biomart:Query virtualSchemaName="default" count="0">
           <biomart:Dataset name="hsapiens_gene_ensembl">
-            <biomart:Filter name="gene_stable_id" value="" />
+            <biomart:Filter name="gene_stable_id" value="" list="true" />
           </biomart:Dataset>
           <biomart:Dataset name="hsapiens_genomic_sequence">
             <biomart:Attribute name="coding_gene_flank" />
@@ -101,7 +101,7 @@ for (Iterator i = hsToRat.keySet().iterator(); i.hasNext();) {
         </biomart:MartDataset>
         <biomart:Query virtualSchemaName="default" count="0">
           <biomart:Dataset name="rnorvegicus_gene_ensembl">
-            <biomart:Filter name="gene_stable_id" value="" />
+            <biomart:Filter name="gene_stable_id" value="" list="true" />
           </biomart:Dataset>
           <biomart:Dataset name="rnorvegicus_genomic_sequence">
             <biomart:Attribute name="coding_gene_flank" />
@@ -123,7 +123,7 @@ for (Iterator i = hsToRat.keySet().iterator(); i.hasNext();) {
         </biomart:MartDataset>
         <biomart:Query virtualSchemaName="default" count="0">
           <biomart:Dataset name="mmusculus_gene_ensembl">
-            <biomart:Filter name="gene_stable_id" value="" />
+            <biomart:Filter name="gene_stable_id" value="" list="true" />
           </biomart:Dataset>
           <biomart:Dataset name="mmusculus_genomic_sequence">
             <biomart:Attribute name="coding_gene_flank" />
