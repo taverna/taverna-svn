@@ -633,7 +633,7 @@ public class DotView implements ScuflModelEventListener, java.io.Serializable {
 						sb.append("|");
 					}
 					sb.append("<i" + inputs[i].getName() + ">"
-							+ inputs[i].getName());
+							+ inputs[i].getName().replaceAll("\\.","\\\\n"));
 				}
 				sb.append("}|");
 				// Show display name
@@ -647,7 +647,7 @@ public class DotView implements ScuflModelEventListener, java.io.Serializable {
 						sb.append("|");
 					}
 					sb.append("<o" + outputs[i].getName() + ">"
-							+ outputs[i].getName());
+							+ outputs[i].getName().replaceAll("\\.","\\\\n"));
 				}
 				sb.append("}}");
 				sb.append("\"\n");
