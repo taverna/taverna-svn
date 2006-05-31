@@ -3,9 +3,12 @@ package org.embl.ebi.escience.testhelpers;
 import java.sql.Connection;
 import java.sql.DriverManager;
 
+import org.apache.log4j.Logger;
 import org.embl.ebi.escience.baclava.store.JDBCBaclavaDataService;
 
 public abstract class DatabaseAwareTestCase extends PropertiesAwareTestCase {
+	
+	private static Logger logger = Logger.getLogger(DatabaseAwareTestCase.class);
 
 	private JDBCBaclavaDataService dataService = null;
 
@@ -14,13 +17,13 @@ public abstract class DatabaseAwareTestCase extends PropertiesAwareTestCase {
 		try {
 			Class.forName(System.getProperties().getProperty("taverna.datastore.jdbc.driver")).newInstance();
 			getConnection().close();
+			dataService = new JDBCBaclavaDataService();
+			dataService.reinit();
 		} catch (Exception e) {
 			String url = System.getProperties().getProperty("taverna.datastore.jdbc.url");
 			String username = System.getProperties().getProperty("taverna.datastore.jdbc.user");
-			fail("unable to connect to database: " + url + " user=" + username + ", so skipping test.");
-		}
-		dataService = new JDBCBaclavaDataService();
-		dataService.reinit();
+			logger.error("unable to connect to database: " + url + " user=" + username + ", so skipping test.");
+		}		
 	}
 
 	protected void tearDown() throws Exception {
