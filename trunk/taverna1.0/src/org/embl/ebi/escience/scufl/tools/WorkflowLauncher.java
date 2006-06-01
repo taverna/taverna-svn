@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: WorkflowLauncher.java,v $
- * Revision           $Revision: 1.7 $
+ * Revision           $Revision: 1.8 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-05-12 15:35:46 $
+ * Last modified on   $Date: 2006-06-01 10:29:17 $
  *               by   $Author: stain $
  * Created on 16-Mar-2006
  *****************************************************************/
@@ -414,7 +414,7 @@ public class WorkflowLauncher {
 
 		if (line.hasOption("help")) {
 			HelpFormatter formatter = new HelpFormatter();
-			formatter.printHelp("WorkflowLauncher <workflow> [..]\n"
+			formatter.printHelp("executeworkflow <workflow> [..]\n"
 					+ "Execute workflow and save outputs. "
 					+ "Inputs can be specified by multiple "
 					+ "--input options, or loaded from an "
