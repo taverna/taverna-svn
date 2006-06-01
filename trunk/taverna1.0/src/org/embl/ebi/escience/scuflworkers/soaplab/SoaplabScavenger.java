@@ -67,7 +67,7 @@ public class SoaplabScavenger extends Scavenger {
 		try {
 			categories = (String[]) Soap.callWebService(categoryBase, "getAvailableCategories");
 		} catch (Exception e) {
-			logger.debug("Missing category: "+categoryBase);
+			logger.debug("Missing category: "+categoryBase, e);
 			return false;
 		}
 		// Iterate over all the categories, creating new child nodes
@@ -77,7 +77,7 @@ public class SoaplabScavenger extends Scavenger {
 				services = (String[]) Soap
 						.callWebService(categoryBase, "getAvailableAnalysesInCategory", categories[i]);
 			} catch (Exception e) {
-				logger.info("Skipping categort " + categories[i]);
+				logger.info("Skipping category " + categories[i], e);
 				continue;
 			}
 			if (services.length == 0) {
