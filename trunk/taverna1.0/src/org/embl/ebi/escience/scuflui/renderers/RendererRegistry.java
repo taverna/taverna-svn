@@ -5,7 +5,6 @@ import org.apache.commons.discovery.tools.SPInterface;
 import org.apache.commons.discovery.resource.ClassLoaders;
 import org.apache.log4j.Logger;
 import org.embl.ebi.escience.baclava.DataThing;
-import org.embl.ebi.escience.scuflui.workbench.WorkbenchLauncher;
 
 // Utility Imports
 import java.util.ArrayList;

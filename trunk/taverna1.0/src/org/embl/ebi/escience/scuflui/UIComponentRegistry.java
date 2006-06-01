@@ -8,7 +8,6 @@ import org.apache.commons.discovery.resource.ClassLoaders;
 import org.apache.commons.discovery.tools.SPInterface;
 import org.apache.commons.discovery.tools.Service;
 import org.apache.log4j.Logger;
-import org.embl.ebi.escience.scuflui.workbench.WorkbenchLauncher;
 
 /**
  * A registry that maintains a list of all available UI components
