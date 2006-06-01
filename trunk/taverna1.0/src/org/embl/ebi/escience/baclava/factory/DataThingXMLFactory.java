@@ -157,7 +157,7 @@ public class DataThingXMLFactory {
 			try {
 				ObjectInputStream in = new ObjectInputStream(
 						new ByteArrayInputStream(decodedData));
-				result = (Object) in.readObject();
+				result = in.readObject();
 				in.close();
 			} catch (Exception ex) {
 				logger.error("Failed to deserialize java object type", ex);
@@ -187,8 +187,7 @@ public class DataThingXMLFactory {
 		// actually ignore the ordering section. For tree and partial
 		// order support we're going to need to consider it, but for
 		// now we're good.
-		String collectionType = e.getAttributeValue("type");
-		Element relationListElement = e.getChild("relationList", namespace);
+		String collectionType = e.getAttributeValue("type");		
 		Element itemListElement = e.getChild("itemList", namespace);
 		Collection result = null;
 		if (collectionType.equals("list")) {
@@ -275,44 +274,43 @@ public class DataThingXMLFactory {
 				// Iterate over the set, creating new items
 			}
 			return poElement;
-		} else {
-			// Handle data elements
-			Element dataElement = new Element("dataElement", namespace);
-			dataElement.setAttribute("lsid", theDataThing.getLSID(o));
-			try {
-				SemanticMarkup sm = theDataThing.getMetadataForObject(o, false);
-				dataElement.addContent(sm.getConfigurationElement());
-			} catch (NoMetadataFoundException nmfe) {
-				// No metadata available for this object
-			}
-			// Add the data itself
-			Element realDataElement = new Element("dataElementData", namespace);
-			byte[] theBytes = new byte[0];
-			if (o instanceof String) {
-				theBytes = ((String) o).getBytes();
-			} else if (o instanceof byte[]) {
-				theBytes = (byte[]) o;
-			}
-			// Handle java object
-			else {
-				try {
-					ByteArrayOutputStream bos = new ByteArrayOutputStream();
-					ObjectOutputStream oos = new ObjectOutputStream(bos);
-					oos.writeObject(o);
-					theBytes = bos.toByteArray();
-				} catch (Exception ex) {
-					logger.error("Error serializing " + o.getClass().getName());
-					ex.printStackTrace();
-				}
-			}
-			// Convert to base64
-			logger
-					.info("Size of binary data is " + theBytes.length
-							+ " bytes.");
-			realDataElement.setText(Base64.encodeBytes(theBytes));
-			dataElement.addContent(realDataElement);
-			return dataElement;
 		}
+		// Handle data elements
+		Element dataElement = new Element("dataElement", namespace);
+		dataElement.setAttribute("lsid", theDataThing.getLSID(o));
+		try {
+			SemanticMarkup sm = theDataThing.getMetadataForObject(o, false);
+			dataElement.addContent(sm.getConfigurationElement());
+		} catch (NoMetadataFoundException nmfe) {
+			// No metadata available for this object
+		}
+		// Add the data itself
+		Element realDataElement = new Element("dataElementData", namespace);
+		byte[] theBytes = new byte[0];
+		if (o instanceof String) {
+			theBytes = ((String) o).getBytes();
+		} else if (o instanceof byte[]) {
+			theBytes = (byte[]) o;
+		}
+		// Handle java object
+		else {
+			try {
+				ByteArrayOutputStream bos = new ByteArrayOutputStream();
+				ObjectOutputStream oos = new ObjectOutputStream(bos);
+				oos.writeObject(o);
+				theBytes = bos.toByteArray();
+			} catch (Exception ex) {
+				logger.error("Error serializing " + o.getClass().getName());
+				ex.printStackTrace();
+			}
+		}
+		// Convert to base64
+		logger
+				.info("Size of binary data is " + theBytes.length
+						+ " bytes.");
+		realDataElement.setText(Base64.encodeBytes(theBytes));
+		dataElement.addContent(realDataElement);
+		return dataElement;
 	}
 
 }
