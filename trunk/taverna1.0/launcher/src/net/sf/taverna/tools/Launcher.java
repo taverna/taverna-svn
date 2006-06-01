@@ -122,12 +122,12 @@ public class Launcher {
 			try {
 				bootDir = getBootstrapDir();
 			} catch (IOException e) { 
-				System.out.println("Can't find taverna home directory, " + e.getMessage());				
+				System.err.println("Can't find taverna home directory, " + e.getMessage());				
 				System.exit(100);				
 				return;
 			}
 			System.setProperty("taverna.home", bootDir.toString());
-		}
+		}			
 		
 		if (System.getProperty("taverna.dotlocation") == null
 				&& System.getProperty("os.name").toLowerCase().indexOf(
