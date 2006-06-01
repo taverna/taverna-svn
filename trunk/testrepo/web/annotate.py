@@ -3,10 +3,16 @@
 import sys
 import RDF
 
+
 import template_script
 from repository import model
 from repository.taverna.scufl import Scufl
 from repository.taverna.ns import XSCUFL
+from repository.taverna import baclava
+
+import logging as log
+#log = logging.getLogger("annotate")
+
 
 _options_string="""host='localhost', 
 user='repository', password='VJBc5HHL', 
@@ -20,6 +26,8 @@ URL_BASE = "http://www.mygrid.org.uk/testrepo/"
 ns = RDF.NS(URL_BASE + "o/")
 ns.rdfs = RDF.NS("http://www.w3.org/2000/01/rdf-schema#")
 ns.rdf = RDF.NS("http://www.w3.org/1999/02/22-rdf-syntax-ns#")
+
+
 
 
 def create_rdf_model():
@@ -41,7 +49,6 @@ def print_rdf_model():
 def add(subject, predicate, object):
     statement = RDF.Statement(subject, predicate, object)
     rdf_model.append(statement)
-    print "Added", statement
     return statement
 
 
@@ -73,7 +80,77 @@ def annotate_workflow(workflow):
                 type_name = child.tag.replace("}", "#")
                 type_name = type_name.replace("{", "")
                 add(p, ns.type, RDF.Uri(type_name))
-    print "Annotated", workflow                
+
+def annotate_test(test):
+    t = RDF.Uri("%stest/%s" % (URL_BASE, test.id))
+    workflow = test.workflow
+    wf = RDF.Uri("%sworkflow/%s" % (URL_BASE, workflow.id))
+    add(t, ns.tests, wf)
+
+def annotate_run(run):
+    r = RDF.Uri("%stest_run/%s" % (URL_BASE, run.id))
+    scufl = Scufl(run.workflow)
+
+    test = run.workflow_test
+    t = RDF.Uri("%stest/%s" % (URL_BASE, test.id))
+    add(r, ns.runs, t)
+
+    add(r, ns.uses, getattr(ns, "java/%s" % run.java))
+    add(r, ns.uses, getattr(ns, "taverna/%s" % run.taverna))
+
+    if run.return_code:
+        add(r, ns.fails, ns.returncode)
+    if run.stdout:
+        add(r, ns.fails, ns.stdout)
+    if run.stderr:
+        add(r, ns.fails, ns.stderr)
+    if not run.report:
+        add(r, ns.fails, ns.report)
+
+    outputs = None
+    if not run.outputdoc:
+        add(r, ns.fails, ns.outputdoc)
+        add(r, ns.fails, ns.output)
+    else:
+        try:
+            outputs = baclava.parse(run.outputdoc)
+        except Exception, e:
+            log.warn("Could not parse output document for test run %d: %s", run.id, e)
+            add(r, ns.fails, ns.outputdoc)
+            add(r, ns.fails, ns.output)
+    
+    expected_outputs = dict((out.port, out.data) for out in test.outputs)
+    expected_outports = set(expected_outputs.keys())
+
+    if outputs is not None:
+        real_outports = set(outputs.keys())
+
+        missing = expected_outports - real_outports
+        for port in missing:
+            p = RDF.Uri("%stest_run/%s/output/%s" % (URL_BASE, run.id, port))
+            add(r, ns.missing_output, p)
+            add(r, ns.fails, ns.output)
+
+        extra = real_outports - expected_outports
+        for port in extra:
+            p = RDF.Uri("%stest_run/%s/output/%s" % (URL_BASE, run.id, port))
+            add(r, ns.missing_output, p)
+            add(r, ns.fails, ns.output)
+        
+        common = real_outports.intersection(expected_outports)
+        for port in common:
+            p = RDF.Uri("%stest_run/%s/output/%s" % (URL_BASE, run.id, port))
+            add(r, ns.returned, p)
+            expected = expected_outputs[port]
+            real = outputs[port]
+
+            ex_p  = RDF.Uri("%stest/%s/output/%s" % (URL_BASE, test.id, port))
+            if real.data == expected:
+                add(p, ns.match, ex_p)
+            else:
+                add(r, ns.fails, ns.output)
+                add(p, ns.not_match, ex_p)
+
 
 def main():
     if "-c" in sys.argv:
@@ -85,6 +162,10 @@ def main():
         sys.exit(0)
     for workflow in model.Workflow.select():
         annotate_workflow(workflow)
+    for test in model.WorkflowTest.select():
+        annotate_test(test)
+    for run in model.WorkflowTestRun.select():
+        annotate_run(run)
 
 if __name__ == "__main__":
     main()
