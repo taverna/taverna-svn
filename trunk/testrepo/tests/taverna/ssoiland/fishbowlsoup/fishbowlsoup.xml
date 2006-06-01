@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<s:scufl xmlns:s="http://org.embl.ebi.escience/xscufl/0.1alpha" version="0.2" log="0">
+  <s:workflowdescription lsid="urn:lsid:www.mygrid.org.uk:operation:D8YG5M4O0N2" author="Stian Soiland" title="Fish bowl soup">Concatinate the inputs with a string constant, producing a list of outputs</s:workflowdescription>
+  <s:processor name="Concatenate_two_strings">
+    <s:local>org.embl.ebi.escience.scuflworkers.java.StringConcat</s:local>
+    <s:iterationstrategy>
+      <i:cross xmlns:i="http://org.embl.ebi.escience/xscufliteration/0.1beta10">
+        <i:iterator name="string1" />
+        <i:iterator name="string2" />
+      </i:cross>
+    </s:iterationstrategy>
+  </s:processor>
+  <s:processor name="String_Constant" boring="true">
+    <s:stringconstant>bowl</s:stringconstant>
+  </s:processor>
+  <s:link source="food" sink="Concatenate_two_strings:string1" />
+  <s:link source="Concatenate_two_strings:output" sink="result" />
+  <s:link source="String_Constant:value" sink="Concatenate_two_strings:string2" />
+  <s:source name="food">
+    <s:metadata>
+      <s:description>The inputs to be concatinated with the bowl</s:description>
+    </s:metadata>
+  </s:source>
+  <s:sink name="result">
+    <s:metadata>
+      <s:description>The inputs concatinated with bowl</s:description>
+    </s:metadata>
+  </s:sink>
+</s:scufl>
+
