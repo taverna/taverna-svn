@@ -179,7 +179,14 @@ ld               Release 06-05-14, May 06
         self.assertEqual(out.data.lsid, "")
         self.assertEqual(out.data[0].lsid, "")
         self.assertEqual(out.data[0][0].lsid, "")
- 
+
+    def testEmpty(self):
+        outputs = baclava.parse(EMPTY) 
+        out = outputs["gene_info"]
+        self.assertEqual(out.data.lsid, "")
+        self.assertEqual(out.data, [""])
+        self.assertEqual(out.data[0].lsid, "")
+
 
 SINGLE_ELEMENT="""<?xml version="1.0" encoding="UTF-8"?>
 <b:dataThingMap xmlns:b="http://org.embl.ebi.escience/baclava/0.1alpha">
@@ -294,6 +301,28 @@ DEEP_LISTS="""<?xml version="1.0" encoding="UTF-8"?>
               </b:dataElement>
             </b:itemList>
           </b:partialOrder>
+        </b:itemList>
+      </b:partialOrder>
+    </b:myGridDataDocument>
+  </b:dataThing>
+</b:dataThingMap>
+"""
+
+EMPTY="""<?xml version="1.0" encoding="UTF-8"?>
+<b:dataThingMap xmlns:b="http://org.embl.ebi.escience/baclava/0.1alpha">
+  <b:dataThing key="gene_info">
+    <b:myGridDataDocument lsid="" syntactictype="l('text/plain')">
+      <s:metadata xmlns:s="http://org.embl.ebi.escience/xscufl/0.1alpha">
+        <s:mimeTypes>
+          <s:mimeType>text/plain</s:mimeType>
+        </s:mimeTypes>
+      </s:metadata>
+      <b:partialOrder lsid="" type="list">
+        <b:relationList />
+        <b:itemList>
+          <b:dataElement lsid="" index="0">
+            <b:dataElementData />
+          </b:dataElement>
         </b:itemList>
       </b:partialOrder>
     </b:myGridDataDocument>

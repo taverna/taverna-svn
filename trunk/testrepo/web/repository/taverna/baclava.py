@@ -26,7 +26,7 @@ def make_input_doc(input_doc, inputs):
     
     root = make_input_elem(inputs)
         
-    if PrettyPrint and True:
+    if PrettyPrint:
         PrettyPrint(FromXml(ET.tostring(root)), output)
     else:    
         tree = ET.ElementTree(root)
@@ -162,13 +162,15 @@ def _parse_data(element, try_encoding=None):
     """
     if element.tag == BACLAVA.dataElement:
         data = element.find(BACLAVA.dataElementData)
-        result = base64.decodestring(data.text)
+        if not data.text:
+            result = ""
+        else:    
+            result = base64.decodestring(data.text)
         if try_encoding:
             try:
                 result = result.decode(try_encoding)
             except UnicodeDecodeError:
                 pass
-            
     elif element.tag == BACLAVA.partialOrder:
         if element.attrib.get("type") == "list":
             result = []
