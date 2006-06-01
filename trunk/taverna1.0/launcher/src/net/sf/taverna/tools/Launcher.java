@@ -154,11 +154,14 @@ public class Launcher {
 		}		
 		
 		File home = new File(System.getProperty("taverna.home"));
-		addJars(home, jarURLList);
-		addJars(new File(home, "lib/"), jarURLList);
-		addJars(new File(home, "libext/"), jarURLList);
-		addJars(new File(home, "plugins/"), jarURLList);
+		// IMPORTANT: conf/ before anything else, to make sure say log4j.properties
+		// can be overriden by users
 		addJars(new File(home, "conf/"), jarURLList);
+     	addJars(home, jarURLList);
+		// Plugins before lib, becuse they might require newer stuff than in lib
+		addJars(new File(home, "plugins/"), jarURLList);				
+		addJars(new File(home, "lib/"), jarURLList);
+		addJars(new File(home, "libext/"), jarURLList);				
 		addJars(new File(home, "resources/"), jarURLList);
 		
 		URL[] urls = (URL[])jarURLList.toArray(new URL[0]);
