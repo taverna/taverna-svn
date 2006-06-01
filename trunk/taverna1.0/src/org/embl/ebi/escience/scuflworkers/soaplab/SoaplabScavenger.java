@@ -7,6 +7,7 @@ package org.embl.ebi.escience.scuflworkers.soaplab;
 
 import javax.swing.tree.DefaultMutableTreeNode;
 
+import org.apache.log4j.Logger;
 import org.embl.ebi.escience.scuflui.workbench.Scavenger;
 import org.embl.ebi.escience.scuflui.workbench.ScavengerCreationException;
 import org.embl.ebi.escience.utils.Soap;
@@ -15,10 +16,11 @@ import org.embl.ebi.escience.utils.Soap;
  * A Scavenger that knows how to get all the Soaplab services from a specified
  * installation
  * 
- * @author Tom Oinn, Stian Soiland
+ * @author Tom Oinn, Stian Soiland, Stuart Owen
  */
 public class SoaplabScavenger extends Scavenger {
 
+	private static Logger logger = Logger.getLogger(SoaplabScavenger.class);
 	/**
 	 * The base URL of the Soaplab service
 	 */
@@ -49,8 +51,6 @@ public class SoaplabScavenger extends Scavenger {
 		}
 	}
 
-	// FIXME: Can callWebService be used by others? Move out to some common library!
-
 
 	/**
 	 * Create the category tree and fill it with SoapLab processor factories as described by categoryBase
@@ -65,8 +65,7 @@ public class SoaplabScavenger extends Scavenger {
 			categories = (String[]) Soap.callWebService(categoryBase,
 					"getAvailableCategories");
 		} catch (Exception e) {
-			// FIXME: Log failed call properly
-			e.printStackTrace();
+			logger.error("Exception adding soaplab service:"+categoryBase,e);
 			return false;
 		}
 		// Iterate over all the categories, creating new child nodes
@@ -76,7 +75,7 @@ public class SoaplabScavenger extends Scavenger {
 				services = (String[]) Soap.callWebService(categoryBase,
 						"getAvailableAnalysesInCategory", categories[i]);
 			} catch (Exception e) {
-				// FIXME: Log skipped category
+				logger.info("Skipping categort "+categories[i]);
 				continue;
 			}			
 			if (services.length == 0) {
