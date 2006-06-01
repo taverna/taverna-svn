@@ -6,10 +6,9 @@ progname=`basename "$0"`
 saveddir=`pwd`
 
 # need this for relative symlinks
-cd `dirname "$PRG"`
-  
+cd $(dirname "$PRG")
 while [ -h "$PRG" ] ; do
-    ls=`ls -ld "$PRG"`
+    ls=$(ls -ld "$PRG")
     link=`expr "$ls" : '.*-> \(.*\)$'`
     if expr "$link" : '.*/.*' > /dev/null; then
 	PRG="$link"
@@ -19,23 +18,9 @@ while [ -h "$PRG" ] ; do
 done
   
 TAVERNA_HOME=`dirname "$PRG"`
-
 cd "$saveddir"
 
-# make it fully qualified
-TAVERNA_HOME=`cd "$TAVERNA_HOME" && pwd`
+MAIN=org.embl.ebi.escience.scufl.tools.WorkflowLauncher
 
+sh $TAVERNA_HOME/runme.sh -Djava.awt.headless=true -Dtaverna.main=$MAIN -jar $@
 
-CLASSP=$TAVERNA_HOME/resources:$TAVERNA_HOME/conf:$TAVERNA_HOME/lib/taverna-1.3.2-RC1.jar
-
-for i in $TAVERNA_HOME/lib/*.jar
-do
-  CLASSP=$CLASSP:$i
-done
-
-case "`uname`" in
-  CYGWIN*) CLASSP=`cygpath --path --type windows $CLASSP`;;
-esac
-
-
-java -classpath $CLASSP -Djava.protocol.handler.pkgs=uk.ac.rdg.resc.jstyx.client -Dtaverna.home=$TAVERNA_HOME -ea org.embl.ebi.escience.scufl.tools.WorkflowLauncher $@

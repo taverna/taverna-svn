@@ -6,10 +6,9 @@ progname=`basename "$0"`
 saveddir=`pwd`
 
 # need this for relative symlinks
-cd `dirname "$PRG"`
-  
+cd $(dirname "$PRG")
 while [ -h "$PRG" ] ; do
-    ls=`ls -ld "$PRG"`
+    ls=$(ls -ld "$PRG")
     link=`expr "$ls" : '.*-> \(.*\)$'`
     if expr "$link" : '.*/.*' > /dev/null; then
 	PRG="$link"
@@ -19,26 +18,8 @@ while [ -h "$PRG" ] ; do
 done
   
 TAVERNA_HOME=`dirname "$PRG"`
-
 cd "$saveddir"
 
-# make it fully qualified
-TAVERNA_HOME=`cd "$TAVERNA_HOME" && pwd`
+MAIN=org.embl.ebi.escience.baclava.tools.DataThingViewer
 
-
-CLASSP=$TAVERNA_HOME/resources:$TAVERNA_HOME/conf
-
-for i in $TAVERNA_HOME/lib/*.jar
-do
-  CLASSP=$CLASSP:$i
-done
-for i in $TAVERNA_HOME/plugins/*.jar
-do
-  CLASSP=$CLASSP:$i
-done
-
-case "`uname`" in
-  CYGWIN*) CLASSP=`cygpath --path --type windows $CLASSP`;;
-esac
-
-java -classpath $CLASSP -Dtaverna.scrollDesktop -ea org.embl.ebi.escience.baclava.tools.DataThingViewer
+sh $TAVERNA_HOME/runme.sh -Dtaverna.scrollDesktop -Dtaverna.main=$MAIN -jar $@

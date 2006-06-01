@@ -6,10 +6,9 @@ progname=`basename "$0"`
 saveddir=`pwd`
 
 # need this for relative symlinks
-cd `dirname "$PRG"`
-  
+cd $(dirname "$PRG")
 while [ -h "$PRG" ] ; do
-    ls=`ls -ld "$PRG"`
+    ls=$(ls -ld "$PRG")
     link=`expr "$ls" : '.*-> \(.*\)$'`
     if expr "$link" : '.*/.*' > /dev/null; then
 	PRG="$link"
@@ -22,20 +21,4 @@ TAVERNA_HOME=`dirname "$PRG"`
 
 cd "$saveddir"
 
-# make it fully qualified
-TAVERNA_HOME=`cd "$TAVERNA_HOME" && pwd`
-
-
-LAUNCHER=$(echo $TAVERNA_HOME/taverna-launcher*.jar)
-CLASSP=$TAVERNA_HOME/resources:$TAVERNA_HOME/conf:$LAUNCHER
-
-for i in $TAVERNA_HOME/libext/*.jar
-do
-  CLASSP=$CLASSP:$i
-done
-
-case "`uname`" in
-  CYGWIN*) CLASSP=`cygpath --path --type windows $CLASSP`;;
-esac
-
-java -Xmx300m -classpath $CLASSP -Djava.protocol.handler.pkgs=uk.ac.rdg.resc.jstyx.client -Dtaverna.home=$TAVERNA_HOME -ea net.sf.taverna.tools.Launcher
+java -Xmx300m -Djava.protocol.handler.pkgs=uk.ac.rdg.resc.jstyx.client -jar $TAVERNA_HOME/taverna-launcher-1.3-SNAPSHOT.jar
