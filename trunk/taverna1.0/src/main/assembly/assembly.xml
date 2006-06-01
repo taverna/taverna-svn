@@ -23,6 +23,11 @@
       <directory>contrib/examples</directory>
       <outputDirectory>examples</outputDirectory>
     </fileSet>
+    <!-- provenance -->
+    <fileSet>
+      <directory>target/provenance</directory>
+      <outputDirectory>/</outputDirectory>
+    </fileSet>
   </fileSets>
   <moduleSets>
     <moduleSet>

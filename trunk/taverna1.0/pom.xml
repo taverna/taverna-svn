@@ -32,6 +32,39 @@
         </dependency>
       </dependencies>
     </profile>
+    <profile>
+      <id>provenance</id>
+      <activation>
+        <property>
+          <name>provenance</name>
+        </property>
+      </activation>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-antrun-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>provenance</id>
+                <phase>generate-resources</phase>
+                <configuration>
+                  <tasks>
+	                <get src="http://twiki.mygrid.org.uk/twiki/pub/Mygrid/TavernaProvenancePlugin/provenance-0.9.2-bin.zip" 
+		              dest="${project.build.directory}/provenance.zip" usetimestamp="yes"/>
+                    <unzip src="${project.build.directory}/provenance.zip"
+                      dest="${project.build.directory}/provenance"/>
+                  </tasks>
+                </configuration>
+                <goals>
+                  <goal>run</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
   </profiles>
   <build>
     <sourceDirectory>src</sourceDirectory>
