@@ -70,10 +70,15 @@ public class Workbench extends JFrame {
 			String key = (String) keys.nextElement();
 			String value = (String) rb.getString(key);
 			sysProps.put(key, value);
-		}
+		}		
 		// Set the native look and feel for whatever platform we're on
 		try {
 			if (System.getProperty("taverna.workbench.themeclass") == null) {
+				if (System.getProperty("os.name").equals("Linux") && System.getProperty("java.vm.version").startsWith("1.5"))
+				{
+					//stops the default theme looking horrible with jdk1.5 under Linux
+					UIManager.setLookAndFeel("javax.swing.plaf.synth.SynchLookAndFeel");
+				}
 				UIManager.setLookAndFeel(UIManager
 						.getSystemLookAndFeelClassName());
 			} else {
@@ -403,6 +408,7 @@ public class Workbench extends JFrame {
 			public GenericUIComponentFrame(ScuflModel model,
 					ScuflUIComponent component) {
 				super(component.getName(), true, true, true, true);
+				
 				getContentPane().setLayout(new BorderLayout());
 				this.component = component;
 				JScrollPane pane = new JScrollPane((JComponent) component);
