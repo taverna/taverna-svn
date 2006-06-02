@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: XMLSplitterSerialisationHelperTest.java,v $
- * Revision           $Revision: 1.2 $
+ * Revision           $Revision: 1.3 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-05-26 08:53:50 $
+ * Last modified on   $Date: 2006-06-02 13:57:22 $
  *               by   $Author: sowen70 $
  * Created on 24-May-2006
  *****************************************************************/
@@ -69,9 +69,9 @@ public class XMLSplitterSerialisationHelperTest extends TestCase {
 
 		assertEquals(
 				"unexpected xml",
-				"<s:extensions xmlns:s=\"http://org.embl.ebi.escience/xscufl/0.1alpha\"><s:complextype optional=\"false\" unbounded=\"false\" typename=\"typename\" name=\"a\" qname=\"{namespace}typename\"><s:elements><s:complextype optional=\"false\" unbounded=\"false\" typename=\"typename2\" name=\"b\" qname=\"{namespace}typename2\"><s:elements><s:complextype id=\"{namespace}typename\" /></s:elements></s:complextype></s:elements></s:complextype></s:extensions>",
+				"<s:extensions xmlns:s=\"http://org.embl.ebi.escience/xscufl/0.1alpha\"><s:complextype optional=\"false\" unbounded=\"false\" typename=\"typename\" name=\"a\" qname=\"{namespace}typename\"><s:elements><s:complextype optional=\"false\" unbounded=\"false\" typename=\"typename2\" name=\"b\" qname=\"{namespace}typename2\"><s:elements><s:complextype id=\"{namespace}typename\" optional=\"false\" unbounded=\"false\" typename=\"typename\" name=\"a\" /></s:elements></s:complextype></s:elements></s:complextype></s:extensions>",
 				xml);
-
+		
 	}
 
 	public void testCyclicToElement2() throws Exception {
@@ -88,8 +88,8 @@ public class XMLSplitterSerialisationHelperTest extends TestCase {
 
 		assertEquals(
 				"unexpected xml",
-				"<s:extensions xmlns:s=\"http://org.embl.ebi.escience/xscufl/0.1alpha\"><s:complextype optional=\"false\" unbounded=\"false\" typename=\"typename\" name=\"a\" qname=\"{namespace}typename\"><s:elements><s:complextype id=\"{namespace}typename\" /></s:elements></s:complextype></s:extensions>",
-				xml);
+				"<s:extensions xmlns:s=\"http://org.embl.ebi.escience/xscufl/0.1alpha\"><s:complextype optional=\"false\" unbounded=\"false\" typename=\"typename\" name=\"a\" qname=\"{namespace}typename\"><s:elements><s:complextype id=\"{namespace}typename\" optional=\"false\" unbounded=\"false\" typename=\"typename\" name=\"a\" /></s:elements></s:complextype></s:extensions>",
+				xml);		
 	}
 
 	public void testCyclicFromElement() throws Exception {
@@ -113,7 +113,7 @@ public class XMLSplitterSerialisationHelperTest extends TestCase {
 
 		assertEquals("should be only 1 element", 1, b_elements.size());
 
-		assertEquals("b should contain a reference to a", a, b_elements.get(0));
+		assertEquals("b should contain a reference to a", a.toString(), b_elements.get(0).toString());
 	}
 
 }
