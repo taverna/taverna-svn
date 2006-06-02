@@ -50,7 +50,7 @@
                 <phase>generate-resources</phase>
                 <configuration>
                   <tasks>
-	                <get src="http://twiki.mygrid.org.uk/twiki/pub/Mygrid/TavernaProvenancePlugin/provenance-0.9.3-bin.zip" 
+	                <get src="http://twiki.mygrid.org.uk/twiki/pub/Mygrid/TavernaProvenancePlugin/provenance-1.0-bin.zip" 
 		              dest="${project.build.directory}/provenance.zip" usetimestamp="yes"/>
                     <unzip src="${project.build.directory}/provenance.zip"
                       dest="${project.build.directory}/provenance"/>
