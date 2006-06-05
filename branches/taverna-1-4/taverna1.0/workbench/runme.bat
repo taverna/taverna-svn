@@ -1,6 +1,6 @@
 @echo off
 
-set DATA="%APPDATA%\Taverrna"
+set DATA="%APPDATA%\Taverna"
 if not exist %DATA% mkdir %DATA%
 %HOMEDRIVE%
 cd %DATA%
