@@ -22,4 +22,9 @@ cd "$saveddir"
 
 MAIN=org.embl.ebi.escience.baclava.tools.DataThingViewer
 
-sh $TAVERNA_HOME/runme.sh -Dtaverna.scrollDesktop -Dtaverna.main=$MAIN -jar $@
+ARGS="-Xmx300m"
+ARGS="$ARGS -Djava.protocol.handler.pkgs=uk.ac.rdg.resc.jstyx.client"
+ARGS="$ARGS -Djava.awt.headless=true -Dtaverna.main=$MAIN"
+
+java $ARGS -jar $TAVERNA_HOME/taverna-launcher-1.4.jar $@
+
