@@ -2,6 +2,7 @@
 
 set DATA="%APPDATA%\Taverrna"
 if not exist %DATA% mkdir %DATA%
+%HOMEDRIVE%
 cd %DATA%
 
 set OPTS=-Xms256m -Xmx512m 
