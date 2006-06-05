@@ -391,6 +391,13 @@
       <scope>system</scope>
       <systemPath>${basedir}/lib/icu4j.jar</systemPath>
     </dependency>
+	<dependency>
+      <groupId>mygrid</groupId>
+      <artifactId>InterationServer</artifactId>
+      <version>0.1</version>
+      <scope>system</scope>
+      <systemPath>${basedir}/lib/InteractionServer-0.1.jar</systemPath>
+    </dependency>
     <dependency>
       <groupId>mygrid</groupId>
       <artifactId>jakarta-oro</artifactId>
