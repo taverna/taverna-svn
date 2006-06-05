@@ -106,6 +106,7 @@ public class MobyPanel extends JPanel implements ScuflUIComponent{
     }
     
     public String getName(){
-        return name;
+    	if (name==null) return "";
+    	else return name;
     }
   }

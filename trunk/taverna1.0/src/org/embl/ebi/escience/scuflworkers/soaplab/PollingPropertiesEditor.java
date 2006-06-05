@@ -164,7 +164,12 @@ public class PollingPropertiesEditor implements ProcessorEditor {
 		}
 
 		public String getName() {
-			return "Polling properties for " + processor.getName();
+			if (processor==null){
+				return "Polling properties";
+			}
+			else{			
+				return "Polling properties for " + processor.getName();
+			}
 		}
 
 		public ImageIcon getIcon() {

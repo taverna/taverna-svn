@@ -54,7 +54,14 @@ public abstract class AbstractProcessorAction implements ProcessorActionSPI {
 	    return AbstractProcessorAction.this.getIcon();
 	}
 	public String getName() {
-	    return AbstractProcessorAction.this.getDescription();
+		try
+		{
+			return AbstractProcessorAction.this.getDescription();
+		}
+		catch(NullPointerException ex)
+		{
+			return "";
+		}
 	}
     }
 

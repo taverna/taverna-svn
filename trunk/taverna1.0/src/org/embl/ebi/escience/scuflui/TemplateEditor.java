@@ -160,7 +160,13 @@ public class TemplateEditor extends JComponent implements ScuflUIComponent {
 	}
 
 	public String getName() {
-		return "Template editor for " + theProcessor.getName();
+		if (theProcessor==null){
+			return "Template editor for unknown processor";
+		}
+		else {
+			return "Template editor for " + theProcessor.getName();
+		}
+		
 	}
 
 	public ImageIcon getIcon() {

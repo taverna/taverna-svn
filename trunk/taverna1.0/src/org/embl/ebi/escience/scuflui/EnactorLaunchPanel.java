@@ -393,7 +393,14 @@ class WorkflowInputPanel extends JPanel {
 	}
 
 	public String getName() {
-		return this.underlyingPort.getName();
+		if (this.underlyingPort==null){
+			return "";
+		}
+		else{
+			return this.underlyingPort.getName();
+		}
+			
+		
 	}
 
 	public Port getPort() {

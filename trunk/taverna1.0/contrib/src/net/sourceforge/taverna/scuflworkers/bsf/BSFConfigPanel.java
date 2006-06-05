@@ -73,7 +73,7 @@ import bsh.Interpreter;
 /**
  * A JPanel that can configure the beanshell processor type
  * 
- * Last edited by: $Author: phidias $
+ * Last edited by: $Author: sowen70 $
  * @author mfortner
  */
 public class BSFConfigPanel extends JPanel implements ScuflUIComponent,
@@ -695,7 +695,12 @@ public class BSFConfigPanel extends JPanel implements ScuflUIComponent,
 
 	public String getName()
 	{
-		return "Configuring script for " + processor.getName();
+		if (processor == null){
+			return "Configuring script";
+		}
+		else {
+			return "Configuring script for " + processor.getName();
+		}
 	}
 
 	public ImageIcon getIcon()
