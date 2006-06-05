@@ -22,5 +22,8 @@ cd "$saveddir"
 
 MAIN=org.embl.ebi.escience.scufl.tools.WorkflowLauncher
 
-sh $TAVERNA_HOME/runme.sh -Djava.awt.headless=true -Dtaverna.main=$MAIN -jar $@
+ARGS="-Xmx300m"
+ARGS="$ARGS -Djava.protocol.handler.pkgs=uk.ac.rdg.resc.jstyx.client"
+ARGS="$ARGS -Djava.awt.headless=true -Dtaverna.main=$MAIN"
 
+java $ARGS -jar $TAVERNA_HOME/taverna-launcher-1.4.jar $@
