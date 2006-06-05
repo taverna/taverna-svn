@@ -26,7 +26,7 @@ For the lazy, here's a quick summary:
   mvn -f parent-pom.xml package assembly:directory
 
 6 Run Taverna from the new distribution directory
-  cd target/taverna-1.3-SNAPSHOT-bin/taverna-1.3-SNAPSHOT
+  cd target/taverna-1.4-bin/taverna-1.4
   sh runme.sh
 
 
