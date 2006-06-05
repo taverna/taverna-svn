@@ -6,19 +6,19 @@
   </s:processor>
   <s:processor name="getChildren">
     <s:arbitrarywsdl>
-      <s:wsdl>http://www.ebi.ac.uk/interpro/internal-tools/goviz-ws/GoViz.jws?wsdl</s:wsdl>
+      <s:wsdl>http://www.ebi.ac.uk/collab/mygrid/service1/goviz/GoViz.jws?wsdl</s:wsdl>
       <s:operation>getChildren</s:operation>
     </s:arbitrarywsdl>
   </s:processor>
   <s:processor name="getAncestry">
     <s:arbitrarywsdl>
-      <s:wsdl>http://www.ebi.ac.uk/interpro/internal-tools/goviz-ws/GoViz.jws?wsdl</s:wsdl>
+      <s:wsdl>http://www.ebi.ac.uk/collab/mygrid/service1/goviz/GoViz.jws?wsdl</s:wsdl>
       <s:operation>getAncestors</s:operation>
     </s:arbitrarywsdl>
   </s:processor>
   <s:processor name="getParents">
     <s:arbitrarywsdl>
-      <s:wsdl>http://www.ebi.ac.uk/interpro/internal-tools/goviz-ws/GoViz.jws?wsdl</s:wsdl>
+      <s:wsdl>http://www.ebi.ac.uk/collab/mygrid/service1/goviz/GoViz.jws?wsdl</s:wsdl>
       <s:operation>getParents</s:operation>
     </s:arbitrarywsdl>
   </s:processor>
@@ -27,43 +27,43 @@
   </s:processor>
   <s:processor name="colourInputTerm">
     <s:arbitrarywsdl>
-      <s:wsdl>http://www.ebi.ac.uk/interpro/internal-tools/goviz-ws/GoViz.jws?wsdl</s:wsdl>
+      <s:wsdl>http://www.ebi.ac.uk/collab/mygrid/service1/goviz/GoViz.jws?wsdl</s:wsdl>
       <s:operation>markTerm</s:operation>
     </s:arbitrarywsdl>
   </s:processor>
   <s:processor name="getImmediateChildren">
     <s:arbitrarywsdl>
-      <s:wsdl>http://www.ebi.ac.uk/interpro/internal-tools/goviz-ws/GoViz.jws?wsdl</s:wsdl>
+      <s:wsdl>http://www.ebi.ac.uk/collab/mygrid/service1/goviz/GoViz.jws?wsdl</s:wsdl>
       <s:operation>getChildren</s:operation>
     </s:arbitrarywsdl>
   </s:processor>
   <s:processor name="markAncestors">
     <s:arbitrarywsdl>
-      <s:wsdl>http://www.ebi.ac.uk/interpro/internal-tools/goviz-ws/GoViz.jws?wsdl</s:wsdl>
+      <s:wsdl>http://www.ebi.ac.uk/collab/mygrid/service1/goviz/GoViz.jws?wsdl</s:wsdl>
       <s:operation>markTerm</s:operation>
     </s:arbitrarywsdl>
   </s:processor>
   <s:processor name="getresults">
     <s:arbitrarywsdl>
-      <s:wsdl>http://www.ebi.ac.uk/interpro/internal-tools/goviz-ws/GoViz.jws?wsdl</s:wsdl>
+      <s:wsdl>http://www.ebi.ac.uk/collab/mygrid/service1/goviz/GoViz.jws?wsdl</s:wsdl>
       <s:operation>getDot</s:operation>
     </s:arbitrarywsdl>
   </s:processor>
   <s:processor name="finish">
     <s:arbitrarywsdl>
-      <s:wsdl>http://www.ebi.ac.uk/interpro/internal-tools/goviz-ws/GoViz.jws?wsdl</s:wsdl>
+      <s:wsdl>http://www.ebi.ac.uk/collab/mygrid/service1/goviz/GoViz.jws?wsdl</s:wsdl>
       <s:operation>destroySession</s:operation>
     </s:arbitrarywsdl>
   </s:processor>
   <s:processor name="add">
     <s:arbitrarywsdl>
-      <s:wsdl>http://www.ebi.ac.uk/interpro/internal-tools/goviz-ws/GoViz.jws?wsdl</s:wsdl>
+      <s:wsdl>http://www.ebi.ac.uk/collab/mygrid/service1/goviz/GoViz.jws?wsdl</s:wsdl>
       <s:operation>addTerm</s:operation>
     </s:arbitrarywsdl>
   </s:processor>
   <s:processor name="addImmediateChildren">
     <s:arbitrarywsdl>
-      <s:wsdl>http://www.ebi.ac.uk/interpro/internal-tools/goviz-ws/GoViz.jws?wsdl</s:wsdl>
+      <s:wsdl>http://www.ebi.ac.uk/collab/mygrid/service1/goviz/GoViz.jws?wsdl</s:wsdl>
       <s:operation>addTerm</s:operation>
     </s:arbitrarywsdl>
   </s:processor>
@@ -72,13 +72,13 @@
   </s:processor>
   <s:processor name="colourChildren">
     <s:arbitrarywsdl>
-      <s:wsdl>http://www.ebi.ac.uk/interpro/internal-tools/goviz-ws/GoViz.jws?wsdl</s:wsdl>
+      <s:wsdl>http://www.ebi.ac.uk/collab/mygrid/service1/goviz/GoViz.jws?wsdl</s:wsdl>
       <s:operation>markTerm</s:operation>
     </s:arbitrarywsdl>
   </s:processor>
   <s:processor name="create">
     <s:arbitrarywsdl critical="true">
-      <s:wsdl>http://www.ebi.ac.uk/interpro/internal-tools/goviz-ws/GoViz.jws?wsdl</s:wsdl>
+      <s:wsdl>http://www.ebi.ac.uk/collab/mygrid/service1/goviz/GoViz.jws?wsdl</s:wsdl>
       <s:operation>createSession</s:operation>
     </s:arbitrarywsdl>
   </s:processor>

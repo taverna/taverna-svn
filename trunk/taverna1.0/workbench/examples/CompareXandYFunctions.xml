@@ -50,6 +50,9 @@ union.addAll(unionSet);</s:scriptvalue>
       </s:beanshelloutputlist>
     </s:beanshell>
   </s:processor>
+  <s:processor name="Red" boring="true">
+    <s:stringconstant>crimson</s:stringconstant>
+  </s:processor>
   <s:processor name="GetUniqueIDs">
     <s:beanshell>
       <s:scriptvalue>Set outputs = new HashSet();
@@ -66,66 +69,35 @@ out.addAll(outputs);</s:scriptvalue>
       </s:beanshelloutputlist>
     </s:beanshell>
   </s:processor>
-  <s:processor name="Red" boring="true">
-    <s:stringconstant>crimson</s:stringconstant>
-  </s:processor>
-  <s:processor name="Yellow" boring="true">
-    <s:stringconstant>gold</s:stringconstant>
-  </s:processor>
   <s:processor name="showCommon">
     <s:arbitrarywsdl>
-      <s:wsdl>http://www.ebi.ac.uk/interpro/internal-tools/goviz-ws/GoViz.jws?wsdl</s:wsdl>
+      <s:wsdl>http://www.ebi.ac.uk/collab/mygrid/service1/goviz/GoViz.jws?wsdl</s:wsdl>
       <s:operation>markTerm</s:operation>
     </s:arbitrarywsdl>
   </s:processor>
-  <s:processor name="showAnnotatedUnique">
-    <s:arbitrarywsdl>
-      <s:wsdl>http://www.ebi.ac.uk/interpro/internal-tools/goviz-ws/GoViz.jws?wsdl</s:wsdl>
-      <s:operation>markTerm</s:operation>
-    </s:arbitrarywsdl>
-  </s:processor>
-  <s:processor name="getDot">
-    <s:arbitrarywsdl>
-      <s:wsdl>http://www.ebi.ac.uk/interpro/internal-tools/goviz-ws/GoViz.jws?wsdl</s:wsdl>
-      <s:operation>getDot</s:operation>
-    </s:arbitrarywsdl>
-  </s:processor>
-  <s:processor name="GetUniqueIDs2">
-    <s:beanshell>
-      <s:scriptvalue>Set outputs = new HashSet();
-for (Iterator i = in.iterator(); i.hasNext();) {
-  outputs.add(i.next());
-}
-out = new ArrayList();
-out.addAll(outputs);</s:scriptvalue>
-      <s:beanshellinputlist>
-        <s:beanshellinput s:syntactictype="l('text/plain')">in</s:beanshellinput>
-      </s:beanshellinputlist>
-      <s:beanshelloutputlist>
-        <s:beanshelloutput s:syntactictype="l('text/plain')">out</s:beanshelloutput>
-      </s:beanshelloutputlist>
-    </s:beanshell>
-  </s:processor>
-  <s:processor name="Green" boring="true">
-    <s:stringconstant>chartreuse3</s:stringconstant>
-  </s:processor>
-  <s:processor name="ShowOnlyUniqueTerms" boring="true">
-    <s:stringconstant>true</s:stringconstant>
+  <s:processor name="GetXChromFunctions">
+    <s:description>Homo sapiens genes (NCBI36)</s:description>
+    <s:biomart>
+      <biomart:MartQuery xmlns:biomart="http://org.embl.ebi.escience/xscufl-biomart/0.1alpha">
+        <biomart:MartService location="http://www.biomart.org/biomart/martservice" />
+        <biomart:MartDataset displayName="Homo sapiens genes (NCBI36)" name="hsapiens_gene_ensembl" type="TableSet" initialBatchSize="100" maximumBatchSize="50000" visible="false">
+          <biomart:MartURLLocation default="1" displayName="ENSEMBL 38 (SANGER)" host="www.biomart.org" name="ensembl" port="80" serverVirtualSchema="default" virtualSchema="default" visible="1" />
+        </biomart:MartDataset>
+        <biomart:Query virtualSchemaName="default" count="0">
+          <biomart:Dataset name="hsapiens_gene_ensembl">
+            <biomart:Attribute name="go" />
+            <biomart:Filter name="chr_name" value="X" />
+            <biomart:Filter name="with_go" excluded="0" />
+          </biomart:Dataset>
+        </biomart:Query>
+      </biomart:MartQuery>
+    </s:biomart>
   </s:processor>
   <s:processor name="PassUniqueTerms">
     <s:local>org.embl.ebi.escience.scuflworkers.java.EchoList</s:local>
   </s:processor>
-  <s:processor name="showUniqueToY">
-    <s:arbitrarywsdl>
-      <s:wsdl>http://www.ebi.ac.uk/interpro/internal-tools/goviz-ws/GoViz.jws?wsdl</s:wsdl>
-      <s:operation>markTerm</s:operation>
-    </s:arbitrarywsdl>
-  </s:processor>
   <s:processor name="Fail_if_false" boring="true">
     <s:local>org.embl.ebi.escience.scuflworkers.java.FailIfFalse</s:local>
-  </s:processor>
-  <s:processor name="PassAllTerms" boring="true">
-    <s:local>org.embl.ebi.escience.scuflworkers.java.EchoList</s:local>
   </s:processor>
   <s:processor name="GetUniqueIDs1">
     <s:beanshell>
@@ -143,48 +115,18 @@ out.addAll(outputs);</s:scriptvalue>
       </s:beanshelloutputlist>
     </s:beanshell>
   </s:processor>
-  <s:processor name="addTerm">
-    <s:arbitrarywsdl>
-      <s:wsdl>http://www.ebi.ac.uk/interpro/internal-tools/goviz-ws/GoViz.jws?wsdl</s:wsdl>
-      <s:operation>addTerm</s:operation>
-    </s:arbitrarywsdl>
-  </s:processor>
-  <s:processor name="showAnnotatedNonUnique">
-    <s:arbitrarywsdl>
-      <s:wsdl>http://www.ebi.ac.uk/interpro/internal-tools/goviz-ws/GoViz.jws?wsdl</s:wsdl>
-      <s:operation>markTerm</s:operation>
-    </s:arbitrarywsdl>
-  </s:processor>
-  <s:processor name="Purple" boring="true">
-    <s:stringconstant>purple</s:stringconstant>
-  </s:processor>
   <s:processor name="FlattenList">
     <s:local>org.embl.ebi.escience.scuflworkers.java.FlattenList</s:local>
   </s:processor>
-  <s:processor name="Fail_if_true" boring="true">
-    <s:local>org.embl.ebi.escience.scuflworkers.java.FailIfTrue</s:local>
-  </s:processor>
   <s:processor name="createSession" boring="true">
     <s:arbitrarywsdl>
-      <s:wsdl>http://www.ebi.ac.uk/interpro/internal-tools/goviz-ws/GoViz.jws?wsdl</s:wsdl>
+      <s:wsdl>http://www.ebi.ac.uk/collab/mygrid/service1/goviz/GoViz.jws?wsdl</s:wsdl>
       <s:operation>createSession</s:operation>
-    </s:arbitrarywsdl>
-  </s:processor>
-  <s:processor name="destroySession">
-    <s:arbitrarywsdl>
-      <s:wsdl>http://www.ebi.ac.uk/interpro/internal-tools/goviz-ws/GoViz.jws?wsdl</s:wsdl>
-      <s:operation>destroySession</s:operation>
     </s:arbitrarywsdl>
   </s:processor>
   <s:processor name="getUniqueAncestors">
     <s:arbitrarywsdl>
-      <s:wsdl>http://www.ebi.ac.uk/interpro/internal-tools/goviz-ws/GoViz.jws?wsdl</s:wsdl>
-      <s:operation>getAncestors</s:operation>
-    </s:arbitrarywsdl>
-  </s:processor>
-  <s:processor name="getCommonAncestors">
-    <s:arbitrarywsdl>
-      <s:wsdl>http://www.ebi.ac.uk/interpro/internal-tools/goviz-ws/GoViz.jws?wsdl</s:wsdl>
+      <s:wsdl>http://www.ebi.ac.uk/collab/mygrid/service1/goviz/GoViz.jws?wsdl</s:wsdl>
       <s:operation>getAncestors</s:operation>
     </s:arbitrarywsdl>
   </s:processor>
@@ -232,23 +174,69 @@ union.addAll(unionSet);</s:scriptvalue>
       </s:beanshelloutputlist>
     </s:beanshell>
   </s:processor>
-  <s:processor name="GetXChromFunctions">
-    <s:biomart>
-      <biomart:MartQuery xmlns:biomart="http://org.embl.ebi.escience/xscufl-biomart/0.1alpha">
-        <biomart:MartService location="http://www.biomart.org/biomart/martservice" />
-        <biomart:MartDataset displayName="Homo sapiens genes (NCBI36)" name="hsapiens_gene_ensembl" type="TableSet" initialBatchSize="100" maximumBatchSize="50000" visible="false">
-          <biomart:MartURLLocation default="1" displayName="ENSEMBL 38 (SANGER)" host="www.biomart.org" name="ensembl" port="80" serverVirtualSchema="default" virtualSchema="default" visible="1" />
-        </biomart:MartDataset>
-        <biomart:Query virtualSchemaName="default" count="0">
-          <biomart:Dataset name="hsapiens_gene_ensembl">
-            <biomart:Attribute name="go" />
-            <biomart:Filter name="chr_name" value="X" />
-          </biomart:Dataset>
-        </biomart:Query>
-      </biomart:MartQuery>
-    </s:biomart>
+  <s:processor name="getCommonAncestors">
+    <s:arbitrarywsdl>
+      <s:wsdl>http://www.ebi.ac.uk/collab/mygrid/service1/goviz/GoViz.jws?wsdl</s:wsdl>
+      <s:operation>getAncestors</s:operation>
+    </s:arbitrarywsdl>
+  </s:processor>
+  <s:processor name="destroySession">
+    <s:arbitrarywsdl>
+      <s:wsdl>http://www.ebi.ac.uk/collab/mygrid/service1/goviz/GoViz.jws?wsdl</s:wsdl>
+      <s:operation>destroySession</s:operation>
+    </s:arbitrarywsdl>
+  </s:processor>
+  <s:processor name="Fail_if_true" boring="true">
+    <s:local>org.embl.ebi.escience.scuflworkers.java.FailIfTrue</s:local>
+  </s:processor>
+  <s:processor name="Purple" boring="true">
+    <s:stringconstant>purple</s:stringconstant>
+  </s:processor>
+  <s:processor name="addTerm">
+    <s:arbitrarywsdl>
+      <s:wsdl>http://www.ebi.ac.uk/collab/mygrid/service1/goviz/GoViz.jws?wsdl</s:wsdl>
+      <s:operation>addTerm</s:operation>
+    </s:arbitrarywsdl>
+  </s:processor>
+  <s:processor name="PassAllTerms" boring="true">
+    <s:local>org.embl.ebi.escience.scuflworkers.java.EchoList</s:local>
+  </s:processor>
+  <s:processor name="showUniqueToY">
+    <s:arbitrarywsdl>
+      <s:wsdl>http://www.ebi.ac.uk/collab/mygrid/service1/goviz/GoViz.jws?wsdl</s:wsdl>
+      <s:operation>markTerm</s:operation>
+    </s:arbitrarywsdl>
+  </s:processor>
+  <s:processor name="ShowOnlyUniqueTerms" boring="true">
+    <s:stringconstant>true</s:stringconstant>
+  </s:processor>
+  <s:processor name="GetUniqueIDs2">
+    <s:beanshell>
+      <s:scriptvalue>Set outputs = new HashSet();
+for (Iterator i = in.iterator(); i.hasNext();) {
+  outputs.add(i.next());
+}
+out = new ArrayList();
+out.addAll(outputs);</s:scriptvalue>
+      <s:beanshellinputlist>
+        <s:beanshellinput s:syntactictype="l('text/plain')">in</s:beanshellinput>
+      </s:beanshellinputlist>
+      <s:beanshelloutputlist>
+        <s:beanshelloutput s:syntactictype="l('text/plain')">out</s:beanshelloutput>
+      </s:beanshelloutputlist>
+    </s:beanshell>
+  </s:processor>
+  <s:processor name="showAnnotatedUnique">
+    <s:arbitrarywsdl>
+      <s:wsdl>http://www.ebi.ac.uk/collab/mygrid/service1/goviz/GoViz.jws?wsdl</s:wsdl>
+      <s:operation>markTerm</s:operation>
+    </s:arbitrarywsdl>
+  </s:processor>
+  <s:processor name="Yellow" boring="true">
+    <s:stringconstant>gold</s:stringconstant>
   </s:processor>
   <s:processor name="GetYChromFunctions">
+    <s:description>Homo sapiens genes (NCBI36)</s:description>
     <s:biomart>
       <biomart:MartQuery xmlns:biomart="http://org.embl.ebi.escience/xscufl-biomart/0.1alpha">
         <biomart:MartService location="http://www.biomart.org/biomart/martservice" />
@@ -259,10 +247,26 @@ union.addAll(unionSet);</s:scriptvalue>
           <biomart:Dataset name="hsapiens_gene_ensembl">
             <biomart:Attribute name="go" />
             <biomart:Filter name="chr_name" value="Y" />
+            <biomart:Filter name="with_go" excluded="0" />
           </biomart:Dataset>
         </biomart:Query>
       </biomart:MartQuery>
     </s:biomart>
+  </s:processor>
+  <s:processor name="showAnnotatedNonUnique">
+    <s:arbitrarywsdl>
+      <s:wsdl>http://www.ebi.ac.uk/collab/mygrid/service1/goviz/GoViz.jws?wsdl</s:wsdl>
+      <s:operation>markTerm</s:operation>
+    </s:arbitrarywsdl>
+  </s:processor>
+  <s:processor name="Green" boring="true">
+    <s:stringconstant>chartreuse3</s:stringconstant>
+  </s:processor>
+  <s:processor name="getDot">
+    <s:arbitrarywsdl>
+      <s:wsdl>http://www.ebi.ac.uk/collab/mygrid/service1/goviz/GoViz.jws?wsdl</s:wsdl>
+      <s:operation>getDot</s:operation>
+    </s:arbitrarywsdl>
   </s:processor>
   <s:link source="FlattenList:outputlist" sink="GenericSetOperations1:set2" />
   <s:link source="FlattenList:outputlist" sink="GetUniqueIDs2:in" />
@@ -294,8 +298,8 @@ union.addAll(unionSet);</s:scriptvalue>
   <s:link source="createSession:createSessionReturn" sink="showCommon:sessionID" />
   <s:link source="createSession:createSessionReturn" sink="showUniqueToY:sessionID" />
   <s:link source="getCommonAncestors:getAncestorsReturn" sink="FlattenList:inputlist" />
-  <s:link source="getDot:getDotReturn" sink="Graph" />
   <s:link source="getUniqueAncestors:getAncestorsReturn" sink="showUniqueToY:geneOntologyID" />
+  <s:link source="getDot:getDotReturn" sink="Graph" />
   <s:sink name="Graph">
     <s:metadata>
       <s:mimeTypes>
