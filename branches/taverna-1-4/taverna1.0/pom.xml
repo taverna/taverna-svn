@@ -396,7 +396,7 @@
       <artifactId>InterationServer</artifactId>
       <version>0.1</version>
       <scope>system</scope>
-      <systemPath>${basedir}/lib/InteractioServer-0.1.jar</systemPath>
+      <systemPath>${basedir}/lib/InteractionServer-0.1.jar</systemPath>
     </dependency>
     <dependency>
       <groupId>mygrid</groupId>
