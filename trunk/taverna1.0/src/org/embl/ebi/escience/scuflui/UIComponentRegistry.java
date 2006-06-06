@@ -48,6 +48,7 @@ public class UIComponentRegistry {
 		ClassLoaders loaders = new ClassLoaders();
 		loaders.put(classLoader);
 		Enumeration spe = Service.providers(spiIF, loaders);
+		// FIXME: Throws UnsupportedClassVersionError on 1.5 classes from 1.4 VM
 		while (spe.hasMoreElements()) {
 			ScuflUIComponent component = (ScuflUIComponent) spe.nextElement();			
 			String componentClassName = component.getClass().getName();
