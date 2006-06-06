@@ -87,6 +87,8 @@ public class TreeTableModelView extends TreeModelView implements TreeTableModel 
 			// model, i.e. not an alternate
 			if (node.getUserObject() instanceof Processor) {
 				return true;
+            } else if (node.getUserObject() instanceof AlternateProcessor) {
+				return true;
 			} else if (node.getUserObject() instanceof Port) {
 
 				Port port = (Port) node.getUserObject();
