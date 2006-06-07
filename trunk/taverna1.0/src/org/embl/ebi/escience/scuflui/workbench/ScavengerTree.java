@@ -81,8 +81,18 @@ public class ScavengerTree extends ExtendedJTree implements ScuflUIComponent, Dr
 
 	private ScavengerTreePanel parentPanel = null;
 
+	private boolean populating = false;
+
 	public ScavengerTreePanel getParentPanel() {
 		return parentPanel;
+	}
+
+	public void setPopulating(boolean populating) {
+		this.populating = populating;
+	}
+
+	public boolean isPopulating() {
+		return populating;
 	}
 
 	/**
@@ -256,8 +266,10 @@ public class ScavengerTree extends ExtendedJTree implements ScuflUIComponent, Dr
 					}
 				}
 				// Add the default soaplab installation if this is defined
+				setPopulating(true);
 				new DefaultScavengerLoaderThread(this);
 			} else {
+				setPopulating(false);
 				setExpansion(true);
 			}
 		}
@@ -379,6 +391,7 @@ public class ScavengerTree extends ExtendedJTree implements ScuflUIComponent, Dr
 				// scavengerTree.setExpansion(true);
 				if (getParentPanel() != null)
 					getParentPanel().stopProgressBar();
+				scavengerTree.setPopulating(false);
 			}
 		}
 	}
