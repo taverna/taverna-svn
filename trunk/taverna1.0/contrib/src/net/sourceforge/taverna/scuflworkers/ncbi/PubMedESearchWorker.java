@@ -1,7 +1,6 @@
 package net.sourceforge.taverna.scuflworkers.ncbi;
 
 import java.net.MalformedURLException;
-import java.util.HashMap;
 import java.util.Map;
 
 import net.sourceforge.taverna.baclava.DataThingAdapter;
@@ -12,10 +11,10 @@ import uk.ac.soton.itinnovation.taverna.enactor.entities.TaskExecutionException;
  * This processor searches for articles in PubMed and returns their IDs
  * in XML format.
  * 
- * Last edited by $Author: phidias $
+ * Last edited by $Author: sowen70 $
  * 
  * @author Mark
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  * 
  * @tavinput term   The search term.
  * @tavinput db		The database to be searched (default=pubmed).

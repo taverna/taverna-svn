@@ -1,6 +1,5 @@
 package net.sourceforge.taverna.scuflui.renderers;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.regex.Pattern;
 
@@ -21,10 +20,10 @@ import org.xml.sax.SAXException;
 /**
  * This class renders SVG Documents.
  * 
- * Last edited by $Author: phidias $
+ * Last edited by $Author: sowen70 $
  * 
  * @author Mark
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
 public class SVGRenderer extends ByPattern implements RendererSPI{
 

@@ -15,7 +15,6 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JWindow;
 import javax.swing.SwingUtilities;
-import javax.swing.Timer;
 import javax.swing.border.BevelBorder;
 public class JXSplash extends JWindow
   implements KeyListener, MouseListener, ActionListener

@@ -1,8 +1,6 @@
 package net.sourceforge.taverna.publish;
 
 import java.io.ByteArrayInputStream;
-import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import org.apache.commons.vfs.FileObject;
@@ -10,20 +8,17 @@ import org.apache.commons.vfs.FileSelectInfo;
 import org.apache.commons.vfs.FileSelector;
 import org.apache.commons.vfs.FileUtil;
 import org.dom4j.Document;
-import org.dom4j.Node;
 import org.dom4j.io.SAXReader;
-
-import uk.ac.soton.itinnovation.taverna.enactor.entities.TaskExecutionException;
 
 
 /**
  * This class accepts a file if the file contains at least one node that
  * matches the XPath query.
  * 
- * Last edited by $Author: phidias $
+ * Last edited by $Author: sowen70 $
  * 
  * @author Mark
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class XPathFileSelector implements FileSelector {
     

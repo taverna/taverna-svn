@@ -1,21 +1,18 @@
 package net.sourceforge.taverna.scuflworkers.ncbi;
 
-import java.net.MalformedURLException;
 import java.util.HashMap;
 import java.util.Map;
 
 import net.sourceforge.taverna.baclava.DataThingAdapter;
-import net.sourceforge.taverna.io.PostStreamTransmitter;
-import net.sourceforge.taverna.io.TransmitterException;
 import uk.ac.soton.itinnovation.taverna.enactor.entities.TaskExecutionException;
 
 /**
  * This class provides a wrapper for the NCBI EFetch Utilities. 
  * 
- * Last edited by $Author: phidias $
+ * Last edited by $Author: sowen70 $
  * 
  * @author Mark
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public class EFetchWorker extends AbstractEFetchWorker {
 

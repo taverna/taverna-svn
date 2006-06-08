@@ -8,10 +8,10 @@ import java.util.Map;
 
 import net.iharder.Base64;
 
+import org.apache.commons.httpclient.HostConfiguration;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpException;
 import org.apache.commons.httpclient.methods.GetMethod;
-import org.apache.commons.httpclient.HostConfiguration;
 
 
 
@@ -19,10 +19,10 @@ import org.apache.commons.httpclient.HostConfiguration;
  * This class uses an HTTP GET to send data to a URL endpoint, and returns
  * the result
  * 
- * Last edited by $Author: mereden $
+ * Last edited by $Author: sowen70 $
  * 
  * @author Mark
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public class GetStreamTransmitter extends AbstractStreamTransmitter {
 

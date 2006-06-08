@@ -3,9 +3,7 @@ package net.sourceforge.taverna.scuflworkers.io;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import net.sourceforge.taverna.baclava.DataThingAdapter;
@@ -20,7 +18,7 @@ import uk.ac.soton.itinnovation.taverna.enactor.entities.TaskExecutionException;
  * 
  * 
  * @author Mark
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  * 
  * @tavinput command  The command to be executed.
  * @tavinput args	  A list of  arguments to be passed to the command.

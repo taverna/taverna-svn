@@ -8,16 +8,16 @@ import net.sourceforge.taverna.publish.Repository;
 
 import org.apache.commons.vfs.FileObject;
 import org.apache.commons.vfs.FileSystemException;
-import org.apache.commons.vfs.VFS;
 import org.apache.commons.vfs.FileUtil;
+import org.apache.commons.vfs.VFS;
 
 /**
  * This class provides a local file system implementation of the repository.
  * 
- * Last edited by $Author: phidias $
+ * Last edited by $Author: sowen70 $
  * 
  * @author Mark
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class LocalRepository extends AbstractRepository implements Repository {
 

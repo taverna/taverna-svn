@@ -6,7 +6,6 @@
  */
 package net.sourceforge.taverna.scuflui.workbench;
 
-import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Toolkit;
 import java.awt.event.WindowAdapter;
@@ -34,7 +33,6 @@ import org.embl.ebi.escience.scufl.parser.XScuflParser;
 import org.embl.ebi.escience.scufl.semantics.RDFSParser;
 import org.embl.ebi.escience.scuflui.AdvancedModelExplorer;
 import org.embl.ebi.escience.scuflui.ScavengerTreePanel;
-import org.embl.ebi.escience.scuflui.ScuflDiagramPanel;
 import org.embl.ebi.escience.scuflui.ScuflModelTreeTableContrib;
 import org.embl.ebi.escience.scuflui.ScuflUIComponent;
 import org.embl.ebi.escience.scuflui.UIComponentRegistry;

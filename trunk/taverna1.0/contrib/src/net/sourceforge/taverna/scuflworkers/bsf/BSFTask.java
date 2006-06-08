@@ -5,14 +5,12 @@
  */
 package net.sourceforge.taverna.scuflworkers.bsf;
 
-import java.awt.datatransfer.DataFlavor;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Vector;
 
 import org.apache.bsf.BSFEngine;
-import org.apache.bsf.ExtendedBSFDeclaredBean;
 import org.apache.bsf.ExtendedBSFManager;
 import org.apache.log4j.Logger;
 import org.embl.ebi.escience.baclava.DataThing;
@@ -27,7 +25,7 @@ import bsh.Interpreter;
 /**
  * A task to invoke a BSFProcessor
  * 
- * Last edited by: $Author: phidias $
+ * Last edited by: $Author: sowen70 $
  * @author mfortner
  */
 public class BSFTask implements ProcessorTaskWorker {

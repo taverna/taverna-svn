@@ -9,9 +9,6 @@ import java.util.Map;
 
 import net.sourceforge.taverna.baclava.DataThingAdapter;
 import net.sourceforge.taverna.io.TransmitterException;
-
-import org.embl.ebi.escience.baclava.DataThing;
-
 import uk.ac.soton.itinnovation.taverna.enactor.entities.TaskExecutionException;
 
 /**
@@ -19,7 +16,7 @@ import uk.ac.soton.itinnovation.taverna.enactor.entities.TaskExecutionException;
  * not currently support a pure XML 
  * 
  * @author mfortner
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public class PubMedSearchWorker extends AbstractNCBIWorker {
 	

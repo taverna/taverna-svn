@@ -2,21 +2,21 @@ package net.sourceforge.taverna.publish.sftp;
 
 import java.io.IOException;
 
-import org.apache.commons.vfs.FileObject;
-import org.apache.commons.vfs.FileSystemException;
-import org.apache.commons.vfs.FileUtil;
-
 import net.sourceforge.taverna.publish.AbstractRepository;
 import net.sourceforge.taverna.publish.PublicationException;
 import net.sourceforge.taverna.publish.Repository;
 
+import org.apache.commons.vfs.FileObject;
+import org.apache.commons.vfs.FileSystemException;
+import org.apache.commons.vfs.FileUtil;
+
 /**
  * This class represents a Secure FTP repository.
  * 
- * Last edited by $Author: phidias $
+ * Last edited by $Author: sowen70 $
  * 
  * @author Mark
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class SFTPRepository extends AbstractRepository implements Repository {
 

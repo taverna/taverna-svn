@@ -3,7 +3,9 @@ package net.sourceforge.taverna.scuflworkers.ui;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.swing.*;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JRadioButton;
 
 import net.sourceforge.taverna.baclava.DataThingAdapter;
 
@@ -19,7 +21,7 @@ import uk.ac.soton.itinnovation.taverna.enactor.entities.TaskExecutionException;
  * 
  * 
  * @author Mark
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  * 
  * @tavinput title				The title to be displayed in the dialog box's titlebar
  * @tavinput message			The prompt message to be displayed

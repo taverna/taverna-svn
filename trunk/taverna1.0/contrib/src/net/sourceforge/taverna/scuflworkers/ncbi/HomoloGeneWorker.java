@@ -9,9 +9,6 @@ import java.util.Map;
 
 import net.sourceforge.taverna.baclava.DataThingAdapter;
 import net.sourceforge.taverna.io.TransmitterException;
-
-import org.embl.ebi.escience.baclava.DataThing;
-
 import uk.ac.soton.itinnovation.taverna.enactor.entities.TaskExecutionException;
 
 /**

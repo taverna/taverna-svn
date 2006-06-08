@@ -6,7 +6,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import net.sourceforge.taverna.baclava.DataThingAdapter;
-import net.sourceforge.taverna.scuflworkers.io.FileListByExtTask.FileExtFilter;
 
 import org.embl.ebi.escience.scuflworkers.java.LocalWorker;
 
@@ -18,7 +17,7 @@ import uk.ac.soton.itinnovation.taverna.enactor.entities.TaskExecutionException;
  * 
  * 
  * @author Mark
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  * 
  * @tavinput regex		A regular expression used to filter the file list.
  * @tavinput directory  The directory to be searched.

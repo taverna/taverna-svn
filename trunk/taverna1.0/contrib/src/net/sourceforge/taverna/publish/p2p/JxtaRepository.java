@@ -2,19 +2,19 @@ package net.sourceforge.taverna.publish.p2p;
 
 import java.io.IOException;
 
-import org.apache.commons.vfs.FileObject;
-import org.apache.commons.vfs.FileUtil;
-
 import net.sourceforge.taverna.publish.AbstractRepository;
 import net.sourceforge.taverna.publish.PublicationException;
+
+import org.apache.commons.vfs.FileObject;
+import org.apache.commons.vfs.FileUtil;
 
 /**
  * This class
  * 
- * Last edited by $Author: phidias $
+ * Last edited by $Author: sowen70 $
  * 
  * @author Mark
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class JxtaRepository extends AbstractRepository {
     

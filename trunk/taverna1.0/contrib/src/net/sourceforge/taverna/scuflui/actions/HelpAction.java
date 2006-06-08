@@ -6,19 +6,14 @@ import java.io.IOException;
 import javax.swing.Action;
 import javax.swing.JDialog;
 import javax.swing.JEditorPane;
-import javax.swing.JOptionPane;
-
-import net.sourceforge.taverna.scuflui.workbench.Workbench;
-
-import org.embl.ebi.escience.scufl.parser.XScuflParser;
 
 /**
  * This class opens a Help window.
  * 
- * Last edited by $Author: phidias $
+ * Last edited by $Author: sowen70 $
  * 
  * @author Mark
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
 public class HelpAction extends DefaultAction {
     private static final String ACTION_COMMAND_KEY_ABOUT = "help-command";

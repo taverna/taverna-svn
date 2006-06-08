@@ -5,7 +5,6 @@ import java.util.Map;
 
 import net.sourceforge.taverna.baclava.DataThingAdapter;
 import net.sourceforge.taverna.io.TransmitterException;
-
 import uk.ac.soton.itinnovation.taverna.enactor.entities.TaskExecutionException;
 
 /**
@@ -13,7 +12,7 @@ import uk.ac.soton.itinnovation.taverna.enactor.entities.TaskExecutionException;
  * 
  * 
  * @author Mark
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  * 
  * @tavinput id	The protein accession.
  * @tavoutput outputText an INSD formatted protein record

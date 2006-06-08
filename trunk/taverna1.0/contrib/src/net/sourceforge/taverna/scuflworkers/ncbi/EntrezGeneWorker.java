@@ -9,9 +9,6 @@ import java.util.Map;
 
 import net.sourceforge.taverna.baclava.DataThingAdapter;
 import net.sourceforge.taverna.io.TransmitterException;
-
-import org.embl.ebi.escience.baclava.DataThing;
-
 import uk.ac.soton.itinnovation.taverna.enactor.entities.TaskExecutionException;
 
 /**
@@ -19,7 +16,7 @@ import uk.ac.soton.itinnovation.taverna.enactor.entities.TaskExecutionException;
  * It can also transform the resulting XML document.
  * 
  * @author mfortner
- * @version $Revision: 1.5 $
+ * @version $Revision: 1.6 $
  * 
  * @tavinput term			The search term (usually a gene name).
  * @tavinput maxRecords		The maximum number of records to be returned.

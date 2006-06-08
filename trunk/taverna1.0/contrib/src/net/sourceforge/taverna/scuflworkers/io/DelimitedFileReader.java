@@ -4,9 +4,9 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Arrays;
 
 import net.sourceforge.taverna.baclava.DataThingAdapter;
 
@@ -18,7 +18,7 @@ import uk.ac.soton.itinnovation.taverna.enactor.entities.TaskExecutionException;
  * This file reads a delimited text file.
  * 
  * @author Mark
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  * 
  * @tavinput fileurl	The fully qualified name of the text file to be read.
  * @tavinput delimiter  The delimiter used to differentiate between the fields in a row of data.

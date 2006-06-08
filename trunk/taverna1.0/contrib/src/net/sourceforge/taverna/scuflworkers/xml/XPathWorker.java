@@ -4,7 +4,6 @@
  */
 package net.sourceforge.taverna.scuflworkers.xml;
 
-import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -16,7 +15,6 @@ import net.sourceforge.taverna.baclava.DataThingAdapter;
 import org.dom4j.Document;
 import org.dom4j.Node;
 import org.dom4j.io.SAXReader;
-import org.dom4j.io.XMLWriter;
 import org.embl.ebi.escience.baclava.factory.DataThingFactory;
 import org.embl.ebi.escience.scuflworkers.java.LocalWorker;
 
@@ -27,7 +25,7 @@ import uk.ac.soton.itinnovation.taverna.enactor.entities.TaskExecutionException;
  * returns a nodelist containing the nodes that match the XPath expression.
  * 
  * @author mfortner
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  * 
  * @tavinput xpath			The XPath expression used to extract data from the document.
  * @tavinput xml-text		The XML text to be processed.

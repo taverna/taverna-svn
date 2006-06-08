@@ -3,16 +3,15 @@ package net.sourceforge.taverna.publish;
 import org.apache.commons.vfs.FileObject;
 import org.apache.commons.vfs.FileSelectInfo;
 import org.apache.commons.vfs.FileSelector;
-import org.apache.commons.vfs.FileSystemException;
 
 /**
  * This class selects files whose name matches the regular expression
  * provided in the constructor.
  * 
- * Last edited by $Author: phidias $
+ * Last edited by $Author: sowen70 $
  * 
  * @author Mark
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class RegexFileSelector implements FileSelector {
 

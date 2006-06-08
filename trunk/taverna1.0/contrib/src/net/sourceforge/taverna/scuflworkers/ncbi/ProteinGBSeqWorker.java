@@ -9,16 +9,13 @@ import java.util.Map;
 
 import net.sourceforge.taverna.baclava.DataThingAdapter;
 import net.sourceforge.taverna.io.TransmitterException;
-
-import org.embl.ebi.escience.baclava.DataThing;
-
 import uk.ac.soton.itinnovation.taverna.enactor.entities.TaskExecutionException;
 
 /**
  * This class fetches protein data in GBSeq XML format.
  * 
  * @author mfortner
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  * 
  * @tavinput id	The protein accession.
  * @tavoutput outputText a GBSeq XML formatted record

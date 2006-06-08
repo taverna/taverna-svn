@@ -3,8 +3,6 @@ package net.sourceforge.taverna.scuflworkers.biojava;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.biojava.bio.seq.io.*;
-
 import net.sourceforge.taverna.baclava.DataThingAdapter;
 
 import org.embl.ebi.escience.scuflworkers.java.LocalWorker;
@@ -14,10 +12,10 @@ import uk.ac.soton.itinnovation.taverna.enactor.entities.TaskExecutionException;
 /**
  * This class
  * 
- * Last edited by $Author: phidias $
+ * Last edited by $Author: sowen70 $
  * 
  * @author Mark
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public class FileFormatIDWorker implements LocalWorker {
 

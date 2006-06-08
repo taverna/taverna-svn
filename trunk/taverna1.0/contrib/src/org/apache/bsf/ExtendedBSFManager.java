@@ -1,23 +1,24 @@
 package org.apache.bsf;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.security.AccessController;
 import java.security.PrivilegedActionException;
 import java.security.PrivilegedExceptionAction;
+import java.util.HashMap;
 import java.util.Iterator;
-import java.util.Vector;
+import java.util.Map;
 import java.util.Properties;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.util.*;
-import java.io.InputStream;
+import java.util.Set;
+import java.util.Vector;
 
 /**
  * This class provides internal access to BSFManager internals
  * 
- * Last edited by $Author: phidias $
+ * Last edited by $Author: sowen70 $
  * 
  * @author Mark
- * @version $Revision: 1.5 $
+ * @version $Revision: 1.6 $
  */
 public class ExtendedBSFManager extends BSFManager {
 	static Properties props = new Properties();

@@ -5,22 +5,20 @@
 package net.sourceforge.taverna.scuflworkers.ncbi;
 
 import java.net.MalformedURLException;
-import java.util.HashMap;
 import java.util.Map;
 
 import net.sourceforge.taverna.baclava.DataThingAdapter;
 import net.sourceforge.taverna.io.TransmitterException;
-
 import uk.ac.soton.itinnovation.taverna.enactor.entities.TaskExecutionException;
 
 /**
  * This processor fetches a nucleotide sequence from NCBI and returns the results in
  * the TinySeqXML format.
  * 
- * Last edited by: $Author: phidias $
+ * Last edited by: $Author: sowen70 $
  * 
  * @author mfortner
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  * 
  * @tavinput id  The nucleotide accession.
  * @tavoutput outputText a TinySeqXML formatted nucleotide record

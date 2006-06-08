@@ -9,16 +9,13 @@ import java.util.Map;
 
 import net.sourceforge.taverna.baclava.DataThingAdapter;
 import net.sourceforge.taverna.io.TransmitterException;
-
-import org.embl.ebi.escience.baclava.DataThing;
-
 import uk.ac.soton.itinnovation.taverna.enactor.entities.TaskExecutionException;
 
 /**
  * This processor fetches an Entrez Protein record from NCBI.
  * 
  * @author mfortner
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  *
  * @tavinput term			The search term (usually a protein name or id).
  * @tavinput maxRecords		The maximum number of records to be returned.

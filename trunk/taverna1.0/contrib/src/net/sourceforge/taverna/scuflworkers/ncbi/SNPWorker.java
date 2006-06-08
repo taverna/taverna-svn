@@ -9,14 +9,13 @@ import java.util.Map;
 
 import net.sourceforge.taverna.baclava.DataThingAdapter;
 import net.sourceforge.taverna.io.TransmitterException;
-
 import uk.ac.soton.itinnovation.taverna.enactor.entities.TaskExecutionException;
 
 /**
  * This processor fetches SNP records.
  * 
  * @author mfortner
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  * 
  * @tavinput id			A comma-delimited list of SNP IDs
  * @tavinput rettype	

@@ -14,8 +14,6 @@ import org.embl.ebi.escience.scufl.XScufl;
 import org.embl.ebi.escience.scufl.parser.XScuflFormatException;
 import org.embl.ebi.escience.scuflworkers.ProcessorFactory;
 import org.embl.ebi.escience.scuflworkers.XMLHandler;
-
-import net.sourceforge.taverna.scuflworkers.bsf.*;
 import org.jdom.Element;
 
 /**
