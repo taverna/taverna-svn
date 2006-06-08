@@ -57,7 +57,16 @@
           <descriptor>src/main/assembly/assembly.xml</descriptor>
         </configuration>
       </plugin>
+<plugin>
+  <groupId>org.apache.maven.plugins</groupId>
+  <artifactId>maven-javadoc-plugin</artifactId>
+  <configuration>
+    <linksource>true</linksource>
+	<protected>true</protected>
+  </configuration>
+</plugin>
     </plugins>
+
   </build>
   <!-- Ready for when the myGrid repository is set up
   <repositories>
