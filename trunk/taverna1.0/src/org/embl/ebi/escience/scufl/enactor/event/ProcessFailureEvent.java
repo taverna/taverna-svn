@@ -5,9 +5,10 @@
  */
 package org.embl.ebi.escience.scufl.enactor.event;
 
+import java.util.Map;
+
 import org.embl.ebi.escience.scufl.Processor;
 import org.embl.ebi.escience.scufl.enactor.WorkflowInstance;
-import java.util.Map;
 
 public class ProcessFailureEvent extends WorkflowInstanceEvent {
 

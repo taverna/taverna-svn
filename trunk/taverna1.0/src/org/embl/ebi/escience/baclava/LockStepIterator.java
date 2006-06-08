@@ -7,12 +7,8 @@ package org.embl.ebi.escience.baclava;
 
 // Utility Imports
 import java.util.Iterator;
+import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.*;
-
-import org.embl.ebi.escience.baclava.BaclavaIterator;
-import java.lang.Object;
-import java.lang.UnsupportedOperationException;
 
 /**
  * Provides an Iterator that iterates over the contained iterators in lock step,

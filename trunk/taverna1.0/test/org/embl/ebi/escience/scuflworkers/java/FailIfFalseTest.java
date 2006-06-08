@@ -1,11 +1,13 @@
 package org.embl.ebi.escience.scuflworkers.java;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+
+import junit.framework.TestCase;
 
 import org.embl.ebi.escience.baclava.DataThing;
 
 import uk.ac.soton.itinnovation.taverna.enactor.entities.TaskExecutionException;
-import junit.framework.TestCase;
 
 public class FailIfFalseTest extends TestCase 
 {

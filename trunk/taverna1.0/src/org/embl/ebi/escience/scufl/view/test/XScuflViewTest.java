@@ -5,18 +5,11 @@
  */
 package org.embl.ebi.escience.scufl.view.test;
 
+import java.net.URL;
+
 import org.embl.ebi.escience.scufl.ScuflModel;
 import org.embl.ebi.escience.scufl.parser.XScuflParser;
 import org.embl.ebi.escience.scufl.view.XScuflView;
-
-// Network Imports
-import java.net.URL;
-
-import java.lang.ClassLoader;
-import java.lang.Exception;
-import java.lang.String;
-import java.lang.System;
-import java.lang.Thread;
 
 /**
  * Attempts to load data into a ScuflModel from the same source that the

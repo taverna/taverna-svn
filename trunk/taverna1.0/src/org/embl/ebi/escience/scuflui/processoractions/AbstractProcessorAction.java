@@ -5,11 +5,20 @@
  */
 package org.embl.ebi.escience.scuflui.processoractions;
 
-import org.embl.ebi.escience.scufl.*;
-import org.embl.ebi.escience.scuflui.*;
-import java.awt.event.*;
-import javax.swing.*;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+import javax.swing.ImageIcon;
+import javax.swing.JComponent;
+import javax.swing.JPanel;
+
+import org.embl.ebi.escience.scufl.Processor;
+import org.embl.ebi.escience.scufl.ScuflModel;
+import org.embl.ebi.escience.scuflui.ScuflUIComponent;
+import org.embl.ebi.escience.scuflui.UIUtils;
 
 /**
  * A simple abstract implementation of the ProcessorActionSPI

@@ -5,19 +5,16 @@
  */
 package org.embl.ebi.escience.scuflworkers.stringconstant;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.apache.log4j.Logger;
 import org.embl.ebi.escience.baclava.DataThing;
 import org.embl.ebi.escience.scufl.Processor;
 import org.embl.ebi.escience.scuflworkers.ProcessorTaskWorker;
-import uk.ac.soton.itinnovation.taverna.enactor.entities.TaskExecutionException;
+
 import uk.ac.soton.itinnovation.taverna.enactor.entities.ProcessorTask;
-
-// Utility Imports
-import java.util.HashMap;
-import java.util.Map;
-
-import org.embl.ebi.escience.scuflworkers.stringconstant.StringConstantProcessor;
-import java.lang.Exception;
+import uk.ac.soton.itinnovation.taverna.enactor.entities.TaskExecutionException;
 
 
 

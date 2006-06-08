@@ -7,15 +7,10 @@ package org.embl.ebi.escience.scuflworkers.beanshell;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import org.embl.ebi.escience.scufl.Processor;
-//import org.embl.ebi.escience.scuflui.workbench.GenericUIComponentFrame;
-//import org.embl.ebi.escience.scuflui.workbench.Workbench;
-import org.embl.ebi.escience.scuflworkers.ProcessorEditor;
-import org.embl.ebi.escience.scuflui.UIUtils;
 
-import org.embl.ebi.escience.scuflworkers.beanshell.BeanshellConfigPanel;
-import org.embl.ebi.escience.scuflworkers.beanshell.BeanshellProcessor;
-import java.lang.String;
+import org.embl.ebi.escience.scufl.Processor;
+import org.embl.ebi.escience.scuflui.UIUtils;
+import org.embl.ebi.escience.scuflworkers.ProcessorEditor;
 
 
 

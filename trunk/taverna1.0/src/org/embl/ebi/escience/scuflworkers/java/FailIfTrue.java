@@ -5,9 +5,12 @@
  */
 package org.embl.ebi.escience.scuflworkers.java;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.embl.ebi.escience.baclava.DataThing;
+
 import uk.ac.soton.itinnovation.taverna.enactor.entities.TaskExecutionException;
-import java.util.*;
 
 /**
  * A processor which fails if the test input matches the string 'true'

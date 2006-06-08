@@ -24,19 +24,16 @@
 //      Created for Project :   MYGRID
 //      Dependencies        :
 //
-//      Last commit info    :   $Author: mereden $
-//                              $Date: 2004-03-11 17:20:37 $
-//                              $Revision: 1.11 $
+//      Last commit info    :   $Author: sowen70 $
+//                              $Date: 2006-06-08 09:24:06 $
+//                              $Revision: 1.12 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 package uk.ac.soton.itinnovation.taverna.enactor.broker;
 
-import org.embl.ebi.escience.scufl.ScuflModel;
-
-// Utility Imports
 import java.util.Map;
 
-import java.lang.String;
+import org.embl.ebi.escience.scufl.ScuflModel;
 
 
 

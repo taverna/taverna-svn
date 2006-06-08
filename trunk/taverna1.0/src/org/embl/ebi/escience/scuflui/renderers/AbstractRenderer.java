@@ -1,10 +1,11 @@
 package org.embl.ebi.escience.scuflui.renderers;
 
-import org.embl.ebi.escience.baclava.DataThing;
-
-import javax.swing.*;
-import java.util.regex.Pattern;
 import java.util.ArrayList;
+import java.util.regex.Pattern;
+
+import javax.swing.Icon;
+
+import org.embl.ebi.escience.baclava.DataThing;
 
 /**
  * Abstract rendering class. Inner classes refine this further.

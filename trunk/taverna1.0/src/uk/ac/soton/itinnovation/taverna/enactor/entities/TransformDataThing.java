@@ -21,26 +21,20 @@
 //      Created for Project :   MYGRID
 //      Dependencies        :
 //
-//      Last commit info    :   $Author: cgreenhalgh $
-//                              $Date: 2004-10-01 12:28:31 $
-//                              $Revision: 1.2 $
+//      Last commit info    :   $Author: sowen70 $
+//                              $Date: 2006-06-08 09:24:04 $
+//                              $Revision: 1.3 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 
 package uk.ac.soton.itinnovation.taverna.enactor.entities;
 
-import org.embl.ebi.escience.baclava.DataThing;
-
-import org.apache.log4j.Logger;
-
-// Utility Imports
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.HashSet;
+
+import org.apache.log4j.Logger;
+import org.embl.ebi.escience.baclava.DataThing;
 
 /** DataThing transformations, currently just replacelsid special case.
  * @author Chris Greenhalgh

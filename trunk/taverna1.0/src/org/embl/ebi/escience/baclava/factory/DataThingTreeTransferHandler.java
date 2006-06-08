@@ -6,12 +6,19 @@
  */
 package org.embl.ebi.escience.baclava.factory;
 
-import java.awt.dnd.*;
+import java.awt.dnd.DnDConstants;
+import java.awt.dnd.DragGestureEvent;
+import java.awt.dnd.DragGestureListener;
+import java.awt.dnd.DragSource;
+import java.awt.dnd.DragSourceDragEvent;
+import java.awt.dnd.DragSourceDropEvent;
+import java.awt.dnd.DragSourceEvent;
+import java.awt.dnd.DragSourceListener;
 
-import javax.swing.*;
-import javax.swing.tree.*;
+import javax.swing.JTree;
+import javax.swing.tree.TreePath;
 
-import org.embl.ebi.escience.baclava.*;
+import org.embl.ebi.escience.baclava.DataThing;
 
 /**
  * @author <a href="mailto:bleh">Kevin Glover </a>

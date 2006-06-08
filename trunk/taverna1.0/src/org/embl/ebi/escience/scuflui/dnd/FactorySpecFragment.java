@@ -5,8 +5,9 @@
  */
 package org.embl.ebi.escience.scuflui.dnd;
 
-import org.jdom.*;
-import java.io.*;
+import java.io.Serializable;
+
+import org.jdom.Element;
 
 /**
  * Contains a JDOM Element and methods to build processors

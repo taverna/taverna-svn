@@ -5,29 +5,28 @@
  */
 package org.embl.ebi.escience.scuflworkers.talisman;
 
-import org.embl.ebi.escience.scufl.*;
-
-// Utility Imports
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
-// IO Imports
-import java.io.IOException;
-
-// JDOM Imports
+import org.embl.ebi.escience.scufl.DuplicatePortNameException;
+import org.embl.ebi.escience.scufl.DuplicateProcessorNameException;
+import org.embl.ebi.escience.scufl.InputPort;
+import org.embl.ebi.escience.scufl.OutputPort;
+import org.embl.ebi.escience.scufl.Port;
+import org.embl.ebi.escience.scufl.PortCreationException;
+import org.embl.ebi.escience.scufl.Processor;
+import org.embl.ebi.escience.scufl.ProcessorCreationException;
+import org.embl.ebi.escience.scufl.ScuflModel;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.JDOMException;
 import org.jdom.input.SAXBuilder;
-
-// Network Imports
-import java.net.MalformedURLException;
-import java.net.URL;
-
-import java.lang.String;
 
 
 

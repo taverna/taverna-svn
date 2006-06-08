@@ -5,9 +5,7 @@
  */
 package org.embl.ebi.escience.scufl.provenance.process;
 
-import org.embl.ebi.escience.scufl.*;
-import org.embl.ebi.escience.scuflworkers.*;
-import org.jdom.*;
+import org.embl.ebi.escience.scufl.Processor;
 
 /**
  * Event corresponding to an alternate processor instance being created by the

@@ -5,19 +5,26 @@
  */
 package org.embl.ebi.escience.scuflui.results;
 
-import org.embl.ebi.escience.scuflui.*;
-import org.embl.ebi.escience.baclava.DataThing;
-import org.embl.ebi.escience.baclava.factory.DataThingXMLFactory;
-import java.util.*;
-import java.util.prefs.*;
-import javax.swing.JFileChooser;
-import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.PrintWriter;
+import java.util.Map;
+import java.util.prefs.Preferences;
+
 import javax.swing.Icon;
-import java.io.*;
-import org.jdom.*;
-import org.jdom.output.*;
-import javax.swing.*;
+import javax.swing.JComponent;
+import javax.swing.JFileChooser;
+import javax.swing.JOptionPane;
+
+import org.embl.ebi.escience.baclava.factory.DataThingXMLFactory;
+import org.embl.ebi.escience.scuflui.AdvancedModelExplorer;
+import org.embl.ebi.escience.scuflui.ExtensionFileFilter;
+import org.embl.ebi.escience.scuflui.ScuflIcons;
+import org.jdom.Document;
+import org.jdom.output.Format;
+import org.jdom.output.XMLOutputter;
 
 /**
  * Store the entire Map of DataThing objects to disk

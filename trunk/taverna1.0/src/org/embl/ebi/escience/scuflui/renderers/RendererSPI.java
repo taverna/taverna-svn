@@ -1,9 +1,9 @@
 package org.embl.ebi.escience.scuflui.renderers;
 
-import org.embl.ebi.escience.baclava.DataThing;
-
 import javax.swing.Icon;
 import javax.swing.JComponent;
+
+import org.embl.ebi.escience.baclava.DataThing;
 
 /**
  * SPI for rendering a data thing.

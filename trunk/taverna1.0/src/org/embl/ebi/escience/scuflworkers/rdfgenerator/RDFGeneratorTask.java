@@ -5,14 +5,14 @@
  */
 package org.embl.ebi.escience.scuflworkers.rdfgenerator;
 
+import java.util.HashMap;
+
 import org.apache.log4j.Logger;
 import org.embl.ebi.escience.scufl.Processor;
 import org.embl.ebi.escience.scuflworkers.ProcessorTaskWorker;
-import uk.ac.soton.itinnovation.taverna.enactor.entities.TaskExecutionException;
-import uk.ac.soton.itinnovation.taverna.enactor.entities.ProcessorTask;
 
-// Utility Imports
-import java.util.HashMap;
+import uk.ac.soton.itinnovation.taverna.enactor.entities.ProcessorTask;
+import uk.ac.soton.itinnovation.taverna.enactor.entities.TaskExecutionException;
 
 
 /**

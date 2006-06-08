@@ -8,12 +8,6 @@ package org.embl.ebi.escience.scufl;
 // IO Imports
 import java.io.PrintStream;
 
-import org.embl.ebi.escience.scufl.ScuflModelEvent;
-import org.embl.ebi.escience.scufl.ScuflModelEventListener;
-import java.lang.Object;
-import java.lang.String;
-import java.lang.System;
-
 /**
  * Trivially implements the ScuflModelEventListener by printing a textual
  * representation of incoming events to a given PrintStream

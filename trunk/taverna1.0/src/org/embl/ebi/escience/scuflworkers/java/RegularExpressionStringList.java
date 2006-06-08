@@ -5,14 +5,18 @@
  */
 package org.embl.ebi.escience.scuflworkers.java;
 
-import uk.ac.soton.itinnovation.taverna.enactor.entities.TaskExecutionException;
-
-import java.util.*;
-import java.util.regex.Pattern;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
-import org.embl.ebi.escience.baclava.DataThing;
 import org.apache.log4j.Logger;
+import org.embl.ebi.escience.baclava.DataThing;
+
+import uk.ac.soton.itinnovation.taverna.enactor.entities.TaskExecutionException;
 
 /**
  * Apply a regular expression to a string, returning a group that matches if

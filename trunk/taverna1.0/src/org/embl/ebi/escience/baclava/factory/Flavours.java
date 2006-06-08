@@ -6,7 +6,7 @@
  */
 package org.embl.ebi.escience.baclava.factory;
 
-import java.awt.datatransfer.*;
+import java.awt.datatransfer.DataFlavor;
 
 /**
  * English spelling, thank you very much.

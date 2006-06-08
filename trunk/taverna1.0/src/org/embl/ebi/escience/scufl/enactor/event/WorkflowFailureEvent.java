@@ -5,7 +5,7 @@
  */
 package org.embl.ebi.escience.scufl.enactor.event;
 
-import org.embl.ebi.escience.scufl.enactor.*;
+import org.embl.ebi.escience.scufl.enactor.WorkflowInstance;
 
 public class WorkflowFailureEvent extends WorkflowInstanceEvent {
 

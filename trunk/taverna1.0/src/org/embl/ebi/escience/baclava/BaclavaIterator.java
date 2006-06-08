@@ -6,14 +6,11 @@
 package org.embl.ebi.escience.baclava;
 
 // Utility Imports
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
-
-import java.lang.Object;
-import java.lang.UnsupportedOperationException;
 
 /**
  * This provides an Iterator interface with a single additional method to allow

@@ -5,14 +5,13 @@
  */
 package org.embl.ebi.escience.scuflworkers.apiconsumer;
 
-import org.embl.ebi.escience.scufl.*;
+import org.embl.ebi.escience.scufl.DuplicateProcessorNameException;
+import org.embl.ebi.escience.scufl.Processor;
+import org.embl.ebi.escience.scufl.ProcessorCreationException;
+import org.embl.ebi.escience.scufl.ScuflModel;
 import org.embl.ebi.escience.scufl.parser.XScuflFormatException;
-import org.embl.ebi.escience.scuflworkers.*;
-
-// Utility Imports
-import java.util.Iterator;
-
-// JDOM Imports
+import org.embl.ebi.escience.scuflworkers.ProcessorFactory;
+import org.embl.ebi.escience.scuflworkers.XMLHandler;
 import org.jdom.Element;
 
 /**

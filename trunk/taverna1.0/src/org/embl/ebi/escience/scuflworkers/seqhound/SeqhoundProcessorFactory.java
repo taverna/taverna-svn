@@ -5,40 +5,7 @@
  */
 package org.embl.ebi.escience.scuflworkers.seqhound;
 
-import org.embl.ebi.escience.scuflui.workbench.Scavenger;
-import org.embl.ebi.escience.scuflui.workbench.ScavengerCreationException;
-
-// Utility Imports
-import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Properties;
-import java.util.*;
-import javax.swing.tree.*;
-
-import org.embl.ebi.escience.scufl.DuplicateProcessorNameException;
-import org.embl.ebi.escience.scufl.Processor;
-import org.embl.ebi.escience.scufl.ProcessorCreationException;
-import org.embl.ebi.escience.scufl.ScuflModel;
 import org.embl.ebi.escience.scuflworkers.ProcessorFactory;
-
-import org.embl.ebi.escience.scuflworkers.java.LocalServiceProcessor;
-import java.lang.Class;
-import java.lang.String;
-
-// Network Imports
-import java.net.URL;
-
-import org.apache.log4j.Logger;
-
-import java.lang.ClassLoader;
-import java.lang.Exception;
-import java.lang.String;
-
-import org.blueprint.seqhound.*;
-
-import java.lang.reflect.*;
 
 
 /**

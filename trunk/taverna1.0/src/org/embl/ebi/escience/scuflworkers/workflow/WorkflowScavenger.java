@@ -5,18 +5,19 @@
  */
 package org.embl.ebi.escience.scuflworkers.workflow;
 
+import java.net.URL;
+
 import javax.swing.tree.DefaultMutableTreeNode;
+
+import org.embl.ebi.escience.scufl.Processor;
+import org.embl.ebi.escience.scufl.ScuflModel;
+import org.embl.ebi.escience.scufl.parser.XScuflParser;
 import org.embl.ebi.escience.scuflui.workbench.Scavenger;
 import org.embl.ebi.escience.scuflui.workbench.ScavengerCreationException;
-import org.embl.ebi.escience.scuflworkers.stringconstant.*;
-import org.embl.ebi.escience.scuflworkers.workflow.WorkflowProcessorFactory;
-import org.embl.ebi.escience.scuflworkers.beanshell.*;
-import java.lang.String;
-import org.embl.ebi.escience.scufl.*;
-import org.embl.ebi.escience.scufl.parser.*;
-import org.embl.ebi.escience.scuflworkers.*;
-import java.net.URL;
-import org.jdom.*;
+import org.embl.ebi.escience.scuflworkers.ProcessorFactory;
+import org.embl.ebi.escience.scuflworkers.ProcessorHelper;
+import org.embl.ebi.escience.scuflworkers.XMLHandler;
+import org.jdom.Document;
 
 
 

@@ -6,14 +6,10 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Enumeration;
 import java.util.List;
-import java.util.Properties;
-import java.util.ResourceBundle;
-import junit.framework.TestCase;
+
 import org.embl.ebi.escience.baclava.DataThing;
 import org.embl.ebi.escience.baclava.StupidLSIDProvider;
-import org.embl.ebi.escience.baclava.factory.DataThingXMLFactory;
 import org.embl.ebi.escience.scufl.ScuflModel;
 import org.embl.ebi.escience.scufl.parser.XScuflParser;
 import org.embl.ebi.escience.scufl.view.XScuflView;

@@ -6,7 +6,6 @@
 package org.embl.ebi.escience.baclava;
 
 // Utility Imports
-import java.util.Collection;
 import java.util.Iterator;
 
 /**

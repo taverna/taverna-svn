@@ -1,11 +1,11 @@
 package org.embl.ebi.escience.scuflui.facets;
 
-import org.embl.ebi.escience.baclava.DataThing;
-
-import java.util.Set;
-import java.util.Collections;
-import java.awt.*;
+import java.awt.Component;
 import java.beans.PropertyChangeListener;
+import java.util.Collections;
+import java.util.Set;
+
+import org.embl.ebi.escience.baclava.DataThing;
 
 /**
  *

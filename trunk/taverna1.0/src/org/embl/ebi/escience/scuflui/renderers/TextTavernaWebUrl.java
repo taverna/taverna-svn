@@ -1,10 +1,14 @@
 package org.embl.ebi.escience.scuflui.renderers;
 
-import org.embl.ebi.escience.baclava.DataThing;
-
-import javax.swing.*;
-import java.awt.*;
+import java.awt.Font;
 import java.util.regex.Pattern;
+
+import javax.swing.ImageIcon;
+import javax.swing.JComponent;
+import javax.swing.JEditorPane;
+import javax.swing.JTextArea;
+
+import org.embl.ebi.escience.baclava.DataThing;
 
 /**
  * View a URL as a clickable HTML URL.

@@ -5,8 +5,9 @@
  */
 package org.embl.ebi.escience.scuflworkers.wsdl;
 
-import org.embl.ebi.escience.scuflworkers.ProcessorFactory;
 import javax.xml.namespace.QName;
+
+import org.embl.ebi.escience.scuflworkers.ProcessorFactory;
 
 /**
  * Implementation of ProcessorFactory that creates WSDLBasedProcessor nodes

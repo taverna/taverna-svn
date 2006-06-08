@@ -8,8 +8,6 @@ package org.biomoby.client.taverna.plugin;
 import org.embl.ebi.escience.scuflui.workbench.Scavenger;
 import org.embl.ebi.escience.scuflui.workbench.ScavengerCreationException;
 
-import org.embl.ebi.escience.scuflworkers.beanshell.BeanshellProcessorFactory;
-
 /**
  * A scavenger that instantiates the Parser.
  * 

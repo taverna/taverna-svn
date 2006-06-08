@@ -5,10 +5,8 @@
  */
 package org.embl.ebi.escience.scufl.enactor.event;
 
-import java.util.*;
-import org.embl.ebi.escience.scufl.*;
-import org.embl.ebi.escience.scufl.enactor.*;
-import org.embl.ebi.escience.baclava.*;
+import org.embl.ebi.escience.baclava.DataThing;
+import org.embl.ebi.escience.scufl.enactor.WorkflowInstance;
 
 public class UserChangedDataEvent extends WorkflowInstanceEvent {
 

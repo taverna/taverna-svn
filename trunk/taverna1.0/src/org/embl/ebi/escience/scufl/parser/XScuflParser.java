@@ -5,32 +5,37 @@
  */
 package org.embl.ebi.escience.scufl.parser;
 
-import org.embl.ebi.escience.scufl.*;
-
-// Utility Imports
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-// IO Imports
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.StringReader;
-import java.io.IOException;
-
-// JDOM Imports
+import org.embl.ebi.escience.scufl.ConcurrencyConstraint;
+import org.embl.ebi.escience.scufl.ConcurrencyConstraintCreationException;
+import org.embl.ebi.escience.scufl.DataConstraint;
+import org.embl.ebi.escience.scufl.DataConstraintCreationException;
+import org.embl.ebi.escience.scufl.DuplicateConcurrencyConstraintNameException;
+import org.embl.ebi.escience.scufl.DuplicatePortNameException;
+import org.embl.ebi.escience.scufl.DuplicateProcessorNameException;
+import org.embl.ebi.escience.scufl.InputPort;
+import org.embl.ebi.escience.scufl.IterationStrategy;
+import org.embl.ebi.escience.scufl.MalformedNameException;
+import org.embl.ebi.escience.scufl.OutputPort;
+import org.embl.ebi.escience.scufl.PortCreationException;
+import org.embl.ebi.escience.scufl.Processor;
+import org.embl.ebi.escience.scufl.ProcessorCreationException;
+import org.embl.ebi.escience.scufl.ScuflModel;
+import org.embl.ebi.escience.scufl.UnknownPortException;
+import org.embl.ebi.escience.scufl.UnknownProcessorException;
+import org.embl.ebi.escience.scufl.WorkflowDescription;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.JDOMException;
 import org.jdom.Namespace;
 import org.jdom.input.SAXBuilder;
-
-import org.embl.ebi.escience.scufl.parser.XScuflFormatException;
-import java.lang.Exception;
-import java.lang.Integer;
-import java.lang.InterruptedException;
-import java.lang.String;
-import java.lang.Thread;
 
 /**
  * Reads a definition in XScufl format and populates the supplied model with it.

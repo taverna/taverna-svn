@@ -1,6 +1,6 @@
 package org.embl.ebi.escience.scuflworkers.java;
 
-import org.jdom.*;
+import org.jdom.Element;
 
 /**
  * Inteface that indicates that a LocalWorker XML description can be extended

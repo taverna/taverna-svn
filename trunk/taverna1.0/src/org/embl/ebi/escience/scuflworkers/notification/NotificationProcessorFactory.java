@@ -4,8 +4,7 @@
  */
 package org.embl.ebi.escience.scuflworkers.notification;
 
-import org.embl.ebi.escience.scuflworkers.*;
-import org.embl.ebi.escience.scufl.*;
+import org.embl.ebi.escience.scuflworkers.ProcessorFactory;
 
 /**
  * @author Justin Ferris

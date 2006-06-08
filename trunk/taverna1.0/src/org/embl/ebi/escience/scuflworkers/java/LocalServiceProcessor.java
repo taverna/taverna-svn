@@ -8,7 +8,16 @@ package org.embl.ebi.escience.scuflworkers.java;
 import java.util.Properties;
 
 import org.apache.log4j.Logger;
-import org.embl.ebi.escience.scufl.*;
+import org.embl.ebi.escience.scufl.DuplicatePortNameException;
+import org.embl.ebi.escience.scufl.DuplicateProcessorNameException;
+import org.embl.ebi.escience.scufl.InputPort;
+import org.embl.ebi.escience.scufl.OutputPort;
+import org.embl.ebi.escience.scufl.Port;
+import org.embl.ebi.escience.scufl.PortCreationException;
+import org.embl.ebi.escience.scufl.Processor;
+import org.embl.ebi.escience.scufl.ProcessorCreationException;
+import org.embl.ebi.escience.scufl.ScuflModel;
+import org.embl.ebi.escience.scufl.SemanticMarkup;
 import org.jdom.Element;
 
 /**

@@ -1,8 +1,10 @@
 package org.embl.ebi.escience.scuflworkers.java;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.embl.ebi.escience.baclava.DataThing;
 import org.embl.ebi.escience.testhelpers.LocalWorkerTestCase;
-import java.util.*;
 
 public class PadNumberTest extends LocalWorkerTestCase {
 

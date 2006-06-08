@@ -5,10 +5,18 @@
  */
 package org.embl.ebi.escience.scuflworkers.seqhound;
 
-import com.sun.javadoc.*;
-import org.jdom.*;
-import org.jdom.output.*;
-import java.io.*;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.PrintWriter;
+
+import org.jdom.Element;
+import org.jdom.output.Format;
+import org.jdom.output.XMLOutputter;
+
+import com.sun.javadoc.ClassDoc;
+import com.sun.javadoc.MethodDoc;
+import com.sun.javadoc.Parameter;
+import com.sun.javadoc.RootDoc;
 
 /**
  * A Doclet to run over the org.blueprint.seqhound class

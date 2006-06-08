@@ -1,6 +1,6 @@
 package org.embl.ebi.escience.testhelpers.acceptance;
 
-import java.util.*;
+import java.util.List;
 /**
  * Holder of the results of an individual test, including all errors that occurred(due to failed assertions), and any Throwable that is thrown from the test.
  * A test is concidered successful if no errors occur and no exception is thrown.

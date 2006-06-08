@@ -5,31 +5,12 @@
  */
 package org.embl.ebi.escience.scuflworkers.seqhound;
 
+import java.lang.reflect.Method;
+
+import javax.swing.tree.DefaultMutableTreeNode;
+
 import org.embl.ebi.escience.scuflui.workbench.Scavenger;
 import org.embl.ebi.escience.scuflui.workbench.ScavengerCreationException;
-
-// Utility Imports
-import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Properties;
-import java.util.*;
-import javax.swing.tree.*;
-
-// Network Imports
-import java.net.URL;
-
-import org.embl.ebi.escience.scuflworkers.java.LocalServiceProcessorFactory;
-import org.apache.log4j.Logger;
-
-import java.lang.ClassLoader;
-import java.lang.Exception;
-import java.lang.String;
-
-import org.blueprint.seqhound.*;
-
-import java.lang.reflect.*;
 
 
 /**

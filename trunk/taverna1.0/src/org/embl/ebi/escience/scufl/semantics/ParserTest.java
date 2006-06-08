@@ -7,17 +7,11 @@ package org.embl.ebi.escience.scufl.semantics;
 
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.net.URL;
+
 import javax.swing.JFrame;
 import javax.swing.JScrollPane;
 import javax.swing.JTree;
-
-// Network Imports
-import java.net.URL;
-
-import org.embl.ebi.escience.scufl.semantics.RDFSParser;
-import java.lang.Exception;
-import java.lang.String;
-import java.lang.System;
 
 /**
  * Test the parser by attempting to load and display the ontology stored at

@@ -11,11 +11,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Properties;
 
-import javax.swing.event.TableModelEvent;
-import javax.swing.event.TableModelListener;
-
 import org.biomoby.client.CentralImpl;
-import org.biomoby.client.taverna.plugin.ConfigureMobyServiceAction;
 import org.biomoby.service.dashboard.data.ParametersTable;
 import org.biomoby.shared.Central;
 import org.biomoby.shared.MobyData;
@@ -33,10 +29,6 @@ import org.embl.ebi.escience.scufl.Processor;
 import org.embl.ebi.escience.scufl.ProcessorCreationException;
 import org.embl.ebi.escience.scufl.ScuflModel;
 import org.embl.ebi.escience.scufl.ScuflModelEvent;
-import org.jdom.Element;
-import org.jdom.output.Format;
-import org.jdom.output.XMLOutputter;
-import org.syntax.jedit.InputHandler.overwrite;
 
 /**
  * A processor based on the Biomoby compliant web services. This processor
@@ -44,7 +36,7 @@ import org.syntax.jedit.InputHandler.overwrite;
  * extant ports at creation time.
  * <p>
  * 
- * @version $Id: BiomobyProcessor.java,v 1.5 2006-05-04 21:08:40 edwardkawas Exp $
+ * @version $Id: BiomobyProcessor.java,v 1.6 2006-06-08 09:24:00 sowen70 Exp $
  * @author Martin Senger
  */
 public class BiomobyProcessor extends Processor implements java.io.Serializable {

@@ -5,14 +5,10 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
-import javax.swing.JDesktopPane;
-import javax.swing.JInternalFrame;
-
-// Utility Imports
 import java.util.Hashtable;
 
-import java.lang.Object;
-import java.lang.String;
+import javax.swing.JDesktopPane;
+import javax.swing.JInternalFrame;
 
 /**
  * ScrollableDesktopPane.java

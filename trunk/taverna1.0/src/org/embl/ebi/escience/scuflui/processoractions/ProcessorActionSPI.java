@@ -5,8 +5,10 @@
  */
 package org.embl.ebi.escience.scuflui.processoractions;
 
-import javax.swing.ImageIcon;
 import java.awt.event.ActionListener;
+
+import javax.swing.ImageIcon;
+
 import org.embl.ebi.escience.scufl.Processor;
 
 /**

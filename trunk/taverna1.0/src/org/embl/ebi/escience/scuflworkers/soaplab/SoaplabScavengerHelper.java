@@ -7,13 +7,12 @@ package org.embl.ebi.escience.scuflworkers.soaplab;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+
 import javax.swing.JOptionPane;
+
 import org.embl.ebi.escience.scuflui.workbench.ScavengerCreationException;
 import org.embl.ebi.escience.scuflui.workbench.ScavengerTree;
 import org.embl.ebi.escience.scuflworkers.ScavengerHelper;
-
-import org.embl.ebi.escience.scuflworkers.soaplab.SoaplabScavenger;
-import java.lang.String;
 
 /**
  * Helper for handling Soaplab scavengers.

@@ -5,10 +5,12 @@
  */
 package org.embl.ebi.escience.baclava.store.test;
 
-import java.util.*;
-import org.embl.ebi.escience.baclava.*;
-import org.embl.ebi.escience.baclava.factory.*;
-import org.embl.ebi.escience.baclava.store.*;
+import java.util.Enumeration;
+import java.util.Properties;
+import java.util.ResourceBundle;
+
+import org.embl.ebi.escience.baclava.DataThing;
+import org.embl.ebi.escience.baclava.store.JDBCBaclavaDataService;
 
 /**
  * Tests the MySQL jdbc backed BaclavaDataService

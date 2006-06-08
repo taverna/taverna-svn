@@ -5,21 +5,30 @@
  */
 package org.embl.ebi.escience.scufl.view;
 
-import org.embl.ebi.escience.scufl.*;
-import org.embl.ebi.escience.scuflworkers.ProcessorHelper;
-
-// Utility Imports
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
-// JDOM Imports
+import org.embl.ebi.escience.scufl.AlternateProcessor;
+import org.embl.ebi.escience.scufl.AnnotationTemplate;
+import org.embl.ebi.escience.scufl.ConcurrencyConstraint;
+import org.embl.ebi.escience.scufl.DataConstraint;
+import org.embl.ebi.escience.scufl.InputPort;
+import org.embl.ebi.escience.scufl.IterationStrategy;
+import org.embl.ebi.escience.scufl.Port;
+import org.embl.ebi.escience.scufl.Processor;
+import org.embl.ebi.escience.scufl.ScuflModel;
+import org.embl.ebi.escience.scufl.ScuflModelEvent;
+import org.embl.ebi.escience.scufl.ScuflModelEventListener;
+import org.embl.ebi.escience.scufl.SemanticMarkup;
+import org.embl.ebi.escience.scufl.WorkflowDescription;
+import org.embl.ebi.escience.scufl.XScufl;
+import org.embl.ebi.escience.scuflworkers.ProcessorHelper;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.Namespace;
-import org.jdom.output.*;
-
-import java.lang.String;
-import java.util.List;
-import java.util.ArrayList;
+import org.jdom.output.Format;
+import org.jdom.output.XMLOutputter;
 
 /**
  * Represents a ScuflModel instance as an XScufl document.

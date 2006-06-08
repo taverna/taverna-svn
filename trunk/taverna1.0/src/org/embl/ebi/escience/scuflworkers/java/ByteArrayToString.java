@@ -5,15 +5,12 @@
  */
 package org.embl.ebi.escience.scuflworkers.java;
 
-import org.embl.ebi.escience.baclava.DataThing;
-import uk.ac.soton.itinnovation.taverna.enactor.entities.TaskExecutionException;
-
-// Utility Imports
 import java.util.HashMap;
 import java.util.Map;
 
-import org.embl.ebi.escience.scuflworkers.java.LocalWorker;
-import java.lang.String;
+import org.embl.ebi.escience.baclava.DataThing;
+
+import uk.ac.soton.itinnovation.taverna.enactor.entities.TaskExecutionException;
 
 /**
  * Constructs a new String from the supplied byte[]

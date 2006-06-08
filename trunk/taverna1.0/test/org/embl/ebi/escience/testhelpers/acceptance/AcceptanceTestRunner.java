@@ -3,7 +3,9 @@ package org.embl.ebi.escience.testhelpers.acceptance;
 
 import java.io.File;
 import java.net.URL;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * Discovers all AcceptanceTestCase type classes that exist in the package org.embl.ebi.escience.acceptancetests.

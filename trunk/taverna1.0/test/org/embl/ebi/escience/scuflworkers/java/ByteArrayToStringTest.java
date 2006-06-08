@@ -1,7 +1,7 @@
 package org.embl.ebi.escience.scuflworkers.java;
 
-import junit.framework.TestCase;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.embl.ebi.escience.baclava.DataThing;
 import org.embl.ebi.escience.testhelpers.LocalWorkerTestCase;

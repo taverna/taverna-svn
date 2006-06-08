@@ -5,9 +5,9 @@
  */
 package org.embl.ebi.escience.scufl.enactor.implementation;
 
-import uk.ac.soton.itinnovation.freefluo.main.FlowContext;
+import org.embl.ebi.escience.scufl.enactor.UserContext;
 
-import org.embl.ebi.escience.scufl.enactor.*;
+import uk.ac.soton.itinnovation.freefluo.main.FlowContext;
 
 /**
  * A simple implementation of the UserContext interface that is configured by

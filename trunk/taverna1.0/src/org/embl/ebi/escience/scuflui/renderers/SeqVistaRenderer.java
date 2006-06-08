@@ -1,16 +1,10 @@
 package org.embl.ebi.escience.scuflui.renderers;
 
+import javax.swing.JComponent;
+
 import org.embl.ebi.escience.baclava.DataThing;
 
-import java.util.regex.Pattern;
-import java.awt.Font;
-import javax.swing.ImageIcon;
-import javax.swing.JComponent;
-import javax.swing.JTextArea;
-import cht.svista.*;
-import java.lang.ClassLoader;
-import java.lang.Object;
-import java.lang.String;
+import cht.svista.SeqVISTA;
 
 /**
  * Uses the SeqVista renderer to draw an EMBL or SwissProt sequence

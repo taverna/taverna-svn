@@ -5,12 +5,18 @@
  */
 package org.embl.ebi.escience.scuflui.renderers;
 
-import org.jmol.api.*;
+import java.awt.Dimension;
+import java.awt.Graphics;
+import java.awt.Rectangle;
+
+import javax.swing.JComponent;
+import javax.swing.JPanel;
+
+import org.embl.ebi.escience.baclava.DataThing;
 import org.jmol.adapter.smarter.SmarterJmolAdapter;
-import java.awt.*;
-import java.awt.event.*;
-import javax.swing.*;
-import org.embl.ebi.escience.baclava.*;
+import org.jmol.api.JmolAdapter;
+import org.jmol.api.JmolSimpleViewer;
+import org.jmol.api.JmolViewer;
 import org.jmol.viewer.Viewer;
 
 /**

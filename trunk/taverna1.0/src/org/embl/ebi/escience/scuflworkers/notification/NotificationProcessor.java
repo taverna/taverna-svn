@@ -7,7 +7,12 @@ package org.embl.ebi.escience.scuflworkers.notification;
 
 import java.util.Properties;
 
-import org.embl.ebi.escience.scufl.*;
+import org.embl.ebi.escience.scufl.DuplicateProcessorNameException;
+import org.embl.ebi.escience.scufl.InputPort;
+import org.embl.ebi.escience.scufl.Port;
+import org.embl.ebi.escience.scufl.Processor;
+import org.embl.ebi.escience.scufl.ProcessorCreationException;
+import org.embl.ebi.escience.scufl.ScuflModel;
 
 /**
  * A Processor for publishing notifications to the myGrid notification

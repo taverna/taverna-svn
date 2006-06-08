@@ -5,13 +5,9 @@
  */
 package org.embl.ebi.escience.scuflworkers.java;
 
-import uk.ac.soton.itinnovation.taverna.enactor.entities.TaskExecutionException;
-
-// Utility Imports
 import java.util.Map;
 
-import org.embl.ebi.escience.scuflworkers.java.LocalWorker;
-import java.lang.String;
+import uk.ac.soton.itinnovation.taverna.enactor.entities.TaskExecutionException;
 
 /**
  * A processor that always fails instantly, useful for testing the reliability

@@ -5,8 +5,14 @@
  */
 package org.embl.ebi.escience.baclava;
 
-import java.util.*;
-import javax.swing.tree.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+
+import javax.swing.tree.MutableTreeNode;
+import javax.swing.tree.TreeNode;
 
 /**
  * Tests the tree based iterator nodes

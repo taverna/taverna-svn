@@ -5,9 +5,7 @@
  */
 package org.biomoby.client.taverna.plugin;
 
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.PrintStream;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -18,8 +16,6 @@ import java.util.Vector;
 
 import org.apache.log4j.Logger;
 import org.biomoby.client.CentralImpl;
-import org.biomoby.client.taverna.plugin.BiomobyProcessor;
-import org.biomoby.client.taverna.plugin.ConfigureMobyServiceAction;
 import org.biomoby.service.dashboard.data.ParametersTable;
 import org.biomoby.shared.MobyException;
 import org.biomoby.shared.Utils;

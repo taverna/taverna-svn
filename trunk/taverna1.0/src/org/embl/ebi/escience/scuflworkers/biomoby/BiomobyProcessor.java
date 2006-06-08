@@ -6,24 +6,26 @@
 
 package org.embl.ebi.escience.scuflworkers.biomoby;
 
-import javax.xml.namespace.QName;
-import org.apache.axis.client.Call;
-import org.apache.axis.client.Service;
-import org.embl.ebi.escience.scufl.*;
-
-// Utility Imports
-import java.util.*;
-
-// Network Imports
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.Properties;
 
-// import java.lang.NullPointerException;
-// import java.lang.Object;
-// import java.lang.String;
-
-import org.biomoby.client.*;
-import org.biomoby.shared.*;
+import org.biomoby.client.CentralImpl;
+import org.biomoby.shared.Central;
+import org.biomoby.shared.MobyData;
+import org.biomoby.shared.MobyPrimaryDataSet;
+import org.biomoby.shared.MobyService;
+import org.embl.ebi.escience.scufl.DuplicatePortNameException;
+import org.embl.ebi.escience.scufl.DuplicateProcessorNameException;
+import org.embl.ebi.escience.scufl.InputPort;
+import org.embl.ebi.escience.scufl.OutputPort;
+import org.embl.ebi.escience.scufl.Port;
+import org.embl.ebi.escience.scufl.PortCreationException;
+import org.embl.ebi.escience.scufl.Processor;
+import org.embl.ebi.escience.scufl.ProcessorCreationException;
+import org.embl.ebi.escience.scufl.ScuflModel;
+import org.embl.ebi.escience.scufl.ScuflModelEvent;
 
 
 /**
@@ -31,7 +33,7 @@ import org.biomoby.shared.*;
  * processor implementation will contact Biomoby registry in order to
  * find the list of extant ports at creation time. <p>
  *
- * @version $Id: BiomobyProcessor.java,v 1.13 2004-10-18 13:39:53 marsenger Exp $
+ * @version $Id: BiomobyProcessor.java,v 1.14 2006-06-08 09:24:03 sowen70 Exp $
  * @author Martin Senger
  */
 public class BiomobyProcessor extends Processor implements java.io.Serializable {

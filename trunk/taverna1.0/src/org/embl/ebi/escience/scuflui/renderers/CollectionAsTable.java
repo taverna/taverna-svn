@@ -1,15 +1,20 @@
 package org.embl.ebi.escience.scuflui.renderers;
 
-import org.embl.ebi.escience.scuflui.FacetsTable;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
+
+import javax.swing.Icon;
+import javax.swing.JComponent;
+
+import org.apache.log4j.Logger;
+import org.embl.ebi.escience.baclava.DataThing;
 import org.embl.ebi.escience.scuflui.FTableColumn;
 import org.embl.ebi.escience.scuflui.FTableColumnModel;
-import org.embl.ebi.escience.scuflui.facets.FacetFinderSPI;
+import org.embl.ebi.escience.scuflui.FacetsTable;
 import org.embl.ebi.escience.scuflui.facets.FacetFinderRegistry;
-import org.embl.ebi.escience.baclava.DataThing;
-import org.apache.log4j.Logger;
-
-import javax.swing.*;
-import java.util.*;
+import org.embl.ebi.escience.scuflui.facets.FacetFinderSPI;
 
 /**
  *

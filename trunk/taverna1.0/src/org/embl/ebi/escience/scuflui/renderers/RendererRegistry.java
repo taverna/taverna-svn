@@ -1,16 +1,15 @@
 package org.embl.ebi.escience.scuflui.renderers;
 
-import org.apache.commons.discovery.tools.Service;
-import org.apache.commons.discovery.tools.SPInterface;
-import org.apache.commons.discovery.resource.ClassLoaders;
-import org.apache.log4j.Logger;
-import org.embl.ebi.escience.baclava.DataThing;
-
-// Utility Imports
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
+
+import org.apache.commons.discovery.resource.ClassLoaders;
+import org.apache.commons.discovery.tools.SPInterface;
+import org.apache.commons.discovery.tools.Service;
+import org.apache.log4j.Logger;
+import org.embl.ebi.escience.baclava.DataThing;
 
 /**
  * A registry that maintains a list of all renderer service providers.

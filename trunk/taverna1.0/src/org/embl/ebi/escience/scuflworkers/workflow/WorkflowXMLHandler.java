@@ -6,16 +6,11 @@ import org.embl.ebi.escience.scufl.ProcessorCreationException;
 import org.embl.ebi.escience.scufl.ScuflModel;
 import org.embl.ebi.escience.scufl.XScufl;
 import org.embl.ebi.escience.scufl.parser.XScuflFormatException;
-import org.embl.ebi.escience.scuflworkers.XMLHandler;
+import org.embl.ebi.escience.scufl.view.XScuflView;
 import org.embl.ebi.escience.scuflworkers.ProcessorFactory;
-
-// JDOM Imports
-import org.jdom.*;
-
-import org.embl.ebi.escience.scufl.view.*;
-import org.embl.ebi.escience.scuflworkers.workflow.WorkflowProcessor;
-import org.embl.ebi.escience.scuflworkers.workflow.WorkflowProcessorFactory;
-import java.lang.String;
+import org.embl.ebi.escience.scuflworkers.XMLHandler;
+import org.jdom.Document;
+import org.jdom.Element;
 
 
 

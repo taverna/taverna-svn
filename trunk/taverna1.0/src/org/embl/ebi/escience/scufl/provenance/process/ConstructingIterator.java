@@ -5,8 +5,8 @@
  */
 package org.embl.ebi.escience.scufl.provenance.process;
 
-import org.embl.ebi.escience.scufl.*;
-import org.jdom.*;
+import org.embl.ebi.escience.scufl.IterationStrategy;
+import org.jdom.Element;
 
 /**
  * Event corresponding to the generation of an implicit iterator.

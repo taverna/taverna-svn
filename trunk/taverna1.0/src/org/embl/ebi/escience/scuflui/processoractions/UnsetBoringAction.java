@@ -5,11 +5,9 @@
  */
 package org.embl.ebi.escience.scuflui.processoractions;
 
-import org.embl.ebi.escience.scufl.*;
-import org.embl.ebi.escience.scuflui.*;
-import java.awt.event.*;
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.ImageIcon;
+
+import org.embl.ebi.escience.scufl.Processor;
 
 /**
  * Unset the boring flag on processors

@@ -5,7 +5,7 @@
  */
 package org.embl.ebi.escience.baclava.store;
 
-import org.embl.ebi.escience.baclava.*;
+import org.embl.ebi.escience.baclava.DataThing;
 
 /**
  * Defines the API that a concrete backing store must implement. Note that

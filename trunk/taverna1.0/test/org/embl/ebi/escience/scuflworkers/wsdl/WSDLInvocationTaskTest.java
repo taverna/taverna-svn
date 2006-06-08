@@ -1,6 +1,9 @@
 package org.embl.ebi.escience.scuflworkers.wsdl;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+
+import junit.framework.TestCase;
 
 import org.embl.ebi.escience.baclava.DataThing;
 import org.embl.ebi.escience.scufl.Processor;
@@ -8,8 +11,6 @@ import org.embl.ebi.escience.scufl.Processor;
 import uk.ac.soton.itinnovation.freefluo.core.flow.Flow;
 import uk.ac.soton.itinnovation.freefluo.task.LogLevel;
 import uk.ac.soton.itinnovation.taverna.enactor.entities.ProcessorTask;
-
-import junit.framework.TestCase;
 
 public class WSDLInvocationTaskTest extends TestCase 
 {

@@ -5,18 +5,25 @@
  */
 package org.embl.ebi.escience.baclava.factory;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import org.apache.log4j.Logger;
 import org.embl.ebi.escience.baclava.Base64;
 import org.embl.ebi.escience.baclava.DataThing;
 import org.embl.ebi.escience.baclava.NoMetadataFoundException;
 import org.embl.ebi.escience.scufl.SemanticMarkup;
 import org.embl.ebi.escience.scufl.XScufl;
-
-// Utility Imports
-import java.util.*;
-import java.io.*;
-
-// JDOM Imports
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.Namespace;

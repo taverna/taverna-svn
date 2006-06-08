@@ -5,30 +5,22 @@
  */
 package org.embl.ebi.escience.scufl.enactor.implementation;
 
-import org.embl.ebi.escience.scufl.ScuflModel;
+import java.net.URL;
+import java.util.Map;
 
-import org.embl.ebi.escience.scufl.view.XScuflView;
-import org.embl.ebi.escience.scufl.enactor.*;
+import org.embl.ebi.escience.scufl.ScuflModel;
+import org.embl.ebi.escience.scufl.enactor.EnactorProxy;
+import org.embl.ebi.escience.scufl.enactor.UserContext;
 import org.embl.ebi.escience.scufl.enactor.WorkflowInstance;
 import org.embl.ebi.escience.scufl.enactor.WorkflowSubmissionException;
+import org.embl.ebi.escience.scufl.view.XScuflView;
 
+import uk.ac.soton.itinnovation.freefluo.conf.ConfigurationDescription;
+import uk.ac.soton.itinnovation.freefluo.conf.EngineConfiguration;
+import uk.ac.soton.itinnovation.freefluo.conf.EngineConfigurationImpl;
 import uk.ac.soton.itinnovation.freefluo.main.Engine;
-import uk.ac.soton.itinnovation.freefluo.main.EngineStub;
 import uk.ac.soton.itinnovation.freefluo.main.EngineImpl;
-import uk.ac.soton.itinnovation.freefluo.event.WorkflowStateListener;
-import uk.ac.soton.itinnovation.freefluo.conf.*;
-
-// Utility Imports
-import java.util.Enumeration;
-import java.util.Map;
-import java.util.Properties;
-import java.util.ResourceBundle;
-
-import java.lang.Exception;
-import java.lang.String;
-import java.lang.System;
-
-import java.net.URL;
+import uk.ac.soton.itinnovation.freefluo.main.EngineStub;
 
 /**
  * An implementation of the EnactorProxy class that uses the Freefluo workflow

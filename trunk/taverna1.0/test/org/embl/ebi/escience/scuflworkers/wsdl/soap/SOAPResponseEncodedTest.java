@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: SOAPResponseEncodedTest.java,v $
- * Revision           $Revision: 1.2 $
+ * Revision           $Revision: 1.3 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-05-19 10:09:17 $
+ * Last modified on   $Date: 2006-06-08 09:28:51 $
  *               by   $Author: sowen70 $
  * Created on 08-May-2006
  *****************************************************************/
@@ -41,11 +41,11 @@ import java.util.Map;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
+import junit.framework.TestCase;
+
 import org.apache.axis.message.SOAPBodyElement;
 import org.embl.ebi.escience.baclava.DataThing;
 import org.w3c.dom.Document;
-
-import junit.framework.TestCase;
 
 public class SOAPResponseEncodedTest extends TestCase {
 	public void testSimpleRPC() throws Exception {

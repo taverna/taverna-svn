@@ -5,18 +5,20 @@
  */
 package org.embl.ebi.escience.scuflui.results;
 
-import org.embl.ebi.escience.scuflui.ScuflIcons;
-import org.embl.ebi.escience.baclava.DataThing;
-import java.util.Map;
-import java.util.Iterator;
-import javax.swing.JFileChooser;
-import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
-import javax.swing.Icon;
-import javax.swing.JOptionPane;
-import javax.swing.JComponent;
+import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
+import java.util.Iterator;
+import java.util.Map;
+
+import javax.swing.Icon;
+import javax.swing.JComponent;
+import javax.swing.JFileChooser;
+import javax.swing.JOptionPane;
+
+import org.embl.ebi.escience.baclava.DataThing;
+import org.embl.ebi.escience.scuflui.ScuflIcons;
 
 
 /**

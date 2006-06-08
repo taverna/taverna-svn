@@ -1,15 +1,35 @@
 package org.embl.ebi.escience.scuflui.facets;
 
-import org.apache.log4j.Logger;
-
-import javax.swing.*;
-import javax.swing.text.Document;
-import javax.swing.text.BadLocationException;
-import java.beans.*;
-import java.awt.*;
-import java.awt.event.*;
-import java.lang.reflect.Method;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+import java.beans.BeanInfo;
+import java.beans.Introspector;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyDescriptor;
+import java.beans.PropertyEditor;
+import java.beans.PropertyEditorManager;
+import java.beans.PropertyEditorSupport;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+
+import javax.swing.JComboBox;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.Document;
+
+import org.apache.log4j.Logger;
 
 /**
  * A component that represents the style sheet for a Java Bean.

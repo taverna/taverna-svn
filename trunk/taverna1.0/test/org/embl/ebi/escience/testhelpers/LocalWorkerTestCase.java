@@ -1,8 +1,8 @@
 package org.embl.ebi.escience.testhelpers;
 
-import org.embl.ebi.escience.scuflworkers.java.LocalWorker;
-
 import junit.framework.TestCase;
+
+import org.embl.ebi.escience.scuflworkers.java.LocalWorker;
 
 /*
  * A abstract class to help in the testing of LocalWorker's. 

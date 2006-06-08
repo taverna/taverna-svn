@@ -5,13 +5,9 @@
  */
 package org.embl.ebi.escience.scufl.enactor;
 
-import org.embl.ebi.escience.scufl.ScuflModel;
-
-// Utility Imports
 import java.util.Map;
 
-import org.embl.ebi.escience.scufl.enactor.WorkflowInstance;
-import org.embl.ebi.escience.scufl.enactor.WorkflowSubmissionException;
+import org.embl.ebi.escience.scufl.ScuflModel;
 
 /**
  * This interface defines the user proxy for a workflow enactment system capable

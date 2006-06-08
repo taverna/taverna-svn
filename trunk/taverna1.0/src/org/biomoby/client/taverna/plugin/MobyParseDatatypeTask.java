@@ -5,30 +5,24 @@
  */
 package org.biomoby.client.taverna.plugin;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+
 import org.apache.log4j.Logger;
-import org.biomoby.client.taverna.plugin.MobyParseDatatypeProcessor;
-import org.biomoby.client.taverna.plugin.XMLUtilities;
 import org.biomoby.shared.MobyException;
-import org.biomoby.shared.mobyxml.jdom.jDomUtilities;
 import org.embl.ebi.escience.baclava.DataThing;
-import org.embl.ebi.escience.scufl.Processor;
 import org.embl.ebi.escience.scufl.OutputPort;
+import org.embl.ebi.escience.scufl.Processor;
 import org.embl.ebi.escience.scuflworkers.ProcessorTaskWorker;
 import org.jdom.Element;
 import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
 
-import uk.ac.soton.itinnovation.taverna.enactor.entities.TaskExecutionException;
 import uk.ac.soton.itinnovation.taverna.enactor.entities.ProcessorTask;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Iterator;
-import java.util.logging.XMLFormatter;
-
-import bsh.*;
+import uk.ac.soton.itinnovation.taverna.enactor.entities.TaskExecutionException;
 
 /**
  * A task to parse a Moby Datatype

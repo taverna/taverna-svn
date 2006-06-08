@@ -4,16 +4,20 @@
  * Copyright Tom Oinn, EMBL-EBI
  */
 package org.embl.ebi.escience.scuflworkers.seqhound;
-import org.embl.ebi.escience.baclava.*;
-import java.lang.reflect.*;
-import java.util.*;
-import org.embl.ebi.escience.scufl.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+
 import org.embl.ebi.escience.baclava.DataThing;
-import org.embl.ebi.escience.baclava.factory.DataThingFactory;
+import org.embl.ebi.escience.scufl.InputPort;
 import org.embl.ebi.escience.scufl.Processor;
 import org.embl.ebi.escience.scuflworkers.ProcessorTaskWorker;
-import uk.ac.soton.itinnovation.taverna.enactor.entities.TaskExecutionException;
+
 import uk.ac.soton.itinnovation.taverna.enactor.entities.ProcessorTask;
+import uk.ac.soton.itinnovation.taverna.enactor.entities.TaskExecutionException;
 
 public class SeqhoundTask implements ProcessorTaskWorker {
     

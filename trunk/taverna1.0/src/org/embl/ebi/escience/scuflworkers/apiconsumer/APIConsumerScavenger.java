@@ -5,16 +5,17 @@
  */
 package org.embl.ebi.escience.scuflworkers.apiconsumer;
 
+import java.net.URL;
+import java.util.Iterator;
+import java.util.List;
+
 import javax.swing.tree.DefaultMutableTreeNode;
+
 import org.embl.ebi.escience.scuflui.workbench.Scavenger;
 import org.embl.ebi.escience.scuflui.workbench.ScavengerCreationException;
-import org.embl.ebi.escience.scufl.*;
-import org.embl.ebi.escience.scufl.parser.*;
-import org.embl.ebi.escience.scuflworkers.*;
-import java.net.URL;
-import org.jdom.*;
-import org.jdom.input.*;
-import java.util.*;
+import org.jdom.Document;
+import org.jdom.Element;
+import org.jdom.input.SAXBuilder;
 
 /**
  * Scavenger driven off an XML file created by the APIConsumer

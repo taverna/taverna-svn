@@ -1,7 +1,7 @@
 package org.embl.ebi.escience.baclava;
 
-import java.util.List;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Interface for things that can guess the mimetype associated with a Java

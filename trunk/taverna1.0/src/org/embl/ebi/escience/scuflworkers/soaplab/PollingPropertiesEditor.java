@@ -6,15 +6,36 @@
 
 package org.embl.ebi.escience.scuflworkers.soaplab;
 
-import java.awt.*;
-import java.awt.event.*;
-import javax.swing.*;
-import org.embl.ebi.escience.scuflworkers.*;
-import org.embl.ebi.escience.scuflui.UIUtils;
-import org.embl.ebi.escience.scuflui.ShadedLabel;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.GradientPaint;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.GridLayout;
+import java.awt.Paint;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+
+import javax.swing.Box;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
+
+import org.embl.ebi.escience.scufl.Processor;
+import org.embl.ebi.escience.scufl.ScuflModel;
 import org.embl.ebi.escience.scuflui.ScuflUIComponent;
-import org.embl.ebi.escience.scufl.*;
+import org.embl.ebi.escience.scuflui.ShadedLabel;
+import org.embl.ebi.escience.scuflui.UIUtils;
 import org.embl.ebi.escience.scuflui.graph.GraphColours;
+import org.embl.ebi.escience.scuflworkers.ProcessorEditor;
+import org.embl.ebi.escience.scuflworkers.ProcessorHelper;
 
 /**
  * Edits the polling properties for the soaplab processor

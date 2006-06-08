@@ -4,16 +4,8 @@
  * Copyright Tom Oinn, EMBL-EBI
  */
 package org.embl.ebi.escience.scuflworkers.workflow;
-import org.embl.ebi.escience.scufl.DuplicateProcessorNameException;
-import org.embl.ebi.escience.scufl.Processor;
-import org.embl.ebi.escience.scufl.ProcessorCreationException;
-import org.embl.ebi.escience.scufl.ScuflModel;
-import org.embl.ebi.escience.scuflworkers.ProcessorFactory;
 import org.embl.ebi.escience.scufl.XScufl;
-
-import org.embl.ebi.escience.scuflworkers.workflow.WorkflowProcessor;
-import java.lang.Class;
-import java.lang.String;
+import org.embl.ebi.escience.scuflworkers.ProcessorFactory;
 import org.jdom.Element;
 
 

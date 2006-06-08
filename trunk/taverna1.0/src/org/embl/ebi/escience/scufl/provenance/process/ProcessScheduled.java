@@ -5,9 +5,9 @@
  */
 package org.embl.ebi.escience.scufl.provenance.process;
 
-import org.embl.ebi.escience.scufl.*;
-import org.embl.ebi.escience.scuflworkers.*;
-import org.jdom.*;
+import org.embl.ebi.escience.scufl.Processor;
+import org.embl.ebi.escience.scuflworkers.ProcessorHelper;
+import org.jdom.Element;
 
 /**
  * Event corresponding to a processor instance being created by the enactor's

@@ -5,10 +5,15 @@
  */
 package org.embl.ebi.escience.scufl.view;
 
-import org.embl.ebi.escience.scufl.*;
-
-import java.lang.String;
-import java.lang.StringBuffer;
+import org.embl.ebi.escience.scufl.ConcurrencyConstraint;
+import org.embl.ebi.escience.scufl.DataConstraint;
+import org.embl.ebi.escience.scufl.InputPort;
+import org.embl.ebi.escience.scufl.OutputPort;
+import org.embl.ebi.escience.scufl.Port;
+import org.embl.ebi.escience.scufl.Processor;
+import org.embl.ebi.escience.scufl.ScuflModel;
+import org.embl.ebi.escience.scufl.ScuflModelEvent;
+import org.embl.ebi.escience.scufl.ScuflModelEventListener;
 import org.embl.ebi.escience.scuflworkers.ProcessorHelper;
 import org.embl.ebi.escience.scuflworkers.workflow.WorkflowProcessor;
 

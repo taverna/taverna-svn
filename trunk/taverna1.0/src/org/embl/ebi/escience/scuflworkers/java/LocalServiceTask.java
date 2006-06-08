@@ -5,16 +5,14 @@
  */
 package org.embl.ebi.escience.scuflworkers.java;
 
+import java.util.Map;
+
 import org.apache.log4j.Logger;
 import org.embl.ebi.escience.scufl.Processor;
 import org.embl.ebi.escience.scuflworkers.ProcessorTaskWorker;
-import uk.ac.soton.itinnovation.taverna.enactor.entities.TaskExecutionException;
+
 import uk.ac.soton.itinnovation.taverna.enactor.entities.ProcessorTask;
-
-// Utility Imports
-import java.util.Map;
-
-import org.embl.ebi.escience.scuflworkers.java.LocalServiceProcessor;
+import uk.ac.soton.itinnovation.taverna.enactor.entities.TaskExecutionException;
 
 /**
  * A task to invoke a LocalServiceProcessor

@@ -5,22 +5,15 @@
  */
 package org.biomoby.client.taverna.plugin;
 
-import org.biomoby.client.taverna.plugin.MobyParseDatatypeProcessor;
-import org.biomoby.client.taverna.plugin.MobyParseDatatypeProcessorFactory;
-import org.embl.ebi.escience.scufl.DuplicatePortNameException;
 import org.embl.ebi.escience.scufl.DuplicateProcessorNameException;
-import org.embl.ebi.escience.scufl.InputPort;
-import org.embl.ebi.escience.scufl.OutputPort;
-import org.embl.ebi.escience.scufl.PortCreationException;
 import org.embl.ebi.escience.scufl.Processor;
 import org.embl.ebi.escience.scufl.ProcessorCreationException;
 import org.embl.ebi.escience.scufl.ScuflModel;
 import org.embl.ebi.escience.scufl.XScufl;
 import org.embl.ebi.escience.scufl.parser.XScuflFormatException;
-import java.util.Iterator;
-import org.jdom.Element;
 import org.embl.ebi.escience.scuflworkers.ProcessorFactory;
 import org.embl.ebi.escience.scuflworkers.XMLHandler;
+import org.jdom.Element;
 
 /**
  * Handles XML store and load for the Moby Datatype Parser

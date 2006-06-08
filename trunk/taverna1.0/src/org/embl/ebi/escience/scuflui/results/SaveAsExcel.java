@@ -5,21 +5,31 @@
  */
 package org.embl.ebi.escience.scuflui.results;
 
-import org.embl.ebi.escience.scuflui.*;
-import org.embl.ebi.escience.baclava.*;
-import org.embl.ebi.escience.baclava.factory.DataThingXMLFactory;
-import java.util.*;
-import java.util.prefs.*;
-import javax.swing.JFileChooser;
-import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.prefs.Preferences;
+
 import javax.swing.Icon;
-import java.io.*;
-import org.jdom.*;
-import org.jdom.output.*;
-import javax.swing.*;
-import org.apache.poi.hssf.usermodel.*;
-import org.apache.poi.hssf.util.*;
+import javax.swing.JComponent;
+import javax.swing.JFileChooser;
+import javax.swing.JOptionPane;
+
+import org.apache.poi.hssf.usermodel.HSSFCell;
+import org.apache.poi.hssf.usermodel.HSSFCellStyle;
+import org.apache.poi.hssf.usermodel.HSSFRow;
+import org.apache.poi.hssf.usermodel.HSSFSheet;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.hssf.util.HSSFColor;
+import org.embl.ebi.escience.baclava.BaclavaIterator;
+import org.embl.ebi.escience.baclava.DataThing;
+import org.embl.ebi.escience.scuflui.AdvancedModelExplorer;
+import org.embl.ebi.escience.scuflui.ExtensionFileFilter;
+import org.embl.ebi.escience.scuflui.ScuflIcons;
 
 /**
  * Uses the Apache POI to save the map of data things

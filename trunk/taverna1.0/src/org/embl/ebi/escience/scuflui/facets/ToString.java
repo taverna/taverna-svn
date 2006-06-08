@@ -1,13 +1,12 @@
 package org.embl.ebi.escience.scuflui.facets;
 
-import org.embl.ebi.escience.scuflui.facets.FacetFinderSPI;
-import org.embl.ebi.escience.baclava.DataThing;
-import org.embl.ebi.escience.baclava.factory.DataThingFactory;
-
+import java.awt.Component;
+import java.beans.PropertyChangeListener;
 import java.util.Collections;
 import java.util.Set;
-import java.awt.*;
-import java.beans.PropertyChangeListener;
+
+import org.embl.ebi.escience.baclava.DataThing;
+import org.embl.ebi.escience.baclava.factory.DataThingFactory;
 
 /**
  *

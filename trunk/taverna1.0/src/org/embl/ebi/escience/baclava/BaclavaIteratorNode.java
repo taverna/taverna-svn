@@ -5,8 +5,10 @@
  */
 package org.embl.ebi.escience.baclava;
 
-import javax.swing.tree.*;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.swing.tree.DefaultMutableTreeNode;
 
 /**
  * A DefaultMutableTreeNode implementing ResumableIterator by wrapping a

@@ -1,18 +1,27 @@
 package org.embl.ebi.escience.scuflui.facets;
 
+import java.awt.Checkbox;
+import java.awt.CheckboxGroup;
+import java.awt.Component;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+import java.beans.BeanInfo;
+import java.beans.IntrospectionException;
+import java.beans.Introspector;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
+import java.beans.PropertyDescriptor;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.Collections;
+import java.util.Set;
+
+import javax.swing.Box;
+
+import org.apache.log4j.Logger;
 import org.embl.ebi.escience.baclava.DataThing;
 import org.embl.ebi.escience.baclava.factory.DataThingFactory;
-import org.apache.log4j.Logger;
-
-import javax.swing.*;
-import java.util.Set;
-import java.util.Collections;
-import java.lang.reflect.Method;
-import java.lang.reflect.InvocationTargetException;
-import java.awt.*;
-import java.awt.event.ItemListener;
-import java.awt.event.ItemEvent;
-import java.beans.*;
 
 /**
  *

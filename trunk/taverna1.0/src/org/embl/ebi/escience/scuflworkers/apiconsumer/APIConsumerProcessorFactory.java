@@ -5,9 +5,7 @@
  */
 package org.embl.ebi.escience.scuflworkers.apiconsumer;
 
-import org.embl.ebi.escience.scuflworkers.*;
-import org.embl.ebi.escience.scufl.*;
-import org.jdom.*;
+import org.embl.ebi.escience.scuflworkers.ProcessorFactory;
 
 /**
  * APIConsumer factory

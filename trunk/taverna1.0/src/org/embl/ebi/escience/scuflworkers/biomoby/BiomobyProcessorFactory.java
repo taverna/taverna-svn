@@ -4,13 +4,7 @@
  * Copyright Martin Senger, EMBL-EBI
  */
 package org.embl.ebi.escience.scuflworkers.biomoby;
-import org.embl.ebi.escience.scufl.DuplicateProcessorNameException;
-import org.embl.ebi.escience.scufl.Processor;
-import org.embl.ebi.escience.scufl.ProcessorCreationException;
-import org.embl.ebi.escience.scufl.ScuflModel;
 import org.embl.ebi.escience.scuflworkers.ProcessorFactory;
-
-import org.embl.ebi.escience.scuflworkers.biomoby.BiomobyProcessor;
 // import java.lang.Class;
 // import java.lang.String;
 
@@ -20,7 +14,7 @@ import org.embl.ebi.escience.scuflworkers.biomoby.BiomobyProcessor;
  * Implementation of ProcessorFactory that creates
  * BiomobyProcessor nodes. <p>
  *
- * @version $Id: BiomobyProcessorFactory.java,v 1.4 2004-11-12 16:34:28 mereden Exp $
+ * @version $Id: BiomobyProcessorFactory.java,v 1.5 2006-06-08 09:24:03 sowen70 Exp $
  * @author Martin Senger
  */
 public class BiomobyProcessorFactory extends ProcessorFactory {

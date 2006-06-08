@@ -6,9 +6,10 @@
 package org.embl.ebi.escience.scuflui.results;
 
 import java.awt.event.ActionListener;
+import java.util.Map;
+
 import javax.swing.Icon;
 import javax.swing.JComponent;
-import java.util.Map;
 
 /**
  * Implementing classes are capable of storing a collection

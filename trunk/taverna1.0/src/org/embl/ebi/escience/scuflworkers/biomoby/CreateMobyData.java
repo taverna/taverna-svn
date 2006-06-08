@@ -5,11 +5,17 @@
  */
 package org.embl.ebi.escience.scuflworkers.biomoby;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.embl.ebi.escience.baclava.DataThing;
-import org.jdom.*;
-import org.jdom.output.*;
-import java.util.*;
-import org.embl.ebi.escience.scuflworkers.java.*;
+import org.embl.ebi.escience.scuflworkers.java.LocalWorker;
+import org.jdom.Document;
+import org.jdom.Element;
+import org.jdom.Namespace;
+import org.jdom.output.Format;
+import org.jdom.output.XMLOutputter;
+
 import uk.ac.soton.itinnovation.taverna.enactor.entities.TaskExecutionException;
 
 /**

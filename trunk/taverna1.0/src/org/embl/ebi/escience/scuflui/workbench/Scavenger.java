@@ -7,8 +7,6 @@ package org.embl.ebi.escience.scuflui.workbench;
 
 import javax.swing.tree.DefaultMutableTreeNode;
 
-import java.lang.Object;
-
 /**
  * A subclass of DefaultMutableTreeNode that should be subclassed to create
  * particular scavengers for different types of processor

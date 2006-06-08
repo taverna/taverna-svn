@@ -5,20 +5,14 @@
  */
 package org.embl.ebi.escience.scufl.tools;
 
-import org.embl.ebi.escience.scufl.ScuflModel;
-import org.embl.ebi.escience.scufl.parser.XScuflParser;
-import org.embl.ebi.escience.scufl.view.DotView;
-
-// IO Imports
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 
-import java.lang.ArrayIndexOutOfBoundsException;
-import java.lang.Exception;
-import java.lang.String;
-import java.lang.System;
+import org.embl.ebi.escience.scufl.ScuflModel;
+import org.embl.ebi.escience.scufl.parser.XScuflParser;
+import org.embl.ebi.escience.scufl.view.DotView;
 
 /**
  * Command line tool to read in an XScufl definition and produce the dot file

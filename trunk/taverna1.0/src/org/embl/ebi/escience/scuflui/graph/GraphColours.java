@@ -10,8 +10,8 @@
 
 package org.embl.ebi.escience.scuflui.graph;
 
-import java.awt.*;
-import java.util.*;
+import java.awt.Color;
+import java.util.Hashtable;
 
 /**
  * This abstract class sets up and provides name-to-color and color-to-name mappings and some

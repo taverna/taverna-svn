@@ -5,22 +5,20 @@
  */
 package org.embl.ebi.escience.scuflworkers.apiconsumer;
 
-import org.apache.log4j.Logger;
-import org.embl.ebi.escience.baclava.DataThing;
-import org.embl.ebi.escience.scufl.Processor;
-import org.embl.ebi.escience.scufl.OutputPort;
-import org.embl.ebi.escience.scuflworkers.ProcessorTaskWorker;
-import uk.ac.soton.itinnovation.taverna.enactor.entities.TaskExecutionException;
-import uk.ac.soton.itinnovation.taverna.enactor.entities.ProcessorTask;
-
-// Utility Imports
+import java.lang.reflect.Array;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Method;
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Iterator;
-import java.util.Arrays;
-import java.math.*;
 
-import java.lang.reflect.*;
+import org.embl.ebi.escience.baclava.DataThing;
+import org.embl.ebi.escience.scufl.Processor;
+import org.embl.ebi.escience.scuflworkers.ProcessorTaskWorker;
+
+import uk.ac.soton.itinnovation.taverna.enactor.entities.ProcessorTask;
+import uk.ac.soton.itinnovation.taverna.enactor.entities.TaskExecutionException;
 
 
 /**

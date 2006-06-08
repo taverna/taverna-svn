@@ -5,7 +5,7 @@
  */
 package org.embl.ebi.escience.scufl;
 
-import javax.swing.tree.*;
+import javax.swing.tree.DefaultMutableTreeNode;
 
 /**
  * A leaf node in an iterator tree model

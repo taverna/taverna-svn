@@ -5,20 +5,11 @@
  */
 package org.embl.ebi.escience.baclava;
 
-import org.embl.ebi.escience.baclava.factory.DataThingFactory;
-
-// Utility Imports
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
-import org.embl.ebi.escience.baclava.BaclavaIterator;
-import org.embl.ebi.escience.baclava.DataThing;
-import org.embl.ebi.escience.baclava.JoinIterator;
-import java.lang.Exception;
-import java.lang.Object;
-import java.lang.String;
-import java.lang.System;
+import org.embl.ebi.escience.baclava.factory.DataThingFactory;
 
 /**
  * Tests the functionality of the various Baclava iterator widgets

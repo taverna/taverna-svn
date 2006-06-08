@@ -25,39 +25,32 @@
 //      Dependencies        :
 //
 //      Last commit info    :   $Author: sowen70 $
-//                              $Date: 2006-05-15 13:52:34 $
-//                              $Revision: 1.16 $
+//                              $Date: 2006-06-08 09:24:01 $
+//                              $Revision: 1.17 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 
 package org.embl.ebi.escience.scuflworkers.soaplab;
 
-import javax.xml.namespace.QName;
-import org.apache.axis.client.Call;
-import org.apache.axis.client.Service;
-import org.apache.log4j.Logger;
-import org.embl.ebi.escience.baclava.DataThing;
-import org.embl.ebi.escience.baclava.factory.DataThingFactory;
-import org.embl.ebi.escience.scufl.Processor;
-import org.embl.ebi.escience.scufl.OutputPort;
-import org.embl.ebi.escience.scuflworkers.ProcessorTaskWorker;
-import uk.ac.soton.itinnovation.taverna.enactor.entities.TaskExecutionException;
-import uk.ac.soton.itinnovation.taverna.enactor.entities.ProcessorTask;
-
-// Utility Imports
+import java.net.URL;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-// Network Imports
-import java.net.URL;
+import javax.xml.namespace.QName;
 
-import org.embl.ebi.escience.scuflworkers.soaplab.SoaplabProcessor;
-import java.lang.Exception;
-import java.lang.Integer;
-import java.lang.Object;
-import java.lang.String;
+import org.apache.axis.client.Call;
+import org.apache.axis.client.Service;
+import org.apache.log4j.Logger;
+import org.embl.ebi.escience.baclava.DataThing;
+import org.embl.ebi.escience.baclava.factory.DataThingFactory;
+import org.embl.ebi.escience.scufl.OutputPort;
+import org.embl.ebi.escience.scufl.Processor;
+import org.embl.ebi.escience.scuflworkers.ProcessorTaskWorker;
+
+import uk.ac.soton.itinnovation.taverna.enactor.entities.ProcessorTask;
+import uk.ac.soton.itinnovation.taverna.enactor.entities.TaskExecutionException;
 
 public class SoaplabTask implements ProcessorTaskWorker {
 

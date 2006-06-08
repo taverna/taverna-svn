@@ -5,10 +5,11 @@
  */
 package org.embl.ebi.escience.scuflui.dnd;
 
-import java.awt.dnd.*;
-import java.awt.datatransfer.*;
-import java.io.*;
-import org.jdom.*;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.Transferable;
+import java.awt.datatransfer.UnsupportedFlavorException;
+
+import org.jdom.Element;
 
 /**
  * This transferable data type encapsulates a SpecFragment

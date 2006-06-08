@@ -11,13 +11,9 @@ import org.embl.ebi.escience.scufl.ProcessorCreationException;
 import org.embl.ebi.escience.scufl.ScuflModel;
 import org.embl.ebi.escience.scufl.XScufl;
 import org.embl.ebi.escience.scufl.parser.XScuflFormatException;
-import org.embl.ebi.escience.scuflworkers.*;
-
-// JDOM Imports
+import org.embl.ebi.escience.scuflworkers.ProcessorFactory;
+import org.embl.ebi.escience.scuflworkers.XMLHandler;
 import org.jdom.Element;
-
-import org.embl.ebi.escience.scuflworkers.java.LocalServiceProcessor;
-import java.lang.String;
 
 /**
  * Handles XML store and load for the local process processor

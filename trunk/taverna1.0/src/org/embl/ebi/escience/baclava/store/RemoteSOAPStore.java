@@ -5,22 +5,28 @@
  */
 package org.embl.ebi.escience.baclava.store;
 
-import java.util.*;
-import java.io.*;
-import org.embl.ebi.escience.baclava.*;
-import org.embl.ebi.escience.baclava.store.*;
-import org.embl.ebi.escience.baclava.factory.*;
-import org.jdom.*;
-import org.jdom.output.*;
-import org.jdom.input.*;
-import org.apache.log4j.*;
+import java.io.StringReader;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.rmi.RemoteException;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Properties;
+
 import javax.xml.namespace.QName;
+import javax.xml.rpc.ServiceException;
+
 import org.apache.axis.client.Call;
 import org.apache.axis.client.Service;
 import org.apache.log4j.Logger;
-import java.net.*;
-import javax.xml.rpc.*;
-import java.rmi.*;
+import org.embl.ebi.escience.baclava.DataThing;
+import org.embl.ebi.escience.baclava.LSIDProvider;
+import org.embl.ebi.escience.baclava.factory.DataThingXMLFactory;
+import org.jdom.Document;
+import org.jdom.JDOMException;
+import org.jdom.input.SAXBuilder;
+import org.jdom.output.Format;
+import org.jdom.output.XMLOutputter;
 
 /**
  * Connects to the DataService.jws axis service in the Ouzo1.0 project to

@@ -1,8 +1,12 @@
 package org.embl.ebi.escience.scuflui.renderers;
 
-import org.embl.ebi.escience.baclava.DataThing;
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
+import javax.swing.JComponent;
+import javax.swing.JLabel;
+import javax.swing.JTextArea;
 
-import javax.swing.*;
+import org.embl.ebi.escience.baclava.DataThing;
 
 /**
  *

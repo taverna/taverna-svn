@@ -5,10 +5,13 @@
  */
 package org.embl.ebi.escience.scuflui.workbench;
 
-import java.util.*;
-import java.io.*;
-import java.lang.reflect.*;
-import java.net.*;
+import java.io.File;
+import java.io.FilenameFilter;
+import java.lang.reflect.Method;
+import java.net.URL;
+import java.net.URLClassLoader;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Bootstrap launcher to avoid having to set an insanely long classpath.

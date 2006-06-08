@@ -6,24 +6,16 @@ import org.embl.ebi.escience.scufl.ProcessorCreationException;
 import org.embl.ebi.escience.scufl.ScuflModel;
 import org.embl.ebi.escience.scufl.XScufl;
 import org.embl.ebi.escience.scufl.parser.XScuflFormatException;
-import org.embl.ebi.escience.scuflworkers.*;
-
-// JDOM Imports
+import org.embl.ebi.escience.scuflworkers.ProcessorFactory;
+import org.embl.ebi.escience.scuflworkers.XMLHandler;
 import org.jdom.Element;
-
-// Network Imports
-import java.net.MalformedURLException;
-import java.net.URL;
-
-import org.embl.ebi.escience.scuflworkers.biomoby.BiomobyProcessor;
-import java.lang.String;
 
 
 
 /**
  * Handles XML store and load for the biomoby processor. <p>
  *
- * @version $Id: BiomobyXMLHandler.java,v 1.5 2004-10-01 13:38:21 mereden Exp $
+ * @version $Id: BiomobyXMLHandler.java,v 1.6 2006-06-08 09:24:03 sowen70 Exp $
  * @author Martin Senger
  */
 public class BiomobyXMLHandler implements XMLHandler {

@@ -5,12 +5,14 @@
  */
 package org.embl.ebi.escience.scuflui.processoractions;
 
-import org.apache.commons.discovery.tools.Service;
-import org.apache.commons.discovery.tools.SPInterface;
+import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.Iterator;
+import java.util.List;
+
 import org.apache.commons.discovery.resource.ClassLoaders;
-
-import java.util.*;
-
+import org.apache.commons.discovery.tools.SPInterface;
+import org.apache.commons.discovery.tools.Service;
 import org.embl.ebi.escience.scufl.Processor;
 
 /**

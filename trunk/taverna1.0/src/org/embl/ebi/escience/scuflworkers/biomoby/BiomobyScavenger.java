@@ -5,29 +5,24 @@
  */
 package org.embl.ebi.escience.scuflworkers.biomoby;
 
+import java.util.Enumeration;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Vector;
+
 import javax.swing.tree.DefaultMutableTreeNode;
-// import javax.xml.namespace.QName;
-// import org.apache.axis.client.Call;
-// import org.apache.axis.client.Service;
+
+import org.biomoby.client.CentralImpl;
+import org.biomoby.shared.Central;
 import org.embl.ebi.escience.scuflui.workbench.Scavenger;
 import org.embl.ebi.escience.scuflui.workbench.ScavengerCreationException;
-
-import org.embl.ebi.escience.scuflworkers.biomoby.BiomobyProcessorFactory;
-// import java.lang.Exception;
-// import java.lang.Object;
-// import java.lang.RuntimeException;
-// import java.lang.String;
-
-import org.biomoby.client.*;
-import org.biomoby.shared.*;
-
-import java.util.*;
 
 /**
  * A Scavenger that knows how to get all the Biomoby services from a
  * specified Biomoby Central Registry. <p>
  *
- * @version $Id: BiomobyScavenger.java,v 1.2 2004-10-01 13:38:21 mereden Exp $
+ * @version $Id: BiomobyScavenger.java,v 1.3 2006-06-08 09:24:03 sowen70 Exp $
  * @author Martin Senger
  */
 public class BiomobyScavenger extends Scavenger {

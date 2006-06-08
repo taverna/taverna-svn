@@ -7,17 +7,9 @@ package org.embl.ebi.escience.scufl.provenance.process;
 
 import java.lang.reflect.Method;
 import java.text.DateFormat;
-
-// Utility Imports
 import java.util.Date;
 
-// JDOM Imports
 import org.jdom.Element;
-
-import java.lang.Class;
-import java.lang.Exception;
-import java.lang.Object;
-import java.lang.String;
 
 /**
  * Represents a single state change in the processor state transition diagram.

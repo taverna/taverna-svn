@@ -7,21 +7,22 @@
 package org.embl.ebi.escience.scuflworkers.notification;
 
 
-import uk.ac.soton.ecs.iam.notification.dynamicproxy.DynamicProxy;
-import uk.ac.soton.ecs.iam.notification.publishprocessor.infc.PublishProcessor;
-import uk.ac.soton.ecs.iam.notification.constants.NotificationProcessorConstants;
-import org.embl.ebi.escience.scuflworkers.ProcessorTaskWorker;
-import org.embl.ebi.escience.scufl.Processor;
-import uk.ac.soton.ecs.iam.notification.notifconfig.infc.NotificationProcessorConfiguration;
-import uk.ac.soton.itinnovation.taverna.enactor.entities.TaskExecutionException;
-import java.util.Map;
-import java.util.HashMap;
-import java.util.Set;
-import java.util.Iterator;
-import java.io.StringReader;
 import java.lang.reflect.Method;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
+
 import org.embl.ebi.escience.baclava.DataThing;
+import org.embl.ebi.escience.scufl.Processor;
+import org.embl.ebi.escience.scuflworkers.ProcessorTaskWorker;
+
+import uk.ac.soton.ecs.iam.notification.constants.NotificationProcessorConstants;
+import uk.ac.soton.ecs.iam.notification.dynamicproxy.DynamicProxy;
+import uk.ac.soton.ecs.iam.notification.notifconfig.infc.NotificationProcessorConfiguration;
+import uk.ac.soton.ecs.iam.notification.publishprocessor.infc.PublishProcessor;
 import uk.ac.soton.itinnovation.taverna.enactor.entities.ProcessorTask;
+import uk.ac.soton.itinnovation.taverna.enactor.entities.TaskExecutionException;
 
 /**
  *

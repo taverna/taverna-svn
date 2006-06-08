@@ -1,33 +1,17 @@
 package org.embl.ebi.escience.scuflui.renderers;
 
-import org.embl.ebi.escience.baclava.DataThing;
-
-import javax.swing.*;
-import javax.imageio.stream.ImageInputStream;
-import javax.imageio.ImageIO;
-import javax.imageio.ImageReader;
-import javax.imageio.stream.ImageInputStream;
-import javax.swing.*;
-import org.embl.ebi.escience.scuflui.*;
-
-// Utility Imports
-import java.util.Iterator;
-
-// IO Imports
+import java.awt.Dimension;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.InputStream;
-import java.io.IOException;
-import java.util.Iterator;
 import java.util.regex.Pattern;
-import java.awt.*;
-import org.apache.batik.swing.*;
-import org.apache.batik.swing.gvt.*;
-import org.apache.batik.swing.svg.*;
-import org.apache.batik.dom.svg.*;
-import org.apache.batik.util.*;
-import org.w3c.dom.svg.*;
+
+import javax.swing.ImageIcon;
+import javax.swing.JComponent;
+
+import org.apache.batik.swing.JSVGCanvas;
+import org.apache.batik.swing.JSVGScrollPane;
+import org.embl.ebi.escience.baclava.DataThing;
+import org.embl.ebi.escience.scuflui.ScuflSVGDiagram;
+import org.w3c.dom.svg.SVGDocument;
 
 /**
  *

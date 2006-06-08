@@ -1,12 +1,15 @@
 package org.embl.ebi.escience.scuflui.renderers;
 
+import java.awt.Font;
+import java.net.URL;
+import java.util.regex.Pattern;
+
+import javax.swing.ImageIcon;
+import javax.swing.JComponent;
+import javax.swing.JTextArea;
+
 import org.embl.ebi.escience.baclava.DataThing;
 import org.embl.ebi.escience.baclava.factory.DataThingFactory;
-
-import javax.swing.*;
-import java.net.URL;
-import java.awt.*;
-import java.util.regex.Pattern;
 
 /**
  * Display the content of a URL.

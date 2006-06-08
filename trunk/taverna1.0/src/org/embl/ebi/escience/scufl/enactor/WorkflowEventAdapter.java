@@ -5,7 +5,14 @@
  */
 package org.embl.ebi.escience.scufl.enactor;
 
-import org.embl.ebi.escience.scufl.enactor.event.*;
+import org.embl.ebi.escience.scufl.enactor.event.CollectionConstructionEvent;
+import org.embl.ebi.escience.scufl.enactor.event.IterationCompletionEvent;
+import org.embl.ebi.escience.scufl.enactor.event.ProcessCompletionEvent;
+import org.embl.ebi.escience.scufl.enactor.event.ProcessFailureEvent;
+import org.embl.ebi.escience.scufl.enactor.event.UserChangedDataEvent;
+import org.embl.ebi.escience.scufl.enactor.event.WorkflowCompletionEvent;
+import org.embl.ebi.escience.scufl.enactor.event.WorkflowCreationEvent;
+import org.embl.ebi.escience.scufl.enactor.event.WorkflowFailureEvent;
 
 /**
  * An (abstract) adapter around the workflow event listener interface allowing for

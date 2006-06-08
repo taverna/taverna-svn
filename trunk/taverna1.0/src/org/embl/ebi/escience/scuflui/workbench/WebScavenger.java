@@ -5,38 +5,25 @@
  */
 package org.embl.ebi.escience.scuflui.workbench;
 
-import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.DefaultTreeModel;
-import javax.swing.tree.TreeNode;
-import org.embl.ebi.escience.scuflworkers.talisman.TalismanProcessorFactory;
-import org.embl.ebi.escience.scuflworkers.workflow.WorkflowScavenger;
-import org.embl.ebi.escience.scuflworkers.wsdl.WSDLBasedScavenger;
-
-// Utility Imports
-import java.util.StringTokenizer;
-import java.util.Vector;
-
-// IO Imports
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-
-// JDOM Imports
-import org.jdom.Document;
-import org.jdom.Element;
-import org.jdom.input.SAXBuilder;
-
-// Network Imports
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.StringTokenizer;
+import java.util.Vector;
 
-import org.embl.ebi.escience.scuflui.workbench.Scavenger;
-import org.embl.ebi.escience.scuflui.workbench.ScavengerCreationException;
-import java.lang.Exception;
-import java.lang.String;
-import java.lang.System;
-import java.lang.Thread;
+import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.TreeNode;
+
+import org.embl.ebi.escience.scuflworkers.talisman.TalismanProcessorFactory;
+import org.embl.ebi.escience.scuflworkers.workflow.WorkflowScavenger;
+import org.embl.ebi.escience.scuflworkers.wsdl.WSDLBasedScavenger;
+import org.jdom.Document;
+import org.jdom.Element;
+import org.jdom.input.SAXBuilder;
 
 /**
  * A scavenger that does a web crawl starting at the specified URL to find scufl

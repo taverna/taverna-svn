@@ -5,11 +5,26 @@
  */
 package org.embl.ebi.escience.scufl.view;
 
-import org.embl.ebi.escience.scufl.*;
-import javax.swing.*;
-import javax.swing.tree.*;
-import java.awt.datatransfer.*;
-import java.util.*;
+import java.util.Enumeration;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Set;
+
+import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.MutableTreeNode;
+
+import org.embl.ebi.escience.scufl.AlternateProcessor;
+import org.embl.ebi.escience.scufl.ConcurrencyConstraint;
+import org.embl.ebi.escience.scufl.DataConstraint;
+import org.embl.ebi.escience.scufl.InputPort;
+import org.embl.ebi.escience.scufl.MinorScuflModelEvent;
+import org.embl.ebi.escience.scufl.OutputPort;
+import org.embl.ebi.escience.scufl.Port;
+import org.embl.ebi.escience.scufl.Processor;
+import org.embl.ebi.escience.scufl.ScuflModel;
+import org.embl.ebi.escience.scufl.ScuflModelEvent;
+import org.embl.ebi.escience.scufl.ScuflModelEventListener;
 
 /**
  * A TreeModel implementation used to represent a ScuflModel as a tree.

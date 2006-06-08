@@ -6,13 +6,10 @@
 package org.embl.ebi.escience.scufl;
 
 // Utility Imports
+import java.io.Serializable;
 import java.util.HashMap;
-import java.util.Map;
 import java.util.Iterator;
-import java.awt.datatransfer.*;
-import java.io.*;
-
-import org.embl.ebi.escience.scufl.Processor;
+import java.util.Map;
 
 /**
  * Represents an alternate processor to be used in case of failures in the

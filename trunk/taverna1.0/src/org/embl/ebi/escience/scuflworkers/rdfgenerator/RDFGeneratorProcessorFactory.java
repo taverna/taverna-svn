@@ -4,15 +4,7 @@
  * Copyright Tom Oinn, EMBL-EBI
  */
 package org.embl.ebi.escience.scuflworkers.rdfgenerator;
-import org.embl.ebi.escience.scufl.DuplicateProcessorNameException;
-import org.embl.ebi.escience.scufl.Processor;
-import org.embl.ebi.escience.scufl.ProcessorCreationException;
-import org.embl.ebi.escience.scufl.ScuflModel;
 import org.embl.ebi.escience.scuflworkers.ProcessorFactory;
-
-import org.embl.ebi.escience.scuflworkers.rdfgenerator.RDFGeneratorProcessor;
-import java.lang.Class;
-import java.lang.String;
 
 
 

@@ -5,16 +5,18 @@
  */
 package org.embl.ebi.escience.scuflui.workbench;
 
-import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.DefaultTreeModel;
-import javax.swing.tree.TreeNode;
-import org.embl.ebi.escience.scuflworkers.workflow.WorkflowScavenger;
+import java.io.File;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
-import java.io.*;
-import org.jdom.*;
-import org.jdom.input.*;
-import java.util.*;
-import org.embl.ebi.escience.scuflworkers.*;
+import javax.swing.tree.DefaultMutableTreeNode;
+
+import org.embl.ebi.escience.scuflworkers.ProcessorFactory;
+import org.embl.ebi.escience.scuflworkers.workflow.WorkflowScavenger;
+import org.jdom.Document;
+import org.jdom.input.SAXBuilder;
 
 /**
  * A scavenger which traverses the filesystem from the specified point looking

@@ -5,15 +5,12 @@
  */
 package org.embl.ebi.escience.scufl.enactor;
 
-import org.embl.ebi.escience.scufl.UnknownProcessorException;
-import org.embl.ebi.escience.scufl.ScuflModel;
-
-import uk.ac.soton.itinnovation.freefluo.main.InvalidInputException;
-
-// Utility Imports
 import java.util.Map;
 
-import java.lang.String;
+import org.embl.ebi.escience.scufl.ScuflModel;
+import org.embl.ebi.escience.scufl.UnknownProcessorException;
+
+import uk.ac.soton.itinnovation.freefluo.main.InvalidInputException;
 
 /**
  * This interface is implemented by any returned object that represents the

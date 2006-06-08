@@ -5,29 +5,20 @@
  */
 package org.embl.ebi.escience.scufl.semantics;
 
-import javax.swing.tree.DefaultMutableTreeNode;
-
-// Utility Imports
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-// IO Imports
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import javax.swing.tree.DefaultMutableTreeNode;
 
-// JDOM Imports
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.Namespace;
 import org.jdom.input.SAXBuilder;
-
-import org.embl.ebi.escience.scufl.semantics.RDFSClassHolder;
-import java.lang.Exception;
-import java.lang.String;
-import java.lang.System;
 
 /**
  * Parse an RDFS ontology file into a tree to be displayed by some UI component

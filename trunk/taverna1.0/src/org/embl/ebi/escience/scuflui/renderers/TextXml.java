@@ -1,16 +1,13 @@
 package org.embl.ebi.escience.scuflui.renderers;
 
+import java.util.Arrays;
+import java.util.regex.Pattern;
+
 import javax.swing.ImageIcon;
 import javax.swing.JComponent;
-import org.embl.ebi.escience.scuflui.XMLTree;
-import org.embl.ebi.escience.baclava.DataThing;
 
-import java.util.regex.Pattern;
-import java.util.Arrays;
-import java.lang.ClassLoader;
-import java.lang.Exception;
-import java.lang.Object;
-import java.lang.String;
+import org.embl.ebi.escience.baclava.DataThing;
+import org.embl.ebi.escience.scuflui.XMLTree;
 
 /**
  * Viewer to display XML as a tree.

@@ -5,15 +5,17 @@
  */
 package org.embl.ebi.escience.baclava;
 
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Properties;
+
+import org.apache.log4j.Logger;
+
 import com.ibm.lsid.LSIDException;
 import com.ibm.lsid.client.LSIDAssigner;
 import com.ibm.lsid.wsdl.SOAPLocation;
-import java.net.URL;
-import java.net.MalformedURLException;
-import org.apache.log4j.Logger;
-import java.util.Map;
-import java.util.HashMap;
-import java.util.Properties;
 
 /**
  * An implementation of the LSIDProvider interface which connects through to an

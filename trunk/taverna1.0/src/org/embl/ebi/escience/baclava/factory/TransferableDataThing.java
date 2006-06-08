@@ -6,11 +6,13 @@
  */
 package org.embl.ebi.escience.baclava.factory;
 
-import java.awt.datatransfer.*;
-import java.util.*;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.Transferable;
+import java.awt.datatransfer.UnsupportedFlavorException;
 
-import org.embl.ebi.escience.baclava.*;
-import org.jdom.output.*;
+import org.embl.ebi.escience.baclava.DataThing;
+import org.jdom.output.Format;
+import org.jdom.output.XMLOutputter;
 
 /**
  * @author <a href="mailto:bleh">Kevin Glover</a>

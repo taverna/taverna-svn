@@ -5,18 +5,17 @@
  */
 package org.embl.ebi.escience.scuflworkers.apiconsumer;
 
-import org.jdom.Element;
-import java.util.*;
-import org.w3c.dom.*;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerConfigurationException;
+import java.io.ByteArrayInputStream;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
 
-import javax.xml.transform.dom.DOMSource; 
-import javax.xml.parsers.*;
-import java.io.*;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+
 import org.embl.ebi.escience.baclava.DataThing;
+import org.jdom.Element;
+import org.w3c.dom.Document;
 
 /**
  * Definition for an APIConsumer processor or factory

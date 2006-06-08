@@ -5,25 +5,19 @@
  */
 package org.embl.ebi.escience.scuflworkers.talisman;
 
+import java.net.URL;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+
 import org.apache.log4j.Logger;
 import org.embl.ebi.escience.baclava.DataThing;
 import org.embl.ebi.escience.scufl.Processor;
 import org.embl.ebi.escience.scuflworkers.ProcessorTaskWorker;
 import org.embl.ebi.escience.talisman.tservice.TeaTray;
-import uk.ac.soton.itinnovation.taverna.enactor.entities.TaskExecutionException;import uk.ac.soton.itinnovation.taverna.enactor.entities.ProcessorTask;
 
-
-// Utility Imports
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-
-// Network Imports
-import java.net.URL;
-
-import org.embl.ebi.escience.scuflworkers.talisman.TalismanProcessor;
-import java.lang.Exception;
-import java.lang.String;
+import uk.ac.soton.itinnovation.taverna.enactor.entities.ProcessorTask;
+import uk.ac.soton.itinnovation.taverna.enactor.entities.TaskExecutionException;
 
 
 

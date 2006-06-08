@@ -1,7 +1,5 @@
 package org.embl.ebi.escience.scuflui.actions;
 
-import java.awt.event.ActionEvent;
-
 import org.embl.ebi.escience.scufl.ScuflModel;
 
 /**

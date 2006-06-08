@@ -5,15 +5,19 @@
  */
 package org.embl.ebi.escience.scuflworkers.apiconsumer;
 
-import java.io.*;
-import java.util.*;
-import javax.swing.*;
-import java.awt.event.*;
-import java.util.prefs.*;
-import org.embl.ebi.escience.scuflworkers.*;
-import org.embl.ebi.escience.scuflui.*;
-import org.embl.ebi.escience.scuflui.workbench.*;
-import java.net.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.File;
+import java.net.URL;
+import java.util.prefs.Preferences;
+
+import javax.swing.JFileChooser;
+import javax.swing.JOptionPane;
+
+import org.embl.ebi.escience.scuflui.ExtensionFileFilter;
+import org.embl.ebi.escience.scuflui.ScuflIcons;
+import org.embl.ebi.escience.scuflui.workbench.ScavengerTree;
+import org.embl.ebi.escience.scuflworkers.ScavengerHelper;
 
 /**
  * Create a new APIConsumerScavenger from a file dialog

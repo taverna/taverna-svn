@@ -5,9 +5,12 @@
  */
 package org.embl.ebi.escience.scufl;
 
-import org.embl.ebi.escience.baclava.*;
-import org.jdom.*;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+
+import org.jdom.Element;
 
 /**
  * An AnnotationTemplate object represents a single possible RDF statement that

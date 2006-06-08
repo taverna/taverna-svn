@@ -10,6 +10,7 @@ import java.awt.Rectangle;
 import java.util.Iterator;
 
 import javax.swing.JComponent;
+import javax.swing.JTable;
 import javax.swing.plaf.basic.BasicTableUI;
 import javax.swing.table.JTableHeader;
 import javax.swing.table.TableCellRenderer;
@@ -23,7 +24,7 @@ import javax.swing.table.TableColumnModel;
  * here. The great benefits of inheritance, eh?
  * 
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover </a>
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
 public class ResultTableUI extends BasicTableUI
 {

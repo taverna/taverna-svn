@@ -5,13 +5,19 @@
  */
 package org.embl.ebi.escience.baclava.iteratorui;
 
-import java.awt.*;
-import javax.swing.*;
-import javax.swing.tree.*;
-import javax.swing.event.*;
-import org.embl.ebi.escience.scufl.*;
-import org.embl.ebi.escience.baclava.*;
-import java.util.*;
+import java.util.Enumeration;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Set;
+
+import javax.swing.event.TreeModelEvent;
+import javax.swing.event.TreeModelListener;
+import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.MutableTreeNode;
+
+import org.embl.ebi.escience.baclava.BaclavaIteratorNode;
+import org.embl.ebi.escience.baclava.JoinIteratorNode;
 
 /**
  * A TreeModel designed to contain iterator nodes

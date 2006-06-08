@@ -5,13 +5,14 @@
  */
 package org.embl.ebi.escience.scuflui.results;
 
-import org.apache.commons.discovery.tools.Service;
-import org.apache.commons.discovery.tools.SPInterface;
-import org.apache.commons.discovery.resource.ClassLoaders;
-import org.apache.log4j.Logger;
-import java.util.List;
 import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.List;
+
+import org.apache.commons.discovery.resource.ClassLoaders;
+import org.apache.commons.discovery.tools.SPInterface;
+import org.apache.commons.discovery.tools.Service;
+import org.apache.log4j.Logger;
 
 /**
  * Maintains a list of all available providers

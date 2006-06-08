@@ -5,9 +5,10 @@
  */
 package org.embl.ebi.escience.scuflworkers.seqhound;
 
-import org.blueprint.seqhound.SeqHound;
+import java.io.IOException;
 import java.util.Properties;
-import java.io.*;
+
+import org.blueprint.seqhound.SeqHound;
 
 /**
  * Extends the basic functionality of the SeqHound class

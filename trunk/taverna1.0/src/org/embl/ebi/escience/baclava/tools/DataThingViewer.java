@@ -5,19 +5,41 @@
  */
 package org.embl.ebi.escience.baclava.tools;
 
-import org.jdom.*;
-import org.jdom.input.*;
-import org.embl.ebi.escience.baclava.*;
-import org.embl.ebi.escience.baclava.factory.*;
-import org.embl.ebi.escience.scuflui.*;
-import org.embl.ebi.escience.scuflui.workbench.Workbench;
-import javax.swing.*;
-import java.awt.*;
-import java.awt.event.*;
-import java.io.*;
-import org.embl.ebi.escience.scuflui.results.*;
-import java.util.*;
-import java.util.prefs.*;
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStream;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.prefs.Preferences;
+
+import javax.swing.Box;
+import javax.swing.JButton;
+import javax.swing.JFileChooser;
+import javax.swing.JFrame;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
+import javax.swing.JTabbedPane;
+import javax.swing.JToolBar;
+import javax.swing.UIManager;
+
+import org.embl.ebi.escience.baclava.DataThing;
+import org.embl.ebi.escience.baclava.factory.DataThingXMLFactory;
+import org.embl.ebi.escience.scuflui.ExtensionFileFilter;
+import org.embl.ebi.escience.scuflui.ResultItemPanel;
+import org.embl.ebi.escience.scuflui.ScuflIcons;
+import org.embl.ebi.escience.scuflui.results.ResultMapSaveRegistry;
+import org.embl.ebi.escience.scuflui.results.ResultMapSaveSPI;
+import org.jdom.Document;
+import org.jdom.input.SAXBuilder;
 
 /**
  * A simple data thing viewer tool that can be launched from the command line or

@@ -1,43 +1,30 @@
 package org.embl.ebi.escience.scuflworkers.biomoby;
 
-import javax.xml.namespace.QName;
-import org.apache.axis.client.Call;
-import org.apache.axis.client.Service;
-import org.apache.log4j.Logger;
-import org.embl.ebi.escience.baclava.DataThing;
-import org.embl.ebi.escience.baclava.factory.DataThingFactory;
-import org.embl.ebi.escience.scufl.Processor;
-import org.embl.ebi.escience.scuflworkers.ProcessorTaskWorker;
-import uk.ac.soton.itinnovation.taverna.enactor.entities.TaskExecutionException;
-import uk.ac.soton.itinnovation.taverna.enactor.entities.ProcessorTask;
-
-import org.embl.ebi.escience.scufl.*;
-
-// Utility Imports
+import java.io.StringReader;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.*;
 
-// Network Imports
-import java.net.URL;
+import org.apache.log4j.Logger;
+import org.biomoby.client.CentralImpl;
+import org.biomoby.shared.MobyException;
+import org.embl.ebi.escience.baclava.DataThing;
+import org.embl.ebi.escience.scufl.InputPort;
+import org.embl.ebi.escience.scufl.OutputPort;
+import org.embl.ebi.escience.scufl.Processor;
+import org.embl.ebi.escience.scuflworkers.ProcessorTaskWorker;
+import org.jdom.Document;
+import org.jdom.Element;
+import org.jdom.Namespace;
+import org.jdom.input.SAXBuilder;
+import org.jdom.output.Format;
+import org.jdom.output.XMLOutputter;
+import org.xml.sax.InputSource;
 
-// for converting XML
-import java.io.*;
-import org.jdom.*;
-import org.jdom.input.*;
-import org.jdom.output.*;
-import org.xml.sax.*;
-
-import org.embl.ebi.escience.scuflworkers.biomoby.BiomobyProcessor;
-// import java.lang.Exception;
-// import java.lang.Integer;
-// import java.lang.Object;
-// import java.lang.String;
-
-import org.biomoby.client.*;
-import org.biomoby.shared.*;
+import uk.ac.soton.itinnovation.taverna.enactor.entities.ProcessorTask;
+import uk.ac.soton.itinnovation.taverna.enactor.entities.TaskExecutionException;
 
 
 public class BiomobyTask implements ProcessorTaskWorker {

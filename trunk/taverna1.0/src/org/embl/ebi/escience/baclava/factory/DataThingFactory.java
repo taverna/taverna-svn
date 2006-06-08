@@ -5,19 +5,19 @@
  */
 package org.embl.ebi.escience.baclava.factory;
 
-import org.embl.ebi.escience.baclava.DataThing;
-
-// Utility Imports
-import java.util.*;
-
-import java.lang.Byte;
-import java.lang.Class;
-import java.lang.Number;
-import java.lang.Object;
-import java.lang.String;
+import java.io.IOException;
 import java.net.URL;
 import java.net.URLConnection;
-import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
+import java.util.Vector;
+
+import org.embl.ebi.escience.baclava.DataThing;
 
 /**
  * A collection of static methods to build DataThings from various other Java

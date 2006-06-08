@@ -1,16 +1,12 @@
 package org.embl.ebi.escience.scuflui.renderers;
 
-import org.embl.ebi.escience.baclava.DataThing;
-
 import java.util.regex.Pattern;
-import javax.swing.Icon;
+
 import javax.swing.ImageIcon;
 import javax.swing.JComponent;
 import javax.swing.JEditorPane;
 
-import java.lang.ClassLoader;
-import java.lang.Object;
-import java.lang.String;
+import org.embl.ebi.escience.baclava.DataThing;
 
 /**
  *

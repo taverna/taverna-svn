@@ -5,14 +5,15 @@
  */
 package org.embl.ebi.escience.scufl.enactor.event;
 
+import java.util.Iterator;
+import java.util.Map;
+
+import org.embl.ebi.escience.baclava.DataThing;
+import org.embl.ebi.escience.scufl.ScuflModel;
 import org.embl.ebi.escience.scufl.enactor.UserContext;
 import org.embl.ebi.escience.scufl.enactor.WorkflowInstance;
-import org.embl.ebi.escience.baclava.DataThing;
-import org.embl.ebi.escience.scufl.*;
-import org.embl.ebi.escience.scufl.view.*;
-import org.embl.ebi.escience.scufl.enactor.implementation.*;
-import java.util.Map;
-import java.util.Iterator;
+import org.embl.ebi.escience.scufl.enactor.implementation.WorkflowInstanceImpl;
+import org.embl.ebi.escience.scufl.view.XScuflView;
 
 public class WorkflowCreationEvent extends WorkflowInstanceEvent {
 

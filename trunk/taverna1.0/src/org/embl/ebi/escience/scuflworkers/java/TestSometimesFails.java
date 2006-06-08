@@ -5,13 +5,10 @@
  */
 package org.embl.ebi.escience.scuflworkers.java;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import uk.ac.soton.itinnovation.taverna.enactor.entities.TaskExecutionException;
-
-// Utility Imports
-import java.util.*;
-
-import org.embl.ebi.escience.scuflworkers.java.LocalWorker;
-import java.lang.String;
 
 /**
  * Processor which fails every four invocations.

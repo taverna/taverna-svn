@@ -6,13 +6,23 @@
 package org.embl.ebi.escience.scufl;
 
 import java.beans.IntrospectionException;
-import org.jdom.*;
-import java.util.*;
-import javax.swing.tree.*;
-import org.embl.ebi.escience.baclava.*;
-import javax.swing.event.*;
-import javax.swing.*;
-import java.awt.*;
+import java.util.Enumeration;
+import java.util.Iterator;
+import java.util.Map;
+
+import javax.swing.event.TreeModelEvent;
+import javax.swing.event.TreeModelListener;
+import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.MutableTreeNode;
+import javax.swing.tree.TreeModel;
+
+import org.embl.ebi.escience.baclava.BaclavaIteratorNode;
+import org.embl.ebi.escience.baclava.JoinIteratorNode;
+import org.embl.ebi.escience.baclava.LockStepIteratorNode;
+import org.embl.ebi.escience.baclava.ResumableIterator;
+import org.jdom.Element;
+import org.jdom.Namespace;
 
 /**
  * Defines the manner in which iterators should be constructed for a given

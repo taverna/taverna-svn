@@ -5,9 +5,9 @@
  */
 package org.embl.ebi.escience.scufl;
 
-import org.embl.ebi.escience.baclava.*;
-
-import org.jdom.*;
+import org.embl.ebi.escience.baclava.DataThing;
+import org.embl.ebi.escience.baclava.LSIDProvider;
+import org.jdom.Element;
 
 /**
  * A container class for the metadata about a workflow definition, including

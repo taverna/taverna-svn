@@ -9,7 +9,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
 
-import org.biomoby.client.taverna.plugin.BiomobyProcessor;
 import org.biomoby.service.dashboard.data.ParametersTable;
 import org.biomoby.shared.MobyData;
 import org.biomoby.shared.MobySecondaryData;

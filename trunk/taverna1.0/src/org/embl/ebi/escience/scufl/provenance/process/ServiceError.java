@@ -5,8 +5,7 @@
  */
 package org.embl.ebi.escience.scufl.provenance.process;
 
-import org.jdom.*;
-import java.util.*;
+import org.jdom.Element;
 
 /**
  * Event corresponding to a single error in a service invocation. This may

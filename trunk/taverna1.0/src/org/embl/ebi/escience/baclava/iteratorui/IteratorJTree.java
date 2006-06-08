@@ -5,14 +5,27 @@
  */
 package org.embl.ebi.escience.baclava.iteratorui;
 
-import java.awt.*;
-import java.awt.event.*;
-import javax.swing.*;
-import javax.swing.tree.*;
-import javax.swing.event.*;
-import org.embl.ebi.escience.scufl.*;
-import org.embl.ebi.escience.baclava.*;
-import java.util.*;
+import java.awt.Component;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.util.Enumeration;
+
+import javax.swing.ImageIcon;
+import javax.swing.JFrame;
+import javax.swing.JScrollPane;
+import javax.swing.JTree;
+import javax.swing.event.TreeModelEvent;
+import javax.swing.event.TreeModelListener;
+import javax.swing.tree.DefaultTreeCellRenderer;
+import javax.swing.tree.MutableTreeNode;
+import javax.swing.tree.TreeNode;
+import javax.swing.tree.TreePath;
+
+import org.embl.ebi.escience.baclava.BaclavaIterator;
+import org.embl.ebi.escience.baclava.BaclavaIteratorNode;
+import org.embl.ebi.escience.baclava.IteratorNodeTests;
+import org.embl.ebi.escience.baclava.JoinIteratorNode;
+import org.embl.ebi.escience.baclava.LockStepIteratorNode;
 
 /**
  * A JTree placed on top of a tree made of iterator nodes from the baclava

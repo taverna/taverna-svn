@@ -7,11 +7,11 @@ package org.embl.ebi.escience.scuflui.workbench;
 
 import java.io.File;
 import java.io.FilenameFilter;
-import java.net.URLClassLoader;
-import java.net.URL;
 import java.net.MalformedURLException;
-import java.util.List;
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Manages classloaders for the various plugin systems to ensure class isolation

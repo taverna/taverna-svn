@@ -1,14 +1,22 @@
 package org.embl.ebi.escience.scufl.view;
 
-import java.net.*;
-import java.util.*;
-import org.embl.ebi.escience.scufl.*;
-import org.embl.ebi.escience.baclava.*;
-import org.embl.ebi.escience.scuflworkers.wsdl.WSDLBasedProcessor;
-import org.embl.ebi.escience.scuflworkers.soaplab.SoaplabProcessor;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import org.biomoby.client.taverna.plugin.BiomobyProcessor;
-import org.embl.ebi.escience.scuflworkers.seqhound.SeqhoundProcessor;
+import org.embl.ebi.escience.scufl.Processor;
+import org.embl.ebi.escience.scufl.ScuflModel;
 import org.embl.ebi.escience.scuflworkers.biomart.BiomartProcessor;
+import org.embl.ebi.escience.scuflworkers.seqhound.SeqhoundProcessor;
+import org.embl.ebi.escience.scuflworkers.soaplab.SoaplabProcessor;
+import org.embl.ebi.escience.scuflworkers.wsdl.WSDLBasedProcessor;
 
 /**
  * A utility class containing a single static method which summarizes the

@@ -5,20 +5,26 @@
  */
 package org.biomoby.client.taverna.plugin;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Properties;
+
 import org.biomoby.client.CentralImpl;
 import org.biomoby.shared.Central;
 import org.biomoby.shared.MobyDataType;
 import org.biomoby.shared.MobyException;
 import org.biomoby.shared.MobyRelationship;
 import org.biomoby.shared.NoSuccessException;
-import org.embl.ebi.escience.scufl.*;
-
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Properties;
+import org.embl.ebi.escience.scufl.DuplicatePortNameException;
+import org.embl.ebi.escience.scufl.DuplicateProcessorNameException;
+import org.embl.ebi.escience.scufl.InputPort;
+import org.embl.ebi.escience.scufl.OutputPort;
+import org.embl.ebi.escience.scufl.Port;
+import org.embl.ebi.escience.scufl.PortCreationException;
+import org.embl.ebi.escience.scufl.Processor;
+import org.embl.ebi.escience.scufl.ProcessorCreationException;
+import org.embl.ebi.escience.scufl.ScuflModel;
 
 /**
  * A processor that breaks up a Moby datatype into its component parts minus all

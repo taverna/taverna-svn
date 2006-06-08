@@ -7,16 +7,10 @@ package org.embl.ebi.escience.baclava.factory;
 
 import org.embl.ebi.escience.baclava.BaclavaIterator;
 import org.embl.ebi.escience.baclava.DataThing;
-
-// JDOM Imports
 import org.jdom.Document;
 import org.jdom.Element;
-import org.jdom.output.*;
-
-import org.embl.ebi.escience.baclava.factory.DataThingFactory;
-import java.lang.Exception;
-import java.lang.String;
-import java.lang.System;
+import org.jdom.output.Format;
+import org.jdom.output.XMLOutputter;
 
 /**
  * Test the creation and type display of the various supported Java object types

@@ -6,22 +6,27 @@
 package org.embl.ebi.escience.scuflworkers.seqhound;
 
 
-import org.embl.ebi.escience.scufl.*;
-
-// Utility Imports
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.lang.reflect.Method;
+import java.net.URL;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 
-import java.lang.Class;
-import java.lang.Exception;
-import java.lang.String;
-import java.lang.System;
-import java.lang.reflect.*;
-import org.blueprint.seqhound.*;
-import java.util.*;
-import java.net.URL;
-import org.jdom.*;
-import org.jdom.input.*;
-import java.io.*;
+import org.embl.ebi.escience.scufl.DuplicatePortNameException;
+import org.embl.ebi.escience.scufl.DuplicateProcessorNameException;
+import org.embl.ebi.escience.scufl.InputPort;
+import org.embl.ebi.escience.scufl.OutputPort;
+import org.embl.ebi.escience.scufl.PortCreationException;
+import org.embl.ebi.escience.scufl.Processor;
+import org.embl.ebi.escience.scufl.ProcessorCreationException;
+import org.embl.ebi.escience.scufl.ScuflModel;
+import org.jdom.Document;
+import org.jdom.Element;
+import org.jdom.input.SAXBuilder;
 
 public class SeqhoundProcessor extends Processor {
 

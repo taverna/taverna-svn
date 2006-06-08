@@ -5,8 +5,16 @@
  */
 package org.embl.ebi.escience.scuflworkers.apiconsumer;
 
-import org.embl.ebi.escience.scufl.*;
-import java.util.*;
+import java.util.Properties;
+
+import org.embl.ebi.escience.scufl.DuplicatePortNameException;
+import org.embl.ebi.escience.scufl.DuplicateProcessorNameException;
+import org.embl.ebi.escience.scufl.InputPort;
+import org.embl.ebi.escience.scufl.OutputPort;
+import org.embl.ebi.escience.scufl.PortCreationException;
+import org.embl.ebi.escience.scufl.Processor;
+import org.embl.ebi.escience.scufl.ProcessorCreationException;
+import org.embl.ebi.escience.scufl.ScuflModel;
 
 /**
  * Processor for the API consumer worker

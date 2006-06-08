@@ -5,14 +5,11 @@
  */
 package org.embl.ebi.escience.baclava.factory;
 
-import javax.swing.tree.TreeCellRenderer;
-import org.embl.ebi.escience.baclava.DataThing;
-
-// Utility Imports
 import java.util.Iterator;
 
-import org.embl.ebi.escience.baclava.factory.DataThingTreeNode;
-import org.embl.ebi.escience.baclava.factory.DataThingTreeNodeRenderer;
+import javax.swing.tree.TreeCellRenderer;
+
+import org.embl.ebi.escience.baclava.DataThing;
 
 /**
  * Presents a tree view of a DataThing, walking over the nested collections if

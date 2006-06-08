@@ -1,16 +1,22 @@
 package org.embl.ebi.escience.scuflui.facets;
 
+import java.awt.Component;
+import java.awt.Graphics;
+import java.awt.Rectangle;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
+import java.beans.PropertyEditor;
+import java.beans.PropertyEditorManager;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import org.embl.ebi.escience.baclava.DataThing;
 import org.embl.ebi.escience.baclava.factory.DataThingFactory;
-
-import java.util.regex.Pattern;
-import java.util.regex.Matcher;
-import java.util.Collections;
-import java.util.Set;
-import java.util.List;
-import java.util.ArrayList;
-import java.beans.*;
-import java.awt.*;
 
 /**
  * Extract matches to a regular expression. The details of what to do with the

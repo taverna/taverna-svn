@@ -2,7 +2,7 @@ package org.embl.ebi.escience.acceptancetests;
 
 
 
-import org.embl.ebi.escience.testhelpers.acceptance.*;
+import org.embl.ebi.escience.testhelpers.acceptance.AcceptanceTestCase;
 
 public class AcceptanceAssertTest extends AcceptanceTestCase
 {

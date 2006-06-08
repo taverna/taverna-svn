@@ -1,7 +1,7 @@
 package org.embl.ebi.escience.baclava.store;
 
 
-import org.embl.ebi.escience.testhelpers.*;
+import org.embl.ebi.escience.testhelpers.DatabaseAwareTestCase;
 
 
 public class BaclavaDataServiceFactoryTest extends DatabaseAwareTestCase 

@@ -5,23 +5,19 @@
  */
 package org.embl.ebi.escience.scuflworkers.beanshell;
 
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+
 import org.apache.log4j.Logger;
 import org.embl.ebi.escience.baclava.DataThing;
-import org.embl.ebi.escience.scufl.Processor;
 import org.embl.ebi.escience.scufl.OutputPort;
+import org.embl.ebi.escience.scufl.Processor;
 import org.embl.ebi.escience.scuflworkers.ProcessorTaskWorker;
-import uk.ac.soton.itinnovation.taverna.enactor.entities.TaskExecutionException;
+
 import uk.ac.soton.itinnovation.taverna.enactor.entities.ProcessorTask;
-
-// Utility Imports
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Iterator;
-
-import org.embl.ebi.escience.scuflworkers.beanshell.BeanshellProcessor;
-import java.lang.Exception;
-
-import bsh.*;
+import uk.ac.soton.itinnovation.taverna.enactor.entities.TaskExecutionException;
+import bsh.Interpreter;
 
 
 /**

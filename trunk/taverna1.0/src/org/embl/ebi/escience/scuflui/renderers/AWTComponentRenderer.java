@@ -5,9 +5,13 @@
  */
 package org.embl.ebi.escience.scuflui.renderers;
 
-import javax.swing.*;
-import java.awt.*;
-import org.embl.ebi.escience.baclava.*;
+import java.awt.BorderLayout;
+import java.awt.Component;
+
+import javax.swing.JComponent;
+import javax.swing.JPanel;
+
+import org.embl.ebi.escience.baclava.DataThing;
 
 /**
  * Class that renders objects which have a Java Component

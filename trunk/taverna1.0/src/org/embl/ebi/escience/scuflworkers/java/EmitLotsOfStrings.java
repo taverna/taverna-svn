@@ -5,8 +5,11 @@
  */
 package org.embl.ebi.escience.scuflworkers.java;
 
-import java.util.*;
-import org.embl.ebi.escience.baclava.*;
+import java.util.HashMap;
+import java.util.Map;
+
+import org.embl.ebi.escience.baclava.DataThing;
+
 import uk.ac.soton.itinnovation.taverna.enactor.entities.TaskExecutionException;
 
 /**

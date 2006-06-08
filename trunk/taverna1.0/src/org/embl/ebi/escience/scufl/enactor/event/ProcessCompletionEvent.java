@@ -5,10 +5,12 @@
  */
 package org.embl.ebi.escience.scufl.enactor.event;
 
+import java.util.Iterator;
+import java.util.Map;
+
+import org.embl.ebi.escience.baclava.DataThing;
 import org.embl.ebi.escience.scufl.Processor;
-import java.util.*;
-import org.embl.ebi.escience.scufl.enactor.*;
-import org.embl.ebi.escience.baclava.*;
+import org.embl.ebi.escience.scufl.enactor.WorkflowInstance;
 
 public class ProcessCompletionEvent extends WorkflowInstanceEvent {
 

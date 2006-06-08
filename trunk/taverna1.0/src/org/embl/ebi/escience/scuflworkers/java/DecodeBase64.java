@@ -5,15 +5,13 @@
  */
 package org.embl.ebi.escience.scuflworkers.java;
 
-import org.embl.ebi.escience.baclava.DataThing;
-import uk.ac.soton.itinnovation.taverna.enactor.entities.TaskExecutionException;
+import java.util.HashMap;
+import java.util.Map;
 
-// Utility Imports
-import java.util.*;
-
-import org.embl.ebi.escience.scuflworkers.java.LocalWorker;
-import java.lang.String;
 import org.embl.ebi.escience.baclava.Base64;
+import org.embl.ebi.escience.baclava.DataThing;
+
+import uk.ac.soton.itinnovation.taverna.enactor.entities.TaskExecutionException;
 
 /**
  * Decode base64 string into byte[]

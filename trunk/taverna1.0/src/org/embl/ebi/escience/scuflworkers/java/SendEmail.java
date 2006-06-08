@@ -5,10 +5,18 @@
  */
 package org.embl.ebi.escience.scuflworkers.java;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Properties;
+
+import javax.mail.Message;
+import javax.mail.Session;
+import javax.mail.Transport;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeMessage;
+
 import org.embl.ebi.escience.baclava.DataThing;
-import java.util.*;
-import javax.mail.*;
-import javax.mail.internet.*;
+
 import uk.ac.soton.itinnovation.taverna.enactor.entities.TaskExecutionException;
 
 /**

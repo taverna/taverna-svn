@@ -1,9 +1,10 @@
 package org.embl.ebi.escience.scufl.tools;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.List;
+
 import junit.framework.TestCase;
 
 public class LangTest extends TestCase {

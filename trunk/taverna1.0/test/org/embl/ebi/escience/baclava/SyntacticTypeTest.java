@@ -2,8 +2,6 @@ package org.embl.ebi.escience.baclava;
 
 import junit.framework.TestCase;
 
-import java.util.Arrays;
-
 /**
  * Test for SyntacticType.
  *

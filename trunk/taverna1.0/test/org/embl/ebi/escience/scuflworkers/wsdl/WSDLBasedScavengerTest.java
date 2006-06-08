@@ -1,6 +1,6 @@
 package org.embl.ebi.escience.scuflworkers.wsdl;
 
-import junit.framework.*;
+import junit.framework.TestCase;
 
 public class WSDLBasedScavengerTest extends TestCase 
 {

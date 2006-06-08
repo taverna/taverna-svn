@@ -6,33 +6,12 @@
 package org.embl.ebi.escience.scufl;
 
 // Utility Imports
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-// JDOM Imports
 import org.jdom.Element;
-
-import org.embl.ebi.escience.scufl.Port;
-import org.embl.ebi.escience.scufl.ScuflModelEvent;
-import org.embl.ebi.escience.scufl.XScufl;
-import java.lang.Object;
-import java.lang.String;
-import java.lang.StringBuffer;
-
-/**
- * A container class for the semantic markup and mime type data for overall
- * workflow input and output ports, although presumably it could be attached to
- * other entities as well. The data contained are a free text description, an
- * array of zero or more mime types and a chunk of text containing semantic
- * metadata. Currently this last is unstructured, but this class will be
- * improved by the addition of a more structured version based possibly on Jena
- * at some point.
- * 
- * @author Tom Oinn
- */
-
-import java.io.*;
 
 public class SemanticMarkup implements Serializable {
 

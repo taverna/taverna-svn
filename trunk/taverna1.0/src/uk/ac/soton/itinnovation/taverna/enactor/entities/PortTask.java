@@ -25,13 +25,20 @@
 //      Created for Project :   MYGRID
 //      Dependencies        :
 //
-//      Last commit info    :   $Author: mereden $
-//                              $Date: 2005-11-08 13:33:50 $
-//                              $Revision: 1.38 $
+//      Last commit info    :   $Author: sowen70 $
+//                              $Date: 2006-06-08 09:24:04 $
+//                              $Revision: 1.39 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 
 package uk.ac.soton.itinnovation.taverna.enactor.entities;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.embl.ebi.escience.baclava.DataThing;
@@ -39,25 +46,15 @@ import org.embl.ebi.escience.scufl.InputPort;
 import org.embl.ebi.escience.scufl.OutputPort;
 import org.embl.ebi.escience.scufl.Port;
 import org.embl.ebi.escience.scufl.SemanticMarkup;
-import org.embl.ebi.escience.scufl.enactor.event.*;
-import org.embl.ebi.escience.scufl.enactor.implementation.*;
-import org.embl.ebi.escience.scufl.enactor.*;
+import org.embl.ebi.escience.scufl.enactor.WorkflowInstance;
+import org.embl.ebi.escience.scufl.enactor.event.CollectionConstructionEvent;
+import org.embl.ebi.escience.scufl.enactor.implementation.WorkflowEventDispatcher;
 
-import uk.ac.soton.itinnovation.freefluo.core.task.*;
-import uk.ac.soton.itinnovation.freefluo.core.event.*;
-import uk.ac.soton.itinnovation.freefluo.core.flow.*; 
+import uk.ac.soton.itinnovation.freefluo.core.event.RunEvent;
+import uk.ac.soton.itinnovation.freefluo.core.flow.Flow;
+import uk.ac.soton.itinnovation.freefluo.core.task.AbstractTask;
+import uk.ac.soton.itinnovation.freefluo.core.task.Task;
 import uk.ac.soton.itinnovation.freefluo.main.Engine;
-
-// Utility Imports
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Iterator;
-import java.lang.Exception;
-import java.lang.Object;
-import java.lang.String;
-import java.lang.System;
-import java.util.Collection;
-import java.util.*;
 
 
 

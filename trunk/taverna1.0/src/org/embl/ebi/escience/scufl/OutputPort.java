@@ -5,8 +5,11 @@
  */
 package org.embl.ebi.escience.scufl;
 
-import java.awt.datatransfer.*;
-import java.io.*;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.Transferable;
+import java.awt.datatransfer.UnsupportedFlavorException;
+import java.io.IOException;
+import java.io.Serializable;
 
 /**
  * A port that exposes output data on behalf of a processor
