@@ -25,8 +25,8 @@
 //      Dependencies        :
 //
 //      Last commit info    :   $Author: sowen70 $
-//                              $Date: 2006-06-08 09:24:06 $
-//                              $Revision: 1.12 $
+//                              $Date: 2006-06-08 10:22:05 $
+//                              $Revision: 1.13 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 package uk.ac.soton.itinnovation.taverna.enactor.broker;
@@ -42,8 +42,7 @@ public class TavernaBinaryWorkflowSubmission {
     private ScuflModel scuflModel;
     private Map inputData;
     private String userID;
-    private String userNamespaceCxt;
-    private String notificationEmailAddress;
+    private String userNamespaceCxt;    
 
     /**
      * Constructor used when no email notification is necessary.

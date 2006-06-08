@@ -21,9 +21,7 @@ public class JoinIterator implements ResumableIterator {
 
 	private boolean isEmptyIterator = false;
 
-	private ResumableIterator[] iteratorsArray;
-
-	private boolean nextState;
+	private ResumableIterator[] iteratorsArray;	
 
 	private Object[] currentState;
 
@@ -43,10 +41,8 @@ public class JoinIterator implements ResumableIterator {
 		this.iteratorsArray = b;
 		// Check that we haven't been passed a load
 		// of empty iterators!
-		nextState = true;
-		if (b.length == 0) {
-			nextState = false;
-		} else {
+		
+		if (b.length != 0) {
 			// Check that all the iterators
 			// have at least one element in
 			for (int i = 0; i < b.length; i++) {

@@ -30,214 +30,203 @@ import uk.ac.soton.itinnovation.taverna.enactor.entities.TaskExecutionException;
  * containing string data. Note that Formula's are not currently evaluated and
  * thus are returned as empty strings.
  * 
- * Last edited by $Author: phidias $
+ * Last edited by $Author: sowen70 $
  * 
  * @author Mark
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public class ExcelFileReader implements LocalWorker {
-    
-    String dateIndexes = null;
-    List dateIndexArray = null;
 
-    /**
-     * @see org.embl.ebi.escience.scuflworkers.java.LocalWorker#execute(java.util.Map)
-     */
-    public Map execute(Map inputMap) throws TaskExecutionException {
-        DataThingAdapter inAdapter = new DataThingAdapter(inputMap);
-        
-        dateIndexes = inAdapter.getString("dateIndexes");
-        if (dateIndexes != null){
-            dateIndexArray = Arrays.asList(dateIndexes.split(","));
-        }       
-        
-        HashMap outputMap = new HashMap();
-        DataThingAdapter outAdapter = new DataThingAdapter(outputMap);
+	String dateIndexes = null;
 
-        this.filename = inAdapter.getString("filename");
+	List dateIndexArray = null;
 
-        DataThing data = new DataThing(init());
-        outputMap.put("data", data);
+	/**
+	 * @see org.embl.ebi.escience.scuflworkers.java.LocalWorker#execute(java.util.Map)
+	 */
+	public Map execute(Map inputMap) throws TaskExecutionException {
+		DataThingAdapter inAdapter = new DataThingAdapter(inputMap);
 
-        return outputMap;
-    }
+		dateIndexes = inAdapter.getString("dateIndexes");
+		if (dateIndexes != null) {
+			dateIndexArray = Arrays.asList(dateIndexes.split(","));
+		}
 
-    /**
-     * This method initialises the datasource using the Excel workbook.
-     * 
-     * @param dataObject
-     *            This parameter is assumed to be a string containing the fully
-     *            qualified filename for the Excel file.
-     */
-    public ArrayList init() throws TaskExecutionException {
-        ArrayList dataArray = new ArrayList();
-        try {
-            POIFSFileSystem fs = new POIFSFileSystem(new FileInputStream(
-                    this.filename));
-            HSSFWorkbook wb = new HSSFWorkbook(fs);
-            HSSFSheet sheet = wb.getSheetAt(sheetNum);
+		HashMap outputMap = new HashMap();
 
-            // determine the number of rows
-            this.lastRow = sheet.getLastRowNum();
-            if (this.lastRow == 0) {
-                throw new Exception("The sheet:" + sheetNum
-                        + " does not contain any rows.");
-            }
+		this.filename = inAdapter.getString("filename");
 
-            // determine the number of columns based on the first row of the
-            // sheet
-            HSSFRow firstRow = sheet.getRow(0);
-            this.lastCol = firstRow.getLastCellNum();
+		DataThing data = new DataThing(init());
+		outputMap.put("data", data);
 
-            ArrayList currRowList = null;
+		return outputMap;
+	}
 
-            HSSFRow currRow = null;
-            Iterator cellIt = null;
-            HSSFCell currCell = null;
-            String currCellVal = null;
-            int cellType;
+	/**
+	 * This method initialises the datasource using the Excel workbook.
+	 * 
+	 * @param dataObject
+	 *            This parameter is assumed to be a string containing the fully
+	 *            qualified filename for the Excel file.
+	 */
+	public ArrayList init() throws TaskExecutionException {
+		ArrayList dataArray = new ArrayList();
+		try {
+			POIFSFileSystem fs = new POIFSFileSystem(new FileInputStream(this.filename));
+			HSSFWorkbook wb = new HSSFWorkbook(fs);
+			HSSFSheet sheet = wb.getSheetAt(sheetNum);
 
-            Iterator it = sheet.rowIterator();
+			// determine the number of rows
+			this.lastRow = sheet.getLastRowNum();
+			if (this.lastRow == 0) {
+				throw new Exception("The sheet:" + sheetNum + " does not contain any rows.");
+			}
 
-            while (it.hasNext()) {
-                currRow = (HSSFRow) it.next();
+			// determine the number of columns based on the first row of the
+			// sheet
+			HSSFRow firstRow = sheet.getRow(0);
+			this.lastCol = firstRow.getLastCellNum();
 
-                currRowList = new ArrayList();
-                this.lastCol = currRow.getLastCellNum();
-                String currVal = null;
-                for (int i = 0; i < lastCol; i++) {
-                    currCell = currRow.getCell((short) i);
-                    if (currCell != null) {
-                        System.out.print(currRow.getRowNum() + ":"
-                                + currCell.getCellNum() + " ");
-                        currVal = getCellValue(currCell);
-                        System.out.println(currVal);
-                        currRowList.add(currVal);
-                    } else {
-                        currRowList.add("");
-                    }
+			ArrayList currRowList = null;
+			HSSFRow currRow = null;
+			HSSFCell currCell = null;
 
-                }
+			Iterator it = sheet.rowIterator();
 
-                dataArray.add(currRowList);
-            }
-        } catch (NumberFormatException ex) {
-            throw new TaskExecutionException(ex);
-        } catch (FileNotFoundException e) {
-            throw new TaskExecutionException(e);
-        } catch (IOException e) {
-            throw new TaskExecutionException(e);
-        } catch (Exception e) {
-            throw new TaskExecutionException(e);
-        }
+			while (it.hasNext()) {
+				currRow = (HSSFRow) it.next();
 
-        return dataArray;
-    }
+				currRowList = new ArrayList();
+				this.lastCol = currRow.getLastCellNum();
+				String currVal = null;
+				for (int i = 0; i < lastCol; i++) {
+					currCell = currRow.getCell((short) i);
+					if (currCell != null) {
+						System.out.print(currRow.getRowNum() + ":" + currCell.getCellNum() + " ");
+						currVal = getCellValue(currCell);
+						System.out.println(currVal);
+						currRowList.add(currVal);
+					} else {
+						currRowList.add("");
+					}
 
-    /**
-     * This method extracts the value from the cell.
-     * @param cell
-     * @return
-     */
-    private String getCellValue(HSSFCell cell) {
-        String value = null;
-        if (cell != null) {
-            int cellType = cell.getCellType();
+				}
 
-            switch (cellType) {
-            case HSSFCell.CELL_TYPE_BOOLEAN: {
-                value = String.valueOf(cell.getBooleanCellValue());
-                break;
-            }
-            case HSSFCell.CELL_TYPE_STRING: {
-                value = cell.getStringCellValue();
-                break;
-            }
-            case HSSFCell.CELL_TYPE_NUMERIC: {
-                double tempCellVal = cell.getNumericCellValue();
-                if (dateIndexes != null){
-                    int index = cell.getCellNum();
-                    String strIndex = String.valueOf(index);
-                   
-                    if(dateIndexArray.contains(strIndex)){
-                        Date date = HSSFDateUtil.getJavaDate(tempCellVal);
-                        SimpleDateFormat formatter = new SimpleDateFormat("MM/dd/yyyy");                
-                        value = formatter.format(date); 
-                        return value;
-                    }
-                    
-                }
-                if (HSSFDateUtil.isCellDateFormatted(cell)) {
-                    Date date = HSSFDateUtil.getJavaDate(tempCellVal);
-                    SimpleDateFormat formatter = new SimpleDateFormat("MM/dd/yyyy");                
-                    value = formatter.format(date);
-                } else {
-                    Double dcurrCellVal = new Double(tempCellVal);
+				dataArray.add(currRowList);
+			}
+		} catch (NumberFormatException ex) {
+			throw new TaskExecutionException(ex);
+		} catch (FileNotFoundException e) {
+			throw new TaskExecutionException(e);
+		} catch (IOException e) {
+			throw new TaskExecutionException(e);
+		} catch (Exception e) {
+			throw new TaskExecutionException(e);
+		}
 
-                    double valFloor = Math.floor(tempCellVal);
-                    if ((tempCellVal - valFloor) > 0) { // is value really a
-                                                        // float?
-                        String tempvalue = tempCellVal + "";
-                        value = new Double(tempCellVal).toString();
-                    } else {
-                        value = (int) valFloor + "";
-                        value = new Integer(new Double(tempCellVal).intValue())
-                                .toString();
-                        
-                    }
+		return dataArray;
+	}
 
-                }
-                break;
-            }
-            case HSSFCell.CELL_TYPE_FORMULA:
-            case HSSFCell.CELL_TYPE_ERROR:
-            case HSSFCell.CELL_TYPE_BLANK:
-            default: {
-                value = "";
-                break;
-            }
-            }
-        } else {
-            value = "";
-        }
-        return value;
-    }
+	/**
+	 * This method extracts the value from the cell.
+	 * 
+	 * @param cell
+	 * @return
+	 */
+	private String getCellValue(HSSFCell cell) {
+		String value = null;
+		if (cell != null) {
+			int cellType = cell.getCellType();
 
-    private String filename = null;
+			switch (cellType) {
+			case HSSFCell.CELL_TYPE_BOOLEAN: {
+				value = String.valueOf(cell.getBooleanCellValue());
+				break;
+			}
+			case HSSFCell.CELL_TYPE_STRING: {
+				value = cell.getStringCellValue();
+				break;
+			}
+			case HSSFCell.CELL_TYPE_NUMERIC: {
+				double tempCellVal = cell.getNumericCellValue();
+				if (dateIndexes != null) {
+					int index = cell.getCellNum();
+					String strIndex = String.valueOf(index);
 
-    private int sheetNum = 0;
+					if (dateIndexArray.contains(strIndex)) {
+						Date date = HSSFDateUtil.getJavaDate(tempCellVal);
+						SimpleDateFormat formatter = new SimpleDateFormat("MM/dd/yyyy");
+						value = formatter.format(date);
+						return value;
+					}
 
-    private boolean firstRowContainsColNames = true;
+				}
+				if (HSSFDateUtil.isCellDateFormatted(cell)) {
+					Date date = HSSFDateUtil.getJavaDate(tempCellVal);
+					SimpleDateFormat formatter = new SimpleDateFormat("MM/dd/yyyy");
+					value = formatter.format(date);
+				} else {
 
-    int lastCol, lastRow;
+					double valFloor = Math.floor(tempCellVal);
+					if ((tempCellVal - valFloor) > 0) { // is value really a
+						// float?
+						value = new Double(tempCellVal).toString();
+					} else {
+						value = (int) valFloor + "";
+						value = new Integer(new Double(tempCellVal).intValue()).toString();
 
-    /**
-     * @see org.embl.ebi.escience.scuflworkers.java.LocalWorker#inputNames()
-     */
-    public String[] inputNames() {
-        return new String[] { "filename", "firstRowContainsColumnNames", "dateIndexes" };
-    }
+					}
 
-    /**
-     * @see org.embl.ebi.escience.scuflworkers.java.LocalWorker#inputTypes()
-     */
-    public String[] inputTypes() {
-        return new String[] { "'text/plain'", "'text/plain'","'text/plain'"  };
-    }
+				}
+				break;
+			}
+			case HSSFCell.CELL_TYPE_FORMULA:
+			case HSSFCell.CELL_TYPE_ERROR:
+			case HSSFCell.CELL_TYPE_BLANK:
+			default: {
+				value = "";
+				break;
+			}
+			}
+		} else {
+			value = "";
+		}
+		return value;
+	}
 
-    /**
-     * @see org.embl.ebi.escience.scuflworkers.java.LocalWorker#outputNames()
-     */
-    public String[] outputNames() {
+	private String filename = null;
 
-        return new String[] { "data" };
-    }
+	private int sheetNum = 0;
 
-    /**
-     * @see org.embl.ebi.escience.scuflworkers.java.LocalWorker#outputTypes()
-     */
-    public String[] outputTypes() {
-        return new String[] { "l(l('text/plain'))" };
-    }
+	int lastCol, lastRow;
+
+	/**
+	 * @see org.embl.ebi.escience.scuflworkers.java.LocalWorker#inputNames()
+	 */
+	public String[] inputNames() {
+		return new String[] { "filename", "firstRowContainsColumnNames", "dateIndexes" };
+	}
+
+	/**
+	 * @see org.embl.ebi.escience.scuflworkers.java.LocalWorker#inputTypes()
+	 */
+	public String[] inputTypes() {
+		return new String[] { "'text/plain'", "'text/plain'", "'text/plain'" };
+	}
+
+	/**
+	 * @see org.embl.ebi.escience.scuflworkers.java.LocalWorker#outputNames()
+	 */
+	public String[] outputNames() {
+
+		return new String[] { "data" };
+	}
+
+	/**
+	 * @see org.embl.ebi.escience.scuflworkers.java.LocalWorker#outputTypes()
+	 */
+	public String[] outputTypes() {
+		return new String[] { "l(l('text/plain'))" };
+	}
 
 }

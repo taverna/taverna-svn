@@ -30,7 +30,7 @@ import uk.ac.soton.itinnovation.taverna.enactor.entities.TaskExecutionException;
  * or command-line workflows should not use this processor.
  * 
  * @author Mark
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  * 
  * @tavinput title				The title to be displayed in the titlebar of the dialog.
  * @tavinput fileExtensions		An array of file extensions that you want to filter.  For example "GIF", "JPG", "JPEG"
@@ -76,23 +76,8 @@ public class SelectFileWorker implements LocalWorker {
             chooser.setFileFilter(filter);           
         }
         
-        chooser.addPropertyChangeListener(new PropertyChangeListener(){
-            
-            public void propertyChange(PropertyChangeEvent e){
-                if(e.getPropertyName().equals(JFileChooser.SELECTED_FILE_CHANGED_PROPERTY)){
-                    File f = (File)e.getNewValue();
-                    if (f != null && f.isFile()){
-                        String s = f.getPath();
-                        String suffix = null;
-                    }
-                    
-                }
-            }
-            
-        });
         
-        
-        int state = chooser.showOpenDialog(null);
+        chooser.showOpenDialog(null);
         File file = chooser.getSelectedFile();
         outAdapter.putString("selectedFile", file.getAbsolutePath());
         
@@ -127,26 +112,7 @@ public class SelectFileWorker implements LocalWorker {
        return new String[]{"'text/plain'"};
     }
     
-    /**
-     * This method determines whether or not a string array contains a specific value.
-     * @param values
-     * @param searchString
-     * @return
-     */
-    private boolean contains(String[] values, String searchString){
-        boolean doesContain = false;
-        
-        for (int i=0; i < values.length; i++){
-           doesContain = (values[i].indexOf(searchString) != -1);
-           if (doesContain){
-               break;
-           }
-        }
-        
-        return doesContain;
-    }
     
- 
     
     class Previewer extends JPanel{
         

@@ -21,8 +21,7 @@ import uk.ac.soton.itinnovation.taverna.enactor.entities.TaskExecutionException;
  * @author Tom Oinn
  */
 public class ExtractImageLinks implements LocalWorker {
-
-	private static final String NEWLINE = System.getProperty("line.separator");
+	
 
 	public String[] inputNames() {
 		return new String[] { "document" };

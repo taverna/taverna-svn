@@ -9,7 +9,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
 import org.embl.ebi.escience.baclava.DataThing;
 import org.embl.ebi.escience.scufl.OutputPort;
 import org.embl.ebi.escience.scufl.Processor;
@@ -27,8 +26,7 @@ import bsh.Interpreter;
 public class BeanshellTask implements ProcessorTaskWorker 
 {
     
-    private static Logger logger = Logger.getLogger(BeanshellTask.class);
-    private static final int INVOCATION_TIMEOUT = 0;
+    //private static Logger logger = Logger.getLogger(BeanshellTask.class);    
     
     private Processor proc;
 	private Interpreter interpreter = new Interpreter();

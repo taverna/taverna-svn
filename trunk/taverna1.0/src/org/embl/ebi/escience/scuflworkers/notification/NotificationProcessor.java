@@ -15,30 +15,28 @@ import org.embl.ebi.escience.scufl.ProcessorCreationException;
 import org.embl.ebi.escience.scufl.ScuflModel;
 
 /**
- * A Processor for publishing notifications to the myGrid notification
- * service.
- *
+ * A Processor for publishing notifications to the myGrid notification service.
+ * 
  * @author Justin Ferris
  * @author Ananth Krishna
  */
 public class NotificationProcessor extends Processor {
-    private String prediction;
 
-    public NotificationProcessor(ScuflModel model, String name) throws ProcessorCreationException,                                                                     DuplicateProcessorNameException {
-        super(model, name);
-        try {
-            Port inputPort1 = new InputPort(this, "publishMessage");
-	    	Port inputPort2 = new InputPort(this, "Topic");
-            addPort(inputPort1);
-            addPort(inputPort2);
-        }
-        catch (Exception e) {
-            throw new ProcessorCreationException("Couldn't create NotificationProcessor");
-        }
-    }
+	public NotificationProcessor(ScuflModel model, String name) throws ProcessorCreationException,
+			DuplicateProcessorNameException {
+		super(model, name);
+		try {
+			Port inputPort1 = new InputPort(this, "publishMessage");
+			Port inputPort2 = new InputPort(this, "Topic");
+			addPort(inputPort1);
+			addPort(inputPort2);
+		} catch (Exception e) {
+			throw new ProcessorCreationException("Couldn't create NotificationProcessor");
+		}
+	}
 
-    public Properties getProperties() {
-        Properties props = new Properties();
-        return props;
-    }
+	public Properties getProperties() {
+		Properties props = new Properties();
+		return props;
+	}
 }

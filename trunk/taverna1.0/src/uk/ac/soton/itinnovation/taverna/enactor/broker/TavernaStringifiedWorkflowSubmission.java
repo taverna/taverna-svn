@@ -24,9 +24,9 @@
 //      Created for Project :   MYGRID
 //      Dependencies        :
 //
-//      Last commit info    :   $Author: mereden $
-//                              $Date: 2004-03-11 17:20:37 $
-//                              $Revision: 1.2 $
+//      Last commit info    :   $Author: sowen70 $
+//                              $Date: 2006-06-08 10:22:05 $
+//                              $Revision: 1.3 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 package uk.ac.soton.itinnovation.taverna.enactor.broker;
@@ -36,8 +36,7 @@ public class TavernaStringifiedWorkflowSubmission {
     private String scuflSpec;
     private String inputData;
     private String userID;
-    private String userNamespaceCxt;
-    private String notificationEmailAddress;
+    private String userNamespaceCxt;    
 
     /**
      * Constructor used when no email notification is necessary.

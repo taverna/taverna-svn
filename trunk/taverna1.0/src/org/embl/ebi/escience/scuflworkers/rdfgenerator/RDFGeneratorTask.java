@@ -7,7 +7,6 @@ package org.embl.ebi.escience.scuflworkers.rdfgenerator;
 
 import java.util.HashMap;
 
-import org.apache.log4j.Logger;
 import org.embl.ebi.escience.scufl.Processor;
 import org.embl.ebi.escience.scuflworkers.ProcessorTaskWorker;
 
@@ -20,13 +19,10 @@ import uk.ac.soton.itinnovation.taverna.enactor.entities.TaskExecutionException;
  * @author Tom Oinn
  */
 public class RDFGeneratorTask implements ProcessorTaskWorker {
-    
-    private static Logger logger = Logger.getLogger(RDFGeneratorTask.class);
-    private static final int INVOCATION_TIMEOUT = 0;
-    private Processor proc;
+        
 
     public RDFGeneratorTask(Processor p) {
-	this.proc = p;
+	
     }
     
     /**

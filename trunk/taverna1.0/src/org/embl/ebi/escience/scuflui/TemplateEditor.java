@@ -85,41 +85,32 @@ public class TemplateEditor extends JComponent implements ScuflUIComponent {
 				Port object = (Port) objects.getSelectedItem();
 				String verb = predicate.getText();
 				if (verb.equals("") == false) {
-					TemplateEditor.this.theProcessor
-							.addAnnotationTemplate(AnnotationTemplate
-									.standardTemplate(subject, verb, object));
+					TemplateEditor.this.theProcessor.addAnnotationTemplate(AnnotationTemplate.standardTemplate(subject,
+							verb, object));
 					TemplateEditor.this.populate();
 				}
 			}
 		});
 
-		addNewTemplate.setBorder(BorderFactory.createTitledBorder(BorderFactory
-				.createEtchedBorder(), "Create new template"));
+		addNewTemplate.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(),
+				"Create new template"));
 		add(addNewTemplate);
 
 		existingTemplates = new JPanel();
-		existingTemplates.setBorder(BorderFactory.createTitledBorder(
-				BorderFactory.createEtchedBorder(), "Current templates"));
-		existingTemplates.setLayout(new BoxLayout(existingTemplates,
-				BoxLayout.PAGE_AXIS));
+		existingTemplates.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(),
+				"Current templates"));
+		existingTemplates.setLayout(new BoxLayout(existingTemplates, BoxLayout.PAGE_AXIS));
 
 		defaultTemplates = new JPanel();
 
-		defaultTemplates.setBorder(BorderFactory.createTitledBorder(
-				BorderFactory.createEtchedBorder(), "Default templates"));
-		defaultTemplates.setLayout(new BoxLayout(defaultTemplates,
-				BoxLayout.PAGE_AXIS));
+		defaultTemplates.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(),
+				"Default templates"));
+		defaultTemplates.setLayout(new BoxLayout(defaultTemplates, BoxLayout.PAGE_AXIS));
 
 		populate();
 		add(existingTemplates);
 		add(defaultTemplates);
 		setVisible(true);
-	}
-
-	private JComponent makeSmall(JComponent c) {
-		c.setPreferredSize(new Dimension(70, 20));
-		c.setMaximumSize(c.getPreferredSize());
-		return c;
 	}
 
 	void populate() {
@@ -128,17 +119,14 @@ public class TemplateEditor extends JComponent implements ScuflUIComponent {
 		// Put JLable instances into the existingTemplates panel
 		AnnotationTemplate[] templates = theProcessor.getAnnotationTemplates();
 		for (int i = 0; i < templates.length; i++) {
-			existingTemplates.add(new JEditorPane("text/html", templates[i]
-					.getDescription()));
+			existingTemplates.add(new JEditorPane("text/html", templates[i].getDescription()));
 		}
 		if (templates.length == 0) {
 			existingTemplates.add(new JLabel("No existing templates"));
 		}
-		AnnotationTemplate[] defaults = theProcessor
-				.defaultAnnotationTemplates();
+		AnnotationTemplate[] defaults = theProcessor.defaultAnnotationTemplates();
 		for (int i = 0; i < defaults.length; i++) {
-			defaultTemplates.add(new JEditorPane("text/html", defaults[i]
-					.getDescription()));
+			defaultTemplates.add(new JEditorPane("text/html", defaults[i].getDescription()));
 		}
 		if (defaults.length == 0) {
 			JLabel l = new JLabel("No default templates");
@@ -160,13 +148,12 @@ public class TemplateEditor extends JComponent implements ScuflUIComponent {
 	}
 
 	public String getName() {
-		if (theProcessor==null){
+		if (theProcessor == null) {
 			return "Template editor for unknown processor";
-		}
-		else {
+		} else {
 			return "Template editor for " + theProcessor.getName();
 		}
-		
+
 	}
 
 	public ImageIcon getIcon() {
@@ -182,8 +169,8 @@ class PortComboBoxRenderer extends JLabel implements ListCellRenderer {
 		setVerticalAlignment(CENTER);
 	}
 
-	public Component getListCellRendererComponent(JList list, Object value,
-			int index, boolean isSelected, boolean cellHasFocus) {
+	public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected,
+			boolean cellHasFocus) {
 		if (isSelected) {
 			setBackground(list.getSelectionBackground());
 			setForeground(list.getSelectionForeground());

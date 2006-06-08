@@ -6,8 +6,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import org.apache.log4j.Logger;
-
 /**
  * Test Case class for the purpose of running Acceptance Tests, rather than Unit Tests.
  * Works in a similar way to unit tests, but rather than failing at the first error, will continue
@@ -18,7 +16,7 @@ import org.apache.log4j.Logger;
  */
 public abstract class AcceptanceTestCase extends AcceptanceAssert
 {	
-	private static Logger logger = Logger.getLogger(AcceptanceTestCase.class);
+	//private static Logger logger = Logger.getLogger(AcceptanceTestCase.class);
 	/*
 	 * Should be overridden to provide pre-test initialisation
 	 */

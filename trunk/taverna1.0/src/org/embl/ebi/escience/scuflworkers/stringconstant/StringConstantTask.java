@@ -8,7 +8,6 @@ package org.embl.ebi.escience.scuflworkers.stringconstant;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
 import org.embl.ebi.escience.baclava.DataThing;
 import org.embl.ebi.escience.scufl.Processor;
 import org.embl.ebi.escience.scuflworkers.ProcessorTaskWorker;
@@ -23,9 +22,7 @@ import uk.ac.soton.itinnovation.taverna.enactor.entities.TaskExecutionException;
  * @author Tom Oinn
  */
 public class StringConstantTask implements ProcessorTaskWorker {
-    
-    private static Logger logger = Logger.getLogger(StringConstantTask.class);
-    private static final int INVOCATION_TIMEOUT = 0;
+        
     
     private Processor proc;
 

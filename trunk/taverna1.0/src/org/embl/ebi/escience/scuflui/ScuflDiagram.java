@@ -38,8 +38,7 @@ import org.embl.ebi.escience.scufl.view.DotView;
  * 
  * @author Tom Oinn
  */
-public class ScuflDiagram extends JComponent implements
-		ScuflModelEventListener, ScuflUIComponent {
+public class ScuflDiagram extends JComponent implements ScuflModelEventListener, ScuflUIComponent {
 
 	private ScuflModel model;
 
@@ -50,8 +49,6 @@ public class ScuflDiagram extends JComponent implements
 	private boolean fitToWindow = false;
 
 	private Timer updateTimer = null;
-
-	private boolean listenToMouse = true;
 
 	public String getDot() {
 		return this.dot.getDot();
@@ -115,8 +112,7 @@ public class ScuflDiagram extends JComponent implements
 
 	public void paint(Graphics g) {
 		Graphics2D g2d = (Graphics2D) g;
-		g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
-				RenderingHints.VALUE_ANTIALIAS_ON);
+		g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 		super.paint(g);
 	}
 
@@ -135,8 +131,7 @@ public class ScuflDiagram extends JComponent implements
 			if (scale != 1.0) {
 				tx.scale(scale, scale);
 			}
-			g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
-					RenderingHints.VALUE_ANTIALIAS_ON);
+			g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 			g2d.drawImage(image, tx, null);
 		}
 	}
@@ -156,13 +151,10 @@ public class ScuflDiagram extends JComponent implements
 	public void paintComponent(Graphics g) {
 		if (this.image != null) {
 			if (fitToWindow == false) {
-				g.drawImage(image, 0, 0, image.getWidth(), image.getHeight(),
-						null);
+				g.drawImage(image, 0, 0, image.getWidth(), image.getHeight(), null);
 			} else {
-				if (getWidth() == lastFrameWidth
-						&& getHeight() == lastFrameHeight
-						&& image.getWidth() == lastImageWidth
-						&& image.getHeight() == lastImageHeight
+				if (getWidth() == lastFrameWidth && getHeight() == lastFrameHeight
+						&& image.getWidth() == lastImageWidth && image.getHeight() == lastImageHeight
 						&& rescaledImage != null) {
 					// Repaint the previously scaled image, no need to resize it
 					g.drawImage(rescaledImage, 0, 0, null);
@@ -193,10 +185,8 @@ public class ScuflDiagram extends JComponent implements
 							rescaledImage.flush();
 						}
 						// System.out.print("Creating new scaled instance");
-						rescaledImage = this.image.getScaledInstance(
-								(int) (imageWidth * scale),
-								(int) (imageHeight * scale),
-								java.awt.Image.SCALE_SMOOTH);
+						rescaledImage = this.image.getScaledInstance((int) (imageWidth * scale),
+								(int) (imageHeight * scale), java.awt.Image.SCALE_SMOOTH);
 						g.drawImage(rescaledImage, 0, 0, null);
 					}
 					lastFrameHeight = getHeight();
@@ -239,30 +229,22 @@ public class ScuflDiagram extends JComponent implements
 		}
 	}
 
-	private void updateGraphic2() {
-		receiveModelEvent(null);
-	}
-
 	private boolean triedImageFormatFix = false;
 
 	void updateGraphic() {
 		try {
-			String imageSuffix = System.getProperty(
-					"taverna.scufldiagram.imagetype", "png");
+			String imageSuffix = System.getProperty("taverna.scufldiagram.imagetype", "png");
 			String dotText = this.dot.getDot();
 			String dotLocation = System.getProperty("taverna.dotlocation");
 			if (dotLocation == null) {
 				dotLocation = "dot";
 			}
-			Process dotProcess = Runtime.getRuntime().exec(
-					new String[] { dotLocation, "-T" + imageSuffix });
-			OutputStream out = new BufferedOutputStream(dotProcess
-					.getOutputStream());
+			Process dotProcess = Runtime.getRuntime().exec(new String[] { dotLocation, "-T" + imageSuffix });
+			OutputStream out = new BufferedOutputStream(dotProcess.getOutputStream());
 			out.write(dotText.getBytes());
 			out.flush();
 			out.close();
-			InputStream in = new BufferedInputStream(dotProcess
-					.getInputStream());
+			InputStream in = new BufferedInputStream(dotProcess.getInputStream());
 			// Wait for the process to complete
 			// dotProcess.waitFor();
 			ImageInputStream iis = ImageIO.createImageInputStream(in);
@@ -276,8 +258,7 @@ public class ScuflDiagram extends JComponent implements
 			doLayout();
 			repaint();
 		} catch (Exception ex) {
-			if (ex instanceof ArrayIndexOutOfBoundsException
-					&& !triedImageFormatFix) {
+			if (ex instanceof ArrayIndexOutOfBoundsException && !triedImageFormatFix) {
 				// Catch these and craftily reset the system property
 				// which defines the image type, then re-call the method
 				triedImageFormatFix = true;
@@ -285,8 +266,7 @@ public class ScuflDiagram extends JComponent implements
 				updateGraphic();
 				return;
 			}
-			JOptionPane.showMessageDialog(ScuflDiagram.this, ex.getMessage(),
-					"Error!", JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(ScuflDiagram.this, ex.getMessage(), "Error!", JOptionPane.ERROR_MESSAGE);
 			// Do nothing
 			// throw new RuntimeException(e);
 		}

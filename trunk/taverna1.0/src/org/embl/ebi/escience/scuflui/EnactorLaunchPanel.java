@@ -36,7 +36,6 @@ import org.embl.ebi.escience.scufl.Port;
 import org.embl.ebi.escience.scufl.ScuflModel;
 import org.embl.ebi.escience.scufl.ScuflModelEvent;
 import org.embl.ebi.escience.scufl.ScuflModelEventListener;
-import org.embl.ebi.escience.scufl.enactor.EnactorProxy;
 import org.embl.ebi.escience.scufl.enactor.implementation.FreefluoEnactorProxy;
 import org.jdom.Document;
 import org.jdom.output.Format;
@@ -50,8 +49,7 @@ import org.jdom.output.XMLOutputter;
  */
 public class EnactorLaunchPanel extends JPanel implements
 		ScuflModelEventListener, ScuflUIComponent {
-
-	private static EnactorProxy defaultEnactor = new FreefluoEnactorProxy();
+	
 
 	ScuflModel model = null;
 

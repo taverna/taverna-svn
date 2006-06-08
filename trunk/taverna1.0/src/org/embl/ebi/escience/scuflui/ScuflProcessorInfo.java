@@ -39,13 +39,9 @@ public class ScuflProcessorInfo extends JDialog {
 	 * The various log levels currently supported by the enactor
 	 */
 	public static LogLevelHolder[] logLevels = new LogLevelHolder[] {
-			new LogLevelHolder(-1, "log : Inherit from model"),
-			new LogLevelHolder(0, "log : No logging"),
-			new LogLevelHolder(1, "log : Low logging"),
-			new LogLevelHolder(2, "log : Medium logging"),
+			new LogLevelHolder(-1, "log : Inherit from model"), new LogLevelHolder(0, "log : No logging"),
+			new LogLevelHolder(1, "log : Low logging"), new LogLevelHolder(2, "log : Medium logging"),
 			new LogLevelHolder(3, "log : High logging") };
-
-	private String[] columnNames = { "Property", "Value" };
 
 	private ArrayList propertyNames = new ArrayList();
 
@@ -90,26 +86,22 @@ public class ScuflProcessorInfo extends JDialog {
 
 		// Create a JComboBox to show the different provenance levels
 		final JComboBox provenanceLevel = new JComboBox(logLevels);
-		provenanceLevel.setSelectedItem(logLevelHolderForLevel(theProcessor
-				.getRealLogLevel()));
+		provenanceLevel.setSelectedItem(logLevelHolderForLevel(theProcessor.getRealLogLevel()));
 		// Attach a listener to it to allow selection changes to change
 		// the logging level of the processor
 		provenanceLevel.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ae) {
 				// Set the processor log level to whatever is selected
-				LogLevelHolder level = (LogLevelHolder) (provenanceLevel
-						.getSelectedItem());
+				LogLevelHolder level = (LogLevelHolder) (provenanceLevel.getSelectedItem());
 				theProcessor.setLogLevel(level.logLevel);
 			}
 		});
 
 		// Create a JTextArea for the description
-		final JTextArea description = new JTextArea(theProcessor
-				.getDescription());
+		final JTextArea description = new JTextArea(theProcessor.getDescription());
 		description.setEditable(true);
 		// Create a JButton to update the description text
-		final JButton updateDescription = new JButton(
-				"Update description and close");
+		final JButton updateDescription = new JButton("Update description and close");
 		updateDescription.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ae) {
 				// Write the description text to the processor
@@ -132,15 +124,13 @@ public class ScuflProcessorInfo extends JDialog {
 		// Container contentPane = getContentPane();
 		JPanel dp = new JPanel(new BorderLayout());
 		dp.add(descriptionPane, BorderLayout.CENTER);
-		Border dpBorder = BorderFactory.createTitledBorder(BorderFactory
-				.createEtchedBorder(), "Description");
+		Border dpBorder = BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), "Description");
 		dp.setBorder(dpBorder);
 
 		Container contentPane = getContentPane();
 
 		if (p.getIterationStrategy() != null) {
-			contentPane.add(new IterationStrategyEditorControl(p
-					.getIterationStrategy()), BorderLayout.CENTER);
+			contentPane.add(new IterationStrategyEditorControl(p.getIterationStrategy()), BorderLayout.CENTER);
 		}
 
 		contentPane.add(dp, BorderLayout.NORTH);

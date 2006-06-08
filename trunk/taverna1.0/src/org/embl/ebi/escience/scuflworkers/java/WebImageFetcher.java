@@ -23,15 +23,12 @@ import uk.ac.soton.itinnovation.taverna.enactor.entities.TaskExecutionException;
  */
 public class WebImageFetcher implements LocalWorker {
 
-	private static final String NEWLINE = System.getProperty("line.separator");
-
 	public String[] inputNames() {
 		return new String[] { "url", "base" };
 	}
 
 	public String[] inputTypes() {
-		return new String[] { "'text/x-taverna-web-url'",
-				"'text/x-taverna-web-url'" };
+		return new String[] { "'text/x-taverna-web-url'", "'text/x-taverna-web-url'" };
 	}
 
 	public String[] outputNames() {
@@ -51,17 +48,14 @@ public class WebImageFetcher implements LocalWorker {
 		BufferedReader reader = null;
 		try {
 			URL inputURL = null;
-			String inputURLString = (String) ((DataThing) inputs.get("url"))
-					.getDataObject();
+			String inputURLString = (String) ((DataThing) inputs.get("url")).getDataObject();
 			// Was a base URL supplied?
 			if (inputs.get("base") != null) {
-				inputURL = new URL(new URL((String) ((DataThing) inputs
-						.get("base")).getDataObject()), inputURLString);
+				inputURL = new URL(new URL((String) ((DataThing) inputs.get("base")).getDataObject()), inputURLString);
 			} else {
 				inputURL = new URL(inputURLString);
 			}
-			System.out.println("Content length is "
-					+ inputURL.openConnection().getContentLength());
+			System.out.println("Content length is " + inputURL.openConnection().getContentLength());
 			byte[] contents;
 			if (inputURL.openConnection().getContentLength() == -1) {
 				// Content size unknown, must read first...
@@ -75,15 +69,13 @@ public class WebImageFetcher implements LocalWorker {
 				}
 				contents = new byte[totalBytesRead];
 			} else {
-				contents = new byte[inputURL.openConnection()
-						.getContentLength()];
+				contents = new byte[inputURL.openConnection().getContentLength()];
 			}
 			int bytesRead = 0;
 			int totalBytesRead = 0;
 			InputStream is = inputURL.openStream();
 			while (bytesRead != -1) {
-				bytesRead = is.read(contents, totalBytesRead, contents.length
-						- totalBytesRead);
+				bytesRead = is.read(contents, totalBytesRead, contents.length - totalBytesRead);
 				totalBytesRead += bytesRead;
 			}
 			System.out.println("Read " + totalBytesRead + " from input stream");
@@ -91,8 +83,7 @@ public class WebImageFetcher implements LocalWorker {
 			outputMap.put("image", new DataThing(contents));
 			return outputMap;
 		} catch (IOException ioe) {
-			TaskExecutionException tee = new TaskExecutionException(
-					"Error fetching web image!");
+			TaskExecutionException tee = new TaskExecutionException("Error fetching web image!");
 			tee.initCause(ioe);
 			throw tee;
 		} finally {

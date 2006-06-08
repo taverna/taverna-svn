@@ -52,8 +52,8 @@ import org.embl.ebi.escience.scufl.DotNode;
 import org.embl.ebi.escience.scufl.IterationStrategy;
 import org.embl.ebi.escience.scufl.LeafNode;
 
-public class IterationStrategyEditor extends JTree implements
-		DragSourceListener, DragGestureListener, Autoscroll, TreeModelListener {
+public class IterationStrategyEditor extends JTree implements DragSourceListener, DragGestureListener, Autoscroll,
+		TreeModelListener {
 
 	private TreePath pathSource; // The path being dragged
 
@@ -63,21 +63,14 @@ public class IterationStrategyEditor extends JTree implements
 
 	// mouse was clicked
 
-	private IterationStrategy strategy;
-
-	static ImageIcon joinIteratorIcon, lockStepIteratorIcon,
-			baclavaIteratorIcon;
+	static ImageIcon joinIteratorIcon, lockStepIteratorIcon, baclavaIteratorIcon;
 
 	static {
 		try {
-			Class c = Class
-					.forName("org.embl.ebi.escience.scuflui.IterationStrategyEditor");
-			joinIteratorIcon = new ImageIcon(c
-					.getResource("icons/iteration/crossproducticon.png"));
-			lockStepIteratorIcon = new ImageIcon(c
-					.getResource("icons/iteration/dotproducticon.png"));
-			baclavaIteratorIcon = new ImageIcon(c
-					.getResource("icons/iteration/baclavaiteratoricon.png"));
+			Class c = Class.forName("org.embl.ebi.escience.scuflui.IterationStrategyEditor");
+			joinIteratorIcon = new ImageIcon(c.getResource("icons/iteration/crossproducticon.png"));
+			lockStepIteratorIcon = new ImageIcon(c.getResource("icons/iteration/dotproducticon.png"));
+			baclavaIteratorIcon = new ImageIcon(c.getResource("icons/iteration/baclavaiteratoricon.png"));
 		} catch (Exception ex) {
 			//
 		}
@@ -113,20 +106,16 @@ public class IterationStrategyEditor extends JTree implements
 
 	public IterationStrategyEditor(IterationStrategy strategy) {
 		super(strategy.getTreeModel());
-		this.strategy = strategy;
 		// Make this a drag source
 		DragSource dragSource = DragSource.getDefaultDragSource();
-		dragSource.createDefaultDragGestureRecognizer(this,
-				DnDConstants.ACTION_MOVE, this);
+		dragSource.createDefaultDragGestureRecognizer(this, DnDConstants.ACTION_MOVE, this);
 		// Also, make this JTree a drag target
 		DropTarget dropTarget = new DropTarget(this, new CDropTargetListener());
 		dropTarget.setDefaultActions(DnDConstants.ACTION_MOVE);
 		setCellRenderer(new DefaultTreeCellRenderer() {
-			public Component getTreeCellRendererComponent(JTree tree,
-					Object value, boolean selected, boolean expanded,
+			public Component getTreeCellRendererComponent(JTree tree, Object value, boolean selected, boolean expanded,
 					boolean leaf, int row, boolean hasFocus) {
-				super.getTreeCellRendererComponent(tree, value, selected,
-						expanded, leaf, row, hasFocus);
+				super.getTreeCellRendererComponent(tree, value, selected, expanded, leaf, row, hasFocus);
 				if (value instanceof CrossNode) {
 					setIcon(IterationStrategyEditor.joinIteratorIcon);
 					setText("cross product");
@@ -155,13 +144,11 @@ public class IterationStrategyEditor extends JTree implements
 		// Work out the offset of the drag point from the TreePath bounding
 		// rectangle origin
 		Rectangle raPath = getPathBounds(path);
-		ptOffset.setLocation(ptDragOrigin.x - raPath.x, ptDragOrigin.y
-				- raPath.y);
+		ptOffset.setLocation(ptDragOrigin.x - raPath.x, ptDragOrigin.y - raPath.y);
 
 		// Get the cell renderer (which is a JLabel) for the path being dragged
-		JLabel lbl = (JLabel) getCellRenderer().getTreeCellRendererComponent(
-				this, path.getLastPathComponent(), false, isExpanded(path),
-				getModel().isLeaf(path.getLastPathComponent()), 0, false);
+		JLabel lbl = (JLabel) getCellRenderer().getTreeCellRendererComponent(this, path.getLastPathComponent(), false,
+				isExpanded(path), getModel().isLeaf(path.getLastPathComponent()), 0, false);
 		lbl.setSize((int) raPath.getWidth(), (int) raPath.getHeight()); // <--
 		// The
 		// layout
@@ -172,8 +159,7 @@ public class IterationStrategyEditor extends JTree implements
 		// this
 
 		// Get a buffered image of the selection for dragging a ghost image
-		imgGhost = new BufferedImage((int) raPath.getWidth(), (int) raPath
-				.getHeight(), BufferedImage.TYPE_INT_ARGB_PRE);
+		imgGhost = new BufferedImage((int) raPath.getWidth(), (int) raPath.getHeight(), BufferedImage.TYPE_INT_ARGB_PRE);
 		Graphics2D g2 = imgGhost.createGraphics();
 		// Ask the cell renderer to paint itself into the BufferedImage
 		g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC, 0.5f)); // Make
@@ -186,13 +172,13 @@ public class IterationStrategyEditor extends JTree implements
 		// Note: this will need tweaking if your icon is not positioned to the
 		// left of the text
 		Icon icon = lbl.getIcon();
-		int nStartOfText = (icon == null) ? 0 : icon.getIconWidth()
-				+ lbl.getIconTextGap();
-		g2.setComposite(AlphaComposite.getInstance(AlphaComposite.DST_OVER,
-				0.5f)); // Make the gradient ghostlike
-		g2.setPaint(new GradientPaint(nStartOfText, 0,
-				SystemColor.controlShadow, getWidth(), 0, new Color(255, 255,
-						255, 0)));
+		int nStartOfText = (icon == null) ? 0 : icon.getIconWidth() + lbl.getIconTextGap();
+		g2.setComposite(AlphaComposite.getInstance(AlphaComposite.DST_OVER, 0.5f)); // Make
+		// the
+		// gradient
+		// ghostlike
+		g2.setPaint(new GradientPaint(nStartOfText, 0, SystemColor.controlShadow, getWidth(), 0, new Color(255, 255,
+				255, 0)));
 		g2.fillRect(nStartOfText, 0, getWidth(), imgGhost.getHeight());
 		g2.dispose();
 
@@ -234,8 +220,7 @@ public class IterationStrategyEditor extends JTree implements
 				// The dragged item (pathSource) has been inserted at the target
 				// selected by the user.
 				// Now it is time to delete it from its original location.
-				System.out.println("REMOVING: "
-						+ pathSource.getLastPathComponent());
+				System.out.println("REMOVING: " + pathSource.getLastPathComponent());
 
 				// .
 				// .. ask your TreeModel to delete the node
@@ -265,18 +250,15 @@ public class IterationStrategyEditor extends JTree implements
 
 		private int _nLeftRight = 0; // Cumulative left/right mouse movement
 
-		private BufferedImage _imgRight = new CArrowImage(15, 15,
-				CArrowImage.ARROW_RIGHT);
+		private BufferedImage _imgRight = new CArrowImage(15, 15, CArrowImage.ARROW_RIGHT);
 
-		private BufferedImage _imgLeft = new CArrowImage(15, 15,
-				CArrowImage.ARROW_LEFT);
+		private BufferedImage _imgLeft = new CArrowImage(15, 15, CArrowImage.ARROW_LEFT);
 
 		private int _nShift = 0;
 
 		// Constructor...
 		public CDropTargetListener() {
-			_colorCueLine = new Color(SystemColor.controlShadow.getRed(),
-					SystemColor.controlShadow.getGreen(),
+			_colorCueLine = new Color(SystemColor.controlShadow.getRed(), SystemColor.controlShadow.getGreen(),
 					SystemColor.controlShadow.getBlue(), 64);
 
 			// Set up a hover timer, so that a node will be automatically
@@ -326,8 +308,7 @@ public class IterationStrategyEditor extends JTree implements
 			// Try to determine whether the user is flicking the cursor right or
 			// left
 			int nDeltaLeftRight = pt.x - _ptLast.x;
-			if ((_nLeftRight > 0 && nDeltaLeftRight < 0)
-					|| (_nLeftRight < 0 && nDeltaLeftRight > 0))
+			if ((_nLeftRight > 0 && nDeltaLeftRight < 0) || (_nLeftRight < 0 && nDeltaLeftRight > 0))
 				_nLeftRight = 0;
 			_nLeftRight += nDeltaLeftRight;
 
@@ -342,10 +323,8 @@ public class IterationStrategyEditor extends JTree implements
 				// ghost image and cue
 				// line
 				// And remember where we are about to draw the new ghost image
-				_raGhost.setRect(pt.x - ptOffset.x, pt.y - ptOffset.y, imgGhost
-						.getWidth(), imgGhost.getHeight());
-				g2.drawImage(imgGhost, AffineTransform.getTranslateInstance(
-						_raGhost.getX(), _raGhost.getY()), null);
+				_raGhost.setRect(pt.x - ptOffset.x, pt.y - ptOffset.y, imgGhost.getWidth(), imgGhost.getHeight());
+				g2.drawImage(imgGhost, AffineTransform.getTranslateInstance(_raGhost.getX(), _raGhost.getY()), null);
 			} else {
 				paintImmediately(_raCueLine.getBounds());
 			}
@@ -361,20 +340,20 @@ public class IterationStrategyEditor extends JTree implements
 			// In any case draw (over the ghost image if necessary) a cue line
 			// indicating where a drop will occur
 			Rectangle raPath = getPathBounds(path);
-			_raCueLine.setRect(0, raPath.y + (int) raPath.getHeight(),
-					getWidth(), 2);
+			_raCueLine.setRect(0, raPath.y + (int) raPath.getHeight(), getWidth(), 2);
 
 			g2.setColor(_colorCueLine);
 			g2.fill(_raCueLine);
 
 			// Now superimpose the left/right movement indicator if necessary
 			if (_nLeftRight > 20) {
-				g2.drawImage(_imgRight, AffineTransform.getTranslateInstance(
-						pt.x - ptOffset.x, pt.y - ptOffset.y), null);
+				g2.drawImage(_imgRight, AffineTransform.getTranslateInstance(pt.x - ptOffset.x, pt.y - ptOffset.y),
+						null);
 				_nShift = +1;
 			} else if (_nLeftRight < -20) {
-				g2.drawImage(_imgLeft, AffineTransform.getTranslateInstance(
-						pt.x - ptOffset.x, pt.y - ptOffset.y), null);
+				g2
+						.drawImage(_imgLeft,
+								AffineTransform.getTranslateInstance(pt.x - ptOffset.x, pt.y - ptOffset.y), null);
 				_nShift = -1;
 			} else {
 				_nShift = 0;
@@ -417,64 +396,46 @@ public class IterationStrategyEditor extends JTree implements
 			DataFlavor[] flavors = transferable.getTransferDataFlavors();
 			for (int i = 0; i < flavors.length; i++) {
 				DataFlavor flavor = flavors[i];
-				if (flavor
-						.isMimeTypeEqual(DataFlavor.javaJVMLocalObjectMimeType)) {
+				if (flavor.isMimeTypeEqual(DataFlavor.javaJVMLocalObjectMimeType)) {
 					try {
 
 						Point pt = e.getLocation();
-						TreePath pathTarget = getClosestPathForLocation(pt.x,
-								pt.y);
-						TreePath pathSource = (TreePath) transferable
-								.getTransferData(flavor);
+						TreePath pathTarget = getClosestPathForLocation(pt.x, pt.y);
+						TreePath pathSource = (TreePath) transferable.getTransferData(flavor);
 
-						System.out.println("DROPPING: "
-								+ pathSource.getLastPathComponent());
+						System.out.println("DROPPING: " + pathSource.getLastPathComponent());
 						DefaultTreeModel model = (DefaultTreeModel) getModel();
 
-						MutableTreeNode draggedNode = (MutableTreeNode) pathSource
-								.getLastPathComponent();
-						MutableTreeNode dropNode = (MutableTreeNode) pathTarget
-								.getLastPathComponent();
+						MutableTreeNode draggedNode = (MutableTreeNode) pathSource.getLastPathComponent();
+						MutableTreeNode dropNode = (MutableTreeNode) pathTarget.getLastPathComponent();
 						/**
 						 * if
 						 * (draggedNode.getParent().equals(dropNode.getParent())) {
 						 * System.out.println("Not doing anything, parent is the
 						 * same for both nodes"); e.dropComplete(false); return; }
 						 */
-						System.out.println("Removing node "
-								+ draggedNode.toString() + " of type "
+						System.out.println("Removing node " + draggedNode.toString() + " of type "
 								+ draggedNode.getClass().getName());
 						model.removeNodeFromParent(draggedNode);
-						if (dropNode instanceof LeafNode
-								|| ((isExpanded(pathTarget) == false) && _nShift <= 0)) {
+						if (dropNode instanceof LeafNode || ((isExpanded(pathTarget) == false) && _nShift <= 0)) {
 							System.out.println("Drop target is a leaf node");
-							MutableTreeNode newParentNode = (MutableTreeNode) dropNode
-									.getParent();
-							System.out.println("Drop target parent : "
-									+ newParentNode.toString() + " of type "
+							MutableTreeNode newParentNode = (MutableTreeNode) dropNode.getParent();
+							System.out.println("Drop target parent : " + newParentNode.toString() + " of type "
 									+ newParentNode.getClass().getName());
-							int index = model.getIndexOfChild(dropNode
-									.getParent(), dropNode);
-							System.out.println("Drop target has index " + index
-									+ " in its parent's child list");
-							model.insertNodeInto(draggedNode, newParentNode,
-									index + 1);
+							int index = model.getIndexOfChild(dropNode.getParent(), dropNode);
+							System.out.println("Drop target has index " + index + " in its parent's child list");
+							model.insertNodeInto(draggedNode, newParentNode, index + 1);
 							System.out.println("Node inserted");
-							System.out.println("New node parent is "
-									+ draggedNode.getParent().toString()
-									+ " of type "
-									+ draggedNode.getParent().getClass()
-											.getName());
+							System.out.println("New node parent is " + draggedNode.getParent().toString() + " of type "
+									+ draggedNode.getParent().getClass().getName());
 						} else {
 							System.out.println("Drop target is not a leaf");
-							System.out.println("Drop target : "
-									+ dropNode.toString() + " of type "
+							System.out.println("Drop target : " + dropNode.toString() + " of type "
 									+ dropNode.getClass().getName());
 							model.insertNodeInto(draggedNode, dropNode, 0);
 							System.out.println("Node inserted");
 						}
-						setSelectionPath(new TreePath(model
-								.getPathToRoot(draggedNode)));
+						setSelectionPath(new TreePath(model.getPathToRoot(draggedNode)));
 
 						// If pathTarget is an expanded BRANCH,
 						// then insert source UNDER it (before the first child
@@ -626,11 +587,9 @@ public class IterationStrategyEditor extends JTree implements
 	public Insets getAutoscrollInsets() {
 		Rectangle raOuter = getBounds();
 		Rectangle raInner = getParent().getBounds();
-		return new Insets(raInner.y - raOuter.y + AUTOSCROLL_MARGIN, raInner.x
-				- raOuter.x + AUTOSCROLL_MARGIN, raOuter.height
-				- raInner.height - raInner.y + raOuter.y + AUTOSCROLL_MARGIN,
-				raOuter.width - raInner.width - raInner.x + raOuter.x
-						+ AUTOSCROLL_MARGIN);
+		return new Insets(raInner.y - raOuter.y + AUTOSCROLL_MARGIN, raInner.x - raOuter.x + AUTOSCROLL_MARGIN,
+				raOuter.height - raInner.height - raInner.y + raOuter.y + AUTOSCROLL_MARGIN, raOuter.width
+						- raInner.width - raInner.x + raOuter.x + AUTOSCROLL_MARGIN);
 	}
 
 	/*
@@ -673,8 +632,7 @@ public class IterationStrategyEditor extends JTree implements
 	// More helpers...
 	private TreePath getChildPath(TreePath pathParent, int nChildIndex) {
 		TreeModel model = getModel();
-		return pathParent.pathByAddingChild(model.getChild(pathParent
-				.getLastPathComponent(), nChildIndex));
+		return pathParent.pathByAddingChild(model.getChild(pathParent.getLastPathComponent(), nChildIndex));
 	}
 
 	private boolean isRootPath(TreePath path) {

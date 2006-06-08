@@ -17,15 +17,11 @@ public class LocalServiceProcessorFactory extends ProcessorFactory {
 
 	private String className;
 
-	private String descriptiveName;
-
 	/**
 	 * Create a new factory configured with the specified worker class.
 	 */
-	public LocalServiceProcessorFactory(String workerClassName,
-			String descriptiveName) {
+	public LocalServiceProcessorFactory(String workerClassName, String descriptiveName) {
 		this.className = workerClassName;
-		this.descriptiveName = descriptiveName;
 		setName(descriptiveName);
 	}
 
@@ -37,8 +33,7 @@ public class LocalServiceProcessorFactory extends ProcessorFactory {
 	 * A description of the factory
 	 */
 	public String getProcessorDescription() {
-		return "A processor that uses the worker class " + className
-				+ " to run a process locally to the enactor.";
+		return "A processor that uses the worker class " + className + " to run a process locally to the enactor.";
 	}
 
 	/**
