@@ -26,5 +26,5 @@ ARGS="-Xmx300m"
 ARGS="$ARGS -Djava.protocol.handler.pkgs=uk.ac.rdg.resc.jstyx.client"
 ARGS="$ARGS -Djava.awt.headless=true -Dtaverna.main=$MAIN"
 
-java $ARGS -jar $TAVERNA_HOME/taverna-launcher-1.4.jar $@
+java $ARGS -jar $TAVERNA_HOME/taverna-launcher-1.4-SNAPSHOT.jar $@
 
