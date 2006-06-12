@@ -172,7 +172,7 @@ public class TreeModelView extends DefaultTreeModel implements
 		for (Enumeration i = parent.children(); i.hasMoreElements();) {
 			DefaultMutableTreeNode node = (DefaultMutableTreeNode) i
 					.nextElement();
-			if (node.getUserObject().getClass().equals(replacingClass)) {
+			if (replacingClass.isInstance(node.getUserObject())) {			
 				Port p = (Port) node.getUserObject();
 				lastPortIndex = tmp;
 				if (portNames.contains(p.getName()) == false) {
