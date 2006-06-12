@@ -29,5 +29,6 @@ For the lazy, here's a quick summary:
   cd target/taverna-1.4-bin/taverna-1.4
   sh runme.sh
 
+Note: Running on Linux requires that the 'graphviz' package is installed. This is available from http://www.graphviz.org/Download_linux.php
 
 -- Stian Soiland, 2006-05-30
