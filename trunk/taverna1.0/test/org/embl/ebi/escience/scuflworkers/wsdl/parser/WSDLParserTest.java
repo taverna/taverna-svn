@@ -1,6 +1,7 @@
 package org.embl.ebi.escience.scuflworkers.wsdl.parser;
 
 import java.io.IOException;
+import java.util.Iterator;
 import java.util.List;
 
 import javax.wsdl.Operation;
@@ -260,5 +261,28 @@ public class WSDLParserTest extends TestCase {
 		}
 
 	}
+	
+	public void testForOverwritingOfNamesForDuplicateTypes() throws Exception
+	{
+		try {
+			boolean editorPresent=false;
+			boolean contactPresent=false;
+			WSDLParser parser = new WSDLParser("http://genex.hgu.mrc.ac.uk/axis/services/ma?wsdl");
+			List outputs = parser.getOperationOutputParameters("getSubmission");
+			ComplexTypeDescriptor desc=(ComplexTypeDescriptor)outputs.get(0);
+			for (Iterator iterator=desc.getElements().iterator();iterator.hasNext();)
+			{
+				TypeDescriptor typeDescriptor=(TypeDescriptor)iterator.next();
+				if (typeDescriptor.getName().equals("editor")) editorPresent=true;
+				if (typeDescriptor.getName().equals("contact")) contactPresent=true;								
+			}
+			assertTrue("editor not in element list",editorPresent);
+			assertTrue("contact not in element list",contactPresent);
+			
+		} catch (IOException e) {
+			logger.error("IOException reading WSDL for testForOverwritingOfNamesForDuplicateTypes, test skipped", e);
+		}
+	}
+
 
 }

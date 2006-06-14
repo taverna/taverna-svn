@@ -46,12 +46,11 @@ import uk.ac.soton.itinnovation.freefluo.main.InvalidInputException;
  * @author Stian Soiland
  * 
  */
-public class WorkflowTest extends FuncTestCase {	
-	
+public class WorkflowTest extends FuncTestCase {
+
 	class TestListener implements WorkflowEventListener {
 		public void workflowFailed(WorkflowFailureEvent e) {
-			fail("Workflow failed: "
-					+ e.getWorkflowInstance().getErrorMessage());
+			fail("Workflow failed: " + e.getWorkflowInstance().getErrorMessage());
 		}
 
 		public void processFailed(ProcessFailureEvent e) {
@@ -134,7 +133,7 @@ public class WorkflowTest extends FuncTestCase {
 			}
 			if (name.endsWith(".regex")) {
 				return new RegexMatcher(content);
-			}			
+			}
 			if (name.endsWith(".any")) {
 				return new AnyMatcher();
 			}
@@ -235,32 +234,28 @@ public class WorkflowTest extends FuncTestCase {
 		public void testMatchesString(String other) {
 			assertMatches(pattern, other);
 		}
-	}	
-
-	
-	public void testWorkflow(File workflowDir)
-			throws WorkflowSubmissionException, InvalidInputException,
-			ProcessorCreationException, DataConstraintCreationException,
-			UnknownProcessorException, UnknownPortException,
-			DuplicateProcessorNameException, MalformedNameException,
-			ConcurrencyConstraintCreationException,
-			DuplicateConcurrencyConstraintNameException, XScuflFormatException,
-			FileNotFoundException {
-		File workflowFile = new File(workflowDir, workflowDir.getName()
-				+ ".xml");
-		File outputDir = new File(workflowDir, "outputs");
-		File inputDir = new File(workflowDir, "inputs");
-		Map inputs = readFiles(inputDir, new DataThingConverter());
-		Map outputMatchers = readFiles(outputDir, new MatcherConverter());
-		InputStream workflowStream;
-		workflowStream = new FileInputStream(workflowFile);
-		WorkflowLauncher launcher;
-		launcher = new WorkflowLauncher(workflowStream);
-		Map outputs;
-		outputs = launcher.execute(inputs, new TestListener());
-		checkOutputs(outputs, outputMatchers);
 	}
-	
+
+	public void testWorkflow(File workflowDir) throws WorkflowSubmissionException, InvalidInputException,
+			ProcessorCreationException, DataConstraintCreationException, UnknownProcessorException,
+			UnknownPortException, DuplicateProcessorNameException, MalformedNameException,
+			ConcurrencyConstraintCreationException, DuplicateConcurrencyConstraintNameException, XScuflFormatException,
+			FileNotFoundException {
+		if (!workflowDir.toString().endsWith("main/assembly")) { //stops it trying to run the assembly.xml as a workflow
+			File workflowFile = new File(workflowDir, workflowDir.getName() + ".xml");
+			File outputDir = new File(workflowDir, "outputs");
+			File inputDir = new File(workflowDir, "inputs");
+			Map inputs = readFiles(inputDir, new DataThingConverter());
+			Map outputMatchers = readFiles(outputDir, new MatcherConverter());
+			InputStream workflowStream;
+			workflowStream = new FileInputStream(workflowFile);
+			WorkflowLauncher launcher;
+			launcher = new WorkflowLauncher(workflowStream);
+			Map outputs;
+			outputs = launcher.execute(inputs, new TestListener());
+			checkOutputs(outputs, outputMatchers);
+		}
+	}
 
 	protected void checkOutputs(Map outputs, Map outputMatchers) {
 		Set outputSet = outputs.keySet();

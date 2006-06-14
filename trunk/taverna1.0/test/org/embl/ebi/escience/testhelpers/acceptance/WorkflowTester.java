@@ -85,7 +85,8 @@ public class WorkflowTester {
 		} catch (IOException e) {
 			logger.error("Could not resolve path " + directory, e);
 			return suite;
-		}		
+		}	
+	
 		suite.setName(directory.getName());
 		// See if we find directory/directory.xml here, which should be a
 		// workflow

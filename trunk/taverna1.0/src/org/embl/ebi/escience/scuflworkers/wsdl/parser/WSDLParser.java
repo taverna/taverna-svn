@@ -500,7 +500,7 @@ public class WSDLParser {
 		ComplexTypeDescriptor result = new ComplexTypeDescriptor();
 
 		if (cachedComplexTypes.get(type.getQName().toString()) != null) {
-			result = (ComplexTypeDescriptor) cachedComplexTypes.get(type.getQName().toString());
+			result = copyFromCache(type.getQName().toString());
 		} else {
 			logger.debug("Constructing complex type (from DefinedElement): " + type.getQName().getLocalPart());
 			// caching the type is not really to improve performance, but is
@@ -525,7 +525,7 @@ public class WSDLParser {
 		ComplexTypeDescriptor result = new ComplexTypeDescriptor();
 
 		if (cachedComplexTypes.get(type.getQName().toString()) != null) {
-			result = (ComplexTypeDescriptor) cachedComplexTypes.get(type.getQName().toString());
+			result = copyFromCache(type.getQName().toString());
 		} else {
 			logger.debug("Constructing complex type (from DefinedType): " + type.getQName().getLocalPart());
 			result.setType(type.getQName().getLocalPart());
@@ -580,6 +580,17 @@ public class WSDLParser {
 			result.setType(type.getRefType().getQName().getLocalPart());
 			result.setQname(type.getRefType().getQName());
 		}
+		return result;
+	}
+	
+	private ComplexTypeDescriptor copyFromCache(String key)
+	{
+		ComplexTypeDescriptor cached=(ComplexTypeDescriptor)cachedComplexTypes.get(key);
+		ComplexTypeDescriptor result=new ComplexTypeDescriptor();
+		result.setQname(cached.getQname());
+		result.setElements(cached.getElements());
+		result.setType(cached.getType());
+		
 		return result;
 	}
 
