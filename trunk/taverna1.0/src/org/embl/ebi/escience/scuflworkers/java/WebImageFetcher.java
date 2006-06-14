@@ -12,6 +12,7 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.log4j.Logger;
 import org.embl.ebi.escience.baclava.DataThing;
 
 import uk.ac.soton.itinnovation.taverna.enactor.entities.TaskExecutionException;
@@ -22,6 +23,8 @@ import uk.ac.soton.itinnovation.taverna.enactor.entities.TaskExecutionException;
  * @author Tom Oinn
  */
 public class WebImageFetcher implements LocalWorker {
+	
+	private Logger logger = Logger.getLogger(WebImageFetcher.class);
 
 	public String[] inputNames() {
 		return new String[] { "url", "base" };
@@ -55,7 +58,7 @@ public class WebImageFetcher implements LocalWorker {
 			} else {
 				inputURL = new URL(inputURLString);
 			}
-			System.out.println("Content length is " + inputURL.openConnection().getContentLength());
+			logger.info("Content length is " + inputURL.openConnection().getContentLength());
 			byte[] contents;
 			if (inputURL.openConnection().getContentLength() == -1) {
 				// Content size unknown, must read first...
@@ -78,7 +81,7 @@ public class WebImageFetcher implements LocalWorker {
 				bytesRead = is.read(contents, totalBytesRead, contents.length - totalBytesRead);
 				totalBytesRead += bytesRead;
 			}
-			System.out.println("Read " + totalBytesRead + " from input stream");
+			logger.info("Read " + totalBytesRead + " from input stream");
 			Map outputMap = new HashMap();
 			outputMap.put("image", new DataThing(contents));
 			return outputMap;
@@ -91,7 +94,6 @@ public class WebImageFetcher implements LocalWorker {
 				if (reader != null)
 					reader.close();
 			} catch (IOException ex) {
-				System.err.println("Cannot close reader: " + reader);
 			}
 		}
 	}
