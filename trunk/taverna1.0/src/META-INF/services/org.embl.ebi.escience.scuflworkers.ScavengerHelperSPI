@@ -1,7 +1,7 @@
 org.embl.ebi.escience.scuflworkers.biomart.BiomartScavengerHelper
 org.embl.ebi.escience.scuflworkers.wsdl.WSDLScavengerHelper
 org.embl.ebi.escience.scuflworkers.soaplab.SoaplabScavengerHelper
-org.embl.ebi.escience.scuflworkers.biomoby.BiomobyScavengerHelper
+org.biomoby.client.taverna.plugin.BiomobyScavengerHelper
 org.embl.ebi.escience.scuflworkers.apiconsumer.APIConsumerScavengerHelper
 org.embl.ebi.escience.scuflworkers.seqhound.SeqhoundScavengerHelper
 org.embl.ebi.escience.scuflworkers.talisman.TalismanScavengerHelper

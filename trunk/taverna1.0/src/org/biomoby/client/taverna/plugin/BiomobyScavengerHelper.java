@@ -7,18 +7,28 @@ package org.biomoby.client.taverna.plugin;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JOptionPane;
 
+import org.apache.log4j.Logger;
 import org.biomoby.client.CentralImpl;
 import org.biomoby.shared.Central;
 import org.biomoby.shared.MobyException;
 import org.biomoby.shared.MobyResourceRef;
+import org.embl.ebi.escience.scufl.Processor;
+import org.embl.ebi.escience.scufl.ScuflModel;
+import org.embl.ebi.escience.scuflui.workbench.Scavenger;
 import org.embl.ebi.escience.scuflui.workbench.ScavengerCreationException;
 import org.embl.ebi.escience.scuflui.workbench.ScavengerTree;
 import org.embl.ebi.escience.scuflworkers.ScavengerHelper;
+import org.embl.ebi.escience.scuflworkers.ScavengerHelperSPI;
+
 
 // import java.lang.String;
 
@@ -30,7 +40,9 @@ import org.embl.ebi.escience.scuflworkers.ScavengerHelper;
  *          Exp $
  * @author Martin Senger
  */
-public class BiomobyScavengerHelper implements ScavengerHelper {
+public class BiomobyScavengerHelper implements ScavengerHelper, ScavengerHelperSPI {
+	
+	private static Logger logger = Logger.getLogger(BiomobyScavengerHelper.class);
 
     private String defaultResourceURL = "http://biomoby.org/RESOURCES/MOBY-S/Objects";
 
@@ -121,4 +133,39 @@ public class BiomobyScavengerHelper implements ScavengerHelper {
             }
         };
     }
+    
+    public Set<Scavenger> getDefaults() {
+		Set<Scavenger> result = new HashSet<Scavenger>();
+		String urlList = System.getProperty("taverna.defaultbiomoby");
+		if (urlList != null) {
+			String[] urls = urlList.split("\\s*,\\s*");
+			for (String url : urls) {
+				try {
+					result.add(new BiomobyScavenger(url));
+				} catch (ScavengerCreationException e) {
+					logger.error("Error creating BiomobyScavenger for " + url, e);
+				}
+			}
+		}
+		return result;
+	}
+	
+	public Set<Scavenger> getFromModel(ScuflModel model) {
+		Set<Scavenger> result = new HashSet<Scavenger>();
+		List<String> existingLocations = new ArrayList<String>();
+
+		Processor[] processors = model.getProcessorsOfType(BiomobyProcessor.class);
+		for (Processor processor : processors) {
+			String loc = ((BiomobyProcessor) processor).getMobyEndpoint();
+			if (!existingLocations.contains(loc)) {
+				existingLocations.add(loc);
+				try {
+					result.add(new BiomobyScavenger(loc));
+				} catch (ScavengerCreationException e) {
+					logger.warn("Error creating TalismanScavenger", e);
+				}
+			}
+		}
+		return result;
+	}
 }
