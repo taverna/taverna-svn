@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: BiomartScavengerHelper.java,v $
- * Revision           $Revision: 1.8 $
+ * Revision           $Revision: 1.9 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-05-30 16:18:39 $
+ * Last modified on   $Date: 2006-06-15 14:29:19 $
  *               by   $Author: sowen70 $
  * Created on 17-Mar-2006
  *****************************************************************/
@@ -35,20 +35,31 @@ package org.embl.ebi.escience.scuflworkers.biomart;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 import javax.swing.JOptionPane;
 
+import org.apache.log4j.Logger;
+import org.embl.ebi.escience.scufl.Processor;
+import org.embl.ebi.escience.scufl.ScuflModel;
+import org.embl.ebi.escience.scuflui.workbench.Scavenger;
 import org.embl.ebi.escience.scuflui.workbench.ScavengerCreationException;
 import org.embl.ebi.escience.scuflui.workbench.ScavengerTree;
 import org.embl.ebi.escience.scuflworkers.ScavengerHelper;
+import org.embl.ebi.escience.scuflworkers.ScavengerHelperSPI;
 
 /**
  * Helper for creating Biomart scavengers
  * 
  * @author David Withers
  */
-public class BiomartScavengerHelper implements ScavengerHelper {
+public class BiomartScavengerHelper implements ScavengerHelper, ScavengerHelperSPI {
 
+	private static Logger logger = Logger.getLogger(BiomartScavengerHelper.class);
+	
 	public String getScavengerDescription() {
 		return "Add new Biomart service...";
 	}
@@ -83,4 +94,27 @@ public class BiomartScavengerHelper implements ScavengerHelper {
 		};
 	}
 
+	public Set<Scavenger> getDefaults() {
+		Set<Scavenger> result = new HashSet<Scavenger>();
+		String urlList = System.getProperty("taverna.defaultmartregistry");
+		if (urlList != null) {
+			String[] urls = urlList.split("\\s*,\\s*");
+			for (String url : urls) {
+				try {
+					result.add(new BiomartScavenger(url));
+				} catch (ScavengerCreationException e) {
+					logger.error("Error creating BiomartScavenger for " + url, e);
+				}
+			}
+		}
+		return result;
+	}
+	
+	public Set<Scavenger> getFromModel(ScuflModel model) {
+		//TODO make BioMartProcessor give access Biomart URL to allow Scavengers
+		//to be created
+		return new HashSet<Scavenger>();		
+	}
+
+	
 }

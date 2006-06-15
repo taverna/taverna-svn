@@ -7,19 +7,24 @@ package org.embl.ebi.escience.scuflworkers.inferno;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.HashSet;
+import java.util.Set;
 
 import javax.swing.JOptionPane;
 
+import org.embl.ebi.escience.scufl.ScuflModel;
+import org.embl.ebi.escience.scuflui.workbench.Scavenger;
 import org.embl.ebi.escience.scuflui.workbench.ScavengerCreationException;
 import org.embl.ebi.escience.scuflui.workbench.ScavengerTree;
 import org.embl.ebi.escience.scuflworkers.ScavengerHelper;
+import org.embl.ebi.escience.scuflworkers.ScavengerHelperSPI;
 
 /**
  * Helper to specify an Inferno SGS location
  * 
  * @author Tom Oinn
  */
-public class InfernoScavengerHelper implements ScavengerHelper {
+public class InfernoScavengerHelper implements ScavengerHelper, ScavengerHelperSPI {
 
 	public String getScavengerDescription() {
 		return "Add new Styx Grid Service...";
@@ -61,4 +66,12 @@ public class InfernoScavengerHelper implements ScavengerHelper {
 
 		};
 	}
+
+	public Set<Scavenger> getDefaults() {
+		return new HashSet<Scavenger>();
+	}
+
+	public Set<Scavenger> getFromModel(ScuflModel model) {
+		return new HashSet<Scavenger>();
+	}	
 }

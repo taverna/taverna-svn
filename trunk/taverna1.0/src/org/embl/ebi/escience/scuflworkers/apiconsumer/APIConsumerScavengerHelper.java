@@ -9,22 +9,31 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.net.URL;
+import java.util.Enumeration;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.prefs.Preferences;
 
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 
+import org.apache.log4j.Logger;
+import org.embl.ebi.escience.scufl.ScuflModel;
 import org.embl.ebi.escience.scuflui.ExtensionFileFilter;
 import org.embl.ebi.escience.scuflui.ScuflIcons;
+import org.embl.ebi.escience.scuflui.workbench.Scavenger;
 import org.embl.ebi.escience.scuflui.workbench.ScavengerTree;
 import org.embl.ebi.escience.scuflworkers.ScavengerHelper;
+import org.embl.ebi.escience.scuflworkers.ScavengerHelperSPI;
 
 /**
  * Create a new APIConsumerScavenger from a file dialog
  * @author Tom Oinn
  */
-public class APIConsumerScavengerHelper implements ScavengerHelper {
+public class APIConsumerScavengerHelper implements ScavengerHelper, ScavengerHelperSPI {
 
+	private static Logger logger = Logger.getLogger(APIConsumerScavengerHelper.class);
+	
     public String getScavengerDescription() {
 	return "Add new API Consumer...";
     }
@@ -60,6 +69,31 @@ public class APIConsumerScavengerHelper implements ScavengerHelper {
 		}
 	    };
     }
+
+	public Set<Scavenger> getDefaults() {
+		// Find all apiconsumer.xml files in the classpath root and
+		// load them as API Consumer scavengers
+		Set <Scavenger> result=new HashSet<Scavenger>();
+		try {
+			ClassLoader loader = Thread.currentThread().getContextClassLoader();
+			Enumeration en = loader.getResources("apiconsumer.xml");
+			while (en.hasMoreElements()) {
+				URL resourceURL = (URL) en.nextElement();
+				result.add(new APIConsumerScavenger(resourceURL));
+			}
+		} catch (Exception ex) {
+			logger.error(ex);
+		}
+		return result;
+	}
+
+	public Set<Scavenger> getFromModel(ScuflModel model) {
+		return new HashSet<Scavenger>();
+	}
+	
+	
+    
+    
 
 
 }

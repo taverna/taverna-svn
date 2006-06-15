@@ -7,12 +7,21 @@ package org.embl.ebi.escience.scuflworkers.wsdl;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 import javax.swing.JOptionPane;
 
+import org.apache.log4j.Logger;
+import org.embl.ebi.escience.scufl.Processor;
+import org.embl.ebi.escience.scufl.ScuflModel;
+import org.embl.ebi.escience.scuflui.workbench.Scavenger;
 import org.embl.ebi.escience.scuflui.workbench.ScavengerCreationException;
 import org.embl.ebi.escience.scuflui.workbench.ScavengerTree;
 import org.embl.ebi.escience.scuflworkers.ScavengerHelper;
+import org.embl.ebi.escience.scuflworkers.ScavengerHelperSPI;
 
 /**
  * Helper for handling WSDL scavengers.
@@ -20,7 +29,9 @@ import org.embl.ebi.escience.scuflworkers.ScavengerHelper;
  * @author Tom Oinn
  * @author Stuart Owen
  */
-public class WSDLScavengerHelper implements ScavengerHelper {
+public class WSDLScavengerHelper implements ScavengerHelper, ScavengerHelperSPI {
+
+	private static Logger logger = Logger.getLogger(WSDLScavengerHelper.class);
 
 	public String getScavengerDescription() {
 		return "Add new WSDL scavenger...";
@@ -51,6 +62,44 @@ public class WSDLScavengerHelper implements ScavengerHelper {
 				}
 			}
 		};
+	}
+
+	/**
+	 * returns the default Scavenger set
+	 */
+	public Set<Scavenger> getDefaults() {
+		Set<Scavenger> result = new HashSet<Scavenger>();
+		String urlList = System.getProperty("taverna.defaultwsdl");
+		if (urlList != null) {
+			String[] urls = urlList.split("\\s*,\\s*");
+			for (String url : urls) {
+				try {
+					result.add(new WSDLBasedScavenger(url));
+				} catch (ScavengerCreationException e) {
+					logger.error("Error creating WSDLBasedScavenger for " + url, e);
+				}
+			}
+		}
+		return result;
+	}
+
+	public Set<Scavenger> getFromModel(ScuflModel model) {
+		Set<Scavenger> result = new HashSet<Scavenger>();
+		List<String> existingLocations = new ArrayList<String>();
+
+		Processor[] processors = model.getProcessorsOfType(WSDLBasedProcessor.class);
+		for (Processor processor : processors) {
+			String loc = ((WSDLBasedProcessor) processor).getWSDLLocation();
+			if (!existingLocations.contains(loc)) {
+				existingLocations.add(loc);
+				try {
+					result.add(new WSDLBasedScavenger(loc));
+				} catch (ScavengerCreationException e) {
+					logger.warn("Error creating WSDLBasedScavenger", e);
+				}
+			}
+		}
+		return result;
 	}
 
 }

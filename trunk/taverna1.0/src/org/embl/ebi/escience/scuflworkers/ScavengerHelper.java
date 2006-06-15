@@ -28,6 +28,6 @@ public interface ScavengerHelper {
 	 * Get the text for this scavenger creator, so something like 'Create new
 	 * WSDL scavenger' or similar
 	 */
-	public String getScavengerDescription();
+	public String getScavengerDescription();		
 
 }

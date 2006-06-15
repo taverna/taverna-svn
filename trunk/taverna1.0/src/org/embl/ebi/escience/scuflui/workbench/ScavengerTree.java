@@ -21,14 +21,10 @@ import java.awt.dnd.DropTargetDragEvent;
 import java.awt.dnd.DropTargetDropEvent;
 import java.awt.dnd.DropTargetEvent;
 import java.awt.dnd.DropTargetListener;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -38,9 +34,6 @@ import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 
 import org.apache.log4j.Logger;
-import org.biomoby.client.taverna.plugin.BiomobyProcessor;
-import org.biomoby.client.taverna.plugin.BiomobyScavenger;
-import org.embl.ebi.escience.scufl.Processor;
 import org.embl.ebi.escience.scufl.ScuflModel;
 import org.embl.ebi.escience.scuflui.ExtendedJTree;
 import org.embl.ebi.escience.scuflui.ScavengerTreePanel;
@@ -51,16 +44,8 @@ import org.embl.ebi.escience.scuflui.dnd.ProcessorSpecFragment;
 import org.embl.ebi.escience.scuflui.dnd.SpecFragmentTransferable;
 import org.embl.ebi.escience.scuflworkers.ProcessorFactory;
 import org.embl.ebi.escience.scuflworkers.ProcessorHelper;
-import org.embl.ebi.escience.scuflworkers.apiconsumer.APIConsumerScavenger;
-import org.embl.ebi.escience.scuflworkers.biomart.BiomartScavenger;
-import org.embl.ebi.escience.scuflworkers.seqhound.SeqhoundScavenger;
-import org.embl.ebi.escience.scuflworkers.soaplab.SoaplabProcessor;
-import org.embl.ebi.escience.scuflworkers.soaplab.SoaplabScavenger;
-import org.embl.ebi.escience.scuflworkers.talisman.TalismanProcessor;
-import org.embl.ebi.escience.scuflworkers.talisman.TalismanScavenger;
-import org.embl.ebi.escience.scuflworkers.workflow.WorkflowProcessor;
-import org.embl.ebi.escience.scuflworkers.wsdl.WSDLBasedProcessor;
-import org.embl.ebi.escience.scuflworkers.wsdl.WSDLBasedScavenger;
+import org.embl.ebi.escience.scuflworkers.ScavengerHelperFactory;
+import org.embl.ebi.escience.scuflworkers.ScavengerHelperSPI;
 import org.jdom.Attribute;
 import org.jdom.Element;
 import org.jdom.output.XMLOutputter;
@@ -103,7 +88,7 @@ public class ScavengerTree extends ExtendedJTree implements ScuflUIComponent, Dr
 	/**
 	 * The root node
 	 */
-	DefaultMutableTreeNode root = null;
+	private DefaultMutableTreeNode root = null;
 
 	/**
 	 * The tree model
@@ -113,7 +98,7 @@ public class ScavengerTree extends ExtendedJTree implements ScuflUIComponent, Dr
 	/**
 	 * A list of the names of all the scavengers contained within this tree
 	 */
-	ArrayList scavengerList = null;
+	ArrayList<String> scavengerList = null;
 
 	/**
 	 * A private count to avoid name duplication on created nodes
@@ -125,8 +110,8 @@ public class ScavengerTree extends ExtendedJTree implements ScuflUIComponent, Dr
 	 */
 	public int getNextCount() {
 		return count++;
-	}
-
+	}	
+	
 	/**
 	 * Recognize the drag gesture, only allow if there's a processor factory
 	 * node here, and export the XML fragment from the node as the transferable
@@ -233,15 +218,13 @@ public class ScavengerTree extends ExtendedJTree implements ScuflUIComponent, Dr
 			this.parentPanel = parentPanel;
 			setRowHeight(18);
 			setLargeModel(true);
-			wsdlURLList = System.getProperty("taverna.defaultwsdl");
-			soaplabDefaultURLList = System.getProperty("taverna.defaultsoaplab");
-			biomobyDefaultURLList = System.getProperty("taverna.defaultbiomoby");
-			webURLList = System.getProperty("taverna.defaultweb");
-			martRegistryList = System.getProperty("taverna.defaultmartregistry");
+
+			
+
 			DragSource dragSource = DragSource.getDefaultDragSource();
 			dragSource.createDefaultDragGestureRecognizer(this, DnDConstants.ACTION_COPY_OR_MOVE, this);
 			new DropTarget(this, DnDConstants.ACTION_COPY_OR_MOVE, this);
-			scavengerList = new ArrayList();
+			scavengerList = new ArrayList<String>();
 			root = new DefaultMutableTreeNode("Available Processors");
 			treeModel = (DefaultTreeModel) this.getModel();
 			treeModel.setRoot(this.root);
@@ -273,9 +256,7 @@ public class ScavengerTree extends ExtendedJTree implements ScuflUIComponent, Dr
 				setExpansion(true);
 			}
 		}
-	}
-
-	String biomobyDefaultURLList, soaplabDefaultURLList, wsdlURLList, webURLList, martRegistryList;
+	}	
 
 	class DefaultScavengerLoaderThread extends Thread {
 
@@ -291,6 +272,8 @@ public class ScavengerTree extends ExtendedJTree implements ScuflUIComponent, Dr
 				if (getParentPanel() != null)
 					getParentPanel().startProgressBar("Populating service list");
 				// Do web scavenger based locations
+				String webURLList = System.getProperty("taverna.defaultweb");
+				
 				if (webURLList != null) {
 					String[] urls = webURLList.split("\\s*,\\s*");
 					for (int i = 0; i < urls.length; i++) {
@@ -303,77 +286,13 @@ public class ScavengerTree extends ExtendedJTree implements ScuflUIComponent, Dr
 					}
 				}
 
-				// Do mart registries
-				if (martRegistryList != null) {
-					String[] urls = martRegistryList.split("\\s*,\\s*");
-					for (int i = 0; i < urls.length; i++) {
-						try {
-							scavengerTree.addScavenger(new BiomartScavenger(urls[i]));
-						} catch (ScavengerCreationException sce) {
-							sce.printStackTrace();
-							logger.error(sce);
-						}
+				Set<ScavengerHelperSPI> helpers = ScavengerHelperFactory.instance().getHelpers();
+				for (ScavengerHelperSPI helper : helpers) {
+					for (Scavenger scavenger : helper.getDefaults()) {
+						scavengerTree.addScavenger(scavenger);
 					}
 				}
 
-				// String wsdlURLList =
-				// System.getProperty("taverna.defaultwsdl");
-				if (wsdlURLList != null) {
-					String[] urls = wsdlURLList.split("\\s*,\\s*");
-					for (int i = 0; i < urls.length; i++) {
-						try {
-							scavengerTree.addScavenger(new WSDLBasedScavenger(urls[i]));
-						} catch (ScavengerCreationException sce) {
-							logger.error(sce);
-						}
-					}
-				}
-				// String soaplabDefaultURLList =
-				// System.getProperty("taverna.defaultsoaplab");
-				if (soaplabDefaultURLList != null) {
-					String[] urls = soaplabDefaultURLList.split("\\s*,\\s*");
-					for (int i = 0; i < urls.length; i++) {
-						try {
-							logger.debug("Creating soaplab scavenger : '" + urls[i] + "'");
-							scavengerTree.addScavenger(new SoaplabScavenger(urls[i]));
-						} catch (ScavengerCreationException sce) {
-							logger.error(sce);
-						}
-					}
-				}
-				// String biomobyDefaultURLList =
-				// System.getProperty("taverna.defaultbiomoby");
-				if (biomobyDefaultURLList != null) {
-					String[] urls = biomobyDefaultURLList.split("\\s*,\\s*");
-					for (int i = 0; i < urls.length; i++) {
-						try {
-							logger.debug("Creating biomoby scavenger : '" + urls[i] + "'");
-							scavengerTree.addScavenger(new BiomobyScavenger(urls[i]));
-						} catch (ScavengerCreationException sce) {
-							logger.error(sce);
-						}
-					}
-				}
-
-				// Find all apiconsumer.xml files in the classpath root and
-				// load them as API Consumer scavengers
-				try {
-					ClassLoader loader = Thread.currentThread().getContextClassLoader();
-					Enumeration en = loader.getResources("apiconsumer.xml");
-					while (en.hasMoreElements()) {
-						URL resourceURL = (URL) en.nextElement();
-						scavengerTree.addScavenger(new APIConsumerScavenger(resourceURL));
-					}
-				} catch (Exception ex) {
-					logger.error(ex);
-				}
-
-				// Add the seqhound scavenger to the end of the list
-				try {
-					scavengerTree.addScavenger(new SeqhoundScavenger());
-				} catch (ScavengerCreationException sce) {
-					logger.error(sce);
-				}
 				try {
 					Thread.sleep(1000);
 				} catch (InterruptedException ie) {
@@ -402,68 +321,25 @@ public class ScavengerTree extends ExtendedJTree implements ScuflUIComponent, Dr
 	 * processor types.
 	 */
 	public void addScavengersFromModel() throws ScavengerCreationException {
+		getParentPanel().startProgressBar("Adding scavengers from model.");
 		synchronized (this.getModel()) {
 			if (this.model != null) {
 				addScavengersFromModel(this.model);
 			}
 		}
+		getParentPanel().stopProgressBar();
 	}
 
 	private void addScavengersFromModel(ScuflModel theModel) throws ScavengerCreationException {
 		if (theModel != null) {
 
-			// Get all WSDL processors
-			Map wsdlLocations = new HashMap();
-			Map talismanLocations = new HashMap();
-			Map soaplabInstallations = new HashMap();
-			Set biomobyCentralLocations = new HashSet();
-			Processor[] p = theModel.getProcessors();
-			for (int i = 0; i < p.length; i++) {
-				// If the processor is a WSDLBasedProcessor then get
-				// the wsdl location and add it to the map.
-				if (p[i] instanceof WSDLBasedProcessor) {
-					String wsdlLocation = ((WSDLBasedProcessor) p[i]).getWSDLLocation();
-					wsdlLocations.put(wsdlLocation, null);
-				} else if (p[i] instanceof TalismanProcessor) {
-					String tscriptLocation = ((TalismanProcessor) p[i]).getTScriptURL();
-					talismanLocations.put(tscriptLocation, null);
-				} else if (p[i] instanceof SoaplabProcessor) {
-					String endpoint = ((SoaplabProcessor) p[i]).getEndpoint().toString();
-					String[] parts = endpoint.split("/");
-					String base = "";
-					for (int j = 0; j < parts.length - 1; j++) {
-						base = base + parts[j] + "/";
-					}
-					soaplabInstallations.put(base, null);
-				} else if (p[i] instanceof BiomobyProcessor) {
-					String mobyCentralLocation = ((BiomobyProcessor) p[i]).getMobyEndpoint();
-					biomobyCentralLocations.add(mobyCentralLocation);
-				}
-				// Recurse into nested workflows
-				else if (p[i] instanceof WorkflowProcessor) {
-					addScavengersFromModel(((WorkflowProcessor) p[i]).getInternalModel());
+			Set<ScavengerHelperSPI> helpers = ScavengerHelperFactory.instance().getHelpers();
+			for (ScavengerHelperSPI helper : helpers) {
+				Set<Scavenger> scavengers = helper.getFromModel(theModel);
+				for (Scavenger scavenger : scavengers) {
+					addScavenger(scavenger);
 				}
 			}
-			// Now iterate over all the wsdl locations found and
-			// create new WSDL scavengers, adding them to the
-			// scavenger tree.
-			for (Iterator i = wsdlLocations.keySet().iterator(); i.hasNext();) {
-				String wsdlLocation = (String) i.next();
-				addScavenger(new WSDLBasedScavenger(wsdlLocation));
-			}
-			for (Iterator i = talismanLocations.keySet().iterator(); i.hasNext();) {
-				String tscriptURL = (String) i.next();
-				addScavenger(new TalismanScavenger(tscriptURL));
-			}
-			for (Iterator i = soaplabInstallations.keySet().iterator(); i.hasNext();) {
-				String base = (String) i.next();
-				addScavenger(new SoaplabScavenger(base));
-			}
-			for (Iterator i = biomobyCentralLocations.iterator(); i.hasNext();) {
-				String mobyCentralLocation = (String) i.next();
-				addScavenger(new BiomobyScavenger(mobyCentralLocation));
-			}
-
 		}
 	}
 
@@ -475,8 +351,7 @@ public class ScavengerTree extends ExtendedJTree implements ScuflUIComponent, Dr
 		synchronized (getModel()) {
 			// Check to see we don't already have a scavenger with this name
 			String newName = theScavenger.getUserObject().toString();
-			for (Iterator i = scavengerList.iterator(); i.hasNext();) {
-				String name = (String) i.next();
+			for (String name : scavengerList) {				
 				if (name.equals(newName)) {
 					// Exit if we already have a scavenger by that name
 					return;

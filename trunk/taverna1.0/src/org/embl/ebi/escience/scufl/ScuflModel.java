@@ -171,7 +171,7 @@ public class ScuflModel implements Serializable, LogAwareComponent {
 	 * The processors defined by this workflow, ArrayList of Processor
 	 * subclasses.
 	 */
-	private ArrayList processors = new ArrayList();
+	private List<Processor> processors = new ArrayList<Processor>();
 
 	/**
 	 * The concurrency constraints defined by this workflow, ArrayList of
@@ -317,6 +317,22 @@ public class ScuflModel implements Serializable, LogAwareComponent {
 		synchronized(this.processors) {
 			return (Processor[]) (this.processors.toArray(new Processor[0]));
 		}
+	}
+	
+	/**
+	 * Returns an array of Processors that are an instance of the Class
+	 * @return
+	 */
+	public Processor[] getProcessorsOfType(Class type) {
+		List<Processor> result=new ArrayList<Processor>();
+		for (Processor p : this.processors)
+		{
+			if (type.isInstance(p))
+			{
+				result.add(p);
+			}
+		}
+		return (Processor[]) (result.toArray(new Processor[0]));
 	}
 
 	/**
