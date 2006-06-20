@@ -52,9 +52,38 @@ class TestParsing(TestCase):
     def testLSID(self):
         self.assertEquals(self.scufl.lsid,
             "urn:lsid:www.mygrid.org.uk:operation:NXIYI8FZ5K0")
+    
+    def testProcessorNames(self):
+        procs = set(self.scufl.processors.keys())
+        exp_procs = set(['merge_gene_pathways', 'lister',
+            'merge_probesets', 'mergePathways_2', 'split_by_regex',
+            'Parse_swiss_ids', 'Remove_swiss_nulls', 'split_gene_ids',
+            'get_pathways_by_genes', 'Add_ncbi_to_string',
+            'probeset_to_gene', 'Ensembl_gene_info', 'merge_pathways',
+            'regex1', 'comma', 'Swissprot_to_Gi', 'split_by_regex_2',
+            'Concatenate_two_strings', 'species', 'getcurrentdatabase',
+            'Kegg_gene_ids_all_species'])
+        self.assertEquals(exp_procs, procs)
+    
+    def testProcessorTypes(self):     
+        self.assertEquals("stringconstant",
+            self.scufl.processors["species"]["type"])
+
+        self.assertEquals("workflow", 
+            self.scufl.processors["Swissprot_to_Gi"]["type"])
+
+        self.assertEquals("local", 
+            self.scufl.processors["merge_pathways"]["type"])
+
+        self.assertEquals("arbitrarywsdl", 
+            self.scufl.processors["Kegg_gene_ids_all_species"]["type"])
+
+        self.assertEquals("beanshell", 
+            self.scufl.processors["split_gene_ids"]["type"])
 
     
 class TestParsingOld(TestCase):
+    """Try to parse older workflow"""
     def setUp(self):
         self.scufl = Scufl(OLD_WORKFLOW)
 

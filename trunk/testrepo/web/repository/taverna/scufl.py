@@ -1,6 +1,7 @@
 
 from elementtree import ElementTree
 
+import re
 
 from ns import XSCUFL
 
@@ -35,6 +36,17 @@ class Scufl(object):
             self.title = desc.attrib["title"]
             self.lsid = desc.attrib["lsid"]
             self.description = (desc.text or "").strip()
-    
-
-
+        self.processors = {}
+        for processor in self.root.findall(XSCUFL.processor): 
+            p_name = processor.attrib["name"]
+            p = dict()
+            self.processors[p_name] = p
+            for child in processor.getchildren():
+                if child.tag == XSCUFL.description:
+                    p["description"] = child.text.strip()
+                elif child.tag == XSCUFL.iterationstrategy:
+                    p["iterationstrategy"] = True
+                else:
+                    # Type is just the tag without namespace
+                    p["type"] = re.sub("{.*}", "", child.tag)
+        
