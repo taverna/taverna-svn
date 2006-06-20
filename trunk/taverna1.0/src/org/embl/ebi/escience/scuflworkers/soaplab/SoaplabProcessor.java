@@ -11,8 +11,13 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
 
 import javax.xml.rpc.ServiceException;
 
@@ -26,6 +31,8 @@ import org.embl.ebi.escience.scufl.Processor;
 import org.embl.ebi.escience.scufl.ProcessorCreationException;
 import org.embl.ebi.escience.scufl.ScuflModel;
 import org.embl.ebi.escience.scufl.ScuflModelEvent;
+import org.embl.ebi.escience.scufl.view.WorkflowSummaryAsHTML;
+import org.embl.ebi.escience.scuflworkers.HTMLSummarisableProcessor;
 import org.embl.ebi.escience.utils.Soap;
 
 /**
@@ -37,7 +44,7 @@ import org.embl.ebi.escience.utils.Soap;
  * 
  * @author Tom Oinn
  */
-public class SoaplabProcessor extends Processor implements Serializable {
+public class SoaplabProcessor extends Processor implements Serializable, HTMLSummarisableProcessor {
 
 	private URL endpoint = null;
 
@@ -122,8 +129,8 @@ public class SoaplabProcessor extends Processor implements Serializable {
 	 * Construct a new processor with the given model and name, delegates to the
 	 * superclass.
 	 */
-	public SoaplabProcessor(ScuflModel model, String name, String endpoint)
-			throws ProcessorCreationException, DuplicateProcessorNameException {
+	public SoaplabProcessor(ScuflModel model, String name, String endpoint) throws ProcessorCreationException,
+			DuplicateProcessorNameException {
 		super(model, name);
 
 		// If this is an old style endpoint with the '::' rewrite it
@@ -153,10 +160,8 @@ public class SoaplabProcessor extends Processor implements Serializable {
 				setEndpoint(sb.toString());
 			}
 		} catch (MalformedURLException mue) {
-			throw new ProcessorCreationException(
-					name
-							+ ": The supplied endpoint url was \n   malformed, endpoint was specified as '"
-							+ theEndpoint + "'");
+			throw new ProcessorCreationException(name
+					+ ": The supplied endpoint url was \n   malformed, endpoint was specified as '" + theEndpoint + "'");
 		}
 	}
 
@@ -174,20 +179,17 @@ public class SoaplabProcessor extends Processor implements Serializable {
 	/**
 	 * Set the endpoint for this soaplab processor
 	 */
-	void setEndpoint(String specifier) throws MalformedURLException,
-			ProcessorCreationException {
+	void setEndpoint(String specifier) throws MalformedURLException, ProcessorCreationException {
 		URL new_endpoint = new URL(specifier);
 		if (endpoint != null) {
 			if (endpoint.equals(new_endpoint) == false) {
-				fireModelEvent(new ScuflModelEvent(this,
-						"Service endpoint changed to '" + specifier + "'"));
+				fireModelEvent(new ScuflModelEvent(this, "Service endpoint changed to '" + specifier + "'"));
 			} else {
 				// Do nothing if the endpoint was the same as before
 				return;
 			}
 		} else {
-			fireModelEvent(new ScuflModelEvent(this,
-					"Service endpoint set to '" + specifier + "'"));
+			fireModelEvent(new ScuflModelEvent(this, "Service endpoint set to '" + specifier + "'"));
 		}
 		endpoint = new_endpoint;
 		try {
@@ -196,15 +198,11 @@ public class SoaplabProcessor extends Processor implements Serializable {
 				getDescriptionText();
 			}
 		} catch (PortCreationException pce) {
-			throw new ProcessorCreationException(
-					getName()
-							+ ": Exception when trying to create ports\n   from Soaplab endpoint : "
-							+ pce.getMessage());
+			throw new ProcessorCreationException(getName()
+					+ ": Exception when trying to create ports\n   from Soaplab endpoint : " + pce.getMessage());
 		} catch (DuplicatePortNameException dpne) {
-			throw new ProcessorCreationException(
-					getName()
-							+ ": Exception when trying to create ports\n   from Soaplab endpoint : "
-							+ dpne.getMessage());
+			throw new ProcessorCreationException(getName()
+					+ ": Exception when trying to create ports\n   from Soaplab endpoint : " + dpne.getMessage());
 		}
 	}
 
@@ -213,25 +211,19 @@ public class SoaplabProcessor extends Processor implements Serializable {
 	 */
 	public void getDescriptionText() throws ProcessorCreationException {
 		try {
-			Map info = (Map) Soap.callWebService(endpoint.toString(),
-					"getAnalysisType");
+			Map info = (Map) Soap.callWebService(endpoint.toString(), "getAnalysisType");
 			// Get the description element from the map
 			String description = (String) info.get("description");
 			if (description != null) {
 				setDescription(description);
 			}
 		} catch (ServiceException se) {
-			throw new ProcessorCreationException(
-					getName()
-							+ ": Unable to create a new call to connect to\n   soaplab, error was : "
-							+ se.getMessage());
+			throw new ProcessorCreationException(getName()
+					+ ": Unable to create a new call to connect to\n   soaplab, error was : " + se.getMessage());
 		} catch (RemoteException re) {
-			throw new ProcessorCreationException(
-					getName()
-							+ ": Unable to call the get description method\n   for XScufl processor "
-							+ getName() + "\nendpoint : " + endpoint.toString()
-							+ "\n   Remote exception message "
-							+ re.getMessage());
+			throw new ProcessorCreationException(getName()
+					+ ": Unable to call the get description method\n   for XScufl processor " + getName()
+					+ "\nendpoint : " + endpoint.toString() + "\n   Remote exception message " + re.getMessage());
 		}
 	}
 
@@ -241,20 +233,17 @@ public class SoaplabProcessor extends Processor implements Serializable {
 	 * and additionally for their syntactic types, as we might as well keep that
 	 * information while we have it.
 	 */
-	public void generatePorts() throws ProcessorCreationException,
-			PortCreationException, DuplicatePortNameException {
+	public void generatePorts() throws ProcessorCreationException, PortCreationException, DuplicatePortNameException {
 		// Wipe the existing port declarations
 		ports = new ArrayList();
 		try {
 			// Do web service type stuff[tm]
-			Map[] inputs = (Map[]) Soap.callWebService(endpoint.toString(),
-					"getInputSpec");
+			Map[] inputs = (Map[]) Soap.callWebService(endpoint.toString(), "getInputSpec");
 			// Iterate over the inputs
 			for (int i = 0; i < inputs.length; i++) {
 				Map input_spec = inputs[i];
 				String input_name = (String) input_spec.get("name");
-				String input_type = ((String) (input_spec.get("type")))
-						.toLowerCase();
+				String input_type = ((String) (input_spec.get("type"))).toLowerCase();
 				// Could get other properties such as defaults here
 				// but at the moment we've got nowhere to put them
 				// so we don't bother.
@@ -272,14 +261,12 @@ public class SoaplabProcessor extends Processor implements Serializable {
 			}
 
 			// Get outputs
-			Map[] results = (Map[]) Soap.callWebService(endpoint.toString(),
-					"getResultSpec");
+			Map[] results = (Map[]) Soap.callWebService(endpoint.toString(), "getResultSpec");
 			// Iterate over the outputs
 			for (int i = 0; i < results.length; i++) {
 				Map output_spec = results[i];
 				String output_name = (String) output_spec.get("name");
-				String output_type = ((String) (output_spec.get("type")))
-						.toLowerCase();
+				String output_type = ((String) (output_spec.get("type"))).toLowerCase();
 				// Check to see whether the output is either report or
 				// detailed_status, in
 				// which cases we ignore it, this is soaplab metadata rather
@@ -295,25 +282,18 @@ public class SoaplabProcessor extends Processor implements Serializable {
 					} else if (output_type.equals("byte[]")) {
 						new_port.setSyntacticType("'application/octet-stream'");
 					} else if (output_type.equals("byte[][]")) {
-						new_port
-								.setSyntacticType("l('application/octet-stream')");
+						new_port.setSyntacticType("l('application/octet-stream')");
 					}
 					this.addPort(new_port);
 				}
 			}
 
 		} catch (ServiceException se) {
-			throw new ProcessorCreationException(
-					getName()
-							+ ": Unable to create a new call to connect\n   to soaplab, error was : "
-							+ se.getMessage());
+			throw new ProcessorCreationException(getName()
+					+ ": Unable to create a new call to connect\n   to soaplab, error was : " + se.getMessage());
 		} catch (RemoteException re) {
-			throw new ProcessorCreationException(
-					getName()
-							+ ": Unable to call the get spec method for\n   endpoint : "
-							+ endpoint.toString()
-							+ "\n   Remote exception message "
-							+ re.getMessage());
+			throw new ProcessorCreationException(getName() + ": Unable to call the get spec method for\n   endpoint : "
+					+ endpoint.toString() + "\n   Remote exception message " + re.getMessage());
 		} catch (NullPointerException npe) {
 			// If we had a null pointer exception, go around again - this is a
 			// bug somewhere between axis and soaplab
@@ -329,6 +309,55 @@ public class SoaplabProcessor extends Processor implements Serializable {
 	 */
 	public URL getEndpoint() {
 		return endpoint;
+	}
+
+	public String getHTMLSummary(List<HTMLSummarisableProcessor> processors, Map<String, Processor> names) {
+		StringBuffer sb = new StringBuffer();
+		Map<String,Map<String,Set<String>>> soaplabLocations = new HashMap<String,Map<String,Set<String>>>();
+		for (HTMLSummarisableProcessor proc : processors) {
+			SoaplabProcessor processor = (SoaplabProcessor) proc;
+			String soaplabLocation = processor.getServicePath();
+			if (soaplabLocations.containsKey(soaplabLocation) == false) {
+				soaplabLocations.put(soaplabLocation, new HashMap<String,Set<String>>());
+			}
+			Map<String,Set<String>> nameToProcessorNames = soaplabLocations.get(soaplabLocation);
+			String appName = processor.getCategory() + "::<font color=\"purple\">" + processor.getAppName() + "</font>";
+			if (nameToProcessorNames.containsKey(appName) == false) {
+				nameToProcessorNames.put(appName, new HashSet<String>());
+			}
+			Set<String> processorNames = nameToProcessorNames.get(appName);
+			processorNames.add(WorkflowSummaryAsHTML.nameFor(names, processor));
+		}
+		for (Iterator j = soaplabLocations.keySet().iterator(); j.hasNext();) {
+			String location = (String) j.next();
+			Map<String,Set<String>> nameToProcessorName = soaplabLocations.get(location);
+			int rows = 2 + nameToProcessorName.size();
+			sb.append("<tr>");
+			sb.append("<td width=\"80\" valign=\"top\" rowspan=\"" + rows + "\" bgcolor=\"#faf9d2\">Soaplab</td>");
+			sb.append("<td colspan=\"2\" bgcolor=\"faf9d2\">Service rooted at <em>" + location + "</em></td>");
+			sb.append("</tr>");
+			sb.append("<tr><td bgcolor=\"#eeeedd\">App category and name</td><td bgcolor=\"#eeeedd\">Processors</td></tr>");
+			
+			for (Iterator k = nameToProcessorName.keySet().iterator(); k.hasNext();) {
+				String appName = (String) k.next();
+				Set<String> processorNames = nameToProcessorName.get(appName);
+				sb.append("<tr>");
+				sb.append("<td>" + appName + "</td>");
+				sb.append("<td>");
+				for (Iterator l = processorNames.iterator(); l.hasNext();) {
+					sb.append((String) l.next());
+					if (l.hasNext()) {
+						sb.append(", ");
+					}
+				}
+				sb.append("</td></tr>");
+			}
+		}
+		return sb.toString();
+	}
+
+	public int htmlTablePlacement() {
+		return 2;
 	}
 
 }

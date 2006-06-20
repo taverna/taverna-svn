@@ -56,7 +56,7 @@ import org.jdom.Element;
  * @author Tom Oinn
  */
 public class ProcessorHelper {
-	private static Logger LOG = Logger.getLogger(ProcessorHelper.class);
+	private static Logger logger = Logger.getLogger(ProcessorHelper.class);
 
 	static Map coloursForTagName = new HashMap();
 
@@ -97,7 +97,7 @@ public class ProcessorHelper {
 			tavernaProperties = new Properties();
 			while (en.hasMoreElements()) {
 				URL resourceURL = (URL) en.nextElement();
-				LOG.info("Loading resources from : " + resourceURL.toString());
+				logger.info("Loading resources from : " + resourceURL.toString());
 				tavernaProperties.load(resourceURL.openStream());
 			}
 			// Should now have a populated properties list, set up the various
@@ -106,9 +106,9 @@ public class ProcessorHelper {
 			for (Iterator i = tavernaProperties.keySet().iterator(); i
 					.hasNext();) {
 				String key = (String) i.next();
-				LOG.debug("key: " + key);
+				logger.debug("key: " + key);
 				String value = tavernaProperties.getProperty(key);
-				LOG.debug("\t value: " + value);
+				logger.debug("\t value: " + value);
 				String[] keyElements = key.split("\\.");
 				// Detect the processor keys
 				if (keyElements.length == 4
@@ -116,7 +116,7 @@ public class ProcessorHelper {
 					String tagName = keyElements[2];
 					// If this is the class name...
 					// Form : taverna.processor.<TAGNAME>.class = <CLASSNAME>
-					LOG.debug("\ttag name: " + tagName);
+					logger.debug("\ttag name: " + tagName);
 					if (keyElements[3].equals("class")) {
 						// Store the class name <-> tag name mappings
 						tagNameForClassName.put(value, tagName);
@@ -188,9 +188,9 @@ public class ProcessorHelper {
 				}
 			}
 
-			LOG.debug("Populated xmlHanderForTagName: " + xmlHandlerForTagName);
+			logger.debug("Populated xmlHanderForTagName: " + xmlHandlerForTagName);
 		} catch (Exception e) {
-			LOG.fatal("Error during initialisation for taverna properties!", e);
+			logger.fatal("Error during initialisation for taverna properties!", e);
 			// Don't exit, as this hides the stack trace etc!
 			// System.exit(1);
 		}
@@ -253,7 +253,7 @@ public class ProcessorHelper {
 					.newInstance(new Object[] { p });
 			return taskWorker;
 		} catch (Exception ex) {
-			LOG.error("Could not get task worker " + taskClassName, ex);
+			logger.error("Could not get task worker " + taskClassName, ex);
 			return null;
 		}
 	}
@@ -429,7 +429,7 @@ public class ProcessorHelper {
 			ScuflModel model, String name) throws ProcessorCreationException,
 			DuplicateProcessorNameException, XScuflFormatException {
 		// Get the first available handler for this processor and use it to load
-		LOG.debug("Attempting to load processor for: " + processorNode);
+		logger.debug("Attempting to load processor for: " + processorNode);
 		Processor loadedProcessor = null;
 		for (Iterator i = processorNode.getChildren().iterator(); i.hasNext()
 				&& loadedProcessor == null;) {
@@ -439,7 +439,7 @@ public class ProcessorHelper {
 			if (xh == null) {
 				continue;
 			}
-			LOG.debug("Possible help: " + candidateElement + " " + elementName
+			logger.debug("Possible help: " + candidateElement + " " + elementName
 					+ " -> " + xh);
 			// mrp: ouch - should we not be using candidateElement in place
 			// of processorNode?
@@ -477,7 +477,7 @@ public class ProcessorHelper {
 			}
 		}
 		if (loadedProcessor == null) {
-			LOG.warn("No processor found for element: " + processorNode);
+			logger.warn("No processor found for element: " + processorNode);
 			return null;
 		}
 

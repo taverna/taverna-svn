@@ -9,6 +9,8 @@ package org.biomoby.client.taverna.plugin;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 
 import org.biomoby.client.CentralImpl;
@@ -29,6 +31,8 @@ import org.embl.ebi.escience.scufl.Processor;
 import org.embl.ebi.escience.scufl.ProcessorCreationException;
 import org.embl.ebi.escience.scufl.ScuflModel;
 import org.embl.ebi.escience.scufl.ScuflModelEvent;
+import org.embl.ebi.escience.scufl.view.WorkflowSummaryAsHTML;
+import org.embl.ebi.escience.scuflworkers.HTMLSummarisableProcessor;
 
 /**
  * A processor based on the Biomoby compliant web services. This processor
@@ -36,10 +40,10 @@ import org.embl.ebi.escience.scufl.ScuflModelEvent;
  * extant ports at creation time.
  * <p>
  * 
- * @version $Id: BiomobyProcessor.java,v 1.6 2006-06-08 09:24:00 sowen70 Exp $
+ * @version $Id: BiomobyProcessor.java,v 1.7 2006-06-20 15:21:47 sowen70 Exp $
  * @author Martin Senger
  */
-public class BiomobyProcessor extends Processor implements java.io.Serializable {
+public class BiomobyProcessor extends Processor implements java.io.Serializable, HTMLSummarisableProcessor {
 
 	private static final long serialVersionUID = 1L;
 
@@ -56,16 +60,15 @@ public class BiomobyProcessor extends Processor implements java.io.Serializable 
 	private String authorityName = null;
 
 	private boolean containSecondary = false;
-	
+
 	private ParametersTable parameterTable = null;
-	
+
 	/**
 	 * Construct a new processor with the given model and name, delegates to the
 	 * superclass.
 	 */
-	public BiomobyProcessor(ScuflModel model, String processorName, String authorityName,
-			String serviceName, String mobyEndpoint) throws ProcessorCreationException,
-			DuplicateProcessorNameException {
+	public BiomobyProcessor(ScuflModel model, String processorName, String authorityName, String serviceName,
+			String mobyEndpoint) throws ProcessorCreationException, DuplicateProcessorNameException {
 		super(model, processorName);
 		this.mobyEndpoint = mobyEndpoint;
 		this.serviceName = serviceName;
@@ -95,8 +98,8 @@ public class BiomobyProcessor extends Processor implements java.io.Serializable 
 	 * Construct a new processor with the given model and name, delegates to the
 	 * superclass.
 	 */
-	public BiomobyProcessor(ScuflModel model, String processorName, MobyService service,
-			String mobyEndpoint) throws ProcessorCreationException, DuplicateProcessorNameException {
+	public BiomobyProcessor(ScuflModel model, String processorName, MobyService service, String mobyEndpoint)
+			throws ProcessorCreationException, DuplicateProcessorNameException {
 		super(model, processorName);
 		this.mobyEndpoint = mobyEndpoint;
 		this.serviceName = service.getName();
@@ -132,8 +135,8 @@ public class BiomobyProcessor extends Processor implements java.io.Serializable 
 			try {
 				setEndpoint(serviceEndpoint);
 			} catch (MalformedURLException e2) {
-				throw new ProcessorCreationException(
-						formatError("Service has malformed endpoint: '" + serviceEndpoint + "'."));
+				throw new ProcessorCreationException(formatError("Service has malformed endpoint: '" + serviceEndpoint
+						+ "'."));
 			}
 
 		} catch (Exception e) {
@@ -176,8 +179,7 @@ public class BiomobyProcessor extends Processor implements java.io.Serializable 
 		URL new_endpoint = new URL(specifier);
 		if (this.endpoint != null) {
 			if (!this.endpoint.equals(new_endpoint)) {
-				fireModelEvent(new ScuflModelEvent(this, "Service endpoint changed to '"
-						+ specifier + "'"));
+				fireModelEvent(new ScuflModelEvent(this, "Service endpoint changed to '" + specifier + "'"));
 
 			} else {
 				// Do nothing if the endpoint was the same as before
@@ -193,11 +195,9 @@ public class BiomobyProcessor extends Processor implements java.io.Serializable 
 			generatePorts();
 			getDescriptionText();
 		} catch (PortCreationException e) {
-			throw new ProcessorCreationException(formatError("When trying to create ports: "
-					+ e.getMessage()));
+			throw new ProcessorCreationException(formatError("When trying to create ports: " + e.getMessage()));
 		} catch (DuplicatePortNameException e) {
-			throw new ProcessorCreationException(formatError("When trying to create ports: "
-					+ e.getMessage()));
+			throw new ProcessorCreationException(formatError("When trying to create ports: " + e.getMessage()));
 		}
 	}
 
@@ -214,8 +214,7 @@ public class BiomobyProcessor extends Processor implements java.io.Serializable 
 	 * Use the endpoint data to create new ports and attach them to the
 	 * processor.
 	 */
-	public void generatePorts() throws ProcessorCreationException, PortCreationException,
-			DuplicatePortNameException {
+	public void generatePorts() throws ProcessorCreationException, PortCreationException, DuplicatePortNameException {
 
 		// Wipe the existing port declarations
 		ports = new ArrayList();
@@ -247,8 +246,8 @@ public class BiomobyProcessor extends Processor implements java.io.Serializable 
 				MobyPrimaryDataSimple[] simples = collection.getElements();
 				for (int y = 0; y < simples.length; y++) {
 					// collection port
-					Port inPort = new InputPort(this, simples[y].getDataType().getName()
-							+ "(Collection - '" + collectionName + "')");
+					Port inPort = new InputPort(this, simples[y].getDataType().getName() + "(Collection - '"
+							+ collectionName + "')");
 					inPort.setSyntacticType("l('text/xml')");
 					this.addPort(inPort);
 
@@ -296,13 +295,13 @@ public class BiomobyProcessor extends Processor implements java.io.Serializable 
 					collectionName = "MobyCollection";
 				MobyPrimaryDataSimple[] simples = collection.getElements();
 				for (int y = 0; y < simples.length; y++) {
-					Port outPort = new OutputPort(this, simples[y].getDataType().getName()
-							+ "(Collection - '" + collectionName + "')");
+					Port outPort = new OutputPort(this, simples[y].getDataType().getName() + "(Collection - '"
+							+ collectionName + "')");
 					outPort.setSyntacticType("l('text/xml')");
 					this.addPort(outPort);
 
-					outPort = new OutputPort(this, simples[y].getDataType().getName()
-							+ "(Collection - '" + collectionName + "' As Simples)");
+					outPort = new OutputPort(this, simples[y].getDataType().getName() + "(Collection - '"
+							+ collectionName + "' As Simples)");
 					outPort.setSyntacticType("l('text/xml')");
 					this.addPort(outPort);
 				}
@@ -345,8 +344,8 @@ public class BiomobyProcessor extends Processor implements java.io.Serializable 
 		// Removed references to the authority, some errors
 		// were causing it to be null which in turn threw
 		// a NPE from here, breaking Taverna's error handlers
-		return ("Problems with service '" + serviceName + "' provided by authority '"
-				+ authorityName + "'\nfrom Moby registry at " + mobyEndpoint + ":\n\n" + msg);
+		return ("Problems with service '" + serviceName + "' provided by authority '" + authorityName
+				+ "'\nfrom Moby registry at " + mobyEndpoint + ":\n\n" + msg);
 	}
 
 	/**
@@ -361,12 +360,29 @@ public class BiomobyProcessor extends Processor implements java.io.Serializable 
 		return containSecondary;
 	}
 
-
 	public ParametersTable getParameterTable() {
-		//System.out.println(new XMLOutputter(Format.getPrettyFormat()).outputString(parameterTable.toXML()[0]));
 		return parameterTable;
 	}
+
 	public void setParameterTable(ParametersTable table) {
 		parameterTable = table;
 	}
+
+	public String getHTMLSummary(List<HTMLSummarisableProcessor> processors, Map<String, Processor> names) {
+		StringBuffer sb = new StringBuffer();
+		for (HTMLSummarisableProcessor proc : processors) {
+			BiomobyProcessor bp = (BiomobyProcessor) proc;
+			sb.append("<tr>");
+			sb.append("<td bgcolor=\"#ffd200\">Biomoby</td>");
+			sb.append("<td><font color=\"purple\">" + bp.getServiceName() + "</font>&nbsp;in&nbsp;"
+					+ bp.getEndpoint().getFile() + "</td>");
+			sb.append("<td>" + WorkflowSummaryAsHTML.nameFor(names, bp) + "</td></tr>");
+		}
+		return sb.toString();
+	}
+
+	public int htmlTablePlacement() {
+		return 4;
+	}
+
 }

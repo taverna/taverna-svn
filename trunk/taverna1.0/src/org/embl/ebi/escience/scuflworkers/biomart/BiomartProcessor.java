@@ -25,10 +25,10 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: BiomartProcessor.java,v $
- * Revision           $Revision: 1.21 $
+ * Revision           $Revision: 1.22 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-05-30 16:43:33 $
- *               by   $Author: davidwithers $
+ * Last modified on   $Date: 2006-06-20 15:21:47 $
+ *               by   $Author: sowen70 $
  * Created on 17-Mar-2006
  *****************************************************************/
 package org.embl.ebi.escience.scuflworkers.biomart;
@@ -36,6 +36,7 @@ package org.embl.ebi.escience.scuflworkers.biomart;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
@@ -54,25 +55,27 @@ import org.embl.ebi.escience.scufl.Processor;
 import org.embl.ebi.escience.scufl.ProcessorCreationException;
 import org.embl.ebi.escience.scufl.ScuflModel;
 import org.embl.ebi.escience.scufl.UnknownPortException;
+import org.embl.ebi.escience.scufl.view.WorkflowSummaryAsHTML;
+import org.embl.ebi.escience.scuflworkers.HTMLSummarisableProcessor;
 
 /**
  * 
  * @author Tom Oinn
  * @author David Withers
+ * @author Stuart Owen
  */
-public class BiomartProcessor extends Processor {
+public class BiomartProcessor extends Processor implements HTMLSummarisableProcessor {
 	private MartQuery query;
 
 	private QueryListener queryListener;
 
 	/**
-     * @param model
-     * @param name
-     * @throws ProcessorCreationException
-     * @throws DuplicateProcessorNameException
-     */
-	public BiomartProcessor(ScuflModel model, String processorName,
-			MartQuery query) throws ProcessorCreationException,
+	 * @param model
+	 * @param name
+	 * @throws ProcessorCreationException
+	 * @throws DuplicateProcessorNameException
+	 */
+	public BiomartProcessor(ScuflModel model, String processorName, MartQuery query) throws ProcessorCreationException,
 			DuplicateProcessorNameException {
 		super(model, processorName);
 		setDescription(query.getMartDataset().getDisplayName());
@@ -83,8 +86,7 @@ public class BiomartProcessor extends Processor {
 			buildOutputPortsFromQuery();
 			buildInputPortsFromQuery();
 		} catch (Exception ex) {
-			ProcessorCreationException pce = new ProcessorCreationException(
-					"Can't build output ports");
+			ProcessorCreationException pce = new ProcessorCreationException("Can't build output ports");
 			pce.initCause(ex);
 			throw pce;
 		}
@@ -136,10 +138,10 @@ public class BiomartProcessor extends Processor {
 	}
 
 	/*
-     * (non-Javadoc)
-     * 
-     * @see org.embl.ebi.escience.scufl.Processor#getProperties()
-     */
+	 * (non-Javadoc)
+	 * 
+	 * @see org.embl.ebi.escience.scufl.Processor#getProperties()
+	 */
 	public Properties getProperties() {
 		return new Properties();
 	}
@@ -152,10 +154,9 @@ public class BiomartProcessor extends Processor {
 		fireModelEvent(new MinorScuflModelEvent(this, "Filter values changed"));
 	}
 
-	private void buildInputPortsFromQuery() throws PortCreationException,
-			DuplicatePortNameException {
+	private void buildInputPortsFromQuery() throws PortCreationException, DuplicatePortNameException {
 		List filters = query.getQuery().getFilters();
-		Set filterNames = new HashSet();
+		Set<String> filterNames = new HashSet<String>();
 		// Create new input ports corresponding to filters
 		for (Iterator iter = filters.iterator(); iter.hasNext();) {
 			Filter filter = (Filter) iter.next();
@@ -184,10 +185,9 @@ public class BiomartProcessor extends Processor {
 		}
 	}
 
-	private void buildOutputPortsFromQuery() throws PortCreationException,
-			DuplicatePortNameException {
+	private void buildOutputPortsFromQuery() throws PortCreationException, DuplicatePortNameException {
 		List attributes = query.getQuery().getAttributes();
-		Set attributeNames = new HashSet();
+		Set<String> attributeNames = new HashSet<String>();
 		// Create new output ports corresponding to attributes
 		for (Iterator iter = attributes.iterator(); iter.hasNext();) {
 			Attribute attribute = (Attribute) iter.next();
@@ -210,6 +210,24 @@ public class BiomartProcessor extends Processor {
 				removePort(outputPort);
 			}
 		}
+	}
+
+	public String getHTMLSummary(List<HTMLSummarisableProcessor> processors, Map<String, Processor> names) {
+		StringBuffer sb = new StringBuffer();
+		for (HTMLSummarisableProcessor p : processors) {
+			sb.append("<tr><td bgcolor=\"d1eeed\" rowspan=\"2\">Biomart</td>");
+			BiomartProcessor bp = (BiomartProcessor) p;
+			sb.append("<td bgcolor=\"d1eeed\">Dataset Name</td>");
+			sb.append("<td bgcolor=\"d1eeed\">Processor</td>");
+			sb.append("</tr>");
+			sb.append("<tr><td>" + bp.getQuery().getMartService().getLocation() + "</td>");
+			sb.append("<td>" + WorkflowSummaryAsHTML.nameFor(names, bp) + "</td></tr>");
+		}
+		return sb.toString();
+	}
+
+	public int htmlTablePlacement() {
+		return 5;
 	}
 
 }

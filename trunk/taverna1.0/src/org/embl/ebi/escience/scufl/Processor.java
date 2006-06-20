@@ -138,7 +138,7 @@ public abstract class Processor implements Serializable, IProcessor {
 	 * default.
 	 */
 	public String getResourceHost() {
-		return Processor.ENACTOR;
+		return IProcessor.ENACTOR;
 	}
 
 	/**
@@ -498,9 +498,7 @@ public abstract class Processor implements Serializable, IProcessor {
 			}
 		}
 		this.model = model;
-		this.name = name;
-		// fireModelEvent(new ScuflModelEvent(this, "New processor created
-		// '"+name+"'"));
+		this.name = name;		
 	}
 
 	/**
@@ -828,6 +826,5 @@ public abstract class Processor implements Serializable, IProcessor {
 		} else {
 			return false;
 		}
-	}
-
+	}		
 }

@@ -28,7 +28,7 @@ import org.embl.ebi.escience.scuflui.ScuflIcons;
  * COMMENT
  * 
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover</a>
- * @version $Revision: 1.5 $
+ * @version $Revision: 1.6 $
  */
 public class LoadWorkflowAction extends ScuflModelAction {
 	final JFileChooser fc = new JFileChooser();
@@ -153,7 +153,7 @@ public class LoadWorkflowAction extends ScuflModelAction {
 						// todo: does the update need running in the AWT thread?
 						// perhaps this thread should be spawned in populate?
 						XScuflParser.populate(file.toURL().openStream(), model,
-								null);
+								null);						
 					} catch (Exception ex) {
 						JOptionPane
 								.showMessageDialog(
