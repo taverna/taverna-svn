@@ -77,6 +77,8 @@ class Root(controllers.RootController):
                         report=executed.report,
                         workflow=workflow_test.workflow.data,
                         inputdoc=ET.tostring(input_doc),
+                        taverna="1.4",
+                        java="1.5",
                         outputdoc=executed.outputdoc)
         raise redirect("/test_run/%d" % test_run.id)
 
@@ -188,9 +190,13 @@ class Root(controllers.RootController):
         id = int(id)
         workflow = Workflow.get(id)
         scufl = Scufl(workflow.data)
+        match_types = ["exact", "ignore", "regex"]
+    
         return dict(id=None, workflow_id=id, name=workflow.name,
                     description=workflow.description, scufl=scufl,
                     workflow_test=None, sources={},
+                    match_types = match_types,
+                    out_types = {},
                     sinks={})
 
     @expose(template="repository.templates.edit_test")
@@ -202,9 +208,13 @@ class Root(controllers.RootController):
         scufl = Scufl(workflow.data)
         sources = dict((s.port, s.data) for s in workflow_test.inputs)
         sinks = dict((s.port, s.data) for s in workflow_test.outputs)
+        out_types = dict((s.port, s.type) for s in workflow_test.outputs)
+        match_types = ["exact", "ignore", "regex"]
         return dict(id=id, workflow_id=workflow.id, name=workflow.name,
                     description=workflow.description, scufl=scufl,
                     workflow_test=workflow_test,
+                    match_types=match_types,
+                    out_types=out_types,
                     sources=sources, sinks=sinks)
 
     @expose(template="repository.templates.test")
@@ -216,20 +226,50 @@ class Root(controllers.RootController):
     
     @expose()
     @identity.require(identity.has_permission("add_test"))
-    def new_test(self, workflow_id, submit, name="", **ports):
-        test = WorkflowTest(workflowID=int(workflow_id), name=name)
+    def new_test(self, workflow_id, submit, test_id=None, name="", **ports):
+        if test_id:
+            test = WorkflowTest.get(int(test_id))
+        else:
+            test = WorkflowTest(workflowID=int(workflow_id), name=name)
+        inputs = {}
+        outputs = {}
+        types = {}
+        
         for (port_name, port_data) in ports.items():
             if port_name.startswith("input_"):
                 # Strip up our input_ (could also be part of real port_name)
-                port_name = port_name[len("input_"):] 
-                port = WorkflowTestInput(workflow_test=test, port=port_name,
-                                         data=port_data)
+                port_name = port_name[len("input_"):]
+                inputs[port_name] = port_data 
             elif port_name.startswith("output_"):
                 # Strip up our input_ (could also be part of real port_name)
                 port_name = port_name[len("output_"):] 
-                port = WorkflowTestOutput(workflow_test=test, port=port_name,
-                                          type="MatchString", data=port_data)
+                outputs[port_name] = port_data
+            elif port_name.startswith("outtype_"):
+                port_name = port_name[len("outtype_"):]
+                types[port_name] = port_data
+        
+        turbogears.database.commit_all()
+        for input in test.inputs:
+            input.destroySelf()
+        turbogears.database.commit_all()    
+        for output in test.outputs:
+            output.destroySelf()
+        turbogears.database.commit_all()        
+
+        for name,data in inputs.items():
+            WorkflowTestInput(workflow_test=test, port=name,
+                              data=data)
             
+        for name,data in outputs.items():
+            type = types.get(name)
+            if not type: 
+                if data:
+                    type = "exact"
+                else:
+                    type = "ignore"     
+            WorkflowTestOutput(workflow_test=test, port=name,
+                                type=type, data=data)        
+        turbogears.database.commit_all()     
         raise redirect("/test/%d" % test.id)
         
 
@@ -258,10 +298,29 @@ class Root(controllers.RootController):
 
     @expose()
     @identity.require(identity.has_permission("delete"))
-    def del_workflow(self, id):
+    def del_test(self, id):
         id = int(id)
         #workflow = Workflow.get(int(id))
-        Workflow.delete(id)
+        test = WorkflowTest.get(id)
+        workflow = test.workflow
+        turbogears.database.commit_all()
+        for input in test.inputs:
+            input.destroySelf()
+        turbogears.database.commit_all()    
+        for output in test.outputs:
+            output.destroySelf()
+        turbogears.database.commit_all()        
+        test.destroySelf()
+        turbogears.database.commit_all()        
+        log.info("Deleted test %d", id)
+        raise redirect("/workflow/%d" % workflow.id)
+
+    @expose()
+    @identity.require(identity.has_permission("delete"))
+    def del_workflow(self, id):
+        id = int(id)
+        workflow = Workflow.get(id)
+        workflow.destroySelf()
         log.info("Deleted workflow %d", id)
         raise redirect("/")
 

@@ -66,19 +66,6 @@
             </ul>
         </div>
     </div>    
-    <div class="workflow tests" py:if="workflow.tests"> 
-        <h2>Defined tests</h2>
-        <ul>
-            <li py:for="test in workflow.tests">
-               $test.name 
-               <div class="actions">
-                    <a href="${tg.url('/run_test/%s' % id)}">Run test</a>
-                    <a href="${tg.url('/edit_test/%s' % id)}">View/edit test</a>
-                    <a href="${tg.url('/delete_test/%s' % id)}">Delete test</a>
-               </div>
-            </li>
-        </ul>   
-    </div>
 
     <div class="workflow actions">
         <a href="${tg.url('/download/%s' % id)}">Download</a>
@@ -86,6 +73,20 @@
         <a href="${tg.url('/del_workflow/%s' % id)}">Delete</a>
         <a href="${tg.url('/run/%s' % id)}">Run</a>
         <a href="${tg.url('/add_test/%s' % id)}">Add test</a>
+    </div>
+    <div class="workflow tests" py:if="workflow.tests"> 
+        <h2>Defined tests</h2>
+        <ul>
+            <li py:for="test in workflow.tests">
+               $test.name 
+               <div class="actions">
+                    <a href="${tg.url('/run_test/%s' % test.id)}">Run test</a>
+                    <a href="${tg.url('/test/%s' % test.id)}">View test</a>
+                    <a href="${tg.url('/edit_test/%s' % test.id)}">Edit test</a>
+                    <a href="${tg.url('/del_test/%s' % test.id)}">Delete test</a>
+               </div>
+            </li>
+        </ul>   
     </div>
 
 </body>

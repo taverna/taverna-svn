@@ -32,8 +32,9 @@
 
     <div class="workflow actions">
         <a href="${tg.url('/run_test/%s' % id)}">Run</a>
-        <a href="${tg.url('/add_test/%s' % id)}">Add test</a>
-        <a href="${tg.url('/workflow/%s' % id)}">Repository info</a>
+        <a href="${tg.url('/edit_test/%s' % id)}">Edit</a>
+         <a href="${tg.url('/del_test/%s' % id)}">Delete</a>
+        <a href="${tg.url('/workflow/%s' % workflow.id)}">View workflow</a>
     </div>
 
 </body>

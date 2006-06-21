@@ -6,7 +6,7 @@
     <meta content="text/html; charset=UTF-8" http-equiv="content-type" py:replace="''"/>
     <title py:replace="''">Your title goes here</title>
     <meta py:replace="item[:]"/>
-    <style type="text/css">
+    <style type="text/css"><!--
         #pageLogin
         {
             font-size: 10px;
@@ -27,7 +27,7 @@
             border-right: black solid 1px;
             margin-right: 1em;
         }
-        .actions a:hover {
+        .actions a:hover {   
             color: black;
             background: white;
         }
@@ -36,6 +36,7 @@
             padding-top: 1em;
             border-top: black solid 1px;
         }
+        -->
     </style>
 </head>
 

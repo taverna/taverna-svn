@@ -20,7 +20,8 @@
         <div class="workflow scufl input test">
             <h2>Workflow input values (sources)</h2>
                 <div py:for="name in scufl.sources">
-                    <label for="input_$name">$name:</label><br />
+                    <label for="input_$name"><strong>$name</strong></label><br />
+
                     <textarea name="input_$name" rows="6" cols="50"
                               py:content="sources.get(name, '')" />
                 </div>
@@ -28,7 +29,14 @@
         <div class="workflow scufl output test">
             <h2>Expected workflow outputs (sinks)</h2>
                 <div py:for="name in scufl.sinks">
-                    <label for="output_$name">$name:</label><br />
+                    <label for="output_$name"><strong>$name</strong></label>
+                     <label for="outtype_$name">matching </label>
+                    <select name="outtype_$name">                   
+                      <option py:for="type in match_types"
+                      	py:attrs="selected=(type==out_types.get(name, 'exact')) or None">
+                         $type
+                      </option>
+                    </select><br />
                     <textarea name="output_$name" rows="6" cols="50" 
                               py:content="sinks.get(name, '')" />
                 </div>
