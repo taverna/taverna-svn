@@ -19,9 +19,9 @@ public class SemanticMarkup implements Serializable {
 
 	private String semanticType = "";
 
-	private List mimeTypeList = new ArrayList();
+	protected List mimeTypeList = new ArrayList();
 
-	private Object subject = null;
+	protected Object subject = null;
 
 	/**
 	 * Create a new item of semantic markup for the Object specified. This
@@ -61,7 +61,6 @@ public class SemanticMarkup implements Serializable {
 	 */
 	public void setDescription(String theDescription) {
 		this.description = theDescription;
-		fireModelEvent();
 	}
 
 	/**
@@ -124,7 +123,6 @@ public class SemanticMarkup implements Serializable {
 	public void clearMIMETypes() {
 		synchronized (this.mimeTypeList) {
 			this.mimeTypeList.clear();
-			fireModelEvent();
 		}
 	}
 
@@ -151,7 +149,6 @@ public class SemanticMarkup implements Serializable {
 					}
 					if (!foundType) {
 						this.mimeTypeList.add(types[j]);
-						fireModelEvent();
 					}
 				}
 			}
@@ -168,7 +165,6 @@ public class SemanticMarkup implements Serializable {
 				}
 			}
 
-			fireModelEvent();
 		}
 	}
 
@@ -188,7 +184,6 @@ public class SemanticMarkup implements Serializable {
 		if (newSemanticType != null) {
 			this.semanticType = newSemanticType;
 		}
-		fireModelEvent();
 	}
 
 	/**
@@ -219,7 +214,6 @@ public class SemanticMarkup implements Serializable {
 		if (semanticTypeElement != null) {
 			this.semanticType = semanticTypeElement.getTextTrim();
 		}
-		fireModelEvent();
 	}
 
 	/**
@@ -275,17 +269,6 @@ public class SemanticMarkup implements Serializable {
 			semanticTypeElement.setText(this.semanticType);
 		}
 		return topElement;
-	}
-
-	/**
-	 * If the subject of this metadata is a port then fire events off when
-	 * things are changed, if not then tough, we don't know how to.
-	 */
-	void fireModelEvent() {
-		if (this.subject instanceof Port) {
-			((Port) this.subject).fireModelEvent(new ScuflModelEvent(this,
-					"Metadata change"));
-		}
 	}
 
 	public String toString() {

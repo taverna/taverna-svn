@@ -30,7 +30,7 @@ public abstract class Port implements Serializable {
 	public Port(Processor processor, String name)
 			throws DuplicatePortNameException, PortCreationException {
 		// Create a new metadata holder
-		metadata = new SemanticMarkup(this);
+		metadata = new PortSemanticMarkup(this);
 		// Check we have no nulls
 		if (processor == null) {
 			throw new PortCreationException(
