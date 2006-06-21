@@ -77,8 +77,8 @@ def add_workflow_test(workflow_dir):
         if output_ext not in (".txt", ".any", ".regex"):
             continue
         output_types = {
-            ".txt": "match_text",
-            ".regex": "match_regex",
+            ".txt": "exact",
+            ".regex": "regex",
             ".any": "ignore",
         }
         output_type = output_types[output_ext]

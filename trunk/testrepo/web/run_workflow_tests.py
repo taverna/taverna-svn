@@ -35,12 +35,6 @@ from repository.model import WorkflowTestRun, WorkflowTest
 from configobj import ConfigObj
 taverna_config = ConfigObj(os.path.join(base, "taverna.cfg"))
 
-CMD = ["java", "-Xms64m", "-Xmx64m", "-Djava.awt.headless=true",
-   "-Dtaverna.home=/local/stain/download/taverna-1.3.cvs.2005.05.19",
-   "-Dtaverna.path=/local/stain/repository/executer-1.3.1.jar",
-   "-Dtaverna.main=net.sf.taverna.tools.WorkflowExecuter",
-   "-jar", "/local/stain/repository/launcher-1.3.1.jar"]
-
 def java_cmd(taverna, java):
     cmd = []
     cmd.append(taverna_config["java"]["versions"][java])
@@ -56,18 +50,11 @@ def java_cmd(taverna, java):
             "false", "0", "no"):
         cmd.append("-Djava.awt.headless=true")
 
-    cmd.append("-Dtaverna.home=%s" %
-        taverna_config["taverna"]["versions"][taverna]["home"]) 
-
-    path = taverna_config["taverna"]["executer"]
-    if taverna_config["taverna"]["classpath"]:
-        path += ":%s" % taverna_config["taverna"]["classpath"]
-    cmd.append("-Dtaverna.path=%s" % path)
-
-    cmd.append("-Dtaverna.main=%s" % taverna_config["taverna"]["main"])
+    cmd.append("-Dtaverna.main=%s" %
+        taverna_config["taverna"]["versions"][taverna]["main"]) 
 
     cmd.append("-jar")
-    cmd.append(taverna_config["taverna"]["launcher"])
+    cmd.append(taverna_config["taverna"]["versions"][taverna]["jar"])
 
     return cmd
 

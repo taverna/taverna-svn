@@ -119,7 +119,7 @@ def annotate_run(run):
             add(r, ns.fails, ns.outputdoc)
             add(r, ns.fails, ns.output)
     
-    expected_outputs = dict((out.port, out.data) for out in test.outputs)
+    expected_outputs = dict((out.port, out) for out in test.outputs)
     expected_outports = set(expected_outputs.keys())
 
     if outputs is not None:
@@ -143,13 +143,29 @@ def annotate_run(run):
             add(r, ns.returned, p)
             expected = expected_outputs[port]
             real = outputs[port]
+            real_s = str(real_s).strip()
 
             ex_p  = RDF.Uri("%stest/%s/output/%s" % (URL_BASE, test.id, port))
-            if real.data == expected:
-                add(p, ns.match, ex_p)
+            if expected.type == "ignore":
+                continue
+            elif expected.type == "match":
+                if expected.data.strip() == real_s:
+                    add(p, ns.match, ex_p)
+                else:
+                    add(r, ns.fails, ns.output)
+                    add(p, ns.not_match, ex_p)
+            elif expected.type == "regex":
+                if re.search(expected.data.strip(),
+                    real_s,
+                    re.DOTALL|re.MULTILINE):
+                    add(p, ns.match, ex_p)
+                else:
+                    add(r, ns.fails, ns.output)
+                    add(p, ns.not_match, ex_p)
             else:
-                add(r, ns.fails, ns.output)
-                add(p, ns.not_match, ex_p)
+                raise "Unknown expected type %s" % expected.type
+
+
 
 
 def main():
