@@ -24,13 +24,12 @@ import org.embl.ebi.escience.scuflui.ScuflIcons;
 import org.embl.ebi.escience.scuflui.workbench.Scavenger;
 import org.embl.ebi.escience.scuflui.workbench.ScavengerTree;
 import org.embl.ebi.escience.scuflworkers.ScavengerHelper;
-import org.embl.ebi.escience.scuflworkers.ScavengerHelperSPI;
 
 /**
  * Create a new APIConsumerScavenger from a file dialog
  * @author Tom Oinn
  */
-public class APIConsumerScavengerHelper implements ScavengerHelper, ScavengerHelperSPI {
+public class APIConsumerScavengerHelper implements ScavengerHelper {
 
 	private static Logger logger = Logger.getLogger(APIConsumerScavengerHelper.class);
 	

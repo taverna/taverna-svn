@@ -21,7 +21,6 @@ import org.embl.ebi.escience.scuflui.workbench.Scavenger;
 import org.embl.ebi.escience.scuflui.workbench.ScavengerCreationException;
 import org.embl.ebi.escience.scuflui.workbench.ScavengerTree;
 import org.embl.ebi.escience.scuflworkers.ScavengerHelper;
-import org.embl.ebi.escience.scuflworkers.ScavengerHelperSPI;
 
 /**
  * Helper for handling WSDL scavengers.
@@ -29,7 +28,7 @@ import org.embl.ebi.escience.scuflworkers.ScavengerHelperSPI;
  * @author Tom Oinn
  * @author Stuart Owen
  */
-public class WSDLScavengerHelper implements ScavengerHelper, ScavengerHelperSPI {
+public class WSDLScavengerHelper implements ScavengerHelper {
 
 	private static Logger logger = Logger.getLogger(WSDLScavengerHelper.class);
 

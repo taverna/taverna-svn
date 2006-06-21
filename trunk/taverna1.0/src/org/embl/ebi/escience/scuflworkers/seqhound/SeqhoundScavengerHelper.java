@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: SeqhoundScavengerHelper.java,v $
- * Revision           $Revision: 1.1 $
+ * Revision           $Revision: 1.2 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-06-15 14:29:18 $
+ * Last modified on   $Date: 2006-06-21 15:23:41 $
  *               by   $Author: sowen70 $
  * Created on 15-Jun-2006
  *****************************************************************/
@@ -40,9 +40,8 @@ import org.apache.log4j.Logger;
 import org.embl.ebi.escience.scufl.ScuflModel;
 import org.embl.ebi.escience.scuflui.workbench.Scavenger;
 import org.embl.ebi.escience.scuflui.workbench.ScavengerCreationException;
-import org.embl.ebi.escience.scuflworkers.ScavengerHelperSPI;
 
-public class SeqhoundScavengerHelper implements ScavengerHelperSPI {
+public class SeqhoundScavengerHelper {
 
 	private static Logger logger = Logger.getLogger(SeqhoundScavengerHelper.class);
 

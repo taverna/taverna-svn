@@ -7,9 +7,13 @@ package org.embl.ebi.escience.scuflworkers.workflow;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.HashSet;
+import java.util.Set;
 
 import javax.swing.JOptionPane;
 
+import org.embl.ebi.escience.scufl.ScuflModel;
+import org.embl.ebi.escience.scuflui.workbench.Scavenger;
 import org.embl.ebi.escience.scuflui.workbench.ScavengerCreationException;
 import org.embl.ebi.escience.scuflui.workbench.ScavengerTree;
 import org.embl.ebi.escience.scuflworkers.ScavengerHelper;
@@ -51,5 +55,22 @@ public class WorkflowScavengerHelper implements ScavengerHelper {
 		 }
 	    };
     }
+    
+    /**
+     * This ScavengerHelper has no defaults
+     */
+	public Set<Scavenger> getDefaults() {
+		return new HashSet<Scavenger>();
+	}
+
+	/**
+	 * WorkflowScavengers are not extracted from the model, so this always returns an empty Set
+	 */
+	public Set<Scavenger> getFromModel(ScuflModel model) {
+		return new HashSet<Scavenger>();
+	}
+	
+	
+	
     
 }

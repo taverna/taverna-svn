@@ -6,7 +6,10 @@
 package org.embl.ebi.escience.scuflworkers;
 
 import java.awt.event.ActionListener;
+import java.util.Set;
 
+import org.embl.ebi.escience.scufl.ScuflModel;
+import org.embl.ebi.escience.scuflui.workbench.Scavenger;
 import org.embl.ebi.escience.scuflui.workbench.ScavengerTree;
 
 /**
@@ -28,6 +31,20 @@ public interface ScavengerHelper {
 	 * Get the text for this scavenger creator, so something like 'Create new
 	 * WSDL scavenger' or similar
 	 */
-	public String getScavengerDescription();		
+	public String getScavengerDescription();	
+	
+	
+	/**
+	 * Defines the default scavengers in the service panel
+	 * @return
+	 */
+	public Set <Scavenger> getDefaults();
+	
+	/**
+	 * Extracts the scavengers from a ScuflModel for adding to the service panel
+	 * @param model
+	 * @return
+	 */
+	public Set <Scavenger> getFromModel(ScuflModel model);
 
 }

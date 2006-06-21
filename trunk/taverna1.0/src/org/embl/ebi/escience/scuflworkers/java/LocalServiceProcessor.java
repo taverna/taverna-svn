@@ -39,7 +39,7 @@ public class LocalServiceProcessor extends Processor {
 		return this.workerClassName;
 	}
 
-	protected LocalWorker getWorker() {
+	public LocalWorker getWorker() {
 		return this.theImplementation;
 	}
 

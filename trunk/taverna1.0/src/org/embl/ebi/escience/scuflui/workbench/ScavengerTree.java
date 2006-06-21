@@ -44,8 +44,7 @@ import org.embl.ebi.escience.scuflui.dnd.ProcessorSpecFragment;
 import org.embl.ebi.escience.scuflui.dnd.SpecFragmentTransferable;
 import org.embl.ebi.escience.scuflworkers.ProcessorFactory;
 import org.embl.ebi.escience.scuflworkers.ProcessorHelper;
-import org.embl.ebi.escience.scuflworkers.ScavengerHelperFactory;
-import org.embl.ebi.escience.scuflworkers.ScavengerHelperSPI;
+import org.embl.ebi.escience.scuflworkers.ScavengerHelper;
 import org.jdom.Attribute;
 import org.jdom.Element;
 import org.jdom.output.XMLOutputter;
@@ -286,8 +285,8 @@ public class ScavengerTree extends ExtendedJTree implements ScuflUIComponent, Dr
 					}
 				}
 
-				Set<ScavengerHelperSPI> helpers = ScavengerHelperFactory.instance().getHelpers();
-				for (ScavengerHelperSPI helper : helpers) {
+				Set<ScavengerHelper> helpers = ProcessorHelper.getScavengerHelpers();
+				for (ScavengerHelper helper : helpers) {
 					for (Scavenger scavenger : helper.getDefaults()) {
 						scavengerTree.addScavenger(scavenger);
 					}
@@ -333,8 +332,8 @@ public class ScavengerTree extends ExtendedJTree implements ScuflUIComponent, Dr
 	private void addScavengersFromModel(ScuflModel theModel) throws ScavengerCreationException {
 		if (theModel != null) {
 
-			Set<ScavengerHelperSPI> helpers = ScavengerHelperFactory.instance().getHelpers();
-			for (ScavengerHelperSPI helper : helpers) {
+			Set<ScavengerHelper> helpers = ProcessorHelper.getScavengerHelpers();
+			for (ScavengerHelper helper : helpers) {
 				Set<Scavenger> scavengers = helper.getFromModel(theModel);
 				for (Scavenger scavenger : scavengers) {
 					addScavenger(scavenger);

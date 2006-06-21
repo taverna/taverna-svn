@@ -21,9 +21,6 @@ import org.embl.ebi.escience.scuflui.workbench.Scavenger;
 import org.embl.ebi.escience.scuflui.workbench.ScavengerCreationException;
 import org.embl.ebi.escience.scuflui.workbench.ScavengerTree;
 import org.embl.ebi.escience.scuflworkers.ScavengerHelper;
-import org.embl.ebi.escience.scuflworkers.ScavengerHelperSPI;
-
-// import java.lang.String;
 
 /**
  * Helper for handling Biomoby scavengers.
@@ -33,7 +30,7 @@ import org.embl.ebi.escience.scuflworkers.ScavengerHelperSPI;
  *          Exp $
  * @author Martin Senger
  */
-public class BiomobyScavengerHelper implements ScavengerHelper, ScavengerHelperSPI {
+public class BiomobyScavengerHelper implements ScavengerHelper {
 
 	private static Logger logger = Logger.getLogger(BiomobyScavengerHelper.class);
 

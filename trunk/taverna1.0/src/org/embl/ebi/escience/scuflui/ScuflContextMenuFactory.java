@@ -40,8 +40,8 @@ import org.embl.ebi.escience.scuflui.processoractions.ProcessorActionSPI;
 import org.embl.ebi.escience.scuflworkers.ProcessorEditor;
 import org.embl.ebi.escience.scuflworkers.ProcessorHelper;
 import org.embl.ebi.escience.scuflworkers.java.LocalServiceProcessor;
-import org.embl.ebi.escience.scuflworkers.java.XMLInputSplitter;
-import org.embl.ebi.escience.scuflworkers.java.XMLOutputSplitter;
+import org.embl.ebi.escience.scuflworkers.wsdl.XMLInputSplitter;
+import org.embl.ebi.escience.scuflworkers.wsdl.XMLOutputSplitter;
 
 /**
  * A static factory method to return an instance of JPopupMenu that is

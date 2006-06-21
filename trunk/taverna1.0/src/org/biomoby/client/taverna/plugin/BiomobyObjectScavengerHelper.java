@@ -7,12 +7,22 @@ package org.biomoby.client.taverna.plugin;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 import javax.swing.JOptionPane;
 
+import org.apache.log4j.Logger;
+import org.embl.ebi.escience.scufl.Processor;
+import org.embl.ebi.escience.scufl.ScuflModel;
+import org.embl.ebi.escience.scuflui.workbench.Scavenger;
 import org.embl.ebi.escience.scuflui.workbench.ScavengerCreationException;
 import org.embl.ebi.escience.scuflui.workbench.ScavengerTree;
 import org.embl.ebi.escience.scuflworkers.ScavengerHelper;
+import org.embl.ebi.escience.scuflworkers.wsdl.WSDLBasedProcessor;
+import org.embl.ebi.escience.scuflworkers.wsdl.WSDLBasedScavenger;
 
 // import java.lang.String;
 
@@ -21,6 +31,8 @@ import org.embl.ebi.escience.scuflworkers.ScavengerHelper;
  * @deprecated
  */
 public class BiomobyObjectScavengerHelper implements ScavengerHelper {
+	
+	private static Logger logger = Logger.getLogger(BiomobyObjectScavengerHelper.class);
 
     public String getScavengerDescription() {
         return "Add new Biomoby Object scavenger...";
@@ -50,5 +62,33 @@ public class BiomobyObjectScavengerHelper implements ScavengerHelper {
             }
         };
     }
+
+    /**
+     * This ScavengerHelper has no defaults
+     */
+	public Set<Scavenger> getDefaults() {
+		return new HashSet<Scavenger>();
+	}
+
+	public Set<Scavenger> getFromModel(ScuflModel model) {
+		Set<Scavenger> result = new HashSet<Scavenger>();
+		List<String> existingLocations = new ArrayList<String>();
+
+		Processor[] processors = model.getProcessorsOfType(BiomobyObjectProcessor.class);
+		for (Processor processor : processors) {
+			String loc = ((BiomobyObjectProcessor) processor).getMobyEndpoint();
+			if (!existingLocations.contains(loc)) {
+				existingLocations.add(loc);
+				try {
+					result.add(new BiomobyObjectScavenger(loc));
+				} catch (ScavengerCreationException e) {
+					logger.warn("Error creating BiomobyObjectScavenger", e);
+				}
+			}
+		}
+		return result;
+	}
+    
+    
 
 }

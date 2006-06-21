@@ -58,27 +58,29 @@ import org.jdom.Element;
 public class ProcessorHelper {
 	private static Logger logger = Logger.getLogger(ProcessorHelper.class);
 
-	static Map coloursForTagName = new HashMap();
+	private static Map coloursForTagName = new HashMap();
 
-	static Map tagNameForClassName = new HashMap();
+	private static Map tagNameForClassName = new HashMap();
 
-	static Map classNameForTagName = new HashMap();
+	private static Map classNameForTagName = new HashMap();
 
-	static Map iconForTagName = null;
+	private static Map iconForTagName = null;
+	
+	private static Set<ScavengerHelper>scavengerHelpers = new HashSet<ScavengerHelper>();
 
-	static Map taskClassForTagName = new HashMap();
+	private static Map taskClassForTagName = new HashMap();
 
-	static Map xmlHandlerForTagName = new HashMap();
+	private static Map xmlHandlerForTagName = new HashMap();
 
-	static Map tagNameForScavenger = new HashMap();
+	private static Map tagNameForScavenger = new HashMap();
 
-	static Map editorForTagName = new HashMap();
+	private static Map editorForTagName = new HashMap();
 
-	static Set simpleScavengers = new HashSet();
+	private static Set simpleScavengers = new HashSet();
 
-	static Properties tavernaProperties = null;
+	private static Properties tavernaProperties = null;
 
-	static ImageIcon unknownProcessorIcon;
+	private static ImageIcon unknownProcessorIcon;
 
 	static {
 		try {
@@ -182,6 +184,7 @@ public class ProcessorHelper {
 					if (o instanceof ScavengerHelper) {
 						tagNameForScavenger.put(scavengerClassName,
 								scavengerTagName);
+						scavengerHelpers.add((ScavengerHelper)o);
 					} else if (o instanceof Scavenger) {
 						simpleScavengers.add(o);
 					}
@@ -267,6 +270,13 @@ public class ProcessorHelper {
 		return (String) tagNameForClassName.get(className);
 	}
 
+	/**
+	 * @return a set of instantiated ScavengerHelper classes
+	 */
+	public static Set<ScavengerHelper>getScavengerHelpers() {
+		return scavengerHelpers;
+	}
+	
 	/**
 	 * Given a tag name, return the in place editor for the processor
 	 */
@@ -525,4 +535,5 @@ public class ProcessorHelper {
 
 		return loadedProcessor;
 	}
+		
 }

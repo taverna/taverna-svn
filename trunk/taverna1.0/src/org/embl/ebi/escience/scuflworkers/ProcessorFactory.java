@@ -77,8 +77,7 @@ public abstract class ProcessorFactory {
 		// tag and thence XML handler implementation
 		String tagName = ProcessorHelper
 				.getTagNameForClassName(getProcessorClass().getName());
-		XMLHandler xh = (XMLHandler) ProcessorHelper.xmlHandlerForTagName
-				.get(tagName);
+		XMLHandler xh = (XMLHandler) ProcessorHelper.getXMLHandlerForTagName(tagName);				
 		return xh.elementForFactory(this);
 	}
 

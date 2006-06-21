@@ -7,9 +7,17 @@ package org.embl.ebi.escience.scuflworkers.rdfgenerator;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 import javax.swing.JOptionPane;
 
+import org.apache.log4j.Logger;
+import org.embl.ebi.escience.scufl.Processor;
+import org.embl.ebi.escience.scufl.ScuflModel;
+import org.embl.ebi.escience.scuflui.workbench.Scavenger;
 import org.embl.ebi.escience.scuflui.workbench.ScavengerCreationException;
 import org.embl.ebi.escience.scuflui.workbench.ScavengerTree;
 import org.embl.ebi.escience.scuflworkers.ScavengerHelper;
@@ -21,6 +29,8 @@ import org.embl.ebi.escience.scuflworkers.ScavengerHelper;
  * @author Tom Oinn
  */
 public class RDFGeneratorScavengerHelper implements ScavengerHelper {
+	
+	private static Logger logger = Logger.getLogger(RDFGeneratorScavengerHelper.class);
 
     public String getScavengerDescription() {
 	return "Add new RDF Generator scavenger...";
@@ -42,5 +52,26 @@ public class RDFGeneratorScavengerHelper implements ScavengerHelper {
 		}
 	    };
     }
+    
+    /**
+     * This ScavengerHelper has no defaults
+     */
+	public Set<Scavenger> getDefaults() {
+		return new HashSet<Scavenger>();
+	}
+
+	public Set<Scavenger> getFromModel(ScuflModel model) {
+		Set<Scavenger> result = new HashSet<Scavenger>();		
+
+		Processor[] processors = model.getProcessorsOfType(RDFGeneratorProcessor.class);
+		if (processors.length>0) {
+			try {
+				result.add(new RDFGeneratorScavenger());
+			} catch (ScavengerCreationException e) {
+				logger.warn("Error creating RDFGeneratorScavenger", e);
+			}
+		}
+		return result;
+	}
     
 }

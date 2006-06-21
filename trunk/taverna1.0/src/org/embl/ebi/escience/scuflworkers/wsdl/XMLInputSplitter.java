@@ -1,4 +1,4 @@
-package org.embl.ebi.escience.scuflworkers.java;
+package org.embl.ebi.escience.scuflworkers.wsdl;
 
 import java.io.IOException;
 import java.io.StringReader;
@@ -11,7 +11,9 @@ import org.apache.log4j.Logger;
 import org.embl.ebi.escience.baclava.DataThing;
 import org.embl.ebi.escience.baclava.factory.DataThingFactory;
 import org.embl.ebi.escience.scufl.InputPort;
-import org.embl.ebi.escience.scuflworkers.wsdl.WSDLBasedProcessor;
+import org.embl.ebi.escience.scuflworkers.java.LocalServiceProcessor;
+import org.embl.ebi.escience.scuflworkers.java.LocalWorker;
+import org.embl.ebi.escience.scuflworkers.java.XMLExtensible;
 import org.embl.ebi.escience.scuflworkers.wsdl.parser.ArrayTypeDescriptor;
 import org.embl.ebi.escience.scuflworkers.wsdl.parser.ComplexTypeDescriptor;
 import org.embl.ebi.escience.scuflworkers.wsdl.parser.TypeDescriptor;

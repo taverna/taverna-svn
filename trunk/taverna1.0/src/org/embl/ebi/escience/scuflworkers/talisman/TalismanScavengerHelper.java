@@ -21,14 +21,13 @@ import org.embl.ebi.escience.scuflui.workbench.Scavenger;
 import org.embl.ebi.escience.scuflui.workbench.ScavengerCreationException;
 import org.embl.ebi.escience.scuflui.workbench.ScavengerTree;
 import org.embl.ebi.escience.scuflworkers.ScavengerHelper;
-import org.embl.ebi.escience.scuflworkers.ScavengerHelperSPI;
 
 /**
  * Helper for handling Talisman scavengers.
  * 
  * @author Tom Oinn
  */
-public class TalismanScavengerHelper implements ScavengerHelper, ScavengerHelperSPI {
+public class TalismanScavengerHelper implements ScavengerHelper {
 
 	private static Logger logger = Logger.getLogger(TalismanScavengerHelper.class);
 

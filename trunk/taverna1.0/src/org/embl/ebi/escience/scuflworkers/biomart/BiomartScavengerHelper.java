@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: BiomartScavengerHelper.java,v $
- * Revision           $Revision: 1.9 $
+ * Revision           $Revision: 1.10 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-06-15 14:29:19 $
+ * Last modified on   $Date: 2006-06-21 15:23:42 $
  *               by   $Author: sowen70 $
  * Created on 17-Mar-2006
  *****************************************************************/
@@ -35,28 +35,24 @@ package org.embl.ebi.escience.scuflworkers.biomart;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import javax.swing.JOptionPane;
 
 import org.apache.log4j.Logger;
-import org.embl.ebi.escience.scufl.Processor;
 import org.embl.ebi.escience.scufl.ScuflModel;
 import org.embl.ebi.escience.scuflui.workbench.Scavenger;
 import org.embl.ebi.escience.scuflui.workbench.ScavengerCreationException;
 import org.embl.ebi.escience.scuflui.workbench.ScavengerTree;
 import org.embl.ebi.escience.scuflworkers.ScavengerHelper;
-import org.embl.ebi.escience.scuflworkers.ScavengerHelperSPI;
 
 /**
  * Helper for creating Biomart scavengers
  * 
  * @author David Withers
  */
-public class BiomartScavengerHelper implements ScavengerHelper, ScavengerHelperSPI {
+public class BiomartScavengerHelper implements ScavengerHelper {
 
 	private static Logger logger = Logger.getLogger(BiomartScavengerHelper.class);
 	

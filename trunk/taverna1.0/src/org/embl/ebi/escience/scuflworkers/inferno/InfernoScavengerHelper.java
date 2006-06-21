@@ -17,14 +17,13 @@ import org.embl.ebi.escience.scuflui.workbench.Scavenger;
 import org.embl.ebi.escience.scuflui.workbench.ScavengerCreationException;
 import org.embl.ebi.escience.scuflui.workbench.ScavengerTree;
 import org.embl.ebi.escience.scuflworkers.ScavengerHelper;
-import org.embl.ebi.escience.scuflworkers.ScavengerHelperSPI;
 
 /**
  * Helper to specify an Inferno SGS location
  * 
  * @author Tom Oinn
  */
-public class InfernoScavengerHelper implements ScavengerHelper, ScavengerHelperSPI {
+public class InfernoScavengerHelper implements ScavengerHelper {
 
 	public String getScavengerDescription() {
 		return "Add new Styx Grid Service...";

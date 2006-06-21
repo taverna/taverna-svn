@@ -21,16 +21,13 @@ import org.embl.ebi.escience.scuflui.workbench.Scavenger;
 import org.embl.ebi.escience.scuflui.workbench.ScavengerCreationException;
 import org.embl.ebi.escience.scuflui.workbench.ScavengerTree;
 import org.embl.ebi.escience.scuflworkers.ScavengerHelper;
-import org.embl.ebi.escience.scuflworkers.ScavengerHelperSPI;
-import org.embl.ebi.escience.scuflworkers.talisman.TalismanProcessor;
-import org.embl.ebi.escience.scuflworkers.talisman.TalismanScavenger;
 
 /**
  * Helper for handling Soaplab scavengers.
  * 
  * @author Tom Oinn
  */
-public class SoaplabScavengerHelper implements ScavengerHelper, ScavengerHelperSPI {
+public class SoaplabScavengerHelper implements ScavengerHelper {
 
 	private static Logger logger = Logger.getLogger(SoaplabScavengerHelper.class);
 
