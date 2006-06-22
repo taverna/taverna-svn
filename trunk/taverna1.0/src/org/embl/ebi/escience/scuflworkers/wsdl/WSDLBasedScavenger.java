@@ -52,6 +52,7 @@ public class WSDLBasedScavenger extends Scavenger {
 		}
 
 		try {
+			WSDLParser.flushCache(wsdlLocation);
 			WSDLParser parser = new WSDLParser(wsdlLocation);
 			List operations = parser.getOperations();
 			String style = parser.getStyle();

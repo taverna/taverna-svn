@@ -55,22 +55,22 @@ public class WSDLParser {
 	/**
 	 * Cache for SymbolTable to remove the need for reprocessing each time.
 	 */
-	private static Map symbolTableMap = Collections.synchronizedMap(new HashMap());
+	private static Map<String,SymbolTable> symbolTableMap = Collections.synchronizedMap(new HashMap<String,SymbolTable>());
 
 	/**
 	 * Cache for operations, to remove the need for reprocessing each time.
 	 */
-	private static Map operationMap = Collections.synchronizedMap(new HashMap());
+	private static Map<String,List<Operation>> operationMap = Collections.synchronizedMap(new HashMap<String,List<Operation>>());
 
-	private static Map bindingMap = Collections.synchronizedMap(new HashMap());
+	private static Map<String,Binding> bindingMap = Collections.synchronizedMap(new HashMap<String,Binding>());
 
-	private static Map styleMap = Collections.synchronizedMap(new HashMap());
+	private static Map<String,String> styleMap = Collections.synchronizedMap(new HashMap<String,String>());
 
-	private static Map portTypeMap = Collections.synchronizedMap(new HashMap());
+	private static Map<String,PortType> portTypeMap = Collections.synchronizedMap(new HashMap<String,PortType>());
 
-	private Map cachedComplexTypes = Collections.synchronizedMap(new HashMap());
+	private Map<String,ComplexTypeDescriptor> cachedComplexTypes = Collections.synchronizedMap(new HashMap<String,ComplexTypeDescriptor>());
 
-	private Map bindingOperations = Collections.synchronizedMap(new HashMap());
+	private Map<String,BindingOperation> bindingOperations = Collections.synchronizedMap(new HashMap<String,BindingOperation>());
 
 	/**
 	 * Constructor which takes the location of the base wsdl file, and begins to
@@ -100,12 +100,25 @@ public class WSDLParser {
 		}
 
 	}
+	
+	/**
+	 * flushes all the caches of entries associated with provided wsdl location
+	 * @param wsdlLocation
+	 */
+	public synchronized static void flushCache(String wsdlLocation)
+	{
+		operationMap.remove(wsdlLocation);
+		bindingMap.remove(wsdlLocation);
+		styleMap.remove(wsdlLocation);
+		portTypeMap.remove(wsdlLocation);
+		symbolTableMap.remove(wsdlLocation);
+	}
 
 	/**
 	 * @return a list of WSDLOperations for all operations for this service,
 	 */
-	public List getOperations() {
-		return (List) operationMap.get(getWSDLLocation());
+	public List<Operation> getOperations() {
+		return operationMap.get(getWSDLLocation());
 	}
 
 	/**
@@ -123,7 +136,7 @@ public class WSDLParser {
 	}
 
 	public Binding getBinding() {
-		return (Binding) bindingMap.get(getWSDLLocation());
+		return bindingMap.get(getWSDLLocation());
 	}
 
 	/**
@@ -131,11 +144,11 @@ public class WSDLParser {
 	 * @return the style, i.e. document or rpc
 	 */
 	public String getStyle() {
-		return (String) styleMap.get(getWSDLLocation());
+		return styleMap.get(getWSDLLocation());
 	}
 
 	public PortType getPortType() {
-		return (PortType) portTypeMap.get(getWSDLLocation());
+		return portTypeMap.get(getWSDLLocation());
 	}
 
 	/**
@@ -148,9 +161,9 @@ public class WSDLParser {
 	 *             if no operation matches the name
 	 * @throws IOException
 	 */
-	public List getOperationInputParameters(String operationName) throws UnknownOperationException, IOException {
+	public List<TypeDescriptor> getOperationInputParameters(String operationName) throws UnknownOperationException, IOException {
 		Operation operation = getOperation(operationName);
-		List result = new ArrayList();
+		List<TypeDescriptor> result = new ArrayList<TypeDescriptor>();
 		if (operation == null) {
 			throw new UnknownOperationException("operation called " + operationName + " does not exist for this wsdl");
 		}
@@ -191,9 +204,9 @@ public class WSDLParser {
 	 *             if no operation matches the name
 	 * @throws IOException
 	 */
-	public List getOperationOutputParameters(String operationName) throws UnknownOperationException, IOException {
+	public List<TypeDescriptor> getOperationOutputParameters(String operationName) throws UnknownOperationException, IOException {
 		Operation operation = getOperation(operationName);
-		List result = new ArrayList();
+		List<TypeDescriptor> result = new ArrayList<TypeDescriptor>();
 		if (operation == null) {
 			throw new UnknownOperationException("operation called " + operationName + " does not exist for this wsdl");
 		}
@@ -356,8 +369,8 @@ public class WSDLParser {
 		return (SymbolTable) symbolTableMap.get(getWSDLLocation());
 	}
 
-	private List determineOperations() {
-		List result = new ArrayList();
+	private List<Operation> determineOperations() {
+		List<Operation> result = new ArrayList<Operation>();
 		Map bindings = getSymbolTable().getDefinition().getBindings();
 		for (Iterator iterator = bindings.values().iterator(); iterator.hasNext();) {
 			Binding binding = (Binding) iterator.next();
@@ -388,8 +401,8 @@ public class WSDLParser {
 		return result;
 	}
 
-	private List processImports(Map imports) {
-		List result = new ArrayList();
+	private List<Operation> processImports(Map imports) {
+		List<Operation> result = new ArrayList<Operation>();
 
 		for (Iterator iterator = imports.values().iterator(); iterator.hasNext();) {
 			List list = (List) iterator.next();
