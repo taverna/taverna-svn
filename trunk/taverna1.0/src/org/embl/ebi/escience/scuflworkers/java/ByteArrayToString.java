@@ -38,8 +38,7 @@ public class ByteArrayToString implements LocalWorker {
 	public Map execute(Map inputs) throws TaskExecutionException {
 		try {
 			Map outputs = new HashMap();
-			byte[] bytes = (byte[]) ((DataThing) inputs.get("bytes"))
-					.getDataObject();
+			byte[] bytes = (byte[]) ((DataThing) inputs.get("bytes")).getDataObject();
 			outputs.put("string", new DataThing(new String(bytes)));
 			return outputs;
 		} catch (Exception ex) {

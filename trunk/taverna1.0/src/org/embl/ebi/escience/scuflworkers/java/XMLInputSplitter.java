@@ -1,4 +1,4 @@
-package org.embl.ebi.escience.scuflworkers.wsdl;
+package org.embl.ebi.escience.scuflworkers.java;
 
 import java.io.IOException;
 import java.io.StringReader;
@@ -11,9 +11,7 @@ import org.apache.log4j.Logger;
 import org.embl.ebi.escience.baclava.DataThing;
 import org.embl.ebi.escience.baclava.factory.DataThingFactory;
 import org.embl.ebi.escience.scufl.InputPort;
-import org.embl.ebi.escience.scuflworkers.java.LocalServiceProcessor;
-import org.embl.ebi.escience.scuflworkers.java.LocalWorker;
-import org.embl.ebi.escience.scuflworkers.java.XMLExtensible;
+import org.embl.ebi.escience.scuflworkers.wsdl.WSDLBasedProcessor;
 import org.embl.ebi.escience.scuflworkers.wsdl.parser.ArrayTypeDescriptor;
 import org.embl.ebi.escience.scuflworkers.wsdl.parser.ComplexTypeDescriptor;
 import org.embl.ebi.escience.scuflworkers.wsdl.parser.TypeDescriptor;
@@ -36,9 +34,9 @@ import uk.ac.soton.itinnovation.taverna.enactor.entities.TaskExecutionException;
  */
 
 public class XMLInputSplitter implements LocalWorker, XMLExtensible {
-	
+
 	private static Logger logger = Logger.getLogger(XMLInputSplitter.class);
-	
+
 	private String[] inputNames = {};
 
 	private String[] inputTypes = {};
@@ -163,7 +161,7 @@ public class XMLInputSplitter implements LocalWorker, XMLExtensible {
 					}
 				}
 			} catch (Exception e) {
-				logger.error("Exception thrown splitting inputs",e);
+				logger.error("Exception thrown splitting inputs", e);
 			}
 		} else if (portToSplit.getProcessor() instanceof LocalServiceProcessor) {
 			LocalServiceProcessor processor = (LocalServiceProcessor) portToSplit.getProcessor();

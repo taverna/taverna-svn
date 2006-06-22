@@ -25,13 +25,13 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: XMLOutputSplitter.java,v $
- * Revision           $Revision: 1.1 $
+ * Revision           $Revision: 1.5 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-06-21 15:23:41 $
+ * Last modified on   $Date: 2006-06-22 11:31:41 $
  *               by   $Author: sowen70 $
  * Created on 16-May-2006
  *****************************************************************/
-package org.embl.ebi.escience.scuflworkers.wsdl;
+package org.embl.ebi.escience.scuflworkers.java;
 
 import java.io.IOException;
 import java.io.StringReader;
@@ -46,9 +46,7 @@ import org.apache.log4j.Logger;
 import org.embl.ebi.escience.baclava.DataThing;
 import org.embl.ebi.escience.baclava.factory.DataThingFactory;
 import org.embl.ebi.escience.scufl.OutputPort;
-import org.embl.ebi.escience.scuflworkers.java.LocalServiceProcessor;
-import org.embl.ebi.escience.scuflworkers.java.LocalWorker;
-import org.embl.ebi.escience.scuflworkers.java.XMLExtensible;
+import org.embl.ebi.escience.scuflworkers.wsdl.WSDLBasedProcessor;
 import org.embl.ebi.escience.scuflworkers.wsdl.parser.ArrayTypeDescriptor;
 import org.embl.ebi.escience.scuflworkers.wsdl.parser.BaseTypeDescriptor;
 import org.embl.ebi.escience.scuflworkers.wsdl.parser.ComplexTypeDescriptor;

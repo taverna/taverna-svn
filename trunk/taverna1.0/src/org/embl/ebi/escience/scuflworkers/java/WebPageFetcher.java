@@ -30,8 +30,7 @@ public class WebPageFetcher implements LocalWorker {
 	}
 
 	public String[] inputTypes() {
-		return new String[] { "'text/x-taverna-web-url'",
-				"'text/x-taverna-web-url'" };
+		return new String[] { "'text/x-taverna-web-url'", "'text/x-taverna-web-url'" };
 	}
 
 	public String[] outputNames() {
@@ -50,18 +49,15 @@ public class WebPageFetcher implements LocalWorker {
 	public Map execute(Map inputs) throws TaskExecutionException {
 		BufferedReader reader = null;
 		try {
-			String inputURLString = (String) ((DataThing) inputs.get("url"))
-					.getDataObject();
+			String inputURLString = (String) ((DataThing) inputs.get("url")).getDataObject();
 			URL inputURL = null;
 			if (inputs.get("base") != null) {
-				inputURL = new URL(new URL((String) ((DataThing) inputs
-						.get("base")).getDataObject()), inputURLString);
+				inputURL = new URL(new URL((String) ((DataThing) inputs.get("base")).getDataObject()), inputURLString);
 			} else {
 				inputURL = new URL(inputURLString);
 			}
 			StringBuffer result = new StringBuffer();
-			reader = new BufferedReader(new InputStreamReader(inputURL
-					.openStream()));
+			reader = new BufferedReader(new InputStreamReader(inputURL.openStream()));
 			String line = null;
 			while ((line = reader.readLine()) != null) {
 				result.append(line);
@@ -71,8 +67,7 @@ public class WebPageFetcher implements LocalWorker {
 			outputMap.put("contents", new DataThing(result.toString()));
 			return outputMap;
 		} catch (IOException ioe) {
-			TaskExecutionException tee = new TaskExecutionException(
-					"Error fetching web page!");
+			TaskExecutionException tee = new TaskExecutionException("Error fetching web page!");
 			tee.initCause(ioe);
 			throw tee;
 		} finally {

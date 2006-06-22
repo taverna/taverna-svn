@@ -19,7 +19,6 @@ import uk.ac.soton.itinnovation.taverna.enactor.entities.TaskExecutionException;
  * @author Tom Oinn
  */
 public class LocalServiceTask implements ProcessorTaskWorker {
-	
 
 	private Processor proc;
 
@@ -27,8 +26,7 @@ public class LocalServiceTask implements ProcessorTaskWorker {
 		this.proc = p;
 	}
 
-	public Map execute(Map inputMap, ProcessorTask parentTask)
-			throws TaskExecutionException {
+	public Map execute(Map inputMap, ProcessorTask parentTask) throws TaskExecutionException {
 		LocalServiceProcessor theProcessor = (LocalServiceProcessor) proc;
 		return theProcessor.getWorker().execute(inputMap);
 	}

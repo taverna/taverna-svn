@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: XMLSplitterSerialisationHelperTest.java,v $
- * Revision           $Revision: 1.5 $
+ * Revision           $Revision: 1.6 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-06-21 15:23:41 $
+ * Last modified on   $Date: 2006-06-22 11:31:41 $
  *               by   $Author: sowen70 $
  * Created on 24-May-2006
  *****************************************************************/
@@ -40,7 +40,6 @@ import javax.xml.namespace.QName;
 
 import junit.framework.TestCase;
 
-import org.embl.ebi.escience.scuflworkers.wsdl.XMLSplitterSerialisationHelper;
 import org.embl.ebi.escience.scuflworkers.wsdl.parser.ComplexTypeDescriptor;
 import org.embl.ebi.escience.scuflworkers.wsdl.parser.TypeDescriptor;
 import org.jdom.Element;

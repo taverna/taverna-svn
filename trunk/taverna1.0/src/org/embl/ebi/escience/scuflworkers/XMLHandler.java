@@ -39,8 +39,7 @@ public interface XMLHandler {
 	/**
 	 * Create a new processor from the given chunk of XML
 	 */
-	public Processor loadProcessorFromXML(Element processorNode,
-			ScuflModel model, String name) throws ProcessorCreationException,
-			DuplicateProcessorNameException, XScuflFormatException;
+	public Processor loadProcessorFromXML(Element processorNode, ScuflModel model, String name)
+			throws ProcessorCreationException, DuplicateProcessorNameException, XScuflFormatException;
 
 }

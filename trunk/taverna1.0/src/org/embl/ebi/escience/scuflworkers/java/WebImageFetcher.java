@@ -23,7 +23,7 @@ import uk.ac.soton.itinnovation.taverna.enactor.entities.TaskExecutionException;
  * @author Tom Oinn
  */
 public class WebImageFetcher implements LocalWorker {
-	
+
 	private Logger logger = Logger.getLogger(WebImageFetcher.class);
 
 	public String[] inputNames() {

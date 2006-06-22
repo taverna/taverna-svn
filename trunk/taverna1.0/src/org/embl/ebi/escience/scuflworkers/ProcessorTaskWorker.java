@@ -30,7 +30,6 @@ public interface ProcessorTaskWorker {
 	 * @exception TaskExecutionException
 	 *                thrown if an error occurs during task invocation
 	 */
-	public Map execute(Map inputMap, ProcessorTask parentTask)
-			throws TaskExecutionException;
+	public Map execute(Map inputMap, ProcessorTask parentTask) throws TaskExecutionException;
 
 }

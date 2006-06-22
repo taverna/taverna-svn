@@ -42,8 +42,7 @@ public class StringStripDuplicates implements LocalWorker {
 
 	public Map execute(Map inputs) throws TaskExecutionException {
 		try {
-			List inputStringList = (List) ((DataThing) inputs.get("stringlist"))
-					.getDataObject();
+			List inputStringList = (List) ((DataThing) inputs.get("stringlist")).getDataObject();
 			List outputStringList = new ArrayList();
 			for (Iterator i = inputStringList.iterator(); i.hasNext();) {
 				String item = (String) i.next();

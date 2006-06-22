@@ -21,7 +21,6 @@ import uk.ac.soton.itinnovation.taverna.enactor.entities.TaskExecutionException;
  * @author Tom Oinn
  */
 public class ExtractImageLinks implements LocalWorker {
-	
 
 	public String[] inputNames() {
 		return new String[] { "document" };
@@ -45,8 +44,7 @@ public class ExtractImageLinks implements LocalWorker {
 	 * for relative URL resolution.
 	 */
 	public Map execute(Map inputs) throws TaskExecutionException {
-		String content = (String) ((DataThing) (inputs.get("document")))
-				.getDataObject();
+		String content = (String) ((DataThing) (inputs.get("document"))).getDataObject();
 		String lowerCaseContent = content.toLowerCase();
 		int index = 0;
 		List urlList = new ArrayList();

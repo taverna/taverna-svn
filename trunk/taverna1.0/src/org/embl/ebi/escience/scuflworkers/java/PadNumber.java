@@ -37,12 +37,10 @@ public class PadNumber implements LocalWorker {
 	}
 
 	public Map execute(Map inputs) throws TaskExecutionException {
-		String input = (String) ((DataThing) (inputs.get("input")))
-				.getDataObject();
+		String input = (String) ((DataThing) (inputs.get("input"))).getDataObject();
 		int targetLength = 7;
 		if (inputs.containsKey("targetlength")) {
-			targetLength = Integer.parseInt((String) ((DataThing) (inputs
-					.get("targetlength"))).getDataObject());
+			targetLength = Integer.parseInt((String) ((DataThing) (inputs.get("targetlength"))).getDataObject());
 		}
 		int currentLength = input.length();
 		while (input.length() < targetLength) {

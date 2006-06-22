@@ -48,12 +48,9 @@ public class RegularExpressionStringList implements LocalWorker {
 	 * supplied regular expression.
 	 */
 	public Map execute(Map inputs) throws TaskExecutionException {
-		List inputList = (List) ((DataThing) (inputs.get("stringlist")))
-				.getDataObject();
-		String pattern = (String) ((DataThing) (inputs.get("regex")))
-				.getDataObject();
-		String group = (String) ((DataThing) (inputs.get("group")))
-				.getDataObject();
+		List inputList = (List) ((DataThing) (inputs.get("stringlist"))).getDataObject();
+		String pattern = (String) ((DataThing) (inputs.get("regex"))).getDataObject();
+		String group = (String) ((DataThing) (inputs.get("group"))).getDataObject();
 		List outputList = new ArrayList();
 		Pattern thePat = Pattern.compile(pattern);
 		int theGroup = Integer.parseInt(group);

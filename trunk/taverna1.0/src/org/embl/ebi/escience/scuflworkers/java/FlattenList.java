@@ -44,8 +44,7 @@ public class FlattenList implements LocalWorker {
 	 * supplied regular expression.
 	 */
 	public Map execute(Map inputs) throws TaskExecutionException {
-		List inputList = (List) ((DataThing) (inputs.get("inputlist")))
-				.getDataObject();
+		List inputList = (List) ((DataThing) (inputs.get("inputlist"))).getDataObject();
 		List outputList = new ArrayList();
 		for (Iterator i = inputList.iterator(); i.hasNext();) {
 			List nestedList = (List) i.next();

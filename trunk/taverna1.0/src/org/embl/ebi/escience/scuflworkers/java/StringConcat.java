@@ -37,10 +37,8 @@ public class StringConcat implements LocalWorker {
 
 	public Map execute(Map inputs) throws TaskExecutionException {
 		try {
-			String firstString = (String) ((DataThing) inputs.get("string1"))
-					.getDataObject();
-			String secondString = (String) ((DataThing) inputs.get("string2"))
-					.getDataObject();
+			String firstString = (String) ((DataThing) inputs.get("string1")).getDataObject();
+			String secondString = (String) ((DataThing) inputs.get("string2")).getDataObject();
 			Map outputs = new HashMap();
 			outputs.put("output", new DataThing(firstString + secondString));
 			return outputs;

@@ -41,12 +41,10 @@ public class StringListMerge implements LocalWorker {
 
 	public Map execute(Map inputs) throws TaskExecutionException {
 		try {
-			List inputStringList = (List) ((DataThing) inputs.get("stringlist"))
-					.getDataObject();
+			List inputStringList = (List) ((DataThing) inputs.get("stringlist")).getDataObject();
 			String seperator = "\n";
 			if (inputs.containsKey("seperator")) {
-				seperator = (String) ((DataThing) inputs.get("seperator"))
-						.getDataObject();
+				seperator = (String) ((DataThing) inputs.get("seperator")).getDataObject();
 			}
 			Map outputs = new HashMap();
 			StringBuffer sb = new StringBuffer();

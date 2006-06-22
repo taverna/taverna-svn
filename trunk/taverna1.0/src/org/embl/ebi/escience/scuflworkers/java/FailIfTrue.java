@@ -46,11 +46,9 @@ public class FailIfTrue implements LocalWorker {
 	}
 
 	public Map execute(Map inputs) throws TaskExecutionException {
-		String condition = (String) ((DataThing) (inputs.get("test")))
-				.getDataObject();
+		String condition = (String) ((DataThing) (inputs.get("test"))).getDataObject();
 		if (condition.equalsIgnoreCase(this.compareString)) {
-			throw new TaskExecutionException(
-					"Test matches, aborting downstream processors");
+			throw new TaskExecutionException("Test matches, aborting downstream processors");
 		}
 		return new HashMap();
 	}

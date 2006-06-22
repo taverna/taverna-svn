@@ -28,14 +28,14 @@ public class WSDLInvocationTask implements ProcessorTaskWorker {
 	private static Logger logger = Logger.getLogger(WSDLInvocationTask.class);
 
 	private WSDLBasedProcessor processor;
-	
+
 	public WSDLInvocationTask(Processor p) {
 		this.processor = (WSDLBasedProcessor) p;
 	}
 
 	/**
-	 * Executes the service identified by the ProcessorTask, and returns a Map of the output DataThing's
-	 * mapped against the output name.
+	 * Executes the service identified by the ProcessorTask, and returns a Map
+	 * of the output DataThing's mapped against the output name.
 	 */
 	public Map execute(Map inputMap, ProcessorTask parentTask) throws TaskExecutionException {
 		Map result = null;
@@ -67,5 +67,5 @@ public class WSDLInvocationTask implements ProcessorTaskWorker {
 		}
 		return result;
 	}
-	
+
 }

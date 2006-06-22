@@ -16,6 +16,7 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
+import javax.swing.JMenuItem;
 import javax.wsdl.Definition;
 import javax.wsdl.WSDLException;
 import javax.xml.namespace.QName;
@@ -32,11 +33,14 @@ import org.apache.wsif.util.WSIFUtils;
 import org.embl.ebi.escience.scufl.DuplicateProcessorNameException;
 import org.embl.ebi.escience.scufl.InputPort;
 import org.embl.ebi.escience.scufl.OutputPort;
+import org.embl.ebi.escience.scufl.Port;
 import org.embl.ebi.escience.scufl.Processor;
 import org.embl.ebi.escience.scufl.ProcessorCreationException;
 import org.embl.ebi.escience.scufl.ScuflModel;
 import org.embl.ebi.escience.scufl.view.WorkflowSummaryAsHTML;
 import org.embl.ebi.escience.scuflworkers.HTMLSummarisableProcessor;
+import org.embl.ebi.escience.scuflworkers.ScuflContextMenuAware;
+import org.embl.ebi.escience.scuflworkers.java.XMLSplitterScuflContextMenuFactory;
 import org.embl.ebi.escience.scuflworkers.wsdl.parser.TypeDescriptor;
 import org.embl.ebi.escience.scuflworkers.wsdl.parser.UnknownOperationException;
 import org.embl.ebi.escience.scuflworkers.wsdl.parser.WSDLParser;
@@ -48,7 +52,8 @@ import org.embl.ebi.escience.scuflworkers.wsdl.parser.WSDLParser;
  * @author Tom Oinn
  */
 
-public class WSDLBasedProcessor extends Processor implements Serializable, HTMLSummarisableProcessor {
+public class WSDLBasedProcessor extends Processor implements Serializable, HTMLSummarisableProcessor,
+		ScuflContextMenuAware {
 
 	private static final long serialVersionUID = 6669263809722072508L;
 
@@ -70,7 +75,7 @@ public class WSDLBasedProcessor extends Processor implements Serializable, HTMLS
 
 	WSDLParser parser = null;
 
-	private static Map defMap = new HashMap();
+	private static Map<String, Definition> defMap = new HashMap<String, Definition>();
 
 	public WSDLBasedProcessor(ScuflModel model, String procName, String wsdlLocation, String operationName)
 			throws ProcessorCreationException, DuplicateProcessorNameException {
@@ -85,7 +90,7 @@ public class WSDLBasedProcessor extends Processor implements Serializable, HTMLS
 	 */
 	public static Definition getDefinition(String wsdlLocation) throws WSDLException {
 		if (defMap.containsKey(wsdlLocation)) {
-			return (Definition) defMap.get(wsdlLocation);
+			return defMap.get(wsdlLocation);
 		} else {
 			Definition def = WSIFUtils.readWSDL(null, wsdlLocation);
 			defMap.put(wsdlLocation, def);
@@ -261,7 +266,7 @@ public class WSDLBasedProcessor extends Processor implements Serializable, HTMLS
 				URL wsdlURL = new URL(wsdlProcessor.getWSDLLocation());
 				wsdlLocation = wsdlURL.getFile();
 			} catch (MalformedURLException mue) {
-				logger.warn("Error with wsdl url: "+wsdlProcessor.getWSDLLocation(),mue);
+				logger.warn("Error with wsdl url: " + wsdlProcessor.getWSDLLocation(), mue);
 			}
 			if (wsLocations.containsKey(wsdlLocation) == false) {
 				wsLocations.put(wsdlLocation, new HashMap<String, Set<String>>());
@@ -305,6 +310,10 @@ public class WSDLBasedProcessor extends Processor implements Serializable, HTMLS
 
 	public int htmlTablePlacement() {
 		return 1;
+	}
+
+	public List<JMenuItem> contextItemsForPort(Port port) {
+		return XMLSplitterScuflContextMenuFactory.instance().contextItemsForPort(port);
 	}
 
 }

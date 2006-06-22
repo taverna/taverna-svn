@@ -24,44 +24,37 @@
  ****************************************************************
  * Source code information
  * -----------------------
- * Filename           $RCSfile: HTMLSummarisableProcessor.java,v $
- * Revision           $Revision: 1.2 $
+ * Filename           $RCSfile: ScuflContextMenuAware.java,v $
+ * Revision           $Revision: 1.1 $
  * Release status     $State: Exp $
  * Last modified on   $Date: 2006-06-22 11:31:41 $
  *               by   $Author: sowen70 $
- * Created on 16-Jun-2006
+ * Created on 21-Jun-2006
  *****************************************************************/
 package org.embl.ebi.escience.scuflworkers;
 
 import java.util.List;
-import java.util.Map;
 
-import org.embl.ebi.escience.scufl.Processor;
+import javax.swing.JMenuItem;
+import org.embl.ebi.escience.scufl.Port;
+
 /**
- * An inteface that when implemented indicates that this Processor is capable of generating
- * a html summary based upon all like processors in the model.
- * 
- * @author Stuart Owen
+ * An Interface then when implemented by a Processor indicates that ports related to this processor
+ * may possibly have scufl context menu items to be appended to the menu when right clicking on that
+ * port in the Advanced Model Explorer
+ * @author sowen
  *
  */
 
-public interface HTMLSummarisableProcessor {
 
+public interface ScuflContextMenuAware {
+	
 	/**
-	 * Generates the html tables for a list of processors, creating a table
-	 * grouped by resource host.
+	 * Creates a list, in order, of the JMenuItems related to that port
 	 * 
-	 * @param processors
+	 * @param port
 	 * @return
 	 */
-	public String getHTMLSummary(List<HTMLSummarisableProcessor> processors, Map<String, Processor> names);
-
-	/**
-	 * int indicating the placement for this type of processor in the order of
-	 * tables displayed
-	 * 
-	 * @return
-	 */
-	public int htmlTablePlacement();
+	List<JMenuItem> contextItemsForPort(Port port);
 
 }

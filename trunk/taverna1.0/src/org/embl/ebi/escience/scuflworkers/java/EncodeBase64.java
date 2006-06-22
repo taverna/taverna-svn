@@ -38,8 +38,7 @@ public class EncodeBase64 implements LocalWorker {
 
 	public Map execute(Map inputs) throws TaskExecutionException {
 		Map results = new HashMap();
-		byte[] bytes = (byte[]) ((DataThing) inputs.get("bytes"))
-				.getDataObject();
+		byte[] bytes = (byte[]) ((DataThing) inputs.get("bytes")).getDataObject();
 		String base64 = Base64.encodeBytes(bytes);
 		results.put("base64", new DataThing(base64));
 		return results;

@@ -11,7 +11,6 @@ import org.embl.ebi.escience.baclava.DataThing;
 import org.embl.ebi.escience.baclava.factory.DataThingFactory;
 import org.embl.ebi.escience.scufl.ScuflModel;
 import org.embl.ebi.escience.scuflworkers.wsdl.WSDLBasedProcessor;
-import org.embl.ebi.escience.scuflworkers.wsdl.XMLInputSplitter;
 import org.jdom.input.SAXBuilder;
 import org.jdom.output.XMLOutputter;
 

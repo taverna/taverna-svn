@@ -29,8 +29,7 @@ public class StringSetIntersection implements LocalWorker {
 	}
 
 	public String[] inputTypes() {
-		return new String[] { LocalWorker.STRING_ARRAY,
-				LocalWorker.STRING_ARRAY };
+		return new String[] { LocalWorker.STRING_ARRAY, LocalWorker.STRING_ARRAY };
 	}
 
 	public String[] outputNames() {
@@ -47,10 +46,8 @@ public class StringSetIntersection implements LocalWorker {
 	 * for relative URL resolution.
 	 */
 	public Map execute(Map inputs) throws TaskExecutionException {
-		Collection list1 = (Collection) ((DataThing) inputs.get("list1"))
-				.getDataObject();
-		Collection list2 = (Collection) ((DataThing) inputs.get("list2"))
-				.getDataObject();
+		Collection list1 = (Collection) ((DataThing) inputs.get("list1")).getDataObject();
+		Collection list2 = (Collection) ((DataThing) inputs.get("list2")).getDataObject();
 		List resultList = new ArrayList();
 		for (Iterator i = list1.iterator(); i.hasNext();) {
 			Object o = i.next();

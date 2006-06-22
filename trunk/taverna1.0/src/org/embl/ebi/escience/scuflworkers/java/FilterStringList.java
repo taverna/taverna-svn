@@ -44,10 +44,8 @@ public class FilterStringList implements LocalWorker {
 	 * supplied regular expression.
 	 */
 	public Map execute(Map inputs) throws TaskExecutionException {
-		List inputList = (List) ((DataThing) (inputs.get("stringlist")))
-				.getDataObject();
-		String pattern = (String) ((DataThing) (inputs.get("regex")))
-				.getDataObject();
+		List inputList = (List) ((DataThing) (inputs.get("stringlist"))).getDataObject();
+		String pattern = (String) ((DataThing) (inputs.get("regex"))).getDataObject();
 		List outputList = new ArrayList();
 		for (Iterator i = inputList.iterator(); i.hasNext();) {
 			String item = (String) i.next();

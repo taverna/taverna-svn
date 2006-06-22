@@ -25,13 +25,13 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: XMLSplitterSerialisationHelper.java,v $
- * Revision           $Revision: 1.1 $
+ * Revision           $Revision: 1.6 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-06-21 15:23:41 $
+ * Last modified on   $Date: 2006-06-22 11:31:41 $
  *               by   $Author: sowen70 $
  * Created on 16-May-2006
  *****************************************************************/
-package org.embl.ebi.escience.scuflworkers.wsdl;
+package org.embl.ebi.escience.scuflworkers.java;
 
 import java.util.ArrayList;
 import java.util.HashMap;

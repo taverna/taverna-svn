@@ -5,7 +5,6 @@
  */
 package org.embl.ebi.escience.scuflworkers.java;
 
-
 /**
  * A processor which fails if the test input matches the string 'false'
  * 

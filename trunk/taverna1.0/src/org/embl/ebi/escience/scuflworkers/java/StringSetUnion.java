@@ -30,8 +30,7 @@ public class StringSetUnion implements LocalWorker {
 	}
 
 	public String[] inputTypes() {
-		return new String[] { LocalWorker.STRING_ARRAY,
-				LocalWorker.STRING_ARRAY };
+		return new String[] { LocalWorker.STRING_ARRAY, LocalWorker.STRING_ARRAY };
 	}
 
 	public String[] outputNames() {
@@ -45,10 +44,8 @@ public class StringSetUnion implements LocalWorker {
 	public Map execute(Map inputs) throws TaskExecutionException {
 		try {
 			Set results = new HashSet();
-			Collection list1 = (Collection) ((DataThing) inputs.get("list1"))
-					.getDataObject();
-			Collection list2 = (Collection) ((DataThing) inputs.get("list2"))
-					.getDataObject();
+			Collection list1 = (Collection) ((DataThing) inputs.get("list1")).getDataObject();
+			Collection list2 = (Collection) ((DataThing) inputs.get("list2")).getDataObject();
 			results.addAll(list1);
 			results.addAll(list2);
 			List resultList = new ArrayList();

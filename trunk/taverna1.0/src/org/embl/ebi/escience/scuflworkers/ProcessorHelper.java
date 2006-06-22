@@ -39,11 +39,11 @@ import org.jdom.Element;
  * is shown below :
  * 
  * <pre>
- *    taverna.processor.soaplabwsdl.class = org.embl.ebi.escience.scuflworkers.soaplab.SoaplabProcessor
- *    taverna.processor.soaplabwsdl.xml = org.embl.ebi.escience.scuflworkers.soaplab.SoaplabXMLHandler
- *    taverna.processor.soaplabwsdl.colour = lightgoldenrodyellow
- *    taverna.processor.soaplabwsdl.icon = org/embl/ebi/escience/scuflui/soaplab.gif
- *    taverna.processor.soaplabwsdl.taskclass = uk.ac.soton.itinnovation.taverna.enactor.entities.SoaplabTask
+ *     taverna.processor.soaplabwsdl.class = org.embl.ebi.escience.scuflworkers.soaplab.SoaplabProcessor
+ *     taverna.processor.soaplabwsdl.xml = org.embl.ebi.escience.scuflworkers.soaplab.SoaplabXMLHandler
+ *     taverna.processor.soaplabwsdl.colour = lightgoldenrodyellow
+ *     taverna.processor.soaplabwsdl.icon = org/embl/ebi/escience/scuflui/soaplab.gif
+ *     taverna.processor.soaplabwsdl.taskclass = uk.ac.soton.itinnovation.taverna.enactor.entities.SoaplabTask
  * </pre>
  * 
  * To load additional processor types for enactment and display within the
@@ -65,8 +65,8 @@ public class ProcessorHelper {
 	private static Map classNameForTagName = new HashMap();
 
 	private static Map iconForTagName = null;
-	
-	private static Set<ScavengerHelper>scavengerHelpers = new HashSet<ScavengerHelper>();
+
+	private static Set<ScavengerHelper> scavengerHelpers = new HashSet<ScavengerHelper>();
 
 	private static Map taskClassForTagName = new HashMap();
 
@@ -90,9 +90,8 @@ public class ProcessorHelper {
 				loader = Thread.currentThread().getContextClassLoader();
 			}
 			// Load the 'unknown processor' image icon
-			unknownProcessorIcon = new ImageIcon(
-					loader
-							.getResource("org/embl/ebi/escience/scuflui/icons/explorer/unknownprocessor.png"));
+			unknownProcessorIcon = new ImageIcon(loader
+					.getResource("org/embl/ebi/escience/scuflui/icons/explorer/unknownprocessor.png"));
 			// Load up the values from any taverna.properties files located
 			// by the class resource loader.
 			Enumeration en = loader.getResources("taverna.properties");
@@ -105,16 +104,14 @@ public class ProcessorHelper {
 			// Should now have a populated properties list, set up the various
 			// static Map objects for the colours etc.
 			// Iterate over all property keys
-			for (Iterator i = tavernaProperties.keySet().iterator(); i
-					.hasNext();) {
+			for (Iterator i = tavernaProperties.keySet().iterator(); i.hasNext();) {
 				String key = (String) i.next();
 				logger.debug("key: " + key);
 				String value = tavernaProperties.getProperty(key);
 				logger.debug("\t value: " + value);
 				String[] keyElements = key.split("\\.");
 				// Detect the processor keys
-				if (keyElements.length == 4
-						&& keyElements[1].equals("processor")) {
+				if (keyElements.length == 4 && keyElements[1].equals("processor")) {
 					String tagName = keyElements[2];
 					// If this is the class name...
 					// Form : taverna.processor.<TAGNAME>.class = <CLASSNAME>
@@ -163,8 +160,7 @@ public class ProcessorHelper {
 						String editorClassName = value;
 						// Create an instance...
 						Class editorClass = Class.forName(editorClassName);
-						ProcessorEditor pe = (ProcessorEditor) editorClass
-								.newInstance();
+						ProcessorEditor pe = (ProcessorEditor) editorClass.newInstance();
 						editorForTagName.put(tagName, pe);
 					}
 				}
@@ -175,16 +171,14 @@ public class ProcessorHelper {
 				// hint
 				// for the type being created.
 				keyElements = key.split("\\.", 3);
-				if (keyElements.length == 3
-						&& keyElements[1].equals("scavenger")) {
+				if (keyElements.length == 3 && keyElements[1].equals("scavenger")) {
 					// Get the set of scavenger creating classes
 					String scavengerClassName = keyElements[2];
 					String scavengerTagName = value;
 					Object o = Class.forName(scavengerClassName).newInstance();
 					if (o instanceof ScavengerHelper) {
-						tagNameForScavenger.put(scavengerClassName,
-								scavengerTagName);
-						scavengerHelpers.add((ScavengerHelper)o);
+						tagNameForScavenger.put(scavengerClassName, scavengerTagName);
+						scavengerHelpers.add((ScavengerHelper) o);
 					} else if (o instanceof Scavenger) {
 						simpleScavengers.add(o);
 					}
@@ -250,10 +244,8 @@ public class ProcessorHelper {
 		try {
 			Class[] constructorClasses = new Class[] { Processor.class };
 			Class taskClass = Class.forName(taskClassName);
-			Constructor taskConstructor = taskClass
-					.getConstructor(constructorClasses);
-			ProcessorTaskWorker taskWorker = (ProcessorTaskWorker) taskConstructor
-					.newInstance(new Object[] { p });
+			Constructor taskConstructor = taskClass.getConstructor(constructorClasses);
+			ProcessorTaskWorker taskWorker = (ProcessorTaskWorker) taskConstructor.newInstance(new Object[] { p });
 			return taskWorker;
 		} catch (Exception ex) {
 			logger.error("Could not get task worker " + taskClassName, ex);
@@ -273,10 +265,10 @@ public class ProcessorHelper {
 	/**
 	 * @return a set of instantiated ScavengerHelper classes
 	 */
-	public static Set<ScavengerHelper>getScavengerHelpers() {
+	public static Set<ScavengerHelper> getScavengerHelpers() {
 		return scavengerHelpers;
 	}
-	
+
 	/**
 	 * Given a tag name, return the in place editor for the processor
 	 */
@@ -298,21 +290,18 @@ public class ProcessorHelper {
 		if (iconForTagName == null) {
 			// Initialise the icon store
 			iconForTagName = new HashMap();
-			for (Iterator i = tavernaProperties.keySet().iterator(); i
-					.hasNext();) {
+			for (Iterator i = tavernaProperties.keySet().iterator(); i.hasNext();) {
 				String key = (String) i.next();
 				String value = tavernaProperties.getProperty(key);
 				String[] keyElements = key.split("\\.");
-				if (keyElements.length == 4
-						&& keyElements[1].equals("processor")) {
+				if (keyElements.length == 4 && keyElements[1].equals("processor")) {
 					String loadTagName = keyElements[2];
 					// Form : taverna.processor.<TAGNAME>.icon =
 					// <RENDERINGHINT_ICON>
 					if (keyElements[3].equals("icon")) {
 						// Fetch resource icon...
-						iconForTagName.put(loadTagName, new ImageIcon(
-								ProcessorHelper.class.getClassLoader()
-										.getResource(value)));
+						iconForTagName.put(loadTagName, new ImageIcon(ProcessorHelper.class.getClassLoader()
+								.getResource(value)));
 					}
 				}
 			}
@@ -395,16 +384,13 @@ public class ProcessorHelper {
 		Element result = xh.elementForProcessor(p);
 		if (decorations) {
 			if (p.getRetries() != 0) {
-				result.setAttribute("maxretries", Integer.toString(p
-						.getRetries()));
+				result.setAttribute("maxretries", Integer.toString(p.getRetries()));
 			}
 			if (p.getRetryDelay() != 0) {
-				result.setAttribute("retrydelay", Integer.toString(p
-						.getRetryDelay()));
+				result.setAttribute("retrydelay", Integer.toString(p.getRetryDelay()));
 			}
 			if (p.getBackoff() != 1.0) {
-				result.setAttribute("retrybackoff", Double.toString(p
-						.getBackoff()));
+				result.setAttribute("retrybackoff", Double.toString(p.getBackoff()));
 			}
 			if (p.getCritical()) {
 				result.setAttribute("critical", "" + p.getCritical());
@@ -435,52 +421,41 @@ public class ProcessorHelper {
 	 * Spit back a processor given a chunk of xml, the element passed in being
 	 * the 'processor' tag return null if we can't handle it
 	 */
-	public static Processor loadProcessorFromXML(Element processorNode,
-			ScuflModel model, String name) throws ProcessorCreationException,
-			DuplicateProcessorNameException, XScuflFormatException {
+	public static Processor loadProcessorFromXML(Element processorNode, ScuflModel model, String name)
+			throws ProcessorCreationException, DuplicateProcessorNameException, XScuflFormatException {
 		// Get the first available handler for this processor and use it to load
 		logger.debug("Attempting to load processor for: " + processorNode);
 		Processor loadedProcessor = null;
-		for (Iterator i = processorNode.getChildren().iterator(); i.hasNext()
-				&& loadedProcessor == null;) {
+		for (Iterator i = processorNode.getChildren().iterator(); i.hasNext() && loadedProcessor == null;) {
 			Element candidateElement = (Element) i.next();
 			String elementName = candidateElement.getName();
 			XMLHandler xh = (XMLHandler) xmlHandlerForTagName.get(elementName);
 			if (xh == null) {
 				continue;
 			}
-			logger.debug("Possible help: " + candidateElement + " " + elementName
-					+ " -> " + xh);
+			logger.debug("Possible help: " + candidateElement + " " + elementName + " -> " + xh);
 			// mrp: ouch - should we not be using candidateElement in place
 			// of processorNode?
-			loadedProcessor = xh.loadProcessorFromXML(processorNode, model,
-					name);
+			loadedProcessor = xh.loadProcessorFromXML(processorNode, model, name);
 			// Loaded the processor, now configure from the inner spec
 			// element for retry policy.
-			String maxRetryString = candidateElement
-					.getAttributeValue("maxretries");
+			String maxRetryString = candidateElement.getAttributeValue("maxretries");
 			if (maxRetryString != null) {
 				loadedProcessor.setRetries(Integer.parseInt(maxRetryString));
 			}
-			String retryDelayString = candidateElement
-					.getAttributeValue("retrydelay");
+			String retryDelayString = candidateElement.getAttributeValue("retrydelay");
 			if (retryDelayString != null) {
-				loadedProcessor.setRetryDelay(Integer
-						.parseInt(retryDelayString));
+				loadedProcessor.setRetryDelay(Integer.parseInt(retryDelayString));
 			}
-			String retryBackoffString = candidateElement
-					.getAttributeValue("retrybackoff");
+			String retryBackoffString = candidateElement.getAttributeValue("retrybackoff");
 			if (retryBackoffString != null) {
-				loadedProcessor.setBackoff(Double
-						.parseDouble(retryBackoffString));
+				loadedProcessor.setBackoff(Double.parseDouble(retryBackoffString));
 			}
 			String critical = candidateElement.getAttributeValue("critical");
 			if (critical != null) {
-				loadedProcessor.setCritical((new Boolean(critical)
-						.booleanValue()));
+				loadedProcessor.setCritical((new Boolean(critical).booleanValue()));
 			}
-			String breakpoint = candidateElement
-					.getAttributeValue("breakpoint");
+			String breakpoint = candidateElement.getAttributeValue("breakpoint");
 			if (breakpoint != null) {
 				if ((new Boolean(breakpoint).booleanValue()))
 					loadedProcessor.addBreakpoint();
@@ -500,12 +475,10 @@ public class ProcessorHelper {
 		List alternates = processorNode.getChildren("alternate", XScufl.XScuflNS);
 		for (Iterator i = alternates.iterator(); i.hasNext();) {
 			Element alternateElement = (Element) i.next();
-			Processor alternateProcessor = loadProcessorFromXML(
-					alternateElement, null, "alternate" + alternateCount++);
+			Processor alternateProcessor = loadProcessorFromXML(alternateElement, null, "alternate" + alternateCount++);
 			AlternateProcessor ap = new AlternateProcessor(alternateProcessor);
 			// Sort out the input mapping
-			List inputMapping = alternateElement.getChildren("inputmap",
-					XScufl.XScuflNS);
+			List inputMapping = alternateElement.getChildren("inputmap", XScufl.XScuflNS);
 			for (Iterator j = inputMapping.iterator(); j.hasNext();) {
 				Element inputMapItem = (Element) j.next();
 				String key = inputMapItem.getAttributeValue("key");
@@ -515,8 +488,7 @@ public class ProcessorHelper {
 			// ..and the output mapping. See the javadoc
 			// for the AlternateProcessor class for more
 			// details about the mapping functionality.
-			List outputMapping = alternateElement.getChildren("outputmap",
-					XScufl.XScuflNS);
+			List outputMapping = alternateElement.getChildren("outputmap", XScufl.XScuflNS);
 			for (Iterator j = outputMapping.iterator(); j.hasNext();) {
 				Element outputMapItem = (Element) j.next();
 				String key = outputMapItem.getAttributeValue("key");
@@ -529,11 +501,10 @@ public class ProcessorHelper {
 		// Add the annotation templates
 		List templates = processorNode.getChildren("template", XScufl.XScuflNS);
 		for (Iterator i = templates.iterator(); i.hasNext();) {
-			loadedProcessor.addAnnotationTemplate(new AnnotationTemplate(
-					(Element) i.next()));
+			loadedProcessor.addAnnotationTemplate(new AnnotationTemplate((Element) i.next()));
 		}
 
 		return loadedProcessor;
 	}
-		
+
 }

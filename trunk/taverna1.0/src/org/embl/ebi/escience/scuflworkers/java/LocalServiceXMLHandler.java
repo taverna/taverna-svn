@@ -48,17 +48,15 @@ public class LocalServiceXMLHandler implements XMLHandler {
 		return new LocalServiceProcessorFactory(workerClass, descriptiveName);
 	}
 
-	public Processor loadProcessorFromXML(Element processorNode,
-			ScuflModel model, String name) throws ProcessorCreationException,
-			DuplicateProcessorNameException, XScuflFormatException {
+	public Processor loadProcessorFromXML(Element processorNode, ScuflModel model, String name)
+			throws ProcessorCreationException, DuplicateProcessorNameException, XScuflFormatException {
 		Element local = processorNode.getChild("local", XScufl.XScuflNS);
 		Element additionalInfo = local.getChild("extensions", XScufl.XScuflNS);
 		String workerClass = local.getTextTrim();
 		if (additionalInfo == null) {
 			return new LocalServiceProcessor(model, name, workerClass);
 		} else {
-			return new LocalServiceProcessor(model, name, workerClass,
-					additionalInfo);
+			return new LocalServiceProcessor(model, name, workerClass, additionalInfo);
 		}
 	}
 }

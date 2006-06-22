@@ -38,8 +38,7 @@ public class DecodeBase64 implements LocalWorker {
 
 	public Map execute(Map inputs) throws TaskExecutionException {
 		Map results = new HashMap();
-		String base64 = (String) ((DataThing) inputs.get("base64"))
-				.getDataObject();
+		String base64 = (String) ((DataThing) inputs.get("base64")).getDataObject();
 		byte[] bytes = Base64.decode(base64);
 		results.put("bytes", new DataThing(bytes));
 		return results;

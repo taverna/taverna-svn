@@ -37,11 +37,9 @@ import org.embl.ebi.escience.scuflui.actions.RenameAction;
 import org.embl.ebi.escience.scuflui.actions.SetDefaultValueAction;
 import org.embl.ebi.escience.scuflui.processoractions.ProcessorActionRegistry;
 import org.embl.ebi.escience.scuflui.processoractions.ProcessorActionSPI;
+import org.embl.ebi.escience.scuflworkers.ScuflContextMenuAware;
 import org.embl.ebi.escience.scuflworkers.ProcessorEditor;
 import org.embl.ebi.escience.scuflworkers.ProcessorHelper;
-import org.embl.ebi.escience.scuflworkers.java.LocalServiceProcessor;
-import org.embl.ebi.escience.scuflworkers.wsdl.XMLInputSplitter;
-import org.embl.ebi.escience.scuflworkers.wsdl.XMLOutputSplitter;
 
 /**
  * A static factory method to return an instance of JPopupMenu that is
@@ -50,10 +48,9 @@ import org.embl.ebi.escience.scuflworkers.wsdl.XMLOutputSplitter;
  * delete it etc.
  * 
  * @author Tom Oinn
+ * @author Stuart Owen
  */
-public class ScuflContextMenuFactory {
-
-	private static Logger logger = Logger.getLogger(ScuflContextMenuFactory.class);
+public class ScuflContextMenuFactory {	
 
 	/**
 	 * Creates a JPopupMenu appropriate to the object supplied. If it doesn't
@@ -72,6 +69,7 @@ public class ScuflContextMenuFactory {
 		} else if (theObject instanceof AlternateProcessor) {
 			return getAlternateProcessorMenu((AlternateProcessor) theObject);
 		} else if (theObject instanceof Port) {
+			JPopupMenu theMenu = new JPopupMenu();
 			// Check whether the port parent node is an AlternateProcessor
 			// in which case we display the mapping options
 			final Port thePort = (Port) theObject;
@@ -79,7 +77,6 @@ public class ScuflContextMenuFactory {
 				DefaultMutableTreeNode parent = (DefaultMutableTreeNode) theNode.getParent();
 				if (parent.getUserObject() instanceof AlternateProcessor) {
 					final AlternateProcessor ap = (AlternateProcessor) parent.getUserObject();
-					JPopupMenu theMenu = new JPopupMenu();
 					theMenu
 							.add(new ShadedLabel("Map port '" + thePort.getName() + "' to...",
 									ShadedLabel.TAVERNA_GREEN));
@@ -117,16 +114,15 @@ public class ScuflContextMenuFactory {
 						}
 					}
 					return theMenu;
-
 				}
 			}
 			// Is the port a workflow source?
 			// Port thePort = (Port)theObject;
 			if (thePort instanceof OutputPort) {
-				JPopupMenu theMenu = createMenuForOutputPort(model, (OutputPort) thePort);
+				theMenu = createMenuForOutputPort(model, (OutputPort) thePort);
 				return theMenu;
 			} else if (thePort instanceof InputPort) {
-				final JPopupMenu theMenu = createMenuForInputPort(model, (InputPort) thePort);
+				theMenu = createMenuForInputPort(model, (InputPort) thePort);
 				return theMenu;
 			}
 
@@ -159,8 +155,14 @@ public class ScuflContextMenuFactory {
 
 	private static JPopupMenu createMenuForOutputPort(final ScuflModel model, final OutputPort theOutputPort) {
 		JPopupMenu theMenu = LinkingMenus.linkFrom(theOutputPort);
-		if (XMLOutputSplitter.isSplittable(theOutputPort)) {
-			addXMLOutputSplitterMenuItem(model, theMenu, theOutputPort);
+		if (theOutputPort.getProcessor() instanceof ScuflContextMenuAware) {
+			List<JMenuItem> items = ((ScuflContextMenuAware) theOutputPort.getProcessor())
+					.contextItemsForPort(theOutputPort);
+			if (items.size() > 0)
+				theMenu.addSeparator();
+			for (JMenuItem item : items) {
+				theMenu.add(item);
+			}
 		}
 		return theMenu;
 	}
@@ -237,93 +239,16 @@ public class ScuflContextMenuFactory {
 		mergeItem.addActionListener(listener);
 		selectItem.addActionListener(listener);
 
-		if (XMLInputSplitter.isSplittable(theInputPort)) {
-			addXMLInputSplitterMenuItem(model, theMenu, theInputPort);
+		if (theInputPort.getProcessor() instanceof ScuflContextMenuAware) {
+			List<JMenuItem> items = ((ScuflContextMenuAware) theInputPort.getProcessor())
+					.contextItemsForPort(theInputPort);
+			if (items.size() > 0)
+				theMenu.addSeparator();
+			for (JMenuItem item : items) {
+				theMenu.add(item);
+			}
 		}
 		return theMenu;
-	}
-
-	private static void addXMLOutputSplitterMenuItem(final ScuflModel model, final JPopupMenu theMenu,
-			final OutputPort outputPort) {
-		theMenu.addSeparator();
-		JMenuItem xmlHelperItem = new JMenuItem("Add XML splitter");
-		JMenuItem xmlHelperItemWithName = new JMenuItem("Add XML splitter with name");
-		theMenu.add(xmlHelperItem);
-		theMenu.add(xmlHelperItemWithName);
-		ActionListener xmlHelperListener = new ActionListener() {
-			public void actionPerformed(ActionEvent ae) {
-				try {
-					XMLOutputSplitter splitter = new XMLOutputSplitter();
-					if (splitter.doesTypeContainCyclicReferences(outputPort)) {
-						if (JOptionPane
-								.showConfirmDialog(
-										null,
-										"This data structure contains cyclic references which may result in failure when the workflow is run. Continue?",
-										"Cyclic References", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE) == JOptionPane.NO_OPTION) {
-							return;
-						}
-					}
-					String name = "";
-					if (ae.getActionCommand().indexOf("name") != -1) {
-						name = (String) JOptionPane.showInputDialog(null, "Name for the new processor?",
-								"Name required", JOptionPane.QUESTION_MESSAGE, null, null, "");
-						if (name != null) {
-							name = model.getValidProcessorName(name);
-						}
-					} else {
-						name = outputPort.getName() + "XML";
-					}
-					if (name != null) {
-						splitter.setUpOutputs(outputPort);
-						LocalServiceProcessor processor = new LocalServiceProcessor(model, model
-								.getValidProcessorName(name), splitter);
-						model.addProcessor(processor);
-						model.addDataConstraint(new DataConstraint(model, outputPort, processor.getInputPorts()[0]));
-					}
-				} catch (Exception e) {
-					logger.error("Error adding XML Output splitter", e);
-				}
-			}
-		};
-		xmlHelperItem.addActionListener(xmlHelperListener);
-		xmlHelperItemWithName.addActionListener(xmlHelperListener);
-	}
-
-	private static void addXMLInputSplitterMenuItem(final ScuflModel model, final JPopupMenu theMenu,
-			final InputPort inputPort) {
-		theMenu.addSeparator();
-		JMenuItem xmlHelperItem = new JMenuItem("Add XML splitter");
-		JMenuItem xmlHelperItemWithName = new JMenuItem("Add XML splitter with name");
-		theMenu.add(xmlHelperItem);
-		theMenu.add(xmlHelperItemWithName);
-		ActionListener xmlHelperListener = new ActionListener() {
-			public void actionPerformed(ActionEvent ae) {
-				try {
-					XMLInputSplitter splitter = new XMLInputSplitter();
-					String name = "";
-					if (ae.getActionCommand().indexOf("name") != -1) {
-						name = (String) JOptionPane.showInputDialog(null, "Name for the new processor?",
-								"Name required", JOptionPane.QUESTION_MESSAGE, null, null, "");
-						if (name != null) {
-							name = model.getValidProcessorName(name);
-						}
-					} else {
-						name = inputPort.getName() + "XML";
-					}
-					if (name != null) {
-						splitter.setUpInputs(inputPort);
-						LocalServiceProcessor processor = new LocalServiceProcessor(model, model
-								.getValidProcessorName(name), splitter);
-						model.addProcessor(processor);
-						model.addDataConstraint(new DataConstraint(model, processor.getOutputPorts()[0], inputPort));
-					}
-				} catch (Exception e) {
-					logger.error("Error adding XML input splitter", e);
-				}
-			}
-		};
-		xmlHelperItem.addActionListener(xmlHelperListener);
-		xmlHelperItemWithName.addActionListener(xmlHelperListener);
 	}
 
 	private static JPopupMenu getDataConstraintMenu(DataConstraint dc, ScuflModel model) {
