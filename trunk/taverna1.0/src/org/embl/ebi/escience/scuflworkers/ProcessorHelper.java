@@ -6,15 +6,11 @@
 package org.embl.ebi.escience.scuflworkers;
 
 import java.lang.reflect.Constructor;
-import java.net.URL;
-import java.util.Enumeration;
+import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
-import java.util.Set;
 
 import javax.swing.ImageIcon;
 
@@ -39,11 +35,11 @@ import org.jdom.Element;
  * is shown below :
  * 
  * <pre>
- *     taverna.processor.soaplabwsdl.class = org.embl.ebi.escience.scuflworkers.soaplab.SoaplabProcessor
- *     taverna.processor.soaplabwsdl.xml = org.embl.ebi.escience.scuflworkers.soaplab.SoaplabXMLHandler
- *     taverna.processor.soaplabwsdl.colour = lightgoldenrodyellow
- *     taverna.processor.soaplabwsdl.icon = org/embl/ebi/escience/scuflui/soaplab.gif
- *     taverna.processor.soaplabwsdl.taskclass = uk.ac.soton.itinnovation.taverna.enactor.entities.SoaplabTask
+ *        taverna.processor.soaplabwsdl.class = org.embl.ebi.escience.scuflworkers.soaplab.SoaplabProcessor
+ *        taverna.processor.soaplabwsdl.xml = org.embl.ebi.escience.scuflworkers.soaplab.SoaplabXMLHandler
+ *        taverna.processor.soaplabwsdl.colour = lightgoldenrodyellow
+ *        taverna.processor.soaplabwsdl.icon = org/embl/ebi/escience/scuflui/soaplab.gif
+ *        taverna.processor.soaplabwsdl.taskclass = uk.ac.soton.itinnovation.taverna.enactor.entities.SoaplabTask
  * </pre>
  * 
  * To load additional processor types for enactment and display within the
@@ -58,139 +54,107 @@ import org.jdom.Element;
 public class ProcessorHelper {
 	private static Logger logger = Logger.getLogger(ProcessorHelper.class);
 
-	private static Map coloursForTagName = new HashMap();
-
-	private static Map tagNameForClassName = new HashMap();
-
-	private static Map classNameForTagName = new HashMap();
-
-	private static Map iconForTagName = null;
-
-	private static Set<ScavengerHelper> scavengerHelpers = new HashSet<ScavengerHelper>();
-
-	private static Map taskClassForTagName = new HashMap();
-
-	private static Map xmlHandlerForTagName = new HashMap();
-
-	private static Map tagNameForScavenger = new HashMap();
-
-	private static Map editorForTagName = new HashMap();
-
-	private static Set simpleScavengers = new HashSet();
-
-	private static Properties tavernaProperties = null;
-
 	private static ImageIcon unknownProcessorIcon;
 
+	private static Map<String, ProcessorInfoBean> beanForProcessorClassname = new HashMap<String, ProcessorInfoBean>();
+
+	private static List<Scavenger> simpleScavengers = new ArrayList<Scavenger>();
+
+	private static List<ScavengerHelper> scavengerHelpers = new ArrayList<ScavengerHelper>();
+
+	private static Map<String, ProcessorInfoBean> beanForScavengerClassname = new HashMap<String, ProcessorInfoBean>();
+
+	private static Map<String, ImageIcon> iconForTagName = new HashMap<String, ImageIcon>();
+
+	private static Map<String, XMLHandler> xmlHandlerForTagName = new HashMap<String, XMLHandler>();
+
+	private static Map<String, ProcessorEditor> editorForTagName = new HashMap<String, ProcessorEditor>();
+
 	static {
-		try {
-			// Get the classloader for this class
-			ClassLoader loader = ProcessorHelper.class.getClassLoader();
-			if (loader == null) {
-				loader = Thread.currentThread().getContextClassLoader();
+		populateMaps();
+	}
+
+	/**
+	 * Populates the class level maps and lists with details about the
+	 * processors and their scavengers
+	 * 
+	 */
+	public static void populateMaps() {
+		emptyMaps();
+		ClassLoader loader = ProcessorHelper.class.getClassLoader();
+		if (loader == null) {
+			loader = Thread.currentThread().getContextClassLoader();
+		}
+
+		unknownProcessorIcon = new ImageIcon(loader
+				.getResource("org/embl/ebi/escience/scuflui/icons/explorer/unknownprocessor.png"));
+
+		List<ProcessorInfoBean> infoBeans = ProcessorRegistry.instance().getProcessorInfoBeans(loader);
+		for (ProcessorInfoBean bean : infoBeans) {
+			beanForProcessorClassname.put(bean.processorClassname(), bean);
+
+			if (bean.icon() != null) {
+				iconForTagName.put(bean.tag(), new ImageIcon(loader.getResource(bean.icon())));
 			}
-			// Load the 'unknown processor' image icon
-			unknownProcessorIcon = new ImageIcon(loader
-					.getResource("org/embl/ebi/escience/scuflui/icons/explorer/unknownprocessor.png"));
-			// Load up the values from any taverna.properties files located
-			// by the class resource loader.
-			Enumeration en = loader.getResources("taverna.properties");
-			tavernaProperties = new Properties();
-			while (en.hasMoreElements()) {
-				URL resourceURL = (URL) en.nextElement();
-				logger.info("Loading resources from : " + resourceURL.toString());
-				tavernaProperties.load(resourceURL.openStream());
-			}
-			// Should now have a populated properties list, set up the various
-			// static Map objects for the colours etc.
-			// Iterate over all property keys
-			for (Iterator i = tavernaProperties.keySet().iterator(); i.hasNext();) {
-				String key = (String) i.next();
-				logger.debug("key: " + key);
-				String value = tavernaProperties.getProperty(key);
-				logger.debug("\t value: " + value);
-				String[] keyElements = key.split("\\.");
-				// Detect the processor keys
-				if (keyElements.length == 4 && keyElements[1].equals("processor")) {
-					String tagName = keyElements[2];
-					// If this is the class name...
-					// Form : taverna.processor.<TAGNAME>.class = <CLASSNAME>
-					logger.debug("\ttag name: " + tagName);
-					if (keyElements[3].equals("class")) {
-						// Store the class name <-> tag name mappings
-						tagNameForClassName.put(value, tagName);
-						classNameForTagName.put(tagName, value);
-					}
-					// Form : taverna.processor.<TAGNAME>.colour =
-					// <RENDERINGHINT_COLOUR>
-					else if (keyElements[3].equals("colour")) {
-						// Configure default display colour for i.e. dot
-						coloursForTagName.put(tagName, value);
-					}
-					// Form : taverna.processor.<TAGNAME>.icon =
-					// <RENDERINGHINT_ICON>
-					// *** NOW LOADS ON DEMAND ***
-					// else if (keyElements[3].equals("icon")) {
-					// Fetch resource icon...
-					// iconForTagName.put(tagName,new
-					// ImageIcon(loader.getResource(value)));
-					// }
-					// Form : taverna.processor.<TAGNAME>.taskclass =
-					// <ENACTOR_TASK_CLASS>
-					else if (keyElements[3].equals("taskclass")) {
-						// Configure the taverna task for the enactor to run
-						// this type of processor
-						taskClassForTagName.put(tagName, value);
-					}
-					// Form : taverna.processor.<TAGNAME>.xml =
-					// <XML_HANDLER_CLASS>
-					else if (keyElements[3].equals("xml")) {
-						// Configure and instantiate the XML handler for this
-						// type of processor
-						String handlerClassName = value;
-						// Create an instance of the handler
-						Class handlerClass = Class.forName(handlerClassName);
-						XMLHandler xh = (XMLHandler) handlerClass.newInstance();
-						xmlHandlerForTagName.put(tagName, xh);
-					}
-					// Form : taverna.processor.<TAGNAME>.editor =
-					// <EDITOR_CLASS>
-					else if (keyElements[3].equals("editor")) {
-						// Configure and create the processor editor handler
-						String editorClassName = value;
-						// Create an instance...
-						Class editorClass = Class.forName(editorClassName);
-						ProcessorEditor pe = (ProcessorEditor) editorClass.newInstance();
-						editorForTagName.put(tagName, pe);
-					}
-				}
-				// Form : taverna.scavenger.<TAGNAME> = <SCAVENGERCLASS>
-				// Use the scavenger class as a key, as this allows us to have
-				// more than one scavenger per tag type. We have the tag type as
-				// a value in order that the rendering code can get the icon
-				// hint
-				// for the type being created.
-				keyElements = key.split("\\.", 3);
-				if (keyElements.length == 3 && keyElements[1].equals("scavenger")) {
-					// Get the set of scavenger creating classes
-					String scavengerClassName = keyElements[2];
-					String scavengerTagName = value;
-					Object o = Class.forName(scavengerClassName).newInstance();
+
+			if (bean.scavengerClassname() != null) {
+				beanForScavengerClassname.put(bean.scavengerClassname(), bean);
+
+				Object o;
+				try {
+					o = Class.forName(bean.scavengerClassname()).newInstance();
 					if (o instanceof ScavengerHelper) {
-						tagNameForScavenger.put(scavengerClassName, scavengerTagName);
 						scavengerHelpers.add((ScavengerHelper) o);
 					} else if (o instanceof Scavenger) {
-						simpleScavengers.add(o);
+						simpleScavengers.add((Scavenger) o);
 					}
+				} catch (Exception e) {
+					logger.error("Exception creating scavenger class: " + bean.scavengerClassname(), e);
 				}
 			}
 
-			logger.debug("Populated xmlHanderForTagName: " + xmlHandlerForTagName);
-		} catch (Exception e) {
-			logger.fatal("Error during initialisation for taverna properties!", e);
-			// Don't exit, as this hides the stack trace etc!
-			// System.exit(1);
+			if (bean.xmlHandlerClassname() != null) {
+				try {
+					XMLHandler handler = (XMLHandler) Class.forName(bean.xmlHandlerClassname()).newInstance();
+					xmlHandlerForTagName.put(bean.tag(), handler);
+				} catch (Exception e) {
+					logger.error("Exception creating xml handler: " + bean.xmlHandlerClassname(), e);
+				}
+			}
+
+			if (bean.editorClassname() != null) {
+				try {
+					ProcessorEditor editor = (ProcessorEditor) Class.forName(bean.editorClassname()).newInstance();
+					editorForTagName.put(bean.tag(), editor);
+				} catch (Exception e) {
+					logger.error("Exception creating processor editor: " + bean.editorClassname(), e);
+				}
+			}
 		}
+	}
+
+	/**
+	 * Clears the maps allowing them to be refreshed with new data
+	 * 
+	 */
+	private static void emptyMaps() {
+		beanForProcessorClassname.clear();
+		simpleScavengers.clear();
+		scavengerHelpers.clear();
+		beanForScavengerClassname.clear();
+		iconForTagName.clear();
+		xmlHandlerForTagName.clear();
+		editorForTagName.clear();
+	}
+
+	/**
+	 * Return the ProcessorInfoBean associated with the given scavenger class
+	 * 
+	 * @param scavengerClassname
+	 * @return
+	 */
+	public static ProcessorInfoBean getInfoBeanForScavenger(String scavengerClassname) {
+		return beanForScavengerClassname.get(scavengerClassname);
 	}
 
 	/**
@@ -198,15 +162,8 @@ public class ProcessorHelper {
 	 * these are added automatically to all service selection panels on
 	 * creation.
 	 */
-	public static Set getSimpleScavengerSet() {
+	public static List<Scavenger> getSimpleScavengers() {
 		return simpleScavengers;
-	}
-
-	/**
-	 * Return the map of scavenger class names to tag names
-	 */
-	public static Map getScavengerToTagNames() {
-		return tagNameForScavenger;
 	}
 
 	/**
@@ -215,16 +172,7 @@ public class ProcessorHelper {
 	 * the processor
 	 */
 	public static String getTaskClassName(Processor p) {
-		String className = p.getClass().getName();
-		String tagName = (String) tagNameForClassName.get(className);
-		if (tagName == null) {
-			return null;
-		}
-		String taskClassName = (String) taskClassForTagName.get(tagName);
-		if (taskClassName == null) {
-			return null;
-		}
-		return taskClassName;
+		return beanForProcessorClassname.get(p.getClass().getName()).taskClassname();
 	}
 
 	/**
@@ -258,14 +206,20 @@ public class ProcessorHelper {
 	 * index for the other categories such as icons.
 	 */
 	public static String getTagNameForClassName(String className) {
-		// LOG.debug("Request for tag name for : "+className);
-		return (String) tagNameForClassName.get(className);
+		String result = null;
+		ProcessorInfoBean bean = beanForProcessorClassname.get(className);
+		if (bean == null) {
+			logger.error("Can't find processor with classname: " + className);
+		} else {
+			result = bean.tag();
+		}
+		return result;
 	}
 
 	/**
 	 * @return a set of instantiated ScavengerHelper classes
 	 */
-	public static Set<ScavengerHelper> getScavengerHelpers() {
+	public static List<ScavengerHelper> getScavengerHelpers() {
 		return scavengerHelpers;
 	}
 
@@ -273,44 +227,25 @@ public class ProcessorHelper {
 	 * Given a tag name, return the in place editor for the processor
 	 */
 	public static ProcessorEditor getEditorForTagName(String tagName) {
-		return (ProcessorEditor) editorForTagName.get(tagName);
+		return editorForTagName.get(tagName);
 	}
 
 	/**
 	 * Get the xml handler for a given tag name
 	 */
 	public static XMLHandler getXMLHandlerForTagName(String tagname) {
-		return (XMLHandler) xmlHandlerForTagName.get(tagname);
+		return xmlHandlerForTagName.get(tagname);
 	}
 
 	/**
 	 * Given a tag name, return the preferred image icon for that tag.
 	 */
 	public static ImageIcon getIconForTagName(String tagName) {
-		if (iconForTagName == null) {
-			// Initialise the icon store
-			iconForTagName = new HashMap();
-			for (Iterator i = tavernaProperties.keySet().iterator(); i.hasNext();) {
-				String key = (String) i.next();
-				String value = tavernaProperties.getProperty(key);
-				String[] keyElements = key.split("\\.");
-				if (keyElements.length == 4 && keyElements[1].equals("processor")) {
-					String loadTagName = keyElements[2];
-					// Form : taverna.processor.<TAGNAME>.icon =
-					// <RENDERINGHINT_ICON>
-					if (keyElements[3].equals("icon")) {
-						// Fetch resource icon...
-						iconForTagName.put(loadTagName, new ImageIcon(ProcessorHelper.class.getClassLoader()
-								.getResource(value)));
-					}
-				}
-			}
-		}
 
-		// LOG.debug("Request for icon for : "+tagName);
 		ImageIcon icon = (ImageIcon) iconForTagName.get(tagName);
 		if (icon == null) {
-			return unknownProcessorIcon;
+			logger.info("No icon exists for processor with tag:" + tagName);
+			icon = unknownProcessorIcon;
 		}
 		return icon;
 	}
@@ -320,15 +255,11 @@ public class ProcessorHelper {
 	 * representations.
 	 */
 	public static String getPreferredColour(Processor p) {
-		String className = p.getClass().getName();
-		String tagName = (String) tagNameForClassName.get(className);
-		if (tagName != null) {
-			String colour = (String) coloursForTagName.get(tagName);
-			if (colour != null) {
-				return colour;
-			}
+		String colour = "white";
+		if (beanForProcessorClassname.get(p.getClass().getName()) != null) {
+			colour = beanForProcessorClassname.get(p.getClass().getName()).colour();
 		}
-		return "white";
+		return colour;
 	}
 
 	/**
@@ -336,15 +267,11 @@ public class ProcessorHelper {
 	 * example, tree renderer objects.
 	 */
 	public static ImageIcon getPreferredIcon(Processor p) {
-		String className = p.getClass().getName();
-		String tagName = (String) tagNameForClassName.get(className);
-		if (tagName != null) {
-			ImageIcon icon = getIconForTagName(tagName);
-			if (icon != null) {
-				return icon;
-			}
+		ImageIcon result = unknownProcessorIcon;
+		if (beanForProcessorClassname.get(p.getClass().getName()) != null) {
+			result = getIconForTagName(beanForProcessorClassname.get(p.getClass().getName()).tag());
 		}
-		return unknownProcessorIcon;
+		return result;
 	}
 
 	/**
@@ -373,11 +300,11 @@ public class ProcessorHelper {
 	 */
 	public static Element elementForProcessor(Processor p, boolean decorations) {
 		String className = p.getClass().getName();
-		String tagName = (String) tagNameForClassName.get(className);
+		String tagName = beanForProcessorClassname.get(className).tag();
 		if (tagName == null) {
 			return null;
 		}
-		XMLHandler xh = (XMLHandler) xmlHandlerForTagName.get(tagName);
+		XMLHandler xh = getXMLHandlerForTagName(tagName);
 		if (xh == null) {
 			return null;
 		}
@@ -429,7 +356,7 @@ public class ProcessorHelper {
 		for (Iterator i = processorNode.getChildren().iterator(); i.hasNext() && loadedProcessor == null;) {
 			Element candidateElement = (Element) i.next();
 			String elementName = candidateElement.getName();
-			XMLHandler xh = (XMLHandler) xmlHandlerForTagName.get(elementName);
+			XMLHandler xh = getXMLHandlerForTagName(elementName);
 			if (xh == null) {
 				continue;
 			}

@@ -16,7 +16,7 @@ import org.apache.log4j.Logger;
  */
 public class UIComponentRegistry {
 
-	private static Logger log = Logger.getLogger(UIComponentRegistry.class);
+	private static Logger logger = Logger.getLogger(UIComponentRegistry.class);
 
 	private static UIComponentRegistry instance;
 
@@ -43,14 +43,15 @@ public class UIComponentRegistry {
 
 	public void loadInstances() {
 		ClassLoader classLoader = UIComponentRegistry.class.getClassLoader();
-		log.info("Loading all UI components");
+		logger.info("Loading all UI components");
 		SPInterface spiIF = new SPInterface(ScuflUIComponent.class);
 		ClassLoaders loaders = new ClassLoaders();
 		loaders.put(classLoader);
 		Enumeration spe = Service.providers(spiIF, loaders);
 		// FIXME: Throws UnsupportedClassVersionError on 1.5 classes from 1.4 VM
 		while (spe.hasMoreElements()) {
-			ScuflUIComponent component = (ScuflUIComponent) spe.nextElement();			
+			ScuflUIComponent component = (ScuflUIComponent) spe.nextElement();	
+			logger.info("Found UI component:"+component.getName());
 			String componentClassName = component.getClass().getName();
 			String componentDisplayName = component.getName();
 			try {
@@ -60,7 +61,7 @@ public class UIComponentRegistry {
 				//
 			}
 		}
-		log.info("Done");
+		logger.info("Done");
 	}
 
 	public Map getComponents() {

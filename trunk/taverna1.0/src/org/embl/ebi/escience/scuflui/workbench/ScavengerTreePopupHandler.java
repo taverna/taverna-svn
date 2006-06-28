@@ -352,19 +352,19 @@ public class ScavengerTreePopupHandler extends MouseAdapter {
 						menu.setLabel("Create new scavenger");
 						// Iterate over the scavenger creator list from the
 						// ProcessorHelper class
-						for (Iterator i = ProcessorHelper.getScavengerToTagNames().keySet().iterator(); i.hasNext();) {
-							String scavengerClassName = (String) i.next();
-							ImageIcon scavengerIcon = ProcessorHelper.getIconForTagName((String) (ProcessorHelper
-									.getScavengerToTagNames().get(scavengerClassName)));
+						for (ScavengerHelper scavengerHelper : ProcessorHelper.getScavengerHelpers())
+						{						
+							ImageIcon scavengerIcon = ProcessorHelper.getIconForTagName(ProcessorHelper.getInfoBeanForScavenger(scavengerHelper.getClass().getName()).tag());
 							// Instantiate a ScavengerHelper...
-							try {
-								Class scavengerHelperClass = Class.forName(scavengerClassName);
-								ScavengerHelper sh = (ScavengerHelper) scavengerHelperClass.newInstance();
-								String scavengerDescription = sh.getScavengerDescription();
-								JMenuItem scavengerMenuItem = new JMenuItem(scavengerDescription, scavengerIcon);
-								scavengerMenuItem.addActionListener(sh
-										.getListener(ScavengerTreePopupHandler.this.scavenger));
-								menu.add(scavengerMenuItem);
+							try {																
+								String scavengerDescription = scavengerHelper.getScavengerDescription();
+								if (scavengerDescription!=null)
+								{
+									JMenuItem scavengerMenuItem = new JMenuItem(scavengerDescription, scavengerIcon);
+									scavengerMenuItem.addActionListener(scavengerHelper
+											.getListener(ScavengerTreePopupHandler.this.scavenger));
+									menu.add(scavengerMenuItem);
+								}
 							} catch (Exception ex) {
 								// Just for now...
 								ex.printStackTrace();

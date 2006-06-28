@@ -18,7 +18,6 @@ import javax.swing.JPopupMenu;
 import javax.swing.JRadioButtonMenuItem;
 import javax.swing.tree.DefaultMutableTreeNode;
 
-import org.apache.log4j.Logger;
 import org.embl.ebi.escience.scufl.AlternateProcessor;
 import org.embl.ebi.escience.scufl.ConcurrencyConstraint;
 import org.embl.ebi.escience.scufl.DataConstraint;
@@ -37,9 +36,9 @@ import org.embl.ebi.escience.scuflui.actions.RenameAction;
 import org.embl.ebi.escience.scuflui.actions.SetDefaultValueAction;
 import org.embl.ebi.escience.scuflui.processoractions.ProcessorActionRegistry;
 import org.embl.ebi.escience.scuflui.processoractions.ProcessorActionSPI;
-import org.embl.ebi.escience.scuflworkers.ScuflContextMenuAware;
 import org.embl.ebi.escience.scuflworkers.ProcessorEditor;
 import org.embl.ebi.escience.scuflworkers.ProcessorHelper;
+import org.embl.ebi.escience.scuflworkers.ScuflContextMenuAware;
 
 /**
  * A static factory method to return an instance of JPopupMenu that is

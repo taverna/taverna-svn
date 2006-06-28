@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: WSDLSOAPInvokerTest.java,v $
- * Revision           $Revision: 1.5 $
+ * Revision           $Revision: 1.6 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-06-02 13:57:22 $
+ * Last modified on   $Date: 2006-06-28 14:50:25 $
  *               by   $Author: sowen70 $
  * Created on 04-May-2006
  *****************************************************************/
@@ -163,39 +163,7 @@ public class WSDLSOAPInvokerTest extends TestCase {
 		Map output = invoker.invoke(new HashMap());
 		
 		assertNotNull("no result returned",output.get("getDatabasesWithDetailsReturn"));
-	}
-
-	public void testComplexEmptyMultiRef() throws Exception {
-		
-		WSDLBasedProcessor processor = null;
-		try {
-			processor = new WSDLBasedProcessor(null, "procName", "http://genex.hgu.mrc.ac.uk/axis/services/ma?wsdl",
-					"whatGeneInStage");
-
-		} catch (ProcessorCreationException e) {
-			logger.error("Unable to connect to serivce in testComplexEmptyMultiRef, skipping test");
-			return; // don't fail because the service is unavailable
-		}
-
-		WSDLSOAPInvoker invoker = new WSDLSOAPInvoker(processor);
-
-		Map inputs = new HashMap();
-		inputs.put("in0", new DataThing("2"));
-		inputs.put("in1", new DataThing("14"));
-		inputs.put("in2", new DataThing("1"));
-
-		Map outputs = invoker.invoke(inputs);
-
-		assertEquals("outputs should have 2 entries", 2, outputs.size());
-
-		DataThing thing = (DataThing) outputs.get("whatGeneInStageReturn");
-
-		assertNotNull("output should contain an entry with key 'whatGeneInStageReturn'", thing);
-
-		assertEquals("output type should be of type String", String.class, thing.getDataObject().getClass());
-
-		assertEquals("incorrect xml", "<whatGeneInStageReturn/>", thing.getDataObject().toString());
-	}
+	}	
 
 	// The following services were found at http://www.xmethods.org/
 	// and can be tested via that site.
@@ -218,50 +186,7 @@ public class WSDLSOAPInvokerTest extends TestCase {
 		assertNotNull("there should be a result of name 'Result'", outputThing);
 		assertEquals("output data should be ArrayList", ArrayList.class, outputThing.getDataObject().getClass());
 	}
-
-	// a service I found that is has an unexpected operation namespace, and is
-	// dependant on parameter order
-	/* Commented out because the service is unreliable :(
-	public void testStrictOrderandOperationNamespace() throws Exception {
-		
-		WSDLBasedProcessor processor = null;
-		try {
-			processor = new WSDLBasedProcessor(null, "procName",
-					"http://www.freewebs.com/jimmy_cheng/CurrencyExchangeService.wsdl", "getRate");
-		} catch (ProcessorCreationException e) {
-			logger.error("Unable to connect to serivce in testStringOrderAndOperationNamespace, skipping test");
-			return; // don't fail because the service is unavailable
-		}
-		WSDLSOAPInvoker invoker = new WSDLSOAPInvoker(processor);
-		Map inputMap = new HashMap();
-		inputMap.put("country1", new DataThing("UK"));
-		inputMap.put("country2", new DataThing("France"));
-		
-		Map output;
-		
-		try
-		{
-			output = invoker.invoke(inputMap);
-		}
-		catch(Exception e)
-		{			
-			logger.error("Error invoking service, skipping the rest of the test.",e);
-			//skip if the invocation fail, this is not the purpose of this test, and there is plenty of other
-			//test coverage for invocing this type of service.
-			return;
-		}
-
-		assertEquals("should be 2 elements", 2, output.size());
-		DataThing outputThing = (DataThing) output.get("Result");
-		assertNotNull("there should be a result of name 'Result'", outputThing);
-
-		float result = Float.parseFloat(outputThing.getDataObject().toString());
-
-		// today, for correct result was 0.9ish, but 0.1 if the wrong way round.
-		assertTrue("Looks like parameters have been sent the wrong way (or the economy has crashed!)", result > 0.5);
-	}
-	*/
-
+	
 	public void testDocumentNamespace() throws Exception {
 		
 		WSDLBasedProcessor processor = null;

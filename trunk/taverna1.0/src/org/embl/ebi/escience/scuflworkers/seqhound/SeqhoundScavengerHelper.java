@@ -25,14 +25,15 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: SeqhoundScavengerHelper.java,v $
- * Revision           $Revision: 1.2 $
+ * Revision           $Revision: 1.3 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-06-21 15:23:41 $
+ * Last modified on   $Date: 2006-06-28 14:50:24 $
  *               by   $Author: sowen70 $
  * Created on 15-Jun-2006
  *****************************************************************/
 package org.embl.ebi.escience.scuflworkers.seqhound;
 
+import java.awt.event.ActionListener;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -40,8 +41,10 @@ import org.apache.log4j.Logger;
 import org.embl.ebi.escience.scufl.ScuflModel;
 import org.embl.ebi.escience.scuflui.workbench.Scavenger;
 import org.embl.ebi.escience.scuflui.workbench.ScavengerCreationException;
+import org.embl.ebi.escience.scuflui.workbench.ScavengerTree;
+import org.embl.ebi.escience.scuflworkers.ScavengerHelper;
 
-public class SeqhoundScavengerHelper {
+public class SeqhoundScavengerHelper implements ScavengerHelper {
 
 	private static Logger logger = Logger.getLogger(SeqhoundScavengerHelper.class);
 
@@ -58,6 +61,19 @@ public class SeqhoundScavengerHelper {
 	public Set<Scavenger> getFromModel(ScuflModel model) {
 		return new HashSet<Scavenger>();
 	}
+
+	
+	//TODO: a temporary hack to allow Seqhound to look like a ScavengerHelper and therefore
+	//		be added to the service list, but by returning null prevents it being added as a
+	//      menu item in ScavengerTreePopup
+	public ActionListener getListener(ScavengerTree theScavenger) {		
+		return null;
+	}
+
+	public String getScavengerDescription() { 
+		return null;
+	}
+
 	
 	
 

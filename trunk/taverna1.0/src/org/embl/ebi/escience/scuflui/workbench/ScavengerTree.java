@@ -236,14 +236,13 @@ public class ScavengerTree extends ExtendedJTree implements ScuflUIComponent, Dr
 			// do this if the populate flag is set to true.
 
 			if (populate) {
-				Set simpleScavengers = ProcessorHelper.getSimpleScavengerSet();
+				List<Scavenger> simpleScavengers = ProcessorHelper.getSimpleScavengers();
 				if (simpleScavengers.isEmpty() == false) {
 					DefaultMutableTreeNode t = new DefaultMutableTreeNode("Local Services");
 					this.treeModel.insertNodeInto(t, (MutableTreeNode) this.treeModel.getRoot(), this.treeModel
 							.getChildCount(this.treeModel.getRoot()));
-					for (Iterator i = simpleScavengers.iterator(); i.hasNext();) {
-						Scavenger s = (Scavenger) i.next();
-						treeModel.insertNodeInto(s, t, treeModel.getChildCount(t));
+					for (Scavenger scavenger : simpleScavengers) {						
+						treeModel.insertNodeInto(scavenger, t, treeModel.getChildCount(t));
 						treeModel.nodeStructureChanged(t);
 					}
 				}
@@ -285,7 +284,7 @@ public class ScavengerTree extends ExtendedJTree implements ScuflUIComponent, Dr
 					}
 				}
 
-				Set<ScavengerHelper> helpers = ProcessorHelper.getScavengerHelpers();
+				List<ScavengerHelper> helpers = ProcessorHelper.getScavengerHelpers();
 				for (ScavengerHelper helper : helpers) {
 					for (Scavenger scavenger : helper.getDefaults()) {
 						scavengerTree.addScavenger(scavenger);
@@ -332,7 +331,7 @@ public class ScavengerTree extends ExtendedJTree implements ScuflUIComponent, Dr
 	private void addScavengersFromModel(ScuflModel theModel) throws ScavengerCreationException {
 		if (theModel != null) {
 
-			Set<ScavengerHelper> helpers = ProcessorHelper.getScavengerHelpers();
+			List<ScavengerHelper> helpers = ProcessorHelper.getScavengerHelpers();
 			for (ScavengerHelper helper : helpers) {
 				Set<Scavenger> scavengers = helper.getFromModel(theModel);
 				for (Scavenger scavenger : scavengers) {

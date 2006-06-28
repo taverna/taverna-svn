@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: WSDLSOAPInvoker.java,v $
- * Revision           $Revision: 1.4 $
+ * Revision           $Revision: 1.5 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-05-19 11:51:06 $
+ * Last modified on   $Date: 2006-06-28 14:50:25 $
  *               by   $Author: sowen70 $
  * Created on 07-Apr-2006
  *****************************************************************/
@@ -100,8 +100,8 @@ public class WSDLSOAPInvoker {
 	public Map invoke(Map inputMap) throws Exception {
 
 		Call call = getCall();
-		SOAPBodyElement body = buildBody(inputMap);				
-
+		SOAPBodyElement body = buildBody(inputMap);						
+		
 		List response = (List) call.invoke(new Object[] { body });
 
 		SOAPResponseParser parser = SOAPResponseParserFactory.instance().create(response, getUse(), getStyle(),
