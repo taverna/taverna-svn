@@ -60,8 +60,8 @@ import org.embl.ebi.escience.scufl.PortCreationException;
 import org.embl.ebi.escience.scufl.ScuflModel;
 import org.embl.ebi.escience.scufl.ScuflModelEvent;
 import org.embl.ebi.escience.scufl.ScuflModelEventListener;
-import org.embl.ebi.escience.scuflui.ScuflIcons;
 import org.embl.ebi.escience.scuflui.ScuflUIComponent;
+import org.embl.ebi.escience.scuflui.TavernaIcons;
 import org.embl.ebi.escience.scuflworkers.ProcessorHelper;
 import org.syntax.jedit.JEditTextArea;
 import org.syntax.jedit.TextAreaDefaults;
@@ -325,7 +325,7 @@ public class BSFConfigPanel extends JPanel implements ScuflUIComponent,
 	
 	JComboBox scriptEngineSelect = new JComboBox();
 
-	Action deletePortAction = new AbstractAction("Delete Port", ScuflIcons.deleteIcon)
+	Action deletePortAction = new AbstractAction("Delete Port", TavernaIcons.deleteIcon)
 	{
 		public void actionPerformed(ActionEvent e)
 		{
@@ -399,7 +399,7 @@ public class BSFConfigPanel extends JPanel implements ScuflUIComponent,
 			}
 		});
 
-		JButton scriptUpdateButton = new JButton("Save Script Changes", ScuflIcons.saveIcon);
+		JButton scriptUpdateButton = new JButton("Save Script Changes", TavernaIcons.saveIcon);
 		scriptUpdateButton.addActionListener(new ActionListener()
 		{
 			public void actionPerformed(ActionEvent ae)
@@ -491,7 +491,7 @@ public class BSFConfigPanel extends JPanel implements ScuflUIComponent,
 			public Component getTableCellRendererComponent(JTable table, Object value,
 					boolean isSelected, boolean hasFocus, int row, int column)
 			{
-				setIcon(ScuflIcons.inputPortIcon);
+				setIcon(TavernaIcons.inputPortIcon);
 				return super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row,
 						column);
 			}
@@ -526,7 +526,7 @@ public class BSFConfigPanel extends JPanel implements ScuflUIComponent,
 			}
 		};
 
-		addInputButton = new JButton("Add Input", ScuflIcons.inputPortIcon);
+		addInputButton = new JButton("Add Input", TavernaIcons.inputPortIcon);
 		addInputButton.addActionListener(addInputAction);
 		addInputButton.setEnabled(false);
 
@@ -601,7 +601,7 @@ public class BSFConfigPanel extends JPanel implements ScuflUIComponent,
 			public Component getTableCellRendererComponent(JTable table, Object value,
 					boolean isSelected, boolean hasFocus, int row, int column)
 			{
-				setIcon(ScuflIcons.outputPortIcon);
+				setIcon(TavernaIcons.outputPortIcon);
 				return super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row,
 						column);
 			}
@@ -663,7 +663,7 @@ public class BSFConfigPanel extends JPanel implements ScuflUIComponent,
 			}
 		});
 
-		addOutputButton = new JButton("Add Output", ScuflIcons.outputPortIcon);
+		addOutputButton = new JButton("Add Output", TavernaIcons.outputPortIcon);
 		addOutputButton.addActionListener(addOutputAction);
 		addOutputButton.setEnabled(false);
 
