@@ -55,9 +55,9 @@ public class NodeColouringRenderer extends DefaultTreeCellRenderer {
 		Object userObject = ((DefaultMutableTreeNode) value).getUserObject();
 		if (!leaf) {
 			if (expanded) {
-				setIcon(ScuflIcons.folderOpenIcon);
+				setIcon(TavernaIcons.folderOpenIcon);
 			} else {
-				setIcon(ScuflIcons.folderClosedIcon);
+				setIcon(TavernaIcons.folderClosedIcon);
 			}
 		}
 		// Do highlight

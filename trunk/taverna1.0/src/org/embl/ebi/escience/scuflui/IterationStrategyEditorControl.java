@@ -67,7 +67,7 @@ public class IterationStrategyEditorControl extends JPanel {
 		addDot.setHorizontalAlignment(SwingConstants.LEFT);
 		normalize = new JButton("Normalize");
 		normalize.setHorizontalAlignment(SwingConstants.LEFT);
-		remove = new JButton("Remove node", ScuflIcons.deleteIcon);
+		remove = new JButton("Remove node", TavernaIcons.deleteIcon);
 		remove.setHorizontalAlignment(SwingConstants.LEFT);
 
 		change = new JButton("Switch to...",

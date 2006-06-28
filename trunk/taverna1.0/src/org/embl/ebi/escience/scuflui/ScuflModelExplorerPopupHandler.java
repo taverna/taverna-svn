@@ -91,7 +91,7 @@ public class ScuflModelExplorerPopupHandler extends MouseAdapter {
 							ShadedLabel.TAVERNA_BLUE));
 					theMenu.addSeparator();
 					JMenuItem editTemplates = new JMenuItem(
-							"Edit templates...", ScuflIcons.editIcon);
+							"Edit templates...", TavernaIcons.editIcon);
 					editTemplates.addActionListener(new ActionListener() {
 						public void actionPerformed(ActionEvent a) {
 							UIUtils.createFrame(theProcessor.getModel(),

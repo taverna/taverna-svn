@@ -18,7 +18,7 @@ import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 
 import org.embl.ebi.escience.baclava.DataThing;
-import org.embl.ebi.escience.scuflui.ScuflIcons;
+import org.embl.ebi.escience.scuflui.TavernaIcons;
 
 
 /**
@@ -33,7 +33,7 @@ public class SaveToFileSystem implements ResultMapSaveSPI {
      * Return the standard looking save to disk icon
      */
     public Icon getIcon() {
-	return ScuflIcons.saveIcon;
+	return TavernaIcons.saveIcon;
     }
 
     /**

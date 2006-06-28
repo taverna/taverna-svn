@@ -12,20 +12,20 @@ import org.embl.ebi.escience.scufl.DataConstraint;
 import org.embl.ebi.escience.scufl.Port;
 import org.embl.ebi.escience.scufl.Processor;
 import org.embl.ebi.escience.scufl.ScuflModel;
-import org.embl.ebi.escience.scuflui.ScuflIcons;
+import org.embl.ebi.escience.scuflui.TavernaIcons;
 
 /**
  * Action for removing an object from the Scufl Model. The object can be for
  * instance a Processor, Port, DataConstraint, or ConcurrencyConstraint.
  * 
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover</a>
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  */
 public class RemoveAction extends ModelObjectAction {
 
 	public RemoveAction(ScuflModel model, Object modelObject) {
 		super(model, modelObject);		
-		putValue(SMALL_ICON, ScuflIcons.deleteIcon);
+		putValue(SMALL_ICON, TavernaIcons.deleteIcon);
 		putValue(NAME, "Remove from model");
 		// putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_DELETE,
 		// 0));

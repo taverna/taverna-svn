@@ -90,7 +90,7 @@ import org.jdom.output.XMLOutputter;
  * Panel to construct the input for a workflow.
  * 
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover </a>
- * @version $Revision: 1.40 $
+ * @version $Revision: 1.41 $
  */
 public abstract class DataThingConstructionPanel extends JPanel implements
 		ScuflUIComponent, ScuflModelEventListener {
@@ -331,9 +331,9 @@ public abstract class DataThingConstructionPanel extends JPanel implements
 				scrollPane.setPreferredSize(new Dimension(0, 0));
 				JToolBar toolbar = new JToolBar();
 				JButton loadInputDocButton = new JButton("Load Input Doc",
-						ScuflIcons.openIcon);
+						TavernaIcons.openIcon);
 				JButton saveInputDocButton = new JButton("Save Input Doc",
-						ScuflIcons.saveIcon);
+						TavernaIcons.saveIcon);
 
 				loadInputDocButton.setToolTipText("Load Input Document");
 				loadInputDocButton.addActionListener(loadInputDocAction);
@@ -364,7 +364,7 @@ public abstract class DataThingConstructionPanel extends JPanel implements
 		 */
 		public void fillMenu(JPopupMenu menu) {
 			JMenuItem loadItem = new JMenuItem("Load Input Document",
-					ScuflIcons.openIcon);
+					TavernaIcons.openIcon);
 			loadItem.addActionListener(loadInputDocAction);
 			JMenuItem saveItem = new JMenuItem(
 					"Save Input Document",
@@ -432,13 +432,13 @@ public abstract class DataThingConstructionPanel extends JPanel implements
 		 */
 		public void fillMenu(JPopupMenu menu) {
 			JMenuItem createItem = new JMenuItem("New Input Value",
-					ScuflIcons.newInputIcon);
+					TavernaIcons.newInputIcon);
 			createItem.addActionListener(newInputAction);
 			JMenuItem createListItem = new JMenuItem("New List",
-					ScuflIcons.newListIcon);
+					TavernaIcons.newListIcon);
 			createListItem.addActionListener(newListAction);
 			JMenuItem removeItem = new JMenuItem("Remove",
-					ScuflIcons.deleteIcon);
+					TavernaIcons.deleteIcon);
 			removeItem.addActionListener(removeAction);
 
 			menu.add(createItem);
@@ -615,10 +615,10 @@ public abstract class DataThingConstructionPanel extends JPanel implements
 		 */
 		public void fillMenu(JPopupMenu menu) {
 			JMenuItem createItem = new JMenuItem("New Input Value",
-					ScuflIcons.newInputIcon);
+					TavernaIcons.newInputIcon);
 			createItem.addActionListener(newInputAction);
 			JMenuItem createListItem = new JMenuItem("New List",
-					ScuflIcons.newListIcon);
+					TavernaIcons.newListIcon);
 			createListItem.addActionListener(newListAction);
 
 			menu.add(createItem);
@@ -762,9 +762,9 @@ public abstract class DataThingConstructionPanel extends JPanel implements
 		public JComponent getPanel() {
 			if (panel == null) {
 				JToolBar toolbar = new JToolBar();
-				JButton loadButton = new JButton("Load", ScuflIcons.openIcon);
+				JButton loadButton = new JButton("Load", TavernaIcons.openIcon);
 				JButton loadURLButton = new JButton("Load from URL",
-						ScuflIcons.webIcon);
+						TavernaIcons.webIcon);
 				loadButton.setToolTipText("Load from File");
 				loadButton.addActionListener(loadFileAction);
 				loadURLButton.addActionListener(loadURLAction);
@@ -877,13 +877,13 @@ public abstract class DataThingConstructionPanel extends JPanel implements
 		 */
 		public void fillMenu(JPopupMenu menu) {
 			JMenuItem removeItem = new JMenuItem("Remove",
-					ScuflIcons.deleteIcon);
+					TavernaIcons.deleteIcon);
 			removeItem.addActionListener(removeAction);
 			JMenuItem loadFileItem = new JMenuItem("Load Input from File",
-					ScuflIcons.openIcon);
+					TavernaIcons.openIcon);
 			loadFileItem.addActionListener(loadFileAction);
 			JMenuItem loadURLItem = new JMenuItem("Load Input from URL",
-					ScuflIcons.openIcon);
+					TavernaIcons.openIcon);
 			loadURLItem.addActionListener(loadURLAction);
 			menu.add(removeItem);
 			menu.add(loadFileItem);
@@ -907,19 +907,19 @@ public abstract class DataThingConstructionPanel extends JPanel implements
 			super.getTreeCellRendererComponent(tree, value, sel, expanded,
 					leaf, row, hasFocus);
 			if (value instanceof InputPortNode) {
-				setIcon(ScuflIcons.inputIcon);
+				setIcon(TavernaIcons.inputIcon);
 			} else if (value instanceof InputDataThingNode) {
-				setIcon(ScuflIcons.inputValueIcon);
+				setIcon(TavernaIcons.inputValueIcon);
 			} else if (value instanceof InputListNode) {
 				if (expanded) {
-					setIcon(ScuflIcons.folderOpenIcon);
+					setIcon(TavernaIcons.folderOpenIcon);
 				} else {
-					setIcon(ScuflIcons.folderClosedIcon);
+					setIcon(TavernaIcons.folderClosedIcon);
 				}
 			} else if (expanded) {
-				setIcon(ScuflIcons.folderOpenIcon);
+				setIcon(TavernaIcons.folderOpenIcon);
 			} else {
-				setIcon(ScuflIcons.folderClosedIcon);
+				setIcon(TavernaIcons.folderClosedIcon);
 			}
 			return this;
 		}
@@ -1226,7 +1226,7 @@ public abstract class DataThingConstructionPanel extends JPanel implements
 		splitter.setPreferredSize(new Dimension(0, 0));
 
 		JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-		JButton runButton = new JButton("Run Workflow", ScuflIcons.runIcon);
+		JButton runButton = new JButton("Run Workflow", TavernaIcons.runIcon);
 		runButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent event) {
 				Map inputObject = bakeInputMap();
@@ -1239,16 +1239,16 @@ public abstract class DataThingConstructionPanel extends JPanel implements
 		});
 		buttonPanel.add(runButton);
 
-		loadInputsButton = new JButton("Load Inputs", ScuflIcons.openIcon);
+		loadInputsButton = new JButton("Load Inputs", TavernaIcons.openIcon);
 		loadInputsButton.setEnabled(false);
 		loadInputsButton.addActionListener(loadFilesAction);
-		newInputButton = new JButton("New Input", ScuflIcons.newInputIcon);
+		newInputButton = new JButton("New Input", TavernaIcons.newInputIcon);
 		newInputButton.setEnabled(false);
 		newInputButton.addActionListener(newInputAction);
-		newListButton = new JButton("New List", ScuflIcons.newListIcon);
+		newListButton = new JButton("New List", TavernaIcons.newListIcon);
 		newListButton.setEnabled(false);
 		newListButton.addActionListener(newListAction);
-		removeButton = new JButton("Remove", ScuflIcons.deleteIcon);
+		removeButton = new JButton("Remove", TavernaIcons.deleteIcon);
 		removeButton.setEnabled(false);
 		removeButton.addActionListener(removeAction);
 
@@ -1321,7 +1321,7 @@ public abstract class DataThingConstructionPanel extends JPanel implements
 	}
 
 	public ImageIcon getIcon() {
-		return ScuflIcons.windowInput;
+		return TavernaIcons.windowInput;
 	}
 
 	/*

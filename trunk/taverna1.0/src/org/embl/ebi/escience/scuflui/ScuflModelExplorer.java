@@ -57,7 +57,7 @@ public class ScuflModelExplorer extends JTree implements
 	}
 
 	public javax.swing.ImageIcon getIcon() {
-		return ScuflIcons.windowExplorer;
+		return TavernaIcons.windowExplorer;
 	}
 
 	/**

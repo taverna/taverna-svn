@@ -23,12 +23,13 @@ import org.embl.ebi.escience.scufl.ScuflModel;
 import org.embl.ebi.escience.scufl.parser.XScuflParser;
 import org.embl.ebi.escience.scuflui.ExtensionFileFilter;
 import org.embl.ebi.escience.scuflui.ScuflIcons;
+import org.embl.ebi.escience.scuflui.TavernaIcons;
 
 /**
  * COMMENT
  * 
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover</a>
- * @version $Revision: 1.6 $
+ * @version $Revision: 1.7 $
  */
 public class LoadWorkflowAction extends ScuflModelAction {
 	final JFileChooser fc = new JFileChooser();
@@ -38,7 +39,7 @@ public class LoadWorkflowAction extends ScuflModelAction {
 	 */
 	public LoadWorkflowAction(ScuflModel model) {
 		super(model);
-		putValue(SMALL_ICON, ScuflIcons.openMenuIcon);
+		putValue(SMALL_ICON, TavernaIcons.openMenuIcon);
 		putValue(NAME, "Load");
 		putValue(SHORT_DESCRIPTION, "Load a workflow...");
 	}
@@ -49,7 +50,7 @@ public class LoadWorkflowAction extends ScuflModelAction {
 
 		JPopupMenu menu = new JPopupMenu("Load");
 		JMenuItem fromFile = new JMenuItem("Load from a file");
-		fromFile.setIcon(ScuflIcons.openIcon);
+		fromFile.setIcon(TavernaIcons.openIcon);
 		fromFile.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				loadFromFile();
@@ -59,7 +60,7 @@ public class LoadWorkflowAction extends ScuflModelAction {
 		menu.add(fromFile);
 
 		JMenuItem fromWeb = new JMenuItem("Load from the web");
-		fromWeb.setIcon(ScuflIcons.openurlIcon);
+		fromWeb.setIcon(TavernaIcons.openurlIcon);
 		fromWeb.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				loadFromWeb();
@@ -69,7 +70,7 @@ public class LoadWorkflowAction extends ScuflModelAction {
 
 		if (jdbcStoreExists) {
 			JMenuItem fromDB = new JMenuItem("Load from the database");
-			fromDB.setIcon(ScuflIcons.databaseIcon);
+			fromDB.setIcon(TavernaIcons.databaseIcon);
 			fromDB.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 					loadFromDatabase((JDBCBaclavaDataService) store);

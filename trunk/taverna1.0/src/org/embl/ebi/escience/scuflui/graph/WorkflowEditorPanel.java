@@ -29,8 +29,8 @@ import javax.swing.JToolBar;
 import org.embl.ebi.escience.scufl.ScuflModel;
 import org.embl.ebi.escience.scuflui.AdvancedModelExplorer;
 import org.embl.ebi.escience.scuflui.ExtensionFileFilter;
-import org.embl.ebi.escience.scuflui.ScuflIcons;
 import org.embl.ebi.escience.scuflui.ScuflUIComponent;
+import org.embl.ebi.escience.scuflui.TavernaIcons;
 import org.embl.ebi.escience.scuflui.actions.LoadWorkflowAction;
 import org.embl.ebi.escience.scuflui.actions.OfflineToggleModel;
 import org.embl.ebi.escience.scuflui.actions.ResetAction;
@@ -40,7 +40,7 @@ import org.embl.ebi.escience.scuflui.actions.SaveWorkflowAction;
  * COMMENT
  * 
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover</a>
- * @version $Revision: 1.8 $
+ * @version $Revision: 1.9 $
  */
 public class WorkflowEditorPanel extends JPanel implements ScuflUIComponent
 {
@@ -124,7 +124,7 @@ public class WorkflowEditorPanel extends JPanel implements ScuflUIComponent
 			}
 		};
 		saveImage.putValue(Action.SHORT_DESCRIPTION, "Save image of workflow");
-		saveImage.putValue(Action.SMALL_ICON, ScuflIcons.savePNGIcon);
+		saveImage.putValue(Action.SMALL_ICON, TavernaIcons.savePNGIcon);
 
 		JCheckBox boring = new JCheckBox("Show Boring");
 		boring.setModel(editor.new ShowBoringModel());
@@ -159,7 +159,7 @@ public class WorkflowEditorPanel extends JPanel implements ScuflUIComponent
 
 	public ImageIcon getIcon()
 	{
-		return ScuflIcons.windowDiagram;
+		return TavernaIcons.windowDiagram;
 	}
 
 	public String getName()

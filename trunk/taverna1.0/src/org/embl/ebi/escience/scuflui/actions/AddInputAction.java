@@ -11,13 +11,13 @@ import org.embl.ebi.escience.scufl.DuplicatePortNameException;
 import org.embl.ebi.escience.scufl.OutputPort;
 import org.embl.ebi.escience.scufl.PortCreationException;
 import org.embl.ebi.escience.scufl.ScuflModel;
-import org.embl.ebi.escience.scuflui.ScuflIcons;
+import org.embl.ebi.escience.scuflui.TavernaIcons;
 
 /**
  * COMMENT
  * 
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover </a>
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
 public class AddInputAction extends ScuflModelAction {
 	/**
@@ -25,7 +25,7 @@ public class AddInputAction extends ScuflModelAction {
 	 */
 	public AddInputAction(ScuflModel model) {
 		super(model);
-		putValue(SMALL_ICON, ScuflIcons.inputIcon);
+		putValue(SMALL_ICON, TavernaIcons.inputIcon);
 		putValue(NAME, "Create New Input...");
 	}
 

@@ -111,8 +111,8 @@ public class AdvancedModelExplorer extends JPanel implements ScuflUIComponent {
 						BorderLayout.CENTER);
 				tabs.setEnabledAt(1, true);
 				tabs.setTitleAt(1, "Metadata for '" + p.getName() + "'");
-				tabs.setIconAt(1, (p.isSource()) ? ScuflIcons.inputIcon
-						: ScuflIcons.outputIcon);
+				tabs.setIconAt(1, (p.isSource()) ? TavernaIcons.inputIcon
+						: TavernaIcons.outputIcon);
 			} else {
 				tabs.setEnabledAt(1, false);
 				tabs.setIconAt(1, null);
@@ -135,7 +135,7 @@ public class AdvancedModelExplorer extends JPanel implements ScuflUIComponent {
 		toolbar.setRollover(true);
 		toolbar.setMaximumSize(new Dimension(2000, 30));
 		toolbar.setBorderPainted(true);
-		JButton saveHTML = new JButton(ScuflIcons.saveIcon);
+		JButton saveHTML = new JButton(TavernaIcons.saveIcon);
 		saveHTML.setPreferredSize(new Dimension(25, 25));
 		toolbar.add(new JLabel(" Save HTML description "));
 		toolbar.add(saveHTML);
@@ -175,7 +175,7 @@ public class AdvancedModelExplorer extends JPanel implements ScuflUIComponent {
 		propertiesPanel.add(edPane);
 		edPane.setPreferredSize(new Dimension(100, 100));
 		tabs.setEnabledAt(1, true);
-		tabs.setIconAt(1, ScuflIcons.openurlIcon);
+		tabs.setIconAt(1, TavernaIcons.openurlIcon);
 		tabs.setTitleAt(1, "Remote resource usage");
 	}
 
@@ -230,7 +230,7 @@ public class AdvancedModelExplorer extends JPanel implements ScuflUIComponent {
 				.createEtchedBorder(), "LSID"));
 		lsidPanel.setLayout(new BorderLayout());
 		lsidPanel.add(lsid, BorderLayout.CENTER);
-		JButton assignNewLSID = new JButton("New", ScuflIcons.openurlIcon);
+		JButton assignNewLSID = new JButton("New", TavernaIcons.openurlIcon);
 		assignNewLSID.setPreferredSize(new Dimension(80, 25));
 		assignNewLSID.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -341,7 +341,7 @@ public class AdvancedModelExplorer extends JPanel implements ScuflUIComponent {
 		propertiesPanel.add(descriptionPanel);
 		tabs.setEnabledAt(1, true);
 		tabs.setTitleAt(1, "Workflow metadata");
-		tabs.setIconAt(1, ScuflIcons.windowExplorer);
+		tabs.setIconAt(1, TavernaIcons.windowExplorer);
 
 	}
 
@@ -487,7 +487,7 @@ public class AdvancedModelExplorer extends JPanel implements ScuflUIComponent {
 	}
 
 	public ImageIcon getIcon() {
-		return ScuflIcons.windowExplorer;
+		return TavernaIcons.windowExplorer;
 	}
 
 	private ScuflModelEventListener listener = null;
@@ -529,7 +529,7 @@ public class AdvancedModelExplorer extends JPanel implements ScuflUIComponent {
 		// Add options to load the workflow, import from web, save and reset
 		// These options were available from the workbench file menu previously
 		// but I think they're more intuitive here as buttons.
-		createNested = new JButton(ScuflIcons.windowExplorer);
+		createNested = new JButton(TavernaIcons.windowExplorer);
 		createNested.setPreferredSize(new Dimension(25, 25));
 
 		workOffline = new JCheckBox("Offline");

@@ -4,15 +4,15 @@ import java.awt.event.ActionEvent;
 
 import org.embl.ebi.escience.scufl.Port;
 import org.embl.ebi.escience.scufl.ScuflModel;
-import org.embl.ebi.escience.scuflui.ScuflIcons;
 import org.embl.ebi.escience.scuflui.ScuflSemanticMarkupEditor;
+import org.embl.ebi.escience.scuflui.TavernaIcons;
 import org.embl.ebi.escience.scuflui.UIUtils;
 
 public class EditMetadataAction extends ModelObjectAction {
 
 	public EditMetadataAction(ScuflModel model, Port modelObject) {
 		super(model, modelObject);		
-		putValue(SMALL_ICON, ScuflIcons.editIcon);
+		putValue(SMALL_ICON, TavernaIcons.editIcon);
 		putValue(NAME, "Edit metadata...");		
 	}
 

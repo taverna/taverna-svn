@@ -21,7 +21,7 @@ import javax.swing.JOptionPane;
 import org.embl.ebi.escience.baclava.factory.DataThingXMLFactory;
 import org.embl.ebi.escience.scuflui.AdvancedModelExplorer;
 import org.embl.ebi.escience.scuflui.ExtensionFileFilter;
-import org.embl.ebi.escience.scuflui.ScuflIcons;
+import org.embl.ebi.escience.scuflui.TavernaIcons;
 import org.jdom.Document;
 import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
@@ -37,7 +37,7 @@ public class SaveAsDataThingDocument implements ResultMapSaveSPI {
      * Return the standard looking save to disk icon
      */
     public Icon getIcon() {
-	return ScuflIcons.xmlNodeIcon;
+	return TavernaIcons.xmlNodeIcon;
     }
 
     /**

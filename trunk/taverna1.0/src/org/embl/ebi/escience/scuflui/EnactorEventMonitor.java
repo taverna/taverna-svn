@@ -92,7 +92,7 @@ public class EnactorEventMonitor extends JTextArea implements
 	}
 
 	public javax.swing.ImageIcon getIcon() {
-		return ScuflIcons.inputValueIcon;
+		return TavernaIcons.inputValueIcon;
 	}
 
 	/**

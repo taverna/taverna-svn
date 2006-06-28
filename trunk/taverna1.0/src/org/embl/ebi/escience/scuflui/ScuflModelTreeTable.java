@@ -503,7 +503,7 @@ public class ScuflModelTreeTable extends JTreeTable implements
 	}
 
 	public ImageIcon getIcon() {
-		return ScuflIcons.windowExplorer;
+		return TavernaIcons.windowExplorer;
 	}
 
 	class TableCheckbox extends JCheckBox implements TableCellRenderer {

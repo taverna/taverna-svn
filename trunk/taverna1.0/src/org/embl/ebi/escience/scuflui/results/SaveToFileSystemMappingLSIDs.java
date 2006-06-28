@@ -22,7 +22,7 @@ import javax.swing.JOptionPane;
 
 import org.embl.ebi.escience.baclava.DataThing;
 import org.embl.ebi.escience.scufl.SemanticMarkup;
-import org.embl.ebi.escience.scuflui.ScuflIcons;
+import org.embl.ebi.escience.scuflui.TavernaIcons;
 
 /** 
  * Store the Map of DataThing objects to disk, using the 
@@ -37,7 +37,7 @@ public class SaveToFileSystemMappingLSIDs implements ResultMapSaveSPI {
     /**     
      * Return the standard looking save to disk icon     
      */    
-    public Icon getIcon() {	return ScuflIcons.saveIcon;    }    
+    public Icon getIcon() {	return TavernaIcons.saveIcon;    }    
     
     /**     
      * Get the description for this plugin     

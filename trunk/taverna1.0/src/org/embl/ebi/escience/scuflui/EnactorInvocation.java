@@ -85,7 +85,7 @@ public class EnactorInvocation extends JPanel implements ScuflUIComponent {
 	}
 
 	public javax.swing.ImageIcon getIcon() {
-		return ScuflIcons.windowRun;
+		return TavernaIcons.windowRun;
 	}
 
 	// private TavernaWorkflowEnactor theEnactor;
@@ -354,18 +354,18 @@ public class EnactorInvocation extends JPanel implements ScuflUIComponent {
 		});
 
 		// Create a computation steering contorl area
-		final JButton playButton = new JButton("Resume", ScuflIcons.playIcon);
-		final JButton pauseButton = new JButton("Pause", ScuflIcons.pauseIcon);
-		final JButton stopButton = new JButton("Stop", ScuflIcons.stopIcon);
+		final JButton playButton = new JButton("Resume", TavernaIcons.playIcon);
+		final JButton pauseButton = new JButton("Pause", TavernaIcons.pauseIcon);
+		final JButton stopButton = new JButton("Stop", TavernaIcons.stopIcon);
 		final JLabel taskLabel = new JLabel("Processor");
 		flowLabel = new JLabel("<html><em>New</em></html>");
 		// Eugh. Ugly. Will use HTML labels instead. tmo
 		// flowLabel.setFont(new java.awt.Font("Monospaced", java.awt.Font.BOLD,
 		// 16));
 		final JButton breakButton = new JButton("Add Breakpoint",
-				ScuflIcons.breakIcon);
+				TavernaIcons.breakIcon);
 		final JButton rbreakButton = new JButton("Resume",
-				ScuflIcons.rbreakIcon);
+				TavernaIcons.rbreakIcon);
 
 		playButton.setVisible(false);
 		playButton.setSize(70, 30);

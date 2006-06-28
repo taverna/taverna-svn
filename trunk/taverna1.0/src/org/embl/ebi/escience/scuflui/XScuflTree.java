@@ -86,7 +86,7 @@ public class XScuflTree extends JComponent implements ScuflModelEventListener,
 	}
 
 	public javax.swing.ImageIcon getIcon() {
-		return ScuflIcons.xmlNodeIcon;
+		return TavernaIcons.xmlNodeIcon;
 	}
 
 	/**

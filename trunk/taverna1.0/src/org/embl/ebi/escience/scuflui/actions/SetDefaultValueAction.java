@@ -6,13 +6,13 @@ import javax.swing.JOptionPane;
 
 import org.embl.ebi.escience.scufl.InputPort;
 import org.embl.ebi.escience.scufl.ScuflModel;
-import org.embl.ebi.escience.scuflui.ScuflIcons;
+import org.embl.ebi.escience.scuflui.TavernaIcons;
 
 public class SetDefaultValueAction extends ModelObjectAction {
 
 	public SetDefaultValueAction(ScuflModel model, InputPort modelObject) {
 		super(model, modelObject);
-		putValue(SMALL_ICON, ScuflIcons.editIcon);
+		putValue(SMALL_ICON, TavernaIcons.editIcon);
 		putValue(NAME, "Set default value");
 	}
 

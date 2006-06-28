@@ -86,7 +86,7 @@ public class ScuflContextMenuFactory {
 						// original processor
 						OutputPort[] originalPorts = ap.getOriginalProcessor().getOutputPorts();
 						for (int i = 0; i < originalPorts.length; i++) {
-							JMenuItem item = new JMenuItem(originalPorts[i].getName(), ScuflIcons.outputPortIcon);
+							JMenuItem item = new JMenuItem(originalPorts[i].getName(), TavernaIcons.outputPortIcon);
 							final Port originalPort = originalPorts[i];
 							item.addActionListener(new ActionListener() {
 								public void actionPerformed(ActionEvent ae) {
@@ -100,7 +100,7 @@ public class ScuflContextMenuFactory {
 					} else {
 						InputPort[] originalPorts = ap.getOriginalProcessor().getInputPorts();
 						for (int i = 0; i < originalPorts.length; i++) {
-							JMenuItem item = new JMenuItem(originalPorts[i].getName(), ScuflIcons.inputPortIcon);
+							JMenuItem item = new JMenuItem(originalPorts[i].getName(), TavernaIcons.inputPortIcon);
 							final Port originalPort = originalPorts[i];
 							item.addActionListener(new ActionListener() {
 								public void actionPerformed(ActionEvent ae) {
@@ -197,7 +197,7 @@ public class ScuflContextMenuFactory {
 				// "+thePort.getName(), ShadedLabel.TAVERNA_GREEN));
 				final InputPort ip = (InputPort) theInputPort;
 				JMenuItem removeDefault = new JMenuItem("Remove default '" + ip.getDefaultValue() + "'",
-						ScuflIcons.editIcon);
+						TavernaIcons.editIcon);
 				removeDefault.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent ae) {
 						ip.setDefaultValue(null);
@@ -278,7 +278,7 @@ public class ScuflContextMenuFactory {
 		String tagName = ProcessorHelper.getTagNameForClassName(theProcessor.getClass().getName());
 		ProcessorEditor pe = ProcessorHelper.getEditorForTagName(tagName);
 		if (pe != null) {
-			JMenuItem edit = new JMenuItem(pe.getEditorDescription(), ScuflIcons.editIcon);
+			JMenuItem edit = new JMenuItem(pe.getEditorDescription(), TavernaIcons.editIcon);
 			edit.addActionListener(pe.getListener(theProcessor));
 			theMenu.add(edit);
 		}
@@ -299,7 +299,7 @@ public class ScuflContextMenuFactory {
 		}
 
 		// Add breakpoint to the processor.
-		final JMenuItem addBreakpoint = new JMenuItem("Add breakpoint", ScuflIcons.breakIcon);
+		final JMenuItem addBreakpoint = new JMenuItem("Add breakpoint", TavernaIcons.breakIcon);
 		addBreakpoint.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent a) {
 				theProcessor.addBreakpoint();
@@ -307,7 +307,7 @@ public class ScuflContextMenuFactory {
 		});
 
 		// Remove breakpoint from the processor.
-		final JMenuItem rmvBreakpoint = new JMenuItem("Remove breakpoint", ScuflIcons.rbreakIcon);
+		final JMenuItem rmvBreakpoint = new JMenuItem("Remove breakpoint", TavernaIcons.rbreakIcon);
 		rmvBreakpoint.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent a) {
 				theProcessor.rmvBreakpoint();
@@ -320,7 +320,7 @@ public class ScuflContextMenuFactory {
 		}
 
 		JMenuItem block = new JMenu("Coordinate from");
-		block.setIcon(ScuflIcons.constraintIcon);
+		block.setIcon(TavernaIcons.constraintIcon);
 		// Iterate over the processors in the model to get the available
 		// gate processors.
 		Processor[] gp = processor.getModel().getProcessors();
@@ -376,12 +376,12 @@ public class ScuflContextMenuFactory {
 		String tagName = ProcessorHelper.getTagNameForClassName(theProcessor.getClass().getName());
 		ProcessorEditor pe = ProcessorHelper.getEditorForTagName(tagName);
 		if (pe != null) {
-			JMenuItem edit = new JMenuItem(pe.getEditorDescription(), ScuflIcons.editIcon);
+			JMenuItem edit = new JMenuItem(pe.getEditorDescription(), TavernaIcons.editIcon);
 			edit.addActionListener(pe.getListener(theProcessor));
 			theMenu.add(edit);
 		}
 		// Always show the delete option
-		JMenuItem delete = new JMenuItem("Remove this alternate", ScuflIcons.deleteIcon);
+		JMenuItem delete = new JMenuItem("Remove this alternate", TavernaIcons.deleteIcon);
 		delete.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent a) {
 				parentProcessor.removeAlternate(alternate);

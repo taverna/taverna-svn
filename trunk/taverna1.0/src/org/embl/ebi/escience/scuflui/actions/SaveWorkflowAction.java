@@ -23,13 +23,13 @@ import org.embl.ebi.escience.scufl.ScuflModel;
 import org.embl.ebi.escience.scufl.view.XScuflView;
 import org.embl.ebi.escience.scuflui.AdvancedModelExplorer;
 import org.embl.ebi.escience.scuflui.ExtensionFileFilter;
-import org.embl.ebi.escience.scuflui.ScuflIcons;
+import org.embl.ebi.escience.scuflui.TavernaIcons;
 
 /**
  * COMMENT
  * 
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover</a>
- * @version $Revision: 1.8 $
+ * @version $Revision: 1.9 $
  */
 public class SaveWorkflowAction extends ScuflModelAction {
 	final JFileChooser fc = new JFileChooser();
@@ -41,9 +41,9 @@ public class SaveWorkflowAction extends ScuflModelAction {
 		super(model);
 		boolean jdbcStore = isDatabaseAware();
 		if (jdbcStore) {
-			putValue(SMALL_ICON, ScuflIcons.saveMenuIcon);
+			putValue(SMALL_ICON, TavernaIcons.saveMenuIcon);
 		} else {
-			putValue(SMALL_ICON, ScuflIcons.saveIcon);
+			putValue(SMALL_ICON, TavernaIcons.saveIcon);
 		}
 		putValue(NAME, "Save");
 		putValue(SHORT_DESCRIPTION, "Save this workflow...");
@@ -65,7 +65,7 @@ public class SaveWorkflowAction extends ScuflModelAction {
 			} else {
 				JPopupMenu menu = new JPopupMenu("Save");
 				JMenuItem fromFile = new JMenuItem("Save to a file");
-				fromFile.setIcon(ScuflIcons.saveIcon);
+				fromFile.setIcon(TavernaIcons.saveIcon);
 				fromFile.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
 						try {
@@ -81,7 +81,7 @@ public class SaveWorkflowAction extends ScuflModelAction {
 				menu.add(fromFile);
 
 				JMenuItem fromWeb = new JMenuItem("Save to the database");
-				fromWeb.setIcon(ScuflIcons.databaseIcon);
+				fromWeb.setIcon(TavernaIcons.databaseIcon);
 				fromWeb.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
 						try {

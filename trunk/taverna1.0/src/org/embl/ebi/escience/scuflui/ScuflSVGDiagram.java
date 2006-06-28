@@ -70,7 +70,7 @@ public class ScuflSVGDiagram extends JComponent implements
 	}
 
 	public ImageIcon getIcon() {
-		return ScuflIcons.windowDiagram;
+		return TavernaIcons.windowDiagram;
 	}
 
 	public ScuflSVGDiagram() {

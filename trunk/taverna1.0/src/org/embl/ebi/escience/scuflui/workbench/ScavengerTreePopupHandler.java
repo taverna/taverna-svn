@@ -42,8 +42,8 @@ import org.embl.ebi.escience.scufl.enactor.implementation.FreefluoEnactorProxy;
 import org.embl.ebi.escience.scufl.parser.XScuflParser;
 import org.embl.ebi.escience.scuflui.DataThingConstructionPanel;
 import org.embl.ebi.escience.scuflui.EnactorInvocation;
-import org.embl.ebi.escience.scuflui.ScuflIcons;
 import org.embl.ebi.escience.scuflui.ShadedLabel;
+import org.embl.ebi.escience.scuflui.TavernaIcons;
 import org.embl.ebi.escience.scuflui.UIUtils;
 import org.embl.ebi.escience.scuflworkers.ProcessorFactory;
 import org.embl.ebi.escience.scuflworkers.ProcessorHelper;
@@ -104,7 +104,7 @@ public class ScavengerTreePopupHandler extends MouseAdapter {
 				boolean addDescribeOption = true;
 				JPopupMenu menu = new JPopupMenu();
 				// Create the menu item to fetch descriptions
-				JMenuItem getDescriptions = new JMenuItem("Fetch descriptions", ScuflIcons.zoomIcon);
+				JMenuItem getDescriptions = new JMenuItem("Fetch descriptions", TavernaIcons.zoomIcon);
 				getDescriptions.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent ae) {
 						// Create a new thread to iterate over all child
@@ -150,7 +150,7 @@ public class ScavengerTreePopupHandler extends MouseAdapter {
 				// select processor and enact it
 				if (scuflObject instanceof ProcessorFactory) {
 					final ProcessorFactory pf = (ProcessorFactory) scuflObject;
-					JMenuItem test = new JMenuItem("Invoke", ScuflIcons.windowRun);
+					JMenuItem test = new JMenuItem("Invoke", TavernaIcons.windowRun);
 					test.addActionListener(new ActionListener() {
 						public void actionPerformed(ActionEvent ae) {
 							try {
@@ -227,10 +227,10 @@ public class ScavengerTreePopupHandler extends MouseAdapter {
 				if (scuflObject instanceof ProcessorFactory && scavenger.model != null) {
 					final ProcessorFactory pf = (ProcessorFactory) scuflObject;
 					// Show the popup for adding new processors to the model
-					JMenuItem add = new JMenuItem("Add to model", ScuflIcons.importIcon);
+					JMenuItem add = new JMenuItem("Add to model", TavernaIcons.importIcon);
 					menu.addSeparator();
 					menu.add(add);
-					JMenuItem addWithName = new JMenuItem("Add to model with name...", ScuflIcons.importIcon);
+					JMenuItem addWithName = new JMenuItem("Add to model with name...", TavernaIcons.importIcon);
 					menu.add(addWithName);
 					// Prepare the 'add as alternate menu'
 					Processor[] processors = scavenger.model.getProcessors();
@@ -276,7 +276,7 @@ public class ScavengerTreePopupHandler extends MouseAdapter {
 					// the user the option to import the complete workflow as
 					// well as to wrap it in a processor
 					if (scuflObject instanceof WorkflowProcessorFactory) {
-						JMenuItem imp = new JMenuItem("Import workflow...", ScuflIcons.webIcon);
+						JMenuItem imp = new JMenuItem("Import workflow...", TavernaIcons.webIcon);
 						final String definitionURL = ((WorkflowProcessorFactory) scuflObject).getDefinitionURL();
 						final Element definitionElement = (Element) ((WorkflowProcessorFactory) scuflObject)
 								.getDefinition();
@@ -371,7 +371,7 @@ public class ScavengerTreePopupHandler extends MouseAdapter {
 							}
 						}
 						if (!ScavengerTreePopupHandler.this.scavenger.isPopulating()) {
-							JMenuItem addWeb = new JMenuItem("Collect scavengers from web...", ScuflIcons.webIcon);
+							JMenuItem addWeb = new JMenuItem("Collect scavengers from web...", TavernaIcons.webIcon);
 							menu.addSeparator();
 							menu.add(addWeb);
 							addWeb.addActionListener(new ActionListener() {
@@ -391,7 +391,7 @@ public class ScavengerTreePopupHandler extends MouseAdapter {
 									}
 								}
 							});
-							JMenuItem collect = new JMenuItem("Collect scavengers from model", ScuflIcons.importIcon);
+							JMenuItem collect = new JMenuItem("Collect scavengers from model", TavernaIcons.importIcon);
 							menu.add(collect);
 							collect.addActionListener(new ActionListener() {
 								public void actionPerformed(ActionEvent ae) {
@@ -427,7 +427,7 @@ public class ScavengerTreePopupHandler extends MouseAdapter {
 						// option to remove it
 						if (choice.equals("Internal Services") == false && choice.equals("Local Java widgets") == false) {
 							// JPopupMenu menu = new JPopupMenu();
-							JMenuItem remove = new JMenuItem("Remove from tree", ScuflIcons.deleteIcon);
+							JMenuItem remove = new JMenuItem("Remove from tree", TavernaIcons.deleteIcon);
 							final String scavengerName = choice;
 							remove.addActionListener(new ActionListener() {
 								public void actionPerformed(ActionEvent ae) {

@@ -179,9 +179,9 @@ class PortComboBoxRenderer extends JLabel implements ListCellRenderer {
 			setForeground(list.getForeground());
 		}
 		if (value instanceof OutputPort) {
-			setIcon(ScuflIcons.outputPortIcon);
+			setIcon(TavernaIcons.outputPortIcon);
 		} else {
-			setIcon(ScuflIcons.inputPortIcon);
+			setIcon(TavernaIcons.inputPortIcon);
 		}
 		setText(((Port) value).getName());
 		return this;

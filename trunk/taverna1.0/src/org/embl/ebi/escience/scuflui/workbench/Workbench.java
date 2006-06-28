@@ -46,8 +46,8 @@ import org.embl.ebi.escience.scuflui.DataThingConstructionPanel;
 import org.embl.ebi.escience.scuflui.EnactorInvocation;
 import org.embl.ebi.escience.scuflui.ScavengerTreePanel;
 import org.embl.ebi.escience.scuflui.ScuflDiagramPanel;
-import org.embl.ebi.escience.scuflui.ScuflIcons;
 import org.embl.ebi.escience.scuflui.ScuflUIComponent;
+import org.embl.ebi.escience.scuflui.TavernaIcons;
 import org.embl.ebi.escience.scuflui.UIComponentRegistry;
 import org.embl.ebi.escience.scuflui.UIUtils;
 import org.embl.ebi.escience.scuflui.renderers.RendererRegistry;
@@ -317,7 +317,7 @@ public class Workbench extends JFrame {
 		}
 
 		JMenuItem thingBuilder = new JMenuItem("Run workflow",
-				ScuflIcons.runIcon);
+				TavernaIcons.runIcon);
 		thingBuilder.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				// Show a workflow input panel if there are workflow inputs,

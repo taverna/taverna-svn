@@ -63,7 +63,7 @@ public class EnactorStatusTableModel extends AbstractTableModel {
 			data[i][4] = "--";
 			// do the breakpoint
 			if (p.hasBreakpoint())
-				data[i][5] = ScuflIcons.tickIcon;
+				data[i][5] = TavernaIcons.tickIcon;
 			else
 				data[i][5] = ScuflIcons.nullIcon;
 		}
@@ -193,7 +193,7 @@ public class EnactorStatusTableModel extends AbstractTableModel {
 					break;
 				}
 			if (p.hasBreakpoint())
-				breakpointStatus = ScuflIcons.tickIcon;
+				breakpointStatus = TavernaIcons.tickIcon;
 
 			// String
 			// breakpoint=processorElement.getAttributeValue("breakpoint");

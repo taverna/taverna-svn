@@ -76,7 +76,7 @@ public class ScuflModelExplorerRenderer extends NodeColouringRenderer {
 			setIcon(org.embl.ebi.escience.scuflworkers.ProcessorHelper
 					.getPreferredIcon((Processor) userObject));
 		} else if (userObject instanceof ConcurrencyConstraint) {
-			setIcon(ScuflIcons.constraintIcon);
+			setIcon(TavernaIcons.constraintIcon);
 		} else if (userObject instanceof DataConstraint) {
 			DataConstraint dc = (DataConstraint) userObject;
 			if (significantObject != null) {
@@ -103,23 +103,23 @@ public class ScuflModelExplorerRenderer extends NodeColouringRenderer {
 			} else {
 				setText(dc.getName());
 			}
-			setIcon(ScuflIcons.dataLinkIcon);
+			setIcon(TavernaIcons.dataLinkIcon);
 		} else if (userObject instanceof Port) {
 			Port thePort = (Port) userObject;
 			// Processor theProcessor = thePort.getProcessor();
 			ScuflModel model = thePort.getProcessor().getModel();
 			if (thePort.isSource()) {
 				// Workflow source port
-				setIcon(ScuflIcons.inputIcon);
+				setIcon(TavernaIcons.inputIcon);
 			} else if (thePort.isSink()) {
 				// Workflow sink port
-				setIcon(ScuflIcons.outputIcon);
+				setIcon(TavernaIcons.outputIcon);
 			} else {
 				// Normal port
 				if (thePort instanceof InputPort) {
-					setIcon(ScuflIcons.inputPortIcon);
+					setIcon(TavernaIcons.inputPortIcon);
 				} else if (thePort instanceof OutputPort) {
-					setIcon(ScuflIcons.outputPortIcon);
+					setIcon(TavernaIcons.outputPortIcon);
 				}
 				// Check whether the port is part of an alternate processor
 				if (model == null) {
@@ -165,7 +165,7 @@ public class ScuflModelExplorerRenderer extends NodeColouringRenderer {
 				}
 			}
 		} else if (((DefaultMutableTreeNode) value).isLeaf()) {
-			setIcon(ScuflIcons.folderClosedIcon);
+			setIcon(TavernaIcons.folderClosedIcon);
 		}
 		return this;
 	}

@@ -66,7 +66,7 @@ public class LinkingMenus {
 				.getProcessors();
 		
 		JMenu workflowSinks = new JMenu("Workflow outputs");
-		workflowSinks.setIcon(ScuflIcons.outputIcon);
+		workflowSinks.setIcon(TavernaIcons.outputIcon);
 
 		// Do the workflow sink ports
 		if (wsp.length > 0) {
@@ -120,7 +120,7 @@ public class LinkingMenus {
 							&& (j < offset + menuSize); j++) {
 						final Port toPort = inputs[j];
 						final JMenuItem ip = new JMenuItem(inputs[j].getName(),
-								ScuflIcons.inputPortIcon);
+								TavernaIcons.inputPortIcon);
 						currentMenu.add(ip);
 						ip.addActionListener(new ActionListener() {
 							public void actionPerformed(ActionEvent ae) {

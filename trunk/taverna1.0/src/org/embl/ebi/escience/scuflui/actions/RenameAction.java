@@ -7,13 +7,13 @@ import javax.swing.JOptionPane;
 import org.embl.ebi.escience.scufl.Port;
 import org.embl.ebi.escience.scufl.Processor;
 import org.embl.ebi.escience.scufl.ScuflModel;
-import org.embl.ebi.escience.scuflui.ScuflIcons;
+import org.embl.ebi.escience.scuflui.TavernaIcons;
 
 public class RenameAction extends ModelObjectAction {
 
 	public RenameAction(ScuflModel model, Object modelObject) {
 		super(model, modelObject);
-		putValue(SMALL_ICON, ScuflIcons.renameIcon);
+		putValue(SMALL_ICON, TavernaIcons.renameIcon);
 		putValue(NAME, "Rename");
 	}
 

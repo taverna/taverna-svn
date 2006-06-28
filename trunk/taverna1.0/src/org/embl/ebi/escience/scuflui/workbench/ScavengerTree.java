@@ -37,8 +37,8 @@ import org.apache.log4j.Logger;
 import org.embl.ebi.escience.scufl.ScuflModel;
 import org.embl.ebi.escience.scuflui.ExtendedJTree;
 import org.embl.ebi.escience.scuflui.ScavengerTreePanel;
-import org.embl.ebi.escience.scuflui.ScuflIcons;
 import org.embl.ebi.escience.scuflui.ScuflUIComponent;
+import org.embl.ebi.escience.scuflui.TavernaIcons;
 import org.embl.ebi.escience.scuflui.dnd.FactorySpecFragment;
 import org.embl.ebi.escience.scuflui.dnd.ProcessorSpecFragment;
 import org.embl.ebi.escience.scuflui.dnd.SpecFragmentTransferable;
@@ -388,7 +388,7 @@ public class ScavengerTree extends ExtendedJTree implements ScuflUIComponent, Dr
 	}
 
 	public javax.swing.ImageIcon getIcon() {
-		return ScuflIcons.windowScavenger;
+		return TavernaIcons.windowScavenger;
 	}
 
 }

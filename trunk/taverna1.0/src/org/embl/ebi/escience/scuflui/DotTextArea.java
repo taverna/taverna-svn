@@ -41,7 +41,7 @@ public class DotTextArea extends JTextArea implements ScuflModelEventListener,
 	}
 
 	public javax.swing.ImageIcon getIcon() {
-		return ScuflIcons.inputValueIcon;
+		return TavernaIcons.inputValueIcon;
 	}
 
 	public void detachFromModel() {

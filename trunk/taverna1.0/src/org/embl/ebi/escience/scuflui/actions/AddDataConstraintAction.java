@@ -10,13 +10,13 @@ import org.embl.ebi.escience.scufl.DataConstraintCreationException;
 import org.embl.ebi.escience.scufl.InputPort;
 import org.embl.ebi.escience.scufl.Port;
 import org.embl.ebi.escience.scufl.ScuflModel;
-import org.embl.ebi.escience.scuflui.ScuflIcons;
+import org.embl.ebi.escience.scuflui.TavernaIcons;
 
 /**
  * COMMENT
  * 
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover</a>
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public class AddDataConstraintAction extends ScuflModelAction {
 	private Port source;
@@ -31,11 +31,11 @@ public class AddDataConstraintAction extends ScuflModelAction {
 		if (end instanceof InputPort) {
 			this.source = start;
 			this.target = end;
-			putValue(SMALL_ICON, ScuflIcons.inputIcon);
+			putValue(SMALL_ICON, TavernaIcons.inputIcon);
 		} else {
 			this.source = end;
 			this.target = start;
-			putValue(SMALL_ICON, ScuflIcons.outputIcon);
+			putValue(SMALL_ICON, TavernaIcons.outputIcon);
 		}
 		putValue(NAME, end.getName());
 	}

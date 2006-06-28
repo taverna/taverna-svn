@@ -45,9 +45,9 @@ import org.embl.ebi.escience.scufl.Processor;
 import org.embl.ebi.escience.scufl.ScuflModel;
 import org.embl.ebi.escience.scuflui.NoContextMenuFoundException;
 import org.embl.ebi.escience.scuflui.ScuflContextMenuFactory;
-import org.embl.ebi.escience.scuflui.ScuflIcons;
 import org.embl.ebi.escience.scuflui.ScuflUIComponent;
 import org.embl.ebi.escience.scuflui.ShadedLabel;
+import org.embl.ebi.escience.scuflui.TavernaIcons;
 import org.embl.ebi.escience.scuflui.actions.AddInputAction;
 import org.embl.ebi.escience.scuflui.actions.AddOutputAction;
 import org.embl.ebi.escience.scuflui.actions.RemoveAction;
@@ -91,9 +91,9 @@ public class WorkflowEditor extends JGraph implements ScuflUIComponent {
 			this.port = port;
 			putValue(NAME, port.getName());
 			if (port instanceof InputPort) {
-				putValue(SMALL_ICON, ScuflIcons.inputPortIcon);
+				putValue(SMALL_ICON, TavernaIcons.inputPortIcon);
 			} else {
-				putValue(SMALL_ICON, ScuflIcons.outputPortIcon);
+				putValue(SMALL_ICON, TavernaIcons.outputPortIcon);
 			}
 		}
 
@@ -374,7 +374,7 @@ public class WorkflowEditor extends JGraph implements ScuflUIComponent {
 										Port[] ports = processor.getPorts();
 										if (ports.length > 0) {
 											JMenu linkMenu = new JMenu("Start link from...");
-											linkMenu.setIcon(ScuflIcons.dataLinkIcon);
+											linkMenu.setIcon(TavernaIcons.dataLinkIcon);
 											ports = processor.getInputPorts();
 											if (ports.length > 0) {
 												linkMenu.add(new ShadedLabel("Inputs", ShadedLabel.TAVERNA_GREEN));
@@ -477,7 +477,7 @@ public class WorkflowEditor extends JGraph implements ScuflUIComponent {
 	 * @see org.embl.ebi.escience.scuflui.ScuflUIComponent#getIcon()
 	 */
 	public ImageIcon getIcon() {
-		return ScuflIcons.windowDiagram;
+		return TavernaIcons.windowDiagram;
 	}
 
 	/*

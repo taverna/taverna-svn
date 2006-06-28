@@ -290,7 +290,7 @@ public class ResultItemPanel extends JPanel {
 				// Can only save on leaf nodes
 				JPopupMenu theMenu = new JPopupMenu();
 				JMenuItem saveAction = new JMenuItem("Save to file",
-						ScuflIcons.saveIcon);
+						TavernaIcons.saveIcon);
 				saveAction.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent ae) {
 						try {

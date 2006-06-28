@@ -78,7 +78,7 @@ public class XScuflTextArea extends JTextArea implements
 	}
 
 	public javax.swing.ImageIcon getIcon() {
-		return ScuflIcons.xmlNodeIcon;
+		return TavernaIcons.xmlNodeIcon;
 	}
 
 	/**

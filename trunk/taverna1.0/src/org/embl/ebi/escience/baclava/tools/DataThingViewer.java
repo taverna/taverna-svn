@@ -35,7 +35,7 @@ import org.embl.ebi.escience.baclava.DataThing;
 import org.embl.ebi.escience.baclava.factory.DataThingXMLFactory;
 import org.embl.ebi.escience.scuflui.ExtensionFileFilter;
 import org.embl.ebi.escience.scuflui.ResultItemPanel;
-import org.embl.ebi.escience.scuflui.ScuflIcons;
+import org.embl.ebi.escience.scuflui.TavernaIcons;
 import org.embl.ebi.escience.scuflui.results.ResultMapSaveRegistry;
 import org.embl.ebi.escience.scuflui.results.ResultMapSaveSPI;
 import org.jdom.Document;
@@ -144,13 +144,13 @@ public class DataThingViewer extends JFrame {
 				System.exit(0);
 			}
 		});
-		JMenuItem reset = new JMenuItem("Reset", ScuflIcons.deleteIcon);
+		JMenuItem reset = new JMenuItem("Reset", TavernaIcons.deleteIcon);
 		reset.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				clear();
 			}
 		});
-		JMenuItem load = new JMenuItem("Load", ScuflIcons.openIcon);
+		JMenuItem load = new JMenuItem("Load", TavernaIcons.openIcon);
 		load.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ae) {
 				Preferences prefs = Preferences

@@ -115,7 +115,7 @@ public class ScavengerTreePanel extends JPanel implements ScuflUIComponent {
 		regex.setPreferredSize(new Dimension(100, 20));
 		regex.setMaximumSize(new Dimension(100, 20));
 		toolbar.add(regex);
-		find = new JButton(ScuflIcons.findIcon);
+		find = new JButton(TavernaIcons.findIcon);
 		find.setPreferredSize(new Dimension(20, 20));
 		find.setEnabled(false);
 		toolbar.add(find);
@@ -288,7 +288,7 @@ public class ScavengerTreePanel extends JPanel implements ScuflUIComponent {
 	}
 
 	public javax.swing.ImageIcon getIcon() {
-		return ScuflIcons.windowScavenger;
+		return TavernaIcons.windowScavenger;
 	}
 
 }

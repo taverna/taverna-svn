@@ -49,8 +49,8 @@ import org.embl.ebi.escience.scufl.PortCreationException;
 import org.embl.ebi.escience.scufl.ScuflModel;
 import org.embl.ebi.escience.scufl.ScuflModelEvent;
 import org.embl.ebi.escience.scufl.ScuflModelEventListener;
-import org.embl.ebi.escience.scuflui.ScuflIcons;
 import org.embl.ebi.escience.scuflui.ScuflUIComponent;
+import org.embl.ebi.escience.scuflui.TavernaIcons;
 import org.embl.ebi.escience.scuflworkers.ProcessorHelper;
 import org.syntax.jedit.JEditTextArea;
 import org.syntax.jedit.TextAreaDefaults;
@@ -159,7 +159,7 @@ public class RservConfigPanel extends JPanel implements ScuflUIComponent,
 	JPasswordField password;
 
 	Action deletePortAction = new AbstractAction("Delete Port",
-			ScuflIcons.deleteIcon) {
+			TavernaIcons.deleteIcon) {
 		public void actionPerformed(ActionEvent e) {
 			JTable table = null;
 			if (e.getSource() instanceof JMenuItem) {
@@ -286,7 +286,7 @@ public class RservConfigPanel extends JPanel implements ScuflUIComponent,
 					public Component getTableCellRendererComponent(
 							JTable table, Object value, boolean isSelected,
 							boolean hasFocus, int row, int column) {
-						setIcon(ScuflIcons.inputPortIcon);
+						setIcon(TavernaIcons.inputPortIcon);
 						return super.getTableCellRendererComponent(table,
 								value, isSelected, hasFocus, row, column);
 					}
@@ -315,7 +315,7 @@ public class RservConfigPanel extends JPanel implements ScuflUIComponent,
 			}
 		};
 
-		addInputButton = new JButton("Add Input", ScuflIcons.inputPortIcon);
+		addInputButton = new JButton("Add Input", TavernaIcons.inputPortIcon);
 		addInputButton.addActionListener(addInputAction);
 		addInputButton.setEnabled(false);
 

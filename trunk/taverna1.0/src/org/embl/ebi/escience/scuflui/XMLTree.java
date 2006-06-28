@@ -138,7 +138,7 @@ public class XMLTree extends JTree {
 				if (value instanceof XMLNode) {
 					XMLNode node = (XMLNode) value;
 					if (node.getUserObject() instanceof Element) {
-						setIcon(ScuflIcons.xmlNodeIcon);
+						setIcon(TavernaIcons.xmlNodeIcon);
 						Element element = (Element) node.getUserObject();
 						StringBuffer nameBuffer = new StringBuffer("<html>"
 								+ element.getQualifiedName());
@@ -191,7 +191,7 @@ public class XMLTree extends JTree {
 						nameBuffer.append("</html>");
 						setText(nameBuffer.toString());
 					} else if (node.getUserObject() instanceof Text) {
-						setIcon(ScuflIcons.leafIcon);
+						setIcon(TavernaIcons.leafIcon);
 						Text text = (Text) node.getUserObject();
 						String name = text.getText();
 						if (textSizeLimit > -1 && name.length() > textSizeLimit) {

@@ -29,7 +29,7 @@ import org.embl.ebi.escience.baclava.BaclavaIterator;
 import org.embl.ebi.escience.baclava.DataThing;
 import org.embl.ebi.escience.scuflui.AdvancedModelExplorer;
 import org.embl.ebi.escience.scuflui.ExtensionFileFilter;
-import org.embl.ebi.escience.scuflui.ScuflIcons;
+import org.embl.ebi.escience.scuflui.TavernaIcons;
 
 /**
  * Uses the Apache POI to save the map of data things to an Excel format
@@ -43,7 +43,7 @@ public class SaveAsExcel implements ResultMapSaveSPI {
 	 * Return the standard looking save to disk icon
 	 */
 	public Icon getIcon() {
-		return ScuflIcons.saveIcon;
+		return TavernaIcons.saveIcon;
 	}
 
 	/**

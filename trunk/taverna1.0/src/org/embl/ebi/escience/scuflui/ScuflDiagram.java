@@ -59,7 +59,7 @@ public class ScuflDiagram extends JComponent implements ScuflModelEventListener,
 	}
 
 	public javax.swing.ImageIcon getIcon() {
-		return ScuflIcons.windowDiagram;
+		return TavernaIcons.windowDiagram;
 	}
 
 	public ScuflDiagram() {

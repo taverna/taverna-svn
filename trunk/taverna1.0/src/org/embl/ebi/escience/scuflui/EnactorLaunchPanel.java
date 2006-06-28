@@ -82,7 +82,7 @@ public class EnactorLaunchPanel extends JPanel implements
 		JPanel actionPanel = new JPanel();
 		actionPanel.setLayout(new BoxLayout(actionPanel, BoxLayout.PAGE_AXIS));
 		xmlPanel.add(actionPanel, BorderLayout.EAST);
-		JButton xmlRefresh = new JButton(ScuflIcons.refreshIcon);
+		JButton xmlRefresh = new JButton(TavernaIcons.refreshIcon);
 		xmlRefresh.setPreferredSize(new Dimension(32, 32));
 		actionPanel.add(xmlRefresh);
 		xmlRefresh.addActionListener(new ActionListener() {
@@ -93,7 +93,7 @@ public class EnactorLaunchPanel extends JPanel implements
 			}
 		});
 		add(xmlPanel, BorderLayout.CENTER);
-		JButton runButton = new JButton(ScuflIcons.runIcon);
+		JButton runButton = new JButton(TavernaIcons.runIcon);
 		actionPanel.add(runButton);
 		runButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ae) {
@@ -272,7 +272,7 @@ public class EnactorLaunchPanel extends JPanel implements
 	}
 
 	public ImageIcon getIcon() {
-		return ScuflIcons.windowInput;
+		return TavernaIcons.windowInput;
 	}
 
 }
@@ -301,11 +301,11 @@ class WorkflowInputPanel extends JPanel {
 		pane.setPreferredSize(new Dimension(100, 100));
 
 		add(pane, BorderLayout.CENTER);
-		JButton loadFromFile = new JButton(ScuflIcons.openIcon);
+		JButton loadFromFile = new JButton(TavernaIcons.openIcon);
 		loadFromFile.setPreferredSize(new Dimension(32, 32));
-		JButton loadFromURL = new JButton(ScuflIcons.webIcon);
+		JButton loadFromURL = new JButton(TavernaIcons.webIcon);
 		loadFromURL.setPreferredSize(new Dimension(32, 32));
-		JButton clear = new JButton(ScuflIcons.deleteIcon);
+		JButton clear = new JButton(TavernaIcons.deleteIcon);
 		clear.setPreferredSize(new Dimension(32, 32));
 		JPanel buttonPanel = new JPanel();
 		buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.PAGE_AXIS));

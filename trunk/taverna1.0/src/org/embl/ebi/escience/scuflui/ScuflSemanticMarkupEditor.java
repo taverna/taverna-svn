@@ -221,7 +221,7 @@ public class ScuflSemanticMarkupEditor extends JPanel implements
 		mimePanel.add(mimeListPane, BorderLayout.CENTER);
 		final JTextField mimeEntryField = new JTextField();
 		mimeEditPanel.add(mimeEntryField, BorderLayout.NORTH);
-		JButton clearMimeTypes = new JButton(ScuflIcons.deleteIcon);
+		JButton clearMimeTypes = new JButton(TavernaIcons.deleteIcon);
 		clearMimeTypes.setPreferredSize(new Dimension(32, 32));
 		clearMimeTypes.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ae) {
@@ -298,9 +298,9 @@ public class ScuflSemanticMarkupEditor extends JPanel implements
 					}
 				} else {
 					if (expanded) {
-						setIcon(ScuflIcons.folderOpenIcon);
+						setIcon(TavernaIcons.folderOpenIcon);
 					} else {
-						setIcon(ScuflIcons.folderClosedIcon);
+						setIcon(TavernaIcons.folderClosedIcon);
 					}
 				}
 				return this;

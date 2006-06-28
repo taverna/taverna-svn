@@ -72,7 +72,7 @@ public class ScuflDiagramPanel extends JPanel implements ScuflUIComponent {
 	final JFileChooser fc;
 
 	public javax.swing.ImageIcon getIcon() {
-		return ScuflIcons.windowDiagram;
+		return TavernaIcons.windowDiagram;
 	}
 
 	JPopupMenu createMenu() {
@@ -193,7 +193,7 @@ public class ScuflDiagramPanel extends JPanel implements ScuflUIComponent {
 		toolbar.addSeparator();
 
 		final JButton configure = new JButton("Configure diagram",
-				ScuflIcons.editIcon);
+				TavernaIcons.editIcon);
 		configure.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ae) {
 				JPopupMenu menu = createMenu();
