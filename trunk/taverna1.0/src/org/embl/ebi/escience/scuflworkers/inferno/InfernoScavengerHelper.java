@@ -10,6 +10,7 @@ import java.awt.event.ActionListener;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
 
 import org.embl.ebi.escience.scufl.ScuflModel;
@@ -73,4 +74,11 @@ public class InfernoScavengerHelper implements ScavengerHelper {
 	public Set<Scavenger> getFromModel(ScuflModel model) {
 		return new HashSet<Scavenger>();
 	}	
+	
+	/**
+	 * Returns the icon for this scavenger
+	 */
+	public ImageIcon getIcon() {
+		return new InfernoProcessorInfoBean().icon();
+	}
 }

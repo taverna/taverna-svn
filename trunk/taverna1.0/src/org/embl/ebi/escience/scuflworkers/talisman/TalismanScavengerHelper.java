@@ -12,6 +12,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
 
 import org.apache.log4j.Logger;
@@ -76,4 +77,10 @@ public class TalismanScavengerHelper implements ScavengerHelper {
 		return result;
 	}
 
+	/**
+	 * Returns the icon for this scavenger
+	 */
+	public ImageIcon getIcon() {
+		return new TalismanProcessorInfoBean().icon();
+	}
 }

@@ -12,9 +12,11 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
 
 import org.apache.log4j.Logger;
+import org.biomoby.client.taverna.plugin.BiomobyProcessorInfoBean;
 import org.embl.ebi.escience.scufl.Processor;
 import org.embl.ebi.escience.scufl.ScuflModel;
 import org.embl.ebi.escience.scuflui.workbench.Scavenger;
@@ -95,6 +97,15 @@ public class BiomobyScavengerHelper implements ScavengerHelper {
 			}
 		}
 		return result;
+	}
+	
+	/**
+	 * Returns the icon for this scavenger
+	 */
+	public ImageIcon getIcon() {
+		//uses the icon for the new processor, this scavenger is now deprecated
+		//and is here just for backward compatibility
+		return new BiomobyProcessorInfoBean().icon();
 	}
 
 }

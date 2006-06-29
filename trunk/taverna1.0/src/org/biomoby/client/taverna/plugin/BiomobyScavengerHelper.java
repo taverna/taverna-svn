@@ -12,6 +12,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JOptionPane;
@@ -166,5 +167,12 @@ public class BiomobyScavengerHelper implements ScavengerHelper {
 			}
 		}
 		return result;
+	}
+	
+	/**
+	 * Returns the icon for this scavenger
+	 */
+	public ImageIcon getIcon() {
+		return new BiomobyProcessorInfoBean().icon();
 	}
 }

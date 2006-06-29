@@ -14,6 +14,7 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.prefs.Preferences;
 
+import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 
@@ -91,6 +92,12 @@ public class APIConsumerScavengerHelper implements ScavengerHelper {
 	}
 	
 	
+	/**
+	 * Returns the icon for this scavenger
+	 */
+	public ImageIcon getIcon() {
+		return new APIConsumerProcessorInfoBean().icon();
+	}
     
     
 

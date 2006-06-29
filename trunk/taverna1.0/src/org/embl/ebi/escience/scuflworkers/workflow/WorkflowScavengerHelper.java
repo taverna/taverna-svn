@@ -10,6 +10,7 @@ import java.awt.event.ActionListener;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
 
 import org.embl.ebi.escience.scufl.ScuflModel;
@@ -70,7 +71,12 @@ public class WorkflowScavengerHelper implements ScavengerHelper {
 		return new HashSet<Scavenger>();
 	}
 	
-	
+	/**
+	 * Returns the icon for this scavenger
+	 */
+	public ImageIcon getIcon() {
+		return new WorkflowProcessorInfoBean().icon();
+	}
 	
     
 }

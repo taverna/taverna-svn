@@ -62,8 +62,6 @@ public class ProcessorHelper {
 
 	private static List<ScavengerHelper> scavengerHelpers = new ArrayList<ScavengerHelper>();
 
-	private static Map<String, ProcessorInfoBean> beanForScavengerClassname = new HashMap<String, ProcessorInfoBean>();
-
 	private static Map<String, ImageIcon> iconForTagName = new HashMap<String, ImageIcon>();
 
 	private static Map<String, XMLHandler> xmlHandlerForTagName = new HashMap<String, XMLHandler>();
@@ -94,12 +92,10 @@ public class ProcessorHelper {
 			beanForProcessorClassname.put(bean.processorClassname(), bean);
 
 			if (bean.icon() != null) {
-				iconForTagName.put(bean.tag(), new ImageIcon(loader.getResource(bean.icon())));
+				iconForTagName.put(bean.tag(), bean.icon());
 			}
 
-			if (bean.scavengerClassname() != null) {
-				beanForScavengerClassname.put(bean.scavengerClassname(), bean);
-
+			if (bean.scavengerClassname() != null) {				
 				Object o;
 				try {
 					o = Class.forName(bean.scavengerClassname()).newInstance();
@@ -141,21 +137,10 @@ public class ProcessorHelper {
 		beanForProcessorClassname.clear();
 		simpleScavengers.clear();
 		scavengerHelpers.clear();
-		beanForScavengerClassname.clear();
 		iconForTagName.clear();
 		xmlHandlerForTagName.clear();
 		editorForTagName.clear();
-	}
-
-	/**
-	 * Return the ProcessorInfoBean associated with the given scavenger class
-	 * 
-	 * @param scavengerClassname
-	 * @return
-	 */
-	public static ProcessorInfoBean getInfoBeanForScavenger(String scavengerClassname) {
-		return beanForScavengerClassname.get(scavengerClassname);
-	}
+	}	
 
 	/**
 	 * Return the set of instances of simple (null constructor) scavengers;
@@ -244,7 +229,7 @@ public class ProcessorHelper {
 
 		ImageIcon icon = (ImageIcon) iconForTagName.get(tagName);
 		if (icon == null) {
-			logger.info("No icon exists for processor with tag:" + tagName);
+			logger.warn("No icon exists for processor with tag:" + tagName);
 			icon = unknownProcessorIcon;
 		}
 		return icon;

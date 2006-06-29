@@ -25,13 +25,15 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: ProcessorInfoBean.java,v $
- * Revision           $Revision: 1.1 $
+ * Revision           $Revision: 1.2 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-06-28 14:50:24 $
+ * Last modified on   $Date: 2006-06-29 16:23:44 $
  *               by   $Author: sowen70 $
  * Created on 22-Jun-2006
  *****************************************************************/
 package org.embl.ebi.escience.scuflworkers;
+
+import javax.swing.ImageIcon;
 
 /**
  * SPI entry point for processor components.
@@ -45,7 +47,7 @@ public interface ProcessorInfoBean {
 	public String processorClassname();
 	public String xmlHandlerClassname();
 	public String colour();
-	public String icon();
+	public ImageIcon icon();
 	public String taskClassname();
 	public String editorClassname();
 	public String scavengerClassname();

@@ -8,6 +8,8 @@ package org.embl.ebi.escience.scuflworkers;
 import java.awt.event.ActionListener;
 import java.util.Set;
 
+import javax.swing.ImageIcon;
+
 import org.embl.ebi.escience.scufl.ScuflModel;
 import org.embl.ebi.escience.scuflui.workbench.Scavenger;
 import org.embl.ebi.escience.scuflui.workbench.ScavengerTree;
@@ -47,5 +49,11 @@ public interface ScavengerHelper {
 	 * @return
 	 */
 	public Set<Scavenger> getFromModel(ScuflModel model);
+	
+	/**
+	 * 
+	 * @return the icon associated with this ScavengerHelper
+	 */
+	public ImageIcon getIcon();
 
 }

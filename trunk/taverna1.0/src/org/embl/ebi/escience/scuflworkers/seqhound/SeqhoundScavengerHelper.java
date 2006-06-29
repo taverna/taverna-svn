@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: SeqhoundScavengerHelper.java,v $
- * Revision           $Revision: 1.3 $
+ * Revision           $Revision: 1.4 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-06-28 14:50:24 $
+ * Last modified on   $Date: 2006-06-29 16:23:44 $
  *               by   $Author: sowen70 $
  * Created on 15-Jun-2006
  *****************************************************************/
@@ -36,6 +36,8 @@ package org.embl.ebi.escience.scuflworkers.seqhound;
 import java.awt.event.ActionListener;
 import java.util.HashSet;
 import java.util.Set;
+
+import javax.swing.ImageIcon;
 
 import org.apache.log4j.Logger;
 import org.embl.ebi.escience.scufl.ScuflModel;
@@ -72,6 +74,13 @@ public class SeqhoundScavengerHelper implements ScavengerHelper {
 
 	public String getScavengerDescription() { 
 		return null;
+	}
+	
+	/**
+	 * Returns the icon for this scavenger
+	 */
+	public ImageIcon getIcon() {
+		return new SeqhoundProcessorInfoBean().icon();
 	}
 
 	

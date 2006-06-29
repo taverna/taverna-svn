@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: ProcessorInfoBeanHelper.java,v $
- * Revision           $Revision: 1.1 $
+ * Revision           $Revision: 1.2 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-06-28 14:50:24 $
+ * Last modified on   $Date: 2006-06-29 16:23:44 $
  *               by   $Author: sowen70 $
  * Created on 22-Jun-2006
  *****************************************************************/
@@ -38,30 +38,34 @@ import java.net.URL;
 import java.util.Enumeration;
 import java.util.Properties;
 
+import javax.swing.ImageIcon;
+
 import org.apache.log4j.Logger;
 
 /**
- * Generic helper class to aid in retreiving processor information from taverna.properties
+ * Generic helper class to aid in retreiving processor information from
+ * taverna.properties
+ * 
  * @author Stuart Owen
- *
+ * 
  */
 
 public class ProcessorInfoBeanHelper implements ProcessorInfoBean {
-	
+
 	private static Logger logger = Logger.getLogger(ProcessorInfoBeanHelper.class);
 
-	private String propertyBase="";
-	private String tag="";
-	
+	private String propertyBase = "";
+
+	private String tag = "";
+
 	private static Properties tavernaProperties;
-	
-	static {		
+
+	static {
 		ClassLoader loader = ProcessorInfoBeanHelper.class.getClassLoader();
 		if (loader == null) {
 			loader = Thread.currentThread().getContextClassLoader();
-		}		
-		try
-		{
+		}
+		try {
 			Enumeration en = loader.getResources("taverna.properties");
 			tavernaProperties = new Properties();
 			while (en.hasMoreElements()) {
@@ -69,47 +73,53 @@ public class ProcessorInfoBeanHelper implements ProcessorInfoBean {
 				logger.info("Loading resources from : " + resourceURL.toString());
 				tavernaProperties.load(resourceURL.openStream());
 			}
-		}
-		catch(IOException e)
-		{
-			logger.error("Error loading taverna.properties.",e);
+		} catch (IOException e) {
+			logger.error("Error loading taverna.properties.", e);
 		}
 	}
-	
-	public ProcessorInfoBeanHelper(String tagname)
-	{
-		tag=tagname;
-		propertyBase="taverna.processor."+tagname;
+
+	public ProcessorInfoBeanHelper(String tagname) {
+		tag = tagname;
+		propertyBase = "taverna.processor." + tagname;
 	}
-	
+
 	public String processorClassname() {
-		return tavernaProperties.getProperty(propertyBase+".class");
+		return tavernaProperties.getProperty(propertyBase + ".class");
 	}
 
 	public String xmlHandlerClassname() {
-		return tavernaProperties.getProperty(propertyBase+".xml");
+		return tavernaProperties.getProperty(propertyBase + ".xml");
 	}
 
 	public String colour() {
-		return tavernaProperties.getProperty(propertyBase+".colour");
+		return tavernaProperties.getProperty(propertyBase + ".colour");
 	}
 
-	public String icon() {
-		return tavernaProperties.getProperty(propertyBase+".icon");
+	public ImageIcon icon() {
+		String icon = tavernaProperties.getProperty(propertyBase + ".icon");
+		ImageIcon result = null;
+		if (icon != null) {
+			ClassLoader loader = ProcessorInfoBeanHelper.class.getClassLoader();
+			if (loader == null) {
+				loader = Thread.currentThread().getContextClassLoader();
+			}
+			result = new ImageIcon(loader.getResource(icon));
+		}
+		return result;
 	}
 
 	public String taskClassname() {
-		return tavernaProperties.getProperty(propertyBase+".taskclass");
+		return tavernaProperties.getProperty(propertyBase + ".taskclass");
 	}
 
 	public String editorClassname() {
-		return tavernaProperties.getProperty(propertyBase+".editor");
+		return tavernaProperties.getProperty(propertyBase + ".editor");
 	}
 
-	public String scavengerClassname() {		
-		return tavernaProperties.getProperty(propertyBase+".scavenger");
+	public String scavengerClassname() {
+		return tavernaProperties.getProperty(propertyBase + ".scavenger");
 	}
-	
+
 	public String tag() {
 		return tag;
 	}

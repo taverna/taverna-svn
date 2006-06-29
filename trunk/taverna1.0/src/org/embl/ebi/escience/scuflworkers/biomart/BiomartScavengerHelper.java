@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: BiomartScavengerHelper.java,v $
- * Revision           $Revision: 1.10 $
+ * Revision           $Revision: 1.11 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-06-21 15:23:42 $
+ * Last modified on   $Date: 2006-06-29 16:23:44 $
  *               by   $Author: sowen70 $
  * Created on 17-Mar-2006
  *****************************************************************/
@@ -38,6 +38,7 @@ import java.awt.event.ActionListener;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
 
 import org.apache.log4j.Logger;
@@ -110,6 +111,13 @@ public class BiomartScavengerHelper implements ScavengerHelper {
 		//TODO make BioMartProcessor give access Biomart URL to allow Scavengers
 		//to be created
 		return new HashSet<Scavenger>();		
+	}
+	
+	/**
+	 * Returns the icon for this scavenger
+	 */
+	public ImageIcon getIcon() {
+		return new BiomartProcessorInfoBean().icon();
 	}
 
 	

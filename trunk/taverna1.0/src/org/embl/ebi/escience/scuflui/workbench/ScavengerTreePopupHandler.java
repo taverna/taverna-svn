@@ -17,7 +17,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import javax.swing.ImageIcon;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
@@ -59,7 +58,7 @@ import org.jdom.Element;
  * @author Tom Oinn
  */
 public class ScavengerTreePopupHandler extends MouseAdapter {
-	private static Logger LOG = Logger.getLogger(ProcessorFactory.class);
+	private static Logger logger = Logger.getLogger(ProcessorFactory.class);
 
 	private ScavengerTree scavenger;
 
@@ -331,11 +330,11 @@ public class ScavengerTreePopupHandler extends MouseAdapter {
 							try {
 								pf.createProcessor(validName, ScavengerTreePopupHandler.this.scavenger.model);
 							} catch (ProcessorCreationException pce) {
-								LOG.error("Problen creating processor", pce);
+								logger.error("Problen creating processor", pce);
 								JOptionPane.showMessageDialog(null, "Processor creation exception : \n"
 										+ pce.getMessage(), "Exception!", JOptionPane.ERROR_MESSAGE);
 							} catch (DuplicateProcessorNameException dpne) {
-								LOG.error("Problen creating processor", dpne);
+								logger.error("Problen creating processor", dpne);
 								JOptionPane.showMessageDialog(null, "Duplicate name : \n" + dpne.getMessage(),
 										"Exception!", JOptionPane.ERROR_MESSAGE);
 							}
@@ -353,21 +352,19 @@ public class ScavengerTreePopupHandler extends MouseAdapter {
 						// Iterate over the scavenger creator list from the
 						// ProcessorHelper class
 						for (ScavengerHelper scavengerHelper : ProcessorHelper.getScavengerHelpers())
-						{						
-							ImageIcon scavengerIcon = ProcessorHelper.getIconForTagName(ProcessorHelper.getInfoBeanForScavenger(scavengerHelper.getClass().getName()).tag());
+						{													
 							// Instantiate a ScavengerHelper...
 							try {																
 								String scavengerDescription = scavengerHelper.getScavengerDescription();
 								if (scavengerDescription!=null)
 								{
-									JMenuItem scavengerMenuItem = new JMenuItem(scavengerDescription, scavengerIcon);
+									JMenuItem scavengerMenuItem = new JMenuItem(scavengerDescription, scavengerHelper.getIcon());
 									scavengerMenuItem.addActionListener(scavengerHelper
 											.getListener(ScavengerTreePopupHandler.this.scavenger));
 									menu.add(scavengerMenuItem);
 								}
 							} catch (Exception ex) {
-								// Just for now...
-								ex.printStackTrace();
+								logger.error("Exception adding scavenger helper to scavenger tree");
 							}
 						}
 						if (!ScavengerTreePopupHandler.this.scavenger.isPopulating()) {
