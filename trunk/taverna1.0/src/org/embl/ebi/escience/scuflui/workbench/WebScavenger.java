@@ -11,13 +11,15 @@ import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.StringTokenizer;
-import java.util.Vector;
 
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeNode;
 
+import org.apache.log4j.Logger;
 import org.embl.ebi.escience.scuflworkers.talisman.TalismanProcessorFactory;
 import org.embl.ebi.escience.scuflworkers.workflow.WorkflowScavenger;
 import org.embl.ebi.escience.scuflworkers.wsdl.WSDLBasedScavenger;
@@ -36,37 +38,35 @@ import org.jdom.input.SAXBuilder;
  */
 public class WebScavenger extends Scavenger {
 
+	private static Logger logger = Logger.getLogger(WebScavenger.class);
+
 	public static final String DISALLOW = "Disallow:";
 
 	private DefaultTreeModel treeModel = null;
 
-	private DefaultMutableTreeNode progressDisplayNode = new DefaultMutableTreeNode(
-			"Searching...");
+	private DefaultMutableTreeNode progressDisplayNode = new DefaultMutableTreeNode("Searching...");
 
 	/**
 	 * Creates a new web scavenger, starting the web crawl in a new thread and
 	 * returning immediately
 	 */
-	public WebScavenger(String initialURL, DefaultTreeModel model)
-			throws ScavengerCreationException {
+	public WebScavenger(String initialURL, DefaultTreeModel model) throws ScavengerCreationException {
 		super("Web crawl @ " + initialURL);
 		treeModel = model;
 		add(progressDisplayNode);
 		// set default for URL access
 		final String theURL = initialURL;
-		// URLConnection.setDefaultAllowUserInteraction(false);
 		Thread urlThread = new Thread() {
 			public void run() {
 				try {
-					System.out.println("Created new thread...");
+					logger.info("Created new web scavenger thread...");
 					getXScuflURLs(theURL);
 
 					remove(progressDisplayNode);
-					treeModel
-							.nodeStructureChanged((TreeNode) (WebScavenger.this));
-					System.out.println("Done searching.");
+					treeModel.nodeStructureChanged((TreeNode) (WebScavenger.this));
+					logger.info("Done searching.");
 				} catch (ScavengerCreationException sce) {
-					//
+					logger.warn("Error creating Web Scavenger", sce);
 				}
 			}
 		};
@@ -78,8 +78,7 @@ public class WebScavenger extends Scavenger {
 		try {
 			allURLs = search(initialURL);
 		} catch (MalformedURLException mue) {
-			throw new ScavengerCreationException(
-					"Cannot crawl from an invalid URL");
+			throw new ScavengerCreationException("Cannot crawl from an invalid URL");
 		}
 		SAXBuilder sb = new SAXBuilder(false);
 		for (int i = 0; i < allURLs.length; i++) {
@@ -88,21 +87,18 @@ public class WebScavenger extends Scavenger {
 				// document
 				if (allURLs[i].toLowerCase().endsWith("wsdl")) {
 					try {
-						progressDisplayNode.setUserObject("Parsing WSDL at : "
-								+ allURLs[i]);
+						progressDisplayNode.setUserObject("Parsing WSDL at : " + allURLs[i]);
 						treeModel.nodeChanged(progressDisplayNode);
 						add(new WSDLBasedScavenger(allURLs[i]));
 					} catch (ScavengerCreationException sce) {
 						//
 					}
 				} else {
-					progressDisplayNode
-							.setUserObject("Reading : " + allURLs[i]);
+					progressDisplayNode.setUserObject("Reading : " + allURLs[i]);
 					treeModel.nodeChanged(progressDisplayNode);
 					// If this is an XScufl url then add a new
 					// WorkflowProcessorFactory to the node
-					Document doc = sb.build(new InputStreamReader(new URL(
-							allURLs[i]).openStream()));
+					Document doc = sb.build(new InputStreamReader(new URL(allURLs[i]).openStream()));
 					Element root = doc.getRootElement();
 					if (root.getName().equals("scufl")) {
 						// WorkflowProcessorFactory wpf = new
@@ -110,8 +106,7 @@ public class WebScavenger extends Scavenger {
 						// add(new DefaultMutableTreeNode(wpf));
 						add(new WorkflowScavenger(allURLs[i]));
 					} else if (root.getName().equals("tscript")) {
-						TalismanProcessorFactory tpf = new TalismanProcessorFactory(
-								allURLs[i]);
+						TalismanProcessorFactory tpf = new TalismanProcessorFactory(allURLs[i]);
 						add(new DefaultMutableTreeNode(tpf));
 					}
 				}
@@ -186,26 +181,26 @@ public class WebScavenger extends Scavenger {
 	private String[] search(String initialURL) throws MalformedURLException {
 		int numberSearched = 0;
 		int numberFound = 0;
-		Vector vectorMatches = new Vector();
-		Vector vectorToSearch = new Vector();
-		Vector vectorSearched = new Vector();
-		Vector listMatches = new Vector();
+		List<String> matchesList = new ArrayList<String>();
+		List<String> toSearchList = new ArrayList<String>();
+		List<String> searchedList = new ArrayList<String>();
+		List<String> listMatches = new ArrayList<String>();
 		if (initialURL.length() == 0) {
 			return new String[0];
 		}
 		String strURL = initialURL;
 
-		vectorToSearch.addElement(initialURL);
+		toSearchList.add(initialURL);
 
-		while (vectorToSearch.size() > 0) {
+		while (toSearchList.size() > 0) {
 			// get the first element from the to be searched list
-			strURL = (String) vectorToSearch.elementAt(0);
+			strURL = toSearchList.get(0);
 			progressDisplayNode.setUserObject("Examining : " + strURL);
 			treeModel.nodeChanged(progressDisplayNode);
 			URL url = new URL(strURL);
 			// mark the URL as searched (we want this one way or the other)
-			vectorToSearch.removeElementAt(0);
-			vectorSearched.addElement(strURL);
+			toSearchList.remove(0);
+			searchedList.add(strURL);
 			// System.out.println(strURL);
 			// can only search http: protocol URLs
 			if (url.getProtocol().compareTo("http") != 0) {
@@ -243,8 +238,7 @@ public class WebScavenger extends Scavenger {
 						break;
 					index++;
 					String remaining = content.substring(index);
-					StringTokenizer st = new StringTokenizer(remaining,
-							"\t\n\r\">#");
+					StringTokenizer st = new StringTokenizer(remaining, "\t\n\r\">#");
 					String strLink = st.nextToken();
 					URL urlLink;
 					try {
@@ -268,16 +262,14 @@ public class WebScavenger extends Scavenger {
 					}
 					// Only look at links that are 'below' the original one in
 					// the web heirarchy
-					if (strLink.toLowerCase().startsWith(
-							initialURL.toLowerCase()) == false) {
+					if (strLink.toLowerCase().startsWith(initialURL.toLowerCase()) == false) {
 						validURLToSearch = false;
 						// System.out.println("Not searching "+strLink+",
 						// doesn't start with "+initialURL);
 					}
 					// If the link ends with .txt or .xml then we don't want to
 					// search any more
-					if (strLink.toLowerCase().endsWith(".xml")
-							|| strLink.toLowerCase().endsWith(".txt")
+					if (strLink.toLowerCase().endsWith(".xml") || strLink.toLowerCase().endsWith(".txt")
 							|| strLink.toLowerCase().endsWith("wsdl")) {
 						validURLToSearch = false;
 					}
@@ -294,21 +286,19 @@ public class WebScavenger extends Scavenger {
 						// System.out.println(strType);
 						// check to see if this URL has already been
 						// searched or is going to be searched
-						if ((!vectorSearched.contains(strLink))
-								&& (!vectorToSearch.contains(strLink))) {
+						if ((!searchedList.contains(strLink)) && (!toSearchList.contains(strLink))) {
 							// test to make sure it is robot-safe!
 							if (robotSafe(urlLink) && validURLToSearch) {
-								vectorToSearch.addElement(strLink);
+								toSearchList.add(strLink);
 							}
 						}
 
 						// if the proper type, add it to the results list
 						// unless we have already seen it
-						if (strLink.indexOf(".xml") > -1
-								|| strLink.toLowerCase().endsWith("wsdl")) {
-							if (vectorMatches.contains(strLink) == false) {
+						if (strLink.indexOf(".xml") > -1 || strLink.toLowerCase().endsWith("wsdl")) {
+							if (matchesList.contains(strLink) == false) {
 								listMatches.add(strLink);
-								vectorMatches.addElement(strLink);
+								matchesList.add(strLink);
 								numberFound++;
 							}
 						}
