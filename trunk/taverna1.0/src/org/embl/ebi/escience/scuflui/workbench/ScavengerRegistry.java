@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: ScavengerRegistry.java,v $
- * Revision           $Revision: 1.1 $
+ * Revision           $Revision: 1.2 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-06-30 11:33:08 $
+ * Last modified on   $Date: 2006-06-30 13:47:47 $
  *               by   $Author: sowen70 $
  * Created on 30-Jun-2006
  *****************************************************************/
@@ -47,7 +47,7 @@ public class ScavengerRegistry extends TavernaSPIRegistry<Scavenger> {
 
 	private static ScavengerRegistry instance = new ScavengerRegistry();
 	
-	public ScavengerRegistry() {
+	private ScavengerRegistry() {
 		super(Scavenger.class);
 	}
 	

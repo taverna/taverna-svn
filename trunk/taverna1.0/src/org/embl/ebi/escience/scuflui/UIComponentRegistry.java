@@ -38,7 +38,7 @@ public class UIComponentRegistry extends TavernaSPIRegistry<ScuflUIComponent>{
 		instance.loadInstances();
 	}
 
-	public UIComponentRegistry() {
+	private UIComponentRegistry() {
 		super(ScuflUIComponent.class);
 		components = new HashMap<String,String>();
 		icons = new HashMap<String,ImageIcon>();

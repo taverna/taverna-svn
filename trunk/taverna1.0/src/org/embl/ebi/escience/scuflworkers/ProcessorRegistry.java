@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: ProcessorRegistry.java,v $
- * Revision           $Revision: 1.2 $
+ * Revision           $Revision: 1.3 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-06-30 11:31:49 $
+ * Last modified on   $Date: 2006-06-30 13:47:47 $
  *               by   $Author: sowen70 $
  * Created on 22-Jun-2006
  *****************************************************************/
@@ -47,7 +47,7 @@ public class ProcessorRegistry extends TavernaSPIRegistry<ProcessorInfoBean> {
 	
 	private static ProcessorRegistry instance=new ProcessorRegistry();
 	
-	public ProcessorRegistry()
+	private ProcessorRegistry()
 	{
 		super(ProcessorInfoBean.class);
 	}

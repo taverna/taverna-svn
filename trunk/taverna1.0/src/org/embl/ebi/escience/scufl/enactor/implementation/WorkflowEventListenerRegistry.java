@@ -24,45 +24,42 @@
  ****************************************************************
  * Source code information
  * -----------------------
- * Filename           $RCSfile: ScavengerHelperRegistry.java,v $
- * Revision           $Revision: 1.2 $
+ * Filename           $RCSfile: WorkflowEventListenerRegistry.java,v $
+ * Revision           $Revision: 1.1 $
  * Release status     $State: Exp $
  * Last modified on   $Date: 2006-06-30 13:47:47 $
  *               by   $Author: sowen70 $
- * Created on 29-Jun-2006
+ * Created on 30-Jun-2006
  *****************************************************************/
-package org.embl.ebi.escience.scuflworkers;
+package org.embl.ebi.escience.scufl.enactor.implementation;
 
 import java.util.List;
 
+import org.embl.ebi.escience.scufl.enactor.WorkflowEventListener;
 import org.embl.ebi.escience.utils.TavernaSPIRegistry;
 
 /**
- * Factory class for discovering ScavengerHelpers using the SPI mechanism
+ * Factory class for discovering providers of WorkflowEventListener
  * @author Stuart Owen
  *
  */
-public class ScavengerHelperRegistry extends TavernaSPIRegistry<ScavengerHelper> {
+public class WorkflowEventListenerRegistry extends TavernaSPIRegistry<WorkflowEventListener>{
 
-	private static ScavengerHelperRegistry instance = new ScavengerHelperRegistry();	
+	private static WorkflowEventListenerRegistry instance = new WorkflowEventListenerRegistry();
 	
-	private ScavengerHelperRegistry() {
-		super(ScavengerHelper.class);
-	}
-	
-	public static ScavengerHelperRegistry instance() {
+	public static WorkflowEventListenerRegistry instance() {
 		return instance;
 	}
 	
-	/**
-	 * Finds all ScavengerHelpers defined as an SPI
-	 * @return
-	 */
-	public List<ScavengerHelper> getScavengerHelpers()
+	private WorkflowEventListenerRegistry()
 	{
-		return findComponents();
+		super(WorkflowEventListener.class);
 	}
 	
-	
-
+	/**
+	 * Returns a list of WorkflowEventListeners registered as an SPI 
+	 */
+	public List<WorkflowEventListener> getWorkflowEventListeners() {
+		return findComponents();
+	}
 }

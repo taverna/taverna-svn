@@ -40,7 +40,7 @@ public class RendererRegistry extends TavernaSPIRegistry<RendererSPI>{
      * Create a new instance. Intialize it with no renderers. You will probably
      * want to call <code>RendererRegistry.instance()</code> instead.
      */
-    public RendererRegistry()
+    private RendererRegistry()
     {
     	super(RendererSPI.class);
         renderers = new ArrayList<RendererSPI>();

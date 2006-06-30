@@ -51,15 +51,10 @@ public class WorkflowEventDispatcher {
 	 */
 	public WorkflowEventDispatcher(boolean loadFromSPI) {
 		if (loadFromSPI) {
-			SPInterface spiIF = new SPInterface(WorkflowEventListener.class);
-			ClassLoaders loaders = new ClassLoaders();
-			loaders.put(Thread.currentThread().getContextClassLoader());
-			Enumeration spe = Service.providers(spiIF, loaders);
-			while (spe.hasMoreElements()) {
-				WorkflowEventListener wel = (WorkflowEventListener) spe
-						.nextElement();
-				addListener(wel);
-			}
+			List<WorkflowEventListener> listeners = WorkflowEventListenerRegistry.instance().getWorkflowEventListeners();
+			for (WorkflowEventListener listener : listeners) {
+				addListener(listener);
+			}			
 		}
 		this.notificationThread = new NotifyThread();
 	}
