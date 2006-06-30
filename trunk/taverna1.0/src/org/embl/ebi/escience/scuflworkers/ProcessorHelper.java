@@ -58,10 +58,6 @@ public class ProcessorHelper {
 
 	private static Map<String, ProcessorInfoBean> beanForProcessorClassname = new HashMap<String, ProcessorInfoBean>();
 
-	private static List<Scavenger> simpleScavengers = new ArrayList<Scavenger>();
-
-	private static List<ScavengerHelper> scavengerHelpers = new ArrayList<ScavengerHelper>();
-
 	private static Map<String, ImageIcon> iconForTagName = new HashMap<String, ImageIcon>();
 
 	private static Map<String, XMLHandler> xmlHandlerForTagName = new HashMap<String, XMLHandler>();
@@ -87,27 +83,13 @@ public class ProcessorHelper {
 		unknownProcessorIcon = new ImageIcon(loader
 				.getResource("org/embl/ebi/escience/scuflui/icons/explorer/unknownprocessor.png"));
 
-		List<ProcessorInfoBean> infoBeans = ProcessorRegistry.instance().getProcessorInfoBeans(loader);
+		List<ProcessorInfoBean> infoBeans = ProcessorRegistry.instance().getProcessorInfoBeans();
 		for (ProcessorInfoBean bean : infoBeans) {
 			beanForProcessorClassname.put(bean.processorClassname(), bean);
 
 			if (bean.icon() != null) {
 				iconForTagName.put(bean.tag(), bean.icon());
-			}
-
-			if (bean.scavengerClassname() != null) {				
-				Object o;
-				try {
-					o = Class.forName(bean.scavengerClassname()).newInstance();
-					if (o instanceof ScavengerHelper) {
-						scavengerHelpers.add((ScavengerHelper) o);
-					} else if (o instanceof Scavenger) {
-						simpleScavengers.add((Scavenger) o);
-					}
-				} catch (Exception e) {
-					logger.error("Exception creating scavenger class: " + bean.scavengerClassname(), e);
-				}
-			}
+			}			
 
 			if (bean.xmlHandlerClassname() != null) {
 				try {
@@ -119,7 +101,7 @@ public class ProcessorHelper {
 			}
 
 			if (bean.editorClassname() != null) {
-				try {
+				try {					
 					ProcessorEditor editor = (ProcessorEditor) Class.forName(bean.editorClassname()).newInstance();
 					editorForTagName.put(bean.tag(), editor);
 				} catch (Exception e) {
@@ -134,22 +116,12 @@ public class ProcessorHelper {
 	 * 
 	 */
 	private static void emptyMaps() {
-		beanForProcessorClassname.clear();
-		simpleScavengers.clear();
-		scavengerHelpers.clear();
+		beanForProcessorClassname.clear();		
 		iconForTagName.clear();
 		xmlHandlerForTagName.clear();
 		editorForTagName.clear();
 	}	
-
-	/**
-	 * Return the set of instances of simple (null constructor) scavengers;
-	 * these are added automatically to all service selection panels on
-	 * creation.
-	 */
-	public static List<Scavenger> getSimpleScavengers() {
-		return simpleScavengers;
-	}
+	
 
 	/**
 	 * Given a processor instance, return the fully qualified class name of a
@@ -199,14 +171,7 @@ public class ProcessorHelper {
 			result = bean.tag();
 		}
 		return result;
-	}
-
-	/**
-	 * @return a set of instantiated ScavengerHelper classes
-	 */
-	public static List<ScavengerHelper> getScavengerHelpers() {
-		return scavengerHelpers;
-	}
+	}	
 
 	/**
 	 * Given a tag name, return the in place editor for the processor

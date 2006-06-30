@@ -47,6 +47,7 @@ import org.embl.ebi.escience.scuflui.UIUtils;
 import org.embl.ebi.escience.scuflworkers.ProcessorFactory;
 import org.embl.ebi.escience.scuflworkers.ProcessorHelper;
 import org.embl.ebi.escience.scuflworkers.ScavengerHelper;
+import org.embl.ebi.escience.scuflworkers.ScavengerHelperRegistry;
 import org.embl.ebi.escience.scuflworkers.workflow.WorkflowProcessor;
 import org.embl.ebi.escience.scuflworkers.workflow.WorkflowProcessorFactory;
 import org.jdom.Document;
@@ -351,7 +352,7 @@ public class ScavengerTreePopupHandler extends MouseAdapter {
 						menu.setLabel("Create new scavenger");
 						// Iterate over the scavenger creator list from the
 						// ProcessorHelper class
-						for (ScavengerHelper scavengerHelper : ProcessorHelper.getScavengerHelpers())
+						for (ScavengerHelper scavengerHelper : ScavengerHelperRegistry.instance().getScavengerHelpers())
 						{													
 							// Instantiate a ScavengerHelper...
 							try {																

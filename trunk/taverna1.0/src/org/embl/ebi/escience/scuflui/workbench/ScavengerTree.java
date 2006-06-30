@@ -45,6 +45,7 @@ import org.embl.ebi.escience.scuflui.dnd.SpecFragmentTransferable;
 import org.embl.ebi.escience.scuflworkers.ProcessorFactory;
 import org.embl.ebi.escience.scuflworkers.ProcessorHelper;
 import org.embl.ebi.escience.scuflworkers.ScavengerHelper;
+import org.embl.ebi.escience.scuflworkers.ScavengerHelperRegistry;
 import org.jdom.Attribute;
 import org.jdom.Element;
 import org.jdom.output.XMLOutputter;
@@ -236,7 +237,7 @@ public class ScavengerTree extends ExtendedJTree implements ScuflUIComponent, Dr
 			// do this if the populate flag is set to true.
 
 			if (populate) {
-				List<Scavenger> simpleScavengers = ProcessorHelper.getSimpleScavengers();
+				List<Scavenger> simpleScavengers = ScavengerRegistry.instance().getScavengers();
 				if (simpleScavengers.isEmpty() == false) {
 					DefaultMutableTreeNode t = new DefaultMutableTreeNode("Local Services");
 					this.treeModel.insertNodeInto(t, (MutableTreeNode) this.treeModel.getRoot(), this.treeModel
@@ -284,7 +285,7 @@ public class ScavengerTree extends ExtendedJTree implements ScuflUIComponent, Dr
 					}
 				}
 
-				List<ScavengerHelper> helpers = ProcessorHelper.getScavengerHelpers();
+				List<ScavengerHelper> helpers = ScavengerHelperRegistry.instance().getScavengerHelpers();
 				for (ScavengerHelper helper : helpers) {
 					for (Scavenger scavenger : helper.getDefaults()) {
 						scavengerTree.addScavenger(scavenger);
@@ -331,7 +332,7 @@ public class ScavengerTree extends ExtendedJTree implements ScuflUIComponent, Dr
 	private void addScavengersFromModel(ScuflModel theModel) throws ScavengerCreationException {
 		if (theModel != null) {
 
-			List<ScavengerHelper> helpers = ProcessorHelper.getScavengerHelpers();
+			List<ScavengerHelper> helpers = ScavengerHelperRegistry.instance().getScavengerHelpers();
 			for (ScavengerHelper helper : helpers) {
 				Set<Scavenger> scavengers = helper.getFromModel(theModel);
 				for (Scavenger scavenger : scavengers) {
