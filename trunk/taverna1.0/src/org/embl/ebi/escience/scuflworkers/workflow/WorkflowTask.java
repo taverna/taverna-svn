@@ -25,8 +25,8 @@
 //      Dependencies        :
 //
 //      Last commit info    :   $Author: sowen70 $
-//                              $Date: 2006-03-22 15:19:34 $
-//                              $Revision: 1.11 $
+//                              $Date: 2006-06-30 14:34:38 $
+//                              $Revision: 1.12 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 
@@ -49,10 +49,11 @@ import org.embl.ebi.escience.scuflworkers.ProcessorTaskWorker;
 import uk.ac.soton.itinnovation.freefluo.event.WorkflowStateChangedEvent;
 import uk.ac.soton.itinnovation.freefluo.event.WorkflowStateListener;
 import uk.ac.soton.itinnovation.freefluo.main.WorkflowState;
+import uk.ac.soton.itinnovation.taverna.enactor.entities.EnactorWorkflowTask;
 import uk.ac.soton.itinnovation.taverna.enactor.entities.ProcessorTask;
 import uk.ac.soton.itinnovation.taverna.enactor.entities.TaskExecutionException;
 
-public class WorkflowTask implements ProcessorTaskWorker {
+public class WorkflowTask implements ProcessorTaskWorker, EnactorWorkflowTask {
 	private static EnactorProxy defaultEnactor = new FreefluoEnactorProxy();
 
 	private static Logger logger = Logger.getLogger(WorkflowTask.class);	

@@ -36,6 +36,8 @@ import org.embl.ebi.escience.scufl.OutputPort;
 import org.embl.ebi.escience.scufl.Processor;
 import org.embl.ebi.escience.scufl.ProcessorCreationException;
 import org.embl.ebi.escience.scufl.ScuflModel;
+import org.embl.ebi.escience.scufl.ScuflWorkflowProcessorFactory;
+import org.embl.ebi.escience.scufl.ScuflWorkflowProcessor;
 import org.embl.ebi.escience.scufl.enactor.WorkflowSubmissionException;
 import org.embl.ebi.escience.scufl.enactor.implementation.FreefluoEnactorProxy;
 import org.embl.ebi.escience.scufl.parser.XScuflParser;
@@ -48,8 +50,6 @@ import org.embl.ebi.escience.scuflworkers.ProcessorFactory;
 import org.embl.ebi.escience.scuflworkers.ProcessorHelper;
 import org.embl.ebi.escience.scuflworkers.ScavengerHelper;
 import org.embl.ebi.escience.scuflworkers.ScavengerHelperRegistry;
-import org.embl.ebi.escience.scuflworkers.workflow.WorkflowProcessor;
-import org.embl.ebi.escience.scuflworkers.workflow.WorkflowProcessorFactory;
 import org.jdom.Document;
 import org.jdom.Element;
 
@@ -155,8 +155,8 @@ public class ScavengerTreePopupHandler extends MouseAdapter {
 						public void actionPerformed(ActionEvent ae) {
 							try {
 								final ScuflModel m;
-								if (pf instanceof WorkflowProcessorFactory) {
-									WorkflowProcessor wp = (WorkflowProcessor) pf.createProcessor("workflow",
+								if (pf instanceof ScuflWorkflowProcessorFactory) {
+									ScuflWorkflowProcessor wp = (ScuflWorkflowProcessor) pf.createProcessor("workflow",
 											new ScuflModel());
 									m = wp.getInternalModel();
 								} else {
@@ -275,10 +275,10 @@ public class ScavengerTreePopupHandler extends MouseAdapter {
 					// If this is a workflow factory then we might as well give
 					// the user the option to import the complete workflow as
 					// well as to wrap it in a processor
-					if (scuflObject instanceof WorkflowProcessorFactory) {
+					if (scuflObject instanceof ScuflWorkflowProcessorFactory) {
 						JMenuItem imp = new JMenuItem("Import workflow...", TavernaIcons.webIcon);
-						final String definitionURL = ((WorkflowProcessorFactory) scuflObject).getDefinitionURL();
-						final Element definitionElement = (Element) ((WorkflowProcessorFactory) scuflObject)
+						final String definitionURL = ((ScuflWorkflowProcessorFactory) scuflObject).getDefinitionURL();
+						final Element definitionElement = (Element) ((ScuflWorkflowProcessorFactory) scuflObject)
 								.getDefinition();
 						imp.addActionListener(new ActionListener() {
 							public void actionPerformed(ActionEvent ae) {

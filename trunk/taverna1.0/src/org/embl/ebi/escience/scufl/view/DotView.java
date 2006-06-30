@@ -14,8 +14,8 @@ import org.embl.ebi.escience.scufl.Processor;
 import org.embl.ebi.escience.scufl.ScuflModel;
 import org.embl.ebi.escience.scufl.ScuflModelEvent;
 import org.embl.ebi.escience.scufl.ScuflModelEventListener;
+import org.embl.ebi.escience.scufl.ScuflWorkflowProcessor;
 import org.embl.ebi.escience.scuflworkers.ProcessorHelper;
-import org.embl.ebi.escience.scuflworkers.workflow.WorkflowProcessor;
 
 /**
  * Represents a ScuflModel instance as a dot file which may then be rendered by
@@ -308,14 +308,14 @@ public class DotView implements ScuflModelEventListener, java.io.Serializable {
 				String constraintName = prefix + "CONSTRAINT" + c.getName();
 				String controllerName = prefix
 						+ c.getControllingProcessor().getName();
-				if (c.getControllingProcessor() instanceof WorkflowProcessor
+				if (c.getControllingProcessor() instanceof ScuflWorkflowProcessor
 						&& expandWorkflow == true) {
 					// controllerName = "cluster_"+controllerName;
 					controllerName = controllerName
 							+ "WORKFLOWINTERNALSINKCONTROL";
 				}
 				String targetName = prefix + c.getTargetProcessor().getName();
-				if (c.getTargetProcessor() instanceof WorkflowProcessor
+				if (c.getTargetProcessor() instanceof ScuflWorkflowProcessor
 						&& expandWorkflow == true) {
 					// targetName = "cluster_"+targetName;
 					targetName = targetName + "WORKFLOWINTERNALSOURCECONTROL";
@@ -390,7 +390,7 @@ public class DotView implements ScuflModelEventListener, java.io.Serializable {
 				if (dc.getSink().getProcessor() == model
 						.getWorkflowSinkProcessor()) {
 					toName = q(prefix + "WORKFLOWINTERNALSINK_" + sinkPortName);
-				} else if (dc.getSink().getProcessor() instanceof WorkflowProcessor
+				} else if (dc.getSink().getProcessor() instanceof ScuflWorkflowProcessor
 						&& expandWorkflow == true) {
 					toName = q(sinkProcessorName + "WORKFLOWINTERNALSOURCE_"
 							+ sinkPortName);
@@ -407,7 +407,7 @@ public class DotView implements ScuflModelEventListener, java.io.Serializable {
 						.getWorkflowSourceProcessor()) {
 					fromName = q(prefix + "WORKFLOWINTERNALSOURCE_"
 							+ sourcePortName);
-				} else if (dc.getSource().getProcessor() instanceof WorkflowProcessor
+				} else if (dc.getSource().getProcessor() instanceof ScuflWorkflowProcessor
 						&& expandWorkflow == true) {
 					fromName = q(sourceProcessorName + "WORKFLOWINTERNALSINK_"
 							+ sourcePortName);
@@ -546,12 +546,12 @@ public class DotView implements ScuflModelEventListener, java.io.Serializable {
 
 	private String createProcessor(Processor p, String prefix, int detail,
 			int fill) {
-		if (p instanceof WorkflowProcessor && expandWorkflow == true) {
+		if (p instanceof ScuflWorkflowProcessor && expandWorkflow == true) {
 			fill++;
 			if (fill == fillColours.length) {
 				fill = 0;
 			}
-			return createWorkflow(p.getName(), ((WorkflowProcessor) p)
+			return createWorkflow(p.getName(), ((ScuflWorkflowProcessor) p)
 					.getInternalModel(), prefix + p.getName(), detail, fill);
 		}
 		String colour = ProcessorHelper.getPreferredColour(p);

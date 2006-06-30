@@ -22,6 +22,7 @@ import org.embl.ebi.escience.scufl.ScuflModelEvent;
 import org.embl.ebi.escience.scufl.ScuflModelEventListener;
 import org.embl.ebi.escience.scufl.SetOnlineException;
 import org.embl.ebi.escience.scufl.UnknownPortException;
+import org.embl.ebi.escience.scufl.ScuflWorkflowProcessor;
 import org.embl.ebi.escience.scufl.parser.XScuflParser;
 import org.jdom.Document;
 import org.jdom.Element;
@@ -33,7 +34,7 @@ import org.jdom.Element;
  * 
  * @author Tom Oinn
  */
-public class WorkflowProcessor extends Processor implements java.io.Serializable {
+public class WorkflowProcessor extends Processor implements ScuflWorkflowProcessor,java.io.Serializable {
 
 	private ScuflModel theModel = null;
 

@@ -19,7 +19,6 @@ import java.util.Properties;
 import org.apache.log4j.Logger;
 import org.embl.ebi.escience.scufl.parser.XScuflParser;
 import org.embl.ebi.escience.scufl.view.XScuflView;
-import org.embl.ebi.escience.scuflworkers.workflow.WorkflowProcessor;
 
 /**
  * Represents a single scufl workflow model
@@ -345,7 +344,7 @@ public class ScuflModel implements Serializable, LogAwareComponent {
 	public void collectAllProcessors(Map target, String prefix) {
 		Processor[] p = getProcessors();
 		for (int i = 0; i < p.length; i++) {
-			if (p[i] instanceof WorkflowProcessor == false) {
+			if (p[i] instanceof ScuflWorkflowProcessor == false) {
 				if (prefix == null) {
 					target.put(p[i].getName(), p[i]);
 				} else {
@@ -356,7 +355,7 @@ public class ScuflModel implements Serializable, LogAwareComponent {
 				if (prefix != null) {
 					newPrefix = prefix + "." + newPrefix;
 				}
-				WorkflowProcessor wp = (WorkflowProcessor) p[i];
+				ScuflWorkflowProcessor wp = (ScuflWorkflowProcessor) p[i];
 				wp.getInternalModel().collectAllProcessors(target, newPrefix);
 			}
 		}

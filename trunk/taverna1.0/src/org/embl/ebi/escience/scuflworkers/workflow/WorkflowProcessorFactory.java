@@ -4,6 +4,7 @@
  * Copyright Tom Oinn, EMBL-EBI
  */
 package org.embl.ebi.escience.scuflworkers.workflow;
+import org.embl.ebi.escience.scufl.ScuflWorkflowProcessorFactory;
 import org.embl.ebi.escience.scufl.XScufl;
 import org.embl.ebi.escience.scuflworkers.ProcessorFactory;
 import org.jdom.Element;
@@ -15,7 +16,7 @@ import org.jdom.Element;
  * WorkflowProcessor nodes
  * @author Tom Oinn
  */
-public class WorkflowProcessorFactory extends ProcessorFactory {
+public class WorkflowProcessorFactory extends ProcessorFactory implements ScuflWorkflowProcessorFactory {
     
     private String definitionURL = null;
     private Element definitionElement = null;
