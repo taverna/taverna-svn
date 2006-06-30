@@ -24,12 +24,12 @@
  ****************************************************************
  * Source code information
  * -----------------------
- * Filename           $RCSfile: ProcessorRegistry.java,v $
- * Revision           $Revision: 1.2 $
+ * Filename           $RCSfile: ScavengerHelperRegistry.java,v $
+ * Revision           $Revision: 1.1 $
  * Release status     $State: Exp $
  * Last modified on   $Date: 2006-06-30 11:31:49 $
  *               by   $Author: sowen70 $
- * Created on 22-Jun-2006
+ * Created on 29-Jun-2006
  *****************************************************************/
 package org.embl.ebi.escience.scuflworkers;
 
@@ -38,36 +38,31 @@ import java.util.List;
 import org.embl.ebi.escience.utils.TavernaSPIRegistry;
 
 /**
- * Factory class that handles the discovery of Processor components using the ProcessorInfoBean SPI
- * @author sowen
+ * Factory class for discovering ScavengerHelpers using the SPI mechanism
+ * @author Stuart Owen
  *
  */
+public class ScavengerHelperRegistry extends TavernaSPIRegistry<ScavengerHelper> {
 
-public class ProcessorRegistry extends TavernaSPIRegistry<ProcessorInfoBean> {		
+	private static ScavengerHelperRegistry instance = new ScavengerHelperRegistry();	
 	
-	private static ProcessorRegistry instance=new ProcessorRegistry();
+	public ScavengerHelperRegistry() {
+		super(ScavengerHelper.class);
+	}
 	
-	public ProcessorRegistry()
-	{
-		super(ProcessorInfoBean.class);
+	public static ScavengerHelperRegistry instance() {
+		return instance;
 	}
 	
 	/**
-	 * Returns an instance of the ProcessorRegistry
-	 */
-	public static ProcessorRegistry instance()
-	{
-		return instance;		
-	}	
-	
-	
-	/**
-	 * Returns all ProcessorInfoBean instances, defined as an SPI
+	 * Finds all ScavengerHelpers defined as an SPI
 	 * @return
 	 */
-	public List<ProcessorInfoBean> getProcessorInfoBeans()
+	public List<ScavengerHelper> getScavengerHelpers()
 	{
 		return findComponents();
 	}
+	
+	
 
 }

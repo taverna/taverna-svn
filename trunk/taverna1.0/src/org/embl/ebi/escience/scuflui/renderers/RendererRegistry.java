@@ -1,15 +1,12 @@
 package org.embl.ebi.escience.scuflui.renderers;
 
 import java.util.ArrayList;
-import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
 
-import org.apache.commons.discovery.resource.ClassLoaders;
-import org.apache.commons.discovery.tools.SPInterface;
-import org.apache.commons.discovery.tools.Service;
 import org.apache.log4j.Logger;
 import org.embl.ebi.escience.baclava.DataThing;
+import org.embl.ebi.escience.utils.TavernaSPIRegistry;
 
 /**
  * A registry that maintains a list of all renderer service providers.
@@ -20,10 +17,13 @@ import org.embl.ebi.escience.baclava.DataThing;
  * the current class path.
  *
  * @author Matthew Pocock
+ * @author Stuart Owen
  */
-public class RendererRegistry {
-    private static Logger LOG = Logger.getLogger(RendererRegistry.class);
+public class RendererRegistry extends TavernaSPIRegistry<RendererSPI>{
+	
+    private static Logger logger = Logger.getLogger(RendererRegistry.class);
     private static RendererRegistry instance;
+    private List<RendererSPI> renderers;
 
     public static synchronized RendererRegistry instance()
     {
@@ -34,9 +34,7 @@ public class RendererRegistry {
         }
 
         return instance;
-    }
-
-    private List renderers;
+    }    
 
     /**
      * Create a new instance. Intialize it with no renderers. You will probably
@@ -44,7 +42,8 @@ public class RendererRegistry {
      */
     public RendererRegistry()
     {
-        renderers = new ArrayList();
+    	super(RendererSPI.class);
+        renderers = new ArrayList<RendererSPI>();
     }
 
     /**
@@ -55,17 +54,8 @@ public class RendererRegistry {
      */
     public void loadInstances(ClassLoader classLoader)
     {
-        LOG.info("Loading all renderers");
-        SPInterface spiIF = new SPInterface(RendererSPI.class);
-        ClassLoaders loaders = new ClassLoaders();
-        loaders.put(classLoader);
-        Enumeration spe = Service.providers(spiIF, loaders);
-        while (spe.hasMoreElements()) {
-            RendererSPI spi = (RendererSPI) spe.nextElement();
-            LOG.info("\t" + spi.getName());
-            renderers.add(spi);
-        }
-        LOG.info("Done");
+        logger.info("Loading all renderers");
+        renderers=findComponents(classLoader);
     }
 
     /**
@@ -77,13 +67,12 @@ public class RendererRegistry {
      */
     public RendererSPI getRenderer(DataThing dataThing)
     {
-        LOG.info("Finding renderer: " + dataThing);
-        for(Iterator i = renderers.iterator(); i.hasNext(); )
-        {
-            RendererSPI rend = (RendererSPI) i.next();
+        logger.info("Finding renderer: " + dataThing);
+        for(RendererSPI rend : renderers)
+        {           
             if(rend.canHandle(this, dataThing))
             {
-                LOG.info("\tFound: " + rend.getName());
+                logger.info("\tFound: " + rend.getName());
                 return rend;
             }
         }
@@ -100,12 +89,11 @@ public class RendererRegistry {
      */
     public List getRenderers(DataThing dataThing)
     {
-        LOG.info("Finding renderers: " + dataThing);
+        logger.info("Finding renderers: " + dataThing);
         List res = new ArrayList();
-        for(Iterator i = renderers.iterator(); i.hasNext();) {
-            RendererSPI rend = (RendererSPI) i.next();
+        for(RendererSPI rend : renderers) {            
             if(rend.canHandle(this, dataThing)) {
-                LOG.info("\tFound: " + rend.getName());
+                logger.info("\tFound: " + rend.getName());
                 res.add(rend);
             }
         }
@@ -135,6 +123,6 @@ public class RendererRegistry {
 
     public RendererSPI get(int i)
     {
-        return (RendererSPI) renderers.get(i);
+        return renderers.get(i);
     }
 }

@@ -1,28 +1,29 @@
 package org.embl.ebi.escience.scuflui;
 
-import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.discovery.resource.ClassLoaders;
-import org.apache.commons.discovery.tools.SPInterface;
-import org.apache.commons.discovery.tools.Service;
+import javax.swing.ImageIcon;
+
 import org.apache.log4j.Logger;
+import org.embl.ebi.escience.utils.TavernaSPIRegistry;
 
 /**
  * A registry that maintains a list of all available UI components
  * 
  * @author Tom Oinn
+ * @author Stuart Owen
  */
-public class UIComponentRegistry {
+public class UIComponentRegistry extends TavernaSPIRegistry<ScuflUIComponent>{
 
 	private static Logger logger = Logger.getLogger(UIComponentRegistry.class);
 
 	private static UIComponentRegistry instance;
 
-	private Map components;
+	private Map<String,String> components;
 
-	private Map icons;
+	private Map<String,ImageIcon> icons;
 
 	public static synchronized UIComponentRegistry instance() {
 		if (instance == null) {
@@ -33,34 +34,25 @@ public class UIComponentRegistry {
 	}
 
 	public static void forceReload() {
+		flushCache(UIComponentRegistry.class);
 		instance.loadInstances();
 	}
 
 	public UIComponentRegistry() {
-		components = new HashMap();
-		icons = new HashMap();
+		super(ScuflUIComponent.class);
+		components = new HashMap<String,String>();
+		icons = new HashMap<String,ImageIcon>();
 	}
 
 	public void loadInstances() {
-		ClassLoader classLoader = UIComponentRegistry.class.getClassLoader();
 		logger.info("Loading all UI components");
-		SPInterface spiIF = new SPInterface(ScuflUIComponent.class);
-		ClassLoaders loaders = new ClassLoaders();
-		loaders.put(classLoader);
-		Enumeration spe = Service.providers(spiIF, loaders);
-		// FIXME: Throws UnsupportedClassVersionError on 1.5 classes from 1.4 VM
-		while (spe.hasMoreElements()) {
-			ScuflUIComponent component = (ScuflUIComponent) spe.nextElement();	
-			logger.info("Found UI component:"+component.getName());
-			String componentClassName = component.getClass().getName();
-			String componentDisplayName = component.getName();
-			try {
-				components.put(componentDisplayName, componentClassName);
-				icons.put(componentDisplayName, component.getIcon());
-			} catch (RuntimeException re) {
-				//
-			}
-		}
+		
+		List<ScuflUIComponent> uicomponents=findComponents();
+		
+		for (ScuflUIComponent component : uicomponents) {
+			components.put(component.getName(),component.getClass().getName());
+			icons.put(component.getName(),component.getIcon());
+		}		
 		logger.info("Done");
 	}
 
