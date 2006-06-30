@@ -24,9 +24,9 @@
 //      Created for Project :   MYGRID
 //      Dependencies        :
 //
-//      Last commit info    :   $Author: stain $
-//                              $Date: 2006-05-03 09:32:28 $
-//                              $Revision: 1.75 $
+//      Last commit info    :   $Author: sowen70 $
+//                              $Date: 2006-06-30 14:35:07 $
+//                              $Revision: 1.76 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 package uk.ac.soton.itinnovation.taverna.enactor.entities;
@@ -78,7 +78,6 @@ import org.embl.ebi.escience.scufl.provenance.process.ServiceFailure;
 import org.embl.ebi.escience.scufl.provenance.process.WaitingToRetry;
 import org.embl.ebi.escience.scuflworkers.ProcessorHelper;
 import org.embl.ebi.escience.scuflworkers.ProcessorTaskWorker;
-import org.embl.ebi.escience.scuflworkers.workflow.WorkflowTask;
 import org.jdom.Element;
 import org.jdom.Namespace;
 
@@ -266,8 +265,8 @@ public class ProcessorTask extends AbstractTask {
 					inputMap.put(portName, dataThing);
 				}
 			}
-			if (processorTaskWorker instanceof WorkflowTask) {								
-				WorkflowInstance nestedWorkflow = (processorTaskWorker != null ? ((WorkflowTask)processorTaskWorker).getWorkflowInstance()
+			if (processorTaskWorker instanceof EnactorWorkflowTask) {								
+				WorkflowInstance nestedWorkflow = (processorTaskWorker != null ? ((EnactorWorkflowTask)processorTaskWorker).getWorkflowInstance()
 						: null);
 				DISPATCHER.fireProcessFailed(new NestedWorkflowFailureEvent(workflowInstance, activeProcessor, ex,
 						inputMap, nestedWorkflow));
@@ -299,8 +298,8 @@ public class ProcessorTask extends AbstractTask {
 		} else {
 			outputMap = invokeWithoutIteration(inputMap);
 			// Fire a new ProcessCompletionEvent
-			if (processorTaskWorker instanceof WorkflowTask) {
-				WorkflowInstance nestedWorkflow = (processorTaskWorker != null ? ((WorkflowTask)processorTaskWorker).getWorkflowInstance()
+			if (processorTaskWorker instanceof EnactorWorkflowTask) {
+				WorkflowInstance nestedWorkflow = (processorTaskWorker != null ? ((EnactorWorkflowTask)processorTaskWorker).getWorkflowInstance()
 						: null);
 				NestedWorkflowCompletionEvent event = new NestedWorkflowCompletionEvent(false, inputMap, outputMap,
 						activeProcessor, workflowInstance, nestedWorkflow);
@@ -840,8 +839,8 @@ public class ProcessorTask extends AbstractTask {
 		
 		// Fire a new ProcessCompletionEvent
 		ProcessCompletionEvent completionEvent;
-		if (processorTaskWorker instanceof WorkflowTask) {
-			WorkflowInstance nestedWorkflow = (processorTaskWorker != null ? ((WorkflowTask)processorTaskWorker).getWorkflowInstance()
+		if (processorTaskWorker instanceof EnactorWorkflowTask) {
+			WorkflowInstance nestedWorkflow = (processorTaskWorker != null ? ((EnactorWorkflowTask)processorTaskWorker).getWorkflowInstance()
 					: null);
 			completionEvent = new NestedWorkflowCompletionEvent(true, inputSet,
 					outputMap, activeProcessor, workflowInstance, nestedWorkflow);
