@@ -3,7 +3,7 @@
  * and is licensed under the GNU LGPL.
  * Copyright Tom Oinn, EMBL-EBI
  */
-package org.embl.ebi.escience.scuflui.workbench;
+package org.embl.ebi.escience.scuflworkers.web;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -20,6 +20,8 @@ import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeNode;
 
 import org.apache.log4j.Logger;
+import org.embl.ebi.escience.scuflui.workbench.Scavenger;
+import org.embl.ebi.escience.scuflui.workbench.ScavengerCreationException;
 import org.embl.ebi.escience.scuflworkers.talisman.TalismanProcessorFactory;
 import org.embl.ebi.escience.scuflworkers.workflow.WorkflowScavenger;
 import org.embl.ebi.escience.scuflworkers.wsdl.WSDLBasedScavenger;

@@ -36,8 +36,8 @@ import org.embl.ebi.escience.scufl.OutputPort;
 import org.embl.ebi.escience.scufl.Processor;
 import org.embl.ebi.escience.scufl.ProcessorCreationException;
 import org.embl.ebi.escience.scufl.ScuflModel;
-import org.embl.ebi.escience.scufl.ScuflWorkflowProcessorFactory;
 import org.embl.ebi.escience.scufl.ScuflWorkflowProcessor;
+import org.embl.ebi.escience.scufl.ScuflWorkflowProcessorFactory;
 import org.embl.ebi.escience.scufl.enactor.WorkflowSubmissionException;
 import org.embl.ebi.escience.scufl.enactor.implementation.FreefluoEnactorProxy;
 import org.embl.ebi.escience.scufl.parser.XScuflParser;
@@ -46,6 +46,7 @@ import org.embl.ebi.escience.scuflui.EnactorInvocation;
 import org.embl.ebi.escience.scuflui.ShadedLabel;
 import org.embl.ebi.escience.scuflui.TavernaIcons;
 import org.embl.ebi.escience.scuflui.UIUtils;
+import org.embl.ebi.escience.scuflui.WebScavengerHelper;
 import org.embl.ebi.escience.scuflworkers.ProcessorFactory;
 import org.embl.ebi.escience.scuflworkers.ProcessorHelper;
 import org.embl.ebi.escience.scuflworkers.ScavengerHelper;
@@ -341,54 +342,38 @@ public class ScavengerTreePopupHandler extends MouseAdapter {
 							}
 						}
 					});
-					// menu.show(scavenger, e.getX(), e.getY());
 				} else if (scuflObject instanceof String) {
 					// Catch the click on the 'Available Processors' text to add
 					// a new scavenger
 					String choice = (String) scuflObject;
 					if (choice.equals("Available Processors")) {
+						ScavengerHelper webScavengerHelper = null;
 						addDescribeOption = false;
-						// JPopupMenu menu = new JPopupMenu();
 						menu.setLabel("Create new scavenger");
 						// Iterate over the scavenger creator list from the
 						// ProcessorHelper class
-						for (ScavengerHelper scavengerHelper : ScavengerHelperRegistry.instance().getScavengerHelpers())
-						{													
+						for (ScavengerHelper scavengerHelper : ScavengerHelperRegistry.instance().getScavengerHelpers()) {
 							// Instantiate a ScavengerHelper...
-							try {																
-								String scavengerDescription = scavengerHelper.getScavengerDescription();
-								if (scavengerDescription!=null)
-								{
-									JMenuItem scavengerMenuItem = new JMenuItem(scavengerDescription, scavengerHelper.getIcon());
-									scavengerMenuItem.addActionListener(scavengerHelper
-											.getListener(ScavengerTreePopupHandler.this.scavenger));
-									menu.add(scavengerMenuItem);
+							try {
+								// webscavenger helper is added after the
+								// seperator
+								if (scavengerHelper instanceof WebScavengerHelper) {
+									webScavengerHelper = scavengerHelper;
+								} else {
+									addScavengerHelperToMenu(menu, scavengerHelper);
 								}
 							} catch (Exception ex) {
 								logger.error("Exception adding scavenger helper to scavenger tree");
 							}
 						}
 						if (!ScavengerTreePopupHandler.this.scavenger.isPopulating()) {
-							JMenuItem addWeb = new JMenuItem("Collect scavengers from web...", TavernaIcons.webIcon);
+
 							menu.addSeparator();
-							menu.add(addWeb);
-							addWeb.addActionListener(new ActionListener() {
-								public void actionPerformed(ActionEvent ae) {
-									String rootURL = (String) JOptionPane
-											.showInputDialog(null, "Address of the web page to crawl from?",
-													"Web root location", JOptionPane.QUESTION_MESSAGE, null, null,
-													"http://cvs.mygrid.org.uk/scufl/");
-									if (rootURL != null) {
-										try {
-											ScavengerTreePopupHandler.this.scavenger.addScavenger(new WebScavenger(
-													rootURL, ScavengerTreePopupHandler.this.scavenger.treeModel));
-										} catch (ScavengerCreationException sce) {
-											JOptionPane.showMessageDialog(null, "Unable to create scavenger!\n"
-													+ sce.getMessage(), "Exception!", JOptionPane.ERROR_MESSAGE);
-										}
-									}
-								}
-							});
+
+							if (webScavengerHelper != null) {
+								addScavengerHelperToMenu(menu, webScavengerHelper);
+							}
+
 							JMenuItem collect = new JMenuItem("Collect scavengers from model", TavernaIcons.importIcon);
 							menu.add(collect);
 							collect.addActionListener(new ActionListener() {
@@ -448,6 +433,15 @@ public class ScavengerTreePopupHandler extends MouseAdapter {
 				}
 				menu.show(scavenger, e.getX(), e.getY());
 			}
+		}
+	}
+
+	private void addScavengerHelperToMenu(JPopupMenu menu, ScavengerHelper scavengerHelper) {
+		String scavengerDescription = scavengerHelper.getScavengerDescription();
+		if (scavengerDescription != null) {
+			JMenuItem scavengerMenuItem = new JMenuItem(scavengerDescription, scavengerHelper.getIcon());
+			scavengerMenuItem.addActionListener(scavengerHelper.getListener(ScavengerTreePopupHandler.this.scavenger));
+			menu.add(scavengerMenuItem);
 		}
 	}
 

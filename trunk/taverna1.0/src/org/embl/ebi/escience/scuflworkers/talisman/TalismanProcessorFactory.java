@@ -46,7 +46,7 @@ public class TalismanProcessorFactory extends ProcessorFactory {
      * be created by this factory
      */
     public Class getProcessorClass() {
-	return org.embl.ebi.escience.scuflworkers.talisman.TalismanProcessor.class;
+    	return TalismanProcessor.class;
     }
     
 }

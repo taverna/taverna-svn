@@ -33,17 +33,16 @@ import javax.swing.tree.MutableTreeNode;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 
-import org.apache.log4j.Logger;
 import org.embl.ebi.escience.scufl.ScuflModel;
 import org.embl.ebi.escience.scuflui.ExtendedJTree;
 import org.embl.ebi.escience.scuflui.ScavengerTreePanel;
 import org.embl.ebi.escience.scuflui.ScuflUIComponent;
 import org.embl.ebi.escience.scuflui.TavernaIcons;
+import org.embl.ebi.escience.scuflui.WebScavengerHelper;
 import org.embl.ebi.escience.scuflui.dnd.FactorySpecFragment;
 import org.embl.ebi.escience.scuflui.dnd.ProcessorSpecFragment;
 import org.embl.ebi.escience.scuflui.dnd.SpecFragmentTransferable;
 import org.embl.ebi.escience.scuflworkers.ProcessorFactory;
-import org.embl.ebi.escience.scuflworkers.ProcessorHelper;
 import org.embl.ebi.escience.scuflworkers.ScavengerHelper;
 import org.embl.ebi.escience.scuflworkers.ScavengerHelperRegistry;
 import org.jdom.Attribute;
@@ -61,8 +60,6 @@ public class ScavengerTree extends ExtendedJTree implements ScuflUIComponent, Dr
 		DropTargetListener {
 
 	private static final long serialVersionUID = -5395001232451125620L;
-
-	private static Logger logger = Logger.getLogger(ScavengerTree.class);
 
 	private ScavengerTreePanel parentPanel = null;
 
@@ -111,6 +108,10 @@ public class ScavengerTree extends ExtendedJTree implements ScuflUIComponent, Dr
 	public int getNextCount() {
 		return count++;
 	}	
+	
+	public DefaultTreeModel getTreeModel(){
+		return treeModel;
+	}
 	
 	/**
 	 * Recognize the drag gesture, only allow if there's a processor factory
@@ -269,24 +270,17 @@ public class ScavengerTree extends ExtendedJTree implements ScuflUIComponent, Dr
 		public void run() {
 			synchronized (this.scavengerTree.getModel()) {
 				if (getParentPanel() != null)
-					getParentPanel().startProgressBar("Populating service list");
-				// Do web scavenger based locations
-				String webURLList = System.getProperty("taverna.defaultweb");
-				
-				if (webURLList != null) {
-					String[] urls = webURLList.split("\\s*,\\s*");
-					for (int i = 0; i < urls.length; i++) {
-						try {
-							scavengerTree.addScavenger(new WebScavenger(urls[i], (DefaultTreeModel) scavengerTree
-									.getModel()));
-						} catch (ScavengerCreationException sce) {
-							logger.error(sce);
-						}
-					}
-				}
+					getParentPanel().startProgressBar("Populating service list");											
 
 				List<ScavengerHelper> helpers = ScavengerHelperRegistry.instance().getScavengerHelpers();
 				for (ScavengerHelper helper : helpers) {
+//					web scavenger is a special case and requires ScavengerTree to construct the Scavengers
+					if (helper instanceof WebScavengerHelper) 
+					{
+						for (Scavenger scavenger : ((WebScavengerHelper)helper).getDefaults(scavengerTree)) {
+							scavengerTree.addScavenger(scavenger);
+						}
+					}
 					for (Scavenger scavenger : helper.getDefaults()) {
 						scavengerTree.addScavenger(scavenger);
 					}
