@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: WebScavengerHelperImpl.java,v $
- * Revision           $Revision: 1.2 $
+ * Revision           $Revision: 1.3 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-07-03 10:28:56 $
+ * Last modified on   $Date: 2006-07-03 11:28:59 $
  *               by   $Author: sowen70 $
  * Created on 03-Jul-2006
  *****************************************************************/
@@ -69,8 +69,12 @@ public class WebScavengerHelperImpl implements ScavengerHelper, WebScavengerHelp
 		return new HashSet<Scavenger>();
 	}
 
+	/**
+	 * Currently doesn't attempt to extract scavengers from the model, so always returns an
+	 * empty Set.
+	 */
 	public Set<Scavenger> getFromModel(ScuflModel model) {
-		return new HashSet<Scavenger>();
+		return new HashSet<Scavenger>();		
 	}
 
 	/**
@@ -84,8 +88,7 @@ public class WebScavengerHelperImpl implements ScavengerHelper, WebScavengerHelp
 	 * Returns the listener associated with the Scavenger Tree popup menu, to facilitate the adding of
 	 * new Web Scavengers
 	 */
-	public ActionListener getListener(ScavengerTree theScavenger) {
-		final ScavengerTree scavenger = theScavenger;
+	public ActionListener getListener(final ScavengerTree theScavengerTree) {		
 		ActionListener result = new ActionListener() {
 			public void actionPerformed(ActionEvent ae) {
 				String rootURL = (String) JOptionPane.showInputDialog(null, "Address of the web page to crawl from?",
@@ -93,7 +96,7 @@ public class WebScavengerHelperImpl implements ScavengerHelper, WebScavengerHelp
 						"http://cvs.mygrid.org.uk/scufl/");
 				if (rootURL != null) {
 					try {
-						scavenger.addScavenger(new WebScavenger(rootURL, (DefaultTreeModel) scavenger.getModel()));
+						theScavengerTree.addScavenger(new WebScavenger(rootURL, (DefaultTreeModel) theScavengerTree.getModel()));
 					} catch (ScavengerCreationException sce) {
 						JOptionPane.showMessageDialog(null, "Unable to create scavenger!\n" + sce.getMessage(),
 								"Exception!", JOptionPane.ERROR_MESSAGE);
