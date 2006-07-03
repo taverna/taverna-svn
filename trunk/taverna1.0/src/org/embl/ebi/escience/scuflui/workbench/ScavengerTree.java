@@ -107,11 +107,7 @@ public class ScavengerTree extends ExtendedJTree implements ScuflUIComponent, Dr
 	 */
 	public int getNextCount() {
 		return count++;
-	}	
-	
-	public DefaultTreeModel getTreeModel(){
-		return treeModel;
-	}
+	}		
 	
 	/**
 	 * Recognize the drag gesture, only allow if there's a processor factory
