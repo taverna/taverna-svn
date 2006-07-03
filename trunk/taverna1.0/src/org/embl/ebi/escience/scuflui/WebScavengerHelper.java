@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: WebScavengerHelper.java,v $
- * Revision           $Revision: 1.1 $
+ * Revision           $Revision: 1.2 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-07-03 10:06:14 $
+ * Last modified on   $Date: 2006-07-03 10:28:57 $
  *               by   $Author: sowen70 $
  * Created on 03-Jul-2006
  *****************************************************************/
@@ -38,8 +38,25 @@ import java.util.Set;
 import org.embl.ebi.escience.scuflui.workbench.Scavenger;
 import org.embl.ebi.escience.scuflui.workbench.ScavengerTree;
 
+/**
+ * An interface to specifically identify the WebScavengerHelper.
+ * This is need to distinguish it from the other scavenger helpers so that is placement
+ * in the menu can be controlled, and because WebScavenger requires ScavengerTree in its constructor
+ * meaning that it needs this information passing to getDefaults.
+ * 
+ * @author Stuart Owen
+ *
+ */
+
 public interface WebScavengerHelper {
 	
+	/**
+	 * The same as getDefaults in ScavengerHelper, except that ScavengerTree is required
+	 * to construct the WebScavengers.
+	 * 
+	 * @param tree
+	 * @return
+	 */
 	public Set<Scavenger> getDefaults(ScavengerTree tree);
 
 }

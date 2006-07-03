@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: WebScavengerHelperImpl.java,v $
- * Revision           $Revision: 1.1 $
+ * Revision           $Revision: 1.2 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-07-03 10:06:14 $
+ * Last modified on   $Date: 2006-07-03 10:28:56 $
  *               by   $Author: sowen70 $
  * Created on 03-Jul-2006
  *****************************************************************/
@@ -51,10 +51,20 @@ import org.embl.ebi.escience.scuflui.workbench.ScavengerCreationException;
 import org.embl.ebi.escience.scuflui.workbench.ScavengerTree;
 import org.embl.ebi.escience.scuflworkers.ScavengerHelper;
 
+/**
+ * ScavengerHelper associated with Web Scavengers.
+ * @author Stuart Owen
+ *
+ */
+
 public class WebScavengerHelperImpl implements ScavengerHelper, WebScavengerHelper {
 
 	private static Logger logger = Logger.getLogger(WebScavengerHelperImpl.class);
 
+	/**
+	 * Always returns an empty set, WebScavengerHelper defaults are found using
+	 * getDefaults(ScavengerTree tree).
+	 */
 	public Set<Scavenger> getDefaults() {
 		return new HashSet<Scavenger>();
 	}
@@ -63,10 +73,17 @@ public class WebScavengerHelperImpl implements ScavengerHelper, WebScavengerHelp
 		return new HashSet<Scavenger>();
 	}
 
+	/**
+	 * Returns the icon for this scavenger helper
+	 */
 	public ImageIcon getIcon() {
 		return TavernaIcons.webIcon;
 	}
 
+	/**
+	 * Returns the listener associated with the Scavenger Tree popup menu, to facilitate the adding of
+	 * new Web Scavengers
+	 */
 	public ActionListener getListener(ScavengerTree theScavenger) {
 		final ScavengerTree scavenger = theScavenger;
 		ActionListener result = new ActionListener() {
@@ -89,10 +106,17 @@ public class WebScavengerHelperImpl implements ScavengerHelper, WebScavengerHelp
 
 	}
 
+	/**
+	 * Returns the description text for the menu item for this scavenger
+	 */
 	public String getScavengerDescription() {
 		return "Collect scavengers from web...";
 	}
 
+	/**
+	 * Returns the defaults, determined by taverna.defaultweb within the mygrid.properties file.
+	 * This is specific to WebScavengerHelper since WebScavengers need ScavengerTree in their constuctor.
+	 */
 	public Set<Scavenger> getDefaults(ScavengerTree tree) {
 		Set<Scavenger> result = new HashSet<Scavenger>();
 		String urlList = System.getProperty("taverna.defaultweb");
