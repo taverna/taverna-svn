@@ -46,16 +46,14 @@ public class WSDLScavengerHelper implements ScavengerHelper {
 				if (wsdlLocation != null) {
 					Runnable r = new Runnable() {
 						public void run() {
-							if (s.getParent() != null)
-								s.getParentPanel().startProgressBar("Processing WSDL");
+							s.scavengingStarting("Processing WSDL");
 							try {
 								s.addScavenger(new WSDLBasedScavenger(wsdlLocation));
 							} catch (ScavengerCreationException sce) {
 								JOptionPane.showMessageDialog(null, "Unable to create scavenger!\n" + sce.getMessage(),
 										"Exception!", JOptionPane.ERROR_MESSAGE);
 							}
-							if (s.getParent() != null)
-								s.getParentPanel().stopProgressBar();
+							s.scavengingDone();
 						}
 					};
 					new Thread(r).start();

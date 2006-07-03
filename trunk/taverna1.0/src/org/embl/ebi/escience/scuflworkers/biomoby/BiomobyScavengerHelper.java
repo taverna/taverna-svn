@@ -49,16 +49,14 @@ public class BiomobyScavengerHelper implements ScavengerHelper {
 						JOptionPane.QUESTION_MESSAGE, null, null,
 						"http://mobycentral.cbr.nrc.ca/cgi-bin/MOBY05/mobycentral.pl");
 				if (baseURL != null) {
-					if (s.getParentPanel() != null)
-						s.getParentPanel().startProgressBar("Adding BioMoby ccavenger");
+					s.scavengingStarting("Adding BioMoby ccavenger");
 					try {
 						s.addScavenger(new BiomobyScavenger(baseURL));
 					} catch (ScavengerCreationException sce) {
 						JOptionPane.showMessageDialog(null, "Unable to create scavenger!\n" + sce.getMessage(),
 								"Exception!", JOptionPane.ERROR_MESSAGE);
 					}
-					if (s.getParentPanel() != null)
-						s.getParentPanel().stopProgressBar();
+					s.scavengingDone();
 				}
 			}
 		};

@@ -62,13 +62,13 @@ import org.jdom.Element;
 public class ScavengerTreePopupHandler extends MouseAdapter {
 	private static Logger logger = Logger.getLogger(ProcessorFactory.class);
 
-	private ScavengerTree scavenger;
+	private DefaultScavengerTree scavenger;
 
 	public boolean isPopulating() {
 		return scavenger.isPopulating();
 	}
 
-	public ScavengerTreePopupHandler(ScavengerTree theTree) {
+	public ScavengerTreePopupHandler(DefaultScavengerTree theTree) {
 		this.scavenger = theTree;
 	}
 

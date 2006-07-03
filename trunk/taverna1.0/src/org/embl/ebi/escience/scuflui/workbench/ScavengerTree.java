@@ -1,385 +1,93 @@
-/**
- * This file is a component of the Taverna project,
- * and is licensed under the GNU LGPL.
- * Copyright Tom Oinn, EMBL-EBI
- */
+/*
+ * Copyright (C) 2003 The University of Manchester 
+ *
+ * Modifications to the initial code base are copyright of their
+ * respective authors, or their employers as appropriate.  Authorship
+ * of the modifications may be determined from the ChangeLog placed at
+ * the end of this file.
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public License
+ * as published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
+ * USA.
+ *
+ ****************************************************************
+ * Source code information
+ * -----------------------
+ * Filename           $RCSfile: ScavengerTree.java,v $
+ * Revision           $Revision: 1.54 $
+ * Release status     $State: Exp $
+ * Last modified on   $Date: 2006-07-03 15:42:17 $
+ *               by   $Author: davidwithers $
+ * Created on 03-Jul-2006
+ *****************************************************************/
 package org.embl.ebi.escience.scuflui.workbench;
 
-import java.awt.Point;
-import java.awt.datatransfer.DataFlavor;
-import java.awt.datatransfer.Transferable;
-import java.awt.dnd.DnDConstants;
-import java.awt.dnd.DragGestureEvent;
+import java.awt.Frame;
 import java.awt.dnd.DragGestureListener;
-import java.awt.dnd.DragSource;
-import java.awt.dnd.DragSourceDragEvent;
-import java.awt.dnd.DragSourceDropEvent;
-import java.awt.dnd.DragSourceEvent;
 import java.awt.dnd.DragSourceListener;
-import java.awt.dnd.DropTarget;
-import java.awt.dnd.DropTargetDragEvent;
-import java.awt.dnd.DropTargetDropEvent;
-import java.awt.dnd.DropTargetEvent;
 import java.awt.dnd.DropTargetListener;
-import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
 
-import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.DefaultTreeModel;
-import javax.swing.tree.MutableTreeNode;
-import javax.swing.tree.TreePath;
-import javax.swing.tree.TreeSelectionModel;
-
-import org.embl.ebi.escience.scufl.ScuflModel;
-import org.embl.ebi.escience.scuflui.ExtendedJTree;
-import org.embl.ebi.escience.scuflui.ScavengerTreePanel;
-import org.embl.ebi.escience.scuflui.ScuflUIComponent;
-import org.embl.ebi.escience.scuflui.TavernaIcons;
-import org.embl.ebi.escience.scuflui.WebScavengerHelper;
-import org.embl.ebi.escience.scuflui.dnd.FactorySpecFragment;
-import org.embl.ebi.escience.scuflui.dnd.ProcessorSpecFragment;
-import org.embl.ebi.escience.scuflui.dnd.SpecFragmentTransferable;
-import org.embl.ebi.escience.scuflworkers.ProcessorFactory;
-import org.embl.ebi.escience.scuflworkers.ScavengerHelper;
-import org.embl.ebi.escience.scuflworkers.ScavengerHelperRegistry;
-import org.jdom.Attribute;
-import org.jdom.Element;
-import org.jdom.output.XMLOutputter;
+import javax.swing.tree.TreeModel;
 
 /**
- * A JTree subclass showing available processors from some set of external
+ * A tree showing available processors from some set of external
  * libraries or searches. Nodes corresponding to a single potential processor
  * instance should contain a user object implementing ProcessorFactory.
  * 
- * @author Tom Oinn
+ * @author David Withers
  */
-public class ScavengerTree extends ExtendedJTree implements ScuflUIComponent, DragSourceListener, DragGestureListener,
-		DropTargetListener {
+public interface ScavengerTree extends DragSourceListener,
+		DragGestureListener, DropTargetListener {
 
-	private static final long serialVersionUID = -5395001232451125620L;
-
-	private ScavengerTreePanel parentPanel = null;
-
-	private boolean populating = false;
-
-	public ScavengerTreePanel getParentPanel() {
-		return parentPanel;
-	}
-
-	public void setPopulating(boolean populating) {
-		this.populating = populating;
-	}
-
-	public boolean isPopulating() {
-		return populating;
-	}
-
-	/**
-	 * The model that this scavenger will create processor for
-	 */
-	ScuflModel model = null;
-
-	/**
-	 * The root node
-	 */
-	private DefaultMutableTreeNode root = null;
-
-	/**
-	 * The tree model
-	 */
-	DefaultTreeModel treeModel = null;
-
-	/**
-	 * A list of the names of all the scavengers contained within this tree
-	 */
-	ArrayList<String> scavengerList = null;
-
-	/**
-	 * A private count to avoid name duplication on created nodes
-	 */
-	private int count = 0;
-
-	/**
-	 * Get the next available count and increment the counter
-	 */
-	public int getNextCount() {
-		return count++;
-	}		
+	public abstract Frame getContainingFrame();
 	
 	/**
-	 * Recognize the drag gesture, only allow if there's a processor factory
-	 * node here, and export the XML fragment from the node as the transferable
+	 * Notifies the start of scavenging.
+	 * 
+	 * @param message the message to display
 	 */
-	public void dragGestureRecognized(DragGestureEvent e) {
-		// Get the node that was dragged
-		Point l = e.getDragOrigin();
-		TreePath dragSourcePath = getPathForLocation((int) l.getX(), (int) l.getY());
-		if (dragSourcePath != null) {
-			DefaultMutableTreeNode node = (DefaultMutableTreeNode) dragSourcePath.getLastPathComponent();
-			Object userObject = node.getUserObject();
-			if (userObject instanceof ProcessorFactory) {
-				Element el = ((ProcessorFactory) userObject).getXMLFragment();
-				String name = ((ProcessorFactory) userObject).getName();
-				FactorySpecFragment fsf = new FactorySpecFragment(el, name);
-				Transferable t = new SpecFragmentTransferable(fsf);
-				e.startDrag(DragSource.DefaultCopyDrop, t, this);
-			}
-		}
-	}
+	public abstract void scavengingStarting(String message);
+	
+	/**
+	 * Notifies the end of scavenging.
+	 * 
+	 */
+	public abstract void scavengingDone();
+	
+	public abstract void setPopulating(boolean populating);
 
-	public void dragDropEnd(DragSourceDropEvent e) {
-		//
-	}
-
-	public void dragEnter(DragSourceDragEvent e) {
-		//
-	}
-
-	public void dragExit(DragSourceEvent e) {
-		//
-	}
-
-	public void dragOver(DragSourceDragEvent e) {
-		//
-	}
-
-	public void dropActionChanged(DragSourceDragEvent e) {
-		//
-	}
-
-	public void dragEnter(DropTargetDragEvent e) {
-		//
-	}
-
-	public void dragExit(DropTargetEvent e) {
-		//
-	}
-
-	public void dragOver(DropTargetDragEvent e) {
-		//
-	}
-
-	public void dropActionChanged(DropTargetDragEvent e) {
-		//
-	}
-
-	public void drop(DropTargetDropEvent e) {
-		try {
-			DataFlavor f = SpecFragmentTransferable.processorSpecFragmentFlavor;
-			Transferable t = e.getTransferable();
-			if (e.isDataFlavorSupported(f)) {
-				ProcessorSpecFragment psf = (ProcessorSpecFragment) t.getTransferData(f);
-				XMLOutputter xo = new XMLOutputter();
-				// Remove the various fault tolerance etc attributes
-				Element processorElement = psf.getElement();
-				List attributes = processorElement.getAttributes();
-				for (Iterator i = attributes.iterator(); i.hasNext();) {
-					Attribute att = (Attribute) i.next();
-					processorElement.removeAttribute(att);
-				}
-				String searchString = xo.outputString(psf.getElement());
-				DefaultMutableTreeNode rootNode = (DefaultMutableTreeNode) treeModel.getRoot();
-				Enumeration en = rootNode.depthFirstEnumeration();
-				while (en.hasMoreElements()) {
-					DefaultMutableTreeNode theNode = (DefaultMutableTreeNode) en.nextElement();
-					Object o = theNode.getUserObject();
-					if (o instanceof ProcessorFactory) {
-						String compare = xo.outputString(((ProcessorFactory) o).getXMLFragment());
-						if (searchString.equals(compare)) {
-							String selectedProcessorString = theNode.getUserObject().toString().toLowerCase();
-							TreePath path = new TreePath(treeModel.getPathToRoot(theNode));
-							setExpansion(false);
-							setPattern(selectedProcessorString);
-							makeVisible(path);
-						}
-					}
-				}
-
-			}
-		} catch (Exception ex) {
-			e.rejectDrop();
-		}
-	}
+	public abstract boolean isPopulating();
 
 	/**
-	 * Create a new scavenger tree, if the boolean 'populate' flag is true then
-	 * load the default service set from the system properties, otherwise start
-	 * with a completely blank panel.
-	 */
-	public ScavengerTree(boolean populate, ScavengerTreePanel parentPanel) {
-		super();
-		synchronized (this.getModel()) {
-			this.parentPanel = parentPanel;
-			setRowHeight(18);
-			setLargeModel(true);
+     * Get the next available count and increment the counter
+     */
+	public abstract int getNextCount();
 
-			
-
-			DragSource dragSource = DragSource.getDefaultDragSource();
-			dragSource.createDefaultDragGestureRecognizer(this, DnDConstants.ACTION_COPY_OR_MOVE, this);
-			new DropTarget(this, DnDConstants.ACTION_COPY_OR_MOVE, this);
-			scavengerList = new ArrayList<String>();
-			root = new DefaultMutableTreeNode("Available Processors");
-			treeModel = (DefaultTreeModel) this.getModel();
-			treeModel.setRoot(this.root);
-			putClientProperty("JTree.lineStyle", "Angled");
-			getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
-			ScavengerTreeRenderer renderer = new ScavengerTreeRenderer();
-			this.setCellRenderer(renderer);
-			this.addMouseListener(new ScavengerTreePopupHandler(this));
-			// Add the simple scavengers, should such exist, but only
-			// do this if the populate flag is set to true.
-
-			if (populate) {
-				List<Scavenger> simpleScavengers = ScavengerRegistry.instance().getScavengers();
-				if (simpleScavengers.isEmpty() == false) {
-					DefaultMutableTreeNode t = new DefaultMutableTreeNode("Local Services");
-					this.treeModel.insertNodeInto(t, (MutableTreeNode) this.treeModel.getRoot(), this.treeModel
-							.getChildCount(this.treeModel.getRoot()));
-					for (Scavenger scavenger : simpleScavengers) {						
-						treeModel.insertNodeInto(scavenger, t, treeModel.getChildCount(t));
-						treeModel.nodeStructureChanged(t);
-					}
-				}
-				// Add the default soaplab installation if this is defined
-				setPopulating(true);
-				new DefaultScavengerLoaderThread(this);
-			} else {
-				setPopulating(false);
-				setExpansion(true);
-			}
-		}
-	}	
-
-	class DefaultScavengerLoaderThread extends Thread {
-
-		ScavengerTree scavengerTree;
-
-		public DefaultScavengerLoaderThread(ScavengerTree scavengerTree) {
-			this.scavengerTree = scavengerTree;
-			start();
-		}
-
-		public void run() {
-			synchronized (this.scavengerTree.getModel()) {
-				if (getParentPanel() != null)
-					getParentPanel().startProgressBar("Populating service list");											
-
-				List<ScavengerHelper> helpers = ScavengerHelperRegistry.instance().getScavengerHelpers();
-				for (ScavengerHelper helper : helpers) {
-//					web scavenger is a special case and requires ScavengerTree to construct the Scavengers
-					if (helper instanceof WebScavengerHelper) 
-					{
-						for (Scavenger scavenger : ((WebScavengerHelper)helper).getDefaults(scavengerTree)) {
-							scavengerTree.addScavenger(scavenger);
-						}
-					}
-					for (Scavenger scavenger : helper.getDefaults()) {
-						scavengerTree.addScavenger(scavenger);
-					}
-				}
-
-				try {
-					Thread.sleep(1000);
-				} catch (InterruptedException ie) {
-					//
-				}
-				// I want to disable the reload() as it collapse the tree, even
-				// though
-				// the user had started exploring it at this point. But I don't
-				// know
-				// what is the effect of not reload-ing, the API says it should
-				// be called when the TreeModel has been modified. --Stian
-				treeModel.reload();
-				// FIXME: Make this a user setable property. By default now we
-				// don't expand the full scavenger tree, as it is too massive
-				// scavengerTree.setExpansion(true);
-				if (getParentPanel() != null)
-					getParentPanel().stopProgressBar();
-				scavengerTree.setPopulating(false);
-			}
-		}
-	}
+	public abstract TreeModel getModel();
 
 	/**
-	 * Examine the model, create any scavengers that would have been required to
-	 * populate the model with its existing processors. Now handles all three
-	 * processor types.
-	 */
-	public void addScavengersFromModel() throws ScavengerCreationException {
-		getParentPanel().startProgressBar("Adding scavengers from model.");
-		synchronized (this.getModel()) {
-			if (this.model != null) {
-				addScavengersFromModel(this.model);
-			}
-		}
-		getParentPanel().stopProgressBar();
-	}
-
-	private void addScavengersFromModel(ScuflModel theModel) throws ScavengerCreationException {
-		if (theModel != null) {
-
-			List<ScavengerHelper> helpers = ScavengerHelperRegistry.instance().getScavengerHelpers();
-			for (ScavengerHelper helper : helpers) {
-				Set<Scavenger> scavengers = helper.getFromModel(theModel);
-				for (Scavenger scavenger : scavengers) {
-					addScavenger(scavenger);
-				}
-			}
-		}
-	}
+     * Examine the model, create any scavengers that would have been required to
+     * populate the model with its existing processors. Now handles all three
+     * processor types.
+     */
+	public abstract void addScavengersFromModel()
+			throws ScavengerCreationException;
 
 	/**
-	 * Add a new scavenger to the tree, firing appropriate model events as we
-	 * do.
-	 */
-	public void addScavenger(Scavenger theScavenger) {
-		synchronized (getModel()) {
-			// Check to see we don't already have a scavenger with this name
-			String newName = theScavenger.getUserObject().toString();
-			for (String name : scavengerList) {				
-				if (name.equals(newName)) {
-					// Exit if we already have a scavenger by that name
-					return;
-				}
-			}
-			this.scavengerList.add(theScavenger.getUserObject().toString());
-			treeModel.insertNodeInto(theScavenger, (MutableTreeNode) this.treeModel.getRoot(), this.treeModel
-					.getChildCount(this.treeModel.getRoot()));
-			treeModel.nodeStructureChanged(theScavenger);
-			// Set the visibility sensibly so that the root node
-			// is expanded and visible
-			TreePath path = new TreePath(this.root);
-			expandPath(path);
-		}
-	}
-
-	/**
-	 * Listen for model bind requests to set the internal ScuflModel field
-	 */
-	public void attachToModel(ScuflModel theModel) {
-		this.model = theModel;
-	}
-
-	/**
-	 * When unbound from a model, set internal model field to null
-	 */
-	public void detachFromModel() {
-		this.model = null;
-	}
-
-	/**
-	 * Return an apppropriate title for windows
-	 */
-	public String getName() {
-		return "Available services";
-	}
-
-	public javax.swing.ImageIcon getIcon() {
-		return TavernaIcons.windowScavenger;
-	}
+     * Add a new scavenger to the tree, firing appropriate model events as we
+     * do.
+     */
+	public abstract void addScavenger(Scavenger theScavenger);
 
 }

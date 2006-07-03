@@ -34,10 +34,10 @@ import javax.swing.tree.TreePath;
 import org.embl.ebi.escience.scufl.ScuflModel;
 import org.embl.ebi.escience.scufl.ScuflModelEvent;
 import org.embl.ebi.escience.scufl.ScuflModelEventListener;
+import org.embl.ebi.escience.scuflui.workbench.DefaultScavengerTree;
 import org.embl.ebi.escience.scuflui.workbench.FileDrop;
 import org.embl.ebi.escience.scuflui.workbench.FileScavenger;
 import org.embl.ebi.escience.scuflui.workbench.ScavengerCreationException;
-import org.embl.ebi.escience.scuflui.workbench.ScavengerTree;
 
 /**
  * Wraps a ScavengerTree to provide a toolbar including a search by regular
@@ -48,7 +48,7 @@ import org.embl.ebi.escience.scuflui.workbench.ScavengerTree;
  */
 public class ScavengerTreePanel extends JPanel implements ScuflUIComponent {
 
-	ScavengerTree tree;
+	DefaultScavengerTree tree;
 
 	JTextField regex = null;	
 
@@ -102,7 +102,7 @@ public class ScavengerTreePanel extends JPanel implements ScuflUIComponent {
 		//progPanel.add(progBar,BorderLayout.CENTER);
 		add(progBar,BorderLayout.PAGE_END);
 		
-		tree = new ScavengerTree(populated,this);		
+		tree = new DefaultScavengerTree(populated,this);		
 		
 		JScrollPane treePane = new JScrollPane(tree);
 		treePane.setPreferredSize(new Dimension(0, 0));

@@ -49,7 +49,7 @@ public class APIConsumerScavengerHelper implements ScavengerHelper {
 			fc.resetChoosableFileFilters();
 			fc.setFileFilter(new ExtensionFileFilter(new String[]{"xml"}));
 			fc.setCurrentDirectory(new File(curDir));
-			int returnVal = fc.showOpenDialog(s);
+			int returnVal = fc.showOpenDialog(s.getContainingFrame());
 			if (returnVal == JFileChooser.APPROVE_OPTION) {
 			    prefs.put("currentDir", fc.getCurrentDirectory().toString());
 			    File file = fc.getSelectedFile();

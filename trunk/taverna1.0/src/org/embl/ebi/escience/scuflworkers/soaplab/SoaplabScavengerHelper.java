@@ -46,15 +46,14 @@ public class SoaplabScavengerHelper implements ScavengerHelper {
 				if (baseURL != null) {
 					new Thread() {
 						public void run() {
-							if (s.getParentPanel() != null)
-								s.getParentPanel().startProgressBar("Adding SOAPLab scavenger");
+							s.scavengingStarting("Adding SOAPLab scavenger");
 							try {
 								s.addScavenger(new SoaplabScavenger(baseURL));
 							} catch (ScavengerCreationException sce) {
 								JOptionPane.showMessageDialog(null, "Unable to create scavenger!\n" + sce.getMessage(),
 										"Exception!", JOptionPane.ERROR_MESSAGE);
 							}
-							s.getParentPanel().stopProgressBar();
+							s.scavengingDone();
 						}
 					}.start();
 				}
