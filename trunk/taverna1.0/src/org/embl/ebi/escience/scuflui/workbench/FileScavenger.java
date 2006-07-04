@@ -8,7 +8,6 @@ package org.embl.ebi.escience.scuflui.workbench;
 import java.io.File;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -48,7 +47,7 @@ public class FileScavenger extends Scavenger {
 			if (children.length > 0) {
 				DefaultMutableTreeNode dirNode = new DefaultMutableTreeNode(f
 						.getName());
-				List childDirectoryNodes = new ArrayList();
+				List<DefaultMutableTreeNode> childDirectoryNodes = new ArrayList<DefaultMutableTreeNode>();
 				boolean hasContents = false;
 				for (int i = 0; i < children.length; i++) {
 					DefaultMutableTreeNode child = getNode(children[i]);
@@ -62,8 +61,8 @@ public class FileScavenger extends Scavenger {
 					}
 				}
 				// Added all workflows, now add all subdirectories
-				for (Iterator i = childDirectoryNodes.iterator(); i.hasNext();) {
-					dirNode.add((DefaultMutableTreeNode) i.next());
+				for (DefaultMutableTreeNode childNode : childDirectoryNodes) {
+					dirNode.add(childNode);
 					hasContents = true;
 				}
 				if (hasContents) {
