@@ -56,6 +56,7 @@ import org.embl.ebi.escience.scuflui.actions.LoadWorkflowAction;
 import org.embl.ebi.escience.scuflui.actions.OfflineToggleModel;
 import org.embl.ebi.escience.scuflui.actions.ResetAction;
 import org.embl.ebi.escience.scuflui.actions.SaveWorkflowAction;
+import org.embl.ebi.escience.scuflworkers.workflow.WorkflowProcessor;
 
 /**
  * An amalgam of the ScuflModelExplorerTreeTable and the
@@ -105,14 +106,11 @@ public class AdvancedModelExplorer extends JPanel implements ScuflUIComponent {
 			if (p.isSource() || p.isSink()) {
 				SemanticMarkup m = p.getMetadata();
 				propertiesPanel.removeAll();
-				propertiesPanel.setLayout(new BoxLayout(propertiesPanel,
-						BoxLayout.PAGE_AXIS));
-				propertiesPanel.add(new ScuflSemanticMarkupEditor(m),
-						BorderLayout.CENTER);
+				propertiesPanel.setLayout(new BoxLayout(propertiesPanel, BoxLayout.PAGE_AXIS));
+				propertiesPanel.add(new ScuflSemanticMarkupEditor(m), BorderLayout.CENTER);
 				tabs.setEnabledAt(1, true);
 				tabs.setTitleAt(1, "Metadata for '" + p.getName() + "'");
-				tabs.setIconAt(1, (p.isSource()) ? TavernaIcons.inputIcon
-						: TavernaIcons.outputIcon);
+				tabs.setIconAt(1, (p.isSource()) ? TavernaIcons.inputIcon : TavernaIcons.outputIcon);
 			} else {
 				tabs.setEnabledAt(1, false);
 				tabs.setIconAt(1, null);
@@ -127,8 +125,7 @@ public class AdvancedModelExplorer extends JPanel implements ScuflUIComponent {
 
 	private void updateTabForSummary() {
 		propertiesPanel.removeAll();
-		propertiesPanel.setLayout(new BoxLayout(propertiesPanel,
-				BoxLayout.PAGE_AXIS));
+		propertiesPanel.setLayout(new BoxLayout(propertiesPanel, BoxLayout.PAGE_AXIS));
 		final String htmlSummary = WorkflowSummaryAsHTML.getSummary(model);
 		JToolBar toolbar = new JToolBar();
 		toolbar.setFloatable(false);
@@ -143,19 +140,14 @@ public class AdvancedModelExplorer extends JPanel implements ScuflUIComponent {
 		saveHTML.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				try {
-					Preferences prefs = Preferences
-							.userNodeForPackage(AdvancedModelExplorer.class);
-					String curDir = prefs.get("currentDir", System
-							.getProperty("user.home"));
+					Preferences prefs = Preferences.userNodeForPackage(AdvancedModelExplorer.class);
+					String curDir = prefs.get("currentDir", System.getProperty("user.home"));
 					fc.resetChoosableFileFilters();
-					fc.setFileFilter(new ExtensionFileFilter(new String[] {
-							"html", "htm" }));
+					fc.setFileFilter(new ExtensionFileFilter(new String[] { "html", "htm" }));
 					fc.setCurrentDirectory(new File(curDir));
-					int returnVal = fc
-							.showSaveDialog(AdvancedModelExplorer.this);
+					int returnVal = fc.showSaveDialog(AdvancedModelExplorer.this);
 					if (returnVal == JFileChooser.APPROVE_OPTION) {
-						prefs.put("currentDir", fc.getCurrentDirectory()
-								.toString());
+						prefs.put("currentDir", fc.getCurrentDirectory().toString());
 						File file = fc.getSelectedFile();
 						PrintWriter out = new PrintWriter(new FileWriter(file));
 						out.println(htmlSummary);
@@ -163,9 +155,8 @@ public class AdvancedModelExplorer extends JPanel implements ScuflUIComponent {
 						out.close();
 					}
 				} catch (Exception ex) {
-					JOptionPane.showMessageDialog(AdvancedModelExplorer.this,
-							"Problem saving workflow : \n" + ex.getMessage(),
-							"Error!", JOptionPane.ERROR_MESSAGE);
+					JOptionPane.showMessageDialog(AdvancedModelExplorer.this, "Problem saving workflow : \n"
+							+ ex.getMessage(), "Error!", JOptionPane.ERROR_MESSAGE);
 				}
 			}
 		});
@@ -181,16 +172,15 @@ public class AdvancedModelExplorer extends JPanel implements ScuflUIComponent {
 
 	private void updateTabForWorkflow() {
 		propertiesPanel.removeAll();
-		propertiesPanel.setLayout(new BoxLayout(propertiesPanel,
-				BoxLayout.PAGE_AXIS));
+		propertiesPanel.setLayout(new BoxLayout(propertiesPanel, BoxLayout.PAGE_AXIS));
 
 		JPanel descriptionPanel = new JPanel() {
 			public Dimension getMaximumSize() {
 				return new Dimension(99999, 3000);
 			}
 		};
-		descriptionPanel.setBorder(BorderFactory.createTitledBorder(
-				BorderFactory.createEtchedBorder(), "Workflow description"));
+		descriptionPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(),
+				"Workflow description"));
 		descriptionPanel.setLayout(new BorderLayout());
 		JTextArea description = new JTextArea(model.getDescription().getText());
 		JScrollPane descriptionPane = new JScrollPane(description);
@@ -203,8 +193,7 @@ public class AdvancedModelExplorer extends JPanel implements ScuflUIComponent {
 				return new Dimension(99999, 50);
 			}
 		};
-		authorPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory
-				.createEtchedBorder(), "Author"));
+		authorPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), "Author"));
 		authorPanel.setLayout(new BorderLayout());
 		authorPanel.add(author, BorderLayout.CENTER);
 
@@ -214,8 +203,7 @@ public class AdvancedModelExplorer extends JPanel implements ScuflUIComponent {
 				return new Dimension(99999, 50);
 			}
 		};
-		titlePanel.setBorder(BorderFactory.createTitledBorder(BorderFactory
-				.createEtchedBorder(), "Descriptive title"));
+		titlePanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), "Descriptive title"));
 		titlePanel.setLayout(new BorderLayout());
 		titlePanel.add(title, BorderLayout.CENTER);
 
@@ -226,18 +214,15 @@ public class AdvancedModelExplorer extends JPanel implements ScuflUIComponent {
 				return new Dimension(99999, 50);
 			}
 		};
-		lsidPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory
-				.createEtchedBorder(), "LSID"));
+		lsidPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), "LSID"));
 		lsidPanel.setLayout(new BorderLayout());
 		lsidPanel.add(lsid, BorderLayout.CENTER);
 		JButton assignNewLSID = new JButton("New", TavernaIcons.openurlIcon);
 		assignNewLSID.setPreferredSize(new Dimension(80, 25));
 		assignNewLSID.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				WorkflowDescription wd = AdvancedModelExplorer.this.model
-						.getDescription();
-				String newLSID = DataThing.SYSTEM_DEFAULT_LSID_PROVIDER
-						.getID(LSIDProvider.WFDEFINITION);
+				WorkflowDescription wd = AdvancedModelExplorer.this.model.getDescription();
+				String newLSID = DataThing.SYSTEM_DEFAULT_LSID_PROVIDER.getID(LSIDProvider.WFDEFINITION);
 				wd.setLSID(newLSID);
 				lsid.setText(newLSID);
 			}
@@ -348,8 +333,7 @@ public class AdvancedModelExplorer extends JPanel implements ScuflUIComponent {
 	private void updateTabForProcessor(Processor processor) {
 		// Clear the properties panel and regenerate it
 		propertiesPanel.removeAll();
-		propertiesPanel.setLayout(new BoxLayout(propertiesPanel,
-				BoxLayout.PAGE_AXIS));
+		propertiesPanel.setLayout(new BoxLayout(propertiesPanel, BoxLayout.PAGE_AXIS));
 		final Processor p = processor;
 		// Create a description section...
 		JPanel descriptionPanel = new JPanel() {
@@ -357,8 +341,7 @@ public class AdvancedModelExplorer extends JPanel implements ScuflUIComponent {
 				return new Dimension(99999, 150);
 			}
 		};
-		descriptionPanel.setBorder(BorderFactory.createTitledBorder(
-				BorderFactory.createEtchedBorder(),
+		descriptionPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(),
 				"Processor Description for '" + p.getName() + "'"));
 		descriptionPanel.setLayout(new BorderLayout());
 		JTextArea description = new JTextArea(p.getDescription(), 4, 0);
@@ -405,8 +388,8 @@ public class AdvancedModelExplorer extends JPanel implements ScuflUIComponent {
 			}
 		};
 		iterationConfigPanel.setLayout(new BorderLayout());
-		iterationConfigPanel.setBorder(BorderFactory.createTitledBorder(
-				BorderFactory.createEtchedBorder(), "Configure Iterators"));
+		iterationConfigPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(),
+				"Configure Iterators"));
 
 		final JButton createStrategy = new JButton("Create iteration strategy");
 		final JButton resetStrategy = new JButton("Reset iteration strategy");
@@ -420,8 +403,7 @@ public class AdvancedModelExplorer extends JPanel implements ScuflUIComponent {
 				p.setIterationStrategy(new IterationStrategy(p));
 				createStrategy.setEnabled(false);
 				resetStrategy.setEnabled(true);
-				IterationStrategyEditorControl editor = new IterationStrategyEditorControl(
-						p.getIterationStrategy());
+				IterationStrategyEditorControl editor = new IterationStrategyEditorControl(p.getIterationStrategy());
 				iterationConfigPanel.removeAll();
 				JScrollPane pane = new JScrollPane(editor);
 				pane.setPreferredSize(new Dimension(100, 100));
@@ -469,8 +451,7 @@ public class AdvancedModelExplorer extends JPanel implements ScuflUIComponent {
 			iterationConfigPanel.add(helpPane);
 		} else {
 			createStrategy.setEnabled(false);
-			IterationStrategyEditorControl editor = new IterationStrategyEditorControl(
-					p.getIterationStrategy());
+			IterationStrategyEditorControl editor = new IterationStrategyEditorControl(p.getIterationStrategy());
 			JScrollPane pane = new JScrollPane(editor);
 			pane.setPreferredSize(new Dimension(100, 100));
 			iterationConfigPanel.add(pane);
@@ -478,8 +459,7 @@ public class AdvancedModelExplorer extends JPanel implements ScuflUIComponent {
 
 		tabs.setEnabledAt(1, true);
 		tabs.setTitleAt(1, "Metadata for '" + p.getName() + "'");
-		tabs.setIconAt(1, org.embl.ebi.escience.scuflworkers.ProcessorHelper
-				.getPreferredIcon(p));
+		tabs.setIconAt(1, org.embl.ebi.escience.scuflworkers.ProcessorHelper.getPreferredIcon(p));
 	}
 
 	public String getName() {
@@ -562,16 +542,12 @@ public class AdvancedModelExplorer extends JPanel implements ScuflUIComponent {
 				ScuflModel targetModel = explorer.model;
 				if (targetModel != null) {
 					try {
-						String name = targetModel
-								.getValidProcessorName("NestedWorkflow");
-						Processor p = new org.embl.ebi.escience.scuflworkers.workflow.WorkflowProcessor(
-								targetModel, name);
+						String name = targetModel.getValidProcessorName("NestedWorkflow");
+						Processor p = new WorkflowProcessor(targetModel, name);
 						targetModel.addProcessor(p);
 					} catch (Exception ex) {
-						JOptionPane.showMessageDialog(
-								AdvancedModelExplorer.this,
-								"Unable to create blank subworkflow : \n"
-										+ ex.getMessage(), "Error",
+						JOptionPane.showMessageDialog(AdvancedModelExplorer.this,
+								"Unable to create blank subworkflow : \n" + ex.getMessage(), "Error",
 								JOptionPane.ERROR_MESSAGE);
 					}
 				}
@@ -579,32 +555,26 @@ public class AdvancedModelExplorer extends JPanel implements ScuflUIComponent {
 		});
 
 		// Bind a list selection listener to the explorer
-		explorer.getSelectionModel().addListSelectionListener(
-				new ListSelectionListener() {
-					public void valueChanged(ListSelectionEvent e) {
-						if (e.getValueIsAdjusting()) {
-							return;
-						}
-						ListSelectionModel lsm = (ListSelectionModel) e
-								.getSource();
-						if (lsm.isSelectionEmpty()) {
-							// Disable the properties tab again
-							AdvancedModelExplorer.this.selectedObject = null;
-							AdvancedModelExplorer.this.tabs.setEnabledAt(1,
-									false);
-						} else {
-							int selectedRow = lsm.getMinSelectionIndex();
-							JTree tree = AdvancedModelExplorer.this.explorer
-									.getTree();
-							DefaultMutableTreeNode node = (DefaultMutableTreeNode) tree
-									.getPathForRow(selectedRow)
-									.getLastPathComponent();
-							AdvancedModelExplorer.this.selectedObject = node
-									.getUserObject();
-							AdvancedModelExplorer.this.updateTab();
-						}
-					}
-				});
+		explorer.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+			public void valueChanged(ListSelectionEvent e) {
+				if (e.getValueIsAdjusting()) {
+					return;
+				}
+				ListSelectionModel lsm = (ListSelectionModel) e.getSource();
+				if (lsm.isSelectionEmpty()) {
+					// Disable the properties tab again
+					AdvancedModelExplorer.this.selectedObject = null;
+					AdvancedModelExplorer.this.tabs.setEnabledAt(1, false);
+				} else {
+					int selectedRow = lsm.getMinSelectionIndex();
+					JTree tree = AdvancedModelExplorer.this.explorer.getTree();
+					DefaultMutableTreeNode node = (DefaultMutableTreeNode) tree.getPathForRow(selectedRow)
+							.getLastPathComponent();
+					AdvancedModelExplorer.this.selectedObject = node.getUserObject();
+					AdvancedModelExplorer.this.updateTab();
+				}
+			}
+		});
 
 		// Just in case, update the file chooser's ui model
 		fc.updateUI();
@@ -613,10 +583,8 @@ public class AdvancedModelExplorer extends JPanel implements ScuflUIComponent {
 		explorer.attachToModel(theModel);
 		listener = new ScuflModelEventListener() {
 			public void receiveModelEvent(ScuflModelEvent event) {
-				if (event != null
-						&& event.getSource() == AdvancedModelExplorer.this.model) {
-					boolean currentOfflineStatus = AdvancedModelExplorer.this.model
-							.isOffline();
+				if (event != null && event.getSource() == AdvancedModelExplorer.this.model) {
+					boolean currentOfflineStatus = AdvancedModelExplorer.this.model.isOffline();
 					workOffline.setSelected(currentOfflineStatus);
 				}
 			}
