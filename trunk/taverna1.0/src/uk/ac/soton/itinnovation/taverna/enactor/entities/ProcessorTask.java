@@ -25,8 +25,8 @@
 //      Dependencies        :
 //
 //      Last commit info    :   $Author: sowen70 $
-//                              $Date: 2006-06-30 14:35:07 $
-//                              $Revision: 1.76 $
+//                              $Date: 2006-07-04 14:05:51 $
+//                              $Revision: 1.77 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 package uk.ac.soton.itinnovation.taverna.enactor.entities;
@@ -56,6 +56,7 @@ import org.embl.ebi.escience.scufl.AlternateProcessor;
 import org.embl.ebi.escience.scufl.AnnotationTemplate;
 import org.embl.ebi.escience.scufl.InputPort;
 import org.embl.ebi.escience.scufl.Processor;
+import org.embl.ebi.escience.scufl.IProcessorTask;
 import org.embl.ebi.escience.scufl.enactor.WorkflowInstance;
 import org.embl.ebi.escience.scufl.enactor.event.IterationCompletionEvent;
 import org.embl.ebi.escience.scufl.enactor.event.NestedWorkflowCompletionEvent;
@@ -91,7 +92,7 @@ import uk.ac.soton.itinnovation.freefluo.task.LogLevel;
 /**
  * The superclass of all actual task implementations
  */
-public class ProcessorTask extends AbstractTask {
+public class ProcessorTask extends AbstractTask  implements IProcessorTask {
 	public static Namespace provNS = Namespace.getNamespace("p",
 			"http://org.embl.ebi.escience/xscuflprovenance/0.1alpha");
 
@@ -156,6 +157,10 @@ public class ProcessorTask extends AbstractTask {
 
 	public List getProvenanceList() {
 		return this.provenanceList;
+	}
+	
+	public WorkflowInstance getWorkflowInstance() {
+		return workflowInstance;
 	}
 
 	/**

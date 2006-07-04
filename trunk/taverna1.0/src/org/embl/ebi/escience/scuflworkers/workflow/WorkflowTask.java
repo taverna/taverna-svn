@@ -25,8 +25,8 @@
 //      Dependencies        :
 //
 //      Last commit info    :   $Author: sowen70 $
-//                              $Date: 2006-06-30 14:34:38 $
-//                              $Revision: 1.12 $
+//                              $Date: 2006-07-04 14:05:51 $
+//                              $Revision: 1.13 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 
@@ -37,6 +37,7 @@ import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.embl.ebi.escience.scufl.Processor;
+import org.embl.ebi.escience.scufl.IProcessorTask;
 import org.embl.ebi.escience.scufl.ScuflModel;
 import org.embl.ebi.escience.scufl.enactor.EnactorProxy;
 import org.embl.ebi.escience.scufl.enactor.UserContext;
@@ -50,7 +51,6 @@ import uk.ac.soton.itinnovation.freefluo.event.WorkflowStateChangedEvent;
 import uk.ac.soton.itinnovation.freefluo.event.WorkflowStateListener;
 import uk.ac.soton.itinnovation.freefluo.main.WorkflowState;
 import uk.ac.soton.itinnovation.taverna.enactor.entities.EnactorWorkflowTask;
-import uk.ac.soton.itinnovation.taverna.enactor.entities.ProcessorTask;
 import uk.ac.soton.itinnovation.taverna.enactor.entities.TaskExecutionException;
 
 public class WorkflowTask implements ProcessorTaskWorker, EnactorWorkflowTask {
@@ -74,14 +74,14 @@ public class WorkflowTask implements ProcessorTaskWorker, EnactorWorkflowTask {
 	 * Invoke a nested workflow, the input map being a map of string port names
 	 * to DataThing objects containing the current values.
 	 */
-	public Map execute(Map inputMap, ProcessorTask parentTask) throws TaskExecutionException {
+	public Map execute(Map inputMap, IProcessorTask parentTask) throws TaskExecutionException {
 		WorkflowProcessor theProcessor = (WorkflowProcessor) proc;
 		ScuflModel theNestedModel = theProcessor.getInternalModel();
 
 		// The inputMap is already in the form we need for a submission
 		try {
 			// Get the parent workflow instance
-			WorkflowInstance parentInstance = parentTask.workflowInstance;
+			WorkflowInstance parentInstance = parentTask.getWorkflowInstance();
 			UserContext context = parentInstance.getUserContext();
 			workflowInstance = defaultEnactor.compileWorkflow(theNestedModel, inputMap, context);
 		} catch (WorkflowSubmissionException e) {

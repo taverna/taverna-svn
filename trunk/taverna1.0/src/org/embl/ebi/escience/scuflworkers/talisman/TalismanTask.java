@@ -13,10 +13,10 @@ import java.util.Map;
 import org.apache.log4j.Logger;
 import org.embl.ebi.escience.baclava.DataThing;
 import org.embl.ebi.escience.scufl.Processor;
+import org.embl.ebi.escience.scufl.IProcessorTask;
 import org.embl.ebi.escience.scuflworkers.ProcessorTaskWorker;
 import org.embl.ebi.escience.talisman.tservice.TeaTray;
 
-import uk.ac.soton.itinnovation.taverna.enactor.entities.ProcessorTask;
 import uk.ac.soton.itinnovation.taverna.enactor.entities.TaskExecutionException;
 
 /**
@@ -33,7 +33,7 @@ public class TalismanTask implements ProcessorTaskWorker {
 		this.proc = p;
 	}
 
-	public Map execute(java.util.Map workflowInputMap, ProcessorTask parentTask) throws TaskExecutionException {
+	public Map execute(java.util.Map workflowInputMap, IProcessorTask parentTask) throws TaskExecutionException {
 		try {
 
 			TalismanProcessor theProcessor = (TalismanProcessor) proc;

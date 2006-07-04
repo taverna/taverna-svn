@@ -25,8 +25,8 @@
 //      Dependencies        :
 //
 //      Last commit info    :   $Author: sowen70 $
-//                              $Date: 2006-06-08 09:24:01 $
-//                              $Revision: 1.17 $
+//                              $Date: 2006-07-04 14:05:51 $
+//                              $Revision: 1.18 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 
@@ -47,9 +47,9 @@ import org.embl.ebi.escience.baclava.DataThing;
 import org.embl.ebi.escience.baclava.factory.DataThingFactory;
 import org.embl.ebi.escience.scufl.OutputPort;
 import org.embl.ebi.escience.scufl.Processor;
+import org.embl.ebi.escience.scufl.IProcessorTask;
 import org.embl.ebi.escience.scuflworkers.ProcessorTaskWorker;
 
-import uk.ac.soton.itinnovation.taverna.enactor.entities.ProcessorTask;
 import uk.ac.soton.itinnovation.taverna.enactor.entities.TaskExecutionException;
 
 public class SoaplabTask implements ProcessorTaskWorker {
@@ -64,7 +64,7 @@ public class SoaplabTask implements ProcessorTaskWorker {
 		this.proc = (SoaplabProcessor) p;
 	}
 
-	public Map execute(Map inputMap, ProcessorTask parentTask)
+	public Map execute(Map inputMap, IProcessorTask parentTask)
 			throws TaskExecutionException {
 
 		try {

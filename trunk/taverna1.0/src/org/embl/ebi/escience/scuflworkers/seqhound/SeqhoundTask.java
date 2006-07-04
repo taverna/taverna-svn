@@ -14,9 +14,9 @@ import java.util.Map;
 import org.embl.ebi.escience.baclava.DataThing;
 import org.embl.ebi.escience.scufl.InputPort;
 import org.embl.ebi.escience.scufl.Processor;
+import org.embl.ebi.escience.scufl.IProcessorTask;
 import org.embl.ebi.escience.scuflworkers.ProcessorTaskWorker;
 
-import uk.ac.soton.itinnovation.taverna.enactor.entities.ProcessorTask;
 import uk.ac.soton.itinnovation.taverna.enactor.entities.TaskExecutionException;
 
 public class SeqhoundTask implements ProcessorTaskWorker {
@@ -27,7 +27,7 @@ public class SeqhoundTask implements ProcessorTaskWorker {
 	this.processor = (SeqhoundProcessor)p;
     }
 
-    public Map execute(Map inputMap, ProcessorTask parentTask)
+    public Map execute(Map inputMap, IProcessorTask parentTask)
 	throws TaskExecutionException {
 	try {
 	    this.processor.initSeqhound();

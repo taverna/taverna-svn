@@ -8,9 +8,9 @@ package org.embl.ebi.escience.scuflworkers.rdfgenerator;
 import java.util.HashMap;
 
 import org.embl.ebi.escience.scufl.Processor;
+import org.embl.ebi.escience.scufl.IProcessorTask;
 import org.embl.ebi.escience.scuflworkers.ProcessorTaskWorker;
 
-import uk.ac.soton.itinnovation.taverna.enactor.entities.ProcessorTask;
 import uk.ac.soton.itinnovation.taverna.enactor.entities.TaskExecutionException;
 
 
@@ -28,7 +28,7 @@ public class RDFGeneratorTask implements ProcessorTaskWorker {
     /**
      * NOT IMPLEMENTED YET!
      */
-    public java.util.Map execute(java.util.Map workflowInputMap, ProcessorTask parentTask) throws TaskExecutionException {
+    public java.util.Map execute(java.util.Map workflowInputMap, IProcessorTask parentTask) throws TaskExecutionException {
 	/**
 	   try{
 	   //

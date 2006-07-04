@@ -11,11 +11,11 @@ import org.apache.axis.AxisFault;
 import org.apache.axis.utils.XMLUtils;
 import org.apache.log4j.Logger;
 import org.embl.ebi.escience.scufl.Processor;
+import org.embl.ebi.escience.scufl.IProcessorTask;
 import org.embl.ebi.escience.scuflworkers.ProcessorTaskWorker;
 import org.embl.ebi.escience.scuflworkers.wsdl.soap.WSDLSOAPInvoker;
 import org.w3c.dom.Element;
 
-import uk.ac.soton.itinnovation.taverna.enactor.entities.ProcessorTask;
 import uk.ac.soton.itinnovation.taverna.enactor.entities.TaskExecutionException;
 
 /**
@@ -37,7 +37,7 @@ public class WSDLInvocationTask implements ProcessorTaskWorker {
 	 * Executes the service identified by the ProcessorTask, and returns a Map
 	 * of the output DataThing's mapped against the output name.
 	 */
-	public Map execute(Map inputMap, ProcessorTask parentTask) throws TaskExecutionException {
+	public Map execute(Map inputMap, IProcessorTask parentTask) throws TaskExecutionException {
 		Map result = null;
 		WSDLSOAPInvoker invoker = new WSDLSOAPInvoker(processor);
 		try {

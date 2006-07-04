@@ -25,10 +25,10 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: BiomartTask.java,v $
- * Revision           $Revision: 1.10 $
+ * Revision           $Revision: 1.11 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-05-19 13:55:22 $
- *               by   $Author: davidwithers $
+ * Last modified on   $Date: 2006-07-04 14:05:51 $
+ *               by   $Author: sowen70 $
  * Created on 17-Mar-2006
  *****************************************************************/
 package org.embl.ebi.escience.scuflworkers.biomart;
@@ -45,9 +45,9 @@ import org.biomart.martservice.query.Filter;
 import org.biomart.martservice.query.Query;
 import org.embl.ebi.escience.baclava.DataThing;
 import org.embl.ebi.escience.scufl.Processor;
+import org.embl.ebi.escience.scufl.IProcessorTask;
 import org.embl.ebi.escience.scuflworkers.ProcessorTaskWorker;
 
-import uk.ac.soton.itinnovation.taverna.enactor.entities.ProcessorTask;
 import uk.ac.soton.itinnovation.taverna.enactor.entities.TaskExecutionException;
 
 /**
@@ -78,7 +78,7 @@ public class BiomartTask implements ProcessorTaskWorker {
      * @see org.embl.ebi.escience.scuflworkers.ProcessorTaskWorker#execute(java.util.Map,
      *      uk.ac.soton.itinnovation.taverna.enactor.entities.ProcessorTask)
      */
-	public Map execute(Map inputMap, ProcessorTask parentTask)
+	public Map execute(Map inputMap, IProcessorTask parentTask)
 			throws TaskExecutionException {
 		try {
 			// Get a query including data source etc, creating

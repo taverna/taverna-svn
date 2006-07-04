@@ -16,6 +16,7 @@ import java.util.Map;
 
 import org.embl.ebi.escience.baclava.DataThing;
 import org.embl.ebi.escience.scufl.Processor;
+import org.embl.ebi.escience.scufl.IProcessorTask;
 import org.embl.ebi.escience.scuflworkers.ProcessorTaskWorker;
 
 import uk.ac.rdg.resc.jstyx.client.CStyxFile;
@@ -26,7 +27,6 @@ import uk.ac.rdg.resc.jstyx.client.StyxFileOutputStream;
 import uk.ac.rdg.resc.jstyx.client.StyxFileOutputStreamWriter;
 import uk.ac.soton.itinnovation.freefluo.core.task.Task;
 import uk.ac.soton.itinnovation.taverna.enactor.entities.PortTask;
-import uk.ac.soton.itinnovation.taverna.enactor.entities.ProcessorTask;
 import uk.ac.soton.itinnovation.taverna.enactor.entities.TaskExecutionException;
 
 /**
@@ -47,7 +47,7 @@ public class InfernoTask implements ProcessorTaskWorker {
 				"uk.ac.rdg.resc.jstyx.client.protocol");
 	}
 
-	public Map execute(Map inputMap, ProcessorTask parentTask)
+	public Map execute(Map inputMap, IProcessorTask parentTask)
 			throws TaskExecutionException {
 		Map results = new HashMap();
 		try {

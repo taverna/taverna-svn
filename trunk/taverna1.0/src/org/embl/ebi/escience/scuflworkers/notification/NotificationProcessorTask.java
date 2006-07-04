@@ -14,13 +14,13 @@ import java.util.Set;
 
 import org.embl.ebi.escience.baclava.DataThing;
 import org.embl.ebi.escience.scufl.Processor;
+import org.embl.ebi.escience.scufl.IProcessorTask;
 import org.embl.ebi.escience.scuflworkers.ProcessorTaskWorker;
 
 import uk.ac.soton.ecs.iam.notification.constants.NotificationProcessorConstants;
 import uk.ac.soton.ecs.iam.notification.dynamicproxy.DynamicProxy;
 import uk.ac.soton.ecs.iam.notification.notifconfig.infc.NotificationProcessorConfiguration;
 import uk.ac.soton.ecs.iam.notification.publishprocessor.infc.PublishProcessor;
-import uk.ac.soton.itinnovation.taverna.enactor.entities.ProcessorTask;
 import uk.ac.soton.itinnovation.taverna.enactor.entities.TaskExecutionException;
 
 /**
@@ -55,7 +55,7 @@ public class NotificationProcessorTask implements ProcessorTaskWorker {
 
 	}
 
-	public Map execute(Map inputMap, ProcessorTask parentTask) throws TaskExecutionException {
+	public Map execute(Map inputMap, IProcessorTask parentTask) throws TaskExecutionException {
 		try {
 			Set set = inputMap.keySet();
 			for (Iterator itr = set.iterator(); itr.hasNext();) {

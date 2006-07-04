@@ -13,6 +13,7 @@ import org.embl.ebi.escience.baclava.DataThing;
 import org.embl.ebi.escience.scufl.InputPort;
 import org.embl.ebi.escience.scufl.OutputPort;
 import org.embl.ebi.escience.scufl.Processor;
+import org.embl.ebi.escience.scufl.IProcessorTask;
 import org.embl.ebi.escience.scuflworkers.ProcessorTaskWorker;
 import org.jdom.Document;
 import org.jdom.Element;
@@ -22,7 +23,6 @@ import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
 import org.xml.sax.InputSource;
 
-import uk.ac.soton.itinnovation.taverna.enactor.entities.ProcessorTask;
 import uk.ac.soton.itinnovation.taverna.enactor.entities.TaskExecutionException;
 
 public class CopyOfBiomobyTask implements ProcessorTaskWorker {
@@ -39,7 +39,7 @@ public class CopyOfBiomobyTask implements ProcessorTaskWorker {
         this.proc = p;
     }
 
-    public Map execute(Map inputMap, ProcessorTask parentTask)
+    public Map execute(Map inputMap, IProcessorTask parentTask)
             throws TaskExecutionException {
 
         try {

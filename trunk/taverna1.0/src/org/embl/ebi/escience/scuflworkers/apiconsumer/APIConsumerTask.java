@@ -15,9 +15,9 @@ import java.util.Map;
 
 import org.embl.ebi.escience.baclava.DataThing;
 import org.embl.ebi.escience.scufl.Processor;
+import org.embl.ebi.escience.scufl.IProcessorTask;
 import org.embl.ebi.escience.scuflworkers.ProcessorTaskWorker;
 
-import uk.ac.soton.itinnovation.taverna.enactor.entities.ProcessorTask;
 import uk.ac.soton.itinnovation.taverna.enactor.entities.TaskExecutionException;
 
 
@@ -125,7 +125,7 @@ public class APIConsumerTask implements ProcessorTaskWorker {
     }
 
     public Map execute(Map input, 
-		       ProcessorTask parentTask) 
+		       IProcessorTask parentTask) 
 	throws TaskExecutionException {
 	Map result = new HashMap();
 	// Different code paths for constructor, static and non static

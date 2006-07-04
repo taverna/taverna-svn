@@ -16,9 +16,9 @@ import org.apache.log4j.Logger;
 import org.embl.ebi.escience.baclava.DataThing;
 import org.embl.ebi.escience.scufl.OutputPort;
 import org.embl.ebi.escience.scufl.Processor;
+import org.embl.ebi.escience.scufl.IProcessorTask;
 import org.embl.ebi.escience.scuflworkers.ProcessorTaskWorker;
 
-import uk.ac.soton.itinnovation.taverna.enactor.entities.ProcessorTask;
 import uk.ac.soton.itinnovation.taverna.enactor.entities.TaskExecutionException;
 import bsh.Interpreter;
 
@@ -53,7 +53,7 @@ public class BSFTask implements ProcessorTaskWorker {
         
     }
 
-    public Map execute(java.util.Map workflowInputMap ,  ProcessorTask parentTask)
+    public Map execute(java.util.Map workflowInputMap ,  IProcessorTask parentTask)
             throws TaskExecutionException {
         try {
             BSFProcessor theProcessor = (BSFProcessor) proc;

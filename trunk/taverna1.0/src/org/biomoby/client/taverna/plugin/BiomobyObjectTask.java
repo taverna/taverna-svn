@@ -13,11 +13,11 @@ import org.biomoby.shared.mobyxml.jdom.MobyObjectClassNSImpl;
 import org.embl.ebi.escience.baclava.DataThing;
 import org.embl.ebi.escience.scufl.InputPort;
 import org.embl.ebi.escience.scufl.Processor;
+import org.embl.ebi.escience.scufl.IProcessorTask;
 import org.embl.ebi.escience.scuflworkers.ProcessorTaskWorker;
 import org.jdom.Element;
 import org.jdom.Namespace;
 
-import uk.ac.soton.itinnovation.taverna.enactor.entities.ProcessorTask;
 import uk.ac.soton.itinnovation.taverna.enactor.entities.TaskExecutionException;
 
 public class BiomobyObjectTask implements ProcessorTaskWorker {
@@ -36,7 +36,7 @@ public class BiomobyObjectTask implements ProcessorTaskWorker {
         proc.isBoring();
     }
 
-    public Map execute(Map inputMap, ProcessorTask parentTask)
+    public Map execute(Map inputMap, IProcessorTask parentTask)
             throws TaskExecutionException {
         // the possible inputs to create 'mobyData' from
         InputPort[] inputPorts = parentTask.getProcessor().getBoundInputPorts();

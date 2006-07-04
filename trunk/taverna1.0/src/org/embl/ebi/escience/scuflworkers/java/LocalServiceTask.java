@@ -8,9 +8,9 @@ package org.embl.ebi.escience.scuflworkers.java;
 import java.util.Map;
 
 import org.embl.ebi.escience.scufl.Processor;
+import org.embl.ebi.escience.scufl.IProcessorTask;
 import org.embl.ebi.escience.scuflworkers.ProcessorTaskWorker;
 
-import uk.ac.soton.itinnovation.taverna.enactor.entities.ProcessorTask;
 import uk.ac.soton.itinnovation.taverna.enactor.entities.TaskExecutionException;
 
 /**
@@ -26,7 +26,7 @@ public class LocalServiceTask implements ProcessorTaskWorker {
 		this.proc = p;
 	}
 
-	public Map execute(Map inputMap, ProcessorTask parentTask) throws TaskExecutionException {
+	public Map execute(Map inputMap, IProcessorTask parentTask) throws TaskExecutionException {
 		LocalServiceProcessor theProcessor = (LocalServiceProcessor) proc;
 		return theProcessor.getWorker().execute(inputMap);
 	}

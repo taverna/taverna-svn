@@ -16,12 +16,12 @@ import org.biomoby.shared.MobyException;
 import org.embl.ebi.escience.baclava.DataThing;
 import org.embl.ebi.escience.scufl.OutputPort;
 import org.embl.ebi.escience.scufl.Processor;
+import org.embl.ebi.escience.scufl.IProcessorTask;
 import org.embl.ebi.escience.scuflworkers.ProcessorTaskWorker;
 import org.jdom.Element;
 import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
 
-import uk.ac.soton.itinnovation.taverna.enactor.entities.ProcessorTask;
 import uk.ac.soton.itinnovation.taverna.enactor.entities.TaskExecutionException;
 
 /**
@@ -47,7 +47,7 @@ public class MobyParseDatatypeTask implements ProcessorTaskWorker {
 	 *  (non-Javadoc)
 	 * @see org.embl.ebi.escience.scuflworkers.ProcessorTaskWorker#execute(java.util.Map, uk.ac.soton.itinnovation.taverna.enactor.entities.ProcessorTask)
 	 */
-	public Map execute(java.util.Map workflowInputMap, ProcessorTask parentTask)
+	public Map execute(java.util.Map workflowInputMap, IProcessorTask parentTask)
 			throws TaskExecutionException {
 		HashMap output = new HashMap();
 		try {

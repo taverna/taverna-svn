@@ -14,13 +14,13 @@ import java.util.Vector;
 import org.embl.ebi.escience.baclava.DataThing;
 import org.embl.ebi.escience.scufl.InputPort;
 import org.embl.ebi.escience.scufl.Processor;
+import org.embl.ebi.escience.scufl.IProcessorTask;
 import org.embl.ebi.escience.scufl.tools.Lang;
 import org.embl.ebi.escience.scuflworkers.ProcessorTaskWorker;
 import org.rosuda.JRclient.REXP;
 import org.rosuda.JRclient.RSrvException;
 import org.rosuda.JRclient.Rconnection;
 
-import uk.ac.soton.itinnovation.taverna.enactor.entities.ProcessorTask;
 import uk.ac.soton.itinnovation.taverna.enactor.entities.TaskExecutionException;
 
 /**
@@ -185,7 +185,7 @@ public class RservTask implements ProcessorTaskWorker {
 	 * @see org.embl.ebi.escience.scuflworkers.ProcessorTaskWorker#execute(java.util.Map,
 	 *      uk.ac.soton.itinnovation.taverna.enactor.entities.ProcessorTask)
 	 */
-	public Map execute(Map workflowInputMap, ProcessorTask parentTask)
+	public Map execute(Map workflowInputMap, IProcessorTask parentTask)
 			throws TaskExecutionException {
 		// FIXME: Check for Rserv availability
 		Rconnection r = connect();
