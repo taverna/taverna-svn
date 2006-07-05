@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: ProcessorInfoBeanHelper.java,v $
- * Revision           $Revision: 1.3 $
+ * Revision           $Revision: 1.4 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-07-05 09:50:37 $
+ * Last modified on   $Date: 2006-07-05 09:54:03 $
  *               by   $Author: sowen70 $
  * Created on 22-Jun-2006
  *****************************************************************/
@@ -102,10 +102,10 @@ public class ProcessorInfoBeanHelper implements ProcessorInfoBean {
 	}
 
 	public ImageIcon icon() {
-		String icon = tavernaProperties.getProperty(propertyBase + ".icon");
-		icon=icon.trim();
+		String icon = tavernaProperties.getProperty(propertyBase + ".icon");		
 		ImageIcon result = null;
 		if (icon != null) {
+			icon=icon.trim();
 			ClassLoader loader = ProcessorInfoBeanHelper.class.getClassLoader();
 			if (loader == null) {
 				loader = Thread.currentThread().getContextClassLoader();
