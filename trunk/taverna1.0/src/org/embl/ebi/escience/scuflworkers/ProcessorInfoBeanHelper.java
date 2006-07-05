@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: ProcessorInfoBeanHelper.java,v $
- * Revision           $Revision: 1.2 $
+ * Revision           $Revision: 1.3 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-06-29 16:23:44 $
+ * Last modified on   $Date: 2006-07-05 09:50:37 $
  *               by   $Author: sowen70 $
  * Created on 22-Jun-2006
  *****************************************************************/
@@ -84,19 +84,26 @@ public class ProcessorInfoBeanHelper implements ProcessorInfoBean {
 	}
 
 	public String processorClassname() {
-		return tavernaProperties.getProperty(propertyBase + ".class");
+		String result = tavernaProperties.getProperty(propertyBase + ".class");
+		if (result!=null) result=result.trim();
+		return result;
 	}
 
 	public String xmlHandlerClassname() {
-		return tavernaProperties.getProperty(propertyBase + ".xml");
+		String result= tavernaProperties.getProperty(propertyBase + ".xml");
+		if (result!=null) result=result.trim();
+		return result;
 	}
 
 	public String colour() {
-		return tavernaProperties.getProperty(propertyBase + ".colour");
+		String result=tavernaProperties.getProperty(propertyBase + ".colour");
+		if (result!=null) result=result.trim();
+		return result;
 	}
 
 	public ImageIcon icon() {
 		String icon = tavernaProperties.getProperty(propertyBase + ".icon");
+		icon=icon.trim();
 		ImageIcon result = null;
 		if (icon != null) {
 			ClassLoader loader = ProcessorInfoBeanHelper.class.getClassLoader();
@@ -109,15 +116,21 @@ public class ProcessorInfoBeanHelper implements ProcessorInfoBean {
 	}
 
 	public String taskClassname() {
-		return tavernaProperties.getProperty(propertyBase + ".taskclass");
+		String result= tavernaProperties.getProperty(propertyBase + ".taskclass");
+		if (result!=null) result=result.trim();
+		return result;
 	}
 
 	public String editorClassname() {
-		return tavernaProperties.getProperty(propertyBase + ".editor");
+		String result= tavernaProperties.getProperty(propertyBase + ".editor");
+		if (result!=null) result=result.trim();
+		return result;
 	}
 
 	public String scavengerClassname() {
-		return tavernaProperties.getProperty(propertyBase + ".scavenger");
+		String result= tavernaProperties.getProperty(propertyBase + ".scavenger");
+		if (result!=null) result=result.trim();
+		return result;
 	}
 
 	public String tag() {
