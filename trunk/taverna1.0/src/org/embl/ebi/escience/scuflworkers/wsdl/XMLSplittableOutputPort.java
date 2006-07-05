@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: XMLSplittableOutputPort.java,v $
- * Revision           $Revision: 1.1 $
+ * Revision           $Revision: 1.2 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-07-05 11:15:44 $
+ * Last modified on   $Date: 2006-07-05 11:19:33 $
  *               by   $Author: sowen70 $
  * Created on 04-Jul-2006
  *****************************************************************/
@@ -60,7 +60,7 @@ public class XMLSplittableOutputPort extends OutputPort implements ScuflContextM
 	/**
 	 * Generates the menu items for the port if applicable, otherwise returns an empty List
 	 */
-	public List<JMenuItem> contextIMenuItems() {
+	public List<JMenuItem> contextMenuItems() {
 		return XMLSplitterScuflContextMenuFactory.instance().contextItemsForPort(this);
 	}
 }

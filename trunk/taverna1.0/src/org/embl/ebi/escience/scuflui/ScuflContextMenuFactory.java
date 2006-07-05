@@ -156,7 +156,7 @@ public class ScuflContextMenuFactory {
 		JPopupMenu theMenu = LinkingMenus.linkFrom(theOutputPort);
 		if (theOutputPort instanceof ScuflContextMenuAware) {
 			List<JMenuItem> items = ((ScuflContextMenuAware) theOutputPort)
-					.contextIMenuItems();
+					.contextMenuItems();
 			if (items.size() > 0)
 				theMenu.addSeparator();
 			for (JMenuItem item : items) {
@@ -240,7 +240,7 @@ public class ScuflContextMenuFactory {
 
 		if (theInputPort instanceof ScuflContextMenuAware) {
 			List<JMenuItem> items = ((ScuflContextMenuAware) theInputPort)
-					.contextIMenuItems();
+					.contextMenuItems();
 			if (items.size() > 0)
 				theMenu.addSeparator();
 			for (JMenuItem item : items) {
