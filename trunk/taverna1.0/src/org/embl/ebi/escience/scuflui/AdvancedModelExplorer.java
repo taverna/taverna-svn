@@ -56,7 +56,8 @@ import org.embl.ebi.escience.scuflui.actions.LoadWorkflowAction;
 import org.embl.ebi.escience.scuflui.actions.OfflineToggleModel;
 import org.embl.ebi.escience.scuflui.actions.ResetAction;
 import org.embl.ebi.escience.scuflui.actions.SaveWorkflowAction;
-import org.embl.ebi.escience.scuflworkers.workflow.WorkflowProcessor;
+import org.embl.ebi.escience.scuflui.actions.ScuflModelActionRegistry;
+import org.embl.ebi.escience.scuflui.actions.ScuflModelActionSPI;
 
 /**
  * An amalgam of the ScuflModelExplorerTreeTable and the
@@ -77,8 +78,6 @@ public class AdvancedModelExplorer extends JPanel implements ScuflUIComponent {
 	private Object selectedObject = null;
 
 	private ScuflModel model;
-
-	private JButton createNested;
 
 	protected JCheckBox workOffline;
 
@@ -506,12 +505,6 @@ public class AdvancedModelExplorer extends JPanel implements ScuflUIComponent {
 		toolbar.setMaximumSize(new Dimension(2000, 30));
 		toolbar.setBorderPainted(true);
 
-		// Add options to load the workflow, import from web, save and reset
-		// These options were available from the workbench file menu previously
-		// but I think they're more intuitive here as buttons.
-		createNested = new JButton(TavernaIcons.windowExplorer);
-		createNested.setPreferredSize(new Dimension(25, 25));
-
 		workOffline = new JCheckBox("Offline");
 		workOffline.setModel(new OfflineToggleModel(model));
 		toolbar.add(new JLabel(" Load "));
@@ -522,8 +515,10 @@ public class AdvancedModelExplorer extends JPanel implements ScuflUIComponent {
 		toolbar.add(new SaveWorkflowAction(model));
 
 		toolbar.addSeparator();
-		toolbar.add(new JLabel("New subworkflow"));
-		toolbar.add(createNested);
+		for (ScuflModelActionSPI action : ScuflModelActionRegistry.instance().getScuflModelActions(model)) {
+			toolbar.add(new JLabel(action.getLabel()));
+			toolbar.add(action);
+		}
 
 		toolbar.addSeparator();
 		toolbar.add(workOffline);
@@ -535,24 +530,6 @@ public class AdvancedModelExplorer extends JPanel implements ScuflUIComponent {
 
 		// Add the toolbar to the top of the panel
 		workflowPanel.add(toolbar, BorderLayout.PAGE_START);
-
-		// Add actionlistener to 'create new nested workflow' button
-		createNested.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent ae) {
-				ScuflModel targetModel = explorer.model;
-				if (targetModel != null) {
-					try {
-						String name = targetModel.getValidProcessorName("NestedWorkflow");
-						Processor p = new WorkflowProcessor(targetModel, name);
-						targetModel.addProcessor(p);
-					} catch (Exception ex) {
-						JOptionPane.showMessageDialog(AdvancedModelExplorer.this,
-								"Unable to create blank subworkflow : \n" + ex.getMessage(), "Error",
-								JOptionPane.ERROR_MESSAGE);
-					}
-				}
-			}
-		});
 
 		// Bind a list selection listener to the explorer
 		explorer.getSelectionModel().addListSelectionListener(new ListSelectionListener() {

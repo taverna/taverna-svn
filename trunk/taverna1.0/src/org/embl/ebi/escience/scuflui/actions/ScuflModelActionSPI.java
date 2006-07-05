@@ -24,37 +24,42 @@
  ****************************************************************
  * Source code information
  * -----------------------
- * Filename           $RCSfile: ScuflContextMenuAware.java,v $
- * Revision           $Revision: 1.4 $
+ * Filename           $RCSfile: ScuflModelActionSPI.java,v $
+ * Revision           $Revision: 1.1 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-07-05 14:01:24 $
+ * Last modified on   $Date: 2006-07-05 14:01:23 $
  *               by   $Author: sowen70 $
- * Created on 21-Jun-2006
+ * Created on 05-Jul-2006
  *****************************************************************/
-package org.embl.ebi.escience.scuflworkers;
+package org.embl.ebi.escience.scuflui.actions;
 
-import java.util.List;
-
-import javax.swing.JMenuItem;
+import org.embl.ebi.escience.scufl.ScuflModel;
 
 /**
- * An Interface then when implemented by a Processor indicates that ports related to this processor
- * may possibly have scufl context menu items to be appended to the menu when right clicking on that
- * port in the Advanced Model Explorer
+ * Abstract class through which optional ScuflModelActions may added using the SPI pattern.
+ * This class is required to generate a default constructor and the ability to add a model after construction of the class.
+ * It also enforces that the label for the action within the action itself.
+ * 
+ * These actions are added to the toolbar of the Advanced Model Explorer.
  * 
  * @author Stuart Owen
- *
+ * @see org.embl.ebi.escience.scuflui.actions.ScuflModelActionRegistry
+ * @see org.embl.ebi.escience.scuflui.AdvancedModelExplorer
  */
 
-
-public interface ScuflContextMenuAware {
+public abstract class ScuflModelActionSPI extends ScuflModelAction {
+	
+	public ScuflModelActionSPI() {
+		super(null);
+	}
+	
+	public void setModel(ScuflModel model){
+		this.model=model;
+	}
 	
 	/**
-	 * Creates a list, in order, of the JMenuItems to be added to the ScuflContextMenu
 	 * 
-	 * @param port
-	 * @return
+	 * @return the label that is asigned to the action when added to the Advanced Model Explorer
 	 */
-	List<JMenuItem> contextMenuItems();
-
+	public abstract String getLabel();
 }

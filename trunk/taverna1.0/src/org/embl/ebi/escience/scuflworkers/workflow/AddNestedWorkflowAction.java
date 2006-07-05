@@ -24,37 +24,48 @@
  ****************************************************************
  * Source code information
  * -----------------------
- * Filename           $RCSfile: ScuflContextMenuAware.java,v $
- * Revision           $Revision: 1.4 $
+ * Filename           $RCSfile: AddNestedWorkflowAction.java,v $
+ * Revision           $Revision: 1.1 $
  * Release status     $State: Exp $
  * Last modified on   $Date: 2006-07-05 14:01:24 $
  *               by   $Author: sowen70 $
- * Created on 21-Jun-2006
+ * Created on 05-Jul-2006
  *****************************************************************/
-package org.embl.ebi.escience.scuflworkers;
+package org.embl.ebi.escience.scuflworkers.workflow;
 
-import java.util.List;
+import java.awt.Component;
+import java.awt.event.ActionEvent;
 
-import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 
-/**
- * An Interface then when implemented by a Processor indicates that ports related to this processor
- * may possibly have scufl context menu items to be appended to the menu when right clicking on that
- * port in the Advanced Model Explorer
- * 
- * @author Stuart Owen
- *
- */
+import org.embl.ebi.escience.scufl.Processor;
+import org.embl.ebi.escience.scuflui.TavernaIcons;
+import org.embl.ebi.escience.scuflui.actions.ScuflModelActionSPI;
 
+public class AddNestedWorkflowAction extends ScuflModelActionSPI {
 
-public interface ScuflContextMenuAware {
-	
-	/**
-	 * Creates a list, in order, of the JMenuItems to be added to the ScuflContextMenu
-	 * 
-	 * @param port
-	 * @return
-	 */
-	List<JMenuItem> contextMenuItems();
+	public AddNestedWorkflowAction() {
+		putValue(SMALL_ICON, TavernaIcons.windowExplorer);
+		putValue(NAME, "Add Nested Workflow");
+		putValue(SHORT_DESCRIPTION, "Add Nested Workflow...");
+	}
+
+	public void actionPerformed(ActionEvent e) {
+		if (model != null) {
+			try {
+				String name = model.getValidProcessorName("NestedWorkflow");
+				Processor p = new WorkflowProcessor(model, name);
+				model.addProcessor(p);
+			} catch (Exception ex) {
+				JOptionPane.showMessageDialog((Component) e.getSource(), "Unable to create blank subworkflow : \n"
+						+ ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+			}
+		}
+
+	}
+
+	public String getLabel() {
+		return "New subworkflow";
+	}
 
 }

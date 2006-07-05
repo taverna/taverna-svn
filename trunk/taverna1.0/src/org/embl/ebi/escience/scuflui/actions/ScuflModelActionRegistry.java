@@ -24,37 +24,51 @@
  ****************************************************************
  * Source code information
  * -----------------------
- * Filename           $RCSfile: ScuflContextMenuAware.java,v $
- * Revision           $Revision: 1.4 $
+ * Filename           $RCSfile: ScuflModelActionRegistry.java,v $
+ * Revision           $Revision: 1.1 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-07-05 14:01:24 $
+ * Last modified on   $Date: 2006-07-05 14:01:23 $
  *               by   $Author: sowen70 $
- * Created on 21-Jun-2006
+ * Created on 05-Jul-2006
  *****************************************************************/
-package org.embl.ebi.escience.scuflworkers;
+package org.embl.ebi.escience.scuflui.actions;
 
 import java.util.List;
 
-import javax.swing.JMenuItem;
+import org.embl.ebi.escience.scufl.ScuflModel;
+import org.embl.ebi.escience.utils.TavernaSPIRegistry;
 
 /**
- * An Interface then when implemented by a Processor indicates that ports related to this processor
- * may possibly have scufl context menu items to be appended to the menu when right clicking on that
- * port in the Advanced Model Explorer
+ * Registry to find option ScuflModelActions
  * 
  * @author Stuart Owen
  *
  */
 
+public class ScuflModelActionRegistry extends TavernaSPIRegistry<ScuflModelActionSPI>{
 
-public interface ScuflContextMenuAware {
+	private static ScuflModelActionRegistry instance = new ScuflModelActionRegistry(ScuflModelActionSPI.class);
+	
+	public static ScuflModelActionRegistry instance() {
+		return instance;
+	}
+	
+	public ScuflModelActionRegistry(Class<ScuflModelActionSPI> spiClass) {
+		super(spiClass);		
+	}
 	
 	/**
-	 * Creates a list, in order, of the JMenuItems to be added to the ScuflContextMenu
-	 * 
-	 * @param port
+	 * Finds the actions, and initialises them with the model provided
+	 * @param model
 	 * @return
 	 */
-	List<JMenuItem> contextMenuItems();
+	public List<ScuflModelActionSPI>getScuflModelActions(ScuflModel model) {
+		List<ScuflModelActionSPI> actions=findComponents();
+		for (ScuflModelActionSPI action : actions) {
+			action.setModel(model);
+		}
+		return actions;
+	}
+	
 
 }
