@@ -154,9 +154,9 @@ public class ScuflContextMenuFactory {
 
 	private static JPopupMenu createMenuForOutputPort(final ScuflModel model, final OutputPort theOutputPort) {
 		JPopupMenu theMenu = LinkingMenus.linkFrom(theOutputPort);
-		if (theOutputPort.getProcessor() instanceof ScuflContextMenuAware) {
-			List<JMenuItem> items = ((ScuflContextMenuAware) theOutputPort.getProcessor())
-					.contextItemsForPort(theOutputPort);
+		if (theOutputPort instanceof ScuflContextMenuAware) {
+			List<JMenuItem> items = ((ScuflContextMenuAware) theOutputPort)
+					.contextIMenuItems();
 			if (items.size() > 0)
 				theMenu.addSeparator();
 			for (JMenuItem item : items) {
@@ -238,9 +238,9 @@ public class ScuflContextMenuFactory {
 		mergeItem.addActionListener(listener);
 		selectItem.addActionListener(listener);
 
-		if (theInputPort.getProcessor() instanceof ScuflContextMenuAware) {
-			List<JMenuItem> items = ((ScuflContextMenuAware) theInputPort.getProcessor())
-					.contextItemsForPort(theInputPort);
+		if (theInputPort instanceof ScuflContextMenuAware) {
+			List<JMenuItem> items = ((ScuflContextMenuAware) theInputPort)
+					.contextIMenuItems();
 			if (items.size() > 0)
 				theMenu.addSeparator();
 			for (JMenuItem item : items) {

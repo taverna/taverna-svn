@@ -5,6 +5,7 @@
  */
 package org.embl.ebi.escience.scuflworkers.workflow;
 
+import java.io.Serializable;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Properties;
@@ -34,7 +35,7 @@ import org.jdom.Element;
  * 
  * @author Tom Oinn
  */
-public class WorkflowProcessor extends Processor implements ScuflWorkflowProcessor,java.io.Serializable {
+public class WorkflowProcessor extends Processor implements ScuflWorkflowProcessor, Serializable {
 
 	private ScuflModel theModel = null;
 

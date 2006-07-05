@@ -24,36 +24,43 @@
  ****************************************************************
  * Source code information
  * -----------------------
- * Filename           $RCSfile: ScuflContextMenuAware.java,v $
- * Revision           $Revision: 1.2 $
+ * Filename           $RCSfile: LocalWorkerWithPorts.java,v $
+ * Revision           $Revision: 1.1 $
  * Release status     $State: Exp $
  * Last modified on   $Date: 2006-07-05 11:15:44 $
  *               by   $Author: sowen70 $
- * Created on 21-Jun-2006
+ * Created on 05-Jul-2006
  *****************************************************************/
-package org.embl.ebi.escience.scuflworkers;
+package org.embl.ebi.escience.scuflworkers.java;
 
 import java.util.List;
 
-import javax.swing.JMenuItem;
+import org.embl.ebi.escience.scufl.DuplicatePortNameException;
+import org.embl.ebi.escience.scufl.InputPort;
+import org.embl.ebi.escience.scufl.OutputPort;
+import org.embl.ebi.escience.scufl.PortCreationException;
 
 /**
- * An Interface then when implemented by a Processor indicates that ports related to this processor
- * may possibly have scufl context menu items to be appended to the menu when right clicking on that
- * port in the Advanced Model Explorer
- * @author sowen
+ * Interface that defines LocalWorker's that need to generate their own InputPorts and OutputPorts.
+ * Examples are XMLInputSplitter and XMLOutputSplitter, which need to generate Input/Output Ports that
+ * are XML splittable.
+ * 
+ * @author Stuart Owen
+ * @see XMLInputSplitter
+ * @see XMLOutputSplitter
  *
  */
 
-
-public interface ScuflContextMenuAware {
+public interface LocalWorkerWithPorts extends LocalWorker {
 	
 	/**
-	 * Creates a list, in order, of the JMenuItems to be added to the ScuflContextMenu
-	 * 
-	 * @param port
-	 * @return
+	 * The InputPorts for this localworker, to be used by LocalServiceProcessor
 	 */
-	List<JMenuItem> contextIMenuItems();
+	public List<InputPort> inputPorts(LocalServiceProcessor processor) throws DuplicatePortNameException, PortCreationException;
+	
+	/**
+	 * The OutputPorts for this localworker, to be used by LocalServiceProcessor
+	 */
+	public List<OutputPort> outputPorts(LocalServiceProcessor processor) throws DuplicatePortNameException, PortCreationException;
 
 }

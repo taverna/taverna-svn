@@ -16,7 +16,6 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
-import javax.swing.JMenuItem;
 import javax.wsdl.Definition;
 import javax.wsdl.WSDLException;
 import javax.xml.namespace.QName;
@@ -33,14 +32,11 @@ import org.apache.wsif.util.WSIFUtils;
 import org.embl.ebi.escience.scufl.DuplicateProcessorNameException;
 import org.embl.ebi.escience.scufl.InputPort;
 import org.embl.ebi.escience.scufl.OutputPort;
-import org.embl.ebi.escience.scufl.Port;
 import org.embl.ebi.escience.scufl.Processor;
 import org.embl.ebi.escience.scufl.ProcessorCreationException;
 import org.embl.ebi.escience.scufl.ScuflModel;
 import org.embl.ebi.escience.scufl.view.WorkflowSummaryAsHTML;
 import org.embl.ebi.escience.scuflworkers.HTMLSummarisableProcessor;
-import org.embl.ebi.escience.scuflworkers.ScuflContextMenuAware;
-import org.embl.ebi.escience.scuflworkers.java.XMLSplitterScuflContextMenuFactory;
 import org.embl.ebi.escience.scuflworkers.wsdl.parser.TypeDescriptor;
 import org.embl.ebi.escience.scuflworkers.wsdl.parser.UnknownOperationException;
 import org.embl.ebi.escience.scuflworkers.wsdl.parser.WSDLParser;
@@ -52,8 +48,8 @@ import org.embl.ebi.escience.scuflworkers.wsdl.parser.WSDLParser;
  * @author Tom Oinn
  */
 
-public class WSDLBasedProcessor extends Processor implements Serializable, HTMLSummarisableProcessor,
-		ScuflContextMenuAware {
+public class WSDLBasedProcessor extends Processor implements Serializable, HTMLSummarisableProcessor {
+		 
 
 	private static final long serialVersionUID = 6669263809722072508L;
 
@@ -158,18 +154,18 @@ public class WSDLBasedProcessor extends Processor implements Serializable, HTMLS
 			TypeDescriptor.retrieveSignature(outputs, outNames, outTypes);
 
 			for (int i = 0; i < inNames.length; i++) {
-				InputPort inputPort = new InputPort(this, inNames[i]);
+				InputPort inputPort = new XMLSplittableInputPort(this, inNames[i]);
 				inputPort.setSyntacticType(TypeDescriptor.translateJavaType(inTypes[i]));
 				addPort(inputPort);
 			}
 
 			// Add an attachment output part
-			OutputPort attachments = new OutputPort(this, "attachmentList");
+			OutputPort attachments = new XMLSplittableOutputPort(this, "attachmentList");
 			attachments.setSyntacticType("l('')");
 			addPort(attachments);
 
 			for (int i = 0; i < outNames.length; i++) {
-				OutputPort outputPort = new OutputPort(this, outNames[i]);
+				OutputPort outputPort = new XMLSplittableOutputPort(this, outNames[i]);
 				outputPort.setSyntacticType(TypeDescriptor.translateJavaType(outTypes[i]));
 				addPort(outputPort);
 			}
@@ -310,10 +306,6 @@ public class WSDLBasedProcessor extends Processor implements Serializable, HTMLS
 
 	public int htmlTablePlacement() {
 		return 1;
-	}
-
-	public List<JMenuItem> contextItemsForPort(Port port) {
-		return XMLSplitterScuflContextMenuFactory.instance().contextItemsForPort(port);
-	}
+	}	
 
 }

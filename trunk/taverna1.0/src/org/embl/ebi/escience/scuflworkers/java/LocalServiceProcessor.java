@@ -5,23 +5,18 @@
  */
 package org.embl.ebi.escience.scuflworkers.java;
 
-import java.util.List;
 import java.util.Properties;
-
-import javax.swing.JMenuItem;
 
 import org.apache.log4j.Logger;
 import org.embl.ebi.escience.scufl.DuplicatePortNameException;
 import org.embl.ebi.escience.scufl.DuplicateProcessorNameException;
 import org.embl.ebi.escience.scufl.InputPort;
 import org.embl.ebi.escience.scufl.OutputPort;
-import org.embl.ebi.escience.scufl.Port;
 import org.embl.ebi.escience.scufl.PortCreationException;
 import org.embl.ebi.escience.scufl.Processor;
 import org.embl.ebi.escience.scufl.ProcessorCreationException;
 import org.embl.ebi.escience.scufl.ScuflModel;
 import org.embl.ebi.escience.scufl.SemanticMarkup;
-import org.embl.ebi.escience.scuflworkers.ScuflContextMenuAware;
 import org.jdom.Element;
 
 /**
@@ -30,7 +25,7 @@ import org.jdom.Element;
  * 
  * @author Tom Oinn
  */
-public class LocalServiceProcessor extends Processor implements ScuflContextMenuAware {
+public class LocalServiceProcessor extends Processor {
 
 	private String workerClassName;
 
@@ -104,24 +99,39 @@ public class LocalServiceProcessor extends Processor implements ScuflContextMenu
 	protected void initialise(ScuflModel model, String name) throws ProcessorCreationException,
 			DuplicateProcessorNameException {
 		try {
-			for (int i = 0; i < theImplementation.inputNames().length; i++) {
-				// Create input ports
-				Port p = new InputPort(this, theImplementation.inputNames()[i]);
-				p.setSyntacticType(theImplementation.inputTypes()[i]);
-				addPort(p);
-			}
-			for (int i = 0; i < theImplementation.outputNames().length; i++) {
-				// Create output ports
-				Port p = new OutputPort(this, theImplementation.outputNames()[i]);
-				p.setSyntacticType(theImplementation.outputTypes()[i]);
-				SemanticMarkup m = p.getMetadata();
-				String[] mimeTypes = ((theImplementation.outputTypes()[i].split("\\'"))[1]).split(",");
-				for (int j = 0; j < mimeTypes.length; j++) {
-					logger.debug("Mime type " + mimeTypes[j]);
-					m.addMIMEType(mimeTypes[j]);
+
+			if (theImplementation instanceof LocalWorkerWithPorts) {
+			
+				for (InputPort port : ((LocalWorkerWithPorts)theImplementation).inputPorts(this)) {
+					addPort(port);
 				}
-				addPort(p);
+				for (OutputPort port : ((LocalWorkerWithPorts)theImplementation).outputPorts(this)) {
+					addPort(port);
+				}
 			}
+			else
+			{
+				for (int i = 0; i < theImplementation.inputNames().length; i++) {
+					// Create input ports
+					InputPort port = new InputPort(this, theImplementation.inputNames()[i]);
+					port.setSyntacticType(theImplementation.inputTypes()[i]);
+					addPort(port);
+				}
+				
+				for (int i = 0; i < theImplementation.outputNames().length; i++) {
+					// Create output ports
+					OutputPort port = new OutputPort(this, theImplementation.outputNames()[i]);
+					port.setSyntacticType(theImplementation.outputTypes()[i]);
+					SemanticMarkup m = port.getMetadata();
+					String[] mimeTypes = ((theImplementation.outputTypes()[i].split("\\'"))[1]).split(",");
+					for (int j = 0; j < mimeTypes.length; j++) {
+						logger.debug("Mime type " + mimeTypes[j]);
+						m.addMIMEType(mimeTypes[j]);
+					}
+					addPort(port);
+				}
+			}
+
 		} catch (DuplicatePortNameException dpne) {
 			throw new ProcessorCreationException("The supplied specification for the local service processor '" + name
 					+ "' contained a duplicate port '" + dpne.getMessage() + "'");
@@ -140,9 +150,4 @@ public class LocalServiceProcessor extends Processor implements ScuflContextMenu
 		props.put("WorkerClass", this.workerClassName);
 		return props;
 	}
-
-	public List<JMenuItem> contextItemsForPort(Port port) {
-		return XMLSplitterScuflContextMenuFactory.instance().contextItemsForPort(port);
-	}
-
 }

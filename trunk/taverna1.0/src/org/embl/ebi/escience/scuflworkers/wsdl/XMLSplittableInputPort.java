@@ -24,36 +24,41 @@
  ****************************************************************
  * Source code information
  * -----------------------
- * Filename           $RCSfile: ScuflContextMenuAware.java,v $
- * Revision           $Revision: 1.2 $
+ * Filename           $RCSfile: XMLSplittableInputPort.java,v $
+ * Revision           $Revision: 1.1 $
  * Release status     $State: Exp $
  * Last modified on   $Date: 2006-07-05 11:15:44 $
  *               by   $Author: sowen70 $
- * Created on 21-Jun-2006
+ * Created on 04-Jul-2006
  *****************************************************************/
-package org.embl.ebi.escience.scuflworkers;
+package org.embl.ebi.escience.scuflworkers.wsdl;
 
 import java.util.List;
 
 import javax.swing.JMenuItem;
 
+import org.embl.ebi.escience.scufl.DuplicatePortNameException;
+import org.embl.ebi.escience.scufl.InputPort;
+import org.embl.ebi.escience.scufl.PortCreationException;
+import org.embl.ebi.escience.scufl.Processor;
+import org.embl.ebi.escience.scuflworkers.ScuflContextMenuAware;
+
 /**
- * An Interface then when implemented by a Processor indicates that ports related to this processor
- * may possibly have scufl context menu items to be appended to the menu when right clicking on that
- * port in the Advanced Model Explorer
- * @author sowen
+ * Specialised InputPort that is able to generate ScuflContextMenu JMenu items
+ * to allow the user to add XMLSplitters to that port
+ * 
+ * @author Stuart Owen
  *
  */
 
+public class XMLSplittableInputPort extends InputPort implements ScuflContextMenuAware {
 
-public interface ScuflContextMenuAware {
+	public XMLSplittableInputPort(Processor processor, String name) throws DuplicatePortNameException, PortCreationException {
+		super(processor, name);		
+	}
 	
-	/**
-	 * Creates a list, in order, of the JMenuItems to be added to the ScuflContextMenu
-	 * 
-	 * @param port
-	 * @return
-	 */
-	List<JMenuItem> contextIMenuItems();
-
+	public List<JMenuItem> contextIMenuItems() {
+		return XMLSplitterScuflContextMenuFactory.instance().contextItemsForPort(this);
+	}
+	
 }

@@ -25,13 +25,13 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: XMLSplitterSerialisationHelperTest.java,v $
- * Revision           $Revision: 1.6 $
+ * Revision           $Revision: 1.1 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-06-22 11:31:41 $
+ * Last modified on   $Date: 2006-07-05 11:15:44 $
  *               by   $Author: sowen70 $
  * Created on 24-May-2006
  *****************************************************************/
-package org.embl.ebi.escience.scuflworkers.java;
+package org.embl.ebi.escience.scuflworkers.wsdl;
 
 import java.io.StringReader;
 import java.util.List;
@@ -40,6 +40,7 @@ import javax.xml.namespace.QName;
 
 import junit.framework.TestCase;
 
+import org.embl.ebi.escience.scuflworkers.wsdl.XMLSplitterSerialisationHelper;
 import org.embl.ebi.escience.scuflworkers.wsdl.parser.ComplexTypeDescriptor;
 import org.embl.ebi.escience.scuflworkers.wsdl.parser.TypeDescriptor;
 import org.jdom.Element;

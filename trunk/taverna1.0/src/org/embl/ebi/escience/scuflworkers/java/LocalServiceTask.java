@@ -7,8 +7,8 @@ package org.embl.ebi.escience.scuflworkers.java;
 
 import java.util.Map;
 
-import org.embl.ebi.escience.scufl.Processor;
 import org.embl.ebi.escience.scufl.IProcessorTask;
+import org.embl.ebi.escience.scufl.Processor;
 import org.embl.ebi.escience.scuflworkers.ProcessorTaskWorker;
 
 import uk.ac.soton.itinnovation.taverna.enactor.entities.TaskExecutionException;

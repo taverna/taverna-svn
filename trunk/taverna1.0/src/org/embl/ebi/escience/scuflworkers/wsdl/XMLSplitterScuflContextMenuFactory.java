@@ -27,11 +27,11 @@
  * Filename           $RCSfile: XMLSplitterScuflContextMenuFactory.java,v $
  * Revision           $Revision: 1.1 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-06-22 11:31:41 $
+ * Last modified on   $Date: 2006-07-05 11:15:44 $
  *               by   $Author: sowen70 $
  * Created on 22-Jun-2006
  *****************************************************************/
-package org.embl.ebi.escience.scuflworkers.java;
+package org.embl.ebi.escience.scuflworkers.wsdl;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -47,6 +47,9 @@ import org.embl.ebi.escience.scufl.InputPort;
 import org.embl.ebi.escience.scufl.OutputPort;
 import org.embl.ebi.escience.scufl.Port;
 import org.embl.ebi.escience.scufl.ScuflModel;
+import org.embl.ebi.escience.scuflworkers.java.LocalServiceProcessor;
+import org.embl.ebi.escience.scuflworkers.java.XMLInputSplitter;
+import org.embl.ebi.escience.scuflworkers.java.XMLOutputSplitter;
 
 /**
  * 

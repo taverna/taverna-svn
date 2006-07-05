@@ -2,6 +2,7 @@ package org.embl.ebi.escience.scuflworkers.java;
 
 import java.io.IOException;
 import java.io.StringReader;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -10,8 +11,15 @@ import java.util.Map;
 import org.apache.log4j.Logger;
 import org.embl.ebi.escience.baclava.DataThing;
 import org.embl.ebi.escience.baclava.factory.DataThingFactory;
+import org.embl.ebi.escience.scufl.DuplicatePortNameException;
 import org.embl.ebi.escience.scufl.InputPort;
+import org.embl.ebi.escience.scufl.OutputPort;
+import org.embl.ebi.escience.scufl.PortCreationException;
+import org.embl.ebi.escience.scufl.SemanticMarkup;
 import org.embl.ebi.escience.scuflworkers.wsdl.WSDLBasedProcessor;
+import org.embl.ebi.escience.scuflworkers.wsdl.XMLSplittableInputPort;
+import org.embl.ebi.escience.scuflworkers.wsdl.XMLSplittableOutputPort;
+import org.embl.ebi.escience.scuflworkers.wsdl.XMLSplitterSerialisationHelper;
 import org.embl.ebi.escience.scuflworkers.wsdl.parser.ArrayTypeDescriptor;
 import org.embl.ebi.escience.scuflworkers.wsdl.parser.ComplexTypeDescriptor;
 import org.embl.ebi.escience.scuflworkers.wsdl.parser.TypeDescriptor;
@@ -33,7 +41,7 @@ import uk.ac.soton.itinnovation.taverna.enactor.entities.TaskExecutionException;
  * 
  */
 
-public class XMLInputSplitter implements LocalWorker, XMLExtensible {
+public class XMLInputSplitter implements LocalWorkerWithPorts, XMLExtensible {
 
 	private static Logger logger = Logger.getLogger(XMLInputSplitter.class);
 
@@ -273,6 +281,36 @@ public class XMLInputSplitter implements LocalWorker, XMLExtensible {
 			if (inputNames[i].equals(key)) {
 				result = inputTypes[i].indexOf("'text/xml'") != -1;
 			}
+		}
+		return result;
+	}
+
+	public List<InputPort> inputPorts(LocalServiceProcessor processor) throws DuplicatePortNameException,
+			PortCreationException {
+		List<InputPort> result = new ArrayList<InputPort>();
+		for (int i = 0; i < inputNames().length; i++) {
+			// Create input ports
+			InputPort port = new XMLSplittableInputPort(processor, inputNames()[i]);
+			port.setSyntacticType(inputTypes()[i]);
+			result.add(port);
+		}
+		return result;
+	}
+
+	public List<OutputPort> outputPorts(LocalServiceProcessor processor) throws DuplicatePortNameException,
+			PortCreationException {
+		List<OutputPort> result = new ArrayList<OutputPort>();
+		for (int i = 0; i < outputNames().length; i++) {
+			// Create output ports
+			OutputPort port = new XMLSplittableOutputPort(processor, outputNames()[i]);
+			port.setSyntacticType(outputTypes()[i]);
+			SemanticMarkup m = port.getMetadata();
+			String[] mimeTypes = ((outputTypes()[i].split("\\'"))[1]).split(",");
+			for (int j = 0; j < mimeTypes.length; j++) {
+				logger.debug("Mime type " + mimeTypes[j]);
+				m.addMIMEType(mimeTypes[j]);
+			}
+			result.add(port);
 		}
 		return result;
 	}
