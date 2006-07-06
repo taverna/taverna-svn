@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<project>
+<?xml version="1.0" encoding="UTF-8"?><project>
   <parent>
     <artifactId>scufl</artifactId>
     <groupId>uk.org.mygrid.taverna</groupId>
@@ -120,6 +119,21 @@
       <groupId>uk.org.mygrid.resources</groupId>
       <artifactId>Jmol</artifactId>
       <version>NO-VERSION</version>
+    </dependency>
+    <dependency>
+      <groupId>batik</groupId>
+      <artifactId>batik-css</artifactId>
+      <version>1.6</version>
+    </dependency>
+    <dependency>
+      <groupId>batik</groupId>
+      <artifactId>batik-gvt</artifactId>
+      <version>1.6</version>
+    </dependency>
+    <dependency>
+      <groupId>batik</groupId>
+      <artifactId>batik-bridge</artifactId>
+      <version>1.6</version>
     </dependency>
   </dependencies>
 </project>
