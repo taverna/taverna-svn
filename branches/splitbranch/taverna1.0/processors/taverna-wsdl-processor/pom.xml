@@ -1,4 +1,5 @@
-<?xml version="1.0" encoding="UTF-8"?><project>
+<?xml version="1.0" encoding="UTF-8"?>
+<project>
   <parent>
     <artifactId>processors</artifactId>
     <groupId>uk.org.mygrid.taverna</groupId>
@@ -16,12 +17,12 @@
       <version>1.5-SNAPSHOT</version>
     </dependency>
     <dependency>
-      <groupId>mygrid</groupId>
+      <groupId>javax.activation</groupId>
       <artifactId>activation</artifactId>
       <version>NO-VERSION</version>
     </dependency>
     <dependency>
-      <groupId>mygrid</groupId>
+      <groupId>uk.org.mygrid.resources</groupId>
       <artifactId>wsif</artifactId>
       <version>svn-1.12.05-patched</version>
     </dependency>
@@ -56,7 +57,7 @@
       <version>1.3</version>
     </dependency>
     <dependency>
-      <groupId>mygrid</groupId>
+      <groupId>uk.org.mygrid.resources</groupId>
       <artifactId>axis</artifactId>
       <version>1.4-taverna</version>
     </dependency>

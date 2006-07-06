@@ -1,4 +1,5 @@
-<?xml version="1.0" encoding="UTF-8"?><project>
+<?xml version="1.0" encoding="UTF-8"?>
+<project>
   <parent>
     <artifactId>baclava</artifactId>
     <groupId>uk.org.mygrid.taverna</groupId>
@@ -21,7 +22,7 @@
       <version>1.2.8</version>
     </dependency>
     <dependency>
-      <groupId>mygrid</groupId>
+      <groupId>uk.org.mygrid.resources</groupId>
       <artifactId>axis</artifactId>
       <version>1.4-taverna</version>
     </dependency>

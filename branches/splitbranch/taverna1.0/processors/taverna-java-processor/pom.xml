@@ -1,4 +1,5 @@
-<?xml version="1.0" encoding="UTF-8"?><project>
+<?xml version="1.0" encoding="UTF-8"?>
+<project>
   <parent>
     <artifactId>processors</artifactId>
     <groupId>uk.org.mygrid.taverna</groupId>
@@ -41,7 +42,7 @@
       <version>1.0</version>
     </dependency>
     <dependency>
-      <groupId>mygrid</groupId>
+      <groupId>javax.mail</groupId>
       <artifactId>mail</artifactId>
       <version>NO-VERSION</version>
     </dependency>
