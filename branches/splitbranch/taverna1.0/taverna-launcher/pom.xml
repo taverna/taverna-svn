@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project>
+  <parent>
+    <artifactId>taverna</artifactId>
+    <groupId>uk.org.mygrid.taverna</groupId>
+    <version>1.5-SNAPSHOT</version>
+  </parent>
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>uk.org.mygrid.taverna</groupId>
+  <artifactId>taverna-launcher</artifactId>
+  <packaging>jar</packaging>
+  <name>Taverna launcher</name>
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jar-plugin</artifactId>
+        <configuration>
+          <archive>
+            <manifest>
+              <mainClass>net.sf.taverna.tools.Launcher</mainClass>
+            </manifest>
+          </archive>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+</project>

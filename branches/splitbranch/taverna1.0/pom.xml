@@ -6,6 +6,56 @@
   <packaging>pom</packaging>
   <name>Taverna</name>
   <version>1.5-SNAPSHOT</version>
+  <issueManagement>
+    <system>jira</system>
+    <url>http://www.mygrid.org.uk/jira</url>
+  </issueManagement>
+  <ciManagement>
+    <system>continuum</system>
+  </ciManagement>
+  <mailingLists>
+    <mailingList>
+      <name>Taverna hackers</name>
+      <subscribe>https://lists.sourceforge.net/lists/listinfo/taverna-hackers</subscribe>
+      <post>taverna-hackers@lists.sourceforge.net</post>
+      <archive>http://sourceforge.net/mailarchive/forum.php?forum=taverna-hackers</archive>
+    </mailingList>
+    <mailingList>
+      <name>Taverna users</name>
+      <subscribe>https://lists.sourceforge.net/lists/listinfo/taverna-users</subscribe>
+      <post>taverna-users@lists.sourceforge.net</post>
+      <archive>http://sourceforge.net/mailarchive/forum.php?forum=taverna-users</archive>
+    </mailingList>
+  </mailingLists>
+  <developers>
+    <developer>
+      <id>witherd5</id>
+      <name>David Withers</name>
+      <email>david.withers@manchester.ac.uk</email>
+      <url>http://www.cs.man.ac.uk/~witherd5/</url>
+      <organization>University of Manchester</organization>
+      <organizationUrl>http://www.manchester.ac.uk</organizationUrl>
+      <roles>
+        <role>Developer</role>
+      </roles>
+      <timezone>0</timezone>
+    </developer>
+  </developers>
+  <licenses>
+    <license>
+      <name>GNU Lesser General Public License</name>
+      <url>http://www.gnu.org/licenses/lgpl.txt</url>
+      <distribution>repo</distribution>
+    </license>
+  </licenses>
+  <scm>
+    <connection>scm:cvs:pserver:anonymous@taverna.cvs.sourceforge.net:/cvsroot/taverna:taverna1.0</connection>
+    <url>http://taverna.cvs.sourceforge.net/taverna/taverna1.0/</url>
+  </scm>
+  <organization>
+    <name>University of Manchester</name>
+    <url>http://www.manchester.ac.uk</url>
+  </organization>
   <build>
     <plugins>
       <plugin>
@@ -66,6 +116,66 @@
         </plugins>
       </build>
     </profile>
+    <profile>
+      <id>default</id>
+      <activation>
+       <activeByDefault>true</activeByDefault>
+      </activation>
+      <build>
+        <plugins>
+          <plugin>
+            <artifactId>maven-assembly-plugin</artifactId>
+            <!--<version>2.1</version>-->
+            <configuration>
+              <descriptor>src/main/assembly/assembly.xml</descriptor>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+    <profile>
+      <id>omii</id>
+      <activation>
+        <property>
+          <name>assembly</name>
+          <value>omii</value>
+        </property>
+      </activation>
+      <build>
+        <plugins>
+          <plugin>
+            <artifactId>maven-assembly-plugin</artifactId>
+            <version>2.1</version>
+            <configuration>
+              <descriptor>src/main/assembly/omii-assembly.xml</descriptor>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+    <profile>
+      <id>omii-client</id>
+      <activation>
+        <property>
+          <name>assembly</name>
+          <value>omii-client</value>
+        </property>
+      </activation>
+      <build>
+        <plugins>
+          <plugin>
+            <artifactId>maven-assembly-plugin</artifactId>
+            <version>2.1</version>
+            <configuration>
+              <descriptor>src/main/assembly/omii-client-assembly.xml</descriptor>
+              <finalName>client</finalName>
+              <appendAssemblyId>false</appendAssemblyId>
+              <outputDirectory>${basedir}/dist</outputDirectory>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
   </profiles>
   <repositories>
     <repository>
@@ -85,6 +195,32 @@
       </releases>
     </repository>
   </repositories>
+  <pluginRepositories>
+     <pluginRepository>
+       <id>Maven Snapshots</id>
+       <url>http://snapshots.maven.codehaus.org/maven2/</url>
+       <snapshots>
+         <enabled>true</enabled>
+       </snapshots>
+       <releases>
+         <enabled>false</enabled>
+       </releases>
+     </pluginRepository>
+  </pluginRepositories>
+  <distributionManagement>
+    <!-- use the following if you're not using a snapshot version. -->
+    <repository>
+      <id>mygrid-repository</id>
+      <name>myGrid Repository</name>
+      <url>scpexe://phoebus.cs.man.ac.uk/disk1/maven/repository</url>
+    </repository>
+    <!-- use the following if you ARE using a snapshot version. -->
+    <snapshotRepository>
+      <id>mygrid-snapshot-repository</id>
+      <name>myGrid Snapshot Repository</name>
+      <url>scpexe://phoebus.cs.man.ac.uk/disk1/maven/snapshot-repository</url>
+    </snapshotRepository>
+  </distributionManagement>
   <modules>
     <module>baclava</module>
     <module>taverna-enactor</module>
@@ -96,5 +232,6 @@
     <module>taverna-core</module>
     <module>taverna-util</module>
     <module>taverna-biomoby</module>
+    <module>taverna-launcher</module>
   </modules>
 </project>
