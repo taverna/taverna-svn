@@ -5,6 +5,7 @@ import java.util.Map;
 
 import junit.framework.TestCase;
 
+import org.apache.log4j.Logger;
 import org.embl.ebi.escience.baclava.DataThing;
 import org.embl.ebi.escience.baclava.factory.DataThingFactory;
 
@@ -20,12 +21,14 @@ import uk.ac.soton.itinnovation.freefluo.util.clazz.ClassUtils;
  * gui. You must first create the workflow in Taverna and save it before
  * instantiating and running this test class.
  * 
- * Last edited by $Author: davidwithers $
+ * Last edited by $Author: sowen70 $
  * 
  * @author Mark
- * @version $Revision: 1.1.2.1 $
+ * @version $Revision: 1.1.2.2 $
  */
-public class WorkflowTestCase extends TestCase {
+public abstract class WorkflowTestCase extends TestCase {
+	
+	private static Logger logger = Logger.getLogger(WorkflowTestCase.class);
 
     private String workflowFile;
     private boolean allInputsRequired = false;
@@ -79,7 +82,7 @@ public class WorkflowTestCase extends TestCase {
                 lock.wait();
             }
 
-            System.out.println("Workflow completed with state: " +
+            logger.info("Workflow completed with state: " +
 
             engine.getStatus(instanceId));
 
@@ -90,7 +93,7 @@ public class WorkflowTestCase extends TestCase {
             DataThing outDataThing = (DataThing) output.get("out");
 
             String outString = (String) outDataThing.getDataObject();
-            System.out.println("Output: " + outString);
+            logger.info("Output: " + outString);
 
             engine.destroy(instanceId);
         } catch (Exception e) {

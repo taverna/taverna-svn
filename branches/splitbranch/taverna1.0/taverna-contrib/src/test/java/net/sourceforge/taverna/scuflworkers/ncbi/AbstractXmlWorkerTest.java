@@ -18,10 +18,10 @@ import org.xml.sax.InputSource;
 /**
  * This class
  * 
- * Last edited by $Author: davidwithers $
+ * Last edited by $Author: sowen70 $
  * 
  * @author Mark
- * @version $Revision: 1.1.2.1 $
+ * @version $Revision: 1.1.2.2 $
  */
 public abstract class AbstractXmlWorkerTest extends TestCase {
     
@@ -108,13 +108,14 @@ public abstract class AbstractXmlWorkerTest extends TestCase {
      * @param content
      */
     public void writeFile(String filename, String content)throws IOException{
+    	
+    	/**
         String home = System.getProperty("user.home");
         FileWriter writer = new FileWriter(new File(home,filename));
         writer.write(content);
         writer.flush();
         writer.close();
-
-        
+        **/        
     }
 
 }

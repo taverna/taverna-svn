@@ -9,12 +9,12 @@ import net.sourceforge.taverna.baclava.DataThingAdapter;
 /**
  * This class
  * 
- * Last edited by $Author: davidwithers $
+ * Last edited by $Author: sowen70 $
  * 
  * @author Mark
- * @version $Revision: 1.1.2.1 $
+ * @version $Revision: 1.1.2.2 $
  */
-public class VelocityFileWriterTest extends TestCase {
+public abstract class VelocityFileWriterTest extends TestCase {
     
     VelocityFileWriter vfw = new VelocityFileWriter();
     

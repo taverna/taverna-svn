@@ -25,10 +25,10 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: BSFProcessorInfoBean.java,v $
- * Revision           $Revision: 1.1.2.1 $
+ * Revision           $Revision: 1.1.2.2 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-07-07 11:05:25 $
- *               by   $Author: davidwithers $
+ * Last modified on   $Date: 2006-07-07 16:08:42 $
+ *               by   $Author: sowen70 $
  * Created on 28-Jun-2006
  *****************************************************************/
 package net.sourceforge.taverna.scuflworkers.bsf;
@@ -36,15 +36,16 @@ package net.sourceforge.taverna.scuflworkers.bsf;
 import org.embl.ebi.escience.scuflworkers.ProcessorInfoBeanHelper;
 
 /**
- * Provides information about the BSF Processor plugin, using taverna.properties, identified by the
- * tag 'bsf'
+ * Provides information about the BSF Processor plugin, using
+ * taverna.properties, identified by the tag 'bsf'
+ * 
  * @author Stuart Owen
- *
+ * 
  */
 
 public class BSFProcessorInfoBean extends ProcessorInfoBeanHelper {
 
 	public BSFProcessorInfoBean() {
-		super("bsf");		
+		super("bsf");
 	}
 }

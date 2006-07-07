@@ -14,89 +14,84 @@ import org.apache.commons.httpclient.HttpException;
 import org.apache.commons.httpclient.methods.PostMethod;
 
 /**
- * This class uses an HTTP POST method to transmit data to a URL,
- * and to return the results in a map.
+ * This class uses an HTTP POST method to transmit data to a URL, and to return
+ * the results in a map.
  * 
- * Last edited by $Author: davidwithers $
+ * Last edited by $Author: sowen70 $
  * 
  * @author Mark
- * @version $Revision: 1.1.2.1 $
+ * @version $Revision: 1.1.2.2 $
  */
 public class PostStreamTransmitter extends AbstractStreamTransmitter {
 
-    /**
-     * 
-     */
-    public Map transmit(Map map, StreamProcessor streamProcessor)
-            throws TransmitterException {
-        Map outputMap = new HashMap();
-        try {
-            String path = context;
-            path = (serviceName != null)?path+ "/" +serviceName:path;
-            PostMethod method = new PostMethod(path);
-            
-            method.setFollowRedirects(true);
+	/**
+	 * 
+	 */
+	public Map transmit(Map map, StreamProcessor streamProcessor) throws TransmitterException {
+		Map outputMap = new HashMap();
+		try {
+			String path = context;
+			path = (serviceName != null) ? path + "/" + serviceName : path;
+			PostMethod method = new PostMethod(path);
 
-            Iterator dataIterator = map.keySet().iterator();
+			method.setFollowRedirects(true);
 
-            if (dataIterator != null) {
-                //Set Authentication Headers
-                if ((userName != null) || (password != null)) {
-                    method.addRequestHeader("Authorization",
-                            "Basic " +
-                            Base64.encodeString(userName + ":" + password));
-                }
+			Iterator dataIterator = map.keySet().iterator();
 
-                //Set mime Headers
-                if (mimeHeaders != null && mimeHeaders.keySet() != null ) {
-                    Iterator mimeIter = mimeHeaders.keySet().iterator();
+			if (dataIterator != null) {
+				// Set Authentication Headers
+				if ((userName != null) || (password != null)) {
+					method.addRequestHeader("Authorization", "Basic " + Base64.encodeString(userName + ":" + password));
+				}
 
-                    while (mimeIter.hasNext()) {
-                        String mimeParamName = (String) mimeIter.next();
-                        method.addRequestHeader(mimeParamName,
-                                (String) mimeHeaders.get(mimeParamName));
-                    }
-                }
+				// Set mime Headers
+				if (mimeHeaders != null && mimeHeaders.keySet() != null) {
+					Iterator mimeIter = mimeHeaders.keySet().iterator();
 
-                //Set Data Params
-                while (dataIterator.hasNext()) {
-                    String paramName = (String) dataIterator.next();
-                    String paramValue = (String)map.get(paramName);
-                    paramValue = (paramValue == null) ? "" : paramValue;
-                    method.addParameter(paramName,
-                            URLEncoder.encode(paramValue, "UTF-8"));
-                }
-            }
+					while (mimeIter.hasNext()) {
+						String mimeParamName = (String) mimeIter.next();
+						method.addRequestHeader(mimeParamName, (String) mimeHeaders.get(mimeParamName));
+					}
+				}
 
-	    HostConfiguration config = new HostConfiguration();
-	    config.setHost(host, port);
-            HttpClient client = new HttpClient();
-	    client.setHostConfiguration(config);
-	    client.executeMethod(method);
-            
-            outputMap = streamProcessor.processStream(method.getResponseBodyAsStream());
-            
-            int statusCode = method.getStatusCode();
-            int statusLevel = statusCode / 100;
-            
+				// Set Data Params
+				while (dataIterator.hasNext()) {
+					String paramName = (String) dataIterator.next();
+					String paramValue = (String) map.get(paramName);
+					paramValue = (paramValue == null) ? "" : paramValue;
+					method.addParameter(paramName, URLEncoder.encode(paramValue, "UTF-8"));
+				}
+			}
 
-            // if there is an invalid response code from the service, throw a TransmitterException
-            if ((statusLevel != 2)) {               
-                TransmitterException ex = new TransmitterException(method.getStatusText());
-                throw ex;
-            }
-        } catch (HttpException httpe) {
-            httpe.printStackTrace();
-            throw createTxException(httpe);
-        } catch (IOException ioe) {
-            ioe.printStackTrace();
-            throw createTxException(ioe);
-        } catch (Exception th){
-            throw createTxException(th);
-        }
+			HostConfiguration config = new HostConfiguration();
+			config.setHost(host, port);
+			HttpClient client = new HttpClient();
+			client.setHostConfiguration(config);
+			client.executeMethod(method);
 
-        return outputMap;
+			outputMap = streamProcessor.processStream(method.getResponseBodyAsStream());
 
-    }
+			int statusCode = method.getStatusCode();
+			int statusLevel = statusCode / 100;
+
+			// if there is an invalid response code from the service, throw a
+			// TransmitterException
+			if ((statusLevel != 2)) {
+				TransmitterException ex = new TransmitterException(method.getStatusText());
+				throw ex;
+			}
+		} catch (HttpException httpe) {
+			httpe.printStackTrace();
+			throw createTxException(httpe);
+		} catch (IOException ioe) {
+			ioe.printStackTrace();
+			throw createTxException(ioe);
+		} catch (Exception th) {
+			throw createTxException(th);
+		}
+
+		return outputMap;
+
+	}
 
 }

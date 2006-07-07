@@ -12,10 +12,10 @@ import junit.framework.TestCase;
 /**
  * This class
  * 
- * Last edited by $Author: davidwithers $
+ * Last edited by $Author: sowen70 $
  * 
  * @author Mark
- * @version $Revision: 1.1.2.1 $
+ * @version $Revision: 1.1.2.2 $
  */
 public class ProteinFastaWorkerTest extends AbstractXmlWorkerTest {
 
@@ -29,8 +29,7 @@ public class ProteinFastaWorkerTest extends AbstractXmlWorkerTest {
         DataThingAdapter outAdapter = new DataThingAdapter(outputMap);
         
         String results = outAdapter.getString("outputText");
-        assertNotNull("The results were null", results);
-        System.out.println(results);
+        assertNotNull("The results were null", results);        
         
         this.writeFile("test_nuc.fasta", results);
 

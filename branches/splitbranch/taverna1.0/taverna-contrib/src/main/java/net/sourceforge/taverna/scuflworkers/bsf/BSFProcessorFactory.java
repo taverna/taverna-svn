@@ -14,38 +14,38 @@ import org.embl.ebi.escience.scuflworkers.ProcessorFactory;
  */
 public class BSFProcessorFactory extends ProcessorFactory {
 
-    private BSFProcessor prototype = null;
+	private BSFProcessor prototype = null;
 
-    /**
-     * Create a new factory
-     */
-    public BSFProcessorFactory() {
-        setName("BSF scripting host");
+	/**
+	 * Create a new factory
+	 */
+	public BSFProcessorFactory() {
+		setName("BSF scripting host");
 
-    }
+	}
 
-    public BSFProcessorFactory(BSFProcessor prot) {
-        setName("BSF scripting host");
-        this.prototype = prot;
-    }
+	public BSFProcessorFactory(BSFProcessor prot) {
+		setName("BSF scripting host");
+		this.prototype = prot;
+	}
 
-    public BSFProcessor getPrototype() {
-        return this.prototype;
-    }
+	public BSFProcessor getPrototype() {
+		return this.prototype;
+	}
 
-    /**
-     * Return a textual description of the factory
-     */
-    public String getProcessorDescription() {
-        return "A processor that allows arbitrary scripts";
-    }
+	/**
+	 * Return a textual description of the factory
+	 */
+	public String getProcessorDescription() {
+		return "A processor that allows arbitrary scripts";
+	}
 
-    /**
-     * Return the Class object for processors that would be created by this
-     * factory
-     */
-    public Class getProcessorClass() {
-        return net.sourceforge.taverna.scuflworkers.bsf.BSFProcessor.class;
-    }
+	/**
+	 * Return the Class object for processors that would be created by this
+	 * factory
+	 */
+	public Class getProcessorClass() {
+		return net.sourceforge.taverna.scuflworkers.bsf.BSFProcessor.class;
+	}
 
 }

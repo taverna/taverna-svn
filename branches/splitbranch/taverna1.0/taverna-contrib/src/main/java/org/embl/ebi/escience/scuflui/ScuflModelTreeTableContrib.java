@@ -5,15 +5,15 @@ import org.embl.ebi.escience.scufl.ScuflModel;
 /**
  * This class
  * 
- * Last edited by $Author: davidwithers $
+ * Last edited by $Author: sowen70 $
  * 
  * @author Mark
- * @version $Revision: 1.1.2.1 $
+ * @version $Revision: 1.1.2.2 $
  */
 public class ScuflModelTreeTableContrib extends ScuflModelTreeTable {
-    
-    public ScuflModel getScuflModel(){
-        return this.model;
-    }
+
+	public ScuflModel getScuflModel() {
+		return this.model;
+	}
 
 }

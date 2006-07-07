@@ -73,35 +73,28 @@ import bsh.Interpreter;
 /**
  * A JPanel that can configure the beanshell processor type
  * 
- * Last edited by: $Author: davidwithers $
+ * Last edited by: $Author: sowen70 $
+ * 
  * @author mfortner
  */
-public class BSFConfigPanel extends JPanel implements ScuflUIComponent,
-		ScuflModelEventListener
-{
-	private abstract class PortTableModel extends AbstractTableModel
-	{
+public class BSFConfigPanel extends JPanel implements ScuflUIComponent, ScuflModelEventListener {
+	private abstract class PortTableModel extends AbstractTableModel {
 		protected abstract Port[] getPorts();
 
-		public int getColumnCount()
-		{
+		public int getColumnCount() {
 			return 3;
 		}
 
-		public int getRowCount()
-		{
+		public int getRowCount() {
 			return getPorts().length;
 		}
 
-		public boolean isCellEditable(int rowIndex, int columnIndex)
-		{
+		public boolean isCellEditable(int rowIndex, int columnIndex) {
 			return columnIndex > 0;
 		}
 
-		public Class getColumnClass(int columnIndex)
-		{
-			switch (columnIndex)
-			{
+		public Class getColumnClass(int columnIndex) {
+			switch (columnIndex) {
 			case 0:
 				return Port.class;
 
@@ -116,16 +109,14 @@ public class BSFConfigPanel extends JPanel implements ScuflUIComponent,
 			}
 		}
 
-		public Object getValueAt(int rowIndex, int columnIndex)
-		{
-			switch (columnIndex)
-			{
+		public Object getValueAt(int rowIndex, int columnIndex) {
+			switch (columnIndex) {
 			case 0:
 				return getPorts()[rowIndex];
 
 			case 1:
 				return new Integer(getListDepth(getPorts()[rowIndex].getSyntacticType()));
-				
+
 			case 2:
 				return getPrintableType(getPorts()[rowIndex].getSyntacticType());
 
@@ -138,69 +129,56 @@ public class BSFConfigPanel extends JPanel implements ScuflUIComponent,
 		 * @param syntacticType
 		 * @return
 		 */
-		private int getListDepth(String syntacticType)
-		{
+		private int getListDepth(String syntacticType) {
 			int index;
 			int depth = 0;
 			String temp = syntacticType;
-			while ((index = temp.indexOf("l(")) > -1)
-			{
+			while ((index = temp.indexOf("l(")) > -1) {
 				temp = temp.substring(2);
 				depth++;
 			}
 			return depth;
 		}
 
-		public void setValueAt(Object aValue, int rowIndex, int columnIndex)
-		{
-			if (columnIndex > 0)
-			{
+		public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
+			if (columnIndex > 0) {
 				int listCount = 0;
 				String prettyMime = null;
-				switch (columnIndex)
-				{
+				switch (columnIndex) {
 				case 1:
 					listCount = ((Integer) aValue).intValue();
-					prettyMime = (String)getValueAt(rowIndex, 2);
+					prettyMime = (String) getValueAt(rowIndex, 2);
 					break;
-					
+
 				case 2:
-					listCount = ((Integer)getValueAt(rowIndex, 1)).intValue();
+					listCount = ((Integer) getValueAt(rowIndex, 1)).intValue();
 					prettyMime = (String) aValue;
 					break;
 				}
 
 				String mimeType = "bleh";
 				Iterator entryIterator = DataThing.mimeTypes.entrySet().iterator();
-				while(entryIterator.hasNext())
-				{
-					Map.Entry entry = (Map.Entry)entryIterator.next();
-					if(entry.getValue().equals(prettyMime))
-					{
-						mimeType = (String)entry.getKey();
+				while (entryIterator.hasNext()) {
+					Map.Entry entry = (Map.Entry) entryIterator.next();
+					if (entry.getValue().equals(prettyMime)) {
+						mimeType = (String) entry.getKey();
 					}
 				}
-				
+
 				getPorts()[rowIndex].setSyntacticType(getSyntacticType(listCount, mimeType));
 			}
 		}
 
-		private String getSyntacticType(int listDepth, String mimeType)
-		{
-			if(listDepth == 0)
-			{
+		private String getSyntacticType(int listDepth, String mimeType) {
+			if (listDepth == 0) {
 				return "'" + mimeType + "'";
-			}
-			else
-			{
-				return "l(" + getSyntacticType(listDepth -1, mimeType) + ")";
+			} else {
+				return "l(" + getSyntacticType(listDepth - 1, mimeType) + ")";
 			}
 		}
-		
-		public String getColumnName(int columnIndex)
-		{
-			switch (columnIndex)
-			{
+
+		public String getColumnName(int columnIndex) {
+			switch (columnIndex) {
 			case 0:
 				return "Name";
 
@@ -215,8 +193,7 @@ public class BSFConfigPanel extends JPanel implements ScuflUIComponent,
 			}
 		}
 
-		private String getPrintableType(String syntacticType)
-		{
+		private String getPrintableType(String syntacticType) {
 			int start = syntacticType.indexOf('\'') + 1;
 			int end = syntacticType.lastIndexOf('\'');
 
@@ -225,79 +202,67 @@ public class BSFConfigPanel extends JPanel implements ScuflUIComponent,
 		}
 	}
 
-	private class ListDepthRenderer extends DefaultTableCellRenderer implements ChangeListener
-	{
-		public ListDepthRenderer()
-		{
+	private class ListDepthRenderer extends DefaultTableCellRenderer implements ChangeListener {
+		public ListDepthRenderer() {
 			super();
 			setHorizontalAlignment(SwingConstants.RIGHT);
 		}
-		
-		protected void setValue(Object value)
-		{
-			if(value instanceof Integer)
-			{
-				int depth = ((Integer)value).intValue();
-				if (depth == 0)
-				{
+
+		protected void setValue(Object value) {
+			if (value instanceof Integer) {
+				int depth = ((Integer) value).intValue();
+				if (depth == 0) {
 					setText("a");
-				}
-				else
-				{
+				} else {
 					String text = "a list of";
-					for (int index = 1; index < depth; index++)
-					{
+					for (int index = 1; index < depth; index++) {
 						text = text + " lists of";
 					}
 					setText(text);
-				}	
-			}
-			else
-			{
+				}
+			} else {
 				super.setValue(value);
 			}
 		}
-		
-		/* (non-Javadoc)
+
+		/*
+		 * (non-Javadoc)
+		 * 
 		 * @see javax.swing.event.ChangeListener#stateChanged(javax.swing.event.ChangeEvent)
 		 */
-		public void stateChanged(ChangeEvent e)
-		{
-			JSpinner mySpinner = (JSpinner)(e.getSource());
+		public void stateChanged(ChangeEvent e) {
+			JSpinner mySpinner = (JSpinner) (e.getSource());
 			setValue(mySpinner.getValue());
 			mySpinner.revalidate();
 			mySpinner.repaint();
 		}
 	}
-	
-	private class JSpinnerEditor extends AbstractCellEditor implements TableCellEditor
-	{
-		private JSpinner spinner = new JSpinner(new SpinnerNumberModel(0,0,10,1));
+
+	private class JSpinnerEditor extends AbstractCellEditor implements TableCellEditor {
+		private JSpinner spinner = new JSpinner(new SpinnerNumberModel(0, 0, 10, 1));
+
 		private ListDepthRenderer renderer = new ListDepthRenderer();
 
 		/**
 		 * 
 		 */
-		public JSpinnerEditor()
-		{
+		public JSpinnerEditor() {
 			super();
 			spinner.setEditor(renderer);
-			spinner.addChangeListener(renderer);			
-		}		
-		
+			spinner.addChangeListener(renderer);
+		}
+
 		/*
 		 * (non-Javadoc)
 		 * 
 		 * @see javax.swing.table.TableCellEditor#getTableCellEditorComponent(javax.swing.JTable,
 		 *      java.lang.Object, boolean, int, int)
 		 */
-		public Component getTableCellEditorComponent(JTable table, Object value,
-				boolean isSelected, int row, int column)
-		{
+		public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int column) {
 			renderer.getTableCellRendererComponent(table, value, isSelected, false, row, column);
-			spinner.setValue(value);			
+			spinner.setValue(value);
 			spinner.revalidate();
-			spinner.repaint();			
+			spinner.repaint();
 			return spinner;
 		}
 
@@ -306,55 +271,51 @@ public class BSFConfigPanel extends JPanel implements ScuflUIComponent,
 		 * 
 		 * @see javax.swing.CellEditor#getCellEditorValue()
 		 */
-		public Object getCellEditorValue()
-		{
+		public Object getCellEditorValue() {
 			return spinner.getValue();
 		}
 
 	}
 
 	BSFProcessor processor = null;
+
 	JEditTextArea scriptText;
+
 	JTable inputTable;
+
 	JTable outputTable;
 
 	JButton addInputButton;
+
 	JTextField addInputField;
+
 	JButton addOutputButton;
+
 	JTextField addOutputField;
-	
+
 	JComboBox scriptEngineSelect = new JComboBox();
 
-	Action deletePortAction = new AbstractAction("Delete Port", TavernaIcons.deleteIcon)
-	{
-		public void actionPerformed(ActionEvent e)
-		{
+	Action deletePortAction = new AbstractAction("Delete Port", TavernaIcons.deleteIcon) {
+		public void actionPerformed(ActionEvent e) {
 			JTable table = null;
-			if (e.getSource() instanceof JMenuItem)
-			{
+			if (e.getSource() instanceof JMenuItem) {
 				JMenuItem item = (JMenuItem) e.getSource();
 				JPopupMenu menu = (JPopupMenu) item.getParent();
 				Component component = menu.getInvoker();
-				if (component instanceof JTable)
-				{
+				if (component instanceof JTable) {
 					table = (JTable) component;
 				}
-			}
-			else if (e.getSource() instanceof JTable)
-			{
+			} else if (e.getSource() instanceof JTable) {
 				table = (JTable) e.getSource();
 			}
 
-			if (table != null)
-			{
+			if (table != null) {
 				int[] rows = table.getSelectedRows();
 				Port[] ports = new Port[rows.length];
-				for (int index = 0; index < rows.length; index++)
-				{
+				for (int index = 0; index < rows.length; index++) {
 					ports[index] = (Port) table.getValueAt(rows[index], 0);
 				}
-				for (int index = 0; index < ports.length; index++)
-				{
+				for (int index = 0; index < ports.length; index++) {
 					processor.removePort(ports[index]);
 				}
 			}
@@ -365,90 +326,76 @@ public class BSFConfigPanel extends JPanel implements ScuflUIComponent,
 	 * Create a new beanshell configuration panel applying to the processor
 	 * specified in the constructor
 	 */
-	public BSFConfigPanel(BSFProcessor bp)
-	{
+	public BSFConfigPanel(BSFProcessor bp) {
 		super(new BorderLayout());
 		setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
 		this.processor = bp;
-		
+
 		scriptText = new JEditTextArea(new TextAreaDefaults());
 		scriptText.setText(processor.getScript());
 		scriptText.setTokenMarker(new JavaTokenMarker());
 		scriptText.setCaretPosition(0);
 		scriptText.setPreferredSize(new Dimension(0, 0));
-		
+
 		ExtendedBSFManager bsfMgr = new ExtendedBSFManager();
 		Vector engineList = bsfMgr.getProcessorNameList();
 		scriptEngineSelect.setModel(new DefaultComboBoxModel(engineList));
 		scriptEngineSelect.setSelectedItem(this.processor.getLanguage());
 
 		JButton testScriptButton = new JButton("Test Script");
-		testScriptButton.addActionListener(new ActionListener()
-		{
-			public void actionPerformed(ActionEvent e)
-			{
-				try
-				{
+		testScriptButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				try {
 					Interpreter interpreter = new Interpreter();
 					interpreter.eval(scriptText.getText());
-				}
-				catch (EvalError e1)
-				{
+				} catch (EvalError e1) {
 					e1.printStackTrace();
 				}
 			}
 		});
 
 		JButton scriptUpdateButton = new JButton("Save Script Changes", TavernaIcons.saveIcon);
-		scriptUpdateButton.addActionListener(new ActionListener()
-		{
-			public void actionPerformed(ActionEvent ae)
-			{
+		scriptUpdateButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent ae) {
 				processor.setScript(scriptText.getText());
-				processor.setLanguage((String)scriptEngineSelect.getSelectedItem());
+				processor.setLanguage((String) scriptEngineSelect.getSelectedItem());
 			}
 		});
 
 		// create the button panel
 		JPanel buttonPanel = new JPanel(new FlowLayout());
 		JLabel scriptLabel = new JLabel("Script Language");
-		
-		//buttonPanel.add(testScriptButton);
+
+		// buttonPanel.add(testScriptButton);
 		buttonPanel.add(scriptLabel);
 		buttonPanel.add(this.scriptEngineSelect);
 		buttonPanel.add(scriptUpdateButton);
 
 		JPanel scriptEditPanel = new JPanel(new BorderLayout());
 		scriptEditPanel.add(scriptText, BorderLayout.CENTER);
-		//this.add(buttonPanel, BorderLayout.SOUTH);
+		// this.add(buttonPanel, BorderLayout.SOUTH);
 		scriptEditPanel.add(buttonPanel, BorderLayout.SOUTH);
 
 		// Panel to edit the input and output ports
 		JPanel portEditPanel = new JPanel(new GridLayout(0, 2));
 
-		MouseListener tableMouseListener = new MouseAdapter()
-		{
-			public void mousePressed(MouseEvent me)
-			{
+		MouseListener tableMouseListener = new MouseAdapter() {
+			public void mousePressed(MouseEvent me) {
 				popup(me);
 			}
 
-			public void mouseReleased(MouseEvent me)
-			{
+			public void mouseReleased(MouseEvent me) {
 				popup(me);
 			}
 
-			protected void popup(MouseEvent me)
-			{
-				if (me.isPopupTrigger())
-				{
+			protected void popup(MouseEvent me) {
+				if (me.isPopupTrigger()) {
 					JTable table = (JTable) me.getSource();
 					int rowIndex = table.rowAtPoint(me.getPoint());
 					table.setRowSelectionInterval(rowIndex, rowIndex);
 					Port port = (Port) table.getValueAt(rowIndex, 0);
 
-					if (port != null)
-					{
+					if (port != null) {
 						JPopupMenu menu = new JPopupMenu();
 						menu.add(new JMenuItem(deletePortAction));
 						menu.show(table, me.getX(), me.getY());
@@ -457,70 +404,55 @@ public class BSFConfigPanel extends JPanel implements ScuflUIComponent,
 			}
 		};
 
-		deletePortAction.putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(
-				KeyEvent.VK_DELETE, 0));
+		deletePortAction.putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_DELETE, 0));
 
 		JComboBox inputTypesCombo = new JComboBox(new Vector(DataThing.mimeTypes.values()));
 
-		inputTable = new JTable(new PortTableModel()
-		{
-			protected Port[] getPorts()
-			{
+		inputTable = new JTable(new PortTableModel() {
+			protected Port[] getPorts() {
 				return processor.getInputPorts();
 			}
 		});
 		inputTable.setIntercellSpacing(new Dimension(0, 0));
 		inputTable.setShowVerticalLines(false);
 		inputTable.setShowHorizontalLines(false);
-//		inputTable.setTableHeader(null);
-		inputTable.getInputMap().put((KeyStroke) deletePortAction.getValue(Action.ACCELERATOR_KEY),
-				"DELETE_PORT");
+		// inputTable.setTableHeader(null);
+		inputTable.getInputMap().put((KeyStroke) deletePortAction.getValue(Action.ACCELERATOR_KEY), "DELETE_PORT");
 		inputTable.getActionMap().put("DELETE_PORT", deletePortAction);
 		inputTable.addMouseListener(tableMouseListener);
-		inputTable.setPreferredSize(new Dimension(0,0));
-		inputTable.getTableHeader().setPreferredSize(new Dimension(0,0));
+		inputTable.setPreferredSize(new Dimension(0, 0));
+		inputTable.getTableHeader().setPreferredSize(new Dimension(0, 0));
 		inputTable.setRowHeight(inputTable.getRowHeight() + 2);
 		inputTable.getColumnModel().getColumn(0).setMinWidth(10);
 		inputTable.getColumnModel().getColumn(1).setMinWidth(10);
-		inputTable.getColumnModel().getColumn(2).setMinWidth(10);		
+		inputTable.getColumnModel().getColumn(2).setMinWidth(10);
 		inputTable.setDefaultEditor(Integer.class, new JSpinnerEditor());
 		inputTable.setDefaultRenderer(Integer.class, new ListDepthRenderer());
 		inputTable.setDefaultEditor(String.class, new DefaultCellEditor(inputTypesCombo));
-		inputTable.setDefaultRenderer(Port.class, new DefaultTableCellRenderer()
-		{
-			public Component getTableCellRendererComponent(JTable table, Object value,
-					boolean isSelected, boolean hasFocus, int row, int column)
-			{
+		inputTable.setDefaultRenderer(Port.class, new DefaultTableCellRenderer() {
+			public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected,
+					boolean hasFocus, int row, int column) {
 				setIcon(TavernaIcons.inputPortIcon);
-				return super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row,
-						column);
+				return super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
 			}
 		});
 
-		
 		JPanel inputTablePanel = new JPanel(new BorderLayout());
 		inputTablePanel.add(inputTable, BorderLayout.CENTER);
 		JScrollPane inputPane = new JScrollPane(inputTablePanel);
 		inputPane.setPreferredSize(new Dimension(0, 0));
 
-		ActionListener addInputAction = new ActionListener()
-		{
-			public void actionPerformed(ActionEvent ae)
-			{
+		ActionListener addInputAction = new ActionListener() {
+			public void actionPerformed(ActionEvent ae) {
 				// Add a port to the input model!
-				try
-				{
+				try {
 					InputPort ip = new InputPort(processor, addInputField.getText());
 					ip.setSyntacticType("'text/plain'");
 					processor.addPort(ip);
 					addInputField.setText("");
-				}
-				catch (PortCreationException pce)
-				{
+				} catch (PortCreationException pce) {
 					//
-				}
-				catch (DuplicatePortNameException dpne)
-				{
+				} catch (DuplicatePortNameException dpne) {
 					//
 				}
 			}
@@ -532,25 +464,20 @@ public class BSFConfigPanel extends JPanel implements ScuflUIComponent,
 
 		addInputField = new JTextField();
 		addInputField.addActionListener(addInputAction);
-		addInputField.getDocument().addDocumentListener(new DocumentListener()
-		{
-			private void checkName()
-			{
+		addInputField.getDocument().addDocumentListener(new DocumentListener() {
+			private void checkName() {
 				addInputButton.setEnabled(isValidName(addInputField.getText()));
 			}
 
-			public void changedUpdate(DocumentEvent e)
-			{
+			public void changedUpdate(DocumentEvent e) {
 				checkName();
 			}
 
-			public void insertUpdate(DocumentEvent e)
-			{
+			public void insertUpdate(DocumentEvent e) {
 				checkName();
 			}
 
-			public void removeUpdate(DocumentEvent e)
-			{
+			public void removeUpdate(DocumentEvent e) {
 				checkName();
 			}
 		});
@@ -562,23 +489,19 @@ public class BSFConfigPanel extends JPanel implements ScuflUIComponent,
 
 		// Input edit panel
 		JPanel inputEditPanel = new JPanel(new BorderLayout());
-		inputEditPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory
-				.createEtchedBorder(), "Inputs"));
+		inputEditPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), "Inputs"));
 		inputEditPanel.add(inputPane, BorderLayout.CENTER);
 		inputEditPanel.add(inputFieldPanel, BorderLayout.SOUTH);
 		portEditPanel.add(inputEditPanel);
 
 		// Output edit panel
 		JPanel outputEditPanel = new JPanel(new BorderLayout());
-		outputEditPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory
-				.createEtchedBorder(), "Outputs"));
+		outputEditPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), "Outputs"));
 
-		JComboBox outputTypesCombo = new JComboBox(new Vector(DataThing.mimeTypes.values()));		
-		
-		outputTable = new JTable(new PortTableModel()
-		{
-			protected Port[] getPorts()
-			{
+		JComboBox outputTypesCombo = new JComboBox(new Vector(DataThing.mimeTypes.values()));
+
+		outputTable = new JTable(new PortTableModel() {
+			protected Port[] getPorts() {
 				return processor.getOutputPorts();
 			}
 		});
@@ -589,21 +512,17 @@ public class BSFConfigPanel extends JPanel implements ScuflUIComponent,
 		outputTable.getColumnModel().getColumn(0).setMinWidth(10);
 		outputTable.getColumnModel().getColumn(1).setMinWidth(10);
 		outputTable.getColumnModel().getColumn(2).setMinWidth(10);
-		outputTable.setPreferredSize(new Dimension(0,0));
-		outputTable.getInputMap().put(
-				(KeyStroke) deletePortAction.getValue(Action.ACCELERATOR_KEY), "DELETE_PORT");
+		outputTable.setPreferredSize(new Dimension(0, 0));
+		outputTable.getInputMap().put((KeyStroke) deletePortAction.getValue(Action.ACCELERATOR_KEY), "DELETE_PORT");
 		outputTable.getActionMap().put("DELETE_PORT", deletePortAction);
 		outputTable.setDefaultEditor(Integer.class, new JSpinnerEditor());
 		outputTable.setDefaultRenderer(Integer.class, new ListDepthRenderer());
 		outputTable.setDefaultEditor(String.class, new DefaultCellEditor(outputTypesCombo));
-		outputTable.setDefaultRenderer(Port.class, new DefaultTableCellRenderer()
-		{
-			public Component getTableCellRendererComponent(JTable table, Object value,
-					boolean isSelected, boolean hasFocus, int row, int column)
-			{
+		outputTable.setDefaultRenderer(Port.class, new DefaultTableCellRenderer() {
+			public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected,
+					boolean hasFocus, int row, int column) {
 				setIcon(TavernaIcons.outputPortIcon);
-				return super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row,
-						column);
+				return super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
 			}
 		});
 
@@ -615,24 +534,17 @@ public class BSFConfigPanel extends JPanel implements ScuflUIComponent,
 		outputEditPanel.add(outputPane, BorderLayout.CENTER);
 		// Add a text button to create a new input
 
-		ActionListener addOutputAction = new ActionListener()
-		{
-			public void actionPerformed(ActionEvent ae)
-			{
+		ActionListener addOutputAction = new ActionListener() {
+			public void actionPerformed(ActionEvent ae) {
 				// Add a port to the input model!
-				try
-				{
+				try {
 					OutputPort op = new OutputPort(processor, addOutputField.getText());
 					op.setSyntacticType("'text/plain'");
 					processor.addPort(op);
 					addOutputField.setText("");
-				}
-				catch (PortCreationException pce)
-				{
+				} catch (PortCreationException pce) {
 					//
-				}
-				catch (DuplicatePortNameException dpne)
-				{
+				} catch (DuplicatePortNameException dpne) {
 					//
 				}
 			}
@@ -640,25 +552,20 @@ public class BSFConfigPanel extends JPanel implements ScuflUIComponent,
 
 		addOutputField = new JTextField();
 		addOutputField.addActionListener(addOutputAction);
-		addOutputField.getDocument().addDocumentListener(new DocumentListener()
-		{
-			private void checkName()
-			{
+		addOutputField.getDocument().addDocumentListener(new DocumentListener() {
+			private void checkName() {
 				addOutputButton.setEnabled(isValidName(addOutputField.getText()));
 			}
 
-			public void changedUpdate(DocumentEvent e)
-			{
+			public void changedUpdate(DocumentEvent e) {
 				checkName();
 			}
 
-			public void insertUpdate(DocumentEvent e)
-			{
+			public void insertUpdate(DocumentEvent e) {
 				checkName();
 			}
 
-			public void removeUpdate(DocumentEvent e)
-			{
+			public void removeUpdate(DocumentEvent e) {
 				checkName();
 			}
 		});
@@ -683,28 +590,23 @@ public class BSFConfigPanel extends JPanel implements ScuflUIComponent,
 		setVisible(true);
 	}
 
-	public void attachToModel(ScuflModel theModel)
-	{
+	public void attachToModel(ScuflModel theModel) {
 		theModel.addListener(this);
 	}
 
-	public void detachFromModel()
-	{
+	public void detachFromModel() {
 		//
 	}
 
-	public String getName()
-	{
-		if (processor == null){
+	public String getName() {
+		if (processor == null) {
 			return "Configuring script";
-		}
-		else {
+		} else {
 			return "Configuring script for " + processor.getName();
 		}
 	}
 
-	public ImageIcon getIcon()
-	{
+	public ImageIcon getIcon() {
 		return ProcessorHelper.getPreferredIcon(processor);
 	}
 
@@ -713,21 +615,16 @@ public class BSFConfigPanel extends JPanel implements ScuflUIComponent,
 	 * 
 	 * @see org.embl.ebi.escience.scufl.ScuflModelEventListener#receiveModelEvent(org.embl.ebi.escience.scufl.ScuflModelEvent)
 	 */
-	public void receiveModelEvent(ScuflModelEvent event)
-	{
+	public void receiveModelEvent(ScuflModelEvent event) {
 		inputTable.tableChanged(new TableModelEvent(inputTable.getModel()));
 		outputTable.tableChanged(new TableModelEvent(outputTable.getModel()));
 	}
 
-	boolean isValidName(String name)
-	{
-		if (name.matches("\\w+"))
-		{
+	boolean isValidName(String name) {
+		if (name.matches("\\w+")) {
 			Port[] ports = processor.getPorts();
-			for (int index = 0; index < ports.length; index++)
-			{
-				if (ports[index].getName().equals(name))
-				{
+			for (int index = 0; index < ports.length; index++) {
+				if (ports[index].getName().equals(name)) {
 					return false;
 				}
 			}

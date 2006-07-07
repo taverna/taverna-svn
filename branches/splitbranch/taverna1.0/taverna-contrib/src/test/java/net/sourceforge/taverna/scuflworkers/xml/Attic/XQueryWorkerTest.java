@@ -12,10 +12,10 @@ import org.embl.ebi.escience.scuflworkers.java.LocalWorker;
 /**
  * This class depends on JDK1.5
  * 
- * Last edited by $Author: davidwithers $
+ * Last edited by $Author: sowen70 $
  * 
  * @author Mark
- * @version $Revision: 1.1.2.1 $
+ * @version $Revision: 1.1.2.2 $
  */
 public class XQueryWorkerTest extends AbstractXmlWorkerTest {
       
@@ -31,8 +31,7 @@ public class XQueryWorkerTest extends AbstractXmlWorkerTest {
         
         Map outputMap = protworker.execute(inputMap);
         DataThingAdapter outAdapter = new DataThingAdapter(outputMap);       
-        String results = outAdapter.getString("outputText");      
-        System.out.println(results);
+        String results = outAdapter.getString("outputText");              
         
         // create an XQueryWorker and run a query
         LocalWorker worker = new XQueryWorker();
@@ -46,8 +45,7 @@ public class XQueryWorkerTest extends AbstractXmlWorkerTest {
         DataThingAdapter xqOutAdapter = new DataThingAdapter(xqOutput);
         
         String xqResults = outAdapter.getString("outputText");
-        assertNotNull("The results were null", xqResults);
-        System.out.println(xqResults);
+        assertNotNull("The results were null", xqResults);        
         
         this.writeFile("test_xquery.xml", xqResults);
         

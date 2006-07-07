@@ -14,6 +14,7 @@ import java.util.Map;
 
 import net.sourceforge.taverna.baclava.DataThingAdapter;
 
+import org.apache.log4j.Logger;
 import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFDateUtil;
 import org.apache.poi.hssf.usermodel.HSSFRow;
@@ -30,12 +31,14 @@ import uk.ac.soton.itinnovation.taverna.enactor.entities.TaskExecutionException;
  * containing string data. Note that Formula's are not currently evaluated and
  * thus are returned as empty strings.
  * 
- * Last edited by $Author: davidwithers $
+ * Last edited by $Author: sowen70 $
  * 
  * @author Mark
- * @version $Revision: 1.1.2.1 $
+ * @version $Revision: 1.1.2.2 $
  */
 public class ExcelFileReader implements LocalWorker {
+	
+	private static Logger logger = Logger.getLogger(ExcelFileReader.class);
 
 	String dateIndexes = null;
 
@@ -102,9 +105,9 @@ public class ExcelFileReader implements LocalWorker {
 				for (int i = 0; i < lastCol; i++) {
 					currCell = currRow.getCell((short) i);
 					if (currCell != null) {
-						System.out.print(currRow.getRowNum() + ":" + currCell.getCellNum() + " ");
+						logger.info(currRow.getRowNum() + ":" + currCell.getCellNum() + " ");
 						currVal = getCellValue(currCell);
-						System.out.println(currVal);
+						logger.info(currVal);
 						currRowList.add(currVal);
 					} else {
 						currRowList.add("");

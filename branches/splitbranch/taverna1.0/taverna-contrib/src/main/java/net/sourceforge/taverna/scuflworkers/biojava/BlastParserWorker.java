@@ -19,141 +19,134 @@ import org.xml.sax.XMLReader;
 import uk.ac.soton.itinnovation.taverna.enactor.entities.TaskExecutionException;
 
 /**
- * This processor parses BLAST results and returns an XML document containing the
- * results.
+ * This processor parses BLAST results and returns an XML document containing
+ * the results.
  * 
  * @author Mark
- * @version $Revision: 1.1.2.1 $
+ * @version $Revision: 1.1.2.2 $
  * 
  * @tavinput fileUrl
  * @tavinput strict
  * 
- * @tavoutput blastresults  XML-formatted BLAST results.
+ * @tavoutput blastresults XML-formatted BLAST results.
  * 
  */
 public class BlastParserWorker implements LocalWorker {
-    private XMLReader oParser;
+	private XMLReader oParser;
 
-    public BlastParserWorker() {
+	public BlastParserWorker() {
 
-    }
+	}
 
-    /**
-     * @see org.embl.ebi.escience.scuflworkers.java.LocalWorker#execute(java.util.Map)
-     */
-    public Map execute(Map inputMap) throws TaskExecutionException {
-        DataThingAdapter inAdapter = new DataThingAdapter(inputMap);
-        String fileUrl = inAdapter.getString("fileUrl");
+	/**
+	 * @see org.embl.ebi.escience.scuflworkers.java.LocalWorker#execute(java.util.Map)
+	 */
+	public Map execute(Map inputMap) throws TaskExecutionException {
+		DataThingAdapter inAdapter = new DataThingAdapter(inputMap);
+		String fileUrl = inAdapter.getString("fileUrl");
 
-        String strictStr = inAdapter.getString("strict");
-        boolean tStrict = (strictStr != null) ? Boolean.getBoolean(strictStr)
-                : false;
-        
-        HashMap outputMap = new HashMap();
-        DataThingAdapter outAdapter = new DataThingAdapter(outputMap);
-        
-        try {  
-            
-            /*
-             * Create a SAX Parser that takes the native output from blast-like
-             * bioinformatics software.
-             */
-            oParser = (XMLReader) new BlastLikeSAXParser();
+		String strictStr = inAdapter.getString("strict");
+		boolean tStrict = (strictStr != null) ? Boolean.getBoolean(strictStr) : false;
 
-            if (tStrict) {
-                ((BlastLikeSAXParser) oParser).setModeStrict();
-            } else {
-                ((BlastLikeSAXParser) oParser).setModeLazy();
-            }
-            
-            /*
-             * Dynamically change configuration of the parser in regard of
-             * Namespace support. Here, the xml.org/sax/features/namespaces
-             * feature is simply "reset" to its default value for SAX2. The
-             * xml.org/sax/features/namespaces-prefixes feature is also set to
-             * true. This is to ensure that xmlns attributes are reported by the
-             * parser. These are required because we want to configure the
-             * XMLEmitter to output qualified names (see below).
-             */
+		HashMap outputMap = new HashMap();
+		DataThingAdapter outAdapter = new DataThingAdapter(outputMap);
 
-            oParser.setFeature("http://xml.org/sax/features/namespaces", true);
-            oParser.setFeature(
-                    "http://xml.org/sax/features/namespace-prefixes", true);
+		try {
 
-            /*
-             * Create an XML ContentHandler. This implementation of the
-             * DocumentHandler interface simple outputs nicely formatted XML.
-             * Passing a true value to the SimpleXMLEmitter constructor
-             * instructs the ContentHandler to take QNames from the SAXParser,
-             * rather than LocalNames.
-             */
-            StringWriter writer = new StringWriter();
-            StringXMLEmitter emitter = new StringXMLEmitter(writer);
-            ContentHandler oHandler = (ContentHandler) emitter;
+			/*
+			 * Create a SAX Parser that takes the native output from blast-like
+			 * bioinformatics software.
+			 */
+			oParser = (XMLReader) new BlastLikeSAXParser();
 
-            /*
-             * Give the parser a reference to the ContentHandler so that it can
-             * send SAX2 mesagges.
-             */
-            oParser.setContentHandler(oHandler);
-            /*
-             * Now make the Parser parse the output from the blast-like software
-             * and emit XML as specificed by the DocumentHandler.
-             */
-           
+			if (tStrict) {
+				((BlastLikeSAXParser) oParser).setModeStrict();
+			} else {
+				((BlastLikeSAXParser) oParser).setModeLazy();
+			}
 
-            FileInputStream oInputFileStream;
-            BufferedReader oContents;
-            String oLine = null;
+			/*
+			 * Dynamically change configuration of the parser in regard of
+			 * Namespace support. Here, the xml.org/sax/features/namespaces
+			 * feature is simply "reset" to its default value for SAX2. The
+			 * xml.org/sax/features/namespaces-prefixes feature is also set to
+			 * true. This is to ensure that xmlns attributes are reported by the
+			 * parser. These are required because we want to configure the
+			 * XMLEmitter to output qualified names (see below).
+			 */
 
+			oParser.setFeature("http://xml.org/sax/features/namespaces", true);
+			oParser.setFeature("http://xml.org/sax/features/namespace-prefixes", true);
 
-            oInputFileStream = new FileInputStream(fileUrl);
-            // create input stream
-            oContents = new BufferedReader(new InputStreamReader(
-                    oInputFileStream));
+			/*
+			 * Create an XML ContentHandler. This implementation of the
+			 * DocumentHandler interface simple outputs nicely formatted XML.
+			 * Passing a true value to the SimpleXMLEmitter constructor
+			 * instructs the ContentHandler to take QNames from the SAXParser,
+			 * rather than LocalNames.
+			 */
+			StringWriter writer = new StringWriter();
+			StringXMLEmitter emitter = new StringXMLEmitter(writer);
+			ContentHandler oHandler = (ContentHandler) emitter;
 
-            oParser.parse(new InputSource(oContents));
-            
-            outAdapter.putString("blastresults", writer.getBuffer().toString());
+			/*
+			 * Give the parser a reference to the ContentHandler so that it can
+			 * send SAX2 mesagges.
+			 */
+			oParser.setContentHandler(oHandler);
+			/*
+			 * Now make the Parser parse the output from the blast-like software
+			 * and emit XML as specificed by the DocumentHandler.
+			 */
 
-        } catch (java.io.FileNotFoundException x) {
-            throw new TaskExecutionException(x);
+			FileInputStream oInputFileStream;
+			BufferedReader oContents;
+			String oLine = null;
 
-        } catch (Exception ex) {
-            throw new TaskExecutionException(ex);
-        }
+			oInputFileStream = new FileInputStream(fileUrl);
+			// create input stream
+			oContents = new BufferedReader(new InputStreamReader(oInputFileStream));
 
-        return outputMap;
-    }
+			oParser.parse(new InputSource(oContents));
 
-    /**
-     * @see org.embl.ebi.escience.scuflworkers.java.LocalWorker#inputNames()
-     */
-    public String[] inputNames() {
-        return new String[] { "fileUrl", "strict" };
-    }
+			outAdapter.putString("blastresults", writer.getBuffer().toString());
 
-    /**
-     * @see org.embl.ebi.escience.scuflworkers.java.LocalWorker#inputTypes()
-     */
-    public String[] inputTypes() {
-        return new String[] { "'text/plain'", "'text/plain'" };
-    }
+		} catch (java.io.FileNotFoundException x) {
+			throw new TaskExecutionException(x);
 
-    /**
-     * @see org.embl.ebi.escience.scuflworkers.java.LocalWorker#outputNames()
-     */
-    public String[] outputNames() {
-        return new String[] { "blastresults" };
-    }
+		} catch (Exception ex) {
+			throw new TaskExecutionException(ex);
+		}
 
-    /**
-     * @see org.embl.ebi.escience.scuflworkers.java.LocalWorker#outputTypes()
-     */
-    public String[] outputTypes() {
-        return new String[] { "'text/xml'" };
-    }
-    
-    
+		return outputMap;
+	}
+
+	/**
+	 * @see org.embl.ebi.escience.scuflworkers.java.LocalWorker#inputNames()
+	 */
+	public String[] inputNames() {
+		return new String[] { "fileUrl", "strict" };
+	}
+
+	/**
+	 * @see org.embl.ebi.escience.scuflworkers.java.LocalWorker#inputTypes()
+	 */
+	public String[] inputTypes() {
+		return new String[] { "'text/plain'", "'text/plain'" };
+	}
+
+	/**
+	 * @see org.embl.ebi.escience.scuflworkers.java.LocalWorker#outputNames()
+	 */
+	public String[] outputNames() {
+		return new String[] { "blastresults" };
+	}
+
+	/**
+	 * @see org.embl.ebi.escience.scuflworkers.java.LocalWorker#outputTypes()
+	 */
+	public String[] outputTypes() {
+		return new String[] { "'text/xml'" };
+	}
 
 }

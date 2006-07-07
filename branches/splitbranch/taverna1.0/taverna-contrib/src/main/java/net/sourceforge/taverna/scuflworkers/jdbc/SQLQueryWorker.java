@@ -23,22 +23,23 @@ import uk.ac.soton.itinnovation.taverna.enactor.entities.TaskExecutionException;
 import com.sun.rowset.WebRowSetImpl;
 
 /**
- * This processor executes SQL prepared statements, and returns the results
- * as an array of arrays.  It can also, optionally generate an XML representation
- * of the results.
+ * This processor executes SQL prepared statements, and returns the results as
+ * an array of arrays. It can also, optionally generate an XML representation of
+ * the results.
  * 
  * @author mfortner
- * @version $Revision: 1.1.2.1 $
+ * @version $Revision: 1.1.2.2 $
  * 
- * @tavinput url		The jdbc database URL.
- * @tavinput driver		A fully qualified driver classname.
- * @tavinput userid		The userid required for database access.
- * @tavinput password	The password required for database access.
- * @tavinput sql		The SQL statement to be executed.
- * @tavinput params		A list of parameters that need to be bound to the query.
- * @tavinput provideXml If set to "true", generate an XML representation of the results.  Defaults to "false".
+ * @tavinput url The jdbc database URL.
+ * @tavinput driver A fully qualified driver classname.
+ * @tavinput userid The userid required for database access.
+ * @tavinput password The password required for database access.
+ * @tavinput sql The SQL statement to be executed.
+ * @tavinput params A list of parameters that need to be bound to the query.
+ * @tavinput provideXml If set to "true", generate an XML representation of the
+ *           results. Defaults to "false".
  * 
- * @tavinput resultList	An array of arrays, containing the results.
+ * @tavinput resultList An array of arrays, containing the results.
  * @tavinput xmlresults An XML representation of the results.
  */
 public class SQLQueryWorker implements LocalWorker {
@@ -60,8 +61,7 @@ public class SQLQueryWorker implements LocalWorker {
 			// get and validate parameters
 			String driverName = inAdapter.getString("driver");
 			if (driverName == null || driverName.equals("")) {
-				throw new TaskExecutionException(
-						"The 'driver' port cannot be null");
+				throw new TaskExecutionException("The 'driver' port cannot be null");
 			}
 			String url = inAdapter.getString("url");
 			if (url == null || url.equals("")) {
@@ -69,21 +69,19 @@ public class SQLQueryWorker implements LocalWorker {
 			}
 			String username = inAdapter.getString("userid");
 			if (username == null || username.equals("")) {
-				throw new TaskExecutionException(
-						"The 'userid' port cannot be null");
+				throw new TaskExecutionException("The 'userid' port cannot be null");
 			}
 			String password = inAdapter.getString("password");
 
 			String provideXmlStr = inAdapter.getString("provideXml");
-			boolean provideXml = (provideXmlStr != null) ? Boolean
-					.valueOf(provideXmlStr.toUpperCase()).booleanValue() : false;
+			boolean provideXml = (provideXmlStr != null) ? Boolean.valueOf(provideXmlStr.toUpperCase()).booleanValue()
+					: false;
 
 			// get the sql statement parameters
 			String[] params = inAdapter.getStringArray("params");
 			String sql = inAdapter.getString("sql");
-			if (sql == null || sql.equals("")){
-				throw new TaskExecutionException(
-				"The 'sql' port cannot be null");
+			if (sql == null || sql.equals("")) {
+				throw new TaskExecutionException("The 'sql' port cannot be null");
 			}
 
 			// Load the JDBC driver
@@ -91,7 +89,7 @@ public class SQLQueryWorker implements LocalWorker {
 
 			// Create a connection to the database
 			connection = DriverManager.getConnection(url, username, password);
-			if (connection == null){
+			if (connection == null) {
 				throw new TaskExecutionException("The connection was null");
 			}
 
@@ -103,7 +101,7 @@ public class SQLQueryWorker implements LocalWorker {
 			}
 			rs = ps.executeQuery();
 			ResultSetMetaData rsmd = rs.getMetaData();
-			
+
 			// if the provideXml flag is set, convert the results into XML.
 			if (provideXml) {
 				WebRowSet webrs = new WebRowSetImpl();
@@ -117,7 +115,7 @@ public class SQLQueryWorker implements LocalWorker {
 			while (rs.next()) {
 				ArrayList row = new ArrayList(numCols);
 				for (int i = 0; i < numCols; i++) {
-					row.add(rs.getString(i+1));
+					row.add(rs.getString(i + 1));
 				}
 				resultList.add(row);
 			}
@@ -126,18 +124,18 @@ public class SQLQueryWorker implements LocalWorker {
 			throw new TaskExecutionException(e);
 		} catch (SQLException e) {
 			throw new TaskExecutionException(e);
-		} catch (Exception ex){
+		} catch (Exception ex) {
 			throw new TaskExecutionException(ex);
 		} finally {
-		
+
 			try {
-				if (rs != null){
+				if (rs != null) {
 					rs.close();
 				}
-				if (ps != null ){
+				if (ps != null) {
 					ps.close();
 				}
-				if (connection != null){
+				if (connection != null) {
 					connection.close();
 				}
 			} catch (SQLException se) {
@@ -145,7 +143,7 @@ public class SQLQueryWorker implements LocalWorker {
 			}
 		}
 
-		//put results into hashmap
+		// put results into hashmap
 		outputMap.put("resultList", new DataThing(resultList));
 
 		return outputMap;
@@ -157,8 +155,7 @@ public class SQLQueryWorker implements LocalWorker {
 	 * @see org.embl.ebi.escience.scuflworkers.java.LocalWorker#inputNames()
 	 */
 	public String[] inputNames() {
-		return new String[] { "url", "driver", "userid", "password", "sql",
-				"params", "provideXml" };
+		return new String[] { "url", "driver", "userid", "password", "sql", "params", "provideXml" };
 	}
 
 	/*
@@ -167,9 +164,8 @@ public class SQLQueryWorker implements LocalWorker {
 	 * @see org.embl.ebi.escience.scuflworkers.java.LocalWorker#inputTypes()
 	 */
 	public String[] inputTypes() {
-		return new String[] { "'text/plain'", "'text/plain'", "'text/plain'",
-				"'text/plain'", "'text/plain'", "l('text/plain')",
-				"'text/plain'" };
+		return new String[] { "'text/plain'", "'text/plain'", "'text/plain'", "'text/plain'", "'text/plain'",
+				"l('text/plain')", "'text/plain'" };
 	}
 
 	/*

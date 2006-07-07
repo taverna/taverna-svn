@@ -11,10 +11,10 @@ import org.embl.ebi.escience.scuflworkers.java.LocalWorker;
 /**
  * This class
  * 
- * Last edited by $Author: davidwithers $
+ * Last edited by $Author: sowen70 $
  * 
  * @author Mark
- * @version $Revision: 1.1.2.1 $
+ * @version $Revision: 1.1.2.2 $
  */
 public class EnvVariableWorkerTest extends TestCase {
 
@@ -30,8 +30,7 @@ public class EnvVariableWorkerTest extends TestCase {
         
         String results = outAdapter.getString("properties");
         assertNotNull("The results were null",results);
-        
-        System.out.println("results: " + results);
+                
         
         
     }

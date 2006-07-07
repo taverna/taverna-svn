@@ -14,11 +14,10 @@ import org.embl.ebi.escience.scuflui.workbench.ScavengerCreationException;
  */
 public class BSFScavenger extends Scavenger {
 
-    /**
-     * Create a new Beanshell scavenger
-     */
-    public BSFScavenger() throws ScavengerCreationException {
-        super(new BSFProcessorFactory());
-    }
+	/**
+	 * Create a new Beanshell scavenger
+	 */
+	public BSFScavenger() throws ScavengerCreationException {
+		super(new BSFProcessorFactory());
+	}
 }
-

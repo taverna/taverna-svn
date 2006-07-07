@@ -24,113 +24,116 @@ import javax.xml.transform.stream.StreamSource;
 
 import net.sourceforge.taverna.io.StreamProcessor;
 
+import org.apache.log4j.Logger;
 import org.embl.ebi.escience.baclava.DataThing;
 
 /**
  * This class is used to apply an XSLT to a stream.
  * 
- * Last edited by $Author: davidwithers $
+ * Last edited by $Author: sowen70 $
  * 
  * @author Mark
- * @version $Revision: 1.1.2.1 $
+ * @version $Revision: 1.1.2.2 $
  */
 public class XSLTStreamProcessor implements StreamProcessor {
+	
+	private static Logger logger = Logger.getLogger(XSLTStreamProcessor.class);
 
-    private String outputFile;
-    private String xslt;
-    private HashMap outputMap = new HashMap();
-    
-    /**
-     * 
-     * @param outputMap
-     * @param outputFile
-     * @param xslt
-     */
-    public XSLTStreamProcessor(HashMap outputMap, String outputFile, String xslt){
-        this.outputMap = outputMap;
-        this.outputFile = outputFile;
-        this.xslt = xslt;
-    }
+	private String outputFile;
 
-    /**
-     * @see net.sourceforge.taverna.io.StreamProcessor#processStream(java.io.InputStream)
-     */
-    public Map processStream(InputStream stream) throws IOException {
-        BufferedReader in = new BufferedReader(new InputStreamReader(stream),2000);
-        String str;
-        String lineEnding = System.getProperty("line.separator");
-        //StringWriter sw = new StringWriter();
-        //BufferedWriter out = new BufferedWriter(sw, this.bufferSize);
-        FileWriter fw = null;
-        if (this.outputFile != null){
-            fw = new FileWriter(this.outputFile);
-        }
+	private String xslt;
 
-        boolean startTagFound = false;
-        boolean endTagFound = false;
+	private HashMap outputMap = new HashMap();
 
-        // Create transformer factory
-        TransformerFactory factory = TransformerFactory.newInstance();
+	/**
+	 * 
+	 * @param outputMap
+	 * @param outputFile
+	 * @param xslt
+	 */
+	public XSLTStreamProcessor(HashMap outputMap, String outputFile, String xslt) {
+		this.outputMap = outputMap;
+		this.outputFile = outputFile;
+		this.xslt = xslt;
+	}
 
-        // Use the factory to create a template containing the xsl file
-        Templates template;
-        StringWriter sw = new StringWriter();
-        
-        System.out.println("Reading xml & starting transform");
+	/**
+	 * @see net.sourceforge.taverna.io.StreamProcessor#processStream(java.io.InputStream)
+	 */
+	public Map processStream(InputStream stream) throws IOException {
+		BufferedReader in = new BufferedReader(new InputStreamReader(stream), 2000);
+		String str;
+		String lineEnding = System.getProperty("line.separator");
+		// StringWriter sw = new StringWriter();
+		// BufferedWriter out = new BufferedWriter(sw, this.bufferSize);
+		FileWriter fw = null;
+		if (this.outputFile != null) {
+			fw = new FileWriter(this.outputFile);
+		}
 
-        try {
-            template = factory.newTemplates(new StreamSource(
-                    new FileInputStream(this.xslt)));
+		boolean startTagFound = false;
+		boolean endTagFound = false;
 
-            // Use the template to create a transformer
-            Transformer xformer = template.newTransformer();
-            
-            StringReader reader = new StringReader("");
-            
-            StreamSource source = new StreamSource(reader);
-            
-            Result result = new StreamResult(sw);
+		// Create transformer factory
+		TransformerFactory factory = TransformerFactory.newInstance();
 
-            sw.write("<?xml version=\"1.0\"?>");
-            sw.write("<searchResults>");
-            int count=0;
+		// Use the factory to create a template containing the xsl file
+		Templates template;
+		StringWriter sw = new StringWriter();
 
-            while ((str = in.readLine()) != null) {
+		logger.info("Reading xml & starting transform");
 
-                // Apply the xsl file to the source file and write the result to
-                // the
-                // output file
-                reader.read(str.toCharArray());
-                
-                xformer.transform(source, result);
-                
-                count++;
-            }
-            sw.write("</searchResults>");
-            sw.close();
+		try {
+			template = factory.newTemplates(new StreamSource(new FileInputStream(this.xslt)));
 
+			// Use the template to create a transformer
+			Transformer xformer = template.newTransformer();
 
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (TransformerConfigurationException e) {
-            e.printStackTrace();
-        } catch (TransformerException e) {
-            // An error occurred while applying the XSL file
-            // Get location of error in input file
-            SourceLocator locator = e.getLocator();
-            int col = locator.getColumnNumber();
-            int line = locator.getLineNumber();
-            String publicId = locator.getPublicId();
-            String systemId = locator.getSystemId();
-        }
-        
-        if (this.outputFile != null) {
-            fw.write(sw.toString());
-            fw.flush();
-            fw.close();
-        }
-        outputMap.put("outputText", new DataThing(sw.toString()));
-        return this.outputMap;
-    }
+			StringReader reader = new StringReader("");
+
+			StreamSource source = new StreamSource(reader);
+
+			Result result = new StreamResult(sw);
+
+			sw.write("<?xml version=\"1.0\"?>");
+			sw.write("<searchResults>");
+			int count = 0;
+
+			while ((str = in.readLine()) != null) {
+
+				// Apply the xsl file to the source file and write the result to
+				// the
+				// output file
+				reader.read(str.toCharArray());
+
+				xformer.transform(source, result);
+
+				count++;
+			}
+			sw.write("</searchResults>");
+			sw.close();
+
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (TransformerConfigurationException e) {
+			e.printStackTrace();
+		} catch (TransformerException e) {
+			// An error occurred while applying the XSL file
+			// Get location of error in input file
+			SourceLocator locator = e.getLocator();
+			int col = locator.getColumnNumber();
+			int line = locator.getLineNumber();
+			String publicId = locator.getPublicId();
+			String systemId = locator.getSystemId();
+		}
+
+		if (this.outputFile != null) {
+			fw.write(sw.toString());
+			fw.flush();
+			fw.close();
+		}
+		outputMap.put("outputText", new DataThing(sw.toString()));
+		return this.outputMap;
+	}
 
 }

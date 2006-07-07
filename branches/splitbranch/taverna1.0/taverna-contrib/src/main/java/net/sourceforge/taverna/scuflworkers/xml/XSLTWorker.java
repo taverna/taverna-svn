@@ -35,20 +35,22 @@ import uk.ac.soton.itinnovation.taverna.enactor.entities.TaskExecutionException;
  * This processor transforms an input XML document into an output document. If
  * an inFileURL is supplied, it will use the document located at the URL as
  * input. If the xml-text is supplied, it will this in-memory XML document as
- * input. If an outputFile url is supplied, the results will be written to the output
- * document.
+ * input. If an outputFile url is supplied, the results will be written to the
+ * output document.
  * 
  * @author mfortner
- * @version $Revision: 1.1.2.1 $
+ * @version $Revision: 1.1.2.2 $
  * 
  * @tavinput xslFileURL The complete path to XSL file.
  * @tavinput outFileURL The complete path to the output file. (optional)
- * @tavinput inFileURL 	The complete path to the input file.
- * @tavinput xml-text 	The XML text to be processed. (optional)
- * @tavinput outputExt  The output file extension.  Use this only if you want to add the extension to the 
- * 						input filename and use it as the output file name.
- * @tavoutput outputStr A string containing the output text.  This is useful, if 
- * 						you want to connect this processor to another and pass the results to it.
+ * @tavinput inFileURL The complete path to the input file.
+ * @tavinput xml-text The XML text to be processed. (optional)
+ * @tavinput outputExt The output file extension. Use this only if you want to
+ *           add the extension to the input filename and use it as the output
+ *           file name.
+ * @tavoutput outputStr A string containing the output text. This is useful, if
+ *            you want to connect this processor to another and pass the results
+ *            to it.
  * 
  */
 public class XSLTWorker implements LocalWorker {
@@ -68,8 +70,8 @@ public class XSLTWorker implements LocalWorker {
 		String outFilename = inAdapter.getString("outFileURL");
 		String inFilename = inAdapter.getString("inFileURL");
 		String ext = inAdapter.getString("outputExt");
-		if ((outFilename == null || outFilename.equals("")) && ext != null){
-			outFilename = FileNameUtil.replacePathExtension(inFilename,ext);
+		if ((outFilename == null || outFilename.equals("")) && ext != null) {
+			outFilename = FileNameUtil.replacePathExtension(inFilename, ext);
 		}
 
 		try {
@@ -77,8 +79,7 @@ public class XSLTWorker implements LocalWorker {
 			TransformerFactory factory = TransformerFactory.newInstance();
 
 			// Use the factory to create a template containing the xsl file
-			Templates template = factory.newTemplates(new StreamSource(
-					new FileInputStream(xslFilename)));
+			Templates template = factory.newTemplates(new StreamSource(new FileInputStream(xslFilename)));
 
 			// Use the template to create a transformer
 			Transformer xformer = template.newTransformer();
@@ -97,8 +98,7 @@ public class XSLTWorker implements LocalWorker {
 			if (outFilename != null && !outFilename.equals("")) {
 				try {
 
-					BufferedWriter out = new BufferedWriter(new FileWriter(
-							outFilename));
+					BufferedWriter out = new BufferedWriter(new FileWriter(outFilename));
 
 					out.write(outText);
 					out.close();
@@ -141,7 +141,7 @@ public class XSLTWorker implements LocalWorker {
 	 * @see org.embl.ebi.escience.scuflworkers.java.LocalWorker#inputTypes()
 	 */
 	public String[] inputTypes() {
-		return new String[] { "'text/plain'", "'text/plain'", "'text/plain'","'text/plain'"  };
+		return new String[] { "'text/plain'", "'text/plain'", "'text/plain'", "'text/plain'" };
 	}
 
 	/*

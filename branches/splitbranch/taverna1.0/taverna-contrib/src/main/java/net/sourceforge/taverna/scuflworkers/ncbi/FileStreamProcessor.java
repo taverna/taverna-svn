@@ -16,57 +16,62 @@ import net.sourceforge.taverna.io.StreamProcessor;
  * 
  * 
  * @author Mark
- * @version $Revision: 1.1.2.1 $
+ * @version $Revision: 1.1.2.2 $
  */
 public class FileStreamProcessor implements StreamProcessor {
-    
-    protected int bufferSize=2000;
 
+	protected int bufferSize = 2000;
 
-    /**
-     * Constructor
-     * @param filename
-     */
-    public FileStreamProcessor(String filename){
-        this.file = new File(filename);
-    }
-    /**
-     * Constructor
-     * @param file  The output file
-     */
-    public FileStreamProcessor(File file){
-        this.file = file;
-    }
-    
-    /**
-     * Constructor
-     * @param file        The output file.
-     * @param bufferSize  The buffer size used when reading/writing files.
-     */
-    public FileStreamProcessor(File file, int bufferSize){
-        this.file = file;
-        this.bufferSize = bufferSize;
-    }
+	/**
+	 * Constructor
+	 * 
+	 * @param filename
+	 */
+	public FileStreamProcessor(String filename) {
+		this.file = new File(filename);
+	}
 
-    /**
-     * This method processes an input stream and outputs the result to a file.
-     * Note that no Map is actually returned.
-     */
-    public Map processStream(InputStream stream) throws IOException{
-        	
-            BufferedReader in = new BufferedReader(new InputStreamReader(stream),this.bufferSize);
-            String str;
-            String lineEnding = System.getProperty("line.separator");
-            BufferedWriter out = new BufferedWriter(new FileWriter(this.file),this.bufferSize);
-            while ((str = in.readLine()) != null) {
-                out.write(str);
-                out.write(lineEnding);
-            }
-            out.close();
+	/**
+	 * Constructor
+	 * 
+	 * @param file
+	 *            The output file
+	 */
+	public FileStreamProcessor(File file) {
+		this.file = file;
+	}
 
-            return null;
-    }
-    
-    
-    protected File file;
+	/**
+	 * Constructor
+	 * 
+	 * @param file
+	 *            The output file.
+	 * @param bufferSize
+	 *            The buffer size used when reading/writing files.
+	 */
+	public FileStreamProcessor(File file, int bufferSize) {
+		this.file = file;
+		this.bufferSize = bufferSize;
+	}
+
+	/**
+	 * This method processes an input stream and outputs the result to a file.
+	 * Note that no Map is actually returned.
+	 */
+	public Map processStream(InputStream stream) throws IOException {
+
+		BufferedReader in = new BufferedReader(new InputStreamReader(stream), this.bufferSize);
+		String str;
+		String lineEnding = System.getProperty("line.separator");
+		BufferedWriter out = new BufferedWriter(new FileWriter(this.file), this.bufferSize);
+		while ((str = in.readLine()) != null) {
+			out.write(str);
+			out.write(lineEnding);
+		}
+		out.close();
+
+		return null;
+	}
+
+	protected File file;
 }

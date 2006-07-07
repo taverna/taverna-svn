@@ -53,17 +53,16 @@ public class XmlUtil {
 			Source source = new StreamSource(new StringReader(xml));
 
 			// Create a new document to hold the results
-			DocumentBuilder builder = DocumentBuilderFactory.newInstance()
-					.newDocumentBuilder();
+			DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
 			Document doc = builder.newDocument();
-			
+
 			StringWriter resultStr = new StringWriter();
 			Result resultObj = new StreamResult(resultStr);
 
 			// Apply the xsl file to the source file and write the result to the
 			// output file
 			xformer.transform(source, resultObj);
-			
+
 			result = resultStr.toString();
 		} catch (ParserConfigurationException e) {
 			e.printStackTrace();

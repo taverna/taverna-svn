@@ -15,12 +15,12 @@ import org.embl.ebi.escience.scuflworkers.java.LocalWorker;
  * is functioning properly.  To use this class, simply instantiate it can call
  * the tests that you need.
  * 
- * Last edited by $Author: davidwithers $
+ * Last edited by $Author: sowen70 $
  * 
  * @author Mark
- * @version $Revision: 1.1.2.1 $
+ * @version $Revision: 1.1.2.2 $
  */
-public class LocalWorkerTest extends TestCase{
+public abstract class LocalWorkerTest extends TestCase{
 
     private LocalWorker worker;
     private boolean allOutputsRequired =false;

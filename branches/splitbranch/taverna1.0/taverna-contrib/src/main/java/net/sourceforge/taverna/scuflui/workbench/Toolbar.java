@@ -11,15 +11,14 @@ import net.sourceforge.taverna.scuflui.actions.OpenWorkflowAction;
 import net.sourceforge.taverna.scuflui.actions.OpenWorkflowFromWebAction;
 import net.sourceforge.taverna.scuflui.actions.RunWorkflowAction;
 
-
 /**
  * 
  * @author Mark
- *
+ * 
  */
 public class Toolbar extends JToolBar {
-	
-	public Toolbar(){
+
+	public Toolbar() {
 		this.add(new JButton(new OpenWorkflowAction()));
 		this.add(new JButton(new OpenWorkflowFromWebAction()));
 		this.add(new JButton(new ImportWorkflowAction()));

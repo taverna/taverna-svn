@@ -16,10 +16,10 @@ import org.embl.ebi.escience.scuflworkers.java.LocalWorker;
 /**
  * This class
  * 
- * Last edited by $Author: davidwithers $
+ * Last edited by $Author: sowen70 $
  * 
  * @author Mark
- * @version $Revision: 1.1.2.1 $
+ * @version $Revision: 1.1.2.2 $
  */
 public class JTidyWorkerTest extends TestCase {
     static final String LINE_ENDING = System.getProperty("line.separator");
@@ -58,8 +58,7 @@ public class JTidyWorkerTest extends TestCase {
         
         assertFalse("The results were empty",results.equals(""));
         assertNotNull("The results were null",results);
-        
-        System.out.println(results);
+                
         
         
     }

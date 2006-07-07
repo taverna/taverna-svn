@@ -15,23 +15,26 @@ import java.util.Vector;
 /**
  * This class provides internal access to BSFManager internals
  * 
- * Last edited by $Author: davidwithers $
+ * Last edited by $Author: sowen70 $
  * 
  * @author Mark
- * @version $Revision: 1.1.2.1 $
+ * @version $Revision: 1.1.2.2 $
  */
 public class ExtendedBSFManager extends BSFManager {
 	static Properties props = new Properties();
 
 	static String[] langArray = null;
+
 	static Map engineMap = new HashMap();
+
 	static Map abbrevMap = new HashMap();
+
 	static Map engineImplMap = new HashMap();
+
 	public ExtendedBSFManager() {
 		super();
 		try {
-			InputStream is = ExtendedBSFManager.class
-					.getResourceAsStream("BSFManager.properties");
+			InputStream is = ExtendedBSFManager.class.getResourceAsStream("BSFManager.properties");
 			props.load(is);
 			// String langs = props.getProperty("languages");
 			// langArray = langs.split(",");
@@ -53,7 +56,7 @@ public class ExtendedBSFManager extends BSFManager {
 					abbrev = entry[1];
 					engineMap.put(language, engineName);
 
-					registerScriptingEngine(language,engineName, entry);
+					registerScriptingEngine(language, engineName, entry);
 
 				}
 			}
@@ -76,44 +79,43 @@ public class ExtendedBSFManager extends BSFManager {
 
 		return procList;
 	}
-	
-    /**
-     * Execute the given script of the given language.
-     *
-     * @param lang     language identifier
-     * @param source   (context info) the source of this expression
-     (e.g., filename)
-     * @param lineNo   (context info) the line number in source for expr
-     * @param columnNo (context info) the column number in source for expr
-     * @param script   the script to execute
-     *
-     * @exception BSFException if anything goes wrong while running the script
-     */
-    public void exec(String lang,
-                     String source,
-                     int lineNo,
-                     int columnNo,
-                     Object script)
-        throws BSFException {
-        final BSFEngine e = loadScriptingEngine(lang);
-        final String sourcef = source;
-        final int lineNof = lineNo, columnNof = columnNo;
-        final Object scriptf = script;
 
-        try {
-            AccessController.doPrivileged(new PrivilegedExceptionAction() {
-                    public Object run() throws Exception {
-                        e.exec(sourcef, lineNof, columnNof, scriptf);
-                        return null;
-                    }
-                });
-        }
-        catch (PrivilegedActionException prive) {
-        	prive.printStackTrace();
-            throw (BSFException) prive.getException();
-        }catch(Exception ex){
-        	ex.printStackTrace();
-        }
-    }
+	/**
+	 * Execute the given script of the given language.
+	 * 
+	 * @param lang
+	 *            language identifier
+	 * @param source
+	 *            (context info) the source of this expression (e.g., filename)
+	 * @param lineNo
+	 *            (context info) the line number in source for expr
+	 * @param columnNo
+	 *            (context info) the column number in source for expr
+	 * @param script
+	 *            the script to execute
+	 * 
+	 * @exception BSFException
+	 *                if anything goes wrong while running the script
+	 */
+	public void exec(String lang, String source, int lineNo, int columnNo, Object script) throws BSFException {
+		final BSFEngine e = loadScriptingEngine(lang);
+		final String sourcef = source;
+		final int lineNof = lineNo, columnNof = columnNo;
+		final Object scriptf = script;
+
+		try {
+			AccessController.doPrivileged(new PrivilegedExceptionAction() {
+				public Object run() throws Exception {
+					e.exec(sourcef, lineNof, columnNof, scriptf);
+					return null;
+				}
+			});
+		} catch (PrivilegedActionException prive) {
+			prive.printStackTrace();
+			throw (BSFException) prive.getException();
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
+	}
 
 }

@@ -13,10 +13,10 @@ import junit.framework.TestCase;
 /**
  * This class
  * 
- * Last edited by $Author: davidwithers $
+ * Last edited by $Author: sowen70 $
  * 
  * @author Mark
- * @version $Revision: 1.1.2.1 $
+ * @version $Revision: 1.1.2.2 $
  */
 public class OMIMWorkerTest extends AbstractXmlWorkerTest {
 
@@ -30,8 +30,7 @@ public class OMIMWorkerTest extends AbstractXmlWorkerTest {
         DataThingAdapter outAdapter = new DataThingAdapter(outputMap);
         
         String results = outAdapter.getString("resultsXml");
-        assertNotNull("The results were null", results);
-        System.out.println(results);
+        assertNotNull("The results were null", results);        
         
         this.writeFile("test_omim.xml", results);
         Element root = this.parseXml(results);

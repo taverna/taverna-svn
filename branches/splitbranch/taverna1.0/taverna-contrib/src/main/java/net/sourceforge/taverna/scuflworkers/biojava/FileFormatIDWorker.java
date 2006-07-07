@@ -8,62 +8,62 @@ import net.sourceforge.taverna.baclava.DataThingAdapter;
 import org.embl.ebi.escience.scuflworkers.java.LocalWorker;
 
 import uk.ac.soton.itinnovation.taverna.enactor.entities.TaskExecutionException;
+
 //TODO: implement FileFormatIDWorker
 /**
  * This class
  * 
- * Last edited by $Author: davidwithers $
+ * Last edited by $Author: sowen70 $
  * 
  * @author Mark
- * @version $Revision: 1.1.2.1 $
+ * @version $Revision: 1.1.2.2 $
  */
 public class FileFormatIDWorker implements LocalWorker {
 
-    /**
-     * @see org.embl.ebi.escience.scuflworkers.java.LocalWorker#execute(java.util.Map)
-     */
-    public Map execute(Map inputMap) throws TaskExecutionException {
-        DataThingAdapter inAdapter = new DataThingAdapter(inputMap);
-        
-        HashMap outMap = new HashMap();
-        DataThingAdapter outAdapter = new DataThingAdapter(outMap);
+	/**
+	 * @see org.embl.ebi.escience.scuflworkers.java.LocalWorker#execute(java.util.Map)
+	 */
+	public Map execute(Map inputMap) throws TaskExecutionException {
+		DataThingAdapter inAdapter = new DataThingAdapter(inputMap);
 
-        //SeqIOTools.identifyFormat();
-        
-        
-        return outMap;
-    }
+		HashMap outMap = new HashMap();
+		DataThingAdapter outAdapter = new DataThingAdapter(outMap);
 
-    /**
-     * @see org.embl.ebi.escience.scuflworkers.java.LocalWorker#inputNames()
-     */
-    public String[] inputNames() {
-        
-        return null;
-    }
+		// SeqIOTools.identifyFormat();
 
-    /**
-     * @see org.embl.ebi.escience.scuflworkers.java.LocalWorker#inputTypes()
-     */
-    public String[] inputTypes() {
-        
-        return null;
-    }
+		return outMap;
+	}
 
-    /**
-     * @see org.embl.ebi.escience.scuflworkers.java.LocalWorker#outputNames()
-     */
-    public String[] outputNames() {
-        
-        return null;
-    }
+	/**
+	 * @see org.embl.ebi.escience.scuflworkers.java.LocalWorker#inputNames()
+	 */
+	public String[] inputNames() {
 
-    /**
-     * @see org.embl.ebi.escience.scuflworkers.java.LocalWorker#outputTypes()
-     */
-    public String[] outputTypes() {
-        
-        return null;
-    }
+		return null;
+	}
+
+	/**
+	 * @see org.embl.ebi.escience.scuflworkers.java.LocalWorker#inputTypes()
+	 */
+	public String[] inputTypes() {
+
+		return null;
+	}
+
+	/**
+	 * @see org.embl.ebi.escience.scuflworkers.java.LocalWorker#outputNames()
+	 */
+	public String[] outputNames() {
+
+		return null;
+	}
+
+	/**
+	 * @see org.embl.ebi.escience.scuflworkers.java.LocalWorker#outputTypes()
+	 */
+	public String[] outputTypes() {
+
+		return null;
+	}
 
 }

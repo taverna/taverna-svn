@@ -25,89 +25,87 @@ import uk.ac.soton.itinnovation.taverna.enactor.entities.TaskExecutionException;
 /**
  * This class parses genbank files and outputs the results in Agave XML format.
  * 
- * Last edited by $Author: davidwithers $
+ * Last edited by $Author: sowen70 $
  * 
  * @author Mark
- * @version $Revision: 1.1.2.1 $
+ * @version $Revision: 1.1.2.2 $
  */
 public class GenBankParserWorker implements LocalWorker {
 
-    public GenBankParserWorker() {
+	public GenBankParserWorker() {
 
-    }
+	}
 
-    /**
-     * @see org.embl.ebi.escience.scuflworkers.java.LocalWorker#execute(java.util.Map)
-     */
-    public Map execute(Map inputMap) throws TaskExecutionException {
-        DataThingAdapter inAdapter = new DataThingAdapter(inputMap);
-        String fileUrl = inAdapter.getString("fileUrl");
+	/**
+	 * @see org.embl.ebi.escience.scuflworkers.java.LocalWorker#execute(java.util.Map)
+	 */
+	public Map execute(Map inputMap) throws TaskExecutionException {
+		DataThingAdapter inAdapter = new DataThingAdapter(inputMap);
+		String fileUrl = inAdapter.getString("fileUrl");
 
-        BufferedReader br = null;
-        HashMap outputMap = new HashMap();
-        DataThingAdapter outAdapter = new DataThingAdapter(outputMap);
-        
-        try {
+		BufferedReader br = null;
+		HashMap outputMap = new HashMap();
+		DataThingAdapter outAdapter = new DataThingAdapter(outputMap);
 
-            //create a buffered reader to read the sequence file specified by
-            // args[0]
-            br = new BufferedReader(new FileReader(new File(fileUrl)));
+		try {
 
-            //read the GenBank File
-            SequenceIterator sequences = SeqIOTools.readGenbank(br);
+			// create a buffered reader to read the sequence file specified by
+			// args[0]
+			br = new BufferedReader(new FileReader(new File(fileUrl)));
 
-            //iterate through the sequences
-            ByteArrayOutputStream os = new ByteArrayOutputStream();
-            StringBuffer sb = new StringBuffer();
-            AgaveWriter writer = new AgaveWriter();
-            
-            while (sequences.hasNext()) {
-                Sequence seq = sequences.nextSequence();
-                writer.writeSequence(seq, new PrintStream(os));
-                sb.append(os.toString());
-            }
-            outAdapter.putString("genbankdata",sb.toString());
-        } catch (FileNotFoundException ex) {
-            throw new TaskExecutionException(ex);
-        } catch (BioException ex) {
-            throw new TaskExecutionException(ex);
-        } catch (NoSuchElementException ex) {
-            throw new TaskExecutionException(ex);
-        } catch (IOException io){
-            throw new TaskExecutionException(io);
-        }
+			// read the GenBank File
+			SequenceIterator sequences = SeqIOTools.readGenbank(br);
 
-        
+			// iterate through the sequences
+			ByteArrayOutputStream os = new ByteArrayOutputStream();
+			StringBuffer sb = new StringBuffer();
+			AgaveWriter writer = new AgaveWriter();
 
-        return outputMap;
-    }
+			while (sequences.hasNext()) {
+				Sequence seq = sequences.nextSequence();
+				writer.writeSequence(seq, new PrintStream(os));
+				sb.append(os.toString());
+			}
+			outAdapter.putString("genbankdata", sb.toString());
+		} catch (FileNotFoundException ex) {
+			throw new TaskExecutionException(ex);
+		} catch (BioException ex) {
+			throw new TaskExecutionException(ex);
+		} catch (NoSuchElementException ex) {
+			throw new TaskExecutionException(ex);
+		} catch (IOException io) {
+			throw new TaskExecutionException(io);
+		}
 
-    /**
-     * @see org.embl.ebi.escience.scuflworkers.java.LocalWorker#inputNames()
-     */
-    public String[] inputNames() {
-        return new String[] { "fileUrl" };
-    }
+		return outputMap;
+	}
 
-    /**
-     * @see org.embl.ebi.escience.scuflworkers.java.LocalWorker#inputTypes()
-     */
-    public String[] inputTypes() {
-        return new String[] { "'text/plain'" };
-    }
+	/**
+	 * @see org.embl.ebi.escience.scuflworkers.java.LocalWorker#inputNames()
+	 */
+	public String[] inputNames() {
+		return new String[] { "fileUrl" };
+	}
 
-    /**
-     * @see org.embl.ebi.escience.scuflworkers.java.LocalWorker#outputNames()
-     */
-    public String[] outputNames() {
-        return new String[] { "genbankdata" };
-    }
+	/**
+	 * @see org.embl.ebi.escience.scuflworkers.java.LocalWorker#inputTypes()
+	 */
+	public String[] inputTypes() {
+		return new String[] { "'text/plain'" };
+	}
 
-    /**
-     * @see org.embl.ebi.escience.scuflworkers.java.LocalWorker#outputTypes()
-     */
-    public String[] outputTypes() {
-        return new String[] { "'text/xml'" };
-    }
+	/**
+	 * @see org.embl.ebi.escience.scuflworkers.java.LocalWorker#outputNames()
+	 */
+	public String[] outputNames() {
+		return new String[] { "genbankdata" };
+	}
+
+	/**
+	 * @see org.embl.ebi.escience.scuflworkers.java.LocalWorker#outputTypes()
+	 */
+	public String[] outputTypes() {
+		return new String[] { "'text/xml'" };
+	}
 
 }

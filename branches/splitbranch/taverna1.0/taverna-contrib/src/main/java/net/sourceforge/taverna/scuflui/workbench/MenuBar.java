@@ -64,110 +64,105 @@ import org.embl.ebi.escience.scuflui.UIUtils;
  * 
  * Help About Taverna Help Contents
  * 
- * Last edited by $Author: davidwithers $
+ * Last edited by $Author: sowen70 $
  * 
  * @author Mark
- * @version $Revision: 1.1.2.1 $
+ * @version $Revision: 1.1.2.2 $
  */
 public class MenuBar extends JMenuBar {
-    
-    public MenuBar(){
-        this.add(createFileMenu());
-        this.add(createEditMenu());
-        this.add(createWorkflowMenu());
-        this.add(createViewMenu());
+
+	public MenuBar() {
+		this.add(createFileMenu());
+		this.add(createEditMenu());
+		this.add(createWorkflowMenu());
+		this.add(createViewMenu());
 		this.add(createRepositoryMenu());
 		this.add(createServicesMenu());
-        this.add(createHelpMenu());
-    }
-    
-    /**
+		this.add(createHelpMenu());
+	}
+
+	/**
 	 * This method creates the workflow menu.
 	 * 
 	 * @return
 	 */
-    private JMenu createWorkflowMenu() {
-        JMenu menu = new JMenu("Workflow");
-        menu.add(new JMenuItem (new GenerateWorkflowDocAction()));
-        menu.add(new JMenuItem(new RunWorkflowAction()));
-        return menu;
-    }
+	private JMenu createWorkflowMenu() {
+		JMenu menu = new JMenu("Workflow");
+		menu.add(new JMenuItem(new GenerateWorkflowDocAction()));
+		menu.add(new JMenuItem(new RunWorkflowAction()));
+		return menu;
+	}
 
-    /**
+	/**
 	 * This method creates the file menu
 	 * 
 	 * @return
 	 */
-    private JMenu createFileMenu(){
-        JMenu menu = new JMenu("File");
-        
-        menu.add(new JMenuItem(new NewWorkflowAction()));
-        menu.add(new JMenuItem(new NewSubWorkflowAction()));
-        menu.add(new JMenuItem(new OpenWorkflowAction()));
-        menu.add(new JMenuItem(new OpenWorkflowFromWebAction()));
-        menu.add(new JMenuItem(new SaveWorkflowAction()));
-        menu.addSeparator();
-        menu.add(new JMenuItem(new ClearWorkflowAction()));
-        menu.add(new JSeparator());
-        menu.add(new JMenuItem(new QuitAction()));
-       
-        
-        return menu;
-    }
-    
-    /**
+	private JMenu createFileMenu() {
+		JMenu menu = new JMenu("File");
+
+		menu.add(new JMenuItem(new NewWorkflowAction()));
+		menu.add(new JMenuItem(new NewSubWorkflowAction()));
+		menu.add(new JMenuItem(new OpenWorkflowAction()));
+		menu.add(new JMenuItem(new OpenWorkflowFromWebAction()));
+		menu.add(new JMenuItem(new SaveWorkflowAction()));
+		menu.addSeparator();
+		menu.add(new JMenuItem(new ClearWorkflowAction()));
+		menu.add(new JSeparator());
+		menu.add(new JMenuItem(new QuitAction()));
+
+		return menu;
+	}
+
+	/**
 	 * This menu creates the edit menu.
 	 * 
 	 * @return
 	 */
-    private JMenu createEditMenu(){
-        JMenu menu = new JMenu("Edit");
-        menu.add(new JMenuItem(new CutAction()));
-        menu.add(new JMenuItem(new CopyAction()));
-        menu.add(new JMenuItem(new PasteAction()));
-        
-        
-        menu.addSeparator();
-        menu.add(new JMenuItem(new UndoAction()));
-        menu.add(new JMenuItem(new RedoAction()));
-        // menu.addSeparator();
-        // menu.add(new JMenuItem(new PreferencesAction()));
-        return menu;
-        
-    }
-    
-    /**
+	private JMenu createEditMenu() {
+		JMenu menu = new JMenu("Edit");
+		menu.add(new JMenuItem(new CutAction()));
+		menu.add(new JMenuItem(new CopyAction()));
+		menu.add(new JMenuItem(new PasteAction()));
+
+		menu.addSeparator();
+		menu.add(new JMenuItem(new UndoAction()));
+		menu.add(new JMenuItem(new RedoAction()));
+		// menu.addSeparator();
+		// menu.add(new JMenuItem(new PreferencesAction()));
+		return menu;
+
+	}
+
+	/**
 	 * This method creates the view menu.
 	 * 
 	 * @return
 	 */
-    private JMenu createViewMenu(){
-        JMenu menu = new JMenu("View");
-        menu.add(new JMenuItem(new ExplorerAction()));
-        menu.add(new JMenuItem(new ServicesAction()));
-        menu.add(new JMenuItem(new WorkflowViewAction()));
-        return menu;
-        
-    }
-    
-    private JMenu createPublishMenu(){
-        JMenu menu = new JMenu("Publish");
-        menu.add(new JMenuItem());
-        
-        return menu;
-    }
-    
-    private JMenu createServicesMenu(){
-    	JMenu menu = new JMenu("Services");
-    	UIComponentRegistry registry = UIComponentRegistry.instance();
-		for (Iterator i = registry.getComponents().keySet().iterator(); i
-				.hasNext();) {
+	private JMenu createViewMenu() {
+		JMenu menu = new JMenu("View");
+		menu.add(new JMenuItem(new ExplorerAction()));
+		menu.add(new JMenuItem(new ServicesAction()));
+		menu.add(new JMenuItem(new WorkflowViewAction()));
+		return menu;
+
+	}
+
+	private JMenu createPublishMenu() {
+		JMenu menu = new JMenu("Publish");
+		menu.add(new JMenuItem());
+
+		return menu;
+	}
+
+	private JMenu createServicesMenu() {
+		JMenu menu = new JMenu("Services");
+		UIComponentRegistry registry = UIComponentRegistry.instance();
+		for (Iterator i = registry.getComponents().keySet().iterator(); i.hasNext();) {
 			final String itemName = (String) i.next();
 			try {
-				final Class itemClass = Class.forName((String) registry
-						.getComponents().get(itemName));
-				final ImageIcon itemIcon = (ImageIcon) registry.getIcons().get(
-						itemName);
+				final Class itemClass = Class.forName((String) registry.getComponents().get(itemName));
+				final ImageIcon itemIcon = (ImageIcon) registry.getIcons().get(itemName);
 				JMenuItem menuItem = null;
 				if (itemIcon == null) {
 					menuItem = new JMenuItem(itemName);
@@ -177,11 +172,9 @@ public class MenuBar extends JMenuBar {
 				menuItem.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent ae) {
 						try {
-							ScuflUIComponent thing = (ScuflUIComponent) itemClass
-									.newInstance();
-							UIUtils.createFrame(Workbench.model, thing,
-									100, 100, 400, 400);
-							
+							ScuflUIComponent thing = (ScuflUIComponent) itemClass.newInstance();
+							UIUtils.createFrame(Workbench.model, thing, 100, 100, 400, 400);
+
 						} catch (InstantiationException ie) {
 							//
 						} catch (IllegalAccessException iae) {
@@ -195,26 +188,24 @@ public class MenuBar extends JMenuBar {
 			}
 		}
 
-         
-    	return menu;
-    }
-    
-   
-    /**
+		return menu;
+	}
+
+	/**
 	 * This method creates the help menu.
 	 * 
 	 * @return
 	 */
-    private JMenu createHelpMenu(){
-        JMenu menu = new JMenu("Help");
-        menu.add(new JMenuItem(new AboutAction()));
-        menu.add(new JMenuItem(new HelpAction()));
-        menu.add(new JMenuItem(new WorkflowHelpAction()));
-        return menu;
+	private JMenu createHelpMenu() {
+		JMenu menu = new JMenu("Help");
+		menu.add(new JMenuItem(new AboutAction()));
+		menu.add(new JMenuItem(new HelpAction()));
+		menu.add(new JMenuItem(new WorkflowHelpAction()));
+		return menu;
 
-    }
-	
-	private JMenu createRepositoryMenu(){
+	}
+
+	private JMenu createRepositoryMenu() {
 		JMenu menu = new JMenu("Repository");
 		menu.add(new JMenuItem(new NewRepositoryAction()));
 		menu.add(new JMenuItem(new UpdateRepositoryAction()));
