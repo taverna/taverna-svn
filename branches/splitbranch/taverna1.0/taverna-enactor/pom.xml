@@ -15,12 +15,7 @@
       <groupId>uk.org.mygrid.taverna</groupId>
       <artifactId>taverna-util</artifactId>
       <version>1.5-SNAPSHOT</version>
-    </dependency>
-    <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <version>3.8</version>
-    </dependency>
+    </dependency>    
     <dependency>
       <groupId>uk.org.mygrid.taverna.scufl</groupId>
       <artifactId>scufl-core</artifactId>
@@ -70,6 +65,6 @@
       <groupId>uk.org.mygrid.taverna.scufl</groupId>
       <artifactId>scufl-provenance</artifactId>
       <version>1.5-SNAPSHOT</version>
-    </dependency>
+    </dependency>        
   </dependencies>
 </project>
