@@ -251,5 +251,6 @@
     <module>taverna-util</module>
     <module>taverna-biomoby</module>
     <module>taverna-launcher</module>
+    <module>taverna-contrib</module>
   </modules>
 </project>
