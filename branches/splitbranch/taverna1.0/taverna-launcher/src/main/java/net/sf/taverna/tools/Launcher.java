@@ -120,7 +120,7 @@ public class Launcher {
 			
 			File bootDir;
 			try {
-				bootDir = getBootstrapDir();
+				bootDir = getBootstrapDir().getParentFile();
 			} catch (IOException e) { 
 				System.err.println("Can't find taverna home directory, " + e.getMessage());				
 				System.exit(100);				
