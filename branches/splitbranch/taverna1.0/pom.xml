@@ -72,6 +72,13 @@
           <skip>true</skip>
         </configuration>
       </plugin>
+      <plugin>
+        <artifactId>maven-assembly-plugin</artifactId>
+        <version>2.2-svn-SNAPSHOT</version>
+        <configuration>
+          <descriptor>src/main/assembly/assembly.xml</descriptor>
+        </configuration>
+      </plugin>
     </plugins>
   </build>
   <profiles>
@@ -124,24 +131,7 @@
       </build>
     </profile>
     <profile>
-      <id>default</id>
-      <activation>
-       <activeByDefault>true</activeByDefault>
-      </activation>
-      <build>
-        <plugins>
-          <plugin>
-            <artifactId>maven-assembly-plugin</artifactId>
-            <version>2.2-svn-SNAPSHOT</version>
-            <configuration>
-              <descriptor>src/main/assembly/assembly.xml</descriptor>
-            </configuration>
-          </plugin>
-        </plugins>
-      </build>
-    </profile>
-    <profile>
-      <id>omii</id>
+      <id>omii-assembly</id>
       <activation>
         <property>
           <name>assembly</name>
@@ -161,7 +151,7 @@
       </build>
     </profile>
     <profile>
-      <id>omii-client</id>
+      <id>omii-client-assembly</id>
       <activation>
         <property>
           <name>assembly</name>
@@ -239,6 +229,9 @@
       <url>scpexe://phoebus.cs.man.ac.uk/disk1/maven/snapshot-repository</url>
     </snapshotRepository>
   </distributionManagement>
+  <properties>
+    <assembly>sf</assembly>
+  </properties>
   <modules>
     <module>baclava</module>
     <module>scufl</module>
