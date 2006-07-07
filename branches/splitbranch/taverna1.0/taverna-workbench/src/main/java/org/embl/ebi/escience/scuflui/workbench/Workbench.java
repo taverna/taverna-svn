@@ -175,11 +175,11 @@ public class Workbench extends JFrame {
 	 */
 	public Workbench() {
 		// Display the build date and version in the top level window
-		super("Scufl Workbench");/* v"
+		super("Scufl Workbench v"
 				+ org.embl.ebi.escience.scufl.TavernaReleaseInfo.getVersion()
 				+ ", built "
 				+ org.embl.ebi.escience.scufl.TavernaReleaseInfo.getBuildDate()
-						.toString());*/
+						.toString());
 
 		// Create the desktop pane
 		JDesktopPane desktop = null;
