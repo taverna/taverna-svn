@@ -25,10 +25,10 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: ProcessorInfoBeanHelper.java,v $
- * Revision           $Revision: 1.1.2.1 $
+ * Revision           $Revision: 1.1.2.2 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-07-05 16:40:59 $
- *               by   $Author: davidwithers $
+ * Last modified on   $Date: 2006-07-07 10:24:12 $
+ *               by   $Author: sowen70 $
  * Created on 22-Jun-2006
  *****************************************************************/
 package org.embl.ebi.escience.scuflworkers;
@@ -85,51 +85,62 @@ public class ProcessorInfoBeanHelper implements ProcessorInfoBean {
 
 	public String processorClassname() {
 		String result = tavernaProperties.getProperty(propertyBase + ".class");
-		if (result!=null) result=result.trim();
+		if (result != null)
+			result = result.trim();
 		return result;
 	}
 
 	public String xmlHandlerClassname() {
-		String result= tavernaProperties.getProperty(propertyBase + ".xml");
-		if (result!=null) result=result.trim();
+		String result = tavernaProperties.getProperty(propertyBase + ".xml");
+		if (result != null)
+			result = result.trim();
 		return result;
 	}
 
 	public String colour() {
-		String result=tavernaProperties.getProperty(propertyBase + ".colour");
-		if (result!=null) result=result.trim();
+		String result = tavernaProperties.getProperty(propertyBase + ".colour");
+		if (result != null)
+			result = result.trim();
 		return result;
 	}
 
 	public ImageIcon icon() {
-		String icon = tavernaProperties.getProperty(propertyBase + ".icon");		
+		String icon = tavernaProperties.getProperty(propertyBase + ".icon");
 		ImageIcon result = null;
 		if (icon != null) {
-			icon=icon.trim();
+			icon = icon.trim();
 			ClassLoader loader = ProcessorInfoBeanHelper.class.getClassLoader();
 			if (loader == null) {
 				loader = Thread.currentThread().getContextClassLoader();
 			}
-			result = new ImageIcon(loader.getResource(icon));
+			if (loader.getResource(icon) != null) {
+				result = new ImageIcon(loader.getResource(icon));
+				logger.info("Found icon: " + icon);
+			} else {
+				logger.error("Unable to find icon: " + icon);
+			}
 		}
 		return result;
 	}
 
 	public String taskClassname() {
-		String result= tavernaProperties.getProperty(propertyBase + ".taskclass");
-		if (result!=null) result=result.trim();
+		String result = tavernaProperties.getProperty(propertyBase + ".taskclass");
+		if (result != null)
+			result = result.trim();
 		return result;
 	}
 
 	public String editorClassname() {
-		String result= tavernaProperties.getProperty(propertyBase + ".editor");
-		if (result!=null) result=result.trim();
+		String result = tavernaProperties.getProperty(propertyBase + ".editor");
+		if (result != null)
+			result = result.trim();
 		return result;
 	}
 
 	public String scavengerClassname() {
-		String result= tavernaProperties.getProperty(propertyBase + ".scavenger");
-		if (result!=null) result=result.trim();
+		String result = tavernaProperties.getProperty(propertyBase + ".scavenger");
+		if (result != null)
+			result = result.trim();
 		return result;
 	}
 
