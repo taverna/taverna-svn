@@ -10,7 +10,7 @@
   <artifactId>taverna-biomoby</artifactId>
   <name>Taverna Biomoby</name>
   <version>1.5-SNAPSHOT</version>
-  <dependencies>
+  <dependencies>  	
     <dependency>
       <groupId>uk.org.mygrid.resources</groupId>
       <artifactId>jmoby</artifactId>
