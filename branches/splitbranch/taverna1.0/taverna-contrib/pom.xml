@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<project>
+<?xml version="1.0" encoding="UTF-8"?><project>
   <parent>
     <artifactId>taverna</artifactId>
     <groupId>uk.org.mygrid.taverna</groupId>
@@ -12,9 +11,39 @@
   <version>1.5-SNAPSHOT</version>
   <dependencies>
     <dependency>
-      <groupId>uk.org.mygrid</groupId>
+      <groupId>uk.org.mygrid.taverna</groupId>
+      <artifactId>taverna-enactor</artifactId>
+      <version>1.5-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>uk.org.mygrid.taverna</groupId>
       <artifactId>taverna-workbench</artifactId>
       <version>1.5-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>uk.org.mygrid.taverna.scufl</groupId>
+      <artifactId>scufl-model</artifactId>
+      <version>1.5-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>uk.org.mygrid.taverna.scufl</groupId>
+      <artifactId>scufl-ui</artifactId>
+      <version>1.5-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>uk.org.mygrid.taverna.processors</groupId>
+      <artifactId>taverna-java-processor</artifactId>
+      <version>1.5-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>commons-httpclient</groupId>
+      <artifactId>commons-httpclient</artifactId>
+      <version>3.0-rc4</version>
+    </dependency>
+    <dependency>
+      <groupId>bsh</groupId>
+      <artifactId>bsh</artifactId>
+      <version>2.0b1</version>
     </dependency>
     <dependency>
       <groupId>jaxen</groupId>
@@ -68,6 +97,11 @@
     </dependency>
     <dependency>
       <groupId>uk.org.mygrid.resources</groupId>
+      <artifactId>jedit-syntax</artifactId>
+      <version>2.2.2</version>
+    </dependency>
+    <dependency>
+      <groupId>uk.org.mygrid.resources</groupId>
       <artifactId>biojava</artifactId>
       <version>1.4pre1</version>
     </dependency>
@@ -104,28 +138,43 @@
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
-      <version>3.8</version>
+      <version>3.8.1</version>
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>net.sf.saxon</groupId>
+      <groupId>uk.org.mygrid.resources</groupId>
       <artifactId>saxon</artifactId>
-      <version>8.7</version>
+      <version>8</version>
     </dependency>
     <dependency>
-      <groupId>net.sf.saxon</groupId>
+      <groupId>uk.org.mygrid.resources</groupId>
       <artifactId>saxon-jdom</artifactId>
-      <version>8.7</version>
+      <version>8</version>
     </dependency>
     <dependency>
-      <groupId>net.sf.saxon</groupId>
+      <groupId>uk.org.mygrid.resources</groupId>
       <artifactId>saxon-sql</artifactId>
-      <version>8.7</version>
+      <version>8</version>
     </dependency>
     <dependency>
-      <groupId>net.sf.saxon</groupId>
+      <groupId>uk.org.mygrid.resources</groupId>
       <artifactId>saxon-xom</artifactId>
-      <version>8.7</version>
+      <version>8</version>
     </dependency>
-  </dependencies>
+    <dependency>
+      <groupId>dom4j</groupId>
+      <artifactId>dom4j</artifactId>
+      <version>1.5</version>
+      <exclusions>
+        <exclusion>
+          <artifactId>jsr173</artifactId>
+          <groupId>javax.xml</groupId>
+        </exclusion>
+        <exclusion>
+          <artifactId>pull-parser</artifactId>
+          <groupId>pull-parser</groupId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+ </dependencies>
 </project>
