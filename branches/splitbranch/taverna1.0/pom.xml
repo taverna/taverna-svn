@@ -40,6 +40,18 @@
       </roles>
       <timezone>0</timezone>
     </developer>
+  	<developer>
+  	      <id>sowen</id>
+  	      <name>Stuart Owen</name>
+  	      <email>stuart.owen@manchester.ac.uk</email>
+  	      <url>http://www.cs.man.ac.uk/~sowen/</url>
+  	      <organization>University of Manchester</organization>
+  	      <organizationUrl>http://www.manchester.ac.uk</organizationUrl>
+  	      <roles>
+  	        <role>Developer</role>
+  	      </roles>
+  	      <timezone>0</timezone>
+  	</developer>
   </developers>
   <licenses>
     <license>
@@ -234,7 +246,7 @@
       <name>myGrid Snapshot Repository</name>
       <url>scpexe://phoebus.cs.man.ac.uk/disk1/maven/snapshot-repository</url>
     </snapshotRepository>
-  </distributionManagement>
+  </distributionManagement> 
   <dependencyManagement>
     <dependencies>
       <dependency>
