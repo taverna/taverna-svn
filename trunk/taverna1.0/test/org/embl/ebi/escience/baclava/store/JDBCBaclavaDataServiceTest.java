@@ -13,8 +13,6 @@ import org.embl.ebi.escience.baclava.StupidLSIDProvider;
 import org.embl.ebi.escience.scufl.ScuflModel;
 import org.embl.ebi.escience.scufl.parser.XScuflParser;
 import org.embl.ebi.escience.scufl.view.XScuflView;
-import org.embl.ebi.escience.testhelpers.DatabaseAwareTestCase;
-import org.embl.ebi.escience.testhelpers.WorkflowFactory;
 
 public class JDBCBaclavaDataServiceTest extends DatabaseAwareTestCase {
     	
@@ -77,7 +75,7 @@ public class JDBCBaclavaDataServiceTest extends DatabaseAwareTestCase {
 	public void testStoreWorkflow() throws Exception
 	{
 		JDBCBaclavaDataService store = getDataService();
-		ScuflModel model = WorkflowFactory.getSimpleWorkflowModel();
+		ScuflModel model = getSimpleWorkflowModel();
 		store.storeWorkflow(model);
 		
 		Connection con=getConnection();
@@ -123,7 +121,7 @@ public class JDBCBaclavaDataServiceTest extends DatabaseAwareTestCase {
 	public void testFetchWorkflow() throws Exception
 	{
 		JDBCBaclavaDataService store = getDataService();
-		ScuflModel model = WorkflowFactory.getSimpleWorkflowModel();
+		ScuflModel model = getSimpleWorkflowModel();
 		store.storeWorkflow(model);
 		String xml=store.fetchWorkflow(model.getDescription().getLSID());
 		
@@ -135,6 +133,28 @@ public class JDBCBaclavaDataServiceTest extends DatabaseAwareTestCase {
 		assertEquals("Author is wrong","tester",fetchedModel.getDescription().getAuthor());
 		assertEquals("LSID is wrong",model.getDescription().getLSID(),fetchedModel.getDescription().getLSID());
 		assertEquals("An invalid number of Processors",model.getProcessors().length,fetchedModel.getProcessors().length);		
+	}
+	
+	private ScuflModel getSimpleWorkflowModel() throws Exception {
+		return buildWorkflowModel(getSimpleWorkflowXML());
+	}
+	
+	private ScuflModel buildWorkflowModel(String xml) throws Exception {
+		ScuflModel model = new ScuflModel();
+		ByteArrayInputStream instr = new ByteArrayInputStream(xml.getBytes());
+		XScuflParser.populate(instr, model, null);
+
+		return model;
+	}
+	
+	private String getSimpleWorkflowXML() {
+		String result = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
+				+ "<s:scufl xmlns:s=\"http://org.embl.ebi.escience/xscufl/0.1alpha\" version=\"0.2\" log=\"0\">"
+				+ "<s:workflowdescription lsid=\"urn:lsid:www.mygrid.org.uk:operation:0Y60ZJP45I0\" author=\"tester\" title=\"simple workflow\" />"
+				+ "<s:processor name=\"String_Constant\" boring=\"false\">"
+				+ "<s:stringconstant>String Value</s:stringconstant>" + "</s:processor>"
+				+ "<s:link source=\"String_Constant:value\" sink=\"out\" />" + "<s:sink name=\"out\" />" + "</s:scufl>";
+		return result;
 	}
 
 }
