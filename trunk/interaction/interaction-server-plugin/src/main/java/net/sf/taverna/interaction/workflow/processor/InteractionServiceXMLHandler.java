@@ -26,70 +26,61 @@ package net.sf.taverna.interaction.workflow.processor;
 
 import org.embl.ebi.escience.scufl.DuplicateProcessorNameException;
 import org.embl.ebi.escience.scufl.Processor;
-import org.embl.ebi.escience.scuflworkers.ProcessorFactory;
 import org.embl.ebi.escience.scufl.ProcessorCreationException;
 import org.embl.ebi.escience.scufl.ScuflModel;
 import org.embl.ebi.escience.scufl.XScufl;
 import org.embl.ebi.escience.scufl.parser.XScuflFormatException;
+import org.embl.ebi.escience.scuflworkers.ProcessorFactory;
 import org.embl.ebi.escience.scuflworkers.XMLHandler;
-
 import org.jdom.Element;
 
 /**
  * Handle XML for the Interaction Service processor
+ * 
  * @author Tom Oinn
  */
 public class InteractionServiceXMLHandler implements XMLHandler {
-    
-    public Element elementForProcessor(Processor p) {
-	InteractionServiceProcessor ip = 
-	    (InteractionServiceProcessor)p;
-	return getElement(ip.getBaseURL(),
-			  ip.getPatternName());
-    }
-    
-    public Element elementForFactory(ProcessorFactory pf) {
-	InteractionServiceProcessorFactory ipf =
-	    (InteractionServiceProcessorFactory)pf;
-	return getElement(ipf.getBaseURL(),
-			  ipf.getPatternName());
-    }
 
-    public Processor loadProcessorFromXML(Element processorNode,
-					  ScuflModel model,
-					  String name)
-	throws ProcessorCreationException,
-	       DuplicateProcessorNameException,
-	       XScuflFormatException {
-	Element interactionProcessor = processorNode.getChild("interaction", XScufl.XScuflNS);
-	String baseURL = interactionProcessor.
-	    getChild("baseurl", XScufl.XScuflNS).getTextTrim();
-	String patternName = interactionProcessor.
-	    getChild("patternname", XScufl.XScuflNS).getTextTrim();
-	return new InteractionServiceProcessor(model,
-					       name,
-					       baseURL, 
-					       patternName);
-    }
-    
-    public ProcessorFactory getFactory(Element interactionProcessor) {
-	String baseURL = interactionProcessor.
-	    getChild("baseurl", XScufl.XScuflNS).getTextTrim();
-	String patternName = interactionProcessor.
-	    getChild("patternname", XScufl.XScuflNS).getTextTrim();
-	return new InteractionServiceProcessorFactory(baseURL, patternName);
-    }
-    
-    private Element getElement(String baseURL,
-			       String patternName) {
-	Element e = new Element("interaction", XScufl.XScuflNS);
-	Element b = new Element("baseurl", XScufl.XScuflNS);
-	b.setText(baseURL);
-	e.addContent(b);
-	Element p = new Element("patternname", XScufl.XScuflNS);
-	p.setText(patternName);
-	e.addContent(p);
-	return e;
-    }
-	
+	public Element elementForProcessor(Processor p) {
+		InteractionServiceProcessor ip = (InteractionServiceProcessor) p;
+		return getElement(ip.getBaseURL(), ip.getPatternName());
+	}
+
+	public Element elementForFactory(ProcessorFactory pf) {
+		InteractionServiceProcessorFactory ipf = (InteractionServiceProcessorFactory) pf;
+		return getElement(ipf.getBaseURL(), ipf.getPatternName());
+	}
+
+	public Processor loadProcessorFromXML(Element processorNode,
+			ScuflModel model, String name) throws ProcessorCreationException,
+			DuplicateProcessorNameException, XScuflFormatException {
+		Element interactionProcessor = processorNode.getChild("interaction",
+				XScufl.XScuflNS);
+		String baseURL = interactionProcessor.getChild("baseurl",
+				XScufl.XScuflNS).getTextTrim();
+		String patternName = interactionProcessor.getChild("patternname",
+				XScufl.XScuflNS).getTextTrim();
+		return new InteractionServiceProcessor(model, name, baseURL,
+				patternName);
+	}
+
+	public ProcessorFactory getFactory(Element interactionProcessor) {
+		String baseURL = interactionProcessor.getChild("baseurl",
+				XScufl.XScuflNS).getTextTrim();
+		String patternName = interactionProcessor.getChild("patternname",
+				XScufl.XScuflNS).getTextTrim();
+		return new InteractionServiceProcessorFactory(baseURL, patternName);
+	}
+
+	private Element getElement(String baseURL, String patternName) {
+		Element e = new Element("interaction", XScufl.XScuflNS);
+		Element b = new Element("baseurl", XScufl.XScuflNS);
+		b.setText(baseURL);
+		e.addContent(b);
+		Element p = new Element("patternname", XScufl.XScuflNS);
+		p.setText(patternName);
+		e.addContent(p);
+		return e;
+	}
+
 }

@@ -24,16 +24,17 @@
 
 package net.sf.taverna.interaction.workflow;
 
-/** 
- * Event corresponding to a change in the state of a submitted
- * interaction request
+/**
+ * Event corresponding to a change in the state of a submitted interaction
+ * request
+ * 
  * @author Tom Oinn
  */
 public interface InteractionEvent {
-    
-    /**
-     * Returns the InteractionReceipt that generated this event
-     */
-    public InteractionReceipt getReceipt();
+
+	/**
+	 * Returns the InteractionReceipt that generated this event
+	 */
+	public InteractionReceipt getReceipt();
 
 }

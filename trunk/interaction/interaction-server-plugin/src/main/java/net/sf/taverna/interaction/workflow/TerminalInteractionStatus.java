@@ -26,38 +26,37 @@ package net.sf.taverna.interaction.workflow;
 
 public interface TerminalInteractionStatus extends InteractionStatus {
 
-    /**
-     * Interaction was rejected by the receipient
-     */
-    public static int REJECTED = 0;
-    
-    /**
-     * Interaction completed successfuly
-     */
-    public static int COMPLETED = 1;
+	/**
+	 * Interaction was rejected by the receipient
+	 */
+	public static int REJECTED = 0;
 
-    /**
-     * Interaction failed due to problems with the service
-     */
-    public static int FAILED = 2;
+	/**
+	 * Interaction completed successfuly
+	 */
+	public static int COMPLETED = 1;
 
-    /**
-     * Interaction timed out
-     */
-    public static int TIMEOUT = 3;
-    
-    /**
-     * Return a Object corresponding to the result data, if 
-     * any, from the interaction service. The exact type of
-     * the Object returned will depend on the interaction
-     * service implementation, in the default case this
-     * is a Map of DataThing objects
-     */
-    public Object getResultData();
-        
-    /**
-     * Returns one of the constant codes defined in this interface
-     */
-    public int getStatusCode();
-    
+	/**
+	 * Interaction failed due to problems with the service
+	 */
+	public static int FAILED = 2;
+
+	/**
+	 * Interaction timed out
+	 */
+	public static int TIMEOUT = 3;
+
+	/**
+	 * Return a Object corresponding to the result data, if any, from the
+	 * interaction service. The exact type of the Object returned will depend on
+	 * the interaction service implementation, in the default case this is a Map
+	 * of DataThing objects
+	 */
+	public Object getResultData();
+
+	/**
+	 * Returns one of the constant codes defined in this interface
+	 */
+	public int getStatusCode();
+
 }

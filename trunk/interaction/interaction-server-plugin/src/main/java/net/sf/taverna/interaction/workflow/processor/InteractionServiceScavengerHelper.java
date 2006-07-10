@@ -40,51 +40,50 @@ import org.embl.ebi.escience.scuflworkers.ScavengerHelper;
 
 /**
  * Helper to specify the baseURL for an Interaction Service scavenger
+ * 
  * @author Tom Oinn
  */
 public class InteractionServiceScavengerHelper implements ScavengerHelper {
-    
-    public String getScavengerDescription() {
-	return "Add new Interaction Service...";
-    }
 
-    public ActionListener getListener(ScavengerTree theScavenger) {
-	final ScavengerTree s = theScavenger;
-	return new ActionListener() {
-		public void actionPerformed(ActionEvent ae) {
-		    String location = (String)JOptionPane.showInputDialog
-			(null,
-			 "Base URL for the Interaction Service",
-			 "Interaction Service Location",
-			 JOptionPane.QUESTION_MESSAGE,
-			 null,
-			 null,
-			 "http://localhost:8080/"); 
-		    if (location != null) {
-			try {
-			    s.addScavenger(new InteractionServiceScavenger(location));
-			}
-			catch (ScavengerCreationException sce) {
-			    JOptionPane.showMessageDialog
-				(null,
-				 "Unable to create scavenger!\n"+sce.getMessage(),
-				 "Exception!",
-				 JOptionPane.ERROR_MESSAGE);
-			}
-		    }
-		}
-	    };
-    }
+	public String getScavengerDescription() {
+		return "Add new Interaction Service...";
+	}
 
-    /**
-     * InteractionService has no defaults, so always returns an empty set
-     */
+	public ActionListener getListener(ScavengerTree theScavenger) {
+		final ScavengerTree s = theScavenger;
+		return new ActionListener() {
+			public void actionPerformed(ActionEvent ae) {
+				String location = (String) JOptionPane.showInputDialog(null,
+						"Base URL for the Interaction Service",
+						"Interaction Service Location",
+						JOptionPane.QUESTION_MESSAGE, null, null,
+						"http://localhost:8080/");
+				if (location != null) {
+					try {
+						s
+								.addScavenger(new InteractionServiceScavenger(
+										location));
+					} catch (ScavengerCreationException sce) {
+						JOptionPane.showMessageDialog(null,
+								"Unable to create scavenger!\n"
+										+ sce.getMessage(), "Exception!",
+								JOptionPane.ERROR_MESSAGE);
+					}
+				}
+			}
+		};
+	}
+
+	/**
+	 * InteractionService has no defaults, so always returns an empty set
+	 */
 	public Set<Scavenger> getDefaults() {
 		return new HashSet<Scavenger>();
 	}
 
 	/**
-	 * InteractionService is not extracted from the model, so always returns an empty set
+	 * InteractionService is not extracted from the model, so always returns an
+	 * empty set
 	 */
 	public Set<Scavenger> getFromModel(ScuflModel model) {
 		return new HashSet<Scavenger>();
@@ -96,7 +95,5 @@ public class InteractionServiceScavengerHelper implements ScavengerHelper {
 	public ImageIcon getIcon() {
 		return new InteractionServiceInfoBean().icon();
 	}
-    
-    
 
 }

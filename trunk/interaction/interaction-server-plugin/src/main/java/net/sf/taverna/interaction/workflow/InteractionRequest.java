@@ -27,35 +27,33 @@ package net.sf.taverna.interaction.workflow;
 import java.util.Date;
 
 /**
- * Represents a populated interaction request message to be
- * submitted to an InteractionService
+ * Represents a populated interaction request message to be submitted to an
+ * InteractionService
+ * 
  * @author Tom Oinn
  */
 public interface InteractionRequest {
-    
-    /**
-     * Return the email address that this request will
-     * be sent to
-     */
-    public String getEmail();
 
-    /**
-     * The interaction pattern requested
-     */
-    public InteractionPattern getPattern();
-    
-    /**
-     * The date at which this request should
-     * register a timed out response
-     */
-    public Date getExpiryTime();
+	/**
+	 * Return the email address that this request will be sent to
+	 */
+	public String getEmail();
 
-    /**
-     * Get the serialized data for this request,
-     * the exact serialization is dependent on the
-     * system, the reference implementation uses
-     * Taverna's DataThing XML map
-     */
-    public byte[] getData();
+	/**
+	 * The interaction pattern requested
+	 */
+	public InteractionPattern getPattern();
+
+	/**
+	 * The date at which this request should register a timed out response
+	 */
+	public Date getExpiryTime();
+
+	/**
+	 * Get the serialized data for this request, the exact serialization is
+	 * dependent on the system, the reference implementation uses Taverna's
+	 * DataThing XML map
+	 */
+	public byte[] getData();
 
 }

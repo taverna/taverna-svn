@@ -36,69 +36,65 @@ import org.embl.ebi.escience.scuflui.workbench.Scavenger;
 import org.embl.ebi.escience.scuflui.workbench.ScavengerCreationException;
 
 /**
- * Collects the available interaction patterns within an interaction
- * service
+ * Collects the available interaction patterns within an interaction service
+ * 
  * @author Tom Oinn
  */
 public class InteractionServiceScavenger extends Scavenger {
-    
-    /**
-     * Create a new InteractionServiceScavenger rooted at the
-     * specified baseURL
-     */
-    public InteractionServiceScavenger(String baseURL) 
-	throws ScavengerCreationException {
-	super("Interaction @ "+baseURL);
-	try {
-	    URL urlObject = new URL(baseURL);
-	    InteractionService is =
-		HTTPInteractionServiceProxy.connectTo(urlObject);
-	    InteractionPattern[] patterns = is.getInteractionPatterns();
-	    for (int i = 0; i < patterns.length; i++) {
-		String patternName = patterns[i].getName();
-		add(patternName.split("\\.")).
-		    setUserObject(new InteractionServiceProcessorFactory(baseURL, patternName));
-	    }
-	}
-	catch (Exception ex) {
-	    if (ex instanceof ScavengerCreationException) {
-		throw (ScavengerCreationException)ex;
-	    }
-	    ScavengerCreationException sce = 
-		new ScavengerCreationException("Unable to create interaction scavenger : "+
-					       ex.getMessage());
-	    sce.initCause(ex);
-	    throw sce;
-	}
-    }
-    
-    private DefaultMutableTreeNode add(String[] name) {
-	DefaultMutableTreeNode currentNode = this;
-	for (int i = 0; i < name.length; i++) {
-	    String currentName = name[i];
-	    DefaultMutableTreeNode foundNode = null;
-	    for (int j = 0; 
-		 j < currentNode.getChildCount() &&
-		     foundNode == null; 
-		 j++) {
-		DefaultMutableTreeNode n = 
-		    (DefaultMutableTreeNode)currentNode.getChildAt(j);
-		if (n.getUserObject() instanceof String &&
-		    ((String)n.getUserObject()).equals(currentName)) {
-		    foundNode = n;
+
+	/**
+	 * Create a new InteractionServiceScavenger rooted at the specified baseURL
+	 */
+	public InteractionServiceScavenger(String baseURL)
+			throws ScavengerCreationException {
+		super("Interaction @ " + baseURL);
+		try {
+			URL urlObject = new URL(baseURL);
+			InteractionService is = HTTPInteractionServiceProxy
+					.connectTo(urlObject);
+			InteractionPattern[] patterns = is.getInteractionPatterns();
+			for (int i = 0; i < patterns.length; i++) {
+				String patternName = patterns[i].getName();
+				add(patternName.split("\\.")).setUserObject(
+						new InteractionServiceProcessorFactory(baseURL,
+								patternName));
+			}
+		} catch (Exception ex) {
+			if (ex instanceof ScavengerCreationException) {
+				throw (ScavengerCreationException) ex;
+			}
+			ScavengerCreationException sce = new ScavengerCreationException(
+					"Unable to create interaction scavenger : "
+							+ ex.getMessage());
+			sce.initCause(ex);
+			throw sce;
 		}
-	    }
-	    if (foundNode == null) {
-		DefaultMutableTreeNode newNode = 
-		    new DefaultMutableTreeNode(currentName);
-		currentNode.add(newNode);
-		currentNode = newNode;
-	    }
-	    else {
-		currentNode = foundNode;
-	    }
 	}
-	return currentNode;
-    }
+
+	private DefaultMutableTreeNode add(String[] name) {
+		DefaultMutableTreeNode currentNode = this;
+		for (int i = 0; i < name.length; i++) {
+			String currentName = name[i];
+			DefaultMutableTreeNode foundNode = null;
+			for (int j = 0; j < currentNode.getChildCount()
+					&& foundNode == null; j++) {
+				DefaultMutableTreeNode n = (DefaultMutableTreeNode) currentNode
+						.getChildAt(j);
+				if (n.getUserObject() instanceof String
+						&& ((String) n.getUserObject()).equals(currentName)) {
+					foundNode = n;
+				}
+			}
+			if (foundNode == null) {
+				DefaultMutableTreeNode newNode = new DefaultMutableTreeNode(
+						currentName);
+				currentNode.add(newNode);
+				currentNode = newNode;
+			} else {
+				currentNode = foundNode;
+			}
+		}
+		return currentNode;
+	}
 
 }

@@ -24,17 +24,16 @@
 
 package net.sf.taverna.interaction.workflow;
 
-/** 
- * The callback interface for handling interaction state change
- * events
+/**
+ * The callback interface for handling interaction state change events
+ * 
  * @author Tom Oinn
  */
 public interface InteractionStateListener {
-    
-    /**
-     * Called when the state of the InteractionReceipt
-     * changes
-     */
-    public void stateChanged(InteractionEvent ie);
+
+	/**
+	 * Called when the state of the InteractionReceipt changes
+	 */
+	public void stateChanged(InteractionEvent ie);
 
 }

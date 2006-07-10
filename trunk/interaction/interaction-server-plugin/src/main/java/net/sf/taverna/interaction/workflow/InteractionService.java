@@ -26,28 +26,28 @@ package net.sf.taverna.interaction.workflow;
 
 /**
  * Proxy to an Interaction Service server
+ * 
  * @author Tom Oinn
  */
 public interface InteractionService {
-    
-    /**
-     * Submit an interaction request to the server
-     * @return an InteractionReceipt object which can
-     * be used to obtain results and status on the
-     * interaction
-     */
-    public InteractionReceipt submitRequest(InteractionRequest request)
-	throws SubmissionException;
 
-    /**
-     * Get all supported interaction patterns from this 
-     * server
-     */
-    public InteractionPattern[] getInteractionPatterns();
+	/**
+	 * Submit an interaction request to the server
+	 * 
+	 * @return an InteractionReceipt object which can be used to obtain results
+	 *         and status on the interaction
+	 */
+	public InteractionReceipt submitRequest(InteractionRequest request)
+			throws SubmissionException;
 
-    /**
-     * Get the hostname of the remote interaction server
-     */
-    public String getHostName();
-    
+	/**
+	 * Get all supported interaction patterns from this server
+	 */
+	public InteractionPattern[] getInteractionPatterns();
+
+	/**
+	 * Get the hostname of the remote interaction server
+	 */
+	public String getHostName();
+
 }

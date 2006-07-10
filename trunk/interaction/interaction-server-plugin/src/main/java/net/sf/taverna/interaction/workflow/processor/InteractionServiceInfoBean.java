@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: InteractionServiceInfoBean.java,v $
- * Revision           $Revision: 1.1 $
+ * Revision           $Revision: 1.2 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-07-10 11:57:30 $
+ * Last modified on   $Date: 2006-07-10 13:17:43 $
  *               by   $Author: sowen70 $
  * Created on 03-Jul-2006
  *****************************************************************/
@@ -36,9 +36,9 @@ package net.sf.taverna.interaction.workflow.processor;
 import org.embl.ebi.escience.scuflworkers.ProcessorInfoBeanHelper;
 
 public class InteractionServiceInfoBean extends ProcessorInfoBeanHelper {
-	
+
 	public InteractionServiceInfoBean() {
 		super("interaction");
 	}
-	
+
 }

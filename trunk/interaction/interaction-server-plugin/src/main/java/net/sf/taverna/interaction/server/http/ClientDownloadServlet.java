@@ -24,26 +24,28 @@
 
 package net.sf.taverna.interaction.server.http;
 
-import net.sf.taverna.interaction.server.*;
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.ServletException;
+
+import net.sf.taverna.interaction.server.InteractionServer;
+import net.sf.taverna.interaction.server.InteractionState;
+import net.sf.taverna.interaction.server.ServerInteractionPattern;
+
 /**
- * Servlet to allow interaction clients access to the input values
- * of an interaction job, uses the ServerInteractionPattern in the
- * InteractionState to translate from the on disk XML form to one
- * suited to that particular pattern.
+ * Servlet to allow interaction clients access to the input values of an
+ * interaction job, uses the ServerInteractionPattern in the InteractionState to
+ * translate from the on disk XML form to one suited to that particular pattern.
+ * 
  * @author Tom Oinn
  */
 public class ClientDownloadServlet extends AbstractClientServlet {
 
-    public void handleRequest(HttpServletRequest request,
-			      HttpServletResponse response,
-			      InteractionState state,
-			      InteractionServer server) 
-	throws ServletException {
-	ServerInteractionPattern pattern = state.getInteractionPattern();
-	pattern.handleInputDownload(request, response, state, server);
-    }
+	public void handleRequest(HttpServletRequest request,
+			HttpServletResponse response, InteractionState state,
+			InteractionServer server) throws ServletException {
+		ServerInteractionPattern pattern = state.getInteractionPattern();
+		pattern.handleInputDownload(request, response, state, server);
+	}
 
 }

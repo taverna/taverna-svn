@@ -28,5 +28,5 @@ package net.sf.taverna.interaction.workflow;
  * Represents the state of a workflow interaction
  */
 public interface InteractionStatus {
-            
+
 }

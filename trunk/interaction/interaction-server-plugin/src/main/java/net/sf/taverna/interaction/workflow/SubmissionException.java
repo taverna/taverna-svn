@@ -25,20 +25,20 @@
 package net.sf.taverna.interaction.workflow;
 
 /**
- * Thrown if an error occurs during interaction request
- * submission
+ * Thrown if an error occurs during interaction request submission
+ * 
  * @author Tom Oinn
  */
 public class SubmissionException extends Exception {
-    
-    private String message;
 
-    public String getMessage() {
-	return this.message;
-    }
-    
-    public void setMessage(String theMessage) {
-	this.message = theMessage;
-    }
+	private String message;
+
+	public String getMessage() {
+		return this.message;
+	}
+
+	public void setMessage(String theMessage) {
+		this.message = theMessage;
+	}
 
 }

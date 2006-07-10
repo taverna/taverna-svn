@@ -26,51 +26,52 @@ package net.sf.taverna.interaction.workflow.processor;
 
 import org.embl.ebi.escience.scuflworkers.ProcessorFactory;
 
-/** 
+/**
  * Holds data required to create an Interaction Service processor
+ * 
  * @author Tom Oinn
  */
-public class InteractionServiceProcessorFactory 
-    extends ProcessorFactory {
-    
-    private String baseURL, patternName;
-    
-    /**
-     * Return the base URL of the HTTP based interaction service
-     */
-    public String getBaseURL() {
-	return this.baseURL;
-    }
-    
-    /**
-     * Return the pattern name used to instantiate this factory
-     */
-    public String getPatternName() {
-	return this.patternName;
-    }
-    
-    /**
-     * Create a new processor factory
-     * @param baseURL the base URL to the HTTP based interaction service
-     * @param patternName full pattern name for the desired interaction
-     * pattern
-     */
-    public InteractionServiceProcessorFactory(String baseURL,
-					      String patternName) {
-	this.baseURL = baseURL;
-	this.patternName = patternName;
-	// Set the factory name to be the last component in the
-	// full name (i.e. foo.bar.pattern is named 'pattern')
-	String[] parts = patternName.split("\\.");
-	setName(parts[parts.length-1]);
-    }
+public class InteractionServiceProcessorFactory extends ProcessorFactory {
 
-    public String getProcessorDescription() {
-	return "Connection to an interaction service";
-    }
+	private String baseURL, patternName;
 
-    public Class getProcessorClass() {
-	return InteractionServiceProcessor.class;
-    }
+	/**
+	 * Return the base URL of the HTTP based interaction service
+	 */
+	public String getBaseURL() {
+		return this.baseURL;
+	}
+
+	/**
+	 * Return the pattern name used to instantiate this factory
+	 */
+	public String getPatternName() {
+		return this.patternName;
+	}
+
+	/**
+	 * Create a new processor factory
+	 * 
+	 * @param baseURL
+	 *            the base URL to the HTTP based interaction service
+	 * @param patternName
+	 *            full pattern name for the desired interaction pattern
+	 */
+	public InteractionServiceProcessorFactory(String baseURL, String patternName) {
+		this.baseURL = baseURL;
+		this.patternName = patternName;
+		// Set the factory name to be the last component in the
+		// full name (i.e. foo.bar.pattern is named 'pattern')
+		String[] parts = patternName.split("\\.");
+		setName(parts[parts.length - 1]);
+	}
+
+	public String getProcessorDescription() {
+		return "Connection to an interaction service";
+	}
+
+	public Class getProcessorClass() {
+		return InteractionServiceProcessor.class;
+	}
 
 }

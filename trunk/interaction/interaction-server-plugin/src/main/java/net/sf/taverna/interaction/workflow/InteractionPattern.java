@@ -26,45 +26,45 @@ package net.sf.taverna.interaction.workflow;
 
 /**
  * Defines metadata for an interaction pattern
+ * 
  * @author Tom Oinn
  */
 public interface InteractionPattern {
- 
-    /**
-     * Return a name for this interaction pattern. If the name
-     * contains a '.' character this may be interpreted by a
-     * browser interface as representing categories, so for 
-     * example the name 'edit.sequence.Artemis' could be placed
-     * in an 'edit' category with subcategory 'sequence'. Names
-     * MUST be unique within a given interaction server.
-     */
-    public String getName();
-    
-    /**
-     * Return a free text description
-     */
-    public String getDescription();
 
-    /**
-     * Return an array of Taverna style syntactic type strings
-     * corresponding to the input data for this interaction pattern
-     */
-    public String[] getInputTypes();
-    
-    /**
-     * Return an array of Taverna style syntactic type strings
-     * corresponding to the output data for this interaction pattern
-     */
-    public String[] getOutputTypes();
+	/**
+	 * Return a name for this interaction pattern. If the name contains a '.'
+	 * character this may be interpreted by a browser interface as representing
+	 * categories, so for example the name 'edit.sequence.Artemis' could be
+	 * placed in an 'edit' category with subcategory 'sequence'. Names MUST be
+	 * unique within a given interaction server.
+	 */
+	public String getName();
 
-    /**
-     * Return an array of names for the inputs defined in getInputTypes
-     */
-    public String[] getInputNames();
+	/**
+	 * Return a free text description
+	 */
+	public String getDescription();
 
-    /**
-     * Return an array of output names
-     */
-    public String[] getOutputNames();
-   
+	/**
+	 * Return an array of Taverna style syntactic type strings corresponding to
+	 * the input data for this interaction pattern
+	 */
+	public String[] getInputTypes();
+
+	/**
+	 * Return an array of Taverna style syntactic type strings corresponding to
+	 * the output data for this interaction pattern
+	 */
+	public String[] getOutputTypes();
+
+	/**
+	 * Return an array of names for the inputs defined in getInputTypes
+	 */
+	public String[] getInputNames();
+
+	/**
+	 * Return an array of output names
+	 */
+	public String[] getOutputNames();
+
 }
