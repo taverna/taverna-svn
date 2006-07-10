@@ -11,6 +11,8 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -352,7 +354,22 @@ public class ScavengerTreePopupHandler extends MouseAdapter {
 						menu.setLabel("Create new scavenger");
 						// Iterate over the scavenger creator list from the
 						// ProcessorHelper class
-						for (ScavengerHelper scavengerHelper : ScavengerHelperRegistry.instance().getScavengerHelpers()) {
+
+						List<ScavengerHelper> scavengerHelpers = ScavengerHelperRegistry.instance()
+								.getScavengerHelpers();
+
+						// sort alphabetically
+						Collections.sort(scavengerHelpers, new Comparator<ScavengerHelper>() {
+							public int compare(ScavengerHelper o1, ScavengerHelper o2) {
+								if (o1.getScavengerDescription() == null)
+									return -1;
+								if (o2.getScavengerDescription() == null)
+									return 1;
+								return o1.getScavengerDescription().compareTo(o2.getScavengerDescription());
+							}
+						});
+
+						for (ScavengerHelper scavengerHelper : scavengerHelpers) {
 							// Instantiate a ScavengerHelper...
 							try {
 								// webscavenger helper is added after the
