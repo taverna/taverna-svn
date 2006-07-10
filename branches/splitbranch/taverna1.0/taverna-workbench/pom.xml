@@ -32,6 +32,13 @@
             </configuration>
           </execution>
         </executions>
+        <dependencies>
+          <dependency>
+            <groupId>uk.org.mygrid.resources</groupId>
+            <artifactId>jreleaseinfo</artifactId>
+            <version>1.2.0</version>
+          </dependency>
+        </dependencies>
       </plugin>
     </plugins>
   </build>
@@ -55,11 +62,6 @@
     <dependency>
       <groupId>uk.org.mygrid.taverna.scufl</groupId>
       <artifactId>scufl-ui</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>uk.org.mygrid.resources</groupId>
-      <artifactId>jreleaseinfo</artifactId>
-      <version>1.2.0</version>
     </dependency>
   </dependencies>
 </project>
