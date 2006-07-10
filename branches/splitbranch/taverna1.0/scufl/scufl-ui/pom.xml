@@ -11,24 +11,49 @@
   <version>1.5-SNAPSHOT</version>
   <dependencies>
     <dependency>
-      <groupId>batik</groupId>
-      <artifactId>batik-dom</artifactId>
-      <version>1.6</version>
+      <groupId>uk.org.mygrid.taverna</groupId>
+      <artifactId>taverna-core</artifactId>
     </dependency>
     <dependency>
       <groupId>uk.org.mygrid.taverna</groupId>
-      <artifactId>taverna-core</artifactId>
-      <version>1.5-SNAPSHOT</version>
+      <artifactId>taverna-enactor</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>uk.org.mygrid.taverna</groupId>
+      <artifactId>taverna-scavenger</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>uk.org.mygrid.taverna</groupId>
+      <artifactId>taverna-util</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>uk.org.mygrid.taverna.baclava</groupId>
+      <artifactId>baclava-core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>uk.org.mygrid.taverna.baclava</groupId>
+      <artifactId>baclava-store</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>uk.org.mygrid.taverna.baclava</groupId>
+      <artifactId>baclava-store-implementation</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>uk.org.mygrid.taverna.baclava</groupId>
+      <artifactId>baclava-ui</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>uk.org.mygrid.taverna.scufl</groupId>
+      <artifactId>scufl-core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>uk.org.mygrid.taverna.scufl</groupId>
+      <artifactId>scufl-model</artifactId>
     </dependency>
     <dependency>
       <groupId>uk.org.mygrid.resources</groupId>
       <artifactId>jgraph</artifactId>
       <version>NO-VERSION</version>
-    </dependency>
-    <dependency>
-      <groupId>uk.org.mygrid.taverna.scufl</groupId>
-      <artifactId>scufl-core</artifactId>
-      <version>1.5-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>log4j</groupId>
@@ -41,9 +66,9 @@
       <version>1.0</version>
     </dependency>
     <dependency>
-      <groupId>uk.org.mygrid.taverna.baclava</groupId>
-      <artifactId>baclava-store</artifactId>
-      <version>1.5-SNAPSHOT</version>
+      <groupId>batik</groupId>
+      <artifactId>batik-dom</artifactId>
+      <version>1.6</version>
     </dependency>
     <dependency>
       <groupId>batik</groupId>
@@ -51,24 +76,9 @@
       <version>1.6</version>
     </dependency>
     <dependency>
-      <groupId>uk.org.mygrid.taverna.baclava</groupId>
-      <artifactId>baclava-ui</artifactId>
-      <version>1.5-SNAPSHOT</version>
-    </dependency>
-    <dependency>
       <groupId>poi</groupId>
       <artifactId>poi-2.0-final</artifactId>
       <version>20040126</version>
-    </dependency>
-    <dependency>
-      <groupId>uk.org.mygrid.taverna</groupId>
-      <artifactId>taverna-enactor</artifactId>
-      <version>1.5-SNAPSHOT</version>
-    </dependency>
-    <dependency>
-      <groupId>uk.org.mygrid.taverna</groupId>
-      <artifactId>taverna-util</artifactId>
-      <version>1.5-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>batik</groupId>
@@ -84,26 +94,6 @@
       <groupId>uk.org.mygrid.resources</groupId>
       <artifactId>seqvista-hacked</artifactId>
       <version>NO-VERSION</version>
-    </dependency>
-    <dependency>
-      <groupId>uk.org.mygrid.taverna.baclava</groupId>
-      <artifactId>baclava-store-implementation</artifactId>
-      <version>1.5-SNAPSHOT</version>
-    </dependency>
-    <dependency>
-      <groupId>uk.org.mygrid.taverna.baclava</groupId>
-      <artifactId>baclava-core</artifactId>
-      <version>1.5-SNAPSHOT</version>
-    </dependency>
-    <dependency>
-      <groupId>uk.org.mygrid.taverna</groupId>
-      <artifactId>taverna-scavenger</artifactId>
-      <version>1.5-SNAPSHOT</version>
-    </dependency>
-    <dependency>
-      <groupId>uk.org.mygrid.taverna.scufl</groupId>
-      <artifactId>scufl-model</artifactId>
-      <version>1.5-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>batik</groupId>

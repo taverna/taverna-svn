@@ -12,9 +12,28 @@
   <version>1.5-SNAPSHOT</version>
   <dependencies>
     <dependency>
+      <groupId>uk.org.mygrid.taverna</groupId>
+      <artifactId>taverna-scavenger</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>uk.org.mygrid.taverna.baclava</groupId>
+      <artifactId>baclava-core</artifactId>
+    </dependency>
+    <dependency>
       <groupId>uk.org.mygrid.taverna.processors</groupId>
       <artifactId>taverna-java-processor</artifactId>
-      <version>1.5-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>uk.org.mygrid.taverna.scufl</groupId>
+      <artifactId>scufl-core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>uk.org.mygrid.taverna.scufl</groupId>
+      <artifactId>scufl-model</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>uk.org.mygrid.taverna.scufl</groupId>
+      <artifactId>scufl-ui</artifactId>
     </dependency>
     <dependency>
       <groupId>javax.activation</groupId>
@@ -30,16 +49,6 @@
       <groupId>log4j</groupId>
       <artifactId>log4j</artifactId>
       <version>1.2.8</version>
-    </dependency>
-    <dependency>
-      <groupId>uk.org.mygrid.taverna.scufl</groupId>
-      <artifactId>scufl-core</artifactId>
-      <version>1.5-SNAPSHOT</version>
-    </dependency>
-    <dependency>
-      <groupId>uk.org.mygrid.taverna.scufl</groupId>
-      <artifactId>scufl-ui</artifactId>
-      <version>1.5-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>axis</groupId>
@@ -65,21 +74,6 @@
       <groupId>uk.org.mygrid.resources</groupId>
       <artifactId>axis</artifactId>
       <version>1.4-taverna</version>
-    </dependency>
-    <dependency>
-      <groupId>uk.org.mygrid.taverna.baclava</groupId>
-      <artifactId>baclava-core</artifactId>
-      <version>1.5-SNAPSHOT</version>
-    </dependency>
-    <dependency>
-      <groupId>uk.org.mygrid.taverna</groupId>
-      <artifactId>taverna-scavenger</artifactId>
-      <version>1.5-SNAPSHOT</version>
-    </dependency>
-    <dependency>
-      <groupId>uk.org.mygrid.taverna.scufl</groupId>
-      <artifactId>scufl-model</artifactId>
-      <version>1.5-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>xerces</groupId>
