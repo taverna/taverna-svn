@@ -1,4 +1,0 @@
-Jar files that cannot be loaded from an online source and are used at compile
-and runtime go here. For libraries only used at build time please use the devlib
-directory and for those that can be fetched online please add the appropriate
-directives to the build.xml file in the 'fetchjars' target.
