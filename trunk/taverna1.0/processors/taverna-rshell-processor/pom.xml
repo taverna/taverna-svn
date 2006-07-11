@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project>
+	<parent>
+		<artifactId>processors</artifactId>
+		<groupId>uk.org.mygrid.taverna</groupId>
+		<version>1.5-SNAPSHOT</version>
+	</parent>
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>uk.org.mygrid.taverna.processors</groupId>
+	<artifactId>taverna-rshell-processor</artifactId>
+	<name>RShell Processor</name>
+	<version>1.5-SNAPSHOT</version>
+	<dependencies>
+		<dependency>
+			<groupId>uk.org.mygrid.taverna.scufl</groupId>
+			<artifactId>scufl-ui</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>uk.org.mygrid.resources</groupId>
+			<artifactId>JRclient</artifactId>
+			<version>RE817</version>
+		</dependency>
+	</dependencies>
+</project>

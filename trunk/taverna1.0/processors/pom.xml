@@ -20,6 +20,7 @@
     <module>taverna-java-processor</module>
     <module>taverna-notification-processor</module>
     <module>taverna-rdfgenerator-processor</module>
+    <module>taverna-rshell-processor</module>
     <module>taverna-rserv-processor</module>
     <module>taverna-seqhound-processor</module>
     <module>taverna-soaplab-processor</module>
