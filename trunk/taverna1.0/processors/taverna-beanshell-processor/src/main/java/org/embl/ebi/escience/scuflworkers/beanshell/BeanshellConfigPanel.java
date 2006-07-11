@@ -388,18 +388,7 @@ public class BeanshellConfigPanel extends JPanel implements ScuflUIComponent,
 			}
 		});
 		buttonPanel.add(testScriptButton);
-
-		/*  //Done by focusLost event on scriptText instead 
-		JButton scriptUpdateButton = new JButton("Save Script Changes", ScuflIcons.saveIcon);
-		scriptUpdateButton.addActionListener(new ActionListener()
-		{
-			public void actionPerformed(ActionEvent ae)
-			{
-				processor.setScript(scriptText.getText());
-			}
-		});
-		buttonPanel.add(scriptUpdateButton);
-		*/
+		
 		
 
 		JPanel scriptEditPanel = new JPanel(new BorderLayout());
