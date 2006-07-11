@@ -232,6 +232,17 @@
         <enabled>false</enabled>
       </releases>
      </pluginRepository>
+    <pluginRepository>
+      <id>mygrid-repository</id>
+      <name>myGrid Repository</name>
+      <url>http://www.mygrid.org.uk/maven/repository</url>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+    </pluginRepository>
   </pluginRepositories>
   <distributionManagement>
     <!-- use the following if you're not using a snapshot version. -->
