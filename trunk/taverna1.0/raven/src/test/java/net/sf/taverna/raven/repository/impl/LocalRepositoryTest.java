@@ -4,6 +4,7 @@
 package net.sf.taverna.raven.repository.impl;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 
@@ -15,6 +16,7 @@ import net.sf.taverna.raven.repository.BasicArtifact;
 import net.sf.taverna.raven.repository.impl.LocalRepository;
 
 import junit.framework.TestCase;
+import static org.apache.commons.io.FileUtils.deleteDirectory;
 
 /**
  * @author Tom
@@ -22,37 +24,66 @@ import junit.framework.TestCase;
  */
 public class LocalRepositoryTest extends TestCase {
 
-	static String rLocation = "C:\\repository\\";
+	File dir = null;
+	LocalRepository r = null;
 	
 	/*
 	 * Test method for 'net.sf.taverna.raven.repository.Repository.Repository(File)'
 	 */
 	public void testRepository() {
-		File f = new File(rLocation);
-		f.delete();
-		new LocalRepository(f);
+		dir.delete();
+		new LocalRepository(dir);
+	}
+	
+	public void setUp() {
+		dir = createTempDirectory();
+		r = new LocalRepository(dir);
 	}
 
+	public void tearDown() {
+		r = null;
+		try {
+			deleteDirectory(dir);
+		} catch (IOException e) {
+			//
+		}
+	}
 	
-	
+	private static File createTempDirectory() {
+		try {
+			File tempFile = File.createTempFile("raven", "");
+			// But we want a directory!
+			tempFile.delete();
+			tempFile.mkdir();
+			tempFile.deleteOnExit();
+			return tempFile;
+		} catch (IOException e) {
+			System.err.println("Could not create temporary directory");
+			e.printStackTrace();
+			return null;
+		}
+	}
+
+	public void testCreateEmpty() {
+		// Should create directory if it is not existing
+		dir.delete();
+		LocalRepository rep = new LocalRepository(dir);
+		assertTrue(dir.isDirectory());
+	}
+
+
 	/*
 	 * Test method for 'net.sf.taverna.raven.repository.Repository.addArtifact(Artifact)'
 	 */
 	public void testAddArtifact() throws MalformedURLException {
-		File f = new File(rLocation);
-		f.delete();
-		LocalRepository r = new LocalRepository(f);
 		r.addRemoteRepository(new URL("http://mirrors.dotsrc.org/maven2/"));
 		r.addArtifact(new BasicArtifact("batik","batik-swing","1.6"));
 	}
 
-	public void testRepositoryWithExistingContents() throws MalformedURLException {
-		File f = new File(rLocation);
-		f.delete();
-		LocalRepository r = new LocalRepository(f);
+	public void testRepositoryWithExistingContents() throws MalformedURLException {		
 		r.addRemoteRepository(new URL("http://mirrors.dotsrc.org/maven2/"));
 		r.addArtifact(new BasicArtifact("batik","batik-swing","1.6"));
-		LocalRepository r2 = new LocalRepository(f);
+		LocalRepository r2 = new LocalRepository(dir);
 		assertTrue(r.getArtifacts().containsAll(r2.getArtifacts()));
 	}
 	
@@ -60,9 +91,6 @@ public class LocalRepositoryTest extends TestCase {
 	 * Test method for 'net.sf.taverna.raven.repository.Repository.update()'
 	 */
 	public void testUpdate() throws MalformedURLException {
-		File f = new File(rLocation);
-		f.delete();
-		LocalRepository r = new LocalRepository(f);
 		r.addRemoteRepository(new URL("http://mirrors.dotsrc.org/maven2/"));
 		r.addArtifact(new BasicArtifact("batik","batik-rasterizer","1.6"));
 		r.update();
@@ -76,9 +104,6 @@ public class LocalRepositoryTest extends TestCase {
 	 * @throws ArtifactStateException
 	 */
 	public void testUpdateWithDots() throws MalformedURLException {
-		File f = new File(rLocation);
-		f.delete();
-		LocalRepository r = new LocalRepository(f);
 		r.addRemoteRepository(new URL("http://mirrors.dotsrc.org/maven2/"));
 		Artifact a = new BasicArtifact("org.xbean","xbean-kernel","2.1");
 		r.addArtifact(a);
@@ -88,9 +113,6 @@ public class LocalRepositoryTest extends TestCase {
 	}
 	
 	public void testUpdateWithPackageOnlyPom() throws MalformedURLException {
-		File f = new File(rLocation);
-		f.delete();
-		LocalRepository r = new LocalRepository(f);
 		r.addRemoteRepository(new URL("http://mirrors.dotsrc.org/maven2/"));
 		Artifact a = new BasicArtifact("org.codehaus.xfire","xfire-parent","1.0");
 		r.addArtifact(a);
@@ -103,8 +125,6 @@ public class LocalRepositoryTest extends TestCase {
 	 * Test method for 'net.sf.taverna.raven.repository.Repository.getLoader(Artifact, ClassLoader)'
 	 */
 	public void testGetLoader() throws MalformedURLException, ClassNotFoundException, ArtifactNotFoundException, ArtifactStateException {
-		File f = new File(rLocation);
-		LocalRepository r = new LocalRepository(f);
 		Artifact a = new BasicArtifact("batik","batik-rasterizer","1.6");
 		r.addRemoteRepository(new URL("http://mirrors.dotsrc.org/maven2/"));
 		r.addArtifact(a);
