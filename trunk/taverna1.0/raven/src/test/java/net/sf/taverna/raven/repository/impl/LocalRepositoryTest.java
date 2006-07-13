@@ -50,18 +50,19 @@ public class LocalRepositoryTest extends TestCase {
 	}
 	
 	private static File createTempDirectory() {
+		File tempFile;
 		try {
-			File tempFile = File.createTempFile("raven", "");
+			tempFile = File.createTempFile("raven", "");
 			// But we want a directory!
-			tempFile.delete();
-			tempFile.mkdir();
-			tempFile.deleteOnExit();
-			return tempFile;
+			
 		} catch (IOException e) {
 			System.err.println("Could not create temporary directory");
 			e.printStackTrace();
 			return null;
 		}
+		tempFile.delete();
+		assert tempFile.mkdir();
+		return tempFile;
 	}
 
 	public void testCreateEmpty() {
