@@ -1,7 +1,7 @@
 /**
  * CVS
  * $Author: sowen70 $
- * $Date: 2006-07-11 16:11:57 $
+ * $Date: 2006-07-20 14:51:32 $
  * $Revision: 1.1 $
  */
 package nl.utwente.ewi.hmi.taverna.scuflworkers.rshell;

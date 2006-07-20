@@ -1,7 +1,7 @@
 /*
  * CVS
  * $Author: sowen70 $
- * $Date: 2006-07-11 16:11:57 $
+ * $Date: 2006-07-20 14:51:32 $
  * $Revision: 1.1 $
  * University of Twente, Human Media Interaction Group
  */
@@ -10,39 +10,32 @@ package nl.utwente.ewi.hmi.taverna.scuflworkers.rshell;
 import nl.utwente.ewi.hmi.taverna.scuflworkers.rshell.RshellPortTypes.SymanticTypes;
 
 import org.embl.ebi.escience.scufl.DuplicatePortNameException;
-import org.embl.ebi.escience.scufl.InputPort;
+import org.embl.ebi.escience.scufl.OutputPort;
 import org.embl.ebi.escience.scufl.PortCreationException;
 import org.embl.ebi.escience.scufl.Processor;
 
 /**
- * InputPort specialization for Rserv processor.
+ * Output port for an Rshell
  * 
- * Add support for setting the desired javaType on input, so as to convert
- * inputs on workflow invocation.
- * 
- * The syntactic type will be set to l('text/plain') for all but REXP, which
- * will be text/plain.
- * 
- * @author Stian Soiland, Ingo Wassink
- * 
+ * @author Ingo Wassink
  */
-public class RshellInputPort extends InputPort {
+public class RshellOutputPort extends OutputPort {
 
-	private static final long serialVersionUID = 6454564758308556076L;
+	private static final long serialVersionUID = -3714649331013542345L;
 
 	private SymanticTypes symanticType;
 
 	/**
-	 * Constructor for input port
+	 * Constructor
 	 * 
 	 * @param processor
-	 *            the processor to which the input ports belongs
+	 *            the parent processor
 	 * @param name
-	 *            the name of the input port
+	 *            the name of the output port
 	 * @throws DuplicatePortNameException
 	 * @throws PortCreationException
 	 */
-	public RshellInputPort(Processor processor, String name)
+	public RshellOutputPort(Processor processor, String name)
 			throws DuplicatePortNameException, PortCreationException {
 		super(processor, name);
 

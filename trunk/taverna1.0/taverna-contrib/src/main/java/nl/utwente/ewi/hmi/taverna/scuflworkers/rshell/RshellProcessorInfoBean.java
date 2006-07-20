@@ -27,7 +27,7 @@
  * Filename           $RCSfile: RshellProcessorInfoBean.java,v $
  * Revision           $Revision: 1.1 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-07-11 16:11:57 $
+ * Last modified on   $Date: 2006-07-20 14:51:32 $
  *               by   $Author: sowen70 $
  * Created on 11-Jul-2006
  *****************************************************************/
