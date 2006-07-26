@@ -75,8 +75,9 @@ public class XMLUtilities {
 			throw new MobyException(
 					newline
 							+ "null 'xml' found where it was not expected in isMultipleInvocationMessage(Element message).");
+		Element e = (Element)message.clone();
 		List list = new ArrayList();
-		jDomUtilities.listChildren(message, "mobyData", list);
+		jDomUtilities.listChildren(e, "mobyData", list);
 		if (list != null)
 			if (list.size() > 1)
 				return true;
@@ -96,21 +97,22 @@ public class XMLUtilities {
 	 *             message structure
 	 */
 	public static Element[] getListOfSimples(Element element) throws MobyException {
-		Element temp = element;
+		Element temp = (Element)element.clone();
+		Element e = (Element)element.clone();
 		String queryID = "";
 
-		Element serviceNotes = getServiceNotes(element);
+		Element serviceNotes = getServiceNotes(e);
 
 		// if the current elements name isnt MOBY, see if its direct child is
-		if (!element.getName().equals("MOBY")) {
-			if (element.getChild("MOBY") != null)
-				temp = element.getChild("MOBY");
-			else if (element.getChild("MOBY", MOBY_NS) != null)
-				temp = element.getChild("MOBY", MOBY_NS);
+		if (!e.getName().equals("MOBY")) {
+			if (e.getChild("MOBY") != null)
+				temp = e.getChild("MOBY");
+			else if (e.getChild("MOBY", MOBY_NS) != null)
+				temp = e.getChild("MOBY", MOBY_NS);
 			else
 				throw new MobyException(newline
 						+ "Expected 'MOBY' as the local name for the element " + newline
-						+ "and instead received '" + element.getName()
+						+ "and instead received '" + e.getName()
 						+ "' (getListOfSimples(Element element).");
 		}
 		// parse the mobyContent node
@@ -214,21 +216,22 @@ public class XMLUtilities {
 	}
 
 	public static Element[] getListOfCollections(Element element) throws MobyException {
-		Element temp = element;
+		Element temp = (Element)element.clone();
+		Element e = (Element)element.clone();
 		String queryID = "";
 
-		Element serviceNotes = getServiceNotes(element);
+		Element serviceNotes = getServiceNotes(e);
 
 		// if the current elements name isnt MOBY, see if its direct child is
-		if (!element.getName().equals("MOBY")) {
-			if (element.getChild("MOBY") != null)
-				temp = element.getChild("MOBY");
-			else if (element.getChild("MOBY", MOBY_NS) != null)
-				temp = element.getChild("MOBY", MOBY_NS);
+		if (!e.getName().equals("MOBY")) {
+			if (e.getChild("MOBY") != null)
+				temp = e.getChild("MOBY");
+			else if (e.getChild("MOBY", MOBY_NS) != null)
+				temp = e.getChild("MOBY", MOBY_NS);
 			else
 				throw new MobyException(newline
 						+ "Expected 'MOBY' as the local name for the element " + newline
-						+ "and instead received '" + element.getName()
+						+ "and instead received '" + e.getName()
 						+ "' (getListOfCollections(Element element).");
 		}
 		// parse the mobyContent node
@@ -339,7 +342,8 @@ public class XMLUtilities {
 	 */
 	public static Element getSimple(String name, String type, Element element, String endpoint)
 			throws MobyException {
-		Element[] elements = getListOfSimples(element);
+		Element el = (Element)element.clone();
+		Element[] elements = getListOfSimples(el);
 		// try matching based on type(less impt) and/or article name (more impt)
 		for (int i = 0; i < elements.length; i++) {
 			// PRE: elements[i] is a fully wrapped element
@@ -448,12 +452,13 @@ public class XMLUtilities {
 	 *         exist
 	 */
 	public static String getQueryID(Element xml) {
-		Element temp = xml;
-		if (!xml.getName().equals("MOBY")) {
-			if (xml.getChild("MOBY") != null)
-				temp = xml.getChild("MOBY");
-			else if (xml.getChild("MOBY", MOBY_NS) != null)
-				temp = xml.getChild("MOBY", MOBY_NS);
+		Element temp = (Element)xml.clone();
+		Element e = (Element)xml.clone();
+		if (!e.getName().equals("MOBY")) {
+			if (e.getChild("MOBY") != null)
+				temp = e.getChild("MOBY");
+			else if (e.getChild("MOBY", MOBY_NS) != null)
+				temp = e.getChild("MOBY", MOBY_NS);
 		}
 		// parse the mobyContent node
 		if (temp.getChild("mobyContent") != null)
@@ -502,12 +507,13 @@ public class XMLUtilities {
 	 *         exist
 	 */
 	public static Element setQueryID(Element xml, String id) {
-		Element temp = xml;
-		if (!xml.getName().equals("MOBY")) {
-			if (xml.getChild("MOBY") != null)
-				temp = xml.getChild("MOBY");
-			else if (xml.getChild("MOBY", MOBY_NS) != null)
-				temp = xml.getChild("MOBY", MOBY_NS);
+		Element temp = (Element)xml.clone();
+		Element e = (Element)xml.clone();
+		if (!e.getName().equals("MOBY")) {
+			if (e.getChild("MOBY") != null)
+				temp = e.getChild("MOBY");
+			else if (e.getChild("MOBY", MOBY_NS) != null)
+				temp = e.getChild("MOBY", MOBY_NS);
 		}
 		// parse the mobyContent node
 		if (temp.getChild("mobyContent") != null)
@@ -556,9 +562,10 @@ public class XMLUtilities {
 	 */
 	public static Element getWrappedSimple(String name, String type, Element element,
 			String endpoint) throws MobyException {
-		String queryID = getQueryID(element);
-		Element serviceNotes = getServiceNotes(element);
-		Element simple = getSimple(name, type, element, endpoint);
+		Element e = (Element)element.clone();
+		String queryID = getQueryID(e);
+		Element serviceNotes = getServiceNotes(e);
+		Element simple = getSimple(name, type, e, endpoint);
 		return createMobyDataElementWrapper(simple, queryID, serviceNotes);
 	}
 
@@ -570,7 +577,8 @@ public class XMLUtilities {
 	 * @throws MobyException
 	 */
 	public static Element getCollection(String name, Element element) throws MobyException {
-		Element[] elements = getListOfCollections(element);
+		Element el = (Element)element.clone();
+		Element[] elements = getListOfCollections(el);
 		for (int i = 0; i < elements.length; i++) {
 			// PRE: elements[i] is a fully wrapped element
 			Element e = elements[i];
@@ -671,9 +679,10 @@ public class XMLUtilities {
 	 * @throws MobyException
 	 */
 	public static Element getWrappedCollection(String name, Element element) throws MobyException {
-		String queryID = getQueryID(element);
-		Element collection = getCollection(name, element);
-		Element serviceNotes = getServiceNotes(element);
+		Element e = (Element)element.clone();
+		String queryID = getQueryID(e);
+		Element collection = getCollection(name, e);
+		Element serviceNotes = getServiceNotes(e);
 		return createMobyDataElementWrapper(collection, queryID, serviceNotes);
 	}
 
@@ -723,10 +732,12 @@ public class XMLUtilities {
 	 * @return an array of Elements objects that represent the simples
 	 * @throws MobyException
 	 */
+	@SuppressWarnings("unchecked")
 	public static Element[] getSimplesFromCollection(String name, Element element)
 			throws MobyException {
+		Element e = (Element)element.clone();
 		// exception thrown if not found
-		Element collection = getCollection(name, element);
+		Element collection = getCollection(name, e);
 
 		List list = collection.getChildren("Simple");
 		if (list.isEmpty())
@@ -778,9 +789,10 @@ public class XMLUtilities {
 	 *         simples
 	 * @throws MobyException
 	 */
+	@SuppressWarnings("unchecked")
 	public static Element[] getSimplesFromCollection(Element element) throws MobyException {
-
-		Element mobyData = extractMobyData(element);
+		Element e = (Element)element.clone();
+		Element mobyData = extractMobyData(e);
 
 		Element collection = mobyData.getChild("Collection");
 		if (collection == null)
@@ -835,11 +847,13 @@ public class XMLUtilities {
 	 * @return an array of Elements objects that represent the simples
 	 * @throws MobyException
 	 */
+	@SuppressWarnings("unchecked")
 	public static Element[] getWrappedSimplesFromCollection(String name, Element element)
 			throws MobyException {
-		String queryID = getQueryID(element);
-		Element collection = getCollection(name, element);
-		Element serviceNotes = getServiceNotes(element);
+		Element el = (Element)element.clone();
+		String queryID = getQueryID(el);
+		Element collection = getCollection(name, el);
+		Element serviceNotes = getServiceNotes(el);
 		List list = collection.getChildren("Simple");
 		if (list.isEmpty())
 			list = collection.getChildren("Simple", MOBY_NS);
@@ -883,7 +897,7 @@ public class XMLUtilities {
 	 */
 	public static Element[] getSingleInvokationsFromMultipleInvokations(Element element)
 			throws MobyException {
-		Element e = element;
+		Element e = (Element)element.clone();
 		Element serviceNotes = getServiceNotes(element);
 		if (e.getChild("MOBY") != null) {
 			e = e.getChild("MOBY");
@@ -992,7 +1006,7 @@ public class XMLUtilities {
 
 		// iterate through elements adding the content of mobyData
 		for (int i = 0; i < elements.length; i++) {
-			Element e = elements[i];
+			Element e = (Element)elements[i].clone();
 			e = extractMobyData(e);
 			mobyData.addContent(e.cloneContent());
 		}
@@ -1006,32 +1020,33 @@ public class XMLUtilities {
 	 * @throws MobyException
 	 */
 	public static Element extractMobyData(Element element) throws MobyException {
-		if (element.getChild("MOBY") != null) {
-			element = element.getChild("MOBY");
-		} else if (element.getChild("MOBY", MOBY_NS) != null) {
-			element = element.getChild("MOBY", MOBY_NS);
+		Element e = (Element)element.clone();
+		if (e.getChild("MOBY") != null) {
+			e = e.getChild("MOBY");
+		} else if (e.getChild("MOBY", MOBY_NS) != null) {
+			e = e.getChild("MOBY", MOBY_NS);
 		}
 
-		if (element.getChild("mobyContent") != null) {
-			element = element.getChild("mobyContent");
-		} else if (element.getChild("mobyContent", MOBY_NS) != null) {
-			element = element.getChild("mobyContent", MOBY_NS);
+		if (e.getChild("mobyContent") != null) {
+			e = e.getChild("mobyContent");
+		} else if (e.getChild("mobyContent", MOBY_NS) != null) {
+			e = e.getChild("mobyContent", MOBY_NS);
 		} else {
 			throw new MobyException(newline
 					+ "Expected the child element 'mobyContent' and did not receive it in:"
-					+ newline + new XMLOutputter(Format.getPrettyFormat()).outputString(element));
+					+ newline + new XMLOutputter(Format.getPrettyFormat()).outputString(e));
 		}
 
-		if (element.getChild("mobyData") != null) {
-			element = element.getChild("mobyData");
-		} else if (element.getChild("mobyData", MOBY_NS) != null) {
-			element = element.getChild("mobyData", MOBY_NS);
+		if (e.getChild("mobyData") != null) {
+			e = e.getChild("mobyData");
+		} else if (e.getChild("mobyData", MOBY_NS) != null) {
+			e = e.getChild("mobyData", MOBY_NS);
 		} else {
 			throw new MobyException(newline
 					+ "Expected the child element 'mobyData' and did not receive it in:" + newline
-					+ new XMLOutputter(Format.getPrettyFormat()).outputString(element));
+					+ new XMLOutputter(Format.getPrettyFormat()).outputString(e));
 		}
-		return element;
+		return e;
 	}
 
 	/**
@@ -1043,12 +1058,13 @@ public class XMLUtilities {
 	 * @throws MobyException
 	 */
 	public static Element renameCollection(String newName, Element element) throws MobyException {
-		Element mobyData = extractMobyData(element);
+		Element e = (Element)element.clone();
+		Element mobyData = extractMobyData(e);
 		Element coll = mobyData.getChild("Collection");
 		if (coll == null)
 			coll = mobyData.getChild("Collection", MOBY_NS);
 		if (coll == null)
-			return element;
+			return e;
 		coll.removeAttribute("articleName");
 		coll.removeAttribute("articleName", MOBY_NS);
 		coll.setAttribute("articleName", newName, MOBY_NS);
@@ -1093,14 +1109,15 @@ public class XMLUtilities {
 	 */
 	public static Element renameSimple(String newName, String type, Element element)
 			throws MobyException {
-		Element mobyData = extractMobyData(element);
-		String queryID = getQueryID(element);
-		Element serviceNotes = getServiceNotes(element);
+		Element e = (Element)element.clone();
+		Element mobyData = extractMobyData(e);
+		String queryID = getQueryID(e);
+		Element serviceNotes = getServiceNotes(e);
 		Element simple = mobyData.getChild("Simple");
 		if (simple == null)
 			simple = mobyData.getChild("Simple", MOBY_NS);
 		if (simple == null)
-			return element;
+			return e;
 		simple.removeAttribute("articleName");
 		simple.removeAttribute("articleName", MOBY_NS);
 		simple.setAttribute("articleName", newName, MOBY_NS);
@@ -1128,6 +1145,7 @@ public class XMLUtilities {
 	 */
 	public static Element createMobyDataElementWrapper(Element element, String queryID,
 			Element serviceNotes) throws MobyException {
+		Element e = (Element)element.clone();
 		Element MOBY = new Element("MOBY", MOBY_NS);
 		Element mobyContent = new Element("mobyContent", MOBY_NS);
 		Element mobyData = new Element("mobyData", MOBY_NS);
@@ -1138,22 +1156,22 @@ public class XMLUtilities {
 		if (serviceNotes != null)
 			mobyContent.addContent(serviceNotes.detach());
 
-		if (element != null) {
-			if (element.getName().equals("Simple")) {
+		if (e != null) {
+			if (e.getName().equals("Simple")) {
 				Element simple = new Element("Simple", MOBY_NS);
 				simple.setAttribute("articleName",
-						(element.getAttributeValue("articleName") == null ? element
-								.getAttributeValue("articleName", MOBY_NS, "") : element
+						(e.getAttributeValue("articleName") == null ? e
+								.getAttributeValue("articleName", MOBY_NS, "") : e
 								.getAttributeValue("articleName", "")), MOBY_NS);
-				simple.addContent(element.cloneContent());
+				simple.addContent(e.cloneContent());
 				mobyData.addContent(simple.detach());
-			} else if (element.getName().equals("Collection")) {
+			} else if (e.getName().equals("Collection")) {
 				Element collection = new Element("Collection", MOBY_NS);
 				collection.setAttribute("articleName",
-						(element.getAttributeValue("articleName") == null ? element
-								.getAttributeValue("articleName", MOBY_NS, "") : element
+						(e.getAttributeValue("articleName") == null ? e
+								.getAttributeValue("articleName", MOBY_NS, "") : e
 								.getAttributeValue("articleName", "")), MOBY_NS);
-				collection.addContent(element.cloneContent());
+				collection.addContent(e.cloneContent());
 				mobyData.addContent(collection.detach());
 			}
 		}
@@ -1163,10 +1181,16 @@ public class XMLUtilities {
 
 	public static Element createMobyDataWrapper(String queryID, Element serviceNotes)
 			throws MobyException {
+		
+		Element e = null;
+		
+		if (serviceNotes != null)
+			e = (Element)serviceNotes.clone();
+		
 		Element MOBY = new Element("MOBY", MOBY_NS);
 		Element mobyContent = new Element("mobyContent", MOBY_NS);
-		if (serviceNotes != null)
-			mobyContent.addContent(serviceNotes.detach());
+		if (e != null)
+			mobyContent.addContent(e.detach());
 		Element mobyData = new Element("mobyData", MOBY_NS);
 		mobyData.setAttribute("queryID", queryID, MOBY_NS);
 		MOBY.addContent(mobyContent);
@@ -1191,7 +1215,7 @@ public class XMLUtilities {
 	 * @throws MobyException
 	 */
 	public static Element createMobyDataElementWrapper(Element element) throws MobyException {
-		Element serviceNotes = getServiceNotes(element);
+		Element serviceNotes = getServiceNotes((Element)element.clone());
 		return createMobyDataElementWrapper(element, "a" + queryCount++, serviceNotes);
 	}
 
@@ -1225,13 +1249,13 @@ public class XMLUtilities {
 		Element serviceNotes = null;
 		for (int i = 0; i < elements.length; i++) {
 			if (serviceNotes == null) {
-				serviceNotes = getServiceNotes(elements[i]);
+				serviceNotes = getServiceNotes((Element)elements[i].clone());
 				if (serviceNotes != null)
 					mobyContent.addContent(serviceNotes.detach());
 			}
 			Element mobyData = new Element("mobyData", MOBY_NS);
-			Element md = extractMobyData(elements[i]);
-			String queryID = getQueryID(elements[i]);
+			Element md = extractMobyData((Element)elements[i].clone());
+			String queryID = getQueryID((Element)elements[i].clone());
 			mobyData.setAttribute("queryID", queryID, MOBY_NS);
 			mobyData.addContent(md.cloneContent());
 			mobyContent.addContent(mobyData);
@@ -1264,7 +1288,7 @@ public class XMLUtilities {
 	 */
 	public static boolean isWrapped(Element element) throws MobyException {
 		try {
-			extractMobyData(element);
+			extractMobyData((Element)element.clone());
 			return true;
 		} catch (MobyException e) {
 			return false;
@@ -1290,7 +1314,7 @@ public class XMLUtilities {
 	 */
 	public static boolean isCollection(Element element) throws MobyException {
 		try {
-			return getListOfCollections(element).length > 0;
+			return getListOfCollections((Element)element.clone()).length > 0;
 
 		} catch (MobyException e) {
 			return false;
@@ -1329,7 +1353,7 @@ public class XMLUtilities {
 	 */
 	public static boolean isEmpty(Element xml) {
 		try {
-			Element e = extractMobyData(xml);
+			Element e = extractMobyData((Element)xml.clone());
 			if (e.getChild("Collection") != null)
 				return false;
 			if (e.getChild("Collection", MOBY_NS) != null)
@@ -1354,6 +1378,7 @@ public class XMLUtilities {
 	 * @throws MobyException
 	 * 
 	 */
+	@SuppressWarnings("unchecked")
 	public static List mergeCollections(List theList, String name) throws MobyException {
 		if (theList == null)
 			return new ArrayList();
@@ -1384,9 +1409,10 @@ public class XMLUtilities {
 	 */
 	public static Element getServiceNotes(Element element) {
 		Element serviceNotes = null;
-		Element mobyContent = element.getChild("mobyContent");
+		Element e = (Element)element.clone();
+		Element mobyContent = e.getChild("mobyContent");
 		if (mobyContent == null)
-			mobyContent = element.getChild("mobyContent", MOBY_NS);
+			mobyContent = e.getChild("mobyContent", MOBY_NS);
 
 		// should throw exception?
 		if (mobyContent == null)
@@ -1449,7 +1475,8 @@ public class XMLUtilities {
 	 * @return an element that represents the direct child or null if it wasnt found.
 	 */
 	public static Element getDirectChildByArticleName(Element element, String articleName) {
-		List list = element.getChildren();
+		Element e = (Element)element.clone();
+		List list = e.getChildren();
 		for (Iterator iter = list.iterator(); iter.hasNext();) {
 			Object object = iter.next();
 			if (object instanceof Element) {
