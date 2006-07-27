@@ -11,6 +11,8 @@ import net.sf.taverna.raven.repository.Repository;
 import net.sf.taverna.raven.repository.impl.LocalRepository.ArtifactClassLoader;
 
 /**
+ * DEPRECATED - do not use, flawed design logic :)
+ * 
  * Use this class to create instances of the Repository. The primary function is to ensure
  * that all instances of Repository in client code have been loaded from the maven repository
  * via the ArtifactClassLoader, this avoids the potentially nasty situation where an

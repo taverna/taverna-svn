@@ -31,7 +31,10 @@ import net.sf.taverna.raven.repository.RepositoryListener;
 
 /**
  * Represents the state of a local Maven2 repository
- * on disk. Manages the queue of pending fetches
+ * on disk. Manages the queue of pending fetches.
+ * Create an instance of this class using the static
+ * getRepository(File base) method passing it the location
+ * of the on disk maven2 repository to access or create.
  * @author Tom Oinn
  */
 public class LocalRepository implements Repository {
@@ -112,9 +115,23 @@ public class LocalRepository implements Repository {
 	 * be a directory containing a valid Maven2 compliant
 	 * repository structure
 	 */
-	public LocalRepository(File base) {
+	protected LocalRepository(File base) {
 		this.base = base;
 		initialize();
+	}
+	
+	private static Map<File,LocalRepository> repositoryCache = new HashMap<File,LocalRepository>();
+	/**
+	 * Get a new or cached instance of LocalRepository for the supplied base directory,
+	 * this is the method to use when you want to get hold of a LocalRepository.
+	 * @param base The base directory for the m2 repository on disk
+	 * @return LocalRepository instance for the base directory
+	 */
+	public static synchronized LocalRepository getRepository(File base) {
+		if (repositoryCache.containsKey(base) == false) {
+			repositoryCache.put(base, new LocalRepository(base));
+		}
+		return repositoryCache.get(base);
 	}
 	
 	/* (non-Javadoc)
@@ -418,6 +435,10 @@ public class LocalRepository implements Repository {
 		}
 		os.flush();
 		os.close();
+	}
+	
+	synchronized void forcePom(ArtifactImpl a) throws ArtifactNotFoundException {
+		fetch(this.repositories, a, "pom");
 	}
 	
 	/**
