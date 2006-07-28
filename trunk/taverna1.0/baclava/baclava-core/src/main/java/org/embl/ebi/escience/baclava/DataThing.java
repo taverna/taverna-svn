@@ -317,11 +317,11 @@ public class DataThing implements Cloneable, Serializable {
 			Object innerObject;
 			if (o instanceof List) {
 			    List innerList = (List)o;
-			    innerObject = innerList.get(innerList.length()-1);
+			    innerObject = innerList.get(innerList.size()-1);
 			}
 			else {
 			    // Pull the first object out of the collection and recurse
-			    Object innerObject = ((Collection) o).iterator().next();
+			    innerObject = ((Collection) o).iterator().next();
 			}
 			if (o instanceof Set) {
 				return ("s(" + getSyntacticTypeForObject(innerObject) + ")");
