@@ -312,8 +312,17 @@ public class DataThing implements Cloneable, Serializable {
 				}
 				return "l('null')";
 			}
-			// Pull the first object out of the collection and recurse
-			Object innerObject = ((Collection) o).iterator().next();
+			// Change to take the _last_ item of the List if it's a List rather
+			// than using the iterator to take the first item
+			Object innerObject;
+			if (o instanceof List) {
+			    List innerList = (List)o;
+			    innerObject = innerList.get(innerList.length()-1);
+			}
+			else {
+			    // Pull the first object out of the collection and recurse
+			    Object innerObject = ((Collection) o).iterator().next();
+			}
 			if (o instanceof Set) {
 				return ("s(" + getSyntacticTypeForObject(innerObject) + ")");
 			} else if (o instanceof List) {
