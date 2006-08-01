@@ -44,7 +44,7 @@
     <dependency>
       <groupId>javax.mail</groupId>
       <artifactId>mail</artifactId>
-      <version>NO-VERSION</version>
+      <version>1.4</version>
     </dependency>
     <dependency>
       <groupId>junit</groupId>
