@@ -34,6 +34,8 @@ import org.embl.ebi.escience.scufl.ScuflModel;
  */
 public class MobyParseDatatypeProcessor extends Processor implements java.io.Serializable {
 
+	private static final long serialVersionUID = 1L;
+
 	private String datatypeName = "";
 
 	private String registryEndpoint = "";
@@ -126,6 +128,7 @@ public class MobyParseDatatypeProcessor extends Processor implements java.io.Ser
 	/*
 	 * initializes this processor
 	 */
+	@SuppressWarnings("unchecked")
 	private void init() throws ProcessorCreationException, DuplicatePortNameException,
 			PortCreationException {
 		try {
@@ -167,10 +170,10 @@ public class MobyParseDatatypeProcessor extends Processor implements java.io.Ser
 		this.addPort(inPort);
 		// add the namespace/id ports to the processor
 		Port ns = new OutputPort(this, "namespace");
-		ns.setSyntacticType("'text/plain'");
+		ns.setSyntacticType("l('text/plain')");
 		this.addPort(ns);
 		Port id = new OutputPort(this, "id");
-		id.setSyntacticType("'text/plain'");
+		id.setSyntacticType("l('text/plain')");
 		this.addPort(id);
 
 		// list contains the output ports i have to create
@@ -179,7 +182,7 @@ public class MobyParseDatatypeProcessor extends Processor implements java.io.Ser
 			if (portName.equals(this.articleNameUsedByService+"_id") || portName.equals(this.articleNameUsedByService+"_ns"))
 				continue;
 			Port outputPort = new OutputPort(this, portName);
-			outputPort.setSyntacticType("'text/plain'");
+			outputPort.setSyntacticType("l('text/plain')");
 			this.addPort(outputPort);
 
 		}
@@ -200,6 +203,7 @@ public class MobyParseDatatypeProcessor extends Processor implements java.io.Ser
 		return false;
 	}
 
+	@SuppressWarnings("unchecked")
 	private void processDatatype(MobyDataType dt, Central central, String currentName, List list)
 			throws ProcessorCreationException {
 

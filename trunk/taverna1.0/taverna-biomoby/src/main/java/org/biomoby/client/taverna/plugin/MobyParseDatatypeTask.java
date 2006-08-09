@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
+import org.biomoby.client.CentralImpl;
 import org.biomoby.shared.MobyException;
 import org.embl.ebi.escience.baclava.DataThing;
 import org.embl.ebi.escience.scufl.OutputPort;
@@ -30,25 +31,29 @@ import uk.ac.soton.itinnovation.taverna.enactor.entities.TaskExecutionException;
  * @author Eddie Kawas
  */
 public class MobyParseDatatypeTask implements ProcessorTaskWorker {
-
 	private static Logger logger = Logger.getLogger(MobyParseDatatypeTask.class);
 
 	private MobyParseDatatypeProcessor proc;
 
 	/**
 	 * 
-	 * @param p the processor that this parser is based upon
+	 * @param p
+	 *            the processor that this parser is based upon
 	 */
 	public MobyParseDatatypeTask(Processor p) {
 		this.proc = (MobyParseDatatypeProcessor) p;
 	}
 
 	/*
-	 *  (non-Javadoc)
-	 * @see org.embl.ebi.escience.scuflworkers.ProcessorTaskWorker#execute(java.util.Map, uk.ac.soton.itinnovation.taverna.enactor.entities.ProcessorTask)
+	 * (non-Javadoc)
+	 * 
+	 * @see org.embl.ebi.escience.scuflworkers.ProcessorTaskWorker#execute(java.util.Map,
+	 *      uk.ac.soton.itinnovation.taverna.enactor.entities.ProcessorTask)
 	 */
+	@SuppressWarnings("unchecked")
 	public Map execute(java.util.Map workflowInputMap, IProcessorTask parentTask)
 			throws TaskExecutionException {
+
 		HashMap output = new HashMap();
 		try {
 
@@ -58,15 +63,64 @@ public class MobyParseDatatypeTask implements ProcessorTaskWorker {
 				return new HashMap();
 
 			DataThing input = (DataThing) workflowInputMap.get(inputMapKey);
-
+			
 			if (input.getDataObject() instanceof String) {
 				String inputXML = (String) input.getDataObject();
 				if (XMLUtilities.isMultipleInvocationMessage(inputXML)) {
-					// this should never happen because outputs from services
-					// with multiple invocations are broken down into a list of
-					// single invocations.
-					logger.debug("MIM not implemented yet");
+					String[] simples = XMLUtilities.getAllSimplesByArticleName(proc
+							.getArticleNameUsedByService(), inputXML);
+					for (int x = 0; x < proc.getBoundOutputPorts().length; x++) {
+						OutputPort outPort = proc.getBoundOutputPorts()[x];
+						if (outPort.getName().equals("namespace")) {
+							ArrayList inputs = new ArrayList();
+							try {
+								processNamespaceFromSimples(simples, inputs);
+							} catch (MobyException me) {
+								// swallow it. most likely the message was
+								// empty
+							}
+							output.put("namespace", new DataThing(inputs));
 
+						} else if (outPort.getName().equals("id")) {
+							ArrayList inputs = new ArrayList();
+							try {
+								processIdFromSimples(simples, inputs);
+							} catch (MobyException me) {
+								// swallow it. most likely the message was
+								// empty
+							}
+							output.put("id", new DataThing(inputs));
+						} else if (outPort.getName().endsWith("_ns")) {
+							ArrayList inputs = new ArrayList();
+							try {
+								processChildNsFromSimples(simples, inputs, outPort.getName());
+							} catch (MobyException me) {
+								// swallow it. most likely the message was
+								// empty
+							}
+							output.put(outPort.getName(), new DataThing(inputs));
+						} else if (outPort.getName().endsWith("_id")) {
+							ArrayList inputs = new ArrayList();
+							try {
+								processChildIdFromSimples(simples, inputs, outPort.getName());
+							} catch (MobyException me) {
+								// swallow it. most likely the message was
+								// empty
+							}
+							output.put(outPort.getName(), new DataThing(inputs));
+						} else {
+							ArrayList inputs = new ArrayList();
+							String outputName = outPort.getName();
+							try {
+								processPortsFromSimples(simples, outPort, inputs);
+							} catch (MobyException me) {
+								// swallow it. most likely the message was
+								// empty
+							}
+							output.put(outputName, new DataThing(inputs));
+						}
+					}
+					
 				} else {
 					if (XMLUtilities.isCollection(inputXML)) {
 						String[] simples = XMLUtilities.getSimplesFromCollection(proc
@@ -130,33 +184,32 @@ public class MobyParseDatatypeTask implements ProcessorTaskWorker {
 								try {
 									processNamespaceFromSimple(output, inputXML);
 								} catch (MobyException me) {
-									// swallow it. most likely the message was
-									// empty
+									output.put(outPort.getName(), new DataThing(new ArrayList()));
 								}
 
 							} else if (outPort.getName().endsWith("_ns")) {
 								try {
 									processChildNsFromSimple(output, inputXML, outPort.getName());
 								} catch (MobyException me) {
+									output.put(outPort.getName(), new DataThing(new ArrayList()));
 								}
 							} else if (outPort.getName().endsWith("_id")) {
 								try {
-									processChildIdFromSimple(output, inputXML,outPort.getName());
+									processChildIdFromSimple(output, inputXML, outPort.getName());
 								} catch (MobyException me) {
+									output.put(outPort.getName(), new DataThing(new ArrayList()));
 								}
 							} else if (outPort.getName().equals("id")) {
 								try {
 									processIdFromSimple(output, inputXML);
 								} catch (MobyException me) {
-									// swallow it. most likely the message was
-									// empty
+									output.put(outPort.getName(), new DataThing(new ArrayList()));
 								}
 							} else {
 								try {
 									processPortsFromSimple(output, inputXML, outPort);
 								} catch (MobyException me) {
-									// swallow it. most likely the message was
-									// empty
+									output.put(outPort.getName(), new DataThing(new ArrayList()));
 								}
 							}
 						}
@@ -164,11 +217,10 @@ public class MobyParseDatatypeTask implements ProcessorTaskWorker {
 				}
 
 			} else if (input.getDataObject() instanceof List) {
-				// System.out.println("Parse a list");
+				// logger.debug("Parse a list");
 				List list = (List) input.getDataObject();
 				// holder contains a list of strings indexed by output port name
 				HashMap holder = new HashMap();
-				
 				for (Iterator it = list.iterator(); it.hasNext();) {
 					String inputXML = (String) it.next();
 					if (XMLUtilities.isMultipleInvocationMessage(inputXML)) {
@@ -177,7 +229,10 @@ public class MobyParseDatatypeTask implements ProcessorTaskWorker {
 						// with multiple invocations are broken down into a list
 						// of
 						// single invocations.
-						logger.debug("MIM not implemented yet");
+						logger.warn("2 MIM not implemented yet (or should it be).\n" +
+								"If you are seeing this message, please contact the\n" +
+								"BioMOBY team and pass along the input that caused\n" +
+								"this message, as well as the workflow.");
 
 					} else {
 						if (XMLUtilities.isCollection(inputXML)) {
@@ -195,30 +250,32 @@ public class MobyParseDatatypeTask implements ProcessorTaskWorker {
 										// empty
 									}
 									if (holder.containsKey("namespace"))
-										((ArrayList)holder.get("namespace")).addAll(inputs);
+										((ArrayList) holder.get("namespace")).addAll(inputs);
 									else
 										holder.put("namespace", inputs);
 
 								} else if (outPort.getName().endsWith("_ns")) {
 									ArrayList inputs = new ArrayList();
 									try {
-										processChildNsFromSimples(simples, inputs, outPort.getName());
+										processChildNsFromSimples(simples, inputs, outPort
+												.getName());
 									} catch (MobyException me) {
 
 									}
 									if (holder.containsKey(outPort.getName()))
-										((ArrayList)holder.get(outPort.getName())).addAll(inputs);
+										((ArrayList) holder.get(outPort.getName())).addAll(inputs);
 									else
 										holder.put(outPort.getName(), inputs);
-								}  else if (outPort.getName().endsWith("_id")) {
+								} else if (outPort.getName().endsWith("_id")) {
 									ArrayList inputs = new ArrayList();
 									try {
-										processChildIdFromSimples(simples, inputs, outPort.getName());
+										processChildIdFromSimples(simples, inputs, outPort
+												.getName());
 									} catch (MobyException me) {
 
 									}
 									if (holder.containsKey(outPort.getName()))
-										((ArrayList)holder.get(outPort.getName())).addAll(inputs);
+										((ArrayList) holder.get(outPort.getName())).addAll(inputs);
 									else
 										holder.put(outPort.getName(), inputs);
 								} else if (outPort.getName().equals("id")) {
@@ -231,7 +288,7 @@ public class MobyParseDatatypeTask implements ProcessorTaskWorker {
 										// empty
 									}
 									if (holder.containsKey("id"))
-										((ArrayList)holder.get("id")).addAll(inputs);
+										((ArrayList) holder.get("id")).addAll(inputs);
 									else
 										holder.put("id", inputs);
 								} else {
@@ -245,7 +302,7 @@ public class MobyParseDatatypeTask implements ProcessorTaskWorker {
 										// empty
 									}
 									if (holder.containsKey(outputName))
-										((ArrayList)holder.get(outputName)).addAll(inputs);
+										((ArrayList) holder.get(outputName)).addAll(inputs);
 									else
 										holder.put(outputName, inputs);
 								}
@@ -292,17 +349,17 @@ public class MobyParseDatatypeTask implements ProcessorTaskWorker {
 									try {
 										processPortsFromSimple(tMap, inputXML, outPort);
 									} catch (MobyException me) {
-										// swallow it. most likely the message
-										// was
-										// empty
+										//TODO should this be here? should i worry about a list of multiple simples
+										tMap.put(outPort.getName(), new DataThing(new ArrayList()));
 									}
 								}
 								if (tMap.size() > 0) {
 									for (Iterator tmIt = tMap.keySet().iterator(); tmIt.hasNext();) {
-										String outName = (String)tmIt.next();
-										DataThing dt = (DataThing)tMap.get(outName);
+										String outName = (String) tmIt.next();
+										DataThing dt = (DataThing) tMap.get(outName);
 										if (holder.containsKey(outName)) {
-											((ArrayList)holder.get(outName)).add(dt.getDataObject());
+											((ArrayList) holder.get(outName)).add(dt
+													.getDataObject());
 										} else {
 											ArrayList aList = new ArrayList();
 											aList.add(dt.getDataObject());
@@ -315,13 +372,14 @@ public class MobyParseDatatypeTask implements ProcessorTaskWorker {
 					}
 				}
 				for (Iterator tmIt = holder.keySet().iterator(); tmIt.hasNext();) {
-					String outName = (String)tmIt.next();
+					String outName = (String) tmIt.next();
 					output.put(outName, new DataThing(holder.get(outName)));
 				}
 			}
 			return output;
 		} catch (Exception ex) {
-			throw new TaskExecutionException("Error parsing moby data: " + ex.getLocalizedMessage());
+			ex.printStackTrace();
+			throw new TaskExecutionException("Error parsing moby data: " + ex.getMessage());
 		}
 	}
 
@@ -331,6 +389,7 @@ public class MobyParseDatatypeTask implements ProcessorTaskWorker {
 	 * @param outPort
 	 * @throws MobyException
 	 */
+	@SuppressWarnings("unchecked")
 	private void processPortsFromSimple(HashMap output, String inputXML, OutputPort outPort)
 			throws MobyException {
 		String parseString = outPort.getName();
@@ -347,22 +406,24 @@ public class MobyParseDatatypeTask implements ProcessorTaskWorker {
 			parseString = parseString.substring(proc.getArticleNameUsedByService().length() + 1);
 			articles = parseString.split("_'");
 			if (!isPrimitive(simElement.getName()))
-			for (int i = 0; i < articles.length; i++) {
-				nextArtName = articles[i];
-				if (nextArtName.startsWith("'"))
-					nextArtName = nextArtName.substring(1);
-				if (nextArtName.endsWith("'"))
-					nextArtName = nextArtName.substring(0, nextArtName.length() - 1);
-				simElement = getElementWithArticleName(simElement, nextArtName);
-				if (simElement == null) {
-					output.put(outputName, new DataThing(new ArrayList()));
-					break;
+				for (int i = 0; i < articles.length; i++) {
+					nextArtName = articles[i];
+					if (nextArtName.startsWith("'"))
+						nextArtName = nextArtName.substring(1);
+					if (nextArtName.endsWith("'"))
+						nextArtName = nextArtName.substring(0, nextArtName.length() - 1);
+					simElement = getElementWithArticleName(simElement, nextArtName);
+					if (simElement == null) {
+						output.put(outputName, new DataThing(new ArrayList()));
+						break;
+					}
 				}
-			}
 			String string = "";
 			if (simElement != null)
 				string = simElement.getTextTrim();
-			output.put(outputName, new DataThing(string));
+			ArrayList theList = new ArrayList();
+			theList.add(string);
+			output.put(outputName, new DataThing(theList));
 		}
 	}
 
@@ -371,11 +432,14 @@ public class MobyParseDatatypeTask implements ProcessorTaskWorker {
 	 * @param inputXML
 	 * @throws MobyException
 	 */
+	@SuppressWarnings("unchecked")
 	private void processIdFromSimple(HashMap output, String inputXML) throws MobyException {
 		String simple = XMLUtilities.getSimple(proc.getArticleNameUsedByService(), proc
 				.getDatatypeName(), inputXML, proc.getRegistryEndpoint());
 		Element simElement = XMLUtilities.getDOMDocument(simple).getRootElement();
-		output.put("id", new DataThing(getElementsMobyID((simElement))));
+		ArrayList theList = new ArrayList();
+		theList.add(getElementsMobyID((simElement)));
+		output.put("id", new DataThing(theList));
 	}
 
 	/**
@@ -383,11 +447,14 @@ public class MobyParseDatatypeTask implements ProcessorTaskWorker {
 	 * @param inputXML
 	 * @throws MobyException
 	 */
+	@SuppressWarnings("unchecked")
 	private void processNamespaceFromSimple(HashMap output, String inputXML) throws MobyException {
 		String simple = XMLUtilities.getSimple(proc.getArticleNameUsedByService(), proc
 				.getDatatypeName(), inputXML, proc.getRegistryEndpoint());
 		Element simElement = XMLUtilities.getDOMDocument(simple).getRootElement();
-		output.put("namespace", new DataThing(getElementsMobyNamespace((simElement))));
+		ArrayList theList = new ArrayList();
+		theList.add(getElementsMobyNamespace((simElement)));
+		output.put("namespace", new DataThing(theList));
 	}
 
 	/**
@@ -396,6 +463,7 @@ public class MobyParseDatatypeTask implements ProcessorTaskWorker {
 	 * @param inputs
 	 * @throws MobyException
 	 */
+	@SuppressWarnings("unchecked")
 	private void processPortsFromSimples(String[] simples, OutputPort outPort, ArrayList inputs)
 			throws MobyException {
 		for (int i = 0; i < simples.length; i++) {
@@ -410,19 +478,19 @@ public class MobyParseDatatypeTask implements ProcessorTaskWorker {
 						.substring(proc.getArticleNameUsedByService().length() + 1);
 				articles = parseString.split("_'");
 				if (!isPrimitive(simElement.getName()))
-				for (int j = 0; j < articles.length; j++) {
-					nextArtName = articles[j];
-					if (nextArtName.startsWith("'"))
-						nextArtName = nextArtName.substring(1);
-					if (nextArtName.endsWith("'"))
-						nextArtName = nextArtName.substring(0, nextArtName.length() - 1);
-					simElement = getElementWithArticleName(simElement, nextArtName);
-					if (simElement == null) {
-						// output.put(outputName, new
-						// DataThing(new ArrayList()));
-						break;
+					for (int j = 0; j < articles.length; j++) {
+						nextArtName = articles[j];
+						if (nextArtName.startsWith("'"))
+							nextArtName = nextArtName.substring(1);
+						if (nextArtName.endsWith("'"))
+							nextArtName = nextArtName.substring(0, nextArtName.length() - 1);
+						simElement = getElementWithArticleName(simElement, nextArtName);
+						if (simElement == null) {
+							// output.put(outputName, new
+							// DataThing(new ArrayList()));
+							break;
+						}
 					}
-				}
 				if (simElement != null)
 					inputs.add(simElement.getTextTrim());
 			}
@@ -434,6 +502,7 @@ public class MobyParseDatatypeTask implements ProcessorTaskWorker {
 	 * @param inputs
 	 * @throws MobyException
 	 */
+	@SuppressWarnings("unchecked")
 	private void processIdFromSimples(String[] simples, ArrayList inputs) throws MobyException {
 		for (int i = 0; i < simples.length; i++) {
 			String simple = simples[i];
@@ -447,6 +516,7 @@ public class MobyParseDatatypeTask implements ProcessorTaskWorker {
 	 * @param inputs
 	 * @throws MobyException
 	 */
+	@SuppressWarnings("unchecked")
 	private void processNamespaceFromSimples(String[] simples, ArrayList inputs)
 			throws MobyException {
 		for (int i = 0; i < simples.length; i++) {
@@ -456,7 +526,7 @@ public class MobyParseDatatypeTask implements ProcessorTaskWorker {
 		}
 	}
 
-	
+	@SuppressWarnings("unchecked")
 	private Element getElementWithArticleName(Element e, String nextArtName) {
 		List list = e.getChildren();
 		for (Iterator it = list.iterator(); it.hasNext();) {
@@ -476,6 +546,7 @@ public class MobyParseDatatypeTask implements ProcessorTaskWorker {
 		return null;
 	}
 
+	@SuppressWarnings("unchecked")
 	private String getElementsMobyNamespace(Element e) {
 		String ns = "";
 		List list = e.getChildren();
@@ -493,6 +564,7 @@ public class MobyParseDatatypeTask implements ProcessorTaskWorker {
 		return ns;
 	}
 
+	@SuppressWarnings("unchecked")
 	private String getElementsMobyID(Element e) {
 		String id = "";
 		List list = e.getChildren();
@@ -510,6 +582,7 @@ public class MobyParseDatatypeTask implements ProcessorTaskWorker {
 		return id;
 	}
 
+	@SuppressWarnings("unchecked")
 	private Element getChildOfSimple(Element e) {
 		List list = e.getChildren();
 		for (Iterator it = list.iterator(); it.hasNext();) {
@@ -519,46 +592,51 @@ public class MobyParseDatatypeTask implements ProcessorTaskWorker {
 		}
 		return e;
 	}
-	
+
+	@SuppressWarnings("unchecked")
 	private boolean isPrimitive(String name) {
 		if (name.equals("Integer") || name.equals("String") || name.equals("Float")
 				|| name.equals("DateTime") || name.equals("Boolean"))
 			return true;
 		return false;
 	}
-	private void processChildNsFromSimple(HashMap map, String inputXML, String portName) throws MobyException {
+
+	@SuppressWarnings("unchecked")
+	private void processChildNsFromSimple(HashMap map, String inputXML, String portName)
+			throws MobyException {
 		String simple = XMLUtilities.getSimple(proc.getArticleNameUsedByService(), proc
 				.getDatatypeName(), inputXML, proc.getRegistryEndpoint());
 		Element simElement = XMLUtilities.getDOMDocument(simple).getRootElement();
 		Element child = null;
 		String[] path = portName.split("_");
-		// expect it to be at least 3 => simple articlename, child relation name, and id | ns
+		// expect it to be at least 3 => simple articlename, child relation
+		// name, and id | ns
 		if (path.length < 3) {
 			// put empty string
-			map.put(portName, new DataThing(""));
+			map.put(portName, new DataThing(new ArrayList()));
 			return;
 		}
 		if (simElement.getChildren().size() == 0) {
 			// put empty string
-			map.put(portName, new DataThing(""));
+			map.put(portName, new DataThing(new ArrayList()));
 			return;
 		}
-		
+
 		for (int x = 0; x < simElement.getChildren().size(); x++) {
 			Object o = simElement.getChildren().get(x);
 			if (o instanceof Element) {
-				child = (Element)o;
+				child = (Element) o;
 				break;
 			}
 		}
 		if (child == null) {
-			map.put(portName, new DataThing(""));
+			map.put(portName, new DataThing(new ArrayList()));
 			return;
 		}
-		
+
 		// now extract the element we want
 		String match = new XMLOutputter(Format.getPrettyFormat()).outputString(child);
-		for (int x = 1; x < path.length-1; x++) {
+		for (int x = 1; x < path.length - 1; x++) {
 			String currentArtName = path[x];
 			if (currentArtName.startsWith("'"))
 				currentArtName = currentArtName.substring(1);
@@ -566,7 +644,7 @@ public class MobyParseDatatypeTask implements ProcessorTaskWorker {
 				currentArtName = currentArtName.substring(0, currentArtName.length() - 1);
 			match = XMLUtilities.getDirectChildByArticleName(match, currentArtName);
 			if (match == null) {
-				map.put(portName, new DataThing(""));
+				map.put(portName, new DataThing(new ArrayList()));
 				return;
 			}
 		}
@@ -576,15 +654,22 @@ public class MobyParseDatatypeTask implements ProcessorTaskWorker {
 		ns = child.getAttributeValue("namespace");
 		if (ns == null)
 			ns = child.getAttributeValue("namespace", XMLUtilities.MOBY_NS);
-		map.put(portName, new DataThing(ns == null ? "" : ns));
+		ArrayList theList = new ArrayList();
+		if (ns != null)
+			theList.add(ns);
+		map.put(portName, new DataThing(theList));
 	}
-	private void processChildNsFromSimples(String[] simples, ArrayList list, String portName) throws MobyException{
+
+	@SuppressWarnings("unchecked")
+	private void processChildNsFromSimples(String[] simples, ArrayList list, String portName)
+			throws MobyException {
 		for (int i = 0; i < simples.length; i++) {
 			String simple = simples[i];
 			Element simElement = XMLUtilities.getDOMDocument(simple).getRootElement();
 			Element child = null;
 			String[] path = portName.split("_");
-			// expect it to be at least 3 => simple articlename, child relation name, and id | ns
+			// expect it to be at least 3 => simple articlename, child relation
+			// name, and id | ns
 			if (path.length < 3) {
 				// put empty string
 				list.add("");
@@ -595,11 +680,11 @@ public class MobyParseDatatypeTask implements ProcessorTaskWorker {
 				list.add("");
 				continue;
 			}
-			
+
 			for (int x = 0; x < simElement.getChildren().size(); x++) {
 				Object o = simElement.getChildren().get(x);
 				if (o instanceof Element) {
-					child = (Element)o;
+					child = (Element) o;
 					break;
 				}
 			}
@@ -607,10 +692,10 @@ public class MobyParseDatatypeTask implements ProcessorTaskWorker {
 				list.add("");
 				continue;
 			}
-			
+
 			// now extract the element we want
 			String match = new XMLOutputter(Format.getPrettyFormat()).outputString(child);
-			for (int x = 1; x < path.length-1; x++) {
+			for (int x = 1; x < path.length - 1; x++) {
 				String currentArtName = path[x];
 				if (currentArtName.startsWith("'"))
 					currentArtName = currentArtName.substring(1);
@@ -631,42 +716,46 @@ public class MobyParseDatatypeTask implements ProcessorTaskWorker {
 			list.add(ns == null ? "" : ns);
 		}
 	}
+
 	/*
 	 * extracts the id from a child element
 	 */
-	private void processChildIdFromSimple(HashMap map, String inputXML, final String portName) throws MobyException {
+	@SuppressWarnings("unchecked")
+	private void processChildIdFromSimple(HashMap map, String inputXML, final String portName)
+			throws MobyException {
 		String simple = XMLUtilities.getSimple(proc.getArticleNameUsedByService(), proc
 				.getDatatypeName(), inputXML, proc.getRegistryEndpoint());
 		Element simElement = XMLUtilities.getDOMDocument(simple).getRootElement();
 		Element child = null;
 		String[] path = portName.split("_");
-		// expect it to be at least 3 => simple articlename, child relation name, and id | ns
+		// expect it to be at least 3 => simple articlename, child relation
+		// name, and id | ns
 		if (path.length < 3) {
 			// put empty string
-			map.put(portName, new DataThing(""));
+			map.put(portName, new DataThing(new ArrayList()));
 			return;
 		}
 		if (simElement.getChildren().size() == 0) {
 			// put empty string
-			map.put(portName, new DataThing(""));
+			map.put(portName, new DataThing(new ArrayList()));
 			return;
 		}
-		
+
 		for (int x = 0; x < simElement.getChildren().size(); x++) {
 			Object o = simElement.getChildren().get(x);
 			if (o instanceof Element) {
-				child = (Element)o;
+				child = (Element) o;
 				break;
 			}
 		}
 		if (child == null) {
-			map.put(portName, new DataThing(""));
+			map.put(portName, new DataThing(new ArrayList()));
 			return;
 		}
-		
+
 		// now extract the element we want
 		String match = new XMLOutputter(Format.getPrettyFormat()).outputString(child);
-		for (int x = 1; x < path.length-1; x++) {
+		for (int x = 1; x < path.length - 1; x++) {
 			String currentArtName = path[x];
 			if (currentArtName.startsWith("'"))
 				currentArtName = currentArtName.substring(1);
@@ -674,7 +763,7 @@ public class MobyParseDatatypeTask implements ProcessorTaskWorker {
 				currentArtName = currentArtName.substring(0, currentArtName.length() - 1);
 			match = XMLUtilities.getDirectChildByArticleName(match, currentArtName);
 			if (match == null) {
-				map.put(portName, new DataThing(""));
+				map.put(portName, new DataThing(new ArrayList()));
 				return;
 			}
 		}
@@ -684,19 +773,25 @@ public class MobyParseDatatypeTask implements ProcessorTaskWorker {
 		id = child.getAttributeValue("id");
 		if (id == null)
 			id = child.getAttributeValue("id", XMLUtilities.MOBY_NS);
-		map.put(portName, new DataThing(id == null ? "" : id));
+		ArrayList theList = new ArrayList();
+		if (id != null)
+			theList.add(id);
+		map.put(portName, new DataThing(theList));
 	}
-	
+
 	/*
 	 * extracts the id from a child element
 	 */
-	private void processChildIdFromSimples(String[] simples, ArrayList list, String portName) throws MobyException{
+	@SuppressWarnings("unchecked")
+	private void processChildIdFromSimples(String[] simples, ArrayList list, String portName)
+			throws MobyException {
 		for (int i = 0; i < simples.length; i++) {
 			String simple = simples[i];
 			Element simElement = XMLUtilities.getDOMDocument(simple).getRootElement();
 			Element child = null;
 			String[] path = portName.split("_");
-			// expect it to be at least 3 => simple articlename, child relation name, and id | ns
+			// expect it to be at least 3 => simple articlename, child relation
+			// name, and id | ns
 			if (path.length < 3) {
 				// put empty string
 				list.add("");
@@ -707,11 +802,11 @@ public class MobyParseDatatypeTask implements ProcessorTaskWorker {
 				list.add("");
 				continue;
 			}
-			
+
 			for (int x = 0; x < simElement.getChildren().size(); x++) {
 				Object o = simElement.getChildren().get(x);
 				if (o instanceof Element) {
-					child = (Element)o;
+					child = (Element) o;
 					break;
 				}
 			}
@@ -719,10 +814,10 @@ public class MobyParseDatatypeTask implements ProcessorTaskWorker {
 				list.add("");
 				continue;
 			}
-			
+
 			// now extract the element we want
 			String match = new XMLOutputter(Format.getPrettyFormat()).outputString(child);
-			for (int x = 1; x < path.length-1; x++) {
+			for (int x = 1; x < path.length - 1; x++) {
 				String currentArtName = path[x];
 				if (currentArtName.startsWith("'"))
 					currentArtName = currentArtName.substring(1);
@@ -742,5 +837,18 @@ public class MobyParseDatatypeTask implements ProcessorTaskWorker {
 				id = child.getAttributeValue("id", XMLUtilities.MOBY_NS);
 			list.add(id == null ? "" : id);
 		}
+	}
+	public static void main(String[] args) throws Exception {
+		Map inputs = new HashMap();
+		String input = "<moby:MOBY xmlns:moby=\"http://www.biomoby.org/moby\">\r\n" + 
+				"  <moby:mobyContent>\r\n" + 
+				"    <moby:mobyData moby:queryID=\"a38\" />\r\n" + 
+				"  </moby:mobyContent>\r\n" + 
+				"</moby:MOBY>";
+		
+		MobyParseDatatypeProcessor p = new MobyParseDatatypeProcessor(null, "foo","b64_encoded_gif","image",CentralImpl.DEFAULT_ENDPOINT);
+		MobyParseDatatypeTask mp = new MobyParseDatatypeTask(p);
+		mp.processPortsFromSimple((HashMap)inputs,input,new OutputPort(p, "mobyData('b64_encoded_gif')"));
+		
 	}
 }

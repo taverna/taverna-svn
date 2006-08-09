@@ -55,6 +55,7 @@ public class BiomobyTask implements ProcessorTaskWorker {
 		this.proc = p;
 	}
 
+	@SuppressWarnings("unchecked")
 	public Map execute(Map inputMap, IProcessorTask parentTask) throws TaskExecutionException {
 		if (DEBUG) {
 			logger.debug("Service " + proc.getName());
@@ -199,7 +200,7 @@ public class BiomobyTask implements ProcessorTaskWorker {
 
 					String inputType = myInput.getSyntacticType();
 					DataThing inputThing = (DataThing) inputMap.get(portName);
-					if (!inputType.startsWith("l(")) {
+					if (!inputThing.getSyntacticType().startsWith("l(")) {
 						inputXML = (String) inputThing.getDataObject();
 						Element inputElement = null;
 						try {
@@ -292,11 +293,12 @@ public class BiomobyTask implements ProcessorTaskWorker {
 						}
 					} else {
 						// we have a collection!
-
 						// inputThing is a list of Strings
 						List list = (List) inputThing.getDataObject();
-						/* need this map in cases where simples are passed into a service
-						 * that wants a collection. each simple is then added into the same collection
+						/*
+						 * need this map in cases where simples are passed into
+						 * a service that wants a collection. each simple is
+						 * then added into the same collection
 						 */
 						Map collectionMap = new HashMap();
 						for (Iterator it = list.iterator(); it.hasNext();) {
@@ -318,34 +320,63 @@ public class BiomobyTask implements ProcessorTaskWorker {
 								Element[] invocations = XMLUtilities
 										.getSingleInvokationsFromMultipleInvokations(inputElement);
 								ArrayList mdList = new ArrayList();
+								// this is here for mim messages of simples
+								Element mimCollection = null;
+								String mimQueryID = "";
 								for (int j = 0; j < invocations.length; j++) {
 									Element[] elements = XMLUtilities
 											.getListOfCollections(invocations[j]);
 									if (elements.length == 0) {
-										// simple was passed in - wrap it
-										Element collection = XMLUtilities
+										if (mimCollection == null)
+											mimCollection = new Element("Collection",
+													XMLUtilities.MOBY_NS);
+										// FIXME simple (s) was(were) passed in
+										// - wrap it (them)
+										/*
+										 * problem is that
+										 * createMobyDataElementWrapper consumes
+										 * simple/collection and not mobydata.
+										 * replace this whole block of code with
+										 * code that will take each invocation
+										 * and produce one collection. queryid
+										 * will be the id from all invocations
+										 * joined by underscores test is: string
+										 * workflow with abcd gluestrings1
+										 */
+
+										Element theSimple = XMLUtilities
 												.extractMobyData(invocations[j]);
-										collection = XMLUtilities
-												.createMobyDataElementWrapper(collection,
-														XMLUtilities.getQueryID(invocations[j]), null);
-										collection = XMLUtilities.renameCollection(articleName,
-												collection);
-										collection = XMLUtilities
-												.createMobyDataElementWrapper(collection,
-														XMLUtilities.getQueryID(invocations[j]), null);
-										mdList.add(XMLUtilities.extractMobyData(collection));
+										if (theSimple.getChild("Simple") != null)
+											theSimple = theSimple.getChild("Simple");
+										else if (theSimple.getChild("Simple", XMLUtilities.MOBY_NS) != null)
+											theSimple = theSimple.getChild("Simple",
+													XMLUtilities.MOBY_NS);
+										mimCollection.addContent(theSimple.detach());
+										mimQueryID = mimQueryID + "_" + XMLUtilities.getQueryID(invocations[j]); 
 									} else {
 										// collection passed in (always 1 passed
 										// in)
 										Element collection = invocations[j];
 										collection = XMLUtilities.renameCollection(articleName,
 												collection);
-										collection = XMLUtilities
-												.createMobyDataElementWrapper(collection,
-														XMLUtilities.getQueryID(invocations[j]), null);
+										collection = XMLUtilities.createMobyDataElementWrapper(
+												collection,
+												XMLUtilities.getQueryID(invocations[j]), null);
 										mdList.add(XMLUtilities.extractMobyData(collection));
 									}
 								}
+								if (mimCollection != null) {
+									mimCollection = XMLUtilities.createMobyDataElementWrapper(
+											mimCollection, mimQueryID,
+											null);
+									mimCollection = XMLUtilities.renameCollection(articleName,
+											mimCollection);
+									mimCollection = XMLUtilities.createMobyDataElementWrapper(
+											mimCollection, mimQueryID,
+											null);
+									mdList.add(XMLUtilities.extractMobyData(mimCollection));
+								}
+
 								if (mdList.isEmpty())
 									continue;
 
@@ -363,58 +394,66 @@ public class BiomobyTask implements ProcessorTaskWorker {
 											XMLUtilities.MOBY_NS);
 									collection.addContent(XMLUtilities
 											.extractMobyData(inputElement).cloneContent());
-									collection = XMLUtilities.createMobyDataElementWrapper(
-											collection, XMLUtilities.getQueryID(inputElement), null);
+									collection = XMLUtilities
+											.createMobyDataElementWrapper(collection, XMLUtilities
+													.getQueryID(inputElement), null);
 									collection = XMLUtilities.renameCollection(articleName,
 											collection);
-									collection = XMLUtilities.createMobyDataElementWrapper(
-											collection, XMLUtilities.getQueryID(inputElement), null);
+									collection = XMLUtilities
+											.createMobyDataElementWrapper(collection, XMLUtilities
+													.getQueryID(inputElement), null);
 									if (collectionMap.containsKey(articleName)) {
-										//add the simple to a pre-existing collection
-										ArrayList mdList = (ArrayList)collectionMap.remove(articleName);
+										// add the simple to a pre-existing
+										// collection
+										ArrayList mdList = (ArrayList) collectionMap
+												.remove(articleName);
 										mdList.add(XMLUtilities.extractMobyData(collection));
 										collectionMap.put(articleName, mdList);
 									} else {
-										// new collection - add element and increment count
+										// new collection - add element and
+										// increment count
 										ArrayList mdList = new ArrayList();
 										mdList.add(XMLUtilities.extractMobyData(collection));
 										collectionMap.put(articleName, mdList);
-										//totalMobyDatas++;
+										// totalMobyDatas++;
 										if (totalMobyDatas < 1)
 											totalMobyDatas = 1;
 									}
-									//mobyDatas.add(mdList);
-									//totalMobyDatas++;
+									// mobyDatas.add(mdList);
+									// totalMobyDatas++;
 								} else {
 									// we have a collection
 									Element collection = inputElement;
 									collection = XMLUtilities.renameCollection(articleName,
 											collection);
 									ArrayList mdList = new ArrayList();
-									collection = XMLUtilities.createMobyDataElementWrapper(
-											collection, XMLUtilities.getQueryID(inputElement), null);
+									collection = XMLUtilities
+											.createMobyDataElementWrapper(collection, XMLUtilities
+													.getQueryID(inputElement), null);
 									mdList.add(XMLUtilities.extractMobyData(collection));
 									if (DEBUG) {
-										logger.debug("***********SIM_COLLECTION_IN****************");
-										logger.debug(new XMLOutputter(Format
-												.getPrettyFormat()).outputString(collection));
-										logger.debug("***********SIM_COLLECTION_IN****************");
+										logger
+												.debug("***********SIM_COLLECTION_IN****************");
+										logger.debug(new XMLOutputter(Format.getPrettyFormat())
+												.outputString(collection));
+										logger
+												.debug("***********SIM_COLLECTION_IN****************");
 									}
 									mobyDatas.add(mdList);
 									if (totalMobyDatas < 1)
 										totalMobyDatas = 1;
-									
+
 								}
 							} // end if MIM
 						} // end iteration over inputThing list
 						Iterator collectionIterator = collectionMap.keySet().iterator();
 						while (collectionIterator.hasNext()) {
-							String key = (String)collectionIterator.next();
-							List theList = (List)collectionMap.get(key);
+							String key = (String) collectionIterator.next();
+							List theList = (List) collectionMap.get(key);
 							theList = XMLUtilities.mergeCollections(theList, key);
 							mobyDatas.add(theList);
 						}
-					}					
+					}
 				}
 
 				if (DEBUG) {
@@ -457,21 +496,20 @@ public class BiomobyTask implements ProcessorTaskWorker {
 						queryID = queryID.substring(1);
 					mds[x].setAttribute("queryID", queryID, XMLUtilities.MOBY_NS);
 					// if secondarys exist add them here
-					if (((BiomobyProcessor)this.proc).containsSecondaries()) {
-						ParametersTable pt = ((BiomobyProcessor)this.proc).getParameterTable();
+					if (((BiomobyProcessor) this.proc).containsSecondaries()) {
+						ParametersTable pt = ((BiomobyProcessor) this.proc).getParameterTable();
 						Element[] parameters = null;
-						parameters = ((BiomobyProcessor)this.proc).getParameterTable().toXML();
+						parameters = ((BiomobyProcessor) this.proc).getParameterTable().toXML();
 						for (int i = 0; i < parameters.length; i++) {
 							mds[x].addContent((parameters[i]).detach());
 						}
 					}
 					content.addContent(mds[x].detach());
 				}
-				
+
 				if (DEBUG) {
 					logger.debug("After MobyData aggregation");
-					logger.debug(new XMLOutputter(Format.getPrettyFormat())
-							.outputString(root));
+					logger.debug(new XMLOutputter(Format.getPrettyFormat()).outputString(root));
 					logger.debug("******* End ******");
 				}
 				// do the task and populate outputXML
@@ -482,7 +520,7 @@ public class BiomobyTask implements ProcessorTaskWorker {
 				String serviceInput = new XMLOutputter(Format.getPrettyFormat()).outputString(root);
 				String[] invocations = XMLUtilities
 						.getSingleInvokationsFromMultipleInvokations(serviceInput);
-				//logger.debug(serviceInput);
+				// logger.debug(serviceInput);
 				// going to iterate over all invocations so that messages with
 				// many mobyData blocks dont timeout.
 				logger.debug("Total invocations " + invocations.length);
@@ -531,6 +569,7 @@ public class BiomobyTask implements ProcessorTaskWorker {
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	private void processOutputPort(String outputXML, Map outputMap) throws TaskExecutionException,
 			JDOMException, IOException {
 		OutputPort myOutput = null;
@@ -605,7 +644,8 @@ public class BiomobyTask implements ProcessorTaskWorker {
 				try {
 					outputList.add(new XMLOutputter(Format.getPrettyFormat())
 							.outputString(XMLUtilities.createMobyDataWrapper(XMLUtilities
-									.getQueryID(outputXML), XMLUtilities.getServiceNotesAsElement(outputXML))));
+									.getQueryID(outputXML), XMLUtilities
+									.getServiceNotesAsElement(outputXML))));
 				} catch (MobyException me) {
 					logger.debug(me);
 				}
@@ -641,6 +681,7 @@ public class BiomobyTask implements ProcessorTaskWorker {
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	private void processOutputPorts(String outputXML, Map outputMap) throws MobyException {
 		OutputPort[] outputPorts = proc.getOutputPorts(); // used to be
 		// boundOutputPorts
@@ -655,7 +696,7 @@ public class BiomobyTask implements ProcessorTaskWorker {
 						// un-named collection -> ignore it as it is illegal
 						// in the api
 						// TODO could throw exception
-						
+
 						List innerList = new ArrayList();
 						outputMap.put(name, new DataThing(innerList));
 						continue;
@@ -666,15 +707,22 @@ public class BiomobyTask implements ProcessorTaskWorker {
 							if (isMIM) {
 								String[] invocations = XMLUtilities
 										.getSingleInvokationsFromMultipleInvokations(outputXML);
-								
+
 								List innerList = new ArrayList();
+								Element serviceNotesElement = XMLUtilities
+										.getServiceNotesAsElement(outputXML);
 								for (int i = 0; i < invocations.length; i++) {
 									try {
 										String collection = XMLUtilities.getWrappedCollection(
 												articleName, invocations[i]);
-										String[] simples = XMLUtilities.getSimplesFromCollection(articleName, collection);
+										String[] simples = XMLUtilities.getSimplesFromCollection(
+												articleName, collection);
 										for (int j = 0; j < simples.length; j++) {
-											innerList.add(XMLUtilities.createMobyDataElementWrapper(simples[j], XMLUtilities.getQueryID(collection)+"_+_s"+qCounter++));
+											innerList.add(XMLUtilities
+													.createMobyDataElementWrapper(simples[j],
+															XMLUtilities.getQueryID(collection)
+																	+ "_+_s" + qCounter++,
+															serviceNotesElement));
 										}
 									} catch (MobyException e) {
 										// collection didnt exist, so put an
@@ -682,7 +730,8 @@ public class BiomobyTask implements ProcessorTaskWorker {
 										// mobyData
 										// TODO keep the original wrapper
 										String qID = XMLUtilities.getQueryID(invocations[i]);
-										Element empty = XMLUtilities.createMobyDataWrapper(qID, XMLUtilities.getServiceNotesAsElement(outputXML));
+										Element empty = XMLUtilities.createMobyDataWrapper(qID,
+												XMLUtilities.getServiceNotesAsElement(outputXML));
 										XMLOutputter output = new XMLOutputter(Format
 												.getPrettyFormat());
 										innerList.add(output.outputString(empty));
@@ -695,16 +744,24 @@ public class BiomobyTask implements ProcessorTaskWorker {
 								// a
 								// list
 								try {
-									
+
 									List innerList = new ArrayList();
 									String collection = XMLUtilities.getWrappedCollection(
 											articleName, outputXML);
-									
-									String[] simples = XMLUtilities.getSimplesFromCollection(articleName, collection);
+
+									String[] simples = XMLUtilities.getSimplesFromCollection(
+											articleName, collection);
+									Element serviceNotesElement = XMLUtilities
+											.getServiceNotesAsElement(outputXML);
 									for (int i = 0; i < simples.length; i++) {
-										innerList.add(XMLUtilities.createMobyDataElementWrapper(simples[i], XMLUtilities.getQueryID(collection)+"_+_s"+qCounter++));
+										innerList
+												.add(XMLUtilities.createMobyDataElementWrapper(
+														simples[i], XMLUtilities
+																.getQueryID(collection)
+																+ "_+_s" + qCounter++,
+														serviceNotesElement));
 									}
-									
+
 									outputMap.put(name, new DataThing(innerList));
 								} catch (MobyException e) {
 									// TODO keep the original wrapper
@@ -712,7 +769,8 @@ public class BiomobyTask implements ProcessorTaskWorker {
 									// simple didnt exist, so put an empty
 									// mobyData
 									String qID = XMLUtilities.getQueryID(outputXML);
-									Element empty = XMLUtilities.createMobyDataWrapper(qID, XMLUtilities.getServiceNotesAsElement(outputXML));
+									Element empty = XMLUtilities.createMobyDataWrapper(qID,
+											XMLUtilities.getServiceNotesAsElement(outputXML));
 									XMLOutputter output = new XMLOutputter(Format.getPrettyFormat());
 									innerList.add(output.outputString(empty));
 									outputMap.put(name, new DataThing(innerList));
@@ -726,7 +784,7 @@ public class BiomobyTask implements ProcessorTaskWorker {
 								// single string
 								String[] invocations = XMLUtilities
 										.getSingleInvokationsFromMultipleInvokations(outputXML);
-								
+
 								List innerList = new ArrayList();
 								for (int i = 0; i < invocations.length; i++) {
 									try {
@@ -739,18 +797,19 @@ public class BiomobyTask implements ProcessorTaskWorker {
 										// mobyData
 										// TODO keep the original wrapper
 										String qID = XMLUtilities.getQueryID(invocations[i]);
-										Element empty = XMLUtilities.createMobyDataWrapper(qID, XMLUtilities.getServiceNotesAsElement(outputXML));
+										Element empty = XMLUtilities.createMobyDataWrapper(qID,
+												XMLUtilities.getServiceNotesAsElement(outputXML));
 										XMLOutputter output = new XMLOutputter(Format
 												.getPrettyFormat());
 										innerList.add(output.outputString(empty));
 									}
 								}
-								
+
 								outputMap.put(name, new DataThing(innerList));
 							} else {
 
 								try {
-									
+
 									List innerList = new ArrayList();
 									String collection = XMLUtilities.getWrappedCollection(
 											articleName, outputXML);
@@ -762,7 +821,8 @@ public class BiomobyTask implements ProcessorTaskWorker {
 									// simple didnt exist, so put an empty
 									// mobyData
 									String qID = XMLUtilities.getQueryID(outputXML);
-									Element empty = XMLUtilities.createMobyDataWrapper(qID, XMLUtilities.getServiceNotesAsElement(outputXML));
+									Element empty = XMLUtilities.createMobyDataWrapper(qID,
+											XMLUtilities.getServiceNotesAsElement(outputXML));
 									XMLOutputter output = new XMLOutputter(Format.getPrettyFormat());
 									innerList.add(output.outputString(empty));
 									outputMap.put(name, new DataThing(innerList));
@@ -778,12 +838,15 @@ public class BiomobyTask implements ProcessorTaskWorker {
 						// TODO could throw exception
 
 						String empty = new XMLOutputter().outputString(XMLUtilities
-								.createMobyDataWrapper(XMLUtilities.getQueryID(outputXML), XMLUtilities.getServiceNotesAsElement(outputXML)));
+								.createMobyDataWrapper(XMLUtilities.getQueryID(outputXML),
+										XMLUtilities.getServiceNotesAsElement(outputXML)));
 						List innerList = new ArrayList();
 						innerList.add(empty);
-						outputMap.put(name, new DataThing(innerList));
+						outputMap.put(name, new DataThing(empty));
 						continue;
 					} else {
+						// TODO what if you make mim messages a single string
+						// and then simples always output 'text/xml'?
 						String articleName = name.substring(name.indexOf("(") + 1, name
 								.indexOf(")"));
 						String objectType = name.substring(0, name.indexOf("("));
@@ -791,7 +854,7 @@ public class BiomobyTask implements ProcessorTaskWorker {
 
 							String[] invocations = XMLUtilities
 									.getSingleInvokationsFromMultipleInvokations(outputXML);
-							
+
 							ArrayList innerList = new ArrayList();
 
 							for (int i = 0; i < invocations.length; i++) {
@@ -805,15 +868,26 @@ public class BiomobyTask implements ProcessorTaskWorker {
 									// mobyData
 									// TODO keep the original wrapper
 									String qID = XMLUtilities.getQueryID(invocations[i]);
-									
-									Element empty = XMLUtilities.createMobyDataWrapper(qID, XMLUtilities.getServiceNotesAsElement(outputXML));
+
+									Element empty = XMLUtilities.createMobyDataWrapper(qID,
+											XMLUtilities.getServiceNotesAsElement(outputXML));
 									XMLOutputter output = new XMLOutputter(Format.getPrettyFormat());
 									// invocations[i] =
 									// output.outputString(empty);
 									innerList.add(output.outputString(empty));
 								}
 							}
-							outputMap.put(name, new DataThing(innerList));
+							String[] s = new String[innerList.size()];
+							s = (String[]) innerList.toArray(s);
+							try {
+								outputMap.put(name, new DataThing(XMLUtilities
+										.createMultipleInvokations(s)));
+							} catch (MobyException e) {
+								logger.error("Error creating output for service: " + proc.getName()
+										+ "." + System.getProperty("line.separator")
+										+ e.getMessage());
+								outputMap.put(name, new DataThing(""));
+							}
 						} else {
 							// process the single invocation and put into a
 							// string
@@ -823,16 +897,17 @@ public class BiomobyTask implements ProcessorTaskWorker {
 												.getMobyEndpoint());
 								ArrayList innerList = new ArrayList();
 								innerList.add(simple);
-								outputMap.put(name, new DataThing(innerList));
+								outputMap.put(name, new DataThing(simple));
 							} catch (MobyException e) {
 								// simple didnt exist, so put an empty mobyData
 								// TODO keep the original wrapper
 								String qID = XMLUtilities.getQueryID(outputXML);
-								Element empty = XMLUtilities.createMobyDataWrapper(qID, XMLUtilities.getServiceNotesAsElement(outputXML));
+								Element empty = XMLUtilities.createMobyDataWrapper(qID,
+										XMLUtilities.getServiceNotesAsElement(outputXML));
 								XMLOutputter output = new XMLOutputter(Format.getPrettyFormat());
 								ArrayList innerList = new ArrayList();
 								innerList.add(output.outputString(empty));
-								outputMap.put(name, new DataThing(innerList));
+								outputMap.put(name, new DataThing(output.outputString(empty)));
 							}
 						}
 					}
