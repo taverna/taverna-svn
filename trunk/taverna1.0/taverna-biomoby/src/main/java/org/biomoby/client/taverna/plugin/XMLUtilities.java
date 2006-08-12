@@ -750,8 +750,10 @@ public class XMLUtilities {
 			Object o = it.next();
 			if (o instanceof Element) {
 				((Element) o).setAttribute("articleName", name, MOBY_NS);
+				if (((Element) o).getChildren().size() > 0)
+					vector.add(o);
 			}
-			vector.add(o);
+			
 		}
 		Element[] elements = new Element[vector.size()];
 		vector.copyInto(elements);
@@ -1226,7 +1228,8 @@ public class XMLUtilities {
 						.getAttributeValue("articleName", MOBY_NS, "") : e.getAttributeValue(
 						"articleName", "")), MOBY_NS);
 				simple.addContent(e.cloneContent());
-				mobyData.addContent(simple.detach());
+				if (simple.getChildren().size() > 0 )
+					mobyData.addContent(simple.detach());
 			} else if (e.getName().equals("Collection")) {
 				Element collection = new Element("Collection", MOBY_NS);
 				collection.setAttribute("articleName",
@@ -1234,7 +1237,8 @@ public class XMLUtilities {
 								"articleName", MOBY_NS, "") : e
 								.getAttributeValue("articleName", "")), MOBY_NS);
 				collection.addContent(e.cloneContent());
-				mobyData.addContent(collection.detach());
+				if (collection.getChildren().size() > 0)
+					mobyData.addContent(collection.detach());
 			}
 		}
 
