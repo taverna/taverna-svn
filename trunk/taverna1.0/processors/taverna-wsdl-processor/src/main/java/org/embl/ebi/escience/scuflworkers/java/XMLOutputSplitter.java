@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: XMLOutputSplitter.java,v $
- * Revision           $Revision: 1.2 $
+ * Revision           $Revision: 1.3 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-07-10 14:12:15 $
+ * Last modified on   $Date: 2006-08-16 10:03:32 $
  *               by   $Author: sowen70 $
  * Created on 16-May-2006
  *****************************************************************/
@@ -53,7 +53,6 @@ import org.embl.ebi.escience.scufl.SemanticMarkup;
 import org.embl.ebi.escience.scuflworkers.wsdl.WSDLBasedProcessor;
 import org.embl.ebi.escience.scuflworkers.wsdl.XMLSplittableInputPort;
 import org.embl.ebi.escience.scuflworkers.wsdl.XMLSplittableOutputPort;
-import org.embl.ebi.escience.scuflworkers.wsdl.XMLSplitterSerialisationHelper;
 import org.embl.ebi.escience.scuflworkers.wsdl.parser.ArrayTypeDescriptor;
 import org.embl.ebi.escience.scuflworkers.wsdl.parser.BaseTypeDescriptor;
 import org.embl.ebi.escience.scuflworkers.wsdl.parser.ComplexTypeDescriptor;
@@ -76,7 +75,7 @@ import uk.ac.soton.itinnovation.taverna.enactor.entities.TaskExecutionException;
  * @author sowen
  * 
  */
-public class XMLOutputSplitter implements LocalWorkerWithPorts,XMLExtensible {
+public class XMLOutputSplitter implements LocalWorkerWithPorts, XMLExtensible {
 
 	private static Logger logger = Logger.getLogger(XMLInputSplitter.class);
 
@@ -135,7 +134,8 @@ public class XMLOutputSplitter implements LocalWorkerWithPorts,XMLExtensible {
 			if (output.getProcessor() instanceof WSDLBasedProcessor) {
 				result = true;
 			} else if (output.getProcessor() instanceof LocalServiceProcessor) {
-				LocalServiceProcessor processor = (LocalServiceProcessor) output.getProcessor();
+				LocalServiceProcessor processor = (LocalServiceProcessor) output
+						.getProcessor();
 				if (processor.getWorker() instanceof XMLOutputSplitter) {
 					result = true;
 				}
@@ -159,13 +159,16 @@ public class XMLOutputSplitter implements LocalWorkerWithPorts,XMLExtensible {
 	private TypeDescriptor getTypeDescriptor(OutputPort portToSplit) {
 		if (typeDescriptor == null) {
 			if (portToSplit.getProcessor() instanceof WSDLBasedProcessor) {
-				WSDLBasedProcessor proc = (WSDLBasedProcessor) portToSplit.getProcessor();
+				WSDLBasedProcessor proc = (WSDLBasedProcessor) portToSplit
+						.getProcessor();
 				WSDLParser parser = proc.getParser();
 				try {
-					List outputs = parser.getOperationOutputParameters(proc.getOperationName());
+					List outputs = parser.getOperationOutputParameters(proc
+							.getOperationName());
 					for (Iterator it = outputs.iterator(); it.hasNext();) {
 						TypeDescriptor desc = (TypeDescriptor) it.next();
-						if (desc.getName().equalsIgnoreCase(portToSplit.getName())) {
+						if (desc.getName().equalsIgnoreCase(
+								portToSplit.getName())) {
 							typeDescriptor = desc;
 							break;
 						}
@@ -174,21 +177,25 @@ public class XMLOutputSplitter implements LocalWorkerWithPorts,XMLExtensible {
 					logger.error("Exception thrown splitting outputs", e);
 				}
 			} else if (portToSplit.getProcessor() instanceof LocalServiceProcessor) {
-				LocalServiceProcessor processor = (LocalServiceProcessor) portToSplit.getProcessor();
+				LocalServiceProcessor processor = (LocalServiceProcessor) portToSplit
+						.getProcessor();
 				if (processor.getWorker() instanceof XMLOutputSplitter) {
-					XMLOutputSplitter splitter = (XMLOutputSplitter) processor.getWorker();
+					XMLOutputSplitter splitter = (XMLOutputSplitter) processor
+							.getWorker();
 					TypeDescriptor workerDesc = splitter.typeDescriptor;
 					if (workerDesc instanceof ComplexTypeDescriptor) {
-						for (Iterator iterator = ((ComplexTypeDescriptor) workerDesc).getElements().iterator(); iterator
-								.hasNext();) {
-							TypeDescriptor desc = (TypeDescriptor) iterator.next();
+						for (Iterator iterator = ((ComplexTypeDescriptor) workerDesc)
+								.getElements().iterator(); iterator.hasNext();) {
+							TypeDescriptor desc = (TypeDescriptor) iterator
+									.next();
 							if (desc.getName().equals(portToSplit.getName())) {
 								typeDescriptor = desc;
 								break;
 							}
 						}
 					} else if (workerDesc instanceof ArrayTypeDescriptor) {
-						typeDescriptor = ((ArrayTypeDescriptor) workerDesc).getElementType();
+						typeDescriptor = ((ArrayTypeDescriptor) workerDesc)
+								.getElementType();
 					}
 				}
 			}
@@ -198,7 +205,8 @@ public class XMLOutputSplitter implements LocalWorkerWithPorts,XMLExtensible {
 
 	private void defineFromTypeDescriptor() {
 		if (typeDescriptor instanceof ComplexTypeDescriptor) {
-			List elements = ((ComplexTypeDescriptor) typeDescriptor).getElements();
+			List elements = ((ComplexTypeDescriptor) typeDescriptor)
+					.getElements();
 			outputNames = new String[elements.size()];
 			outputTypes = new String[elements.size()];
 			Class[] types = new Class[elements.size()];
@@ -223,7 +231,8 @@ public class XMLOutputSplitter implements LocalWorkerWithPorts,XMLExtensible {
 	 * provideXML.
 	 */
 	public void consumeXML(Element element) {
-		typeDescriptor = XMLSplitterSerialisationHelper.extensionXMLToTypeDescriptor(element);
+		typeDescriptor = XMLSplitterSerialisationHelper
+				.extensionXMLToTypeDescriptor(element);
 		defineFromTypeDescriptor();
 	}
 
@@ -233,7 +242,8 @@ public class XMLOutputSplitter implements LocalWorkerWithPorts,XMLExtensible {
 	 * consumeXML.
 	 */
 	public Element provideXML() {
-		return XMLSplitterSerialisationHelper.typeDescriptorToExtensionXML(typeDescriptor);
+		return XMLSplitterSerialisationHelper
+				.typeDescriptorToExtensionXML(typeDescriptor);
 	}
 
 	/**
@@ -257,7 +267,8 @@ public class XMLOutputSplitter implements LocalWorkerWithPorts,XMLExtensible {
 				List children = doc.getRootElement().getChildren();
 				if (typeDescriptor instanceof ArrayTypeDescriptor) {
 					if (outputNames.length > 1)
-						throw new TaskExecutionException("Unexpected, multiple output names for ArrayType");
+						throw new TaskExecutionException(
+								"Unexpected, multiple output names for ArrayType");
 					executeForArrayType(result, children);
 				} else {
 					executeForComplexType(result, outputNameList, children);
@@ -268,9 +279,11 @@ public class XMLOutputSplitter implements LocalWorkerWithPorts,XMLExtensible {
 				for (int i = 0; i < outputNames.length; i++) {
 					if (result.get(outputNames[i]) == null) {
 						if (outputTypes[i].equals("'text/xml'")) {
-							result.put(outputNames[i], new DataThing("<" + outputNames[i] + " />"));
+							result.put(outputNames[i], new DataThing("<"
+									+ outputNames[i] + " />"));
 						} else if (outputTypes[i].startsWith("l('")) {
-							result.put(outputNames[i], DataThingFactory.bake(new ArrayList()));
+							result.put(outputNames[i], DataThingFactory
+									.bake(new ArrayList()));
 						} else {
 							result.put(outputNames[i], new DataThing(""));
 						}
@@ -278,9 +291,11 @@ public class XMLOutputSplitter implements LocalWorkerWithPorts,XMLExtensible {
 					}
 				}
 			} catch (JDOMException e) {
-				throw new TaskExecutionException("Unable to parse XML: " + xml, e);
+				throw new TaskExecutionException("Unable to parse XML: " + xml,
+						e);
 			} catch (IOException e) {
-				throw new TaskExecutionException("IOException parsing XML: " + xml, e);
+				throw new TaskExecutionException("IOException parsing XML: "
+						+ xml, e);
 			}
 
 		}
@@ -305,13 +320,15 @@ public class XMLOutputSplitter implements LocalWorkerWithPorts,XMLExtensible {
 		result.put(outputNames[0], DataThingFactory.bake(values));
 	}
 
-	private void executeForComplexType(Map result, List outputNameList, List children) {
+	private void executeForComplexType(Map result, List outputNameList,
+			List children) {
 		XMLOutputter outputter = new XMLOutputter();
 		for (Iterator iterator = children.iterator(); iterator.hasNext();) {
 			Element child = (Element) iterator.next();
 			if (outputNameList.contains(child.getName())) {
 				int i = outputNameList.indexOf(child.getName());
-				if (outputTypes[i].equals("'text/xml'") || outputTypes[i].equals("l('text/xml')")) {
+				if (outputTypes[i].equals("'text/xml'")
+						|| outputTypes[i].equals("l('text/xml')")) {
 					String xmlText = outputter.outputString(child);
 					result.put(child.getName(), new DataThing(xmlText));
 				} else {
@@ -321,26 +338,31 @@ public class XMLOutputSplitter implements LocalWorkerWithPorts,XMLExtensible {
 
 		}
 	}
-	
-	public List<InputPort> inputPorts(LocalServiceProcessor processor) throws DuplicatePortNameException, PortCreationException {
-		List<InputPort> result=new ArrayList<InputPort>();
+
+	public List<InputPort> inputPorts(LocalServiceProcessor processor)
+			throws DuplicatePortNameException, PortCreationException {
+		List<InputPort> result = new ArrayList<InputPort>();
 		for (int i = 0; i < inputNames().length; i++) {
 			// Create input ports
-			InputPort port = new XMLSplittableInputPort(processor, inputNames()[i]);
+			InputPort port = new XMLSplittableInputPort(processor,
+					inputNames()[i]);
 			port.setSyntacticType(inputTypes()[i]);
 			result.add(port);
 		}
 		return result;
 	}
 
-	public List<OutputPort> outputPorts(LocalServiceProcessor processor) throws DuplicatePortNameException, PortCreationException {
-		List<OutputPort> result=new ArrayList<OutputPort>();
+	public List<OutputPort> outputPorts(LocalServiceProcessor processor)
+			throws DuplicatePortNameException, PortCreationException {
+		List<OutputPort> result = new ArrayList<OutputPort>();
 		for (int i = 0; i < outputNames().length; i++) {
 			// Create output ports
-			OutputPort port = new XMLSplittableOutputPort(processor, outputNames()[i]);
+			OutputPort port = new XMLSplittableOutputPort(processor,
+					outputNames()[i]);
 			port.setSyntacticType(outputTypes()[i]);
 			SemanticMarkup m = port.getMetadata();
-			String[] mimeTypes = ((outputTypes()[i].split("\\'"))[1]).split(",");
+			String[] mimeTypes = ((outputTypes()[i].split("\\'"))[1])
+					.split(",");
 			for (int j = 0; j < mimeTypes.length; j++) {
 				logger.debug("Mime type " + mimeTypes[j]);
 				m.addMIMEType(mimeTypes[j]);

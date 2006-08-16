@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: WSDLSOAPInvoker.java,v $
- * Revision           $Revision: 1.2 $
+ * Revision           $Revision: 1.3 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-07-10 14:11:19 $
+ * Last modified on   $Date: 2006-08-16 10:03:32 $
  *               by   $Author: sowen70 $
  * Created on 07-Apr-2006
  *****************************************************************/
@@ -100,12 +100,13 @@ public class WSDLSOAPInvoker {
 	public Map invoke(Map inputMap) throws Exception {
 
 		Call call = getCall();
-		SOAPBodyElement body = buildBody(inputMap);						
-		
+		SOAPBodyElement body = buildBody(inputMap);
+
 		List response = (List) call.invoke(new Object[] { body });
 
-		SOAPResponseParser parser = SOAPResponseParserFactory.instance().create(response, getUse(), getStyle(),
-				getProcessor().getOutputPorts());
+		SOAPResponseParser parser = SOAPResponseParserFactory.instance()
+				.create(response, getUse(), getStyle(),
+						getProcessor().getOutputPorts());
 		Map result = parser.parse(response);
 
 		result.put("attachmentList", extractAttachmentsDataThing(call));
@@ -118,7 +119,8 @@ public class WSDLSOAPInvoker {
 	}
 
 	private String getUse() throws UnknownOperationException {
-		return getProcessor().getParser().getUse(getProcessor().getOperationName());
+		return getProcessor().getParser().getUse(
+				getProcessor().getOperationName());
 	}
 
 	private WSDLBasedProcessor getProcessor() {
@@ -135,19 +137,24 @@ public class WSDLSOAPInvoker {
 	 * @throws WSDLException
 	 * @throws WSIFException
 	 */
-	private Call getCall() throws ServiceException, UnknownOperationException, WSDLException, WSIFException {
+	private Call getCall() throws ServiceException, UnknownOperationException,
+			WSDLException, WSIFException {
 
 		WSDLBasedProcessor processor = getProcessor();
 		String operationName = processor.getOperationName();
 		String use = processor.getParser().getUse(operationName);
-		Call result = (((WSIFPort_ApacheAxis) ((WSIFOperation_ApacheAxis) processor.getWSIFOperation()).getWSIFPort())
-				.getCall());
+		Call result = (((WSIFPort_ApacheAxis) ((WSIFOperation_ApacheAxis) processor
+				.getWSIFOperation()).getWSIFPort()).getCall());
 		result.setUseSOAPAction(true);
-		result.setProperty(org.apache.axis.client.Call.SEND_TYPE_ATTR, Boolean.FALSE);
-		result.setProperty(org.apache.axis.AxisEngine.PROP_DOMULTIREFS, Boolean.FALSE);
-		result.setSOAPVersion(org.apache.axis.soap.SOAPConstants.SOAP11_CONSTANTS);
+		result.setProperty(org.apache.axis.client.Call.SEND_TYPE_ATTR,
+				Boolean.FALSE);
+		result.setProperty(org.apache.axis.AxisEngine.PROP_DOMULTIREFS,
+				Boolean.FALSE);
+		result
+				.setSOAPVersion(org.apache.axis.soap.SOAPConstants.SOAP11_CONSTANTS);
 		if (use.equalsIgnoreCase("literal")) {
-			result.setSOAPActionURI(processor.getParser().getSOAPActionURI(operationName));
+			result.setSOAPActionURI(processor.getParser().getSOAPActionURI(
+					operationName));
 			result.setEncodingStyle(null);
 		}
 
@@ -159,7 +166,8 @@ public class WSDLSOAPInvoker {
 	 * @return the namespace for the operation
 	 */
 	private String getOperationNamespace() throws UnknownOperationException {
-		return getProcessor().getParser().getOperationNamespaceURI(getProcessor().getOperationName());
+		return getProcessor().getParser().getOperationNamespaceURI(
+				getProcessor().getOperationName());
 	}
 
 	/**
@@ -176,17 +184,20 @@ public class WSDLSOAPInvoker {
 	 * @throws SAXException
 	 * @throws UnknownOperationException
 	 */
-	private SOAPBodyElement buildBody(Map inputMap) throws WSDLException, ParserConfigurationException, SOAPException,
-			IOException, SAXException, UnknownOperationException {
+	private SOAPBodyElement buildBody(Map inputMap) throws WSDLException,
+			ParserConfigurationException, SOAPException, IOException,
+			SAXException, UnknownOperationException {
 
 		String operationName = getProcessor().getOperationName();
 
-		List inputs = getProcessor().getParser().getOperationInputParameters(operationName);
+		List inputs = getProcessor().getParser().getOperationInputParameters(
+				operationName);
 
 		Map namespaceMappings = generateNamespaceMappings(inputs);
 		String operationNamespace = getOperationNamespace();
 
-		SOAPBodyElement body = new SOAPBodyElement(XMLUtils.StringToElement(operationNamespace, operationName, ""));
+		SOAPBodyElement body = new SOAPBodyElement(XMLUtils.StringToElement(
+				operationNamespace, operationName, ""));
 
 		// its important to preserve the order of the inputs!
 		for (Iterator iterator = inputs.iterator(); iterator.hasNext();) {
@@ -195,7 +206,8 @@ public class WSDLSOAPInvoker {
 			DataThing thing = (DataThing) inputMap.get(inputName);
 
 			if (thing == null)
-				logger.warn("No input named: '" + inputName + "' provided to invoke service: '" + operationName);
+				logger.warn("No input named: '" + inputName
+						+ "' provided to invoke service: '" + operationName);
 			else {
 				String mimeType = getMimeTypeForInputName(inputName);
 				String typeName = descriptor.getType();
@@ -203,7 +215,8 @@ public class WSDLSOAPInvoker {
 				Element el = null;
 
 				if (descriptor instanceof ArrayTypeDescriptor) {
-					el = createElementForArrayType(namespaceMappings, inputName, thing, descriptor, mimeType, typeName);
+					el = createElementForArrayType(namespaceMappings,
+							inputName, thing, descriptor, mimeType, typeName);
 
 				} else {
 					String dataValue = thing.getDataObject().toString();
@@ -212,9 +225,11 @@ public class WSDLSOAPInvoker {
 					else
 						el = XMLUtils.StringToElement("", inputName, "");
 
-					String ns = (String) namespaceMappings.get(descriptor.getNamespaceURI());
+					String ns = (String) namespaceMappings.get(descriptor
+							.getNamespaceURI());
 					if (ns != null) {
-						el.setAttribute("xsi:type", ns + ":" + descriptor.getType());
+						el.setAttribute("xsi:type", ns + ":"
+								+ descriptor.getType());
 					}
 
 					populateElementWithStringData(mimeType, el, dataValue);
@@ -229,14 +244,16 @@ public class WSDLSOAPInvoker {
 			}
 		}
 
-		for (Iterator iterator = namespaceMappings.keySet().iterator(); iterator.hasNext();) {
+		for (Iterator iterator = namespaceMappings.keySet().iterator(); iterator
+				.hasNext();) {
 			String namespaceURI = (String) iterator.next();
 			String ns = (String) namespaceMappings.get(namespaceURI);
 			body.addNamespaceDeclaration(ns, namespaceURI);
 		}
 
 		if (getProcessor().getParser().getUse(operationName).equals("encoded")) {
-			body.setAttribute("soapenv:encodingStyle", "http://schemas.xmlsoap.org/soap/encoding/");
+			body.setAttribute("soapenv:encodingStyle",
+					"http://schemas.xmlsoap.org/soap/encoding/");
 		}
 
 		if (logger.isInfoEnabled()) {
@@ -264,9 +281,10 @@ public class WSDLSOAPInvoker {
 	 * @throws SAXException
 	 * @throws IOException
 	 */
-	private Element createElementForArrayType(Map namespaceMappings, String inputName, DataThing thing,
-			TypeDescriptor descriptor, String mimeType, String typeName) throws ParserConfigurationException,
-			SAXException, IOException {
+	private Element createElementForArrayType(Map namespaceMappings,
+			String inputName, DataThing thing, TypeDescriptor descriptor,
+			String mimeType, String typeName)
+			throws ParserConfigurationException, SAXException, IOException {
 		Element el;
 		ArrayTypeDescriptor arrayDescriptor = (ArrayTypeDescriptor) descriptor;
 		TypeDescriptor elementType = arrayDescriptor.getElementType();
@@ -286,28 +304,35 @@ public class WSDLSOAPInvoker {
 			// if mime type is text/xml then the data is an array in xml form,
 			// else its just a single primitive element
 			if (mimeType.equals("'text/xml'")) {
-				DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
-				Document doc = builder.parse(new ByteArrayInputStream(dataItem.toString().getBytes()));
+				DocumentBuilder builder = DocumentBuilderFactory.newInstance()
+						.newDocumentBuilder();
+				Document doc = builder.parse(new ByteArrayInputStream(dataItem
+						.toString().getBytes()));
 				Node child = doc.getDocumentElement().getFirstChild();
 
 				while (child != null) {
 					size++;
-					el.appendChild(el.getOwnerDocument().importNode(child, true));
+					el.appendChild(el.getOwnerDocument()
+							.importNode(child, true));
 					child = child.getNextSibling();
 				}
 			} else {
 				Element item = el.getOwnerDocument().createElement("item");
-				populateElementWithStringData(mimeType, item, dataItem.toString());
+				populateElementWithStringData(mimeType, item, dataItem
+						.toString());
 				el.appendChild(item);
 			}
 
 		}
 
-		String ns = (String) namespaceMappings.get(elementType.getNamespaceURI());
+		String ns = (String) namespaceMappings.get(elementType
+				.getNamespaceURI());
 		if (ns != null) {
-			String elementNS = ns + ":" + elementType.getType() + "[" + size + "]";
+			String elementNS = ns + ":" + elementType.getType() + "[" + size
+					+ "]";
 			el.setAttribute("soapenc:arrayType", elementNS);
-			el.setAttribute("xmlns:soapenc", "http://schemas.xmlsoap.org/soap/encoding/");
+			el.setAttribute("xmlns:soapenc",
+					"http://schemas.xmlsoap.org/soap/encoding/");
 		}
 
 		el.setAttribute("xsi:type", "soapenc:Array");
@@ -328,9 +353,11 @@ public class WSDLSOAPInvoker {
 	 * @throws SAXException
 	 * @throws IOException
 	 */
-	private void populateElementWithList(String mimeType, Element element, List dataValues)
-			throws ParserConfigurationException, SAXException, IOException {
-		for (Iterator dataIterator = dataValues.iterator(); dataIterator.hasNext();) {
+	private void populateElementWithList(String mimeType, Element element,
+			List dataValues) throws ParserConfigurationException, SAXException,
+			IOException {
+		for (Iterator dataIterator = dataValues.iterator(); dataIterator
+				.hasNext();) {
 			Object dataItem = dataIterator.next();
 			Element item = element.getOwnerDocument().createElement("item");
 			populateElementWithStringData(mimeType, item, dataItem.toString());
@@ -348,19 +375,24 @@ public class WSDLSOAPInvoker {
 	 * @throws SAXException
 	 * @throws IOException
 	 */
-	private void populateElementWithStringData(String mimeType, Element element, String dataValue)
+	private void populateElementWithStringData(String mimeType,
+			Element element, String dataValue)
 			throws ParserConfigurationException, SAXException, IOException {
 		if (mimeType.equals("'text/xml'")) {
-			DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
-			Document doc = builder.parse(new ByteArrayInputStream(dataValue.getBytes()));
+			DocumentBuilder builder = DocumentBuilderFactory.newInstance()
+					.newDocumentBuilder();
+			Document doc = builder.parse(new ByteArrayInputStream(dataValue
+					.getBytes()));
 			Node child = doc.getDocumentElement().getFirstChild();
 
 			while (child != null) {
-				element.appendChild(element.getOwnerDocument().importNode(child, true));
+				element.appendChild(element.getOwnerDocument().importNode(
+						child, true));
 				child = child.getNextSibling();
 			}
 		} else {
-			element.appendChild(element.getOwnerDocument().createTextNode(dataValue));
+			element.appendChild(element.getOwnerDocument().createTextNode(
+					dataValue));
 		}
 	}
 
@@ -392,7 +424,8 @@ public class WSDLSOAPInvoker {
 	 * @throws UnknownOperationException
 	 * @throws IOException
 	 */
-	private Map generateNamespaceMappings(List inputs) throws UnknownOperationException, IOException {
+	private Map generateNamespaceMappings(List inputs)
+			throws UnknownOperationException, IOException {
 		Map result = new HashMap();
 		int nsCount = 2;
 
@@ -417,7 +450,8 @@ public class WSDLSOAPInvoker {
 	 * @param nsCount
 	 * @return
 	 */
-	private int mapNamespace(TypeDescriptor descriptor, Map namespaceMap, int nsCount) {
+	private int mapNamespace(TypeDescriptor descriptor, Map namespaceMap,
+			int nsCount) {
 		String namespace = descriptor.getNamespaceURI();
 		if (!namespaceMap.containsKey(namespace)) {
 			namespaceMap.put(namespace, "ns" + nsCount);
@@ -425,11 +459,13 @@ public class WSDLSOAPInvoker {
 		}
 
 		if (descriptor instanceof ArrayTypeDescriptor) {
-			nsCount = mapNamespace(((ArrayTypeDescriptor) descriptor).getElementType(), namespaceMap, nsCount);
+			nsCount = mapNamespace(((ArrayTypeDescriptor) descriptor)
+					.getElementType(), namespaceMap, nsCount);
 		} else if (descriptor instanceof ComplexTypeDescriptor) {
 			List elements = ((ComplexTypeDescriptor) descriptor).getElements();
 			for (Iterator iterator = elements.iterator(); iterator.hasNext();) {
-				nsCount = mapNamespace((TypeDescriptor) iterator.next(), namespaceMap, nsCount);
+				nsCount = mapNamespace((TypeDescriptor) iterator.next(),
+						namespaceMap, nsCount);
 			}
 		}
 
@@ -445,13 +481,17 @@ public class WSDLSOAPInvoker {
 	 * @throws SOAPException
 	 * @throws IOException
 	 */
-	private DataThing extractAttachmentsDataThing(Call axisCall) throws SOAPException, IOException {
+	private DataThing extractAttachmentsDataThing(Call axisCall)
+			throws SOAPException, IOException {
 		List attachmentList = new ArrayList();
-		for (Iterator i = axisCall.getResponseMessage().getAttachments(); i.hasNext();) {
+		for (Iterator i = axisCall.getResponseMessage().getAttachments(); i
+				.hasNext();) {
 			AttachmentPart ap = (AttachmentPart) i.next();
-			System.out.println("Found attachment filename : " + ap.getAttachmentFile());
+			System.out.println("Found attachment filename : "
+					+ ap.getAttachmentFile());
 			DataHandler dh = ap.getDataHandler();
-			BufferedInputStream bis = new BufferedInputStream(dh.getInputStream());
+			BufferedInputStream bis = new BufferedInputStream(dh
+					.getInputStream());
 			ByteArrayOutputStream bos = new ByteArrayOutputStream();
 			int c;
 			while ((c = bis.read()) != -1) {
@@ -460,7 +500,8 @@ public class WSDLSOAPInvoker {
 			bis.close();
 			bos.close();
 			String mimeType = dh.getContentType();
-			if (mimeType.matches(".*image.*") || mimeType.matches(".*octet.*") || mimeType.matches(".*audio.*")
+			if (mimeType.matches(".*image.*") || mimeType.matches(".*octet.*")
+					|| mimeType.matches(".*audio.*")
 					|| mimeType.matches(".*application/zip.*")) {
 				attachmentList.add(bos.toByteArray());
 			} else {
@@ -468,8 +509,10 @@ public class WSDLSOAPInvoker {
 			}
 		}
 		DataThing attachmentThing = DataThingFactory.bake(attachmentList);
-		for (Iterator i = axisCall.getResponseMessage().getAttachments(); i.hasNext();) {
-			String mimeType = ((AttachmentPart) i.next()).getDataHandler().getContentType();
+		for (Iterator i = axisCall.getResponseMessage().getAttachments(); i
+				.hasNext();) {
+			String mimeType = ((AttachmentPart) i.next()).getDataHandler()
+					.getContentType();
 			attachmentThing.getMetadata().addMIMEType(mimeType);
 		}
 		return attachmentThing;

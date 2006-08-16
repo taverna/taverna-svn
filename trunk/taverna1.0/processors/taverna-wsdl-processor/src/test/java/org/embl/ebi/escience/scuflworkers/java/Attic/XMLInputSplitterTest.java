@@ -33,8 +33,11 @@ public class XMLInputSplitterTest extends TestCase {
 	public void testSplitter() throws Exception {
 		XMLInputSplitter splitter = new XMLInputSplitter();
 		ScuflModel model = new ScuflModel();
-		WSDLBasedProcessor processor = new WSDLBasedProcessor(model, "testProc",
-				"http://eutils.ncbi.nlm.nih.gov/entrez/eutils/soap/eutils_lite.wsdl", "run_eSpell");
+		WSDLBasedProcessor processor = new WSDLBasedProcessor(
+				model,
+				"testProc",
+				"http://eutils.ncbi.nlm.nih.gov/entrez/eutils/soap/eutils_lite.wsdl",
+				"run_eSpell");
 		splitter.setUpInputs(processor.getInputPorts()[0]);
 
 		assertEquals("wrong number of inputs", 4, splitter.inputNames().length);
@@ -50,7 +53,8 @@ public class XMLInputSplitterTest extends TestCase {
 		assertEquals("wrong type", "'text/plain'", splitter.inputTypes()[2]);
 		assertEquals("wrong type", "'text/plain'", splitter.inputTypes()[3]);
 
-		assertEquals("wrong number of outputs", 1, splitter.outputNames().length);
+		assertEquals("wrong number of outputs", 1,
+				splitter.outputNames().length);
 		assertEquals("wrong name", "output", splitter.outputNames()[0]);
 		assertEquals("wrong type", "'text/xml'", splitter.outputTypes()[0]);
 
@@ -63,15 +67,20 @@ public class XMLInputSplitterTest extends TestCase {
 		DataThing outputThing = (DataThing) outputMap.get("output");
 		String outputString = outputThing.getDataObject().toString();
 
-		assertEquals("output is incorrect", "<parameters><db>a database</db><tool>a tool</tool></parameters>",
+		assertEquals(
+				"output is incorrect",
+				"<parameters><db xmlns=\"http://www.ncbi.nlm.nih.gov/soap/eutils/espell\">a database</db><tool xmlns=\"http://www.ncbi.nlm.nih.gov/soap/eutils/espell\">a tool</tool></parameters>",
 				outputString);
 	}
 
 	public void testProvideXML() throws Exception {
 		XMLInputSplitter splitter = new XMLInputSplitter();
 		ScuflModel model = new ScuflModel();
-		WSDLBasedProcessor processor = new WSDLBasedProcessor(model, "testProc",
-				"http://eutils.ncbi.nlm.nih.gov/entrez/eutils/soap/eutils_lite.wsdl", "run_eSpell");
+		WSDLBasedProcessor processor = new WSDLBasedProcessor(
+				model,
+				"testProc",
+				"http://eutils.ncbi.nlm.nih.gov/entrez/eutils/soap/eutils_lite.wsdl",
+				"run_eSpell");
 		splitter.setUpInputs(processor.getInputPorts()[0]);
 
 		String xml = new XMLOutputter().outputString(splitter.provideXML());
@@ -80,7 +89,8 @@ public class XMLInputSplitterTest extends TestCase {
 
 	public void testConsumeXML() throws Exception {
 		XMLInputSplitter splitter = new XMLInputSplitter();
-		splitter.consumeXML(new SAXBuilder().build(new StringReader(eInfoXML())).getRootElement());
+		splitter.consumeXML(new SAXBuilder()
+				.build(new StringReader(eInfoXML())).getRootElement());
 
 		assertEquals("wrong number of inputs", 4, splitter.inputNames().length);
 		assertEquals("wrong number of types", 4, splitter.inputTypes().length);
@@ -95,7 +105,8 @@ public class XMLInputSplitterTest extends TestCase {
 		assertEquals("wrong type", "'text/plain'", splitter.inputTypes()[2]);
 		assertEquals("wrong type", "'text/plain'", splitter.inputTypes()[3]);
 
-		assertEquals("wrong number of outputs", 1, splitter.outputNames().length);
+		assertEquals("wrong number of outputs", 1,
+				splitter.outputNames().length);
 		assertEquals("wrong name", "output", splitter.outputNames()[0]);
 		assertEquals("wrong type", "'text/xml'", splitter.outputTypes()[0]);
 
@@ -108,7 +119,9 @@ public class XMLInputSplitterTest extends TestCase {
 		DataThing outputThing = (DataThing) outputMap.get("output");
 		String outputString = outputThing.getDataObject().toString();
 
-		assertEquals("output is incorrect", "<parameters><db>a database</db><tool>a tool</tool></parameters>",
+		assertEquals(
+				"output is incorrect",
+				"<parameters><db xmlns=\"http://www.ncbi.nlm.nih.gov/soap/eutils/espell\">a database</db><tool xmlns=\"http://www.ncbi.nlm.nih.gov/soap/eutils/espell\">a tool</tool></parameters>",
 				outputString);
 	}
 
@@ -120,8 +133,8 @@ public class XMLInputSplitterTest extends TestCase {
 	public void testArrayTypes() throws Exception {
 		XMLInputSplitter splitter = new XMLInputSplitter();
 		ScuflModel model = new ScuflModel();
-		WSDLBasedProcessor processor = new WSDLBasedProcessor(model, "testProc",
-				"http://www.ebi.ac.uk/ws/WSFasta.wsdl", "runFasta");
+		WSDLBasedProcessor processor = new WSDLBasedProcessor(model,
+				"testProc", "http://www.ebi.ac.uk/ws/WSFasta.wsdl", "runFasta");
 		splitter.setUpInputs(processor.getInputPorts()[1]);
 
 		assertEquals("wrong number of inputs", 1, splitter.inputNames().length);
@@ -148,10 +161,11 @@ public class XMLInputSplitterTest extends TestCase {
 		DataThing output = (DataThing) outputMap.get("output");
 		assertNotNull("'output' did not exist in output map", output);
 
-		assertTrue("output should be a string", output.getDataObject() instanceof String);
+		assertTrue("output should be a string",
+				output.getDataObject() instanceof String);
 
 		assertEquals(
-				"<WSArrayofData><data><type>type1</type><content>content1</content></data><data><type>type2</type><content>content2</content></data></WSArrayofData>",
+				"<WSArrayofData xmlns=\"http://www.ebi.ac.uk/WSFasta\"><data xmlns=\"\"><type>type1</type><content>content1</content></data><data xmlns=\"\"><type>type2</type><content>content2</content></data></WSArrayofData>",
 				output.getDataObject().toString());
 
 	}
@@ -159,8 +173,11 @@ public class XMLInputSplitterTest extends TestCase {
 	public void testOrderPreserved() throws Exception {
 		XMLInputSplitter splitter = new XMLInputSplitter();
 		ScuflModel model = new ScuflModel();
-		WSDLBasedProcessor processor = new WSDLBasedProcessor(model, "testProc",
-				"http://eutils.ncbi.nlm.nih.gov/entrez/eutils/soap/eutils_lite.wsdl", "run_eSpell");
+		WSDLBasedProcessor processor = new WSDLBasedProcessor(
+				model,
+				"testProc",
+				"http://eutils.ncbi.nlm.nih.gov/entrez/eutils/soap/eutils_lite.wsdl",
+				"run_eSpell");
 		splitter.setUpInputs(processor.getInputPorts()[0]);
 
 		Map inputMap = new HashMap();
@@ -173,16 +190,20 @@ public class XMLInputSplitterTest extends TestCase {
 
 		assertNotNull("'output' did not exist in output map", output);
 		String xmlOutput = output.getDataObject().toString();
-		assertTrue("xml returned is unexpected, element order should be same as defined by the webservice", xmlOutput
-				.indexOf("<db>a database</db><tool>a tool</tool><email>an email</email>") != -1);
+		assertTrue(
+				"xml returned is unexpected, element order should be same as defined by the webservice",
+				xmlOutput
+						.indexOf("<db xmlns=\"http://www.ncbi.nlm.nih.gov/soap/eutils/espell\">a database</db><tool xmlns=\"http://www.ncbi.nlm.nih.gov/soap/eutils/espell\">a tool</tool><email xmlns=\"http://www.ncbi.nlm.nih.gov/soap/eutils/espell\">an email</email>") != -1);
 
 	}
 
 	public void testOrderPreserved2() throws Exception {
 		XMLInputSplitter splitter = new XMLInputSplitter();
 		ScuflModel model = new ScuflModel();
-		WSDLBasedProcessor processor = new WSDLBasedProcessor(model, "testProc",
-				"http://discover.nci.nih.gov/gominer/xfire/GMService?wsdl", "getReport");
+		WSDLBasedProcessor processor = new WSDLBasedProcessor(model,
+				"testProc",
+				"http://discover.nci.nih.gov/gominer/xfire/GMService?wsdl",
+				"getReport");
 		splitter.setUpInputs(processor.getInputPorts()[0]);
 
 		Map inputMap = new HashMap();
@@ -204,7 +225,7 @@ public class XMLInputSplitterTest extends TestCase {
 		assertTrue(
 				"xml returned is unexpected, element order should be same as defined by the webservice",
 				xmlOutput
-						.indexOf("<in0><item>0</item></in0><in1><item>1</item></in1><in2>2</in2><in3>3</in3><in4>4</in4><in5>true</in5><in6>true</in6><in7>true</in7>") != -1);
+						.indexOf("<in0 xmlns=\"http://webservice.gominer.lmp.nci.nih.gov\"><item>0</item></in0><in1 xmlns=\"http://webservice.gominer.lmp.nci.nih.gov\"><item>1</item></in1><in2 xmlns=\"http://webservice.gominer.lmp.nci.nih.gov\">2</in2><in3 xmlns=\"http://webservice.gominer.lmp.nci.nih.gov\">3</in3><in4 xmlns=\"http://webservice.gominer.lmp.nci.nih.gov\">4</in4><in5 xmlns=\"http://webservice.gominer.lmp.nci.nih.gov\">true</in5><in6 xmlns=\"http://webservice.gominer.lmp.nci.nih.gov\">true</in6><in7 xmlns=\"http://webservice.gominer.lmp.nci.nih.gov\">true</in7>") != -1);
 
 	}
 

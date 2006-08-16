@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: TypeDescriptorTest.java,v $
- * Revision           $Revision: 1.2 $
+ * Revision           $Revision: 1.3 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-07-10 14:09:33 $
+ * Last modified on   $Date: 2006-08-16 10:03:32 $
  *               by   $Author: sowen70 $
  * Created on 17-May-2006
  *****************************************************************/
@@ -167,7 +167,20 @@ public class TypeDescriptorTest extends TestCase {
 		a.getElements().add(b);
 		a.getElements().add(c);
 
-		assertFalse("should be not identified as cyclic", TypeDescriptor.isCyclic(a));
+		assertFalse("should be not identified as cyclic", TypeDescriptor
+				.isCyclic(a));
+	}
+
+	public void testQNameAsString() {
+		ComplexTypeDescriptor a = new ComplexTypeDescriptor();
+		a.setQnameFromString("{URI}localPart");
+		assertEquals("URI", a.getQname().getNamespaceURI());
+		assertEquals("localPart", a.getQname().getLocalPart());
+
+		a = new ComplexTypeDescriptor();
+		a.setQnameFromString("{}localPart");
+		assertEquals("", a.getQname().getNamespaceURI());
+		assertEquals("localPart", a.getQname().getLocalPart());
 	}
 
 }

@@ -25,13 +25,13 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: XMLSplitterSerialisationHelper.java,v $
- * Revision           $Revision: 1.2 $
+ * Revision           $Revision: 1.1 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-07-10 14:10:11 $
+ * Last modified on   $Date: 2006-08-16 10:03:32 $
  *               by   $Author: sowen70 $
  * Created on 16-May-2006
  *****************************************************************/
-package org.embl.ebi.escience.scuflworkers.wsdl;
+package org.embl.ebi.escience.scuflworkers.java;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -59,7 +59,8 @@ import org.jdom.Element;
  */
 public class XMLSplitterSerialisationHelper {
 
-	private static Logger logger = Logger.getLogger(XMLSplitterSerialisationHelper.class);
+	private static Logger logger = Logger
+			.getLogger(XMLSplitterSerialisationHelper.class);
 
 	/**
 	 * Generates the extensions XML that describes the TypeDescriptor to allow
@@ -70,9 +71,11 @@ public class XMLSplitterSerialisationHelper {
 		Element result = new Element("extensions", XScufl.XScuflNS);
 		Element type = null;
 		if (descriptor instanceof ComplexTypeDescriptor)
-			type = constructElementForComplexType((ComplexTypeDescriptor) descriptor, new ArrayList());
+			type = constructElementForComplexType(
+					(ComplexTypeDescriptor) descriptor, new ArrayList());
 		else if (descriptor instanceof ArrayTypeDescriptor)
-			type = constructElementForArrayType((ArrayTypeDescriptor) descriptor, new ArrayList());
+			type = constructElementForArrayType(
+					(ArrayTypeDescriptor) descriptor, new ArrayList());
 		result.addContent(type);
 		return result;
 	}
@@ -87,7 +90,8 @@ public class XMLSplitterSerialisationHelper {
 		return buildTypeDescriptorFromElement(child, new HashMap());
 	}
 
-	private static Element constructElementForArrayType(ArrayTypeDescriptor descriptor, List existingsTypes) {
+	private static Element constructElementForArrayType(
+			ArrayTypeDescriptor descriptor, List existingsTypes) {
 		Element result = new Element("arraytype", XScufl.XScuflNS);
 		if (existingsTypes.contains(descriptor.getQname().toString())) {
 			result.setAttribute("id", descriptor.getQname().toString());
@@ -98,10 +102,12 @@ public class XMLSplitterSerialisationHelper {
 			populateElement(result, descriptor);
 			Element elementType = new Element("elementtype", XScufl.XScuflNS);
 			if (descriptor.getElementType() instanceof ComplexTypeDescriptor) {
-				elementType.addContent(constructElementForComplexType((ComplexTypeDescriptor) descriptor
-						.getElementType(), existingsTypes));
+				elementType.addContent(constructElementForComplexType(
+						(ComplexTypeDescriptor) descriptor.getElementType(),
+						existingsTypes));
 			} else if (descriptor.getElementType() instanceof ArrayTypeDescriptor) {
-				elementType.addContent(constructElementForArrayType((ArrayTypeDescriptor) descriptor.getElementType(),
+				elementType.addContent(constructElementForArrayType(
+						(ArrayTypeDescriptor) descriptor.getElementType(),
 						existingsTypes));
 			} else if (descriptor.getElementType() instanceof BaseTypeDescriptor) {
 				Element element = new Element("basetype", XScufl.XScuflNS);
@@ -113,7 +119,8 @@ public class XMLSplitterSerialisationHelper {
 		return result;
 	}
 
-	private static Element constructElementForComplexType(ComplexTypeDescriptor descriptor, List existingsTypes) {
+	private static Element constructElementForComplexType(
+			ComplexTypeDescriptor descriptor, List existingsTypes) {
 		Element result = new Element("complextype", XScufl.XScuflNS);
 		if (existingsTypes.contains(descriptor.getQname().toString())) {
 			result.setAttribute("id", descriptor.getQname().toString());
@@ -123,13 +130,16 @@ public class XMLSplitterSerialisationHelper {
 			existingsTypes.add(descriptor.getQname().toString());
 			populateElement(result, descriptor);
 			Element elements = new Element("elements", XScufl.XScuflNS);
-			for (Iterator iterator = descriptor.getElements().iterator(); iterator.hasNext();) {
+			for (Iterator iterator = descriptor.getElements().iterator(); iterator
+					.hasNext();) {
 				TypeDescriptor desc = (TypeDescriptor) iterator.next();
 				Element element = null;
 				if (desc instanceof ComplexTypeDescriptor) {
-					element = constructElementForComplexType((ComplexTypeDescriptor) desc, existingsTypes);
+					element = constructElementForComplexType(
+							(ComplexTypeDescriptor) desc, existingsTypes);
 				} else if (desc instanceof ArrayTypeDescriptor) {
-					element = constructElementForArrayType((ArrayTypeDescriptor) desc, existingsTypes);
+					element = constructElementForArrayType(
+							(ArrayTypeDescriptor) desc, existingsTypes);
 				} else if (desc instanceof BaseTypeDescriptor) {
 					element = new Element("basetype", XScufl.XScuflNS);
 					populateElement(element, desc);
@@ -142,20 +152,27 @@ public class XMLSplitterSerialisationHelper {
 		return result;
 	}
 
-	private static void populateElement(Element element, TypeDescriptor descriptor) {
-		element.setAttribute("optional", String.valueOf(descriptor.isOptional()));
-		element.setAttribute("unbounded", String.valueOf(descriptor.isUnbounded()));
+	private static void populateElement(Element element,
+			TypeDescriptor descriptor) {
+		element.setAttribute("optional", String
+				.valueOf(descriptor.isOptional()));
+		element.setAttribute("unbounded", String.valueOf(descriptor
+				.isUnbounded()));
 		element.setAttribute("typename", descriptor.getType());
-		element.setAttribute("name", descriptor.getName() == null ? "" : descriptor.getName());
+		element.setAttribute("name", descriptor.getName() == null ? ""
+				: descriptor.getName());
 		element.setAttribute("qname", descriptor.getQname().toString());
 	}
 
-	private static TypeDescriptor buildTypeDescriptorFromElement(Element element, HashMap existingsTypes) {
+	private static TypeDescriptor buildTypeDescriptorFromElement(
+			Element element, HashMap existingsTypes) {
 		TypeDescriptor result = null;
 		if (element.getAttributeValue("id") != null) {
-			TypeDescriptor stored = (TypeDescriptor) existingsTypes.get(element.getAttributeValue("id"));
+			TypeDescriptor stored = (TypeDescriptor) existingsTypes.get(element
+					.getAttributeValue("id"));
 			if (stored == null)
-				logger.fatal("Missing reference to parent type with id=" + element.getAttributeValue("id"));
+				logger.fatal("Missing reference to parent type with id="
+						+ element.getAttributeValue("id"));
 			else {
 				result = createFromCache(stored, element);
 			}
@@ -166,11 +183,14 @@ public class XMLSplitterSerialisationHelper {
 				result = new ComplexTypeDescriptor();
 				populateDescriptor(element, result);
 				existingsTypes.put(result.getQname().toString(), result);
-				Element elements = element.getChild("elements", XScufl.XScuflNS);
-				for (Iterator iterator = elements.getChildren().iterator(); iterator.hasNext();) {
+				Element elements = element
+						.getChild("elements", XScufl.XScuflNS);
+				for (Iterator iterator = elements.getChildren().iterator(); iterator
+						.hasNext();) {
 					Element childElement = (Element) iterator.next();
 					((ComplexTypeDescriptor) result).getElements().add(
-							buildTypeDescriptorFromElement(childElement, existingsTypes));
+							buildTypeDescriptorFromElement(childElement,
+									existingsTypes));
 				}
 
 			} else if (element.getName().equalsIgnoreCase("arraytype")) {
@@ -178,9 +198,12 @@ public class XMLSplitterSerialisationHelper {
 				result = new ArrayTypeDescriptor();
 				populateDescriptor(element, result);
 				existingsTypes.put(result.getQname().toString(), result);
-				Element elementType = element.getChild("elementtype", XScufl.XScuflNS);
-				((ArrayTypeDescriptor) result).setElementType(buildTypeDescriptorFromElement((Element) elementType
-						.getChildren().get(0), existingsTypes));
+				Element elementType = element.getChild("elementtype",
+						XScufl.XScuflNS);
+				((ArrayTypeDescriptor) result)
+						.setElementType(buildTypeDescriptorFromElement(
+								(Element) elementType.getChildren().get(0),
+								existingsTypes));
 
 			} else if (element.getName().equalsIgnoreCase("basetype")) {
 				result = new BaseTypeDescriptor();
@@ -202,17 +225,20 @@ public class XMLSplitterSerialisationHelper {
 	 * @param element
 	 * @return
 	 */
-	private static TypeDescriptor createFromCache(TypeDescriptor descriptor, Element element) {
+	private static TypeDescriptor createFromCache(TypeDescriptor descriptor,
+			Element element) {
 		TypeDescriptor result = null;
 		if (descriptor instanceof ArrayTypeDescriptor) {
 			ArrayTypeDescriptor array = new ArrayTypeDescriptor();
 			array.setQname(descriptor.getQname());
-			array.setElementType(((ArrayTypeDescriptor) descriptor).getElementType());
+			array.setElementType(((ArrayTypeDescriptor) descriptor)
+					.getElementType());
 			result = array;
 		} else if (descriptor instanceof ComplexTypeDescriptor) {
 			ComplexTypeDescriptor complex = new ComplexTypeDescriptor();
 			complex.setQname(descriptor.getQname());
-			complex.setElements(((ComplexTypeDescriptor) descriptor).getElements());
+			complex.setElements(((ComplexTypeDescriptor) descriptor)
+					.getElements());
 			result = complex;
 		}
 		result.setType(descriptor.getType());
@@ -237,11 +263,14 @@ public class XMLSplitterSerialisationHelper {
 		return result;
 	}
 
-	private static void populateDescriptor(Element element, TypeDescriptor result) {
+	private static void populateDescriptor(Element element,
+			TypeDescriptor result) {
 		result.setName(element.getAttributeValue("name"));
 		result.setType(element.getAttributeValue("typename"));
-		result.setOptional(element.getAttributeValue("optional").equalsIgnoreCase("true"));
-		result.setUnbounded(element.getAttributeValue("unbounded").equalsIgnoreCase("true"));
+		result.setOptional(element.getAttributeValue("optional")
+				.equalsIgnoreCase("true"));
+		result.setUnbounded(element.getAttributeValue("unbounded")
+				.equalsIgnoreCase("true"));
 
 		// qname has been added since 1.3.2-RC1 so need to test if missing for
 		// older workflows
@@ -249,7 +278,7 @@ public class XMLSplitterSerialisationHelper {
 		// {}typename
 		String qname = element.getAttributeValue("qname");
 		if (qname != null)
-			result.setQname(new QName(qname));
+			result.setQnameFromString(qname);
 	}
 
 }

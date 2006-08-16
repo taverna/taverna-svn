@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: TypeDescriptor.java,v $
- * Revision           $Revision: 1.2 $
+ * Revision           $Revision: 1.3 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-07-10 14:08:24 $
+ * Last modified on   $Date: 2006-08-16 10:03:31 $
  *               by   $Author: sowen70 $
  * Created on March-2006
  *****************************************************************/
@@ -58,7 +58,19 @@ public class TypeDescriptor {
 		if (qname != null)
 			return qname;
 		else {
-			return new QName("{}" + type);
+			return new QName("", type);
+		}
+	}
+
+	public void setQnameFromString(String qname) {
+		String[] split = qname.split("}");
+		if (split.length == 1) {
+			this.qname = new QName("", qname);
+		} else {
+			String uri = split[0];
+			uri = uri.replaceAll("\\{", "");
+			uri = uri.replaceAll("\\}", "");
+			this.qname = new QName(uri, split[1]);
 		}
 	}
 
@@ -130,7 +142,8 @@ public class TypeDescriptor {
 		}
 	}
 
-	public static void retrieveSignature(List params, String[] names, Class[] types) {
+	public static void retrieveSignature(List params, String[] names,
+			Class[] types) {
 		for (int i = 0; i < names.length; i++) {
 			TypeDescriptor descriptor = (TypeDescriptor) params.get(i);
 			names[i] = descriptor.getName();
@@ -141,7 +154,8 @@ public class TypeDescriptor {
 					types[i] = String[].class;
 				else
 					types[i] = String.class;
-			} else if ("arrayof_xsd_string".equalsIgnoreCase(s) || "arrayofstring".equalsIgnoreCase(s)
+			} else if ("arrayof_xsd_string".equalsIgnoreCase(s)
+					|| "arrayofstring".equalsIgnoreCase(s)
 					|| "arrayof_soapenc_string".equalsIgnoreCase(s)) {
 				types[i] = String[].class;
 
@@ -173,15 +187,18 @@ public class TypeDescriptor {
 		boolean result = false;
 		if (!(descriptor instanceof BaseTypeDescriptor)) {
 			if (descriptor instanceof ComplexTypeDescriptor) {
-				result = testForCyclic((ComplexTypeDescriptor) descriptor, new ArrayList());
+				result = testForCyclic((ComplexTypeDescriptor) descriptor,
+						new ArrayList());
 			} else {
-				result = testForCyclic((ArrayTypeDescriptor) descriptor, new ArrayList());
+				result = testForCyclic((ArrayTypeDescriptor) descriptor,
+						new ArrayList());
 			}
 		}
 		return result;
 	}
 
-	private static boolean testForCyclic(ComplexTypeDescriptor descriptor, List parents) {
+	private static boolean testForCyclic(ComplexTypeDescriptor descriptor,
+			List parents) {
 		boolean result = false;
 		String descKey = descriptor.getQname().toString();
 		if (parents.contains(descKey))
@@ -190,11 +207,14 @@ public class TypeDescriptor {
 			parents.add(descKey);
 			List elements = descriptor.getElements();
 			for (Iterator iterator = elements.iterator(); iterator.hasNext();) {
-				TypeDescriptor elementDescriptor = (TypeDescriptor) iterator.next();
+				TypeDescriptor elementDescriptor = (TypeDescriptor) iterator
+						.next();
 				if (elementDescriptor instanceof ComplexTypeDescriptor) {
-					result = testForCyclic((ComplexTypeDescriptor) elementDescriptor, parents);
+					result = testForCyclic(
+							(ComplexTypeDescriptor) elementDescriptor, parents);
 				} else if (elementDescriptor instanceof ArrayTypeDescriptor) {
-					result = testForCyclic((ArrayTypeDescriptor) elementDescriptor, parents);
+					result = testForCyclic(
+							(ArrayTypeDescriptor) elementDescriptor, parents);
 				}
 
 				if (result)
@@ -206,7 +226,8 @@ public class TypeDescriptor {
 		return result;
 	}
 
-	private static boolean testForCyclic(ArrayTypeDescriptor descriptor, List parents) {
+	private static boolean testForCyclic(ArrayTypeDescriptor descriptor,
+			List parents) {
 		boolean result = false;
 		String descKey = descriptor.getQname().toString();
 		if (parents.contains(descKey))
@@ -214,11 +235,14 @@ public class TypeDescriptor {
 		else {
 			parents.add(descKey);
 
-			TypeDescriptor elementDescriptor = (TypeDescriptor) descriptor.getElementType();
+			TypeDescriptor elementDescriptor = (TypeDescriptor) descriptor
+					.getElementType();
 			if (elementDescriptor instanceof ComplexTypeDescriptor) {
-				result = testForCyclic((ComplexTypeDescriptor) elementDescriptor, parents);
+				result = testForCyclic(
+						(ComplexTypeDescriptor) elementDescriptor, parents);
 			} else if (elementDescriptor instanceof ArrayTypeDescriptor) {
-				result = testForCyclic((ArrayTypeDescriptor) elementDescriptor, parents);
+				result = testForCyclic((ArrayTypeDescriptor) elementDescriptor,
+						parents);
 			}
 
 			parents.remove(descKey);
