@@ -25,13 +25,15 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: WorkflowLauncher.java,v $
- * Revision           $Revision: 1.2 $
+ * Revision           $Revision: 1.3 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-07-10 14:08:34 $
- *               by   $Author: sowen70 $
+ * Last modified on   $Date: 2006-08-16 12:53:12 $
+ *               by   $Author: stain $
  * Created on 16-Mar-2006
  *****************************************************************/
 package org.embl.ebi.escience.scufl.tools;
+
+import net.sf.taverna.utils.MyGridConfiguration;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -43,6 +45,7 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -91,6 +94,7 @@ import uk.ac.soton.itinnovation.freefluo.main.InvalidInputException;
  * workflows to be easily executed independantly of the GUI.
  * 
  * @author Stuart Owen
+ * @author Stian Soiland
  */
 
 public class WorkflowLauncher {
@@ -353,7 +357,11 @@ public class WorkflowLauncher {
 	 * @param args
 	 * @throws MalformedURLException
 	 */
+	@SuppressWarnings({ "deprecation", "static-access" })
 	public static void main(String args[]) throws MalformedURLException {
+		// For compatability with old-style code using System.getProperty("taverna.*")
+		MyGridConfiguration.loadMygridProperties();
+		
 		// Return code to exit with, normally 0
 		int error = 0;
 
