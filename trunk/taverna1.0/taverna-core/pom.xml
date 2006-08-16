@@ -10,4 +10,11 @@
   <artifactId>taverna-core</artifactId>
   <name>Taverna Core</name>
   <version>1.5-SNAPSHOT</version>
+  <dependencies>
+    <dependency>
+      <groupId>log4j</groupId>
+      <artifactId>log4j</artifactId>
+      <version>1.2.8</version>
+    </dependency>
+  </dependencies>
 </project>
