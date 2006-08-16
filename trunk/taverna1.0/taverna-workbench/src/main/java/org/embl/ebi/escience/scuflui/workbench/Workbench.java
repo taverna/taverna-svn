@@ -14,12 +14,9 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
 import java.net.URL;
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.Properties;
-import java.util.ResourceBundle;
 
 import javax.swing.ImageIcon;
 import javax.swing.JComponent;
@@ -33,9 +30,13 @@ import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.event.InternalFrameAdapter;
 import javax.swing.event.InternalFrameEvent;
 
+import net.sf.taverna.utils.MyGridConfiguration;
+
+import org.apache.log4j.Logger;
 import org.embl.ebi.escience.scufl.ScuflModel;
 import org.embl.ebi.escience.scufl.enactor.WorkflowSubmissionException;
 import org.embl.ebi.escience.scufl.enactor.implementation.FreefluoEnactorProxy;
@@ -61,70 +62,66 @@ import org.embl.ebi.escience.scuflui.renderers.RendererRegistry;
  */
 public class Workbench extends JFrame {
 
-	static {
-		// Initialize the proxy settings etc.
-		ResourceBundle rb = ResourceBundle.getBundle("mygrid");
-		Properties sysProps = System.getProperties();
-		Enumeration keys = rb.getKeys();
-		while (keys.hasMoreElements()) {
-			String key = (String) keys.nextElement();
-			String value = (String) rb.getString(key);
-			sysProps.put(key, value);
-		}		
-		// Set the native look and feel for whatever platform we're on
-		try {
-			if (System.getProperty("taverna.workbench.themeclass") == null) {
-				if (System.getProperty("os.name").equals("Linux") && System.getProperty("java.vm.version").startsWith("1.5"))
-				{
-					//stops the default theme looking horrible with jdk1.5 under Linux
-					UIManager.setLookAndFeel("javax.swing.plaf.synth.SynchLookAndFeel");
-				}
-				UIManager.setLookAndFeel(UIManager
-						.getSystemLookAndFeelClassName());
-			} else {
-				UIManager.setLookAndFeel(System
-						.getProperty("taverna.workbench.themeclass"));
-			}
-		} catch (Exception e) {
-		}
-	}
-
+	private static Logger logger = Logger.getLogger(Workbench.class);
+	
 	/**
 	 * Launch the model workbench, shows the default set of UI components in
 	 * internal frames and waits for the user to load a model from file
 	 */
+	@SuppressWarnings("deprecation")
 	public static void main(String[] args) {
+		
+		// For compatability with old-style code using System.getProperty("taverna.*")
+		MyGridConfiguration.loadMygridProperties();
+
+		try {
+			if (MyGridConfiguration.getProperty("taverna.workbench.themeclass") == null) {
+				if (System.getProperty("os.name").equals("Linux") && System.getProperty("java.vm.version").startsWith("1.5"))
+				{
+					//stops the default theme looking horrible with jdk1.5 under Linux
+					UIManager.setLookAndFeel("javax.swing.plaf.synth.SynchLookAndFeel"); 
+				} else {
+					UIManager.setLookAndFeel(UIManager
+							.getSystemLookAndFeelClassName());
+				} 
+			}
+			else {
+				UIManager.setLookAndFeel(MyGridConfiguration
+						.getProperty("taverna.workbench.themeclass"));
+			}
+
+		} catch (ClassNotFoundException e) {
+			logger.warn("Could not set look and feel, class not found", e);
+		} catch (InstantiationException e) {
+			logger.warn("Could not set look and feel, could not instanciate", e);
+		} catch (IllegalAccessException e) {
+			logger.warn("Could not set look and feel, access denied", e);
+		} catch (UnsupportedLookAndFeelException e) {
+			logger.warn("Could not set look and feel, unsupported", e);
+		}
 
 		new SplashScreen(8000);
 
-		// Set up the plugin classloader system
-		/**
-		 * if (System.getProperty("taverna.home") == null) {
-		 * System.out.println("Warning, taverna.home not set, will probably be"+ "
-		 * unable to locate any of the plugins!."); } else {
-		 * PluginManager.init(new File(System.getProperty("taverna.home"))); }
-		 */
 		// Initialize the UI component registry
 		UIComponentRegistry.instance();
 		RendererRegistry.instance();
 
 		// Create the workbench and define the authenticator before anything
-		// tries to
-		// access the network
+		// tries to access the network
 		Workbench workbench = new Workbench();
 		java.net.Authenticator
-				.setDefault(new WorkbenchAuthenticator(workbench));
+		.setDefault(new WorkbenchAuthenticator(workbench));
 
 		// Load the test ontology for the annotation of workflow
 		// source and sink ports
 		try {
 			URL ontologyURL;
-			if (System.getProperty("taverna.ontology.location") != null) {
-				ontologyURL = new URL(System
+			if (MyGridConfiguration.getProperty("taverna.ontology.location") != null) {
+				ontologyURL = new URL(MyGridConfiguration
 						.getProperty("taverna.ontology.location"));
 			} else {
 				ontologyURL = ClassLoader
-						.getSystemResource("org/embl/ebi/escience/scufl/semantics/mygrid-reasoned-small.rdfs");
+				.getSystemResource("org/embl/ebi/escience/scufl/semantics/mygrid-reasoned-small.rdfs");
 			}
 			RDFSParser.loadRDFSDocument(ontologyURL.openStream(), "Types");
 		} catch (Exception ex) {
@@ -147,8 +144,9 @@ public class Workbench extends JFrame {
 
 		// Only show the workbench window if we're not on OSX and using external
 		// frames...
-		if (System.getProperty("taverna.osxpresent") == null
-				|| System.getProperty("taverna.workbench.useinternalframes") != null) {
+		// FIXME: Shouldn't need osxpresent, test System.getProperty("os.name") instead
+		if (MyGridConfiguration.getProperty("taverna.osxpresent") == null
+				|| MyGridConfiguration.getProperty("taverna.workbench.useinternalframes") != null) {
 			workbench.setVisible(true);
 			workbench.toFront();
 		}
@@ -179,11 +177,10 @@ public class Workbench extends JFrame {
 				+ org.embl.ebi.escience.scufl.TavernaReleaseInfo.getVersion()
 				+ ", built "
 				+ org.embl.ebi.escience.scufl.TavernaReleaseInfo.getBuildDate()
-						.toString());
-
+				.toString());
 		// Create the desktop pane
 		JDesktopPane desktop = null;
-		if (System.getProperty("taverna.scrollDesktop") == null) {
+		if (MyGridConfiguration.getProperty("taverna.scrollDesktop") == null) {
 			desktop = new JDesktopPane();
 			setContentPane(desktop);
 		} else {
@@ -193,7 +190,7 @@ public class Workbench extends JFrame {
 
 		// Set up the bounds and frame creators based on whether we're running
 		// under OS X and whether the internal frame flag is set to be true.
-		if (System.getProperty("taverna.workbench.useinternalframes") != null) {
+		if (MyGridConfiguration.getProperty("taverna.workbench.useinternalframes") != null) {
 			UIUtils.DEFAULT_FRAME_CREATOR = new InternalFrameCreator(desktop);
 			int inset = 50;
 			Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
@@ -207,7 +204,7 @@ public class Workbench extends JFrame {
 			}
 			setBounds(inset, inset, width, height);
 			setJMenuBar(createMenuBar());
-		} else if (System.getProperty("taverna.osxpresent") != null) {
+		} else if (MyGridConfiguration.getProperty("taverna.osxpresent") != null) {
 			UIUtils.DEFAULT_FRAME_CREATOR = new OSXFrameCreator();
 		} else {
 			setBounds(0, 0, 450, 105);
@@ -226,7 +223,7 @@ public class Workbench extends JFrame {
 
 		// Put the background image in
 		ImageIcon background = new ImageIcon(getClass().getResource(
-				"background.png"));
+		"background.png"));
 		if (background != null) {
 			JLabel bgLabel = new JLabel(background);
 			bgLabel.setBounds(0, 0, background.getIconWidth(), background
@@ -251,18 +248,18 @@ public class Workbench extends JFrame {
 						public void run() {
 							try {
 								XScuflParser
-										.populate(
-												files[j].toURL().openStream(),
-												model,
-												(files.length == 1) ? null
-														: "file" + j);
+								.populate(
+										files[j].toURL().openStream(),
+										model,
+										(files.length == 1) ? null
+												: "file" + j);
 							} catch (Exception ex) {
 								JOptionPane
-										.showMessageDialog(null,
-												"Problem opening XScufl from file : \n"
-														+ ex.getMessage(),
-												"Exception!",
-												JOptionPane.ERROR_MESSAGE);
+								.showMessageDialog(null,
+										"Problem opening XScufl from file : \n"
+										+ ex.getMessage(),
+										"Exception!",
+										JOptionPane.ERROR_MESSAGE);
 							}
 						}
 					}.start();
@@ -283,7 +280,7 @@ public class Workbench extends JFrame {
 		// menu
 		UIComponentRegistry registry = UIComponentRegistry.instance();
 		for (Iterator i = registry.getComponents().keySet().iterator(); i
-				.hasNext();) {
+		.hasNext();) {
 			final String itemName = (String) i.next();
 			try {
 				final Class itemClass = Class.forName((String) registry
@@ -300,7 +297,7 @@ public class Workbench extends JFrame {
 					public void actionPerformed(ActionEvent ae) {
 						try {
 							ScuflUIComponent thing = (ScuflUIComponent) itemClass
-									.newInstance();
+							.newInstance();
 							UIUtils.createFrame(Workbench.this.model, thing,
 									100, 100, 400, 400);
 						} catch (InstantiationException ie) {
@@ -328,13 +325,13 @@ public class Workbench extends JFrame {
 				// an error
 				if (theModel.isOffline()) {
 					JOptionPane
-							.showMessageDialog(
-									null,
-									"Workflow is currently offline, cannot be invoked.\n"
-											+ "Deselect the 'offline' checkbox in the AME to set \n"
-											+ "online mode in order to run this workflow.",
-									"Offline, cannot invoke",
-									JOptionPane.ERROR_MESSAGE);
+					.showMessageDialog(
+							null,
+							"Workflow is currently offline, cannot be invoked.\n"
+							+ "Deselect the 'offline' checkbox in the AME to set \n"
+							+ "online mode in order to run this workflow.",
+							"Offline, cannot invoke",
+							JOptionPane.ERROR_MESSAGE);
 				} else {
 					if (theModel.getWorkflowSourcePorts().length != 0) {
 						DataThingConstructionPanel thing = new DataThingConstructionPanel() {
@@ -343,21 +340,21 @@ public class Workbench extends JFrame {
 									UIUtils.createFrame(theModel,
 											new EnactorInvocation(
 													FreefluoEnactorProxy
-															.getInstance(),
+													.getInstance(),
 													theModel, inputObject),
-											100, 100, 600, 400);
+													100, 100, 600, 400);
 								} catch (WorkflowSubmissionException wse) {
 									JOptionPane.showMessageDialog(null,
 											"Problem invoking workflow engine : \n"
-													+ wse.getMessage(),
+											+ wse.getMessage(),
 											"Exception!",
 											JOptionPane.ERROR_MESSAGE);
 								}
 							}
 						};
 						UIUtils
-								.createFrame(theModel, thing, 100, 100, 600,
-										400);
+						.createFrame(theModel, thing, 100, 100, 600,
+								400);
 					} else {
 						try {
 							// No inputs so launch the enactor directly
@@ -408,7 +405,7 @@ public class Workbench extends JFrame {
 			public GenericUIComponentFrame(ScuflModel model,
 					ScuflUIComponent component) {
 				super(component.getName(), true, true, true, true);
-				
+
 				getContentPane().setLayout(new BorderLayout());
 				this.component = component;
 				JScrollPane pane = new JScrollPane((JComponent) component);
@@ -424,7 +421,7 @@ public class Workbench extends JFrame {
 				addInternalFrameListener(new InternalFrameAdapter() {
 					public void internalFrameClosing(InternalFrameEvent e) {
 						GenericUIComponentFrame.this.component
-								.detachFromModel();
+						.detachFromModel();
 					}
 				});
 			}
