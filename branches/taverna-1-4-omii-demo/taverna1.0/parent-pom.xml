@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>uk.org.mygrid</groupId>
   <artifactId>taverna</artifactId>
-  <version>1.4</version>
+  <version>1.4-omii-demo</version>
   <packaging>pom</packaging>
   <name>Taverna</name>
   <modules>
@@ -59,6 +59,52 @@
       </plugin>
     </plugins>
   </build>
+  <profiles>
+    <profile>
+      <id>omii</id>
+      <activation>
+        <property>
+          <name>assembly</name>
+          <value>omii</value>
+        </property>
+      </activation>
+      <build>
+        <plugins>
+          <plugin>
+            <artifactId>maven-assembly-plugin</artifactId>
+            <version>2.1</version>
+            <configuration>
+              <descriptor>src/main/assembly/omii-assembly.xml</descriptor>
+              <appendAssemblyId>false</appendAssemblyId>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+    <profile>
+      <id>omii-client</id>
+      <activation>
+        <property>
+          <name>assembly</name>
+          <value>omii-client</value>
+        </property>
+      </activation>
+      <build>
+        <plugins>
+          <plugin>
+            <artifactId>maven-assembly-plugin</artifactId>
+            <version>2.1</version>
+            <configuration>
+              <descriptor>src/main/assembly/omii-client-assembly.xml</descriptor>
+              <finalName>client</finalName>
+              <appendAssemblyId>false</appendAssemblyId>
+              <outputDirectory>${basedir}/dist</outputDirectory>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
   <!-- Ready for when the myGrid repository is set up
   <repositories>
     <repository>
@@ -97,9 +143,11 @@
         </reportSets>
       </plugin>
       <plugin>
-         <groupId>org.codehaus.mojo</groupId>
-         <artifactId>taglist-maven-plugin</artifactId>
-         <version>2.0-beta-1</version>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <configuration>
+          <protected>true</protected>
+        </configuration>
       </plugin>
    </plugins>
   </reporting>

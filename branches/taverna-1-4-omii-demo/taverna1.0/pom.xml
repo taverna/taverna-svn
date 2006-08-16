@@ -4,7 +4,7 @@
   <parent>
     <groupId>uk.org.mygrid</groupId>
     <artifactId>taverna</artifactId>
-    <version>1.4</version>
+    <version>1.4-omii-demo</version>
     <relativePath>parent-pom.xml</relativePath>
   </parent>
   <artifactId>taverna-workbench</artifactId>
