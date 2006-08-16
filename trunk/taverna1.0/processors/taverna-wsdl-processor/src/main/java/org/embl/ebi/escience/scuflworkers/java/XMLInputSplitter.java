@@ -26,7 +26,6 @@ import org.embl.ebi.escience.scuflworkers.wsdl.parser.WSDLParser;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.JDOMException;
-import org.jdom.Namespace;
 import org.jdom.input.SAXBuilder;
 import org.jdom.output.XMLOutputter;
 
