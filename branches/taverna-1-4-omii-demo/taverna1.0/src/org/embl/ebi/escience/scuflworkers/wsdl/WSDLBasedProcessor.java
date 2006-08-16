@@ -12,6 +12,8 @@ import java.util.Map;
 import java.util.Properties;
 
 import javax.wsdl.Definition;
+import javax.wsdl.PortType;
+import javax.wsdl.Service;
 import javax.wsdl.WSDLException;
 import javax.xml.namespace.QName;
 
@@ -19,6 +21,7 @@ import org.apache.log4j.Logger;
 import org.apache.wsif.WSIFException;
 import org.apache.wsif.WSIFOperation;
 import org.apache.wsif.WSIFPort;
+import org.apache.wsif.WSIFService;
 import org.apache.wsif.WSIFServiceFactory;
 import org.apache.wsif.providers.soap.apacheaxis.WSIFDynamicProvider_ApacheAxis;
 import org.apache.wsif.providers.soap.apacheaxis.WSIFPort_ApacheAxis;
@@ -133,8 +136,15 @@ public class WSDLBasedProcessor extends Processor implements java.io.Serializabl
 			List outputs = parser.getOperationOutputParameters(operationName);
 			setDescription(parser.getOperationDocumentation(operationName));
 
+			//TODO handle more than 1 service block
+			if (def.getServices().size()>1) logger.warn("WSDL "+getWSDLLocation()+" contains more than one service block, Taverna will only use the first service block");
+			
+			Service s=(Service)def.getServices().values().toArray()[0];
+			
 			WSIFServiceFactory factory = WSIFServiceFactory.newInstance();
-			port = factory.getService(def).getPort();
+			PortType portType=parser.getPortType(operationName);					
+			WSIFService service=factory.getService(def,s,portType);
+			port = service.getPort();
 
 			inNames = new String[inputs.size()];
 			inTypes = new Class[inputs.size()];

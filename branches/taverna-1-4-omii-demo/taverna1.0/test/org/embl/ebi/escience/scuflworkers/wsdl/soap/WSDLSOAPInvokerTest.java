@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: WSDLSOAPInvokerTest.java,v $
- * Revision           $Revision: 1.5 $
+ * Revision           $Revision: 1.5.4.1 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-06-02 13:57:22 $
+ * Last modified on   $Date: 2006-08-16 15:10:18 $
  *               by   $Author: sowen70 $
  * Created on 04-May-2006
  *****************************************************************/
@@ -164,39 +164,7 @@ public class WSDLSOAPInvokerTest extends TestCase {
 		
 		assertNotNull("no result returned",output.get("getDatabasesWithDetailsReturn"));
 	}
-
-	public void testComplexEmptyMultiRef() throws Exception {
-		
-		WSDLBasedProcessor processor = null;
-		try {
-			processor = new WSDLBasedProcessor(null, "procName", "http://genex.hgu.mrc.ac.uk/axis/services/ma?wsdl",
-					"whatGeneInStage");
-
-		} catch (ProcessorCreationException e) {
-			logger.error("Unable to connect to serivce in testComplexEmptyMultiRef, skipping test");
-			return; // don't fail because the service is unavailable
-		}
-
-		WSDLSOAPInvoker invoker = new WSDLSOAPInvoker(processor);
-
-		Map inputs = new HashMap();
-		inputs.put("in0", new DataThing("2"));
-		inputs.put("in1", new DataThing("14"));
-		inputs.put("in2", new DataThing("1"));
-
-		Map outputs = invoker.invoke(inputs);
-
-		assertEquals("outputs should have 2 entries", 2, outputs.size());
-
-		DataThing thing = (DataThing) outputs.get("whatGeneInStageReturn");
-
-		assertNotNull("output should contain an entry with key 'whatGeneInStageReturn'", thing);
-
-		assertEquals("output type should be of type String", String.class, thing.getDataObject().getClass());
-
-		assertEquals("incorrect xml", "<whatGeneInStageReturn/>", thing.getDataObject().toString());
-	}
-
+	
 	// The following services were found at http://www.xmethods.org/
 	// and can be tested via that site.
 
