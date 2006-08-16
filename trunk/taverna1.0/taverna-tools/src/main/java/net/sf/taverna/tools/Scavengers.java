@@ -6,7 +6,8 @@ import java.util.Enumeration;
 import java.util.List;
 import javax.swing.tree.DefaultMutableTreeNode;
 
-import org.embl.ebi.escience.scufl.MyGridConfiguration;
+import net.sf.taverna.utils.MyGridConfiguration;
+
 import org.embl.ebi.escience.scuflui.WebScavengerHelper;
 import org.embl.ebi.escience.scuflui.workbench.Scavenger;
 import org.embl.ebi.escience.scuflui.workbench.ScavengerRegistry;
