@@ -20,6 +20,7 @@ import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
+import javax.swing.JProgressBar;
 import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
 import javax.swing.JTree;
@@ -55,11 +56,14 @@ import org.embl.ebi.escience.scuflui.processoractions.AbstractProcessorAction;
  */
 public class BiomobyAction extends AbstractProcessorAction {
 
+	JProgressBar progressBar = new JProgressBar();
+
 	/*
 	 * (non-Javadoc)
 	 * 
 	 * @see org.embl.ebi.escience.scuflui.processoractions.AbstractProcessorAction#getComponent(org.embl.ebi.escience.scufl.Processor)
 	 */
+
 	public JComponent getComponent(Processor processor) {
 		// variables i need
 		BiomobyProcessor theProcessor = (BiomobyProcessor) processor;
@@ -448,72 +452,114 @@ public class BiomobyAction extends AbstractProcessorAction {
 										.getLastPathComponent().toString();
 								final boolean isCollection = potentialCollectionString
 										.indexOf("Collection('") >= 0;
-								final Object selectedMobyObjectTreeNodeHolder = (DefaultMutableTreeNode) tree.getLastSelectedPathComponent();
+								final Object selectedMobyObjectTreeNodeHolder = (DefaultMutableTreeNode) tree
+										.getLastSelectedPathComponent();
 								item.addActionListener(new ActionListener() {
 
 									public void actionPerformed(ActionEvent ae) {
 										// you would like to search for
 										// selectedObject
-										try {
-											String name = selectedObject;
-											if (name.indexOf("(") > 0)
-												name = name.substring(0, name.indexOf("("));
-											String articlename = "";
-											if (isCollection) {
-												articlename = potentialCollectionString
-														.substring(potentialCollectionString
-																.indexOf("('") + 2,
-																potentialCollectionString
-																		.lastIndexOf("'"));
-											} else {
-												articlename = selectedObject.substring(
-														selectedObject.indexOf("'") + 1,
-														selectedObject.lastIndexOf("'"));
-											}
+										new Thread() {
+											public void run() {
+												try {
+													String name = selectedObject;
+													if (name.indexOf("(") > 0)
+														name = name.substring(0, name.indexOf("("));
+													String articlename = "";
+													if (isCollection) {
+														articlename = potentialCollectionString
+																.substring(
+																		potentialCollectionString
+																				.indexOf("('") + 2,
+																		potentialCollectionString
+																				.lastIndexOf("'"));
+													} else {
+														articlename = selectedObject.substring(
+																selectedObject.indexOf("'") + 1,
+																selectedObject.lastIndexOf("'"));
+													}
 
-											BiomobyObjectProcessor bop = new BiomobyObjectProcessor(
-													scuflModel, scuflModel
-															.getValidProcessorName(name),
-													new MobyDataType(name), endpoint);
-											Port theServiceport = null;
+													BiomobyObjectProcessor bop = new BiomobyObjectProcessor(
+															scuflModel, scuflModel
+																	.getValidProcessorName(name),
+															new MobyDataType(name), endpoint);
+													Port theServiceport = null;
 
-											try {
-											if (isCollection)
-												theServiceport = theproc
-														.locatePort(
-																name
-																		+ "(Collection - '"
-																		+ (articlename
-																				.equals("") ? "MobyCollection"
-																				: articlename)
-																		+ "')", false);
-											else
-												theServiceport = theproc.locatePort(name
-														+ "(" + articlename + ")", false);
-											} catch (Exception except) {}
-											BiomobyObjectAction boa = null;
-											
-											if (theServiceport == null) {
-												boa = new BiomobyObjectAction(false);
+													try {
+														if (isCollection)
+															theServiceport = theproc
+																	.locatePort(
+																			name
+																					+ "(Collection - '"
+																					+ (articlename
+																							.equals("") ? "MobyCollection"
+																							: articlename)
+																					+ "')", false);
+														else
+															theServiceport = theproc.locatePort(
+																	name + "(" + articlename + ")",
+																	false);
+													} catch (Exception except) {
+													}
+													BiomobyObjectAction boa = null;
+
+													if (theServiceport == null) {
+														boa = new BiomobyObjectAction(false);
+													} else {
+														boa = new BiomobyObjectAction(
+																theServiceport, false);
+													}
+
+													if (selectedMobyObjectTreeNodeHolder instanceof DefaultMutableTreeNode
+															&& ((DefaultMutableTreeNode) selectedMobyObjectTreeNodeHolder)
+																	.getUserObject() instanceof MobyObjectTreeNode) {
+														DefaultMutableTreeNode dmtn = (DefaultMutableTreeNode) selectedMobyObjectTreeNodeHolder;
+														MobyObjectTreeNode motn = (MobyObjectTreeNode) dmtn
+																.getUserObject();
+														boa.setNamespaces(motn.getNamespaces());
+													}
+													PopupThread popupthread = new PopupThread(bop,
+															boa);
+													progressBar.setStringPainted(true);
+													progressBar.setVisible(true);
+													popupthread.start();
+
+													while (popupthread.isAlive()) {
+														Thread.sleep(4000);
+													}
+
+													progressBar.setVisible(false);
+													Component c = popupthread.getComponent();
+													Dimension loc = BiomobyAction.this
+															.getFrameLocation();
+													Dimension size = BiomobyAction.this
+															.getFrameSize();
+													ScuflUIComponent frame = new SimpleFrame(c, bop);
+													UIUtils.createFrame((ScuflModel) null, frame,
+															(int) loc.getWidth(), (int) loc
+																	.getHeight(), (int) size
+																	.getWidth(), (int) size
+																	.getHeight());
+													/*
+													 * Component c =
+													 * boa.getComponent(bop);
+													 * Dimension loc =
+													 * BiomobyAction.this.getFrameLocation();
+													 * Dimension size =
+													 * BiomobyAction.this.getFrameSize();
+													 * ScuflUIComponent frame =
+													 * new SimpleFrame(c, bop);
+													 * UIUtils.createFrame((ScuflModel)
+													 * null, frame, (int) loc
+													 * .getWidth(), (int)
+													 * loc.getHeight(), (int)
+													 * size .getWidth(), (int)
+													 * size.getHeight());
+													 */
+												} catch (Exception e) {
+												}
 											}
-											else {
-												boa = new BiomobyObjectAction(theServiceport, false);
-											}
-											
-											if (selectedMobyObjectTreeNodeHolder instanceof DefaultMutableTreeNode && ((DefaultMutableTreeNode)selectedMobyObjectTreeNodeHolder).getUserObject() instanceof MobyObjectTreeNode) {
-												DefaultMutableTreeNode dmtn = (DefaultMutableTreeNode)selectedMobyObjectTreeNodeHolder;
-												MobyObjectTreeNode motn = (MobyObjectTreeNode) dmtn.getUserObject();
-												boa.setNamespaces(motn.getNamespaces());
-											}
-											Component c = boa.getComponent(bop);
-											Dimension loc = BiomobyAction.this.getFrameLocation();
-											Dimension size = BiomobyAction.this.getFrameSize();
-											ScuflUIComponent frame = new SimpleFrame(c, bop);
-											UIUtils.createFrame((ScuflModel) null, frame, (int) loc
-													.getWidth(), (int) loc.getHeight(), (int) size
-													.getWidth(), (int) size.getHeight());
-										} catch (Exception e) {
-										}
+										}.start();
 
 									}
 								});
@@ -523,66 +569,91 @@ public class BiomobyAction extends AbstractProcessorAction {
 								item2
 										.setIcon(getIcon("org/biomoby/client/ui/graphical/applets/img/toolbarButtonGraphics/general/Search24.gif"));
 								item2.addActionListener(new ActionListener() {
-
 									public void actionPerformed(ActionEvent ae) {
 										// you would like to search for
 										// selectedObject
-										try {
-											String name = selectedObject;
-											if (name.indexOf("(") > 0)
-												name = name.substring(0, name.indexOf("("));
-											String articlename = "";
-											if (isCollection) {
-												articlename = potentialCollectionString
-														.substring(potentialCollectionString
-																.indexOf("('") + 2,
-																potentialCollectionString
-																		.lastIndexOf("'"));
-											} else {
-												articlename = selectedObject.substring(
-														selectedObject.indexOf("'") + 1,
-														selectedObject.lastIndexOf("'"));
-											}
-											BiomobyObjectProcessor bop = new BiomobyObjectProcessor(
-													scuflModel, scuflModel
-															.getValidProcessorName(name),
-													new MobyDataType(name), endpoint);
-											Port theServiceport = null;
-											try {
-											if (isCollection)
-												theServiceport = theproc
-														.locatePort(
-																name
-																		+ "(Collection - '"
-																		+ (articlename
-																				.equals("") ? "MobyCollection"
-																				: articlename)
-																		+ "')", false);
-											else
-												theServiceport = theproc.locatePort(name
-														+ "(" + articlename + ")", false);
-											} catch (Exception except) {}
-											BiomobyObjectAction boa = null;
-											
-											if (theServiceport == null)
-												boa = new BiomobyObjectAction(true);
-											else
-												boa = new BiomobyObjectAction(theServiceport, true);
-											if (selectedMobyObjectTreeNodeHolder instanceof DefaultMutableTreeNode && ((DefaultMutableTreeNode)selectedMobyObjectTreeNodeHolder).getUserObject() instanceof MobyObjectTreeNode) {
-												DefaultMutableTreeNode dmtn = (DefaultMutableTreeNode)selectedMobyObjectTreeNodeHolder;
-												MobyObjectTreeNode motn = (MobyObjectTreeNode) dmtn.getUserObject();
-												boa.setNamespaces(motn.getNamespaces());
-											}
-											Component c = boa.getComponent(bop);
-											Dimension loc = BiomobyAction.this.getFrameLocation();
-											Dimension size = BiomobyAction.this.getFrameSize();
-											ScuflUIComponent frame = new SimpleFrame(c, bop);
-											UIUtils.createFrame((ScuflModel) null, frame, (int) loc
-													.getWidth(), (int) loc.getHeight(), (int) size
-													.getWidth(), (int) size.getHeight());
-										} catch (Exception e) {
-										}
+										new Thread() {
 
+											public void run() {
+												try {
+													String name = selectedObject;
+													if (name.indexOf("(") > 0)
+														name = name.substring(0, name.indexOf("("));
+													String articlename = "";
+													if (isCollection) {
+														articlename = potentialCollectionString
+																.substring(
+																		potentialCollectionString
+																				.indexOf("('") + 2,
+																		potentialCollectionString
+																				.lastIndexOf("'"));
+													} else {
+														articlename = selectedObject.substring(
+																selectedObject.indexOf("'") + 1,
+																selectedObject.lastIndexOf("'"));
+													}
+													BiomobyObjectProcessor bop = new BiomobyObjectProcessor(
+															scuflModel, scuflModel
+																	.getValidProcessorName(name),
+															new MobyDataType(name), endpoint);
+													Port theServiceport = null;
+													try {
+														if (isCollection)
+															theServiceport = theproc
+																	.locatePort(
+																			name
+																					+ "(Collection - '"
+																					+ (articlename
+																							.equals("") ? "MobyCollection"
+																							: articlename)
+																					+ "')", false);
+														else
+															theServiceport = theproc.locatePort(
+																	name + "(" + articlename + ")",
+																	false);
+													} catch (Exception except) {
+													}
+													BiomobyObjectAction boa = null;
+
+													if (theServiceport == null)
+														boa = new BiomobyObjectAction(true);
+													else
+														boa = new BiomobyObjectAction(
+																theServiceport, true);
+													if (selectedMobyObjectTreeNodeHolder instanceof DefaultMutableTreeNode
+															&& ((DefaultMutableTreeNode) selectedMobyObjectTreeNodeHolder)
+																	.getUserObject() instanceof MobyObjectTreeNode) {
+														DefaultMutableTreeNode dmtn = (DefaultMutableTreeNode) selectedMobyObjectTreeNodeHolder;
+														MobyObjectTreeNode motn = (MobyObjectTreeNode) dmtn
+																.getUserObject();
+														boa.setNamespaces(motn.getNamespaces());
+													}
+													PopupThread popupthread = new PopupThread(bop,
+															boa);
+													progressBar.setStringPainted(true);
+													progressBar.setVisible(true);
+													popupthread.start();
+
+													while (popupthread.isAlive()) {
+														Thread.sleep(4000);
+													}
+
+													progressBar.setVisible(false);
+													Component c = popupthread.getComponent();
+													Dimension loc = BiomobyAction.this
+															.getFrameLocation();
+													Dimension size = BiomobyAction.this
+															.getFrameSize();
+													ScuflUIComponent frame = new SimpleFrame(c, bop);
+													UIUtils.createFrame((ScuflModel) null, frame,
+															(int) loc.getWidth(), (int) loc
+																	.getHeight(), (int) size
+																	.getWidth(), (int) size
+																	.getHeight());
+												} catch (Exception e) {
+												}
+											}
+										}.start();
 									}
 								});
 
@@ -704,8 +775,19 @@ public class BiomobyAction extends AbstractProcessorAction {
 			public void mouseExited(MouseEvent me) {
 			}
 		});
+
 		tree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
-		return new JScrollPane(tree);
+		JScrollPane jsp = new JScrollPane(tree);
+		JPanel thePanel = new JPanel(new BorderLayout());
+		thePanel.add(jsp, BorderLayout.CENTER);
+		progressBar = new JProgressBar();
+		progressBar.setValue(0);
+		progressBar.setString("Finding Services ... ");
+		progressBar.setStringPainted(true);
+		progressBar.setIndeterminate(true);
+		progressBar.setVisible(false);
+		thePanel.add(progressBar, BorderLayout.PAGE_END);
+		return thePanel;
 	}
 
 	private class SimpleFrame extends JPanel implements ScuflUIComponent {
