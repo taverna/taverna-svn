@@ -198,7 +198,7 @@ public class BiomobyTask implements ProcessorTaskWorker {
 						type = portName.substring(0, portName.indexOf("("));
 					}
 
-					String inputType = myInput.getSyntacticType();
+					@SuppressWarnings("unused") String inputType = myInput.getSyntacticType();
 					DataThing inputThing = (DataThing) inputMap.get(portName);
 					if (!inputThing.getSyntacticType().startsWith("l(")) {
 						inputXML = (String) inputThing.getDataObject();
@@ -497,7 +497,7 @@ public class BiomobyTask implements ProcessorTaskWorker {
 					mds[x].setAttribute("queryID", queryID, XMLUtilities.MOBY_NS);
 					// if secondarys exist add them here
 					if (((BiomobyProcessor) this.proc).containsSecondaries()) {
-						ParametersTable pt = ((BiomobyProcessor) this.proc).getParameterTable();
+						@SuppressWarnings("unused") ParametersTable pt = ((BiomobyProcessor) this.proc).getParameterTable();
 						Element[] parameters = null;
 						parameters = ((BiomobyProcessor) this.proc).getParameterTable().toXML();
 						for (int i = 0; i < parameters.length; i++) {

@@ -140,6 +140,7 @@ public class BiomobyAction extends AbstractProcessorAction {
 				MobyObjectTreeNode mobyObjectTreeNode = new MobyObjectTreeNode(simple.getDataType()
 						.getName()
 						+ "('" + simple.getName() + "')", sb.toString());
+				mobyObjectTreeNode.setNamespaces(simple.getNamespaces());
 				output.insert(new DefaultMutableTreeNode(mobyObjectTreeNode), output
 						.getChildCount());
 			} else {
@@ -161,6 +162,7 @@ public class BiomobyAction extends AbstractProcessorAction {
 					MobyObjectTreeNode mobyObjectTreeNode = new MobyObjectTreeNode(simple
 							.getDataType().getName()
 							+ "('" + simple.getName() + "')", sb.toString());
+					mobyObjectTreeNode.setNamespaces(simple.getNamespaces());
 					collectionNode.insert(new DefaultMutableTreeNode(mobyObjectTreeNode),
 							collectionNode.getChildCount());
 				}
@@ -446,7 +448,7 @@ public class BiomobyAction extends AbstractProcessorAction {
 										.getLastPathComponent().toString();
 								final boolean isCollection = potentialCollectionString
 										.indexOf("Collection('") >= 0;
-
+								final Object selectedMobyObjectTreeNodeHolder = (DefaultMutableTreeNode) tree.getLastSelectedPathComponent();
 								item.addActionListener(new ActionListener() {
 
 									public void actionPerformed(ActionEvent ae) {
@@ -490,10 +492,19 @@ public class BiomobyAction extends AbstractProcessorAction {
 														+ "(" + articlename + ")", false);
 											} catch (Exception except) {}
 											BiomobyObjectAction boa = null;
-											if (theServiceport == null)
+											
+											if (theServiceport == null) {
 												boa = new BiomobyObjectAction(false);
-											else
+											}
+											else {
 												boa = new BiomobyObjectAction(theServiceport, false);
+											}
+											
+											if (selectedMobyObjectTreeNodeHolder instanceof DefaultMutableTreeNode && ((DefaultMutableTreeNode)selectedMobyObjectTreeNodeHolder).getUserObject() instanceof MobyObjectTreeNode) {
+												DefaultMutableTreeNode dmtn = (DefaultMutableTreeNode)selectedMobyObjectTreeNodeHolder;
+												MobyObjectTreeNode motn = (MobyObjectTreeNode) dmtn.getUserObject();
+												boa.setNamespaces(motn.getNamespaces());
+											}
 											Component c = boa.getComponent(bop);
 											Dimension loc = BiomobyAction.this.getFrameLocation();
 											Dimension size = BiomobyAction.this.getFrameSize();
@@ -557,7 +568,11 @@ public class BiomobyAction extends AbstractProcessorAction {
 												boa = new BiomobyObjectAction(true);
 											else
 												boa = new BiomobyObjectAction(theServiceport, true);
-											
+											if (selectedMobyObjectTreeNodeHolder instanceof DefaultMutableTreeNode && ((DefaultMutableTreeNode)selectedMobyObjectTreeNodeHolder).getUserObject() instanceof MobyObjectTreeNode) {
+												DefaultMutableTreeNode dmtn = (DefaultMutableTreeNode)selectedMobyObjectTreeNodeHolder;
+												MobyObjectTreeNode motn = (MobyObjectTreeNode) dmtn.getUserObject();
+												boa.setNamespaces(motn.getNamespaces());
+											}
 											Component c = boa.getComponent(bop);
 											Dimension loc = BiomobyAction.this.getFrameLocation();
 											Dimension size = BiomobyAction.this.getFrameSize();

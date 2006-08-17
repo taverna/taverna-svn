@@ -12,7 +12,8 @@ public class MobyServiceTreeNode {
     private String name = "";
     
     // list of objects that service produces
-    private ArrayList mobyObjectTreeNodes = null;
+    @SuppressWarnings("unused")
+	private ArrayList mobyObjectTreeNodes = null;
     
     // description of object == tool tip text
     private String description = "";

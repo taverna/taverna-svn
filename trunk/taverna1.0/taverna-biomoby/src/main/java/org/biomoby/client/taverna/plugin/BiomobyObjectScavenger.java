@@ -61,7 +61,8 @@ public class BiomobyObjectScavenger extends Scavenger {
     /*
      * copied over from MobyTree.java - replaced call to RESOURCES with an http call
      */
-    private HashMap createHomes(String url) throws MobyException {
+    @SuppressWarnings("unchecked")
+	private HashMap createHomes(String url) throws MobyException {
         HashMap homes = new HashMap(); // (key=parent,val=household)
         try {
             // create an empty model
@@ -117,7 +118,8 @@ public class BiomobyObjectScavenger extends Scavenger {
     /*
      * copied over from MobyTree.java
      */
-    private DefaultMutableTreeNode fillSubTree(DefaultMutableTreeNode parentNode, ArrayList children, HashMap hashmap,String base) {
+    @SuppressWarnings("unchecked")
+	private DefaultMutableTreeNode fillSubTree(DefaultMutableTreeNode parentNode, ArrayList children, HashMap hashmap,String base) {
         Collections.sort(children);
         Iterator it = children.iterator();
         while (it.hasNext()) {

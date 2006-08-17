@@ -66,7 +66,8 @@ public class CreateMobyCollection implements LocalWorker {
         return new String[] { "'text/xml'" };
     }
 
-    public Map execute(Map inputs) throws TaskExecutionException {
+    @SuppressWarnings("unchecked")
+	public Map execute(Map inputs) throws TaskExecutionException {
 
         boolean hasSimple = hasSimple(inputs);
         String name = "";

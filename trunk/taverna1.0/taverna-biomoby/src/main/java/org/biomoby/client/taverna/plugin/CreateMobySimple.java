@@ -46,7 +46,8 @@ public class CreateMobySimple implements LocalWorker {
         return new String[] { "l('text/xml')" };
     }
 
-    public Map execute(Map inputs) throws TaskExecutionException {
+    @SuppressWarnings("unchecked")
+	public Map execute(Map inputs) throws TaskExecutionException {
         // Only allow one of stringvalue, floatvalue, intvalue
         // If none are specified that's fine as well, it's just an ID
         // objects

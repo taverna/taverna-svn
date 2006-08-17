@@ -24,6 +24,8 @@ import org.embl.ebi.escience.scuflui.ScuflUIComponent;
  */
 public class MobyPanel extends JPanel implements ScuflUIComponent{
 
+	
+	private static final long serialVersionUID = 1L;
 	private JTextArea textArea = null;
 	private String text = "";
 	private String name = "";

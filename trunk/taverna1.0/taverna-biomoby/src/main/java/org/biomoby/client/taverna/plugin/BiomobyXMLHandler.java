@@ -7,7 +7,6 @@ package org.biomoby.client.taverna.plugin;
 
 import java.util.Iterator;
 import java.util.List;
-import java.util.Vector;
 
 import org.biomoby.service.dashboard.data.ParametersTable;
 import org.biomoby.shared.MobyData;
@@ -117,7 +116,6 @@ public class BiomobyXMLHandler implements XMLHandler {
 		
 		if (bp.containsSecondaries()) {
 			// check for secondary input informatioin
-			Vector vector = new Vector();
 			List list = biomoby.getChildren(PARAMETER, XScufl.XScuflNS);
 			MobyData[] datas = bp.getMobyService().getSecondaryInputs();
 			

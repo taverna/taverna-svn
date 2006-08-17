@@ -4,6 +4,9 @@
  * Copyright Edward Kawas, The BioMoby Project
  */
 package org.biomoby.client.taverna.plugin;
+
+import org.biomoby.shared.MobyNamespace;
+
 public class MobyObjectTreeNode {
     
     //  name of the object == node name
@@ -12,7 +15,7 @@ public class MobyObjectTreeNode {
     // description of object == tool tip text
     private String description = "";
     
-
+	private MobyNamespace[] ns = null;
     /**
      * 
      * @param name - the name of the Moby Object
@@ -28,6 +31,17 @@ public class MobyObjectTreeNode {
      */
     public String toString() {
         return name;
+    }
+    
+    public void setNamespaces(MobyNamespace[] namespaces) {
+    	if (namespaces != null && namespaces.length == 0)
+    		this.ns = null;
+    	else
+    		this.ns = namespaces;
+    }
+    
+    public MobyNamespace[] getNamespaces() {
+    	return this.ns;
     }
     
     public String getDescription() {

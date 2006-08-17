@@ -36,7 +36,8 @@ public class BiomobyObjectTask implements ProcessorTaskWorker {
         proc.isBoring();
     }
 
-    public Map execute(Map inputMap, IProcessorTask parentTask)
+    @SuppressWarnings("unchecked")
+	public Map execute(Map inputMap, IProcessorTask parentTask)
             throws TaskExecutionException {
         // the possible inputs to create 'mobyData' from
         InputPort[] inputPorts = parentTask.getProcessor().getBoundInputPorts();

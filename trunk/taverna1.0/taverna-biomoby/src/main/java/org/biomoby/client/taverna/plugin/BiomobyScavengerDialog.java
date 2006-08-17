@@ -19,7 +19,8 @@ import org.embl.ebi.escience.scuflui.ShadedLabel;
  */
 public class BiomobyScavengerDialog extends JPanel {
 
-    private JTextField registryEndpoint = new JTextField("http://mobycentral.icapture.ubc.ca/cgi-bin/MOBY05/mobycentral.pl");
+	private static final long serialVersionUID = -57047613557546674L;
+	private JTextField registryEndpoint = new JTextField("http://mobycentral.icapture.ubc.ca/cgi-bin/MOBY05/mobycentral.pl");
 
     /**
      * Default constructor.

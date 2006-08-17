@@ -44,7 +44,8 @@ public class BiomobyScavengerHelper implements ScavengerHelper {
 	
 	private static Logger logger = Logger.getLogger(BiomobyScavengerHelper.class);
 
-    private String defaultResourceURL = "http://biomoby.org/RESOURCES/MOBY-S/Objects";
+    @SuppressWarnings("unused")
+	private String defaultResourceURL = "http://biomoby.org/RESOURCES/MOBY-S/Objects";
 
     private String endpoint = "http://mobycentral.icapture.ubc.ca/cgi-bin/MOBY05/mobycentral.pl";
 

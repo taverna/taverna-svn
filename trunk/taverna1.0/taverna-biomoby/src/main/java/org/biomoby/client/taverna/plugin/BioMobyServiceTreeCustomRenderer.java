@@ -20,13 +20,17 @@ public class BioMobyServiceTreeCustomRenderer extends DefaultTreeCellRenderer {
 
     private Color leafForeground = Color.blue;
 
-    private Color rootColor = Color.black;
+    @SuppressWarnings("unused")
+	private Color rootColor = Color.black;
 
-    private Color feedsIntoColor = Color.gray;
+    @SuppressWarnings("unused")
+	private Color feedsIntoColor = Color.gray;
 
-    private Color producedColor = Color.lightGray;
+    @SuppressWarnings("unused")
+	private Color producedColor = Color.lightGray;
 
-    private Color authorityColor = Color.orange;
+    @SuppressWarnings("unused")
+	private Color authorityColor = Color.orange;
 
     private Color serviceColor = Color.magenta;
 

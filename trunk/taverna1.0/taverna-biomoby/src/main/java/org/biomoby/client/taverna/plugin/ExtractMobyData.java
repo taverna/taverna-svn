@@ -52,6 +52,7 @@ public class ExtractMobyData implements LocalWorker {
 				LocalWorker.STRING, LocalWorker.STRING };
 	}
 
+	@SuppressWarnings("unchecked")
 	public Map execute(Map inputs) throws TaskExecutionException {
 		logger.debug("Entering moby parse stage");
 		// Must contain a single input called mobydata, if not

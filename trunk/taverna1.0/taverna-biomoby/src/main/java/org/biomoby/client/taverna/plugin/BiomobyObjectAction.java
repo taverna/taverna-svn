@@ -59,6 +59,7 @@ public class BiomobyObjectAction extends AbstractProcessorAction {
 
 	private boolean searchParentTypes = false;
 	private Port outputPort = null;
+	private MobyNamespace[] namespaces = null;
 	public BiomobyObjectAction(boolean searchParentTypes) {
 		super();
 		this.searchParentTypes = searchParentTypes;
@@ -92,7 +93,8 @@ public class BiomobyObjectAction extends AbstractProcessorAction {
         MobyDataObject data = new MobyDataObject("");
         data.setDataType(new MobyDataType(name));
         data.setXmlMode(MobyDataInstance.CENTRAL_XML_MODE);
-
+        if (this.namespaces != null)
+        	data.setNamespaces(this.namespaces);
         // create the nodes for the tree
         MutableTreeNode parent = new DefaultMutableTreeNode(name);
         MutableTreeNode inputNode = new DefaultMutableTreeNode("Feeds into");
@@ -115,6 +117,7 @@ public class BiomobyObjectAction extends AbstractProcessorAction {
         // what services return this object?
         template = null;
         template = new MobyService("dummy");
+        
         template.setOutputs(new MobyData[] { data });
         services = null;
         try {
@@ -252,7 +255,8 @@ public class BiomobyObjectAction extends AbstractProcessorAction {
                                                     .getHeight());
                                 }
 
-                                private String createServiceDescription(
+                                @SuppressWarnings("unchecked")
+								private String createServiceDescription(
                                         String selectedService,
                                         String selectedAuthority,
                                         String endpoint) {
@@ -308,8 +312,6 @@ public class BiomobyObjectAction extends AbstractProcessorAction {
                                             .getPrimaryInputs();
                                     Vector primaryDataSimples = new Vector();
                                     Vector primaryDataSets = new Vector();
-//TODO                                    MobyData[] secondaries = service
-//                                            .getSecondaryInputs();
                                     for (int x = 0; x < data.length; x++) {
                                         if (data[x] instanceof MobyPrimaryDataSimple)
                                             primaryDataSimples.add(data[x]);
@@ -539,7 +541,8 @@ public class BiomobyObjectAction extends AbstractProcessorAction {
      * method that processes the services returned by findService and adds them to 
      * the TreeNode parentNode, sorted by authority
      */
-    private void createTreeNodes(MutableTreeNode parentNode,
+    @SuppressWarnings("unchecked")
+	private void createTreeNodes(MutableTreeNode parentNode,
             MobyService[] services) {
         HashMap inputHash;
         inputHash = new HashMap();
@@ -656,5 +659,12 @@ public class BiomobyObjectAction extends AbstractProcessorAction {
      */
     public Dimension getFrameSize() {
         return new Dimension(450, 450);
+    }
+    
+    public void setNamespaces(MobyNamespace[] namespaces) {
+    	if (namespaces != null && namespaces.length == 0)
+    		this.namespaces = null;
+    	else
+    		this.namespaces = namespaces;
     }
 }

@@ -35,7 +35,7 @@ import com.ibm.lsid.LSID;
  * A Scavenger that knows how to get all the Biomoby services from a specified
  * Biomoby Central Registry. <p>
  * 
- * @version $Id: BiomobyScavenger.java,v 1.2 2006-07-10 14:07:28 sowen70 Exp $
+ * @version $Id: BiomobyScavenger.java,v 1.3 2006-08-17 20:12:35 edwardkawas Exp $
  * @author Martin Senger
  */
 public class BiomobyScavenger extends Scavenger {
@@ -48,7 +48,8 @@ public class BiomobyScavenger extends Scavenger {
      * Create a new Biomoby scavenger, the base parameter should be the base URL
      * of the Biomoby Central Registry.
      */
-    protected BiomobyScavenger(String base, String resourceURL)
+    @SuppressWarnings("unchecked")
+	protected BiomobyScavenger(String base, String resourceURL)
             throws ScavengerCreationException {
         super("Biomoby @ " + base);
 
@@ -104,7 +105,8 @@ public class BiomobyScavenger extends Scavenger {
     /**
      * constructor that taverna's init uses
      */
-    public BiomobyScavenger(String base) throws ScavengerCreationException {
+    @SuppressWarnings("unchecked")
+	public BiomobyScavenger(String base) throws ScavengerCreationException {
         super("Biomoby @ " + base);
 
         // get list of services and their authorities
@@ -199,7 +201,8 @@ public class BiomobyScavenger extends Scavenger {
      * copied over from MobyTree.java - replaced call to RESOURCES with an http
      * call
      */
-    private HashMap createHomes(String url) {
+    @SuppressWarnings("unchecked")
+	private HashMap createHomes(String url) {
         HashMap homes = new HashMap(); // (key=parent,val=household)
         try {
             // create an empty model
@@ -271,7 +274,8 @@ public class BiomobyScavenger extends Scavenger {
     /*
      * copied over from MobyTree.java
      */
-    private DefaultMutableTreeNode fillSubTree(
+    @SuppressWarnings("unchecked")
+	private DefaultMutableTreeNode fillSubTree(
             DefaultMutableTreeNode parentNode, ArrayList children,
             HashMap hashmap, String base) {
         Collections.sort(children);

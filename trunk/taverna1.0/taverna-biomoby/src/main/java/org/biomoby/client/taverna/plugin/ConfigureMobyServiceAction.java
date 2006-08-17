@@ -29,8 +29,8 @@ public class ConfigureMobyServiceAction extends AbstractProcessorAction {
 		// variables i need
 		BiomobyProcessor bp = (BiomobyProcessor) processor;
 
-		String serviceName = bp.getMobyService().getName();
-		String description = bp.getDescription();
+		@SuppressWarnings("unused") String serviceName = bp.getMobyService().getName();
+		@SuppressWarnings("unused") String description = bp.getDescription();
 		return bp.getParameterTable().scrollable();
 	}
 
