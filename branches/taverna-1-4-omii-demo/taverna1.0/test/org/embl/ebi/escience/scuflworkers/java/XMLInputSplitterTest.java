@@ -204,7 +204,7 @@ public class XMLInputSplitterTest extends TestCase {
 		assertTrue(
 				"xml returned is unexpected, element order should be same as defined by the webservice",
 				xmlOutput
-						.indexOf("<in0><item>0</item></in0><in1><item>1</item></in1><in2>2</in2><in3>3</in3><in4>4</in4><in5>true</in5><in6>true</in6><in7>true</in7>") != -1);
+						.indexOf("<in0><string>0</string></in0><in1><string>1</string></in1><in2>2</in2><in3>3</in3><in4>4</in4><in5>true</in5><in6>true</in6><in7>true</in7>") != -1);
 
 	}
 

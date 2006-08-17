@@ -25,10 +25,10 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: WSDLSOAPInvoker.java,v $
- * Revision           $Revision: 1.4.4.1 $
+ * Revision           $Revision: 1.4.4.2 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-08-16 10:48:34 $
- *               by   $Author: davidwithers $
+ * Last modified on   $Date: 2006-08-17 11:34:29 $
+ *               by   $Author: sowen70 $
  * Created on 07-Apr-2006
  *****************************************************************/
 package org.embl.ebi.escience.scuflworkers.wsdl.soap;
@@ -64,6 +64,7 @@ import org.embl.ebi.escience.baclava.factory.DataThingFactory;
 import org.embl.ebi.escience.scufl.InputPort;
 import org.embl.ebi.escience.scuflworkers.wsdl.WSDLBasedProcessor;
 import org.embl.ebi.escience.scuflworkers.wsdl.parser.ArrayTypeDescriptor;
+import org.embl.ebi.escience.scuflworkers.wsdl.parser.BaseTypeDescriptor;
 import org.embl.ebi.escience.scuflworkers.wsdl.parser.ComplexTypeDescriptor;
 import org.embl.ebi.escience.scuflworkers.wsdl.parser.TypeDescriptor;
 import org.embl.ebi.escience.scuflworkers.wsdl.parser.UnknownOperationException;
@@ -312,7 +313,7 @@ public class WSDLSOAPInvoker {
 		if (thing.getDataObject() instanceof List) {
 			List dataValues = (List) thing.getDataObject();
 			size = dataValues.size();
-			populateElementWithList(mimeType, el, dataValues);
+			populateElementWithList(mimeType, el, dataValues,elementType);
 		} else {
 			Object dataItem = thing.getDataObject();
 			// if mime type is text/xml then the data is an array in xml form,
@@ -331,7 +332,14 @@ public class WSDLSOAPInvoker {
 					child = child.getNextSibling();
 				}
 			} else {
-				Element item = el.getOwnerDocument().createElement("item");
+				String tag="item";
+				if (elementType instanceof BaseTypeDescriptor) {
+					tag=elementType.getType();
+				}
+				else {				
+					tag=elementType.getName();
+				}
+				Element item = el.getOwnerDocument().createElement(tag);
 				populateElementWithStringData(mimeType, item, dataItem
 						.toString());
 				el.appendChild(item);
@@ -368,12 +376,20 @@ public class WSDLSOAPInvoker {
 	 * @throws IOException
 	 */
 	private void populateElementWithList(String mimeType, Element element,
-			List dataValues) throws ParserConfigurationException, SAXException,
+			List dataValues,TypeDescriptor elementType) throws ParserConfigurationException, SAXException,
 			IOException {
 		for (Iterator dataIterator = dataValues.iterator(); dataIterator
 				.hasNext();) {
 			Object dataItem = dataIterator.next();
-			Element item = element.getOwnerDocument().createElement("item");
+			String tag;
+			if (elementType instanceof BaseTypeDescriptor) {
+				tag=elementType.getType();
+			}
+			else {
+				tag=elementType.getName();
+			}
+				 
+			Element item = element.getOwnerDocument().createElement(tag);
 			populateElementWithStringData(mimeType, item, dataItem.toString());
 			element.appendChild(item);
 		}
