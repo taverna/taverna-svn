@@ -24,6 +24,7 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.axis.wsdl.gen.NoopFactory;
 import org.apache.axis.wsdl.symbolTable.BindingEntry;
+import org.apache.axis.wsdl.symbolTable.CollectionElement;
 import org.apache.axis.wsdl.symbolTable.CollectionType;
 import org.apache.axis.wsdl.symbolTable.DefinedElement;
 import org.apache.axis.wsdl.symbolTable.DefinedType;
@@ -483,7 +484,7 @@ public class WSDLParser {
 
 	private TypeDescriptor constructType(TypeEntry type) {
 		TypeDescriptor result = null;
-		if (type instanceof CollectionType) {
+		if (type instanceof CollectionType || type instanceof CollectionElement) {
 			result = constructArrayType(type);
 			result.setType(type.getRefType().getQName().getLocalPart());
 		} else if (type instanceof DefinedType || type instanceof DefinedElement) {
