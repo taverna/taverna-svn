@@ -169,6 +169,10 @@ public class XMLUtilitiesTest extends TestCase {
 	public void testGetDirectChildByArticleName() {
 
 	}
+	
+	public void TestIsThereData() {
+		
+	}
 
 	private String xml = "<moby:MOBY xmlns:moby=\"http://www.biomoby.org/moby\">\r\n"
 			+ "  <moby:mobyContent>\r\n"

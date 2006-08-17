@@ -198,7 +198,6 @@ public class XMLUtilities {
 		return strings;
 	}
 
-	
 	public static String[] getListOfCollections(String message) throws MobyException {
 		Element element = getDOMDocument(message).getRootElement();
 		Element[] elements = getListOfCollections(element);
@@ -753,7 +752,7 @@ public class XMLUtilities {
 				if (((Element) o).getChildren().size() > 0)
 					vector.add(o);
 			}
-			
+
 		}
 		Element[] elements = new Element[vector.size()];
 		vector.copyInto(elements);
@@ -813,7 +812,7 @@ public class XMLUtilities {
 								vector.add(simple);
 						}
 					}
-						
+
 				}
 			}
 		}
@@ -960,6 +959,7 @@ public class XMLUtilities {
 	 * @return
 	 * @throws MobyException
 	 */
+	@SuppressWarnings("unchecked")
 	public static Element[] getSingleInvokationsFromMultipleInvokations(Element element)
 			throws MobyException {
 		Element e = (Element) element.clone();
@@ -982,8 +982,8 @@ public class XMLUtilities {
 		List invocations = e.getChildren("mobyData");
 		if (invocations.isEmpty())
 			invocations = e.getChildren("mobyData", MOBY_NS);
-		Element[] elements = new Element[invocations.size()];
-		int count = 0;
+		Element[] elements = new Element[] {};
+		ArrayList theData = new ArrayList();
 		for (Iterator it = invocations.iterator(); it.hasNext();) {
 			Element MOBY = new Element("MOBY", MOBY_NS);
 			Element mobyContent = new Element("mobyContent", MOBY_NS);
@@ -999,8 +999,11 @@ public class XMLUtilities {
 			mobyData.addContent(next.cloneContent());
 			MOBY.addContent(mobyContent);
 			mobyContent.addContent(mobyData);
-			elements[count++] = MOBY;
+			if (next.getChildren().size() > 0)
+				theData.add(MOBY);
 		}
+		elements = new Element[theData.size()];
+		elements = (Element[]) theData.toArray(elements);
 		return elements;
 	}
 
@@ -1228,7 +1231,7 @@ public class XMLUtilities {
 						.getAttributeValue("articleName", MOBY_NS, "") : e.getAttributeValue(
 						"articleName", "")), MOBY_NS);
 				simple.addContent(e.cloneContent());
-				if (simple.getChildren().size() > 0 )
+				if (simple.getChildren().size() > 0)
 					mobyData.addContent(simple.detach());
 			} else if (e.getName().equals("Collection")) {
 				Element collection = new Element("Collection", MOBY_NS);
@@ -1602,5 +1605,58 @@ public class XMLUtilities {
 			return null;
 		}
 	}
-	
+
+	/**
+	 * 
+	 * @param xml
+	 *            the xml message to test whether or not there is stuff in the
+	 *            mobyData portion of a message.
+	 * @return true if there is data, false otherwise.
+	 */
+	public static boolean isThereData(Element xml) {
+		Element e = null;
+		e = (Element) xml.clone();
+		try {
+			e = extractMobyData(e);
+			if (e.getChildren().size() > 0) {
+				// make sure we dont have empty collections or simples
+				if (e.getChild("Collection") != null) {
+					//System.out.println("1. collection with stuff in it: " + getQueryID(xml));
+					return e.getChild("Collection").getChildren().size() > 0;
+				}
+				if (e.getChild("Collection", MOBY_NS) != null) {
+					//System.out.println("2. collectionNS with stuff in it: " + getQueryID(xml));
+					return e.getChild("Collection", MOBY_NS).getChildren().size() > 0;
+				}
+				if (e.getChild("Simple") != null) {
+					//System.out.println("3. Simple with stuff in it: " + getQueryID(xml));
+					return e.getChild("Simple").getChildren().size() > 0;
+				}
+				if (e.getChild("Simple", MOBY_NS) != null) {
+					//System.out.println("4. SimpleNS with stuff in it: " + getQueryID(xml));
+					return e.getChild("Simple", MOBY_NS).getChildren().size() > 0;
+				}
+				return false;
+			}
+		} catch (MobyException e1) {
+			return false;
+		}
+		return false;
+	}
+
+	/**
+	 * 
+	 * @param xml
+	 *            the xml message to test whether or not there is stuff in the
+	 *            mobyData portion of a message.
+	 * @return true if there is data, false otherwise.
+	 */
+	public static boolean isThereData(String xml) {
+		try {
+			return isThereData(getDOMDocument(xml).getRootElement());
+		} catch (Exception e) {
+			return false;
+		}
+	}
+
 }
