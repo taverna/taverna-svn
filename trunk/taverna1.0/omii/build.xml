@@ -14,7 +14,7 @@
       <arg line="package assembly:directory -Dassembly=omii-client"/>
     </exec>
     <copy file="client-build.xml" tofile="dist/client/build.xml"/>
-    <copy file="LICENSE.text" tofile="dist/client/LICENSE"/>
+    <copy file="LICENSE.txt" tofile="dist/client/LICENSE"/>
   </target>
   
   <target name="build-doc">
