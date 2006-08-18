@@ -225,8 +225,30 @@ public class XMLInputSplitterTest extends TestCase {
 		assertTrue(
 				"xml returned is unexpected, element order should be same as defined by the webservice",
 				xmlOutput
-						.indexOf("<in0 xmlns=\"http://webservice.gominer.lmp.nci.nih.gov\"><item>0</item></in0><in1 xmlns=\"http://webservice.gominer.lmp.nci.nih.gov\"><item>1</item></in1><in2 xmlns=\"http://webservice.gominer.lmp.nci.nih.gov\">2</in2><in3 xmlns=\"http://webservice.gominer.lmp.nci.nih.gov\">3</in3><in4 xmlns=\"http://webservice.gominer.lmp.nci.nih.gov\">4</in4><in5 xmlns=\"http://webservice.gominer.lmp.nci.nih.gov\">true</in5><in6 xmlns=\"http://webservice.gominer.lmp.nci.nih.gov\">true</in6><in7 xmlns=\"http://webservice.gominer.lmp.nci.nih.gov\">true</in7>") != -1);
+						.indexOf("<in0 xmlns=\"http://webservice.gominer.lmp.nci.nih.gov\"><string>0</string></in0><in1 xmlns=\"http://webservice.gominer.lmp.nci.nih.gov\"><string>1</string></in1><in2 xmlns=\"http://webservice.gominer.lmp.nci.nih.gov\">2</in2><in3 xmlns=\"http://webservice.gominer.lmp.nci.nih.gov\">3</in3><in4 xmlns=\"http://webservice.gominer.lmp.nci.nih.gov\">4</in4><in5 xmlns=\"http://webservice.gominer.lmp.nci.nih.gov\">true</in5><in6 xmlns=\"http://webservice.gominer.lmp.nci.nih.gov\">true</in6><in7 xmlns=\"http://webservice.gominer.lmp.nci.nih.gov\">true</in7>") != -1);
 
+	}
+	
+	/**
+	 * tests that a nil value gets converted to a nil="true" attribute
+	 * @throws Exception
+	 */
+	public void testForNil() throws Exception {
+		XMLInputSplitter splitter = new XMLInputSplitter();
+		ScuflModel model = new ScuflModel();
+		WSDLBasedProcessor processor = new WSDLBasedProcessor(model,
+				"testProc",
+				"http://discover.nci.nih.gov/gominer/xfire/GMService?wsdl",
+				"getReport");
+		splitter.setUpInputs(processor.getInputPorts()[0]);
+		Map inputMap = new HashMap();
+		inputMap.put("in2", new DataThing("nil"));
+		
+		Map outputMap=splitter.execute(inputMap);
+		DataThing output=(DataThing)outputMap.get("output");
+		String xmlOutput = output.getDataObject().toString();
+				
+		assertTrue("xml incorrect",xmlOutput.indexOf("<in2 xmlns=\"http://webservice.gominer.lmp.nci.nih.gov\" nil=\"true\" />")!=-1);
 	}
 
 }

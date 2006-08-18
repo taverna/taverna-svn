@@ -20,6 +20,7 @@ import org.embl.ebi.escience.scuflworkers.wsdl.WSDLBasedProcessor;
 import org.embl.ebi.escience.scuflworkers.wsdl.XMLSplittableInputPort;
 import org.embl.ebi.escience.scuflworkers.wsdl.XMLSplittableOutputPort;
 import org.embl.ebi.escience.scuflworkers.wsdl.parser.ArrayTypeDescriptor;
+import org.embl.ebi.escience.scuflworkers.wsdl.parser.BaseTypeDescriptor;
 import org.embl.ebi.escience.scuflworkers.wsdl.parser.ComplexTypeDescriptor;
 import org.embl.ebi.escience.scuflworkers.wsdl.parser.TypeDescriptor;
 import org.embl.ebi.escience.scuflworkers.wsdl.parser.WSDLParser;
@@ -222,11 +223,24 @@ public class XMLInputSplitter implements LocalWorkerWithPorts, XMLExtensible {
 
 				if (dataObject instanceof List) {
 					Element arrayElement = buildElementFromObject(key, "");
+					
+					String itemkey="item";
+					if (elementType instanceof ArrayTypeDescriptor) {
+						TypeDescriptor arrayElementType=((ArrayTypeDescriptor)elementType).getElementType();
+						if (arrayElementType.getName()!=null && arrayElementType.getName().length()>0) {
+							itemkey=arrayElementType.getName();
+						}
+						else {
+							itemkey=arrayElementType.getType();
+						}
+							
+					}
+					
 					for (Iterator itemIterator = ((List) dataObject).iterator(); itemIterator
 							.hasNext();) {
 
 						Object itemObject = itemIterator.next();
-						Element dataElement = buildElementFromObject("item",
+						Element dataElement = buildElementFromObject(itemkey,
 								itemObject);
 						arrayElement.addContent(dataElement);
 					}
@@ -283,7 +297,13 @@ public class XMLInputSplitter implements LocalWorkerWithPorts, XMLExtensible {
 				dataElement.detach();
 			}
 		} else {
-			dataElement.setText(dataObject.toString());
+			if (dataObject.toString().equals("nil")) {
+				dataElement.setAttribute("nil","true"); //changes nil value to nil=true attribute.
+			}
+			else {
+				dataElement.setText(dataObject.toString());
+			}
+			
 		}
 		return dataElement;
 	}
@@ -301,7 +321,11 @@ public class XMLInputSplitter implements LocalWorkerWithPorts, XMLExtensible {
 			}
 		} else if (typeDescriptor instanceof ArrayTypeDescriptor) {
 			inputNames = new String[] { typeDescriptor.getType() };
-			inputTypes = new String[] { "l('text/xml')" };
+			if (((ArrayTypeDescriptor) typeDescriptor).getElementType() instanceof BaseTypeDescriptor) {
+				inputTypes = new String[] { "l('text/plain')" };
+			} else {
+				inputTypes = new String[] { "l('text/xml')" };
+			}
 		}
 	}
 

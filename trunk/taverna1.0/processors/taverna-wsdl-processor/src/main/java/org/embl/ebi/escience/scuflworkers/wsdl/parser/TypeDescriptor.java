@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: TypeDescriptor.java,v $
- * Revision           $Revision: 1.3 $
+ * Revision           $Revision: 1.4 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-08-16 10:03:31 $
+ * Last modified on   $Date: 2006-08-18 14:53:45 $
  *               by   $Author: sowen70 $
  * Created on March-2006
  *****************************************************************/
@@ -149,28 +149,30 @@ public class TypeDescriptor {
 			names[i] = descriptor.getName();
 			String s = descriptor.getType().toLowerCase();
 
-			if ("string".equals(s)) {
-				if (descriptor instanceof ArrayTypeDescriptor)
+			if (descriptor instanceof ArrayTypeDescriptor) {
+				if (((ArrayTypeDescriptor)descriptor).getElementType() instanceof BaseTypeDescriptor) {
 					types[i] = String[].class;
-				else
-					types[i] = String.class;
-			} else if ("arrayof_xsd_string".equalsIgnoreCase(s)
-					|| "arrayofstring".equalsIgnoreCase(s)
-					|| "arrayof_soapenc_string".equalsIgnoreCase(s)) {
-				types[i] = String[].class;
-
-			} else if ("double".equals(s)) {
-				types[i] = Double.TYPE;
-			} else if ("float".equals(s)) {
-				types[i] = Float.TYPE;
-			} else if ("int".equals(s)) {
-				types[i] = Integer.TYPE;
-			} else if ("boolean".equals(s)) {
-				types[i] = Boolean.TYPE;
-			} else if ("base64binary".equals(s)) {
-				types[i] = byte[].class;
-			} else {
-				types[i] = org.w3c.dom.Element.class;
+				}
+				else {				
+					types[i] = org.w3c.dom.Element.class;
+				}
+			}
+			else {
+				if ("string".equals(s)) {				
+						types[i] = String.class;
+				} else if ("double".equals(s)) {
+					types[i] = Double.TYPE;
+				} else if ("float".equals(s)) {
+					types[i] = Float.TYPE;
+				} else if ("int".equals(s)) {
+					types[i] = Integer.TYPE;
+				} else if ("boolean".equals(s)) {
+					types[i] = Boolean.TYPE;
+				} else if ("base64binary".equals(s)) {
+					types[i] = byte[].class;
+				} else {
+					types[i] = org.w3c.dom.Element.class;
+				}
 			}
 		}
 	}
