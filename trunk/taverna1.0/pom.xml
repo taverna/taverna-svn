@@ -88,7 +88,9 @@
         <artifactId>maven-assembly-plugin</artifactId>
         <version>2.2-svn-SNAPSHOT</version>
         <configuration>
-          <descriptor>src/main/assembly/assembly.xml</descriptor>
+          <descriptors>
+            <descriptor>src/main/assembly/assembly.xml</descriptor>
+          </descriptors>
         </configuration>
       </plugin>
     </plugins>
@@ -156,7 +158,9 @@
             <artifactId>maven-assembly-plugin</artifactId>
             <version>2.1</version>
             <configuration>
-              <descriptor>src/main/assembly/omii-assembly.xml</descriptor>
+              <descriptors>
+                <descriptor>src/main/assembly/omii-assembly.xml</descriptor>
+              </descriptors>
             </configuration>
           </plugin>
         </plugins>
@@ -176,7 +180,9 @@
             <artifactId>maven-assembly-plugin</artifactId>
             <version>2.1</version>
             <configuration>
-              <descriptor>src/main/assembly/omii-client-assembly.xml</descriptor>
+              <descriptors>
+                <descriptor>src/main/assembly/omii-client-assembly.xml</descriptor>
+              </descriptors>
               <finalName>client</finalName>
               <appendAssemblyId>false</appendAssemblyId>
               <outputDirectory>${basedir}/dist</outputDirectory>
@@ -258,6 +264,45 @@
       <url>scpexe://phoebus.cs.man.ac.uk/disk1/maven/snapshot-repository</url>
     </snapshotRepository>
   </distributionManagement> 
+  <reporting>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-project-info-reports-plugin</artifactId>
+        <reportSets>
+          <reportSet>
+            <reports>
+              <!--<report>dependencies</report>-->
+              <report>project-team</report>
+              <report>mailing-list</report>
+              <report>cim</report>
+              <report>issue-tracking</report>
+              <report>license</report>
+              <report>scm</report>
+            </reports>
+          </reportSet>
+        </reportSets>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <configuration>
+          <linksource>true</linksource>
+          <protected>true</protected>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>jdepend-maven-plugin</artifactId>
+        <version>2.0-beta-1-SNAPSHOT</version>
+      </plugin>
+      <plugin>
+         <groupId>org.codehaus.mojo</groupId>
+         <artifactId>taglist-maven-plugin</artifactId>
+         <version>2.0-beta-1</version>
+      </plugin>
+   </plugins>
+  </reporting>
   <dependencyManagement>
     <dependencies>
       <dependency>
