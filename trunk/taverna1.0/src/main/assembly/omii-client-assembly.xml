@@ -6,12 +6,15 @@
   <includeBaseDirectory>false</includeBaseDirectory>
   <fileSets>
     <fileSet>
-      <directory>workbench</directory>
+      <directory>src/main/resources/workbench</directory>
       <outputDirectory>/</outputDirectory>
+      <excludes>
+        <exclude>conf/mygridtest.properties</exclude>
+      </excludes>
     </fileSet>
     <!-- contrib examples -->
     <fileSet>
-      <directory>contrib/examples</directory>
+      <directory>taverna-contrib/examples</directory>
       <outputDirectory>examples</outputDirectory>
     </fileSet>
     <!-- provenance -->
@@ -22,22 +25,8 @@
   </fileSets>
   <moduleSets>
     <moduleSet>
-      <includes>
-        <include>uk.org.mygrid:taverna-workbench</include>
-        <include>uk.org.mygrid:taverna-contrib</include>
-      </includes>
       <binaries>
         <outputDirectory>lib</outputDirectory>
-        <includeDependencies>true</includeDependencies>
-        <unpack>false</unpack>
-      </binaries>
-    </moduleSet>
-    <moduleSet>
-      <includes>
-         <include>uk.org.mygrid:taverna-launcher</include>
-      </includes>
-      <binaries>
-        <outputDirectory>/</outputDirectory>
         <includeDependencies>true</includeDependencies>
         <unpack>false</unpack>
       </binaries>

@@ -11,15 +11,15 @@
   
   <target name="build-client">
     <exec executable="mvn">
-      <arg line="-f parent-pom.xml package assembly:directory -Dassembly=omii-client"/>
+      <arg line="package assembly:directory -Dassembly=omii-client"/>
     </exec>
     <copy file="client-build.xml" tofile="dist/client/build.xml"/>
-    <copy file="license.text" tofile="dist/client/LICENSE"/>
+    <copy file="LICENSE.text" tofile="dist/client/LICENSE"/>
   </target>
   
   <target name="build-doc">
     <exec executable="mvn">
-      <arg line="-f parent-pom.xml site:site"/>
+      <arg line="site:site"/>
     </exec>
 	<copy todir="dist/client/docs">
  	  <fileset dir="target/site"/>
@@ -28,13 +28,13 @@
   
   <target name="test">
     <exec executable="mvn">
-      <arg line="-f parent-pom.xml test"/>
+      <arg line="test"/>
     </exec>
   </target>
   
   <target name="clean">
     <exec executable="mvn">
-      <arg line="-f parent-pom.xml clean"/>
+      <arg line="clean"/>
     </exec>
   </target>
 
