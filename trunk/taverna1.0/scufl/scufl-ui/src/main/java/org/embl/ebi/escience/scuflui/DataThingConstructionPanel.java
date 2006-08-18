@@ -67,6 +67,7 @@ import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 import org.embl.ebi.escience.baclava.DataThing;
 import org.embl.ebi.escience.baclava.factory.DataThingFactory;
@@ -90,7 +91,7 @@ import org.jdom.output.XMLOutputter;
  * Panel to construct the input for a workflow.
  * 
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover </a>
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public abstract class DataThingConstructionPanel extends JPanel implements
 		ScuflUIComponent, ScuflModelEventListener {
@@ -664,6 +665,7 @@ public abstract class DataThingConstructionPanel extends JPanel implements
 							}
 							editor.setText(sb.toString());
 						} else {
+							// FIXME: Avoid doing 1 byte at a time (SLOW)							
 							int input = 0;
 							ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
 							while ((input = is.read()) != -1) {
@@ -691,7 +693,7 @@ public abstract class DataThingConstructionPanel extends JPanel implements
 							.showOpenDialog(DataThingConstructionPanel.this);
 					if (returnVal == JFileChooser.APPROVE_OPTION) {
 						File file = fileChooser.getSelectedFile();
-						if (isText()) {
+						if (isText()) {							
 							BufferedReader reader = new BufferedReader(
 									new FileReader(file));
 							StringBuffer sb = new StringBuffer();
@@ -701,16 +703,9 @@ public abstract class DataThingConstructionPanel extends JPanel implements
 								sb.append("\n");
 							}
 							editor.setText(sb.toString());
-						} else {
-							int input = 0;
-							ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
-							FileInputStream fileInput = new FileInputStream(
-									file);
-							while ((input = fileInput.read()) != -1) {
-								byteStream.write(input);
-							}
-							byteStream.flush();
-							setUserObject(byteStream.toByteArray());
+						} else {							
+							byte[] bytes = FileUtils.readFileToByteArray(file);
+							setUserObject(bytes);
 							panel = null;
 							updatePanel();
 						}
@@ -1034,17 +1029,11 @@ public abstract class DataThingConstructionPanel extends JPanel implements
 									.getMIMETypeList());
 							parent.add(newNode);
 						} else {
-							int input = 0;
-							ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
-							FileInputStream fileInput = new FileInputStream(
-									files[index]);
-							while ((input = fileInput.read()) != -1) {
-								byteStream.write(input);
-							}
-							byteStream.flush();
-							newNode = new InputDataThingNode(byteStream
-									.toByteArray(), parent.getPort()
-									.getMetadata().getMIMETypeList());
+							File file = files[index];
+							byte[] bytes = FileUtils.readFileToByteArray(file);
+					        // Store as datathing
+							newNode = new InputDataThingNode(bytes,
+									parent.getPort().getMetadata().getMIMETypeList());
 							parent.add(newNode);
 						}
 					} catch (Exception exception) {
