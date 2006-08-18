@@ -62,11 +62,11 @@ public class WSDLParser {
 	 */
 	private static Map<String,List<Operation>> operationMap = Collections.synchronizedMap(new HashMap<String,List<Operation>>());
 
-	private static Map<String,Binding> bindingMap = Collections.synchronizedMap(new HashMap<String,Binding>());
+	private static Map<String,Map<String,Binding>> bindingMap = Collections.synchronizedMap(new HashMap<String,Map<String,Binding>>());
 
 	private static Map<String,String> styleMap = Collections.synchronizedMap(new HashMap<String,String>());
 
-	private static Map<String,PortType> portTypeMap = Collections.synchronizedMap(new HashMap<String,PortType>());
+	private static Map<String,Map<String,PortType>> portTypeMap = Collections.synchronizedMap(new HashMap<String,Map<String,PortType>>());
 
 	private Map<String,ComplexTypeDescriptor> cachedComplexTypes = Collections.synchronizedMap(new HashMap<String,ComplexTypeDescriptor>());
 
@@ -135,8 +135,13 @@ public class WSDLParser {
 		return getSymbolTable().getDefinition();
 	}
 
-	public Binding getBinding() {
-		return bindingMap.get(getWSDLLocation());
+	private Binding getBinding(String operationName) {
+		Binding result=null;
+		Map<String,Binding> bindingToOpMap = bindingMap.get(getWSDLLocation());
+		if (bindingToOpMap!=null) {
+			result=bindingToOpMap.get(operationName);
+		}
+		return result;
 	}
 
 	/**
@@ -147,8 +152,13 @@ public class WSDLParser {
 		return styleMap.get(getWSDLLocation());
 	}
 
-	public PortType getPortType() {
-		return portTypeMap.get(getWSDLLocation());
+	public PortType getPortType(String operationName) {
+		PortType result = null;
+		Map<String,PortType> portToOpMap=portTypeMap.get(getWSDLLocation());
+		if (portToOpMap!=null) {
+			result=portToOpMap.get(operationName);
+		}
+		return result;
 	}
 
 	/**
@@ -168,7 +178,7 @@ public class WSDLParser {
 			throw new UnknownOperationException("operation called " + operationName + " does not exist for this wsdl");
 		}
 
-		Parameters parameters = getSymbolTable().getOperationParameters(operation, "", new BindingEntry(getBinding()));
+		Parameters parameters = getSymbolTable().getOperationParameters(operation, "", new BindingEntry(getBinding(operationName)));
 
 		for (Iterator iterator = parameters.list.iterator(); iterator.hasNext();) {
 			Parameter param = (Parameter) iterator.next();
@@ -211,7 +221,7 @@ public class WSDLParser {
 			throw new UnknownOperationException("operation called " + operationName + " does not exist for this wsdl");
 		}
 
-		Parameters parameters = getSymbolTable().getOperationParameters(operation, "", new BindingEntry(getBinding()));
+		Parameters parameters = getSymbolTable().getOperationParameters(operation, "", new BindingEntry(getBinding(operationName)));
 
 		for (Iterator iterator = parameters.list.iterator(); iterator.hasNext();) {
 			Parameter param = (Parameter) iterator.next();
@@ -371,6 +381,10 @@ public class WSDLParser {
 
 	private List<Operation> determineOperations() {
 		List<Operation> result = new ArrayList<Operation>();
+		
+		Map<String, PortType> portToOperationMap = portTypeToOperationMap();		
+		Map<String, Binding> bindingToOperationMap = bindingToOperationMap();
+		
 		Map bindings = getSymbolTable().getDefinition().getBindings();
 		for (Iterator iterator = bindings.values().iterator(); iterator.hasNext();) {
 			Binding binding = (Binding) iterator.next();
@@ -380,14 +394,14 @@ public class WSDLParser {
 				if (ee instanceof SOAPBindingImpl) {
 					SOAPBinding soapBinding = (SOAPBinding) ee;
 					PortType portType = binding.getPortType();
-
-					bindingMap.put(getWSDLLocation(), binding);
-					styleMap.put(getWSDLLocation(), soapBinding.getStyle());
-					portTypeMap.put(getWSDLLocation(), portType);
+					
+					styleMap.put(getWSDLLocation(), soapBinding.getStyle());					
 
 					for (Iterator opIterator = portType.getOperations().iterator(); opIterator.hasNext();) {
 						Operation op = (Operation) opIterator.next();
 						result.add(op);
+						portToOperationMap.put(op.getName(),portType);
+						bindingToOperationMap.put(op.getName(),binding);
 					}
 				}
 			}
@@ -401,8 +415,20 @@ public class WSDLParser {
 		return result;
 	}
 
+	private Map<String, PortType> portTypeToOperationMap() {
+		Map<String,PortType> portToOperationMap = portTypeMap.get(getWSDLLocation());
+		if (portToOperationMap==null) {
+			portToOperationMap=new HashMap<String,PortType>();
+			portTypeMap.put(getWSDLLocation(),portToOperationMap);
+		}
+		return portToOperationMap;
+	}
+
 	private List<Operation> processImports(Map imports) {
 		List<Operation> result = new ArrayList<Operation>();
+		
+		Map<String, PortType> portToOperationMap = portTypeToOperationMap();		
+		Map<String, Binding> bindingToOperationMap = bindingToOperationMap();
 
 		for (Iterator iterator = imports.values().iterator(); iterator.hasNext();) {
 			List list = (List) iterator.next();
@@ -417,14 +443,14 @@ public class WSDLParser {
 						if (ee instanceof SOAPBindingImpl) {
 							SOAPBinding soapBinding = (SOAPBinding) ee;
 							PortType portType = binding.getPortType();
-
-							bindingMap.put(getWSDLLocation(), binding);
-							styleMap.put(getWSDLLocation(), soapBinding.getStyle());
-							portTypeMap.put(getWSDLLocation(), portType);
+							
+							styleMap.put(getWSDLLocation(), soapBinding.getStyle());							
 
 							for (Iterator opIterator = portType.getOperations().iterator(); opIterator.hasNext();) {
 								Operation op = (Operation) opIterator.next();
 								result.add(op);
+								portToOperationMap.put(op.getName(),portType);
+								bindingToOperationMap.put(op.getName(),binding);
 							}
 						}
 					}
@@ -436,10 +462,19 @@ public class WSDLParser {
 		return result;
 	}
 
+	private Map<String, Binding> bindingToOperationMap() {
+		Map<String,Binding> bindingToOperationMap = bindingMap.get(getWSDLLocation());
+		if (bindingToOperationMap==null) {
+			bindingToOperationMap=new HashMap<String,Binding>();
+			bindingMap.put(getWSDLLocation(),bindingToOperationMap);
+		}
+		return bindingToOperationMap;
+	}
+
 	private BindingOperation getBindingOperation(String operationName) throws UnknownOperationException {
 		BindingOperation result = (BindingOperation) bindingOperations.get(operationName);
 		if (result == null) {
-			List bindings = getBinding().getBindingOperations();
+			List bindings = getBinding(operationName).getBindingOperations();
 			for (Iterator iterator = bindings.iterator(); iterator.hasNext();) {
 				BindingOperation bindingOperation = (BindingOperation) iterator.next();
 				if (bindingOperation.getOperation().getName().equals(operationName)) {

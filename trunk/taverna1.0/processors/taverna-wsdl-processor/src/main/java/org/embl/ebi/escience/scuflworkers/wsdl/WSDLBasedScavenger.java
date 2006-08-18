@@ -8,8 +8,10 @@ package org.embl.ebi.escience.scuflworkers.wsdl;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.wsdl.Operation;
@@ -55,27 +57,39 @@ public class WSDLBasedScavenger extends Scavenger {
 			WSDLParser.flushCache(wsdlLocation);
 			WSDLParser parser = new WSDLParser(wsdlLocation);
 			List operations = parser.getOperations();
-			String style = parser.getStyle();
-			PortType portType = parser.getPortType();
-			String portTypeName = portType.getQName().getLocalPart();
-			String name = "";
-
-			if (style.equals("document")) {
-				name = "porttype: " + portTypeName + " [<font color=\"blue\">DOCUMENT</font>]";
-			} else {
-				name = "porttype: " + portTypeName + " [<font color=\"green\">" + style.toUpperCase() + "</font>]";
-			}
-			DefaultMutableTreeNode portTypeNode = new DefaultMutableTreeNode(name);
-			add(portTypeNode);
-			// Iterate over all the operation names
-			for (Iterator i = operations.iterator(); i.hasNext();) {
-				Operation op = (Operation) i.next();
-				String operationName = op.getName();
-				WSDLBasedProcessorFactory wpf = new WSDLBasedProcessorFactory(wsdlLocation, operationName, portType
-						.getQName());
-				DefaultMutableTreeNode operationNode = new DefaultMutableTreeNode(wpf);
-				portTypeNode.add(operationNode);
-			}
+			
+			Map<String,DefaultMutableTreeNode> portTypeNameTreeNodeMap = new HashMap<String,DefaultMutableTreeNode>();
+			if (operations.size()>0) {
+				String style = parser.getStyle();
+				
+				DefaultMutableTreeNode portTypeNode;
+				
+				for (Iterator i = operations.iterator(); i.hasNext();) {
+					Operation op = (Operation) i.next();
+					PortType portType = parser.getPortType(op.getName());					
+					String portTypeName = portType.getQName().getLocalPart();
+					
+					portTypeNode=portTypeNameTreeNodeMap.get(portTypeName);
+					
+					if (portTypeNode==null) {
+						String name;
+						if (style.equals("document")) {
+							name = "porttype: " + portTypeName + " [<font color=\"blue\">DOCUMENT</font>]";
+						} else {
+							name = "porttype: " + portTypeName + " [<font color=\"green\">" + style.toUpperCase() + "</font>]";						
+						}
+						portTypeNode = new DefaultMutableTreeNode(name);
+						add(portTypeNode);
+						portTypeNameTreeNodeMap.put(portTypeName,portTypeNode);
+					}									
+					
+					String operationName = op.getName();
+					WSDLBasedProcessorFactory wpf = new WSDLBasedProcessorFactory(wsdlLocation, operationName, portType
+							.getQName());
+					DefaultMutableTreeNode operationNode = new DefaultMutableTreeNode(wpf);
+					portTypeNode.add(operationNode);
+				}
+			}								
 
 		} catch (SAXException e) {
 			logger.error("SAXException parsing wsdl:" + wsdlLocation);
