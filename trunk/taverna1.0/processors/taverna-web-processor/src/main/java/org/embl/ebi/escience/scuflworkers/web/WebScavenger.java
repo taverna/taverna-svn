@@ -12,13 +12,19 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedHashSet;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Queue;
+import java.util.Set;
 import java.util.StringTokenizer;
 
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
-import javax.swing.tree.TreeNode;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
 import org.embl.ebi.escience.scuflui.workbench.Scavenger;
 import org.embl.ebi.escience.scuflui.workbench.ScavengerCreationException;
@@ -27,6 +33,7 @@ import org.embl.ebi.escience.scuflworkers.workflow.WorkflowScavenger;
 import org.embl.ebi.escience.scuflworkers.wsdl.WSDLBasedScavenger;
 import org.jdom.Document;
 import org.jdom.Element;
+import org.jdom.JDOMException;
 import org.jdom.input.SAXBuilder;
 
 /**
@@ -40,118 +47,139 @@ import org.jdom.input.SAXBuilder;
  */
 public class WebScavenger extends Scavenger {
 
+	private static final long serialVersionUID = -4238626422988051418L;
+
 	private static Logger logger = Logger.getLogger(WebScavenger.class);
 
-	public static final String DISALLOW = "Disallow:";
+	//private static final String DISALLOW = "Disallow:";
 
 	private DefaultTreeModel treeModel = null;
 
-	private DefaultMutableTreeNode progressDisplayNode = new DefaultMutableTreeNode("Searching...");
+	private DefaultMutableTreeNode progressDisplayNode = new DefaultMutableTreeNode(
+			"Searching...");
 
 	/**
 	 * Creates a new web scavenger, starting the web crawl in a new thread and
 	 * returning immediately
 	 */
-	public WebScavenger(String initialURL, DefaultTreeModel model) throws ScavengerCreationException {
+	public WebScavenger(String initialURL, DefaultTreeModel model)
+			throws ScavengerCreationException {
 		super("Web crawl @ " + initialURL);
 		treeModel = model;
 		add(progressDisplayNode);
 		// set default for URL access
-		final String theURL = initialURL;
+		final URL url;
+		try {
+			url = new URL(initialURL);
+		} catch (MalformedURLException e) {
+			throw new ScavengerCreationException("Invalid URL: " + initialURL);
+		}
 		Thread urlThread = new Thread() {
 			public void run() {
+				logger.info("Created new web scavenger thread...");
 				try {
-					logger.info("Created new web scavenger thread...");
-					getXScuflURLs(theURL);
-
+					getXScuflURLs(url);
+				} finally {
+					// Remove the status thingie even if we fail
 					remove(progressDisplayNode);
-					treeModel.nodeStructureChanged((TreeNode) (WebScavenger.this));
-					logger.info("Done searching.");
-				} catch (ScavengerCreationException sce) {
-					logger.warn("Error creating Web Scavenger", sce);
+					treeModel.nodeStructureChanged((WebScavenger.this));
 				}
+				logger.info("Done searching " + url);
 			}
 		};
 		urlThread.start();
 	}
 
-	void getXScuflURLs(String initialURL) throws ScavengerCreationException {
-		String[] allURLs;
-		try {
-			allURLs = search(initialURL);
-		} catch (MalformedURLException mue) {
-			throw new ScavengerCreationException("Cannot crawl from an invalid URL");
-		}
+	/**
+	 * Build the tree of scavengers by traversing the initialURL and
+	 * subpages, and then checking all links for WSDLs and workflows, 
+	 * which are addeed to the scavenger tree.
+	 * 
+	 * @param initialURL
+	 */
+	void getXScuflURLs(URL initialURL) {
 		SAXBuilder sb = new SAXBuilder(false);
-		for (int i = 0; i < allURLs.length; i++) {
-			try {
-				// If the URL ends in 'wsdl' then try to parse it as a wsdl
-				// document
-				if (allURLs[i].toLowerCase().endsWith("wsdl")) {
-					try {
-						progressDisplayNode.setUserObject("Parsing WSDL at : " + allURLs[i]);
-						treeModel.nodeChanged(progressDisplayNode);
-						add(new WSDLBasedScavenger(allURLs[i]));
-					} catch (ScavengerCreationException sce) {
-						//
-					}
-				} else {
-					progressDisplayNode.setUserObject("Reading : " + allURLs[i]);
+		for (URL url : search(initialURL)) {
+			// If the URL ends in 'wsdl' then try to parse it as a wsdl
+			// document.
+			// (Note that we check getFile, so we support both .wsdl and ?wsdl)
+			if (url.getFile().toLowerCase().endsWith("wsdl")) {
+				try {
+					progressDisplayNode.setUserObject("Parsing WSDL at: "
+							+ url);
 					treeModel.nodeChanged(progressDisplayNode);
-					// If this is an XScufl url then add a new
-					// WorkflowProcessorFactory to the node
-					Document doc = sb.build(new InputStreamReader(new URL(allURLs[i]).openStream()));
-					Element root = doc.getRootElement();
-					if (root.getName().equals("scufl")) {
-						// WorkflowProcessorFactory wpf = new
-						// WorkflowProcessorFactory(allURLs[i]);
-						// add(new DefaultMutableTreeNode(wpf));
-						add(new WorkflowScavenger(allURLs[i]));
-					} else if (root.getName().equals("tscript")) {
-						TalismanProcessorFactory tpf = new TalismanProcessorFactory(allURLs[i]);
-						add(new DefaultMutableTreeNode(tpf));
-					}
+					add(new WSDLBasedScavenger(url.toExternalForm()));
+				} catch (ScavengerCreationException sce) {
+					logger.info("Could not add WSDL processor for " + url);				
+				} catch (OutOfMemoryError e) {
+					// In particular, this could happen with
+					// http://www.ncbi.nlm.nih.gov/entrez/eutils/soap/eutils.wsdl 					
+					logger.error("Out of memory adding WSDL processor " + url);
+					continue;		
 				}
-			} catch (Exception e) {
-				e.printStackTrace();
-				throw new ScavengerCreationException(e.getMessage());
+				continue;
+			}
+			progressDisplayNode.setUserObject("Reading : " + url);
+			treeModel.nodeChanged(progressDisplayNode);
+			// If this is an XScufl url then add a new
+			// WorkflowProcessorFactory to the node
+			Document doc;
+			try {
+				doc = sb.build(new InputStreamReader(url.openStream()));
+			} catch (JDOMException e) {
+				logger.info("Not valid XML " + url);
+				continue;
+			} catch (IOException e) {
+				logger.info("Could not retrieve " + url);
+				continue;
+			} catch (OutOfMemoryError e) {
+				logger.error("Out of memory parsing " + url);
+				continue;		
+			}
+			Element root = doc.getRootElement();
+			if (root.getName().equals("scufl")) {
+				try {
+					add(new WorkflowScavenger(url.toExternalForm()));
+				} catch (ScavengerCreationException e) {
+					logger.info("Could not create scavenger for workflow "
+							+ url);
+					continue;
+				} catch (OutOfMemoryError e) {
+					logger.error("Out of memory loading workflow " + url);
+					continue;
+				}
+				
+			} else if (root.getName().equals("tscript")) {
+				TalismanProcessorFactory tpf = new TalismanProcessorFactory(url
+						.toExternalForm());
+				add(new DefaultMutableTreeNode(tpf));
 			}
 		}
 	}
 
+	
 	boolean robotSafe(URL url) {
 		return true;
 	}
 
 	/**
 	 * Check whether there is a robots.txt that would ban access to the URL and
-	 * those below it
+	 * those below it. Currently disabled.
 	 */
-	boolean robotSafeOld(URL url) {
-		String strHost = url.getHost();
-		// form URL of the robots.txt file
-		String strRobot = "http://" + strHost + "/robots.txt";
+	/*
+	boolean robotSafe(URL url) {
+		// TODO: Avoid loading robots.txt every time
 		URL urlRobot;
 		try {
-			urlRobot = new URL(strRobot);
-		} catch (MalformedURLException e) {
+			urlRobot = new URL(url, "/robots.txt");
+		} catch (MalformedURLException e1) {
 			// something weird is happening, so don't trust it
 			return false;
 		}
 		String strCommands;
 		try {
 			InputStream urlRobotStream = urlRobot.openStream();
-			// read in entire file
-			byte b[] = new byte[1000];
-			int numRead = urlRobotStream.read(b);
-			strCommands = new String(b, 0, numRead);
-			while (numRead != -1) {
-				numRead = urlRobotStream.read(b);
-				if (numRead != -1) {
-					String newCommands = new String(b, 0, numRead);
-					strCommands += newCommands;
-				}
-			}
+			strCommands = IOUtils.toString(urlRobotStream, "latin1");
 			urlRobotStream.close();
 		} catch (IOException e) {
 			// if there is no robots.txt file, it is OK to search
@@ -175,128 +203,171 @@ public class WebScavenger extends Scavenger {
 		}
 		return true;
 	}
+	*/
 
 	/**
-	 * Return an array of strings of URLs of XScufl files found by a web crawl
-	 * from the initial URL.
+	 * Return URLs of XScufl files and WSDL descriptions
+	 * found by a web crawl from the initial URL.
 	 */
-	private String[] search(String initialURL) throws MalformedURLException {
-		int numberSearched = 0;
-		int numberFound = 0;
-		List<String> matchesList = new ArrayList<String>();
-		List<String> toSearchList = new ArrayList<String>();
-		List<String> searchedList = new ArrayList<String>();
-		List<String> listMatches = new ArrayList<String>();
-		if (initialURL.length() == 0) {
-			return new String[0];
-		}
-		String strURL = initialURL;
-
-		toSearchList.add(initialURL);
-
-		while (toSearchList.size() > 0) {
-			// get the first element from the to be searched list
-			strURL = toSearchList.get(0);
-			progressDisplayNode.setUserObject("Examining : " + strURL);
-			treeModel.nodeChanged(progressDisplayNode);
-			URL url = new URL(strURL);
-			// mark the URL as searched (we want this one way or the other)
-			toSearchList.remove(0);
-			searchedList.add(strURL);			
+	private Iterable<URL> search(URL initialURL) {
+		// NOTE: LinkedList is not thread safe
+		Queue<URL> searchQueue = new LinkedList<URL>();
+		searchQueue.isEmpty();
+		// Note that an URL is in visits even if its just in searchQueue
+		Set<URL> visits = new HashSet<URL>();
+		// maintain order in matches, which is the result set of wsdls and xscufls
+		Set<URL> services = new LinkedHashSet<URL>();		
+		
+		// We'll start with the initial URL
+		searchQueue.add(initialURL);
+		visits.add(initialURL);
+		
+		// We'll only traverse URLs that go below our initial address. We'll 
+		// check all links to see if they are workflows or wsdl's, though.
+		String root = initialURL.toString().toLowerCase();
+				
+		// Main loop, search, width first
+		// TODO: Avoid extensive depth search, could possibly go on forever
+		while (!searchQueue.isEmpty()) {
+			// Since we're the same thread inputting to the queue, 
+			// remove() should not throw NoSuchElementException 
+			// after !isempty()
+			URL url = searchQueue.remove();								
+			progressDisplayNode.setUserObject("Examining : " + url);
+			treeModel.nodeChanged(progressDisplayNode);			
+			
 			// can only search http: protocol URLs
 			if (url.getProtocol().compareTo("http") != 0) {
-				break;
+				logger.info("Ignoring non-http URL " + url);
+				continue;
 			}
-			// test to make sure it is before searching
+			// test to make sure it is robot-safe before searching
 			if (!robotSafe(url)) {
-				break;
+				logger.info("Skipping robot.txt forbidden URL " + url);
+				continue;
 			}
+
+			for (URL link : extractLinks(url)) {
+				String lowercaseLink = link.toString().toLowerCase();
+				// By default, we'll follow the link for more URLs
+				boolean traverseURL = true;
+				// but only look at http links
+				if (link.getProtocol().compareTo("http") != 0) {
+					traverseURL = false;
+				}
+				// If there is a '?' in the url then don't traverse down, avoids
+				// getting trapped in (some) dynamic pages
+				// (it might be a ?wsdl though, so we'll still check the
+				// content)
+				if (link.getQuery() != null) {
+					traverseURL = false;
+				}
+				// Only look at links that are 'below' the original one in
+				// the web hierarchy. Note that we check with the original's folder, 
+				// ie. to the last /
+				if (!lowercaseLink.startsWith(root)) {
+					traverseURL = false;
+				}
+				// If the link ends with .txt or .xml then we don't want to
+				// search it for links
+				if (lowercaseLink.endsWith(".xml") || lowercaseLink.endsWith(".txt")
+						|| lowercaseLink.endsWith("wsdl")) {
+					traverseURL = false;
+				}
+				// If it's a new URL, we'll visit it
+				if (traverseURL && !visits.contains(link) && robotSafe(link)) {					
+					visits.add(link);
+					searchQueue.add(link);					
+				}
+				// If we think it's a workflow or a WSDL document, we'll consider
+				// it as a possible match
+				if (lowercaseLink.indexOf(".xml") > -1
+						|| lowercaseLink.toLowerCase().endsWith("wsdl")) {									
+					services.add(link);											
+				}
+			}			
+		}		
+		return services;
+	}
+	
+	/**
+	 * Extract links from a HTML page (given as a String).
+	 * <p>
+	 * Not exactly strictly parsing the HTML, but roughly searches for 
+	 * <a href=..> links, which should work for most pages.
+	 * 
+	 * @param url Address of HTML page to search for links
+	 * @return An iterable of URLs from the page, possibly empty if an error occured or no links were found
+	 */
+	Iterable<URL> extractLinks(URL url) {
+		// In order, but without duplicates
+		Set<URL> links = new LinkedHashSet<URL>();
+		String html = fetch(url);
+		if (html == null) {
+			// Return an empty iterator
+			return links;
+		}		
+		// Look for links using a rough HTML search
+		String lowerCaseContent = html.toLowerCase();
+		int index = 0;
+		while ((index = lowerCaseContent.indexOf("<a", index)) != -1) {
+			if ((index = lowerCaseContent.indexOf("href", index)) == -1)
+				break;
+			if ((index = lowerCaseContent.indexOf("=", index)) == -1)
+				break;
+			index++;
+			String remaining = html.substring(index);
+			StringTokenizer st = new StringTokenizer(remaining,
+					"\t\n\r\">#");
+			String strLink = st.nextToken();							
 			try {
-				// try opening the URL
-				URLConnection urlConnection = url.openConnection();
-				urlConnection.setAllowUserInteraction(false);
-				InputStream urlStream = url.openStream();
-				// search the input stream for links
-				// first, read in the entire URL
-				byte b[] = new byte[1000];
-				int numRead = urlStream.read(b);
-				String content = new String(b, 0, numRead);
-				while (numRead != -1) {
-					numRead = urlStream.read(b);
-					if (numRead != -1) {
-						String newContent = new String(b, 0, numRead);
-						content += newContent;
-					}
-				}
-				urlStream.close();
-
-				String lowerCaseContent = content.toLowerCase();
-				int index = 0;
-				while ((index = lowerCaseContent.indexOf("<a", index)) != -1) {
-					if ((index = lowerCaseContent.indexOf("href", index)) == -1)
-						break;
-					if ((index = lowerCaseContent.indexOf("=", index)) == -1)
-						break;
-					index++;
-					String remaining = content.substring(index);
-					StringTokenizer st = new StringTokenizer(remaining, "\t\n\r\">#");
-					String strLink = st.nextToken();
-					URL urlLink;
-					try {
-						urlLink = new URL(url, strLink);
-						strLink = urlLink.toString();
-					} catch (MalformedURLException e) {
-						continue;
-					}
-					boolean validURLToSearch = true;					
-					// only look at http links
-					if (urlLink.getProtocol().compareTo("http") != 0) {						
-						validURLToSearch = false;
-					}
-					// If there is a '?' in the url then reject it
-					if (strLink.indexOf("?") > 0) {
-						validURLToSearch = false;						
-					}
-					// Only look at links that are 'below' the original one in
-					// the web heirarchy
-					if (strLink.toLowerCase().startsWith(initialURL.toLowerCase()) == false) {
-						validURLToSearch = false;						
-					}
-					// If the link ends with .txt or .xml then we don't want to
-					// search any more
-					if (strLink.toLowerCase().endsWith(".xml") || strLink.toLowerCase().endsWith(".txt")
-							|| strLink.toLowerCase().endsWith("wsdl")) {
-						validURLToSearch = false;
-					}
-					try {						
-						// check to see if this URL has already been
-						// searched or is going to be searched
-						if ((!searchedList.contains(strLink)) && (!toSearchList.contains(strLink))) {
-							// test to make sure it is robot-safe!
-							if (robotSafe(urlLink) && validURLToSearch) {
-								toSearchList.add(strLink);
-							}
-						}
-
-						// if the proper type, add it to the results list
-						// unless we have already seen it
-						if (strLink.indexOf(".xml") > -1 || strLink.toLowerCase().endsWith("wsdl")) {
-							if (matchesList.contains(strLink) == false) {
-								listMatches.add(strLink);
-								matchesList.add(strLink);
-								numberFound++;
-							}
-						}
-					} catch (Exception e) {
-						continue;
-					}
-				}
-			} catch (IOException e) {
-				break;
-			}
-
-			numberSearched++;
+				URL urlLink = new URL(url, strLink);
+				links.add(urlLink);
+			} catch (MalformedURLException e) {
+				continue;
+			}		
 		}
-		return (String[]) (listMatches.toArray(new String[0]));
+		return links;
+	}
+	
+
+	/**
+	 * Load a page from a URL, return as String.
+	 * <p>
+	 * This is done with user interaction disabled and a 
+	 * low (1s) connection timeout, and an assumption of character
+	 * encoding to be latin1.
+	 * <p>
+	 * If an error occurs, null is returned.
+	 * 
+	 * @param url Address of resource
+	 * @return String of resource
+	 */
+	String fetch(URL url) {
+		String content;
+		// try opening the URL, avoid pop-ups
+		try {
+			URLConnection urlConnection = url.openConnection();
+			urlConnection.setAllowUserInteraction(false);
+			// 1 second timeout max
+			urlConnection.setConnectTimeout(1000);
+			InputStream urlStream = urlConnection.getInputStream();
+			// FIXME: Should only read the first megabyte! People might link to
+			// movies, etc.				
+			// Assumes encoding latin1.. but since we only care about URLs anyway,
+			// this shouldn't matter much
+			try {				
+				content = IOUtils.toString(urlStream, "latin1");
+			} catch (OutOfMemoryError e) {
+				logger.error("Out of memory retrieving " + url);				
+				return null;
+			} finally {
+				urlStream.close();
+			}
+		} catch (IOException e) {
+			logger.info("Could not read " + url);
+			return null;
+		}
+		return content;
 	}
 }
