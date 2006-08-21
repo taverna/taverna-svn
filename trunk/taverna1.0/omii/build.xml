@@ -1,5 +1,15 @@
 <project name="taverna" default="build-all" basedir=".">
 
+  <condition property="maven.executable" value="mvn">
+    <not>
+      <os family="windows"/>
+    </not>
+  </condition>
+
+  <condition property="maven.executable" value="mvn.bat">
+    <os family="windows"/>
+  </condition>
+		
   <property name="dist.directory" value="dist"/>
 
   <target name="build-all" depends="build-server, build-client">
@@ -10,7 +20,7 @@
   </target>
   
   <target name="build-client">
-    <exec executable="mvn">
+    <exec executable="${maven.executable}">
       <arg line="package assembly:directory -Dassembly=omii-client"/>
     </exec>
     <copy file="client-build.xml" tofile="dist/client/build.xml"/>
@@ -18,22 +28,22 @@
   </target>
   
   <target name="build-doc">
-    <exec executable="mvn">
-      <arg line="site:site"/>
+    <exec executable="${maven.executable}">
+      <arg line="site:stage -DstagingDirectory=${basedir}/target -Dassembly=omii-client"/>
     </exec>
 	<copy todir="dist/client/docs">
- 	  <fileset dir="target/site"/>
+ 	  <fileset dir="target/localhost"/>
  	</copy>
   </target>
   
   <target name="test">
-    <exec executable="mvn">
+    <exec executable="${maven.executable}">
       <arg line="test"/>
     </exec>
   </target>
   
   <target name="clean">
-    <exec executable="mvn">
+    <exec executable="${maven.executable}">
       <arg line="clean"/>
     </exec>
   </target>
