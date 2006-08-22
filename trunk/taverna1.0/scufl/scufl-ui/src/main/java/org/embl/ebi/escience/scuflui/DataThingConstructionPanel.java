@@ -7,8 +7,11 @@ package org.embl.ebi.escience.scuflui;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
+import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.Insets;
+import java.awt.LayoutManager;
 import java.awt.Point;
 import java.awt.datatransfer.Transferable;
 import java.awt.dnd.DropTarget;
@@ -24,7 +27,6 @@ import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.InputStream;
@@ -47,6 +49,7 @@ import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JEditorPane;
 import javax.swing.JFileChooser;
+import javax.swing.JLabel;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -91,7 +94,7 @@ import org.jdom.output.XMLOutputter;
  * Panel to construct the input for a workflow.
  * 
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover </a>
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
 public abstract class DataThingConstructionPanel extends JPanel implements
 		ScuflUIComponent, ScuflModelEventListener {
@@ -562,10 +565,7 @@ public abstract class DataThingConstructionPanel extends JPanel implements
 					sb.append(types[k]);
 				}
 				sb.append(bits[bits.length - 1]);
-				sb.append("</td></tr>\n");
-				sb
-						.append("<tr><td bgcolor=\"#ddeeff\"colspan=\"2\"><b>Description</b></td></tr>\n");
-				sb.append("<tr><td colspan=\"2\">");
+				sb.append("</td></tr></table><p>");
 				if (port.getMetadata().getDescription() != null
 						&& port.getMetadata().getDescription() != "") {
 					sb.append(port.getMetadata().getDescription());
@@ -573,10 +573,7 @@ public abstract class DataThingConstructionPanel extends JPanel implements
 					sb
 							.append("<font color=\"#666666\"><i>no description</i></font>");
 				}
-				sb.append("</td></tr></table>");
-				sb
-						.append("<h2>Instructions</h2><p>To input data into this workflow you must first create either a single item or a list. Having done this you can select the item from the tree to the left of this panel and either enter the data manually, upload from a file on your local machine or load from a location on the internet. When all workflow inputs have been populated as required you can click the 'run workflow' button to run the workflow on these inputs.</p>");
-				sb.append("</html>");
+				sb.append("</p></html>");
 				JEditorPane portDetails = new JEditorPane("text/html", sb
 						.toString());
 				portDetails.setEditable(false);
@@ -1227,7 +1224,62 @@ public abstract class DataThingConstructionPanel extends JPanel implements
 			}
 		});
 		buttonPanel.add(runButton);
-
+		
+		// NASTY - we'll do our own layout manager so that we can have 
+		// our instructions label placed nicely next to the Run button.
+		// FIXME: Do this with any of the existing layout managers instead
+		JPanel south = new JPanel(new LayoutManager(){
+			final int GAP=5;
+			public void addLayoutComponent(String name, Component comp) {}
+			public void removeLayoutComponent(Component comp) {}
+			public void layoutContainer(Container parent) {
+				Insets insets = parent.getInsets();
+				int x = insets.left + GAP;
+				for (Component c : parent.getComponents()) {
+					if (c instanceof JLabel) {
+						int height = c.getPreferredSize().height;
+						int width = parent.getSize().width - insets.left - insets.right;
+						System.out.println("Width " + width);
+						width -= preferredLayoutSize(parent).width;
+						width += c.getMinimumSize().width;
+						c.setSize(width, height);
+						System.out.println("The size is " + c.getSize());
+						height = c.getPreferredSize().height;
+						c.setSize(width, height);
+						System.out.println("The new size is " + c.getSize());
+					} else {
+						c.setSize(c.getMinimumSize());
+					}
+					// Place it low, from left to right
+					int y = parent.getSize().height - c.getHeight() - GAP - insets.top;
+					c.setLocation(x, y);
+					x += c.getSize().width + GAP ;
+				}
+			}
+			public Dimension minimumLayoutSize(Container parent) {	
+				return preferredLayoutSize(parent);
+			}
+			public Dimension preferredLayoutSize(Container parent) {
+				Dimension size = new Dimension();
+				for (Component c : parent.getComponents()) {
+					size.height = Math.max(size.height, c.getMinimumSize().height);
+					size.width = size.width + GAP + c.getMinimumSize().width;
+				}
+				// Some space on top/bottom
+				size.height += GAP*2;
+				return size;
+			}
+		});
+		JLabel instructions = new JLabel("<html><p>To input data into this workflow you must "
+				+"select the item from the tree to the left of this panel and "
+				+"either enter the data manually, upload from a file on your local "
+				+"machine or load from a location on the internet. When all "
+		        +"workflow inputs have been populated as required you can click "
+				+"the <code>Run workflow</code> button to run the workflow on "
+				+"these inputs.</p></html>");
+		south.add(instructions);
+		south.add(buttonPanel);
+		
 		loadInputsButton = new JButton("Load Inputs", TavernaIcons.openIcon);
 		loadInputsButton.setEnabled(false);
 		loadInputsButton.addActionListener(loadFilesAction);
@@ -1250,9 +1302,9 @@ public abstract class DataThingConstructionPanel extends JPanel implements
 		toolbar.add(removeButton);
 
 		setLayout(new BorderLayout());
-		add(toolbar, BorderLayout.NORTH);
+		add(toolbar, BorderLayout.NORTH);		
 		add(splitter, BorderLayout.CENTER);
-		add(buttonPanel, BorderLayout.SOUTH);
+		add(south, BorderLayout.SOUTH);
 		setVisible(true);
 
 		if (this.model == null) {
