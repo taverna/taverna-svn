@@ -94,7 +94,7 @@ import org.jdom.output.XMLOutputter;
  * Panel to construct the input for a workflow.
  * 
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover </a>
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  */
 public abstract class DataThingConstructionPanel extends JPanel implements
 		ScuflUIComponent, ScuflModelEventListener {
@@ -1239,14 +1239,11 @@ public abstract class DataThingConstructionPanel extends JPanel implements
 					if (c instanceof JLabel) {
 						int height = c.getPreferredSize().height;
 						int width = parent.getSize().width - insets.left - insets.right;
-						System.out.println("Width " + width);
 						width -= preferredLayoutSize(parent).width;
 						width += c.getMinimumSize().width;
 						c.setSize(width, height);
-						System.out.println("The size is " + c.getSize());
 						height = c.getPreferredSize().height;
 						c.setSize(width, height);
-						System.out.println("The new size is " + c.getSize());
 					} else {
 						c.setSize(c.getMinimumSize());
 					}
