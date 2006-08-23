@@ -169,7 +169,7 @@ public class ArtifactImpl extends BasicArtifact {
 					Document document = builder.parse(is);
 					is.close();
 					List<Node> elementList = findElements(document, "dependencyManagement");
-					for (depNode : elementList) {
+					for (Node depNode : elementList) {
 						Node n = findElements(depNode, "groupId" ).iterator().next();
 						String groupId = n.getFirstChild().getNodeValue().trim();
 						n = findElements(depNode, "artifactId" ).iterator().next();
