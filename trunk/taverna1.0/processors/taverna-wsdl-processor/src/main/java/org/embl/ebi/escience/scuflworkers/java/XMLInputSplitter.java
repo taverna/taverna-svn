@@ -17,8 +17,6 @@ import org.embl.ebi.escience.scufl.OutputPort;
 import org.embl.ebi.escience.scufl.PortCreationException;
 import org.embl.ebi.escience.scufl.SemanticMarkup;
 import org.embl.ebi.escience.scuflworkers.wsdl.WSDLBasedProcessor;
-import org.embl.ebi.escience.scuflworkers.wsdl.XMLSplittableInputPort;
-import org.embl.ebi.escience.scuflworkers.wsdl.XMLSplittableOutputPort;
 import org.embl.ebi.escience.scuflworkers.wsdl.parser.ArrayTypeDescriptor;
 import org.embl.ebi.escience.scuflworkers.wsdl.parser.BaseTypeDescriptor;
 import org.embl.ebi.escience.scuflworkers.wsdl.parser.ComplexTypeDescriptor;

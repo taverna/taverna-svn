@@ -1,8 +1,8 @@
 /*
  * CVS
  * $Author: sowen70 $
- * $Date: 2006-07-20 14:51:32 $
- * $Revision: 1.1 $
+ * $Date: 2006-08-24 13:43:17 $
+ * $Revision: 1.2 $
  * University of Twente, Human Media Interaction Group
  */
 package nl.utwente.ewi.hmi.taverna.scuflworkers.rshell;
@@ -584,7 +584,7 @@ public class RshellConfigPanel extends JPanel implements ScuflUIComponent,
 	 * Method for creating a new input port
 	 */
 	private void createInputPort() {
-		String portName = JOptionPane.showInputDialog(null,
+		String portName = JOptionPane.showInputDialog(this,
 				"Enter the name of the input port to be created",
 				"Create a new input port", JOptionPane.QUESTION_MESSAGE);
 		if (portName != null) {
@@ -609,7 +609,7 @@ public class RshellConfigPanel extends JPanel implements ScuflUIComponent,
 	 * Method for creating a new input port
 	 */
 	private void createOutputPort() {
-		String portName = JOptionPane.showInputDialog(null,
+		String portName = JOptionPane.showInputDialog(this,
 				"Enter the name of the output port to be created",
 				"Create a new output port", JOptionPane.QUESTION_MESSAGE);
 		if (portName != null) {

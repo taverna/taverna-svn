@@ -98,14 +98,14 @@ public class BiomobyScavengerHelper implements ScavengerHelper {
                                 s.addScavenger(bs);
                             } catch (ScavengerCreationException sce) {
                                 JOptionPane
-                                        .showMessageDialog(null,
+                                        .showMessageDialog(s.getContainingFrame(),
                                                 "Unable to create scavenger!\n"
                                                         + sce.getMessage(),
                                                 "Exception!",
                                                 JOptionPane.ERROR_MESSAGE);
                                 sce.printStackTrace();
                             } catch (MobyException e) {
-                                JOptionPane.showMessageDialog(null,
+                                JOptionPane.showMessageDialog(s.getContainingFrame(),
                                         "Unable to create scavenger!\n"
                                                 + e.getMessage(), "Exception!",
                                         JOptionPane.ERROR_MESSAGE);

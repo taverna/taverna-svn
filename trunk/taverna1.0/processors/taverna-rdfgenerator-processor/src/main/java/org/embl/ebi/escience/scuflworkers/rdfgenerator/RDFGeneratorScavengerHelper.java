@@ -43,7 +43,7 @@ public class RDFGeneratorScavengerHelper implements ScavengerHelper {
 			s.addScavenger(new RDFGeneratorScavenger());
 		    }
 		    catch (ScavengerCreationException sce) {
-			JOptionPane.showMessageDialog(null,
+			JOptionPane.showMessageDialog(s.getContainingFrame(),
 						      "Unable to create scavenger!\n"+sce.getMessage(),
 						      "Exception!",
 						      JOptionPane.ERROR_MESSAGE);

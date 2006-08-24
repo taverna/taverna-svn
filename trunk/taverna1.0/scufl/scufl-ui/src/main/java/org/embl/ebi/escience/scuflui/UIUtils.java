@@ -6,6 +6,8 @@
 package org.embl.ebi.escience.scuflui;
 
 import java.awt.BorderLayout;
+import java.awt.Component;
+import java.awt.event.ActionEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
@@ -13,6 +15,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 
 import org.embl.ebi.escience.scufl.ScuflModel;
@@ -120,6 +123,24 @@ public class UIUtils {
 		public void detachFromModel() {
 			//
 		}
+	}
+	
+	/**
+	 * Determines, if possible, the parent window of an ActionEvent. Usually determined via the JPopupMenu invoker.
+	 * This is useful for making JOptionPane dialogues modal when diplayed from menu item.
+	 * 
+	 * @param ae
+	 * @return Component, or null if it cannot be determined.
+	 */
+	public static Component getActionEventParentWindow(ActionEvent ae) {
+		Component parent = null;
+		if (ae.getSource() instanceof Component) {
+			Component source=(Component)ae.getSource();
+			if (source.getParent() instanceof JPopupMenu) {
+				parent = ((JPopupMenu)source.getParent()).getInvoker();
+			}
+		}
+		return parent;		
 	}
 
 }

@@ -35,7 +35,7 @@ public class WorkflowScavengerHelper implements ScavengerHelper {
 	final ScavengerTree s = theScavenger;
 	return new ActionListener() {
 		 public void actionPerformed(ActionEvent ae) {
-		     String definitionURL = (String)JOptionPane.showInputDialog(null,
+		     String definitionURL = (String)JOptionPane.showInputDialog(s.getContainingFrame(),
 										"Address of the XScufl document?",
 										"XScufl location",
 										JOptionPane.QUESTION_MESSAGE,
@@ -47,7 +47,7 @@ public class WorkflowScavengerHelper implements ScavengerHelper {
 			     s.addScavenger(new WorkflowScavenger(definitionURL));					
 			 }
 			 catch (ScavengerCreationException sce) {
-			     JOptionPane.showMessageDialog(null,
+			     JOptionPane.showMessageDialog(s.getContainingFrame(),
 							   "Unable to create scavenger!\n"+sce.getMessage(),
 							   "Exception!",
 							   JOptionPane.ERROR_MESSAGE);

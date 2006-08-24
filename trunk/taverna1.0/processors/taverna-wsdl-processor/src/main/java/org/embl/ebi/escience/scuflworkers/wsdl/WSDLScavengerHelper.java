@@ -41,7 +41,7 @@ public class WSDLScavengerHelper implements ScavengerHelper {
 		final ScavengerTree s = theScavenger;
 		return new ActionListener() {
 			public void actionPerformed(ActionEvent ae) {
-				final String wsdlLocation = (String) JOptionPane.showInputDialog(null, "Address of the WSDL document?",
+				final String wsdlLocation = (String) JOptionPane.showInputDialog(s.getContainingFrame(), "Address of the WSDL document?",
 						"WSDL location", JOptionPane.QUESTION_MESSAGE, null, null, "http://");
 				if (wsdlLocation != null) {
 					Runnable r = new Runnable() {
@@ -50,7 +50,7 @@ public class WSDLScavengerHelper implements ScavengerHelper {
 							try {
 								s.addScavenger(new WSDLBasedScavenger(wsdlLocation));
 							} catch (ScavengerCreationException sce) {
-								JOptionPane.showMessageDialog(null, "Unable to create scavenger!\n" + sce.getMessage(),
+								JOptionPane.showMessageDialog(s.getContainingFrame(), "Unable to create scavenger!\n" + sce.getMessage(),
 										"Exception!", JOptionPane.ERROR_MESSAGE);
 							}
 							s.scavengingDone();

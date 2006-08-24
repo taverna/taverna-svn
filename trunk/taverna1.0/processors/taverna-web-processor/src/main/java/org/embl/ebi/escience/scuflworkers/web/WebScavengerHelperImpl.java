@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: WebScavengerHelperImpl.java,v $
- * Revision           $Revision: 1.2 $
+ * Revision           $Revision: 1.3 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-07-10 14:08:30 $
+ * Last modified on   $Date: 2006-08-24 13:43:17 $
  *               by   $Author: sowen70 $
  * Created on 03-Jul-2006
  *****************************************************************/
@@ -91,14 +91,14 @@ public class WebScavengerHelperImpl implements ScavengerHelper, WebScavengerHelp
 	public ActionListener getListener(final ScavengerTree theScavengerTree) {		
 		ActionListener result = new ActionListener() {
 			public void actionPerformed(ActionEvent ae) {
-				String rootURL = (String) JOptionPane.showInputDialog(null, "Address of the web page to crawl from?",
+				String rootURL = (String) JOptionPane.showInputDialog(theScavengerTree.getContainingFrame(), "Address of the web page to crawl from?",
 						"Web root location", JOptionPane.QUESTION_MESSAGE, null, null,
 						"http://cvs.mygrid.org.uk/scufl/");
 				if (rootURL != null) {
 					try {
 						theScavengerTree.addScavenger(new WebScavenger(rootURL, (DefaultTreeModel) theScavengerTree.getModel()));
 					} catch (ScavengerCreationException sce) {
-						JOptionPane.showMessageDialog(null, "Unable to create scavenger!\n" + sce.getMessage(),
+						JOptionPane.showMessageDialog(theScavengerTree.getContainingFrame(), "Unable to create scavenger!\n" + sce.getMessage(),
 								"Exception!", JOptionPane.ERROR_MESSAGE);
 					}
 				}

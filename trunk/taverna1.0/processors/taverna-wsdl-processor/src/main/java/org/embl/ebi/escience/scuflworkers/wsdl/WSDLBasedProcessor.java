@@ -40,6 +40,8 @@ import org.embl.ebi.escience.scufl.ProcessorCreationException;
 import org.embl.ebi.escience.scufl.ScuflModel;
 import org.embl.ebi.escience.scufl.view.WorkflowSummaryAsHTML;
 import org.embl.ebi.escience.scuflworkers.HTMLSummarisableProcessor;
+import org.embl.ebi.escience.scuflworkers.java.XMLSplittableInputPort;
+import org.embl.ebi.escience.scuflworkers.java.XMLSplittableOutputPort;
 import org.embl.ebi.escience.scuflworkers.wsdl.parser.TypeDescriptor;
 import org.embl.ebi.escience.scuflworkers.wsdl.parser.UnknownOperationException;
 import org.embl.ebi.escience.scuflworkers.wsdl.parser.WSDLParser;

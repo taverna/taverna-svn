@@ -1,8 +1,8 @@
 /**
  * CVS
  * $Author: sowen70 $
- * $Date: 2006-07-11 15:08:48 $
- * $Revision: 1.1 $
+ * $Date: 2006-08-24 13:43:17 $
+ * $Revision: 1.2 $
  */
 package nl.utwente.ewi.hmi.taverna.scuflworkers.abstractprocessor;
 
@@ -392,7 +392,7 @@ public class APConfigPanel extends JPanel implements ScuflUIComponent,
 	 * Method for creating a new input port
 	 */
 	private void createInputPort() {
-		String portName = JOptionPane.showInputDialog(null,
+		String portName = JOptionPane.showInputDialog(this,
 				"Enter the name of the input port to be created",
 				"Create a new input port", JOptionPane.QUESTION_MESSAGE);
 		if (portName != null) {
@@ -417,7 +417,7 @@ public class APConfigPanel extends JPanel implements ScuflUIComponent,
 	 * Method for creating a new input port
 	 */
 	private void createOutputPort() {
-		String portName = JOptionPane.showInputDialog(null,
+		String portName = JOptionPane.showInputDialog(this,
 				"Enter the name of the output port to be created",
 				"Create a new output port", JOptionPane.QUESTION_MESSAGE);
 		if (portName != null) {

@@ -44,7 +44,7 @@ public class BiomobyScavengerHelper implements ScavengerHelper {
 		final ScavengerTree s = theScavenger;
 		return new ActionListener() {
 			public void actionPerformed(ActionEvent ae) {
-				String baseURL = (String) JOptionPane.showInputDialog(null,
+				String baseURL = (String) JOptionPane.showInputDialog(s.getContainingFrame(),
 						"Location (URL) of your Biomoby central registry?", "Biomoby location",
 						JOptionPane.QUESTION_MESSAGE, null, null,
 						"http://mobycentral.cbr.nrc.ca/cgi-bin/MOBY05/mobycentral.pl");
@@ -53,7 +53,7 @@ public class BiomobyScavengerHelper implements ScavengerHelper {
 					try {
 						s.addScavenger(new BiomobyScavenger(baseURL));
 					} catch (ScavengerCreationException sce) {
-						JOptionPane.showMessageDialog(null, "Unable to create scavenger!\n" + sce.getMessage(),
+						JOptionPane.showMessageDialog(s.getContainingFrame(), "Unable to create scavenger!\n" + sce.getMessage(),
 								"Exception!", JOptionPane.ERROR_MESSAGE);
 					}
 					s.scavengingDone();

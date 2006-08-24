@@ -25,14 +25,15 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: XMLSplitterScuflContextMenuFactory.java,v $
- * Revision           $Revision: 1.2 $
+ * Revision           $Revision: 1.1 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-07-10 14:10:09 $
+ * Last modified on   $Date: 2006-08-24 13:43:17 $
  *               by   $Author: sowen70 $
  * Created on 22-Jun-2006
  *****************************************************************/
-package org.embl.ebi.escience.scuflworkers.wsdl;
+package org.embl.ebi.escience.scuflworkers.java;
 
+import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
@@ -47,9 +48,8 @@ import org.embl.ebi.escience.scufl.InputPort;
 import org.embl.ebi.escience.scufl.OutputPort;
 import org.embl.ebi.escience.scufl.Port;
 import org.embl.ebi.escience.scufl.ScuflModel;
+import org.embl.ebi.escience.scuflui.UIUtils;
 import org.embl.ebi.escience.scuflworkers.java.LocalServiceProcessor;
-import org.embl.ebi.escience.scuflworkers.java.XMLInputSplitter;
-import org.embl.ebi.escience.scuflworkers.java.XMLOutputSplitter;
 
 /**
  * 
@@ -100,13 +100,15 @@ public class XMLSplitterScuflContextMenuFactory {
 			JMenuItem xmlHelperItemWithName = new JMenuItem("Add XML splitter with name");
 			result.add(xmlHelperItem);
 			result.add(xmlHelperItemWithName);
+			
 			ActionListener xmlHelperListener = new ActionListener() {
 				public void actionPerformed(ActionEvent ae) {
 					try {
 						XMLInputSplitter splitter = new XMLInputSplitter();
 						String name = "";
-						if (ae.getActionCommand().indexOf("name") != -1) {
-							name = (String) JOptionPane.showInputDialog(null, "Name for the new processor?",
+						Component parent = UIUtils.getActionEventParentWindow(ae);
+						if (ae.getActionCommand().indexOf("name") != -1) {									
+							name = (String) JOptionPane.showInputDialog(parent, "Name for the new processor?",
 									"Name required", JOptionPane.QUESTION_MESSAGE, null, null, "");
 							if (name != null) {
 								name = model.getValidProcessorName(name);
@@ -148,11 +150,12 @@ public class XMLSplitterScuflContextMenuFactory {
 			ActionListener xmlHelperListener = new ActionListener() {
 				public void actionPerformed(ActionEvent ae) {
 					try {
+						Component parent = UIUtils.getActionEventParentWindow(ae);
 						XMLOutputSplitter splitter = new XMLOutputSplitter();
 						if (splitter.doesTypeContainCyclicReferences(outputPort)) {
 							if (JOptionPane
 									.showConfirmDialog(
-											null,
+											parent,
 											"This data structure contains cyclic references which may result in failure when the workflow is run. Continue?",
 											"Cyclic References", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE) == JOptionPane.NO_OPTION) {
 								return;
@@ -160,7 +163,7 @@ public class XMLSplitterScuflContextMenuFactory {
 						}
 						String name = "";
 						if (ae.getActionCommand().indexOf("name") != -1) {
-							name = (String) JOptionPane.showInputDialog(null, "Name for the new processor?",
+							name = (String) JOptionPane.showInputDialog(parent, "Name for the new processor?",
 									"Name required", JOptionPane.QUESTION_MESSAGE, null, null, "");
 							if (name != null) {
 								name = model.getValidProcessorName(name);

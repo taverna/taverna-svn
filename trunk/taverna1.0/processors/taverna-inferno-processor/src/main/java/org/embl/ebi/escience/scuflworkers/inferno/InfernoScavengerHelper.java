@@ -34,7 +34,7 @@ public class InfernoScavengerHelper implements ScavengerHelper {
 		final ScavengerTree s = theScavenger;
 		return new ActionListener() {
 			public void actionPerformed(ActionEvent ae) {
-				String location = (String) JOptionPane.showInputDialog(null,
+				String location = (String) JOptionPane.showInputDialog(s.getContainingFrame(),
 						"Location of SGS in the form <host>:<port>",
 						"SGS Location", JOptionPane.QUESTION_MESSAGE, null,
 						null, "localhost:8080");
@@ -58,7 +58,7 @@ public class InfernoScavengerHelper implements ScavengerHelper {
 					}
 					s.addScavenger(new InfernoScavenger(host, port));
 				} catch (ScavengerCreationException sce) {
-					JOptionPane.showMessageDialog(null,
+					JOptionPane.showMessageDialog(s.getContainingFrame(),
 							"Unable to create scavenger!\n" + sce.getMessage(),
 							"Exception!", JOptionPane.ERROR_MESSAGE);
 				}

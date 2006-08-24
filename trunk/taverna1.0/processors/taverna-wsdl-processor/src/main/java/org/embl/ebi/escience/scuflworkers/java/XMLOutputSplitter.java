@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: XMLOutputSplitter.java,v $
- * Revision           $Revision: 1.3 $
+ * Revision           $Revision: 1.4 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-08-16 10:03:32 $
+ * Last modified on   $Date: 2006-08-24 13:43:18 $
  *               by   $Author: sowen70 $
  * Created on 16-May-2006
  *****************************************************************/
@@ -51,8 +51,6 @@ import org.embl.ebi.escience.scufl.OutputPort;
 import org.embl.ebi.escience.scufl.PortCreationException;
 import org.embl.ebi.escience.scufl.SemanticMarkup;
 import org.embl.ebi.escience.scuflworkers.wsdl.WSDLBasedProcessor;
-import org.embl.ebi.escience.scuflworkers.wsdl.XMLSplittableInputPort;
-import org.embl.ebi.escience.scuflworkers.wsdl.XMLSplittableOutputPort;
 import org.embl.ebi.escience.scuflworkers.wsdl.parser.ArrayTypeDescriptor;
 import org.embl.ebi.escience.scuflworkers.wsdl.parser.BaseTypeDescriptor;
 import org.embl.ebi.escience.scuflworkers.wsdl.parser.ComplexTypeDescriptor;

@@ -311,7 +311,7 @@ public class ScavengerTreePopupHandler extends MouseAdapter {
 					}
 					addWithName.addActionListener(new ActionListener() {
 						public void actionPerformed(ActionEvent ae) {
-							String name = (String) JOptionPane.showInputDialog(null, "Name for the new processor?",
+							String name = (String) JOptionPane.showInputDialog(UIUtils.getActionEventParentWindow(ae), "Name for the new processor?",
 									"Name required", JOptionPane.QUESTION_MESSAGE, null, null, "");
 							if (name != null) {
 								try {

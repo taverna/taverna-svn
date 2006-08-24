@@ -94,7 +94,7 @@ import org.jdom.output.XMLOutputter;
  * Panel to construct the input for a workflow.
  * 
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover </a>
- * @version $Revision: 1.5 $
+ * @version $Revision: 1.6 $
  */
 public abstract class DataThingConstructionPanel extends JPanel implements
 		ScuflUIComponent, ScuflModelEventListener {
@@ -265,7 +265,7 @@ public abstract class DataThingConstructionPanel extends JPanel implements
 									.toString());
 							if (thing == null) {
 								logger.error("Could not load input document, missing input " + portNode);
-								JOptionPane.showMessageDialog(null,
+								JOptionPane.showMessageDialog(DataThingConstructionPanel.this,
 										"Could not load input document.\n" +
 										"Input document is missing input port '"
 												+ portNode + "'.",
@@ -280,7 +280,7 @@ public abstract class DataThingConstructionPanel extends JPanel implements
 					}
 				} catch (Exception ex) {
 					logger.error("Could not load input document", ex);
-					JOptionPane.showMessageDialog(null,
+					JOptionPane.showMessageDialog(DataThingConstructionPanel.this,
 							"Problem loading input document: \n"
 									+ ex, "Exception!",
 							JOptionPane.ERROR_MESSAGE);
@@ -316,7 +316,7 @@ public abstract class DataThingConstructionPanel extends JPanel implements
 						fileWriter.flush();
 					}
 				} catch (Exception ex) {
-					JOptionPane.showMessageDialog(null,
+					JOptionPane.showMessageDialog(DataThingConstructionPanel.this,
 							"Problem opening content from web : \n"
 									+ ex.getMessage(), "Exception!",
 							JOptionPane.ERROR_MESSAGE);
@@ -645,7 +645,7 @@ public abstract class DataThingConstructionPanel extends JPanel implements
 			public void actionPerformed(ActionEvent e) {
 				try {
 					String name = (String) JOptionPane
-							.showInputDialog(null, "URL to open?",
+							.showInputDialog(DataThingConstructionPanel.this, "URL to open?",
 									"URL Required",
 									JOptionPane.QUESTION_MESSAGE, null, null,
 									"http://");

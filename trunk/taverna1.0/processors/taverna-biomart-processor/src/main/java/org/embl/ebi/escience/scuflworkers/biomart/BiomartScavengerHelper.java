@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: BiomartScavengerHelper.java,v $
- * Revision           $Revision: 1.2 $
+ * Revision           $Revision: 1.3 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-07-10 14:07:42 $
+ * Last modified on   $Date: 2006-08-24 13:43:18 $
  *               by   $Author: sowen70 $
  * Created on 17-Mar-2006
  *****************************************************************/
@@ -66,7 +66,7 @@ public class BiomartScavengerHelper implements ScavengerHelper {
 		return new ActionListener() {
 			public void actionPerformed(ActionEvent ae) {
 				final String baseURL = (String) JOptionPane.showInputDialog(
-						null, "Enter the Biomart location", "Biomart location",
+						s.getContainingFrame(), "Enter the Biomart location", "Biomart location",
 						JOptionPane.QUESTION_MESSAGE, null, null,
 						"http://www.biomart.org/biomart");
 				if (baseURL != null) {
@@ -77,7 +77,7 @@ public class BiomartScavengerHelper implements ScavengerHelper {
 								s.addScavenger(new BiomartScavenger(baseURL));
 							} catch (ScavengerCreationException sce) {
 								JOptionPane
-										.showMessageDialog(null,
+										.showMessageDialog(s.getContainingFrame(),
 												"Unable to create scavenger!\n"
 														+ sce.getMessage(),
 												"Exception!",

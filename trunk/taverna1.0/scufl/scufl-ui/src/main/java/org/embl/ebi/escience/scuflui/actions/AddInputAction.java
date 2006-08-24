@@ -3,6 +3,7 @@
  */
 package org.embl.ebi.escience.scuflui.actions;
 
+import java.awt.Component;
 import java.awt.event.ActionEvent;
 
 import javax.swing.JOptionPane;
@@ -12,12 +13,13 @@ import org.embl.ebi.escience.scufl.OutputPort;
 import org.embl.ebi.escience.scufl.PortCreationException;
 import org.embl.ebi.escience.scufl.ScuflModel;
 import org.embl.ebi.escience.scuflui.TavernaIcons;
+import org.embl.ebi.escience.scuflui.UIUtils;
 
 /**
  * COMMENT
  * 
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover </a>
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public class AddInputAction extends ScuflModelAction {
 	/**
@@ -34,8 +36,10 @@ public class AddInputAction extends ScuflModelAction {
 	 * 
 	 * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
 	 */
-	public void actionPerformed(ActionEvent e) {
-		String name = (String) JOptionPane.showInputDialog(null,
+	public void actionPerformed(ActionEvent e) {		
+		Component parent = UIUtils.getActionEventParentWindow(e);
+		
+		String name = (String) JOptionPane.showInputDialog(parent,
 				"Name for the new workflow input?", "Name required",
 				JOptionPane.QUESTION_MESSAGE, null, null, "");
 		if (name != null) {

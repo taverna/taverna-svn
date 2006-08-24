@@ -10,6 +10,7 @@ import net.sourceforge.taverna.scuflui.workbench.Workbench;
 
 import org.embl.ebi.escience.scufl.ScuflModel;
 import org.embl.ebi.escience.scufl.parser.XScuflParser;
+import org.embl.ebi.escience.scuflui.UIUtils;
 
 /**
  * This class opens a workflow from a web site.
@@ -17,7 +18,7 @@ import org.embl.ebi.escience.scufl.parser.XScuflParser;
  * Last edited by $Author: sowen70 $
  * 
  * @author Mark
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public class OpenWorkflowFromWebAction extends DefaultAction {
 

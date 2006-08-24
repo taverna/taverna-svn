@@ -7,6 +7,7 @@ import javax.swing.JOptionPane;
 import org.embl.ebi.escience.scufl.InputPort;
 import org.embl.ebi.escience.scufl.ScuflModel;
 import org.embl.ebi.escience.scuflui.TavernaIcons;
+import org.embl.ebi.escience.scuflui.UIUtils;
 
 public class SetDefaultValueAction extends ModelObjectAction {
 
@@ -19,7 +20,7 @@ public class SetDefaultValueAction extends ModelObjectAction {
 	public void actionPerformed(ActionEvent e) {
 		InputPort port = (InputPort) modelObject;
 		String value = port.getDefaultValue();
-		String new_value = (String) JOptionPane.showInputDialog(null,
+		String new_value = (String) JOptionPane.showInputDialog(UIUtils.getActionEventParentWindow(e),
 				"Default value for port " + port, "Default value", JOptionPane.QUESTION_MESSAGE,
 				null, null, value);
 		if (new_value == null || new_value.equals(value)) {

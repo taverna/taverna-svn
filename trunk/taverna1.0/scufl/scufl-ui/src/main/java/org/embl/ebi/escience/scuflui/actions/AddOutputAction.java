@@ -3,6 +3,7 @@
  */
 package org.embl.ebi.escience.scuflui.actions;
 
+import java.awt.Component;
 import java.awt.event.ActionEvent;
 
 import javax.swing.JOptionPane;
@@ -12,12 +13,13 @@ import org.embl.ebi.escience.scufl.InputPort;
 import org.embl.ebi.escience.scufl.PortCreationException;
 import org.embl.ebi.escience.scufl.ScuflModel;
 import org.embl.ebi.escience.scuflui.TavernaIcons;
+import org.embl.ebi.escience.scuflui.UIUtils;
 
 /**
  * COMMENT
  * 
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover </a>
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public class AddOutputAction extends ScuflModelAction {
 	/**
@@ -35,7 +37,8 @@ public class AddOutputAction extends ScuflModelAction {
 	 * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
 	 */
 	public void actionPerformed(ActionEvent e) {
-		String name = (String) JOptionPane.showInputDialog(null,
+		Component parent = UIUtils.getActionEventParentWindow(e);
+		String name = (String) JOptionPane.showInputDialog(parent,
 				"Name for the new workflow output?", "Name required",
 				JOptionPane.QUESTION_MESSAGE, null, null, "");
 		if (name != null) {
@@ -44,11 +47,11 @@ public class AddOutputAction extends ScuflModelAction {
 						new InputPort(model.getWorkflowSinkProcessor(), name));
 				model.forceUpdate();
 			} catch (PortCreationException pce) {
-				JOptionPane.showMessageDialog(null,
+				JOptionPane.showMessageDialog(parent,
 						"Port creation exception : \n" + pce.getMessage(),
 						"Exception!", JOptionPane.ERROR_MESSAGE);
 			} catch (DuplicatePortNameException dpne) {
-				JOptionPane.showMessageDialog(null, "Duplicate name : \n"
+				JOptionPane.showMessageDialog(parent, "Duplicate name : \n"
 						+ dpne.getMessage(), "Exception!",
 						JOptionPane.ERROR_MESSAGE);
 			}

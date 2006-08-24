@@ -25,13 +25,13 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: XMLSplittableOutputPort.java,v $
- * Revision           $Revision: 1.2 $
+ * Revision           $Revision: 1.1 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-07-10 14:10:11 $
+ * Last modified on   $Date: 2006-08-24 13:43:18 $
  *               by   $Author: sowen70 $
  * Created on 04-Jul-2006
  *****************************************************************/
-package org.embl.ebi.escience.scuflworkers.wsdl;
+package org.embl.ebi.escience.scuflworkers.java;
 
 import java.util.List;
 

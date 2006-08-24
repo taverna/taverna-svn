@@ -5,12 +5,14 @@
  */
 package org.embl.ebi.escience.scuflworkers.stringconstant;
 
+import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.JOptionPane;
 
 import org.embl.ebi.escience.scufl.Processor;
+import org.embl.ebi.escience.scuflui.UIUtils;
 import org.embl.ebi.escience.scuflworkers.ProcessorEditor;
 
 
@@ -26,7 +28,8 @@ public class StringConstantEditor implements ProcessorEditor {
 	final StringConstantProcessor scp = (StringConstantProcessor)theProcessor;
 	return new ActionListener() {
 		public void actionPerformed(ActionEvent at) {
-		    String newValue = (String)JOptionPane.showInputDialog(null,
+			Component parent = UIUtils.getActionEventParentWindow(at);
+		    String newValue = (String)JOptionPane.showInputDialog(parent,
 									  "String constant",
 									  "New value?",
 									  JOptionPane.QUESTION_MESSAGE,

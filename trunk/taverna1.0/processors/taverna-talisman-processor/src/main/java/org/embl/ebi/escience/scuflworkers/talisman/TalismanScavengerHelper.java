@@ -40,13 +40,13 @@ public class TalismanScavengerHelper implements ScavengerHelper {
 		final ScavengerTree s = theScavenger;
 		return new ActionListener() {
 			public void actionPerformed(ActionEvent ae) {
-				String scriptURL = (String) JOptionPane.showInputDialog(null, "Address of the TScript document?",
+				String scriptURL = (String) JOptionPane.showInputDialog(s.getContainingFrame(), "Address of the TScript document?",
 						"TScript location", JOptionPane.QUESTION_MESSAGE, null, null, "http://");
 				if (scriptURL != null) {
 					try {
 						s.addScavenger(new TalismanScavenger(scriptURL));
 					} catch (ScavengerCreationException sce) {
-						JOptionPane.showMessageDialog(null, "Unable to create scavenger!\n" + sce.getMessage(),
+						JOptionPane.showMessageDialog(s.getContainingFrame(), "Unable to create scavenger!\n" + sce.getMessage(),
 								"Exception!", JOptionPane.ERROR_MESSAGE);
 					}
 				}
