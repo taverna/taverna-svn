@@ -218,6 +218,9 @@ public class WorkflowEditor extends JGraph implements ScuflUIComponent {
 		});
 		WorkflowEdgeRenderer edgeRenderer = new WorkflowEdgeRenderer();
 		edgeRenderer.setTension((float) 0.6);
+		
+		// FIXME: modifying static variables binds class attribute to this workflow editor instance,
+		// leaking memory. We'll try to reset these in detachModel, though.
 		EdgeView.renderer = edgeRenderer;
 		VertexView.renderer = new VertexRenderer() {
 			// Change to non 1 value to show only part of the progress bar and
@@ -471,6 +474,11 @@ public class WorkflowEditor extends JGraph implements ScuflUIComponent {
 	 */
 	public void detachFromModel() {
 		((ScuflGraphModel) getModel()).detachFromModel();
+		// FIXME: Is it correct to reset these to null? At least 
+		// we have to get away the references 
+		// to the hacks we inserted in attachToModel()
+		VertexView.renderer = null;
+		EdgeView.renderer = null;
 	}
 
 	/*
