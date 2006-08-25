@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: XMLOutputSplitter.java,v $
- * Revision           $Revision: 1.5 $
+ * Revision           $Revision: 1.6 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-08-25 13:22:27 $
+ * Last modified on   $Date: 2006-08-25 13:57:00 $
  *               by   $Author: sowen70 $
  * Created on 16-May-2006
  *****************************************************************/
@@ -330,12 +330,10 @@ public class XMLOutputSplitter implements LocalWorkerWithPorts, XMLExtensible {
 						|| outputTypes[i].equals("l('text/xml')")) {
 					String xmlText = outputter.outputString(child);
 					result.put(child.getName(), new DataThing(xmlText));
-				} 
-				else if (outputTypes[i].equals("'application/octet-stream'"))  { //base64Binary
-					byte [] data = Base64.decode(child.getText());
-					result.put(child.getName(), DataThingFactory.bake(data));					
-				}
-				else {
+				} else if (outputTypes[i].equals("'application/octet-stream'")) { // base64Binary
+					byte[] data = Base64.decode(child.getText());
+					result.put(child.getName(), DataThingFactory.bake(data));
+				} else {
 					result.put(child.getName(), new DataThing(child.getText()));
 				}
 			}

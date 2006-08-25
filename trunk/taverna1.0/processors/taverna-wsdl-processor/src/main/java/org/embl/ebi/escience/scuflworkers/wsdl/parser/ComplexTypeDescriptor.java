@@ -13,8 +13,8 @@ public class ComplexTypeDescriptor extends TypeDescriptor {
 	public List getElements() {
 		return elements;
 	}
-	
+
 	public void setElements(List elements) {
-		this.elements=elements;
+		this.elements = elements;
 	}
 }

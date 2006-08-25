@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: WSDLSOAPInvoker.java,v $
- * Revision           $Revision: 1.5 $
+ * Revision           $Revision: 1.6 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-08-25 13:22:27 $
+ * Last modified on   $Date: 2006-08-25 13:56:59 $
  *               by   $Author: sowen70 $
  * Created on 07-Apr-2006
  *****************************************************************/
@@ -104,10 +104,10 @@ public class WSDLSOAPInvoker {
 		Call call = getCall();
 		SOAPBodyElement body = buildBody(inputMap);
 
-		List response = (List) call.invoke(new Object[] { body });		
-		
-		logger.info("SOAP response was:"+response);
-		
+		List response = (List) call.invoke(new Object[] { body });
+
+		logger.info("SOAP response was:" + response);
+
 		SOAPResponseParser parser = SOAPResponseParserFactory.instance()
 				.create(response, getUse(), getStyle(),
 						getProcessor().getOutputPorts());
@@ -197,7 +197,7 @@ public class WSDLSOAPInvoker {
 		List inputs = getProcessor().getParser().getOperationInputParameters(
 				operationName);
 
-		Map<String,String> namespaceMappings = generateNamespaceMappings(inputs);
+		Map<String, String> namespaceMappings = generateNamespaceMappings(inputs);
 		String operationNamespace = getOperationNamespace();
 
 		SOAPBodyElement body = new SOAPBodyElement(XMLUtils.StringToElement(
@@ -250,7 +250,7 @@ public class WSDLSOAPInvoker {
 
 		for (Iterator iterator = namespaceMappings.keySet().iterator(); iterator
 				.hasNext();) {
-			String namespaceURI = (String)iterator.next();
+			String namespaceURI = (String) iterator.next();
 			String ns = (String) namespaceMappings.get(namespaceURI);
 			if (!ns.equals("xsd") && !ns.equals("xsi")) {
 				body.addNamespaceDeclaration(ns, namespaceURI);
@@ -269,7 +269,7 @@ public class WSDLSOAPInvoker {
 				logger.warn("Cant display soap body", e);
 			}
 		}
-		
+
 		return body;
 	}
 
@@ -287,10 +287,11 @@ public class WSDLSOAPInvoker {
 	 * @throws SAXException
 	 * @throws IOException
 	 */
-	private Element createElementForArrayType(Map<String,String> namespaceMappings,
-			String inputName, DataThing thing, TypeDescriptor descriptor,
-			String mimeType, String typeName)
-			throws ParserConfigurationException, SAXException, IOException {
+	private Element createElementForArrayType(
+			Map<String, String> namespaceMappings, String inputName,
+			DataThing thing, TypeDescriptor descriptor, String mimeType,
+			String typeName) throws ParserConfigurationException, SAXException,
+			IOException {
 		Element el;
 		ArrayTypeDescriptor arrayDescriptor = (ArrayTypeDescriptor) descriptor;
 		TypeDescriptor elementType = arrayDescriptor.getElementType();
@@ -304,7 +305,7 @@ public class WSDLSOAPInvoker {
 		if (thing.getDataObject() instanceof List) {
 			List dataValues = (List) thing.getDataObject();
 			size = dataValues.size();
-			populateElementWithList(mimeType, el, dataValues,elementType);
+			populateElementWithList(mimeType, el, dataValues, elementType);
 		} else {
 			Object dataItem = thing.getDataObject();
 			// if mime type is text/xml then the data is an array in xml form,
@@ -323,12 +324,11 @@ public class WSDLSOAPInvoker {
 					child = child.getNextSibling();
 				}
 			} else {
-				String tag="item";
+				String tag = "item";
 				if (elementType instanceof BaseTypeDescriptor) {
-					tag=elementType.getType();
-				}
-				else {				
-					tag=elementType.getName();
+					tag = elementType.getType();
+				} else {
+					tag = elementType.getName();
 				}
 				Element item = el.getOwnerDocument().createElement(tag);
 				populateElementWithObjectData(mimeType, item, dataItem);
@@ -337,8 +337,7 @@ public class WSDLSOAPInvoker {
 
 		}
 
-		String ns = namespaceMappings.get(elementType
-				.getNamespaceURI());
+		String ns = namespaceMappings.get(elementType.getNamespaceURI());
 		if (ns != null) {
 			String elementNS = ns + ":" + elementType.getType() + "[" + size
 					+ "]";
@@ -362,25 +361,24 @@ public class WSDLSOAPInvoker {
 	 * @param dataValues -
 	 *            the List of Objects containing the data
 	 * @param elementType -
-	 * 			  the TypeDescriptor for the element being populated
+	 *            the TypeDescriptor for the element being populated
 	 * @throws ParserConfigurationException
 	 * @throws SAXException
 	 * @throws IOException
 	 */
 	private void populateElementWithList(String mimeType, Element element,
-			List dataValues,TypeDescriptor elementType) throws ParserConfigurationException, SAXException,
-			IOException {
+			List dataValues, TypeDescriptor elementType)
+			throws ParserConfigurationException, SAXException, IOException {
 		for (Iterator dataIterator = dataValues.iterator(); dataIterator
 				.hasNext();) {
 			Object dataItem = dataIterator.next();
 			String tag;
 			if (elementType instanceof BaseTypeDescriptor) {
-				tag=elementType.getType();
+				tag = elementType.getType();
+			} else {
+				tag = elementType.getName();
 			}
-			else {
-				tag=elementType.getName();
-			}
-				 
+
 			Element item = element.getOwnerDocument().createElement(tag);
 			populateElementWithObjectData(mimeType, item, dataItem);
 			element.appendChild(item);
@@ -403,8 +401,8 @@ public class WSDLSOAPInvoker {
 		if (mimeType.equals("'text/xml'")) {
 			DocumentBuilder builder = DocumentBuilderFactory.newInstance()
 					.newDocumentBuilder();
-			Document doc = builder.parse(new ByteArrayInputStream(dataValue.toString()
-					.getBytes()));
+			Document doc = builder.parse(new ByteArrayInputStream(dataValue
+					.toString().getBytes()));
 			Node child = doc.getDocumentElement().getFirstChild();
 
 			while (child != null) {
@@ -412,12 +410,12 @@ public class WSDLSOAPInvoker {
 						child, true));
 				child = child.getNextSibling();
 			}
-		} 		
-		else if (mimeType.equals("'application/octet-stream'") && dataValue instanceof byte[]) {			
-					String encoded=Base64.encodeBytes((byte[])dataValue);					
-					element.appendChild(element.getOwnerDocument().createTextNode(encoded));
-		}
-		else {
+		} else if (mimeType.equals("'application/octet-stream'")
+				&& dataValue instanceof byte[]) {
+			String encoded = Base64.encodeBytes((byte[]) dataValue);
+			element.appendChild(element.getOwnerDocument().createTextNode(
+					encoded));
+		} else {
 			element.appendChild(element.getOwnerDocument().createTextNode(
 					dataValue.toString()));
 		}
@@ -451,14 +449,14 @@ public class WSDLSOAPInvoker {
 	 * @throws UnknownOperationException
 	 * @throws IOException
 	 */
-	private Map<String,String> generateNamespaceMappings(List inputs)
+	private Map<String, String> generateNamespaceMappings(List inputs)
 			throws UnknownOperationException, IOException {
-		Map<String,String> result = new HashMap<String,String>();
+		Map<String, String> result = new HashMap<String, String>();
 		int nsCount = 2;
 
 		result.put(getOperationNamespace(), "ns1");
-		result.put("http://www.w3.org/2001/XMLSchema","xsd");
-		result.put("http://www.w3.org/2001/XMLSchema-instance","xsi");
+		result.put("http://www.w3.org/2001/XMLSchema", "xsd");
+		result.put("http://www.w3.org/2001/XMLSchema-instance", "xsi");
 
 		for (Iterator iterator = inputs.iterator(); iterator.hasNext();) {
 			TypeDescriptor descriptor = (TypeDescriptor) iterator.next();

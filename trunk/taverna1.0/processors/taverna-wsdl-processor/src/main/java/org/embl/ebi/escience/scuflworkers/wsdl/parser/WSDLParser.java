@@ -56,22 +56,29 @@ public class WSDLParser {
 	/**
 	 * Cache for SymbolTable to remove the need for reprocessing each time.
 	 */
-	private static Map<String,SymbolTable> symbolTableMap = Collections.synchronizedMap(new HashMap<String,SymbolTable>());
+	private static Map<String, SymbolTable> symbolTableMap = Collections
+			.synchronizedMap(new HashMap<String, SymbolTable>());
 
 	/**
 	 * Cache for operations, to remove the need for reprocessing each time.
 	 */
-	private static Map<String,List<Operation>> operationMap = Collections.synchronizedMap(new HashMap<String,List<Operation>>());
+	private static Map<String, List<Operation>> operationMap = Collections
+			.synchronizedMap(new HashMap<String, List<Operation>>());
 
-	private static Map<String,Map<String,Binding>> bindingMap = Collections.synchronizedMap(new HashMap<String,Map<String,Binding>>());
+	private static Map<String, Map<String, Binding>> bindingMap = Collections
+			.synchronizedMap(new HashMap<String, Map<String, Binding>>());
 
-	private static Map<String,String> styleMap = Collections.synchronizedMap(new HashMap<String,String>());
+	private static Map<String, String> styleMap = Collections
+			.synchronizedMap(new HashMap<String, String>());
 
-	private static Map<String,Map<String,PortType>> portTypeMap = Collections.synchronizedMap(new HashMap<String,Map<String,PortType>>());
+	private static Map<String, Map<String, PortType>> portTypeMap = Collections
+			.synchronizedMap(new HashMap<String, Map<String, PortType>>());
 
-	private Map<String,ComplexTypeDescriptor> cachedComplexTypes = Collections.synchronizedMap(new HashMap<String,ComplexTypeDescriptor>());
+	private Map<String, ComplexTypeDescriptor> cachedComplexTypes = Collections
+			.synchronizedMap(new HashMap<String, ComplexTypeDescriptor>());
 
-	private Map<String,BindingOperation> bindingOperations = Collections.synchronizedMap(new HashMap<String,BindingOperation>());
+	private Map<String, BindingOperation> bindingOperations = Collections
+			.synchronizedMap(new HashMap<String, BindingOperation>());
 
 	/**
 	 * Constructor which takes the location of the base wsdl file, and begins to
@@ -84,30 +91,32 @@ public class WSDLParser {
 	 * @throws IOException
 	 * @throws SAXException
 	 */
-	public WSDLParser(String wsdlLocation) throws ParserConfigurationException, WSDLException, IOException,
-			SAXException {
+	public WSDLParser(String wsdlLocation) throws ParserConfigurationException,
+			WSDLException, IOException, SAXException {
 
 		logger.info("Initialising WSDLParser for " + wsdlLocation);
 		this.wsdlLocation = wsdlLocation;
 
-		WSIFPluggableProviders.overrideDefaultProvider("http://schemas.xmlsoap.org/wsdl/soap/",
+		WSIFPluggableProviders.overrideDefaultProvider(
+				"http://schemas.xmlsoap.org/wsdl/soap/",
 				new WSIFDynamicProvider_ApacheAxis());
 
 		if (!symbolTableMap.containsKey(wsdlLocation)) {
-			SymbolTable symbolTable = new SymbolTable(new NoopFactory().getBaseTypeMapping(), true, false, false);
+			SymbolTable symbolTable = new SymbolTable(new NoopFactory()
+					.getBaseTypeMapping(), true, false, false);
 			symbolTable.populate(wsdlLocation);
 			symbolTableMap.put(wsdlLocation, symbolTable);
 			operationMap.put(wsdlLocation, determineOperations());
 		}
 
 	}
-	
+
 	/**
 	 * flushes all the caches of entries associated with provided wsdl location
+	 * 
 	 * @param wsdlLocation
 	 */
-	public synchronized static void flushCache(String wsdlLocation)
-	{
+	public synchronized static void flushCache(String wsdlLocation) {
 		operationMap.remove(wsdlLocation);
 		bindingMap.remove(wsdlLocation);
 		styleMap.remove(wsdlLocation);
@@ -137,10 +146,10 @@ public class WSDLParser {
 	}
 
 	private Binding getBinding(String operationName) {
-		Binding result=null;
-		Map<String,Binding> bindingToOpMap = bindingMap.get(getWSDLLocation());
-		if (bindingToOpMap!=null) {
-			result=bindingToOpMap.get(operationName);
+		Binding result = null;
+		Map<String, Binding> bindingToOpMap = bindingMap.get(getWSDLLocation());
+		if (bindingToOpMap != null) {
+			result = bindingToOpMap.get(operationName);
 		}
 		return result;
 	}
@@ -155,9 +164,9 @@ public class WSDLParser {
 
 	public PortType getPortType(String operationName) {
 		PortType result = null;
-		Map<String,PortType> portToOpMap=portTypeMap.get(getWSDLLocation());
-		if (portToOpMap!=null) {
-			result=portToOpMap.get(operationName);
+		Map<String, PortType> portToOpMap = portTypeMap.get(getWSDLLocation());
+		if (portToOpMap != null) {
+			result = portToOpMap.get(operationName);
 		}
 		return result;
 	}
@@ -172,24 +181,29 @@ public class WSDLParser {
 	 *             if no operation matches the name
 	 * @throws IOException
 	 */
-	public List<TypeDescriptor> getOperationInputParameters(String operationName) throws UnknownOperationException, IOException {
+	public List<TypeDescriptor> getOperationInputParameters(String operationName)
+			throws UnknownOperationException, IOException {
 		Operation operation = getOperation(operationName);
 		List<TypeDescriptor> result = new ArrayList<TypeDescriptor>();
 		if (operation == null) {
-			throw new UnknownOperationException("operation called " + operationName + " does not exist for this wsdl");
+			throw new UnknownOperationException("operation called "
+					+ operationName + " does not exist for this wsdl");
 		}
 
-		Parameters parameters = getSymbolTable().getOperationParameters(operation, "", new BindingEntry(getBinding(operationName)));
+		Parameters parameters = getSymbolTable().getOperationParameters(
+				operation, "", new BindingEntry(getBinding(operationName)));
 
 		for (Iterator iterator = parameters.list.iterator(); iterator.hasNext();) {
 			Parameter param = (Parameter) iterator.next();
 			if (param.getMode() == Parameter.IN) {
 				TypeDescriptor typeDescriptor = processParameter(param);
-				if (typeDescriptor instanceof ComplexTypeDescriptor && getStyle().equals("document")) {
+				if (typeDescriptor instanceof ComplexTypeDescriptor
+						&& getStyle().equals("document")) {
 					// for document based, if operation requires no parameters
 					// the param still exists (representing the operation) but
 					// with empty inner elements
-					if (((ComplexTypeDescriptor) typeDescriptor).getElements().size() > 0) {
+					if (((ComplexTypeDescriptor) typeDescriptor).getElements()
+							.size() > 0) {
 						result.add(typeDescriptor);
 					}
 				} else {
@@ -215,14 +229,17 @@ public class WSDLParser {
 	 *             if no operation matches the name
 	 * @throws IOException
 	 */
-	public List<TypeDescriptor> getOperationOutputParameters(String operationName) throws UnknownOperationException, IOException {
+	public List<TypeDescriptor> getOperationOutputParameters(
+			String operationName) throws UnknownOperationException, IOException {
 		Operation operation = getOperation(operationName);
 		List<TypeDescriptor> result = new ArrayList<TypeDescriptor>();
 		if (operation == null) {
-			throw new UnknownOperationException("operation called " + operationName + " does not exist for this wsdl");
+			throw new UnknownOperationException("operation called "
+					+ operationName + " does not exist for this wsdl");
 		}
 
-		Parameters parameters = getSymbolTable().getOperationParameters(operation, "", new BindingEntry(getBinding(operationName)));
+		Parameters parameters = getSymbolTable().getOperationParameters(
+				operation, "", new BindingEntry(getBinding(operationName)));
 
 		for (Iterator iterator = parameters.list.iterator(); iterator.hasNext();) {
 			Parameter param = (Parameter) iterator.next();
@@ -250,26 +267,31 @@ public class WSDLParser {
 	 * @return
 	 * @throws UnknownOperationException
 	 */
-	public String getOperationNamespaceURI(String operationName) throws UnknownOperationException {
+	public String getOperationNamespaceURI(String operationName)
+			throws UnknownOperationException {
 
 		String result = null;
 		if (getStyle().equals("document")) {
 			try {
 				// this lovely line of code gets the correct namespace ....
-				result = ((Part) getBindingOperation(operationName).getOperation().getInput().getMessage()
-						.getOrderedParts(null).get(0)).getElementName().getNamespaceURI();
+				result = ((Part) getBindingOperation(operationName)
+						.getOperation().getInput().getMessage()
+						.getOrderedParts(null).get(0)).getElementName()
+						.getNamespaceURI();
 			} catch (Exception e) {
 				// .... but this gets a good approximation if the above fails
 				result = getDefinition().getTargetNamespace();
 			}
 		} else {
 			BindingOperation binding = getBindingOperation(operationName);
-			List extElements = binding.getBindingInput().getExtensibilityElements();
+			List extElements = binding.getBindingInput()
+					.getExtensibilityElements();
 			if (extElements != null && extElements.size() > 0) {
 				SOAPBody body = (SOAPBody) extElements.get(0);
 				result = body.getNamespaceURI();
 			} else {
-				extElements = binding.getBindingOutput().getExtensibilityElements();
+				extElements = binding.getBindingOutput()
+						.getExtensibilityElements();
 				if (extElements != null && extElements.size() > 0) {
 					SOAPBody body = (SOAPBody) extElements.get(0);
 					result = body.getNamespaceURI();
@@ -319,7 +341,8 @@ public class WSDLParser {
 	 * @return
 	 * @throws UnknownOperationException
 	 */
-	public String getSOAPActionURI(String operationName) throws UnknownOperationException {
+	public String getSOAPActionURI(String operationName)
+			throws UnknownOperationException {
 		String result = null;
 		BindingOperation op = getBindingOperation(operationName);
 		List elements = op.getExtensibilityElements();
@@ -339,13 +362,15 @@ public class WSDLParser {
 	 * @return
 	 * @throws UnknownOperationException
 	 */
-	public String getOperationDocumentation(String operationName) throws UnknownOperationException {
+	public String getOperationDocumentation(String operationName)
+			throws UnknownOperationException {
 		String result = "";
 
 		Operation operation = getOperation(operationName);
 		if (operation.getDocumentationElement() != null) {
 			if (operation.getDocumentationElement().getFirstChild() != null) {
-				result = operation.getDocumentationElement().getFirstChild().getNodeValue();
+				result = operation.getDocumentationElement().getFirstChild()
+						.getNodeValue();
 			}
 		}
 
@@ -361,7 +386,8 @@ public class WSDLParser {
 	 * @throws UnknowOperationException
 	 *             if no operation matches the name
 	 */
-	public Operation getOperation(String operationName) throws UnknownOperationException {
+	public Operation getOperation(String operationName)
+			throws UnknownOperationException {
 		Operation result = null;
 
 		for (Iterator iterator = getOperations().iterator(); iterator.hasNext();) {
@@ -372,7 +398,8 @@ public class WSDLParser {
 			}
 		}
 		if (result == null)
-			throw new UnknownOperationException("No operation named: " + operationName + " exists");
+			throw new UnknownOperationException("No operation named: "
+					+ operationName + " exists");
 		return result;
 	}
 
@@ -382,12 +409,13 @@ public class WSDLParser {
 
 	private List<Operation> determineOperations() {
 		List<Operation> result = new ArrayList<Operation>();
-		
-		Map<String, PortType> portToOperationMap = portTypeToOperationMap();		
+
+		Map<String, PortType> portToOperationMap = portTypeToOperationMap();
 		Map<String, Binding> bindingToOperationMap = bindingToOperationMap();
-		
+
 		Map bindings = getSymbolTable().getDefinition().getBindings();
-		for (Iterator iterator = bindings.values().iterator(); iterator.hasNext();) {
+		for (Iterator iterator = bindings.values().iterator(); iterator
+				.hasNext();) {
 			Binding binding = (Binding) iterator.next();
 			List extensibilityElementList = binding.getExtensibilityElements();
 			for (Iterator k = extensibilityElementList.iterator(); k.hasNext();) {
@@ -395,14 +423,15 @@ public class WSDLParser {
 				if (ee instanceof SOAPBindingImpl) {
 					SOAPBinding soapBinding = (SOAPBinding) ee;
 					PortType portType = binding.getPortType();
-					
-					styleMap.put(getWSDLLocation(), soapBinding.getStyle());					
 
-					for (Iterator opIterator = portType.getOperations().iterator(); opIterator.hasNext();) {
+					styleMap.put(getWSDLLocation(), soapBinding.getStyle());
+
+					for (Iterator opIterator = portType.getOperations()
+							.iterator(); opIterator.hasNext();) {
 						Operation op = (Operation) opIterator.next();
 						result.add(op);
-						portToOperationMap.put(op.getName(),portType);
-						bindingToOperationMap.put(op.getName(),binding);
+						portToOperationMap.put(op.getName(), portType);
+						bindingToOperationMap.put(op.getName(), binding);
 					}
 				}
 			}
@@ -417,41 +446,51 @@ public class WSDLParser {
 	}
 
 	private Map<String, PortType> portTypeToOperationMap() {
-		Map<String,PortType> portToOperationMap = portTypeMap.get(getWSDLLocation());
-		if (portToOperationMap==null) {
-			portToOperationMap=new HashMap<String,PortType>();
-			portTypeMap.put(getWSDLLocation(),portToOperationMap);
+		Map<String, PortType> portToOperationMap = portTypeMap
+				.get(getWSDLLocation());
+		if (portToOperationMap == null) {
+			portToOperationMap = new HashMap<String, PortType>();
+			portTypeMap.put(getWSDLLocation(), portToOperationMap);
 		}
 		return portToOperationMap;
 	}
 
 	private List<Operation> processImports(Map imports) {
 		List<Operation> result = new ArrayList<Operation>();
-		
-		Map<String, PortType> portToOperationMap = portTypeToOperationMap();		
+
+		Map<String, PortType> portToOperationMap = portTypeToOperationMap();
 		Map<String, Binding> bindingToOperationMap = bindingToOperationMap();
 
-		for (Iterator iterator = imports.values().iterator(); iterator.hasNext();) {
+		for (Iterator iterator = imports.values().iterator(); iterator
+				.hasNext();) {
 			List list = (List) iterator.next();
-			for (Iterator importIterator = list.iterator(); importIterator.hasNext();) {
+			for (Iterator importIterator = list.iterator(); importIterator
+					.hasNext();) {
 				Import imp = (Import) importIterator.next();
 				Map bindings = imp.getDefinition().getBindings();
-				for (Iterator bindingsIterator = bindings.values().iterator(); bindingsIterator.hasNext();) {
+				for (Iterator bindingsIterator = bindings.values().iterator(); bindingsIterator
+						.hasNext();) {
 					Binding binding = (Binding) bindingsIterator.next();
-					List extensibilityElementList = binding.getExtensibilityElements();
-					for (Iterator k = extensibilityElementList.iterator(); k.hasNext();) {
-						ExtensibilityElement ee = (ExtensibilityElement) k.next();
+					List extensibilityElementList = binding
+							.getExtensibilityElements();
+					for (Iterator k = extensibilityElementList.iterator(); k
+							.hasNext();) {
+						ExtensibilityElement ee = (ExtensibilityElement) k
+								.next();
 						if (ee instanceof SOAPBindingImpl) {
 							SOAPBinding soapBinding = (SOAPBinding) ee;
 							PortType portType = binding.getPortType();
-							
-							styleMap.put(getWSDLLocation(), soapBinding.getStyle());							
 
-							for (Iterator opIterator = portType.getOperations().iterator(); opIterator.hasNext();) {
+							styleMap.put(getWSDLLocation(), soapBinding
+									.getStyle());
+
+							for (Iterator opIterator = portType.getOperations()
+									.iterator(); opIterator.hasNext();) {
 								Operation op = (Operation) opIterator.next();
 								result.add(op);
-								portToOperationMap.put(op.getName(),portType);
-								bindingToOperationMap.put(op.getName(),binding);
+								portToOperationMap.put(op.getName(), portType);
+								bindingToOperationMap
+										.put(op.getName(), binding);
 							}
 						}
 					}
@@ -464,21 +503,26 @@ public class WSDLParser {
 	}
 
 	private Map<String, Binding> bindingToOperationMap() {
-		Map<String,Binding> bindingToOperationMap = bindingMap.get(getWSDLLocation());
-		if (bindingToOperationMap==null) {
-			bindingToOperationMap=new HashMap<String,Binding>();
-			bindingMap.put(getWSDLLocation(),bindingToOperationMap);
+		Map<String, Binding> bindingToOperationMap = bindingMap
+				.get(getWSDLLocation());
+		if (bindingToOperationMap == null) {
+			bindingToOperationMap = new HashMap<String, Binding>();
+			bindingMap.put(getWSDLLocation(), bindingToOperationMap);
 		}
 		return bindingToOperationMap;
 	}
 
-	private BindingOperation getBindingOperation(String operationName) throws UnknownOperationException {
-		BindingOperation result = (BindingOperation) bindingOperations.get(operationName);
+	private BindingOperation getBindingOperation(String operationName)
+			throws UnknownOperationException {
+		BindingOperation result = (BindingOperation) bindingOperations
+				.get(operationName);
 		if (result == null) {
 			List bindings = getBinding(operationName).getBindingOperations();
 			for (Iterator iterator = bindings.iterator(); iterator.hasNext();) {
-				BindingOperation bindingOperation = (BindingOperation) iterator.next();
-				if (bindingOperation.getOperation().getName().equals(operationName)) {
+				BindingOperation bindingOperation = (BindingOperation) iterator
+						.next();
+				if (bindingOperation.getOperation().getName().equals(
+						operationName)) {
 					result = bindingOperation;
 					bindingOperations.put(operationName, result);
 					break;
@@ -486,7 +530,8 @@ public class WSDLParser {
 			}
 		}
 		if (result == null)
-			throw new UnknownOperationException("Can't find binding operation for '" + operationName + "'");
+			throw new UnknownOperationException(
+					"Can't find binding operation for '" + operationName + "'");
 		return result;
 	}
 
@@ -503,7 +548,8 @@ public class WSDLParser {
 		if (type instanceof CollectionType || type instanceof CollectionElement) {
 			result = constructArrayType(type);
 			result.setType(type.getRefType().getQName().getLocalPart());
-		} else if (type instanceof DefinedType || type instanceof DefinedElement) {
+		} else if (type instanceof DefinedType
+				|| type instanceof DefinedElement) {
 			if (type.getComponentType() == null) {
 				if (type instanceof DefinedElement) {
 					if (type.isBaseType()) {
@@ -533,7 +579,8 @@ public class WSDLParser {
 		ArrayTypeDescriptor result = new ArrayTypeDescriptor();
 		TypeEntry mapItem = getSymbolTable().getType(type.getItemQName());
 		if (mapItem == null) {
-			mapItem = getSymbolTable().getType(new QName(type.getQName().getNamespaceURI(), "mapItem"));
+			mapItem = getSymbolTable().getType(
+					new QName(type.getQName().getNamespaceURI(), "mapItem"));
 		}
 
 		result.setElementType(constructType(mapItem));
@@ -551,7 +598,8 @@ public class WSDLParser {
 		if (cachedComplexTypes.get(type.getQName().toString()) != null) {
 			result = copyFromCache(type.getQName().toString());
 		} else {
-			logger.debug("Constructing complex type (from DefinedElement): " + type.getQName().getLocalPart());
+			logger.debug("Constructing complex type (from DefinedElement): "
+					+ type.getQName().getLocalPart());
 			// caching the type is not really to improve performance, but is
 			// to handle types that contain elements that reference
 			// itself or another parent. Without the caching, this could lead to
@@ -563,7 +611,8 @@ public class WSDLParser {
 			result.setQname(type.getQName());
 			List containedElements = type.getRefType().getContainedElements();
 			if (containedElements != null) {
-				result.getElements().addAll(constructElements(containedElements));
+				result.getElements().addAll(
+						constructElements(containedElements));
 			}
 		}
 
@@ -576,12 +625,14 @@ public class WSDLParser {
 		if (cachedComplexTypes.get(type.getQName().toString()) != null) {
 			result = copyFromCache(type.getQName().toString());
 		} else {
-			logger.debug("Constructing complex type (from DefinedType): " + type.getQName().getLocalPart());
+			logger.debug("Constructing complex type (from DefinedType): "
+					+ type.getQName().getLocalPart());
 			result.setType(type.getQName().getLocalPart());
 			cachedComplexTypes.put(type.getQName().toString(), result);
 			List containedElements = type.getContainedElements();
 			if (containedElements != null) {
-				result.getElements().addAll(constructElements(containedElements));
+				result.getElements().addAll(
+						constructElements(containedElements));
 			}
 			result.setQname(type.getQName());
 		}
@@ -631,15 +682,15 @@ public class WSDLParser {
 		}
 		return result;
 	}
-	
-	private ComplexTypeDescriptor copyFromCache(String key)
-	{
-		ComplexTypeDescriptor cached=(ComplexTypeDescriptor)cachedComplexTypes.get(key);
-		ComplexTypeDescriptor result=new ComplexTypeDescriptor();
+
+	private ComplexTypeDescriptor copyFromCache(String key) {
+		ComplexTypeDescriptor cached = (ComplexTypeDescriptor) cachedComplexTypes
+				.get(key);
+		ComplexTypeDescriptor result = new ComplexTypeDescriptor();
 		result.setQname(cached.getQname());
 		result.setElements(cached.getElements());
 		result.setType(cached.getType());
-		
+
 		return result;
 	}
 

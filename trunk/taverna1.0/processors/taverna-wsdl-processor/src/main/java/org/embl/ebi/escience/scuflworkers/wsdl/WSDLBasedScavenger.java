@@ -42,71 +42,83 @@ public class WSDLBasedScavenger extends Scavenger {
 	 * resolvable to a location from which the wsdl document can be fetched.
 	 */
 
-	public WSDLBasedScavenger(String wsdlLocation) throws ScavengerCreationException {
+	public WSDLBasedScavenger(String wsdlLocation)
+			throws ScavengerCreationException {
 		super("WSDL @ " + wsdlLocation);
 
 		// Load the wsdl document
 		try {
 			new URL(wsdlLocation);
 		} catch (MalformedURLException mue) {
-			throw new ScavengerCreationException("Unable to parse the supplied URL '" + wsdlLocation + "', error was "
-					+ mue.getMessage());
+			throw new ScavengerCreationException(
+					"Unable to parse the supplied URL '" + wsdlLocation
+							+ "', error was " + mue.getMessage());
 		}
 
 		try {
 			WSDLParser.flushCache(wsdlLocation);
 			WSDLParser parser = new WSDLParser(wsdlLocation);
 			List operations = parser.getOperations();
-			
-			Map<String,DefaultMutableTreeNode> portTypeNameTreeNodeMap = new HashMap<String,DefaultMutableTreeNode>();
-			if (operations.size()>0) {
+
+			Map<String, DefaultMutableTreeNode> portTypeNameTreeNodeMap = new HashMap<String, DefaultMutableTreeNode>();
+			if (operations.size() > 0) {
 				String style = parser.getStyle();
-				
+
 				DefaultMutableTreeNode portTypeNode;
-				
+
 				for (Iterator i = operations.iterator(); i.hasNext();) {
 					Operation op = (Operation) i.next();
-					PortType portType = parser.getPortType(op.getName());					
+					PortType portType = parser.getPortType(op.getName());
 					String portTypeName = portType.getQName().getLocalPart();
-					
-					portTypeNode=portTypeNameTreeNodeMap.get(portTypeName);
-					
-					if (portTypeNode==null) {
+
+					portTypeNode = portTypeNameTreeNodeMap.get(portTypeName);
+
+					if (portTypeNode == null) {
 						String name;
 						if (style.equals("document")) {
-							name = "porttype: " + portTypeName + " [<font color=\"blue\">DOCUMENT</font>]";
+							name = "porttype: " + portTypeName
+									+ " [<font color=\"blue\">DOCUMENT</font>]";
 						} else {
-							name = "porttype: " + portTypeName + " [<font color=\"green\">" + style.toUpperCase() + "</font>]";						
+							name = "porttype: " + portTypeName
+									+ " [<font color=\"green\">"
+									+ style.toUpperCase() + "</font>]";
 						}
 						portTypeNode = new DefaultMutableTreeNode(name);
 						add(portTypeNode);
-						portTypeNameTreeNodeMap.put(portTypeName,portTypeNode);
-					}									
-					
+						portTypeNameTreeNodeMap.put(portTypeName, portTypeNode);
+					}
+
 					String operationName = op.getName();
-					WSDLBasedProcessorFactory wpf = new WSDLBasedProcessorFactory(wsdlLocation, operationName, portType
-							.getQName());
-					DefaultMutableTreeNode operationNode = new DefaultMutableTreeNode(wpf);
+					WSDLBasedProcessorFactory wpf = new WSDLBasedProcessorFactory(
+							wsdlLocation, operationName, portType.getQName());
+					DefaultMutableTreeNode operationNode = new DefaultMutableTreeNode(
+							wpf);
 					portTypeNode.add(operationNode);
 				}
-			}								
+			}
 
 		} catch (SAXException e) {
 			logger.error("SAXException parsing wsdl:" + wsdlLocation);
-			throw new ScavengerCreationException("Unable to load the WSDL definition, underlying reason was "
-					+ e.getMessage());
+			throw new ScavengerCreationException(
+					"Unable to load the WSDL definition, underlying reason was "
+							+ e.getMessage());
 		} catch (ParserConfigurationException e) {
-			logger.error("ParserConfigurationException parsing wsdl:" + wsdlLocation);
-			throw new ScavengerCreationException("Unable to load the WSDL definition, underlying reason was "
-					+ e.getMessage());
+			logger.error("ParserConfigurationException parsing wsdl:"
+					+ wsdlLocation);
+			throw new ScavengerCreationException(
+					"Unable to load the WSDL definition, underlying reason was "
+							+ e.getMessage());
 		} catch (WSDLException e) {
-			logger.error("WSDLException parsing wsdl:" + wsdlLocation + "," + e.getMessage());
-			throw new ScavengerCreationException("Unable to load the WSDL definition, underlying reason was "
+			logger.error("WSDLException parsing wsdl:" + wsdlLocation + ","
 					+ e.getMessage());
+			throw new ScavengerCreationException(
+					"Unable to load the WSDL definition, underlying reason was "
+							+ e.getMessage());
 		} catch (IOException e) {
 			logger.error("IOException parsing wsdl:" + wsdlLocation);
-			throw new ScavengerCreationException("Unable to load the WSDL definition, underlying reason was "
-					+ e.getMessage());
+			throw new ScavengerCreationException(
+					"Unable to load the WSDL definition, underlying reason was "
+							+ e.getMessage());
 		}
 	}
 }

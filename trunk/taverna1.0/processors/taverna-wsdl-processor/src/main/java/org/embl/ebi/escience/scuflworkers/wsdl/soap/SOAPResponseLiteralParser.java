@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: SOAPResponseLiteralParser.java,v $
- * Revision           $Revision: 1.2 $
+ * Revision           $Revision: 1.3 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-07-10 14:11:19 $
+ * Last modified on   $Date: 2006-08-25 13:56:59 $
  *               by   $Author: sowen70 $
  * Created on 05-May-2006
  *****************************************************************/
@@ -54,7 +54,8 @@ import org.w3c.dom.Element;
 
 public class SOAPResponseLiteralParser implements SOAPResponseParser {
 
-	private static Logger logger = Logger.getLogger(SOAPResponseLiteralParser.class);
+	private static Logger logger = Logger
+			.getLogger(SOAPResponseLiteralParser.class);
 
 	List outputNames;
 
@@ -73,15 +74,16 @@ public class SOAPResponseLiteralParser implements SOAPResponseParser {
 		Map result = new HashMap();
 
 		if (response.size() > 1)
-			logger.warn("Document style response unexpectedly contained more than one RPCElement, number of elements="
-					+ response.size());
+			logger
+					.warn("Document style response unexpectedly contained more than one RPCElement, number of elements="
+							+ response.size());
 
 		SOAPBodyElement rpcElement = (SOAPBodyElement) response.get(0);
 
 		Element dom = rpcElement.getAsDOM();
 
 		String outputName = getOutputName();
-		String xml = XMLUtils.ElementToString(dom);		
+		String xml = XMLUtils.ElementToString(dom);
 
 		result.put(outputName, new DataThing(xml));
 

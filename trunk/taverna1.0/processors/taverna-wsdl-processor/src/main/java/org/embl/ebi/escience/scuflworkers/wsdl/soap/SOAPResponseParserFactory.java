@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: SOAPResponseParserFactory.java,v $
- * Revision           $Revision: 1.2 $
+ * Revision           $Revision: 1.3 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-07-10 14:11:20 $
+ * Last modified on   $Date: 2006-08-25 13:56:59 $
  *               by   $Author: sowen70 $
  * Created on 05-May-2006
  *****************************************************************/
@@ -70,7 +70,8 @@ public class SOAPResponseParserFactory {
 	 * @return
 	 * @see SOAPResponseParser
 	 */
-	public SOAPResponseParser create(List response, String use, String style, OutputPort[] outputPorts) {
+	public SOAPResponseParser create(List response, String use, String style,
+			OutputPort[] outputPorts) {
 
 		SOAPResponseParser result = null;
 		List outputNames = outputNamesForProcessor(outputPorts);

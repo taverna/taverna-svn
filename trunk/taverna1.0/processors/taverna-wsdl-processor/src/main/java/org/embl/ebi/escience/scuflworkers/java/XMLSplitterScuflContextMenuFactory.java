@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: XMLSplitterScuflContextMenuFactory.java,v $
- * Revision           $Revision: 1.1 $
+ * Revision           $Revision: 1.2 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-08-24 13:43:17 $
+ * Last modified on   $Date: 2006-08-25 13:57:00 $
  *               by   $Author: sowen70 $
  * Created on 22-Jun-2006
  *****************************************************************/
@@ -49,7 +49,6 @@ import org.embl.ebi.escience.scufl.OutputPort;
 import org.embl.ebi.escience.scufl.Port;
 import org.embl.ebi.escience.scufl.ScuflModel;
 import org.embl.ebi.escience.scuflui.UIUtils;
-import org.embl.ebi.escience.scuflworkers.java.LocalServiceProcessor;
 
 /**
  * 
@@ -57,12 +56,13 @@ import org.embl.ebi.escience.scuflworkers.java.LocalServiceProcessor;
  * that are based upon an XML schema.
  * 
  * @author Stuart Owen
- *
+ * 
  */
 
 public class XMLSplitterScuflContextMenuFactory {
 
-	private static Logger logger = Logger.getLogger(XMLSplitterScuflContextMenuFactory.class);
+	private static Logger logger = Logger
+			.getLogger(XMLSplitterScuflContextMenuFactory.class);
 
 	private static XMLSplitterScuflContextMenuFactory instance = new XMLSplitterScuflContextMenuFactory();
 
@@ -76,6 +76,7 @@ public class XMLSplitterScuflContextMenuFactory {
 
 	/**
 	 * Generates a List of JMenuItems, if appropriate, for the given port
+	 * 
 	 * @param port
 	 * @return
 	 */
@@ -97,19 +98,24 @@ public class XMLSplitterScuflContextMenuFactory {
 			final ScuflModel model = inputPort.getProcessor().getModel();
 
 			JMenuItem xmlHelperItem = new JMenuItem("Add XML splitter");
-			JMenuItem xmlHelperItemWithName = new JMenuItem("Add XML splitter with name");
+			JMenuItem xmlHelperItemWithName = new JMenuItem(
+					"Add XML splitter with name");
 			result.add(xmlHelperItem);
 			result.add(xmlHelperItemWithName);
-			
+
 			ActionListener xmlHelperListener = new ActionListener() {
 				public void actionPerformed(ActionEvent ae) {
 					try {
 						XMLInputSplitter splitter = new XMLInputSplitter();
 						String name = "";
-						Component parent = UIUtils.getActionEventParentWindow(ae);
-						if (ae.getActionCommand().indexOf("name") != -1) {									
-							name = (String) JOptionPane.showInputDialog(parent, "Name for the new processor?",
-									"Name required", JOptionPane.QUESTION_MESSAGE, null, null, "");
+						Component parent = UIUtils
+								.getActionEventParentWindow(ae);
+						if (ae.getActionCommand().indexOf("name") != -1) {
+							name = (String) JOptionPane.showInputDialog(parent,
+									"Name for the new processor?",
+									"Name required",
+									JOptionPane.QUESTION_MESSAGE, null, null,
+									"");
 							if (name != null) {
 								name = model.getValidProcessorName(name);
 							}
@@ -118,12 +124,12 @@ public class XMLSplitterScuflContextMenuFactory {
 						}
 						if (name != null) {
 							splitter.setUpInputs(inputPort);
-							LocalServiceProcessor processor = new LocalServiceProcessor(model, model
-									.getValidProcessorName(name), splitter);
+							LocalServiceProcessor processor = new LocalServiceProcessor(
+									model, model.getValidProcessorName(name),
+									splitter);
 							model.addProcessor(processor);
-							model
-									.addDataConstraint(new DataConstraint(model, processor.getOutputPorts()[0],
-											inputPort));
+							model.addDataConstraint(new DataConstraint(model,
+									processor.getOutputPorts()[0], inputPort));
 						}
 					} catch (Exception e) {
 						logger.error("Error adding XML input splitter", e);
@@ -136,7 +142,8 @@ public class XMLSplitterScuflContextMenuFactory {
 		return result;
 	}
 
-	private List<JMenuItem> contextItemsForOutputPort(final OutputPort outputPort) {
+	private List<JMenuItem> contextItemsForOutputPort(
+			final OutputPort outputPort) {
 		List<JMenuItem> result = new ArrayList<JMenuItem>();
 
 		if (XMLOutputSplitter.isSplittable(outputPort)) {
@@ -144,27 +151,35 @@ public class XMLSplitterScuflContextMenuFactory {
 			final ScuflModel model = outputPort.getProcessor().getModel();
 
 			JMenuItem xmlHelperItem = new JMenuItem("Add XML splitter");
-			JMenuItem xmlHelperItemWithName = new JMenuItem("Add XML splitter with name");
+			JMenuItem xmlHelperItemWithName = new JMenuItem(
+					"Add XML splitter with name");
 			result.add(xmlHelperItem);
 			result.add(xmlHelperItemWithName);
 			ActionListener xmlHelperListener = new ActionListener() {
 				public void actionPerformed(ActionEvent ae) {
 					try {
-						Component parent = UIUtils.getActionEventParentWindow(ae);
+						Component parent = UIUtils
+								.getActionEventParentWindow(ae);
 						XMLOutputSplitter splitter = new XMLOutputSplitter();
-						if (splitter.doesTypeContainCyclicReferences(outputPort)) {
+						if (splitter
+								.doesTypeContainCyclicReferences(outputPort)) {
 							if (JOptionPane
 									.showConfirmDialog(
 											parent,
 											"This data structure contains cyclic references which may result in failure when the workflow is run. Continue?",
-											"Cyclic References", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE) == JOptionPane.NO_OPTION) {
+											"Cyclic References",
+											JOptionPane.YES_NO_OPTION,
+											JOptionPane.WARNING_MESSAGE) == JOptionPane.NO_OPTION) {
 								return;
 							}
 						}
 						String name = "";
 						if (ae.getActionCommand().indexOf("name") != -1) {
-							name = (String) JOptionPane.showInputDialog(parent, "Name for the new processor?",
-									"Name required", JOptionPane.QUESTION_MESSAGE, null, null, "");
+							name = (String) JOptionPane.showInputDialog(parent,
+									"Name for the new processor?",
+									"Name required",
+									JOptionPane.QUESTION_MESSAGE, null, null,
+									"");
 							if (name != null) {
 								name = model.getValidProcessorName(name);
 							}
@@ -173,12 +188,12 @@ public class XMLSplitterScuflContextMenuFactory {
 						}
 						if (name != null) {
 							splitter.setUpOutputs(outputPort);
-							LocalServiceProcessor processor = new LocalServiceProcessor(model, model
-									.getValidProcessorName(name), splitter);
+							LocalServiceProcessor processor = new LocalServiceProcessor(
+									model, model.getValidProcessorName(name),
+									splitter);
 							model.addProcessor(processor);
-							model
-									.addDataConstraint(new DataConstraint(model, outputPort,
-											processor.getInputPorts()[0]));
+							model.addDataConstraint(new DataConstraint(model,
+									outputPort, processor.getInputPorts()[0]));
 						}
 					} catch (Exception e) {
 						logger.error("Error adding XML Output splitter", e);

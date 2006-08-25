@@ -30,7 +30,6 @@ public class XMLInputSplitterTest extends TestCase {
 	 * @throws Exception
 	 */
 
-	
 	public void testSplitter() throws Exception {
 		XMLInputSplitter splitter = new XMLInputSplitter();
 		ScuflModel model = new ScuflModel();
@@ -229,9 +228,10 @@ public class XMLInputSplitterTest extends TestCase {
 						.indexOf("<in0 xmlns=\"http://webservice.gominer.lmp.nci.nih.gov\"><string>0</string></in0><in1 xmlns=\"http://webservice.gominer.lmp.nci.nih.gov\"><string>1</string></in1><in2 xmlns=\"http://webservice.gominer.lmp.nci.nih.gov\">2</in2><in3 xmlns=\"http://webservice.gominer.lmp.nci.nih.gov\">3</in3><in4 xmlns=\"http://webservice.gominer.lmp.nci.nih.gov\">4</in4><in5 xmlns=\"http://webservice.gominer.lmp.nci.nih.gov\">true</in5><in6 xmlns=\"http://webservice.gominer.lmp.nci.nih.gov\">true</in6><in7 xmlns=\"http://webservice.gominer.lmp.nci.nih.gov\">true</in7>") != -1);
 
 	}
-	
+
 	/**
 	 * tests that a nil value gets converted to a nil="true" attribute
+	 * 
 	 * @throws Exception
 	 */
 	public void testForNil() throws Exception {
@@ -244,36 +244,41 @@ public class XMLInputSplitterTest extends TestCase {
 		splitter.setUpInputs(processor.getInputPorts()[0]);
 		Map inputMap = new HashMap();
 		inputMap.put("in2", new DataThing("nil"));
-		
-		Map outputMap=splitter.execute(inputMap);
-		DataThing output=(DataThing)outputMap.get("output");
+
+		Map outputMap = splitter.execute(inputMap);
+		DataThing output = (DataThing) outputMap.get("output");
 		String xmlOutput = output.getDataObject().toString();
-				
-		assertTrue("xml incorrect",xmlOutput.indexOf("<in2 xmlns=\"http://webservice.gominer.lmp.nci.nih.gov\" nil=\"true\" />")!=-1);
+
+		assertTrue(
+				"xml incorrect",
+				xmlOutput
+						.indexOf("<in2 xmlns=\"http://webservice.gominer.lmp.nci.nih.gov\" nil=\"true\" />") != -1);
 	}
-	
-	
+
 	public void testBase64EncodeInputData() throws Exception {
 		XMLInputSplitter splitter = new XMLInputSplitter();
 		Map inputMap = new HashMap();
-		
-		String xml="<s:extensions xmlns:s=\"http://org.embl.ebi.escience/xscufl/0.1alpha\"><s:complextype optional=\"false\" unbounded=\"false\" typename=\"SomeData\" name=\"data\" qname=\"{http://testing.org}SomeData\"><s:elements><s:basetype optional=\"false\" unbounded=\"false\" typename=\"base64binary\" name=\"binaryData\" qname=\"{http://www.w3.org/2001/XMLSchema}base64Binary\" /><s:basetype optional=\"false\" unbounded=\"false\" typename=\"string\" name=\"value\" qname=\"{http://www.w3.org/2001/XMLSchema}string\" /></s:elements></s:complextype></s:extensions>";
-		
-		splitter.consumeXML(new SAXBuilder()
-				.build(new StringReader(xml)).getRootElement());
-		
-		assertEquals(splitter.inputTypes()[0],"'application/octet-stream'");
-		assertEquals(splitter.inputTypes()[1],"'text/plain'");
-		
-		byte[] bytes = new byte[] {1,2,3,4,5};
-		inputMap.put("binaryData",new DataThing(bytes));
-		inputMap.put("value",new DataThing("a value"));
-		
-		Map outputMap=splitter.execute(inputMap);
-		DataThing output=(DataThing)outputMap.get("output");
+
+		String xml = "<s:extensions xmlns:s=\"http://org.embl.ebi.escience/xscufl/0.1alpha\"><s:complextype optional=\"false\" unbounded=\"false\" typename=\"SomeData\" name=\"data\" qname=\"{http://testing.org}SomeData\"><s:elements><s:basetype optional=\"false\" unbounded=\"false\" typename=\"base64binary\" name=\"binaryData\" qname=\"{http://www.w3.org/2001/XMLSchema}base64Binary\" /><s:basetype optional=\"false\" unbounded=\"false\" typename=\"string\" name=\"value\" qname=\"{http://www.w3.org/2001/XMLSchema}string\" /></s:elements></s:complextype></s:extensions>";
+
+		splitter.consumeXML(new SAXBuilder().build(new StringReader(xml))
+				.getRootElement());
+
+		assertEquals(splitter.inputTypes()[0], "'application/octet-stream'");
+		assertEquals(splitter.inputTypes()[1], "'text/plain'");
+
+		byte[] bytes = new byte[] { 1, 2, 3, 4, 5 };
+		inputMap.put("binaryData", new DataThing(bytes));
+		inputMap.put("value", new DataThing("a value"));
+
+		Map outputMap = splitter.execute(inputMap);
+		DataThing output = (DataThing) outputMap.get("output");
 		String xmlOutput = output.getDataObject().toString();
-		
-		assertTrue("XML should contain base64Binary encoded String for byte array",xmlOutput.contains("<binaryData xmlns=\"http://testing.org\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:type=\"xsd:base64Binary\">AQIDBAU=</binaryData>"));
+
+		assertTrue(
+				"XML should contain base64Binary encoded String for byte array",
+				xmlOutput
+						.contains("<binaryData xmlns=\"http://testing.org\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:type=\"xsd:base64Binary\">AQIDBAU=</binaryData>"));
 	}
 
 }

@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: SOAPResponseEncodedParser.java,v $
- * Revision           $Revision: 1.2 $
+ * Revision           $Revision: 1.3 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-07-10 14:11:20 $
+ * Last modified on   $Date: 2006-08-25 13:56:59 $
  *               by   $Author: sowen70 $
  * Created on 08-May-2006
  *****************************************************************/
@@ -64,7 +64,8 @@ import org.xml.sax.SAXException;
 
 public class SOAPResponseEncodedParser implements SOAPResponseParser {
 
-	private static Logger logger = Logger.getLogger(SOAPResponseEncodedParser.class);
+	private static Logger logger = Logger
+			.getLogger(SOAPResponseEncodedParser.class);
 
 	protected List outputNames;
 
@@ -95,7 +96,8 @@ public class SOAPResponseEncodedParser implements SOAPResponseParser {
 				String xml;
 				if (stripAttributes) {
 					stripAttributes(outputNode);
-					outputNode = (Node) removeNamespace(outputName, (Element) outputNode);
+					outputNode = (Node) removeNamespace(outputName,
+							(Element) outputNode);
 				}
 				xml = XMLUtils.ElementToString((Element) outputNode);
 				result.put(outputName, new DataThing(xml));
@@ -110,14 +112,17 @@ public class SOAPResponseEncodedParser implements SOAPResponseParser {
 
 	protected Node getOutputNode(Element mainBody, String outputName) {
 		// first try using body namespace ...
-		Node outputNode = (Node) mainBody.getElementsByTagNameNS(mainBody.getNamespaceURI(), outputName).item(0);
+		Node outputNode = (Node) mainBody.getElementsByTagNameNS(
+				mainBody.getNamespaceURI(), outputName).item(0);
 		// ... and if that doesn't work, try without namespace
 		if (outputNode == null) {
-			outputNode = (Node) mainBody.getElementsByTagName(outputName).item(0);
+			outputNode = (Node) mainBody.getElementsByTagName(outputName).item(
+					0);
 		}
 		if (outputNode == null) { // if still null, and there is only 1
 			// output, take the first child
-			if (outputNames.size() == 1 && mainBody.getChildNodes().getLength() == 1) {
+			if (outputNames.size() == 1
+					&& mainBody.getChildNodes().getLength() == 1) {
 				outputNode = mainBody.getFirstChild();
 			}
 		}
@@ -136,8 +141,8 @@ public class SOAPResponseEncodedParser implements SOAPResponseParser {
 	 * @throws IOException
 	 * @throws SAXException
 	 */
-	protected Element removeNamespace(String outputName, Element element) throws ParserConfigurationException,
-			SAXException, IOException {
+	protected Element removeNamespace(String outputName, Element element)
+			throws ParserConfigurationException, SAXException, IOException {
 		String xml;
 		String innerXML = XMLUtils.getInnerXMLString(element);
 		if (innerXML != null) {
@@ -145,7 +150,8 @@ public class SOAPResponseEncodedParser implements SOAPResponseParser {
 		} else {
 			xml = "<" + outputName + " />";
 		}
-		DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+		DocumentBuilder builder = DocumentBuilderFactory.newInstance()
+				.newDocumentBuilder();
 		Document doc = builder.parse(new ByteArrayInputStream(xml.getBytes()));
 		return doc.getDocumentElement();
 	}

@@ -218,23 +218,24 @@ public class XMLInputSplitter implements LocalWorkerWithPorts, XMLExtensible {
 			String key = elementType.getName();
 			DataThing thing = (DataThing) inputMap.get(key);
 			if (thing != null) {
-				Object dataObject = thing.getDataObject();				
+				Object dataObject = thing.getDataObject();
 
 				if (dataObject instanceof List) {
 					Element arrayElement = buildElementFromObject(key, "");
-					
-					String itemkey="item";
+
+					String itemkey = "item";
 					if (elementType instanceof ArrayTypeDescriptor) {
-						TypeDescriptor arrayElementType=((ArrayTypeDescriptor)elementType).getElementType();
-						if (arrayElementType.getName()!=null && arrayElementType.getName().length()>0) {
-							itemkey=arrayElementType.getName();
+						TypeDescriptor arrayElementType = ((ArrayTypeDescriptor) elementType)
+								.getElementType();
+						if (arrayElementType.getName() != null
+								&& arrayElementType.getName().length() > 0) {
+							itemkey = arrayElementType.getName();
+						} else {
+							itemkey = arrayElementType.getType();
 						}
-						else {
-							itemkey=arrayElementType.getType();
-						}
-							
+
 					}
-					
+
 					for (Iterator itemIterator = ((List) dataObject).iterator(); itemIterator
 							.hasNext();) {
 
@@ -297,16 +298,23 @@ public class XMLInputSplitter implements LocalWorkerWithPorts, XMLExtensible {
 			}
 		} else {
 			if (dataObject.toString().equals("nil")) {
-				dataElement.setAttribute("nil","true"); //changes nil value to nil=true attribute.
-			}
-			else {
+				dataElement.setAttribute("nil", "true"); // changes nil value
+															// to nil=true
+															// attribute.
+			} else {
 				if (dataObject instanceof byte[]) {
-					dataElement.setAttribute("type","xsd:base64Binary",org.jdom.Namespace.getNamespace("xsi","http://www.w3.org/2001/XMLSchema-instance"));
-					dataObject=Base64.encodeBytes((byte[])dataObject);
+					dataElement
+							.setAttribute(
+									"type",
+									"xsd:base64Binary",
+									org.jdom.Namespace
+											.getNamespace("xsi",
+													"http://www.w3.org/2001/XMLSchema-instance"));
+					dataObject = Base64.encodeBytes((byte[]) dataObject);
 				}
-				dataElement.setText(dataObject.toString());				
+				dataElement.setText(dataObject.toString());
 			}
-			
+
 		}
 		return dataElement;
 	}

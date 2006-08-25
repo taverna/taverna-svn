@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: WSDLProcessorInfoBean.java,v $
- * Revision           $Revision: 1.2 $
+ * Revision           $Revision: 1.3 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-07-10 14:10:09 $
+ * Last modified on   $Date: 2006-08-25 13:56:59 $
  *               by   $Author: sowen70 $
  * Created on 22-Jun-2006
  *****************************************************************/
@@ -36,14 +36,15 @@ package org.embl.ebi.escience.scuflworkers.wsdl;
 import org.embl.ebi.escience.scuflworkers.ProcessorInfoBeanHelper;
 
 /**
- * Provides information about the WSDL Processor plugin, using taverna.properties, identified by the
- * tag 'abitrarywsdl'
+ * Provides information about the WSDL Processor plugin, using
+ * taverna.properties, identified by the tag 'abitrarywsdl'
+ * 
  * @author Stuart Owen
- *
+ * 
  */
 
 public class WSDLProcessorInfoBean extends ProcessorInfoBeanHelper {
-	
+
 	public WSDLProcessorInfoBean() {
 		super("arbitrarywsdl");
 	}

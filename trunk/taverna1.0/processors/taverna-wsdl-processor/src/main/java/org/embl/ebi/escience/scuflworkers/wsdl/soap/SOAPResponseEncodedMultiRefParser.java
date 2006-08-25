@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: SOAPResponseEncodedMultiRefParser.java,v $
- * Revision           $Revision: 1.2 $
+ * Revision           $Revision: 1.3 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-07-10 14:11:19 $
+ * Last modified on   $Date: 2006-08-25 13:56:59 $
  *               by   $Author: sowen70 $
  * Created on 05-May-2006
  *****************************************************************/
@@ -58,9 +58,11 @@ import org.w3c.dom.Node;
  * 
  */
 
-public class SOAPResponseEncodedMultiRefParser extends SOAPResponseEncodedParser {
+public class SOAPResponseEncodedMultiRefParser extends
+		SOAPResponseEncodedParser {
 
-	private static Logger logger = Logger.getLogger(SOAPResponseEncodedMultiRefParser.class);
+	private static Logger logger = Logger
+			.getLogger(SOAPResponseEncodedMultiRefParser.class);
 
 	private List resolvedReferences = new ArrayList();
 
@@ -94,7 +96,8 @@ public class SOAPResponseEncodedMultiRefParser extends SOAPResponseEncodedParser
 				String xml;
 				if (stripAttributes) {
 					stripAttributes(outputNode);
-					outputNode = (Node) removeNamespace(outputName, (Element) outputNode);
+					outputNode = (Node) removeNamespace(outputName,
+							(Element) outputNode);
 				}
 				xml = XMLUtils.ElementToString((Element) outputNode);
 
@@ -135,7 +138,8 @@ public class SOAPResponseEncodedMultiRefParser extends SOAPResponseEncodedParser
 	 * @throws CyclicReferenceException
 	 */
 	private void expandRefMap() throws CyclicReferenceException {
-		for (Iterator iterator = referenceMap.keySet().iterator(); iterator.hasNext();) {
+		for (Iterator iterator = referenceMap.keySet().iterator(); iterator
+				.hasNext();) {
 			String key = (String) iterator.next();
 			if (!resolvedReferences.contains(key)) {
 				expandMultirefElement(key, new ArrayList());
@@ -143,7 +147,8 @@ public class SOAPResponseEncodedMultiRefParser extends SOAPResponseEncodedParser
 		}
 	}
 
-	private void expandMultirefElement(String key, List parentKeys) throws CyclicReferenceException {
+	private void expandMultirefElement(String key, List parentKeys)
+			throws CyclicReferenceException {
 		if (parentKeys.contains(key))
 			throw new CyclicReferenceException();
 		parentKeys.add(key);
@@ -153,7 +158,8 @@ public class SOAPResponseEncodedMultiRefParser extends SOAPResponseEncodedParser
 		parentKeys.remove(key);
 	}
 
-	private void expandNode(Node node, List parentKeys) throws CyclicReferenceException {
+	private void expandNode(Node node, List parentKeys)
+			throws CyclicReferenceException {
 		String href = getHrefForNode(node);
 		if (href != null) {
 			if (!resolvedReferences.contains(href)) {
@@ -174,7 +180,8 @@ public class SOAPResponseEncodedMultiRefParser extends SOAPResponseEncodedParser
 		Element multiRef = (Element) referenceMap.get(multirefKey);
 		Node child = multiRef.getFirstChild();
 		while (child != null) {
-			parent.appendChild(parent.getOwnerDocument().importNode(child, true));
+			parent.appendChild(parent.getOwnerDocument()
+					.importNode(child, true));
 			child = child.getNextSibling();
 		}
 		parent.getAttributes().removeNamedItem("href");

@@ -53,8 +53,8 @@ import org.embl.ebi.escience.scuflworkers.wsdl.parser.WSDLParser;
  * @author Tom Oinn
  */
 
-public class WSDLBasedProcessor extends Processor implements Serializable, HTMLSummarisableProcessor {
-		 
+public class WSDLBasedProcessor extends Processor implements Serializable,
+		HTMLSummarisableProcessor {
 
 	private static final long serialVersionUID = 6669263809722072508L;
 
@@ -78,7 +78,8 @@ public class WSDLBasedProcessor extends Processor implements Serializable, HTMLS
 
 	private static Map<String, Definition> defMap = new HashMap<String, Definition>();
 
-	public WSDLBasedProcessor(ScuflModel model, String procName, String wsdlLocation, String operationName)
+	public WSDLBasedProcessor(ScuflModel model, String procName,
+			String wsdlLocation, String operationName)
 			throws ProcessorCreationException, DuplicateProcessorNameException {
 		this(model, procName, wsdlLocation, operationName, null);
 	}
@@ -89,7 +90,8 @@ public class WSDLBasedProcessor extends Processor implements Serializable, HTMLS
 	 * 
 	 * @throws WSDLException
 	 */
-	public static Definition getDefinition(String wsdlLocation) throws WSDLException {
+	public static Definition getDefinition(String wsdlLocation)
+			throws WSDLException {
 		if (defMap.containsKey(wsdlLocation)) {
 			return defMap.get(wsdlLocation);
 		} else {
@@ -116,8 +118,9 @@ public class WSDLBasedProcessor extends Processor implements Serializable, HTMLS
 	 * inspection.
 	 */
 
-	public WSDLBasedProcessor(ScuflModel model, String procName, String wsdlLocation, String operationName,
-			QName portTypeName) throws ProcessorCreationException, DuplicateProcessorNameException {
+	public WSDLBasedProcessor(ScuflModel model, String procName,
+			String wsdlLocation, String operationName, QName portTypeName)
+			throws ProcessorCreationException, DuplicateProcessorNameException {
 		super(model, procName);
 
 		this.wsdlLocation = wsdlLocation;
@@ -129,15 +132,16 @@ public class WSDLBasedProcessor extends Processor implements Serializable, HTMLS
 		try {
 			parser = new WSDLParser(wsdlLocation);
 		} catch (Exception e) {
-			ProcessorCreationException pce = new ProcessorCreationException(procName + ": Unable to load wsdl at "
-					+ wsdlLocation);
+			ProcessorCreationException pce = new ProcessorCreationException(
+					procName + ": Unable to load wsdl at " + wsdlLocation);
 			pce.initCause(e);
 			logger.error(pce);
 			throw pce;
 		}
 
 		// Configure to use axis then read the WSDL
-		WSIFPluggableProviders.overrideDefaultProvider("http://schemas.xmlsoap.org/wsdl/soap/",
+		WSIFPluggableProviders.overrideDefaultProvider(
+				"http://schemas.xmlsoap.org/wsdl/soap/",
 				new WSIFDynamicProvider_ApacheAxis());
 		Definition def = parser.getDefinition();
 
@@ -146,14 +150,18 @@ public class WSDLBasedProcessor extends Processor implements Serializable, HTMLS
 			List outputs = parser.getOperationOutputParameters(operationName);
 			setDescription(parser.getOperationDocumentation(operationName));
 
-//			TODO handle more than 1 service block
-			if (def.getServices().size()>1) logger.warn("WSDL "+getWSDLLocation()+" contains more than one service block, Taverna will only use the first service block");
-			
-			Service s=(Service)def.getServices().values().toArray()[0];
-			
+			// TODO handle more than 1 service block
+			if (def.getServices().size() > 1)
+				logger
+						.warn("WSDL "
+								+ getWSDLLocation()
+								+ " contains more than one service block, Taverna will only use the first service block");
+
+			Service s = (Service) def.getServices().values().toArray()[0];
+
 			WSIFServiceFactory factory = WSIFServiceFactory.newInstance();
-			PortType portType=parser.getPortType(operationName);					
-			WSIFService service=factory.getService(def,s,portType);
+			PortType portType = parser.getPortType(operationName);
+			WSIFService service = factory.getService(def, s, portType);
 			port = service.getPort();
 
 			inNames = new String[inputs.size()];
@@ -166,27 +174,34 @@ public class WSDLBasedProcessor extends Processor implements Serializable, HTMLS
 			TypeDescriptor.retrieveSignature(outputs, outNames, outTypes);
 
 			for (int i = 0; i < inNames.length; i++) {
-				InputPort inputPort = new XMLSplittableInputPort(this, inNames[i]);
-				inputPort.setSyntacticType(TypeDescriptor.translateJavaType(inTypes[i]));
+				InputPort inputPort = new XMLSplittableInputPort(this,
+						inNames[i]);
+				inputPort.setSyntacticType(TypeDescriptor
+						.translateJavaType(inTypes[i]));
 				addPort(inputPort);
 			}
 
 			// Add an attachment output part
-			OutputPort attachments = new XMLSplittableOutputPort(this, "attachmentList");
+			OutputPort attachments = new XMLSplittableOutputPort(this,
+					"attachmentList");
 			attachments.setSyntacticType("l('')");
 			addPort(attachments);
 
 			for (int i = 0; i < outNames.length; i++) {
-				OutputPort outputPort = new XMLSplittableOutputPort(this, outNames[i]);
-				outputPort.setSyntacticType(TypeDescriptor.translateJavaType(outTypes[i]));
+				OutputPort outputPort = new XMLSplittableOutputPort(this,
+						outNames[i]);
+				outputPort.setSyntacticType(TypeDescriptor
+						.translateJavaType(outTypes[i]));
 				addPort(outputPort);
 			}
 		} catch (UnknownOperationException e) {
-			throw new ProcessorCreationException(procName + ": Unable to locate operation " + operationName
+			throw new ProcessorCreationException(procName
+					+ ": Unable to locate operation " + operationName
 					+ " in WSDL at " + wsdlLocation);
 		} catch (Exception e) {
-			ProcessorCreationException ex = new ProcessorCreationException("Unable to process operation "
-					+ operationName + " in WSDL at " + wsdlLocation);
+			ProcessorCreationException ex = new ProcessorCreationException(
+					"Unable to process operation " + operationName
+							+ " in WSDL at " + wsdlLocation);
 			ex.initCause(e);
 			throw ex;
 		}
@@ -263,7 +278,8 @@ public class WSDLBasedProcessor extends Processor implements Serializable, HTMLS
 		return this.operationName;
 	}
 
-	public String getHTMLSummary(List<HTMLSummarisableProcessor> processors, Map<String, Processor> names) {
+	public String getHTMLSummary(List<HTMLSummarisableProcessor> processors,
+			Map<String, Processor> names) {
 		Map<String, Map<String, Set<String>>> wsLocations = new HashMap<String, Map<String, Set<String>>>();
 		StringBuffer sb = new StringBuffer();
 
@@ -274,18 +290,24 @@ public class WSDLBasedProcessor extends Processor implements Serializable, HTMLS
 				URL wsdlURL = new URL(wsdlProcessor.getWSDLLocation());
 				wsdlLocation = wsdlURL.getFile();
 			} catch (MalformedURLException mue) {
-				logger.warn("Error with wsdl url: " + wsdlProcessor.getWSDLLocation(), mue);
+				logger.warn("Error with wsdl url: "
+						+ wsdlProcessor.getWSDLLocation(), mue);
 			}
 			if (wsLocations.containsKey(wsdlLocation) == false) {
-				wsLocations.put(wsdlLocation, new HashMap<String, Set<String>>());
+				wsLocations.put(wsdlLocation,
+						new HashMap<String, Set<String>>());
 			}
-			Map<String, Set<String>> operationToProcessorName = wsLocations.get(wsdlLocation);
+			Map<String, Set<String>> operationToProcessorName = wsLocations
+					.get(wsdlLocation);
 			String operationName = wsdlProcessor.getOperationName();
 			if (operationToProcessorName.containsKey(operationName) == false) {
-				operationToProcessorName.put(operationName, new HashSet<String>());
+				operationToProcessorName.put(operationName,
+						new HashSet<String>());
 			}
-			Set<String> processorNames = operationToProcessorName.get(operationName);
-			processorNames.add(WorkflowSummaryAsHTML.nameFor(names, wsdlProcessor));
+			Set<String> processorNames = operationToProcessorName
+					.get(operationName);
+			processorNames.add(WorkflowSummaryAsHTML.nameFor(names,
+					wsdlProcessor));
 		}
 		for (Iterator j = wsLocations.keySet().iterator(); j.hasNext();) {
 			// Top level iterator over all service locations.
@@ -295,14 +317,20 @@ public class WSDLBasedProcessor extends Processor implements Serializable, HTMLS
 			sb.append("<tr>");
 			sb.append("<td width=\"80\" valign=\"top\" rowspan=\"" + rows
 					+ "\" bgcolor=\"#a3cd5a\">Web&nbsp;service</td>");
-			sb.append("<td colspan=\"2\" bgcolor=\"#a3cd5a\">WSDL Defined at <em>" + location + "</em></td>");
+			sb
+					.append("<td colspan=\"2\" bgcolor=\"#a3cd5a\">WSDL Defined at <em>"
+							+ location + "</em></td>");
 			sb.append("</tr>");
-			sb.append("<tr><td bgcolor=\"#eeeedd\">Operation name</td><td bgcolor=\"#eeeedd\">Processors</td></tr>");
-			for (Iterator k = operationToProcessorName.keySet().iterator(); k.hasNext();) {
+			sb
+					.append("<tr><td bgcolor=\"#eeeedd\">Operation name</td><td bgcolor=\"#eeeedd\">Processors</td></tr>");
+			for (Iterator k = operationToProcessorName.keySet().iterator(); k
+					.hasNext();) {
 				String operationName = (String) k.next();
-				Set processorNames = (Set) operationToProcessorName.get(operationName);
+				Set processorNames = (Set) operationToProcessorName
+						.get(operationName);
 				sb.append("<tr>");
-				sb.append("<td><font color=\"purple\">" + operationName + "</font></td>");
+				sb.append("<td><font color=\"purple\">" + operationName
+						+ "</font></td>");
 				sb.append("<td>");
 				for (Iterator l = processorNames.iterator(); l.hasNext();) {
 					sb.append((String) l.next());
@@ -318,6 +346,6 @@ public class WSDLBasedProcessor extends Processor implements Serializable, HTMLS
 
 	public int htmlTablePlacement() {
 		return 1;
-	}	
+	}
 
 }

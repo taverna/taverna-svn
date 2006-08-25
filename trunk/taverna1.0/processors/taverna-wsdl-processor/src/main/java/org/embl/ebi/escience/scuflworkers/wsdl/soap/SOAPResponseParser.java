@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: SOAPResponseParser.java,v $
- * Revision           $Revision: 1.2 $
+ * Revision           $Revision: 1.3 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-07-10 14:11:20 $
+ * Last modified on   $Date: 2006-08-25 13:56:59 $
  *               by   $Author: sowen70 $
  * Created on 05-May-2006
  *****************************************************************/
@@ -37,18 +37,22 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Inteface that defines all parsers responsible for parsing SOAP responses from calling SOAP based webservices.
+ * Inteface that defines all parsers responsible for parsing SOAP responses from
+ * calling SOAP based webservices.
+ * 
  * @author sowen
- *
+ * 
  */
 
 public interface SOAPResponseParser {
 
 	/**
-	 * All SOAPResponseParsers take a list of SOAPBodyElement's, resulting from invoking the service, and convert these into a suitable
-	 * map of output DataThings.
+	 * All SOAPResponseParsers take a list of SOAPBodyElement's, resulting from
+	 * invoking the service, and convert these into a suitable map of output
+	 * DataThings.
 	 * 
-	 * @param response - List of SOAPBodyElements
+	 * @param response -
+	 *            List of SOAPBodyElements
 	 * @return Map of output DataThing's mapped to their output name
 	 * @throws Exception
 	 */

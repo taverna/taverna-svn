@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: XMLOutputSplitterTest.java,v $
- * Revision           $Revision: 1.3 $
+ * Revision           $Revision: 1.4 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-08-25 13:22:27 $
+ * Last modified on   $Date: 2006-08-25 13:57:00 $
  *               by   $Author: sowen70 $
  * Created on 16-May-2006
  *****************************************************************/
@@ -48,19 +48,22 @@ import org.jdom.Element;
 import org.jdom.input.SAXBuilder;
 import org.jdom.output.XMLOutputter;
 
-import sun.security.krb5.internal.crypto.s;
-
 public class XMLOutputSplitterTest extends TestCase {
 
 	public void testSplitter() throws Exception {
 		XMLOutputSplitter splitter = new XMLOutputSplitter();
 		ScuflModel model = new ScuflModel();
-		WSDLBasedProcessor processor = new WSDLBasedProcessor(model, "testProc",
-				"http://eutils.ncbi.nlm.nih.gov/entrez/eutils/soap/eutils_lite.wsdl", "run_eInfo");
+		WSDLBasedProcessor processor = new WSDLBasedProcessor(
+				model,
+				"testProc",
+				"http://eutils.ncbi.nlm.nih.gov/entrez/eutils/soap/eutils_lite.wsdl",
+				"run_eInfo");
 		splitter.setUpOutputs(processor.getOutputPorts()[1]);
 
-		assertEquals("wrong number of outputs", 3, splitter.outputNames().length);
-		assertEquals("wrong number of outputs types", 3, splitter.outputTypes().length);
+		assertEquals("wrong number of outputs", 3,
+				splitter.outputNames().length);
+		assertEquals("wrong number of outputs types", 3,
+				splitter.outputTypes().length);
 
 		assertEquals("wrong name", "ERROR", splitter.outputNames()[0]);
 		assertEquals("wrong type", "'text/plain'", splitter.outputTypes()[0]);
@@ -86,28 +89,36 @@ public class XMLOutputSplitterTest extends TestCase {
 
 		DataThing outputThing = (DataThing) outputMap.get("ERROR");
 		assertNotNull("ERROR missing from output Map", outputThing);
-		assertEquals("wrong type for ERROR", String.class, outputThing.getDataObject().getClass());
+		assertEquals("wrong type for ERROR", String.class, outputThing
+				.getDataObject().getClass());
 		String outputString = outputThing.getDataObject().toString();
 		assertEquals("output ERROR is incorrect", "error text", outputString);
 
 		outputThing = (DataThing) outputMap.get("DbList");
 		assertNotNull("DbList missing from output Map", outputThing);
-		assertEquals("wrong type for DbList", String.class, outputThing.getDataObject().getClass());
+		assertEquals("wrong type for DbList", String.class, outputThing
+				.getDataObject().getClass());
 		outputString = outputThing.getDataObject().toString();
-		assertEquals("output DbList is incorrect", "<DbList><list><item /></list></DbList>", outputString);
+		assertEquals("output DbList is incorrect",
+				"<DbList><list><item /></list></DbList>", outputString);
 
 		outputThing = (DataThing) outputMap.get("DbInfo");
 		assertNotNull("DbInfo missing from output Map", outputThing);
-		assertEquals("wrong type for DbInfo", String.class, outputThing.getDataObject().getClass());
+		assertEquals("wrong type for DbInfo", String.class, outputThing
+				.getDataObject().getClass());
 		outputString = outputThing.getDataObject().toString();
-		assertEquals("output DbInfo is incorrect", "<DbInfo><info>some info</info></DbInfo>", outputString);
+		assertEquals("output DbInfo is incorrect",
+				"<DbInfo><info>some info</info></DbInfo>", outputString);
 	}
 
 	public void testProvideXML() throws Exception {
 		XMLOutputSplitter splitter = new XMLOutputSplitter();
 		ScuflModel model = new ScuflModel();
-		WSDLBasedProcessor processor = new WSDLBasedProcessor(model, "testProc",
-				"http://eutils.ncbi.nlm.nih.gov/entrez/eutils/soap/eutils_lite.wsdl", "run_eInfo");
+		WSDLBasedProcessor processor = new WSDLBasedProcessor(
+				model,
+				"testProc",
+				"http://eutils.ncbi.nlm.nih.gov/entrez/eutils/soap/eutils_lite.wsdl",
+				"run_eInfo");
 		splitter.setUpOutputs(processor.getOutputPorts()[1]);
 		Element element = splitter.provideXML();
 		String xml = new XMLOutputter().outputString(element);
@@ -117,10 +128,13 @@ public class XMLOutputSplitterTest extends TestCase {
 
 	public void testConsumeXML() throws Exception {
 		XMLOutputSplitter splitter = new XMLOutputSplitter();
-		splitter.consumeXML(new SAXBuilder().build(new StringReader(eInfoProcessorXML())).getRootElement());
+		splitter.consumeXML(new SAXBuilder().build(
+				new StringReader(eInfoProcessorXML())).getRootElement());
 
-		assertEquals("wrong number of outputs", 3, splitter.outputNames().length);
-		assertEquals("wrong number of outputs types", 3, splitter.outputTypes().length);
+		assertEquals("wrong number of outputs", 3,
+				splitter.outputNames().length);
+		assertEquals("wrong number of outputs types", 3,
+				splitter.outputTypes().length);
 
 		assertEquals("wrong name", "ERROR", splitter.outputNames()[0]);
 		assertEquals("wrong type", "'text/plain'", splitter.outputTypes()[0]);
@@ -146,41 +160,51 @@ public class XMLOutputSplitterTest extends TestCase {
 
 		DataThing outputThing = (DataThing) outputMap.get("ERROR");
 		assertNotNull("ERROR missing from output Map", outputThing);
-		assertEquals("wrong type for ERROR", String.class, outputThing.getDataObject().getClass());
+		assertEquals("wrong type for ERROR", String.class, outputThing
+				.getDataObject().getClass());
 		String outputString = outputThing.getDataObject().toString();
 		assertEquals("output ERROR is incorrect", "error text", outputString);
 
 		outputThing = (DataThing) outputMap.get("DbList");
 		assertNotNull("DbList missing from output Map", outputThing);
-		assertEquals("wrong type for DbList", String.class, outputThing.getDataObject().getClass());
+		assertEquals("wrong type for DbList", String.class, outputThing
+				.getDataObject().getClass());
 		outputString = outputThing.getDataObject().toString();
-		assertEquals("output DbList is incorrect", "<DbList><list><item /></list></DbList>", outputString);
+		assertEquals("output DbList is incorrect",
+				"<DbList><list><item /></list></DbList>", outputString);
 
 		outputThing = (DataThing) outputMap.get("DbInfo");
 		assertNotNull("DbInfo missing from output Map", outputThing);
-		assertEquals("wrong type for DbInfo", String.class, outputThing.getDataObject().getClass());
+		assertEquals("wrong type for DbInfo", String.class, outputThing
+				.getDataObject().getClass());
 		outputString = outputThing.getDataObject().toString();
-		assertEquals("output DbInfo is incorrect", "<DbInfo><info>some info</info></DbInfo>", outputString);
+		assertEquals("output DbInfo is incorrect",
+				"<DbInfo><info>some info</info></DbInfo>", outputString);
 	}
 
 	public void testArraysBasic() throws Exception {
 		String splitterXML = "<s:extensions xmlns:s=\"http://org.embl.ebi.escience/xscufl/0.1alpha\"><s:arraytype optional=\"true\" unbounded=\"true\" typename=\"string\" name=\"DbName\"><s:elementtype><s:basetype optional=\"false\" unbounded=\"false\" typename=\"string\" name=\"\" /></s:elementtype></s:arraytype></s:extensions>";
 		XMLOutputSplitter splitter = new XMLOutputSplitter();
-		splitter.consumeXML(new SAXBuilder().build(new StringReader(splitterXML)).getRootElement());
+		splitter.consumeXML(new SAXBuilder().build(
+				new StringReader(splitterXML)).getRootElement());
 
 		assertEquals(splitter.outputTypes()[0], "l('text/plain')");
 		assertEquals(splitter.outputNames()[0], "DbName");
 
 		Map inputMap = new HashMap();
-		inputMap.put("input", new DataThing(
-				"<DbName><item>item 1</item><item>item 2</item><item>item 3</item></DbName>"));
+		inputMap
+				.put(
+						"input",
+						new DataThing(
+								"<DbName><item>item 1</item><item>item 2</item><item>item 3</item></DbName>"));
 
 		Map outputMap = splitter.execute(inputMap);
 
 		assertNotNull("no output found for DbName", outputMap.get("DbName"));
 		DataThing thingy = (DataThing) outputMap.get("DbName");
 
-		assertEquals("Expecting ArrayList as datatype", ArrayList.class, thingy.getDataObject().getClass());
+		assertEquals("Expecting ArrayList as datatype", ArrayList.class, thingy
+				.getDataObject().getClass());
 		ArrayList elements = (ArrayList) thingy.getDataObject();
 
 		assertEquals("3 elements were expected", 3, elements.size());
@@ -192,7 +216,8 @@ public class XMLOutputSplitterTest extends TestCase {
 	public void testArraysComplex() throws Exception {
 		String splitterXML = "<s:extensions xmlns:s=\"http://org.embl.ebi.escience/xscufl/0.1alpha\"><s:arraytype optional=\"true\" unbounded=\"true\" typename=\"string\" name=\"People\"><s:elementtype><s:complextype optional=\"false\" unbounded=\"false\" typename=\"Person\" name=\"\" ><s:elements><s:basetype optional=\"false\" unbounded=\"false\" typename=\"string\" name=\"Name\" /><s:basetype optional=\"false\" unbounded=\"false\" typename=\"int\" name=\"Age\" /></s:elements></s:complextype></s:elementtype></s:arraytype></s:extensions>";
 		XMLOutputSplitter splitter = new XMLOutputSplitter();
-		splitter.consumeXML(new SAXBuilder().build(new StringReader(splitterXML)).getRootElement());
+		splitter.consumeXML(new SAXBuilder().build(
+				new StringReader(splitterXML)).getRootElement());
 
 		assertEquals(splitter.outputTypes()[0], "l('text/xml')");
 		assertEquals(splitter.outputNames()[0], "People");
@@ -206,21 +231,29 @@ public class XMLOutputSplitterTest extends TestCase {
 		assertNotNull("no output found for DbName", outputMap.get("People"));
 		DataThing thingy = (DataThing) outputMap.get("People");
 
-		assertEquals("Expecting ArrayList as datatype", ArrayList.class, thingy.getDataObject().getClass());
+		assertEquals("Expecting ArrayList as datatype", ArrayList.class, thingy
+				.getDataObject().getClass());
 		ArrayList elements = (ArrayList) thingy.getDataObject();
 
 		assertEquals("2 elements were expected", 2, elements.size());
-		assertEquals("unexpected value", "<item><Name>bob</Name><Age>37</Age></item>", elements.get(0));
-		assertEquals("unexpected value", "<item><Name>mary</Name><Age>57</Age></item>", elements.get(1));
+		assertEquals("unexpected value",
+				"<item><Name>bob</Name><Age>37</Age></item>", elements.get(0));
+		assertEquals("unexpected value",
+				"<item><Name>mary</Name><Age>57</Age></item>", elements.get(1));
 	}
 
 	public void testEmptyOutputs() throws Exception {
 		// missing optional outputs are populated with an empty string
 		XMLOutputSplitter splitter = new XMLOutputSplitter();
-		splitter.consumeXML(new SAXBuilder().build(new StringReader(eInfoProcessorXML())).getRootElement());
+		splitter.consumeXML(new SAXBuilder().build(
+				new StringReader(eInfoProcessorXML())).getRootElement());
 
 		Map inputMap = new HashMap();
-		inputMap.put("input", new DataThing("<eInfoResult><DbInfo><info>some info</info></DbInfo></eInfoResult>"));
+		inputMap
+				.put(
+						"input",
+						new DataThing(
+								"<eInfoResult><DbInfo><info>some info</info></DbInfo></eInfoResult>"));
 
 		Map outputMap = splitter.execute(inputMap);
 		assertNotNull(outputMap.get("DbList"));
@@ -235,11 +268,14 @@ public class XMLOutputSplitterTest extends TestCase {
 	public void testEmptyOutputsForArray() throws Exception {
 		String procXML = "<s:extensions xmlns:s=\"http://org.embl.ebi.escience/xscufl/0.1alpha\"><s:complextype optional=\"false\" unbounded=\"false\" typename=\"eInfoResult\" name=\"parameters\"><s:elements><s:arraytype optional=\"true\" unbounded=\"true\" typename=\"arrayofstring\" name=\"AnArray\"><s:elementtype><s:basetype optional=\"false\" unbounded=\"false\" typename=\"string\" name=\"\" /></s:elementtype></s:arraytype></s:elements></s:complextype></s:extensions>";
 		XMLOutputSplitter splitter = new XMLOutputSplitter();
-		splitter.consumeXML(new SAXBuilder().build(new StringReader(procXML)).getRootElement());
+		splitter.consumeXML(new SAXBuilder().build(new StringReader(procXML))
+				.getRootElement());
 
-		assertEquals("wrong number of outputs", 1, splitter.outputNames().length);
+		assertEquals("wrong number of outputs", 1,
+				splitter.outputNames().length);
 		assertEquals("wrong output name", "AnArray", splitter.outputNames()[0]);
-		assertEquals("wrong output type, should be array", "l('text/plain')", splitter.outputTypes()[0]);
+		assertEquals("wrong output type, should be array", "l('text/plain')",
+				splitter.outputTypes()[0]);
 		Map inputMap = new HashMap();
 		inputMap.put("input", new DataThing("<eInfoResult />"));
 
@@ -257,29 +293,34 @@ public class XMLOutputSplitterTest extends TestCase {
 	private String eInfoProcessorXML() {
 		return "<s:extensions xmlns:s=\"http://org.embl.ebi.escience/xscufl/0.1alpha\"><s:complextype optional=\"false\" unbounded=\"false\" typename=\"eInfoResult\" name=\"parameters\" qname=\"{http://www.ncbi.nlm.nih.gov/soap/eutils/einfo}eInfoResult\"><s:elements><s:basetype optional=\"true\" unbounded=\"false\" typename=\"string\" name=\"ERROR\" qname=\"{http://www.w3.org/2001/XMLSchema}string\" /><s:complextype optional=\"true\" unbounded=\"false\" typename=\"DbListType\" name=\"DbList\" qname=\"{http://www.ncbi.nlm.nih.gov/soap/eutils/einfo}DbListType\"><s:elements><s:arraytype optional=\"true\" unbounded=\"true\" typename=\"string\" name=\"DbName\" qname=\"{http://www.w3.org/2001/XMLSchema}string[0,unbounded]\"><s:elementtype><s:basetype optional=\"false\" unbounded=\"false\" typename=\"string\" name=\"\" qname=\"{http://www.w3.org/2001/XMLSchema}string\" /></s:elementtype></s:arraytype></s:elements></s:complextype><s:complextype optional=\"true\" unbounded=\"false\" typename=\"DbInfoType\" name=\"DbInfo\" qname=\"{http://www.ncbi.nlm.nih.gov/soap/eutils/einfo}DbInfoType\"><s:elements><s:basetype optional=\"false\" unbounded=\"false\" typename=\"string\" name=\"DbName\" qname=\"{http://www.w3.org/2001/XMLSchema}string\" /><s:basetype optional=\"false\" unbounded=\"false\" typename=\"string\" name=\"MenuName\" qname=\"{http://www.w3.org/2001/XMLSchema}string\" /><s:basetype optional=\"false\" unbounded=\"false\" typename=\"string\" name=\"Description\" qname=\"{http://www.w3.org/2001/XMLSchema}string\" /><s:basetype optional=\"false\" unbounded=\"false\" typename=\"string\" name=\"Count\" qname=\"{http://www.w3.org/2001/XMLSchema}string\" /><s:basetype optional=\"false\" unbounded=\"false\" typename=\"string\" name=\"LastUpdate\" qname=\"{http://www.w3.org/2001/XMLSchema}string\" /><s:arraytype optional=\"false\" unbounded=\"false\" typename=\"FieldListType\" name=\"FieldList\" qname=\"{http://www.ncbi.nlm.nih.gov/soap/eutils/einfo}FieldListType\"><s:elementtype><s:complextype optional=\"false\" unbounded=\"false\" typename=\"FieldType\" name=\"\" qname=\"{http://www.ncbi.nlm.nih.gov/soap/eutils/einfo}FieldType\"><s:elements><s:basetype optional=\"false\" unbounded=\"false\" typename=\"string\" name=\"Name\" qname=\"{http://www.w3.org/2001/XMLSchema}string\" /><s:basetype optional=\"false\" unbounded=\"false\" typename=\"string\" name=\"Description\" qname=\"{http://www.w3.org/2001/XMLSchema}string\" /><s:basetype optional=\"false\" unbounded=\"false\" typename=\"string\" name=\"TermCount\" qname=\"{http://www.w3.org/2001/XMLSchema}string\" /><s:basetype optional=\"false\" unbounded=\"false\" typename=\"string\" name=\"IsDate\" qname=\"{http://www.w3.org/2001/XMLSchema}string\" /><s:basetype optional=\"false\" unbounded=\"false\" typename=\"string\" name=\"IsNumerical\" qname=\"{http://www.w3.org/2001/XMLSchema}string\" /><s:basetype optional=\"false\" unbounded=\"false\" typename=\"string\" name=\"SingleToken\" qname=\"{http://www.w3.org/2001/XMLSchema}string\" /><s:basetype optional=\"false\" unbounded=\"false\" typename=\"string\" name=\"Hierarchy\" qname=\"{http://www.w3.org/2001/XMLSchema}string\" /></s:elements></s:complextype></s:elementtype></s:arraytype><s:arraytype optional=\"true\" unbounded=\"false\" typename=\"LinkListType\" name=\"LinkList\" qname=\"{http://www.ncbi.nlm.nih.gov/soap/eutils/einfo}LinkListType\"><s:elementtype><s:complextype optional=\"false\" unbounded=\"false\" typename=\"LinkType\" name=\"\" qname=\"{http://www.ncbi.nlm.nih.gov/soap/eutils/einfo}LinkType\"><s:elements><s:basetype optional=\"false\" unbounded=\"false\" typename=\"string\" name=\"Name\" qname=\"{http://www.w3.org/2001/XMLSchema}string\" /><s:basetype optional=\"false\" unbounded=\"false\" typename=\"string\" name=\"Menu\" qname=\"{http://www.w3.org/2001/XMLSchema}string\" /><s:basetype optional=\"false\" unbounded=\"false\" typename=\"string\" name=\"Description\" qname=\"{http://www.w3.org/2001/XMLSchema}string\" /><s:basetype optional=\"false\" unbounded=\"false\" typename=\"string\" name=\"DbTo\" qname=\"{http://www.w3.org/2001/XMLSchema}string\" /></s:elements></s:complextype></s:elementtype></s:arraytype></s:elements></s:complextype></s:elements></s:complextype></s:extensions>";
 	}
-	
+
 	public void testBase64Decoding() throws Exception {
 		String procXML = "<s:extensions xmlns:s=\"http://org.embl.ebi.escience/xscufl/0.1alpha\"><s:complextype optional=\"false\" unbounded=\"false\" typename=\"SomeData\" name=\"data\" qname=\"{http://testing.org}SomeData\"><s:elements><s:basetype optional=\"false\" unbounded=\"false\" typename=\"base64binary\" name=\"binaryData\" qname=\"{http://www.w3.org/2001/XMLSchema}base64Binary\" /><s:basetype optional=\"false\" unbounded=\"false\" typename=\"string\" name=\"value\" qname=\"{http://www.w3.org/2001/XMLSchema}string\" /></s:elements></s:complextype></s:extensions>";
 		XMLOutputSplitter splitter = new XMLOutputSplitter();
-		splitter.consumeXML(new SAXBuilder().build(new StringReader(procXML)).getRootElement());
-		
+		splitter.consumeXML(new SAXBuilder().build(new StringReader(procXML))
+				.getRootElement());
+
 		Map inputMap = new HashMap();
-		inputMap.put("input",new DataThing("<data><binaryData>AQIDBAU=</binaryData><value>a value</value></data>"));
-		
+		inputMap
+				.put(
+						"input",
+						new DataThing(
+								"<data><binaryData>AQIDBAU=</binaryData><value>a value</value></data>"));
+
 		Map output = splitter.execute(inputMap);
-		
-		DataThing thingy=(DataThing)output.get("binaryData");
-		Object obj=thingy.getDataObject();
-		
-		//results should be byte [] = {1,2,3,4,5}
-		
-		assertTrue("should be a byte array",obj instanceof byte[]);
-		byte[] byteArray = (byte[])obj;
-		
-		assertEquals(5,byteArray.length);
-		assertEquals(1,byteArray[0]);
-		assertEquals(5,byteArray[4]);
-		
+
+		DataThing thingy = (DataThing) output.get("binaryData");
+		Object obj = thingy.getDataObject();
+
+		// results should be byte [] = {1,2,3,4,5}
+
+		assertTrue("should be a byte array", obj instanceof byte[]);
+		byte[] byteArray = (byte[]) obj;
+
+		assertEquals(5, byteArray.length);
+		assertEquals(1, byteArray[0]);
+		assertEquals(5, byteArray[4]);
+
 	}
 
 }

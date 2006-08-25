@@ -24,7 +24,8 @@ public class WSDLBasedProcessorFactory extends ProcessorFactory {
 	 * Create a new factory with the specified wsdl location, port type name and
 	 * operation name
 	 */
-	public WSDLBasedProcessorFactory(String wsdlLocation, String operationName, QName portTypeName) {
+	public WSDLBasedProcessorFactory(String wsdlLocation, String operationName,
+			QName portTypeName) {
 		this.wsdlLocation = wsdlLocation;
 		this.operationName = operationName;
 		this.portTypeName = portTypeName;
@@ -47,8 +48,9 @@ public class WSDLBasedProcessorFactory extends ProcessorFactory {
 	 * Return a description of the factory
 	 */
 	public String getProcessorDescription() {
-		return "A WSDL based processor using the wsdl document at '" + wsdlLocation + "' with operation name '"
-				+ operationName + "'";
+		return "A WSDL based processor using the wsdl document at '"
+				+ wsdlLocation + "' with operation name '" + operationName
+				+ "'";
 	}
 
 	/**

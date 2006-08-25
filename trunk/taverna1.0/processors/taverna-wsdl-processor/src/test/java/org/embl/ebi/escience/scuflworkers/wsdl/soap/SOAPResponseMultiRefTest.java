@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: SOAPResponseMultiRefTest.java,v $
- * Revision           $Revision: 1.2 $
+ * Revision           $Revision: 1.3 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-07-10 14:09:20 $
+ * Last modified on   $Date: 2006-08-25 13:57:00 $
  *               by   $Author: sowen70 $
  * Created on 08-May-2006
  *****************************************************************/
@@ -59,7 +59,8 @@ public class SOAPResponseMultiRefTest extends TestCase {
 		String xml1 = "<ns1:getPersonResponse soapenv:encodingStyle=\"http://schemas.xmlsoap.org/soap/encoding/\" xmlns:ns1=\"urn:testing\" xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\"><getPersonReturn href=\"#id0\"/></ns1:getPersonResponse>";
 		String xml2 = "<multiRef id=\"id0\" soapenc:root=\"0\" soapenv:encodingStyle=\"http://schemas.xmlsoap.org/soap/encoding/\" xmlns:soapenc=\"http://schemas.xmlsoap.org/soap/encoding/\" xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"><age xsi:type=\"soapenc:string\">5</age><name xsi:type=\"soapenc:string\">bob</name></multiRef>";
 
-		DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+		DocumentBuilder builder = DocumentBuilderFactory.newInstance()
+				.newDocumentBuilder();
 		Document doc = builder.parse(new ByteArrayInputStream(xml1.getBytes()));
 
 		response.add(new SOAPBodyElement(doc.getDocumentElement()));
@@ -67,22 +68,28 @@ public class SOAPResponseMultiRefTest extends TestCase {
 		doc = builder.parse(new ByteArrayInputStream(xml2.getBytes()));
 		response.add(new SOAPBodyElement(doc.getDocumentElement()));
 
-		SOAPResponseEncodedMultiRefParser parser = new SOAPResponseEncodedMultiRefParser(outputNames);
+		SOAPResponseEncodedMultiRefParser parser = new SOAPResponseEncodedMultiRefParser(
+				outputNames);
 		Map outputMap = parser.parse(response);
 
 		assertNotNull("no output map returned", outputMap);
 
 		assertEquals("map should contain 1 element", 1, outputMap.size());
 
-		DataThing getPersonReturn = (DataThing) outputMap.get("getPersonReturn");
+		DataThing getPersonReturn = (DataThing) outputMap
+				.get("getPersonReturn");
 
-		assertNotNull("output map should have contained entry for 'getPersonReturn'", getPersonReturn);
+		assertNotNull(
+				"output map should have contained entry for 'getPersonReturn'",
+				getPersonReturn);
 
-		assertEquals("output data should be a string", String.class, getPersonReturn.getDataObject().getClass());
+		assertEquals("output data should be a string", String.class,
+				getPersonReturn.getDataObject().getClass());
 
-		assertEquals("unexpected xml content in output",
-				"<getPersonReturn><age>5</age><name>bob</name></getPersonReturn>", getPersonReturn.getDataObject()
-						.toString());
+		assertEquals(
+				"unexpected xml content in output",
+				"<getPersonReturn><age>5</age><name>bob</name></getPersonReturn>",
+				getPersonReturn.getDataObject().toString());
 
 	}
 
@@ -96,7 +103,8 @@ public class SOAPResponseMultiRefTest extends TestCase {
 		String xml1 = "<ns1:getPersonResponse soapenv:encodingStyle=\"http://schemas.xmlsoap.org/soap/encoding/\" xmlns:ns1=\"urn:testing\" xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\"><ns1:getPersonReturn xmlns:ns1=\"urn:testing\" href=\"#id0\"/></ns1:getPersonResponse>";
 		String xml2 = "<multiRef id=\"id0\" soapenc:root=\"0\" soapenv:encodingStyle=\"http://schemas.xmlsoap.org/soap/encoding/\" xmlns:soapenc=\"http://schemas.xmlsoap.org/soap/encoding/\" xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"><age xsi:type=\"soapenc:string\">5</age><name xsi:type=\"soapenc:string\">bob</name></multiRef>";
 
-		DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+		DocumentBuilder builder = DocumentBuilderFactory.newInstance()
+				.newDocumentBuilder();
 		Document doc = builder.parse(new ByteArrayInputStream(xml1.getBytes()));
 
 		response.add(new SOAPBodyElement(doc.getDocumentElement()));
@@ -104,22 +112,28 @@ public class SOAPResponseMultiRefTest extends TestCase {
 		doc = builder.parse(new ByteArrayInputStream(xml2.getBytes()));
 		response.add(new SOAPBodyElement(doc.getDocumentElement()));
 
-		SOAPResponseEncodedMultiRefParser parser = new SOAPResponseEncodedMultiRefParser(outputNames);
+		SOAPResponseEncodedMultiRefParser parser = new SOAPResponseEncodedMultiRefParser(
+				outputNames);
 		Map outputMap = parser.parse(response);
 
 		assertNotNull("no output map returned", outputMap);
 
 		assertEquals("map should contain 1 element", 1, outputMap.size());
 
-		DataThing getPersonReturn = (DataThing) outputMap.get("getPersonReturn");
+		DataThing getPersonReturn = (DataThing) outputMap
+				.get("getPersonReturn");
 
-		assertNotNull("output map should have contained entry for 'getPersonReturn'", getPersonReturn);
+		assertNotNull(
+				"output map should have contained entry for 'getPersonReturn'",
+				getPersonReturn);
 
-		assertEquals("output data should be a string", String.class, getPersonReturn.getDataObject().getClass());
+		assertEquals("output data should be a string", String.class,
+				getPersonReturn.getDataObject().getClass());
 
-		assertEquals("unexpected xml content in output",
-				"<getPersonReturn><age>5</age><name>bob</name></getPersonReturn>", getPersonReturn.getDataObject()
-						.toString());
+		assertEquals(
+				"unexpected xml content in output",
+				"<getPersonReturn><age>5</age><name>bob</name></getPersonReturn>",
+				getPersonReturn.getDataObject().toString());
 	}
 
 	public void testNestedReferences() throws Exception {
@@ -134,7 +148,8 @@ public class SOAPResponseMultiRefTest extends TestCase {
 
 		List response = new ArrayList();
 
-		DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+		DocumentBuilder builder = DocumentBuilderFactory.newInstance()
+				.newDocumentBuilder();
 		Document doc = builder.parse(new ByteArrayInputStream(xml1.getBytes()));
 		response.add(new SOAPBodyElement(doc.getDocumentElement()));
 
@@ -147,7 +162,8 @@ public class SOAPResponseMultiRefTest extends TestCase {
 		doc = builder.parse(new ByteArrayInputStream(xml4.getBytes()));
 		response.add(new SOAPBodyElement(doc.getDocumentElement()));
 
-		SOAPResponseEncodedMultiRefParser parser = new SOAPResponseEncodedMultiRefParser(outputNames);
+		SOAPResponseEncodedMultiRefParser parser = new SOAPResponseEncodedMultiRefParser(
+				outputNames);
 
 		Map outputMap = parser.parse(response);
 
@@ -157,9 +173,11 @@ public class SOAPResponseMultiRefTest extends TestCase {
 
 		DataThing result = (DataThing) outputMap.get("result");
 
-		assertNotNull("output map should have contained entry for 'result'", result);
+		assertNotNull("output map should have contained entry for 'result'",
+				result);
 
-		assertEquals("output data should be a string", String.class, result.getDataObject().getClass());
+		assertEquals("output data should be a string", String.class, result
+				.getDataObject().getClass());
 
 		assertEquals(
 				"incorrect xml content in output",
@@ -179,7 +197,8 @@ public class SOAPResponseMultiRefTest extends TestCase {
 
 		List response = new ArrayList();
 
-		DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+		DocumentBuilder builder = DocumentBuilderFactory.newInstance()
+				.newDocumentBuilder();
 		Document doc = builder.parse(new ByteArrayInputStream(xml1.getBytes()));
 		response.add(new SOAPBodyElement(doc.getDocumentElement()));
 
@@ -189,7 +208,8 @@ public class SOAPResponseMultiRefTest extends TestCase {
 		doc = builder.parse(new ByteArrayInputStream(xml3.getBytes()));
 		response.add(new SOAPBodyElement(doc.getDocumentElement()));
 
-		SOAPResponseEncodedMultiRefParser parser = new SOAPResponseEncodedMultiRefParser(outputNames);
+		SOAPResponseEncodedMultiRefParser parser = new SOAPResponseEncodedMultiRefParser(
+				outputNames);
 
 		try {
 			parser.parse(response);

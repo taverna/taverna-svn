@@ -41,17 +41,26 @@ public class WSDLScavengerHelper implements ScavengerHelper {
 		final ScavengerTree s = theScavenger;
 		return new ActionListener() {
 			public void actionPerformed(ActionEvent ae) {
-				final String wsdlLocation = (String) JOptionPane.showInputDialog(s.getContainingFrame(), "Address of the WSDL document?",
-						"WSDL location", JOptionPane.QUESTION_MESSAGE, null, null, "http://");
+				final String wsdlLocation = (String) JOptionPane
+						.showInputDialog(s.getContainingFrame(),
+								"Address of the WSDL document?",
+								"WSDL location", JOptionPane.QUESTION_MESSAGE,
+								null, null, "http://");
 				if (wsdlLocation != null) {
 					Runnable r = new Runnable() {
 						public void run() {
 							s.scavengingStarting("Processing WSDL");
 							try {
-								s.addScavenger(new WSDLBasedScavenger(wsdlLocation));
+								s.addScavenger(new WSDLBasedScavenger(
+										wsdlLocation));
 							} catch (ScavengerCreationException sce) {
-								JOptionPane.showMessageDialog(s.getContainingFrame(), "Unable to create scavenger!\n" + sce.getMessage(),
-										"Exception!", JOptionPane.ERROR_MESSAGE);
+								JOptionPane
+										.showMessageDialog(s
+												.getContainingFrame(),
+												"Unable to create scavenger!\n"
+														+ sce.getMessage(),
+												"Exception!",
+												JOptionPane.ERROR_MESSAGE);
 							}
 							s.scavengingDone();
 						}
@@ -74,7 +83,8 @@ public class WSDLScavengerHelper implements ScavengerHelper {
 				try {
 					result.add(new WSDLBasedScavenger(url));
 				} catch (ScavengerCreationException e) {
-					logger.error("Error creating WSDLBasedScavenger for " + url, e);
+					logger.error(
+							"Error creating WSDLBasedScavenger for " + url, e);
 				}
 			}
 		}
@@ -85,7 +95,8 @@ public class WSDLScavengerHelper implements ScavengerHelper {
 		Set<Scavenger> result = new HashSet<Scavenger>();
 		List<String> existingLocations = new ArrayList<String>();
 
-		Processor[] processors = model.getProcessorsOfType(WSDLBasedProcessor.class);
+		Processor[] processors = model
+				.getProcessorsOfType(WSDLBasedProcessor.class);
 		for (Processor processor : processors) {
 			String loc = ((WSDLBasedProcessor) processor).getWSDLLocation();
 			if (!existingLocations.contains(loc)) {
@@ -99,7 +110,7 @@ public class WSDLScavengerHelper implements ScavengerHelper {
 		}
 		return result;
 	}
-	
+
 	/**
 	 * Returns the icon for this scavenger
 	 */

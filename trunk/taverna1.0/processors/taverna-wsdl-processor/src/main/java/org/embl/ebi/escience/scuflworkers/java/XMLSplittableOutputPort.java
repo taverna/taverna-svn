@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: XMLSplittableOutputPort.java,v $
- * Revision           $Revision: 1.1 $
+ * Revision           $Revision: 1.2 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-08-24 13:43:18 $
+ * Last modified on   $Date: 2006-08-25 13:57:00 $
  *               by   $Author: sowen70 $
  * Created on 04-Jul-2006
  *****************************************************************/
@@ -48,19 +48,23 @@ import org.embl.ebi.escience.scuflworkers.ScuflContextMenuAware;
  * to allow the user to add XMLSplitters to that port
  * 
  * @author Stuart Owen
- *
+ * 
  */
 
-public class XMLSplittableOutputPort extends OutputPort implements ScuflContextMenuAware{
+public class XMLSplittableOutputPort extends OutputPort implements
+		ScuflContextMenuAware {
 
-	public XMLSplittableOutputPort(Processor processor, String name) throws DuplicatePortNameException, PortCreationException {
-		super(processor, name);		
-	}	
-	
+	public XMLSplittableOutputPort(Processor processor, String name)
+			throws DuplicatePortNameException, PortCreationException {
+		super(processor, name);
+	}
+
 	/**
-	 * Generates the menu items for the port if applicable, otherwise returns an empty List
+	 * Generates the menu items for the port if applicable, otherwise returns an
+	 * empty List
 	 */
 	public List<JMenuItem> contextMenuItems() {
-		return XMLSplitterScuflContextMenuFactory.instance().contextItemsForPort(this);
+		return XMLSplitterScuflContextMenuFactory.instance()
+				.contextItemsForPort(this);
 	}
 }

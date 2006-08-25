@@ -25,23 +25,25 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: CyclicReferenceException.java,v $
- * Revision           $Revision: 1.2 $
+ * Revision           $Revision: 1.3 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-07-10 14:11:20 $
+ * Last modified on   $Date: 2006-08-25 13:56:59 $
  *               by   $Author: sowen70 $
  * Created on 05-May-2006
  *****************************************************************/
 package org.embl.ebi.escience.scuflworkers.wsdl.soap;
 
 /**
- * Exception thrown when a MultiRef based xml document is found to have cyclic references when
- * transforming into a flat XML document, therefore meaning the xml cannot be transformed.
+ * Exception thrown when a MultiRef based xml document is found to have cyclic
+ * references when transforming into a flat XML document, therefore meaning the
+ * xml cannot be transformed.
+ * 
  * @author sowen
- *
+ * 
  */
 
-public class CyclicReferenceException extends Exception{
-	
+public class CyclicReferenceException extends Exception {
+
 	private static final long serialVersionUID = -4051406646273085676L;
 
 }

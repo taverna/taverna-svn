@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: SOAPResponsePrimitiveParser.java,v $
- * Revision           $Revision: 1.2 $
+ * Revision           $Revision: 1.3 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-07-10 14:11:20 $
+ * Last modified on   $Date: 2006-08-25 13:56:59 $
  *               by   $Author: sowen70 $
  * Created on 05-May-2006
  *****************************************************************/
@@ -54,7 +54,8 @@ import org.embl.ebi.escience.baclava.factory.DataThingFactory;
 
 public class SOAPResponsePrimitiveParser implements SOAPResponseParser {
 
-	private static Logger logger = Logger.getLogger(SOAPResponsePrimitiveParser.class);
+	private static Logger logger = Logger
+			.getLogger(SOAPResponsePrimitiveParser.class);
 
 	private List outputNames;
 
@@ -71,14 +72,18 @@ public class SOAPResponsePrimitiveParser implements SOAPResponseParser {
 		int c = 0;
 
 		if (response.size() > 1)
-			logger.error("More than one element to the response Vector when parsing for primitive types:" + response);
+			logger
+					.error("More than one element to the response Vector when parsing for primitive types:"
+							+ response);
 		RPCElement responseElement = (RPCElement) response.get(0);
 		List params = responseElement.getParams();
 
 		if (params.size() != outputNames.size())
-			logger.error("Different number of output parameters to outputs expected.");
+			logger
+					.error("Different number of output parameters to outputs expected.");
 
-		for (Iterator paramIterator = params.iterator(); paramIterator.hasNext();) {
+		for (Iterator paramIterator = params.iterator(); paramIterator
+				.hasNext();) {
 			RPCParam param = (RPCParam) paramIterator.next();
 			Object value = param.getObjectValue();
 			// use the param name if it matches the outputname list,

@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: SOAPResponseEncodedTest.java,v $
- * Revision           $Revision: 1.2 $
+ * Revision           $Revision: 1.3 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-07-10 14:09:20 $
+ * Last modified on   $Date: 2006-08-25 13:57:00 $
  *               by   $Author: sowen70 $
  * Created on 08-May-2006
  *****************************************************************/
@@ -57,11 +57,13 @@ public class SOAPResponseEncodedTest extends TestCase {
 
 		List response = new ArrayList();
 
-		DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+		DocumentBuilder builder = DocumentBuilderFactory.newInstance()
+				.newDocumentBuilder();
 		Document doc = builder.parse(new ByteArrayInputStream(xml1.getBytes()));
 		response.add(new SOAPBodyElement(doc.getDocumentElement()));
 
-		SOAPResponseEncodedParser parser = new SOAPResponseEncodedParser(outputNames);
+		SOAPResponseEncodedParser parser = new SOAPResponseEncodedParser(
+				outputNames);
 
 		Map outputMap = parser.parse(response);
 
@@ -71,12 +73,16 @@ public class SOAPResponseEncodedTest extends TestCase {
 
 		DataThing result = (DataThing) outputMap.get("whatGeneInStageReturn");
 
-		assertNotNull("output map should have contained entry for 'whatGeneInStageReturn'", result);
+		assertNotNull(
+				"output map should have contained entry for 'whatGeneInStageReturn'",
+				result);
 
-		assertEquals("output data should be a string", String.class, result.getDataObject().getClass());
+		assertEquals("output data should be a string", String.class, result
+				.getDataObject().getClass());
 
-		assertEquals("incorrect xml content in output",
-				"<whatGeneInStageReturn><agene>a gene</agene></whatGeneInStageReturn>", result.getDataObject()
-						.toString());
+		assertEquals(
+				"incorrect xml content in output",
+				"<whatGeneInStageReturn><agene>a gene</agene></whatGeneInStageReturn>",
+				result.getDataObject().toString());
 	}
 }

@@ -27,17 +27,23 @@ public class WSDLXMLHandler implements XMLHandler {
 		return getElement(factory.getWSDLLocation(), factory.getOperationName());
 	}
 
-	public Processor loadProcessorFromXML(Element processorNode, ScuflModel model, String name)
-			throws ProcessorCreationException, DuplicateProcessorNameException, XScuflFormatException {
-		Element wsdlProcessor = processorNode.getChild("arbitrarywsdl", XScufl.XScuflNS);
-		String wsdlLocation = wsdlProcessor.getChild("wsdl", XScufl.XScuflNS).getTextTrim();
-		String operationName = wsdlProcessor.getChild("operation", XScufl.XScuflNS).getTextTrim();
+	public Processor loadProcessorFromXML(Element processorNode,
+			ScuflModel model, String name) throws ProcessorCreationException,
+			DuplicateProcessorNameException, XScuflFormatException {
+		Element wsdlProcessor = processorNode.getChild("arbitrarywsdl",
+				XScufl.XScuflNS);
+		String wsdlLocation = wsdlProcessor.getChild("wsdl", XScufl.XScuflNS)
+				.getTextTrim();
+		String operationName = wsdlProcessor.getChild("operation",
+				XScufl.XScuflNS).getTextTrim();
 		return new WSDLBasedProcessor(model, name, wsdlLocation, operationName);
 	}
 
 	public ProcessorFactory getFactory(Element specElement) {
-		String wsdlLocation = specElement.getChild("wsdl", XScufl.XScuflNS).getTextTrim();
-		String operationName = specElement.getChild("operation", XScufl.XScuflNS).getTextTrim();
+		String wsdlLocation = specElement.getChild("wsdl", XScufl.XScuflNS)
+				.getTextTrim();
+		String operationName = specElement.getChild("operation",
+				XScufl.XScuflNS).getTextTrim();
 		return new WSDLBasedProcessorFactory(wsdlLocation, operationName, null);
 	}
 
