@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: WSDLSOAPInvoker.java,v $
- * Revision           $Revision: 1.4 $
+ * Revision           $Revision: 1.5 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-08-18 14:53:45 $
+ * Last modified on   $Date: 2006-08-25 13:22:27 $
  *               by   $Author: sowen70 $
  * Created on 07-Apr-2006
  *****************************************************************/
@@ -59,6 +59,7 @@ import org.apache.log4j.Logger;
 import org.apache.wsif.WSIFException;
 import org.apache.wsif.providers.soap.apacheaxis.WSIFOperation_ApacheAxis;
 import org.apache.wsif.providers.soap.apacheaxis.WSIFPort_ApacheAxis;
+import org.embl.ebi.escience.baclava.Base64;
 import org.embl.ebi.escience.baclava.DataThing;
 import org.embl.ebi.escience.baclava.factory.DataThingFactory;
 import org.embl.ebi.escience.scufl.InputPort;
@@ -103,8 +104,10 @@ public class WSDLSOAPInvoker {
 		Call call = getCall();
 		SOAPBodyElement body = buildBody(inputMap);
 
-		List response = (List) call.invoke(new Object[] { body });
-
+		List response = (List) call.invoke(new Object[] { body });		
+		
+		logger.info("SOAP response was:"+response);
+		
 		SOAPResponseParser parser = SOAPResponseParserFactory.instance()
 				.create(response, getUse(), getStyle(),
 						getProcessor().getOutputPorts());
@@ -194,7 +197,7 @@ public class WSDLSOAPInvoker {
 		List inputs = getProcessor().getParser().getOperationInputParameters(
 				operationName);
 
-		Map namespaceMappings = generateNamespaceMappings(inputs);
+		Map<String,String> namespaceMappings = generateNamespaceMappings(inputs);
 		String operationNamespace = getOperationNamespace();
 
 		SOAPBodyElement body = new SOAPBodyElement(XMLUtils.StringToElement(
@@ -220,20 +223,20 @@ public class WSDLSOAPInvoker {
 							inputName, thing, descriptor, mimeType, typeName);
 
 				} else {
-					String dataValue = thing.getDataObject().toString();
+					Object dataValue = thing.getDataObject();
 					if (getUse().equals("literal"))
 						el = XMLUtils.StringToElement("", typeName, "");
 					else
 						el = XMLUtils.StringToElement("", inputName, "");
 
-					String ns = (String) namespaceMappings.get(descriptor
+					String ns = namespaceMappings.get(descriptor
 							.getNamespaceURI());
 					if (ns != null) {
 						el.setAttribute("xsi:type", ns + ":"
 								+ descriptor.getType());
 					}
 
-					populateElementWithStringData(mimeType, el, dataValue);
+					populateElementWithObjectData(mimeType, el, dataValue);
 				}
 
 				if (getUse().equals("literal")) {
@@ -247,9 +250,11 @@ public class WSDLSOAPInvoker {
 
 		for (Iterator iterator = namespaceMappings.keySet().iterator(); iterator
 				.hasNext();) {
-			String namespaceURI = (String) iterator.next();
+			String namespaceURI = (String)iterator.next();
 			String ns = (String) namespaceMappings.get(namespaceURI);
-			body.addNamespaceDeclaration(ns, namespaceURI);
+			if (!ns.equals("xsd") && !ns.equals("xsi")) {
+				body.addNamespaceDeclaration(ns, namespaceURI);
+			}
 		}
 
 		if (getProcessor().getParser().getUse(operationName).equals("encoded")) {
@@ -264,7 +269,7 @@ public class WSDLSOAPInvoker {
 				logger.warn("Cant display soap body", e);
 			}
 		}
-
+		
 		return body;
 	}
 
@@ -282,7 +287,7 @@ public class WSDLSOAPInvoker {
 	 * @throws SAXException
 	 * @throws IOException
 	 */
-	private Element createElementForArrayType(Map namespaceMappings,
+	private Element createElementForArrayType(Map<String,String> namespaceMappings,
 			String inputName, DataThing thing, TypeDescriptor descriptor,
 			String mimeType, String typeName)
 			throws ParserConfigurationException, SAXException, IOException {
@@ -326,14 +331,13 @@ public class WSDLSOAPInvoker {
 					tag=elementType.getName();
 				}
 				Element item = el.getOwnerDocument().createElement(tag);
-				populateElementWithStringData(mimeType, item, dataItem
-						.toString());
+				populateElementWithObjectData(mimeType, item, dataItem);
 				el.appendChild(item);
 			}
 
 		}
 
-		String ns = (String) namespaceMappings.get(elementType
+		String ns = namespaceMappings.get(elementType
 				.getNamespaceURI());
 		if (ns != null) {
 			String elementNS = ns + ":" + elementType.getType() + "[" + size
@@ -378,7 +382,7 @@ public class WSDLSOAPInvoker {
 			}
 				 
 			Element item = element.getOwnerDocument().createElement(tag);
-			populateElementWithStringData(mimeType, item, dataItem.toString());
+			populateElementWithObjectData(mimeType, item, dataItem);
 			element.appendChild(item);
 		}
 	}
@@ -393,13 +397,13 @@ public class WSDLSOAPInvoker {
 	 * @throws SAXException
 	 * @throws IOException
 	 */
-	private void populateElementWithStringData(String mimeType,
-			Element element, String dataValue)
+	private void populateElementWithObjectData(String mimeType,
+			Element element, Object dataValue)
 			throws ParserConfigurationException, SAXException, IOException {
 		if (mimeType.equals("'text/xml'")) {
 			DocumentBuilder builder = DocumentBuilderFactory.newInstance()
 					.newDocumentBuilder();
-			Document doc = builder.parse(new ByteArrayInputStream(dataValue
+			Document doc = builder.parse(new ByteArrayInputStream(dataValue.toString()
 					.getBytes()));
 			Node child = doc.getDocumentElement().getFirstChild();
 
@@ -408,9 +412,14 @@ public class WSDLSOAPInvoker {
 						child, true));
 				child = child.getNextSibling();
 			}
-		} else {
+		} 		
+		else if (mimeType.equals("'application/octet-stream'") && dataValue instanceof byte[]) {			
+					String encoded=Base64.encodeBytes((byte[])dataValue);					
+					element.appendChild(element.getOwnerDocument().createTextNode(encoded));
+		}
+		else {
 			element.appendChild(element.getOwnerDocument().createTextNode(
-					dataValue));
+					dataValue.toString()));
 		}
 	}
 
@@ -442,12 +451,14 @@ public class WSDLSOAPInvoker {
 	 * @throws UnknownOperationException
 	 * @throws IOException
 	 */
-	private Map generateNamespaceMappings(List inputs)
+	private Map<String,String> generateNamespaceMappings(List inputs)
 			throws UnknownOperationException, IOException {
-		Map result = new HashMap();
+		Map<String,String> result = new HashMap<String,String>();
 		int nsCount = 2;
 
 		result.put(getOperationNamespace(), "ns1");
+		result.put("http://www.w3.org/2001/XMLSchema","xsd");
+		result.put("http://www.w3.org/2001/XMLSchema-instance","xsi");
 
 		for (Iterator iterator = inputs.iterator(); iterator.hasNext();) {
 			TypeDescriptor descriptor = (TypeDescriptor) iterator.next();

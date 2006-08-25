@@ -51,13 +51,13 @@ public class WSDLParserTest extends TestCase {
 
 		assertTrue("wrong class type for descriptor - should be TypeDescriptor",
 				inputs.get(1) instanceof TypeDescriptor);
-		assertEquals("wrong type", "base64binary", ((TypeDescriptor) inputs.get(1)).getType());
+		assertEquals("wrong type", "base64Binary", ((TypeDescriptor) inputs.get(1)).getType());
 		assertEquals("wrong name", "content", ((TypeDescriptor) inputs.get(1)).getName());
 
 		assertEquals("wrong number of outputs", 1, outputs.size());
 		assertTrue("wrong class type for descriptor - should be TypeDescriptor",
 				outputs.get(0) instanceof TypeDescriptor);
-		assertEquals("wrong type", "base64binary", ((TypeDescriptor) outputs.get(0)).getType());
+		assertEquals("wrong type", "base64Binary", ((TypeDescriptor) outputs.get(0)).getType());
 		assertEquals("wrong name", "result", ((TypeDescriptor) outputs.get(0)).getName());
 
 	}
@@ -191,16 +191,7 @@ public class WSDLParserTest extends TestCase {
 		assertTrue("input should be BaseType", typeDesc instanceof BaseTypeDescriptor);
 		assertEquals("wrong name", "sessionID", typeDesc.getName());
 		assertEquals("wrong type", "string", typeDesc.getType());
-	}
-
-	/*
-	public void testGetOperationDocumentation() throws Exception {
-		WSDLParser parser = new WSDLParser("http://services.serkoonline.com/serkoservices2.asmx?WSDL");
-		String doc = parser.getOperationDocumentation("Login");
-		assertTrue("this service should contain some documentation, and it should contain the word 'password'", doc
-				.indexOf("password") != -1);
-	}
-	*/
+	}	
 
 	public void testGetUseEncoded() throws Exception {
 		WSDLParser parser = new WSDLParser("http://soap.bind.ca/wsdl/bind.wsdl");

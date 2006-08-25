@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
+import org.embl.ebi.escience.baclava.Base64;
 import org.embl.ebi.escience.baclava.DataThing;
 import org.embl.ebi.escience.baclava.factory.DataThingFactory;
 import org.embl.ebi.escience.scufl.DuplicatePortNameException;
@@ -217,7 +218,7 @@ public class XMLInputSplitter implements LocalWorkerWithPorts, XMLExtensible {
 			String key = elementType.getName();
 			DataThing thing = (DataThing) inputMap.get(key);
 			if (thing != null) {
-				Object dataObject = thing.getDataObject();
+				Object dataObject = thing.getDataObject();				
 
 				if (dataObject instanceof List) {
 					Element arrayElement = buildElementFromObject(key, "");
@@ -299,7 +300,11 @@ public class XMLInputSplitter implements LocalWorkerWithPorts, XMLExtensible {
 				dataElement.setAttribute("nil","true"); //changes nil value to nil=true attribute.
 			}
 			else {
-				dataElement.setText(dataObject.toString());
+				if (dataObject instanceof byte[]) {
+					dataElement.setAttribute("type","xsd:base64Binary",org.jdom.Namespace.getNamespace("xsi","http://www.w3.org/2001/XMLSchema-instance"));
+					dataObject=Base64.encodeBytes((byte[])dataObject);
+				}
+				dataElement.setText(dataObject.toString());				
 			}
 			
 		}

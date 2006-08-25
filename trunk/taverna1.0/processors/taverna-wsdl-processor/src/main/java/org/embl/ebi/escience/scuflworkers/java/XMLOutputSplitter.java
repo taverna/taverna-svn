@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: XMLOutputSplitter.java,v $
- * Revision           $Revision: 1.4 $
+ * Revision           $Revision: 1.5 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-08-24 13:43:18 $
+ * Last modified on   $Date: 2006-08-25 13:22:27 $
  *               by   $Author: sowen70 $
  * Created on 16-May-2006
  *****************************************************************/
@@ -43,6 +43,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
+import org.embl.ebi.escience.baclava.Base64;
 import org.embl.ebi.escience.baclava.DataThing;
 import org.embl.ebi.escience.baclava.factory.DataThingFactory;
 import org.embl.ebi.escience.scufl.DuplicatePortNameException;
@@ -329,7 +330,12 @@ public class XMLOutputSplitter implements LocalWorkerWithPorts, XMLExtensible {
 						|| outputTypes[i].equals("l('text/xml')")) {
 					String xmlText = outputter.outputString(child);
 					result.put(child.getName(), new DataThing(xmlText));
-				} else {
+				} 
+				else if (outputTypes[i].equals("'application/octet-stream'"))  { //base64Binary
+					byte [] data = Base64.decode(child.getText());
+					result.put(child.getName(), DataThingFactory.bake(data));					
+				}
+				else {
 					result.put(child.getName(), new DataThing(child.getText()));
 				}
 			}

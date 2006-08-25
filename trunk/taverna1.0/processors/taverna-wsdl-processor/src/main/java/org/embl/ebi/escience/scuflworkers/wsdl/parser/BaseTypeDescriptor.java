@@ -8,6 +8,6 @@ package org.embl.ebi.escience.scuflworkers.wsdl.parser;
 public class BaseTypeDescriptor extends TypeDescriptor {
 
 	public void setType(String type) {
-		super.setType(type.toLowerCase());
+		super.setType(type);
 	}
 }
