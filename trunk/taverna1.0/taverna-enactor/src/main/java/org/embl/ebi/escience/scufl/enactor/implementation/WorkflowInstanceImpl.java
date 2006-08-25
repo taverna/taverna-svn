@@ -24,9 +24,9 @@
 //      Created for Project :   MYGRID
 //      Dependencies        :
 //
-//      Last commit info    :   $Author: sowen70 $
-//                              $Date: 2006-07-10 14:10:46 $
-//                              $Revision: 1.2 $
+//      Last commit info    :   $Author: stain $
+//                              $Date: 2006-08-25 14:50:07 $
+//                              $Revision: 1.3 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 package org.embl.ebi.escience.scufl.enactor.implementation;
@@ -279,7 +279,7 @@ public class WorkflowInstanceImpl implements WorkflowInstance {
 		} catch (UnknownWorkflowInstanceException e) {
 			String msg = "Error getting status for workflow instance with id "
 					+ workflowInstanceId
-					+ ".  The workflow engine didn't recognise the workflow isntance id";
+					+ ".  The workflow engine didn't recognise the workflow instance id";
 			logger.error(msg, e);
 			throw new IllegalStateException(msg);
 		}
@@ -313,7 +313,7 @@ public class WorkflowInstanceImpl implements WorkflowInstance {
 		} catch (UnknownWorkflowInstanceException e) {
 			String msg = "Error getting intermediate results for workflow instance with id "
 					+ workflowInstanceId
-					+ ".  The workflow engine didn't recognise the workflow isntance id";
+					+ ".  The workflow engine didn't recognise the workflow instance id";
 			logger.error(msg, e);
 			throw new IllegalStateException(msg);
 		}
@@ -328,7 +328,7 @@ public class WorkflowInstanceImpl implements WorkflowInstance {
 		} catch (UnknownWorkflowInstanceException e) {
 			String msg = "Error getting progress report xml string for workflow instance with id "
 					+ workflowInstanceId
-					+ ".  The workflow engine didn't recognise the workflow isntance id";
+					+ ".  The workflow engine didn't recognise the workflow instance id";
 			logger.error(msg, e);
 			throw new IllegalStateException(msg);
 		}
@@ -340,7 +340,7 @@ public class WorkflowInstanceImpl implements WorkflowInstance {
 		} catch (UnknownWorkflowInstanceException e) {
 			String msg = "Error getting progress the output for workflow instance with id "
 					+ workflowInstanceId
-					+ ".  The workflow engine didn't recognise the workflow isntance id";
+					+ ".  The workflow engine didn't recognise the workflow instance id";
 			logger.error(msg, e);
 			throw new IllegalStateException(msg);
 		}
@@ -352,7 +352,7 @@ public class WorkflowInstanceImpl implements WorkflowInstance {
 		} catch (UnknownWorkflowInstanceException e) {
 			String msg = "Error getting the error message for workflow instance with id "
 					+ workflowInstanceId
-					+ ".  The workflow engine didn't recognise the workflow isntance id";
+					+ ".  The workflow engine didn't recognise the workflow instance id";
 			logger.error(msg, e);
 			throw new IllegalStateException(msg);
 		}
@@ -364,7 +364,7 @@ public class WorkflowInstanceImpl implements WorkflowInstance {
 		} catch (UnknownWorkflowInstanceException e) {
 			String msg = "Error getting provenance xml string for workflow instance with id "
 					+ workflowInstanceId
-					+ ".  The workflow engine didn't recognise the workflow isntance id";
+					+ ".  The workflow engine didn't recognise the workflow instance id";
 			logger.error(msg, e);
 			throw new IllegalStateException(msg);
 		}
@@ -376,7 +376,7 @@ public class WorkflowInstanceImpl implements WorkflowInstance {
 		} catch (UnknownWorkflowInstanceException e) {
 			String msg = "Error pausing workflow instance with id "
 					+ workflowInstanceId
-					+ ".  The workflow engine didn't recognise the workflow isntance id";
+					+ ".  The workflow engine didn't recognise the workflow instance id";
 			logger.error(msg, e);
 			throw new IllegalStateException(msg);
 		}
@@ -388,7 +388,7 @@ public class WorkflowInstanceImpl implements WorkflowInstance {
 		} catch (UnknownWorkflowInstanceException e) {
 			String msg = "Error resuming workflow instance with id "
 					+ workflowInstanceId
-					+ ".  The workflow engine didn't recognise the workflow isntance id";
+					+ ".  The workflow engine didn't recognise the workflow instance id";
 			logger.error(msg, e);
 			throw new IllegalStateException(msg);
 		}
@@ -400,7 +400,7 @@ public class WorkflowInstanceImpl implements WorkflowInstance {
 		} catch (UnknownWorkflowInstanceException e) {
 			String msg = "Error determining if the workflow is paused for workflow instance with id "
 					+ workflowInstanceId
-					+ ".  The workflow engine didn't recognise the workflow isntance id";
+					+ ".  The workflow engine didn't recognise the workflow instance id";
 			logger.error(msg, e);
 			throw new IllegalStateException(msg);
 		}
@@ -413,7 +413,7 @@ public class WorkflowInstanceImpl implements WorkflowInstance {
 		} catch (UnknownWorkflowInstanceException e) {
 			String msg = "Error cancelling workflow instance with id "
 					+ workflowInstanceId
-					+ ".  The workflow engine didn't recognise the workflow isntance id";
+					+ ".  The workflow engine didn't recognise the workflow instance id";
 			logger.error(msg, e);
 			throw new IllegalStateException(msg);
 		}
@@ -425,7 +425,7 @@ public class WorkflowInstanceImpl implements WorkflowInstance {
 		} catch (UnknownWorkflowInstanceException e) {
 			String msg = "Error destroying workflow instance with id "
 					+ workflowInstanceId
-					+ ".  The workflow engine didn't recognise the workflow isntance id";
+					+ ".  The workflow engine didn't recognise the workflow instance id";
 			logger.error(msg, e);
 			throw new IllegalStateException(msg);
 		}
@@ -437,7 +437,7 @@ public class WorkflowInstanceImpl implements WorkflowInstance {
 		} catch (UnknownWorkflowInstanceException e) {
 			String msg = "Error destroying workflow instance with id "
 					+ workflowInstanceId
-					+ ".  The workflow engine didn't recognise the workflow isntance id";
+					+ ".  The workflow engine didn't recognise the workflow instance id";
 			logger.error(msg, e);
 			throw new IllegalStateException(msg);
 		}
@@ -449,7 +449,7 @@ public class WorkflowInstanceImpl implements WorkflowInstance {
 		} catch (UnknownWorkflowInstanceException e) {
 			String msg = "Error destroying workflow instance with id "
 					+ workflowInstanceId
-					+ ".  The workflow engine didn't recognise the workflow isntance id";
+					+ ".  The workflow engine didn't recognise the workflow instance id";
 			logger.error(msg, e);
 			throw new IllegalStateException(msg);
 		}
@@ -463,7 +463,7 @@ public class WorkflowInstanceImpl implements WorkflowInstance {
 		} catch (UnknownWorkflowInstanceException e) {
 			String msg = "Error destroying workflow instance with id "
 					+ workflowInstanceId
-					+ ".  The workflow engine didn't recognise the workflow isntance id";
+					+ ".  The workflow engine didn't recognise the workflow instance id";
 			logger.error(msg, e);
 			throw new IllegalStateException(msg);
 		}
@@ -475,7 +475,7 @@ public class WorkflowInstanceImpl implements WorkflowInstance {
 		} catch (UnknownWorkflowInstanceException e) {
 			String msg = "Error destroying workflow instance with id "
 					+ workflowInstanceId
-					+ ".  The workflow engine didn't recognise the workflow isntance id";
+					+ ".  The workflow engine didn't recognise the workflow instance id";
 			logger.error(msg, e);
 			throw new IllegalStateException(msg);
 		}
