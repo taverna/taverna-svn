@@ -24,12 +24,13 @@ import org.embl.ebi.escience.scufl.view.XScuflView;
 import org.embl.ebi.escience.scuflui.AdvancedModelExplorer;
 import org.embl.ebi.escience.scuflui.ExtensionFileFilter;
 import org.embl.ebi.escience.scuflui.TavernaIcons;
+import org.embl.ebi.escience.scuflui.UIUtils;
 
 /**
  * COMMENT
  * 
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover</a>
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public class SaveWorkflowAction extends ScuflModelAction {
 	final JFileChooser fc = new JFileChooser();
@@ -71,7 +72,7 @@ public class SaveWorkflowAction extends ScuflModelAction {
 						try {
 							saveToFile();
 						} catch (Exception ex) {
-							JOptionPane.showMessageDialog(null,
+							JOptionPane.showMessageDialog(UIUtils.getActionEventParentWindow(e),
 									"Problem saving workflow : \n"
 											+ ex.getMessage(), "Error!",
 									JOptionPane.ERROR_MESSAGE);

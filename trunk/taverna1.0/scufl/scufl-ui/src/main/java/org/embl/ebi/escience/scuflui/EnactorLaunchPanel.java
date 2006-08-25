@@ -344,7 +344,7 @@ class WorkflowInputPanel extends JPanel {
 						text.setText(sb.toString());
 					}
 				} catch (Exception ex) {
-					JOptionPane.showMessageDialog(null,
+					JOptionPane.showMessageDialog(WorkflowInputPanel.this,
 							"Problem opening content from web : \n"
 									+ ex.getMessage(), "Exception!",
 							JOptionPane.ERROR_MESSAGE);
@@ -355,7 +355,7 @@ class WorkflowInputPanel extends JPanel {
 			public void actionPerformed(ActionEvent e) {
 				try {
 					String name = (String) JOptionPane
-							.showInputDialog(null, "URL to open?",
+							.showInputDialog(WorkflowInputPanel.this, "URL to open?",
 									"URL Required",
 									JOptionPane.QUESTION_MESSAGE, null, null,
 									"http://");
@@ -373,7 +373,7 @@ class WorkflowInputPanel extends JPanel {
 						text.setText(sb.toString());
 					}
 				} catch (Exception ex) {
-					JOptionPane.showMessageDialog(null,
+					JOptionPane.showMessageDialog(WorkflowInputPanel.this,
 							"Problem opening content from web : \n"
 									+ ex.getMessage(), "Exception!",
 							JOptionPane.ERROR_MESSAGE);

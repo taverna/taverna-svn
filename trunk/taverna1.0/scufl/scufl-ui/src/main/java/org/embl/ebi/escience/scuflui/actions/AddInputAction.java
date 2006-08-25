@@ -19,7 +19,7 @@ import org.embl.ebi.escience.scuflui.UIUtils;
  * COMMENT
  * 
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover </a>
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
 public class AddInputAction extends ScuflModelAction {
 	/**
@@ -50,11 +50,11 @@ public class AddInputAction extends ScuflModelAction {
 										.getWorkflowSourceProcessor(), name));
 				model.forceUpdate();
 			} catch (PortCreationException pce) {
-				JOptionPane.showMessageDialog(null,
+				JOptionPane.showMessageDialog(parent,
 						"Port creation exception : \n" + pce.getMessage(),
 						"Exception!", JOptionPane.ERROR_MESSAGE);
 			} catch (DuplicatePortNameException dpne) {
-				JOptionPane.showMessageDialog(null, "Duplicate name : \n"
+				JOptionPane.showMessageDialog(parent, "Duplicate name : \n"
 						+ dpne.getMessage(), "Exception!",
 						JOptionPane.ERROR_MESSAGE);
 			}

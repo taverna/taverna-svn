@@ -286,7 +286,7 @@ public class ScavengerTreePopupHandler extends MouseAdapter {
 						imp.addActionListener(new ActionListener() {
 							public void actionPerformed(ActionEvent ae) {
 								try {
-									String prefix = (String) JOptionPane.showInputDialog(null, "Optional name prefix?",
+									String prefix = (String) JOptionPane.showInputDialog(UIUtils.getActionEventParentWindow(ae), "Optional name prefix?",
 											"Prefix", JOptionPane.QUESTION_MESSAGE, null, null, "");
 									if (prefix != null) {
 										if (prefix.equals("")) {

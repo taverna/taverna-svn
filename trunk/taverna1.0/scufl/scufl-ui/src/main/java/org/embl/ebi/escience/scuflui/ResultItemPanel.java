@@ -324,7 +324,7 @@ public class ResultItemPanel extends JPanel {
 								}
 							}
 						} catch (IOException ioe) {
-							JOptionPane.showMessageDialog(null,
+							JOptionPane.showMessageDialog(ResultItemPanel.this,
 									"Problem saving data : \n"
 											+ ioe.getMessage(), "Exception!",
 									JOptionPane.ERROR_MESSAGE);

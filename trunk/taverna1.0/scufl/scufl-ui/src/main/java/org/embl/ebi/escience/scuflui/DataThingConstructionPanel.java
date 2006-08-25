@@ -94,7 +94,7 @@ import org.jdom.output.XMLOutputter;
  * Panel to construct the input for a workflow.
  * 
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover </a>
- * @version $Revision: 1.6 $
+ * @version $Revision: 1.7 $
  */
 public abstract class DataThingConstructionPanel extends JPanel implements
 		ScuflUIComponent, ScuflModelEventListener {
@@ -708,11 +708,11 @@ public abstract class DataThingConstructionPanel extends JPanel implements
 						}
 					}
 				} catch (Exception ex) {
-					JOptionPane.showMessageDialog(null,
+					JOptionPane.showMessageDialog(DataThingConstructionPanel.this,
 							"Problem opening content from file : \n"
 									+ ex.getMessage(), "Exception!",
 							JOptionPane.ERROR_MESSAGE);
-					ex.printStackTrace();
+					logger.error("Error opening file:",ex);
 				}
 			}
 		};
@@ -720,7 +720,7 @@ public abstract class DataThingConstructionPanel extends JPanel implements
 		private ActionListener loadLSIDAction = new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				try {
-					String lsid = (String) JOptionPane.showInputDialog(null,
+					String lsid = (String) JOptionPane.showInputDialog(DataThingConstructionPanel.this,
 							"LSID to open?", "LSID Required",
 							JOptionPane.QUESTION_MESSAGE, null, null,
 							"URN:LSID:");
@@ -729,7 +729,7 @@ public abstract class DataThingConstructionPanel extends JPanel implements
 						setDataThing(thing);
 					}
 				} catch (Exception ex) {
-					JOptionPane.showMessageDialog(null,
+					JOptionPane.showMessageDialog(DataThingConstructionPanel.this,
 							"Problem opening content from web : \n"
 									+ ex.getMessage(), "Exception!",
 							JOptionPane.ERROR_MESSAGE);
