@@ -64,8 +64,6 @@ public class WSDLBasedProcessor extends Processor implements Serializable,
 
 	private static Logger logger = Logger.getLogger(WSDLBasedProcessor.class);
 
-	WSIFPort port = null;
-
 	String operationName = null;
 
 	String wsdlLocation = null;
@@ -75,6 +73,8 @@ public class WSDLBasedProcessor extends Processor implements Serializable,
 	Class[] inTypes, outTypes;
 
 	WSDLParser parser = null;
+	
+	WSIFService service; 
 
 	private static Map<String, Definition> defMap = new HashMap<String, Definition>();
 
@@ -161,9 +161,8 @@ public class WSDLBasedProcessor extends Processor implements Serializable,
 
 			WSIFServiceFactory factory = WSIFServiceFactory.newInstance();
 			PortType portType = parser.getPortType(operationName);
-			WSIFService service = factory.getService(def, s, portType);
-			port = service.getPort();
-
+			service = factory.getService(def, s, portType);
+						
 			inNames = new String[inputs.size()];
 			inTypes = new Class[inputs.size()];
 
@@ -212,9 +211,10 @@ public class WSDLBasedProcessor extends Processor implements Serializable,
 	 * single invocation of the target service!
 	 */
 	public WSIFOperation getWSIFOperation() throws WSIFException {
+		WSIFPort port = getPort();
 		synchronized (port) {
 			WSIFOperation op = port.createOperation(operationName);
-			logger.debug("Created operation : " + op.toString());
+			logger.debug("Created operation : " + op.toString());			
 			return op;
 		}
 	}
@@ -245,11 +245,26 @@ public class WSDLBasedProcessor extends Processor implements Serializable,
 	public String getWSDLLocation() {
 		return this.wsdlLocation;
 	}
+	
+	/**
+     * Get a port. Note that if you keep references to this port, it will
+     * also mean keeping referencing to the last call, and thereby
+     * to the last data in that call.
+     */
+	WSIFPort getPort() {
+		try {
+			return service.getPort();
+		} catch (WSIFException e) {
+			logger.warn("Could not get WSIFPort", e);
+			return null;
+		}
+	}
 
 	/**
 	 * Get the target endpoint for this processor
 	 */
 	public String getResourceHost() {
+		WSIFPort port = getPort();
 		if (port instanceof WSIFPort_ApacheAxis) {
 			URL endpoint = ((WSIFPort_ApacheAxis) port).getEndPoint();
 			return endpoint.getHost();
@@ -264,6 +279,7 @@ public class WSDLBasedProcessor extends Processor implements Serializable,
 	 *         service associated with this processor.
 	 */
 	String getTargetEndpoint() {
+		WSIFPort port = getPort();
 		if (port instanceof WSIFPort_ApacheAxis) {
 			return ((WSIFPort_ApacheAxis) port).getEndPoint().toString();
 		} else {
