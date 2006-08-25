@@ -581,7 +581,7 @@ public class ScuflModel implements Serializable, LogAwareComponent {
 			synchronized (pendingEventList) {
 				pendingEventList.add(event);
 			}
-			eventThread.interrupt();
+			eventThread.interrupt();			
 		}
 	}
 
@@ -592,17 +592,16 @@ public class ScuflModel implements Serializable, LogAwareComponent {
 		fireModelEvent(new ScuflModelEvent(this, "Forced update"));
 	}
 
-	Thread eventThread = new NotifyThread(this);
+	Thread eventThread = new NotifyThread();
 
 	List pendingEventList = new ArrayList();
 
 	/**
 	 * A thread subclass to notify listeners of an event
 	 */
+	// FIXME: How to finish this thread? This will run forever!
 	class NotifyThread extends Thread {
-		private List listeners;
-
-		protected NotifyThread(ScuflModel model) {
+		protected NotifyThread() {
 			super();
 			try {
 				setDaemon(true);
@@ -610,7 +609,6 @@ public class ScuflModel implements Serializable, LogAwareComponent {
 				// Should never happen!
 				logger.fatal(ex);				
 			}
-			this.listeners = model.listeners;
 			this.start();
 		}
 
