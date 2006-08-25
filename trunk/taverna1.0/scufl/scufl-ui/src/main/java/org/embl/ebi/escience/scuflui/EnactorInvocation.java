@@ -74,7 +74,17 @@ public class EnactorInvocation extends JPanel implements ScuflUIComponent {
 		// it is closing. Cleanup of remote resources will be done here.
 		try {
 			workflowEditor.detachFromModel();
+			
 			workflowInstance.cancelExecution();
+			// FIXME: Is this the right place to destroy? What about
+			// other people attached to the workflow instance? 
+			// (We must destroy() it somewhere, otherwise it will float
+			// around and reference among other things our possibly large
+			// input data)
+			workflowInstance.destroy();
+			// And remove our reference to it		
+			workflowInstance = null;
+			
 		} catch (Exception e) {
 			logger.error("Could not detach", e);
 		}
