@@ -154,6 +154,7 @@ public class ArtifactImpl extends BasicArtifact {
 		if (dependencyManagement == null) {
 			// Need to take all parent poms and traverse them to find
 			// the dependency versions
+			dependencyManagement = new HashMap<String,String>();
 			List<ArtifactImpl> parents = new ArrayList<ArtifactImpl>();
 			ArtifactImpl parent = parentArtifact;
 			while (parent != null) {
@@ -168,15 +169,24 @@ public class ArtifactImpl extends BasicArtifact {
 					DocumentBuilder builder = factory.newDocumentBuilder();
 					Document document = builder.parse(is);
 					is.close();
-					List<Node> elementList = findElements(document, "dependencyManagement");
-					for (Node depNode : elementList) {
-						Node n = findElements(depNode, "groupId" ).iterator().next();
-						String groupId = n.getFirstChild().getNodeValue().trim();
-						n = findElements(depNode, "artifactId" ).iterator().next();
-						String artifactId = n.getFirstChild().getNodeValue().trim();
-						n = findElements(depNode, "version" ).iterator().next();
-						version = n.getFirstChild().getNodeValue().trim();
-						dependencyManagement.put(groupId+":"+artifactId,version);
+					List<Node> managerElementList = findElements(document, "dependencyManagement");
+					for (Node depManagerNode : managerElementList) {
+						List<Node> elementList = findElements(depManagerNode, "dependency");
+						for (Node depNode : elementList) {
+							Node n = findElements(depNode, "groupId" ).iterator().next();
+							String groupId = n.getFirstChild().getNodeValue().trim();
+							n = findElements(depNode, "artifactId" ).iterator().next();
+							String artifactId = n.getFirstChild().getNodeValue().trim();
+							n = findElements(depNode, "version" ).iterator().next();
+							version = n.getFirstChild().getNodeValue().trim();
+							/**System.out.println(this.toString());
+							System.out.println("Parent : "+a);
+							System.out.println(groupId);
+							System.out.println(artifactId);
+							System.out.println(version);
+							*/
+							dependencyManagement.put(groupId+":"+artifactId,version);
+						}
 					}
 				}
 				catch (IOException e) {

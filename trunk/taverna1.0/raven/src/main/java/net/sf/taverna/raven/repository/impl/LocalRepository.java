@@ -5,6 +5,7 @@ package net.sf.taverna.raven.repository.impl;
 
 import java.io.File;
 import java.io.FileFilter;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FilenameFilter;
 import java.io.IOException;
@@ -294,6 +295,7 @@ public class LocalRepository implements Repository {
 		for (ArtifactImpl a : temp) {
 			ArtifactStatus s = status.get(a);
 			if (s.equals(ArtifactStatus.Pom)) {
+				//System.out.println(a.toString());
 				if (a.getPackageType().equals("jar") == false) {
 					setStatus(a, ArtifactStatus.PomNonJar);
 				}
@@ -337,6 +339,9 @@ public class LocalRepository implements Repository {
 				try {
 					List<ArtifactImpl> deps = a.getDependencies();
 					for (Artifact dep : deps) {
+						if (status.containsKey(dep) == false) {
+							addArtifact(dep);
+						}
 						if (status.get(dep).equals(ArtifactStatus.Ready) == false) {
 							fullyResolved = false;
 						}
@@ -431,7 +436,7 @@ public class LocalRepository implements Repository {
 		while ((bytesRead = is.read(buffer)) != -1) {
 			totalbytes += bytesRead;
 			os.write(buffer, 0, bytesRead);
-			dlstatus.get(a).setReadBytes(bytesRead);
+			dlstatus.get(a).setReadBytes(totalbytes);
 		}
 		os.flush();
 		os.close();
@@ -480,7 +485,12 @@ public class LocalRepository implements Repository {
 			} catch (MalformedURLException e) {
 				// Invalid repository URL?
 			} catch (IOException e) {
-				e.printStackTrace();
+				if (e instanceof FileNotFoundException) {
+					System.out.println(a.toString()+" not found in "+repository);
+				}
+				else {
+					e.printStackTrace();
+				}
 				// Ignore the exception, probably means we couldn't find the POM
 				// in the repository. If there are more repositories in the list this
 				// isn't neccessarily an issue.
@@ -562,14 +572,29 @@ public class LocalRepository implements Repository {
 				for (String version : versions) {
 					ArtifactImpl artifact = new ArtifactImpl(groupId, artifactId, version, this);
 					File versionDirectory = new File(artifactDirectory, version);
-					status.put(artifact, ArtifactStatus.Queued);
-					File pomFile = new File(versionDirectory, artifactId+"-"+version+".pom");
-					if (pomFile.exists()) {
-						status.put(artifact, ArtifactStatus.Pom);
-					}
-					File jarFile = new File(versionDirectory, artifactId+"-"+version+".jar");
-					if (jarFile.exists()) {
-						status.put(artifact, ArtifactStatus.Jar);
+					// If there are any directories inside here we're not in a valid
+					// artifact and have accidentally wandered down the wrong branch
+					// of the file system. Blame the idiotic maven2 directory structure
+					// with groups split into subdirectories!
+					boolean foundSubDir = false;
+					//System.out.println("Version directory : "+versionDirectory.toString());
+					if (versionDirectory.isDirectory()) {
+						for (File sub : versionDirectory.listFiles()) {
+							if (sub.isDirectory()) {
+								foundSubDir = true;
+							}
+						}
+						if (foundSubDir == false) {
+							status.put(artifact, ArtifactStatus.Queued);
+							File pomFile = new File(versionDirectory, artifactId+"-"+version+".pom");
+							if (pomFile.exists()) {
+								status.put(artifact, ArtifactStatus.Pom);
+							}
+							File jarFile = new File(versionDirectory, artifactId+"-"+version+".jar");
+							if (jarFile.exists()) {
+								status.put(artifact, ArtifactStatus.Jar);
+							}
+						}
 					}
 				}
 			}
