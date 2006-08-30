@@ -68,29 +68,65 @@ public class LoaderTest extends TestCase {
 	public void testDynamic() throws MalformedURLException, ClassNotFoundException, 
 	SecurityException, NoSuchMethodException, IllegalArgumentException, 
 	IllegalAccessException, InvocationTargetException, InterruptedException {
-		ClassLoader c = new URLClassLoader(new URL[]{new URL("http://www.ebi.ac.uk/~tmo/repository/uk/org/mygrid/taverna/raven/raven/1.5-SNAPSHOT/raven-1.5-SNAPSHOT.jar")},null);
-		System.out.println(c.toString());
+		
+		// Create a remote classloader referencing the raven jar within a repository
+		String repositoryLocation = 
+			"http://www.ebi.ac.uk/~tmo/repository/";
+		String artifactLocation = 
+			"uk/org/mygrid/taverna/raven/raven/1.5-SNAPSHOT/raven-1.5-SNAPSHOT.jar";
+		ClassLoader c = new URLClassLoader(
+				new URL[]{new URL(repositoryLocation+artifactLocation)}
+				,null);
+		
+		// Reference to the Loader class within net.sf.taverna.raven
 		Class loaderClass = c.loadClass("net.sf.taverna.raven.Loader");
-		Method m = loaderClass.getDeclaredMethod("doRavenMagic",String.class,File.class,URL[].class,URL.class,String.class,String.class,String.class,int.class,String.class);
-		System.out.println(m);
-		Class workbenchClass = (Class)m.invoke(null,new Object[]{"1.5-SNAPSHOT",
+		// Find the single static method provided by the loader
+		Method m = loaderClass.getDeclaredMethod(
+				"doRavenMagic",String.class,File.class,
+				URL[].class,URL.class,String.class,
+				String.class,String.class,int.class,String.class);
+		
+		// Parameters for the Raven loader call
+		String ravenVersion = "1.5-SNAPSHOT";
+		URL[] remoteRepositories = new URL[]{
+				new URL("http://www.ebi.ac.uk/~tmo/repository/"), 
+				new URL("http://www.ibiblio.org/maven2/")};
+		URL splashScreenImage = new URL("http://www.ebi.ac.uk/~tmo/mygrid/splashscreen.png");
+		String groupID = "uk.org.mygrid.taverna";
+		String artifactID = "taverna-workbench";
+		String version = "1.5-SNAPSHOT";
+		int minimumDisplayTime = 10 * 1000; // Ten seconds
+		String targetClassName = "org.embl.ebi.escience.scuflui.workbench.Workbench";
+		
+		// Construct array for dynamic invocation
+		Object[] args = new Object[]{
+				ravenVersion,
 				dir,
-				new URL[]{new URL("http://www.ebi.ac.uk/~tmo/repository/"), 
-				          new URL("http://www.ibiblio.org/maven2/")},
-				new URL("http://www.ebi.ac.uk/~tmo/mygrid/splashscreen.png"),
-				"uk.org.mygrid.taverna",
-				"taverna-workbench",
-				"1.5-SNAPSHOT",
-				10000,
-		"org.embl.ebi.escience.scuflui.workbench.Workbench"});
-		System.out.println(workbenchClass.toString());
-		System.out.println(workbenchClass.getClassLoader().toString());
-		Method workbenchMain = workbenchClass.getDeclaredMethod("main",String[].class);
-		//workbenchMain.invoke(null,new Object[]{new String[0]});
+				remoteRepositories,
+				splashScreenImage,
+				groupID,
+				artifactID,
+				version,
+				minimumDisplayTime,
+				targetClassName
+		};
+		
+		// Call method via reflection, 'null' target as this is a static method
+		Class workbenchClass = (Class)m.invoke(null,args);
+		
+		// Verify that the class is loaded and that the classloader is being
+		// driven off Raven's artifact system
+		assertTrue(workbenchClass.getName().equals("org.embl.ebi.escience.scuflui.workbench.Workbench"));
+		assertTrue(workbenchClass.getClassLoader().toString().equals("loader{uk.org.mygrid.taverna:taverna-workbench:1.5-SNAPSHOT}"));
+		
+		// Could invoke the workbench's main method here as follows :
+		//
+		// Method workbenchMain = workbenchClass.getDeclaredMethod("main",String[].class);
+		// workbenchMain.invoke(null,new Object[]{new String[0]});
 	}
 	
 	/**
-	 * Test whether we can launch the workbench from a remote raven
+	 * Test whether we can launch the workbench from a local raven jar
 	 * @throws MalformedURLException
 	 * @throws ArtifactNotFoundException
 	 * @throws ArtifactStateException
