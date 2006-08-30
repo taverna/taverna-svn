@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: WSDLSOAPInvoker.java,v $
- * Revision           $Revision: 1.6 $
+ * Revision           $Revision: 1.7 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-08-25 13:56:59 $
+ * Last modified on   $Date: 2006-08-30 11:25:14 $
  *               by   $Author: sowen70 $
  * Created on 07-Apr-2006
  *****************************************************************/
@@ -102,6 +102,7 @@ public class WSDLSOAPInvoker {
 	public Map invoke(Map inputMap) throws Exception {
 
 		Call call = getCall();
+		call.setTimeout(getTimeout());
 		SOAPBodyElement body = buildBody(inputMap);
 
 		List response = (List) call.invoke(new Object[] { body });
@@ -115,6 +116,29 @@ public class WSDLSOAPInvoker {
 
 		result.put("attachmentList", extractAttachmentsDataThing(call));
 
+		return result;
+	}
+	
+	/**
+	 * Reads the property taverna.wsdl.timeout, default to 5 minutes if missing.
+	 * @return
+	 */
+	private Integer getTimeout() {
+		int result=300000;
+		String minutesStr=System.getProperty("taverna.wsdl.timeout").trim();
+		if (minutesStr==null) {
+			logger.warn("Missing property for taverna.wsdl.timeout. Using default of 5 minutes");
+			return result;
+		}
+		try {
+			int minutes=Integer.parseInt(minutesStr);
+			result=minutes*1000*60;
+		}
+		catch(NumberFormatException e) {
+			logger.error("Error with number format for timeout setting taverna.wsdl.timeout",e);
+			return result;
+		}		
+		logger.info("Using a timout of "+result+"ms");
 		return result;
 	}
 
@@ -148,7 +172,7 @@ public class WSDLSOAPInvoker {
 		String operationName = processor.getOperationName();
 		String use = processor.getParser().getUse(operationName);
 		Call result = (((WSIFPort_ApacheAxis) ((WSIFOperation_ApacheAxis) processor
-				.getWSIFOperation()).getWSIFPort()).getCall());
+				.getWSIFOperation()).getWSIFPort()).getCall());		
 		result.setUseSOAPAction(true);
 		result.setProperty(org.apache.axis.client.Call.SEND_TYPE_ATTR,
 				Boolean.FALSE);
