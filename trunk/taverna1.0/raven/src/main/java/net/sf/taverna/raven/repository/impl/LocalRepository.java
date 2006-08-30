@@ -50,7 +50,7 @@ public class LocalRepository implements Repository {
 			new ArrayList<ArtifactClassLoader>();
 		private Map<String, Class> classMap =
 			new HashMap<String, Class>();
-
+		private String name;
 		
 		protected ArtifactClassLoader(ArtifactImpl a) throws MalformedURLException, ArtifactStateException {
 			super(new URL[]{LocalRepository.this.jarFile(a).toURL()});
@@ -70,9 +70,10 @@ public class LocalRepository implements Repository {
 		
 		private void init(ArtifactImpl a) throws ArtifactStateException {
 			List<ArtifactImpl> deps = a.getDependencies();
+			this.name = a.toString();
 			for (ArtifactImpl dep : deps) {
 				synchronized(loaderMap) {
-					ArtifactClassLoader ac = loaderMap.get(a);
+					ArtifactClassLoader ac = loaderMap.get(dep);
 					if (ac == null) {
 						try {
 							ac = new ArtifactClassLoader(dep);
@@ -87,21 +88,32 @@ public class LocalRepository implements Repository {
 			}
 		}
 		
+		public String toString() {
+			return "loader{"+this.name+"}";
+		}
+		
 		protected Class<?> findClass(String name) throws ClassNotFoundException {
+			//System.out.println("Searching for '"+name+"' - "+this.toString());
 			if (classMap.containsKey(name)) {
+				//System.out.println("Returning cached '"+name+"' - "+this.toString());
 				return classMap.get(name);
 			}
 			try {
 				Class c = super.findClass(name);
 				classMap.put(name, c);
+				//System.out.println("Returning found '"+name+"' - "+this.toString());
 				return c;
 			} catch (ClassNotFoundException e) {
+				//System.out.println("Trying children of "+this.toString());
+				//for (ArtifactClassLoader ac : childLoaders) {
+					//System.out.println("    "+ac.toString());
+				//}
 				for (ArtifactClassLoader ac : childLoaders) {
 					try {
 						return ac.findClass(name);
 					}
 					catch (ClassNotFoundException cnfe) {
-						//
+						//System.out.println("No '"+name+"' in "+this.toString());
 					}
 				}
 			}
@@ -175,7 +187,7 @@ public class LocalRepository implements Repository {
 			ClassLoader loader;
 			try {
 				if (parent == null) {
-					loader = new ArtifactClassLoader(a);
+					loader = new ArtifactClassLoader(a, null);
 				}
 				else {
 					loader = new ArtifactClassLoader(a, parent);
