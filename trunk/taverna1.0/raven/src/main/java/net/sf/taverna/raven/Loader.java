@@ -123,7 +123,7 @@ public class Loader {
 		//System.out.println("Done close request");
 		ClassLoader loader = repository.getLoader(artifact,null);
 		//System.out.println("Got classloader");
-		return Class.forName(className,true,loader);
+		return loader.loadClass(className);
 	}
 	
 	private static class SplashScreen extends JWindow {
