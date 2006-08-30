@@ -9,8 +9,10 @@ import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -220,7 +222,7 @@ public class ArtifactImpl extends BasicArtifact {
 			return result;
 		}
 		ArtifactStatus status = repository.getStatus(this);
-		if (status.getOrder() < ArtifactStatus.Pom.getOrder() || status.isError()) {
+		if (status.getOrder() < ArtifactStatus.Pom.getOrder() || (status.isError() && status.equals(ArtifactStatus.PomNonJar)==false)) {
 			throw new ArtifactStateException(status, new ArtifactStatus[]{ArtifactStatus.Analyzed,
 					ArtifactStatus.Jar, ArtifactStatus.Pom, ArtifactStatus.Ready});
 		}
@@ -235,7 +237,7 @@ public class ArtifactImpl extends BasicArtifact {
 				DocumentBuilder builder = factory.newDocumentBuilder();
 				Document document = builder.parse(is);
 				is.close();
-				List<Node> elementList = findElements(document, "dependency");
+				List<Node> elementList = findElements(document, new String[]{"project","dependencies","dependency"});
 				for (Node node : elementList) {
 					node.normalize();
 					Node n = findElements(node, "groupId" ).iterator().next();
@@ -252,8 +254,40 @@ public class ArtifactImpl extends BasicArtifact {
 						version = versionFor(groupId,artifactId);
 					}
 					if (version != null) {
-						result.add(new ArtifactImpl(groupId, artifactId, version, this.repository));
-					}	
+						
+						// Check for optional dependency
+						boolean optional = false;
+						List<Node> optionalNodeList = findElements(node, "optional");
+						if (optionalNodeList.isEmpty()==false) {
+							n = optionalNodeList.get(0);
+							String optionalString = n.getFirstChild().getNodeValue().trim();
+							if (optionalString.equalsIgnoreCase("true")) {
+								optional = true;
+							}
+						}
+						
+						// Test for scope, if scope is 'provided' or 'test' then
+						// we don't add it as a dependency as this would force a
+						// download.
+						boolean downloadableScope = true;
+						List<Node> scopeNodeList = findElements(node, "scope");
+						if (scopeNodeList.isEmpty()==false) {
+							n = scopeNodeList.get(0);
+							String scopeString = n.getFirstChild().getNodeValue().trim();
+							if (scopeString.equalsIgnoreCase("test") ||
+									scopeString.equalsIgnoreCase("provided") ||
+									scopeString.equalsIgnoreCase("system")) {
+								downloadableScope = false;
+							}
+						}
+						
+						if (!optional && downloadableScope) {
+							result.add(new ArtifactImpl(groupId, artifactId, version, this.repository));
+						}
+						else {
+							// Log the optional dependency here if needed
+						}
+					}
 					else {
 						System.out.println("Warning - unable to find a version for the dependency "+groupId+":"+artifactId);
 					}
@@ -279,6 +313,12 @@ public class ArtifactImpl extends BasicArtifact {
 		return result;
 	}
 	
+	/**
+	 * Find any descendants of the given node with the specified element name
+	 * @param fromnode
+	 * @param name
+	 * @return
+	 */
 	private List<Node> findElements(Node fromnode, String name) {
 		NodeList nodelist = fromnode.getChildNodes();
 		List<Node> list = new ArrayList<Node>();
@@ -292,6 +332,51 @@ public class ArtifactImpl extends BasicArtifact {
 			}    		
 		}
 		return list;
+	}
+	
+	/**
+	 * Find all immediate children of the given node with the specified element
+	 * name
+	 * @param fromnode
+	 * @param name
+	 * @return
+	 */
+	private List<Node> findImmediateElements(Node fromnode, String name) {
+		NodeList nodelist = fromnode.getChildNodes();
+		List<Node> list = new ArrayList<Node>();
+		for (int i=0; i<nodelist.getLength(); i++) {
+			Node node = nodelist.item(i);
+			if (node.getNodeType() == Node.ELEMENT_NODE) {
+				if (name.equals(node.getNodeName())) {
+					list.add(node);
+				}
+				//list.addAll(findElements(node, name));
+			}    		
+		}
+		return list;
+	}
+	
+	/**
+	 * Find all descendants of the given node with the specified sequence of
+	 * element names - must be an exact match for the path from the specified
+	 * node to a found node with the names of elements in the path corresponding
+	 * to those in the names[] array.
+	 * @param fromNode
+	 * @param names
+	 * @return
+	 */
+	private List<Node> findElements(Node fromNode, String[] names) {
+		List<Node> fromNodes = new ArrayList<Node>();
+		fromNodes.add(fromNode);
+		List<Node> foundNodes = new ArrayList<Node>();
+		for (String name : names) {
+			for (Node from : fromNodes) {
+				foundNodes.addAll(findImmediateElements(from,name));
+			}
+			fromNodes = foundNodes;
+			foundNodes = new ArrayList<Node>();
+		}
+		return fromNodes;
 	}
 
 	
