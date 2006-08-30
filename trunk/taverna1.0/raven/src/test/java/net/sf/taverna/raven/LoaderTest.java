@@ -68,10 +68,15 @@ public class LoaderTest extends TestCase {
 	public void testDynamic() throws MalformedURLException, ClassNotFoundException, 
 	SecurityException, NoSuchMethodException, IllegalArgumentException, 
 	IllegalAccessException, InvocationTargetException, InterruptedException {
-		ClassLoader c = new URLClassLoader(new URL[]{new URL("http://www.ebi.ac.uk/~tmo/repository/uk/org/mygrid/taverna/raven/1.5-SNAPSHOT/raven-1.5-SNAPSHOT.jar")});
-		Class loaderClass = Class.forName("net.sf.taverna.raven.Loader",true,c);
+		ClassLoader c = new URLClassLoader(new URL[]{new URL("http://www.ebi.ac.uk/~tmo/repository/uk/org/mygrid/taverna/raven/raven/1.5-SNAPSHOT/raven-1.5-SNAPSHOT.jar")},null);
+		System.out.println(c.toString());
+		Class loaderClass = c.loadClass("net.sf.taverna.raven.Loader");
 		Method m = loaderClass.getDeclaredMethod("doRavenMagic",String.class,File.class,URL[].class,URL.class,String.class,String.class,String.class,int.class,String.class);
-		Class workbenchClass = (Class)m.invoke(null,new Object[]{"1.5-SNAPSHOT",dir,new URL[]{new URL("http://www.ebi.ac.uk/~tmo/repository/"),new URL("http://www.ibiblio.org/maven2/")},
+		System.out.println(m);
+		Class workbenchClass = (Class)m.invoke(null,new Object[]{"1.5-SNAPSHOT",
+				dir,
+				new URL[]{new URL("http://www.ebi.ac.uk/~tmo/repository/"), 
+				          new URL("http://www.ibiblio.org/maven2/")},
 				new URL("http://www.ebi.ac.uk/~tmo/mygrid/splashscreen.png"),
 				"uk.org.mygrid.taverna",
 				"taverna-workbench",
@@ -79,8 +84,9 @@ public class LoaderTest extends TestCase {
 				10000,
 		"org.embl.ebi.escience.scuflui.workbench.Workbench"});
 		System.out.println(workbenchClass.toString());
+		System.out.println(workbenchClass.getClassLoader().toString());
 		Method workbenchMain = workbenchClass.getDeclaredMethod("main",String[].class);
-		workbenchMain.invoke(null,new Object[]{new String[0]});
+		//workbenchMain.invoke(null,new Object[]{new String[0]});
 	}
 	
 	/**
@@ -108,6 +114,8 @@ public class LoaderTest extends TestCase {
 				10000,
 		"org.embl.ebi.escience.scuflui.workbench.Workbench");
 		System.out.println(workbenchClass.toString());
+		System.out.println(workbenchClass.getClassLoader().toString());
+		/**
 		System.out.println("\n\nRepository state dump : \n");
 		LocalRepository r = LocalRepository.getRepository(dir);
 		for (Artifact a : r.getArtifacts()) {
@@ -117,6 +125,12 @@ public class LoaderTest extends TestCase {
 				System.out.println("    "+dep.toString()+"  --  "+r.getStatus(dep).toString());
 			}
 		}
+		*/
 	}
+	
+	public void testDummy() {
+		//
+	}
+	
 	
 }
