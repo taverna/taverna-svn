@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: WSDLSOAPInvoker.java,v $
- * Revision           $Revision: 1.7 $
+ * Revision           $Revision: 1.8 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-08-30 11:25:14 $
+ * Last modified on   $Date: 2006-08-30 13:00:18 $
  *               by   $Author: sowen70 $
  * Created on 07-Apr-2006
  *****************************************************************/
@@ -125,13 +125,14 @@ public class WSDLSOAPInvoker {
 	 */
 	private Integer getTimeout() {
 		int result=300000;
-		String minutesStr=System.getProperty("taverna.wsdl.timeout").trim();
+		String minutesStr=System.getProperty("taverna.wsdl.timeout");
+		
 		if (minutesStr==null) {
 			logger.warn("Missing property for taverna.wsdl.timeout. Using default of 5 minutes");
 			return result;
 		}
 		try {
-			int minutes=Integer.parseInt(minutesStr);
+			int minutes=Integer.parseInt(minutesStr.trim());
 			result=minutes*1000*60;
 		}
 		catch(NumberFormatException e) {
