@@ -14,8 +14,14 @@ public interface DownloadStatus {
 	
 	/**
 	 * @return total number of bytes read from the
-	 * download source.
+	 * download source
 	 */
 	public abstract int getReadBytes();
-	
+
+  /**
+   *
+   * @return true if the download has finnished (successfully, or in error),
+   * false otherwise
+   */
+  public abstract boolean isFinnished();
 }

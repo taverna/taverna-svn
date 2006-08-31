@@ -435,14 +435,21 @@ public class LocalRepository implements Repository {
 		int totalbytes = 0;
 		byte[] buffer = new byte[1024];
 		int bytesRead;
-		while ((bytesRead = is.read(buffer)) != -1) {
-			totalbytes += bytesRead;
-			os.write(buffer, 0, bytesRead);
-			dlstatus.get(a).setReadBytes(totalbytes);
-		}
-		os.flush();
-		os.close();
-	}
+    try
+    {
+      while ((bytesRead = is.read(buffer)) != -1) {
+        totalbytes += bytesRead;
+        os.write(buffer, 0, bytesRead);
+        dlstatus.get(a).setReadBytes(totalbytes);
+      }
+    }
+    finally
+    {
+      dlstatus.get(a).setFinnished();
+      os.flush();
+      os.close();
+    }
+  }
 	
 	synchronized void forcePom(ArtifactImpl a) throws ArtifactNotFoundException {
 		fetch(this.repositories, a, "pom");

@@ -8,12 +8,15 @@ import net.sf.taverna.raven.repository.DownloadStatus;
  */
 public class DownloadStatusImpl implements DownloadStatus {
 
-	private int total, read;
+	private int total;
+  private int read;
+  private boolean finnished;
 	
-	DownloadStatusImpl(int total) {
+  DownloadStatusImpl(int total) {
 		this.total = total;
 		this.read = 0;
-	}
+    this.finnished = false;
+  }
 	
 	void setReadBytes(int read) {
 		this.read = read;
@@ -27,4 +30,13 @@ public class DownloadStatusImpl implements DownloadStatus {
 		return this.read;
 	}
 
+  public void setFinnished()
+  {
+    finnished = true;
+  }
+
+  public boolean isFinnished()
+  {
+    return finnished;
+  }
 }

@@ -19,9 +19,9 @@ import java.net.URL;
  * @author Tom Oinn
  */
 public class Loader {
-  public static Class doRavenMagic(
-
-  )
+//  public static Class doRavenMagic(
+//
+//  )
 
   /**
 	 * Initialize raven's repository, show a splash screen and load the specified
@@ -79,8 +79,13 @@ public class Loader {
 								try {
 									while (running) {
 										Thread.sleep(100);
-										splash.setProgress((dls.getReadBytes() * 100) / dls.getTotalBytes());
-										if (dls.getReadBytes() >= dls.getTotalBytes()) {
+
+                    int progress = Math.min(
+                            (dls.getReadBytes() * 100) / dls.getTotalBytes(),
+                            100);
+                    splash.setProgress(progress);
+
+                    if (dls.isFinnished()) {
 											running = false;
 										}
 									}
