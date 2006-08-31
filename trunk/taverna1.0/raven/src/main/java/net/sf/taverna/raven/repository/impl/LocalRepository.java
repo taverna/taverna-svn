@@ -3,32 +3,14 @@
  */
 package net.sf.taverna.raven.repository.impl;
 
-import java.io.File;
-import java.io.FileFilter;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.FilenameFilter;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import net.sf.taverna.raven.repository.*;
+
+import java.io.*;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.net.URLConnection;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import net.sf.taverna.raven.repository.Artifact;
-import net.sf.taverna.raven.repository.ArtifactNotFoundException;
-import net.sf.taverna.raven.repository.ArtifactStateException;
-import net.sf.taverna.raven.repository.ArtifactStatus;
-import net.sf.taverna.raven.repository.DownloadStatus;
-import net.sf.taverna.raven.repository.Repository;
-import net.sf.taverna.raven.repository.RepositoryListener;
+import java.util.*;
 
 /**
  * Represents the state of a local Maven2 repository
@@ -53,7 +35,8 @@ public class LocalRepository implements Repository {
 		private String name;
 		
 		protected ArtifactClassLoader(ArtifactImpl a) throws MalformedURLException, ArtifactStateException {
-			super(new URL[]{LocalRepository.this.jarFile(a).toURL()});
+      // fixme: use jarFile(a).toURI().toURL()?
+      super(new URL[]{LocalRepository.this.jarFile(a).toURL()});
 			init(a);
 			synchronized(loaderMap) {
 				loaderMap.put(a, this);
@@ -61,7 +44,8 @@ public class LocalRepository implements Repository {
 		}
 		
 		protected ArtifactClassLoader(ArtifactImpl a, ClassLoader parent) throws MalformedURLException, ArtifactStateException {
-			super(new URL[]{LocalRepository.this.jarFile(a).toURL()}, parent);
+      // fixme: use jarFile(a).toURI().toURL()?
+      super(new URL[]{LocalRepository.this.jarFile(a).toURL()}, parent);
 			init(a);
 			synchronized(loaderMap) {
 				loaderMap.put(a, this);
@@ -88,11 +72,13 @@ public class LocalRepository implements Repository {
 			}
 		}
 		
-		public String toString() {
+		@Override
+    public String toString() {
 			return "loader{"+this.name+"}";
 		}
 		
-		protected Class<?> findClass(String name) throws ClassNotFoundException {
+		@Override
+    protected Class<?> findClass(String name) throws ClassNotFoundException {
 			//System.out.println("Searching for '"+name+"' - "+this.toString());
 			if (classMap.containsKey(name)) {
 				//System.out.println("Returning cached '"+name+"' - "+this.toString());
@@ -220,8 +206,11 @@ public class LocalRepository implements Repository {
 	 * @see net.sf.taverna.raven.repository.impl.Repository#update()
 	 */
 	public synchronized void update() {
-		while (act());
-	}
+		while (act())
+    {
+      // nothing
+    }
+  }
 	
 	/**
 	 * Return all Artifacts within this repository
@@ -285,9 +274,10 @@ public class LocalRepository implements Repository {
 		return status.get(a);
 	}
 	
-	static Map<Artifact, ArtifactClassLoader> loaderMap = 
+	static final Map<Artifact, ArtifactClassLoader> loaderMap =
 		new HashMap<Artifact, ArtifactClassLoader>();
-	private List<RepositoryListener> listeners =
+
+  private final List<RepositoryListener> listeners =
 		new ArrayList<RepositoryListener>();
 	
 	/**
@@ -308,7 +298,7 @@ public class LocalRepository implements Repository {
 			ArtifactStatus s = status.get(a);
 			if (s.equals(ArtifactStatus.Pom)) {
 				//System.out.println(a.toString());
-				if (a.getPackageType().equals("jar") == false) {
+				if ("jar".equals(a.getPackageType()) == false) {
 					setStatus(a, ArtifactStatus.PomNonJar);
 				}
 				else {
@@ -350,7 +340,7 @@ public class LocalRepository implements Repository {
 				boolean resolutionError = false;
 				try {
 					List<ArtifactImpl> deps = a.getDependencies();
-					for (Artifact dep : deps) {
+					for (ArtifactImpl dep : deps) {
 						if (status.containsKey(dep) == false) {
 							addArtifact(dep);
 						}
@@ -390,7 +380,7 @@ public class LocalRepository implements Repository {
 	/**
 	 * Map of artifact to artifact status
 	 */
-	private Map<ArtifactImpl, ArtifactStatus> status = 
+	private Map<ArtifactImpl, ArtifactStatus> status =
 		new HashMap<ArtifactImpl, ArtifactStatus>();
 	
 	/**
@@ -465,7 +455,8 @@ public class LocalRepository implements Repository {
 	 * @param suffix The suffix of the file to fetch, either 'pom' or 'jar'
 	 * @throws ArtifactNotFoundException
 	 */
-	private void fetch(List<URL> repositories2, ArtifactImpl a, String suffix) 
+  //fixme: repositories2 isn't used
+  private void fetch(List<URL> repositories2, ArtifactImpl a, String suffix)
 		throws ArtifactNotFoundException {
 		String fname = a.getArtifactId()+"-"+a.getVersion()+"."+suffix;
 		String repositoryPath = a.getGroupId().replaceAll("\\.","/")+"/"+a.getArtifactId()+"/"+a.getVersion()+"/"+fname;
@@ -480,14 +471,14 @@ public class LocalRepository implements Repository {
 				InputStream is = connection.getInputStream();
 				// Opened the stream so presumably the thing exists
 				// Create the appropriate directory structure within the local repository
-				File toFile = (suffix.equals("pom")?pomFile(a):jarFile(a));
+				File toFile = ("pom".equals(suffix) ?pomFile(a):jarFile(a));
 				if (toFile.exists() == false) {
 					toFile.createNewFile();
 					FileOutputStream fos = new FileOutputStream(toFile);
-					setStatus(a, suffix.equals("pom")?ArtifactStatus.PomFetching:ArtifactStatus.JarFetching);
+					setStatus(a, "pom".equals(suffix) ?ArtifactStatus.PomFetching:ArtifactStatus.JarFetching);
 					copyStream(is, fos, a);
 					dlstatus.remove(a);
-					setStatus(a, suffix.equals("pom")?ArtifactStatus.Pom:ArtifactStatus.Jar);
+					setStatus(a, "pom".equals(suffix) ?ArtifactStatus.Pom:ArtifactStatus.Jar);
 					return;
 				}
 				else {
@@ -509,7 +500,7 @@ public class LocalRepository implements Repository {
 			}
 		}
 		// No appropriate POM found in any of the repositories so throw an exception
-		setStatus(a, suffix.equals("pom")?ArtifactStatus.PomFailed:ArtifactStatus.JarFailed);
+		setStatus(a, "pom".equals(suffix) ?ArtifactStatus.PomFailed:ArtifactStatus.JarFailed);
 		dlstatus.remove(a);
 		throw new ArtifactNotFoundException();
 	}
@@ -553,7 +544,7 @@ public class LocalRepository implements Repository {
 			String groupName = "";
 
 			while (temp.equals(base) == false) {
-				if (groupName.equals("") == false) {
+				if ("".equals(groupName) == false) {
 					groupName = "." + groupName ;
 				}
 				groupName = temp.getName() + groupName;
@@ -643,7 +634,11 @@ public class LocalRepository implements Repository {
 	public String toString() {
 		StringBuffer sb = new StringBuffer();
 		for (Artifact a : status.keySet()) {
-			sb.append(getStatus(a) + "\t" + a.toString() + "\n");
+			sb
+              .append(getStatus(a))
+              .append("\t")
+              .append(a.toString())
+              .append("\n");
 		}
 		return sb.toString();
 	}
