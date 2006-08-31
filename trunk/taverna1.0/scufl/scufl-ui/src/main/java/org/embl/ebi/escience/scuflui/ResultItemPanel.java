@@ -62,6 +62,71 @@ import org.embl.ebi.escience.scuflui.renderers.RendererSPI;
  * @author Matthew Pocock
  */
 public class ResultItemPanel extends JPanel {
+	
+	class ChangeAction implements ActionListener {
+		
+		JComponent component;
+
+		DataThing thing;
+
+		TreeNode tn;
+
+		JTree tree;
+
+		ChangeAction(JComponent component, DataThing thing, TreeNode tn,
+				JTree tree) {
+			super();
+			this.component = component;
+			this.thing = thing;
+			this.tn = tn;
+			this.tree = tree;
+		}
+
+		public void actionPerformed(ActionEvent ae) {
+			DataThingTreeNode node = (DataThingTreeNode) tree
+					.getLastSelectedPathComponent();
+			if (node == null /* || ! node.isLeaf() */) {
+				return;
+			}
+			if (!(component instanceof javax.swing.text.JTextComponent)) {
+				// TODO for other renderers
+				// newDataThing.setDataObject(((javax.swing.JTable)component).getValueAt(0,0));
+				return;
+			}
+
+			DataThing dataThing = node.getNodeThing();
+			String oldData = (String) dataThing.getDataObject();
+			String newData = ((javax.swing.text.JTextComponent) component)
+					.getText();
+			if (oldData.equals(newData)) {
+				return;
+			}
+			String oldLSID = this.thing.getLSID(thing.getDataObject());
+			DataThing thing = this.thing.drillAndSet(dataThing, newData);
+			if (thing != null
+					&& workflowInstance.changeOutputPortTaskData(processorName,
+						portName, thing)) {
+				DISPATCHER.fireUserChangedData(new UserChangedDataEvent(
+						workflowInstance, oldLSID, thing));
+				// System.out.println("DATATHING CHANGED EVENT!!!!");
+
+				// Update the JTree
+				tree.setEditable(true);
+				((DefaultMutableTreeNode) tn).removeAllChildren();
+				DefaultMutableTreeNode root = (DefaultMutableTreeNode) tree
+						.getModel().getRoot();
+				root.removeAllChildren();
+				DataThingTreeNode rootDataThing = DataThingTreeFactory
+						.getTree(thing);
+				DefaultTreeModel newTree = new DefaultTreeModel(rootDataThing);
+				tree.setModel(newTree);
+				tree.setEditable(false);
+				tree.repaint();
+				// structureTree.update(structureTree.getGraphics());
+			}
+		}
+	}
+
 	Logger LOG = Logger.getLogger(ResultItemPanel.class);
 
 	final JFileChooser fc = new JFileChooser();
@@ -145,12 +210,12 @@ public class ResultItemPanel extends JPanel {
 							try {
 								final JComponent component = renderer
 										.getComponent(
-												ResultItemPanel.this.renderers,
-												dataThing);
+											ResultItemPanel.this.renderers,
+											dataThing);
 								if (component != null) {
 									JScrollPane foo = new JScrollPane(component);
 									foo.getViewport().setBackground(
-											java.awt.Color.WHITE);
+										java.awt.Color.WHITE);
 									foo
 											.setPreferredSize(new Dimension(
 													100, 100));
@@ -186,14 +251,14 @@ public class ResultItemPanel extends JPanel {
 																				.getDataObject());
 																DataThing thing = newDataThing
 																		.drillAndSet(
-																				dataThing,
-																				newData);
+																			dataThing,
+																			newData);
 																if (thing != null
 																		&& workflowInstance
 																				.changeOutputPortTaskData(
-																						processorName,
-																						portName,
-																						newDataThing)) {
+																					processorName,
+																					portName,
+																					newDataThing)) {
 																	DISPATCHER
 																			.fireUserChangedData(new UserChangedDataEvent(
 																					workflowInstance,
@@ -241,7 +306,7 @@ public class ResultItemPanel extends JPanel {
 													.isDataNonVolatile(processorName))
 										panel
 												.add(rightPanel,
-														BorderLayout.EAST);
+													BorderLayout.EAST);
 									panel.setPreferredSize(new Dimension(200,
 											80));
 									splitPane.setRightComponent(panel);
@@ -258,8 +323,8 @@ public class ResultItemPanel extends JPanel {
 							} catch (Throwable otherError) {
 								LOG
 										.error(
-												"Unexpected error occured during panel construction",
-												otherError);
+											"Unexpected error occured during panel construction",
+											otherError);
 							}
 						}
 					}
@@ -325,9 +390,8 @@ public class ResultItemPanel extends JPanel {
 							}
 						} catch (IOException ioe) {
 							JOptionPane.showMessageDialog(ResultItemPanel.this,
-									"Problem saving data : \n"
-											+ ioe.getMessage(), "Exception!",
-									JOptionPane.ERROR_MESSAGE);
+								"Problem saving data : \n" + ioe.getMessage(),
+								"Exception!", JOptionPane.ERROR_MESSAGE);
 						}
 					}
 				});
@@ -352,18 +416,18 @@ public class ResultItemPanel extends JPanel {
 								.next();
 						viewers.add(new JMenuItem(new AbstractAction(renderer
 								.getName(), renderer.getIcon(
-								ResultItemPanel.this.renderers, nodeThing)) {
+							ResultItemPanel.this.renderers, nodeThing)) {
 							public void actionPerformed(ActionEvent e) {
 								try {
 									final JComponent component = renderer
 											.getComponent(
-													ResultItemPanel.this.renderers,
-													nodeThing);
+												ResultItemPanel.this.renderers,
+												nodeThing);
 									if (ui != null) {
 										JScrollPane jp = new JScrollPane(
 												component);
 										jp.getViewport().setBackground(
-												java.awt.Color.WHITE);
+											java.awt.Color.WHITE);
 
 										// Add the update button and the text
 										// area.
@@ -374,89 +438,20 @@ public class ResultItemPanel extends JPanel {
 										JPanel rightPanel = new JPanel();
 										JButton cmdEdit = new JButton("Change");
 										cmdEdit
-												.addActionListener(new ActionListener() {
-													public void actionPerformed(
-															ActionEvent ae) {
-														DataThingTreeNode node = (DataThingTreeNode) structureTree
-																.getLastSelectedPathComponent();
-														if (node != null /*
-																			 * &&
-																			 * node.isLeaf()
-																			 */)
-															if (component instanceof javax.swing.text.JTextComponent) {
-																DataThing dataThing = node
-																		.getNodeThing();
-																String oldData = (String) dataThing
-																		.getDataObject();
-																String newData = ((javax.swing.text.JTextComponent) component)
-																		.getText();
-																if (!oldData
-																		.equals(newData)) {
-																	String oldLSID = newDataThing
-																			.getLSID(newDataThing
-																					.getDataObject());
-																	DataThing thing = newDataThing
-																			.drillAndSet(
-																					dataThing,
-																					newData);
-																	if (thing != null
-																			&& workflowInstance
-																					.changeOutputPortTaskData(
-																							processorName,
-																							portName,
-																							newDataThing)) {
-																		DISPATCHER
-																				.fireUserChangedData(new UserChangedDataEvent(
-																						workflowInstance,
-																						oldLSID,
-																						newDataThing));
-																		// System.out.println("DATATHIN
-																		// CHANGED
-																		// EVENT!!!!");
-
-																		// Update
-																		// the
-																		// JTree
-																		structureTree
-																				.setEditable(true);
-																		((DefaultMutableTreeNode) tn)
-																				.removeAllChildren();
-																		DefaultMutableTreeNode root = (DefaultMutableTreeNode) structureTree
-																				.getModel()
-																				.getRoot();
-																		root
-																				.removeAllChildren();
-																		DataThingTreeNode rootDataThing = DataThingTreeFactory
-																				.getTree(newDataThing);
-																		DefaultTreeModel newTree = new DefaultTreeModel(
-																				rootDataThing);
-																		structureTree
-																				.setModel(newTree);
-																		structureTree
-																				.setEditable(false);
-																		structureTree
-																				.repaint();
-																		// structureTree.update(structureTree.getGraphics());
-																	}
-																}
-															} else {
-																// TODO for
-																// other
-																// renderers
-																// newDataThing.setDataObject(((javax.swing.JTable)component).getValueAt(0,0));
-															}
-													}
-												});
+												.addActionListener(new ChangeAction(
+														component,
+														newDataThing, tn,
+														structureTree));
 										panel.removeAll();
 										leftPanel.add(jp);
 										rightPanel.add(cmdEdit);
 										panel.add(leftPanel,
-												BorderLayout.CENTER);
+											BorderLayout.CENTER);
 										if (processorName != null
 												&& workflowInstance
 														.isDataNonVolatile(processorName))
 											panel.add(rightPanel,
-													BorderLayout.EAST);
+												BorderLayout.EAST);
 										panel.setPreferredSize(new Dimension(
 												200, 80));
 
