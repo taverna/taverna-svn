@@ -32,6 +32,16 @@
       </roles>
       <timezone>0</timezone>
     </developer>
+    <developer>
+      <id>mpocock</id>
+      <name>Matthew Pocock</name>
+      <email>matthew.pocock@ncl.ac.uk</email>
+      <organization>Unversity of Newcastle Upon Tyne</organization>
+      <organizationUrl>http://www.ncl.ac.uk</organizationUrl>
+      <roles>
+        <role>Developer</role>
+      </roles>
+    </developer>
   </developers>
   <licenses>
     <license>
@@ -55,6 +65,17 @@
         <configuration>
           <source>1.5</source>
           <target>1.5</target>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jar-plugin</artifactId>
+        <configuration>
+          <archive>
+            <manifest>
+              <mainClass>net.sf.taverna.raven.Raven</mainClass>
+            </manifest>
+          </archive>
         </configuration>
       </plugin>
       <plugin>
