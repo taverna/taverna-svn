@@ -1,30 +1,14 @@
 package net.sf.taverna.raven;
 
-import java.awt.BorderLayout;
-import java.awt.Dimension;
-import java.awt.Toolkit;
+import net.sf.taverna.raven.repository.*;
+import net.sf.taverna.raven.repository.impl.LocalRepository;
+
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
-import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
-
-import javax.swing.JLabel;
-import javax.swing.JProgressBar;
-import javax.swing.JWindow;
-import javax.swing.ImageIcon;
-import javax.swing.SwingUtilities;
-
-
-import net.sf.taverna.raven.repository.Artifact;
-import net.sf.taverna.raven.repository.ArtifactNotFoundException;
-import net.sf.taverna.raven.repository.ArtifactStateException;
-import net.sf.taverna.raven.repository.ArtifactStatus;
-import net.sf.taverna.raven.repository.BasicArtifact;
-import net.sf.taverna.raven.repository.DownloadStatus;
-import net.sf.taverna.raven.repository.Repository;
-import net.sf.taverna.raven.repository.RepositoryListener;
-import net.sf.taverna.raven.repository.impl.LocalRepository;
 
 /**
  * Bootstrap a raven installation, allows a non raven aware
@@ -35,8 +19,11 @@ import net.sf.taverna.raven.repository.impl.LocalRepository;
  * @author Tom Oinn
  */
 public class Loader {
-	
-	/**
+  public static Class doRavenMagic(
+
+  )
+
+  /**
 	 * Initialize raven's repository, show a splash screen and load the specified
 	 * artifact into it. Returns the named class from that specified artifact.
 	 * @param ravenVersion The version of Raven to install or check in the local repository
@@ -93,7 +80,7 @@ public class Loader {
 									while (running) {
 										Thread.sleep(100);
 										splash.setProgress((dls.getReadBytes() * 100) / dls.getTotalBytes());
-										if (dls.getReadBytes() == dls.getTotalBytes()) {
+										if (dls.getReadBytes() >= dls.getTotalBytes()) {
 											running = false;
 										}
 									}
