@@ -17,44 +17,97 @@ import java.net.URL;
  * to actually have raven installed to begin with. Also handles
  * splash screen management and a few other conveniences.
  * @author Tom Oinn
+ * @author Matthew Pocock
  */
 public class Loader {
-//  public static Class doRavenMagic(
-//
-//  )
-
   /**
-	 * Initialize raven's repository, show a splash screen and load the specified
-	 * artifact into it. Returns the named class from that specified artifact.
-	 * @param ravenVersion The version of Raven to install or check in the local repository
-	 * @param localRepositoryLocation Directory on disk to use as a local cache for m2 artifacts
-	 * @param remoteRepositories array of URLs to remote Maven2 repositories
-	 * @param splashScreenURL URL to a splash screen image of a form a JLabel can use
-	 * @param targetGroup Group ID of the Maven2 artifact to bootstrap from
-	 * @param targetArtifact Artifact ID of the Maven2 artifact to bootstrap from
-	 * @param targetVersion Version of the Maven2 artifact to bootstrap from
-	 * @param splashTime Time in milliseconds to display the splashscreen, splashscreen is
-	 * displayed while either this timeout is not exceeded or there is any raven activity.
-	 * @param className Class name to return from the target artifact
-	 * @return Class object loaded by raven as specified by the arguments to this method call
-	 * @throws ArtifactNotFoundException
-	 * @throws ArtifactStateException
-	 * @throws ClassNotFoundException
-	 */
-	public static Class doRavenMagic(String ravenVersion, 
-			File localRepositoryLocation, 
-			URL[] remoteRepositories,
-			URL splashScreenURL,
-			String targetGroup,
-			String targetArtifact,
-			String targetVersion,
-			int splashTime,
-			String className) throws ArtifactNotFoundException, ArtifactStateException, ClassNotFoundException {
-		
-		final SplashScreen splash = 
+   * Initialize raven's repository and load the specified artifact into it.
+   * Returns the named class from the classloader containing the specified
+   * artifact and all of its dependencies.
+   *
+   * @param localRepositoryLocation Directory on disk to use as a local cache for m2 artifacts
+   * @param remoteRepositories array of URLs to remote Maven2 repositories
+   * @param targetGroup Group ID of the Maven2 artifact to bootstrap from
+   * @param targetArtifact Artifact ID of the Maven2 artifact to bootstrap from
+   * @param targetVersion Version of the Maven2 artifact to bootstrap from
+   * @param className Class name to return from the target artifact
+   * @param listener  a RepositoryListener that will be informed of repository
+   * events
+   * @return Class object loaded by raven as specified by the arguments to this method call
+   * @throws ArtifactNotFoundException
+   * @throws ArtifactStateException
+   * @throws ClassNotFoundException
+   */
+  public static Class doRavenMagic(
+          File localRepositoryLocation,
+          URL[] remoteRepositories,
+          String targetGroup,
+          String targetArtifact,
+          String targetVersion,
+          String className,
+          RepositoryListener listener)
+          throws ArtifactNotFoundException,
+                 ArtifactStateException,
+                 ClassNotFoundException
+
+  {
+    Repository repository =
+            LocalRepository.getRepository(localRepositoryLocation);
+
+    for(URL remoteLocation : remoteRepositories)
+    {
+      repository.addRemoteRepository(remoteLocation);
+    }
+
+    Artifact artifact =
+            new BasicArtifact(targetGroup, targetArtifact, targetVersion);
+    repository.addArtifact(artifact);
+    repository.addRepositoryListener(listener);
+    repository.update();
+    repository.removeRepositoryListener(listener);
+    ClassLoader loader = repository.getLoader(artifact, null);
+    return loader.loadClass(className);
+  }
+
+    /**
+    * Initialize raven's repository, show a splash screen and load the specified
+    * artifact into it. Returns the named class from the classloader containing
+     * the specified artifact and all of its dependencies. This will
+     * additionally download the specified version of raven.
+     * .
+    * @param ravenVersion The version of Raven to install or check in the local repository
+     * @param localRepositoryLocation Directory on disk to use as a local cache for m2 artifacts
+     * @param remoteRepositories array of URLs to remote Maven2 repositories
+     * @param targetGroup Group ID of the Maven2 artifact to bootstrap from
+     * @param targetArtifact Artifact ID of the Maven2 artifact to bootstrap from
+     * @param targetVersion Version of the Maven2 artifact to bootstrap from
+     * @param className Class name to return from the target artifact
+     * @param splashScreenURL URL to a splash screen image of a form a JLabel can use
+     * @param splashTime Time in milliseconds to display the splashscreen, splashscreen is
+     * displayed while either this timeout is not exceeded or there is any raven activity.
+     * @return Class object loaded by raven as specified by the arguments to this method call
+     * @throws ArtifactNotFoundException
+    * @throws ArtifactStateException
+    * @throws ClassNotFoundException
+    */
+  public static Class doRavenMagic(String ravenVersion,
+                                   File localRepositoryLocation,
+                                   URL[] remoteRepositories,
+                                   String targetGroup,
+                                   String targetArtifact,
+                                   String targetVersion,
+                                   String className,
+                                   URL splashScreenURL,
+                                   int splashTime)
+          throws ArtifactNotFoundException,
+                 ArtifactStateException,
+                 ClassNotFoundException
+  {
+
+    final SplashScreen splash =
 			new SplashScreen(splashScreenURL,splashTime);
 		
-		final Repository repository = 
+		final Repository repository =
 			LocalRepository.getRepository(localRepositoryLocation);
 		
 		for (URL remoteLocation : remoteRepositories) {
