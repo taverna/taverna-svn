@@ -94,13 +94,26 @@ import org.jdom.output.XMLOutputter;
  * Panel to construct the input for a workflow.
  * 
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover </a>
- * @version $Revision: 1.7 $
+ * @version $Revision: 1.8 $
  */
 public abstract class DataThingConstructionPanel extends JPanel implements
 		ScuflUIComponent, ScuflModelEventListener {
 	
 	private static Logger logger = Logger.getLogger(DataThingConstructionPanel.class);
 	
+	private class RunAction implements ActionListener {
+		public void actionPerformed(ActionEvent event) {
+			Map inputObject = bakeInputMap();
+			try {
+				launchEnactorDisplay(inputObject);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+	}
+	RunAction runAction = new RunAction();
+	JButton runButton;
+
 	private interface PanelTreeNode {
 		public JComponent getPanel();
 
@@ -917,7 +930,8 @@ public abstract class DataThingConstructionPanel extends JPanel implements
 		}
 	}
 
-	static JFileChooser fileChooser = new JFileChooser();
+	// Noo, not static, then it'll manage to keep a reference to us
+	JFileChooser fileChooser = new JFileChooser();
 
 	static BaclavaDataService store = null;
 
@@ -928,6 +942,8 @@ public abstract class DataThingConstructionPanel extends JPanel implements
 	DefaultTreeModel treeModel = new DefaultTreeModel(rootNode);
 
 	JSplitPane splitter;
+	
+	JPanel south;
 
 	JTree portTree;
 
@@ -1212,23 +1228,14 @@ public abstract class DataThingConstructionPanel extends JPanel implements
 		splitter.setPreferredSize(new Dimension(0, 0));
 
 		JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-		JButton runButton = new JButton("Run Workflow", TavernaIcons.runIcon);
-		runButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent event) {
-				Map inputObject = bakeInputMap();
-				try {
-					launchEnactorDisplay(inputObject);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
+		runButton = new JButton("Run Workflow", TavernaIcons.runIcon);		
+		runButton.addActionListener(runAction);
 		buttonPanel.add(runButton);
 		
 		// NASTY - we'll do our own layout manager so that we can have 
 		// our instructions label placed nicely next to the Run button.
 		// FIXME: Do this with any of the existing layout managers instead
-		JPanel south = new JPanel(new LayoutManager(){
+		south = new JPanel(new LayoutManager(){
 			final int GAP=5;
 			public void addLayoutComponent(String name, Component comp) {}
 			public void removeLayoutComponent(Component comp) {}
@@ -1315,17 +1322,29 @@ public abstract class DataThingConstructionPanel extends JPanel implements
 	 * @see org.embl.ebi.escience.scuflui.ScuflUIComponent#detachFromModel()
 	 */
 	public void detachFromModel() {
-		if (this.model != null) {
-			model.removeListener(this);
-			this.model = null;
-			rootNode.removeAllChildren();
-			try {
-				splitter.remove(splitter.getRightComponent());
-			} catch (NullPointerException npe) {
-				// Can occur if the split window isn't populated
-				// tmo, 17th feb 2004
-			}
+		if (this.model == null) {
+			return;
 		}
+		model.removeListener(this);		
+		rootNode.removeAllChildren();
+		portTree.removeAll();
+		try {
+			splitter.remove(splitter.getRightComponent());
+		} catch (NullPointerException npe) {
+			// Can occur if the split window isn't populated
+		}
+		try {
+			// Clear the south panel to remove long living references
+			// (oddly enough, our JLabel instructions does that)
+			south.removeAll();
+		} catch (NullPointerException e) {
+			// Same as above
+		}
+		// Because the runAction keeps a reference to us, and the
+		// runButton is kept alive through some
+		// internal sun.awt.*.InputMethodContext
+		runButton.removeActionListener(runAction);		
+		this.model = null;
 	}
 
 	private void updateModel() {
