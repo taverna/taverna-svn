@@ -76,11 +76,8 @@ public class Workbench extends JFrame {
 
 		try {
 			if (MyGridConfiguration.getProperty("taverna.workbench.themeclass") == null) {
-				if (System.getProperty("os.name").equals("Linux") && System.getProperty("java.vm.version").startsWith("1.5"))
-				{
-					//stops the default theme looking horrible with jdk1.5 under Linux
-					UIManager.setLookAndFeel("javax.swing.plaf.synth.SynchLookAndFeel"); 
-				} else {
+//				//looks best just to leave alone with Linux 
+				if (!(System.getProperty("os.name").equals("Linux"))) { 
 					UIManager.setLookAndFeel(UIManager
 							.getSystemLookAndFeelClassName());
 				} 
