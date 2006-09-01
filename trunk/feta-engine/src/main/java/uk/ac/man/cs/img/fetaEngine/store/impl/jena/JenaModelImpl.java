@@ -14,6 +14,7 @@ import uk.ac.man.cs.img.fetaEngine.command.IQueryProvider;
 import uk.ac.man.cs.img.fetaEngine.command.impl.rdql.QueryProviderRDQLImpl;
 import uk.ac.man.cs.img.fetaEngine.store.FetaEngineException;
 import uk.ac.man.cs.img.fetaEngine.store.FetaPersistentRegistryIndex;
+import uk.ac.man.cs.img.fetaEngine.webservice.CannedQueryType;
 
 import com.hp.hpl.jena.rdf.model.Model;
 

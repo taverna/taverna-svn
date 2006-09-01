@@ -27,6 +27,8 @@ package uk.ac.man.cs.img.fetaEngine.store;
 
 import java.util.Set;
 
+import uk.ac.man.cs.img.fetaEngine.webservice.CannedQueryType;
+
 public interface IFetaModel {
 
 	/* INQUIRY RELATED */

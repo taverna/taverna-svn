@@ -14,6 +14,7 @@ import org.apache.axis.types.NMToken;
 import uk.ac.man.cs.img.fetaEngine.command.IQueryGenerator;
 import uk.ac.man.cs.img.fetaEngine.command.IQueryProvider;
 import uk.ac.man.cs.img.fetaEngine.commons.FetaModelRDF;
+import uk.ac.man.cs.img.fetaEngine.webservice.CannedQueryType;
 
 /**
  * 

@@ -40,6 +40,7 @@ import uk.ac.man.cs.img.fetaEngine.store.FetaPersistentRegistryIndex;
 import uk.ac.man.cs.img.fetaEngine.store.IFetaModel;
 import uk.ac.man.cs.img.fetaEngine.store.PedroXMLToRDF;
 import uk.ac.man.cs.img.fetaEngine.store.load.FetaLoad;
+import uk.ac.man.cs.img.fetaEngine.webservice.CannedQueryType;
 
 /**
  * 

@@ -6,6 +6,8 @@
 
 package uk.ac.man.cs.img.fetaEngine.command;
 
+import uk.ac.man.cs.img.fetaEngine.webservice.CannedQueryType;
+
 /**
  * 
  * @author Pinar
