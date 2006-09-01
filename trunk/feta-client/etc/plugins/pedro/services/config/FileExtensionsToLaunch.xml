@@ -1,0 +1,106 @@
+<!-- 
+FileExtensionsToLaunch: this file associates file extensions with launcher programs.  These
+settings effect the "View" button on URL data form fields.  If no extensions are defined here
+the view button will not appear in these fields.  If any are defined, the application examines
+the extension of the URL name and determines whether the extension has been associated with
+any program.  If it finds none, the "View" button appears desensitized.  Otherwise, when the 
+user presses the "View" button, the selected URL is launched with the program corresponding
+to the file extension.  Note that only one program may be associated with any file extension.
+
+Important: each <launch> value represents the name of the program executable.  The application assumes that the paths for all of these applications are included in your environment.
+
+-->
+
+<launch_programs>
+	<file_extension>
+		<extension>
+			jpg
+		</extension>
+
+		<launch>
+			iexplore
+		</launch>
+	</file_extension>
+
+	<file_extension>
+		<extension>
+			gif
+		</extension>
+
+		<launch>
+			iexplore
+		</launch>
+	</file_extension>
+
+	<file_extension>
+		<extension>
+			html
+		</extension>
+
+		<launch>
+			iexplore
+		</launch>
+	</file_extension>
+
+	<file_extension>
+		<extension>
+			pdf
+		</extension>
+
+		<launch>
+			AcroRd32
+		</launch>
+	</file_extension>
+
+	<file_extension>
+		<extension>
+			doc
+		</extension>
+
+		<launch>
+			winword
+		</launch>
+	</file_extension>
+
+	<file_extension>
+		<extension>
+			txt
+		</extension>
+
+		<launch>
+			winword
+		</launch>
+	</file_extension>
+
+	<file_extension>
+		<extension>
+			xls
+		</extension>
+
+		<launch>
+			excel
+		</launch>
+	</file_extension>
+
+	<file_extension>
+		<extension>
+			wsdl
+		</extension>
+
+		<launch>
+			iexplore
+		</launch>
+	</file_extension>
+
+	<file_extension>
+		<extension>
+			xml
+		</extension>
+
+		<launch>
+			iexplore
+		</launch>
+	</file_extension>
+
+
+</launch_programs>
