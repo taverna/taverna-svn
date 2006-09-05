@@ -84,9 +84,10 @@ public class EnactorInvocation extends JPanel implements ScuflUIComponent {
 			// input data)
 			workflowInstance.destroy();
 			// And remove our reference to it		
-			workflowInstance = null;						
+			workflowInstance = null;
+			theModel = null;
 		} catch (Exception e) {
-			logger.error("Could not detach", e);
+			logger.error("Could not detach EnactorInvocation", e);
 		}
 	}
 
