@@ -11,7 +11,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -24,11 +23,54 @@ import org.embl.ebi.escience.scufl.view.XScuflView;
  * Represents a single scufl workflow model
  * 
  * @author Tom Oinn
+ * @author Stian Soiland
  */
 public class ScuflModel implements Serializable, LogAwareComponent {
 
 	private static Logger logger = Logger.getLogger(ScuflModel.class);
-	
+
+	/**
+	 * The processors defined by this workflow, ArrayList of Processor
+	 * subclasses.
+	 */
+	private List<Processor> processors;
+
+	/**
+	 * An internal processor implementation to hold the overall workflow
+	 * outputs, appearing as InputPort objects and acting as sinks for data from
+	 * the externally visible processors.
+	 */
+	private InternalSinkPortHolder sinks;
+
+	/**
+	 * An internal processor implementation to hold the overall workflow source
+	 * links; these appear as OutputPort objects in this processor.
+	 */
+	private InternalSourcePortHolder sources;
+
+	/**
+	 * The concurrency constraints defined by this workflow, ArrayList of
+	 * ConcurrencyConstraint objects.
+	 */
+	private ArrayList<ConcurrencyConstraint> constraints;
+
+	/**
+	 * A workflow description object containing fields such as a free text
+	 * description, author list etc
+	 */
+	private WorkflowDescription description;
+
+	/**
+	 * The data flow constraints defined by this workflow, ArrayList of
+	 * DataConstraint objects.
+	 */
+	private ArrayList<DataConstraint> dataconstraints;
+
+	/**
+	 * The log level for the model overall
+	 */
+	int logLevel;
+
 	/**
 	 * Set to true if the workflow definition is being loaded in offline mode,
 	 * i.e. no network activity
@@ -36,23 +78,115 @@ public class ScuflModel implements Serializable, LogAwareComponent {
 	boolean offline = false;
 
 	/**
+	 * The active model listeners for this model
+	 */
+	List<ScuflModelEventListener> listeners;
+
+	/**
+	 * Events pending to be processed by the notify thread
+	 * 
+	 */
+	List<ScuflModelEvent> pendingEvents;
+
+	/**
+	 * Thread that processes events and pass them on to the listeners
+	 */
+	NotifyThread notifyThread;
+
+	/**
+	 * Whether the model should fire events to its listeners
+	 */
+	public boolean isFiringEvents = true;
+
+	public ScuflModel() {
+		// The event processing system (listeners/pendingEvents/notifyThread) 
+		// lives throughout the lifetime of the ScuflModel. 		
+		listeners = Collections
+				.synchronizedList(new ArrayList<ScuflModelEventListener>());
+		pendingEvents = new ArrayList<ScuflModelEvent>();
+		initialize();
+		notifyThread = new NotifyThread(pendingEvents, listeners);
+	}
+
+	protected void finalize() throws Throwable {
+		// Stop our event thread
+		if (notifyThread != null) {
+			synchronized (notifyThread) {
+				notifyThread.loop = false;
+				notifyThread.interrupt();
+			}
+		}
+	}
+
+	public ScuflModel clone() throws CloneNotSupportedException {
+		XScuflView xsv = new XScuflView(this);
+		String xscuflText = xsv.getXMLText();
+		removeListener(xsv);
+		ScuflModel newModel = new ScuflModel();
+		try {
+			XScuflParser.populate(xscuflText, newModel, null);
+		} catch (ScuflException e) {
+			logger.error("Model could not be cloned", e);
+			throw new CloneNotSupportedException();
+		}
+		return newModel;
+	}
+
+
+	
+	/**
+	 * Initialize all members, used by constructor and clear()
+	 * 
+	 */
+	void initialize() {
+		setLogLevel(0);
+		processors = new ArrayList<Processor>();
+		try {
+			sinks = new InternalSinkPortHolder(this);
+			sources = new InternalSourcePortHolder(this);
+		} catch (ScuflException e) {
+			logger.error("Could not create internal sink/source holder", e);
+		}
+		dataconstraints = new ArrayList<DataConstraint>();
+		constraints = new ArrayList<ConcurrencyConstraint>();
+		description = new WorkflowDescription();		
+	}
+
+	/**
+	 * Clear the model, retaining any existing listeners but removing all model
+	 * data. Restarts the notify thread.
+	 */
+	public void clear() {
+		initialize();		
+		fireModelEvent(new ScuflModelEvent(this,
+				"Reset model to initial state."));		
+	}
+
+	/**
 	 * Is the workflow in offline mode?
 	 */
 	public boolean isOffline() {
-		return this.offline;
+		return offline;
 	}
 
 	/**
 	 * Set the online / offline status, true sets to offline, false to online
-	 * (the initial value)
+	 * (the initial value). In online mode, processors are allowed to use the
+	 * network. Use offline mode to load a workflow with network problems.
 	 */
-	public synchronized void setOffline(boolean offlineValue)
-			throws SetOnlineException {
-		if (offlineValue != this.offline) {
-			this.offline = offlineValue;
-			if (offlineValue == false) {
+	public synchronized void setOffline(boolean goOffline)
+	throws SetOnlineException {
+		if (goOffline == this.offline) {
+			return;
+		}				
+		boolean originalEventStatus = this.isFiringEvents;
+		try {
+			this.offline = goOffline;
+			if (!this.offline) {
+				// We'll disable event statuses while we do lots of resets and stuff
+				setEventStatus(false);			
 				// Interesting case where the workflow was loaded offline
-				// but is now in online mode again...
+				// but is now in online mode again...			
 				XScuflView xsv = new XScuflView(this);
 				String xscuflText = xsv.getXMLText();
 				removeListener(xsv);
@@ -60,13 +194,13 @@ public class ScuflModel implements Serializable, LogAwareComponent {
 				// loaded online or not. Can now reinstate the model
 				// with the XML form, processor loaders will be aware of
 				// the online status and fill in any details.
-				this.clear();
+				clear();
 				// Load the model in online mode with no prefix specified
 				try {
 					XScuflParser.populate(xscuflText, this, null);
-				} catch (Exception ex) {
-					// Re-load the workflow in offline mode
-					this.clear();
+				} catch (ScuflException ex) {
+					// Go back to offline-mode and reload the workflow
+					clear();
 					setOffline(true);
 					try {
 						XScuflParser.populate(xscuflText, this, null);
@@ -74,115 +208,45 @@ public class ScuflModel implements Serializable, LogAwareComponent {
 						logger.fatal(e);
 					}
 					SetOnlineException soe = new SetOnlineException(
-							"Unable to go online.");
+					"Unable to go online.");
 					soe.initCause(ex);
-					logger.error("Unable to go online");					
+					logger.error("Unable to go online");
+					
 					throw soe;
 				}
+				
 			}
 			// Iterate over all the processors and kick the appropriate method
-			Processor[] allProcessors = getProcessors();
-			for (int i = 0; i < allProcessors.length; i++) {
-				if (offlineValue == true) {
-					allProcessors[i].setOffline();
+			for (Processor processor : getProcessors()) {
+				if (this.offline) {
+					processor.setOffline();
 				} else {
-					allProcessors[i].setOnline();
+					processor.setOnline();
 				}
 			}
-			// Throw a minor model event to give a hint to the UI that
-			// the model online status has been changed.
-			fireModelEvent(new ScuflModelEvent(this, "Offline status change"));
-		}
+		} finally {			
+			setEventStatus(originalEventStatus);
+		}		
+		// Throw a minor model event to give a hint to the UI that
+		// the model online status has been changed.
+		fireModelEvent(new ScuflModelEvent(this, "Offline status change"));
 	}
 
-	public Object clone() {
-		try {
-			XScuflView xsv = new XScuflView(this);
-			String xscuflText = xsv.getXMLText();
-
-			ScuflModel newModel = new ScuflModel();
-			XScuflParser.populate(xscuflText, newModel, null);
-			return newModel;
-		} catch (Exception upe) {
-			logger.warn("Model not cloned");			
-			return this;
-		}
-
-	}
-
-	/**
-	 * The log level for the model overall
-	 */
-	int logLevel = 0;
-
-	/**
-	 * Get the log level
-	 */
 	public int getLogLevel() {
-		return this.logLevel;
+		return logLevel;
 	}
 
-	/**
-	 * Set the log level
-	 */
 	public void setLogLevel(int level) {
-		this.logLevel = level;
+		logLevel = level;
 	}
-
-	/**
-	 * A workflow description object containing fields such as a free text
-	 * description, author list etc
-	 */
-	private WorkflowDescription description = new WorkflowDescription();
 
 	public WorkflowDescription getDescription() {
-		return this.description;
+		return description;
 	}
 
 	public void setDescription(WorkflowDescription description) {
 		this.description = description;
 	}
-
-	/**
-	 * Whether the model should fire events to its listeners
-	 */
-	public boolean isFiringEvents = true;
-
-	/**
-	 * The active model listeners for this model
-	 */
-	List listeners = Collections.synchronizedList(new ArrayList());
-
-	/**
-	 * An internal processor implementation to hold the overall workflow source
-	 * links; these appear as OutputPort objects in this processor.
-	 */
-	private InternalSourcePortHolder sources = null;
-
-	/**
-	 * An internal processor implementation to hold the overall workflow
-	 * outputs, appearing as InputPort objects and acting as sinks for data from
-	 * the externally visible processors.
-	 */
-	private InternalSinkPortHolder sinks = null;
-
-	/**
-	 * The processors defined by this workflow, ArrayList of Processor
-	 * subclasses.
-	 */
-	private List<Processor> processors = new ArrayList<Processor>();
-
-	/**
-	 * The concurrency constraints defined by this workflow, ArrayList of
-	 * ConcurrencyConstraint objects.
-	 */
-	private ArrayList constraints = new ArrayList();
-
-	/**
-	 * The data flow constraints defined by this workflow, ArrayList of
-	 * DataConstraint objects.
-	 */
-	private ArrayList dataconstraints = new ArrayList();
 
 	/**
 	 * Get the next valid name based on the specified arbitrary string that
@@ -192,7 +256,6 @@ public class ScuflModel implements Serializable, LogAwareComponent {
 	 * in use
 	 */
 	public String getValidProcessorName(String originalName) {
-		int suffix = 0;
 		StringBuffer sb = new StringBuffer();
 		String[] split = originalName.split("\\W");
 		for (int i = 0; i < split.length; i++) {
@@ -203,17 +266,19 @@ public class ScuflModel implements Serializable, LogAwareComponent {
 		}
 		String rootName = sb.toString();
 		try {
-			Processor testExists = locateProcessor(rootName);
+			locateProcessor(rootName);
 		} catch (UnknownProcessorException upe) {
 			// Not found, so we can use this name
 			return rootName;
 		}
 		// Otherwise will have to use a suffix
+		int suffix = 0;
 		while (true) {
+			String name = rootName + (++suffix);
 			try {
-				Processor testExists = locateProcessor(rootName + (++suffix));
+				locateProcessor(name);
 			} catch (UnknownProcessorException upe) {
-				return rootName + suffix;
+				return name;
 			}
 		}
 	}
@@ -238,39 +303,18 @@ public class ScuflModel implements Serializable, LogAwareComponent {
 	}
 
 	/**
-	 * Default constructor, creates internal port holders
+	 * Handle a ScuflModelEvent from one of our children or self, only send an
+	 * event notification if the isFiringEvents is set to true.
 	 */
-	public ScuflModel() {
-		try {
-			this.sinks = new InternalSinkPortHolder(this);
-			this.sources = new InternalSourcePortHolder(this);
-		} catch (ProcessorCreationException pce) {
-			//
-		} catch (DuplicateProcessorNameException dpne) {
-			//
+	void fireModelEvent(ScuflModelEvent event) {		
+		if (!isFiringEvents) {
+			return;
+		}		
+		synchronized (pendingEvents) {
+			pendingEvents.add(event);
 		}
-	}
-
-	/**
-	 * Clear the model, retaining any existing listeners but removing all model
-	 * data.
-	 */
-	public void clear() {
-		try {
-			this.sinks = new InternalSinkPortHolder(this);
-			this.sources = new InternalSourcePortHolder(this);
-			this.dataconstraints = new ArrayList();
-			this.constraints = new ArrayList();
-			this.processors = new ArrayList();
-			this.description = new WorkflowDescription();
-			this.setLogLevel(0);
-			fireModelEvent(new ScuflModelEvent(this,
-					"Reset model to initial state."));
-		} catch (ProcessorCreationException pce) {
-			//
-		} catch (DuplicateProcessorNameException dpne) {
-			//
-		}
+		// Poke the thread so it can process some
+		notifyThread.interrupt();
 	}
 
 	/**
@@ -284,7 +328,7 @@ public class ScuflModel implements Serializable, LogAwareComponent {
 	 * input task.
 	 */
 	public Port[] getWorkflowSourcePorts() {
-		return this.sources.getPorts();
+		return sources.getPorts();
 	}
 
 	/**
@@ -292,46 +336,45 @@ public class ScuflModel implements Serializable, LogAwareComponent {
 	 * as overal outputs from the workflow.
 	 */
 	public Port[] getWorkflowSinkPorts() {
-		return this.sinks.getPorts();
+		return sinks.getPorts();
 	}
 
 	/**
 	 * Return the internal processor that represents the workflow sources.
 	 */
 	public Processor getWorkflowSourceProcessor() {
-		return this.sources;
+		return sources;
 	}
 
 	/**
 	 * Return the internal processor that holds the overall workflow sink ports
 	 */
 	public Processor getWorkflowSinkProcessor() {
-		return this.sinks;
+		return sinks;
 	}
 
 	/**
 	 * Return an array of the Processor objects defined by this workflow model
 	 */
 	public Processor[] getProcessors() {
-		synchronized(this.processors) {
-			return (Processor[]) (this.processors.toArray(new Processor[0]));
+		synchronized (processors) {
+			return processors.toArray(new Processor[0]);
 		}
 	}
-	
+
 	/**
 	 * Returns an array of Processors that are an instance of the Class
+	 * 
 	 * @return
 	 */
 	public Processor[] getProcessorsOfType(Class type) {
-		List<Processor> result=new ArrayList<Processor>();
-		for (Processor p : this.processors)
-		{
-			if (type.isInstance(p))
-			{
+		List<Processor> result = new ArrayList<Processor>();
+		for (Processor p : getProcessors()) {
+			if (type.isInstance(p)) {
 				result.add(p);
 			}
 		}
-		return (Processor[]) (result.toArray(new Processor[0]));
+		return result.toArray(new Processor[0]);
 	}
 
 	/**
@@ -342,21 +385,20 @@ public class ScuflModel implements Serializable, LogAwareComponent {
 	 * in local scope with the prefix specified.
 	 */
 	public void collectAllProcessors(Map target, String prefix) {
-		Processor[] p = getProcessors();
-		for (int i = 0; i < p.length; i++) {
-			if (p[i] instanceof ScuflWorkflowProcessor == false) {
-				if (prefix == null) {
-					target.put(p[i].getName(), p[i]);
-				} else {
-					target.put(prefix + "." + p[i].getName(), p[i]);
-				}
-			} else {
-				String newPrefix = p[i].getName();
+		for (Processor p : getProcessors()) {
+			if (p instanceof ScuflWorkflowProcessor) {
+				String newPrefix = p.getName();
 				if (prefix != null) {
 					newPrefix = prefix + "." + newPrefix;
 				}
-				ScuflWorkflowProcessor wp = (ScuflWorkflowProcessor) p[i];
+				ScuflWorkflowProcessor wp = (ScuflWorkflowProcessor) p;
 				wp.getInternalModel().collectAllProcessors(target, newPrefix);
+			} else {
+				if (prefix == null) {
+					target.put(p.getName(), p);
+				} else {
+					target.put(prefix + "." + p.getName(), p);
+				}
 			}
 		}
 	}
@@ -371,10 +413,9 @@ public class ScuflModel implements Serializable, LogAwareComponent {
 		if (processor == null) {
 			throw new NullPointerException("Processor must not be null");
 		}
-
-		synchronized (this.processors) {
-			this.processors.add(processor);
-			processor.firingEvents = true;
+		synchronized (processors) {
+			processors.add(processor);
+			processor.firingEvents = isFiringEvents;
 			fireModelEvent(new ScuflModelAddEvent(this, processor));
 		}
 	}
@@ -383,42 +424,43 @@ public class ScuflModel implements Serializable, LogAwareComponent {
 	 * Destroy a processor, this also removes any data constraints that have the
 	 * processor as either a source or a sink.
 	 */
-	public void destroyProcessor(Processor the_processor) {
-		if (this.processors.remove(the_processor)) {
-			// Iterate over all the data constraints, remove any that
-			// refer to this processor.
-			HashSet removed = new HashSet();
-			DataConstraint[] dc = getDataConstraints();
-			for (int i = 0; i < dc.length; i++) {
-				Processor source = dc[i].getSource().getProcessor();
-				Processor sink = dc[i].getSink().getProcessor();
-				if (source == the_processor || sink == the_processor) {
-					removed.add(dc[i]);
-					dataconstraints.remove(dc[i]);
-				}
+	public void destroyProcessor(Processor processor) {
+		synchronized (processors) {
+			if (!processors.remove(processor)) {
+				logger.warn("Could not destroy unknown processor: " + processor);
+				return;
 			}
-			ConcurrencyConstraint[] cc = getConcurrencyConstraints();
-			for (int i = 0; i < cc.length; i++) {
-				if (the_processor == cc[i].getTargetProcessor()
-						|| the_processor == cc[i].getControllingProcessor()) {
-					removed.add(cc[i]);
-					constraints.remove(cc[i]);
-				}
-			}
-			String message = "Removed "
-					+ ScuflModelEvent.getClassName(the_processor) + " "
-					+ the_processor.getName() + ", and edges " + removed;
-			removed.add(the_processor);
-
-			fireModelEvent(new ScuflModelRemoveEvent(this, removed, message));
 		}
+		// Iterate over all the data constraints, remove any that
+		// refer to this processor.
+		HashSet<Object> removed = new HashSet<Object>();
+		for (DataConstraint dc : getDataConstraints()) {
+			Processor source = dc.getSource().getProcessor();
+			Processor sink = dc.getSink().getProcessor();
+			if (source == processor || sink == processor) {
+				removed.add(dc);
+				dataconstraints.remove(dc);
+			}
+		}
+		for (ConcurrencyConstraint cc : getConcurrencyConstraints()) {
+			if (processor == cc.getTargetProcessor()
+					|| processor == cc.getControllingProcessor()) {
+				removed.add(cc);
+				constraints.remove(cc);
+			}
+		}
+		String message = "Removed " + ScuflModelEvent.getClassName(processor)
+				+ " " + processor.getName() + ", and edges " + removed;
+		removed.add(processor);
+
+		fireModelEvent(new ScuflModelRemoveEvent(this, removed, message));
 	}
 
 	/**
 	 * Add a data constraint to the model
 	 */
 	public void addDataConstraint(DataConstraint the_constraint) {
-		this.dataconstraints.add(the_constraint);
+		dataconstraints.add(the_constraint);
 		fireModelEvent(new ScuflModelAddEvent(this, the_constraint));
 	}
 
@@ -426,7 +468,7 @@ public class ScuflModel implements Serializable, LogAwareComponent {
 	 * Remove a data constraint from the model
 	 */
 	public void destroyDataConstraint(DataConstraint the_constraint) {
-		if (this.dataconstraints.remove(the_constraint)) {
+		if (dataconstraints.remove(the_constraint)) {
 			fireModelEvent(new ScuflModelRemoveEvent(this, the_constraint));
 		}
 	}
@@ -435,7 +477,7 @@ public class ScuflModel implements Serializable, LogAwareComponent {
 	 * Add a concurrency constraint to the model
 	 */
 	public void addConcurrencyConstraint(ConcurrencyConstraint the_constraint) {
-		this.constraints.add(the_constraint);
+		constraints.add(the_constraint);
 		fireModelEvent(new ScuflModelAddEvent(this, the_constraint));
 	}
 
@@ -444,7 +486,7 @@ public class ScuflModel implements Serializable, LogAwareComponent {
 	 */
 	public void destroyConcurrencyConstraint(
 			ConcurrencyConstraint the_constraint) {
-		if (this.constraints.remove(the_constraint)) {
+		if (constraints.remove(the_constraint)) {
 			fireModelEvent(new ScuflModelRemoveEvent(this, the_constraint));
 		}
 	}
@@ -454,16 +496,15 @@ public class ScuflModel implements Serializable, LogAwareComponent {
 	 * workflow model
 	 */
 	public ConcurrencyConstraint[] getConcurrencyConstraints() {
-		return (ConcurrencyConstraint[]) (this.constraints
-				.toArray(new ConcurrencyConstraint[0]));
+		return constraints.toArray(new ConcurrencyConstraint[0]);
 	}
 
 	/**
 	 * Return an array of data constraints defined within this workflow model
 	 */
 	public DataConstraint[] getDataConstraints() {
-		DataConstraint[] result = (DataConstraint[]) (this.dataconstraints
-				.toArray(new DataConstraint[0]));
+		DataConstraint[] result = dataconstraints
+				.toArray(new DataConstraint[0]);
 		Arrays.sort(result);
 		return result;
 	}
@@ -472,14 +513,14 @@ public class ScuflModel implements Serializable, LogAwareComponent {
 	 * Add a new ScuflModelEventListener to the listener list.
 	 */
 	public void addListener(ScuflModelEventListener listener) {
-		this.listeners.add(listener);
+		listeners.add(listener);
 	}
 
 	/**
 	 * Remove a ScuflModelEventListener from the listener list.
 	 */
 	public void removeListener(ScuflModelEventListener listener) {
-		this.listeners.remove(listener);
+		listeners.remove(listener);
 	}
 
 	/**
@@ -487,8 +528,7 @@ public class ScuflModel implements Serializable, LogAwareComponent {
 	 * ScuflModel.
 	 */
 	public ScuflModelEventListener[] getListeners() {
-		return (ScuflModelEventListener[]) (this.listeners
-				.toArray(new ScuflModelEventListener[0]));
+		return listeners.toArray(new ScuflModelEventListener[0]);
 	}
 
 	/**
@@ -519,9 +559,9 @@ public class ScuflModel implements Serializable, LogAwareComponent {
 			String port_name = parts[0];
 			try {
 				// Look for a source port
-				return this.sources.locatePort(port_name);
+				return sources.locatePort(port_name);
 			} catch (UnknownPortException upe) {
-				return this.sinks.locatePort(port_name);
+				return sinks.locatePort(port_name);
 			}
 		}
 		throw new MalformedNameException("Couldn't resolve port name '"
@@ -549,9 +589,9 @@ public class ScuflModel implements Serializable, LogAwareComponent {
 			// Got a reference to an internal port
 			String port_name = parts[0];
 			if (isInputPort) {
-				return this.sinks.locatePort(port_name);
+				return sinks.locatePort(port_name);
 			}
-			return this.sources.locatePort(port_name);
+			return sources.locatePort(port_name);
 		}
 		throw new MalformedNameException("Couldn't resolve port name '"
 				+ port_specifier + "'.");
@@ -562,8 +602,7 @@ public class ScuflModel implements Serializable, LogAwareComponent {
 	 */
 	public Processor locateProcessor(String processor_name)
 			throws UnknownProcessorException {
-		for (Iterator i = processors.iterator(); i.hasNext();) {
-			Processor p = (Processor) i.next();
+		for (Processor p : getProcessors()) {
 			if (p.getName().equalsIgnoreCase(processor_name)) {
 				return p;
 			}
@@ -573,79 +612,10 @@ public class ScuflModel implements Serializable, LogAwareComponent {
 	}
 
 	/**
-	 * Handle a ScuflModelEvent from one of our children or self, only send an
-	 * event notification if the isFiringEvents is set to true.
-	 */
-	void fireModelEvent(ScuflModelEvent event) {
-		if (this.isFiringEvents) {
-			synchronized (pendingEventList) {
-				pendingEventList.add(event);
-			}
-			eventThread.interrupt();			
-		}
-	}
-
-	/**
 	 * Create an internal model event to force an update of the model
 	 */
 	public void forceUpdate() {
 		fireModelEvent(new ScuflModelEvent(this, "Forced update"));
-	}
-
-	Thread eventThread = new NotifyThread();
-
-	List pendingEventList = new ArrayList();
-
-	/**
-	 * A thread subclass to notify listeners of an event
-	 */
-	// FIXME: How to finish this thread? This will run forever!
-	class NotifyThread extends Thread {
-		protected NotifyThread() {
-			super();
-			try {
-				setDaemon(true);
-			} catch (Exception ex) {
-				// Should never happen!
-				logger.fatal(ex);				
-			}
-			this.start();
-		}
-
-		public void run() {
-			while (true) {
-				// Are there any pending events?
-				if (pendingEventList == null || pendingEventList.isEmpty()) {
-					try {
-						Thread.sleep(10000);
-					} catch (InterruptedException ie) {
-						//
-					}
-				} else {
-					ScuflModelEvent[] events;
-					synchronized (pendingEventList) {
-						// Copy the event list across to an array of events and
-						// clear it
-						events = (ScuflModelEvent[]) pendingEventList
-								.toArray(new ScuflModelEvent[0]);
-						pendingEventList.clear();
-					}
-					for (int i = 0; i < events.length; i++) {
-						logger.debug(events[i]);											
-						for (Iterator j = new ArrayList(listeners).iterator(); j
-								.hasNext();) {
-							ScuflModelEventListener l = (ScuflModelEventListener) j
-									.next();
-							try {
-								l.receiveModelEvent(events[i]);
-							} catch (Throwable ex) {
-								logger.error(ex);								
-							}
-						}
-					}
-				}
-			}
-		}
 	}
 }
 
@@ -654,8 +624,7 @@ public class ScuflModel implements Serializable, LogAwareComponent {
  * ports are therefore output ports, as they are used as data sources for links
  * into the workflow
  */
-class InternalSourcePortHolder extends Processor implements
-		java.io.Serializable {
+class InternalSourcePortHolder extends Processor {
 	protected InternalSourcePortHolder(ScuflModel model)
 			throws DuplicateProcessorNameException, ProcessorCreationException {
 		super(model, "SCUFL_INTERNAL_SOURCEPORTS");
@@ -671,7 +640,8 @@ class InternalSourcePortHolder extends Processor implements
  * A Processor subclass to hold ports for the overall workflow outputs, these
  * ports are therefore held as input ports, acting as they do as data sinks.
  */
-class InternalSinkPortHolder extends Processor implements java.io.Serializable {
+class InternalSinkPortHolder extends Processor {	
+
 	protected InternalSinkPortHolder(ScuflModel model)
 			throws DuplicateProcessorNameException, ProcessorCreationException {
 		super(model, "SCUFL_INTERNAL_SINKPORTS");
@@ -680,5 +650,71 @@ class InternalSinkPortHolder extends Processor implements java.io.Serializable {
 
 	public Properties getProperties() {
 		return null;
+	}
+}
+
+/**
+ * A thread subclass to notify listeners of events. Starts itself on
+ * construction, set loop=false and notify it to stop the thread.
+ */
+class NotifyThread extends Thread {
+	private static Logger logger = Logger.getLogger(NotifyThread.class);
+
+	// Set to false when the thread is to stop. Call .interrupt()
+	// or wait max_sleep miliseconds
+	public boolean loop;
+
+	// Maximum sleep in milliseconds before looking at new events
+	static int max_sleep = 10000;
+
+	// events that should be passed to listeners
+	List<ScuflModelEvent> pendingEvents;
+
+	List<ScuflModelEventListener> listeners;
+
+	protected NotifyThread(List<ScuflModelEvent> pendingEvents,
+			List<ScuflModelEventListener> listeners) {
+		super();
+		// We'll keep references to the events and listeners, but not the
+		// ScuflModel. That way, its destructor has a chance to stop us.
+		this.pendingEvents = pendingEvents;
+		this.listeners = listeners;
+		setDaemon(true);
+		loop = true;
+		this.start();
+	}
+
+	public void run() {			
+		while (loop) {
+			// Are there any pending events?
+			if (pendingEvents.isEmpty()) {
+				try {
+					Thread.sleep(max_sleep);
+				} catch (InterruptedException e) {
+					// Awake again!
+				}
+				// Re-loop, might be loop==false
+				continue;
+			}
+			List<ScuflModelEvent> events;
+			synchronized (pendingEvents) {
+				// Copy off the event list and clear it
+				events = new ArrayList<ScuflModelEvent>(pendingEvents);
+				pendingEvents.clear();
+			}
+			for (ScuflModelEvent event : events) {
+				logger.debug("Processing event " + event);
+				// Copy the listeners as well to avoid iterator failing
+				for (ScuflModelEventListener l : new ArrayList<ScuflModelEventListener>(
+						listeners)) {
+					try {
+						l.receiveModelEvent(event);
+					} catch (Throwable ex) {
+						logger.error("Could not notify " + l + " of event "
+								+ event, ex);
+					}
+				}
+			}
+		}
 	}
 }
