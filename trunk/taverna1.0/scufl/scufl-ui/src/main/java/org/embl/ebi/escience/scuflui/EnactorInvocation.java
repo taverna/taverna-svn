@@ -50,6 +50,7 @@ import uk.ac.soton.itinnovation.freefluo.main.InvalidInputException;
 /**
  * @author Tom Oinn
  * @author Matthew Pocock
+ * @author Stian Soiland
  */
 public class EnactorInvocation extends JPanel implements ScuflUIComponent {
 
@@ -73,7 +74,7 @@ public class EnactorInvocation extends JPanel implements ScuflUIComponent {
 		// detachFromModel() is called by GeneridUIComponentFrame when
 		// it is closing. Cleanup of remote resources will be done here.
 		try {
-			workflowEditor.detachFromModel();
+			workflowEditor.detachFromModel();			
 			
 			workflowInstance.cancelExecution();
 			// FIXME: Is this the right place to destroy? What about
@@ -83,8 +84,7 @@ public class EnactorInvocation extends JPanel implements ScuflUIComponent {
 			// input data)
 			workflowInstance.destroy();
 			// And remove our reference to it		
-			workflowInstance = null;
-			
+			workflowInstance = null;						
 		} catch (Exception e) {
 			logger.error("Could not detach", e);
 		}
