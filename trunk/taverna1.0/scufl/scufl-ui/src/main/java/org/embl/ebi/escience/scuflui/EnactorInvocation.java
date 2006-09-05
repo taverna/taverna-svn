@@ -295,7 +295,14 @@ public class EnactorInvocation extends JPanel implements ScuflUIComponent {
 			throws WorkflowSubmissionException {
 		super(new BorderLayout());
 		this.workflowInstance = instance;
-		this.theModel = (ScuflModel) instance.getWorkflowModel().clone();
+		try {
+			this.theModel = (ScuflModel) instance.getWorkflowModel().clone();
+		} catch (CloneNotSupportedException ce) {
+			logger.error("Could not clone workflow model", ce);			
+			WorkflowSubmissionException wfex = new WorkflowSubmissionException();
+			wfex.initCause(ce);			
+			throw wfex;
+		}
 		setPreferredSize(new Dimension(100, 100));
 
 		// Create a new toolbar for the save results option...
