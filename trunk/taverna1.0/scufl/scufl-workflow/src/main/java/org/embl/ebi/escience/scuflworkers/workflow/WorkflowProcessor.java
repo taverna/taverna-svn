@@ -10,6 +10,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Properties;
 
+import org.apache.log4j.Logger;
 import org.embl.ebi.escience.scufl.DuplicatePortNameException;
 import org.embl.ebi.escience.scufl.DuplicateProcessorNameException;
 import org.embl.ebi.escience.scufl.InputPort;
@@ -37,6 +38,8 @@ import org.jdom.Element;
  */
 public class WorkflowProcessor extends Processor implements ScuflWorkflowProcessor, Serializable {
 
+	private static Logger logger = Logger.getLogger(WorkflowProcessor.class);
+	
 	private ScuflModel theModel = null;
 
 	private String definitionURL = null;
@@ -47,9 +50,9 @@ public class WorkflowProcessor extends Processor implements ScuflWorkflowProcess
 	public void setOffline() {
 		try {
 			this.theModel.setOffline(true);
-			System.out.println("Set nested processor to offline mode");
+			logger.info("Set nested processor offline");
 		} catch (SetOnlineException soe) {
-			soe.printStackTrace();
+			logger.warn("Could not set nested processor offline", soe);			
 		}
 	}
 
@@ -59,9 +62,9 @@ public class WorkflowProcessor extends Processor implements ScuflWorkflowProcess
 	public void setOnline() {
 		try {
 			this.theModel.setOffline(false);
-			System.out.println("Set nested processor to online mode");
+			logger.info("Set nested processor online");			
 		} catch (SetOnlineException soe) {
-			soe.printStackTrace();
+			logger.warn("Could not set nested processor online", soe);			
 		}
 	}
 
