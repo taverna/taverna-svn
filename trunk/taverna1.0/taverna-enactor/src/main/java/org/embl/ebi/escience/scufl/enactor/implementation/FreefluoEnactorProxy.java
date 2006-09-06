@@ -87,15 +87,11 @@ public class FreefluoEnactorProxy implements EnactorProxy {
 	public WorkflowInstance compileWorkflow(ScuflModel workflow,
 			UserContext user) throws WorkflowSubmissionException {
 		try {
-			XScuflView scuflView = new XScuflView(workflow);
-			String strWorkflow = scuflView.getXMLText();
-            workflow.removeListener(scuflView);       
+			String strWorkflow = XScuflView.getXMLText(workflow);
 			String workflowInstanceId = engine.compile(strWorkflow);
-
 			if (user != null) {
 				engine.setFlowContext(workflowInstanceId, user.toFlowContext());
 			}
-
 			WorkflowInstance workflowInstance = new WorkflowInstanceImpl(
 					engine, workflow, workflowInstanceId);
 			String definitionLSID = workflow.getDescription().getLSID();

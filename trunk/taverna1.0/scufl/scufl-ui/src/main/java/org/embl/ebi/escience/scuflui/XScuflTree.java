@@ -13,6 +13,7 @@ import org.embl.ebi.escience.scufl.ScuflModel;
 import org.embl.ebi.escience.scufl.ScuflModelEvent;
 import org.embl.ebi.escience.scufl.ScuflModelEventListener;
 import org.embl.ebi.escience.scufl.view.XScuflView;
+import org.jdom.Document;
 
 /**
  * A swing component which provides an XML tree view of the ScuflModel instance
@@ -52,9 +53,9 @@ public class XScuflTree extends JComponent implements ScuflModelEventListener,
 	private void update() {
 		if (this.xscufl != null) {
 			try {
-				String xscuflText = xscufl.getXMLText();
+				Document xml = xscufl.getDocument();
 				removeAll();
-				XMLTree display = new XMLTree(xscuflText);
+				XMLTree display = new XMLTree(xml);
 				add(display, BorderLayout.CENTER);
 				display.repaint();
 				doLayout();

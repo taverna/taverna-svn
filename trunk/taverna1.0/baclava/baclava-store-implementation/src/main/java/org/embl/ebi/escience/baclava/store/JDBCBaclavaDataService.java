@@ -668,7 +668,7 @@ public class JDBCBaclavaDataService implements BaclavaDataService, LSIDProvider 
 		String title = model.getDescription().getTitle();
 		String author = model.getDescription().getAuthor();
 
-		String xml = new XScuflView(model).getXMLText();
+		String xml = XScuflView.getXMLText(model);
 
 		try {
 			boolean exists = hasWorkflow(LSID);

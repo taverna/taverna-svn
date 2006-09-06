@@ -20,10 +20,10 @@ import org.embl.ebi.escience.scuflui.ExtensionFileFilter;
 /**
  * This class
  * 
- * Last edited by $Author: sowen70 $
+ * Last edited by $Author: stain $
  * 
  * @author Mark
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public class SaveWorkflowAsAction extends DefaultAction {
 
@@ -70,11 +70,9 @@ public class SaveWorkflowAsAction extends DefaultAction {
 			if (returnVal == JFileChooser.APPROVE_OPTION) {
 				prefs.put("currentDir", fc.getCurrentDirectory().toString());
 				File file = fc.getSelectedFile();
-				ScuflModel model = Workbench.getModel();
-				XScuflView xsv = new XScuflView(model);
+				ScuflModel model = Workbench.getModel();				
 				PrintWriter out = new PrintWriter(new FileWriter(file));
-				out.println(xsv.getXMLText());
-				model.removeListener(xsv);
+				out.println(XScuflView.getXMLText(model));				
 				out.flush();
 				out.close();
 			}

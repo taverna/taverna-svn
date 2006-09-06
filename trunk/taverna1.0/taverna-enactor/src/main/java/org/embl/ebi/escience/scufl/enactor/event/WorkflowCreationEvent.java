@@ -38,7 +38,7 @@ public class WorkflowCreationEvent extends WorkflowInstanceEvent {
 	 * workflow inputs
 	 */
 	public Map getInputs() {
-		return this.inputs;
+		return inputs;
 	}
 
 	/**
@@ -46,14 +46,14 @@ public class WorkflowCreationEvent extends WorkflowInstanceEvent {
 	 * instance
 	 */
 	public String getDefinitionLSID() {
-		return this.defn;
+		return defn;
 	}
 
 	/**
 	 * Return a reference to the ScuflModel object used to create this workflow
 	 */
 	public ScuflModel getModel() {
-		return this.model;
+		return model;
 	}
 
 	/**
@@ -61,14 +61,10 @@ public class WorkflowCreationEvent extends WorkflowInstanceEvent {
 	 * workflow model has not been initialised for some reason
 	 */
 	public String getModelXML() {
-		if (this.model != null) {
-			XScuflView xsv = new XScuflView(this.model);
-			String xml = xsv.getXMLText();
-			this.model.removeListener(xsv);
-			return xml;
-		} else {
+		if (model == null) {
 			return null;
 		}
+		return XScuflView.getXMLText(model);							
 	}
 
 	/**
@@ -76,18 +72,18 @@ public class WorkflowCreationEvent extends WorkflowInstanceEvent {
 	 */
 	public String toString() {
 		StringBuffer sb = new StringBuffer();
-		sb.append("Workflow '" + this.workflowInstance.getID()
-				+ "' created with " + this.inputs.size() + " input"
-				+ (this.inputs.size() != 1 ? "s" : "") + "\n");
-		for (Iterator i = this.inputs.keySet().iterator(); i.hasNext();) {
+		sb.append("Workflow '" + workflowInstance.getID()
+				+ "' created with " + inputs.size() + " input"
+				+ (inputs.size() != 1 ? "s" : "") + "\n");
+		for (Iterator i = inputs.keySet().iterator(); i.hasNext();) {
 			String inputName = (String) i.next();
 			DataThing inputValue = (DataThing) inputs.get(inputName);
 			String inputLSID = inputValue.getLSID(inputValue.getDataObject());
 			sb.append("  '" + inputName + "'->" + inputLSID + "\n");
 		}
 		sb.append("Created from workflow definition "
-				+ this.model.getDescription().getLSID() + "\n");
-		UserContext workflowContext = this.workflowInstance.getUserContext();
+				+ model.getDescription().getLSID() + "\n");
+		UserContext workflowContext = workflowInstance.getUserContext();
 		if (workflowContext == null) {
 			sb.append("No user context supplied\n");
 		} else {

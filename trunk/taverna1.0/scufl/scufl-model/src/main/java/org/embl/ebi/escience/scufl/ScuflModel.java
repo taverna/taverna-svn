@@ -18,6 +18,7 @@ import java.util.Properties;
 import org.apache.log4j.Logger;
 import org.embl.ebi.escience.scufl.parser.XScuflParser;
 import org.embl.ebi.escience.scufl.view.XScuflView;
+import org.jdom.Document;
 
 /**
  * Represents a single scufl workflow model
@@ -118,13 +119,11 @@ public class ScuflModel implements Serializable, LogAwareComponent {
 		}
 	}
 
-	public ScuflModel clone() throws CloneNotSupportedException {
-		XScuflView xsv = new XScuflView(this);
-		String xscuflText = xsv.getXMLText();
-		removeListener(xsv);
+	public ScuflModel clone() throws CloneNotSupportedException {		
+		Document xscufl = XScuflView.getDocument(this);		
 		ScuflModel newModel = new ScuflModel();
 		try {
-			XScuflParser.populate(xscuflText, newModel, null);
+			XScuflParser.populate(xscufl, newModel, null);
 		} catch (ScuflException e) {
 			logger.error("Model could not be cloned", e);
 			throw new CloneNotSupportedException();
@@ -186,10 +185,8 @@ public class ScuflModel implements Serializable, LogAwareComponent {
 				// We'll disable event statuses while we do lots of resets and stuff
 				setEventStatus(false);			
 				// Interesting case where the workflow was loaded offline
-				// but is now in online mode again...			
-				XScuflView xsv = new XScuflView(this);
-				String xscuflText = xsv.getXMLText();
-				removeListener(xsv);
+				// but is now in online mode again...							
+				Document xscufl = XScuflView.getDocument(this);				
 				// Now have the XML form which should be identical whether
 				// loaded online or not. Can now reinstate the model
 				// with the XML form, processor loaders will be aware of
@@ -197,13 +194,13 @@ public class ScuflModel implements Serializable, LogAwareComponent {
 				clear();
 				// Load the model in online mode with no prefix specified
 				try {
-					XScuflParser.populate(xscuflText, this, null);
+					XScuflParser.populate(xscufl, this, null);
 				} catch (ScuflException ex) {
 					// Go back to offline-mode and reload the workflow
 					clear();
 					setOffline(true);
 					try {
-						XScuflParser.populate(xscuflText, this, null);
+						XScuflParser.populate(xscufl, this, null);
 					} catch (Exception e) {
 						logger.fatal(e);
 					}

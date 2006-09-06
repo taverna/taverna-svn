@@ -30,11 +30,9 @@ public class WorkflowXMLHandler implements XMLHandler {
 	    definition.setText(wp.getDefinitionURL());
 	}
 	else {
-	    // No definition URL so inline the workflow
-	    XScuflView view = new XScuflView(wp.getInternalModel());
-	    Document doc = view.getDocument();
-	    spec.addContent(doc.detachRootElement());
-	    wp.getInternalModel().removeListener(view);
+	    // No definition URL so inline the workflow	    
+	    Document doc = XScuflView.getDocument(wp.getInternalModel());
+	    spec.addContent(doc.detachRootElement());	    
 	}
 	return spec;
     }

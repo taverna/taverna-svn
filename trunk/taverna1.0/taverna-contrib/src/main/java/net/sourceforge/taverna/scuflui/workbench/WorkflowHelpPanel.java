@@ -21,6 +21,7 @@ import org.embl.ebi.escience.scuflui.ScuflUIComponent;
 
 /**
  * @author Mark
+ * @author Stian Soiland
  * 
  */
 public class WorkflowHelpPanel extends JPanel implements ScuflUIComponent {
@@ -33,6 +34,8 @@ public class WorkflowHelpPanel extends JPanel implements ScuflUIComponent {
 	ScuflModelEventListener listener = null;
 
 	ImageIcon imageIcon = null;
+	
+	private XScuflView xsv = null;
 
 	public WorkflowHelpPanel() {
 		this.setLayout(new BorderLayout());
@@ -44,39 +47,28 @@ public class WorkflowHelpPanel extends JPanel implements ScuflUIComponent {
 		this.setSize(100, 200);
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.embl.ebi.escience.scuflui.ScuflUIComponent#attachToModel(org.embl.ebi.escience.scufl.ScuflModel)
-	 */
 	public void attachToModel(ScuflModel model) {
 		this.model = model;
-		final XScuflView xsv = new XScuflView(model);
-		this.listener = new ScuflModelEventListener() {
+		xsv = new XScuflView(model);
+		listener = new ScuflModelEventListener() {
 			public void receiveModelEvent(ScuflModelEvent event) {
 				String html = XmlUtil.transform("/etc/wkflow2html.xslt", xsv.getXMLText());
 				htmlPane.setText(html);
 				logger.info("model: " + html);
 			}
 		};
-		this.model.addListener(listener);
+		model.addListener(listener);
 
 	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.embl.ebi.escience.scuflui.ScuflUIComponent#detachFromModel()
-	 */
+	
 	public void detachFromModel() {
-		this.model.removeListener(this.listener);
+		model.removeListener(listener);
+		model.removeListener(xsv);
+		xsv = null;		
+		model = null;
+		listener = null;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.embl.ebi.escience.scuflui.ScuflUIComponent#getIcon()
-	 */
 	public ImageIcon getIcon() {
 		return imageIcon;
 	}

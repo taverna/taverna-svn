@@ -30,7 +30,7 @@ import org.embl.ebi.escience.scuflui.UIUtils;
  * COMMENT
  * 
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover</a>
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
 public class SaveWorkflowAction extends ScuflModelAction {
 	final JFileChooser fc = new JFileChooser();
@@ -145,11 +145,9 @@ public class SaveWorkflowAction extends ScuflModelAction {
 			File file = fc.getSelectedFile();
 			if (file.getName().endsWith(".xml") == false) {
 				file = new File(file.toURI().resolve(file.getName() + ".xml"));
-			}
-			XScuflView xsv = new XScuflView(model);
+			}	
 			PrintWriter out = new PrintWriter(new FileWriter(file));
-			out.print(xsv.getXMLText());
-			model.removeListener(xsv);
+			out.print(XScuflView.getXMLText(model));			
 			out.flush();
 			out.close();
 		}
