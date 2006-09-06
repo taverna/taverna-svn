@@ -12,11 +12,13 @@ import org.embl.ebi.escience.scufl.DuplicateProcessorNameException;
 import org.embl.ebi.escience.scufl.MalformedNameException;
 import org.embl.ebi.escience.scufl.ProcessorCreationException;
 import org.embl.ebi.escience.scufl.ScuflModel;
+import org.embl.ebi.escience.scufl.ScuflModelEventListener;
 import org.embl.ebi.escience.scufl.SetOnlineException;
 import org.embl.ebi.escience.scufl.UnknownPortException;
 import org.embl.ebi.escience.scufl.UnknownProcessorException;
 import org.embl.ebi.escience.scufl.parser.XScuflFormatException;
 import org.embl.ebi.escience.scufl.parser.XScuflParser;
+import org.jdom.Document;
 
 public class XScuflViewTest extends TestCase {
 	
@@ -30,6 +32,8 @@ public class XScuflViewTest extends TestCase {
 	 * @author Stian Soiland
 	 */
 	public void testLoading() throws UnknownProcessorException, UnknownPortException, ProcessorCreationException, DataConstraintCreationException, DuplicateProcessorNameException, MalformedNameException, ConcurrencyConstraintCreationException, DuplicateConcurrencyConstraintNameException, XScuflFormatException, IOException, SetOnlineException {
+		// Time to wait for the events to propagate to XScuflView
+		final int waitForEvent=50; // ms
 		ScuflModel model = new ScuflModel();
 		// We don't care about the services in our example being outdated!
 		model.setOffline(true);
@@ -38,23 +42,65 @@ public class XScuflViewTest extends TestCase {
 		URL location = loader
 				.getResource("org/embl/ebi/escience/scufl/parser/XScufl_example.xml");					
 		XScuflParser.populate(location.openStream(), model, null);		
-								
+		try {
+			
+			Thread.sleep(waitForEvent);
+		} catch (InterruptedException e) {
+		}						
 		// NOTE: The following test will fail with anything but a very simple workflow. 
 		// For instance, two processors can be stored in any order in the XML.
 		String generatedXML = view.getXMLText();		
 		// Should no longer be equal if we clear
 		model.clear();
+		try {
+			Thread.sleep(waitForEvent);
+		} catch (InterruptedException e) {
+		}
 		assertFalse(generatedXML.equals(view.getXMLText()));
 		// But if we reload what we just generated, it should be the same
 		XScuflParser.populate(generatedXML, model, null);
-		assertTrue(generatedXML.equals(view.getXMLText()));				
-		
+		try {
+			Thread.sleep(waitForEvent);
+		} catch (InterruptedException e) {
+		}
+		assertTrue(generatedXML.equals(view.getXMLText()));
+		// Finished with the view
+		model.removeListener(view);
 
 		/*  Disabled - the XML on file might be in an older format		
 		InputStreamReader isr = new InputStreamReader(location.openStream());		
 		String loadedXML = IOUtils.toString(isr);				
 		assertEquals(loadedXML, generatedXML);
-		*/
-		
-	}		
+		*/		
+	}
+	
+	public void testStatic() {
+		ScuflModel model = new ScuflModel();
+		Document doc = XScuflView.getDocument(model);
+		assertEquals("scufl", doc.getRootElement().getName());
+		for (ScuflModelEventListener listener : model.getListeners() ) {
+			assertFalse(listener instanceof XScuflView);
+		}		
+		String xml = XScuflView.getXMLText(model);
+		assertTrue(xml.startsWith("<?xml"));
+		for (ScuflModelEventListener listener : model.getListeners() ) {
+			assertFalse(listener instanceof XScuflView);
+		}				
+	}
+	public void testListener() {
+		ScuflModel model = new ScuflModel();
+		for (ScuflModelEventListener listener : model.getListeners() ) {
+			assertFalse(listener instanceof XScuflView);
+		}
+		// Should add it self automatically
+		XScuflView view = new XScuflView(model);
+		for (ScuflModelEventListener listener : model.getListeners() ) {
+			assertTrue(listener instanceof XScuflView);
+		}
+		// But we have to remove it manually
+		model.removeListener(view);
+		for (ScuflModelEventListener listener : model.getListeners() ) {
+			assertFalse(listener instanceof XScuflView);
+		}
+	}
 }

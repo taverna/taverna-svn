@@ -32,8 +32,29 @@ import org.jdom.output.XMLOutputter;
 
 /**
  * Represents a ScuflModel instance as an XScufl document.
+ * <p>
+ * The view registers with the model to always provide updated XML representations. 
+ * <p>
+ * Note that when you are finished using the view, you have to
+ * manually remove the listener from the model as:
+ * <pre>
+ *   XScuflView view = new XScuflView(model);
+ *   ..
+ *   model.removeListener(view);
+ * </pre>
+ * If you don't do this, the NotifyThread will be kept alive by the
+ * XScuflView, and the XScuflView by the list of listeners in 
+ * NotifyThread. Indirectly that would mean even 
+ * the ScuflModel is kept alive forever.
+ * <p>
+ * Use the static methods <code>getDocument(ScuflModel model)</code>
+ * and <code>getXMLText(ScuflModel model)</code> to avoid constructing 
+ * the view and having to remember to remove the listener from the
+ * ScuflModel. 
  * 
  * @author Tom Oinn
+ * @author Stian Soiland
+ * 
  */
 public class XScuflView implements ScuflModelEventListener,
 		java.io.Serializable {
@@ -46,6 +67,7 @@ public class XScuflView implements ScuflModelEventListener,
 
 	private Document cachedDocument = null;
 
+	
 	/**
 	 * Construct the view and bind to the given model.
 	 */
@@ -55,11 +77,16 @@ public class XScuflView implements ScuflModelEventListener,
 		// Cached copy doesn't exist so set validity to false
 		this.cacheValid = false;
 		// Be informed of events corresponding to changes in the model
-		this.model.addListener(this);
+		model.addListener(this);
 	}
 
 	/**
-	 * Get the XML Document from this view
+	 * Get the XML Document from this view.
+	 * <p>
+	 * This is probably preferable over getXMLText() if you 
+	 * are passing on the XML to another method expecting either
+	 * Document or String.
+	 * 
 	 */
 	public Document getDocument() {
 		synchronized (this) {
@@ -69,6 +96,25 @@ public class XScuflView implements ScuflModelEventListener,
 			return this.cachedDocument;
 		}
 	}
+	
+	/**
+	 * Get the XML Document for the model.
+	 * <p>
+	 * Use this static version of getXMLText() if you are only
+	 * getting the XML once, and don't expect the model to change. 
+	 * <p>
+	 * This is probably preferable over getXMLText(model) if you 
+	 * are passing on the XML to another method expecting either
+	 * Document or String. 
+	 * 
+	 */
+	public static Document getDocument(ScuflModel model) {
+		XScuflView view = new XScuflView(model);
+		Document doc = view.getDocument();
+		model.removeListener(view);
+		return doc;
+	}
+	
 
 	/**
 	 * Get the XML String from this view
@@ -81,9 +127,21 @@ public class XScuflView implements ScuflModelEventListener,
 			return this.cachedRepresentation;
 		}
 	}
+	/**
+	 * Get the XML representation as String for this model. 
+	 * Use this static version of getXMLText() if you are only
+	 * getting the XML once, and don't expect the model to change.  
+	 *  
+	 */
+	public static String getXMLText(ScuflModel model) {
+		XScuflView view = new XScuflView(model);
+		String xml = view.getXMLText();
+		model.removeListener(view);
+		return xml;
+	}
 
 	/**
-	 * Handle model events
+	 * Invalidate cache on changed model (but don't recalculate the XML now)
 	 */
 	public void receiveModelEvent(ScuflModelEvent event) {
 		// Invalidate cache, this will
@@ -102,8 +160,7 @@ public class XScuflView implements ScuflModelEventListener,
 		// Create the XML document
 		Element root = new Element("scufl", scuflNS());
 		root.setAttribute("version", "0.2");
-		root.setAttribute("log", "" + model.getLogLevel());
-		this.cachedDocument = new Document(root);
+		root.setAttribute("log", "" + model.getLogLevel());		
 
 		WorkflowDescription wd = model.getDescription();
 		root.addContent(WorkflowDescription.getElement(wd));
@@ -363,10 +420,11 @@ public class XScuflView implements ScuflModelEventListener,
 			statechange.addContent(to);
 		}
 
+		// Finished, publish it
+		this.cachedDocument = new Document(root);
 		// Generate the textual version and cache it.
 		XMLOutputter xo = new XMLOutputter(Format.getPrettyFormat());
 		this.cachedRepresentation = xo.outputString(this.cachedDocument);
-
 		// Cache is now valid.
 		this.cacheValid = true;
 	}
