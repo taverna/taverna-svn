@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.embl.ebi.escience.scufl.ConcurrencyConstraint;
 import org.embl.ebi.escience.scufl.ConcurrencyConstraintCreationException;
 import org.embl.ebi.escience.scufl.DataConstraint;
@@ -43,7 +44,9 @@ import org.jdom.input.SAXBuilder;
  * @author Tom Oinn
  */
 public class XScuflParser {
-
+	
+	private static Logger logger = Logger.getLogger(XScuflParser.class);
+	
 	/**
 	 * Read from the given String containing an XScufl document and populate the
 	 * given ScuflModel with data from the definition. You can optionally
@@ -221,9 +224,9 @@ public class XScuflParser {
 		// All processors are nodes of form <processor name="foo"> ....
 		// </processor>
 		List processors = root.getChildren("processor", namespace);
-		// System.out.println("Found "+processors.size()+" processor nodes.");
+		logger.debug("Found "+processors.size()+" processor nodes.");
 		ExceptionHolder holder = new ExceptionHolder();
-		ArrayList threadList = new ArrayList();
+		ArrayList<ProcessorLoaderThread> threadList = new ArrayList<ProcessorLoaderThread>();
 		for (Iterator i = processors.iterator(); i.hasNext();) {
 			Element processorNode = (Element) i.next();
 			String name = processorNode.getAttributeValue("name");
@@ -236,23 +239,20 @@ public class XScuflParser {
 			// End iterator over processors
 		}
 		// Wait on all the threads in the threadList
-		for (Iterator i = threadList.iterator(); i.hasNext();) {
-			Thread t = (Thread) i.next();
+		for (ProcessorLoaderThread t : threadList) {			
+			logger.debug("Joining with thread " + t);
 			try {
 				t.join();
 			} catch (InterruptedException ie) {
-				//
+				//				
 			}
+			logger.debug("Joined all threads");
 		}
 		// Hack hack hack, since the threads themselves can't throw exceptions,
-		// they
-		// catch any of the following three exception types and put them into
-		// the
-		// exception holder. When all the threads have exited we check the
-		// holder and
-		// throw back any of the exceptions it contains in the main thread.
-		// Seems to
-		// work okay and is a big optimisation at load time.
+		// they catch any of the following three exception types and put them into
+		// the exception holder. When all the threads have exited we check the
+		// holder and throw back any of the exceptions it contains in the main thread.
+		// Seems to work okay and is a big optimisation at load time.
 		if (! holder.exceptionList.isEmpty()) {
 			// Re-enable events before exiting the method.
 			model.setEventStatus(true);
