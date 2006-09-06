@@ -50,5 +50,10 @@
       <version>1.4</version>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>uk.org.mygrid.taverna.processors</groupId>
+      <artifactId>taverna-java-processor</artifactId>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 </project>
