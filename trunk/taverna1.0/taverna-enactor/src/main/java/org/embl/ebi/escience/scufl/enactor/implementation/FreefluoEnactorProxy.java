@@ -89,6 +89,7 @@ public class FreefluoEnactorProxy implements EnactorProxy {
 		try {
 			XScuflView scuflView = new XScuflView(workflow);
 			String strWorkflow = scuflView.getXMLText();
+            workflow.removeListener(scuflView);       
 			String workflowInstanceId = engine.compile(strWorkflow);
 
 			if (user != null) {
