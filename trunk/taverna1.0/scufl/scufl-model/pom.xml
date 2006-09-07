@@ -49,7 +49,7 @@
       <artifactId>junit-addons</artifactId>
       <version>1.4</version>
       <scope>test</scope>
-    </dependency>
+    </dependency>    
     <!-- Introduces cyclic crap :(
     <dependency>
       <groupId>uk.org.mygrid.taverna.processors</groupId>
