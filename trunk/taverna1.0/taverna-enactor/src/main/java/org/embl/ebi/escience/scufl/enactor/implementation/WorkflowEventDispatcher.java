@@ -6,13 +6,9 @@
 package org.embl.ebi.escience.scufl.enactor.implementation;
 
 import java.util.ArrayList;
-import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
 
-import org.apache.commons.discovery.resource.ClassLoaders;
-import org.apache.commons.discovery.tools.SPInterface;
-import org.apache.commons.discovery.tools.Service;
 import org.embl.ebi.escience.scufl.enactor.WorkflowEventListener;
 import org.embl.ebi.escience.scufl.enactor.event.CollectionConstructionEvent;
 import org.embl.ebi.escience.scufl.enactor.event.IterationCompletionEvent;
@@ -51,10 +47,11 @@ public class WorkflowEventDispatcher {
 	 */
 	public WorkflowEventDispatcher(boolean loadFromSPI) {
 		if (loadFromSPI) {
-			List<WorkflowEventListener> listeners = WorkflowEventListenerRegistry.instance().getWorkflowEventListeners();
+			List<WorkflowEventListener> listeners = WorkflowEventListenerRegistry
+					.instance().getWorkflowEventListeners();
 			for (WorkflowEventListener listener : listeners) {
 				addListener(listener);
-			}			
+			}
 		}
 		this.notificationThread = new NotifyThread();
 	}
