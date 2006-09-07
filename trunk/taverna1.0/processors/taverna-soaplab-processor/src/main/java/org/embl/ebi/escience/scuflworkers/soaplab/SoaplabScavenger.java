@@ -5,6 +5,8 @@
  */
 package org.embl.ebi.escience.scuflworkers.soaplab;
 
+import java.util.List;
+
 import javax.swing.tree.DefaultMutableTreeNode;
 
 import org.apache.log4j.Logger;
@@ -39,61 +41,32 @@ public class SoaplabScavenger extends Scavenger {
 		super("Soaplab @ " + (theBase.endsWith("/") ? theBase : theBase + "/"));
 		// Of course we have to do this again since we are not allowed to do
 		// such stuff before super()
+		theBase=theBase.trim();
 		base = theBase.endsWith("/") ? theBase : theBase + "/";
 		// Get the categories for this installation
-		boolean foundAnInstallation = loadCategories(base + "AnalysisFactory");
-		// Yes, bitwise OR is on purpose, to make sure the second
-		// loadCategories() is always run. Do NOT replace with
-		// foundInstallation = foundInstallation || getCategories(..)
-		foundAnInstallation |= loadCategories(base + "GowlabFactory");
-		if (!foundAnInstallation) {
-			// Neither Soaplab nor Gowlab were found, probably a fault
-			throw new ScavengerCreationException("Unable to locate a soaplab installation at \n" + base);
-		}
-	}
-
-	/**
-	 * Create the category tree and fill it with SoapLab processor factories as
-	 * described by categoryBase
-	 * 
-	 * @param categoryBase
-	 *            The base for the category, example
-	 *            "http://www.ebi.ac.uk/soaplab/services/AnalysisFactory"
-	 * @return
-	 */
-	boolean loadCategories(String categoryBase) {
-		boolean foundSome = false;
-		String[] categories;
 		try {
-			categories = (String[]) Soap.callWebService(categoryBase, "getAvailableCategories");
-		} catch (Exception e) {
-			logger.debug("Missing category: "+categoryBase, e);
-			return false;
+			List<SoaplabCategory> categories=SoaplabScavengerAgent.load(base);
+			populateTree(categories);
+			
+		} catch (MissingSoaplabException e) {
+			logger.warn("Unable to load categories for SoaplabScavenger",e);
+			throw new ScavengerCreationException(e.getMessage());
 		}
-		// Iterate over all the categories, creating new child nodes
-		for (int i = 0; i < categories.length; i++) {
-			String[] services;
-			try {
-				services = (String[]) Soap
-						.callWebService(categoryBase, "getAvailableAnalysesInCategory", categories[i]);
-			} catch (Exception e) {
-				logger.info("Skipping category " + categories[i], e);
-				continue;
-			}
-			if (services.length == 0) {
-				// Avoid creating empty treenodes
-				continue;
-			}
-			DefaultMutableTreeNode category = new DefaultMutableTreeNode(categories[i]);
-			foundSome = true;
-			// Iterate over the services
-			for (int j = 0; j < services.length; j++) {
-				SoaplabProcessorFactory f = new SoaplabProcessorFactory(base, services[j]);
-				category.add(new DefaultMutableTreeNode(f));
-			}
-			this.add(category);
-		}
-		return foundSome;
 	}
+	
+	/**
+	 * populates the tree with discovered categories, and services.
+	 * @param categories
+	 */
+	private void populateTree(List<SoaplabCategory>categories) {
+		for (SoaplabCategory category : categories) {
+			DefaultMutableTreeNode categoryNode = new DefaultMutableTreeNode(category.getCategory());
+			for (String service : category.getServices()) {
+				SoaplabProcessorFactory f = new SoaplabProcessorFactory(base, service);
+				categoryNode.add(new DefaultMutableTreeNode(f));
+			}
+			this.add(categoryNode);
+		}
+	}	
 
 }

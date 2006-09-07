@@ -6,7 +6,7 @@
 <!-- Author: Martin Senger (senger@ebi.ac.uk)                              -->
 <!-- ===================================================================== -->
 
-<!-- $Id: analysis_metadata_2_html.xsl,v 1.2 2006-07-10 14:09:25 sowen70 Exp $ -->
+<!-- $Id: analysis_metadata_2_html.xsl,v 1.1 2006-09-07 15:43:38 sowen70 Exp $ -->
 
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
                 version="1.0">
