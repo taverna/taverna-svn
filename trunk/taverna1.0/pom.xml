@@ -69,6 +69,13 @@
     <url>http://www.manchester.ac.uk</url>
   </organization>
   <build>
+    <extensions>
+      <extension>
+        <groupId>org.apache.maven.wagon</groupId>
+        <artifactId>wagon-ssh-external</artifactId>
+        <version>1.0-alpha-5</version>
+      </extension>
+    </extensions>
     <plugins>
       <plugin>
         <artifactId>maven-compiler-plugin</artifactId>
@@ -495,7 +502,7 @@
         <groupId>uk.org.mygrid.taverna.scufl</groupId>
         <artifactId>scufl-workflow</artifactId>
         <version>1.5-SNAPSHOT</version>
-      </dependency>
+      </dependency>    	    	
     </dependencies>
   </dependencyManagement>
   <modules>
