@@ -3,6 +3,8 @@ package org.biomoby.client.taverna.plugin;
 import junit.framework.TestCase;
 
 import org.biomoby.client.CentralImpl;
+import org.embl.ebi.escience.scufl.DataConstraint;
+import org.embl.ebi.escience.scufl.ScuflModel;
 
 
 public class BiomobyObjectProcessorTest extends TestCase {
@@ -13,7 +15,8 @@ public class BiomobyObjectProcessorTest extends TestCase {
 
 	public void testCreation() {
 		try {
-			BiomobyObjectProcessor bop = new BiomobyObjectProcessor(null,"DNASequenceProcessor", "www.illuminae.com","DNASequence", CentralImpl.DEFAULT_ENDPOINT);
+			ScuflModel model = new ScuflModel();
+			BiomobyObjectProcessor bop = new BiomobyObjectProcessor(model,"DNASequenceProcessor", "www.illuminae.com","DNASequence", CentralImpl.DEFAULT_ENDPOINT, false);
 			assertTrue(bop.locatePort("String(SequenceString)", true) != null);
 			assertTrue(bop.locatePort("Integer(Length)", true) != null);
 			assertTrue(bop.locatePort("namespace", true) != null);
@@ -24,6 +27,10 @@ public class BiomobyObjectProcessorTest extends TestCase {
 			assertEquals(bop.getAuthorityName(), "www.illuminae.com");
 			assertEquals(bop.getName(), "DNASequenceProcessor");
 			assertEquals(bop.getServiceName(), "DNASequence");
+			
+			// DNA sequence should have 2 inputs linked to it
+			DataConstraint[] constraints = model.getDataConstraints();
+			assertEquals(constraints.length, 2);
 			
 		} catch (Exception e) {
 			fail("There was a problem creating the BioMOBY Object processor:\n"+ e);
