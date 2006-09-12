@@ -311,7 +311,9 @@ public class ScuflModel implements Serializable, LogAwareComponent {
 			pendingEvents.add(event);
 		}
 		// Poke the thread so it can process some
-		notifyThread.interrupt();
+        synchronized (notifyThread) {            
+            notifyThread.notify();
+        }
 	}
 
 	/**
@@ -686,7 +688,9 @@ class NotifyThread extends Thread {
 			// Are there any pending events?
 			if (pendingEvents.isEmpty()) {
 				try {
-					Thread.sleep(max_sleep);
+                    synchronized (this) {                        
+                        this.wait(max_sleep);
+                    }
 				} catch (InterruptedException e) {
 					// Awake again!
 				}

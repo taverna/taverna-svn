@@ -5,6 +5,8 @@
  */
 package org.embl.ebi.escience.scufl.enactor.implementation;
 
+import org.apache.log4j.Logger;
+
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -28,6 +30,11 @@ import org.embl.ebi.escience.scufl.enactor.event.WorkflowInstanceEvent;
  * @author Tom Oinn
  */
 public class WorkflowEventDispatcher {
+    /**
+     * Logger for this class
+     */
+    private static final Logger logger = Logger
+            .getLogger(WorkflowEventDispatcher.class);
 
 	private List eventQueue = new ArrayList();
 
@@ -104,8 +111,7 @@ public class WorkflowEventDispatcher {
 					try {
 						sendAnEvent(listener, events[j]);
 					} catch (Exception e) {
-						// Silently ignore, was probably an exception in a
-						// plugin
+						logger.error("Could not send event to " + listener, e);
 					}
 				}
 			}
@@ -157,7 +163,9 @@ public class WorkflowEventDispatcher {
 	private void addEventToQueue(WorkflowInstanceEvent e) {
 		synchronized (this.eventQueue) {
 			this.eventQueue.add(e);
-			notificationThread.interrupt();
+            synchronized (notificationThread) {
+                notificationThread.notify();
+            }
 		}
 	}
 
@@ -177,6 +185,11 @@ public class WorkflowEventDispatcher {
 	}
 
 	class NotifyThread extends Thread {
+        /**
+         * Logger for this class
+         */
+        private final Logger logger = Logger.getLogger(NotifyThread.class);
+
 		protected NotifyThread() {
 			super();
 			setDaemon(true);
@@ -189,7 +202,10 @@ public class WorkflowEventDispatcher {
 				try {
 					// Sleep for ten seconds or until we're kicked
 					// by the addition of a new event
-					Thread.sleep(10000);
+                    synchronized (this) {                        
+                        this.wait(10000);
+                    }
+					//Thread.sleep(10000);
 				} catch (InterruptedException ie) {
 					//
 				}
