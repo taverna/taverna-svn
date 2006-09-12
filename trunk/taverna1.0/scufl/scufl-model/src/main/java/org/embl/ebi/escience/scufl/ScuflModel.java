@@ -512,6 +512,9 @@ public class ScuflModel implements Serializable, LogAwareComponent {
 	 * Add a new ScuflModelEventListener to the listener list.
 	 */
 	public void addListener(ScuflModelEventListener listener) {
+        if (listener == null) {
+            throw new NullPointerException("Attempt to add null listener");
+        }
 		listeners.add(listener);
 	}
 
