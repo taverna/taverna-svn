@@ -97,6 +97,7 @@ public class BiomobyObjectProcessor extends Processor implements Serializable {
             }
         }
         if (model != null) {
+        	//TODO - replace with -> StackTraceElement ste = new Throwable().getStackTrace()[ 1 ] .getClassName();
             Throwable stack = new Throwable();
             stack.fillInStackTrace();
             String callingClassName = "";

@@ -12,7 +12,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
-import org.biomoby.client.CentralImpl;
 import org.biomoby.shared.MobyException;
 import org.embl.ebi.escience.baclava.DataThing;
 import org.embl.ebi.escience.scufl.OutputPort;
@@ -396,8 +395,7 @@ public class MobyParseDatatypeTask implements ProcessorTaskWorker {
 		String[] articles = null;
 		String nextArtName = "";
 		String outputName = outPort.getName();
-		String simple = XMLUtilities.getSimple(proc.getArticleNameUsedByService(), proc
-				.getDatatypeName(), inputXML, proc.getRegistryEndpoint());
+		String simple = XMLUtilities.getSimple(proc.getArticleNameUsedByService(), inputXML);
 		Element simElement = XMLUtilities.getDOMDocument(simple).getRootElement();
 		simElement = getChildOfSimple(simElement);
 		if (simElement == null) {
@@ -434,8 +432,7 @@ public class MobyParseDatatypeTask implements ProcessorTaskWorker {
 	 */
 	@SuppressWarnings("unchecked")
 	private void processIdFromSimple(HashMap output, String inputXML) throws MobyException {
-		String simple = XMLUtilities.getSimple(proc.getArticleNameUsedByService(), proc
-				.getDatatypeName(), inputXML, proc.getRegistryEndpoint());
+		String simple = XMLUtilities.getSimple(proc.getArticleNameUsedByService(), inputXML);
 		Element simElement = XMLUtilities.getDOMDocument(simple).getRootElement();
 		ArrayList theList = new ArrayList();
 		theList.add(getElementsMobyID((simElement)));
@@ -449,8 +446,7 @@ public class MobyParseDatatypeTask implements ProcessorTaskWorker {
 	 */
 	@SuppressWarnings("unchecked")
 	private void processNamespaceFromSimple(HashMap output, String inputXML) throws MobyException {
-		String simple = XMLUtilities.getSimple(proc.getArticleNameUsedByService(), proc
-				.getDatatypeName(), inputXML, proc.getRegistryEndpoint());
+		String simple = XMLUtilities.getSimple(proc.getArticleNameUsedByService(), inputXML);
 		Element simElement = XMLUtilities.getDOMDocument(simple).getRootElement();
 		ArrayList theList = new ArrayList();
 		theList.add(getElementsMobyNamespace((simElement)));
@@ -604,8 +600,7 @@ public class MobyParseDatatypeTask implements ProcessorTaskWorker {
 	@SuppressWarnings("unchecked")
 	private void processChildNsFromSimple(HashMap map, String inputXML, String portName)
 			throws MobyException {
-		String simple = XMLUtilities.getSimple(proc.getArticleNameUsedByService(), proc
-				.getDatatypeName(), inputXML, proc.getRegistryEndpoint());
+		String simple = XMLUtilities.getSimple(proc.getArticleNameUsedByService(), inputXML);
 		Element simElement = XMLUtilities.getDOMDocument(simple).getRootElement();
 		Element child = null;
 		String[] path = portName.split("_");
@@ -723,8 +718,7 @@ public class MobyParseDatatypeTask implements ProcessorTaskWorker {
 	@SuppressWarnings("unchecked")
 	private void processChildIdFromSimple(HashMap map, String inputXML, final String portName)
 			throws MobyException {
-		String simple = XMLUtilities.getSimple(proc.getArticleNameUsedByService(), proc
-				.getDatatypeName(), inputXML, proc.getRegistryEndpoint());
+		String simple = XMLUtilities.getSimple(proc.getArticleNameUsedByService(), inputXML);
 		Element simElement = XMLUtilities.getDOMDocument(simple).getRootElement();
 		Element child = null;
 		String[] path = portName.split("_");
@@ -837,18 +831,5 @@ public class MobyParseDatatypeTask implements ProcessorTaskWorker {
 				id = child.getAttributeValue("id", XMLUtilities.MOBY_NS);
 			list.add(id == null ? "" : id);
 		}
-	}
-	public static void main(String[] args) throws Exception {
-		Map inputs = new HashMap();
-		String input = "<moby:MOBY xmlns:moby=\"http://www.biomoby.org/moby\">\r\n" + 
-				"  <moby:mobyContent>\r\n" + 
-				"    <moby:mobyData moby:queryID=\"a38\" />\r\n" + 
-				"  </moby:mobyContent>\r\n" + 
-				"</moby:MOBY>";
-		
-		MobyParseDatatypeProcessor p = new MobyParseDatatypeProcessor(null, "foo","b64_encoded_gif","image",CentralImpl.DEFAULT_ENDPOINT);
-		MobyParseDatatypeTask mp = new MobyParseDatatypeTask(p);
-		mp.processPortsFromSimple((HashMap)inputs,input,new OutputPort(p, "mobyData('b64_encoded_gif')"));
-		
 	}
 }

@@ -849,7 +849,6 @@ public class BiomobyTask implements ProcessorTaskWorker {
 						// and then simples always output 'text/xml'?
 						String articleName = name.substring(name.indexOf("(") + 1, name
 								.indexOf(")"));
-						String objectType = name.substring(0, name.indexOf("("));
 						if (isMIM) {
 
 							String[] invocations = XMLUtilities
@@ -860,8 +859,7 @@ public class BiomobyTask implements ProcessorTaskWorker {
 							for (int i = 0; i < invocations.length; i++) {
 								try {
 									String simple = XMLUtilities.getWrappedSimple(articleName,
-											objectType, invocations[i], ((BiomobyProcessor) proc)
-													.getMobyEndpoint());
+											invocations[i]);
 									innerList.add(simple);
 								} catch (MobyException e) {
 									// simple didnt exist, so put an empty
@@ -892,9 +890,7 @@ public class BiomobyTask implements ProcessorTaskWorker {
 							// process the single invocation and put into a
 							// string
 							try {
-								String simple = XMLUtilities.getWrappedSimple(articleName,
-										objectType, outputXML, ((BiomobyProcessor) proc)
-												.getMobyEndpoint());
+								String simple = XMLUtilities.getWrappedSimple(articleName,outputXML);
 								ArrayList innerList = new ArrayList();
 								innerList.add(simple);
 								outputMap.put(name, new DataThing(simple));
@@ -914,6 +910,6 @@ public class BiomobyTask implements ProcessorTaskWorker {
 				}
 			}
 		}
+		logger.debug(outputMap);
 	}
-
 }
