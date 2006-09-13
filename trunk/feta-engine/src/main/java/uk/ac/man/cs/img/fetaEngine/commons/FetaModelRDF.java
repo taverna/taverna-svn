@@ -199,6 +199,11 @@ public class FetaModelRDF {
 	public static final Property inNamespaces = m_model
 			.createProperty("http://www.mygrid.org.uk/mygrid-moby-service#inNamespaces");
 
+	
+	public static final Property objectType = m_model
+	.createProperty("http://www.mygrid.org.uk/mygrid-moby-service#objectType");
+
+	
 	public static final Property DC_PATCHED_Format = m_model
 			.createProperty("http://protege.stanford.edu/plugins/owl/dc/protege-dc.owl#format");
 

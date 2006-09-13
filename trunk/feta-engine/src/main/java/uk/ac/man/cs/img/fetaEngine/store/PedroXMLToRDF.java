@@ -31,11 +31,17 @@ package uk.ac.man.cs.img.fetaEngine.store;
  */
 import java.io.IOException;
 import java.io.StringWriter;
+import java.net.URL;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+
+import org.w3c.dom.Document;
 
 import uk.ac.man.cs.img.fetaEngine.commons.FetaModelRDF;
 import uk.ac.man.cs.img.fetaEngine.commons.FetaModelXSD;
+import uk.ac.man.cs.img.fetaEngine.store.load.FetaLoad;
 
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.vocabulary.RDF;
@@ -48,6 +54,25 @@ public class PedroXMLToRDF {
 	/** A configured XMLConverter suitable for MyGrid */
 	XMLConverter myGridConverter;
 
+
+	public static void main(String[] args){
+		try{
+			String operationURI = "file:///c:/desc.xml";
+			List locList = new ArrayList();
+			locList.add(operationURI);
+			PedroXMLToRDF rdfConverter = new PedroXMLToRDF();
+			URL operationURL = new URL(operationURI);
+			Map docAsRDF = new HashMap();
+			docAsRDF = new FetaLoad().readFetaDescriptions(locList, 'u');
+			String RDFXMLStr = rdfConverter.convertToRdfXml((Document) docAsRDF.get(operationURL.toString()));
+			System.out.println(RDFXMLStr);
+		}catch(Exception exp){
+			
+			
+		}
+
+	}
+	
 	public PedroXMLToRDF() {
 
 		init();
@@ -188,7 +213,17 @@ public class PedroXMLToRDF {
 				new XMLConverter.ConvertTypedResource(
 						FetaModelRDF.isFunctionOf, RDF.type,
 						FetaModelRDF.application, FetaModelRDF.NS));
-	}
+
+		myGridConverter.register(FetaModelXSD.PARAM_FORMAT,	new XMLConverter.ConvertTypedResource(
+				FetaModelRDF.objectType, RDF.type,
+				null, FetaModelRDF.NS));
+
+		
+		myGridConverter.register(FetaModelXSD.PARAM_COLLECTION_TYPE, new XMLConverter.ConvertTypedResource(
+				FetaModelRDF.hasParameterType, RDF.type,
+				null, FetaModelRDF.MYGRID_MOBY_SERVICE_NS));
+		
+		}
 
 	/**
 	 * Return the RDF model containing the services data
@@ -220,4 +255,5 @@ public class PedroXMLToRDF {
 	public Model getModel() {
 		return this.services;
 	}
+
 }

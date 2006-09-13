@@ -94,6 +94,9 @@ public class FetaModelXSD {
 	public static final String IS_CONFIG_PARAM = "isConfigurationParameter";
 
 	public static final String SERV_DESC_LOC = "serviceDescriptionLocation";
+	
+	public static final String PARAM_FORMAT = "parameterFormat";
 
+	public static final String PARAM_COLLECTION_TYPE = "collectionSemanticType";
 } // CommonModel
 
