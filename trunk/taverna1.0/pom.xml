@@ -508,6 +508,16 @@
         <groupId>uk.org.mygrid.taverna.scufl</groupId>
         <artifactId>scufl-workflow</artifactId>
         <version>1.5-SNAPSHOT</version>
+      </dependency>
+      <dependency>
+        <groupId>uk.org.mygrid.taverna.raven</groupId>
+        <artifactId>raven</artifactId>
+        <version>1.5-SNAPSHOT</version>
+      </dependency>
+      <dependency>
+        <groupId>uk.org.mygrid.taverna.zaria</groupId>
+        <artifactId>zaria</artifactId>
+        <version>1.5-SNAPSHOT</version>
       </dependency>    	    	
     </dependencies>
   </dependencyManagement>
@@ -525,5 +535,7 @@
     <module>taverna-biomoby</module>
     <module>taverna-launcher</module>
     <module>taverna-contrib</module>
+    <module>raven</module>
+    <module>zaria</module>
   </modules>
 </project>
