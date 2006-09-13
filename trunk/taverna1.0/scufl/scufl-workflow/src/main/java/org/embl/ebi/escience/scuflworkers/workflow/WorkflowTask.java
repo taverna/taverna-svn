@@ -25,8 +25,8 @@
 //      Dependencies        :
 //
 //      Last commit info    :   $Author: sowen70 $
-//                              $Date: 2006-07-10 14:10:31 $
-//                              $Revision: 1.2 $
+//                              $Date: 2006-09-13 15:51:25 $
+//                              $Revision: 1.3 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 
@@ -43,7 +43,9 @@ import org.embl.ebi.escience.scufl.enactor.EnactorProxy;
 import org.embl.ebi.escience.scufl.enactor.UserContext;
 import org.embl.ebi.escience.scufl.enactor.WorkflowInstance;
 import org.embl.ebi.escience.scufl.enactor.WorkflowSubmissionException;
+import org.embl.ebi.escience.scufl.enactor.event.NestedWorkflowCreationEvent;
 import org.embl.ebi.escience.scufl.enactor.implementation.FreefluoEnactorProxy;
+import org.embl.ebi.escience.scufl.enactor.implementation.WorkflowEventDispatcher;
 import org.embl.ebi.escience.scufl.enactor.implementation.WorkflowInstanceImpl;
 import org.embl.ebi.escience.scuflworkers.ProcessorTaskWorker;
 
@@ -82,8 +84,11 @@ public class WorkflowTask implements ProcessorTaskWorker, EnactorWorkflowTask {
 		try {
 			// Get the parent workflow instance
 			WorkflowInstance parentInstance = parentTask.getWorkflowInstance();
-			UserContext context = parentInstance.getUserContext();
+			UserContext context = parentInstance.getUserContext();			
 			workflowInstance = defaultEnactor.compileWorkflow(theNestedModel, inputMap, context);
+			if (WorkflowEventDispatcher.DISPATCHER!=null) {
+				WorkflowEventDispatcher.DISPATCHER.fireNestedWorkflowCreated(new NestedWorkflowCreationEvent(parentTask.getWorkflowInstance(), inputMap ,workflowInstance));
+			}
 		} catch (WorkflowSubmissionException e) {
 			String msg = "Error executing workflow task.  Error compiling the nested workflow.";
 			logger.error(msg, e);

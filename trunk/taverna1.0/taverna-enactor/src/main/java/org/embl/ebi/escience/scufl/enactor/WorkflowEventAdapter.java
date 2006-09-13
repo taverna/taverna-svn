@@ -7,6 +7,9 @@ package org.embl.ebi.escience.scufl.enactor;
 
 import org.embl.ebi.escience.scufl.enactor.event.CollectionConstructionEvent;
 import org.embl.ebi.escience.scufl.enactor.event.IterationCompletionEvent;
+import org.embl.ebi.escience.scufl.enactor.event.NestedWorkflowCompletionEvent;
+import org.embl.ebi.escience.scufl.enactor.event.NestedWorkflowCreationEvent;
+import org.embl.ebi.escience.scufl.enactor.event.NestedWorkflowFailureEvent;
 import org.embl.ebi.escience.scufl.enactor.event.ProcessCompletionEvent;
 import org.embl.ebi.escience.scufl.enactor.event.ProcessFailureEvent;
 import org.embl.ebi.escience.scufl.enactor.event.UserChangedDataEvent;
@@ -45,5 +48,10 @@ public class WorkflowEventAdapter implements WorkflowEventListener {
 	}
 	public void dataChanged(UserChangedDataEvent e) {		
 	}
-
+	public void nestedWorkflowCompleted(NestedWorkflowCompletionEvent e) {				
+	}
+	public void nestedWorkflowCreated(NestedWorkflowCreationEvent e) {
+	}
+	public void nestedWorkflowFailed(NestedWorkflowFailureEvent e) {		
+	}	
 }

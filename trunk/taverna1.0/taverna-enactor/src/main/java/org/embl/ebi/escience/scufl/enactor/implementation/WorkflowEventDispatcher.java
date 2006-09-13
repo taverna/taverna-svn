@@ -5,15 +5,16 @@
  */
 package org.embl.ebi.escience.scufl.enactor.implementation;
 
-import org.apache.log4j.Logger;
-
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.embl.ebi.escience.scufl.enactor.WorkflowEventListener;
 import org.embl.ebi.escience.scufl.enactor.event.CollectionConstructionEvent;
 import org.embl.ebi.escience.scufl.enactor.event.IterationCompletionEvent;
+import org.embl.ebi.escience.scufl.enactor.event.NestedWorkflowCompletionEvent;
+import org.embl.ebi.escience.scufl.enactor.event.NestedWorkflowCreationEvent;
+import org.embl.ebi.escience.scufl.enactor.event.NestedWorkflowFailureEvent;
 import org.embl.ebi.escience.scufl.enactor.event.ProcessCompletionEvent;
 import org.embl.ebi.escience.scufl.enactor.event.ProcessFailureEvent;
 import org.embl.ebi.escience.scufl.enactor.event.UserChangedDataEvent;
@@ -36,9 +37,10 @@ public class WorkflowEventDispatcher {
     private static final Logger logger = Logger
             .getLogger(WorkflowEventDispatcher.class);
 
-	private List eventQueue = new ArrayList();
+	private List<WorkflowInstanceEvent> eventQueue = new ArrayList<WorkflowInstanceEvent>();
+	
 
-	private List listeners = new ArrayList();
+	private List<WorkflowEventListener> listeners = new ArrayList<WorkflowEventListener>();
 
 	private Thread notificationThread;
 
@@ -62,6 +64,18 @@ public class WorkflowEventDispatcher {
 		}
 		this.notificationThread = new NotifyThread();
 	}
+	
+	public void fireNestedWorkflowCreated(NestedWorkflowCreationEvent e) {
+		addEventToQueue(e);
+	}
+	
+	public void fireNestedWorkflowFailed(NestedWorkflowFailureEvent e) {
+		addEventToQueue(e);
+	}
+	
+	public void fireNestedWorkflowCompleted(NestedWorkflowCompletionEvent e) {
+		addEventToQueue(e);
+	}
 
 	public void fireWorkflowCreated(WorkflowCreationEvent e) {
 		addEventToQueue(e);
@@ -75,7 +89,7 @@ public class WorkflowEventDispatcher {
 		addEventToQueue(e);
 	}
 
-	public void fireProcessCompleted(ProcessCompletionEvent e) {
+	public void fireProcessCompleted(ProcessCompletionEvent e) {		
 		addEventToQueue(e);
 	}
 
@@ -104,12 +118,11 @@ public class WorkflowEventDispatcher {
 			// Get the list of events to send
 			WorkflowInstanceEvent[] events = getPendingEvents();
 			// Iterate over the listeners
-			for (Iterator i = listeners.iterator(); i.hasNext();) {
-				WorkflowEventListener listener = (WorkflowEventListener) i
-						.next();
-				for (int j = 0; j < events.length; j++) {
+			for (WorkflowEventListener listener : listeners) {	
+				//Iterate over the events
+				for (WorkflowInstanceEvent event : events) {
 					try {
-						sendAnEvent(listener, events[j]);
+						sendAnEvent(listener, event);
 					} catch (Exception e) {
 						logger.error("Could not send event to " + listener, e);
 					}
@@ -148,6 +161,15 @@ public class WorkflowEventDispatcher {
 		} else if (e instanceof IterationCompletionEvent) {
 			l.processCompletedWithIteration((IterationCompletionEvent) e);
 			return;
+		} else if (e instanceof NestedWorkflowCompletionEvent) {
+			l.nestedWorkflowCompleted((NestedWorkflowCompletionEvent)e);
+			return;
+		} else if (e instanceof NestedWorkflowFailureEvent) {
+			l.nestedWorkflowFailed((NestedWorkflowFailureEvent)e);
+			return;
+		} else if (e instanceof NestedWorkflowCreationEvent) {
+			l.nestedWorkflowCreated((NestedWorkflowCreationEvent)e);
+			return;
 		} else if (e instanceof ProcessFailureEvent) {
 			l.processFailed((ProcessFailureEvent) e);
 			return;
@@ -171,8 +193,7 @@ public class WorkflowEventDispatcher {
 
 	private WorkflowInstanceEvent[] getPendingEvents() {
 		synchronized (this.eventQueue) {
-			WorkflowInstanceEvent[] events = (WorkflowInstanceEvent[]) this.eventQueue
-					.toArray(new WorkflowInstanceEvent[0]);
+			WorkflowInstanceEvent[] events = (WorkflowInstanceEvent[]) this.eventQueue.toArray(new WorkflowInstanceEvent[0]);
 			this.eventQueue.clear();
 			return events;
 		}
@@ -184,11 +205,7 @@ public class WorkflowEventDispatcher {
 		}
 	}
 
-	class NotifyThread extends Thread {
-        /**
-         * Logger for this class
-         */
-        private final Logger logger = Logger.getLogger(NotifyThread.class);
+	class NotifyThread extends Thread {        
 
 		protected NotifyThread() {
 			super();

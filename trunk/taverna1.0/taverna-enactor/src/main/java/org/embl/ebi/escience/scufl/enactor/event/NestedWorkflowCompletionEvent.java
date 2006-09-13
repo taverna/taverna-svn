@@ -25,26 +25,81 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: NestedWorkflowCompletionEvent.java,v $
- * Revision           $Revision: 1.2 $
+ * Revision           $Revision: 1.3 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-07-10 14:05:57 $
+ * Last modified on   $Date: 2006-09-13 15:51:24 $
  *               by   $Author: sowen70 $
  * Created on 22-Mar-2006
  *****************************************************************/
 package org.embl.ebi.escience.scufl.enactor.event;
 
+import java.util.Iterator;
 import java.util.Map;
 
+import org.embl.ebi.escience.baclava.DataThing;
 import org.embl.ebi.escience.scufl.Processor;
 import org.embl.ebi.escience.scufl.enactor.WorkflowInstance;
 
-public class NestedWorkflowCompletionEvent extends ProcessCompletionEvent {
+public class NestedWorkflowCompletionEvent extends WorkflowInstanceEvent {
 	private WorkflowInstance nestedWorkflowInstance = null;
+	
+	private boolean isIterating;
+
+	private Map inputMap, outputMap;
+
+	private Processor processor;	
+
+	public boolean isIterating() {
+		return isIterating;
+	}
+
+	public Map getInputMap() {
+		return this.inputMap;
+	}
+
+	public Map getOutputMap() {
+		return this.outputMap;
+	}	
+
+	/**
+	 * Print a summary of the event details
+	 */
+	public String toString() {
+		StringBuffer sb = new StringBuffer();
+		sb.append("NestedWorkflow '" + processor.getName() + "' complete ");
+		if (isIterating) {
+			sb.append("(iterating)");
+		} else {
+			sb.append("(simple)");
+		}
+		sb.append("\n");
+		String prefix = "in  ";
+		for (Iterator i = inputMap.keySet().iterator(); i.hasNext();) {
+			String inputKey = (String) i.next();
+			DataThing inputThing = (DataThing) inputMap.get(inputKey);
+			String mainLSID = inputThing.getLSID(inputThing.getDataObject());
+			sb.append(prefix + "'" + inputKey + "'->" + mainLSID + "\n");
+			prefix = "    ";
+		}
+		prefix = "out ";
+		for (Iterator i = outputMap.keySet().iterator(); i.hasNext();) {
+			String outputKey = (String) i.next();
+			DataThing outputThing = (DataThing) outputMap.get(outputKey);
+			String mainLSID = outputThing.getLSID(outputThing.getDataObject());
+			sb.append(prefix + "" + mainLSID + "->'" + outputKey + "'\n");
+			prefix = "    ";
+		}
+		return sb.toString();
+	}
 
 	public NestedWorkflowCompletionEvent(boolean isIterating, Map inputs,
 			Map outputs, Processor proc, WorkflowInstance workflow,
 			WorkflowInstance nestedWorkflow) {
-		super(isIterating, inputs, outputs, proc, workflow);
+		super(workflow);
+		this.isIterating = isIterating;
+		this.inputMap = inputs;
+		this.outputMap = outputs;
+		this.processor = proc;
 		nestedWorkflowInstance = nestedWorkflow;
 	}
 

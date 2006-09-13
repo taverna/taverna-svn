@@ -25,8 +25,8 @@
 //      Dependencies        :
 //
 //      Last commit info    :   $Author: sowen70 $
-//                              $Date: 2006-07-10 14:05:58 $
-//                              $Revision: 1.2 $
+//                              $Date: 2006-09-13 15:51:25 $
+//                              $Revision: 1.3 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 package uk.ac.soton.itinnovation.taverna.enactor.entities;
@@ -273,11 +273,11 @@ public class ProcessorTask extends AbstractTask  implements IProcessorTask {
 			if (processorTaskWorker instanceof EnactorWorkflowTask) {								
 				WorkflowInstance nestedWorkflow = (processorTaskWorker != null ? ((EnactorWorkflowTask)processorTaskWorker).getWorkflowInstance()
 						: null);
-				DISPATCHER.fireProcessFailed(new NestedWorkflowFailureEvent(workflowInstance, activeProcessor, ex,
+				DISPATCHER.fireNestedWorkflowFailed(new NestedWorkflowFailureEvent(workflowInstance, activeProcessor, ex,
 						inputMap, nestedWorkflow));
-			} else {
-				DISPATCHER.fireProcessFailed(new ProcessFailureEvent(workflowInstance, activeProcessor, ex, inputMap));
 			}
+			DISPATCHER.fireProcessFailed(new ProcessFailureEvent(workflowInstance, activeProcessor, ex, inputMap));
+			
 		}
 	}
 
@@ -308,7 +308,7 @@ public class ProcessorTask extends AbstractTask  implements IProcessorTask {
 						: null);
 				NestedWorkflowCompletionEvent event = new NestedWorkflowCompletionEvent(false, inputMap, outputMap,
 						activeProcessor, workflowInstance, nestedWorkflow);
-				DISPATCHER.fireProcessCompleted(event);
+				DISPATCHER.fireNestedWorkflowCompleted(event);
 			} else {
 				DISPATCHER.fireProcessCompleted(new ProcessCompletionEvent(false, inputMap, outputMap, activeProcessor,
 						workflowInstance));
@@ -751,7 +751,7 @@ public class ProcessorTask extends AbstractTask  implements IProcessorTask {
 			boolean finished = false;
 			while (finished == false) {
 				try {
-					manager.sleep(1000);
+					Thread.sleep(1000);
 				} catch (InterruptedException ie) {
 					if (exception[0] != null) {
 						throw exception[0];
@@ -842,21 +842,21 @@ public class ProcessorTask extends AbstractTask  implements IProcessorTask {
 		Map singleResultMap = invokeOnce(inputSet);
 		
 		
-		// Fire a new ProcessCompletionEvent
-		ProcessCompletionEvent completionEvent;
+		// Fire a new ProcessCompletionEvent		
 		if (processorTaskWorker instanceof EnactorWorkflowTask) {
 			WorkflowInstance nestedWorkflow = (processorTaskWorker != null ? ((EnactorWorkflowTask)processorTaskWorker).getWorkflowInstance()
 					: null);
-			completionEvent = new NestedWorkflowCompletionEvent(true, inputSet,
+			NestedWorkflowCompletionEvent completionEvent = new NestedWorkflowCompletionEvent(true, inputSet,
 					outputMap, activeProcessor, workflowInstance, nestedWorkflow);
+			DISPATCHER.fireNestedWorkflowCompleted(completionEvent);
 			
-		} else {
-			completionEvent=new ProcessCompletionEvent(true, inputSet, singleResultMap,
-					activeProcessor, workflowInstance);
-		}
+		} 
+		ProcessCompletionEvent completionEvent=new ProcessCompletionEvent(true, inputSet, singleResultMap,
+				activeProcessor, workflowInstance);
 		DISPATCHER.fireProcessCompleted(completionEvent);
 		completionEvents.add(completionEvent);
-		
+			
+				
 		// Iterate over the outputs
 		for (Iterator l = singleResultMap.keySet().iterator(); l.hasNext();) {
 			String outputName = (String) l.next();

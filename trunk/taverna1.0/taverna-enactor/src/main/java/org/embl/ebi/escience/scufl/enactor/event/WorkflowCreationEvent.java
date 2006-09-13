@@ -25,7 +25,7 @@ public class WorkflowCreationEvent extends WorkflowInstanceEvent {
 
 	public WorkflowCreationEvent(WorkflowInstance workflow, Map inputs,
 			String definitionLSID) {
-		super(workflow);
+		super(workflow);		
 		this.defn = definitionLSID;
 		this.inputs = inputs;
 		if (workflow instanceof WorkflowInstanceImpl) {

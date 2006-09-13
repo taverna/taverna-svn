@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: NestedWorkflowFailureEvent.java,v $
- * Revision           $Revision: 1.2 $
+ * Revision           $Revision: 1.3 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-07-10 14:05:57 $
+ * Last modified on   $Date: 2006-09-13 15:51:24 $
  *               by   $Author: sowen70 $
  * Created on 22-Mar-2006
  *****************************************************************/
@@ -38,19 +38,54 @@ import java.util.Map;
 import org.embl.ebi.escience.scufl.Processor;
 import org.embl.ebi.escience.scufl.enactor.WorkflowInstance;
 
-public class NestedWorkflowFailureEvent extends ProcessFailureEvent {
+/**
+ * An event to indicates a failure within a Nested Workflow
+ * @author sowen
+ *
+ */
+
+public class NestedWorkflowFailureEvent extends WorkflowInstanceEvent {
 
 	private WorkflowInstance nestedWorkflow = null;
+	private Exception cause;
+	private Processor processor;
+	private Map inputs;
 
 	public NestedWorkflowFailureEvent(WorkflowInstance workflow,
 			Processor processor, Exception cause, Map inputs,
 			WorkflowInstance nestedWorkflow) {
-		super(workflow, processor, cause, inputs);
+		super(workflow);
+		this.processor = processor;
+		this.cause = cause;
+		this.inputs = inputs;
 		this.nestedWorkflow = nestedWorkflow;
 	}
 
 	public WorkflowInstance getNestedWorkflow() {
 		return this.nestedWorkflow;
+	}
+	
+
+	public Exception getCause() {
+		return this.cause;
+	}
+
+	public Processor getProcessor() {
+		return this.processor;
+	}
+
+	public String toString() {
+		StringBuffer sb = new StringBuffer();
+		sb
+				.append("Nested Workflow '" + processor.getName()
+						+ "' failed, cause :\n  ");
+		sb.append(cause.toString());
+		sb.append("\n");
+		return sb.toString();
+	}
+
+	public Map getInputMap() {
+		return this.inputs;
 	}
 
 }
