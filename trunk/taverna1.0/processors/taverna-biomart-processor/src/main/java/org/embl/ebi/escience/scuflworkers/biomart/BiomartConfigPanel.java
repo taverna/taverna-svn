@@ -25,10 +25,10 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: BiomartConfigPanel.java,v $
- * Revision           $Revision: 1.2 $
+ * Revision           $Revision: 1.3 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-07-10 14:07:42 $
- *               by   $Author: sowen70 $
+ * Last modified on   $Date: 2006-09-14 11:02:30 $
+ *               by   $Author: davidwithers $
  * Created on 17-Mar-2006
  *****************************************************************/
 package org.embl.ebi.escience.scuflworkers.biomart;
@@ -91,7 +91,7 @@ public class BiomartConfigPanel extends JPanel implements ScuflUIComponent {
      */
 	public static void main(String[] args) {
 		try {
-			MartService martService = new MartService(
+			MartService martService = MartService.getMartService(
 					"http://www.biomart.org/biomart/martservice");
 			MartDataset dataset = null;
 			MartDataset[] datasets = martService.getDatasets();

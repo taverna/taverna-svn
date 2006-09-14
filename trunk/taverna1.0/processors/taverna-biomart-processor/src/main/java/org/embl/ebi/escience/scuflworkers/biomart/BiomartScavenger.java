@@ -25,10 +25,10 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: BiomartScavenger.java,v $
- * Revision           $Revision: 1.2 $
+ * Revision           $Revision: 1.3 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-07-10 14:07:43 $
- *               by   $Author: sowen70 $
+ * Last modified on   $Date: 2006-09-14 11:02:30 $
+ *               by   $Author: davidwithers $
  * Created on 17-Mar-2006
  *****************************************************************/
 package org.embl.ebi.escience.scuflworkers.biomart;
@@ -54,14 +54,14 @@ import org.embl.ebi.escience.scuflui.workbench.ScavengerCreationException;
  */
 public class BiomartScavenger extends Scavenger {
 
-	private static Logger logger=Logger.getLogger(BiomartScavenger.class);
-	
+	private static Logger logger = Logger.getLogger(BiomartScavenger.class);
+
 	public BiomartScavenger(String registryURL)
 			throws ScavengerCreationException {
 		super("Biomart service @ " + registryURL);
-		
-		logger.info("Initialising Biomart Scavenger for URL:"+registryURL);
-		
+
+		logger.info("Initialising Biomart Scavenger for URL:" + registryURL);
+
 		URL registryLocation;
 		try {
 			registryLocation = new URL(getBiomartServiceLocation(registryURL));
@@ -70,8 +70,8 @@ public class BiomartScavenger extends Scavenger {
 					+ mue.getMessage());
 		}
 		try {
-			MartService martService = new MartService(registryLocation
-					.toString());
+			MartService martService = MartService
+					.getMartService(registryLocation.toString());
 			MartRegistry registry = martService.getRegistry();
 			MartURLLocation[] martURLLocations = registry.getMartURLLocations();
 			for (int i = 0; i < martURLLocations.length; i++) {
