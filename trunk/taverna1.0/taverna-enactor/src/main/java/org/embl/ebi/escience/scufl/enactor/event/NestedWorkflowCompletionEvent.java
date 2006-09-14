@@ -25,10 +25,10 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: NestedWorkflowCompletionEvent.java,v $
- * Revision           $Revision: 1.3 $
+ * Revision           $Revision: 1.4 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-09-13 15:51:24 $
- *               by   $Author: sowen70 $
+ * Last modified on   $Date: 2006-09-14 14:06:47 $
+ *               by   $Author: dturi $
  * Created on 22-Mar-2006
  *****************************************************************/
 package org.embl.ebi.escience.scufl.enactor.event;
@@ -53,7 +53,7 @@ public class NestedWorkflowCompletionEvent extends WorkflowInstanceEvent {
 		return isIterating;
 	}
 
-	public Map getInputMap() {
+    public Map getInputMap() {
 		return this.inputMap;
 	}
 
@@ -61,6 +61,10 @@ public class NestedWorkflowCompletionEvent extends WorkflowInstanceEvent {
 		return this.outputMap;
 	}	
 
+	public Processor getProcessor() {
+	    return processor;
+	}
+	
 	/**
 	 * Print a summary of the event details
 	 */
