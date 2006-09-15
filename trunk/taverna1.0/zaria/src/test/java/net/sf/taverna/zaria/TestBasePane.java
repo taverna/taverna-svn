@@ -15,7 +15,7 @@ public class TestBasePane extends TestCase {
 		pane.setEditable(true);
 		myFrame.getContentPane().add(pane, BorderLayout.CENTER);
 		myFrame.setVisible(true);
-		Thread.sleep(1000*10);
+		Thread.sleep(1000*30);
 	}
 	
 }

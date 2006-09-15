@@ -21,42 +21,45 @@ public class ZSplitPane extends ZPane {
 
 	private JSplitPane splitPane = new JSplitPane();
 	
-	/**
-	 * Set horizontal split orientation
-	 */
-	private Action setHorizontalOrientationAction = new AbstractAction() {
-		public void actionPerformed(ActionEvent arg0) {
-			splitPane.setOrientation(JSplitPane.HORIZONTAL_SPLIT);
-			setHorizontalOrientationAction.setEnabled(false);
-			setVerticalOrientationAction.setEnabled(true);
-		}
-	};
-	
-	/**
-	 * Set vertical split orientation
-	 */
-	private Action setVerticalOrientationAction = new AbstractAction() {
+	private class SwitchOrientationAction extends AbstractAction {
 		
-		public void actionPerformed(ActionEvent arg0) {
-			splitPane.setOrientation(JSplitPane.VERTICAL_SPLIT);
-			setHorizontalOrientationAction.setEnabled(true);
-			setVerticalOrientationAction.setEnabled(false);
+		public SwitchOrientationAction() {
+			super();
+			if (splitPane.getOrientation() == JSplitPane.HORIZONTAL_SPLIT) {
+				putValue(Action.SHORT_DESCRIPTION,"Switch to horizontal split");
+				putValue(Action.SMALL_ICON,ZIcons.iconFor("horizontal"));
+			}
+			else {
+				putValue(Action.SHORT_DESCRIPTION,"Switch to vertical split");
+				putValue(Action.SMALL_ICON,ZIcons.iconFor("vertical"));
+			}
 		}
-	};
+
+		public void actionPerformed(ActionEvent arg0) {
+			if (splitPane.getOrientation() == JSplitPane.HORIZONTAL_SPLIT) {
+				splitPane.setOrientation(JSplitPane.VERTICAL_SPLIT);
+				putValue(Action.SHORT_DESCRIPTION,"Switch to vertical split");
+				putValue(Action.SMALL_ICON,ZIcons.iconFor("vertical"));
+			}
+			else {
+				splitPane.setOrientation(JSplitPane.HORIZONTAL_SPLIT);
+				putValue(Action.SHORT_DESCRIPTION,"Switch to horizontal split");
+				putValue(Action.SMALL_ICON,ZIcons.iconFor("horizontal"));
+			}
+		}
+		
+	}
 	
 	private List<Action> actions = new ArrayList<Action>();
 	
 	public ZSplitPane() {
 		super();
-		actions.add(setHorizontalOrientationAction);
-		setHorizontalOrientationAction.putValue(Action.NAME,"Horizontal");
-		actions.add(setVerticalOrientationAction);
-		setVerticalOrientationAction.putValue(Action.NAME,"Vertical");
-		actions.add(new ReplaceWithBlankAction());
-		// Set up action validity
-		setVerticalOrientationAction.actionPerformed(null);
 		splitPane.setLeftComponent(new ZBlankComponent());
 		splitPane.setRightComponent(new ZBlankComponent());
+		splitPane.setDividerLocation(0.5d);
+		splitPane.setResizeWeight(0.5d);
+		actions.add(new SwitchOrientationAction());
+		actions.add(new ReplaceWithBlankAction());
 		add(splitPane, BorderLayout.CENTER);
 	}
 
@@ -101,6 +104,8 @@ public class ZSplitPane extends ZPane {
 	}
 
 	public void swap(ZTreeNode oldComponent, ZTreeNode newComponent) {
+		// Store the old divider location, we don't want this to change
+		int location = splitPane.getDividerLocation();
 		if (getRightComponent().equals(oldComponent)) {
 			// Swap the right component
 			splitPane.remove((Component)oldComponent);
@@ -112,6 +117,7 @@ public class ZSplitPane extends ZPane {
 			splitPane.setLeftComponent((Component)newComponent);
 		}
 		newComponent.setEditable(this.editable);
+		splitPane.setDividerLocation(location);
 		revalidate();
 	}
 

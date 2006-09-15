@@ -25,7 +25,8 @@ public class ZBlankComponent extends ZPane implements ZTreeNode {
 		super();
 		actions = new ArrayList<Action>();
 		actions.add(createSplitPaneAction);
-		createSplitPaneAction.putValue(Action.NAME,"Split");
+		createSplitPaneAction.putValue(Action.SHORT_DESCRIPTION,"Create split pane");
+		createSplitPaneAction.putValue(Action.SMALL_ICON,ZIcons.iconFor("createsplit"));
 		add(new JPanel(), BorderLayout.CENTER);
 	}
 

@@ -2,6 +2,7 @@ package net.sf.taverna.zaria;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.util.ArrayList;
 import java.util.Enumeration;
@@ -30,13 +31,16 @@ public abstract class ZPane extends JComponent implements ZTreeNode {
 	protected ZPane() {
 		super();
 		toolBar.setFloatable(false);
+		toolBar.setRollover(true);
+		toolBar.setBorderPainted(false);
 		setLayout(new BorderLayout());
 	}
 	
 	protected class ReplaceWithBlankAction extends AbstractAction {
 		public ReplaceWithBlankAction() {
 			super();
-			putValue(Action.NAME,"Clear");
+			putValue(Action.SHORT_DESCRIPTION,"Clear");
+			putValue(Action.SMALL_ICON,ZIcons.iconFor("delete"));
 		}
 		public void actionPerformed(ActionEvent arg0) {
 			replaceWith(new ZBlankComponent());
