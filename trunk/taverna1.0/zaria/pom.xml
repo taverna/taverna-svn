@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?><project>
-  <modelVersion>4.0.0</modelVersion>
-  <groupId>uk.org.mygrid.taverna.raven</groupId>
-  <artifactId>zaria</artifactId>
-  <name>Zaria</name>
-  <version>1.5-SNAPSHOT</version>
   <parent>
     <artifactId>taverna</artifactId>
     <groupId>uk.org.mygrid.taverna</groupId>
     <version>1.5-SNAPSHOT</version>
   </parent>
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>uk.org.mygrid.taverna.raven</groupId>
+  <artifactId>zaria</artifactId>
+  <name>Zaria</name>
+  <version>1.5-SNAPSHOT</version>
   <developers>
     <developer>
       <id>mereden</id>
@@ -83,5 +83,10 @@
       <groupId>uk.org.mygrid.taverna.raven</groupId>
       <artifactId>raven</artifactId>
     </dependency>
-   </dependencies>
+    <dependency>
+      <groupId>jdom</groupId>
+      <artifactId>jdom</artifactId>
+      <version>1.0</version>
+    </dependency>
+  </dependencies>
 </project>
