@@ -505,29 +505,25 @@ public class AdvancedModelExplorer extends JPanel implements ScuflUIComponent {
 		toolbar.setMaximumSize(new Dimension(2000, 30));
 		toolbar.setBorderPainted(true);
 
+		toolbar.add(new JButton(new LoadWorkflowAction(model)));
+		toolbar.addSeparator();
+
+		toolbar.add(new JButton(new SaveWorkflowAction(model)));
+		toolbar.addSeparator();
+		
+		for (ScuflModelActionSPI action : ScuflModelActionRegistry.instance().getScuflModelActions(model)) {
+			toolbar.add(new JButton(action));
+		}
+		toolbar.addSeparator();
+
 		workOffline = new JCheckBox("Offline");
 		workOffline.setModel(new OfflineToggleModel(model));
-		toolbar.add(new JLabel(" Load "));
-		toolbar.add(new LoadWorkflowAction(model));
-		toolbar.addSeparator();
-
-		toolbar.add(new JLabel("Save "));
-		toolbar.add(new SaveWorkflowAction(model));
-
-		toolbar.addSeparator();
-		for (ScuflModelActionSPI action : ScuflModelActionRegistry.instance().getScuflModelActions(model)) {
-			toolbar.add(new JLabel(action.getLabel()));
-			toolbar.add(action);
-		}
-
-		toolbar.addSeparator();
 		toolbar.add(workOffline);
 
 		toolbar.add(Box.createHorizontalGlue());
-
-		toolbar.add(new JLabel("Reset "));
-		toolbar.add(new ResetAction(model));
-
+		toolbar.add(new JButton(new ResetAction(model)));
+		
+		
 		// Add the toolbar to the top of the panel
 		workflowPanel.add(toolbar, BorderLayout.PAGE_START);
 
