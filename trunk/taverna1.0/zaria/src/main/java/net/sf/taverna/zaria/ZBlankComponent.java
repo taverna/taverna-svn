@@ -27,12 +27,20 @@ public class ZBlankComponent extends ZPane implements ZTreeNode {
 		actions.add(createSplitPaneAction);
 		createSplitPaneAction.putValue(Action.SHORT_DESCRIPTION,"Create split pane");
 		createSplitPaneAction.putValue(Action.SMALL_ICON,ZIcons.iconFor("createsplit"));
+		actions.add(createTabbedPaneAction);
+		createTabbedPaneAction.putValue(Action.NAME,"New tabs");
 		add(new JPanel(), BorderLayout.CENTER);
 	}
 
 	private Action createSplitPaneAction = new AbstractAction() {
 		public void actionPerformed(ActionEvent arg0) {
 			replaceWith(new ZSplitPane());
+		}
+	};
+	
+	private Action createTabbedPaneAction = new AbstractAction() {
+		public void actionPerformed(ActionEvent arg0) {
+			replaceWith(new ZTabbedPane());
 		}
 	};
 	

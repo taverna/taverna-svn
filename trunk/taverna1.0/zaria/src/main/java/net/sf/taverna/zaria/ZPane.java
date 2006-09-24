@@ -10,6 +10,7 @@ import java.util.List;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
+import javax.swing.Box;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.JToolBar;
@@ -75,21 +76,42 @@ public abstract class ZPane extends JComponent implements ZTreeNode {
 		return (getZChildren().isEmpty());
 	}
 	
+	public List<JComponent> getToolbarComponents() {
+		return new ArrayList<JComponent>();
+	}
+	
 	/**
 	 * If setting editable from false to true
 	 * generates the toolbar from the getActions
 	 * method of the subclass and displays it
-	 * otherwise hides the toolbar.
+	 * otherwise hides the toolbar. The toolbar
+	 * is only shown if there are actions present,
+	 * I'm not sure this is actually a sensible
+	 * behaviour.
 	 */
 	public void setEditable(boolean b) {
 		if (b!=editable) {
 			editable = b;
 			if (editable) {
 				toolBar.removeAll();
+				boolean hasContent = false;
+				// Add arbitrary JComponents
+				for (JComponent j : getToolbarComponents()) {
+					toolBar.add(j);
+					hasContent = true;
+				}
+				// Pack to force action buttons to the right hand side
+				// of the toolbar, other components are inserted on the
+				// left by default.
+				toolBar.add(Box.createHorizontalGlue());
+				// Add actions
 				for (Action a : getActions()) {
 					toolBar.add(a);
+					hasContent = true;
 				}
-				add(toolBar,BorderLayout.NORTH);
+				if (hasContent) {
+					add(toolBar,BorderLayout.NORTH);
+				}
 			}
 			else {
 				remove(toolBar);

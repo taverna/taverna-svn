@@ -3,6 +3,7 @@ package net.sf.taverna.zaria;
 import java.util.List;
 
 import javax.swing.Action;
+import javax.swing.JComponent;
 
 import org.jdom.Element;
 
@@ -76,6 +77,13 @@ public interface ZTreeNode {
 	 */
 	public List<Action> getActions();
 
+	/**
+	 * Return a list of JComponent items that should be
+	 * added on the left hand side of the toolbar when
+	 * in edit mode
+	 */
+	public List<JComponent> getToolbarComponents();
+	
 	/**
 	 * Swap out the given child for the new one
 	 * @param oldComponent the ZTreeNode to remove as a child
