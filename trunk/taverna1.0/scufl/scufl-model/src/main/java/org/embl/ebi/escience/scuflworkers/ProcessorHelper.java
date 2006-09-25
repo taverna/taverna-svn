@@ -84,6 +84,7 @@ public class ProcessorHelper {
 		List<ProcessorInfoBean> infoBeans = ProcessorRegistry.instance().getProcessorInfoBeans();
 		for (ProcessorInfoBean bean : infoBeans) {
 			beanForProcessorClassname.put(bean.processorClassname(), bean);
+			ClassLoader beanLoader = bean.getClass().getClassLoader();
 
 			if (bean.icon() != null) {
 				iconForTagName.put(bean.tag(), bean.icon());
@@ -91,7 +92,8 @@ public class ProcessorHelper {
 
 			if (bean.xmlHandlerClassname() != null) {
 				try {
-					XMLHandler handler = (XMLHandler) Class.forName(bean.xmlHandlerClassname()).newInstance();
+					Class xmlHandlerClass = beanLoader.loadClass(bean.xmlHandlerClassname());
+					XMLHandler handler = (XMLHandler)xmlHandlerClass.newInstance();
 					xmlHandlerForTagName.put(bean.tag(), handler);
 				} catch (Exception e) {
 					logger.error("Exception creating xml handler: " + bean.xmlHandlerClassname(), e);
@@ -100,7 +102,8 @@ public class ProcessorHelper {
 
 			if (bean.editorClassname() != null) {
 				try {					
-					ProcessorEditor editor = (ProcessorEditor) Class.forName(bean.editorClassname()).newInstance();
+					Class processorEditorClass = beanLoader.loadClass(bean.editorClassname());
+					ProcessorEditor editor = (ProcessorEditor)processorEditorClass.newInstance();
 					editorForTagName.put(bean.tag(), editor);
 				} catch (Exception e) {
 					logger.error("Exception creating processor editor: " + bean.editorClassname(), e);
@@ -144,9 +147,10 @@ public class ProcessorHelper {
 		}
 		// Assume there is a constructor that takes a single processor
 		// as its argument
+		ClassLoader loader = p.getClass().getClassLoader();
 		try {
 			Class[] constructorClasses = new Class[] { Processor.class };
-			Class taskClass = Class.forName(taskClassName);
+			Class taskClass = loader.loadClass(taskClassName);
 			Constructor taskConstructor = taskClass.getConstructor(constructorClasses);
 			ProcessorTaskWorker taskWorker = (ProcessorTaskWorker) taskConstructor.newInstance(new Object[] { p });
 			return taskWorker;
