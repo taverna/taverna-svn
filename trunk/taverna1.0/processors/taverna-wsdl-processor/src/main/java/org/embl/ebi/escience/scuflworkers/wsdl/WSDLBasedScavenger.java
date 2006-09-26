@@ -62,12 +62,12 @@ public class WSDLBasedScavenger extends Scavenger {
 
 			Map<String, DefaultMutableTreeNode> portTypeNameTreeNodeMap = new HashMap<String, DefaultMutableTreeNode>();
 			if (operations.size() > 0) {
-				String style = parser.getStyle();
+				String style = parser.getStyle();				
 
 				DefaultMutableTreeNode portTypeNode;
 
 				for (Iterator i = operations.iterator(); i.hasNext();) {
-					Operation op = (Operation) i.next();
+					Operation op = (Operation) i.next();					
 					PortType portType = parser.getPortType(op.getName());
 					String portTypeName = portType.getQName().getLocalPart();
 

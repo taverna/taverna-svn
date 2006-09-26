@@ -159,7 +159,12 @@ public class WSDLParser {
 	 * @return the style, i.e. document or rpc
 	 */
 	public String getStyle() {
-		return styleMap.get(getWSDLLocation());
+		String style= styleMap.get(getWSDLLocation());
+		if (style==null) {
+			logger.warn("Operation style not defined for wsdlLocation '"+getWSDLLocation()+"' so assuming 'document'");
+			style="document"; //assume document if not specified (only come accross this with .NET)
+		}
+		return style;
 	}
 
 	public PortType getPortType(String operationName) {
