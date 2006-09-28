@@ -11,7 +11,7 @@ import javax.swing.Box;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
-import org.embl.ebi.escience.scuflui.ShadedLabel;
+import org.embl.ebi.escience.scuflui.shared.ShadedLabel;
 
 /**
  * a dialog for helping create scavengers for BioMoby registries that are not the default registry.

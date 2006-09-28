@@ -18,4 +18,7 @@ public class Scavenger extends DefaultMutableTreeNode {
 	public Scavenger(Object userObject) {
 		super(userObject);
 	} 
+	
+	
+	
 }

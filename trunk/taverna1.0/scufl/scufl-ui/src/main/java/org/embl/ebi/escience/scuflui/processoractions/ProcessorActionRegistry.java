@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.embl.ebi.escience.scufl.Processor;
+import org.embl.ebi.escience.scuflui.spi.ProcessorActionSPI;
 import org.embl.ebi.escience.utils.TavernaSPIRegistry;
 
 /**

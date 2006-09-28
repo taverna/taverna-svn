@@ -29,11 +29,10 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 
 import org.embl.ebi.escience.scufl.Processor;
-import org.embl.ebi.escience.scufl.ScuflModel;
-import org.embl.ebi.escience.scuflui.ScuflUIComponent;
-import org.embl.ebi.escience.scuflui.ShadedLabel;
-import org.embl.ebi.escience.scuflui.UIUtils;
 import org.embl.ebi.escience.scuflui.graph.GraphColours;
+import org.embl.ebi.escience.scuflui.shared.ShadedLabel;
+import org.embl.ebi.escience.scuflui.shared.UIUtils;
+import org.embl.ebi.escience.scuflui.spi.UIComponentSPI;
 import org.embl.ebi.escience.scuflworkers.ProcessorEditor;
 import org.embl.ebi.escience.scuflworkers.ProcessorHelper;
 
@@ -59,7 +58,7 @@ public class PollingPropertiesEditor implements ProcessorEditor {
 	}
 
 	public class PollingPropertiesPanel extends JPanel implements
-			ScuflUIComponent {
+			UIComponentSPI {
 
 		SoaplabProcessor processor;
 
@@ -168,11 +167,11 @@ public class PollingPropertiesEditor implements ProcessorEditor {
 			super.paintComponent(g);
 		}
 
-		public void attachToModel(ScuflModel theModel) {
+		public void onDisplay() {
 			//
 		}
 
-		public void detachFromModel() {
+		public void onDispose() {
 			try {
 				processor.setPolling(Integer.parseInt(interval.getText()),
 						Double.parseDouble(backoff.getText()), Integer

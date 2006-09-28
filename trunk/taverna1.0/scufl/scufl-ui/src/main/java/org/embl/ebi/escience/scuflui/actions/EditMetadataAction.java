@@ -6,7 +6,7 @@ import org.embl.ebi.escience.scufl.Port;
 import org.embl.ebi.escience.scufl.ScuflModel;
 import org.embl.ebi.escience.scuflui.ScuflSemanticMarkupEditor;
 import org.embl.ebi.escience.scuflui.TavernaIcons;
-import org.embl.ebi.escience.scuflui.UIUtils;
+import org.embl.ebi.escience.scuflui.shared.UIUtils;
 
 public class EditMetadataAction extends ModelObjectAction {
 

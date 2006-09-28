@@ -1,5 +1,6 @@
 package net.sourceforge.taverna.scuflui.renderers;
 
+
 import java.io.IOException;
 import java.util.regex.Pattern;
 
@@ -13,18 +14,18 @@ import org.apache.log4j.Logger;
 import org.embl.ebi.escience.baclava.DataThing;
 import org.embl.ebi.escience.scuflui.renderers.RendererException;
 import org.embl.ebi.escience.scuflui.renderers.RendererRegistry;
-import org.embl.ebi.escience.scuflui.renderers.RendererSPI;
 import org.embl.ebi.escience.scuflui.renderers.AbstractRenderer.ByPattern;
+import org.embl.ebi.escience.scuflui.spi.RendererSPI;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
 /**
  * This class renders SVG Documents.
  * 
- * Last edited by $Author: sowen70 $
+ * Last edited by $Author: mereden $
  * 
  * @author Mark
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public class SVGRenderer extends ByPattern implements RendererSPI {
 
@@ -40,7 +41,7 @@ public class SVGRenderer extends ByPattern implements RendererSPI {
 	}
 
 	/**
-	 * @see org.embl.ebi.escience.scuflui.renderers.RendererSPI#isTerminal()
+	 * @see org.embl.ebi.escience.scuflui.spi.RendererSPI#isTerminal()
 	 */
 	public boolean isTerminal() {
 		return true;
@@ -50,7 +51,7 @@ public class SVGRenderer extends ByPattern implements RendererSPI {
 	 * @throws ParserConfigurationException
 	 * @throws IOException
 	 * @throws SAXException
-	 * @see org.embl.ebi.escience.scuflui.renderers.RendererSPI#getComponent(org.embl.ebi.escience.scuflui.renderers.RendererRegistry,
+	 * @see org.embl.ebi.escience.scuflui.spi.RendererSPI#getComponent(RendererRegistry,
 	 *      org.embl.ebi.escience.baclava.DataThing)
 	 */
 	public JComponent getComponent(RendererRegistry renderers, DataThing dataThing) throws RendererException {

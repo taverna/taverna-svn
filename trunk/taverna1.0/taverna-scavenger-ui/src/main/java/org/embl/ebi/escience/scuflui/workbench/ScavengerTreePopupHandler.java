@@ -5,6 +5,7 @@
  */
 package org.embl.ebi.escience.scuflui.workbench;
 
+
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -43,16 +44,16 @@ import org.embl.ebi.escience.scufl.ScuflWorkflowProcessorFactory;
 import org.embl.ebi.escience.scufl.enactor.WorkflowSubmissionException;
 import org.embl.ebi.escience.scufl.enactor.implementation.FreefluoEnactorProxy;
 import org.embl.ebi.escience.scufl.parser.XScuflParser;
-import org.embl.ebi.escience.scuflui.DataThingConstructionPanel;
+import org.embl.ebi.escience.scuflui.WorkflowInputMapBuilder;
 import org.embl.ebi.escience.scuflui.EnactorInvocation;
-import org.embl.ebi.escience.scuflui.ShadedLabel;
 import org.embl.ebi.escience.scuflui.TavernaIcons;
-import org.embl.ebi.escience.scuflui.UIUtils;
-import org.embl.ebi.escience.scuflui.WebScavengerHelper;
+import org.embl.ebi.escience.scuflui.shared.ShadedLabel;
+import org.embl.ebi.escience.scuflui.shared.UIUtils;
 import org.embl.ebi.escience.scuflworkers.ProcessorFactory;
 import org.embl.ebi.escience.scuflworkers.ProcessorHelper;
 import org.embl.ebi.escience.scuflworkers.ScavengerHelper;
 import org.embl.ebi.escience.scuflworkers.ScavengerHelperRegistry;
+import org.embl.ebi.escience.scuflworkers.web.WebScavengerHelper;
 import org.jdom.Document;
 import org.jdom.Element;
 
@@ -188,7 +189,7 @@ public class ScavengerTreePopupHandler extends MouseAdapter {
 									// more complex one.
 								}
 								if (m.getWorkflowSourcePorts().length != 0) {
-									DataThingConstructionPanel thing = new DataThingConstructionPanel() {
+									WorkflowInputMapBuilder thing = new WorkflowInputMapBuilder() {
 										public void launchEnactorDisplay(Map inputObject) {
 											try {
 												UIUtils.createFrame(m, new EnactorInvocation(FreefluoEnactorProxy

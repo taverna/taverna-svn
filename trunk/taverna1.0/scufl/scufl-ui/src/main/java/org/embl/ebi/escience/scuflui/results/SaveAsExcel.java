@@ -33,8 +33,9 @@ import org.apache.poi.hssf.util.HSSFColor;
 import org.embl.ebi.escience.baclava.BaclavaIterator;
 import org.embl.ebi.escience.baclava.DataThing;
 import org.embl.ebi.escience.scuflui.AdvancedModelExplorer;
-import org.embl.ebi.escience.scuflui.ExtensionFileFilter;
 import org.embl.ebi.escience.scuflui.TavernaIcons;
+import org.embl.ebi.escience.scuflui.shared.ExtensionFileFilter;
+import org.embl.ebi.escience.scuflui.spi.ResultMapSaveSPI;
 
 /**
  * Uses the Apache POI to save the map of data things to an Excel format

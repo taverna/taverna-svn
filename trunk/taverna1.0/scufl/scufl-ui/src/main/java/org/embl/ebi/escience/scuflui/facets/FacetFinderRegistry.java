@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.embl.ebi.escience.baclava.DataThing;
+import org.embl.ebi.escience.scuflui.spi.FacetFinderSPI;
 import org.embl.ebi.escience.utils.TavernaSPIRegistry;
 
 /**

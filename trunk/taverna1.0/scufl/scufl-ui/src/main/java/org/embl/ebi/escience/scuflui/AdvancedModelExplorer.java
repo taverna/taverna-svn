@@ -58,6 +58,10 @@ import org.embl.ebi.escience.scuflui.actions.ResetAction;
 import org.embl.ebi.escience.scuflui.actions.SaveWorkflowAction;
 import org.embl.ebi.escience.scuflui.actions.ScuflModelActionRegistry;
 import org.embl.ebi.escience.scuflui.actions.ScuflModelActionSPI;
+import org.embl.ebi.escience.scuflui.shared.ExtensionFileFilter;
+import org.embl.ebi.escience.scuflui.spi.UIComponentSPI;
+import org.embl.ebi.escience.scuflui.spi.WorkflowModelViewSPI;
+import org.embl.ebi.escience.scuflui.treeview.ScuflModelTreeTable;
 
 /**
  * An amalgam of the ScuflModelExplorerTreeTable and the
@@ -67,7 +71,7 @@ import org.embl.ebi.escience.scuflui.actions.ScuflModelActionSPI;
  * 
  * @author Tom Oinn
  */
-public class AdvancedModelExplorer extends JPanel implements ScuflUIComponent {
+public class AdvancedModelExplorer extends JPanel implements WorkflowModelViewSPI {
 
 	private ScuflModelTreeTable explorer;
 
@@ -475,7 +479,7 @@ public class AdvancedModelExplorer extends JPanel implements ScuflUIComponent {
 		this.model = theModel;
 
 		setLayout(new BorderLayout());
-
+		removeAll();
 		// Create a tabbed layout and put the
 		// explorer component in the first tab
 		tabs = new JTabbedPane();
@@ -566,9 +570,20 @@ public class AdvancedModelExplorer extends JPanel implements ScuflUIComponent {
 	}
 
 	public void detachFromModel() {
-		explorer.detachFromModel();
-		this.model.removeListener(listener);
-		this.model = null;
+		if (this.model!=null) {
+			explorer.detachFromModel();
+			this.model.removeListener(listener);
+			this.model = null;
+		}
+	}
+
+	public void onDisplay() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void onDispose() {
+		detachFromModel();
 	}
 
 }

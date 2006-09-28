@@ -56,7 +56,6 @@ public class DataThing implements Cloneable, Serializable {
 
 	protected HashMap lsid = new HashMap();
 
-
 	public static LSIDProvider SYSTEM_DEFAULT_LSID_PROVIDER = null;
 
 	// This array contains mime types, when asked for its most
@@ -69,8 +68,6 @@ public class DataThing implements Cloneable, Serializable {
 	public static Properties mimeTypes = new Properties();
 
 	static {
-		// FIXME: Avoid depending on static classloader property loading
-		
 		// Get the mimetypes.properties data
 		try {
 			ClassLoader loader = DataThing.class.getClassLoader();
@@ -101,10 +98,6 @@ public class DataThing implements Cloneable, Serializable {
 			} catch (Exception ex) {
 				ex.printStackTrace();
 			}
-		}
-		// Last resort: Use a local UUID-based LSID provider
-		if (SYSTEM_DEFAULT_LSID_PROVIDER == null) {
-			SYSTEM_DEFAULT_LSID_PROVIDER = new UUIDLSIDProvider();
 		}
 	}
 
@@ -151,15 +144,12 @@ public class DataThing implements Cloneable, Serializable {
 	 * well as the DataThing itself and provides LSID values where there are
 	 * none defined.
 	 */
-	public void fillLSIDValues(LSIDProvider provider) {		
-		// FIXME: Why is this code commented out?  -stain
-		/* 		   
+	public void fillLSIDValues(LSIDProvider provider) {
 		// First check the DataThing itself
-		String selfValue = lsid.get(this);
-		if (selfValue == null || selfValue.equals("")) {			
-			lsid.put(this, provider.getID("datathing"));
+		String selfValue = (String) (lsid.get(this));
+		if (selfValue == null || selfValue.equals("")) {
+			// lsid.put(this, provider.getID("datathing"));
 		}
-		*/
 		// Recursively populate the data object lsid map
 		doInternalLSIDFill(theDataObject, provider);
 	}

@@ -15,14 +15,14 @@ import javax.swing.JPanel;
 import javax.swing.JTextArea;
 
 import org.embl.ebi.escience.scufl.ScuflModel;
-import org.embl.ebi.escience.scuflui.ScuflUIComponent;
+import org.embl.ebi.escience.scuflui.spi.UIComponentSPI;
 /**
  * @author Eddie
  *
  * TODO To change the template for this generated type comment go to
  * Window - Preferences - Java - Code Style - Code Templates
  */
-public class MobyPanel extends JPanel implements ScuflUIComponent{
+public class MobyPanel extends JPanel implements UIComponentSPI {
 
 	
 	private static final long serialVersionUID = 1L;
@@ -86,18 +86,6 @@ public class MobyPanel extends JPanel implements ScuflUIComponent{
 	}
 
     /* (non-Javadoc)
-     * @see org.embl.ebi.escience.scuflui.ScuflUIComponent#attachToModel(org.embl.ebi.escience.scufl.ScuflModel)
-     */
-    public void attachToModel(ScuflModel model) {
-    }
-
-    /* (non-Javadoc)
-     * @see org.embl.ebi.escience.scuflui.ScuflUIComponent#detachFromModel()
-     */
-    public void detachFromModel() {
-    }
-
-    /* (non-Javadoc)
      * @see org.embl.ebi.escience.scuflui.ScuflUIComponent#getIcon()
      */
     public ImageIcon getIcon() {
@@ -111,4 +99,14 @@ public class MobyPanel extends JPanel implements ScuflUIComponent{
     	if (name==null) return "";
     	else return name;
     }
+
+	public void onDisplay() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void onDispose() {
+		// TODO Auto-generated method stub
+		
+	}
   }

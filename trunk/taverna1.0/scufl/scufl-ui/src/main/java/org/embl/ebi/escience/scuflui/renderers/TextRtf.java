@@ -1,5 +1,6 @@
 package org.embl.ebi.escience.scuflui.renderers;
 
+
 import java.util.regex.Pattern;
 
 import javax.swing.ImageIcon;

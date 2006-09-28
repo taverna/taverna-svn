@@ -25,10 +25,10 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: BiomartEditor.java,v $
- * Revision           $Revision: 1.2 $
+ * Revision           $Revision: 1.3 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-07-10 14:07:43 $
- *               by   $Author: sowen70 $
+ * Last modified on   $Date: 2006-09-28 16:36:54 $
+ *               by   $Author: mereden $
  * Created on 17-Mar-2006
  *****************************************************************/
 package org.embl.ebi.escience.scuflworkers.biomart;
@@ -40,7 +40,7 @@ import javax.swing.JOptionPane;
 
 import org.biomart.martservice.MartServiceException;
 import org.embl.ebi.escience.scufl.Processor;
-import org.embl.ebi.escience.scuflui.UIUtils;
+import org.embl.ebi.escience.scuflui.shared.UIUtils;
 import org.embl.ebi.escience.scuflworkers.ProcessorEditor;
 
 /**

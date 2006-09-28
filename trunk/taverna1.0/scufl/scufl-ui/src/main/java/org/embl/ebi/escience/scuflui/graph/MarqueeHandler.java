@@ -21,8 +21,8 @@ import javax.swing.JPopupMenu;
 import org.embl.ebi.escience.scufl.InputPort;
 import org.embl.ebi.escience.scufl.Port;
 import org.embl.ebi.escience.scufl.Processor;
-import org.embl.ebi.escience.scuflui.ShadedLabel;
 import org.embl.ebi.escience.scuflui.actions.AddDataConstraintAction;
+import org.embl.ebi.escience.scuflui.shared.ShadedLabel;
 import org.jgraph.JGraph;
 import org.jgraph.graph.BasicMarqueeHandler;
 import org.jgraph.graph.CellView;
@@ -32,7 +32,7 @@ import org.jgraph.graph.VertexView;
  * COMMENT
  * 
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover </a>
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public class MarqueeHandler extends BasicMarqueeHandler
 {

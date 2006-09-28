@@ -20,8 +20,8 @@ import javax.swing.JOptionPane;
 
 import org.apache.log4j.Logger;
 import org.embl.ebi.escience.scufl.ScuflModel;
-import org.embl.ebi.escience.scuflui.ExtensionFileFilter;
-import org.embl.ebi.escience.scuflui.ScuflIcons;
+import org.embl.ebi.escience.scuflui.TavernaIcons;
+import org.embl.ebi.escience.scuflui.shared.ExtensionFileFilter;
 import org.embl.ebi.escience.scuflui.workbench.Scavenger;
 import org.embl.ebi.escience.scuflui.workbench.ScavengerTree;
 import org.embl.ebi.escience.scuflworkers.ScavengerHelper;
@@ -44,7 +44,7 @@ public class APIConsumerScavengerHelper implements ScavengerHelper {
 		public void actionPerformed(ActionEvent e) {
 		    try {
 			JFileChooser fc = new JFileChooser();
-			Preferences prefs = Preferences.userNodeForPackage(ScuflIcons.class);
+			Preferences prefs = Preferences.userNodeForPackage(TavernaIcons.class);
 			String curDir = prefs.get("currentDir", System.getProperty("user.home"));
 			fc.resetChoosableFileFilters();
 			fc.setFileFilter(new ExtensionFileFilter(new String[]{"xml"}));

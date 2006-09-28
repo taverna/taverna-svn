@@ -22,6 +22,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import org.apache.log4j.Logger;
 import org.embl.ebi.escience.scuflui.workbench.Scavenger;
 import org.embl.ebi.escience.scuflui.workbench.ScavengerCreationException;
+import org.embl.ebi.escience.scuflui.workbench.URLBasedScavenger;
 import org.embl.ebi.escience.scuflworkers.wsdl.parser.WSDLParser;
 import org.xml.sax.SAXException;
 
@@ -31,12 +32,25 @@ import org.xml.sax.SAXException;
  * 
  * @author Tom Oinn
  */
-public class WSDLBasedScavenger extends Scavenger {
+public class WSDLBasedScavenger extends URLBasedScavenger {
 
 	private static final long serialVersionUID = 5281708181579790512L;
 
 	private static Logger logger = Logger.getLogger(WSDLBasedScavenger.class);
 
+	public Scavenger fromURL(URL theURL) throws ScavengerCreationException {
+		if (theURL.getFile().toLowerCase().endsWith("wsdl")) {
+			return new WSDLBasedScavenger(theURL.toExternalForm());
+		}
+		else {
+			throw new ScavengerCreationException("Not a WSDL");
+		}
+	}
+	
+	public WSDLBasedScavenger() {
+		super("Blank");
+	}
+	
 	/**
 	 * Create a new WSDLBased scavenger, the single parameter should be
 	 * resolvable to a location from which the wsdl document can be fetched.
@@ -62,12 +76,12 @@ public class WSDLBasedScavenger extends Scavenger {
 
 			Map<String, DefaultMutableTreeNode> portTypeNameTreeNodeMap = new HashMap<String, DefaultMutableTreeNode>();
 			if (operations.size() > 0) {
-				String style = parser.getStyle();				
+				String style = parser.getStyle();
 
 				DefaultMutableTreeNode portTypeNode;
 
 				for (Iterator i = operations.iterator(); i.hasNext();) {
-					Operation op = (Operation) i.next();					
+					Operation op = (Operation) i.next();
 					PortType portType = parser.getPortType(op.getName());
 					String portTypeName = portType.getQName().getLocalPart();
 

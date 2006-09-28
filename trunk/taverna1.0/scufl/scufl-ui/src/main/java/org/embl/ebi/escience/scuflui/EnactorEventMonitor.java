@@ -21,14 +21,14 @@ import org.embl.ebi.escience.scufl.enactor.event.WorkflowCompletionEvent;
 import org.embl.ebi.escience.scufl.enactor.event.WorkflowCreationEvent;
 import org.embl.ebi.escience.scufl.enactor.event.WorkflowFailureEvent;
 import org.embl.ebi.escience.scufl.enactor.implementation.WorkflowEventDispatcher;
+import org.embl.ebi.escience.scuflui.spi.UIComponentSPI;
 
 /**
  * Prints events from the enactor as they occur, to be used for debugging.
  * 
  * @author Tom Oinn
  */
-public class EnactorEventMonitor extends JTextArea implements
-		ScuflModelEventListener, ScuflUIComponent {
+public class EnactorEventMonitor extends JTextArea implements UIComponentSPI {
 
 	WorkflowEventDispatcher dispatcher = WorkflowEventDispatcher.DISPATCHER;
 
@@ -74,19 +74,7 @@ public class EnactorEventMonitor extends JTextArea implements
 		};
 	}
 
-	public void attachToModel(ScuflModel model) {
-		dispatcher.addListener(this.listener);
-	}
-
-	public void detachFromModel() {
-		dispatcher.removeListener(this.listener);
-	}
-
-	public void receiveModelEvent(ScuflModelEvent event) {
-		//
-	}
-
-	public synchronized void addText(String text) {
+	private synchronized void addText(String text) {
 		setText(this.getText() + "\n" + text);
 		repaint();
 	}
@@ -100,6 +88,14 @@ public class EnactorEventMonitor extends JTextArea implements
 	 */
 	public String getName() {
 		return "DEBUG - Enactor event monitor";
+	}
+
+	public void onDisplay() {
+		dispatcher.addListener(this.listener);
+	}
+
+	public void onDispose() {
+		dispatcher.removeListener(this.listener);
 	}
 
 }

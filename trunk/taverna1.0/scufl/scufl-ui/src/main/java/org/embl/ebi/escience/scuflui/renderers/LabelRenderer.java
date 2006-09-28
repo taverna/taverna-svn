@@ -1,5 +1,6 @@
 package org.embl.ebi.escience.scuflui.renderers;
 
+
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JComponent;
@@ -7,6 +8,7 @@ import javax.swing.JLabel;
 import javax.swing.JTextArea;
 
 import org.embl.ebi.escience.baclava.DataThing;
+import org.embl.ebi.escience.scuflui.spi.RendererSPI;
 
 /**
  *

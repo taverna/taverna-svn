@@ -33,11 +33,11 @@ import javax.swing.UIManager;
 
 import org.embl.ebi.escience.baclava.DataThing;
 import org.embl.ebi.escience.baclava.factory.DataThingXMLFactory;
-import org.embl.ebi.escience.scuflui.ExtensionFileFilter;
 import org.embl.ebi.escience.scuflui.ResultItemPanel;
 import org.embl.ebi.escience.scuflui.TavernaIcons;
 import org.embl.ebi.escience.scuflui.results.ResultMapSaveRegistry;
-import org.embl.ebi.escience.scuflui.results.ResultMapSaveSPI;
+import org.embl.ebi.escience.scuflui.shared.ExtensionFileFilter;
+import org.embl.ebi.escience.scuflui.spi.ResultMapSaveSPI;
 import org.jdom.Document;
 import org.jdom.input.SAXBuilder;
 

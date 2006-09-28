@@ -42,8 +42,10 @@ import org.embl.ebi.escience.scufl.enactor.WorkflowInstance;
 import org.embl.ebi.escience.scufl.enactor.WorkflowSubmissionException;
 import org.embl.ebi.escience.scuflui.graph.WorkflowEditor;
 import org.embl.ebi.escience.scuflui.results.ResultMapSaveRegistry;
-import org.embl.ebi.escience.scuflui.results.ResultMapSaveSPI;
 import org.embl.ebi.escience.scuflui.results.ResultTablePanel;
+import org.embl.ebi.escience.scuflui.shared.XMLTree;
+import org.embl.ebi.escience.scuflui.spi.ResultMapSaveSPI;
+import org.embl.ebi.escience.scuflui.spi.UIComponentSPI;
 
 import uk.ac.soton.itinnovation.freefluo.main.InvalidInputException;
 
@@ -52,7 +54,7 @@ import uk.ac.soton.itinnovation.freefluo.main.InvalidInputException;
  * @author Matthew Pocock
  * @author Stian Soiland
  */
-public class EnactorInvocation extends JPanel implements ScuflUIComponent {
+public class EnactorInvocation extends JPanel implements UIComponentSPI {
 
 	private static Logger logger = Logger.getLogger(EnactorInvocation.class);
 
@@ -66,11 +68,11 @@ public class EnactorInvocation extends JPanel implements ScuflUIComponent {
 
 	boolean workflowStatusUpdateReady = false;
 
-	public void attachToModel(ScuflModel theModel) {
+	public void onDisplay() {
 		//
 	}
 
-	public void detachFromModel() {
+	public void onDispose() {
 		// detachFromModel() is called by GeneridUIComponentFrame when
 		// it is closing. Cleanup of remote resources will be done here.
 		try {
@@ -132,6 +134,10 @@ public class EnactorInvocation extends JPanel implements ScuflUIComponent {
 		return this.instanceID;
 	}
 
+	public WorkflowInstance getWorkflowInstance() {
+		return this.workflowInstance;
+	}
+	
 	// The workflow status label
 	JLabel flowLabel = null;
 

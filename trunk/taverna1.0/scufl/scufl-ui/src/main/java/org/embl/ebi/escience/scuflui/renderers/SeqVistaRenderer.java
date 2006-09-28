@@ -1,5 +1,6 @@
 package org.embl.ebi.escience.scuflui.renderers;
 
+
 import javax.swing.JComponent;
 
 import org.embl.ebi.escience.baclava.DataThing;

@@ -51,9 +51,13 @@ import org.embl.ebi.escience.scufl.CrossNode;
 import org.embl.ebi.escience.scufl.DotNode;
 import org.embl.ebi.escience.scufl.IterationStrategy;
 import org.embl.ebi.escience.scufl.LeafNode;
+import org.embl.ebi.escience.scufl.Processor;
+import org.embl.ebi.escience.scuflui.shared.CArrowImage;
+import org.embl.ebi.escience.scuflui.shared.CTransferableTreePath;
+import org.embl.ebi.escience.scuflui.spi.ProcessorViewSPI;
 
 public class IterationStrategyEditor extends JTree implements DragSourceListener, DragGestureListener, Autoscroll,
-		TreeModelListener {
+		TreeModelListener, ProcessorViewSPI {
 
 	private TreePath pathSource; // The path being dragged
 
@@ -61,6 +65,8 @@ public class IterationStrategyEditor extends JTree implements DragSourceListener
 
 	private Point ptOffset = new Point(); // Where, in the drag image, the
 
+	private IterationStrategy strategy = null;
+	
 	// mouse was clicked
 
 	static ImageIcon joinIteratorIcon, lockStepIteratorIcon, baclavaIteratorIcon;
@@ -104,8 +110,21 @@ public class IterationStrategyEditor extends JTree implements DragSourceListener
 		}
 	}
 
-	public IterationStrategyEditor(IterationStrategy strategy) {
-		super(strategy.getTreeModel());
+	public IterationStrategyEditor(IterationStrategy theStrategy) {
+		this();
+		setIterationStrategy(theStrategy);
+	}
+	
+	private void setIterationStrategy(IterationStrategy theStrategy) {
+		if (theStrategy != this.strategy) {
+			this.strategy = theStrategy;
+			setModel(theStrategy.getTreeModel());
+			revalidate();
+		}
+	}
+	
+	public IterationStrategyEditor() {
+		super();
 		// Make this a drag source
 		DragSource dragSource = DragSource.getDefaultDragSource();
 		dragSource.createDefaultDragGestureRecognizer(this, DnDConstants.ACTION_MOVE, this);
@@ -645,6 +664,29 @@ public class IterationStrategyEditor extends JTree implements DragSourceListener
 		for (int i = 0; i < nIndex.length; i++) {
 			System.out.println(i + ". " + nIndex[i]);
 		}
+	}
+
+	public void attachToModel(Processor p) {
+		setIterationStrategy(p.getIterationStrategy());
+		
+	}
+
+	public void detachFromModel() {
+		setIterationStrategy(null);
+	}
+
+	public ImageIcon getIcon() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public void onDisplay() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void onDispose() {
+		detachFromModel();		
 	}
 
 }

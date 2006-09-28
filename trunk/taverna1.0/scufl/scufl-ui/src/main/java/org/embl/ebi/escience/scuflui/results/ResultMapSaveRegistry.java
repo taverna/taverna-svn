@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.log4j.Logger;
+import org.embl.ebi.escience.scuflui.spi.ResultMapSaveSPI;
 import org.embl.ebi.escience.utils.TavernaSPIRegistry;
 
 /**

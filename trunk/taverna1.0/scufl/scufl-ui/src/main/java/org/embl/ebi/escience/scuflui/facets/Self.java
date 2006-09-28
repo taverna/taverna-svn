@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.Set;
 
 import org.embl.ebi.escience.baclava.DataThing;
+import org.embl.ebi.escience.scuflui.spi.FacetFinderSPI;
 
 /**
  *

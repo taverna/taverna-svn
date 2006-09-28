@@ -5,7 +5,7 @@
     <version>1.5-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
-  <groupId>uk.org.mygrid.taverna.raven</groupId>
+  <groupId>uk.org.mygrid.taverna</groupId>
   <artifactId>zaria</artifactId>
   <name>Zaria</name>
   <version>1.5-SNAPSHOT</version>

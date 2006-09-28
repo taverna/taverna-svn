@@ -17,8 +17,9 @@ import javax.swing.JPanel;
 
 import org.embl.ebi.escience.scufl.Processor;
 import org.embl.ebi.escience.scufl.ScuflModel;
-import org.embl.ebi.escience.scuflui.ScuflUIComponent;
-import org.embl.ebi.escience.scuflui.UIUtils;
+import org.embl.ebi.escience.scuflui.shared.UIUtils;
+import org.embl.ebi.escience.scuflui.spi.ProcessorActionSPI;
+import org.embl.ebi.escience.scuflui.spi.UIComponentSPI;
 
 /**
  * A simple abstract implementation of the ProcessorActionSPI
@@ -36,13 +37,13 @@ public abstract class AbstractProcessorAction implements ProcessorActionSPI {
 		    Dimension loc = AbstractProcessorAction.this.getFrameLocation();
 		    Dimension size = AbstractProcessorAction.this.getFrameSize();
 		    Component c = getComponent(theProcessor);
-		    ScuflUIComponent frame = new SimpleFrame(c, theProcessor);
+		    UIComponentSPI frame = new SimpleFrame(c, theProcessor);
 		    UIUtils.createFrame((ScuflModel)null, frame, (int)loc.getWidth(), (int)loc.getHeight(), (int)size.getWidth(), (int)size.getHeight());
 		}
 	    };
     }
     
-    private class SimpleFrame extends JPanel implements ScuflUIComponent {
+    private class SimpleFrame extends JPanel implements UIComponentSPI {
 	Processor processor = null;
 	public SimpleFrame(Component c, Processor p) {
 	    super(new BorderLayout());
@@ -53,10 +54,10 @@ public abstract class AbstractProcessorAction implements ProcessorActionSPI {
 	    //setMaximumSize(c.getMaximumSize());
 	    //setPreferredSize(new Dimension(0,0));
 	}
-	public void attachToModel(ScuflModel model) {
+	public void onDisplay() {
 	    //
 	}
-	public void detachFromModel() {
+	public void onDispose() {
 	    AbstractProcessorAction.this.frameClosing();
 	}
 	public ImageIcon getIcon() {

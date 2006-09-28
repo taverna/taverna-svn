@@ -45,6 +45,10 @@
   <dependencies>
     <dependency>
       <groupId>uk.org.mygrid.taverna</groupId>
+      <artifactId>zaria</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>uk.org.mygrid.taverna</groupId>
       <artifactId>taverna-core</artifactId>
     </dependency>
     <dependency>

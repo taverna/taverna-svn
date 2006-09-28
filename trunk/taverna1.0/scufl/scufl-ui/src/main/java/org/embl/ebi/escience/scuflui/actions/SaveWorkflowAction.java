@@ -22,15 +22,15 @@ import org.embl.ebi.escience.baclava.store.JDBCBaclavaDataService;
 import org.embl.ebi.escience.scufl.ScuflModel;
 import org.embl.ebi.escience.scufl.view.XScuflView;
 import org.embl.ebi.escience.scuflui.AdvancedModelExplorer;
-import org.embl.ebi.escience.scuflui.ExtensionFileFilter;
 import org.embl.ebi.escience.scuflui.TavernaIcons;
-import org.embl.ebi.escience.scuflui.UIUtils;
+import org.embl.ebi.escience.scuflui.shared.ExtensionFileFilter;
+import org.embl.ebi.escience.scuflui.shared.UIUtils;
 
 /**
  * COMMENT
  * 
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover</a>
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  */
 public class SaveWorkflowAction extends ScuflModelAction {
 	final JFileChooser fc = new JFileChooser();

@@ -8,6 +8,7 @@ package org.embl.ebi.escience.scuflui;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
@@ -41,6 +42,7 @@ import org.embl.ebi.escience.scufl.ScuflModel;
 import org.embl.ebi.escience.scufl.SemanticMarkup;
 import org.embl.ebi.escience.scufl.semantics.RDFSClassHolder;
 import org.embl.ebi.escience.scufl.semantics.RDFSParser;
+import org.embl.ebi.escience.scuflui.spi.SemanticMarkupViewSPI;
 
 /**
  * A JPanel that allows editing of the semantic markup object passed into its
@@ -49,10 +51,77 @@ import org.embl.ebi.escience.scufl.semantics.RDFSParser;
  * @author Tom Oinn
  */
 public class ScuflSemanticMarkupEditor extends JPanel implements
-		ScuflUIComponent {
+		SemanticMarkupViewSPI {
 
-	private final SemanticMarkup theMetadata;
-
+	private final SemanticMarkup theMetadata = null;
+	private JTextField selectedOntologyNode = new JTextField();
+	private DefaultTreeModel treeModel = new DefaultTreeModel(
+			RDFSParser.rootNode);
+	private JTree ontologyTree = new JTree(treeModel);
+	private JTextArea descriptionText = new JTextArea();
+	private DefaultListModel mimeTypeListModel = new DefaultListModel();
+	private JList mimeTypeList = new JList(mimeTypeListModel);
+	
+	private void setSemanticMarkup(SemanticMarkup m) {
+		if (m == null) {
+			setRecursiveEnabled(false);
+			descriptionText.setText("");
+			selectedOntologyNode.setText("");
+			mimeTypeListModel.clear();
+		}
+		else {
+			selectedOntologyNode.setText(m.getSemanticType());
+			if (theMetadata.getSemanticType().equals("") == false) {
+				String filterString = theMetadata.getSemanticType();
+				String[] filter = theMetadata.getSemanticType().split("#");
+				if (filter.length == 2) {
+					filterString = filter[1];
+				}
+				ontologyTree.setCellRenderer(getRenderer(filterString));
+				DefaultMutableTreeNode rootNode = (DefaultMutableTreeNode) treeModel
+				.getRoot();
+				Enumeration en = rootNode.depthFirstEnumeration();
+				while (en.hasMoreElements()) {
+					DefaultMutableTreeNode theNode = (DefaultMutableTreeNode) en
+					.nextElement();
+					if (theNode.getUserObject().toString().toLowerCase().matches(
+							filterString)) {
+						TreePath path = new TreePath(treeModel
+								.getPathToRoot(theNode));
+						ontologyTree.makeVisible(path);
+					}
+				}
+			}
+			descriptionText.setText(m.getDescription());
+			mimeTypeListModel.clear();
+			for (String mime : theMetadata.getMIMETypes()) {
+				mimeTypeListModel.addElement(mime);
+			}
+			setRecursiveEnabled(true);
+		}
+		
+	}
+	
+	private void setRecursiveEnabled(boolean b) {
+		setRecursiveEnabled(b, this);
+	}
+	
+	private void setRecursiveEnabled(boolean b, Component comp) {
+		setEnabled(b);
+		if (comp instanceof Container) {
+			for (Component c : ((Container)comp).getComponents()) {
+				setRecursiveEnabled(b, c);
+			}
+		}
+	}
+	
+	/**
+	 * Construct a blank semantic markup editor with no model object assigned
+	 */
+	public ScuflSemanticMarkupEditor() {
+		this(null);
+	}
+	
 	/**
 	 * Build a new markup editor attached to the particular SemanticMarkup
 	 * object.
@@ -66,47 +135,23 @@ public class ScuflSemanticMarkupEditor extends JPanel implements
 		JTabbedPane tabbedPane = new JTabbedPane();
 		add(tabbedPane);
 
-		theMetadata = m;
-
 		JPanel ontologyPanel = new JPanel(new BorderLayout());
 		ontologyPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory
 				.createEtchedBorder(), "Pick from ontology"));
 		ontologyPanel.setPreferredSize(new Dimension(400, 400));
-		final DefaultTreeModel treeModel = new DefaultTreeModel(
-				RDFSParser.rootNode);
-		final JTree ontologyTree = new JTree(treeModel);
+
 		ontologyTree.setCellRenderer(getRenderer(null));
 
 		JScrollPane ontologyTreeDisplayPane = new JScrollPane(ontologyTree);
 		ontologyPanel.add(ontologyTreeDisplayPane, BorderLayout.CENTER);
-		final JTextField selectedOntologyNode = new JTextField(theMetadata
-				.getSemanticType());
+		//final JTextField selectedOntologyNode = new JTextField(theMetadata
+		//		.getSemanticType());
 		ontologyPanel.add(selectedOntologyNode, BorderLayout.SOUTH);
 		JPanel currentTermPanel = new JPanel(new GridLayout(2, 0));
 		currentTermPanel.add(new JLabel(
 				"Select from ontology or manually edit term below"));
 		currentTermPanel.add(selectedOntologyNode);
-		if (theMetadata.getSemanticType().equals("") == false) {
-			String filterString = theMetadata.getSemanticType();
-			String[] filter = theMetadata.getSemanticType().split("#");
-			if (filter.length == 2) {
-				filterString = filter[1];
-			}
-			ontologyTree.setCellRenderer(getRenderer(filterString));
-			DefaultMutableTreeNode rootNode = (DefaultMutableTreeNode) treeModel
-					.getRoot();
-			Enumeration en = rootNode.depthFirstEnumeration();
-			while (en.hasMoreElements()) {
-				DefaultMutableTreeNode theNode = (DefaultMutableTreeNode) en
-						.nextElement();
-				if (theNode.getUserObject().toString().toLowerCase().matches(
-						filterString)) {
-					TreePath path = new TreePath(treeModel
-							.getPathToRoot(theNode));
-					ontologyTree.makeVisible(path);
-				}
-			}
-		}
+
 		ontologyPanel.add(currentTermPanel, BorderLayout.SOUTH);
 
 		// Add the behaviour of putting the selected node, if a class holder,
@@ -121,7 +166,9 @@ public class ScuflSemanticMarkupEditor extends JPanel implements
 						RDFSClassHolder h = (RDFSClassHolder) node
 								.getUserObject();
 						selectedOntologyNode.setText(h.getClassName());
-						theMetadata.setSemanticType(h.getClassName());
+						if (theMetadata != null) {
+							theMetadata.setSemanticType(h.getClassName());
+						}
 					} catch (ClassCastException cce) {
 						//
 					}
@@ -132,7 +179,9 @@ public class ScuflSemanticMarkupEditor extends JPanel implements
 		// well, always a good idea.
 		selectedOntologyNode.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ae) {
-				theMetadata.setSemanticType(selectedOntologyNode.getText());
+				if (theMetadata!=null) {
+					theMetadata.setSemanticType(selectedOntologyNode.getText());
+				}
 			}
 		});
 		// Show a filter dialog at the top
@@ -185,8 +234,7 @@ public class ScuflSemanticMarkupEditor extends JPanel implements
 		descriptionPanel.setPreferredSize(new Dimension(400, 400));
 		descriptionPanel.setBorder(BorderFactory.createTitledBorder(
 				BorderFactory.createEtchedBorder(), "Edit Description"));
-		final JTextArea descriptionText = new JTextArea(theMetadata
-				.getDescription());
+
 		JScrollPane descriptionPane = new JScrollPane(descriptionText);
 		descriptionPanel.add(descriptionPane, BorderLayout.CENTER);
 		descriptionText.addFocusListener(new FocusListener() {
@@ -195,11 +243,14 @@ public class ScuflSemanticMarkupEditor extends JPanel implements
 				// metadata are open and the description has been changed from
 				// one of the others.
 				// FIXME: Do this as an event on theMetadata.
-				descriptionText.setText(theMetadata.getDescription());
+				if (theMetadata != null) {
+					descriptionText.setText(theMetadata.getDescription());
+				}
 			}
-
 			public void focusLost(FocusEvent e) {
-				theMetadata.setDescription(descriptionText.getText());
+				if (theMetadata != null) {
+					theMetadata.setDescription(descriptionText.getText());
+				}
 			}
 		});
 		tabbedPane.addTab("Description", descriptionPanel);
@@ -216,7 +267,7 @@ public class ScuflSemanticMarkupEditor extends JPanel implements
 				.createEtchedBorder(), "Enter new MIME Type and hit return"));
 		topLevelMimePanel.add(mimeEditPanel, BorderLayout.SOUTH);
 
-		final JList mimeTypeList = new JList(theMetadata.getMIMETypes());
+		
 		JScrollPane mimeListPane = new JScrollPane(mimeTypeList);
 		mimePanel.add(mimeListPane, BorderLayout.CENTER);
 		final JTextField mimeEntryField = new JTextField();
@@ -226,37 +277,40 @@ public class ScuflSemanticMarkupEditor extends JPanel implements
 		clearMimeTypes.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ae) {
 				// Clear the list and the metadata container
-				theMetadata.clearMIMETypes();
-				mimeTypeList.setModel(new DefaultListModel());
+				if (theMetadata != null) {
+					theMetadata.clearMIMETypes();
+					mimeTypeListModel.clear();
+				}
 			}
 		});
 		mimeEntryField.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ae) {
 				// Add a new MIME type
-				theMetadata.addMIMEType(mimeEntryField.getText());
-				mimeTypeList.setModel(new DefaultListModel());
-				String[] types = theMetadata.getMIMETypes();
-				for (int i = 0; i < types.length; i++) {
-					((DefaultListModel) mimeTypeList.getModel()).add(i,
-							types[i]);
+				if (theMetadata != null) {
+					theMetadata.addMIMEType(mimeEntryField.getText());
+					mimeTypeListModel.clear();
+					for (String mime : theMetadata.getMIMETypes()) {
+						mimeTypeListModel.addElement(mime);
+					}
 				}
 			}
 		});
 		mimeEditPanel.add(clearMimeTypes, BorderLayout.EAST);
 		tabbedPane.addTab("MIME Types", topLevelMimePanel);
 		setVisible(true);
+		setSemanticMarkup(m);
 	}
 
 	public javax.swing.ImageIcon getIcon() {
-		return ScuflIcons.classIcon;
+		return TavernaIcons.classIcon;
 	}
 
-	public void attachToModel(ScuflModel theModel) {
-		//
+	public void attachToModel(SemanticMarkup theModel) {
+		setSemanticMarkup(theModel);
 	}
 
 	public void detachFromModel() {
-		//
+		setSemanticMarkup(null);
 	}
 
 	public String getName() {
@@ -284,16 +338,16 @@ public class ScuflSemanticMarkupEditor extends JPanel implements
 						.getUserObject();
 				if (userObject instanceof RDFSClassHolder) {
 					if (searchString == null) {
-						setIcon(ScuflIcons.classIcon);
+						setIcon(TavernaIcons.classIcon);
 					} else {
 						if (userObject.toString().toLowerCase().matches(
 								searchString)) {
-							setIcon(ScuflIcons.selectedClassIcon);
+							setIcon(TavernaIcons.selectedClassIcon);
 							setText("<html><font color=\"red\">"
 									+ userObject.toString() + "</font></html>");
 							setBackground(new Color(191, 213, 197));
 						} else {
-							setIcon(ScuflIcons.classIcon);
+							setIcon(TavernaIcons.classIcon);
 						}
 					}
 				} else {
@@ -332,6 +386,16 @@ public class ScuflSemanticMarkupEditor extends JPanel implements
 		} else {
 			tree.collapsePath(parent);
 		}
+	}
+
+	public void onDisplay() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void onDispose() {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

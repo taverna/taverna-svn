@@ -33,10 +33,10 @@ import org.apache.axis.client.Call;
 import org.apache.axis.client.Service;
 import org.embl.ebi.escience.scufl.Processor;
 import org.embl.ebi.escience.scufl.view.WorkflowSummaryAsHTML;
-import org.embl.ebi.escience.scuflui.ShadedLabel;
-import org.embl.ebi.escience.scuflui.XMLTree;
 import org.embl.ebi.escience.scuflui.graph.GraphColours;
 import org.embl.ebi.escience.scuflui.processoractions.AbstractProcessorAction;
+import org.embl.ebi.escience.scuflui.shared.ShadedLabel;
+import org.embl.ebi.escience.scuflui.shared.XMLTree;
 import org.embl.ebi.escience.scuflworkers.ProcessorHelper;
 
 /**

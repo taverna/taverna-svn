@@ -65,7 +65,7 @@ public class EnactorStatusTableModel extends AbstractTableModel {
 			if (p.hasBreakpoint())
 				data[i][5] = TavernaIcons.tickIcon;
 			else
-				data[i][5] = ScuflIcons.nullIcon;
+				data[i][5] = TavernaIcons.nullIcon;
 		}
 	}
 
@@ -185,7 +185,7 @@ public class EnactorStatusTableModel extends AbstractTableModel {
 			Processor[] processors = scuflModel.getProcessors();
 			Processor p = processors[0];
 
-			ImageIcon breakpointStatus = ScuflIcons.nullIcon;
+			ImageIcon breakpointStatus = TavernaIcons.nullIcon;
 
 			for (int pIndex = 0; pIndex < processors.length; pIndex++)
 				if (processors[pIndex].getName().equals(processorName)) {

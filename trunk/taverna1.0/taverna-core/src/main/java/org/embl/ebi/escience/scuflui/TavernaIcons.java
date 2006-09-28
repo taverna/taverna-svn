@@ -25,10 +25,10 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: TavernaIcons.java,v $
- * Revision           $Revision: 1.2 $
+ * Revision           $Revision: 1.3 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-07-10 14:12:17 $
- *               by   $Author: sowen70 $
+ * Last modified on   $Date: 2006-09-28 16:36:56 $
+ *               by   $Author: mereden $
  * Created on 28-Jun-2006
  *****************************************************************/
 package org.embl.ebi.escience.scuflui;
@@ -50,7 +50,7 @@ public class TavernaIcons {
 			windowScavenger, windowInput, windowDiagram, windowExplorer,
 			saveIcon, importIcon, openurlIcon, pauseIcon, playIcon, stopIcon,
 			breakIcon, rbreakIcon, tickIcon, openMenuIcon, saveMenuIcon,
-			databaseIcon, renameIcon;
+			databaseIcon, renameIcon, classIcon, selectedClassIcon, nullIcon;
 
 	static {
 		// Load the image files found in this package into the class.
@@ -123,6 +123,13 @@ public class TavernaIcons {
 					.getResource("icons/generic/rename.png"));
 			databaseIcon = new ImageIcon(c
 					.getResource("icons/generic/database.gif"));
+			classIcon = new ImageIcon(c
+					.getResource("icons/semantics/class.gif"));
+			selectedClassIcon = new ImageIcon(c
+					.getResource("icons/semantics/selectedclass.gif"));
+			nullIcon = new ImageIcon(new java.awt.image.BufferedImage(1, 1,
+					java.awt.image.BufferedImage.TYPE_INT_RGB));
+
 
 		} catch (ClassNotFoundException cnfe) {
 			//

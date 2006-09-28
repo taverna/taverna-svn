@@ -12,7 +12,7 @@ import java.awt.event.ActionListener;
 import javax.swing.JOptionPane;
 
 import org.embl.ebi.escience.scufl.Processor;
-import org.embl.ebi.escience.scuflui.UIUtils;
+import org.embl.ebi.escience.scuflui.shared.UIUtils;
 import org.embl.ebi.escience.scuflworkers.ProcessorEditor;
 
 

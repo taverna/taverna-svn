@@ -19,6 +19,7 @@ import javax.swing.JOptionPane;
 
 import org.embl.ebi.escience.baclava.DataThing;
 import org.embl.ebi.escience.scuflui.TavernaIcons;
+import org.embl.ebi.escience.scuflui.spi.ResultMapSaveSPI;
 
 
 /**

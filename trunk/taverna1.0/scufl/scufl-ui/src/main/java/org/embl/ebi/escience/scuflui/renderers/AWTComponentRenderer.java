@@ -5,6 +5,7 @@
  */
 package org.embl.ebi.escience.scuflui.renderers;
 
+
 import java.awt.BorderLayout;
 import java.awt.Component;
 

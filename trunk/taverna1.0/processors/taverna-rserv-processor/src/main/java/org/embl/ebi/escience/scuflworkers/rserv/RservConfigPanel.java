@@ -49,8 +49,8 @@ import org.embl.ebi.escience.scufl.PortCreationException;
 import org.embl.ebi.escience.scufl.ScuflModel;
 import org.embl.ebi.escience.scufl.ScuflModelEvent;
 import org.embl.ebi.escience.scufl.ScuflModelEventListener;
-import org.embl.ebi.escience.scuflui.ScuflUIComponent;
 import org.embl.ebi.escience.scuflui.TavernaIcons;
+import org.embl.ebi.escience.scuflui.spi.UIComponentSPI;
 import org.embl.ebi.escience.scuflworkers.ProcessorHelper;
 import org.syntax.jedit.JEditTextArea;
 import org.syntax.jedit.TextAreaDefaults;
@@ -62,7 +62,7 @@ import org.syntax.jedit.tokenmarker.JavaTokenMarker;
  * 
  * @author Stian Soiland, Tom Oinn, Chris Greenhalgh, Kevin Glover
  */
-public class RservConfigPanel extends JPanel implements ScuflUIComponent,
+public class RservConfigPanel extends JPanel implements UIComponentSPI,
 		ScuflModelEventListener, FocusListener {
 	private abstract class PortTableModel extends AbstractTableModel {
 		protected abstract Port[] getPorts();
@@ -405,16 +405,6 @@ public class RservConfigPanel extends JPanel implements ScuflUIComponent,
 		panel.add(field);
 	}
 
-	public void attachToModel(ScuflModel theModel) {
-		if (theModel != null) {
-			theModel.addListener(this);
-		}
-	}
-
-	public void detachFromModel() {
-		//
-	}
-
 	public String getName() {
 		if (processor == null) {
 			return "Rserv config panel for unknown processor";
@@ -484,5 +474,15 @@ public class RservConfigPanel extends JPanel implements ScuflUIComponent,
 			}
 		}
 
+	}
+
+	public void onDisplay() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void onDispose() {
+		// TODO Auto-generated method stub
+		
 	}
 }

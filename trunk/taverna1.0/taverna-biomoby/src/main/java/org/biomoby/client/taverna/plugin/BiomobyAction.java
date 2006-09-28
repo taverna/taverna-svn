@@ -46,9 +46,9 @@ import org.embl.ebi.escience.scufl.Processor;
 import org.embl.ebi.escience.scufl.ProcessorCreationException;
 import org.embl.ebi.escience.scufl.ScuflModel;
 import org.embl.ebi.escience.scufl.UnknownPortException;
-import org.embl.ebi.escience.scuflui.ScuflUIComponent;
-import org.embl.ebi.escience.scuflui.UIUtils;
 import org.embl.ebi.escience.scuflui.processoractions.AbstractProcessorAction;
+import org.embl.ebi.escience.scuflui.shared.UIUtils;
+import org.embl.ebi.escience.scuflui.spi.UIComponentSPI;
 
 /**
  * 
@@ -287,7 +287,7 @@ public class BiomobyAction extends AbstractProcessorAction {
 								public void actionPerformed(ActionEvent ae) {
 									Dimension loc = new Dimension(100, 100);
 									Dimension size = new Dimension(450, 450);
-									ScuflUIComponent c = new MobyPanel(
+									UIComponentSPI c = new MobyPanel(
 									// TODO create a valid description
 											selectedObject, "A BioMoby Object Description", "");
 									UIUtils.createFrame((ScuflModel) null, c, (int) loc.getWidth(),
@@ -390,7 +390,7 @@ public class BiomobyAction extends AbstractProcessorAction {
 								public void actionPerformed(ActionEvent ae) {
 									Dimension loc = new Dimension(100, 100);
 									Dimension size = new Dimension(450, 450);
-									ScuflUIComponent c = new MobyPanel(
+									UIComponentSPI c = new MobyPanel(
 									// TODO create a valid description
 											selectedObject, "A BioMoby Object Description",
 											createDataDescription(selectedObject.split("\\(")[0],
@@ -534,7 +534,7 @@ public class BiomobyAction extends AbstractProcessorAction {
 															.getFrameLocation();
 													Dimension size = BiomobyAction.this
 															.getFrameSize();
-													ScuflUIComponent frame = new SimpleFrame(c, bop);
+													UIComponentSPI frame = new SimpleFrame(c, bop);
 													UIUtils.createFrame((ScuflModel) null, frame,
 															(int) loc.getWidth(), (int) loc
 																	.getHeight(), (int) size
@@ -644,7 +644,7 @@ public class BiomobyAction extends AbstractProcessorAction {
 															.getFrameLocation();
 													Dimension size = BiomobyAction.this
 															.getFrameSize();
-													ScuflUIComponent frame = new SimpleFrame(c, bop);
+													UIComponentSPI frame = new SimpleFrame(c, bop);
 													UIUtils.createFrame((ScuflModel) null, frame,
 															(int) loc.getWidth(), (int) loc
 																	.getHeight(), (int) size
@@ -790,7 +790,7 @@ public class BiomobyAction extends AbstractProcessorAction {
 		return thePanel;
 	}
 
-	private class SimpleFrame extends JPanel implements ScuflUIComponent {
+	private class SimpleFrame extends JPanel implements UIComponentSPI {
 
 		private static final long serialVersionUID = -6611234116434482238L;
 
@@ -806,20 +806,21 @@ public class BiomobyAction extends AbstractProcessorAction {
 			// setPreferredSize(new Dimension(0,0));
 		}
 
-		public void attachToModel(ScuflModel model) {
-			//
-		}
-
-		public void detachFromModel() {
-			BiomobyAction.this.frameClosing();
-		}
-
 		public ImageIcon getIcon() {
 			return BiomobyAction.this.getIcon();
 		}
 
 		public String getName() {
 			return "Moby Object Details";
+		}
+
+		public void onDisplay() {
+			// TODO Auto-generated method stub
+			
+		}
+
+		public void onDispose() {
+			BiomobyAction.this.frameClosing();
 		}
 	}
 

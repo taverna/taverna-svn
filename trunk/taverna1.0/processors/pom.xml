@@ -25,7 +25,7 @@
     <module>taverna-soaplab-processor</module>
     <module>taverna-stringconstant-processor</module>
     <module>taverna-talisman-processor</module>
-    <module>taverna-web-processor</module>
+    <!--<module>taverna-web-processor</module>-->
     <module>taverna-wsdl-processor</module>
   </modules>
 </project>

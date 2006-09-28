@@ -1,5 +1,6 @@
 package org.embl.ebi.escience.scuflui.renderers;
 
+
 import java.awt.Dimension;
 import java.io.IOException;
 import java.util.regex.Pattern;

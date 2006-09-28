@@ -25,10 +25,10 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: BiomartConfigPanel.java,v $
- * Revision           $Revision: 1.3 $
+ * Revision           $Revision: 1.4 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-09-14 11:02:30 $
- *               by   $Author: davidwithers $
+ * Last modified on   $Date: 2006-09-28 16:36:54 $
+ *               by   $Author: mereden $
  * Created on 17-Mar-2006
  *****************************************************************/
 package org.embl.ebi.escience.scuflworkers.biomart;
@@ -50,7 +50,7 @@ import org.biomart.martservice.config.QueryConfigController;
 import org.biomart.martservice.config.ui.MartServiceQueryConfigUIFactory;
 import org.biomart.martservice.config.ui.QueryConfigUIFactory;
 import org.embl.ebi.escience.scufl.ScuflModel;
-import org.embl.ebi.escience.scuflui.ScuflUIComponent;
+import org.embl.ebi.escience.scuflui.spi.UIComponentSPI;
 import org.embl.ebi.escience.scuflworkers.ProcessorHelper;
 
 /**
@@ -58,7 +58,7 @@ import org.embl.ebi.escience.scuflworkers.ProcessorHelper;
  * 
  * @author David Withers
  */
-public class BiomartConfigPanel extends JPanel implements ScuflUIComponent {
+public class BiomartConfigPanel extends JPanel implements UIComponentSPI {
 
 	private BiomartProcessor biomartProcessor;
 
@@ -131,24 +131,6 @@ public class BiomartConfigPanel extends JPanel implements ScuflUIComponent {
 	/*
      * (non-Javadoc)
      * 
-     * @see org.embl.ebi.escience.scuflui.ScuflUIComponent#attachToModel(org.embl.ebi.escience.scufl.ScuflModel)
-     */
-	public void attachToModel(ScuflModel model) {
-		// nothing to do
-	}
-
-	/*
-     * (non-Javadoc)
-     * 
-     * @see org.embl.ebi.escience.scuflui.ScuflUIComponent#detachFromModel()
-     */
-	public void detachFromModel() {
-		// nothing to do
-	}
-
-	/*
-     * (non-Javadoc)
-     * 
      * @see org.embl.ebi.escience.scuflui.ScuflUIComponent#getIcon()
      */
 	public ImageIcon getIcon() {
@@ -161,6 +143,16 @@ public class BiomartConfigPanel extends JPanel implements ScuflUIComponent {
 		} catch (NullPointerException ex) {
 			return "Unconfigured Biomart processor";
 		}
+	}
+
+	public void onDisplay() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void onDispose() {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

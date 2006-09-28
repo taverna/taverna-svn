@@ -1,5 +1,6 @@
 package net.sf.taverna.tools;
 
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Enumeration;
@@ -8,12 +9,12 @@ import javax.swing.tree.DefaultMutableTreeNode;
 
 import net.sf.taverna.utils.MyGridConfiguration;
 
-import org.embl.ebi.escience.scuflui.WebScavengerHelper;
 import org.embl.ebi.escience.scuflui.workbench.Scavenger;
 import org.embl.ebi.escience.scuflui.workbench.ScavengerRegistry;
 import org.embl.ebi.escience.scuflworkers.ProcessorFactory;
 import org.embl.ebi.escience.scuflworkers.ScavengerHelper;
 import org.embl.ebi.escience.scuflworkers.ScavengerHelperRegistry;
+import org.embl.ebi.escience.scuflworkers.web.WebScavengerHelper;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.Namespace;

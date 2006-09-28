@@ -43,10 +43,7 @@ import org.embl.ebi.escience.scufl.InputPort;
 import org.embl.ebi.escience.scufl.Port;
 import org.embl.ebi.escience.scufl.Processor;
 import org.embl.ebi.escience.scufl.ScuflModel;
-import org.embl.ebi.escience.scuflui.NoContextMenuFoundException;
-import org.embl.ebi.escience.scuflui.ScuflContextMenuFactory;
-import org.embl.ebi.escience.scuflui.ScuflUIComponent;
-import org.embl.ebi.escience.scuflui.ShadedLabel;
+import org.embl.ebi.escience.scufl.shared.ScuflContextMenuFactory;
 import org.embl.ebi.escience.scuflui.TavernaIcons;
 import org.embl.ebi.escience.scuflui.actions.AddInputAction;
 import org.embl.ebi.escience.scuflui.actions.AddOutputAction;
@@ -55,6 +52,9 @@ import org.embl.ebi.escience.scuflui.actions.ScuflModelAction;
 import org.embl.ebi.escience.scuflui.dnd.FactorySpecFragment;
 import org.embl.ebi.escience.scuflui.dnd.SpecFragmentTransferable;
 import org.embl.ebi.escience.scuflui.graph.model.ScuflGraphModel;
+import org.embl.ebi.escience.scuflui.shared.NoContextMenuFoundException;
+import org.embl.ebi.escience.scuflui.shared.ShadedLabel;
+import org.embl.ebi.escience.scuflui.spi.WorkflowModelViewSPI;
 import org.embl.ebi.escience.scuflworkers.ProcessorHelper;
 import org.jdom.Document;
 import org.jdom.Element;
@@ -78,7 +78,7 @@ import org.jgraph.plaf.basic.BasicGraphUI;
 /**
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover </a>
  */
-public class WorkflowEditor extends JGraph implements ScuflUIComponent {
+public class WorkflowEditor extends JGraph implements WorkflowModelViewSPI {
 	private class StartLinkAction extends ScuflModelAction {
 		private Port port;
 
@@ -267,7 +267,7 @@ public class WorkflowEditor extends JGraph implements ScuflUIComponent {
 						}
 					} else if (progress == -1) {
 						g2d.setPaint(new GradientPaint(0, 0, background3, getWidth(), getHeight(),
-								org.embl.ebi.escience.scuflui.ShadedLabel.halfShade(background3)));
+								org.embl.ebi.escience.scuflui.shared.ShadedLabel.halfShade(background3)));
 						g2d.fillRect(0, 0, getWidth(), getHeight() / progressBarDivide);
 					}
 				}
@@ -588,5 +588,14 @@ public class WorkflowEditor extends JGraph implements ScuflUIComponent {
 			return GraphColours.getColour("medium purple", Color.MAGENTA);
 		}
 		return GraphColours.getColour("light gray", Color.GRAY);
+	}
+
+	public void onDisplay() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void onDispose() {
+		detachFromModel();
 	}
 }

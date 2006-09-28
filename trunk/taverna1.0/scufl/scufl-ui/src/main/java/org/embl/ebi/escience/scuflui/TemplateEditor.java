@@ -30,6 +30,7 @@ import org.embl.ebi.escience.scufl.Port;
 import org.embl.ebi.escience.scufl.Processor;
 import org.embl.ebi.escience.scufl.ScuflModel;
 import org.embl.ebi.escience.scufl.ScuflModelEvent;
+import org.embl.ebi.escience.scuflui.spi.ProcessorViewSPI;
 
 /**
  * An editor for the AnnotationTemplate objects associated with a given
@@ -37,19 +38,20 @@ import org.embl.ebi.escience.scufl.ScuflModelEvent;
  * 
  * @author Tom Oinn
  */
-public class TemplateEditor extends JComponent implements ScuflUIComponent {
+public class TemplateEditor extends JComponent implements ProcessorViewSPI {
 
-	Processor theProcessor;
-
+	Processor theProcessor = null;
 	JPanel existingTemplates;
-
 	JPanel defaultTemplates;
-
 	static final PortComboBoxRenderer renderer = new PortComboBoxRenderer();
 
-	public TemplateEditor(Processor theProcessor) {
+	public TemplateEditor() {
+		this(null);
+	}
+	
+	public TemplateEditor(Processor p) {
 		super();
-		this.theProcessor = theProcessor;
+		this.theProcessor = p;
 		setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
 		setPreferredSize(new Dimension(100, 100));
 
@@ -85,9 +87,11 @@ public class TemplateEditor extends JComponent implements ScuflUIComponent {
 				Port object = (Port) objects.getSelectedItem();
 				String verb = predicate.getText();
 				if (verb.equals("") == false) {
-					TemplateEditor.this.theProcessor.addAnnotationTemplate(AnnotationTemplate.standardTemplate(subject,
-							verb, object));
-					TemplateEditor.this.populate();
+					if (theProcessor != null) {
+						TemplateEditor.this.theProcessor.addAnnotationTemplate(AnnotationTemplate.standardTemplate(subject,
+								verb, object));
+						TemplateEditor.this.populate();
+					}
 				}
 			}
 		});
@@ -116,35 +120,25 @@ public class TemplateEditor extends JComponent implements ScuflUIComponent {
 	void populate() {
 		existingTemplates.removeAll();
 		defaultTemplates.removeAll();
-		// Put JLable instances into the existingTemplates panel
-		AnnotationTemplate[] templates = theProcessor.getAnnotationTemplates();
-		for (int i = 0; i < templates.length; i++) {
-			existingTemplates.add(new JEditorPane("text/html", templates[i].getDescription()));
+		if (theProcessor != null) {
+			// Put JLabel instances into the existingTemplates panel
+			AnnotationTemplate[] templates = theProcessor.getAnnotationTemplates();
+			for (int i = 0; i < templates.length; i++) {
+				existingTemplates.add(new JEditorPane("text/html", templates[i].getDescription()));
+			}
+			if (templates.length == 0) {
+				existingTemplates.add(new JLabel("No existing templates"));
+			}
+			AnnotationTemplate[] defaults = theProcessor.defaultAnnotationTemplates();
+			for (int i = 0; i < defaults.length; i++) {
+				defaultTemplates.add(new JEditorPane("text/html", defaults[i].getDescription()));
+			}
+			if (defaults.length == 0) {
+				JLabel l = new JLabel("No default templates");
+				l.setPreferredSize(new Dimension(1000, 25));
+				defaultTemplates.add(l);
+			}
 		}
-		if (templates.length == 0) {
-			existingTemplates.add(new JLabel("No existing templates"));
-		}
-		AnnotationTemplate[] defaults = theProcessor.defaultAnnotationTemplates();
-		for (int i = 0; i < defaults.length; i++) {
-			defaultTemplates.add(new JEditorPane("text/html", defaults[i].getDescription()));
-		}
-		if (defaults.length == 0) {
-			JLabel l = new JLabel("No default templates");
-			l.setPreferredSize(new Dimension(1000, 25));
-			defaultTemplates.add(l);
-		}
-	}
-
-	public void attachToModel(ScuflModel model) {
-		//
-	}
-
-	public void detachFromModel() {
-		//
-	}
-
-	public void receiveModelEvent(ScuflModelEvent event) {
-		//
 	}
 
 	public String getName() {
@@ -158,6 +152,25 @@ public class TemplateEditor extends JComponent implements ScuflUIComponent {
 
 	public ImageIcon getIcon() {
 		return null;
+	}
+
+	public void attachToModel(Processor p) {
+		this.theProcessor = p;
+		populate();		
+	}
+
+	public void onDisplay() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void onDispose() {
+		this.theProcessor = null;		
+	}
+
+	public void detachFromModel() {
+		this.theProcessor = null;
+		populate();		
 	}
 
 }

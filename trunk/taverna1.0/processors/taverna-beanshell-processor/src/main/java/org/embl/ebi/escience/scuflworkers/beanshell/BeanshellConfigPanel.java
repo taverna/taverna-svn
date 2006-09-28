@@ -58,11 +58,12 @@ import org.embl.ebi.escience.scufl.InputPort;
 import org.embl.ebi.escience.scufl.OutputPort;
 import org.embl.ebi.escience.scufl.Port;
 import org.embl.ebi.escience.scufl.PortCreationException;
+import org.embl.ebi.escience.scufl.Processor;
 import org.embl.ebi.escience.scufl.ScuflModel;
 import org.embl.ebi.escience.scufl.ScuflModelEvent;
 import org.embl.ebi.escience.scufl.ScuflModelEventListener;
-import org.embl.ebi.escience.scuflui.ScuflUIComponent;
 import org.embl.ebi.escience.scuflui.TavernaIcons;
+import org.embl.ebi.escience.scuflui.spi.UIComponentSPI;
 import org.embl.ebi.escience.scuflworkers.ProcessorHelper;
 import org.syntax.jedit.JEditTextArea;
 import org.syntax.jedit.TextAreaDefaults;
@@ -76,64 +77,64 @@ import bsh.Interpreter;
  * 
  * @author Tom Oinn, Chris Greenhalgh, Kevin Glover
  */
-public class BeanshellConfigPanel extends JPanel implements ScuflUIComponent,
-		ScuflModelEventListener
+public class BeanshellConfigPanel extends JPanel implements UIComponentSPI,
+ScuflModelEventListener
 {
 	private abstract class PortTableModel extends AbstractTableModel
 	{
 		protected abstract Port[] getPorts();
-
+		
 		public int getColumnCount()
 		{
 			return 3;
 		}
-
+		
 		public int getRowCount()
 		{
 			return getPorts().length;
 		}
-
+		
 		public boolean isCellEditable(int rowIndex, int columnIndex)
 		{
 			return columnIndex > 0;
 		}
-
+		
 		public Class getColumnClass(int columnIndex)
 		{
 			switch (columnIndex)
 			{
 			case 0:
 				return Port.class;
-
+				
 			case 1:
 				return Integer.class;
-
+				
 			case 2:
 				return String.class;
-
+				
 			default:
 				return null;
 			}
 		}
-
+		
 		public Object getValueAt(int rowIndex, int columnIndex)
 		{
 			switch (columnIndex)
 			{
 			case 0:
 				return getPorts()[rowIndex];
-
+				
 			case 1:
 				return new Integer(getListDepth(getPorts()[rowIndex].getSyntacticType()));
 				
 			case 2:
 				return getPrintableType(getPorts()[rowIndex].getSyntacticType());
-
+				
 			default:
 				return null;
 			}
 		}
-
+		
 		
 		// FIXME: Move to a more general class
 		private int getListDepth(String syntacticType)
@@ -146,7 +147,7 @@ public class BeanshellConfigPanel extends JPanel implements ScuflUIComponent,
 			}
 			return depth;
 		}
-
+		
 		public void setValueAt(Object aValue, int rowIndex, int columnIndex)
 		{
 			if (columnIndex > 0)
@@ -165,7 +166,7 @@ public class BeanshellConfigPanel extends JPanel implements ScuflUIComponent,
 					prettyMime = (String) aValue;
 					break;
 				}
-
+				
 				String mimeType = "bleh";
 				Iterator entryIterator = DataThing.mimeTypes.entrySet().iterator();
 				while(entryIterator.hasNext())
@@ -180,7 +181,7 @@ public class BeanshellConfigPanel extends JPanel implements ScuflUIComponent,
 				getPorts()[rowIndex].setSyntacticType(getSyntacticType(listCount, mimeType));
 			}
 		}
-        
+		
 		// FIXME: Move to a more general class
 		private String getSyntacticType(int listDepth, String mimeType)
 		{
@@ -200,29 +201,29 @@ public class BeanshellConfigPanel extends JPanel implements ScuflUIComponent,
 			{
 			case 0:
 				return "Name";
-
+				
 			case 1:
 				return "List";
-
+				
 			case 2:
 				return "Type";
-
+				
 			default:
 				return "Eh? Shouldn't be here";
 			}
 		}
-
+		
 		// FIXME: Move to a more general class
 		private String getPrintableType(String syntacticType)
 		{
 			int start = syntacticType.indexOf('\'') + 1;
 			int end = syntacticType.lastIndexOf('\'');
-
+			
 			String mimeType = syntacticType.substring(start, end);
 			return (String) DataThing.mimeTypes.get(mimeType);
 		}
 	}
-
+	
 	private class ListDepthRenderer extends DefaultTableCellRenderer implements ChangeListener
 	{
 		public ListDepthRenderer()
@@ -242,7 +243,7 @@ public class BeanshellConfigPanel extends JPanel implements ScuflUIComponent,
 				}
 				else if (depth == 1) { 
 					setText("a list of");
-                } else { 					
+				} else { 					
 					setText(depth + "-deep list of");
 				}	
 			}
@@ -268,7 +269,7 @@ public class BeanshellConfigPanel extends JPanel implements ScuflUIComponent,
 	{
 		private JSpinner spinner = new JSpinner(new SpinnerNumberModel(0,0,10,1));
 		private ListDepthRenderer renderer = new ListDepthRenderer();
-
+		
 		/**
 		 * 
 		 */
@@ -288,24 +289,24 @@ public class BeanshellConfigPanel extends JPanel implements ScuflUIComponent,
 			spinner.repaint();			
 			return spinner;
 		}
-
+		
 		public Object getCellEditorValue()
 		{
 			return spinner.getValue();
 		}
-
+		
 	}
-
+	
 	BeanshellProcessor processor = null;
 	JEditTextArea scriptText;
 	JTable inputTable;
 	JTable outputTable;
-
+	
 	JButton addInputButton;
 	JTextField addInputField;
 	JButton addOutputButton;
 	JTextField addOutputField;
-
+	
 	Action deletePortAction = new AbstractAction("Delete Port", TavernaIcons.deleteIcon)
 	{
 		public void actionPerformed(ActionEvent e)
@@ -325,7 +326,7 @@ public class BeanshellConfigPanel extends JPanel implements ScuflUIComponent,
 			{
 				table = (JTable) e.getSource();
 			}
-
+			
 			if (table != null)
 			{
 				int[] rows = table.getSelectedRows();
@@ -341,7 +342,7 @@ public class BeanshellConfigPanel extends JPanel implements ScuflUIComponent,
 			}
 		}
 	};
-
+	
 	/**
 	 * Create a new beanshell configuration panel applying to the processor
 	 * specified in the constructor
@@ -351,7 +352,7 @@ public class BeanshellConfigPanel extends JPanel implements ScuflUIComponent,
 		super(new BorderLayout());
 		setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
 		this.processor = bp;
-
+		
 		scriptText = new JEditTextArea(new TextAreaDefaults());
 		scriptText.setText(processor.getScript());
 		scriptText.setTokenMarker(new JavaTokenMarker());
@@ -364,12 +365,12 @@ public class BeanshellConfigPanel extends JPanel implements ScuflUIComponent,
 				processor.setScript(scriptText.getText());
 			}		
 		});
-
+		
 		JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
 		
 		JButton testScriptButton = new JButton("Test Script");
 		testScriptButton.addActionListener(new ActionListener()
-		{
+				{
 			public void actionPerformed(ActionEvent e)
 			{
 				try
@@ -379,37 +380,37 @@ public class BeanshellConfigPanel extends JPanel implements ScuflUIComponent,
 				}
 				catch (EvalError e1)
 				{
-				    JOptionPane.showMessageDialog(BeanshellConfigPanel.this,
-								  "Script error : \n"+e1.getMessage(),
-								  "Script error",
-								  JOptionPane.ERROR_MESSAGE);
-				    e1.printStackTrace();
+					JOptionPane.showMessageDialog(BeanshellConfigPanel.this,
+							"Script error : \n"+e1.getMessage(),
+							"Script error",
+							JOptionPane.ERROR_MESSAGE);
+					e1.printStackTrace();
 				}
 			}
-		});
+				});
 		buttonPanel.add(testScriptButton);
 		
 		
-
+		
 		JPanel scriptEditPanel = new JPanel(new BorderLayout());
 		scriptEditPanel.add(scriptText, BorderLayout.CENTER);
 		scriptEditPanel.add(buttonPanel, BorderLayout.PAGE_END);
-
+		
 		// Panel to edit the input and output ports
 		JPanel portEditPanel = new JPanel(new GridLayout(0, 2));
-
+		
 		MouseListener tableMouseListener = new MouseAdapter()
 		{
 			public void mousePressed(MouseEvent me)
 			{
 				popup(me);
 			}
-
+			
 			public void mouseReleased(MouseEvent me)
 			{
 				popup(me);
 			}
-
+			
 			protected void popup(MouseEvent me)
 			{
 				if (me.isPopupTrigger())
@@ -418,7 +419,7 @@ public class BeanshellConfigPanel extends JPanel implements ScuflUIComponent,
 					int rowIndex = table.rowAtPoint(me.getPoint());
 					table.setRowSelectionInterval(rowIndex, rowIndex);
 					Port port = (Port) table.getValueAt(rowIndex, 0);
-
+					
 					if (port != null)
 					{
 						JPopupMenu menu = new JPopupMenu();
@@ -428,25 +429,25 @@ public class BeanshellConfigPanel extends JPanel implements ScuflUIComponent,
 				}
 			}
 		};
-
+		
 		deletePortAction.putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(
 				KeyEvent.VK_DELETE, 0));
-
+		
 		JComboBox inputTypesCombo = new JComboBox(new Vector(DataThing.mimeTypes.values()));
-
+		
 		inputTable = new JTable(new PortTableModel()
-		{
+				{
 			protected Port[] getPorts()
 			{
 				return processor.getInputPorts();
 			}
-		});
+				});
 		inputTable.setIntercellSpacing(new Dimension(0, 0));
 		inputTable.setShowVerticalLines(false);
 		inputTable.setShowHorizontalLines(false);
 //		inputTable.setTableHeader(null);
 		inputTable.getInputMap().put((KeyStroke) deletePortAction.getValue(Action.ACCELERATOR_KEY),
-				"DELETE_PORT");
+		"DELETE_PORT");
 		inputTable.getActionMap().put("DELETE_PORT", deletePortAction);
 		inputTable.addMouseListener(tableMouseListener);
 		inputTable.setPreferredSize(new Dimension(0,0));
@@ -459,7 +460,7 @@ public class BeanshellConfigPanel extends JPanel implements ScuflUIComponent,
 		inputTable.setDefaultRenderer(Integer.class, new ListDepthRenderer());
 		inputTable.setDefaultEditor(String.class, new DefaultCellEditor(inputTypesCombo));
 		inputTable.setDefaultRenderer(Port.class, new DefaultTableCellRenderer()
-		{
+				{
 			public Component getTableCellRendererComponent(JTable table, Object value,
 					boolean isSelected, boolean hasFocus, int row, int column)
 			{
@@ -467,14 +468,14 @@ public class BeanshellConfigPanel extends JPanel implements ScuflUIComponent,
 				return super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row,
 						column);
 			}
-		});
-
+				});
+		
 		
 		JPanel inputTablePanel = new JPanel(new BorderLayout());
 		inputTablePanel.add(inputTable, BorderLayout.CENTER);
 		JScrollPane inputPane = new JScrollPane(inputTablePanel);
 		inputPane.setPreferredSize(new Dimension(0, 0));
-
+		
 		ActionListener addInputAction = new ActionListener()
 		{
 			public void actionPerformed(ActionEvent ae)
@@ -497,41 +498,41 @@ public class BeanshellConfigPanel extends JPanel implements ScuflUIComponent,
 				}
 			}
 		};
-
+		
 		addInputButton = new JButton("Add Input", TavernaIcons.inputPortIcon);
 		addInputButton.addActionListener(addInputAction);
 		addInputButton.setEnabled(false);
-
+		
 		addInputField = new JTextField();
 		addInputField.addActionListener(addInputAction);
 		addInputField.getDocument().addDocumentListener(new DocumentListener()
-		{
+				{
 			private void checkName()
 			{
 				addInputButton.setEnabled(isValidName(addInputField.getText()));
 			}
-
+			
 			public void changedUpdate(DocumentEvent e)
 			{
 				checkName();
 			}
-
+			
 			public void insertUpdate(DocumentEvent e)
 			{
 				checkName();
 			}
-
+			
 			public void removeUpdate(DocumentEvent e)
 			{
 				checkName();
 			}
-		});
-
+				});
+		
 		JPanel inputFieldPanel = new JPanel(new BorderLayout());
 		inputFieldPanel.setBorder(BorderFactory.createEmptyBorder(3, 0, 0, 0));
 		inputFieldPanel.add(addInputButton, BorderLayout.LINE_START);
 		inputFieldPanel.add(addInputField, BorderLayout.CENTER);
-
+		
 		// Input edit panel
 		JPanel inputEditPanel = new JPanel(new BorderLayout());
 		inputEditPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory
@@ -539,21 +540,21 @@ public class BeanshellConfigPanel extends JPanel implements ScuflUIComponent,
 		inputEditPanel.add(inputPane, BorderLayout.CENTER);
 		inputEditPanel.add(inputFieldPanel, BorderLayout.SOUTH);
 		portEditPanel.add(inputEditPanel);
-
+		
 		// Output edit panel
 		JPanel outputEditPanel = new JPanel(new BorderLayout());
 		outputEditPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory
 				.createEtchedBorder(), "Outputs"));
-
+		
 		JComboBox outputTypesCombo = new JComboBox(new Vector(DataThing.mimeTypes.values()));		
 		
 		outputTable = new JTable(new PortTableModel()
-		{
+				{
 			protected Port[] getPorts()
 			{
 				return processor.getOutputPorts();
 			}
-		});
+				});
 		outputTable.setIntercellSpacing(new Dimension(0, 0));
 		outputTable.setShowVerticalLines(false);
 		outputTable.setShowHorizontalLines(false);
@@ -569,7 +570,7 @@ public class BeanshellConfigPanel extends JPanel implements ScuflUIComponent,
 		outputTable.setDefaultRenderer(Integer.class, new ListDepthRenderer());
 		outputTable.setDefaultEditor(String.class, new DefaultCellEditor(outputTypesCombo));
 		outputTable.setDefaultRenderer(Port.class, new DefaultTableCellRenderer()
-		{
+				{
 			public Component getTableCellRendererComponent(JTable table, Object value,
 					boolean isSelected, boolean hasFocus, int row, int column)
 			{
@@ -577,16 +578,16 @@ public class BeanshellConfigPanel extends JPanel implements ScuflUIComponent,
 				return super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row,
 						column);
 			}
-		});
-
+				});
+		
 		JPanel outputTablePanel = new JPanel(new BorderLayout());
 		outputTablePanel.add(outputTable, BorderLayout.CENTER);
 		JScrollPane outputPane = new JScrollPane(outputTablePanel);
 		inputPane.setPreferredSize(new Dimension(0, 0));
-
+		
 		outputEditPanel.add(outputPane, BorderLayout.CENTER);
 		// Add a text button to create a new input
-
+		
 		ActionListener addOutputAction = new ActionListener()
 		{
 			public void actionPerformed(ActionEvent ae)
@@ -609,78 +610,66 @@ public class BeanshellConfigPanel extends JPanel implements ScuflUIComponent,
 				}
 			}
 		};
-
+		
 		addOutputField = new JTextField();
 		addOutputField.addActionListener(addOutputAction);
 		addOutputField.getDocument().addDocumentListener(new DocumentListener()
-		{
+				{
 			private void checkName()
 			{
 				addOutputButton.setEnabled(isValidName(addOutputField.getText()));
 			}
-
+			
 			public void changedUpdate(DocumentEvent e)
 			{
 				checkName();
 			}
-
+			
 			public void insertUpdate(DocumentEvent e)
 			{
 				checkName();
 			}
-
+			
 			public void removeUpdate(DocumentEvent e)
 			{
 				checkName();
 			}
-		});
-
+				});
+		
 		addOutputButton = new JButton("Add Output", TavernaIcons.outputPortIcon);
 		addOutputButton.addActionListener(addOutputAction);
 		addOutputButton.setEnabled(false);
-
+		
 		JPanel outputFieldPanel = new JPanel(new BorderLayout());
 		outputFieldPanel.setBorder(BorderFactory.createEmptyBorder(3, 0, 0, 0));
 		outputFieldPanel.add(addOutputButton, BorderLayout.LINE_START);
 		outputFieldPanel.add(addOutputField, BorderLayout.CENTER);
-
+		
 		outputEditPanel.add(outputFieldPanel, BorderLayout.SOUTH);
 		portEditPanel.add(outputEditPanel);
-
+		
 		JTabbedPane tabbedPane = new JTabbedPane();
 		tabbedPane.addTab("Script", scriptEditPanel);
 		tabbedPane.addTab("Ports", portEditPanel);
 		add(tabbedPane);
-
+		
 		setVisible(true);
 	}
-
-	public void attachToModel(ScuflModel theModel)
-	{
-	    if (theModel != null) {
-		theModel.addListener(this);
-	    }
+	
+	public String getName() {
+		if (processor == null) {
+			return "Beanshell config panel for unknown processor";
+		}
+		else {
+			return "Configuring beanshell for " + processor.getName();
+		}
 	}
-
-	public void detachFromModel()
-	{
-		//
-	}
-
-    public String getName() {
-	if (processor == null) {
-	    return "Beanshell config panel for unknown processor";
-	}
-	else {
-	    return "Configuring beanshell for " + processor.getName();
-	}
-    }
-
+	
 	public ImageIcon getIcon()
 	{
 		return ProcessorHelper.getPreferredIcon(processor);
 	}
-
+	
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -691,7 +680,7 @@ public class BeanshellConfigPanel extends JPanel implements ScuflUIComponent,
 		inputTable.tableChanged(new TableModelEvent(inputTable.getModel()));
 		outputTable.tableChanged(new TableModelEvent(outputTable.getModel()));
 	}
-
+	
 	boolean isValidName(String name)
 	{
 		if (name.matches("\\w+"))
@@ -707,5 +696,15 @@ public class BeanshellConfigPanel extends JPanel implements ScuflUIComponent,
 			return true;
 		}
 		return false;
+	}
+	
+	public void onDisplay() {
+		// TODO Auto-generated method stub
+		
+	}
+	
+	public void onDispose() {
+		// TODO Auto-generated method stub
+		
 	}
 }

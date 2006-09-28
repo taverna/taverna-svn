@@ -5,30 +5,68 @@
  */
 package org.embl.ebi.escience.scuflworkers.workflow;
 
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.URL;
 
 import javax.swing.tree.DefaultMutableTreeNode;
 
 import org.apache.log4j.Logger;
 import org.embl.ebi.escience.scufl.Processor;
+import org.embl.ebi.escience.scufl.ProcessorCreationException;
 import org.embl.ebi.escience.scufl.ScuflModel;
 import org.embl.ebi.escience.scufl.parser.XScuflParser;
 import org.embl.ebi.escience.scuflui.workbench.Scavenger;
 import org.embl.ebi.escience.scuflui.workbench.ScavengerCreationException;
+import org.embl.ebi.escience.scuflui.workbench.URLBasedScavenger;
 import org.embl.ebi.escience.scuflworkers.ProcessorFactory;
 import org.embl.ebi.escience.scuflworkers.ProcessorHelper;
 import org.embl.ebi.escience.scuflworkers.XMLHandler;
 import org.jdom.Document;
+import org.jdom.Element;
+import org.jdom.JDOMException;
+import org.jdom.input.SAXBuilder;
 
 /**
  * A Scavenger that knows how to load nested workflow scripts
  * 
  * @author Tom Oinn
  */
-public class WorkflowScavenger extends Scavenger {
+public class WorkflowScavenger extends URLBasedScavenger {
 
 	private static Logger logger = Logger.getLogger(WorkflowScavenger.class);
 
+	public Scavenger fromURL(URL url) throws ScavengerCreationException {
+		Document doc;
+		SAXBuilder sb = new SAXBuilder(false);
+		try {
+			doc = sb.build(new InputStreamReader(url.openStream()));
+		} catch (JDOMException e) {
+			logger.info("Not valid XML " + url);
+			throw new ScavengerCreationException("JDOM Exception");
+		} catch (IOException e) {
+			logger.info("Could not retrieve " + url);
+			throw new ScavengerCreationException("IOException");
+		} catch (OutOfMemoryError e) {
+			logger.error("Out of memory parsing " + url);
+			throw new ScavengerCreationException("Out of memory");		
+		}
+		Element root = doc.getRootElement();
+		if (root.getName().equals("scufl")) {
+			try {
+				return new WorkflowScavenger(url.toExternalForm());
+			} catch (OutOfMemoryError e) {
+				logger.error("Out of memory loading workflow " + url);
+				throw new ScavengerCreationException("Out of memory");
+			}		
+		} 
+		throw new ScavengerCreationException("Shouldn't reach here...");
+	}
+	
+	public WorkflowScavenger() {
+		super("Blank");
+	}
+	
 	/**
 	 * Create a new Workflow scavenger, the single parameter should be
 	 * resolvable to a location from which the definition could be fetched.

@@ -18,5 +18,6 @@
     <module>scufl-provenance</module>
     <module>scufl-tools</module>
     <module>scufl-ui</module>
+    <module>scufl-ui-api</module>
   </modules>
 </project>

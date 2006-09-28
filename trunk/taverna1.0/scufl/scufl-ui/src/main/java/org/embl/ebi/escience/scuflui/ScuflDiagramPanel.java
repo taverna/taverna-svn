@@ -35,6 +35,11 @@ import javax.swing.JScrollPane;
 import javax.swing.JToolBar;
 
 import org.embl.ebi.escience.scufl.ScuflModel;
+import org.embl.ebi.escience.scuflui.shared.ExtensionFileFilter;
+import org.embl.ebi.escience.scuflui.shared.ShadedLabel;
+import org.embl.ebi.escience.scuflui.shared.StreamCopier;
+import org.embl.ebi.escience.scuflui.shared.StreamDevourer;
+import org.embl.ebi.escience.scuflui.spi.WorkflowModelViewSPI;
 
 /**
  * Wraps a ScuflDiagram up in a JScrollPane and provides a toolbar to alter port
@@ -43,7 +48,7 @@ import org.embl.ebi.escience.scufl.ScuflModel;
  * 
  * @author Tom Oinn
  */
-public class ScuflDiagramPanel extends JPanel implements ScuflUIComponent {
+public class ScuflDiagramPanel extends JPanel implements WorkflowModelViewSPI {
 
 	String[] displayPolicyStrings = { "All ports", "Bound ports", "No ports",
 			"Blobs", "Blobs + Names" };
@@ -292,6 +297,15 @@ public class ScuflDiagramPanel extends JPanel implements ScuflUIComponent {
 
 	public String getName() {
 		return "Workflow diagram";
+	}
+
+	public void onDisplay() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void onDispose() {
+		diagram.detachFromModel();		
 	}
 
 }

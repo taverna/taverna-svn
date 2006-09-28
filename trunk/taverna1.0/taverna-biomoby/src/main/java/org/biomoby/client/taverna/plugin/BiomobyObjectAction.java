@@ -54,9 +54,9 @@ import org.embl.ebi.escience.scufl.Port;
 import org.embl.ebi.escience.scufl.Processor;
 import org.embl.ebi.escience.scufl.ProcessorCreationException;
 import org.embl.ebi.escience.scufl.ScuflModel;
-import org.embl.ebi.escience.scuflui.ScuflUIComponent;
-import org.embl.ebi.escience.scuflui.UIUtils;
 import org.embl.ebi.escience.scuflui.processoractions.AbstractProcessorAction;
+import org.embl.ebi.escience.scuflui.shared.UIUtils;
+import org.embl.ebi.escience.scuflui.spi.UIComponentSPI;
 
 public class BiomobyObjectAction extends AbstractProcessorAction {
 
@@ -273,7 +273,7 @@ public class BiomobyObjectAction extends AbstractProcessorAction {
 									public void actionPerformed(ActionEvent ae) {
 										Dimension loc = new Dimension(100, 100);
 										Dimension size = new Dimension(450, 450);
-										ScuflUIComponent c = new MobyPanel(selectedService,
+										UIComponentSPI c = new MobyPanel(selectedService,
 												"A BioMoby Service Description",
 												createServiceDescription(selectedService,
 														selectedAuthority, theProcessor

@@ -1,5 +1,6 @@
 package org.embl.ebi.escience.scuflui.renderers;
 
+
 import java.awt.image.ImageProducer;
 import java.util.regex.Pattern;
 

@@ -11,6 +11,7 @@ import org.embl.ebi.escience.scufl.ScuflModel;
 import org.embl.ebi.escience.scufl.ScuflModelEvent;
 import org.embl.ebi.escience.scufl.ScuflModelEventListener;
 import org.embl.ebi.escience.scufl.view.DotView;
+import org.embl.ebi.escience.scuflui.spi.WorkflowModelViewSPI;
 
 /**
  * A swing component that provides a textual dot representation corresponding to
@@ -19,7 +20,7 @@ import org.embl.ebi.escience.scufl.view.DotView;
  * @author Tom Oinn
  */
 public class DotTextArea extends JTextArea implements ScuflModelEventListener,
-		ScuflUIComponent {
+		WorkflowModelViewSPI {
 
 	private DotView dot = null;
 
@@ -86,6 +87,15 @@ public class DotTextArea extends JTextArea implements ScuflModelEventListener,
 	 */
 	public String getName() {
 		return "Dot text";
+	}
+
+	public void onDisplay() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void onDispose() {
+		detachFromModel();		
 	}
 
 }

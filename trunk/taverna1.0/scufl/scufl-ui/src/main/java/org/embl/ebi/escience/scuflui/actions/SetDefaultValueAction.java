@@ -7,7 +7,7 @@ import javax.swing.JOptionPane;
 import org.embl.ebi.escience.scufl.InputPort;
 import org.embl.ebi.escience.scufl.ScuflModel;
 import org.embl.ebi.escience.scuflui.TavernaIcons;
-import org.embl.ebi.escience.scuflui.UIUtils;
+import org.embl.ebi.escience.scuflui.shared.UIUtils;
 
 public class SetDefaultValueAction extends ModelObjectAction {
 

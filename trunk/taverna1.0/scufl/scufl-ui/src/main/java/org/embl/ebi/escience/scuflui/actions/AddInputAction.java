@@ -13,13 +13,13 @@ import org.embl.ebi.escience.scufl.OutputPort;
 import org.embl.ebi.escience.scufl.PortCreationException;
 import org.embl.ebi.escience.scufl.ScuflModel;
 import org.embl.ebi.escience.scuflui.TavernaIcons;
-import org.embl.ebi.escience.scuflui.UIUtils;
+import org.embl.ebi.escience.scuflui.shared.UIUtils;
 
 /**
  * COMMENT
  * 
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover </a>
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  */
 public class AddInputAction extends ScuflModelAction {
 	/**

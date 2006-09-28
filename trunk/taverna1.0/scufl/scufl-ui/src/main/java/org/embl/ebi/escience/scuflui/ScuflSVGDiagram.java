@@ -37,6 +37,8 @@ import org.embl.ebi.escience.scufl.ScuflModel;
 import org.embl.ebi.escience.scufl.ScuflModelEvent;
 import org.embl.ebi.escience.scufl.ScuflModelEventListener;
 import org.embl.ebi.escience.scufl.view.DotView;
+import org.embl.ebi.escience.scuflui.shared.StreamDevourer;
+import org.embl.ebi.escience.scuflui.spi.WorkflowModelViewSPI;
 import org.w3c.dom.svg.SVGDocument;
 
 /**
@@ -45,7 +47,7 @@ import org.w3c.dom.svg.SVGDocument;
  * @author Tom Oinn
  */
 public class ScuflSVGDiagram extends JComponent implements
-		ScuflModelEventListener, ScuflUIComponent {
+		ScuflModelEventListener, WorkflowModelViewSPI {
 
 	private static Logger logger = Logger.getLogger(ScuflSVGDiagram.class);
 
@@ -207,6 +209,15 @@ public class ScuflSVGDiagram extends JComponent implements
 		return docFactory.createSVGDocument(
 				"http://taverna.sf.net/diagram/generated.svg",
 				new StringReader(devourer.blockOnOutput()));
+	}
+
+	public void onDisplay() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void onDispose() {
+		detachFromModel();		
 	}
 
 }

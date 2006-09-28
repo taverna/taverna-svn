@@ -3,6 +3,7 @@
  */
 package org.embl.ebi.escience.scuflui.results;
 
+
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.GridLayout;
@@ -17,14 +18,14 @@ import org.embl.ebi.escience.scufl.ScuflModel;
 import org.embl.ebi.escience.scufl.enactor.WorkflowInstance;
 import org.embl.ebi.escience.scuflui.renderers.RendererException;
 import org.embl.ebi.escience.scuflui.renderers.RendererRegistry;
-import org.embl.ebi.escience.scuflui.renderers.RendererSPI;
+import org.embl.ebi.escience.scuflui.spi.RendererSPI;
 import org.embl.ebi.escience.scuflworkers.ProcessorHelper;
 
 /**
  * A panel for display the ResultTable. It also has a 
  * 
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover</a>
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public class ResultTablePanel extends JPanel implements ResultTable.TableSelectionListener
 {

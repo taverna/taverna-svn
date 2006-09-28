@@ -5,6 +5,7 @@
  */
 package org.embl.ebi.escience.scuflui.workbench;
 
+
 import java.awt.Point;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
@@ -31,17 +32,17 @@ import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 
 import org.embl.ebi.escience.scufl.ScuflModel;
-import org.embl.ebi.escience.scuflui.ExtendedJTree;
 import org.embl.ebi.escience.scuflui.ScavengerTreePanel;
-import org.embl.ebi.escience.scuflui.ScuflUIComponent;
 import org.embl.ebi.escience.scuflui.TavernaIcons;
-import org.embl.ebi.escience.scuflui.WebScavengerHelper;
 import org.embl.ebi.escience.scuflui.dnd.FactorySpecFragment;
 import org.embl.ebi.escience.scuflui.dnd.ProcessorSpecFragment;
 import org.embl.ebi.escience.scuflui.dnd.SpecFragmentTransferable;
+import org.embl.ebi.escience.scuflui.shared.ExtendedJTree;
+import org.embl.ebi.escience.scuflui.spi.WorkflowModelViewSPI;
 import org.embl.ebi.escience.scuflworkers.ProcessorFactory;
 import org.embl.ebi.escience.scuflworkers.ScavengerHelper;
 import org.embl.ebi.escience.scuflworkers.ScavengerHelperRegistry;
+import org.embl.ebi.escience.scuflworkers.web.WebScavengerHelper;
 import org.jdom.Attribute;
 import org.jdom.Element;
 import org.jdom.output.XMLOutputter;
@@ -53,7 +54,7 @@ import org.jdom.output.XMLOutputter;
  * 
  * @author Tom Oinn
  */
-public class DefaultScavengerTree extends ExtendedJTree implements ScuflUIComponent, ScavengerTree {
+public class DefaultScavengerTree extends ExtendedJTree implements WorkflowModelViewSPI, ScavengerTree {
 
 	private static final long serialVersionUID = -5395001232451125620L;
 
@@ -400,6 +401,15 @@ public class DefaultScavengerTree extends ExtendedJTree implements ScuflUICompon
 
 	public javax.swing.ImageIcon getIcon() {
 		return TavernaIcons.windowScavenger;
+	}
+
+	public void onDisplay() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void onDispose() {
+		detachFromModel();		
 	}
 
 }

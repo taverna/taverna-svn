@@ -10,6 +10,11 @@
   <name>Scufl UI</name>
   <version>1.5-SNAPSHOT</version>
   <dependencies>
+  	<!-- Dependency on extension APIs -->
+  	<dependency>
+  	  <groupId>uk.org.mygrid.taverna.scufl</groupId>
+  	  <artifactId>scufl-ui-api</artifactId>
+  	</dependency>
     <dependency>
       <groupId>uk.org.mygrid.taverna</groupId>
       <artifactId>taverna-core</artifactId>

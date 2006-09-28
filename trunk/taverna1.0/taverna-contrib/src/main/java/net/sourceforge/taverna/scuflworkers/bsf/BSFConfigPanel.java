@@ -60,8 +60,8 @@ import org.embl.ebi.escience.scufl.PortCreationException;
 import org.embl.ebi.escience.scufl.ScuflModel;
 import org.embl.ebi.escience.scufl.ScuflModelEvent;
 import org.embl.ebi.escience.scufl.ScuflModelEventListener;
-import org.embl.ebi.escience.scuflui.ScuflUIComponent;
 import org.embl.ebi.escience.scuflui.TavernaIcons;
+import org.embl.ebi.escience.scuflui.spi.WorkflowModelViewSPI;
 import org.embl.ebi.escience.scuflworkers.ProcessorHelper;
 import org.syntax.jedit.JEditTextArea;
 import org.syntax.jedit.TextAreaDefaults;
@@ -73,11 +73,11 @@ import bsh.Interpreter;
 /**
  * A JPanel that can configure the beanshell processor type
  * 
- * Last edited by: $Author: sowen70 $
+ * Last edited by: $Author: mereden $
  * 
  * @author mfortner
  */
-public class BSFConfigPanel extends JPanel implements ScuflUIComponent, ScuflModelEventListener {
+public class BSFConfigPanel extends JPanel implements WorkflowModelViewSPI, ScuflModelEventListener {
 	private abstract class PortTableModel extends AbstractTableModel {
 		protected abstract Port[] getPorts();
 
@@ -595,7 +595,7 @@ public class BSFConfigPanel extends JPanel implements ScuflUIComponent, ScuflMod
 	}
 
 	public void detachFromModel() {
-		//
+		processor.getModel().removeListener(this);
 	}
 
 	public String getName() {
@@ -631,5 +631,14 @@ public class BSFConfigPanel extends JPanel implements ScuflUIComponent, ScuflMod
 			return true;
 		}
 		return false;
+	}
+
+	public void onDisplay() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void onDispose() {
+		detachFromModel();		
 	}
 }

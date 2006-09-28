@@ -1,8 +1,8 @@
 /**
  * CVS
- * $Author: sowen70 $
- * $Date: 2006-08-24 13:43:17 $
- * $Revision: 1.2 $
+ * $Author: mereden $
+ * $Date: 2006-09-28 16:36:56 $
+ * $Revision: 1.3 $
  */
 package nl.utwente.ewi.hmi.taverna.scuflworkers.abstractprocessor;
 
@@ -49,8 +49,8 @@ import org.embl.ebi.escience.scufl.PortCreationException;
 import org.embl.ebi.escience.scufl.ScuflModel;
 import org.embl.ebi.escience.scufl.ScuflModelEvent;
 import org.embl.ebi.escience.scufl.ScuflModelEventListener;
-import org.embl.ebi.escience.scuflui.ScuflUIComponent;
 import org.embl.ebi.escience.scuflui.TavernaIcons;
+import org.embl.ebi.escience.scuflui.spi.WorkflowModelViewSPI;
 import org.embl.ebi.escience.scuflworkers.ProcessorHelper;
 
 /**
@@ -58,7 +58,7 @@ import org.embl.ebi.escience.scuflworkers.ProcessorHelper;
  * 
  * @author Ingo Wassink
  */
-public class APConfigPanel extends JPanel implements ScuflUIComponent,
+public class APConfigPanel extends JPanel implements WorkflowModelViewSPI,
 		ScuflModelEventListener {
 
 	private static final long serialVersionUID = -1596783050410457435L;
@@ -339,7 +339,7 @@ public class APConfigPanel extends JPanel implements ScuflUIComponent,
 	}
 
 	public void detachFromModel() {
-		//
+		processor.getModel().removeListener(this);
 	}
 
 	/**
@@ -512,6 +512,15 @@ public class APConfigPanel extends JPanel implements ScuflUIComponent,
 				}
 			}
 		}
+	}
+
+	public void onDisplay() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void onDispose() {
+		detachFromModel();		
 	};
 
 }

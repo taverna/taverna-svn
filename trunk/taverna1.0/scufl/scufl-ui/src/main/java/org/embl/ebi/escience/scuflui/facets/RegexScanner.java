@@ -17,6 +17,7 @@ import java.util.regex.Pattern;
 
 import org.embl.ebi.escience.baclava.DataThing;
 import org.embl.ebi.escience.baclava.factory.DataThingFactory;
+import org.embl.ebi.escience.scuflui.spi.FacetFinderSPI;
 
 /**
  * Extract matches to a regular expression. The details of what to do with the

@@ -7,6 +7,7 @@ import java.util.Set;
 
 import org.embl.ebi.escience.baclava.DataThing;
 import org.embl.ebi.escience.baclava.factory.DataThingFactory;
+import org.embl.ebi.escience.scuflui.spi.FacetFinderSPI;
 
 /**
  *

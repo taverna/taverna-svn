@@ -34,6 +34,8 @@ import javax.swing.tree.TreePath;
 import org.embl.ebi.escience.scufl.ScuflModel;
 import org.embl.ebi.escience.scufl.ScuflModelEvent;
 import org.embl.ebi.escience.scufl.ScuflModelEventListener;
+import org.embl.ebi.escience.scuflui.spi.WorkflowModelViewSPI;
+import org.embl.ebi.escience.scuflui.treeview.ScuflModelExplorerRenderer;
 import org.embl.ebi.escience.scuflui.workbench.DefaultScavengerTree;
 import org.embl.ebi.escience.scuflui.workbench.FileDrop;
 import org.embl.ebi.escience.scuflui.workbench.FileScavenger;
@@ -46,7 +48,7 @@ import org.embl.ebi.escience.scuflui.workbench.ScavengerCreationException;
  * @author Tom Oinn
  * @author Stuart Owen
  */
-public class ScavengerTreePanel extends JPanel implements ScuflUIComponent {
+public class ScavengerTreePanel extends JPanel implements WorkflowModelViewSPI {
 
 	DefaultScavengerTree tree;
 
@@ -275,12 +277,12 @@ public class ScavengerTreePanel extends JPanel implements ScuflUIComponent {
 
 	private ScuflModel model = null;
 
-	
-
 	public void detachFromModel() {
-		model.removeListener(eventListener);
-		tree.detachFromModel();
-		this.model = null;
+		if (model != null) {
+			model.removeListener(eventListener);
+			tree.detachFromModel();
+			this.model = null;
+		}
 	}
 
 	public String getName() {
@@ -289,6 +291,15 @@ public class ScavengerTreePanel extends JPanel implements ScuflUIComponent {
 
 	public javax.swing.ImageIcon getIcon() {
 		return TavernaIcons.windowScavenger;
+	}
+
+	public void onDisplay() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void onDispose() {
+		detachFromModel();		
 	}
 
 }

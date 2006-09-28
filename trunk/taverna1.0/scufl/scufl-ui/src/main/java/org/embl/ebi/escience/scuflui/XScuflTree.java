@@ -13,6 +13,8 @@ import org.embl.ebi.escience.scufl.ScuflModel;
 import org.embl.ebi.escience.scufl.ScuflModelEvent;
 import org.embl.ebi.escience.scufl.ScuflModelEventListener;
 import org.embl.ebi.escience.scufl.view.XScuflView;
+import org.embl.ebi.escience.scuflui.shared.XMLTree;
+import org.embl.ebi.escience.scuflui.spi.WorkflowModelViewSPI;
 import org.jdom.Document;
 
 /**
@@ -22,7 +24,7 @@ import org.jdom.Document;
  * @author Tom Oinn
  */
 public class XScuflTree extends JComponent implements ScuflModelEventListener,
-		ScuflUIComponent {
+		WorkflowModelViewSPI {
 
 	private ScuflModel model = null;
 
@@ -95,6 +97,15 @@ public class XScuflTree extends JComponent implements ScuflModelEventListener,
 	 */
 	public String getName() {
 		return "DEBUG - Workflow XML preview";
+	}
+
+	public void onDisplay() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void onDispose() {
+		detachFromModel();
 	}
 
 }

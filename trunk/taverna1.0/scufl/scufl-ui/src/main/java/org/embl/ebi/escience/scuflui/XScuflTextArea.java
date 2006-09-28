@@ -11,6 +11,7 @@ import org.embl.ebi.escience.scufl.ScuflModel;
 import org.embl.ebi.escience.scufl.ScuflModelEvent;
 import org.embl.ebi.escience.scufl.ScuflModelEventListener;
 import org.embl.ebi.escience.scufl.view.XScuflView;
+import org.embl.ebi.escience.scuflui.spi.WorkflowModelViewSPI;
 
 /**
  * A swing component that provides a textual view of the xscufl corresponding to
@@ -19,7 +20,7 @@ import org.embl.ebi.escience.scufl.view.XScuflView;
  * @author Tom Oinn
  */
 public class XScuflTextArea extends JTextArea implements
-		ScuflModelEventListener, ScuflUIComponent {
+		ScuflModelEventListener, WorkflowModelViewSPI {
 
 	private XScuflView xscufl = null;
 
@@ -86,6 +87,15 @@ public class XScuflTextArea extends JTextArea implements
 	 */
 	public String getName() {
 		return "Workflow XML preview";
+	}
+
+	public void onDisplay() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void onDispose() {
+		detachFromModel();		
 	}
 
 }

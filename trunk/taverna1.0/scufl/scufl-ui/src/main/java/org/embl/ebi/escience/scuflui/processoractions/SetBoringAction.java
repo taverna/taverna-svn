@@ -11,6 +11,7 @@ import java.awt.event.ActionListener;
 import javax.swing.ImageIcon;
 
 import org.embl.ebi.escience.scufl.Processor;
+import org.embl.ebi.escience.scuflui.spi.ProcessorActionSPI;
 
 /**
  * Set the boring flag on processors

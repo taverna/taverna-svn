@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<project>
+<?xml version="1.0" encoding="UTF-8"?><project>
   <parent>
     <artifactId>taverna</artifactId>
     <groupId>uk.org.mygrid.taverna</groupId>
@@ -18,6 +17,15 @@
     <dependency>
       <groupId>uk.org.mygrid.taverna.scufl</groupId>
       <artifactId>scufl-model</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>uk.org.mygrid.taverna</groupId>
+      <artifactId>taverna-core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>commons-io</groupId>
+      <artifactId>commons-io</artifactId>
+      <version>1.2</version>
     </dependency>
   </dependencies>
 </project>

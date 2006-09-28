@@ -5,6 +5,7 @@
  */
 package org.embl.ebi.escience.scuflui;
 
+
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.dnd.DnDConstants;
@@ -52,7 +53,7 @@ import org.embl.ebi.escience.scufl.enactor.event.UserChangedDataEvent;
 import org.embl.ebi.escience.scufl.enactor.implementation.WorkflowEventDispatcher;
 import org.embl.ebi.escience.scuflui.renderers.RendererException;
 import org.embl.ebi.escience.scuflui.renderers.RendererRegistry;
-import org.embl.ebi.escience.scuflui.renderers.RendererSPI;
+import org.embl.ebi.escience.scuflui.spi.RendererSPI;
 
 /**
  * A JPanel to represent a single result DataThing to the user at the end of the

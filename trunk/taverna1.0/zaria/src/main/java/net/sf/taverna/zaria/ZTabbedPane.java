@@ -1,6 +1,7 @@
 package net.sf.taverna.zaria;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.util.ArrayList;
@@ -9,6 +10,7 @@ import java.util.List;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.Icon;
+import javax.swing.JColorChooser;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -37,6 +39,7 @@ public class ZTabbedPane extends ZPane {
 	private Action removeTabAction = new RemoveCurrentTabAction();
 	private Action demoteTabAction = new DemoteTabAction();
 	private Action promoteTabAction = new PromoteTabAction();
+	private Action colourTabAction = new ColourTabAction();
 	private JTextField tabName = new JTextField();
 	
 	public ZTabbedPane() {
@@ -45,11 +48,9 @@ public class ZTabbedPane extends ZPane {
 		add(tabs, BorderLayout.CENTER);
 		actions.add(new AddTabAction());
 		actions.add(removeTabAction);
-		removeTabAction.setEnabled(false);
+		actions.add(colourTabAction);
 		actions.add(demoteTabAction);
-		promoteTabAction.setEnabled(false);
 		actions.add(promoteTabAction);
-		demoteTabAction.setEnabled(false);
 		actions.add(new ReplaceWithBlankAction());
 		tabs.addChangeListener(new ChangeListener() {
 			public void stateChanged(ChangeEvent e) {
@@ -98,6 +99,7 @@ public class ZTabbedPane extends ZPane {
 		int index = tabs.getSelectedIndex();
 		if (index >= 0) {
 			removeTabAction.setEnabled(true);
+			colourTabAction.setEnabled(true);
 			tabName.setEnabled(true);
 			if (tabName.getText().equals(tabs.getTitleAt(index))==false) {
 				tabName.setText(tabs.getTitleAt(index));
@@ -120,10 +122,30 @@ public class ZTabbedPane extends ZPane {
 			removeTabAction.setEnabled(false);
 			promoteTabAction.setEnabled(false);
 			demoteTabAction.setEnabled(false);
+			colourTabAction.setEnabled(false);
 		}
 		// Set up state for other tab controls
 		// here, will do later when we actually
 		// have the other controls...		
+	}
+	
+	private class ColourTabAction extends AbstractAction {
+
+		public ColourTabAction() {
+			super();
+			putValue(Action.NAME,"Colour...");
+		}
+		
+		public void actionPerformed(ActionEvent arg0) {
+			int i = tabs.getSelectedIndex();
+			Color c = tabs.getBackgroundAt(i);
+			Color newColour = JColorChooser.showDialog(
+					ZTabbedPane.this,"Pick tab colour",c);
+			if (newColour != null) {
+				tabs.setBackgroundAt(i,newColour);
+			}
+		}
+		
 	}
 	
 	private class AddTabAction extends AbstractAction {

@@ -25,10 +25,10 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: XMLSplitterScuflContextMenuFactory.java,v $
- * Revision           $Revision: 1.2 $
+ * Revision           $Revision: 1.3 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-08-25 13:57:00 $
- *               by   $Author: sowen70 $
+ * Last modified on   $Date: 2006-09-28 16:37:03 $
+ *               by   $Author: mereden $
  * Created on 22-Jun-2006
  *****************************************************************/
 package org.embl.ebi.escience.scuflworkers.java;
@@ -48,7 +48,7 @@ import org.embl.ebi.escience.scufl.InputPort;
 import org.embl.ebi.escience.scufl.OutputPort;
 import org.embl.ebi.escience.scufl.Port;
 import org.embl.ebi.escience.scufl.ScuflModel;
-import org.embl.ebi.escience.scuflui.UIUtils;
+import org.embl.ebi.escience.scuflui.shared.UIUtils;
 
 /**
  * 

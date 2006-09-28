@@ -12,6 +12,7 @@ import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.Box;
 import javax.swing.JComponent;
+import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JToolBar;
 import javax.swing.tree.TreeNode;
@@ -32,8 +33,8 @@ public abstract class ZPane extends JComponent implements ZTreeNode {
 	protected ZPane() {
 		super();
 		toolBar.setFloatable(false);
-		toolBar.setRollover(true);
-		toolBar.setBorderPainted(false);
+		//toolBar.setRollover(true);
+		//toolBar.setBorderPainted(false);
 		setLayout(new BorderLayout());
 	}
 	
@@ -46,6 +47,42 @@ public abstract class ZPane extends JComponent implements ZTreeNode {
 		public void actionPerformed(ActionEvent arg0) {
 			replaceWith(new ZBlankComponent());
 		}
+	}
+	
+	/**
+	 * Traverse up the component heirarchy until we find an
+	 * instance of ZBasePane
+	 */
+	public ZBasePane getRoot() {
+		if (this instanceof ZBasePane) {
+			return (ZBasePane)this;
+		}
+		else {
+			Component c = this;
+			while (c != null) {
+				c = c.getParent();
+				if (c instanceof ZBasePane) {
+					return (ZBasePane)c;
+				}
+			}
+			return null;
+		}
+	}
+	
+	/**
+	 * Traverse up to the JFrame this component is contained within,
+	 * used for showing dialogues and locking the frame using the
+	 * glass pane.
+	 */
+	public JFrame getFrame() {
+		Component c = this;
+		while (c != null) {
+			c = c.getParent();
+			if (c instanceof JFrame) {
+				return (JFrame)c;
+			}
+		}
+		return null;
 	}
 	
 	/**

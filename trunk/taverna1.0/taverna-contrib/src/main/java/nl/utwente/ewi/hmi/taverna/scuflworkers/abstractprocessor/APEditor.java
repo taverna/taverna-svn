@@ -1,8 +1,8 @@
 /**
  * CVS
- * $Author: sowen70 $
- * $Date: 2006-07-11 15:08:48 $
- * $Revision: 1.1 $
+ * $Author: mereden $
+ * $Date: 2006-09-28 16:36:56 $
+ * $Revision: 1.2 $
  */
 package nl.utwente.ewi.hmi.taverna.scuflworkers.abstractprocessor;
 
@@ -10,7 +10,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import org.embl.ebi.escience.scufl.Processor;
-import org.embl.ebi.escience.scuflui.UIUtils;
+import org.embl.ebi.escience.scuflui.shared.UIUtils;
 import org.embl.ebi.escience.scuflworkers.ProcessorEditor;
 
 /**

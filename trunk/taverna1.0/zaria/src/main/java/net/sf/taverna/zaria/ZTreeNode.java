@@ -91,4 +91,11 @@ public interface ZTreeNode {
 	 */
 	public void swap(ZTreeNode oldComponent, ZTreeNode newComponent);
 	
+	/**
+	 * Get the ZBasePane at the root of the component
+	 * heirarchy or null if there isn't one (there will be
+	 * for all cases where the component is visible)
+	 */
+	public ZBasePane getRoot();
+	
 }

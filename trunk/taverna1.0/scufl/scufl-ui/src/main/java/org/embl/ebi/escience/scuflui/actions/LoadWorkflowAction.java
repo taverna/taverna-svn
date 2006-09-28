@@ -21,15 +21,14 @@ import org.embl.ebi.escience.baclava.store.BaclavaDataServiceFactory;
 import org.embl.ebi.escience.baclava.store.JDBCBaclavaDataService;
 import org.embl.ebi.escience.scufl.ScuflModel;
 import org.embl.ebi.escience.scufl.parser.XScuflParser;
-import org.embl.ebi.escience.scuflui.ExtensionFileFilter;
-import org.embl.ebi.escience.scuflui.ScuflIcons;
 import org.embl.ebi.escience.scuflui.TavernaIcons;
+import org.embl.ebi.escience.scuflui.shared.ExtensionFileFilter;
 
 /**
  * COMMENT
  * 
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover</a>
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public class LoadWorkflowAction extends ScuflModelAction {
 	final JFileChooser fc = new JFileChooser();
@@ -136,7 +135,7 @@ public class LoadWorkflowAction extends ScuflModelAction {
 	 * Prompts for a file and loads a workflow from that file
 	 */
 	protected void loadFromFile() {
-		Preferences prefs = Preferences.userNodeForPackage(ScuflIcons.class);
+		Preferences prefs = Preferences.userNodeForPackage(TavernaIcons.class);
 		String curDir = prefs
 				.get("currentDir", System.getProperty("user.home"));
 		fc.setDialogTitle("Open Workflow");
