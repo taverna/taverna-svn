@@ -27,11 +27,11 @@ public class ZSplitPane extends ZPane {
 			super();
 			if (splitPane.getOrientation() == JSplitPane.HORIZONTAL_SPLIT) {
 				putValue(Action.SHORT_DESCRIPTION,"Switch to horizontal split");
-				putValue(Action.SMALL_ICON,ZIcons.iconFor("horizontal"));
+				putValue(Action.SMALL_ICON,ZIcons.iconFor("converttohorizontalsplit"));
 			}
 			else {
 				putValue(Action.SHORT_DESCRIPTION,"Switch to vertical split");
-				putValue(Action.SMALL_ICON,ZIcons.iconFor("vertical"));
+				putValue(Action.SMALL_ICON,ZIcons.iconFor("converttoverticalsplit"));
 			}
 		}
 
@@ -39,12 +39,12 @@ public class ZSplitPane extends ZPane {
 			if (splitPane.getOrientation() == JSplitPane.HORIZONTAL_SPLIT) {
 				splitPane.setOrientation(JSplitPane.VERTICAL_SPLIT);
 				putValue(Action.SHORT_DESCRIPTION,"Switch to vertical split");
-				putValue(Action.SMALL_ICON,ZIcons.iconFor("vertical"));
+				putValue(Action.SMALL_ICON,ZIcons.iconFor("converttoverticalsplit"));
 			}
 			else {
 				splitPane.setOrientation(JSplitPane.HORIZONTAL_SPLIT);
 				putValue(Action.SHORT_DESCRIPTION,"Switch to horizontal split");
-				putValue(Action.SMALL_ICON,ZIcons.iconFor("horizontal"));
+				putValue(Action.SMALL_ICON,ZIcons.iconFor("converttohorizontalsplit"));
 			}
 		}
 		

@@ -1,6 +1,7 @@
 package net.sf.taverna.zaria;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.util.ArrayList;
 import java.util.List;
@@ -26,10 +27,14 @@ public class ZBlankComponent extends ZPane implements ZTreeNode {
 		actions = new ArrayList<Action>();
 		actions.add(createSplitPaneAction);
 		createSplitPaneAction.putValue(Action.SHORT_DESCRIPTION,"Create split pane");
-		createSplitPaneAction.putValue(Action.SMALL_ICON,ZIcons.iconFor("createsplit"));
+		createSplitPaneAction.putValue(Action.SMALL_ICON,ZIcons.iconFor("addsplit"));
 		actions.add(createTabbedPaneAction);
-		createTabbedPaneAction.putValue(Action.NAME,"New tabs");
-		add(new JPanel(), BorderLayout.CENTER);
+		createTabbedPaneAction.putValue(Action.SHORT_DESCRIPTION,"New tabs");
+		createTabbedPaneAction.putValue(Action.SMALL_ICON,ZIcons.iconFor("addtab"));
+		JPanel panel = new JPanel();
+		panel.setOpaque(true);
+		panel.setBackground(Color.WHITE);
+		add(panel, BorderLayout.CENTER);
 	}
 
 	private Action createSplitPaneAction = new AbstractAction() {

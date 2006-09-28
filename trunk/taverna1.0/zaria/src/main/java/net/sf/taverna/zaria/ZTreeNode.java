@@ -1,5 +1,6 @@
 package net.sf.taverna.zaria;
 
+import java.awt.Component;
 import java.util.List;
 
 import javax.swing.Action;
@@ -82,7 +83,7 @@ public interface ZTreeNode {
 	 * added on the left hand side of the toolbar when
 	 * in edit mode
 	 */
-	public List<JComponent> getToolbarComponents();
+	public List<Component> getToolbarComponents();
 	
 	/**
 	 * Swap out the given child for the new one

@@ -3,12 +3,14 @@ package net.sf.taverna.zaria;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
+import javax.swing.Box;
 import javax.swing.Icon;
 import javax.swing.JColorChooser;
 import javax.swing.JComponent;
@@ -44,6 +46,8 @@ public class ZTabbedPane extends ZPane {
 	
 	public ZTabbedPane() {
 		super();
+		tabName.setMaximumSize(new Dimension(150,20));
+		tabName.setPreferredSize(new Dimension(150,20));
 		tabs = new JTabbedPane();
 		add(tabs, BorderLayout.CENTER);
 		actions.add(new AddTabAction());
@@ -133,7 +137,8 @@ public class ZTabbedPane extends ZPane {
 
 		public ColourTabAction() {
 			super();
-			putValue(Action.NAME,"Colour...");
+			putValue(Action.SHORT_DESCRIPTION,"Colour...");
+			putValue(Action.SMALL_ICON,ZIcons.iconFor("colourwheel"));
 		}
 		
 		public void actionPerformed(ActionEvent arg0) {
@@ -152,7 +157,8 @@ public class ZTabbedPane extends ZPane {
 		
 		public AddTabAction() {
 			super();
-			putValue(Action.NAME,"Add tab");
+			putValue(Action.SHORT_DESCRIPTION,"Add tab");
+			putValue(Action.SMALL_ICON,ZIcons.iconFor("addtab"));
 		}
 		
 		public void actionPerformed(ActionEvent arg0) {
@@ -169,7 +175,8 @@ public class ZTabbedPane extends ZPane {
 		
 		public RemoveCurrentTabAction() {
 			super();
-			putValue(Action.NAME,"Remove tab");
+			putValue(Action.SHORT_DESCRIPTION,"Remove tab");
+			putValue(Action.SMALL_ICON,ZIcons.iconFor("deletetab"));
 		}
 		
 		public void actionPerformed(ActionEvent arg0) {
@@ -184,7 +191,8 @@ public class ZTabbedPane extends ZPane {
 		
 		public PromoteTabAction() {
 			super();
-			putValue(Action.NAME,"Promote");
+			putValue(Action.SHORT_DESCRIPTION,"Shift tab right");
+			putValue(Action.SMALL_ICON,ZIcons.iconFor("promotetab"));
 		}
 		
 		public void actionPerformed(ActionEvent e) {
@@ -199,7 +207,8 @@ public class ZTabbedPane extends ZPane {
 		
 		public DemoteTabAction() {
 			super();
-			putValue(Action.NAME,"Demote");
+			putValue(Action.SHORT_DESCRIPTION,"Shift tab left");
+			putValue(Action.SMALL_ICON,ZIcons.iconFor("demotetab"));
 		}
 		
 		public void actionPerformed(ActionEvent e) {
@@ -259,8 +268,9 @@ public class ZTabbedPane extends ZPane {
 	/**
 	 * Get the tab name editor
 	 */
-	public List<JComponent> getToolbarComponents() {
-		List<JComponent> components = new ArrayList<JComponent>();
+	public List<Component> getToolbarComponents() {
+		List<Component> components = new ArrayList<Component>();
+		components.add(Box.createRigidArea(new Dimension(5,5)));
 		components.add(tabName);
 		return components;
 	}

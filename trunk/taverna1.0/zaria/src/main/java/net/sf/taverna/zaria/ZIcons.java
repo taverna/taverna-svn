@@ -21,6 +21,10 @@ public class ZIcons {
 		}
 		else {
 			URL iconLocation = ZIcons.class.getResource("icons/"+name+".png");
+			// Prefer .png icons but use .gif if available
+			if (iconLocation == null) {
+				iconLocation = ZIcons.class.getResource("icons/"+name+".gif");
+			}
 			if (iconLocation != null) {
 				ImageIcon icon = new ImageIcon(iconLocation);
 				iconMap.put(name, icon);

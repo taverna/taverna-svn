@@ -33,8 +33,8 @@ public abstract class ZPane extends JComponent implements ZTreeNode {
 	protected ZPane() {
 		super();
 		toolBar.setFloatable(false);
-		//toolBar.setRollover(true);
-		//toolBar.setBorderPainted(false);
+		toolBar.setRollover(false);
+		toolBar.setBorderPainted(false);
 		setLayout(new BorderLayout());
 	}
 	
@@ -113,8 +113,8 @@ public abstract class ZPane extends JComponent implements ZTreeNode {
 		return (getZChildren().isEmpty());
 	}
 	
-	public List<JComponent> getToolbarComponents() {
-		return new ArrayList<JComponent>();
+	public List<Component> getToolbarComponents() {
+		return new ArrayList<Component>();
 	}
 	
 	/**
@@ -133,7 +133,7 @@ public abstract class ZPane extends JComponent implements ZTreeNode {
 				toolBar.removeAll();
 				boolean hasContent = false;
 				// Add arbitrary JComponents
-				for (JComponent j : getToolbarComponents()) {
+				for (Component j : getToolbarComponents()) {
 					toolBar.add(j);
 					hasContent = true;
 				}
