@@ -11,6 +11,7 @@ import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.ImageIcon;
 import javax.swing.JComponent;
+import javax.swing.JLabel;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -65,6 +66,7 @@ public class ZRavenComponent extends ZPane {
 		if (spiName == null || newSPIName.equals(spiName)==false) {
 			this.spiName = newSPIName;
 			registry = getRoot().getRegistryFor(spiName);
+			selectInstance.setEnabled(true);
 		}
 	}
 	
@@ -82,6 +84,7 @@ public class ZRavenComponent extends ZPane {
 			contentArea.add(theComponent, BorderLayout.CENTER);
 		}
 		this.contents = theComponent;
+		toggleScroll.setEnabled(true);
 	}
 	
 	/**
@@ -91,7 +94,9 @@ public class ZRavenComponent extends ZPane {
 		
 		public SelectInstanceAction() {
 			super();
-			putValue(Action.NAME, "Select component");
+			putValue(Action.SHORT_DESCRIPTION, "Select component");
+			putValue(Action.SMALL_ICON, ZIcons.iconFor("selectraven"));
+			setEnabled(false);
 		}
 		
 		public void actionPerformed(ActionEvent e) {
@@ -126,7 +131,8 @@ public class ZRavenComponent extends ZPane {
 
 		public SelectSPIAction() {
 			super();
-			putValue(Action.NAME,"Select SPI");
+			putValue(Action.SHORT_DESCRIPTION,"Select SPI");
+			putValue(Action.SMALL_ICON, ZIcons.iconFor("selectspi"));
 		}
 		
 		public void actionPerformed(ActionEvent arg0) {
@@ -156,17 +162,20 @@ public class ZRavenComponent extends ZPane {
 
 		public ToggleScrollPaneAction() {
 			super();
+			setEnabled(false);
 			updateState();
 		}
 		
 		private void updateState() {
 			if (hasScrollPane) {
 				// Set state for button to remove pane
-				putValue(Action.NAME,"Disable Scroll");
+				putValue(Action.SHORT_DESCRIPTION,"Disable scroll pane");
+				putValue(Action.SMALL_ICON, ZIcons.iconFor("disablescroll"));
 			}
 			else {
 				// Set state for button to enable pane
-				putValue(Action.NAME,"Enable Scroll");
+				putValue(Action.SHORT_DESCRIPTION,"Enable scroll pane");
+				putValue(Action.SMALL_ICON, ZIcons.iconFor("enablescroll"));
 			}
 			if (contents == null) {
 				setEnabled(false);

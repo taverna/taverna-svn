@@ -31,6 +31,9 @@ public class ZBlankComponent extends ZPane implements ZTreeNode {
 		actions.add(createTabbedPaneAction);
 		createTabbedPaneAction.putValue(Action.SHORT_DESCRIPTION,"New tabs");
 		createTabbedPaneAction.putValue(Action.SMALL_ICON,ZIcons.iconFor("addtab"));
+		actions.add(createRavenPaneAction);
+		createRavenPaneAction.putValue(Action.SHORT_DESCRIPTION,"Add component from Raven");
+		createRavenPaneAction.putValue(Action.SMALL_ICON,ZIcons.iconFor("addraven"));
 		JPanel panel = new JPanel();
 		panel.setOpaque(true);
 		panel.setBackground(Color.WHITE);
@@ -46,6 +49,12 @@ public class ZBlankComponent extends ZPane implements ZTreeNode {
 	private Action createTabbedPaneAction = new AbstractAction() {
 		public void actionPerformed(ActionEvent arg0) {
 			replaceWith(new ZTabbedPane());
+		}
+	};
+	
+	private Action createRavenPaneAction = new AbstractAction() {
+		public void actionPerformed(ActionEvent arg0) {
+			replaceWith(new ZRavenComponent());
 		}
 	};
 	
