@@ -33,7 +33,7 @@
     </dependency>
     <dependency>
       <groupId>uk.org.mygrid.taverna.scufl</groupId>
-      <artifactId>scufl-ui</artifactId>
+      <artifactId>scufl-ui-api</artifactId>
     </dependency>
     <dependency>
       <groupId>uk.org.mygrid.resources</groupId>

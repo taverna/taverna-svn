@@ -11,7 +11,7 @@ import org.embl.ebi.escience.scufl.ScuflModel;
  * COMMENT
  * 
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover</a>
- * @version $Revision: 1.2 $
+ * @version $Revision$
  */
 public abstract class ScuflModelAction extends AbstractAction {
 	

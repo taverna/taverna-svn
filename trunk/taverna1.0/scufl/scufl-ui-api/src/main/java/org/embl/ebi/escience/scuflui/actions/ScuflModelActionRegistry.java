@@ -24,11 +24,11 @@
  ****************************************************************
  * Source code information
  * -----------------------
- * Filename           $RCSfile: ScuflModelActionRegistry.java,v $
- * Revision           $Revision: 1.2 $
- * Release status     $State: Exp $
- * Last modified on   $Date: 2006-07-10 14:09:28 $
- *               by   $Author: sowen70 $
+ * Filename           $RCSfile$
+ * Revision           $Revision$
+ * Release status     $State$
+ * Last modified on   $Date$
+ *               by   $Author$
  * Created on 05-Jul-2006
  *****************************************************************/
 package org.embl.ebi.escience.scuflui.actions;

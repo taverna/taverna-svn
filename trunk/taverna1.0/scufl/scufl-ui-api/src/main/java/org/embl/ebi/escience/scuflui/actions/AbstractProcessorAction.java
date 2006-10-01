@@ -3,7 +3,7 @@
  * and is licensed under the GNU LGPL.
  * Copyright Tom Oinn, EMBL-EBI
  */
-package org.embl.ebi.escience.scuflui.processoractions;
+package org.embl.ebi.escience.scuflui.actions;
 
 import java.awt.BorderLayout;
 import java.awt.Component;

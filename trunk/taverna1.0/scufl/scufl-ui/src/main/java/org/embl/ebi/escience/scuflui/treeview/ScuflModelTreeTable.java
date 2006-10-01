@@ -62,6 +62,7 @@ import org.embl.ebi.escience.scuflui.TavernaIcons;
 import org.embl.ebi.escience.scuflui.dnd.FactorySpecFragment;
 import org.embl.ebi.escience.scuflui.dnd.ProcessorSpecFragment;
 import org.embl.ebi.escience.scuflui.dnd.SpecFragmentTransferable;
+import org.embl.ebi.escience.scuflui.shared.ScuflModelExplorerRenderer;
 import org.embl.ebi.escience.scuflui.spi.WorkflowModelViewSPI;
 import org.embl.ebi.escience.scuflworkers.ProcessorHelper;
 import org.embl.ebi.escience.treetable.JTreeTable;

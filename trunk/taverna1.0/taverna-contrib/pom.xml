@@ -28,6 +28,11 @@
     </dependency>
     <dependency>
       <groupId>uk.org.mygrid.taverna.scufl</groupId>
+      <artifactId>scufl-ui-api</artifactId>
+    </dependency>
+    <!-- TODO - the dependency below entirely breaks raven -->
+    <dependency>
+      <groupId>uk.org.mygrid.taverna.scufl</groupId>
       <artifactId>scufl-ui</artifactId>
     </dependency>
     <dependency>

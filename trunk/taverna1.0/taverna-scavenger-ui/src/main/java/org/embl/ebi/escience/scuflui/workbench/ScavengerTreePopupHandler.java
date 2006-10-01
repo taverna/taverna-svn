@@ -15,7 +15,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Enumeration;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -41,11 +40,7 @@ import org.embl.ebi.escience.scufl.ProcessorCreationException;
 import org.embl.ebi.escience.scufl.ScuflModel;
 import org.embl.ebi.escience.scufl.ScuflWorkflowProcessor;
 import org.embl.ebi.escience.scufl.ScuflWorkflowProcessorFactory;
-import org.embl.ebi.escience.scufl.enactor.WorkflowSubmissionException;
-import org.embl.ebi.escience.scufl.enactor.implementation.FreefluoEnactorProxy;
 import org.embl.ebi.escience.scufl.parser.XScuflParser;
-import org.embl.ebi.escience.scuflui.WorkflowInputMapBuilder;
-import org.embl.ebi.escience.scuflui.EnactorInvocation;
 import org.embl.ebi.escience.scuflui.TavernaIcons;
 import org.embl.ebi.escience.scuflui.shared.ShadedLabel;
 import org.embl.ebi.escience.scuflui.shared.UIUtils;
@@ -154,7 +149,7 @@ public class ScavengerTreePopupHandler extends MouseAdapter {
 				// select processor and enact it
 				if (scuflObject instanceof ProcessorFactory) {
 					final ProcessorFactory pf = (ProcessorFactory) scuflObject;
-					JMenuItem test = new JMenuItem("Invoke", TavernaIcons.windowRun);
+					JMenuItem test = new JMenuItem("Invoke (currently non functional!)", TavernaIcons.windowRun);
 					test.addActionListener(new ActionListener() {
 						public void actionPerformed(ActionEvent ae) {
 							try {
@@ -188,6 +183,13 @@ public class ScavengerTreePopupHandler extends MouseAdapter {
 									// processor workflow or the directly loaded
 									// more complex one.
 								}
+								/**
+								 * TODO - the code below forces a hard dependency on the workflow input builder and
+								 * invoker UI components. This will have to be changed to insert the new workflow
+								 * model into the model set and force an immediate switch to an enactor perspective
+								 * so the user can run the new (trivial) workflow.
+								 */
+								/**
 								if (m.getWorkflowSourcePorts().length != 0) {
 									WorkflowInputMapBuilder thing = new WorkflowInputMapBuilder() {
 										public void launchEnactorDisplay(Map inputObject) {
@@ -213,6 +215,7 @@ public class ScavengerTreePopupHandler extends MouseAdapter {
 										ex.printStackTrace();
 									}
 								}
+								*/
 							} catch (Exception ex) {
 								JOptionPane.showMessageDialog(null, "Unable to run operation : \n" + ex.getMessage(),
 										"Exception!", JOptionPane.ERROR_MESSAGE);

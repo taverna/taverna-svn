@@ -8,7 +8,7 @@
  *  it without violating AT&T's intellectual property rights.
  */
 
-package org.embl.ebi.escience.scuflui.graph;
+package org.embl.ebi.escience.scuflui.shared;
 
 import java.awt.Color;
 import java.util.Hashtable;

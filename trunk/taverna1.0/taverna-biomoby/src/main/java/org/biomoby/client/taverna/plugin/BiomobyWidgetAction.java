@@ -13,7 +13,7 @@ import javax.swing.JComponent;
 import javax.swing.JTree;
 
 import org.embl.ebi.escience.scufl.Processor;
-import org.embl.ebi.escience.scuflui.processoractions.AbstractProcessorAction;
+import org.embl.ebi.escience.scuflui.actions.AbstractProcessorAction;
 import org.embl.ebi.escience.scuflworkers.java.LocalServiceProcessor;
 
 public class BiomobyWidgetAction extends AbstractProcessorAction {

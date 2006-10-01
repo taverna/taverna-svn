@@ -33,7 +33,7 @@
     </dependency>
     <dependency>
       <groupId>uk.org.mygrid.taverna.scufl</groupId>
-      <artifactId>scufl-ui</artifactId>
+      <artifactId>scufl-ui-api</artifactId>
     </dependency>
     <dependency>
       <groupId>javax.activation</groupId>
@@ -84,6 +84,11 @@
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
       <version>3.8.2</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>uk.org.mygrid.taverna</groupId>
+      <artifactId>taverna-enactor</artifactId>
       <scope>test</scope>
     </dependency>
   </dependencies>

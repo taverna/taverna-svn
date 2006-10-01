@@ -19,6 +19,7 @@ import org.embl.ebi.escience.scufl.ScuflModelEvent;
 import org.embl.ebi.escience.scufl.ScuflModelEventListener;
 import org.embl.ebi.escience.scufl.view.TreeModelView;
 import org.embl.ebi.escience.scuflui.TavernaIcons;
+import org.embl.ebi.escience.scuflui.shared.ScuflModelExplorerRenderer;
 import org.embl.ebi.escience.scuflui.spi.WorkflowModelViewSPI;
 
 /**

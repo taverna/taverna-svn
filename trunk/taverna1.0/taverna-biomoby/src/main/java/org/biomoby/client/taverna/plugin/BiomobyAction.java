@@ -46,7 +46,7 @@ import org.embl.ebi.escience.scufl.Processor;
 import org.embl.ebi.escience.scufl.ProcessorCreationException;
 import org.embl.ebi.escience.scufl.ScuflModel;
 import org.embl.ebi.escience.scufl.UnknownPortException;
-import org.embl.ebi.escience.scuflui.processoractions.AbstractProcessorAction;
+import org.embl.ebi.escience.scuflui.actions.AbstractProcessorAction;
 import org.embl.ebi.escience.scuflui.shared.UIUtils;
 import org.embl.ebi.escience.scuflui.spi.UIComponentSPI;
 

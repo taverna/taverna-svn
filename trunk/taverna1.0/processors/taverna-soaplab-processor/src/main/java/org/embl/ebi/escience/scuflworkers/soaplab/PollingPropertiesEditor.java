@@ -29,7 +29,7 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 
 import org.embl.ebi.escience.scufl.Processor;
-import org.embl.ebi.escience.scuflui.graph.GraphColours;
+import org.embl.ebi.escience.scuflui.shared.GraphColours;
 import org.embl.ebi.escience.scuflui.shared.ShadedLabel;
 import org.embl.ebi.escience.scuflui.shared.UIUtils;
 import org.embl.ebi.escience.scuflui.spi.UIComponentSPI;

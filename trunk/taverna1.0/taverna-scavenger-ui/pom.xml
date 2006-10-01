@@ -33,12 +33,12 @@
     </dependency>
     
     <!-- I don't believe this package depends on the UI now -->
-    <!--
+ 
      <dependency>
       <groupId>uk.org.mygrid.taverna.scufl</groupId>
-      <artifactId>scufl-ui</artifactId>
+      <artifactId>scufl-ui-api</artifactId>
     </dependency>
-    -->
+   
    
     <dependency>
       <groupId>uk.org.mygrid.taverna.scufl</groupId>

@@ -52,6 +52,7 @@ import org.embl.ebi.escience.scuflui.actions.ScuflModelAction;
 import org.embl.ebi.escience.scuflui.dnd.FactorySpecFragment;
 import org.embl.ebi.escience.scuflui.dnd.SpecFragmentTransferable;
 import org.embl.ebi.escience.scuflui.graph.model.ScuflGraphModel;
+import org.embl.ebi.escience.scuflui.shared.GraphColours;
 import org.embl.ebi.escience.scuflui.shared.NoContextMenuFoundException;
 import org.embl.ebi.escience.scuflui.shared.ShadedLabel;
 import org.embl.ebi.escience.scuflui.spi.WorkflowModelViewSPI;

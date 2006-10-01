@@ -3,7 +3,7 @@
  * and is licensed under the GNU LGPL.
  * Copyright Tom Oinn, EMBL-EBI
  */
-package org.embl.ebi.escience.scuflui.treeview;
+package org.embl.ebi.escience.scuflui.shared;
 
 import java.awt.Component;
 
@@ -19,7 +19,6 @@ import org.embl.ebi.escience.scufl.Port;
 import org.embl.ebi.escience.scufl.Processor;
 import org.embl.ebi.escience.scufl.ScuflModel;
 import org.embl.ebi.escience.scuflui.TavernaIcons;
-import org.embl.ebi.escience.scuflui.shared.NodeColouringRenderer;
 
 /**
  * A cell renderer that paints the appropriate icons depending on the component
