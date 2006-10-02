@@ -33,7 +33,6 @@ import org.embl.ebi.escience.scufl.ScuflModel;
 import org.embl.ebi.escience.scufl.ScuflModelEvent;
 import org.embl.ebi.escience.scufl.view.WorkflowSummaryAsHTML;
 import org.embl.ebi.escience.scuflworkers.HTMLSummarisableProcessor;
-import org.embl.ebi.escience.utils.Soap;
 
 /**
  * A processor based on the Soaplab web service around the EMBOSS tools. This

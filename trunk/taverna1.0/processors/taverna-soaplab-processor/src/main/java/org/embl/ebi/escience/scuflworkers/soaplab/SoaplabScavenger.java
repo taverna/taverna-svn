@@ -12,7 +12,6 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import org.apache.log4j.Logger;
 import org.embl.ebi.escience.scuflui.workbench.Scavenger;
 import org.embl.ebi.escience.scuflui.workbench.ScavengerCreationException;
-import org.embl.ebi.escience.utils.Soap;
 
 /**
  * A Scavenger that knows how to get all the Soaplab services from a specified

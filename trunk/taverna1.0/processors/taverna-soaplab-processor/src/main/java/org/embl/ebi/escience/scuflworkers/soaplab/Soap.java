@@ -1,4 +1,4 @@
-package org.embl.ebi.escience.utils;
+package org.embl.ebi.escience.scuflworkers.soaplab;
 
 import java.rmi.RemoteException;
 

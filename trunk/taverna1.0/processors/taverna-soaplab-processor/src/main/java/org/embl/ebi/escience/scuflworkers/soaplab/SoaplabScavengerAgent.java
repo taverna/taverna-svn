@@ -25,10 +25,10 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: SoaplabScavengerAgent.java,v $
- * Revision           $Revision: 1.1 $
+ * Revision           $Revision: 1.2 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-09-07 15:43:38 $
- *               by   $Author: sowen70 $
+ * Last modified on   $Date: 2006-10-02 12:33:59 $
+ *               by   $Author: mereden $
  * Created on 4 Sep 2006
  *****************************************************************/
 package org.embl.ebi.escience.scuflworkers.soaplab;
@@ -37,7 +37,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.log4j.Logger;
-import org.embl.ebi.escience.utils.Soap;
 
 /**
  * An agent to query Soaplab server to determine the available categories and services.
