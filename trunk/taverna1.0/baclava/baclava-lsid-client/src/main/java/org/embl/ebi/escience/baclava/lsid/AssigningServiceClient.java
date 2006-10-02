@@ -3,7 +3,7 @@
  * and is licensed under the GNU LGPL.
  * Copyright Tom Oinn, EMBL-EBI
  */
-package org.embl.ebi.escience.baclava;
+package org.embl.ebi.escience.baclava.lsid;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -12,6 +12,7 @@ import java.util.Map;
 import java.util.Properties;
 
 import org.apache.log4j.Logger;
+import org.embl.ebi.escience.baclava.LSIDProvider;
 
 import com.ibm.lsid.LSIDException;
 import com.ibm.lsid.client.LSIDAssigner;

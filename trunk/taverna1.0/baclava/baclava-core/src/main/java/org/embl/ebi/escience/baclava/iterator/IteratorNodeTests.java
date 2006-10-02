@@ -3,7 +3,7 @@
  * and is licensed under the GNU LGPL.
  * Copyright Tom Oinn, EMBL-EBI
  */
-package org.embl.ebi.escience.baclava;
+package org.embl.ebi.escience.baclava.iterator;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -13,6 +13,8 @@ import java.util.Map;
 
 import javax.swing.tree.MutableTreeNode;
 import javax.swing.tree.TreeNode;
+
+import org.embl.ebi.escience.baclava.DataThing;
 
 /**
  * Tests the tree based iterator nodes

@@ -24,9 +24,9 @@
 //      Created for Project :   MYGRID
 //      Dependencies        :
 //
-//      Last commit info    :   $Author: sowen70 $
-//                              $Date: 2006-09-13 15:51:25 $
-//                              $Revision: 1.3 $
+//      Last commit info    :   $Author: mereden $
+//                              $Date: 2006-10-02 12:00:50 $
+//                              $Revision: 1.4 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 package uk.ac.soton.itinnovation.taverna.enactor.entities;
@@ -44,11 +44,11 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
-import org.embl.ebi.escience.baclava.BaclavaIterator;
-import org.embl.ebi.escience.baclava.BaclavaIteratorNode;
 import org.embl.ebi.escience.baclava.DataThing;
-import org.embl.ebi.escience.baclava.JoinIteratorNode;
-import org.embl.ebi.escience.baclava.ResumableIterator;
+import org.embl.ebi.escience.baclava.iterator.BaclavaIterator;
+import org.embl.ebi.escience.baclava.iterator.BaclavaIteratorNode;
+import org.embl.ebi.escience.baclava.iterator.JoinIteratorNode;
+import org.embl.ebi.escience.baclava.iterator.ResumableIterator;
 import org.embl.ebi.escience.baclava.store.BaclavaDataService;
 import org.embl.ebi.escience.baclava.store.BaclavaDataServiceFactory;
 import org.embl.ebi.escience.baclava.store.DuplicateLSIDException;

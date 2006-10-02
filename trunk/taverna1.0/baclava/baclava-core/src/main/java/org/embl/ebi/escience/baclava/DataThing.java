@@ -33,6 +33,7 @@ import javax.swing.ImageIcon;
 
 import org.embl.ebi.escience.baclava.factory.DataThingFactory;
 import org.embl.ebi.escience.baclava.factory.DataThingXMLFactory;
+import org.embl.ebi.escience.baclava.iterator.BaclavaIterator;
 import org.embl.ebi.escience.scufl.SemanticMarkup;
 import org.jdom.Element;
 

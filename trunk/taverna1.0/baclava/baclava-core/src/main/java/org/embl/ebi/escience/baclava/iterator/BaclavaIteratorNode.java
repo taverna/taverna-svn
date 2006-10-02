@@ -3,7 +3,7 @@
  * and is licensed under the GNU LGPL.
  * Copyright Tom Oinn, EMBL-EBI
  */
-package org.embl.ebi.escience.baclava;
+package org.embl.ebi.escience.baclava.iterator;
 
 import java.util.HashMap;
 import java.util.Map;

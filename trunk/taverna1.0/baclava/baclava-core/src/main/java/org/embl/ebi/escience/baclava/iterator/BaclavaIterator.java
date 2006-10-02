@@ -3,7 +3,7 @@
  * and is licensed under the GNU LGPL.
  * Copyright Tom Oinn, EMBL-EBI
  */
-package org.embl.ebi.escience.baclava;
+package org.embl.ebi.escience.baclava.iterator;
 
 // Utility Imports
 import java.util.ArrayList;
@@ -11,6 +11,8 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.NoSuchElementException;
+
+import org.embl.ebi.escience.baclava.DataThing;
 
 /**
  * This provides an Iterator interface with a single additional method to allow

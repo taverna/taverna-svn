@@ -2,6 +2,8 @@ package org.embl.ebi.escience.baclava;
 
 import java.util.UUID;
 import org.embl.ebi.escience.baclava.LSIDProvider.NamespaceEnumeration;
+import org.embl.ebi.escience.baclava.lsid.UUIDLSIDProvider;
+
 import junit.framework.TestCase;
 
 /**

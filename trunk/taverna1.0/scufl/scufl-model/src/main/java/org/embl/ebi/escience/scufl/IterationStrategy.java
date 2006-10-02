@@ -17,10 +17,10 @@ import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.MutableTreeNode;
 import javax.swing.tree.TreeModel;
 
-import org.embl.ebi.escience.baclava.BaclavaIteratorNode;
-import org.embl.ebi.escience.baclava.JoinIteratorNode;
-import org.embl.ebi.escience.baclava.LockStepIteratorNode;
-import org.embl.ebi.escience.baclava.ResumableIterator;
+import org.embl.ebi.escience.baclava.iterator.BaclavaIteratorNode;
+import org.embl.ebi.escience.baclava.iterator.JoinIteratorNode;
+import org.embl.ebi.escience.baclava.iterator.LockStepIteratorNode;
+import org.embl.ebi.escience.baclava.iterator.ResumableIterator;
 import org.jdom.Element;
 import org.jdom.Namespace;
 

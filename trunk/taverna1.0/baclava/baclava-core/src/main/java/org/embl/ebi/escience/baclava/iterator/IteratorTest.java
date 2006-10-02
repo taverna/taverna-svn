@@ -3,12 +3,13 @@
  * and is licensed under the GNU LGPL.
  * Copyright Tom Oinn, EMBL-EBI
  */
-package org.embl.ebi.escience.baclava;
+package org.embl.ebi.escience.baclava.iterator;
 
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
+import org.embl.ebi.escience.baclava.DataThing;
 import org.embl.ebi.escience.baclava.factory.DataThingFactory;
 
 /**

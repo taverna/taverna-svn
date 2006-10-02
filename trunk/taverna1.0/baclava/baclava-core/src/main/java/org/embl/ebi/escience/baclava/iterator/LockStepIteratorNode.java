@@ -3,7 +3,7 @@
  * and is licensed under the GNU LGPL.
  * Copyright Tom Oinn, EMBL-EBI
  */
-package org.embl.ebi.escience.baclava;
+package org.embl.ebi.escience.baclava.iterator;
 
 import java.util.HashMap;
 import java.util.Iterator;
@@ -14,51 +14,44 @@ import javax.swing.tree.MutableTreeNode;
 
 /**
  * A DefaultMutableTreeNode implementing ResumableIterator which wraps a
- * JoinIterator.
+ * LockStepIterator.
  * 
  * @author Tom Oinn
  */
-public class JoinIteratorNode extends DefaultMutableTreeNode implements
+public class LockStepIteratorNode extends DefaultMutableTreeNode implements
 		ResumableIterator {
 
-	JoinIterator iterator;
+	LockStepIterator iterator;
 
 	/**
-	 * Create a new JoinIteratorNode, calls to insert(...) will add iterators to
-	 * the join.
+	 * Create a new LockStepIteratorNode, calls to insert(...) will add
+	 * iterators to the dot product.
 	 */
-	public JoinIteratorNode() {
-		iterator = new JoinIterator() {
+	public LockStepIteratorNode() {
+		iterator = new LockStepIterator() {
 			// Gather a list of all children in the
 			// enclosing class
 			ResumableIterator[] iterators() {
-				ResumableIterator[] result = new ResumableIterator[JoinIteratorNode.this
+				ResumableIterator[] result = new ResumableIterator[LockStepIteratorNode.this
 						.getChildCount()];
-				for (int i = 0; i < JoinIteratorNode.this.getChildCount(); i++) {
-					result[i] = (ResumableIterator) JoinIteratorNode.this
+				for (int i = 0; i < LockStepIteratorNode.this.getChildCount(); i++) {
+					result[i] = (ResumableIterator) LockStepIteratorNode.this
 							.getChildAt(i);
 				}
 				return result;
 			}
 
-			// Check for validity of the iterator
 			boolean emptyIterator() {
-				for (int i = 0; i < JoinIteratorNode.this.getChildCount(); i++) {
-					if (((ResumableIterator) JoinIteratorNode.this
-							.getChildAt(i)).size() == 0) {
-						return true;
-					}
-				}
-				return false;
+				return (LockStepIteratorNode.this.getChildCount() == 0);
 			}
 		};
 	}
 
 	/**
 	 * Return a Map of named objects derived from any iterator nodes attached to
-	 * this one as children. The iteration strategy is derived from the
-	 * JoinIterator which performs a cross product or orthoganol join across all
-	 * the sub-iterators
+	 * this one as children, the iteration strategy is derived from the
+	 * underlying LockStepIterator which performs a cross product of all
+	 * available sub-iterators
 	 */
 	public Object next() {
 		// Result will be an array of Map objects, convert to a Map i.e.
@@ -82,28 +75,21 @@ public class JoinIteratorNode extends DefaultMutableTreeNode implements
 	}
 
 	/**
-	 * Return true if calls to next() will succeed
+	 * Delegates to contained LockStepIterator
 	 */
 	public boolean hasNext() {
 		return iterator.hasNext();
 	}
 
 	/**
-	 * Return the current location
-	 */
-	public int[] getCurrentLocation() {
-		return iterator.getCurrentLocation();
-	}
-
-	/**
-	 * Reset the underlying JoinIterator
+	 * Delegates to contained LockStepIterator
 	 */
 	public void reset() {
 		iterator.reset();
 	}
 
 	/**
-	 * Return the size of the underlying JoinIterator
+	 * Delegates to contained LockStepIterator
 	 */
 	public int size() {
 		return iterator.size();
@@ -126,18 +112,26 @@ public class JoinIteratorNode extends DefaultMutableTreeNode implements
 	}
 
 	/**
-	 * JoinIteratorNode objects are never leaves in the tree or at least
-	 * shouldn't act as such.
+	 * A LockStepIteratorNode requires children to be functional and is
+	 * therefore never a leaf.
 	 */
 	public boolean isLeaf() {
 		return false;
 	}
 
 	/**
-	 * JoinIteratorNode objects rely on their children to provide them with
-	 * objects to iterate over, they do not contain any collections themselves
+	 * LockStepIteratorNode objects pull iterators from their children,
+	 * therefore always allow them.
 	 */
 	public boolean getAllowsChildren() {
 		return true;
 	}
+
+	/**
+	 * Get the current location
+	 */
+	public int[] getCurrentLocation() {
+		return iterator.getCurrentLocation();
+	}
+
 }

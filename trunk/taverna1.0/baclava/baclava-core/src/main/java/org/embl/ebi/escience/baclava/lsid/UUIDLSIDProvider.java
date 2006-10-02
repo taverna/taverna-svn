@@ -1,6 +1,9 @@
-package org.embl.ebi.escience.baclava;
+package org.embl.ebi.escience.baclava.lsid;
 
 import java.util.UUID;
+
+import org.embl.ebi.escience.baclava.LSIDProvider;
+import org.embl.ebi.escience.baclava.LSIDProvider.NamespaceEnumeration;
 
 /**
  * Generate random LSIDs using UUIDs
