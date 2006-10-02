@@ -14,8 +14,8 @@
   <modules>
     <module>baclava-core</module>
     <module>baclava-ui</module>
-    <module>baclava-store</module>
     <module>baclava-store-implementation</module>
     <module>baclava-tools</module>
+    <module>baclava-lsid-client</module>
   </modules>
 </project>
