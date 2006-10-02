@@ -9,10 +9,12 @@ import java.util.Map;
 
 import javax.swing.Action;
 import javax.swing.JComponent;
+import javax.swing.JFrame;
 import javax.swing.JMenuItem;
 
 import net.sf.taverna.raven.repository.Repository;
 import net.sf.taverna.raven.spi.SpiRegistry;
+import net.sf.taverna.zaria.progress.InfiniteProgressPanel;
 
 import org.jdom.Element;
 
@@ -32,6 +34,9 @@ public abstract class ZBasePane extends ZPane {
 	private Map<String,SpiRegistry> registries =
 		new HashMap<String,SpiRegistry>();
 	private String[] knownSpiNames = new String[0];
+	private InfiniteProgressPanel glassPane = 
+		new InfiniteProgressPanel();
+	private Component oldGlassPane = null;
 	
 	/**
 	 * Construct a new ZBasePane, inserting a default
@@ -149,9 +154,7 @@ public abstract class ZBasePane extends ZPane {
 	 * want to make this method any more specialized to avoid
 	 * dependencies on the potential range of SPI interfaces.
 	 */
-	public JMenuItem getMenuItem(Class theClass) {
-		return new JMenuItem(theClass.getName());
-	}
+	public abstract JMenuItem getMenuItem(Class theClass);
 	
 	/**
 	 * Given a Class object from an SPI construct a
@@ -166,7 +169,34 @@ public abstract class ZBasePane extends ZPane {
 	 */
 	public abstract JComponent getComponent(Class theClass);
 	
+	/**
+	 * Lock the parent frame, showing an infinite progress display
+	 * message
+	 */
+	public void lockFrame() {
+		JFrame jf = getFrame();
+		if (jf != null) {
+			Component c = jf.getGlassPane();
+			if (c != glassPane) {
+				oldGlassPane = c;
+				jf.setGlassPane(glassPane);
+			}
+			glassPane.setText("Locked...");
+			glassPane.start();
+		}
+	}
 	
-	
+	/**
+	 * Unlock the parent frame
+	 */
+	public void unlockFrame() {
+		JFrame jf = getFrame();
+		if (jf != null) {
+			glassPane.stop();
+			if (oldGlassPane != null) {
+				jf.setGlassPane(oldGlassPane);
+			}
+		}
+	}
 	
 }
