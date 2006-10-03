@@ -384,11 +384,6 @@
       </dependency>
       <dependency>
         <groupId>uk.org.mygrid.taverna</groupId>
-        <artifactId>taverna-util</artifactId>
-        <version>1.5-SNAPSHOT</version>
-      </dependency>
-      <dependency>
-        <groupId>uk.org.mygrid.taverna</groupId>
         <artifactId>taverna-workbench</artifactId>
         <version>1.5-SNAPSHOT</version>
       </dependency>
@@ -538,7 +533,6 @@
     <module>taverna-scavenger</module>
     <module>taverna-scavenger-ui</module>
     <module>taverna-core</module>
-    <module>taverna-util</module>
     <module>taverna-tools</module>
     <module>taverna-biomoby</module>
     <module>taverna-launcher</module>

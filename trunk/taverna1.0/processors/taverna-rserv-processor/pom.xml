@@ -20,10 +20,6 @@
       <artifactId>taverna-scavenger</artifactId>
     </dependency>
     <dependency>
-      <groupId>uk.org.mygrid.taverna</groupId>
-      <artifactId>taverna-util</artifactId>
-    </dependency>
-    <dependency>
       <groupId>uk.org.mygrid.taverna.baclava</groupId>
       <artifactId>baclava-core</artifactId>
     </dependency>
