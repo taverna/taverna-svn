@@ -28,8 +28,8 @@
       <artifactId>baclava-core</artifactId>
     </dependency>
     <dependency>
-      <groupId>uk.org.mygrid.taverna.scufl</groupId>
-      <artifactId>scufl-core</artifactId>
+      <groupId>uk.org.mygrid.taverna</groupId>
+      <artifactId>taverna-core</artifactId>
     </dependency>
     <dependency>
       <groupId>uk.org.mygrid.taverna.scufl</groupId>

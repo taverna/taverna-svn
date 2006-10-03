@@ -30,7 +30,7 @@ import org.embl.ebi.escience.scuflui.shared.UIUtils;
  * COMMENT
  * 
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover</a>
- * @version $Revision: 1.5 $
+ * @version $Revision: 1.6 $
  */
 public class SaveWorkflowAction extends ScuflModelAction {
 	final JFileChooser fc = new JFileChooser();
@@ -81,6 +81,7 @@ public class SaveWorkflowAction extends ScuflModelAction {
 				});
 				menu.add(fromFile);
 
+				/**
 				JMenuItem fromWeb = new JMenuItem("Save to the database");
 				fromWeb.setIcon(TavernaIcons.databaseIcon);
 				fromWeb.addActionListener(new ActionListener() {
@@ -98,6 +99,7 @@ public class SaveWorkflowAction extends ScuflModelAction {
 					}
 				});
 				menu.add(fromWeb);
+				*/
 				Component component = (Component) e.getSource();
 				menu.show(component, 0, component.getHeight());
 
@@ -113,6 +115,7 @@ public class SaveWorkflowAction extends ScuflModelAction {
 	 * Saves the workflow to the database. Queries whether a stored workflow
 	 * should be overwritten if one already exists for that LSID
 	 */
+	/**
 	protected void saveToDatabase(JDBCBaclavaDataService store)
 			throws Exception {
 		if (store.hasWorkflow(model.getDescription().getLSID())) {
@@ -125,6 +128,7 @@ public class SaveWorkflowAction extends ScuflModelAction {
 			store.storeWorkflow(model);
 		}
 	}
+	*/
 
 	/*
 	 * Prompts for a file, and then saves the workflow to that file.
