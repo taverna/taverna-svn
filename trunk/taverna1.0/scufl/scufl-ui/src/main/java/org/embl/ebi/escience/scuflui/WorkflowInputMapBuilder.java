@@ -86,7 +86,6 @@ import org.embl.ebi.escience.scuflui.renderers.RendererException;
 import org.embl.ebi.escience.scuflui.renderers.RendererRegistry;
 import org.embl.ebi.escience.scuflui.shared.XMLTree;
 import org.embl.ebi.escience.scuflui.spi.RendererSPI;
-import org.embl.ebi.escience.scuflui.spi.UIComponentSPI;
 import org.embl.ebi.escience.scuflui.spi.WorkflowModelViewSPI;
 import org.jdom.Document;
 import org.jdom.Element;
