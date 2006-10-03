@@ -1555,7 +1555,8 @@ public class XMLUtilities {
 		String queryID = "";
 		for (Iterator iter = theList.iterator(); iter.hasNext();) {
 			Element mobyData = (Element) iter.next();
-			queryID += getQueryID(mobyData);
+			//FIXME
+			queryID = getQueryID(mobyData);
 			Element collection = mobyData.getChild("Collection");
 			if (collection == null)
 				collection = mobyData.getChild("Collection", MOBY_NS);
