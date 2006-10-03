@@ -19,8 +19,8 @@ import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 
 import org.embl.ebi.escience.baclava.factory.DataThingXMLFactory;
-import org.embl.ebi.escience.scuflui.AdvancedModelExplorer;
 import org.embl.ebi.escience.scuflui.TavernaIcons;
+import org.embl.ebi.escience.scuflui.actions.SaveWorkflowAction;
 import org.embl.ebi.escience.scuflui.shared.ExtensionFileFilter;
 import org.embl.ebi.escience.scuflui.spi.ResultMapSaveSPI;
 import org.jdom.Document;
@@ -66,7 +66,7 @@ public class SaveAsDataThingDocument implements ResultMapSaveSPI {
 		public void actionPerformed(ActionEvent e) {
 		    try {
 			JFileChooser jfc = new JFileChooser();
-			Preferences prefs = Preferences.userNodeForPackage(AdvancedModelExplorer.class);
+			Preferences prefs = Preferences.userNodeForPackage(SaveWorkflowAction.class);
 			String curDir = prefs.get("currentDir", System.getProperty("user.home"));
 			jfc.resetChoosableFileFilters();
 			jfc.setFileFilter(new ExtensionFileFilter(new String[]{"xml"}));

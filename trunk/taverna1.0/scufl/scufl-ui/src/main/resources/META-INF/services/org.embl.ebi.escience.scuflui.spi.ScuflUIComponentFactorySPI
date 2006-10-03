@@ -1,9 +1,0 @@
-org.embl.ebi.escience.scuflui.AdvancedModelExplorerFactory
-org.embl.ebi.escience.scuflui.DotTextAreaFactory
-org.embl.ebi.escience.scuflui.EnactorEventMonitorFactory
-org.embl.ebi.escience.scuflui.IterationStrategyEditorFactory
-org.embl.ebi.escience.scuflui.ScuflDiagramPanelFactory
-org.embl.ebi.escience.scuflui.TemplateEditorFactory
-org.embl.ebi.escience.scuflui.WorkflowInputPanelFactory
-org.embl.ebi.escience.scuflui.XScuflTreeFactory
-org.embl.ebi.escience.scuflui.WorkflowInstanceContainerFactory

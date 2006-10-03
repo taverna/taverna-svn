@@ -97,7 +97,7 @@ import org.jdom.output.XMLOutputter;
  * Panel to construct the input for a workflow.
  * 
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover </a>
- * @version $Revision$
+ * @version $Revision: 1.1 $
  */
 public abstract class WorkflowInputMapBuilder extends JPanel implements
 		WorkflowModelViewSPI, ScuflModelEventListener {

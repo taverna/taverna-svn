@@ -17,5 +17,6 @@
     <module>scufl-tools</module>
     <module>scufl-ui</module>
     <module>scufl-ui-api</module>
+    <module>scufl-ui-components</module>
   </modules>
 </project>

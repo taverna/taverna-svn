@@ -30,11 +30,17 @@
       <groupId>uk.org.mygrid.taverna.scufl</groupId>
       <artifactId>scufl-ui-api</artifactId>
     </dependency>
+    <dependency>
+      <groupId>uk.org.mygrid.taverna.scufl.scufl-ui-components</groupId>
+      <artifactId>scufl-model-explorer</artifactId>
+    </dependency>
     <!-- TODO - the dependency below entirely breaks raven -->
+    <!--
     <dependency>
       <groupId>uk.org.mygrid.taverna.scufl</groupId>
       <artifactId>scufl-ui</artifactId>
     </dependency>
+    -->
     <dependency>
       <groupId>commons-httpclient</groupId>
       <artifactId>commons-httpclient</artifactId>

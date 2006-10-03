@@ -1,8 +1,3 @@
-/**
- * This file is a component of the Taverna project,
- * and is licensed under the GNU LGPL.
- * Copyright Tom Oinn, EMBL-EBI
- */
 package org.embl.ebi.escience.scuflui;
 
 import java.awt.BorderLayout;
@@ -59,7 +54,6 @@ import org.embl.ebi.escience.scuflui.actions.SaveWorkflowAction;
 import org.embl.ebi.escience.scuflui.actions.ScuflModelActionRegistry;
 import org.embl.ebi.escience.scuflui.actions.ScuflModelActionSPI;
 import org.embl.ebi.escience.scuflui.shared.ExtensionFileFilter;
-import org.embl.ebi.escience.scuflui.spi.UIComponentSPI;
 import org.embl.ebi.escience.scuflui.spi.WorkflowModelViewSPI;
 import org.embl.ebi.escience.scuflui.treeview.ScuflModelTreeTable;
 
@@ -71,7 +65,8 @@ import org.embl.ebi.escience.scuflui.treeview.ScuflModelTreeTable;
  * 
  * @author Tom Oinn
  */
-public class AdvancedModelExplorer extends JPanel implements WorkflowModelViewSPI {
+public class AdvancedModelExplorer extends JPanel implements
+		WorkflowModelViewSPI {
 
 	private ScuflModelTreeTable explorer;
 
@@ -109,11 +104,14 @@ public class AdvancedModelExplorer extends JPanel implements WorkflowModelViewSP
 			if (p.isSource() || p.isSink()) {
 				SemanticMarkup m = p.getMetadata();
 				propertiesPanel.removeAll();
-				propertiesPanel.setLayout(new BoxLayout(propertiesPanel, BoxLayout.PAGE_AXIS));
-				propertiesPanel.add(new ScuflSemanticMarkupEditor(m), BorderLayout.CENTER);
+				propertiesPanel.setLayout(new BoxLayout(propertiesPanel,
+						BoxLayout.PAGE_AXIS));
+				propertiesPanel.add(new ScuflSemanticMarkupEditor(m),
+						BorderLayout.CENTER);
 				tabs.setEnabledAt(1, true);
 				tabs.setTitleAt(1, "Metadata for '" + p.getName() + "'");
-				tabs.setIconAt(1, (p.isSource()) ? TavernaIcons.inputIcon : TavernaIcons.outputIcon);
+				tabs.setIconAt(1, (p.isSource()) ? TavernaIcons.inputIcon
+						: TavernaIcons.outputIcon);
 			} else {
 				tabs.setEnabledAt(1, false);
 				tabs.setIconAt(1, null);
@@ -128,7 +126,8 @@ public class AdvancedModelExplorer extends JPanel implements WorkflowModelViewSP
 
 	private void updateTabForSummary() {
 		propertiesPanel.removeAll();
-		propertiesPanel.setLayout(new BoxLayout(propertiesPanel, BoxLayout.PAGE_AXIS));
+		propertiesPanel.setLayout(new BoxLayout(propertiesPanel,
+				BoxLayout.PAGE_AXIS));
 		final String htmlSummary = WorkflowSummaryAsHTML.getSummary(model);
 		JToolBar toolbar = new JToolBar();
 		toolbar.setFloatable(false);
@@ -143,14 +142,19 @@ public class AdvancedModelExplorer extends JPanel implements WorkflowModelViewSP
 		saveHTML.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				try {
-					Preferences prefs = Preferences.userNodeForPackage(AdvancedModelExplorer.class);
-					String curDir = prefs.get("currentDir", System.getProperty("user.home"));
+					Preferences prefs = Preferences
+							.userNodeForPackage(AdvancedModelExplorer.class);
+					String curDir = prefs.get("currentDir", System
+							.getProperty("user.home"));
 					fc.resetChoosableFileFilters();
-					fc.setFileFilter(new ExtensionFileFilter(new String[] { "html", "htm" }));
+					fc.setFileFilter(new ExtensionFileFilter(new String[] {
+							"html", "htm" }));
 					fc.setCurrentDirectory(new File(curDir));
-					int returnVal = fc.showSaveDialog(AdvancedModelExplorer.this);
+					int returnVal = fc
+							.showSaveDialog(AdvancedModelExplorer.this);
 					if (returnVal == JFileChooser.APPROVE_OPTION) {
-						prefs.put("currentDir", fc.getCurrentDirectory().toString());
+						prefs.put("currentDir", fc.getCurrentDirectory()
+								.toString());
 						File file = fc.getSelectedFile();
 						PrintWriter out = new PrintWriter(new FileWriter(file));
 						out.println(htmlSummary);
@@ -158,8 +162,9 @@ public class AdvancedModelExplorer extends JPanel implements WorkflowModelViewSP
 						out.close();
 					}
 				} catch (Exception ex) {
-					JOptionPane.showMessageDialog(AdvancedModelExplorer.this, "Problem saving workflow : \n"
-							+ ex.getMessage(), "Error!", JOptionPane.ERROR_MESSAGE);
+					JOptionPane.showMessageDialog(AdvancedModelExplorer.this,
+							"Problem saving workflow : \n" + ex.getMessage(),
+							"Error!", JOptionPane.ERROR_MESSAGE);
 				}
 			}
 		});
@@ -175,15 +180,16 @@ public class AdvancedModelExplorer extends JPanel implements WorkflowModelViewSP
 
 	private void updateTabForWorkflow() {
 		propertiesPanel.removeAll();
-		propertiesPanel.setLayout(new BoxLayout(propertiesPanel, BoxLayout.PAGE_AXIS));
+		propertiesPanel.setLayout(new BoxLayout(propertiesPanel,
+				BoxLayout.PAGE_AXIS));
 
 		JPanel descriptionPanel = new JPanel() {
 			public Dimension getMaximumSize() {
 				return new Dimension(99999, 3000);
 			}
 		};
-		descriptionPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(),
-				"Workflow description"));
+		descriptionPanel.setBorder(BorderFactory.createTitledBorder(
+				BorderFactory.createEtchedBorder(), "Workflow description"));
 		descriptionPanel.setLayout(new BorderLayout());
 		JTextArea description = new JTextArea(model.getDescription().getText());
 		JScrollPane descriptionPane = new JScrollPane(description);
@@ -196,7 +202,8 @@ public class AdvancedModelExplorer extends JPanel implements WorkflowModelViewSP
 				return new Dimension(99999, 50);
 			}
 		};
-		authorPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), "Author"));
+		authorPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory
+				.createEtchedBorder(), "Author"));
 		authorPanel.setLayout(new BorderLayout());
 		authorPanel.add(author, BorderLayout.CENTER);
 
@@ -206,7 +213,8 @@ public class AdvancedModelExplorer extends JPanel implements WorkflowModelViewSP
 				return new Dimension(99999, 50);
 			}
 		};
-		titlePanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), "Descriptive title"));
+		titlePanel.setBorder(BorderFactory.createTitledBorder(BorderFactory
+				.createEtchedBorder(), "Descriptive title"));
 		titlePanel.setLayout(new BorderLayout());
 		titlePanel.add(title, BorderLayout.CENTER);
 
@@ -217,15 +225,18 @@ public class AdvancedModelExplorer extends JPanel implements WorkflowModelViewSP
 				return new Dimension(99999, 50);
 			}
 		};
-		lsidPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), "LSID"));
+		lsidPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory
+				.createEtchedBorder(), "LSID"));
 		lsidPanel.setLayout(new BorderLayout());
 		lsidPanel.add(lsid, BorderLayout.CENTER);
 		JButton assignNewLSID = new JButton("New", TavernaIcons.openurlIcon);
 		assignNewLSID.setPreferredSize(new Dimension(80, 25));
 		assignNewLSID.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				WorkflowDescription wd = AdvancedModelExplorer.this.model.getDescription();
-				String newLSID = DataThing.SYSTEM_DEFAULT_LSID_PROVIDER.getID(LSIDProvider.WFDEFINITION);
+				WorkflowDescription wd = AdvancedModelExplorer.this.model
+						.getDescription();
+				String newLSID = DataThing.SYSTEM_DEFAULT_LSID_PROVIDER
+						.getID(LSIDProvider.WFDEFINITION);
 				wd.setLSID(newLSID);
 				lsid.setText(newLSID);
 			}
@@ -336,7 +347,8 @@ public class AdvancedModelExplorer extends JPanel implements WorkflowModelViewSP
 	private void updateTabForProcessor(Processor processor) {
 		// Clear the properties panel and regenerate it
 		propertiesPanel.removeAll();
-		propertiesPanel.setLayout(new BoxLayout(propertiesPanel, BoxLayout.PAGE_AXIS));
+		propertiesPanel.setLayout(new BoxLayout(propertiesPanel,
+				BoxLayout.PAGE_AXIS));
 		final Processor p = processor;
 		// Create a description section...
 		JPanel descriptionPanel = new JPanel() {
@@ -344,7 +356,8 @@ public class AdvancedModelExplorer extends JPanel implements WorkflowModelViewSP
 				return new Dimension(99999, 150);
 			}
 		};
-		descriptionPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(),
+		descriptionPanel.setBorder(BorderFactory.createTitledBorder(
+				BorderFactory.createEtchedBorder(),
 				"Processor Description for '" + p.getName() + "'"));
 		descriptionPanel.setLayout(new BorderLayout());
 		JTextArea description = new JTextArea(p.getDescription(), 4, 0);
@@ -391,8 +404,8 @@ public class AdvancedModelExplorer extends JPanel implements WorkflowModelViewSP
 			}
 		};
 		iterationConfigPanel.setLayout(new BorderLayout());
-		iterationConfigPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(),
-				"Configure Iterators"));
+		iterationConfigPanel.setBorder(BorderFactory.createTitledBorder(
+				BorderFactory.createEtchedBorder(), "Configure Iterators"));
 
 		final JButton createStrategy = new JButton("Create iteration strategy");
 		final JButton resetStrategy = new JButton("Reset iteration strategy");
@@ -406,7 +419,8 @@ public class AdvancedModelExplorer extends JPanel implements WorkflowModelViewSP
 				p.setIterationStrategy(new IterationStrategy(p));
 				createStrategy.setEnabled(false);
 				resetStrategy.setEnabled(true);
-				IterationStrategyEditorControl editor = new IterationStrategyEditorControl(p.getIterationStrategy());
+				IterationStrategyEditorControl editor = new IterationStrategyEditorControl(
+						p.getIterationStrategy());
 				iterationConfigPanel.removeAll();
 				JScrollPane pane = new JScrollPane(editor);
 				pane.setPreferredSize(new Dimension(100, 100));
@@ -454,7 +468,8 @@ public class AdvancedModelExplorer extends JPanel implements WorkflowModelViewSP
 			iterationConfigPanel.add(helpPane);
 		} else {
 			createStrategy.setEnabled(false);
-			IterationStrategyEditorControl editor = new IterationStrategyEditorControl(p.getIterationStrategy());
+			IterationStrategyEditorControl editor = new IterationStrategyEditorControl(
+					p.getIterationStrategy());
 			JScrollPane pane = new JScrollPane(editor);
 			pane.setPreferredSize(new Dimension(100, 100));
 			iterationConfigPanel.add(pane);
@@ -462,7 +477,8 @@ public class AdvancedModelExplorer extends JPanel implements WorkflowModelViewSP
 
 		tabs.setEnabledAt(1, true);
 		tabs.setTitleAt(1, "Metadata for '" + p.getName() + "'");
-		tabs.setIconAt(1, org.embl.ebi.escience.scuflworkers.ProcessorHelper.getPreferredIcon(p));
+		tabs.setIconAt(1, org.embl.ebi.escience.scuflworkers.ProcessorHelper
+				.getPreferredIcon(p));
 	}
 
 	public String getName() {
@@ -514,8 +530,9 @@ public class AdvancedModelExplorer extends JPanel implements WorkflowModelViewSP
 
 		toolbar.add(new JButton(new SaveWorkflowAction(model)));
 		toolbar.addSeparator();
-		
-		for (ScuflModelActionSPI action : ScuflModelActionRegistry.instance().getScuflModelActions(model)) {
+
+		for (ScuflModelActionSPI action : ScuflModelActionRegistry.instance()
+				.getScuflModelActions(model)) {
 			toolbar.add(new JButton(action));
 		}
 		toolbar.addSeparator();
@@ -526,32 +543,37 @@ public class AdvancedModelExplorer extends JPanel implements WorkflowModelViewSP
 
 		toolbar.add(Box.createHorizontalGlue());
 		toolbar.add(new JButton(new ResetAction(model)));
-		
-		
+
 		// Add the toolbar to the top of the panel
 		workflowPanel.add(toolbar, BorderLayout.PAGE_START);
 
 		// Bind a list selection listener to the explorer
-		explorer.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
-			public void valueChanged(ListSelectionEvent e) {
-				if (e.getValueIsAdjusting()) {
-					return;
-				}
-				ListSelectionModel lsm = (ListSelectionModel) e.getSource();
-				if (lsm.isSelectionEmpty()) {
-					// Disable the properties tab again
-					AdvancedModelExplorer.this.selectedObject = null;
-					AdvancedModelExplorer.this.tabs.setEnabledAt(1, false);
-				} else {
-					int selectedRow = lsm.getMinSelectionIndex();
-					JTree tree = AdvancedModelExplorer.this.explorer.getTree();
-					DefaultMutableTreeNode node = (DefaultMutableTreeNode) tree.getPathForRow(selectedRow)
-							.getLastPathComponent();
-					AdvancedModelExplorer.this.selectedObject = node.getUserObject();
-					AdvancedModelExplorer.this.updateTab();
-				}
-			}
-		});
+		explorer.getSelectionModel().addListSelectionListener(
+				new ListSelectionListener() {
+					public void valueChanged(ListSelectionEvent e) {
+						if (e.getValueIsAdjusting()) {
+							return;
+						}
+						ListSelectionModel lsm = (ListSelectionModel) e
+								.getSource();
+						if (lsm.isSelectionEmpty()) {
+							// Disable the properties tab again
+							AdvancedModelExplorer.this.selectedObject = null;
+							AdvancedModelExplorer.this.tabs.setEnabledAt(1,
+									false);
+						} else {
+							int selectedRow = lsm.getMinSelectionIndex();
+							JTree tree = AdvancedModelExplorer.this.explorer
+									.getTree();
+							DefaultMutableTreeNode node = (DefaultMutableTreeNode) tree
+									.getPathForRow(selectedRow)
+									.getLastPathComponent();
+							AdvancedModelExplorer.this.selectedObject = node
+									.getUserObject();
+							AdvancedModelExplorer.this.updateTab();
+						}
+					}
+				});
 
 		// Just in case, update the file chooser's ui model
 		fc.updateUI();
@@ -560,8 +582,10 @@ public class AdvancedModelExplorer extends JPanel implements WorkflowModelViewSP
 		explorer.attachToModel(theModel);
 		listener = new ScuflModelEventListener() {
 			public void receiveModelEvent(ScuflModelEvent event) {
-				if (event != null && event.getSource() == AdvancedModelExplorer.this.model) {
-					boolean currentOfflineStatus = AdvancedModelExplorer.this.model.isOffline();
+				if (event != null
+						&& event.getSource() == AdvancedModelExplorer.this.model) {
+					boolean currentOfflineStatus = AdvancedModelExplorer.this.model
+							.isOffline();
 					workOffline.setSelected(currentOfflineStatus);
 				}
 			}
@@ -570,7 +594,7 @@ public class AdvancedModelExplorer extends JPanel implements WorkflowModelViewSP
 	}
 
 	public void detachFromModel() {
-		if (this.model!=null) {
+		if (this.model != null) {
 			explorer.detachFromModel();
 			this.model.removeListener(listener);
 			this.model = null;
@@ -579,7 +603,7 @@ public class AdvancedModelExplorer extends JPanel implements WorkflowModelViewSP
 
 	public void onDisplay() {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	public void onDispose() {

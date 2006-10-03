@@ -34,10 +34,6 @@
     </dependency>
     <dependency>
       <groupId>uk.org.mygrid.taverna.baclava</groupId>
-      <artifactId>baclava-store</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>uk.org.mygrid.taverna.baclava</groupId>
       <artifactId>baclava-store-implementation</artifactId>
     </dependency>
     <dependency>
@@ -147,11 +143,6 @@
       <groupId>batik</groupId>
       <artifactId>batik-gui-util</artifactId>
       <version>1.6</version>
-    </dependency>
-    <dependency>
-      <groupId>commons-io</groupId>
-      <artifactId>commons-io</artifactId>
-      <version>1.2</version>
     </dependency>
     <dependency>
       <groupId>junit</groupId>

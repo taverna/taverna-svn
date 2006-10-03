@@ -32,8 +32,8 @@ import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.hssf.util.HSSFColor;
 import org.embl.ebi.escience.baclava.DataThing;
 import org.embl.ebi.escience.baclava.iterator.BaclavaIterator;
-import org.embl.ebi.escience.scuflui.AdvancedModelExplorer;
 import org.embl.ebi.escience.scuflui.TavernaIcons;
+import org.embl.ebi.escience.scuflui.actions.SaveWorkflowAction;
 import org.embl.ebi.escience.scuflui.shared.ExtensionFileFilter;
 import org.embl.ebi.escience.scuflui.spi.ResultMapSaveSPI;
 
@@ -97,7 +97,7 @@ class SaveExcelAction implements ActionListener {
 		try {
 			generateSheet();	
 			JFileChooser jfc = new JFileChooser();
-			Preferences prefs = Preferences.userNodeForPackage(AdvancedModelExplorer.class);
+			Preferences prefs = Preferences.userNodeForPackage(SaveWorkflowAction.class);
 			String curDir = prefs.get("currentDir", System.getProperty("user.home"));
 			jfc.resetChoosableFileFilters();
 			jfc.setFileFilter(new ExtensionFileFilter(new String[] { "xls" }));

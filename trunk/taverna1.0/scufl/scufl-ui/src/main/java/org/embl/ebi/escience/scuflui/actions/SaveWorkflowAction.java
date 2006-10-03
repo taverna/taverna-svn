@@ -21,7 +21,6 @@ import org.embl.ebi.escience.baclava.store.BaclavaDataServiceFactory;
 import org.embl.ebi.escience.baclava.store.JDBCBaclavaDataService;
 import org.embl.ebi.escience.scufl.ScuflModel;
 import org.embl.ebi.escience.scufl.view.XScuflView;
-import org.embl.ebi.escience.scuflui.AdvancedModelExplorer;
 import org.embl.ebi.escience.scuflui.TavernaIcons;
 import org.embl.ebi.escience.scuflui.shared.ExtensionFileFilter;
 import org.embl.ebi.escience.scuflui.shared.UIUtils;
@@ -30,7 +29,7 @@ import org.embl.ebi.escience.scuflui.shared.UIUtils;
  * COMMENT
  * 
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover</a>
- * @version $Revision: 1.6 $
+ * @version $Revision: 1.7 $
  */
 public class SaveWorkflowAction extends ScuflModelAction {
 	final JFileChooser fc = new JFileChooser();
@@ -136,7 +135,7 @@ public class SaveWorkflowAction extends ScuflModelAction {
 	protected void saveToFile() throws Exception {
 
 		Preferences prefs = Preferences
-				.userNodeForPackage(AdvancedModelExplorer.class);
+				.userNodeForPackage(SaveWorkflowAction.class);
 		String curDir = prefs
 				.get("currentDir", System.getProperty("user.home"));
 		fc.setDialogTitle("Save Workflow");
