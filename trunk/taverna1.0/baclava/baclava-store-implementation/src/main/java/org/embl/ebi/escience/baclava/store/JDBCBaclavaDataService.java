@@ -28,8 +28,8 @@ import org.apache.log4j.Logger;
 import org.embl.ebi.escience.baclava.DataThing;
 import org.embl.ebi.escience.baclava.LSIDProvider;
 import org.embl.ebi.escience.baclava.factory.DataThingXMLFactory;
-import org.embl.ebi.escience.scufl.ScuflModel;
-import org.embl.ebi.escience.scufl.view.XScuflView;
+//import org.embl.ebi.escience.scufl.ScuflModel;
+//import org.embl.ebi.escience.scufl.view.XScuflView;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.JDOMException;
@@ -660,6 +660,7 @@ public class JDBCBaclavaDataService implements BaclavaDataService, LSIDProvider 
 	 * title, and lsid * Overwrites an existing workflow if it already exists
 	 * with a given lsid
 	 */
+	/**
 	public void storeWorkflow(ScuflModel model) {
 		Connection con = null;
 		PreparedStatement pstmt = null;
@@ -699,6 +700,7 @@ public class JDBCBaclavaDataService implements BaclavaDataService, LSIDProvider 
 			}
 		}
 	}
+	*/
 
 	public boolean hasWorkflow(String LSID) {
 		return (fetchWorkflow(LSID) != null);
