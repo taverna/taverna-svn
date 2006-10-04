@@ -14,15 +14,18 @@
   <modules>
     <module>advanced-model-explorer</module>
     <module>dot-text-area</module>
+    <module>enactor-event-monitor</module>
+    <module>enactor-invocation</module>
     <module>iteration-strategy-editor</module>
     <module>scufl-diagram-panel</module>
     <module>scufl-model-explorer</module>
+    <module>semantic-markup-editor</module>
+    <module>svg-diagram</module>
     <module>template-editor</module>
     <module>workflow-input-panel</module>
     <module>workflow-instance-container</module>
     <module>xscufl-text-area</module>
     <module>xscufl-tree</module>
-    <module>enactor-event-monitor</module>
   </modules>
 </project>
 
