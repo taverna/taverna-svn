@@ -198,7 +198,7 @@ public class BiomobyTask implements ProcessorTaskWorker {
 						type = portName.substring(0, portName.indexOf("("));
 					}
 
-					@SuppressWarnings("unused") 
+					
 					String inputType = myInput.getSyntacticType();
 					DataThing inputThing = (DataThing) inputMap.get(portName);
 					if (!inputThing.getSyntacticType().startsWith("l(")) {
@@ -238,8 +238,8 @@ public class BiomobyTask implements ProcessorTaskWorker {
 									for (int k = 0; k < simples.length; k++) {
 										Element wrappedSimple = XMLUtilities
 												.createMobyDataElementWrapper(simples[k]);
-										XMLUtilities.renameSimple(articleName, type, wrappedSimple);
-										XMLUtilities.setQueryID(wrappedSimple, queryID /*+ "_+_"
+										wrappedSimple = XMLUtilities.renameSimple(articleName, type, wrappedSimple);
+										wrappedSimple = XMLUtilities.setQueryID(wrappedSimple, queryID /*+ "_+_"
 												+ XMLUtilities.getQueryID(wrappedSimple)*/);
 										list.add(XMLUtilities.extractMobyData(wrappedSimple));
 									}
@@ -276,8 +276,8 @@ public class BiomobyTask implements ProcessorTaskWorker {
 								for (int j = 0; j < simples.length; j++) {
 									Element wrappedSimple = XMLUtilities
 											.createMobyDataElementWrapper(simples[j]);
-									XMLUtilities.renameSimple(articleName, type, wrappedSimple);
-									XMLUtilities.setQueryID(wrappedSimple, queryID /*+ "_+_"
+									wrappedSimple = XMLUtilities.renameSimple(articleName, type, wrappedSimple);
+									wrappedSimple = XMLUtilities.setQueryID(wrappedSimple, queryID /*+ "_+_"
 											+ XMLUtilities.getQueryID(wrappedSimple)*/);
 									list.add(XMLUtilities.extractMobyData(wrappedSimple));
 								}
