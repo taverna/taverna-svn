@@ -45,6 +45,8 @@ public class ZRavenComponent extends ZPane {
 		actions.add(selectInstance);
 		actions.add(toggleScroll);
 		actions.add(new ReplaceWithBlankAction());
+		setLayout(new BorderLayout());
+		contentArea.setLayout(new BorderLayout());
 		add(contentArea, BorderLayout.CENTER);
 		// TODO Auto-generated constructor stub
 	}
@@ -85,6 +87,7 @@ public class ZRavenComponent extends ZPane {
 		}
 		this.contents = theComponent;
 		toggleScroll.setEnabled(true);
+		revalidate();
 	}
 	
 	/**
@@ -195,6 +198,7 @@ public class ZRavenComponent extends ZPane {
 			else {
 				contentArea.add(contents, BorderLayout.CENTER);
 			}
+			updateState();
 		}
 		
 	}

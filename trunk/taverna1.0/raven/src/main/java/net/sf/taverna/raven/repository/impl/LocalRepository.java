@@ -22,17 +22,26 @@ import java.util.*;
  */
 public class LocalRepository implements Repository {
 
+	private static FileFilter dFilter;
+	static {
+		dFilter = new AcceptDirectoryFilter();
+	}
+	
 	/**
 	 * Implementation of ClassLoader that uses the artifact
 	 * metadata to manage any dependencies of the artifact
 	 */
-	class ArtifactClassLoader extends URLClassLoader {
+	public class ArtifactClassLoader extends URLClassLoader {
 
 		private List<ArtifactClassLoader> childLoaders = 
 			new ArrayList<ArtifactClassLoader>();
 		private Map<String, Class> classMap =
 			new HashMap<String, Class>();
 		private String name;
+		
+		public Repository getRepository() {
+			return LocalRepository.this;
+		}
 		
 		protected ArtifactClassLoader(ArtifactImpl a) throws MalformedURLException, ArtifactStateException {
       // fixme: use jarFile(a).toURI().toURL()?
@@ -50,6 +59,10 @@ public class LocalRepository implements Repository {
 			synchronized(loaderMap) {
 				loaderMap.put(a, this);
 			}
+		}
+		
+		protected ArtifactClassLoader(ClassLoader selfLoader) {
+			super(new URL[0], selfLoader);
 		}
 		
 		private void init(ArtifactImpl a) throws ArtifactStateException {
@@ -74,7 +87,7 @@ public class LocalRepository implements Repository {
 		
 		@Override
     public String toString() {
-			return "loader{"+this.name+"}";
+			return "loader{"+this.name+"} from "+System.identityHashCode(LocalRepository.this);
 		}
 		
 		@Override
@@ -96,7 +109,7 @@ public class LocalRepository implements Repository {
 				//}
 				for (ArtifactClassLoader ac : childLoaders) {
 					try {
-						return ac.findClass(name);
+						return ac.loadClass(name);
 					}
 					catch (ClassNotFoundException cnfe) {
 						//System.out.println("No '"+name+"' in "+this.toString());
@@ -116,6 +129,8 @@ public class LocalRepository implements Repository {
 	 */
 	protected LocalRepository(File base) {
 		this.base = base;
+		this.loaderMap.put(new BasicArtifact("uk.org.mygrid.taverna.raven","raven","1.5-SNAPSHOT"), new ArtifactClassLoader(this.getClass().getClassLoader()));
+		
 		initialize();
 	}
 	
@@ -512,12 +527,15 @@ public class LocalRepository implements Repository {
 		throw new ArtifactNotFoundException();
 	}
 	
+  	private static class AcceptDirectoryFilter implements FileFilter {
+  		public boolean accept(File f) {
+  			return f.isDirectory();
+  		}
+  	}
+  	
+  
 	private void enumerateDirs(File current, Set<File> groupDirs) {
-		File[] subdirs = current.listFiles(new FileFilter() {
-			public boolean accept(File f) {
-				return f.isDirectory();
-			}
-		});
+		File[] subdirs = current.listFiles(dFilter);
 		if (subdirs == null || subdirs.length == 0) {
 			if (current.equals(base) == false) {
 				groupDirs.add(current.getParentFile().getParentFile());
@@ -579,6 +597,11 @@ public class LocalRepository implements Repository {
 								return d.isDirectory();
 						}
 				});
+				if (versions == null) {
+					System.out.println("Null version list at "+artifactDirectory);
+					System.out.println(artifactDirectory.isDirectory());
+				}
+				else {
 				for (String version : versions) {
 					ArtifactImpl artifact = new ArtifactImpl(groupId, artifactId, version, this);
 					File versionDirectory = new File(artifactDirectory, version);
@@ -606,6 +629,7 @@ public class LocalRepository implements Repository {
 							}
 						}
 					}
+				}
 				}
 			}
 		}

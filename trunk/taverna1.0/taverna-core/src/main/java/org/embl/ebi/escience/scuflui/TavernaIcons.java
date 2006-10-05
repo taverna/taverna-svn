@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: TavernaIcons.java,v $
- * Revision           $Revision: 1.3 $
+ * Revision           $Revision: 1.4 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-09-28 16:36:56 $
+ * Last modified on   $Date: 2006-10-05 19:25:06 $
  *               by   $Author: mereden $
  * Created on 28-Jun-2006
  *****************************************************************/
@@ -55,8 +55,7 @@ public class TavernaIcons {
 	static {
 		// Load the image files found in this package into the class.
 		try {
-			Class c = Class
-					.forName("org.embl.ebi.escience.scuflui.TavernaIcons");
+			Class c = TavernaIcons.class;
 			inputPortIcon = new ImageIcon(c
 					.getResource("icons/explorer/inputport.png"));
 			outputPortIcon = new ImageIcon(c
@@ -131,8 +130,6 @@ public class TavernaIcons {
 					java.awt.image.BufferedImage.TYPE_INT_RGB));
 
 
-		} catch (ClassNotFoundException cnfe) {
-			//
 		} catch (Exception ex) {
 			ex.printStackTrace();
 			System.out.println(ex.toString());
