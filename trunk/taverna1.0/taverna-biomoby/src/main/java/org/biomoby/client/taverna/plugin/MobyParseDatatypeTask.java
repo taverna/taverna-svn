@@ -503,8 +503,9 @@ public class MobyParseDatatypeTask implements ProcessorTaskWorker {
 		for (int i = 0; i < simples.length; i++) {
 			String simple = simples[i];
 			Element simElement = XMLUtilities.getDOMDocument(simple).getRootElement();
-			if (!simElement.getChildren().isEmpty())
-				simElement = (Element)simElement.getChildren().get(0);
+			if (!simElement.getName().equals("Simple"))
+				if (!simElement.getChildren().isEmpty())
+					simElement = (Element)simElement.getChildren().get(0);
 			inputs.add(getElementsMobyID(simElement));
 		}
 	}
@@ -520,8 +521,9 @@ public class MobyParseDatatypeTask implements ProcessorTaskWorker {
 		for (int i = 0; i < simples.length; i++) {
 			String simple = simples[i];
 			Element simElement = XMLUtilities.getDOMDocument(simple).getRootElement();
-			if (!simElement.getChildren().isEmpty())
-				simElement = (Element)simElement.getChildren().get(0);
+			if (!simElement.getName().equals("Simple"))
+				if (!simElement.getChildren().isEmpty())
+					simElement = (Element)simElement.getChildren().get(0);
 			inputs.add(getElementsMobyNamespace(simElement));
 		}
 	}

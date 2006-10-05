@@ -199,7 +199,7 @@ public class BiomobyTask implements ProcessorTaskWorker {
 					}
 
 					
-					String inputType = myInput.getSyntacticType();
+					//String inputType = myInput.getSyntacticType();
 					DataThing inputThing = (DataThing) inputMap.get(portName);
 					if (!inputThing.getSyntacticType().startsWith("l(")) {
 						inputXML = (String) inputThing.getDataObject();
@@ -241,7 +241,7 @@ public class BiomobyTask implements ProcessorTaskWorker {
 										wrappedSimple = XMLUtilities.renameSimple(articleName, type, wrappedSimple);
 										wrappedSimple = XMLUtilities.setQueryID(wrappedSimple, queryID /*+ "_+_"
 												+ XMLUtilities.getQueryID(wrappedSimple)*/);
-										list.add(XMLUtilities.extractMobyData(wrappedSimple));
+										list.add((wrappedSimple));
 									}
 								}
 							}
@@ -279,7 +279,7 @@ public class BiomobyTask implements ProcessorTaskWorker {
 									wrappedSimple = XMLUtilities.renameSimple(articleName, type, wrappedSimple);
 									wrappedSimple = XMLUtilities.setQueryID(wrappedSimple, queryID /*+ "_+_"
 											+ XMLUtilities.getQueryID(wrappedSimple)*/);
-									list.add(XMLUtilities.extractMobyData(wrappedSimple));
+									list.add((wrappedSimple));
 								}
 								if (list.isEmpty())
 									continue;
