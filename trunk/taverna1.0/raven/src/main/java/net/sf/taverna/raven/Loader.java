@@ -138,7 +138,7 @@ public class Loader {
 												100);
 										splash.setProgress(progress);
 										
-										if (dls.isFinnished()) {
+										if (dls.isFinished()) {
 											running = false;
 										}
 									}

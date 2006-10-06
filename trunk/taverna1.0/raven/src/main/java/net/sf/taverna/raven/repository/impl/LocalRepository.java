@@ -188,6 +188,7 @@ public class LocalRepository implements Repository {
 		}
 		if (status.get(a).equals(ArtifactStatus.Ready) == false) {
 			// Can't get a classloader yet, the artifact isn't ready
+			System.out.println(a+" :: "+status.get(a));
 			throw new ArtifactStateException(status.get(a), new ArtifactStatus[]{ArtifactStatus.Ready});
 		}
 		if (loaderMap.containsKey(a)) {
@@ -278,7 +279,9 @@ public class LocalRepository implements Repository {
 		if (status.containsKey(a) && status.get(a) != newStatus) {
 			synchronized(listeners) {
 				for (RepositoryListener l : listeners) {
-					l.statusChanged(a, status.get(a), newStatus);
+					ArtifactStatus old = status.get(a);
+					status.put(a, newStatus);
+					l.statusChanged(a, old, newStatus);
 				}
 			}
 			status.put(a, newStatus);

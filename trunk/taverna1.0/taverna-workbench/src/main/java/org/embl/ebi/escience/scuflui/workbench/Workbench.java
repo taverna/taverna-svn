@@ -50,6 +50,17 @@ public class Workbench extends JFrame {
 	}
 	
 	/**
+	 * Do not attempt to run from here - this is a quick hack to make at least
+	 * some parts of the workbench run from within Eclipse but it doesn't really
+	 * work very well. You need to launch from the Bootstrap class to get the
+	 * thing working properly.
+	 * @param args
+	 */
+	public static void main(String[] args) {
+		new Workbench();
+	}
+	
+	/**
 	 * Construct a new Workbench instance with the underlying Raven
 	 * repository pointing to the given directory on disc.
 	 * @param localRepositoryLocation
@@ -104,11 +115,28 @@ public class Workbench extends JFrame {
 			}
 			
 		};
-		ArtifactClassLoader acl = 
-			(ArtifactClassLoader)getClass().getClassLoader();
-		basePane.setRepository(acl.getRepository());
+		try {
+			ArtifactClassLoader acl = 
+				(ArtifactClassLoader)getClass().getClassLoader();
+			basePane.setRepository(acl.getRepository());
+		}
+		catch (ClassCastException cce) {
+			basePane.setRepository(LocalRepository.getRepository(new File("e:/home/tom/taverna")));
+			try {
+				basePane.getRepository().addRemoteRepository(new URL("http://www.ebi.ac.uk/~tmo/repository/"));
+			} catch (MalformedURLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			try {
+				basePane.getRepository().addRemoteRepository(new URL("http://www.ibiblio.org/maven2/"));
+			} catch (MalformedURLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
 		basePane.setKnownSPINames(new String[]{
-				"org.embl.ebi.escience.scuflui.spi.UIComponentFactorySPI"});
+		"org.embl.ebi.escience.scuflui.spi.UIComponentFactorySPI"});
 		basePane.setEditable(true);
 		setUI();
 	}
@@ -130,7 +158,9 @@ public class Workbench extends JFrame {
 		};
 		getArtifact.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				basePane.lockFrame();
 				Artifact a = ArtifactDownloadDialog.showDialog(Workbench.this, null, "Download new artifact", "Raven downloader", groups, versions);
+				basePane.unlockFrame();
 				if (a != null) {
 					addArtifact(a);
 				}

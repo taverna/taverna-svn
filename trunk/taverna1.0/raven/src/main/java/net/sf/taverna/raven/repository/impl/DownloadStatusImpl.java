@@ -35,7 +35,7 @@ public class DownloadStatusImpl implements DownloadStatus {
     finnished = true;
   }
 
-  public boolean isFinnished()
+  public boolean isFinished()
   {
     return finnished;
   }
