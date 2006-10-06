@@ -21,7 +21,7 @@ import java.util.*;
  * @author Tom Oinn
  */
 public class LocalRepository implements Repository {
-
+	
 	private static FileFilter dFilter;
 	static {
 		dFilter = new AcceptDirectoryFilter();
@@ -32,20 +32,21 @@ public class LocalRepository implements Repository {
 	 * metadata to manage any dependencies of the artifact
 	 */
 	public class ArtifactClassLoader extends URLClassLoader {
-
+		
 		private List<ArtifactClassLoader> childLoaders = 
 			new ArrayList<ArtifactClassLoader>();
 		private Map<String, Class> classMap =
 			new HashMap<String, Class>();
 		private String name;
+		private ClassLoader parent = null;
 		
 		public Repository getRepository() {
 			return LocalRepository.this;
 		}
 		
 		protected ArtifactClassLoader(ArtifactImpl a) throws MalformedURLException, ArtifactStateException {
-      // fixme: use jarFile(a).toURI().toURL()?
-      super(new URL[]{LocalRepository.this.jarFile(a).toURL()});
+			// fixme: use jarFile(a).toURI().toURL()?
+			super(new URL[]{LocalRepository.this.jarFile(a).toURL()});
 			init(a);
 			synchronized(loaderMap) {
 				loaderMap.put(a, this);
@@ -53,8 +54,9 @@ public class LocalRepository implements Repository {
 		}
 		
 		protected ArtifactClassLoader(ArtifactImpl a, ClassLoader parent) throws MalformedURLException, ArtifactStateException {
-      // fixme: use jarFile(a).toURI().toURL()?
-      super(new URL[]{LocalRepository.this.jarFile(a).toURL()}, parent);
+			// fixme: use jarFile(a).toURI().toURL()?
+			super(new URL[]{LocalRepository.this.jarFile(a).toURL()}, parent);
+			this.parent = parent;
 			init(a);
 			synchronized(loaderMap) {
 				loaderMap.put(a, this);
@@ -86,13 +88,18 @@ public class LocalRepository implements Repository {
 		}
 		
 		@Override
-    public String toString() {
+		public String toString() {
 			return "loader{"+this.name+"} from "+System.identityHashCode(LocalRepository.this);
 		}
 		
 		@Override
-    protected Class<?> findClass(String name) throws ClassNotFoundException {
+		protected Class<?> findClass(String name) throws ClassNotFoundException {
+			return findClass(name, new HashSet<ArtifactClassLoader>());
+		}
+				
+		protected Class<?> findClass(String name, Set<ArtifactClassLoader> seenLoaders) throws ClassNotFoundException {
 			//System.out.println("Searching for '"+name+"' - "+this.toString());
+			//seenLoaders.add(this);
 			if (classMap.containsKey(name)) {
 				//System.out.println("Returning cached '"+name+"' - "+this.toString());
 				return classMap.get(name);
@@ -105,21 +112,23 @@ public class LocalRepository implements Repository {
 			} catch (ClassNotFoundException e) {
 				//System.out.println("Trying children of "+this.toString());
 				//for (ArtifactClassLoader ac : childLoaders) {
-					//System.out.println("    "+ac.toString());
+				//System.out.println("    "+ac.toString());
 				//}
 				for (ArtifactClassLoader ac : childLoaders) {
-					try {
-						return ac.loadClass(name);
-					}
-					catch (ClassNotFoundException cnfe) {
-						//System.out.println("No '"+name+"' in "+this.toString());
-					}
+					//if (seenLoaders.contains(ac) == false) {
+						try {
+							return ac.loadClass(name);
+						}
+						catch (ClassNotFoundException cnfe) {
+							//System.out.println("No '"+name+"' in "+this.toString());
+						}
+					//}
 				}
 			}
 			throw new ClassNotFoundException();
 		}
 	}
-
+	
 	/**
 	 * Create a new Repository object with the specified
 	 * base.
@@ -222,10 +231,10 @@ public class LocalRepository implements Repository {
 	 */
 	public synchronized void update() {
 		while (act())
-    {
-      // nothing
-    }
-  }
+		{
+			// nothing
+		}
+	}
 	
 	/**
 	 * Return all Artifacts within this repository
@@ -291,8 +300,8 @@ public class LocalRepository implements Repository {
 	
 	static final Map<Artifact, ArtifactClassLoader> loaderMap =
 		new HashMap<Artifact, ArtifactClassLoader>();
-
-  private final List<RepositoryListener> listeners =
+	
+	private final List<RepositoryListener> listeners =
 		new ArrayList<RepositoryListener>();
 	
 	/**
@@ -446,25 +455,25 @@ public class LocalRepository implements Repository {
 	 * @throws IOException
 	 */
 	void copyStream(InputStream is, OutputStream os, Artifact a) 
-		throws IOException {
+	throws IOException {
 		int totalbytes = 0;
 		byte[] buffer = new byte[1024];
 		int bytesRead;
-    try
-    {
-      while ((bytesRead = is.read(buffer)) != -1) {
-        totalbytes += bytesRead;
-        os.write(buffer, 0, bytesRead);
-        dlstatus.get(a).setReadBytes(totalbytes);
-      }
-    }
-    finally
-    {
-      dlstatus.get(a).setFinnished();
-      os.flush();
-      os.close();
-    }
-  }
+		try
+		{
+			while ((bytesRead = is.read(buffer)) != -1) {
+				totalbytes += bytesRead;
+				os.write(buffer, 0, bytesRead);
+				dlstatus.get(a).setReadBytes(totalbytes);
+			}
+		}
+		finally
+		{
+			dlstatus.get(a).setFinnished();
+			os.flush();
+			os.close();
+		}
+	}
 	
 	synchronized void forcePom(ArtifactImpl a) throws ArtifactNotFoundException {
 		fetch(this.repositories, a, "pom");
@@ -477,9 +486,9 @@ public class LocalRepository implements Repository {
 	 * @param suffix The suffix of the file to fetch, either 'pom' or 'jar'
 	 * @throws ArtifactNotFoundException
 	 */
-  //fixme: repositories2 isn't used
-  private void fetch(List<URL> repositories2, ArtifactImpl a, String suffix)
-		throws ArtifactNotFoundException {
+	//fixme: repositories2 isn't used
+	private void fetch(List<URL> repositories2, ArtifactImpl a, String suffix)
+	throws ArtifactNotFoundException {
 		String fname = a.getArtifactId()+"-"+a.getVersion()+"."+suffix;
 		String repositoryPath = a.getGroupId().replaceAll("\\.","/")+"/"+a.getArtifactId()+"/"+a.getVersion()+"/"+fname;
 		for (URL repository : repositories) {
@@ -527,13 +536,13 @@ public class LocalRepository implements Repository {
 		throw new ArtifactNotFoundException();
 	}
 	
-  	private static class AcceptDirectoryFilter implements FileFilter {
-  		public boolean accept(File f) {
-  			return f.isDirectory();
-  		}
-  	}
-  	
-  
+	private static class AcceptDirectoryFilter implements FileFilter {
+		public boolean accept(File f) {
+			return f.isDirectory();
+		}
+	}
+	
+	
 	private void enumerateDirs(File current, Set<File> groupDirs) {
 		File[] subdirs = current.listFiles(dFilter);
 		if (subdirs == null || subdirs.length == 0) {
@@ -567,7 +576,7 @@ public class LocalRepository implements Repository {
 		for (File f : groupDirs) {
 			File temp = f;
 			String groupName = "";
-
+			
 			while (temp.equals(base) == false) {
 				if ("".equals(groupName) == false) {
 					groupName = "." + groupName ;
@@ -578,7 +587,7 @@ public class LocalRepository implements Repository {
 			groupIds.add(groupName);
 		}
 		
-
+		
 		// For each subdirectory collect all artifacts
 		for (String groupId : groupIds) {
 			File groupDirectory = base;
@@ -593,48 +602,48 @@ public class LocalRepository implements Repository {
 			for (String artifactId : artifactIds) {
 				File artifactDirectory = new File(groupDirectory, artifactId);
 				String[] versions = artifactDirectory.list(new FilenameFilter() {
-						public boolean accept(File d, String name) {
-								return d.isDirectory();
-						}
+					public boolean accept(File d, String name) {
+						return d.isDirectory();
+					}
 				});
 				if (versions == null) {
 					System.out.println("Null version list at "+artifactDirectory);
 					System.out.println(artifactDirectory.isDirectory());
 				}
 				else {
-				for (String version : versions) {
-					ArtifactImpl artifact = new ArtifactImpl(groupId, artifactId, version, this);
-					File versionDirectory = new File(artifactDirectory, version);
-					// If there are any directories inside here we're not in a valid
-					// artifact and have accidentally wandered down the wrong branch
-					// of the file system. Blame the idiotic maven2 directory structure
-					// with groups split into subdirectories!
-					boolean foundSubDir = false;
-					//System.out.println("Version directory : "+versionDirectory.toString());
-					if (versionDirectory.isDirectory()) {
-						for (File sub : versionDirectory.listFiles()) {
-							if (sub.isDirectory()) {
-								foundSubDir = true;
+					for (String version : versions) {
+						ArtifactImpl artifact = new ArtifactImpl(groupId, artifactId, version, this);
+						File versionDirectory = new File(artifactDirectory, version);
+						// If there are any directories inside here we're not in a valid
+						// artifact and have accidentally wandered down the wrong branch
+						// of the file system. Blame the idiotic maven2 directory structure
+						// with groups split into subdirectories!
+						boolean foundSubDir = false;
+						//System.out.println("Version directory : "+versionDirectory.toString());
+						if (versionDirectory.isDirectory()) {
+							for (File sub : versionDirectory.listFiles()) {
+								if (sub.isDirectory()) {
+									foundSubDir = true;
+								}
 							}
-						}
-						if (foundSubDir == false) {
-							status.put(artifact, ArtifactStatus.Queued);
-							File pomFile = new File(versionDirectory, artifactId+"-"+version+".pom");
-							if (pomFile.exists()) {
-								status.put(artifact, ArtifactStatus.Pom);
-							}
-							File jarFile = new File(versionDirectory, artifactId+"-"+version+".jar");
-							if (jarFile.exists()) {
-								status.put(artifact, ArtifactStatus.Jar);
+							if (foundSubDir == false) {
+								status.put(artifact, ArtifactStatus.Queued);
+								File pomFile = new File(versionDirectory, artifactId+"-"+version+".pom");
+								if (pomFile.exists()) {
+									status.put(artifact, ArtifactStatus.Pom);
+								}
+								File jarFile = new File(versionDirectory, artifactId+"-"+version+".jar");
+								if (jarFile.exists()) {
+									status.put(artifact, ArtifactStatus.Jar);
+								}
 							}
 						}
 					}
 				}
-				}
 			}
 		}
 	}
-
+	
 	/**
 	 * If the artifact specified is in either PomFetching or JarFetching state this returns
 	 * a DownloadStatus object which provides a non updating snapshot of the file size (if known)
@@ -666,10 +675,10 @@ public class LocalRepository implements Repository {
 		StringBuffer sb = new StringBuffer();
 		for (Artifact a : status.keySet()) {
 			sb
-              .append(getStatus(a))
-              .append("\t")
-              .append(a.toString())
-              .append("\n");
+			.append(getStatus(a))
+			.append("\t")
+			.append(a.toString())
+			.append("\n");
 		}
 		return sb.toString();
 	}

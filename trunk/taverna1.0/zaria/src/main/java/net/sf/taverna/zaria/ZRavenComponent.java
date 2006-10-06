@@ -108,15 +108,22 @@ public class ZRavenComponent extends ZPane {
 				JMenuItem item = getRoot().getMenuItem(theClass);
 				item.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent arg0) {
-						setComponent(getRoot().getComponent(theClass));
 						try {
+							setComponent(getRoot().getComponent(theClass));
 							artifact = getRoot().getRepository().artifactForClass(theClass);
 						} catch (ArtifactNotFoundException e) {
 							// Should never happen as these things can only be loaded
 							// from within a raven classloader and so should by definition
 							// have an artifact associated with them. You never know though.
 							e.printStackTrace();
+						} catch (NoClassDefFoundError ncdfe) {
+							JOptionPane.showMessageDialog(null,
+									"Transitive dependency failure - this is normally\n"+
+									"caused by an invalid POM file with missing dependencies.",
+									"Error!",
+									JOptionPane.ERROR_MESSAGE);
 						}
+						
 					}
 				});
 				menu.add(item);
