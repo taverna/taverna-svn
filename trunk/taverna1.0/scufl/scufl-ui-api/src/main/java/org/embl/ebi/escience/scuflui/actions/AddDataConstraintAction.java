@@ -16,7 +16,7 @@ import org.embl.ebi.escience.scuflui.TavernaIcons;
  * COMMENT
  * 
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover</a>
- * @version $Revision: 1.2 $
+ * @version $Revision$
  */
 public class AddDataConstraintAction extends ScuflModelAction {
 	private Port source;

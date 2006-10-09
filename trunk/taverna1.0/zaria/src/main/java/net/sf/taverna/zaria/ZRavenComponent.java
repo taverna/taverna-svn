@@ -2,6 +2,7 @@ package net.sf.taverna.zaria;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
@@ -34,6 +35,7 @@ public class ZRavenComponent extends ZPane {
 	private JComponent contents = null;
 	private List<Action> actions = new ArrayList<Action>();
 	private SpiRegistry registry = null;
+	private String sharedName = "";
 	
 	private Action toggleScroll = new ToggleScrollPaneAction();
 	private Action selectSPI = new SelectSPIAction();
@@ -48,7 +50,6 @@ public class ZRavenComponent extends ZPane {
 		setLayout(new BorderLayout());
 		contentArea.setLayout(new BorderLayout());
 		add(contentArea, BorderLayout.CENTER);
-		// TODO Auto-generated constructor stub
 	}
 
 	public Element getElement() {
@@ -78,6 +79,9 @@ public class ZRavenComponent extends ZPane {
 	 * @param theComponent
 	 */
 	private synchronized void setComponent(JComponent theComponent) {
+		if (this.contents != null) {
+			getRoot().deregisterComponent(this.contents);
+		}
 		contentArea.removeAll();
 		if (hasScrollPane) {
 			contentArea.add(new JScrollPane(theComponent), BorderLayout.CENTER);
@@ -86,8 +90,16 @@ public class ZRavenComponent extends ZPane {
 			contentArea.add(theComponent, BorderLayout.CENTER);
 		}
 		this.contents = theComponent;
+		getRoot().registerComponent(this.contents);
 		toggleScroll.setEnabled(true);
 		revalidate();
+	}
+	
+	/**
+	 * Get the current component
+	 */
+	public JComponent getComponent() {
+		return this.contents;
 	}
 	
 	/**
@@ -199,12 +211,17 @@ public class ZRavenComponent extends ZPane {
 			contentArea.removeAll();
 			hasScrollPane = !hasScrollPane;
 			if (hasScrollPane) {
-				contentArea.add(new JScrollPane(contents), 
-						BorderLayout.CENTER);
+				JScrollPane sp = new JScrollPane(contents,
+						JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
+						JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
+				sp.setPreferredSize(new Dimension(0,0));
+				contentArea.add(sp,	BorderLayout.CENTER);
 			}
 			else {
 				contentArea.add(contents, BorderLayout.CENTER);
 			}
+			repaint();
+			revalidate();
 			updateState();
 		}
 		

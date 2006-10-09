@@ -19,7 +19,7 @@ import org.embl.ebi.escience.scuflui.TavernaIcons;
  * instance a Processor, Port, DataConstraint, or ConcurrencyConstraint.
  * 
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover</a>
- * @version $Revision: 1.2 $
+ * @version $Revision$
  */
 public class RemoveAction extends ModelObjectAction {
 

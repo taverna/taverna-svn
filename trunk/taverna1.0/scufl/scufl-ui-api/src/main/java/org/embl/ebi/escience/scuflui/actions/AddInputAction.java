@@ -19,7 +19,7 @@ import org.embl.ebi.escience.scuflui.shared.UIUtils;
  * COMMENT
  * 
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover </a>
- * @version $Revision: 1.5 $
+ * @version $Revision$
  */
 public class AddInputAction extends ScuflModelAction {
 	/**

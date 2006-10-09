@@ -2,11 +2,13 @@ package net.sf.taverna.zaria;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
+import java.awt.event.ActionEvent;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
@@ -37,6 +39,7 @@ public abstract class ZBasePane extends ZPane {
 	private InfiniteProgressPanel glassPane = 
 		new InfiniteProgressPanel();
 	private Component oldGlassPane = null;
+	private Action toggleEditAction;
 	
 	/**
 	 * Construct a new ZBasePane, inserting a default
@@ -46,8 +49,36 @@ public abstract class ZBasePane extends ZPane {
 		super();
 		child = new ZBlankComponent();
 		add((Component)child, BorderLayout.CENTER);
+		toggleEditAction = new AbstractAction() {
+			public void actionPerformed(ActionEvent e) {
+				boolean edit = ZBasePane.this.editable;
+				ZBasePane.this.setEditable(!edit);				
+			}
+		};
+		setEditActionState();
+	}
+	
+	/**
+	 * Get an Action object which can toggle the editable state
+	 * of the ZBasePane
+	 */
+	public Action getToggleEditAction() {
+		return toggleEditAction;
 	}
 
+	/**
+	 * Configure the edit action based on the current editable
+	 * state.
+	 */
+	private void setEditActionState() {
+		if (editable) {
+			toggleEditAction.putValue(Action.NAME, "Stop editing");
+		}
+		else {
+			toggleEditAction.putValue(Action.NAME, "Edit");
+		}
+	}
+	
 	/**
 	 * Single element list consiting only of the child item
 	 */
@@ -97,6 +128,9 @@ public abstract class ZBasePane extends ZPane {
 		if (child != null) {
 			child.setEditable(b);
 		}
+		setEditActionState();
+		repaint();
+		revalidate();
 	}
 	
 	/**
@@ -168,6 +202,45 @@ public abstract class ZBasePane extends ZPane {
 	 * really)
 	 */
 	public abstract JComponent getComponent(Class theClass);
+	
+	/**
+	 * Called when a new component is added to a ZRavenComponent
+	 * pane, can be overridden to perform implementation specific
+	 * initialization of the component
+	 */
+	protected void registerComponent(JComponent comp) {
+		// Do nothing by default
+	}
+	
+	/**
+	 * Called when a component is removed from a ZRavenComponent pane,
+	 * only called if the component is not named (and therefore will
+	 * not be shared by other panes)
+	 */
+	protected void deregisterComponent(JComponent comp) {
+		// Do nothing by default
+	}
+	
+	/**
+	 * Enumerate all visible ZRavenComponent panes within the current
+	 * layout
+	 */
+	public List<ZRavenComponent> getRavenComponents() {
+		List<ZRavenComponent> result = 
+			new ArrayList<ZRavenComponent>();
+		enumerateRavenComponents(result, this);
+		return result;
+	}
+	private void enumerateRavenComponents(List<ZRavenComponent> results, ZTreeNode node) {
+		if (node instanceof ZRavenComponent) {
+			results.add((ZRavenComponent)node);
+		}
+		else {
+			for (ZTreeNode child : node.getZChildren()) {
+				enumerateRavenComponents(results, child);
+			}
+		}
+	}
 	
 	/**
 	 * Lock the parent frame, showing an infinite progress display

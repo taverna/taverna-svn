@@ -6,7 +6,6 @@ package org.embl.ebi.escience.scuflui.actions;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.net.URL;
 import java.util.prefs.Preferences;
@@ -16,9 +15,6 @@ import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
 
-import org.embl.ebi.escience.baclava.store.BaclavaDataService;
-import org.embl.ebi.escience.baclava.store.BaclavaDataServiceFactory;
-import org.embl.ebi.escience.baclava.store.JDBCBaclavaDataService;
 import org.embl.ebi.escience.scufl.ScuflModel;
 import org.embl.ebi.escience.scufl.parser.XScuflParser;
 import org.embl.ebi.escience.scuflui.TavernaIcons;
@@ -28,7 +24,7 @@ import org.embl.ebi.escience.scuflui.shared.ExtensionFileFilter;
  * COMMENT
  * 
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover</a>
- * @version $Revision: 1.3 $
+ * @version $Revision$
  */
 public class LoadWorkflowAction extends ScuflModelAction {
 	final JFileChooser fc = new JFileChooser();
@@ -44,9 +40,7 @@ public class LoadWorkflowAction extends ScuflModelAction {
 	}
 
 	public void actionPerformed(ActionEvent e) {
-		final BaclavaDataService store = BaclavaDataServiceFactory.getStore();
-		boolean jdbcStoreExists = (store != null && store instanceof JDBCBaclavaDataService);
-
+		
 		JPopupMenu menu = new JPopupMenu("Load");
 		JMenuItem fromFile = new JMenuItem("Load from a file");
 		fromFile.setIcon(TavernaIcons.openIcon);
@@ -67,48 +61,8 @@ public class LoadWorkflowAction extends ScuflModelAction {
 		});
 		menu.add(fromWeb);
 
-		if (jdbcStoreExists) {
-			JMenuItem fromDB = new JMenuItem("Load from the database");
-			fromDB.setIcon(TavernaIcons.databaseIcon);
-			fromDB.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent e) {
-					loadFromDatabase((JDBCBaclavaDataService) store);
-				}
-			});
-			menu.add(fromDB);
-		}
-
 		Component sourceComponent = (Component) e.getSource();
 		menu.show(sourceComponent, 0, sourceComponent.getHeight());
-	}
-
-	/*
-	 * Select a workflow from the database and opens it
-	 */
-	protected void loadFromDatabase(JDBCBaclavaDataService store) {
-		String LSID = (String) JOptionPane.showInputDialog(null,
-				"Enter the LSID", "Workflow LSID",
-				JOptionPane.QUESTION_MESSAGE, null, null, "");
-		if (LSID != null) {
-			String xml = store.fetchWorkflow(LSID);
-			if (xml == null) {
-				JOptionPane.showMessageDialog(null,
-						"Cannot find workflow for LSID " + LSID
-								+ " in the database.", "Error!",
-						JOptionPane.ERROR_MESSAGE);
-			} else {
-				ByteArrayInputStream instr = new ByteArrayInputStream(xml
-						.getBytes());
-				try {
-					XScuflParser.populate(instr, model, null);
-				} catch (Exception e) {
-					JOptionPane.showMessageDialog(null,
-							"Problem opening workflow from the database : \n"
-									+ e.getMessage(), "Error!",
-							JOptionPane.ERROR_MESSAGE);
-				}
-			}
-		}
 	}
 
 	/*
@@ -168,10 +122,5 @@ public class LoadWorkflowAction extends ScuflModelAction {
 
 		}
 	}
-
-	/*
-	 * public void actionPerformed(ActionEvent e) { // Load an XScufl definition
-	 * here }
-	 */
 
 }
