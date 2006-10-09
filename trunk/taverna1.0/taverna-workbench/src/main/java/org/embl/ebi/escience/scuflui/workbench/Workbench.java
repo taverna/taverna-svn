@@ -53,7 +53,7 @@ public class Workbench extends JFrame {
 	private ZBasePane basePane = null;
 	private Set<ScuflModel> workflowModels = 
 		new HashSet<ScuflModel>();
-	private JMenu fileMenu = new JMenu("File");
+	private JMenu fileMenu = null;
 	
 	public static Workbench getWorkbench() {
 		return new Workbench();
@@ -84,6 +84,7 @@ public class Workbench extends JFrame {
 		catch (Exception ex) {
 			// Look and feel not available
 		}
+		fileMenu = new JMenu("File");
 		/**
 		 * Create and configure the ZBasePane
 		 */
