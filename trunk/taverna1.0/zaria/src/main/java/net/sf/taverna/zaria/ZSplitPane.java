@@ -8,6 +8,7 @@ import java.util.List;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
+import javax.swing.JComponent;
 import javax.swing.JSplitPane;
 
 import org.jdom.Element;
@@ -64,13 +65,34 @@ public class ZSplitPane extends ZPane {
 	}
 
 	public Element getElement() {
-		// TODO Auto-generated method stub
-		return null;
+		Element splitElement = new Element("split");
+		Element rightElement = new Element("right");
+		splitElement.addContent(rightElement);
+		Element leftElement = new Element("left");
+		splitElement.addContent(leftElement);
+		ZTreeNode rightNode = (ZTreeNode)splitPane.getRightComponent();
+		ZTreeNode leftNode = (ZTreeNode)splitPane.getLeftComponent();
+		rightElement.addContent(elementFor(rightNode));
+		leftElement.addContent(elementFor(leftNode));
+		return splitElement;
 	}
 
 	public void configure(Element e) {
-		// TODO Auto-generated method stub
-
+		Element splitElement = e.getChild("split");
+		if (splitElement!=null) {
+			Element leftElement = splitElement.getChild("left");
+			Element leftDefinition = leftElement.getChild("znode");
+			ZTreeNode leftNode = (ZTreeNode)componentFor(leftDefinition);
+			splitPane.setLeftComponent((JComponent)leftNode);
+			
+			Element rightElement = splitElement.getChild("right");
+			Element rightDefinition = rightElement.getChild("znode");
+			ZTreeNode rightNode = (ZTreeNode)componentFor(rightDefinition);
+			splitPane.setRightComponent((JComponent)rightNode);
+			
+			leftNode.configure(leftDefinition);
+			rightNode.configure(rightDefinition);
+		}
 	}
 
 	/**

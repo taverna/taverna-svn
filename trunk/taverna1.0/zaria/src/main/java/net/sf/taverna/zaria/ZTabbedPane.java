@@ -90,13 +90,33 @@ public class ZTabbedPane extends ZPane {
 	}
 	
 	public Element getElement() {
-		// TODO Auto-generated method stub
-		return null;
+		Element tabsElement = new Element("tabs");
+		for (int i = 0; i < tabs.getComponentCount(); i++) {
+			ZTreeNode child = (ZTreeNode)tabs.getComponentAt(i);
+			String tabName = tabs.getTitleAt(i);
+			Element tabElement = new Element("tab");
+			tabsElement.addContent(tabElement);
+			Element tabNameElement = new Element("title");
+			tabNameElement.setText(tabName);
+			tabElement.addContent(tabNameElement);
+			tabElement.addContent(elementFor(child));
+		}
+		return tabsElement;
 	}
 	
 	public void configure(Element e) {
-		// TODO Auto-generated method stub
-		
+		Element tabsElement = e.getChild("tabs");
+		if (tabsElement != null) {
+			for (Object tabElement : tabsElement.getChildren("tab")) {
+				Element t = (Element)tabElement;
+				String tabName = t.getChildTextTrim("title");
+				ZTreeNode znode = componentFor(t.getChild("znode"));
+				// Add to tabs then configure so we have a valid
+				// component heirarchy in place to find the base pane etc
+				tabs.addTab(tabName, (JComponent)znode);
+				znode.configure(t.getChild("znode"));
+			}
+		}
 	}
 	
 	private void checkValidity() {

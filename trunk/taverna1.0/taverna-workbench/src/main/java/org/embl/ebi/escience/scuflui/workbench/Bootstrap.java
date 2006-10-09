@@ -10,7 +10,7 @@ import java.net.URLClassLoader;
 public class Bootstrap {
 	
 	public static void main(String[] args) throws MalformedURLException, ClassNotFoundException, SecurityException, NoSuchMethodException, IllegalArgumentException, IllegalAccessException, InvocationTargetException {
-		File dir = new File("e:/home/tom/taverna");
+		File dir = new File(System.getProperty("taverna.home"));
 		dir.mkdirs();
 		// Create a remote classloader referencing the raven jar within a repository
 		String repositoryLocation = 

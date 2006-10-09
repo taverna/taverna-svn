@@ -33,11 +33,16 @@ import net.sf.taverna.zaria.ZRavenComponent;
 import net.sf.taverna.zaria.raven.ArtifactDownloadDialog;
 
 import org.embl.ebi.escience.scufl.ScuflModel;
+import org.embl.ebi.escience.scufl.ScuflModelEvent;
+import org.embl.ebi.escience.scufl.ScuflModelEventListener;
 import org.embl.ebi.escience.scuflui.TavernaIcons;
 import org.embl.ebi.escience.scuflui.shared.UIUtils;
 import org.embl.ebi.escience.scuflui.shared.UIUtils.ModelChangeListener;
 import org.embl.ebi.escience.scuflui.spi.UIComponentFactorySPI;
 import org.embl.ebi.escience.scuflui.spi.WorkflowModelViewSPI;
+import org.jdom.Element;
+import org.jdom.output.Format;
+import org.jdom.output.XMLOutputter;
 
 /**
  * Top level Zaria based UI for Taverna
@@ -197,6 +202,16 @@ public class Workbench extends JFrame {
 		menuBar.add(zariaMenu);
 		zariaMenu.add(new JMenuItem(basePane.getToggleEditAction()));
 		
+		Action dumpLayoutXMLAction = new AbstractAction() {
+			public void actionPerformed(ActionEvent e) {
+				Element element = basePane.getElement();
+				XMLOutputter xo = new XMLOutputter(Format.getPrettyFormat());
+				System.out.println(xo.outputString(element));
+			}
+		};
+		dumpLayoutXMLAction.putValue(Action.NAME,"Dump layout XML to console");
+		zariaMenu.add(new JMenuItem(dumpLayoutXMLAction));
+		
 		setJMenuBar(menuBar);
 		setSize(new Dimension(500,500));
 		setVisible(true);
@@ -208,26 +223,51 @@ public class Workbench extends JFrame {
 		updateRepository();
 	}
 	
+	
+	
 	private void setModelChangeListener() {
 		UIUtils.DEFAULT_MODEL_LISTENER = new ModelChangeListener() {
 
-			public void modelChanged(String modelName, Object oldModel, Object newModel) {
+			private ScuflModelEventListener listener = new ScuflModelEventListener() {
+				public void receiveModelEvent(ScuflModelEvent event) {
+					// Refresh file menu to reflect any changes to the workflow
+					// titles. This isn't terribly efficient but hey.
+					refreshFileMenu();
+				}
+			};
+			private ScuflModel currentWorkflowModel = null;
+			
+			public synchronized void modelChanged(String modelName, Object oldModel, Object newModel) {
 				if (newModel instanceof ScuflModel) {
 					ScuflModel newWorkflow = (ScuflModel)newModel;
 					for (WorkflowModelViewSPI view : getWorkflowViews()) {
 						view.detachFromModel();
 						view.attachToModel(newWorkflow);
+						if (currentWorkflowModel != null) {
+							currentWorkflowModel.removeListener(listener);
+						}
+						currentWorkflowModel = newWorkflow;
+						currentWorkflowModel.addListener(listener);
+						
 					}
 				}
 			}
 
-			public void modelDestroyed(String modelName) {
-				// No actions at the moment
+			public synchronized void modelDestroyed(String modelName) {
+				if (currentWorkflowModel != null) {
+					currentWorkflowModel.removeListener(listener);
+				}
+				currentWorkflowModel = null;
 			}
 
-			public void modelCreated(String modelName, Object model) {
+			public synchronized void modelCreated(String modelName, Object model) {
 				if (model instanceof ScuflModel && modelName.equals("currentWorkflow")) {
+					if (currentWorkflowModel != null) {
+						currentWorkflowModel.removeListener(listener);
+					}
 					ScuflModel newWorkflow = (ScuflModel)model;
+					newWorkflow.addListener(listener);
+					currentWorkflowModel = newWorkflow;
 					for (WorkflowModelViewSPI view : getWorkflowViews()) {
 						view.detachFromModel();
 						view.attachToModel(newWorkflow);
@@ -269,9 +309,10 @@ public class Workbench extends JFrame {
 					refreshFileMenu();
 				}
 			};
-			selectModel.putValue("Action.SMALL_ICON",TavernaIcons.windowExplorer);
-			selectModel.putValue("Action.NAME",model.getDescription().getTitle());
-			selectModel.putValue("Action.DESCRIPTION",model.getDescription().getTitle());
+			selectModel.putValue(Action.SMALL_ICON,TavernaIcons.windowExplorer);
+			selectModel.putValue(Action.NAME,model.getDescription().getTitle());
+			selectModel.putValue(Action.SHORT_DESCRIPTION,model.getDescription().getTitle());
+			
 			if (model == UIUtils.getNamedModel("currentWorkflow")) {
 				selectModel.setEnabled(false);
 			}

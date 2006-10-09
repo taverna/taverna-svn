@@ -89,12 +89,13 @@ public abstract class ZBasePane extends ZPane {
 	}
 
 	public Element getElement() {
-		// TODO Auto-generated method stub
-		return null;
+		return elementFor(child);
 	}
 
 	public void configure(Element e) {
-		// TODO Auto-generated method stub
+		ZTreeNode node = componentFor(e);
+		swap(child, node);
+		node.configure(e);
 	}
 
 	/**

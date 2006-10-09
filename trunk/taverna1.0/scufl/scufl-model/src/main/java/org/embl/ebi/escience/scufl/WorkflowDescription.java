@@ -23,7 +23,7 @@ public class WorkflowDescription {
 
 	private String author = "";
 
-	private String title = "";
+	private String title = "Untitled workflow";
 
 	/**
 	 * Override the default constructor to set an LSID by default from the

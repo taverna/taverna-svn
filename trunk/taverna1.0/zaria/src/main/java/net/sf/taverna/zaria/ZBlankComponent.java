@@ -63,12 +63,11 @@ public class ZBlankComponent extends ZPane implements ZTreeNode {
 	}
 
 	public Element getElement() {
-		// TODO Auto-generated method stub
-		return null;
+		return new Element("blank");
 	}
 
 	public void configure(Element e) {
-		// TODO Auto-generated method stub
+		// No configuration for blank component
 	}
 
 	public List<Action> getActions() {

@@ -154,6 +154,8 @@ public abstract class ZPane extends JComponent implements ZTreeNode {
 				remove(toolBar);
 			}
 		}
+		revalidate();
+		repaint();
 	}
 	
 	/**
@@ -170,6 +172,45 @@ public abstract class ZPane extends JComponent implements ZTreeNode {
 			parent.swap(this, newComponent);
 			((Component)parent).repaint();
 		}
+	}
+	
+	/**
+	 * Returns the base element for the ZPane but does not configure it,
+	 * we don't configure here as we want the configure() method to have
+	 * access to the ZBasePane so it can get at the Repository etc.
+	 * @param e
+	 * @return
+	 */
+	static ZTreeNode componentFor(Element e) {
+		String className = e.getAttributeValue("classname");
+		try {
+			Class<ZTreeNode> theClass = 
+				(Class<ZTreeNode>)ZPane.class.getClassLoader().loadClass(className);
+			return theClass.newInstance();
+		} catch (ClassNotFoundException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		} catch (InstantiationException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		} catch (IllegalAccessException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		return null;
+	}
+	
+	/**
+	 * Return the base element + configuration for the given ZPane
+	 * subclass
+	 * @param z
+	 * @return
+	 */
+	static Element elementFor(ZTreeNode z) {
+		Element zPaneElement = new Element("znode");
+		zPaneElement.setAttribute("classname",z.getClass().getName());
+		zPaneElement.addContent(z.getElement());
+		return zPaneElement;
 	}
 
 }

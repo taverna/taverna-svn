@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<project>
+<?xml version="1.0" encoding="UTF-8"?><project>
   <parent>
     <artifactId>taverna</artifactId>
     <groupId>uk.org.mygrid.taverna</groupId>
@@ -24,7 +23,7 @@
             <configuration>
               <tasks>
                 <taskdef classname="ch.oscg.jreleaseinfo.anttask.JReleaseInfoAntTask" name="jreleaseinfo">
-                  <classpath refid="maven.compile.classpath"/>
+                  <classpath refid="maven.compile.classpath"></classpath>
                 </taskdef>
                 <jreleaseinfo packageName="org.embl.ebi.escience.scufl" targetDir="${project.build.directory}/generated-sources/jreleaseinfo" project="${artifactId}" className="TavernaReleaseInfo" withViewer="false" version="${version}"></jreleaseinfo>
               </tasks>
@@ -70,6 +69,11 @@
     <dependency>
       <groupId>uk.org.mygrid.taverna.raven</groupId>
       <artifactId>raven</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>jdom</groupId>
+      <artifactId>jdom</artifactId>
+      <version>1.0</version>
     </dependency>
   </dependencies>
 </project>

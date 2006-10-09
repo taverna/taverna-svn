@@ -21,6 +21,8 @@ import javax.swing.JScrollPane;
 
 import net.sf.taverna.raven.repository.Artifact;
 import net.sf.taverna.raven.repository.ArtifactNotFoundException;
+import net.sf.taverna.raven.repository.ArtifactStateException;
+import net.sf.taverna.raven.repository.BasicArtifact;
 import net.sf.taverna.raven.spi.SpiRegistry;
 
 import org.jdom.Element;
@@ -53,14 +55,70 @@ public class ZRavenComponent extends ZPane {
 	}
 
 	public Element getElement() {
-		// TODO Auto-generated method stub
-		return null;
+		Element e = new Element("component");
+		if (artifact != null && className != null) {
+			Element artifactElement = new Element("raven");
+			Element g = new Element("group");
+			g.setText(artifact.getGroupId());
+			Element a = new Element("artifact");
+			a.setText(artifact.getArtifactId());
+			Element v = new Element("version");
+			v.setText(artifact.getVersion());
+			artifactElement.addContent(g);
+			artifactElement.addContent(a);
+			artifactElement.addContent(v);
+			
+			Element classNameElement = new Element("classname");
+			classNameElement.setText(className);
+
+			Element spiNameElement = new Element("interface");
+			spiNameElement.setText(spiName);
+			
+			e.addContent(artifactElement);
+			e.addContent(classNameElement);
+			e.addContent(spiNameElement);
+		}
+		return e;
 	}
 
-	public void configure(Element e) {
-		// TODO Auto-generated method stub
+	public void configure(Element confElement) {
+		Element e = confElement.getChild("component");
+		if (e!=null) {
+			Element spiNameElement = e.getChild("interface");
+			if (spiNameElement != null) {
+				this.setSPI(spiNameElement.getTextTrim());
+			}
+			Element artifactElement = e.getChild("artifact");
+			if (artifactElement != null) {
+				artifact = new BasicArtifact(
+						artifactElement.getChild("group").getTextTrim(),
+						artifactElement.getChild("artifact").getTextTrim(),
+						artifactElement.getChild("version").getTextTrim());
+			}
+			Element classNameElement = e.getChild("classname");
+			if (classNameElement != null) {
+				className = classNameElement.getTextTrim();
+			}
+			if (className != null) {
+				ClassLoader acl;
+				try {
+					acl = getRoot().getRepository().getLoader(artifact, null);
+					Class theClass = acl.loadClass(className);
+					setComponent(getRoot().getComponent(theClass));
+				} catch (ArtifactNotFoundException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				} catch (ArtifactStateException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				} catch (ClassNotFoundException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+			}
+		}
 	}
-
+	
 	public List<Action> getActions() {
 		return actions;
 	}
@@ -121,6 +179,7 @@ public class ZRavenComponent extends ZPane {
 				item.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent arg0) {
 						try {
+							className = theClass.getName();
 							setComponent(getRoot().getComponent(theClass));
 							artifact = getRoot().getRepository().artifactForClass(theClass);
 						} catch (ArtifactNotFoundException e) {
@@ -212,8 +271,8 @@ public class ZRavenComponent extends ZPane {
 			hasScrollPane = !hasScrollPane;
 			if (hasScrollPane) {
 				JScrollPane sp = new JScrollPane(contents,
-						JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
-						JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
+						JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
+						JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 				sp.setPreferredSize(new Dimension(0,0));
 				contentArea.add(sp,	BorderLayout.CENTER);
 			}
