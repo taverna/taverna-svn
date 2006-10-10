@@ -16,6 +16,7 @@ import javax.swing.JMenuItem;
 
 import net.sf.taverna.raven.repository.Repository;
 import net.sf.taverna.raven.spi.SpiRegistry;
+import net.sf.taverna.zaria.progress.BlurredGlassPane;
 import net.sf.taverna.zaria.progress.InfiniteProgressPanel;
 
 import org.jdom.Element;
@@ -243,11 +244,20 @@ public abstract class ZBasePane extends ZPane {
 		}
 	}
 	
+	private BlurredGlassPane blur = null;
+	
 	/**
 	 * Lock the parent frame, showing an infinite progress display
 	 * message
 	 */
 	public void lockFrame() {
+		if (blur == null) {
+			blur = new BlurredGlassPane(getFrame());
+			getFrame().setGlassPane(blur);
+		}
+		blur.setActive(true);
+		
+		/**
 		JFrame jf = getFrame();
 		if (jf != null) {
 			Component c = jf.getGlassPane();
@@ -258,12 +268,15 @@ public abstract class ZBasePane extends ZPane {
 			glassPane.setText("Locked...");
 			glassPane.start();
 		}
+		*/
 	}
 	
 	/**
 	 * Unlock the parent frame
 	 */
 	public void unlockFrame() {
+		blur.setActive(false);
+		/**
 		JFrame jf = getFrame();
 		if (jf != null) {
 			glassPane.stop();
@@ -271,6 +284,7 @@ public abstract class ZBasePane extends ZPane {
 				jf.setGlassPane(oldGlassPane);
 			}
 		}
+		*/
 	}
 	
 }
