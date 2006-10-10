@@ -25,10 +25,10 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: ProcessorInfoBeanHelper.java,v $
- * Revision           $Revision: 1.2 $
+ * Revision           $Revision: 1.3 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-07-10 14:10:29 $
- *               by   $Author: sowen70 $
+ * Last modified on   $Date: 2006-10-10 13:04:40 $
+ *               by   $Author: mereden $
  * Created on 22-Jun-2006
  *****************************************************************/
 package org.embl.ebi.escience.scuflworkers;
@@ -79,6 +79,19 @@ public class ProcessorInfoBeanHelper implements ProcessorInfoBean {
 	}
 
 	public ProcessorInfoBeanHelper(String tagname) {
+		synchronized(tavernaProperties) {
+			ClassLoader loader = getClass().getClassLoader();
+			try {
+				Enumeration en = loader.getResources("taverna.properties");
+				while (en.hasMoreElements()) {
+					URL resourceURL = (URL) en.nextElement();
+					tavernaProperties.load(resourceURL.openStream());
+				}
+			}
+			catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
 		tag = tagname;
 		propertyBase = "taverna.processor." + tagname;
 	}
@@ -109,7 +122,7 @@ public class ProcessorInfoBeanHelper implements ProcessorInfoBean {
 		ImageIcon result = null;
 		if (icon != null) {
 			icon = icon.trim();
-			ClassLoader loader = ProcessorInfoBeanHelper.class.getClassLoader();
+			ClassLoader loader = getClass().getClassLoader();
 			if (loader == null) {
 				loader = Thread.currentThread().getContextClassLoader();
 			}

@@ -5,9 +5,6 @@
  */
 package org.embl.ebi.escience.scuflui.results;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.apache.log4j.Logger;
 import org.embl.ebi.escience.scuflui.spi.ResultMapSaveSPI;
 import org.embl.ebi.escience.utils.TavernaSPIRegistry;
@@ -22,11 +19,7 @@ import org.embl.ebi.escience.utils.TavernaSPIRegistry;
  */
 public class ResultMapSaveRegistry extends TavernaSPIRegistry<ResultMapSaveSPI> {
 
-	private static Logger log = Logger.getLogger(ResultMapSaveRegistry.class);
-
 	private static ResultMapSaveRegistry instance;
-
-	private List<ResultMapSaveSPI> savePlugins;
 
 	/**
 	 * Get an instance of the ResultMapSaveRegistry, this method initializes
@@ -35,7 +28,6 @@ public class ResultMapSaveRegistry extends TavernaSPIRegistry<ResultMapSaveSPI> 
 	private static synchronized ResultMapSaveRegistry instance() {
 		if (instance == null) {
 			instance = new ResultMapSaveRegistry();
-			instance.loadInstances(ResultMapSaveRegistry.class.getClassLoader());
 		}
 		return instance;
 	}
@@ -47,16 +39,6 @@ public class ResultMapSaveRegistry extends TavernaSPIRegistry<ResultMapSaveSPI> 
 	 */
 	private ResultMapSaveRegistry() {
 		super(ResultMapSaveSPI.class);
-		savePlugins = new ArrayList<ResultMapSaveSPI>();
-	}
-
-	/**
-	 * Load the available SPI workers from the specified ClassLoader
-	 */
-	private void loadInstances(ClassLoader classLoader) {
-		log.info("Loading save plugins");
-		savePlugins = findComponents(classLoader);
-		log.info("Done");
 	}
 
 	/**
@@ -65,7 +47,7 @@ public class ResultMapSaveRegistry extends TavernaSPIRegistry<ResultMapSaveSPI> 
 	 * can then be used to populate the save portion of the UI
 	 */
 	public static ResultMapSaveSPI[] plugins() {
-		return (ResultMapSaveSPI[]) (instance().savePlugins.toArray(new ResultMapSaveSPI[0]));
+		return instance().findComponents().toArray(new ResultMapSaveSPI[0]);
 	}
 
 }

@@ -21,18 +21,14 @@ import org.embl.ebi.escience.utils.TavernaSPIRegistry;
  * @author Stuart Owen
  */
 public class FacetFinderRegistry extends TavernaSPIRegistry<FacetFinderSPI> {
+
 	private static Logger logger = Logger.getLogger(FacetFinderRegistry.class);
-
 	private static FacetFinderRegistry instance;
-
-	private List<FacetFinderSPI> facetFinders;
 
 	public static synchronized FacetFinderRegistry instance() {
 		if (instance == null) {
 			instance = new FacetFinderRegistry();
-			instance.loadInstances(FacetFinderRegistry.class.getClassLoader());
 		}
-
 		return instance;
 	}
 
@@ -43,21 +39,8 @@ public class FacetFinderRegistry extends TavernaSPIRegistry<FacetFinderSPI> {
 	 */
 	private FacetFinderRegistry() {
 		super(FacetFinderSPI.class);
-		facetFinders = new ArrayList<FacetFinderSPI>();
 	}
 
-	/**
-	 * Load all FacetFinderSPI implementations that are registered in the given
-	 * ClassLoader.
-	 * 
-	 * @param classLoader
-	 *            a ClassLoader which will be searched
-	 */
-	public void loadInstances(ClassLoader classLoader) {
-		logger.info("Loading all facet finders");
-		facetFinders = findComponents(classLoader);
-		logger.info("Done");
-	}
 
 	/**
 	 * Get all facet finders that can decompose a user object and mime type. If
@@ -70,7 +53,7 @@ public class FacetFinderRegistry extends TavernaSPIRegistry<FacetFinderSPI> {
 	public List getFinders(DataThing dataThing) {
 		logger.info("Finding facetisers: " + dataThing);
 		List res = new ArrayList();
-		for (FacetFinderSPI finder : facetFinders) {
+		for (FacetFinderSPI finder : findComponents()) {
 			logger.info("\tfound: " + finder.getName());
 			if (finder.canMakeFacets(dataThing)) {
 				logger.info("\taccepted: " + finder.getName());
@@ -81,23 +64,4 @@ public class FacetFinderRegistry extends TavernaSPIRegistry<FacetFinderSPI> {
 		return res;
 	}
 
-	public void addFinder(FacetFinderSPI finder) {
-		facetFinders.add(finder);
-	}
-
-	public void removeFinder(FacetFinderSPI finder) {
-		facetFinders.remove(finder);
-	}
-
-	public int size() {
-		return facetFinders.size();
-	}
-
-	public Iterator iterator() {
-		return facetFinders.iterator();
-	}
-
-	public FacetFinderSPI get(int i) {
-		return (FacetFinderSPI) facetFinders.get(i);
-	}
 }

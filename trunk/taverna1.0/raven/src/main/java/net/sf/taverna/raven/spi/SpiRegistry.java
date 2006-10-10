@@ -159,6 +159,9 @@ public class SpiRegistry implements Iterable<Class> {
 	 */
 	public synchronized void updateRegistry() {
 		// Do filtering
+		
+		// TODO - ensure that each classloader is only looked at once!
+		Set<URL> alreadySeen = new HashSet<URL>();
 		Set<Artifact> workingSet = new HashSet<Artifact>(newArtifacts);
 		newArtifacts.clear();
 		if (implementations == null) {
@@ -173,8 +176,9 @@ public class SpiRegistry implements Iterable<Class> {
 				//System.out.println("Scanning "+a);
 				ClassLoader cl = repository.getLoader(a, parentLoader);
 				URL resourceURL = cl.getResource("META-INF/services/"+classname);
-				if (resourceURL != null) {
+				if (resourceURL != null && alreadySeen.contains(resourceURL) == false) {
 					// Found an appropriate SPI file
+					alreadySeen.add(resourceURL);
 					try {
 						//System.out.println(" - found SPI file at "+resourceURL.toString());
 						InputStream is = resourceURL.openStream();

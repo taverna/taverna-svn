@@ -25,16 +25,11 @@ public class RendererRegistry extends TavernaSPIRegistry<RendererSPI>{
 	
     private static Logger logger = Logger.getLogger(RendererRegistry.class);
     private static RendererRegistry instance;
-    private List<RendererSPI> renderers;
-
-    public static synchronized RendererRegistry instance()
-    {
-        if(instance == null)
-        {
+    
+    public static synchronized RendererRegistry instance() {
+        if (instance == null) {
             instance = new RendererRegistry();
-            instance.loadInstances(RendererRegistry.class.getClassLoader());
         }
-
         return instance;
     }    
 
@@ -42,22 +37,8 @@ public class RendererRegistry extends TavernaSPIRegistry<RendererSPI>{
      * Create a new instance. Intialize it with no renderers. You will probably
      * want to call <code>RendererRegistry.instance()</code> instead.
      */
-    private RendererRegistry()
-    {
+    private RendererRegistry() {
     	super(RendererSPI.class);
-        renderers = new ArrayList<RendererSPI>();
-    }
-
-    /**
-     * Load all RendererSPI implementations that are registered in the
-     * given ClassLoader.
-     *
-     * @param classLoader  a ClassLoader which will be searched
-     */
-    public void loadInstances(ClassLoader classLoader)
-    {
-        logger.info("Loading all renderers");
-        renderers=findComponents(classLoader);
     }
 
     /**
@@ -67,18 +48,14 @@ public class RendererRegistry extends TavernaSPIRegistry<RendererSPI>{
      * @return  a MimeTypeRendereSPI that can render this, or null if none is
      *      found
      */
-    public RendererSPI getRenderer(DataThing dataThing)
-    {
+    public RendererSPI getRenderer(DataThing dataThing) {
         logger.info("Finding renderer: " + dataThing);
-        for(RendererSPI rend : renderers)
-        {           
-            if(rend.canHandle(this, dataThing))
-            {
+        for (RendererSPI rend : findComponents()) {           
+            if (rend.canHandle(this, dataThing)) {
                 logger.info("\tFound: " + rend.getName());
                 return rend;
             }
         }
-
         return null;
     }
 
@@ -89,42 +66,16 @@ public class RendererRegistry extends TavernaSPIRegistry<RendererSPI>{
      * @param dataThing the object to render
      * @return a (possibly empty) List of RendererSPI instances
      */
-    public List getRenderers(DataThing dataThing)
-    {
+    public List<RendererSPI> getRenderers(DataThing dataThing) {
         logger.info("Finding renderers: " + dataThing);
-        List res = new ArrayList();
-        for(RendererSPI rend : renderers) {            
-            if(rend.canHandle(this, dataThing)) {
+        List<RendererSPI> res = new ArrayList<RendererSPI>();
+        for (RendererSPI rend : findComponents()) {            
+            if (rend.canHandle(this, dataThing)) {
                 logger.info("\tFound: " + rend.getName());
                 res.add(rend);
             }
         }
-
         return res;
     }
 
-    public void addRenderer(RendererSPI renderer)
-    {
-        renderers.add(renderer);
-    }
-
-    public void removeRenderer(RendererSPI renderer)
-    {
-        renderers.remove(renderer);
-    }
-
-    public int size()
-    {
-        return renderers.size();
-    }
-
-    public Iterator iterator()
-    {
-        return renderers.iterator();
-    }
-
-    public RendererSPI get(int i)
-    {
-        return renderers.get(i);
-    }
 }

@@ -88,6 +88,48 @@ public class LocalRepository implements Repository {
 		}
 		
 		@Override
+		public URL findResource(String name) {
+			return findFirstInstanceOfResource(new HashSet<ArtifactClassLoader>(), name);
+		}
+		
+		@Override
+		public Enumeration<URL> findResources(String name) throws IOException {
+			Set<URL> resourceLocations = new HashSet<URL>();
+			enumerateResources(new HashSet<ArtifactClassLoader>(), resourceLocations, name);
+			return Collections.enumeration(resourceLocations);
+		}
+		
+		
+		private URL findFirstInstanceOfResource(Set<ArtifactClassLoader> alreadySeen, String name) {
+			URL resourceURL = super.findResource(name);
+			if (resourceURL != null) {
+				return resourceURL;
+			}
+			alreadySeen.add(this);
+			for (ArtifactClassLoader cl : childLoaders) {
+				resourceURL = cl.findFirstInstanceOfResource(alreadySeen, name);
+				if (resourceURL != null) {
+					return resourceURL;
+				}
+			}
+			return null;
+		}
+		
+		private void enumerateResources(Set<ArtifactClassLoader> alreadySeen, Set<URL> resourceLocations, String name) throws IOException {
+			alreadySeen.add(this);
+			URL resourceURL = super.findResource(name);
+			if (resourceURL != null) {
+				resourceLocations.add(resourceURL);
+			}
+			for (ArtifactClassLoader cl : childLoaders) {
+				if (alreadySeen.contains(cl) == false) {
+					cl.enumerateResources(alreadySeen, resourceLocations, name);
+				}
+			}
+		}
+		
+		
+		@Override
 		public String toString() {
 			return "loader{"+this.name+"} from "+System.identityHashCode(LocalRepository.this);
 		}

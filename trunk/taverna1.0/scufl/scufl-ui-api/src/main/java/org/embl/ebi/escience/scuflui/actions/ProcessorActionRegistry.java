@@ -22,11 +22,7 @@ public class ProcessorActionRegistry extends TavernaSPIRegistry<ProcessorActionS
 
 	private static ProcessorActionRegistry instance = null;
 
-	private List<ProcessorActionSPI> actions = new ArrayList<ProcessorActionSPI>();
-
 	private ProcessorActionRegistry() {
-		// Prevent this class from being instantiated except through
-		// the static instance() method
 		super(ProcessorActionSPI.class);
 	}
 
@@ -37,25 +33,17 @@ public class ProcessorActionRegistry extends TavernaSPIRegistry<ProcessorActionS
 	public static synchronized ProcessorActionRegistry instance() {
 		if (instance == null) {
 			instance = new ProcessorActionRegistry();
-			instance.loadInstances(ProcessorActionRegistry.class.getClassLoader());
 		}
 		return instance;
-	}
-
-	/**
-	 * Discover and load instances
-	 */
-	private void loadInstances(ClassLoader classLoader) {
-		actions = findComponents(classLoader);
 	}
 
 	/**
 	 * Return a List containing all instances of the ProcessorActionSPI which
 	 * think they can operate on the specified processor
 	 */
-	public List getActions(Processor processor) {
-		List result = new ArrayList();
-		for (ProcessorActionSPI spi : actions) {
+	public List<ProcessorActionSPI> getActions(Processor processor) {
+		List<ProcessorActionSPI> result = new ArrayList<ProcessorActionSPI>();
+		for (ProcessorActionSPI spi : findComponents()) {
 			if (spi.canHandle(processor)) {
 				result.add(spi);
 			}
@@ -67,7 +55,7 @@ public class ProcessorActionRegistry extends TavernaSPIRegistry<ProcessorActionS
 	 * Get all registered ProcessorActionSPI instances
 	 */
 	public List getAllActions() {
-		return this.actions;
+		return instance().findComponents();
 	}
 
 }

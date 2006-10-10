@@ -40,6 +40,7 @@ import org.embl.ebi.escience.scuflui.shared.UIUtils;
 import org.embl.ebi.escience.scuflui.shared.UIUtils.ModelChangeListener;
 import org.embl.ebi.escience.scuflui.spi.UIComponentFactorySPI;
 import org.embl.ebi.escience.scuflui.spi.WorkflowModelViewSPI;
+import org.embl.ebi.escience.utils.TavernaSPIRegistry;
 import org.jdom.Element;
 import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
@@ -146,6 +147,8 @@ public class Workbench extends JFrame {
 				(ArtifactClassLoader)getClass().getClassLoader();
 			basePane.setRepository(acl.getRepository());
 		}
+		
+		// Running from outside of Raven - won't expect this to work properly!
 		catch (ClassCastException cce) {
 			basePane.setRepository(LocalRepository.getRepository(new File("e:/home/tom/taverna")));
 			try {
@@ -161,6 +164,9 @@ public class Workbench extends JFrame {
 				e.printStackTrace();
 			}
 		}
+		
+		TavernaSPIRegistry.setRepository(basePane.getRepository());
+		
 		basePane.setKnownSPINames(new String[]{
 		"org.embl.ebi.escience.scuflui.spi.UIComponentFactorySPI"});
 		basePane.setEditable(true);
@@ -184,16 +190,17 @@ public class Workbench extends JFrame {
 		ravenMenu.add(getArtifact);
 		final String[] groups = new String[] {
 				"uk.org.mygrid.taverna.scufl.scufl-ui-components",
-				"uk.org.mygrid.taverna.scuflui"
+				"uk.org.mygrid.taverna.scuflui",
+				"uk.org.mygrid.taverna.processors"
 		};
 		final String[] versions = new String[] {
 				"1.5-SNAPSHOT"
 		};
 		getArtifact.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				basePane.lockFrame();
+				//basePane.lockFrame();
 				Artifact a = ArtifactDownloadDialog.showDialog(Workbench.this, null, "Download new artifact", "Raven downloader", groups, versions);
-				basePane.unlockFrame();
+				//basePane.unlockFrame();
 				if (a != null) {
 					addArtifact(a);
 				}
@@ -341,8 +348,8 @@ public class Workbench extends JFrame {
 	}
 	
 	public synchronized void updateRepository() {
-		basePane.lockFrame();
+		//basePane.lockFrame();
 		basePane.getRepository().update();
-		basePane.unlockFrame();
+		//basePane.unlockFrame();
 	}
 }

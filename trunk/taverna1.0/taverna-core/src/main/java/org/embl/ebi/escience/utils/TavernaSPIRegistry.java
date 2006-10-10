@@ -33,16 +33,16 @@
  *****************************************************************/
 package org.embl.ebi.escience.utils;
 
-import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.discovery.resource.ClassLoaders;
-import org.apache.commons.discovery.tools.SPInterface;
-import org.apache.commons.discovery.tools.Service;
+import net.sf.taverna.raven.repository.Repository;
+import net.sf.taverna.raven.spi.InstanceRegistry;
+import net.sf.taverna.raven.spi.RegistryListener;
+import net.sf.taverna.raven.spi.SpiRegistry;
+
 import org.apache.log4j.Logger;
 
 /**
@@ -57,14 +57,30 @@ public class TavernaSPIRegistry<T> {
 
 	private Class<T> spiClass;
 	private static Logger logger = Logger.getLogger(TavernaSPIRegistry.class);
-	private static Map<Class,List> cache = Collections.synchronizedMap(new HashMap<Class,List>());
+
+	private static Map<Class, InstanceRegistry> spiMap =
+		Collections.synchronizedMap(new HashMap<Class, InstanceRegistry>());
+	private static Repository REPOSITORY = null;
 	
+	public static void setRepository(Repository theRepository) {
+		REPOSITORY = theRepository;
+	}
 	
 	public TavernaSPIRegistry(Class<T> spiClass) {
 		this.spiClass = spiClass;
-		if (cache.get(spiClass)==null)
-		{
-			cache.put(spiClass,new ArrayList<T>());
+		if (spiMap.containsKey(spiClass) == false) {
+			SpiRegistry registry = new SpiRegistry(REPOSITORY, spiClass.getName(), null);
+			registry.addRegistryListener(new RegistryListener() {
+				public void spiRegistryUpdated(SpiRegistry registry) {
+					System.out.println("Registry updated <"+
+							TavernaSPIRegistry.this.spiClass.getName()+"> : ");
+					for (Class<T> theClass : registry.getClasses()) {
+						System.out.println("  "+theClass.getName());
+						System.out.println("    - "+theClass.getClassLoader().toString());
+					}
+				}
+			});
+			spiMap.put(spiClass, new InstanceRegistry<T>(registry, new Object[0]));
 		}
 	}
 	
@@ -73,56 +89,9 @@ public class TavernaSPIRegistry<T> {
 	 * Checks cache first, and only does a refetch if the cache is empty.
 	 * The cache can be cleared using flushCache. 
 	 */
-	protected synchronized List<T> findComponents(ClassLoader classloader)
-	{
-		List<T> result = cache.get(spiClass);
-		if (result.size()==0)
-		{
-			ClassLoaders loaders = new ClassLoaders();
-			loaders.put(classloader);
-			SPInterface spi = new SPInterface(spiClass);
-			Enumeration en = Service.providers(spi,loaders);
-			while (en.hasMoreElements()) {
-				T el=(T)en.nextElement();
-				result.add(el);	
-				logger.info("Found plugin:"+el.getClass().getSimpleName());
-			}			
-		}
-		return result;
+	protected synchronized List<T> findComponents() {
+		InstanceRegistry<T> ir = spiMap.get(spiClass);
+		return ir.getInstances();
 	}
 	
-	
-	/**
-	 * Finds the components registered as an SPI against class <T>, searching the current classloader
-	 * Checks cache first, and only does a refetch if the cache is empty.
-	 * The cache can be cleared using flushCache. 
-	 */
-	protected synchronized List<T> findComponents()
-	{				
-		return findComponents(getClassLoader());
-	}
-	
-	protected ClassLoader getClassLoader()
-	{
-		ClassLoader loader = TavernaSPIRegistry.class.getClassLoader();
-		if (loader == null) {
-			loader = Thread.currentThread().getContextClassLoader();
-		}
-		
-		return loader;	
-	}
-	
-	/**
-	 * flushes the cached components based on the provided spiClass
-	 * @param spiClass
-	 */
-	public static void flushCache(Class spiClass)
-	{
-		List list=cache.get(spiClass);
-		if (list!=null)
-		{
-			list.clear();
-		}
-	}
-
 }
