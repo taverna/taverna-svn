@@ -229,8 +229,8 @@ public class ZRavenComponent extends ZPane {
 		public SelectNamedInstanceAction() {
 			super();
 			putValue(Action.SHORT_DESCRIPTION,"Select named component");
-			//putValue(Action.SMALL_ICON, ZIcons.iconFor("selectspi"));
-			putValue(Action.NAME, "fromName");
+			putValue(Action.SMALL_ICON, ZIcons.iconFor("selectnamed"));
+			//putValue(Action.NAME, "fromName");
 		}
 		
 		public void actionPerformed(ActionEvent arg0) {
@@ -274,8 +274,8 @@ public class ZRavenComponent extends ZPane {
 		public NameComponentAction() {
 			super();
 			putValue(Action.SHORT_DESCRIPTION,"Assign name to component");
-			//putValue(Action.SMALL_ICON, ZIcons.iconFor("selectspi"));
-			putValue(Action.NAME,"addName");
+			putValue(Action.SMALL_ICON, ZIcons.iconFor("setname"));
+			//putValue(Action.NAME,"addName");
 		}
 		
 		public void actionPerformed(ActionEvent arg0) {
