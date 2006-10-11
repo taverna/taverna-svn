@@ -24,6 +24,7 @@ import net.sf.taverna.raven.repository.ArtifactNotFoundException;
 import net.sf.taverna.raven.repository.ArtifactStateException;
 import net.sf.taverna.raven.repository.BasicArtifact;
 import net.sf.taverna.raven.spi.SpiRegistry;
+import net.sf.taverna.zaria.ZBasePane.NamedRavenComponentSpecifier;
 
 import org.jdom.Element;
 
@@ -42,45 +43,93 @@ public class ZRavenComponent extends ZPane {
 	private Action toggleScroll = new ToggleScrollPaneAction();
 	private Action selectSPI = new SelectSPIAction();
 	private Action selectInstance = new SelectInstanceAction();
+	private Action nameComponent = new NameComponentAction();
+	private Action selectNamedInstance = new SelectNamedInstanceAction();
+	
 	
 	public ZRavenComponent() {
 		super();
 		actions.add(selectSPI);
 		actions.add(selectInstance);
 		actions.add(toggleScroll);
+		actions.add(nameComponent);
+		actions.add(selectNamedInstance);
+		nameComponent.setEnabled(false);
 		actions.add(new ReplaceWithBlankAction());
 		setLayout(new BorderLayout());
 		contentArea.setLayout(new BorderLayout());
 		add(contentArea, BorderLayout.CENTER);
 	}
-
+	
 	public Element getElement() {
-		Element e = new Element("component");
-		if (artifact != null && className != null) {
-			Element artifactElement = new Element("raven");
-			Element g = new Element("group");
-			g.setText(artifact.getGroupId());
-			Element a = new Element("artifact");
-			a.setText(artifact.getArtifactId());
-			Element v = new Element("version");
-			v.setText(artifact.getVersion());
-			artifactElement.addContent(g);
-			artifactElement.addContent(a);
-			artifactElement.addContent(v);
-			
-			Element classNameElement = new Element("classname");
-			classNameElement.setText(className);
-
-			Element spiNameElement = new Element("interface");
-			spiNameElement.setText(spiName);
-			
-			e.addContent(artifactElement);
-			e.addContent(classNameElement);
-			e.addContent(spiNameElement);
+		if (sharedName.equals("")) {
+			Element e = new Element("component");
+			if (artifact != null && className != null) {
+				Element artifactElement = new Element("raven");
+				Element g = new Element("group");
+				g.setText(artifact.getGroupId());
+				Element a = new Element("artifact");
+				a.setText(artifact.getArtifactId());
+				Element v = new Element("version");
+				v.setText(artifact.getVersion());
+				artifactElement.addContent(g);
+				artifactElement.addContent(a);
+				artifactElement.addContent(v);
+				
+				Element classNameElement = new Element("classname");
+				classNameElement.setText(className);
+				
+				Element spiNameElement = new Element("interface");
+				spiNameElement.setText(spiName);
+				
+				e.addContent(artifactElement);
+				e.addContent(classNameElement);
+				e.addContent(spiNameElement);
+			}
+			return e;
 		}
-		return e;
+		else {
+			Element e = new Element("namedcomponent");
+			Element nameElement = new Element("name");
+			nameElement.setText(sharedName);
+			e.addContent(nameElement);
+			return e;
+		}
 	}
 
+	public void unsetSharedName() {
+		this.sharedName = "";
+		nameComponent.setEnabled(true);
+	}
+	
+	public void setSharedName(String name) {
+		this.sharedName = name;
+		// Either fetch a component from the base pane with this name
+		// or we're creating a new one.
+		JComponent jc = getRoot().getNamedComponent(name);
+		if (jc != null) {
+			if (jc.getParent()!=null) {
+				JComponent parent = (JComponent) jc.getParent();
+				// Remove from any existing parent just in case
+				jc.getParent().remove(jc);
+				parent.revalidate();
+				parent.repaint();
+				
+			}
+			setComponent(jc);
+		}
+		else {
+			// Create a new shared component entry in the basepane
+			NamedRavenComponentSpecifier nrcs = 
+				getRoot().new NamedRavenComponentSpecifier(artifact, className, name);
+			getRoot().namedComponentDefinitions.put(name, nrcs);
+			if (this.contents != null) {
+				getRoot().namedComponents.put(name, this.contents);
+			}
+		}
+		nameComponent.setEnabled(false);
+	}
+	
 	public void configure(Element confElement) {
 		Element e = confElement.getChild("component");
 		if (e!=null) {
@@ -117,6 +166,18 @@ public class ZRavenComponent extends ZPane {
 				}
 			}
 		}
+		else {
+			e = confElement.getChild("namedcomponent");
+			if (e!=null) {
+				Element componentNameElement = e.getChild("name");
+				String componentName = componentNameElement.getTextTrim();
+				JComponent jc = getRoot().getNamedComponent(componentName);
+				if (jc.getParent()!=null) {
+					jc.getParent().remove(jc);
+				}
+				setComponent(jc);
+			}
+		}
 	}
 	
 	public List<Action> getActions() {
@@ -150,7 +211,7 @@ public class ZRavenComponent extends ZPane {
 		this.contents = theComponent;
 		getRoot().registerComponent(this.contents);
 		toggleScroll.setEnabled(true);
-		revalidate();
+		getRoot().revalidate();
 	}
 	
 	/**
@@ -158,6 +219,82 @@ public class ZRavenComponent extends ZPane {
 	 */
 	public JComponent getComponent() {
 		return this.contents;
+	}
+	
+	/**
+	 * Pick the component from a list of known named base scoped components
+	 */
+	public class SelectNamedInstanceAction extends AbstractAction {
+
+		public SelectNamedInstanceAction() {
+			super();
+			putValue(Action.SHORT_DESCRIPTION,"Select named component");
+			//putValue(Action.SMALL_ICON, ZIcons.iconFor("selectspi"));
+			putValue(Action.NAME, "fromName");
+		}
+		
+		public void actionPerformed(ActionEvent arg0) {
+			JPopupMenu menu = new JPopupMenu("Named Components");
+			for (final String name : getRoot().namedComponentDefinitions.keySet()) {
+				NamedRavenComponentSpecifier nrcs = 
+					getRoot().namedComponentDefinitions.get(name);
+				JMenuItem prototype;
+				try {
+					prototype = getRoot().getMenuItem(nrcs.getComponentClass());
+					JMenuItem item = new JMenuItem(name, prototype.getIcon());
+					item.addActionListener(new ActionListener() {
+						public void actionPerformed(ActionEvent arg0) {
+								setSharedName(name);
+						}
+					});
+					menu.add(item);
+				} catch (ArtifactNotFoundException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (ArtifactStateException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (ClassNotFoundException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+			Component sourceComponent = (Component) arg0.getSource();
+			menu.show(sourceComponent, 0, sourceComponent.getHeight());
+		}
+			
+		
+	}
+	
+	/**
+	 * Assign a new name to the current (unnamed) component
+	 */
+	public class NameComponentAction extends AbstractAction {
+
+		public NameComponentAction() {
+			super();
+			putValue(Action.SHORT_DESCRIPTION,"Assign name to component");
+			//putValue(Action.SMALL_ICON, ZIcons.iconFor("selectspi"));
+			putValue(Action.NAME,"addName");
+		}
+		
+		public void actionPerformed(ActionEvent arg0) {
+			ImageIcon icon = null;
+			String[] options = getRoot().getKnownSPINames();
+			String newName = (String)JOptionPane.showInputDialog(
+					getFrame(),
+					"Assign name to component",
+					"Name",
+					JOptionPane.QUESTION_MESSAGE,
+					icon,
+					null,
+					"new name");
+			if (newName!=null) {
+				setSharedName(newName);
+			}
+		}
+			
+		
 	}
 	
 	/**
@@ -182,6 +319,8 @@ public class ZRavenComponent extends ZPane {
 							className = theClass.getName();
 							setComponent(getRoot().getComponent(theClass));
 							artifact = getRoot().getRepository().artifactForClass(theClass);
+							unsetSharedName();
+							nameComponent.setEnabled(true);
 						} catch (ArtifactNotFoundException e) {
 							// Should never happen as these things can only be loaded
 							// from within a raven classloader and so should by definition

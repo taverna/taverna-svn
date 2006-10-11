@@ -12,9 +12,16 @@ import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JMenuItem;
 
+import net.sf.taverna.raven.repository.Artifact;
+import net.sf.taverna.raven.repository.ArtifactNotFoundException;
+import net.sf.taverna.raven.repository.ArtifactStateException;
+import net.sf.taverna.raven.repository.ArtifactStatus;
+import net.sf.taverna.raven.repository.BasicArtifact;
 import net.sf.taverna.raven.repository.Repository;
+import net.sf.taverna.raven.repository.impl.LocalRepository.ArtifactClassLoader;
 import net.sf.taverna.raven.spi.SpiRegistry;
 import net.sf.taverna.zaria.progress.BlurredGlassPane;
 import net.sf.taverna.zaria.progress.InfiniteProgressPanel;
@@ -41,6 +48,10 @@ public abstract class ZBasePane extends ZPane {
 		new InfiniteProgressPanel();
 	private Component oldGlassPane = null;
 	private Action toggleEditAction;
+	Map<String, NamedRavenComponentSpecifier> namedComponentDefinitions =
+		new HashMap<String, NamedRavenComponentSpecifier>();
+	Map<String, JComponent> namedComponents =
+		new HashMap<String, JComponent>();
 	
 	/**
 	 * Construct a new ZBasePane, inserting a default
@@ -57,6 +68,76 @@ public abstract class ZBasePane extends ZPane {
 			}
 		};
 		setEditActionState();
+	}
+	
+	/**
+	 * Returns or creates and returns the given named component assuming the
+	 * definition for that component exists within this base pane.
+	 * @param componentName
+	 * @return
+	 */
+	JComponent getNamedComponent(String componentName) {
+		synchronized(namedComponents) {
+			if (namedComponents.containsKey(componentName)) {
+				return namedComponents.get(componentName);
+			}
+			else {
+				
+				if (namedComponentDefinitions.containsKey(componentName)) {
+					NamedRavenComponentSpecifier spec = 
+						namedComponentDefinitions.get(componentName);
+					try {
+						Class theClass = spec.getComponentClass();
+						JComponent theComponent = getComponent(theClass);
+						namedComponents.put(componentName, theComponent);
+						return theComponent;
+					} catch (ArtifactNotFoundException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} catch (ArtifactStateException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} catch (ClassNotFoundException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+				else {
+					return null;
+				}
+			}
+		}
+		return new JLabel("Error, see console: can't create '"
+				+componentName+"'");
+	}
+	
+	/**
+	 * A bean containing information about a named Raven component
+	 * allowing its reuse amongst various different layouts.
+	 * @author Tom Oinn
+	 */
+	class NamedRavenComponentSpecifier {
+		
+		private Artifact artifact;
+		private String className;
+		private String componentName;
+		
+		public NamedRavenComponentSpecifier(Artifact artifact, 
+				String className, String componentName) {
+			this.artifact = artifact;
+			this.className = className;
+			this.componentName = componentName;
+		}
+		
+		public Class getComponentClass() throws 
+		ArtifactNotFoundException, 
+		ArtifactStateException, 
+		ClassNotFoundException {
+			ClassLoader acl = 
+				repository.getLoader(artifact, null);
+			return acl.loadClass(className);
+		}
+		
 	}
 	
 	/**
@@ -90,12 +171,66 @@ public abstract class ZBasePane extends ZPane {
 	}
 
 	public Element getElement() {
-		return elementFor(child);
+		Element baseElement = new Element("basepane");
+		Element childElement = new Element("child");
+		childElement.addContent(elementFor(child));
+		baseElement.addContent(childElement);
+		Element namedComponentsElement = new Element("namedcomponents");
+		baseElement.addContent(namedComponentsElement);
+		for (String name : namedComponentDefinitions.keySet()) {
+			NamedRavenComponentSpecifier nrcs = 
+				namedComponentDefinitions.get(name);
+			Element namedComponentElement = new Element("namedcomponent");
+			namedComponentsElement.addContent(namedComponentElement);
+			addChildText(namedComponentElement, "groupid", nrcs.artifact.getGroupId());
+			addChildText(namedComponentElement, "artifact", nrcs.artifact.getArtifactId());
+			addChildText(namedComponentElement, "version", nrcs.artifact.getVersion());
+			addChildText(namedComponentElement, "classname", nrcs.className);
+			addChildText(namedComponentElement, "name", name);
+		}
+		return baseElement;
+	}
+	private static void addChildText(Element parent, String elementName, String text) {
+		Element e = new Element(elementName);
+		e.setText(text);
+		parent.addContent(e);
 	}
 
+	/**
+	 * Automatically intializes the repository with any named components that 
+	 * aren't already there.
+	 */
 	public void configure(Element e) {
-		ZTreeNode node = componentFor(e);
+		Element childElement = e.getChild("child");
+		ZTreeNode node = componentFor(childElement);
 		swap(child, node);
+		// Initialize any named component definitions we may have
+		// lying around
+		Element namedComponentSetElement = e.getChild("namedcomponents");
+		if (namedComponentSetElement != null) {
+			boolean needUpdate = false;
+			for (Element compElement : 
+				(List<Element>)namedComponentSetElement.getChildren("namedcomponent")) {
+				String groupId = compElement.getChildTextTrim("groupid");
+				String artifactId = compElement.getChildTextTrim("artifact");
+				String version = compElement.getChildTextTrim("version");
+				String className = compElement.getChildTextTrim("classname");
+				String name = compElement.getChildTextTrim("name");
+				Artifact a = new BasicArtifact(groupId, artifactId, version);
+				NamedRavenComponentSpecifier nrcs = 
+					new NamedRavenComponentSpecifier(a, className, name);
+				namedComponentDefinitions.put(name, nrcs);
+				repository.addArtifact(a);
+				if (repository.getStatus(a).equals(ArtifactStatus.Ready)==false) {
+					needUpdate = true;
+				}
+			}
+			if (needUpdate) {
+				lockFrame();
+				repository.update();
+				unlockFrame();				
+			}
+		}
 		node.configure(e);
 	}
 
@@ -286,5 +421,6 @@ public abstract class ZBasePane extends ZPane {
 		}
 		*/
 	}
+
 	
 }
