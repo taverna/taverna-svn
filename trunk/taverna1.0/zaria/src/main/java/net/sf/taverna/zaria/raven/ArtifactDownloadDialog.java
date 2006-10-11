@@ -2,11 +2,8 @@ package net.sf.taverna.zaria.raven;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
-import java.awt.Dialog;
 import java.awt.Dimension;
 import java.awt.Frame;
-import java.awt.GraphicsConfiguration;
-import java.awt.HeadlessException;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -18,7 +15,7 @@ import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JTextArea;
+import javax.swing.JTextField;
 
 import net.sf.taverna.raven.repository.Artifact;
 import net.sf.taverna.raven.repository.BasicArtifact;
@@ -49,10 +46,13 @@ public class ArtifactDownloadDialog extends JDialog {
 		groupID.setEditable(true);
 		final JComboBox version = new JComboBox(suggestedVersions);
 		version.setEditable(true);
-		final JTextArea artifactID = new JTextArea("");
+		final JTextField artifactID = new JTextField("");
 		sP.add(groupID);
+		sP.add(Box.createRigidArea(new Dimension(3,3)));
 		sP.add(artifactID);
+		sP.add(Box.createRigidArea(new Dimension(3,3)));
 		sP.add(version);
+		sP.add(Box.createRigidArea(new Dimension(3,3)));
 		
 		ActionListener listener = new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -88,6 +88,8 @@ public class ArtifactDownloadDialog extends JDialog {
         getContentPane().add(new JLabel(labelText), BorderLayout.NORTH);
         getContentPane().add(buttonPanel, BorderLayout.SOUTH);
         getContentPane().add(sP, BorderLayout.CENTER);
+        getContentPane().add(Box.createRigidArea(new Dimension(3,3)), BorderLayout.EAST);
+        getContentPane().add(Box.createRigidArea(new Dimension(3,3)), BorderLayout.WEST);
         pack();
         setLocationRelativeTo(locationComp);
 	}
