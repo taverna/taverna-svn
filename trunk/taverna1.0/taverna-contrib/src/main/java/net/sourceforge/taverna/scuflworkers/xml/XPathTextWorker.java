@@ -26,7 +26,7 @@ import uk.ac.soton.itinnovation.taverna.enactor.entities.TaskExecutionException;
  * returns a nodelist containing the nodes that match the XPath expression.
  * 
  * @author mfortner
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  * 
  * @tavinput "xpath", "xml-text"
  * 
@@ -43,8 +43,7 @@ public class XPathTextWorker implements LocalWorker {
 		DataThingAdapter inAdapter = new DataThingAdapter(inputMap);
 		String xpathStr = inAdapter.getString("xpath");
 		String xmlText = inAdapter.getString("xml-text");
-
-		Document doc;
+		
 		// Get the matching elements
 		try {
 			// doc = parseXml(xmlText, false);
