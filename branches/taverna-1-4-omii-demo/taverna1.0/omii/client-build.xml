@@ -1,8 +1,10 @@
 <project default="release">
-	<property name="install.directory" value="taverna"/>
+	<property name="project.name" value="taverna"/>
+	<property name="project.version" value="1.4.1"/>
+	<property name="install.directory" value="${project.name}"/>
 
     <target name="release">
-        <echo>Taverna client v${version} http://www.mygrid.org.uk</echo>
+        <echo>${project.name} v${project.version} http://www.mygrid.org.uk</echo>
     </target>
 
     <target name="verify-install-env">
