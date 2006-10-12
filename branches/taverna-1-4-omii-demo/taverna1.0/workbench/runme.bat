@@ -20,4 +20,4 @@ set TAVERNA_OMII_OPTS=%TAVERNA_OMII_OPTS% -Dtaverna.path="%TAVERNA_OMII_FILES%"
 set OPTS=-Xms256m -Xmx512m
 set OPTS=%OPTS% -Djava.protocol.handler.pkgs=uk.ac.rdg.resc.jstyx.client
 
-java %OPTS% %TAVERNA_OMII_OPTS% -jar "%~dp0\taverna-launcher-1.4-omii-demo.jar" %*
+java %OPTS% %TAVERNA_OMII_OPTS% -jar "%~dp0\taverna-launcher-1.4.1.jar" %*
