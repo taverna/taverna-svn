@@ -2,7 +2,7 @@
 <project name="Taverna">
   <bannerLeft>
     <name>myGrid</name>
-    <src>http://www.omii.ac.uk/images/omii_logo_name.jpg</src>
+    <src>http://www.omii.ac.uk/images/omii_uk_logo_name.jpg</src>
     <href>http://www.omii.ac.uk/</href>
   </bannerLeft>
   <bannerRight>
@@ -34,10 +34,12 @@
 
   </body>
 
+<!--
   <skin>
     <groupId>org.apache.maven.skins</groupId>
     <artifactId>maven-classic-skin</artifactId>
     <version>1.0</version>
   </skin>
+-->
 
 </project>
