@@ -25,10 +25,10 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: WSDLSOAPInvoker.java,v $
- * Revision           $Revision: 1.4.4.2 $
+ * Revision           $Revision: 1.4.4.3 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-08-17 11:34:29 $
- *               by   $Author: sowen70 $
+ * Last modified on   $Date: 2006-10-12 10:26:06 $
+ *               by   $Author: davidwithers $
  * Created on 07-Apr-2006
  *****************************************************************/
 package org.embl.ebi.escience.scuflworkers.wsdl.soap;
@@ -51,6 +51,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.rpc.ServiceException;
 import javax.xml.soap.SOAPException;
 
+import org.apache.axis.EngineConfiguration;
 import org.apache.axis.attachments.AttachmentPart;
 import org.apache.axis.client.Call;
 import org.apache.axis.message.SOAPBodyElement;
@@ -99,25 +100,28 @@ public class WSDLSOAPInvoker {
 	 * @throws Exception
 	 */
 	public Map invoke(Map inputMap) throws Exception {
+		return invoke(inputMap, null);
+	}
+
+	/**
+	 * Invokes the webservice with the supplied input Map, and returns a Map
+	 * containing the outputs, mapped against their output names.
+	 * 
+	 * @param inputMap
+	 * @param config client handler configuration; can be null
+	 * @return
+	 * @throws Exception
+	 */
+	public Map invoke(Map inputMap, EngineConfiguration config) throws Exception {
 
 		Call call = getCall();
-		SOAPBodyElement body = buildBody(inputMap);
-
-		// nasty hack that tries to invoke the service and if it fails tries again
-		// with an omii secure deployment descriptor
-		List response = null;
-		try {
-			response = (List) call.invoke(new Object[] { body });
-		} catch (java.rmi.RemoteException e) {
-			// set the secure config
-			org.apache.axis.EngineConfiguration config = new org.apache.axis.configuration.FileProvider(
-					"client-config.wsdd");
-			config.configureEngine(new org.apache.axis.client.AxisClient());
+		if (config != null) {
 			call.setClientHandlers(config.getGlobalRequest(), config
 					.getGlobalResponse());
-			// try again
-			response = (List) call.invoke(new Object[] { body });
 		}
+		SOAPBodyElement body = buildBody(inputMap);
+
+		List response = (List) call.invoke(new Object[] { body });
 
 		SOAPResponseParser parser = SOAPResponseParserFactory.instance()
 				.create(response, getUse(), getStyle(),
@@ -313,7 +317,7 @@ public class WSDLSOAPInvoker {
 		if (thing.getDataObject() instanceof List) {
 			List dataValues = (List) thing.getDataObject();
 			size = dataValues.size();
-			populateElementWithList(mimeType, el, dataValues,elementType);
+			populateElementWithList(mimeType, el, dataValues, elementType);
 		} else {
 			Object dataItem = thing.getDataObject();
 			// if mime type is text/xml then the data is an array in xml form,
@@ -332,12 +336,11 @@ public class WSDLSOAPInvoker {
 					child = child.getNextSibling();
 				}
 			} else {
-				String tag="item";
+				String tag = "item";
 				if (elementType instanceof BaseTypeDescriptor) {
-					tag=elementType.getType();
-				}
-				else {				
-					tag=elementType.getName();
+					tag = elementType.getType();
+				} else {
+					tag = elementType.getName();
 				}
 				Element item = el.getOwnerDocument().createElement(tag);
 				populateElementWithStringData(mimeType, item, dataItem
@@ -376,19 +379,18 @@ public class WSDLSOAPInvoker {
 	 * @throws IOException
 	 */
 	private void populateElementWithList(String mimeType, Element element,
-			List dataValues,TypeDescriptor elementType) throws ParserConfigurationException, SAXException,
-			IOException {
+			List dataValues, TypeDescriptor elementType)
+			throws ParserConfigurationException, SAXException, IOException {
 		for (Iterator dataIterator = dataValues.iterator(); dataIterator
 				.hasNext();) {
 			Object dataItem = dataIterator.next();
 			String tag;
 			if (elementType instanceof BaseTypeDescriptor) {
-				tag=elementType.getType();
+				tag = elementType.getType();
+			} else {
+				tag = elementType.getName();
 			}
-			else {
-				tag=elementType.getName();
-			}
-				 
+
 			Element item = element.getOwnerDocument().createElement(tag);
 			populateElementWithStringData(mimeType, item, dataItem.toString());
 			element.appendChild(item);
