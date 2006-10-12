@@ -7,6 +7,10 @@ import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -18,10 +22,12 @@ import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.Icon;
 import javax.swing.JComponent;
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.UIManager;
 
@@ -32,16 +38,20 @@ import net.sf.taverna.zaria.ZBasePane;
 import net.sf.taverna.zaria.ZRavenComponent;
 import net.sf.taverna.zaria.raven.ArtifactDownloadDialog;
 
+import org.apache.log4j.Logger;
 import org.embl.ebi.escience.scufl.ScuflModel;
 import org.embl.ebi.escience.scufl.ScuflModelEvent;
 import org.embl.ebi.escience.scufl.ScuflModelEventListener;
 import org.embl.ebi.escience.scuflui.TavernaIcons;
+import org.embl.ebi.escience.scuflui.shared.ExtensionFileFilter;
 import org.embl.ebi.escience.scuflui.shared.UIUtils;
 import org.embl.ebi.escience.scuflui.shared.UIUtils.ModelChangeListener;
 import org.embl.ebi.escience.scuflui.spi.UIComponentFactorySPI;
 import org.embl.ebi.escience.scuflui.spi.WorkflowModelViewSPI;
 import org.embl.ebi.escience.utils.TavernaSPIRegistry;
+import org.jdom.Document;
 import org.jdom.Element;
+import org.jdom.input.SAXBuilder;
 import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
 
@@ -49,7 +59,10 @@ import org.jdom.output.XMLOutputter;
  * Top level Zaria based UI for Taverna
  * @author Tom Oinn
  */
+@SuppressWarnings("serial")
 public class Workbench extends JFrame {
+	
+	private static Logger logger = Logger.getLogger(Workbench.class);
 	
 	private ZBasePane basePane = null;
 	private Set<ScuflModel> workflowModels = 
@@ -76,6 +89,7 @@ public class Workbench extends JFrame {
 	 * repository pointing to the given directory on disc.
 	 * @param localRepositoryLocation
 	 */
+	@SuppressWarnings("serial")
 	private Workbench() {
 		super();
 		try {
@@ -116,11 +130,9 @@ public class Workbench extends JFrame {
 				try {
 					factory = (UIComponentFactorySPI) theClass.newInstance();
 					return (JComponent)factory.getComponent();
-				} catch (InstantiationException e) {
-					// TODO Auto-generated catch block
+				} catch (InstantiationException e) {					
 					e.printStackTrace();
 				} catch (IllegalAccessException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 				return new JPanel();
@@ -176,6 +188,7 @@ public class Workbench extends JFrame {
 		createWorkflowAction().actionPerformed(null);
 	}
 	
+	@SuppressWarnings("serial")
 	public void setUI() {
 		getContentPane().setLayout(new BorderLayout());
 		getContentPane().add(basePane, BorderLayout.CENTER);
@@ -217,8 +230,72 @@ public class Workbench extends JFrame {
 				System.out.println(xo.outputString(element));
 			}
 		};
+		
 		dumpLayoutXMLAction.putValue(Action.NAME,"Dump layout XML to console");
+		
+		Action saveLayoutXMLAction = new AbstractAction() {
+			public void actionPerformed(ActionEvent e) {
+				JFileChooser chooser=new JFileChooser();
+				chooser.setDialogTitle("Save Layout");
+				chooser.setFileFilter(new ExtensionFileFilter(new String[] { "xml" }));
+				int retVal=chooser.showSaveDialog(Workbench.this);
+				if (retVal == JFileChooser.APPROVE_OPTION) {
+					File file=chooser.getSelectedFile();
+					if (file!=null) {
+						PrintWriter out;
+						try {
+							out = new PrintWriter(new FileWriter(file));
+							Element element = basePane.getElement();
+							XMLOutputter xo = new XMLOutputter(Format.getPrettyFormat());
+							out.print(xo.outputString(element));
+							out.flush();
+							out.close();
+						} catch (IOException ex) {							
+							logger.error("IOException saving layout",ex);
+							JOptionPane.showMessageDialog(Workbench.this,"Error saving layout file: "+ex.getMessage());
+						}
+						
+					}
+				}
+			}			
+		};
+		
+		saveLayoutXMLAction.putValue(Action.NAME, "Save layout XML");
+		
+		Action loadLayoutXMLAction = new AbstractAction() {
+			public void actionPerformed(ActionEvent e) {				
+				JFileChooser chooser=new JFileChooser();
+				chooser.setDialogTitle("Open Layout");
+				chooser.setFileFilter(new ExtensionFileFilter(new String[] { "xml" }));
+				int retVal=chooser.showOpenDialog(Workbench.this);
+				if (retVal == JFileChooser.APPROVE_OPTION) {
+					File file=chooser.getSelectedFile();
+					if (file!=null) {
+						try {
+							InputStreamReader isr = new InputStreamReader(file.toURL().openStream());
+							SAXBuilder builder = new SAXBuilder(false);
+							Document document = builder.build(isr);
+							basePane.configure(document.detachRootElement());
+						}
+						catch(Exception ex) {
+							ex.printStackTrace();
+							logger.error("Error opening layout file",ex);
+							JOptionPane.showMessageDialog(Workbench.this,"Error opening layout file: "+ex.getMessage());
+						}
+					}
+				}
+			}
+			
+		};
+		
+		loadLayoutXMLAction.putValue(Action.NAME, "Open layout XML");
+		
+		
 		zariaMenu.add(new JMenuItem(dumpLayoutXMLAction));
+		zariaMenu.add(new JMenuItem(loadLayoutXMLAction));
+		zariaMenu.add(new JMenuItem(saveLayoutXMLAction));
+		
+		
 		
 		setJMenuBar(menuBar);
 		setSize(new Dimension(500,500));

@@ -2,10 +2,8 @@ package net.sf.taverna.zaria;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
-import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.util.ArrayList;
-import java.util.Enumeration;
 import java.util.List;
 
 import javax.swing.AbstractAction;
@@ -13,9 +11,7 @@ import javax.swing.Action;
 import javax.swing.Box;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
-import javax.swing.JPanel;
 import javax.swing.JToolBar;
-import javax.swing.tree.TreeNode;
 
 import org.jdom.Element;
 
@@ -182,7 +178,7 @@ public abstract class ZPane extends JComponent implements ZTreeNode {
 	 * @return
 	 */
 	static ZTreeNode componentFor(Element e) {
-		String className = e.getAttributeValue("classname");
+		String className = e.getAttributeValue("classname");		
 		try {
 			Class<ZTreeNode> theClass = 
 				(Class<ZTreeNode>)ZPane.class.getClassLoader().loadClass(className);

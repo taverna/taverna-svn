@@ -11,7 +11,6 @@ import java.util.Map;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.JComponent;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JMenuItem;
 
@@ -21,11 +20,10 @@ import net.sf.taverna.raven.repository.ArtifactStateException;
 import net.sf.taverna.raven.repository.ArtifactStatus;
 import net.sf.taverna.raven.repository.BasicArtifact;
 import net.sf.taverna.raven.repository.Repository;
-import net.sf.taverna.raven.repository.impl.LocalRepository.ArtifactClassLoader;
 import net.sf.taverna.raven.spi.SpiRegistry;
 import net.sf.taverna.zaria.progress.BlurredGlassPane;
-import net.sf.taverna.zaria.progress.InfiniteProgressPanel;
 
+import org.apache.log4j.Logger;
 import org.jdom.Element;
 
 /**
@@ -38,15 +36,14 @@ import org.jdom.Element;
  * @author Tom Oinn
  */
 public abstract class ZBasePane extends ZPane {
+	
+	private static Logger logger = Logger.getLogger(ZBasePane.class);
 
 	private ZTreeNode child = null;
 	private Repository repository = null;
 	private Map<String,SpiRegistry> registries =
 		new HashMap<String,SpiRegistry>();
-	private String[] knownSpiNames = new String[0];
-	private InfiniteProgressPanel glassPane = 
-		new InfiniteProgressPanel();
-	private Component oldGlassPane = null;
+	private String[] knownSpiNames = new String[0];	
 	private Action toggleEditAction;
 	Map<String, NamedRavenComponentSpecifier> namedComponentDefinitions =
 		new HashMap<String, NamedRavenComponentSpecifier>();
@@ -92,14 +89,11 @@ public abstract class ZBasePane extends ZPane {
 						namedComponents.put(componentName, theComponent);
 						return theComponent;
 					} catch (ArtifactNotFoundException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
+						logger.error("ArtifactNotFoundException",e);						
 					} catch (ArtifactStateException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
+						logger.error("ArtifactStateException",e);
 					} catch (ClassNotFoundException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
+						logger.error("ClassNotFoundException",e);
 					}
 				}
 				else {
@@ -202,10 +196,17 @@ public abstract class ZBasePane extends ZPane {
 	 */
 	public void configure(Element e) {
 		Element childElement = e.getChild("child");
-		ZTreeNode node = componentFor(childElement);
-		swap(child, node);
+		if (childElement!=null) {
+			childElement=childElement.getChild("znode");
+			if (childElement!=null) {
+				ZTreeNode node = componentFor(childElement);
+				node.configure(childElement);
+				swap(child, node);
+			}
+		}
 		// Initialize any named component definitions we may have
 		// lying around
+		
 		Element namedComponentSetElement = e.getChild("namedcomponents");
 		if (namedComponentSetElement != null) {
 			boolean needUpdate = false;
@@ -230,8 +231,7 @@ public abstract class ZBasePane extends ZPane {
 				repository.update();
 				unlockFrame();				
 			}
-		}
-		node.configure(e);
+		}		
 	}
 
 	/**
