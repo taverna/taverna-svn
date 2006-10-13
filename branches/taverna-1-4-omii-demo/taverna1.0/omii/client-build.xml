@@ -2,8 +2,17 @@
 	<property name="project.name" value="taverna"/>
 	<property name="project.version" value="1.4.1"/>
 	<property name="install.directory" value="${project.name}"/>
+	<property name="install.home" value="${omii.client.home}/${install.directory}"/>
 
-    <target name="release">
+	<condition property="isMacOs">
+	  <os family="mac"/>
+	</condition>
+	
+	<target name="copyMacProperties" if="isMacOS">
+    	<copy file="conf/mygrid-osx.properties" tofile="${install.home}/conf/mygrid.properties" overwrite="true"/>
+    </target>
+
+	<target name="release">
         <echo>${project.name} v${project.version} http://www.mygrid.org.uk</echo>
     </target>
 
@@ -25,7 +34,7 @@
     </target>
 
     <target name="pre-install">
-     </target>
+    </target>
  
     <target name="post-install">
     </target>
@@ -35,11 +44,11 @@
 
     <target name="deploy">
     	<echo message="Deploying Taverna client"/>
-    	<property name="install.home" value="${omii.client.home}/${install.directory}"/>
 		<mkdir dir="${install.home}"/>
     	<copy todir="${install.home}">
     		<fileset dir="${basedir}">
     		  <exclude name="runme.*"/>
+      		  <exclude name="conf/mygrid-osx.properties"/>
     	    </fileset>
     	</copy>
     	<copy todir="${install.home}">
@@ -50,11 +59,11 @@
     		   <filter token="OMII_CLIENT_HOME" value="${omii.client.home}"/>
     		</filterset>
     	</copy>
+    	<antcall target="copyMacProperties"/>
     </target>
  
     <target name="undeploy">
     	<echo message="Undeploying Taverna client"/>
-    	<property name="install.home" value="${omii.client.home}/${install.directory}"/>
     	<delete dir="${install.home}"/>
     </target>
 

@@ -17,6 +17,7 @@
       <excludes>
         <exclude>pom.xml</exclude>
         <exclude>conf/mygridtest.properties</exclude>
+        <exclude>conf/mygrid-osx.properties</exclude>
       </excludes>
     </fileSet>
     <!-- contrib examples -->
