@@ -8,10 +8,6 @@
 	  <os family="mac"/>
 	</condition>
 	
-	<target name="copyMacProperties" if="isMacOS">
-    	<copy file="conf/mygrid-osx.properties" tofile="${install.home}/conf/mygrid.properties" overwrite="true"/>
-    </target>
-
 	<target name="release">
         <echo>${project.name} v${project.version} http://www.mygrid.org.uk</echo>
     </target>
@@ -51,15 +47,8 @@
       		  <exclude name="conf/mygrid-osx.properties"/>
     	    </fileset>
     	</copy>
-    	<copy todir="${install.home}">
-    		<fileset dir="${basedir}">
-    		  <include name="runme.*"/>
-    	    </fileset>
-    		<filterset>
-    		   <filter token="OMII_CLIENT_HOME" value="${omii.client.home}"/>
-    		</filterset>
-    	</copy>
-    	<antcall target="copyMacProperties"/>
+    	<antcall target="copyScript"/>
+   	    <antcall target="copyMacScript"/>
     </target>
  
     <target name="undeploy">
@@ -79,6 +68,31 @@
 	<target name="clean-db">
     </target>
 
+	<target name="copyMacScript" if="isMacOs">
+    	<copy file="${basedir}/conf/mygrid-osx.properties" tofile="${install.home}/conf/mygrid.properties" overwrite="true"/>
+    	<copy todir="${install.home}">
+    		<fileset dir="${basedir}">
+    		  <include name="runme.*"/>
+    	    </fileset>
+    		<filterset>
+    		   <filter token="OMII_CLIENT_HOME" value="${omii.client.home}"/>
+     		   <filter token="MAC-OPTS" value="-Dapple.laf.useScreenMenuBar=true"/>
+    		</filterset>
+    	</copy>
+     </target>
+	
+	<target name="copyScript" unless="isMacOs">
+    	<copy todir="${install.home}">
+    		<fileset dir="${basedir}">
+    		  <include name="runme.*"/>
+    	    </fileset>
+    		<filterset>
+    		   <filter token="OMII_CLIENT_HOME" value="${omii.client.home}"/>
+     		   <filter token="MAC-OPTS" value=""/>
+    		</filterset>
+    	</copy>
+     </target>
+	
 </project>
     
     

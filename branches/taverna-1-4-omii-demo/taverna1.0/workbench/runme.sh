@@ -38,4 +38,4 @@ TAVERNA_OMII_OPTS=-Daxis.ClientConfigFile=$OMII_CLIENT_HOME/conf/default-client-
 TAVERNA_OMII_OPTS="$TAVERNA_OMII_OPTS -Djava.endorsed.dirs=$OMII_CLIENT_HOME/endorsed"
 TAVERNA_OMII_OPTS="$TAVERNA_OMII_OPTS -Dtaverna.path=$TAVERNA_OMII_FILES"
 
-java -Xmx300m -Djava.protocol.handler.pkgs=uk.ac.rdg.resc.jstyx.client $TAVERNA_OMII_OPTS -jar $TAVERNA_HOME/taverna-launcher-1.4.1.jar
+java @MAC-OPTS@ -Xmx300m -Djava.protocol.handler.pkgs=uk.ac.rdg.resc.jstyx.client $TAVERNA_OMII_OPTS -jar $TAVERNA_HOME/taverna-launcher-1.4.1.jar
