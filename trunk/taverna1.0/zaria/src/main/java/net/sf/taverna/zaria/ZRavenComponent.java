@@ -151,7 +151,16 @@ public class ZRavenComponent extends ZPane {
 			if (className != null) {
 				ClassLoader acl;
 				try {
-					acl = getRoot().getRepository().getLoader(artifact, null);
+					
+					try {
+						acl = getRoot().getRepository().getLoader(artifact, null);
+					}
+					catch(ArtifactNotFoundException e1) { //add to repository if it doesn't exist
+						System.out.println("Fetching artifact for ZRavenComponent:"+artifact.getGroupId()+":"+artifact.getArtifactId());
+						getRoot().getRepository().addArtifact(artifact);
+						getRoot().getRepository().update();
+						acl = getRoot().getRepository().getLoader(artifact, null);
+					}
 					Class theClass = acl.loadClass(className);
 					setComponent(getRoot().getComponent(theClass));
 				} catch (ArtifactNotFoundException e1) {
