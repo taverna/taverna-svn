@@ -37,8 +37,7 @@ public class LocalRepository implements Repository {
 			new ArrayList<ArtifactClassLoader>();
 		private Map<String, Class> classMap =
 			new HashMap<String, Class>();
-		private String name;
-		private ClassLoader parent = null;
+		private String name;		
 		
 		public Repository getRepository() {
 			return LocalRepository.this;
@@ -55,8 +54,7 @@ public class LocalRepository implements Repository {
 		
 		protected ArtifactClassLoader(ArtifactImpl a, ClassLoader parent) throws MalformedURLException, ArtifactStateException {
 			// fixme: use jarFile(a).toURI().toURL()?
-			super(new URL[]{LocalRepository.this.jarFile(a).toURL()}, parent);
-			this.parent = parent;
+			super(new URL[]{LocalRepository.this.jarFile(a).toURL()}, parent);			
 			init(a);
 			synchronized(loaderMap) {
 				loaderMap.put(a, this);
@@ -67,7 +65,7 @@ public class LocalRepository implements Repository {
 			super(new URL[0], selfLoader);
 		}
 		
-		private void init(ArtifactImpl a) throws ArtifactStateException {
+		private void init(ArtifactImpl a) throws ArtifactStateException {			
 			List<ArtifactImpl> deps = a.getDependencies();
 			this.name = a.toString();
 			for (ArtifactImpl dep : deps) {
@@ -80,7 +78,7 @@ public class LocalRepository implements Repository {
 							// Never happens
 							e.printStackTrace();
 						}
-						loaderMap.put(a, ac);
+						loaderMap.put(a, ac);						
 					}						
 					childLoaders.add(ac);
 				}

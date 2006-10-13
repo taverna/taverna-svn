@@ -27,134 +27,133 @@ import org.apache.log4j.Logger;
 import org.jdom.Element;
 
 /**
- * A base ZPane implementation, this is always the root
- * of the ZTreeNode heirarchy (or should be for sane uses).
- * We need an additional layer here as the swap component
- * method relies on having a parent, without the extra 'invisible'
- * parent here we couldn't swap out the user visible top
- * level UI component.
+ * A base ZPane implementation, this is always the root of the ZTreeNode
+ * heirarchy (or should be for sane uses). We need an additional layer here as
+ * the swap component method relies on having a parent, without the extra
+ * 'invisible' parent here we couldn't swap out the user visible top level UI
+ * component.
+ * 
  * @author Tom Oinn
  */
 public abstract class ZBasePane extends ZPane {
-	
+
 	private static Logger logger = Logger.getLogger(ZBasePane.class);
 
 	private ZTreeNode child = null;
+
 	private Repository repository = null;
-	private Map<String,SpiRegistry> registries =
-		new HashMap<String,SpiRegistry>();
-	private String[] knownSpiNames = new String[0];	
+
+	private Map<String, SpiRegistry> registries = new HashMap<String, SpiRegistry>();
+
+	private String[] knownSpiNames = new String[0];
+
 	private Action toggleEditAction;
-	Map<String, NamedRavenComponentSpecifier> namedComponentDefinitions =
-		new HashMap<String, NamedRavenComponentSpecifier>();
-	Map<String, JComponent> namedComponents =
-		new HashMap<String, JComponent>();
-	
+
+	Map<String, NamedRavenComponentSpecifier> namedComponentDefinitions = new HashMap<String, NamedRavenComponentSpecifier>();
+
+	Map<String, JComponent> namedComponents = new HashMap<String, JComponent>();
+
 	/**
-	 * Construct a new ZBasePane, inserting a default
-	 * ZBlankComponent as the solitary child
+	 * Construct a new ZBasePane, inserting a default ZBlankComponent as the
+	 * solitary child
 	 */
 	public ZBasePane() {
 		super();
 		child = new ZBlankComponent();
-		add((Component)child, BorderLayout.CENTER);
+		add((Component) child, BorderLayout.CENTER);
 		toggleEditAction = new AbstractAction() {
 			public void actionPerformed(ActionEvent e) {
 				boolean edit = ZBasePane.this.editable;
-				ZBasePane.this.setEditable(!edit);				
+				ZBasePane.this.setEditable(!edit);
 			}
 		};
 		setEditActionState();
 	}
-	
+
 	/**
 	 * Returns or creates and returns the given named component assuming the
 	 * definition for that component exists within this base pane.
+	 * 
 	 * @param componentName
 	 * @return
 	 */
 	JComponent getNamedComponent(String componentName) {
-		synchronized(namedComponents) {
+		synchronized (namedComponents) {
 			if (namedComponents.containsKey(componentName)) {
 				return namedComponents.get(componentName);
-			}
-			else {
-				
+			} else {
+
 				if (namedComponentDefinitions.containsKey(componentName)) {
-					NamedRavenComponentSpecifier spec = 
-						namedComponentDefinitions.get(componentName);
+					NamedRavenComponentSpecifier spec = namedComponentDefinitions
+							.get(componentName);
 					try {
 						Class theClass = spec.getComponentClass();
 						JComponent theComponent = getComponent(theClass);
 						namedComponents.put(componentName, theComponent);
 						return theComponent;
 					} catch (ArtifactNotFoundException e) {
-						logger.error("ArtifactNotFoundException",e);						
+						logger.error("ArtifactNotFoundException", e);
 					} catch (ArtifactStateException e) {
-						logger.error("ArtifactStateException",e);
+						logger.error("ArtifactStateException", e);
 					} catch (ClassNotFoundException e) {
-						logger.error("ClassNotFoundException",e);
+						logger.error("ClassNotFoundException", e);
 					}
-				}
-				else {
+				} else {
 					return null;
 				}
 			}
 		}
-		return new JLabel("Error, see console: can't create '"
-				+componentName+"'");
+		return new JLabel("Error, see console: can't create '" + componentName
+				+ "'");
 	}
-	
+
 	/**
-	 * A bean containing information about a named Raven component
-	 * allowing its reuse amongst various different layouts.
+	 * A bean containing information about a named Raven component allowing its
+	 * reuse amongst various different layouts.
+	 * 
 	 * @author Tom Oinn
 	 */
 	class NamedRavenComponentSpecifier {
-		
+
 		private Artifact artifact;
+
 		private String className;
+
 		private String componentName;
-		
-		public NamedRavenComponentSpecifier(Artifact artifact, 
+
+		public NamedRavenComponentSpecifier(Artifact artifact,
 				String className, String componentName) {
 			this.artifact = artifact;
 			this.className = className;
 			this.componentName = componentName;
 		}
-		
-		public Class getComponentClass() throws 
-		ArtifactNotFoundException, 
-		ArtifactStateException, 
-		ClassNotFoundException {
-			ClassLoader acl = 
-				repository.getLoader(artifact, null);
+
+		public Class getComponentClass() throws ArtifactNotFoundException,
+				ArtifactStateException, ClassNotFoundException {
+			ClassLoader acl = repository.getLoader(artifact, null);
 			return acl.loadClass(className);
 		}
-		
+
 	}
-	
+
 	/**
-	 * Get an Action object which can toggle the editable state
-	 * of the ZBasePane
+	 * Get an Action object which can toggle the editable state of the ZBasePane
 	 */
 	public Action getToggleEditAction() {
 		return toggleEditAction;
 	}
 
 	/**
-	 * Configure the edit action based on the current editable
-	 * state.
+	 * Configure the edit action based on the current editable state.
 	 */
 	private void setEditActionState() {
 		if (editable) {
 			toggleEditAction.putValue(Action.NAME, "Stop editing");
-		}
-		else {
+		} else {
 			toggleEditAction.putValue(Action.NAME, "Edit");
 		}
 	}
-	
+
 	/**
 	 * Single element list consiting only of the child item
 	 */
@@ -172,66 +171,72 @@ public abstract class ZBasePane extends ZPane {
 		Element namedComponentsElement = new Element("namedcomponents");
 		baseElement.addContent(namedComponentsElement);
 		for (String name : namedComponentDefinitions.keySet()) {
-			NamedRavenComponentSpecifier nrcs = 
-				namedComponentDefinitions.get(name);
+			NamedRavenComponentSpecifier nrcs = namedComponentDefinitions
+					.get(name);
 			Element namedComponentElement = new Element("namedcomponent");
 			namedComponentsElement.addContent(namedComponentElement);
-			addChildText(namedComponentElement, "groupid", nrcs.artifact.getGroupId());
-			addChildText(namedComponentElement, "artifact", nrcs.artifact.getArtifactId());
-			addChildText(namedComponentElement, "version", nrcs.artifact.getVersion());
+			addChildText(namedComponentElement, "groupid", nrcs.artifact
+					.getGroupId());
+			addChildText(namedComponentElement, "artifact", nrcs.artifact
+					.getArtifactId());
+			addChildText(namedComponentElement, "version", nrcs.artifact
+					.getVersion());
 			addChildText(namedComponentElement, "classname", nrcs.className);
 			addChildText(namedComponentElement, "name", name);
 		}
 		return baseElement;
 	}
-	private static void addChildText(Element parent, String elementName, String text) {
+
+	private static void addChildText(Element parent, String elementName,
+			String text) {
 		Element e = new Element(elementName);
 		e.setText(text);
 		parent.addContent(e);
 	}
 
 	/**
-	 * Automatically intializes the repository with any named components that 
+	 * Automatically intializes the repository with any named components that
 	 * aren't already there.
 	 */
 	public void configure(Element e) {
 		Element childElement = e.getChild("child");
-		if (childElement!=null) {
-			childElement=childElement.getChild("znode");
-			if (childElement!=null) {
+		if (childElement != null) {
+			childElement = childElement.getChild("znode");
+			if (childElement != null) {
 				ZTreeNode node = componentFor(childElement);
-				node.configure(childElement);
 				swap(child, node);
+				node.configure(childElement);
 			}
 		}
 		// Initialize any named component definitions we may have
 		// lying around
-		
+
 		Element namedComponentSetElement = e.getChild("namedcomponents");
 		if (namedComponentSetElement != null) {
 			boolean needUpdate = false;
-			for (Element compElement : 
-				(List<Element>)namedComponentSetElement.getChildren("namedcomponent")) {
+			for (Object childObj : namedComponentSetElement
+					.getChildren("namedcomponent")) {
+				Element compElement = (Element)childObj;
 				String groupId = compElement.getChildTextTrim("groupid");
 				String artifactId = compElement.getChildTextTrim("artifact");
 				String version = compElement.getChildTextTrim("version");
 				String className = compElement.getChildTextTrim("classname");
 				String name = compElement.getChildTextTrim("name");
 				Artifact a = new BasicArtifact(groupId, artifactId, version);
-				NamedRavenComponentSpecifier nrcs = 
-					new NamedRavenComponentSpecifier(a, className, name);
+				NamedRavenComponentSpecifier nrcs = new NamedRavenComponentSpecifier(
+						a, className, name);
 				namedComponentDefinitions.put(name, nrcs);
 				repository.addArtifact(a);
-				if (repository.getStatus(a).equals(ArtifactStatus.Ready)==false) {
+				if (repository.getStatus(a).equals(ArtifactStatus.Ready) == false) {
 					needUpdate = true;
 				}
 			}
 			if (needUpdate) {
 				lockFrame();
 				repository.update();
-				unlockFrame();				
+				unlockFrame();
 			}
-		}		
+		}
 	}
 
 	/**
@@ -242,13 +247,13 @@ public abstract class ZBasePane extends ZPane {
 	}
 
 	/**
-	 * Only a single child so always swap it out and replace with
-	 * the new component
+	 * Only a single child so always swap it out and replace with the new
+	 * component
 	 */
 	public void swap(ZTreeNode oldComponent, ZTreeNode newComponent) {
 		if (oldComponent == child || child == null) {
 			if (child != null) {
-				remove((Component)child);
+				remove((Component) child);
 			}
 			child = newComponent;
 			add((Component) newComponent, BorderLayout.CENTER);
@@ -256,7 +261,7 @@ public abstract class ZBasePane extends ZPane {
 			revalidate();
 		}
 	}
-	
+
 	/**
 	 * Call setEditable on the single child
 	 */
@@ -269,18 +274,18 @@ public abstract class ZBasePane extends ZPane {
 		repaint();
 		revalidate();
 	}
-	
+
 	/**
 	 * Get the Raven repository associated with this ZBasePane
 	 */
 	public Repository getRepository() {
 		return this.repository;
 	}
-	
+
 	/**
-	 * Set the Raven Repository object used to discover SPI
-	 * implementations for the ZRavenComponent instances within
-	 * the layout
+	 * Set the Raven Repository object used to discover SPI implementations for
+	 * the ZRavenComponent instances within the layout
+	 * 
 	 * @param r
 	 */
 	public void setRepository(Repository r) {
@@ -293,97 +298,90 @@ public abstract class ZBasePane extends ZPane {
 	public String[] getKnownSPINames() {
 		return knownSpiNames;
 	}
-	
+
 	/**
 	 * Set the array of known SPIs
 	 */
 	public void setKnownSPINames(String[] spis) {
 		this.knownSpiNames = spis;
 	}
-	
+
 	/**
-	 * Create or return a cached reference to an SpiRegistry for
-	 * the specified SPI name
+	 * Create or return a cached reference to an SpiRegistry for the specified
+	 * SPI name
 	 */
 	public synchronized SpiRegistry getRegistryFor(String spiName) {
 		if (registries.containsKey(spiName)) {
 			return registries.get(spiName);
-		}
-		else {
+		} else {
 			SpiRegistry sr = new SpiRegistry(repository, spiName, null);
 			registries.put(spiName, sr);
 			return sr;
 		}
 	}
-	
+
 	/**
-	 * Given a Class object from an SPI produce an appropriate
-	 * JMenuItem. By default this method doesn't do much, it
-	 * just returns a textual menu item with the classname
-	 * in but it's expected that this will be extended by any
-	 * implementing class to produce something sensible. I don't
-	 * want to make this method any more specialized to avoid
-	 * dependencies on the potential range of SPI interfaces.
+	 * Given a Class object from an SPI produce an appropriate JMenuItem. By
+	 * default this method doesn't do much, it just returns a textual menu item
+	 * with the classname in but it's expected that this will be extended by any
+	 * implementing class to produce something sensible. I don't want to make
+	 * this method any more specialized to avoid dependencies on the potential
+	 * range of SPI interfaces.
 	 */
 	public abstract JMenuItem getMenuItem(Class theClass);
-	
+
 	/**
-	 * Given a Class object from an SPI construct a
-	 * JComponent. Typically the SPI itself will point to
-	 * a factory pattern although it may be directly linked
-	 * to the implementation classes (which is why we're using
-	 * the SpiRegistry rather than the more elegant
-	 * InstanceRegistry). This method will always be extended,
-	 * the only reason to avoid making this entire class
-	 * abstract is for testing purposes (not a very good reason
-	 * really)
+	 * Given a Class object from an SPI construct a JComponent. Typically the
+	 * SPI itself will point to a factory pattern although it may be directly
+	 * linked to the implementation classes (which is why we're using the
+	 * SpiRegistry rather than the more elegant InstanceRegistry). This method
+	 * will always be extended, the only reason to avoid making this entire
+	 * class abstract is for testing purposes (not a very good reason really)
 	 */
 	public abstract JComponent getComponent(Class theClass);
-	
+
 	/**
-	 * Called when a new component is added to a ZRavenComponent
-	 * pane, can be overridden to perform implementation specific
-	 * initialization of the component
+	 * Called when a new component is added to a ZRavenComponent pane, can be
+	 * overridden to perform implementation specific initialization of the
+	 * component
 	 */
 	protected void registerComponent(JComponent comp) {
 		// Do nothing by default
 	}
-	
+
 	/**
-	 * Called when a component is removed from a ZRavenComponent pane,
-	 * only called if the component is not named (and therefore will
-	 * not be shared by other panes)
+	 * Called when a component is removed from a ZRavenComponent pane, only
+	 * called if the component is not named (and therefore will not be shared by
+	 * other panes)
 	 */
 	protected void deregisterComponent(JComponent comp) {
 		// Do nothing by default
 	}
-	
+
 	/**
-	 * Enumerate all visible ZRavenComponent panes within the current
-	 * layout
+	 * Enumerate all visible ZRavenComponent panes within the current layout
 	 */
 	public List<ZRavenComponent> getRavenComponents() {
-		List<ZRavenComponent> result = 
-			new ArrayList<ZRavenComponent>();
+		List<ZRavenComponent> result = new ArrayList<ZRavenComponent>();
 		enumerateRavenComponents(result, this);
 		return result;
 	}
-	private void enumerateRavenComponents(List<ZRavenComponent> results, ZTreeNode node) {
+
+	private void enumerateRavenComponents(List<ZRavenComponent> results,
+			ZTreeNode node) {
 		if (node instanceof ZRavenComponent) {
-			results.add((ZRavenComponent)node);
-		}
-		else {
+			results.add((ZRavenComponent) node);
+		} else {
 			for (ZTreeNode child : node.getZChildren()) {
 				enumerateRavenComponents(results, child);
 			}
 		}
 	}
-	
+
 	private BlurredGlassPane blur = null;
-	
+
 	/**
-	 * Lock the parent frame, showing an infinite progress display
-	 * message
+	 * Lock the parent frame, showing an infinite progress display message
 	 */
 	public void lockFrame() {
 		if (blur == null) {
@@ -391,36 +389,24 @@ public abstract class ZBasePane extends ZPane {
 			getFrame().setGlassPane(blur);
 		}
 		blur.setActive(true);
-		
+
 		/**
-		JFrame jf = getFrame();
-		if (jf != null) {
-			Component c = jf.getGlassPane();
-			if (c != glassPane) {
-				oldGlassPane = c;
-				jf.setGlassPane(glassPane);
-			}
-			glassPane.setText("Locked...");
-			glassPane.start();
-		}
-		*/
+		 * JFrame jf = getFrame(); if (jf != null) { Component c =
+		 * jf.getGlassPane(); if (c != glassPane) { oldGlassPane = c;
+		 * jf.setGlassPane(glassPane); } glassPane.setText("Locked...");
+		 * glassPane.start(); }
+		 */
 	}
-	
+
 	/**
 	 * Unlock the parent frame
 	 */
 	public void unlockFrame() {
 		blur.setActive(false);
 		/**
-		JFrame jf = getFrame();
-		if (jf != null) {
-			glassPane.stop();
-			if (oldGlassPane != null) {
-				jf.setGlassPane(oldGlassPane);
-			}
-		}
-		*/
+		 * JFrame jf = getFrame(); if (jf != null) { glassPane.stop(); if
+		 * (oldGlassPane != null) { jf.setGlassPane(oldGlassPane); } }
+		 */
 	}
 
-	
 }

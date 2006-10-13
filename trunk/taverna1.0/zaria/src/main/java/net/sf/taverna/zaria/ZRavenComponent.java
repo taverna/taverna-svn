@@ -137,12 +137,12 @@ public class ZRavenComponent extends ZPane {
 			if (spiNameElement != null) {
 				this.setSPI(spiNameElement.getTextTrim());
 			}
-			Element artifactElement = e.getChild("artifact");
-			if (artifactElement != null) {
+			Element ravenElement = e.getChild("raven");
+			if (ravenElement != null) {
 				artifact = new BasicArtifact(
-						artifactElement.getChild("group").getTextTrim(),
-						artifactElement.getChild("artifact").getTextTrim(),
-						artifactElement.getChild("version").getTextTrim());
+						ravenElement.getChild("group").getTextTrim(),
+						ravenElement.getChild("artifact").getTextTrim(),
+						ravenElement.getChild("version").getTextTrim());
 			}
 			Element classNameElement = e.getChild("classname");
 			if (classNameElement != null) {
