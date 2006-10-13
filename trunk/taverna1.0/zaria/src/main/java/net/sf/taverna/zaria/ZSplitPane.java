@@ -66,6 +66,7 @@ public class ZSplitPane extends ZPane {
 
 	public Element getElement() {
 		Element splitElement = new Element("split");
+		splitElement.setAttribute("orientation",splitPane.getOrientation()==JSplitPane.HORIZONTAL_SPLIT ? "horizontal" : "vertical");
 		Element rightElement = new Element("right");
 		splitElement.addContent(rightElement);
 		Element leftElement = new Element("left");
@@ -80,6 +81,10 @@ public class ZSplitPane extends ZPane {
 	public void configure(Element e) {
 		Element splitElement = e.getChild("split");
 		if (splitElement!=null) {
+			String orientation=splitElement.getAttributeValue("orientation");
+			if (orientation!=null) {
+				splitPane.setOrientation(orientation.equalsIgnoreCase("horizontal") ? JSplitPane.HORIZONTAL_SPLIT : JSplitPane.VERTICAL_SPLIT);
+			}
 			Element leftElement = splitElement.getChild("left");
 			Element leftDefinition = leftElement.getChild("znode");
 			ZTreeNode leftNode = (ZTreeNode)componentFor(leftDefinition);
