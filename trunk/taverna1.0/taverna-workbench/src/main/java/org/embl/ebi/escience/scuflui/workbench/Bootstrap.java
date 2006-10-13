@@ -9,12 +9,20 @@ import java.net.URLClassLoader;
 
 public class Bootstrap {
 	
+	//repository for finding raven should come first!
+	public static final String [] REPOSITORY_LIST = new String[] {"file:/home/sowen/.m2/repository/","http://www.ibiblio.org/maven2/"};
+	//public static final String [] REPOSITORY_LIST = new String[] {"http://www.ebi.ac.uk/~tmo/repository/","http://www.ibiblio.org/maven2/"};
+	public static String TAVERNA_CACHE="";
+	public static final String RAVEN_VERSION="1.5-SNAPSHOT";
+	public static final String SPLASHSCREEN="http://www.ebi.ac.uk/~tmo/mygrid/splashscreen.png";
+	public static final String WORKBENCH_VERSION="1.5-SNAPSHOT";
+	
 	public static void main(String[] args) throws MalformedURLException, ClassNotFoundException, SecurityException, NoSuchMethodException, IllegalArgumentException, IllegalAccessException, InvocationTargetException {
-		File dir = new File(System.getProperty("taverna.home"));
+		TAVERNA_CACHE=System.getProperty("taverna.home");
+		File dir = new File(TAVERNA_CACHE);
 		dir.mkdirs();
 		// Create a remote classloader referencing the raven jar within a repository
-		String repositoryLocation = 
-			"http://www.ebi.ac.uk/~tmo/repository/";
+		String repositoryLocation = REPOSITORY_LIST[0];			
 		String artifactLocation = 
 			"uk/org/mygrid/taverna/raven/raven/1.5-SNAPSHOT/raven-1.5-SNAPSHOT.jar";
 		ClassLoader c = new URLClassLoader(
@@ -37,14 +45,16 @@ public class Bootstrap {
 				int.class);
 		
 		// Parameters for the Raven loader call
-		String ravenVersion = "1.5-SNAPSHOT";
-		URL[] remoteRepositories = new URL[]{
-				new URL("http://www.ebi.ac.uk/~tmo/repository/"), 
-				new URL("http://www.ibiblio.org/maven2/")};
-		URL splashScreenImage = new URL("http://www.ebi.ac.uk/~tmo/mygrid/splashscreen.png");
+		String ravenVersion = RAVEN_VERSION;
+		URL[] remoteRepositories = new URL[REPOSITORY_LIST.length];
+		for (int i=0;i<remoteRepositories.length;i++) {
+			remoteRepositories[i]=new URL(REPOSITORY_LIST[i]);
+		}
+		
+		URL splashScreenImage = new URL(SPLASHSCREEN);
 		String groupID = "uk.org.mygrid.taverna";
 		String artifactID = "taverna-workbench";
-		String version = "1.5-SNAPSHOT";
+		String version = WORKBENCH_VERSION;
 		int minimumDisplayTime = 10 * 1000; // Ten seconds
 		String targetClassName = "org.embl.ebi.escience.scuflui.workbench.Workbench";
 		

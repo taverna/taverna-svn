@@ -162,15 +162,11 @@ public class Workbench extends JFrame {
 		
 		// Running from outside of Raven - won't expect this to work properly!
 		catch (ClassCastException cce) {
-			basePane.setRepository(LocalRepository.getRepository(new File("e:/home/tom/taverna")));
+			basePane.setRepository(LocalRepository.getRepository(new File(Bootstrap.TAVERNA_CACHE)));
 			try {
-				basePane.getRepository().addRemoteRepository(new URL("http://www.ebi.ac.uk/~tmo/repository/"));
-			} catch (MalformedURLException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			try {
-				basePane.getRepository().addRemoteRepository(new URL("http://www.ibiblio.org/maven2/"));
+				for (String repository : Bootstrap.REPOSITORY_LIST) {
+					basePane.getRepository().addRemoteRepository(new URL(repository));
+				}
 			} catch (MalformedURLException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
