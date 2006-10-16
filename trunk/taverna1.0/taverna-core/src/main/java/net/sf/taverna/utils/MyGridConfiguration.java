@@ -16,6 +16,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.LineIterator;
 import org.apache.log4j.Logger;
+import org.apache.log4j.PropertyConfigurator;
 
 /**
  * myGrid configuration, such as services to load in the workbench or LSID
@@ -35,7 +36,7 @@ import org.apache.log4j.Logger;
  * 
  */
 public class MyGridConfiguration {
-
+	
 	// Cache of properties for getProperty() and getProperties()  (clear with flushProperties() )
 	static Properties properties = null;
 
@@ -51,13 +52,50 @@ public class MyGridConfiguration {
 	// For each resource, this header will be added to mygrid.properties.dist
 	private final static String SECTION_HEADER = "# Default properties from ";
 
-	private static Logger logger = Logger.getLogger(MyGridConfiguration.class);
+	// Initialized by static block
+	private static Logger logger;
 
+	/**
+     * Prepare log4j and loadMyGridProperties()
+	 */
+	static {
+		// Avoid warnings before we have loaded log4j settings
+		System.setProperty("log4j.defaultInitOverride", "true");
+		// Must be set before we call anything else
+		logger = Logger.getLogger(MyGridConfiguration.class);
+		prepareLog4J();
+		loadMygridProperties();
+	}
+
+	
 	/**
 	 * Can't be instanciated, static methods only
 	 * 
 	 */
 	private MyGridConfiguration() {
+		// FIXME: Make possible to make a MyGridConfiguration("mygrid.properties") - this
+		// can then also be used with say log4j.properties.
+	}
+
+	/**
+	 * Load log4j.properties
+	 * 
+	 */
+	
+	private static void prepareLog4J() {
+		for (URL url : findResources("log4j.properties")) {
+			PropertyConfigurator.configure(url);
+		}
+		// FIXME: Use loadUserProperties() and the gang to write
+		// out log4j.properties.dist.
+		
+		File log4j = new File(getUserDir("conf"), "log4j.properties");
+		if (log4j.canRead()) {
+			// FIXME: Can't do log4j.rootLogger=WARN, CONSOLE as 
+			// configure(String path) treats each call separately. 
+			// Should use configure(Properties p) instead.
+			PropertyConfigurator.configure(log4j.toString());
+		}
 	}
 
 	/**
@@ -78,6 +116,24 @@ public class MyGridConfiguration {
 			return null;
 		}
 		return props.getProperty(key);
+	}
+	
+	/**
+	 * Look up a myGrid property.
+	 * <p>
+	 * Like getProperty(String key) - but return <code>def</code>
+	 * if the key is unknown.
+	 * 
+	 * @param key
+	 * @param def Default string if key not found
+	 * @return
+	 */
+	public static String getProperty(String key, String def) {
+		String value = getProperty(key);
+		if (value == null) {
+			return def;
+		} 
+		return value;
 	}
 
 	/**
@@ -126,7 +182,7 @@ public class MyGridConfiguration {
 	 */
 	@Deprecated
 	synchronized public static void loadMygridProperties() {
-		Properties myGridProps = MyGridConfiguration.getProperties();
+		Properties myGridProps = getProperties();
 		if (myGridProps == null) {
 			logger.warn("mygrid properties not found/initialized");
 			return;
@@ -281,7 +337,7 @@ public class MyGridConfiguration {
 		Properties properties = new Properties();
 		// Concatinate all resources
 		for (URL resource : findResources(PROPERTIES)) {
-			logger.info("Loading resources from " + resource.toString());
+			logger.info("Loading resources from " + resource);
 			try {
 				properties.load(resource.openStream());
 			} catch (IOException e) {
