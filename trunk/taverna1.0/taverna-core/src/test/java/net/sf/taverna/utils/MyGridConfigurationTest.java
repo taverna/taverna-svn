@@ -37,7 +37,7 @@ public class MyGridConfigurationTest extends TestCase {
 		System.setProperty("os.name", realOS);
 		//FileUtils.deleteDirectory(tempHome);
 		// Might have been messed up by getProperties calls
-		MyGridConfiguration.properties = null;
+		MyGridConfiguration.flushProperties();
 	}
 	
 	public void testMadeTempHome() {
@@ -94,23 +94,23 @@ public class MyGridConfigurationTest extends TestCase {
 	
 	/**
 	 * Test that mygrid properties are written out to the
-	 * mygrid.properties.orig, and that the defaults are 
+	 * mygrid.properties.dist, and that the defaults are 
 	 * double-commented out
 	 * 
 	 * @throws IOException
 	 */
-	public void testWriteDefaultConfOrig() throws IOException {
-		File propertiesOrig = new File(MyGridConfiguration.getUserDir("conf"), 
-									 "mygrid.properties.orig");
-		assertFalse(propertiesOrig.isFile());
+	public void testWriteDefaultConfDist() throws IOException {
+		File propertiesDist = new File(MyGridConfiguration.getUserDir("conf"), 
+									 "mygrid.properties.dist");
+		assertFalse(propertiesDist.isFile());
 		MyGridConfiguration.writeDefaultProperties();
-		assertTrue(propertiesOrig.isFile());
-		String content = FileUtils.readFileToString(propertiesOrig, "utf8");
+		assertTrue(propertiesDist.isFile());
+		String content = FileUtils.readFileToString(propertiesDist, "utf8");
 		// global header
 		assertTrue(content.startsWith("# Default values are shown"));
 		// local header
 		assertTrue(content.contains("\n# Default properties from file:/"));
-		// Should include the original config file, we'll test for parts of that
+		// Should include the distinal config file, we'll test for parts of that
 		assertTrue(content.contains("\n# Taverna configuration file"));
 		// The defaults should have been included only once (ie. the split will make two parts)
 		assertEquals(2, content.split("Taverna configuration file").length);
@@ -119,66 +119,66 @@ public class MyGridConfigurationTest extends TestCase {
 		// This default should be there (including any tabs), but double-commented out
 		assertTrue(content.contains("\n##\ttaverna.lsid.providerclass = " +
 				"org.embl.ebi.escience.baclava.UUIDLSIDProvider\n"));
-		// And the end should be as in the original
+		// And the end should be as in the distinal
 		assertTrue(content.endsWith("\n#--------------------------------------------------------------------\n"));
 	}
 	
 	
 	/**
-	 * Test the upgrade mechanism for mygrid.properties and mygrid.properties.orig
+	 * Test the upgrade mechanism for mygrid.properties and mygrid.properties.dist
 	 * <p>
-	 * In short, if mygrid.properties exist, it will be upgraded only if it matches completely with the old mygrid.properties.orig. 
-	 * mygrid.properties.orig should always be upgraded. 
+	 * In short, if mygrid.properties exist, it will be upgraded only if it matches completely with the old mygrid.properties.dist. 
+	 * mygrid.properties.dist should always be upgraded. 
 	 * 
 	 * @throws IOException
 	 */
 	public void testWriteDefaultConf() throws IOException {
-		File propertiesOrig = new File(MyGridConfiguration.getUserDir("conf"), 
-			"mygrid.properties.orig");
+		File propertiesDist = new File(MyGridConfiguration.getUserDir("conf"), 
+			"mygrid.properties.dist");
 		File properties = new File(MyGridConfiguration.getUserDir("conf"), 
 			"mygrid.properties");
 		assertFalse(properties.isFile());
-		assertFalse(propertiesOrig.isFile());
+		assertFalse(propertiesDist.isFile());
 		
 		// Create both files when they don't exist
 		MyGridConfiguration.writeDefaultProperties();
 		assertTrue(properties.isFile());
-		assertTrue(propertiesOrig.isFile());
-		assertTrue(FileUtils.contentEquals(propertiesOrig, properties));
+		assertTrue(propertiesDist.isFile());
+		assertTrue(FileUtils.contentEquals(propertiesDist, properties));
 		
 		// rewrite mygrid.properties
 		properties.delete();
 		MyGridConfiguration.writeDefaultProperties();
-		assertTrue(FileUtils.contentEquals(propertiesOrig, properties));
+		assertTrue(FileUtils.contentEquals(propertiesDist, properties));
 
-		// rewrite mygrid.properties.orig
-		propertiesOrig.delete();
+		// rewrite mygrid.properties.dist
+		propertiesDist.delete();
 		MyGridConfiguration.writeDefaultProperties();
-		assertTrue(FileUtils.contentEquals(propertiesOrig, properties));
+		assertTrue(FileUtils.contentEquals(propertiesDist, properties));
 		
 		// We'll change the mygrid.properties so that it won't be upgraded
 		FileUtils.writeStringToFile(properties, "Changed something", "latin1");
 		String content = FileUtils.readFileToString(properties, "latin1");
 		assertEquals("Changed something", content);
 		// They should now be different
-		assertFalse(FileUtils.contentEquals(propertiesOrig, properties));
+		assertFalse(FileUtils.contentEquals(propertiesDist, properties));
 		MyGridConfiguration.writeDefaultProperties();
 		// And it should not have been changed
 		content = FileUtils.readFileToString(properties, "latin1");
 		assertEquals("Changed something", content);
-		assertFalse(FileUtils.contentEquals(propertiesOrig, properties));
+		assertFalse(FileUtils.contentEquals(propertiesDist, properties));
 
-		// Unless it is equal to the .orig, then it is probably
+		// Unless it is equal to the .dist, then it is probably
 		// just an old version
-		FileUtils.writeStringToFile(propertiesOrig, "Changed something", "latin1");
-		String origContent = FileUtils.readFileToString(propertiesOrig, "latin1");
-		assertEquals("Changed something", origContent);
+		FileUtils.writeStringToFile(propertiesDist, "Changed something", "latin1");
+		String distContent = FileUtils.readFileToString(propertiesDist, "latin1");
+		assertEquals("Changed something", distContent);
 		MyGridConfiguration.writeDefaultProperties();
-		assertTrue(FileUtils.contentEquals(propertiesOrig, properties));
+		assertTrue(FileUtils.contentEquals(propertiesDist, properties));
 		// And that crap we added should now be gone
-		origContent = FileUtils.readFileToString(propertiesOrig, "latin1");
-		assertTrue(origContent.contains("Taverna"));
-		assertFalse(origContent.contains("Changed something"));
+		distContent = FileUtils.readFileToString(propertiesDist, "latin1");
+		assertTrue(distContent.contains("Taverna"));
+		assertFalse(distContent.contains("Changed something"));
 	}
 	
 	public void testloadUserProperties() throws IOException {
