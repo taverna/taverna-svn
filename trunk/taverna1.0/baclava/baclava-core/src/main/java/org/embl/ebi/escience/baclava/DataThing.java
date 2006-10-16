@@ -35,6 +35,7 @@ import org.embl.ebi.escience.baclava.factory.DataThingFactory;
 import org.embl.ebi.escience.baclava.factory.DataThingXMLFactory;
 import org.embl.ebi.escience.baclava.iterator.BaclavaIterator;
 import org.embl.ebi.escience.scufl.SemanticMarkup;
+import net.sf.taverna.utils.MyGridConfiguration;
 import org.jdom.Element;
 
 /**
@@ -89,7 +90,7 @@ public class DataThing implements Cloneable, Serializable {
 		// a single static instance of the LSIDProvider
 		// implementation if such is found, otherwise leave
 		// it as null
-		String providerClassName = System
+		String providerClassName = MyGridConfiguration
 				.getProperty("taverna.lsid.providerclass");
 		if (providerClassName != null) {
 			try {
@@ -97,6 +98,7 @@ public class DataThing implements Cloneable, Serializable {
 				SYSTEM_DEFAULT_LSID_PROVIDER = (LSIDProvider) providerClass
 						.newInstance();
 			} catch (Exception ex) {
+				System.err.println("Could not initiate LSID provider " + providerClassName);
 				ex.printStackTrace();
 			}
 		}
