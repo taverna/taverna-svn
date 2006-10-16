@@ -164,7 +164,8 @@ public abstract class ZBasePane extends ZPane {
 	}
 
 	public Element getElement() {
-		Element baseElement = new Element("basepane");
+		
+		Element baseElement = new Element("basepane");				
 		Element childElement = new Element("child");
 		childElement.addContent(elementFor(child));
 		baseElement.addContent(childElement);
@@ -199,18 +200,19 @@ public abstract class ZBasePane extends ZPane {
 	 * aren't already there.
 	 */
 	public void configure(Element e) {
+		
 		Element childElement = e.getChild("child");
 		if (childElement != null) {
 			childElement = childElement.getChild("znode");
 			if (childElement != null) {
-				ZTreeNode node = componentFor(childElement);
-				swap(child, node);
-				node.configure(childElement);
+				ZTreeNode node = componentFor(childElement);					
+				swap(child, node);							
+				node.configure(childElement);				
 			}
 		}
+		
 		// Initialize any named component definitions we may have
 		// lying around
-
 		Element namedComponentSetElement = e.getChild("namedcomponents");
 		if (namedComponentSetElement != null) {
 			boolean needUpdate = false;
@@ -236,7 +238,10 @@ public abstract class ZBasePane extends ZPane {
 				repository.update();
 				unlockFrame();
 			}
-		}
+		}	
+				
+		//ensure editable status is correct on this and all children
+		setEditable(this.editable);				
 	}
 
 	/**
@@ -257,8 +262,8 @@ public abstract class ZBasePane extends ZPane {
 			}
 			child = newComponent;
 			add((Component) newComponent, BorderLayout.CENTER);
-			newComponent.setEditable(this.editable);
-			revalidate();
+			newComponent.setEditable(this.editable);			
+			revalidate();			
 		}
 	}
 
@@ -270,9 +275,9 @@ public abstract class ZBasePane extends ZPane {
 		if (child != null) {
 			child.setEditable(b);
 		}
-		setEditActionState();
-		repaint();
+		setEditActionState();		
 		revalidate();
+		repaint();
 	}
 
 	/**

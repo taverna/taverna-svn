@@ -235,8 +235,8 @@ public class Workbench extends JFrame {
 				chooser.setDialogTitle("Save Layout");
 				chooser.setFileFilter(new ExtensionFileFilter(new String[] { "xml" }));
 				int retVal=chooser.showSaveDialog(Workbench.this);
-				if (retVal == JFileChooser.APPROVE_OPTION) {
-					File file=chooser.getSelectedFile();
+				if (retVal == JFileChooser.APPROVE_OPTION) {					
+					File file=chooser.getSelectedFile();					
 					if (file!=null) {
 						PrintWriter out;
 						try {
@@ -256,7 +256,7 @@ public class Workbench extends JFrame {
 			}			
 		};
 		
-		saveLayoutXMLAction.putValue(Action.NAME, "Save layout XML");
+		saveLayoutXMLAction.putValue(Action.NAME, "Save layout XML");			
 		
 		Action loadLayoutXMLAction = new AbstractAction() {
 			public void actionPerformed(ActionEvent e) {				
@@ -271,7 +271,7 @@ public class Workbench extends JFrame {
 							InputStreamReader isr = new InputStreamReader(file.toURL().openStream());
 							SAXBuilder builder = new SAXBuilder(false);
 							Document document = builder.build(isr);
-							basePane.configure(document.detachRootElement());
+							basePane.configure(document.detachRootElement());																				
 						}
 						catch(Exception ex) {
 							ex.printStackTrace();
@@ -295,9 +295,9 @@ public class Workbench extends JFrame {
 		
 		setJMenuBar(menuBar);
 		setSize(new Dimension(500,500));
-		setVisible(true);
+		setVisible(true);		
 		addWindowListener(new WindowAdapter() {
-			public void windowClosed(WindowEvent e) {
+			public void windowClosing(WindowEvent e) {
 				System.exit(0);
 			}
 		});

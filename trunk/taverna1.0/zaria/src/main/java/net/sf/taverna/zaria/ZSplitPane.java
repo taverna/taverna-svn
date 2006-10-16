@@ -18,10 +18,12 @@ import org.jdom.Element;
  * sub-panel is itself a ZPane
  * @author Tom Oinn
  */
+@SuppressWarnings("serial")
 public class ZSplitPane extends ZPane {
 
 	private JSplitPane splitPane = new JSplitPane();
 	
+	@SuppressWarnings("serial")
 	private class SwitchOrientationAction extends AbstractAction {
 		
 		public SwitchOrientationAction() {
@@ -61,11 +63,16 @@ public class ZSplitPane extends ZPane {
 		splitPane.setResizeWeight(0.5d);
 		actions.add(new SwitchOrientationAction());
 		actions.add(new ReplaceWithBlankAction());
-		add(splitPane, BorderLayout.CENTER);
+		add(splitPane, BorderLayout.CENTER);				
 	}
 
 	public Element getElement() {
+		//total size would be the height if oriented vertically, or the width if horizontally
+		double total=splitPane.getOrientation()==JSplitPane.HORIZONTAL_SPLIT ? (double)splitPane.getWidth() : (double)splitPane.getHeight();		
+		double ratio=(((double)splitPane.getDividerLocation())/total);				
+		
 		Element splitElement = new Element("split");
+		splitElement.setAttribute("ratio",String.valueOf(ratio));
 		splitElement.setAttribute("orientation",splitPane.getOrientation()==JSplitPane.HORIZONTAL_SPLIT ? "horizontal" : "vertical");
 		Element rightElement = new Element("right");
 		splitElement.addContent(rightElement);
@@ -85,6 +92,7 @@ public class ZSplitPane extends ZPane {
 			if (orientation!=null) {
 				splitPane.setOrientation(orientation.equalsIgnoreCase("horizontal") ? JSplitPane.HORIZONTAL_SPLIT : JSplitPane.VERTICAL_SPLIT);
 			}
+			
 			Element leftElement = splitElement.getChild("left");
 			Element leftDefinition = leftElement.getChild("znode");
 			ZTreeNode leftNode = (ZTreeNode)componentFor(leftDefinition);
@@ -96,7 +104,18 @@ public class ZSplitPane extends ZPane {
 			splitPane.setRightComponent((JComponent)rightNode);
 			
 			leftNode.configure(leftDefinition);
-			rightNode.configure(rightDefinition);
+			rightNode.configure(rightDefinition);			
+			
+			String ratio=splitElement.getAttributeValue("ratio");
+			if (ratio!=null) {
+				try {
+					double r=Double.parseDouble(ratio);
+					splitPane.setResizeWeight(r);
+				}
+				catch(NumberFormatException ex) {
+					ex.printStackTrace();
+				}
+			}
 		}
 	}
 
@@ -132,7 +151,7 @@ public class ZSplitPane extends ZPane {
 
 	public void swap(ZTreeNode oldComponent, ZTreeNode newComponent) {
 		// Store the old divider location, we don't want this to change
-		int location = splitPane.getDividerLocation();
+		int location = splitPane.getDividerLocation();		
 		if (getRightComponent().equals(oldComponent)) {
 			// Swap the right component
 			splitPane.remove((Component)oldComponent);
@@ -145,7 +164,7 @@ public class ZSplitPane extends ZPane {
 		}
 		newComponent.setEditable(this.editable);
 		splitPane.setDividerLocation(location);
-		revalidate();
+		revalidate();		
 	}
 
 	
