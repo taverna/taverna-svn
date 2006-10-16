@@ -6,7 +6,6 @@ import java.net.URL;
 import java.util.Properties;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
 
 import junit.framework.TestCase;
 
@@ -18,7 +17,7 @@ public class MyGridConfigurationTest extends TestCase {
 	
 	// Property that we can expect to be there
 	final static String property = "taverna.lsid.providerclass";
-	final static String propValue = "org.embl.ebi.escience.baclava.UUIDLSIDProvider";
+	final static String propValue = "org.embl.ebi.escience.baclava.lsid.UUIDLSIDProvider";
 
 	public void setUp() throws IOException {
 		realHome = System.getProperty("user.home");
@@ -29,6 +28,7 @@ public class MyGridConfigurationTest extends TestCase {
 		assertTrue(tempHome.isDirectory());
 		assertEquals(0, tempHome.listFiles().length); //empty
 		System.setProperty("user.home", tempHome.getAbsolutePath());
+		MyGridConfiguration.flushProperties();
 		assertNull(MyGridConfiguration.properties);
 	}
 	
@@ -113,12 +113,14 @@ public class MyGridConfigurationTest extends TestCase {
 		// Should include the distinal config file, we'll test for parts of that
 		assertTrue(content.contains("\n# Taverna configuration file"));
 		// The defaults should have been included only once (ie. the split will make two parts)
+		// NOTE: This might fail in Eclipse!	 
 		assertEquals(2, content.split("Taverna configuration file").length);
+		
 		// Blank lines should be preserved as-is
 		assertTrue(content.contains("\n\n\n# LSID Configuration"));
 		// This default should be there (including any tabs), but double-commented out
-		assertTrue(content.contains("\n##\ttaverna.lsid.providerclass = " +
-				"org.embl.ebi.escience.baclava.UUIDLSIDProvider\n"));
+		assertTrue(content.contains("\n##\t" + property + " = " +
+				propValue + "\n"));
 		// And the end should be as in the distinal
 		assertTrue(content.endsWith("\n#--------------------------------------------------------------------\n"));
 	}
@@ -237,6 +239,7 @@ public class MyGridConfigurationTest extends TestCase {
 		boolean foundMygrid = false;
 		for (URL url : MyGridConfiguration.findResources("mygrid.properties")) {
 			if (foundMygrid) {
+				// NOTE: This might happen in Eclipse. Run tests from maven.
 				fail("Found more than one mygrid.properties: " + url);
 			}
 			foundMygrid = true;
