@@ -68,9 +68,9 @@ public abstract class Baclava {
 			System.out.println("Error initialising Baclava : " + ex.toString());
 			ex.printStackTrace();
 		}
-*/
+
 	}
-	
+*/	
 
 	/**
 	 * The namespace prefix for tags in the myGrid data document format
