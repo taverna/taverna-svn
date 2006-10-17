@@ -2,20 +2,28 @@ package org.embl.ebi.escience.scuflui.workbench;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.io.Reader;
+import java.io.Writer;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Properties;
 import java.util.Set;
 
 import javax.swing.AbstractAction;
@@ -34,6 +42,7 @@ import javax.swing.UIManager;
 import net.sf.taverna.raven.repository.Artifact;
 import net.sf.taverna.raven.repository.impl.LocalRepository;
 import net.sf.taverna.raven.repository.impl.LocalRepository.ArtifactClassLoader;
+import net.sf.taverna.utils.MyGridConfiguration;
 import net.sf.taverna.zaria.ZBasePane;
 import net.sf.taverna.zaria.ZRavenComponent;
 import net.sf.taverna.zaria.raven.ArtifactDownloadDialog;
@@ -294,16 +303,122 @@ public class Workbench extends JFrame {
 		
 		
 		setJMenuBar(menuBar);
-		setSize(new Dimension(500,500));
-		setVisible(true);		
-		addWindowListener(new WindowAdapter() {
-			public void windowClosing(WindowEvent e) {
-				System.exit(0);
-			}
-		});
+		setSize(new Dimension(500,500));				
+		addWindowListener(getWindowClosingAdaptor());
 		updateRepository();
+						
+		readLastLayout();
+		readLastPreferences();
+		basePane.setEditable(false);
+		setVisible(true);
 	}
 	
+	private WindowAdapter getWindowClosingAdaptor() {
+		return new WindowAdapter() {
+			public void windowClosing(WindowEvent e) {
+				try {
+					storeUserPrefs();
+				}
+				catch(Exception ex) {
+					logger.error("Error writing user preferences when closing",ex);
+				}
+				System.exit(0);
+			}
+		};
+	}	
+
+	private void readLastPreferences() {
+		File userDir=MyGridConfiguration.getUserDir("conf");
+		File size=new File(userDir,"preferences.properties");
+		if (size!=null && size.exists()) {
+			Properties props=new Properties();
+			try {
+				props.load(size.toURL().openStream());
+				String swidth=props.getProperty("width");
+				String sheight=props.getProperty("height");
+				String sx=props.getProperty("x");
+				String sy=props.getProperty("y");
+				
+				Dimension resolution=getToolkit().getScreenSize();
+				
+				
+				int width=Integer.parseInt(swidth);
+				int height=Integer.parseInt(sheight);
+				int x=Integer.parseInt(sx);
+				int y=Integer.parseInt(sy);
+				
+				if (resolution.getWidth() < width ) {
+					width=(int)resolution.getWidth();
+				}
+				
+				if (resolution.getHeight() < height) {
+					height=(int)resolution.getHeight();
+				}
+				
+				if (x>(resolution.getWidth()-50) || x<0) {
+					x=0;
+				}
+				
+				if (y>(resolution.getHeight()-50) || y<0) {
+					y=0;
+				}
+				
+				this.setBounds(x, y, width, height);
+				this.repaint();
+				
+			} catch (Exception e) {
+				e.printStackTrace();
+				logger.error("Error loading default window dimensions",e);
+			}
+		}
+	}
+
+	private File readLastLayout() {
+		File userDir=MyGridConfiguration.getUserDir("conf");		
+		File layout=new File(userDir,"layout.xml");
+		if (layout!=null && layout.exists()) {
+			try {
+				InputStreamReader isr = new InputStreamReader(layout.toURL().openStream());
+				SAXBuilder builder = new SAXBuilder(false);
+				Document document = builder.build(isr);
+				basePane.configure(document.detachRootElement());
+			}
+			catch(FileNotFoundException e) {
+				logger.info("last used layout not found");
+				//ignore and just use defaults
+			}
+			catch(IOException e) {
+				logger.warn("IOException reading default layout",e);
+			}
+			catch(Exception e) {
+				logger.error("Exception reading default layout",e);
+			}
+		}
+		return userDir;
+	}
+	
+	private void storeUserPrefs() throws IOException {
+		File userDir=MyGridConfiguration.getUserDir("conf");
+		
+		//store current layout
+		File layout=new File(userDir,"layout.xml");
+		Writer writer=new BufferedWriter(new FileWriter(layout));
+		Element element = basePane.getElement();
+		XMLOutputter xo = new XMLOutputter(Format.getPrettyFormat());		
+		writer.write(xo.outputString(element));
+		writer.flush();
+		writer.close();
+		
+		//store current window size
+		File size=new File(userDir,"preferences.properties");		
+		writer=new BufferedWriter(new FileWriter(size));
+		writer.write("width="+this.getWidth()+"\n");
+		writer.write("height="+this.getHeight()+"\n");		
+		writer.write("x="+this.getX()+"\n");
+		writer.write("y="+this.getY()+"\n");
+		writer.flush();
+		writer.close();
+	}
 	
 	
 	private void setModelChangeListener() {
