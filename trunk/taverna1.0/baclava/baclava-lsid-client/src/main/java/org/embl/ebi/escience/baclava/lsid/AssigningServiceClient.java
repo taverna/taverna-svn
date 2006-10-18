@@ -11,6 +11,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
+import net.sf.taverna.utils.MyGridConfiguration;
+
 import org.apache.log4j.Logger;
 import org.embl.ebi.escience.baclava.LSIDProvider;
 
@@ -49,8 +51,8 @@ public class AssigningServiceClient implements LSIDProvider {
 	 * endpoint.
 	 */
 	public AssigningServiceClient() {
-		this.serviceEndpoint = System
-				.getProperty("taverna.lsid.asclient.endpoint");
+		this.serviceEndpoint = MyGridConfiguration
+		.getProperty("taverna.lsid.asclient.endpoint");
 		// Try to build a new URL from the endpoint
 		if (serviceEndpoint != null) {
 			try {
@@ -68,14 +70,17 @@ public class AssigningServiceClient implements LSIDProvider {
 		} else {
 
 			// Populate the target namespaces from the system properties
-			wfdefinitionNS = System.getProperty(
+			wfdefinitionNS = MyGridConfiguration
+			.getProperty(
 					"taverna.lsid.asclient.ns.wfdefinition",
 					"WorkflowDefinition");
-			wfinstanceNS = System.getProperty(
+			wfinstanceNS = MyGridConfiguration
+			.getProperty(
 					"taverna.lsid.asclient.ns.wfinstance", "WorkflowInstance");
-			datathingLeafNS = System.getProperty(
+			datathingLeafNS = MyGridConfiguration
+			.getProperty(
 					"taverna.lsid.asclient.ns.datathingleaf", "DataThing");
-			datathingCollectionNS = System
+			datathingCollectionNS = MyGridConfiguration
 					.getProperty(
 							"taverna.lsid.asclient.ns.datathingcollection",
 							"DataThing");
