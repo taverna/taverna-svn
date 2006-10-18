@@ -91,5 +91,10 @@
       <artifactId>taverna-enactor</artifactId>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>uk.org.mygrid.taverna.raven</groupId>
+      <artifactId>raven</artifactId>
+      <!--<scope>test</scope> dependencies already define scope 'compile' -->
+    </dependency>
   </dependencies>
 </project>
