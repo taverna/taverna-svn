@@ -63,7 +63,12 @@ public class ProcessorHelper {
 	private static Map<String, ProcessorEditor> editorForTagName = new HashMap<String, ProcessorEditor>();
 
 	static {
-		populateMaps();
+		try {
+			populateMaps();
+		} catch (Error e) {
+			logger.error("Could not initialize ProcessorHelper", e);
+			throw e;
+		}
 	}
 
 	/**
@@ -77,7 +82,6 @@ public class ProcessorHelper {
 		if (loader == null) {
 			loader = Thread.currentThread().getContextClassLoader();
 		}
-
 		unknownProcessorIcon = new ImageIcon(loader
 				.getResource("org/embl/ebi/escience/scuflui/icons/explorer/unknownprocessor.png"));
 
