@@ -101,11 +101,15 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
         <configuration>
-          <skip>true</skip>
+              <skip>true</skip>
           <systemProperties>
             <property>
               <name>java.awt.headless</name>
               <value>true</value>
+            </property>
+            <property>
+              <name>taverna.home</name>
+              <value>${java.io.tmpdir}/tavernatest</value>
             </property>
           </systemProperties>
         </configuration>
