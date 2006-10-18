@@ -17,6 +17,7 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.LineIterator;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
+//import org.embl.ebi.escience.scuflui.workbench.Bootstrap;
 
 /**
  * myGrid configuration, such as services to load in the workbench or LSID
@@ -42,8 +43,7 @@ public class MyGridConfiguration {
 
 	// Property filename/resource name
 	private final static String PROPERTIES = "mygrid.properties";
-	// Application name, as in $HOME/.taverna 
-	private final static String APPLICATION = "Taverna";
+
 
 	// Written to the top of the generated mygrid.properties.dist
 	private final static String HEADER = "# Default values are shown double-commented like this:\n"
@@ -192,88 +192,32 @@ public class MyGridConfiguration {
 	}
 
 	/**
-	 * Get the user's application directory according to operating system.
-	 * 
+	 * Get the user's application directory according to taverna.home.
 	 * <p>
-	 * On Windows, this will typically be something like:
+	 * The system property <code>taverna.home</code> is assumed to have been
+	 * set by Bootstrap.findUserDir() or externally. The directory is created
+	 * if needed.
 	 * 
-	 * <pre>
-	 *  	C:\Document and settings\MyUsername\Application Data\MyApplication
-	 * </pre>
-	 * 
-	 * while on Mac OS X it will be something like:
-	 * 
-	 * <pre>
-	 *  	/Users/MyUsername/Library/Application Support/MyApplication
-	 * </pre>
-	 * 
-	 * All other OS'es are assumed to be UNIX-alike, returning something like:
-	 * 
-	 * <pre>
-	 *  	/user/myusername/.myapplication
-	 * </pre>
-	 * 
-	 * <p>
-	 * If the directory does not already exist, it will be created.
-	 * </p>
-	 * 
-	 * @return <code>File</code> object representing the OS-specific user
+	 * @see org.embl.ebi.escience.scuflui.workbench.Bootstrap
+	 * @return <code>File</code> object representing the user
 	 *         directory for this application, or <code>null</code> if it could
 	 *         not be found or created.
 	 */
 	public static File getUserDir() {
-		File home = new File(System.getProperty("user.home"));
-		if (!home.isDirectory()) {
-			logger.error("User home not a valid directory: " + home);
+		String tavernaHome = System.getProperty("taverna.home");
+		if (tavernaHome == null) {
+			logger.error("Could not find Taverna home. Set -Dtaverna.home or call Bootstrap.findUserDir()");
+			return null;
+			//Bootstrap.findUserDir();
+			//tavernaHome = System.getProperty("taverna.home");
+		}
+		File dir = new File(tavernaHome);
+		dir.mkdirs();
+		if (! dir.isDirectory()) {
+			logger.warn("Could not create directory " + dir);
 			return null;
 		}
-		String os = System.getProperty("os.name");
-		logger.debug("OS is " + os);
-		File appHome;
-	
-		if (os.equals("Mac OS X")) {
-			File libDir = new File(home, "Library/Application Support");
-			if (!libDir.isDirectory()) {
-				logger.warn("Could not find Application support directory:"
-						+ libDir);
-				// We'll make it, we could be the first one
-				new File(home, "Library").mkdir();
-				libDir.mkdir();
-			}
-			appHome = new File(libDir, APPLICATION);
-	
-		} else if (os.startsWith("Windows")) {
-			String APPDATA = System.getenv("APPDATA");
-			File appData = null;
-			if (APPDATA != null) {
-				appData = new File(APPDATA);
-			}
-			if (appData != null && appData.isDirectory()) {
-				appHome = new File(appData, APPLICATION);
-			} else {
-				logger.warn("Could not find %APPDATA%: " + APPDATA);
-				appHome = new File(home, APPLICATION);
-			}
-	
-		} else {
-			// We'll assume UNIX style is OK
-			appHome = new File(home, "." + APPLICATION.toLowerCase());
-		}
-	
-		if (!appHome.exists()) {
-			if (appHome.mkdir()) {
-				logger.info("Created " + appHome);
-			} else {
-				logger.error("Could not create " + appHome);
-				return null;
-			}
-		}
-		if (!appHome.isDirectory()) {
-			logger.error(APPLICATION + " user home not a valid directory: "
-					+ appHome);
-			return null;
-		}
-		return appHome;
+		return dir;
 	}
 
 	/**
@@ -290,13 +234,10 @@ public class MyGridConfiguration {
 	 */
 	public static File getUserDir(String subDirectory) {
 		File dir = new File(getUserDir(), subDirectory);
-		if (!dir.isDirectory()) {
-			if (dir.mkdir()) {
-				logger.info("Created " + dir);
-			} else {
-				logger.error("Could not create " + dir);
-				return null;
-			}
+		dir.mkdirs();
+		if (! dir.isDirectory()) {
+			logger.warn("Could not create directory " + dir);
+			return null;
 		}
 		return dir;
 	}

@@ -11,7 +11,7 @@ import junit.framework.TestCase;
 
 public class MyGridConfigurationTest extends TestCase {
 	
-	private String realHome;
+	private String realTavHome;
 	private File tempHome;
 	private String realOS;
 	
@@ -20,20 +20,24 @@ public class MyGridConfigurationTest extends TestCase {
 	final static String propValue = "org.embl.ebi.escience.baclava.lsid.UUIDLSIDProvider";
 
 	public void setUp() throws IOException {
-		realHome = System.getProperty("user.home");
+		realTavHome = System.getProperty("taverna.home");
 		realOS = System.getProperty("os.name");
 		tempHome = File.createTempFile("taverna", ".tmp");
 		assertTrue(tempHome.delete());
 		assertTrue(tempHome.mkdir());
 		assertTrue(tempHome.isDirectory());
 		assertEquals(0, tempHome.listFiles().length); //empty
-		System.setProperty("user.home", tempHome.getAbsolutePath());
+		System.setProperty("taverna.home", tempHome.getAbsolutePath());
 		MyGridConfiguration.flushProperties();
 		assertNull(MyGridConfiguration.properties);
 	}
 	
 	public void tearDown() throws IOException {
-		System.setProperty("user.home", realHome);
+		if (realTavHome == null) {
+			System.clearProperty("taverna.home");
+		} else {
+			System.setProperty("taverna.home", realTavHome);
+		}
 		System.setProperty("os.name", realOS);
 		//FileUtils.deleteDirectory(tempHome);
 		// Might have been messed up by getProperties calls
@@ -41,7 +45,7 @@ public class MyGridConfigurationTest extends TestCase {
 	}
 	
 	public void testMadeTempHome() {
-		String home = System.getProperty("user.home");
+		String home = System.getProperty("taverna.home");
 		assertTrue(home.contains(".tmp"));
 	}
 	
@@ -52,37 +56,6 @@ public class MyGridConfigurationTest extends TestCase {
 		assertTrue(userDir.getAbsolutePath().startsWith(tempHome.getAbsolutePath()));
 		// Ignore T/t
 		assertTrue(userDir.getName().contains("averna"));
-	}
-	
-	/* 
-	 * Test that getUserDir() works as expected on different OS-es
-	 * 
-	 */
-	public void testGetUserDirMultiOS() {
-		System.setProperty("os.name", "Mac OS X");
-		File dir = MyGridConfiguration.getUserDir();
-		File shouldBe = new File(tempHome, "Library/Application Support/Taverna");
-		assertEquals(shouldBe, dir);
-		assertTrue(dir.isDirectory());
-		
-		System.setProperty("os.name", "Windows XP");
-		dir = MyGridConfiguration.getUserDir();
-		String APPDATA = System.getenv("APPDATA");
-		if (APPDATA == null) {
-			// Likely on Non-Windows platform
-			shouldBe = new File(tempHome, "Taverna");
-		} else {
-			shouldBe = new File(APPDATA, "Taverna");
-		}
-		assertEquals(shouldBe, dir);
-		assertTrue(dir.isDirectory());
-	
-		// Anything else is UNIX style
-		System.setProperty("os.name", "Linn0x");
-		dir = MyGridConfiguration.getUserDir();
-		shouldBe = new File(tempHome, ".taverna");
-		assertEquals(shouldBe, dir);
-		assertTrue(dir.isDirectory());
 	}
 	
 	
