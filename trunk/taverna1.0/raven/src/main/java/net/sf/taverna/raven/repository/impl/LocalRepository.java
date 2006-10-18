@@ -46,19 +46,19 @@ public class LocalRepository implements Repository {
 		protected ArtifactClassLoader(ArtifactImpl a) throws MalformedURLException, ArtifactStateException {
 			// fixme: use jarFile(a).toURI().toURL()?
 			super(new URL[]{LocalRepository.this.jarFile(a).toURL()});
-			init(a);
 			synchronized(loaderMap) {
 				loaderMap.put(a, this);
 			}
+			init(a);
 		}
 		
 		protected ArtifactClassLoader(ArtifactImpl a, ClassLoader parent) throws MalformedURLException, ArtifactStateException {
 			// fixme: use jarFile(a).toURI().toURL()?
 			super(new URL[]{LocalRepository.this.jarFile(a).toURL()}, parent);			
-			init(a);
 			synchronized(loaderMap) {
 				loaderMap.put(a, this);
 			}
+			init(a);
 		}
 		
 		protected ArtifactClassLoader(ClassLoader selfLoader) {
@@ -78,7 +78,7 @@ public class LocalRepository implements Repository {
 							// Never happens
 							e.printStackTrace();
 						}
-						loaderMap.put(a, ac);						
+//						loaderMap.put(a, ac);						
 					}						
 					childLoaders.add(ac);
 				}
@@ -105,9 +105,11 @@ public class LocalRepository implements Repository {
 			}
 			alreadySeen.add(this);
 			for (ArtifactClassLoader cl : childLoaders) {
-				resourceURL = cl.findFirstInstanceOfResource(alreadySeen, name);
-				if (resourceURL != null) {
-					return resourceURL;
+				if (!alreadySeen.contains(cl)) {
+					resourceURL = cl.findFirstInstanceOfResource(alreadySeen, name);
+					if (resourceURL != null) {
+						return resourceURL;
+					}
 				}
 			}
 			return null;
@@ -139,7 +141,7 @@ public class LocalRepository implements Repository {
 				
 		protected Class<?> findClass(String name, Set<ArtifactClassLoader> seenLoaders) throws ClassNotFoundException {
 			//System.out.println("Searching for '"+name+"' - "+this.toString());
-			//seenLoaders.add(this);
+			seenLoaders.add(this);
 			if (classMap.containsKey(name)) {
 				//System.out.println("Returning cached '"+name+"' - "+this.toString());
 				return classMap.get(name);
@@ -155,17 +157,30 @@ public class LocalRepository implements Repository {
 				//System.out.println("    "+ac.toString());
 				//}
 				for (ArtifactClassLoader ac : childLoaders) {
-					//if (seenLoaders.contains(ac) == false) {
+					if (seenLoaders.contains(ac) == false) {
 						try {
-							return ac.loadClass(name);
+//							Class loadedClass = findLoadedClass(name);
+//							if (loadedClass != null) {
+//								return loadedClass;
+//							}
+							if (ac.getParent() instanceof ArtifactClassLoader) {
+								((ArtifactClassLoader) ac.getParent()).findClass(name, seenLoaders);
+							} else if (ac.getParent() != null) {
+								try {
+									return ac.getParent().loadClass(name);
+								} catch (ClassNotFoundException cnfe) {
+								}
+							}
+//							return ac.loadClass(name);
+							return ac.findClass(name, seenLoaders);
 						}
 						catch (ClassNotFoundException cnfe) {
 							//System.out.println("No '"+name+"' in "+this.toString());
 						}
-					//}
+					}
 				}
 			}
-			throw new ClassNotFoundException();
+			throw new ClassNotFoundException(name);
 		}
 	}
 	
@@ -407,11 +422,16 @@ public class LocalRepository implements Repository {
 				boolean resolutionError = false;
 				try {
 					List<ArtifactImpl> deps = a.getDependencies();
+					Set<Artifact> seenArtifacts = new HashSet<Artifact>();
+					seenArtifacts.add(a);
 					for (ArtifactImpl dep : deps) {
 						if (status.containsKey(dep) == false) {
 							addArtifact(dep);
 						}
-						if (status.get(dep).equals(ArtifactStatus.Ready) == false) {
+//						if (status.get(dep).equals(ArtifactStatus.Ready) == false) {
+//							fullyResolved = false;
+//						}
+						if (!fullyResolved(dep, seenArtifacts)) {
 							fullyResolved = false;
 						}
 						if (status.get(dep).isError()) {
@@ -432,6 +452,42 @@ public class LocalRepository implements Repository {
 			}
 		}
 		return moreToDo;
+	}
+	
+	/**
+	 * Returns true if the artifact is fully resolved.
+	 * 
+	 * A fully resolved jar has:
+	 * <ul>
+	 * <li>a status of 'Ready', or</li>
+	 * <li>a status of 'Jar' and all its dependencies are 'Ready' or have already been seen.</li>
+	 * </ul>
+	 * @param artifact
+	 * @param seenArtifacts
+	 * @return true if the artifact is fully resolved
+	 */
+	private boolean fullyResolved(ArtifactImpl artifact, Set<Artifact> seenArtifacts) {
+		if (status.get(artifact).equals(ArtifactStatus.Ready)) {
+			return true;
+		}
+		if (status.get(artifact).equals(ArtifactStatus.Jar)) {
+			if (seenArtifacts.contains(artifact)) {
+				return true;
+			}
+			seenArtifacts.add(artifact);
+			try {
+				List<ArtifactImpl> deps = artifact.getDependencies();
+				for (ArtifactImpl dep : deps) {
+					if (!fullyResolved(dep, seenArtifacts)) {
+						return false;
+					}
+				}
+				return true;
+			} catch (ArtifactStateException e) {
+				e.printStackTrace();
+			}
+		}
+		return false;
 	}
 	
 	/**
