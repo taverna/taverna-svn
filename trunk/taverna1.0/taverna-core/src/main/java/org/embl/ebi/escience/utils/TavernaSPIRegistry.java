@@ -63,10 +63,16 @@ public class TavernaSPIRegistry<T> {
 	private static Repository REPOSITORY = null;
 	
 	public static void setRepository(Repository theRepository) {
+		assert theRepository != null;
 		REPOSITORY = theRepository;
 	}
 	
 	public TavernaSPIRegistry(Class<T> spiClass) {
+		if (REPOSITORY == null) {
+			logger.error("setRepository() has not been called"); 
+			throw new IllegalStateException("TavernaSPIRegistry not initialized " +
+									"with setRepository() ");
+		}
 		this.spiClass = spiClass;
 		if (spiMap.containsKey(spiClass) == false) {
 			SpiRegistry registry = new SpiRegistry(REPOSITORY, spiClass.getName(), null);
