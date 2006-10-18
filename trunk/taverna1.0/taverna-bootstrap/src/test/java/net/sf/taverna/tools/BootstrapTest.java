@@ -1,7 +1,10 @@
-package org.embl.ebi.escience.scuflui.workbench;
+package net.sf.taverna.tools;
+
 
 import java.io.File;
 import java.io.IOException;
+
+import net.sf.taverna.tools.Bootstrap;
 
 import junit.framework.TestCase;
 

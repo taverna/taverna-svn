@@ -1,4 +1,6 @@
-package org.embl.ebi.escience.scuflui.workbench;
+package net.sf.taverna.tools;
+
+
 
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
@@ -65,7 +67,7 @@ public class Bootstrap {
 		String artifactLocation = 
 			"uk/org/mygrid/taverna/raven/raven/1.5-SNAPSHOT/raven-1.5-SNAPSHOT.jar";
 		URL artifactURL = new URL(new URL(repositoryLocation), artifactLocation);
-		System.out.println("Loaing Raven from " + artifactURL);
+		//System.out.println("Loading Raven from " + artifactURL);
 		ClassLoader c = new URLClassLoader(
 				new URL[]{artifactURL}
 				,null);

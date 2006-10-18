@@ -26,6 +26,10 @@
 	  <artifactId>raven</artifactId>
 	</dependency>
     <dependency>
+      <groupId>uk.org.mygrid.taverna</groupId>
+      <artifactId>taverna-bootstrap</artifactId>
+    </dependency>
+    <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
       <version>3.8.2</version>

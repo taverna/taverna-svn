@@ -17,7 +17,7 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.LineIterator;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
-//import org.embl.ebi.escience.scuflui.workbench.Bootstrap;
+import net.sf.taverna.tools.Bootstrap;
 
 /**
  * myGrid configuration, such as services to load in the workbench or LSID
@@ -198,7 +198,7 @@ public class MyGridConfiguration {
 	 * set by Bootstrap.findUserDir() or externally. The directory is created
 	 * if needed.
 	 * 
-	 * @see org.embl.ebi.escience.scuflui.workbench.Bootstrap
+	 * @see net.sf.taverna.tools.Bootstrap.findUserDir()
 	 * @return <code>File</code> object representing the user
 	 *         directory for this application, or <code>null</code> if it could
 	 *         not be found or created.
@@ -206,15 +206,17 @@ public class MyGridConfiguration {
 	public static File getUserDir() {
 		String tavernaHome = System.getProperty("taverna.home");
 		if (tavernaHome == null) {
-			logger.error("Could not find Taverna home. Set -Dtaverna.home or call Bootstrap.findUserDir()");
-			return null;
-			//Bootstrap.findUserDir();
-			//tavernaHome = System.getProperty("taverna.home");
+			Bootstrap.findUserDir();
+			tavernaHome = System.getProperty("taverna.home");
+			if (tavernaHome == null) {
+				logger.error("Could not find Taverna home. Try setting -Dtaverna.home");
+				return null;
+			}
 		}
 		File dir = new File(tavernaHome);
 		dir.mkdirs();
 		if (! dir.isDirectory()) {
-			logger.warn("Could not create directory " + dir);
+			logger.warn("Invalid taverna.home directory " + dir);
 			return null;
 		}
 		return dir;
