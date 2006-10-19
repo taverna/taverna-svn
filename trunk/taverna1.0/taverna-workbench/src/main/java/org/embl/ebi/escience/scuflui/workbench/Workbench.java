@@ -14,7 +14,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.io.Writer;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -169,13 +168,8 @@ public class Workbench extends JFrame {
 		// Running from outside of Raven - won't expect this to work properly!
 		catch (ClassCastException cce) {
 			basePane.setRepository(LocalRepository.getRepository(new File(Bootstrap.TAVERNA_CACHE)));
-			try {
-				for (String repository : Bootstrap.REPOSITORY_LIST) {
-					basePane.getRepository().addRemoteRepository(new URL(repository));
-				}
-			} catch (MalformedURLException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+			for (URL repository : Bootstrap.remoteRepositories) {
+				basePane.getRepository().addRemoteRepository(repository);
 			}
 		}
 		

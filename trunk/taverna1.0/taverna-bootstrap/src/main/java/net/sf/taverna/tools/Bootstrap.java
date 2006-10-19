@@ -3,110 +3,158 @@ package net.sf.taverna.tools;
 
 
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Properties;
+import java.util.Map.Entry;
 
 public class Bootstrap {
+		
+	public static Properties properties = findProperties();
 	
-	private static String develRepo = "";
-	static {
-		File mavenRep = new File(System.getProperty("user.home"), ".m2/repository/");
-		if (! mavenRep.isDirectory()) {
-			// Use current directory instead
-			mavenRep = new File(System.getProperty("user.dir"));
-			assert mavenRep.isDirectory();
+	public static Properties findProperties() {
+		Properties properties = new Properties();
+		String propsName = "/raven.properties";
+		InputStream props = Bootstrap.class.getResourceAsStream(propsName);
+		if (props == null) {
+			System.err.println("Could not find " + propsName);
+			System.exit(1);
 		}
 		try {
-			develRepo = mavenRep.toURI().toURL().toString();
-		} catch (MalformedURLException e) {
-			System.err.println("Invalid user.home: " + mavenRep);
-			assert false;
+			properties.load(props);
+		} catch (IOException e) {
+			System.err.println("Could not load " + propsName);
+			System.exit(2);
 		}
+		// Allow overriding any of those on command line
+		properties.putAll(System.getProperties());
+		return properties;
 	}
-	// FIXME: Avoid hardcoding!
-	//repository for finding raven should come first!
-	public static final String [] REPOSITORY_LIST = new String[] {
-		develRepo, 
-		"http://www.mygrid.org.uk/maven/repository/", 
-		"http://www.ibiblio.org/maven2/"
-	};
+	
+	public static URL[] remoteRepositories = findRepositories(properties);	
+
+	public static URL[] findRepositories(Properties properties) {
+		// entries are named raven.repository.2 = http:// .. 
+		// We'll add these in order as stated (not as in property file)
+		String prefix = "raven.repository.";
+		ArrayList<URL> urls = new ArrayList<URL>();
+		for (Entry property : properties.entrySet()) {
+			String propName = (String) property.getKey();
+			if (! propName.startsWith(prefix)) {
+				continue;
+			}
+			String propValue = (String) property.getValue();
+			URL url;
+			try {
+				url = new URL(propValue);
+			} catch (MalformedURLException e1) {
+				System.err.println("Ignoring invalid URL " + propValue);
+				continue;
+			}
+			int position;
+			try {
+				position = Integer.valueOf(propName.replace(prefix, "")); 
+			} catch (NumberFormatException e) {
+				// Just ignore the position
+				System.err.println("Invalid URL position " + propName);
+				urls.add(url);
+				continue;
+			}
+			// Fill up with null's if we are to insert way out there
+			while (position >= urls.size()) {
+				urls.add(null);
+			}
+			// .add(pos, url) makes sure we don't overwrite anything
+			urls.add(position, url);
+		}
+		// Check if .m2/repository is there, add it
+		File mavenRep = new File(System.getProperty("user.home"), ".m2/repository/");
+		if (mavenRep.isDirectory()) {
+			try {
+				// We'll put it in 1, not 0, so that raven.repository.0 can come first
+				urls.add(1, mavenRep.toURI().toURL());
+			} catch (MalformedURLException e) {
+				System.err.println("Invalid maven repository: " + mavenRep);
+			}	
+		}
+		// Remove nulls and export as URL[]
+		while (urls.remove(null)) {}
+		return urls.toArray(new URL[0]);
+	} 
+	
+	
 	// Where Raven will store its repository, discovered by main()
-	public static String TAVERNA_CACHE="";
-	public static final String RAVEN_VERSION="1.5-SNAPSHOT";
-	public static final String SPLASHSCREEN="http://www.ebi.ac.uk/~tmo/mygrid/splashscreen.png";
-	public static final String WORKBENCH_VERSION="1.5-SNAPSHOT";
+	public static String TAVERNA_CACHE = "";
+	
+	public static final String RAVEN_VERSION = properties.getProperty("raven.loader.version");
+	public static final String SPLASHSCREEN = properties.getProperty("raven.splashscreen.url");
 	// Application name, as in $HOME/.taverna 
 	private final static String APPLICATION = "Taverna";
 	
 	public static void main(String[] args) throws MalformedURLException, ClassNotFoundException, SecurityException, NoSuchMethodException, IllegalArgumentException, IllegalAccessException, InvocationTargetException {
 		findUserDir();
-		String tavernaCache = System.getProperty("taverna.repository");
-		File cacheDir;
-		if (tavernaCache != null) {
-			cacheDir = new File(tavernaCache);
-		} else {
-			String TAVERNA_HOME = System.getProperty("taverna.home");
-			if (TAVERNA_HOME == null) {
-				System.err.println("Could not locate a Taverna home / local repository");
-				return;
-			}
-			cacheDir = new File(TAVERNA_HOME, "repository");
-		}
-		cacheDir.mkdirs();
-		if (! cacheDir.isDirectory()) {
-			System.err.println("Not a valid repository directory: " + cacheDir);
+		File cacheDir = findCache();
+		if (cacheDir == null) {
 			return;
 		}
-		TAVERNA_CACHE = cacheDir.getAbsolutePath();
 		
 		// Create a remote classloader referencing the raven jar within a repository
-		String repositoryLocation = REPOSITORY_LIST[0];			
-		String artifactLocation = 
-			"uk/org/mygrid/taverna/raven/raven/1.5-SNAPSHOT/raven-1.5-SNAPSHOT.jar";
-		URL artifactURL = new URL(new URL(repositoryLocation), artifactLocation);
-		//System.out.println("Loading Raven from " + artifactURL);
+		
+		String artifactLocation = artifactURI(
+				properties.getProperty("raven.loader.groupid"), 
+				properties.getProperty("raven.loader.artifactid"), 
+				properties.getProperty("raven.loader.version"));
+		List<URL> loaderURLs = new ArrayList<URL>();
+		for (URL repository : remoteRepositories) {
+			loaderURLs.add(new URL(repository, artifactLocation));
+		}
 		ClassLoader c = new URLClassLoader(
-				new URL[]{artifactURL}
-				,null);
+				loaderURLs.toArray(new URL[0]),
+				null);
+
+		String useSplashProp = properties.getProperty("raven.splashscreen");
+		boolean useSplashscreen = !(useSplashProp == null || useSplashProp.equalsIgnoreCase("false"));
 		
 		// Reference to the Loader class within net.sf.taverna.raven
-		Class loaderClass = c.loadClass("net.sf.taverna.raven.Loader");
+		Class loaderClass = c.loadClass(properties.getProperty("raven.loader.class"));
 		// Find the single static method provided by the loader
 		Method m = loaderClass.getDeclaredMethod(
-				"doRavenMagic",
-				String.class,
-				File.class,
-				URL[].class,
-				String.class,
-				String.class,
-				String.class,
-				String.class,
-				URL.class,
-				int.class);
+				properties.getProperty("raven.loader.method"),
+				String.class, // ravenVersion
+				File.class,   // localRepositoryLocation
+				URL[].class,  // remoteRepositories
+				String.class, // targetGroup
+				String.class, // targetArtifact
+				String.class, // targetVersion
+				String.class, // className
+				URL.class,    // splashScreenURL
+				int.class);   // splashTime
 		
 		// Parameters for the Raven loader call
 		String ravenVersion = RAVEN_VERSION;
-		URL[] remoteRepositories = new URL[REPOSITORY_LIST.length];
-		for (int i=0;i<remoteRepositories.length;i++) {
-			remoteRepositories[i]=new URL(REPOSITORY_LIST[i]);
-		}
-		
-		// FIXME: Support non-splashscreen
-		URL splashScreenImage = new URL(SPLASHSCREEN);
+
 		// FIXME: Support other classes like WorkflowLauncher
-		String groupID = "uk.org.mygrid.taverna";
-		String artifactID = "taverna-workbench";
-		String version = WORKBENCH_VERSION;
-		int minimumDisplayTime = 10 * 1000; // Ten seconds
-		String targetClassName = "org.embl.ebi.escience.scuflui.workbench.Workbench";
-		
-		// Construct array for dynamic invocation
-		//fixme: this will need changing when a mvn deploy is run
-		
+		String groupID = properties.getProperty("raven.target.groupid");
+		String artifactID = properties.getProperty("raven.target.artifactid");
+		String version = properties.getProperty("raven.target.version");
+
+		String targetClassName = properties.getProperty("raven.target.class");
 		// Call method via reflection, 'null' target as this is a static method
+		URL splashScreenImage = null;
+		int minimumDisplayTime = 1;
+		if (useSplashscreen) {
+			// FIXME: Support offline splashscreen
+			splashScreenImage = new URL(SPLASHSCREEN);
+			minimumDisplayTime = Integer.valueOf(properties.getProperty("raven.splashscreen.timeout")) 
+									* 1000; // seconds
+		}
 		Class workbenchClass = (Class)m.invoke(
 				null,
 				ravenVersion,
@@ -117,10 +165,48 @@ public class Bootstrap {
 				version,
 				targetClassName,
 				splashScreenImage,
-				minimumDisplayTime);	
-		Method workbenchStatic = workbenchClass.getMethod(
-				"getWorkbench",new Class[0]);
-		workbenchStatic.invoke(null, new Object[0]);
+				minimumDisplayTime);
+		
+		try {
+			// Try m(String[] args) first
+			Method workbenchStatic = workbenchClass.getMethod(
+					 properties.getProperty("raven.target.method"), 
+					 String[].class);
+				workbenchStatic.invoke(null, new Object[]{args});
+		} catch (NoSuchMethodException ex) {
+			// Then with m()
+			Method workbenchStatic = workbenchClass.getMethod(
+				 properties.getProperty("raven.target.method"));
+			workbenchStatic.invoke(null);
+		}
+	}
+
+	private static String artifactURI(String groupid, String artifactid, String version) {
+		String filename = artifactid + "-" + version +  ".jar";
+		String groupLocation = groupid.replace(".", "/");
+		return groupLocation + "/" + artifactid + "/" + version + "/" + filename;
+	}
+
+	private static File findCache() {
+		String tavernaCache = System.getProperty("taverna.repository");
+		File cacheDir;
+		if (tavernaCache != null) {
+			cacheDir = new File(tavernaCache);
+		} else {
+			String TAVERNA_HOME = System.getProperty("taverna.home");
+			if (TAVERNA_HOME == null) {
+				System.err.println("Could not locate a Taverna home / local repository");
+				return null;
+			}
+			cacheDir = new File(TAVERNA_HOME, "repository");
+		}
+		cacheDir.mkdirs();
+		if (! cacheDir.isDirectory()) {
+			System.err.println("Not a valid repository directory: " + cacheDir);
+			return null;
+		}
+		TAVERNA_CACHE = cacheDir.getAbsolutePath();
+		return cacheDir;
 	}
 
 	/**
