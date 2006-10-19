@@ -10,12 +10,12 @@ public class DownloadStatusImpl implements DownloadStatus {
 
 	private int total;
   private int read;
-  private boolean finnished;
+  private boolean finished;
 	
   DownloadStatusImpl(int total) {
 		this.total = total;
 		this.read = 0;
-    this.finnished = false;
+    this.finished = false;
   }
 	
 	void setReadBytes(int read) {
@@ -30,13 +30,13 @@ public class DownloadStatusImpl implements DownloadStatus {
 		return this.read;
 	}
 
-  public void setFinnished()
+  public void setFinished()
   {
-    finnished = true;
+    finished = true;
   }
 
   public boolean isFinished()
   {
-    return finnished;
+    return finished;
   }
 }
