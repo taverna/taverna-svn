@@ -103,45 +103,53 @@ public class ArtifactImpl extends BasicArtifact {
 	 */
 	private synchronized void checkParent(File pomFile) {
 		InputStream is;
+		Document document;
 		try {
 			is = pomFile.toURL().openStream();
 			DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-			DocumentBuilder builder = factory.newDocumentBuilder();
-			Document document = builder.parse(is);
-			is.close();
-			List<Node> elementList = findElements(document, "parent");
-			if (elementList.isEmpty() == false) {
-				Node parentNode = elementList.iterator().next();
-				Node n = findElements(parentNode, "groupId" ).iterator().next();
-				String parentGroupId = n.getFirstChild().getNodeValue().trim();
-				n = findElements(parentNode, "artifactId" ).iterator().next();
-				String parentArtifactId = n.getFirstChild().getNodeValue().trim();
-				n = findElements(parentNode, "version" ).iterator().next();
-				String parentVersion = n.getFirstChild().getNodeValue().trim();
-				parentArtifact = new ArtifactImpl(parentGroupId,parentArtifactId,parentVersion,this.repository);
-				this.repository.addArtifact(parentArtifact);
-				if (this.repository.getStatus(parentArtifact).equals(ArtifactStatus.Queued)) {
-					// Force a fetch of the pom file
-					this.repository.forcePom(parentArtifact);
-				}
-				parentArtifact.checkParent(this.repository.pomFile(parentArtifact));
+			DocumentBuilder builder;
+			try {
+				builder = factory.newDocumentBuilder();
+			} catch (ParserConfigurationException ex) {
+				ex.printStackTrace();
+				return;
 			}
-		} catch (MalformedURLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (ParserConfigurationException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (SAXException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (ArtifactNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			try {
+				document = builder.parse(is);
+			} catch (SAXException e) {
+				System.err.println("Could not parse " + pomFile);
+				e.printStackTrace();
+				is.close();
+				return;
+			}
+			is.close(); }
+		catch (IOException e) {
+			System.err.println("Could not read " + pomFile + ": " + e);
+			return;
 		}
+		List<Node> elementList = findElements(document, "parent");
+		if (elementList.isEmpty()) {
+			return;
+		}
+		Node parentNode = elementList.iterator().next();
+		Node n = findElements(parentNode, "groupId" ).iterator().next();
+		String parentGroupId = n.getFirstChild().getNodeValue().trim();
+		n = findElements(parentNode, "artifactId" ).iterator().next();
+		String parentArtifactId = n.getFirstChild().getNodeValue().trim();
+		n = findElements(parentNode, "version" ).iterator().next();
+		String parentVersion = n.getFirstChild().getNodeValue().trim();
+		parentArtifact = new ArtifactImpl(parentGroupId,parentArtifactId,parentVersion,this.repository);
+		this.repository.addArtifact(parentArtifact);
+		if (repository.getStatus(parentArtifact).equals(ArtifactStatus.Queued)) {
+			try {
+				// Force a fetch of the pom file
+				this.repository.forcePom(parentArtifact);
+			} catch (ArtifactNotFoundException e) {
+				System.err.println("Could not fetch pom for artifact " + parentArtifact);
+				return;
+			}
+		}
+		parentArtifact.checkParent(this.repository.pomFile(parentArtifact));
 	}
 	
 	private Map<String,String> dependencyManagement = null;
@@ -216,7 +224,8 @@ public class ArtifactImpl extends BasicArtifact {
 			return result;
 		}
 		ArtifactStatus status = repository.getStatus(this);
-		if (status.getOrder() < ArtifactStatus.Pom.getOrder() || (status.isError() && status.equals(ArtifactStatus.PomNonJar)==false)) {
+		if (status.getOrder() < ArtifactStatus.Pom.getOrder() || 
+				(status.isError() && !status.equals(ArtifactStatus.PomNonJar))) {
 			throw new ArtifactStateException(status, new ArtifactStatus[]{ArtifactStatus.Analyzed,
 					ArtifactStatus.Jar, ArtifactStatus.Pom, ArtifactStatus.Ready});
 		}
@@ -240,7 +249,7 @@ public class ArtifactImpl extends BasicArtifact {
 					String artifactId = n.getFirstChild().getNodeValue().trim();
 					List<Node> versionNodeList = findElements(node, "version");
 					String version = null;
-					if (versionNodeList.isEmpty() == false) {
+					if (! versionNodeList.isEmpty()) {
 						n = findElements(node, "version" ).iterator().next();
 						version = n.getFirstChild().getNodeValue().trim();
 					}
@@ -252,7 +261,7 @@ public class ArtifactImpl extends BasicArtifact {
 						// Check for optional dependency
 						boolean optional = false;
 						List<Node> optionalNodeList = findElements(node, "optional");
-						if (optionalNodeList.isEmpty()==false) {
+						if (! optionalNodeList.isEmpty()) {
 							n = optionalNodeList.get(0);
 							String optionalString = n.getFirstChild().getNodeValue().trim();
 							if (optionalString.equalsIgnoreCase("true")) {
@@ -265,7 +274,7 @@ public class ArtifactImpl extends BasicArtifact {
 						// download.
 						boolean downloadableScope = true;
 						List<Node> scopeNodeList = findElements(node, "scope");
-						if (scopeNodeList.isEmpty()==false) {
+						if (! scopeNodeList.isEmpty()) {
 							n = scopeNodeList.get(0);
 							String scopeString = n.getFirstChild().getNodeValue().trim();
 							if (scopeString.equalsIgnoreCase("test") ||
