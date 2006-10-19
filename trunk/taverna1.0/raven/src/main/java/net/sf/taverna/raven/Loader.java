@@ -103,10 +103,15 @@ public class Loader {
 	ArtifactStateException,
 	ClassNotFoundException
 	{
-		
-		final SplashScreen splash =
+		boolean splashScreen = splashScreenURL != null;
+		final SplashScreen splash;
+		if (splashScreen) {
+			splash =
 			new SplashScreen(splashScreenURL,splashTime);
-		
+		} else { 
+			splash = null;
+		};
+			
 		final Repository repository =
 			LocalRepository.getRepository(localRepositoryLocation);
 		
@@ -116,6 +121,8 @@ public class Loader {
 		Artifact artifact = new BasicArtifact(targetGroup, targetArtifact, targetVersion);
 		repository.addArtifact(artifact);
 		repository.addArtifact(new BasicArtifact("uk.org.mygrid.taverna.raven","raven",ravenVersion));
+		
+		
 		RepositoryListener listener = new RepositoryListener() {
 			public void statusChanged(Artifact a, ArtifactStatus oldStatus, ArtifactStatus newStatus) {
 				splash.setText(a.getArtifactId()+"-"+a.getVersion()+" : "+newStatus.toString());				
@@ -160,11 +167,15 @@ public class Loader {
 				}
 			}			
 		};
-		repository.addRepositoryListener(listener);
+		if (splashScreen) {
+			repository.addRepositoryListener(listener);
+		}
 		repository.update();
-		repository.removeRepositoryListener(listener);
-		splash.setText("Done...");
-		splash.requestClose();
+		if (splashScreen) {
+			repository.removeRepositoryListener(listener);
+			splash.setText("Done...");
+			splash.requestClose();
+		} 
 		//System.out.println("Done close request");
 		ClassLoader loader = repository.getLoader(artifact,null);
 		//System.out.println("Got classloader");
