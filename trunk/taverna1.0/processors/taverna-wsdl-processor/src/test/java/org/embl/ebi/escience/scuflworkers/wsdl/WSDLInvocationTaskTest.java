@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import junit.framework.TestCase;
+import net.sf.taverna.raven.repository.Repository;
 import net.sf.taverna.raven.repository.impl.LocalRepository;
 
 import org.embl.ebi.escience.baclava.DataThing;
@@ -23,7 +24,7 @@ public class WSDLInvocationTaskTest extends TestCase {
 	public void setUp() throws IOException {
 		File tmpDir = File.createTempFile("taverna", "raven");
 		assertTrue(tmpDir.delete());
-		LocalRepository tempRepository = LocalRepository.getRepository(tmpDir);
+		Repository tempRepository = LocalRepository.getRepository(tmpDir);
 		assertTrue(tmpDir.isDirectory());
 		TavernaSPIRegistry.setRepository(tempRepository);		
 	}

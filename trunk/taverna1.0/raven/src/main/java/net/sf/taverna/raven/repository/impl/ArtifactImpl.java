@@ -1,6 +1,3 @@
-/**
- * 
- */
 package net.sf.taverna.raven.repository.impl;
 
 import java.io.File;
@@ -9,21 +6,18 @@ import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
-
 import net.sf.taverna.raven.repository.Artifact;
 import net.sf.taverna.raven.repository.ArtifactNotFoundException;
+import net.sf.taverna.raven.repository.ArtifactStateException;
 import net.sf.taverna.raven.repository.ArtifactStatus;
 import net.sf.taverna.raven.repository.BasicArtifact;
-import net.sf.taverna.raven.repository.ArtifactStateException;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;

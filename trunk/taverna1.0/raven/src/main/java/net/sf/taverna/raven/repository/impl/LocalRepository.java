@@ -106,11 +106,11 @@ public class LocalRepository implements Repository {
 			alreadySeen.add(this);
 			for (ArtifactClassLoader cl : childLoaders) {
 				if (!alreadySeen.contains(cl)) {
-					resourceURL = cl.findFirstInstanceOfResource(alreadySeen, name);
-					if (resourceURL != null) {
-						return resourceURL;
-					}
+				resourceURL = cl.findFirstInstanceOfResource(alreadySeen, name);
+				if (resourceURL != null) {
+					return resourceURL;
 				}
+			}
 			}
 			return null;
 		}
@@ -169,7 +169,7 @@ public class LocalRepository implements Repository {
 								try {
 									return ac.getParent().loadClass(name);
 								} catch (ClassNotFoundException cnfe) {
-								}
+						}
 							}
 //							return ac.loadClass(name);
 							return ac.findClass(name, seenLoaders);
@@ -177,11 +177,11 @@ public class LocalRepository implements Repository {
 						catch (ClassNotFoundException cnfe) {
 							//System.out.println("No '"+name+"' in "+this.toString());
 						}
-					}
 				}
 			}
-			throw new ClassNotFoundException(name);
 		}
+			throw new ClassNotFoundException(name);
+	}
 	}
 	
 	/**
@@ -198,16 +198,21 @@ public class LocalRepository implements Repository {
 		initialize();
 	}
 	
-	private static Map<File,LocalRepository> repositoryCache = new HashMap<File,LocalRepository>();
+	private static Map<File,Repository> repositoryCache = new HashMap<File,Repository>();
 	/**
 	 * Get a new or cached instance of LocalRepository for the supplied base directory,
 	 * this is the method to use when you want to get hold of a LocalRepository.
 	 * @param base The base directory for the m2 repository on disk
 	 * @return LocalRepository instance for the base directory
 	 */
-	public static synchronized LocalRepository getRepository(File base) {
+	public static synchronized Repository getRepository(File base) {
 		if (repositoryCache.containsKey(base) == false) {
-			repositoryCache.put(base, new LocalRepository(base));
+			if (System.getProperty("raven.eclipse")==null) {
+				repositoryCache.put(base, new LocalRepository(base));
+			}
+			else {
+				repositoryCache.put(base, new EclipseRepository());
+			}
 		}
 		return repositoryCache.get(base);
 	}
@@ -568,7 +573,7 @@ public class LocalRepository implements Repository {
 		}
 		finally
 		{
-			dlstatus.get(a).setFinnished();
+			dlstatus.get(a).setFinished();
 			os.flush();
 			os.close();
 		}
@@ -645,7 +650,7 @@ public class LocalRepository implements Repository {
 	private void enumerateDirs(File current, Set<File> groupDirs) {
 		File[] subdirs = current.listFiles(dFilter);
 		if (subdirs == null || subdirs.length == 0) {
-			if (current.equals(base) == false) {
+			if (current.equals(base) == false) {				
 				groupDirs.add(current.getParentFile().getParentFile());
 			}
 		}
@@ -673,7 +678,7 @@ public class LocalRepository implements Repository {
 		
 		List<String> groupIds = new ArrayList<String>();
 		for (File f : groupDirs) {
-			File temp = f;
+			File temp = f;			
 			String groupName = "";
 			
 			while (temp.equals(base) == false) {

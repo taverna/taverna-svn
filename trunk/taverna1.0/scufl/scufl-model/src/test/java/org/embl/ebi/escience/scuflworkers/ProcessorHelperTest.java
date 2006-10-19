@@ -25,10 +25,10 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: ProcessorHelperTest.java,v $
- * Revision           $Revision: 1.2 $
+ * Revision           $Revision: 1.3 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-10-18 15:20:19 $
- *               by   $Author: stain $
+ * Last modified on   $Date: 2006-10-19 13:35:21 $
+ *               by   $Author: sowen70 $
  * Created on 7 Sep 2006
  *****************************************************************/
 package org.embl.ebi.escience.scuflworkers;
@@ -38,6 +38,7 @@ import java.io.IOException;
 
 import org.embl.ebi.escience.utils.TavernaSPIRegistry;
 
+import net.sf.taverna.raven.repository.Repository;
 import net.sf.taverna.raven.repository.impl.LocalRepository;
 import junit.framework.TestCase;
 
@@ -46,7 +47,7 @@ public class ProcessorHelperTest extends TestCase{
 	public void setUp() throws IOException {
 		File tmpDir = File.createTempFile("taverna", "raven");
 		assertTrue(tmpDir.delete());
-		LocalRepository tempRepository = LocalRepository.getRepository(tmpDir);
+		Repository tempRepository = LocalRepository.getRepository(tmpDir);
 		assertTrue(tmpDir.isDirectory());
 		TavernaSPIRegistry.setRepository(tempRepository);		
 	}

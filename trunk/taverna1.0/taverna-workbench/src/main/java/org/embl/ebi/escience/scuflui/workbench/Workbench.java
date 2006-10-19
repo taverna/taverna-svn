@@ -1,6 +1,5 @@
 package org.embl.ebi.escience.scuflui.workbench;
 
-
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
@@ -304,9 +303,10 @@ public class Workbench extends JFrame {
 		setSize(new Dimension(500,500));				
 		addWindowListener(getWindowClosingAdaptor());
 		updateRepository();
-						
-		readLastLayout();
+		
 		readLastPreferences();
+		readLastLayout();
+		
 		basePane.setEditable(false);
 		setVisible(true);
 	}
