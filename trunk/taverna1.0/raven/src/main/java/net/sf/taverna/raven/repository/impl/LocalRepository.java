@@ -201,9 +201,9 @@ public class LocalRepository implements Repository {
 	private static Map<File,Repository> repositoryCache = new HashMap<File,Repository>();
 	/**
 	 * Get a new or cached instance of LocalRepository for the supplied base directory,
-	 * this is the method to use when you want to get hold of a LocalRepository.
+	 * this is the method to use when you want to get hold of a Repository.
 	 * @param base The base directory for the m2 repository on disk
-	 * @return LocalRepository instance for the base directory
+	 * @return Repository instance for the base directory
 	 */
 	public static synchronized Repository getRepository(File base) {
 		if (repositoryCache.containsKey(base) == false) {
