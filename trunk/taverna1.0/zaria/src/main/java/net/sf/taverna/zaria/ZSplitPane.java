@@ -81,7 +81,11 @@ public class ZSplitPane extends ZPane {
 									// negative (?!), setting to 0 prevents an
 									// error on reload it gives the correct
 									// approximate location
-		double ratio = dividerLocation / total;
+		
+		double ratio;
+		if (total<=0) ratio=0;
+		else  ratio = dividerLocation / total;
+		
 
 		Element splitElement = new Element("split");
 		splitElement.setAttribute("ratio", String.valueOf(ratio));
