@@ -104,7 +104,6 @@ public class FreefluoEnactorProxy implements EnactorProxy {
 					"Error during submission of workflow to in memory freefluo enactor");
 			wse.initCause(e);
 			e.printStackTrace();
-			wse.initCause(e);
 			throw wse;
 		}
 	}
