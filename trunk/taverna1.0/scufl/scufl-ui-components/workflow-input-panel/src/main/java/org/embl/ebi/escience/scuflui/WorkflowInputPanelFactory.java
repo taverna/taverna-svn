@@ -32,7 +32,7 @@ public class WorkflowInputPanelFactory implements UIComponentFactorySPI {
 			public void launchEnactorDisplay(Map inputObject) {
 				EnactorProxy enactor = FreefluoEnactorProxy.getInstance();
 				ScuflModel workflowModel = 
-					(ScuflModel)UIUtils.getNamedModel("activeWorkflow");
+					(ScuflModel)UIUtils.getNamedModel("currentWorkflow");
 				try {
 					WorkflowInstance instance = enactor.compileWorkflow(workflowModel, inputObject, EnactorInvocation.USERCONTEXT);
 					UIUtils.setModel("workflowInstance"+(count++), instance);
