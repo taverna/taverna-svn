@@ -112,6 +112,8 @@ public class Bootstrap {
 				properties.getProperty("raven.loader.artifactid"), 
 				properties.getProperty("raven.loader.version"));
 		List<URL> loaderURLs = new ArrayList<URL>();
+		// Use our local repository if possible
+		loaderURLs.add(cacheDir.toURI().toURL());
 		for (URL repository : remoteRepositories) {
 			loaderURLs.add(new URL(repository, artifactLocation));
 		}
@@ -155,6 +157,7 @@ public class Bootstrap {
 			minimumDisplayTime = Integer.valueOf(properties.getProperty("raven.splashscreen.timeout")) 
 									* 1000; // seconds
 		}
+
 		Class workbenchClass;
 		try {
 			workbenchClass = (Class)m.invoke(
@@ -174,6 +177,7 @@ public class Bootstrap {
 			System.exit(4);
 			return;
 		}
+		
 		try {
 			try {
 				// Try m(String[] args) first
