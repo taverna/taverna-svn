@@ -79,6 +79,8 @@ public class ScavengerTreePanel extends JPanel implements WorkflowModelViewSPI {
 			}
 		}
 	};
+
+	private boolean initialised = false;
 	
 	public void startProgressBar(String text)
 	{		
@@ -97,12 +99,12 @@ public class ScavengerTreePanel extends JPanel implements WorkflowModelViewSPI {
 		// To avoid double horisontal scrollbars, let the treePane be in charge
 		this.setPreferredSize(new Dimension(0, 0));
 		
-		progBar=new JProgressBar();
+		progBar = new JProgressBar();
 		progBar.setIndeterminate(true);
 		progBar.setVisible(false);		
 		//JPanel progPanel=new JPanel();		
 		//progPanel.add(progBar,BorderLayout.CENTER);
-		add(progBar,BorderLayout.PAGE_END);
+		add(progBar, BorderLayout.PAGE_END);
 		
 		tree = new DefaultScavengerTree(populated,this);		
 		
@@ -207,8 +209,11 @@ public class ScavengerTreePanel extends JPanel implements WorkflowModelViewSPI {
 	}
 	
 	public void attachToModel(ScuflModel model) {
-		initialise(populate());
-		this.model = model;
+		if (! initialised) {
+			initialise(populate());
+			initialised = true;
+		}
+		this.scuflModel = model;
 		tree.attachToModel(model);
 		model.addListener(eventListener);
 	}
@@ -275,13 +280,13 @@ public class ScavengerTreePanel extends JPanel implements WorkflowModelViewSPI {
 		}
 	}
 
-	private ScuflModel model = null;
+	private ScuflModel scuflModel = null;
 
 	public void detachFromModel() {
-		if (model != null) {
-			model.removeListener(eventListener);
+		if (scuflModel != null) {
+			scuflModel.removeListener(eventListener);
 			tree.detachFromModel();
-			this.model = null;
+			this.scuflModel = null;
 		}
 	}
 
@@ -294,7 +299,7 @@ public class ScavengerTreePanel extends JPanel implements WorkflowModelViewSPI {
 	}
 
 	public void onDisplay() {
-		// TODO Auto-generated method stub
+		
 		
 	}
 
