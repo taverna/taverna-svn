@@ -155,7 +155,9 @@ public class Bootstrap {
 			minimumDisplayTime = Integer.valueOf(properties.getProperty("raven.splashscreen.timeout")) 
 									* 1000; // seconds
 		}
-		Class workbenchClass = (Class)m.invoke(
+		Class workbenchClass;
+		try {
+			workbenchClass = (Class)m.invoke(
 				null,
 				ravenVersion,
 				cacheDir,
@@ -166,18 +168,30 @@ public class Bootstrap {
 				targetClassName,
 				splashScreenImage,
 				minimumDisplayTime);
-		
+		} catch (InvocationTargetException e) {
+			System.err.println("Could not launch Raven");
+			e.getCause().printStackTrace();
+			System.exit(4);
+			return;
+		}
 		try {
-			// Try m(String[] args) first
-			Method workbenchStatic = workbenchClass.getMethod(
-					 properties.getProperty("raven.target.method"), 
-					 String[].class);
+			try {
+				// Try m(String[] args) first
+				Method workbenchStatic = workbenchClass.getMethod(
+						properties.getProperty("raven.target.method"), 
+						String[].class);
 				workbenchStatic.invoke(null, new Object[]{args});
-		} catch (NoSuchMethodException ex) {
-			// Then with m()
-			Method workbenchStatic = workbenchClass.getMethod(
-				 properties.getProperty("raven.target.method"));
-			workbenchStatic.invoke(null);
+			} catch (NoSuchMethodException ex) {
+				// Then with m()
+				Method workbenchStatic = workbenchClass.getMethod(
+						properties.getProperty("raven.target.method"));
+				workbenchStatic.invoke(null);
+			}
+		} catch (InvocationTargetException e) {
+			String methodName = workbenchClass + System.getProperty("raven.target.method");
+			System.err.println("Exception occured in " + methodName);
+			e.getCause().printStackTrace();
+			System.exit(5);
 		}
 	}
 
