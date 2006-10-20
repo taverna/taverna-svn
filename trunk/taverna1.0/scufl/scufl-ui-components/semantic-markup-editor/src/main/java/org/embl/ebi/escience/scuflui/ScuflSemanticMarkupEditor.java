@@ -53,7 +53,7 @@ import org.embl.ebi.escience.scuflui.spi.SemanticMarkupViewSPI;
 public class ScuflSemanticMarkupEditor extends JPanel implements
 		SemanticMarkupViewSPI {
 
-	private final SemanticMarkup theMetadata = null;
+	private SemanticMarkup theMetadata = null;
 	private JTextField selectedOntologyNode = new JTextField();
 	private DefaultTreeModel treeModel = new DefaultTreeModel(
 			RDFSParser.rootNode);
@@ -70,6 +70,7 @@ public class ScuflSemanticMarkupEditor extends JPanel implements
 			mimeTypeListModel.clear();
 		}
 		else {
+			theMetadata = m;
 			selectedOntologyNode.setText(m.getSemanticType());
 			if (theMetadata.getSemanticType().equals("") == false) {
 				String filterString = theMetadata.getSemanticType();
