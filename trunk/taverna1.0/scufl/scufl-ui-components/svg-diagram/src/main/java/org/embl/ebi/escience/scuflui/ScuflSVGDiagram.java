@@ -164,7 +164,7 @@ public class ScuflSVGDiagram extends JComponent implements
 		graphicValid = false;
 	}
 
-	synchronized void updateGraphic() {
+	public synchronized void updateGraphic() {
 		updateTimer.cancel();
 		try {
 			svgCanvas.setSVGDocument(getSVG(getDot()));
