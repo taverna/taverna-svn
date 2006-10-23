@@ -111,6 +111,7 @@ public class InstanceRegistry <IType> implements Iterable<IType>, RegistryListen
 		}
 	}
 	
+	
 	@SuppressWarnings("unchecked")
 	private synchronized void update(List<Class> classList) {
 		boolean changed = false;

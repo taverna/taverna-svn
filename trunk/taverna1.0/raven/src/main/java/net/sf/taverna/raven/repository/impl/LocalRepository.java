@@ -637,7 +637,7 @@ public class LocalRepository implements Repository {
 		// No appropriate POM found in any of the repositories so throw an exception
 		setStatus(a, "pom".equals(suffix) ?ArtifactStatus.PomFailed:ArtifactStatus.JarFailed);
 		dlstatus.remove(a);
-		throw new ArtifactNotFoundException();
+		throw new ArtifactNotFoundException("Can't find artifact for: "+a);
 	}
 	
 	private static class AcceptDirectoryFilter implements FileFilter {
@@ -771,7 +771,7 @@ public class LocalRepository implements Repository {
 				throw new ArtifactStateException (astatus, new ArtifactStatus[]{ArtifactStatus.PomFetching, ArtifactStatus.JarFetching});	
 			}
 		}
-		throw new ArtifactNotFoundException();
+		throw new ArtifactNotFoundException("Cant find artifact for: "+a);
 	}
 	
 	@Override

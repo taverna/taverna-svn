@@ -2,6 +2,8 @@ package net.sf.taverna.raven;
 
 import net.sf.taverna.raven.repository.*;
 import net.sf.taverna.raven.repository.impl.LocalRepository;
+import net.sf.taverna.raven.spi.Profile;
+import net.sf.taverna.raven.spi.ProfileFactory;
 
 import javax.swing.*;
 import java.awt.*;
@@ -121,6 +123,14 @@ public class Loader {
 		Artifact artifact = new BasicArtifact(targetGroup, targetArtifact, targetVersion);
 		repository.addArtifact(artifact);
 		repository.addArtifact(new BasicArtifact("uk.org.mygrid.taverna.raven","raven",ravenVersion));
+		
+		//add any profile artifacts, if defined, so that all required artifacts get loaded at startup
+		Profile profile=ProfileFactory.instance().getProfile();
+		if (profile!=null) {
+			for (Artifact a : profile.getArtifacts()) {
+				repository.addArtifact(a);
+			}
+		}
 		
 		
 		RepositoryListener listener = new RepositoryListener() {

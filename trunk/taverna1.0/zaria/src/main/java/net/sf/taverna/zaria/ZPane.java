@@ -13,6 +13,10 @@ import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JToolBar;
 
+import net.sf.taverna.raven.repository.Artifact;
+import net.sf.taverna.raven.spi.Profile;
+import net.sf.taverna.raven.spi.ProfileFactory;
+
 import org.jdom.Element;
 
 /**
@@ -34,6 +38,7 @@ public abstract class ZPane extends JComponent implements ZTreeNode {
 		setLayout(new BorderLayout());
 	}
 	
+	@SuppressWarnings("serial")
 	protected class ReplaceWithBlankAction extends AbstractAction {
 		public ReplaceWithBlankAction() {
 			super();
@@ -177,6 +182,7 @@ public abstract class ZPane extends JComponent implements ZTreeNode {
 	 * @param e
 	 * @return
 	 */
+	@SuppressWarnings("unchecked")
 	static ZTreeNode componentFor(Element e) {
 		String className = e.getAttributeValue("classname");		
 		try {
@@ -207,6 +213,21 @@ public abstract class ZPane extends JComponent implements ZTreeNode {
 		zPaneElement.setAttribute("classname",z.getClass().getName());
 		zPaneElement.addContent(z.getElement());
 		return zPaneElement;
+	}
+	
+	/**
+	 * Determines whether an artifact exists in the profile, if one exists.
+	 * 
+	 * @param artifact
+	 * @return true if a profile exists and the artifact exists in it, other false
+	 */
+	public boolean artifactExistsInProfile(Artifact artifact) {
+		boolean result=false;
+		Profile profile=ProfileFactory.instance().getProfile();
+		if (profile!=null) {
+			result=profile.getArtifacts().contains(artifact);
+		}
+		return result;
 	}
 
 }

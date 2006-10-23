@@ -2,9 +2,13 @@ package net.sf.taverna.tools;
 
 
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.MalformedURLException;
@@ -103,7 +107,7 @@ public class Bootstrap {
 		File cacheDir = findCache();
 		if (cacheDir == null) {
 			return;
-		}
+		}		
 		
 		// Create a remote classloader referencing the raven jar within a repository
 		
@@ -142,11 +146,15 @@ public class Bootstrap {
 		// Parameters for the Raven loader call
 		String ravenVersion = RAVEN_VERSION;
 
+		String profileURL=properties.getProperty("raven.profile");
+		if (profileURL!=null) {
+			initialiseProfile(profileURL);
+		}
+		
 		// FIXME: Support other classes like WorkflowLauncher
 		String groupID = properties.getProperty("raven.target.groupid");
 		String artifactID = properties.getProperty("raven.target.artifactid");
-		String version = properties.getProperty("raven.target.version");
-
+		String version = properties.getProperty("raven.target.version");		
 		String targetClassName = properties.getProperty("raven.target.class");
 		// Call method via reflection, 'null' target as this is a static method
 		URL splashScreenImage = null;
@@ -180,24 +188,26 @@ public class Bootstrap {
 		
 		try {
 			try {
-				// Try m(String[] args) first
-				Method workbenchStatic = workbenchClass.getMethod(
-						properties.getProperty("raven.target.method"), 
-						String[].class);
+			// Try m(String[] args) first
+			Method workbenchStatic = workbenchClass.getMethod(
+					 properties.getProperty("raven.target.method"), 
+					 String[].class);
 				workbenchStatic.invoke(null, new Object[]{args});
-			} catch (NoSuchMethodException ex) {
-				// Then with m()
-				Method workbenchStatic = workbenchClass.getMethod(
-						properties.getProperty("raven.target.method"));
-				workbenchStatic.invoke(null);
-			}
+		} catch (NoSuchMethodException ex) {
+			// Then with m()
+			Method workbenchStatic = workbenchClass.getMethod(
+				 properties.getProperty("raven.target.method"));
+			workbenchStatic.invoke(null);
+		}
 		} catch (InvocationTargetException e) {
 			String methodName = workbenchClass + System.getProperty("raven.target.method");
 			System.err.println("Exception occured in " + methodName);
 			e.getCause().printStackTrace();
 			System.exit(5);
-		}
 	}
+	}
+
+	
 
 	private static String artifactURI(String groupid, String artifactid, String version) {
 		String filename = artifactid + "-" + version +  ".jar";
@@ -225,6 +235,69 @@ public class Bootstrap {
 		}
 		TAVERNA_CACHE = cacheDir.getAbsolutePath();
 		return cacheDir;
+	}
+	
+	/**
+	 * Updates locally stored profile with that designated with profileURL
+	 * and then reassigns the system property raven.profile to point to the
+	 * stored file location. This prevents raven having to know the location
+	 * of taverna.home and thereby keeps the coupling loose.
+	 * 
+	 * Requires the property taverna.home to be set to indicate where to save it.
+	 * If the remote profile cannot be found then the last stored profile will continue to
+	 * be used. If there is no local profile, then startup terminates.
+	 * 
+	 * @param profileURL
+	 */
+	private static void initialiseProfile(String profileURL) {
+		String tavernaHome=System.getProperty("taverna.home");
+		if (tavernaHome!=null) {
+			File storedProfile=getStoredProfileFile(profileURL);
+			try {
+				URL profile=new URL(profileURL);
+				BufferedReader reader=new BufferedReader(new InputStreamReader(profile.openStream()));
+				BufferedWriter writer=new BufferedWriter(new FileWriter(storedProfile));
+				String line=reader.readLine();
+				while (line!=null) {
+					writer.write(line+"\n");
+					line=reader.readLine();
+				}
+				writer.flush();
+				writer.close();
+				
+				reader.close();
+			} catch (Exception e) {
+				e.printStackTrace();
+				if (storedProfile.exists()) {
+					System.out.println("Cannot find remote profile, using last stored");
+				}
+				else {
+					System.out.println("Cannot find remote profile, and no locally stored profile exits. Unable to run Taverna.");
+					System.exit(-1);
+				}
+			}
+			if (storedProfile.exists()) {
+				try {
+					System.setProperty("raven.profile", storedProfile.toURI().toURL().toString());
+				} catch (MalformedURLException e) {
+					System.clearProperty("raven.profile");
+				}
+			}
+		}
+		else {
+			System.clearProperty("raven.profile");
+		}
+	}	
+	private static File getStoredProfileFile(String profileStr) {
+		File tavernaHome=new File(System.getProperty("taverna.home"));
+		File userdir=new File(tavernaHome,"conf");
+		String fileStr=profileStr;
+		if (fileStr.contains("/")) {
+			int i=fileStr.lastIndexOf("/");
+			fileStr=fileStr.substring(i+1);
+		}
+		File profileFile=new File(userdir,fileStr);
+		return profileFile;
 	}
 
 	/**

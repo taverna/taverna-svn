@@ -33,15 +33,25 @@
  *****************************************************************/
 package org.embl.ebi.escience.utils;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.InputStreamReader;
+import java.net.URL;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import net.sf.taverna.raven.repository.Artifact;
 import net.sf.taverna.raven.repository.Repository;
 import net.sf.taverna.raven.spi.InstanceRegistry;
+import net.sf.taverna.raven.spi.Profile;
 import net.sf.taverna.raven.spi.RegistryListener;
 import net.sf.taverna.raven.spi.SpiRegistry;
+import net.sf.taverna.raven.spi.ProfileFactory;
+import net.sf.taverna.utils.MyGridConfiguration;
 
 import org.apache.log4j.Logger;
 
@@ -61,13 +71,14 @@ public class TavernaSPIRegistry<T> {
 	private static Map<Class, InstanceRegistry> spiMap =
 		Collections.synchronizedMap(new HashMap<Class, InstanceRegistry>());
 	private static Repository REPOSITORY = null;
+	private static Profile profile = null;
 	
 	public static void setRepository(Repository theRepository) {
 		assert theRepository != null;
 		REPOSITORY = theRepository;
 	}
 	
-	public TavernaSPIRegistry(Class<T> spiClass) {
+	public TavernaSPIRegistry(Class<T> spiClass) {		
 		if (REPOSITORY == null) {
 			logger.error("setRepository() has not been called"); 
 			throw new IllegalStateException("TavernaSPIRegistry not initialized " +
@@ -76,13 +87,14 @@ public class TavernaSPIRegistry<T> {
 		this.spiClass = spiClass;
 		if (spiMap.containsKey(spiClass) == false) {
 			SpiRegistry registry = new SpiRegistry(REPOSITORY, spiClass.getName(), null);
+			updateWithProfile(registry);
 			registry.addRegistryListener(new RegistryListener() {
 				public void spiRegistryUpdated(SpiRegistry registry) {
-					System.out.println("Registry updated <"+
+					logger.info("Registry updated <"+
 							TavernaSPIRegistry.this.spiClass.getName()+"> : ");
 					for (Class<T> theClass : registry.getClasses()) {
-						System.out.println("  "+theClass.getName());
-						System.out.println("    - "+theClass.getClassLoader().toString());
+						logger.info("\t"+theClass.getName());
+						logger.info("\t - "+theClass.getClassLoader().toString());
 					}
 				}
 			});
@@ -90,11 +102,27 @@ public class TavernaSPIRegistry<T> {
 		}
 	}
 	
+	protected void updateWithProfile(SpiRegistry registry) {		
+		if (profile==null) {
+			profile=ProfileFactory.instance().getProfile();
+		}		
+		
+		if (profile!=null) {
+			registry.addFilter(profile);
+			 
+			for (Artifact a : profile.getArtifacts()) {
+				REPOSITORY.addArtifact(a);					
+			}
+			REPOSITORY.update();						
+		}				
+	}
+	
 	/**
 	 * Finds the components registered as an SPI against class <T>, and searches the specified classloader
 	 * Checks cache first, and only does a refetch if the cache is empty.
 	 * The cache can be cleared using flushCache. 
 	 */
+	@SuppressWarnings("unchecked")
 	protected synchronized List<T> findComponents() {
 		InstanceRegistry<T> ir = spiMap.get(spiClass);
 		return ir.getInstances();

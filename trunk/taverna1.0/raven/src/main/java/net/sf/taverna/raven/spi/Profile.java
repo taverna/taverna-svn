@@ -2,12 +2,19 @@ package net.sf.taverna.raven.spi;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+
+import net.sf.taverna.raven.repository.Artifact;
+import net.sf.taverna.raven.repository.BasicArtifact;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -15,9 +22,6 @@ import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
-
-import net.sf.taverna.raven.repository.Artifact;
-import net.sf.taverna.raven.repository.BasicArtifact;
 
 /**
  * A Profile in this context is a set of Artifacts that are known to work in conjunction
@@ -69,6 +73,7 @@ public class Profile implements ArtifactFilter {
 		
 		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 		Document document;		
+		this.strict=strict;
 		
 		try {
 			DocumentBuilder builder = factory.newDocumentBuilder();
@@ -123,13 +128,13 @@ public class Profile implements ArtifactFilter {
 		for (Artifact a : s) {
 			if (artifacts.contains(a)) {
 				// Exact match to an entry in the profile so include it
-				result.add(a);
+				result.add(a);			
 			}
 			else if (strict == false) {
 				if (containsOtherVersion(a) == false) {
-					result.add(a);
+					result.add(a);					
 				}
-			}
+			}			
 		}
 		return result;
 	}
@@ -146,6 +151,82 @@ public class Profile implements ArtifactFilter {
 			}
 		}
 		return false;
+	}
+	
+	/**
+	 * Selects the highest version artifact defined in the registry that fits the 
+	 * artifactId and groupId. Useful for allowing artifacts to be defined without version with
+	 * the profile dictating the version to be used. 
+	 * 
+	 * Version numbers
+     * are treated as being integers under lexicographic ordering
+     * with the '.' character as separator. Presence of a token is
+     * assumed to be an indication of a later version when compared
+     * to absence, i.e. 1.3 &lt; 1.3.1. Where tokens are not
+     * parsable as integer numbers String ordering is applied to both
+ 	 * tokens.
+ 	 * 
+	 * @param groupId
+	 * @param artifactId
+	 * @return the Artifact or null if not found
+	 */
+	public Artifact discoverArtifact(String groupId, String artifactId) {
+		Artifact result=null;
+		List<Artifact> matches=new ArrayList<Artifact>();
+		for (Artifact a: artifacts) {
+			if (a.getArtifactId().equals(artifactId) && a.getGroupId().equals(groupId)) {
+				matches.add(a);
+			}
+		}
+		if (matches.size()>0) {
+				Comparator<Artifact> comparator=new Comparator<Artifact>(){
+	
+				public int compare(Artifact o1, Artifact o2) {
+					if (o1.getVersion().equals(o2.getVersion()));
+					return lessThan(o1.getVersion(), o2.getVersion()) ? 1 : -2;
+					
+				}
+				
+				private boolean lessThan(String a, String b) {
+					String[] va = a.split("\\.");
+					String[] vb = b.split("\\.");
+					for (int i = 0; i < va.length || i < vb.length ; i++) {
+						if (i == va.length) {
+							return true;
+						}
+						else if (i == vb.length) {
+							return false;
+						}
+						String ca = va[i];
+						String cb = vb[i];
+						
+						try {
+							int ia = Integer.parseInt(ca);
+							int ib = Integer.parseInt(cb);
+							if (ia < ib) {
+								return true;
+							}
+							else if (ia > ib) {
+								return false;
+							}
+						}
+						catch (NumberFormatException nfe) {
+							if (ca.compareTo(cb) > 0) {
+								return false;
+							}
+							else if (ca.compareTo(cb) < 0) {
+								return true;
+							}
+						}
+					}
+					return false;
+				}
+				
+			};
+			Collections.sort(matches,comparator);
+			result=matches.get(0);
+		}
+		return result;
 	}
 	
 }

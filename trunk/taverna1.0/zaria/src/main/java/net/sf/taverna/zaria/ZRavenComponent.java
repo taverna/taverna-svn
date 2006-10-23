@@ -22,11 +22,14 @@ import net.sf.taverna.raven.repository.Artifact;
 import net.sf.taverna.raven.repository.ArtifactNotFoundException;
 import net.sf.taverna.raven.repository.ArtifactStateException;
 import net.sf.taverna.raven.repository.BasicArtifact;
+import net.sf.taverna.raven.spi.Profile;
+import net.sf.taverna.raven.spi.ProfileFactory;
 import net.sf.taverna.raven.spi.SpiRegistry;
 import net.sf.taverna.zaria.ZBasePane.NamedRavenComponentSpecifier;
 
 import org.jdom.Element;
 
+@SuppressWarnings("serial")
 public class ZRavenComponent extends ZPane {
 
 	private String spiName = null;
@@ -64,16 +67,20 @@ public class ZRavenComponent extends ZPane {
 		if (sharedName.equals("")) {
 			Element e = new Element("component");
 			if (artifact != null && className != null) {
-				Element artifactElement = new Element("raven");
-				Element g = new Element("group");
-				g.setText(artifact.getGroupId());
-				Element a = new Element("artifact");
-				a.setText(artifact.getArtifactId());
-				Element v = new Element("version");
-				v.setText(artifact.getVersion());
-				artifactElement.addContent(g);
-				artifactElement.addContent(a);
-				artifactElement.addContent(v);
+				Element ravenElement = new Element("raven");
+				Element groupElement = new Element("group");
+				groupElement.setText(artifact.getGroupId());
+				Element artifactElement = new Element("artifact");
+				artifactElement.setText(artifact.getArtifactId());
+				
+				ravenElement.addContent(groupElement);
+				ravenElement.addContent(artifactElement);
+				
+				if (!artifactExistsInProfile(artifact)) {				
+					Element versionElement = new Element("version");
+					versionElement.setText(artifact.getVersion());
+					ravenElement.addContent(versionElement);
+				}
 				
 				Element classNameElement = new Element("classname");
 				classNameElement.setText(className);
@@ -81,7 +88,7 @@ public class ZRavenComponent extends ZPane {
 				Element spiNameElement = new Element("interface");
 				spiNameElement.setText(spiName);
 				
-				e.addContent(artifactElement);
+				e.addContent(ravenElement);
 				e.addContent(classNameElement);
 				e.addContent(spiNameElement);
 			}
@@ -138,10 +145,21 @@ public class ZRavenComponent extends ZPane {
 			}
 			Element ravenElement = e.getChild("raven");
 			if (ravenElement != null) {
-				artifact = new BasicArtifact(
-						ravenElement.getChild("group").getTextTrim(),
-						ravenElement.getChild("artifact").getTextTrim(),
-						ravenElement.getChild("version").getTextTrim());
+				String groupId=ravenElement.getChild("group").getTextTrim();
+				String artifactId=ravenElement.getChild("artifact").getTextTrim();
+				String version=null;
+				if (ravenElement.getChild("version")!=null) {
+					version=ravenElement.getChild("version").getTextTrim();
+				}				
+				
+				//if no version defined, use the version defined in the profile
+				if (version==null) {
+					Profile profile=ProfileFactory.instance().getProfile();
+					artifact=profile.discoverArtifact(groupId,artifactId);
+				}
+				else {
+					artifact = new BasicArtifact(groupId,artifactId,version);
+				}
 			}
 			Element classNameElement = e.getChild("classname");
 			if (classNameElement != null) {
@@ -269,9 +287,7 @@ public class ZRavenComponent extends ZPane {
 			}
 			Component sourceComponent = (Component) arg0.getSource();
 			menu.show(sourceComponent, 0, sourceComponent.getHeight());
-		}
-			
-		
+		}		
 	}
 	
 	/**
@@ -287,8 +303,7 @@ public class ZRavenComponent extends ZPane {
 		}
 		
 		public void actionPerformed(ActionEvent arg0) {
-			ImageIcon icon = null;
-			String[] options = getRoot().getKnownSPINames();
+			ImageIcon icon = null;			
 			String newName = (String)JOptionPane.showInputDialog(
 					getFrame(),
 					"Assign name to component",

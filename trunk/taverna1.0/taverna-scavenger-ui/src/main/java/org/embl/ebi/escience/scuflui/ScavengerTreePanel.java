@@ -48,6 +48,7 @@ import org.embl.ebi.escience.scuflui.workbench.ScavengerCreationException;
  * @author Tom Oinn
  * @author Stuart Owen
  */
+@SuppressWarnings("serial")
 public class ScavengerTreePanel extends JPanel implements WorkflowModelViewSPI {
 
 	DefaultScavengerTree tree;
@@ -79,7 +80,7 @@ public class ScavengerTreePanel extends JPanel implements WorkflowModelViewSPI {
 			}
 		}
 	};
-
+	
 	private boolean initialised = false;
 	
 	public void startProgressBar(String text)
@@ -99,13 +100,13 @@ public class ScavengerTreePanel extends JPanel implements WorkflowModelViewSPI {
 		// To avoid double horisontal scrollbars, let the treePane be in charge
 		this.setPreferredSize(new Dimension(0, 0));
 		
-		progBar = new JProgressBar();
+		progBar=new JProgressBar();
 		progBar.setIndeterminate(true);
 		progBar.setVisible(false);		
 		//JPanel progPanel=new JPanel();		
 		//progPanel.add(progBar,BorderLayout.CENTER);
-		add(progBar, BorderLayout.PAGE_END);
-		
+		add(progBar,BorderLayout.PAGE_END);
+				
 		tree = new DefaultScavengerTree(populated,this);		
 		
 		JScrollPane treePane = new JScrollPane(tree);
@@ -210,7 +211,7 @@ public class ScavengerTreePanel extends JPanel implements WorkflowModelViewSPI {
 	
 	public void attachToModel(ScuflModel model) {
 		if (! initialised) {
-			initialise(populate());
+		initialise(populate());
 			initialised = true;
 		}
 		this.scuflModel = model;
@@ -299,7 +300,6 @@ public class ScavengerTreePanel extends JPanel implements WorkflowModelViewSPI {
 	}
 
 	public void onDisplay() {
-		
 		
 	}
 

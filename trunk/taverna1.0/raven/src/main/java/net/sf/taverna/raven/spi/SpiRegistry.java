@@ -170,11 +170,10 @@ public class SpiRegistry implements Iterable<Class> {
 		}
 		boolean addedNew = false;
 		for (ArtifactFilter af : filters) {
-			workingSet = af.filter(workingSet);
+			workingSet = af.filter(workingSet); 												
 		}
 		for (Artifact a : workingSet) {
-			try {
-				//System.out.println("Scanning "+a);
+			try {				
 				ClassLoader cl = repository.getLoader(a, parentLoader);
 				Enumeration resources=cl.getResources("META-INF/services/"+classname);
 				while (resources.hasMoreElements()) {

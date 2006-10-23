@@ -20,6 +20,8 @@ import net.sf.taverna.raven.repository.ArtifactStateException;
 import net.sf.taverna.raven.repository.ArtifactStatus;
 import net.sf.taverna.raven.repository.BasicArtifact;
 import net.sf.taverna.raven.repository.Repository;
+import net.sf.taverna.raven.spi.Profile;
+import net.sf.taverna.raven.spi.ProfileFactory;
 import net.sf.taverna.raven.spi.SpiRegistry;
 import net.sf.taverna.zaria.progress.BlurredGlassPane;
 
@@ -57,6 +59,7 @@ public abstract class ZBasePane extends ZPane {
 	 * Construct a new ZBasePane, inserting a default ZBlankComponent as the
 	 * solitary child
 	 */
+	@SuppressWarnings("serial")
 	public ZBasePane() {
 		super();
 		child = new ZBlankComponent();
@@ -116,16 +119,12 @@ public abstract class ZBasePane extends ZPane {
 	class NamedRavenComponentSpecifier {
 
 		private Artifact artifact;
-
-		private String className;
-
-		private String componentName;
+		private String className;		
 
 		public NamedRavenComponentSpecifier(Artifact artifact,
 				String className, String componentName) {
 			this.artifact = artifact;
-			this.className = className;
-			this.componentName = componentName;
+			this.className = className;			
 		}
 
 		public Class getComponentClass() throws ArtifactNotFoundException,
@@ -180,13 +179,15 @@ public abstract class ZBasePane extends ZPane {
 					.getGroupId());
 			addChildText(namedComponentElement, "artifact", nrcs.artifact
 					.getArtifactId());
-			addChildText(namedComponentElement, "version", nrcs.artifact
-					.getVersion());
+			if (!artifactExistsInProfile(nrcs.artifact)) {
+				addChildText(namedComponentElement, "version", nrcs.artifact
+						.getVersion());
+			}
 			addChildText(namedComponentElement, "classname", nrcs.className);
 			addChildText(namedComponentElement, "name", name);
 		}
 		return baseElement;
-	}
+	}	
 
 	private static void addChildText(Element parent, String elementName,
 			String text) {
@@ -199,7 +200,57 @@ public abstract class ZBasePane extends ZPane {
 	 * Automatically intializes the repository with any named components that
 	 * aren't already there.
 	 */
-	public void configure(Element e) {
+	public void configure(Element e) {		
+		
+		// Initialize any named component definitions we may have
+		// lying around. This needs doing before the children
+		Element namedComponentSetElement = e.getChild("namedcomponents");
+		if (namedComponentSetElement != null) {
+			boolean needUpdate = false;
+			for (Object childObj : namedComponentSetElement
+					.getChildren("namedcomponent")) {
+				Element compElement = (Element)childObj;
+				String groupId = compElement.getChildTextTrim("groupid");
+				String artifactId = compElement.getChildTextTrim("artifact");
+				String version=null;
+				if (compElement.getChildTextTrim("version") != null) {
+					version = compElement.getChildTextTrim("version");
+				}
+				String className = compElement.getChildTextTrim("classname");
+				String name = compElement.getChildTextTrim("name");
+				
+				Artifact a=null;
+				if (version!=null) {
+					 a = new BasicArtifact(groupId, artifactId, version);
+				}
+				else {
+					Profile prof=ProfileFactory.instance().getProfile();
+					if (prof!=null) {
+						a = prof.discoverArtifact(groupId, artifactId);
+						if (a==null) {
+							System.out.println("No artifact found in profile for:"+groupId+":"+artifactId);
+						}
+					}
+				}
+				if (a!=null) {
+					NamedRavenComponentSpecifier nrcs = new NamedRavenComponentSpecifier(
+							a, className, name);
+					namedComponentDefinitions.put(name, nrcs);
+					repository.addArtifact(a);
+					if (repository.getStatus(a).equals(ArtifactStatus.Ready) == false) {
+						needUpdate = true;
+					}
+				}
+				else {
+					System.out.println("Cannot determine version for artifact "+groupId+":"+artifactId);
+				}
+			}
+			if (needUpdate) {
+				lockFrame();
+				repository.update();
+				unlockFrame();
+			}
+		}	
 		
 		Element childElement = e.getChild("child");
 		if (childElement != null) {
@@ -210,35 +261,6 @@ public abstract class ZBasePane extends ZPane {
 				node.configure(childElement);				
 			}
 		}
-		
-		// Initialize any named component definitions we may have
-		// lying around
-		Element namedComponentSetElement = e.getChild("namedcomponents");
-		if (namedComponentSetElement != null) {
-			boolean needUpdate = false;
-			for (Object childObj : namedComponentSetElement
-					.getChildren("namedcomponent")) {
-				Element compElement = (Element)childObj;
-				String groupId = compElement.getChildTextTrim("groupid");
-				String artifactId = compElement.getChildTextTrim("artifact");
-				String version = compElement.getChildTextTrim("version");
-				String className = compElement.getChildTextTrim("classname");
-				String name = compElement.getChildTextTrim("name");
-				Artifact a = new BasicArtifact(groupId, artifactId, version);
-				NamedRavenComponentSpecifier nrcs = new NamedRavenComponentSpecifier(
-						a, className, name);
-				namedComponentDefinitions.put(name, nrcs);
-				repository.addArtifact(a);
-				if (repository.getStatus(a).equals(ArtifactStatus.Ready) == false) {
-					needUpdate = true;
-				}
-			}
-			if (needUpdate) {
-				lockFrame();
-				repository.update();
-				unlockFrame();
-			}
-		}	
 				
 		//ensure editable status is correct on this and all children
 		setEditable(this.editable);				
