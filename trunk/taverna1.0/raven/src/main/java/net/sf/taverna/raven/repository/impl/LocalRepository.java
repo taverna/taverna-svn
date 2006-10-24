@@ -122,7 +122,7 @@ public class LocalRepository implements Repository {
 				resourceLocations.add(resourceURL);
 			}
 			for (ArtifactClassLoader cl : childLoaders) {
-				if (alreadySeen.contains(cl) == false) {
+				if (! alreadySeen.contains(cl)) {
 					cl.enumerateResources(alreadySeen, resourceLocations, name);
 				}
 			}
@@ -157,7 +157,7 @@ public class LocalRepository implements Repository {
 				//System.out.println("    "+ac.toString());
 				//}
 				for (ArtifactClassLoader ac : childLoaders) {
-					if (seenLoaders.contains(ac) == false) {
+					if (! seenLoaders.contains(ac)) {
 						try {
 //							Class loadedClass = findLoadedClass(name);
 //							if (loadedClass != null) {
@@ -206,7 +206,7 @@ public class LocalRepository implements Repository {
 	 * @return Repository instance for the base directory
 	 */
 	public static synchronized Repository getRepository(File base) {
-		if (repositoryCache.containsKey(base) == false) {
+		if (! repositoryCache.containsKey(base)) {
 			if (System.getProperty("raven.eclipse")==null) {
 				repositoryCache.put(base, new LocalRepository(base));
 			}
@@ -222,7 +222,7 @@ public class LocalRepository implements Repository {
 	 */
 	public synchronized void addArtifact(Artifact a1) {
 		ArtifactImpl a = new ArtifactImpl(a1, this);
-		if (this.status.containsKey(a) == false) {
+		if (! this.status.containsKey(a)) {
 			artifactDir(a);
 			status.put(a, ArtifactStatus.Unknown);
 			setStatus(a, ArtifactStatus.Queued);
@@ -242,11 +242,11 @@ public class LocalRepository implements Repository {
 	public ClassLoader getLoader(Artifact a1, ClassLoader parent) 
 	throws ArtifactNotFoundException, ArtifactStateException {
 		ArtifactImpl a = new ArtifactImpl(a1, this);
-		if (status.containsKey(a) == false) {
+		if (! status.containsKey(a)) {
 			// No such artifact
 			throw new ArtifactNotFoundException();
 		}
-		if (status.get(a).equals(ArtifactStatus.Ready) == false) {
+		if (! status.get(a).equals(ArtifactStatus.Ready)) {
 			// Can't get a classloader yet, the artifact isn't ready
 			System.out.println(a+" :: "+status.get(a));
 			throw new ArtifactStateException(status.get(a), new ArtifactStatus[]{ArtifactStatus.Ready});
@@ -323,7 +323,7 @@ public class LocalRepository implements Repository {
 	 */
 	public void addRepositoryListener(RepositoryListener l) {
 		synchronized(this.listeners) {
-			if (listeners.contains(l) == false) {
+			if (! listeners.contains(l)) {
 				listeners.add(l);
 			}
 		}
@@ -355,7 +355,7 @@ public class LocalRepository implements Repository {
 	 * this repository, or ArtifactStatus.Unknown if there is no such artifact
 	 */
 	public synchronized ArtifactStatus getStatus(Artifact a) {
-		if (status.containsKey(a) == false) {
+		if (! status.containsKey(a)) {
 			return ArtifactStatus.Unknown;
 		}
 		return status.get(a);
@@ -385,7 +385,7 @@ public class LocalRepository implements Repository {
 			ArtifactStatus s = status.get(a);
 			if (s.equals(ArtifactStatus.Pom)) {
 				//System.out.println(a.toString());
-				if ("jar".equals(a.getPackageType()) == false) {
+				if (! "jar".equals(a.getPackageType())) {
 					setStatus(a, ArtifactStatus.PomNonJar);
 				}
 				else {
@@ -430,10 +430,10 @@ public class LocalRepository implements Repository {
 					Set<Artifact> seenArtifacts = new HashSet<Artifact>();
 					seenArtifacts.add(a);
 					for (ArtifactImpl dep : deps) {
-						if (status.containsKey(dep) == false) {
+						if (! status.containsKey(dep)) {
 							addArtifact(dep);
 						}
-//						if (status.get(dep).equals(ArtifactStatus.Ready) == false) {
+//						if (! status.get(dep).equals(ArtifactStatus.Ready)) {
 //							fullyResolved = false;
 //						}
 						if (!fullyResolved(dep, seenArtifacts)) {
@@ -531,7 +531,7 @@ public class LocalRepository implements Repository {
 		}
 		File artifactDir = new File(groupDir, a.getArtifactId());
 		File versionDir = new File(artifactDir, a.getVersion());
-		if (versionDir.exists() == false) {
+		if (! versionDir.exists()) {
 			versionDir.mkdirs();
 		}
 		return versionDir;
@@ -607,7 +607,7 @@ public class LocalRepository implements Repository {
 				// Opened the stream so presumably the thing exists
 				// Create the appropriate directory structure within the local repository
 				File toFile = ("pom".equals(suffix) ?pomFile(a):jarFile(a));
-				if (toFile.exists() == false) {
+				if (! toFile.exists()) {
 					toFile.createNewFile();
 					FileOutputStream fos = new FileOutputStream(toFile);
 					setStatus(a, "pom".equals(suffix) ?ArtifactStatus.PomFetching:ArtifactStatus.JarFetching);
@@ -650,7 +650,7 @@ public class LocalRepository implements Repository {
 	private void enumerateDirs(File current, Set<File> groupDirs) {
 		File[] subdirs = current.listFiles(dFilter);
 		if (subdirs == null || subdirs.length == 0) {
-			if (current.equals(base) == false) {				
+			if (! current.equals(base)) {				
 				groupDirs.add(current.getParentFile().getParentFile());
 			}
 		}
@@ -666,7 +666,7 @@ public class LocalRepository implements Repository {
 	 * the status map accordingly
 	 */
 	private synchronized void initialize() {
-		if (base.exists() == false) {
+		if (! base.exists()) {
 			// No base directory so create it
 			base.mkdirs();
 			return;
@@ -681,8 +681,8 @@ public class LocalRepository implements Repository {
 			File temp = f;			
 			String groupName = "";
 			
-			while (temp.equals(base) == false) {
-				if ("".equals(groupName) == false) {
+			while (! temp.equals(base)) {
+				if (! "".equals(groupName)) {
 					groupName = "." + groupName ;
 				}
 				groupName = temp.getName() + groupName;
@@ -730,7 +730,7 @@ public class LocalRepository implements Repository {
 									foundSubDir = true;
 								}
 							}
-							if (foundSubDir == false) {
+							if (! foundSubDir) {
 								status.put(artifact, ArtifactStatus.Queued);
 								File pomFile = new File(versionDirectory, artifactId+"-"+version+".pom");
 								if (pomFile.exists()) {
