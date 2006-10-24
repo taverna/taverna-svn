@@ -44,7 +44,7 @@ import net.sf.taverna.raven.repository.RepositoryListener;
  */
 public class LocalRepository implements Repository {
 	
-	private static FileFilter dFilter = new AcceptDirectoryFilter();
+	private static FileFilter isDirectory = new AcceptDirectoryFilter();
 	
 	/**
 	 * Implementation of ClassLoader that uses the artifact
@@ -653,7 +653,7 @@ public class LocalRepository implements Repository {
 	
 	
 	private void enumerateDirs(File current, Set<File> groupDirs) {
-		File[] subdirs = current.listFiles(dFilter);
+		File[] subdirs = current.listFiles(isDirectory);
 		if (subdirs == null || subdirs.length == 0) {
 			if (! current.equals(base)) {				
 				groupDirs.add(current.getParentFile().getParentFile());
@@ -686,7 +686,6 @@ public class LocalRepository implements Repository {
 		for (File f : groupDirs) {
 			File temp = f;			
 			String groupName = "";
-			
 			while (! temp.equals(base)) {
 				if (! "".equals(groupName)) {
 					groupName = "." + groupName ;
@@ -704,55 +703,47 @@ public class LocalRepository implements Repository {
 			for (String part : groupId.split("\\.")) {
 				groupDirectory = new File(groupDirectory, part);
 			}
-			String[] artifactIds = groupDirectory.list(new FilenameFilter() {
-				public boolean accept(File d, String name) {
-					return d.isDirectory();
-				}			
-			});
-			for (String artifactId : artifactIds) {
-				File artifactDirectory = new File(groupDirectory, artifactId);
-				String[] versions = artifactDirectory.list(new FilenameFilter() {
-					public boolean accept(File d, String name) {
-						return d.isDirectory();
-					}
-				});
+			File[] artifacts = groupDirectory.listFiles(isDirectory); 
+			for (File artifactDir : artifacts) {
+				String artifactId = artifactDir.getName();
+				File[] versions = artifactDir.listFiles(isDirectory);
 				if (versions == null) {
-					System.out.println("Null version list at "+artifactDirectory);
-					System.out.println(artifactDirectory.isDirectory());
+					System.out.println("Null version list at "+artifactDir);
+					System.out.println((artifactDir.isDirectory() ? "Is" : "Is not")  +
+										"a directory");
+					continue;
 				}
-				else {
-					for (String version : versions) {
-						ArtifactImpl artifact = new ArtifactImpl(groupId, artifactId, version, this);
-						File versionDirectory = new File(artifactDirectory, version);
-						// If there are any directories inside here we're not in a valid
-						// artifact and have accidentally wandered down the wrong branch
-						// of the file system. Blame the idiotic maven2 directory structure
-						// with groups split into subdirectories!
-						boolean foundSubDir = false;
-						//System.out.println("Version directory : "+versionDirectory.toString());
-						if (versionDirectory.isDirectory()) {
-							for (File sub : versionDirectory.listFiles()) {
-								if (sub.isDirectory()) {
-									foundSubDir = true;
-								}
-							}
-							if (! foundSubDir) {
-								status.put(artifact, ArtifactStatus.Queued);
-								File pomFile = new File(versionDirectory, artifactId+"-"+version+".pom");
-								if (pomFile.exists()) {
-									status.put(artifact, ArtifactStatus.Pom);
-								}
-								File jarFile = new File(versionDirectory, artifactId+"-"+version+".jar");
-								if (jarFile.exists()) {
-									status.put(artifact, ArtifactStatus.Jar);
-								}
-							}
-						}
+				for (File versionDir : versions) {
+					String version = versionDir.getName();
+					ArtifactImpl artifact = new ArtifactImpl(groupId, artifactId, version, this);
+					// If there are any directories inside here we're not in a valid
+					// artifact and have accidentally wandered down the wrong branch
+					// of the file system. Blame the idiotic maven2 directory structure
+					// with groups split into subdirectories!
+					File[] subDirs = versionDir.listFiles(isDirectory);
+					if (subDirs != null && subDirs.length > 0) {
+						// Not a valid version directory!
+						continue;
+					}
+					File[] files = versionDir.listFiles();
+					if (files != null && files.length == 0) {
+						// No POM or JAR - ignore directory, should be deleted
+						continue;
+					}
+					status.put(artifact, ArtifactStatus.Queued);
+					File pomFile = new File(versionDir, artifactId+"-"+version+".pom");
+					if (pomFile.exists()) {
+						status.put(artifact, ArtifactStatus.Pom);
+					}
+					File jarFile = new File(versionDir, artifactId+"-"+version+".jar");
+					if (jarFile.exists()) {
+						status.put(artifact, ArtifactStatus.Jar);
 					}
 				}
 			}
 		}
 	}
+	
 	
 	/**
 	 * If the artifact specified is in either PomFetching or JarFetching state this returns
