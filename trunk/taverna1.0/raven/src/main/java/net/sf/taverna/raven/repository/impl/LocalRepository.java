@@ -3,14 +3,36 @@
  */
 package net.sf.taverna.raven.repository.impl;
 
-import net.sf.taverna.raven.repository.*;
-
-import java.io.*;
+import java.io.File;
+import java.io.FileFilter;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.FilenameFilter;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.net.URLConnection;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Map.Entry;
+
+import net.sf.taverna.raven.repository.Artifact;
+import net.sf.taverna.raven.repository.ArtifactNotFoundException;
+import net.sf.taverna.raven.repository.ArtifactStateException;
+import net.sf.taverna.raven.repository.ArtifactStatus;
+import net.sf.taverna.raven.repository.BasicArtifact;
+import net.sf.taverna.raven.repository.DownloadStatus;
+import net.sf.taverna.raven.repository.Repository;
+import net.sf.taverna.raven.repository.RepositoryListener;
 
 /**
  * Represents the state of a local Maven2 repository
@@ -22,10 +44,7 @@ import java.util.*;
  */
 public class LocalRepository implements Repository {
 	
-	private static FileFilter dFilter;
-	static {
-		dFilter = new AcceptDirectoryFilter();
-	}
+	private static FileFilter dFilter = new AcceptDirectoryFilter();
 	
 	/**
 	 * Implementation of ClassLoader that uses the artifact
@@ -44,8 +63,7 @@ public class LocalRepository implements Repository {
 		}
 		
 		protected ArtifactClassLoader(ArtifactImpl a) throws MalformedURLException, ArtifactStateException {
-			// fixme: use jarFile(a).toURI().toURL()?
-			super(new URL[]{LocalRepository.this.jarFile(a).toURL()});
+			super(new URL[]{jarFile(a).toURI().toURL()});
 			synchronized(loaderMap) {
 				loaderMap.put(a, this);
 			}
@@ -53,8 +71,7 @@ public class LocalRepository implements Repository {
 		}
 		
 		protected ArtifactClassLoader(ArtifactImpl a, ClassLoader parent) throws MalformedURLException, ArtifactStateException {
-			// fixme: use jarFile(a).toURI().toURL()?
-			super(new URL[]{LocalRepository.this.jarFile(a).toURL()}, parent);			
+			super(new URL[]{jarFile(a).toURI().toURL()}, parent);			
 			synchronized(loaderMap) {
 				loaderMap.put(a, this);
 			}
@@ -67,7 +84,7 @@ public class LocalRepository implements Repository {
 		
 		private void init(ArtifactImpl a) throws ArtifactStateException {			
 			List<ArtifactImpl> deps = a.getDependencies();
-			this.name = a.toString();
+			name = a.toString();
 			for (ArtifactImpl dep : deps) {
 				synchronized(loaderMap) {
 					ArtifactClassLoader ac = loaderMap.get(dep);
@@ -131,7 +148,7 @@ public class LocalRepository implements Repository {
 		
 		@Override
 		public String toString() {
-			return "loader{"+this.name+"} from "+System.identityHashCode(LocalRepository.this);
+			return "loader{"+name+"} from "+System.identityHashCode(LocalRepository.this);
 		}
 		
 		@Override
@@ -140,19 +157,19 @@ public class LocalRepository implements Repository {
 		}
 				
 		protected Class<?> findClass(String name, Set<ArtifactClassLoader> seenLoaders) throws ClassNotFoundException {
-			//System.out.println("Searching for '"+name+"' - "+this.toString());
+			//System.out.println("Searching for '"+name+"' - "+this));
 			seenLoaders.add(this);
 			if (classMap.containsKey(name)) {
-				//System.out.println("Returning cached '"+name+"' - "+this.toString());
+				//System.out.println("Returning cached '"+name+"' - "+this);
 				return classMap.get(name);
 			}
 			try {
 				Class c = super.findClass(name);
 				classMap.put(name, c);
-				//System.out.println("Returning found '"+name+"' - "+this.toString());
+				//System.out.println("Returning found '"+name+"' - "+this);
 				return c;
 			} catch (ClassNotFoundException e) {
-				//System.out.println("Trying children of "+this.toString());
+				//System.out.println("Trying children of "+this);
 				//for (ArtifactClassLoader ac : childLoaders) {
 				//System.out.println("    "+ac.toString());
 				//}
@@ -175,7 +192,7 @@ public class LocalRepository implements Repository {
 							return ac.findClass(name, seenLoaders);
 						}
 						catch (ClassNotFoundException cnfe) {
-							//System.out.println("No '"+name+"' in "+this.toString());
+							//System.out.println("No '"+name+"' in "+this);
 						}
 				}
 			}
@@ -193,8 +210,7 @@ public class LocalRepository implements Repository {
 	 */
 	protected LocalRepository(File base) {
 		this.base = base;
-		this.loaderMap.put(new BasicArtifact("uk.org.mygrid.taverna.raven","raven","1.5-SNAPSHOT"), new ArtifactClassLoader(this.getClass().getClassLoader()));
-		
+		loaderMap.put(new BasicArtifact("uk.org.mygrid.taverna.raven","raven","1.5-SNAPSHOT"), new ArtifactClassLoader(this.getClass().getClassLoader()));
 		initialize();
 	}
 	
@@ -207,10 +223,9 @@ public class LocalRepository implements Repository {
 	 */
 	public static synchronized Repository getRepository(File base) {
 		if (! repositoryCache.containsKey(base)) {
-			if (System.getProperty("raven.eclipse")==null) {
+			if (System.getProperty("raven.eclipse") == null) {
 				repositoryCache.put(base, new LocalRepository(base));
-			}
-			else {
+			} else {
 				repositoryCache.put(base, new EclipseRepository());
 			}
 		}
@@ -222,7 +237,7 @@ public class LocalRepository implements Repository {
 	 */
 	public synchronized void addArtifact(Artifact a1) {
 		ArtifactImpl a = new ArtifactImpl(a1, this);
-		if (! this.status.containsKey(a)) {
+		if (! status.containsKey(a)) {
 			artifactDir(a);
 			status.put(a, ArtifactStatus.Unknown);
 			setStatus(a, ArtifactStatus.Queued);
@@ -254,22 +269,15 @@ public class LocalRepository implements Repository {
 		if (loaderMap.containsKey(a)) {
 			return loaderMap.get(a);
 		}
-		else {
-			ClassLoader loader;
-			try {
-				if (parent == null) {
-					loader = new ArtifactClassLoader(a, null);
-				}
-				else {
-					loader = new ArtifactClassLoader(a, parent);
-				}
-				return loader;
-			} catch (MalformedURLException e) {
-				// Never happens
-				e.printStackTrace();
-			}
-			return null;
+		try {
+			// Even if parent is null
+			return new ArtifactClassLoader(a, parent);
+		} catch (MalformedURLException e) {
+			// Should never happen
+			e.printStackTrace();
 		}
+		return null;
+
 	}
 	
 	/**
@@ -277,11 +285,9 @@ public class LocalRepository implements Repository {
 	 * not an instance of ArtifactClassLoader then return null
 	 */
 	public Artifact artifactForClass(Class c) throws ArtifactNotFoundException {
-		synchronized(loaderMap) {
-			for (Artifact a : loaderMap.keySet()) {
-				if (loaderMap.get(a) == c.getClassLoader()) {
-					return a;
-				}
+		for (Entry<Artifact, ArtifactClassLoader> entry : loaderMap.entrySet()) {
+			if (entry.getValue() == c.getClassLoader()) { 
+				return entry.getKey();
 			}
 		}
 		throw new ArtifactNotFoundException("No artifact for Class : "+c.getName());
@@ -291,8 +297,7 @@ public class LocalRepository implements Repository {
 	 * @see net.sf.taverna.raven.repository.impl.Repository#update()
 	 */
 	public synchronized void update() {
-		while (act())
-		{
+		while (act()) {
 			// nothing
 		}
 	}
@@ -322,7 +327,7 @@ public class LocalRepository implements Repository {
 	 * within this Repository implementation
 	 */
 	public void addRepositoryListener(RepositoryListener l) {
-		synchronized(this.listeners) {
+		synchronized(listeners) {
 			if (! listeners.contains(l)) {
 				listeners.add(l);
 			}
@@ -330,7 +335,7 @@ public class LocalRepository implements Repository {
 	}
 	
 	public void removeRepositoryListener(RepositoryListener l) {
-		synchronized(this.listeners) {
+		synchronized(listeners) {
 			listeners.remove(l);
 		}
 	}
@@ -580,7 +585,7 @@ public class LocalRepository implements Repository {
 	}
 	
 	synchronized void forcePom(ArtifactImpl a) throws ArtifactNotFoundException {
-		fetch(this.repositories, a, "pom");
+		fetch(repositories, a, "pom");
 	}
 	
 	/**
@@ -669,6 +674,7 @@ public class LocalRepository implements Repository {
 		if (! base.exists()) {
 			// No base directory so create it
 			base.mkdirs();
+			// Don't need to check previous content, finished
 			return;
 		}
 		// Fetch all subdirectories, assuming that each
