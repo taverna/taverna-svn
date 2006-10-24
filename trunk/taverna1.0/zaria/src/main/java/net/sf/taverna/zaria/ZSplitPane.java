@@ -19,9 +19,11 @@ import org.jdom.Element;
  * @author Tom Oinn
  */
 @SuppressWarnings("serial")
-public class ZSplitPane extends ZPane {
-
+public class ZSplitPane extends ZPane {	
+	
 	private JSplitPane splitPane = new JSplitPane();
+	private double dividerLocation;
+	private boolean dividerSet=false;
 
 	@SuppressWarnings("serial")
 	private class SwitchOrientationAction extends AbstractAction {
@@ -54,37 +56,34 @@ public class ZSplitPane extends ZPane {
 		}
 
 	}
+	
+	
+	@Override
+	public void repaint(long tm, int x, int y, int width, int height) {
+		super.repaint(tm, x, y, width, height);
+		if (splitPane.getWidth()!=0 && !dividerSet) {
+			splitPane.resetToPreferredSizes();
+			splitPane.setDividerLocation(dividerLocation);
+			splitPane.setResizeWeight(dividerLocation);			
+			dividerSet=true;
+		}
+	}	
 
 	private List<Action> actions = new ArrayList<Action>();
 
 	public ZSplitPane() {
-		super();
+		super();		
 		splitPane.setLeftComponent(new ZBlankComponent());
 		splitPane.setRightComponent(new ZBlankComponent());
 		splitPane.setDividerLocation(0.5d);
 		splitPane.setResizeWeight(0.5d);
 		actions.add(new SwitchOrientationAction());
 		actions.add(new ReplaceWithBlankAction());
-		add(splitPane, BorderLayout.CENTER);
+		add(splitPane, BorderLayout.CENTER);		
 	}
 
 	public Element getElement() {
-		// total size would be the height if oriented vertically, or the width
-		// if horizontally
-		double total = splitPane.getOrientation() == JSplitPane.HORIZONTAL_SPLIT ? (double) splitPane
-				.getWidth()
-				: (double) splitPane.getHeight();
-		double dividerLocation = (double) splitPane.getDividerLocation();
-		if (dividerLocation < 0)
-			dividerLocation = 0; // when the divider is far to one side, it
-									// the dividerlocation results in being
-									// negative (?!), setting to 0 prevents an
-									// error on reload it gives the correct
-									// approximate location
-		
-		double ratio;
-		if (total<=0) ratio=0;
-		else  ratio = dividerLocation / total;
+		double ratio = getDividerRatio();
 		
 
 		Element splitElement = new Element("split");
@@ -103,6 +102,28 @@ public class ZSplitPane extends ZPane {
 		rightElement.addContent(elementFor(rightNode));
 		leftElement.addContent(elementFor(leftNode));
 		return splitElement;
+	}
+
+	private double getDividerRatio() {
+		if (!dividerSet) return dividerLocation; //use the stored value if the true value has not been set up yet.
+		
+		// total size would be the height if oriented vertically, or the width
+		// if horizontally
+		double total = splitPane.getOrientation() == JSplitPane.HORIZONTAL_SPLIT ? (double) splitPane
+				.getWidth() 
+				: (double) splitPane.getHeight();
+		double dividerLocation = (double) splitPane.getDividerLocation();
+		if (dividerLocation < 0)
+			dividerLocation = 0; // when the divider is far to one side, it
+									// the dividerlocation results in being
+									// negative (?!), setting to 0 prevents an
+									// error on reload it gives the correct
+									// approximate location
+		
+		double ratio;		
+		if (total<=0) ratio=0;
+		else  ratio = dividerLocation / total;
+		return ratio;
 	}
 
 	public void configure(Element e) {
@@ -132,8 +153,10 @@ public class ZSplitPane extends ZPane {
 			String ratio = splitElement.getAttributeValue("ratio");
 			if (ratio != null) {
 				try {
-					double r = Double.parseDouble(ratio);
-					splitPane.setResizeWeight(r);
+					//defer setting the dividerlocation until the first repaint
+					//that splitpane
+					dividerLocation = Double.parseDouble(ratio);	
+					dividerSet=false;
 				} catch (NumberFormatException ex) {
 					ex.printStackTrace();
 				}

@@ -2,6 +2,7 @@ package net.sf.taverna.zaria;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.util.ArrayList;
 import java.util.List;
@@ -38,6 +39,8 @@ public class ZBlankComponent extends ZPane implements ZTreeNode {
 		panel.setOpaque(true);
 		panel.setBackground(Color.WHITE);
 		add(panel, BorderLayout.CENTER);
+		setPreferredSize(new Dimension(100,100));
+		revalidate();
 	}
 
 	private Action createSplitPaneAction = new AbstractAction() {

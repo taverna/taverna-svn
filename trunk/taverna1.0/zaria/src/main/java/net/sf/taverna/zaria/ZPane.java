@@ -155,8 +155,7 @@ public abstract class ZPane extends JComponent implements ZTreeNode {
 				remove(toolBar);
 			}
 		}
-		revalidate();
-		repaint();
+		revalidate();		
 	}
 	
 	/**

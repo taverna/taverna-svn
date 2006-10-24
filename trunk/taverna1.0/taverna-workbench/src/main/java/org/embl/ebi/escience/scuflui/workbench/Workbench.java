@@ -77,7 +77,7 @@ public class Workbench extends JFrame {
 	public static Workbench getWorkbench() {
 		return new Workbench();
 	}
-	
+		
 	/**
 	 * Do not attempt to run from here - this is a quick hack to make at least
 	 * some parts of the workbench run from within Eclipse but it doesn't really
@@ -184,6 +184,17 @@ public class Workbench extends JFrame {
 		createWorkflowAction().actionPerformed(null);
 	}
 	
+	protected void saveDefaultLayout() throws IOException {		
+		File userDir = MyGridConfiguration.getUserDir("conf");
+		File layout=new File(userDir,"layout.xml");
+		Writer writer=new BufferedWriter(new FileWriter(layout));
+		Element element = basePane.getElement();
+		XMLOutputter xo = new XMLOutputter(Format.getPrettyFormat());		
+		writer.write(xo.outputString(element));
+		writer.flush();
+		writer.close();
+	}
+	
 	@SuppressWarnings("serial")
 	public void setUI() {
 		getContentPane().setLayout(new BorderLayout());
@@ -246,6 +257,8 @@ public class Workbench extends JFrame {
 							out.print(xo.outputString(element));
 							out.flush();
 							out.close();
+							
+							saveDefaultLayout();
 						} catch (IOException ex) {							
 							logger.error("IOException saving layout",ex);
 							JOptionPane.showMessageDialog(Workbench.this,"Error saving layout file: "+ex.getMessage());
@@ -271,7 +284,8 @@ public class Workbench extends JFrame {
 							InputStreamReader isr = new InputStreamReader(file.toURL().openStream());
 							SAXBuilder builder = new SAXBuilder(false);
 							Document document = builder.build(isr);
-							basePane.configure(document.detachRootElement());																				
+							basePane.configure(document.detachRootElement());							
+							saveDefaultLayout();
 						}
 						catch(Exception ex) {
 							ex.printStackTrace();
@@ -285,24 +299,22 @@ public class Workbench extends JFrame {
 		};
 		
 		loadLayoutXMLAction.putValue(Action.NAME, "Open layout XML");
-		
-		
+				
 		zariaMenu.add(new JMenuItem(dumpLayoutXMLAction));
 		zariaMenu.add(new JMenuItem(loadLayoutXMLAction));
 		zariaMenu.add(new JMenuItem(saveLayoutXMLAction));
-		
-		
-		
+				
 		setJMenuBar(menuBar);
 		setSize(new Dimension(500,500));				
 		addWindowListener(getWindowClosingAdaptor());
 		updateRepository();
-		
-		readLastPreferences();
-		readLastLayout();
+				
+		readLastPreferences();		
+		readLastLayout();		
+		setVisible(true);
 		
 		basePane.setEditable(false);
-		setVisible(true);
+		
 	}
 	
 	private WindowAdapter getWindowClosingAdaptor() {
@@ -390,20 +402,11 @@ public class Workbench extends JFrame {
 	}
 	
 	private void storeUserPrefs() throws IOException {
-		File userDir=MyGridConfiguration.getUserDir("conf");
-		
-		//store current layout
-		File layout=new File(userDir,"layout.xml");
-		Writer writer=new BufferedWriter(new FileWriter(layout));
-		Element element = basePane.getElement();
-		XMLOutputter xo = new XMLOutputter(Format.getPrettyFormat());		
-		writer.write(xo.outputString(element));
-		writer.flush();
-		writer.close();
+		File userDir=MyGridConfiguration.getUserDir("conf");				
 		
 		//store current window size
 		File size=new File(userDir,"preferences.properties");		
-		writer=new BufferedWriter(new FileWriter(size));
+		Writer writer=new BufferedWriter(new FileWriter(size));
 		writer.write("width="+this.getWidth()+"\n");
 		writer.write("height="+this.getHeight()+"\n");		
 		writer.write("x="+this.getX()+"\n");
