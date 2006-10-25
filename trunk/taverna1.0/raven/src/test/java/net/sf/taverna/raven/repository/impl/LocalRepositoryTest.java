@@ -68,6 +68,7 @@ public class LocalRepositoryTest extends TestCase {
 	public void testCreateEmpty() {
 		// Should create directory if it is not existing
 		dir.delete();
+		assertFalse(dir.isDirectory());
 		LocalRepository rep = new LocalRepository(dir);
 		assertTrue(dir.isDirectory());
 	}
@@ -78,15 +79,59 @@ public class LocalRepositoryTest extends TestCase {
 	 */
 	public void testAddArtifact() throws MalformedURLException {
 		r.addRemoteRepository(new URL("http://mirrors.dotsrc.org/maven2/"));
-		r.addArtifact(new BasicArtifact("batik","batik-swing","1.6"));
+		BasicArtifact batik = new BasicArtifact("batik","batik-swing","1.6");
+		r.addArtifact(batik);
+		File batikDir = new File(dir, "batik/batik-swing");
+		assertTrue(batikDir.isDirectory());
+		// Assumes batik-swing don't have any dependencies
+		assertEquals(1, r.getArtifacts().size());
 	}
 
-	public void testRepositoryWithExistingContents() throws MalformedURLException {		
+	public void testRepositoryWithExistingContents() throws MalformedURLException {	
+		System.out.println("Testing " + dir);
 		r.addRemoteRepository(new URL("http://mirrors.dotsrc.org/maven2/"));
 		r.addArtifact(new BasicArtifact("batik","batik-swing","1.6"));
 		LocalRepository r2 = new LocalRepository(dir);
 		assertTrue(r.getArtifacts().containsAll(r2.getArtifacts()));
 	}
+	
+	public void testCleanEmpty() {
+		File emptyDir = new File(dir, "some/artifact/1.1");
+		emptyDir.mkdirs();
+		assertTrue(emptyDir.isDirectory());
+		r.clean();
+		// some/artifact/1.1
+		assertFalse(emptyDir.isDirectory());
+		// some/artifact
+		assertFalse(emptyDir.getParentFile().isDirectory());
+		// some
+		assertFalse(emptyDir.getParentFile().getParentFile().isDirectory());
+		assertTrue(dir.isDirectory());
+	}
+	
+	
+//	public void testCleanUnknown() throws IOException {
+//		File wrongFile = new File(dir, "wrongfile");
+//		wrongFile.createNewFile();
+//		assertTrue(wrongFile.isFile());
+//		r.clean(false, false);
+//		// Should not touch it, it's unknown
+//		assertTrue(wrongFile.exists());
+//		// unless we ask to remove unknowns
+//		r.clean(false, true);
+//		assertFalse(wrongFile.exists());
+//	}
+//	
+//	public void testCleanNonEmpty() throws MalformedURLException {
+//		r.addRemoteRepository(new URL("http://mirrors.dotsrc.org/maven2/"));
+//		BasicArtifact batik = new BasicArtifact("batik","batik-swing","1.6");
+//		r.addArtifact(batik);
+//		File batikDir = new File(dir, "batik/batik-swing");
+//		r.clean(false, false);
+//		// Did not touch our batik-swing
+//		assertTrue(batikDir.isDirectory());
+//	}
+	
 	
 	/*
 	 * Test method for 'net.sf.taverna.raven.repository.Repository.update()'
