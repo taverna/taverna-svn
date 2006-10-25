@@ -54,16 +54,11 @@ public class ArtifactImpl extends BasicArtifact {
 		this.repository = repository;
 	}
 	
-	@Override
-	public String toString() {
-		return getGroupId()+":"+getArtifactId()+":"+getVersion();
-	}
-	
 	public String getPackageType() {
 		if (packageType != null) {
-			return this.packageType;
+			return packageType;
 		}
-		File pomFile = this.repository.pomFile(this);
+		File pomFile = repository.pomFile(this);
 		if (pomFile.exists()) {
 			InputStream is;
 			try {
@@ -73,12 +68,12 @@ public class ArtifactImpl extends BasicArtifact {
 				Document document = builder.parse(is);
 				List<Node> l = findElements(document, "packaging");
 				if (l.isEmpty()) {
-					this.packageType = "jar";
-					return this.packageType;
+					packageType = "jar";
+					return packageType;
 				}
 				Node packageNode = l.iterator().next();
-				this.packageType = packageNode.getFirstChild().getNodeValue().trim();
-				return this.packageType;
+				packageType = packageNode.getFirstChild().getNodeValue().trim();
+				return packageType;
 			} catch (MalformedURLException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -138,18 +133,18 @@ public class ArtifactImpl extends BasicArtifact {
 		String parentArtifactId = n.getFirstChild().getNodeValue().trim();
 		n = findElements(parentNode, "version" ).iterator().next();
 		String parentVersion = n.getFirstChild().getNodeValue().trim();
-		parentArtifact = new ArtifactImpl(parentGroupId,parentArtifactId,parentVersion,this.repository);
-		this.repository.addArtifact(parentArtifact);
+		parentArtifact = new ArtifactImpl(parentGroupId,parentArtifactId,parentVersion,repository);
+		repository.addArtifact(parentArtifact);
 		if (repository.getStatus(parentArtifact).equals(ArtifactStatus.Queued)) {
 			try {
 				// Force a fetch of the pom file
-				this.repository.forcePom(parentArtifact);
+				repository.forcePom(parentArtifact);
 			} catch (ArtifactNotFoundException e) {
 				System.err.println("Could not fetch pom for artifact " + parentArtifact);
 				return;
 			}
 		}
-		parentArtifact.checkParent(this.repository.pomFile(parentArtifact));
+		parentArtifact.checkParent(repository.pomFile(parentArtifact));
 	}
 	
 	private Map<String,String> dependencyManagement = null;
@@ -166,7 +161,7 @@ public class ArtifactImpl extends BasicArtifact {
 				parent = parent.parentArtifact;
 			}
 			for (ArtifactImpl a : parents) {
-				File pomFile = this.repository.pomFile(a);
+				File pomFile = repository.pomFile(a);
 				try {
 					InputStream is = pomFile.toURL().openStream();
 					DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
@@ -183,7 +178,7 @@ public class ArtifactImpl extends BasicArtifact {
 							String artifactId = n.getFirstChild().getNodeValue().trim();
 							n = findElements(depNode, "version" ).iterator().next();
 							version = n.getFirstChild().getNodeValue().trim();
-							/**System.out.println(this.toString());
+							/**System.out.println(this);
 							System.out.println("Parent : "+a);
 							System.out.println(groupId);
 							System.out.println(artifactId);
@@ -214,7 +209,7 @@ public class ArtifactImpl extends BasicArtifact {
 	 * @return List of Artifacts upon which this depends
 	 */
 	public synchronized List<ArtifactImpl> getDependencies() throws ArtifactStateException {
-		if (this.dependencies != null) {
+		if (dependencies != null) {
 			return dependencies;
 		}
 		List<ArtifactImpl> result = new ArrayList<ArtifactImpl>();
@@ -230,7 +225,7 @@ public class ArtifactImpl extends BasicArtifact {
 					ArtifactStatus.Jar, ArtifactStatus.Pom, ArtifactStatus.Ready});
 		}
 		
-		File pomFile = this.repository.pomFile(this);
+		File pomFile = repository.pomFile(this);
 		if (pomFile.exists()) {
 			checkParent(pomFile);
 			InputStream is;
@@ -285,7 +280,7 @@ public class ArtifactImpl extends BasicArtifact {
 						}
 						
 						if (!optional && downloadableScope) {
-							result.add(new ArtifactImpl(groupId, artifactId, version, this.repository));
+							result.add(new ArtifactImpl(groupId, artifactId, version, repository));
 						}
 						else {
 							// Log the optional dependency here if needed
@@ -312,7 +307,7 @@ public class ArtifactImpl extends BasicArtifact {
 		else {
 			// TODO Handle absence of pom file here
 		}
-		this.dependencies = result;
+		dependencies = result;
 		return result;
 	}
 	

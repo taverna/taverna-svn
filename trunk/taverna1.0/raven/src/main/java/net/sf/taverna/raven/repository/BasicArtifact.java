@@ -30,15 +30,13 @@ public class BasicArtifact implements Artifact, Comparable {
 	 * @see java.lang.Object#equals(java.lang.Object)
 	 */
 	public boolean equals(Object other) {
-		if (other instanceof Artifact) {
-			Artifact otherDep = (Artifact)other;
-			if (otherDep.getArtifactId().equals(this.artifactId) &&
-					otherDep.getGroupId().equals(this.groupId) &&
-					otherDep.getVersion().equals(this.version)) {
-				return true;
-			}
+		if (! (other instanceof Artifact)) {
+			return false;
 		}
-		return false;
+		Artifact otherDep = (Artifact)other;
+		return (otherDep.getArtifactId().equals(getArtifactId()) &&
+					otherDep.getGroupId().equals(getGroupId()) &&
+					otherDep.getVersion().equals(getVersion()));
 	}
 
 	/** 
@@ -47,29 +45,34 @@ public class BasicArtifact implements Artifact, Comparable {
 	 * @see java.lang.Object#hashCode()
 	 */
 	public int hashCode() {
-		return (this.artifactId+this.groupId+this.version).hashCode();
+		return (getArtifactId()+getGroupId()+getVersion()).hashCode();
 	}
 
 	public String getArtifactId() {
-		return this.artifactId;
+		return artifactId;
 	}
 
 	public String getGroupId() {
-		return this.groupId;
+		return groupId;
 	}
 
 	public String getVersion() {
-		return this.version;
+		return version;
 	}
 
+	@Override
+	public String toString() {
+		return getGroupId()+":"+getArtifactId()+":"+getVersion();
+	}
+	
 	public int compareTo(Object arg0) {
 		if (arg0 instanceof Artifact) {
 			Artifact other = (Artifact)arg0;
-			int groupIdComp = this.groupId.compareTo(other.getGroupId());
+			int groupIdComp = getGroupId().compareTo(other.getGroupId());
 			if (groupIdComp == 0) {
-				int artifactIdComp = this.artifactId.compareTo(other.getArtifactId());
+				int artifactIdComp = getArtifactId().compareTo(other.getArtifactId());
 				if (artifactIdComp == 0) {
-					return this.version.compareTo(other.getVersion());
+					return getVersion().compareTo(other.getVersion());
 				}
 				else {
 					return artifactIdComp;
