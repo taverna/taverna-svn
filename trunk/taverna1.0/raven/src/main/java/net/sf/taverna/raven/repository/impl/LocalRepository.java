@@ -651,11 +651,25 @@ public class LocalRepository implements Repository {
 		}
 	}
 	
+	private Set<File> enumerateDirs(File current) {
+		Set<File> groupDirs = new HashSet<File>();
+		enumerateDirs(current, groupDirs);
+		return groupDirs;
+	}
 	
 	private void enumerateDirs(File current, Set<File> groupDirs) {
+		try {
+			if (! current.getCanonicalPath().startsWith(base.getCanonicalPath())) {
+				// Climbed outside our base!
+				return;
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+			return;
+		}
 		File[] subdirs = current.listFiles(isDirectory);
 		if (subdirs == null || subdirs.length == 0) {
-			if (! current.equals(base)) {				
+			if (! current.equals(base)) {
 				groupDirs.add(current.getParentFile().getParentFile());
 			}
 		}
@@ -663,6 +677,72 @@ public class LocalRepository implements Repository {
 			for (File subDir : subdirs) {
 				enumerateDirs(subDir, groupDirs);
 			}
+		}
+	}
+	
+	/** 
+	 * Clean the local repository by removing invalid 
+	 * artifacts and directories. 
+	 * <p>
+	 * Empty directories will always be removed. 
+	 * 
+	 * <p><!--  removeFailing/removeUnknown not implemented
+	 * If <code>removeFailing</code> is true, 
+	 * all artifacts will be attempted re-downloaded, 
+	 * if this fails, the artifact 
+	 * will be removed. This option should only be used
+	 * after verifying network access to the repositories.
+	 * <p>
+	 * If <code>removeUnknown</code> is true, files and
+	 * directories not native to the Raven repositories will be removed.
+	 * Be sure that the local repository directory is only
+	 * used as a Raven repository before enabling this option.
+	 * 
+	 * 
+	 * @param removeFailing Remove artifacts that can no longer be downloaded from repositories
+	 * @param removeUnknown Remove unknown (non-Raven) files and directories
+	 * -->
+	 */
+	public synchronized void clean() {
+		if (! base.isDirectory()) {
+			// WARNING
+			return;
+		}
+		Set<File> groupDirs = enumerateDirs(base);
+		for (File groupDir : groupDirs) {
+			deleteEmptyDirs(groupDir);
+		}
+	}
+	
+	private void deleteEmptyDirs(File dir) {
+		try {
+			dir = dir.getCanonicalFile();
+		} catch (IOException e) {
+			System.err.println("Could not check: " + dir);
+			// bad sign.. Let's stay away
+			return;
+		}
+		File[] subdirs = dir.listFiles(isDirectory);
+		for (File child : subdirs) {
+			try {
+				// Make sure we don't climb out following a symlink or something
+				if (! child.getCanonicalFile().getParentFile().equals(dir)) {
+					System.err.println("Skipping not a real child: " + child);
+					continue;
+				}
+			} catch (IOException e) {
+				// bad sign.. Let's stay away
+				System.err.println("Could not check child: " + child);
+				continue;
+			}
+			deleteEmptyDirs(child);
+		}
+		// OK.. we've checked our subdirs.. they might have all be
+		// gone now, so let's see if we can disappear as well
+		File[] content = dir.listFiles();
+		if (content == null || content.length == 0) {
+			//System.out.println("Deleting " + dir);
+			dir.delete();
 		}
 	}
 	
@@ -679,8 +759,7 @@ public class LocalRepository implements Repository {
 		}
 		// Fetch all subdirectories, assuming that each
 		// subdirectory corresponds to a groupId
-		Set<File> groupDirs = new HashSet<File>();
-		enumerateDirs(base, groupDirs);
+		Set<File> groupDirs = enumerateDirs(base);
 		
 		List<String> groupIds = new ArrayList<String>();
 		for (File f : groupDirs) {
@@ -709,8 +788,6 @@ public class LocalRepository implements Repository {
 				File[] versions = artifactDir.listFiles(isDirectory);
 				if (versions == null) {
 					System.out.println("Null version list at "+artifactDir);
-					System.out.println((artifactDir.isDirectory() ? "Is" : "Is not")  +
-										"a directory");
 					continue;
 				}
 				for (File versionDir : versions) {
