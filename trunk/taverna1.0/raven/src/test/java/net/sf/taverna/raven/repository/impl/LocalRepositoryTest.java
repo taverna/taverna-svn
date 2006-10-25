@@ -35,7 +35,7 @@ public class LocalRepositoryTest extends TestCase {
 		new LocalRepository(dir);
 	}
 	
-	public void setUp() {
+	public void setUp() throws IOException {
 		dir = createTempDirectory();
 		r = new LocalRepository(dir);
 	}
@@ -49,16 +49,14 @@ public class LocalRepositoryTest extends TestCase {
 		}
 	}
 	
-	private static File createTempDirectory() {
+	public static File createTempDirectory() throws IOException {
 		File tempFile;
 		try {
 			tempFile = File.createTempFile("raven", "");
 			// But we want a directory!
-			
 		} catch (IOException e) {
 			System.err.println("Could not create temporary directory");
-			e.printStackTrace();
-			return null;
+			throw e;
 		}
 		tempFile.delete();
 		assert tempFile.mkdir();
@@ -88,9 +86,9 @@ public class LocalRepositoryTest extends TestCase {
 	}
 
 	public void testRepositoryWithExistingContents() throws MalformedURLException {	
-		System.out.println("Testing " + dir);
 		r.addRemoteRepository(new URL("http://mirrors.dotsrc.org/maven2/"));
 		r.addArtifact(new BasicArtifact("batik","batik-swing","1.6"));
+		r.update();
 		LocalRepository r2 = new LocalRepository(dir);
 		assertTrue(r.getArtifacts().containsAll(r2.getArtifacts()));
 	}
