@@ -12,6 +12,7 @@ import java.io.InputStreamReader;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.MalformedURLException;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
@@ -121,15 +122,21 @@ public class Bootstrap {
 		for (URL repository : remoteRepositories) {
 			loaderURLs.add(new URL(repository, artifactLocation));
 		}
+		
 		ClassLoader c = new URLClassLoader(
 				loaderURLs.toArray(new URL[0]),
 				null);
+		
+		//override with system classloader if running in eclipse
+		if (System.getProperty("raven.eclipse")!=null) {
+			c=ClassLoader.getSystemClassLoader();
+		}		
 
 		String useSplashProp = properties.getProperty("raven.splashscreen");
 		boolean useSplashscreen = !(useSplashProp == null || useSplashProp.equalsIgnoreCase("false"));
 		
 		// Reference to the Loader class within net.sf.taverna.raven
-		Class loaderClass = c.loadClass(properties.getProperty("raven.loader.class"));
+		Class loaderClass = c.loadClass(properties.getProperty("raven.loader.class"));		
 		// Find the single static method provided by the loader
 		Method m = loaderClass.getDeclaredMethod(
 				properties.getProperty("raven.loader.method"),
@@ -146,7 +153,7 @@ public class Bootstrap {
 		// Parameters for the Raven loader call
 		String ravenVersion = RAVEN_VERSION;
 
-		String profileURL=properties.getProperty("raven.profile");
+		String profileURL=properties.getProperty("raven.remoteprofile");
 		if (profileURL!=null) {
 			initialiseProfile(profileURL);
 		}
@@ -238,60 +245,33 @@ public class Bootstrap {
 	}
 	
 	/**
-	 * Updates locally stored profile with that designated with profileURL
-	 * and then reassigns the system property raven.profile to point to the
-	 * stored file location. This prevents raven having to know the location
-	 * of taverna.home and thereby keeps the coupling loose.
-	 * 
-	 * Requires the property taverna.home to be set to indicate where to save it.
-	 * If the remote profile cannot be found then the last stored profile will continue to
-	 * be used. If there is no local profile, then startup terminates.
-	 * 
+	 * Checks for local profile, whos name is dervied from raven.remoteprofile and the user dir. If not exists then copies the bundled default profile.
+	 * The property raven.profile is set to the locally stored profile
+	 * If default profile cannot be accessed then raven.profile and raven.remoteprofile property is cleared, disabling the profile 
 	 * @param profileURL
 	 */
-	private static void initialiseProfile(String profileURL) {
-		String tavernaHome=System.getProperty("taverna.home");
-		if (tavernaHome!=null) {
-			File storedProfile=getStoredProfileFile(profileURL);
-			try {
-				URL profile=new URL(profileURL);
-				BufferedReader reader=new BufferedReader(new InputStreamReader(profile.openStream()));
-				BufferedWriter writer=new BufferedWriter(new FileWriter(storedProfile));
-				String line=reader.readLine();
-				while (line!=null) {
-					writer.write(line+"\n");
-					line=reader.readLine();
-				}
-				writer.flush();
-				writer.close();
-				
-				reader.close();
-			} catch (Exception e) {
-				e.printStackTrace();
-				if (storedProfile.exists()) {
-					System.out.println("Cannot find remote profile, using last stored");
-				}
-				else {
-					System.out.println("Cannot find remote profile, and no locally stored profile exits. Unable to run Taverna.");
-					System.exit(-1);
-				}
-			}
-			if (storedProfile.exists()) {
-				try {
-					System.setProperty("raven.profile", storedProfile.toURI().toURL().toString());
-				} catch (MalformedURLException e) {
-					System.clearProperty("raven.profile");
-				}
+	private static void initialiseProfile(String profileUrlStr) {
+		System.setProperty("raven.remoteprofile",profileUrlStr);
+		File localProfile=getLocalProfileFile(profileUrlStr);
+		try {			
+			System.setProperty("raven.profile", localProfile.toURI().toURL().toString());
+			if (!localProfile.exists()) {
+				storeDefaultProfile(localProfile);
 			}
 		}
-		else {
+		catch(Exception e) {
+			e.printStackTrace();
+			//disable profile. May be better to just bail out completely here.			
 			System.clearProperty("raven.profile");
+			System.clearProperty("raven.remoteprofile");
 		}
+		
 	}	
-	private static File getStoredProfileFile(String profileStr) {
+	
+	private static File getLocalProfileFile(String profileUrlStr) {		
 		File tavernaHome=new File(System.getProperty("taverna.home"));
 		File userdir=new File(tavernaHome,"conf");
-		String fileStr=profileStr;
+		String fileStr=profileUrlStr;
 		if (fileStr.contains("/")) {
 			int i=fileStr.lastIndexOf("/");
 			fileStr=fileStr.substring(i+1);
@@ -299,6 +279,24 @@ public class Bootstrap {
 		File profileFile=new File(userdir,fileStr);
 		return profileFile;
 	}
+	
+	private static void storeDefaultProfile(File localProfile) throws Exception, IOException, URISyntaxException {
+		InputStream defaultStream=Bootstrap.class.getResourceAsStream("/default-profile.xml");
+		if (defaultStream==null) throw new Exception("Unable to find default profile");
+		BufferedReader reader=new BufferedReader(new InputStreamReader(defaultStream));
+		BufferedWriter writer=new BufferedWriter(new FileWriter(localProfile));
+		String line=reader.readLine();
+		while (line!=null) {
+			writer.write(line+"\n");
+			line=reader.readLine();
+		}
+		writer.flush();
+		writer.close();
+		
+		reader.close();
+	}
+	
+		
 
 	/**
 	 * Find and create if neccessary the user's application directory, 

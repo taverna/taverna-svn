@@ -2,6 +2,7 @@ package net.sf.taverna.raven.spi;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -12,6 +13,11 @@ import java.util.Set;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 
 import net.sf.taverna.raven.repository.Artifact;
 import net.sf.taverna.raven.repository.BasicArtifact;
@@ -49,6 +55,9 @@ public class Profile implements ArtifactFilter {
 	private Set<Artifact> artifacts = new HashSet<Artifact>();
 	private boolean strict;
 	
+	private String version;
+	private String name;
+	
 	/**
 	 * Create a Profile and initialize it from the specified
 	 * InputStream of XML (see class description)<p>
@@ -76,7 +85,7 @@ public class Profile implements ArtifactFilter {
 		this.strict=strict;
 		
 		try {
-			DocumentBuilder builder = factory.newDocumentBuilder();
+			DocumentBuilder builder = factory.newDocumentBuilder();			
 			try {
 				document = builder.parse(is);
 			} catch (SAXException e) {
@@ -88,6 +97,24 @@ public class Profile implements ArtifactFilter {
 			throw new InvalidProfileException("Failed to create XML parser", e);
 		}
 		
+		//determine the version if available		
+		Node profileVersionAttribute=document.getDocumentElement().getAttributes().getNamedItem("version");
+		if (profileVersionAttribute!=null) {
+			version=profileVersionAttribute.getNodeValue();
+		}
+		else {
+			System.out.println("Profile document contains no version.");
+		}
+		
+//		determine the name if available		
+		Node profileNameAttribute=document.getDocumentElement().getAttributes().getNamedItem("name");
+		if (profileNameAttribute!=null) {
+			name=profileNameAttribute.getNodeValue();
+		}
+		else {
+			System.out.println("Profile document contains no name.");
+		}
+							
 		NodeList nodelist = document.getDocumentElement().getChildNodes();
 		for (int i=0; i<nodelist.getLength(); i++) {
 			Node n = nodelist.item(i);
@@ -104,8 +131,22 @@ public class Profile implements ArtifactFilter {
 						vnode.getNodeValue());
 				artifacts.add(a);
 			}
-		}
-		
+		}		
+	}
+	
+	/**
+	 * Returns the version string of the Profile, or 'NO VERSION' if a version is not defined
+	 */
+	public String getVersion() {
+		if (version==null) return "NO VERSION";
+		else return version;
+	}
+	
+	/**
+	 * returns the name of the profile, or null if no name is defined
+	 */
+	public String getName() {
+		return name;
 	}
 	
 	/**
@@ -229,4 +270,29 @@ public class Profile implements ArtifactFilter {
 		return result;
 	}
 	
+	public void write(OutputStream outputStream) throws Exception {
+		DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+		Document doc=builder.newDocument();
+		Element element=doc.createElement("profile");
+		doc.appendChild(element);
+		if (version!=null) element.setAttribute("version",version);
+		if (name!=null) element.setAttribute("name",name);
+		for (Artifact a : getArtifacts()) {
+			String groupId=a.getGroupId();
+			String artifactId=a.getArtifactId();
+			String version=a.getVersion();
+			
+			Element artifactElement=doc.createElement("artifact");
+			artifactElement.setAttribute("groupId", groupId);
+			artifactElement.setAttribute("artifactId", artifactId);
+			artifactElement.setAttribute("version", version);
+			element.appendChild(artifactElement);
+		}
+		
+		Transformer transformer=TransformerFactory.newInstance().newTransformer();
+		DOMSource source=new DOMSource(doc);
+		StreamResult dest=new StreamResult(outputStream);
+		transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+		transformer.transform(source, dest);		
+	}
 }

@@ -37,7 +37,10 @@ import javax.swing.UIManager;
 import net.sf.taverna.raven.repository.Artifact;
 import net.sf.taverna.raven.repository.impl.LocalRepository;
 import net.sf.taverna.raven.repository.impl.LocalRepository.ArtifactClassLoader;
+import net.sf.taverna.raven.spi.Profile;
+import net.sf.taverna.raven.spi.ProfileFactory;
 import net.sf.taverna.tools.Bootstrap;
+import net.sf.taverna.update.ProfileHandler;
 import net.sf.taverna.utils.MyGridConfiguration;
 import net.sf.taverna.zaria.ZBasePane;
 import net.sf.taverna.zaria.ZRavenComponent;
@@ -199,8 +202,27 @@ public class Workbench extends JFrame {
 	public void setUI() {
 		getContentPane().setLayout(new BorderLayout());
 		getContentPane().add(basePane, BorderLayout.CENTER);
-		JMenuBar menuBar = new JMenuBar();
 		
+		
+		JMenuBar menuBar = getWorkbenchMenuBar();
+				
+		setJMenuBar(menuBar);
+		setSize(new Dimension(500,500));				
+		addWindowListener(getWindowClosingAdaptor());
+		updateRepository();
+		
+		setWorkbenchTitle();
+				
+		readLastPreferences();		
+		readLastLayout();		
+		setVisible(true);
+		
+		basePane.setEditable(false);
+		
+	}
+
+	private JMenuBar getWorkbenchMenuBar() {
+		JMenuBar menuBar = new JMenuBar();
 		menuBar.add(fileMenu);
 		refreshFileMenu();
 		
@@ -226,6 +248,19 @@ public class Workbench extends JFrame {
 				}
 			}
 		});
+		
+		if (System.getProperty("raven.remoteprofile")!=null) {
+			JMenuItem checkUpdates = new JMenuItem("Check for profile updates");
+			ravenMenu.add(checkUpdates);
+			
+			checkUpdates.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					checkForProfileUpdate();
+				}
+			});
+		}
+		
+		
 		JMenu zariaMenu = new JMenu("Layout");
 		menuBar.add(zariaMenu);
 		zariaMenu.add(new JMenuItem(basePane.getToggleEditAction()));
@@ -296,25 +331,55 @@ public class Workbench extends JFrame {
 				}
 			}
 			
-		};
+		};				
 		
 		loadLayoutXMLAction.putValue(Action.NAME, "Open layout XML");
 				
 		zariaMenu.add(new JMenuItem(dumpLayoutXMLAction));
 		zariaMenu.add(new JMenuItem(loadLayoutXMLAction));
 		zariaMenu.add(new JMenuItem(saveLayoutXMLAction));
-				
-		setJMenuBar(menuBar);
-		setSize(new Dimension(500,500));				
-		addWindowListener(getWindowClosingAdaptor());
-		updateRepository();
-				
-		readLastPreferences();		
-		readLastLayout();		
-		setVisible(true);
 		
-		basePane.setEditable(false);
+		return menuBar;
+	}
+	
+	/**
+	 * set the title to the profile name and version, otherwise just Taverna Workbench
+	 */
+	private void setWorkbenchTitle() {
+		String title="Taverna Workbench";
+		Profile prof=ProfileFactory.instance().getProfile();
+		if (prof!=null) {
+			title=prof.getName()+" v"+prof.getVersion();			
+		}
+		setTitle(title);
+	}
+
+	
+	private void checkForProfileUpdate() {
+		String remoteProfileURL=System.getProperty("raven.remoteprofile");
 		
+		try {
+			ProfileHandler handler=new ProfileHandler(remoteProfileURL);
+			if (handler.isNewVersionAvailable()) {
+				int retval=JOptionPane.showConfirmDialog(Workbench.this, "New updates are available, update now?");
+				if (retval==JOptionPane.YES_OPTION) {
+					try {
+						handler.updateLocalProfile();
+						JOptionPane.showMessageDialog(Workbench.this,"Your updates will be applied when you restart Taverna","Resart required",JOptionPane.INFORMATION_MESSAGE);
+					}
+					catch(Exception e) {
+						logger.error("Error updating local profile",e);
+						JOptionPane.showMessageDialog(Workbench.this, "Updating your profile failed, try again later.", "Error updating profile", JOptionPane.WARNING_MESSAGE);
+					}					
+				}
+			}
+			else {
+				JOptionPane.showMessageDialog(Workbench.this,"You have all the latest components for this profile","No updates",JOptionPane.INFORMATION_MESSAGE);
+			}
+		} catch (Exception e) {
+			logger.error("Error checking for new profile",e);
+			JOptionPane.showMessageDialog(Workbench.this, "Currently unable to check for updates, try again later.", "Error checking for update", JOptionPane.WARNING_MESSAGE);
+		}
 	}
 	
 	private WindowAdapter getWindowClosingAdaptor() {
