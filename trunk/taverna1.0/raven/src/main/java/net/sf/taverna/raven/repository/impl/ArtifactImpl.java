@@ -6,8 +6,10 @@ import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -32,6 +34,9 @@ public class ArtifactImpl extends BasicArtifact {
 	
 	private LocalRepository repository;
 	private String packageType = null;
+	private Set<Artifact> exclusions = null;
+	private Map<String, String> dependencyManagement = null;
+	private ArtifactImpl parentArtifact = null;
 	private List<ArtifactImpl> dependencies = null;
 	
 	/**
@@ -54,6 +59,149 @@ public class ArtifactImpl extends BasicArtifact {
 		this.repository = repository;
 	}
 	
+	/**
+	 * Analyse the corresponding .pom and return a list of all
+	 * immediate dependencies from this artifact. If no repository
+	 * is defined then return an empty list.
+	 * @return List of Artifacts upon which this depends
+	 */
+	public synchronized List<ArtifactImpl> getDependencies() throws ArtifactStateException {
+		if (dependencies != null) {
+			return dependencies;
+		}
+		List<ArtifactImpl> result = new ArrayList<ArtifactImpl>();
+		if (repository == null) {
+			System.err.println("WARNING: Repository is null");
+			// Should never get here, it's impossible to construct an ArtifactImpl with
+			// a null repository.
+			return result;
+		}
+		ArtifactStatus status = repository.getStatus(this);
+		if (status.getOrder() < ArtifactStatus.Pom.getOrder() || 
+				(status.isError() && !status.equals(ArtifactStatus.PomNonJar))) {
+			throw new ArtifactStateException(status, new ArtifactStatus[]{ArtifactStatus.Analyzed,
+					ArtifactStatus.Jar, ArtifactStatus.Pom, ArtifactStatus.Ready});
+		}
+		
+		File pomFile = repository.pomFile(this);
+		if (! pomFile.exists()) {
+			System.err.println("Pom file does not exist: " + pomFile);
+			// TODO Handle absence of pom file here
+			return result;
+		}
+		checkParent(pomFile);
+		InputStream is;
+		try {
+			is = pomFile.toURL().openStream();
+			DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+			DocumentBuilder builder = factory.newDocumentBuilder();
+			Document document = builder.parse(is);
+			is.close();
+			List<Node> elementList = findElements(document, new String[]{"project","dependencies","dependency"});
+			for (Node node : elementList) {
+				node.normalize();
+				Node n = findElements(node, "groupId" ).iterator().next();
+				String groupId = n.getFirstChild().getNodeValue().trim();
+				n = findElements(node, "artifactId" ).iterator().next();
+				String artifactId = n.getFirstChild().getNodeValue().trim();
+	
+				// Check if we should exclude it
+				if (exclusions != null && 
+				      exclusions.contains(new BasicArtifact(groupId, artifactId, ""))) {
+					System.out.print("Excluding " + groupId + ":" + artifactId);
+					System.out.println(" from " + this);
+					continue;	
+				}
+				
+				List<Node> versionNodeList = findElements(node, "version");
+				String version;
+				if (versionNodeList.isEmpty()) {
+					version = versionFor(groupId,artifactId);
+				} else {
+					n = findElements(node, "version" ).iterator().next();
+					version = n.getFirstChild().getNodeValue().trim();
+				}
+				if (version == null) {
+					System.err.print("Warning - unable to find a version for the dependency ");
+					System.err.print(groupId+":"+artifactId);
+					System.err.println(" - skipping");
+					continue;
+				}
+	
+				// Find exclusions (and inherit our own)
+				Set<Artifact> depExclusions;
+				if (exclusions != null) {
+					depExclusions = new HashSet<Artifact>(exclusions);
+				} else {
+					depExclusions = new HashSet<Artifact>();
+				}
+				List<Node> excludeNodes = findElements(node, new String[] {"exclusions", "exclusion"});
+				if (! excludeNodes.isEmpty()) {
+					for (Node excludeNode : excludeNodes) {
+						Node groupNode = findElements(excludeNode, "groupId" ).iterator().next();
+						String exGroupId = groupNode.getFirstChild().getNodeValue().trim();
+						Node artifactNode = findElements(excludeNode, "artifactId" ).iterator().next();
+						String exArtifactId = artifactNode.getFirstChild().getNodeValue().trim();
+						BasicArtifact exclusion = new BasicArtifact(exGroupId, exArtifactId, "");
+						//System.out.println("Excluding " + exclusion);
+						depExclusions.add(exclusion);
+					}
+				}
+	
+				// Check for optional dependency
+				boolean optional = false;
+				List<Node> optionalNodeList = findElements(node, "optional");
+				if (! optionalNodeList.isEmpty()) {
+					n = optionalNodeList.get(0);
+					String optionalString = n.getFirstChild().getNodeValue().trim();
+					if (optionalString.equalsIgnoreCase("true")) {
+						optional = true;
+					}
+				}
+	
+				// Test for scope, if scope is 'provided' or 'test' then
+				// we don't add it as a dependency as this would force a
+				// download.
+				boolean downloadableScope = true;
+				List<Node> scopeNodeList = findElements(node, "scope");
+				if (! scopeNodeList.isEmpty()) {
+					n = scopeNodeList.get(0);
+					String scopeString = n.getFirstChild().getNodeValue().trim();
+					if (scopeString.equalsIgnoreCase("test") ||
+							scopeString.equalsIgnoreCase("provided") ||
+							scopeString.equalsIgnoreCase("system")) {
+						downloadableScope = false;
+					}
+				}
+	
+				if (!optional && downloadableScope) {
+					ArtifactImpl dependency = new ArtifactImpl(groupId, artifactId, version, repository);
+					if (! depExclusions.isEmpty()) {
+						dependency.setExclusions(depExclusions);
+					}
+					result.add(dependency);
+				}
+				else {
+					// Log the optional dependency here if needed
+				}
+			}
+		} catch (MalformedURLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (ParserConfigurationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (SAXException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		dependencies = result;
+		return result;
+	}
+
 	public String getPackageType() {
 		if (packageType != null) {
 			return packageType;
@@ -91,7 +239,6 @@ public class ArtifactImpl extends BasicArtifact {
 		return null;
 	}
 	
-	private ArtifactImpl parentArtifact = null;
 	/**
 	 * Force all parent pom XML files to exist within the repository, set up the
 	 * parentArtifact field if one is found
@@ -147,7 +294,6 @@ public class ArtifactImpl extends BasicArtifact {
 		parentArtifact.checkParent(repository.pomFile(parentArtifact));
 	}
 	
-	private Map<String,String> dependencyManagement = null;
 	private String versionFor(String group, String artifact) {
 		String version = null;
 		if (dependencyManagement == null) {
@@ -202,115 +348,13 @@ public class ArtifactImpl extends BasicArtifact {
 		return dependencyManagement.get(group+":"+artifact);
 	}
 	
-	/**
-	 * Analyse the corresponding .pom and return a list of all
-	 * immediate dependencies from this artifact. If no repository
-	 * is defined then return an empty list.
-	 * @return List of Artifacts upon which this depends
-	 */
-	public synchronized List<ArtifactImpl> getDependencies() throws ArtifactStateException {
-		if (dependencies != null) {
-			return dependencies;
+	private void setExclusions(Set<Artifact> exclusions) {
+		if (exclusions.isEmpty()) {
+			exclusions = null;
 		}
-		List<ArtifactImpl> result = new ArrayList<ArtifactImpl>();
-		if (repository == null) {
-			// Should never get here, it's impossible to construct an ArtifactImpl with
-			// a null repository.
-			return result;
-		}
-		ArtifactStatus status = repository.getStatus(this);
-		if (status.getOrder() < ArtifactStatus.Pom.getOrder() || 
-				(status.isError() && !status.equals(ArtifactStatus.PomNonJar))) {
-			throw new ArtifactStateException(status, new ArtifactStatus[]{ArtifactStatus.Analyzed,
-					ArtifactStatus.Jar, ArtifactStatus.Pom, ArtifactStatus.Ready});
-		}
-		
-		File pomFile = repository.pomFile(this);
-		if (pomFile.exists()) {
-			checkParent(pomFile);
-			InputStream is;
-			try {
-				is = pomFile.toURL().openStream();
-				DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-				DocumentBuilder builder = factory.newDocumentBuilder();
-				Document document = builder.parse(is);
-				is.close();
-				List<Node> elementList = findElements(document, new String[]{"project","dependencies","dependency"});
-				for (Node node : elementList) {
-					node.normalize();
-					Node n = findElements(node, "groupId" ).iterator().next();
-					String groupId = n.getFirstChild().getNodeValue().trim();
-					n = findElements(node, "artifactId" ).iterator().next();
-					String artifactId = n.getFirstChild().getNodeValue().trim();
-					List<Node> versionNodeList = findElements(node, "version");
-					String version = null;
-					if (! versionNodeList.isEmpty()) {
-						n = findElements(node, "version" ).iterator().next();
-						version = n.getFirstChild().getNodeValue().trim();
-					}
-					else {
-						version = versionFor(groupId,artifactId);
-					}
-					if (version != null) {
-						
-						// Check for optional dependency
-						boolean optional = false;
-						List<Node> optionalNodeList = findElements(node, "optional");
-						if (! optionalNodeList.isEmpty()) {
-							n = optionalNodeList.get(0);
-							String optionalString = n.getFirstChild().getNodeValue().trim();
-							if (optionalString.equalsIgnoreCase("true")) {
-								optional = true;
-							}
-						}
-						
-						// Test for scope, if scope is 'provided' or 'test' then
-						// we don't add it as a dependency as this would force a
-						// download.
-						boolean downloadableScope = true;
-						List<Node> scopeNodeList = findElements(node, "scope");
-						if (! scopeNodeList.isEmpty()) {
-							n = scopeNodeList.get(0);
-							String scopeString = n.getFirstChild().getNodeValue().trim();
-							if (scopeString.equalsIgnoreCase("test") ||
-									scopeString.equalsIgnoreCase("provided") ||
-									scopeString.equalsIgnoreCase("system")) {
-								downloadableScope = false;
-							}
-						}
-						
-						if (!optional && downloadableScope) {
-							result.add(new ArtifactImpl(groupId, artifactId, version, repository));
-						}
-						else {
-							// Log the optional dependency here if needed
-						}
-					}
-					else {
-						System.out.println("Warning - unable to find a version for the dependency "+groupId+":"+artifactId);
-					}
-				}
-			} catch (MalformedURLException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (ParserConfigurationException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (SAXException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
-		else {
-			// TODO Handle absence of pom file here
-		}
-		dependencies = result;
-		return result;
+		this.exclusions  = exclusions;
 	}
-	
+
 	/**
 	 * Find any descendants of the given node with the specified element name
 	 * @param fromnode
