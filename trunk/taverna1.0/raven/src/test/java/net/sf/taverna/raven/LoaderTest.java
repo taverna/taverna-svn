@@ -96,7 +96,7 @@ public class LoaderTest extends TestCase {
 		URL[] remoteRepositories = new URL[]{
 				new URL("http://www.ebi.ac.uk/~tmo/repository/"), 
 				new URL("http://www.ibiblio.org/maven2/")};
-		URL splashScreenImage = new URL("http://www.ebi.ac.uk/~tmo/mygrid/splashscreen.png");
+		//URL splashScreenImage = new URL("http://www.ebi.ac.uk/~tmo/mygrid/splashscreen.png");
 		String groupID = "uk.org.mygrid.taverna";
 		String artifactID = "taverna-workbench";
 		String version = "1.5-SNAPSHOT";
@@ -116,13 +116,16 @@ public class LoaderTest extends TestCase {
             artifactID,
             version,
             targetClassName,
-            splashScreenImage,
+            null, //splashScreenImage,
             minimumDisplayTime);
 		
 		// Verify that the class is loaded and that the classloader is being
 		// driven off Raven's artifact system
-		assertTrue(workbenchClass.getName().equals("org.embl.ebi.escience.scuflui.workbench.Workbench"));
-		assertTrue(workbenchClass.getClassLoader().toString().equals("loader{uk.org.mygrid.taverna:taverna-workbench:1.5-SNAPSHOT}"));
+		assertEquals("org.embl.ebi.escience.scuflui.workbench.Workbench", 
+				workbenchClass.getName());
+		String classLoaderName = workbenchClass.getClassLoader().toString().split(" ")[0];
+		assertEquals("loader{uk.org.mygrid.taverna:taverna-workbench:1.5-SNAPSHOT}",
+				classLoaderName);
 		
 		// Could invoke the workbench's main method here as follows :
 		//
@@ -162,10 +165,12 @@ public class LoaderTest extends TestCase {
       {
         if(newStatus != null)
         {
+        	/*
           System.out.println(
                   "change in status: " + a +
                   " changed from " + oldStatus +
                   " to " + newStatus);
+                  */
         }
       }
     };
@@ -182,10 +187,12 @@ public class LoaderTest extends TestCase {
 
     // Verify that the class is loaded and that the classloader is being
     // driven off Raven's artifact system
-    assertTrue("org.embl.ebi.escience.scuflui.workbench.Workbench".equals(
-            workbenchClass.getName()));
-    assertTrue("loader{uk.org.mygrid.taverna:taverna-workbench:1.5-SNAPSHOT}".equals(
-            workbenchClass.getClassLoader().toString()));
+    assertEquals("org.embl.ebi.escience.scuflui.workbench.Workbench",
+            workbenchClass.getName());
+
+	String classLoaderName = workbenchClass.getClassLoader().toString().split(" ")[0];
+	assertEquals("loader{uk.org.mygrid.taverna:taverna-workbench:1.5-SNAPSHOT}",
+			classLoaderName);
 
     // Could invoke the workbench's main method here as follows :
     //
@@ -212,11 +219,11 @@ public class LoaderTest extends TestCase {
 				new URL[]{new URL("http://www.ebi.ac.uk/~tmo/repository/"), 
 				          new URL("http://www.ibiblio.org/maven2/")},
         "uk.org.mygrid.taverna", "taverna-workbench", "1.5-SNAPSHOT",
-        "org.embl.ebi.escience.scuflui.workbench.Workbench", new URL("http://www.ebi.ac.uk/~tmo/mygrid/splashscreen.png"),
-        10000
+        "org.embl.ebi.escience.scuflui.workbench.Workbench", //new URL("http://www.ebi.ac.uk/~tmo/mygrid/splashscreen.png"),
+        null, 10000
     );
-		System.out.println(workbenchClass.toString());
-		System.out.println(workbenchClass.getClassLoader().toString());
+		//System.out.println(workbenchClass.toString());
+		//System.out.println(workbenchClass.getClassLoader().toString());
 		/**
 		System.out.println("\n\nRepository state dump : \n");
 		LocalRepository r = LocalRepository.getRepository(dir);
