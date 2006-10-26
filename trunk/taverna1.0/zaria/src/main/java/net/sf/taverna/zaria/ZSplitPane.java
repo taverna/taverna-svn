@@ -22,8 +22,8 @@ import org.jdom.Element;
 public class ZSplitPane extends ZPane {	
 	
 	private JSplitPane splitPane = new JSplitPane();
-	private double dividerLocation;
-	private boolean dividerSet=false;
+	private double dividerLocation=0.5d;
+	private boolean dividerSet=true;
 
 	@SuppressWarnings("serial")
 	private class SwitchOrientationAction extends AbstractAction {
@@ -129,6 +129,7 @@ public class ZSplitPane extends ZPane {
 	public void configure(Element e) {
 		Element splitElement = e.getChild("split");
 		if (splitElement != null) {
+			dividerSet=false;
 			String orientation = splitElement.getAttributeValue("orientation");
 			if (orientation != null) {
 				splitPane
