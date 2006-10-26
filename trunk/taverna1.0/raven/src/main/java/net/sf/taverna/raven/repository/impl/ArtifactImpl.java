@@ -59,7 +59,9 @@ public class ArtifactImpl extends BasicArtifact {
 		this.repository = repository;
 		if (a instanceof ArtifactImpl) {
 			ArtifactImpl other = (ArtifactImpl) a;
-			setExclusions(new HashSet<Artifact>(other.exclusions));
+			if (other.exclusions != null) {
+				setExclusions(new HashSet<Artifact>(other.exclusions));
+			}
 		}
 	}
 	
