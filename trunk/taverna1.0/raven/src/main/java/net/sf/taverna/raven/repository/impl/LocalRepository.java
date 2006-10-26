@@ -629,7 +629,7 @@ public class LocalRepository implements Repository {
 				// Invalid repository URL?
 			} catch (IOException e) {
 				if (e instanceof FileNotFoundException) {
-					System.out.println(a.toString()+" not found in "+repository);
+					//System.out.println(a.toString()+" not found in "+repository);
 				}
 				else {
 					e.printStackTrace();
