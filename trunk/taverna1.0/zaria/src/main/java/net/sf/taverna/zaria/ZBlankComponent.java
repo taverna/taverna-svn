@@ -51,7 +51,10 @@ public class ZBlankComponent extends ZPane implements ZTreeNode {
 	
 	private Action createTabbedPaneAction = new AbstractAction() {
 		public void actionPerformed(ActionEvent arg0) {
-			replaceWith(new ZTabbedPane());
+			ZTabbedPane tabbedPane = new ZTabbedPane();
+			// Make an initial tab inside
+			tabbedPane.newTab();
+			replaceWith(tabbedPane);
 		}
 	};
 	

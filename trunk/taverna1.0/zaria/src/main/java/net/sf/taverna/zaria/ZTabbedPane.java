@@ -14,8 +14,6 @@ import javax.swing.Box;
 import javax.swing.Icon;
 import javax.swing.JColorChooser;
 import javax.swing.JComponent;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
 import javax.swing.event.ChangeEvent;
@@ -33,6 +31,7 @@ import org.jdom.Element;
  * tabs present.
  * @author Tom Oinn
  */
+@SuppressWarnings("serial")
 public class ZTabbedPane extends ZPane {
 	
 	private JTabbedPane tabs;
@@ -102,6 +101,18 @@ public class ZTabbedPane extends ZPane {
 			tabElement.addContent(elementFor(child));
 		}
 		return tabsElement;
+	}
+	
+	public void newTab() {
+		newTab("Tab "+tabs.getComponentCount());
+	}
+	
+	public void newTab(String name) {
+		ZBlankComponent c = new ZBlankComponent();
+		c.setEditable(editable);
+		tabs.add(name, c);
+		tabs.setSelectedComponent(c);
+		checkValidity();
 	}
 	
 	public void configure(Element e) {
@@ -182,11 +193,7 @@ public class ZTabbedPane extends ZPane {
 		}
 		
 		public void actionPerformed(ActionEvent arg0) {
-			ZBlankComponent c = new ZBlankComponent();
-			c.setEditable(editable);
-			tabs.add("Tab "+tabs.getComponentCount(), c);
-			tabs.setSelectedComponent(c);
-			checkValidity();
+			newTab();
 		}
 		
 	};
