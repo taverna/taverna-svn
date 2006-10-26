@@ -42,33 +42,40 @@ public class ArtifactImplTest extends TestCase {
 		URL pom = new URL(testRepos, "raventest/exclusiontest/1.5.1/exclusiontest-1.5.1.pom");
 		String pomContent = IOUtils.toString(pom.openStream(), "utf8");	
 		assertTrue(pomContent.contains("<exclusions>"));
+		assertTrue(pomContent.contains("jsr173"));
 	}
 
 	
 	public void testExclusionDependencies() throws MalformedURLException, InterruptedException, ArtifactStateException {
 		r.addRemoteRepository(new URL("http://mirrors.dotsrc.org/maven2/"));
 		r.addRemoteRepository(testRepos);
-		BasicArtifact mavenReporting = new BasicArtifact("raventest",
+		BasicArtifact exclusionTest = new BasicArtifact("raventest",
 				"exclusiontest","1.5.1");
-		r.addArtifact(mavenReporting);
+		r.addArtifact(exclusionTest);
 		r.update();
 		List<Artifact> artifacts = r.getArtifacts();
 		// Find the ArtifactImpl for maven-reporting-api
 		ArtifactImpl artifactImpl = null;
 		for (Artifact artifact : artifacts) {
-			System.out.println(artifact);
-			if (artifact.equals(mavenReporting)) {
+			if (artifact.equals(exclusionTest)) {
 				artifactImpl = (ArtifactImpl) artifact;
+			} else {
+				ArtifactImpl resolved = (ArtifactImpl) artifact;
+				assertNotNull("Should have inherited exclusions: " + resolved, 
+						resolved.exclusions);
+				assertEquals(2, resolved.exclusions.size());
 			}
 		}
-		assertNotNull("Could not find " + mavenReporting, artifactImpl);
+		assertNotNull("Could not find " + exclusionTest, artifactImpl);
 		for (ArtifactImpl dependency : artifactImpl.getDependencies()) {
 			if (dependency.getGroupId().equals("pull-parser") && 
 					dependency.getArtifactId().equals("pull-parser")) {
 				fail("Did not exclude pull-parser:pull-parser");
 			}
-			System.out.println("  " + dependency);
+			if (dependency.getGroupId().equals("javax.xml") && 
+					dependency.getArtifactId().equals("jsr173")) {
+				fail("Did not exclude javax.xml:jsr173");
+			}
 		}
-
 	}
 }

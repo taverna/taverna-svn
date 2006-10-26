@@ -34,7 +34,7 @@ public class ArtifactImpl extends BasicArtifact {
 	
 	private LocalRepository repository;
 	private String packageType = null;
-	private Set<Artifact> exclusions = null;
+	protected Set<Artifact> exclusions = null;
 	private Map<String, String> dependencyManagement = null;
 	private ArtifactImpl parentArtifact = null;
 	private List<ArtifactImpl> dependencies = null;
@@ -57,6 +57,10 @@ public class ArtifactImpl extends BasicArtifact {
 	ArtifactImpl(Artifact a, LocalRepository repository) {
 		super(a.getGroupId(), a.getArtifactId(), a.getVersion());
 		this.repository = repository;
+		if (a instanceof ArtifactImpl) {
+			ArtifactImpl other = (ArtifactImpl) a;
+			setExclusions(new HashSet<Artifact>(other.exclusions));
+		}
 	}
 	
 	/**
@@ -108,8 +112,6 @@ public class ArtifactImpl extends BasicArtifact {
 				// Check if we should exclude it
 				if (exclusions != null && 
 				      exclusions.contains(new BasicArtifact(groupId, artifactId, ""))) {
-					System.out.print("Excluding " + groupId + ":" + artifactId);
-					System.out.println(" from " + this);
 					continue;	
 				}
 				
@@ -240,6 +242,27 @@ public class ArtifactImpl extends BasicArtifact {
 	}
 	
 	/**
+	 * Set the exclusions for this artifact. 
+	 * <p>
+	 * The exclusions consists of a set of Artifacts, but with a
+	 * "version" field set to "". When calculating <code>getDependencies()</code> 
+	 * the excluded artifacts will not be included. Additionally, this 
+	 * list of exclusions will be inherited down
+	 * as exclusions for the dependencies that are found.
+	 * <p>
+	 * This comes from the <code>&lt;exclusions&gt;</code> block of the 
+	 * <code>.pom</code> file.
+	 * 
+	 * @param exclusions
+	 */
+	private void setExclusions(Set<Artifact> exclusions) {
+		if (exclusions.isEmpty()) {
+			exclusions = null;
+		}
+		this.exclusions  = exclusions;
+	}
+
+	/**
 	 * Force all parent pom XML files to exist within the repository, set up the
 	 * parentArtifact field if one is found
 	 */
@@ -348,13 +371,6 @@ public class ArtifactImpl extends BasicArtifact {
 		return dependencyManagement.get(group+":"+artifact);
 	}
 	
-	private void setExclusions(Set<Artifact> exclusions) {
-		if (exclusions.isEmpty()) {
-			exclusions = null;
-		}
-		this.exclusions  = exclusions;
-	}
-
 	/**
 	 * Find any descendants of the given node with the specified element name
 	 * @param fromnode
