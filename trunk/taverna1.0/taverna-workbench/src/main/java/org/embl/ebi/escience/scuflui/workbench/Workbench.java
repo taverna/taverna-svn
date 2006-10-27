@@ -506,12 +506,12 @@ public class Workbench extends JFrame {
 				for (WorkflowModelViewSPI view : getWorkflowViews()) {
 					view.detachFromModel();
 					view.attachToModel(newWorkflow);
-					if (currentWorkflowModel != null) {
-						currentWorkflowModel.removeListener(listener);
-					}
-					currentWorkflowModel = newWorkflow;
-					currentWorkflowModel.addListener(listener);
 				}
+				if (currentWorkflowModel != null) {
+					currentWorkflowModel.removeListener(listener);
+				}
+				currentWorkflowModel = newWorkflow;
+				currentWorkflowModel.addListener(listener);
 				refreshFileMenu();
 			}
 
