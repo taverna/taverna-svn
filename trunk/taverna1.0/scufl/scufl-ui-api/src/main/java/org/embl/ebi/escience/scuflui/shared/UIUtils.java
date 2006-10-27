@@ -10,7 +10,7 @@ import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.Map;
 
 import javax.swing.ImageIcon;
@@ -38,8 +38,15 @@ public class UIUtils {
 	 * which the workbench UI is acting. 
 	 */
 	private static Map<String,Object> modelMap = 
-		new HashMap<String,Object>();
+		new Hashtable<String,Object>();
 	
+	/**
+	 * Used as a modelName for setModel() and getNamedModel() - notes
+	 * the current active workflow in the GUI.
+	 *  
+	 */
+	public final static String CURRENT_WORKFLOW = "currentWorkflow";
+
 	/**
 	 * Set this to be notified of changes to the model map
 	 */
@@ -53,31 +60,38 @@ public class UIUtils {
 	 * event will be fired otherwise modelChanged is called.
 	 */
 	public synchronized static void setModel(String modelName, Object model) {
+		if (! modelMap.containsKey(modelName)) {
+			if (model == null) {
+				// removal of unknown model
+				return;
+			}
+			// Store new model
+			modelMap.put(modelName, model);
+			if (DEFAULT_MODEL_LISTENER != null) {
+				DEFAULT_MODEL_LISTENER.modelCreated(modelName, model);
+			}
+			return;
+		}
+		if (model == null) {
+			// Remove existing model
+			modelMap.remove(modelName);
+			if (DEFAULT_MODEL_LISTENER != null) {
+				DEFAULT_MODEL_LISTENER.modelDestroyed(modelName);
+			}
+			return;
+		}
+		// Replace existing model
+		Object oldModel = modelMap.get(modelName);
+		if (oldModel == model) {
+			// No change
+			return;
+		}
+		modelMap.put(modelName, model);
 		if (DEFAULT_MODEL_LISTENER != null) {
-			if (modelMap.containsKey(modelName) == false) {
-				if (model != null) {
-					// Create new model object
-					modelMap.put(modelName,model);
-					DEFAULT_MODEL_LISTENER.modelCreated(modelName, model);
-				}
-			}
-			else {
-				if (model == null) {
-					// Destroy model object
-					modelMap.remove(modelMap.get(modelName));
-					DEFAULT_MODEL_LISTENER.modelDestroyed(modelName);
-				}
-				else {
-					Object oldModel = modelMap.get(modelName);
-					if (oldModel != model) {
-						// Update model object
-						modelMap.put(modelName, model);
-						DEFAULT_MODEL_LISTENER.modelChanged(modelName, oldModel, model);
-					}
-				}
-			}
+			DEFAULT_MODEL_LISTENER.modelChanged(modelName, oldModel, model);
 		}
 	}
+
 	
 	/**
 	 * Register with the UIUtils static class to inform workbench like
@@ -190,6 +204,7 @@ public class UIUtils {
 	 * Trivial implementation of ScuflUIComponent to wrap a JComponent, ignores
 	 * all model handling methods.
 	 */
+	@SuppressWarnings("serial")
 	static class WrapperFrame extends JPanel implements UIComponentSPI {
 		public WrapperFrame(JComponent component) {
 			super(new BorderLayout());
@@ -230,7 +245,7 @@ public class UIUtils {
 		}
 		return parent;		
 	}
-
+	
 	public static Object getNamedModel(String string) {
 		return modelMap.get(string);
 	}
