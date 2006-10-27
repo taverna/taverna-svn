@@ -31,6 +31,8 @@ import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
+import net.sf.taverna.utils.MyGridConfiguration;
+
 import org.apache.log4j.Logger;
 import org.embl.ebi.escience.baclava.DataThing;
 import org.embl.ebi.escience.scufl.Processor;
@@ -77,7 +79,6 @@ public class EnactorInvocation extends JPanel implements UIComponentSPI {
 		// it is closing. Cleanup of remote resources will be done here.
 		try {
 			workflowEditor.detachFromModel();			
-			
 			workflowInstance.cancelExecution();
 			// FIXME: Is this the right place to destroy? What about
 			// other people attached to the workflow instance? 
@@ -131,11 +132,11 @@ public class EnactorInvocation extends JPanel implements UIComponentSPI {
 	 * Get the workflow instance ID for this invocation
 	 */
 	public String getInstanceID() {
-		return this.instanceID;
+		return instanceID;
 	}
 
 	public WorkflowInstance getWorkflowInstance() {
-		return this.workflowInstance;
+		return workflowInstance;
 	}
 	
 	// The workflow status label
@@ -156,7 +157,7 @@ public class EnactorInvocation extends JPanel implements UIComponentSPI {
 	 * Get the status text for this invocation
 	 */
 	public String getStatusText() {
-		return this.workflowInstance.getProgressReportXMLString();
+		return workflowInstance.getProgressReportXMLString();
 	}
 
 	/**
@@ -167,12 +168,12 @@ public class EnactorInvocation extends JPanel implements UIComponentSPI {
 		try {
 			logger.debug("Getting results");
 			while (true) {
-				if (this.workflowInstance.getStatus().equalsIgnoreCase(
+				if (workflowInstance.getStatus().equalsIgnoreCase(
 						"Complete")) {
 					break;
 				}
-				// logger.debug(this.workflowInstance.getStatus());
-				// results = this.workflowInstance.getOutputXMLString();
+				// logger.debug(workflowInstance.getStatus());
+				// results = workflowInstance.getOutputXMLString();
 				// if (results.equals("") == false) {
 				// break;
 				Thread.sleep(1000);
@@ -180,7 +181,7 @@ public class EnactorInvocation extends JPanel implements UIComponentSPI {
 		} catch (InterruptedException ie) {
 			// todo: ugly hack - I didn't want to change the logic just incase
 			// but shouldn't the try be close on the sleep()?
-			this.resultsText.setText("No results available : " + ie.toString());
+			resultsText.setText("No results available : " + ie.toString());
 		}
 	}
 
@@ -192,10 +193,10 @@ public class EnactorInvocation extends JPanel implements UIComponentSPI {
 		ensureGotResults();
 		toolbar.removeAll();
 		// Show the results
-		this.tabs.add("Results", individualResults);
+		tabs.add("Results", individualResults);
 		// Populate the toolbar with all the buttons from
 		// the ResultMapSaveSPI
-		Map resultMap = this.workflowInstance.getOutput();
+		Map resultMap = workflowInstance.getOutput();
 		ResultMapSaveSPI[] savePlugins = ResultMapSaveRegistry.plugins();
 		for (int i = 0; i < savePlugins.length; i++) {
 			JButton saveAction = new JButton(savePlugins[i].getName(),
@@ -216,31 +217,31 @@ public class EnactorInvocation extends JPanel implements UIComponentSPI {
 			DataThing resultValue = (DataThing) resultMap.get(resultName);
 			ResultItemPanel rip = new ResultItemPanel(resultValue,
 					workflowInstance);
-			this.individualResults.add(resultName, rip);
+			individualResults.add(resultName, rip);
 		}
-		this.tabs.setSelectedComponent(individualResults);
+		tabs.setSelectedComponent(individualResults);
 	}
 
 	public void showResultTable() {
-		if (System.getProperty("taverna.resulttable.enable") == null) {
+		if (MyGridConfiguration.getProperty("taverna.resulttable.enable") == null) {
 			return;
 		}
 		try {
 			int sizeLimit = 128000;
 			try {
-				sizeLimit = Integer.parseInt(System
-						.getProperty("taverna.resulttable.sizelimit"));
+				sizeLimit = Integer.parseInt(
+						MyGridConfiguration.getProperty("taverna.resulttable.sizelimit"));
 			} catch (NumberFormatException ex) {
 				logger.error("Could not set taverna.resulttable.sizelimit", ex);
 			}
 			if (workflowInstance.getProvenanceXMLString().length() < sizeLimit) {
-				this.tabs.add("Result Table", new JScrollPane(
+				tabs.add("Result Table", new JScrollPane(
 						new ResultTablePanel(theModel, workflowInstance)));
 			}
-		} catch (Exception e) {
+		} catch (RuntimeException e) {
 			// The above can cause a NPE, we need to track this down
 			// FIXME
-			logger.error(e);
+			logger.error("Could not show results", e);
 		}
 	}
 
@@ -250,15 +251,15 @@ public class EnactorInvocation extends JPanel implements UIComponentSPI {
 	public void showProgressReport() {
 		String progressReport = "";
 		try {
-			progressReport = this.workflowInstance.getProgressReportXMLString();
+			progressReport = workflowInstance.getProgressReportXMLString();
 			// JEditTextArea display = new JEditTextArea(new
 			// TextAreaDefaults());
 			// display.setText(progressReport);
 			// display.setTokenMarker(new XMLTokenMarker());
 			// display.setEditable(false);
 			// display.setPreferredSize(new Dimension(0,0));
-			// this.tabs.add("Process report", display);
-			this.tabs.add("Process report", new JScrollPane(new XMLTree(
+			// tabs.add("Process report", display);
+			tabs.add("Process report", new JScrollPane(new XMLTree(
 					progressReport, false)));
 		} catch (Exception ex) {
 			//
@@ -270,7 +271,7 @@ public class EnactorInvocation extends JPanel implements UIComponentSPI {
 	 */
 	public void rmvProgressReport() {
 		try {
-			this.tabs.remove(this.tabs.indexOfTab("Process report"));
+			tabs.remove(tabs.indexOfTab("Process report"));
 		} catch (Exception ex) {
 		}
 	}
@@ -280,7 +281,7 @@ public class EnactorInvocation extends JPanel implements UIComponentSPI {
 	 * display the statii of the workflow processors
 	 */
 	public EnactorStatusTableModel getTableModel() {
-		return this.statusTableModel;
+		return statusTableModel;
 	}
 
 	/**
@@ -301,9 +302,9 @@ public class EnactorInvocation extends JPanel implements UIComponentSPI {
 	public EnactorInvocation(WorkflowInstance instance)
 			throws WorkflowSubmissionException {
 		super(new BorderLayout());
-		this.workflowInstance = instance;
+		workflowInstance = instance;
 		try {
-			this.theModel = (ScuflModel) instance.getWorkflowModel().clone();
+			theModel = (ScuflModel) instance.getWorkflowModel().clone();
 		} catch (CloneNotSupportedException ce) {
 			logger.error("Could not clone workflow model", ce);			
 			WorkflowSubmissionException wfex = new WorkflowSubmissionException();
@@ -481,7 +482,7 @@ public class EnactorInvocation extends JPanel implements UIComponentSPI {
 							.getValueAt(selectedRow, 1);
 					Map[] intermediateResultMaps;
 					try {
-						intermediateResultMaps = EnactorInvocation.this.workflowInstance
+						intermediateResultMaps = workflowInstance
 								.getIntermediateResultsForProcessor(processorName);
 					} catch (UnknownProcessorException ex) {
 						logger.error("Unknown processor " + processorName, ex);
