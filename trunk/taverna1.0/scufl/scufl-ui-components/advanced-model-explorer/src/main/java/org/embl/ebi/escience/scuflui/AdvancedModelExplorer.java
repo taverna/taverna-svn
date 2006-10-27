@@ -64,7 +64,9 @@ import org.embl.ebi.escience.scuflui.treeview.ScuflModelTreeTable;
  * properties tab.
  * 
  * @author Tom Oinn
+ * @author Stuart Owen
  */
+@SuppressWarnings("serial")
 public class AdvancedModelExplorer extends JPanel implements
 		WorkflowModelViewSPI {
 
@@ -216,8 +218,8 @@ public class AdvancedModelExplorer extends JPanel implements
 		titlePanel.setBorder(BorderFactory.createTitledBorder(BorderFactory
 				.createEtchedBorder(), "Descriptive title"));
 		titlePanel.setLayout(new BorderLayout());
-		titlePanel.add(title, BorderLayout.CENTER);
-
+		titlePanel.add(title, BorderLayout.CENTER);		
+		
 		final JTextField lsid = new JTextField(model.getDescription().getLSID());
 		lsid.setEditable(false);
 		JPanel lsidPanel = new JPanel() {
@@ -307,6 +309,8 @@ public class AdvancedModelExplorer extends JPanel implements
 				try {
 					Document d = e.getDocument();
 					wd.setTitle(d.getText(0, d.getLength()));
+					model.fireModelEvent(new ScuflModelEvent(this,
+					"Title Changed"));							
 				} catch (BadLocationException ble) {
 					//
 				}
@@ -316,6 +320,8 @@ public class AdvancedModelExplorer extends JPanel implements
 				try {
 					Document d = e.getDocument();
 					wd.setTitle(d.getText(0, d.getLength()));
+					model.fireModelEvent(new ScuflModelEvent(this,
+					"Title Changed"));					
 				} catch (BadLocationException ble) {
 					//
 				}
@@ -325,6 +331,8 @@ public class AdvancedModelExplorer extends JPanel implements
 				try {
 					Document d = e.getDocument();
 					wd.setTitle(d.getText(0, d.getLength()));
+					model.fireModelEvent(new ScuflModelEvent(this,
+					"Title Changed"));					
 				} catch (BadLocationException ble) {
 					//
 				}

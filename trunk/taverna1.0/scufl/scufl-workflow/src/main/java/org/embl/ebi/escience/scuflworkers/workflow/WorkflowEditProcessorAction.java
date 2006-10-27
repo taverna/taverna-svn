@@ -24,48 +24,56 @@
  ****************************************************************
  * Source code information
  * -----------------------
- * Filename           $RCSfile: AddNestedWorkflowAction.java,v $
- * Revision           $Revision: 1.3 $
+ * Filename           $RCSfile: WorkflowEditProcessorAction.java,v $
+ * Revision           $Revision: 1.1 $
  * Release status     $State: Exp $
  * Last modified on   $Date: 2006-10-27 15:43:24 $
  *               by   $Author: sowen70 $
- * Created on 05-Jul-2006
+ * Created on 26 Oct 2006
  *****************************************************************/
 package org.embl.ebi.escience.scuflworkers.workflow;
 
-import java.awt.Component;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
-import javax.swing.JOptionPane;
+import javax.swing.ImageIcon;
 
-import org.embl.ebi.escience.scuflui.TavernaIcons;
-import org.embl.ebi.escience.scuflui.actions.ScuflModelActionSPI;
+import org.embl.ebi.escience.scufl.Processor;
+import org.embl.ebi.escience.scufl.ScuflModel;
+import org.embl.ebi.escience.scuflui.shared.ScuflModelSet;
+import org.embl.ebi.escience.scuflui.spi.ProcessorActionSPI;
+import org.embl.ebi.escience.scuflworkers.ProcessorHelper;
 
-@SuppressWarnings("serial")
-public class AddNestedWorkflowAction extends ScuflModelActionSPI {
+public class WorkflowEditProcessorAction implements ProcessorActionSPI
+{
 
-	public AddNestedWorkflowAction() {
-		putValue(SMALL_ICON, TavernaIcons.windowExplorer);
-		putValue(NAME, "Add Nested Workflow");
-		putValue(SHORT_DESCRIPTION, "Add Nested Workflow...");
-	}
-
-	public void actionPerformed(ActionEvent e) {
-		if (model != null) {
-			try {
-				String name = model.getValidProcessorName("Nested Workflow");
-				WorkflowProcessor p = new WorkflowProcessor(model, name);					
-				model.addProcessor(p);
-			} catch (Exception ex) {
-				JOptionPane.showMessageDialog((Component) e.getSource(), "Unable to create blank subworkflow : \n"
-						+ ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-			}
+	WorkflowProcessor processor;
+	
+	public ActionListener getListener(Processor processor) {
+		this.processor=(WorkflowProcessor)processor;
+	return new ActionListener() {
+		public void actionPerformed(ActionEvent e) {
+		    handleAction();
 		}
-
+	    };	
 	}
 
-	public String getLabel() {
-		return "New subworkflow";
+	private void handleAction() {
+		ScuflModel model= processor.getInternalModel();				
+		ScuflModelSet.instance().addModel(model);		
+	}
+		
+
+	public boolean canHandle(Processor processor) {
+		return (processor instanceof WorkflowProcessor);
+	}
+
+	public String getDescription() {
+		return "Edit Nested Workflow";
+	}
+
+	public ImageIcon getIcon() {
+		return ProcessorHelper.getIconForTagName("workflow");
 	}
 
 }

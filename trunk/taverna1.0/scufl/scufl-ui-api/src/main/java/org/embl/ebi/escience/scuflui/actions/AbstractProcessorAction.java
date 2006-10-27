@@ -49,10 +49,6 @@ public abstract class AbstractProcessorAction implements ProcessorActionSPI {
 	    super(new BorderLayout());
 	    add(c, BorderLayout.CENTER);
 	    this.processor = p;
-	    //setPreferredSize(c.getPreferredSize());
-	    //setMinimumSize(c.getMinimumSize());
-	    //setMaximumSize(c.getMaximumSize());
-	    //setPreferredSize(new Dimension(0,0));
 	}
 	public void onDisplay() {
 	    //

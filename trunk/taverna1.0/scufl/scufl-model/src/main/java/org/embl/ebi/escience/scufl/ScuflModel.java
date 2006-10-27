@@ -303,7 +303,7 @@ public class ScuflModel implements Serializable, LogAwareComponent {
 	 * Handle a ScuflModelEvent from one of our children or self, only send an
 	 * event notification if the isFiringEvents is set to true.
 	 */
-	void fireModelEvent(ScuflModelEvent event) {		
+	public void fireModelEvent(ScuflModelEvent event) {		
 		if (!isFiringEvents) {
 			return;
 		}		

@@ -10,8 +10,6 @@ import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.util.Hashtable;
-import java.util.Map;
 
 import javax.swing.ImageIcon;
 import javax.swing.JComponent;
@@ -27,106 +25,9 @@ import org.embl.ebi.escience.scuflui.spi.WorkflowModelViewSPI;
 /**
  * Contains utility methods to deal with opening windows and suchlike in a way
  * that makes no assumptions about the existance of a JDesktop pane.
- * <p>Also contains, from version 1.5 onwards, methods to set and notify
- * components of changes to the underlying set of named models.
  * @author Tom Oinn
  */
-public class UIUtils {
-
-	/**
-	 * At any given time there are zero or more named model objects over
-	 * which the workbench UI is acting. 
-	 */
-	private static Map<String,Object> modelMap = 
-		new Hashtable<String,Object>();
-	
-	/**
-	 * Used as a modelName for setModel() and getNamedModel() - notes
-	 * the current active workflow in the GUI.
-	 *  
-	 */
-	public final static String CURRENT_WORKFLOW = "currentWorkflow";
-
-	/**
-	 * Set this to be notified of changes to the model map
-	 */
-	public static ModelChangeListener DEFAULT_MODEL_LISTENER = null;
-	
-	/**
-	 * Manipulate the current model map
-	 * @param modelName name of the model to act on
-	 * @param model null to destroy the model or a reference to the
-	 * new model to set. If it didn't already exist a modelCreated
-	 * event will be fired otherwise modelChanged is called.
-	 */
-	public synchronized static void setModel(String modelName, Object model) {
-		if (! modelMap.containsKey(modelName)) {
-			if (model == null) {
-				// removal of unknown model
-				return;
-			}
-			// Store new model
-			modelMap.put(modelName, model);
-			if (DEFAULT_MODEL_LISTENER != null) {
-				DEFAULT_MODEL_LISTENER.modelCreated(modelName, model);
-			}
-			return;
-		}
-		if (model == null) {
-			// Remove existing model
-			modelMap.remove(modelName);
-			if (DEFAULT_MODEL_LISTENER != null) {
-				DEFAULT_MODEL_LISTENER.modelDestroyed(modelName);
-			}
-			return;
-		}
-		// Replace existing model
-		Object oldModel = modelMap.get(modelName);
-		if (oldModel == model) {
-			// No change
-			return;
-		}
-		modelMap.put(modelName, model);
-		if (DEFAULT_MODEL_LISTENER != null) {
-			DEFAULT_MODEL_LISTENER.modelChanged(modelName, oldModel, model);
-		}
-	}
-
-	
-	/**
-	 * Register with the UIUtils static class to inform workbench like
-	 * systems that the underlying map of named model objects has been
-	 * altered in some way.
-	 * @author Tom Oinn
-	 */
-	public interface ModelChangeListener {
-
-		/**
-		 * Called when the named model is updated
-		 * @param modelName name of the model that changed
-		 * @param newModel new model object
-		 * @param oldModel old model object it replaces
-		 */
-		public void modelChanged(String modelName, Object oldModel, Object newModel);
-
-		/**
-		 * Called when the named model is removed from the
-		 * model map
-		 * @param modelName
-		 */
-		public void modelDestroyed(String modelName);
-
-		/**
-		 * Called when a new model is created or inserted into the
-		 * model map under a previously absent key
-		 * @param modelName name of the new model
-		 * @param model the new model object
-		 */
-		public void modelCreated(String modelName, Object model);
-	
-	}
-	
-	
+public class UIUtils {	
 	
 	public static FrameCreator DEFAULT_FRAME_CREATOR = new FrameCreator() {
 		public void createFrame(ScuflModel targetModel,
@@ -244,10 +145,6 @@ public class UIUtils {
 			}
 		}
 		return parent;		
-	}
-	
-	public static Object getNamedModel(String string) {
-		return modelMap.get(string);
-	}
+	}	
 
 }

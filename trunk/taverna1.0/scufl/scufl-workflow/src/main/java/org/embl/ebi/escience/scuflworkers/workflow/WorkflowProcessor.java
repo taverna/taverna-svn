@@ -70,7 +70,7 @@ public class WorkflowProcessor extends Processor implements ScuflWorkflowProcess
 
 	public int getMaximumWorkers() {
 		return 10;
-	}
+	}	
 
 	/**
 	 * Construct a new processor with the given model to bind to, name and URL

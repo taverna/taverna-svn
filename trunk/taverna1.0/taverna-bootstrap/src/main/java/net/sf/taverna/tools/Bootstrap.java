@@ -27,19 +27,23 @@ import org.w3c.dom.NodeList;
 
 public class Bootstrap {
 
-	public static Properties properties = findProperties();	
+	public static Properties properties = findProperties();
+
 	// Where Raven will store its repository, discovered by main()
 	public static String TAVERNA_CACHE = "";
+
 	public static final String SPLASHSCREEN = properties
 			.getProperty("raven.splashscreen.url");
+
 	public static URL[] remoteRepositories = findRepositories(properties);
+
 	private static String loaderVersion;
 
 	public static void main(String[] args) throws MalformedURLException,
 			ClassNotFoundException, SecurityException, NoSuchMethodException,
 			IllegalArgumentException, IllegalAccessException,
 			InvocationTargetException {
-		
+
 		findUserDir();
 
 		if (properties.getProperty("raven.remoteprofile") != null) {
@@ -48,7 +52,7 @@ public class Bootstrap {
 
 		List<URL> loaderURLs = getLoaderUrls();
 
-		Method loaderMethod = createLoaderMethod(loaderURLs);		
+		Method loaderMethod = createLoaderMethod(loaderURLs);
 
 		Class workbenchClass = createWorkbenchClass(loaderVersion, loaderMethod);
 
@@ -72,7 +76,7 @@ public class Bootstrap {
 		// Allow overriding any of those on command line
 		properties.putAll(System.getProperties());
 		return properties;
-	}	
+	}
 
 	public static URL[] findRepositories(Properties properties) {
 		// entries are named raven.repository.2 = http:// ..
@@ -124,6 +128,20 @@ public class Bootstrap {
 		while (urls.remove(null)) {
 		}
 		return urls.toArray(new URL[0]);
+	}
+
+	private static void addMavenLocalRepository(ArrayList<URL> urls) {
+		File mavenRep = new File(System.getProperty("user.home"),
+				".m2/repository/");
+		if (mavenRep.isDirectory()) {
+			try {
+				// We'll put it in 1, not 0, so that raven.repository.0 can come
+				// first
+				urls.add(1, mavenRep.toURI().toURL());
+			} catch (MalformedURLException e) {
+				System.err.println("Invalid maven repository: " + mavenRep);
+			}
+		}
 	}
 
 	private static void invokeWorkbench(String[] args, Class workbenchClass)
@@ -226,6 +244,7 @@ public class Bootstrap {
 
 		// Use our local repository if possible
 		List<URL> loaderURLs = new ArrayList<URL>();
+		// loaderURLs.add(new URL(cacheDir.toURI().toURL(),artifactLocation));
 		loaderURLs.add(cacheDir.toURI().toURL());
 		for (URL repository : remoteRepositories) {
 			loaderURLs.add(new URL(repository, artifactLocation));
@@ -408,19 +427,19 @@ public class Bootstrap {
 	 * On Windows, this will typically be something like:
 	 * 
 	 * <pre>
-	 *    	C:\Document and settings\MyUsername\Application Data\MyApplication
+	 *     	C:\Document and settings\MyUsername\Application Data\MyApplication
 	 * </pre>
 	 * 
 	 * while on Mac OS X it will be something like:
 	 * 
 	 * <pre>
-	 *    	/Users/MyUsername/Library/Application Support/MyApplication
+	 *     	/Users/MyUsername/Library/Application Support/MyApplication
 	 * </pre>
 	 * 
 	 * All other OS'es are assumed to be UNIX-alike, returning something like:
 	 * 
 	 * <pre>
-	 *    	/user/myusername/.myapplication
+	 *     	/user/myusername/.myapplication
 	 * </pre>
 	 * 
 	 * <p>

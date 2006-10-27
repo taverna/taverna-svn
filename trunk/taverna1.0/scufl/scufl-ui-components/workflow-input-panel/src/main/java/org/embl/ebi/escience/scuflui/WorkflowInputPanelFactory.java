@@ -11,15 +11,13 @@ import org.embl.ebi.escience.scufl.enactor.EnactorProxy;
 import org.embl.ebi.escience.scufl.enactor.WorkflowInstance;
 import org.embl.ebi.escience.scufl.enactor.WorkflowSubmissionException;
 import org.embl.ebi.escience.scufl.enactor.implementation.FreefluoEnactorProxy;
-import org.embl.ebi.escience.scuflui.shared.UIUtils;
+import org.embl.ebi.escience.scuflui.shared.ScuflModelMap;
 import org.embl.ebi.escience.scuflui.spi.UIComponentFactorySPI;
 import org.embl.ebi.escience.scuflui.spi.UIComponentSPI;
 
 public class WorkflowInputPanelFactory implements UIComponentFactorySPI {
 
-	private static Logger logger = Logger.getLogger(WorkflowInputPanelFactory.class);
-	
-	private static int count = 0;
+	private static Logger logger = Logger.getLogger(WorkflowInputPanelFactory.class);	
 	
 	public String getName() {
 		return "Workflow input panel";
@@ -37,7 +35,7 @@ public class WorkflowInputPanelFactory implements UIComponentFactorySPI {
 			public void launchEnactorDisplay(Map inputObject) {
 				EnactorProxy enactor = FreefluoEnactorProxy.getInstance();
 				ScuflModel workflowModel = 
-					(ScuflModel)UIUtils.getNamedModel(UIUtils.CURRENT_WORKFLOW);
+					(ScuflModel)ScuflModelMap.getNamedModel(ScuflModelMap.CURRENT_WORKFLOW);
 				try {
 					WorkflowInstance instance = enactor.compileWorkflow(workflowModel, inputObject, EnactorInvocation.USERCONTEXT);
 					logger.debug("Compiled workflow " + instance);
