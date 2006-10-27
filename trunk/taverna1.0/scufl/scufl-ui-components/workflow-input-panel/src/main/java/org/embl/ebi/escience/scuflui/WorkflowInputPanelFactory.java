@@ -3,7 +3,9 @@ package org.embl.ebi.escience.scuflui;
 import java.util.Map;
 
 import javax.swing.ImageIcon;
+import javax.swing.JFrame;
 
+import org.apache.log4j.Logger;
 import org.embl.ebi.escience.scufl.ScuflModel;
 import org.embl.ebi.escience.scufl.enactor.EnactorProxy;
 import org.embl.ebi.escience.scufl.enactor.WorkflowInstance;
@@ -15,6 +17,8 @@ import org.embl.ebi.escience.scuflui.spi.UIComponentSPI;
 
 public class WorkflowInputPanelFactory implements UIComponentFactorySPI {
 
+	private static Logger logger = Logger.getLogger(WorkflowInputPanelFactory.class);
+	
 	private static int count = 0;
 	
 	public String getName() {
@@ -36,14 +40,20 @@ public class WorkflowInputPanelFactory implements UIComponentFactorySPI {
 					(ScuflModel)UIUtils.getNamedModel(UIUtils.CURRENT_WORKFLOW);
 				try {
 					WorkflowInstance instance = enactor.compileWorkflow(workflowModel, inputObject, EnactorInvocation.USERCONTEXT);
-					UIUtils.setModel("workflowInstance"+(count++), instance);
+					logger.debug("Compiled workflow " + instance);
+					//UIUtils.setModel("workflowInstance"+(count++), instance);
+					EnactorInvocation invocationPanel = new EnactorInvocation(instance);
+					// TODO: Show as tabs or something within Zaria instead of popping up as a window
+					JFrame frame = new JFrame("Workflow run: " + workflowModel.getDescription().getTitle());
+					frame.setSize(640, 480);
+					frame.add(invocationPanel);
+					frame.setVisible(true);
+					logger.debug("Running the workflow " + instance);
 				} catch (WorkflowSubmissionException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
-				}
-					
+				}	
 			}
-			
 		};
 	}
 
