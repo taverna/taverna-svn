@@ -148,7 +148,7 @@ public class Workbench extends JFrame {
 			@Override
 			protected void registerComponent(JComponent comp) {
 				if (comp instanceof WorkflowModelViewSPI) {
-					ScuflModel model = (ScuflModel)UIUtils.getNamedModel("currentWorkflow");
+					ScuflModel model = (ScuflModel)UIUtils.getNamedModel(UIUtils.CURRENT_WORKFLOW);
 					if (model != null) {
 						((WorkflowModelViewSPI)comp).attachToModel(model);
 					}
@@ -494,41 +494,58 @@ public class Workbench extends JFrame {
 			private ScuflModel currentWorkflowModel = null;
 			
 			public synchronized void modelChanged(String modelName, Object oldModel, Object newModel) {
-				if (newModel instanceof ScuflModel) {
-					ScuflModel newWorkflow = (ScuflModel)newModel;
-					for (WorkflowModelViewSPI view : getWorkflowViews()) {
-						view.detachFromModel();
-						view.attachToModel(newWorkflow);
-						if (currentWorkflowModel != null) {
-							currentWorkflowModel.removeListener(listener);
-						}
-						currentWorkflowModel = newWorkflow;
-						currentWorkflowModel.addListener(listener);
-						
-					}
+				if (! modelName.equals(UIUtils.CURRENT_WORKFLOW)) {
+					return;
 				}
+				if (! (newModel instanceof ScuflModel)) {
+					logger.error(UIUtils.CURRENT_WORKFLOW +
+							" is not a ScuflModel: " + newModel);
+					return;
+				}
+				ScuflModel newWorkflow = (ScuflModel)newModel;
+				for (WorkflowModelViewSPI view : getWorkflowViews()) {
+					view.detachFromModel();
+					view.attachToModel(newWorkflow);
+					if (currentWorkflowModel != null) {
+						currentWorkflowModel.removeListener(listener);
+					}
+					currentWorkflowModel = newWorkflow;
+					currentWorkflowModel.addListener(listener);
+				}
+				refreshFileMenu();
 			}
 
 			public synchronized void modelDestroyed(String modelName) {
+				if (! modelName.equals(UIUtils.CURRENT_WORKFLOW)) {
+					return;
+				}
 				if (currentWorkflowModel != null) {
 					currentWorkflowModel.removeListener(listener);
 				}
 				currentWorkflowModel = null;
+				refreshFileMenu();
 			}
 
 			public synchronized void modelCreated(String modelName, Object model) {
-				if (model instanceof ScuflModel && modelName.equals("currentWorkflow")) {
-					if (currentWorkflowModel != null) {
-						currentWorkflowModel.removeListener(listener);
-					}
-					ScuflModel newWorkflow = (ScuflModel)model;
-					newWorkflow.addListener(listener);
-					currentWorkflowModel = newWorkflow;
-					for (WorkflowModelViewSPI view : getWorkflowViews()) {
-						view.detachFromModel();
-						view.attachToModel(newWorkflow);
-					}
-				}			
+				if (! modelName.equals(UIUtils.CURRENT_WORKFLOW)) {
+					return;
+				}
+				if (! (model instanceof ScuflModel)) {
+					logger.error(UIUtils.CURRENT_WORKFLOW +
+							" is not a ScuflModel: " + model);
+					return;
+				}
+				if (currentWorkflowModel != null) {
+					currentWorkflowModel.removeListener(listener);
+				}
+				ScuflModel newWorkflow = (ScuflModel)model;
+				newWorkflow.addListener(listener);
+				currentWorkflowModel = newWorkflow;
+				for (WorkflowModelViewSPI view : getWorkflowViews()) {
+					view.detachFromModel();
+					view.attachToModel(newWorkflow);
+				}
+				refreshFileMenu();
 			}
 			
 			private List<WorkflowModelViewSPI> getWorkflowViews() {
@@ -561,15 +578,14 @@ public class Workbench extends JFrame {
 		for (final ScuflModel model : workflowModels) {
 			Action selectModel = new AbstractAction() {
 				public void actionPerformed(ActionEvent e) {
-					UIUtils.setModel("currentWorkflow",model);					
-					refreshFileMenu();
+					UIUtils.setModel(UIUtils.CURRENT_WORKFLOW, model);				
 				}
 			};
 			selectModel.putValue(Action.SMALL_ICON,TavernaIcons.windowExplorer);
 			selectModel.putValue(Action.NAME,model.getDescription().getTitle());
 			selectModel.putValue(Action.SHORT_DESCRIPTION,model.getDescription().getTitle());
 			
-			if (model == UIUtils.getNamedModel("currentWorkflow")) {
+			if (model == UIUtils.getNamedModel(UIUtils.CURRENT_WORKFLOW)) {
 				selectModel.setEnabled(false);
 			}
 			fileMenu.add(new JMenuItem(selectModel));
@@ -582,8 +598,7 @@ public class Workbench extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				ScuflModel model = new ScuflModel();
 				workflowModels.add(model);
-				UIUtils.setModel("currentWorkflow",model);
-				refreshFileMenu();
+				UIUtils.setModel(UIUtils.CURRENT_WORKFLOW, model);
 			}
 		};
 		a.putValue(Action.NAME,"New workflow");
