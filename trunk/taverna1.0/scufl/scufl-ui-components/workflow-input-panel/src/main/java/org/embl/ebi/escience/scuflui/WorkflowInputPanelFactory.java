@@ -25,6 +25,7 @@ public class WorkflowInputPanelFactory implements UIComponentFactorySPI {
 		return TavernaIcons.windowRun;
 	}
 
+	@SuppressWarnings("serial")
 	public UIComponentSPI getComponent() {
 		return new WorkflowInputMapBuilder() {
 
@@ -32,7 +33,7 @@ public class WorkflowInputPanelFactory implements UIComponentFactorySPI {
 			public void launchEnactorDisplay(Map inputObject) {
 				EnactorProxy enactor = FreefluoEnactorProxy.getInstance();
 				ScuflModel workflowModel = 
-					(ScuflModel)UIUtils.getNamedModel("currentWorkflow");
+					(ScuflModel)UIUtils.getNamedModel(UIUtils.CURRENT_WORKFLOW);
 				try {
 					WorkflowInstance instance = enactor.compileWorkflow(workflowModel, inputObject, EnactorInvocation.USERCONTEXT);
 					UIUtils.setModel("workflowInstance"+(count++), instance);
