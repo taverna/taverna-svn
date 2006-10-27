@@ -97,13 +97,178 @@ import org.jdom.output.XMLOutputter;
  * Panel to construct the input for a workflow.
  * 
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover </a>
- * @version $Revision: 1.1 $
+ * @author Stian Soiland
+ * @version $Revision: 1.2 $
  */
 public abstract class WorkflowInputMapBuilder extends JPanel implements
 		WorkflowModelViewSPI, ScuflModelEventListener {
 	
 	private static Logger logger = Logger.getLogger(WorkflowInputMapBuilder.class);
 	
+	/**
+	 * NASTY - we'll do our own layout manager so that we can have 
+	 * our instructions label placed nicely next to the Run button.
+	 * @author Stian Soiland
+	 */
+	class SouthLayoutManager implements LayoutManager {
+		final int GAP=5;
+
+		public void addLayoutComponent(String name, Component comp) {}
+
+		public void removeLayoutComponent(Component comp) {}
+
+		public void layoutContainer(Container parent) {
+			Insets insets = parent.getInsets();
+			int x = insets.left + GAP;
+			for (Component c : parent.getComponents()) {
+				if (c instanceof JLabel) {
+					int height = c.getPreferredSize().height;
+					int width = parent.getSize().width - insets.left - insets.right;
+					width -= preferredLayoutSize(parent).width;
+					width += c.getMinimumSize().width;
+					c.setSize(width, height);
+					height = c.getPreferredSize().height;
+					c.setSize(width, height);
+				} else {
+					c.setSize(c.getMinimumSize());
+				}
+				// Place it low, from left to right
+				int y = parent.getSize().height - c.getHeight() - GAP - insets.top;
+				c.setLocation(x, y);
+				x += c.getSize().width + GAP ;
+			}
+		}
+
+		public Dimension minimumLayoutSize(Container parent) {	
+			return preferredLayoutSize(parent);
+		}
+
+		public Dimension preferredLayoutSize(Container parent) {
+			Dimension size = new Dimension();
+			for (Component c : parent.getComponents()) {
+				size.height = Math.max(size.height, c.getMinimumSize().height);
+				size.width = size.width + GAP + c.getMinimumSize().width;
+			}
+			// Some space on top/bottom
+			size.height += GAP*2;
+			return size;
+		}
+	}
+
+	class PortTreeMouseListener extends MouseAdapter {
+		public void mousePressed(MouseEvent e) {
+			showPopup(e);
+		}
+
+		public void mouseReleased(MouseEvent e) {
+			showPopup(e);
+		}
+
+		private void showPopup(MouseEvent event) {
+			if (event.isPopupTrigger()) {
+				try {
+					// TODO NullPointer if not over node
+					PanelTreeNode node = (PanelTreeNode) portTree
+							.getPathForLocation(event.getX(), event.getY())
+							.getLastPathComponent();
+					JPopupMenu popup = new JPopupMenu();
+					node.fillMenu(popup);
+					popup.show(event.getComponent(), event.getX(), event
+							.getY());
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		}
+	}
+
+	class PortTreeSelectionListener implements TreeSelectionListener {
+		public void valueChanged(TreeSelectionEvent event) {
+			if (event.getPath().getLastPathComponent() instanceof PanelTreeNode) {
+				PanelTreeNode node = (PanelTreeNode) event.getPath()
+						.getLastPathComponent();
+				splitter.setRightComponent(node.getPanel());
+				if (node instanceof InputsRootNode) {
+					loadInputsButton.setEnabled(false);
+					newInputButton.setEnabled(false);
+					newListButton.setEnabled(false);
+					removeButton.setEnabled(false);
+				} else if (node instanceof InputPortNode) {
+					loadInputsButton.setEnabled(true);
+					newInputButton
+							.setEnabled(canAddInputs((InputListNode) node));
+					newListButton
+							.setEnabled(canAddLists((InputListNode) node));
+					removeButton.setEnabled(false);
+				} else if (node instanceof InputListNode) {
+					loadInputsButton.setEnabled(true);
+					removeButton.setEnabled(true);
+		
+					InputListNode parent = (InputListNode) ((InputListNode) node)
+							.getParent();
+					if (parent != null) {
+						boolean canAddList = true;
+						boolean canAddInput = true;
+						for (int index = 0; index < parent.getChildCount(); index++) {
+							InputListNode aListNode = (InputListNode) parent
+									.getChildAt(index);
+							if (aListNode.getChildCount() > 0) {
+								canAddList = aListNode.getFirstChild() instanceof InputListNode;
+								canAddInput = !canAddList;
+								break;
+							}
+						}
+						newListButton.setEnabled(canAddList);
+						newInputButton.setEnabled(canAddInput);
+					} else {
+						newInputButton.setEnabled(false);
+						newListButton.setEnabled(false);
+					}
+				} else if (node instanceof InputDataThingNode) {
+					InputDataThingNode thingNode = (InputDataThingNode) node;
+					InputListNode parent = (InputListNode) thingNode
+							.getParent();
+					if (parent == null) {
+						newInputButton.setEnabled(false);
+						newListButton.setEnabled(false);
+					} else {
+						newInputButton.setEnabled(canAddInputs(parent));
+						newListButton.setEnabled(canAddLists(parent));
+					}
+					loadInputsButton.setEnabled(true);
+					removeButton.setEnabled(true);
+				}
+			} else {
+				if (splitter.getRightComponent() != null) {
+					splitter.remove(splitter.getRightComponent());
+				}
+				loadInputsButton.setEnabled(false);
+				newInputButton.setEnabled(false);
+				newListButton.setEnabled(false);
+				removeButton.setEnabled(false);
+			}
+			splitter.validate();
+		}
+
+		private boolean canAddLists(InputListNode node) {
+			if (node.getChildCount() > 0) {
+				if (node.getFirstChild() instanceof InputDataThingNode) {
+					return false;
+				}
+			}
+			return true;
+		}
+
+		private boolean canAddInputs(InputListNode node) {
+			if (node.getChildCount() > 0) {
+				if (node.getFirstChild() instanceof InputListNode) {
+					return false;
+				}
+			}
+			return true;
+		}
+	}
+
 	private class RunAction implements ActionListener {
 		public void actionPerformed(ActionEvent event) {
 			Map inputObject = bakeInputMap();
@@ -933,7 +1098,7 @@ public abstract class WorkflowInputMapBuilder extends JPanel implements
 		}
 	}
 
-	// Noo, not static, then it'll manage to keep a reference to us
+	// not static, then it would keep a reference to us (!)
 	JFileChooser fileChooser = new JFileChooser();
 
 	static BaclavaDataService store = null;
@@ -950,7 +1115,7 @@ public abstract class WorkflowInputMapBuilder extends JPanel implements
 
 	JTree portTree;
 
-	Pattern textPattern;
+	static Pattern textPattern = Pattern.compile(".*text/.*");;
 
 	JButton loadInputsButton;
 
@@ -1064,6 +1229,7 @@ public abstract class WorkflowInputMapBuilder extends JPanel implements
 			fileChooser.setMultiSelectionEnabled(false);
 		}
 	};
+	private boolean initialized;
 
 	static {
 		String storageClassName = System.getProperty("taverna.datastore.class");
@@ -1100,130 +1266,31 @@ public abstract class WorkflowInputMapBuilder extends JPanel implements
 	 * @see org.embl.ebi.escience.scuflui.ScuflUIComponent#attachToModel(org.embl.ebi.escience.scufl.ScuflModel)
 	 */
 	public void attachToModel(ScuflModel model) {
-		textPattern = Pattern.compile(".*text/.*");
+		if (! initialized) {
+			init();
+		}
+		if (this.model != null) {
+			logger.warn("Didn't call detachFromModel() before attachToModel()");
+			detachFromModel();
+		}
+		this.model = model;
+		model.addListener(this);
+		updateModel();
+		setVisible(true);
+	}
 
+	void init() {
 		portTree = new JTree(treeModel);
 		portTree.setRowHeight(0);
 		portTree.setCellRenderer(new InputNodeRenderer());
 		portTree.setDragEnabled(true);
 		portTree.getSelectionModel().setSelectionMode(
 				TreeSelectionModel.SINGLE_TREE_SELECTION);
-		portTree.addTreeSelectionListener(new TreeSelectionListener() {
-			public void valueChanged(TreeSelectionEvent event) {
-				if (event.getPath().getLastPathComponent() instanceof PanelTreeNode) {
-					PanelTreeNode node = (PanelTreeNode) event.getPath()
-							.getLastPathComponent();
-					splitter.setRightComponent(node.getPanel());
-					if (node instanceof InputsRootNode) {
-						loadInputsButton.setEnabled(false);
-						newInputButton.setEnabled(false);
-						newListButton.setEnabled(false);
-						removeButton.setEnabled(false);
-					} else if (node instanceof InputPortNode) {
-						loadInputsButton.setEnabled(true);
-						newInputButton
-								.setEnabled(canAddInputs((InputListNode) node));
-						newListButton
-								.setEnabled(canAddLists((InputListNode) node));
-						removeButton.setEnabled(false);
-					} else if (node instanceof InputListNode) {
-						loadInputsButton.setEnabled(true);
-						removeButton.setEnabled(true);
-
-						InputListNode parent = (InputListNode) ((InputListNode) node)
-								.getParent();
-						if (parent != null) {
-							boolean canAddList = true;
-							boolean canAddInput = true;
-							for (int index = 0; index < parent.getChildCount(); index++) {
-								InputListNode aListNode = (InputListNode) parent
-										.getChildAt(index);
-								if (aListNode.getChildCount() > 0) {
-									canAddList = aListNode.getFirstChild() instanceof InputListNode;
-									canAddInput = !canAddList;
-									break;
-								}
-							}
-							newListButton.setEnabled(canAddList);
-							newInputButton.setEnabled(canAddInput);
-						} else {
-							newInputButton.setEnabled(false);
-							newListButton.setEnabled(false);
-						}
-					} else if (node instanceof InputDataThingNode) {
-						InputDataThingNode thingNode = (InputDataThingNode) node;
-						InputListNode parent = (InputListNode) thingNode
-								.getParent();
-						if (parent == null) {
-							newInputButton.setEnabled(false);
-							newListButton.setEnabled(false);
-						} else {
-							newInputButton.setEnabled(canAddInputs(parent));
-							newListButton.setEnabled(canAddLists(parent));
-						}
-						loadInputsButton.setEnabled(true);
-						removeButton.setEnabled(true);
-					}
-				} else {
-					if (splitter.getRightComponent() != null) {
-						splitter.remove(splitter.getRightComponent());
-					}
-					loadInputsButton.setEnabled(false);
-					newInputButton.setEnabled(false);
-					newListButton.setEnabled(false);
-					removeButton.setEnabled(false);
-				}
-				splitter.validate();
-			}
-
-			private boolean canAddLists(InputListNode node) {
-				if (node.getChildCount() > 0) {
-					if (node.getFirstChild() instanceof InputDataThingNode) {
-						return false;
-					}
-				}
-				return true;
-			}
-
-			private boolean canAddInputs(InputListNode node) {
-				if (node.getChildCount() > 0) {
-					if (node.getFirstChild() instanceof InputListNode) {
-						return false;
-					}
-				}
-				return true;
-			}
-		});
-		portTree.addMouseListener(new MouseAdapter() {
-			public void mousePressed(MouseEvent e) {
-				showPopup(e);
-			}
-
-			public void mouseReleased(MouseEvent e) {
-				showPopup(e);
-			}
-
-			private void showPopup(MouseEvent event) {
-				if (event.isPopupTrigger()) {
-					try {
-						// TODO NullPointer if not over node
-						PanelTreeNode node = (PanelTreeNode) portTree
-								.getPathForLocation(event.getX(), event.getY())
-								.getLastPathComponent();
-						JPopupMenu popup = new JPopupMenu();
-						node.fillMenu(popup);
-						popup.show(event.getComponent(), event.getX(), event
-								.getY());
-					} catch (Exception e) {
-						e.printStackTrace();
-					}
-				}
-			}
-		});
+		portTree.addMouseListener(new PortTreeMouseListener());
 		new TreeTransferHandler(portTree);
-
+		
 		JScrollPane scrollPane = new JScrollPane();
-		scrollPane.setViewportView(portTree);
+		scrollPane.setViewportView(portTree);	
 
 		splitter = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
 		splitter.setContinuousLayout(false);
@@ -1235,48 +1302,9 @@ public abstract class WorkflowInputMapBuilder extends JPanel implements
 		runButton.addActionListener(runAction);
 		buttonPanel.add(runButton);
 		
-		// NASTY - we'll do our own layout manager so that we can have 
-		// our instructions label placed nicely next to the Run button.
+
 		// FIXME: Do this with any of the existing layout managers instead
-		south = new JPanel(new LayoutManager(){
-			final int GAP=5;
-			public void addLayoutComponent(String name, Component comp) {}
-			public void removeLayoutComponent(Component comp) {}
-			public void layoutContainer(Container parent) {
-				Insets insets = parent.getInsets();
-				int x = insets.left + GAP;
-				for (Component c : parent.getComponents()) {
-					if (c instanceof JLabel) {
-						int height = c.getPreferredSize().height;
-						int width = parent.getSize().width - insets.left - insets.right;
-						width -= preferredLayoutSize(parent).width;
-						width += c.getMinimumSize().width;
-						c.setSize(width, height);
-						height = c.getPreferredSize().height;
-						c.setSize(width, height);
-					} else {
-						c.setSize(c.getMinimumSize());
-					}
-					// Place it low, from left to right
-					int y = parent.getSize().height - c.getHeight() - GAP - insets.top;
-					c.setLocation(x, y);
-					x += c.getSize().width + GAP ;
-				}
-			}
-			public Dimension minimumLayoutSize(Container parent) {	
-				return preferredLayoutSize(parent);
-			}
-			public Dimension preferredLayoutSize(Container parent) {
-				Dimension size = new Dimension();
-				for (Component c : parent.getComponents()) {
-					size.height = Math.max(size.height, c.getMinimumSize().height);
-					size.width = size.width + GAP + c.getMinimumSize().width;
-				}
-				// Some space on top/bottom
-				size.height += GAP*2;
-				return size;
-			}
-		});
+		south = new JPanel(new SouthLayoutManager());
 		JLabel instructions = new JLabel("<html><p>To input data into this workflow you must "
 				+"select the item from the tree to the left of this panel and "
 				+"either enter the data manually, upload from a file on your local "
@@ -1312,42 +1340,23 @@ public abstract class WorkflowInputMapBuilder extends JPanel implements
 		add(toolbar, BorderLayout.NORTH);		
 		add(splitter, BorderLayout.CENTER);
 		add(south, BorderLayout.SOUTH);
-		setVisible(true);
-
-		if (this.model == null) {
-			this.model = model;
-			model.addListener(this);
-			updateModel();
-		}
+		
+		// Add listeners after all the GUI stuff has been created
+		portTree.addTreeSelectionListener(new PortTreeSelectionListener());
+		initialized = true;
+		// Will be set visible when attachToModel()
 	}
 
 	/*
 	 * @see org.embl.ebi.escience.scuflui.ScuflUIComponent#detachFromModel()
 	 */
 	public void detachFromModel() {
-		if (this.model == null) {
+		setVisible(false);
+		if (model == null) {
 			return;
 		}
 		model.removeListener(this);		
-		rootNode.removeAllChildren();
-		portTree.removeAll();
-		try {
-			splitter.remove(splitter.getRightComponent());
-		} catch (NullPointerException npe) {
-			// Can occur if the split window isn't populated
-		}
-		try {
-			// Clear the south panel to remove long living references
-			// (oddly enough, our JLabel instructions does that)
-			south.removeAll();
-		} catch (NullPointerException e) {
-			// Same as above
-		}
-		// Because the runAction keeps a reference to us, and the
-		// runButton is kept alive through some
-		// internal sun.awt.*.InputMethodContext
-		runButton.removeActionListener(runAction);		
-		this.model = null;
+		model = null;
 	}
 
 	private void updateModel() {
