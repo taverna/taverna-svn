@@ -84,5 +84,9 @@ public class BasicArtifact implements Artifact, Comparable {
 		}
 		throw new ClassCastException("Cannot compare Artifact to other type");
 	}
+	
+	public String toString() {
+		return groupId+":"+artifactId+":"+version;
+	}
 
 }

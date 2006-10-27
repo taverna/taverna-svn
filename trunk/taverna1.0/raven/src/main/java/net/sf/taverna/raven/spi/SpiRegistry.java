@@ -186,11 +186,13 @@ public class SpiRegistry implements Iterable<Class> {
 							InputStream is = resourceURL.openStream();
 							Scanner scanner = new Scanner(is);
 							while (scanner.hasNext()) {
-								String impName = scanner.next();
-								Class impClass = cl.loadClass(impName);
-								if (impClass.getClassLoader() instanceof ArtifactClassLoader || System.getProperty("raven.eclipse")!=null) {
-									implementations.add(impClass);
-									addedNew = true;
+								String impName = scanner.next();								
+								if (!impName.startsWith("#")) { //ignore commented entries
+									Class impClass = cl.loadClass(impName);
+									if (impClass.getClassLoader() instanceof ArtifactClassLoader || System.getProperty("raven.eclipse")!=null) {
+										implementations.add(impClass);
+										addedNew = true;
+									}
 								}
 							}
 							scanner.close();

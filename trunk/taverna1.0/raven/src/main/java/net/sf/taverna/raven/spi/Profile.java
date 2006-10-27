@@ -143,6 +143,14 @@ public class Profile implements ArtifactFilter {
 	}
 	
 	/**
+	 * Allows an artifact to be added to the profile at runtime
+	 * @param artifact
+	 */
+	public void addArtifact(Artifact artifact) {
+		artifacts.add(artifact);
+	}
+	
+	/**
 	 * returns the name of the profile, or null if no name is defined
 	 */
 	public String getName() {
