@@ -25,10 +25,10 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: ProfileFactory.java,v $
- * Revision           $Revision: 1.1 $
+ * Revision           $Revision: 1.2 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-10-23 14:48:52 $
- *               by   $Author: sowen70 $
+ * Last modified on   $Date: 2006-10-30 15:37:37 $
+ *               by   $Author: stain $
  * Created on 20 Oct 2006
  *****************************************************************/
 package net.sf.taverna.raven.spi;
@@ -44,30 +44,38 @@ import java.net.URL;
 
 
 public class ProfileFactory {
-	private static ProfileFactory instance=new ProfileFactory();
-	private static Profile profile=null;
+	private static ProfileFactory instance = new ProfileFactory();
+	private static Profile profile = null;
 	
-	public static ProfileFactory instance() {
+	/**
+	 * Singleton, use getInstance() instead
+	 *
+	 */ 
+	private ProfileFactory() {}
+	
+	// Why is an instance needed at all instead of a static getProfile()?
+	public static ProfileFactory getInstance() {
 		return instance;
 	}
 	
 	public Profile getProfile() {
-		if (profile==null) {
-			String profileStr=System.getProperty("raven.profile");
-			if (profileStr!=null) {
-				try {				
-					URL profileURL=new URL(profileStr);					
-					profile=new Profile(profileURL.openStream(),true);										
-				} catch (Exception e) {
-					e.printStackTrace();
-					System.out.println("Exception fetching profile from: "+profileStr+" using stored profile.");				
-				}								
-			}
-			else {
-				System.out.println("No profile defined");
-			}
+		if (profile != null) {
+			return profile;
 		}
-		return profile;
+		String profileStr=System.getProperty("raven.profile");
+		if (profileStr == null) {
+			System.out.println("No profile defined, try specifying -Draven.profile");
+			return null;
+		}
+		try {				
+			URL profileURL = new URL(profileStr);					
+			profile = new Profile(profileURL.openStream(), true);
+			return profile;
+		} catch (Exception e) {
+			System.out.println("Could not fetch profile from: "+profileStr+" using stored profile.");	
+			e.printStackTrace();
+			return null;
+		}								
 	}
 	
 }
