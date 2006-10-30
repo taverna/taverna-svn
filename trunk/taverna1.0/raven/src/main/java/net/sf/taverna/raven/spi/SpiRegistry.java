@@ -101,7 +101,7 @@ public class SpiRegistry implements Iterable<Class> {
 	 */
 	public void addRegistryListener(RegistryListener l) {
 		synchronized (listeners) {
-			if (listeners.contains(l) == false) {
+			if (! listeners.contains(l)) {
 				listeners.add(l);
 			}
 		}
@@ -178,7 +178,7 @@ public class SpiRegistry implements Iterable<Class> {
 				Enumeration resources=cl.getResources("META-INF/services/"+classname);
 				while (resources.hasMoreElements()) {
 					URL resourceURL = (URL)resources.nextElement();
-					if (resourceURL != null && alreadySeen.contains(resourceURL) == false) {
+					if (resourceURL != null && ! alreadySeen.contains(resourceURL)) {
 						// Found an appropriate SPI file
 						alreadySeen.add(resourceURL);
 						try {

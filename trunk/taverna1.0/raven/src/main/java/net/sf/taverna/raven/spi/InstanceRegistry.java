@@ -52,7 +52,7 @@ public class InstanceRegistry <IType> implements Iterable<IType>, RegistryListen
 			//Class spiClass = Class.forName(registry.getClassName());
 			Class genericClass = Class.class.cast(this.getClass().getTypeParameters()[0]);
 			
-			if (genericClass.equals(spiClass) == false) {
+			if (! genericClass.equals(spiClass)) {
 				ClassCastException cce = 
 					new ClassCastException("Generic type doesn't match SPI classname");
 				throw cce;
@@ -181,7 +181,7 @@ public class InstanceRegistry <IType> implements Iterable<IType>, RegistryListen
 	 */
 	public void addRegistryListener(InstanceRegistryListener l) {
 		synchronized (listeners) {
-			if (listeners.contains(l) == false) {
+			if (! listeners.contains(l)) {
 				listeners.add(l);
 			}
 		}
