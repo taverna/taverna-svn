@@ -151,6 +151,17 @@ public class ScuflModel implements Serializable, LogAwareComponent {
 		description = new WorkflowDescription();		
 	}
 
+	@Override
+	public String toString() {
+		try {
+			return "ScuflModel: " + getDescription().getTitle() + 
+				" " + getDescription().getLSID();
+		} catch (RuntimeException ex) {
+			logger.warn("Could not get title", ex);
+			return super.toString();
+		}
+	}
+	
 	/**
 	 * Clear the model, retaining any existing listeners but removing all model
 	 * data. Restarts the notify thread.
