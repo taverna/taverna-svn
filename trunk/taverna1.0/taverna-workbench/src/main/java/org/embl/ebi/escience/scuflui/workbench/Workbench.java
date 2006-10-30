@@ -369,10 +369,13 @@ public class Workbench extends JFrame {
 	 * set the title to the profile name and version, otherwise just Taverna Workbench
 	 */
 	private void setWorkbenchTitle() {
-		String title="Taverna Workbench";
-		Profile prof=ProfileFactory.instance().getProfile();
-		if (prof!=null) {
-			title=prof.getName()+" v"+prof.getVersion();			
+		String title = "Taverna Workbench";
+		Profile prof = ProfileFactory.getInstance().getProfile();
+		if (prof != null) {
+			if (prof.getName() != null) {
+				title = prof.getName();
+			}
+			title += " v" + prof.getVersion();			
 		}
 		setTitle(title);
 	}
@@ -380,7 +383,6 @@ public class Workbench extends JFrame {
 	
 	private void checkForProfileUpdate() {
 		String remoteProfileURL=System.getProperty("raven.remoteprofile");
-		
 		try {
 			ProfileHandler handler=new ProfileHandler(remoteProfileURL);
 			if (handler.isNewVersionAvailable()) {
