@@ -2,7 +2,6 @@ package org.embl.ebi.escience.scuflui.renderers;
 
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -52,7 +51,7 @@ public class RendererRegistry extends TavernaSPIRegistry<RendererSPI>{
         logger.info("Finding renderer: " + dataThing);
         for (RendererSPI rend : findComponents()) {           
             if (rend.canHandle(this, dataThing)) {
-                logger.info("\tFound: " + rend.getName());
+                logger.info("Found: " + rend.getName());
                 return rend;
             }
         }
@@ -71,7 +70,7 @@ public class RendererRegistry extends TavernaSPIRegistry<RendererSPI>{
         List<RendererSPI> res = new ArrayList<RendererSPI>();
         for (RendererSPI rend : findComponents()) {            
             if (rend.canHandle(this, dataThing)) {
-                logger.info("\tFound: " + rend.getName());
+                logger.info("Found: " + rend.getName());
                 res.add(rend);
             }
         }
