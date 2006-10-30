@@ -33,12 +33,6 @@
  *****************************************************************/
 package org.embl.ebi.escience.utils;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.InputStreamReader;
-import java.net.URL;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -48,10 +42,9 @@ import net.sf.taverna.raven.repository.Artifact;
 import net.sf.taverna.raven.repository.Repository;
 import net.sf.taverna.raven.spi.InstanceRegistry;
 import net.sf.taverna.raven.spi.Profile;
+import net.sf.taverna.raven.spi.ProfileFactory;
 import net.sf.taverna.raven.spi.RegistryListener;
 import net.sf.taverna.raven.spi.SpiRegistry;
-import net.sf.taverna.raven.spi.ProfileFactory;
-import net.sf.taverna.utils.MyGridConfiguration;
 
 import org.apache.log4j.Logger;
 
@@ -73,9 +66,11 @@ public class TavernaSPIRegistry<T> {
 	private static Repository REPOSITORY = null;
 	private static Profile profile = null;
 	
-	public static void setRepository(Repository theRepository) {
-		assert theRepository != null;
-		REPOSITORY = theRepository;
+	public static void setRepository(Repository repository) {
+		if (repository == null) {
+			throw new NullPointerException("repository cannot be null");
+		}
+		REPOSITORY = repository;
 	}
 	
 	public TavernaSPIRegistry(Class<T> spiClass) {		
@@ -85,7 +80,7 @@ public class TavernaSPIRegistry<T> {
 									"with setRepository() ");
 		}
 		this.spiClass = spiClass;
-		if (spiMap.containsKey(spiClass) == false) {
+		if (! spiMap.containsKey(spiClass)) {
 			SpiRegistry registry = new SpiRegistry(REPOSITORY, spiClass.getName(), null);
 			updateWithProfile(registry);
 			registry.addRegistryListener(new RegistryListener() {
@@ -93,8 +88,8 @@ public class TavernaSPIRegistry<T> {
 					logger.info("Registry updated <"+
 							TavernaSPIRegistry.this.spiClass.getName()+"> : ");
 					for (Class<T> theClass : registry.getClasses()) {
-						logger.info("\t"+theClass.getName());
-						logger.info("\t - "+theClass.getClassLoader().toString());
+						logger.info(theClass.getName());
+						logger.info(theClass.getClassLoader().toString());
 					}
 				}
 			});
@@ -103,18 +98,20 @@ public class TavernaSPIRegistry<T> {
 	}
 	
 	protected void updateWithProfile(SpiRegistry registry) {		
-		if (profile==null) {
-			profile=ProfileFactory.instance().getProfile();
+		if (profile == null) {
+			profile=ProfileFactory.getInstance().getProfile();
+
 		}		
-		
-		if (profile!=null) {
-			registry.addFilter(profile);
-			 
-			for (Artifact a : profile.getArtifacts()) {
-				REPOSITORY.addArtifact(a);					
-			}
-			REPOSITORY.update();						
-		}				
+		if (profile == null) {
+			logger.info("No profile");
+			return;
+		}
+		registry.addFilter(profile);
+
+		for (Artifact a : profile.getArtifacts()) {
+			REPOSITORY.addArtifact(a);					
+		}
+		REPOSITORY.update();						
 	}
 	
 	/**
