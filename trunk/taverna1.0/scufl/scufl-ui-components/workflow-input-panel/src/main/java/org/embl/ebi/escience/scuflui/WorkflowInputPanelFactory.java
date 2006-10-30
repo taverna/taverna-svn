@@ -42,14 +42,13 @@ public class WorkflowInputPanelFactory implements UIComponentFactorySPI {
 					//UIUtils.setModel("workflowInstance"+(count++), instance);
 					EnactorInvocation invocationPanel = new EnactorInvocation(instance);
 					// TODO: Show as tabs or something within Zaria instead of popping up as a window
-					JFrame frame = new JFrame("Workflow run: " + workflowModel.getDescription().getTitle());
+					JFrame frame = new JFrame("Workflow run: " + workflowModel);
 					frame.setSize(640, 480);
 					frame.add(invocationPanel);
 					frame.setVisible(true);
 					logger.debug("Running the workflow " + instance);
 				} catch (WorkflowSubmissionException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					logger.error("Could not submit workflow", e);
 				}	
 			}
 		};
