@@ -424,7 +424,7 @@ public class Workbench extends JFrame {
 	private void readLastPreferences() {
 		File userDir=MyGridConfiguration.getUserDir("conf");
 		File size=new File(userDir,"preferences.properties");
-		if (size!=null && size.exists()) {
+		if (size.exists()) {
 			Properties props=new Properties();
 			try {
 				props.load(size.toURL().openStream());
@@ -470,7 +470,7 @@ public class Workbench extends JFrame {
 	private File readLastLayout() {
 		File userDir=MyGridConfiguration.getUserDir("conf");		
 		File layout=new File(userDir,"layout.xml");
-		if (layout!=null && layout.exists()) {
+		if (layout.exists()) {
 			try {
 				InputStreamReader isr = new InputStreamReader(layout.toURL().openStream());
 				SAXBuilder builder = new SAXBuilder(false);
