@@ -98,7 +98,7 @@ import org.jdom.output.XMLOutputter;
  * 
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover </a>
  * @author Stian Soiland
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public abstract class WorkflowInputMapBuilder extends JPanel implements
 		WorkflowModelViewSPI, ScuflModelEventListener {
@@ -594,20 +594,24 @@ public abstract class WorkflowInputMapBuilder extends JPanel implements
 		 */
 		public JComponent getPanel() {
 			getDataThing();
-			if (thing != null) {
-				RendererRegistry registry = RendererRegistry.instance();
-				RendererSPI renderer = registry.getRenderer(thing);
-				try {
-					JScrollPane scrollPane = new JScrollPane(renderer
-							.getComponent(registry, thing));
-					scrollPane.setPreferredSize(new Dimension(0, 0));
-					return scrollPane;
-				} catch (RendererException e) {
-					e.printStackTrace();
-				}
+			if (thing == null) {
+				return null;
 			}
-
-			return null;
+			RendererRegistry registry = RendererRegistry.instance();
+			RendererSPI renderer = registry.getRenderer(thing);
+			if (renderer == null) {
+				logger.warn("Could not find renderer for: " + thing);
+				return null;
+			}
+			try {
+				JScrollPane scrollPane = new JScrollPane(renderer
+						.getComponent(registry, thing));
+				scrollPane.setPreferredSize(new Dimension(0, 0));
+				return scrollPane;
+			} catch (RendererException e) {
+				logger.warn("Could not render: "+ thing, e);
+				return null;
+			}
 		}
 
 		/*
