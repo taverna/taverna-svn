@@ -224,7 +224,7 @@ public abstract class ZBasePane extends ZPane {
 					 a = new BasicArtifact(groupId, artifactId, version);
 				}
 				else {
-					Profile prof=ProfileFactory.instance().getProfile();
+					Profile prof=ProfileFactory.getInstance().getProfile();
 					if (prof!=null) {
 						a = prof.discoverArtifact(groupId, artifactId);
 						if (a==null) {

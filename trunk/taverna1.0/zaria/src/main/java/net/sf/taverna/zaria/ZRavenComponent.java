@@ -154,7 +154,7 @@ public class ZRavenComponent extends ZPane {
 				
 				//if no version defined, use the version defined in the profile
 				if (version==null) {
-					Profile profile=ProfileFactory.instance().getProfile();
+					Profile profile=ProfileFactory.getInstance().getProfile();
 					artifact=profile.discoverArtifact(groupId,artifactId);
 				}
 				else {

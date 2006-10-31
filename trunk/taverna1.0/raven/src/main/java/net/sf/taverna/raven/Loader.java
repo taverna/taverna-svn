@@ -125,7 +125,7 @@ public class Loader {
 		repository.addArtifact(new BasicArtifact("uk.org.mygrid.taverna.raven","raven",ravenVersion));
 		
 		//add any profile artifacts, if defined, so that all required artifacts get loaded at startup
-		Profile profile=ProfileFactory.instance().getProfile();
+		Profile profile=ProfileFactory.getInstance().getProfile();
 		if (profile!=null) {
 			for (Artifact a : profile.getArtifacts()) {
 				repository.addArtifact(a);
