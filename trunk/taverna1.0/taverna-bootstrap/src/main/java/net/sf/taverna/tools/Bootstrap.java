@@ -56,7 +56,46 @@ public class Bootstrap {
 
 		Class workbenchClass = createWorkbenchClass(loaderVersion, loaderMethod);
 
+		addSystemLoaderArtifacts(loaderVersion, loaderMethod);
+
 		invokeWorkbench(args, workbenchClass);
+	}
+
+	private static void addSystemLoaderArtifacts(String ravenVersion, Method loaderMethod) throws MalformedURLException {
+		ClassLoader systemClassLoader = ClassLoader.getSystemClassLoader();
+		if (systemClassLoader instanceof BootstrapClassLoader) {
+			BootstrapClassLoader bootstrapClassLoader = (BootstrapClassLoader) systemClassLoader;
+			File cacheDir = findCache();			
+
+			String[] systemLoaderArtifacts = new String[0];
+			String contextLoaderArtifactsProperty = properties.getProperty("raven.systemloader.artifacts");
+			if (contextLoaderArtifactsProperty != null) {
+				systemLoaderArtifacts = contextLoaderArtifactsProperty.split(",");
+			}
+			
+			for (String systemLoaderArtifact : systemLoaderArtifacts) {
+				String[] splitArtifact = systemLoaderArtifact.trim().split(":");
+				if (splitArtifact.length == 3) {
+					String groupID = splitArtifact[0];
+					String artifactID = splitArtifact[1];
+					String version = splitArtifact[2];
+					try {
+						loaderMethod.invoke(null, ravenVersion,
+								cacheDir, new URL[0], groupID, artifactID, version,
+								"", null, 0);
+					} catch (InvocationTargetException e) {
+						if(e.getCause() instanceof ClassNotFoundException) {
+							//don't expect a a class to be found
+							bootstrapClassLoader.addURL(new URL(cacheDir.toURI().toURL(), artifactURI(groupID, artifactID, version)));
+						} else {
+							System.err.println("Error adding " + systemLoaderArtifact + "to system classloader");
+						}
+					} catch (Exception e) {
+						System.err.println("Error adding " + systemLoaderArtifact + "to system classloader");
+					}
+				}
+			}
+		}
 	}
 
 	public static Properties findProperties() {
