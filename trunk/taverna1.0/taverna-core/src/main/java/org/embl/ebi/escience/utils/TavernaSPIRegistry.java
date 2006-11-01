@@ -82,7 +82,6 @@ public class TavernaSPIRegistry<T> {
 		this.spiClass = spiClass;
 		if (! spiMap.containsKey(spiClass)) {
 			SpiRegistry registry = new SpiRegistry(REPOSITORY, spiClass.getName(), null);
-			updateWithProfile(registry);
 			registry.addRegistryListener(new RegistryListener() {
 				public void spiRegistryUpdated(SpiRegistry registry) {
 					logger.info("Registry updated <"+
@@ -93,6 +92,7 @@ public class TavernaSPIRegistry<T> {
 					}
 				}
 			});
+			updateWithProfile(registry);
 			spiMap.put(spiClass, new InstanceRegistry<T>(registry, new Object[0]));
 		}
 	}
