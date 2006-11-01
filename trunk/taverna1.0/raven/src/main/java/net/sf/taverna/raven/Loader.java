@@ -1,16 +1,31 @@
 package net.sf.taverna.raven;
 
-import net.sf.taverna.raven.repository.*;
-import net.sf.taverna.raven.repository.impl.LocalRepository;
-import net.sf.taverna.raven.spi.Profile;
-import net.sf.taverna.raven.spi.ProfileFactory;
-
-import javax.swing.*;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.GraphicsEnvironment;
+import java.awt.Toolkit;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
 import java.net.URL;
+
+import javax.swing.ImageIcon;
+import javax.swing.JLabel;
+import javax.swing.JProgressBar;
+import javax.swing.JWindow;
+import javax.swing.SwingUtilities;
+
+import net.sf.taverna.raven.repository.Artifact;
+import net.sf.taverna.raven.repository.ArtifactNotFoundException;
+import net.sf.taverna.raven.repository.ArtifactStateException;
+import net.sf.taverna.raven.repository.ArtifactStatus;
+import net.sf.taverna.raven.repository.BasicArtifact;
+import net.sf.taverna.raven.repository.DownloadStatus;
+import net.sf.taverna.raven.repository.Repository;
+import net.sf.taverna.raven.repository.RepositoryListener;
+import net.sf.taverna.raven.repository.impl.LocalRepository;
+import net.sf.taverna.raven.spi.Profile;
+import net.sf.taverna.raven.spi.ProfileFactory;
 
 /**
  * Bootstrap a raven installation, allows a non raven aware
@@ -103,16 +118,11 @@ public class Loader {
 			int splashTime)
 	throws ArtifactNotFoundException,
 	ArtifactStateException,
-	ClassNotFoundException
-	{
-		boolean splashScreen = splashScreenURL != null;
-		final SplashScreen splash;
-		if (splashScreen) {
-			splash =
-			new SplashScreen(splashScreenURL,splashTime);
-		} else { 
-			splash = null;
-		};
+	ClassNotFoundException {			
+		SplashScreen splash = null;
+		if (!GraphicsEnvironment.isHeadless() && splashScreenURL != null) {
+			splash = new SplashScreen(splashScreenURL, splashTime);
+		}
 			
 		final Repository repository =
 			LocalRepository.getRepository(localRepositoryLocation);
@@ -126,63 +136,17 @@ public class Loader {
 		
 		//add any profile artifacts, if defined, so that all required artifacts get loaded at startup
 		Profile profile=ProfileFactory.getInstance().getProfile();
-		if (profile!=null) {
+		if (profile != null) {
 			for (Artifact a : profile.getArtifacts()) {
 				repository.addArtifact(a);
 			}
 		}
-		
-		
-		RepositoryListener listener = new RepositoryListener() {
-			public void statusChanged(Artifact a, ArtifactStatus oldStatus, ArtifactStatus newStatus) {
-				splash.setText(a.getArtifactId()+"-"+a.getVersion()+" : "+newStatus.toString());				
-				if (newStatus.isError()) {
-					//System.out.println(a.toString()+" :: "+newStatus.toString());
-				}
-				if (newStatus.equals(ArtifactStatus.JarFetching)) {
-					try {
-						final DownloadStatus dls = repository.getDownloadStatus(a);
-						new Thread(new Runnable() {
-							public void run() {
-								//System.out.println("Progress thread starting");
-								boolean running = true;
-								try {
-									while (running) {
-										Thread.sleep(100);
-										
-										int progress = Math.min(
-												(dls.getReadBytes() * 100) / dls.getTotalBytes(),
-												100);
-										splash.setProgress(progress);
-										
-										if (dls.isFinished()) {
-											running = false;
-										}
-									}
-									//System.out.println("Progress bar thread finished");
-								} catch (InterruptedException e) {
-									// TODO Auto-generated catch block
-									//e.printStackTrace();
-									//System.out.println("Progress bar thread interrupted");
-								}
-							}
-						}).start();
-					} catch (ArtifactStateException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					} catch (ArtifactNotFoundException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-				}
-			}			
-		};
-		if (splashScreen) {
-			repository.addRepositoryListener(listener);
+		if (splash != null) {
+			splash.listenToRepository(repository);
 		}
 		repository.update();
-		if (splashScreen) {
-			repository.removeRepositoryListener(listener);
+		if (splash != null) {
+			splash.removeListener();
 			splash.setText("Done...");
 			splash.requestClose();
 		} 
@@ -190,106 +154,184 @@ public class Loader {
 		ClassLoader loader = repository.getLoader(artifact,null);
 		//System.out.println("Got classloader");
 		return loader.loadClass(className);
+	}	
+}
+
+class SplashScreen extends JWindow {
+
+	private static class SplashListener implements RepositoryListener {
+		
+		private final Repository repository;
+		private final SplashScreen splash;
+
+		private SplashListener(Repository repository, SplashScreen splash) {
+			this.repository = repository;
+			this.splash = splash;
+		}
+
+		public void statusChanged(Artifact a, ArtifactStatus oldStatus, ArtifactStatus newStatus) {
+			splash.setText(a.getArtifactId()+"-"+a.getVersion()+" : "+newStatus.toString());				
+			if (newStatus.isError()) {
+				//System.out.println(a.toString()+" :: "+newStatus.toString());
+			}
+			if (! newStatus.equals(ArtifactStatus.JarFetching)) {
+				return;
+			}
+			final DownloadStatus dls;
+			try {
+				dls = repository.getDownloadStatus(a);
+			} catch (RavenException ex) {
+				// TODO Auto-generated catch block
+				ex.printStackTrace();
+				return;
+			}
+			// FIXME: What if there are severan artifacts JarFetching at the 
+			// same time? Would we get many progressThreads?
+			Thread progressThread = new Thread(new Runnable() {
+				public void run() {
+					while (true) {
+						try {
+							Thread.sleep(100);
+						} catch (InterruptedException e) {
+							// Should not happen, but if it does, we'll quit
+							e.printStackTrace();
+							return;
+						}
+						int progress = Math.min(100, 
+								(dls.getReadBytes() * 100) / dls.getTotalBytes());
+						splash.setProgress(progress);
+						if (dls.isFinished()) {
+							return;
+						}
+					}
+				}
+			});
+			progressThread.start();			
+		}
 	}
-	
-	private static class SplashScreen extends JWindow {
-		
-		private static final long serialVersionUID = -3444472402764959095L;
-		private boolean canClose = false;
-		private boolean timedOut = false;
-		private JProgressBar progress = new JProgressBar();
-		
-		public void setText(String text) {
-			progress.setString(text);
-		}
-		
-		public void setProgress(int percentage) {
-			if (percentage > 0) {
-				//progress.setIndeterminate(false);
-				progress.setValue(percentage);
+
+	private static final long serialVersionUID = -3444472402764959095L;
+	private boolean canClose = false;
+	private boolean timedOut = false;
+	private JProgressBar progress = new JProgressBar();
+	private SplashListener listener;
+
+	public SplashScreen(URL imageURL, final int timeout) {
+		super();
+		ImageIcon image = new ImageIcon(imageURL);
+		JLabel label = new JLabel(image);
+		getContentPane().add(label, BorderLayout.CENTER);
+		progress.setStringPainted(true);
+		progress.setString("Initializing");
+		//progress.setIndeterminate(true);
+		getContentPane().add(progress, BorderLayout.SOUTH);
+		pack();
+		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+		Dimension labelSize = label.getPreferredSize();
+		setLocation(screenSize.width / 2 - (labelSize.width / 2),
+				screenSize.height / 2 - (labelSize.height / 2));
+
+		// If the mouse is clicked then we can close the splash
+		// screen once all raven activity has ceased
+		addMouseListener(new MouseAdapter() {
+			public void mousePressed(MouseEvent me) {
+				requestCloseFromMouse();					
 			}
-			else {
-				progress.setValue(0);
+		});
+
+		Runnable waitRunner = new Runnable() {
+			public void run() {
+				try {
+					Thread.sleep(timeout);
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				requestCloseFromTimeout();
 			}
+		};
+
+		setVisible(true);
+		Thread timerThread = new Thread(waitRunner, "SplashThread");
+		timerThread.setDaemon(true);
+		timerThread.start();
+	}
+
+	/**
+	 * Remove listener as set by listenToRepository(Repository repository).
+	 *
+	 * @see listenToRepository(Repository repository)
+	 */
+	public void removeListener() {
+		if (listener != null) {
+			listener.repository.removeRepositoryListener(listener);
+			listener = null;
 		}
-		
-		public synchronized void setClosable() {
-			this.canClose = true;
-		}
-		
-		public synchronized void requestClose() {
-			canClose = true;
+	}
+
+	/**
+	 * Add a listener to the repository that will update this
+	 * splashscreen. Any old listeners connected to this
+	 * splashscreen will be removed. 
+	 * Remove the listener with removeListener()
+	 * when finished. 
+	 * 
+	 * @see removeListener()
+	 * @param repository
+	 */
+	public void listenToRepository(Repository repository) {
+		removeListener();
+		listener = new SplashListener(repository, this);
+		repository.addRepositoryListener(listener);
+	}
+
+	public void setText(String text) {
+		progress.setString(text);
+	}
+
+	public void setProgress(int percentage) {
+		if (percentage > 0) {
 			//progress.setIndeterminate(false);
-			if (timedOut) {
-				closeMe();
-			}
+			progress.setValue(percentage);
+		} else {
+			progress.setValue(0);
 		}
-		
-		private synchronized void requestCloseFromTimeout() {
-			timedOut = true;
-			if (canClose) {
-				closeMe();
-			}
+	}
+
+	public synchronized void setClosable() {
+		canClose = true;
+	}
+
+	public synchronized void requestClose() {
+		canClose = true;
+		//progress.setIndeterminate(false);
+		if (timedOut) {
+			closeMe();
 		}
-		
-		private synchronized void requestCloseFromMouse() {
-			timedOut = true;
-			if (canClose) {
+	}
+
+	private synchronized void requestCloseFromTimeout() {
+		timedOut = true;
+		if (canClose) {
+			closeMe();
+		}
+	}
+
+	private synchronized void requestCloseFromMouse() {
+		timedOut = true;
+		if (canClose) {
+			setVisible(false);
+			dispose();
+		}
+	}
+
+	private synchronized void closeMe() {
+		SwingUtilities.invokeLater(new Runnable() {
+			public void run() {
 				setVisible(false);
 				dispose();
 			}
-		}
-		
-		private synchronized void closeMe() {
-			SwingUtilities.invokeLater(new Runnable() {
-				public void run() {
-					setVisible(false);
-					dispose();
-				}
-			});
-		}
-		
-		public SplashScreen(URL imageURL, final int timeout) {
-			super();
-			ImageIcon image = new ImageIcon(imageURL);
-			JLabel label = new JLabel(image);
-			getContentPane().add(label, BorderLayout.CENTER);
-			progress.setStringPainted(true);
-			progress.setString("Initializing");
-			//progress.setIndeterminate(true);
-			getContentPane().add(progress, BorderLayout.SOUTH);
-			pack();
-			Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-			Dimension labelSize = label.getPreferredSize();
-			setLocation(screenSize.width / 2 - (labelSize.width / 2),
-					screenSize.height / 2 - (labelSize.height / 2));
-			
-			// If the mouse is clicked then we can close the splash
-			// screen once all raven activity has ceased
-			addMouseListener(new MouseAdapter() {
-				public void mousePressed(MouseEvent me) {
-					requestCloseFromMouse();					
-				}
-			});
-			
-			Runnable waitRunner = new Runnable() {
-				public void run() {
-					try {
-						Thread.sleep(timeout);
-					} catch (InterruptedException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-					requestCloseFromTimeout();
-				}
-			};
-			
-			setVisible(true);
-			Thread timerThread = new Thread(waitRunner, "SplashThread");
-			timerThread.setDaemon(true);
-			timerThread.start();
-		}
-		
+		});
 	}
-	
 }
+
