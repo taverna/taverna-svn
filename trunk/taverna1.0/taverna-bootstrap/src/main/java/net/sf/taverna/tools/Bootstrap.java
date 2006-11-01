@@ -32,9 +32,6 @@ public class Bootstrap {
 	// Where Raven will store its repository, discovered by main()
 	public static String TAVERNA_CACHE = "";
 
-	public static final String SPLASHSCREEN = properties
-			.getProperty("raven.splashscreen.url");
-
 	public static URL[] remoteRepositories = findRepositories(properties);
 
 	private static String loaderVersion;
@@ -99,30 +96,30 @@ public class Bootstrap {
 	}
 
 	public static Properties findProperties() {
-		Properties properties = new Properties();
+		Properties props = new Properties();
 		String propsName = "/raven.properties";
-		InputStream props = Bootstrap.class.getResourceAsStream(propsName);
-		if (props == null) {
+		InputStream propStream = Bootstrap.class.getResourceAsStream(propsName);
+		if (propStream == null) {
 			System.err.println("Could not find " + propsName);
 			System.exit(1);
 		}
 		try {
-			properties.load(props);
+			props.load(propStream);
 		} catch (IOException e) {
 			System.err.println("Could not load " + propsName);
 			System.exit(2);
 		}
 		// Allow overriding any of those on command line
-		properties.putAll(System.getProperties());
-		return properties;
+		props.putAll(System.getProperties());
+		return props;
 	}
 
-	public static URL[] findRepositories(Properties properties) {
+	public static URL[] findRepositories(Properties props) {
 		// entries are named raven.repository.2 = http:// ..
 		// We'll add these in order as stated (not as in property file)
 		String prefix = "raven.repository.";
 		ArrayList<URL> urls = new ArrayList<URL>();
-		for (Entry property : properties.entrySet()) {
+		for (Entry property : props.entrySet()) {
 			String propName = (String) property.getKey();
 			if (!propName.startsWith(prefix)) {
 				continue;
@@ -151,35 +148,30 @@ public class Bootstrap {
 			// .add(pos, url) makes sure we don't overwrite anything
 			urls.add(position, url);
 		}
-		// Check if .m2/repository is there, add it
-		File mavenRep = new File(System.getProperty("user.home"),
-				".m2/repository/");
-		if (mavenRep.isDirectory()) {
-			try {
-				// We'll put it in 1, not 0, so that raven.repository.0 can come
-				// first
-				urls.add(1, mavenRep.toURI().toURL());
-			} catch (MalformedURLException e) {
-				System.err.println("Invalid maven repository: " + mavenRep);
-			}
-		}
+		// We'll put it in 1, not 0, so that raven.repository.0 can 
+		// override .m2/repository
+		urls.add(1, findLocalMavenRepository());
 		// Remove nulls and export as URL[]
 		while (urls.remove(null)) {
+			// nothing
 		}
 		return urls.toArray(new URL[0]);
 	}
 
-	private static void addMavenLocalRepository(ArrayList<URL> urls) {
+	/** 
+	 * Find URL to local .m2/repository or return null.
+	 */
+	private static URL findLocalMavenRepository() {
 		File mavenRep = new File(System.getProperty("user.home"),
 				".m2/repository/");
-		if (mavenRep.isDirectory()) {
-			try {
-				// We'll put it in 1, not 0, so that raven.repository.0 can come
-				// first
-				urls.add(1, mavenRep.toURI().toURL());
-			} catch (MalformedURLException e) {
-				System.err.println("Invalid maven repository: " + mavenRep);
-			}
+		if (! mavenRep.isDirectory()) {
+			return null;
+		}
+		try {
+			return mavenRep.toURI().toURL();
+		} catch (MalformedURLException e) {
+			System.err.println("Invalid maven repository: " + mavenRep);
+			return null;
 		}
 	}
 
@@ -199,7 +191,7 @@ public class Bootstrap {
 			}
 		} catch (InvocationTargetException e) {
 			String methodName = workbenchClass
-					+ System.getProperty("raven.target.method");
+					+ properties.getProperty("raven.target.method");
 			System.err.println("Exception occured in " + methodName);
 			e.getCause().printStackTrace();
 			System.exit(5);
@@ -212,10 +204,9 @@ public class Bootstrap {
 		Class workbenchClass = null;
 		File cacheDir = findCache();
 		String useSplashProp = properties.getProperty("raven.splashscreen");
-		boolean useSplashscreen = !(useSplashProp == null || useSplashProp
-				.equalsIgnoreCase("false"));
+		boolean useSplashscreen = useSplashProp != null && 
+			! useSplashProp.equalsIgnoreCase("false");
 
-		// FIXME: Support other classes like WorkflowLauncher
 		String groupID = properties.getProperty("raven.target.groupid");
 		String artifactID = properties.getProperty("raven.target.artifactid");
 		String version = properties.getProperty("raven.target.version");
@@ -233,19 +224,19 @@ public class Bootstrap {
 				+ artifactID);
 
 		// Call method via reflection, 'null' target as this is a static method
-		URL splashScreenImage = null;
-		int minimumDisplayTime = 1;
+		URL splashScreenURL = null;
+		int splashScreenTime = 1;
 		if (useSplashscreen) {
-			// FIXME: Support offline splashscreen
-			splashScreenImage = new URL(SPLASHSCREEN);
-			minimumDisplayTime = Integer.valueOf(properties
+			splashScreenURL = new URL(properties
+					.getProperty("raven.splashscreen.url"));
+			splashScreenTime = Integer.valueOf(properties
 					.getProperty("raven.splashscreen.timeout")) * 1000; // seconds
 		}
 
 		try {
 			workbenchClass = (Class) loaderMethod.invoke(null, ravenVersion,
 					cacheDir, remoteRepositories, groupID, artifactID, version,
-					targetClassName, splashScreenImage, minimumDisplayTime);
+					targetClassName, splashScreenURL, splashScreenTime);
 		} catch (InvocationTargetException e) {
 			System.err.println("Could not launch Raven");
 			e.getCause().printStackTrace();
@@ -260,6 +251,7 @@ public class Bootstrap {
 		if (cacheDir == null) {
 			System.err.println("Unable to create repository directory");
 			System.exit(-1);
+			return null;
 		}
 
 		// Create a remote classloader referencing the raven jar within a
@@ -297,7 +289,7 @@ public class Bootstrap {
 		ClassLoader c = new URLClassLoader(loaderURLs.toArray(new URL[0]), null);
 
 		// override with system classloader if running in eclipse
-		if (System.getProperty("raven.eclipse") != null) {
+		if (properties.getProperty("raven.eclipse") != null) {
 			c = ClassLoader.getSystemClassLoader();
 		}
 
