@@ -22,10 +22,10 @@ import org.xml.sax.SAXException;
 /**
  * This class renders SVG Documents.
  * 
- * Last edited by $Author: mereden $
+ * Last edited by $Author: stain $
  * 
  * @author Mark
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
 public class SVGRenderer extends ByPattern implements RendererSPI {
 
@@ -61,8 +61,7 @@ public class SVGRenderer extends ByPattern implements RendererSPI {
 		Object data = dataThing.getDataObject();
 		String mimetype = dataThing.getSyntacticType();
 		logger.info(" *** mimeType: " + mimetype);
-		if (data instanceof String && data != null && !data.equals("")) {
-
+		if (data != null && data instanceof String && !data.equals("")) {
 			if ("'image/svg+xml'".equals(mimetype)) {
 				String svgContent = (String) data;
 
