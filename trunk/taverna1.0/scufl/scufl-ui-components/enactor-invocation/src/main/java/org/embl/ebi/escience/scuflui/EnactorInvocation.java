@@ -75,8 +75,6 @@ public class EnactorInvocation extends JPanel implements UIComponentSPI {
 	}
 
 	public void onDispose() {
-		// detachFromModel() is called by GeneridUIComponentFrame when
-		// it is closing. Cleanup of remote resources will be done here.
 		try {
 			workflowEditor.detachFromModel();			
 			workflowInstance.cancelExecution();
@@ -304,7 +302,7 @@ public class EnactorInvocation extends JPanel implements UIComponentSPI {
 		super(new BorderLayout());
 		workflowInstance = instance;
 		try {
-			theModel = (ScuflModel) instance.getWorkflowModel().clone();
+			theModel = instance.getWorkflowModel().clone();
 		} catch (CloneNotSupportedException ce) {
 			logger.error("Could not clone workflow model", ce);			
 			WorkflowSubmissionException wfex = new WorkflowSubmissionException();
@@ -382,15 +380,15 @@ public class EnactorInvocation extends JPanel implements UIComponentSPI {
 		final JButton playButton = new JButton("Resume", TavernaIcons.playIcon);
 		final JButton pauseButton = new JButton("Pause", TavernaIcons.pauseIcon);
 		final JButton stopButton = new JButton("Stop", TavernaIcons.stopIcon);
-		final JLabel taskLabel = new JLabel("Processor");
+		//final JLabel taskLabel = new JLabel("Processor");
 		flowLabel = new JLabel("<html><em>New</em></html>");
 		// Eugh. Ugly. Will use HTML labels instead. tmo
 		// flowLabel.setFont(new java.awt.Font("Monospaced", java.awt.Font.BOLD,
 		// 16));
-		final JButton breakButton = new JButton("Add Breakpoint",
-				TavernaIcons.breakIcon);
-		final JButton rbreakButton = new JButton("Resume",
-				TavernaIcons.rbreakIcon);
+		//final JButton breakButton = new JButton("Add Breakpoint",
+		//		TavernaIcons.breakIcon);
+		//final JButton rbreakButton = new JButton("Resume",
+		//		TavernaIcons.rbreakIcon);
 
 		playButton.setVisible(false);
 		playButton.setSize(70, 30);
@@ -568,8 +566,7 @@ public class EnactorInvocation extends JPanel implements UIComponentSPI {
 					.getMessage());
 			throw wse;
 		}
-		EnactorInvocationStatusThread s = new EnactorInvocationStatusThread(
-				this);
+		new EnactorInvocationStatusThread(this);
 	}
 
 	/**
