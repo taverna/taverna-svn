@@ -1,12 +1,14 @@
 package net.sf.taverna.raven.repository;
 
+import net.sf.taverna.raven.RavenException;
+
 /**
  * Thrown when an operation attempt to perform on an artifact
  * that isn't in the right state relative to a particular
  * repository
  * @author Tom Oinn
  */
-public class ArtifactStateException extends Exception {
+public class ArtifactStateException extends RavenException {
 
 	private static final long serialVersionUID = 1L;
 
