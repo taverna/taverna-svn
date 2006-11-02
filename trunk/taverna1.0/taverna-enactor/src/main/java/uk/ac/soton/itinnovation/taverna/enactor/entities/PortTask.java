@@ -1,7 +1,7 @@
 
 ////////////////////////////////////////////////////////////////////////////////
 //
-// © University of Southampton IT Innovation Centre, 2002
+// ï¿½ University of Southampton IT Innovation Centre, 2002
 //
 // Copyright in this library belongs to the IT Innovation Centre of
 // 2 Venture Road, Chilworth Science Park, Southampton SO16 7NP, UK.
@@ -25,9 +25,9 @@
 //      Created for Project :   MYGRID
 //      Dependencies        :
 //
-//      Last commit info    :   $Author: sowen70 $
-//                              $Date: 2006-07-10 14:05:58 $
-//                              $Revision: 1.2 $
+//      Last commit info    :   $Author: stain $
+//                              $Date: 2006-11-02 11:27:17 $
+//                              $Revision: 1.3 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 
@@ -49,6 +49,7 @@ import org.embl.ebi.escience.scufl.SemanticMarkup;
 import org.embl.ebi.escience.scufl.enactor.WorkflowInstance;
 import org.embl.ebi.escience.scufl.enactor.event.CollectionConstructionEvent;
 import org.embl.ebi.escience.scufl.enactor.implementation.WorkflowEventDispatcher;
+import org.embl.ebi.escience.scufl.enactor.implementation.WorkflowInstanceImpl;
 
 import uk.ac.soton.itinnovation.freefluo.core.event.RunEvent;
 import uk.ac.soton.itinnovation.freefluo.core.flow.Flow;
@@ -315,7 +316,7 @@ public class PortTask extends AbstractTask {
 		Flow flow = getFlow();
 		String flowID = flow.getFlowId();
 		Engine e = flow.getEngine();
-		this.workflowInstance = (WorkflowInstance)new org.embl.ebi.escience.scufl.enactor.implementation.WorkflowInstanceImpl(e, thePort.getProcessor().getModel(), flowID);
+		this.workflowInstance = WorkflowInstanceImpl.getInstance(e, thePort.getProcessor().getModel(), flowID);
                 //System.out.println("Invoking : "+getScuflPort().getProcessor().getName()+"."+getScuflPort().getName());
 		for(Iterator i = getChildren().iterator(); i.hasNext();) {
 		    Task task = (Task) i.next();

@@ -24,9 +24,9 @@
 //      Created for Project :   MYGRID
 //      Dependencies        :
 //
-//      Last commit info    :   $Author: mereden $
-//                              $Date: 2006-10-02 12:00:50 $
-//                              $Revision: 1.4 $
+//      Last commit info    :   $Author: stain $
+//                              $Date: 2006-11-02 11:27:17 $
+//                              $Revision: 1.5 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 package uk.ac.soton.itinnovation.taverna.enactor.entities;
@@ -64,6 +64,7 @@ import org.embl.ebi.escience.scufl.enactor.event.NestedWorkflowFailureEvent;
 import org.embl.ebi.escience.scufl.enactor.event.ProcessCompletionEvent;
 import org.embl.ebi.escience.scufl.enactor.event.ProcessFailureEvent;
 import org.embl.ebi.escience.scufl.enactor.implementation.WorkflowEventDispatcher;
+import org.embl.ebi.escience.scufl.enactor.implementation.WorkflowInstanceImpl;
 import org.embl.ebi.escience.scufl.provenance.process.AlternateProcessScheduled;
 import org.embl.ebi.escience.scufl.provenance.process.ConstructingIterator;
 import org.embl.ebi.escience.scufl.provenance.process.DataMismatchError;
@@ -226,7 +227,7 @@ public class ProcessorTask extends AbstractTask  implements IProcessorTask {
 			Flow flow = getFlow();
 			String flowID = flow.getFlowId();
 			Engine e = flow.getEngine();
-			this.workflowInstance = (WorkflowInstance) new org.embl.ebi.escience.scufl.enactor.implementation.WorkflowInstanceImpl(
+			this.workflowInstance =  WorkflowInstanceImpl.getInstance(
 					e, activeProcessor.getModel(), flowID);
 			// //System.out.println("Invoking processor task for
 			// "+activeProcessor.getName());
