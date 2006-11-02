@@ -56,7 +56,7 @@ public class DataThing implements Cloneable, Serializable {
 
 	protected SemanticMarkup myMarkup;
 
-	protected HashMap lsid = new HashMap();
+	protected HashMap<Object, String> lsid = new HashMap<Object, String>();
 
 	public static LSIDProvider SYSTEM_DEFAULT_LSID_PROVIDER = null;
 
@@ -123,8 +123,8 @@ public class DataThing implements Cloneable, Serializable {
 	/**
 	 * Get the LSID map object->LSID
 	 */
-	public Map getLSIDMap() {
-		return this.lsid;
+	public Map<Object, String> getLSIDMap() {
+		return lsid;
 	}
 
 	/**
