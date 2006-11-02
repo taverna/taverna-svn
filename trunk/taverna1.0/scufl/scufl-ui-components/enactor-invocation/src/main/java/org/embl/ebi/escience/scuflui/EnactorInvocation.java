@@ -79,14 +79,14 @@ public class EnactorInvocation extends JPanel implements UIComponentSPI {
 			workflowEditor.detachFromModel();
 			workflowInstance.cancelExecution();
 			// FIXME: Is this the right place to destroy? What about
-			// other people attached to the workflow instance? 
+			// other people attached to the workflow instance?
 			// (We must destroy() it somewhere, otherwise it will float
 			// around and reference among other things our possibly large
 			// input data)
 			logger.debug("Destroying " + workflowInstance);
 			workflowInstance.destroy();
 			logger.debug("Destroyed " + workflowInstance);
-			// And remove our reference to it		
+			// And remove our reference to it
 			workflowInstance = null;
 			theModel = null;
 		} catch (Exception e) {
@@ -138,7 +138,7 @@ public class EnactorInvocation extends JPanel implements UIComponentSPI {
 	public WorkflowInstance getWorkflowInstance() {
 		return workflowInstance;
 	}
-	
+
 	// The workflow status label
 	JLabel flowLabel = null;
 
@@ -168,8 +168,7 @@ public class EnactorInvocation extends JPanel implements UIComponentSPI {
 		try {
 			logger.debug("Getting results");
 			while (true) {
-				if (workflowInstance.getStatus().equalsIgnoreCase(
-						"Complete")) {
+				if (workflowInstance.getStatus().equalsIgnoreCase("Complete")) {
 					break;
 				}
 				// logger.debug(workflowInstance.getStatus());
@@ -229,14 +228,14 @@ public class EnactorInvocation extends JPanel implements UIComponentSPI {
 		try {
 			int sizeLimit = 128000;
 			try {
-				sizeLimit = Integer.parseInt(
-						MyGridConfiguration.getProperty("taverna.resulttable.sizelimit"));
+				sizeLimit = Integer.parseInt(MyGridConfiguration
+						.getProperty("taverna.resulttable.sizelimit"));
 			} catch (NumberFormatException ex) {
 				logger.error("Could not set taverna.resulttable.sizelimit", ex);
 			}
 			if (workflowInstance.getProvenanceXMLString().length() < sizeLimit) {
-				tabs.add("Result Table", new JScrollPane(
-						new ResultTablePanel(theModel, workflowInstance)));
+				tabs.add("Result Table", new JScrollPane(new ResultTablePanel(
+						theModel, workflowInstance)));
 			}
 		} catch (RuntimeException e) {
 			// The above can cause a NPE, we need to track this down
@@ -306,9 +305,9 @@ public class EnactorInvocation extends JPanel implements UIComponentSPI {
 		try {
 			theModel = instance.getWorkflowModel().clone();
 		} catch (CloneNotSupportedException ce) {
-			logger.error("Could not clone workflow model", ce);			
+			logger.error("Could not clone workflow model", ce);
 			WorkflowSubmissionException wfex = new WorkflowSubmissionException();
-			wfex.initCause(ce);			
+			wfex.initCause(ce);
 			throw wfex;
 		}
 		setPreferredSize(new Dimension(100, 100));
@@ -382,15 +381,15 @@ public class EnactorInvocation extends JPanel implements UIComponentSPI {
 		final JButton playButton = new JButton("Resume", TavernaIcons.playIcon);
 		final JButton pauseButton = new JButton("Pause", TavernaIcons.pauseIcon);
 		final JButton stopButton = new JButton("Stop", TavernaIcons.stopIcon);
-		//final JLabel taskLabel = new JLabel("Processor");
+		// final JLabel taskLabel = new JLabel("Processor");
 		flowLabel = new JLabel("<html><em>New</em></html>");
 		// Eugh. Ugly. Will use HTML labels instead. tmo
 		// flowLabel.setFont(new java.awt.Font("Monospaced", java.awt.Font.BOLD,
 		// 16));
-		//final JButton breakButton = new JButton("Add Breakpoint",
-		//		TavernaIcons.breakIcon);
-		//final JButton rbreakButton = new JButton("Resume",
-		//		TavernaIcons.rbreakIcon);
+		// final JButton breakButton = new JButton("Add Breakpoint",
+		// TavernaIcons.breakIcon);
+		// final JButton rbreakButton = new JButton("Resume",
+		// TavernaIcons.rbreakIcon);
 
 		playButton.setVisible(false);
 		playButton.setSize(70, 30);

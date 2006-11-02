@@ -92,8 +92,8 @@ public class FreefluoEnactorProxy implements EnactorProxy {
 			if (user != null) {
 				engine.setFlowContext(workflowInstanceId, user.toFlowContext());
 			}
-			WorkflowInstance workflowInstance = WorkflowInstanceImpl.getInstance(
-					engine, workflow, workflowInstanceId);
+			WorkflowInstance workflowInstance = WorkflowInstanceImpl
+					.getInstance(engine, workflow, workflowInstanceId);
 			return workflowInstance;
 		} catch (Exception e) {
 			WorkflowSubmissionException wse = new WorkflowSubmissionException(
