@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: LocalWorkerRegistry.java,v $
- * Revision           $Revision: 1.2 $
+ * Revision           $Revision: 1.3 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-11-02 11:56:10 $
+ * Last modified on   $Date: 2006-11-02 15:36:56 $
  *               by   $Author: sowen70 $
  * Created on 1 Nov 2006
  *****************************************************************/
@@ -48,7 +48,7 @@ import org.embl.ebi.escience.utils.TavernaSPIRegistry;
 public class LocalWorkerRegistry extends TavernaSPIRegistry<LocalWorker> {
 	
 	private static LocalWorkerRegistry instance = new LocalWorkerRegistry();
-	private static Map<String,ClassLoader> classloaderMap=new HashMap<String,ClassLoader>();
+	private static Map<String,ClassLoader> classloaderMap=new HashMap<String,ClassLoader>();	
 
 	private LocalWorkerRegistry() {
 		super(LocalWorker.class);
@@ -81,12 +81,11 @@ public class LocalWorkerRegistry extends TavernaSPIRegistry<LocalWorker> {
 		}
 	}
 	
-	public static Class findClassForName(String name) throws ClassNotFoundException{
-		ClassLoader loader=classloaderMap.get(name);
-		if (loader==null) { //try context loader as a last resort
+	public static Class findClassForName(String classname) throws ClassNotFoundException{
+		ClassLoader loader=classloaderMap.get(classname);
+		if (loader==null) { //try the classloader for the current context as a last resort	
 			loader=Thread.currentThread().getContextClassLoader();
 		}
-		return loader.loadClass(name);
-	}
-
+		return loader.loadClass(classname);
+	}	
 }

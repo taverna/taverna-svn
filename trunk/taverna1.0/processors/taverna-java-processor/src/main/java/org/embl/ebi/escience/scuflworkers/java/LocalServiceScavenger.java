@@ -66,12 +66,17 @@ public class LocalServiceScavenger extends Scavenger {
 				} else {
 					String[] split = description.split(":");
 					String shortDescription = description;
+					String category="";
 					if (split.length == 2) {
 						shortDescription = split[1];
+						category = split[0];
+						
 					}
-					workerList.put(description, new Scavenger(
-							new LocalServiceProcessorFactory(worker.getClass()
-									.getName(), shortDescription)));
+					if (!category.equalsIgnoreCase("hidden")) {
+						workerList.put(description, new Scavenger(
+								new LocalServiceProcessorFactory(worker.getClass()
+										.getName(), shortDescription)));
+					}
 				}
 			}
 		} catch (Exception e) {

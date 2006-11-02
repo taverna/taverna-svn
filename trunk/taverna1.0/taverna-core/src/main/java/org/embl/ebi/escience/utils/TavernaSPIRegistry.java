@@ -125,4 +125,11 @@ public class TavernaSPIRegistry<T> {
 		return ir.getInstances();
 	}
 	
+	/**
+	 * 
+	 * @return an instance of the Repository, if set by setRepository
+	 */
+	protected static Repository getRepository() {
+		return repository;
+	}
 }
