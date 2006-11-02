@@ -7,9 +7,12 @@ package org.embl.ebi.escience.scufl;
 
 // Utility Imports
 import java.io.Serializable;
-import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Map.Entry;
+
+import org.apache.log4j.Logger;
 
 /**
  * Represents an alternate processor to be used in case of failures in the
@@ -81,13 +84,15 @@ import java.util.Map;
  */
 public class AlternateProcessor implements Serializable {
 
+	private static Logger logger = Logger.getLogger(AlternateProcessor.class);
+	
 	private Processor alternate;
 
 	private Processor original;
 
-	private Map inputMapping = new HashMap();
+	private Map<String,String> inputMapping = new Hashtable<String,String>();
 
-	private Map outputMapping = new HashMap();
+	private Map<String,String> outputMapping = new Hashtable<String,String>();
 
 	public AlternateProcessor(Processor alternate) {
 		this.alternate = alternate;
@@ -105,7 +110,7 @@ public class AlternateProcessor implements Serializable {
 	 * care!
 	 */
 	public Processor getProcessor() {
-		return this.alternate;
+		return alternate;
 	}
 
 	/**
@@ -114,37 +119,39 @@ public class AlternateProcessor implements Serializable {
 	 * defined for the alternate.
 	 */
 	public Processor getOriginalProcessor() {
-		return this.original;
+		return original;
 	}
 
 	public void setOriginalProcessor(Processor p) {
-		this.original = p;
-		this.alternate.parentProcessor = p;
+		original = p;
+		alternate.parentProcessor = p;
 		// If there are ports that are the same name on the
 		// original and this processor, and these are not
 		// already defined in the mapping section, then create
 		// simple identity mappings.
-		Port[] ports = this.original.getPorts();
-		for (int i = 0; i < ports.length; i++) {
+		for (Port port : original.getPorts()) {
+			String portName = port.getName();
 			// Check for an existing mapping
-			if ((inputMapping.get(ports[i].getName()) == null && ports[i] instanceof InputPort)
-					|| (outputMapping.get(ports[i].getName()) == null && ports[i] instanceof OutputPort)) {
-				// Does the alternate have a named port with the same name?
-				try {
-					Port targetPort = this.alternate.locatePort(ports[i]
-							.getName());
-					if (targetPort instanceof InputPort
-							&& ports[i] instanceof InputPort) {
-						inputMapping.put(targetPort.getName(), targetPort
-								.getName());
-					} else if (targetPort instanceof OutputPort
-							&& ports[i] instanceof OutputPort) {
-						outputMapping.put(targetPort.getName(), targetPort
-								.getName());
-					}
-				} catch (UnknownPortException upe) {
-					//
-				}
+			if ((port instanceof InputPort && inputMapping.containsKey(portName))
+					|| (port instanceof OutputPort && outputMapping.containsKey(portName))) {
+				continue;
+			}
+			// Does the alternate have a named port with the same name?
+			Port targetPort;
+			try {
+				targetPort = alternate.locatePort(portName);
+			} catch (UnknownPortException e) {
+				logger.debug("Could not match port " + portName);
+				continue;
+			}
+			if (targetPort instanceof InputPort
+					&& port instanceof InputPort) {
+				inputMapping.put(portName, targetPort.getName());
+			} else if (targetPort instanceof OutputPort
+					&& port instanceof OutputPort) {
+				outputMapping.put(portName, targetPort.getName());
+			} else {
+				logger.debug("Found port " + portName + " does not match input/output");
 			}
 		}
 	}
@@ -154,8 +161,8 @@ public class AlternateProcessor implements Serializable {
 	 * primary input names and values being the corresponding names of inputs on
 	 * the alternate processor this holder class contains.
 	 */
-	public Map getInputMapping() {
-		return this.inputMapping;
+	public Map<String,String> getInputMapping() {
+		return inputMapping;
 	}
 
 	/**
@@ -163,15 +170,15 @@ public class AlternateProcessor implements Serializable {
 	 * primary output names and values being the corresponding names of outputs
 	 * on the alternate processor this holder class contains.
 	 */
-	public Map getOutputMapping() {
-		return this.outputMapping;
+	public Map<String,String> getOutputMapping() {
+		return outputMapping;
 	}
 
 	/**
 	 * Use the toString method of the underlying processor
 	 */
 	public String toString() {
-		return this.alternate.toString();
+		return alternate.toString();
 	}
 
 	/**
@@ -183,18 +190,14 @@ public class AlternateProcessor implements Serializable {
 	 *         of the original port otherwise.
 	 */
 	public String getPortTranslation(String alternatePort) {
-		for (Iterator i = inputMapping.keySet().iterator(); i.hasNext();) {
-			String key = (String) i.next();
-			String value = (String) inputMapping.get(key);
-			if (value != null && value.equalsIgnoreCase(alternatePort)) {
-				return key;
+		for (Entry<String,String> mapping : inputMapping.entrySet()) {
+			if (mapping.getValue().equalsIgnoreCase(alternatePort)) {
+				return mapping.getKey();
 			}
 		}
-		for (Iterator i = outputMapping.keySet().iterator(); i.hasNext();) {
-			String key = (String) i.next();
-			String value = (String) outputMapping.get(key);
-			if (value != null && value.equalsIgnoreCase(alternatePort)) {
-				return key;
+		for (Entry<String,String> mapping : outputMapping.entrySet()) {
+			if (mapping.getValue().equalsIgnoreCase(alternatePort)) {
+				return mapping.getKey();
 			}
 		}
 		return null;
