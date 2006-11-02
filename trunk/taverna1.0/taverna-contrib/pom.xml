@@ -190,17 +190,7 @@
     <dependency>
       <groupId>dom4j</groupId>
       <artifactId>dom4j</artifactId>
-      <version>1.5</version>
-      <exclusions>
-        <exclusion>
-          <artifactId>jsr173</artifactId>
-          <groupId>javax.xml</groupId>
-        </exclusion>
-        <exclusion>
-          <artifactId>pull-parser</artifactId>
-          <groupId>pull-parser</groupId>
-        </exclusion>
-      </exclusions>
+      <version>1.6</version>      
     </dependency>
  </dependencies> 
 </project>

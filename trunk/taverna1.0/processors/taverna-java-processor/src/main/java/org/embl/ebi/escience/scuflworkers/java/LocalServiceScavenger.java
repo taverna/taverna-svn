@@ -9,6 +9,7 @@ import java.net.URL;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
@@ -19,51 +20,63 @@ import org.embl.ebi.escience.scuflui.workbench.Scavenger;
 import org.embl.ebi.escience.scuflui.workbench.ScavengerCreationException;
 
 /**
- * A scavenger that can create new LocalServiceProcessor nodes. <p/> This uses
- * the Java SPI model to locate instances of LocalWorker. List all
- * implementations under
- * <code>META-INF/services/org.embl.ebi.escience.scuflworkers.java.LocalWorker</code>.
+ * A scavenger that can create new LocalServiceProcessor nodes. Local Services
+ * are discovered using the LocalWorker SPI pattern, with the processor
+ * description and category held in localworkers.properties mapped to the
+ * classname.
  * 
  * @author Tom Oinn
  * @author Matthew Pocock
+ * @author Stuart Owen
  */
 public class LocalServiceScavenger extends Scavenger {
 
 	private static final long serialVersionUID = -901978754221092069L;
 
-	private static Logger LOG = Logger.getLogger(LocalServiceScavenger.class);
+	private static Logger logger = Logger
+			.getLogger(LocalServiceScavenger.class);
 
-	private static Map workerList = new HashMap();
+	private static Map<String, Scavenger> workerList = new HashMap<String, Scavenger>();
 
 	static {
 		try {
-			LOG.info("Loading LocalWorker implementations");
-			Enumeration en = LocalServiceScavenger.class.getClassLoader().getResources(
-					"META-INF/services/org.embl.ebi.escience.scuflworkers.java.LocalWorker");
-			Properties tavernaProperties = new Properties();
-			while (en.hasMoreElements()) {
-				URL resourceURL = (URL) en.nextElement();
-				LOG.debug("Loading workers from: " + resourceURL);
-				tavernaProperties.load(resourceURL.openStream());
-			}
-
-			// Iterate over the available local properties
-			for (Iterator i = tavernaProperties.keySet().iterator(); i.hasNext();) {
-				String className = (String) i.next();
-				String description = (String) tavernaProperties.get(className);
-				String[] split = description.split(":");
-				String category = "default";
-				if (split.length == 2) {
-					category = split[0];
-					description = split[1];
+			Properties properties = new Properties();
+			List<LocalWorker> workers = LocalWorkerRegistry.instance()
+					.getLocalWorkers();
+			for (LocalWorker worker : workers) {
+				String description = properties.getProperty(worker.getClass()
+						.getName());
+				if (description == null) {
+					// use the workers classloader to find the properties file
+					// (because of Raven).
+					Enumeration en = worker.getClass().getClassLoader()
+							.getResources("localworkers.properties");
+					while (en.hasMoreElements()) {
+						URL resURL = (URL) en.nextElement();
+						properties.load(resURL.openStream());
+					}
+					description = properties.getProperty(worker.getClass()
+							.getName());
 				}
-				LOG.debug("Worker: " + className + " category: " + category + " desc: " + description);
-				workerList.put((String) tavernaProperties.get(className), new Scavenger(
-						new LocalServiceProcessorFactory(className, description)));
+
+				if (description == null) {
+					logger
+							.warn("No description in localworkers.properties file found for: "
+									+ worker.getClass().getName());
+				} else {
+					String[] split = description.split(":");
+					String shortDescription = description;
+					if (split.length == 2) {
+						shortDescription = split[1];
+					}
+					workerList.put(description, new Scavenger(
+							new LocalServiceProcessorFactory(worker.getClass()
+									.getName(), shortDescription)));
+				}
 			}
-			LOG.info("Loaded: " + workerList);
 		} catch (Exception e) {
-			LOG.error("Failure in initialization of LocalWorker scavenger", e);
+			logger.error("Failure in initialization of LocalWorker scavenger",
+					e);
 		}
 	}
 
@@ -73,7 +86,7 @@ public class LocalServiceScavenger extends Scavenger {
 	public LocalServiceScavenger() throws ScavengerCreationException {
 		super("Local Java widgets");
 		// Get all the categories and create nodes
-		Map nodeMap = new HashMap();
+		Map<String, DefaultMutableTreeNode> nodeMap = new HashMap<String, DefaultMutableTreeNode>();
 		for (Iterator i = workerList.keySet().iterator(); i.hasNext();) {
 			String key = (String) i.next();
 			Scavenger s = (Scavenger) workerList.get(key);

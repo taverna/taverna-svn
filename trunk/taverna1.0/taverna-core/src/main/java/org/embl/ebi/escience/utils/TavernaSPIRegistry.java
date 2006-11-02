@@ -52,8 +52,7 @@ import org.apache.log4j.Logger;
  * Base class of the Registry classes in Taverna. Uses the SPI pattern to discover classes
  * of the type defined by spiClass in the constructor.
  * 
- * @author sowen
- *
+ * @author Stuart Owen
  */
 
 public class TavernaSPIRegistry<T> {
@@ -63,25 +62,26 @@ public class TavernaSPIRegistry<T> {
 
 	private static Map<Class, InstanceRegistry> spiMap =
 		Collections.synchronizedMap(new HashMap<Class, InstanceRegistry>());
-	private static Repository REPOSITORY = null;
+	private static Repository repository = null;
 	private static Profile profile = null;
 	
 	public static void setRepository(Repository repository) {
 		if (repository == null) {
 			throw new NullPointerException("repository cannot be null");
 		}
-		REPOSITORY = repository;
-	}
+		TavernaSPIRegistry.repository = repository;
+	}	
 	
 	public TavernaSPIRegistry(Class<T> spiClass) {		
-		if (REPOSITORY == null) {
+		if (repository == null) {
 			logger.error("setRepository() has not been called"); 
 			throw new IllegalStateException("TavernaSPIRegistry not initialized " +
 									"with setRepository() ");
 		}
 		this.spiClass = spiClass;
 		if (! spiMap.containsKey(spiClass)) {
-			SpiRegistry registry = new SpiRegistry(REPOSITORY, spiClass.getName(), null);
+			SpiRegistry registry = new SpiRegistry(repository, spiClass.getName(), null);
+			
 			registry.addRegistryListener(new RegistryListener() {
 				public void spiRegistryUpdated(SpiRegistry registry) {
 					logger.info("Registry updated <"+
@@ -109,9 +109,9 @@ public class TavernaSPIRegistry<T> {
 		registry.addFilter(profile);
 
 		for (Artifact a : profile.getArtifacts()) {
-			REPOSITORY.addArtifact(a);					
+			repository.addArtifact(a);					
 		}
-		REPOSITORY.update();						
+		repository.update();						
 	}
 	
 	/**

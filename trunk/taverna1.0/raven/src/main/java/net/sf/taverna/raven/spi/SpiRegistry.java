@@ -199,8 +199,8 @@ public class SpiRegistry implements Iterable<Class> {
 				Scanner scanner = new Scanner(is);
 				scanner.useDelimiter("\n");
 				while (scanner.hasNext()) {
-					String impName = scanner.next().trim();							
-					if (impName.startsWith("#")) { //ignore commented entries
+					String impName = scanner.next().trim();						
+					if (impName.length()==0 || impName.startsWith("#")) { //ignore commented entries or blank lines
 						//System.out.println("Skipping " + impName);
 						continue;
 					} else {

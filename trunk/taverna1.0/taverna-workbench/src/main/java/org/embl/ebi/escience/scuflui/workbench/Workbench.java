@@ -174,7 +174,7 @@ public class Workbench extends JFrame {
 			for (URL repository : Bootstrap.remoteRepositories) {
 				basePane.getRepository().addRemoteRepository(repository);
 			}
-		}
+		}			
 		
 		TavernaSPIRegistry.setRepository(basePane.getRepository());
 		
