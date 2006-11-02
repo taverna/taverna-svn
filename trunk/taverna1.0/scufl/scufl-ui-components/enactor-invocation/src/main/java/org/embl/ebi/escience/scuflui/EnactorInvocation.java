@@ -76,14 +76,16 @@ public class EnactorInvocation extends JPanel implements UIComponentSPI {
 
 	public void onDispose() {
 		try {
-			workflowEditor.detachFromModel();			
+			workflowEditor.detachFromModel();
 			workflowInstance.cancelExecution();
 			// FIXME: Is this the right place to destroy? What about
 			// other people attached to the workflow instance? 
 			// (We must destroy() it somewhere, otherwise it will float
 			// around and reference among other things our possibly large
 			// input data)
+			logger.debug("Destroying " + workflowInstance);
 			workflowInstance.destroy();
+			logger.debug("Destroyed " + workflowInstance);
 			// And remove our reference to it		
 			workflowInstance = null;
 			theModel = null;
@@ -174,7 +176,7 @@ public class EnactorInvocation extends JPanel implements UIComponentSPI {
 				// results = workflowInstance.getOutputXMLString();
 				// if (results.equals("") == false) {
 				// break;
-				Thread.sleep(1000);
+				Thread.sleep(200);
 			}
 		} catch (InterruptedException ie) {
 			// todo: ugly hack - I didn't want to change the logic just incase
