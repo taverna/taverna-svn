@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 //
-// © University of Southampton IT Innovation Centre, 2002
+// ï¿½ University of Southampton IT Innovation Centre, 2002
 //
 // Copyright in this library belongs to the IT Innovation Centre of
 // 2 Venture Road, Chilworth Science Park, Southampton SO16 7NP, UK.
@@ -24,9 +24,9 @@
 //      Created for Project :   MYGRID
 //      Dependencies        :
 //
-//      Last commit info    :   $Author: sowen70 $
-//                              $Date: 2006-09-13 15:51:25 $
-//                              $Revision: 1.3 $
+//      Last commit info    :   $Author: stain $
+//                              $Date: 2006-11-02 14:45:30 $
+//                              $Revision: 1.4 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 
@@ -56,7 +56,7 @@ import uk.ac.soton.itinnovation.taverna.enactor.entities.EnactorWorkflowTask;
 import uk.ac.soton.itinnovation.taverna.enactor.entities.TaskExecutionException;
 
 public class WorkflowTask implements ProcessorTaskWorker, EnactorWorkflowTask {
-	private static EnactorProxy defaultEnactor = new FreefluoEnactorProxy();
+	private static EnactorProxy defaultEnactor = FreefluoEnactorProxy.getInstance();
 
 	private static Logger logger = Logger.getLogger(WorkflowTask.class);	
 
