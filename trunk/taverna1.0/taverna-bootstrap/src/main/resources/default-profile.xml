@@ -33,4 +33,7 @@
 
 	<!-- raven -->
 	<artifact groupId="uk.org.mygrid.taverna.raven" artifactId="raven" version="1.5-SNAPSHOT"/>
+
+	<!-- system sax parser -->
+	<artifact groupId="xerces" artifactId="xercesImpl" version="2.6.2" system="true"/>
 </profile>

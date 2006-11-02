@@ -53,6 +53,7 @@ import org.xml.sax.SAXException;
  */
 public class Profile implements ArtifactFilter {
 	private Set<Artifact> artifacts = new HashSet<Artifact>();
+	private Set<Artifact> systemArtifacts = new HashSet<Artifact>();
 	
 	private boolean strict;
 	
@@ -133,6 +134,10 @@ public class Profile implements ArtifactFilter {
 						anode.getNodeValue(),
 						vnode.getNodeValue());
 				artifacts.add(artifact);
+				Node snode = atts.getNamedItem("system");
+				if (snode != null && "true".equals(snode.getNodeValue())) {
+					systemArtifacts.add(artifact);
+				}
 			}
 		}		
 	}
@@ -267,6 +272,9 @@ public class Profile implements ArtifactFilter {
 			artifactElement.setAttribute("groupId", groupId);
 			artifactElement.setAttribute("artifactId", artifactId);
 			artifactElement.setAttribute("version", version);
+			if (systemArtifacts.contains(artifact)) {
+				artifactElement.setAttribute("system", "true");
+			}
 			element.appendChild(artifactElement);
 		}
 		

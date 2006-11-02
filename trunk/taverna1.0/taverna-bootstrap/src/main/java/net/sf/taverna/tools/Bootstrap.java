@@ -22,6 +22,7 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.w3c.dom.Document;
+import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
@@ -53,44 +54,42 @@ public class Bootstrap {
 
 		Class workbenchClass = createWorkbenchClass(loaderVersion, loaderMethod);
 
-		addSystemLoaderArtifacts(loaderVersion, loaderMethod);
+		addSystemLoaderArtifacts();
 
 		invokeWorkbench(args, workbenchClass);
 	}
 
-	private static void addSystemLoaderArtifacts(String ravenVersion, Method loaderMethod) throws MalformedURLException {
+	private static void addSystemLoaderArtifacts() throws MalformedURLException {
 		ClassLoader systemClassLoader = ClassLoader.getSystemClassLoader();
 		if (systemClassLoader instanceof BootstrapClassLoader) {
 			BootstrapClassLoader bootstrapClassLoader = (BootstrapClassLoader) systemClassLoader;
-			File cacheDir = findCache();			
+			URL cacheURL = findCache().toURI().toURL();			
 
-			String[] systemLoaderArtifacts = new String[0];
-			String contextLoaderArtifactsProperty = properties.getProperty("raven.systemloader.artifacts");
-			if (contextLoaderArtifactsProperty != null) {
-				systemLoaderArtifacts = contextLoaderArtifactsProperty.split(",");
-			}
-			
-			for (String systemLoaderArtifact : systemLoaderArtifacts) {
-				String[] splitArtifact = systemLoaderArtifact.trim().split(":");
-				if (splitArtifact.length == 3) {
-					String groupID = splitArtifact[0];
-					String artifactID = splitArtifact[1];
-					String version = splitArtifact[2];
-					try {
-						loaderMethod.invoke(null, ravenVersion,
-								cacheDir, new URL[0], groupID, artifactID, version,
-								"", null, 0);
-					} catch (InvocationTargetException e) {
-						if(e.getCause() instanceof ClassNotFoundException) {
-							//don't expect a a class to be found
-							bootstrapClassLoader.addURL(new URL(cacheDir.toURI().toURL(), artifactURI(groupID, artifactID, version)));
-						} else {
-							System.err.println("Error adding " + systemLoaderArtifact + "to system classloader");
+			try {
+				String localProfile = System.getProperty("raven.profile");
+				if (localProfile != null) {
+					URL url = new URL(localProfile);
+					DocumentBuilder builder = DocumentBuilderFactory.newInstance()
+							.newDocumentBuilder();
+					Document doc = builder.parse(url.toURI().toURL().openStream());
+					NodeList nodes = doc.getElementsByTagName("artifact");
+					for (int i = 0; i < nodes.getLength(); i++) {
+						Node node = nodes.item(i);
+						NamedNodeMap attributes = node.getAttributes();
+						Node systemNode = attributes.getNamedItem("system");
+						if (systemNode != null && "true".equals(systemNode.getNodeValue())) {
+							Node groupNode = attributes.getNamedItem("groupId");
+							Node artifactNode = attributes.getNamedItem("artifactId");
+							Node versionNode = attributes.getNamedItem("version");
+							if (groupNode != null && artifactNode != null && versionNode != null) {
+								bootstrapClassLoader.addURL(new URL(cacheURL, artifactURI(groupNode.getNodeValue(),
+										artifactNode.getNodeValue(), versionNode.getNodeValue())));
+							}
 						}
-					} catch (Exception e) {
-						System.err.println("Error adding " + systemLoaderArtifact + "to system classloader");
 					}
 				}
+			} catch (Exception e) {
+				e.printStackTrace();
 			}
 		}
 	}
