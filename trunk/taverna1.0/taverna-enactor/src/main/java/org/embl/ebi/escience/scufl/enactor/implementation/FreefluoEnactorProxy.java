@@ -5,9 +5,11 @@
  */
 package org.embl.ebi.escience.scufl.enactor.implementation;
 
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Map;
 
+import org.apache.log4j.Logger;
 import org.embl.ebi.escience.scufl.ScuflModel;
 import org.embl.ebi.escience.scufl.enactor.EnactorProxy;
 import org.embl.ebi.escience.scufl.enactor.UserContext;
@@ -18,9 +20,13 @@ import org.embl.ebi.escience.scufl.view.XScuflView;
 import uk.ac.soton.itinnovation.freefluo.conf.ConfigurationDescription;
 import uk.ac.soton.itinnovation.freefluo.conf.EngineConfiguration;
 import uk.ac.soton.itinnovation.freefluo.conf.EngineConfigurationImpl;
+import uk.ac.soton.itinnovation.freefluo.lang.BadlyFormedDocumentException;
+import uk.ac.soton.itinnovation.freefluo.lang.ParsingException;
 import uk.ac.soton.itinnovation.freefluo.main.Engine;
 import uk.ac.soton.itinnovation.freefluo.main.EngineImpl;
 import uk.ac.soton.itinnovation.freefluo.main.EngineStub;
+import uk.ac.soton.itinnovation.freefluo.main.InvalidFlowContextException;
+import uk.ac.soton.itinnovation.freefluo.main.UnknownWorkflowInstanceException;
 
 /**
  * An implementation of the EnactorProxy class that uses the Freefluo workflow
@@ -33,12 +39,19 @@ import uk.ac.soton.itinnovation.freefluo.main.EngineStub;
  */
 public class FreefluoEnactorProxy implements EnactorProxy {
 
+	private static Logger logger = Logger.getLogger(FreefluoEnactorProxy.class);
+	
 	private Engine engine = null;
 
 	private static EnactorProxy staticInstance = null;
 
 	private EngineConfiguration config = null;
 
+	/**
+	 * Singleton pattern to retrieve a FreefluoEnactorProxy
+	 * 
+	 * @return
+	 */
 	public static EnactorProxy getInstance() {
 		if (staticInstance == null) {
 			staticInstance = new FreefluoEnactorProxy();
@@ -46,7 +59,13 @@ public class FreefluoEnactorProxy implements EnactorProxy {
 		return staticInstance;
 	}
 
-	public FreefluoEnactorProxy() {
+	/** 
+	 * Protected constructor, use singleton pattern with getInstance() instead
+	 * 
+	 * @see getInstance()
+	 *
+	 */
+	protected FreefluoEnactorProxy() {
 		// See whether we need to create a local engine or a proxy
 		// to talk to one over SOAP
 		String enactorEndpoint = System
@@ -58,9 +77,14 @@ public class FreefluoEnactorProxy implements EnactorProxy {
 		String password = System.getProperty("mygrid.enactor.password");
 		EngineConfiguration engineConfig = getEngineConfiguration();
 		if (enactorEndpoint != null) {
-			try {
-				EngineStub stub = new EngineStub(engineConfig, new URL(
-						enactorEndpoint));
+				EngineStub stub;
+				try {
+					stub = new EngineStub(engineConfig, new URL(
+							enactorEndpoint));
+				} catch (MalformedURLException e) {
+					logger.error("Invalid enactor endpoint URL: " + enactorEndpoint, e);
+					throw new IllegalStateException("Invalid enactor endpoint: " + enactorEndpoint);
+				}
 				this.engine = stub;
 				if (username != null) {
 					stub.setUsername(username);
@@ -68,10 +92,6 @@ public class FreefluoEnactorProxy implements EnactorProxy {
 				if (password != null) {
 					stub.setPassword(password);
 				}
-			} catch (Exception ex) {
-				// Problem with remote enactor creation
-				ex.printStackTrace();
-			}
 		} else {
 			this.engine = new EngineImpl(engineConfig);
 		}
@@ -86,22 +106,27 @@ public class FreefluoEnactorProxy implements EnactorProxy {
 
 	public WorkflowInstance compileWorkflow(ScuflModel workflow,
 			UserContext user) throws WorkflowSubmissionException {
+		String strWorkflow = XScuflView.getXMLText(workflow);
+		String workflowInstanceId;
 		try {
-			String strWorkflow = XScuflView.getXMLText(workflow);
-			String workflowInstanceId = engine.compile(strWorkflow);
-			if (user != null) {
-				engine.setFlowContext(workflowInstanceId, user.toFlowContext());
-			}
-			WorkflowInstance workflowInstance = WorkflowInstanceImpl
-					.getInstance(engine, workflow, workflowInstanceId);
-			return workflowInstance;
-		} catch (Exception e) {
-			WorkflowSubmissionException wse = new WorkflowSubmissionException(
-					"Error during submission of workflow to in memory freefluo enactor");
-			wse.initCause(e);
-			e.printStackTrace();
-			throw wse;
+			workflowInstanceId = engine.compile(strWorkflow);
+		} catch (BadlyFormedDocumentException e) {
+			throw new WorkflowSubmissionException("Badly formed workflow document", e);
+		} catch (ParsingException e) {
+			throw new WorkflowSubmissionException("Could not parse workflow", e);
 		}
+		if (user != null) {
+			try {
+				engine.setFlowContext(workflowInstanceId, user.toFlowContext());
+			} catch (UnknownWorkflowInstanceException e) {
+				throw new WorkflowSubmissionException("Unknown workflow instance " + workflowInstanceId, e);
+			} catch (InvalidFlowContextException e) {
+				throw new WorkflowSubmissionException("Invalid flow context " + user.toFlowContext(), e);
+			}
+		}
+		WorkflowInstance workflowInstance = WorkflowInstanceImpl.getInstance(
+				engine, workflow, workflowInstanceId);
+		return workflowInstance;
 	}
 
 	private EngineConfiguration getEngineConfiguration() {
