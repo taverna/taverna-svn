@@ -25,6 +25,7 @@ import org.jdom.Element;
  * 
  * @author Tom Oinn
  */
+@SuppressWarnings("serial")
 public class LocalServiceProcessor extends Processor {
 
 	private String workerClassName;
@@ -59,7 +60,7 @@ public class LocalServiceProcessor extends Processor {
 		this.workerClassName = workerClassName;
 		try {
 			// Get the instance of the worker
-			Class theClass = Class.forName(workerClassName);
+			Class theClass = LocalWorkerRegistry.findClassForName(workerClassName);
 			theImplementation = (LocalWorker) theClass.newInstance();
 
 		} catch (Exception e) {
@@ -83,7 +84,7 @@ public class LocalServiceProcessor extends Processor {
 		this.workerClassName = workerClassName;
 		try {
 			// Get the instance of the worker
-			Class theClass = Class.forName(workerClassName);
+			Class theClass = LocalWorkerRegistry.findClassForName(workerClassName);
 			theImplementation = (LocalWorker) theClass.newInstance();
 
 		} catch (Exception e) {

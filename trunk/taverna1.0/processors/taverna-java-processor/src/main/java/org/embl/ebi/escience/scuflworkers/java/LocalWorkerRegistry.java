@@ -25,15 +25,17 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: LocalWorkerRegistry.java,v $
- * Revision           $Revision: 1.1 $
+ * Revision           $Revision: 1.2 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-11-02 11:29:33 $
+ * Last modified on   $Date: 2006-11-02 11:56:10 $
  *               by   $Author: sowen70 $
  * Created on 1 Nov 2006
  *****************************************************************/
 package org.embl.ebi.escience.scuflworkers.java;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.embl.ebi.escience.utils.TavernaSPIRegistry;
 
@@ -46,6 +48,7 @@ import org.embl.ebi.escience.utils.TavernaSPIRegistry;
 public class LocalWorkerRegistry extends TavernaSPIRegistry<LocalWorker> {
 	
 	private static LocalWorkerRegistry instance = new LocalWorkerRegistry();
+	private static Map<String,ClassLoader> classloaderMap=new HashMap<String,ClassLoader>();
 
 	private LocalWorkerRegistry() {
 		super(LocalWorker.class);
@@ -61,7 +64,29 @@ public class LocalWorkerRegistry extends TavernaSPIRegistry<LocalWorker> {
 	}
 	
 	public List<LocalWorker> getLocalWorkers() {
-		return findComponents();
+		List<LocalWorker> result = findComponents();
+		mapClassloaders(result);
+		return result;
+	}
+	
+	/**
+	 * adds the local worker classnames to a map, mapping to the classloader.
+	 * this is so that the correct classloader can be found when trying to load
+	 * that local worker from a scufl xml document.
+	 * @param workers
+	 */
+	private void mapClassloaders(List<LocalWorker> workers) {
+		for (LocalWorker worker : workers) {
+			classloaderMap.put(worker.getClass().getName(),worker.getClass().getClassLoader());
+		}
+	}
+	
+	public static Class findClassForName(String name) throws ClassNotFoundException{
+		ClassLoader loader=classloaderMap.get(name);
+		if (loader==null) { //try context loader as a last resort
+			loader=Thread.currentThread().getContextClassLoader();
+		}
+		return loader.loadClass(name);
 	}
 
 }
