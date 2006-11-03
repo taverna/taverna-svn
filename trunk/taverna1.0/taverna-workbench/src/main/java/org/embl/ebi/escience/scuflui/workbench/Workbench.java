@@ -16,8 +16,10 @@ import java.io.PrintWriter;
 import java.io.Writer;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Properties;
+import java.util.Set;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
@@ -42,12 +44,16 @@ import net.sf.taverna.update.ProfileHandler;
 import net.sf.taverna.utils.MyGridConfiguration;
 import net.sf.taverna.zaria.ZBasePane;
 import net.sf.taverna.zaria.ZRavenComponent;
+import net.sf.taverna.zaria.ZTreeNode;
 import net.sf.taverna.zaria.raven.ArtifactDownloadDialog;
 
 import org.apache.log4j.Logger;
 import org.embl.ebi.escience.scufl.ScuflModel;
 import org.embl.ebi.escience.scufl.ScuflModelEvent;
 import org.embl.ebi.escience.scufl.ScuflModelEventListener;
+import org.embl.ebi.escience.scufl.enactor.WorkflowInstance;
+import org.embl.ebi.escience.scufl.enactor.WorkflowSubmissionException;
+import org.embl.ebi.escience.scuflui.EnactorInvocation;
 import org.embl.ebi.escience.scuflui.TavernaIcons;
 import org.embl.ebi.escience.scuflui.shared.ExtensionFileFilter;
 import org.embl.ebi.escience.scuflui.shared.ModelMap;
@@ -55,6 +61,7 @@ import org.embl.ebi.escience.scuflui.shared.ScuflModelSet;
 import org.embl.ebi.escience.scuflui.shared.ModelMap.ModelChangeListener;
 import org.embl.ebi.escience.scuflui.shared.ScuflModelSet.ScuflModelSetListener;
 import org.embl.ebi.escience.scuflui.spi.UIComponentFactorySPI;
+import org.embl.ebi.escience.scuflui.spi.WorkflowInstanceSetViewSPI;
 import org.embl.ebi.escience.scuflui.spi.WorkflowModelViewSPI;
 import org.embl.ebi.escience.utils.TavernaSPIRegistry;
 import org.jdom.Document;
@@ -519,28 +526,23 @@ public class Workbench extends JFrame {
 			private ScuflModel currentWorkflowModel = null;
 			
 			public synchronized void modelChanged(String modelName, Object oldModel, Object newModel) {
-				if (! modelName.equals(ModelMap.CURRENT_WORKFLOW)) {
-					return;
+				if (logger.isDebugEnabled()) logger.debug("Model changed:"+modelName+", "+newModel);
+				if (newModel instanceof ScuflModel) {
+					ScuflModel newWorkflow = (ScuflModel)newModel;
+					for (WorkflowModelViewSPI view : getWorkflowViews()) {
+						view.detachFromModel();
+						view.attachToModel(newWorkflow);
+						if (currentWorkflowModel != null) {
+							currentWorkflowModel.removeListener(listener);
+						}
+						currentWorkflowModel = newWorkflow;
+						currentWorkflowModel.addListener(listener);					
+					}
 				}
-				if (! (newModel instanceof ScuflModel)) {
-					logger.error(ModelMap.CURRENT_WORKFLOW +
-							" is not a ScuflModel: " + newModel);
-					return;
-				}
-				ScuflModel newWorkflow = (ScuflModel)newModel;
-				for (WorkflowModelViewSPI view : getWorkflowViews()) {
-					view.detachFromModel();
-					view.attachToModel(newWorkflow);
-				}
-				if (currentWorkflowModel != null) {
-					currentWorkflowModel.removeListener(listener);
-				}
-				currentWorkflowModel = newWorkflow;
-				currentWorkflowModel.addListener(listener);		
-				refreshFileMenu();
 			}
 
 			public synchronized void modelDestroyed(String modelName) {
+				if (logger.isDebugEnabled()) logger.debug("Model destroyed:"+modelName);
 				if (! modelName.equals(ModelMap.CURRENT_WORKFLOW)) {
 					return;
 				}
@@ -551,24 +553,38 @@ public class Workbench extends JFrame {
 			}
 
 			public synchronized void modelCreated(String modelName, Object model) {
-				if (! modelName.equals(ModelMap.CURRENT_WORKFLOW)) {
-					return;
+				if (logger.isDebugEnabled()) logger.debug("Model created:"+modelName+", "+model);
+				if (model instanceof ScuflModel && modelName.equals("currentWorkflow")) {
+					if (currentWorkflowModel != null) {
+						currentWorkflowModel.removeListener(listener);
+					}
+					ScuflModel newWorkflow = (ScuflModel)model;
+					newWorkflow.addListener(listener);
+					currentWorkflowModel = newWorkflow;
+					for (WorkflowModelViewSPI view : getWorkflowViews()) {
+						view.detachFromModel();
+						view.attachToModel(newWorkflow);
+					}
+				}	
+				if (model instanceof WorkflowInstance) {
+					Set<WorkflowInstanceSetViewSPI> views = new HashSet<WorkflowInstanceSetViewSPI>();
+					findWorkflowInstanceSetViewSPIPanes(basePane.getZChildren(), views);
+					for (WorkflowInstanceSetViewSPI view : views) {
+						view.newWorkflowInstance(modelName, (WorkflowInstance)model);
+					}
 				}
-				if (! (model instanceof ScuflModel)) {
-					logger.error(ModelMap.CURRENT_WORKFLOW +
-							" is not a ScuflModel: " + model);
-					return;
+			}
+			
+			private void findWorkflowInstanceSetViewSPIPanes(List<ZTreeNode> children, Set<WorkflowInstanceSetViewSPI> results) {
+				for (ZTreeNode child : children) {
+					if (child instanceof ZRavenComponent) {							
+						ZRavenComponent raven=(ZRavenComponent)child;
+						if (raven.getComponent() instanceof WorkflowInstanceSetViewSPI) {
+							results.add((WorkflowInstanceSetViewSPI)raven.getComponent());
+						}						
+					}
+					findWorkflowInstanceSetViewSPIPanes(child.getZChildren(), results);
 				}
-				if (currentWorkflowModel != null) {
-					currentWorkflowModel.removeListener(listener);
-				}
-				ScuflModel newWorkflow = (ScuflModel)model;
-				newWorkflow.addListener(listener);
-				currentWorkflowModel = newWorkflow;
-				for (WorkflowModelViewSPI view : getWorkflowViews()) {
-					view.detachFromModel();
-					view.attachToModel(newWorkflow);
-				}				
 			}
 			
 			private List<WorkflowModelViewSPI> getWorkflowViews() {

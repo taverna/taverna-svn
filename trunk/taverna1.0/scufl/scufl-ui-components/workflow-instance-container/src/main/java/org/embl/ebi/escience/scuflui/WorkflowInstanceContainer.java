@@ -6,7 +6,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import javax.swing.ImageIcon;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 
@@ -22,12 +21,12 @@ import org.embl.ebi.escience.scuflui.spi.WorkflowInstanceSetViewSPI;
  * object.
  * @author Tom Oinn
  */
+@SuppressWarnings("serial")
 public class WorkflowInstanceContainer extends JPanel implements WorkflowInstanceSetViewSPI {
 
 	private JTabbedPane tabs = new JTabbedPane();
 	private Map<String, EnactorInvocation> invocations = 
-		new HashMap<String, EnactorInvocation>();
-	private JLabel workflowTitle = new JLabel("");
+		new HashMap<String, EnactorInvocation>();	
 	
 	public WorkflowInstanceContainer() {
 		super(new BorderLayout());
@@ -39,9 +38,8 @@ public class WorkflowInstanceContainer extends JPanel implements WorkflowInstanc
 			EnactorInvocation i = new EnactorInvocation(instance);
 			invocations.put(modelName, i);
 			String title = instance.getWorkflowModel().getDescription().getTitle();
-			tabs.addTab(title, TavernaIcons.windowRun,i);
+			tabs.addTab(title, TavernaIcons.windowRun,i);			
 		} catch (WorkflowSubmissionException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}

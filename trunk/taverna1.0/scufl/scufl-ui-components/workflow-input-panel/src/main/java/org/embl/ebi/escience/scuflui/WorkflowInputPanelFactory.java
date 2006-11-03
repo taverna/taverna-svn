@@ -40,13 +40,7 @@ public class WorkflowInputPanelFactory implements UIComponentFactorySPI {
 				try {
 					WorkflowInstance instance = enactor.compileWorkflow(workflowModel, inputObject, EnactorInvocation.USERCONTEXT);
 					logger.debug("Compiled workflow " + instance);
-					ModelMap.getInstance().setModel("workflowInstance"+(count++), instance);
-					EnactorInvocation invocationPanel = new EnactorInvocation(instance);
-					// TODO: Show as tabs or something within Zaria instead of popping up as a window
-					JFrame frame = new JFrame("Workflow run: " + workflowModel);
-					frame.setSize(640, 480);
-					frame.add(invocationPanel);
-					frame.setVisible(true);
+					ModelMap.getInstance().setModel("workflowInstance"+(count++), instance);					
 					logger.debug("Running the workflow " + instance);
 				} catch (WorkflowSubmissionException e) {
 					logger.error("Could not submit workflow", e);

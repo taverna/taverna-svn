@@ -50,6 +50,10 @@
       <artifactId>raven</artifactId>
     </dependency>
     <dependency>
+    	<groupId>uk.org.mygrid.taverna.scufl.scufl-ui-components</groupId>
+    	<artifactId>enactor-invocation</artifactId>    	
+    </dependency>
+    <dependency>
       <groupId>jdom</groupId>
       <artifactId>jdom</artifactId>
       <version>1.0</version>

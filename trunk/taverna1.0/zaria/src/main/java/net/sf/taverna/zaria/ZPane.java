@@ -220,7 +220,7 @@ public abstract class ZPane extends JComponent implements ZTreeNode {
 	 * @param artifact
 	 * @return true if a profile exists and the artifact exists in it, other false
 	 */
-	public boolean artifactExistsInProfile(Artifact artifact) {
+	protected boolean artifactExistsInProfile(Artifact artifact) {
 		boolean result=false;
 		Profile profile=ProfileFactory.getInstance().getProfile();
 		if (profile!=null) {
