@@ -84,6 +84,21 @@ public class FetaEngineProperties {
 		return ontos;
 	}
 
+	public List getLocationstoCrawlandPoll() throws FetaLoadException {
+
+		List locs = new ArrayList();
+		int i = 0;
+
+		while (fetaProperties.containsKey("fetaEngine.housekeeper.poll_location" + i)) {
+			String loc = fetaProperties.getProperty("fetaEngine.housekeeper.poll_location" + i);
+			locs.add(loc);
+			i++;
+		}
+
+		return locs;
+	}
+
+	
 	public String getPropertyValue(String propertyName, String defaultValue) {
 		return fetaProperties.getProperty(propertyName, defaultValue);
 	}

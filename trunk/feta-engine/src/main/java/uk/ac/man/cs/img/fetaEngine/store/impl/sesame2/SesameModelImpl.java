@@ -15,6 +15,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -40,6 +41,7 @@ import uk.ac.man.cs.img.fetaEngine.store.FetaPersistentRegistryIndex;
 import uk.ac.man.cs.img.fetaEngine.store.IFetaModel;
 import uk.ac.man.cs.img.fetaEngine.store.PedroXMLToRDF;
 import uk.ac.man.cs.img.fetaEngine.store.load.FetaLoad;
+import uk.ac.man.cs.img.fetaEngine.store.load.WebCrawler;
 import uk.ac.man.cs.img.fetaEngine.webservice.CannedQueryType;
 
 /**
@@ -53,6 +55,8 @@ public class SesameModelImpl implements IFetaModel {
 	private Repository myRepository;
 
 	FetaPersistentRegistryIndex registryIndex;
+	
+	private RegistryHouseKeeperThread houseKeeper;
 
 	/** Creates a new instance of SesameModelImpl */
 	public SesameModelImpl() {
@@ -61,8 +65,7 @@ public class SesameModelImpl implements IFetaModel {
 			try {
 				myRepository = new Repository(new MemoryStoreRDFSInferencer(
 						new MemoryStore()));
-				myRepository.initialize();
-				// initStoreWithProperties();
+				myRepository.initialize();				
 
 			} catch (Exception exp) {
 
@@ -86,6 +89,10 @@ public class SesameModelImpl implements IFetaModel {
 		}
 
 		return instance;
+	}
+
+	public FetaPersistentRegistryIndex getRegistryIndex() {
+		return registryIndex;
 	}
 
 	public void publishDescription(String operationURLstr)
@@ -285,7 +292,7 @@ public class SesameModelImpl implements IFetaModel {
 			throws FetaEngineException {
 
 		try {
-			// the baseURI here is for any relative URI that might
+			// the baseURI here is to fully qualify any relative URI that might exist in the RDF
 			// in reality our service descriptions DO NOT have any relative URI
 			// refs in them.
 			// String baseURIString = "http://www.mygrid.org.uk/ontology";
@@ -314,6 +321,7 @@ public class SesameModelImpl implements IFetaModel {
 				ontoURL = new URL((String) ontoList.get(i));
 				registerRDFSOntology(ontoURL);
 			}// for
+
 
 			if (fetaProps.getProperties().containsKey(
 					"fetaEngine.persistentIndex.location")) {
@@ -349,9 +357,9 @@ public class SesameModelImpl implements IFetaModel {
 					for (int j = 0; j < tmpList.size(); j++) {
 
 						String operationURI = (String) tmpList.get(j);
-						if (operationURI.endsWith(".rdf")) {
+						if (operationURI.toLowerCase().endsWith(".rdf")) {
 							publishDescription(operationURI);
-						} else if (operationURI.endsWith(".xml")) {
+						} else if (operationURI.toLowerCase().endsWith(".xml")) {
 							try {
 
 								PedroXMLToRDF rdfConverter = new PedroXMLToRDF();
@@ -383,10 +391,129 @@ public class SesameModelImpl implements IFetaModel {
 				throw new FetaEngineException();
 			}
 
+			
+
+				List locationsToPoll = fetaProps.getLocationstoCrawlandPoll();
+			
+				Set initialLocsToPoll = new HashSet();
+				initialLocsToPoll.addAll(locationsToPoll);
+				houseKeeper = new RegistryHouseKeeperThread((IFetaModel)this, initialLocsToPoll);
+				houseKeeper.start();
+
+					
+			
 		} catch (Exception iexp) {
 			iexp.printStackTrace();
 			throw new FetaEngineException();
 		}
 
 	}
+	
+	
+	
+	class RegistryHouseKeeperThread extends Thread {
+
+		IFetaModel fetaRegistry;
+		Set initialLocsToPoll;
+		
+		public RegistryHouseKeeperThread(IFetaModel registry, Set locationsToPoll) {
+			
+			this.fetaRegistry = registry;
+			initialLocsToPoll = new HashSet();
+			initialLocsToPoll.addAll(locationsToPoll);
+			
+		}
+
+		public void run() {
+			while (true) {
+
+				try {
+						Set descsWeCrawlFromWeb = new HashSet();
+					
+						for (Iterator it = this.initialLocsToPoll.iterator(); it.hasNext();) {
+							WebCrawler crwlr = new WebCrawler();					
+							// Put these into a set 						
+							List tmp = new ArrayList(); 
+							tmp = crwlr.getXMLandRDFURLs(it.next().toString());
+							for (int i = 0; i<tmp.size(); i++){
+								descsWeCrawlFromWeb.add((String)tmp.get(i));
+								
+							}						
+						}
+						
+						Set descsWeHaveInTheRegistry = fetaRegistry.getRegistryIndex().getIndexKeys();
+						
+						Set interSection = new HashSet();
+						interSection.addAll(descsWeCrawlFromWeb);						
+						interSection.retainAll(descsWeHaveInTheRegistry);
+						
+						Set descsToBePulished = new HashSet();
+						descsToBePulished.addAll(descsWeCrawlFromWeb);						
+						descsToBePulished.removeAll(interSection);
+						
+
+						Set descsToBeUNPulished = new HashSet();
+						descsToBeUNPulished.addAll(descsWeHaveInTheRegistry);						
+						descsToBeUNPulished.removeAll(interSection);
+
+						
+						for (Iterator iter = descsToBeUNPulished.iterator(); iter.hasNext();) {
+					
+							try {
+
+								//unpublish the description
+								fetaRegistry.removeDescription(iter.next().toString());
+
+							} catch (Exception ex) {
+								ex.printStackTrace();
+							}
+						}
+
+						
+						for (Iterator iter2 = descsToBePulished.iterator(); iter2.hasNext();) {
+							
+							try {
+								String operationURI = iter2.next().toString();
+								
+								//publish the description								
+								if (operationURI.toLowerCase().endsWith(".rdf")) {
+									fetaRegistry.publishDescription(operationURI);
+								} else if (operationURI.toLowerCase().endsWith(".xml")) {
+									try {
+
+										PedroXMLToRDF rdfConverter = new PedroXMLToRDF();
+										List locList = new ArrayList();
+										locList.add(operationURI);
+										URL operationURL = new URL(operationURI);
+										Map docAsRDF = new HashMap();
+										docAsRDF = new FetaLoad().readFetaDescriptions( locList, 'u');
+										String RDFXMLStr = rdfConverter
+												.convertToRdfXml((Document) docAsRDF
+														.get(operationURL.toString()));
+										fetaRegistry.publishDescription(operationURI, RDFXMLStr);
+
+									} catch (Exception exp) {
+										exp.printStackTrace();
+									}// try-catch
+
+								}
+							} catch (Exception ex) {
+								ex.printStackTrace();
+							}
+						}
+						
+				} catch (Exception exp) {
+					exp.printStackTrace();
+				}
+				try {
+					Thread.sleep(100000);
+				} catch (InterruptedException ie) {
+					ie.printStackTrace();
+					// ?? do what
+				}
+			}
+
+		}
+	}
+	
 }

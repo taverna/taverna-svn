@@ -55,4 +55,6 @@ public interface IFetaModel {
 	/* ADMINISTRATIVE OPERATION */
 	public String getStoreContent() throws FetaEngineException;
 
+	public FetaPersistentRegistryIndex getRegistryIndex() throws FetaEngineException;
+
 }

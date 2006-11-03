@@ -88,6 +88,40 @@ public class WebCrawler {
 		return allPedroXMLURLS;
 	}
 
+	
+	
+	public List getXMLandRDFURLs(String initialURL) throws FetaLoadException {
+		String[] allURLs;
+		List allFetaDescURLS = new ArrayList();
+		try {
+			allURLs = search(initialURL);
+		} catch (MalformedURLException mue) {
+			throw new FetaLoadException("Cannot crawl from an invalid URL");
+		}
+
+		for (int i = 0; i < allURLs.length; i++) {
+			try {
+				// If the URL ends in 'xml' then add it to the list of Pedro XML
+				// document URLs
+				if (allURLs[i].toLowerCase().endsWith("xml")||allURLs[i].toLowerCase().endsWith("rdf")) {
+					try {
+						System.out.println("Loading desc at : " + allURLs[i]);
+						allFetaDescURLS.add(allURLs[i]);
+					} catch (Exception e) {
+						//
+					}
+				} else {
+					// do nothing
+				}
+
+			} catch (Exception e) {
+				throw new FetaLoadException(e.getMessage());
+			}
+		}
+		return allFetaDescURLS;
+	}
+
+	
 	/**
 	 * Return an array of strings of URLs of Pedro XML files found by a web
 	 * crawl from the initial URL.
@@ -184,6 +218,7 @@ public class WebCrawler {
 					// If the link ends with .txt or .xml then we don't want to
 					// search any more
 					if (strLink.toLowerCase().endsWith(".xml")
+							|| strLink.toLowerCase().endsWith(".rdf")
 							|| strLink.toLowerCase().endsWith(".txt")
 							|| strLink.toLowerCase().endsWith("wsdl")) {
 						validURLToSearch = false;
@@ -201,8 +236,9 @@ public class WebCrawler {
 
 						// if the proper type, add it to the results list
 						// unless we have already seen it
-						if (strLink.indexOf(".xml") > -1
-								|| strLink.toLowerCase().endsWith("wsdl")) {
+						if (strLink.indexOf(".xml") > -1 ||
+							strLink.indexOf(".rdf") > -1	|| 
+							strLink.toLowerCase().endsWith("wsdl")) {
 							if (vectorMatches.contains(strLink) == false) {
 								listMatches.add(strLink);
 								vectorMatches.addElement(strLink);

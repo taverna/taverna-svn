@@ -243,7 +243,7 @@ public class PedroXMLToRDF {
 			services.write(resultWriter, "RDF/XML-ABBREV");
 			resultWriter.flush();
 			System.out.println("RDF generated for the given XML file");
-			System.out.println(resultWriter.toString());
+			// System.out.println(resultWriter.toString());
 			return resultWriter.toString();
 
 		} catch (Exception exp) {
