@@ -50,9 +50,9 @@ import org.embl.ebi.escience.scufl.ScuflModelEvent;
 import org.embl.ebi.escience.scufl.ScuflModelEventListener;
 import org.embl.ebi.escience.scuflui.TavernaIcons;
 import org.embl.ebi.escience.scuflui.shared.ExtensionFileFilter;
-import org.embl.ebi.escience.scuflui.shared.ScuflModelMap;
+import org.embl.ebi.escience.scuflui.shared.ModelMap;
 import org.embl.ebi.escience.scuflui.shared.ScuflModelSet;
-import org.embl.ebi.escience.scuflui.shared.ScuflModelMap.ModelChangeListener;
+import org.embl.ebi.escience.scuflui.shared.ModelMap.ModelChangeListener;
 import org.embl.ebi.escience.scuflui.shared.ScuflModelSet.ScuflModelSetListener;
 import org.embl.ebi.escience.scuflui.spi.UIComponentFactorySPI;
 import org.embl.ebi.escience.scuflui.spi.WorkflowModelViewSPI;
@@ -148,7 +148,7 @@ public class Workbench extends JFrame {
 			@Override
 			protected void registerComponent(JComponent comp) {
 				if (comp instanceof WorkflowModelViewSPI) {
-					ScuflModel model = ScuflModelMap.getNamedModel(ScuflModelMap.CURRENT_WORKFLOW);
+					ScuflModel model = (ScuflModel)ModelMap.getInstance().getNamedModel(ModelMap.CURRENT_WORKFLOW);
 					if (model != null) {
 						((WorkflowModelViewSPI)comp).attachToModel(model);
 					}
@@ -192,16 +192,16 @@ public class Workbench extends JFrame {
 		ScuflModelSetListener listener=new ScuflModelSetListener() {
 
 			public void modelAdded(ScuflModel model) {
-				ScuflModelMap.setModel(ScuflModelMap.CURRENT_WORKFLOW, model);
+				ModelMap.getInstance().setModel(ModelMap.CURRENT_WORKFLOW, model);
 				refreshFileMenu();
 				
 			}
 
 			public void modelRemoved(ScuflModel model) {
-				ScuflModelMap.setModel(ScuflModelMap.CURRENT_WORKFLOW, null);
+				ModelMap.getInstance().setModel(ModelMap.CURRENT_WORKFLOW, null);
 				if (workflowModels.size()>0) {
 					ScuflModel firstmodel=(ScuflModel)workflowModels.getModels().toArray()[0];
-					ScuflModelMap.setModel(ScuflModelMap.CURRENT_WORKFLOW, firstmodel);
+					ModelMap.getInstance().setModel(ModelMap.CURRENT_WORKFLOW, firstmodel);
 				}
 				refreshFileMenu();				
 			}
@@ -507,7 +507,7 @@ public class Workbench extends JFrame {
 	
 	
 	private void setModelChangeListener() {
-		ScuflModelMap.DEFAULT_MODEL_LISTENER = new ModelChangeListener() {
+		ModelMap.DEFAULT_MODEL_LISTENER = new ModelChangeListener() {
 
 			private ScuflModelEventListener listener = new ScuflModelEventListener() {
 				public void receiveModelEvent(ScuflModelEvent event) {
@@ -519,11 +519,11 @@ public class Workbench extends JFrame {
 			private ScuflModel currentWorkflowModel = null;
 			
 			public synchronized void modelChanged(String modelName, Object oldModel, Object newModel) {
-				if (! modelName.equals(ScuflModelMap.CURRENT_WORKFLOW)) {
+				if (! modelName.equals(ModelMap.CURRENT_WORKFLOW)) {
 					return;
 				}
 				if (! (newModel instanceof ScuflModel)) {
-					logger.error(ScuflModelMap.CURRENT_WORKFLOW +
+					logger.error(ModelMap.CURRENT_WORKFLOW +
 							" is not a ScuflModel: " + newModel);
 					return;
 				}
@@ -541,7 +541,7 @@ public class Workbench extends JFrame {
 			}
 
 			public synchronized void modelDestroyed(String modelName) {
-				if (! modelName.equals(ScuflModelMap.CURRENT_WORKFLOW)) {
+				if (! modelName.equals(ModelMap.CURRENT_WORKFLOW)) {
 					return;
 				}
 				if (currentWorkflowModel != null) {
@@ -551,11 +551,11 @@ public class Workbench extends JFrame {
 			}
 
 			public synchronized void modelCreated(String modelName, Object model) {
-				if (! modelName.equals(ScuflModelMap.CURRENT_WORKFLOW)) {
+				if (! modelName.equals(ModelMap.CURRENT_WORKFLOW)) {
 					return;
 				}
 				if (! (model instanceof ScuflModel)) {
-					logger.error(ScuflModelMap.CURRENT_WORKFLOW +
+					logger.error(ModelMap.CURRENT_WORKFLOW +
 							" is not a ScuflModel: " + model);
 					return;
 				}
@@ -606,14 +606,14 @@ public class Workbench extends JFrame {
 		for (final ScuflModel model : workflowModels.getModels()) {
 			Action selectModel = new AbstractAction() {
 				public void actionPerformed(ActionEvent e) {
-					ScuflModelMap.setModel(ScuflModelMap.CURRENT_WORKFLOW, model);				
+					ModelMap.getInstance().setModel(ModelMap.CURRENT_WORKFLOW, model);				
 				}
 			};
 			selectModel.putValue(Action.SMALL_ICON,TavernaIcons.windowExplorer);
 			selectModel.putValue(Action.NAME,model.getDescription().getTitle());
 			selectModel.putValue(Action.SHORT_DESCRIPTION,model.getDescription().getTitle());
 			
-			if (model == ScuflModelMap.getNamedModel(ScuflModelMap.CURRENT_WORKFLOW)) {
+			if (model == ModelMap.getInstance().getNamedModel(ModelMap.CURRENT_WORKFLOW)) {
 				selectModel.setEnabled(false);
 			}
 			fileMenu.add(new JMenuItem(selectModel));
@@ -639,7 +639,7 @@ public class Workbench extends JFrame {
 	private Action closeWorkflowAction() {
 		Action a = new AbstractAction() {
 			public void actionPerformed(ActionEvent e) {
-				ScuflModel currentModel=ScuflModelMap.getNamedModel(ScuflModelMap.CURRENT_WORKFLOW);
+				ScuflModel currentModel=(ScuflModel)ModelMap.getInstance().getNamedModel(ModelMap.CURRENT_WORKFLOW);
 				
 				if (currentModel!=null) {
 					int ret=JOptionPane.showConfirmDialog(Workbench.this, "Are you sure you want to close the workflow titled '"+currentModel.getDescription().getTitle()+"'");
@@ -659,8 +659,6 @@ public class Workbench extends JFrame {
 	}
 	
 	public synchronized void updateRepository() {
-		//basePane.lockFrame();
 		basePane.getRepository().update();
-		//basePane.unlockFrame();
 	}
 }

@@ -24,10 +24,10 @@
  ****************************************************************
  * Source code information
  * -----------------------
- * Filename           $RCSfile: ScuflModelMap.java,v $
+ * Filename           $RCSfile: ModelMap.java,v $
  * Revision           $Revision: 1.1 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-10-27 15:43:25 $
+ * Last modified on   $Date: 2006-11-03 11:35:45 $
  *               by   $Author: sowen70 $
  * Created on 27 Oct 2006
  *****************************************************************/
@@ -39,25 +39,35 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import org.embl.ebi.escience.scufl.ScuflModel;
-
 /**
  * Map of the models present in the workbench associated with their names, together with
  * the ability to manipulate this.
  * Contains, from version 1.5 onwards, methods to set and notify
  * components of changes to the underlying set of named models.
+ * 
+ * A 'model' can be any Object that has an effect on the UI
  * @author Stuart Owen
  * @author Tom Oinn
  *
  */
-public class ScuflModelMap {
+public class ModelMap {
+	
+	private static ModelMap instance = new ModelMap();
+	
+	private ModelMap() {
+		
+	}
+	
+	public static ModelMap getInstance() {
+		return instance;
+	}
 	
 	/**
 	 * At any given time there are zero or more named model objects over
 	 * which the workbench UI is acting. 
 	 */
-	private static Map<String,ScuflModel> modelMap = 
-		Collections.synchronizedMap(new HashMap<String,ScuflModel>());
+	private static Map<String,Object> modelMap = 
+		Collections.synchronizedMap(new HashMap<String,Object>());
 	
 	/**
 	 * Used as a modelName for setModel() and getNamedModel() - notes
@@ -74,8 +84,8 @@ public class ScuflModelMap {
 	/**
 	 * returns the model set
 	 */
-	public static Set<ScuflModel> getModels() {
-		Set<ScuflModel> models=new HashSet<ScuflModel>();
+	public Set<Object> getModels() {
+		Set<Object> models=new HashSet<Object>();
 		models.addAll(modelMap.values());
 		return models;
 	}
@@ -87,7 +97,7 @@ public class ScuflModelMap {
 	 * new model to set. If it didn't already exist a modelCreated
 	 * event will be fired otherwise modelChanged is called.
 	 */
-	public synchronized static void setModel(String modelName, ScuflModel model) {
+	public synchronized void setModel(String modelName, Object model) {
 		if (DEFAULT_MODEL_LISTENER != null) {
 			if (modelMap.containsKey(modelName) == false) {
 				if (model != null) {
@@ -147,7 +157,7 @@ public class ScuflModelMap {
 	
 	}
 	
-	public static ScuflModel getNamedModel(String string) {
+	public Object getNamedModel(String string) {
 		return modelMap.get(string);
 	}
 	
