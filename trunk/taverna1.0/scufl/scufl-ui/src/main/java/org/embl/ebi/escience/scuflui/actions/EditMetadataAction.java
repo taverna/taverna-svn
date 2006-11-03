@@ -8,6 +8,7 @@ import org.embl.ebi.escience.scuflui.ScuflSemanticMarkupEditor;
 import org.embl.ebi.escience.scuflui.TavernaIcons;
 import org.embl.ebi.escience.scuflui.shared.UIUtils;
 
+@SuppressWarnings("serial")
 public class EditMetadataAction extends ModelObjectAction {
 
 	public EditMetadataAction(ScuflModel model, Port modelObject) {

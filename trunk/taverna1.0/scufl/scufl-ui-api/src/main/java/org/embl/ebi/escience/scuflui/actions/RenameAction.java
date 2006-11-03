@@ -9,6 +9,7 @@ import org.embl.ebi.escience.scufl.Processor;
 import org.embl.ebi.escience.scufl.ScuflModel;
 import org.embl.ebi.escience.scuflui.TavernaIcons;
 
+@SuppressWarnings("serial")
 public class RenameAction extends ModelObjectAction {
 
 	public RenameAction(ScuflModel model, Object modelObject) {
