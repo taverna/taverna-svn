@@ -60,7 +60,7 @@ public class LocalServiceProcessor extends Processor {
 		this.workerClassName = workerClassName;
 		try {
 			// Get the instance of the worker
-			Class theClass = LocalWorkerRegistry.findClassForName(workerClassName);
+			Class theClass = LocalWorkerRegistry.instance().findClassForName(workerClassName);
 			theImplementation = (LocalWorker) theClass.newInstance();
 
 		} catch (Exception e) {
@@ -84,7 +84,7 @@ public class LocalServiceProcessor extends Processor {
 		this.workerClassName = workerClassName;
 		try {
 			// Get the instance of the worker
-			Class theClass = LocalWorkerRegistry.findClassForName(workerClassName);
+			Class theClass = LocalWorkerRegistry.instance().findClassForName(workerClassName);
 			theImplementation = (LocalWorker) theClass.newInstance();
 
 		} catch (Exception e) {
