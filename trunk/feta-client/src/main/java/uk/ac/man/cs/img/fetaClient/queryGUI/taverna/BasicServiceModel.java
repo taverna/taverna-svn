@@ -42,7 +42,7 @@ import uk.ac.man.cs.img.fetaEngine.commons.ServiceType;
 
 /**
  * @author alperp
- * 
+ *
  */
 
 public class BasicServiceModel extends AbstractMonitorableModel {
@@ -116,6 +116,11 @@ public class BasicServiceModel extends AbstractMonitorableModel {
 
 					// there is no way we can introduce this resulting operation
 					// to Taverna
+					System.out.println("==============================================================");
+					System.out.println("Problem creating a service model FOR service " + serviceName + " "+operationName);
+					System.out.println("details - desc loc " + serviceDescriptionLocation);
+					System.out.println("details - service Type " + serviceType);
+					System.out.println("==============================================================");
 				}
 			} else {
 				// it already has a Taverna compliant processor spec element

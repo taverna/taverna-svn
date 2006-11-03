@@ -47,12 +47,14 @@ import pedro.util.HelpEnabledMenuItem;
 import uk.ac.man.cs.img.fetaClient.queryGUI.taverna.TavernaFetaGUI;
 import uk.ac.man.cs.img.fetaClient.resource.FetaResources;
 
+import uk.ac.man.cs.img.fetaClient.publisher.FetaEnginePublishManager;
+
 /**
  * @author alperp
- * 
+ *
  */
 public class AnnotatorLauncher extends JPanel implements ScuflUIComponent,
-		ActionListener, PropertyChangeListener, PedroMyGridEventListener {
+		ActionListener, PropertyChangeListener , PedroMyGridEventListener {
 
 	private ScuflModel model;
 
@@ -168,10 +170,20 @@ public class AnnotatorLauncher extends JPanel implements ScuflUIComponent,
 	}
 
 	public void receiveModelEvent(PedroMyGridEvent event) {
+		System.out.println("Submit event received from Pedro Dialog");
 		if (event.getEventType() == event.SUBMIT) {
 			TavernaFetaGUI feta = TavernaFetaGUI.getInstance();
+			try{
 			if (feta != null) {
-				feta.checkCacheValidity(event.getMessage());
+				//do a publish to the engine here
+System.out.println("Publishing description: \n"+ event.getMessage() + "\n to Feta Registry");
+				FetaEnginePublishManager publisher = new FetaEnginePublishManager(TavernaFetaGUI.getProperties().getProperty("fetaClient.fetaEngineLocation"));
+				publisher.publish(event.getMessage());
+				//feta.checkCacheValidity(event.getMessage());
+			}
+			}catch(Exception exp){
+				exp.printStackTrace();
+
 			}
 		}
 	}

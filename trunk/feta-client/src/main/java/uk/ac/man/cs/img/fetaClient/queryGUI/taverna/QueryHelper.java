@@ -254,6 +254,7 @@ public class QueryHelper {
 
 			return response.getOperationURI();
 		} catch (Exception ex) {
+			ex.printStackTrace();
 			System.out.println("Error occured during executing query: "
 					+ ex.getMessage());
 			return null;

@@ -92,10 +92,10 @@ public class QueryPanel extends JPanel implements ActionListener,
 		titlePane.setMaximumSize(new Dimension(Short.MAX_VALUE, 40));
 
 		titlePane.setBorder(BorderFactory.createEmptyBorder(0, 10, 10, 10));
-		JLabel criteriaLabel = new JLabel("Criteria Type");
+		JLabel criteriaLabel = new JLabel("With Property");
 		criteriaLabel.setFont(new Font("Arial", Font.BOLD, 12));
 
-		JLabel valueLabel = new JLabel("Criteria Value");
+		JLabel valueLabel = new JLabel("Having Value");
 		valueLabel.setFont(new Font("Arial", Font.BOLD, 12));
 
 		titlePane.add(criteriaLabel);

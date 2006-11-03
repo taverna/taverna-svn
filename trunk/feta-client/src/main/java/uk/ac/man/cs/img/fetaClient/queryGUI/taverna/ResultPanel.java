@@ -127,7 +127,16 @@ public class ResultPanel extends JPanel {
 		});
 
 		bottomPane.add(queryButton);
-		// bottomPane.add(annotateButton);
+		boolean annotator = false;
+		try{
+			annotator = FetaClientProperties.isAnnotator();
+		}catch(Exception exp){
+			exp.printStackTrace();			
+		}
+		if (annotator) {
+			bottomPane.add(annotateButton);	
+		}
+		 
 
 		this.add(topPane);
 		this.add(bottomPane);
