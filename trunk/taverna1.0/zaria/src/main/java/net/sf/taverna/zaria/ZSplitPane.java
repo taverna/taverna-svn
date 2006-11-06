@@ -11,6 +11,8 @@ import javax.swing.Action;
 import javax.swing.JComponent;
 import javax.swing.JSplitPane;
 
+import net.sf.taverna.raven.log.Log;
+
 import org.jdom.Element;
 
 /**
@@ -20,6 +22,8 @@ import org.jdom.Element;
  */
 @SuppressWarnings("serial")
 public class ZSplitPane extends ZPane {	
+	
+	private static Log logger = Log.getLogger(ZSplitPane.class);
 	
 	private JSplitPane splitPane = new JSplitPane();
 	private double dividerLocation=0.5d;
@@ -159,7 +163,7 @@ public class ZSplitPane extends ZPane {
 					dividerLocation = Double.parseDouble(ratio);	
 					dividerSet=false;
 				} catch (NumberFormatException ex) {
-					ex.printStackTrace();
+					logger.warn("Invalid divider ratio " + ratio, ex);
 				}
 			}
 		}

@@ -228,7 +228,7 @@ public abstract class ZBasePane extends ZPane {
 					if (prof!=null) {
 						a = prof.discoverArtifact(groupId, artifactId);
 						if (a==null) {
-							System.out.println("No artifact found in profile for:"+groupId+":"+artifactId);
+							logger.warn("No artifact found in profile for:"+groupId+":"+artifactId);
 						}
 					}
 				}
@@ -242,7 +242,7 @@ public abstract class ZBasePane extends ZPane {
 					}
 				}
 				else {
-					System.out.println("Cannot determine version for artifact "+groupId+":"+artifactId);
+					logger.warn("Cannot determine version for artifact "+groupId+":"+artifactId);
 				}
 			}
 			if (needUpdate) {

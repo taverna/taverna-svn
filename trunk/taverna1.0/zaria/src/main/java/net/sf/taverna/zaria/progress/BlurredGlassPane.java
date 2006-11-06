@@ -10,10 +10,13 @@ import java.awt.image.BufferedImage;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 
+import net.sf.taverna.raven.log.Log;
+
 import com.jhlabs.image.BoxBlurFilter;
 
 public class BlurredGlassPane extends JComponent {
 
+	private static Log logger = Log.getLogger(BlurredGlassPane.class);
 	private JFrame frame;
 	private boolean active;
 	private BufferedImage blur = null;
@@ -70,7 +73,7 @@ public class BlurredGlassPane extends JComponent {
 		Graphics g = original.getGraphics();
 		contentPane.paintAll(g);
 		blur = filter.filter(original, null);
-		System.out.println("Creating blurred image : "+width+","+height);
+		logger.debug("Creating blurred image : "+width+","+height);
 		repaint();
 	}
 	

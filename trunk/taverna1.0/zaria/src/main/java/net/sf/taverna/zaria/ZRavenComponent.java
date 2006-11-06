@@ -18,6 +18,7 @@ import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 
+import net.sf.taverna.raven.log.Log;
 import net.sf.taverna.raven.repository.Artifact;
 import net.sf.taverna.raven.repository.ArtifactNotFoundException;
 import net.sf.taverna.raven.repository.ArtifactStateException;
@@ -32,6 +33,7 @@ import org.jdom.Element;
 @SuppressWarnings("serial")
 public class ZRavenComponent extends ZPane {
 
+	private static Log logger = Log.getLogger(ZRavenComponent.class);
 	private String spiName = null;
 	private Artifact artifact = null;
 	private String className = null;
@@ -168,27 +170,23 @@ public class ZRavenComponent extends ZPane {
 			if (className != null) {
 				ClassLoader acl;
 				try {
-					
 					try {
 						acl = getRoot().getRepository().getLoader(artifact, null);
 					}
-					catch(ArtifactNotFoundException e1) { //add to repository if it doesn't exist
-						System.out.println("Fetching artifact for ZRavenComponent:"+artifact.getGroupId()+":"+artifact.getArtifactId());
+					catch(ArtifactNotFoundException ex) { //add to repository if it doesn't exist
+						logger.info("Fetching artifact for ZRavenComponent:"+artifact.getGroupId()+":"+artifact.getArtifactId());
 						getRoot().getRepository().addArtifact(artifact);
 						getRoot().getRepository().update();
 						acl = getRoot().getRepository().getLoader(artifact, null);
 					}
 					Class theClass = acl.loadClass(className);
 					setComponent(getRoot().getComponent(theClass));
-				} catch (ArtifactNotFoundException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				} catch (ArtifactStateException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				} catch (ClassNotFoundException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
+				} catch (ArtifactNotFoundException ex) {
+					logger.warn("Could not find artifact " + artifact, ex);
+				} catch (ArtifactStateException ex) {
+					logger.warn("Invalid state for artifact " + artifact, ex);
+				} catch (ClassNotFoundException ex) {
+					logger.warn("Class not found: " + className, ex);
 				}
 			}
 		}
@@ -274,15 +272,12 @@ public class ZRavenComponent extends ZPane {
 						}
 					});
 					menu.add(item);
-				} catch (ArtifactNotFoundException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (ArtifactStateException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (ClassNotFoundException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+				} catch (ArtifactNotFoundException ex) {
+					logger.warn("Could not find artifact " + artifact, ex);
+				} catch (ArtifactStateException ex) {
+					logger.warn("Invalid state for artifact " + artifact, ex);
+				} catch (ClassNotFoundException ex) {
+					logger.warn("Class not found: " + className, ex);
 				}
 			}
 			Component sourceComponent = (Component) arg0.getSource();
@@ -348,7 +343,7 @@ public class ZRavenComponent extends ZPane {
 							// Should never happen as these things can only be loaded
 							// from within a raven classloader and so should by definition
 							// have an artifact associated with them. You never know though.
-							e.printStackTrace();
+							logger.error("Could not find artifact " + artifact, e);
 						} catch (NoClassDefFoundError ncdfe) {
 							JOptionPane.showMessageDialog(null,
 									"Transitive dependency failure - this is normally\n"+

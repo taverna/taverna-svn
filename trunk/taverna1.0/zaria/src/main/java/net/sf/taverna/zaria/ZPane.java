@@ -13,6 +13,7 @@ import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JToolBar;
 
+import net.sf.taverna.raven.log.Log;
 import net.sf.taverna.raven.repository.Artifact;
 import net.sf.taverna.raven.spi.Profile;
 import net.sf.taverna.raven.spi.ProfileFactory;
@@ -27,6 +28,8 @@ import org.jdom.Element;
  */
 public abstract class ZPane extends JComponent implements ZTreeNode {
 
+	private static Log logger = Log.getLogger(ZPane.class);
+	
 	protected boolean editable = false;
 	protected JToolBar toolBar = new JToolBar();
 	
@@ -189,14 +192,11 @@ public abstract class ZPane extends JComponent implements ZTreeNode {
 				(Class<ZTreeNode>)ZPane.class.getClassLoader().loadClass(className);
 			return theClass.newInstance();
 		} catch (ClassNotFoundException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
+			logger.warn("Could not find class " + className, e1);
 		} catch (InstantiationException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
+			logger.warn("Could not instantiate class " + className, e1);
 		} catch (IllegalAccessException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
+			logger.warn("Could not access class " + className, e1);
 		}
 		return null;
 	}
