@@ -25,8 +25,8 @@
 //      Dependencies        :
 //
 //      Last commit info    :   $Author: stain $
-//                              $Date: 2006-11-02 11:32:01 $
-//                              $Revision: 1.6 $
+//                              $Date: 2006-11-06 17:05:31 $
+//                              $Revision: 1.7 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 package org.embl.ebi.escience.scufl.enactor.implementation;
@@ -77,17 +77,41 @@ public class WorkflowInstanceImpl implements WorkflowInstance {
 
 	private Map input;
 
+	private String instanceLSID = null;
+
 	private UserContext context;
 
-	private static Map<String, String> internalToLSID = new HashMap<String, String>();
-
-	private static Map<String, String> instanceToDefinitionLSID = new HashMap<String, String>();
-
+	/**
+	 * Cache of instances as used by getInstance()
+	 */
+	private static Map<Object[], WorkflowInstanceImpl> instanceCache = new HashMap<Object[], WorkflowInstanceImpl>();
+	
 	private ScuflModel workflowModel;
-
-	public static WorkflowInstanceImpl getInstance(Engine engine,
-			ScuflModel scuflModel, String workflowInstanceId) {
-		return new WorkflowInstanceImpl(engine, scuflModel, workflowInstanceId);
+	
+	/**
+	 * Get the workflow as compiled to the given engine with the given engineId.
+	 * <p>
+	 * Instances are cached until the instance is destroyed by destroy()
+	 * 
+	 * @see destroy()
+	 * 
+	 * @param engine Engine the workflow was compiled on
+	 * @param workflowModel Workflow that was compiled
+	 * @param engineId Identifier returned when compiling
+	 * 
+	 * @return A WorkflowInstanceImpl representing given workflow compilation. 
+	 * Instances are cached, so that each call to getInstance() with
+	 * the same parameters will return the same instance.
+	 */
+	public synchronized static WorkflowInstanceImpl getInstance(Engine engine,
+			ScuflModel workflowModel, String engineId) {
+		Object[] cacheKey = {engine, workflowModel, engineId};
+		WorkflowInstanceImpl instance = instanceCache.get(cacheKey);
+		if (instance == null) {
+			instance = new WorkflowInstanceImpl(engine, workflowModel, engineId);
+			instanceCache.put(cacheKey, instance);
+		} 
+		return instance;
 	}
 
 	/**
@@ -95,42 +119,22 @@ public class WorkflowInstanceImpl implements WorkflowInstance {
 	 * 
 	 * @param engine -
 	 *            the enactment engine to use.
+	 * @param workflowModel -
+	 *            the ScuflModel that has been submitted
 	 * @param engineId -
 	 *            the unique Id for the workflow instance as compiled in the
 	 *            engine
-	 * @exception WorkflowSubmitInvalidException
-	 *                thrown by the superclass
+	 * @exception IllegalStateException
+	 *                if the engineId is not valid
 	 */
-	private WorkflowInstanceImpl(Engine engine, ScuflModel scuflModel,
+	private WorkflowInstanceImpl(Engine engine, ScuflModel workflowModel,
 			String engineId) {
-		logger.debug("WorkflowInstanceImpl(Engine engine=" + engine
-				+ ", ScuflModel scuflModel=" + scuflModel
-				+ ", String workflowInstanceId=" + engineId + ") - start");
-
-		this.workflowModel = scuflModel;
+		this.workflowModel = workflowModel;
 		this.engineId = engineId;
 		this.engine = engine;
-
 		try {
 			this.context = new SimpleUserContext(engine
 					.getFlowContext(engineId));
-
-			// If there's a global LSID provider configured then use
-			// it to get an LSID for the workflow instance class and
-			// store it.
-			if (DataThing.SYSTEM_DEFAULT_LSID_PROVIDER != null) {
-				// Check whether we already have an LSID allocated!
-				String lsidKey = scuflModel.getDescription().getLSID()
-						+ engineId;
-				String existingLSID = (String) internalToLSID.get(lsidKey);
-				if (existingLSID == null) {
-					LSIDProvider p = DataThing.SYSTEM_DEFAULT_LSID_PROVIDER;
-					String instanceLSID = p.getID(LSIDProvider.WFINSTANCE);
-					internalToLSID.put(lsidKey, instanceLSID);
-					engineId = instanceLSID;
-				} else
-					engineId = existingLSID;
-			}
 		} catch (UnknownWorkflowInstanceException e) {
 			String errorMsg = "Error starting to run workflow instance with id "
 					+ engineId;
@@ -139,56 +143,45 @@ public class WorkflowInstanceImpl implements WorkflowInstance {
 			logger.warn(msg);
 			throw new IllegalStateException(msg);
 		}
-		String definitionLSID = scuflModel.getDescription().getLSID();
-		String instanceLSID = getID();
-		WorkflowInstanceImpl.instanceToDefinitionLSID.put(instanceLSID,
-				definitionLSID);
-		logger.debug("WorkflowInstanceImpl(Engine, ScuflModel, String) - end");
 	}
 
 	/**
 	 * Return a reference to the ScuflModel which this workflow was built from
 	 */
 	public ScuflModel getWorkflowModel() {
-		return this.workflowModel;
+		return workflowModel;
 	}
 
+
+	// FIXME: Rename to getInstanceLSID() ?
 	/**
-	 * Return the workflow instance ID Modified to look in the global mapping to
-	 * see whether an LSID has been assigned to this internal ID and if so
-	 * return the LSID
+	 * Return a unique identifier for this workflow run. If the system
+	 * default LSID provider is set in DataThing.SYSTEM_DEFAULT_LSID_PROVIDER,
+	 * a fresh LSID will be assigned. Otherwise, a semi-unique string will
+	 * be generated from the internal engine representation.
+	 * 
 	 */
-	private String cachedLSID = null;
-
-	public String getID() {
-		logger.debug("getID() - start");
-
-		if (cachedLSID != null) {
-			logger.debug("getID() - end at cachedLSID != null");
-			return cachedLSID;
+	public synchronized String getID() {
+		if (instanceLSID == null && DataThing.SYSTEM_DEFAULT_LSID_PROVIDER != null) {
+			// If there's a global LSID provider configured then use
+			// it to get an LSID for the workflow instance class and
+			// store it.
+			LSIDProvider provider = DataThing.SYSTEM_DEFAULT_LSID_PROVIDER;
+			instanceLSID = provider.getID(LSIDProvider.WFINSTANCE);
 		}
-		String lsidKey = workflowModel.getDescription().getLSID() + engineId;
-		logger.debug("getID() - String lsidKey=" + lsidKey);
-
-		String lsid = (String) internalToLSID.get(lsidKey);
-		logger.debug("getID() - String lsid=" + lsid);
-
-		if (lsid != null) {
-			cachedLSID = lsid;
-			logger.debug("getID() - end with lsid != null");
-			return lsid;
+		if (instanceLSID == null) {
+			// Last resort, make up some kind of id
+			return engine.toString() + engineId;
 		}
-
-		logger.debug("getID() - end");
-		return engineId;
+		return instanceLSID;
 	}
 
 	public String getDefinitionLSID() {
-		String definitionLSID = (String) instanceToDefinitionLSID.get(getID());
-		if (definitionLSID != null) {
-			return definitionLSID;
+		String lsid = workflowModel.getDescription().getLSID();
+		if (lsid == null) {
+			return "";
 		}
-		return "";
+		return lsid;
 	}
 
 	/**
@@ -223,7 +216,7 @@ public class WorkflowInstanceImpl implements WorkflowInstance {
 	}
 
 	public void setInputs(Map inputMap) {
-		this.input = inputMap;
+		input = inputMap;
 	}
 
 	public void run() throws InvalidInputException {
@@ -241,38 +234,26 @@ public class WorkflowInstanceImpl implements WorkflowInstance {
 			engine.setInput(engineId, input);
 			engine.run(engineId);
 			WorkflowEventDispatcher.DISPATCHER
-					.fireWorkflowCreated(new WorkflowCreationEvent(this, input,
-							this.getDefinitionLSID()));
+					.fireEvent(new WorkflowCreationEvent(this, input,
+							getDefinitionLSID()));
 			// Add a new listener to handle and emit the workflow completion
 			// events
-			final Map lsidMap = internalToLSID;
 			addWorkflowStateListener(new WorkflowStateListener() {
 				public void workflowStateChanged(WorkflowStateChangedEvent event) {
 					WorkflowEventDispatcher dispatcher = WorkflowEventDispatcher.DISPATCHER;
 					WorkflowState state = event.getWorkflowState();
 					if (state.isFinal()) {
-						// Force caching of the LSID
-						getID();
 						// Have either completion, cancellation or failure
 						if (state.equals(WorkflowState.CANCELLED)
 								|| state.equals(WorkflowState.FAILED)) {
 							dispatcher
-									.fireWorkflowFailed(new WorkflowFailureEvent(
+									.fireEvent(new WorkflowFailureEvent(
 											WorkflowInstanceImpl.this));
 						} else if (state.equals(WorkflowState.COMPLETE)) {
 							dispatcher
-									.fireWorkflowCompleted(new WorkflowCompletionEvent(
+									.fireEvent(new WorkflowCompletionEvent(
 											WorkflowInstanceImpl.this));
 						}
-						// Remove the LSID mapping from the global map as the
-						// internal
-						// ID will be recycled, don't want the LSID to be picked
-						// up as
-						// well.
-						WorkflowInstanceImpl.instanceToDefinitionLSID
-								.remove(lsidMap
-										.get(WorkflowInstanceImpl.this.engineId));
-						lsidMap.remove(WorkflowInstanceImpl.this.engineId);
 					}
 				}
 			});
@@ -312,7 +293,8 @@ public class WorkflowInstanceImpl implements WorkflowInstance {
 	 *                within the DiGraph that this FlowReceipt is associated
 	 *                with.
 	 */
-	public Map[] getIntermediateResultsForProcessor(String processorName)
+	@SuppressWarnings("unchecked")
+	public Map<String, DataThing>[] getIntermediateResultsForProcessor(String processorName)
 			throws UnknownProcessorException {
 		try {
 			return engine.getIntermediateResultsForProcessor(engineId,
@@ -349,8 +331,10 @@ public class WorkflowInstanceImpl implements WorkflowInstance {
 		}
 	}
 
-	public Map getOutput() {
+	@SuppressWarnings("unchecked")
+	public Map<String, DataThing> getOutput() {
 		try {
+			// It's <String, DataThing> because we have a Taverna-based engine
 			return engine.getOutput(engineId);
 		} catch (UnknownWorkflowInstanceException e) {
 			String msg = "Error getting progress the output for workflow instance with id "
@@ -434,7 +418,10 @@ public class WorkflowInstanceImpl implements WorkflowInstance {
 		}
 	}
 
-	public void destroy() {
+	public synchronized void destroy() {
+		logger.debug("Destroying " + this);
+		Object[] cacheKey = {engine, workflowModel, engineId};
+		instanceCache.remove(cacheKey);
 		try {
 			engine.destroy(engineId);
 		} catch (UnknownWorkflowInstanceException e) {
@@ -444,6 +431,12 @@ public class WorkflowInstanceImpl implements WorkflowInstance {
 			logger.error(msg, e);
 			throw new IllegalStateException(msg);
 		}
+		engine = null;
+		engineId = null;
+		context = null;
+		input = null;
+		workflowModel = null;
+		logger.debug("Destroyed " + this);
 	}
 
 	public void pause(String processorId) {
