@@ -219,8 +219,8 @@ public class Bootstrap {
 			}
 		}
 
-		System.out.println("Using version " + version + " of " + groupID + ":"
-				+ artifactID);
+		//System.out.println("Using version " + version + " of " + groupID + ":"
+			//	+ artifactID);
 
 		// Call method via reflection, 'null' target as this is a static method
 		URL splashScreenURL = null;
@@ -267,8 +267,8 @@ public class Bootstrap {
 			}
 		}
 
-		System.out.println("Using version " + loaderVersion + " of "
-				+ loaderGroupId + ":" + loaderArtifactId);
+		//System.out.println("Using version " + loaderVersion + " of "
+			//	+ loaderGroupId + ":" + loaderArtifactId);
 		String artifactLocation = artifactURI(loaderGroupId, loaderArtifactId,
 				loaderVersion);
 
