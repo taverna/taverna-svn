@@ -196,7 +196,7 @@ public class EnactorInvocation extends JPanel implements UIComponentSPI {
 		toolbar.removeAll();
 		// Show the results
 		
-		toolbar.add(getCloseAction());
+		toolbar.add(getCloseActionButton());
 		
 		tabs.add("Results", individualResults);
 		// Populate the toolbar with all the buttons from
@@ -227,13 +227,13 @@ public class EnactorInvocation extends JPanel implements UIComponentSPI {
 		tabs.setSelectedComponent(individualResults);
 	}
 	
-	private JButton getCloseAction() {
+	private JButton getCloseActionButton() {
 		JButton closeAction = new JButton("Close",TavernaIcons.deleteIcon);
 		
 		closeAction.addActionListener(new ActionListener() {
 
 			public void actionPerformed(ActionEvent e) {	
-				int r=JOptionPane.showConfirmDialog(EnactorInvocation.this, "Are you sure you wish to close this enactment?");
+				int r=JOptionPane.showConfirmDialog(EnactorInvocation.this, "Are you sure you wish to close this workflow run?");
 				if (r==JOptionPane.YES_OPTION) {
 					ModelMap.getInstance().setModel(workflowInstance.getID(),null);
 				}
@@ -404,7 +404,7 @@ public class EnactorInvocation extends JPanel implements UIComponentSPI {
 		final JButton playButton = new JButton("Resume", TavernaIcons.playIcon);
 		final JButton pauseButton = new JButton("Pause", TavernaIcons.pauseIcon);
 		final JButton stopButton = new JButton("Stop", TavernaIcons.stopIcon);
-		closeButton = getCloseAction();
+		closeButton = getCloseActionButton();
 		// final JLabel taskLabel = new JLabel("Processor");
 		flowLabel = new JLabel("<html><em>New</em></html>");
 		// Eugh. Ugly. Will use HTML labels instead. tmo
