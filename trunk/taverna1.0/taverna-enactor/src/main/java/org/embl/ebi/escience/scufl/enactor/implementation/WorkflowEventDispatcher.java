@@ -31,15 +31,12 @@ import org.embl.ebi.escience.scufl.enactor.event.WorkflowInstanceEvent;
  * @author Tom Oinn
  */
 public class WorkflowEventDispatcher {
-    /**
-     * Logger for this class
-     */
+
     private static final Logger logger = Logger
             .getLogger(WorkflowEventDispatcher.class);
 
 	private List<WorkflowInstanceEvent> eventQueue = new ArrayList<WorkflowInstanceEvent>();
 	
-
 	private List<WorkflowEventListener> listeners = new ArrayList<WorkflowEventListener>();
 
 	private Thread notificationThread;
@@ -56,71 +53,93 @@ public class WorkflowEventDispatcher {
 	 */
 	public WorkflowEventDispatcher(boolean loadFromSPI) {
 		if (loadFromSPI) {
-			List<WorkflowEventListener> listeners = WorkflowEventListenerRegistry
-					.instance().getWorkflowEventListeners();
-			for (WorkflowEventListener listener : listeners) {
+			List<WorkflowEventListener> listenersFromSPI = WorkflowEventListenerRegistry
+					.getInstance().getWorkflowEventListeners();
+			for (WorkflowEventListener listener : listenersFromSPI) {
 				addListener(listener);
 			}
 		}
+		// FIXME: No way to kill notification thread
 		this.notificationThread = new NotifyThread();
 	}
 	
+	// Use fireEvent(WorkflowEventListener) instead of these
+	@Deprecated
 	public void fireNestedWorkflowCreated(NestedWorkflowCreationEvent e) {
 		addEventToQueue(e);
 	}
-	
+	@Deprecated	
 	public void fireNestedWorkflowFailed(NestedWorkflowFailureEvent e) {
 		addEventToQueue(e);
 	}
-	
+	@Deprecated
 	public void fireNestedWorkflowCompleted(NestedWorkflowCompletionEvent e) {
 		addEventToQueue(e);
 	}
-
+	@Deprecated
 	public void fireWorkflowCreated(WorkflowCreationEvent e) {
 		addEventToQueue(e);
 	}
-
+	@Deprecated
 	public void fireWorkflowFailed(WorkflowFailureEvent e) {
 		addEventToQueue(e);
 	}
-
+	@Deprecated
 	public void fireWorkflowCompleted(WorkflowCompletionEvent e) {
 		addEventToQueue(e);
 	}
-
+	@Deprecated
 	public void fireProcessCompleted(ProcessCompletionEvent e) {		
 		addEventToQueue(e);
 	}
-
+	@Deprecated
 	public void fireUserChangedData(UserChangedDataEvent e) {
 		addEventToQueue(e);
 	}
-
+	@Deprecated
 	public void fireIterationCompleted(IterationCompletionEvent e) {
 		addEventToQueue(e);
 	}
-
+	@Deprecated
 	public void fireProcessFailed(ProcessFailureEvent e) {
 		addEventToQueue(e);
 	}
-
+	@Deprecated
 	public void fireCollectionConstructed(CollectionConstructionEvent e) {
 		addEventToQueue(e);
 	}
+	
+	/**
+	 * Fire an event.
+	 * <p>
+	 * Use this function instead of the numerous 
+	 * <code>fireCollectionConstructed()</code> etc.
+	 * 
+	 * @param event The event to fire
+	 */
+	public void fireEvent(WorkflowInstanceEvent event) {
+		addEventToQueue(event);
+	}
+
+	public void addListener(WorkflowEventListener listener) {
+		synchronized (listeners) {
+			if (! listeners.contains(listener)) {
+				listeners.add(listener);
+			}
+		}
+	}
+
+	public void removeListener(WorkflowEventListener listener) {
+		synchronized (listeners) {
+			listeners.remove(listener);
+		}
+	}
 
 	void fireEvents() {
-		// Return if nothing to do
-		if (hasPendingEvents() == false) {
-			return;
-		}
-		synchronized (this.listeners) {
-			// Get the list of events to send
-			WorkflowInstanceEvent[] events = getPendingEvents();
-			// Iterate over the listeners
-			for (WorkflowEventListener listener : listeners) {	
-				//Iterate over the events
-				for (WorkflowInstanceEvent event : events) {
+		WorkflowInstanceEvent[] events = getPendingEvents();
+		for (WorkflowInstanceEvent event : events) {
+			synchronized (listeners) {
+				for (WorkflowEventListener listener : listeners) {	
 					try {
 						sendAnEvent(listener, event);
 					} catch (Exception e) {
@@ -131,60 +150,35 @@ public class WorkflowEventDispatcher {
 		}
 	}
 
-	public void addListener(WorkflowEventListener listener) {
-		synchronized (this.listeners) {
-			if (listeners.contains(listener) == false) {
-				listeners.add(listener);
-			}
-		}
-	}
-
-	public void removeListener(WorkflowEventListener listener) {
-		synchronized (this.listeners) {
-			listeners.remove(listener);
-		}
-	}
-
 	private void sendAnEvent(WorkflowEventListener l, WorkflowInstanceEvent e) {
 		if (e instanceof WorkflowCreationEvent) {
 			l.workflowCreated((WorkflowCreationEvent) e);
-			return;
 		} else if (e instanceof WorkflowFailureEvent) {
 			l.workflowFailed((WorkflowFailureEvent) e);
-			return;
 		} else if (e instanceof WorkflowCompletionEvent) {
 			l.workflowCompleted((WorkflowCompletionEvent) e);
-			return;
 		} else if (e instanceof ProcessCompletionEvent) {
 			l.processCompleted((ProcessCompletionEvent) e);
-			return;
 		} else if (e instanceof IterationCompletionEvent) {
 			l.processCompletedWithIteration((IterationCompletionEvent) e);
-			return;
 		} else if (e instanceof NestedWorkflowCompletionEvent) {
 			l.nestedWorkflowCompleted((NestedWorkflowCompletionEvent)e);
-			return;
 		} else if (e instanceof NestedWorkflowFailureEvent) {
 			l.nestedWorkflowFailed((NestedWorkflowFailureEvent)e);
-			return;
 		} else if (e instanceof NestedWorkflowCreationEvent) {
 			l.nestedWorkflowCreated((NestedWorkflowCreationEvent)e);
-			return;
 		} else if (e instanceof ProcessFailureEvent) {
 			l.processFailed((ProcessFailureEvent) e);
-			return;
 		} else if (e instanceof CollectionConstructionEvent) {
 			l.collectionConstructed((CollectionConstructionEvent) e);
-			return;
 		} else if (e instanceof UserChangedDataEvent) {
 			l.dataChanged((UserChangedDataEvent) e);
-			return;
 		}
 	}
 
 	private void addEventToQueue(WorkflowInstanceEvent e) {
-		synchronized (this.eventQueue) {
-			this.eventQueue.add(e);
+		synchronized (eventQueue) {
+			eventQueue.add(e);
             synchronized (notificationThread) {
                 notificationThread.notify();
             }
@@ -192,16 +186,10 @@ public class WorkflowEventDispatcher {
 	}
 
 	private WorkflowInstanceEvent[] getPendingEvents() {
-		synchronized (this.eventQueue) {
-			WorkflowInstanceEvent[] events = (WorkflowInstanceEvent[]) this.eventQueue.toArray(new WorkflowInstanceEvent[0]);
-			this.eventQueue.clear();
+		synchronized (eventQueue) {
+			WorkflowInstanceEvent[] events = eventQueue.toArray(new WorkflowInstanceEvent[0]);
+			eventQueue.clear();
 			return events;
-		}
-	}
-
-	private boolean hasPendingEvents() {
-		synchronized (this.eventQueue) {
-			return !this.eventQueue.isEmpty();
 		}
 	}
 
@@ -215,16 +203,15 @@ public class WorkflowEventDispatcher {
 
 		public void run() {
 			while (true) {
-				WorkflowEventDispatcher.this.fireEvents();
+				fireEvents();
 				try {
-					// Sleep for ten seconds or until we're kicked
+					// wait for ten seconds until we're kicked
 					// by the addition of a new event
                     synchronized (this) {                        
                         this.wait(10000);
                     }
-					//Thread.sleep(10000);
 				} catch (InterruptedException ie) {
-					//
+					// We got notified, some new events coming up in the loop
 				}
 			}
 		}
