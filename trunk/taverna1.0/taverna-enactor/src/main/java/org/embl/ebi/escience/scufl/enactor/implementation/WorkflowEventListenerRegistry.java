@@ -25,10 +25,10 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: WorkflowEventListenerRegistry.java,v $
- * Revision           $Revision: 1.2 $
+ * Revision           $Revision: 1.3 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-07-10 14:10:46 $
- *               by   $Author: sowen70 $
+ * Last modified on   $Date: 2006-11-06 17:03:13 $
+ *               by   $Author: stain $
  * Created on 30-Jun-2006
  *****************************************************************/
 package org.embl.ebi.escience.scufl.enactor.implementation;
@@ -47,12 +47,11 @@ public class WorkflowEventListenerRegistry extends TavernaSPIRegistry<WorkflowEv
 
 	private static WorkflowEventListenerRegistry instance = new WorkflowEventListenerRegistry();
 	
-	public static WorkflowEventListenerRegistry instance() {
+	public static WorkflowEventListenerRegistry getInstance() {
 		return instance;
 	}
 	
-	private WorkflowEventListenerRegistry()
-	{
+	private WorkflowEventListenerRegistry() {
 		super(WorkflowEventListener.class);
 	}
 	
