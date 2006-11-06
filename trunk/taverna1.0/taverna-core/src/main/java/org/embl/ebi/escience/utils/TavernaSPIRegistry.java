@@ -87,8 +87,8 @@ public class TavernaSPIRegistry<T> {
 					logger.info("Registry updated <"+
 							TavernaSPIRegistry.this.spiClass.getName()+"> : ");
 					for (Class<T> theClass : registry.getClasses()) {
-						logger.info(theClass.getName());
-						logger.info(theClass.getClassLoader().toString());
+						logger.debug(theClass.getName());
+						logger.debug(theClass.getClassLoader().toString());
 					}
 				}
 			});
