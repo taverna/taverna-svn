@@ -25,8 +25,8 @@
 //      Dependencies        :
 //
 //      Last commit info    :   $Author: stain $
-//                              $Date: 2006-11-02 14:45:30 $
-//                              $Revision: 1.4 $
+//                              $Date: 2006-11-06 17:02:00 $
+//                              $Revision: 1.5 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 
@@ -86,9 +86,7 @@ public class WorkflowTask implements ProcessorTaskWorker, EnactorWorkflowTask {
 			WorkflowInstance parentInstance = parentTask.getWorkflowInstance();
 			UserContext context = parentInstance.getUserContext();			
 			workflowInstance = defaultEnactor.compileWorkflow(theNestedModel, inputMap, context);
-			if (WorkflowEventDispatcher.DISPATCHER!=null) {
-				WorkflowEventDispatcher.DISPATCHER.fireNestedWorkflowCreated(new NestedWorkflowCreationEvent(parentTask.getWorkflowInstance(), inputMap ,workflowInstance));
-			}
+			WorkflowEventDispatcher.DISPATCHER.fireEvent(new NestedWorkflowCreationEvent(parentTask.getWorkflowInstance(), inputMap, workflowInstance));
 		} catch (WorkflowSubmissionException e) {
 			String msg = "Error executing workflow task.  Error compiling the nested workflow.";
 			logger.error(msg, e);

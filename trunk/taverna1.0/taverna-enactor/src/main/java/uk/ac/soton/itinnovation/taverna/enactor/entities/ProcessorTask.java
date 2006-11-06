@@ -24,8 +24,8 @@
 //Dependencies        :
 
 //Last commit info    :   $Author: stain $
-//$Date: 2006-11-02 11:32:02 $
-//$Revision: 1.6 $
+//$Date: 2006-11-06 17:01:02 $
+//$Revision: 1.7 $
 
 ///////////////////////////////////////////////////////////////////////////////////////
 package uk.ac.soton.itinnovation.taverna.enactor.entities;
@@ -277,11 +277,11 @@ public class ProcessorTask extends AbstractTask implements IProcessorTask {
 						.getWorkflowInstance()
 						: null);
 				DISPATCHER
-						.fireNestedWorkflowFailed(new NestedWorkflowFailureEvent(
+						.fireEvent(new NestedWorkflowFailureEvent(
 								workflowInstance, activeProcessor, ex,
 								inputMap, nestedWorkflow));
 			}
-			DISPATCHER.fireProcessFailed(new ProcessFailureEvent(
+			DISPATCHER.fireEvent(new ProcessFailureEvent(
 					workflowInstance, activeProcessor, ex, inputMap));
 
 		}
@@ -316,9 +316,9 @@ public class ProcessorTask extends AbstractTask implements IProcessorTask {
 				NestedWorkflowCompletionEvent event = new NestedWorkflowCompletionEvent(
 						false, inputMap, outputMap, activeProcessor,
 						workflowInstance, nestedWorkflow);
-				DISPATCHER.fireNestedWorkflowCompleted(event);
+				DISPATCHER.fireEvent(event);
 			} else {
-				DISPATCHER.fireProcessCompleted(new ProcessCompletionEvent(
+				DISPATCHER.fireEvent(new ProcessCompletionEvent(
 						false, inputMap, outputMap, activeProcessor,
 						workflowInstance));
 			}
@@ -846,7 +846,7 @@ public class ProcessorTask extends AbstractTask implements IProcessorTask {
 		IterationCompletionEvent iterationCompletionEvent = new IterationCompletionEvent(
 				collectionStructure, inputShredding, workflowInstance,
 				activeProcessor, completionEvents, inputMap, outputMap);
-		DISPATCHER.fireIterationCompleted(iterationCompletionEvent);
+		DISPATCHER.fireEvent(iterationCompletionEvent);
 
 		return outputMap;
 	}
@@ -908,13 +908,13 @@ public class ProcessorTask extends AbstractTask implements IProcessorTask {
 			NestedWorkflowCompletionEvent completionEvent = new NestedWorkflowCompletionEvent(
 					true, inputSet, outputMap, activeProcessor,
 					workflowInstance, nestedWorkflow);
-			DISPATCHER.fireNestedWorkflowCompleted(completionEvent);
+			DISPATCHER.fireEvent(completionEvent);
 
 		}
 		ProcessCompletionEvent completionEvent = new ProcessCompletionEvent(
 				true, inputSet, singleResultMap, activeProcessor,
 				workflowInstance);
-		DISPATCHER.fireProcessCompleted(completionEvent);
+		DISPATCHER.fireEvent(completionEvent);
 		completionEvents.add(completionEvent);
 
 		// Iterate over the outputs

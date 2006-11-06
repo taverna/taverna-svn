@@ -107,7 +107,7 @@ public class ResultItemPanel extends JPanel {
 			if (thing != null
 					&& workflowInstance.changeOutputPortTaskData(processorName,
 						portName, thing)) {
-				DISPATCHER.fireUserChangedData(new UserChangedDataEvent(
+				DISPATCHER.fireEvent(new UserChangedDataEvent(
 						workflowInstance, oldLSID, thing));
 				// System.out.println("DATATHING CHANGED EVENT!!!!");
 
@@ -261,7 +261,7 @@ public class ResultItemPanel extends JPanel {
 																					portName,
 																					newDataThing)) {
 																	DISPATCHER
-																			.fireUserChangedData(new UserChangedDataEvent(
+																			.fireEvent(new UserChangedDataEvent(
 																					workflowInstance,
 																					oldLSID,
 																					newDataThing));
