@@ -25,10 +25,10 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: BootstrapClassLoader.java,v $
- * Revision           $Revision: 1.1 $
+ * Revision           $Revision: 1.2 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-11-01 13:19:42 $
- *               by   $Author: davidwithers $
+ * Last modified on   $Date: 2006-11-06 17:08:10 $
+ *               by   $Author: stain $
  * Created on 1 Nov 2006
  *****************************************************************/
 package net.sf.taverna.tools;
@@ -43,7 +43,7 @@ import java.net.URLClassLoader;
  * (-Djava.system.class.loader=net.sf.taverna.tools.BootstrapClassLoader) this
  * effectively allows the classpath to be set dynamically.
  * 
- * @author witherd5
+ * @author David Withers
  */
 public class BootstrapClassLoader extends URLClassLoader {
 
