@@ -7,6 +7,7 @@ package org.embl.ebi.escience.scufl.enactor;
 
 import java.util.Map;
 
+import org.embl.ebi.escience.baclava.DataThing;
 import org.embl.ebi.escience.scufl.ScuflModel;
 import org.embl.ebi.escience.scufl.UnknownProcessorException;
 
@@ -61,7 +62,7 @@ public interface WorkflowInstance {
 	 *                thrown if the named processor is not present in the
 	 *                ScuflModel that this workflow instance is derived from.
 	 */
-	public Map[] getIntermediateResultsForProcessor(String processorName)
+	public Map<String, DataThing>[] getIntermediateResultsForProcessor(String processorName)
 			throws UnknownProcessorException;
 
 	/**
@@ -77,7 +78,7 @@ public interface WorkflowInstance {
 	 * 
 	 * @return Map of DataThing objects
 	 */
-	public Map getOutput();
+	public Map<String, DataThing> getOutput();
 
 	/**
 	 * Return the identifier for this workflow instance assigned by the workflow
