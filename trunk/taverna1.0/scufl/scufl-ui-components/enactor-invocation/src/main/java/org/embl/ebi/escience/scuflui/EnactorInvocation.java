@@ -20,6 +20,7 @@ import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
@@ -45,6 +46,7 @@ import org.embl.ebi.escience.scufl.enactor.WorkflowSubmissionException;
 import org.embl.ebi.escience.scuflui.graph.WorkflowEditor;
 import org.embl.ebi.escience.scuflui.results.ResultMapSaveRegistry;
 import org.embl.ebi.escience.scuflui.results.ResultTablePanel;
+import org.embl.ebi.escience.scuflui.shared.ModelMap;
 import org.embl.ebi.escience.scuflui.shared.XMLTree;
 import org.embl.ebi.escience.scuflui.spi.ResultMapSaveSPI;
 import org.embl.ebi.escience.scuflui.spi.UIComponentSPI;
@@ -52,10 +54,15 @@ import org.embl.ebi.escience.scuflui.spi.UIComponentSPI;
 import uk.ac.soton.itinnovation.freefluo.main.InvalidInputException;
 
 /**
+ * Panel for displayed progress and ultimately the results when
+ * enacting a workflow.
+ * 
  * @author Tom Oinn
  * @author Matthew Pocock
  * @author Stian Soiland
+ * @author Stuart Owen
  */
+@SuppressWarnings("serial")
 public class EnactorInvocation extends JPanel implements UIComponentSPI {
 
 	private static Logger logger = Logger.getLogger(EnactorInvocation.class);
@@ -105,7 +112,7 @@ public class EnactorInvocation extends JPanel implements UIComponentSPI {
 	// private TavernaWorkflowEnactor theEnactor;
 	private ScuflModel theModel;
 
-	private String instanceID = null;
+	//private String instanceID = null;
 
 	private EnactorStatusTableModel statusTableModel = null;
 
@@ -126,14 +133,7 @@ public class EnactorInvocation extends JPanel implements UIComponentSPI {
 
 	private JTabbedPane tabs = null;
 
-	private JToolBar toolbar = null;
-
-	/**
-	 * Get the workflow instance ID for this invocation
-	 */
-	public String getInstanceID() {
-		return instanceID;
-	}
+	private JToolBar toolbar = null;	
 
 	public WorkflowInstance getWorkflowInstance() {
 		return workflowInstance;
@@ -141,6 +141,9 @@ public class EnactorInvocation extends JPanel implements UIComponentSPI {
 
 	// The workflow status label
 	JLabel flowLabel = null;
+	
+	//The button that allows the enactment window to be closed
+	JButton closeButton=null;
 
 	/**
 	 * Returns the processor that user pointed to obtain a breakpoint
@@ -192,6 +195,9 @@ public class EnactorInvocation extends JPanel implements UIComponentSPI {
 		ensureGotResults();
 		toolbar.removeAll();
 		// Show the results
+		
+		toolbar.add(getCloseAction());
+		
 		tabs.add("Results", individualResults);
 		// Populate the toolbar with all the buttons from
 		// the ResultMapSaveSPI
@@ -219,6 +225,23 @@ public class EnactorInvocation extends JPanel implements UIComponentSPI {
 			individualResults.add(resultName, rip);
 		}
 		tabs.setSelectedComponent(individualResults);
+	}
+	
+	private JButton getCloseAction() {
+		JButton closeAction = new JButton("Close",TavernaIcons.deleteIcon);
+		
+		closeAction.addActionListener(new ActionListener() {
+
+			public void actionPerformed(ActionEvent e) {	
+				int r=JOptionPane.showConfirmDialog(EnactorInvocation.this, "Are you sure you wish to close this enactment?");
+				if (r==JOptionPane.YES_OPTION) {
+					ModelMap.getInstance().setModel(workflowInstance.getID(),null);
+				}
+			}
+			
+		});
+		
+		return closeAction;
 	}
 
 	public void showResultTable() {
@@ -381,6 +404,7 @@ public class EnactorInvocation extends JPanel implements UIComponentSPI {
 		final JButton playButton = new JButton("Resume", TavernaIcons.playIcon);
 		final JButton pauseButton = new JButton("Pause", TavernaIcons.pauseIcon);
 		final JButton stopButton = new JButton("Stop", TavernaIcons.stopIcon);
+		closeButton = getCloseAction();
 		// final JLabel taskLabel = new JLabel("Processor");
 		flowLabel = new JLabel("<html><em>New</em></html>");
 		// Eugh. Ugly. Will use HTML labels instead. tmo
@@ -390,7 +414,7 @@ public class EnactorInvocation extends JPanel implements UIComponentSPI {
 		// TavernaIcons.breakIcon);
 		// final JButton rbreakButton = new JButton("Resume",
 		// TavernaIcons.rbreakIcon);
-
+		
 		playButton.setVisible(false);
 		playButton.setSize(70, 30);
 		playButton.addActionListener(new ActionListener() {
@@ -434,7 +458,9 @@ public class EnactorInvocation extends JPanel implements UIComponentSPI {
 		toolbar.add(new JLabel("Workflow Status : "));
 		// toolbar.add(new JLabel(" "));
 		toolbar.add(flowLabel);
-		toolbar.add(Box.createHorizontalGlue());
+		toolbar.add(Box.createHorizontalGlue());		
+		closeButton.setVisible(false);
+		toolbar.add(closeButton);
 		toolbar.addSeparator();
 		toolbar.add(playButton);
 		toolbar.add(pauseButton);
@@ -581,9 +607,7 @@ public class EnactorInvocation extends JPanel implements UIComponentSPI {
 
 		boolean abort = false;
 
-		EnactorInvocation theEnactorInvocation;
-
-		String instanceID = null;
+		EnactorInvocation theEnactorInvocation;		
 
 		/**
 		 * Create the enactor run thread, passing it the EnactorInvocation
@@ -592,8 +616,7 @@ public class EnactorInvocation extends JPanel implements UIComponentSPI {
 		public EnactorInvocationStatusThread(
 				EnactorInvocation theEnactorInvocation) {
 			super();
-			this.theEnactorInvocation = theEnactorInvocation;
-			this.instanceID = theEnactorInvocation.getInstanceID();
+			this.theEnactorInvocation = theEnactorInvocation;			
 			this.start();
 		}
 
@@ -655,6 +678,7 @@ public class EnactorInvocation extends JPanel implements UIComponentSPI {
 							abort = true;
 							theEnactorInvocation.flowLabel
 									.setText("<html><font color=\"red\">Cancelled</font></html>");
+							theEnactorInvocation.closeButton.setVisible(true);
 						} else if (workflowStatus.equals("COMPLETE")) {
 							running = false;
 							// Set the results display in the display panel

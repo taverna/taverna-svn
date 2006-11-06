@@ -3,7 +3,6 @@ package org.embl.ebi.escience.scuflui;
 import java.util.Map;
 
 import javax.swing.ImageIcon;
-import javax.swing.JFrame;
 
 import org.apache.log4j.Logger;
 import org.embl.ebi.escience.scufl.ScuflModel;
@@ -17,8 +16,7 @@ import org.embl.ebi.escience.scuflui.spi.UIComponentSPI;
 
 public class WorkflowInputPanelFactory implements UIComponentFactorySPI {
 
-	private static Logger logger = Logger.getLogger(WorkflowInputPanelFactory.class);
-	private static int count=1;
+	private static Logger logger = Logger.getLogger(WorkflowInputPanelFactory.class);	
 	
 	public String getName() {
 		return "Workflow input panel";
@@ -40,7 +38,7 @@ public class WorkflowInputPanelFactory implements UIComponentFactorySPI {
 				try {
 					WorkflowInstance instance = enactor.compileWorkflow(workflowModel, inputObject, EnactorInvocation.USERCONTEXT);
 					logger.debug("Compiled workflow " + instance);
-					ModelMap.getInstance().setModel("workflowInstance"+(count++), instance);					
+					ModelMap.getInstance().setModel(instance.getID(), instance);					
 					logger.debug("Running the workflow " + instance);
 				} catch (WorkflowSubmissionException e) {
 					logger.error("Could not submit workflow", e);

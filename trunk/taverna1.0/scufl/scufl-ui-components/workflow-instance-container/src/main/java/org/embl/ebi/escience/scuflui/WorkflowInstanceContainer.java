@@ -32,13 +32,23 @@ public class WorkflowInstanceContainer extends JPanel implements WorkflowInstanc
 		super(new BorderLayout());
 		add(tabs, BorderLayout.CENTER);
 	}
+	
+	public void removeWorkflowInstance(String modelName) {
+		EnactorInvocation invocation=invocations.get(modelName);
+		if (invocation!=null) {
+			tabs.remove(invocation);
+			invocations.remove(modelName);
+		}
+	}
 
 	public void newWorkflowInstance(String modelName, WorkflowInstance instance) {
 		try {
-			EnactorInvocation i = new EnactorInvocation(instance);
-			invocations.put(modelName, i);
-			String title = instance.getWorkflowModel().getDescription().getTitle();
-			tabs.addTab(title, TavernaIcons.windowRun,i);			
+			EnactorInvocation enactorInvocationPanel = new EnactorInvocation(instance);
+			invocations.put(modelName, enactorInvocationPanel);
+			String title = instance.getWorkflowModel().getDescription().getTitle();			
+			tabs.addTab(title, TavernaIcons.windowRun,enactorInvocationPanel);				
+			tabs.setSelectedComponent(enactorInvocationPanel);						
+			
 		} catch (WorkflowSubmissionException e) {
 			e.printStackTrace();
 		}
@@ -73,6 +83,5 @@ public class WorkflowInstanceContainer extends JPanel implements WorkflowInstanc
 				uic.onDispose();
 			}
 		}
-	}
-
+	}		
 }

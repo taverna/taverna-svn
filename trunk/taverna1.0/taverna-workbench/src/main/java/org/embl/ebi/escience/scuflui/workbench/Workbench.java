@@ -1,6 +1,7 @@
 package org.embl.ebi.escience.scuflui.workbench;
 
 import java.awt.BorderLayout;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -32,6 +33,7 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JTabbedPane;
 import javax.swing.UIManager;
 
 import net.sf.taverna.raven.repository.Artifact;
@@ -44,6 +46,7 @@ import net.sf.taverna.update.ProfileHandler;
 import net.sf.taverna.utils.MyGridConfiguration;
 import net.sf.taverna.zaria.ZBasePane;
 import net.sf.taverna.zaria.ZRavenComponent;
+import net.sf.taverna.zaria.ZTabbedPane;
 import net.sf.taverna.zaria.ZTreeNode;
 import net.sf.taverna.zaria.raven.ArtifactDownloadDialog;
 
@@ -52,8 +55,6 @@ import org.embl.ebi.escience.scufl.ScuflModel;
 import org.embl.ebi.escience.scufl.ScuflModelEvent;
 import org.embl.ebi.escience.scufl.ScuflModelEventListener;
 import org.embl.ebi.escience.scufl.enactor.WorkflowInstance;
-import org.embl.ebi.escience.scufl.enactor.WorkflowSubmissionException;
-import org.embl.ebi.escience.scuflui.EnactorInvocation;
 import org.embl.ebi.escience.scuflui.TavernaIcons;
 import org.embl.ebi.escience.scuflui.shared.ExtensionFileFilter;
 import org.embl.ebi.escience.scuflui.shared.ModelMap;
@@ -542,19 +543,25 @@ public class Workbench extends JFrame {
 			}
 
 			public synchronized void modelDestroyed(String modelName) {
-				if (logger.isDebugEnabled()) logger.debug("Model destroyed:"+modelName);
-				if (! modelName.equals(ModelMap.CURRENT_WORKFLOW)) {
-					return;
+				if (logger.isDebugEnabled()) logger.debug("Model destroyed:"+modelName);				
+				if (modelName.equals(ModelMap.CURRENT_WORKFLOW)) {
+					if (currentWorkflowModel != null) {
+						currentWorkflowModel.removeListener(listener);
+					}
+					currentWorkflowModel = null;
 				}
-				if (currentWorkflowModel != null) {
-					currentWorkflowModel.removeListener(listener);
-				}
-				currentWorkflowModel = null;				
+				else {
+					Set<WorkflowInstanceSetViewSPI> views = new HashSet<WorkflowInstanceSetViewSPI>();
+					findWorkflowInstanceSetViewSPIPanes(basePane.getZChildren(), views);					
+					for (WorkflowInstanceSetViewSPI view : views) {
+						view.removeWorkflowInstance(modelName);
+					}
+				}				
 			}
 
 			public synchronized void modelCreated(String modelName, Object model) {
 				if (logger.isDebugEnabled()) logger.debug("Model created:"+modelName+", "+model);
-				if (model instanceof ScuflModel && modelName.equals("currentWorkflow")) {
+				if (model instanceof ScuflModel && modelName.equals(ModelMap.CURRENT_WORKFLOW)) {
 					if (currentWorkflowModel != null) {
 						currentWorkflowModel.removeListener(listener);
 					}
@@ -569,10 +576,23 @@ public class Workbench extends JFrame {
 				if (model instanceof WorkflowInstance) {
 					Set<WorkflowInstanceSetViewSPI> views = new HashSet<WorkflowInstanceSetViewSPI>();
 					findWorkflowInstanceSetViewSPIPanes(basePane.getZChildren(), views);
+					boolean found=false;
 					for (WorkflowInstanceSetViewSPI view : views) {
-						view.newWorkflowInstance(modelName, (WorkflowInstance)model);
+						view.newWorkflowInstance(modelName, (WorkflowInstance)model);		
+						if (!found) { //only jump to the first view found
+							showEnactorTab((Component)view);
+							found=true;						
+						}
 					}
 				}
+			}
+			
+			private void showEnactorTab(Component component) {
+				if (component.getParent() instanceof JTabbedPane) {
+					JTabbedPane pane=(JTabbedPane)component.getParent();
+					pane.setSelectedComponent(component);
+				}
+				if (component.getParent()!=null) showEnactorTab(component.getParent());
 			}
 			
 			private void findWorkflowInstanceSetViewSPIPanes(List<ZTreeNode> children, Set<WorkflowInstanceSetViewSPI> results) {
