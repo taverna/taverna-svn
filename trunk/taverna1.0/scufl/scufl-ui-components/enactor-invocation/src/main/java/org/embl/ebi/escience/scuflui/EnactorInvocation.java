@@ -232,7 +232,7 @@ public class EnactorInvocation extends JPanel implements UIComponentSPI {
 		closeAction.addActionListener(new ActionListener() {
 
 			public void actionPerformed(ActionEvent e) {	
-				int r=JOptionPane.showConfirmDialog(EnactorInvocation.this, "Are you sure you wish to close this workflow run?");
+				int r=JOptionPane.showConfirmDialog(EnactorInvocation.this, "Are you sure you wish to close this workflow run?","Close workflow run?",JOptionPane.YES_NO_OPTION);
 				if (r==JOptionPane.YES_OPTION) {
 					ModelMap.getInstance().setModel(workflowInstance.getID(),null);
 				}
