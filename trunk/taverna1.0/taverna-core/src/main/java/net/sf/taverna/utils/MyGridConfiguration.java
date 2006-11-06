@@ -12,12 +12,15 @@ import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.Properties;
 
+import net.sf.taverna.raven.log.Log;
+import net.sf.taverna.raven.repository.impl.LocalRepository.ArtifactClassLoader;
+import net.sf.taverna.tools.Bootstrap;
+
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.LineIterator;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
-import net.sf.taverna.tools.Bootstrap;
 
 /**
  * myGrid configuration, such as services to load in the workbench or LSID
@@ -59,10 +62,6 @@ public class MyGridConfiguration {
      * Prepare log4j and loadMyGridProperties()
 	 */
 	static {
-		// Avoid warnings before we have loaded log4j settings
-		System.setProperty("log4j.defaultInitOverride", "true");
-		// Must be set before we call anything else
-		logger = Logger.getLogger(MyGridConfiguration.class);
 		prepareLog4J();
 		loadMygridProperties();
 	}
@@ -83,6 +82,10 @@ public class MyGridConfiguration {
 	 */
 	
 	private static void prepareLog4J() {
+		// Avoid warnings before we have loaded log4j settings
+		System.setProperty("log4j.defaultInitOverride", "true");
+		// Must be set before we call anything else
+		logger = Logger.getLogger(MyGridConfiguration.class);
 		for (URL url : findResources("log4j.properties")) {
 			PropertyConfigurator.configure(url);
 		}
@@ -95,6 +98,11 @@ public class MyGridConfiguration {
 			// configure(String path) treats each call separately. 
 			// Should use configure(Properties p) instead.
 			PropertyConfigurator.configure(log4j.toString());
+		}
+		// Let Raven use log4j through our little proxy, unless it has been loaded
+		// through Raven (that would introduce funny recursive problems)
+		if (! (Log4jLog.class.getClassLoader() instanceof ArtifactClassLoader)) {
+			Log.setImplementation(new Log4jLog(Log.class));
 		}
 	}
 
