@@ -207,7 +207,9 @@ public class ScuflSVGDiagram extends JComponent implements
 		out.flush();
 		out.close();
 		return docFactory.createSVGDocument(
+				// Fake URI, just used for internal references like #fish
 				"http://taverna.sf.net/diagram/generated.svg",
+				// since we provide this fancy StringReader
 				new StringReader(devourer.blockOnOutput()));
 	}
 
