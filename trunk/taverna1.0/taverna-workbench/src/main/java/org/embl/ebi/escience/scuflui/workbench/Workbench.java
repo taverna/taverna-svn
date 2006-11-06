@@ -46,7 +46,6 @@ import net.sf.taverna.update.ProfileHandler;
 import net.sf.taverna.utils.MyGridConfiguration;
 import net.sf.taverna.zaria.ZBasePane;
 import net.sf.taverna.zaria.ZRavenComponent;
-import net.sf.taverna.zaria.ZTabbedPane;
 import net.sf.taverna.zaria.ZTreeNode;
 import net.sf.taverna.zaria.raven.ArtifactDownloadDialog;
 
@@ -678,7 +677,7 @@ public class Workbench extends JFrame {
 				ScuflModel currentModel=(ScuflModel)ModelMap.getInstance().getNamedModel(ModelMap.CURRENT_WORKFLOW);
 				
 				if (currentModel!=null) {
-					int ret=JOptionPane.showConfirmDialog(Workbench.this, "Are you sure you want to close the workflow titled '"+currentModel.getDescription().getTitle()+"'");
+					int ret=JOptionPane.showConfirmDialog(Workbench.this, "Are you sure you want to close the workflow titled '"+currentModel.getDescription().getTitle()+"'","Close workflow?",JOptionPane.YES_NO_OPTION);
 					if (ret==JOptionPane.YES_OPTION) {
 						workflowModels.removeModel(currentModel);
 					}
