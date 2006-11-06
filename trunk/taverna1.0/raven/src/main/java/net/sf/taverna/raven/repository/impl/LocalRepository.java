@@ -24,6 +24,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Map.Entry;
 
+import net.sf.taverna.raven.log.Log;
 import net.sf.taverna.raven.repository.Artifact;
 import net.sf.taverna.raven.repository.ArtifactNotFoundException;
 import net.sf.taverna.raven.repository.ArtifactStateException;
@@ -42,6 +43,8 @@ import net.sf.taverna.raven.repository.RepositoryListener;
  * @author Tom Oinn
  */
 public class LocalRepository implements Repository {
+	
+	private static Log logger = Log.getLogger(LocalRepository.class);
 	
 	private static FileFilter isDirectory = new AcceptDirectoryFilter();
 	
@@ -91,8 +94,7 @@ public class LocalRepository implements Repository {
 						try {
 							ac = new ArtifactClassLoader(dep);
 						} catch (MalformedURLException e) {
-							// Never happens
-							e.printStackTrace();
+							logger.error("Malformed URL when loading " + dep, e);
 						}
 //						loaderMap.put(a, ac);						
 					}						
@@ -156,21 +158,21 @@ public class LocalRepository implements Repository {
 		}
 				
 		protected Class<?> findClass(String name, Set<ArtifactClassLoader> seenLoaders) throws ClassNotFoundException {
-			//System.out.println("Searching for '"+name+"' - "+this));
+			logger.debug("Searching for '"+name+"' - "+this);
 			seenLoaders.add(this);
 			if (classMap.containsKey(name)) {
-				//System.out.println("Returning cached '"+name+"' - "+this);
+				logger.debug("Returning cached '"+name+"' - "+this);
 				return classMap.get(name);
 			}
 			try {
 				Class c = super.findClass(name);
 				classMap.put(name, c);
-				//System.out.println("Returning found '"+name+"' - "+this);
+				logger.debug("Returning found '"+name+"' - "+this);
 				return c;
 			} catch (ClassNotFoundException e) {
-				//System.out.println("Trying children of "+this);
+				//logger.debug("Trying children of "+this);
 				//for (ArtifactClassLoader ac : childLoaders) {
-				//System.out.println("    "+ac.toString());
+				//logger.debug("    "+ac.toString());
 				//}
 				for (ArtifactClassLoader ac : childLoaders) {
 					if (! seenLoaders.contains(ac)) {
@@ -191,7 +193,7 @@ public class LocalRepository implements Repository {
 							return ac.findClass(name, seenLoaders);
 						}
 						catch (ClassNotFoundException cnfe) {
-							//System.out.println("No '"+name+"' in "+this);
+							logger.debug("No '"+name+"' in "+this);
 						}
 				}
 			}
@@ -208,7 +210,13 @@ public class LocalRepository implements Repository {
 	 * repository structure
 	 */
 	protected LocalRepository(File base) {
-		this.base = base;
+		try {
+			this.base = base.getCanonicalFile();
+		} catch (IOException e) {
+			logger.error("Could not make canonical file " + base, e);
+			this.base = base;
+		}
+		// Fake in our own classloader
 		loaderMap.put(new BasicArtifact("uk.org.mygrid.taverna.raven","raven","1.5-SNAPSHOT"), new ArtifactClassLoader(this.getClass().getClassLoader()));
 		initialize();
 	}
@@ -262,7 +270,7 @@ public class LocalRepository implements Repository {
 		}
 		if (! status.get(a).equals(ArtifactStatus.Ready)) {
 			// Can't get a classloader yet, the artifact isn't ready
-			System.out.println(a+" :: "+status.get(a));
+			logger.debug(a+" :: "+status.get(a));
 			throw new ArtifactStateException(status.get(a), new ArtifactStatus[]{ArtifactStatus.Ready});
 		}
 		if (loaderMap.containsKey(a)) {
@@ -272,8 +280,7 @@ public class LocalRepository implements Repository {
 			// Even if parent is null
 			return new ArtifactClassLoader(a, parent);
 		} catch (MalformedURLException e) {
-			// Should never happen
-			e.printStackTrace();
+			logger.error("Malformed URL for artifact " + a, e);
 		}
 		return null;
 
@@ -388,7 +395,7 @@ public class LocalRepository implements Repository {
 		for (ArtifactImpl a : temp) {
 			ArtifactStatus s = status.get(a);
 			if (s.equals(ArtifactStatus.Pom)) {
-				//System.out.println(a.toString());
+				//logger.debug(a.toString());
 				if (! "jar".equals(a.getPackageType())) {
 					setStatus(a, ArtifactStatus.PomNonJar);
 				}
@@ -405,6 +412,7 @@ public class LocalRepository implements Repository {
 					}
 					catch (ArtifactStateException ase) {
 						// Never happens, state must be Pom to enter this block
+						logger.error("Artifact state for " + a + "should have been Pom", ase);
 					}
 				}
 			}
@@ -413,8 +421,7 @@ public class LocalRepository implements Repository {
 					fetch(repositories, a, "pom");
 					moreToDo = true;
 				} catch (ArtifactNotFoundException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					logger.warn("Could not find artifact "+ a, e);
 				}
 			}
 			else if (s.equals(ArtifactStatus.Analyzed)) {
@@ -422,8 +429,7 @@ public class LocalRepository implements Repository {
 					fetch(repositories, a, "jar");
 					moreToDo = true;
 				} catch (ArtifactNotFoundException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					logger.warn("Could not find artifact "+ a, e);
 				}
 			}
 			else if (s.equals(ArtifactStatus.Jar)) {
@@ -449,7 +455,7 @@ public class LocalRepository implements Repository {
 					}
 				}
 				catch (ArtifactStateException ase) {
-					// Never happens, status must be Jar to enter this block
+					logger.error("Artifact state for " + a + "should have been Jar", ase);
 				}
 				if (fullyResolved) {
 					setStatus(a, ArtifactStatus.Ready);
@@ -493,7 +499,7 @@ public class LocalRepository implements Repository {
 				}
 				return true;
 			} catch (ArtifactStateException e) {
-				e.printStackTrace();
+				logger.error("Artifact state for " + artifact + "should have been Jar", e);
 			}
 		}
 		return false;
@@ -625,13 +631,12 @@ public class LocalRepository implements Repository {
 				}
 				
 			} catch (MalformedURLException e) {
-				// Invalid repository URL?
+				logger.error("Malformed repository URL: " + repository, e);
 			} catch (IOException e) {
 				if (e instanceof FileNotFoundException) {
-					//System.out.println(a.toString()+" not found in "+repository);
-				}
-				else {
-					e.printStackTrace();
+					logger.debug(a+" not found in "+repository);
+				} else {
+					logger.warn("Could not read " + a, e);
 				}
 				// Ignore the exception, probably means we couldn't find the POM
 				// in the repository. If there are more repositories in the list this
@@ -658,12 +663,14 @@ public class LocalRepository implements Repository {
 	
 	private void enumerateDirs(File current, Set<File> groupDirs) {
 		try {
-			if (! current.getCanonicalPath().startsWith(base.getCanonicalPath())) {
-				// Climbed outside our base!
-				return;
-			}
+			current = current.getCanonicalFile();
 		} catch (IOException e) {
-			e.printStackTrace();
+			logger.warn("Could not make canonical path " + current, e);
+			return;
+		}
+		// assumes base is canonical path (as by constructor)
+		if (! current.getPath().startsWith(base.getPath())) {
+			logger.warn(current + " is outside base root " + base);
 			return;
 		}
 		File[] subdirs = current.listFiles(isDirectory);
@@ -671,8 +678,7 @@ public class LocalRepository implements Repository {
 			if (! current.equals(base)) {
 				groupDirs.add(current.getParentFile().getParentFile());
 			}
-		}
-		else {
+		} else {
 			for (File subDir : subdirs) {
 				enumerateDirs(subDir, groupDirs);
 			}
@@ -704,7 +710,7 @@ public class LocalRepository implements Repository {
 	 */
 	public synchronized void clean() {
 		if (! base.isDirectory()) {
-			// WARNING
+			logger.warn("Could not clean non-directory " + base);
 			return;
 		}
 		Set<File> groupDirs = enumerateDirs(base);
@@ -717,7 +723,7 @@ public class LocalRepository implements Repository {
 		try {
 			dir = dir.getCanonicalFile();
 		} catch (IOException e) {
-			System.err.println("Could not check: " + dir);
+			logger.warn("Could not check: " + dir, e);
 			// bad sign.. Let's stay away
 			return;
 		}
@@ -726,12 +732,12 @@ public class LocalRepository implements Repository {
 			try {
 				// Make sure we don't climb out following a symlink or something
 				if (! child.getCanonicalFile().getParentFile().equals(dir)) {
-					System.err.println("Skipping not a real child: " + child);
+					logger.warn("Skipping not a real child: " + child);
 					continue;
 				}
 			} catch (IOException e) {
 				// bad sign.. Let's stay away
-				System.err.println("Could not check child: " + child);
+				logger.warn("Could not check child: " + child, e);
 				continue;
 			}
 			deleteEmptyDirs(child);
@@ -740,7 +746,7 @@ public class LocalRepository implements Repository {
 		// gone now, so let's see if we can disappear as well
 		File[] content = dir.listFiles();
 		if (content == null || content.length == 0) {
-			//System.out.println("Deleting " + dir);
+			//logger.debug("Deleting " + dir);
 			dir.delete();
 		}
 	}
@@ -786,7 +792,7 @@ public class LocalRepository implements Repository {
 				String artifactId = artifactDir.getName();
 				File[] versions = artifactDir.listFiles(isDirectory);
 				if (versions == null) {
-					System.out.println("Null version list at "+artifactDir);
+					logger.debug("Null version list at "+artifactDir);
 					continue;
 				}
 				for (File versionDir : versions) {
