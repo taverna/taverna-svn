@@ -194,9 +194,7 @@ public class EnactorInvocation extends JPanel implements UIComponentSPI {
 	public void showResults() {
 		ensureGotResults();
 		toolbar.removeAll();
-		// Show the results
-		
-		toolbar.add(getCloseActionButton());
+		// Show the results		
 		
 		tabs.add("Results", individualResults);
 		// Populate the toolbar with all the buttons from
@@ -214,6 +212,7 @@ public class EnactorInvocation extends JPanel implements UIComponentSPI {
 			}
 		}
 		toolbar.add(Box.createHorizontalGlue());
+		toolbar.add(getCloseActionButton());
 
 		// saveResultsButton.setEnabled(true);
 		// Get the output map and create new result detail panes
@@ -405,6 +404,7 @@ public class EnactorInvocation extends JPanel implements UIComponentSPI {
 		final JButton pauseButton = new JButton("Pause", TavernaIcons.pauseIcon);
 		final JButton stopButton = new JButton("Stop", TavernaIcons.stopIcon);
 		closeButton = getCloseActionButton();
+		closeButton.setVisible(false);
 		// final JLabel taskLabel = new JLabel("Processor");
 		flowLabel = new JLabel("<html><em>New</em></html>");
 		// Eugh. Ugly. Will use HTML labels instead. tmo
@@ -458,14 +458,14 @@ public class EnactorInvocation extends JPanel implements UIComponentSPI {
 		toolbar.add(new JLabel("Workflow Status : "));
 		// toolbar.add(new JLabel(" "));
 		toolbar.add(flowLabel);
-		toolbar.add(Box.createHorizontalGlue());		
-		closeButton.setVisible(false);
-		toolbar.add(closeButton);
+		toolbar.add(Box.createHorizontalGlue());						
 		toolbar.addSeparator();
 		toolbar.add(playButton);
 		toolbar.add(pauseButton);
 		toolbar.addSeparator();
 		toolbar.add(stopButton);
+		toolbar.addSeparator();
+		toolbar.add(closeButton);
 
 		// Add a listener to the table to allow the display of intermediate
 		// results
