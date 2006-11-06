@@ -102,7 +102,7 @@ public class MyGridConfiguration {
 		// Let Raven use log4j through our little proxy, unless it has been loaded
 		// through Raven (that would introduce funny recursive problems)
 		if (! (Log4jLog.class.getClassLoader() instanceof ArtifactClassLoader)) {
-			Log.setImplementation(new Log4jLog(Log.class));
+			Log.setImplementation(new Log4jLog());
 		}
 	}
 
