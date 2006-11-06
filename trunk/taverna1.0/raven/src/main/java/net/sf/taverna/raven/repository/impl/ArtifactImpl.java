@@ -15,6 +15,7 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
+import net.sf.taverna.raven.log.Log;
 import net.sf.taverna.raven.repository.Artifact;
 import net.sf.taverna.raven.repository.ArtifactNotFoundException;
 import net.sf.taverna.raven.repository.ArtifactStateException;
@@ -31,6 +32,7 @@ import org.xml.sax.SAXException;
  * @author Tom
  */
 public class ArtifactImpl extends BasicArtifact {
+	private static Log logger = Log.getLogger(ArtifactImpl.class);
 	
 	private LocalRepository repository;
 	private String packageType = null;
@@ -77,7 +79,7 @@ public class ArtifactImpl extends BasicArtifact {
 		}
 		List<ArtifactImpl> result = new ArrayList<ArtifactImpl>();
 		if (repository == null) {
-			System.err.println("WARNING: Repository is null");
+			logger.error("Repository is null");
 			// Should never get here, it's impossible to construct an ArtifactImpl with
 			// a null repository.
 			return result;
@@ -91,7 +93,7 @@ public class ArtifactImpl extends BasicArtifact {
 		
 		File pomFile = repository.pomFile(this);
 		if (! pomFile.exists()) {
-			System.err.println("Pom file does not exist: " + pomFile);
+			logger.error("Pom file does not exist: " + pomFile);
 			// TODO Handle absence of pom file here
 			return result;
 		}
@@ -126,9 +128,8 @@ public class ArtifactImpl extends BasicArtifact {
 					version = n.getFirstChild().getNodeValue().trim();
 				}
 				if (version == null) {
-					System.err.print("Warning - unable to find a version for the dependency ");
-					System.err.print(groupId+":"+artifactId);
-					System.err.println(" - skipping");
+					logger.warn("Unable to find a version for the dependency " +
+								groupId+":"+artifactId + " - skipping");
 					continue;
 				}
 	
@@ -147,7 +148,7 @@ public class ArtifactImpl extends BasicArtifact {
 						Node artifactNode = findElements(excludeNode, "artifactId" ).iterator().next();
 						String exArtifactId = artifactNode.getFirstChild().getNodeValue().trim();
 						BasicArtifact exclusion = new BasicArtifact(exGroupId, exArtifactId, "");
-						//System.out.println("Excluding " + exclusion);
+						//logger.info("Excluding " + exclusion);
 						depExclusions.add(exclusion);
 					}
 				}
@@ -189,18 +190,15 @@ public class ArtifactImpl extends BasicArtifact {
 					// Log the optional dependency here if needed
 				}
 			}
+		// FIXME: catching exceptions where they are thrown
 		} catch (MalformedURLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error("Malformed URL", e);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.warn("IO error", e);
 		} catch (ParserConfigurationException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error("XML parser configuration error", e);
 		} catch (SAXException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.warn("XML SAX error", e);
 		}
 		dependencies = result;
 		return result;
@@ -226,18 +224,15 @@ public class ArtifactImpl extends BasicArtifact {
 				Node packageNode = l.iterator().next();
 				packageType = packageNode.getFirstChild().getNodeValue().trim();
 				return packageType;
+				// FIXME: catching exceptions where they are thrown
 			} catch (MalformedURLException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				logger.error("Malformed URL", e);
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				logger.warn("IO error", e);
 			} catch (ParserConfigurationException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				logger.error("XML parser configuration error", e);
 			} catch (SAXException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				logger.warn("XML SAX error", e);
 			}
 		}
 		return null;
@@ -278,20 +273,20 @@ public class ArtifactImpl extends BasicArtifact {
 			try {
 				builder = factory.newDocumentBuilder();
 			} catch (ParserConfigurationException ex) {
-				ex.printStackTrace();
+				logger.error("Could not create XML document builder", ex);
 				return;
 			}
 			try {
 				document = builder.parse(is);
 			} catch (SAXException e) {
-				System.err.println("Could not parse " + pomFile);
-				e.printStackTrace();
-				is.close();
+				logger.warn("Could not parse XML " + pomFile, e);
 				return;
+			} finally {
+				is.close();
 			}
-			is.close(); }
+		}
 		catch (IOException e) {
-			System.err.println("Could not read " + pomFile + ": " + e);
+			logger.warn("Could not read " + pomFile,  e);
 			return;
 		}
 		List<Node> elementList = findElements(document, "parent");
@@ -312,7 +307,7 @@ public class ArtifactImpl extends BasicArtifact {
 				// Force a fetch of the pom file
 				repository.forcePom(parentArtifact);
 			} catch (ArtifactNotFoundException e) {
-				System.err.println("Could not fetch pom for artifact " + parentArtifact);
+				logger.warn("Could not fetch pom for artifact " + parentArtifact, e);
 				return;
 			}
 		}
@@ -349,24 +344,22 @@ public class ArtifactImpl extends BasicArtifact {
 							String artifactId = n.getFirstChild().getNodeValue().trim();
 							n = findElements(depNode, "version" ).iterator().next();
 							version = n.getFirstChild().getNodeValue().trim();
-							/**System.out.println(this);
-							System.out.println("Parent : "+a);
-							System.out.println(groupId);
-							System.out.println(artifactId);
-							System.out.println(version);
+							/**logger.debug(this);
+							logger.debug("Parent : "+a);
+							logger.debug(groupId);
+							logger.debug(artifactId);
+							logger.debug(version);
 							*/
 							dependencyManagement.put(groupId+":"+artifactId,version);
 						}
 					}
-				}
-				catch (IOException e) {
-					e.printStackTrace();
+				
+				} catch (IOException e) {
+					logger.warn("IO error reading " + a, e);
 				} catch (ParserConfigurationException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					logger.error("XML parser configuration error", e);
 				} catch (SAXException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					logger.warn("XML SAX error reading " + a, e);
 				}
 			}
 		}

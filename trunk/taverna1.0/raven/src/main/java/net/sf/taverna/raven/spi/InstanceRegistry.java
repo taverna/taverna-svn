@@ -2,9 +2,12 @@ package net.sf.taverna.raven.spi;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.TypeVariable;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+
+import net.sf.taverna.raven.log.Log;
 
 /**
  * Instance registry to sit on top of the SpiRegistry object. When
@@ -27,6 +30,8 @@ import java.util.List;
  */
 public class InstanceRegistry <IType> implements Iterable<IType>, RegistryListener {
 
+	private static Log logger = Log.getLogger(InstanceRegistry.class);
+	
 	private List<InstanceRegistryListener> listeners = 
 		new ArrayList<InstanceRegistryListener>();
 	private List<IType> instances = null;
@@ -96,7 +101,7 @@ public class InstanceRegistry <IType> implements Iterable<IType>, RegistryListen
 		if (instances == null) {
 			update(registry.getClasses());
 		}
-		System.out.println("getInstances called, contains "+instances.size()+" instances of "+registry.getClassName());
+		logger.debug("getInstances called, contains "+instances.size()+" instances of "+registry.getClassName());
 		return new ArrayList<IType>(instances);
 	}
 
@@ -144,27 +149,21 @@ public class InstanceRegistry <IType> implements Iterable<IType>, RegistryListen
 				temp.add(newInstance);
 				changed = true;
 			} catch (SecurityException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				logger.warn("Could not instanciate " + c, e);
 			} catch (NoSuchMethodException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				logger.warn("Could not instanciate " + c, e);
 			} catch (IllegalArgumentException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				logger.warn("Could not instanciate " + c, e);
 			} catch (InstantiationException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				logger.warn("Could not instanciate " + c, e);
 			} catch (IllegalAccessException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				logger.warn("Could not instanciate " + c, e);
 			} catch (InvocationTargetException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				logger.warn("Could not instanciate " + c, e);
 			} catch (ClassCastException e) {
-				// TODO - declared as implementation of the SPI
-				// but obviously wasn't!
-				e.printStackTrace();
+				TypeVariable spi = getClass().getTypeParameters()[0];
+				logger.error("Declared as implementation of the SPI " + spi.getName()
+						 + ", but was not: " + c, e);
 			}
 		}
 		if (changed) {

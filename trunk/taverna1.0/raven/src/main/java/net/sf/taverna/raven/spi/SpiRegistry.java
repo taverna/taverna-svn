@@ -12,6 +12,7 @@ import java.util.Scanner;
 import java.util.Set;
 
 import net.sf.taverna.raven.RavenException;
+import net.sf.taverna.raven.log.Log;
 import net.sf.taverna.raven.repository.Artifact;
 import net.sf.taverna.raven.repository.ArtifactStatus;
 import net.sf.taverna.raven.repository.Repository;
@@ -28,6 +29,8 @@ import net.sf.taverna.raven.repository.impl.LocalRepository.ArtifactClassLoader;
  * @author Tom Oinn
  */
 public class SpiRegistry implements Iterable<Class> {
+	
+	private static Log logger = Log.getLogger(SpiRegistry.class);
 	
 	private List<RegistryListener> listeners = new ArrayList<RegistryListener>();
 	private Repository repository;
@@ -166,7 +169,7 @@ public class SpiRegistry implements Iterable<Class> {
 			try {
 				cl = repository.getLoader(a, parentLoader);
 			} catch (RavenException e) {
-				e.printStackTrace();
+				logger.error("Could not get class loader for " + a, e);
 				continue;
 			}
 			if (seenClassLoaders.contains(cl)) {
@@ -174,26 +177,27 @@ public class SpiRegistry implements Iterable<Class> {
 			}
 			seenClassLoaders.add(cl);
 			Enumeration<URL> resources;
+			String resource = "META-INF/services/"+classname;
 			try {
-				resources = cl.getResources("META-INF/services/"+classname);
+				resources = cl.getResources(resource);
 			} catch (IOException e) {
-				e.printStackTrace();
+				logger.warn("Could not find resource " + resource, e);
 				continue;
 			}
 			while (resources.hasMoreElements()) {
 				URL resourceURL = resources.nextElement();
 				if (resourceURL == null || seenURLs.contains(resourceURL)) {
-					// System.out.println(" - no SPI file for "+classname);
+					logger.info("No SPI file for "+classname);
 					continue;
 				}
 				// Found an appropriate SPI file
 				seenURLs.add(resourceURL);
-				//System.out.println(" - found SPI file at "+resourceURL.toString());
+				logger.debug("Found SPI file at "+resourceURL);
 				InputStream is;
 				try {
 					is = resourceURL.openStream();
 				} catch (IOException ex) {
-					ex.printStackTrace();
+					logger.warn("Could not read " + resourceURL, ex);
 					continue;
 				}
 				Scanner scanner = new Scanner(is);
@@ -201,16 +205,16 @@ public class SpiRegistry implements Iterable<Class> {
 				while (scanner.hasNext()) {
 					String impName = scanner.next().trim();						
 					if (impName.length()==0 || impName.startsWith("#")) { //ignore commented entries or blank lines
-						//System.out.println("Skipping " + impName);
+						//logger.debug("Skipping line " + impName);
 						continue;
 					} else {
-						//System.out.println("Loading " + impName);
+						logger.info("Loading SPI " + impName);
 					}
 					Class impClass;
 					try {
 						impClass = cl.loadClass(impName);
 					} catch (ClassNotFoundException e) {
-						e.printStackTrace();
+						logger.warn("Could not find class " + impName + " using " + cl, e);
 						continue;
 					}
 					if (impClass.getClassLoader() instanceof ArtifactClassLoader || System.getProperty("raven.eclipse")!=null) {
@@ -222,7 +226,7 @@ public class SpiRegistry implements Iterable<Class> {
 				try {
 					is.close();
 				} catch (IOException e) {
-					e.printStackTrace();
+					logger.warn("Could not close stream " + resourceURL, e);
 					continue;
 				}
 			}
@@ -247,6 +251,7 @@ public class SpiRegistry implements Iterable<Class> {
 }
 class AddNewArtifactsListener implements RepositoryListener {
 
+	private static Log logger = Log.getLogger(AddNewArtifactsListener.class);
 	private SpiRegistry registry;
 
 	AddNewArtifactsListener(SpiRegistry registry) {
@@ -257,7 +262,7 @@ class AddNewArtifactsListener implements RepositoryListener {
 	// ready artifacts for the appropriate SPI
 	public void statusChanged(Artifact a, ArtifactStatus oldStatus, ArtifactStatus newStatus) {
 		if (newStatus.equals(ArtifactStatus.Ready)) {
-			//System.out.println(a+" "+oldStatus+"->"+newStatus);
+			logger.debug(a+" "+oldStatus+"->"+newStatus);
 			synchronized(registry) {
 				registry.newArtifacts.add(a);
 				registry.updateRegistry();

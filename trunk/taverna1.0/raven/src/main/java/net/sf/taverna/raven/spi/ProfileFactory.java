@@ -25,15 +25,17 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: ProfileFactory.java,v $
- * Revision           $Revision: 1.2 $
+ * Revision           $Revision: 1.3 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-10-30 15:37:37 $
+ * Last modified on   $Date: 2006-11-06 14:31:44 $
  *               by   $Author: stain $
  * Created on 20 Oct 2006
  *****************************************************************/
 package net.sf.taverna.raven.spi;
 
 import java.net.URL;
+
+import net.sf.taverna.raven.log.Log;
 
 
 /**
@@ -44,6 +46,8 @@ import java.net.URL;
 
 
 public class ProfileFactory {
+	private static Log logger = Log.getLogger(ProfileFactory.class);
+	
 	private static ProfileFactory instance = new ProfileFactory();
 	private static Profile profile = null;
 	
@@ -64,7 +68,7 @@ public class ProfileFactory {
 		}
 		String profileStr=System.getProperty("raven.profile");
 		if (profileStr == null) {
-			System.out.println("No profile defined, try specifying -Draven.profile");
+			logger.warn("No profile defined, try specifying -Draven.profile");
 			return null;
 		}
 		try {				
@@ -72,8 +76,7 @@ public class ProfileFactory {
 			profile = new Profile(profileURL.openStream(), true);
 			return profile;
 		} catch (Exception e) {
-			System.out.println("Could not fetch profile from: "+profileStr+" using stored profile.");	
-			e.printStackTrace();
+			logger.warn("Could not fetch profile from: "+profileStr+" using stored profile.", e);	
 			return null;
 		}								
 	}

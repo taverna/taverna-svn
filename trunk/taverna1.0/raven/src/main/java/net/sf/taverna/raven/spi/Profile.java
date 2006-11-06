@@ -19,6 +19,7 @@ import javax.xml.transform.TransformerFactoryConfigurationError;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
+import net.sf.taverna.raven.log.Log;
 import net.sf.taverna.raven.repository.Artifact;
 import net.sf.taverna.raven.repository.BasicArtifact;
 
@@ -52,6 +53,8 @@ import org.xml.sax.SAXException;
  *
  */
 public class Profile implements ArtifactFilter {
+	private static Log logger = Log.getLogger(Profile.class);
+	
 	private Set<Artifact> artifacts = new HashSet<Artifact>();
 	private Set<Artifact> systemArtifacts = new HashSet<Artifact>();
 	
@@ -106,7 +109,7 @@ public class Profile implements ArtifactFilter {
 		if (profileVersionAttribute != null) {
 			version = profileVersionAttribute.getNodeValue();
 		} else {
-			System.out.println("Profile document contains no version.");
+			logger.warn("Profile document contains no version.");
 			version = null;
 		}
 		
@@ -115,7 +118,7 @@ public class Profile implements ArtifactFilter {
 		if (profileNameAttribute != null) {
 			name = profileNameAttribute.getNodeValue();
 		} else {
-			System.out.println("Profile document contains no name.");
+			logger.warn("Profile document contains no name.");
 			name = null;
 		}
 							

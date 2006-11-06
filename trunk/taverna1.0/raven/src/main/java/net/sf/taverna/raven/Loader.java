@@ -15,6 +15,7 @@ import javax.swing.JProgressBar;
 import javax.swing.JWindow;
 import javax.swing.SwingUtilities;
 
+import net.sf.taverna.raven.log.Log;
 import net.sf.taverna.raven.repository.Artifact;
 import net.sf.taverna.raven.repository.ArtifactNotFoundException;
 import net.sf.taverna.raven.repository.ArtifactStateException;
@@ -37,6 +38,9 @@ import net.sf.taverna.raven.spi.ProfileFactory;
  * @author Matthew Pocock
  */
 public class Loader {
+	
+	public static Log logger = Log.getLogger(Loader.class);
+	
 	/**
 	 * Initialize raven's repository and load the specified artifact into it.
 	 * Returns the named class from the classloader containing the specified
@@ -150,15 +154,17 @@ public class Loader {
 			splash.setText("Done...");
 			splash.requestClose();
 		} 
-		//System.out.println("Done close request");
+		//logger.debug("Done close request");
 		ClassLoader loader = repository.getLoader(artifact,null);
-		//System.out.println("Got classloader");
+		//logger.debug("Got classloader");
 		return loader.loadClass(className);
 	}	
 }
 
 class SplashScreen extends JWindow {
 
+	private static Log logger = Log.getLogger(SplashScreen.class);
+	
 	private static class SplashListener implements RepositoryListener {
 		
 		private final Repository repository;
@@ -172,7 +178,7 @@ class SplashScreen extends JWindow {
 		public void statusChanged(Artifact a, ArtifactStatus oldStatus, ArtifactStatus newStatus) {
 			splash.setText(a.getArtifactId()+"-"+a.getVersion()+" : "+newStatus.toString());				
 			if (newStatus.isError()) {
-				//System.out.println(a.toString()+" :: "+newStatus.toString());
+				//logger.debug(a.toString()+" :: "+newStatus.toString());
 			}
 			if (! newStatus.equals(ArtifactStatus.JarFetching)) {
 				return;
@@ -181,11 +187,10 @@ class SplashScreen extends JWindow {
 			try {
 				dls = repository.getDownloadStatus(a);
 			} catch (RavenException ex) {
-				// TODO Auto-generated catch block
-				ex.printStackTrace();
+				logger.warn("Could not get download status for: " + a, ex);
 				return;
 			}
-			// FIXME: What if there are severan artifacts JarFetching at the 
+			// FIXME: What if there are several artifacts JarFetching at the 
 			// same time? Would we get many progressThreads?
 			Thread progressThread = new Thread(new Runnable() {
 				public void run() {
@@ -193,8 +198,7 @@ class SplashScreen extends JWindow {
 						try {
 							Thread.sleep(100);
 						} catch (InterruptedException e) {
-							// Should not happen, but if it does, we'll quit
-							e.printStackTrace();
+							logger.warn("Progress thread interrupted", e);
 							return;
 						}
 						int progress = Math.min(100, 
@@ -244,8 +248,7 @@ class SplashScreen extends JWindow {
 				try {
 					Thread.sleep(timeout);
 				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					logger.warn("timeout thread interrupted", e);
 				}
 				requestCloseFromTimeout();
 			}
