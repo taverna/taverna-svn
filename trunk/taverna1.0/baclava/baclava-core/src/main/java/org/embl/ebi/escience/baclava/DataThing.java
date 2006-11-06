@@ -31,11 +31,13 @@ import java.util.Set;
 
 import javax.swing.ImageIcon;
 
+import net.sf.taverna.utils.MyGridConfiguration;
+
+import org.apache.log4j.Logger;
 import org.embl.ebi.escience.baclava.factory.DataThingFactory;
 import org.embl.ebi.escience.baclava.factory.DataThingXMLFactory;
 import org.embl.ebi.escience.baclava.iterator.BaclavaIterator;
 import org.embl.ebi.escience.scufl.SemanticMarkup;
-import net.sf.taverna.utils.MyGridConfiguration;
 import org.jdom.Element;
 
 /**
@@ -50,6 +52,8 @@ import org.jdom.Element;
  */
 public class DataThing implements Cloneable, Serializable {
 
+	private static Logger logger = Logger.getLogger(DataThing.class);
+	
 	protected Object theDataObject;
 
 	protected HashMap metadataMap = new HashMap();
@@ -83,8 +87,7 @@ public class DataThing implements Cloneable, Serializable {
 				mimeTypes.load(resourceURL.openStream());
 			}
 		} catch (Exception ex) {
-			System.out.println("Unable to get mime type information.");
-			ex.printStackTrace();
+			logger.warn("Unable to get mime type information", ex);
 		}
 		// Interrogate the system properties and instantiate
 		// a single static instance of the LSIDProvider
@@ -94,12 +97,13 @@ public class DataThing implements Cloneable, Serializable {
 				.getProperty("taverna.lsid.providerclass");
 		if (providerClassName != null) {
 			try {
+				// FIXME: Whould use Raven SPIs/profiles to allow loading
+				// LSID providers that we don't officially depend on
 				Class providerClass = Class.forName(providerClassName);
 				SYSTEM_DEFAULT_LSID_PROVIDER = (LSIDProvider) providerClass
 						.newInstance();
 			} catch (Exception ex) {
-				System.err.println("Could not initiate LSID provider " + providerClassName);
-				ex.printStackTrace();
+				logger.warn("Could not initiate LSID provider " + providerClassName, ex);
 			}
 		}
 	}
@@ -136,7 +140,7 @@ public class DataThing implements Cloneable, Serializable {
 			try {
 				fillLSIDValues(SYSTEM_DEFAULT_LSID_PROVIDER);
 			} catch (Throwable ex) {
-				ex.printStackTrace();
+				logger.warn("Could not fill LSID values", ex);
 			}
 		}
 	}
@@ -202,7 +206,7 @@ public class DataThing implements Cloneable, Serializable {
 		for (Iterator i = lsid.keySet().iterator(); i.hasNext();) {
 			Object key = i.next();
 			Object value = lsid.get(key);
-			// System.out.println("LSID value found : "+value);
+			// logger.debug("LSID value found : "+value);
 			if (((String) value).equals(LSID)) {
 				return key;
 			}
@@ -293,7 +297,7 @@ public class DataThing implements Cloneable, Serializable {
 
 	public String getMostInterestingMIMETypeForObject(Object o) {
 		String typeString = getSyntacticTypeForObject(o);
-		// System.out.println("Got types : "+typeString);
+		// logger.debug("Got types : "+typeString);
 		String mimeTypes = typeString.split("'")[1].toLowerCase();
 		for (int i = 0; i < interestingTypes.length; i++) {
 			if (mimeTypes.matches(".*" + interestingTypes[i] + ".*")) {
@@ -751,10 +755,10 @@ public class DataThing implements Cloneable, Serializable {
 					new ByteArrayInputStream(buf));
 			return in.readObject();
 		} catch (IOException e) {
-			e.printStackTrace();
+			logger.error("Could not clone", e);
 			return null;
 		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
+			logger.error("Could not clone", e);
 			return null;
 		}
 	}
