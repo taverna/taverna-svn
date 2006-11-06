@@ -25,8 +25,8 @@
 //      Dependencies        :
 //
 //      Last commit info    :   $Author: stain $
-//                              $Date: 2006-11-02 11:32:02 $
-//                              $Revision: 1.4 $
+//                              $Date: 2006-11-06 17:00:42 $
+//                              $Revision: 1.5 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 
@@ -77,7 +77,7 @@ public class PortTask extends AbstractTask {
 
 	public PortTask(String id, Flow flow, Port port) {
 		super(id, flow);
-		this.thePort = port;
+		thePort = port;
 	}
 
 	/**
@@ -86,7 +86,7 @@ public class PortTask extends AbstractTask {
 	 * @return type
 	 */
 	public int type() {
-		if (this.thePort instanceof InputPort) {
+		if (thePort instanceof InputPort) {
 			return PortTask.IN;
 		} else {
 			return PortTask.OUT;
@@ -99,7 +99,7 @@ public class PortTask extends AbstractTask {
 	 * @return XScufl definition port
 	 */
 	public Port getScuflPort() {
-		return this.thePort;
+		return thePort;
 	}
 
 	/**
@@ -117,7 +117,7 @@ public class PortTask extends AbstractTask {
 	 * @return holder for data
 	 */
 	public synchronized DataThing getData() {
-		return this.theDataThing;
+		return theDataThing;
 	}
 
 	public void forceSetData(DataThing newDataThing) {
@@ -205,7 +205,7 @@ public class PortTask extends AbstractTask {
 				}
 			}
 			WorkflowEventDispatcher.DISPATCHER
-					.fireCollectionConstructed(new CollectionConstructionEvent(
+					.fireEvent(new CollectionConstructionEvent(
 							workflowInstance, lsidWrapArray, originalLSID));
 			newDataThing = newThing;
 		}
@@ -213,18 +213,18 @@ public class PortTask extends AbstractTask {
 		// collection type or higher
 		if (getScuflPort() instanceof InputPort
 				&& ((InputPort) getScuflPort()).getMergeMode() == InputPort.MERGE) {
-			if (this.theDataThing == null) {
-				this.theDataThing = new DataThing(new ArrayList());
+			if (theDataThing == null) {
+				theDataThing = new DataThing(new ArrayList());
 			}
-			((List) (this.theDataThing.getDataObject())).add(newDataThing
+			((List) (theDataThing.getDataObject())).add(newDataThing
 					.getDataObject());
-			this.theDataThing.copyMetadataFrom(newDataThing);
+			theDataThing.copyMetadataFrom(newDataThing);
 		} else {
-			this.theDataThing = newDataThing;
+			theDataThing = newDataThing;
 		}
 		// Fully populate the dataThing with LSID values if it doesn't already
 		// have them
-		this.theDataThing.fillLSIDValues();
+		theDataThing.fillLSIDValues();
 
 		// Copy any MIME types available from the markup object
 		// on the Scufl port into the MIME container in the
@@ -249,11 +249,11 @@ public class PortTask extends AbstractTask {
 					// //System.out.println("Adding mime type
 					// "+portMIMETypes[i]+" to
 					// "+((Object)theDataThing).toString());
-					this.theDataThing.getMetadata().addMIMEType(
+					theDataThing.getMetadata().addMIMEType(
 							portMIMETypes[i]);
 				}
 				// Copy any semantic markup into the markup object as well
-				this.theDataThing.getMetadata().setSemanticType(
+				theDataThing.getMetadata().setSemanticType(
 						portMarkup.getSemanticType());
 			}
 			// Now copy all MIME types available from this port
@@ -262,12 +262,12 @@ public class PortTask extends AbstractTask {
 			for (int i = 0; i < portMIMETypes.length; i++) {
 				// //System.out.println("Adding mime type "+portMIMETypes[i]+"
 				// to "+((Object)theDataThing).toString());
-				this.theDataThing.getMetadata().addMIMEType(portMIMETypes[i]);
+				theDataThing.getMetadata().addMIMEType(portMIMETypes[i]);
 			}
 		}
 		// Fully populate the dataThing with LSID values if it doesn't already
 		// have them
-		this.theDataThing.fillLSIDValues();
+		theDataThing.fillLSIDValues();
 		// If this is a workflow source then store the data thing.
 		if (getScuflPort().isSource()) {
 			if (ProcessorTask.STORE != null) {
@@ -334,7 +334,7 @@ public class PortTask extends AbstractTask {
 				Flow flow = getFlow();
 				String flowID = flow.getFlowId();
 				Engine e = flow.getEngine();
-				this.workflowInstance = WorkflowInstanceImpl.getInstance(e,
+				workflowInstance = WorkflowInstanceImpl.getInstance(e,
 						thePort.getProcessor().getModel(), flowID);
 				// System.out.println("Invoking :
 				// "+getScuflPort().getProcessor().getName()+"."+getScuflPort().getName());
@@ -342,7 +342,7 @@ public class PortTask extends AbstractTask {
 					Task task = (Task) i.next();
 					if (task instanceof PortTask) {
 						PortTask childPortTask = (PortTask) task;
-						childPortTask.setData(this.theDataThing);
+						childPortTask.setData(theDataThing);
 					}
 				}
 
@@ -411,10 +411,10 @@ public class PortTask extends AbstractTask {
 
 	/*
 	 * public void setInput(Object theData){
-	 * this.theDataThing=(DataThing)theData; }
+	 * theDataThing=(DataThing)theData; }
 	 * 
 	 * public void setOutput(Object theData){
-	 * this.theDataThing=(DataThing)theData; }
+	 * theDataThing=(DataThing)theData; }
 	 */
 
 }
