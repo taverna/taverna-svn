@@ -38,6 +38,7 @@ public class WorkflowInstanceContainer extends JPanel implements WorkflowInstanc
 		if (invocation!=null) {
 			tabs.remove(invocation);
 			invocations.remove(modelName);
+			invocation.onDispose();
 		}
 	}
 
