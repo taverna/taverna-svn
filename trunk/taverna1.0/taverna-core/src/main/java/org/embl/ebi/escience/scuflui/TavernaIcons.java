@@ -25,10 +25,10 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: TavernaIcons.java,v $
- * Revision           $Revision: 1.4 $
+ * Revision           $Revision: 1.5 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-10-05 19:25:06 $
- *               by   $Author: mereden $
+ * Last modified on   $Date: 2006-11-08 12:46:39 $
+ *               by   $Author: stain $
  * Created on 28-Jun-2006
  *****************************************************************/
 package org.embl.ebi.escience.scuflui;
@@ -42,20 +42,23 @@ import javax.swing.ImageIcon;
  */
 public class TavernaIcons {
 
-	public static ImageIcon deleteIcon, zoomIcon, webIcon, openIcon, runIcon,
-			refreshIcon, editIcon, inputIcon, savePNGIcon, outputIcon,
-			inputPortIcon, outputPortIcon, dataLinkIcon, constraintIcon,
-			findIcon, folderOpenIcon, folderClosedIcon, newInputIcon,
-			newListIcon, inputValueIcon, xmlNodeIcon, leafIcon, windowRun,
-			windowScavenger, windowInput, windowDiagram, windowExplorer,
-			saveIcon, importIcon, openurlIcon, pauseIcon, playIcon, stopIcon,
-			breakIcon, rbreakIcon, tickIcon, openMenuIcon, saveMenuIcon,
-			databaseIcon, renameIcon, classIcon, selectedClassIcon, nullIcon;
+	public static ImageIcon tavernaIcon, deleteIcon, zoomIcon, webIcon,
+			openIcon, runIcon, refreshIcon, editIcon, inputIcon, savePNGIcon,
+			outputIcon, inputPortIcon, outputPortIcon, dataLinkIcon,
+			constraintIcon, findIcon, folderOpenIcon, folderClosedIcon,
+			newInputIcon, newListIcon, inputValueIcon, xmlNodeIcon, leafIcon,
+			windowRun, windowScavenger, windowInput, windowDiagram,
+			windowExplorer, saveIcon, importIcon, openurlIcon, pauseIcon,
+			playIcon, stopIcon, breakIcon, rbreakIcon, tickIcon, openMenuIcon,
+			saveMenuIcon, databaseIcon, renameIcon, classIcon,
+			selectedClassIcon, nullIcon;
 
 	static {
 		// Load the image files found in this package into the class.
 		try {
 			Class c = TavernaIcons.class;
+			tavernaIcon = new ImageIcon(c
+					.getResource("icons/generic/taverna.png"));
 			inputPortIcon = new ImageIcon(c
 					.getResource("icons/explorer/inputport.png"));
 			outputPortIcon = new ImageIcon(c
