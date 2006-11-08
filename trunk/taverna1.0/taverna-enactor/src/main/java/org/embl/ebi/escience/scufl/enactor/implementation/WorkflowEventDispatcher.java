@@ -20,8 +20,10 @@ import org.embl.ebi.escience.scufl.enactor.event.ProcessFailureEvent;
 import org.embl.ebi.escience.scufl.enactor.event.UserChangedDataEvent;
 import org.embl.ebi.escience.scufl.enactor.event.WorkflowCompletionEvent;
 import org.embl.ebi.escience.scufl.enactor.event.WorkflowCreationEvent;
+import org.embl.ebi.escience.scufl.enactor.event.WorkflowDestroyedEvent;
 import org.embl.ebi.escience.scufl.enactor.event.WorkflowFailureEvent;
 import org.embl.ebi.escience.scufl.enactor.event.WorkflowInstanceEvent;
+import org.embl.ebi.escience.scufl.enactor.event.WorkflowToBeDestroyedEvent;
 
 /**
  * The dispatcher class for workflow events, create one of these per enactor
@@ -37,6 +39,12 @@ public class WorkflowEventDispatcher {
 
 	private List<WorkflowInstanceEvent> eventQueue = new ArrayList<WorkflowInstanceEvent>();
 	
+	/**
+	 * List of listeners. This must be in order of calls to 
+	 * addListener(), so that WorkflowInstanceImpl.destroy() works
+	 * properly.
+	 * 
+	 */
 	private List<WorkflowEventListener> listeners = new ArrayList<WorkflowEventListener>();
 
 	private Thread notificationThread;
@@ -138,8 +146,11 @@ public class WorkflowEventDispatcher {
 	void fireEvents() {
 		WorkflowInstanceEvent[] events = getPendingEvents();
 		for (WorkflowInstanceEvent event : events) {
+			// Send the event to each listener in order
 			synchronized (listeners) {
-				for (WorkflowEventListener listener : listeners) {	
+				// Iterate over a copy to avoid ConcurrentModificationException in case
+				// one of our listeners do addListener() or removeListener().
+				for (WorkflowEventListener listener : listeners.toArray(new WorkflowEventListener[0])) {	
 					try {
 						sendAnEvent(listener, event);
 					} catch (Exception e) {
@@ -173,6 +184,10 @@ public class WorkflowEventDispatcher {
 			l.collectionConstructed((CollectionConstructionEvent) e);
 		} else if (e instanceof UserChangedDataEvent) {
 			l.dataChanged((UserChangedDataEvent) e);
+		} else if (e instanceof WorkflowToBeDestroyedEvent) {
+			l.workflowToBeDestroyed((WorkflowToBeDestroyedEvent) e);
+		} else if (e instanceof WorkflowDestroyedEvent) {
+			l.workflowDestroyed((WorkflowDestroyedEvent) e);
 		}
 	}
 

@@ -15,7 +15,9 @@ import org.embl.ebi.escience.scufl.enactor.event.ProcessFailureEvent;
 import org.embl.ebi.escience.scufl.enactor.event.UserChangedDataEvent;
 import org.embl.ebi.escience.scufl.enactor.event.WorkflowCompletionEvent;
 import org.embl.ebi.escience.scufl.enactor.event.WorkflowCreationEvent;
+import org.embl.ebi.escience.scufl.enactor.event.WorkflowDestroyedEvent;
 import org.embl.ebi.escience.scufl.enactor.event.WorkflowFailureEvent;
+import org.embl.ebi.escience.scufl.enactor.event.WorkflowToBeDestroyedEvent;
 
 /**
  * Implementations express an interest in events produced during the lifecycle
@@ -103,5 +105,39 @@ public interface WorkflowEventListener {
 	 * the same input type
 	 */
 	public void collectionConstructed(CollectionConstructionEvent e);
+
+	/**
+	 * Called right before workflowInstance.destroy() is to be called.
+	 * (Usually this has been triggered by the user clicking a 
+	 * "Close" button in the result window)
+	 * <p>
+	 * This is your last chance to access the workflow instance before it 
+	 * becomes unusable. workflowDestroyed(WorkflowDestroyedEvent) 
+	 * will be called after destroy() has been invoked, but at that
+	 * point it will be too late to access the instance.
+	 * <p>
+	 * <strong>Note</strong>: This is the last chance to access
+	 * workflowInstance before it is destroyed. If you have your own 
+	 * references to the instance or any of the data of workflowInstance
+	 * (such as the input map), this is the time to remove such references.
+	 * 
+	 */
+	public void workflowToBeDestroyed(WorkflowToBeDestroyedEvent event);
+
+	/**
+	 * This event is sent after workflowInstance.destroy() has been called.
+	 * <p>
+	 * This is the last message you receive about this workflow instance, 
+	 * which by now should not be accessed anymore.
+	 * <p>
+	 * event.getWorkflowInstance() on this event will therefore always 
+	 * return null, but you can access what would have been the result 
+	 * of workflowInstance.getID() by calling 
+	 * event.getWorkflowInstanceID().
+	 * <p>
+	 * If you would like to access the instance before it has been destroyed, 
+	 * do so from workflowToBeDestroyed(WorkflowToBeDestroyedEvent)
+	 */
+	public void workflowDestroyed(WorkflowDestroyedEvent event);
 
 }

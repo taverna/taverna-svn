@@ -25,8 +25,8 @@
 //      Dependencies        :
 //
 //      Last commit info    :   $Author: stain $
-//                              $Date: 2006-11-06 17:05:31 $
-//                              $Revision: 1.7 $
+//                              $Date: 2006-11-08 09:27:12 $
+//                              $Revision: 1.8 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 package org.embl.ebi.escience.scufl.enactor.implementation;
@@ -41,10 +41,13 @@ import org.embl.ebi.escience.baclava.LSIDProvider;
 import org.embl.ebi.escience.scufl.ScuflModel;
 import org.embl.ebi.escience.scufl.UnknownProcessorException;
 import org.embl.ebi.escience.scufl.enactor.UserContext;
+import org.embl.ebi.escience.scufl.enactor.WorkflowEventAdapter;
 import org.embl.ebi.escience.scufl.enactor.WorkflowInstance;
 import org.embl.ebi.escience.scufl.enactor.event.WorkflowCompletionEvent;
 import org.embl.ebi.escience.scufl.enactor.event.WorkflowCreationEvent;
+import org.embl.ebi.escience.scufl.enactor.event.WorkflowDestroyedEvent;
 import org.embl.ebi.escience.scufl.enactor.event.WorkflowFailureEvent;
+import org.embl.ebi.escience.scufl.enactor.event.WorkflowToBeDestroyedEvent;
 
 import uk.ac.soton.itinnovation.freefluo.event.WorkflowStateChangedEvent;
 import uk.ac.soton.itinnovation.freefluo.event.WorkflowStateListener;
@@ -80,6 +83,8 @@ public class WorkflowInstanceImpl implements WorkflowInstance {
 	private String instanceLSID = null;
 
 	private UserContext context;
+	
+	private boolean toBeDestroyed = false;
 
 	/**
 	 * Cache of instances as used by getInstance()
@@ -418,10 +423,81 @@ public class WorkflowInstanceImpl implements WorkflowInstance {
 		}
 	}
 
+	/**
+	 * Ask for the the workflow instance to be destroyed. 
+	 * <p>
+	 * This happens in two stages. First, an WorkflowToBeDestroyedEvent is
+	 * sent to each of the registered WorkflowEventListener. A mini-listener has
+	 * been added by this method, which will be the latest listener to receive 
+	 * that event, uppon when the real destruction (through doDestroy()) will occur. 
+	 * After that, a WorkflowDestroyedEvent is sent out to confirm the destruction.
+	 * Finally, cleanup() is called.
+	 * 
+	 * @see doDestroy()
+	 * @see cleanup()
+	 * @see WorkflowToBeDestroyedEvent
+	 * @see WorkflowDestroyedEvent
+	 * @see WorkflowEventDispatcher
+	 */
 	public synchronized void destroy() {
+		if (toBeDestroyed) {
+			// Only one destruction can be initiated
+			return;
+		}
+		// We'll add a listener here so that we can assume it is
+		// the latest listener 
+		WorkflowEventDispatcher.DISPATCHER.addListener(new WorkflowEventAdapter(){
+			public void workflowDestroyed(WorkflowDestroyedEvent event) {
+				if (! event.getWorkflowInstanceID().equals(getID())) {
+					return; // someone else
+				}
+				// This listener has done it's job now, but we can't remove ourself
+				// from this thread, as it will have the synchronized lock on 
+				// 
+				WorkflowEventDispatcher.DISPATCHER.removeListener(this);
+				// And we'll clean up some other stuff
+				cleanup();
+			}
+			public void workflowToBeDestroyed(WorkflowToBeDestroyedEvent event) {
+				if (event.getWorkflowInstance() != WorkflowInstanceImpl.this) {
+					return; // someone else
+				}
+				if (! toBeDestroyed) {
+					// Maybe one of our listeners decided to cancel the destroy
+					logger.info("destroy() cancelled");
+					// TODO: Implement a cancelDestroy() method - if needed
+					return;
+				}
+				// We are the last listener, so we'll get started on the destruction
+				String id = getID();
+				doDestroy();
+				// We'll pop off this event, and do the final cleanup in 
+				// workflowDestroyed()
+				WorkflowEventDispatcher.DISPATCHER.fireEvent(new WorkflowDestroyedEvent(id));
+			}	
+		});
+		toBeDestroyed = true;
+		WorkflowEventDispatcher.DISPATCHER.fireEvent(new WorkflowToBeDestroyedEvent(this));
+	}
+	
+	
+	/**
+	 * Perform the destruction of this workflow instance in the
+	 * workflow engine.
+	 * <p>
+	 * This method is called by destroy() after all listeners have received
+	 * an WorkflowToBeDestroyedEvent.
+	 * 
+	 * @see destroy()
+	 */
+	// Yes, circular references are possible in Java because there can
+	// be threads referring to the circle.
+	private synchronized void doDestroy() {
+		if (! toBeDestroyed) {
+			logger.error("Attempted to call doDestroy() without calling destroy()");
+			return;
+		}
 		logger.debug("Destroying " + this);
-		Object[] cacheKey = {engine, workflowModel, engineId};
-		instanceCache.remove(cacheKey);
 		try {
 			engine.destroy(engineId);
 		} catch (UnknownWorkflowInstanceException e) {
@@ -431,12 +507,31 @@ public class WorkflowInstanceImpl implements WorkflowInstance {
 			logger.error(msg, e);
 			throw new IllegalStateException(msg);
 		}
+		logger.debug("Destroyed " + this);		
+	}
+	
+	/**
+	 * Clear out our own references to avoid any circular references.
+	 * This involves destroying it at the engine, removing it 
+	 * from instanceCache, and resetting internal fields to null.
+	 * <p>
+	 * This method is called by destroy() after the WorkflowDestroyedEvent
+	 * has been received by all listeners.
+	 *
+	 */
+	private synchronized void cleanup() {
+		if (! toBeDestroyed) {
+			logger.error("Attempted to call cleanup() without calling destroy()");
+			return;
+		}
+		Object[] cacheKey = {engine, workflowModel, engineId};
+		instanceCache.remove(cacheKey);
 		engine = null;
 		engineId = null;
 		context = null;
 		input = null;
 		workflowModel = null;
-		logger.debug("Destroyed " + this);
+		instanceLSID = null;
 	}
 
 	public void pause(String processorId) {

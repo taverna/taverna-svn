@@ -15,7 +15,9 @@ import org.embl.ebi.escience.scufl.enactor.event.ProcessFailureEvent;
 import org.embl.ebi.escience.scufl.enactor.event.UserChangedDataEvent;
 import org.embl.ebi.escience.scufl.enactor.event.WorkflowCompletionEvent;
 import org.embl.ebi.escience.scufl.enactor.event.WorkflowCreationEvent;
+import org.embl.ebi.escience.scufl.enactor.event.WorkflowDestroyedEvent;
 import org.embl.ebi.escience.scufl.enactor.event.WorkflowFailureEvent;
+import org.embl.ebi.escience.scufl.enactor.event.WorkflowToBeDestroyedEvent;
 
 /**
  * An (abstract) adapter around the workflow event listener interface allowing for
@@ -53,5 +55,9 @@ public class WorkflowEventAdapter implements WorkflowEventListener {
 	public void nestedWorkflowCreated(NestedWorkflowCreationEvent e) {
 	}
 	public void nestedWorkflowFailed(NestedWorkflowFailureEvent e) {		
+	}
+	public void workflowDestroyed(WorkflowDestroyedEvent event) {
+	}
+	public void workflowToBeDestroyed(WorkflowToBeDestroyedEvent event) {
 	}	
 }
