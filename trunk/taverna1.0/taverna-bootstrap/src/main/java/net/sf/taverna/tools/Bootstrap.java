@@ -36,6 +36,8 @@ public class Bootstrap {
 	public static URL[] remoteRepositories = findRepositories(properties);
 
 	private static String loaderVersion;
+	
+	private static final String SPLASHSCREEN = "splashscreen-1.5.png";
 
 	public static void main(String[] args) throws MalformedURLException,
 			ClassNotFoundException, SecurityException, NoSuchMethodException,
@@ -226,8 +228,7 @@ public class Bootstrap {
 		URL splashScreenURL = null;
 		int splashScreenTime = 1;
 		if (useSplashscreen) {
-			splashScreenURL = new URL(properties
-					.getProperty("raven.splashscreen.url"));
+			splashScreenURL = getSplashScreenURL();			
 			splashScreenTime = Integer.valueOf(properties
 					.getProperty("raven.splashscreen.timeout")) * 1000; // seconds
 		}
@@ -244,6 +245,10 @@ public class Bootstrap {
 		return workbenchClass;
 	}
 
+	private static URL getSplashScreenURL() throws MalformedURLException{
+		return Bootstrap.class.getResource("/"+SPLASHSCREEN);
+	}	
+	
 	private static List<URL> getLoaderUrls() throws MalformedURLException {
 		File cacheDir = findCache();
 
