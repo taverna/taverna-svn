@@ -619,8 +619,7 @@
     <module>taverna-core</module>
     <module>taverna-tools</module>
     <module>taverna-biomoby</module>
-    <module>taverna-bootstrap</module>
-    <module>taverna-launcher</module>
+    <module>taverna-bootstrap</module>    
     <module>taverna-contrib</module>
     <module>taverna-update-manager</module>
     <module>raven</module>

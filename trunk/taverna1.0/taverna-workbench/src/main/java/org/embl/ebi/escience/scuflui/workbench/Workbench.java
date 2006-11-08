@@ -78,7 +78,7 @@ import org.jdom.output.XMLOutputter;
 @SuppressWarnings("serial")
 public class Workbench extends JFrame {
 	
-	private static Logger logger = Logger.getLogger(Workbench.class);
+	private static Logger logger = Logger.getLogger(Workbench.class);	
 	
 	private ZBasePane basePane = null;
 	private ScuflModelSet workflowModels=ScuflModelSet.instance();
