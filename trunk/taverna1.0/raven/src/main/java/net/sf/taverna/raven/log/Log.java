@@ -1,18 +1,73 @@
 package net.sf.taverna.raven.log;
 
-public class Log {
-	
-	private static LogInterface logImplementation = new JavaLog();
-	private LogInterface logger;
-	private Class callingClass;
 
+/**
+ * Log proxy for Raven
+ * <p>
+ * Allow Raven to log its internals without worrying about which 
+ * implementation of the logging framework to use. 
+ * Logging framework can be switched on the fly by 
+ * calling Log.setImplementation(LogInterface).
+ * <p>
+ * The public interface of this class slightly resembles
+ * that of Log4j.Logger. Example usage:
+ * <pre>
+ * public class LocalRepository implements Repository {
+ *     private static Log logger = Log.getLogger(LocalRepository.class);
+ *       ..
+ *                      try { 
+ * 							ac = new ArtifactClassLoader(dep);
+ * 							logger.info("Found " + ac);
+ *     					} catch (MalformedURLException e) {
+ * 							logger.error("Malformed URL when loading " + dep, e);
+ * 						}
+ * </pre>
+ * <p>
+ * The default log implementation is JavaLog, which proxies to java.util.logging.
+ * For details on how to modify these settings, see JavaLog.
+ * Other available implementations are ConsoleLog, which just prints to System.err 
+ * for everything on level WARN or above, or Log4jLog in the artifact raven-log4j, 
+ * which depends on log4j being available through the system classloader. For details,
+ * see Log4jLog.
+ * 
+ * @see java.util.logging.Logging
+ * @see JavaLog
+ * @see ConsoleLog
+ * @see Log4jLog
+ * @see Log.setImplementation(LogInterface)
+ * @author Stian Soiland
+ *
+ */
+public class Log {
+	// For our internal logging (hihi)
+	private static Log logger = Log.getLogger(Log.class);
+	// FIXME: Default log implementation should be set by properties
+	// Implementation as set with setImplementation() - possibly null (no logging)
+	private static LogInterface logImplementation = new JavaLog();
+	// The class that constructed this logger with getLogger(Class)
+	private Class callingClass;
+	// The instance of our implementation
+	private LogInterface logInstance;
+
+	/**
+	 * Private constructor, use getLogger(Class) instead.
+	 * 
+	 * @param c Class that 
+	 */
 	private Log(Class c) {
 		this.callingClass = c;
-		this.logger = null;
+		this.logInstance = null;
 	}
 
-	public static void setImplementation(LogInterface logger) {
-		logImplementation = logger;
+	/**
+	 * Set the implementation 
+	 * 
+	 * @param implementation
+	 */
+	public synchronized static void setImplementation(LogInterface implementation) {
+		LogInterface oldImplementation = logImplementation;
+		logImplementation = implementation;
+		logger.info("Changed log implementation from " + oldImplementation + " to " + implementation);
 	}
 	
 	public static Log getLogger(Class c) {
@@ -56,10 +111,12 @@ public class Log {
 			return;
 		}
 		try {
-			logger.log(priority, msg, ex);
+			logInstance.log(priority, msg, ex);
 		} catch (Throwable t) {
-			System.err.println("Could not log to " + logger);
+			System.err.println("Raven could not log to " + logInstance);
 			t.printStackTrace();
+			System.err.println("Disabling Raven logging");
+			setImplementation(null);
 		}
 	}
 		
@@ -67,15 +124,17 @@ public class Log {
 		if (logImplementation == null) {
 			return false;
 		}
-		if (logger == null || ! logImplementation.getClass().isInstance(logger)) {
+		if (logInstance == null || ! logImplementation.getClass().isInstance(logInstance)) {
 			// Not yet initialized or implementation has changed
 			try {
-				logger = logImplementation.getLogger(callingClass);
+				logInstance = logImplementation.getLogger(callingClass);
 			} catch (Throwable t) {
-				System.err.println("Could not get logger implementation " + logImplementation);
+				System.err.println("Raven could not get logger implementation " + logImplementation);
 				t.printStackTrace();
+				System.err.println("Disabling Raven logging");
+				setImplementation(null);
 			}
 		}
-		return (logger != null);
+		return (logInstance != null);
 	}
 }
