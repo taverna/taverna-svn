@@ -91,9 +91,7 @@ public class Workbench extends JFrame {
 
 	private static Logger logger = Logger.getLogger(Workbench.class);
 
-	private ZBasePane basePane = null;
-	
-	static Graph g = new GraphMem();
+	private ZBasePane basePane = null;	
 
 	private ScuflModelSet workflowModels = ScuflModelSet.instance();
 
