@@ -28,6 +28,10 @@
 	<artifact groupId="uk.org.mygrid.taverna.scufl.scufl-ui-components" artifactId="enactor-event-monitor" version="1.5-SNAPSHOT"/>
 	<artifact groupId="uk.org.mygrid.taverna.scufl.scufl-ui-components" artifactId="dot-text-area" version="1.5-SNAPSHOT"/>	
 	<artifact groupId="uk.org.mygrid.taverna.scufl.scufl-ui-components" artifactId="workflow-instance-container" version="1.5-SNAPSHOT"/>
+	
+	<!-- perspectives -->
+	<artifact groupId="uk.org.mygrid.taverna.perspectives" artifactId="perspective-design" version="1.5-SNAPSHOT"/>
+	<artifact groupId="uk.org.mygrid.taverna.perspectives" artifactId="perspective-enact" version="1.5-SNAPSHOT"/>
 
 	<!-- workbench -->
 	<artifact groupId="uk.org.mygrid.taverna" artifactId="taverna-workbench" version="1.5-SNAPSHOT"/>
@@ -37,4 +41,5 @@
 
 	<!-- system sax parser -->
 	<artifact groupId="xerces" artifactId="xercesImpl" version="2.6.2" system="true"/>
+		
 </profile>

@@ -12,9 +12,11 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.io.Writer;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -23,8 +25,10 @@ import java.util.Properties;
 import java.util.Set;
 
 import javax.swing.AbstractAction;
+import javax.swing.AbstractButton;
 import javax.swing.Action;
 import javax.swing.Icon;
+import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
@@ -34,8 +38,11 @@ import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
+import javax.swing.JToolBar;
 import javax.swing.UIManager;
 
+import net.sf.taverna.perspectives.PerspectiveRegistry;
+import net.sf.taverna.perspectives.PerspectiveSPI;
 import net.sf.taverna.raven.repository.Artifact;
 import net.sf.taverna.raven.repository.impl.LocalRepository;
 import net.sf.taverna.raven.repository.impl.LocalRepository.ArtifactClassLoader;
@@ -70,48 +77,59 @@ import org.jdom.input.SAXBuilder;
 import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
 
+import com.hp.hpl.jena.graph.Graph;
+import com.hp.hpl.jena.mem.GraphMem;
+
 /**
  * Top level Zaria based UI for Taverna
+ * 
  * @author Tom Oinn
  * @author Stuart Owen
  */
 @SuppressWarnings("serial")
 public class Workbench extends JFrame {
-	
+
 	private static Logger logger = Logger.getLogger(Workbench.class);
-	
+
 	private ZBasePane basePane = null;
-	private ScuflModelSet workflowModels=ScuflModelSet.instance();
-	private JMenu fileMenu = null;
 	
+	static Graph g = new GraphMem();
+
+	private ScuflModelSet workflowModels = ScuflModelSet.instance();
+
+	private JMenu fileMenu = null;
+	private JToolBar toolBar = null;
+	private JMenu perspectivesMenu = null;
+
 	public static Workbench getWorkbench() {
 		return new Workbench();
 	}
-		
+
 	/**
 	 * Do not attempt to run from here - this is a quick hack to make at least
 	 * some parts of the workbench run from within Eclipse but it doesn't really
 	 * work very well. You need to launch from the Bootstrap class to get the
 	 * thing working properly.
+	 * 
 	 * @param args
 	 */
 	public static void main(String[] args) {
 		new Workbench();
 	}
-	
+
 	/**
-	 * Construct a new Workbench instance with the underlying Raven
-	 * repository pointing to the given directory on disc.
+	 * Construct a new Workbench instance with the underlying Raven repository
+	 * pointing to the given directory on disc.
+	 * 
 	 * @param localRepositoryLocation
 	 */
 	@SuppressWarnings("serial")
 	private Workbench() {
 		super();
 		try {
-			UIManager.setLookAndFeel(
-			"de.javasoft.plaf.synthetica.SyntheticaStandardLookAndFeel");
-		}
-		catch (Exception ex) {
+			UIManager
+					.setLookAndFeel("de.javasoft.plaf.synthetica.SyntheticaStandardLookAndFeel");
+		} catch (Exception ex) {
 			// Look and feel not available
 		}
 		setIconImage(TavernaIcons.tavernaIcon.getImage());
@@ -123,15 +141,13 @@ public class Workbench extends JFrame {
 			@Override
 			public JMenuItem getMenuItem(Class theClass) {
 				try {
-					//System.out.println(UIComponentFactorySPI.class.getClassLoader());
-					//System.out.println(theClass.getClassLoader());
-					UIComponentFactorySPI factory = 
-						(UIComponentFactorySPI) theClass.newInstance();
+					UIComponentFactorySPI factory = (UIComponentFactorySPI) theClass
+							.newInstance();
 					Icon icon = factory.getIcon();
 					if (icon != null) {
-						return new JMenuItem(factory.getName(), factory.getIcon());
-					}
-					else {
+						return new JMenuItem(factory.getName(), factory
+								.getIcon());
+					} else {
 						return new JMenuItem(factory.getName());
 					}
 				} catch (InstantiationException e) {
@@ -140,123 +156,135 @@ public class Workbench extends JFrame {
 					return new JMenuItem("Illegal access exception!");
 				}
 			}
+
 			@Override
 			public JComponent getComponent(Class theClass) {
 				UIComponentFactorySPI factory;
 				try {
 					factory = (UIComponentFactorySPI) theClass.newInstance();
-					return (JComponent)factory.getComponent();
-				} catch (InstantiationException e) {					
+					return (JComponent) factory.getComponent();
+				} catch (InstantiationException e) {
 					e.printStackTrace();
 				} catch (IllegalAccessException e) {
 					e.printStackTrace();
 				}
 				return new JPanel();
 			}
+
 			@Override
 			protected void registerComponent(JComponent comp) {
 				if (comp instanceof WorkflowModelViewSPI) {
-					ScuflModel model = (ScuflModel)ModelMap.getInstance().getNamedModel(ModelMap.CURRENT_WORKFLOW);
+					ScuflModel model = (ScuflModel) ModelMap.getInstance()
+							.getNamedModel(ModelMap.CURRENT_WORKFLOW);
 					if (model != null) {
-						((WorkflowModelViewSPI)comp).attachToModel(model);
+						((WorkflowModelViewSPI) comp).attachToModel(model);
 					}
 				}
 			}
+
 			@Override
 			protected void deregisterComponent(JComponent comp) {
 				if (comp instanceof WorkflowModelViewSPI) {
-					((WorkflowModelViewSPI)comp).detachFromModel();
+					((WorkflowModelViewSPI) comp).detachFromModel();
 				}
 			}
-			
+
 		};
 		try {
-			ArtifactClassLoader acl = 
-				(ArtifactClassLoader)getClass().getClassLoader();
+			ArtifactClassLoader acl = (ArtifactClassLoader) getClass()
+					.getClassLoader();
 			basePane.setRepository(acl.getRepository());
 		}
-		
+
 		// Running from outside of Raven - won't expect this to work properly!
 		catch (ClassCastException cce) {
-			basePane.setRepository(LocalRepository.getRepository(new File(Bootstrap.TAVERNA_CACHE)));
+			basePane.setRepository(LocalRepository.getRepository(new File(
+					Bootstrap.TAVERNA_CACHE)));
 			for (URL repository : Bootstrap.remoteRepositories) {
 				basePane.getRepository().addRemoteRepository(repository);
 			}
-		}			
-		
+		}
+
 		TavernaSPIRegistry.setRepository(basePane.getRepository());
-		
-		basePane.setKnownSPINames(new String[]{
-		"org.embl.ebi.escience.scuflui.spi.UIComponentFactorySPI"});
-		basePane.setEditable(true);
+
+		basePane
+				.setKnownSPINames(new String[] { "org.embl.ebi.escience.scuflui.spi.UIComponentFactorySPI" });
+		basePane.setEditable(true);				
+				
 		setUI();
 		setModelChangeListener();
 		setModelSetListener();
 		// Force a new workflow instance to start off with
 		createWorkflowAction().actionPerformed(null);
-	}
-	
+	}	
+
 	private void setModelSetListener() {
-		ScuflModelSetListener listener=new ScuflModelSetListener() {
+		ScuflModelSetListener listener = new ScuflModelSetListener() {
 
 			public void modelAdded(ScuflModel model) {
-				ModelMap.getInstance().setModel(ModelMap.CURRENT_WORKFLOW, model);
+				ModelMap.getInstance().setModel(ModelMap.CURRENT_WORKFLOW,
+						model);
 				refreshFileMenu();
-				
+
 			}
 
 			public void modelRemoved(ScuflModel model) {
-				ModelMap.getInstance().setModel(ModelMap.CURRENT_WORKFLOW, null);
-				if (workflowModels.size()>0) {
-					ScuflModel firstmodel=(ScuflModel)workflowModels.getModels().toArray()[0];
-					ModelMap.getInstance().setModel(ModelMap.CURRENT_WORKFLOW, firstmodel);
+				ModelMap.getInstance()
+						.setModel(ModelMap.CURRENT_WORKFLOW, null);
+				if (workflowModels.size() > 0) {
+					ScuflModel firstmodel = (ScuflModel) workflowModels
+							.getModels().toArray()[0];
+					ModelMap.getInstance().setModel(ModelMap.CURRENT_WORKFLOW,
+							firstmodel);
 				}
-				refreshFileMenu();				
+				refreshFileMenu();
 			}
-			
+
 		};
 		workflowModels.addListener(listener);
 	}
-	
-	private void saveDefaultLayout() throws IOException {		
+
+	private void saveDefaultLayout() throws IOException {
 		File userDir = MyGridConfiguration.getUserDir("conf");
-		File layout=new File(userDir,"layout.xml");
-		Writer writer=new BufferedWriter(new FileWriter(layout));
+		File layout = new File(userDir, "layout.xml");
+		Writer writer = new BufferedWriter(new FileWriter(layout));
 		Element element = basePane.getElement();
-		XMLOutputter xo = new XMLOutputter(Format.getPrettyFormat());		
+		XMLOutputter xo = new XMLOutputter(Format.getPrettyFormat());
 		writer.write(xo.outputString(element));
 		writer.flush();
 		writer.close();
 	}
-	
+
 	@SuppressWarnings("serial")
 	public void setUI() {
+		toolBar = new JToolBar();
 		getContentPane().setLayout(new BorderLayout());
+		getContentPane().add(toolBar,BorderLayout.PAGE_START);
 		getContentPane().add(basePane, BorderLayout.CENTER);
-		
-		
-		JMenuBar menuBar = getWorkbenchMenuBar();
 				
-		setJMenuBar(menuBar);
-		setSize(new Dimension(500,500));				
+		JMenuBar menuBar = getWorkbenchMenuBar();
+		initialisePerspectives();
+
+		setJMenuBar(menuBar);		
+		setSize(new Dimension(500, 500));
 		addWindowListener(getWindowClosingAdaptor());
 		updateRepository();
-		
+
 		setWorkbenchTitle();
-				
-		readLastPreferences();		
-		readLastLayout();		
+
+		readLastPreferences();
+		readLastLayout();
 		setVisible(true);
-		
+
 		basePane.setEditable(false);
-		
+
 	}
 
 	private JMenuBar getWorkbenchMenuBar() {
 		JMenuBar menuBar = new JMenuBar();
 		menuBar.add(fileMenu);
 		refreshFileMenu();
-		
+
 		JMenu ravenMenu = new JMenu("Raven");
 		menuBar.add(ravenMenu);
 		JMenuItem getArtifact = new JMenuItem("Download artifact...");
@@ -264,38 +292,36 @@ public class Workbench extends JFrame {
 		final String[] groups = new String[] {
 				"uk.org.mygrid.taverna.scufl.scufl-ui-components",
 				"uk.org.mygrid.taverna.scuflui",
-				"uk.org.mygrid.taverna.processors"
-		};
-		final String[] versions = new String[] {
-				"1.5-SNAPSHOT"
-		};
+				"uk.org.mygrid.taverna.processors" };
+		final String[] versions = new String[] { "1.5-SNAPSHOT" };
 		getArtifact.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				//basePane.lockFrame();
-				Artifact a = ArtifactDownloadDialog.showDialog(Workbench.this, null, "Download new artifact", "Raven downloader", groups, versions);
-				//basePane.unlockFrame();
+				// basePane.lockFrame();
+				Artifact a = ArtifactDownloadDialog.showDialog(Workbench.this,
+						null, "Download new artifact", "Raven downloader",
+						groups, versions);
+				// basePane.unlockFrame();
 				if (a != null) {
 					addArtifact(a);
 				}
 			}
 		});
-		
-		if (System.getProperty("raven.remoteprofile")!=null) {
+
+		if (System.getProperty("raven.remoteprofile") != null) {
 			JMenuItem checkUpdates = new JMenuItem("Check for profile updates");
 			ravenMenu.add(checkUpdates);
-			
+
 			checkUpdates.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 					checkForProfileUpdate();
 				}
 			});
 		}
-		
-		
+
 		JMenu zariaMenu = new JMenu("Layout");
 		menuBar.add(zariaMenu);
 		zariaMenu.add(new JMenuItem(basePane.getToggleEditAction()));
-		
+
 		Action dumpLayoutXMLAction = new AbstractAction() {
 			public void actionPerformed(ActionEvent e) {
 				Element element = basePane.getElement();
@@ -304,77 +330,126 @@ public class Workbench extends JFrame {
 			}
 		};
 		
-		dumpLayoutXMLAction.putValue(Action.NAME,"Dump layout XML to console");
+		perspectivesMenu = new JMenu("Perspectives");
+		zariaMenu.add(perspectivesMenu);
 		
+		dumpLayoutXMLAction.putValue(Action.NAME, "Dump layout XML to console");
+
 		Action saveLayoutXMLAction = new AbstractAction() {
 			public void actionPerformed(ActionEvent e) {
-				JFileChooser chooser=new JFileChooser();
+				JFileChooser chooser = new JFileChooser();
 				chooser.setDialogTitle("Save Layout");
-				chooser.setFileFilter(new ExtensionFileFilter(new String[] { "xml" }));
-				int retVal=chooser.showSaveDialog(Workbench.this);
-				if (retVal == JFileChooser.APPROVE_OPTION) {					
-					File file=chooser.getSelectedFile();					
-					if (file!=null) {
+				chooser.setFileFilter(new ExtensionFileFilter(
+						new String[] { "xml" }));
+				int retVal = chooser.showSaveDialog(Workbench.this);
+				if (retVal == JFileChooser.APPROVE_OPTION) {
+					File file = chooser.getSelectedFile();
+					if (file != null) {
 						PrintWriter out;
 						try {
 							out = new PrintWriter(new FileWriter(file));
 							Element element = basePane.getElement();
-							XMLOutputter xo = new XMLOutputter(Format.getPrettyFormat());
+							XMLOutputter xo = new XMLOutputter(Format
+									.getPrettyFormat());
 							out.print(xo.outputString(element));
 							out.flush();
 							out.close();
-							
+
 							saveDefaultLayout();
-						} catch (IOException ex) {							
-							logger.error("IOException saving layout",ex);
-							JOptionPane.showMessageDialog(Workbench.this,"Error saving layout file: "+ex.getMessage());
+						} catch (IOException ex) {
+							logger.error("IOException saving layout", ex);
+							JOptionPane.showMessageDialog(Workbench.this,
+									"Error saving layout file: "
+											+ ex.getMessage());
 						}
-						
+
 					}
 				}
-			}			
+			}
 		};
-		
-		saveLayoutXMLAction.putValue(Action.NAME, "Save layout XML");			
-		
+
+		saveLayoutXMLAction.putValue(Action.NAME, "Save layout XML");
+
 		Action loadLayoutXMLAction = new AbstractAction() {
-			public void actionPerformed(ActionEvent e) {				
-				JFileChooser chooser=new JFileChooser();
+			public void actionPerformed(ActionEvent e) {
+				JFileChooser chooser = new JFileChooser();
 				chooser.setDialogTitle("Open Layout");
-				chooser.setFileFilter(new ExtensionFileFilter(new String[] { "xml" }));
-				int retVal=chooser.showOpenDialog(Workbench.this);
+				chooser.setFileFilter(new ExtensionFileFilter(
+						new String[] { "xml" }));
+				int retVal = chooser.showOpenDialog(Workbench.this);
 				if (retVal == JFileChooser.APPROVE_OPTION) {
-					File file=chooser.getSelectedFile();
-					if (file!=null) {
+					File file = chooser.getSelectedFile();
+					if (file != null) {
 						try {
-							InputStreamReader isr = new InputStreamReader(file.toURL().openStream());
-							SAXBuilder builder = new SAXBuilder(false);
-							Document document = builder.build(isr);
-							basePane.configure(document.detachRootElement());							
+							openLayout(file.toURI().toURL().openStream());
 							saveDefaultLayout();
-						}
-						catch(Exception ex) {
-							ex.printStackTrace();
-							logger.error("Error opening layout file",ex);
-							JOptionPane.showMessageDialog(Workbench.this,"Error opening layout file: "+ex.getMessage());
+						} catch (MalformedURLException ex) {
+							logger.error("Error with layout URL",ex);
+						} catch(IOException ex) {
+							logger.error("Error saving default layout",ex);
 						}
 					}
 				}
 			}
-			
-		};				
-		
+		};
+
 		loadLayoutXMLAction.putValue(Action.NAME, "Open layout XML");
-				
+
 		zariaMenu.add(new JMenuItem(dumpLayoutXMLAction));
 		zariaMenu.add(new JMenuItem(loadLayoutXMLAction));
 		zariaMenu.add(new JMenuItem(saveLayoutXMLAction));
-		
+
 		return menuBar;
+	}
+
+	private void initialisePerspectives() {				 
+		List<PerspectiveSPI> perspectives=PerspectiveRegistry.getInstance().getPerspectives();
+		for (final PerspectiveSPI perspective : perspectives) {			
+			addPerspective(perspective);
+		}		
+	}
+
+	private void addPerspective(final PerspectiveSPI perspective) {
+		final JButton toolbarButton = new JButton(perspective.getText(),perspective.getButtonIcon());
+		toolbarButton.setToolTipText(perspective.getText()+" perspective");		
+		ActionListener action = new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				
+				openLayout(perspective.getLayoutInputStream());
+				for (Component comp : toolBar.getComponents()) {
+					if (comp instanceof AbstractButton) {
+						((AbstractButton)comp).setEnabled(true);																		
+					}
+				}
+				toolbarButton.setEnabled(false);								
+			}				
+		};			
+		JMenuItem menuItem=new JMenuItem(perspective.getText());
+		menuItem.addActionListener(action);
+		perspectivesMenu.add(menuItem);
+		perspectivesMenu.addActionListener(action);			
+		toolbarButton.addActionListener(action);
+		toolBar.add(toolbarButton);
+	}
+	
+	private void openLayout(InputStream layoutStream) {
+		try {
+			InputStreamReader isr = new InputStreamReader(layoutStream);
+			SAXBuilder builder = new SAXBuilder(false);
+			Document document = builder.build(isr);
+			basePane.configure(document.detachRootElement());			
+		} catch (Exception ex) {
+			ex.printStackTrace();
+			logger.error("Error opening layout file", ex);
+			JOptionPane.showMessageDialog(Workbench.this,
+					"Error opening layout file: "
+							+ ex.getMessage());
+		}
 	}
 	
 	/**
-	 * set the title to the profile name and version, otherwise just Taverna Workbench
+	 * set the title to the profile name and version, otherwise just Taverna
+	 * Workbench
 	 */
 	private void setWorkbenchTitle() {
 		String title = "Taverna Workbench";
@@ -383,153 +458,166 @@ public class Workbench extends JFrame {
 			if (prof.getName() != null) {
 				title = prof.getName();
 			}
-			title += " v" + prof.getVersion();			
+			title += " v" + prof.getVersion();
 		}
 		setTitle(title);
 	}
 
-	
 	private void checkForProfileUpdate() {
-		String remoteProfileURL=System.getProperty("raven.remoteprofile");
+		String remoteProfileURL = System.getProperty("raven.remoteprofile");
 		try {
-			ProfileHandler handler=new ProfileHandler(remoteProfileURL);
+			ProfileHandler handler = new ProfileHandler(remoteProfileURL);
 			if (handler.isNewVersionAvailable()) {
-				int retval=JOptionPane.showConfirmDialog(Workbench.this, "New updates are available, update now?");
-				if (retval==JOptionPane.YES_OPTION) {
+				int retval = JOptionPane.showConfirmDialog(Workbench.this,
+						"New updates are available, update now?");
+				if (retval == JOptionPane.YES_OPTION) {
 					try {
 						handler.updateLocalProfile();
-						JOptionPane.showMessageDialog(Workbench.this,"Your updates will be applied when you restart Taverna","Resart required",JOptionPane.INFORMATION_MESSAGE);
+						JOptionPane
+								.showMessageDialog(
+										Workbench.this,
+										"Your updates will be applied when you restart Taverna",
+										"Resart required",
+										JOptionPane.INFORMATION_MESSAGE);
+					} catch (Exception e) {
+						logger.error("Error updating local profile", e);
+						JOptionPane
+								.showMessageDialog(
+										Workbench.this,
+										"Updating your profile failed, try again later.",
+										"Error updating profile",
+										JOptionPane.WARNING_MESSAGE);
 					}
-					catch(Exception e) {
-						logger.error("Error updating local profile",e);
-						JOptionPane.showMessageDialog(Workbench.this, "Updating your profile failed, try again later.", "Error updating profile", JOptionPane.WARNING_MESSAGE);
-					}					
 				}
-			}
-			else {
-				JOptionPane.showMessageDialog(Workbench.this,"You have all the latest components for this profile","No updates",JOptionPane.INFORMATION_MESSAGE);
+			} else {
+				JOptionPane.showMessageDialog(Workbench.this,
+						"You have all the latest components for this profile",
+						"No updates", JOptionPane.INFORMATION_MESSAGE);
 			}
 		} catch (Exception e) {
-			logger.error("Error checking for new profile",e);
-			JOptionPane.showMessageDialog(Workbench.this, "Currently unable to check for updates, try again later.", "Error checking for update", JOptionPane.WARNING_MESSAGE);
+			logger.error("Error checking for new profile", e);
+			JOptionPane.showMessageDialog(Workbench.this,
+					"Currently unable to check for updates, try again later.",
+					"Error checking for update", JOptionPane.WARNING_MESSAGE);
 		}
 	}
-	
+
 	private WindowAdapter getWindowClosingAdaptor() {
 		return new WindowAdapter() {
 			public void windowClosing(WindowEvent e) {
 				try {
 					storeUserPrefs();
-				}
-				catch(Exception ex) {
-					logger.error("Error writing user preferences when closing",ex);
+				} catch (Exception ex) {
+					logger.error("Error writing user preferences when closing",
+							ex);
 				}
 				System.exit(0);
 			}
 		};
-	}	
+	}
 
 	private void readLastPreferences() {
-		File userDir=MyGridConfiguration.getUserDir("conf");
-		File size=new File(userDir,"preferences.properties");
+		File userDir = MyGridConfiguration.getUserDir("conf");
+		File size = new File(userDir, "preferences.properties");
 		if (size.exists()) {
-			Properties props=new Properties();
+			Properties props = new Properties();
 			try {
 				props.load(size.toURL().openStream());
-				String swidth=props.getProperty("width");
-				String sheight=props.getProperty("height");
-				String sx=props.getProperty("x");
-				String sy=props.getProperty("y");
-				
-				Dimension resolution=getToolkit().getScreenSize();
-				
-				
-				int width=Integer.parseInt(swidth);
-				int height=Integer.parseInt(sheight);
-				int x=Integer.parseInt(sx);
-				int y=Integer.parseInt(sy);
-				
-				if (resolution.getWidth() < width ) {
-					width=(int)resolution.getWidth();
+				String swidth = props.getProperty("width");
+				String sheight = props.getProperty("height");
+				String sx = props.getProperty("x");
+				String sy = props.getProperty("y");
+
+				Dimension resolution = getToolkit().getScreenSize();
+
+				int width = Integer.parseInt(swidth);
+				int height = Integer.parseInt(sheight);
+				int x = Integer.parseInt(sx);
+				int y = Integer.parseInt(sy);
+
+				if (resolution.getWidth() < width) {
+					width = (int) resolution.getWidth();
 				}
-				
+
 				if (resolution.getHeight() < height) {
-					height=(int)resolution.getHeight();
+					height = (int) resolution.getHeight();
 				}
-				
-				if (x>(resolution.getWidth()-50) || x<0) {
-					x=0;
+
+				if (x > (resolution.getWidth() - 50) || x < 0) {
+					x = 0;
 				}
-				
-				if (y>(resolution.getHeight()-50) || y<0) {
-					y=0;
+
+				if (y > (resolution.getHeight() - 50) || y < 0) {
+					y = 0;
 				}
-				
+
 				this.setBounds(x, y, width, height);
 				this.repaint();
-				
+
 			} catch (Exception e) {
 				e.printStackTrace();
-				logger.error("Error loading default window dimensions",e);
+				logger.error("Error loading default window dimensions", e);
 			}
 		}
 	}
 
 	private File readLastLayout() {
-		File userDir=MyGridConfiguration.getUserDir("conf");		
-		File layout=new File(userDir,"layout.xml");
+		File userDir = MyGridConfiguration.getUserDir("conf");
+		File layout = new File(userDir, "layout.xml");
 		if (layout.exists()) {
 			try {
-				InputStreamReader isr = new InputStreamReader(layout.toURL().openStream());
+				InputStreamReader isr = new InputStreamReader(layout.toURL()
+						.openStream());
 				SAXBuilder builder = new SAXBuilder(false);
 				Document document = builder.build(isr);
 				basePane.configure(document.detachRootElement());
-			}
-			catch(FileNotFoundException e) {
+			} catch (FileNotFoundException e) {
 				logger.info("last used layout not found");
-				//ignore and just use defaults
-			}
-			catch(IOException e) {
-				logger.warn("IOException reading default layout",e);
-			}
-			catch(Exception e) {
-				logger.error("Exception reading default layout",e);
+				// ignore and just use defaults
+			} catch (IOException e) {
+				logger.warn("IOException reading default layout", e);
+			} catch (Exception e) {
+				logger.error("Exception reading default layout", e);
 			}
 		}
 		return userDir;
 	}
-	
+
 	private void storeUserPrefs() throws IOException {
-		File userDir=MyGridConfiguration.getUserDir("conf");				
-		
-		//store current window size
-		File size=new File(userDir,"preferences.properties");		
-		Writer writer=new BufferedWriter(new FileWriter(size));
-		writer.write("width="+this.getWidth()+"\n");
-		writer.write("height="+this.getHeight()+"\n");		
-		writer.write("x="+this.getX()+"\n");
-		writer.write("y="+this.getY()+"\n");
+		File userDir = MyGridConfiguration.getUserDir("conf");
+
+		// store current window size
+		File size = new File(userDir, "preferences.properties");
+		Writer writer = new BufferedWriter(new FileWriter(size));
+		writer.write("width=" + this.getWidth() + "\n");
+		writer.write("height=" + this.getHeight() + "\n");
+		writer.write("x=" + this.getX() + "\n");
+		writer.write("y=" + this.getY() + "\n");
 		writer.flush();
 		writer.close();
 	}
-	
-	
+
 	private void setModelChangeListener() {
 		ModelMap.DEFAULT_MODEL_LISTENER = new ModelChangeListener() {
 
 			private ScuflModelEventListener listener = new ScuflModelEventListener() {
 				public void receiveModelEvent(ScuflModelEvent event) {
 					// Refresh file menu to reflect any changes to the workflow
-					// titles. This isn't terribly efficient but hey.					
+					// titles. This isn't terribly efficient but hey.
 					refreshFileMenu();
 				}
 			};
+
 			private ScuflModel currentWorkflowModel = null;
-			
-			public synchronized void modelChanged(String modelName, Object oldModel, Object newModel) {
-				if (logger.isDebugEnabled()) logger.debug("Model changed:"+modelName+", "+newModel);
+
+			public synchronized void modelChanged(String modelName,
+					Object oldModel, Object newModel) {
+				if (logger.isDebugEnabled())
+					logger
+							.debug("Model changed:" + modelName + ", "
+									+ newModel);
 				if (newModel instanceof ScuflModel) {
-					ScuflModel newWorkflow = (ScuflModel)newModel;
+					ScuflModel newWorkflow = (ScuflModel) newModel;
 					for (WorkflowModelViewSPI view : getWorkflowViews()) {
 						view.detachFromModel();
 						view.attachToModel(newWorkflow);
@@ -537,164 +625,184 @@ public class Workbench extends JFrame {
 							currentWorkflowModel.removeListener(listener);
 						}
 						currentWorkflowModel = newWorkflow;
-						currentWorkflowModel.addListener(listener);					
+						currentWorkflowModel.addListener(listener);
 					}
 				}
 			}
 
 			public synchronized void modelDestroyed(String modelName) {
-				if (logger.isDebugEnabled()) logger.debug("Model destroyed:"+modelName);				
+				if (logger.isDebugEnabled())
+					logger.debug("Model destroyed:" + modelName);
 				if (modelName.equals(ModelMap.CURRENT_WORKFLOW)) {
 					if (currentWorkflowModel != null) {
 						currentWorkflowModel.removeListener(listener);
 					}
 					currentWorkflowModel = null;
-				}
-				else {
+				} else {
 					Set<WorkflowInstanceSetViewSPI> views = new HashSet<WorkflowInstanceSetViewSPI>();
-					findWorkflowInstanceSetViewSPIPanes(basePane.getZChildren(), views);					
+					findWorkflowInstanceSetViewSPIPanes(
+							basePane.getZChildren(), views);
 					for (WorkflowInstanceSetViewSPI view : views) {
 						view.removeWorkflowInstance(modelName);
 					}
-				}				
+				}
 			}
 
 			public synchronized void modelCreated(String modelName, Object model) {
-				if (logger.isDebugEnabled()) logger.debug("Model created:"+modelName+", "+model);
-				if (model instanceof ScuflModel && modelName.equals(ModelMap.CURRENT_WORKFLOW)) {
+				if (logger.isDebugEnabled())
+					logger.debug("Model created:" + modelName + ", " + model);
+				if (model instanceof ScuflModel
+						&& modelName.equals(ModelMap.CURRENT_WORKFLOW)) {
 					if (currentWorkflowModel != null) {
 						currentWorkflowModel.removeListener(listener);
 					}
-					ScuflModel newWorkflow = (ScuflModel)model;
+					ScuflModel newWorkflow = (ScuflModel) model;
 					newWorkflow.addListener(listener);
 					currentWorkflowModel = newWorkflow;
 					for (WorkflowModelViewSPI view : getWorkflowViews()) {
 						view.detachFromModel();
 						view.attachToModel(newWorkflow);
 					}
-				}	
+				}
 				if (model instanceof WorkflowInstance) {
 					Set<WorkflowInstanceSetViewSPI> views = new HashSet<WorkflowInstanceSetViewSPI>();
-					findWorkflowInstanceSetViewSPIPanes(basePane.getZChildren(), views);
-					boolean found=false;
+					findWorkflowInstanceSetViewSPIPanes(
+							basePane.getZChildren(), views);
+					boolean found = false;
 					for (WorkflowInstanceSetViewSPI view : views) {
-						view.newWorkflowInstance(modelName, (WorkflowInstance)model);		
-						if (!found) { //only jump to the first view found
-							showEnactorTab((Component)view);
-							found=true;						
+						view.newWorkflowInstance(modelName,
+								(WorkflowInstance) model);
+						if (!found) { // only jump to the first view found
+							showEnactorTab((Component) view);
+							found = true;
 						}
 					}
 				}
 			}
-			
+
 			private void showEnactorTab(Component component) {
 				if (component.getParent() instanceof JTabbedPane) {
-					JTabbedPane pane=(JTabbedPane)component.getParent();
+					JTabbedPane pane = (JTabbedPane) component.getParent();
 					pane.setSelectedComponent(component);
 				}
-				if (component.getParent()!=null) showEnactorTab(component.getParent());
+				if (component.getParent() != null)
+					showEnactorTab(component.getParent());
 			}
-			
-			private void findWorkflowInstanceSetViewSPIPanes(List<ZTreeNode> children, Set<WorkflowInstanceSetViewSPI> results) {
+
+			private void findWorkflowInstanceSetViewSPIPanes(
+					List<ZTreeNode> children,
+					Set<WorkflowInstanceSetViewSPI> results) {
 				for (ZTreeNode child : children) {
-					if (child instanceof ZRavenComponent) {							
-						ZRavenComponent raven=(ZRavenComponent)child;
+					if (child instanceof ZRavenComponent) {
+						ZRavenComponent raven = (ZRavenComponent) child;
 						if (raven.getComponent() instanceof WorkflowInstanceSetViewSPI) {
-							results.add((WorkflowInstanceSetViewSPI)raven.getComponent());
-						}						
+							results.add((WorkflowInstanceSetViewSPI) raven
+									.getComponent());
+						}
 					}
-					findWorkflowInstanceSetViewSPIPanes(child.getZChildren(), results);
+					findWorkflowInstanceSetViewSPIPanes(child.getZChildren(),
+							results);
 				}
 			}
-			
+
 			private List<WorkflowModelViewSPI> getWorkflowViews() {
-				List<WorkflowModelViewSPI> workflowViews = 
-					new ArrayList<WorkflowModelViewSPI>();
+				List<WorkflowModelViewSPI> workflowViews = new ArrayList<WorkflowModelViewSPI>();
 				for (ZRavenComponent zc : basePane.getRavenComponents()) {
 					JComponent contents = zc.getComponent();
 					if (contents instanceof WorkflowModelViewSPI) {
-						workflowViews.add((WorkflowModelViewSPI)contents);
+						workflowViews.add((WorkflowModelViewSPI) contents);
 					}
-				}	
+				}
 				return workflowViews;
 			}
-			
+
 		};
-	}	
-	
+	}
+
 	/**
-	 * Wipe the current contents of the 'file' menu and replace, 
-	 * regenerates the various model specific actions to ensure that
-	 * they're acting on the current model
+	 * Wipe the current contents of the 'file' menu and replace, regenerates the
+	 * various model specific actions to ensure that they're acting on the
+	 * current model
 	 */
 	private void refreshFileMenu() {
 		fileMenu.removeAll();
 		JMenuItem newWorkflow = new JMenuItem(createWorkflowAction());
 		fileMenu.add(newWorkflow);
-		
-		if (workflowModels.size()>1) {
+
+		if (workflowModels.size() > 1) {
 			fileMenu.add(new JMenuItem(closeWorkflowAction()));
 		}
-		
+
 		if (!workflowModels.isEmpty()) {
 			fileMenu.addSeparator();
 		}
 		for (final ScuflModel model : workflowModels.getModels()) {
 			Action selectModel = new AbstractAction() {
 				public void actionPerformed(ActionEvent e) {
-					ModelMap.getInstance().setModel(ModelMap.CURRENT_WORKFLOW, model);				
+					ModelMap.getInstance().setModel(ModelMap.CURRENT_WORKFLOW,
+							model);
 				}
 			};
-			selectModel.putValue(Action.SMALL_ICON,TavernaIcons.windowExplorer);
-			selectModel.putValue(Action.NAME,model.getDescription().getTitle());
-			selectModel.putValue(Action.SHORT_DESCRIPTION,model.getDescription().getTitle());
-			
-			if (model == ModelMap.getInstance().getNamedModel(ModelMap.CURRENT_WORKFLOW)) {
+			selectModel
+					.putValue(Action.SMALL_ICON, TavernaIcons.windowExplorer);
+			selectModel
+					.putValue(Action.NAME, model.getDescription().getTitle());
+			selectModel.putValue(Action.SHORT_DESCRIPTION, model
+					.getDescription().getTitle());
+
+			if (model == ModelMap.getInstance().getNamedModel(
+					ModelMap.CURRENT_WORKFLOW)) {
 				selectModel.setEnabled(false);
 			}
 			fileMenu.add(new JMenuItem(selectModel));
 		}
-		
+
 	}
-	
+
 	private Action createWorkflowAction() {
 		Action a = new AbstractAction() {
 			public void actionPerformed(ActionEvent e) {
-				ScuflModel model = new ScuflModel();				
-				workflowModels.addModel(model);				
+				ScuflModel model = new ScuflModel();
+				workflowModels.addModel(model);
 			}
 		};
-		a.putValue(Action.NAME,"New workflow");
+		a.putValue(Action.NAME, "New workflow");
 		return a;
 	}
-	
+
 	/**
 	 * The action to remove the current workflow from the workbench
+	 * 
 	 * @return Action
 	 */
 	private Action closeWorkflowAction() {
 		Action a = new AbstractAction() {
 			public void actionPerformed(ActionEvent e) {
-				ScuflModel currentModel=(ScuflModel)ModelMap.getInstance().getNamedModel(ModelMap.CURRENT_WORKFLOW);
-				
-				if (currentModel!=null) {
-					int ret=JOptionPane.showConfirmDialog(Workbench.this, "Are you sure you want to close the workflow titled '"+currentModel.getDescription().getTitle()+"'","Close workflow?",JOptionPane.YES_NO_OPTION);
-					if (ret==JOptionPane.YES_OPTION) {
+				ScuflModel currentModel = (ScuflModel) ModelMap.getInstance()
+						.getNamedModel(ModelMap.CURRENT_WORKFLOW);
+
+				if (currentModel != null) {
+					int ret = JOptionPane.showConfirmDialog(Workbench.this,
+							"Are you sure you want to close the workflow titled '"
+									+ currentModel.getDescription().getTitle()
+									+ "'", "Close workflow?",
+							JOptionPane.YES_NO_OPTION);
+					if (ret == JOptionPane.YES_OPTION) {
 						workflowModels.removeModel(currentModel);
 					}
 				}
-			}			
+			}
 		};
 		a.putValue(Action.NAME, "Close workflow");
 		return a;
 	}
-		
+
 	public synchronized void addArtifact(Artifact a) {
 		basePane.getRepository().addArtifact(a);
 		updateRepository();
 	}
-	
+
 	public synchronized void updateRepository() {
 		basePane.getRepository().update();
-	}
+	}	
 }
