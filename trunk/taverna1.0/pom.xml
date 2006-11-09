@@ -373,11 +373,6 @@
       </dependency>
       <dependency>
         <groupId>uk.org.mygrid.taverna</groupId>
-        <artifactId>taverna-launcher</artifactId>
-        <version>1.5-SNAPSHOT</version>
-      </dependency>
-      <dependency>
-        <groupId>uk.org.mygrid.taverna</groupId>
         <artifactId>taverna-scavenger</artifactId>
         <version>1.5-SNAPSHOT</version>
       </dependency>
@@ -426,7 +421,6 @@
         <artifactId>baclava-ui</artifactId>
         <version>1.5-SNAPSHOT</version>
       </dependency>
-      
       <dependency>
       	<groupId>uk.org.mygrid.taverna.perspectives</groupId>
       	<artifactId>perspective-core</artifactId>
@@ -442,12 +436,11 @@
       	<artifactId>perspective-enact</artifactId>
       	<version>1.5-SNAPSHOT</version>
       </dependency>
-      
       <dependency>
         <groupId>uk.org.mygrid.taverna.processors</groupId>
         <artifactId>taverna-apiconsumer-processor</artifactId>
         <version>1.5-SNAPSHOT</version>
-      </dependency>            
+      </dependency>
       <dependency>
         <groupId>uk.org.mygrid.taverna.processors</groupId>
         <artifactId>taverna-beanshell-processor</artifactId>
@@ -619,6 +612,11 @@
         <version>1.5-SNAPSHOT</version>
       </dependency>
       <dependency>
+        <groupId>uk.org.mygrid.taverna.raven</groupId>
+        <artifactId>raven-log4j</artifactId>
+        <version>1.5-SNAPSHOT</version>
+      </dependency>
+      <dependency>
         <groupId>uk.org.mygrid.taverna</groupId>
         <artifactId>zaria</artifactId>
         <version>1.5-SNAPSHOT</version>
@@ -628,8 +626,8 @@
   <modules>
     <module>baclava</module>
     <module>scufl</module>
+    <module>perspectives</module>
     <module>processors</module>
-    <module>perspectives</module>       
     <module>taverna-enactor</module>
     <module>taverna-workbench</module>
     <module>taverna-scavenger</module>
@@ -637,10 +635,11 @@
     <module>taverna-core</module>
     <module>taverna-tools</module>
     <module>taverna-biomoby</module>
-    <module>taverna-bootstrap</module>    
+    <module>taverna-bootstrap</module>
     <module>taverna-contrib</module>
     <module>taverna-update-manager</module>
     <module>raven</module>
+    <module>raven-log4j</module>
     <module>zaria</module>
   </modules>
 </project>
