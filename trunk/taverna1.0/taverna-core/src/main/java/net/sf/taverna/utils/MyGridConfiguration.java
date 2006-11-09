@@ -13,6 +13,7 @@ import java.util.NoSuchElementException;
 import java.util.Properties;
 
 import net.sf.taverna.raven.log.Log;
+import net.sf.taverna.raven.log.Log4jLog;
 import net.sf.taverna.raven.repository.impl.LocalRepository.ArtifactClassLoader;
 import net.sf.taverna.tools.Bootstrap;
 
@@ -99,10 +100,13 @@ public class MyGridConfiguration {
 			// Should use configure(Properties p) instead.
 			PropertyConfigurator.configure(log4j.toString());
 		}
-		// Let Raven use log4j through our little proxy, unless it has been loaded
+		// Let Raven use log4j through our little proxy, unless log4j has been loaded
 		// through Raven (that would introduce funny recursive problems)
-		if (! (Log4jLog.class.getClassLoader() instanceof ArtifactClassLoader)) {
+		// (It seems to be OK to load Log4jLog through Raven)
+		if (! (Logger.class.getClassLoader() instanceof ArtifactClassLoader)) {
 			Log.setImplementation(new Log4jLog());
+		} else {
+			logger.warn("Cannot enable log4j logging for Raven, try adding log4j to profile with system='true'");
 		}
 	}
 

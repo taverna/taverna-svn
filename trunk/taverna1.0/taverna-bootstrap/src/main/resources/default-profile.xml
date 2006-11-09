@@ -21,8 +21,8 @@
 	<artifact groupId="uk.org.mygrid.taverna" artifactId="taverna-contrib" version="1.5-SNAPSHOT"/>
 
 	<!-- ui components -->	
-	<artifact groupId="uk.org.mygrid.taverna.scufl.scufl-ui-components" artifactId="advanced-model-explorer" version="1.5-SNAPSHOT"/>
 	<artifact groupId="uk.org.mygrid.taverna" artifactId="taverna-scavenger-ui" version="1.5-SNAPSHOT"/>
+	<artifact groupId="uk.org.mygrid.taverna.scufl.scufl-ui-components" artifactId="advanced-model-explorer" version="1.5-SNAPSHOT"/>
 	<artifact groupId="uk.org.mygrid.taverna.scufl.scufl-ui-components" artifactId="workflow-input-panel" version="1.5-SNAPSHOT"/>
 	<artifact groupId="uk.org.mygrid.taverna.scufl.scufl-ui-components" artifactId="scufl-diagram-panel" version="1.5-SNAPSHOT"/>
 	<artifact groupId="uk.org.mygrid.taverna.scufl.scufl-ui-components" artifactId="enactor-event-monitor" version="1.5-SNAPSHOT"/>
@@ -41,5 +41,7 @@
 
 	<!-- system sax parser -->
 	<artifact groupId="xerces" artifactId="xercesImpl" version="2.6.2" system="true"/>
-		
+	
+	<!-- system log4j for Raven's Log4jLog proxy -->
+	<artifact groupId="log4j" artifactId="log4j" version="1.2.12" system="true"/>
 </profile>
