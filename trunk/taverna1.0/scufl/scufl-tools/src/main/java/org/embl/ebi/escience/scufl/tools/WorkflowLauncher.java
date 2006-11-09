@@ -25,14 +25,17 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: WorkflowLauncher.java,v $
- * Revision           $Revision: 1.3 $
+ * Revision           $Revision: 1.4 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-08-16 12:53:12 $
- *               by   $Author: stain $
+ * Last modified on   $Date: 2006-11-09 16:48:20 $
+ *               by   $Author: davidwithers $
  * Created on 16-Mar-2006
  *****************************************************************/
 package org.embl.ebi.escience.scufl.tools;
 
+import net.sf.taverna.raven.repository.Repository;
+import net.sf.taverna.raven.repository.impl.LocalRepository;
+import net.sf.taverna.tools.Bootstrap;
 import net.sf.taverna.utils.MyGridConfiguration;
 
 import java.io.File;
@@ -81,6 +84,7 @@ import org.embl.ebi.escience.scufl.enactor.implementation.FreefluoEnactorProxy;
 import org.embl.ebi.escience.scufl.enactor.implementation.WorkflowEventDispatcher;
 import org.embl.ebi.escience.scufl.parser.XScuflFormatException;
 import org.embl.ebi.escience.scufl.parser.XScuflParser;
+import org.embl.ebi.escience.utils.TavernaSPIRegistry;
 import org.jdom.Document;
 import org.jdom.JDOMException;
 import org.jdom.input.SAXBuilder;
@@ -368,6 +372,12 @@ public class WorkflowLauncher {
 		// Current directory is from where files are read if not otherwise
 		// specified
 		URL here = new URL("file:");
+
+		// Set the local repository for the SPI registry
+		Repository repository = LocalRepository.getRepository(new File(Bootstrap.TAVERNA_CACHE));
+		if (repository != null) {
+			TavernaSPIRegistry.setRepository(repository);
+		}
 
 		// Construct command line options
 		Option helpOption = new Option("help", "print this message");

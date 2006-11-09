@@ -31,6 +31,10 @@ import javax.swing.JTabbedPane;
 import javax.swing.JToolBar;
 import javax.swing.UIManager;
 
+import net.sf.taverna.raven.repository.Repository;
+import net.sf.taverna.raven.repository.impl.LocalRepository;
+import net.sf.taverna.tools.Bootstrap;
+
 import org.embl.ebi.escience.baclava.DataThing;
 import org.embl.ebi.escience.baclava.factory.DataThingXMLFactory;
 import org.embl.ebi.escience.scuflui.ResultItemPanel;
@@ -38,6 +42,7 @@ import org.embl.ebi.escience.scuflui.TavernaIcons;
 import org.embl.ebi.escience.scuflui.results.ResultMapSaveRegistry;
 import org.embl.ebi.escience.scuflui.shared.ExtensionFileFilter;
 import org.embl.ebi.escience.scuflui.spi.ResultMapSaveSPI;
+import org.embl.ebi.escience.utils.TavernaSPIRegistry;
 import org.jdom.Document;
 import org.jdom.input.SAXBuilder;
 
@@ -60,6 +65,12 @@ public class DataThingViewer extends JFrame {
 	final JFileChooser fc = new JFileChooser();
 
 	public static void main(String[] args) throws Exception {
+		// Set the local repository for the SPI registry
+		Repository repository = LocalRepository.getRepository(new File(Bootstrap.TAVERNA_CACHE));
+		if (repository != null) {
+			TavernaSPIRegistry.setRepository(repository);
+		}
+
 		UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 		DataThingViewer viewer = new DataThingViewer();
 		if (args.length == 1) {
