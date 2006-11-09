@@ -20,11 +20,13 @@ done
 TAVERNA_HOME=`dirname "$PRG"`
 cd "$saveddir"
 
-MAIN=org.embl.ebi.escience.baclava.tools.DataThingViewer
-
 ARGS="-Xmx300m"
+ARGS="$ARGS -Djava.system.class.loader=net.sf.taverna.tools.BootstrapClassLoader"
 ARGS="$ARGS -Djava.protocol.handler.pkgs=uk.ac.rdg.resc.jstyx.client"
-ARGS="$ARGS -Djava.awt.headless=true -Dtaverna.main=$MAIN"
+ARGS="$ARGS -Draven.target.groupid=uk.org.mygrid.taverna.baclava "
+ARGS="$ARGS -Draven.target.artifactid=baclava-tools "
+ARGS="$ARGS -Draven.target.class=org.embl.ebi.escience.baclava.tools.DataThingViewer "
+ARGS="$ARGS -Draven.target.method=main"
 
-java $ARGS -jar $TAVERNA_HOME/taverna-launcher-1.4-SNAPSHOT.jar $@
+java $ARGS -jar $TAVERNA_HOME/taverna-bootstrap-1.5-SNAPSHOT.jar $@
 

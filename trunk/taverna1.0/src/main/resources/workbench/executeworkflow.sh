@@ -21,10 +21,9 @@ TAVERNA_HOME=`dirname "$PRG"`
 cd "$saveddir"
 
 ARGS="-Xmx300m"
+ARGS="$ARGS -Djava.system.class.loader=net.sf.taverna.tools.BootstrapClassLoader"
 ARGS="$ARGS -Djava.protocol.handler.pkgs=uk.ac.rdg.resc.jstyx.client"
 ARGS="$ARGS -Djava.awt.headless=true"
-# FIXME: Avoid this hardcoded profile
-ARGS="$ARGS -Draven.remoteprofile=file://$HOME/.taverna/conf/default-profile.xml "
 ARGS="$ARGS -Draven.target.groupid=uk.org.mygrid.taverna.scufl "
 ARGS="$ARGS -Draven.target.artifactid=scufl-tools "
 ARGS="$ARGS -Draven.target.class=org.embl.ebi.escience.scufl.tools.WorkflowLauncher "

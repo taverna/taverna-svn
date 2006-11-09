@@ -18,7 +18,10 @@ while [ -h "$PRG" ] ; do
 done
   
 TAVERNA_HOME=`dirname "$PRG"`
-
 cd "$saveddir"
 
-java -Xmx300m -Djava.protocol.handler.pkgs=uk.ac.rdg.resc.jstyx.client -jar $TAVERNA_HOME/lib/taverna-launcher-1.5-SNAPSHOT.jar
+ARGS="-Xmx300m"
+ARGS="$ARGS -Djava.system.class.loader=net.sf.taverna.tools.BootstrapClassLoader"
+ARGS="$ARGS -Djava.protocol.handler.pkgs=uk.ac.rdg.resc.jstyx.client"
+
+java $ARGS -jar $TAVERNA_HOME/taverna-bootstrap-1.5-SNAPSHOT.jar $@
