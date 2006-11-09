@@ -118,9 +118,10 @@ public class Workbench extends JFrame {
 	 * 
 	 * @param localRepositoryLocation
 	 */
-	@SuppressWarnings("serial")
+	@SuppressWarnings({ "serial", "deprecation" })
 	private Workbench() {
 		super();
+		MyGridConfiguration.loadMygridProperties();
 		try {
 			UIManager
 					.setLookAndFeel("de.javasoft.plaf.synthetica.SyntheticaStandardLookAndFeel");

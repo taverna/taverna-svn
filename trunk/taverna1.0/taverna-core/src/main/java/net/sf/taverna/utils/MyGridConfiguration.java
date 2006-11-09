@@ -180,7 +180,8 @@ public class MyGridConfiguration {
 	}
 
 	/**
-	 * Load the myGrid properties and store them into the System properties.
+	 * Load the myGrid properties and store them into the System properties. 
+	 * This function should be called as early as possible in your program.
 	 * <p>
 	 * This is provided for backwards compatibility <em>only</em>, as old
 	 * code relies on System.getProperties() to be prepopulated with the myGrid
