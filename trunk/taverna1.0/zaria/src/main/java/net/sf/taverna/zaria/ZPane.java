@@ -162,6 +162,14 @@ public abstract class ZPane extends JComponent implements ZTreeNode {
 	}
 	
 	/**
+	 * 
+	 * @return boolean to indicate whether the pane is in edit mode
+	 */
+	public boolean isEditable() {
+		return this.editable;
+	}
+	
+	/**
 	 * Replace this component with the specified new one
 	 */
 	protected void replaceWith(ZTreeNode newComponent) {

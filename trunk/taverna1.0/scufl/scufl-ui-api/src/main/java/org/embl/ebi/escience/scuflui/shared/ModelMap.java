@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: ModelMap.java,v $
- * Revision           $Revision: 1.1 $
+ * Revision           $Revision: 1.2 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-11-03 11:35:45 $
+ * Last modified on   $Date: 2006-11-10 12:06:30 $
  *               by   $Author: sowen70 $
  * Created on 27 Oct 2006
  *****************************************************************/
@@ -38,6 +38,8 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+
+import org.apache.log4j.Logger;
 
 /**
  * Map of the models present in the workbench associated with their names, together with
@@ -51,6 +53,8 @@ import java.util.Set;
  *
  */
 public class ModelMap {
+	
+	private static Logger logger = Logger.getLogger(ModelMap.class);
 	
 	private static ModelMap instance = new ModelMap();
 	
@@ -77,6 +81,12 @@ public class ModelMap {
 	public final static String CURRENT_WORKFLOW = "currentWorkflow";
 	
 	/**
+	 * Used as a modelName for setModel() and getNamedModel() - notes
+	 * the current active perspective in the GUI.
+	 */
+	public final static String CURRENT_PERSPECTIVE = "currentPerspective";
+	
+	/**
 	 * Set this to be notified of changes to the model map
 	 */
 	public static ModelChangeListener DEFAULT_MODEL_LISTENER = null;
@@ -98,6 +108,7 @@ public class ModelMap {
 	 * event will be fired otherwise modelChanged is called.
 	 */
 	public synchronized void setModel(String modelName, Object model) {
+		logger.debug("SetModel called, modelName="+modelName+", model="+model);
 		if (DEFAULT_MODEL_LISTENER != null) {
 			if (modelMap.containsKey(modelName) == false) {
 				if (model != null) {
@@ -109,8 +120,9 @@ public class ModelMap {
 			else {
 				if (model == null) {
 					// Destroy model object
+					Object oldModel = modelMap.get(modelName);
 					modelMap.remove(modelMap.get(modelName));
-					DEFAULT_MODEL_LISTENER.modelDestroyed(modelName);
+					DEFAULT_MODEL_LISTENER.modelDestroyed(modelName,oldModel);
 				}
 				else {
 					Object oldModel = modelMap.get(modelName);
@@ -145,7 +157,7 @@ public class ModelMap {
 		 * model map
 		 * @param modelName
 		 */
-		public void modelDestroyed(String modelName);
+		public void modelDestroyed(String modelName, Object oldModel);
 
 		/**
 		 * Called when a new model is created or inserted into the
