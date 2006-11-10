@@ -24,9 +24,10 @@ import java.util.Properties;
 import java.util.Set;
 
 import javax.swing.AbstractAction;
+import javax.swing.AbstractButton;
 import javax.swing.Action;
+import javax.swing.ButtonGroup;
 import javax.swing.Icon;
-import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
@@ -36,6 +37,7 @@ import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
+import javax.swing.JToggleButton;
 import javax.swing.JToolBar;
 import javax.swing.UIManager;
 
@@ -93,7 +95,9 @@ public class Workbench extends JFrame {
 	private ScuflModelSet workflowModels = ScuflModelSet.instance();
 
 	private JMenu fileMenu = null;
+	private ButtonGroup perspectiveButtons = new ButtonGroup();
 	private JToolBar toolBar = null;
+	private AbstractButton lastPerspectiveButton = null;
 	private JMenu perspectivesMenu = null;
 	private Action openPerspectiveAction=null;
 	private Action deletePerspectiveAction=null;
@@ -155,8 +159,7 @@ public class Workbench extends JFrame {
 		TavernaSPIRegistry.setRepository(basePane.getRepository());
 
 		basePane
-				.setKnownSPINames(new String[] { "org.embl.ebi.escience.scuflui.spi.UIComponentFactorySPI" });
-		basePane.setEditable(true);				
+				.setKnownSPINames(new String[] { "org.embl.ebi.escience.scuflui.spi.UIComponentFactorySPI" });				
 						
 		setModelChangeListener();
 		setModelSetListener();
@@ -336,8 +339,7 @@ public class Workbench extends JFrame {
 		layout.addContent(defaultBasePane().getElement());
 		CustomPerspective p = new CustomPerspective(layout);
 		customPerspectives.add(p);
-		addPerspective(p);
-		ModelMap.getInstance().setModel(ModelMap.CURRENT_PERSPECTIVE, p);		
+		addPerspective(p,true);			
 	}
 	
 	private Action getSavePerspectiveAction() {
@@ -471,7 +473,7 @@ public class Workbench extends JFrame {
 		PerspectiveSPI firstPerspective = null;
 		List<PerspectiveSPI> perspectives=PerspectiveRegistry.getInstance().getPerspectives();
 		for (final PerspectiveSPI perspective : perspectives) {			
-			addPerspective(perspective);
+			addPerspective(perspective,false);
 			if (firstPerspective==null) {
 				firstPerspective=perspective;
 			}
@@ -487,36 +489,49 @@ public class Workbench extends JFrame {
 		}
 		if (customPerspectives!=null && customPerspectives.size()>0) {			
 			for (CustomPerspective perspective : customPerspectives) {
-				addPerspective(perspective);
+				addPerspective(perspective,false);
 				if (firstPerspective==null) {
 					firstPerspective=perspective;
 				}
 			}
 		}
-		if (firstPerspective!=null) ModelMap.getInstance().setModel(ModelMap.CURRENT_PERSPECTIVE, firstPerspective);
+		//if (firstPerspective!=null) ModelMap.getInstance().setModel(ModelMap.CURRENT_PERSPECTIVE, firstPerspective);
+		for (Component c : toolBar.getComponents()) {
+			if (c instanceof AbstractButton) { 
+				((AbstractButton)c).doClick();
+				break;
+			}
+		}
 	}
 	
 	
 
-	private void addPerspective(final PerspectiveSPI perspective) {
-		final JButton toolbarButton = new JButton(perspective.getText(),perspective.getButtonIcon());
+	private void addPerspective(final PerspectiveSPI perspective, boolean makeActive) {
+		final JToggleButton toolbarButton = new JToggleButton(perspective.getText(),perspective.getButtonIcon());
 		toolbarButton.setToolTipText(perspective.getText()+" perspective");		
-		ActionListener action = new ActionListener() {
+		Action action = new AbstractAction() {
 			public void actionPerformed(ActionEvent e) {
-				if (basePane.isEditable()) {
+				if (basePane.isEditable()) {					
 					JOptionPane.showMessageDialog(Workbench.this, "Sorry, unable to change perspectives whilst in edit mode", "Cannot change perspective",JOptionPane.INFORMATION_MESSAGE);
+					//make sure selected button is the previous one.
+					if (lastPerspectiveButton!=null) lastPerspectiveButton.setSelected(true);
 				}
 				else {
 					ModelMap.getInstance().setModel(ModelMap.CURRENT_PERSPECTIVE, perspective);
+					toolbarButton.setSelected(true); //select the button incase action was invoked via the menu
+					lastPerspectiveButton=toolbarButton;
 				}
 			}				
 		};			
-		JMenuItem menuItem=new JMenuItem(perspective.getText());
-		menuItem.setIcon(perspective.getButtonIcon());
-		menuItem.addActionListener(action);
-		perspectivesMenu.add(menuItem);				
-		toolbarButton.addActionListener(action);
+		
+		action.putValue(Action.NAME, perspective.getText());
+		action.putValue(Action.SMALL_ICON,perspective.getButtonIcon());
+		
+		perspectivesMenu.add(action);						
+		toolbarButton.setAction(action);
 		toolBar.add(toolbarButton);
+		perspectiveButtons.add(toolbarButton);
+		if (makeActive) toolbarButton.doClick();
 	}
 	
 	private void openLayout(InputStream layoutStream) {
