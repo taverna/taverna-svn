@@ -24,15 +24,17 @@
 //      Created for Project :   MYGRID
 //      Dependencies        :
 //
-//      Last commit info    :   $Author: stain $
-//                              $Date: 2006-11-08 09:27:12 $
-//                              $Revision: 1.8 $
+//      Last commit info    :   $Author: dturi $
+//                              $Date: 2006-11-13 15:14:39 $
+//                              $Revision: 1.9 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 package org.embl.ebi.escience.scufl.enactor.implementation;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
@@ -89,7 +91,7 @@ public class WorkflowInstanceImpl implements WorkflowInstance {
 	/**
 	 * Cache of instances as used by getInstance()
 	 */
-	private static Map<Object[], WorkflowInstanceImpl> instanceCache = new HashMap<Object[], WorkflowInstanceImpl>();
+	private static Map<List<Object>, WorkflowInstanceImpl> instanceCache = new HashMap<List<Object>, WorkflowInstanceImpl>();
 	
 	private ScuflModel workflowModel;
 	
@@ -110,7 +112,7 @@ public class WorkflowInstanceImpl implements WorkflowInstance {
 	 */
 	public synchronized static WorkflowInstanceImpl getInstance(Engine engine,
 			ScuflModel workflowModel, String engineId) {
-		Object[] cacheKey = {engine, workflowModel, engineId};
+		List<Object> cacheKey = cacheKey(engine, engineId);
 		WorkflowInstanceImpl instance = instanceCache.get(cacheKey);
 		if (instance == null) {
 			instance = new WorkflowInstanceImpl(engine, workflowModel, engineId);
@@ -119,7 +121,14 @@ public class WorkflowInstanceImpl implements WorkflowInstance {
 		return instance;
 	}
 
-	/**
+	private static List<Object> cacheKey(Engine engine, String engineId) {
+        List<Object> cacheKey = new ArrayList<Object>(2);
+        cacheKey.add(engine);
+        cacheKey.add(engineId);
+        return cacheKey;
+    }
+
+    /**
 	 * Constructor for this concrete instance of a flow receipt
 	 * 
 	 * @param engine -
@@ -524,7 +533,7 @@ public class WorkflowInstanceImpl implements WorkflowInstance {
 			logger.error("Attempted to call cleanup() without calling destroy()");
 			return;
 		}
-		Object[] cacheKey = {engine, workflowModel, engineId};
+        List<Object> cacheKey = cacheKey(engine, engineId);
 		instanceCache.remove(cacheKey);
 		engine = null;
 		engineId = null;
@@ -534,7 +543,7 @@ public class WorkflowInstanceImpl implements WorkflowInstance {
 		instanceLSID = null;
 	}
 
-	public void pause(String processorId) {
+    public void pause(String processorId) {
 		try {
 			engine.pause(engineId, processorId);
 		} catch (UnknownWorkflowInstanceException e) {
