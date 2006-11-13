@@ -151,9 +151,7 @@ public class Workbench extends JFrame {
 
 		setModelChangeListeners();
 		setModelSetListener();
-		setUI();
-		// Have to wait for this till perspectives have been made in setUI()
-		modelmap.addModelListener(perspectives.getModelChangeListener());
+		setUI();		
 		// Force a new workflow instance to start off with
 		createWorkflowAction().actionPerformed(null);
 	}
@@ -193,6 +191,7 @@ public class Workbench extends JFrame {
 		JToolBar toolBar = new JToolBar();
 		
 		perspectives = new WorkbenchPerspectives(basePane,toolBar);
+		modelmap.addModelListener(perspectives.getModelChangeListener());				
 		perspectives.initialisePerspectives();
 		
 		getContentPane().setLayout(new BorderLayout());
