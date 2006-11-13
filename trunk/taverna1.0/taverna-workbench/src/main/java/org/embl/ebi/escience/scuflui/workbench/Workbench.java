@@ -1,7 +1,11 @@
 package org.embl.ebi.escience.scuflui.workbench;
 
+
+import static java.lang.Math.min;
+
 import java.awt.BorderLayout;
 import java.awt.Component;
+import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -48,6 +52,7 @@ import net.sf.taverna.zaria.ZTreeNode;
 import net.sf.taverna.zaria.raven.ArtifactDownloadDialog;
 
 import org.apache.log4j.Logger;
+import org.apache.poi.hssf.record.MMSRecord;
 import org.embl.ebi.escience.scufl.ScuflModel;
 import org.embl.ebi.escience.scufl.ScuflModelEvent;
 import org.embl.ebi.escience.scufl.ScuflModelEventListener;
@@ -58,6 +63,7 @@ import org.embl.ebi.escience.scuflui.shared.ScuflModelSet;
 import org.embl.ebi.escience.scuflui.shared.ModelMap.ModelChangeListener;
 import org.embl.ebi.escience.scuflui.shared.ScuflModelSet.ScuflModelSetListener;
 import org.embl.ebi.escience.scuflui.spi.WorkflowInstanceSetViewSPI;
+import org.embl.ebi.escience.scuflui.spi.WorkflowModelInvokeSPI;
 import org.embl.ebi.escience.scuflui.spi.WorkflowModelViewSPI;
 import org.embl.ebi.escience.utils.TavernaSPIRegistry;
 import org.jdom.Element;
@@ -69,6 +75,7 @@ import org.jdom.output.XMLOutputter;
  * 
  * @author Tom Oinn
  * @author Stuart Owen
+ * @author Stian Soiland
  */
 @SuppressWarnings("serial")
 public class Workbench extends JFrame {
@@ -84,9 +91,8 @@ public class Workbench extends JFrame {
 	private WorkbenchPerspectives perspectives = null;
 
 	private Repository repository;
-	private ModelMap modelmap = ModelMap.getInstance();
-
 	
+	private ModelMap modelmap = ModelMap.getInstance();
 
 	public static Workbench getWorkbench() {
 		return new Workbench();
@@ -152,14 +158,11 @@ public class Workbench extends JFrame {
 
 	private void setModelSetListener() {
 		ScuflModelSetListener listener = new ScuflModelSetListener() {
-
 			public void modelAdded(ScuflModel model) {
 				modelmap.setModel(ModelMap.CURRENT_WORKFLOW,
 						model);
 				refreshFileMenu();
-
 			}
-
 			public void modelRemoved(ScuflModel model) {
 				modelmap
 						.setModel(ModelMap.CURRENT_WORKFLOW, null);
@@ -171,7 +174,6 @@ public class Workbench extends JFrame {
 				}
 				refreshFileMenu();
 			}
-
 		};
 		workflowModels.addListener(listener);
 	}	
@@ -179,7 +181,7 @@ public class Workbench extends JFrame {
 	public void setUI() {
 		JToolBar toolBar = new JToolBar();
 		
-		perspectives=new WorkbenchPerspectives(basePane,toolBar);
+		perspectives = new WorkbenchPerspectives(basePane,toolBar);
 		perspectives.initialisePerspectives();
 		
 		getContentPane().setLayout(new BorderLayout());
@@ -189,7 +191,7 @@ public class Workbench extends JFrame {
 		JMenuBar menuBar = getWorkbenchMenuBar();
 
 		setJMenuBar(menuBar);		
-		setSize(new Dimension(500, 500));
+		setSize(500, 500);
 		addWindowListener(getWindowClosingAdaptor());
 		updateRepository();
 
@@ -197,9 +199,8 @@ public class Workbench extends JFrame {
 
 		readLastPreferences();		
 		setVisible(true);
-
+		
 		basePane.setEditable(false);
-
 	}
 
 	private JMenuBar getWorkbenchMenuBar() {
@@ -211,13 +212,17 @@ public class Workbench extends JFrame {
 		menuBar.add(ravenMenu);
 		JMenuItem getArtifact = new JMenuItem("Download artifact...");
 		ravenMenu.add(getArtifact);
+		// TODO: Avoid hardcoded groups
 		final String[] groups = new String[] {
 				"uk.org.mygrid.taverna.scufl.scufl-ui-components",
 				"uk.org.mygrid.taverna.scuflui",
 				"uk.org.mygrid.taverna.processors" };
+		// FIXME: Avoid hardcoded version 1.5-SNAPSHOT
 		final String[] versions = new String[] { "1.5-SNAPSHOT" };
 		getArtifact.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				// lock and unlockFrame seems to actually lock up the whole
+				// GUI thread on Linux.
 				// basePane.lockFrame();
 				Artifact a = ArtifactDownloadDialog.showDialog(Workbench.this,
 						null, "Download new artifact", "Raven downloader",
@@ -298,11 +303,11 @@ public class Workbench extends JFrame {
 						"No updates", JOptionPane.INFORMATION_MESSAGE);
 			return;
 			}
-		int retval = JOptionPane.showConfirmDialog(this,
+		int confirmation = JOptionPane.showConfirmDialog(this,
 				"New updates are available, update now?",
 				"New updates available",
 				JOptionPane.YES_NO_OPTION);
-		if (retval != JOptionPane.YES_OPTION) {
+		if (confirmation != JOptionPane.YES_OPTION) {
 			return;
 		}
 		try {
@@ -344,45 +349,40 @@ public class Workbench extends JFrame {
 		if (! size.exists()) {
 			return;
 		}
-			Properties props = new Properties();
-			try {
-				props.load(size.toURL().openStream());
-				String swidth = props.getProperty("width");
-				String sheight = props.getProperty("height");
-				String sx = props.getProperty("x");
-				String sy = props.getProperty("y");
+		Properties props = new Properties();
+		try {
+			props.load(size.toURL().openStream());
+			String swidth = props.getProperty("width");
+			String sheight = props.getProperty("height");
+			String sx = props.getProperty("x");
+			String sy = props.getProperty("y");
 
-				Dimension resolution = getToolkit().getScreenSize();
+			Dimension resolution = getToolkit().getScreenSize();
 
-				int width = Integer.parseInt(swidth);
-				int height = Integer.parseInt(sheight);
-				int x = Integer.parseInt(sx);
-				int y = Integer.parseInt(sy);
+			int width = Integer.parseInt(swidth);
+			int height = Integer.parseInt(sheight);
+			int x = Integer.parseInt(sx);
+			int y = Integer.parseInt(sy);
 
-				if (resolution.getWidth() < width) {
-					width = (int) resolution.getWidth();
-				}
-
-				if (resolution.getHeight() < height) {
-					height = (int) resolution.getHeight();
-				}
-
-				if (x > (resolution.getWidth() - 50) || x < 0) {
-					x = 0;
-				}
-
-				if (y > (resolution.getHeight() - 50) || y < 0) {
-					y = 0;
-				}
-
-				this.setBounds(x, y, width, height);
-				this.repaint();
-
-			} catch (Exception e) {
-				e.printStackTrace();
-				logger.error("Error loading default window dimensions", e);
+			// Make sure our window is not too big
+			width = min((int)resolution.getWidth(), width);
+			height = min((int)resolution.getHeight(), height);
+			
+			// Move to upper left corner if we are too far off
+			if (x > (resolution.getWidth() - 50) || x < 0) {
+				x = 0;
 			}
+			if (y > (resolution.getHeight() - 50) || y < 0) {
+				y = 0;
+			}
+
+			this.setBounds(x, y, width, height);
+			this.repaint();
+
+		} catch (Exception e) {
+			logger.error("Error loading default window dimensions", e);
 		}
+	}
 	
 	private void storeUserPrefs() throws IOException {
 		File userDir = MyGridConfiguration.getUserDir("conf");
@@ -399,8 +399,13 @@ public class Workbench extends JFrame {
 	}
 
 	private void setModelChangeListener() {
-		// FIXME: Also do modelmap.removeModelListener()
-		modelmap.addModelListener(new DefaultModelListener());
+		// FIXME: Also do modelmap.removeModelListener() on close? 
+		// (No, we do System.exit.. so it's OK)
+		modelmap.addModelListener(new DebugListener());
+		modelmap.addModelListener(new CurrentWorkflowListener());
+		modelmap.addModelListener(new CurrentPerspectiveListener());
+		modelmap.addModelListener(new WorkflowInstanceListener());
+		modelmap.addModelListener(new InvokeWorkflowListener());
 	}
 
 
@@ -483,15 +488,59 @@ public class Workbench extends JFrame {
 	}
 
 	public synchronized void addArtifact(Artifact a) {
-		basePane.getRepository().addArtifact(a);
+		repository.addArtifact(a);
 		updateRepository();
 	}
 
 	public synchronized void updateRepository() {
-		basePane.getRepository().update();
+		repository.update();
 	}	
 	
-	private class DefaultModelListener implements ModelChangeListener {
+
+	private List<WorkflowModelViewSPI> getWorkflowViews() {
+		List<WorkflowModelViewSPI> workflowViews = new ArrayList<WorkflowModelViewSPI>();
+		for (ZRavenComponent zc : basePane.getRavenComponents()) {
+			JComponent contents = zc.getComponent();
+			if (contents instanceof WorkflowModelViewSPI) {
+				workflowViews.add((WorkflowModelViewSPI) contents);
+			}
+		}
+		return workflowViews;
+	}
+	
+	/**
+	 * Print debug messages of model changes.
+	 * 
+	 * @author Stian Soiland
+	 * 
+	 */
+	public class DebugListener implements ModelChangeListener {
+		public boolean canHandle(String modelName, Object model) {
+			return logger.isDebugEnabled();
+		}
+		public void modelCreated(String modelName, Object model) {
+			logger.debug("Model created:" + modelName + ", " + model);
+		}
+		public void modelChanged(String modelName, Object oldModel, Object newModel) {
+			logger.debug("Model changed:" + modelName + ", " + oldModel + 
+					"-->" + newModel);	
+		}
+		public void modelDestroyed(String modelName, Object oldModel) {
+			logger.debug("Model destroyed:" + modelName + ", " + oldModel);
+		}
+	}
+	
+	/**
+	 * Notify WorkflowModelViewSPI instances that ModelMap.CURRENT_WORKFLOW
+	 * have changed, by calling detachFromModel() and attachToModel().
+	 * In addition, a small ScuflModelEventListener is added to to the
+	 * workflow that refreshes the file menu.
+	 * 
+	 * @author Stian Soiland
+	 *
+	 */
+	public class CurrentWorkflowListener implements ModelChangeListener {
+
 		private ScuflModelEventListener listener = new ScuflModelEventListener() {
 			public void receiveModelEvent(ScuflModelEvent event) {
 				// Refresh file menu to reflect any changes to the workflow
@@ -499,101 +548,209 @@ public class Workbench extends JFrame {
 				refreshFileMenu();
 			}
 		};
-
-		private ScuflModel currentWorkflowModel = null;
-
-		public synchronized void modelChanged(String modelName,
-				Object oldModel, Object newModel) {
-			if (logger.isDebugEnabled())
-				logger.debug("Model changed:" + modelName + ", "
-								+ newModel);
-			if (newModel instanceof ScuflModel) {
-				ScuflModel newWorkflow = (ScuflModel) newModel;
-				for (WorkflowModelViewSPI view : getWorkflowViews()) {
-					view.detachFromModel();
-					view.attachToModel(newWorkflow);
-					if (currentWorkflowModel != null) {
-						currentWorkflowModel.removeListener(listener);
-					}
-					currentWorkflowModel = newWorkflow;
-					currentWorkflowModel.addListener(listener);
-				}
+		
+		public boolean canHandle(String modelName, Object model) {
+			if (! modelName.equals(ModelMap.CURRENT_WORKFLOW)) {
+				return false;
 			}
-			if (modelName.equalsIgnoreCase(ModelMap.CURRENT_PERSPECTIVE) && newModel instanceof PerspectiveSPI) {
-				if (oldModel instanceof CustomPerspective) {
-					((CustomPerspective)oldModel).update(basePane.getElement());
+			if (! (model instanceof ScuflModel)) {
+				logger.error(ModelMap.CURRENT_WORKFLOW + 
+						" is not an ScuflModel instance");
+				return false;
+			}
+			return true;
+		}
+		
+		void setWorkflow(ScuflModel workflow) {
+			for (WorkflowModelViewSPI view : getWorkflowViews()) {
+				view.detachFromModel();
+				if (workflow != null) {
+					view.attachToModel(workflow);
 				}
-				PerspectiveSPI perspective = (PerspectiveSPI)newModel;
-				perspectives.switchPerspective(perspective);
 			}
 		}
 
-		public synchronized void modelDestroyed(String modelName, Object oldModel) {
-			if (logger.isDebugEnabled())
-				logger.debug("Model destroyed:" + modelName);
-			if (modelName.equals(ModelMap.CURRENT_WORKFLOW)) {
-				if (currentWorkflowModel != null) {
-					currentWorkflowModel.removeListener(listener);
+		public void modelCreated(String modelName, Object model) {
+			ScuflModel workflow = (ScuflModel) model;
+			workflow.addListener(listener);
+			setWorkflow(workflow);
+		}
+
+		public void modelChanged(String modelName, Object oldModel, Object newModel) {
+			ScuflModel oldWorkflow = (ScuflModel) oldModel;
+			ScuflModel newWorkflow = (ScuflModel) newModel;
+			oldWorkflow.removeListener(listener);
+			newWorkflow.addListener(listener);
+			setWorkflow(newWorkflow);
+		}
+
+		public void modelDestroyed(String modelName, Object oldModel) {
+			setWorkflow(null);
+			ScuflModel oldWorkflow = (ScuflModel) oldModel;
+			oldWorkflow.removeListener(listener);
+		}
+	}
+	
+	public class InvokeWorkflowListener implements ModelChangeListener {
+
+		public boolean canHandle(String modelName, Object model) {
+			if (! modelName.equals(ModelMap.INVOKE_WORKFLOW)) {
+				return false;
+			}
+			if (! (model instanceof ScuflModel)) {
+				logger.error(ModelMap.INVOKE_WORKFLOW + 
+						" is not an ScuflModel instance");
+				return false;
+			}
+			return true;
+		}
+		
+		void setWorkflow(ScuflModel workflow) {
+			for (WorkflowModelViewSPI view : getWorkflowViews()) {
+				if (! (view instanceof WorkflowModelInvokeSPI)) {
+					continue;
 				}
-				currentWorkflowModel = null;
-			} else {
-				Set<WorkflowInstanceSetViewSPI> views = new HashSet<WorkflowInstanceSetViewSPI>();
-				findWorkflowInstanceSetViewSPIPanes(
-						basePane.getZChildren(), views);
-				for (WorkflowInstanceSetViewSPI view : views) {
-					view.removeWorkflowInstance(modelName);
+				view.detachFromModel();
+				if (workflow != null) {
+					view.attachToModel(workflow);
 				}
-			}		
+			}
+		}
+		
+		public void modelCreated(String modelName, Object model) {
+			setWorkflow((ScuflModel)model);
+		}
+
+		public void modelChanged(String modelName, Object oldModel, Object newModel) {
+			setWorkflow((ScuflModel)newModel);
+		}
+
+		public void modelDestroyed(String modelName, Object oldModel) {
+			ScuflModel workflow = (ScuflModel) modelmap.getNamedModel(ModelMap.CURRENT_WORKFLOW);
+			setWorkflow(workflow);
+		}	
+	}
+	
+	/**
+	 * Change perspective when ModelMap.CURRENT_PERSPECTIVE has been
+	 * modified. In addition, custom perspectives 
+	 * 
+	 * @author Stian Soiland
+	 *
+	 */
+	public class CurrentPerspectiveListener implements ModelChangeListener {
+		
+		public boolean canHandle(String modelName, Object model) {
+			if (! modelName.equals(ModelMap.CURRENT_PERSPECTIVE)) {
+				return false;
+			}
+			if (! (model instanceof PerspectiveSPI)) {
+				logger.error(ModelMap.CURRENT_PERSPECTIVE + 
+						" is not an PerspectiveSPI instance");
+				return false;
+			}
+			return true;
+		}
+
+		public void modelChanged(String modelName, Object oldModel, Object newModel) {
+			if (oldModel instanceof CustomPerspective) {
+				// Layout might have changed, so we'll make sure our old 
+				// custom perspective has the current layout
+				((CustomPerspective)oldModel).update(basePane.getElement());
+			}
+			PerspectiveSPI perspective = (PerspectiveSPI)newModel;
+			perspectives.switchPerspective(perspective);
+		}
+
+		public void modelCreated(String modelName, Object model) {
+			PerspectiveSPI perspective = (PerspectiveSPI)model;
+			perspectives.switchPerspective(perspective);
+		}
+
+		public void modelDestroyed(String modelName, Object oldModel) {
 			if (oldModel instanceof CustomPerspective) {
 				perspectives.removeCustomPerspective((CustomPerspective)oldModel);
 			}
 		}
+	}
+	
+	/**
+	 * Keep WorkflowInstanceSetViewSPI notified about creation and
+	 * destruction about workflow instances. The WorkflowInstanceSetViewSPIs 
+	 * will create tabs or similar showing the workflow run progression.
+	 * 
+	 * @author Stian Soiland
+	 *
+	 */
+	public class WorkflowInstanceListener implements ModelChangeListener {
 
-		public synchronized void modelCreated(String modelName, Object model) {
-			if (logger.isDebugEnabled())
-				logger.debug("Model created:" + modelName + ", " + model);
-			if (model instanceof ScuflModel
-					&& modelName.equals(ModelMap.CURRENT_WORKFLOW)) {
-				if (currentWorkflowModel != null) {
-					currentWorkflowModel.removeListener(listener);
-				}
-				ScuflModel newWorkflow = (ScuflModel) model;
-				newWorkflow.addListener(listener);
-				currentWorkflowModel = newWorkflow;
-				for (WorkflowModelViewSPI view : getWorkflowViews()) {
-					view.detachFromModel();
-					view.attachToModel(newWorkflow);
-				}
-			}
-			if (model instanceof WorkflowInstance) {
-				Set<WorkflowInstanceSetViewSPI> views = new HashSet<WorkflowInstanceSetViewSPI>();
-				findWorkflowInstanceSetViewSPIPanes(
-						basePane.getZChildren(), views);
-				boolean found = false;
-				for (WorkflowInstanceSetViewSPI view : views) {
-					view.newWorkflowInstance(modelName,
-							(WorkflowInstance) model);
-					if (!found) { // only jump to the first view found
-						showEnactorTab((Component) view);
-						found = true;
-					}
+		public boolean canHandle(String modelName, Object model) {
+			return model instanceof WorkflowInstance;
+		}
+		
+		/**
+		 * New WorkflowInstance created, create workflow instance in 
+		 * each WorkflowInstanceSetViewSPI. Highlights the first view 
+		 * by selecting its tabs.
+		 */
+		public void modelCreated(String modelName, Object model) {
+			Set<WorkflowInstanceSetViewSPI> views = findWorkflowInstanceSetViewSPIPanes(
+					basePane.getZChildren());
+			boolean found = false;
+			for (WorkflowInstanceSetViewSPI view : views) {
+				logger.info("Notified " + view);
+				view.newWorkflowInstance(modelName, (WorkflowInstance) model);
+				if (!found && view instanceof Component) { 
+					// only jump to the first view found
+					showEnactorTab((Component) view);
+					found = true;
 				}
 			}
-			if (modelName.equalsIgnoreCase(ModelMap.CURRENT_PERSPECTIVE) && model instanceof PerspectiveSPI) {
-				PerspectiveSPI perspective = (PerspectiveSPI)model;
-				perspectives.switchPerspective(perspective);										
+		}
+		
+		/**
+		 * Should normally not happen with WF instances
+		 */
+		public void modelChanged(String modelName, Object oldModel, Object newModel) {
+			logger.warn("modelChanged() unexpected for WorkflowInstance " + modelName);
+		}
+		
+		/**
+		 * Remove workflow instance from each WorkflowInstanceSetViewSPI.
+		 */
+		public synchronized void modelDestroyed(String modelName, Object oldModel) {
+			Set<WorkflowInstanceSetViewSPI> views = findWorkflowInstanceSetViewSPIPanes(
+					basePane.getZChildren());
+			for (WorkflowInstanceSetViewSPI view : views) {
+				view.removeWorkflowInstance(modelName);
 			}
 		}
 
+		/**
+		 * Climb the hierarchy of components and select all tabs
+		 * leading to the given component.
+		 * 
+		 * @param component Component that should be showed.
+		 */
 		private void showEnactorTab(Component component) {
-			if (component.getParent() instanceof JTabbedPane) {
-				JTabbedPane pane = (JTabbedPane) component.getParent();
+			Container parent = component.getParent();
+			if (parent == null) {
+				return;
+			}
+			if (parent instanceof JTabbedPane) {
+				JTabbedPane pane = (JTabbedPane) parent;
 				pane.setSelectedComponent(component);
 			}
-			if (component.getParent() != null)
-				showEnactorTab(component.getParent());
+			showEnactorTab(parent); // recurse
 		}
 
+		// TODO: Generalise to work for any SPI/class, not just WorkflowInstanceSetViewSPI
+		private Set<WorkflowInstanceSetViewSPI> findWorkflowInstanceSetViewSPIPanes(List<ZTreeNode> children) {
+			Set<WorkflowInstanceSetViewSPI> set = new HashSet<WorkflowInstanceSetViewSPI>();
+			findWorkflowInstanceSetViewSPIPanes(children, set);
+			return set;
+		}
+		
 		private void findWorkflowInstanceSetViewSPIPanes(
 				List<ZTreeNode> children,
 				Set<WorkflowInstanceSetViewSPI> results) {
@@ -608,21 +765,6 @@ public class Workbench extends JFrame {
 				findWorkflowInstanceSetViewSPIPanes(child.getZChildren(),
 						results);
 			}
-		}
-
-		private List<WorkflowModelViewSPI> getWorkflowViews() {
-			List<WorkflowModelViewSPI> workflowViews = new ArrayList<WorkflowModelViewSPI>();
-			for (ZRavenComponent zc : basePane.getRavenComponents()) {
-				JComponent contents = zc.getComponent();
-				if (contents instanceof WorkflowModelViewSPI) {
-					workflowViews.add((WorkflowModelViewSPI) contents);
-				}
-			}
-			return workflowViews;
-		}
-
-		public boolean canHandle(String modelName, Object model) {
-			return true;
 		}
 	}	
 }

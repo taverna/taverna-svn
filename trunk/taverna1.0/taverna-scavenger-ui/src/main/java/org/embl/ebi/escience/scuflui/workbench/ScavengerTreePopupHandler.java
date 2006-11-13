@@ -29,6 +29,8 @@ import javax.swing.tree.MutableTreeNode;
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 
+import net.sf.taverna.perspectives.EnactPerspective;
+
 import org.apache.log4j.Logger;
 import org.embl.ebi.escience.scufl.AlternateProcessor;
 import org.embl.ebi.escience.scufl.DataConstraint;
@@ -42,6 +44,7 @@ import org.embl.ebi.escience.scufl.ScuflWorkflowProcessor;
 import org.embl.ebi.escience.scufl.ScuflWorkflowProcessorFactory;
 import org.embl.ebi.escience.scufl.parser.XScuflParser;
 import org.embl.ebi.escience.scuflui.TavernaIcons;
+import org.embl.ebi.escience.scuflui.shared.ModelMap;
 import org.embl.ebi.escience.scuflui.shared.ShadedLabel;
 import org.embl.ebi.escience.scuflui.shared.UIUtils;
 import org.embl.ebi.escience.scuflworkers.ProcessorFactory;
@@ -145,11 +148,11 @@ public class ScavengerTreePopupHandler extends MouseAdapter {
 					}
 				});
 
-				// Add a magic rune to create a trivial workflow with only the
+				// Add a magic rune (ᛏᚨᚡᛂᚱᚿᚨ) to create a trivial workflow with only the
 				// select processor and enact it
 				if (scuflObject instanceof ProcessorFactory) {
 					final ProcessorFactory pf = (ProcessorFactory) scuflObject;
-					JMenuItem test = new JMenuItem("Invoke (currently non functional!)", TavernaIcons.windowRun);
+					JMenuItem test = new JMenuItem("Invoke", TavernaIcons.windowRun);
 					test.addActionListener(new ActionListener() {
 						public void actionPerformed(ActionEvent ae) {
 							try {
@@ -183,6 +186,11 @@ public class ScavengerTreePopupHandler extends MouseAdapter {
 									// processor workflow or the directly loaded
 									// more complex one.
 								}
+								ModelMap.getInstance().setModel(ModelMap.CURRENT_PERSPECTIVE, 
+										new EnactPerspective());
+								ModelMap.getInstance().setModel(ModelMap.INVOKE_WORKFLOW,
+										m);
+								logger.info("Changed to invoke perspective");
 								/**
 								 * TODO - the code below forces a hard dependency on the workflow input builder and
 								 * invoker UI components. This will have to be changed to insert the new workflow

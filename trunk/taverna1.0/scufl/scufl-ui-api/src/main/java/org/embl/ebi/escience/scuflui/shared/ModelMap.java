@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: ModelMap.java,v $
- * Revision           $Revision: 1.3 $
+ * Revision           $Revision: 1.4 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-11-13 10:59:47 $
+ * Last modified on   $Date: 2006-11-13 13:20:48 $
  *               by   $Author: stain $
  * Created on 27 Oct 2006
  *****************************************************************/
@@ -208,6 +208,15 @@ public class ModelMap {
 		 */
 		public boolean canHandle(String modelName, Object model);
 		
+
+		/**
+		 * Called when a new model is created or inserted into the
+		 * model map under a previously absent key
+		 * @param modelName name of the new model
+		 * @param model the new model object
+		 */
+		public void modelCreated(String modelName, Object model);
+		
 		/**
 		 * Called when the named model is updated
 		 * @param modelName name of the model that changed
@@ -222,15 +231,6 @@ public class ModelMap {
 		 * @param modelName
 		 */
 		public void modelDestroyed(String modelName, Object oldModel);
-
-		/**
-		 * Called when a new model is created or inserted into the
-		 * model map under a previously absent key
-		 * @param modelName name of the new model
-		 * @param model the new model object
-		 */
-		public void modelCreated(String modelName, Object model);
-	
 	}
 	
 	public Object getNamedModel(String string) {
