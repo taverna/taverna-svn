@@ -200,6 +200,7 @@ public class ZRavenComponent extends ZPane {
 					jc.getParent().remove(jc);
 				}
 				setComponent(jc);
+				this.sharedName=componentName;
 			}
 		}
 	}
