@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: WorkbenchPerspectives.java,v $
- * Revision           $Revision: 1.2 $
+ * Revision           $Revision: 1.3 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-11-13 16:26:46 $
+ * Last modified on   $Date: 2006-11-13 16:34:37 $
  *               by   $Author: stain $
  * Created on 10 Nov 2006
  *****************************************************************/
@@ -142,7 +142,7 @@ public class WorkbenchPerspectives {
 		perspectivesMenu.add(getDeleteCurrentPerspectiveAction());
 		perspectivesMenu.addSeparator();
 				
-		List<PerspectiveSPI> perspectives=PerspectiveRegistry.getInstance().getPerspectives();
+		List<PerspectiveSPI> perspectives = PerspectiveRegistry.getInstance().getPerspectives();
 		for (final PerspectiveSPI perspective : perspectives) {			
 			addPerspective(perspective,false);			
 		}		
@@ -349,12 +349,11 @@ public class WorkbenchPerspectives {
 		}
 		
 		// Regardless of the above, we'll add it as a button
-		// if it still does not yet exist in the toolbar.
+		// if it still does not exist in the toolbar.
 		if (! perspectives.containsKey(perspective)) {
 			addPerspective(perspective, true);
 		}
 		// (Button should now be in perspectives)
-
 		
 		// Make sure the button is selected
 		perspectives.get(perspective).setSelected(true);
@@ -374,7 +373,7 @@ public class WorkbenchPerspectives {
 	
 	/**
 	 * Change perspective when ModelMap.CURRENT_PERSPECTIVE has been
-	 * modified. In addition, custom perspectives 
+	 * modified. 
 	 * 
 	 * @author Stian Soiland
 	 *
@@ -393,6 +392,11 @@ public class WorkbenchPerspectives {
 			return true;
 		}
 
+		public void modelCreated(String modelName, Object model) {
+			PerspectiveSPI perspective = (PerspectiveSPI)model;
+			switchPerspective(perspective);
+		}
+
 		public void modelChanged(String modelName, Object oldModel, Object newModel) {
 			if (oldModel instanceof CustomPerspective) {
 				// Layout might have changed, so we'll make sure our old 
@@ -400,11 +404,6 @@ public class WorkbenchPerspectives {
 				((CustomPerspective)oldModel).update(basePane.getElement());
 			}
 			PerspectiveSPI perspective = (PerspectiveSPI)newModel;
-			switchPerspective(perspective);
-		}
-
-		public void modelCreated(String modelName, Object model) {
-			PerspectiveSPI perspective = (PerspectiveSPI)model;
 			switchPerspective(perspective);
 		}
 
