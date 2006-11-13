@@ -4,7 +4,8 @@ import org.embl.ebi.escience.scufl.ScuflModel;
 
 /**
  * Interface for classes which should be notified about
- * changes to the current active workflow model object
+ * changes to the current active workflow model 
+ * (ModelMap.CURRENT_WORKFLOW) object
  * within the workbench UI
  * @author Tom Oinn
  */

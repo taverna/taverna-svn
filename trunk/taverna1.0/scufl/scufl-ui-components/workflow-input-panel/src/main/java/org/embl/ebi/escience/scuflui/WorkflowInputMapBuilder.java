@@ -86,7 +86,7 @@ import org.embl.ebi.escience.scuflui.renderers.RendererException;
 import org.embl.ebi.escience.scuflui.renderers.RendererRegistry;
 import org.embl.ebi.escience.scuflui.shared.XMLTree;
 import org.embl.ebi.escience.scuflui.spi.RendererSPI;
-import org.embl.ebi.escience.scuflui.spi.WorkflowModelViewSPI;
+import org.embl.ebi.escience.scuflui.spi.WorkflowModelInvokeSPI;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.input.SAXBuilder;
@@ -98,10 +98,10 @@ import org.jdom.output.XMLOutputter;
  * 
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover </a>
  * @author Stian Soiland
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
 public abstract class WorkflowInputMapBuilder extends JPanel implements
-		WorkflowModelViewSPI, ScuflModelEventListener {
+	WorkflowModelInvokeSPI, ScuflModelEventListener {
 	
 	private static Logger logger = Logger.getLogger(WorkflowInputMapBuilder.class);
 	
@@ -1272,6 +1272,9 @@ public abstract class WorkflowInputMapBuilder extends JPanel implements
 	public void attachToModel(ScuflModel model) {
 		if (! initialized) {
 			init();
+		}
+		if (this.model == model) {
+			return;
 		}
 		if (this.model != null) {
 			logger.warn("Didn't call detachFromModel() before attachToModel()");

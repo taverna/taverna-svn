@@ -5,7 +5,6 @@ import java.util.Map;
 import javax.swing.ImageIcon;
 
 import org.apache.log4j.Logger;
-import org.embl.ebi.escience.scufl.ScuflModel;
 import org.embl.ebi.escience.scufl.enactor.EnactorProxy;
 import org.embl.ebi.escience.scufl.enactor.WorkflowInstance;
 import org.embl.ebi.escience.scufl.enactor.WorkflowSubmissionException;
@@ -29,14 +28,13 @@ public class WorkflowInputPanelFactory implements UIComponentFactorySPI {
 	@SuppressWarnings("serial")
 	public UIComponentSPI getComponent() {
 		return new WorkflowInputMapBuilder() {
-
 			@Override
 			public void launchEnactorDisplay(Map inputObject) {
 				EnactorProxy enactor = FreefluoEnactorProxy.getInstance();
-				ScuflModel workflowModel = 
-					(ScuflModel)ModelMap.getInstance().getNamedModel(ModelMap.CURRENT_WORKFLOW);
 				try {
-					WorkflowInstance instance = enactor.compileWorkflow(workflowModel, inputObject, EnactorInvocation.USERCONTEXT);
+					WorkflowInstance instance = enactor.compileWorkflow(model, 
+							inputObject, 
+							EnactorInvocation.USERCONTEXT);
 					logger.debug("Compiled workflow " + instance);
 					ModelMap.getInstance().setModel(instance.getID(), instance);					
 					logger.debug("Running the workflow " + instance);
