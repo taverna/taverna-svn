@@ -72,7 +72,7 @@ import org.jdom.output.XMLOutputter;
  */
 @SuppressWarnings("serial")
 public class Workbench extends JFrame {
-	
+
 	private static Logger logger = Logger.getLogger(Workbench.class);
 
 	private ZBasePane basePane = null;	
@@ -399,8 +399,10 @@ public class Workbench extends JFrame {
 	}
 
 	private void setModelChangeListener() {
-		ModelMap.DEFAULT_MODEL_LISTENER = new DefaultModelListener();
-	}		
+		// FIXME: Also do modelmap.removeModelListener()
+		modelmap.addModelListener(new DefaultModelListener());
+	}
+
 
 	/**
 	 * Wipe the current contents of the 'file' menu and replace, regenerates the
@@ -617,6 +619,10 @@ public class Workbench extends JFrame {
 				}
 			}
 			return workflowViews;
+		}
+
+		public boolean canHandle(String modelName, Object model) {
+			return true;
 		}
 	}	
 }

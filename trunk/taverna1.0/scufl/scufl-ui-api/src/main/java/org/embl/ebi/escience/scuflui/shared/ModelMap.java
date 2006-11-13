@@ -25,17 +25,19 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: ModelMap.java,v $
- * Revision           $Revision: 1.2 $
+ * Revision           $Revision: 1.3 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-11-10 12:06:30 $
- *               by   $Author: sowen70 $
+ * Last modified on   $Date: 2006-11-13 10:59:47 $
+ *               by   $Author: stain $
  * Created on 27 Oct 2006
  *****************************************************************/
 package org.embl.ebi.escience.scuflui.shared;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -59,7 +61,6 @@ public class ModelMap {
 	private static ModelMap instance = new ModelMap();
 	
 	private ModelMap() {
-		
 	}
 	
 	public static ModelMap getInstance() {
@@ -70,13 +71,15 @@ public class ModelMap {
 	 * At any given time there are zero or more named model objects over
 	 * which the workbench UI is acting. 
 	 */
-	private static Map<String,Object> modelMap = 
+	private Map<String,Object> modelMap = 
 		Collections.synchronizedMap(new HashMap<String,Object>());
+	
+	private List<ModelChangeListener> listeners = new ArrayList<ModelChangeListener>();
+	
 	
 	/**
 	 * Used as a modelName for setModel() and getNamedModel() - notes
 	 * the current active workflow in the GUI.
-	 *  
 	 */
 	public final static String CURRENT_WORKFLOW = "currentWorkflow";
 	
@@ -85,20 +88,23 @@ public class ModelMap {
 	 * the current active perspective in the GUI.
 	 */
 	public final static String CURRENT_PERSPECTIVE = "currentPerspective";
-	
+
 	/**
-	 * Set this to be notified of changes to the model map
+	 * Used as a modelName for the workflow that is to be invoked
+	 * from the EnactPerspective view, normally the same
+	 * as CURRENT_WORKFLOW
 	 */
-	public static ModelChangeListener DEFAULT_MODEL_LISTENER = null;
+	public static final String INVOKE_WORKFLOW = "invokeWorkflow";
+	
 	
 	/**
-	 * returns the model set
+	 * Return the model set
 	 */
 	public Set<Object> getModels() {
-		Set<Object> models=new HashSet<Object>();
-		models.addAll(modelMap.values());
-		return models;
+		return new HashSet<Object>(modelMap.values());
 	}
+	
+	
 	
 	/**
 	 * Manipulate the current model map
@@ -109,41 +115,99 @@ public class ModelMap {
 	 */
 	public synchronized void setModel(String modelName, Object model) {
 		logger.debug("SetModel called, modelName="+modelName+", model="+model);
-		if (DEFAULT_MODEL_LISTENER != null) {
-			if (modelMap.containsKey(modelName) == false) {
-				if (model != null) {
-					// Create new model object
-					modelMap.put(modelName,model);
-					DEFAULT_MODEL_LISTENER.modelCreated(modelName, model);
-				}
+		if (! modelMap.containsKey(modelName)) {
+			if (model != null) {
+				// Create new model object
+				modelMap.put(modelName,model);
+				modelCreated(modelName, model);
 			}
-			else {
-				if (model == null) {
-					// Destroy model object
-					Object oldModel = modelMap.get(modelName);
-					modelMap.remove(modelMap.get(modelName));
-					DEFAULT_MODEL_LISTENER.modelDestroyed(modelName,oldModel);
-				}
-				else {
-					Object oldModel = modelMap.get(modelName);
-					if (oldModel != model) {
-						// Update model object
-						modelMap.put(modelName, model);
-						DEFAULT_MODEL_LISTENER.modelChanged(modelName, oldModel, model);
-					}
+		} else {
+			if (model == null) {
+				// Destroy model object
+				Object oldModel = modelMap.get(modelName);
+				modelMap.remove(modelMap.get(modelName));
+				modelDestroyed(modelName,oldModel);
+			} else {
+				Object oldModel = modelMap.get(modelName);
+				if (oldModel != model) {
+					// Update model object
+					modelMap.put(modelName, model);
+					modelChanged(modelName, oldModel, model);
 				}
 			}
 		}
 	}
 	
+	public void addModelListener(ModelChangeListener listener) {
+		listeners.add(listener);
+	}
+
+	public void removeModelListener(ModelChangeListener listener) {
+		listeners.remove(listener);
+	}
+	
+	private void modelChanged(String modelName, Object oldModel, Object newModel) {
+		for (ModelChangeListener listener : listeners) {
+			if (! listener.canHandle(modelName, newModel)) {
+				continue;
+			}
+			try {
+				listener.modelChanged(modelName, oldModel, newModel);
+			} catch (Error er) {
+				logger.error("Could not notify model listener " + listener);
+			}
+		}
+	}
+
+	private void modelDestroyed(String modelName, Object oldModel) {
+		for (ModelChangeListener listener : listeners) {
+			if (! listener.canHandle(modelName, oldModel)) {
+				continue;
+			}
+			try {
+				listener.modelDestroyed(modelName, oldModel);
+			} catch (Error er) {
+				logger.error("Could not notify model listener " + listener);
+			}
+		}
+	}
+
+	private void modelCreated(String modelName, Object model) {
+		for (ModelChangeListener listener : listeners) {
+			if (! listener.canHandle(modelName, model)) {
+				continue;
+			}
+			try {
+				listener.modelCreated(modelName, model);
+			} catch (Error er) {
+				logger.error("Could not notify model listener " + listener);
+			}
+		}
+	}
+
+
 	/**
 	 * Register with the static class to inform workbench like
 	 * systems that the underlying map of named model objects has been
 	 * altered in some way.
 	 * @author Tom Oinn
+	 * @author Stian Soiland
 	 */
 	public interface ModelChangeListener {
 
+		/**
+		 * Return true if the listener can handle events for the
+		 * given modelname and model. Called before firing model* events.
+		 * <p>
+		 * For modelChanged events, the canHandle() will be called with the
+		 * newModel object.
+		 * 
+		 * @param modelName name of the model ex: ModelMap.CURRENT_WORKFLOW
+		 * @param model Model that is being created, changed or destroyed
+		 * @return true if the listener want to receive events for such objects
+		 */
+		public boolean canHandle(String modelName, Object model);
+		
 		/**
 		 * Called when the named model is updated
 		 * @param modelName name of the model that changed
