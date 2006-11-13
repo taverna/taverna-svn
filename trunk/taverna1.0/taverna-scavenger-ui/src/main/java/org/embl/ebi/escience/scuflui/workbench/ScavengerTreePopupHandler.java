@@ -17,7 +17,6 @@ import java.util.Comparator;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
@@ -28,8 +27,6 @@ import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.MutableTreeNode;
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
-
-import net.sf.taverna.perspectives.EnactPerspective;
 
 import org.apache.log4j.Logger;
 import org.embl.ebi.escience.scufl.AlternateProcessor;
@@ -186,11 +183,10 @@ public class ScavengerTreePopupHandler extends MouseAdapter {
 									// processor workflow or the directly loaded
 									// more complex one.
 								}
-								ModelMap.getInstance().setModel(ModelMap.CURRENT_PERSPECTIVE, 
-										new EnactPerspective());
+
 								ModelMap.getInstance().setModel(ModelMap.INVOKE_WORKFLOW,
 										m);
-								logger.info("Changed to invoke perspective");
+
 								/**
 								 * TODO - the code below forces a hard dependency on the workflow input builder and
 								 * invoker UI components. This will have to be changed to insert the new workflow

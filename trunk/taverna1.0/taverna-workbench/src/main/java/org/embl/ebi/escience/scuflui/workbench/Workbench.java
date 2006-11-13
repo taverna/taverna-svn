@@ -36,6 +36,7 @@ import javax.swing.JToolBar;
 import javax.swing.UIManager;
 
 import net.sf.taverna.perspectives.CustomPerspective;
+import net.sf.taverna.perspectives.EnactPerspective;
 import net.sf.taverna.perspectives.PerspectiveSPI;
 import net.sf.taverna.raven.repository.Artifact;
 import net.sf.taverna.raven.repository.Repository;
@@ -52,7 +53,6 @@ import net.sf.taverna.zaria.ZTreeNode;
 import net.sf.taverna.zaria.raven.ArtifactDownloadDialog;
 
 import org.apache.log4j.Logger;
-import org.apache.poi.hssf.record.MMSRecord;
 import org.embl.ebi.escience.scufl.ScuflModel;
 import org.embl.ebi.escience.scufl.ScuflModelEvent;
 import org.embl.ebi.escience.scufl.ScuflModelEventListener;
@@ -149,11 +149,22 @@ public class Workbench extends JFrame {
 		basePane.setKnownSPINames(new String[] {
 				"org.embl.ebi.escience.scuflui.spi.UIComponentFactorySPI" });				
 
-		setModelChangeListener();
+		setModelChangeListeners();
 		setModelSetListener();
 		setUI();
+		// Have to wait for this till perspectives have been made in setUI()
+		modelmap.addModelListener(perspectives.getModelChangeListener());
 		// Force a new workflow instance to start off with
 		createWorkflowAction().actionPerformed(null);
+	}
+
+	private void setModelChangeListeners() {
+		// FIXME: Also do modelmap.removeModelListener() on close? 
+		// (No, we do System.exit.. so it's OK)
+		modelmap.addModelListener(new DebugListener());
+		modelmap.addModelListener(new CurrentWorkflowListener());
+		modelmap.addModelListener(new WorkflowInstanceListener());
+		modelmap.addModelListener(new InvokeWorkflowListener());
 	}
 
 	private void setModelSetListener() {
@@ -398,17 +409,6 @@ public class Workbench extends JFrame {
 		writer.close();
 	}
 
-	private void setModelChangeListener() {
-		// FIXME: Also do modelmap.removeModelListener() on close? 
-		// (No, we do System.exit.. so it's OK)
-		modelmap.addModelListener(new DebugListener());
-		modelmap.addModelListener(new CurrentWorkflowListener());
-		modelmap.addModelListener(new CurrentPerspectiveListener());
-		modelmap.addModelListener(new WorkflowInstanceListener());
-		modelmap.addModelListener(new InvokeWorkflowListener());
-	}
-
-
 	/**
 	 * Wipe the current contents of the 'file' menu and replace, regenerates the
 	 * various model specific actions to ensure that they're acting on the
@@ -568,6 +568,7 @@ public class Workbench extends JFrame {
 					view.attachToModel(workflow);
 				}
 			}
+			refreshFileMenu();
 		}
 
 		public void modelCreated(String modelName, Object model) {
@@ -606,6 +607,9 @@ public class Workbench extends JFrame {
 		}
 		
 		void setWorkflow(ScuflModel workflow) {
+			// important to change the perspective *before* we attach
+			modelmap.setModel(ModelMap.CURRENT_PERSPECTIVE, 
+					new EnactPerspective());
 			for (WorkflowModelViewSPI view : getWorkflowViews()) {
 				if (! (view instanceof WorkflowModelInvokeSPI)) {
 					continue;
@@ -615,6 +619,7 @@ public class Workbench extends JFrame {
 					view.attachToModel(workflow);
 				}
 			}
+			logger.info("Changed to invoke perspective");
 		}
 		
 		public void modelCreated(String modelName, Object model) {
@@ -631,48 +636,7 @@ public class Workbench extends JFrame {
 		}	
 	}
 	
-	/**
-	 * Change perspective when ModelMap.CURRENT_PERSPECTIVE has been
-	 * modified. In addition, custom perspectives 
-	 * 
-	 * @author Stian Soiland
-	 *
-	 */
-	public class CurrentPerspectiveListener implements ModelChangeListener {
-		
-		public boolean canHandle(String modelName, Object model) {
-			if (! modelName.equals(ModelMap.CURRENT_PERSPECTIVE)) {
-				return false;
-			}
-			if (! (model instanceof PerspectiveSPI)) {
-				logger.error(ModelMap.CURRENT_PERSPECTIVE + 
-						" is not an PerspectiveSPI instance");
-				return false;
-			}
-			return true;
-		}
 
-		public void modelChanged(String modelName, Object oldModel, Object newModel) {
-			if (oldModel instanceof CustomPerspective) {
-				// Layout might have changed, so we'll make sure our old 
-				// custom perspective has the current layout
-				((CustomPerspective)oldModel).update(basePane.getElement());
-			}
-			PerspectiveSPI perspective = (PerspectiveSPI)newModel;
-			perspectives.switchPerspective(perspective);
-		}
-
-		public void modelCreated(String modelName, Object model) {
-			PerspectiveSPI perspective = (PerspectiveSPI)model;
-			perspectives.switchPerspective(perspective);
-		}
-
-		public void modelDestroyed(String modelName, Object oldModel) {
-			if (oldModel instanceof CustomPerspective) {
-				perspectives.removeCustomPerspective((CustomPerspective)oldModel);
-			}
-		}
-	}
 	
 	/**
 	 * Keep WorkflowInstanceSetViewSPI notified about creation and
