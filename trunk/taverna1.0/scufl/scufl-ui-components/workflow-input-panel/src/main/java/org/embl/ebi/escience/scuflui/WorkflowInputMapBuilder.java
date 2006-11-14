@@ -98,7 +98,7 @@ import org.jdom.output.XMLOutputter;
  * 
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover </a>
  * @author Stian Soiland
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  */
 public abstract class WorkflowInputMapBuilder extends JPanel implements
 	WorkflowModelInvokeSPI, ScuflModelEventListener {
@@ -551,11 +551,8 @@ public abstract class WorkflowInputMapBuilder extends JPanel implements
 			JMenuItem loadItem = new JMenuItem("Load Input Document",
 					TavernaIcons.openIcon);
 			loadItem.addActionListener(loadInputDocAction);
-			JMenuItem saveItem = new JMenuItem(
-					"Save Input Document",
-					new ImageIcon(
-							ClassLoader
-									.getSystemResource("org/embl/ebi/escience/scuflui/workbench/save.gif")));
+			JMenuItem saveItem = new JMenuItem("Save Input Document",
+					TavernaIcons.saveIcon);
 			saveItem.addActionListener(saveInputDocAction);
 			menu.add(loadItem);
 			// menu.add(importItem);
