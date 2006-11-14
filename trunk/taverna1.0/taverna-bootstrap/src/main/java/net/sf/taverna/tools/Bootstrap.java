@@ -28,7 +28,9 @@ import org.w3c.dom.NodeList;
 
 public class Bootstrap {
 
-	public static Properties properties = findProperties();
+	public static final String RAVEN_REMOTEPROFILE = "raven.remoteprofile";
+
+    public static Properties properties = findProperties();
 
 	// Where Raven will store its repository, discovered by main()
 	public static String TAVERNA_CACHE = "";
@@ -46,8 +48,8 @@ public class Bootstrap {
 
 		findUserDir();
 
-		if (properties.getProperty("raven.remoteprofile") != null) {
-			initialiseProfile(properties.getProperty("raven.remoteprofile"));
+		if (properties.getProperty(RAVEN_REMOTEPROFILE) != null) {
+			initialiseProfile(properties.getProperty(RAVEN_REMOTEPROFILE));
 		}
 
 		List<URL> loaderURLs = getLoaderUrls();
@@ -213,7 +215,7 @@ public class Bootstrap {
 		String version = properties.getProperty("raven.target.version");
 		String targetClassName = properties.getProperty("raven.target.class");
 
-		if (properties.getProperty("raven.remoteprofile") != null) {
+		if (properties.getProperty(RAVEN_REMOTEPROFILE) != null) {
 			String targetVersion = getProfileArtifactVersion(groupID,
 					artifactID);
 			if (targetVersion != null) {
@@ -264,7 +266,7 @@ public class Bootstrap {
 		String loaderArtifactId = properties
 				.getProperty("raven.loader.artifactid");
 		loaderVersion = properties.getProperty("raven.loader.version");
-		if (properties.getProperty("raven.remoteprofile") != null) {
+		if (properties.getProperty(RAVEN_REMOTEPROFILE) != null) {
 			String version = getProfileArtifactVersion(loaderGroupId,
 					loaderArtifactId);
 			if (version != null) {
@@ -355,7 +357,7 @@ public class Bootstrap {
 	 * @param profileURL
 	 */
 	public static void initialiseProfile(String profileUrlStr) {
-		System.setProperty("raven.remoteprofile", profileUrlStr);
+		System.setProperty(RAVEN_REMOTEPROFILE, profileUrlStr);
 		File localProfile = getLocalProfileFile(profileUrlStr);
 		try {
 			System.setProperty("raven.profile", localProfile.toURI().toURL()
@@ -367,7 +369,7 @@ public class Bootstrap {
 			e.printStackTrace();
 			// disable profile. May be better to just bail out completely here.
 			System.clearProperty("raven.profile");
-			System.clearProperty("raven.remoteprofile");
+			System.clearProperty(RAVEN_REMOTEPROFILE);
 		}
 
 	}
