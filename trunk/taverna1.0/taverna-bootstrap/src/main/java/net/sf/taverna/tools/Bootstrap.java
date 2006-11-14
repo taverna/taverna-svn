@@ -61,7 +61,7 @@ public class Bootstrap {
 		invokeWorkbench(args, workbenchClass);
 	}
 
-	private static void addSystemLoaderArtifacts() throws MalformedURLException {
+	public static void addSystemLoaderArtifacts() throws MalformedURLException {
 		ClassLoader systemClassLoader = ClassLoader.getSystemClassLoader();
 		if (systemClassLoader instanceof BootstrapClassLoader) {
 			BootstrapClassLoader bootstrapClassLoader = (BootstrapClassLoader) systemClassLoader;
@@ -176,7 +176,7 @@ public class Bootstrap {
 		}
 	}
 
-	private static void invokeWorkbench(String[] args, Class workbenchClass)
+	public static void invokeWorkbench(String[] args, Class workbenchClass)
 			throws IllegalAccessException, NoSuchMethodException {
 		try {
 			try {
@@ -199,7 +199,7 @@ public class Bootstrap {
 		}
 	}
 
-	private static Class createWorkbenchClass(String ravenVersion,
+	public static Class createWorkbenchClass(String ravenVersion,
 			Method loaderMethod) throws MalformedURLException,
 			IllegalAccessException {
 		Class workbenchClass = null;
@@ -249,7 +249,7 @@ public class Bootstrap {
 		return Bootstrap.class.getResource("/"+SPLASHSCREEN);
 	}	
 	
-	private static List<URL> getLoaderUrls() throws MalformedURLException {
+	public static List<URL> getLoaderUrls() throws MalformedURLException {
 		File cacheDir = findCache();
 
 		if (cacheDir == null) {
@@ -287,7 +287,7 @@ public class Bootstrap {
 		return loaderURLs;
 	}
 
-	private static Method createLoaderMethod(List<URL> loaderURLs)
+	public static Method createLoaderMethod(List<URL> loaderURLs)
 			throws ClassNotFoundException, NoSuchMethodException {
 		Method loaderMethod;
 		ClassLoader c = new URLClassLoader(loaderURLs.toArray(new URL[0]), null);
@@ -354,7 +354,7 @@ public class Bootstrap {
 	 * 
 	 * @param profileURL
 	 */
-	private static void initialiseProfile(String profileUrlStr) {
+	public static void initialiseProfile(String profileUrlStr) {
 		System.setProperty("raven.remoteprofile", profileUrlStr);
 		File localProfile = getLocalProfileFile(profileUrlStr);
 		try {
@@ -537,4 +537,8 @@ public class Bootstrap {
 		System.setProperty("taverna.home", appHome.getAbsolutePath());
 		return;
 	}
+
+    public static String getLoaderVersion() {
+        return loaderVersion;
+    }
 }
