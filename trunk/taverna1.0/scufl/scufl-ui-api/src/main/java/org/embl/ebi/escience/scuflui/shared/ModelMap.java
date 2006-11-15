@@ -25,10 +25,10 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: ModelMap.java,v $
- * Revision           $Revision: 1.4 $
+ * Revision           $Revision: 1.5 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-11-13 13:20:48 $
- *               by   $Author: stain $
+ * Last modified on   $Date: 2006-11-15 10:30:43 $
+ *               by   $Author: sowen70 $
  * Created on 27 Oct 2006
  *****************************************************************/
 package org.embl.ebi.escience.scuflui.shared;
@@ -154,7 +154,7 @@ public class ModelMap {
 			try {
 				listener.modelChanged(modelName, oldModel, newModel);
 			} catch (Error er) {
-				logger.error("Could not notify model listener " + listener);
+				logger.error("Could not notify model listener " + listener,er);
 			}
 		}
 	}
@@ -167,7 +167,7 @@ public class ModelMap {
 			try {
 				listener.modelDestroyed(modelName, oldModel);
 			} catch (Error er) {
-				logger.error("Could not notify model listener " + listener);
+				logger.error("Could not notify model listener " + listener,er);
 			}
 		}
 	}
@@ -180,7 +180,7 @@ public class ModelMap {
 			try {
 				listener.modelCreated(modelName, model);
 			} catch (Error er) {
-				logger.error("Could not notify model listener " + listener);
+				logger.error("Could not notify model listener " + listener,er);
 			}
 		}
 	}
