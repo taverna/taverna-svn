@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: DesignPerspective.java,v $
- * Revision           $Revision: 1.2 $
+ * Revision           $Revision: 1.3 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-11-15 09:19:05 $
+ * Last modified on   $Date: 2006-11-15 10:18:27 $
  *               by   $Author: stain $
  * Created on 8 Nov 2006
  *****************************************************************/
@@ -50,7 +50,7 @@ public class DesignPerspective implements PerspectiveSPI {
 	}
 
 	public String getText() {
-		return "Edit";
+		return "Design";
 	}
 
 }
