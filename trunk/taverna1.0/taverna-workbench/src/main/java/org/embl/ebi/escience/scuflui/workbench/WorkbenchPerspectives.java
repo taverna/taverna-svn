@@ -25,10 +25,10 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: WorkbenchPerspectives.java,v $
- * Revision           $Revision: 1.4 $
+ * Revision           $Revision: 1.5 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-11-15 12:44:53 $
- *               by   $Author: sowen70 $
+ * Last modified on   $Date: 2006-11-15 15:11:46 $
+ *               by   $Author: stain $
  * Created on 10 Nov 2006
  *****************************************************************/
 package org.embl.ebi.escience.scuflui.workbench;
@@ -382,13 +382,7 @@ public class WorkbenchPerspectives {
 	public class CurrentPerspectiveListener implements ModelChangeListener {
 		
 		public boolean canHandle(String modelName, Object model) {	
-			boolean result=true;
-			if (! (model instanceof PerspectiveSPI)) {
-				logger.error(model + 
-						" is not an PerspectiveSPI instance");
-				result=false;
-			}
-			return result;
+			return model instanceof PerspectiveSPI;
 		}
 
 		public void modelCreated(String modelName, Object model) {
