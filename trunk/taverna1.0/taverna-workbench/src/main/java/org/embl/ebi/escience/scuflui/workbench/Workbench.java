@@ -36,7 +36,6 @@ import javax.swing.JToolBar;
 import javax.swing.UIManager;
 
 import net.sf.taverna.perspectives.CustomPerspective;
-import net.sf.taverna.perspectives.EnactPerspective;
 import net.sf.taverna.perspectives.PerspectiveSPI;
 import net.sf.taverna.raven.repository.Artifact;
 import net.sf.taverna.raven.repository.Repository;
@@ -63,7 +62,6 @@ import org.embl.ebi.escience.scuflui.shared.ScuflModelSet;
 import org.embl.ebi.escience.scuflui.shared.ModelMap.ModelChangeListener;
 import org.embl.ebi.escience.scuflui.shared.ScuflModelSet.ScuflModelSetListener;
 import org.embl.ebi.escience.scuflui.spi.WorkflowInstanceSetViewSPI;
-import org.embl.ebi.escience.scuflui.spi.WorkflowModelInvokeSPI;
 import org.embl.ebi.escience.scuflui.spi.WorkflowModelViewSPI;
 import org.embl.ebi.escience.utils.TavernaSPIRegistry;
 import org.jdom.Element;
@@ -82,11 +80,13 @@ public class Workbench extends JFrame {
 
 	private static Logger logger = Logger.getLogger(Workbench.class);
 
+	private static Workbench instance = null;
+
 	private ZBasePane basePane = null;	
 
 	private ScuflModelSet workflowModels = ScuflModelSet.instance();
 
-	private JMenu fileMenu = null;
+	private JMenu fileMenu;
 	
 	private WorkbenchPerspectives perspectives = null;
 
@@ -94,8 +94,17 @@ public class Workbench extends JFrame {
 	
 	private ModelMap modelmap = ModelMap.getInstance();
 
-	public static Workbench getWorkbench() {
-		return new Workbench();
+	/**
+	 * Singleton constructor. More than one Workbench is not recommended as
+	 * it performs System.exit() when the window is closed.
+	 * 
+	 * @return Workbench instance
+	 */
+	public static Workbench getInstance() {
+		if (instance == null) {
+			instance = new Workbench();
+		}
+		return instance;
 	}
 
 	/**
@@ -107,7 +116,7 @@ public class Workbench extends JFrame {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		getWorkbench();
+		getInstance();
 	}
 
 	/**
@@ -116,12 +125,13 @@ public class Workbench extends JFrame {
 	 * 
 	 * @param localRepositoryLocation
 	 */	
+	@SuppressWarnings("deprecation")
 	private Workbench() {
 		super();
 		MyGridConfiguration.loadMygridProperties();
 		try {
-			UIManager
-					.setLookAndFeel("de.javasoft.plaf.synthetica.SyntheticaStandardLookAndFeel");
+			UIManager.setLookAndFeel(
+					"de.javasoft.plaf.synthetica.SyntheticaStandardLookAndFeel");
 		} catch (Exception ex) {
 			// Look and feel not available
 		}
@@ -162,7 +172,6 @@ public class Workbench extends JFrame {
 		modelmap.addModelListener(new DebugListener());
 		modelmap.addModelListener(new CurrentWorkflowListener());
 		modelmap.addModelListener(new WorkflowInstanceListener());
-		modelmap.addModelListener(new InvokeWorkflowListener());
 	}
 
 	private void setModelSetListener() {
@@ -495,8 +504,8 @@ public class Workbench extends JFrame {
 		repository.update();
 	}	
 	
-
-	private List<WorkflowModelViewSPI> getWorkflowViews() {
+	// FIXME: Allow any SPI, not just WorkflowModelViewSPI
+	public List<WorkflowModelViewSPI> getWorkflowViews() {
 		List<WorkflowModelViewSPI> workflowViews = new ArrayList<WorkflowModelViewSPI>();
 		for (ZRavenComponent zc : basePane.getRavenComponents()) {
 			JComponent contents = zc.getComponent();
@@ -590,52 +599,6 @@ public class Workbench extends JFrame {
 			oldWorkflow.removeListener(listener);
 		}
 	}
-	
-	public class InvokeWorkflowListener implements ModelChangeListener {
-
-		public boolean canHandle(String modelName, Object model) {
-			if (! modelName.equals(ModelMap.INVOKE_WORKFLOW)) {
-				return false;
-			}
-			if (! (model instanceof ScuflModel)) {
-				logger.error(ModelMap.INVOKE_WORKFLOW + 
-						" is not an ScuflModel instance");
-				return false;
-			}
-			return true;
-		}
-		
-		void setWorkflow(ScuflModel workflow) {
-			// important to change the perspective *before* we attach
-			modelmap.setModel(ModelMap.CURRENT_PERSPECTIVE, 
-					new EnactPerspective());
-			for (WorkflowModelViewSPI view : getWorkflowViews()) {
-				if (! (view instanceof WorkflowModelInvokeSPI)) {
-					continue;
-				}
-				view.detachFromModel();
-				if (workflow != null) {
-					view.attachToModel(workflow);
-				}
-			}
-			logger.info("Changed to invoke perspective");
-		}
-		
-		public void modelCreated(String modelName, Object model) {
-			setWorkflow((ScuflModel)model);
-		}
-
-		public void modelChanged(String modelName, Object oldModel, Object newModel) {
-			setWorkflow((ScuflModel)newModel);
-		}
-
-		public void modelDestroyed(String modelName, Object oldModel) {
-			ScuflModel workflow = (ScuflModel) modelmap.getNamedModel(ModelMap.CURRENT_WORKFLOW);
-			setWorkflow(workflow);
-		}	
-	}
-	
-
 	
 	/**
 	 * Keep WorkflowInstanceSetViewSPI notified about creation and
