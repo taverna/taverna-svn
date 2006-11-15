@@ -25,14 +25,15 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: EnactPerspective.java,v $
- * Revision           $Revision: 1.3 $
+ * Revision           $Revision: 1.4 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-11-15 10:15:44 $
- *               by   $Author: stain $
+ * Last modified on   $Date: 2006-11-15 12:44:53 $
+ *               by   $Author: sowen70 $
  * Created on 8 Nov 2006
  *****************************************************************/
 package net.sf.taverna.perspectives;
 
+import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 
 import javax.swing.ImageIcon;
@@ -45,6 +46,9 @@ import org.embl.ebi.escience.scuflui.shared.ModelMap.ModelChangeListener;
 import org.embl.ebi.escience.scuflui.spi.WorkflowModelInvokeSPI;
 import org.embl.ebi.escience.scuflui.spi.WorkflowModelViewSPI;
 import org.embl.ebi.escience.scuflui.workbench.Workbench;
+import org.jdom.Element;
+import org.jdom.output.Format;
+import org.jdom.output.XMLOutputter;
 
 /**
  * Perspective for enacting a workflow and keeping the results
@@ -52,8 +56,8 @@ import org.embl.ebi.escience.scuflui.workbench.Workbench;
  * @author Stuart Owens
  *
  */
-public class EnactPerspective implements PerspectiveSPI{
-
+public class EnactPerspective extends AbstractPerspective {	
+	
 	static {
 		ModelMap.getInstance().addModelListener(new InvokeWorkflowListener());
 	}
@@ -61,14 +65,18 @@ public class EnactPerspective implements PerspectiveSPI{
 	public ImageIcon getButtonIcon() {
 		return TavernaIcons.runIcon;
 	}
-
-	public InputStream getLayoutInputStream() {
-		return EnactPerspective.class.getResourceAsStream("/perspective-enact.xml");
-	}
+	
 
 	public String getText() {
 		return "Run";
 	}
+
+
+	@Override
+	protected InputStream getLayoutResourceStream() {
+		return EnactPerspective.class.getResourceAsStream("/perspective-enact.xml");		
+	}
+		
 }
 
 /**

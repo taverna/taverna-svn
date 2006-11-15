@@ -25,10 +25,10 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: WorkbenchPerspectives.java,v $
- * Revision           $Revision: 1.3 $
+ * Revision           $Revision: 1.4 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-11-13 16:34:37 $
- *               by   $Author: stain $
+ * Last modified on   $Date: 2006-11-15 12:44:53 $
+ *               by   $Author: sowen70 $
  * Created on 10 Nov 2006
  *****************************************************************/
 package org.embl.ebi.escience.scuflui.workbench;
@@ -376,20 +376,19 @@ public class WorkbenchPerspectives {
 	 * modified. 
 	 * 
 	 * @author Stian Soiland
+	 * @author Stuart Owen
 	 *
 	 */
 	public class CurrentPerspectiveListener implements ModelChangeListener {
 		
-		public boolean canHandle(String modelName, Object model) {
-			if (! modelName.equals(ModelMap.CURRENT_PERSPECTIVE)) {
-				return false;
-			}
+		public boolean canHandle(String modelName, Object model) {	
+			boolean result=true;
 			if (! (model instanceof PerspectiveSPI)) {
-				logger.error(ModelMap.CURRENT_PERSPECTIVE + 
+				logger.error(model + 
 						" is not an PerspectiveSPI instance");
-				return false;
+				result=false;
 			}
-			return true;
+			return result;
 		}
 
 		public void modelCreated(String modelName, Object model) {
@@ -398,11 +397,8 @@ public class WorkbenchPerspectives {
 		}
 
 		public void modelChanged(String modelName, Object oldModel, Object newModel) {
-			if (oldModel instanceof CustomPerspective) {
-				// Layout might have changed, so we'll make sure our old 
-				// custom perspective has the current layout
-				((CustomPerspective)oldModel).update(basePane.getElement());
-			}
+			((PerspectiveSPI)oldModel).update(basePane.getElement());
+			
 			PerspectiveSPI perspective = (PerspectiveSPI)newModel;
 			switchPerspective(perspective);
 		}

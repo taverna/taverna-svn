@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: PerspectiveSPI.java,v $
- * Revision           $Revision: 1.1 $
+ * Revision           $Revision: 1.2 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-11-09 11:54:48 $
+ * Last modified on   $Date: 2006-11-15 12:44:53 $
  *               by   $Author: sowen70 $
  * Created on 8 Nov 2006
  *****************************************************************/
@@ -35,6 +35,8 @@ package net.sf.taverna.perspectives;
 
 import java.io.InputStream;
 import javax.swing.ImageIcon;
+
+import org.jdom.Element;
 
 /**
  * SPI representing UI perspectives
@@ -48,17 +50,26 @@ public interface PerspectiveSPI {
 	 * 
 	 * @return the input stream to the layout XML
 	 */
-	InputStream getLayoutInputStream();
+	public InputStream getLayoutInputStream();
 	
 	/**
 	 * 
 	 * @return the icon image for the toolbar button
 	 */
-	ImageIcon getButtonIcon();
+	public ImageIcon getButtonIcon();
 	
 	/**
 	 * 
 	 * @return the text for the perspective
 	 */
-	String getText();
+	public String getText();
+	
+	/**
+	 * Store internally any changes to the layout xml
+	 */
+	public void update(Element layoutElement);
+		
+	
+	
+	
 }

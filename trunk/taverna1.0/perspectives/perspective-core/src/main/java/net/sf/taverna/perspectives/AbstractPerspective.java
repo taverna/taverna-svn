@@ -24,34 +24,63 @@
  ****************************************************************
  * Source code information
  * -----------------------
- * Filename           $RCSfile: DesignPerspective.java,v $
- * Revision           $Revision: 1.4 $
+ * Filename           $RCSfile: AbstractPerspective.java,v $
+ * Revision           $Revision: 1.1 $
  * Release status     $State: Exp $
  * Last modified on   $Date: 2006-11-15 12:44:53 $
  *               by   $Author: sowen70 $
- * Created on 8 Nov 2006
+ * Created on 15 Nov 2006
  *****************************************************************/
 package net.sf.taverna.perspectives;
 
+import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 
 import javax.swing.ImageIcon;
 
-import org.embl.ebi.escience.scuflui.TavernaIcons;
+import org.jdom.Element;
+import org.jdom.output.Format;
+import org.jdom.output.XMLOutputter;
 
-public class DesignPerspective extends AbstractPerspective {	
+/**
+ * An abstract implementation of a perspective that handles the storing of the
+ * layout XML if modified via the 'update' method, which once set causes this XML to be used rather than
+ * the bundled resource.
+ * Concrete subclass should provide getText, getButtonIcon, and getLayoutResourceName.
+ * @author Stuart Owen
+ *
+ */
+public abstract class AbstractPerspective implements PerspectiveSPI {
 
-	public ImageIcon getButtonIcon() {
-		return TavernaIcons.editIcon;
-	}	
+	private Element layoutElement = null;	
 
-	public String getText() {
-		return "Design";
+	public InputStream getLayoutInputStream() {
+		if (layoutElement == null) return getLayoutResourceStream();
+		else {
+			XMLOutputter outputter = new XMLOutputter(Format.getPrettyFormat());
+			String xml=outputter.outputString(layoutElement);
+			return new ByteArrayInputStream(xml.getBytes());
+		}
 	}
 
-	@Override
-	protected InputStream getLayoutResourceStream() {
-		return DesignPerspective.class.getResourceAsStream("/perspective-design.xml");
-	}	
+	public void update(Element layoutElement) {
+		this.layoutElement = layoutElement;
+	}
 	
+	/**
+	 * The text for the perspective
+	 */
+	public abstract String getText();
+	
+	/**
+	 * The icon for the perspective
+	 */
+	public abstract ImageIcon getButtonIcon();
+	
+	/**
+	 * 
+	 * @return the resource stream for the perspective
+	 */
+	protected abstract InputStream getLayoutResourceStream();
+
 }
