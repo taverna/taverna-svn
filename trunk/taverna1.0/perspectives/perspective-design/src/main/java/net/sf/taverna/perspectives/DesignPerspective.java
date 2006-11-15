@@ -25,10 +25,10 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: DesignPerspective.java,v $
- * Revision           $Revision: 1.1 $
+ * Revision           $Revision: 1.2 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-11-09 11:54:48 $
- *               by   $Author: sowen70 $
+ * Last modified on   $Date: 2006-11-15 09:19:05 $
+ *               by   $Author: stain $
  * Created on 8 Nov 2006
  *****************************************************************/
 package net.sf.taverna.perspectives;
@@ -50,7 +50,7 @@ public class DesignPerspective implements PerspectiveSPI {
 	}
 
 	public String getText() {
-		return "Design";
+		return "Edit";
 	}
 
 }
