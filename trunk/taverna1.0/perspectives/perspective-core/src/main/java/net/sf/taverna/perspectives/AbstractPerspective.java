@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: AbstractPerspective.java,v $
- * Revision           $Revision: 1.1 $
+ * Revision           $Revision: 1.2 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-11-15 12:44:53 $
+ * Last modified on   $Date: 2006-11-15 12:52:28 $
  *               by   $Author: sowen70 $
  * Created on 15 Nov 2006
  *****************************************************************/
@@ -46,7 +46,7 @@ import org.jdom.output.XMLOutputter;
  * An abstract implementation of a perspective that handles the storing of the
  * layout XML if modified via the 'update' method, which once set causes this XML to be used rather than
  * the bundled resource.
- * Concrete subclass should provide getText, getButtonIcon, and getLayoutResourceName.
+ * Concrete subclass should provide getText, getButtonIcon, and getLayoutResourceStream.
  * @author Stuart Owen
  *
  */
