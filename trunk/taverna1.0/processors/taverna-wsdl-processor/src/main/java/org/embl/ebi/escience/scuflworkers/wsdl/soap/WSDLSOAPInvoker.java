@@ -25,10 +25,10 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: WSDLSOAPInvoker.java,v $
- * Revision           $Revision: 1.8 $
+ * Revision           $Revision: 1.9 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-08-30 13:00:18 $
- *               by   $Author: sowen70 $
+ * Last modified on   $Date: 2006-11-15 10:49:52 $
+ *               by   $Author: davidwithers $
  * Created on 07-Apr-2006
  *****************************************************************/
 package org.embl.ebi.escience.scuflworkers.wsdl.soap;
@@ -51,6 +51,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.rpc.ServiceException;
 import javax.xml.soap.SOAPException;
 
+import org.apache.axis.EngineConfiguration;
 import org.apache.axis.attachments.AttachmentPart;
 import org.apache.axis.client.Call;
 import org.apache.axis.message.SOAPBodyElement;
@@ -100,8 +101,24 @@ public class WSDLSOAPInvoker {
 	 * @throws Exception
 	 */
 	public Map invoke(Map inputMap) throws Exception {
+		return invoke(inputMap, null);
+	}
+
+	/**
+	 * Invokes the webservice with the supplied input Map, and returns a Map
+	 * containing the outputs, mapped against their output names.
+	 * 
+	 * @param inputMap
+	 * @return
+	 * @throws Exception
+	 */
+	public Map invoke(Map inputMap, EngineConfiguration config) throws Exception {
 
 		Call call = getCall();
+		if (config != null) {
+			call.setClientHandlers(config.getGlobalRequest(), config
+					.getGlobalResponse());
+		}
 		call.setTimeout(getTimeout());
 		SOAPBodyElement body = buildBody(inputMap);
 

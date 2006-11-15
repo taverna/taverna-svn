@@ -5,9 +5,17 @@
  */
 package org.embl.ebi.escience.scuflworkers.wsdl;
 
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.axis.AxisFault;
+import org.apache.axis.EngineConfiguration;
+import org.apache.axis.client.AxisClient;
+import org.apache.axis.configuration.FileProvider;
+import org.apache.axis.utils.ClassUtils;
+import org.apache.axis.utils.ClasspathUtils;
 import org.apache.axis.utils.XMLUtils;
 import org.apache.log4j.Logger;
 import org.embl.ebi.escience.scufl.IProcessorTask;
@@ -29,6 +37,33 @@ public class WSDLInvocationTask implements ProcessorTaskWorker {
 
 	private WSDLBasedProcessor processor;
 
+	private static final List<String> secureServiceList = new ArrayList<String>();
+
+	private static EngineConfiguration securityConfiguration = null;
+
+	static {
+		try {
+			String omiiClientHome = System.getProperty("omii.client.home");
+			if (omiiClientHome != null) {
+				File omiiLibDir = new File(omiiClientHome, "lib");
+				File omiiConfDir = new File(omiiClientHome, "conf");
+				String omiiClasspath = ClasspathUtils.expandDirs(omiiLibDir
+						.getCanonicalPath())
+						+ File.pathSeparator + omiiConfDir.getCanonicalPath();
+				ClassLoader omiiClassLoader = ClassUtils.createClassLoader(
+						omiiClasspath, ClassUtils.class.getClassLoader());
+				ClassUtils.setDefaultClassLoader(omiiClassLoader);
+				securityConfiguration = new FileProvider(omiiConfDir
+						.getAbsolutePath(), "client-config.wsdd");
+				securityConfiguration.configureEngine(new AxisClient());
+			}
+		} catch (Exception e) {
+			logger.debug("Failed to load security configuration : "
+					+ e.getMessage());
+			securityConfiguration = null;
+		}
+	}
+
 	public WSDLInvocationTask(Processor p) {
 		this.processor = (WSDLBasedProcessor) p;
 	}
@@ -42,8 +77,21 @@ public class WSDLInvocationTask implements ProcessorTaskWorker {
 		Map result = null;
 		WSDLSOAPInvoker invoker = new WSDLSOAPInvoker(processor);
 		try {
-			result = invoker.invoke(inputMap);
+			if (isSecureService()) {
+				result = invoker.invoke(inputMap, securityConfiguration);
+			} else {
+				result = invoker.invoke(inputMap);
+			}
 		} catch (AxisFault af) {
+			if ("SecurityContextInitHandler: Request does not contain required Security header"
+					.equals(af.getMessage())) {
+				if (!isSecureService() && securityConfiguration != null) {
+					// this looks like a secure service so set it as secure and
+					// try again
+					setSecureService(true);
+					return execute(inputMap, parentTask);
+				}
+			}
 			logger.error("Axis fault invoking wsdl based service: "
 					+ af.getMessage());
 			Element[] details = af.getFaultDetails();
@@ -73,6 +121,20 @@ public class WSDLInvocationTask implements ProcessorTaskWorker {
 			throw te;
 		}
 		return result;
+	}
+
+	private boolean isSecureService() {
+		return secureServiceList.contains(processor.getWSDLLocation());
+	}
+
+	private void setSecureService(boolean isSecure) {
+		if (isSecure) {
+			if (!isSecureService()) {
+				secureServiceList.add(processor.getWSDLLocation());
+			}
+		} else {
+			secureServiceList.remove(processor.getWSDLLocation());
+		}
 	}
 
 }
