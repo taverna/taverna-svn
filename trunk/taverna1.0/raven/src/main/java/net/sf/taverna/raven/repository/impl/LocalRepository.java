@@ -177,19 +177,18 @@ public class LocalRepository implements Repository {
 				for (ArtifactClassLoader ac : childLoaders) {
 					if (! seenLoaders.contains(ac)) {
 						try {
-//							Class loadedClass = findLoadedClass(name);
-//							if (loadedClass != null) {
-//								return loadedClass;
-//							}
+							Class loadedClass = findLoadedClass(name);
+							if (loadedClass != null) {
+								return loadedClass;
+							}
 							if (ac.getParent() instanceof ArtifactClassLoader) {
 								((ArtifactClassLoader) ac.getParent()).findClass(name, seenLoaders);
 							} else if (ac.getParent() != null) {
 								try {
 									return ac.getParent().loadClass(name);
 								} catch (ClassNotFoundException cnfe) {
-						}
+								}
 							}
-//							return ac.loadClass(name);
 							return ac.findClass(name, seenLoaders);
 						}
 						catch (ClassNotFoundException cnfe) {
