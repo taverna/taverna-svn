@@ -17,7 +17,7 @@ import net.sf.taverna.raven.repository.Artifact;
 import net.sf.taverna.raven.repository.ArtifactStatus;
 import net.sf.taverna.raven.repository.Repository;
 import net.sf.taverna.raven.repository.RepositoryListener;
-import net.sf.taverna.raven.repository.impl.LocalRepository.ArtifactClassLoader;
+import net.sf.taverna.raven.repository.impl.ArtifactClassLoader;
 
 /**
  * A typed registry of implementations of a particular

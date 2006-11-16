@@ -14,7 +14,7 @@ import java.util.Properties;
 
 import net.sf.taverna.raven.log.Log;
 import net.sf.taverna.raven.log.Log4jLog;
-import net.sf.taverna.raven.repository.impl.LocalRepository.ArtifactClassLoader;
+import net.sf.taverna.raven.repository.impl.ArtifactClassLoader;
 import net.sf.taverna.tools.Bootstrap;
 
 import org.apache.commons.io.FileUtils;

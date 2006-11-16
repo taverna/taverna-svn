@@ -3,7 +3,7 @@ package net.sf.taverna.raven.log;
 import java.util.HashMap;
 import java.util.Map;
 
-import net.sf.taverna.raven.repository.impl.LocalRepository.ArtifactClassLoader;
+import net.sf.taverna.raven.repository.impl.ArtifactClassLoader;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
