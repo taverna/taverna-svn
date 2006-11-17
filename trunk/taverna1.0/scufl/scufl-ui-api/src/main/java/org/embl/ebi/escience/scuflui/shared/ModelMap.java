@@ -25,10 +25,10 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: ModelMap.java,v $
- * Revision           $Revision: 1.5 $
+ * Revision           $Revision: 1.6 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-11-15 10:30:43 $
- *               by   $Author: sowen70 $
+ * Last modified on   $Date: 2006-11-17 14:34:05 $
+ *               by   $Author: dturi $
  * Created on 27 Oct 2006
  *****************************************************************/
 package org.embl.ebi.escience.scuflui.shared;
@@ -42,6 +42,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
+import org.embl.ebi.escience.baclava.DataThing;
 
 /**
  * Map of the models present in the workbench associated with their names, together with
@@ -91,10 +92,18 @@ public class ModelMap {
 
 	/**
 	 * Used as a modelName for the workflow that is to be invoked
-	 * from the EnactPerspective view, normally the same
+	 * from the {@link EnactPerspective} view, normally the same
 	 * as CURRENT_WORKFLOW
 	 */
 	public static final String INVOKE_WORKFLOW = "invokeWorkflow";
+    
+    /**
+     * Used as a modelName for the inputs of the workflow that is to be invoked
+     * from the {@link EnactPerspective} view. 
+     *  
+     * @see org.embl.ebi.escience.scuflui.spi.WorkflowModelInvokeSPI#setWorkflowInputs(Map<String, DataThing> inputs)
+     */
+    public static final String INVOKE_WORKFLOW_INPUTS = "invokeWorkflowInputs";
 	
 	
 	/**
