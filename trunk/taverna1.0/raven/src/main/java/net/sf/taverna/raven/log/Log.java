@@ -16,7 +16,7 @@ package net.sf.taverna.raven.log;
  *     private static Log logger = Log.getLogger(LocalRepository.class);
  *       ..
  *                      try { 
- * 							ac = new ArtifactClassLoader(dep);
+ * 							ac = new LocalArtifactClassLoader(dep);
  * 							logger.info("Found " + ac);
  *     					} catch (MalformedURLException e) {
  * 							logger.error("Malformed URL when loading " + dep, e);

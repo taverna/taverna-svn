@@ -101,8 +101,8 @@ public interface Repository {
 	public abstract void removeRepositoryListener(RepositoryListener l);
 
 	/**
-	 * Given a Class object return the Artifact whose ArtifactClassLoader created it. 
-	 * If the classloader was not an instance of ArtifactClassLoader an 
+	 * Given a Class object return the Artifact whose LocalArtifactClassLoader created it. 
+	 * If the classloader was not an instance of LocalArtifactClassLoader an 
 	 * ArtifactNotFoundException is thrown
 	 */
 	public abstract Artifact artifactForClass(Class c) throws ArtifactNotFoundException;

@@ -39,8 +39,8 @@ import net.sf.taverna.perspectives.CustomPerspective;
 import net.sf.taverna.perspectives.PerspectiveSPI;
 import net.sf.taverna.raven.repository.Artifact;
 import net.sf.taverna.raven.repository.Repository;
-import net.sf.taverna.raven.repository.impl.ArtifactClassLoader;
 import net.sf.taverna.raven.repository.impl.LocalRepository;
+import net.sf.taverna.raven.repository.impl.LocalArtifactClassLoader;
 import net.sf.taverna.raven.spi.Profile;
 import net.sf.taverna.raven.spi.ProfileFactory;
 import net.sf.taverna.tools.Bootstrap;
@@ -141,7 +141,7 @@ public class Workbench extends JFrame {
 		// Create and configure the ZBasePane
 		basePane=new WorkbenchZBasePane();
 		try {
-			ArtifactClassLoader acl = (ArtifactClassLoader) getClass()
+			LocalArtifactClassLoader acl = (LocalArtifactClassLoader) getClass()
 					.getClassLoader();
 			repository = acl.getRepository();
 			basePane.setRepository(repository);

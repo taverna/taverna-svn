@@ -61,8 +61,8 @@ public class LocalRepository implements Repository {
 		}
 		// Fake in our own classloader
 		loaderMap.put(new BasicArtifact("uk.org.mygrid.taverna.raven", "raven",
-				"1.5-SNAPSHOT"), new ArtifactClassLoader(this, this.getClass()
-				.getClassLoader()));
+				"1.5-SNAPSHOT"), new LocalArtifactClassLoader(this, 
+						this.getClass().getClassLoader()));
 		initialize();
 	}
 
@@ -135,7 +135,7 @@ public class LocalRepository implements Repository {
 		}
 		try {
 			// Even if parent is null
-			return new ArtifactClassLoader(this, a, parent);
+			return new LocalArtifactClassLoader(this, a, parent);
 		} catch (MalformedURLException e) {
 			logger.error("Malformed URL for artifact " + a, e);
 		}
@@ -144,12 +144,12 @@ public class LocalRepository implements Repository {
 	}
 
 	/**
-	 * Given a Class object return the Artifact whose ArtifactClassLoader
-	 * created it. If the classloader was not an instance of ArtifactClassLoader
+	 * Given a Class object return the Artifact whose LocalArtifactClassLoader
+	 * created it. If the classloader was not an instance of LocalArtifactClassLoader
 	 * then return null
 	 */
 	public Artifact artifactForClass(Class c) throws ArtifactNotFoundException {
-		for (Entry<Artifact, ArtifactClassLoader> entry : loaderMap.entrySet()) {
+		for (Entry<Artifact, LocalArtifactClassLoader> entry : loaderMap.entrySet()) {
 			if (entry.getValue() == c.getClassLoader()) {
 				return entry.getKey();
 			}
@@ -236,7 +236,7 @@ public class LocalRepository implements Repository {
 		return status.get(a);
 	}
 
-	static final Map<Artifact, ArtifactClassLoader> loaderMap = new HashMap<Artifact, ArtifactClassLoader>();
+	static final Map<Artifact, LocalArtifactClassLoader> loaderMap = new HashMap<Artifact, LocalArtifactClassLoader>();
 
 	private final List<RepositoryListener> listeners = new ArrayList<RepositoryListener>();
 
@@ -414,7 +414,7 @@ public class LocalRepository implements Repository {
 	/**
 	 * File object for Jar for the specified artifact
 	 */
-	File jarFile(Artifact a) {
+	public File jarFile(Artifact a) {
 		return new File(artifactDir(a), a.getArtifactId() + "-"
 				+ a.getVersion() + ".jar");
 	}
@@ -739,3 +739,4 @@ public class LocalRepository implements Repository {
 		return sb.toString();
 	}
 }
+

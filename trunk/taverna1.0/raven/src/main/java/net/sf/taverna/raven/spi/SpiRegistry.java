@@ -17,7 +17,7 @@ import net.sf.taverna.raven.repository.Artifact;
 import net.sf.taverna.raven.repository.ArtifactStatus;
 import net.sf.taverna.raven.repository.Repository;
 import net.sf.taverna.raven.repository.RepositoryListener;
-import net.sf.taverna.raven.repository.impl.ArtifactClassLoader;
+import net.sf.taverna.raven.repository.impl.LocalArtifactClassLoader;
 
 /**
  * A typed registry of implementations of a particular
@@ -217,7 +217,7 @@ public class SpiRegistry implements Iterable<Class> {
 						logger.warn("Could not find class " + impName + " using " + cl, e);
 						continue;
 					}
-					if (impClass.getClassLoader() instanceof ArtifactClassLoader || System.getProperty("raven.eclipse")!=null) {
+					if (impClass.getClassLoader() instanceof LocalArtifactClassLoader || System.getProperty("raven.eclipse")!=null) {
 						implementations.add(impClass);
 						addedNew = true;
 					}

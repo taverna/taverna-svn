@@ -21,45 +21,45 @@ import net.sf.taverna.raven.repository.Repository;
  * Implementation of ClassLoader that uses the artifact metadata to manage
  * any dependencies of the artifact
  */
-public class ArtifactClassLoader extends URLClassLoader {
+public class LocalArtifactClassLoader extends URLClassLoader {
 
-	private static Log logger = Log.getLogger(ArtifactClassLoader.class);
+	private static Log logger = Log.getLogger(LocalArtifactClassLoader.class);
 	
-	private final LocalRepository repository;
-
-	private List<ArtifactClassLoader> childLoaders = new ArrayList<ArtifactClassLoader>();
+	private List<LocalArtifactClassLoader> childLoaders = new ArrayList<LocalArtifactClassLoader>();
 
 	private Map<String, Class> classMap = new HashMap<String, Class>();
 
 	private String name;
 
+	private LocalRepository repository;
+
 	public Repository getRepository() {
 		return repository;
 	}
 
-	protected ArtifactClassLoader(LocalRepository repository, ArtifactImpl a)
+	protected LocalArtifactClassLoader(LocalRepository r, ArtifactImpl a)
 			throws MalformedURLException, ArtifactStateException {
-		super(new URL[] { repository.jarFile(a).toURI().toURL() });
-		this.repository = repository;
+		super(new URL[] { r.jarFile(a).toURI().toURL() });
+		repository = r;
 		synchronized (LocalRepository.loaderMap) {
 			LocalRepository.loaderMap.put(a, this);
 		}
 		init(a);
 	}
 
-	protected ArtifactClassLoader(LocalRepository repository, ArtifactImpl a, ClassLoader parent)
+	protected LocalArtifactClassLoader(LocalRepository r, ArtifactImpl a, ClassLoader parent)
 			throws MalformedURLException, ArtifactStateException {
-		super(new URL[] { repository.jarFile(a).toURI().toURL() }, parent);
-		this.repository = repository;
+		super(new URL[] { r.jarFile(a).toURI().toURL() }, parent);
+		repository = r;
 		synchronized (LocalRepository.loaderMap) {
 			LocalRepository.loaderMap.put(a, this);
 		}
 		init(a);
 	}
 
-	protected ArtifactClassLoader(LocalRepository repository, ClassLoader selfLoader) {
+	protected LocalArtifactClassLoader(LocalRepository r, ClassLoader selfLoader) {
 		super(new URL[0], selfLoader);
-		this.repository = repository;
+		repository = r;
 	}
 
 	private void init(ArtifactImpl a) throws ArtifactStateException {
@@ -67,16 +67,16 @@ public class ArtifactClassLoader extends URLClassLoader {
 		name = a.toString();
 		for (ArtifactImpl dep : deps) {
 			synchronized (LocalRepository.loaderMap) {
-				ArtifactClassLoader ac = LocalRepository.loaderMap.get(dep);
+				LocalArtifactClassLoader ac = LocalRepository.loaderMap.get(dep);
 				if (ac == null) {
 					try {
-						ac = new ArtifactClassLoader(this.repository, dep);
+						ac = new LocalArtifactClassLoader(repository, dep);
 					} catch (MalformedURLException e) {
 						logger
 								.error("Malformed URL when loading " + dep,
 										e);
 					}
-					// loaderMap.put(a, ac);
+					// LocalRepository.loaderMap.put(a, ac);
 				}
 				childLoaders.add(ac);
 			}
@@ -86,25 +86,25 @@ public class ArtifactClassLoader extends URLClassLoader {
 	@Override
 	public URL findResource(String name) {
 		return findFirstInstanceOfResource(
-				new HashSet<ArtifactClassLoader>(), name);
+				new HashSet<LocalArtifactClassLoader>(), name);
 	}
 
 	@Override
 	public Enumeration<URL> findResources(String name) throws IOException {
 		Set<URL> resourceLocations = new HashSet<URL>();
-		enumerateResources(new HashSet<ArtifactClassLoader>(),
+		enumerateResources(new HashSet<LocalArtifactClassLoader>(),
 				resourceLocations, name);
 		return Collections.enumeration(resourceLocations);
 	}
 
 	private URL findFirstInstanceOfResource(
-			Set<ArtifactClassLoader> alreadySeen, String name) {
+			Set<LocalArtifactClassLoader> alreadySeen, String name) {
 		URL resourceURL = super.findResource(name);
 		if (resourceURL != null) {
 			return resourceURL;
 		}
 		alreadySeen.add(this);
-		for (ArtifactClassLoader cl : childLoaders) {
+		for (LocalArtifactClassLoader cl : childLoaders) {
 			if (!alreadySeen.contains(cl)) {
 				resourceURL = cl.findFirstInstanceOfResource(alreadySeen,
 						name);
@@ -116,14 +116,14 @@ public class ArtifactClassLoader extends URLClassLoader {
 		return null;
 	}
 
-	private void enumerateResources(Set<ArtifactClassLoader> alreadySeen,
+	private void enumerateResources(Set<LocalArtifactClassLoader> alreadySeen,
 			Set<URL> resourceLocations, String name) throws IOException {
 		alreadySeen.add(this);
 		URL resourceURL = super.findResource(name);
 		if (resourceURL != null) {
 			resourceLocations.add(resourceURL);
 		}
-		for (ArtifactClassLoader cl : childLoaders) {
+		for (LocalArtifactClassLoader cl : childLoaders) {
 			if (!alreadySeen.contains(cl)) {
 				cl.enumerateResources(alreadySeen, resourceLocations, name);
 			}
@@ -133,16 +133,16 @@ public class ArtifactClassLoader extends URLClassLoader {
 	@Override
 	public String toString() {
 		return "loader{" + name + "} from "
-				+ System.identityHashCode(this.repository);
+				+ System.identityHashCode(repository);
 	}
 
 	@Override
 	protected Class<?> findClass(String name) throws ClassNotFoundException {
-		return findClass(name, new HashSet<ArtifactClassLoader>());
+		return findClass(name, new HashSet<LocalArtifactClassLoader>());
 	}
 
 	protected Class<?> findClass(String name,
-			Set<ArtifactClassLoader> seenLoaders)
+			Set<LocalArtifactClassLoader> seenLoaders)
 			throws ClassNotFoundException {
 		logger.debug("Searching for '" + name + "' - " + this);
 		seenLoaders.add(this);
@@ -157,10 +157,10 @@ public class ArtifactClassLoader extends URLClassLoader {
 			return c;
 		} catch (ClassNotFoundException e) {
 			// logger.debug("Trying children of "+this);
-			// for (ArtifactClassLoader ac : childLoaders) {
+			// for (LocalArtifactClassLoader ac : childLoaders) {
 			// logger.debug(" "+ac.toString());
 			// }
-			for (ArtifactClassLoader ac : childLoaders) {
+			for (LocalArtifactClassLoader ac : childLoaders) {
 				if (!seenLoaders.contains(ac)) {
 					try {
 						return ac.loadClass(name, seenLoaders);
@@ -174,7 +174,7 @@ public class ArtifactClassLoader extends URLClassLoader {
 	}
 
 	private Class<?> loadClass(String name,
-			Set<ArtifactClassLoader> seenLoaders)
+			Set<LocalArtifactClassLoader> seenLoaders)
 			throws ClassNotFoundException {
 		Class loadedClass = findLoadedClass(name);
 		if (loadedClass != null) {
@@ -182,8 +182,8 @@ public class ArtifactClassLoader extends URLClassLoader {
 		}
 		ClassLoader parent = getParent();
 		try {
-			if (parent instanceof ArtifactClassLoader) {
-				return ((ArtifactClassLoader) parent).loadClass(name,
+			if (parent instanceof LocalArtifactClassLoader) {
+				return ((LocalArtifactClassLoader) parent).loadClass(name,
 						seenLoaders);
 			} else if (parent != null) {
 				return parent.loadClass(name);

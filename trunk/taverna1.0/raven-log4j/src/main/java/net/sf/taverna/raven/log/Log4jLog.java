@@ -3,7 +3,7 @@ package net.sf.taverna.raven.log;
 import java.util.HashMap;
 import java.util.Map;
 
-import net.sf.taverna.raven.repository.impl.ArtifactClassLoader;
+import net.sf.taverna.raven.repository.impl.LocalArtifactClassLoader;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -45,7 +45,7 @@ public class Log4jLog implements LogInterface {
 	}
 	
 	public Log4jLog(Class c) {
-		if (Logger.class.getClassLoader() instanceof ArtifactClassLoader) {
+		if (Logger.class.getClassLoader() instanceof LocalArtifactClassLoader) {
 			throw new IllegalStateException("log4j cannot be used as a Raven logger when loaded through Raven");
 		}
 		log4j = Logger.getLogger(c);
