@@ -59,7 +59,7 @@ public class TreeModelView extends DefaultTreeModel implements
 	public void attachToModel(ScuflModel theModel) {
 		this.workflow = theModel;
 		theModel.addListener(this);
-		getRootNode().setUserObject("Workflow model");
+		getRootNode().setUserObject(theModel);
 		generateInitialModel();
 	}
 

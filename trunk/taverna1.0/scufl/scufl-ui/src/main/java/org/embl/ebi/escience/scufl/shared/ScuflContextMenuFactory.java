@@ -67,6 +67,8 @@ public class ScuflContextMenuFactory {
 		final ScuflModel model = methodSigModel;
 		if (theObject == null) {
 			throw new NoContextMenuFoundException("Supplied user object was null, giving up.");
+		} else if (theObject instanceof ScuflModel) {
+			return getWorkflowMenu((ScuflModel) theObject);
 		} else if (theObject instanceof Processor) {
 			return getProcessorMenu((Processor) theObject);
 		} else if (theObject instanceof AlternateProcessor) {
@@ -251,6 +253,15 @@ public class ScuflContextMenuFactory {
 				theMenu.add(item);
 			}
 		}
+		return theMenu;
+	}
+
+	private static JPopupMenu getWorkflowMenu(ScuflModel model) {
+		JPopupMenu theMenu = new JPopupMenu();
+		theMenu.add(new ShadedLabel("Workflow : " + model.getDescription().getTitle(),
+				ShadedLabel.TAVERNA_GREEN));
+		theMenu.addSeparator();
+		theMenu.add(new RenameAction(model, model));
 		return theMenu;
 	}
 

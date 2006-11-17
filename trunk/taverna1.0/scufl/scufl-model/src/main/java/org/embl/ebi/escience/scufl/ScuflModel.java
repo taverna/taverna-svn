@@ -253,6 +253,9 @@ public class ScuflModel implements Serializable, LogAwareComponent {
 	}
 
 	public void setDescription(WorkflowDescription description) {
+		if (description == null) {
+			throw new IllegalArgumentException("Cannot set description to null");
+		}
 		this.description = description;
 	}
 

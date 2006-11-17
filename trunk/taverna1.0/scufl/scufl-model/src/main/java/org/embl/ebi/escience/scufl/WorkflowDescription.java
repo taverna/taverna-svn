@@ -49,7 +49,13 @@ public class WorkflowDescription {
 	 * Set the title for this workflow
 	 */
 	public void setTitle(String theTitle) {
-		this.title = theTitle;
+		if (theTitle == null) {
+			throw new IllegalArgumentException("Cannot set title to null");
+		}
+		String trimmedTitle = theTitle.trim();
+		if (!trimmedTitle.equals("")) {
+			this.title = trimmedTitle;
+		}
 	}
 
 	/**

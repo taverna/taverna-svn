@@ -89,19 +89,19 @@ public class AdvancedModelExplorer extends JPanel implements
 	 * appropriate context object into the selectedObject value
 	 */
 	private void updateTab() {
-		if (selectedObject != null && selectedObject instanceof Processor) {
+		if (selectedObject instanceof ScuflModel) {
+			updateTabForWorkflow();
+		} else if (selectedObject instanceof Processor) {
 			updateTabForProcessor((Processor) selectedObject);
-		} else if (selectedObject != null && selectedObject instanceof String) {
-			if (((String) selectedObject).equals("Workflow model")) {
-				updateTabForWorkflow();
-			} else if (((String) selectedObject).equals("Processors")) {
+		} else if (selectedObject instanceof String) {
+			if (((String) selectedObject).equals("Processors")) {
 				updateTabForSummary();
 			} else {
 				tabs.setEnabledAt(1, false);
 				tabs.setIconAt(1, null);
 				tabs.setTitleAt(1, "");
 			}
-		} else if (selectedObject != null && selectedObject instanceof Port) {
+		} else if (selectedObject instanceof Port) {
 			Port p = (Port) selectedObject;
 			if (p.isSource() || p.isSink()) {
 				SemanticMarkup m = p.getMetadata();
@@ -525,6 +525,7 @@ public class AdvancedModelExplorer extends JPanel implements
 
 		// Add the tabbed pane to the center area of the panel
 		add(tabs, BorderLayout.CENTER);
+		add(new JLabel(getName()), BorderLayout.NORTH);
 
 		// Create the tool bar
 		JToolBar toolbar = new JToolBar();

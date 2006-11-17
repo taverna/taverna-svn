@@ -165,6 +165,9 @@ public class ScuflModelExplorerRenderer extends NodeColouringRenderer {
 							+ defaultText + "</html>");
 				}
 			}
+		} else if (userObject instanceof ScuflModel) {
+			setIcon(TavernaIcons.folderClosedIcon);
+			setText(((ScuflModel) userObject).getDescription().getTitle());
 		} else if (((DefaultMutableTreeNode) value).isLeaf()) {
 			setIcon(TavernaIcons.folderClosedIcon);
 		}

@@ -39,6 +39,9 @@ public class RenameAction extends ModelObjectAction {
 			}
 			name = port.getName();
 			description = "New name for the port?";
+		} else if (object instanceof ScuflModel) {
+			name = ((ScuflModel) object).getDescription().getTitle();
+			description = "New workflow title";
 		} else {
 			throw new IllegalArgumentException("Unknown modelObject type");
 		}
@@ -57,6 +60,13 @@ public class RenameAction extends ModelObjectAction {
 			Port port = (Port) object;
 			port.setName(new_name);
 			name = port.getName();
+		} else if (object instanceof ScuflModel) {
+			ScuflModel model = (ScuflModel) object;
+			new_name = new_name.trim();
+			model.getDescription().setTitle(new_name);
+			name = model.getDescription().getTitle();
+			model.fireModelEvent(new org.embl.ebi.escience.scufl.ScuflModelEvent(this,
+					"Title Changed"));					
 		} else {
 			throw new IllegalArgumentException("Unknown modelObject type");
 		}
