@@ -167,6 +167,15 @@ public class MyGridConfiguration {
 		properties = loadDefaultProperties();
 		writeDefaultProperties();
 		properties.putAll(loadUserProperties());
+		// FIXME: Support overriding through system properties (but for this to
+		// work we can no longer do loadMygridProperties() - as that would mean 
+		// we will get the old values even after flushProperties(). 
+		
+		// Also, we don't want to put non-Taverna properties (like java.*)
+		// into this property object. How to do it? Something like..
+		// for key,value in SystemProperties.entrySet():
+		//    if key in properties:  // Known mygrid key
+		//           properties.put(key, value);
 		return properties;
 	}
 

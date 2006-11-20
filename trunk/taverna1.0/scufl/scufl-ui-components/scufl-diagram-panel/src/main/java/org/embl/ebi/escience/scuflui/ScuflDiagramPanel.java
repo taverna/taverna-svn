@@ -260,6 +260,10 @@ public class ScuflDiagramPanel extends JPanel implements WorkflowModelViewSPI {
 					} else {
 						FileOutputStream fos = new FileOutputStream(file);
 						// Invoke DOT to get the SVG document as a byte stream
+						// FIXME: Should use MyGridConfiguration.getProperty(), 
+						// but that would not include the system property
+						// specified at command line on Windows (runme.bat) 
+						// and OS X (Taverna.app)
 						String dotLocation = System
 								.getProperty("taverna.dotlocation");
 						if (dotLocation == null) {

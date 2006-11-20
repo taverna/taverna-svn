@@ -187,6 +187,10 @@ public class ScuflSVGDiagram extends JComponent implements
 	}
 
 	public static SVGDocument getSVG(String dotText) throws IOException {
+		// FIXME: Should use MyGridConfiguration.getProperty(), 
+		// but that would not include the system property
+		// specified at command line on Windows (runme.bat) 
+		// and OS X (Taverna.app)
 		String dotLocation = System.getProperty("taverna.dotlocation");
 		if (dotLocation == null) {
 			dotLocation = "dot";
