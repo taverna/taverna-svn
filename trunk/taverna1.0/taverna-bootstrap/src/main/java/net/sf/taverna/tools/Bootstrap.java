@@ -481,6 +481,7 @@ public class Bootstrap {
 	 * 
 	 * <p>
 	 * If the directory does not already exist, it will be created.
+	 * It will also create the 'conf' directory within it if it doesn't exist.
 	 * </p>
 	 * 
 	 * @return System property <code>taverna.home</code> contains path of an
@@ -536,6 +537,11 @@ public class Bootstrap {
 			System.clearProperty("taverna.home");
 			return;
 		}
+		
+		//create conf folder
+		File conf=new File(appHome,"conf");
+		if (!conf.exists()) conf.mkdir();
+		
 		System.setProperty("taverna.home", appHome.getAbsolutePath());
 		return;
 	}
