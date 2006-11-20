@@ -66,8 +66,8 @@ public class DataThingXMLFactory {
 	 * Parse a data document and return a Map of DataThing objects, the keys in
 	 * the map being the string key attributes from the data document
 	 */
-	public static Map parseDataDocument(Document dataDocument) {
-		Map result = new HashMap();
+	public static Map<String, DataThing> parseDataDocument(Document dataDocument) {
+		Map<String, DataThing> result = new HashMap<String, DataThing>();
 		Element rootElement = dataDocument.getRootElement();
 		for (Iterator i = rootElement.getChildren("dataThing", namespace)
 				.iterator(); i.hasNext();) {
