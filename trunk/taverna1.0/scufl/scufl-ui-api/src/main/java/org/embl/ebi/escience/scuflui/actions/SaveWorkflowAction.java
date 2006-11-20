@@ -5,8 +5,11 @@ package org.embl.ebi.escience.scuflui.actions;
 
 import java.awt.event.ActionEvent;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.FileWriter;
+import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
+import java.nio.charset.Charset;
 import java.util.prefs.Preferences;
 
 import javax.swing.JFileChooser;
@@ -75,7 +78,9 @@ public class SaveWorkflowAction extends ScuflModelAction {
 			if (file.getName().endsWith(".xml") == false) {
 				file = new File(file.toURI().resolve(file.getName() + ".xml"));
 			}	
-			PrintWriter out = new PrintWriter(new FileWriter(file));
+			OutputStreamWriter writer = new OutputStreamWriter(new FileOutputStream(file), 
+					Charset.forName("UTF-8"));
+			PrintWriter out = new PrintWriter(writer);
 			out.print(XScuflView.getXMLText(model));			
 			out.flush();
 			out.close();

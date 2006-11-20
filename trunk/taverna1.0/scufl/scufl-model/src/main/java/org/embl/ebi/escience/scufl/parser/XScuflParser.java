@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.StringReader;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -138,7 +139,7 @@ public class XScuflParser {
 			DuplicateConcurrencyConstraintNameException, XScuflFormatException {
 
 		// Load the data into a JDom Document
-		InputStreamReader isr = new InputStreamReader(is);
+		InputStreamReader isr = new InputStreamReader(is, Charset.forName("UTF-8"));
 		SAXBuilder builder = new SAXBuilder(false);
 		Document document = null;
 		try {

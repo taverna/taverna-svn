@@ -27,12 +27,15 @@ import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.io.StringReader;
 import java.net.URL;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Enumeration;
@@ -97,7 +100,7 @@ import org.jdom.output.XMLOutputter;
  * 
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover </a>
  * @author Stian Soiland
- * @version $Revision: 1.6 $
+ * @version $Revision: 1.7 $
  */
 public abstract class WorkflowInputMapBuilder extends JPanel implements
         WorkflowModelInvokeSPI, ScuflModelEventListener {
@@ -442,16 +445,17 @@ public abstract class WorkflowInputMapBuilder extends JPanel implements
                             .showOpenDialog(WorkflowInputMapBuilder.this);
                     if (returnVal == JFileChooser.APPROVE_OPTION) {
                         File file = fileChooser.getSelectedFile();
+                        InputStreamReader stream = new InputStreamReader(
+                        		new FileInputStream(file),
+                        			Charset.forName("UTF-8"));
                         Document inputDoc = new SAXBuilder(false)
-                                .build(new FileReader(file));
+                                .build(stream);
                         Map<String, DataThing> inputMap = DataThingXMLFactory
                                 .parseDataDocument(inputDoc);
                         try {
                             populateInputs(inputMap);
                         } catch (InputsNotMatchingException iex) {
-                            logger
-                                    .error(
-                                            "Could not load input document, missing input",
+                            logger.error("Could not load input document, missing input",
                                             iex);
                             JOptionPane
                                     .showMessageDialog(
@@ -482,17 +486,17 @@ public abstract class WorkflowInputMapBuilder extends JPanel implements
                         File file = fileChooser.getSelectedFile();
                         // FileFilter fileFilter =
                         // fileChooser.getFileFilter();
-                        FileWriter fileWriter = new FileWriter(file);
+                        OutputStreamWriter fileWriter = new OutputStreamWriter(
+                        		new FileOutputStream(file), 
+                        			Charset.forName("UTF-8"));
                         BufferedWriter writer = new BufferedWriter(fileWriter);
                         // XMLOutputter outputter = new XMLOutputter(Format
                         // .getCompactFormat());
                         XMLOutputter outputter = new XMLOutputter(Format
                                 .getPrettyFormat());
                         BufferedReader reader = new BufferedReader(
-                                new StringReader(
-                                        outputter
-                                                .outputString(DataThingXMLFactory
-                                                        .getDataDocument(bakeInputMap()))));
+                                new StringReader(outputter.outputString(
+                                  DataThingXMLFactory.getDataDocument(bakeInputMap()))));
                         String line = null;
                         while ((line = reader.readLine()) != null) {
                             writer.write(line);
