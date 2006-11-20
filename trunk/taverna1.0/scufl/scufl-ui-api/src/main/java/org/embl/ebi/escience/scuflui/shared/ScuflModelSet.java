@@ -25,16 +25,16 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: ScuflModelSet.java,v $
- * Revision           $Revision: 1.1 $
+ * Revision           $Revision: 1.2 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-10-27 15:43:25 $
- *               by   $Author: sowen70 $
+ * Last modified on   $Date: 2006-11-20 16:05:10 $
+ *               by   $Author: stain $
  * Created on 27 Oct 2006
  *****************************************************************/
 package org.embl.ebi.escience.scuflui.shared;
 
 import java.util.Collections;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Set;
 
 import org.embl.ebi.escience.scufl.ScuflModel;
@@ -44,19 +44,29 @@ import org.embl.ebi.escience.scufl.ScuflModel;
  * the addition and removal of models.
  * 
  * @author Stuart Owen
+ * @author Stian Soiland
  */
 
 public class ScuflModelSet {
-	private Set<ScuflModel> modelSet = Collections.synchronizedSet(new HashSet<ScuflModel>());
-	private Set<ScuflModelSetListener> listeners=Collections.synchronizedSet(new HashSet<ScuflModelSetListener>());
+	// LinkedHashSet gives non-random order
+	private Set<ScuflModel> modelSet = Collections.synchronizedSet(new LinkedHashSet<ScuflModel>());
+	private Set<ScuflModelSetListener> listeners = Collections.synchronizedSet(new LinkedHashSet<ScuflModelSetListener>());
 	
 	private static ScuflModelSet instance = new ScuflModelSet();
 	
-	private ScuflModelSet() {
-		
+	/** 
+	 * Singleton pattern, use getInstance().
+	 *
+	 */
+	private ScuflModelSet() {	
 	}
 	
-	public static ScuflModelSet instance() {
+	/**
+	 * Singleton constructor
+	 * 
+	 * @return Singleton instance of ScuflModelSet
+	 */
+	public static ScuflModelSet getInstance() {
 		return instance;
 	}
 	

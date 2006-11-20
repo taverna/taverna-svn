@@ -84,7 +84,7 @@ public class Workbench extends JFrame {
 
 	private ZBasePane basePane = null;	
 
-	private ScuflModelSet workflowModels = ScuflModelSet.instance();
+	private ScuflModelSet workflowModels = ScuflModelSet.getInstance();
 
 	private JMenu fileMenu;
 	

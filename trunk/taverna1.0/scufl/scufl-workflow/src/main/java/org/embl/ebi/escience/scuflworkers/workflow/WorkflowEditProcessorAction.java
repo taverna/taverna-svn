@@ -25,10 +25,10 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: WorkflowEditProcessorAction.java,v $
- * Revision           $Revision: 1.1 $
+ * Revision           $Revision: 1.2 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-10-27 15:43:24 $
- *               by   $Author: sowen70 $
+ * Last modified on   $Date: 2006-11-20 16:05:10 $
+ *               by   $Author: stain $
  * Created on 26 Oct 2006
  *****************************************************************/
 package org.embl.ebi.escience.scuflworkers.workflow;
@@ -60,7 +60,7 @@ public class WorkflowEditProcessorAction implements ProcessorActionSPI
 
 	private void handleAction() {
 		ScuflModel model= processor.getInternalModel();				
-		ScuflModelSet.instance().addModel(model);		
+		ScuflModelSet.getInstance().addModel(model);		
 	}
 		
 

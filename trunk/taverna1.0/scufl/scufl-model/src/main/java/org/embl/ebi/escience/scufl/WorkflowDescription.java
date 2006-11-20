@@ -17,13 +17,16 @@ import org.jdom.Element;
  */
 public class WorkflowDescription {
 
+	// Just for numbering the untitled workflows, really
+	private static int instanceCounter = 0;
+	
 	private String text = "";
 
 	private String lsid = "";
 
 	private String author = "";
 
-	private String title = "Untitled workflow";
+	private String title = "Untitled workflow #" + ++instanceCounter;
 
 	/**
 	 * Override the default constructor to set an LSID by default from the
