@@ -96,7 +96,6 @@ public class AlternateProcessor implements Serializable {
 
 	public AlternateProcessor(Processor alternate) {
 		this.alternate = alternate;
-		alternate.firingEvents = true;
 	}
 
 	/**

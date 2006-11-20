@@ -52,8 +52,6 @@ public abstract class Processor implements Serializable, IProcessor {
 
 	protected IterationStrategy iterationStrategy = null;
 
-	public boolean firingEvents = false;
-
 	private boolean breakpoint = false;
 
 	protected boolean boring = false;
@@ -797,16 +795,14 @@ public abstract class Processor implements Serializable, IProcessor {
 	 * Fire a change event back to the model
 	 */
 	public void fireModelEvent(ScuflModelEvent event) {
-		if (firingEvents) {
-			if (this.model != null) {
-				this.model.fireModelEvent(event);
-			} else {
-				// Fire event back to the parent processor if this
-				// is an alternate
-				if (this.parentProcessor != null) {
-					event.source = this.parentProcessor;
-					this.parentProcessor.fireModelEvent(event);
-				}
+		if (this.model != null) {
+			this.model.fireModelEvent(event);
+		} else {
+			// Fire event back to the parent processor if this
+			// is an alternate
+			if (this.parentProcessor != null) {
+				event.source = this.parentProcessor;
+				this.parentProcessor.fireModelEvent(event);
 			}
 		}
 	}

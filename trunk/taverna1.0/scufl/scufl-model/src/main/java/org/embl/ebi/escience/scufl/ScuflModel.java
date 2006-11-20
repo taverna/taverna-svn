@@ -428,7 +428,6 @@ public class ScuflModel implements Serializable, LogAwareComponent {
 		}
 		synchronized (processors) {
 			processors.add(processor);
-			processor.firingEvents = isFiringEvents;
 			fireModelEvent(new ScuflModelAddEvent(this, processor));
 		}
 	}
@@ -644,7 +643,6 @@ class InternalSourcePortHolder extends Processor {
 	protected InternalSourcePortHolder(ScuflModel model)
 			throws DuplicateProcessorNameException, ProcessorCreationException {
 		super(model, "SCUFL_INTERNAL_SOURCEPORTS");
-		firingEvents = true;
 	}
 
 	public Properties getProperties() {
@@ -661,7 +659,6 @@ class InternalSinkPortHolder extends Processor {
 	protected InternalSinkPortHolder(ScuflModel model)
 			throws DuplicateProcessorNameException, ProcessorCreationException {
 		super(model, "SCUFL_INTERNAL_SINKPORTS");
-		firingEvents = true;
 	}
 
 	public Properties getProperties() {
