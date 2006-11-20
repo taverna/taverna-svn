@@ -2,6 +2,8 @@ package org.embl.ebi.escience.scuflui;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
+import java.text.DateFormat;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -24,9 +26,16 @@ import org.embl.ebi.escience.scuflui.spi.WorkflowInstanceSetViewSPI;
 @SuppressWarnings("serial")
 public class WorkflowInstanceContainer extends JPanel implements WorkflowInstanceSetViewSPI {
 
+	private Calendar firstInstance = null;
+	
 	private JTabbedPane tabs = new JTabbedPane();
 	private Map<String, EnactorInvocation> invocations = 
-		new HashMap<String, EnactorInvocation>();	
+		new HashMap<String, EnactorInvocation>();
+	
+	private DateFormat timeFormat = DateFormat.getTimeInstance(DateFormat.SHORT);
+	private DateFormat dateFormat = DateFormat.getDateTimeInstance(DateFormat.MEDIUM, 
+										DateFormat.SHORT);
+	
 	
 	public WorkflowInstanceContainer() {
 		super(new BorderLayout());
@@ -42,14 +51,25 @@ public class WorkflowInstanceContainer extends JPanel implements WorkflowInstanc
 		}
 	}
 
+	private String instanceTitle(WorkflowInstance instance) {
+		String title = instance.getWorkflowModel().getDescription().getTitle();
+		if (firstInstance == null) {
+			firstInstance = Calendar.getInstance();
+		}
+		Calendar now = Calendar.getInstance();
+		// FIXME: if (now - title) < 24h, use timeFormat
+		title = title + " " + dateFormat.format(now.getTime());
+		return title;
+	}
+	
 	public void newWorkflowInstance(String modelName, WorkflowInstance instance) {
 		try {
 			EnactorInvocation enactorInvocationPanel = new EnactorInvocation(instance);
 			invocations.put(modelName, enactorInvocationPanel);
-			String title = instance.getWorkflowModel().getDescription().getTitle();			
-			tabs.addTab(title, TavernaIcons.windowRun,enactorInvocationPanel);				
-			tabs.setSelectedComponent(enactorInvocationPanel);						
-			
+
+			tabs.addTab(instanceTitle(instance), 
+					TavernaIcons.windowRun,enactorInvocationPanel);				
+			tabs.setSelectedComponent(enactorInvocationPanel);		
 		} catch (WorkflowSubmissionException e) {
 			e.printStackTrace();
 		}
