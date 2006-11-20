@@ -43,8 +43,8 @@ public class LocalArtifactClassLoader extends URLClassLoader {
 		repository = r;
 		synchronized (LocalRepository.loaderMap) {
 			LocalRepository.loaderMap.put(a, this);
+			init(a); // Avoid people getting non-initialized instances
 		}
-		init(a);
 	}
 
 	protected LocalArtifactClassLoader(LocalRepository r, ArtifactImpl a, ClassLoader parent)
@@ -53,8 +53,8 @@ public class LocalArtifactClassLoader extends URLClassLoader {
 		repository = r;
 		synchronized (LocalRepository.loaderMap) {
 			LocalRepository.loaderMap.put(a, this);
+			init(a); // Avoid people getting non-initialized instances
 		}
-		init(a);
 	}
 
 	protected LocalArtifactClassLoader(LocalRepository r, ClassLoader selfLoader) {

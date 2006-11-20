@@ -60,9 +60,12 @@ public class LocalRepository implements Repository {
 			this.base = base;
 		}
 		// Fake in our own classloader
-		loaderMap.put(new BasicArtifact("uk.org.mygrid.taverna.raven", "raven",
-				"1.5-SNAPSHOT"), new LocalArtifactClassLoader(this, 
-						this.getClass().getClassLoader()));
+		synchronized (loaderMap) {
+			loaderMap.put(new BasicArtifact("uk.org.mygrid.taverna.raven", "raven",
+											"1.5-SNAPSHOT"),
+						 new LocalArtifactClassLoader(this, 
+								 this.getClass().getClassLoader()));
+		}
 		initialize();
 	}
 
@@ -130,8 +133,10 @@ public class LocalRepository implements Repository {
 			throw new ArtifactStateException(status.get(a),
 					new ArtifactStatus[] { ArtifactStatus.Ready });
 		}
-		if (loaderMap.containsKey(a)) {
-			return loaderMap.get(a);
+		synchronized (loaderMap) {
+			if (loaderMap.containsKey(a)) {
+				return loaderMap.get(a);
+			}			
 		}
 		try {
 			// Even if parent is null
@@ -149,9 +154,11 @@ public class LocalRepository implements Repository {
 	 * then return null
 	 */
 	public Artifact artifactForClass(Class c) throws ArtifactNotFoundException {
-		for (Entry<Artifact, LocalArtifactClassLoader> entry : loaderMap.entrySet()) {
-			if (entry.getValue() == c.getClassLoader()) {
-				return entry.getKey();
+		synchronized (loaderMap) {
+			for (Entry<Artifact, LocalArtifactClassLoader> entry : loaderMap.entrySet()) {
+				if (entry.getValue() == c.getClassLoader()) {
+					return entry.getKey();
+				}
 			}
 		}
 		throw new ArtifactNotFoundException("No artifact for Class : "
