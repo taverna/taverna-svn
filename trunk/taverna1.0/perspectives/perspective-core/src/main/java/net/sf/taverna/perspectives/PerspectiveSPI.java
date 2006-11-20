@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: PerspectiveSPI.java,v $
- * Revision           $Revision: 1.2 $
+ * Revision           $Revision: 1.3 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-11-15 12:44:53 $
+ * Last modified on   $Date: 2006-11-20 11:03:26 $
  *               by   $Author: sowen70 $
  * Created on 8 Nov 2006
  *****************************************************************/
@@ -68,8 +68,4 @@ public interface PerspectiveSPI {
 	 * Store internally any changes to the layout xml
 	 */
 	public void update(Element layoutElement);
-		
-	
-	
-	
 }

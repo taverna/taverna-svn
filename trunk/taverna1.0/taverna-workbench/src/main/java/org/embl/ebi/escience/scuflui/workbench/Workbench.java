@@ -283,10 +283,7 @@ public class Workbench extends JFrame {
 
 		return menuBar;
 	}
-	
-	
-	
-	
+		
 	
 	/**
 	 * set the title to the profile name and version, otherwise just Taverna

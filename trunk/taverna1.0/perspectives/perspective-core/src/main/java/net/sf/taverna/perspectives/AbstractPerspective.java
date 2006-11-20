@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: AbstractPerspective.java,v $
- * Revision           $Revision: 1.2 $
+ * Revision           $Revision: 1.3 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-11-15 12:52:28 $
+ * Last modified on   $Date: 2006-11-20 11:03:26 $
  *               by   $Author: sowen70 $
  * Created on 15 Nov 2006
  *****************************************************************/
@@ -52,7 +52,7 @@ import org.jdom.output.XMLOutputter;
  */
 public abstract class AbstractPerspective implements PerspectiveSPI {
 
-	private Element layoutElement = null;	
+	private Element layoutElement = null;		
 
 	public InputStream getLayoutInputStream() {
 		if (layoutElement == null) return getLayoutResourceStream();
@@ -64,7 +64,7 @@ public abstract class AbstractPerspective implements PerspectiveSPI {
 	}
 
 	public void update(Element layoutElement) {
-		this.layoutElement = layoutElement;
+		this.layoutElement = layoutElement;		
 	}
 	
 	/**
@@ -82,5 +82,5 @@ public abstract class AbstractPerspective implements PerspectiveSPI {
 	 * @return the resource stream for the perspective
 	 */
 	protected abstract InputStream getLayoutResourceStream();
-
+		
 }

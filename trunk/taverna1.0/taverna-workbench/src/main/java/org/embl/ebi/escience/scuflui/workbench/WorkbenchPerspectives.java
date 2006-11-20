@@ -25,10 +25,10 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: WorkbenchPerspectives.java,v $
- * Revision           $Revision: 1.5 $
+ * Revision           $Revision: 1.6 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-11-15 15:11:46 $
- *               by   $Author: stain $
+ * Last modified on   $Date: 2006-11-20 11:03:26 $
+ *               by   $Author: sowen70 $
  * Created on 10 Nov 2006
  *****************************************************************/
 package org.embl.ebi.escience.scuflui.workbench;
@@ -37,6 +37,7 @@ import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
@@ -46,7 +47,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.Map.Entry;
 
 import javax.swing.AbstractAction;
 import javax.swing.AbstractButton;
@@ -62,6 +62,7 @@ import net.sf.taverna.perspectives.CustomPerspective;
 import net.sf.taverna.perspectives.CustomPerspectiveFactory;
 import net.sf.taverna.perspectives.PerspectiveRegistry;
 import net.sf.taverna.perspectives.PerspectiveSPI;
+import net.sf.taverna.utils.MyGridConfiguration;
 import net.sf.taverna.zaria.ZBasePane;
 
 import org.apache.log4j.Logger;
@@ -71,6 +72,7 @@ import org.embl.ebi.escience.scuflui.shared.ModelMap;
 import org.embl.ebi.escience.scuflui.shared.ModelMap.ModelChangeListener;
 import org.jdom.Document;
 import org.jdom.Element;
+import org.jdom.JDOMException;
 import org.jdom.input.SAXBuilder;
 import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
@@ -110,9 +112,45 @@ public class WorkbenchPerspectives {
 		return perspectivesMenu;
 	}
 	
-	public void saveAll() throws FileNotFoundException, IOException {
+	public void saveAll() throws FileNotFoundException, IOException {				
+		//update current perspective
+		PerspectiveSPI current=(PerspectiveSPI)ModelMap.getInstance().getNamedModel(ModelMap.CURRENT_PERSPECTIVE);
+		if (current!=null) { 
+			current.update(basePane.getElement());
+		}
+		
 		CustomPerspectiveFactory.getInstance().saveAll(customPerspectives);
+		
+		for (PerspectiveSPI perspective : perspectives.keySet()) {
+			if (! (perspective instanceof CustomPerspective) ) {
+				savePerspective(perspective);
+			}
+		}
 	}
+	
+	private void savePerspective(PerspectiveSPI perspective) {
+		
+		InputStreamReader isr = new InputStreamReader(perspective.getLayoutInputStream());
+		SAXBuilder builder = new SAXBuilder(false);
+		Document document;
+		try {
+			document = builder.build(isr);
+			
+			String filename=perspective.getClass().getName()+".perspective";
+			File file=new File(MyGridConfiguration.getUserDir("conf"),filename);
+			
+			XMLOutputter outputter=new XMLOutputter(Format.getPrettyFormat());
+			outputter.output(document.getRootElement(), new FileOutputStream(file));
+			
+		} catch (JDOMException e) {
+			logger.error("Error parsing perspective XML",e);
+		} catch (IOException e) {
+			logger.error("Error saving perspective XML",e);
+		}
+		
+		
+	}
+	
 	
 	public void removeCustomPerspective(CustomPerspective perspective) {
 		customPerspectives.remove(perspective);
@@ -143,7 +181,8 @@ public class WorkbenchPerspectives {
 		perspectivesMenu.addSeparator();
 				
 		List<PerspectiveSPI> perspectives = PerspectiveRegistry.getInstance().getPerspectives();
-		for (final PerspectiveSPI perspective : perspectives) {			
+		for (final PerspectiveSPI perspective : perspectives) {
+			updatePerspectiveWithSaved(perspective);
 			addPerspective(perspective,false);			
 		}		
 		
@@ -168,8 +207,21 @@ public class WorkbenchPerspectives {
 		}
 	}
 	
-	
-	
+	private void updatePerspectiveWithSaved(PerspectiveSPI perspective) {
+		String filename=perspective.getClass().getName()+".perspective";
+		File file=new File(MyGridConfiguration.getUserDir("conf"),filename);
+		if (file.exists()) {
+			try {
+				Document doc=new SAXBuilder().build(file);
+				perspective.update(doc.detachRootElement());
+			} catch (JDOMException e) {
+				logger.error("Error parsing saved layout xml '"+filename+"'",e);
+			} catch (IOException e) {
+				logger.error("Error opening saved layout xml '"+filename+"'",e);
+			}
+		}				 
+	}
+		
 	private void addPerspective(final PerspectiveSPI perspective, boolean makeActive) {
 		final JToggleButton toolbarButton = new JToggleButton(perspective.getText(),perspective.getButtonIcon());
 		toolbarButton.setToolTipText(perspective.getText()+" perspective");		
@@ -249,7 +301,6 @@ public class WorkbenchPerspectives {
 									"Error saving layout file: "
 											+ ex.getMessage());
 						}
-
 					}
 				}
 			}
@@ -383,7 +434,7 @@ public class WorkbenchPerspectives {
 		
 		public boolean canHandle(String modelName, Object model) {	
 			return model instanceof PerspectiveSPI;
-		}
+			}
 
 		public void modelCreated(String modelName, Object model) {
 			PerspectiveSPI perspective = (PerspectiveSPI)model;

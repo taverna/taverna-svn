@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: CustomPerspective.java,v $
- * Revision           $Revision: 1.1 $
+ * Revision           $Revision: 1.2 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-11-10 12:06:31 $
+ * Last modified on   $Date: 2006-11-20 11:03:26 $
  *               by   $Author: sowen70 $
  * Created on 9 Nov 2006
  *****************************************************************/
@@ -51,12 +51,13 @@ import org.jdom.output.XMLOutputter;
 public class CustomPerspective implements PerspectiveSPI {
 
 	private String name;
-	private Element layoutElement;
+	private Element layoutElement;	
 	
 	public CustomPerspective(Element layoutElement) {
 		this.name=layoutElement.getAttributeValue("name");
 		this.layoutElement=layoutElement;
 	}
+	
 	public ImageIcon getButtonIcon() {
 		return TavernaIcons.importIcon;
 	}
@@ -70,7 +71,7 @@ public class CustomPerspective implements PerspectiveSPI {
 	public void update(Element paneElement) {
 		layoutElement=new Element("layout");
 		layoutElement.setAttribute("name",name);
-		layoutElement.addContent(paneElement);
+		layoutElement.addContent(paneElement);		
 	}
 	
 	public String getText() {
@@ -79,6 +80,5 @@ public class CustomPerspective implements PerspectiveSPI {
 	
 	public String getName() {
 		return name;
-	}
-	
+	}	
 }
