@@ -38,7 +38,7 @@ import javax.swing.JInternalFrame;
 import javax.swing.JPanel;
 
 import org.embl.ebi.escience.scufl.ScuflModel;
-import org.embl.ebi.escience.scuflui.ScuflUIComponent;
+import org.embl.ebi.escience.scuflui.spi.UIComponentSPI;
 
 import pedro.PedroMyGridEvent;
 import pedro.PedroMyGridEventListener;
@@ -53,7 +53,7 @@ import uk.ac.man.cs.img.fetaClient.publisher.FetaEnginePublishManager;
  * @author alperp
  *
  */
-public class AnnotatorLauncher extends JPanel implements ScuflUIComponent,
+public class AnnotatorLauncher extends JPanel implements UIComponentSPI,
 		ActionListener, PropertyChangeListener , PedroMyGridEventListener {
 
 	private ScuflModel model;
@@ -113,6 +113,17 @@ public class AnnotatorLauncher extends JPanel implements ScuflUIComponent,
 
 		return this.model;
 
+	}
+		
+
+	public void onDisplay() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void onDispose() {
+		// TODO Auto-generated method stub
+		
 	}
 
 	/**

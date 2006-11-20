@@ -39,7 +39,7 @@ import javax.swing.JTextField;
 import javax.swing.SpinnerListModel;
 import javax.swing.SpringLayout;
 
-import org.embl.ebi.escience.scuflui.ShadedLabel;
+import org.embl.ebi.escience.scuflui.shared.ShadedLabel;
 
 import uk.ac.man.cs.img.fetaClient.resource.FetaResources;
 import uk.ac.man.cs.img.fetaEngine.commons.ServiceType;

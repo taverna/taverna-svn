@@ -29,6 +29,8 @@ package uk.ac.man.cs.img.fetaClient.queryGUI.taverna;
 
 import java.awt.Cursor;
 import java.awt.Dimension;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.Transferable;
 import java.awt.dnd.DnDConstants;
 import java.awt.dnd.DropTarget;
 import java.awt.dnd.DropTargetDropEvent;
@@ -36,6 +38,8 @@ import java.awt.dnd.DropTargetEvent;
 import java.awt.dnd.DropTargetListener;
 import java.io.IOException;
 import java.net.URL;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Properties;
 
 import javax.swing.ImageIcon;
@@ -44,8 +48,14 @@ import javax.swing.JInternalFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JTabbedPane;
 
+import org.apache.log4j.Logger;
 import org.embl.ebi.escience.scufl.ScuflModel;
-import org.embl.ebi.escience.scuflui.ScuflUIComponent;
+import org.embl.ebi.escience.scuflui.dnd.FactorySpecFragment;
+import org.embl.ebi.escience.scuflui.dnd.ProcessorSpecFragment;
+import org.embl.ebi.escience.scuflui.dnd.SpecFragmentTransferable;
+import org.embl.ebi.escience.scuflui.spi.WorkflowModelViewSPI;
+import org.jdom.Attribute;
+import org.jdom.Element;
 import org.jdom.output.XMLOutputter;
 
 import uk.ac.man.cs.img.fetaClient.importer.BioMobyToSkeletonConverter;
@@ -58,54 +68,21 @@ import uk.ac.man.cs.img.fetaClient.queryGUI.taverna.dnd.SOAPLABFragment;
 import uk.ac.man.cs.img.fetaClient.queryGUI.taverna.dnd.WORKFLOWFragment;
 import uk.ac.man.cs.img.fetaClient.queryGUI.taverna.dnd.WSDLFragment;
 import uk.ac.man.cs.img.fetaClient.resource.FetaResources;
-
-
-
-import java.util.List;
-import java.util.Iterator;
-
-//import org.embl.ebi.escience.scuflui.ScuflIcons;
-
-import org.embl.ebi.escience.scuflui.dnd.SpecFragmentTransferable;
-import org.embl.ebi.escience.scuflui.dnd.FactorySpecFragment;
-import org.embl.ebi.escience.scuflui.dnd.ProcessorSpecFragment;
-//import org.embl.ebi.escience.scuflui.ShadedLabel;
-
-import org.embl.ebi.escience.scuflui.ScuflUIComponent;
-
-
-import uk.ac.man.cs.img.fetaClient.importer.*;
 import uk.ac.man.cs.img.fetaClient.util.GUIUtil;
-import uk.ac.man.cs.img.fetaClient.queryGUI.taverna.dnd.*;
-import uk.ac.man.cs.img.fetaClient.resource.FetaResources;
-
-import java.io.IOException;
-import java.io.InputStream;
-
-import java.awt.dnd.DropTarget;
-import java.awt.dnd.DropTargetEvent;
-import java.awt.dnd.DropTargetDropEvent;
-import java.awt.dnd.DropTargetListener;
-import java.awt.datatransfer.Transferable;
-import java.awt.datatransfer.DataFlavor;
-import java.awt.dnd.DnDConstants;
-import java.awt.Cursor;
-
-import org.jdom.Element;
-import org.jdom.Attribute;
-
-
-import org.jdom.Text;
 
 
 /**
  * @author alperp
+ * @author Stuart Owen
  * 
  * 
  * 
  */
-public class TavernaFetaGUI extends JTabbedPane implements ScuflUIComponent,
+@SuppressWarnings("serial")
+public class TavernaFetaGUI extends JTabbedPane implements WorkflowModelViewSPI,
 DropTargetListener {
+	
+	private static Logger logger = Logger.getLogger(TavernaFetaGUI.class);
 	
 	private static TavernaFetaGUI instance;
 	
@@ -117,9 +94,9 @@ DropTargetListener {
 	
 	private AdminPanel adminPanel;
 	
-	private QueryHelper helper;
+	private QueryHelper helper;	
 	
-	public TavernaFetaGUI() {
+	private TavernaFetaGUI() {
 		super();
 		
 		this.setMaximumSize(new Dimension(500, 700));
@@ -129,12 +106,19 @@ DropTargetListener {
 		try {
 			getProperties();
 		} catch (java.io.IOException e) {
-			e.printStackTrace();
-			System.out.println("Problem reading Feta Properties File : " + e);
+			logger.error("Problem reading Feta Properties File : ",e);
 		}
-		
+		initialise();		
 	}
-	
+		
+	public void onDisplay() {
+		// do nothing		
+	}
+
+	public void onDispose() {
+		// do nothing	
+	}
+
 	public static TavernaFetaGUI getInstance() {
 		if (instance == null) {
 			instance = new TavernaFetaGUI();
@@ -147,9 +131,16 @@ DropTargetListener {
 	 */
 	public void attachToModel(ScuflModel theModel) {
 		
-		this.model = theModel;
+		logger.debug("Attach to model called, model:"+model);				
+		this.model = theModel;							
+	}
+
+	/**
+	 * Initialises the UI
+	 *
+	 */
+	private void initialise() {
 		boolean annotator = false;
-		String errMessage = "";
 		String loc = "";
 		String loc2 = "";
 		try {
@@ -208,21 +199,14 @@ DropTargetListener {
 			return;
 			
 		}
-		
-		/*
-		 * System.out.println(e.toString()); detachFromModel(); return;
-		 */
-		
 	}
 	
 	/**
 	 * When unbound from a model, set internal model field to null
 	 */
-	public void detachFromModel() {
-		
+	public void detachFromModel() {		
 		this.model = null;
-		TavernaFetaGUI.instance = null;
-		
+		TavernaFetaGUI.instance = null;		
 	}
 	
 	/**
@@ -260,12 +244,14 @@ DropTargetListener {
 	
 	public static void main(String[] args) {
 		try {
+			TavernaFetaGUI gui = TavernaFetaGUI.getInstance();
 			JFrame frame = new JFrame();
 			frame.setTitle("Smart Service Search");
-			frame.getContentPane().add("Center", new TavernaFetaGUI());
+			frame.getContentPane().add("Center", gui);
 			frame.pack();
 			frame.setSize(800, 600);
 			frame.show();
+			gui.attachToModel(null);
 		} catch (Throwable t) {
 			System.out.println("uncaught exception: " + t);
 			t.printStackTrace();

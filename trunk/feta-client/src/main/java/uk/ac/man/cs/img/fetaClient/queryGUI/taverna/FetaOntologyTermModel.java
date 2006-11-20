@@ -6,12 +6,17 @@
 
 package uk.ac.man.cs.img.fetaClient.queryGUI.taverna;
 
+import org.apache.log4j.Logger;
+
 /**
  * 
  * @author alperp
  */
 
 public class FetaOntologyTermModel {
+	
+	private static Logger logger = Logger
+			.getLogger(FetaOntologyTermModel.class);
 
 	private String rdfID;
 
@@ -34,7 +39,7 @@ public class FetaOntologyTermModel {
 		String[] resourceIDParts = id.split("#");
 		if (resourceIDParts.length == 2) {
 			rdfLabel = resourceIDParts[1];
-			System.out.println("Setting label -->" + rdfLabel);
+			logger.debug("Setting label -->" + rdfLabel);
 			// temporarily ..if it has a label specified it should be set after
 			// construction
 		} else {

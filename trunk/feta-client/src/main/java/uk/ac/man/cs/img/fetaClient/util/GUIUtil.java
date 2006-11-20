@@ -16,8 +16,8 @@ import java.net.URLConnection;
 
 import org.apache.xml.serialize.OutputFormat;
 import org.apache.xml.serialize.XMLSerializer;
-import org.embl.ebi.escience.scuflui.ScuflUIComponent;
-import org.embl.ebi.escience.scuflui.UIUtils;
+import org.embl.ebi.escience.scuflui.shared.UIUtils;
+import org.embl.ebi.escience.scuflui.spi.UIComponentSPI;
 import org.w3c.dom.Document;
 
 import uk.ac.man.cs.img.fetaClient.annotator.AnnotatorLauncher;
@@ -65,7 +65,7 @@ public class GUIUtil {
 			// UIUtils.createFrame(Workbench.workbench.model,
 			// (ScuflUIComponent)pedroLauncher, 100,100, 30, 30);
 			UIUtils.createFrame(pedroLauncher.getModel(),
-					(ScuflUIComponent) pedroLauncher, 100, 100, 30, 30);
+					(UIComponentSPI) pedroLauncher, 100, 100, 30, 30);
 
 			// }
 		} catch (Exception e) {
@@ -99,7 +99,7 @@ public class GUIUtil {
 			// UIUtils.createFrame(Workbench.workbench.model,
 			// (ScuflUIComponent)pedroLauncher, 100,100, 30, 30);
 			UIUtils.createFrame(pedroLauncher.getModel(),
-					(ScuflUIComponent) pedroLauncher, 100, 100, 30, 30);
+					(UIComponentSPI) pedroLauncher, 100, 100, 30, 30);
 			// }
 		} catch (Exception e) {
 			e.printStackTrace();
