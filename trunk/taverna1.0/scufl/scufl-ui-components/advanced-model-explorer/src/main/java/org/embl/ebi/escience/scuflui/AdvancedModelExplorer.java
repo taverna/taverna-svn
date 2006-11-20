@@ -600,6 +600,7 @@ public class AdvancedModelExplorer extends JPanel implements
 			}
 		};
 		theModel.addListener(listener);
+		revalidate();
 	}
 
 	public void detachFromModel() {
