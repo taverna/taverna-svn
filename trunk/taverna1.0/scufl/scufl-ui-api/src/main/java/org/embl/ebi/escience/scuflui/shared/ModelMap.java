@@ -25,10 +25,10 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: ModelMap.java,v $
- * Revision           $Revision: 1.6 $
+ * Revision           $Revision: 1.7 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-11-17 14:34:05 $
- *               by   $Author: dturi $
+ * Last modified on   $Date: 2006-11-20 15:50:55 $
+ *               by   $Author: stain $
  * Created on 27 Oct 2006
  *****************************************************************/
 package org.embl.ebi.escience.scuflui.shared;
@@ -42,7 +42,6 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
-import org.embl.ebi.escience.baclava.DataThing;
 
 /**
  * Map of the models present in the workbench associated with their names, together with
@@ -92,14 +91,15 @@ public class ModelMap {
 
 	/**
 	 * Used as a modelName for the workflow that is to be invoked
-	 * from the {@link EnactPerspective} view, normally the same
-	 * as CURRENT_WORKFLOW
+	 * from the {@link net.sf.taverna.perspectives.EnactPerspective}
+	 * view. Setting this model will change the current perspective.
 	 */
 	public static final String INVOKE_WORKFLOW = "invokeWorkflow";
     
     /**
-     * Used as a modelName for the inputs of the workflow that is to be invoked
-     * from the {@link EnactPerspective} view. 
+     * Used as a modelName for the inputs of the workflow that is 
+     * to be invoked from the 
+     * {@link net.sf.taverna.perspectives.EnactPerspective} view. 
      *  
      * @see org.embl.ebi.escience.scuflui.spi.WorkflowModelInvokeSPI#setWorkflowInputs(Map<String, DataThing> inputs)
      */
@@ -123,7 +123,8 @@ public class ModelMap {
 	 * event will be fired otherwise modelChanged is called.
 	 */
 	public synchronized void setModel(String modelName, Object model) {
-		logger.debug("SetModel called, modelName="+modelName+", model="+model);
+		// FIXME: What happens if a listener changes a model midthrough?
+		logger.debug("setModel "+modelName+"="+model);
 		if (! modelMap.containsKey(modelName)) {
 			if (model != null) {
 				// Create new model object
