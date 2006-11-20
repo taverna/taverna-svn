@@ -166,7 +166,11 @@ public class Workbench extends JFrame {
 		createWorkflowAction().actionPerformed(null);
 	}
 
-	private void setModelChangeListeners() {
+	public ScuflModelSet getWorkflowModels() {
+        return workflowModels;
+    }
+
+    private void setModelChangeListeners() {
 		// FIXME: Also do modelmap.removeModelListener() on close? 
 		// (No, we do System.exit.. so it's OK)
 		modelmap.addModelListener(new DebugListener());
