@@ -25,10 +25,10 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: WorkbenchPerspectives.java,v $
- * Revision           $Revision: 1.6 $
+ * Revision           $Revision: 1.7 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-11-20 11:03:26 $
- *               by   $Author: sowen70 $
+ * Last modified on   $Date: 2006-11-20 15:45:45 $
+ *               by   $Author: stain $
  * Created on 10 Nov 2006
  *****************************************************************/
 package org.embl.ebi.escience.scuflui.workbench;
@@ -432,20 +432,34 @@ public class WorkbenchPerspectives {
 	 */
 	public class CurrentPerspectiveListener implements ModelChangeListener {
 		
-		public boolean canHandle(String modelName, Object model) {	
-			return model instanceof PerspectiveSPI;
-			}
+		// Use as fail safe if anything goes wrong in changing perspective
+		PerspectiveSPI failSafe = null;
+		
+		public boolean canHandle(String modelName, Object model) {
+			return modelName.equals(ModelMap.CURRENT_PERSPECTIVE) && 
+					model instanceof PerspectiveSPI;
+		}
+		
+		public void setPerspective(PerspectiveSPI perspective) {
+			try {
+				switchPerspective(perspective); 
+				failSafe = perspective;
+			} catch (Throwable t) {
+				logger.warn("Could not switch to perspective "+ perspective, t);
+				if (failSafe != null) {
+					failSafe = null;
+					switchPerspective(failSafe);
+				}
+			}	
+		}
 
 		public void modelCreated(String modelName, Object model) {
-			PerspectiveSPI perspective = (PerspectiveSPI)model;
-			switchPerspective(perspective);
+			setPerspective((PerspectiveSPI)model);
 		}
 
 		public void modelChanged(String modelName, Object oldModel, Object newModel) {
-			((PerspectiveSPI)oldModel).update(basePane.getElement());
-			
-			PerspectiveSPI perspective = (PerspectiveSPI)newModel;
-			switchPerspective(perspective);
+			((PerspectiveSPI)oldModel).update(basePane.getElement());			
+			setPerspective((PerspectiveSPI) newModel);
 		}
 
 		public void modelDestroyed(String modelName, Object oldModel) {
