@@ -25,15 +25,16 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: WorkbenchPerspectives.java,v $
- * Revision           $Revision: 1.7 $
+ * Revision           $Revision: 1.8 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-11-20 15:45:45 $
- *               by   $Author: stain $
+ * Last modified on   $Date: 2006-11-20 16:33:35 $
+ *               by   $Author: sowen70 $
  * Created on 10 Nov 2006
  *****************************************************************/
 package org.embl.ebi.escience.scuflui.workbench;
 
 import java.awt.Component;
+import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -52,6 +53,7 @@ import javax.swing.AbstractAction;
 import javax.swing.AbstractButton;
 import javax.swing.Action;
 import javax.swing.ButtonGroup;
+import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
 import javax.swing.JMenu;
 import javax.swing.JOptionPane;
@@ -223,7 +225,15 @@ public class WorkbenchPerspectives {
 	}
 		
 	private void addPerspective(final PerspectiveSPI perspective, boolean makeActive) {
-		final JToggleButton toolbarButton = new JToggleButton(perspective.getText(),perspective.getButtonIcon());
+		
+		//ensure icon image is always 16x16		
+		ImageIcon buttonIcon = null;
+		if (perspective.getButtonIcon()!=null) {
+			Image buttonImage = perspective.getButtonIcon().getImage();	
+			buttonIcon =new ImageIcon(buttonImage.getScaledInstance(16, 16, Image.SCALE_SMOOTH));
+		}
+		
+		final JToggleButton toolbarButton = new JToggleButton(perspective.getText(),buttonIcon);
 		toolbarButton.setToolTipText(perspective.getText()+" perspective");		
 		Action action = new AbstractAction() {
 			public void actionPerformed(ActionEvent e) {
@@ -239,7 +249,7 @@ public class WorkbenchPerspectives {
 			}				
 		};			
 		action.putValue(Action.NAME, perspective.getText());
-		action.putValue(Action.SMALL_ICON,perspective.getButtonIcon());
+		action.putValue(Action.SMALL_ICON,buttonIcon);
 		
 		perspectivesMenu.add(action);						
 		toolbarButton.setAction(action);
@@ -432,34 +442,21 @@ public class WorkbenchPerspectives {
 	 */
 	public class CurrentPerspectiveListener implements ModelChangeListener {
 		
-		// Use as fail safe if anything goes wrong in changing perspective
-		PerspectiveSPI failSafe = null;
-		
-		public boolean canHandle(String modelName, Object model) {
+		public boolean canHandle(String modelName, Object model) {	
 			return modelName.equals(ModelMap.CURRENT_PERSPECTIVE) && 
 					model instanceof PerspectiveSPI;
 		}
-		
-		public void setPerspective(PerspectiveSPI perspective) {
-			try {
-				switchPerspective(perspective); 
-				failSafe = perspective;
-			} catch (Throwable t) {
-				logger.warn("Could not switch to perspective "+ perspective, t);
-				if (failSafe != null) {
-					failSafe = null;
-					switchPerspective(failSafe);
-				}
-			}	
-		}
 
 		public void modelCreated(String modelName, Object model) {
-			setPerspective((PerspectiveSPI)model);
+			PerspectiveSPI perspective = (PerspectiveSPI)model;
+			switchPerspective(perspective);
 		}
 
 		public void modelChanged(String modelName, Object oldModel, Object newModel) {
-			((PerspectiveSPI)oldModel).update(basePane.getElement());			
-			setPerspective((PerspectiveSPI) newModel);
+			((PerspectiveSPI)oldModel).update(basePane.getElement());
+			
+			PerspectiveSPI perspective = (PerspectiveSPI)newModel;
+			switchPerspective(perspective);
 		}
 
 		public void modelDestroyed(String modelName, Object oldModel) {
