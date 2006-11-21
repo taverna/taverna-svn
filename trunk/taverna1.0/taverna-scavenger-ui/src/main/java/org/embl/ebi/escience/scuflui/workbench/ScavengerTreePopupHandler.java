@@ -160,6 +160,7 @@ public class ScavengerTreePopupHandler extends MouseAdapter {
 									m = wp.getInternalModel();
 								} else {
 									m = new ScuflModel();
+									m.getDescription().setTitle(pf.getName());								
 									Processor p = pf.createProcessor("processor", m);
 									// m.addProcessor(p);
 									// Iterate over all inputs and create
@@ -183,7 +184,7 @@ public class ScavengerTreePopupHandler extends MouseAdapter {
 									// processor workflow or the directly loaded
 									// more complex one.
 								}
-
+								
 								ModelMap.getInstance().setModel(ModelMap.INVOKE_WORKFLOW,
 										m);
 
