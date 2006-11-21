@@ -25,24 +25,36 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: AddNestedWorkflowAction.java,v $
- * Revision           $Revision: 1.3 $
+ * Revision           $Revision: 1.4 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-10-27 15:43:24 $
- *               by   $Author: sowen70 $
+ * Last modified on   $Date: 2006-11-21 16:27:04 $
+ *               by   $Author: davidwithers $
  * Created on 05-Jul-2006
  *****************************************************************/
 package org.embl.ebi.escience.scuflworkers.workflow;
 
 import java.awt.Component;
 import java.awt.event.ActionEvent;
+import java.io.File;
+import java.util.prefs.Preferences;
 
+import javax.swing.AbstractAction;
+import javax.swing.JFileChooser;
+import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
+import javax.swing.JPopupMenu;
 
 import org.embl.ebi.escience.scuflui.TavernaIcons;
 import org.embl.ebi.escience.scuflui.actions.ScuflModelActionSPI;
+import org.embl.ebi.escience.scuflui.shared.ExtensionFileFilter;
 
 @SuppressWarnings("serial")
 public class AddNestedWorkflowAction extends ScuflModelActionSPI {
+	private CreateNewNestedWorkflowAction createNew = new CreateNewNestedWorkflowAction();
+
+	private OpenNestedWorkflowFromFileAction openFile = new OpenNestedWorkflowFromFileAction();
+
+	private OpenNestedWorkflowFromURLAction openURL = new OpenNestedWorkflowFromURLAction();
 
 	public AddNestedWorkflowAction() {
 		putValue(SMALL_ICON, TavernaIcons.windowExplorer);
@@ -51,21 +63,121 @@ public class AddNestedWorkflowAction extends ScuflModelActionSPI {
 	}
 
 	public void actionPerformed(ActionEvent e) {
-		if (model != null) {
-			try {
-				String name = model.getValidProcessorName("Nested Workflow");
-				WorkflowProcessor p = new WorkflowProcessor(model, name);					
-				model.addProcessor(p);
-			} catch (Exception ex) {
-				JOptionPane.showMessageDialog((Component) e.getSource(), "Unable to create blank subworkflow : \n"
-						+ ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+		JPopupMenu menu = new JPopupMenu("Add Nested Workflow");
+
+		menu.add(new JMenuItem(createNew));
+
+		menu.addSeparator();
+
+		menu.add(new JMenuItem(openFile));
+
+		menu.add(new JMenuItem(openURL));
+
+		Component sourceComponent = (Component) e.getSource();
+		menu.show(sourceComponent, 0, sourceComponent.getHeight());
+	}
+
+	public String getLabel() {
+		return "New subworkflow";
+	}
+
+	class CreateNewNestedWorkflowAction extends AbstractAction {
+
+		public CreateNewNestedWorkflowAction() {
+			putValue(NAME, "New Workflow");
+			putValue(SHORT_DESCRIPTION, "Create a new nested workflow");
+		}
+
+		public void actionPerformed(ActionEvent e) {
+			createNestedWorkflow(null, (Component) e.getSource());
+		}
+
+	}
+
+	class OpenNestedWorkflowFromFileAction extends AbstractAction {
+
+		private JFileChooser fileChooser = new JFileChooser();
+
+		public OpenNestedWorkflowFromFileAction() {
+			putValue(SMALL_ICON, TavernaIcons.openIcon);
+			putValue(NAME, "Open File...");
+			putValue(SHORT_DESCRIPTION, "Open a nested workflow from a file");
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * 
+		 * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
+		 */
+		public void actionPerformed(ActionEvent e) {
+
+			Preferences prefs = Preferences
+					.userNodeForPackage(OpenNestedWorkflowFromFileAction.class);
+			String curDir = prefs.get("currentDir", System
+					.getProperty("user.home"));
+			fileChooser.setDialogTitle("Open Nested Workflow");
+			fileChooser.resetChoosableFileFilters();
+			fileChooser.setFileFilter(new ExtensionFileFilter(
+					new String[] { "xml" }));
+			fileChooser.setCurrentDirectory(new File(curDir));
+			int returnVal = fileChooser.showOpenDialog(null);
+			if (returnVal == JFileChooser.APPROVE_OPTION) {
+				prefs.put("currentDir", fileChooser.getCurrentDirectory()
+						.toString());
+				File file = fileChooser.getSelectedFile();
+				createNestedWorkflow(file.toURI().toString(), (Component) e
+						.getSource());
 			}
 		}
 
 	}
 
-	public String getLabel() {
-		return "New subworkflow";
+	public class OpenNestedWorkflowFromURLAction extends AbstractAction {
+
+		public OpenNestedWorkflowFromURLAction() {
+			putValue(SMALL_ICON, TavernaIcons.openurlIcon);
+			putValue(NAME, "Open Location...");
+			putValue(SHORT_DESCRIPTION, "Open a workflow from the web");
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * 
+		 * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
+		 */
+		public void actionPerformed(ActionEvent e) {
+			Preferences prefs = Preferences.userNodeForPackage(OpenNestedWorkflowFromURLAction.class);
+			String currentUrl = prefs
+					.get("currentUrl", "http://");
+
+			String url = (String) JOptionPane.showInputDialog(null,
+					"Enter the URL of a workflow definition to load",
+					"Workflow URL", JOptionPane.QUESTION_MESSAGE, null, null,
+					currentUrl);
+			if (url != null) {
+				prefs.put("currentUrl", url);
+				createNestedWorkflow(url, (Component) e.getSource());
+			}
+		}
+
+	}
+
+	private void createNestedWorkflow(String url, Component component) {
+		try {
+			String name = model.getValidProcessorName("Nested Workflow");
+			WorkflowProcessor p = null;
+			if (url == null) {
+				p = new WorkflowProcessor(model, name);
+			} else {
+				p = new WorkflowProcessor(model, name, url);
+			}
+			model.addProcessor(p);
+		} catch (Exception ex) {
+			JOptionPane.showMessageDialog(component,
+					"Unable to create subworkflow : \n" + ex.getMessage(),
+					"Error", JOptionPane.ERROR_MESSAGE);
+		}
+
 	}
 
 }

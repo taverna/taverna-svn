@@ -57,6 +57,9 @@ import org.embl.ebi.escience.scufl.ScuflModelEvent;
 import org.embl.ebi.escience.scufl.ScuflModelEventListener;
 import org.embl.ebi.escience.scufl.enactor.WorkflowInstance;
 import org.embl.ebi.escience.scuflui.TavernaIcons;
+import org.embl.ebi.escience.scuflui.actions.OpenWorkflowFromFileAction;
+import org.embl.ebi.escience.scuflui.actions.OpenWorkflowFromURLAction;
+import org.embl.ebi.escience.scuflui.actions.SaveWorkflowAction;
 import org.embl.ebi.escience.scuflui.shared.ModelMap;
 import org.embl.ebi.escience.scuflui.shared.ScuflModelSet;
 import org.embl.ebi.escience.scuflui.shared.ModelMap.ModelChangeListener;
@@ -428,9 +431,16 @@ public class Workbench extends JFrame {
 		JMenuItem newWorkflow = new JMenuItem(createWorkflowAction());
 		fileMenu.add(newWorkflow);
 
+		fileMenu.add(new JMenuItem(new OpenWorkflowFromFileAction()));
+		fileMenu.add(new JMenuItem(new OpenWorkflowFromURLAction()));
+		
 		if (workflowModels.size() > 1) {
+			fileMenu.addSeparator();
 			fileMenu.add(new JMenuItem(closeWorkflowAction()));
 		}
+
+		fileMenu.addSeparator();
+		fileMenu.add(new JMenuItem(new SaveWorkflowAction()));
 
 		if (!workflowModels.isEmpty()) {
 			fileMenu.addSeparator();
@@ -465,7 +475,8 @@ public class Workbench extends JFrame {
 				workflowModels.addModel(model);
 			}
 		};
-		a.putValue(Action.NAME, "New workflow");
+		a.putValue(Action.NAME, "New Workflow");
+		a.putValue(Action.SHORT_DESCRIPTION, "Create a new workflow");
 		return a;
 	}
 

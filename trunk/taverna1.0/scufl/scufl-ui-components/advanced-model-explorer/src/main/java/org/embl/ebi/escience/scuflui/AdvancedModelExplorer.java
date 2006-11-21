@@ -534,12 +534,6 @@ public class AdvancedModelExplorer extends JPanel implements
 		toolbar.setMaximumSize(new Dimension(2000, 30));
 		toolbar.setBorderPainted(true);
 
-		toolbar.add(new JButton(new LoadWorkflowAction(model)));
-		toolbar.addSeparator();
-
-		toolbar.add(new JButton(new SaveWorkflowAction(model)));
-		toolbar.addSeparator();
-
 		for (ScuflModelActionSPI action : ScuflModelActionRegistry.instance()
 				.getScuflModelActions(model)) {
 			toolbar.add(new JButton(action));
