@@ -71,7 +71,7 @@ public class BasicServiceModel extends AbstractMonitorableModel {
 
 	public BasicServiceModel() {
 		super();
-		serviceType = ServiceType.WSDL;
+		serviceType = ServiceType.UNDEFINED;
 		operation = new BasicOperationModel();
 	}
 

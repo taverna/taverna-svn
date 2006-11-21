@@ -42,6 +42,7 @@ import javax.swing.tree.TreeModel;
  * 
  * 
  */
+@SuppressWarnings("serial")
 public class ServiceTreePanel extends JPanel {
 
 	private TreeModel serviceTreeModel;

@@ -32,11 +32,9 @@ import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.JSpinner;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
-import javax.swing.SpinnerListModel;
 import javax.swing.SpringLayout;
 
 import org.embl.ebi.escience.scuflui.shared.ShadedLabel;
@@ -50,6 +48,7 @@ import uk.ac.man.cs.img.fetaEngine.commons.ServiceType;
  * 
  * 
  */
+@SuppressWarnings("serial")
 public class ServiceFormPanel extends JTabbedPane {
 
 	private ServiceModelAdaptor serviceModelAdaptor;
@@ -58,7 +57,7 @@ public class ServiceFormPanel extends JTabbedPane {
 
 	private JLabel typeLabel;
 
-	private JSpinner typeSpinner;
+	private JTextField typeSpinner;
 
 	private JLabel organisationLabel;
 
@@ -131,6 +130,7 @@ public class ServiceFormPanel extends JTabbedPane {
 	 * @param arg0
 	 */
 
+	@SuppressWarnings("serial")
 	public void initialize() {
 		/** Initialize Service Panel * */
 		servicePanel.setLayout(new SpringLayout());
@@ -138,7 +138,7 @@ public class ServiceFormPanel extends JTabbedPane {
 		nameLabel = new JLabel("Service name");
 		nameField = new JTextField();
 		nameField.setMaximumSize(new Dimension(300, 20));
-		nameField.setEnabled(false);
+		nameField.setEditable(false);
 
 		descriptionLabel = new JLabel("Service description");
 		descriptionField = new JTextArea() {
@@ -155,7 +155,7 @@ public class ServiceFormPanel extends JTabbedPane {
 		descriptionField.setMinimumSize(new Dimension(200, 100));
 		descriptionField.setMaximumSize(new Dimension(300, 200));
 		descriptionField.setRows(3);
-		descriptionField.setEnabled(false);
+		descriptionField.setEditable(false);
 		/* descriptionField.setWrapStyleWord(true); */
 		descriptionField.setLineWrap(true);
 
@@ -167,29 +167,28 @@ public class ServiceFormPanel extends JTabbedPane {
 		locationLabel = new JLabel("Service endpoint location");
 		locationField = new JTextField();
 		locationField.setMaximumSize(new Dimension(300, 20));
-		locationField.setEnabled(false);
+		locationField.setEditable(false);
 
 		interfaceLabel = new JLabel("Service interface location");
 		interfaceField = new JTextField();
 		interfaceField.setMaximumSize(new Dimension(300, 20));
-		interfaceField.setEnabled(false);
+		interfaceField.setEditable(false);
 
 		organisationLabel = new JLabel("Organisation name");
 		organisationField = new JTextField();
 		organisationField.setMaximumSize(new Dimension(300, 20));
-		organisationField.setEnabled(false);
+		organisationField.setEditable(false);
 
 		typeLabel = new JLabel("Service type");
 
-		typeSpinner = new JSpinner(new SpinnerListModel(ServiceType
-				.getAllElements(ServiceType.class)));
+		typeSpinner = new JTextField();
 		typeSpinner.setMaximumSize(new Dimension(300, 20));
-		typeSpinner.setEnabled(false);
+		typeSpinner.setEditable(false);
 
 		descLocationLabel = new JLabel("Description File Location");
 		descLocationField = new JTextField();
 		descLocationField.setMaximumSize(new Dimension(300, 20));
-		descLocationField.setEnabled(false);
+		descLocationField.setEditable(false);
 
 		servicePanel.setOpaque(true);
 
@@ -351,7 +350,7 @@ public class ServiceFormPanel extends JTabbedPane {
 	}
 
 	public void setServiceType(ServiceType type) {
-		typeSpinner.setValue(type);
+		typeSpinner.setText(type.toString());
 	}
 
 	public void setOrganisationName(String organisation) {
@@ -360,28 +359,18 @@ public class ServiceFormPanel extends JTabbedPane {
 
 	public void setServiceDescriptionLocation(String descLocation) {
 		descLocationField.setText(descLocation);
-	}
-
-	public void setServiceTypeEditable(boolean editable) {
-		typeSpinner.setEnabled(editable);
-	}
+	}	
 
 	public void setOperationMethod(String method) {
-
 		this.operationMethodField.setText(method);
-
 	}
 
 	public void setOperationTask(String task) {
-
 		this.operationTaskField.setText(task);
-
 	}
 
 	public void setOperationResource(String resource) {
-
 		this.operationResourceField.setText(resource);
-
 	}
 
 	/*

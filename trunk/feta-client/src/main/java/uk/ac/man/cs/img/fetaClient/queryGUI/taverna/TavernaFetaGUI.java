@@ -129,9 +129,8 @@ DropTargetListener {
 	/**
 	 * Listen for model bind requests to set the internal ScuflModel field
 	 */
-	public void attachToModel(ScuflModel theModel) {
-		
-		logger.debug("Attach to model called, model:"+model);				
+	public void attachToModel(ScuflModel theModel) {		
+		logger.debug("Attach to model called, model:"+theModel);				
 		this.model = theModel;							
 	}
 
@@ -206,7 +205,8 @@ DropTargetListener {
 	 */
 	public void detachFromModel() {		
 		this.model = null;
-		TavernaFetaGUI.instance = null;		
+		//TavernaFetaGUI.instance = null;
+		logger.debug("Detach from model called");	
 	}
 	
 	/**

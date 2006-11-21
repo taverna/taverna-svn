@@ -50,6 +50,7 @@ import uk.ac.man.cs.img.fetaClient.resource.FetaResources;
  * 
  * 
  */
+@SuppressWarnings("serial")
 public class QueryPanel extends JPanel implements ActionListener,
 		ChangeListener {
 

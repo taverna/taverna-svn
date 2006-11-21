@@ -29,8 +29,9 @@ import javax.swing.tree.TreePath;
 import org.embl.ebi.escience.scuflui.dnd.FactorySpecFragment;
 import org.embl.ebi.escience.scuflui.dnd.SpecFragmentTransferable;
 
+@SuppressWarnings("serial")
 public class ServiceTree extends JTree implements DragGestureListener,
-		DragSourceListener {
+		DragSourceListener {	
 
 	/** Creates a new instance of ServiceTree */
 	public ServiceTree(TreeModel model) {
@@ -43,8 +44,9 @@ public class ServiceTree extends JTree implements DragGestureListener,
 		FetaResultRenderer renderer = new FetaResultRenderer();
 		this.setCellRenderer(renderer);
 		setShowsRootHandles(false);
+		this.addMouseListener(new ServiceTreePopupHandler(this));
 
-	}
+	}	
 
 	public void dragGestureRecognized(DragGestureEvent e) {
 

@@ -44,9 +44,10 @@ import uk.ac.man.cs.img.fetaClient.util.GUIUtil;
  * @author alperp
  * 
  */
+@SuppressWarnings("serial")
 public class ResultPanel extends JPanel {
 
-	private QueryHelper helper;
+	private QueryHelper helper;	
 
 	private ServiceTreePanel treePanel;
 
@@ -70,11 +71,11 @@ public class ResultPanel extends JPanel {
 		this.helper = queryHelper;
 		helper.setTree(serviceTree);
 
-		initialize();
+		initialise();
 
-	}
+	}	
 
-	private void initialize() {
+	private void initialise() {
 
 		serviceModelAdaptor = new ServiceModelAdaptor(serviceModel);
 
@@ -137,10 +138,8 @@ public class ResultPanel extends JPanel {
 			bottomPane.add(annotateButton);	
 		}
 		 
-
 		this.add(topPane);
 		this.add(bottomPane);
-
 	}
 
 	public void clearForm() {
