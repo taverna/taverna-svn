@@ -57,7 +57,7 @@ public class ServiceFormPanel extends JTabbedPane {
 
 	private JLabel typeLabel;
 
-	private JTextField typeSpinner;
+	private JTextField typeField;
 
 	private JLabel organisationLabel;
 
@@ -181,9 +181,9 @@ public class ServiceFormPanel extends JTabbedPane {
 
 		typeLabel = new JLabel("Service type");
 
-		typeSpinner = new JTextField();
-		typeSpinner.setMaximumSize(new Dimension(300, 20));
-		typeSpinner.setEditable(false);
+		typeField = new JTextField();
+		typeField.setMaximumSize(new Dimension(300, 20));
+		typeField.setEditable(false);
 
 		descLocationLabel = new JLabel("Description File Location");
 		descLocationField = new JTextField();
@@ -205,7 +205,7 @@ public class ServiceFormPanel extends JTabbedPane {
 		servicePanel.add(organisationLabel);
 		servicePanel.add(organisationField);
 		servicePanel.add(typeLabel);
-		servicePanel.add(typeSpinner);
+		servicePanel.add(typeField);
 
 		SpringUtilities.makeCompactGrid(servicePanel, 7, 2, 6, 6, 6, 6);
 
@@ -350,7 +350,7 @@ public class ServiceFormPanel extends JTabbedPane {
 	}
 
 	public void setServiceType(ServiceType type) {
-		typeSpinner.setText(type.toString());
+		typeField.setText(type.toString());
 	}
 
 	public void setOrganisationName(String organisation) {

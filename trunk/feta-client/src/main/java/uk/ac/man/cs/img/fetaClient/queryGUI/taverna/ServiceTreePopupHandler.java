@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: ServiceTreePopupHandler.java,v $
- * Revision           $Revision: 1.1 $
+ * Revision           $Revision: 1.2 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-11-21 13:59:45 $
+ * Last modified on   $Date: 2006-11-21 15:32:12 $
  *               by   $Author: sowen70 $
  * Created on 21 Nov 2006
  *****************************************************************/
@@ -38,17 +38,17 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
+import javax.swing.JMenu;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreePath;
 
 import org.apache.log4j.Logger;
-import org.embl.ebi.escience.scufl.DuplicateProcessorNameException;
+import org.embl.ebi.escience.scufl.AlternateProcessor;
 import org.embl.ebi.escience.scufl.Processor;
-import org.embl.ebi.escience.scufl.ProcessorCreationException;
 import org.embl.ebi.escience.scufl.ScuflModel;
-import org.embl.ebi.escience.scufl.parser.XScuflFormatException;
 import org.embl.ebi.escience.scuflworkers.ProcessorHelper;
 import org.jdom.Element;
 
@@ -75,15 +75,26 @@ public class ServiceTreePopupHandler extends MouseAdapter {
 		if (e.isPopupTrigger()) {
 			doEvent(e);
 		}
-	}
-
-	/**
-	 * Similarly handle the mouse released event
-	 */
-	public void mouseReleased(MouseEvent e) {
-		if (e.isPopupTrigger()) {
-			doEvent(e);
-		}
+	}	
+	
+	private final Processor createProcessorFromServiceModel(final ScuflModel model, BasicServiceModel serviceModel) {
+		Processor newProcessor = null;
+		Element wrapperElement = new Element("wrapper");						
+		wrapperElement.addContent(serviceModel.getTavernaProcessorSpecAsElement().detach());
+		String validName = serviceModel.getServiceName();
+		validName=model.getValidProcessorName(validName);
+		
+		try {
+			newProcessor = ProcessorHelper
+			.loadProcessorFromXML(wrapperElement, model,
+					validName);							
+		} catch (Exception e1) {
+			logger.error("Error creating processor",e1);
+			JOptionPane.showMessageDialog(theTree, "An error occured creating the processor"
+					+ e1.getMessage(), "Exception!", JOptionPane.ERROR_MESSAGE);
+			
+		} 
+		return newProcessor;
 	}
 	
 	private void doEvent(MouseEvent e) {
@@ -93,8 +104,8 @@ public class ServiceTreePopupHandler extends MouseAdapter {
 			final ScuflModel model = TavernaFetaGUI.getInstance().getScuflModel();
 			if (node.getUserObject() instanceof BasicServiceModel) {								
 				JPopupMenu menu=new JPopupMenu("Query result.");
-				JMenuItem item=new JMenuItem("Add to model");
-				if (model==null) item.setEnabled(false);	
+				JMenuItem addToModelMenuItem=new JMenuItem("Add to model");
+				if (model==null) addToModelMenuItem.setEnabled(false);	
 				
 				ActionListener addToModelListener=new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
@@ -103,31 +114,46 @@ public class ServiceTreePopupHandler extends MouseAdapter {
 						newProcessor=createProcessorFromServiceModel(model, serviceModel);
 						if (newProcessor!=null)
 							model.addProcessor(newProcessor);
-					}
-
-					private Processor createProcessorFromServiceModel(final ScuflModel model, BasicServiceModel serviceModel) {
-						Processor newProcessor = null;
-						Element wrapperElement = new Element("wrapper");						
-						wrapperElement.addContent(serviceModel.getTavernaProcessorSpecAsElement().detach());
-						String validName = serviceModel.getServiceName();
-						validName=model.getValidProcessorName(validName);
-						
-						try {
-							newProcessor = ProcessorHelper
-							.loadProcessorFromXML(wrapperElement, model,
-									validName);							
-						} catch (ProcessorCreationException e1) {
-							logger.error("Error creating processor",e1);
-						} catch (DuplicateProcessorNameException e1) {
-							logger.error("Duplicate processor name",e1);
-						} catch (XScuflFormatException e1) {
-							logger.error("Error with scufl xml for processor",e1);
-						}
-						return newProcessor;
-					}					
+					}																		
 				};
-				item.addActionListener(addToModelListener);
-				menu.add(item);
+				addToModelMenuItem.addActionListener(addToModelListener);
+				menu.add(addToModelMenuItem);
+				
+				if (model!=null && model.getProcessors().length>0) {
+					JMenu processorList = new JMenu("Add as alternate to...");
+					for (final Processor p : model.getProcessors()) {
+						JMenuItem processorItem = new JMenuItem(p.getName(), ProcessorHelper
+								.getPreferredIcon(p));
+						processorList.add(processorItem);
+						processorItem.addActionListener(new ActionListener() {
+							public void actionPerformed(ActionEvent ae) {
+								try {																		
+									BasicServiceModel serviceModel = (BasicServiceModel) node.getUserObject();
+									Processor alternateProcessor = createProcessorFromServiceModel(model, serviceModel);
+									if (alternateProcessor!=null) {
+										AlternateProcessor alternate = new AlternateProcessor(alternateProcessor);
+										p.addAlternate(alternate);
+										if (p.getModel() != null) {
+											boolean isOffline = p.getModel().isOffline();
+											if (isOffline) {
+												alternateProcessor.setOffline();
+											} else {
+												alternateProcessor.setOnline();
+											}
+										}
+									}
+								} catch (Exception ex) {
+									logger.error("Error creating alternate processor",ex);
+									JOptionPane.showMessageDialog(theTree, "Problem creating alternate : \n"
+											+ ex.getMessage(), "Exception!", JOptionPane.ERROR_MESSAGE);
+								}
+							}														
+
+						});
+					}
+					menu.add(processorList);
+				}
+				
 				menu.show(theTree,e.getX(), e.getY());
 			}
 		}
