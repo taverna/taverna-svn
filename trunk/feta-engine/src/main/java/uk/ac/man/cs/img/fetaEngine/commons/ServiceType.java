@@ -40,6 +40,8 @@ public final class ServiceType extends AbstractEnumeration {
 
 	}
 
+	public static final ServiceType UNDEFINED = new ServiceType("","undefined");
+	
 	public static final ServiceType SOAPLAB = new ServiceType(
 			"Soaplab service", "soaplab");
 

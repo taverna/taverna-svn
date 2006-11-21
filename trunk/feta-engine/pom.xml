@@ -106,7 +106,6 @@
           <fileNamespaceToPackage>src/main/wsdl/NStoPkg.properties</fileNamespaceToPackage>
         </configuration>
       </plugin>
-
     </plugins>
     </build>
   <profiles>
