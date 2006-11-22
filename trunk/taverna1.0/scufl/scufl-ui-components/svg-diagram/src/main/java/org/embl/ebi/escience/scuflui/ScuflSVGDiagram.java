@@ -48,8 +48,16 @@ import org.w3c.dom.svg.SVGDocument;
  */
 public class ScuflSVGDiagram extends JComponent implements
 		ScuflModelEventListener, WorkflowModelViewSPI {
-
+	
 	private static Logger logger = Logger.getLogger(ScuflSVGDiagram.class);
+
+	static SAXSVGDocumentFactory docFactory = null;
+	
+	static {
+		String parser = XMLResourceDescriptor.getXMLParserClassName();
+		logger.warn("Using XML parser " + parser);
+		docFactory = new SAXSVGDocumentFactory(parser);
+	}
 
 	private ScuflModel model;
 
@@ -64,11 +72,11 @@ public class ScuflSVGDiagram extends JComponent implements
 	Timer updateTimer = null;
 
 	public String getDot() {
-		return this.dot.getDot();
+		return dot.getDot();
 	}
 
 	public DotView getDotView() {
-		return this.dot;
+		return dot;
 	}
 
 	public ImageIcon getIcon() {
@@ -121,26 +129,31 @@ public class ScuflSVGDiagram extends JComponent implements
 		});
 	}
 
-	public void attachToModel(ScuflModel model) {
-		if (this.model == null) {
-			this.dot = new DotView(model);
-			this.dot.setPortDisplay(DotView.BOUND);
-			model.addListener(this);
-			graphicValid = false;
-			updateTimer = new Timer();
-			updateTimer.schedule(new UpdateTimer(), (long) 0, (long) 2000);
+	public synchronized void attachToModel(ScuflModel model) {
+		if (this.model != null) {
+			logger.warn("Did not detachFromModel() before attachToModel()");
+			detachFromModel();
 		}
+		this.model = model;
+		dot = new DotView(model);
+		dot.setPortDisplay(DotView.NONE);
+		dot.setTypeLabelDisplay(false);
+		model.addListener(this);
+		graphicValid = false;
+		updateTimer = new Timer();
+		updateTimer.schedule(new UpdateTimer(), 0, 2000);
 	}
 
-	public void detachFromModel() {
-		if (this.model != null) {
-			model.removeListener(this);
-			model.removeListener(dot);
-			this.dot = null;
-			this.model = null;
-			repaint();
-			updateTimer.cancel();
+	public synchronized void detachFromModel() {
+		if (model == null) {
+			return;
 		}
+		model.removeListener(this);
+		model.removeListener(dot);
+		dot = null;
+		model = null;
+		repaint();
+		updateTimer.cancel();
 	}
 
 	class UpdateTimer extends TimerTask {
@@ -177,13 +190,6 @@ public class ScuflSVGDiagram extends JComponent implements
 		}
 		updateTimer = new Timer();
 		updateTimer.schedule(new UpdateTimer(), 0, 2000);
-	}
-
-	static SAXSVGDocumentFactory docFactory = null;
-
-	static {
-		String parser = XMLResourceDescriptor.getXMLParserClassName();
-		docFactory = new SAXSVGDocumentFactory(parser);
 	}
 
 	public static SVGDocument getSVG(String dotText) throws IOException {

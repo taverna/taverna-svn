@@ -304,8 +304,6 @@ public class ScuflDiagramPanel extends JPanel implements WorkflowModelViewSPI {
 	}
 
 	public void onDisplay() {
-		// TODO Auto-generated method stub
-		
 	}
 
 	public void onDispose() {

@@ -36,9 +36,13 @@ public class DotView implements ScuflModelEventListener, java.io.Serializable {
 	private boolean displayTypes = true;
 
 	private boolean lralign = false;
-
+	
 	private boolean showBoring = true;
 
+	String[] fillColours = { "white", "yellow", "goldenrod1" };
+
+	boolean expandWorkflow = true;
+	
 	public static final int ALL = 0;
 
 	public static final int BOUND = 1;
@@ -150,70 +154,6 @@ public class DotView implements ScuflModelEventListener, java.io.Serializable {
 		return this.cachedRepresentation;
 	}
 
-	private String q(String name) {
-		return "\"" + name + "\"";
-	}
-
-	/**
-	 * Generate the dot view
-	 */
-	void generateDot() {
-		StringBuffer dot = new StringBuffer();
-
-		// Overall graph style
-		dot.append("digraph scufl_graph {\n");
-		dot.append(" graph [             \n");
-		dot.append("  style=\"\"         \n");
-		dot.append("  labeljust=\"left\"\n");
-		dot.append("  clusterrank=\"local\"\n");
-		if (System.getProperty("taverna.scufldiagram.ranksep") != null) {
-			dot.append("  ranksep=\""
-					+ System.getProperty("taverna.scufldiagram.ranksep")
-					+ "\"\n");
-		}
-		if (System.getProperty("taverna.scufldiagram.nodesep") != null) {
-			dot.append("  nodesep=\""
-					+ System.getProperty("taverna.scufldiagram.nodesep")
-					+ "\"\n");
-		}
-		// Only set left to right view if using port views
-		if (this.lralign) {
-			dot.append("  rankdir=\"LR\"     \n");
-		}
-		dot.append(" ]                   \n");
-
-		// Overall node style
-		dot.append(" node [              \n");
-		dot.append("  fontname=\"Helvetica\",         \n");
-		dot.append("  fontsize=\"10\",              \n");
-		dot.append("  fontcolor=\"black\",  \n");
-		// Only set record shape if we're using port views
-		if (this.portDisplay == DotView.ALL
-				|| this.portDisplay == DotView.BOUND) {
-			dot.append("  shape=\"record\",             \n");
-		} else {
-			dot.append("  shape=\"box\",                \n");
-			dot.append("  height=\"0\",\n");
-			dot.append("  width=\"0\",\n");
-		}
-		dot.append("  color=\"black\",               \n");
-		dot.append("  fillcolor=\"lightgoldenrodyellow\",\n");
-		dot.append("  style=\"filled\"  \n");
-		dot.append(" ];\n\n");
-
-		// Overall edge style
-		dot.append(" edge [                         \n");
-		dot.append("  fontname=\"Helvetica\",         \n");
-		dot.append("  fontsize=\"8\",              \n");
-		dot.append("  fontcolor=\"black\",  \n");
-		dot.append("  color=\"black\"                \n");
-		dot.append(" ];\n\n");
-
-		dot.append(createWorkflow(null, model, "", this.portDisplay, 0));
-		dot.append("}");
-		this.cachedRepresentation = dot.toString();
-	}
-
 	/**
 	 * Implements ScuflModelEventListener, in this case is used to tell when our
 	 * cached version of the dot representation may be out of date.
@@ -259,9 +199,69 @@ public class DotView implements ScuflModelEventListener, java.io.Serializable {
 		return this.fillColours;
 	}
 
-	boolean expandWorkflow = true;
+	/**
+	 * Generate the dot view
+	 */
+	void generateDot() {
+		StringBuffer dot = new StringBuffer();
+	
+		// Overall graph style
+		dot.append("digraph scufl_graph {\n");
+		dot.append(" graph [             \n");
+		dot.append("  style=\"\"         \n");
+		dot.append("  labeljust=\"left\"\n");
+		dot.append("  clusterrank=\"local\"\n");
+		if (System.getProperty("taverna.scufldiagram.ranksep") != null) {
+			dot.append("  ranksep=\""
+					+ System.getProperty("taverna.scufldiagram.ranksep")
+					+ "\"\n");
+		}
+		if (System.getProperty("taverna.scufldiagram.nodesep") != null) {
+			dot.append("  nodesep=\""
+					+ System.getProperty("taverna.scufldiagram.nodesep")
+					+ "\"\n");
+		}
+		// Only set left to right view if using port views
+		if (this.lralign) {
+			dot.append("  rankdir=\"LR\"     \n");
+		}
+		dot.append(" ]                   \n");
+	
+		// Overall node style
+		dot.append(" node [              \n");
+		dot.append("  fontname=\"Helvetica\",         \n");
+		dot.append("  fontsize=\"10\",              \n");
+		dot.append("  fontcolor=\"black\",  \n");
+		// Only set record shape if we're using port views
+		if (this.portDisplay == DotView.ALL
+				|| this.portDisplay == DotView.BOUND) {
+			dot.append("  shape=\"record\",             \n");
+		} else {
+			dot.append("  shape=\"box\",                \n");
+			dot.append("  height=\"0\",\n");
+			dot.append("  width=\"0\",\n");
+		}
+		dot.append("  color=\"black\",               \n");
+		dot.append("  fillcolor=\"lightgoldenrodyellow\",\n");
+		dot.append("  style=\"filled\"  \n");
+		dot.append(" ];\n\n");
+	
+		// Overall edge style
+		dot.append(" edge [                         \n");
+		dot.append("  fontname=\"Helvetica\",         \n");
+		dot.append("  fontsize=\"8\",              \n");
+		dot.append("  fontcolor=\"black\",  \n");
+		dot.append("  color=\"black\"                \n");
+		dot.append(" ];\n\n");
+	
+		dot.append(createWorkflow(null, model, "", this.portDisplay, 0));
+		dot.append("}");
+		this.cachedRepresentation = dot.toString();
+	}
 
-	String[] fillColours = { "white", "yellow", "goldenrod1" };
+	private String q(String name) {
+		return "\"" + name + "\"";
+	}
 
 	private String createWorkflow(String name, ScuflModel model, String prefix,
 			int detail, int fill) {
