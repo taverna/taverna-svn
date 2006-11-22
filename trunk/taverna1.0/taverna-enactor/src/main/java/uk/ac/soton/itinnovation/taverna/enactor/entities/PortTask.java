@@ -24,9 +24,9 @@
 //      Created for Project :   MYGRID
 //      Dependencies        :
 //
-//      Last commit info    :   $Author: stain $
-//                              $Date: 2006-11-06 17:00:42 $
-//                              $Revision: 1.5 $
+//      Last commit info    :   $Author: sowen70 $
+//                              $Date: 2006-11-22 15:28:11 $
+//                              $Revision: 1.6 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 
@@ -67,13 +67,9 @@ public class PortTask extends AbstractTask {
 
 	public static int OUT = 1;
 
-	// The WorkflowInstance object which can access this
-	// workflow instance
-	private WorkflowInstance workflowInstance = null;
-
 	private Port thePort;
 
-	private DataThing theDataThing = null;
+	private DataThing theDataThing = null;	
 
 	public PortTask(String id, Flow flow, Port port) {
 		super(id, flow);
@@ -203,7 +199,19 @@ public class PortTask extends AbstractTask {
 				} catch (ClassCastException cce) {
 					break;
 				}
+			}																	
+
+			WorkflowInstance workflowInstance = getWorkflowInstance();
+			
+			if (logger.isDebugEnabled()) {
+				logger.debug("CollectionConstructionEvent, workflowInstance="
+						+ workflowInstance);
+				if (workflowInstance != null) {
+					logger.debug("CollectionConstructionEvent, workflowInstanceID="
+							+ workflowInstance.getID());
+				}
 			}
+
 			WorkflowEventDispatcher.DISPATCHER
 					.fireEvent(new CollectionConstructionEvent(
 							workflowInstance, lsidWrapArray, originalLSID));
@@ -249,8 +257,7 @@ public class PortTask extends AbstractTask {
 					// //System.out.println("Adding mime type
 					// "+portMIMETypes[i]+" to
 					// "+((Object)theDataThing).toString());
-					theDataThing.getMetadata().addMIMEType(
-							portMIMETypes[i]);
+					theDataThing.getMetadata().addMIMEType(portMIMETypes[i]);
 				}
 				// Copy any semantic markup into the markup object as well
 				theDataThing.getMetadata().setSemanticType(
@@ -304,6 +311,13 @@ public class PortTask extends AbstractTask {
 		 * ((PortTask)o).cancel(); } }
 		 */
 	}
+	
+	private WorkflowInstance getWorkflowInstance() {
+		String flowID = getFlow().getFlowId();
+		Engine e = getFlow().getEngine();
+		WorkflowInstance workflowInstance= WorkflowInstanceImpl.getInstance(e, thePort.getProcessor().getModel(), flowID);
+		return workflowInstance;
+	}
 
 	/**
 	 * Forces class to clean itself up a bit.
@@ -330,12 +344,6 @@ public class PortTask extends AbstractTask {
 						+ "No data for port " + thePort.getName()
 						+ ",please check its links");
 			} else {
-				// Get the workflow instance object
-				Flow flow = getFlow();
-				String flowID = flow.getFlowId();
-				Engine e = flow.getEngine();
-				workflowInstance = WorkflowInstanceImpl.getInstance(e,
-						thePort.getProcessor().getModel(), flowID);
 				// System.out.println("Invoking :
 				// "+getScuflPort().getProcessor().getName()+"."+getScuflPort().getName());
 				for (Iterator i = getChildren().iterator(); i.hasNext();) {
@@ -410,11 +418,9 @@ public class PortTask extends AbstractTask {
 	}
 
 	/*
-	 * public void setInput(Object theData){
-	 * theDataThing=(DataThing)theData; }
+	 * public void setInput(Object theData){ theDataThing=(DataThing)theData; }
 	 * 
-	 * public void setOutput(Object theData){
-	 * theDataThing=(DataThing)theData; }
+	 * public void setOutput(Object theData){ theDataThing=(DataThing)theData; }
 	 */
 
 }
