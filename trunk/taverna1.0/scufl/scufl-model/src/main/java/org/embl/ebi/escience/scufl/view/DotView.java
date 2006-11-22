@@ -5,6 +5,9 @@
  */
 package org.embl.ebi.escience.scufl.view;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+
 import org.embl.ebi.escience.scufl.ConcurrencyConstraint;
 import org.embl.ebi.escience.scufl.DataConstraint;
 import org.embl.ebi.escience.scufl.InputPort;
@@ -197,6 +200,27 @@ public class DotView implements ScuflModelEventListener, java.io.Serializable {
 	 */
 	public String[] getFillColours() {
 		return this.fillColours;
+	}
+
+	public DotViewSettings getViewSettings() {
+		DotViewSettings settings = new DotViewSettings();
+		
+		settings.setShowBoring(getShowBoring());
+		settings.setAlignment(getAlignment());
+		settings.setExpandWorkflow(getExpandWorkflow());
+		settings.setTypeLabelDisplay(getTypeLabelDisplay());
+		settings.setPortDisplay(getPortDisplay());
+		settings.setFillColours(new ArrayList<String>(Arrays.asList(getFillColours())));
+		return settings;
+	}
+	
+	public void setViewSettings(DotViewSettings settings) {
+		setPortDisplay(settings.getPortDisplay());
+		setBoring(settings.getShowBoring());
+		setAlignment(settings.getAlignment());
+		setExpandWorkflow(settings.getExpandWorkflow());
+		setTypeLabelDisplay(settings.getTypeLabelDisplay());
+		setFillColours(settings.getFillColours().toArray(new String[0]));
 	}
 
 	/**
@@ -678,3 +702,4 @@ public class DotView implements ScuflModelEventListener, java.io.Serializable {
 	}
 
 }
+

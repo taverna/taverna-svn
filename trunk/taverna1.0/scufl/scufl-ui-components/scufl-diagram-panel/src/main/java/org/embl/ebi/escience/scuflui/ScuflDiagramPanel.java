@@ -291,8 +291,6 @@ public class ScuflDiagramPanel extends JPanel implements WorkflowModelViewSPI {
 
 	public void attachToModel(ScuflModel model) {
 		diagram.attachToModel(model);
-		diagram.getDotView().setPortDisplay(2);
-		diagram.getDotView().setTypeLabelDisplay(false);
 	}
 
 	public void detachFromModel() {

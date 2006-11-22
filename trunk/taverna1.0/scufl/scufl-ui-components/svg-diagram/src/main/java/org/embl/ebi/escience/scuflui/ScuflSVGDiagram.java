@@ -11,8 +11,11 @@ import java.awt.Dimension;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringReader;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.WeakHashMap;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -37,6 +40,7 @@ import org.embl.ebi.escience.scufl.ScuflModel;
 import org.embl.ebi.escience.scufl.ScuflModelEvent;
 import org.embl.ebi.escience.scufl.ScuflModelEventListener;
 import org.embl.ebi.escience.scufl.view.DotView;
+import org.embl.ebi.escience.scufl.view.DotViewSettings;
 import org.embl.ebi.escience.scuflui.shared.StreamDevourer;
 import org.embl.ebi.escience.scuflui.spi.WorkflowModelViewSPI;
 import org.w3c.dom.svg.SVGDocument;
@@ -48,6 +52,8 @@ import org.w3c.dom.svg.SVGDocument;
  */
 public class ScuflSVGDiagram extends JComponent implements
 		ScuflModelEventListener, WorkflowModelViewSPI {
+	
+	private WeakHashMap<ScuflModel, DotViewSettings> dotViewSettings = new WeakHashMap<ScuflModel, DotViewSettings>();
 	
 	private static Logger logger = Logger.getLogger(ScuflSVGDiagram.class);
 
@@ -136,8 +142,13 @@ public class ScuflSVGDiagram extends JComponent implements
 		}
 		this.model = model;
 		dot = new DotView(model);
-		dot.setPortDisplay(DotView.NONE);
-		dot.setTypeLabelDisplay(false);
+		DotViewSettings dotViewSetting = dotViewSettings.get(model);
+		if (dotViewSetting != null) { // previous settings
+			dot.setViewSettings(dotViewSetting);
+		} else { // defaults
+			dot.setPortDisplay(DotView.NONE);
+			dot.setTypeLabelDisplay(false);
+		}
 		model.addListener(this);
 		graphicValid = false;
 		updateTimer = new Timer();
@@ -148,6 +159,10 @@ public class ScuflSVGDiagram extends JComponent implements
 		if (model == null) {
 			return;
 		}
+		// Remember the settings (Boring, expand nested, etc) for each
+		// workflow model. As we use weak references, this should be OK
+		dotViewSettings.put(model, dot.getViewSettings());
+		
 		model.removeListener(this);
 		model.removeListener(dot);
 		dot = null;
