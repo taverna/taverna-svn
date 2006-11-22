@@ -33,6 +33,7 @@ import org.embl.ebi.escience.scufl.ScuflModel;
 import org.embl.ebi.escience.scufl.UnknownPortException;
 import org.embl.ebi.escience.scufl.UnknownProcessorException;
 import org.embl.ebi.escience.scufl.WorkflowDescription;
+import org.embl.ebi.escience.scuflworkers.ProcessorHelper;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.JDOMException;
@@ -475,7 +476,7 @@ class ProcessorLoaderThread extends Thread {
 			if (logLevel != null) {
 				log = Integer.parseInt(logLevel);
 			}
-			Processor theProcessor = org.embl.ebi.escience.scuflworkers.ProcessorHelper
+			Processor theProcessor = ProcessorHelper
 					.loadProcessorFromXML(processorNode, model, name);
 			if (theProcessor == null) {
 				throw new XScuflFormatException(
