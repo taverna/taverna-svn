@@ -202,7 +202,7 @@ public class LocalArtifactClassLoader extends URLClassLoader {
 				}
 				if (result==null) result = findClass(name, seenLoaders);
 			}
-			classMap.put(name,result);
+			if (!classMap.containsKey(name)) classMap.put(name,result);
 		}
 		return result;
 	}
