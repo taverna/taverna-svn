@@ -3,6 +3,7 @@
  */
 package org.embl.ebi.escience.scuflui.actions;
 
+import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -28,16 +29,19 @@ import org.embl.ebi.escience.scuflui.shared.ModelMap;
  * @author David Withers
  * @version $Revision$
  */
+@SuppressWarnings("serial")
 public class SaveWorkflowAction extends AbstractAction {
 	private JFileChooser fc = new JFileChooser();
+	private Component parentComponent;
 
 	/**
 	 * @param model
 	 */
-	public SaveWorkflowAction() {
+	public SaveWorkflowAction(Component parentComponent) {
 		putValue(SMALL_ICON, TavernaIcons.saveIcon);
 		putValue(NAME, "Save Workflow...");
 		putValue(SHORT_DESCRIPTION, "Saves the current workflow to a file");
+		this.parentComponent=parentComponent;
 	}
 
 	/*
@@ -48,7 +52,7 @@ public class SaveWorkflowAction extends AbstractAction {
 		try {
 			saveToFile();
 		} catch (Exception ex) {
-			JOptionPane.showMessageDialog(null, "Problem saving workflow : \n"
+			JOptionPane.showMessageDialog(parentComponent, "Problem saving workflow : \n"
 					+ ex.getMessage(), "Error!", JOptionPane.ERROR_MESSAGE);
 		}
 
@@ -71,7 +75,7 @@ public class SaveWorkflowAction extends AbstractAction {
 			fc.resetChoosableFileFilters();
 			fc.setFileFilter(new ExtensionFileFilter(new String[] { "xml" }));
 			fc.setCurrentDirectory(new File(curDir));
-			int returnVal = fc.showSaveDialog(null);
+			int returnVal = fc.showSaveDialog(parentComponent);
 			if (returnVal == JFileChooser.APPROVE_OPTION) {
 				prefs.put("currentDir", fc.getCurrentDirectory().toString());
 				File file = fc.getSelectedFile();

@@ -431,8 +431,8 @@ public class Workbench extends JFrame {
 		JMenuItem newWorkflow = new JMenuItem(createWorkflowAction());
 		fileMenu.add(newWorkflow);
 
-		fileMenu.add(new JMenuItem(new OpenWorkflowFromFileAction()));
-		fileMenu.add(new JMenuItem(new OpenWorkflowFromURLAction()));
+		fileMenu.add(new JMenuItem(new OpenWorkflowFromFileAction(this)));
+		fileMenu.add(new JMenuItem(new OpenWorkflowFromURLAction(this)));
 		
 		if (workflowModels.size() > 1) {
 			fileMenu.addSeparator();
@@ -440,7 +440,7 @@ public class Workbench extends JFrame {
 		}
 
 		fileMenu.addSeparator();
-		fileMenu.add(new JMenuItem(new SaveWorkflowAction()));
+		fileMenu.add(new JMenuItem(new SaveWorkflowAction(this)));
 
 		if (!workflowModels.isEmpty()) {
 			fileMenu.addSeparator();

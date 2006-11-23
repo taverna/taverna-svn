@@ -25,14 +25,15 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: OpenWorkflowFromURLAction.java,v $
- * Revision           $Revision: 1.1 $
+ * Revision           $Revision: 1.2 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-11-21 16:26:59 $
- *               by   $Author: davidwithers $
+ * Last modified on   $Date: 2006-11-23 10:22:47 $
+ *               by   $Author: sowen70 $
  * Created on 20 Nov 2006
  *****************************************************************/
 package org.embl.ebi.escience.scuflui.actions;
 
+import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.net.URL;
 import java.util.prefs.Preferences;
@@ -49,12 +50,16 @@ import org.embl.ebi.escience.scuflui.shared.ScuflModelSet;
  *
  * @author David Withers
  */
+@SuppressWarnings("serial")
 public class OpenWorkflowFromURLAction extends AbstractAction {
 
-	public OpenWorkflowFromURLAction() {
+	private Component parentComponent;
+	
+	public OpenWorkflowFromURLAction(Component parentComponent) {
 		putValue(SMALL_ICON, TavernaIcons.openurlIcon);
 		putValue(NAME, "Open Location...");
 		putValue(SHORT_DESCRIPTION, "Open a workflow from the web");
+		this.parentComponent = parentComponent;
 	}
 
 	/* (non-Javadoc)
@@ -68,7 +73,7 @@ public class OpenWorkflowFromURLAction extends AbstractAction {
 				.get("currentUrl", "http://");
 		
 		try {
-			String name = (String) JOptionPane.showInputDialog(null,
+			String name = (String) JOptionPane.showInputDialog(parentComponent,
 					"Enter the URL of a workflow definition to load",
 					"Workflow URL", JOptionPane.QUESTION_MESSAGE, null, null,
 					currentUrl);
@@ -79,7 +84,7 @@ public class OpenWorkflowFromURLAction extends AbstractAction {
 				ScuflModelSet.getInstance().addModel(model);
 			}
 		} catch (Exception ex) {
-			JOptionPane.showMessageDialog(null,
+			JOptionPane.showMessageDialog(parentComponent,
 					"Problem opening workflow from web : \n" + ex.getMessage(),
 					"Error!", JOptionPane.ERROR_MESSAGE);
 		}

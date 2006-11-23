@@ -25,14 +25,15 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: OpenWorkflowFromFileAction.java,v $
- * Revision           $Revision: 1.1 $
+ * Revision           $Revision: 1.2 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-11-21 16:26:59 $
- *               by   $Author: davidwithers $
+ * Last modified on   $Date: 2006-11-23 10:22:47 $
+ *               by   $Author: sowen70 $
  * Created on 20 Nov 2006
  *****************************************************************/
 package org.embl.ebi.escience.scuflui.actions;
 
+import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.io.File;
 import java.util.prefs.Preferences;
@@ -51,14 +52,17 @@ import org.embl.ebi.escience.scuflui.shared.ScuflModelSet;
  * 
  * @author David Withers
  */
+@SuppressWarnings("serial")
 public class OpenWorkflowFromFileAction extends AbstractAction {
 
 	private final JFileChooser fileChooser = new JFileChooser();
+	private Component parentComponent;
 
-	public OpenWorkflowFromFileAction() {
+	public OpenWorkflowFromFileAction(Component parentComponent) {
 		putValue(SMALL_ICON, TavernaIcons.openIcon);
 		putValue(NAME, "Open File...");
 		putValue(SHORT_DESCRIPTION, "Open a workflow from a file");
+		this.parentComponent=parentComponent;
 	}
 
 	/*
@@ -77,7 +81,7 @@ public class OpenWorkflowFromFileAction extends AbstractAction {
 		fileChooser.setFileFilter(new ExtensionFileFilter(
 				new String[] { "xml" }));
 		fileChooser.setCurrentDirectory(new File(curDir));
-		int returnVal = fileChooser.showOpenDialog(null);
+		int returnVal = fileChooser.showOpenDialog(parentComponent);
 		if (returnVal == JFileChooser.APPROVE_OPTION) {
 			prefs.put("currentDir", fileChooser.getCurrentDirectory()
 					.toString());
@@ -96,7 +100,7 @@ public class OpenWorkflowFromFileAction extends AbstractAction {
 						model.clear();
 						JOptionPane
 								.showMessageDialog(
-										null,
+										parentComponent,
 										"Problem opening workflow from file : \n\n"
 												+ ex.getMessage()
 												+ "\n\nLoading workflow in offline mode, "
@@ -108,7 +112,7 @@ public class OpenWorkflowFromFileAction extends AbstractAction {
 									model, null);
 							workflowOpened = true;
 						} catch (Exception e) {
-							JOptionPane.showMessageDialog(null,
+							JOptionPane.showMessageDialog(parentComponent,
 									"Problem opening workflow from file : \n\n"
 											+ ex.getMessage(), "Error",
 									JOptionPane.ERROR_MESSAGE);
