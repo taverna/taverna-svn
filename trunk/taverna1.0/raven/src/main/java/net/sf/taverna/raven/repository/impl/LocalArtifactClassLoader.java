@@ -35,7 +35,7 @@ public class LocalArtifactClassLoader extends URLClassLoader {
 
 	public Repository getRepository() {
 		return repository;
-	}
+	}	
 
 	protected LocalArtifactClassLoader(LocalRepository r, ArtifactImpl a)
 			throws MalformedURLException, ArtifactStateException {
@@ -50,7 +50,7 @@ public class LocalArtifactClassLoader extends URLClassLoader {
 	protected LocalArtifactClassLoader(LocalRepository r, ArtifactImpl a, ClassLoader parent)
 			throws MalformedURLException, ArtifactStateException {
 		super(new URL[] { r.jarFile(a).toURI().toURL() }, parent);
-		repository = r;
+		repository = r;		
 		synchronized (LocalRepository.loaderMap) {
 			LocalRepository.loaderMap.put(a, this);
 			init(a); // Avoid people getting non-initialized instances
@@ -138,7 +138,7 @@ public class LocalArtifactClassLoader extends URLClassLoader {
 
 	@Override
 	protected Class<?> findClass(String name) throws ClassNotFoundException {
-		return findClass(name, new HashSet<LocalArtifactClassLoader>());
+		return findClass(name, new HashSet<LocalArtifactClassLoader>());		
 	}
 
 	protected Class<?> findClass(String name,
@@ -156,40 +156,54 @@ public class LocalArtifactClassLoader extends URLClassLoader {
 			logger.debug("Returning found '" + name + "' - " + this);
 			return c;
 		} catch (ClassNotFoundException e) {
-			// logger.debug("Trying children of "+this);
-			// for (LocalArtifactClassLoader ac : childLoaders) {
-			// logger.debug(" "+ac.toString());
-			// }
 			for (LocalArtifactClassLoader ac : childLoaders) {
 				if (!seenLoaders.contains(ac)) {
 					try {
-						return ac.loadClass(name, seenLoaders);
+						Class c = ac.loadClass(name, seenLoaders);
+						classMap.put(name, c);
+						return c;
 					} catch (ClassNotFoundException cnfe) {
 						logger.debug("No '" + name + "' in " + this);
 					}
 				}
 			}
 		}
+		catch(Error e) {
+			logger.error("Error finding class "+name,e);
+			throw e;
+		}
 		throw new ClassNotFoundException(name);
 	}
+	
+	
 
 	private Class<?> loadClass(String name,
 			Set<LocalArtifactClassLoader> seenLoaders)
 			throws ClassNotFoundException {
-		Class loadedClass = findLoadedClass(name);
-		if (loadedClass != null) {
-			return loadedClass;
+		Class result = null;
+		if (classMap.get(name)!=null) {
+			result = classMap.get(name);
 		}
-		ClassLoader parent = getParent();
-		try {
-			if (parent instanceof LocalArtifactClassLoader) {
-				return ((LocalArtifactClassLoader) parent).loadClass(name,
-						seenLoaders);
-			} else if (parent != null) {
-				return parent.loadClass(name);
+		else {
+			Class loadedClass = findLoadedClass(name);
+			if (loadedClass != null) {			
+				result = loadedClass;
+			}		
+			else {
+				ClassLoader parent = getParent();
+				try {
+					if (parent instanceof LocalArtifactClassLoader) {
+						result = ((LocalArtifactClassLoader) parent).loadClass(name,
+								seenLoaders);
+					} else if (parent != null) {
+						result = parent.loadClass(name);
+					}
+				} catch (ClassNotFoundException cnfe) {			
+				}
+				if (result==null) result = findClass(name, seenLoaders);
 			}
-		} catch (ClassNotFoundException cnfe) {
+			classMap.put(name,result);
 		}
-		return findClass(name, seenLoaders);
+		return result;
 	}
 }
