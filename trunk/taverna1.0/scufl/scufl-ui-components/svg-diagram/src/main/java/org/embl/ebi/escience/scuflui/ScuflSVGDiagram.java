@@ -61,7 +61,7 @@ public class ScuflSVGDiagram extends JComponent implements
 	
 	static {
 		String parser = XMLResourceDescriptor.getXMLParserClassName();
-		logger.warn("Using XML parser " + parser);
+		logger.info("Using XML parser " + parser);
 		docFactory = new SAXSVGDocumentFactory(parser);
 	}
 
