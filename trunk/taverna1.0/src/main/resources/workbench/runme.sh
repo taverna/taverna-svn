@@ -24,4 +24,4 @@ ARGS="-Xmx300m"
 ARGS="$ARGS -Djava.system.class.loader=net.sf.taverna.tools.BootstrapClassLoader"
 ARGS="$ARGS -Djava.protocol.handler.pkgs=uk.ac.rdg.resc.jstyx.client"
 
-java $ARGS -jar $TAVERNA_HOME/taverna-bootstrap-1.5-SNAPSHOT.jar $@
+java $ARGS -jar $TAVERNA_HOME/lib/taverna-bootstrap-1.5-SNAPSHOT.jar $@
