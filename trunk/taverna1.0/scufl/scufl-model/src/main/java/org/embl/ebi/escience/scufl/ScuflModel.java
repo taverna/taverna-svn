@@ -154,8 +154,7 @@ public class ScuflModel implements Serializable, LogAwareComponent {
 	@Override
 	public String toString() {
 		try {
-			return "ScuflModel: " + getDescription().getTitle() + 
-				" " + getDescription().getLSID();
+			return "ScuflModel: " + getDescription().getTitle();
 		} catch (RuntimeException ex) {
 			logger.warn("Could not get title", ex);
 			return super.toString();
