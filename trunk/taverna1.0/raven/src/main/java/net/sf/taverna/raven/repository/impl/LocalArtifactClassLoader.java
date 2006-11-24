@@ -18,13 +18,13 @@ import net.sf.taverna.raven.repository.ArtifactStateException;
 import net.sf.taverna.raven.repository.Repository;
 
 /**
- * Implementation of ClassLoader that uses the artifact metadata to manage
- * any dependencies of the artifact
+ * Implementation of ClassLoader that uses the artifact metadata to manage any
+ * dependencies of the artifact
  */
 public class LocalArtifactClassLoader extends URLClassLoader {
 
 	private static Log logger = Log.getLogger(LocalArtifactClassLoader.class);
-	
+
 	private List<LocalArtifactClassLoader> childLoaders = new ArrayList<LocalArtifactClassLoader>();
 
 	private Map<String, Class> classMap = new HashMap<String, Class>();
@@ -35,7 +35,7 @@ public class LocalArtifactClassLoader extends URLClassLoader {
 
 	public Repository getRepository() {
 		return repository;
-	}	
+	}
 
 	protected LocalArtifactClassLoader(LocalRepository r, ArtifactImpl a)
 			throws MalformedURLException, ArtifactStateException {
@@ -47,10 +47,11 @@ public class LocalArtifactClassLoader extends URLClassLoader {
 		}
 	}
 
-	protected LocalArtifactClassLoader(LocalRepository r, ArtifactImpl a, ClassLoader parent)
-			throws MalformedURLException, ArtifactStateException {
+	protected LocalArtifactClassLoader(LocalRepository r, ArtifactImpl a,
+			ClassLoader parent) throws MalformedURLException,
+			ArtifactStateException {
 		super(new URL[] { r.jarFile(a).toURI().toURL() }, parent);
-		repository = r;		
+		repository = r;
 		synchronized (LocalRepository.loaderMap) {
 			LocalRepository.loaderMap.put(a, this);
 			init(a); // Avoid people getting non-initialized instances
@@ -67,14 +68,13 @@ public class LocalArtifactClassLoader extends URLClassLoader {
 		name = a.toString();
 		for (ArtifactImpl dep : deps) {
 			synchronized (LocalRepository.loaderMap) {
-				LocalArtifactClassLoader ac = LocalRepository.loaderMap.get(dep);
+				LocalArtifactClassLoader ac = LocalRepository.loaderMap
+						.get(dep);
 				if (ac == null) {
 					try {
 						ac = new LocalArtifactClassLoader(repository, dep);
 					} catch (MalformedURLException e) {
-						logger
-								.error("Malformed URL when loading " + dep,
-										e);
+						logger.error("Malformed URL when loading " + dep, e);
 					}
 					// LocalRepository.loaderMap.put(a, ac);
 				}
@@ -106,8 +106,7 @@ public class LocalArtifactClassLoader extends URLClassLoader {
 		alreadySeen.add(this);
 		for (LocalArtifactClassLoader cl : childLoaders) {
 			if (!alreadySeen.contains(cl)) {
-				resourceURL = cl.findFirstInstanceOfResource(alreadySeen,
-						name);
+				resourceURL = cl.findFirstInstanceOfResource(alreadySeen, name);
 				if (resourceURL != null) {
 					return resourceURL;
 				}
@@ -138,76 +137,74 @@ public class LocalArtifactClassLoader extends URLClassLoader {
 
 	@Override
 	protected Class<?> findClass(String name) throws ClassNotFoundException {
-		return findClass(name, new HashSet<LocalArtifactClassLoader>());		
+		return findClass(name, new HashSet<LocalArtifactClassLoader>());
 	}
 
 	protected Class<?> findClass(String name,
 			Set<LocalArtifactClassLoader> seenLoaders)
 			throws ClassNotFoundException {
-		Class result = null;		
+		Class result = null;
 		logger.debug("Searching for '" + name + "' - " + this);
-		seenLoaders.add(this);		
-		synchronized(classMap) {
-			if (classMap.containsKey(name)) {
-				logger.debug("Returning cached '" + name + "' - " + this);
-				result = classMap.get(name);			
-			}
-			else {
-				try {
-					result = super.findClass(name);				
-					logger.debug("Returning found '" + name + "' - " + this);				
-				} catch (ClassNotFoundException e) {
-					for (LocalArtifactClassLoader ac : childLoaders) {
-						if (!seenLoaders.contains(ac)) {
-							try {
-								result = ac.loadClass(name, seenLoaders);													
-							} catch (ClassNotFoundException cnfe) {
-								logger.debug("No '" + name + "' in " + this);
-							}
+		seenLoaders.add(this);
+
+		if (classMap.containsKey(name)) {
+			logger.debug("Returning cached '" + name + "' - " + this);
+			result = classMap.get(name);
+		} else {
+			try {
+				result = super.findClass(name);
+				logger.debug("Returning found '" + name + "' - " + this);
+			} catch (ClassNotFoundException e) {
+				for (LocalArtifactClassLoader ac : childLoaders) {
+					if (!seenLoaders.contains(ac)) {
+						try {
+							result = ac.loadClass(name, seenLoaders);
+						} catch (ClassNotFoundException cnfe) {
+							logger.debug("No '" + name + "' in " + this);
 						}
 					}
 				}
-				catch(Error e) {
-					logger.error("Error finding class "+name,e);				
-				}			
+			} catch (Error e) {
+				logger.error("Error finding class " + name, e);
 			}
-			if (result == null) {
-				throw new ClassNotFoundException(name);
-			}
-						
-			if (!classMap.containsKey(name)) classMap.put(name, result);
 		}
+		if (result == null) {
+			throw new ClassNotFoundException(name);
+		}
+
+		if (!classMap.containsKey(name))
+			classMap.put(name, result);
+
 		return result;
-	}	
+	}
 
 	private Class<?> loadClass(String name,
 			Set<LocalArtifactClassLoader> seenLoaders)
 			throws ClassNotFoundException {
-		Class result = null;		
-		if (classMap.get(name)!=null) {
+		Class result = null;
+		if (classMap.get(name) != null) {
 			result = classMap.get(name);
-		}
-		else {
+		} else {
 			Class loadedClass = findLoadedClass(name);
-			if (loadedClass != null) {			
+			if (loadedClass != null) {
 				result = loadedClass;
-			}		
-			else {
+			} else {
 				ClassLoader parent = getParent();
 				try {
 					if (parent instanceof LocalArtifactClassLoader) {
-						result = ((LocalArtifactClassLoader) parent).loadClass(name,
-								seenLoaders);
+						result = ((LocalArtifactClassLoader) parent).loadClass(
+								name, seenLoaders);
 					} else if (parent != null) {
 						result = parent.loadClass(name);
 					}
-				} catch (ClassNotFoundException cnfe) {			
+				} catch (ClassNotFoundException cnfe) {
 				}
-				if (result==null) result = findClass(name, seenLoaders);
-			}			
+				if (result == null)
+					result = findClass(name, seenLoaders);
+			}
 		}
 		if (!classMap.containsKey(name)) {
-			classMap.put(name, result);			
+			classMap.put(name, result);
 		}
 		return result;
 	}
