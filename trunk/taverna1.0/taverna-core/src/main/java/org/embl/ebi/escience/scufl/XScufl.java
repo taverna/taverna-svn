@@ -16,7 +16,7 @@ import org.jdom.Namespace;
  */
 public class XScufl {
 
-	public static Namespace XScuflNS = Namespace.getNamespace("s",
+	public final static Namespace XScuflNS = Namespace.getNamespace("s",
 			"http://org.embl.ebi.escience/xscufl/0.1alpha");
 
 }
