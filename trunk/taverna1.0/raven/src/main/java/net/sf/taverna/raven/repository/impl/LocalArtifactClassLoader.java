@@ -144,43 +144,46 @@ public class LocalArtifactClassLoader extends URLClassLoader {
 	protected Class<?> findClass(String name,
 			Set<LocalArtifactClassLoader> seenLoaders)
 			throws ClassNotFoundException {
+		Class result = null;		
 		logger.debug("Searching for '" + name + "' - " + this);
-		seenLoaders.add(this);
-		if (classMap.containsKey(name)) {
-			logger.debug("Returning cached '" + name + "' - " + this);
-			return classMap.get(name);
-		}
-		try {
-			Class c = super.findClass(name);
-			classMap.put(name, c);
-			logger.debug("Returning found '" + name + "' - " + this);
-			return c;
-		} catch (ClassNotFoundException e) {
-			for (LocalArtifactClassLoader ac : childLoaders) {
-				if (!seenLoaders.contains(ac)) {
-					try {
-						Class c = ac.loadClass(name, seenLoaders);
-						classMap.put(name, c);
-						return c;
-					} catch (ClassNotFoundException cnfe) {
-						logger.debug("No '" + name + "' in " + this);
+		seenLoaders.add(this);		
+		synchronized(classMap) {
+			if (classMap.containsKey(name)) {
+				logger.debug("Returning cached '" + name + "' - " + this);
+				result = classMap.get(name);			
+			}
+			else {
+				try {
+					result = super.findClass(name);				
+					logger.debug("Returning found '" + name + "' - " + this);				
+				} catch (ClassNotFoundException e) {
+					for (LocalArtifactClassLoader ac : childLoaders) {
+						if (!seenLoaders.contains(ac)) {
+							try {
+								result = ac.loadClass(name, seenLoaders);													
+							} catch (ClassNotFoundException cnfe) {
+								logger.debug("No '" + name + "' in " + this);
+							}
+						}
 					}
 				}
+				catch(Error e) {
+					logger.error("Error finding class "+name,e);				
+				}			
 			}
+			if (result == null) {
+				throw new ClassNotFoundException(name);
+			}
+						
+			if (!classMap.containsKey(name)) classMap.put(name, result);
 		}
-		catch(Error e) {
-			logger.error("Error finding class "+name,e);
-			throw e;
-		}
-		throw new ClassNotFoundException(name);
-	}
-	
-	
+		return result;
+	}	
 
 	private Class<?> loadClass(String name,
 			Set<LocalArtifactClassLoader> seenLoaders)
 			throws ClassNotFoundException {
-		Class result = null;
+		Class result = null;		
 		if (classMap.get(name)!=null) {
 			result = classMap.get(name);
 		}
@@ -201,8 +204,10 @@ public class LocalArtifactClassLoader extends URLClassLoader {
 				} catch (ClassNotFoundException cnfe) {			
 				}
 				if (result==null) result = findClass(name, seenLoaders);
-			}
-			if (!classMap.containsKey(name)) classMap.put(name,result);
+			}			
+		}
+		if (!classMap.containsKey(name)) {
+			classMap.put(name, result);			
 		}
 		return result;
 	}
