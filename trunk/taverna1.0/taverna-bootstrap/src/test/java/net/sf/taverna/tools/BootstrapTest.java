@@ -3,6 +3,7 @@ package net.sf.taverna.tools;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Properties;
 
 import net.sf.taverna.tools.Bootstrap;
 
@@ -28,7 +29,6 @@ public class BootstrapTest extends TestCase {
 		assertEquals(0, tempHome.listFiles().length); //empty
 		System.setProperty("user.home", tempHome.getAbsolutePath());
 		// Needs to be blank to be able to auto-detect
-
 	}
 	
 	public void tearDown() throws IOException {
@@ -105,5 +105,5 @@ public class BootstrapTest extends TestCase {
 		assertEquals(shouldBe, dir);
 		assertTrue(dir.isDirectory());
 	}
-	
+			
 }
