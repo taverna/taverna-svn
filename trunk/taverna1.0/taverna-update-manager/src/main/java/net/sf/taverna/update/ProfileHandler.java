@@ -25,16 +25,15 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: ProfileHandler.java,v $
- * Revision           $Revision: 1.1 $
+ * Revision           $Revision: 1.2 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-10-25 15:28:18 $
+ * Last modified on   $Date: 2006-11-24 12:03:29 $
  *               by   $Author: sowen70 $
  * Created on 25 Oct 2006
  *****************************************************************/
 package net.sf.taverna.update;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.net.URL;
 
