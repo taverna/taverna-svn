@@ -11,8 +11,6 @@ import java.awt.Dimension;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringReader;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.WeakHashMap;
@@ -50,6 +48,7 @@ import org.w3c.dom.svg.SVGDocument;
  * 
  * @author Tom Oinn
  */
+@SuppressWarnings("serial")
 public class ScuflSVGDiagram extends JComponent implements
 		ScuflModelEventListener, WorkflowModelViewSPI {
 	
@@ -201,7 +200,7 @@ public class ScuflSVGDiagram extends JComponent implements
 			JOptionPane.showMessageDialog(ScuflSVGDiagram.this, ioe
 					.getMessage(), "Error!", JOptionPane.ERROR_MESSAGE);
 		} catch (Exception other) {
-			logger.error("Could not update graphics", other);
+			logger.warn("Could not update graphics");			
 		}
 		updateTimer = new Timer();
 		updateTimer.schedule(new UpdateTimer(), 0, 2000);
