@@ -294,7 +294,6 @@ class SplashScreen extends JWindow {
 
 	public void setProgress(int percentage) {
 		if (percentage > 0) {
-			//progress.setIndeterminate(false);
 			progress.setValue(percentage);
 		} else {
 			progress.setValue(0);
@@ -307,25 +306,21 @@ class SplashScreen extends JWindow {
 
 	public synchronized void requestClose() {
 		canClose = true;
-		//progress.setIndeterminate(false);
 		if (timedOut) {
 			closeMe();
 		}
 	}
 
 	private synchronized void requestCloseFromTimeout() {
-		timedOut = true;
+		timedOut = true;		
 		if (canClose) {
 			closeMe();
 		}
 	}
 
-	private synchronized void requestCloseFromMouse() {
-		timedOut = true;
-		if (canClose) {
-			setVisible(false);
-			dispose();
-		}
+	private synchronized void requestCloseFromMouse() {		
+		setVisible(false);
+		dispose();		
 	}
 
 	private synchronized void closeMe() {
