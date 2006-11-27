@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: PerspectiveSPI.java,v $
- * Revision           $Revision: 1.3 $
+ * Revision           $Revision: 1.4 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-11-20 11:03:26 $
+ * Last modified on   $Date: 2006-11-27 10:35:42 $
  *               by   $Author: sowen70 $
  * Created on 8 Nov 2006
  *****************************************************************/
@@ -68,4 +68,14 @@ public interface PerspectiveSPI {
 	 * Store internally any changes to the layout xml
 	 */
 	public void update(Element layoutElement);
+	
+	/**
+	 * Provides a hint for the position of perspective in the toolbar and menu.
+	 * The lower the value the earlier it will appear in the list.
+	 * 
+	 * Custom plugins are recommended to start with a value > 100 (allowing for a whopping 100 built in plugins!)
+	 */
+	public int positionHint();
+		
+	
 }

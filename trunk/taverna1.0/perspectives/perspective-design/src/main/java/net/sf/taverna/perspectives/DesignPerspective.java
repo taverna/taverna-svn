@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: DesignPerspective.java,v $
- * Revision           $Revision: 1.4 $
+ * Revision           $Revision: 1.5 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-11-15 12:44:53 $
+ * Last modified on   $Date: 2006-11-27 10:35:43 $
  *               by   $Author: sowen70 $
  * Created on 8 Nov 2006
  *****************************************************************/
@@ -52,6 +52,13 @@ public class DesignPerspective extends AbstractPerspective {
 	@Override
 	protected InputStream getLayoutResourceStream() {
 		return DesignPerspective.class.getResourceAsStream("/perspective-design.xml");
+	}
+
+	@Override
+	public int positionHint() {
+		return 1;
 	}	
+	
+	
 	
 }

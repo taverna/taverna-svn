@@ -25,10 +25,10 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: EnactPerspective.java,v $
- * Revision           $Revision: 1.5 $
+ * Revision           $Revision: 1.6 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-11-17 14:36:09 $
- *               by   $Author: dturi $
+ * Last modified on   $Date: 2006-11-27 10:35:43 $
+ *               by   $Author: sowen70 $
  * Created on 8 Nov 2006
  *****************************************************************/
 package net.sf.taverna.perspectives;
@@ -76,6 +76,13 @@ public class EnactPerspective extends AbstractPerspective {
         return EnactPerspective.class
                 .getResourceAsStream("/perspective-enact.xml");
     }
+
+	@Override
+	public int positionHint() {
+		return 2;
+	}
+    
+    
 
 }
 
@@ -128,6 +135,8 @@ class InvokeWorkflowInputsListener implements ModelChangeListener {
         // Ignore
         // FIXME: Would it work if we set an empty map?
     }
+    
+    
 
 }
 

@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: WorkbenchPerspectives.java,v $
- * Revision           $Revision: 1.8 $
+ * Revision           $Revision: 1.9 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-11-20 16:33:35 $
+ * Last modified on   $Date: 2006-11-27 10:35:43 $
  *               by   $Author: sowen70 $
  * Created on 10 Nov 2006
  *****************************************************************/
@@ -224,8 +224,7 @@ public class WorkbenchPerspectives {
 		}				 
 	}
 		
-	private void addPerspective(final PerspectiveSPI perspective, boolean makeActive) {
-		
+	private void addPerspective(final PerspectiveSPI perspective, boolean makeActive) {		
 		//ensure icon image is always 16x16		
 		ImageIcon buttonIcon = null;
 		if (perspective.getButtonIcon()!=null) {

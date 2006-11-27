@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: AbstractPerspective.java,v $
- * Revision           $Revision: 1.3 $
+ * Revision           $Revision: 1.4 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-11-20 11:03:26 $
+ * Last modified on   $Date: 2006-11-27 10:35:42 $
  *               by   $Author: sowen70 $
  * Created on 15 Nov 2006
  *****************************************************************/
@@ -82,5 +82,15 @@ public abstract class AbstractPerspective implements PerspectiveSPI {
 	 * @return the resource stream for the perspective
 	 */
 	protected abstract InputStream getLayoutResourceStream();
+
+	/**
+	 * default to 101, meaning that perspective that don't provide a hint will always appear
+	 * towards the end (Built in perspective coming first in a controlled order).
+	 */
+	public int positionHint() {
+		return 101;
+	}
+	
+	
 		
 }

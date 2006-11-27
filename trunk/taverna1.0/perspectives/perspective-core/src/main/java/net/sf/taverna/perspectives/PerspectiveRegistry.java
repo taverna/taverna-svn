@@ -25,14 +25,16 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: PerspectiveRegistry.java,v $
- * Revision           $Revision: 1.1 $
+ * Revision           $Revision: 1.2 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-11-09 11:54:48 $
+ * Last modified on   $Date: 2006-11-27 10:35:42 $
  *               by   $Author: sowen70 $
  * Created on 8 Nov 2006
  *****************************************************************/
 package net.sf.taverna.perspectives;
 
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import org.embl.ebi.escience.utils.TavernaSPIRegistry;
@@ -53,7 +55,17 @@ public class PerspectiveRegistry extends TavernaSPIRegistry<PerspectiveSPI>{
 		return instance;
 	}
 	
+	/**
+	 * Returns a list of the discovered Perspectives, sorted by increasing positionHint 
+	 * @return
+	 */
 	public List<PerspectiveSPI> getPerspectives() {
-		return findComponents();
+		List<PerspectiveSPI> result = findComponents();
+		Collections.sort(result, new Comparator<PerspectiveSPI>() {
+			public int compare(PerspectiveSPI o1, PerspectiveSPI o2) {
+				return new Integer(o1.positionHint()).compareTo(new Integer(o2.positionHint()));
+			}			
+		});
+		return result;
 	}
 }
