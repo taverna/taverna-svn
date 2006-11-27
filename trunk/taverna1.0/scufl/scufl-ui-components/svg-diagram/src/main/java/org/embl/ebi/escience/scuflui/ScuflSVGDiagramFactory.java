@@ -16,7 +16,7 @@ public class ScuflSVGDiagramFactory implements UIComponentFactorySPI {
 	}
 
 	public UIComponentSPI getComponent() {
-		return new ScuflSVGDiagram();
+		return new ScuflSVGDiagram(false, false);
 	}
 	
 }

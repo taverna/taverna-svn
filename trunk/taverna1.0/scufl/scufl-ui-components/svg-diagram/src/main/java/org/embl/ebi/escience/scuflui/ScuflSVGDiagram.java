@@ -8,6 +8,8 @@ package org.embl.ebi.escience.scuflui;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.event.ComponentEvent;
+import java.awt.event.ComponentListener;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringReader;
@@ -76,6 +78,15 @@ public class ScuflSVGDiagram extends JComponent implements
 
 	Timer updateTimer = null;
 
+	ComponentListener resizeListener = new ComponentListener() {
+		public void componentHidden(ComponentEvent e) {}
+		public void componentMoved(ComponentEvent e) {}
+		public void componentShown(ComponentEvent e) {}
+		public void componentResized(ComponentEvent e) {
+			graphicValid = false;
+		}
+	};
+
 	public String getDot() {
 		return dot.getDot();
 	}
@@ -89,22 +100,34 @@ public class ScuflSVGDiagram extends JComponent implements
 	}
 
 	public ScuflSVGDiagram() {
+		this(true, true);
+	}
+	
+	public ScuflSVGDiagram(boolean withStatusBar, boolean withScrollbars) {
 		super();
 		setBackground(Color.white);
 		setOpaque(false);
 		setLayout(new BorderLayout());
+		addComponentListener(resizeListener);
 		svgCanvas = new JSVGCanvas();
+		svgCanvas.setOpaque(false);
 		pane = new JSVGScrollPane(svgCanvas);
-		pane.setPreferredSize(new Dimension(0, 0));
-		add(pane, BorderLayout.CENTER);
-		JPanel statusPanel = new JPanel();
-		statusPanel.setLayout(new BoxLayout(statusPanel, BoxLayout.LINE_AXIS));
+		if (withScrollbars) {
+			pane.setPreferredSize(new Dimension(0, 0));
+			add(pane, BorderLayout.CENTER);
+		} else {
+			add(svgCanvas, BorderLayout.CENTER);
+		}
 		final JLabel statusLabel = new JLabel("No document");
-		statusPanel.add(Box.createRigidArea(new Dimension(5, 5)));
-		statusPanel.add(statusLabel);
-		statusPanel.add(Box.createHorizontalGlue());
-		statusPanel.setMaximumSize(new Dimension(6000, 30));
-		add(statusPanel, BorderLayout.SOUTH);
+		if (withStatusBar) {
+			JPanel statusPanel = new JPanel();
+			statusPanel.setLayout(new BoxLayout(statusPanel, BoxLayout.LINE_AXIS));
+			statusPanel.add(Box.createRigidArea(new Dimension(5, 5)));
+			statusPanel.add(statusLabel);
+			statusPanel.add(Box.createHorizontalGlue());
+			statusPanel.setMaximumSize(new Dimension(6000, 30));
+			add(statusPanel, BorderLayout.SOUTH);
+		}
 		svgCanvas.addSVGDocumentLoaderListener(new SVGDocumentLoaderAdapter() {
 			public void documentLoadingStarted(SVGDocumentLoaderEvent e) {
 				statusLabel.setText("Loading document...");
@@ -200,10 +223,10 @@ public class ScuflSVGDiagram extends JComponent implements
 			JOptionPane.showMessageDialog(ScuflSVGDiagram.this, ioe
 					.getMessage(), "Error!", JOptionPane.ERROR_MESSAGE);
 		} catch (Exception other) {
-			logger.warn("Could not update graphics");			
+			logger.warn("Could not update graphics");
 		}
 		updateTimer = new Timer();
-		updateTimer.schedule(new UpdateTimer(), 0, 2000);
+		updateTimer.schedule(new UpdateTimer(), 0, 1000);
 	}
 
 	public static SVGDocument getSVG(String dotText) throws IOException {
@@ -238,12 +261,10 @@ public class ScuflSVGDiagram extends JComponent implements
 	}
 
 	public void onDisplay() {
-		// TODO Auto-generated method stub
-		
 	}
 
 	public void onDispose() {
 		detachFromModel();		
 	}
-
+	
 }
