@@ -282,14 +282,14 @@ public class LocalRepository implements Repository {
 				}
 			} else if (s.equals(ArtifactStatus.Queued)) {
 				try {
-					fetch(repositories, a, "pom");
+					fetch(a, "pom");
 					moreToDo = true;
 				} catch (ArtifactNotFoundException e) {
 					logger.warn("Could not find artifact " + a, e);
 				}
 			} else if (s.equals(ArtifactStatus.Analyzed)) {
 				try {
-					fetch(repositories, a, "jar");
+					fetch(a, "jar");
 					moreToDo = true;
 				} catch (ArtifactNotFoundException e) {
 					logger.warn("Could not find artifact " + a, e);
@@ -453,22 +453,19 @@ public class LocalRepository implements Repository {
 	}
 
 	synchronized void forcePom(ArtifactImpl a) throws ArtifactNotFoundException {
-		fetch(repositories, a, "pom");
+		fetch(a, "pom");
 	}
 
 	/**
 	 * Fetch a remote POM or Jar and store it in the local repository
-	 * 
-	 * @param repositories2
-	 *            Array of URLs to maven2 repositories online
+	 * 	 
 	 * @param a
 	 *            The artifact to resolve the POM for
 	 * @param suffix
 	 *            The suffix of the file to fetch, either 'pom' or 'jar'
 	 * @throws ArtifactNotFoundException
 	 */
-	// fixme: repositories2 isn't used
-	private void fetch(List<URL> repositories2, ArtifactImpl a, String suffix)
+	private void fetch(ArtifactImpl a, String suffix)
 			throws ArtifactNotFoundException {
 		String fname = a.getArtifactId() + "-" + a.getVersion() + "." + suffix;
 		String repositoryPath = a.getGroupId().replaceAll("\\.", "/") + "/"
