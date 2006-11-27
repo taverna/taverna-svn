@@ -59,7 +59,7 @@ public class LocalArtifactClassLoader extends URLClassLoader {
 	}
 
 	protected LocalArtifactClassLoader(LocalRepository r, ClassLoader selfLoader) {
-		super(new URL[0], selfLoader);
+		super(new URL[0], selfLoader);				
 		repository = r;
 	}
 
@@ -137,7 +137,7 @@ public class LocalArtifactClassLoader extends URLClassLoader {
 
 	@Override
 	protected Class<?> findClass(String name) throws ClassNotFoundException {
-		return findClass(name, new HashSet<LocalArtifactClassLoader>());
+		return findClass(name, new HashSet<LocalArtifactClassLoader>());						
 	}
 
 	protected Class<?> findClass(String name,
@@ -145,7 +145,7 @@ public class LocalArtifactClassLoader extends URLClassLoader {
 			throws ClassNotFoundException {
 		Class result = null;
 		logger.debug("Searching for '" + name + "' - " + this);
-		seenLoaders.add(this);
+		seenLoaders.add(this);		
 
 		if (classMap.containsKey(name)) {
 			logger.debug("Returning cached '" + name + "' - " + this);
@@ -165,16 +165,17 @@ public class LocalArtifactClassLoader extends URLClassLoader {
 					}
 				}
 			} catch (Error e) {
-				logger.error("Error finding class " + name, e);
+				logger.error("Error finding class " + name + " ACL="+this, e);
 			}
 		}
 		if (result == null) {
 			throw new ClassNotFoundException(name);
 		}
 
-		if (!classMap.containsKey(name))
+		if (!classMap.containsKey(name)) {
 			classMap.put(name, result);
-
+		}
+		
 		return result;
 	}
 
