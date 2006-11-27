@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: CustomPerspective.java,v $
- * Revision           $Revision: 1.3 $
+ * Revision           $Revision: 1.4 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-11-27 12:13:29 $
+ * Last modified on   $Date: 2006-11-27 12:14:50 $
  *               by   $Author: sowen70 $
  * Created on 9 Nov 2006
  *****************************************************************/
@@ -83,7 +83,8 @@ public class CustomPerspective implements PerspectiveSPI {
 	}
 
 	/**
-	 * returns 101 by default so that custom perspectives fall after built in perspectives
+	 * returns 101 by default but is generally irrevelevant as CustomPerspectives are always
+	 * added after built in and plugin perspectives anyway.
 	 */
 	public int positionHint() {
 		return 101;
