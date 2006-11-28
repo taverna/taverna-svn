@@ -34,10 +34,10 @@ public class Bootstrap {
 	public static Properties properties;
 
 	// a list of locations that host the raven.properties
-	public final static String REMOTE_PROPERTIES = "http://www.cs.man.ac.uk/~sowen/taverna/profile/raven-1.5-SNAPSHOT.properties";
+	public final static String REMOTE_PROPERTIES = "http://www.mygrid.org.uk/taverna/updates/1.5/raven.properties";
 
 	// the name of the file the local properties get stored to and read from
-	private final static String LOCAL_PROPERTIES = "raven-1.5-SNAPSHOT.properties";
+	private final static String LOCAL_PROPERTIES = "raven-1.5.properties";
 
 	// Where Raven will store its repository, discovered by main()
 	public static String TAVERNA_CACHE = "";
