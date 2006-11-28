@@ -561,7 +561,11 @@ public class LocalRepository implements Repository {
 			try {				
 				Document doc=fac.newDocumentBuilder().parse(metadata.openStream());
 				String filename=getSnapshotFilenameFromMetaData(a,doc,suffix);
-				result = new URL(repository,repositoryDir+"/"+filename).openStream();
+				
+				//test for the file, with a short timeout
+				URLConnection con = new URL(repository,repositoryDir+"/"+filename).openConnection();
+				con.setConnectTimeout(500); 
+				result=con.getInputStream();
 				
 				logger.info("Returning snapshot stream to "+new URL(repository,repositoryDir+"/"+filename));
 				

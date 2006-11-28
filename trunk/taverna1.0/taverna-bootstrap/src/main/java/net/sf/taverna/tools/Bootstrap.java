@@ -13,6 +13,7 @@ import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
@@ -309,8 +310,8 @@ public class Bootstrap {
 		loaderURLs.add(new URL(cacheDir.toURI().toURL(),artifactLocation));
 		for (URL repository : remoteRepositories) {
 			URL loaderUrl=null;
-			if (loaderVersion.endsWith("-SNAPSHOT")) {
-				loaderUrl=getSnapshotUrl(loaderArtifactId,loaderGroupId,loaderVersion,repository);
+			if (loaderVersion.endsWith("-SNAPSHOT")) {				
+				loaderUrl=getSnapshotUrl(loaderArtifactId,loaderGroupId,loaderVersion,repository);				
 			}
 			else {
 				loaderUrl=new URL(repository, artifactLocation);
@@ -329,15 +330,20 @@ public class Bootstrap {
 		String loc=artifactURI(group, artifact, version);
 			
 		try {
+			//test if the URL exists, with a short timeout
 			result = new URL(repository,loc);
-			result.openStream();			
+			URLConnection con = result.openConnection();
+			con.setConnectTimeout(500);
+			con.getInputStream();			
 		}
 		catch(IOException e) {
 			result=null;
 			//try metadata
 			try {
 				URL metadata=new URL(repository, path+"/maven-metadata.xml");
-				Document doc=DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(metadata.openStream());
+				URLConnection con=metadata.openConnection();
+				con.setConnectTimeout(500);
+				Document doc=DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(con.getInputStream());
 				//generate file = <artifact>-<version>-<timestamp>-<buildnumber>.jar
 				NodeList timestamps=doc.getElementsByTagName("timestamp");
 				NodeList buildnumbers=doc.getElementsByTagName("buildNumber");				
