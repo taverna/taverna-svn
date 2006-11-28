@@ -42,7 +42,9 @@ import org.apache.log4j.PropertyConfigurator;
  */
 public class MyGridConfiguration {
 	
-	// Cache of properties for getProperty() and getProperties()  (clear with flushProperties() )
+	public static final String CONFIGURATION_DIRECTORY = "conf";
+
+    // Cache of properties for getProperty() and getProperties()  (clear with flushProperties() )
 	static Properties properties = null;
 
 	// Property filename/resource name
@@ -93,7 +95,7 @@ public class MyGridConfiguration {
 		// FIXME: Use loadUserProperties() and the gang to write
 		// out log4j.properties.dist.
 		
-		File log4j = new File(getUserDir("conf"), "log4j.properties");
+		File log4j = new File(getUserDir(CONFIGURATION_DIRECTORY), "log4j.properties");
 		if (log4j.canRead()) {
 			// FIXME: Can't do log4j.rootLogger=WARN, CONSOLE as 
 			// configure(String path) treats each call separately. 
@@ -275,7 +277,7 @@ public class MyGridConfiguration {
 	 */
 	static Properties loadUserProperties() {
 		Properties userProps = new Properties();
-		File confDir = getUserDir("conf");
+		File confDir = getUserDir(CONFIGURATION_DIRECTORY);
 		File propertyFile = new File(confDir, PROPERTIES);
 		if (!propertyFile.isFile()) {
 			return userProps;
@@ -328,7 +330,7 @@ public class MyGridConfiguration {
 	 * 
 	 */
 	static void writeDefaultProperties() {
-		File confDir = getUserDir("conf");
+		File confDir = getUserDir(CONFIGURATION_DIRECTORY);
 		File propDist = new File(confDir, PROPERTIES + ".dist");
 		File prop = new File(confDir, PROPERTIES);
 		boolean replaceProp; 
