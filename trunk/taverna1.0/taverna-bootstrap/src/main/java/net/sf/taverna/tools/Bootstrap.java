@@ -175,32 +175,13 @@ public class Bootstrap {
 			// .add(pos, url) makes sure we don't overwrite anything
 			urls.add(position, url);
 		}
-		// We'll put it in 1, not 0, so that raven.repository.0 can
-		// override .m2/repository
-		urls.add(1, findLocalMavenRepository());
+		
 		// Remove nulls and export as URL[]
 		while (urls.remove(null)) {
 			// nothing
 		}
 		return urls.toArray(new URL[0]);
-	}
-
-	/**
-	 * Find URL to local .m2/repository or return null.
-	 */
-	private static URL findLocalMavenRepository() {
-		File mavenRep = new File(System.getProperty("user.home"),
-				".m2/repository/");
-		if (!mavenRep.isDirectory()) {
-			return null;
-		}
-		try {
-			return mavenRep.toURI().toURL();
-		} catch (MalformedURLException e) {
-			System.err.println("Invalid maven repository: " + mavenRep);
-			return null;
-		}
-	}
+	}	
 
 	public static void invokeWorkbench(String[] args, Class workbenchClass)
 			throws IllegalAccessException, NoSuchMethodException {
