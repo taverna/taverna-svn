@@ -20,11 +20,13 @@ import java.util.Map.Entry;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
 
 public class Bootstrap {
 
@@ -303,17 +305,79 @@ public class Bootstrap {
 
 		// Use our local repository if possible
 		List<URL> loaderURLs = new ArrayList<URL>();
-		// loaderURLs.add(new URL(cacheDir.toURI().toURL(),artifactLocation));
-		loaderURLs.add(cacheDir.toURI().toURL());
+		
+		loaderURLs.add(new URL(cacheDir.toURI().toURL(),artifactLocation));
 		for (URL repository : remoteRepositories) {
-			loaderURLs.add(new URL(repository, artifactLocation));
+			URL loaderUrl=null;
+			if (loaderVersion.endsWith("-SNAPSHOT")) {
+				loaderUrl=getSnapshotUrl(loaderArtifactId,loaderGroupId,loaderVersion,repository);
+			}
+			else {
+				loaderUrl=new URL(repository, artifactLocation);
+			}
+			if (loaderUrl!=null)
+				loaderURLs.add(loaderUrl);
 		}
 		return loaderURLs;
+	}
+	
+	private static URL getSnapshotUrl(String artifact, String group, String version, URL repository) {
+		URL result=null;
+		String path=group.replaceAll("\\.", "/") + "/" + artifact + "/" + version;
+		
+		//try concrete path first
+		String loc=artifactURI(group, artifact, version);
+			
+		try {
+			result = new URL(repository,loc);
+			result.openStream();			
+		}
+		catch(IOException e) {
+			result=null;
+			//try metadata
+			try {
+				URL metadata=new URL(repository, path+"/maven-metadata.xml");
+				Document doc=DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(metadata.openStream());
+				//generate file = <artifact>-<version>-<timestamp>-<buildnumber>.jar
+				NodeList timestamps=doc.getElementsByTagName("timestamp");
+				NodeList buildnumbers=doc.getElementsByTagName("buildNumber");				
+				
+				if (timestamps.getLength()>0) {
+					String timestamp="";
+					String buildnumber;
+					
+					if (timestamps.getLength()>1) System.out.println("More than 1 timestamp for snapshot");
+					Node el=timestamps.item(0);
+					timestamp=el.getTextContent();
+					if (buildnumbers.getLength()>0) {
+						if (buildnumbers.getLength()>1) System.out.println("More than 1 buildnumber for snapshot");
+						el=buildnumbers.item(0);
+						buildnumber=el.getTextContent();
+						
+						String file=artifact+"-"+version.replace("-SNAPSHOT", "")+"-"+timestamp+"-"+buildnumber+".jar";						
+						result=new URL(repository,path+"/"+file);
+					}
+				}				
+			}
+			catch(IOException ex) {
+				//no metadata at this repository either so give up
+			}
+			catch(SAXException sex) {
+				System.out.println("SAX Exception parsing maven-metadata.xml for location "+path);
+				sex.printStackTrace();
+			}
+			catch(ParserConfigurationException pcex) {
+				System.out.println("ParserConfigurationException parsing maven-metadata.xml for location "+path);
+				pcex.printStackTrace();
+			}
+		}
+		
+		return result;
 	}
 
 	public static Method createLoaderMethod(List<URL> loaderURLs)
 			throws ClassNotFoundException, NoSuchMethodException {
-		Method loaderMethod;
+		Method loaderMethod;		
 		ClassLoader c = new URLClassLoader(loaderURLs.toArray(new URL[0]), null);
 
 		// override with system classloader if running in eclipse

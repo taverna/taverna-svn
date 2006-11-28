@@ -21,6 +21,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Map.Entry;
 
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+
 import net.sf.taverna.raven.log.Log;
 import net.sf.taverna.raven.repository.Artifact;
 import net.sf.taverna.raven.repository.ArtifactNotFoundException;
@@ -30,6 +33,10 @@ import net.sf.taverna.raven.repository.BasicArtifact;
 import net.sf.taverna.raven.repository.DownloadStatus;
 import net.sf.taverna.raven.repository.Repository;
 import net.sf.taverna.raven.repository.RepositoryListener;
+
+import org.w3c.dom.Document;
+import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
 
 /**
  * Represents the state of a local Maven2 repository on disk. Manages the queue
@@ -258,8 +265,8 @@ public class LocalRepository implements Repository {
 	private boolean act() {
 		boolean moreToDo = false;
 		Set<ArtifactImpl> temp = new HashSet<ArtifactImpl>(status.keySet());
-		for (ArtifactImpl a : temp) {
-			ArtifactStatus s = status.get(a);
+		for (ArtifactImpl a : temp) {			
+			ArtifactStatus s = status.get(a);			
 			if (s.equals(ArtifactStatus.Pom)) {
 				// logger.debug(a.toString());
 				if (!"jar".equals(a.getPackageType())) {
@@ -467,59 +474,147 @@ public class LocalRepository implements Repository {
 	 */
 	private void fetch(ArtifactImpl a, String suffix)
 			throws ArtifactNotFoundException {
-		String fname = a.getArtifactId() + "-" + a.getVersion() + "." + suffix;
-		String repositoryPath = a.getGroupId().replaceAll("\\.", "/") + "/"
-				+ a.getArtifactId() + "/" + a.getVersion() + "/" + fname;
-		for (URL repository : repositories) {
-			try {
-				URL pomLocation = new URL(repository, repositoryPath);
-				URLConnection connection = pomLocation.openConnection();
-				connection.connect();
-				int length = connection.getContentLength();
-				dlstatus.put(a, new DownloadStatusImpl(length));
-
-				InputStream is = connection.getInputStream();
-				// Opened the stream so presumably the thing exists
-				// Create the appropriate directory structure within the local
-				// repository
-				File toFile = ("pom".equals(suffix) ? pomFile(a) : jarFile(a));
-				if (!toFile.exists()) {
-					toFile.createNewFile();
-					FileOutputStream fos = new FileOutputStream(toFile);
-					setStatus(a,
-							"pom".equals(suffix) ? ArtifactStatus.PomFetching
-									: ArtifactStatus.JarFetching);
-					copyStream(is, fos, a);
-					dlstatus.remove(a);
-					setStatus(a, "pom".equals(suffix) ? ArtifactStatus.Pom
-							: ArtifactStatus.Jar);
-					return;
-				} else {
-					// Strange, file shouldn't have been there
+		
+			String fname = a.getArtifactId() + "-" + a.getVersion() + "." + suffix;
+			String repositoryDir = a.getGroupId().replaceAll("\\.", "/") + "/"
+					+ a.getArtifactId() + "/" + a.getVersion();
+			String repositoryPath = repositoryDir + "/" + fname;			
+			for (URL repository : repositories) {
+				try {
+					URL pomLocation = new URL(repository, repositoryPath);					
+	
+					InputStream is=null;
+					
+					try {
+						URLConnection connection = pomLocation.openConnection();						
+						connection.connect();
+						int length = connection.getContentLength();
+						dlstatus.put(a, new DownloadStatusImpl(length));
+						
+						is = connection.getInputStream();
+					}
+					catch(FileNotFoundException e) {
+						if (a.getVersion().endsWith("-SNAPSHOT")) {
+							is = getSnapshotArtifactStream(a,suffix,repository);
+						}
+						else {
+							logger.info(a + " not found in " + repository);
+						}
+					}
+					if (is != null) {
+						// Opened the stream so presumably the thing exists
+						// Create the appropriate directory structure within the local
+						// repository
+						File toFile = ("pom".equals(suffix) ? pomFile(a) : jarFile(a));
+						if (!toFile.exists()) {
+							toFile.createNewFile();
+							FileOutputStream fos = new FileOutputStream(toFile);
+							setStatus(a,
+									"pom".equals(suffix) ? ArtifactStatus.PomFetching
+											: ArtifactStatus.JarFetching);
+							copyStream(is, fos, a);
+							dlstatus.remove(a);
+							setStatus(a, "pom".equals(suffix) ? ArtifactStatus.Pom
+									: ArtifactStatus.Jar);
+							return;
+						}
+					}
+	
+				} catch (MalformedURLException e) {
+					logger.error("Malformed repository URL: " + repository, e);
+				} catch (IOException e) {
+					if (e instanceof FileNotFoundException) {
+						logger.info(a + " not found in " + repository);						
+					} else {
+						logger.warn("Could not read " + a, e);
+					}
+					// Ignore the exception, probably means we couldn't find the POM
+					// in the repository. If there are more repositories in the list
+					// this
+					// isn't neccessarily an issue.
 				}
-
-			} catch (MalformedURLException e) {
-				logger.error("Malformed repository URL: " + repository, e);
-			} catch (IOException e) {
-				if (e instanceof FileNotFoundException) {
-					logger.debug(a + " not found in " + repository);
-				} else {
-					logger.warn("Could not read " + a, e);
-				}
-				// Ignore the exception, probably means we couldn't find the POM
-				// in the repository. If there are more repositories in the list
-				// this
-				// isn't neccessarily an issue.
 			}
+			// No appropriate POM found in any of the repositories so throw an
+			// exception
+			setStatus(a, "pom".equals(suffix) ? ArtifactStatus.PomFailed
+					: ArtifactStatus.JarFailed);
+			dlstatus.remove(a);
+			throw new ArtifactNotFoundException("Can't find artifact for: " + a);		
+	}	
+	
+	/**
+	 * checks for a maven-metadata.xml, and if present opens it to find the current build and timestamp.
+	 * From this information it then generates a stream to the file, or return null if no such file exists.
+	 * 
+	 * @param a
+	 * @param suffix
+	 * @param repository
+	 * @return
+	 */
+	private InputStream getSnapshotArtifactStream(ArtifactImpl a,String suffix, URL repository) {		
+		String repositoryDir = a.getGroupId().replaceAll("\\.", "/") + "/"
+				+ a.getArtifactId() + "/" + a.getVersion();
+		InputStream result = null;		
+		try {
+			URL metadata = new URL(repository,repositoryDir+"/"+"maven-metadata.xml");			
+			DocumentBuilderFactory fac = DocumentBuilderFactory.newInstance();
+			try {				
+				Document doc=fac.newDocumentBuilder().parse(metadata.openStream());
+				String filename=getSnapshotFilenameFromMetaData(a,doc,suffix);
+				result = new URL(repository,repositoryDir+"/"+filename).openStream();
+				
+				logger.info("Returning snapshot stream to "+new URL(repository,repositoryDir+"/"+filename));
+				
+			} catch (SAXException e) {
+				logger.error("Error parsing maven-metadata.xml for artifact "+a+" at "+metadata);
+			} catch (IOException e) {
+				//metadata not found, so not a snapshot				
+			} catch (ParserConfigurationException e) {
+				logger.error("Error parsing maven-metadata.xml for artifact "+a+" at "+metadata);
+			}			
+			
+		} catch (MalformedURLException e) {
+			logger.error("Malformed URL",e);
 		}
-		// No appropriate POM found in any of the repositories so throw an
-		// exception
-		setStatus(a, "pom".equals(suffix) ? ArtifactStatus.PomFailed
-				: ArtifactStatus.JarFailed);
-		dlstatus.remove(a);
-		throw new ArtifactNotFoundException("Can't find artifact for: " + a);
+				
+		return result;
 	}
-
+	
+	/**
+	 * Queries the xml, and generates the filename which is
+	 * artifact-<version>-<timestamp>-<buildnumber>.suffix
+	 * @param a
+	 * @param doc
+	 * @param suffix
+	 * @return
+	 */
+	private String getSnapshotFilenameFromMetaData(Artifact a, Document doc, String suffix) {
+		NodeList ts=doc.getElementsByTagName("timestamp");
+		NodeList bn=doc.getElementsByTagName("buildNumber");
+		String timestamp="";
+		String buildnumber="";
+				
+		if (ts.getLength()>0) {
+			if (ts.getLength()!=1) logger.warn("metadata for snapshot for "+a+" contains multiple timestamp entries");
+			timestamp=ts.item(0).getTextContent();
+		}
+		else {
+			logger.warn("metadata for snapshot for "+a+" doesn't describe a timestamp");
+		}
+		
+		if (bn.getLength()>0) {
+			if (bn.getLength()!=1) logger.warn("metadata for snapshot for "+a+" contains multiple buildnumber entries");
+			buildnumber=bn.item(0).getTextContent();
+		}
+		else {
+			logger.warn("metadata for snapshot for "+a+" doesn't describe a buildnumber");
+		}				
+				
+		String filename=a.getArtifactId()+"-"+a.getVersion().replace("-SNAPSHOT", "")+"-"+timestamp+"-"+buildnumber+"."+suffix;
+		logger.info("SNAPSHOT filename="+filename);
+		return filename;
+	}
+	
 	private static class AcceptDirectoryFilter implements FileFilter {
 		public boolean accept(File f) {
 			return f.isDirectory();
