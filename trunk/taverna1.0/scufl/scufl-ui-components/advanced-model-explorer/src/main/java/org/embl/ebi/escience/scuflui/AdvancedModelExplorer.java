@@ -544,8 +544,8 @@ public class AdvancedModelExplorer extends JPanel implements
 		workOffline.setModel(new OfflineToggleModel(model));
 		toolbar.add(workOffline);
 
-		toolbar.add(Box.createHorizontalGlue());
-		toolbar.add(new JButton(new ResetAction(model,this)));
+		//toolbar.add(Box.createHorizontalGlue());
+		//toolbar.add(new JButton(new ResetAction(model,this)));
 
 		// Add the toolbar to the top of the panel
 		workflowPanel.add(toolbar, BorderLayout.PAGE_START);

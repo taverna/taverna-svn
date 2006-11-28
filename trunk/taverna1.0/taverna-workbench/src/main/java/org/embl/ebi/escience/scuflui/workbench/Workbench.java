@@ -504,6 +504,8 @@ public class Workbench extends JFrame {
 			}
 		};
 		a.putValue(Action.NAME, "Close workflow");
+		a.putValue(Action.SHORT_DESCRIPTION,"Close the current workflow");
+		a.putValue(Action.SMALL_ICON,TavernaIcons.deleteIcon);
 		return a;
 	}
 
