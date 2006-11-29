@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: WorkbenchPerspectives.java,v $
- * Revision           $Revision: 1.9 $
+ * Revision           $Revision: 1.10 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-11-27 10:35:43 $
+ * Last modified on   $Date: 2006-11-29 16:57:48 $
  *               by   $Author: sowen70 $
  * Created on 10 Nov 2006
  *****************************************************************/
@@ -38,7 +38,6 @@ import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
@@ -81,176 +80,205 @@ import org.jdom.output.XMLOutputter;
 
 @SuppressWarnings("serial")
 public class WorkbenchPerspectives {
-	
+
 	private static Logger logger = Logger
 			.getLogger(WorkbenchPerspectives.class);
-	
+
 	private ButtonGroup perspectiveButtons = new ButtonGroup();
+
 	private AbstractButton lastPerspectiveButton = null;
-	private Action openPerspectiveAction=null;
-	private Action deletePerspectiveAction=null;
-	private CurrentPerspectiveListener modelChangeListener = null;
-	private JMenu perspectivesMenu = null;		
+
+	private Action openPerspectiveAction = null;
+
+	private Action deletePerspectiveAction = null;
+
+	private CurrentPerspectiveListener modelChangeListener = null;	
+
 	Set<CustomPerspective> customPerspectives = null;
+
 	private ZBasePane basePane = null;
+
 	private JToolBar toolBar = null;
+
 	private Map<PerspectiveSPI, JToggleButton> perspectives = new HashMap<PerspectiveSPI, JToggleButton>();
-	
+
 	public ModelChangeListener getModelChangeListener() {
 		if (modelChangeListener == null) {
-			modelChangeListener = new CurrentPerspectiveListener();		
+			modelChangeListener = new CurrentPerspectiveListener();
 		}
 		return modelChangeListener;
 	}
 
-	public WorkbenchPerspectives(ZBasePane basePane, JToolBar toolBar) {
-		perspectivesMenu=new JMenu("Perspectives");
-		this.basePane=basePane;
-		this.toolBar=toolBar;
-		
+	public WorkbenchPerspectives(ZBasePane basePane, JToolBar toolBar) {		
+
+		this.basePane = basePane;
+		this.toolBar = toolBar;
+
+	}	
+
+	public JMenu getEditPerspectivesMenu() {
+		JMenu editPerspectivesMenu = new JMenu("Edit perspectives");
+
+		Action newPerspectiveAction = new AbstractAction() {
+
+			public void actionPerformed(ActionEvent e) {
+				String name = JOptionPane.showInputDialog(basePane,
+						"New perspective name");
+				if (name != null) {
+					newPerspective(name);
+				}
+			}
+		};
+
+		newPerspectiveAction.putValue(Action.NAME, "New ..");
+		newPerspectiveAction.putValue(Action.SMALL_ICON,
+				TavernaIcons.newIcon);
+		editPerspectivesMenu.add(newPerspectiveAction);
+		Action toggleEditAction = basePane.getToggleEditAction();
+		toggleEditAction.putValue(Action.SMALL_ICON, TavernaIcons.editIcon);
+		editPerspectivesMenu.add(toggleEditAction);
+
+		editPerspectivesMenu.add(getOpenPerspectiveAction());
+		editPerspectivesMenu.add(getSavePerspectiveAction());
+		editPerspectivesMenu.add(getDeleteCurrentPerspectiveAction());
+
+		return editPerspectivesMenu;
 	}
 
-	public JMenu getPerspectivesMenu() {
-		return perspectivesMenu;
-	}
-	
-	public void saveAll() throws FileNotFoundException, IOException {				
-		//update current perspective
-		PerspectiveSPI current=(PerspectiveSPI)ModelMap.getInstance().getNamedModel(ModelMap.CURRENT_PERSPECTIVE);
-		if (current!=null) { 
+	public void saveAll() throws FileNotFoundException, IOException {
+		// update current perspective
+		PerspectiveSPI current = (PerspectiveSPI) ModelMap.getInstance()
+				.getNamedModel(ModelMap.CURRENT_PERSPECTIVE);
+		if (current != null) {
 			current.update(basePane.getElement());
 		}
-		
+
 		CustomPerspectiveFactory.getInstance().saveAll(customPerspectives);
+
+		//FIXME: saving built in perspectives is currently a bit dangerous, and only
+		//done to save the split pane ratios. If a component fails, the save can fail making
+		//it difficult to get back the original perspective.
 		
-		for (PerspectiveSPI perspective : perspectives.keySet()) {
-			if (! (perspective instanceof CustomPerspective) ) {
-				savePerspective(perspective);
-			}
-		}
+//		for (PerspectiveSPI perspective : perspectives.keySet()) {
+//			if (!(perspective instanceof CustomPerspective)) {
+//				savePerspective(perspective);
+//			}
+//		}
 	}
-	
-	private void savePerspective(PerspectiveSPI perspective) {
-		
-		InputStreamReader isr = new InputStreamReader(perspective.getLayoutInputStream());
-		SAXBuilder builder = new SAXBuilder(false);
-		Document document;
-		try {
-			document = builder.build(isr);
-			
-			String filename=perspective.getClass().getName()+".perspective";
-			File file=new File(MyGridConfiguration.getUserDir("conf"),filename);
-			
-			XMLOutputter outputter=new XMLOutputter(Format.getPrettyFormat());
-			outputter.output(document.getRootElement(), new FileOutputStream(file));
-			
-		} catch (JDOMException e) {
-			logger.error("Error parsing perspective XML",e);
-		} catch (IOException e) {
-			logger.error("Error saving perspective XML",e);
-		}
-		
-		
-	}
-	
-	
+
+//	private void savePerspective(PerspectiveSPI perspective) {
+//
+//		InputStreamReader isr = new InputStreamReader(perspective
+//				.getLayoutInputStream());
+//		SAXBuilder builder = new SAXBuilder(false);
+//		Document document;
+//		try {
+//			document = builder.build(isr);
+//
+//			String filename = perspective.getClass().getName() + ".perspective";
+//			File file = new File(MyGridConfiguration.getUserDir("conf"),
+//					filename);
+//
+//			XMLOutputter outputter = new XMLOutputter(Format.getPrettyFormat());
+//			outputter.output(document.getRootElement(), new FileOutputStream(
+//					file));
+//
+//		} catch (JDOMException e) {
+//			logger.error("Error parsing perspective XML", e);
+//		} catch (IOException e) {
+//			logger.error("Error saving perspective XML", e);
+//		}
+//
+//	}
+
 	public void removeCustomPerspective(CustomPerspective perspective) {
 		customPerspectives.remove(perspective);
 		perspectives.remove(perspective);
 	}
-		
-	public void initialisePerspectives() {		
-		Action newPerspectiveAction = new AbstractAction() {
 
-			public void actionPerformed(ActionEvent e) {
-				String name=JOptionPane.showInputDialog(basePane,"New perspective name");
-				if (name!=null) {
-					newPerspective(name);
-				}
-			}			
-		};
-		
-		newPerspectiveAction.putValue(Action.NAME, "New ..");
-		newPerspectiveAction.putValue(Action.SMALL_ICON,TavernaIcons.newInputIcon);
-		perspectivesMenu.add(newPerspectiveAction);
-		Action toggleEditAction = basePane.getToggleEditAction();
-		toggleEditAction.putValue(Action.SMALL_ICON, TavernaIcons.editIcon);
-		perspectivesMenu.add(toggleEditAction);		
-		
-		perspectivesMenu.add(getOpenPerspectiveAction());
-		perspectivesMenu.add(getSavePerspectiveAction());
-		perspectivesMenu.add(getDeleteCurrentPerspectiveAction());
-		perspectivesMenu.addSeparator();
-				
-		List<PerspectiveSPI> perspectives = PerspectiveRegistry.getInstance().getPerspectives();
-		for (final PerspectiveSPI perspective : perspectives) {
+	public void initialisePerspectives() {
+
+		List<PerspectiveSPI> perspectives = PerspectiveRegistry.getInstance()
+				.getPerspectives();
+		for (final PerspectiveSPI perspective : perspectives) {			
 			updatePerspectiveWithSaved(perspective);
-			addPerspective(perspective,false);			
+			addPerspective(perspective, false);
 		}		
-		
-		toolBar.addSeparator();
-		perspectivesMenu.addSeparator();
-		
+
 		try {
-			customPerspectives = CustomPerspectiveFactory.getInstance().getAll();
+			customPerspectives = CustomPerspectiveFactory.getInstance()
+					.getAll();
 		} catch (IOException e) {
-			logger.error("Error reading user perspectives",e);				
+			logger.error("Error reading user perspectives", e);
 		}
-		if (customPerspectives!=null && customPerspectives.size()>0) {			
+		if (customPerspectives != null && customPerspectives.size() > 0) {
+			toolBar.addSeparator();			
+			
 			for (CustomPerspective perspective : customPerspectives) {
-				addPerspective(perspective,false);		
+				addPerspective(perspective, false);
 			}
 		}
+
 		for (Component c : toolBar.getComponents()) {
-			if (c instanceof AbstractButton) { 
-				((AbstractButton)c).doClick();
+			if (c instanceof AbstractButton) {
+				((AbstractButton) c).doClick();
 				break;
 			}
 		}
 	}
-	
+
 	private void updatePerspectiveWithSaved(PerspectiveSPI perspective) {
-		String filename=perspective.getClass().getName()+".perspective";
-		File file=new File(MyGridConfiguration.getUserDir("conf"),filename);
+		String filename = perspective.getClass().getName() + ".perspective";
+		File file = new File(MyGridConfiguration.getUserDir("conf"), filename);
 		if (file.exists()) {
 			try {
-				Document doc=new SAXBuilder().build(file);
+				Document doc = new SAXBuilder().build(file);
 				perspective.update(doc.detachRootElement());
 			} catch (JDOMException e) {
-				logger.error("Error parsing saved layout xml '"+filename+"'",e);
+				logger.error("Error parsing saved layout xml '" + filename
+						+ "'", e);
 			} catch (IOException e) {
-				logger.error("Error opening saved layout xml '"+filename+"'",e);
+				logger.error("Error opening saved layout xml '" + filename
+						+ "'", e);
 			}
-		}				 
-	}
-		
-	private void addPerspective(final PerspectiveSPI perspective, boolean makeActive) {		
-		//ensure icon image is always 16x16		
-		ImageIcon buttonIcon = null;
-		if (perspective.getButtonIcon()!=null) {
-			Image buttonImage = perspective.getButtonIcon().getImage();	
-			buttonIcon =new ImageIcon(buttonImage.getScaledInstance(16, 16, Image.SCALE_SMOOTH));
 		}
-		
-		final JToggleButton toolbarButton = new JToggleButton(perspective.getText(),buttonIcon);
-		toolbarButton.setToolTipText(perspective.getText()+" perspective");		
+	}
+
+	private void addPerspective(final PerspectiveSPI perspective,
+			boolean makeActive) {
+		// ensure icon image is always 16x16
+		ImageIcon buttonIcon = null;
+		if (perspective.getButtonIcon() != null) {
+			Image buttonImage = perspective.getButtonIcon().getImage();
+			buttonIcon = new ImageIcon(buttonImage.getScaledInstance(16, 16,
+					Image.SCALE_SMOOTH));
+		}
+
+		final JToggleButton toolbarButton = new JToggleButton(perspective
+				.getText(), buttonIcon);
+		toolbarButton.setToolTipText(perspective.getText() + " perspective");
 		Action action = new AbstractAction() {
 			public void actionPerformed(ActionEvent e) {
-				if (basePane.isEditable()) {					
-					JOptionPane.showMessageDialog(basePane, "Sorry, unable to change perspectives whilst in edit mode", "Cannot change perspective",JOptionPane.INFORMATION_MESSAGE);
-					//make sure selected button is the previous one.
-					if (lastPerspectiveButton!=null) lastPerspectiveButton.setSelected(true);
+				if (basePane.isEditable()) {
+					JOptionPane
+							.showMessageDialog(
+									basePane,
+									"Sorry, unable to change perspectives whilst in edit mode",
+									"Cannot change perspective",
+									JOptionPane.INFORMATION_MESSAGE);
+					// make sure selected button is the previous one.
+					if (lastPerspectiveButton != null)
+						lastPerspectiveButton.setSelected(true);
+				} else {
+					ModelMap.getInstance().setModel(
+							ModelMap.CURRENT_PERSPECTIVE, perspective);
+					lastPerspectiveButton = toolbarButton;
 				}
-				else {
-					ModelMap.getInstance().setModel(ModelMap.CURRENT_PERSPECTIVE, perspective);
-					lastPerspectiveButton=toolbarButton;
-				}
-			}				
-		};			
+			}
+		};
 		action.putValue(Action.NAME, perspective.getText());
-		action.putValue(Action.SMALL_ICON,buttonIcon);
+		action.putValue(Action.SMALL_ICON, buttonIcon);
 		
-		perspectivesMenu.add(action);						
 		toolbarButton.setAction(action);
 		toolBar.add(toolbarButton);
 		perspectiveButtons.add(toolbarButton);
@@ -259,31 +287,30 @@ public class WorkbenchPerspectives {
 			toolbarButton.doClick();
 		}
 	}
-	
+
 	private void openLayout(InputStream layoutStream) {
 		try {
 			InputStreamReader isr = new InputStreamReader(layoutStream);
 			SAXBuilder builder = new SAXBuilder(false);
 			Document document = builder.build(isr);
-			basePane.configure(document.detachRootElement());			
+			basePane.configure(document.detachRootElement());
 		} catch (Exception ex) {
 			ex.printStackTrace();
 			logger.error("Error opening layout file", ex);
 			JOptionPane.showMessageDialog(basePane,
-					"Error opening layout file: "
-							+ ex.getMessage());
+					"Error opening layout file: " + ex.getMessage());
 		}
 	}
-	
+
 	private void newPerspective(String name) {
-		Element layout=new Element("layout");
-		layout.setAttribute("name",name);
+		Element layout = new Element("layout");
+		layout.setAttribute("name", name);
 		layout.addContent(new WorkbenchZBasePane().getElement());
 		CustomPerspective p = new CustomPerspective(layout);
 		customPerspectives.add(p);
-		addPerspective(p,true);			
+		addPerspective(p, true);
 	}
-	
+
 	private Action getSavePerspectiveAction() {
 		Action result = new AbstractAction() {
 			public void actionPerformed(ActionEvent e) {
@@ -303,7 +330,7 @@ public class WorkbenchPerspectives {
 									.getPrettyFormat());
 							out.print(xo.outputString(element));
 							out.flush();
-							out.close();							
+							out.close();
 						} catch (IOException ex) {
 							logger.error("IOException saving layout", ex);
 							JOptionPane.showMessageDialog(basePane,
@@ -320,8 +347,8 @@ public class WorkbenchPerspectives {
 	}
 
 	private Action getOpenPerspectiveAction() {
-		if (openPerspectiveAction==null) {
-			openPerspectiveAction=new AbstractAction() {
+		if (openPerspectiveAction == null) {
+			openPerspectiveAction = new AbstractAction() {
 				public void actionPerformed(ActionEvent e) {
 					JFileChooser chooser = new JFileChooser();
 					chooser.setDialogTitle("Open Layout");
@@ -332,71 +359,90 @@ public class WorkbenchPerspectives {
 						File file = chooser.getSelectedFile();
 						if (file != null) {
 							try {
-								openLayout(file.toURI().toURL().openStream());							
-							}  catch(IOException ex) {
-								logger.error("Error saving default layout",ex);
+								openLayout(file.toURI().toURL().openStream());
+							} catch (IOException ex) {
+								logger.error("Error saving default layout", ex);
 							}
 						}
 					}
 				}
 			};
 			openPerspectiveAction.putValue(Action.NAME, "Load");
-			openPerspectiveAction.putValue(Action.SMALL_ICON, TavernaIcons.openIcon);
+			openPerspectiveAction.putValue(Action.SMALL_ICON,
+					TavernaIcons.openIcon);
 		}
 		return openPerspectiveAction;
 	}
-	
+
 	private Action getDeleteCurrentPerspectiveAction() {
-		if (deletePerspectiveAction==null) {
+		if (deletePerspectiveAction == null) {
 			deletePerspectiveAction = new AbstractAction() {
 				public void actionPerformed(ActionEvent e) {
-					int ret=JOptionPane.showConfirmDialog(basePane, "Are you sure you wish to delete the current perspective","Delete perspective?",JOptionPane.YES_NO_OPTION);
+					int ret = JOptionPane
+							.showConfirmDialog(
+									basePane,
+									"Are you sure you wish to delete the current perspective",
+									"Delete perspective?",
+									JOptionPane.YES_NO_OPTION);
 					if (ret == JOptionPane.YES_OPTION) {
-						PerspectiveSPI p = (PerspectiveSPI)ModelMap.getInstance().getNamedModel(ModelMap.CURRENT_PERSPECTIVE);
-						if (p!=null) {
-							ModelMap.getInstance().setModel(ModelMap.CURRENT_PERSPECTIVE, null);
-							basePane.setEditable(false); //cancel edit mode so perspective can be changed after deletion
+						PerspectiveSPI p = (PerspectiveSPI) ModelMap
+								.getInstance().getNamedModel(
+										ModelMap.CURRENT_PERSPECTIVE);
+						if (p != null) {
+							ModelMap.getInstance().setModel(
+									ModelMap.CURRENT_PERSPECTIVE, null);
+							basePane.setEditable(false); // cancel edit mode
+															// so perspective
+															// can be changed
+															// after deletion
 							if (p instanceof CustomPerspective) {
 								removeCustomPerspective((CustomPerspective) p);
 							}
 							try {
-								CustomPerspectiveFactory.getInstance().saveAll(customPerspectives);
+								CustomPerspectiveFactory.getInstance().saveAll(
+										customPerspectives);
 								refreshPerspectives();
 							} catch (FileNotFoundException e1) {
-								logger.error("No file to save custom perspectives",e1);
+								logger.error(
+										"No file to save custom perspectives",
+										e1);
 							} catch (IOException e1) {
-								logger.error("Error writing custom perspectives to file",e1);
+								logger
+										.error(
+												"Error writing custom perspectives to file",
+												e1);
 							}
 						}
 					}
 				}
-				
+
 			};
 			deletePerspectiveAction.putValue(Action.NAME, "Delete current");
-			deletePerspectiveAction.putValue(Action.SMALL_ICON,TavernaIcons.deleteIcon);		
+			deletePerspectiveAction.putValue(Action.SMALL_ICON,
+					TavernaIcons.deleteIcon);
 		}
 		return deletePerspectiveAction;
 	}
-	
+
 	/**
-	 * Recreates the menu and toolbar buttons. Useful if a perspective has been removed.
-	 *
+	 * Recreates the toolbar buttons. Useful if a perspective has been
+	 * removed.
+	 * 
 	 */
 	private void refreshPerspectives() {
 		toolBar.removeAll();
 		toolBar.repaint();
 		
-		perspectivesMenu.removeAll();
 		customPerspectives.clear();
 		initialisePerspectives();
 	}
-	
+
 	public void switchPerspective(PerspectiveSPI perspective) {
 		// If we don't know it, and it's not a custom perspective
-		// (where each instance is really unique), 
+		// (where each instance is really unique),
 		// we'll try to locate one of the existing buttons
-		if (! perspectives.containsKey(perspective) && 
-			! (perspective instanceof CustomPerspective)) {
+		if (!perspectives.containsKey(perspective)
+				&& !(perspective instanceof CustomPerspective)) {
 			for (PerspectiveSPI buttonPerspective : perspectives.keySet()) {
 				// FIXME: Should have some other identifier than getClass() ?
 				// First (sub)class instance wins
@@ -407,63 +453,62 @@ public class WorkbenchPerspectives {
 				}
 			}
 		}
-		
+
 		// Regardless of the above, we'll add it as a button
 		// if it still does not exist in the toolbar.
-		if (! perspectives.containsKey(perspective)) {
+		if (!perspectives.containsKey(perspective)) {
 			addPerspective(perspective, true);
 		}
 		// (Button should now be in perspectives)
-		
+
 		// Make sure the button is selected
 		perspectives.get(perspective).setSelected(true);
-		
-		if (perspective instanceof CustomPerspective) { 
-			//only allow custom perspectives to be editable.
+
+		if (perspective instanceof CustomPerspective) {
+			// only allow custom perspectives to be editable.
 			basePane.getToggleEditAction().setEnabled(true);
-			openPerspectiveAction.setEnabled(true);
-			deletePerspectiveAction.setEnabled(true);
+			getOpenPerspectiveAction().setEnabled(true);
+			getDeleteCurrentPerspectiveAction().setEnabled(true);
 		} else {
 			basePane.getToggleEditAction().setEnabled(false);
-			openPerspectiveAction.setEnabled(false);
-			deletePerspectiveAction.setEnabled(false);
+			getOpenPerspectiveAction().setEnabled(false);
+			getDeleteCurrentPerspectiveAction().setEnabled(false);
 		}
-		openLayout(perspective.getLayoutInputStream());	
+		openLayout(perspective.getLayoutInputStream());
 	}
-	
+
 	/**
-	 * Change perspective when ModelMap.CURRENT_PERSPECTIVE has been
-	 * modified. 
+	 * Change perspective when ModelMap.CURRENT_PERSPECTIVE has been modified.
 	 * 
 	 * @author Stian Soiland
 	 * @author Stuart Owen
-	 *
+	 * 
 	 */
 	public class CurrentPerspectiveListener implements ModelChangeListener {
-		
-		public boolean canHandle(String modelName, Object model) {	
-			return modelName.equals(ModelMap.CURRENT_PERSPECTIVE) && 
-					model instanceof PerspectiveSPI;
+
+		public boolean canHandle(String modelName, Object model) {
+			return modelName.equals(ModelMap.CURRENT_PERSPECTIVE)
+					&& model instanceof PerspectiveSPI;
 		}
 
 		public void modelCreated(String modelName, Object model) {
-			PerspectiveSPI perspective = (PerspectiveSPI)model;
+			PerspectiveSPI perspective = (PerspectiveSPI) model;
 			switchPerspective(perspective);
 		}
 
-		public void modelChanged(String modelName, Object oldModel, Object newModel) {
-			((PerspectiveSPI)oldModel).update(basePane.getElement());
-			
-			PerspectiveSPI perspective = (PerspectiveSPI)newModel;
+		public void modelChanged(String modelName, Object oldModel,
+				Object newModel) {
+			((PerspectiveSPI) oldModel).update(basePane.getElement());
+
+			PerspectiveSPI perspective = (PerspectiveSPI) newModel;
 			switchPerspective(perspective);
 		}
 
 		public void modelDestroyed(String modelName, Object oldModel) {
 			if (oldModel instanceof CustomPerspective) {
-				removeCustomPerspective((CustomPerspective)oldModel);
+				removeCustomPerspective((CustomPerspective) oldModel);
 			}
 		}
 	}
-	
-	
+
 }

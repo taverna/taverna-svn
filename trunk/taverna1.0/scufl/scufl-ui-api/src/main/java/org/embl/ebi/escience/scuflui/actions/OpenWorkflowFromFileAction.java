@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: OpenWorkflowFromFileAction.java,v $
- * Revision           $Revision: 1.2 $
+ * Revision           $Revision: 1.3 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-11-23 10:22:47 $
+ * Last modified on   $Date: 2006-11-29 16:57:48 $
  *               by   $Author: sowen70 $
  * Created on 20 Nov 2006
  *****************************************************************/
@@ -60,7 +60,7 @@ public class OpenWorkflowFromFileAction extends AbstractAction {
 
 	public OpenWorkflowFromFileAction(Component parentComponent) {
 		putValue(SMALL_ICON, TavernaIcons.openIcon);
-		putValue(NAME, "Open File...");
+		putValue(NAME, "Open workflow ...");
 		putValue(SHORT_DESCRIPTION, "Open a workflow from a file");
 		this.parentComponent=parentComponent;
 	}

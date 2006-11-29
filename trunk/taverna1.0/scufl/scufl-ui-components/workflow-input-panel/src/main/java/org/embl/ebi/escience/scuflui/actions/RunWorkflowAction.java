@@ -19,7 +19,7 @@ public class RunWorkflowAction extends AbstractAction {
 	public RunWorkflowAction(Component parentComponent) {
 		this.parentComponent = parentComponent;
 		putValue(SMALL_ICON, TavernaIcons.runIcon);
-		putValue(NAME, "Run Workflow...");
+		putValue(NAME, "Run workflow ...");
 		putValue(SHORT_DESCRIPTION, "Run the current workflow");
 	}
 	

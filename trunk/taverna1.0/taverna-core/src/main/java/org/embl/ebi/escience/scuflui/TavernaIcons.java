@@ -25,10 +25,10 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: TavernaIcons.java,v $
- * Revision           $Revision: 1.5 $
+ * Revision           $Revision: 1.6 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-11-08 12:46:39 $
- *               by   $Author: stain $
+ * Last modified on   $Date: 2006-11-29 16:57:48 $
+ *               by   $Author: sowen70 $
  * Created on 28-Jun-2006
  *****************************************************************/
 package org.embl.ebi.escience.scuflui;
@@ -45,7 +45,7 @@ public class TavernaIcons {
 	public static ImageIcon tavernaIcon, deleteIcon, zoomIcon, webIcon,
 			openIcon, runIcon, refreshIcon, editIcon, inputIcon, savePNGIcon,
 			outputIcon, inputPortIcon, outputPortIcon, dataLinkIcon,
-			constraintIcon, findIcon, folderOpenIcon, folderClosedIcon,
+			constraintIcon, findIcon, folderOpenIcon, folderClosedIcon, newIcon,
 			newInputIcon, newListIcon, inputValueIcon, xmlNodeIcon, leafIcon,
 			windowRun, windowScavenger, windowInput, windowDiagram,
 			windowExplorer, saveIcon, importIcon, openurlIcon, pauseIcon,
@@ -86,10 +86,12 @@ public class TavernaIcons {
 					.getResource("icons/generic/folder-closed.png"));
 			newInputIcon = new ImageIcon(c
 					.getResource("icons/generic/newinput.gif"));
+			newIcon = new ImageIcon(c.getResource("icons/generic/newinput.gif"));
 			newListIcon = new ImageIcon(c
 					.getResource("icons/generic/newlist.gif"));
 			inputValueIcon = new ImageIcon(c
 					.getResource("icons/generic/inputValue.gif"));
+			
 			xmlNodeIcon = new ImageIcon(c
 					.getResource("icons/generic/xml_node.gif"));
 			leafIcon = new ImageIcon(c.getResource("icons/generic/leaf.gif"));
