@@ -11,6 +11,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
@@ -18,6 +19,8 @@ import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.prefs.Preferences;
 
+import javax.swing.AbstractAction;
+import javax.swing.Action;
 import javax.swing.Box;
 import javax.swing.ButtonGroup;
 import javax.swing.ImageIcon;
@@ -27,6 +30,7 @@ import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
+import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
@@ -76,10 +80,28 @@ public class ScuflDiagramPanel extends JPanel implements WorkflowModelViewSPI {
 
 	final JFileChooser fc;
 
+	
+	
 	public javax.swing.ImageIcon getIcon() {
 		return TavernaIcons.windowDiagram;
 	}
 
+	JPopupMenu createSaveDiagramMenu() {
+		JPopupMenu menu = new JPopupMenu();
+		for (int i = 0; i < saveTypes.length; i++) {
+			String type = saveTypes[i];
+			String extension = saveExtensions[i];
+			ImageIcon icon = new ImageIcon(ScuflDiagramPanel.class
+					.getResource("icons/graphicalview/saveAs"
+							+ type.toUpperCase() + ".png"));
+			JMenuItem item = new JMenuItem("Save as " + saveTypeNames[i],
+					icon);
+			item.addActionListener(new DotInvoker(type, extension));
+			menu.add(item);
+		}
+		return menu;
+	}
+	
 	JPopupMenu createMenu() {
 		JPopupMenu menu = new JPopupMenu();
 		menu.add(new ShadedLabel("Port detail", ShadedLabel.TAVERNA_BLUE));
@@ -180,21 +202,17 @@ public class ScuflDiagramPanel extends JPanel implements WorkflowModelViewSPI {
 		// diagram.setFitToWindow(true);
 
 		JToolBar toolbar = new JToolBar();
-		toolbar.add(new JLabel("Save as "));
-		// Create the save buttons
-		for (int i = 0; i < saveTypes.length; i++) {
-			String type = saveTypes[i];
-			String extension = saveExtensions[i];
-			ImageIcon icon = new ImageIcon(ScuflDiagramPanel.class
-					.getResource("icons/graphicalview/saveAs"
-							+ type.toUpperCase() + ".png"));
-			JButton saveButton = new JButton(icon);
-			saveButton.setPreferredSize(new Dimension(25, 25));
-			saveButton.addActionListener(new DotInvoker(type, extension));
-			saveButton.setToolTipText("Save as " + saveTypeNames[i]);
-			toolbar.add(saveButton);
-		}
 
+		
+		final JButton saveAs = new JButton("Save diagram", 
+				TavernaIcons.savePNGIcon);
+		saveAs.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent ae) {
+				JPopupMenu menu = createSaveDiagramMenu();
+				menu.show(saveAs, 0, saveAs.getHeight());
+			}
+		});
+		toolbar.add(saveAs);
 		toolbar.addSeparator();
 
 		final JButton configure = new JButton("Configure diagram",
@@ -205,6 +223,8 @@ public class ScuflDiagramPanel extends JPanel implements WorkflowModelViewSPI {
 				menu.show(configure, 0, configure.getHeight());
 			}
 		});
+		toolbar.add(new JButton(new RefreshAction()));
+		toolbar.addSeparator();
 		toolbar.add(configure);
 		toolbar.add(Box.createHorizontalGlue());
 
@@ -307,5 +327,17 @@ public class ScuflDiagramPanel extends JPanel implements WorkflowModelViewSPI {
 	public void onDispose() {
 		diagram.detachFromModel();		
 	}
+
+	class RefreshAction extends AbstractAction {
+		public RefreshAction() {
+			putValue(SMALL_ICON, TavernaIcons.refreshIcon);
+			putValue(NAME, "Refresh");
+			putValue(SHORT_DESCRIPTION, "Redraw workflow diagram");
+		}
+		public void actionPerformed(ActionEvent e) {
+			updateDiagram();
+		}
+	}
+
 
 }
