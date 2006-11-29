@@ -1,22 +1,9 @@
 <basepane>
   <child>
-    <znode classname="net.sf.taverna.zaria.ZSplitPane">
-      <split ratio="0.3313559322033898" orientation="horizontal">
-        <right>
-          <znode classname="net.sf.taverna.zaria.ZRavenComponent">
-            <namedcomponent>
-              <name>Workflow Instance Container</name>
-            </namedcomponent>
-          </znode>
-        </right>
-        <left>
-          <znode classname="net.sf.taverna.zaria.ZRavenComponent">
-            <namedcomponent>
-              <name>Input Panel</name>
-            </namedcomponent>
-          </znode>
-        </left>
-      </split>
+    <znode classname="net.sf.taverna.zaria.ZRavenComponent">
+      <namedcomponent>
+        <name>Workflow Instance Container</name>
+      </namedcomponent>
     </znode>
   </child>
   <namedcomponents>
@@ -25,36 +12,6 @@
       <artifact>workflow-instance-container</artifact>
       <classname>org.embl.ebi.escience.scuflui.WorkflowInstanceContainerFactory</classname>
       <name>Workflow Instance Container</name>
-    </namedcomponent>
-    <namedcomponent>
-      <groupid>uk.org.mygrid.taverna</groupid>
-      <artifact>taverna-scavenger-ui</artifact>
-      <classname>org.embl.ebi.escience.scuflui.ScavengerTreePanelFactory</classname>
-      <name>Services</name>
-    </namedcomponent>
-    <namedcomponent>
-      <groupid>uk.org.mygrid.taverna.scufl.scufl-ui-components</groupid>
-      <artifact>scufl-diagram-panel</artifact>
-      <classname>org.embl.ebi.escience.scuflui.ScuflDiagramPanelFactory</classname>
-      <name>Workflow Diagram</name>
-    </namedcomponent>
-    <namedcomponent>
-      <groupid>uk.org.mygrid.taverna.scufl.scufl-ui-components</groupid>
-      <artifact>workflow-instance-container</artifact>
-      <classname>org.embl.ebi.escience.scuflui.WorkflowInstanceContainerFactory</classname>
-      <name>Instance Container</name>
-    </namedcomponent>
-    <namedcomponent>
-      <groupid>uk.org.mygrid.taverna.scufl.scufl-ui-components</groupid>
-      <artifact>workflow-input-panel</artifact>
-      <classname>org.embl.ebi.escience.scuflui.WorkflowInputPanelFactory</classname>
-      <name>Input Panel</name>
-    </namedcomponent>
-    <namedcomponent>
-      <groupid>uk.org.mygrid.taverna.scufl.scufl-ui-components</groupid>
-      <artifact>advanced-model-explorer</artifact>
-      <classname>org.embl.ebi.escience.scuflui.AdvancedModelExplorerFactory</classname>
-      <name>Advanced Model Explorer</name>
     </namedcomponent>
   </namedcomponents>
 </basepane>

@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: ModelMap.java,v $
- * Revision           $Revision: 1.7 $
+ * Revision           $Revision: 1.8 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-11-20 15:50:55 $
+ * Last modified on   $Date: 2006-11-29 12:25:01 $
  *               by   $Author: stain $
  * Created on 27 Oct 2006
  *****************************************************************/
@@ -52,6 +52,7 @@ import org.apache.log4j.Logger;
  * A 'model' can be any Object that has an effect on the UI
  * @author Stuart Owen
  * @author Tom Oinn
+ * @author Stian Soiland
  *
  */
 public class ModelMap {
@@ -88,22 +89,6 @@ public class ModelMap {
 	 * the current active perspective in the GUI.
 	 */
 	public final static String CURRENT_PERSPECTIVE = "currentPerspective";
-
-	/**
-	 * Used as a modelName for the workflow that is to be invoked
-	 * from the {@link net.sf.taverna.perspectives.EnactPerspective}
-	 * view. Setting this model will change the current perspective.
-	 */
-	public static final String INVOKE_WORKFLOW = "invokeWorkflow";
-    
-    /**
-     * Used as a modelName for the inputs of the workflow that is 
-     * to be invoked from the 
-     * {@link net.sf.taverna.perspectives.EnactPerspective} view. 
-     *  
-     * @see org.embl.ebi.escience.scuflui.spi.WorkflowModelInvokeSPI#setWorkflowInputs(Map<String, DataThing> inputs)
-     */
-    public static final String INVOKE_WORKFLOW_INPUTS = "invokeWorkflowInputs";
 	
 	
 	/**

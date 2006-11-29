@@ -59,6 +59,7 @@ import org.embl.ebi.escience.scufl.enactor.WorkflowInstance;
 import org.embl.ebi.escience.scuflui.TavernaIcons;
 import org.embl.ebi.escience.scuflui.actions.OpenWorkflowFromFileAction;
 import org.embl.ebi.escience.scuflui.actions.OpenWorkflowFromURLAction;
+import org.embl.ebi.escience.scuflui.actions.RunWorkflowAction;
 import org.embl.ebi.escience.scuflui.actions.SaveWorkflowAction;
 import org.embl.ebi.escience.scuflui.shared.ModelMap;
 import org.embl.ebi.escience.scuflui.shared.ScuflModelSet;
@@ -446,6 +447,9 @@ public class Workbench extends JFrame {
 		fileMenu.addSeparator();
 		fileMenu.add(new JMenuItem(new SaveWorkflowAction(this)));
 
+		fileMenu.addSeparator();
+		fileMenu.add(new JMenuItem(new RunWorkflowAction(this)));
+		
 		if (!workflowModels.isEmpty()) {
 			fileMenu.addSeparator();
 		}

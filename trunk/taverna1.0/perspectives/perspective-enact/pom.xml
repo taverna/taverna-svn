@@ -14,9 +14,5 @@
   		<groupId>uk.org.mygrid.taverna.perspectives</groupId>
   		<artifactId>perspective-core</artifactId>
   	</dependency>
-  	<dependency>
-        <groupId>uk.org.mygrid.taverna</groupId>
-        <artifactId>taverna-workbench</artifactId>
-  	</dependency>
   </dependencies>   
 </project>

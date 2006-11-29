@@ -88,7 +88,7 @@ import org.embl.ebi.escience.scuflui.renderers.RendererException;
 import org.embl.ebi.escience.scuflui.renderers.RendererRegistry;
 import org.embl.ebi.escience.scuflui.shared.XMLTree;
 import org.embl.ebi.escience.scuflui.spi.RendererSPI;
-import org.embl.ebi.escience.scuflui.spi.WorkflowModelInvokeSPI;
+import org.embl.ebi.escience.scuflui.spi.WorkflowModelViewSPI;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.input.SAXBuilder;
@@ -100,10 +100,10 @@ import org.jdom.output.XMLOutputter;
  * 
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover </a>
  * @author Stian Soiland
- * @version $Revision: 1.7 $
+ * @version $Revision: 1.8 $
  */
-public abstract class WorkflowInputMapBuilder extends JPanel implements
-        WorkflowModelInvokeSPI, ScuflModelEventListener {
+public class WorkflowInputMapBuilder extends JPanel implements
+        WorkflowModelViewSPI, ScuflModelEventListener {
 
     private static Logger logger = Logger
             .getLogger(WorkflowInputMapBuilder.class);
@@ -786,8 +786,7 @@ public abstract class WorkflowInputMapBuilder extends JPanel implements
                         && port.getMetadata().getDescription() != "") {
                     sb.append(port.getMetadata().getDescription());
                 } else {
-                    sb
-                            .append("<font color=\"#666666\"><i>no description</i></font>");
+                    sb.append("<font color=\"#666666\"><i>no description</i></font>");
                 }
                 sb.append("</p></html>");
                 JEditorPane portDetails = new JEditorPane("text/html", sb
@@ -1295,12 +1294,13 @@ public abstract class WorkflowInputMapBuilder extends JPanel implements
     }
 
     /**
-     * Fully implement this method to allow launch of the workflow display from
-     * the input panel
+     * Launch the workflow display from the input panel
      * 
      * @param inputObject
      */
-    public abstract void launchEnactorDisplay(Map inputObject);
+    public void launchEnactorDisplay(Map<String, DataThing> inputObject) {
+    	WorkflowInputPanelFactory.executeWorkflow(model, inputObject);
+    }
 
     /*
      * @see org.embl.ebi.escience.scuflui.ScuflUIComponent#attachToModel(org.embl.ebi.escience.scufl.ScuflModel)
@@ -1452,8 +1452,6 @@ public abstract class WorkflowInputMapBuilder extends JPanel implements
     }
 
     public void onDisplay() {
-        // TODO Auto-generated method stub
-
     }
 
     public void onDispose() {

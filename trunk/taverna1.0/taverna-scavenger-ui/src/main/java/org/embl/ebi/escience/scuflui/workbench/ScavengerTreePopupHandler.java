@@ -41,7 +41,7 @@ import org.embl.ebi.escience.scufl.ScuflWorkflowProcessor;
 import org.embl.ebi.escience.scufl.ScuflWorkflowProcessorFactory;
 import org.embl.ebi.escience.scufl.parser.XScuflParser;
 import org.embl.ebi.escience.scuflui.TavernaIcons;
-import org.embl.ebi.escience.scuflui.shared.ModelMap;
+import org.embl.ebi.escience.scuflui.WorkflowInputPanelFactory;
 import org.embl.ebi.escience.scuflui.shared.ShadedLabel;
 import org.embl.ebi.escience.scuflui.shared.UIUtils;
 import org.embl.ebi.escience.scuflworkers.ProcessorFactory;
@@ -185,42 +185,7 @@ public class ScavengerTreePopupHandler extends MouseAdapter {
 									// more complex one.
 								}
 								
-								ModelMap.getInstance().setModel(ModelMap.INVOKE_WORKFLOW,
-										m);
-
-								/**
-								 * TODO - the code below forces a hard dependency on the workflow input builder and
-								 * invoker UI components. This will have to be changed to insert the new workflow
-								 * model into the model set and force an immediate switch to an enactor perspective
-								 * so the user can run the new (trivial) workflow.
-								 */
-								/**
-								if (m.getWorkflowSourcePorts().length != 0) {
-									WorkflowInputMapBuilder thing = new WorkflowInputMapBuilder() {
-										public void launchEnactorDisplay(Map inputObject) {
-											try {
-												UIUtils.createFrame(m, new EnactorInvocation(FreefluoEnactorProxy
-														.getInstance(), m, inputObject), 100, 100, 600, 400);
-											} catch (WorkflowSubmissionException wse) {
-												JOptionPane.showMessageDialog(null,
-														"Problem invoking workflow engine : \n" + wse.getMessage(),
-														"Exception!", JOptionPane.ERROR_MESSAGE);
-											}
-										}
-									};
-									UIUtils.createFrame(m, thing, 100, 100, 600, 400);
-								} else {
-									try {
-										// No inputs so launch the enactor
-										// directly
-										UIUtils.createFrame(m, new EnactorInvocation(
-												FreefluoEnactorProxy.getInstance(), m, new HashMap()), 100, 100, 600,
-												400);
-									} catch (Exception ex) {
-										ex.printStackTrace();
-									}
-								}
-								*/
+								WorkflowInputPanelFactory.invokeWorkflow(m);
 							} catch (Exception ex) {
 								JOptionPane.showMessageDialog(null, "Unable to run operation : \n" + ex.getMessage(),
 										"Exception!", JOptionPane.ERROR_MESSAGE);

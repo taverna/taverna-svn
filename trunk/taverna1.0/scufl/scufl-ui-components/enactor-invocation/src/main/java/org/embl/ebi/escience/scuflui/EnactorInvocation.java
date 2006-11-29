@@ -51,8 +51,6 @@ import org.embl.ebi.escience.scuflui.shared.XMLTree;
 import org.embl.ebi.escience.scuflui.spi.ResultMapSaveSPI;
 import org.embl.ebi.escience.scuflui.spi.UIComponentSPI;
 
-import uk.ac.soton.itinnovation.freefluo.main.InvalidInputException;
-
 /**
  * Panel for displayed progress and ultimately the results when
  * enacting a workflow.
@@ -584,14 +582,7 @@ public class EnactorInvocation extends JPanel implements UIComponentSPI {
 		// setSize(new Dimension(600,300));
 		setVisible(true);
 		// show();
-		// Run the workflow and poll for status messages
-		try {
-			workflowInstance.run();
-		} catch (InvalidInputException e) {
-			WorkflowSubmissionException wse = new WorkflowSubmissionException(e
-					.getMessage());
-			throw wse;
-		}
+		// FIXME: Assumes that workflow is running
 		new EnactorInvocationStatusThread(this);
 	}
 
