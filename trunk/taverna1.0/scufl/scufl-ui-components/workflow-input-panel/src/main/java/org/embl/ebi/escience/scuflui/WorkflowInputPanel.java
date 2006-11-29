@@ -32,6 +32,8 @@ public class WorkflowInputPanel extends JPanel {
 	private static Logger logger = Logger.getLogger(WorkflowInputPanel.class);
 	
 	private ScuflModel model = null;
+	DiagramAndInputs diagramAndInputs;
+	
 	
 	public WorkflowInputPanel(ScuflModel model) {
 		super(new BorderLayout());
@@ -47,7 +49,8 @@ public class WorkflowInputPanel extends JPanel {
 		this.model = model;
 		removeAll();
 		add(new Header(), BorderLayout.NORTH);
-		add(new DiagramAndInputs(), BorderLayout.CENTER);
+		diagramAndInputs = new DiagramAndInputs();
+		add(diagramAndInputs, BorderLayout.CENTER);
 		add(new RunButtons(), BorderLayout.SOUTH);
 	}
 
@@ -144,6 +147,8 @@ public class WorkflowInputPanel extends JPanel {
 	
 	public class Inputs extends JPanel {
 		
+		private WorkflowInputMapBuilder builder;
+
 		public Inputs() {
 			super();
 			setLayout(new GridBagLayout());
@@ -154,7 +159,7 @@ public class WorkflowInputPanel extends JPanel {
 			c.weightx = 0.9;
 			c.anchor = GridBagConstraints.FIRST_LINE_START;
 			add(new ShadedLabel("Inputs", ShadedLabel.TAVERNA_GREEN), c);
-			final WorkflowInputMapBuilder builder = new WorkflowInputMapBuilder();
+			builder = new WorkflowInputMapBuilder();
 			// FIXME: also call detachFromModel
 			c.fill = GridBagConstraints.BOTH;
 			c.weighty = 0.1;
@@ -170,8 +175,7 @@ public class WorkflowInputPanel extends JPanel {
 		}
 	}
 
-	public void setInputs(Map<String, DataThing> inputs) {
-		// TODO Auto-generated method stub
-		
+	public void setInputs(Map<String, DataThing> inputs) throws InputsNotMatchingException {
+		diagramAndInputs.inputs.builder.setWorkflowInputs(inputs);
 	}
 }
