@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import javax.swing.ImageIcon;
+import javax.swing.JOptionPane;
 
 import net.sf.taverna.perspectives.EnactPerspective;
 
@@ -85,7 +86,19 @@ public class WorkflowInputPanelFactory implements UIComponentFactorySPI {
 		} 
 		WorkflowInputPanel panel = new WorkflowInputPanel(workflow);
 		if (inputs != null && inputs.size() > 0) {
-			panel.setInputs(inputs);			
+			try {
+                panel.setInputs(inputs);
+            } catch (InputsNotMatchingException e) {
+                Object[] options = { "Ok" };
+                JOptionPane
+                        .showOptionDialog(
+                                null,
+                                "Inputs do not match.",
+                                "Warning", JOptionPane.NO_OPTION,
+                                JOptionPane.WARNING_MESSAGE, null, options,
+                                options[0]);
+                logger.warn(e);
+            }			
 		}
 		UIUtils.createFrame(panel, 50, 50, 600, 600);
 		return panel;
