@@ -2,10 +2,15 @@ package org.embl.ebi.escience.scuflui;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.Window;
+import java.awt.event.ActionEvent;
 import java.util.Map;
 
+import javax.swing.AbstractAction;
+import javax.swing.Action;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -112,6 +117,8 @@ public class WorkflowInputPanel extends JPanel {
 			description.setLineWrap(true);
 			description.setOpaque(false);
 			description.setWrapStyleWord(true);
+			// Avoid stealing all width
+        	description.setMinimumSize(new Dimension(25, 10));
 			// FIXME: detach from model when window is closed
 			diagram.attachToModel(model);
 			add(description, BorderLayout.NORTH);
@@ -146,9 +153,7 @@ public class WorkflowInputPanel extends JPanel {
 	}
 	
 	public class Inputs extends JPanel {
-		
 		private WorkflowInputMapBuilder builder;
-
 		public Inputs() {
 			super();
 			setLayout(new GridBagLayout());
@@ -169,9 +174,14 @@ public class WorkflowInputPanel extends JPanel {
 	}
 
 	public class RunButtons extends JPanel {
+		Action runAction = new AbstractAction("Run workflow", TavernaIcons.runIcon){
+			public void actionPerformed(ActionEvent e) {
+				Map<String, DataThing> inputs = diagramAndInputs.inputs.builder.bakeInputMap();
+				WorkflowInputPanelFactory.executeWorkflow(model, inputs);
+			}
+		};
 		public RunButtons() {
-			add(new JButton("Cancel"));
-			add(new JButton("Run"));
+			add(new JButton(runAction), BorderLayout.EAST);
 		}
 	}
 

@@ -36,22 +36,7 @@ public class WorkflowInputPanelFactory implements UIComponentFactorySPI {
 
 	@SuppressWarnings("serial")
 	public UIComponentSPI getComponent() {
-		return new WorkflowInputMapBuilder() {
-			@Override
-			public void launchEnactorDisplay(Map inputObject) {
-				EnactorProxy enactor = FreefluoEnactorProxy.getInstance();
-				try {
-					WorkflowInstance instance = enactor.compileWorkflow(model, 
-							inputObject, 
-							EnactorInvocation.USERCONTEXT);
-					logger.debug("Compiled workflow " + instance);
-					ModelMap.getInstance().setModel(instance.getID(), instance);					
-					logger.debug("Running the workflow " + instance);
-				} catch (WorkflowSubmissionException e) {
-					logger.error("Could not submit workflow", e);
-				}	
-			}
-		};
+		return new WorkflowInputMapBuilder();
 	}
 	
 	/**

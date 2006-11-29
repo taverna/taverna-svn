@@ -69,6 +69,7 @@ import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.MutableTreeNode;
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
@@ -86,6 +87,7 @@ import org.embl.ebi.escience.scufl.ScuflModelEvent;
 import org.embl.ebi.escience.scufl.ScuflModelEventListener;
 import org.embl.ebi.escience.scuflui.renderers.RendererException;
 import org.embl.ebi.escience.scuflui.renderers.RendererRegistry;
+import org.embl.ebi.escience.scuflui.shared.ShadedLabel;
 import org.embl.ebi.escience.scuflui.shared.XMLTree;
 import org.embl.ebi.escience.scuflui.spi.RendererSPI;
 import org.embl.ebi.escience.scuflui.spi.WorkflowModelViewSPI;
@@ -100,69 +102,14 @@ import org.jdom.output.XMLOutputter;
  * 
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover </a>
  * @author Stian Soiland
- * @version $Revision: 1.8 $
+ * @version $Revision: 1.9 $
  */
 public class WorkflowInputMapBuilder extends JPanel implements
         WorkflowModelViewSPI, ScuflModelEventListener {
 
     private static Logger logger = Logger
             .getLogger(WorkflowInputMapBuilder.class);
-
-    /**
-     * NASTY - we'll do our own layout manager so that we can have our
-     * instructions label placed nicely next to the Run button.
-     * 
-     * @author Stian Soiland
-     */
-    class SouthLayoutManager implements LayoutManager {
-        final int GAP = 5;
-
-        public void addLayoutComponent(String name, Component comp) {
-        }
-
-        public void removeLayoutComponent(Component comp) {
-        }
-
-        public void layoutContainer(Container parent) {
-            Insets insets = parent.getInsets();
-            int x = insets.left + GAP;
-            for (Component c : parent.getComponents()) {
-                if (c instanceof JLabel) {
-                    int height = c.getPreferredSize().height;
-                    int width = parent.getSize().width - insets.left
-                            - insets.right;
-                    width -= preferredLayoutSize(parent).width;
-                    width += c.getMinimumSize().width;
-                    c.setSize(width, height);
-                    height = c.getPreferredSize().height;
-                    c.setSize(width, height);
-                } else {
-                    c.setSize(c.getMinimumSize());
-                }
-                // Place it low, from left to right
-                int y = parent.getSize().height - c.getHeight() - GAP
-                        - insets.top;
-                c.setLocation(x, y);
-                x += c.getSize().width + GAP;
-            }
-        }
-
-        public Dimension minimumLayoutSize(Container parent) {
-            return preferredLayoutSize(parent);
-        }
-
-        public Dimension preferredLayoutSize(Container parent) {
-            Dimension size = new Dimension();
-            for (Component c : parent.getComponents()) {
-                size.height = Math.max(size.height, c.getMinimumSize().height);
-                size.width = size.width + GAP + c.getMinimumSize().width;
-            }
-            // Some space on top/bottom
-            size.height += GAP * 2;
-            return size;
-        }
-    }
-
+    
     class PortTreeMouseListener extends MouseAdapter {
         public void mousePressed(MouseEvent e) {
             showPopup(e);
@@ -277,21 +224,6 @@ public class WorkflowInputMapBuilder extends JPanel implements
         }
     }
 
-    private class RunAction implements ActionListener {
-        public void actionPerformed(ActionEvent event) {
-            Map inputObject = bakeInputMap();
-            try {
-                launchEnactorDisplay(inputObject);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
-    RunAction runAction = new RunAction();
-
-    JButton runButton;
-
     private interface PanelTreeNode {
         public JComponent getPanel();
 
@@ -302,6 +234,86 @@ public class WorkflowInputMapBuilder extends JPanel implements
         public DataThing getDataThing();
     }
 
+    private ActionListener loadInputDocAction = new ActionListener() {
+        public void actionPerformed(ActionEvent e) {
+            try {
+                int returnVal = fileChooser
+                        .showOpenDialog(WorkflowInputMapBuilder.this);
+                if (returnVal == JFileChooser.APPROVE_OPTION) {
+                    File file = fileChooser.getSelectedFile();
+                    InputStreamReader stream = new InputStreamReader(
+                    		new FileInputStream(file),
+                    			Charset.forName("UTF-8"));
+                    Document inputDoc = new SAXBuilder(false)
+                            .build(stream);
+                    Map<String, DataThing> inputMap = DataThingXMLFactory
+                            .parseDataDocument(inputDoc);
+                    try {
+                        setWorkflowInputs(inputMap);
+                    } catch (InputsNotMatchingException iex) {	
+                        logger.error("Could not load input document, missing input",
+                                        iex);
+                        JOptionPane
+                                .showMessageDialog(
+                                        WorkflowInputMapBuilder.this,
+                                        "Could not load input document.\n"
+                                                + "Input document is missing input port '"
+                                                + iex.getMessage() + "'.",
+                                        "Missing input",
+                                        JOptionPane.ERROR_MESSAGE);
+                        return;
+                    }
+
+                    // FIXME: Force update
+//                    getPanel();
+                }
+            } catch (Exception ex) {
+                logger.error("Could not load input document", ex);
+                JOptionPane.showMessageDialog(WorkflowInputMapBuilder.this,
+                        "Problem loading input document: \n" + ex,
+                        "Exception!", JOptionPane.ERROR_MESSAGE);
+            }
+        }
+    };
+
+
+    private ActionListener saveInputDocAction = new ActionListener() {
+        public void actionPerformed(ActionEvent e) {
+            try {
+                int returnVal = fileChooser.showSaveDialog(WorkflowInputMapBuilder.this);
+                if (returnVal == JFileChooser.APPROVE_OPTION) {
+                    File file = fileChooser.getSelectedFile();
+                    // FileFilter fileFilter =
+                    // fileChooser.getFileFilter();
+                    OutputStreamWriter fileWriter = new OutputStreamWriter(
+                    		new FileOutputStream(file), 
+                    			Charset.forName("UTF-8"));
+                    BufferedWriter writer = new BufferedWriter(fileWriter);
+                    // XMLOutputter outputter = new XMLOutputter(Format
+                    // .getCompactFormat());
+                    XMLOutputter outputter = new XMLOutputter(Format
+                            .getPrettyFormat());
+                    BufferedReader reader = new BufferedReader(
+                            new StringReader(outputter.outputString(
+                              DataThingXMLFactory.getDataDocument(bakeInputMap()))));
+                    String line = null;
+                    while ((line = reader.readLine()) != null) {
+                        writer.write(line);
+                        writer.newLine();
+                    }
+                    writer.flush();
+                    fileWriter.flush();
+                }
+            } catch (Exception ex) {
+                JOptionPane.showMessageDialog(WorkflowInputMapBuilder.this,
+                        "Problem opening content from web : \n"
+                                + ex.getMessage(), "Exception!",
+                        JOptionPane.ERROR_MESSAGE);
+            }
+        }
+    };
+    
+    
     public class TreeTransferHandler implements DropTargetListener {
         private JTree tree;
 
@@ -438,81 +450,7 @@ public class WorkflowInputMapBuilder extends JPanel implements
 
         JScrollPane scrollPane;
 
-        private ActionListener loadInputDocAction = new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                try {
-                    int returnVal = fileChooser
-                            .showOpenDialog(WorkflowInputMapBuilder.this);
-                    if (returnVal == JFileChooser.APPROVE_OPTION) {
-                        File file = fileChooser.getSelectedFile();
-                        InputStreamReader stream = new InputStreamReader(
-                        		new FileInputStream(file),
-                        			Charset.forName("UTF-8"));
-                        Document inputDoc = new SAXBuilder(false)
-                                .build(stream);
-                        Map<String, DataThing> inputMap = DataThingXMLFactory
-                                .parseDataDocument(inputDoc);
-                        try {
-                            populateInputs(inputMap);
-                        } catch (InputsNotMatchingException iex) {
-                            logger.error("Could not load input document, missing input",
-                                            iex);
-                            JOptionPane
-                                    .showMessageDialog(
-                                            WorkflowInputMapBuilder.this,
-                                            "Could not load input document.\n"
-                                                    + "Input document is missing input port '"
-                                                    + iex.getMessage() + "'.",
-                                            "Missing input",
-                                            JOptionPane.ERROR_MESSAGE);
-                            return;
-                        }
-                        getPanel();
-                    }
-                } catch (Exception ex) {
-                    logger.error("Could not load input document", ex);
-                    JOptionPane.showMessageDialog(WorkflowInputMapBuilder.this,
-                            "Problem loading input document: \n" + ex,
-                            "Exception!", JOptionPane.ERROR_MESSAGE);
-                }
-            }
-        };
 
-        private ActionListener saveInputDocAction = new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                try {
-                    int returnVal = fileChooser.showSaveDialog(panel);
-                    if (returnVal == JFileChooser.APPROVE_OPTION) {
-                        File file = fileChooser.getSelectedFile();
-                        // FileFilter fileFilter =
-                        // fileChooser.getFileFilter();
-                        OutputStreamWriter fileWriter = new OutputStreamWriter(
-                        		new FileOutputStream(file), 
-                        			Charset.forName("UTF-8"));
-                        BufferedWriter writer = new BufferedWriter(fileWriter);
-                        // XMLOutputter outputter = new XMLOutputter(Format
-                        // .getCompactFormat());
-                        XMLOutputter outputter = new XMLOutputter(Format
-                                .getPrettyFormat());
-                        BufferedReader reader = new BufferedReader(
-                                new StringReader(outputter.outputString(
-                                  DataThingXMLFactory.getDataDocument(bakeInputMap()))));
-                        String line = null;
-                        while ((line = reader.readLine()) != null) {
-                            writer.write(line);
-                            writer.newLine();
-                        }
-                        writer.flush();
-                        fileWriter.flush();
-                    }
-                } catch (Exception ex) {
-                    JOptionPane.showMessageDialog(WorkflowInputMapBuilder.this,
-                            "Problem opening content from web : \n"
-                                    + ex.getMessage(), "Exception!",
-                            JOptionPane.ERROR_MESSAGE);
-                }
-            }
-        };
 
         /*
          * @see org.embl.ebi.escience.scuflui.DataThingConstructionPanel.PanelTreeNode#getPanel()
@@ -525,21 +463,21 @@ public class WorkflowInputMapBuilder extends JPanel implements
                 scrollPane = new JScrollPane();
                 scrollPane.setPreferredSize(new Dimension(0, 0));
                 JToolBar toolbar = new JToolBar();
-                JButton loadInputDocButton = new JButton("Load Input Doc",
-                        TavernaIcons.openIcon);
-                JButton saveInputDocButton = new JButton("Save Input Doc",
-                        TavernaIcons.saveIcon);
-
-                loadInputDocButton.setToolTipText("Load Input Document");
-                loadInputDocButton.addActionListener(loadInputDocAction);
-
-                saveInputDocButton.setToolTipText("Save Input Document");
-                saveInputDocButton.addActionListener(saveInputDocAction);
+//                JButton loadInputDocButton = new JButton("Load Input Doc",
+//                        TavernaIcons.openIcon);
+//                JButton saveInputDocButton = new JButton("Save Input Doc",
+//                        TavernaIcons.saveIcon);
+//
+//                loadInputDocButton.setToolTipText("Load Input Document");
+//                loadInputDocButton.addActionListener(loadInputDocAction);
+//
+//                saveInputDocButton.setToolTipText("Save Input Document");
+//                saveInputDocButton.addActionListener(saveInputDocAction);
 
                 toolbar.setFloatable(false);
                 toolbar.setRollover(true);
-                toolbar.add(loadInputDocButton);
-                toolbar.add(saveInputDocButton);
+//                toolbar.add(loadInputDocButton);
+//                toolbar.add(saveInputDocButton);
 
                 panel.add(scrollPane, BorderLayout.CENTER);
                 panel.add(toolbar, BorderLayout.NORTH);
@@ -727,7 +665,7 @@ public class WorkflowInputMapBuilder extends JPanel implements
                 add(child);
                 child.setDataThing(thing);
             } else {
-                InputDataThingNode child = new InputDataThingNode(thing);
+                InputDataThingNode child = new InputDataThingNode(getPort(), thing);
                 add(child);
             }
         }
@@ -746,62 +684,62 @@ public class WorkflowInputMapBuilder extends JPanel implements
         public Port getPort() {
             return port;
         }
-
+        
         /*
          * @see org.embl.ebi.escience.scuflui.DataThingConstructionPanel.PanelTreeNode#getPanel()
          */
-        public JComponent getPanel() {
-            if (portPanel == null) {
-                portPanel = new JPanel(new BorderLayout(3, 3));
-                portPanel
-                        .setBorder(BorderFactory.createEmptyBorder(3, 3, 3, 3));
-                JPanel descriptionPanel = new JPanel();
-                StringBuffer sb = new StringBuffer();
-                sb.append("<html><h2>Workflow Input : " + port.getName()
-                        + "</h2>");
-                sb
-                        .append("<table border=\"1\"><tr><td bgcolor=\"#ddeeff\" colspan=\"2\"><b>Input Metadata</b></td></tr><tr><td bgcolor=\"#ddeeff\"><b>Semantic type</b></td><td>\n");
-                if (port.getMetadata().getSemanticType() != null
-                        && port.getMetadata().getSemanticType() != "") {
-                    sb.append(port.getMetadata().getSemanticType());
-                } else {
-                    sb
-                            .append("<font color=\"#666666\"><i>not specified</i></font>");
-                }
-                sb.append("</td></tr>\n");
-                sb
-                        .append("<tr><td bgcolor=\"#ddeeff\"><b>Syntactic type</b></td><td>");
-                String[] bits = port.getSyntacticType().split("'");
-                sb.append(bits[0]);
-                String[] types = port.getMetadata().getMIMETypes();
-                for (int k = 0; k < types.length; k++) {
-                    if (k > 0) {
-                        sb.append(",");
-                    }
-                    sb.append(types[k]);
-                }
-                sb.append(bits[bits.length - 1]);
-                sb.append("</td></tr></table><p>");
-                if (port.getMetadata().getDescription() != null
-                        && port.getMetadata().getDescription() != "") {
-                    sb.append(port.getMetadata().getDescription());
-                } else {
-                    sb.append("<font color=\"#666666\"><i>no description</i></font>");
-                }
-                sb.append("</p></html>");
-                JEditorPane portDetails = new JEditorPane("text/html", sb
-                        .toString());
-                portDetails.setEditable(false);
-                JScrollPane scrollPane = new JScrollPane(portDetails);
-                scrollPane.setPreferredSize(new Dimension(0, 0));
-
-                descriptionPanel.setLayout(new BoxLayout(descriptionPanel,
-                        BoxLayout.Y_AXIS));
-                descriptionPanel.add(scrollPane);
-                portPanel.add(descriptionPanel, BorderLayout.CENTER);
-            }
-            return portPanel;
-        }
+//        public JComponent getPanel() {
+//            if (portPanel == null) {
+//                portPanel = new JPanel(new BorderLayout(3, 3));
+//                portPanel
+//                        .setBorder(BorderFactory.createEmptyBorder(3, 3, 3, 3));
+//                JPanel descriptionPanel = new JPanel();
+//                StringBuffer sb = new StringBuffer();
+//                sb.append("<html><h2>Workflow Input : " + port.getName()
+//                        + "</h2>");
+//                sb
+//                        .append("<table border=\"1\"><tr><td bgcolor=\"#ddeeff\" colspan=\"2\"><b>Input Metadata</b></td></tr><tr><td bgcolor=\"#ddeeff\"><b>Semantic type</b></td><td>\n");
+//                if (port.getMetadata().getSemanticType() != null
+//                        && port.getMetadata().getSemanticType() != "") {
+//                    sb.append(port.getMetadata().getSemanticType());
+//                } else {
+//                    sb
+//                            .append("<font color=\"#666666\"><i>not specified</i></font>");
+//                }
+//                sb.append("</td></tr>\n");
+//                sb
+//                        .append("<tr><td bgcolor=\"#ddeeff\"><b>Syntactic type</b></td><td>");
+//                String[] bits = port.getSyntacticType().split("'");
+//                sb.append(bits[0]);
+//                String[] types = port.getMetadata().getMIMETypes();
+//                for (int k = 0; k < types.length; k++) {
+//                    if (k > 0) {
+//                        sb.append(",");
+//                    }
+//                    sb.append(types[k]);
+//                }
+//                sb.append(bits[bits.length - 1]);
+//                sb.append("</td></tr></table><p>");
+//                if (port.getMetadata().getDescription() != null
+//                        && port.getMetadata().getDescription() != "") {
+//                    sb.append(port.getMetadata().getDescription());
+//                } else {
+//                    sb.append("<font color=\"#666666\"><i>no description</i></font>");
+//                }
+//                sb.append("</p></html>");
+//                JEditorPane portDetails = new JEditorPane("text/html", sb
+//                        .toString());
+//                portDetails.setEditable(false);
+//                JScrollPane scrollPane = new JScrollPane(portDetails);
+//                scrollPane.setPreferredSize(new Dimension(0, 0));
+//
+//                descriptionPanel.setLayout(new BoxLayout(descriptionPanel,
+//                        BoxLayout.Y_AXIS));
+//                descriptionPanel.add(scrollPane);
+//                portPanel.add(descriptionPanel, BorderLayout.CENTER);
+//            }
+//            return portPanel;
+//        }
 
         public boolean isText() {
             logger.debug(port.getMetadata().getDisplayTypeList());
@@ -846,6 +784,33 @@ public class WorkflowInputMapBuilder extends JPanel implements
         }
     }
 
+    public class PortDescription extends JPanel {
+    	Port port;
+    	public PortDescription(Port port) {
+    		super(new BorderLayout());
+    		this.port = port;
+    		add(makeTitle(), BorderLayout.NORTH);
+    		add(makeDescription(), BorderLayout.CENTER);
+    	}
+
+    	public ShadedLabel makeTitle() {
+    		return new ShadedLabel(port.getName(), 
+    				ShadedLabel.TAVERNA_BLUE);
+    	}
+    	
+    	public JTextArea makeDescription() {	   		
+        	String descriptionTxt = port.getMetadata().getDescription();
+        	JTextArea description = new JTextArea(descriptionTxt);
+        	description.setEditable(false);
+        	description.setLineWrap(true);
+        	description.setOpaque(false);
+        	description.setWrapStyleWord(true);
+        	// Avoid stealing all width of the split pane
+        	description.setMinimumSize(new Dimension(25, 10));
+        	return description;
+    	}
+    }
+    
     private class InputDataThingNode extends DefaultMutableTreeNode implements
             PanelTreeNode, DataThingNode {
         private DataThing thing;
@@ -855,7 +820,7 @@ public class WorkflowInputMapBuilder extends JPanel implements
         private List mimeTypes;
 
         JTextArea editor;
-
+        
         private ActionListener loadURLAction = new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 try {
@@ -951,13 +916,17 @@ public class WorkflowInputMapBuilder extends JPanel implements
             }
         };
 
-        public InputDataThingNode(Object inputValue, List mimeTypes) {
+		private Port port;
+
+        public InputDataThingNode(Port port, Object inputValue, List mimeTypes) {
             super(inputValue);
+            this.port = port;
             this.mimeTypes = mimeTypes;
         }
 
-        public InputDataThingNode(DataThing thing) {
+        public InputDataThingNode(Port port, DataThing thing) {
             super(thing.getDataObject());
+            this.port = port;
             this.thing = thing;
             this.mimeTypes = thing.getMetadata().getMIMETypeList();
         }
@@ -966,69 +935,72 @@ public class WorkflowInputMapBuilder extends JPanel implements
          * @see org.embl.ebi.escience.scuflui.DataThingConstructionPanel.PanelTreeNode#getPanel()
          */
         public JComponent getPanel() {
-            if (panel == null) {
-                JToolBar toolbar = new JToolBar();
-                JButton loadButton = new JButton("Load", TavernaIcons.openIcon);
-                JButton loadURLButton = new JButton("Load from URL",
-                        TavernaIcons.webIcon);
-                loadButton.setToolTipText("Load from File");
-                loadButton.addActionListener(loadFileAction);
-                loadURLButton.addActionListener(loadURLAction);
-                toolbar.setFloatable(false);
-                toolbar.setRollover(true);
-                toolbar.add(loadButton);
-                toolbar.add(loadURLButton);
-                if (store != null) {
-                    JButton loadLSIDButton = new JButton("Load LSID");
-                    loadLSIDButton.addActionListener(loadLSIDAction);
-                    toolbar.add(loadLSIDButton);
-                }
-                panel = new JPanel(new BorderLayout());
-                panel.add(toolbar, BorderLayout.NORTH);
-
-                if (isText()) {
-                    editor = new JTextArea();
-                    editor.setText((String) getUserObject());
-                    editor.getDocument().addDocumentListener(
-                            new DocumentListener() {
-                                public void insertUpdate(DocumentEvent e) {
-                                    setUserObject(editor.getText());
-                                    treeModel
-                                            .nodeChanged(InputDataThingNode.this);
-                                }
-
-                                public void removeUpdate(DocumentEvent e) {
-                                    setUserObject(editor.getText());
-                                    treeModel
-                                            .nodeChanged(InputDataThingNode.this);
-                                }
-
-                                public void changedUpdate(DocumentEvent e) {
-                                    setUserObject(editor.getText());
-                                    treeModel
-                                            .nodeChanged(InputDataThingNode.this);
-                                }
-                            });
-
-                    JScrollPane scrollPane = new JScrollPane(editor);
-                    scrollPane.setPreferredSize(new Dimension(0, 0));
-
-                    panel.add(scrollPane, BorderLayout.CENTER);
-
-                } else {
-                    RendererRegistry registry = RendererRegistry.instance();
-                    RendererSPI renderer = registry.getRenderer(getDataThing());
-                    try {
-                        JScrollPane scrollPane = new JScrollPane(renderer
-                                .getComponent(registry, thing));
-                        scrollPane.setPreferredSize(new Dimension(0, 0));
-                        panel.add(scrollPane, BorderLayout.CENTER);
-                    } catch (RendererException e) {
-                        e.printStackTrace();
-                    }
-                }
+            if (panel != null) {
+            	return panel;
             }
+//            JToolBar toolbar = new JToolBar();
+//            JButton loadButton = new JButton("Load", TavernaIcons.openIcon);
+//            JButton loadURLButton = new JButton("Load from URL",
+//            		TavernaIcons.webIcon);
+//            loadButton.setToolTipText("Load from File");
+//            loadButton.addActionListener(loadFileAction);
+//            loadURLButton.addActionListener(loadURLAction);
+//            toolbar.setFloatable(false);
+//            toolbar.setRollover(true);
+//            toolbar.add(loadButton);
+//            toolbar.add(loadURLButton);
+//            if (store != null) {
+//            	JButton loadLSIDButton = new JButton("Load LSID");
+//            	loadLSIDButton.addActionListener(loadLSIDAction);
+//            	toolbar.add(loadLSIDButton);
+//            }
+            panel = new JPanel(new BorderLayout());
+//            panel.add(toolbar, BorderLayout.NORTH);
+           
+            panel.add(new PortDescription(port),
+            		BorderLayout.NORTH);
 
+            if (isText()) {
+            	editor = new JTextArea();
+            	editor.setText((String) getUserObject());
+            	editor.getDocument().addDocumentListener(
+            			new DocumentListener() {
+            				public void insertUpdate(DocumentEvent e) {
+            					setUserObject(editor.getText());
+            					treeModel
+            					.nodeChanged(InputDataThingNode.this);
+            				}
+
+            				public void removeUpdate(DocumentEvent e) {
+            					setUserObject(editor.getText());
+            					treeModel
+            					.nodeChanged(InputDataThingNode.this);
+            				}
+
+            				public void changedUpdate(DocumentEvent e) {
+            					setUserObject(editor.getText());
+            					treeModel
+            					.nodeChanged(InputDataThingNode.this);
+            				}
+            			});
+
+            	JScrollPane scrollPane = new JScrollPane(editor);
+            	scrollPane.setPreferredSize(new Dimension(0, 0));
+
+            	panel.add(scrollPane, BorderLayout.CENTER);
+
+            } else {
+            	RendererRegistry registry = RendererRegistry.instance();
+            	RendererSPI renderer = registry.getRenderer(getDataThing());
+            	try {
+            		JScrollPane scrollPane = new JScrollPane(renderer
+            				.getComponent(registry, thing));
+            		scrollPane.setPreferredSize(new Dimension(0, 0));
+            		panel.add(scrollPane, BorderLayout.CENTER);
+            	} catch (RendererException e) {
+            		e.printStackTrace();
+            	}
+            }
             return panel;
         }
 
@@ -1144,8 +1116,6 @@ public class WorkflowInputMapBuilder extends JPanel implements
 
     JSplitPane splitter;
 
-    JPanel south;
-
     JTree portTree;
 
     static Pattern textPattern = Pattern.compile(".*text/.*");;
@@ -1171,11 +1141,13 @@ public class WorkflowInputMapBuilder extends JPanel implements
             }
             InputDataThingNode newNode;
             if (parent.isText()) {
-                newNode = new InputDataThingNode("Some input data goes here",
+                newNode = new InputDataThingNode(parent.getPort(),
+                		"Some input data goes here",
                         parent.getPort().getMetadata().getMIMETypeList());
             } else {
-                newNode = new InputDataThingNode(new byte[0], parent.getPort()
-                        .getMetadata().getMIMETypeList());
+                newNode = new InputDataThingNode(parent.getPort(), 
+                		new byte[0], 
+                		parent.getPort().getMetadata().getMIMETypeList());
             }
             parent.add(newNode);
             treeModel.nodeStructureChanged(parent);
@@ -1238,16 +1210,17 @@ public class WorkflowInputMapBuilder extends JPanel implements
                                 stringBuffer.append(string);
                                 stringBuffer.append("\n");
                             }
-                            newNode = new InputDataThingNode(stringBuffer
-                                    .toString(), parent.getPort().getMetadata()
-                                    .getMIMETypeList());
+                            newNode = new InputDataThingNode(parent.getPort(),
+                            		stringBuffer.toString(), 
+                            		parent.getPort().getMetadata().getMIMETypeList());
                             parent.add(newNode);
                         } else {
                             File file = files[index];
                             byte[] bytes = FileUtils.readFileToByteArray(file);
                             // Store as datathing
-                            newNode = new InputDataThingNode(bytes, parent
-                                    .getPort().getMetadata().getMIMETypeList());
+                            newNode = new InputDataThingNode(parent.getPort(),
+                            		bytes, 
+                            		parent.getPort().getMetadata().getMIMETypeList());
                             parent.add(newNode);
                         }
                     } catch (Exception exception) {
@@ -1293,15 +1266,6 @@ public class WorkflowInputMapBuilder extends JPanel implements
         rootNode.setWorkflowInputs(inputs);
     }
 
-    /**
-     * Launch the workflow display from the input panel
-     * 
-     * @param inputObject
-     */
-    public void launchEnactorDisplay(Map<String, DataThing> inputObject) {
-    	WorkflowInputPanelFactory.executeWorkflow(model, inputObject);
-    }
-
     /*
      * @see org.embl.ebi.escience.scuflui.ScuflUIComponent#attachToModel(org.embl.ebi.escience.scufl.ScuflModel)
      */
@@ -1334,30 +1298,26 @@ public class WorkflowInputMapBuilder extends JPanel implements
 
         JScrollPane scrollPane = new JScrollPane();
         scrollPane.setViewportView(portTree);
+        // Avoid the leftcomponent to become very tiny
+        scrollPane.setMinimumSize(new Dimension(100, 100));
 
         splitter = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
         splitter.setContinuousLayout(false);
         splitter.setLeftComponent(scrollPane);
         splitter.setPreferredSize(new Dimension(0, 0));
 
-        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-        runButton = new JButton("Run Workflow", TavernaIcons.runIcon);
-        runButton.addActionListener(runAction);
-        buttonPanel.add(runButton);
+        JButton loadInputDocButton = new JButton("Load Input Doc",
+                TavernaIcons.openIcon);
+        JButton saveInputDocButton = new JButton("Save Input Doc",
+                TavernaIcons.saveIcon);
 
-        // FIXME: Do this with any of the existing layout managers instead
-        south = new JPanel(new SouthLayoutManager());
-        JLabel instructions = new JLabel(
-                "<html><p>To input data into this workflow you must "
-                        + "select the item from the tree to the left of this panel and "
-                        + "either enter the data manually, upload from a file on your local "
-                        + "machine or load from a location on the internet. When all "
-                        + "workflow inputs have been populated as required you can click "
-                        + "the <code>Run workflow</code> button to run the workflow on "
-                        + "these inputs.</p></html>");
-        south.add(instructions);
-        south.add(buttonPanel);
+        loadInputDocButton.setToolTipText("Load Input Document");
+        loadInputDocButton.addActionListener(loadInputDocAction);
 
+        saveInputDocButton.setToolTipText("Save Input Document");
+        saveInputDocButton.addActionListener(saveInputDocAction);
+        
+        
         loadInputsButton = new JButton("Load Inputs", TavernaIcons.openIcon);
         loadInputsButton.setEnabled(false);
         loadInputsButton.addActionListener(loadFilesAction);
@@ -1374,6 +1334,9 @@ public class WorkflowInputMapBuilder extends JPanel implements
         JToolBar toolbar = new JToolBar();
         toolbar.setFloatable(false);
         toolbar.setRollover(true);
+        toolbar.add(loadInputDocButton);
+        toolbar.add(saveInputDocButton);
+        
         toolbar.add(loadInputsButton);
         toolbar.add(newInputButton);
         toolbar.add(newListButton);
@@ -1382,7 +1345,6 @@ public class WorkflowInputMapBuilder extends JPanel implements
         setLayout(new BorderLayout());
         add(toolbar, BorderLayout.NORTH);
         add(splitter, BorderLayout.CENTER);
-        add(south, BorderLayout.SOUTH);
 
         // Add listeners after all the GUI stuff has been created
         portTree.addTreeSelectionListener(new PortTreeSelectionListener());
