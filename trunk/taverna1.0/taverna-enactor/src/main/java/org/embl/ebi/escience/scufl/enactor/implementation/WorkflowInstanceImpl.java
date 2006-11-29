@@ -24,9 +24,9 @@
 //      Created for Project :   MYGRID
 //      Dependencies        :
 //
-//      Last commit info    :   $Author: dturi $
-//                              $Date: 2006-11-13 15:14:39 $
-//                              $Revision: 1.9 $
+//      Last commit info    :   $Author: stain $
+//                              $Date: 2006-11-29 12:10:28 $
+//                              $Revision: 1.10 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 package org.embl.ebi.escience.scufl.enactor.implementation;
@@ -157,6 +157,10 @@ public class WorkflowInstanceImpl implements WorkflowInstance {
 			logger.warn(msg);
 			throw new IllegalStateException(msg);
 		}
+	}
+	
+	public String toString() {
+		return workflowModel + " instance " + engineId + "@" + engine; 
 	}
 
 	/**
