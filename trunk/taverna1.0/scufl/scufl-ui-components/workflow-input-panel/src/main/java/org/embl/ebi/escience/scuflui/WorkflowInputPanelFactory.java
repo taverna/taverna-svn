@@ -97,7 +97,7 @@ public class WorkflowInputPanelFactory implements UIComponentFactorySPI {
                                 "Warning", JOptionPane.NO_OPTION,
                                 JOptionPane.WARNING_MESSAGE, null, options,
                                 options[0]);
-                logger.warn(e);
+                logger.warn("Inputs for workflow " + workflow + " don't match", e);
             }			
 		}
 		UIUtils.createFrame(panel, 50, 50, 600, 600);
