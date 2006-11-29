@@ -57,7 +57,7 @@ public class WorkflowInstanceContainer extends JPanel implements WorkflowInstanc
 			firstInstance = now;
 		}
 		DateFormat format = timeFormat;
-		if (now.getTime().getTime() - firstInstance.getTime().getTime() > 24*3600*1000) {
+		if (now.getTime().getTime() - firstInstance.getTime().getTime() > 24*60*60*1000) {
 			format = dateFormat; // include date
 		}
 		String title = instance.getWorkflowModel().getDescription().getTitle();
