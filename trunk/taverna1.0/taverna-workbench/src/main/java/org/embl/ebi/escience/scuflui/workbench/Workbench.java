@@ -216,8 +216,12 @@ public class Workbench extends JFrame {
 		
 		JMenuBar menuBar = getWorkbenchMenuBar();
 
-		setJMenuBar(menuBar);		
-		setSize(500, 500);
+		setJMenuBar(menuBar);	
+		
+		//set default size to 3/4 of width and height
+		Dimension screen=getToolkit().getScreenSize();
+		setSize((int)(screen.getWidth()*0.75), (int)(screen.getHeight()*0.75));
+		
 		addWindowListener(getWindowClosingAdaptor());
 		updateRepository();
 
