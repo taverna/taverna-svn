@@ -25,7 +25,26 @@ public class ZSplitPane extends ZPane {
 	
 	private static Log logger = Log.getLogger(ZSplitPane.class);
 	
-	private JSplitPane splitPane = new JSplitPane();
+	/** 
+	 * Set the divider location on the first call to getDividerLocation() - which 
+	 * should be after (or while) we have been displayed.
+	 * 
+	 * @author Stian Soiland
+	 *
+	 */
+	public class DividerLocationSplitPane extends JSplitPane {
+		private boolean initialDividerSet = false;
+		public int getDividerLocation() {
+			if (! initialDividerSet && getWidth() > 0) {
+				setDividerLocation(dividerLocation);
+				setResizeWeight(dividerLocation);
+				initialDividerSet = true;
+			}
+			return super.getDividerLocation();
+		}
+	}
+	
+	private JSplitPane splitPane = new DividerLocationSplitPane();
 	private double dividerLocation=0.5d;
 	private boolean dividerSet=true;
 
@@ -61,17 +80,17 @@ public class ZSplitPane extends ZPane {
 
 	}
 	
-	
-	@Override
-	public void repaint(long tm, int x, int y, int width, int height) {
-		super.repaint(tm, x, y, width, height);
-		if (splitPane.getWidth()!=0 && !dividerSet) {
-			splitPane.resetToPreferredSizes();
-			splitPane.setDividerLocation(dividerLocation);
-			splitPane.setResizeWeight(dividerLocation);			
-			dividerSet=true;
-		}
-	}	
+// No longer needed due to DividerLocationSplitPane
+//	@Override
+//	public void repaint(long tm, int x, int y, int width, int height) {
+//		super.repaint(tm, x, y, width, height);
+//		if (splitPane.getWidth()!=0 && !dividerSet) {
+//			splitPane.resetToPreferredSizes();
+//			splitPane.setDividerLocation(dividerLocation);
+//			splitPane.setResizeWeight(dividerLocation);			
+//			dividerSet=true;
+//		}
+//	}	
 
 	private List<Action> actions = new ArrayList<Action>();
 
@@ -116,7 +135,7 @@ public class ZSplitPane extends ZPane {
 		double total = splitPane.getOrientation() == JSplitPane.HORIZONTAL_SPLIT ? (double) splitPane
 				.getWidth() 
 				: (double) splitPane.getHeight();
-		double dividerLocation = (double) splitPane.getDividerLocation();
+		double dividerLocation = splitPane.getDividerLocation();
 		if (dividerLocation < 0)
 			dividerLocation = 0; // when the divider is far to one side, it
 									// the dividerlocation results in being
@@ -144,12 +163,12 @@ public class ZSplitPane extends ZPane {
 
 			Element leftElement = splitElement.getChild("left");
 			Element leftDefinition = leftElement.getChild("znode");
-			ZTreeNode leftNode = (ZTreeNode) componentFor(leftDefinition);
+			ZTreeNode leftNode = componentFor(leftDefinition);
 			splitPane.setLeftComponent((JComponent) leftNode);
 
 			Element rightElement = splitElement.getChild("right");
 			Element rightDefinition = rightElement.getChild("znode");
-			ZTreeNode rightNode = (ZTreeNode) componentFor(rightDefinition);
+			ZTreeNode rightNode = componentFor(rightDefinition);
 			splitPane.setRightComponent((JComponent) rightNode);
 
 			leftNode.configure(leftDefinition);
