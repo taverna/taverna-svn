@@ -52,14 +52,16 @@ public class WorkflowInstanceContainer extends JPanel implements WorkflowInstanc
 	}
 
 	private String instanceTitle(WorkflowInstance instance) {
-		String title = instance.getWorkflowModel().getDescription().getTitle();
-		if (firstInstance == null) {
-			firstInstance = Calendar.getInstance();
-		}
 		Calendar now = Calendar.getInstance();
-		// FIXME: if (now - title) < 24h, use timeFormat
-		title = title + " " + dateFormat.format(now.getTime());
-		return title;
+		if (firstInstance == null) {
+			firstInstance = now;
+		}
+		DateFormat format = timeFormat;
+		if (now.getTime().getTime() - firstInstance.getTime().getTime() > 24*3600) {
+			format = dateFormat; // include date
+		}
+		String title = instance.getWorkflowModel().getDescription().getTitle();
+		return title + " " + format.format(now.getTime());		
 	}
 	
 	public void newWorkflowInstance(String modelName, WorkflowInstance instance) {
@@ -80,13 +82,10 @@ public class WorkflowInstanceContainer extends JPanel implements WorkflowInstanc
 	}
 
 	public ImageIcon getIcon() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	public void onDisplay() {
-		// TODO Auto-generated method stub
-
 	}
 	
 	/**
