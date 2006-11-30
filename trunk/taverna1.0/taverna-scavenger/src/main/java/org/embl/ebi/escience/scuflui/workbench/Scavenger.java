@@ -13,12 +13,10 @@ import javax.swing.tree.DefaultMutableTreeNode;
  * 
  * @author Tom Oinn
  */
+@SuppressWarnings("serial")
 public class Scavenger extends DefaultMutableTreeNode {
 
 	public Scavenger(Object userObject) {
 		super(userObject);
-	} 
-	
-	
-	
+	} 	
 }

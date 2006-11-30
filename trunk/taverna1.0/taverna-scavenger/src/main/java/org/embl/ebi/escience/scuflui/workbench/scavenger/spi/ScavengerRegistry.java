@@ -25,16 +25,17 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: ScavengerRegistry.java,v $
- * Revision           $Revision: 1.2 $
+ * Revision           $Revision: 1.1 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-07-10 14:09:58 $
+ * Last modified on   $Date: 2006-11-30 16:05:19 $
  *               by   $Author: sowen70 $
  * Created on 30-Jun-2006
  *****************************************************************/
-package org.embl.ebi.escience.scuflui.workbench;
+package org.embl.ebi.escience.scuflui.workbench.scavenger.spi;
 
 import java.util.List;
 
+import org.embl.ebi.escience.scuflui.workbench.Scavenger;
 import org.embl.ebi.escience.utils.TavernaSPIRegistry;
 
 /**

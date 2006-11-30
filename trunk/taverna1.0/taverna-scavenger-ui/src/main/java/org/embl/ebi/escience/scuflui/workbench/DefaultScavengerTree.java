@@ -39,6 +39,7 @@ import org.embl.ebi.escience.scuflui.dnd.ProcessorSpecFragment;
 import org.embl.ebi.escience.scuflui.dnd.SpecFragmentTransferable;
 import org.embl.ebi.escience.scuflui.shared.ExtendedJTree;
 import org.embl.ebi.escience.scuflui.spi.WorkflowModelViewSPI;
+import org.embl.ebi.escience.scuflui.workbench.scavenger.spi.ScavengerRegistry;
 import org.embl.ebi.escience.scuflworkers.ProcessorFactory;
 import org.embl.ebi.escience.scuflworkers.ScavengerHelper;
 import org.embl.ebi.escience.scuflworkers.ScavengerHelperRegistry;
@@ -361,20 +362,16 @@ public class DefaultScavengerTree extends ExtendedJTree implements WorkflowModel
 		synchronized (getModel()) {
 			// Check to see we don't already have a scavenger with this name
 			String newName = theScavenger.getUserObject().toString();
-			for (String name : scavengerList) {				
-				if (name.equals(newName)) {
-					// Exit if we already have a scavenger by that name
-					return;
-				}
+			if (!scavengerList.contains(newName)) {			
+				this.scavengerList.add(theScavenger.getUserObject().toString());
+				treeModel.insertNodeInto(theScavenger, (MutableTreeNode) this.treeModel.getRoot(), this.treeModel
+						.getChildCount(this.treeModel.getRoot()));
+				treeModel.nodeStructureChanged(theScavenger);
+				// Set the visibility sensibly so that the root node
+				// is expanded and visible
+				TreePath path = new TreePath(this.root);
+				expandPath(path);
 			}
-			this.scavengerList.add(theScavenger.getUserObject().toString());
-			treeModel.insertNodeInto(theScavenger, (MutableTreeNode) this.treeModel.getRoot(), this.treeModel
-					.getChildCount(this.treeModel.getRoot()));
-			treeModel.nodeStructureChanged(theScavenger);
-			// Set the visibility sensibly so that the root node
-			// is expanded and visible
-			TreePath path = new TreePath(this.root);
-			expandPath(path);
 		}
 	}
 

@@ -10,7 +10,7 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import net.sf.taverna.utils.MyGridConfiguration;
 
 import org.embl.ebi.escience.scuflui.workbench.Scavenger;
-import org.embl.ebi.escience.scuflui.workbench.ScavengerRegistry;
+import org.embl.ebi.escience.scuflui.workbench.scavenger.spi.ScavengerRegistry;
 import org.embl.ebi.escience.scuflworkers.ProcessorFactory;
 import org.embl.ebi.escience.scuflworkers.ScavengerHelper;
 import org.embl.ebi.escience.scuflworkers.ScavengerHelperRegistry;

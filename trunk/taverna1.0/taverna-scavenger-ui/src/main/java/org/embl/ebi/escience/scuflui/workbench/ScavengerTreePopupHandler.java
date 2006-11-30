@@ -44,6 +44,8 @@ import org.embl.ebi.escience.scuflui.TavernaIcons;
 import org.embl.ebi.escience.scuflui.WorkflowInputPanelFactory;
 import org.embl.ebi.escience.scuflui.shared.ShadedLabel;
 import org.embl.ebi.escience.scuflui.shared.UIUtils;
+import org.embl.ebi.escience.scuflui.workbench.scavenger.spi.ScavengerActionRegistry;
+import org.embl.ebi.escience.scuflui.workbench.scavenger.spi.ScavengerActionSPI;
 import org.embl.ebi.escience.scuflworkers.ProcessorFactory;
 import org.embl.ebi.escience.scuflworkers.ProcessorHelper;
 import org.embl.ebi.escience.scuflworkers.ScavengerHelper;
@@ -319,6 +321,15 @@ public class ScavengerTreePopupHandler extends MouseAdapter {
 						}
 					});
 				} else if (scuflObject instanceof String) {
+					
+					if (node instanceof Scavenger) {
+						List<ScavengerActionSPI> actions = ScavengerActionRegistry.getInstance().getActions((Scavenger)node);
+						for (ScavengerActionSPI action : actions) {
+							JMenuItem item = new JMenuItem(action.getDescription(),action.getIcon());
+							item.addActionListener(action.getListener((Scavenger)node));
+							menu.add(item);
+						}						
+					}
 					// Catch the click on the 'Available Processors' text to add
 					// a new scavenger
 					String choice = (String) scuflObject;
