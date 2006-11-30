@@ -21,7 +21,9 @@ import org.embl.ebi.escience.scuflui.TavernaIcons;
 import org.embl.ebi.escience.scuflui.shared.ExtensionFileFilter;
 
 /**
- * COMMENT
+ * Outdated action for loading a workflow into a current model.
+ * See OpenWorkflowFromFileAction and OpenWorkflowFromURLAction instead.
+ * 
  * 
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover</a>
  * @version $Revision$
