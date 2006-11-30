@@ -219,7 +219,7 @@ public class FetaRDFSParser2 {
 
 	public static void main(String[] args) {
 
-		String ontURLAsString = "http://phoebus.cs.man.ac.uk:8100/feta-beta/mygrid/ontology/mygrid-services-lite.rdfs";
+		String ontURLAsString = "http://www.mygrid.org.uk:8100/feta-beta/mygrid/ontology/mygrid-services-lite.rdfs";
 		try {
 			URL ontoURL = new URL(ontURLAsString);
 			FetaOntology fetaOnt = new FetaOntology(ontoURL);
