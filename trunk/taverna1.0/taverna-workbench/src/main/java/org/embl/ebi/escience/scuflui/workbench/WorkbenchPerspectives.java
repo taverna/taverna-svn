@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: WorkbenchPerspectives.java,v $
- * Revision           $Revision: 1.10 $
+ * Revision           $Revision: 1.11 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-11-29 16:57:48 $
+ * Last modified on   $Date: 2006-11-30 11:23:46 $
  *               by   $Author: sowen70 $
  * Created on 10 Nov 2006
  *****************************************************************/
@@ -201,7 +201,7 @@ public class WorkbenchPerspectives {
 		List<PerspectiveSPI> perspectives = PerspectiveRegistry.getInstance()
 				.getPerspectives();
 		for (final PerspectiveSPI perspective : perspectives) {			
-			updatePerspectiveWithSaved(perspective);
+			//updatePerspectiveWithSaved(perspective);
 			addPerspective(perspective, false);
 		}		
 
@@ -227,22 +227,22 @@ public class WorkbenchPerspectives {
 		}
 	}
 
-	private void updatePerspectiveWithSaved(PerspectiveSPI perspective) {
-		String filename = perspective.getClass().getName() + ".perspective";
-		File file = new File(MyGridConfiguration.getUserDir("conf"), filename);
-		if (file.exists()) {
-			try {
-				Document doc = new SAXBuilder().build(file);
-				perspective.update(doc.detachRootElement());
-			} catch (JDOMException e) {
-				logger.error("Error parsing saved layout xml '" + filename
-						+ "'", e);
-			} catch (IOException e) {
-				logger.error("Error opening saved layout xml '" + filename
-						+ "'", e);
-			}
-		}
-	}
+//	private void updatePerspectiveWithSaved(PerspectiveSPI perspective) {
+//		String filename = perspective.getClass().getName() + ".perspective";
+//		File file = new File(MyGridConfiguration.getUserDir("conf"), filename);
+//		if (file.exists()) {
+//			try {
+//				Document doc = new SAXBuilder().build(file);
+//				perspective.update(doc.detachRootElement());
+//			} catch (JDOMException e) {
+//				logger.error("Error parsing saved layout xml '" + filename
+//						+ "'", e);
+//			} catch (IOException e) {
+//				logger.error("Error opening saved layout xml '" + filename
+//						+ "'", e);
+//			}
+//		}
+//	}
 
 	private void addPerspective(final PerspectiveSPI perspective,
 			boolean makeActive) {
