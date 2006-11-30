@@ -41,6 +41,9 @@
 
 	<!-- logbook -->
 	<artifact groupId="uk.org.mygrid.provenance" artifactId="logbook-ui" version="1.2.0-SNAPSHOT"/>
+	
+	<!-- feta -->
+	<artifact groupId="uk.org.mygrid.feta" artifactId="feta-client" version="1.1-SNAPSHOT" />
 
 	<!-- system sax parser -->
 	<artifact groupId="xerces" artifactId="xercesImpl" version="2.6.2" system="true"/>
