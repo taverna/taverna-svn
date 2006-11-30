@@ -25,10 +25,10 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: OpenWorkflowFromFileAction.java,v $
- * Revision           $Revision: 1.3 $
+ * Revision           $Revision: 1.4 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-11-29 16:57:48 $
- *               by   $Author: sowen70 $
+ * Last modified on   $Date: 2006-11-30 16:51:48 $
+ *               by   $Author: stain $
  * Created on 20 Nov 2006
  *****************************************************************/
 package org.embl.ebi.escience.scuflui.actions;
@@ -47,6 +47,7 @@ import org.embl.ebi.escience.scufl.parser.XScuflParser;
 import org.embl.ebi.escience.scuflui.TavernaIcons;
 import org.embl.ebi.escience.scuflui.shared.ExtensionFileFilter;
 import org.embl.ebi.escience.scuflui.shared.ScuflModelSet;
+import org.embl.ebi.escience.scuflui.shared.WorkflowChanges;
 
 /**
  * 
@@ -121,6 +122,7 @@ public class OpenWorkflowFromFileAction extends AbstractAction {
 					if (workflowOpened) {
 						ScuflModelSet.getInstance().addModel(model);
 					}
+					WorkflowChanges.getInstance().syncedWithFile(model, file);
 				}
 			}).start();
 		}

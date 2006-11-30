@@ -19,6 +19,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Properties;
 import java.util.Set;
 
@@ -62,6 +63,7 @@ import org.embl.ebi.escience.scuflui.actions.RunWorkflowAction;
 import org.embl.ebi.escience.scuflui.actions.SaveWorkflowAction;
 import org.embl.ebi.escience.scuflui.shared.ModelMap;
 import org.embl.ebi.escience.scuflui.shared.ScuflModelSet;
+import org.embl.ebi.escience.scuflui.shared.WorkflowChanges;
 import org.embl.ebi.escience.scuflui.shared.ModelMap.ModelChangeListener;
 import org.embl.ebi.escience.scuflui.shared.ScuflModelSet.ScuflModelSetListener;
 import org.embl.ebi.escience.scuflui.spi.WorkflowInstanceSetViewSPI;
@@ -93,6 +95,8 @@ public class Workbench extends JFrame {
 	private ModelMap modelmap = ModelMap.getInstance();
 
 	private WorkbenchMenuBar menuBar;
+
+	private WorkflowChanges workflowChanges = WorkflowChanges.getInstance();
 
 	/**
 	 * Singleton constructor. More than one Workbench is not recommended as it
@@ -186,11 +190,19 @@ public class Workbench extends JFrame {
 			}
 
 			public void modelRemoved(ScuflModel model) {
-				modelmap.setModel(ModelMap.CURRENT_WORKFLOW, null);
-				if (workflowModels.size() > 0) {
-					ScuflModel firstmodel = (ScuflModel) workflowModels
-							.getModels().toArray()[0];
-					modelmap.setModel(ModelMap.CURRENT_WORKFLOW, firstmodel);
+				if (model == modelmap.getNamedModel(ModelMap.CURRENT_WORKFLOW)) {
+					// Need to find some other current workflow
+					modelmap.setModel(ModelMap.CURRENT_WORKFLOW, null);
+					try {
+						ScuflModel firstmodel = workflowModels.getModels()
+								.iterator().next();
+						modelmap
+								.setModel(ModelMap.CURRENT_WORKFLOW, firstmodel);
+					} catch (NoSuchElementException ex) {
+						// No more models, make a new empty one
+						createWorkflow();
+						return;
+					}
 				}
 				menuBar.refreshWorkflowsMenu();
 			}
@@ -280,10 +292,29 @@ public class Workbench extends JFrame {
 		}
 		JOptionPane.showMessageDialog(this,
 				"Your updates will be applied when you restart Taverna",
-				"Resart required", JOptionPane.INFORMATION_MESSAGE);
+				"Restart required", JOptionPane.INFORMATION_MESSAGE);
 	}
 
-	private void exit() {
+	/**
+	 * Exit Taverna workbench.
+	 * <p>
+	 * Save all changed, open workflows (will pop-up "Do you want to save?" if changed),
+	 * save preferences and perspectives, and exit application.
+	 * 
+	 */
+	public void exit() {
+		// Save changed models if desired.
+		// Note that we don't bother with closing the models here, we'll leave
+		// that to System.exit. (And that also avoids the destructive 
+		// behavoure of closing all non-changed models if the user does "Cancel")
+		for (ScuflModel model : workflowModels.getModels()) {
+			// Pop-up a warning if the model has not been saved
+			if (!safeToClose(model)) {
+				logger.info("Aborted exit() due to non-safe-to-close " + model);
+				return;
+			}
+		}
+
 		try {
 			storeUserPrefs();
 			PerspectiveSPI currentPerspective = (PerspectiveSPI) modelmap
@@ -393,6 +424,76 @@ public class Workbench extends JFrame {
 	}
 
 	/**
+	 * Close the current workflow.
+	 * 
+	 * @return true if the workflow was closed, false if anything went wrong or
+	 *         the operation was cancelled.
+	 */
+	public boolean closeWorkflow() {
+		ScuflModel currentModel = (ScuflModel) modelmap
+				.getNamedModel(ModelMap.CURRENT_WORKFLOW);
+		if (currentModel == null) {
+			return false;
+		}
+		return closeWorkflow(currentModel);
+	}
+
+	/**
+	 * Close the given workflow.
+	 * 
+	 * @param model
+	 *            Workflow to close
+	 * @return true if the workflow was closed, false if anything went wrong or
+	 *         the operation was cancelled.
+	 */
+	public boolean closeWorkflow(ScuflModel model) {
+		if (safeToClose(model)) {
+			workflowModels.removeModel(model);
+			return true;
+		}
+		return false;
+	}
+
+	/**
+	 * Check if it's safe to close the given model. Pop's up a "Do you want to
+	 * save?" box if the model has been changed.
+	 * <p>
+	 * Does not actually close the model, either use closeWorkflow(model.) or
+	 * workflowModels.removeModel(model)
+	 * 
+	 * @param model
+	 *            Model that is to be checked
+	 * @return if the model has not been changed, the user saved the model, or
+	 *         the user said "No" to saving it. Returns false if the user
+	 *         cancelled.
+	 */
+	public boolean safeToClose(ScuflModel model) {
+		if (!workflowChanges.hasChanged(model)) {
+			return true;
+		}
+		// Make sure it is visible first so the user knows what he could save
+		modelmap.setModel(ModelMap.CURRENT_WORKFLOW, model);
+
+		String msg = "Do you want to save changes before closing workflow "
+				+ model.getDescription().getTitle() + "?";
+		int ret = JOptionPane.showConfirmDialog(Workbench.this, msg,
+				"Save workflow?", JOptionPane.YES_NO_CANCEL_OPTION);
+		if (ret == JOptionPane.CANCEL_OPTION) {
+			return false;
+		}
+		if (ret == JOptionPane.NO_OPTION) {
+			return true;
+		}
+		// ret == JOptionPane.YES_OPTION
+		try {
+			return new SaveWorkflowAction(Workbench.this).saveToFile(model);
+		} catch (Exception ex) {
+			logger.warn("Could not save file for " + model, ex);
+			return false;
+		}
+	}
+
+	/**
 	 * The action to remove the current workflow from the workbench
 	 * 
 	 * @return Action
@@ -400,19 +501,7 @@ public class Workbench extends JFrame {
 	private Action closeWorkflowAction() {
 		Action a = new AbstractAction() {
 			public void actionPerformed(ActionEvent e) {
-				ScuflModel currentModel = (ScuflModel) modelmap
-						.getNamedModel(ModelMap.CURRENT_WORKFLOW);
-
-				if (currentModel != null) {
-					int ret = JOptionPane.showConfirmDialog(Workbench.this,
-							"Are you sure you want to close the workflow titled '"
-									+ currentModel.getDescription().getTitle()
-									+ "'", "Close workflow?",
-							JOptionPane.YES_NO_OPTION);
-					if (ret == JOptionPane.YES_OPTION) {
-						workflowModels.removeModel(currentModel);
-					}
-				}
+				closeWorkflow();
 			}
 		};
 		a.putValue(Action.NAME, "Close workflow");
@@ -445,11 +534,11 @@ public class Workbench extends JFrame {
 	/**
 	 * Menu bar for the workbench.
 	 * <p>
-	 * Call refreshWorkflowsMenu() to update the "Workflows" menu
-	 * with the current workflow models.
+	 * Call refreshWorkflowsMenu() to update the "Workflows" menu with the
+	 * current workflow models.
 	 * 
 	 * @author Stian Soiland
-	 *
+	 * 
 	 */
 	public class WorkbenchMenuBar extends JMenuBar {
 
@@ -460,20 +549,20 @@ public class Workbench extends JFrame {
 		JMenu workflows = makeWorkflows();
 
 		private boolean refreshingWorkflowsmenu = false;
+
 		// Only refresh every 0.3s at maximum
 		public final int MAX_REFRESH = 300;
-		
+
 		public WorkbenchMenuBar() {
 			add(file);
 			add(advanced);
 			add(workflows);
 		}
-		
+
 		/**
-		 * Update the list of open workflows. A delay of 
-		 * MAX_REFRESH will be enforced to avoid excessive
-		 * menu updates.
-		 *
+		 * Update the list of open workflows. A delay of MAX_REFRESH will be
+		 * enforced to avoid excessive menu updates.
+		 * 
 		 */
 		public synchronized void refreshWorkflowsMenu() {
 			if (refreshingWorkflowsmenu) {
@@ -546,22 +635,25 @@ public class Workbench extends JFrame {
 				};
 				selectModel.putValue(Action.SMALL_ICON,
 						TavernaIcons.windowExplorer);
-				selectModel.putValue(Action.NAME, model.getDescription()
-						.getTitle());
-				selectModel.putValue(Action.SHORT_DESCRIPTION, model
-						.getDescription().getTitle());
+				String title = model.getDescription().getTitle();
+				if (workflowChanges.hasChanged(model)) {
+					// FIXME: * is not removed on Save (because the save action can't 
+					// call refreshWorkflowsMenu() )
+					title = "*" + title;
+				}
+				selectModel.putValue(Action.NAME, title);
+				selectModel.putValue(Action.SHORT_DESCRIPTION, title);
 
 				if (model == modelmap.getNamedModel(ModelMap.CURRENT_WORKFLOW)) {
 					selectModel.setEnabled(false);
 				}
 				menu.add(new JMenuItem(selectModel));
 			}
-
-			if (workflowModels.size() > 1) {
-				// Don't allow closing last workflow
-				menu.addSeparator();
-				menu.add(new JMenuItem(closeWorkflowAction()));
-			}
+			//if (workflowModels.size() > 1) {
+				// Should we really allow closing last workflow?
+			menu.addSeparator();
+			menu.add(new JMenuItem(closeWorkflowAction()));
+			//}
 			return menu;
 		}
 	}

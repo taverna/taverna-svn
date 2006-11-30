@@ -19,6 +19,8 @@ public class WorkflowDescription {
 
 	// Just for numbering the untitled workflows, really
 	private static int instanceCounter = 0;
+
+	public static String DEFAULT_TITLE = "Untitled workflow";
 	
 	private String text = "";
 
@@ -26,7 +28,7 @@ public class WorkflowDescription {
 
 	private String author = "";
 
-	private String title = "Untitled workflow #" + ++instanceCounter;
+	private String title = DEFAULT_TITLE + " #" + ++instanceCounter;
 
 	/**
 	 * Override the default constructor to set an LSID by default from the
