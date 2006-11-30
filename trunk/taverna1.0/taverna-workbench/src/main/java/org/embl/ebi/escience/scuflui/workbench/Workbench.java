@@ -33,6 +33,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JToolBar;
 import javax.swing.UIManager;
+import javax.swing.WindowConstants;
 
 import net.sf.taverna.perspectives.CustomPerspective;
 import net.sf.taverna.perspectives.PerspectiveSPI;
@@ -85,13 +86,13 @@ public class Workbench extends JFrame {
 
 	private ScuflModelSet workflowModels = ScuflModelSet.getInstance();
 
-	private JMenu fileMenu;
-
 	private WorkbenchPerspectives perspectives = null;
 
 	private Repository repository;
 
 	private ModelMap modelmap = ModelMap.getInstance();
+
+	private WorkbenchMenuBar menuBar;
 
 	/**
 	 * Singleton constructor. More than one Workbench is not recommended as it
@@ -135,7 +136,6 @@ public class Workbench extends JFrame {
 			// Look and feel not available
 		}
 		setIconImage(TavernaIcons.tavernaIcon.getImage());
-		fileMenu = new JMenu("File");
 
 		// Create and configure the ZBasePane
 		basePane = new WorkbenchZBasePane();
@@ -158,12 +158,12 @@ public class Workbench extends JFrame {
 
 		basePane
 				.setKnownSPINames(new String[] { "org.embl.ebi.escience.scuflui.spi.UIComponentFactorySPI" });
-
+		setUI();
 		setModelChangeListeners();
 		setModelSetListener();
-		setUI();
+		setVisible(true);
 		// Force a new workflow instance to start off with
-		createWorkflowAction().actionPerformed(null);
+		createWorkflow();
 	}
 
 	public ScuflModelSet getWorkflowModels() {
@@ -182,7 +182,7 @@ public class Workbench extends JFrame {
 		ScuflModelSetListener listener = new ScuflModelSetListener() {
 			public void modelAdded(ScuflModel model) {
 				modelmap.setModel(ModelMap.CURRENT_WORKFLOW, model);
-				refreshFileMenu();
+				menuBar.refreshWorkflowsMenu();
 			}
 
 			public void modelRemoved(ScuflModel model) {
@@ -192,7 +192,7 @@ public class Workbench extends JFrame {
 							.getModels().toArray()[0];
 					modelmap.setModel(ModelMap.CURRENT_WORKFLOW, firstmodel);
 				}
-				refreshFileMenu();
+				menuBar.refreshWorkflowsMenu();
 			}
 		};
 		workflowModels.addListener(listener);
@@ -209,8 +209,7 @@ public class Workbench extends JFrame {
 		getContentPane().add(toolBar, BorderLayout.PAGE_START);
 		getContentPane().add(basePane, BorderLayout.CENTER);
 
-		JMenuBar menuBar = getWorkbenchMenuBar();
-
+		menuBar = new WorkbenchMenuBar();
 		setJMenuBar(menuBar);
 
 		// set default size to 3/4 of width and height
@@ -218,39 +217,17 @@ public class Workbench extends JFrame {
 		setSize((int) (screen.getWidth() * 0.75),
 				(int) (screen.getHeight() * 0.75));
 
+		// Handle closing ourself
 		addWindowListener(getWindowClosingAdaptor());
+		setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
+
 		updateRepository();
 
 		setWorkbenchTitle();
 
 		readLastPreferences();
-		setVisible(true);
 
 		basePane.setEditable(false);
-	}
-
-	private JMenuBar getWorkbenchMenuBar() {
-		JMenuBar menuBar = new JMenuBar();
-		menuBar.add(fileMenu);
-		refreshFileMenu();
-			
-		JMenu advancedMenu = new JMenu("Advanced");
-		advancedMenu.add(perspectives.getEditPerspectivesMenu());		
-
-		if (System.getProperty("raven.remoteprofile") != null) {
-			JMenuItem checkUpdates = new JMenuItem("Check for profile updates");
-			advancedMenu.add(checkUpdates);
-
-			checkUpdates.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent e) {
-					checkForProfileUpdate();
-				}
-			});
-		}
-
-		menuBar.add(advancedMenu);
-
-		return menuBar;
 	}
 
 	/**
@@ -306,24 +283,27 @@ public class Workbench extends JFrame {
 				"Resart required", JOptionPane.INFORMATION_MESSAGE);
 	}
 
+	private void exit() {
+		try {
+			storeUserPrefs();
+			PerspectiveSPI currentPerspective = (PerspectiveSPI) modelmap
+					.getNamedModel(ModelMap.CURRENT_PERSPECTIVE);
+			if (currentPerspective != null
+					&& currentPerspective instanceof CustomPerspective) {
+				((CustomPerspective) currentPerspective).update(basePane
+						.getElement());
+			}
+			perspectives.saveAll();
+		} catch (Exception ex) {
+			logger.error("Error writing user preferences when closing", ex);
+		}
+		System.exit(0);
+	}
+
 	private WindowAdapter getWindowClosingAdaptor() {
 		return new WindowAdapter() {
 			public void windowClosing(WindowEvent e) {
-				try {
-					storeUserPrefs();
-					PerspectiveSPI currentPerspective = (PerspectiveSPI) modelmap
-							.getNamedModel(ModelMap.CURRENT_PERSPECTIVE);
-					if (currentPerspective != null
-							&& currentPerspective instanceof CustomPerspective) {
-						((CustomPerspective) currentPerspective)
-								.update(basePane.getElement());
-					}
-					perspectives.saveAll();
-				} catch (Exception ex) {
-					logger.error("Error writing user preferences when closing",
-							ex);
-				}
-				System.exit(0);
+				exit();
 			}
 		};
 	}
@@ -383,59 +363,27 @@ public class Workbench extends JFrame {
 		writer.close();
 	}
 
-	/**
-	 * Wipe the current contents of the 'file' menu and replace, regenerates the
-	 * various model specific actions to ensure that they're acting on the
-	 * current model
-	 */
-	private void refreshFileMenu() {
-		fileMenu.removeAll();
-		JMenuItem newWorkflow = new JMenuItem(createWorkflowAction());
-		fileMenu.add(newWorkflow);
-
-		fileMenu.add(new JMenuItem(new OpenWorkflowFromFileAction(this)));
-		fileMenu.add(new JMenuItem(new OpenWorkflowFromURLAction(this)));
-
-		if (workflowModels.size() > 1) {
-			fileMenu.addSeparator();
-			fileMenu.add(new JMenuItem(closeWorkflowAction()));
+	public class ExitAction extends AbstractAction {
+		public ExitAction() {
+			super();
+			putValue(NAME, "Exit");
+			putValue(SHORT_DESCRIPTION, "Quit the Taverna workbench");
 		}
 
-		fileMenu.addSeparator();
-		fileMenu.add(new JMenuItem(new SaveWorkflowAction(this)));
-
-		fileMenu.addSeparator();
-		fileMenu.add(new JMenuItem(new RunWorkflowAction(this)));
-		
-		if (!workflowModels.isEmpty()) {
-			fileMenu.addSeparator();
+		public void actionPerformed(ActionEvent e) {
+			exit();
 		}
-		for (final ScuflModel model : workflowModels.getModels()) {
-			Action selectModel = new AbstractAction() {
-				public void actionPerformed(ActionEvent e) {
-					modelmap.setModel(ModelMap.CURRENT_WORKFLOW, model);
-				}
-			};
-			selectModel
-					.putValue(Action.SMALL_ICON, TavernaIcons.windowExplorer);
-			selectModel
-					.putValue(Action.NAME, model.getDescription().getTitle());
-			selectModel.putValue(Action.SHORT_DESCRIPTION, model
-					.getDescription().getTitle());
+	}
 
-			if (model == modelmap.getNamedModel(ModelMap.CURRENT_WORKFLOW)) {
-				selectModel.setEnabled(false);
-			}
-			fileMenu.add(new JMenuItem(selectModel));
-		}
-
+	private void createWorkflow() {
+		ScuflModel model = new ScuflModel();
+		workflowModels.addModel(model);
 	}
 
 	private Action createWorkflowAction() {
 		Action a = new AbstractAction() {
 			public void actionPerformed(ActionEvent e) {
-				ScuflModel model = new ScuflModel();
-				workflowModels.addModel(model);
+				createWorkflow();
 			}
 		};
 		a.putValue(Action.NAME, "New workflow");
@@ -495,6 +443,130 @@ public class Workbench extends JFrame {
 	}
 
 	/**
+	 * Menu bar for the workbench.
+	 * <p>
+	 * Call refreshWorkflowsMenu() to update the "Workflows" menu
+	 * with the current workflow models.
+	 * 
+	 * @author Stian Soiland
+	 *
+	 */
+	public class WorkbenchMenuBar extends JMenuBar {
+
+		JMenu file = makeFile();
+
+		JMenu advanced = makeAdvanced();
+
+		JMenu workflows = makeWorkflows();
+
+		private boolean refreshingWorkflowsmenu = false;
+		// Only refresh every 0.3s at maximum
+		public final int MAX_REFRESH = 300;
+		
+		public WorkbenchMenuBar() {
+			add(file);
+			add(advanced);
+			add(workflows);
+		}
+		
+		/**
+		 * Update the list of open workflows. A delay of 
+		 * MAX_REFRESH will be enforced to avoid excessive
+		 * menu updates.
+		 *
+		 */
+		public synchronized void refreshWorkflowsMenu() {
+			if (refreshingWorkflowsmenu) {
+				return;
+			}
+			refreshingWorkflowsmenu = true;
+			new Thread() {
+				public void run() {
+					try {
+						try {
+							Thread.sleep(MAX_REFRESH);
+						} catch (InterruptedException e) {
+						}
+						int index = getComponentIndex(workflows);
+						workflows = makeWorkflows();
+						remove(index);
+						add(workflows);
+						revalidate();
+					} finally {
+						refreshingWorkflowsmenu = false;
+					}
+				}
+			}.start();
+		}
+
+		JMenu makeFile() {
+			JMenu menu = new JMenu("File");
+			JMenuItem newWorkflow = new JMenuItem(createWorkflowAction());
+			menu.add(newWorkflow);
+
+			menu.add(new JMenuItem(new OpenWorkflowFromFileAction(this)));
+			menu.add(new JMenuItem(new OpenWorkflowFromURLAction(this)));
+
+			menu.addSeparator();
+			menu.add(new JMenuItem(new SaveWorkflowAction(this)));
+
+			menu.addSeparator();
+			menu.add(new JMenuItem(new RunWorkflowAction(this)));
+
+			menu.addSeparator();
+			menu.add(new JMenuItem(new ExitAction()));
+			return menu;
+		}
+
+		JMenu makeAdvanced() {
+			JMenu advancedMenu = new JMenu("Advanced");
+			advancedMenu.add(perspectives.getEditPerspectivesMenu());
+
+			if (System.getProperty("raven.remoteprofile") != null) {
+				JMenuItem checkUpdates = new JMenuItem(
+						"Check for profile updates");
+				advancedMenu.add(checkUpdates);
+
+				checkUpdates.addActionListener(new ActionListener() {
+					public void actionPerformed(ActionEvent e) {
+						checkForProfileUpdate();
+					}
+				});
+			}
+			return advancedMenu;
+		}
+
+		JMenu makeWorkflows() {
+			JMenu menu = new JMenu("Workflows");
+			for (final ScuflModel model : workflowModels.getModels()) {
+				Action selectModel = new AbstractAction() {
+					public void actionPerformed(ActionEvent e) {
+						modelmap.setModel(ModelMap.CURRENT_WORKFLOW, model);
+					}
+				};
+				selectModel.putValue(Action.SMALL_ICON,
+						TavernaIcons.windowExplorer);
+				selectModel.putValue(Action.NAME, model.getDescription()
+						.getTitle());
+				selectModel.putValue(Action.SHORT_DESCRIPTION, model
+						.getDescription().getTitle());
+
+				if (model == modelmap.getNamedModel(ModelMap.CURRENT_WORKFLOW)) {
+					selectModel.setEnabled(false);
+				}
+				menu.add(new JMenuItem(selectModel));
+			}
+
+			if (workflowModels.size() > 1) {
+				// Don't allow closing last workflow
+				menu.addSeparator();
+				menu.add(new JMenuItem(closeWorkflowAction()));
+			}
+			return menu;
+		}
+	}
+
+	/**
 	 * Print debug messages of model changes.
 	 * 
 	 * @author Stian Soiland
@@ -535,7 +607,7 @@ public class Workbench extends JFrame {
 			public void receiveModelEvent(ScuflModelEvent event) {
 				// Refresh file menu to reflect any changes to the workflow
 				// titles. This isn't terribly efficient but hey.
-				refreshFileMenu();
+				menuBar.refreshWorkflowsMenu();
 			}
 		};
 
@@ -558,7 +630,7 @@ public class Workbench extends JFrame {
 					view.attachToModel(workflow);
 				}
 			}
-			refreshFileMenu();
+			menuBar.refreshWorkflowsMenu();
 		}
 
 		public void modelCreated(String modelName, Object model) {
