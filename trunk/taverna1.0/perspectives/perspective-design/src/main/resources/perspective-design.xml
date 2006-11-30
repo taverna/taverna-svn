@@ -1,7 +1,7 @@
 <basepane>
   <child>
     <znode classname="net.sf.taverna.zaria.ZSplitPane">
-      <split ratio="0.5137404580152671" orientation="horizontal">
+      <split ratio="0.4689075630252101" orientation="horizontal">
         <right>
           <znode classname="net.sf.taverna.zaria.ZRavenComponent">
             <namedcomponent>
@@ -11,7 +11,7 @@
         </right>
         <left>
           <znode classname="net.sf.taverna.zaria.ZSplitPane">
-            <split ratio="0.47619047619047616" orientation="horizontal">
+            <split ratio="0.386780905752754" orientation="vertical">
               <right>
                 <znode classname="net.sf.taverna.zaria.ZRavenComponent">
                   <namedcomponent>
@@ -44,7 +44,7 @@
       <artifact>scufl-diagram-panel</artifact>
       <classname>org.embl.ebi.escience.scuflui.ScuflDiagramPanelFactory</classname>
       <name>Workflow Diagram</name>
-    </namedcomponent>      
+    </namedcomponent>    
     <namedcomponent>
       <groupid>uk.org.mygrid.taverna.scufl.scufl-ui-components</groupid>
       <artifact>advanced-model-explorer</artifact>
