@@ -166,42 +166,45 @@ public class Workbench extends JFrame {
 	}
 
 	private void setLookAndFeel() {
-		String landf=MyGridConfiguration.getProperty("taverna.workbench.themeclass");
-		boolean set=false;
-		
-		if (landf!=null) {
+		String landf = MyGridConfiguration
+				.getProperty("taverna.workbench.themeclass");
+		boolean set = false;
+
+		if (landf != null) {
 			try {
-				UIManager
-						.setLookAndFeel(landf);
-				logger.info("Using "+landf+" Look and Feel");
-				set=true;
+				UIManager.setLookAndFeel(landf);
+				logger.info("Using " + landf + " Look and Feel");
+				set = true;
 			} catch (Exception ex) {
-				logger.error("Error using theme defined by taverna.workbench.themeclass as "+landf,ex);
+				logger.error(
+						"Error using theme defined by taverna.workbench.themeclass as "
+								+ landf, ex);
 			}
 		}
-		
+
 		if (!set) {
 			try {
 				UIManager
 						.setLookAndFeel("de.javasoft.plaf.synthetica.SyntheticaStandardLookAndFeel");
-				logger.info("Using Synthetica Look and Feel");				
+				logger.info("Using Synthetica Look and Feel");
 			} catch (Exception ex) {
 				try {
-					if (!(System.getProperty("os.name").equals("Linux") && System.getProperty("java.vm.version").startsWith("1.5")))
-    				{
-						UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-						logger.info("Using "+UIManager.getSystemLookAndFeelClassName()+" Look and Feel");
-    				}
-					else {
+					if (!(System.getProperty("os.name").equals("Linux") && System
+							.getProperty("java.vm.version").startsWith("1.5"))) {
+						UIManager.setLookAndFeel(UIManager
+								.getSystemLookAndFeelClassName());
+						logger.info("Using "
+								+ UIManager.getSystemLookAndFeelClassName()
+								+ " Look and Feel");
+					} else {
 						logger.info("Using default Look and Feel");
 					}
-				}
-				catch(Exception ex2) {
+				} catch (Exception ex2) {
 					ex2.printStackTrace();
 				}
-	
+
 			}
-		}		
+		}
 	}
 
 	public ScuflModelSet getWorkflowModels() {
@@ -226,7 +229,7 @@ public class Workbench extends JFrame {
 			public void modelRemoved(ScuflModel model) {
 				if (model == modelmap.getNamedModel(ModelMap.CURRENT_WORKFLOW)) {
 					// Need to find some other current workflow
-				modelmap.setModel(ModelMap.CURRENT_WORKFLOW, null);
+					modelmap.setModel(ModelMap.CURRENT_WORKFLOW, null);
 					try {
 						ScuflModel firstmodel = workflowModels.getModels()
 								.iterator().next();
@@ -236,7 +239,7 @@ public class Workbench extends JFrame {
 						// No more models, make a new empty one
 						createWorkflow();
 						return;
-				}
+					}
 				}
 				menuBar.refreshWorkflowsMenu();
 			}
@@ -332,15 +335,16 @@ public class Workbench extends JFrame {
 	/**
 	 * Exit Taverna workbench.
 	 * <p>
-	 * Save all changed, open workflows (will pop-up "Do you want to save?" if changed),
-	 * save preferences and perspectives, and exit application.
+	 * Save all changed, open workflows (will pop-up "Do you want to save?" if
+	 * changed), save preferences and perspectives, and exit application.
 	 * 
 	 */
 	public void exit() {
 		// Save changed models if desired.
 		// Note that we don't bother with closing the models here, we'll leave
-		// that to System.exit. (And that also avoids the destructive 
-		// behavoure of closing all non-changed models if the user does "Cancel")
+		// that to System.exit. (And that also avoids the destructive
+		// behavoure of closing all non-changed models if the user does
+		// "Cancel")
 		for (ScuflModel model : workflowModels.getModels()) {
 			// Pop-up a warning if the model has not been saved
 			if (!safeToClose(model)) {
@@ -536,7 +540,7 @@ public class Workbench extends JFrame {
 		Action a = new AbstractAction() {
 			public void actionPerformed(ActionEvent e) {
 				closeWorkflow();
-					}
+			}
 		};
 		a.putValue(Action.NAME, "Close workflow");
 		a.putValue(Action.SHORT_DESCRIPTION, "Close the current workflow");
@@ -572,7 +576,7 @@ public class Workbench extends JFrame {
 	 * current workflow models.
 	 * 
 	 * @author Stian Soiland
-	 *
+	 * 
 	 */
 	public class WorkbenchMenuBar extends JMenuBar {
 
@@ -583,19 +587,20 @@ public class Workbench extends JFrame {
 		JMenu workflows = makeWorkflows();
 
 		private boolean refreshingWorkflowsmenu = false;
+
 		// Only refresh every 0.3s at maximum
 		public final int MAX_REFRESH = 300;
-		
+
 		public WorkbenchMenuBar() {
 			add(file);
 			add(advanced);
 			add(workflows);
 		}
-		
+
 		/**
 		 * Update the list of open workflows. A delay of MAX_REFRESH will be
 		 * enforced to avoid excessive menu updates.
-		 *
+		 * 
 		 */
 		public synchronized void refreshWorkflowsMenu() {
 			if (refreshingWorkflowsmenu) {
@@ -628,6 +633,8 @@ public class Workbench extends JFrame {
 
 			menu.add(new JMenuItem(new OpenWorkflowFromFileAction(this)));
 			menu.add(new JMenuItem(new OpenWorkflowFromURLAction(this)));
+			menu.addSeparator();
+			menu.add(new JMenuItem(closeWorkflowAction()));
 
 			menu.addSeparator();
 			menu.add(new JMenuItem(new SaveWorkflowAction(this)));
@@ -670,7 +677,8 @@ public class Workbench extends JFrame {
 						TavernaIcons.windowExplorer);
 				String title = model.getDescription().getTitle();
 				if (workflowChanges.hasChanged(model)) {
-					// FIXME: * is not removed on Save (because the save action can't 
+					// FIXME: * is not removed on Save (because the save action
+					// can't
 					// call refreshWorkflowsMenu() )
 					title = "*" + title;
 				}
@@ -682,11 +690,7 @@ public class Workbench extends JFrame {
 				}
 				menu.add(new JMenuItem(selectModel));
 			}
-			//if (workflowModels.size() > 1) {
-				// Should we really allow closing last workflow?
-				menu.addSeparator();
-				menu.add(new JMenuItem(closeWorkflowAction()));
-			//}
+
 			return menu;
 		}
 	}
