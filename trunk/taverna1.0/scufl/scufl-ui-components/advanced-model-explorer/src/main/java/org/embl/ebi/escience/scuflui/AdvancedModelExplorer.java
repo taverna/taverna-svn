@@ -5,17 +5,19 @@ import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.PrintWriter;
 import java.util.prefs.Preferences;
 
 import javax.swing.BorderFactory;
-import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
+import javax.swing.JComponent;
 import javax.swing.JEditorPane;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
@@ -34,11 +36,13 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
+import javax.swing.text.JTextComponent;
 import javax.swing.tree.DefaultMutableTreeNode;
 
 import org.embl.ebi.escience.baclava.DataThing;
 import org.embl.ebi.escience.baclava.LSIDProvider;
 import org.embl.ebi.escience.scufl.IterationStrategy;
+import org.embl.ebi.escience.scufl.MinorScuflModelEvent;
 import org.embl.ebi.escience.scufl.Port;
 import org.embl.ebi.escience.scufl.Processor;
 import org.embl.ebi.escience.scufl.ScuflModel;
@@ -47,10 +51,7 @@ import org.embl.ebi.escience.scufl.ScuflModelEventListener;
 import org.embl.ebi.escience.scufl.SemanticMarkup;
 import org.embl.ebi.escience.scufl.WorkflowDescription;
 import org.embl.ebi.escience.scufl.view.WorkflowSummaryAsHTML;
-import org.embl.ebi.escience.scuflui.actions.LoadWorkflowAction;
 import org.embl.ebi.escience.scuflui.actions.OfflineToggleModel;
-import org.embl.ebi.escience.scuflui.actions.ResetAction;
-import org.embl.ebi.escience.scuflui.actions.SaveWorkflowAction;
 import org.embl.ebi.escience.scuflui.actions.ScuflModelActionRegistry;
 import org.embl.ebi.escience.scuflui.actions.ScuflModelActionSPI;
 import org.embl.ebi.escience.scuflui.shared.ExtensionFileFilter;
@@ -182,170 +183,8 @@ public class AdvancedModelExplorer extends JPanel implements
 
 	private void updateTabForWorkflow() {
 		propertiesPanel.removeAll();
-		propertiesPanel.setLayout(new BoxLayout(propertiesPanel,
-				BoxLayout.PAGE_AXIS));
-
-		JPanel descriptionPanel = new JPanel() {
-			public Dimension getMaximumSize() {
-				return new Dimension(99999, 3000);
-			}
-		};
-		descriptionPanel.setBorder(BorderFactory.createTitledBorder(
-				BorderFactory.createEtchedBorder(), "Workflow description"));
-		descriptionPanel.setLayout(new BorderLayout());
-		JTextArea description = new JTextArea(model.getDescription().getText());
-		JScrollPane descriptionPane = new JScrollPane(description);
-		descriptionPane.setPreferredSize(new Dimension(100, 100));
-		final WorkflowDescription wd = model.getDescription();
-
-		JTextField author = new JTextField(model.getDescription().getAuthor());
-		JPanel authorPanel = new JPanel() {
-			public Dimension getMaximumSize() {
-				return new Dimension(99999, 50);
-			}
-		};
-		authorPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory
-				.createEtchedBorder(), "Author"));
-		authorPanel.setLayout(new BorderLayout());
-		authorPanel.add(author, BorderLayout.CENTER);
-
-		JTextField title = new JTextField(model.getDescription().getTitle());
-		JPanel titlePanel = new JPanel() {
-			public Dimension getMaximumSize() {
-				return new Dimension(99999, 50);
-			}
-		};
-		titlePanel.setBorder(BorderFactory.createTitledBorder(BorderFactory
-				.createEtchedBorder(), "Descriptive title"));
-		titlePanel.setLayout(new BorderLayout());
-		titlePanel.add(title, BorderLayout.CENTER);		
-		
-		final JTextField lsid = new JTextField(model.getDescription().getLSID());
-		lsid.setEditable(false);
-		JPanel lsidPanel = new JPanel() {
-			public Dimension getMaximumSize() {
-				return new Dimension(99999, 50);
-			}
-		};
-		lsidPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory
-				.createEtchedBorder(), "LSID"));
-		lsidPanel.setLayout(new BorderLayout());
-		lsidPanel.add(lsid, BorderLayout.CENTER);
-		JButton assignNewLSID = new JButton("New", TavernaIcons.openurlIcon);
-		assignNewLSID.setPreferredSize(new Dimension(80, 25));
-		assignNewLSID.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				WorkflowDescription wd = AdvancedModelExplorer.this.model
-						.getDescription();
-				String newLSID = DataThing.SYSTEM_DEFAULT_LSID_PROVIDER
-						.getID(LSIDProvider.WFDEFINITION);
-				wd.setLSID(newLSID);
-				lsid.setText(newLSID);
-			}
-		});
-		if (DataThing.SYSTEM_DEFAULT_LSID_PROVIDER == null) {
-			assignNewLSID.setEnabled(false);
-		}
-		lsidPanel.add(assignNewLSID, BorderLayout.EAST);
-
-		description.getDocument().addDocumentListener(new DocumentListener() {
-			public void insertUpdate(DocumentEvent e) {
-				try {
-					Document d = e.getDocument();
-					wd.setText(d.getText(0, d.getLength()));
-				} catch (BadLocationException ble) {
-					//
-				}
-			}
-
-			public void removeUpdate(DocumentEvent e) {
-				try {
-					Document d = e.getDocument();
-					wd.setText(d.getText(0, d.getLength()));
-				} catch (BadLocationException ble) {
-					//
-				}
-			}
-
-			public void changedUpdate(DocumentEvent e) {
-				try {
-					Document d = e.getDocument();
-					wd.setText(d.getText(0, d.getLength()));
-				} catch (BadLocationException ble) {
-					//
-				}
-			}
-		});
-		author.getDocument().addDocumentListener(new DocumentListener() {
-			public void insertUpdate(DocumentEvent e) {
-				try {
-					Document d = e.getDocument();
-					wd.setAuthor(d.getText(0, d.getLength()));
-				} catch (BadLocationException ble) {
-					//
-				}
-			}
-
-			public void removeUpdate(DocumentEvent e) {
-				try {
-					Document d = e.getDocument();
-					wd.setAuthor(d.getText(0, d.getLength()));
-				} catch (BadLocationException ble) {
-					//
-				}
-			}
-
-			public void changedUpdate(DocumentEvent e) {
-				try {
-					Document d = e.getDocument();
-					wd.setAuthor(d.getText(0, d.getLength()));
-				} catch (BadLocationException ble) {
-					//
-				}
-			}
-		});
-		title.getDocument().addDocumentListener(new DocumentListener() {
-			public void insertUpdate(DocumentEvent e) {
-				try {
-					Document d = e.getDocument();
-					wd.setTitle(d.getText(0, d.getLength()));
-					model.fireModelEvent(new ScuflModelEvent(this,
-					"Title Changed"));							
-				} catch (BadLocationException ble) {
-					//
-				}
-			}
-
-			public void removeUpdate(DocumentEvent e) {
-				try {
-					Document d = e.getDocument();
-					wd.setTitle(d.getText(0, d.getLength()));
-					model.fireModelEvent(new ScuflModelEvent(this,
-					"Title Changed"));					
-				} catch (BadLocationException ble) {
-					//
-				}
-			}
-
-			public void changedUpdate(DocumentEvent e) {
-				try {
-					Document d = e.getDocument();
-					wd.setTitle(d.getText(0, d.getLength()));
-					model.fireModelEvent(new ScuflModelEvent(this,
-					"Title Changed"));					
-				} catch (BadLocationException ble) {
-					//
-				}
-			}
-		});
-		description.setEditable(true);
-		description.setLineWrap(true);
-		description.setWrapStyleWord(true);
-		descriptionPanel.add(descriptionPane);
-		propertiesPanel.add(authorPanel);
-		propertiesPanel.add(titlePanel);
-		propertiesPanel.add(lsidPanel);
-		propertiesPanel.add(descriptionPanel);
+		propertiesPanel.setLayout(new BorderLayout());
+		propertiesPanel.add(new WorkflowMetadata(), BorderLayout.CENTER);
 		tabs.setEnabledAt(1, true);
 		tabs.setTitleAt(1, "Workflow metadata");
 		tabs.setIconAt(1, TavernaIcons.windowExplorer);
@@ -544,8 +383,8 @@ public class AdvancedModelExplorer extends JPanel implements
 		workOffline.setModel(new OfflineToggleModel(model));
 		toolbar.add(workOffline);
 
-		//toolbar.add(Box.createHorizontalGlue());
-		//toolbar.add(new JButton(new ResetAction(model,this)));
+		// toolbar.add(Box.createHorizontalGlue());
+		// toolbar.add(new JButton(new ResetAction(model,this)));
 
 		// Add the toolbar to the top of the panel
 		workflowPanel.add(toolbar, BorderLayout.PAGE_START);
@@ -614,4 +453,170 @@ public class AdvancedModelExplorer extends JPanel implements
 		detachFromModel();
 	}
 
+	public class WorkflowMetadata extends JPanel {
+
+		private WorkflowDescription wd = model.getDescription();
+
+		private boolean updated = false;
+
+		private DocumentFocusListener documentFocusListener = new DocumentFocusListener();
+
+		public WorkflowMetadata() {
+			super();
+			setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
+			add(makeAuthor());
+			add(makeTitle());
+			add(makeLsid());
+			add(makeDescription());
+		}
+
+		private JPanel makeAuthor() {
+			JTextField author = new JTextField(wd.getAuthor());
+			JPanel authorPanel = titledPanel(author, "Author");
+			addDocumentListener(author, new MetadataDocListener() {
+				public void setValue(String text) {
+					wd.setAuthor(text);
+				}
+			});
+			return authorPanel;
+		}
+
+		private JPanel makeTitle() {
+			JTextField title = new JTextField(wd.getTitle());
+			JPanel titlePanel = titledPanel(title, "Descriptive title");
+
+			addDocumentListener(title, new MetadataDocListener() {
+				public void setValue(String text) {
+					wd.setTitle(text);
+				}
+			});
+			return titlePanel;
+		}
+
+		private JPanel makeLsid() {
+			final JTextField lsid = new JTextField(wd.getLSID());
+			lsid.setEditable(false);
+			JPanel lsidPanel = titledPanel(lsid, "LSID");
+			JButton assignNewLSID = new JButton("New", TavernaIcons.openurlIcon);
+			assignNewLSID.setPreferredSize(new Dimension(80, 25));
+			assignNewLSID.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					WorkflowDescription wd = AdvancedModelExplorer.this.model
+							.getDescription();
+					String newLSID = DataThing.SYSTEM_DEFAULT_LSID_PROVIDER
+							.getID(LSIDProvider.WFDEFINITION);
+					wd.setLSID(newLSID);
+					lsid.setText(newLSID);
+				}
+			});
+			if (DataThing.SYSTEM_DEFAULT_LSID_PROVIDER == null) {
+				assignNewLSID.setEnabled(false);
+			}
+			lsidPanel.add(assignNewLSID, BorderLayout.EAST);
+			return lsidPanel;
+		}
+
+		private JPanel makeDescription() {
+			JTextArea description = new JTextArea(wd.getText());
+			JScrollPane descriptionPane = new JScrollPane(description);
+			descriptionPane.setPreferredSize(new Dimension(100, 100));
+
+			description.setEditable(true);
+			description.setLineWrap(true);
+			description.setWrapStyleWord(true);
+			JPanel descriptionPanel = titledPanel(description,
+					"Workflow description");
+			addDocumentListener(description, new MetadataDocListener() {
+				public void setValue(String text) {
+					wd.setText(text);
+
+				}
+			});
+			return descriptionPanel;
+		}
+
+		private JPanel titledPanel(final JComponent field, String title) {
+			JPanel authorPanel = new JPanel() {
+				public Dimension getMaximumSize() {
+					if (field instanceof JTextField) {
+						// Avoid enormous JTextField height
+						return new Dimension(99999, 50);
+					} else {
+						return super.getMaximumSize();
+					}
+				}
+			};
+			authorPanel.setBorder(BorderFactory.createTitledBorder(
+					BorderFactory.createEtchedBorder(), title));
+			authorPanel.setLayout(new BorderLayout());
+			authorPanel.add(field, BorderLayout.CENTER);
+			return authorPanel;
+		}
+
+		private void addDocumentListener(JTextComponent description,
+				MetadataDocListener listener) {
+			description.getDocument().addDocumentListener(listener);
+			description.addFocusListener(documentFocusListener);
+		}
+
+		public synchronized void checkUpdated() {
+			if (updated) {
+				model.fireModelEvent(new MinorScuflModelEvent(this,
+						"Metadata updated"));
+				updated = false;
+			}
+		}
+
+		public synchronized void setUpdated() {
+			updated = true;
+		}
+
+		private class DocumentFocusListener implements FocusListener {
+			public void focusGained(FocusEvent e) {
+			}
+
+			public void focusLost(FocusEvent e) {
+				checkUpdated();
+			}
+		}
+
+		private abstract class MetadataDocListener implements DocumentListener {
+
+			/**
+			 * Implement this to do wd.setAuthor(text); etc.
+			 * 
+			 */
+			public abstract void setValue(String text);
+
+			public void insertUpdate(DocumentEvent e) {
+				try {
+					Document d = e.getDocument();
+					setValue(d.getText(0, d.getLength()));
+					setUpdated();
+				} catch (BadLocationException ble) {
+					//
+				}
+			}
+
+			public void removeUpdate(DocumentEvent e) {
+				try {
+					Document d = e.getDocument();
+					setValue(d.getText(0, d.getLength()));
+					setUpdated();
+				} catch (BadLocationException ble) {
+					//
+				}
+			}
+
+			public void changedUpdate(DocumentEvent e) {
+				try {
+					Document d = e.getDocument();
+					setValue(d.getText(0, d.getLength()));
+					setUpdated();
+				} catch (BadLocationException ble) {
+					//
+				}
+			}
+		}
+	}
 }

@@ -112,6 +112,9 @@ public class WorkflowDescription {
 	 * Set the author string for this workflow
 	 */
 	public void setAuthor(String newAuthor) {
+		if (newAuthor == null) {
+			throw new IllegalArgumentException("Cannot set author to null");
+		}
 		this.author = newAuthor;
 	}
 
