@@ -45,13 +45,6 @@
       <artifactId>junit-addons</artifactId>
       <version>1.4</version>
       <scope>test</scope>
-    </dependency>    
-    <!-- Introduces cyclic crap :(
-    <dependency>
-      <groupId>uk.org.mygrid.taverna.processors</groupId>
-      <artifactId>taverna-java-processor</artifactId>
-      <scope>test</scope>
-    </dependency>
-    -->
+    </dependency>        
   </dependencies>
 </project>
