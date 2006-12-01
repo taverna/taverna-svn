@@ -129,6 +129,17 @@
       <name>myGrid Snapshot Repository</name>
       <url>http://www.mygrid.org.uk/maven/snapshot-repository</url>
     </repository>
+    <repository>
+    	<id>mobycentral</id>
+    	<name>MobyCentral Repository</name>
+    	<url>http://mobycentral.icapture.ubc.ca/maven</url>
+    	<snapshots>
+        	<enabled>false</enabled>
+      	</snapshots>
+      	<releases>
+        	<enabled>true</enabled>
+     	</releases>
+    </repository>
   </repositories>
   <pluginRepositories>
     <pluginRepository>

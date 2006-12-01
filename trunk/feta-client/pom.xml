@@ -113,6 +113,17 @@
 			<name>myGrid Snapshot Repository</name>
 			<url>http://www.mygrid.org.uk/maven/snapshot-repository</url>
 		</repository>
+		<repository>
+    	<id>mobycentral</id>
+    	<name>MobyCentral Repository</name>
+    	<url>http://mobycentral.icapture.ubc.ca/maven</url>
+    	<snapshots>
+        	<enabled>false</enabled>
+      	</snapshots>
+      	<releases>
+        	<enabled>true</enabled>
+     	</releases>
+    </repository>
 	</repositories>
 	<pluginRepositories>
 		<pluginRepository>
@@ -154,9 +165,9 @@
 			<version>1.0-SNAPSHOT</version>
 		</dependency>		
 		<dependency>
-			<groupId>uk.org.mygrid.resources</groupId>
+			<groupId>biomoby.org</groupId>
 			<artifactId>jmoby</artifactId>
-			<version>NO-VERSION</version>
+			<version>1</version>
 		</dependency>		
 		<dependency>
 			<groupId>uk.org.mygrid.taverna.scufl</groupId>
