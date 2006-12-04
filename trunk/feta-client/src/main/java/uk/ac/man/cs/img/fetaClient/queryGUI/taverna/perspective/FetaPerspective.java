@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: FetaPerspective.java,v $
- * Revision           $Revision: 1.2 $
+ * Revision           $Revision: 1.3 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-12-04 17:57:07 $
+ * Last modified on   $Date: 2006-12-04 17:57:27 $
  *               by   $Author: sowen70 $
  * Created on 13 Nov 2006
  *****************************************************************/
@@ -37,11 +37,9 @@ import java.io.InputStream;
 
 import javax.swing.ImageIcon;
 
-import org.embl.ebi.escience.scuflui.TavernaIcons;
-
-import uk.ac.man.cs.img.fetaClient.resource.FetaResources;
-
 import net.sf.taverna.perspectives.AbstractPerspective;
+
+import org.embl.ebi.escience.scuflui.TavernaIcons;
 
 public class FetaPerspective extends AbstractPerspective {
 
