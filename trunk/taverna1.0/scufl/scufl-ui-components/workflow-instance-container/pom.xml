@@ -19,6 +19,10 @@
       <artifactId>taverna-enactor</artifactId>
     </dependency>
     <dependency>
+      <groupId>uk.org.mygrid.taverna.scufl.scufl-ui-components</groupId>
+      <artifactId>workflow-input-panel</artifactId>
+    </dependency>
+    <dependency>
       <groupId>uk.org.mygrid.taverna.scufl</groupId>
       <artifactId>scufl-ui-api</artifactId>
     </dependency>
