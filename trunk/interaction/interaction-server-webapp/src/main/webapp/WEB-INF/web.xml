@@ -20,7 +20,7 @@
     <!-- Define where the server should place temporary data files -->
     <init-param>
       <param-name>temp_location</param-name>
-      <param-value>C:\interaction</param-value>
+      <param-value>/tmp/</param-value>
     </init-param>
     <!-- Configure for your smtp relay and other mail related parameters -->
     <init-param>
@@ -35,7 +35,7 @@
     <!-- Base URL from which to assemble callback URLs -->
     <init-param>
       <param-name>base_url</param-name>
-      <param-value>http://ogre.dhcp.ebi.ac.uk:8080/InteractionServer-0.1/</param-value>
+      <param-value>http://localhost:8080/interaction-server-webapp-0.4/</param-value>
     </init-param>
     <!-- Set to true to enable wrapping of emails in html body tags -->
     <init-param>
