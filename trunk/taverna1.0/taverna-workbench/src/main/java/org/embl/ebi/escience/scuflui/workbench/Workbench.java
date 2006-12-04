@@ -682,9 +682,10 @@ public class Workbench extends JFrame {
 					// call refreshWorkflowsMenu() )
 					title = "*" + title;
 				}
+				
 				selectModel.putValue(Action.NAME, title);
 				selectModel.putValue(Action.SHORT_DESCRIPTION, title);
-
+				// TODO: Tag the currently selected workflow instead of disabling it
 				if (model == modelmap.getNamedModel(ModelMap.CURRENT_WORKFLOW)) {
 					selectModel.setEnabled(false);
 				}
