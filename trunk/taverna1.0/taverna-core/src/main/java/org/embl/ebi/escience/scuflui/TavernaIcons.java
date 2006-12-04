@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: TavernaIcons.java,v $
- * Revision           $Revision: 1.7 $
+ * Revision           $Revision: 1.8 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-12-04 16:44:40 $
+ * Last modified on   $Date: 2006-12-04 17:21:26 $
  *               by   $Author: dturi $
  * Created on 28-Jun-2006
  *****************************************************************/
@@ -51,7 +51,7 @@ public class TavernaIcons {
 			windowExplorer, saveIcon, importIcon, openurlIcon, pauseIcon,
 			playIcon, stopIcon, breakIcon, rbreakIcon, tickIcon, openMenuIcon,
 			saveMenuIcon, databaseIcon, renameIcon, classIcon,
-			selectedClassIcon, nullIcon, copyIcon, pasteIcon;
+			selectedClassIcon, nullIcon, copyIcon, pasteIcon, searchIcon;
 
 	static {
 		// Load the image files found in this package into the class.
@@ -135,8 +135,7 @@ public class TavernaIcons {
 					java.awt.image.BufferedImage.TYPE_INT_RGB));
             copyIcon = new ImageIcon(c.getResource("icons/generic/copy.png"));
             pasteIcon = new ImageIcon(c.getResource("icons/generic/paste.png"));
-
-
+            searchIcon = new ImageIcon(c.getResource("icons/generic/search.png"));
 		} catch (Exception ex) {
 			ex.printStackTrace();
 			System.out.println(ex.toString());
