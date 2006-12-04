@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: AddNestedWorkflowAction.java,v $
- * Revision           $Revision: 1.4 $
+ * Revision           $Revision: 1.5 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-11-21 16:27:04 $
+ * Last modified on   $Date: 2006-12-04 16:34:32 $
  *               by   $Author: davidwithers $
  * Created on 05-Jul-2006
  *****************************************************************/
@@ -84,6 +84,7 @@ public class AddNestedWorkflowAction extends ScuflModelActionSPI {
 	class CreateNewNestedWorkflowAction extends AbstractAction {
 
 		public CreateNewNestedWorkflowAction() {
+			putValue(SMALL_ICON, TavernaIcons.newIcon);
 			putValue(NAME, "New Workflow");
 			putValue(SHORT_DESCRIPTION, "Create a new nested workflow");
 		}
