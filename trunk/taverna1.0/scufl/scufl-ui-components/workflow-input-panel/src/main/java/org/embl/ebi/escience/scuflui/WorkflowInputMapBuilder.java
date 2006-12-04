@@ -7,12 +7,11 @@ package org.embl.ebi.escience.scuflui;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
-import java.awt.Container;
 import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.Insets;
-import java.awt.LayoutManager;
 import java.awt.Point;
+import java.awt.Toolkit;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.dnd.DropTarget;
 import java.awt.dnd.DropTargetDragEvent;
@@ -45,14 +44,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 
-import javax.swing.BorderFactory;
-import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComponent;
-import javax.swing.JEditorPane;
 import javax.swing.JFileChooser;
-import javax.swing.JLabel;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -69,7 +64,6 @@ import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.DefaultTreeModel;
-import javax.swing.tree.MutableTreeNode;
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
@@ -87,6 +81,7 @@ import org.embl.ebi.escience.scufl.ScuflModelEvent;
 import org.embl.ebi.escience.scufl.ScuflModelEventListener;
 import org.embl.ebi.escience.scuflui.renderers.RendererException;
 import org.embl.ebi.escience.scuflui.renderers.RendererRegistry;
+import org.embl.ebi.escience.scuflui.shared.BytesSelection;
 import org.embl.ebi.escience.scuflui.shared.ShadedLabel;
 import org.embl.ebi.escience.scuflui.shared.XMLTree;
 import org.embl.ebi.escience.scuflui.spi.RendererSPI;
@@ -102,14 +97,14 @@ import org.jdom.output.XMLOutputter;
  * 
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover </a>
  * @author Stian Soiland
- * @version $Revision: 1.9 $
+ * @version $Revision: 1.10 $
  */
 public class WorkflowInputMapBuilder extends JPanel implements
         WorkflowModelViewSPI, ScuflModelEventListener {
 
     private static Logger logger = Logger
             .getLogger(WorkflowInputMapBuilder.class);
-    
+
     class PortTreeMouseListener extends MouseAdapter {
         public void mousePressed(MouseEvent e) {
             showPopup(e);
@@ -242,17 +237,16 @@ public class WorkflowInputMapBuilder extends JPanel implements
                 if (returnVal == JFileChooser.APPROVE_OPTION) {
                     File file = fileChooser.getSelectedFile();
                     InputStreamReader stream = new InputStreamReader(
-                    		new FileInputStream(file),
-                    			Charset.forName("UTF-8"));
-                    Document inputDoc = new SAXBuilder(false)
-                            .build(stream);
+                            new FileInputStream(file), Charset.forName("UTF-8"));
+                    Document inputDoc = new SAXBuilder(false).build(stream);
                     Map<String, DataThing> inputMap = DataThingXMLFactory
                             .parseDataDocument(inputDoc);
                     try {
                         setWorkflowInputs(inputMap);
-                    } catch (InputsNotMatchingException iex) {	
-                        logger.error("Could not load input document, missing input",
-                                        iex);
+                    } catch (InputsNotMatchingException iex) {
+                        logger.error(
+                                "Could not load input document, missing input",
+                                iex);
                         JOptionPane
                                 .showMessageDialog(
                                         WorkflowInputMapBuilder.this,
@@ -265,7 +259,7 @@ public class WorkflowInputMapBuilder extends JPanel implements
                     }
 
                     // FIXME: Force update
-//                    getPanel();
+                    // getPanel();
                 }
             } catch (Exception ex) {
                 logger.error("Could not load input document", ex);
@@ -276,26 +270,27 @@ public class WorkflowInputMapBuilder extends JPanel implements
         }
     };
 
-
     private ActionListener saveInputDocAction = new ActionListener() {
         public void actionPerformed(ActionEvent e) {
             try {
-                int returnVal = fileChooser.showSaveDialog(WorkflowInputMapBuilder.this);
+                int returnVal = fileChooser
+                        .showSaveDialog(WorkflowInputMapBuilder.this);
                 if (returnVal == JFileChooser.APPROVE_OPTION) {
                     File file = fileChooser.getSelectedFile();
                     // FileFilter fileFilter =
                     // fileChooser.getFileFilter();
                     OutputStreamWriter fileWriter = new OutputStreamWriter(
-                    		new FileOutputStream(file), 
-                    			Charset.forName("UTF-8"));
+                            new FileOutputStream(file), Charset
+                                    .forName("UTF-8"));
                     BufferedWriter writer = new BufferedWriter(fileWriter);
                     // XMLOutputter outputter = new XMLOutputter(Format
                     // .getCompactFormat());
                     XMLOutputter outputter = new XMLOutputter(Format
                             .getPrettyFormat());
                     BufferedReader reader = new BufferedReader(
-                            new StringReader(outputter.outputString(
-                              DataThingXMLFactory.getDataDocument(bakeInputMap()))));
+                            new StringReader(outputter
+                                    .outputString(DataThingXMLFactory
+                                            .getDataDocument(bakeInputMap()))));
                     String line = null;
                     while ((line = reader.readLine()) != null) {
                         writer.write(line);
@@ -312,8 +307,7 @@ public class WorkflowInputMapBuilder extends JPanel implements
             }
         }
     };
-    
-    
+
     public class TreeTransferHandler implements DropTargetListener {
         private JTree tree;
 
@@ -450,8 +444,6 @@ public class WorkflowInputMapBuilder extends JPanel implements
 
         JScrollPane scrollPane;
 
-
-
         /*
          * @see org.embl.ebi.escience.scuflui.DataThingConstructionPanel.PanelTreeNode#getPanel()
          */
@@ -463,21 +455,21 @@ public class WorkflowInputMapBuilder extends JPanel implements
                 scrollPane = new JScrollPane();
                 scrollPane.setPreferredSize(new Dimension(0, 0));
                 JToolBar toolbar = new JToolBar();
-//                JButton loadInputDocButton = new JButton("Load Input Doc",
-//                        TavernaIcons.openIcon);
-//                JButton saveInputDocButton = new JButton("Save Input Doc",
-//                        TavernaIcons.saveIcon);
-//
-//                loadInputDocButton.setToolTipText("Load Input Document");
-//                loadInputDocButton.addActionListener(loadInputDocAction);
-//
-//                saveInputDocButton.setToolTipText("Save Input Document");
-//                saveInputDocButton.addActionListener(saveInputDocAction);
+                // JButton loadInputDocButton = new JButton("Load Input Doc",
+                // TavernaIcons.openIcon);
+                // JButton saveInputDocButton = new JButton("Save Input Doc",
+                // TavernaIcons.saveIcon);
+                //
+                // loadInputDocButton.setToolTipText("Load Input Document");
+                // loadInputDocButton.addActionListener(loadInputDocAction);
+                //
+                // saveInputDocButton.setToolTipText("Save Input Document");
+                // saveInputDocButton.addActionListener(saveInputDocAction);
 
                 toolbar.setFloatable(false);
                 toolbar.setRollover(true);
-//                toolbar.add(loadInputDocButton);
-//                toolbar.add(saveInputDocButton);
+                // toolbar.add(loadInputDocButton);
+                // toolbar.add(saveInputDocButton);
 
                 panel.add(scrollPane, BorderLayout.CENTER);
                 panel.add(toolbar, BorderLayout.NORTH);
@@ -665,7 +657,8 @@ public class WorkflowInputMapBuilder extends JPanel implements
                 add(child);
                 child.setDataThing(thing);
             } else {
-                InputDataThingNode child = new InputDataThingNode(getPort(), thing);
+                InputDataThingNode child = new InputDataThingNode(getPort(),
+                        thing);
                 add(child);
             }
         }
@@ -684,63 +677,65 @@ public class WorkflowInputMapBuilder extends JPanel implements
         public Port getPort() {
             return port;
         }
-        
+
         /*
          * @see org.embl.ebi.escience.scuflui.DataThingConstructionPanel.PanelTreeNode#getPanel()
          */
-//        public JComponent getPanel() {
-//            if (portPanel == null) {
-//                portPanel = new JPanel(new BorderLayout(3, 3));
-//                portPanel
-//                        .setBorder(BorderFactory.createEmptyBorder(3, 3, 3, 3));
-//                JPanel descriptionPanel = new JPanel();
-//                StringBuffer sb = new StringBuffer();
-//                sb.append("<html><h2>Workflow Input : " + port.getName()
-//                        + "</h2>");
-//                sb
-//                        .append("<table border=\"1\"><tr><td bgcolor=\"#ddeeff\" colspan=\"2\"><b>Input Metadata</b></td></tr><tr><td bgcolor=\"#ddeeff\"><b>Semantic type</b></td><td>\n");
-//                if (port.getMetadata().getSemanticType() != null
-//                        && port.getMetadata().getSemanticType() != "") {
-//                    sb.append(port.getMetadata().getSemanticType());
-//                } else {
-//                    sb
-//                            .append("<font color=\"#666666\"><i>not specified</i></font>");
-//                }
-//                sb.append("</td></tr>\n");
-//                sb
-//                        .append("<tr><td bgcolor=\"#ddeeff\"><b>Syntactic type</b></td><td>");
-//                String[] bits = port.getSyntacticType().split("'");
-//                sb.append(bits[0]);
-//                String[] types = port.getMetadata().getMIMETypes();
-//                for (int k = 0; k < types.length; k++) {
-//                    if (k > 0) {
-//                        sb.append(",");
-//                    }
-//                    sb.append(types[k]);
-//                }
-//                sb.append(bits[bits.length - 1]);
-//                sb.append("</td></tr></table><p>");
-//                if (port.getMetadata().getDescription() != null
-//                        && port.getMetadata().getDescription() != "") {
-//                    sb.append(port.getMetadata().getDescription());
-//                } else {
-//                    sb.append("<font color=\"#666666\"><i>no description</i></font>");
-//                }
-//                sb.append("</p></html>");
-//                JEditorPane portDetails = new JEditorPane("text/html", sb
-//                        .toString());
-//                portDetails.setEditable(false);
-//                JScrollPane scrollPane = new JScrollPane(portDetails);
-//                scrollPane.setPreferredSize(new Dimension(0, 0));
-//
-//                descriptionPanel.setLayout(new BoxLayout(descriptionPanel,
-//                        BoxLayout.Y_AXIS));
-//                descriptionPanel.add(scrollPane);
-//                portPanel.add(descriptionPanel, BorderLayout.CENTER);
-//            }
-//            return portPanel;
-//        }
-
+        // public JComponent getPanel() {
+        // if (portPanel == null) {
+        // portPanel = new JPanel(new BorderLayout(3, 3));
+        // portPanel
+        // .setBorder(BorderFactory.createEmptyBorder(3, 3, 3, 3));
+        // JPanel descriptionPanel = new JPanel();
+        // StringBuffer sb = new StringBuffer();
+        // sb.append("<html><h2>Workflow Input : " + port.getName()
+        // + "</h2>");
+        // sb
+        // .append("<table border=\"1\"><tr><td bgcolor=\"#ddeeff\"
+        // colspan=\"2\"><b>Input Metadata</b></td></tr><tr><td
+        // bgcolor=\"#ddeeff\"><b>Semantic type</b></td><td>\n");
+        // if (port.getMetadata().getSemanticType() != null
+        // && port.getMetadata().getSemanticType() != "") {
+        // sb.append(port.getMetadata().getSemanticType());
+        // } else {
+        // sb
+        // .append("<font color=\"#666666\"><i>not specified</i></font>");
+        // }
+        // sb.append("</td></tr>\n");
+        // sb
+        // .append("<tr><td bgcolor=\"#ddeeff\"><b>Syntactic
+        // type</b></td><td>");
+        // String[] bits = port.getSyntacticType().split("'");
+        // sb.append(bits[0]);
+        // String[] types = port.getMetadata().getMIMETypes();
+        // for (int k = 0; k < types.length; k++) {
+        // if (k > 0) {
+        // sb.append(",");
+        // }
+        // sb.append(types[k]);
+        // }
+        // sb.append(bits[bits.length - 1]);
+        // sb.append("</td></tr></table><p>");
+        // if (port.getMetadata().getDescription() != null
+        // && port.getMetadata().getDescription() != "") {
+        // sb.append(port.getMetadata().getDescription());
+        // } else {
+        // sb.append("<font color=\"#666666\"><i>no description</i></font>");
+        // }
+        // sb.append("</p></html>");
+        // JEditorPane portDetails = new JEditorPane("text/html", sb
+        // .toString());
+        // portDetails.setEditable(false);
+        // JScrollPane scrollPane = new JScrollPane(portDetails);
+        // scrollPane.setPreferredSize(new Dimension(0, 0));
+        //
+        // descriptionPanel.setLayout(new BoxLayout(descriptionPanel,
+        // BoxLayout.Y_AXIS));
+        // descriptionPanel.add(scrollPane);
+        // portPanel.add(descriptionPanel, BorderLayout.CENTER);
+        // }
+        // return portPanel;
+        // }
         public boolean isText() {
             logger.debug(port.getMetadata().getDisplayTypeList());
             for (int index = 0; index < port.getMetadata().getMIMETypeList()
@@ -785,32 +780,32 @@ public class WorkflowInputMapBuilder extends JPanel implements
     }
 
     public class PortDescription extends JPanel {
-    	Port port;
-    	public PortDescription(Port port) {
-    		super(new BorderLayout());
-    		this.port = port;
-    		add(makeTitle(), BorderLayout.NORTH);
-    		add(makeDescription(), BorderLayout.CENTER);
-    	}
+        Port port;
 
-    	public ShadedLabel makeTitle() {
-    		return new ShadedLabel(port.getName(), 
-    				ShadedLabel.TAVERNA_BLUE);
-    	}
-    	
-    	public JTextArea makeDescription() {	   		
-        	String descriptionTxt = port.getMetadata().getDescription();
-        	JTextArea description = new JTextArea(descriptionTxt);
-        	description.setEditable(false);
-        	description.setLineWrap(true);
-        	description.setOpaque(false);
-        	description.setWrapStyleWord(true);
-        	// Avoid stealing all width of the split pane
-        	description.setMinimumSize(new Dimension(25, 10));
-        	return description;
-    	}
+        public PortDescription(Port port) {
+            super(new BorderLayout());
+            this.port = port;
+            add(makeTitle(), BorderLayout.NORTH);
+            add(makeDescription(), BorderLayout.CENTER);
+        }
+
+        public ShadedLabel makeTitle() {
+            return new ShadedLabel(port.getName(), ShadedLabel.TAVERNA_BLUE);
+        }
+
+        public JTextArea makeDescription() {
+            String descriptionTxt = port.getMetadata().getDescription();
+            JTextArea description = new JTextArea(descriptionTxt);
+            description.setEditable(false);
+            description.setLineWrap(true);
+            description.setOpaque(false);
+            description.setWrapStyleWord(true);
+            // Avoid stealing all width of the split pane
+            description.setMinimumSize(new Dimension(25, 10));
+            return description;
+        }
     }
-    
+
     private class InputDataThingNode extends DefaultMutableTreeNode implements
             PanelTreeNode, DataThingNode {
         private DataThing thing;
@@ -820,7 +815,7 @@ public class WorkflowInputMapBuilder extends JPanel implements
         private List mimeTypes;
 
         JTextArea editor;
-        
+
         private ActionListener loadURLAction = new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 try {
@@ -896,6 +891,45 @@ public class WorkflowInputMapBuilder extends JPanel implements
             }
         };
 
+        private ActionListener pasteAction = new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    Clipboard clipboard = Toolkit.getDefaultToolkit()
+                            .getSystemClipboard();
+
+                    Transferable contents = clipboard.getContents(null);
+                    if (isText()) {
+                        boolean hasTransferableText = (contents != null)
+                                && contents
+                                        .isDataFlavorSupported(DataFlavor.stringFlavor);
+                        if (hasTransferableText) {
+                            String text = (String) contents
+                                    .getTransferData(DataFlavor.stringFlavor);
+                            editor.setText(text);
+                        }
+                    } else {
+                        boolean hasTransferableBytes = (contents != null)
+                                && contents
+                                        .isDataFlavorSupported(BytesSelection.bytesFlavor);
+                        if (hasTransferableBytes) {
+                            byte[] bytes = (byte[]) contents
+                                    .getTransferData(BytesSelection.bytesFlavor);
+                            setUserObject(bytes);
+                            panel = null;
+                            updatePanel();
+                        }
+                    }
+
+                } catch (Exception ex) {
+                    JOptionPane.showMessageDialog(WorkflowInputMapBuilder.this,
+                            "Problem pasting content from clipboard : \n"
+                                    + ex.getMessage(), "Exception!",
+                            JOptionPane.ERROR_MESSAGE);
+                    logger.error("Error pasting from clipboard:", ex);
+                }
+            }
+        };
+
         private ActionListener loadLSIDAction = new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 try {
@@ -916,7 +950,7 @@ public class WorkflowInputMapBuilder extends JPanel implements
             }
         };
 
-		private Port port;
+        private Port port;
 
         public InputDataThingNode(Port port, Object inputValue, List mimeTypes) {
             super(inputValue);
@@ -936,70 +970,66 @@ public class WorkflowInputMapBuilder extends JPanel implements
          */
         public JComponent getPanel() {
             if (panel != null) {
-            	return panel;
+                return panel;
             }
-//            JToolBar toolbar = new JToolBar();
-//            JButton loadButton = new JButton("Load", TavernaIcons.openIcon);
-//            JButton loadURLButton = new JButton("Load from URL",
-//            		TavernaIcons.webIcon);
-//            loadButton.setToolTipText("Load from File");
-//            loadButton.addActionListener(loadFileAction);
-//            loadURLButton.addActionListener(loadURLAction);
-//            toolbar.setFloatable(false);
-//            toolbar.setRollover(true);
-//            toolbar.add(loadButton);
-//            toolbar.add(loadURLButton);
-//            if (store != null) {
-//            	JButton loadLSIDButton = new JButton("Load LSID");
-//            	loadLSIDButton.addActionListener(loadLSIDAction);
-//            	toolbar.add(loadLSIDButton);
-//            }
+            // JToolBar toolbar = new JToolBar();
+            // JButton loadButton = new JButton("Load", TavernaIcons.openIcon);
+            // JButton loadURLButton = new JButton("Load from URL",
+            // TavernaIcons.webIcon);
+            // loadButton.setToolTipText("Load from File");
+            // loadButton.addActionListener(loadFileAction);
+            // loadURLButton.addActionListener(loadURLAction);
+            // toolbar.setFloatable(false);
+            // toolbar.setRollover(true);
+            // toolbar.add(loadButton);
+            // toolbar.add(loadURLButton);
+            // if (store != null) {
+            // JButton loadLSIDButton = new JButton("Load LSID");
+            // loadLSIDButton.addActionListener(loadLSIDAction);
+            // toolbar.add(loadLSIDButton);
+            // }
             panel = new JPanel(new BorderLayout());
-//            panel.add(toolbar, BorderLayout.NORTH);
-           
-            panel.add(new PortDescription(port),
-            		BorderLayout.NORTH);
+            // panel.add(toolbar, BorderLayout.NORTH);
+
+            panel.add(new PortDescription(port), BorderLayout.NORTH);
 
             if (isText()) {
-            	editor = new JTextArea();
-            	editor.setText((String) getUserObject());
-            	editor.getDocument().addDocumentListener(
-            			new DocumentListener() {
-            				public void insertUpdate(DocumentEvent e) {
-            					setUserObject(editor.getText());
-            					treeModel
-            					.nodeChanged(InputDataThingNode.this);
-            				}
+                editor = new JTextArea();
+                editor.setText((String) getUserObject());
+                editor.getDocument().addDocumentListener(
+                        new DocumentListener() {
+                            public void insertUpdate(DocumentEvent e) {
+                                setUserObject(editor.getText());
+                                treeModel.nodeChanged(InputDataThingNode.this);
+                            }
 
-            				public void removeUpdate(DocumentEvent e) {
-            					setUserObject(editor.getText());
-            					treeModel
-            					.nodeChanged(InputDataThingNode.this);
-            				}
+                            public void removeUpdate(DocumentEvent e) {
+                                setUserObject(editor.getText());
+                                treeModel.nodeChanged(InputDataThingNode.this);
+                            }
 
-            				public void changedUpdate(DocumentEvent e) {
-            					setUserObject(editor.getText());
-            					treeModel
-            					.nodeChanged(InputDataThingNode.this);
-            				}
-            			});
+                            public void changedUpdate(DocumentEvent e) {
+                                setUserObject(editor.getText());
+                                treeModel.nodeChanged(InputDataThingNode.this);
+                            }
+                        });
 
-            	JScrollPane scrollPane = new JScrollPane(editor);
-            	scrollPane.setPreferredSize(new Dimension(0, 0));
+                JScrollPane scrollPane = new JScrollPane(editor);
+                scrollPane.setPreferredSize(new Dimension(0, 0));
 
-            	panel.add(scrollPane, BorderLayout.CENTER);
+                panel.add(scrollPane, BorderLayout.CENTER);
 
             } else {
-            	RendererRegistry registry = RendererRegistry.instance();
-            	RendererSPI renderer = registry.getRenderer(getDataThing());
-            	try {
-            		JScrollPane scrollPane = new JScrollPane(renderer
-            				.getComponent(registry, thing));
-            		scrollPane.setPreferredSize(new Dimension(0, 0));
-            		panel.add(scrollPane, BorderLayout.CENTER);
-            	} catch (RendererException e) {
-            		e.printStackTrace();
-            	}
+                RendererRegistry registry = RendererRegistry.instance();
+                RendererSPI renderer = registry.getRenderer(getDataThing());
+                try {
+                    JScrollPane scrollPane = new JScrollPane(renderer
+                            .getComponent(registry, thing));
+                    scrollPane.setPreferredSize(new Dimension(0, 0));
+                    panel.add(scrollPane, BorderLayout.CENTER);
+                } catch (RendererException e) {
+                    e.printStackTrace();
+                }
             }
             return panel;
         }
@@ -1063,9 +1093,13 @@ public class WorkflowInputMapBuilder extends JPanel implements
             JMenuItem loadURLItem = new JMenuItem("Load Input from URL",
                     TavernaIcons.openIcon);
             loadURLItem.addActionListener(loadURLAction);
+            JMenuItem loadClipboardItem = new JMenuItem(
+                    "Paste Input from Clipboard", TavernaIcons.pasteIcon);
+            loadClipboardItem.addActionListener(pasteAction);
             menu.add(removeItem);
             menu.add(loadFileItem);
             menu.add(loadURLItem);
+            menu.add(loadClipboardItem);
             if (store != null) {
                 JMenuItem loadLSIDItem = new JMenuItem("Load Input from LSID");
                 loadLSIDItem.addActionListener(loadLSIDAction);
@@ -1142,12 +1176,11 @@ public class WorkflowInputMapBuilder extends JPanel implements
             InputDataThingNode newNode;
             if (parent.isText()) {
                 newNode = new InputDataThingNode(parent.getPort(),
-                		"Some input data goes here",
-                        parent.getPort().getMetadata().getMIMETypeList());
+                        "Some input data goes here", parent.getPort()
+                                .getMetadata().getMIMETypeList());
             } else {
-                newNode = new InputDataThingNode(parent.getPort(), 
-                		new byte[0], 
-                		parent.getPort().getMetadata().getMIMETypeList());
+                newNode = new InputDataThingNode(parent.getPort(), new byte[0],
+                        parent.getPort().getMetadata().getMIMETypeList());
             }
             parent.add(newNode);
             treeModel.nodeStructureChanged(parent);
@@ -1211,16 +1244,16 @@ public class WorkflowInputMapBuilder extends JPanel implements
                                 stringBuffer.append("\n");
                             }
                             newNode = new InputDataThingNode(parent.getPort(),
-                            		stringBuffer.toString(), 
-                            		parent.getPort().getMetadata().getMIMETypeList());
+                                    stringBuffer.toString(), parent.getPort()
+                                            .getMetadata().getMIMETypeList());
                             parent.add(newNode);
                         } else {
                             File file = files[index];
                             byte[] bytes = FileUtils.readFileToByteArray(file);
                             // Store as datathing
                             newNode = new InputDataThingNode(parent.getPort(),
-                            		bytes, 
-                            		parent.getPort().getMetadata().getMIMETypeList());
+                                    bytes, parent.getPort().getMetadata()
+                                            .getMIMETypeList());
                             parent.add(newNode);
                         }
                     } catch (Exception exception) {
@@ -1316,8 +1349,7 @@ public class WorkflowInputMapBuilder extends JPanel implements
 
         saveInputDocButton.setToolTipText("Save Input Document");
         saveInputDocButton.addActionListener(saveInputDocAction);
-        
-        
+
         loadInputsButton = new JButton("Load Inputs", TavernaIcons.openIcon);
         loadInputsButton.setEnabled(false);
         loadInputsButton.addActionListener(loadFilesAction);
@@ -1336,7 +1368,7 @@ public class WorkflowInputMapBuilder extends JPanel implements
         toolbar.setRollover(true);
         toolbar.add(loadInputDocButton);
         toolbar.add(saveInputDocButton);
-        
+
         toolbar.add(loadInputsButton);
         toolbar.add(newInputButton);
         toolbar.add(newListButton);

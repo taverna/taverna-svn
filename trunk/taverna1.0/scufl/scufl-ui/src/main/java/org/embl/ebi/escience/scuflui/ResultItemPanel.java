@@ -5,9 +5,11 @@
  */
 package org.embl.ebi.escience.scuflui;
 
-
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.awt.Toolkit;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.StringSelection;
 import java.awt.dnd.DnDConstants;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -53,6 +55,7 @@ import org.embl.ebi.escience.scufl.enactor.event.UserChangedDataEvent;
 import org.embl.ebi.escience.scufl.enactor.implementation.WorkflowEventDispatcher;
 import org.embl.ebi.escience.scuflui.renderers.RendererException;
 import org.embl.ebi.escience.scuflui.renderers.RendererRegistry;
+import org.embl.ebi.escience.scuflui.shared.BytesSelection;
 import org.embl.ebi.escience.scuflui.spi.RendererSPI;
 
 /**
@@ -63,448 +66,484 @@ import org.embl.ebi.escience.scuflui.spi.RendererSPI;
  * @author Matthew Pocock
  */
 public class ResultItemPanel extends JPanel {
-	
-	class ChangeAction implements ActionListener {
-		
-		JComponent component;
 
-		DataThing thing;
+    class ChangeAction implements ActionListener {
 
-		TreeNode tn;
+        JComponent component;
 
-		JTree tree;
+        DataThing thing;
 
-		ChangeAction(JComponent component, DataThing thing, TreeNode tn,
-				JTree tree) {
-			super();
-			this.component = component;
-			this.thing = thing;
-			this.tn = tn;
-			this.tree = tree;
-		}
+        TreeNode tn;
 
-		public void actionPerformed(ActionEvent ae) {
-			DataThingTreeNode node = (DataThingTreeNode) tree
-					.getLastSelectedPathComponent();
-			if (node == null /* || ! node.isLeaf() */) {
-				return;
-			}
-			if (!(component instanceof javax.swing.text.JTextComponent)) {
-				// TODO for other renderers
-				// newDataThing.setDataObject(((javax.swing.JTable)component).getValueAt(0,0));
-				return;
-			}
+        JTree tree;
 
-			DataThing dataThing = node.getNodeThing();
-			String oldData = (String) dataThing.getDataObject();
-			String newData = ((javax.swing.text.JTextComponent) component)
-					.getText();
-			if (oldData.equals(newData)) {
-				return;
-			}
-			String oldLSID = this.thing.getLSID(thing.getDataObject());
-			DataThing thing = this.thing.drillAndSet(dataThing, newData);
-			if (thing != null
-					&& workflowInstance.changeOutputPortTaskData(processorName,
-						portName, thing)) {
-				DISPATCHER.fireEvent(new UserChangedDataEvent(
-						workflowInstance, oldLSID, thing));
-				// System.out.println("DATATHING CHANGED EVENT!!!!");
+        ChangeAction(JComponent component, DataThing thing, TreeNode tn,
+                JTree tree) {
+            super();
+            this.component = component;
+            this.thing = thing;
+            this.tn = tn;
+            this.tree = tree;
+        }
 
-				// Update the JTree
-				tree.setEditable(true);
-				((DefaultMutableTreeNode) tn).removeAllChildren();
-				DefaultMutableTreeNode root = (DefaultMutableTreeNode) tree
-						.getModel().getRoot();
-				root.removeAllChildren();
-				DataThingTreeNode rootDataThing = DataThingTreeFactory
-						.getTree(thing);
-				DefaultTreeModel newTree = new DefaultTreeModel(rootDataThing);
-				tree.setModel(newTree);
-				tree.setEditable(false);
-				tree.repaint();
-				// structureTree.update(structureTree.getGraphics());
-			}
-		}
-	}
+        public void actionPerformed(ActionEvent ae) {
+            DataThingTreeNode node = (DataThingTreeNode) tree
+                    .getLastSelectedPathComponent();
+            if (node == null /* || ! node.isLeaf() */) {
+                return;
+            }
+            if (!(component instanceof javax.swing.text.JTextComponent)) {
+                // TODO for other renderers
+                // newDataThing.setDataObject(((javax.swing.JTable)component).getValueAt(0,0));
+                return;
+            }
 
-	Logger LOG = Logger.getLogger(ResultItemPanel.class);
+            DataThing dataThing = node.getNodeThing();
+            String oldData = (String) dataThing.getDataObject();
+            String newData = ((javax.swing.text.JTextComponent) component)
+                    .getText();
+            if (oldData.equals(newData)) {
+                return;
+            }
+            String oldLSID = this.thing.getLSID(thing.getDataObject());
+            DataThing thing = this.thing.drillAndSet(dataThing, newData);
+            if (thing != null
+                    && workflowInstance.changeOutputPortTaskData(processorName,
+                            portName, thing)) {
+                DISPATCHER.fireEvent(new UserChangedDataEvent(workflowInstance,
+                        oldLSID, thing));
+                // System.out.println("DATATHING CHANGED EVENT!!!!");
 
-	final JFileChooser fc = new JFileChooser();
+                // Update the JTree
+                tree.setEditable(true);
+                ((DefaultMutableTreeNode) tn).removeAllChildren();
+                DefaultMutableTreeNode root = (DefaultMutableTreeNode) tree
+                        .getModel().getRoot();
+                root.removeAllChildren();
+                DataThingTreeNode rootDataThing = DataThingTreeFactory
+                        .getTree(thing);
+                DefaultTreeModel newTree = new DefaultTreeModel(rootDataThing);
+                tree.setModel(newTree);
+                tree.setEditable(false);
+                tree.repaint();
+                // structureTree.update(structureTree.getGraphics());
+            }
+        }
+    }
 
-	final RendererRegistry renderers;
+    Logger LOG = Logger.getLogger(ResultItemPanel.class);
 
-	WorkflowInstance workflowInstance;
+    final JFileChooser fc = new JFileChooser();
 
-	String processorName = null;
+    final RendererRegistry renderers;
 
-	String portName = null;
+    WorkflowInstance workflowInstance;
 
-	private static WorkflowEventDispatcher DISPATCHER = WorkflowEventDispatcher.DISPATCHER;
+    String processorName = null;
 
-	public void setSelectedPort(String processor, String port) {
-		processorName = processor;
-		portName = port;
-	}
+    String portName = null;
 
-	public ResultItemPanel(DataThing theDataThing) {
-		this(theDataThing, RendererRegistry.instance());
-	}
+    private static WorkflowEventDispatcher DISPATCHER = WorkflowEventDispatcher.DISPATCHER;
 
-	public ResultItemPanel(DataThing theDataThing,
-			WorkflowInstance workflowInstance) {
-		this(theDataThing, RendererRegistry.instance());
-		this.workflowInstance = workflowInstance;
-	}
+    public void setSelectedPort(String processor, String port) {
+        processorName = processor;
+        portName = port;
+    }
 
-	public ResultItemPanel(final DataThing theDataThing,
-			RendererRegistry renderers) {
-		super(new BorderLayout());
+    public ResultItemPanel(DataThing theDataThing) {
+        this(theDataThing, RendererRegistry.instance());
+    }
 
-		this.renderers = renderers;
+    public ResultItemPanel(DataThing theDataThing,
+            WorkflowInstance workflowInstance) {
+        this(theDataThing, RendererRegistry.instance());
+        this.workflowInstance = workflowInstance;
+    }
 
-		// Construct the scrollable view of the structure
-		// of the DataThing by using a copy.
-		final DataThing newDataThing = (DataThing) theDataThing.clone();
-		final TreeNode tn = DataThingTreeFactory.getTree(newDataThing);
-		final JTree structureTree = new JTree(tn) {
-			// public Dimension getMinimumSize() {
-			// return getPreferredSize();
-			// }
-		};
-		// Fix for look and feel problems with multiline labels.
-		structureTree.setRowHeight(0);
-		structureTree.setCellRenderer(DataThingTreeFactory.getRenderer());
-		// structureTree.setModel(tm);
-		new DataThingTreeTransferHandler(structureTree,
-				DnDConstants.ACTION_COPY);
-		String viewerHelp = "<h2>Result browser</h2>Click on items in the tree to the left of this panel to select them and show their values in this area. Right clicking on an item within the tree will allow you to select different rendering options that might be available, for example displaying an XML file as text or as a navigable tree.";
-		JEditorPane help = new JEditorPane("text/html", viewerHelp);
-		help.setPreferredSize(new Dimension(200, 100));
-		help.setEditable(false);
-		JScrollPane helpPanel = new JScrollPane(help);
-		helpPanel.getViewport().setBackground(java.awt.Color.WHITE);
-		final JSplitPane splitPane = new JSplitPane(
-				JSplitPane.HORIZONTAL_SPLIT, new JScrollPane(structureTree),
-				helpPanel);
-		splitPane.setDividerLocation(-1);
-		boolean isEmptyCollection = false;
-		Object data = newDataThing.getDataObject();
-		if (data instanceof Collection) {
-			isEmptyCollection = ((Collection) data).isEmpty();
-		}
+    public ResultItemPanel(final DataThing theDataThing,
+            RendererRegistry renderers) {
+        super(new BorderLayout());
 
-		if (!isEmptyCollection) {
-			// Add an action listener to display the data
-			structureTree.addTreeSelectionListener(new TreeSelectionListener() {
-				public void valueChanged(TreeSelectionEvent e) {
-					DataThingTreeNode node = (DataThingTreeNode) structureTree
-							.getLastSelectedPathComponent();
-					if (node != null /* && node.isLeaf() */) {
-						// Only interested in leaf nodes as they contain the
-						// data
-						DataThing dataThing = node.getNodeThing();
-						RendererSPI renderer = ResultItemPanel.this.renderers
-								.getRenderer(dataThing);
+        this.renderers = renderers;
 
-						if (renderer != null) {
-							try {
-								final JComponent component = renderer
-										.getComponent(
-											ResultItemPanel.this.renderers,
-											dataThing);
-								if (component != null) {
-									JScrollPane foo = new JScrollPane(component);
-									foo.getViewport().setBackground(
-										java.awt.Color.WHITE);
-									foo
-											.setPreferredSize(new Dimension(
-													100, 100));
-									// Add the update button and the text area.
-									JPanel panel = new JPanel(
-											new java.awt.BorderLayout());
-									JPanel rightPanel = new JPanel(
-											new java.awt.FlowLayout());
-									JPanel leftPanel = new JPanel(
-											new java.awt.BorderLayout());
-									JButton cmdEdit = new JButton("Change");
-									cmdEdit
-											.addActionListener(new ActionListener() {
-												public void actionPerformed(
-														ActionEvent ae) {
-													DataThingTreeNode node = (DataThingTreeNode) structureTree
-															.getLastSelectedPathComponent();
-													if (node != null /*
-																		 * &&
-																		 * node.isLeaf()
-																		 */)
-														if (component instanceof javax.swing.text.JTextComponent) {
-															DataThing dataThing = node
-																	.getNodeThing();
-															String oldData = (String) dataThing
-																	.getDataObject();
-															String newData = ((javax.swing.text.JTextComponent) component)
-																	.getText();
-															if (!oldData
-																	.equals(newData)) {
-																String oldLSID = newDataThing
-																		.getLSID(newDataThing
-																				.getDataObject());
-																DataThing thing = newDataThing
-																		.drillAndSet(
-																			dataThing,
-																			newData);
-																if (thing != null
-																		&& workflowInstance
-																				.changeOutputPortTaskData(
-																					processorName,
-																					portName,
-																					newDataThing)) {
-																	DISPATCHER
-																			.fireEvent(new UserChangedDataEvent(
-																					workflowInstance,
-																					oldLSID,
-																					newDataThing));
-																	// System.out.println("DATATHIN
-																	// CHANGED
-																	// EVENT!!!!");
+        // Construct the scrollable view of the structure
+        // of the DataThing by using a copy.
+        final DataThing newDataThing = (DataThing) theDataThing.clone();
+        final TreeNode tn = DataThingTreeFactory.getTree(newDataThing);
+        final JTree structureTree = new JTree(tn) {
+            // public Dimension getMinimumSize() {
+            // return getPreferredSize();
+            // }
+        };
+        // Fix for look and feel problems with multiline labels.
+        structureTree.setRowHeight(0);
+        structureTree.setCellRenderer(DataThingTreeFactory.getRenderer());
+        // structureTree.setModel(tm);
+        new DataThingTreeTransferHandler(structureTree,
+                DnDConstants.ACTION_COPY);
+        String viewerHelp = "<h2>Result browser</h2>Click on items in the tree to the left of this panel to select them and show their values in this area. Right clicking on an item within the tree will allow you to select different rendering options that might be available, for example displaying an XML file as text or as a navigable tree.";
+        JEditorPane help = new JEditorPane("text/html", viewerHelp);
+        help.setPreferredSize(new Dimension(200, 100));
+        help.setEditable(false);
+        JScrollPane helpPanel = new JScrollPane(help);
+        helpPanel.getViewport().setBackground(java.awt.Color.WHITE);
+        final JSplitPane splitPane = new JSplitPane(
+                JSplitPane.HORIZONTAL_SPLIT, new JScrollPane(structureTree),
+                helpPanel);
+        splitPane.setDividerLocation(-1);
+        boolean isEmptyCollection = false;
+        Object data = newDataThing.getDataObject();
+        if (data instanceof Collection) {
+            isEmptyCollection = ((Collection) data).isEmpty();
+        }
 
-																	// Update
-																	// the JTree
-																	structureTree
-																			.setEditable(true);
-																	((DefaultMutableTreeNode) tn)
-																			.removeAllChildren();
-																	DefaultMutableTreeNode root = (DefaultMutableTreeNode) structureTree
-																			.getModel()
-																			.getRoot();
-																	root
-																			.removeAllChildren();
-																	DataThingTreeNode rootDataThing = DataThingTreeFactory
-																			.getTree(newDataThing);
-																	DefaultTreeModel newTree = new DefaultTreeModel(
-																			rootDataThing);
-																	structureTree
-																			.setModel(newTree);
-																	structureTree
-																			.setEditable(false);
-																	structureTree
-																			.repaint();
-																}
-															}
-														} else {
-															// TODO for other
-															// renderers
-															// newDataThing.setDataObject(((javax.swing.JTable)component).getValueAt(0,0));
-														}
-												}
-											});
-									leftPanel.add(foo);
-									rightPanel.add(cmdEdit);
-									panel.add(leftPanel, BorderLayout.CENTER);
-									if (processorName != null
-											&& workflowInstance
-													.isDataNonVolatile(processorName))
-										panel
-												.add(rightPanel,
-													BorderLayout.EAST);
-									panel.setPreferredSize(new Dimension(200,
-											80));
-									splitPane.setRightComponent(panel);
-									// Reset the widths of the split Pane to
-									// show the entire tree
-									splitPane.setDividerLocation(-1);
-								}
-							} catch (RendererException re) {
-								// we should print up some message about the
-								// problem
+        if (!isEmptyCollection) {
+            // Add an action listener to display the data
+            structureTree.addTreeSelectionListener(new TreeSelectionListener() {
+                public void valueChanged(TreeSelectionEvent e) {
+                    DataThingTreeNode node = (DataThingTreeNode) structureTree
+                            .getLastSelectedPathComponent();
+                    if (node != null /* && node.isLeaf() */) {
+                        // Only interested in leaf nodes as they contain the
+                        // data
+                        DataThing dataThing = node.getNodeThing();
+                        RendererSPI renderer = ResultItemPanel.this.renderers
+                                .getRenderer(dataThing);
 
-								// and then log this
-								LOG.error("Problem loading renderer", re);
-							} catch (Throwable otherError) {
-								LOG
-										.error(
-											"Unexpected error occured during panel construction",
-											otherError);
-							}
-						}
-					}
-				}
-			});
-		}
+                        if (renderer != null) {
+                            try {
+                                final JComponent component = renderer
+                                        .getComponent(
+                                                ResultItemPanel.this.renderers,
+                                                dataThing);
+                                if (component != null) {
+                                    JScrollPane foo = new JScrollPane(component);
+                                    foo.getViewport().setBackground(
+                                            java.awt.Color.WHITE);
+                                    foo
+                                            .setPreferredSize(new Dimension(
+                                                    100, 100));
+                                    // Add the update button and the text area.
+                                    JPanel panel = new JPanel(
+                                            new java.awt.BorderLayout());
+                                    JPanel rightPanel = new JPanel(
+                                            new java.awt.FlowLayout());
+                                    JPanel leftPanel = new JPanel(
+                                            new java.awt.BorderLayout());
+                                    JButton cmdEdit = new JButton("Change");
+                                    cmdEdit
+                                            .addActionListener(new ActionListener() {
+                                                public void actionPerformed(
+                                                        ActionEvent ae) {
+                                                    DataThingTreeNode node = (DataThingTreeNode) structureTree
+                                                            .getLastSelectedPathComponent();
+                                                    if (node != null /*
+                                                                         * &&
+                                                                         * node.isLeaf()
+                                                                         */)
+                                                        if (component instanceof javax.swing.text.JTextComponent) {
+                                                            DataThing dataThing = node
+                                                                    .getNodeThing();
+                                                            String oldData = (String) dataThing
+                                                                    .getDataObject();
+                                                            String newData = ((javax.swing.text.JTextComponent) component)
+                                                                    .getText();
+                                                            if (!oldData
+                                                                    .equals(newData)) {
+                                                                String oldLSID = newDataThing
+                                                                        .getLSID(newDataThing
+                                                                                .getDataObject());
+                                                                DataThing thing = newDataThing
+                                                                        .drillAndSet(
+                                                                                dataThing,
+                                                                                newData);
+                                                                if (thing != null
+                                                                        && workflowInstance
+                                                                                .changeOutputPortTaskData(
+                                                                                        processorName,
+                                                                                        portName,
+                                                                                        newDataThing)) {
+                                                                    DISPATCHER
+                                                                            .fireEvent(new UserChangedDataEvent(
+                                                                                    workflowInstance,
+                                                                                    oldLSID,
+                                                                                    newDataThing));
+                                                                    // System.out.println("DATATHIN
+                                                                    // CHANGED
+                                                                    // EVENT!!!!");
 
-		// Add a mouse listener to allow the user to save results to disc
-		// and chose renderers
-		structureTree.addMouseListener(new MouseAdapter() {
-			public void mousePressed(MouseEvent e) {
-				if (e.isPopupTrigger()) {
-					doEvent(e);
-				}
-			}
+                                                                    // Update
+                                                                    // the JTree
+                                                                    structureTree
+                                                                            .setEditable(true);
+                                                                    ((DefaultMutableTreeNode) tn)
+                                                                            .removeAllChildren();
+                                                                    DefaultMutableTreeNode root = (DefaultMutableTreeNode) structureTree
+                                                                            .getModel()
+                                                                            .getRoot();
+                                                                    root
+                                                                            .removeAllChildren();
+                                                                    DataThingTreeNode rootDataThing = DataThingTreeFactory
+                                                                            .getTree(newDataThing);
+                                                                    DefaultTreeModel newTree = new DefaultTreeModel(
+                                                                            rootDataThing);
+                                                                    structureTree
+                                                                            .setModel(newTree);
+                                                                    structureTree
+                                                                            .setEditable(false);
+                                                                    structureTree
+                                                                            .repaint();
+                                                                }
+                                                            }
+                                                        } else {
+                                                            // TODO for other
+                                                            // renderers
+                                                            // newDataThing.setDataObject(((javax.swing.JTable)component).getValueAt(0,0));
+                                                        }
+                                                }
+                                            });
+                                    leftPanel.add(foo);
+                                    rightPanel.add(cmdEdit);
+                                    panel.add(leftPanel, BorderLayout.CENTER);
+                                    if (processorName != null
+                                            && workflowInstance
+                                                    .isDataNonVolatile(processorName))
+                                        panel
+                                                .add(rightPanel,
+                                                        BorderLayout.EAST);
+                                    panel.setPreferredSize(new Dimension(200,
+                                            80));
+                                    splitPane.setRightComponent(panel);
+                                    // Reset the widths of the split Pane to
+                                    // show the entire tree
+                                    splitPane.setDividerLocation(-1);
+                                }
+                            } catch (RendererException re) {
+                                // we should print up some message about the
+                                // problem
 
-			public void mouseReleased(MouseEvent e) {
-				if (e.isPopupTrigger()) {
-					doEvent(e);
-				}
-			}
+                                // and then log this
+                                LOG.error("Problem loading renderer", re);
+                            } catch (Throwable otherError) {
+                                LOG
+                                        .error(
+                                                "Unexpected error occured during panel construction",
+                                                otherError);
+                            }
+                        }
+                    }
+                }
+            });
+        }
 
-			void doEvent(MouseEvent e) {
-				final DataThingTreeNode node = (DataThingTreeNode) (structureTree
-						.getPathForLocation(e.getX(), e.getY())
-						.getLastPathComponent());
-				final Object theDataObject = node.getUserObject();
-				// Can only save on leaf nodes
-				JPopupMenu theMenu = new JPopupMenu();
-				JMenuItem saveAction = new JMenuItem("Save to file",
-						TavernaIcons.saveIcon);
-				saveAction.addActionListener(new ActionListener() {
-					public void actionPerformed(ActionEvent ae) {
-						try {
-							// Popup a save dialog and allow the user to store
-							// the data to disc
-							Preferences prefs = Preferences
-									.userNodeForPackage(ResultItemPanel.class);
-							String curDir = prefs.get("currentDir", System
-									.getProperty("user.home"));
-							fc.setCurrentDirectory(new File(curDir));
-							int returnVal = fc
-									.showSaveDialog(ResultItemPanel.this);
-							if (returnVal == JFileChooser.APPROVE_OPTION) {
-								prefs.put("currentDir", fc
-										.getCurrentDirectory().toString());
-								File file = fc.getSelectedFile();
-								FileOutputStream fos = new FileOutputStream(
-										file);
-								if (theDataObject instanceof byte[]) {
-									// Byte
-									fos.write((byte[]) theDataObject);
-									fos.flush();
-									fos.close();
-								} else {
-									// String
-									Writer out = new BufferedWriter(
-											new OutputStreamWriter(fos));
-									out.write((String) theDataObject);
-									out.flush();
-									out.close();
-								}
-							}
-						} catch (IOException ioe) {
-							JOptionPane.showMessageDialog(ResultItemPanel.this,
-								"Problem saving data : \n" + ioe.getMessage(),
-								"Exception!", JOptionPane.ERROR_MESSAGE);
-						}
-					}
-				});
-				if (node.isLeaf()) {
-					theMenu.add(saveAction);
-				}
-				// all possible viewers
-				final DataThing nodeThing = node.getNodeThing();
-				boolean isEmptyCollection = false;
-				Object data = nodeThing.getDataObject();
-				if (data instanceof Collection) {
-					isEmptyCollection = ((Collection) data).isEmpty();
-				}
+        // Add a mouse listener to allow the user to save results to disc
+        // and chose renderers
+        structureTree.addMouseListener(new MouseAdapter() {
+            public void mousePressed(MouseEvent e) {
+                if (e.isPopupTrigger()) {
+                    doEvent(e);
+                }
+            }
 
-				Iterator renderers = ResultItemPanel.this.renderers
-						.getRenderers(nodeThing).iterator();
-				if (!isEmptyCollection && renderers.hasNext()) {
-					JMenu viewers = new JMenu("Viewers");
+            public void mouseReleased(MouseEvent e) {
+                if (e.isPopupTrigger()) {
+                    doEvent(e);
+                }
+            }
 
-					while (renderers.hasNext()) {
-						final RendererSPI renderer = (RendererSPI) renderers
-								.next();
-						viewers.add(new JMenuItem(new AbstractAction(renderer
-								.getName(), renderer.getIcon(
-							ResultItemPanel.this.renderers, nodeThing)) {
-							public void actionPerformed(ActionEvent e) {
-								try {
-									final JComponent component = renderer
-											.getComponent(
-												ResultItemPanel.this.renderers,
-												nodeThing);
-									if (ui != null) {
-										JScrollPane jp = new JScrollPane(
-												component);
-										jp.getViewport().setBackground(
-											java.awt.Color.WHITE);
+            void doEvent(MouseEvent e) {
+                final DataThingTreeNode node = (DataThingTreeNode) (structureTree
+                        .getPathForLocation(e.getX(), e.getY())
+                        .getLastPathComponent());
+                final Object theDataObject = node.getUserObject();
+                // Can only save on leaf nodes
+                JPopupMenu theMenu = new JPopupMenu();
 
-										// Add the update button and the text
-										// area.
-										JPanel panel = new JPanel(
-												new java.awt.BorderLayout());
-										JPanel leftPanel = new JPanel(
-												new java.awt.BorderLayout());
-										JPanel rightPanel = new JPanel();
-										JButton cmdEdit = new JButton("Change");
-										cmdEdit
-												.addActionListener(new ChangeAction(
-														component,
-														newDataThing, tn,
-														structureTree));
-										panel.removeAll();
-										leftPanel.add(jp);
-										rightPanel.add(cmdEdit);
-										panel.add(leftPanel,
-											BorderLayout.CENTER);
-										if (processorName != null
-												&& workflowInstance
-														.isDataNonVolatile(processorName))
-											panel.add(rightPanel,
-												BorderLayout.EAST);
-										panel.setPreferredSize(new Dimension(
-												200, 80));
+                JMenuItem saveAction = new JMenuItem("Save to file",
+                        TavernaIcons.saveIcon);
+                saveAction.addActionListener(new ActionListener() {
+                    public void actionPerformed(ActionEvent ae) {
+                        try {
+                            // Popup a save dialog and allow the user to store
+                            // the data to disc
+                            Preferences prefs = Preferences
+                                    .userNodeForPackage(ResultItemPanel.class);
+                            String curDir = prefs.get("currentDir", System
+                                    .getProperty("user.home"));
+                            fc.setCurrentDirectory(new File(curDir));
+                            int returnVal = fc
+                                    .showSaveDialog(ResultItemPanel.this);
+                            if (returnVal == JFileChooser.APPROVE_OPTION) {
+                                prefs.put("currentDir", fc
+                                        .getCurrentDirectory().toString());
+                                File file = fc.getSelectedFile();
+                                FileOutputStream fos = new FileOutputStream(
+                                        file);
+                                if (theDataObject instanceof byte[]) {
+                                    // Byte
+                                    fos.write((byte[]) theDataObject);
+                                    fos.flush();
+                                    fos.close();
+                                } else {
+                                    // String
+                                    Writer out = new BufferedWriter(
+                                            new OutputStreamWriter(fos));
+                                    out.write(theDataObject.toString());
+                                    out.flush();
+                                    out.close();
+                                }
+                            }
+                        } catch (IOException ioe) {
+                            JOptionPane.showMessageDialog(ResultItemPanel.this,
+                                    "Problem saving data : \n"
+                                            + ioe.getMessage(), "Exception!",
+                                    JOptionPane.ERROR_MESSAGE);
+                        }
+                    }
+                });
+                if (node.isLeaf()) {
+                    theMenu.add(saveAction);
+                }
 
-										splitPane.setRightComponent(panel);
-									}
-								} catch (RendererException re) {
-									// should be informing the user something is
-									// wrong
+                JMenuItem copyAction = new JMenuItem("Copy to Clipboard",
+                        TavernaIcons.copyIcon);
+                copyAction.addActionListener(new ActionListener() {
+                    public void actionPerformed(ActionEvent ae) {
+                        try {
+                            Clipboard clipboard = Toolkit.getDefaultToolkit()
+                                    .getSystemClipboard();
 
-									// log this
-									LOG.error("Unable to load renderer", re);
-								}
-							}
-						}));
-					}
+                            if (theDataObject instanceof byte[]) {
+                                BytesSelection bytesSelection = new BytesSelection(
+                                        (byte[]) theDataObject);
+                                clipboard.setContents(bytesSelection,
+                                        bytesSelection);
+                            } else {
+                                // String
+                                StringSelection stringSelection = new StringSelection(
+                                        theDataObject.toString());
+                                clipboard.setContents(stringSelection,
+                                        stringSelection);
+                            }
 
-					theMenu.add(viewers);
-				}
+                        } catch (Exception ex) {
+                            JOptionPane.showMessageDialog(ResultItemPanel.this,
+                                    "Problem copying data : \n"
+                                            + ex.getMessage(), "Exception!",
+                                    JOptionPane.ERROR_MESSAGE);
+                        }
+                    }
+                });
+                if (node.isLeaf()) {
+                    theMenu.add(copyAction);
+                }
 
-				theMenu.show(structureTree, e.getX(), e.getY());
-			}
-		});
-		add(splitPane, BorderLayout.CENTER);
-	}
+                // all possible viewers
+                final DataThing nodeThing = node.getNodeThing();
+                boolean isEmptyCollection = false;
+                Object data = nodeThing.getDataObject();
+                if (data instanceof Collection) {
+                    isEmptyCollection = ((Collection) data).isEmpty();
+                }
 
-	// VERY TEMP
-	// If expand is true, expands all nodes in the tree.
-	// Otherwise, collapses all nodes in the tree.
-	public void expandAll(JTree tree, boolean expand) {
-		TreeNode root = (TreeNode) tree.getModel().getRoot();
+                Iterator renderers = ResultItemPanel.this.renderers
+                        .getRenderers(nodeThing).iterator();
+                if (!isEmptyCollection && renderers.hasNext()) {
+                    JMenu viewers = new JMenu("Viewers");
 
-		// Traverse tree from root
-		expandAll(tree, new TreePath(root), expand);
-	}
+                    while (renderers.hasNext()) {
+                        final RendererSPI renderer = (RendererSPI) renderers
+                                .next();
+                        viewers.add(new JMenuItem(new AbstractAction(renderer
+                                .getName(), renderer.getIcon(
+                                ResultItemPanel.this.renderers, nodeThing)) {
+                            public void actionPerformed(ActionEvent e) {
+                                try {
+                                    final JComponent component = renderer
+                                            .getComponent(
+                                                    ResultItemPanel.this.renderers,
+                                                    nodeThing);
+                                    if (ui != null) {
+                                        JScrollPane jp = new JScrollPane(
+                                                component);
+                                        jp.getViewport().setBackground(
+                                                java.awt.Color.WHITE);
 
-	private void expandAll(JTree tree, TreePath parent, boolean expand) {
-		// Traverse children
-		TreeNode node = (TreeNode) parent.getLastPathComponent();
-		if (node.getChildCount() >= 0) {
-			for (java.util.Enumeration e = node.children(); e.hasMoreElements();) {
-				TreeNode n = (TreeNode) e.nextElement();
-				TreePath path = parent.pathByAddingChild(n);
-				expandAll(tree, path, expand);
-			}
-		}
+                                        // Add the update button and the text
+                                        // area.
+                                        JPanel panel = new JPanel(
+                                                new java.awt.BorderLayout());
+                                        JPanel leftPanel = new JPanel(
+                                                new java.awt.BorderLayout());
+                                        JPanel rightPanel = new JPanel();
+                                        JButton cmdEdit = new JButton("Change");
+                                        cmdEdit
+                                                .addActionListener(new ChangeAction(
+                                                        component,
+                                                        newDataThing, tn,
+                                                        structureTree));
+                                        panel.removeAll();
+                                        leftPanel.add(jp);
+                                        rightPanel.add(cmdEdit);
+                                        panel.add(leftPanel,
+                                                BorderLayout.CENTER);
+                                        if (processorName != null
+                                                && workflowInstance
+                                                        .isDataNonVolatile(processorName))
+                                            panel.add(rightPanel,
+                                                    BorderLayout.EAST);
+                                        panel.setPreferredSize(new Dimension(
+                                                200, 80));
 
-		// Expansion or collapse must be done bottom-up
-		if (expand) {
-			tree.expandPath(parent);
-		} else {
-			tree.collapsePath(parent);
-		}
-	}
+                                        splitPane.setRightComponent(panel);
+                                    }
+                                } catch (RendererException re) {
+                                    // should be informing the user something is
+                                    // wrong
+
+                                    // log this
+                                    LOG.error("Unable to load renderer", re);
+                                }
+                            }
+                        }));
+                    }
+
+                    theMenu.add(viewers);
+                }
+
+                theMenu.show(structureTree, e.getX(), e.getY());
+            }
+        });
+        add(splitPane, BorderLayout.CENTER);
+    }
+
+    // VERY TEMP
+    // If expand is true, expands all nodes in the tree.
+    // Otherwise, collapses all nodes in the tree.
+    public void expandAll(JTree tree, boolean expand) {
+        TreeNode root = (TreeNode) tree.getModel().getRoot();
+
+        // Traverse tree from root
+        expandAll(tree, new TreePath(root), expand);
+    }
+
+    private void expandAll(JTree tree, TreePath parent, boolean expand) {
+        // Traverse children
+        TreeNode node = (TreeNode) parent.getLastPathComponent();
+        if (node.getChildCount() >= 0) {
+            for (java.util.Enumeration e = node.children(); e.hasMoreElements();) {
+                TreeNode n = (TreeNode) e.nextElement();
+                TreePath path = parent.pathByAddingChild(n);
+                expandAll(tree, path, expand);
+            }
+        }
+
+        // Expansion or collapse must be done bottom-up
+        if (expand) {
+            tree.expandPath(parent);
+        } else {
+            tree.collapsePath(parent);
+        }
+    }
 
 }
