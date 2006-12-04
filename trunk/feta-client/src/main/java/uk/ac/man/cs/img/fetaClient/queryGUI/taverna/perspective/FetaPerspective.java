@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: FetaPerspective.java,v $
- * Revision           $Revision: 1.1 $
+ * Revision           $Revision: 1.2 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-11-20 15:19:02 $
+ * Last modified on   $Date: 2006-12-04 17:57:07 $
  *               by   $Author: sowen70 $
  * Created on 13 Nov 2006
  *****************************************************************/
@@ -37,6 +37,8 @@ import java.io.InputStream;
 
 import javax.swing.ImageIcon;
 
+import org.embl.ebi.escience.scuflui.TavernaIcons;
+
 import uk.ac.man.cs.img.fetaClient.resource.FetaResources;
 
 import net.sf.taverna.perspectives.AbstractPerspective;
@@ -44,7 +46,7 @@ import net.sf.taverna.perspectives.AbstractPerspective;
 public class FetaPerspective extends AbstractPerspective {
 
 	public ImageIcon getButtonIcon() {
-		return FetaResources.getFetaIcon();
+		return TavernaIcons.searchIcon;
 	}
 
 	public InputStream getLayoutResourceStream() {
@@ -52,7 +54,7 @@ public class FetaPerspective extends AbstractPerspective {
 	}
 
 	public String getText() {
-		return "Feta";
+		return "Discover";
 	}
 	
 }
