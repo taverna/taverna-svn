@@ -212,8 +212,7 @@ public class Workbench extends JFrame {
 	}
 
 	private void setModelChangeListeners() {
-		// FIXME: Also do modelmap.removeModelListener() on close?
-		// (No, we do System.exit.. so it's OK)
+		
 		modelmap.addModelListener(new DebugListener());
 		modelmap.addModelListener(new CurrentWorkflowListener());
 		modelmap.addModelListener(new WorkflowInstanceListener());
@@ -682,7 +681,6 @@ public class Workbench extends JFrame {
 					// call refreshWorkflowsMenu() )
 					title = "*" + title;
 				}
-				
 				selectModel.putValue(Action.NAME, title);
 				selectModel.putValue(Action.SHORT_DESCRIPTION, title);
 				// TODO: Tag the currently selected workflow instead of disabling it

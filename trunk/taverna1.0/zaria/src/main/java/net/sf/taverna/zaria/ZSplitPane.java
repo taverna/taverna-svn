@@ -45,8 +45,7 @@ public class ZSplitPane extends ZPane {
 	}
 	
 	private JSplitPane splitPane = new DividerLocationSplitPane();
-	private double dividerLocation=0.5d;
-	private boolean dividerSet=true;
+	private double dividerLocation=0.5d;	
 
 	@SuppressWarnings("serial")
 	private class SwitchOrientationAction extends AbstractAction {
@@ -127,22 +126,24 @@ public class ZSplitPane extends ZPane {
 		return splitElement;
 	}
 
-	private double getDividerRatio() {
-		if (!dividerSet) return dividerLocation; //use the stored value if the true value has not been set up yet.
+	private double getDividerRatio() {		
 		
 		// total size would be the height if oriented vertically, or the width
 		// if horizontally
 		double total = splitPane.getOrientation() == JSplitPane.HORIZONTAL_SPLIT ? (double) splitPane
-				.getWidth() 
-				: (double) splitPane.getHeight();
-		double dividerLocation = splitPane.getDividerLocation();
+				.getBounds().getWidth()
+				: (double) splitPane.getBounds().getHeight();
+				
+				total = total - splitPane.getDividerSize();
+		
+				
+		double dividerLocation = splitPane.getDividerLocation();		
 		if (dividerLocation < 0)
 			dividerLocation = 0; // when the divider is far to one side, it
 									// the dividerlocation results in being
 									// negative (?!), setting to 0 prevents an
 									// error on reload it gives the correct
-									// approximate location
-		
+									// approximate location		
 		double ratio;		
 		if (total<=0) ratio=0;
 		else  ratio = dividerLocation / total;
@@ -151,8 +152,7 @@ public class ZSplitPane extends ZPane {
 
 	public void configure(Element e) {
 		Element splitElement = e.getChild("split");
-		if (splitElement != null) {
-			dividerSet=false;
+		if (splitElement != null) {			
 			String orientation = splitElement.getAttributeValue("orientation");
 			if (orientation != null) {
 				splitPane
@@ -179,8 +179,7 @@ public class ZSplitPane extends ZPane {
 				try {
 					//defer setting the dividerlocation until the first repaint
 					//that splitpane
-					dividerLocation = Double.parseDouble(ratio);	
-					dividerSet=false;
+					dividerLocation = Double.parseDouble(ratio);						
 				} catch (NumberFormatException ex) {
 					logger.warn("Invalid divider ratio " + ratio, ex);
 				}

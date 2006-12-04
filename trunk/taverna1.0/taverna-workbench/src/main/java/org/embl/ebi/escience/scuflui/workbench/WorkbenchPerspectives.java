@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: WorkbenchPerspectives.java,v $
- * Revision           $Revision: 1.11 $
+ * Revision           $Revision: 1.12 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-11-30 11:23:46 $
+ * Last modified on   $Date: 2006-12-04 14:40:30 $
  *               by   $Author: sowen70 $
  * Created on 10 Nov 2006
  *****************************************************************/
@@ -38,11 +38,13 @@ import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -153,43 +155,39 @@ public class WorkbenchPerspectives {
 			current.update(basePane.getElement());
 		}
 
-		CustomPerspectiveFactory.getInstance().saveAll(customPerspectives);
-
-		//FIXME: saving built in perspectives is currently a bit dangerous, and only
-		//done to save the split pane ratios. If a component fails, the save can fail making
-		//it difficult to get back the original perspective.
+		CustomPerspectiveFactory.getInstance().saveAll(customPerspectives);		
 		
-//		for (PerspectiveSPI perspective : perspectives.keySet()) {
-//			if (!(perspective instanceof CustomPerspective)) {
-//				savePerspective(perspective);
-//			}
-//		}
+		for (PerspectiveSPI perspective : perspectives.keySet()) {
+			if (!(perspective instanceof CustomPerspective)) {
+				savePerspective(perspective);
+			}
+		}
 	}
 
-//	private void savePerspective(PerspectiveSPI perspective) {
-//
-//		InputStreamReader isr = new InputStreamReader(perspective
-//				.getLayoutInputStream());
-//		SAXBuilder builder = new SAXBuilder(false);
-//		Document document;
-//		try {
-//			document = builder.build(isr);
-//
-//			String filename = perspective.getClass().getName() + ".perspective";
-//			File file = new File(MyGridConfiguration.getUserDir("conf"),
-//					filename);
-//
-//			XMLOutputter outputter = new XMLOutputter(Format.getPrettyFormat());
-//			outputter.output(document.getRootElement(), new FileOutputStream(
-//					file));
-//
-//		} catch (JDOMException e) {
-//			logger.error("Error parsing perspective XML", e);
-//		} catch (IOException e) {
-//			logger.error("Error saving perspective XML", e);
-//		}
-//
-//	}
+	private void savePerspective(PerspectiveSPI perspective) {
+
+		InputStreamReader isr = new InputStreamReader(perspective
+				.getLayoutInputStream());
+		SAXBuilder builder = new SAXBuilder(false);
+		Document document;
+		try {
+			document = builder.build(isr);
+
+			String filename = perspective.getClass().getName() + ".perspective";
+			File file = new File(MyGridConfiguration.getUserDir("conf"),
+					filename);
+
+			XMLOutputter outputter = new XMLOutputter(Format.getPrettyFormat());
+			outputter.output(document.getRootElement(), new FileOutputStream(
+					file));
+
+		} catch (JDOMException e) {
+			logger.error("Error parsing perspective XML", e);
+		} catch (IOException e) {
+			logger.error("Error saving perspective XML", e);
+		}
+
+	}
 
 	public void removeCustomPerspective(CustomPerspective perspective) {
 		customPerspectives.remove(perspective);
@@ -201,7 +199,7 @@ public class WorkbenchPerspectives {
 		List<PerspectiveSPI> perspectives = PerspectiveRegistry.getInstance()
 				.getPerspectives();
 		for (final PerspectiveSPI perspective : perspectives) {			
-			//updatePerspectiveWithSaved(perspective);
+			updatePerspectiveSplitPanesWithSaved(perspective);
 			addPerspective(perspective, false);
 		}		
 
@@ -227,22 +225,60 @@ public class WorkbenchPerspectives {
 		}
 	}
 
-//	private void updatePerspectiveWithSaved(PerspectiveSPI perspective) {
-//		String filename = perspective.getClass().getName() + ".perspective";
-//		File file = new File(MyGridConfiguration.getUserDir("conf"), filename);
-//		if (file.exists()) {
-//			try {
-//				Document doc = new SAXBuilder().build(file);
-//				perspective.update(doc.detachRootElement());
-//			} catch (JDOMException e) {
-//				logger.error("Error parsing saved layout xml '" + filename
-//						+ "'", e);
-//			} catch (IOException e) {
-//				logger.error("Error opening saved layout xml '" + filename
-//						+ "'", e);
-//			}
-//		}
-//	}
+	/**
+	 * Checks the saved copy of the perspective for the split pane ratios, and updates
+	 * the current perspective with these values. This is so that the split pane ratios
+	 * are restored to the users last session. Reopenning the whole layout file was found to
+	 * be dangerous, as embedded components can disappear if there are errors initialising them.
+	 */
+	private void updatePerspectiveSplitPanesWithSaved(PerspectiveSPI perspective) {
+		String filename = perspective.getClass().getName() + ".perspective";
+		File file = new File(MyGridConfiguration.getUserDir("conf"), filename);
+		if (file.exists()) {
+			try {
+				Document savedLayout = new SAXBuilder().build(file);
+				Element perspectiveLayout = new SAXBuilder().build(perspective.getLayoutInputStream()).detachRootElement();				
+				
+				List<Element> savedSplitElements = getSplitChildElements(savedLayout.getRootElement());
+				List<Element> perspectiveSplitElements = getSplitChildElements(perspectiveLayout);
+				
+				if (savedSplitElements.size()==perspectiveSplitElements.size()) {
+					for (int i=0;i<savedSplitElements.size();i++) {
+						Element savedElement = savedSplitElements.get(i);
+						Element perspectiveElement = perspectiveSplitElements.get(i);						
+						perspectiveElement.setAttribute("ratio",savedElement.getAttributeValue("ratio"));
+					}					
+					perspective.update(perspectiveLayout);
+				}
+				else {
+					logger.warn("Number of split panes differ, default perspective must have changed. Restoring to default.");
+				}
+				
+			} catch (JDOMException e) {
+				logger.error("Error parsing saved layout xml '" + filename
+						+ "'", e);
+			} catch (IOException e) {
+				logger.error("Error opening saved layout xml '" + filename
+						+ "'", e);
+			}
+		}
+	}
+	
+	private List<Element> getSplitChildElements(Element root) {
+		List<Element> result = new ArrayList<Element>();
+		getSplitChildElements(root,result);
+		return result;
+	}
+	
+	private void getSplitChildElements(Element root, List<Element> result) {
+		for (Object el : root.getChildren()) {
+			Element element = (Element)el;
+			if (element.getName().equals("split")) result.add(element);
+			getSplitChildElements(element,result);
+		}
+	}
+	
+	
 
 	private void addPerspective(final PerspectiveSPI perspective,
 			boolean makeActive) {
