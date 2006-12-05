@@ -52,7 +52,7 @@ import org.xml.sax.SAXException;
  * @author Tom Oinn
  *
  */
-public class Profile implements ArtifactFilter {
+public class Profile extends AbstractArtifactFilter {
 	private static Log logger = Log.getLogger(Profile.class);
 	
 	private Set<Artifact> artifacts = new HashSet<Artifact>();
@@ -62,6 +62,10 @@ public class Profile implements ArtifactFilter {
 	
 	private String version;
 	private String name;
+	
+	public Profile(boolean strict)  {
+		this.strict = strict;
+	}
 	
 	/**
 	 * Create a Profile and initialize it from the specified
@@ -161,6 +165,16 @@ public class Profile implements ArtifactFilter {
 	 */
 	public void addArtifact(Artifact artifact) {
 		artifacts.add(artifact);
+		fireFilterChanged(this);
+	}
+	
+	/**
+	 * Allow an artifact to be removed from the profile at runtime
+	 * @param artifact
+	 */
+	public void removeArtifact(Artifact artifact) {
+		artifacts.remove(artifact);
+		fireFilterChanged(this);
 	}
 	
 	/**
@@ -287,4 +301,5 @@ public class Profile implements ArtifactFilter {
 		transformer.setOutputProperty(OutputKeys.INDENT, "yes");
 		transformer.transform(source, dest);		
 	}
+	
 }

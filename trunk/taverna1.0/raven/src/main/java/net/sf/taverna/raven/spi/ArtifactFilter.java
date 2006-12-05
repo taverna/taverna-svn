@@ -18,5 +18,9 @@ public interface ArtifactFilter {
 	 * @return filtered subset of the input
 	 */
 	public abstract Set<Artifact> filter(Set<Artifact> artifacts);
+
+	public abstract void addArtifactFilterListener(ArtifactFilterListener listener);
+
+	public abstract void removeArtifactFilterListener(ArtifactFilterListener listener);
 	
 }

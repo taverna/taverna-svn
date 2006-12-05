@@ -17,7 +17,7 @@ import net.sf.taverna.raven.repository.Artifact;
  * @author Stian Soiland
  * 
  */
-public class LatestVersionFilter implements ArtifactFilter {
+public class LatestVersionFilter extends AbstractArtifactFilter  {
 
 	public Set<Artifact> filter(Set<Artifact> artifacts) {
 		SortedSet<Artifact> sortedArtifacts = 
@@ -40,5 +40,6 @@ public class LatestVersionFilter implements ArtifactFilter {
 			results.add(previous);
 		}
 		return results;
-	}	
+	}
+
 }

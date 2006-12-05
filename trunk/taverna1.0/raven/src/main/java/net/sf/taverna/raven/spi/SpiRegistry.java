@@ -28,7 +28,7 @@ import net.sf.taverna.raven.repository.impl.LocalArtifactClassLoader;
  * jar archives for META-INF/services/<SPI name>
  * @author Tom Oinn
  */
-public class SpiRegistry implements Iterable<Class> {
+public class SpiRegistry implements Iterable<Class>, ArtifactFilterListener {
 	
 	private static Log logger = Log.getLogger(SpiRegistry.class);
 	
@@ -115,6 +115,7 @@ public class SpiRegistry implements Iterable<Class> {
 	public synchronized void addFilter(ArtifactFilter af) {
 		implementations = null;
 		filters.add(af);
+		af.addArtifactFilterListener(this);
 		newArtifacts.clear();
 		newArtifacts.addAll(repository.getArtifacts(ArtifactStatus.Ready));
 		notifyListeners();
@@ -125,6 +126,9 @@ public class SpiRegistry implements Iterable<Class> {
 	 */
 	public synchronized void clearFilters() {
 		implementations = null;
+		for (ArtifactFilter filter : filters) {
+			filter.removeArtifactFilterListener(this);
+		}
 		filters.clear();
 		newArtifacts.clear();
 		newArtifacts.addAll(repository.getArtifacts(ArtifactStatus.Ready));
@@ -136,10 +140,23 @@ public class SpiRegistry implements Iterable<Class> {
 	 */
 	public synchronized void setFilters(List<ArtifactFilter> newFilters) {
 		implementations = null;
+		for (ArtifactFilter filter : filters) {
+			filter.removeArtifactFilterListener(this);
+		}
 		filters = new ArrayList<ArtifactFilter>(newFilters);
+		for (ArtifactFilter filter : filters) {
+			filter.addArtifactFilterListener(this);
+		}
 		newArtifacts.clear();
 		newArtifacts.addAll(repository.getArtifacts(ArtifactStatus.Ready));
 		notifyListeners();
+	}
+	
+	public void filterChanged(ArtifactFilter filter) {
+		implementations = null;
+		newArtifacts.clear();
+		newArtifacts.addAll(repository.getArtifacts(ArtifactStatus.Ready));
+		notifyListeners();		
 	}
 	
 	/**
