@@ -31,6 +31,9 @@ import javax.swing.tree.MutableTreeNode;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 
+import net.sf.taverna.raven.spi.RegistryListener;
+import net.sf.taverna.raven.spi.SpiRegistry;
+
 import org.embl.ebi.escience.scufl.ScuflModel;
 import org.embl.ebi.escience.scuflui.ScavengerTreePanel;
 import org.embl.ebi.escience.scuflui.TavernaIcons;
@@ -272,6 +275,14 @@ public class DefaultScavengerTree extends ExtendedJTree implements WorkflowModel
 				// Add the default soaplab installation if this is defined
 				setPopulating(true);
 				new DefaultScavengerLoaderThread(this);
+				ScavengerHelperRegistry.instance().addRegistryListener(new RegistryListener() {
+
+					public void spiRegistryUpdated(SpiRegistry registry) {
+						setPopulating(true);
+						new DefaultScavengerLoaderThread(DefaultScavengerTree.this);						
+					}
+					
+				});
 			} else {
 				setPopulating(false);
 				setExpansion(true);
