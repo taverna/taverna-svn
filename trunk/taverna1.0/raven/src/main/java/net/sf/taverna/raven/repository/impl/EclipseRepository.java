@@ -25,10 +25,10 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: EclipseRepository.java,v $
- * Revision           $Revision: 1.3 $
+ * Revision           $Revision: 1.4 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-10-30 15:37:50 $
- *               by   $Author: stain $
+ * Last modified on   $Date: 2006-12-05 15:10:48 $
+ *               by   $Author: davidwithers $
  * Created on 18 Oct 2006
  *****************************************************************/
 package net.sf.taverna.raven.repository.impl;
@@ -94,14 +94,15 @@ public class EclipseRepository implements Repository {
 	public List<Artifact> getArtifacts(ArtifactStatus s) {
 		//adds a dummy artifact, tricks SPIRegistry into looking up SPI registered items (which it gets from the system classpath).
 		Artifact a=new BasicArtifact("dummy","dummy","dummy");
-		if (artifacts.size()==0) artifacts.add(a);
+		if (artifacts.size()==0) {
+			artifacts.add(a);
 		
-		//add artifact to profile so it doesn't get filtered out
-		Profile p=ProfileFactory.getInstance().getProfile();
-		if (p!=null) {
-			p.addArtifact(a);
-		}
-		
+			//add artifact to profile so it doesn't get filtered out
+			Profile p=ProfileFactory.getInstance().getProfile();
+			if (p!=null) {
+				p.addArtifact(a);
+			}
+		}		
 		
 		if (s.equals(ArtifactStatus.Ready))
 			return artifacts;
