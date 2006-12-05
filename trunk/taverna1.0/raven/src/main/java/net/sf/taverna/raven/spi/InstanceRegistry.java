@@ -149,17 +149,17 @@ public class InstanceRegistry <IType> implements Iterable<IType>, RegistryListen
 				temp.add(newInstance);
 				changed = true;
 			} catch (SecurityException e) {
-				logger.warn("Could not instanciate " + c, e);
+				logger.warn("Could not instantiate " + c, e);
 			} catch (NoSuchMethodException e) {
-				logger.warn("Could not instanciate " + c, e);
+				logger.warn("Could not instantiate " + c, e);
 			} catch (IllegalArgumentException e) {
-				logger.warn("Could not instanciate " + c, e);
+				logger.warn("Could not instantiate " + c, e);
 			} catch (InstantiationException e) {
-				logger.warn("Could not instanciate " + c, e);
+				logger.warn("Could not instantiate " + c, e);
 			} catch (IllegalAccessException e) {
-				logger.warn("Could not instanciate " + c, e);
+				logger.warn("Could not instantiate " + c, e);
 			} catch (InvocationTargetException e) {
-				logger.warn("Could not instanciate " + c, e);
+				logger.warn("Could not instantiate " + c, e);
 			} catch (ClassCastException e) {
 				TypeVariable spi = getClass().getTypeParameters()[0];
 				logger.error("Declared as implementation of the SPI " + spi.getName()
