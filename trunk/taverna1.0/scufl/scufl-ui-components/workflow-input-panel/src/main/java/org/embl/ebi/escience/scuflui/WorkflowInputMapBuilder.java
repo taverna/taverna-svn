@@ -20,6 +20,7 @@ import java.awt.dnd.DropTargetEvent;
 import java.awt.dnd.DropTargetListener;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.BufferedReader;
@@ -57,6 +58,7 @@ import javax.swing.JSplitPane;
 import javax.swing.JTextArea;
 import javax.swing.JToolBar;
 import javax.swing.JTree;
+import javax.swing.KeyStroke;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.event.TreeSelectionEvent;
@@ -97,7 +99,7 @@ import org.jdom.output.XMLOutputter;
  * 
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover </a>
  * @author Stian Soiland
- * @version $Revision: 1.10 $
+ * @version $Revision: 1.11 $
  */
 public class WorkflowInputMapBuilder extends JPanel implements
         WorkflowModelViewSPI, ScuflModelEventListener {
@@ -1094,7 +1096,10 @@ public class WorkflowInputMapBuilder extends JPanel implements
                     TavernaIcons.openIcon);
             loadURLItem.addActionListener(loadURLAction);
             JMenuItem loadClipboardItem = new JMenuItem(
-                    "Paste Input from Clipboard", TavernaIcons.pasteIcon);
+                    "Paste", TavernaIcons.pasteIcon);
+            loadClipboardItem.setAccelerator(KeyStroke.getKeyStroke(
+                    "ctrl V"));
+            loadClipboardItem.setMnemonic(KeyEvent.VK_PASTE);
             loadClipboardItem.addActionListener(pasteAction);
             menu.add(removeItem);
             menu.add(loadFileItem);
