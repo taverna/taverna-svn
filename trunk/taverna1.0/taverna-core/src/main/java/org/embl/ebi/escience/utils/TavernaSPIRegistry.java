@@ -45,7 +45,6 @@ import net.sf.taverna.raven.spi.Profile;
 import net.sf.taverna.raven.spi.ProfileFactory;
 import net.sf.taverna.raven.spi.RegistryListener;
 import net.sf.taverna.raven.spi.SpiRegistry;
-import net.sf.taverna.update.plugin.PluginManager;
 
 import org.apache.log4j.Logger;
 
