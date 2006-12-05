@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: PluginManager.java,v $
- * Revision           $Revision: 1.1 $
+ * Revision           $Revision: 1.2 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-12-05 12:24:28 $
+ * Last modified on   $Date: 2006-12-05 12:57:31 $
  *               by   $Author: davidwithers $
  * Created on 23 Nov 2006
  *****************************************************************/
@@ -44,14 +44,11 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import net.sf.taverna.raven.log.Log;
 import net.sf.taverna.raven.repository.Artifact;
 import net.sf.taverna.raven.repository.Repository;
-import net.sf.taverna.raven.spi.ArtifactFilter;
 import net.sf.taverna.raven.spi.Profile;
 import net.sf.taverna.raven.spi.ProfileFactory;
 import net.sf.taverna.update.plugin.event.PluginEvent;
@@ -92,7 +89,7 @@ public class PluginManager implements PluginListener {
 	private List<Plugin> updatedPlugins = new ArrayList<Plugin>();
 
 	private Profile profile = ProfileFactory.getInstance().getProfile();
-	
+
 	private PluginManager() {
 		String tavernaHome = System.getProperty("taverna.home");
 		if (tavernaHome != null) {
@@ -143,7 +140,7 @@ public class PluginManager implements PluginListener {
 			for (Artifact artifact : plugin.getProfile().getArtifacts()) {
 				repository.addArtifact(artifact);
 			}
-			repository.update();	
+			repository.update();
 			if (plugin.isEnabled()) {
 				enablePlugin(plugin);
 			}
@@ -156,7 +153,7 @@ public class PluginManager implements PluginListener {
 		if (plugins.contains(plugin)) {
 			if (plugin.isEnabled()) {
 				disablePlugin(plugin);
-			}			
+			}
 			firePluginRemovedEvent(new PluginManagerEvent(this, plugin));
 			plugins.remove(plugin);
 			plugin.removePluginListener(this);
@@ -166,21 +163,21 @@ public class PluginManager implements PluginListener {
 	private void enablePlugin(Plugin plugin) {
 		if (plugins.contains(plugin)) {
 			for (Artifact artifact : plugin.getProfile().getArtifacts()) {
-				profile.addArtifact(artifact);		
+				profile.addArtifact(artifact);
 			}
 		}
 		savePlugins();
 	}
-	
+
 	private void disablePlugin(Plugin plugin) {
 		if (plugins.contains(plugin)) {
 			for (Artifact artifact : plugin.getProfile().getArtifacts()) {
-				profile.removeArtifact(artifact);		
-			}	
+				profile.removeArtifact(artifact);
+			}
 		}
 		savePlugins();
 	}
-	
+
 	public void savePlugins() {
 		if (plugins.size() > 0) {
 			Element pluginsElement = new Element("plugins");
@@ -190,8 +187,8 @@ public class PluginManager implements PluginListener {
 			Writer writer;
 			try {
 				writer = new FileWriter(new File(pluginsDir, "plugins.xml"));
-				new XMLOutputter(Format.getPrettyFormat()).output(pluginsElement,
-						writer);
+				new XMLOutputter(Format.getPrettyFormat()).output(
+						pluginsElement, writer);
 				writer.flush();
 				writer.close();
 			} catch (IOException e) {
@@ -253,7 +250,7 @@ public class PluginManager implements PluginListener {
 		try {
 			int statusCode = client.executeMethod(getPlugins);
 			if (statusCode != HttpStatus.SC_OK) {
-				//log
+				// log
 			}
 			Document pluginsDocument = new SAXBuilder().build(getPlugins
 					.getResponseBodyAsStream());
@@ -265,7 +262,7 @@ public class PluginManager implements PluginListener {
 				HttpMethod getPlugin = new GetMethod(pluginUri.toString());
 				statusCode = client.executeMethod(getPlugin);
 				if (statusCode != HttpStatus.SC_OK) {
-					//log
+					// log
 				}
 				Document pluginDocument = new SAXBuilder().build(getPlugin
 						.getResponseBodyAsStream());
@@ -308,7 +305,7 @@ public class PluginManager implements PluginListener {
 			return updatedPlugins.get(updatedPlugins.indexOf(plugin));
 		}
 	}
-	
+
 	public void updatePlugin(Plugin plugin) {
 		if (isUpdateAvailable(plugin)) {
 			synchronized (updatedPlugins) {
@@ -319,11 +316,11 @@ public class PluginManager implements PluginListener {
 			}
 		}
 	}
-	
+
 	public boolean isUpdateAvailable(Plugin plugin) {
 		return updatedPlugins.contains(plugin);
 	}
-	
+
 	public boolean checkForUpdates() {
 		updatedPlugins = new ArrayList<Plugin>();
 		for (PluginSite pluginSite : getPluginSites()) {
@@ -336,14 +333,16 @@ public class PluginManager implements PluginListener {
 						if (updatedPlugin.compareVersion(plugin) < 0) {
 							updatedPlugins.remove(index);
 							updatedPlugins.add(plugin);
-							firePluginChangedEvent(new PluginManagerEvent(this, plugin));
+							firePluginChangedEvent(new PluginManagerEvent(this,
+									plugin));
 						}
 					} else {
 						int index = plugins.indexOf(plugin);
 						Plugin updatedPlugin = plugins.get(index);
 						if (updatedPlugin.compareVersion(plugin) < 0) {
 							updatedPlugins.add(plugin);
-							firePluginChangedEvent(new PluginManagerEvent(this, plugin));
+							firePluginChangedEvent(new PluginManagerEvent(this,
+									plugin));
 						}
 					}
 				}
@@ -399,28 +398,6 @@ public class PluginManager implements PluginListener {
 		firePluginChangedEvent(new PluginManagerEvent(event, event.getPlugin()));
 	}
 
-//	public Set<Artifact> filter(Set<Artifact> artifacts) {
-//		Set<Artifact> result = new HashSet<Artifact>();
-//		for (Plugin plugin : plugins) {
-//			Profile profile = plugin.getProfile();
-//			if (profile != null) {
-//				result.addAll(profile.filter(artifacts));
-//			}
-//		}
-//		return result;
-//	}
-//
-//	public Set<Artifact> getArtifacts() {
-//		Set<Artifact> result = new HashSet<Artifact>();
-//		for (Plugin plugin : plugins) {
-//			Profile profile = plugin.getProfile();
-//			if (profile != null) {
-//				result.addAll(profile.getArtifacts());
-//			}
-//		}
-//		return result;
-//	}
-
 	private void initializePlugins() {
 		File pluginsFile = new File(pluginsDir, "plugins.xml");
 		if (pluginsFile.exists()) {
@@ -430,10 +407,6 @@ public class PluginManager implements PluginListener {
 				List<Element> pluginList = root.getChildren("plugin");
 				for (Element pluginElement : pluginList) {
 					Plugin plugin = Plugin.fromXml(pluginElement);
-//					if (!plugin.isActive()) {
-//						plugin.setActive(true);
-//						plugin.setEnabled(true);
-//					}
 					addPlugin(plugin);
 				}
 				savePlugins();
@@ -463,6 +436,22 @@ public class PluginManager implements PluginListener {
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
+			}
+		} else {
+			String updateSite = System.getProperty("raven.pluginsite");
+			if (updateSite != null) {
+				try {
+					PluginSite defaultPluginSite = new PluginSite(
+							"Taverna Plugin Update Site", new URL(updateSite));
+					pluginSites.add(defaultPluginSite);
+					savePluginSites();
+				} catch (MalformedURLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			}
 		}
 	}
