@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: PluginManager.java,v $
- * Revision           $Revision: 1.3 $
+ * Revision           $Revision: 1.4 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-12-05 13:50:33 $
+ * Last modified on   $Date: 2006-12-05 17:02:06 $
  *               by   $Author: davidwithers $
  * Created on 23 Nov 2006
  *****************************************************************/
@@ -91,6 +91,10 @@ public class PluginManager implements PluginListener {
 
 	private Profile profile = ProfileFactory.getInstance().getProfile();
 
+	/**
+	 * Constructs an instance of PluginManager.
+	 * 
+	 */
 	private PluginManager() {
 		String tavernaHome = System.getProperty("taverna.home");
 		if (tavernaHome != null) {
@@ -134,14 +138,14 @@ public class PluginManager implements PluginListener {
 				try {
 					repository.addRemoteRepository(new URL(repositoryURL));
 				} catch (MalformedURLException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					logger.warn("Invalid remote repository URL - "
+							+ repositoryURL);
 				}
 			}
 			for (Artifact artifact : plugin.getProfile().getArtifacts()) {
 				repository.addArtifact(artifact);
 			}
-			repository.update();
+			// repository.update();
 			if (plugin.isEnabled()) {
 				enablePlugin(plugin);
 			}
@@ -185,16 +189,16 @@ public class PluginManager implements PluginListener {
 			for (Plugin plugin : plugins) {
 				pluginsElement.addContent(plugin.toXml());
 			}
-			Writer writer;
+			File pluginsFile = new File(pluginsDir, "plugins.xml");
 			try {
-				writer = new FileWriter(new File(pluginsDir, "plugins.xml"));
+				Writer writer = new FileWriter(pluginsFile);
 				new XMLOutputter(Format.getPrettyFormat()).output(
 						pluginsElement, writer);
 				writer.flush();
 				writer.close();
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				logger.error("Error writing plugins to "
+						+ pluginsFile.getPath());
 			}
 		}
 	}
@@ -208,41 +212,56 @@ public class PluginManager implements PluginListener {
 		return pluginSites;
 	}
 
+	/**
+	 * Adds a <code>PluginSite</code>.
+	 * 
+	 * @param pluginSite
+	 *            the <code>PluginSite</code> to add
+	 */
 	public void addPluginSite(PluginSite pluginSite) {
 		pluginSites.add(pluginSite);
-		try {
-			savePluginSites();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		savePluginSites();
 	}
 
+	/**
+	 * Removes a <code>PluginSite</code>.
+	 * 
+	 * @param pluginSite
+	 *            the <code>PluginSite</code> to remove
+	 */
 	public void removePluginSite(PluginSite pluginSite) {
 		pluginSites.remove(pluginSite);
-		try {
-			savePluginSites();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		savePluginSites();
 	}
 
-	public void savePluginSites() throws IOException {
+	public void savePluginSites() {
 		if (pluginSites.size() > 0) {
 			Element pluginSitesElement = new Element("pluginSites");
 			for (PluginSite pluginSite : pluginSites) {
 				pluginSitesElement.addContent(pluginSite.toXml());
 			}
-			Writer writer = new FileWriter(new File(pluginsDir,
-					"plugin-sites.xml"));
-			new XMLOutputter(Format.getPrettyFormat()).output(
-					pluginSitesElement, writer);
-			writer.flush();
-			writer.close();
+			File pluginSitesFile = new File(pluginsDir, "plugin-sites.xml");
+			try {
+				Writer writer = new FileWriter(pluginSitesFile);
+				new XMLOutputter(Format.getPrettyFormat()).output(
+						pluginSitesElement, writer);
+				writer.flush();
+				writer.close();
+			} catch (IOException e) {
+				logger.error("Error writing plugin sites to "
+						+ pluginSitesFile.getPath());
+			}
 		}
 	}
 
+	/**
+	 * Returns all the <code>Plugin</code>s available from the
+	 * <code>PluginSite</code>.
+	 * 
+	 * @param pluginSite
+	 * @return all the <code>Plugin</code>s available from the
+	 *         <code>PluginSite</code>
+	 */
 	public List<Plugin> getPluginsFromSite(PluginSite pluginSite) {
 		List<Plugin> plugins = new ArrayList<Plugin>();
 		HttpClient client = new HttpClient();
@@ -281,6 +300,14 @@ public class PluginManager implements PluginListener {
 		return plugins;
 	}
 
+	/**
+	 * Returns all the <code>Plugin</code>s available from the
+	 * <code>PluginSite</code> that haven't already been installed.
+	 * 
+	 * @param pluginSite
+	 * @return all the uninstalled <code>Plugin</code>s from the
+	 *         <code>PluginSite</code>
+	 */
 	public List<Plugin> getUninstalledPluginsFromSite(PluginSite pluginSite) {
 		List<Plugin> uninstalledPlugins = new ArrayList<Plugin>();
 		List<Plugin> pluginsFromSite = getPluginsFromSite(pluginSite);
@@ -301,12 +328,23 @@ public class PluginManager implements PluginListener {
 		return uninstalledPlugins;
 	}
 
+	/**
+	 * Returns the update for the plugin;
+	 * 
+	 * @param plugin
+	 * @return
+	 */
 	public Plugin getUpdate(Plugin plugin) {
 		synchronized (updatedPlugins) {
 			return updatedPlugins.get(updatedPlugins.indexOf(plugin));
 		}
 	}
 
+	/**
+	 * If an update is available, removes the plugin an installs the update.
+	 * 
+	 * @param plugin the plugin to update
+	 */
 	public void updatePlugin(Plugin plugin) {
 		if (isUpdateAvailable(plugin)) {
 			synchronized (updatedPlugins) {
@@ -314,14 +352,26 @@ public class PluginManager implements PluginListener {
 				updatedPlugins.remove(newPlugin);
 				removePlugin(plugin);
 				addPlugin(newPlugin);
+				savePlugins();
 			}
 		}
 	}
 
+	/**
+	 * Returns <code>true</code> if an update is available for the plugin.
+	 * 
+	 * @param plugin
+	 * @return
+	 */
 	public boolean isUpdateAvailable(Plugin plugin) {
 		return updatedPlugins.contains(plugin);
 	}
 
+	/**
+	 * Checks the <code>PluginSite</code>s to find updates for installed plugins.
+	 * 
+	 * @return true if updates are found
+	 */
 	public boolean checkForUpdates() {
 		updatedPlugins = new ArrayList<Plugin>();
 		for (PluginSite pluginSite : getPluginSites()) {
@@ -390,6 +440,9 @@ public class PluginManager implements PluginListener {
 		}
 	}
 
+	/* (non-Javadoc)
+	 * @see net.sf.taverna.update.plugin.event.PluginListener#pluginChanged(net.sf.taverna.update.plugin.event.PluginEvent)
+	 */
 	public void pluginChanged(PluginEvent event) {
 		if (event.getAction() == PluginEvent.ENABLED) {
 			enablePlugin(event.getPlugin());
@@ -439,7 +492,8 @@ public class PluginManager implements PluginListener {
 				e.printStackTrace();
 			}
 		} else {
-			String updateSite = Bootstrap.properties.getProperty("raven.pluginsite");
+			String updateSite = Bootstrap.properties
+					.getProperty("raven.pluginsite");
 			if (updateSite != null) {
 				try {
 					PluginSite defaultPluginSite = new PluginSite(

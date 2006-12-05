@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: PluginManagerEvent.java,v $
- * Revision           $Revision: 1.1 $
+ * Revision           $Revision: 1.2 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-12-05 12:24:28 $
+ * Last modified on   $Date: 2006-12-05 17:02:05 $
  *               by   $Author: davidwithers $
  * Created on 30 Nov 2006
  *****************************************************************/
@@ -38,12 +38,21 @@ import java.util.EventObject;
 import net.sf.taverna.update.plugin.Plugin;
 
 /**
+ * An event to notify listeners that the <code>PluginManager</code> has changed.
  *
  * @author David Withers
  */
 public class PluginManagerEvent extends EventObject {
+	private static final long serialVersionUID = 1L;
+
 	private Plugin plugin;
 	
+	/**
+	 * Constructs an instance of PluginManagerEvent.
+	 *
+	 * @param source
+	 * @param plugin
+	 */
 	public PluginManagerEvent(Object source, Plugin plugin) {
 		super(source);
 		this.plugin = plugin;

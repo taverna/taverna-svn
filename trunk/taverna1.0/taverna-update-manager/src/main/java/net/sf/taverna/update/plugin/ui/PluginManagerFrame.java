@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: PluginManagerFrame.java,v $
- * Revision           $Revision: 1.2 $
+ * Revision           $Revision: 1.3 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-12-05 15:59:14 $
+ * Last modified on   $Date: 2006-12-05 17:02:05 $
  *               by   $Author: davidwithers $
  * Created on 27 Nov 2006
  *****************************************************************/
@@ -51,6 +51,7 @@ import net.sf.taverna.update.plugin.Plugin;
 import net.sf.taverna.update.plugin.PluginManager;
 
 /**
+ * GUI component for the <code>PluginManager</code>.
  * 
  * @author David Withers
  */
@@ -60,9 +61,9 @@ public class PluginManagerFrame extends JFrame {
 
 	private JPanel jContentPane = null;
 
-	private JButton jButton = null;
+	private JButton updateButton = null;
 
-	private JButton jButton1 = null;
+	private JButton findPluginsButton = null;
 
 	private PluginManager pluginManager;
 
@@ -70,11 +71,11 @@ public class PluginManagerFrame extends JFrame {
 
 	private JList jList = null;
 
-	private JButton jButton2 = null;
+	private JButton enableButton = null;
 
-	private JButton jButton3 = null;
+	private JButton uninstallButton = null;
 
-	private JButton jButton4 = null;
+	private JButton findUpdatesButton = null;
 
 	/**
 	 * This is the default constructor
@@ -103,52 +104,52 @@ public class PluginManagerFrame extends JFrame {
 	 */
 	private JPanel getJContentPane() {
 		if (jContentPane == null) {
-			GridBagConstraints gridBagConstraints12 = new GridBagConstraints();
-			gridBagConstraints12.gridx = 0;
-			gridBagConstraints12.insets = new Insets(5, 5, 5, 5);
-			gridBagConstraints12.gridy = 3;
-			GridBagConstraints gridBagConstraints3 = new GridBagConstraints();
-			gridBagConstraints3.gridx = 2;
-			gridBagConstraints3.anchor = GridBagConstraints.NORTHEAST;
-			gridBagConstraints3.fill = GridBagConstraints.HORIZONTAL;
-			gridBagConstraints3.insets = new Insets(5, 0, 0, 5);
-			gridBagConstraints3.gridy = 1;
-			GridBagConstraints gridBagConstraints = new GridBagConstraints();
-			gridBagConstraints.gridx = 2;
-			gridBagConstraints.anchor = GridBagConstraints.NORTHEAST;
-			gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
-			gridBagConstraints.insets = new Insets(5, 0, 0, 5);
-			gridBagConstraints.gridy = 0;
-			GridBagConstraints gridBagConstraints11 = new GridBagConstraints();
-			gridBagConstraints11.fill = GridBagConstraints.BOTH;
-			gridBagConstraints11.gridy = 0;
-			gridBagConstraints11.weightx = 1.0;
-			gridBagConstraints11.weighty = 1.0;
-			gridBagConstraints11.gridwidth = 2;
-			gridBagConstraints11.insets = new Insets(5, 5, 5, 5);
-			gridBagConstraints11.gridx = 0;
-			gridBagConstraints11.gridheight = 3;
-			gridBagConstraints11.anchor = GridBagConstraints.NORTHWEST;
-			GridBagConstraints gridBagConstraints2 = new GridBagConstraints();
-			gridBagConstraints2.gridx = 1;
-			gridBagConstraints2.anchor = GridBagConstraints.WEST;
-			gridBagConstraints2.insets = new Insets(5, 5, 5, 5);
-			gridBagConstraints2.gridy = 3;
-			GridBagConstraints gridBagConstraints1 = new GridBagConstraints();
-			gridBagConstraints1.gridx = 2;
-			gridBagConstraints1.gridwidth = 1;
-			gridBagConstraints1.anchor = GridBagConstraints.NORTHEAST;
-			gridBagConstraints1.insets = new Insets(5, 0, 0, 5);
-			gridBagConstraints1.fill = GridBagConstraints.HORIZONTAL;
-			gridBagConstraints1.gridy = 2;
+			GridBagConstraints findUpdatesConstraints = new GridBagConstraints();
+			findUpdatesConstraints.gridx = 0;
+			findUpdatesConstraints.insets = new Insets(5, 5, 5, 5);
+			findUpdatesConstraints.gridy = 3;
+			GridBagConstraints uninstallButtonConstraints = new GridBagConstraints();
+			uninstallButtonConstraints.gridx = 2;
+			uninstallButtonConstraints.anchor = GridBagConstraints.NORTHEAST;
+			uninstallButtonConstraints.fill = GridBagConstraints.HORIZONTAL;
+			uninstallButtonConstraints.insets = new Insets(5, 0, 0, 5);
+			uninstallButtonConstraints.gridy = 1;
+			GridBagConstraints enableButtonConstraints = new GridBagConstraints();
+			enableButtonConstraints.gridx = 2;
+			enableButtonConstraints.anchor = GridBagConstraints.NORTHEAST;
+			enableButtonConstraints.fill = GridBagConstraints.HORIZONTAL;
+			enableButtonConstraints.insets = new Insets(5, 0, 0, 5);
+			enableButtonConstraints.gridy = 0;
+			GridBagConstraints scrollPaneConstraints = new GridBagConstraints();
+			scrollPaneConstraints.fill = GridBagConstraints.BOTH;
+			scrollPaneConstraints.gridy = 0;
+			scrollPaneConstraints.weightx = 1.0;
+			scrollPaneConstraints.weighty = 1.0;
+			scrollPaneConstraints.gridwidth = 2;
+			scrollPaneConstraints.insets = new Insets(5, 5, 5, 5);
+			scrollPaneConstraints.gridx = 0;
+			scrollPaneConstraints.gridheight = 3;
+			scrollPaneConstraints.anchor = GridBagConstraints.NORTHWEST;
+			GridBagConstraints findPluginsConstraints = new GridBagConstraints();
+			findPluginsConstraints.gridx = 1;
+			findPluginsConstraints.anchor = GridBagConstraints.WEST;
+			findPluginsConstraints.insets = new Insets(5, 5, 5, 5);
+			findPluginsConstraints.gridy = 3;
+			GridBagConstraints updateButtonConstraints = new GridBagConstraints();
+			updateButtonConstraints.gridx = 2;
+			updateButtonConstraints.gridwidth = 1;
+			updateButtonConstraints.anchor = GridBagConstraints.NORTHEAST;
+			updateButtonConstraints.insets = new Insets(5, 0, 0, 5);
+			updateButtonConstraints.fill = GridBagConstraints.HORIZONTAL;
+			updateButtonConstraints.gridy = 2;
 			jContentPane = new JPanel();
 			jContentPane.setLayout(new GridBagLayout());
-			jContentPane.add(getJButton(), gridBagConstraints1);
-			jContentPane.add(getJButton1(), gridBagConstraints2);
-			jContentPane.add(getJScrollPane(), gridBagConstraints11);
-			jContentPane.add(getJButton2(), gridBagConstraints);
-			jContentPane.add(getJButton3(), gridBagConstraints3);
-			jContentPane.add(getJButton4(), gridBagConstraints12);
+			jContentPane.add(getUpdateButton(), updateButtonConstraints);
+			jContentPane.add(getFindPluginsButton(), findPluginsConstraints);
+			jContentPane.add(getJScrollPane(), scrollPaneConstraints);
+			jContentPane.add(getEnableButton(), enableButtonConstraints);
+			jContentPane.add(getUninstallButton(), uninstallButtonConstraints);
+			jContentPane.add(getFindUpdatesButton(), findUpdatesConstraints);
 		}
 		return jContentPane;
 	}
@@ -158,12 +159,12 @@ public class PluginManagerFrame extends JFrame {
 	 * 
 	 * @return javax.swing.JButton
 	 */
-	private JButton getJButton() {
-		if (jButton == null) {
-			jButton = new JButton();
-			jButton.setText("Update");
-			jButton.setEnabled(false);
-			jButton.addActionListener(new java.awt.event.ActionListener() {
+	private JButton getUpdateButton() {
+		if (updateButton == null) {
+			updateButton = new JButton();
+			updateButton.setText("Update");
+			updateButton.setEnabled(false);
+			updateButton.addActionListener(new java.awt.event.ActionListener() {
 				public void actionPerformed(java.awt.event.ActionEvent e) {
 					Object selectedObject = getJList().getSelectedValue();
 					if (selectedObject instanceof Plugin) {
@@ -173,7 +174,7 @@ public class PluginManagerFrame extends JFrame {
 				}
 			});
 		}
-		return jButton;
+		return updateButton;
 	}
 
 	/**
@@ -208,17 +209,17 @@ public class PluginManagerFrame extends JFrame {
 						if (selectedObject instanceof Plugin) {
 							Plugin plugin = (Plugin) selectedObject;
 							if (plugin.isEnabled()) {
-								getJButton2().setText("Disable");
-								getJButton2().setActionCommand("disable");
+								getEnableButton().setText("Disable");
+								getEnableButton().setActionCommand("disable");
 							} else {
-								getJButton2().setText("Enable");
-								getJButton2().setActionCommand("enable");
+								getEnableButton().setText("Enable");
+								getEnableButton().setActionCommand("enable");
 							}
-							getJButton2().setEnabled(true);
+							getEnableButton().setEnabled(true);
 							if (pluginManager.isUpdateAvailable(plugin)) {
-								getJButton().setEnabled(true);
+								getUpdateButton().setEnabled(true);
 							} else {
-								getJButton().setEnabled(false);
+								getUpdateButton().setEnabled(false);
 							}
 						}
 					}
@@ -237,32 +238,32 @@ public class PluginManagerFrame extends JFrame {
 	 * 
 	 * @return javax.swing.JButton
 	 */
-	private JButton getJButton2() {
-		if (jButton2 == null) {
-			jButton2 = new JButton();
-			jButton2.setText("Enable");
-			jButton2.setEnabled(false);
-			jButton2.setActionCommand("enable");
-			jButton2.addActionListener(new java.awt.event.ActionListener() {
+	private JButton getEnableButton() {
+		if (enableButton == null) {
+			enableButton = new JButton();
+			enableButton.setText("Enable");
+			enableButton.setEnabled(false);
+			enableButton.setActionCommand("enable");
+			enableButton.addActionListener(new java.awt.event.ActionListener() {
 				public void actionPerformed(java.awt.event.ActionEvent e) {
 					Object selectedObject = jList.getSelectedValue();
 					if (selectedObject instanceof Plugin) {
 						Plugin plugin = (Plugin) selectedObject;
 						if ("enable".equals(e.getActionCommand())) {
 							plugin.setEnabled(true);
-							jButton2.setText("Disable");
-							jButton2.setActionCommand("disable");
+							enableButton.setText("Disable");
+							enableButton.setActionCommand("disable");
 						} else if ("disable".equals(e.getActionCommand())) {
 							plugin.setEnabled(false);
-							jButton2.setText("Enable");
-							jButton2.setActionCommand("enable");
+							enableButton.setText("Enable");
+							enableButton.setActionCommand("enable");
 						}
 					}
 					jList.setSelectedValue(selectedObject, true);
 				}
 			});
 		}
-		return jButton2;
+		return enableButton;
 	}
 
 	/**
@@ -270,11 +271,11 @@ public class PluginManagerFrame extends JFrame {
 	 * 
 	 * @return javax.swing.JButton
 	 */
-	private JButton getJButton3() {
-		if (jButton3 == null) {
-			jButton3 = new JButton();
-			jButton3.setText("Uninstall");
-			jButton3.addActionListener(new java.awt.event.ActionListener() {
+	private JButton getUninstallButton() {
+		if (uninstallButton == null) {
+			uninstallButton = new JButton();
+			uninstallButton.setText("Uninstall");
+			uninstallButton.addActionListener(new java.awt.event.ActionListener() {
 				public void actionPerformed(java.awt.event.ActionEvent e) {
 					int index = jList.getSelectedIndex();
 					Object selectedObject = jList.getSelectedValue();
@@ -290,7 +291,7 @@ public class PluginManagerFrame extends JFrame {
 				}
 			});
 		}
-		return jButton3;
+		return uninstallButton;
 	}
 
 	/**
@@ -298,11 +299,11 @@ public class PluginManagerFrame extends JFrame {
 	 * 
 	 * @return javax.swing.JButton
 	 */
-	private JButton getJButton1() {
-		if (jButton1 == null) {
-			jButton1 = new JButton();
-			jButton1.setText("Find New Plugins");
-			jButton1.addActionListener(new java.awt.event.ActionListener() {
+	private JButton getFindPluginsButton() {
+		if (findPluginsButton == null) {
+			findPluginsButton = new JButton();
+			findPluginsButton.setText("Find New Plugins");
+			findPluginsButton.addActionListener(new java.awt.event.ActionListener() {
 				public void actionPerformed(java.awt.event.ActionEvent e) {
 					Object selectedObject = getJList().getSelectedValue();
 					PluginSiteFrame pluginSiteFrame = new PluginSiteFrame(
@@ -317,7 +318,7 @@ public class PluginManagerFrame extends JFrame {
 				}
 			});
 		}
-		return jButton1;
+		return findPluginsButton;
 	}
 
 	/**
@@ -325,11 +326,11 @@ public class PluginManagerFrame extends JFrame {
 	 * 	
 	 * @return javax.swing.JButton	
 	 */
-	private JButton getJButton4() {
-		if (jButton4 == null) {
-			jButton4 = new JButton();
-			jButton4.setText("Find Updates");
-			jButton4.addActionListener(new java.awt.event.ActionListener() {
+	private JButton getFindUpdatesButton() {
+		if (findUpdatesButton == null) {
+			findUpdatesButton = new JButton();
+			findUpdatesButton.setText("Find Updates");
+			findUpdatesButton.addActionListener(new java.awt.event.ActionListener() {
 				public void actionPerformed(java.awt.event.ActionEvent e) {
 					Object selectedObject = getJList().getSelectedValue();
 					if (!pluginManager.checkForUpdates()) {
@@ -343,7 +344,7 @@ public class PluginManagerFrame extends JFrame {
 				}
 			});
 		}
-		return jButton4;
+		return findUpdatesButton;
 	}
 
 } // @jve:decl-index=0:visual-constraint="33,9"

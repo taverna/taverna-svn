@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: Plugin.java,v $
- * Revision           $Revision: 1.1 $
+ * Revision           $Revision: 1.2 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-12-05 12:24:28 $
+ * Last modified on   $Date: 2006-12-05 17:02:06 $
  *               by   $Author: davidwithers $
  * Created on 28 Nov 2006
  *****************************************************************/
@@ -44,6 +44,10 @@ import net.sf.taverna.update.plugin.event.PluginListener;
 
 import org.jdom.Element;
 
+/**
+ *
+ * @author David Withers
+ */
 public class Plugin implements Comparable<Plugin> {
 	private List<PluginListener> pluginListeners = new ArrayList<PluginListener>();
 
@@ -63,6 +67,10 @@ public class Plugin implements Comparable<Plugin> {
 
 	private Profile profile = new Profile(true);
 
+	/**
+	 * Constructs an instance of Plugin.
+	 *
+	 */
 	private Plugin() {
 	}
 
@@ -192,7 +200,7 @@ public class Plugin implements Comparable<Plugin> {
 	/**
 	 * Creates a <code>Plugin</code> from an XML element.
 	 * 
-	 * @param pluginElement
+	 * @param pluginElement the XML element
 	 * @return a new <code>Plugin</code>
 	 */
 	public static Plugin fromXml(Element pluginElement) {

@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: PluginManagerListener.java,v $
- * Revision           $Revision: 1.1 $
+ * Revision           $Revision: 1.2 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-12-05 12:24:28 $
+ * Last modified on   $Date: 2006-12-05 17:02:06 $
  *               by   $Author: davidwithers $
  * Created on 30 Nov 2006
  *****************************************************************/
@@ -35,17 +35,33 @@ package net.sf.taverna.update.plugin.event;
 
 import java.util.EventListener;
 
-
 /**
- *
+ * PluginManagerListener defines the interface for an object that listens to
+ * changes in a PluginManager.
+ * 
  * @author David Withers
  */
 public interface PluginManagerListener extends EventListener {
 
+	/**
+	 * Invoked when a plugin is added.
+	 *
+	 * @param event
+	 */
 	public void pluginAdded(PluginManagerEvent event);
-	
+
+	/**
+	 * Invoked when a plugin is removed.
+	 *
+	 * @param event
+	 */
 	public void pluginRemoved(PluginManagerEvent event);
-	
+
+	/**
+	 * Invoked when a plugin is changed.
+	 *
+	 * @param event
+	 */
 	public void pluginChanged(PluginManagerEvent event);
-	
+
 }

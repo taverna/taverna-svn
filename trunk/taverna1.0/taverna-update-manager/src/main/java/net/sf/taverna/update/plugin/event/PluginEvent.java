@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: PluginEvent.java,v $
- * Revision           $Revision: 1.1 $
+ * Revision           $Revision: 1.2 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-12-05 12:24:28 $
+ * Last modified on   $Date: 2006-12-05 17:02:06 $
  *               by   $Author: davidwithers $
  * Created on 1 Dec 2006
  *****************************************************************/
@@ -38,10 +38,13 @@ import java.util.EventObject;
 import net.sf.taverna.update.plugin.Plugin;
 
 /**
+ * An event to notify listeners that a <code>Plugin</code> has changed.
  *
  * @author David Withers
  */
 public class PluginEvent extends EventObject {
+	private static final long serialVersionUID = 1L;
+
 	private Plugin plugin;
 	
 	private int action;
@@ -52,10 +55,23 @@ public class PluginEvent extends EventObject {
 	
 	public static final int DISABLED = 2;
 	
+	/**
+	 * Constructs an instance of PluginEvent.
+	 *
+	 * @param source the source of the event
+	 * @param plugin the <code>Plugin</code> that has changed
+	 */
 	public PluginEvent(Object source, Plugin plugin) {
 		this(source, plugin, NONE);
 	}
 
+	/**
+	 * Constructs an instance of PluginEvent.
+	 *
+	 * @param source the source of the event
+	 * @param plugin the <code>Plugin</code> that has changed
+	 * @param action
+	 */
 	public PluginEvent(Object source, Plugin plugin, int action) {
 		super(source);
 		this.plugin = plugin;

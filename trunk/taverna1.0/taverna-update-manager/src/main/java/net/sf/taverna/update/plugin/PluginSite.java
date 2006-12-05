@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: PluginSite.java,v $
- * Revision           $Revision: 1.2 $
+ * Revision           $Revision: 1.3 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-12-05 14:02:02 $
+ * Last modified on   $Date: 2006-12-05 17:02:06 $
  *               by   $Author: davidwithers $
  * Created on 28 Nov 2006
  *****************************************************************/
@@ -38,11 +38,21 @@ import java.net.URL;
 
 import org.jdom.Element;
 
+/**
+ *
+ * @author David Withers
+ */
 public class PluginSite {
 	private String name;
 
 	private URL url;
 
+	/**
+	 * Constructs an instance of PluginSite.
+	 *
+	 * @param name the name of the plugin site
+	 * @param url the url of the plugin site
+	 */
 	public PluginSite(String name, URL url) {
 		this.name = name;
 		this.url = url;
@@ -66,6 +76,12 @@ public class PluginSite {
 		return url;
 	}
 	
+	/**
+	 * Creates a <code>PluginSite</code> from an XML element.
+	 * 
+	 * @param pluginSiteElement the XML element
+	 * @return a new <code>PluginSite</code>
+	 */
 	public static PluginSite fromXml(Element pluginSiteElement) throws MalformedURLException {
 		String name = pluginSiteElement.getChildTextTrim("name");
 		String urlString = pluginSiteElement.getChildTextTrim("url");
@@ -76,6 +92,11 @@ public class PluginSite {
 		return new PluginSite(name, url);
 	}
 
+	/**
+	 * Creates an XML element from this <code>PluginSite</code>.
+	 * 
+	 * @return an XML element for this <code>PluginSite</code>
+	 */
 	public Element toXml() {
 		Element pluginSiteElement = new Element("pluginSite");
 		pluginSiteElement.addContent(new Element("name").addContent(getName()));
