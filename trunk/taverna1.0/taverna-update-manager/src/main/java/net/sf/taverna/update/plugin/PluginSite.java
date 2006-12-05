@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: PluginSite.java,v $
- * Revision           $Revision: 1.1 $
+ * Revision           $Revision: 1.2 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-12-05 12:24:28 $
+ * Last modified on   $Date: 2006-12-05 14:02:02 $
  *               by   $Author: davidwithers $
  * Created on 28 Nov 2006
  *****************************************************************/
@@ -79,7 +79,7 @@ public class PluginSite {
 	public Element toXml() {
 		Element pluginSiteElement = new Element("pluginSite");
 		pluginSiteElement.addContent(new Element("name").addContent(getName()));
-		pluginSiteElement.addContent(new Element("urlElement").addContent(getUrl().toString()));
+		pluginSiteElement.addContent(new Element("url").addContent(getUrl().toString()));
 		return pluginSiteElement;
 	}
 	
