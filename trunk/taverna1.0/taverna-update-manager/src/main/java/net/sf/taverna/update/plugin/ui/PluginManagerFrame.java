@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: PluginManagerFrame.java,v $
- * Revision           $Revision: 1.1 $
+ * Revision           $Revision: 1.2 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-12-05 12:24:28 $
+ * Last modified on   $Date: 2006-12-05 15:59:14 $
  *               by   $Author: davidwithers $
  * Created on 27 Nov 2006
  *****************************************************************/
@@ -162,37 +162,18 @@ public class PluginManagerFrame extends JFrame {
 		if (jButton == null) {
 			jButton = new JButton();
 			jButton.setText("Update");
+			jButton.setEnabled(false);
 			jButton.addActionListener(new java.awt.event.ActionListener() {
 				public void actionPerformed(java.awt.event.ActionEvent e) {
 					Object selectedObject = getJList().getSelectedValue();
 					if (selectedObject instanceof Plugin) {
 						pluginManager.updatePlugin((Plugin) selectedObject);
 					}
+					jList.setSelectedValue(selectedObject, true);
 				}
 			});
 		}
 		return jButton;
-	}
-
-	/**
-	 * This method initializes jButton1
-	 * 
-	 * @return javax.swing.JButton
-	 */
-	private JButton getJButton1() {
-		if (jButton1 == null) {
-			jButton1 = new JButton();
-			jButton1.setText("Find New Plugins");
-			jButton1.addActionListener(new java.awt.event.ActionListener() {
-				public void actionPerformed(java.awt.event.ActionEvent e) {
-					PluginSiteFrame pluginSiteFrame = new PluginSiteFrame(
-							pluginManager);
-					pluginSiteFrame.setLocationRelativeTo(PluginManagerFrame.this);
-					pluginSiteFrame.setVisible(true);
-				}
-			});
-		}
-		return jButton1;
 	}
 
 	/**
@@ -260,6 +241,7 @@ public class PluginManagerFrame extends JFrame {
 		if (jButton2 == null) {
 			jButton2 = new JButton();
 			jButton2.setText("Enable");
+			jButton2.setEnabled(false);
 			jButton2.setActionCommand("enable");
 			jButton2.addActionListener(new java.awt.event.ActionListener() {
 				public void actionPerformed(java.awt.event.ActionEvent e) {
@@ -276,6 +258,7 @@ public class PluginManagerFrame extends JFrame {
 							jButton2.setActionCommand("enable");
 						}
 					}
+					jList.setSelectedValue(selectedObject, true);
 				}
 			});
 		}
@@ -291,9 +274,50 @@ public class PluginManagerFrame extends JFrame {
 		if (jButton3 == null) {
 			jButton3 = new JButton();
 			jButton3.setText("Uninstall");
-			jButton3.setEnabled(false);
+			jButton3.addActionListener(new java.awt.event.ActionListener() {
+				public void actionPerformed(java.awt.event.ActionEvent e) {
+					int index = jList.getSelectedIndex();
+					Object selectedObject = jList.getSelectedValue();
+					if (selectedObject instanceof Plugin) {
+						pluginManager.removePlugin((Plugin) selectedObject);
+					}
+					int listSize = jList.getModel().getSize();
+					if (listSize > index) {
+						jList.setSelectedIndex(index);
+					} else {
+						jList.setSelectedIndex(listSize - 1);
+					}
+				}
+			});
 		}
 		return jButton3;
+	}
+
+	/**
+	 * This method initializes jButton1
+	 * 
+	 * @return javax.swing.JButton
+	 */
+	private JButton getJButton1() {
+		if (jButton1 == null) {
+			jButton1 = new JButton();
+			jButton1.setText("Find New Plugins");
+			jButton1.addActionListener(new java.awt.event.ActionListener() {
+				public void actionPerformed(java.awt.event.ActionEvent e) {
+					Object selectedObject = getJList().getSelectedValue();
+					PluginSiteFrame pluginSiteFrame = new PluginSiteFrame(
+							pluginManager);
+					pluginSiteFrame.setLocationRelativeTo(PluginManagerFrame.this);
+					pluginSiteFrame.setVisible(true);
+					if (selectedObject != null) {
+						jList.setSelectedValue(selectedObject, true);
+					} else {
+						jList.setSelectedIndex(0);
+					}
+				}
+			});
+		}
+		return jButton1;
 	}
 
 	/**
@@ -307,8 +331,14 @@ public class PluginManagerFrame extends JFrame {
 			jButton4.setText("Find Updates");
 			jButton4.addActionListener(new java.awt.event.ActionListener() {
 				public void actionPerformed(java.awt.event.ActionEvent e) {
+					Object selectedObject = getJList().getSelectedValue();
 					if (!pluginManager.checkForUpdates()) {
 						JOptionPane.showMessageDialog(PluginManagerFrame.this, "No updates available");
+					}
+					if (selectedObject != null) {
+						jList.setSelectedValue(selectedObject, true);
+					} else {
+						jList.setSelectedIndex(0);
 					}
 				}
 			});
