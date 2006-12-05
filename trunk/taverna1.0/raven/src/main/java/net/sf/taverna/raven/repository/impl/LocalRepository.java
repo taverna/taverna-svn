@@ -118,7 +118,9 @@ public class LocalRepository implements Repository {
 	 * @see net.sf.taverna.raven.repository.impl.Repository#addRemoteRepository(java.net.URL)
 	 */
 	public void addRemoteRepository(URL repositoryURL) {
-		repositories.add(repositoryURL);
+		if (!repositories.contains(repositoryURL)) {
+			repositories.add(repositoryURL);
+		}
 	}
 
 	/*
