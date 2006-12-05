@@ -10,6 +10,10 @@
   <artifactId>taverna-update-manager</artifactId>
   <name>Taverna Update Manager</name>  
   <dependencies>
+   	<dependency>
+      	<groupId>uk.org.mygrid.taverna</groupId>
+    	<artifactId>taverna-bootstrap</artifactId>
+    </dependency>
   	<dependency>
       	<groupId>uk.org.mygrid.taverna.raven</groupId>
     	<artifactId>raven</artifactId>
