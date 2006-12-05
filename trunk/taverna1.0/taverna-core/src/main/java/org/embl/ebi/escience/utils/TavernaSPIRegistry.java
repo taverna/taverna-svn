@@ -45,6 +45,7 @@ import net.sf.taverna.raven.spi.Profile;
 import net.sf.taverna.raven.spi.ProfileFactory;
 import net.sf.taverna.raven.spi.RegistryListener;
 import net.sf.taverna.raven.spi.SpiRegistry;
+import net.sf.taverna.update.plugin.PluginManager;
 
 import org.apache.log4j.Logger;
 
@@ -64,7 +65,8 @@ public class TavernaSPIRegistry<T> {
 		Collections.synchronizedMap(new HashMap<Class, InstanceRegistry>());
 	private static Repository repository = null;
 	private static Profile profile = null;
-	
+	private SpiRegistry registry;
+
 	public static void setRepository(Repository repository) {
 		if (repository == null) {
 			throw new NullPointerException("repository cannot be null");
@@ -80,7 +82,7 @@ public class TavernaSPIRegistry<T> {
 		}
 		this.spiClass = spiClass;
 		if (! spiMap.containsKey(spiClass)) {
-			SpiRegistry registry = new SpiRegistry(repository, spiClass.getName(), null);
+			registry = new SpiRegistry(repository, spiClass.getName(), null);
 			
 			registry.addRegistryListener(new RegistryListener() {
 				public void spiRegistryUpdated(SpiRegistry registry) {
@@ -95,6 +97,10 @@ public class TavernaSPIRegistry<T> {
 			updateWithProfile(registry);
 			spiMap.put(spiClass, new InstanceRegistry<T>(registry, new Object[0]));
 		}
+	}
+	
+	public void addRegistryListener(RegistryListener listener) {
+		registry.addRegistryListener(listener);
 	}
 	
 	protected void updateWithProfile(SpiRegistry registry) {		
