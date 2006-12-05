@@ -1,0 +1,86 @@
+/*
+ * Copyright (C) 2003 The University of Manchester 
+ *
+ * Modifications to the initial code base are copyright of their
+ * respective authors, or their employers as appropriate.  Authorship
+ * of the modifications may be determined from the ChangeLog placed at
+ * the end of this file.
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public License
+ * as published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
+ * USA.
+ *
+ ****************************************************************
+ * Source code information
+ * -----------------------
+ * Filename           $RCSfile: PluginSite.java,v $
+ * Revision           $Revision: 1.1 $
+ * Release status     $State: Exp $
+ * Last modified on   $Date: 2006-12-05 12:24:28 $
+ *               by   $Author: davidwithers $
+ * Created on 28 Nov 2006
+ *****************************************************************/
+package net.sf.taverna.update.plugin;
+
+import java.net.MalformedURLException;
+import java.net.URL;
+
+import org.jdom.Element;
+
+public class PluginSite {
+	private String name;
+
+	private URL url;
+
+	public PluginSite(String name, URL url) {
+		this.name = name;
+		this.url = url;
+	}
+
+	/**
+	 * Returns the name.
+	 *
+	 * @return the name
+	 */
+	public String getName() {
+		return name;
+	}
+
+	/**
+	 * Returns the url.
+	 *
+	 * @return the url
+	 */
+	public URL getUrl() {
+		return url;
+	}
+	
+	public static PluginSite fromXml(Element pluginSiteElement) throws MalformedURLException {
+		String name = pluginSiteElement.getChildTextTrim("name");
+		String urlString = pluginSiteElement.getChildTextTrim("url");
+		if (!urlString.endsWith("/")) {
+			urlString = urlString + "/";
+		}
+		URL url = new URL(urlString);		
+		return new PluginSite(name, url);
+	}
+
+	public Element toXml() {
+		Element pluginSiteElement = new Element("pluginSite");
+		pluginSiteElement.addContent(new Element("name").addContent(getName()));
+		pluginSiteElement.addContent(new Element("urlElement").addContent(getUrl().toString()));
+		return pluginSiteElement;
+	}
+	
+}
