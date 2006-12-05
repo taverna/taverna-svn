@@ -46,6 +46,8 @@ import net.sf.taverna.raven.spi.Profile;
 import net.sf.taverna.raven.spi.ProfileFactory;
 import net.sf.taverna.tools.Bootstrap;
 import net.sf.taverna.update.ProfileHandler;
+import net.sf.taverna.update.plugin.PluginManager;
+import net.sf.taverna.update.plugin.ui.PluginManagerFrame;
 import net.sf.taverna.utils.MyGridConfiguration;
 import net.sf.taverna.zaria.ZBasePane;
 import net.sf.taverna.zaria.ZRavenComponent;
@@ -153,6 +155,8 @@ public class Workbench extends JFrame {
 				repository.addRemoteRepository(remoteRepository);
 			}
 		}
+		PluginManager.setRepository(repository);
+		PluginManager.getInstance();
 		TavernaSPIRegistry.setRepository(repository);
 
 		basePane
@@ -580,6 +584,8 @@ public class Workbench extends JFrame {
 	public class WorkbenchMenuBar extends JMenuBar {
 
 		JMenu file = makeFile();
+		
+		JMenu tools = makeTools();
 
 		JMenu advanced = makeAdvanced();
 
@@ -592,6 +598,7 @@ public class Workbench extends JFrame {
 
 		public WorkbenchMenuBar() {
 			add(file);
+			add(tools);
 			add(advanced);
 			add(workflows);
 		}
@@ -643,6 +650,21 @@ public class Workbench extends JFrame {
 
 			menu.addSeparator();
 			menu.add(new JMenuItem(new ExitAction()));
+			return menu;
+		}
+
+		JMenu makeTools() {
+			JMenu menu = new JMenu("Tools");
+
+			menu.add(new JMenuItem(new AbstractAction("Plugin Manager") {
+				
+				public void actionPerformed(ActionEvent e) {					
+					PluginManagerFrame pluginManagerUI = new PluginManagerFrame(PluginManager.getInstance());
+					pluginManagerUI.setLocationRelativeTo(Workbench.this);
+					pluginManagerUI.setVisible(true);
+				}
+				
+			}));
 			return menu;
 		}
 
