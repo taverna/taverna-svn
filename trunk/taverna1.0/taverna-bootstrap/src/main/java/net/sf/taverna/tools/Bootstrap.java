@@ -359,8 +359,7 @@ public class Bootstrap {
 				}				
 			}
 			catch(IOException ex) {
-				//no metadata at this repository either so give up
-				System.out.println("Done, no metadata found, skipping.");
+				//no metadata at this repository either so give up				
 			}
 			catch(SAXException sex) {
 				System.out.println("SAX Exception parsing maven-metadata.xml for location "+path);
