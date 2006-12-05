@@ -25,10 +25,10 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: WorkbenchPerspectives.java,v $
- * Revision           $Revision: 1.12 $
+ * Revision           $Revision: 1.13 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-12-04 14:40:30 $
- *               by   $Author: sowen70 $
+ * Last modified on   $Date: 2006-12-05 11:46:23 $
+ *               by   $Author: davidwithers $
  * Created on 10 Nov 2006
  *****************************************************************/
 package org.embl.ebi.escience.scuflui.workbench;
@@ -65,6 +65,8 @@ import net.sf.taverna.perspectives.CustomPerspective;
 import net.sf.taverna.perspectives.CustomPerspectiveFactory;
 import net.sf.taverna.perspectives.PerspectiveRegistry;
 import net.sf.taverna.perspectives.PerspectiveSPI;
+import net.sf.taverna.raven.spi.RegistryListener;
+import net.sf.taverna.raven.spi.SpiRegistry;
 import net.sf.taverna.utils.MyGridConfiguration;
 import net.sf.taverna.zaria.ZBasePane;
 
@@ -116,6 +118,13 @@ public class WorkbenchPerspectives {
 		this.basePane = basePane;
 		this.toolBar = toolBar;
 
+		PerspectiveRegistry.getInstance().addRegistryListener(new RegistryListener() {
+
+			public void spiRegistryUpdated(SpiRegistry registry) {
+				refreshPerspectives();
+			}
+			
+		});
 	}	
 
 	public JMenu getEditPerspectivesMenu() {
