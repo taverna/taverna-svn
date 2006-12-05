@@ -292,7 +292,11 @@ public class Bootstrap {
 		for (URL repository : remoteRepositories) {
 			URL loaderUrl=null;
 			if (loaderVersion.endsWith("-SNAPSHOT")) {				
-				loaderUrl=getSnapshotUrl(loaderArtifactId,loaderGroupId,loaderVersion,repository);				
+				loaderUrl=getSnapshotUrl(loaderArtifactId,loaderGroupId,loaderVersion,repository);
+				if (loaderUrl!=null) {
+					loaderURLs.add(loaderUrl);
+					break; //for snapshots leave loop once we've found the first.
+				}				
 			}
 			else {
 				loaderUrl=new URL(repository, artifactLocation);
@@ -314,8 +318,9 @@ public class Bootstrap {
 			//test if the URL exists, with a short timeout
 			result = new URL(repository,loc);
 			URLConnection con = result.openConnection();
-			con.setConnectTimeout(500);
-			con.getInputStream();			
+			con.setConnectTimeout(2000);
+			con.setReadTimeout(2000);			
+			con.getInputStream();						
 		}
 		catch(IOException e) {
 			result=null;
@@ -323,8 +328,8 @@ public class Bootstrap {
 			try {
 				URL metadata=new URL(repository, path+"/maven-metadata.xml");
 				URLConnection con=metadata.openConnection();
-				con.setConnectTimeout(500);
-				Document doc=DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(con.getInputStream());
+				con.setConnectTimeout(2000);				
+				Document doc=DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(con.getInputStream());				
 				//generate file = <artifact>-<version>-<timestamp>-<buildnumber>.jar
 				NodeList timestamps=doc.getElementsByTagName("timestamp");
 				NodeList buildnumbers=doc.getElementsByTagName("buildNumber");				
@@ -342,12 +347,20 @@ public class Bootstrap {
 						buildnumber=el.getTextContent();
 						
 						String file=artifact+"-"+version.replace("-SNAPSHOT", "")+"-"+timestamp+"-"+buildnumber+".jar";						
-						result=new URL(repository,path+"/"+file);
+						URL snapshot=new URL(repository,path+"/"+file);
+						
+						//test that snapshot file exists.
+						con = snapshot.openConnection();
+						con.setConnectTimeout(2000);
+						con.setReadTimeout(2000);						
+						con.getInputStream();										
+						result=snapshot;
 					}
 				}				
 			}
 			catch(IOException ex) {
 				//no metadata at this repository either so give up
+				System.out.println("Done, no metadata found, skipping.");
 			}
 			catch(SAXException sex) {
 				System.out.println("SAX Exception parsing maven-metadata.xml for location "+path);

@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: RavenProperties.java,v $
- * Revision           $Revision: 1.2 $
+ * Revision           $Revision: 1.3 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-11-28 15:49:33 $
+ * Last modified on   $Date: 2006-12-05 13:08:42 $
  *               by   $Author: sowen70 $
  * Created on 23 Nov 2006
  *****************************************************************/
@@ -86,7 +86,7 @@ public class RavenProperties extends Properties {
 		putAll(System.getProperties());
 	}
 
-	protected boolean findRemoteProperties() {
+	protected boolean findRemoteProperties() {		
 		String[] locations = Bootstrap.REMOTE_PROPERTIES.split(",");
 		boolean found = false;
 		for (String location : locations) {

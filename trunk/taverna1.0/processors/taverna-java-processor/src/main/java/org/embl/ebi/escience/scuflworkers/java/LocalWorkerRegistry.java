@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: LocalWorkerRegistry.java,v $
- * Revision           $Revision: 1.4 $
+ * Revision           $Revision: 1.5 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-11-03 10:26:25 $
+ * Last modified on   $Date: 2006-12-05 13:08:42 $
  *               by   $Author: sowen70 $
  * Created on 1 Nov 2006
  *****************************************************************/
@@ -67,7 +67,7 @@ public class LocalWorkerRegistry extends TavernaSPIRegistry<LocalWorker> {
 		return result;
 	}
 	
-	public Class findClassForName(String classname) throws ClassNotFoundException{
+	public Class findClassForName(String classname) throws ClassNotFoundException{		
 		SpiRegistry reg = new SpiRegistry(getRepository(),LocalWorker.class.getName(),null);
 		for (Class c: reg.getClasses()) {
 			if (c.getName().equalsIgnoreCase(classname)) {

@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.MalformedURLException;
+import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
@@ -119,8 +120,8 @@ public class LocalRepository implements Repository {
 	 */
 	public void addRemoteRepository(URL repositoryURL) {
 		if (!repositories.contains(repositoryURL)) {
-			repositories.add(repositoryURL);
-		}
+		repositories.add(repositoryURL);
+	}
 	}
 
 	/*
@@ -487,12 +488,12 @@ public class LocalRepository implements Repository {
 	
 					InputStream is=null;
 					
-					try {
+					try {						
 						URLConnection connection = pomLocation.openConnection();						
-						connection.connect();
+						connection.setConnectTimeout(2000);						
+						connection.connect();						
 						int length = connection.getContentLength();
-						dlstatus.put(a, new DownloadStatusImpl(length));
-						
+						dlstatus.put(a, new DownloadStatusImpl(length));						
 						is = connection.getInputStream();
 					}
 					catch(FileNotFoundException e) {
@@ -502,6 +503,9 @@ public class LocalRepository implements Repository {
 						else {
 							logger.info(a + " not found in " + repository);
 						}
+					}
+					catch(SocketTimeoutException e) {
+						logger.warn("Connection timed out while looking for"+a+" in " + repository);						
 					}
 					if (is != null) {
 						// Opened the stream so presumably the thing exists
@@ -556,6 +560,7 @@ public class LocalRepository implements Repository {
 	private InputStream getSnapshotArtifactStream(ArtifactImpl a,String suffix, URL repository) {		
 		String repositoryDir = a.getGroupId().replaceAll("\\.", "/") + "/"
 				+ a.getArtifactId() + "/" + a.getVersion();
+		
 		InputStream result = null;		
 		try {
 			URL metadata = new URL(repository,repositoryDir+"/"+"maven-metadata.xml");			
@@ -566,7 +571,7 @@ public class LocalRepository implements Repository {
 				
 				//test for the file, with a short timeout
 				URLConnection con = new URL(repository,repositoryDir+"/"+filename).openConnection();
-				con.setConnectTimeout(500); 
+				con.setConnectTimeout(2000); 
 				result=con.getInputStream();
 				
 				logger.info("Returning snapshot stream to "+new URL(repository,repositoryDir+"/"+filename));
