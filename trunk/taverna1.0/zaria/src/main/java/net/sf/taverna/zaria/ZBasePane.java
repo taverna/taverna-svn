@@ -342,6 +342,7 @@ public abstract class ZBasePane extends ZPane {
 			return registries.get(spiName);
 		} else {
 			SpiRegistry sr = new SpiRegistry(repository, spiName, null);
+			sr.addFilter(ProfileFactory.getInstance().getProfile());
 			registries.put(spiName, sr);
 			return sr;
 		}
