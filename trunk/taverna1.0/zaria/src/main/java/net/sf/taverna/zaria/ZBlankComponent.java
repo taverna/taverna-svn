@@ -19,6 +19,7 @@ import org.jdom.Element;
  * therefore be created empty by default).
  * @author Tom Oinn
  */
+@SuppressWarnings("serial")
 public class ZBlankComponent extends ZPane implements ZTreeNode {
 
 	private List<Action> actions;
@@ -84,4 +85,10 @@ public class ZBlankComponent extends ZPane implements ZTreeNode {
 		// Do nothing, this has no children
 	}
 
+	public void discard() {
+		// Do nothing
+		
+	}
+
+	
 }

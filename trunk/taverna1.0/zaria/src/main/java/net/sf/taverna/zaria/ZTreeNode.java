@@ -4,7 +4,6 @@ import java.awt.Component;
 import java.util.List;
 
 import javax.swing.Action;
-import javax.swing.JComponent;
 
 import org.jdom.Element;
 
@@ -98,5 +97,12 @@ public interface ZTreeNode {
 	 * for all cases where the component is visible)
 	 */
 	public ZBasePane getRoot();
+	
+	
+	/**
+	 * Indicates that the component is about to be discarded, and any cleaning up
+	 * should be carried out here.
+	 */
+	public void discard();
 	
 }

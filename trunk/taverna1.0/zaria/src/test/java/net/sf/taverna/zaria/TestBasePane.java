@@ -37,6 +37,11 @@ public class TestBasePane extends TestCase {
 				// TODO Auto-generated method stub
 				return null;
 			}
+
+			public void discard() {
+				// TODO Auto-generated method stub
+				
+			}			
 			
 		};
 		pane.setEditable(true);

@@ -458,5 +458,13 @@ public class ZRavenComponent extends ZPane {
 	public List<ZTreeNode> getZChildren() {
 		return new ArrayList<ZTreeNode>();
 	}
+
+	public void discard() {		
+		if (this.contents != null) {
+			getRoot().deregisterComponent(this.contents);
+		}
+	}
+	
+	
 	
 }

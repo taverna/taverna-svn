@@ -280,6 +280,7 @@ public abstract class ZBasePane extends ZPane {
 	public void swap(ZTreeNode oldComponent, ZTreeNode newComponent) {
 		if (oldComponent == child || child == null) {
 			if (child != null) {
+				child.discard();
 				remove((Component) child);
 			}
 			child = newComponent;

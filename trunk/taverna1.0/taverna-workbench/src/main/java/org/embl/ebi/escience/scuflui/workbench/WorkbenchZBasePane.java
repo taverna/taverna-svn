@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: WorkbenchZBasePane.java,v $
- * Revision           $Revision: 1.1 $
+ * Revision           $Revision: 1.2 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-11-13 10:50:10 $
+ * Last modified on   $Date: 2006-12-06 15:50:17 $
  *               by   $Author: sowen70 $
  * Created on 10 Nov 2006
  *****************************************************************/
@@ -102,5 +102,11 @@ public class WorkbenchZBasePane extends ZBasePane{
 			((WorkflowModelViewSPI) comp).detachFromModel();
 		}
 	}
+
+	public void discard() {		
+		
+	}
+	
+	
 
 }

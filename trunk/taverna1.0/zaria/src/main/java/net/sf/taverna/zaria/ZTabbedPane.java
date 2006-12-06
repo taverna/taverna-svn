@@ -80,6 +80,16 @@ public class ZTabbedPane extends ZPane {
 		checkValidity();
 	}
 	
+	
+	
+	public void discard() {		
+		for (ZTreeNode child : getZChildren()) {
+			child.discard();
+		}		
+	}
+
+
+
 	public List<ZTreeNode> getZChildren() {
 		List<ZTreeNode> children = new ArrayList<ZTreeNode>();
 		for (int i = 0; i < tabs.getComponentCount(); i++) {
@@ -262,6 +272,7 @@ public class ZTabbedPane extends ZPane {
 			// Give up, couldn't find the old component
 			return;
 		}
+		oldComponent.discard();
 		newComponent.setEditable(editable);
 		tabs.setComponentAt(componentIndex, (JComponent)newComponent);
 	}
@@ -300,6 +311,6 @@ public class ZTabbedPane extends ZPane {
 		components.add(Box.createRigidArea(new Dimension(5,5)));
 		components.add(tabName);
 		return components;
-	}
+	}	
 	
 }
