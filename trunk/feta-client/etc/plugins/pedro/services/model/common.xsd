@@ -20,8 +20,7 @@
      Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
      Author: Nick Sharman, Victoria University of Manchester
-     Revision: $Id: common.xsd,v 1.1 2006-09-01 09:43:15 sowen70 Exp $
-
+     Revision: $Id: common.xsd,v 1.2 2006-12-06 16:57:23 alperp Exp $
 
      This file supports myGrid's nightly build process for the describer module.
  -->
@@ -60,7 +59,6 @@
 					</xs:restriction>
 				</xs:simpleType>
 				</xs:element>
-
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
@@ -74,9 +72,7 @@
 				<xs:element ref="operationOutputs" minOccurs="0"/>
 				<xs:element name="operationTask" type="xs:string" minOccurs="0"/>
 				<xs:element name="operationResource" type="xs:string" minOccurs="0"/>
-				<xs:element name="operationResourceContent" type="xs:string" minOccurs="0"/>				
 				<xs:element name="operationMethod" type="xs:string" minOccurs="0"/>
-				<xs:element name="operationApplication" type="xs:string" minOccurs="0"/>
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
@@ -91,10 +87,9 @@
 				<xs:element name="semanticType" type="xs:string" minOccurs="0"/>
 				<xs:element name="XMLSchemaTypeName" type="xs:string" minOccurs="0"/>
 				<xs:element name="XMLSchemaURI" type="xs:anyURI" minOccurs="0"/>
-				<xs:element ref="formats" minOccurs="0"/>
+				<xs:element name="parameterFormat" type="xs:string" minOccurs="0"/>
 				<xs:element name="transportDataType" type="xs:string" minOccurs="0"/>
 				<xs:element name="collectionSemanticType" type="xs:string" minOccurs="0"/>
-				<xs:element name="collectionFormat" type="xs:string" minOccurs="0"/>
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
@@ -119,13 +114,7 @@
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
-	<xs:element name="formats">
-		<xs:complexType>
-			<xs:sequence>
-				<xs:element name="formatIdentifier" type="xs:string" minOccurs="0"/>
-			</xs:sequence>
-		</xs:complexType>
-	</xs:element>
+		
 	<xs:element name="contacts">
 		<xs:complexType>
 			<xs:sequence>
@@ -156,5 +145,4 @@
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
-	<!-- Named groups for choices go after here...-->
 </xs:schema>
