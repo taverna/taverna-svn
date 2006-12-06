@@ -7,6 +7,7 @@ package org.embl.ebi.escience.scuflui;
 
 import javax.swing.JTextArea;
 
+import org.apache.log4j.Logger;
 import org.embl.ebi.escience.scufl.ScuflModel;
 import org.embl.ebi.escience.scufl.ScuflModelEvent;
 import org.embl.ebi.escience.scufl.ScuflModelEventListener;
@@ -19,9 +20,12 @@ import org.embl.ebi.escience.scuflui.spi.WorkflowModelViewSPI;
  * 
  * @author Tom Oinn
  */
+@SuppressWarnings("serial")
 public class DotTextArea extends JTextArea implements ScuflModelEventListener,
 		WorkflowModelViewSPI {
 
+	private static Logger logger = Logger.getLogger(DotTextArea.class);
+	
 	private DotView dot = null;
 
 	private ScuflModel model = null;
@@ -34,6 +38,10 @@ public class DotTextArea extends JTextArea implements ScuflModelEventListener,
 	}
 
 	public void attachToModel(ScuflModel model) {
+		if (this.model!=null) {
+			logger.warn("Did not detachFromModel() before attachToModel()");
+			detachFromModel();
+		}
 		if (this.model == null) {
 			this.dot = new DotView(model);
 			model.addListener(this);

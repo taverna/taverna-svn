@@ -31,6 +31,7 @@ import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 
+import org.apache.log4j.Logger;
 import org.embl.ebi.escience.scufl.ScuflModel;
 import org.embl.ebi.escience.scufl.ScuflModelEvent;
 import org.embl.ebi.escience.scufl.ScuflModelEventListener;
@@ -51,6 +52,8 @@ import org.embl.ebi.escience.scuflui.workbench.ScavengerCreationException;
 @SuppressWarnings("serial")
 public class ScavengerTreePanel extends JPanel implements WorkflowModelViewSPI {
 
+	private static Logger logger = Logger.getLogger(ScavengerTreePanel.class);
+	
 	DefaultScavengerTree tree;
 
 	JTextField regex = null;	
@@ -210,6 +213,10 @@ public class ScavengerTreePanel extends JPanel implements WorkflowModelViewSPI {
 	}
 	
 	public void attachToModel(ScuflModel model) {
+		if (this.scuflModel!=null) {
+			logger.warn("Did not detachFromModel() before attachToModel()");
+			detachFromModel();
+		}
 		if (! initialised) {
 		initialise(populate());
 			initialised = true;

@@ -34,6 +34,7 @@ import javax.swing.tree.TreeSelectionModel;
 import net.sf.taverna.raven.spi.RegistryListener;
 import net.sf.taverna.raven.spi.SpiRegistry;
 
+import org.apache.log4j.Logger;
 import org.embl.ebi.escience.scufl.ScuflModel;
 import org.embl.ebi.escience.scuflui.ScavengerTreePanel;
 import org.embl.ebi.escience.scuflui.TavernaIcons;
@@ -60,6 +61,8 @@ import org.jdom.output.XMLOutputter;
  */
 public class DefaultScavengerTree extends ExtendedJTree implements WorkflowModelViewSPI, ScavengerTree {
 
+	private static Logger logger = Logger.getLogger(DefaultScavengerTree.class);
+	
 	private static final long serialVersionUID = -5395001232451125620L;
 
 	private ScavengerTreePanel parentPanel = null;
@@ -395,6 +398,10 @@ public class DefaultScavengerTree extends ExtendedJTree implements WorkflowModel
 	 * Listen for model bind requests to set the internal ScuflModel field
 	 */
 	public void attachToModel(ScuflModel theModel) {
+		if (this.model!=null) {
+			logger.warn("Did not detachFromModel() before attachToModel()");
+			detachFromModel();
+		}
 		this.model = theModel;
 	}
 

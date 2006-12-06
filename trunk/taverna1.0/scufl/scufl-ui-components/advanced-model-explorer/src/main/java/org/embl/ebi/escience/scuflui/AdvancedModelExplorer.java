@@ -39,6 +39,7 @@ import javax.swing.text.Document;
 import javax.swing.text.JTextComponent;
 import javax.swing.tree.DefaultMutableTreeNode;
 
+import org.apache.log4j.Logger;
 import org.embl.ebi.escience.baclava.DataThing;
 import org.embl.ebi.escience.baclava.LSIDProvider;
 import org.embl.ebi.escience.scufl.IterationStrategy;
@@ -71,6 +72,9 @@ import org.embl.ebi.escience.scuflui.treeview.ScuflModelTreeTable;
 public class AdvancedModelExplorer extends JPanel implements
 		WorkflowModelViewSPI {
 
+	private static Logger logger = Logger
+			.getLogger(AdvancedModelExplorer.class);
+	
 	private ScuflModelTreeTable explorer;
 
 	private JTabbedPane tabs;
@@ -339,6 +343,10 @@ public class AdvancedModelExplorer extends JPanel implements
 	private ScuflModelEventListener listener = null;
 
 	public void attachToModel(ScuflModel theModel) {
+		if (this.model!=null) {
+			logger.warn("Did not detachFromModel() before attachToModel()");
+			detachFromModel();
+		}
 		this.model = theModel;
 
 		setLayout(new BorderLayout());
