@@ -130,45 +130,48 @@ public class XMLInputSplitterTest extends TestCase {
 
 	}
 
-	public void testArrayTypes() throws Exception {
-		XMLInputSplitter splitter = new XMLInputSplitter();
-		ScuflModel model = new ScuflModel();
-		WSDLBasedProcessor processor = new WSDLBasedProcessor(model,
-				"testProc", "http://www.ebi.ac.uk/ws/WSFasta.wsdl", "runFasta");
-		splitter.setUpInputs(processor.getInputPorts()[1]);
-
-		assertEquals("wrong number of inputs", 1, splitter.inputNames().length);
-		assertEquals("wrong number of types", 1, splitter.inputTypes().length);
-
-		assertEquals("wrong name", "WSArrayofData", splitter.inputNames()[0]);
-		assertEquals("wrong type", "l('text/xml')", splitter.inputTypes()[0]);
-
-		assertEquals("wrong name", "output", splitter.outputNames()[0]);
-		assertEquals("wrong type", "'text/xml'", splitter.outputTypes()[0]);
-
-		ArrayList ins = new ArrayList();
-
-		ins.add("<data><type>type1</type><content>content1</content></data>");
-		ins.add("<data><type>type2</type><content>content2</content></data>");
-
-		DataThing input = DataThingFactory.bake(ins);
-
-		Map inputMap = new HashMap();
-		inputMap.put("WSArrayofData", input);
-
-		Map outputMap = splitter.execute(inputMap);
-
-		DataThing output = (DataThing) outputMap.get("output");
-		assertNotNull("'output' did not exist in output map", output);
-
-		assertTrue("output should be a string",
-				output.getDataObject() instanceof String);
-
-		assertEquals(
-				"<WSArrayofData xmlns=\"http://www.ebi.ac.uk/WSFasta\"><data xmlns=\"\"><type>type1</type><content>content1</content></data><data xmlns=\"\"><type>type2</type><content>content2</content></data></WSArrayofData>",
-				output.getDataObject().toString());
-
-	}
+	//removed since WSDL no longer exists.
+	//FIXME use a wsdl under our own control.
+	
+//	public void testArrayTypes() throws Exception {
+//		XMLInputSplitter splitter = new XMLInputSplitter();
+//		ScuflModel model = new ScuflModel();
+//		WSDLBasedProcessor processor = new WSDLBasedProcessor(model,
+//				"testProc", "http://www.ebi.ac.uk/ws/WSFasta.wsdl", "runFasta");
+//		splitter.setUpInputs(processor.getInputPorts()[1]);
+//
+//		assertEquals("wrong number of inputs", 1, splitter.inputNames().length);
+//		assertEquals("wrong number of types", 1, splitter.inputTypes().length);
+//
+//		assertEquals("wrong name", "WSArrayofData", splitter.inputNames()[0]);
+//		assertEquals("wrong type", "l('text/xml')", splitter.inputTypes()[0]);
+//
+//		assertEquals("wrong name", "output", splitter.outputNames()[0]);
+//		assertEquals("wrong type", "'text/xml'", splitter.outputTypes()[0]);
+//
+//		ArrayList ins = new ArrayList();
+//
+//		ins.add("<data><type>type1</type><content>content1</content></data>");
+//		ins.add("<data><type>type2</type><content>content2</content></data>");
+//
+//		DataThing input = DataThingFactory.bake(ins);
+//
+//		Map inputMap = new HashMap();
+//		inputMap.put("WSArrayofData", input);
+//
+//		Map outputMap = splitter.execute(inputMap);
+//
+//		DataThing output = (DataThing) outputMap.get("output");
+//		assertNotNull("'output' did not exist in output map", output);
+//
+//		assertTrue("output should be a string",
+//				output.getDataObject() instanceof String);
+//
+//		assertEquals(
+//				"<WSArrayofData xmlns=\"http://www.ebi.ac.uk/WSFasta\"><data xmlns=\"\"><type>type1</type><content>content1</content></data><data xmlns=\"\"><type>type2</type><content>content2</content></data></WSArrayofData>",
+//				output.getDataObject().toString());
+//
+//	}
 
 	public void testOrderPreserved() throws Exception {
 		XMLInputSplitter splitter = new XMLInputSplitter();
