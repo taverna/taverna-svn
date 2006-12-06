@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.MutableTreeNode;
 import javax.wsdl.Operation;
 import javax.wsdl.PortType;
 import javax.wsdl.WSDLException;
@@ -35,6 +36,7 @@ import org.xml.sax.SAXException;
 public class WSDLBasedScavenger extends URLBasedScavenger {
 
 	private static final long serialVersionUID = 5281708181579790512L;
+	private String wsdlLocation;
 
 	private static Logger logger = Logger.getLogger(WSDLBasedScavenger.class);
 
@@ -47,6 +49,22 @@ public class WSDLBasedScavenger extends URLBasedScavenger {
 		}
 	}
 	
+	
+
+	@Override
+	/**
+	 * Overridden to catch when a scavenger is removed from the tree (newParent = null).
+	 * This triggers the flushing of the WSDLParser cache.
+	 */
+	public void setParent(MutableTreeNode newParent) {		
+		super.setParent(newParent);
+		if (newParent==null) { 
+			WSDLParser.flushCache(wsdlLocation);
+		}
+	}
+
+
+
 	public WSDLBasedScavenger() {
 		super("Blank");
 	}
@@ -59,7 +77,8 @@ public class WSDLBasedScavenger extends URLBasedScavenger {
 	public WSDLBasedScavenger(String wsdlLocation)
 			throws ScavengerCreationException {
 		super("WSDL @ " + wsdlLocation);
-
+		this.wsdlLocation=wsdlLocation;
+		
 		// Load the wsdl document
 		try {
 			new URL(wsdlLocation);
@@ -69,8 +88,7 @@ public class WSDLBasedScavenger extends URLBasedScavenger {
 							+ "', error was " + mue.getMessage());
 		}
 
-		try {
-			WSDLParser.flushCache(wsdlLocation);
+		try {			
 			WSDLParser parser = new WSDLParser(wsdlLocation);
 			List operations = parser.getOperations();
 
