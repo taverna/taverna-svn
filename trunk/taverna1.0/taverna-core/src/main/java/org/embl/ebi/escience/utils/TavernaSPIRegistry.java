@@ -73,6 +73,10 @@ public class TavernaSPIRegistry<T> {
 		TavernaSPIRegistry.repository = repository;
 	}	
 	
+	protected SpiRegistry getSpiRegistry() {
+		return registry;
+	}
+	
 	public TavernaSPIRegistry(Class<T> spiClass) {		
 		if (repository == null) {
 			logger.error("setRepository() has not been called"); 

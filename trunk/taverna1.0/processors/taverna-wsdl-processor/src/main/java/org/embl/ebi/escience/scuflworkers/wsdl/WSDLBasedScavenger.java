@@ -8,6 +8,7 @@ package org.embl.ebi.escience.scuflworkers.wsdl;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLConnection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -81,12 +82,23 @@ public class WSDLBasedScavenger extends URLBasedScavenger {
 		
 		// Load the wsdl document
 		try {
-			new URL(wsdlLocation);
-		} catch (MalformedURLException mue) {
+			URL url=new URL(wsdlLocation);
+			
+			//test for connection timeout
+			URLConnection con = url.openConnection();
+			con.setConnectTimeout(1000);
+			con.getInputStream();
+			
+		} catch (MalformedURLException e) {
 			throw new ScavengerCreationException(
 					"Unable to parse the supplied URL '" + wsdlLocation
-							+ "', error was " + mue.getMessage());
+							+ "', error was " + e.getMessage());
+		} catch(IOException e) {
+			throw new ScavengerCreationException(
+					"Unable to connect to the supplied URL '" + wsdlLocation
+							+ "', error was " + e.getMessage());
 		}
+		
 
 		try {			
 			WSDLParser parser = new WSDLParser(wsdlLocation);

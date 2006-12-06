@@ -35,11 +35,12 @@ public class SpiRegistry implements Iterable<Class>, ArtifactFilterListener {
 	private List<RegistryListener> listeners = new ArrayList<RegistryListener>();
 	private Repository repository;
 	private String classname;
-	Set<Artifact> newArtifacts = new HashSet<Artifact>();
+	private Set<Artifact> newArtifacts = new HashSet<Artifact>();
 	private List<ArtifactFilter> filters = new ArrayList<ArtifactFilter>();
 	private ClassLoader parentLoader = null;
 	private List<Class> implementations = null;
 	private RepositoryListener rlistener;
+	private List<Class> previousImplementations;
 	
 	/**
 	 * Create a new SpiRegistry based on a particular repository
@@ -53,13 +54,17 @@ public class SpiRegistry implements Iterable<Class>, ArtifactFilterListener {
 	 * any entries loaded here, or null for no parent (most likely
 	 * behaviour is to leave as null)
 	 */
-	public SpiRegistry(Repository r, String classname, ClassLoader parentLoader) {
+	public SpiRegistry(Repository r, String classname, ClassLoader parentLoader) {		
 		this.repository = r;
 		this.classname = classname;
 		this.parentLoader = parentLoader;
 		this.rlistener = new AddNewArtifactsListener(this);
 		r.addRepositoryListener(rlistener);
 		newArtifacts.addAll(r.getArtifacts(ArtifactStatus.Ready));		
+	}
+	
+	public void addNewArtifact(Artifact a) {
+		newArtifacts.add(a);
 	}
 	
 	@Override
@@ -149,14 +154,14 @@ public class SpiRegistry implements Iterable<Class>, ArtifactFilterListener {
 		}
 		newArtifacts.clear();
 		newArtifacts.addAll(repository.getArtifacts(ArtifactStatus.Ready));
-		notifyListeners();
+		updateRegistry();
 	}
 	
-	public void filterChanged(ArtifactFilter filter) {
+	public void filterChanged(ArtifactFilter filter) {		
 		implementations = null;
 		newArtifacts.clear();
 		newArtifacts.addAll(repository.getArtifacts(ArtifactStatus.Ready));
-		notifyListeners();		
+		updateRegistry();
 	}
 	
 	/**
@@ -168,8 +173,7 @@ public class SpiRegistry implements Iterable<Class>, ArtifactFilterListener {
 	 * the set of current known implementations.
 	 */
 	public synchronized void updateRegistry() {
-		// Do filtering
-		
+		// Do filtering		
 		Set<URL> seenURLs = new HashSet<URL>();
 		Set<ClassLoader> seenClassLoaders = new HashSet<ClassLoader>();
 		Set<Artifact> workingSet = new HashSet<Artifact>(newArtifacts);
@@ -234,9 +238,13 @@ public class SpiRegistry implements Iterable<Class>, ArtifactFilterListener {
 						logger.warn("Could not find class " + impName + " using " + cl, e);
 						continue;
 					}
-					if (impClass.getClassLoader() instanceof LocalArtifactClassLoader || System.getProperty("raven.eclipse")!=null) {
-						implementations.add(impClass);
-						addedNew = true;
+					if (impClass.getClassLoader() instanceof LocalArtifactClassLoader || System.getProperty("raven.eclipse")!=null) {						
+						implementations.add(impClass);	
+						//only mark as new if this class did not appear in the previous set of implementations, i.e.
+						//is actually new.
+						if (previousImplementations==null || !previousImplementations.contains(impClass)) {							
+							addedNew = true;
+						}
 					}
 				}
 				scanner.close();
@@ -248,9 +256,11 @@ public class SpiRegistry implements Iterable<Class>, ArtifactFilterListener {
 				}
 			}
 		}
-		if (addedNew) {
+		previousImplementations=implementations;
+		if (addedNew) {			
 			notifyListeners();
 		}
+		
 	}
 	
 	private void notifyListeners() {
@@ -281,7 +291,7 @@ class AddNewArtifactsListener implements RepositoryListener {
 		if (newStatus.equals(ArtifactStatus.Ready)) {
 			logger.debug(a+" "+oldStatus+"->"+newStatus);
 			synchronized(registry) {
-				registry.newArtifacts.add(a);
+				registry.addNewArtifact(a);				
 				registry.updateRegistry();
 			}
 		}

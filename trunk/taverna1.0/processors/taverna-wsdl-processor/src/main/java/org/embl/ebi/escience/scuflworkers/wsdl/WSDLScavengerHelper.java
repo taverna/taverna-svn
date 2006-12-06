@@ -84,7 +84,7 @@ public class WSDLScavengerHelper implements ScavengerHelper {
 					result.add(new WSDLBasedScavenger(url));
 				} catch (ScavengerCreationException e) {
 					logger.error(
-							"Error creating WSDLBasedScavenger for " + url, e);
+							"Error creating default WSDLBasedScavenger for " + url + ": "+e.getMessage());
 				}
 			}
 		}

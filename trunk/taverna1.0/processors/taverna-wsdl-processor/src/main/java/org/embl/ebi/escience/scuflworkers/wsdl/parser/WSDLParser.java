@@ -1,6 +1,7 @@
 package org.embl.ebi.escience.scuflworkers.wsdl.parser;
 
 import java.io.IOException;
+import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -22,6 +23,7 @@ import javax.wsdl.extensions.soap.SOAPBody;
 import javax.xml.namespace.QName;
 import javax.xml.parsers.ParserConfigurationException;
 
+import org.apache.axis.client.Call;
 import org.apache.axis.wsdl.gen.NoopFactory;
 import org.apache.axis.wsdl.symbolTable.BindingEntry;
 import org.apache.axis.wsdl.symbolTable.CollectionElement;
@@ -95,15 +97,15 @@ public class WSDLParser {
 			WSDLException, IOException, SAXException {
 
 		logger.info("Initialising WSDLParser for " + wsdlLocation);
-		this.wsdlLocation = wsdlLocation;
-
+		this.wsdlLocation = wsdlLocation;						
+		
 		WSIFPluggableProviders.overrideDefaultProvider(
 				"http://schemas.xmlsoap.org/wsdl/soap/",
 				new WSIFDynamicProvider_ApacheAxis());
 
 		if (!symbolTableMap.containsKey(wsdlLocation)) {
 			SymbolTable symbolTable = new SymbolTable(new NoopFactory()
-					.getBaseTypeMapping(), true, false, false);
+					.getBaseTypeMapping(), true, false, false);									
 			symbolTable.populate(wsdlLocation);
 			symbolTableMap.put(wsdlLocation, symbolTable);
 			operationMap.put(wsdlLocation, determineOperations());

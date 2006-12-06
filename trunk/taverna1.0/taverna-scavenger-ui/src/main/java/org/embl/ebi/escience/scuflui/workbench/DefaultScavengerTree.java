@@ -193,6 +193,28 @@ public class DefaultScavengerTree extends ExtendedJTree implements WorkflowModel
 	public void dropActionChanged(DropTargetDragEvent e) {
 		//
 	}
+	
+	protected void addFromScavengerHelpers() {
+		List<ScavengerHelper> helpers = ScavengerHelperRegistry.instance().getScavengerHelpers();
+		for (ScavengerHelper helper : helpers) {
+//				web scavenger is a special case and requires ScavengerTree to construct the Scavengers
+			if (helper instanceof WebScavengerHelper) 
+			{
+				for (Scavenger scavenger : ((WebScavengerHelper)helper).getDefaults(this)) {
+					addScavenger(scavenger);
+				}
+			}
+			for (Scavenger scavenger : helper.getDefaults()) {
+				addScavenger(scavenger);
+			}
+		}
+
+		try {
+			Thread.sleep(1000);
+		} catch (InterruptedException ie) {
+			//
+		}
+	}
 
 	public void drop(DropTargetDropEvent e) {
 		try {
@@ -229,7 +251,7 @@ public class DefaultScavengerTree extends ExtendedJTree implements WorkflowModel
 			}
 		} catch (Exception ex) {
 			e.rejectDrop();
-		}
+		}			
 	}
 
 	/**
@@ -275,11 +297,10 @@ public class DefaultScavengerTree extends ExtendedJTree implements WorkflowModel
 				// Add the default soaplab installation if this is defined
 				setPopulating(true);
 				new DefaultScavengerLoaderThread(this);
-				ScavengerHelperRegistry.instance().addRegistryListener(new RegistryListener() {
-
-					public void spiRegistryUpdated(SpiRegistry registry) {
-						setPopulating(true);
-						new DefaultScavengerLoaderThread(DefaultScavengerTree.this);						
+				ScavengerHelperRegistry.instance().addRegistryListener(new RegistryListener() {					
+					
+					public void spiRegistryUpdated(SpiRegistry registry) {						
+						new DefaultScavengerLoaderThread(DefaultScavengerTree.this);												
 					}
 					
 				});
@@ -304,25 +325,7 @@ public class DefaultScavengerTree extends ExtendedJTree implements WorkflowModel
 				if (getParentPanel() != null)
 					getParentPanel().startProgressBar("Populating service list");											
 
-				List<ScavengerHelper> helpers = ScavengerHelperRegistry.instance().getScavengerHelpers();
-				for (ScavengerHelper helper : helpers) {
-//					web scavenger is a special case and requires ScavengerTree to construct the Scavengers
-					if (helper instanceof WebScavengerHelper) 
-					{
-						for (Scavenger scavenger : ((WebScavengerHelper)helper).getDefaults(scavengerTree)) {
-							scavengerTree.addScavenger(scavenger);
-						}
-					}
-					for (Scavenger scavenger : helper.getDefaults()) {
-						scavengerTree.addScavenger(scavenger);
-					}
-				}
-
-				try {
-					Thread.sleep(1000);
-				} catch (InterruptedException ie) {
-					//
-				}
+				addFromScavengerHelpers();
 				// I want to disable the reload() as it collapse the tree, even
 				// though
 				// the user had started exploring it at this point. But I don't
@@ -338,6 +341,8 @@ public class DefaultScavengerTree extends ExtendedJTree implements WorkflowModel
 				scavengerTree.setPopulating(false);
 			}
 		}
+
+		
 	}
 
 	/* (non-Javadoc)
