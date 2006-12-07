@@ -244,8 +244,7 @@ public class SpiRegistry implements Iterable<Class>, ArtifactFilterListener {
 						implementations.add(impClass);	
 						//only mark as new if this class did not appear in the previous set of implementations, i.e.
 						//is actually new.						
-						if (previousImplementations==null || !previousImplementations.contains(impClass)) {
-							System.out.println("NEW CLASS="+impClass.getName());
+						if (previousImplementations==null || !previousImplementations.contains(impClass)) {							
 							addedNew = true;
 						}
 					}
