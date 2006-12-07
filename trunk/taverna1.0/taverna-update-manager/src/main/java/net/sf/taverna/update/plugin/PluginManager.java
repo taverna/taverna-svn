@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: PluginManager.java,v $
- * Revision           $Revision: 1.7 $
+ * Revision           $Revision: 1.8 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-12-07 14:19:51 $
+ * Last modified on   $Date: 2006-12-07 14:27:50 $
  *               by   $Author: sowen70 $
  * Created on 23 Nov 2006
  *****************************************************************/
@@ -182,24 +182,22 @@ public class PluginManager implements PluginListener {
 	}
 	}
 
-	public void savePlugins() {
-		if (plugins.size() > 0) {
-			Element pluginsElement = new Element("plugins");
-			for (Plugin plugin : plugins) {
-				pluginsElement.addContent(plugin.toXml());
-			}
-			File pluginsFile = new File(pluginsDir, "plugins.xml");
-			try {
-				Writer writer = new FileWriter(pluginsFile);
-				new XMLOutputter(Format.getPrettyFormat()).output(
-						pluginsElement, writer);
-				writer.flush();
-				writer.close();
-			} catch (IOException e) {
-				logger.error("Error writing plugins to "
-						+ pluginsFile.getPath());
-			}
+	public void savePlugins() {		
+		Element pluginsElement = new Element("plugins");
+		for (Plugin plugin : plugins) {
+			pluginsElement.addContent(plugin.toXml());
 		}
+		File pluginsFile = new File(pluginsDir, "plugins.xml");
+		try {
+			Writer writer = new FileWriter(pluginsFile);
+			new XMLOutputter(Format.getPrettyFormat()).output(
+					pluginsElement, writer);
+			writer.flush();
+			writer.close();
+		} catch (IOException e) {
+			logger.error("Error writing plugins to "
+					+ pluginsFile.getPath());
+		}		
 	}
 
 	/**
