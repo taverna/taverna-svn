@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: PluginManager.java,v $
- * Revision           $Revision: 1.8 $
+ * Revision           $Revision: 1.9 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-12-07 14:27:50 $
+ * Last modified on   $Date: 2006-12-07 18:20:04 $
  *               by   $Author: sowen70 $
  * Created on 23 Nov 2006
  *****************************************************************/
@@ -49,6 +49,7 @@ import java.util.List;
 import net.sf.taverna.raven.log.Log;
 import net.sf.taverna.raven.repository.Artifact;
 import net.sf.taverna.raven.repository.Repository;
+import net.sf.taverna.raven.repository.RepositoryListener;
 import net.sf.taverna.raven.spi.Profile;
 import net.sf.taverna.raven.spi.ProfileFactory;
 import net.sf.taverna.tools.Bootstrap;
@@ -116,6 +117,10 @@ public class PluginManager implements PluginListener {
 		return instance;
 	}
 
+	public Repository getRepository() {
+		return repository;
+	}
+	
 	public static void setRepository(Repository repository) {
 		PluginManager.repository = repository;
 	}
@@ -405,7 +410,7 @@ public class PluginManager implements PluginListener {
 				pluginManagerListeners.add(listener);
 			}
 		}
-	}
+	}	
 
 	public void removePluginManagerListener(PluginManagerListener listener) {
 		synchronized (pluginManagerListeners) {

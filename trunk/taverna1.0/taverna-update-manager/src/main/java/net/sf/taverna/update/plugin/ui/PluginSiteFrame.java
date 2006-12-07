@@ -25,10 +25,10 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: PluginSiteFrame.java,v $
- * Revision           $Revision: 1.1 $
+ * Revision           $Revision: 1.2 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-12-05 12:24:28 $
- *               by   $Author: davidwithers $
+ * Last modified on   $Date: 2006-12-07 18:20:03 $
+ *               by   $Author: sowen70 $
  * Created on 29 Nov 2006
  *****************************************************************/
 package net.sf.taverna.update.plugin.ui;
@@ -43,7 +43,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -77,6 +79,8 @@ public class PluginSiteFrame extends JFrame {
 	private JButton cancelButton = null;
 
 	private JButton jButton = null;
+
+	private Map<Plugin, PluginRepositoryListener> listeners = new HashMap<Plugin, PluginRepositoryListener>();
 
 	/**
 	 * This is the default constructor
@@ -234,6 +238,20 @@ public class PluginSiteFrame extends JFrame {
 							gridBagConstraints1.insets = new Insets(5, 20, 0, 0);
 							pluginSitePanel.add(getJCheckBox(plugin),
 									gridBagConstraints1);
+
+							gridY++;
+
+							GridBagConstraints gridBagConstraints2 = new GridBagConstraints();
+							gridBagConstraints2.gridx = 0;
+							gridBagConstraints2.gridy = gridY;
+							gridBagConstraints2.anchor = GridBagConstraints.CENTER;
+							gridBagConstraints2.insets = new Insets(5, 5, 0, 0);
+
+							PluginRepositoryListener progress = new PluginRepositoryListener();
+							listeners.put(plugin, progress);
+							progress.setVisible(false);
+							pluginSitePanel.add(progress.getProgressBar(),
+									gridBagConstraints2);
 						}
 					} else {
 						pluginSitePanel.remove(progressBar);
@@ -301,19 +319,43 @@ public class PluginSiteFrame extends JFrame {
 					.addActionListener(new java.awt.event.ActionListener() {
 						public void actionPerformed(java.awt.event.ActionEvent e) {
 							installButton.setEnabled(false);
-							for (int i = 0; i < installationScheduled.size(); i++) {
-								Plugin plugin = installationScheduled.get(i);
-								pluginManager.addPlugin(plugin);
-								plugin.setEnabled(true);
-							}
-							pluginManager.savePlugins();
-							installationScheduled.clear();
-							// JOptionPane
-							// .showMessageDialog(PluginSiteFrame.this,
-							// "New plugins will be applied when Taverna is
-							// restarted");
-							setVisible(false);
-							dispose();
+
+							new Thread(new Runnable() {
+
+								public void run() {
+									for (int i = 0; i < installationScheduled
+											.size(); i++) {
+										final Plugin plugin = installationScheduled
+												.get(i);
+										PluginRepositoryListener listener = listeners
+												.get(plugin);
+										if (listener != null) {
+											pluginManager.getRepository()
+													.addRepositoryListener(
+															listener);
+											listener.getProgressBar()
+													.setVisible(true);
+										}
+
+										pluginManager.addPlugin(plugin);
+
+										if (listener != null) {
+											pluginManager.getRepository()
+													.removeRepositoryListener(
+															listener);
+											listener.getProgressBar()
+													.setVisible(false);
+										}
+										plugin.setEnabled(true);
+
+									}
+									pluginManager.savePlugins();
+									installationScheduled.clear();
+									setVisible(false);
+									dispose();
+								}
+
+							}).start();
 						}
 					});
 		}
