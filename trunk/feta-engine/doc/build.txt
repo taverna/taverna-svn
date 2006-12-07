@@ -6,23 +6,22 @@ below.
 
 The pre-requisites for Feta Engine is to have Java 1.5 and Tomcat. 
 
-
-The mygrid project has chosen Tomcat as  the platform for
-delivering web-services. The following document assumes that the
-web-service will be installed into  Tomcat, This process has been
+The Feta Engine web-service will be installed into  Tomcat, This process has been
 tested on  Tomcat  versions 4.1 and  5.0.28. It  is expected to
 work on other versions of Tomcat as well.
 
-1. If you have the  source distribution or building the feta-engine from CVS 
-make sure you follow all the following steps. If you have the 
-binary distribution (i.e. the war file). You can skip steps (2.3), (4) and (8).
 
-Also, if you're building from source an additional pre-requisite is to have Maven
-installed, as it is chosen method of buildings projects in myGrid.
+1. If you have the binary distribution (i.e. a zip file containing the war file and the properties file). 
+You can skip steps (2.3), (4) and (8).
 
 
+If you have the  source distribution or building the feta-engine from CVS 
+make sure you follow all the following steps. Also, make sure you have Maven
+installed, as it is the chosen method of building projects in myGrid.
 
-2. Understanding (and if necessary Modifying) the configuration file <fetaEngine-home>/conf/fetaEngine.properties
+
+
+2. Understanding (and, if necessary, modifying) the configuration file fetaEngine.properties
 
 
 
@@ -76,7 +75,7 @@ installed, as it is chosen method of buildings projects in myGrid.
 
 
 5. Start Tomcat and go to http://<host>:<port>/manager/html . Using the web application deployment form 
-   at this location deploy the newly generated fetEngine1.0.war file to Tomcat.
+   at this location deploy the newly generated fetEngine.1.0.X.war file to Tomcat.
 
 
 6. Restart tomcat. Verify the deployment of Feta Engine by going to
