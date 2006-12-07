@@ -2,30 +2,40 @@
 FETA_ENGINE INSTALLATION
 ------------------------
 Individual steps in fetaEngine installation process are described
-below. The mygrid project has chosen Tomcat as  the platform for
+below. 
+
+The pre-requisites for Feta Engine is to have Java 1.5 and Tomcat. 
+
+
+The mygrid project has chosen Tomcat as  the platform for
 delivering web-services. The following document assumes that the
 web-service will be installed into  Tomcat, This process has been
 tested on  Tomcat  versions 4.1 and  5.0.28. It  is expected to
 work on other versions of Tomcat as well.
 
-1. If you have the  source distribution make sure you follow all the following steps. If you have the 
-binary distribution (i.e. the war file). You can skip step 4.
+1. If you have the  source distribution or building the feta-engine from CVS 
+make sure you follow all the following steps. If you have the 
+binary distribution (i.e. the war file). You can skip steps (2.3), (4) and (8).
+
+Also, if you're building from source an additional pre-requisite is to have Maven
+installed, as it is chosen method of buildings projects in myGrid.
 
 
-2. Modify the configuration file <fetaEngine-home>/conf/fetaEngine.properties
+
+2. Understanding (and if necessary Modifying) the configuration file <fetaEngine-home>/conf/fetaEngine.properties
 
 
 
 	2.1) In order to do RDFS reasoning Feta needs the 
 	location of the ontologies used to structure and annotate the semantic service descriptions. 
 	The properties file will be pre-cofigured to use the mygrid service and domain ontologies.
-	You can change the configuration for the domain ontology to point out to your ontology. But the 
-	configurations for the service ontologies need to point out to complementary the myGRid and BioMoby service
-	ontologies.
+	You can change  or extend the configuration to load your domain's ontology. But the 
+	intial configuration  for the service ontology needs to stary there i.e. do not change 
+        the value of the parameter fetaEngine.ontology.URL0.
 
 
-	fetaEngine.ontology.URL0=http\://phoebus.cs.man.ac.uk:8100/feta-beta/mygrid/moby-feta/Common-Service-Ontology.rdfs
-	fetaEngine.ontology.URL1=http\://phoebus.cs.man.ac.uk:8100/feta-beta/mygrid/moby-feta/UpdatedmyGridDomainOntology.rdfs
+	fetaEngine.ontology.URL0=http\://www.mygrid.org.uk:8100/feta/mygrid/ontology/Common-Service-Ontology.rdfs
+	fetaEngine.ontology.URL1=http\://www.mygrid.org.uk:8100/feta/mygrid/ontology/myGridDomainOntology.rdfs
 
 
 
@@ -41,7 +51,8 @@ binary distribution (i.e. the war file). You can skip step 4.
 	the class that implements this interface and is used to connect to
 	the back-end RDF repository.  Currently the Feta Engine supports
 	only the Sesame2Alpha3 based implementation and this is reflected in the
-	properties file with the property
+	properties file with the property. If you've not implemented a new provider
+	then you do not need to change this property.
 
 
 	       fetaEngine.backend.provider=uk.ac.man.cs.img.fetaEngine.store.impl.sesame2.SesameModelImpl
@@ -61,21 +72,31 @@ binary distribution (i.e. the war file). You can skip step 4.
 
 
 
-4. Do "ant war"
+4. Do "mvn install" firstly for the feta-engine and then for the feta-war.
+
 
 5. Start Tomcat and go to http://<host>:<port>/manager/html . Using the web application deployment form 
-at this location deploy the newly generated fetEngine1.0.war file to Tomcat.
+   at this location deploy the newly generated fetEngine1.0.war file to Tomcat.
+
 
 6. Restart tomcat. Verify the deployment of Feta Engine by going to
 
    http://<host>:<port>/fetaEngine1.0/services/feta?wsdl
+
    
-7. Copy fetEngine.properties file to <tomcat-home>/common/classes 
+7. Copy the fetEngine.properties file to <tomcat-home>/common/classes 
+
 
 8. Use the test client to do publish and inquiry tests using the specified test data file
    The command for this is "ant testclass AllTests"
    This target will cause tests to be run against the Feta Engine web service
    located at the web end point which is the value of property "feta.test.ws.url".
+
+9. Or you could use the Taverna plug-in to query the contents of a Feta Engine. In order to do
+   this you need to deploy the FEta Client plugin to taverna and configure it so that
+   it talks to your newly deployed Feta Backend Engine.
+
+
 
 
 

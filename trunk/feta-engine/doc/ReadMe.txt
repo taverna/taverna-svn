@@ -26,4 +26,4 @@ the necessary  ontologies
 	- Building the Feta Engine web-service and  deploying  it on Tomcat. 
 
 
-Please read the build.txt for details on how to build Feta Engine
+Please read the build.txt for details on how to build Feta Engine from source
