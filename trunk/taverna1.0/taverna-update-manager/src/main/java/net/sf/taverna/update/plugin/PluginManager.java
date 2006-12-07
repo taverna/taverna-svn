@@ -25,10 +25,10 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: PluginManager.java,v $
- * Revision           $Revision: 1.5 $
+ * Revision           $Revision: 1.6 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-12-07 13:04:18 $
- *               by   $Author: davidwithers $
+ * Last modified on   $Date: 2006-12-07 13:28:40 $
+ *               by   $Author: stain $
  * Created on 23 Nov 2006
  *****************************************************************/
 package net.sf.taverna.update.plugin;
@@ -56,6 +56,7 @@ import net.sf.taverna.update.plugin.event.PluginEvent;
 import net.sf.taverna.update.plugin.event.PluginListener;
 import net.sf.taverna.update.plugin.event.PluginManagerEvent;
 import net.sf.taverna.update.plugin.event.PluginManagerListener;
+import net.sf.taverna.utils.MyGridConfiguration;
 
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpMethod;
@@ -96,10 +97,8 @@ public class PluginManager implements PluginListener {
 	 * 
 	 */
 	private PluginManager() {
-		String tavernaHome = System.getProperty("taverna.home");
-		if (tavernaHome != null) {
-			pluginsDir = new File(tavernaHome, "plugins");
-			pluginsDir.mkdir();
+		pluginsDir = MyGridConfiguration.getUserDir("plugins");
+		if (pluginsDir != null) {
 			initializePluginSites();
 			initializePlugins();
 		}
