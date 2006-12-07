@@ -89,13 +89,15 @@ public class FetaEngineProperties {
 		List locs = new ArrayList();
 		int i = 0;
 
-		while (fetaProperties.containsKey("fetaEngine.housekeeper.poll_location" + i)) {
-			String loc = fetaProperties.getProperty("fetaEngine.housekeeper.poll_location" + i);
-			locs.add(loc);
-			i++;
-		}
+		if (fetaProperties.containsKey("fetaEngine.housekeeper.poll_location0")){
+			while (fetaProperties.containsKey("fetaEngine.housekeeper.poll_location" + i)) {
+				String loc = fetaProperties.getProperty("fetaEngine.housekeeper.poll_location" + i);
+				locs.add(loc);
+				i++;
+			}
 
-		return locs;
+			return locs;	
+		}else return null;
 	}
 
 	

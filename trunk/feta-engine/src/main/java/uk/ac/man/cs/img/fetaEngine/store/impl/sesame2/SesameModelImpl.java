@@ -394,11 +394,12 @@ public class SesameModelImpl implements IFetaModel {
 			
 
 				List locationsToPoll = fetaProps.getLocationstoCrawlandPoll();
-			
-				Set initialLocsToPoll = new HashSet();
-				initialLocsToPoll.addAll(locationsToPoll);
-				houseKeeper = new RegistryHouseKeeperThread((IFetaModel)this, initialLocsToPoll);
-				houseKeeper.start();
+			    if (locationsToPoll!= null){
+					Set initialLocsToPoll = new HashSet();
+					initialLocsToPoll.addAll(locationsToPoll);
+					houseKeeper = new RegistryHouseKeeperThread((IFetaModel)this, initialLocsToPoll);
+					houseKeeper.start();
+			    }
 
 					
 			
