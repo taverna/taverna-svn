@@ -302,7 +302,8 @@ public class DefaultScavengerTree extends ExtendedJTree implements WorkflowModel
 				new DefaultScavengerLoaderThread(this);
 				ScavengerHelperRegistry.instance().addRegistryListener(new RegistryListener() {					
 					
-					public void spiRegistryUpdated(SpiRegistry registry) {						
+					public void spiRegistryUpdated(SpiRegistry registry) {
+						logger.info("Registry updated for class:"+registry.getClassName());
 						new DefaultScavengerLoaderThread(DefaultScavengerTree.this);												
 					}
 					

@@ -117,19 +117,19 @@ public class SpiRegistry implements Iterable<Class>, ArtifactFilterListener {
 	/**
 	 * Add a new ArtifactFilter
 	 */
-	public synchronized void addFilter(ArtifactFilter af) {
+	public synchronized void addFilter(ArtifactFilter af) {		
 		implementations = null;
 		filters.add(af);
 		af.addArtifactFilterListener(this);
 		newArtifacts.clear();
 		newArtifacts.addAll(repository.getArtifacts(ArtifactStatus.Ready));
-		notifyListeners();
+		updateRegistry();
 	}
 	
 	/**
 	 * Clear all ArtifactFilter objects
 	 */
-	public synchronized void clearFilters() {
+	public synchronized void clearFilters() {		
 		implementations = null;
 		for (ArtifactFilter filter : filters) {
 			filter.removeArtifactFilterListener(this);
@@ -137,13 +137,13 @@ public class SpiRegistry implements Iterable<Class>, ArtifactFilterListener {
 		filters.clear();
 		newArtifacts.clear();
 		newArtifacts.addAll(repository.getArtifacts(ArtifactStatus.Ready));
-		notifyListeners();
+		updateRegistry();
 	}
 	
 	/**
 	 * Set the filter list
 	 */
-	public synchronized void setFilters(List<ArtifactFilter> newFilters) {
+	public synchronized void setFilters(List<ArtifactFilter> newFilters) {		
 		implementations = null;
 		for (ArtifactFilter filter : filters) {
 			filter.removeArtifactFilterListener(this);
@@ -153,14 +153,14 @@ public class SpiRegistry implements Iterable<Class>, ArtifactFilterListener {
 			filter.addArtifactFilterListener(this);
 		}
 		newArtifacts.clear();
-		newArtifacts.addAll(repository.getArtifacts(ArtifactStatus.Ready));
+		newArtifacts.addAll(repository.getArtifacts(ArtifactStatus.Ready));		
 		updateRegistry();
 	}
 	
-	public void filterChanged(ArtifactFilter filter) {		
+	public void filterChanged(ArtifactFilter filter) {			
 		implementations = null;
 		newArtifacts.clear();
-		newArtifacts.addAll(repository.getArtifacts(ArtifactStatus.Ready));
+		newArtifacts.addAll(repository.getArtifacts(ArtifactStatus.Ready));		
 		updateRegistry();
 	}
 	
@@ -173,7 +173,7 @@ public class SpiRegistry implements Iterable<Class>, ArtifactFilterListener {
 	 * the set of current known implementations.
 	 */
 	public synchronized void updateRegistry() {
-		// Do filtering		
+						
 		Set<URL> seenURLs = new HashSet<URL>();
 		Set<ClassLoader> seenClassLoaders = new HashSet<ClassLoader>();
 		Set<Artifact> workingSet = new HashSet<Artifact>(newArtifacts);
@@ -182,7 +182,9 @@ public class SpiRegistry implements Iterable<Class>, ArtifactFilterListener {
 			implementations = new ArrayList<Class>();
 		}
 		boolean addedNew = false;
-		for (ArtifactFilter af : filters) {
+		
+//		 Do filtering
+		for (ArtifactFilter af : filters) {			
 			workingSet = af.filter(workingSet); 												
 		}
 		for (Artifact a : workingSet) {			
@@ -241,8 +243,9 @@ public class SpiRegistry implements Iterable<Class>, ArtifactFilterListener {
 					if (impClass.getClassLoader() instanceof LocalArtifactClassLoader || System.getProperty("raven.eclipse")!=null) {						
 						implementations.add(impClass);	
 						//only mark as new if this class did not appear in the previous set of implementations, i.e.
-						//is actually new.
-						if (previousImplementations==null || !previousImplementations.contains(impClass)) {							
+						//is actually new.						
+						if (previousImplementations==null || !previousImplementations.contains(impClass)) {
+							System.out.println("NEW CLASS="+impClass.getName());
 							addedNew = true;
 						}
 					}
@@ -256,11 +259,24 @@ public class SpiRegistry implements Iterable<Class>, ArtifactFilterListener {
 				}
 			}
 		}
-		previousImplementations=implementations;
-		if (addedNew) {			
-			notifyListeners();
-		}
+		boolean removedOld=implementationRemoved();
+		previousImplementations=implementations;		
 		
+		if (addedNew || removedOld) {			
+			notifyListeners();
+		}				
+	}
+	
+	/**
+	 * Returns true if any classes stored in previousImplementations have now been removed.
+	 * @return
+	 */
+	private boolean implementationRemoved() {
+		if (previousImplementations==null) return false;
+		for (Class c : previousImplementations) {
+			if (!implementations.contains(c)) return true;
+		}
+		return false;
 	}
 	
 	private void notifyListeners() {
