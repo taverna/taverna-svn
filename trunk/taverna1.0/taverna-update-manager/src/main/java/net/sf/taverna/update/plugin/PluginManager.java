@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: PluginManager.java,v $
- * Revision           $Revision: 1.4 $
+ * Revision           $Revision: 1.5 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-12-05 17:02:06 $
+ * Last modified on   $Date: 2006-12-07 13:04:18 $
  *               by   $Author: davidwithers $
  * Created on 23 Nov 2006
  *****************************************************************/
@@ -170,8 +170,8 @@ public class PluginManager implements PluginListener {
 			for (Artifact artifact : plugin.getProfile().getArtifacts()) {
 				profile.addArtifact(artifact);
 			}
+			savePlugins();
 		}
-		savePlugins();
 	}
 
 	private void disablePlugin(Plugin plugin) {
@@ -179,8 +179,8 @@ public class PluginManager implements PluginListener {
 			for (Artifact artifact : plugin.getProfile().getArtifacts()) {
 				profile.removeArtifact(artifact);
 			}
+			savePlugins();
 		}
-		savePlugins();
 	}
 
 	public void savePlugins() {

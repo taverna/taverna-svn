@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: PluginManagerFrame.java,v $
- * Revision           $Revision: 1.3 $
+ * Revision           $Revision: 1.4 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-12-05 17:02:05 $
+ * Last modified on   $Date: 2006-12-07 13:04:18 $
  *               by   $Author: davidwithers $
  * Created on 27 Nov 2006
  *****************************************************************/
@@ -281,7 +281,8 @@ public class PluginManagerFrame extends JFrame {
 					Object selectedObject = jList.getSelectedValue();
 					if (selectedObject instanceof Plugin) {
 						pluginManager.removePlugin((Plugin) selectedObject);
-					}
+						pluginManager.savePlugins();
+						}
 					int listSize = jList.getModel().getSize();
 					if (listSize > index) {
 						jList.setSelectedIndex(index);
