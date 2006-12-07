@@ -14,6 +14,10 @@
       	<groupId>uk.org.mygrid.taverna</groupId>
     	<artifactId>taverna-bootstrap</artifactId>
     </dependency>
+   	<dependency>
+      	<groupId>uk.org.mygrid.taverna</groupId>
+    	<artifactId>taverna-core</artifactId>
+    </dependency>
   	<dependency>
       	<groupId>uk.org.mygrid.taverna.raven</groupId>
     	<artifactId>raven</artifactId>
