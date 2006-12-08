@@ -25,20 +25,22 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: PluginSiteFrame.java,v $
- * Revision           $Revision: 1.3 $
+ * Revision           $Revision: 1.4 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-12-08 10:53:15 $
+ * Last modified on   $Date: 2006-12-08 16:41:46 $
  *               by   $Author: sowen70 $
  * Created on 29 Nov 2006
  *****************************************************************/
 package net.sf.taverna.update.plugin.ui;
 
 import java.awt.Color;
+import java.awt.Frame;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -48,8 +50,9 @@ import java.util.Map;
 
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
-import javax.swing.JFrame;
+import javax.swing.JDialog;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.JScrollPane;
@@ -63,7 +66,7 @@ import net.sf.taverna.update.plugin.PluginSite;
  * 
  * @author David Withers
  */
-public class PluginSiteFrame extends JFrame {
+public class PluginSiteFrame extends JDialog {
 
 	private static final long serialVersionUID = 1L;
 
@@ -77,17 +80,21 @@ public class PluginSiteFrame extends JFrame {
 
 	private JButton cancelButton = null;
 
-	private JButton jButton = null;
+	private JButton addSiteButton = null;
 
 	private Map<Plugin, PluginRepositoryListener> listeners = new HashMap<Plugin, PluginRepositoryListener>();
+	
+	private AddPluginSiteFrame addSiteFrame = null;
+	
+	private JScrollPane scrollPane = null;
 
 	/**
 	 * This is the default constructor
 	 */
-	public PluginSiteFrame(PluginManager pluginManager) {
-		super();
-		this.pluginSites = pluginManager.getPluginSites();
-		this.pluginManager = pluginManager;
+	public PluginSiteFrame(Frame owner) {
+		super(owner,true);
+		this.pluginManager = PluginManager.getInstance();
+		this.pluginSites = this.pluginManager.getPluginSites();		
 		initialize();
 	}
 
@@ -136,7 +143,7 @@ public class PluginSiteFrame extends JFrame {
 		jContentPane.add(getJScrollPane(), gridBagConstraints12);
 		jContentPane.add(getInstallButton(), gridBagConstraints);
 		jContentPane.add(getCancelButton(), gridBagConstraints1);
-		jContentPane.add(getJButton(), gridBagConstraints14);
+		jContentPane.add(getAddPluginSiteButton(), gridBagConstraints14);
 		return jContentPane;
 	}
 
@@ -146,9 +153,9 @@ public class PluginSiteFrame extends JFrame {
 	 * @return javax.swing.JScrollPane
 	 */
 	private JScrollPane getJScrollPane() {
-		JScrollPane jScrollPane = new JScrollPane();
-		jScrollPane.setViewportView(getJPanel());
-		return jScrollPane;
+		scrollPane = new JScrollPane();
+		scrollPane.setViewportView(getJPanel());
+		return scrollPane;
 	}
 
 	/**
@@ -305,9 +312,10 @@ public class PluginSiteFrame extends JFrame {
 	}
 
 	private final Thread getUpdateRepositoryThread() {
-		return new Thread(new Runnable() {
+		return new Thread("Update Repository Progress") {
 
-			public void run() {
+			public void run() {				
+				cancelButton.setEnabled(false); 
 				for (int i = 0; i < installationScheduled.size(); i++) {
 					final Plugin plugin = installationScheduled.get(i);
 					PluginRepositoryListener listener = listeners.get(plugin);
@@ -330,10 +338,10 @@ public class PluginSiteFrame extends JFrame {
 				pluginManager.savePlugins();
 				installationScheduled.clear();
 				setVisible(false);
-				dispose();
+				dispose();				
 			}
 
-		});
+		};
 	}
 
 	/**
@@ -367,7 +375,7 @@ public class PluginSiteFrame extends JFrame {
 		if (cancelButton == null) {
 			cancelButton = new JButton();
 			cancelButton.setText("Cancel");
-			cancelButton.addActionListener(new java.awt.event.ActionListener() {
+			cancelButton.addActionListener(new ActionListener() {
 				public void actionPerformed(java.awt.event.ActionEvent e) {
 					setVisible(false);
 					dispose();
@@ -382,18 +390,52 @@ public class PluginSiteFrame extends JFrame {
 		public Plugin plugin;
 	}
 
+	private final void addPluginSite() {
+		if (addSiteFrame==null) addSiteFrame=new AddPluginSiteFrame(this);
+		addSiteFrame.setLocationRelativeTo(this);
+		addSiteFrame.setVisible(true);
+		if (addSiteFrame.getName()!=null) {
+			if (addSiteFrame.getName().length()==0) {
+				JOptionPane.showMessageDialog(this, "You must provide a name for your site.","Error adding plugin site",JOptionPane.ERROR_MESSAGE);
+				addPluginSite();
+			}
+			else {
+				if (addSiteFrame.getUrl()!=null) {
+					try {
+						PluginSite site = new PluginSite(addSiteFrame.getName(), new URL(addSiteFrame.getUrl()));
+						pluginManager.addPluginSite(site);
+						pluginManager.savePluginSites();
+						scrollPane.setViewportView(getJPanel());
+						addSiteFrame=null; //so that the name and url are reset.
+					}
+					catch(Exception e) {
+						JOptionPane.showMessageDialog(this, "There was a problem adding the site you provided: "+e.getMessage(),"Error adding plugin site",JOptionPane.ERROR_MESSAGE);						
+					}
+				}
+			}
+		}
+	}
+	
 	/**
 	 * This method initializes jButton
 	 * 
 	 * @return javax.swing.JButton
 	 */
-	private JButton getJButton() {
-		if (jButton == null) {
-			jButton = new JButton();
-			jButton.setText("Add Plugin Site");
-			jButton.setEnabled(false);
+	private JButton getAddPluginSiteButton() {
+		if (addSiteButton == null) {
+			addSiteButton = new JButton();
+			addSiteButton.setText("Add Plugin Site");
+			addSiteButton.setEnabled(true);
+			addSiteButton.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					addSiteButton.setEnabled(false);
+					addPluginSite();
+					addSiteButton.setEnabled(true);
+				}				
+			});
+			
 		}
-		return jButton;
+		return addSiteButton;
 	}
 
 } // @jve:decl-index=0:visual-constraint="10,10"

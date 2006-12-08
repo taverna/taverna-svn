@@ -25,10 +25,10 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: PluginManagerFrame.java,v $
- * Revision           $Revision: 1.4 $
+ * Revision           $Revision: 1.5 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-12-07 13:04:18 $
- *               by   $Author: davidwithers $
+ * Last modified on   $Date: 2006-12-08 16:41:46 $
+ *               by   $Author: sowen70 $
  * Created on 27 Nov 2006
  *****************************************************************/
 package net.sf.taverna.update.plugin.ui;
@@ -307,8 +307,7 @@ public class PluginManagerFrame extends JFrame {
 			findPluginsButton.addActionListener(new java.awt.event.ActionListener() {
 				public void actionPerformed(java.awt.event.ActionEvent e) {
 					Object selectedObject = getJList().getSelectedValue();
-					PluginSiteFrame pluginSiteFrame = new PluginSiteFrame(
-							pluginManager);
+					PluginSiteFrame pluginSiteFrame = new PluginSiteFrame(PluginManagerFrame.this);
 					pluginSiteFrame.setLocationRelativeTo(PluginManagerFrame.this);
 					pluginSiteFrame.setVisible(true);
 					if (selectedObject != null) {
