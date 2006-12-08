@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: OpenWorkflowFromFileAction.java,v $
- * Revision           $Revision: 1.4 $
+ * Revision           $Revision: 1.5 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-11-30 16:51:48 $
+ * Last modified on   $Date: 2006-12-08 16:44:14 $
  *               by   $Author: stain $
  * Created on 20 Nov 2006
  *****************************************************************/
@@ -36,12 +36,15 @@ package org.embl.ebi.escience.scuflui.actions;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.io.File;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.prefs.Preferences;
 
 import javax.swing.AbstractAction;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 
+import org.apache.log4j.Logger;
 import org.embl.ebi.escience.scufl.ScuflModel;
 import org.embl.ebi.escience.scufl.parser.XScuflParser;
 import org.embl.ebi.escience.scuflui.TavernaIcons;
@@ -56,6 +59,8 @@ import org.embl.ebi.escience.scuflui.shared.WorkflowChanges;
 @SuppressWarnings("serial")
 public class OpenWorkflowFromFileAction extends AbstractAction {
 
+	private static Logger logger = Logger.getLogger(OpenWorkflowFromFileAction.class);
+	
 	private final JFileChooser fileChooser = new JFileChooser();
 	private Component parentComponent;
 
@@ -72,7 +77,7 @@ public class OpenWorkflowFromFileAction extends AbstractAction {
 	 * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
 	 */
 	public void actionPerformed(ActionEvent e) {
-		final ScuflModel model = new ScuflModel();
+		
 
 		Preferences prefs = Preferences.userNodeForPackage(OpenWorkflowFromFileAction.class);
 		String curDir = prefs
@@ -88,44 +93,70 @@ public class OpenWorkflowFromFileAction extends AbstractAction {
 					.toString());
 			final File file = fileChooser.getSelectedFile();
 			// mrp Refactored to do the heavy-lifting in a new thread
-			new Thread(new Runnable() {
-				public void run() {
-					boolean workflowOpened = false;
-					try {
-						// todo: does the update need running in the AWT thread?
-						// perhaps this thread should be spawned in populate?
-						XScuflParser.populate(file.toURL().openStream(), model,
-								null);
-						workflowOpened = true;
-					} catch (Exception ex) {
-						model.clear();
-						JOptionPane
-								.showMessageDialog(
-										parentComponent,
-										"Problem opening workflow from file : \n\n"
-												+ ex.getMessage()
-												+ "\n\nLoading workflow in offline mode, "
-												+ "this will allow you to remove any defunct operations.",
-										"Error", JOptionPane.ERROR_MESSAGE);
-						try {
-							model.setOffline(true);
-							XScuflParser.populate(file.toURL().openStream(),
-									model, null);
-							workflowOpened = true;
-						} catch (Exception e) {
-							JOptionPane.showMessageDialog(parentComponent,
-									"Problem opening workflow from file : \n\n"
-											+ ex.getMessage(), "Error",
-									JOptionPane.ERROR_MESSAGE);
-						}
-					}
-					if (workflowOpened) {
-						ScuflModelSet.getInstance().addModel(model);
-					}
-					WorkflowChanges.getInstance().syncedWithFile(model, file);
-				}
-			}).start();
+			final URL url;
+			try {
+				url = file.toURI().toURL();
+			} catch (MalformedURLException ex) {
+				logger.error("Malformed URL from file " + file, ex);
+				return;
+			}
+			openFromURL(url);
 		}
 	}
 
+	/**
+	 * Open a workflow from the given URL.
+	 * <p>
+	 * This will happen in a separate thread to avoid hanging the GUI.
+	 * If the workflow can't be loaded, it will be attempted loaded in
+	 * offline mode. If the workflow is a local file, 
+	 * WorkflowChanges.syncedWithFile will be set.
+	 * 
+	 * @param url URL to workflow to load.
+	 */
+	public void openFromURL(final URL url) {
+		new Thread(new Runnable() {
+			public void run() {
+				final ScuflModel model = new ScuflModel();
+				boolean workflowOpened = false;
+				try {
+					// todo: does the update need running in the AWT thread?
+					// perhaps this thread should be spawned in populate?
+					XScuflParser.populate(url.openStream(), model,
+							null);
+					workflowOpened = true;
+				} catch (Exception ex) {
+					model.clear();
+					JOptionPane
+							.showMessageDialog(
+									parentComponent,
+									"Problem opening workflow from" + url + ": \n\n"
+											+ ex.getMessage()
+											+ "\n\nLoading workflow in offline mode, "
+											+ "this will allow you to remove any defunct operations.",
+									"Error", JOptionPane.ERROR_MESSAGE);
+					try {
+						model.setOffline(true);
+						XScuflParser.populate(url.openStream(),
+								model, null);
+						workflowOpened = true;
+					} catch (Exception e) {
+						JOptionPane.showMessageDialog(parentComponent,
+								"Problem opening workflow from" + url + ": \n\n"
+										+ ex.getMessage(), "Error",
+								JOptionPane.ERROR_MESSAGE);
+					}
+				}
+				if (workflowOpened) {
+					ScuflModelSet.getInstance().addModel(model);
+				}
+				if (url.getProtocol().equals("file")) {
+					File file = new File(url.getPath());
+					WorkflowChanges.getInstance().syncedWithFile(model, file);
+				} else {
+					WorkflowChanges.getInstance().synced(model);
+				}
+			}
+		}).start();
+	}
 }

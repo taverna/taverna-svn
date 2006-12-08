@@ -25,10 +25,10 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: OpenWorkflowFromURLAction.java,v $
- * Revision           $Revision: 1.3 $
+ * Revision           $Revision: 1.4 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-11-29 16:57:48 $
- *               by   $Author: sowen70 $
+ * Last modified on   $Date: 2006-12-08 16:44:14 $
+ *               by   $Author: stain $
  * Created on 20 Nov 2006
  *****************************************************************/
 package org.embl.ebi.escience.scuflui.actions;
@@ -73,15 +73,14 @@ public class OpenWorkflowFromURLAction extends AbstractAction {
 				.get("currentUrl", "http://");
 		
 		try {
-			String name = (String) JOptionPane.showInputDialog(parentComponent,
+			String url = (String) JOptionPane.showInputDialog(parentComponent,
 					"Enter the URL of a workflow definition to load",
 					"Workflow URL", JOptionPane.QUESTION_MESSAGE, null, null,
 					currentUrl);
-			if (name != null) {
-				prefs.put("currentUrl", name);
-				XScuflParser
-						.populate((new URL(name)).openStream(), model, null);
-				ScuflModelSet.getInstance().addModel(model);
+			if (url != null) {
+				prefs.put("currentUrl", url);
+				// FIXME: Avoid tight coupling, refactor openFromURL to some common class
+				new OpenWorkflowFromFileAction(parentComponent).openFromURL(new URL(url));
 			}
 		} catch (Exception ex) {
 			JOptionPane.showMessageDialog(parentComponent,
