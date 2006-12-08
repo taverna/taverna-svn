@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: PluginRepositoryListener.java,v $
- * Revision           $Revision: 1.1 $
+ * Revision           $Revision: 1.2 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-12-07 18:20:03 $
+ * Last modified on   $Date: 2006-12-08 17:34:28 $
  *               by   $Author: sowen70 $
  * Created on 7 Dec 2006
  *****************************************************************/
@@ -57,6 +57,7 @@ public class PluginRepositoryListener implements
 	public PluginRepositoryListener() {
 		bar.setMaximum(100);
 		bar.setMinimum(0);
+		bar.setStringPainted(true);
 	}
 
 	public void statusChanged(final Artifact a, ArtifactStatus oldStatus,

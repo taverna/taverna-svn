@@ -25,15 +25,16 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: PluginSiteFrame.java,v $
- * Revision           $Revision: 1.4 $
+ * Revision           $Revision: 1.5 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-12-08 16:41:46 $
+ * Last modified on   $Date: 2006-12-08 17:34:28 $
  *               by   $Author: sowen70 $
  * Created on 29 Nov 2006
  *****************************************************************/
 package net.sf.taverna.update.plugin.ui;
 
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.Frame;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -66,7 +67,7 @@ import net.sf.taverna.update.plugin.PluginSite;
  * 
  * @author David Withers
  */
-public class PluginSiteFrame extends JDialog {
+public class PluginSiteFrame extends JDialog {	
 
 	private static final long serialVersionUID = 1L;
 
@@ -104,7 +105,7 @@ public class PluginSiteFrame extends JDialog {
 	 * @return void
 	 */
 	private void initialize() {
-		this.setSize(400, 450);
+		this.setSize(600, 450);
 		this.setContentPane(getJContentPane());
 		this.setTitle("Plugin Sites");
 	}
@@ -153,7 +154,7 @@ public class PluginSiteFrame extends JDialog {
 	 * @return javax.swing.JScrollPane
 	 */
 	private JScrollPane getJScrollPane() {
-		scrollPane = new JScrollPane();
+		scrollPane = new JScrollPane();		
 		scrollPane.setViewportView(getJPanel());
 		return scrollPane;
 	}
@@ -237,27 +238,41 @@ public class PluginSiteFrame extends JDialog {
 						int gridY = 0;
 						for (Plugin plugin : plugins) {
 							gridY++;
-							GridBagConstraints gridBagConstraints1 = new GridBagConstraints();
+							GridBagConstraints gridBagConstraints1 = new GridBagConstraints();							
 							gridBagConstraints1.gridx = 0;
 							gridBagConstraints1.gridy = gridY;
 							gridBagConstraints1.anchor = GridBagConstraints.WEST;
 							gridBagConstraints1.insets = new Insets(5, 20, 0, 0);
 							pluginSitePanel.add(getJCheckBox(plugin),
 									gridBagConstraints1);
+							
+							//gridY++;
+							
+							GridBagConstraints gridBagConstraintsDescription = new GridBagConstraints();
+							//gridBagConstraintsDescription.gridwidth = 2;
+							gridBagConstraintsDescription.gridx = 1;
+							gridBagConstraintsDescription.ipadx = 50;
+							gridBagConstraintsDescription.gridy = gridY;							
+							gridBagConstraintsDescription.anchor = GridBagConstraints.WEST;
+							gridBagConstraintsDescription.insets = new Insets(5, 5, 0, 0);
 
 							gridY++;
 
-							GridBagConstraints gridBagConstraints2 = new GridBagConstraints();
-							gridBagConstraints2.gridx = 0;
-							gridBagConstraints2.gridy = gridY;
-							gridBagConstraints2.anchor = GridBagConstraints.CENTER;
-							gridBagConstraints2.insets = new Insets(5, 5, 0, 0);
+							GridBagConstraints gridBagConstraintsProgress = new GridBagConstraints();							
+							gridBagConstraintsProgress.gridx = 0;
+							gridBagConstraintsProgress.gridy = gridY;							
+							gridBagConstraintsProgress.fill = GridBagConstraints.HORIZONTAL;
+							gridBagConstraintsProgress.anchor = GridBagConstraints.WEST;
+							gridBagConstraintsProgress.insets = new Insets(5, 5, 0, 0);
 
 							PluginRepositoryListener progress = new PluginRepositoryListener();
 							listeners.put(plugin, progress);
 							progress.setVisible(false);
+							JLabel description = new JLabel(plugin.getDescription());							
+							description.setFont(getFont().deriveFont(Font.PLAIN));
+							pluginSitePanel.add(description,gridBagConstraintsDescription);
 							pluginSitePanel.add(progress.getProgressBar(),
-									gridBagConstraints2);
+									gridBagConstraintsProgress);
 						}
 					} else {
 						pluginSitePanel.remove(progressBar);
@@ -277,7 +292,7 @@ public class PluginSiteFrame extends JDialog {
 			}
 		}.start();
 
-		pluginSitePanel.setBorder(new EtchedBorder());
+		pluginSitePanel.setBorder(new EtchedBorder());		
 		return pluginSitePanel;
 	}
 
