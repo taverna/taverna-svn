@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: PluginManager.java,v $
- * Revision           $Revision: 1.9 $
+ * Revision           $Revision: 1.10 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-12-07 18:20:04 $
+ * Last modified on   $Date: 2006-12-08 16:51:12 $
  *               by   $Author: sowen70 $
  * Created on 23 Nov 2006
  *****************************************************************/
@@ -291,13 +291,11 @@ public class PluginManager implements PluginListener {
 				plugins.add(Plugin.fromXml(pluginDocument.getRootElement()));
 			}
 		} catch (JDOMException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error("Error parsing xml: "+e.getMessage());
 		} catch (IOException e) {
-			e.printStackTrace();
+			logger.error("Error contacting plugin site: "+e.getMessage());
 		} catch (URISyntaxException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error("Error parsing plugin site: "+e.getMessage());
 		}
 		return plugins;
 	}
