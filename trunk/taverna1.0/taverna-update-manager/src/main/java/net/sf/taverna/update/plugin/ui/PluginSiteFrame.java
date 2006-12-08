@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: PluginSiteFrame.java,v $
- * Revision           $Revision: 1.2 $
+ * Revision           $Revision: 1.3 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-12-07 18:20:03 $
+ * Last modified on   $Date: 2006-12-08 10:53:15 $
  *               by   $Author: sowen70 $
  * Created on 29 Nov 2006
  *****************************************************************/
@@ -39,7 +39,6 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -305,6 +304,38 @@ public class PluginSiteFrame extends JFrame {
 		return checkBox;
 	}
 
+	private final Thread getUpdateRepositoryThread() {
+		return new Thread(new Runnable() {
+
+			public void run() {
+				for (int i = 0; i < installationScheduled.size(); i++) {
+					final Plugin plugin = installationScheduled.get(i);
+					PluginRepositoryListener listener = listeners.get(plugin);
+					if (listener != null) {
+						pluginManager.getRepository().addRepositoryListener(
+								listener);
+						listener.getProgressBar().setVisible(true);
+					}
+
+					pluginManager.addPlugin(plugin);
+
+					if (listener != null) {
+						pluginManager.getRepository().removeRepositoryListener(
+								listener);
+						listener.getProgressBar().setVisible(false);
+					}
+					plugin.setEnabled(true);
+
+				}
+				pluginManager.savePlugins();
+				installationScheduled.clear();
+				setVisible(false);
+				dispose();
+			}
+
+		});
+	}
+
 	/**
 	 * This method initializes jButton
 	 * 
@@ -319,44 +350,9 @@ public class PluginSiteFrame extends JFrame {
 					.addActionListener(new java.awt.event.ActionListener() {
 						public void actionPerformed(java.awt.event.ActionEvent e) {
 							installButton.setEnabled(false);
-
-							new Thread(new Runnable() {
-
-								public void run() {
-									for (int i = 0; i < installationScheduled
-											.size(); i++) {
-										final Plugin plugin = installationScheduled
-												.get(i);
-										PluginRepositoryListener listener = listeners
-												.get(plugin);
-										if (listener != null) {
-											pluginManager.getRepository()
-													.addRepositoryListener(
-															listener);
-											listener.getProgressBar()
-													.setVisible(true);
-										}
-
-										pluginManager.addPlugin(plugin);
-
-										if (listener != null) {
-											pluginManager.getRepository()
-													.removeRepositoryListener(
-															listener);
-											listener.getProgressBar()
-													.setVisible(false);
-										}
-										plugin.setEnabled(true);
-
-									}
-									pluginManager.savePlugins();
-									installationScheduled.clear();
-									setVisible(false);
-									dispose();
-								}
-
-							}).start();
+							getUpdateRepositoryThread().start();
 						}
+
 					});
 		}
 		return installButton;
@@ -381,6 +377,7 @@ public class PluginSiteFrame extends JFrame {
 		return cancelButton;
 	}
 
+	@SuppressWarnings("serial")
 	class PluginCheckBox extends JCheckBox {
 		public Plugin plugin;
 	}
