@@ -278,8 +278,9 @@ public class ScuflModelTreeTable extends JTreeTable implements
 			if (e instanceof MouseEvent) {
 				MouseEvent me = (MouseEvent) e;
 				if (me.getClickCount() == 1
-						&& System.getProperties().getProperty(
-								"taverna.osxpresent") != null) {
+						&& System.getProperty("os.name").equals("Mac OS X")) {
+					// Workaround for buggy tree table on OS X. Open/close the path
+					// on any click on the column (not just on the > icon)
 					for (int counter = getColumnCount() - 1; counter >= 0; counter--) {
 						if (getColumnClass(counter) == TreeTableModel.class) {
 							MouseEvent newME = new MouseEvent(tree, me.getID(),
