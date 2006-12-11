@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: PluginManager.java,v $
- * Revision           $Revision: 1.10 $
+ * Revision           $Revision: 1.11 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-12-08 16:51:12 $
+ * Last modified on   $Date: 2006-12-11 15:14:24 $
  *               by   $Author: sowen70 $
  * Created on 23 Nov 2006
  *****************************************************************/
@@ -236,24 +236,22 @@ public class PluginManager implements PluginListener {
 		savePluginSites();
 	}
 
-	public void savePluginSites() {
-		if (pluginSites.size() > 0) {
-			Element pluginSitesElement = new Element("pluginSites");
-			for (PluginSite pluginSite : pluginSites) {
-				pluginSitesElement.addContent(pluginSite.toXml());
-			}
-			File pluginSitesFile = new File(pluginsDir, "plugin-sites.xml");
-			try {
-				Writer writer = new FileWriter(pluginSitesFile);
-				new XMLOutputter(Format.getPrettyFormat()).output(
-						pluginSitesElement, writer);
-				writer.flush();
-				writer.close();
-			} catch (IOException e) {
-				logger.error("Error writing plugin sites to "
-						+ pluginSitesFile.getPath());
-			}
+	public void savePluginSites() {		
+		Element pluginSitesElement = new Element("pluginSites");
+		for (PluginSite pluginSite : pluginSites) {
+			pluginSitesElement.addContent(pluginSite.toXml());
 		}
+		File pluginSitesFile = new File(pluginsDir, "plugin-sites.xml");
+		try {
+			Writer writer = new FileWriter(pluginSitesFile);
+			new XMLOutputter(Format.getPrettyFormat()).output(
+					pluginSitesElement, writer);
+			writer.flush();
+			writer.close();
+		} catch (IOException e) {
+			logger.error("Error writing plugin sites to "
+					+ pluginSitesFile.getPath());
+		}		
 	}
 
 	/**
@@ -474,6 +472,13 @@ public class PluginManager implements PluginListener {
 		}
 	}
 
+	public String getTavernaPluginSite() {
+		String result= Bootstrap.properties
+		.getProperty("raven.pluginsite");
+		if (result!=null) result=result.trim();
+		return result;
+	}
+	
 	private void initializePluginSites() {
 		File pluginSitesFile = new File(pluginsDir, "plugin-sites.xml");
 		if (pluginSitesFile.exists()) {
@@ -492,8 +497,7 @@ public class PluginManager implements PluginListener {
 				e.printStackTrace();
 			}
 		} else {
-			String updateSite = Bootstrap.properties
-					.getProperty("raven.pluginsite");
+			String updateSite = getTavernaPluginSite();
 			if (updateSite != null) {
 				try {
 					PluginSite defaultPluginSite = new PluginSite(

@@ -23,6 +23,10 @@
     	<artifactId>raven</artifactId>
     </dependency>
     <dependency>
+      	<groupId>uk.org.mygrid.taverna.scufl</groupId>
+    	<artifactId>scufl-ui-api</artifactId>
+    </dependency>
+    <dependency>
     	<groupId>log4j</groupId>
     	<artifactId>log4j</artifactId>
     	<version>1.2.12</version>

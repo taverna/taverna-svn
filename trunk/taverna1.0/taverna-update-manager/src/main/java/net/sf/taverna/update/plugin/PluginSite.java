@@ -25,10 +25,10 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: PluginSite.java,v $
- * Revision           $Revision: 1.3 $
+ * Revision           $Revision: 1.4 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-12-05 17:02:06 $
- *               by   $Author: davidwithers $
+ * Last modified on   $Date: 2006-12-11 15:14:24 $
+ *               by   $Author: sowen70 $
  * Created on 28 Nov 2006
  *****************************************************************/
 package net.sf.taverna.update.plugin;
@@ -44,8 +44,7 @@ import org.jdom.Element;
  */
 public class PluginSite {
 	private String name;
-
-	private URL url;
+	private URL url;	
 
 	/**
 	 * Constructs an instance of PluginSite.
@@ -56,7 +55,7 @@ public class PluginSite {
 	public PluginSite(String name, URL url) {
 		this.name = name;
 		this.url = url;
-	}
+	}	
 
 	/**
 	 * Returns the name.

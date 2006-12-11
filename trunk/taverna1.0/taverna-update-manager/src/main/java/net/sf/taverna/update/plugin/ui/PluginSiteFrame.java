@@ -25,15 +25,16 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: PluginSiteFrame.java,v $
- * Revision           $Revision: 1.5 $
+ * Revision           $Revision: 1.6 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-12-08 17:34:28 $
+ * Last modified on   $Date: 2006-12-11 15:14:24 $
  *               by   $Author: sowen70 $
  * Created on 29 Nov 2006
  *****************************************************************/
 package net.sf.taverna.update.plugin.ui;
 
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Frame;
 import java.awt.GridBagConstraints;
@@ -41,6 +42,8 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -53,15 +56,21 @@ import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
+import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
 import javax.swing.JProgressBar;
 import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
 import javax.swing.border.EtchedBorder;
 
 import net.sf.taverna.update.plugin.Plugin;
 import net.sf.taverna.update.plugin.PluginManager;
 import net.sf.taverna.update.plugin.PluginSite;
+
+import org.embl.ebi.escience.scuflui.TavernaIcons;
+import org.embl.ebi.escience.scuflui.shared.ShadedLabel;
 
 /**
  * 
@@ -143,7 +152,7 @@ public class PluginSiteFrame extends JDialog {
 		jContentPane.setLayout(new GridBagLayout());
 		jContentPane.add(getJScrollPane(), gridBagConstraints12);
 		jContentPane.add(getInstallButton(), gridBagConstraints);
-		jContentPane.add(getCancelButton(), gridBagConstraints1);
+		jContentPane.add(getCloseButton(), gridBagConstraints1);
 		jContentPane.add(getAddPluginSiteButton(), gridBagConstraints14);
 		return jContentPane;
 	}
@@ -155,7 +164,7 @@ public class PluginSiteFrame extends JDialog {
 	 */
 	private JScrollPane getJScrollPane() {
 		scrollPane = new JScrollPane();		
-		scrollPane.setViewportView(getJPanel());
+		scrollPane.setViewportView(getJPanel());		
 		return scrollPane;
 	}
 
@@ -183,7 +192,7 @@ public class PluginSiteFrame extends JDialog {
 		gridBagConstraints.gridx = 0;
 		gridBagConstraints.gridy = GridBagConstraints.RELATIVE;
 		gridBagConstraints.weighty = 1.0;
-		jPanel.add(new JPanel(), gridBagConstraints);
+		jPanel.add(new JPanel(), gridBagConstraints);		
 		return jPanel;
 	}
 
@@ -201,9 +210,8 @@ public class PluginSiteFrame extends JDialog {
 		gridBagConstraints.ipadx = 5;
 		gridBagConstraints.ipady = 5;
 		gridBagConstraints.weightx = 1.0;
-		JLabel siteNameLabel = new JLabel(pluginSite.getName());
-		siteNameLabel.setBackground(Color.LIGHT_GRAY);
-		siteNameLabel.setOpaque(true);
+		ShadedLabel siteNameLabel = getSiteLabel(pluginSite);
+		
 		pluginSitePanel.add(siteNameLabel, gridBagConstraints);
 
 		final GridBagConstraints gridBagConstraints1 = new GridBagConstraints();
@@ -246,15 +254,14 @@ public class PluginSiteFrame extends JDialog {
 							pluginSitePanel.add(getJCheckBox(plugin),
 									gridBagConstraints1);
 							
-							//gridY++;
+							gridY++;
 							
-							GridBagConstraints gridBagConstraintsDescription = new GridBagConstraints();
-							//gridBagConstraintsDescription.gridwidth = 2;
-							gridBagConstraintsDescription.gridx = 1;
+							GridBagConstraints gridBagConstraintsDescription = new GridBagConstraints();							
+							gridBagConstraintsDescription.gridx = 0;
 							gridBagConstraintsDescription.ipadx = 50;
 							gridBagConstraintsDescription.gridy = gridY;							
 							gridBagConstraintsDescription.anchor = GridBagConstraints.WEST;
-							gridBagConstraintsDescription.insets = new Insets(5, 5, 0, 0);
+							gridBagConstraintsDescription.insets = new Insets(5, 25, 10, 5);							
 
 							gridY++;
 
@@ -263,16 +270,20 @@ public class PluginSiteFrame extends JDialog {
 							gridBagConstraintsProgress.gridy = gridY;							
 							gridBagConstraintsProgress.fill = GridBagConstraints.HORIZONTAL;
 							gridBagConstraintsProgress.anchor = GridBagConstraints.WEST;
-							gridBagConstraintsProgress.insets = new Insets(5, 5, 0, 0);
-
+							gridBagConstraintsProgress.insets = new Insets(5, 5, 0, 0);							
+							
+							JLabel description = new JLabel();							
+							description.setText("<html>"+plugin.getDescription());														
+							description.setFont(getFont().deriveFont(Font.PLAIN));
+							pluginSitePanel.add(description,gridBagConstraintsDescription);
+							
 							PluginRepositoryListener progress = new PluginRepositoryListener();
 							listeners.put(plugin, progress);
 							progress.setVisible(false);
-							JLabel description = new JLabel(plugin.getDescription());							
-							description.setFont(getFont().deriveFont(Font.PLAIN));
-							pluginSitePanel.add(description,gridBagConstraintsDescription);
+							
 							pluginSitePanel.add(progress.getProgressBar(),
 									gridBagConstraintsProgress);
+														
 						}
 					} else {
 						pluginSitePanel.remove(progressBar);
@@ -294,6 +305,46 @@ public class PluginSiteFrame extends JDialog {
 
 		pluginSitePanel.setBorder(new EtchedBorder());		
 		return pluginSitePanel;
+	}
+	
+	private ShadedLabel getSiteLabel(final PluginSite pluginSite) {
+		ShadedLabel result = new ShadedLabel(pluginSite.getName(),Color.LIGHT_GRAY);
+		
+		//add popup remove option, except on the Taverna main plugin site.
+		if (!pluginSite.getUrl().toString().equals(pluginManager.getTavernaPluginSite())) {
+			result.addMouseListener(new MouseAdapter() {
+				@Override
+				public void mouseClicked(MouseEvent e) {
+					popup(e);
+				}
+				
+				@Override
+				public void mousePressed(MouseEvent e) {
+					popup(e);
+				}
+				
+				private void popup(MouseEvent e) {				
+					if (e.isPopupTrigger()) {									
+						JPopupMenu menu=new JPopupMenu();						
+						JMenuItem item = new JMenuItem("Remove site",TavernaIcons.deleteIcon);
+						menu.add(item);
+						menu.show(e.getComponent(), e.getX(), e.getY());
+						item.addActionListener(new ActionListener() {
+	
+							public void actionPerformed(ActionEvent e) {
+								int response=JOptionPane.showConfirmDialog(PluginSiteFrame.this, "Are you sure you want to remove the plugin site:"+pluginSite.getName(),"Remove plugin site",JOptionPane.YES_NO_OPTION);
+								if (response==JOptionPane.YES_OPTION) {
+									pluginManager.removePluginSite(pluginSite);
+									pluginManager.savePluginSites();
+									scrollPane.setViewportView(getJPanel());
+								}
+							}						
+						});
+					}
+				}			
+			});
+		}
+		return result;
 	}
 
 	/**
@@ -386,10 +437,10 @@ public class PluginSiteFrame extends JDialog {
 	 * 
 	 * @return javax.swing.JButton
 	 */
-	private JButton getCancelButton() {
+	private JButton getCloseButton() {
 		if (cancelButton == null) {
 			cancelButton = new JButton();
-			cancelButton.setText("Cancel");
+			cancelButton.setText("Close");
 			cancelButton.addActionListener(new ActionListener() {
 				public void actionPerformed(java.awt.event.ActionEvent e) {
 					setVisible(false);
@@ -420,6 +471,8 @@ public class PluginSiteFrame extends JDialog {
 						PluginSite site = new PluginSite(addSiteFrame.getName(), new URL(addSiteFrame.getUrl()));
 						pluginManager.addPluginSite(site);
 						pluginManager.savePluginSites();
+						
+						//refresh
 						scrollPane.setViewportView(getJPanel());
 						addSiteFrame=null; //so that the name and url are reset.
 					}

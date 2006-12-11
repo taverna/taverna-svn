@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: AddPluginSiteFrame.java,v $
- * Revision           $Revision: 1.1 $
+ * Revision           $Revision: 1.2 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-12-08 16:41:46 $
+ * Last modified on   $Date: 2006-12-11 15:14:24 $
  *               by   $Author: sowen70 $
  * Created on 8 Dec 2006
  *****************************************************************/
@@ -90,7 +90,7 @@ public class AddPluginSiteFrame extends JDialog {
 			GridBagConstraints gridBagContraintHeading = new GridBagConstraints();
 			gridBagContraintHeading.ipadx = 10;
 			gridBagContraintHeading.ipady = 5;	
-			gridBagContraintHeading.gridx = 1;
+			gridBagContraintHeading.gridx = 0;
 			gridBagContraintHeading.gridy = 0;	        
 	        gridBagContraintHeading.gridwidth = 2;
 	        gridBagContraintHeading.anchor = GridBagConstraints.CENTER;
@@ -213,13 +213,12 @@ public class AddPluginSiteFrame extends JDialog {
 	public String getUrl() {
 		if (url!=null) url=url.trim();
 		return url;
-	}
-    
-       
+	}	
 
 }  //  @jve:decl-index=0:visual-constraint="73,21"
 
 
+@SuppressWarnings("serial")
 class ButtonPanel extends JPanel {
     public ButtonPanel(JButton ok, JButton cancel) {
         super(new GridBagLayout());
