@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: PluginSiteFrame.java,v $
- * Revision           $Revision: 1.6 $
+ * Revision           $Revision: 1.7 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-12-11 15:14:24 $
+ * Last modified on   $Date: 2006-12-11 15:33:31 $
  *               by   $Author: sowen70 $
  * Created on 29 Nov 2006
  *****************************************************************/
@@ -282,19 +282,18 @@ public class PluginSiteFrame extends JDialog {
 							progress.setVisible(false);
 							
 							pluginSitePanel.add(progress.getProgressBar(),
-									gridBagConstraintsProgress);
-														
+									gridBagConstraintsProgress);													
 						}
 					} else {
 						pluginSitePanel.remove(progressBar);
 						pluginSitePanel.add(new JLabel(
-								"Plugin site contains no new plugins"),
+								"This plugin site contains no new plugins"),
 								gridBagConstraints1);
 					}
 				} catch (Exception e) {
 					pluginSitePanel.remove(progressBar);
 					pluginSitePanel.add(new JLabel(
-							"Unable to contact plugin site"),
+							"Unable to contact the plugin site"),
 							gridBagConstraints1);
 				} finally {
 					pluginSitePanel.revalidate();

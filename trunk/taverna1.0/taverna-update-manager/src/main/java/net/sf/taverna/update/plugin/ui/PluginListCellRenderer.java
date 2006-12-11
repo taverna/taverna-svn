@@ -25,10 +25,10 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: PluginListCellRenderer.java,v $
- * Revision           $Revision: 1.1 $
+ * Revision           $Revision: 1.2 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-12-05 12:24:28 $
- *               by   $Author: davidwithers $
+ * Last modified on   $Date: 2006-12-11 15:33:31 $
+ *               by   $Author: sowen70 $
  * Created on 28 Nov 2006
  *****************************************************************/
 package net.sf.taverna.update.plugin.ui;
@@ -156,7 +156,7 @@ public class PluginListCellRenderer extends JPanel implements ListCellRenderer {
 			Plugin plugin = (Plugin) value;
 			name.setText(plugin.getName());
 			version.setText(plugin.getVersion());
-			description.setText(plugin.getDescription());
+			description.setText("<html>"+plugin.getDescription());
 			if (pluginManager.isUpdateAvailable(plugin)) {
 				status.setText("An update is available for this plugin");
 			} else if (!plugin.isEnabled()) {
