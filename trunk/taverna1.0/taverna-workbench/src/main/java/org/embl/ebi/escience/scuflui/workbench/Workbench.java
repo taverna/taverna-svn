@@ -154,8 +154,10 @@ public class Workbench extends JFrame {
 			for (URL remoteRepository : Bootstrap.remoteRepositories) {
 				repository.addRemoteRepository(remoteRepository);
 			}
-		}
+		}		
 		
+		PluginManager.setRepository(repository);
+		PluginManager.getInstance();
 		TavernaSPIRegistry.setRepository(repository);
 
 		basePane
@@ -167,9 +169,7 @@ public class Workbench extends JFrame {
 				
 		// Force a new workflow instance to start off with
 		createWorkflow();
-		
-		PluginManager.setRepository(repository);
-		PluginManager.getInstance();
+				
 	}
 
 	private void setLookAndFeel() {
