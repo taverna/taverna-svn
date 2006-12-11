@@ -2,6 +2,7 @@ package net.sf.taverna.raven.spi;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.lang.reflect.TypeVariable;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -143,9 +144,9 @@ public class InstanceRegistry <IType> implements Iterable<IType>, RegistryListen
 		// Iterate over any remaining entries in the classes List
 		// and attempt to construct new instances from them.
 		for (Class c : classes) {
-			try {
+			try {											
 				Constructor con = c.getConstructor(cArgTypes);
-				IType newInstance = (IType) con.newInstance(cArgs);
+				IType newInstance = (IType) con.newInstance(cArgs);				
 				temp.add(newInstance);
 				changed = true;
 			} catch (SecurityException e) {
@@ -159,7 +160,17 @@ public class InstanceRegistry <IType> implements Iterable<IType>, RegistryListen
 			} catch (IllegalAccessException e) {
 				logger.warn("Could not instantiate " + c, e);
 			} catch (InvocationTargetException e) {
-				logger.warn("Could not instantiate " + c, e);
+				try {	
+					//try as a Singleton
+					Method m = c.getMethod("getInstance", new Class[]{});
+					IType newInstance = (IType) m.invoke(null, new Object[]{});
+					temp.add(newInstance);					
+					changed=true;
+				}
+				catch(Exception e2) {
+					logger.warn("Could not instantiate (either through constructor or as a singleton:"+c,e.getCause());
+				}
+								
 			} catch (ClassCastException e) {
 				TypeVariable spi = getClass().getTypeParameters()[0];
 				logger.error("Declared as implementation of the SPI " + spi.getName()
@@ -171,7 +182,7 @@ public class InstanceRegistry <IType> implements Iterable<IType>, RegistryListen
 			notifyListeners();
 		}
 		
-	}
+	}	
 
 	/**
 	 * Add a new registry listener to be notified of any updates to
