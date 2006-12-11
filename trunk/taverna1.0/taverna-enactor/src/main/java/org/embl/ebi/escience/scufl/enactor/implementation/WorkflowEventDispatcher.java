@@ -8,6 +8,9 @@ package org.embl.ebi.escience.scufl.enactor.implementation;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.sf.taverna.raven.spi.RegistryListener;
+import net.sf.taverna.raven.spi.SpiRegistry;
+
 import org.apache.log4j.Logger;
 import org.embl.ebi.escience.scufl.enactor.WorkflowEventListener;
 import org.embl.ebi.escience.scufl.enactor.event.CollectionConstructionEvent;
@@ -33,6 +36,8 @@ import org.embl.ebi.escience.scufl.enactor.event.WorkflowToBeDestroyedEvent;
  * @author Tom Oinn
  */
 public class WorkflowEventDispatcher {
+	
+	private static List<WorkflowEventListener> spiListeners=new ArrayList<WorkflowEventListener>();
 
     private static final Logger logger = Logger
             .getLogger(WorkflowEventDispatcher.class);
@@ -61,14 +66,37 @@ public class WorkflowEventDispatcher {
 	 */
 	public WorkflowEventDispatcher(boolean loadFromSPI) {
 		if (loadFromSPI) {
-			List<WorkflowEventListener> listenersFromSPI = WorkflowEventListenerRegistry
-					.getInstance().getWorkflowEventListeners();
-			for (WorkflowEventListener listener : listenersFromSPI) {
-				addListener(listener);
-			}
+			addEventListenersFromSPI();
+			WorkflowEventListenerRegistry.getInstance().addRegistryListener(new RegistryListener() {
+				public void spiRegistryUpdated(SpiRegistry registry) {
+					addEventListenersFromSPI();					
+				}				
+			});			
 		}
 		// FIXME: No way to kill notification thread
 		this.notificationThread = new NotifyThread();
+	}
+
+	private void addEventListenersFromSPI() {
+		List<WorkflowEventListener> listenersFromSPI = WorkflowEventListenerRegistry
+				.getInstance().getWorkflowEventListeners();
+		
+		//first add any new ones
+		for (WorkflowEventListener listener : listenersFromSPI) {			
+			addListener(listener);			
+			if (!spiListeners.contains(listener)) spiListeners.add(listener);
+		}
+		
+		//then remove any listeners that were previously added but no longer exist - for example, the LogBook plugin has been disabled.		
+		List<WorkflowEventListener> forRemoval = new ArrayList<WorkflowEventListener>();
+		for (WorkflowEventListener oldListener : spiListeners) {
+			if (!listenersFromSPI.contains(oldListener)) {
+				logger.info("Removing workflow listener:"+oldListener);
+				forRemoval.add(oldListener);
+				removeListener(oldListener);
+			}
+		}
+		spiListeners.removeAll(forRemoval);
 	}
 	
 	// Use fireEvent(WorkflowEventListener) instead of these
@@ -132,6 +160,7 @@ public class WorkflowEventDispatcher {
 	public void addListener(WorkflowEventListener listener) {
 		synchronized (listeners) {
 			if (! listeners.contains(listener)) {
+				logger.info("Adding Workflow Listener:"+listener);
 				listeners.add(listener);
 			}
 		}
