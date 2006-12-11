@@ -526,39 +526,50 @@ public class AdvancedModelExplorer extends JPanel implements
 
 		private JPanel makeDescription() {
 			JTextArea description = new JTextArea(wd.getText());
-			JScrollPane descriptionPane = new JScrollPane(description);
+			JScrollPane descriptionPane = new JScrollPane(description);			
+			JPanel descriptionPanel = new JPanel() {
+				public Dimension getMaximumSize() {
+					return new Dimension(99999, 3000);
+				}
+			};
+			descriptionPanel.setBorder(BorderFactory.createTitledBorder(
+					BorderFactory.createEtchedBorder(), "Workflow description"));
+			descriptionPanel.setLayout(new BorderLayout());			
+			
 			descriptionPane.setPreferredSize(new Dimension(100, 100));
-
 			description.setEditable(true);
 			description.setLineWrap(true);
-			description.setWrapStyleWord(true);
-			JPanel descriptionPanel = titledPanel(description,
-					"Workflow description");
+			description.setWrapStyleWord(true);			
+			descriptionPanel.add(descriptionPane);
+			
 			addDocumentListener(description, new MetadataDocListener() {
 				public void setValue(String text) {
 					wd.setText(text);
-
 				}
 			});
+			
 			return descriptionPanel;
 		}
 
 		private JPanel titledPanel(final JComponent field, String title) {
-			JPanel authorPanel = new JPanel() {
+			JPanel panel = new JPanel() {
 				public Dimension getMaximumSize() {
 					if (field instanceof JTextField) {
 						// Avoid enormous JTextField height
 						return new Dimension(99999, 50);
+					}
+					else if (field instanceof JTextArea) {
+						return new Dimension(99999, 3000);
 					} else {
 						return super.getMaximumSize();
 					}
 				}
 			};
-			authorPanel.setBorder(BorderFactory.createTitledBorder(
+			panel.setBorder(BorderFactory.createTitledBorder(
 					BorderFactory.createEtchedBorder(), title));
-			authorPanel.setLayout(new BorderLayout());
-			authorPanel.add(field, BorderLayout.CENTER);
-			return authorPanel;
+			panel.setLayout(new BorderLayout());
+			panel.add(field, BorderLayout.CENTER);
+			return panel;
 		}
 
 		private void addDocumentListener(JTextComponent description,
