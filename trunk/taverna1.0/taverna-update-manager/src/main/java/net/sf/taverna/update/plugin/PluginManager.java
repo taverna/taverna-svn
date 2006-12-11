@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: PluginManager.java,v $
- * Revision           $Revision: 1.11 $
+ * Revision           $Revision: 1.12 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-12-11 15:14:24 $
+ * Last modified on   $Date: 2006-12-11 15:39:12 $
  *               by   $Author: sowen70 $
  * Created on 23 Nov 2006
  *****************************************************************/
@@ -49,7 +49,6 @@ import java.util.List;
 import net.sf.taverna.raven.log.Log;
 import net.sf.taverna.raven.repository.Artifact;
 import net.sf.taverna.raven.repository.Repository;
-import net.sf.taverna.raven.repository.RepositoryListener;
 import net.sf.taverna.raven.spi.Profile;
 import net.sf.taverna.raven.spi.ProfileFactory;
 import net.sf.taverna.tools.Bootstrap;
@@ -463,11 +462,9 @@ public class PluginManager implements PluginListener {
 				}
 				savePlugins();
 			} catch (JDOMException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				logger.error("Error parsing plugins.xml",e);
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				logger.error("Error reading plugins.xml",e);
 			}
 		}
 	}
@@ -490,11 +487,9 @@ public class PluginManager implements PluginListener {
 					pluginSites.add(PluginSite.fromXml(site));
 				}
 			} catch (JDOMException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				logger.error("Error parsing plugin-sites.xml",e);
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				logger.error("Error reading plugin-sites.xml",e);
 			}
 		} else {
 			String updateSite = getTavernaPluginSite();
@@ -505,11 +500,9 @@ public class PluginManager implements PluginListener {
 					pluginSites.add(defaultPluginSite);
 					savePluginSites();
 				} catch (MalformedURLException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					logger.error("Malformed URL for updates site",e);
 				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					logger.error("Error reading from updates site:"+updateSite,e);
 				}
 			}
 		}
