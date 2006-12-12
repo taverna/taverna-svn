@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: AddPluginSiteFrame.java,v $
- * Revision           $Revision: 1.2 $
+ * Revision           $Revision: 1.3 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-12-11 15:14:24 $
+ * Last modified on   $Date: 2006-12-12 09:48:03 $
  *               by   $Author: sowen70 $
  * Created on 8 Dec 2006
  *****************************************************************/
@@ -212,6 +212,7 @@ public class AddPluginSiteFrame extends JDialog {
 
 	public String getUrl() {
 		if (url!=null) url=url.trim();
+		if (!url.endsWith("/")) url+="/";
 		return url;
 	}	
 
