@@ -600,9 +600,9 @@ public class Workbench extends JFrame {
 
 		public WorkbenchMenuBar() {
 			add(file);
-			add(tools);
-			add(advanced);
+			add(tools);			
 			add(workflows);
+			add(advanced);
 		}
 
 		/**
@@ -625,7 +625,7 @@ public class Workbench extends JFrame {
 						int index = getComponentIndex(workflows);
 						workflows = makeWorkflows();
 						remove(index);
-						add(workflows);
+						add(workflows,index);
 						revalidate();
 					} finally {
 						refreshingWorkflowsmenu = false;
@@ -667,17 +667,11 @@ public class Workbench extends JFrame {
 				}
 				
 			}));
-			return menu;
-		}
-
-		JMenu makeAdvanced() {
-			JMenu advancedMenu = new JMenu("Advanced");
-			advancedMenu.add(perspectives.getEditPerspectivesMenu());
-
+			
 			if (System.getProperty("raven.remoteprofile") != null) {
 				JMenuItem checkUpdates = new JMenuItem(
-						"Check for profile updates");
-				advancedMenu.add(checkUpdates);
+						"Check for core Taverna updates");
+				menu.add(checkUpdates);
 
 				checkUpdates.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
@@ -685,6 +679,13 @@ public class Workbench extends JFrame {
 					}
 				});
 			}
+			
+			return menu;
+		}
+
+		JMenu makeAdvanced() {
+			JMenu advancedMenu = new JMenu("Advanced");
+			advancedMenu.add(perspectives.getEditPerspectivesMenu());			
 			return advancedMenu;
 		}
 
