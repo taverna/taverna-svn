@@ -25,18 +25,24 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: BiomartEditor.java,v $
- * Revision           $Revision: 1.3 $
+ * Revision           $Revision: 1.4 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-09-28 16:36:54 $
- *               by   $Author: mereden $
+ * Last modified on   $Date: 2006-12-12 17:53:58 $
+ *               by   $Author: davidwithers $
  * Created on 17-Mar-2006
  *****************************************************************/
 package org.embl.ebi.escience.scuflworkers.biomart;
 
+import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 
+import javax.swing.JFrame;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 
 import org.biomart.martservice.MartServiceException;
 import org.embl.ebi.escience.scufl.Processor;
@@ -56,8 +62,24 @@ public class BiomartEditor implements ProcessorEditor {
 		return new ActionListener() {
 			public void actionPerformed(ActionEvent ae) {
 				try {
-					UIUtils.createFrame(bp.getModel(), new BiomartConfigPanel(
-							bp), 100, 100, 600, 500);
+					final BiomartConfigPanel component = new BiomartConfigPanel(bp);
+
+					JFrame frame = new JFrame(component.getName());
+					frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+					JScrollPane scrollPane = new JScrollPane(component);
+					scrollPane.getVerticalScrollBar().setUnitIncrement(10);
+					frame.getContentPane().add(scrollPane);
+					frame.addWindowListener(new WindowAdapter() {
+						public void windowClosed(WindowEvent e) {
+							component.onDispose();
+						}
+					});
+					if (component.getIcon() != null) {
+						frame.setIconImage(component.getIcon().getImage());
+					}
+					frame.setSize(new Dimension(800, 600));
+					frame.setVisible(true);
+
 				} catch (MartServiceException e) {
 					JOptionPane.showMessageDialog(null,
 							"Unable to create biomart query editor\n"
