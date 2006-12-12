@@ -196,8 +196,7 @@ public class Workbench extends JFrame {
 				logger.info("Using Synthetica Look and Feel");
 			} catch (Exception ex) {
 				try {
-					if (!(System.getProperty("os.name").equals("Linux") && System
-							.getProperty("java.vm.version").startsWith("1.5"))) {
+					if (!(System.getProperty("os.name").equals("Linux"))) {
 						UIManager.setLookAndFeel(UIManager
 								.getSystemLookAndFeelClassName());
 						logger.info("Using "
@@ -391,7 +390,7 @@ public class Workbench extends JFrame {
 		}
 		Properties props = new Properties();
 		try {
-			props.load(size.toURL().openStream());
+			props.load(size.toURI().toURL().openStream());
 			String swidth = props.getProperty("width");
 			String sheight = props.getProperty("height");
 			String sx = props.getProperty("x");
