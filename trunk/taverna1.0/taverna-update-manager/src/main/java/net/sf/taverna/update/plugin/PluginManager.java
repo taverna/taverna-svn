@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: PluginManager.java,v $
- * Revision           $Revision: 1.12 $
+ * Revision           $Revision: 1.13 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-12-11 15:39:12 $
+ * Last modified on   $Date: 2006-12-12 15:20:53 $
  *               by   $Author: sowen70 $
  * Created on 23 Nov 2006
  *****************************************************************/
@@ -238,7 +238,8 @@ public class PluginManager implements PluginListener {
 	public void savePluginSites() {		
 		Element pluginSitesElement = new Element("pluginSites");
 		for (PluginSite pluginSite : pluginSites) {
-			pluginSitesElement.addContent(pluginSite.toXml());
+			if (!(pluginSite instanceof TavernaPluginSite))
+				pluginSitesElement.addContent(pluginSite.toXml());
 		}
 		File pluginSitesFile = new File(pluginsDir, "plugin-sites.xml");
 		try {
@@ -277,15 +278,18 @@ public class PluginManager implements PluginListener {
 					.getChildren("plugin");
 			for (Element plugin : pluginList) {
 				URI pluginUri = new URI(plugin.getTextTrim());
-				pluginUri = pluginSite.getUrl().toURI().resolve(pluginUri);
-				HttpMethod getPlugin = new GetMethod(pluginUri.toString());
-				statusCode = client.executeMethod(getPlugin);
-				if (statusCode != HttpStatus.SC_OK) {
-					// log
+				URL pluginURL=pluginSite.getUrl();
+				if (pluginURL!=null) {
+					pluginUri = pluginURL.toURI().resolve(pluginUri);
+					HttpMethod getPlugin = new GetMethod(pluginUri.toString());
+					statusCode = client.executeMethod(getPlugin);
+					if (statusCode != HttpStatus.SC_OK) {
+						// log
+					}
+					Document pluginDocument = new SAXBuilder().build(getPlugin
+							.getResponseBodyAsStream());
+					plugins.add(Plugin.fromXml(pluginDocument.getRootElement()));
 				}
-				Document pluginDocument = new SAXBuilder().build(getPlugin
-						.getResponseBodyAsStream());
-				plugins.add(Plugin.fromXml(pluginDocument.getRootElement()));
 			}
 		} catch (JDOMException e) {
 			logger.error("Error parsing xml: "+e.getMessage());
@@ -469,14 +473,38 @@ public class PluginManager implements PluginListener {
 		}
 	}
 
-	public String getTavernaPluginSite() {
-		String result= Bootstrap.properties
+	public String[] getTavernaPluginSites() {
+		String sites= Bootstrap.properties
 		.getProperty("raven.pluginsite");
-		if (result!=null) result=result.trim();
-		return result;
+		String [] sitelist = sites.split(",");
+		for (int i=0;i<sitelist.length;i++) {
+			if (sitelist[i]!=null) sitelist[i]=sitelist[i].trim();
+			if (!sitelist[i].endsWith("/")) sitelist[i]+="/";
+		}
+		return sitelist;
 	}
 	
 	private void initializePluginSites() {
+		String [] updateSites = getTavernaPluginSites();
+		if (updateSites != null && updateSites.length>0) {			
+			
+				List<URL> urls = new ArrayList<URL>();
+				for (String updateSite : updateSites) {
+					try {
+						URL url = new URL(updateSite);
+						urls.add(url);
+					}
+					catch(MalformedURLException e) {
+						logger.error("Error with taverna plugin site URL: "+updateSite,e);
+					}					
+				}
+				TavernaPluginSite defaultPluginSite = new TavernaPluginSite(
+						"Taverna Plugin Update Site", urls.toArray(new URL[]{}));
+								
+				pluginSites.add(defaultPluginSite);				
+			
+		}
+		
 		File pluginSitesFile = new File(pluginsDir, "plugin-sites.xml");
 		if (pluginSitesFile.exists()) {
 			try {
@@ -491,21 +519,7 @@ public class PluginManager implements PluginListener {
 			} catch (IOException e) {
 				logger.error("Error reading plugin-sites.xml",e);
 			}
-		} else {
-			String updateSite = getTavernaPluginSite();
-			if (updateSite != null) {
-				try {
-					PluginSite defaultPluginSite = new PluginSite(
-							"Taverna Plugin Update Site", new URL(updateSite));
-					pluginSites.add(defaultPluginSite);
-					savePluginSites();
-				} catch (MalformedURLException e) {
-					logger.error("Malformed URL for updates site",e);
-				} catch (IOException e) {
-					logger.error("Error reading from updates site:"+updateSite,e);
-				}
-			}
-		}
+		}					
 	}
 
 	private void sortPlugins() {

@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: RavenProperties.java,v $
- * Revision           $Revision: 1.3 $
+ * Revision           $Revision: 1.4 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-12-05 13:08:42 $
+ * Last modified on   $Date: 2006-12-12 15:20:52 $
  *               by   $Author: sowen70 $
  * Created on 23 Nov 2006
  *****************************************************************/
@@ -99,6 +99,7 @@ public class RavenProperties extends Properties {
 				load(propUrl.openStream());
 				found = true;
 				source = RavenPropertiesSource.REMOTE;
+				break;
 			} catch (Exception e) {
 				e.printStackTrace();
 			}

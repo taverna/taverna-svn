@@ -25,16 +25,15 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: PluginSiteFrame.java,v $
- * Revision           $Revision: 1.7 $
+ * Revision           $Revision: 1.8 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-12-11 15:33:31 $
+ * Last modified on   $Date: 2006-12-12 15:20:52 $
  *               by   $Author: sowen70 $
  * Created on 29 Nov 2006
  *****************************************************************/
 package net.sf.taverna.update.plugin.ui;
 
 import java.awt.Color;
-import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Frame;
 import java.awt.GridBagConstraints;
@@ -46,6 +45,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -62,12 +62,12 @@ import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JProgressBar;
 import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
 import javax.swing.border.EtchedBorder;
 
 import net.sf.taverna.update.plugin.Plugin;
 import net.sf.taverna.update.plugin.PluginManager;
 import net.sf.taverna.update.plugin.PluginSite;
+import net.sf.taverna.update.plugin.TavernaPluginSite;
 
 import org.embl.ebi.escience.scuflui.TavernaIcons;
 import org.embl.ebi.escience.scuflui.shared.ShadedLabel;
@@ -307,10 +307,10 @@ public class PluginSiteFrame extends JDialog {
 	}
 	
 	private ShadedLabel getSiteLabel(final PluginSite pluginSite) {
-		ShadedLabel result = new ShadedLabel(pluginSite.getName(),Color.LIGHT_GRAY);
+		ShadedLabel result = new ShadedLabel(pluginSite.getName(),Color.LIGHT_GRAY);		
 		
 		//add popup remove option, except on the Taverna main plugin site.
-		if (!pluginSite.getUrl().toString().equals(pluginManager.getTavernaPluginSite())) {
+		if (!(pluginSite instanceof TavernaPluginSite)) {
 			result.addMouseListener(new MouseAdapter() {
 				@Override
 				public void mouseClicked(MouseEvent e) {

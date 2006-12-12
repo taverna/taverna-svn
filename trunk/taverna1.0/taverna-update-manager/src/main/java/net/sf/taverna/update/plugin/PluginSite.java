@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: PluginSite.java,v $
- * Revision           $Revision: 1.4 $
+ * Revision           $Revision: 1.5 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-12-11 15:14:24 $
+ * Last modified on   $Date: 2006-12-12 15:20:53 $
  *               by   $Author: sowen70 $
  * Created on 28 Nov 2006
  *****************************************************************/
@@ -35,6 +35,8 @@ package net.sf.taverna.update.plugin;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.jdom.Element;
 
@@ -44,7 +46,7 @@ import org.jdom.Element;
  */
 public class PluginSite {
 	private String name;
-	private URL url;	
+	private URL url;		
 
 	/**
 	 * Constructs an instance of PluginSite.
@@ -73,7 +75,7 @@ public class PluginSite {
 	 */
 	public URL getUrl() {
 		return url;
-	}
+	}	
 	
 	/**
 	 * Creates a <code>PluginSite</code> from an XML element.
