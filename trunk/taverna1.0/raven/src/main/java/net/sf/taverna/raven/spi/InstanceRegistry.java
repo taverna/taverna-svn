@@ -168,7 +168,7 @@ public class InstanceRegistry <IType> implements Iterable<IType>, RegistryListen
 					changed=true;
 				}
 				catch(Exception e2) {
-					logger.warn("Could not instantiate (either through constructor or as a singleton:"+c,e.getCause());
+					logger.warn("Could not instantiate (either through constructor or as a singleton):"+c,e.getCause());
 				}
 								
 			} catch (ClassCastException e) {
