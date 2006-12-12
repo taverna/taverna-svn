@@ -25,22 +25,25 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: BiomartConfigPanel.java,v $
- * Revision           $Revision: 1.4 $
+ * Revision           $Revision: 1.5 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-09-28 16:36:54 $
- *               by   $Author: mereden $
+ * Last modified on   $Date: 2006-12-12 17:54:44 $
+ *               by   $Author: davidwithers $
  * Created on 17-Mar-2006
  *****************************************************************/
 package org.embl.ebi.escience.scuflworkers.biomart;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.io.File;
 
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+
+import net.sf.taverna.utils.MyGridConfiguration;
 
 import org.biomart.martservice.MartDataset;
 import org.biomart.martservice.MartQuery;
@@ -49,7 +52,6 @@ import org.biomart.martservice.MartServiceException;
 import org.biomart.martservice.config.QueryConfigController;
 import org.biomart.martservice.config.ui.MartServiceQueryConfigUIFactory;
 import org.biomart.martservice.config.ui.QueryConfigUIFactory;
-import org.embl.ebi.escience.scufl.ScuflModel;
 import org.embl.ebi.escience.scuflui.spi.UIComponentSPI;
 import org.embl.ebi.escience.scuflworkers.ProcessorHelper;
 
@@ -74,6 +76,7 @@ public class BiomartConfigPanel extends JPanel implements UIComponentSPI {
 		MartQuery martQuery = biomartProcessor.getQuery();
 		MartDataset dataset = martQuery.getMartDataset();
 		MartService martService = martQuery.getMartService();
+		martService.setCacheDirectory(new File(MyGridConfiguration.getUserDir("taverna-biomart-processor"), "cache"));
 		QueryConfigController controller = new QueryConfigController(martQuery);
 
 		setLayout(new BorderLayout());
@@ -118,7 +121,7 @@ public class BiomartConfigPanel extends JPanel implements UIComponentSPI {
 			scrollPane.getVerticalScrollBar().setUnitIncrement(10);
 			frame.getContentPane().add(scrollPane, BorderLayout.CENTER);
 			frame.pack();
-			frame.setSize(new Dimension(600, 800));
+			frame.setSize(new Dimension(800, 600));
 			frame.setVisible(true);
 		} catch (MartServiceException e) {
 			JOptionPane.showMessageDialog(null,
