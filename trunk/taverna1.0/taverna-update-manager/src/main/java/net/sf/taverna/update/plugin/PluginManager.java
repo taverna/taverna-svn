@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: PluginManager.java,v $
- * Revision           $Revision: 1.14 $
+ * Revision           $Revision: 1.15 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-12-13 13:12:50 $
+ * Last modified on   $Date: 2006-12-13 16:25:45 $
  *               by   $Author: sowen70 $
  * Created on 23 Nov 2006
  *****************************************************************/
@@ -45,6 +45,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
+import java.util.Map.Entry;
 
 import net.sf.taverna.raven.log.Log;
 import net.sf.taverna.raven.repository.Artifact;
@@ -74,7 +77,8 @@ import org.jdom.output.XMLOutputter;
  * @author David Withers
  */
 public class PluginManager implements PluginListener {
-	private static Log logger = Log.getLogger(Profile.class);
+	
+	private static Log logger = Log.getLogger(PluginListener.class);
 
 	private static PluginManager instance;
 
@@ -477,37 +481,53 @@ public class PluginManager implements PluginListener {
 		}
 	}
 
-	public String[] getTavernaPluginSites() {
-		String sites= Bootstrap.properties
-		.getProperty("raven.pluginsite");
-		String [] sitelist = sites.split(",");
-		for (int i=0;i<sitelist.length;i++) {
-			if (sitelist[i]!=null) sitelist[i]=sitelist[i].trim();
-			if (!sitelist[i].endsWith("/")) sitelist[i]+="/";
+	public List<TavernaPluginSite> getTavernaPluginSites() {
+		List<TavernaPluginSite> result = new ArrayList<TavernaPluginSite>();
+		String prefix="raven.pluginsite.";
+		Map<Integer,String> pluginSiteMap = new TreeMap<Integer,String>(); //tree map will do the sorting for us
+		for (Entry prop : Bootstrap.properties.entrySet()) {
+			String propertyName=(String)prop.getKey();
+			if (propertyName.startsWith(prefix) && !propertyName.endsWith("name")) {		
+				try {
+					Integer index=new Integer(propertyName.replace(prefix,""));
+					pluginSiteMap.put(index, (String)prop.getValue());
+				}
+				catch(NumberFormatException e) {
+					logger.error("Error with index for property: "+propertyName);
+				}								
+			}
 		}
-		return sitelist;
+		
+		//create a list of URL objects from the comma seperated list of alternatives for each site		
+		for (Integer siteIndex : pluginSiteMap.keySet()) {
+			String siteList = pluginSiteMap.get(siteIndex);
+			String nameKey=prefix+siteIndex+".name";
+			String name=(String)Bootstrap.properties.get(nameKey);
+			if (name==null) name="Taverna Plugin Update Site";
+			
+			List<URL> urls = new ArrayList<URL>();
+			logger.info("Adding plugin sitelist: "+siteList);
+			String [] siteUrls = siteList.split(",");
+			for (String siteUrl : siteUrls) {
+				siteUrl=siteUrl.trim();
+				if (!siteUrl.endsWith("/")) siteUrl+="/";
+				try {
+					URL url = new URL(siteUrl);
+					urls.add(url);
+				}
+				catch(MalformedURLException e) {
+					logger.error("Malformed URL for plugin site (or mirror):"+siteUrl);
+				}
+			}
+			if (urls.size()>0) {
+				result.add(new TavernaPluginSite(name,urls.toArray(new URL[]{})));
+			}
+		}
+		return result;
 	}
 	
 	private void initializePluginSites() {
-		String [] updateSites = getTavernaPluginSites();
-		if (updateSites != null && updateSites.length>0) {			
-			
-				List<URL> urls = new ArrayList<URL>();
-				for (String updateSite : updateSites) {
-					try {
-						URL url = new URL(updateSite);
-						urls.add(url);
-					}
-					catch(MalformedURLException e) {
-						logger.error("Error with taverna plugin site URL: "+updateSite,e);
-					}					
-				}
-				TavernaPluginSite defaultPluginSite = new TavernaPluginSite(
-						"Taverna Plugin Update Site", urls.toArray(new URL[]{}));
-								
-				pluginSites.add(defaultPluginSite);				
-			
-		}
+		pluginSites.addAll(getTavernaPluginSites());
 		
 		File pluginSitesFile = new File(pluginsDir, "plugin-sites.xml");
 		if (pluginSitesFile.exists()) {
@@ -534,6 +554,5 @@ public class PluginManager implements PluginListener {
 			}
 
 		});
-	}
-
+	}	
 }

@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: TavernaPluginSite.java,v $
- * Revision           $Revision: 1.1 $
+ * Revision           $Revision: 1.2 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-12-12 15:20:53 $
+ * Last modified on   $Date: 2006-12-13 16:25:45 $
  *               by   $Author: sowen70 $
  * Created on 12 Dec 2006
  *****************************************************************/
@@ -54,7 +54,7 @@ import org.apache.log4j.Logger;
 public class TavernaPluginSite extends PluginSite {
 	
 	private static Logger logger = Logger.getLogger(TavernaPluginSite.class);
-	private static URL workingURL = null;
+	private URL workingURL = null;
 	
 	private List<URL> urls;
 	
@@ -69,7 +69,11 @@ public class TavernaPluginSite extends PluginSite {
 	 * If a working url is found then this url is stored an returned for subsequent calls.
 	 */	
 	public URL getUrl() {		
-		if (workingURL!=null) return workingURL;
+		if (workingURL!=null) {
+			if (logger.isDebugEnabled())
+				logger.debug("Using known working URL:"+workingURL +" from list: "+urls);
+			return workingURL;
+		}
 		URL pluginsURL=null;
 		for (URL url : urls) {
 			try {
@@ -84,7 +88,7 @@ public class TavernaPluginSite extends PluginSite {
 				logger.warn("Unable opening stream to "+pluginsURL+", will use next mirror");
 			}
 		}
-		logger.error("Unable to connect to Taverna plugin site.");
+		logger.warn("Unable to connect to Taverna plugin site. None of the candidate URLs worked:"+urls);
 		return null;
 	}
 	

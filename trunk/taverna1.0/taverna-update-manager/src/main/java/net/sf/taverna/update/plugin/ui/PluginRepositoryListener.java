@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: PluginRepositoryListener.java,v $
- * Revision           $Revision: 1.2 $
+ * Revision           $Revision: 1.3 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-12-08 17:34:28 $
+ * Last modified on   $Date: 2006-12-13 16:25:45 $
  *               by   $Author: sowen70 $
  * Created on 7 Dec 2006
  *****************************************************************/
@@ -87,9 +87,7 @@ public class PluginRepositoryListener implements
 							return;
 						}
 						int progress = Math.min(100, (dls.getReadBytes() * 100)
-								/ dls.getTotalBytes());
-						if (logger.isDebugEnabled())
-							logger.debug("Download progress :" + progress);
+								/ dls.getTotalBytes());						
 						setProgress(progress);
 						if (dls.isFinished()) {
 							return;
