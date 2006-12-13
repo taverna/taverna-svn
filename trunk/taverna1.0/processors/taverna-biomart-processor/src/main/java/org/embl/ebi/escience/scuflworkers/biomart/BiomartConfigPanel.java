@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: BiomartConfigPanel.java,v $
- * Revision           $Revision: 1.5 $
+ * Revision           $Revision: 1.6 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-12-12 17:54:44 $
+ * Last modified on   $Date: 2006-12-13 17:49:18 $
  *               by   $Author: davidwithers $
  * Created on 17-Mar-2006
  *****************************************************************/
@@ -65,41 +65,45 @@ public class BiomartConfigPanel extends JPanel implements UIComponentSPI {
 	private BiomartProcessor biomartProcessor;
 
 	/**
-     * Creates a component for configuring a Biomart query.
-     * 
-     * @param biomartProcessor
-     * @throws MartServiceException
-     */
+	 * Creates a component for configuring a Biomart query.
+	 * 
+	 * @param biomartProcessor
+	 * @throws MartServiceException
+	 */
 	public BiomartConfigPanel(BiomartProcessor biomartProcessor)
 			throws MartServiceException {
 		this.biomartProcessor = biomartProcessor;
 		MartQuery martQuery = biomartProcessor.getQuery();
 		MartDataset dataset = martQuery.getMartDataset();
 		MartService martService = martQuery.getMartService();
-		martService.setCacheDirectory(new File(MyGridConfiguration.getUserDir("taverna-biomart-processor"), "cache"));
+		martService.setRequestId("taverna");
+		martService.setCacheDirectory(new File(MyGridConfiguration
+				.getUserDir("taverna-biomart-processor"), "cache"));
 		QueryConfigController controller = new QueryConfigController(martQuery);
-
-		setLayout(new BorderLayout());
 
 		QueryConfigUIFactory queryConfigUIFactory;
 		queryConfigUIFactory = new MartServiceQueryConfigUIFactory(martService,
 				controller, dataset);
-		add(queryConfigUIFactory.getDatasetConfigUI(), BorderLayout.NORTH);
+		setLayout(new BorderLayout());
+		add(queryConfigUIFactory.getDatasetConfigUI(), BorderLayout.CENTER);
 	}
 
 	/**
-     * For testing the martservice without the workbench
-     * 
-     * @param args
-     */
+	 * For testing the martservice without the workbench
+	 * 
+	 * @param args
+	 */
 	public static void main(String[] args) {
 		try {
-			MartService martService = MartService.getMartService(
-					"http://www.biomart.org/biomart/martservice");
+			MartService martService = MartService
+					.getMartService("http://www.biomart.org/biomart/martservice");
+//			MartService martService = MartService
+//			.getMartService("http://www.wormbase.org/biomart/martservice");
 			MartDataset dataset = null;
 			MartDataset[] datasets = martService.getDatasets();
 			for (int i = 0; i < datasets.length; i++) {
 				if (datasets[i].getName().equals("hsapiens_gene_ensembl")) {
+//			    if (datasets[i].getName().equals("paper")) {
 					dataset = datasets[i];
 					break;
 				}
@@ -111,15 +115,9 @@ public class BiomartConfigPanel extends JPanel implements UIComponentSPI {
 			QueryConfigUIFactory queryConfigUIFactory = new MartServiceQueryConfigUIFactory(
 					martService, controller, dataset);
 
-			JPanel panel = new JPanel(new BorderLayout());
-			panel.add(queryConfigUIFactory.getDatasetConfigUI(),
-					BorderLayout.NORTH);
-
 			JFrame frame = new JFrame("test");
 			frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-			JScrollPane scrollPane = new JScrollPane(panel);
-			scrollPane.getVerticalScrollBar().setUnitIncrement(10);
-			frame.getContentPane().add(scrollPane, BorderLayout.CENTER);
+			frame.getContentPane().add(queryConfigUIFactory.getDatasetConfigUI());
 			frame.pack();
 			frame.setSize(new Dimension(800, 600));
 			frame.setVisible(true);
@@ -132,17 +130,18 @@ public class BiomartConfigPanel extends JPanel implements UIComponentSPI {
 	}
 
 	/*
-     * (non-Javadoc)
-     * 
-     * @see org.embl.ebi.escience.scuflui.ScuflUIComponent#getIcon()
-     */
+	 * (non-Javadoc)
+	 * 
+	 * @see org.embl.ebi.escience.scuflui.ScuflUIComponent#getIcon()
+	 */
 	public ImageIcon getIcon() {
 		return ProcessorHelper.getPreferredIcon(biomartProcessor);
 	}
 
 	public String getName() {
 		try {
-			return biomartProcessor.getQuery().getMartDataset().getDisplayName();
+			return biomartProcessor.getQuery().getMartDataset()
+					.getDisplayName();
 		} catch (NullPointerException ex) {
 			return "Unconfigured Biomart processor";
 		}
@@ -150,12 +149,12 @@ public class BiomartConfigPanel extends JPanel implements UIComponentSPI {
 
 	public void onDisplay() {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	public void onDispose() {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 }
