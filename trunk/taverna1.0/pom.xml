@@ -140,40 +140,10 @@
           <artifactId>tools</artifactId>
           <version>1.4.2</version>
           <scope>system</scope>
-          <systemPath>${java.home}/../lib/tools.jar</systemPath>
+          <systemPath>C:/j2sdk1.4.2_08/lib/tools.jar</systemPath>
         </dependency>
       </dependencies>
-    </profile>
-    <profile>
-      <id>provenance</id>
-      <activation>
-        <property>
-          <name>provenance</name>
-        </property>
-      </activation>
-      <build>
-        <plugins>
-          <plugin>
-            <artifactId>maven-antrun-plugin</artifactId>
-            <executions>
-              <execution>
-                <id>provenance</id>
-                <phase>generate-resources</phase>
-                <goals>
-                  <goal>run</goal>
-                </goals>
-                <configuration>
-                  <tasks>
-                    <get usetimestamp="yes" src="http://twiki.mygrid.org.uk/twiki/pub/Mygrid/TavernaProvenancePlugin/provenance-1.0_02-bin.zip" dest="${project.build.directory}/provenance.zip"></get>
-                    <unzip src="${project.build.directory}/provenance.zip" dest="${project.build.directory}/provenance"></unzip>
-                  </tasks>
-                </configuration>
-              </execution>
-            </executions>
-          </plugin>
-        </plugins>
-      </build>
-    </profile>
+    </profile>    
     <profile>
       <id>omii-assembly</id>
       <activation>
