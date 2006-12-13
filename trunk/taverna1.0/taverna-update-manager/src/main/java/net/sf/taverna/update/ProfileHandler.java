@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: ProfileHandler.java,v $
- * Revision           $Revision: 1.2 $
+ * Revision           $Revision: 1.3 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-11-24 12:03:29 $
+ * Last modified on   $Date: 2006-12-13 11:20:51 $
  *               by   $Author: sowen70 $
  * Created on 25 Oct 2006
  *****************************************************************/
@@ -61,7 +61,7 @@ public class ProfileHandler {
 		this.remoteProfile=new Profile(remoteProfileURL.toURI().toURL().openStream(),true);
 		init();
 	}
-	
+		
 	public boolean isNewVersionAvailable() {
 		return newVersionAvailable;
 	}

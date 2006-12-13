@@ -25,12 +25,14 @@ import java.util.Set;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
+import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 import javax.swing.JToolBar;
 import javax.swing.UIManager;
@@ -48,6 +50,7 @@ import net.sf.taverna.tools.Bootstrap;
 import net.sf.taverna.update.ProfileHandler;
 import net.sf.taverna.update.plugin.PluginManager;
 import net.sf.taverna.update.plugin.ui.PluginManagerFrame;
+import net.sf.taverna.update.plugin.ui.UpdatesAvailableIcon;
 import net.sf.taverna.utils.MyGridConfiguration;
 import net.sf.taverna.zaria.ZBasePane;
 import net.sf.taverna.zaria.ZRavenComponent;
@@ -254,13 +257,18 @@ public class Workbench extends JFrame {
 
 	public void setUI() {
 		JToolBar toolBar = new JToolBar();
+		JPanel toolBarPanel = new JPanel();
+		toolBarPanel.setLayout(new BorderLayout());
+		
+		toolBarPanel.add(toolBar,BorderLayout.WEST);
+		toolBarPanel.add(new UpdatesAvailableIcon(),BorderLayout.EAST);
 
 		perspectives = new WorkbenchPerspectives(basePane, toolBar);
 		modelmap.addModelListener(perspectives.getModelChangeListener());
 		perspectives.initialisePerspectives();
 
 		getContentPane().setLayout(new BorderLayout());
-		getContentPane().add(toolBar, BorderLayout.PAGE_START);
+		getContentPane().add(toolBarPanel, BorderLayout.PAGE_START);
 		getContentPane().add(basePane, BorderLayout.CENTER);
 
 		menuBar = new WorkbenchMenuBar();
@@ -326,15 +334,15 @@ public class Workbench extends JFrame {
 		}
 		try {
 			handler.updateLocalProfile();
+			JOptionPane.showMessageDialog(this,
+					"Your updates will be applied when you restart Taverna",
+					"Restart required", JOptionPane.INFORMATION_MESSAGE);
 		} catch (Exception e) {
 			logger.error("Error updating local profile", e);
 			JOptionPane.showMessageDialog(this,
 					"Updating your profile failed, try again later.",
 					"Error updating profile", JOptionPane.WARNING_MESSAGE);
-		}
-		JOptionPane.showMessageDialog(this,
-				"Your updates will be applied when you restart Taverna",
-				"Restart required", JOptionPane.INFORMATION_MESSAGE);
+		}		
 	}
 
 	/**
