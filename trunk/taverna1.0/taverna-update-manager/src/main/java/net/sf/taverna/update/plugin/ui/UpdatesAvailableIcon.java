@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: UpdatesAvailableIcon.java,v $
- * Revision           $Revision: 1.2 $
+ * Revision           $Revision: 1.3 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-12-13 11:25:08 $
+ * Last modified on   $Date: 2006-12-13 13:12:49 $
  *               by   $Author: sowen70 $
  * Created on 12 Dec 2006
  *****************************************************************/
@@ -80,7 +80,8 @@ public class UpdatesAvailableIcon extends JLabel implements PluginManagerListene
 	
 
 	public void pluginAdded(PluginManagerEvent event) {
-		checkForUpdates();		
+		logger.info("Plugin Added");
+		if (!isVisible()) checkForUpdates();		
 	}
 
 	public void pluginChanged(PluginManagerEvent event) {
@@ -88,7 +89,8 @@ public class UpdatesAvailableIcon extends JLabel implements PluginManagerListene
 	}
 
 	public void pluginRemoved(PluginManagerEvent event) {
-				
+		logger.info("Plugin Removed ");
+		if (isVisible()) checkForUpdates();
 	}
 	
 	private void startCheckThread() {
@@ -114,6 +116,7 @@ public class UpdatesAvailableIcon extends JLabel implements PluginManagerListene
 	private synchronized void checkForUpdates() {		
 		
 		if (profileUpdatesAvailable()) {
+			logger.info("Profile update available");
 			setToolTipText("A core taverna update is available");
 			setIcon(TavernaIcons.updateRecommendedIcon);			
 			setVisible(true);
@@ -124,6 +127,7 @@ public class UpdatesAvailableIcon extends JLabel implements PluginManagerListene
 		}
 		
 		if (pluginUpdateAvailable()) {
+			logger.info("Plugin update available");
 			setToolTipText("A plugin update is available");
 			setVisible(true);
 			setIcon(TavernaIcons.updateIcon);
@@ -138,8 +142,8 @@ public class UpdatesAvailableIcon extends JLabel implements PluginManagerListene
 				
 	}
 	
-	private boolean pluginUpdateAvailable() {		
-		return PluginManager.getInstance().checkForUpdates();
+	private boolean pluginUpdateAvailable() {			
+		return PluginManager.getInstance().checkForUpdates();						
 	}
 	
 	private String getRemoteProfile() {

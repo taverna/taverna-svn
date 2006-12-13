@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: PluginManager.java,v $
- * Revision           $Revision: 1.13 $
+ * Revision           $Revision: 1.14 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-12-12 15:20:53 $
+ * Last modified on   $Date: 2006-12-13 13:12:50 $
  *               by   $Author: sowen70 $
  * Created on 23 Nov 2006
  *****************************************************************/
@@ -152,20 +152,23 @@ public class PluginManager implements PluginListener {
 			if (plugin.isEnabled()) {
 				enablePlugin(plugin);
 			}
-			firePluginAddedEvent(new PluginManagerEvent(this, plugin));
+			firePluginAddedEvent(new PluginManagerEvent(this, plugin,plugins.indexOf(plugin)));
 			plugin.addPluginListener(this);
 		}
 	}
 
 	public void removePlugin(Plugin plugin) {
+		if (updatedPlugins.contains(plugin)) updatedPlugins.remove(plugin);
+		
 		if (plugins.contains(plugin)) {
 			if (plugin.isEnabled()) {
 				disablePlugin(plugin);
 			}
-			firePluginRemovedEvent(new PluginManagerEvent(this, plugin));
+			int index=plugins.indexOf(plugin);
 			plugins.remove(plugin);
+			firePluginRemovedEvent(new PluginManagerEvent(this, plugin,index));										
 			plugin.removePluginListener(this);
-		}
+		}		
 	}
 
 	private void enablePlugin(Plugin plugin) {
@@ -351,8 +354,9 @@ public class PluginManager implements PluginListener {
 			synchronized (updatedPlugins) {
 				Plugin newPlugin = getUpdate(plugin);
 				updatedPlugins.remove(newPlugin);
+				newPlugin.setEnabled(plugin.isEnabled());
 				removePlugin(plugin);
-				addPlugin(newPlugin);
+				addPlugin(newPlugin);								
 				savePlugins();
 			}
 		}
@@ -386,7 +390,7 @@ public class PluginManager implements PluginListener {
 							updatedPlugins.remove(index);
 							updatedPlugins.add(plugin);
 							firePluginChangedEvent(new PluginManagerEvent(this,
-									plugin));
+									plugin,plugins.indexOf(plugin)));
 						}
 					} else {
 						int index = plugins.indexOf(plugin);
@@ -394,7 +398,7 @@ public class PluginManager implements PluginListener {
 						if (updatedPlugin.compareVersion(plugin) < 0) {
 							updatedPlugins.add(plugin);
 							firePluginChangedEvent(new PluginManagerEvent(this,
-									plugin));
+									plugin,plugins.indexOf(plugin)));
 						}
 					}
 				}
@@ -436,7 +440,7 @@ public class PluginManager implements PluginListener {
 	protected void firePluginChangedEvent(PluginManagerEvent event) {
 		synchronized (pluginManagerListeners) {
 			for (PluginManagerListener listener : pluginManagerListeners) {
-				listener.pluginRemoved(event);
+				listener.pluginChanged(event);
 			}
 		}
 	}
@@ -450,7 +454,7 @@ public class PluginManager implements PluginListener {
 		} else if (event.getAction() == PluginEvent.DISABLED) {
 			disablePlugin(event.getPlugin());
 		}
-		firePluginChangedEvent(new PluginManagerEvent(event, event.getPlugin()));
+		firePluginChangedEvent(new PluginManagerEvent(event, event.getPlugin(),plugins.indexOf(event.getPlugin())));
 	}
 
 	private void initializePlugins() {

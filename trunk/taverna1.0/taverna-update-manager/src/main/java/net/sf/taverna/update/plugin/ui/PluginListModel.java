@@ -25,10 +25,10 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: PluginListModel.java,v $
- * Revision           $Revision: 1.1 $
+ * Revision           $Revision: 1.2 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-12-05 12:24:28 $
- *               by   $Author: davidwithers $
+ * Last modified on   $Date: 2006-12-13 13:12:50 $
+ *               by   $Author: sowen70 $
  * Created on 28 Nov 2006
  *****************************************************************/
 package net.sf.taverna.update.plugin.ui;
@@ -65,19 +65,16 @@ public class PluginListModel extends AbstractListModel implements PluginManagerL
 		return pluginManager.getPlugins().size();
 	}
 	
-	public void pluginAdded(PluginManagerEvent event) {
-		int index = pluginManager.getPlugins().indexOf(event.getPlugin());
-		fireIntervalAdded(this, index, index);
+	public void pluginAdded(PluginManagerEvent event) {		
+		fireIntervalAdded(this, event.getPluginIndex(), event.getPluginIndex());
 	}
 
-	public void pluginRemoved(PluginManagerEvent event) {
-		int index = pluginManager.getPlugins().indexOf(event.getPlugin());
-		fireIntervalRemoved(this, index, index);
+	public void pluginRemoved(PluginManagerEvent event) {		
+		fireIntervalRemoved(this, event.getPluginIndex(), event.getPluginIndex());
 	}
 
-	public void pluginChanged(PluginManagerEvent event) {
-		int index = pluginManager.getPlugins().indexOf(event.getPlugin());
-		fireContentsChanged(this, index, index);
+	public void pluginChanged(PluginManagerEvent event) {		
+		fireContentsChanged(this, event.getPluginIndex(), event.getPluginIndex());
 	}
 	
 }

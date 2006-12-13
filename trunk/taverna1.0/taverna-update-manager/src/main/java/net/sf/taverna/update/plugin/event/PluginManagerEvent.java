@@ -25,10 +25,10 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: PluginManagerEvent.java,v $
- * Revision           $Revision: 1.2 $
+ * Revision           $Revision: 1.3 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-12-05 17:02:05 $
- *               by   $Author: davidwithers $
+ * Last modified on   $Date: 2006-12-13 13:12:50 $
+ *               by   $Author: sowen70 $
  * Created on 30 Nov 2006
  *****************************************************************/
 package net.sf.taverna.update.plugin.event;
@@ -46,16 +46,19 @@ public class PluginManagerEvent extends EventObject {
 	private static final long serialVersionUID = 1L;
 
 	private Plugin plugin;
+	private int index;
 	
 	/**
 	 * Constructs an instance of PluginManagerEvent.
 	 *
 	 * @param source
 	 * @param plugin
+	 * @param pluginIndex - the index of the plugin in the managers list of plugins
 	 */
-	public PluginManagerEvent(Object source, Plugin plugin) {
+	public PluginManagerEvent(Object source, Plugin plugin, int pluginIndex) {
 		super(source);
 		this.plugin = plugin;
+		this.index = pluginIndex;
 	}
 
 	/**
@@ -66,5 +69,12 @@ public class PluginManagerEvent extends EventObject {
 	public Plugin getPlugin() {
 		return plugin;
 	}
-	
+
+	/**
+	 * 
+	 * @return the index of the plugin in the plugin managers internal list
+	 */
+	public int getPluginIndex() {
+		return index;
+	}	
 }
