@@ -258,7 +258,8 @@ public class Workbench extends JFrame {
 	public void setUI() {
 		JToolBar toolBar = new JToolBar();
 		JPanel toolBarPanel = new JPanel();
-		toolBarPanel.setLayout(new BorderLayout());
+		toolBarPanel.setLayout(new BorderLayout());	
+		toolBar.setFloatable(false);
 		
 		toolBarPanel.add(toolBar,BorderLayout.WEST);
 		toolBarPanel.add(new UpdatesAvailableIcon(),BorderLayout.EAST);
