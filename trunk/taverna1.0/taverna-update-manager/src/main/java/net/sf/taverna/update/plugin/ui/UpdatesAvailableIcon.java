@@ -25,14 +25,15 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: UpdatesAvailableIcon.java,v $
- * Revision           $Revision: 1.1 $
+ * Revision           $Revision: 1.2 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-12-13 11:20:49 $
+ * Last modified on   $Date: 2006-12-13 11:25:08 $
  *               by   $Author: sowen70 $
  * Created on 12 Dec 2006
  *****************************************************************/
 package net.sf.taverna.update.plugin.ui;
 
+import java.awt.Component;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.Arrays;
@@ -160,21 +161,24 @@ public class UpdatesAvailableIcon extends JLabel implements PluginManagerListene
 	private final class UpdateProfileMouseAdaptor extends MouseAdapter {
 		@Override
 		public void mouseClicked(MouseEvent e) {
-			int confirmation = JOptionPane.showConfirmDialog(UpdatesAvailableIcon.this.getParent(),
+			//FIXME: this assumes the button is on the toolbar.
+			Component parent=UpdatesAvailableIcon.this.getParent().getParent();
+			
+			int confirmation = JOptionPane.showConfirmDialog(parent,
 					"New updates are available to the Taverna core, update now?",
 					"New updates available", JOptionPane.YES_NO_OPTION);
 			if (confirmation == JOptionPane.YES_OPTION) {
 										
 				try {
 					new ProfileHandler(getRemoteProfile()).updateLocalProfile();
-					JOptionPane.showMessageDialog(UpdatesAvailableIcon.this,
+					JOptionPane.showMessageDialog(parent,
 							"Your updates will be applied when you restart Taverna",
 							"Restart required", JOptionPane.INFORMATION_MESSAGE);
 					profileUpdated=true;
 					checkForUpdates();
 				} catch (Exception ex) {
 					logger.error("Error updating local profile", ex);
-					JOptionPane.showMessageDialog(UpdatesAvailableIcon.this,
+					JOptionPane.showMessageDialog(parent,
 							"Updating your profile failed, try again later.",
 							"Error updating profile", JOptionPane.WARNING_MESSAGE);
 				}
@@ -188,8 +192,11 @@ public class UpdatesAvailableIcon extends JLabel implements PluginManagerListene
 
 		@Override
 		public void mouseClicked(MouseEvent e) {
+//			FIXME: this assumes the button is on the toolbar.
+			Component parent=UpdatesAvailableIcon.this.getParent().getParent();
+			
 			final PluginManagerFrame pluginManagerUI = new PluginManagerFrame(PluginManager.getInstance());
-			pluginManagerUI.setLocationRelativeTo(UpdatesAvailableIcon.this.getParent());
+			pluginManagerUI.setLocationRelativeTo(parent);
 			pluginManagerUI.setVisible(true);						
 		}
 		
