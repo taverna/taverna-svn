@@ -140,7 +140,7 @@
           <artifactId>tools</artifactId>
           <version>1.4.2</version>
           <scope>system</scope>
-          <systemPath>C:/j2sdk1.4.2_08/lib/tools.jar</systemPath>
+          <systemPath>${java.home}/../lib/tools.jar</systemPath>
         </dependency>
       </dependencies>
     </profile>    
