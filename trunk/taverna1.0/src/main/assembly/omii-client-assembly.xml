@@ -4,6 +4,7 @@
     <format>dir</format>
   </formats>
   <includeBaseDirectory>false</includeBaseDirectory>
+  <includeSiteDirectory>true</includeSiteDirectory>
   <fileSets>
     <fileSet>
       <directory>src/main/resources/workbench</directory>
