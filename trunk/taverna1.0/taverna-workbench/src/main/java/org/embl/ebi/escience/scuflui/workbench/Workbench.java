@@ -25,6 +25,7 @@ import java.util.Set;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
+import javax.swing.Box;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
@@ -590,17 +591,22 @@ public class Workbench extends JFrame {
 	 * current workflow models.
 	 * 
 	 * @author Stian Soiland
+	 * @author Stuart Owen
 	 * 
 	 */
 	public class WorkbenchMenuBar extends JMenuBar {
-
-		JMenu file = makeFile();
 		
-		JMenu tools = makeTools();
+		private final AboutBox aboutBox=new AboutBox();
 
-		JMenu advanced = makeAdvanced();
+		private JMenu file = makeFile();
+		
+		private JMenu tools = makeTools();
 
-		JMenu workflows = makeWorkflows();
+		private JMenu advanced = makeAdvanced();
+
+		private JMenu workflows = makeWorkflows();
+		
+		private JMenu help = makeHelp();
 
 		private boolean refreshingWorkflowsmenu = false;
 
@@ -612,6 +618,8 @@ public class Workbench extends JFrame {
 			add(tools);			
 			add(workflows);
 			add(advanced);
+			add(Box.createHorizontalGlue());
+			add(help);
 		}
 
 		/**
@@ -643,7 +651,7 @@ public class Workbench extends JFrame {
 			}.start();
 		}
 
-		JMenu makeFile() {
+		private JMenu makeFile() {
 			JMenu menu = new JMenu("File");
 			JMenuItem newWorkflow = new JMenuItem(createWorkflowAction());
 			menu.add(newWorkflow);
@@ -664,7 +672,7 @@ public class Workbench extends JFrame {
 			return menu;
 		}
 
-		JMenu makeTools() {
+		private JMenu makeTools() {
 			JMenu menu = new JMenu("Tools");
 
 			menu.add(new JMenuItem(new AbstractAction("Plugin Manager") {
@@ -692,13 +700,13 @@ public class Workbench extends JFrame {
 			return menu;
 		}
 
-		JMenu makeAdvanced() {
+		private JMenu makeAdvanced() {
 			JMenu advancedMenu = new JMenu("Advanced");
 			advancedMenu.add(perspectives.getEditPerspectivesMenu());			
 			return advancedMenu;
 		}
 
-		JMenu makeWorkflows() {
+		private JMenu makeWorkflows() {
 			JMenu menu = new JMenu("Workflows");
 			for (final ScuflModel model : workflowModels.getModels()) {
 				Action selectModel = new AbstractAction() {
@@ -725,6 +733,18 @@ public class Workbench extends JFrame {
 			}
 
 			return menu;
+		}
+		
+		private JMenu makeHelp() {
+			JMenu result = new JMenu("Help");
+			JMenuItem about = new JMenuItem(new AbstractAction("About") {
+				public void actionPerformed(ActionEvent e) {
+					aboutBox.setLocationRelativeTo(Workbench.this);
+					aboutBox.setVisible(true);
+				}				
+			});
+			result.add(about);
+			return result;
 		}
 	}
 

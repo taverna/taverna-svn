@@ -10,6 +10,7 @@ import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.io.IOException;
 
 import javax.swing.ImageIcon;
 import javax.swing.JComponent;
@@ -146,5 +147,116 @@ public class UIUtils {
 		}
 		return parent;		
 	}	
+	
+	/**
+	 * Launches the address in a browser. Currently very crude. On Linux will open in firefox
+	 * and in Windows in IExplorer using an example taken from (http://www.javaworld.com/javaworld/javatips/jw-javatip66.html).
+	 * <br>Ultimately this should be done using BasicService of javaws.jnlp
+	 * e.g. BasicService.showDocument(address), but unable to do this at the moment due to licensing concerns with
+	 * the sun jnlp jar (we are not able to host it in a Maven repository).
+	 * 
+	 * @param address to launch
+	 */
+	public static void launchBrowser(String address) {
+		
+		BrowserControl.displayURL(address);
+	}
+	
+	/**
+	 * A temporary solution until licensing concerns around distributing jnlp with Raven are resolved.
+	 * @author http://www.javaworld.com/javaworld/javatips/jw-javatip66.html
+	 *
+	 */
+	private static class BrowserControl
+	{
+	    /**
+	     * Display a file in the system browser.  If you want to display a
+	     * file, you must include the absolute path name.
+	     *
+	     * @param url the file's url (the url must start with either "http://"
+	or
+	     * "file://").
+	     */
+	    public static void displayURL(String url)
+	    {
+	        boolean windows = isWindowsPlatform();
+	        String cmd = null;
+	        try
+	        {
+	            if (windows)
+	            {
+	                // cmd = 'rundll32 url.dll,FileProtocolHandler http://...'
+	                cmd = WIN_PATH + " " + WIN_FLAG + " " + url;
+	                Process p = Runtime.getRuntime().exec(cmd);
+	            }
+	            else
+	            {
+	                // Under Unix, Netscape has to be running for the "-remote"
+	                // command to work.  So, we try sending the command and
+	                // check for an exit value.  If the exit command is 0,
+	                // it worked, otherwise we need to start the browser.
+	                // cmd = 'netscape -remote openURL(http://www.javaworld.com)'
+	                cmd = UNIX_PATH + " " + UNIX_FLAG + "(" + url + ")";
+	                Process p = Runtime.getRuntime().exec(cmd);
+	                try
+	                {
+	                    // wait for exit code -- if it's 0, command worked,
+	                    // otherwise we need to start the browser up.
+	                    int exitCode = p.waitFor();
+	                    if (exitCode != 0)
+	                    {
+	                        // Command failed, start up the browser
+	                        // cmd = 'netscape http://www.javaworld.com'
+	                        cmd = UNIX_PATH + " "  + url;
+	                        p = Runtime.getRuntime().exec(cmd);
+	                    }
+	                }
+	                catch(InterruptedException x)
+	                {
+	                    System.err.println("Error bringing up browser, cmd='" +
+	                                       cmd + "'");
+	                    System.err.println("Caught: " + x);
+	                }
+	            }
+	        }
+	        catch(IOException x)
+	        {
+	            // couldn't exec browser
+	            System.err.println("Could not invoke browser, command=" + cmd);
+	            System.err.println("Caught: " + x);
+	        }
+	    }
+	    /**
+	     * Try to determine whether this application is running under Windows
+	     * or some other platform by examing the "os.name" property.
+	     *
+	     * @return true if this application is running under a Windows OS
+	     */
+	    public static boolean isWindowsPlatform()
+	    {
+	        String os = System.getProperty("os.name");
+	        if ( os != null && os.startsWith(WIN_ID))
+	            return true;
+	        else
+	            return false;
+	    }
+	    /**
+	     * Simple example.
+	     */
+	    public static void main(String[] args)
+	    {
+	        displayURL("http://www.javaworld.com");
+	    }
+	    // Used to identify the windows platform.
+	    private static final String WIN_ID = "Windows";
+	    // The default system browser under windows.
+	    private static final String WIN_PATH = "rundll32";
+	    // The flag to display a url.
+	    private static final String WIN_FLAG = "url.dll,FileProtocolHandler";
+	    // The default browser under unix.
+	    private static final String UNIX_PATH = "firefox";
+	    // The flag to display a url.
+	    private static final String UNIX_FLAG = "-remote openURL";
+	}
 
 }

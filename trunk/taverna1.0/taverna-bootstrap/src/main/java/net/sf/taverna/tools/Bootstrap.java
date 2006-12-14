@@ -253,7 +253,7 @@ public class Bootstrap {
 		return workbenchClass;
 	}
 
-	private static URL getSplashScreenURL() throws MalformedURLException {
+	public static URL getSplashScreenURL() throws MalformedURLException {
 		return Bootstrap.class.getResource("/" + SPLASHSCREEN);
 	}
 
