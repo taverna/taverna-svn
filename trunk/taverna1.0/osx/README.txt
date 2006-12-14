@@ -42,7 +42,7 @@ means that any fancy option in runme.sh needs to be here, like -Xms300m
 Running java this way avoids any console windows, and makes the running
 Taverna also use the nice icon in the doc.
 
-Replace all "1.5-SNAPSHOT" with the real version number. Update the path
+Replace all "1.5.0" with the real version number. Update the path
 to the taverna-bootstrap-1.5.jar.
 
 

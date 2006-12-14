@@ -12,7 +12,7 @@
       <artifact>feta-client</artifact>      
       <classname>uk.ac.man.cs.img.fetaClient.queryGUI.taverna.TavernaFetaGUIFactory</classname>
       <name>Feta</name>
-      <version>1.1-SNAPSHOT</version>
+      <version>1.1.0</version>
     </namedcomponent>   
   </namedcomponents>
 </basepane>

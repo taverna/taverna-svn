@@ -28,5 +28,5 @@ ARGS="$ARGS -Draven.target.artifactid=baclava-tools "
 ARGS="$ARGS -Draven.target.class=org.embl.ebi.escience.baclava.tools.DataThingViewer "
 ARGS="$ARGS -Draven.target.method=main"
 
-java $ARGS -jar $TAVERNA_HOME/taverna-bootstrap-1.5-SNAPSHOT.jar $@
+java $ARGS -jar $TAVERNA_HOME/taverna-bootstrap-1.5.0.jar $@
 

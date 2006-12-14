@@ -3,13 +3,13 @@
   <parent>
     <artifactId>processors</artifactId>
     <groupId>uk.org.mygrid.taverna</groupId>
-    <version>1.5-SNAPSHOT</version>
+    <version>1.5.0</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>uk.org.mygrid.taverna.processors</groupId>
   <artifactId>taverna-biomart-processor</artifactId>
   <name>BioMart Processor</name>
-  <version>1.5-SNAPSHOT</version>
+  <version>1.5.0</version>
   <dependencies>
     <dependency>
       <groupId>uk.org.mygrid.taverna</groupId>
@@ -39,7 +39,7 @@
     <dependency>
       <groupId>org.biomart</groupId>
       <artifactId>martservice</artifactId>
-      <version>0.5.0-SNAPSHOT</version>
+      <version>0.5.0</version>
     </dependency>
     <dependency>
       <groupId>jdom</groupId>

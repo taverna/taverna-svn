@@ -3,13 +3,13 @@
   <parent>
     <artifactId>taverna</artifactId>
     <groupId>uk.org.mygrid.taverna</groupId>
-    <version>1.5-SNAPSHOT</version>
+    <version>1.5.0</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>uk.org.mygrid.taverna</groupId>
   <artifactId>taverna-scavenger-ui</artifactId>
   <name>Taverna Scavenger UI</name>
-  <version>1.5-SNAPSHOT</version>
+  <version>1.5.0</version>
   <dependencies>
     <dependency>
       <groupId>uk.org.mygrid.taverna</groupId>
