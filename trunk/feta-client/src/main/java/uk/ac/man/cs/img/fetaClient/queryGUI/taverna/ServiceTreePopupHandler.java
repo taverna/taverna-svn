@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: ServiceTreePopupHandler.java,v $
- * Revision           $Revision: 1.2 $
+ * Revision           $Revision: 1.3 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-11-21 15:32:12 $
+ * Last modified on   $Date: 2006-12-14 10:43:24 $
  *               by   $Author: sowen70 $
  * Created on 21 Nov 2006
  *****************************************************************/
@@ -67,6 +67,14 @@ public class ServiceTreePopupHandler extends MouseAdapter {
 		this.theTree=theTree;
 	}
 		
+	
+	@Override
+	public void mouseReleased(MouseEvent e) {
+		if (e.isPopupTrigger()) {
+			doEvent(e);
+		}
+	}
+
 	/**
 	 * Handle the mouse pressed event in case this is the platform specific
 	 * trigger for a popup menu
