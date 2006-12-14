@@ -12,7 +12,9 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import javax.swing.BorderFactory;
@@ -104,7 +106,7 @@ public class EnactorInvocation extends JPanel implements UIComponentSPI {
 
 	public javax.swing.ImageIcon getIcon() {
 		return TavernaIcons.windowRun;
-	}
+	}	
 
 	// private TavernaWorkflowEnactor theEnactor;
 	private ScuflModel theModel;
@@ -183,12 +185,11 @@ public class EnactorInvocation extends JPanel implements UIComponentSPI {
 			resultsText.setText("No results available : " + ie.toString());
 		}
 	}
-
-	// todo: should this be public? We only call it here.
+	
 	/**
 	 * Show the results in the text area.
 	 */
-	public void showResults() {
+	private void showResults() {
 		ensureGotResults();
 		toolbar.removeAll();
 		// Show the results		
@@ -228,10 +229,15 @@ public class EnactorInvocation extends JPanel implements UIComponentSPI {
 		
 		closeAction.addActionListener(new ActionListener() {
 
-			public void actionPerformed(ActionEvent e) {	
-				int r=JOptionPane.showConfirmDialog(EnactorInvocation.this, "Are you sure you wish to close this workflow run?","Close workflow run?",JOptionPane.YES_NO_OPTION);
-				if (r==JOptionPane.YES_OPTION) {
-					ModelMap.getInstance().setModel(workflowInstance.getID(), null);
+			public void actionPerformed(ActionEvent e) {
+				if (runningWorkflows.size()!=0) {
+					JOptionPane.showMessageDialog(EnactorInvocation.this, "Sorry, unable to close whilst other workflows are running","Unable to close results",JOptionPane.OK_OPTION);
+				}
+				else {
+					int r=JOptionPane.showConfirmDialog(EnactorInvocation.this, "Are you sure you wish to close this workflow run?","Close workflow run?",JOptionPane.YES_NO_OPTION);
+					if (r==JOptionPane.YES_OPTION) {
+						ModelMap.getInstance().setModel(workflowInstance.getID(), null);
+					}
 				}
 			}
 			
@@ -587,9 +593,18 @@ public class EnactorInvocation extends JPanel implements UIComponentSPI {
 	}
 
 	/**
+	 * Used to keep track of running workflows, workflowInstances are added to this list when they start to run, and
+	 * are removed when they are complete.
+	 */
+	//FIXME: is there an existing way of tracking the number of running workflows?
+	private static List<WorkflowInstance> runningWorkflows = new ArrayList<WorkflowInstance>();
+	
+	/**
 	 * Workflow run and poll
 	 */
 	class EnactorInvocationStatusThread extends Thread {
+		
+		
 
 		boolean running = true;
 
@@ -628,6 +643,7 @@ public class EnactorInvocation extends JPanel implements UIComponentSPI {
 
 		public void run() {
 			// TODO - Run the workflow
+			runningWorkflows.add(theEnactorInvocation.getWorkflowInstance());
 			while (running) {
 				// TODO - Poll and update the status display
 				// fixed the tight loop that was hanging the display when
@@ -708,6 +724,7 @@ public class EnactorInvocation extends JPanel implements UIComponentSPI {
 					running = false;
 				}
 			}
+			runningWorkflows.remove(theEnactorInvocation.getWorkflowInstance());
 			// If we're here then either the enactor has finished or
 			// the workflow has been aborted intentionally
 			if (abort) {
