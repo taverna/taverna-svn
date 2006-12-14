@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <s:scufl xmlns:s="http://org.embl.ebi.escience/xscufl/0.1alpha" version="0.2" log="0">
-  <s:workflowdescription lsid="urn:lsid:taverna1.0.kubrick.mrl.nott.ac.uk:wfDefinition:48253abbb" author="" title="" />
+  <s:workflowdescription lsid="urn:lsid:taverna1.0.kubrick.mrl.nott.ac.uk:wfDefinition:48253abbb" author="" title="Replace LSID example" />
   <s:processor name="Beanshell_scripting_host">
     <s:beanshell>
       <s:scriptvalue>output = input;
