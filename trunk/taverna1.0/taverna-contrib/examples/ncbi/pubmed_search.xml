@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <s:scufl xmlns:s="http://org.embl.ebi.escience/xscufl/0.1alpha" version="0.2" log="0">
-  <s:workflowdescription lsid="urn:lsid:www.mygrid.org.uk:operation:MA9EEB84DP2" author="" title="" />
+  <s:workflowdescription lsid="urn:lsid:www.mygrid.org.uk:operation:MA9EEB84DP2" author="" title="PubMed Search test" />
   <s:processor name="terms">
     <s:stringconstant>brca2</s:stringconstant>
   </s:processor>
