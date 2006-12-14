@@ -318,8 +318,8 @@ public class Bootstrap {
 			//test if the URL exists, with a short timeout
 			result = new URL(repository,loc);
 			URLConnection con = result.openConnection();
-			con.setConnectTimeout(2000);
-			con.setReadTimeout(2000);			
+			con.setConnectTimeout(5000);
+			con.setReadTimeout(5000);			
 			con.getInputStream();						
 		}
 		catch(IOException e) {
@@ -328,7 +328,7 @@ public class Bootstrap {
 			try {
 				URL metadata=new URL(repository, path+"/maven-metadata.xml");
 				URLConnection con=metadata.openConnection();
-				con.setConnectTimeout(2000);				
+				con.setConnectTimeout(5000);				
 				Document doc=DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(con.getInputStream());				
 				//generate file = <artifact>-<version>-<timestamp>-<buildnumber>.jar
 				NodeList timestamps=doc.getElementsByTagName("timestamp");
@@ -351,8 +351,8 @@ public class Bootstrap {
 						
 						//test that snapshot file exists.
 						con = snapshot.openConnection();
-						con.setConnectTimeout(2000);
-						con.setReadTimeout(2000);						
+						con.setConnectTimeout(5000);
+						con.setReadTimeout(5000);						
 						con.getInputStream();										
 						result=snapshot;
 					}

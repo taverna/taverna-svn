@@ -490,7 +490,7 @@ public class LocalRepository implements Repository {
 					
 					try {						
 						URLConnection connection = pomLocation.openConnection();						
-						connection.setConnectTimeout(2000);						
+						connection.setConnectTimeout(10000);						
 						connection.connect();						
 						int length = connection.getContentLength();
 						dlstatus.put(a, new DownloadStatusImpl(length));						
@@ -571,7 +571,7 @@ public class LocalRepository implements Repository {
 				
 				//test for the file, with a short timeout
 				URLConnection con = new URL(repository,repositoryDir+"/"+filename).openConnection();
-				con.setConnectTimeout(2000); 
+				con.setConnectTimeout(10000); 
 				result=con.getInputStream();
 				
 				logger.info("Returning snapshot stream to "+new URL(repository,repositoryDir+"/"+filename));

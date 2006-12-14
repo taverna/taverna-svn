@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: RavenProperties.java,v $
- * Revision           $Revision: 1.4 $
+ * Revision           $Revision: 1.5 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-12-12 15:20:52 $
+ * Last modified on   $Date: 2006-12-14 18:18:06 $
  *               by   $Author: sowen70 $
  * Created on 23 Nov 2006
  *****************************************************************/
@@ -94,8 +94,8 @@ public class RavenProperties extends Properties {
 				URL propUrl = new URL(location);
 				URLConnection con=propUrl.openConnection();
 				
-				//give it a 3 second timeout so that the user isn't left hanging around if the server is down.
-				con.setConnectTimeout(3000);				
+				//give it a 5 second timeout so that the user isn't left hanging around if the server is down.
+				con.setConnectTimeout(5000);				
 				load(propUrl.openStream());
 				found = true;
 				source = RavenPropertiesSource.REMOTE;

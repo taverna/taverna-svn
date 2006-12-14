@@ -86,7 +86,7 @@ public class WSDLBasedScavenger extends URLBasedScavenger {
 			
 			//test for connection timeout
 			URLConnection con = url.openConnection();
-			con.setConnectTimeout(1000);
+			con.setConnectTimeout(4000);
 			con.getInputStream();
 			
 		} catch (MalformedURLException e) {
