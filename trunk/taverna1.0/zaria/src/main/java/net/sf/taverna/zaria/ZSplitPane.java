@@ -217,21 +217,22 @@ public class ZSplitPane extends ZPane {
 		return children;
 	}
 
-	public void swap(ZTreeNode oldComponent, ZTreeNode newComponent) {
-		// Store the old divider location, we don't want this to change
+	public void swap(ZTreeNode oldComponent, ZTreeNode newComponent) {		
+//		 Store the old divider location, we don't want this to change
 		int location = splitPane.getDividerLocation();
 		oldComponent.discard();
-		splitPane.remove((Component) oldComponent);
 		if (getRightComponent().equals(oldComponent)) {
-			// Swap the right component			
+			// Swap the right component
+			splitPane.remove((Component) oldComponent);
 			splitPane.setRightComponent((Component) newComponent);
 		} else if (getLeftComponent().equals(oldComponent)) {
-			// Swap the left component			
+			// Swap the left component
+			splitPane.remove((Component) oldComponent);
 			splitPane.setLeftComponent((Component) newComponent);
 		}
 		newComponent.setEditable(this.editable);
 		splitPane.setDividerLocation(location);
-		revalidate();
+		revalidate();		
 	}
 
 	public void discard() {		
