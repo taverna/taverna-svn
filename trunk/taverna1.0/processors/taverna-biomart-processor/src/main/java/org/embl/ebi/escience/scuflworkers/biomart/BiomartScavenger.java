@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: BiomartScavenger.java,v $
- * Revision           $Revision: 1.3 $
+ * Revision           $Revision: 1.4 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-09-14 11:02:30 $
+ * Last modified on   $Date: 2006-12-14 14:10:36 $
  *               by   $Author: davidwithers $
  * Created on 17-Mar-2006
  *****************************************************************/
@@ -85,7 +85,7 @@ public class BiomartScavenger extends Scavenger {
 					for (int j = 0; j < datasets.length; j++) {
 						if (datasets[j].isVisible()) {
 							MartQuery biomartQuery = new MartQuery(martService,
-									datasets[j]);
+									datasets[j], "taverna");
 							BiomartProcessorFactory bpf = new BiomartProcessorFactory(
 									biomartQuery);
 							adaptorNode.add(new DefaultMutableTreeNode(bpf));

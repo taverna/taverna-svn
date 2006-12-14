@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: BiomartEditor.java,v $
- * Revision           $Revision: 1.5 $
+ * Revision           $Revision: 1.6 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-12-13 17:49:18 $
+ * Last modified on   $Date: 2006-12-14 14:10:36 $
  *               by   $Author: davidwithers $
  * Created on 17-Mar-2006
  *****************************************************************/
@@ -66,9 +66,6 @@ public class BiomartEditor implements ProcessorEditor {
 
 					JFrame frame = new JFrame(component.getName());
 					frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-//					JScrollPane scrollPane = new JScrollPane(component);
-//					scrollPane.getVerticalScrollBar().setUnitIncrement(10);
-//					frame.getContentPane().add(scrollPane);
 					frame.getContentPane().add(component);
 					frame.addWindowListener(new WindowAdapter() {
 						public void windowClosed(WindowEvent e) {

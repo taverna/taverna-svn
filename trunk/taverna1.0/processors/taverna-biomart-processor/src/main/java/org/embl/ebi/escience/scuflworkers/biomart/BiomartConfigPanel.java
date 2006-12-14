@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: BiomartConfigPanel.java,v $
- * Revision           $Revision: 1.6 $
+ * Revision           $Revision: 1.7 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-12-13 17:49:18 $
+ * Last modified on   $Date: 2006-12-14 14:10:36 $
  *               by   $Author: davidwithers $
  * Created on 17-Mar-2006
  *****************************************************************/
@@ -97,19 +97,18 @@ public class BiomartConfigPanel extends JPanel implements UIComponentSPI {
 		try {
 			MartService martService = MartService
 					.getMartService("http://www.biomart.org/biomart/martservice");
-//			MartService martService = MartService
-//			.getMartService("http://www.wormbase.org/biomart/martservice");
+			martService.setCacheDirectory(new File(MyGridConfiguration
+					.getUserDir("taverna-biomart-processor"), "cache"));
 			MartDataset dataset = null;
 			MartDataset[] datasets = martService.getDatasets();
 			for (int i = 0; i < datasets.length; i++) {
 				if (datasets[i].getName().equals("hsapiens_gene_ensembl")) {
-//			    if (datasets[i].getName().equals("paper")) {
 					dataset = datasets[i];
 					break;
 				}
 			}
 
-			MartQuery query = new MartQuery(martService, dataset);
+			MartQuery query = new MartQuery(martService, dataset, "taverna");
 			QueryConfigController controller = new QueryConfigController(query);
 
 			QueryConfigUIFactory queryConfigUIFactory = new MartServiceQueryConfigUIFactory(

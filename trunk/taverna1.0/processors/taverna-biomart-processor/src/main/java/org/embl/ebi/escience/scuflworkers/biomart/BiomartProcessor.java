@@ -25,10 +25,10 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: BiomartProcessor.java,v $
- * Revision           $Revision: 1.2 $
+ * Revision           $Revision: 1.3 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-07-10 14:07:43 $
- *               by   $Author: sowen70 $
+ * Last modified on   $Date: 2006-12-14 14:10:37 $
+ *               by   $Author: davidwithers $
  * Created on 17-Mar-2006
  *****************************************************************/
 package org.embl.ebi.escience.scuflworkers.biomart;
@@ -42,6 +42,7 @@ import java.util.Set;
 
 import org.biomart.martservice.MartQuery;
 import org.biomart.martservice.query.Attribute;
+import org.biomart.martservice.query.Dataset;
 import org.biomart.martservice.query.Filter;
 import org.biomart.martservice.query.QueryListener;
 import org.embl.ebi.escience.scufl.DuplicatePortNameException;
@@ -94,23 +95,23 @@ public class BiomartProcessor extends Processor implements HTMLSummarisableProce
 		// Register a query change listener to trap changes to the query object
 		// and fire them off as minor model events
 		queryListener = new QueryListener() {
-			public void attributeAdded(Attribute attribute) {
+			public void attributeAdded(Attribute attribute, Dataset dataset) {
 				updateOutputs();
 			}
 
-			public void attributeRemoved(Attribute attribute) {
+			public void attributeRemoved(Attribute attribute, Dataset dataset) {
 				updateOutputs();
 			}
 
-			public void filterAdded(Filter filter) {
+			public void filterAdded(Filter filter, Dataset dataset) {
 				updateInputs();
 			}
 
-			public void filterRemoved(Filter filter) {
+			public void filterRemoved(Filter filter, Dataset dataset) {
 				updateInputs();
 			}
 
-			public void filterChanged(Filter filter) {
+			public void filterChanged(Filter filter, Dataset dataset) {
 				pingModel();
 			}
 
