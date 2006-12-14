@@ -2,7 +2,7 @@
 <project name="Taverna">
   <bannerLeft>
     <name>myGrid</name>
-    <src>http://www.omii.ac.uk/images/omii_logo_name.jpg</src>
+    <src>http://www.omii.ac.uk/images/omii_uk_logo_name.jpg</src>
     <href>http://www.omii.ac.uk/</href>
   </bannerLeft>
   <bannerRight>
