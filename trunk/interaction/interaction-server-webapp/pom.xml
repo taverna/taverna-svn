@@ -11,7 +11,7 @@
 	<name>Interaction Server Web Application</name>
 	<packaging>war</packaging>
 	<version>0.4</version>
-
+	
 	<build>
 		<plugins>
 			<plugin>
@@ -59,7 +59,7 @@
 		<dependency>
 			<groupId>uk.org.mygrid.interaction</groupId>
 			<artifactId>interaction-server-plugin</artifactId>
-			<version>0.3</version>
+			<version>0.4</version>
 		</dependency>				
 	</dependencies>
 
