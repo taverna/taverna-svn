@@ -40,9 +40,9 @@
       <artifactId>scufl-ui-api</artifactId>
     </dependency>
     <dependency>
-      <groupId>uk.org.mygrid.resources</groupId>
+      <groupId>biomoby.org</groupId>
       <artifactId>jmoby</artifactId>
-      <version>NO-VERSION</version>
+      <version>1</version>
     </dependency>
     <dependency>
       <groupId>log4j</groupId>
