@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: RavenProperties.java,v $
- * Revision           $Revision: 1.5 $
+ * Revision           $Revision: 1.6 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-12-14 18:18:06 $
+ * Last modified on   $Date: 2006-12-15 10:01:13 $
  *               by   $Author: sowen70 $
  * Created on 23 Nov 2006
  *****************************************************************/
@@ -55,7 +55,7 @@ import java.util.Properties;
 public class RavenProperties extends Properties {
 
 	public enum RavenPropertiesSource {
-		LOCAL, REMOTE, RESOURCE;
+		LOCAL, REMOTE, RESOURCE, USERDEFINED;
 	}
 
 	private RavenPropertiesSource source;
@@ -86,23 +86,39 @@ public class RavenProperties extends Properties {
 		putAll(System.getProperties());
 	}
 
-	protected boolean findRemoteProperties() {		
-		String[] locations = Bootstrap.REMOTE_PROPERTIES.split(",");
+	protected boolean findRemoteProperties() {	
 		boolean found = false;
-		for (String location : locations) {
-			try {
-				URL propUrl = new URL(location);
-				URLConnection con=propUrl.openConnection();
-				
-				//give it a 5 second timeout so that the user isn't left hanging around if the server is down.
-				con.setConnectTimeout(5000);				
-				load(propUrl.openStream());
-				found = true;
-				source = RavenPropertiesSource.REMOTE;
-				break;
-			} catch (Exception e) {
-				e.printStackTrace();
+		String userLocation=(System.getProperty("raven.properties"));
+		if (userLocation==null) {
+			String[] locations = Bootstrap.REMOTE_PROPERTIES.split(",");
+			
+			for (String location : locations) {
+				try {
+					URL propUrl = new URL(location);
+					URLConnection con=propUrl.openConnection();
+					
+					//give it a 5 second timeout so that the user isn't left hanging around if the server is down.
+					con.setConnectTimeout(5000);				
+					load(propUrl.openStream());
+					found = true;
+					source = RavenPropertiesSource.REMOTE;
+					break;
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
 			}
+		}
+		else {
+			System.out.println("Using raven.propeties location of:"+userLocation);
+			try {
+				URL propUrl=new URL(userLocation);
+				load(propUrl.openStream());
+				found=true;
+				source=RavenPropertiesSource.USERDEFINED;
+			}
+			catch(Exception e) {
+				e.printStackTrace();
+			}			
 		}
 		return found;
 	}
