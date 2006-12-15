@@ -5,7 +5,7 @@
 	<key>CFBundleName</key>
 	<string>Taverna</string>
 	<key>CFBundleVersion</key>
-	<string>2005-06-05</string>
+	<string>2005-12-15</string>
 	<key>CFBundleAllowMixedLocalizations</key>
 	<string>true</string>
 	<key>CFBundleExecutable</key>
