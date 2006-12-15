@@ -28,14 +28,14 @@ For the lazy, here's a quick summary:
 
 6 	To run with the actual compiled components, rather than those fetched from the remote repository, first install the artifacts by running
 	mvn install	
-	Then edit the target/taverna-1.5-bin/taverna-1.5/runme.bat or target/taverna-1.5-bin/taverna-1.5/run.sh to add the argument -Draven.repository.0=file://path to local maven repository.
+	Then edit the target/taverna-1.5.0-bin/taverna-1.5/runme.bat or target/taverna-1.5.0-bin/taverna-1.5.0/run.sh to add the argument -Draven.repository.0=file://path to local maven repository.
 	In Windows this would involve adding a line similar to
 	set ARGS=%ARGS% "-Draven.repository.0=file:///C:/Documents%20and%20Settings/name/.m2/repository/"
 	Just before the java command. Likewise in Linux this would be
 	ARGS="$ARGS -Draven.repository.0=file:///home/name/.m2/repository"
 	
 7 	Run Taverna from the new distribution directory  
-	cd target/taverna-1.5-bin/taverna-1.5	
+	cd target/taverna-1.5.0-bin/taverna-1.5.0	
   	sh runme.sh or runme.bat
 
 Note: Running on Linux requires that the 'graphviz' package is installed. This is available from http://www.graphviz.org/Download_linux.php
