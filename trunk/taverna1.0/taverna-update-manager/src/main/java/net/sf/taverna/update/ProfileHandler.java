@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: ProfileHandler.java,v $
- * Revision           $Revision: 1.3 $
+ * Revision           $Revision: 1.4 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-12-13 11:20:51 $
+ * Last modified on   $Date: 2006-12-15 10:14:44 $
  *               by   $Author: sowen70 $
  * Created on 25 Oct 2006
  *****************************************************************/
@@ -70,7 +70,7 @@ public class ProfileHandler {
 		File localProfileFile = getLocalProfileFile();
 		if (localProfileFile.exists() && remoteProfile!=null) {
 			localProfile=new Profile(localProfileFile.toURI().toURL().openStream(),true);			
-			if (!localProfile.getVersion().equals(remoteProfile.getVersion())) {
+			if (remoteProfile.getVersion().compareTo(localProfile.getVersion())>0) {
 				newVersionAvailable=true;
 			}
 		}
