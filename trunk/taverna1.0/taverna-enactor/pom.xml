@@ -3,13 +3,13 @@
   <parent>
     <artifactId>taverna</artifactId>
     <groupId>uk.org.mygrid.taverna</groupId>
-    <version>1.5.0</version>
+    <version>1.5.1-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>uk.org.mygrid.taverna</groupId>
   <artifactId>taverna-enactor</artifactId>
   <name>Enactor</name>
-  <version>1.5.0</version>
+  <version>1.5.1-SNAPSHOT</version>
   <dependencies>
     
     <dependency>
@@ -44,7 +44,7 @@
     <dependency>
       <groupId>uk.org.mygrid.resources</groupId>
       <artifactId>freefluo-taverna-exts</artifactId>
-      <version>1.5.0</version>
+      <version>1.5.1-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>commons-discovery</groupId>
