@@ -19,12 +19,11 @@ import org.biomoby.client.CentralImpl;
 import org.biomoby.service.dashboard.data.ParametersTable;
 import org.biomoby.shared.MobyException;
 import org.biomoby.shared.Utils;
-import org.biomoby.shared.mobyxml.jdom.MobyObjectClassNSImpl;
 import org.embl.ebi.escience.baclava.DataThing;
+import org.embl.ebi.escience.scufl.IProcessorTask;
 import org.embl.ebi.escience.scufl.InputPort;
 import org.embl.ebi.escience.scufl.OutputPort;
 import org.embl.ebi.escience.scufl.Processor;
-import org.embl.ebi.escience.scufl.IProcessorTask;
 import org.embl.ebi.escience.scuflworkers.ProcessorTaskWorker;
 import org.jdom.Document;
 import org.jdom.Element;
@@ -39,8 +38,6 @@ import uk.ac.soton.itinnovation.taverna.enactor.entities.TaskExecutionException;
 
 public class BiomobyTask implements ProcessorTaskWorker {
 
-	private static final boolean DEBUG = false;
-
 	private static Logger logger = Logger.getLogger(BiomobyTask.class);
 
 	private static int qCounter = 0;
@@ -49,7 +46,7 @@ public class BiomobyTask implements ProcessorTaskWorker {
 
 	private Processor proc;
 
-	Namespace mobyNS = MobyObjectClassNSImpl.MOBYNS;
+	Namespace mobyNS = XMLUtilities.MOBY_NS;
 
 	public BiomobyTask(Processor p) {
 		this.proc = p;
@@ -57,7 +54,8 @@ public class BiomobyTask implements ProcessorTaskWorker {
 
 	@SuppressWarnings("unchecked")
 	public Map execute(Map inputMap, IProcessorTask parentTask) throws TaskExecutionException {
-		if (DEBUG) {
+		
+		if (logger.isDebugEnabled()) {
 			logger.debug("Service " + proc.getName());
 			for (Iterator it = inputMap.keySet().iterator(); it.hasNext();) {
 				String key = (String) it.next();
@@ -74,7 +72,7 @@ public class BiomobyTask implements ProcessorTaskWorker {
 			}
 			logger.debug("Printing of ports complete.");
 		}
-
+		
 		if (inputMap.containsKey("input")) {
 			// input port takes precedence over other ports
 			try {
@@ -165,7 +163,6 @@ public class BiomobyTask implements ProcessorTaskWorker {
 		} else {
 			// now try other named ports
 			try {
-
 				InputPort myInput = null;
 				InputPort[] myInputs = proc.getBoundInputPorts();
 				String inputXML = null;
@@ -241,7 +238,7 @@ public class BiomobyTask implements ProcessorTaskWorker {
 										wrappedSimple = XMLUtilities.renameSimple(articleName, type, wrappedSimple);
 										wrappedSimple = XMLUtilities.setQueryID(wrappedSimple, queryID /*+ "_+_"
 												+ XMLUtilities.getQueryID(wrappedSimple)*/);
-										list.add((wrappedSimple));
+										list.add(XMLUtilities.extractMobyData(wrappedSimple));
 									}
 								}
 							}
@@ -279,7 +276,7 @@ public class BiomobyTask implements ProcessorTaskWorker {
 									wrappedSimple = XMLUtilities.renameSimple(articleName, type, wrappedSimple);
 									wrappedSimple = XMLUtilities.setQueryID(wrappedSimple, queryID /*+ "_+_"
 											+ XMLUtilities.getQueryID(wrappedSimple)*/);
-									list.add((wrappedSimple));
+									list.add(XMLUtilities.extractMobyData(wrappedSimple));
 								}
 								if (list.isEmpty())
 									continue;
@@ -328,25 +325,11 @@ public class BiomobyTask implements ProcessorTaskWorker {
 								for (int j = 0; j < invocations.length; j++) {
 									Element[] elements = XMLUtilities
 											.getListOfCollections(invocations[j]);
-									// FIXME
 									mimQueryID = XMLUtilities.getQueryID(invocations[j]);
 									if (elements.length == 0) {
 										if (mimCollection == null)
 											mimCollection = new Element("Collection",
 													XMLUtilities.MOBY_NS);
-										// FIXME simple (s) was(were) passed in
-										// - wrap it (them)
-										/*
-										 * problem is that
-										 * createMobyDataElementWrapper consumes
-										 * simple/collection and not mobydata.
-										 * replace this whole block of code with
-										 * code that will take each invocation
-										 * and produce one collection. queryid
-										 * will be the id from all invocations
-										 * joined by underscores test is: string
-										 * workflow with abcd gluestrings1
-										 */
 
 										Element theSimple = XMLUtilities
 												.extractMobyData(invocations[j]);
@@ -423,8 +406,6 @@ public class BiomobyTask implements ProcessorTaskWorker {
 										if (totalMobyDatas < 1)
 											totalMobyDatas = 1;
 									}
-									// mobyDatas.add(mdList);
-									// totalMobyDatas++;
 								} else {
 									// we have a collection
 									Element collection = inputElement;
@@ -435,32 +416,32 @@ public class BiomobyTask implements ProcessorTaskWorker {
 											.createMobyDataElementWrapper(collection, XMLUtilities
 													.getQueryID(inputElement), null);
 									mdList.add(XMLUtilities.extractMobyData(collection));
-									if (DEBUG) {
-										logger
-												.debug("***********SIM_COLLECTION_IN****************");
-										logger.debug(new XMLOutputter(Format.getPrettyFormat())
-												.outputString(collection));
-										logger
-												.debug("***********SIM_COLLECTION_IN****************");
-									}
 									mobyDatas.add(mdList);
 									if (totalMobyDatas < 1)
 										totalMobyDatas = 1;
 
 								}
-							} // end if MIM
+							} // end if SIM
 						} // end iteration over inputThing list
 						Iterator collectionIterator = collectionMap.keySet().iterator();
 						while (collectionIterator.hasNext()) {
 							String key = (String) collectionIterator.next();
 							List theList = (List) collectionMap.get(key);
 							theList = XMLUtilities.mergeCollections(theList, key);
-							mobyDatas.add(theList);
+							List unwrappedList = new ArrayList();
+							for (Iterator it = theList.iterator(); it.hasNext(); ) {
+								Element e = (Element)it.next();
+								if (XMLUtilities.isWrapped(e))
+									unwrappedList.add(XMLUtilities.extractMobyData(e));
+								else
+									unwrappedList.add(e);
+							}
+							mobyDatas.add(unwrappedList);
 						}
 					}
 				}
 
-				if (DEBUG) {
+				if (logger.isDebugEnabled()) {
 					logger.debug("Before MobyData aggregation");
 					for (Iterator itr = mobyDatas.iterator(); itr.hasNext();) {
 						List eList = (List) itr.next();
@@ -478,7 +459,7 @@ public class BiomobyTask implements ProcessorTaskWorker {
 				 * there are totalMobyData number of invocations in the output
 				 * moby message
 				 */
-				if (DEBUG) {
+				if (logger.isDebugEnabled()) {
 					logger.debug("TotalMobyDatas: " + totalMobyDatas);
 				}
 				Element[] mds = new Element[totalMobyDatas];
@@ -491,6 +472,7 @@ public class BiomobyTask implements ProcessorTaskWorker {
 						ArrayList list = (ArrayList) iter.next();
 						int index = x % list.size();
 						Element next = ((Element) list.get(index));
+						logger.debug(new XMLOutputter(Format.getPrettyFormat()).outputString(next));
 						//queryID += "_" + XMLUtilities.getQueryID(next);
 						queryID = XMLUtilities.getQueryID(next);
 						mds[x].addContent(next.cloneContent());
@@ -512,7 +494,7 @@ public class BiomobyTask implements ProcessorTaskWorker {
 					content.addContent(mds[x].detach());
 				}
 
-				if (DEBUG) {
+				if (logger.isDebugEnabled()) {
 					logger.debug("After MobyData aggregation");
 					logger.debug(new XMLOutputter(Format.getPrettyFormat()).outputString(root));
 					logger.debug("******* End ******");
@@ -533,26 +515,23 @@ public class BiomobyTask implements ProcessorTaskWorker {
 					logger.debug("invocation 00");
 				for (int inCount = 0; inCount < invocations.length; inCount++) {
 
-					// logger.debug("invocation " + (inCount + 1) + " of " +
-					// invocations.length);
-					logger.debug(((inCount + 1) % 10 == 0 ? "\b\b" + (inCount + 1) : "\b"
-							+ (inCount + 1) % 10));
-					if (DEBUG)
-						logger.info("input:\n" + invocations[inCount]);
+					if (logger.isDebugEnabled())
+						logger.info("input("+inCount+"):\n" + invocations[inCount]);
 					if (!XMLUtilities.isEmpty(invocations[inCount]))
 						invocations[inCount] = new CentralImpl(serviceEndpoint,
 								"http://biomoby.org/").call(methodName, invocations[inCount]);
-					if (DEBUG)
-						logger.info("output:\n" + invocations[inCount]);
+					if (logger.isDebugEnabled())
+						logger.info("output("+inCount+"):\n" + invocations[inCount]);
 				}
+				
 				String outputXML = XMLUtilities.createMultipleInvokations(invocations);
-
 				Map outputMap = new HashMap();
 				// goes through and creates the port 'output'
 				processOutputPort(outputXML, outputMap);
 				// create the other ports
-				processOutputPorts(outputXML, outputMap);
+				processOutputPorts(outputXML, outputMap);				
 				return outputMap;
+				
 			} catch (MobyException ex) {
 				// a MobyException should be already reasonably formatted
 				logger.error("Error invoking biomoby service for biomoby. A MobyException caught",
@@ -573,8 +552,8 @@ public class BiomobyTask implements ProcessorTaskWorker {
 			}
 		}
 	}
-
-	@SuppressWarnings("unchecked")
+	
+@SuppressWarnings("unchecked")
 	private void processOutputPort(String outputXML, Map outputMap) throws TaskExecutionException,
 			JDOMException, IOException {
 		OutputPort myOutput = null;
@@ -919,6 +898,5 @@ public class BiomobyTask implements ProcessorTaskWorker {
 				}
 			}
 		}
-		logger.debug(outputMap);
 	}
 }

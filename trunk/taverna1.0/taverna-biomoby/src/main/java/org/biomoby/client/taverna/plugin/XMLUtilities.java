@@ -14,8 +14,6 @@ import java.util.Vector;
 
 import org.biomoby.shared.MobyException;
 import org.biomoby.shared.Utils;
-import org.biomoby.shared.mobyxml.jdom.MobyObjectClassNSImpl;
-import org.biomoby.shared.mobyxml.jdom.jDomUtilities;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.JDOMException;
@@ -40,7 +38,8 @@ public class XMLUtilities {
 	private static int queryCount = 0;
 
 	// the moby namespaces
-	public final static Namespace MOBY_NS = MobyObjectClassNSImpl.MOBYNS;
+	public final static Namespace MOBY_NS = Namespace.getNamespace("moby",
+			"http://www.biomoby.org/moby");
 
 	/**
 	 * 
@@ -51,7 +50,8 @@ public class XMLUtilities {
 	 * @throws MobyException
 	 *             if the message is null
 	 */
-	public static boolean isMultipleInvocationMessage(String message) throws MobyException {
+	public static boolean isMultipleInvocationMessage(String message)
+			throws MobyException {
 		if (message == null)
 			throw new MobyException(
 					newline
@@ -69,14 +69,15 @@ public class XMLUtilities {
 	 * @throws MobyException
 	 *             if the message is null
 	 */
-	public static boolean isMultipleInvocationMessage(Element message) throws MobyException {
+	public static boolean isMultipleInvocationMessage(Element message)
+			throws MobyException {
 		if (message == null)
 			throw new MobyException(
 					newline
 							+ "null 'xml' found where it was not expected in isMultipleInvocationMessage(Element message).");
 		Element e = (Element) message.clone();
 		List list = new ArrayList();
-		jDomUtilities.listChildren(e, "mobyData", list);
+		listChildren(e, "mobyData", list);
 		if (list != null)
 			if (list.size() > 1)
 				return true;
@@ -95,7 +96,8 @@ public class XMLUtilities {
 	 *             if the Element isnt structurally valid in terms of Moby
 	 *             message structure
 	 */
-	public static Element[] getListOfSimples(Element element) throws MobyException {
+	public static Element[] getListOfSimples(Element element)
+			throws MobyException {
 		Element temp = (Element) element.clone();
 		Element e = (Element) element.clone();
 		String queryID = "";
@@ -113,8 +115,8 @@ public class XMLUtilities {
 				temp = e.getChild("MOBY", MOBY_NS);
 			else
 				throw new MobyException(newline
-						+ "Expected 'MOBY' as the local name for the element " + newline
-						+ "and instead received '" + e.getName()
+						+ "Expected 'MOBY' as the local name for the element "
+						+ newline + "and instead received '" + e.getName()
 						+ "' (getListOfSimples(Element element).");
 		}
 		// parse the mobyContent node
@@ -166,7 +168,8 @@ public class XMLUtilities {
 		int index = 0;
 		for (Iterator it = list.iterator(); it.hasNext();) {
 			Element next = (Element) it.next();
-			elements[index++] = createMobyDataElementWrapper(next, queryID, serviceNotes);
+			elements[index++] = createMobyDataElementWrapper(next, queryID,
+					serviceNotes);
 		}
 		return elements;
 	}
@@ -183,18 +186,20 @@ public class XMLUtilities {
 	 *             if the String doesnt contain a structurally valid Moby
 	 *             message structure or if an unexpected error occurs
 	 */
-	public static String[] getListOfSimples(String message) throws MobyException {
+	public static String[] getListOfSimples(String message)
+			throws MobyException {
 		Element element = getDOMDocument(message).getRootElement();
 		Element[] elements = getListOfSimples(element);
 		String[] strings = new String[elements.length];
-		XMLOutputter outputter = new XMLOutputter(Format.getPrettyFormat());
+		XMLOutputter outputter = new XMLOutputter(Format.getPrettyFormat()
+				.setOmitDeclaration(false));
 		for (int count = 0; count < elements.length; count++) {
 			try {
 				strings[count] = outputter.outputString(elements[count]);
 			} catch (Exception e) {
 				throw new MobyException(newline
-						+ "Unexpected error occured while creating String[]:" + newline
-						+ Utils.format(e.getLocalizedMessage(), 3));
+						+ "Unexpected error occured while creating String[]:"
+						+ newline + Utils.format(e.getLocalizedMessage(), 3));
 			}
 		}
 		return strings;
@@ -210,18 +215,20 @@ public class XMLUtilities {
 	 * @throws MobyException
 	 *             if the the element contains an invalid BioMOBY message
 	 */
-	public static String[] getListOfCollections(String message) throws MobyException {
+	public static String[] getListOfCollections(String message)
+			throws MobyException {
 		Element element = getDOMDocument(message).getRootElement();
 		Element[] elements = getListOfCollections(element);
 		String[] strings = new String[elements.length];
-		XMLOutputter outputter = new XMLOutputter(Format.getPrettyFormat());
+		XMLOutputter outputter = new XMLOutputter(Format.getPrettyFormat()
+				.setOmitDeclaration(false));
 		for (int count = 0; count < elements.length; count++) {
 			try {
 				strings[count] = outputter.outputString(elements[count]);
 			} catch (Exception e) {
 				throw new MobyException(newline
-						+ "Unexpected error occured while creating String[]:" + newline
-						+ Utils.format(e.getLocalizedMessage(), 3));
+						+ "Unexpected error occured while creating String[]:"
+						+ newline + Utils.format(e.getLocalizedMessage(), 3));
 			}
 		}
 		return strings;
@@ -237,7 +244,8 @@ public class XMLUtilities {
 	 * @throws MobyException
 	 *             if the element contains an invalid BioMOBY message
 	 */
-	public static Element[] getListOfCollections(Element element) throws MobyException {
+	public static Element[] getListOfCollections(Element element)
+			throws MobyException {
 		Element temp = (Element) element.clone();
 		Element e = (Element) element.clone();
 		String queryID = "";
@@ -255,8 +263,8 @@ public class XMLUtilities {
 				temp = e.getChild("MOBY", MOBY_NS);
 			else
 				throw new MobyException(newline
-						+ "Expected 'MOBY' as the local name for the element " + newline
-						+ "and instead received '" + e.getName()
+						+ "Expected 'MOBY' as the local name for the element "
+						+ newline + "and instead received '" + e.getName()
 						+ "' (getListOfCollections(Element element).");
 		}
 		// parse the mobyContent node
@@ -308,7 +316,8 @@ public class XMLUtilities {
 		int index = 0;
 		for (Iterator it = list.iterator(); it.hasNext();) {
 			Element next = (Element) it.next();
-			elements[index++] = createMobyDataElementWrapper(next, queryID, serviceNotes);
+			elements[index++] = createMobyDataElementWrapper(next, queryID,
+					serviceNotes);
 		}
 		return elements;
 	}
@@ -327,17 +336,19 @@ public class XMLUtilities {
 	 *             type or if the xml was not valid moby xml or if an unexpected
 	 *             error occurs.
 	 */
-	public static String getSimple(String name, String xml) throws MobyException {
+	public static String getSimple(String name, String xml)
+			throws MobyException {
 		Element element = getDOMDocument(xml).getRootElement();
-		XMLOutputter outputter = new XMLOutputter(Format.getPrettyFormat());
+		XMLOutputter outputter = new XMLOutputter(Format.getPrettyFormat()
+				.setOmitDeclaration(false));
 		Element simples = getSimple(name, element);
 		if (simples != null) {
 			try {
 				return outputter.outputString(simples);
 			} catch (Exception e) {
 				throw new MobyException(newline
-						+ "Unexpected error occured while creating String[]:" + newline
-						+ Utils.format(e.getLocalizedMessage(), 3));
+						+ "Unexpected error occured while creating String[]:"
+						+ newline + Utils.format(e.getLocalizedMessage(), 3));
 			}
 		}
 		throw new MobyException(newline + "The simple named '" + name
@@ -358,7 +369,8 @@ public class XMLUtilities {
 	 *             type or if the xml was not valid moby xml or if an unexpected
 	 *             error occurs.
 	 */
-	public static Element getSimple(String name, Element element) throws MobyException {
+	public static Element getSimple(String name, Element element)
+			throws MobyException {
 		Element el = (Element) element.clone();
 		Element[] elements = getListOfSimples(el);
 		// try matching based on type(less impt) and/or article name (more impt)
@@ -394,11 +406,12 @@ public class XMLUtilities {
 			} else if (e.getChild("Simple", MOBY_NS) != null) {
 				e = e.getChild("Simple", MOBY_NS);
 			} else {
-				throw new MobyException(newline
-						+ "Expected 'Simple' as the local name for the next child element but it "
-						+ newline
-						+ "wasn't there. I even tried a qualified name (getSimple(String name,"
-						+ " Element element).");
+				throw new MobyException(
+						newline
+								+ "Expected 'Simple' as the local name for the next child element but it "
+								+ newline
+								+ "wasn't there. I even tried a qualified name (getSimple(String name,"
+								+ " Element element).");
 			}
 			// e == Simple -> check its name as long as name != ""
 			if (!name.equals(""))
@@ -415,9 +428,14 @@ public class XMLUtilities {
 				}
 
 		}
-		throw new MobyException(newline + "The simple named '" + name
-				+ "' was not found in the xml:" + newline
-				+ (new XMLOutputter(Format.getPrettyFormat())).outputString(element) + newline);
+		throw new MobyException(newline
+				+ "The simple named '"
+				+ name
+				+ "' was not found in the xml:"
+				+ newline
+				+ (new XMLOutputter(Format.getPrettyFormat()
+						.setOmitDeclaration(false))).outputString(element)
+				+ newline);
 	}
 
 	/**
@@ -494,8 +512,9 @@ public class XMLUtilities {
 	 *             message is a multiple invocation message
 	 */
 	public static String setQueryID(String xml, String id) throws MobyException {
-		return new XMLOutputter(Format.getPrettyFormat()).outputString(setQueryID(getDOMDocument(
-				xml).getRootElement(), id));
+		return new XMLOutputter(Format.getPrettyFormat().setOmitDeclaration(
+				false)).outputString(setQueryID(getDOMDocument(xml)
+				.getRootElement(), id));
 	}
 
 	/**
@@ -507,9 +526,10 @@ public class XMLUtilities {
 	 * @throws MobyException
 	 *             if the message is a multiple invocation message
 	 */
-	public static Element setQueryID(Element xml, String id) throws MobyException {
-		Element temp = (Element) xml.clone();
+	public static Element setQueryID(Element xml, String id)
+			throws MobyException {
 		Element e = (Element) xml.clone();
+		Element temp = e;
 		if (isMultipleInvocationMessage(e))
 			throw new MobyException(
 					"Unable to set the queryID, because there are more than one queryID to set!");
@@ -534,8 +554,9 @@ public class XMLUtilities {
 
 		temp.removeAttribute("queryID");
 		temp.removeAttribute("queryID", MOBY_NS);
-		temp.setAttribute("queryID", (id == null || id == "" ? "a" + queryCount++ : id), MOBY_NS);
-		return temp;
+		temp.setAttribute("queryID", (id == null || id == "" ? "a"
+				+ queryCount++ : id), MOBY_NS);
+		return e;
 	}
 
 	/**
@@ -549,9 +570,12 @@ public class XMLUtilities {
 	 *             if the message is a multiple invocation message or if the xml
 	 *             is syntatically invalid.
 	 */
-	public static String getWrappedSimple(String name, String xml) throws MobyException {
-		Element element = getWrappedSimple(name, getDOMDocument(xml).getRootElement());
-		XMLOutputter outputter = new XMLOutputter(Format.getPrettyFormat());
+	public static String getWrappedSimple(String name, String xml)
+			throws MobyException {
+		Element element = getWrappedSimple(name, getDOMDocument(xml)
+				.getRootElement());
+		XMLOutputter outputter = new XMLOutputter(Format.getPrettyFormat()
+				.setOmitDeclaration(false));
 		return outputter.outputString(element);
 	}
 
@@ -565,7 +589,8 @@ public class XMLUtilities {
 	 * @throws MobyException
 	 *             if the message is a multiple invocation message.
 	 */
-	public static Element getWrappedSimple(String name, Element element) throws MobyException {
+	public static Element getWrappedSimple(String name, Element element)
+			throws MobyException {
 		Element e = (Element) element.clone();
 		String queryID = getQueryID(e);
 		Element serviceNotes = getServiceNotes(e);
@@ -583,7 +608,8 @@ public class XMLUtilities {
 	 * @throws MobyException
 	 *             if the message is invalid
 	 */
-	public static Element getCollection(String name, Element element) throws MobyException {
+	public static Element getCollection(String name, Element element)
+			throws MobyException {
 		Element el = (Element) element.clone();
 		Element[] elements = getListOfCollections(el);
 		for (int i = 0; i < elements.length; i++) {
@@ -663,7 +689,9 @@ public class XMLUtilities {
 						+ name
 						+ "' was not found in the xml:"
 						+ newline
-						+ (new XMLOutputter(Format.getPrettyFormat())).outputString(element)
+						+ (new XMLOutputter(Format.getPrettyFormat()
+								.setOmitDeclaration(false)))
+								.outputString(element)
 						+ newline
 						+ "Note: A collection of that may exist, but may be contained in a multiple invocation message.");
 	}
@@ -675,9 +703,11 @@ public class XMLUtilities {
 	 * @return
 	 * @throws MobyException
 	 */
-	public static String getCollection(String name, String xml) throws MobyException {
+	public static String getCollection(String name, String xml)
+			throws MobyException {
 		Element element = getDOMDocument(xml).getRootElement();
-		XMLOutputter outputter = new XMLOutputter(Format.getPrettyFormat());
+		XMLOutputter outputter = new XMLOutputter(Format.getPrettyFormat()
+				.setOmitDeclaration(false));
 		Element collection = getCollection(name, element);
 		if (collection != null)
 			return outputter.outputString(collection);
@@ -691,7 +721,8 @@ public class XMLUtilities {
 	 * @return
 	 * @throws MobyException
 	 */
-	public static Element getWrappedCollection(String name, Element element) throws MobyException {
+	public static Element getWrappedCollection(String name, Element element)
+			throws MobyException {
 		Element e = (Element) element.clone();
 		String queryID = getQueryID(e);
 		Element collection = getCollection(name, e);
@@ -706,9 +737,12 @@ public class XMLUtilities {
 	 * @return
 	 * @throws MobyException
 	 */
-	public static String getWrappedCollection(String name, String xml) throws MobyException {
-		Element element = getWrappedCollection(name, getDOMDocument(xml).getRootElement());
-		XMLOutputter outputter = new XMLOutputter(Format.getPrettyFormat());
+	public static String getWrappedCollection(String name, String xml)
+			throws MobyException {
+		Element element = getWrappedCollection(name, getDOMDocument(xml)
+				.getRootElement());
+		XMLOutputter outputter = new XMLOutputter(Format.getPrettyFormat()
+				.setOmitDeclaration(false));
 		return outputter.outputString(element);
 	}
 
@@ -721,15 +755,19 @@ public class XMLUtilities {
 	 * @return an array of String objects that represent the simples
 	 * @throws MobyException
 	 */
-	public static String[] getSimplesFromCollection(String name, String xml) throws MobyException {
-		Element[] elements = getSimplesFromCollection(name, getDOMDocument(xml).getRootElement());
+	public static String[] getSimplesFromCollection(String name, String xml)
+			throws MobyException {
+		Element[] elements = getSimplesFromCollection(name, getDOMDocument(xml)
+				.getRootElement());
 		String[] strings = new String[elements.length];
-		XMLOutputter output = new XMLOutputter(Format.getPrettyFormat());
+		XMLOutputter output = new XMLOutputter(Format.getPrettyFormat()
+				.setOmitDeclaration(false));
 		for (int i = 0; i < elements.length; i++) {
 			try {
 				strings[i] = output.outputString(elements[i]);
 			} catch (Exception e) {
-				throw new MobyException(newline + "Unknown error occured while creating String[]."
+				throw new MobyException(newline
+						+ "Unknown error occured while creating String[]."
 						+ newline + Utils.format(e.getLocalizedMessage(), 3));
 			}
 		}
@@ -745,8 +783,8 @@ public class XMLUtilities {
 	 * @return an array of Elements objects that represent the simples
 	 * @throws MobyException
 	 */
-	public static Element[] getSimplesFromCollection(String name, Element element)
-			throws MobyException {
+	public static Element[] getSimplesFromCollection(String name,
+			Element element) throws MobyException {
 		Element e = (Element) element.clone();
 		// exception thrown if not found
 		Element collection = getCollection(name, e);
@@ -785,15 +823,19 @@ public class XMLUtilities {
 	 * @throws MobyException
 	 *             if there is a problem with the BioMOBY message
 	 */
-	public static String[] getAllSimplesByArticleName(String name, String xml) throws MobyException {
-		Element[] elements = getAllSimplesByArticleName(name, getDOMDocument(xml).getRootElement());
+	public static String[] getAllSimplesByArticleName(String name, String xml)
+			throws MobyException {
+		Element[] elements = getAllSimplesByArticleName(name, getDOMDocument(
+				xml).getRootElement());
 		String[] strings = new String[elements.length];
-		XMLOutputter output = new XMLOutputter(Format.getPrettyFormat());
+		XMLOutputter output = new XMLOutputter(Format.getPrettyFormat()
+				.setOmitDeclaration(false));
 		for (int i = 0; i < elements.length; i++) {
 			try {
 				strings[i] = output.outputString(elements[i]);
 			} catch (Exception e) {
-				throw new MobyException(newline + "Unknown error occured while creating String[]."
+				throw new MobyException(newline
+						+ "Unknown error occured while creating String[]."
 						+ newline + Utils.format(e.getLocalizedMessage(), 3));
 			}
 		}
@@ -814,14 +856,14 @@ public class XMLUtilities {
 	 * @throws MobyException
 	 *             if there is a problem with the BioMOBY message
 	 */
-	public static Element[] getAllSimplesByArticleName(String name, Element element)
-			throws MobyException {
+	public static Element[] getAllSimplesByArticleName(String name,
+			Element element) throws MobyException {
 		Element e = (Element) element.clone();
 		Element[] invocations = getSingleInvokationsFromMultipleInvokations(e);
 		Vector vector = new Vector();
 		for (int i = 0; i < invocations.length; i++) {
 			// System.out.println(i + ":" + name + "\n" + new
-			// XMLOutputter(Format.getPrettyFormat()).outputString(invocations[i]));
+			// XMLOutputter(Format.getPrettyFormat().setOmitDeclaration(false)).outputString(invocations[i]));
 			Element collection = null;
 			try {
 				collection = getCollection(name, invocations[i]);
@@ -837,7 +879,8 @@ public class XMLUtilities {
 				for (Iterator it = list.iterator(); it.hasNext();) {
 					Object o = it.next();
 					if (o instanceof Element) {
-						((Element) o).setAttribute("articleName", name, MOBY_NS);
+						((Element) o)
+								.setAttribute("articleName", name, MOBY_NS);
 					}
 					vector.add(o);
 				}
@@ -852,10 +895,12 @@ public class XMLUtilities {
 					simple = mobyData.getChild("Simple", MOBY_NS);
 				if (simple != null) {
 					if (simple.getAttribute("articleName") != null) {
-						if (simple.getAttribute("articleName").getValue().equals(name))
+						if (simple.getAttribute("articleName").getValue()
+								.equals(name))
 							vector.add(simple);
 					} else if (simple.getAttribute("articleName", MOBY_NS) != null) {
-						if (simple.getAttribute("articleName", MOBY_NS).getValue().equals(name))
+						if (simple.getAttribute("articleName", MOBY_NS)
+								.getValue().equals(name))
 							vector.add(simple);
 					}
 				}
@@ -875,15 +920,19 @@ public class XMLUtilities {
 	 * @return an array of String objects that represent the simples
 	 * @throws MobyException
 	 */
-	public static String[] getSimplesFromCollection(String xml) throws MobyException {
-		Element[] elements = getSimplesFromCollection(getDOMDocument(xml).getRootElement());
+	public static String[] getSimplesFromCollection(String xml)
+			throws MobyException {
+		Element[] elements = getSimplesFromCollection(getDOMDocument(xml)
+				.getRootElement());
 		String[] strings = new String[elements.length];
-		XMLOutputter output = new XMLOutputter(Format.getPrettyFormat());
+		XMLOutputter output = new XMLOutputter(Format.getPrettyFormat()
+				.setOmitDeclaration(false));
 		for (int i = 0; i < elements.length; i++) {
 			try {
 				strings[i] = output.outputString(elements[i]);
 			} catch (Exception e) {
-				throw new MobyException(newline + "Unknown error occured while creating String[]."
+				throw new MobyException(newline
+						+ "Unknown error occured while creating String[]."
 						+ newline + Utils.format(e.getLocalizedMessage(), 3));
 			}
 		}
@@ -900,7 +949,8 @@ public class XMLUtilities {
 	 *         simples
 	 * @throws MobyException
 	 */
-	public static Element[] getSimplesFromCollection(Element element) throws MobyException {
+	public static Element[] getSimplesFromCollection(Element element)
+			throws MobyException {
 		Element e = (Element) element.clone();
 		Element mobyData = extractMobyData(e);
 
@@ -933,17 +983,19 @@ public class XMLUtilities {
 	 * @throws MobyException
 	 *             if the collection doesnt exist or the xml is invalid
 	 */
-	public static String[] getWrappedSimplesFromCollection(String name, String xml)
-			throws MobyException {
-		Element[] elements = getWrappedSimplesFromCollection(name, getDOMDocument(xml)
-				.getRootElement());
+	public static String[] getWrappedSimplesFromCollection(String name,
+			String xml) throws MobyException {
+		Element[] elements = getWrappedSimplesFromCollection(name,
+				getDOMDocument(xml).getRootElement());
 		String[] strings = new String[elements.length];
-		XMLOutputter output = new XMLOutputter(Format.getPrettyFormat());
+		XMLOutputter output = new XMLOutputter(Format.getPrettyFormat()
+				.setOmitDeclaration(false));
 		for (int i = 0; i < elements.length; i++) {
 			try {
 				strings[i] = output.outputString(elements[i]);
 			} catch (Exception e) {
-				throw new MobyException(newline + "Unknown error occured while creating String[]."
+				throw new MobyException(newline
+						+ "Unknown error occured while creating String[]."
 						+ newline + Utils.format(e.getLocalizedMessage(), 3));
 			}
 		}
@@ -962,8 +1014,8 @@ public class XMLUtilities {
 	 *             MobyException if the collection doesnt exist or the xml is
 	 *             invalid
 	 */
-	public static Element[] getWrappedSimplesFromCollection(String name, Element element)
-			throws MobyException {
+	public static Element[] getWrappedSimplesFromCollection(String name,
+			Element element) throws MobyException {
 		Element el = (Element) element.clone();
 		String queryID = getQueryID(el);
 		Element collection = getCollection(name, el);
@@ -977,7 +1029,8 @@ public class XMLUtilities {
 		for (Iterator it = list.iterator(); it.hasNext();) {
 			Element e = (Element) it.next();
 			e.setAttribute("articleName", name, MOBY_NS);
-			e = createMobyDataElementWrapper(e, queryID + "_split" + queryCount++, serviceNotes);
+			e = createMobyDataElementWrapper(e, queryID + "_split"
+					+ queryCount++, serviceNotes);
 			vector.add(e);
 		}
 		Element[] elements = new Element[vector.size()];
@@ -995,15 +1048,16 @@ public class XMLUtilities {
 	 *             if the moby message is invalid or if the xml is syntatically
 	 *             invalid.
 	 */
-	public static String[] getSingleInvokationsFromMultipleInvokations(String xml)
-			throws MobyException {
-		Element[] elements = getSingleInvokationsFromMultipleInvokations(getDOMDocument(xml)
-				.getRootElement());
+	public static String[] getSingleInvokationsFromMultipleInvokations(
+			String xml) throws MobyException {
+		Element[] elements = getSingleInvokationsFromMultipleInvokations(getDOMDocument(
+				xml).getRootElement());
 		String[] strings = new String[elements.length];
-		XMLOutputter output = new XMLOutputter(Format.getPrettyFormat());
+		XMLOutputter output = new XMLOutputter(Format.getPrettyFormat()
+				.setOmitDeclaration(false));
 
 		for (int i = 0; i < elements.length; i++) {
-			strings[i] = output.outputString(elements[i]);
+			strings[i] = output.outputString(new Document(elements[i]));
 		}
 		return strings;
 	}
@@ -1017,8 +1071,8 @@ public class XMLUtilities {
 	 * @throws MobyException
 	 *             if the moby message is invalid.
 	 */
-	public static Element[] getSingleInvokationsFromMultipleInvokations(Element element)
-			throws MobyException {
+	public static Element[] getSingleInvokationsFromMultipleInvokations(
+			Element element) throws MobyException {
 		Element e = (Element) element.clone();
 		Element serviceNotes = getServiceNotes(e);
 		if (e.getChild("MOBY") != null) {
@@ -1032,9 +1086,12 @@ public class XMLUtilities {
 		} else if (e.getChild("mobyContent", MOBY_NS) != null) {
 			e = e.getChild("mobyContent", MOBY_NS);
 		} else {
-			throw new MobyException(newline
-					+ "Expected a child element called 'mobyContent' and did not receive it in:"
-					+ newline + new XMLOutputter(Format.getPrettyFormat()).outputString(e));
+			throw new MobyException(
+					newline
+							+ "Expected a child element called 'mobyContent' and did not receive it in:"
+							+ newline
+							+ new XMLOutputter(Format.getPrettyFormat()
+									.setOmitDeclaration(false)).outputString(e));
 		}
 		List invocations = e.getChildren("mobyData");
 		if (invocations.isEmpty())
@@ -1052,7 +1109,7 @@ public class XMLUtilities {
 			if (queryID == null)
 				queryID = next.getAttributeValue("queryID");
 
-			mobyData.setAttribute("queryID", queryID, MOBY_NS);
+			mobyData.setAttribute("queryID", (queryID == null ? "a"+queryCount++ : queryID), MOBY_NS);
 			mobyData.addContent(next.cloneContent());
 			MOBY.addContent(mobyContent);
 			mobyContent.addContent(mobyData);
@@ -1074,7 +1131,8 @@ public class XMLUtilities {
 	 */
 	public static Document getDOMDocument(String document) throws MobyException {
 		if (document == null)
-			throw new MobyException(newline + "null found where an XML document was expected.");
+			throw new MobyException(newline
+					+ "null found where an XML document was expected.");
 		SAXBuilder builder = new SAXBuilder();
 		// Create the document
 		Document doc = null;
@@ -1082,7 +1140,8 @@ public class XMLUtilities {
 			doc = builder.build(new StringReader(document));
 		} catch (JDOMException e) {
 			// e.printStackTrace();
-			throw new MobyException(newline + "Error parsing XML:->" + newline + document + newline
+			throw new MobyException(newline + "Error parsing XML:->" + newline
+					+ document + newline
 					+ Utils.format(e.getLocalizedMessage(), 3) + ".");
 		} catch (IOException e) {
 			// e.printStackTrace();
@@ -1109,12 +1168,14 @@ public class XMLUtilities {
 	 *             if an element is invalid or if the XML is syntatically
 	 *             invalid.
 	 */
-	public static String createServiceInput(String[] elements, String queryID) throws MobyException {
+	public static String createServiceInput(String[] elements, String queryID)
+			throws MobyException {
 		Element[] element = new Element[elements.length];
 		for (int i = 0; i < elements.length; i++) {
 			element[i] = getDOMDocument(elements[i]).getRootElement();
 		}
-		XMLOutputter output = new XMLOutputter(Format.getPrettyFormat());
+		XMLOutputter output = new XMLOutputter(Format.getPrettyFormat()
+				.setOmitDeclaration(false));
 		return output.outputString(createServiceInput(element, queryID));
 	}
 
@@ -1136,7 +1197,8 @@ public class XMLUtilities {
 		Element MOBY = new Element("MOBY", MOBY_NS);
 		Element mobyContent = new Element("mobyContent", MOBY_NS);
 		Element mobyData = new Element("mobyData", MOBY_NS);
-		mobyData.setAttribute("queryID", (queryID == null ? "" : queryID), MOBY_NS);
+		mobyData.setAttribute("queryID", (queryID == null ? "" : queryID),
+				MOBY_NS);
 
 		// add the content
 		MOBY.addContent(mobyContent);
@@ -1175,9 +1237,12 @@ public class XMLUtilities {
 		} else if (e.getChild("mobyContent", MOBY_NS) != null) {
 			e = e.getChild("mobyContent", MOBY_NS);
 		} else {
-			throw new MobyException(newline
-					+ "Expected the child element 'mobyContent' and did not receive it in:"
-					+ newline + new XMLOutputter(Format.getPrettyFormat()).outputString(e));
+			throw new MobyException(
+					newline
+							+ "Expected the child element 'mobyContent' and did not receive it in:"
+							+ newline
+							+ new XMLOutputter(Format.getPrettyFormat()
+									.setOmitDeclaration(false)).outputString(e));
 		}
 
 		if (e.getChild("mobyData") != null) {
@@ -1185,9 +1250,12 @@ public class XMLUtilities {
 		} else if (e.getChild("mobyData", MOBY_NS) != null) {
 			e = e.getChild("mobyData", MOBY_NS);
 		} else {
-			throw new MobyException(newline
-					+ "Expected the child element 'mobyData' and did not receive it in:" + newline
-					+ new XMLOutputter(Format.getPrettyFormat()).outputString(e));
+			throw new MobyException(
+					newline
+							+ "Expected the child element 'mobyData' and did not receive it in:"
+							+ newline
+							+ new XMLOutputter(Format.getPrettyFormat()
+									.setOmitDeclaration(false)).outputString(e));
 		}
 		return e;
 	}
@@ -1198,11 +1266,12 @@ public class XMLUtilities {
 	 *            the new name for this fully wrapped BioMOBY collection
 	 * @param element
 	 *            the fully wrapped BioMOBY collection
-	 * @return a fully wrapped BioMOBY message containing the renamed collection
+	 * @return @return an element 'Collection' representing the renamed collection
 	 * @throws MobyException
 	 *             if the message is invalid
 	 */
-	public static Element renameCollection(String newName, Element element) throws MobyException {
+	public static Element renameCollection(String newName, Element element)
+			throws MobyException {
 		Element e = (Element) element.clone();
 		Element mobyData = extractMobyData(e);
 		Element coll = mobyData.getChild("Collection");
@@ -1222,13 +1291,16 @@ public class XMLUtilities {
 	 *            the new name for this fully wrapped BioMOBY collection
 	 * @param xml
 	 *            the fully wrapped BioMOBY collection
-	 * @return a fully wrapped BioMOBY message containing the renamed collection
+	 * @return an element 'Collection' representing the renamed collection
 	 * @throws MobyException
-	 *             if the BioMOBY message is invalid or the xml is syntatically invalid.
+	 *             if the BioMOBY message is invalid or the xml is syntatically
+	 *             invalid.
 	 */
-	public static String renameCollection(String newName, String xml) throws MobyException {
-		return new XMLOutputter(Format.getPrettyFormat()).outputString(renameCollection(newName,
-				getDOMDocument(xml).getRootElement()));
+	public static String renameCollection(String newName, String xml)
+			throws MobyException {
+		return new XMLOutputter(Format.getPrettyFormat().setOmitDeclaration(
+				false)).outputString(renameCollection(newName, getDOMDocument(
+				xml).getRootElement()));
 	}
 
 	/**
@@ -1240,8 +1312,10 @@ public class XMLUtilities {
 	 * @return
 	 * @throws MobyException
 	 */
-	public static String renameSimple(String newName, String type, String xml) throws MobyException {
-		return new XMLOutputter(Format.getPrettyFormat()).outputString(renameSimple(newName, type,
+	public static String renameSimple(String newName, String type, String xml)
+			throws MobyException {
+		return new XMLOutputter(Format.getPrettyFormat().setOmitDeclaration(
+				false)).outputString(renameSimple(newName, type,
 				getDOMDocument(xml).getRootElement()));
 	}
 
@@ -1254,8 +1328,8 @@ public class XMLUtilities {
 	 * @return
 	 * @throws MobyException
 	 */
-	public static Element renameSimple(String newName, String type, Element element)
-			throws MobyException {
+	public static Element renameSimple(String newName, String type,
+			Element element) throws MobyException {
 		Element e = (Element) element.clone();
 		Element mobyData = extractMobyData(e);
 		String queryID = getQueryID(e);
@@ -1263,8 +1337,9 @@ public class XMLUtilities {
 		Element simple = mobyData.getChild("Simple");
 		if (simple == null)
 			simple = mobyData.getChild("Simple", MOBY_NS);
-		if (simple == null)
+		if (simple == null) {
 			return e;
+		}
 		simple.removeAttribute("articleName");
 		simple.removeAttribute("articleName", MOBY_NS);
 		simple.setAttribute("articleName", newName, MOBY_NS);
@@ -1278,7 +1353,7 @@ public class XMLUtilities {
 	 */
 	public static Document createDomDocument() throws MobyException {
 		Document d = new Document();
-		d.setBaseURI(MobyObjectClassNSImpl.MOBYNS.getURI());
+		d.setBaseURI(MOBY_NS.getURI());
 		return d;
 	}
 
@@ -1290,8 +1365,8 @@ public class XMLUtilities {
 	 * @return
 	 * @throws MobyException
 	 */
-	public static Element createMobyDataElementWrapper(Element element, String queryID,
-			Element serviceNotes) throws MobyException {
+	public static Element createMobyDataElementWrapper(Element element,
+			String queryID, Element serviceNotes) throws MobyException {
 		Element e = (Element) element.clone();
 		Element MOBY = new Element("MOBY", MOBY_NS);
 		Element mobyContent = new Element("mobyContent", MOBY_NS);
@@ -1306,18 +1381,19 @@ public class XMLUtilities {
 		if (e != null) {
 			if (e.getName().equals("Simple")) {
 				Element simple = new Element("Simple", MOBY_NS);
-				simple.setAttribute("articleName", (e.getAttributeValue("articleName") == null ? e
-						.getAttributeValue("articleName", MOBY_NS, "") : e.getAttributeValue(
-						"articleName", "")), MOBY_NS);
+				simple.setAttribute("articleName", (e
+						.getAttributeValue("articleName") == null ? e
+						.getAttributeValue("articleName", MOBY_NS, "") : e
+						.getAttributeValue("articleName", "")), MOBY_NS);
 				simple.addContent(e.cloneContent());
 				if (simple.getChildren().size() > 0)
 					mobyData.addContent(simple.detach());
 			} else if (e.getName().equals("Collection")) {
 				Element collection = new Element("Collection", MOBY_NS);
-				collection.setAttribute("articleName",
-						(e.getAttributeValue("articleName") == null ? e.getAttributeValue(
-								"articleName", MOBY_NS, "") : e
-								.getAttributeValue("articleName", "")), MOBY_NS);
+				collection.setAttribute("articleName", (e
+						.getAttributeValue("articleName") == null ? e
+						.getAttributeValue("articleName", MOBY_NS, "") : e
+						.getAttributeValue("articleName", "")), MOBY_NS);
 				collection.addContent(e.cloneContent());
 				if (collection.getChildren().size() > 0)
 					mobyData.addContent(collection.detach());
@@ -1327,8 +1403,8 @@ public class XMLUtilities {
 		return MOBY;
 	}
 
-	public static Element createMobyDataWrapper(String queryID, Element serviceNotes)
-			throws MobyException {
+	public static Element createMobyDataWrapper(String queryID,
+			Element serviceNotes) throws MobyException {
 
 		Element e = null;
 
@@ -1352,7 +1428,8 @@ public class XMLUtilities {
 	 * @return
 	 * @throws MobyException
 	 */
-	public static String createMobyDataElementWrapper(String xml) throws MobyException {
+	public static String createMobyDataElementWrapper(String xml)
+			throws MobyException {
 		return createMobyDataElementWrapper(xml, "a" + queryCount++);
 	}
 
@@ -1362,9 +1439,11 @@ public class XMLUtilities {
 	 * @return
 	 * @throws MobyException
 	 */
-	public static Element createMobyDataElementWrapper(Element element) throws MobyException {
+	public static Element createMobyDataElementWrapper(Element element)
+			throws MobyException {
 		Element serviceNotes = getServiceNotes((Element) element.clone());
-		return createMobyDataElementWrapper(element, "a" + queryCount++, serviceNotes);
+		return createMobyDataElementWrapper(element, "a" + queryCount++,
+				serviceNotes);
 	}
 
 	/**
@@ -1378,20 +1457,23 @@ public class XMLUtilities {
 			throws MobyException {
 		if (xml == null)
 			return null;
-		Element serviceNotes = getServiceNotes(getDOMDocument(xml).getRootElement());
-		Element element = createMobyDataElementWrapper(getDOMDocument(xml).getRootElement(),
-				queryID, serviceNotes);
-		XMLOutputter outputter = new XMLOutputter(Format.getPrettyFormat());
+		Element serviceNotes = getServiceNotes(getDOMDocument(xml)
+				.getRootElement());
+		Element element = createMobyDataElementWrapper(getDOMDocument(xml)
+				.getRootElement(), queryID, serviceNotes);
+		XMLOutputter outputter = new XMLOutputter(Format.getPrettyFormat()
+				.setOmitDeclaration(false));
 		return (element == null ? null : outputter.outputString(element));
 	}
 
-	public static String createMobyDataElementWrapper(String xml, String queryID,
-			Element serviceNotes) throws MobyException {
+	public static String createMobyDataElementWrapper(String xml,
+			String queryID, Element serviceNotes) throws MobyException {
 		if (xml == null)
 			return null;
-		Element element = createMobyDataElementWrapper(getDOMDocument(xml).getRootElement(),
-				queryID, serviceNotes);
-		XMLOutputter outputter = new XMLOutputter(Format.getPrettyFormat());
+		Element element = createMobyDataElementWrapper(getDOMDocument(xml)
+				.getRootElement(), queryID, serviceNotes);
+		XMLOutputter outputter = new XMLOutputter(Format.getPrettyFormat()
+				.setOmitDeclaration(false));
 		return (element == null ? null : outputter.outputString(element));
 	}
 
@@ -1401,7 +1483,8 @@ public class XMLUtilities {
 	 * @return
 	 * @throws MobyException
 	 */
-	public static Element createMultipleInvokations(Element[] elements) throws MobyException {
+	public static Element createMultipleInvokations(Element[] elements)
+			throws MobyException {
 		Element MOBY = new Element("MOBY", MOBY_NS);
 		Element mobyContent = new Element("mobyContent", MOBY_NS);
 		Element serviceNotes = null;
@@ -1429,12 +1512,14 @@ public class XMLUtilities {
 	 * @return
 	 * @throws MobyException
 	 */
-	public static String createMultipleInvokations(String[] xmls) throws MobyException {
+	public static String createMultipleInvokations(String[] xmls)
+			throws MobyException {
 		Element[] elements = new Element[xmls.length];
 		for (int i = 0; i < elements.length; i++) {
 			elements[i] = getDOMDocument(xmls[i]).getRootElement();
 		}
-		XMLOutputter output = new XMLOutputter(Format.getPrettyFormat());
+		XMLOutputter output = new XMLOutputter(Format.getPrettyFormat()
+				.setOmitDeclaration(false));
 		return output.outputString(createMultipleInvokations(elements));
 	}
 
@@ -1542,12 +1627,15 @@ public class XMLUtilities {
 	 * @param theList
 	 *            a list of Elements that represent collections (wrapped in a
 	 *            MobyData tag
-	 * @return a list containing a single collection that contains all of the
-	 *         simples in the collections in theList
+	 * @param name
+	 *            the name to set for the collection
+	 * @return a list containing a single wrapped collection Element that contains all
+	 *         of the simples in the collections in theList
 	 * @throws MobyException
 	 * 
 	 */
-	public static List mergeCollections(List theList, String name) throws MobyException {
+	public static List mergeCollections(List theList, String name)
+			throws MobyException {
 		if (theList == null)
 			return new ArrayList();
 		Element mainCollection = new Element("Collection", MOBY_NS);
@@ -1555,7 +1643,6 @@ public class XMLUtilities {
 		String queryID = "";
 		for (Iterator iter = theList.iterator(); iter.hasNext();) {
 			Element mobyData = (Element) iter.next();
-			//FIXME
 			queryID = getQueryID(mobyData);
 			Element collection = mobyData.getChild("Collection");
 			if (collection == null)
@@ -1565,7 +1652,9 @@ public class XMLUtilities {
 			mainCollection.addContent(collection.cloneContent());
 		}
 		theList = new ArrayList();
-		theList.add(extractMobyData(createMobyDataElementWrapper(mainCollection, queryID, null)));
+		theList
+				.add((createMobyDataElementWrapper(mainCollection, queryID,
+						null)));
 		return theList;
 	}
 
@@ -1607,7 +1696,8 @@ public class XMLUtilities {
 			Element e = getServiceNotes(getDOMDocument(xml).getRootElement());
 			if (e == null)
 				return null;
-			XMLOutputter out = new XMLOutputter(Format.getPrettyFormat());
+			XMLOutputter out = new XMLOutputter(Format.getPrettyFormat()
+					.setOmitDeclaration(false));
 			return out.outputString(e);
 		} catch (MobyException ex) {
 			return null;
@@ -1639,7 +1729,8 @@ public class XMLUtilities {
 	 * @return an element that represents the direct child or null if it wasnt
 	 *         found.
 	 */
-	public static Element getDirectChildByArticleName(Element element, String articleName) {
+	public static Element getDirectChildByArticleName(Element element,
+			String articleName) {
 		Element e = (Element) element.clone();
 		List list = e.getChildren();
 		for (Iterator iter = list.iterator(); iter.hasNext();) {
@@ -1647,10 +1738,12 @@ public class XMLUtilities {
 			if (object instanceof Element) {
 				Element child = (Element) object;
 				if (child.getAttributeValue("articleName") != null) {
-					if (child.getAttributeValue("articleName").equals(articleName))
+					if (child.getAttributeValue("articleName").equals(
+							articleName))
 						return child;
 				} else if (child.getAttributeValue("articleName", MOBY_NS) != null) {
-					if (child.getAttributeValue("articleName", MOBY_NS).equals(articleName)) {
+					if (child.getAttributeValue("articleName", MOBY_NS).equals(
+							articleName)) {
 						return child;
 					}
 				}
@@ -1670,13 +1763,15 @@ public class XMLUtilities {
 	 * @return an xml string that represents the direct child or null if it
 	 *         wasnt found.
 	 */
-	public static String getDirectChildByArticleName(String xml, String articleName) {
+	public static String getDirectChildByArticleName(String xml,
+			String articleName) {
 		try {
-			Element e = getDirectChildByArticleName(getDOMDocument(xml).getRootElement(),
-					articleName);
+			Element e = getDirectChildByArticleName(getDOMDocument(xml)
+					.getRootElement(), articleName);
 			if (e == null)
 				return null;
-			XMLOutputter out = new XMLOutputter(Format.getPrettyFormat());
+			XMLOutputter out = new XMLOutputter(Format.getPrettyFormat()
+					.setOmitDeclaration(false));
 			return out.outputString(e);
 		} catch (MobyException me) {
 			return null;
@@ -1705,7 +1800,8 @@ public class XMLUtilities {
 				if (e.getChild("Collection", MOBY_NS) != null) {
 					// System.out.println("2. collectionNS with stuff in it: " +
 					// getQueryID(xml));
-					return e.getChild("Collection", MOBY_NS).getChildren().size() > 0;
+					return e.getChild("Collection", MOBY_NS).getChildren()
+							.size() > 0;
 				}
 				if (e.getChild("Simple") != null) {
 					// System.out.println("3. Simple with stuff in it: " +
@@ -1740,4 +1836,105 @@ public class XMLUtilities {
 		}
 	}
 
+	public static void main(String[] args) throws MobyException {
+		String msg = "<moby:MOBY xmlns:moby=\"http://www.biomoby.org/moby\">\r\n"
+				+ "  <moby:mobyContent>\r\n"
+				+ "    <moby:mobyData moby:queryID=\"a2_+_s65_+_s165_+_s1290_a2_+_s65_+_s165_+_s1290_+_s1408_a0_+_s3_+_s1409\">\r\n"
+				+ "      <moby:Collection moby:articleName=\"alleles\">\r\n"
+				+ "        <moby:Simple>\r\n"
+				+ "          <Object xmlns=\"http://www.biomoby.org/moby\" namespace=\"DragonDB_Allele\" id=\"def-101\" />\r\n"
+				+ "        </moby:Simple>\r\n"
+				+ "        <moby:Simple>\r\n"
+				+ "          <Object xmlns=\"http://www.biomoby.org/moby\" namespace=\"DragonDB_Allele\" id=\"def-chl\" />\r\n"
+				+ "        </moby:Simple>\r\n"
+				+ "        <moby:Simple>\r\n"
+				+ "          <Object xmlns=\"http://www.biomoby.org/moby\" namespace=\"DragonDB_Allele\" id=\"def-gli\" />\r\n"
+				+ "        </moby:Simple>\r\n"
+				+ "        <moby:Simple>\r\n"
+				+ "          <Object xmlns=\"http://www.biomoby.org/moby\" namespace=\"DragonDB_Allele\" id=\"def-nic\" />\r\n"
+				+ "        </moby:Simple>\r\n"
+				+ "        <moby:Simple>\r\n"
+				+ "          <Object xmlns=\"http://www.biomoby.org/moby\" namespace=\"DragonDB_Allele\" id=\"def-23\" />\r\n"
+				+ "        </moby:Simple>\r\n"
+				+ "      </moby:Collection>\r\n"
+				+ "    </moby:mobyData>\r\n"
+				+ "  </moby:mobyContent>\r\n"
+				+ "</moby:MOBY>";
+		Element inputElement = getDOMDocument(msg).getRootElement();
+		String queryID = XMLUtilities.getQueryID(inputElement);
+		Element[] simples = XMLUtilities.getSimplesFromCollection(inputElement);
+
+		ArrayList list = new ArrayList();
+		for (int j = 0; j < simples.length; j++) {
+			Element wrappedSimple = XMLUtilities
+					.createMobyDataElementWrapper(simples[j]);
+			wrappedSimple = XMLUtilities.renameSimple("Allele", "Object",
+					wrappedSimple);
+			wrappedSimple = XMLUtilities.setQueryID(wrappedSimple, queryID
+					+ "_+_" + XMLUtilities.getQueryID(wrappedSimple));
+			list.add(XMLUtilities.extractMobyData(wrappedSimple));
+		}
+	}
+
+	/*
+	 * 
+	 * @param current the Element that you would like to search @param name the
+	 * name of the element that you would like to find @param list the list to
+	 * put the elements that are found in @return a list containing the elements
+	 * that are named name
+	 */
+	private static List listChildren(Element current, String name, List list) {
+		if (list == null)
+			list = new ArrayList();
+		if (current.getName().equals(name))
+			list.add(current);
+		List children = current.getChildren();
+		Iterator iterator = children.iterator();
+		while (iterator.hasNext()) {
+			Element child = (Element) iterator.next();
+			if (child instanceof Element)
+				listChildren(child, name, list);
+		}
+		return list;
+	}
+
+	/**
+	 * 
+	 * @param collectionName
+	 *            the name you would like the collection to be called
+	 * @param simples2makeCollection
+	 *            the list of Elements to merge into a collection
+	 * @return null if a collection wasnt made, otherwise a fully wrapped
+	 *         collection is returned.
+	 * @throws MobyException
+	 */
+	public static Element createCollectionFromListOfSimples(
+			String collectionName, List<Element> simples2makeCollection)
+			throws MobyException {
+		if (simples2makeCollection.size() > 0) {
+			// create a collection from the list of
+			// simples
+			Element mimCollection = new Element("Collection",
+					XMLUtilities.MOBY_NS);
+			for (Element simple : simples2makeCollection) {
+				Element theSimple = XMLUtilities.extractMobyData(simple);
+				if (theSimple.getChild("Simple") != null)
+					theSimple = theSimple.getChild("Simple");
+				else if (theSimple.getChild("Simple", XMLUtilities.MOBY_NS) != null)
+					theSimple = theSimple.getChild("Simple",
+							XMLUtilities.MOBY_NS);
+				mimCollection.addContent(theSimple.detach());
+			}
+			String mimQueryID = "merged_" + queryCount++;
+
+			mimCollection = XMLUtilities.createMobyDataElementWrapper(
+					mimCollection, mimQueryID, null);
+			mimCollection = XMLUtilities.renameCollection(collectionName,
+					mimCollection);
+			mimCollection = XMLUtilities.createMobyDataElementWrapper(
+					mimCollection, mimQueryID, null);
+			return mimCollection;
+		}
+		return null;
+	}
 }

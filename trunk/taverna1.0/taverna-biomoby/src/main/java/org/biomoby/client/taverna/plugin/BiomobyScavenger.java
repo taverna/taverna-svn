@@ -25,8 +25,8 @@ import org.biomoby.shared.MobyResourceRef;
 import org.embl.ebi.escience.scuflui.workbench.Scavenger;
 import org.embl.ebi.escience.scuflui.workbench.ScavengerCreationException;
 
-import com.hp.hpl.jena.mem.ModelMem;
 import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.rdf.model.StmtIterator;
 import com.ibm.lsid.LSID;
@@ -35,7 +35,7 @@ import com.ibm.lsid.LSID;
  * A Scavenger that knows how to get all the Biomoby services from a specified
  * Biomoby Central Registry. <p>
  * 
- * @version $Id: BiomobyScavenger.java,v 1.3 2006-08-17 20:12:35 edwardkawas Exp $
+ * @version $Id: BiomobyScavenger.java,v 1.4 2006-12-15 17:45:25 edwardkawas Exp $
  * @author Martin Senger
  */
 public class BiomobyScavenger extends Scavenger {
@@ -66,6 +66,9 @@ public class BiomobyScavenger extends Scavenger {
                 DefaultMutableTreeNode authority = new DefaultMutableTreeNode(
                         authorityName);
                 add(authority);
+                try {
+                java.util.Arrays.sort(authorities, String.CASE_INSENSITIVE_ORDER);
+                } catch (Exception e) {}
                 for (int i = 0; i < authorities.length; i++) {
                     String serviceName = (String) authorities[i];
                     BiomobyProcessorFactory f = new BiomobyProcessorFactory(
@@ -138,6 +141,9 @@ public class BiomobyScavenger extends Scavenger {
                 DefaultMutableTreeNode authority = new DefaultMutableTreeNode(
                         authorityName);
                 add(authority);
+                try {
+                    java.util.Arrays.sort(authorities, String.CASE_INSENSITIVE_ORDER);
+                    } catch (Exception e) {}
                 for (int i = 0; i < authorities.length; i++) {
                     String serviceName = (String) authorities[i];
                     BiomobyProcessorFactory f = new BiomobyProcessorFactory(
@@ -206,7 +212,7 @@ public class BiomobyScavenger extends Scavenger {
         HashMap homes = new HashMap(); // (key=parent,val=household)
         try {
             // create an empty model
-            Model model = new ModelMem();
+            Model model = ModelFactory.createDefaultModel();
 
             InputStream in = (new URL(url).openStream());
 
@@ -305,4 +311,5 @@ public class BiomobyScavenger extends Scavenger {
         parent.add(child);
         return child;
     }
+
 }

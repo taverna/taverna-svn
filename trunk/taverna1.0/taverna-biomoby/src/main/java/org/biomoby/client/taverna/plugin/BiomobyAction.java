@@ -494,7 +494,7 @@ public class BiomobyAction extends AbstractProcessorAction {
 																					+ (articlename
 																							.equals("") ? "MobyCollection"
 																							: articlename)
-																					+ "')", false);
+																					+ "' As Simples)", false);
 														else
 															theServiceport = theproc.locatePort(
 																	name + "(" + articlename + ")",
@@ -606,7 +606,7 @@ public class BiomobyAction extends AbstractProcessorAction {
 																					+ (articlename
 																							.equals("") ? "MobyCollection"
 																							: articlename)
-																					+ "')", false);
+																					+ "' As Simples)", false);
 														else
 															theServiceport = theproc.locatePort(
 																	name + "(" + articlename + ")",
@@ -725,7 +725,7 @@ public class BiomobyAction extends AbstractProcessorAction {
 																				+ (articlename
 																						.equals("") ? "MobyCollection"
 																						: articlename)
-																				+ "')", false);
+																				+ "' As Simples)", false);
 													else
 														theServiceport = theproc.locatePort(name
 																+ "(" + articlename + ")", false);
