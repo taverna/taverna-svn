@@ -229,8 +229,11 @@ public class WebScavenger extends Scavenger {
 				logger.info("Skipping robot.txt forbidden URL " + url);
 				continue;
 			}
+							
+			logger.debug("extracting links for "+url);			
 			
 			for (URL link : extractLinks(url)) {
+				logger.debug("Extracted URL="+url);
 				String lowercaseLink = link.toString().toLowerCase();
 				// By default, we'll follow the link for more URLs
 				boolean traverseURL = true;
@@ -270,6 +273,7 @@ public class WebScavenger extends Scavenger {
 				}
 			}			
 		}		
+		logger.debug("Found "+services.size()+" services.");
 		return services;
 	}
 	
@@ -282,7 +286,7 @@ public class WebScavenger extends Scavenger {
 	 * @param url Address of HTML page to search for links
 	 * @return An iterable of URLs from the page, possibly empty if an error occured or no links were found
 	 */
-	Iterable<URL> extractLinks(URL url) {
+	private Iterable<URL> extractLinks(URL url) {
 		// In order, but without duplicates
 		Set<URL> links = new LinkedHashSet<URL>();
 		String html = fetch(url);
@@ -326,7 +330,7 @@ public class WebScavenger extends Scavenger {
 	 * @param url Address of resource
 	 * @return String of resource
 	 */
-	String fetch(URL url) {
+	private String fetch(URL url) {
 		String content;
 		// try opening the URL, avoid pop-ups
 		try {

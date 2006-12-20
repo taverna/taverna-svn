@@ -14,6 +14,7 @@
 	<artifact groupId="uk.org.mygrid.taverna.processors" artifactId="taverna-notification-processor" version="1.5.1-SNAPSHOT"/>
 	<artifact groupId="uk.org.mygrid.taverna.processors" artifactId="taverna-talisman-processor" version="1.5.1-SNAPSHOT"/>
 	<artifact groupId="uk.org.mygrid.taverna" artifactId="taverna-biomoby" version="1.5.1-SNAPSHOT"/>	
+	<artifact groupId="uk.org.mygrid.taverna" artifactId="taverna-scavenger" version="1.5.1-SNAPSHOT"/>
 
 	<artifact groupId="uk.org.mygrid.taverna.scufl" artifactId="scufl-workflow" version="1.5.1-SNAPSHOT"/>
 
