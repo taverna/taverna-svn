@@ -26,6 +26,7 @@ import java.util.Set;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.Box;
+import javax.swing.ButtonGroup;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
@@ -33,12 +34,14 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JRadioButtonMenuItem;
 import javax.swing.JTabbedPane;
 import javax.swing.JToolBar;
 import javax.swing.UIManager;
 import javax.swing.WindowConstants;
 
 import net.sf.taverna.perspectives.CustomPerspective;
+import net.sf.taverna.perspectives.DesignPerspective;
 import net.sf.taverna.perspectives.PerspectiveSPI;
 import net.sf.taverna.raven.repository.Artifact;
 import net.sf.taverna.raven.repository.Repository;
@@ -630,28 +633,23 @@ public class Workbench extends JFrame {
 		 * enforced to avoid excessive menu updates.
 		 * 
 		 */
-		public synchronized void refreshWorkflowsMenu() {
+		public void refreshWorkflowsMenu() {
 			if (refreshingWorkflowsmenu) {
-				return;
+				return; // ignore second request
 			}
 			refreshingWorkflowsmenu = true;
-			new Thread() {
-				public void run() {
-					try {
-						try {
-							Thread.sleep(MAX_REFRESH);
-						} catch (InterruptedException e) {
-						}
-						int index = getComponentIndex(workflows);
-						workflows = makeWorkflows();
-						remove(index);
-						add(workflows,index);
-						revalidate();
-					} finally {
-						refreshingWorkflowsmenu = false;
-					}
+			try {
+				int index = getComponentIndex(workflows);
+				workflows = makeWorkflows();
+				// FIXME: Causes Java on OS X to segfault sometimes
+				remove(index);
+				add(workflows,index);
+				revalidate();
+			} finally {
+				synchronized(this) {
+					refreshingWorkflowsmenu = false;
 				}
-			}.start();
+			}
 		}
 
 		private JMenu makeFile() {
@@ -711,30 +709,33 @@ public class Workbench extends JFrame {
 
 		private JMenu makeWorkflows() {
 			JMenu menu = new JMenu("Workflows");
+			ButtonGroup group = new ButtonGroup();
 			for (final ScuflModel model : workflowModels.getModels()) {
 				Action selectModel = new AbstractAction() {
 					public void actionPerformed(ActionEvent e) {
 						modelmap.setModel(ModelMap.CURRENT_WORKFLOW, model);
+						// It doesn't make sense with any other perspectives (now)
+						// FIXME: Add to the PerspectiveSPI a way to say if it
+						// is OK with model changes
+						modelmap.setModel(ModelMap.CURRENT_PERSPECTIVE, 
+								new DesignPerspective());
 					}
 				};
-				selectModel.putValue(Action.SMALL_ICON,
-						TavernaIcons.windowExplorer);
 				String title = model.getDescription().getTitle();
 				if (workflowChanges.hasChanged(model)) {
 					// FIXME: * is not removed on Save (because the save action
-					// can't
-					// call refreshWorkflowsMenu() )
+					// can't call refreshWorkflowsMenu() )
 					title = "*" + title;
 				}
 				selectModel.putValue(Action.NAME, title);
 				selectModel.putValue(Action.SHORT_DESCRIPTION, title);
-				// TODO: Tag the currently selected workflow instead of disabling it
+				JRadioButtonMenuItem menuItem = new JRadioButtonMenuItem(selectModel);
+				group.add(menuItem);				
 				if (model == modelmap.getNamedModel(ModelMap.CURRENT_WORKFLOW)) {
-					selectModel.setEnabled(false);
-				}
-				menu.add(new JMenuItem(selectModel));
+					menuItem.setSelected(true);
+				}	
+				menu.add(menuItem);
 			}
-
 			return menu;
 		}
 		
