@@ -26,7 +26,6 @@ import java.util.Set;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.Box;
-import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
@@ -537,9 +536,13 @@ public class Workbench extends JFrame {
 		if (ret == JOptionPane.NO_OPTION) {
 			return true;
 		}
-		// ret == JOptionPane.YES_OPTION
+		if (ret != JOptionPane.YES_OPTION) {
+			// That should be the only one left!
+			logger.error("Unknown option returned from showConfirmDialog: " + ret);
+			return false;
+		}
 		try {
-			return new SaveWorkflowAction(Workbench.this).saveToFile(model);
+			return SaveWorkflowAction.saveToFile(Workbench.this, model);
 		} catch (Exception ex) {
 			logger.warn("Could not save file for " + model, ex);
 			return false;

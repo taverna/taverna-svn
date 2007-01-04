@@ -11,16 +11,13 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
-import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.OutputStream;
 import java.io.PrintWriter;
-import java.util.prefs.Preferences;
 
 import javax.swing.AbstractAction;
-import javax.swing.Action;
 import javax.swing.Box;
 import javax.swing.ButtonGroup;
 import javax.swing.ImageIcon;
@@ -29,7 +26,6 @@ import javax.swing.JCheckBox;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
-import javax.swing.JLabel;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -38,8 +34,9 @@ import javax.swing.JRadioButtonMenuItem;
 import javax.swing.JScrollPane;
 import javax.swing.JToolBar;
 
+import org.apache.log4j.Logger;
 import org.embl.ebi.escience.scufl.ScuflModel;
-import org.embl.ebi.escience.scuflui.shared.ExtensionFileFilter;
+import org.embl.ebi.escience.scuflui.actions.SaveWorkflowAction;
 import org.embl.ebi.escience.scuflui.shared.ShadedLabel;
 import org.embl.ebi.escience.scuflui.shared.StreamCopier;
 import org.embl.ebi.escience.scuflui.shared.StreamDevourer;
@@ -54,6 +51,8 @@ import org.embl.ebi.escience.scuflui.spi.WorkflowModelViewSPI;
  */
 public class ScuflDiagramPanel extends JPanel implements WorkflowModelViewSPI {
 
+	private static Logger logger = Logger.getLogger(ScuflDiagramPanel.class);
+	
 	String[] displayPolicyStrings = { "All ports", "Bound ports", "No ports",
 			"Blobs", "Blobs + Names" };
 
@@ -80,6 +79,7 @@ public class ScuflDiagramPanel extends JPanel implements WorkflowModelViewSPI {
 
 	final JFileChooser fc;
 
+	private ScuflModel model = null;
 	
 	
 	public javax.swing.ImageIcon getIcon() {
@@ -250,58 +250,41 @@ public class ScuflDiagramPanel extends JPanel implements WorkflowModelViewSPI {
 		}
 
 		public void actionPerformed(ActionEvent e) {
+			if (model == null) {
+				logger.warn("Can't save diagram not attach to model");
+				return;
+			}
+			File file = SaveWorkflowAction.saveDialogue(ScuflDiagramPanel.this, 
+					model, extension, "Save workflow diagram");
+			if (file == null) {
+				return; // User cancelled
+			}
 			try {
-				Preferences prefs = Preferences
-						.userNodeForPackage(ScuflDiagramPanel.class);
-				String curDir = prefs.get("currentDir", System
-						.getProperty("user.home"));
-				fc.setCurrentDirectory(new File(curDir));
-				fc.resetChoosableFileFilters();
-				fc.setFileFilter(new ExtensionFileFilter(
-						new String[] { extension }));
-				int returnVal = fc.showSaveDialog(ScuflDiagramPanel.this);
-				if (returnVal == JFileChooser.APPROVE_OPTION) {
-					prefs
-							.put("currentDir", fc.getCurrentDirectory()
-									.toString());
-					File file = fc.getSelectedFile();
-					// Rewrite the file name if it doesn't end with the
-					// specified extension
-					if (file.getName().endsWith("." + extension) == false) {
-						file = new File(file.toURI().resolve(
-								file.getName() + "." + extension));
-					}
-					if (type.equals("dot")) {
-						// Just write out the dot text, no processing required
-						PrintWriter out = new PrintWriter(new FileWriter(file));
-						out.println(diagram.getDot());
-						out.flush();
-						out.close();
-					} else {
-						FileOutputStream fos = new FileOutputStream(file);
-						// Invoke DOT to get the SVG document as a byte stream
-						// FIXME: Should use MyGridConfiguration.getProperty(), 
-						// but that would not include the system property
-						// specified at command line on Windows (runme.bat) 
-						// and OS X (Taverna.app)
-						String dotLocation = System
-								.getProperty("taverna.dotlocation");
-						if (dotLocation == null) {
-							dotLocation = "dot";
-						}
-						Process dotProcess = Runtime.getRuntime().exec(
-								new String[] { dotLocation, "-T" + type });
-						OutputStream dotOut = dotProcess.getOutputStream();
-						dotOut.write(diagram.getDot().getBytes());
-						dotOut.flush();
-						dotOut.close();
-						new StreamDevourer(dotProcess.getErrorStream()).start();
-						new StreamCopier(dotProcess.getInputStream(), fos)
-								.start();
-					}
-				}
+				if (type.equals("dot")) {
+					// Just write out the dot text, no processing required
+					PrintWriter out = new PrintWriter(new FileWriter(file));
+					out.println(diagram.getDot());
+					out.flush();
+					out.close();
+					return;
+				} 
+				FileOutputStream fos = new FileOutputStream(file);
+				// Invoke DOT to get the SVG document as a byte stream
+				// FIXME: Should use MyGridConfiguration.getProperty(), 
+				// but that would not include the system property
+				// specified at command line on Windows (runme.bat) 
+				// and OS X (Taverna.app)
+				String dotLocation = System.getProperty("taverna.dotlocation", "dot");
+				Process dotProcess = Runtime.getRuntime().exec(
+						new String[] { dotLocation, "-T" + type });
+				OutputStream dotOut = dotProcess.getOutputStream();
+				dotOut.write(diagram.getDot().getBytes());
+				dotOut.flush();
+				dotOut.close();
+				new StreamDevourer(dotProcess.getErrorStream()).start();
+				new StreamCopier(dotProcess.getInputStream(), fos).start();
 			} catch (Exception ex) {
-				ex.printStackTrace();
+				logger.warn("Could not save diagram to " + file, ex);
 				JOptionPane.showMessageDialog(null,
 						"Problem saving diagram : \n" + ex.getMessage(),
 						"Error!", JOptionPane.ERROR_MESSAGE);
@@ -311,10 +294,12 @@ public class ScuflDiagramPanel extends JPanel implements WorkflowModelViewSPI {
 
 	public void attachToModel(ScuflModel model) {
 		diagram.attachToModel(model);
+		this.model  = model;
 	}
 
 	public void detachFromModel() {
 		diagram.detachFromModel();
+		this.model = null;
 	}
 
 	public String getName() {
@@ -325,7 +310,7 @@ public class ScuflDiagramPanel extends JPanel implements WorkflowModelViewSPI {
 	}
 
 	public void onDispose() {
-		diagram.detachFromModel();		
+		detachFromModel();		
 	}
 
 	class RefreshAction extends AbstractAction {
