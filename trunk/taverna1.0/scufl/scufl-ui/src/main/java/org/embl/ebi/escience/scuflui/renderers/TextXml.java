@@ -16,7 +16,7 @@ import org.embl.ebi.escience.scuflui.shared.XMLTree;
  */
 public class TextXml extends AbstractRenderer.ByPattern {
 	public TextXml() {
-		super("XML", new ImageIcon(TextXml.class.getClassLoader().getResource(
+		super("XML", new ImageIcon(TextXml.class.getResource(
 			"org/embl/ebi/escience/baclava/icons/text.png")),
 			Pattern.compile(".*text/xml.*"));
 	}
