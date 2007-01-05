@@ -25,10 +25,10 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: BytesSelection.java,v $
- * Revision           $Revision: 1.1 $
+ * Revision           $Revision: 1.2 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-12-04 16:44:38 $
- *               by   $Author: dturi $
+ * Last modified on   $Date: 2007-01-05 15:22:38 $
+ *               by   $Author: stain $
  * Created on 4 Dec 2006
  *****************************************************************/
 package org.embl.ebi.escience.scuflui.shared;
@@ -38,13 +38,14 @@ import java.awt.datatransfer.ClipboardOwner;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 
 /**
  * {@link Transferable} bytes used for clipboard.
  * 
  * @author dturi
- * @version $Id: BytesSelection.java,v 1.1 2006-12-04 16:44:38 dturi Exp $
+ * @version $Id: BytesSelection.java,v 1.2 2007-01-05 15:22:38 stain Exp $
  */
 public class BytesSelection implements Transferable, ClipboardOwner {
 
@@ -68,7 +69,7 @@ public class BytesSelection implements Transferable, ClipboardOwner {
     public Object getTransferData(DataFlavor flavor)
             throws UnsupportedFlavorException, IOException {
         if (flavor.equals(flavors[BYTES])) {
-            return bytes;
+            return new ByteArrayInputStream(bytes);
             // } else if (flavor.equals(flavors[IMAGE])) {
             // return bytes;
         } else {
@@ -79,7 +80,7 @@ public class BytesSelection implements Transferable, ClipboardOwner {
     public DataFlavor[] getTransferDataFlavors() {
         // returning flavors itself would allow client code to modify
         // our internal behavior
-        return (DataFlavor[]) flavors.clone();
+        return flavors.clone();
     }
 
     public boolean isDataFlavorSupported(DataFlavor flavor) {
