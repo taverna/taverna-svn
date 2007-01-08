@@ -25,10 +25,10 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: CustomPerspectiveFactory.java,v $
- * Revision           $Revision: 1.1 $
+ * Revision           $Revision: 1.2 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-11-10 12:06:31 $
- *               by   $Author: sowen70 $
+ * Last modified on   $Date: 2007-01-08 11:07:31 $
+ *               by   $Author: stain $
  * Created on 9 Nov 2006
  *****************************************************************/
 package net.sf.taverna.perspectives;
@@ -48,7 +48,6 @@ import org.apache.log4j.Logger;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.JDOMException;
-import org.jdom.input.DOMBuilder;
 import org.jdom.input.SAXBuilder;
 import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;

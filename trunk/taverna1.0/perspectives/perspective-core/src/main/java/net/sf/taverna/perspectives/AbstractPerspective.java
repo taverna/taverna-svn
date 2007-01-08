@@ -25,10 +25,10 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: AbstractPerspective.java,v $
- * Revision           $Revision: 1.4 $
+ * Revision           $Revision: 1.5 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-11-27 10:35:42 $
- *               by   $Author: sowen70 $
+ * Last modified on   $Date: 2007-01-08 11:07:31 $
+ *               by   $Author: stain $
  * Created on 15 Nov 2006
  *****************************************************************/
 package net.sf.taverna.perspectives;
@@ -55,8 +55,9 @@ public abstract class AbstractPerspective implements PerspectiveSPI {
 	private Element layoutElement = null;		
 
 	public InputStream getLayoutInputStream() {
-		if (layoutElement == null) return getLayoutResourceStream();
-		else {
+		if (layoutElement == null) {
+			return getLayoutResourceStream();
+		} else {
 			XMLOutputter outputter = new XMLOutputter(Format.getPrettyFormat());
 			String xml=outputter.outputString(layoutElement);
 			return new ByteArrayInputStream(xml.getBytes());
@@ -68,7 +69,7 @@ public abstract class AbstractPerspective implements PerspectiveSPI {
 	}
 	
 	/**
-	 * The text for the perspective
+	 * The name of the perspective
 	 */
 	public abstract String getText();
 	
@@ -79,13 +80,14 @@ public abstract class AbstractPerspective implements PerspectiveSPI {
 	
 	/**
 	 * 
-	 * @return the resource stream for the perspective
+	 * @return the resource stream for the perspective layout XML
 	 */
 	protected abstract InputStream getLayoutResourceStream();
 
 	/**
-	 * default to 101, meaning that perspective that don't provide a hint will always appear
-	 * towards the end (Built in perspective coming first in a controlled order).
+	 * Position hint, default to 101, meaning that perspective that don't
+	 * provide a hint will always appear towards the end (Built-in perspectives
+	 * coming first in a controlled order).
 	 */
 	public int positionHint() {
 		return 101;
