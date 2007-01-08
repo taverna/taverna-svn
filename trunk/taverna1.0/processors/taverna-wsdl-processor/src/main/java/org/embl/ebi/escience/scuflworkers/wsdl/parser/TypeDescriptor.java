@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: TypeDescriptor.java,v $
- * Revision           $Revision: 1.5 $
+ * Revision           $Revision: 1.6 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-08-25 13:56:59 $
+ * Last modified on   $Date: 2007-01-08 16:43:55 $
  *               by   $Author: sowen70 $
  * Created on March-2006
  *****************************************************************/
@@ -158,18 +158,24 @@ public class TypeDescriptor {
 			} else {
 				if ("string".equals(s)) {
 					types[i] = String.class;
-				} else if ("double".equals(s)) {
+				} else if ("double".equals(s) || "decimal".equals(s)) {
 					types[i] = Double.TYPE;
 				} else if ("float".equals(s)) {
 					types[i] = Float.TYPE;
-				} else if ("int".equals(s)) {
+				} else if ("int".equals(s) || "integer".equals(s)) {
 					types[i] = Integer.TYPE;
 				} else if ("boolean".equals(s)) {
 					types[i] = Boolean.TYPE;
 				} else if ("base64binary".equals(s)) {
 					types[i] = byte[].class;
 				} else {
-					types[i] = org.w3c.dom.Element.class;
+					//treat any other basetype as a String.
+					if (descriptor instanceof BaseTypeDescriptor) {
+						types[i]=String.class;
+					}
+					else {
+						types[i] = org.w3c.dom.Element.class;
+					}
 				}
 			}
 		}

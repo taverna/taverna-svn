@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: TypeDescriptorTest.java,v $
- * Revision           $Revision: 1.3 $
+ * Revision           $Revision: 1.4 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-08-16 10:03:32 $
+ * Last modified on   $Date: 2007-01-08 16:43:55 $
  *               by   $Author: sowen70 $
  * Created on 17-May-2006
  *****************************************************************/
@@ -35,6 +35,8 @@ package org.embl.ebi.escience.scuflworkers.wsdl.parser;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.xml.namespace.QName;
 
 import junit.framework.TestCase;
 
@@ -181,6 +183,60 @@ public class TypeDescriptorTest extends TestCase {
 		a.setQnameFromString("{}localPart");
 		assertEquals("", a.getQname().getNamespaceURI());
 		assertEquals("localPart", a.getQname().getLocalPart());
+	}
+	
+	public void testBaseTypeKnownSigniture() {
+		TypeDescriptor decimal=new BaseTypeDescriptor();
+		decimal.setName("adecimal");
+		decimal.setType("decimal");
+		
+		List params=new ArrayList();
+		String [] names=new String[1];
+		Class [] types=new Class[1];
+		params.add(decimal);
+		TypeDescriptor.retrieveSignature(params, names, types);
+		
+		assertEquals("should only be 1 type",1,types.length);
+		assertEquals("should only be 1 name",1,names.length);
+		
+		assertEquals("name should be adecimal","adecimal",names[0]);
+		assertEquals("type should be double",Double.TYPE,types[0]);
+	}
+	
+	public void testBaseTypeUnrecognisedSigniture() {
+		TypeDescriptor date=new BaseTypeDescriptor();
+		date.setName("adate");
+		date.setType("date");
+		
+		List params=new ArrayList();
+		String [] names=new String[1];
+		Class [] types=new Class[1];
+		params.add(date);
+		TypeDescriptor.retrieveSignature(params, names, types);
+		
+		assertEquals("should only be 1 type",1,types.length);
+		assertEquals("should only be 1 name",1,names.length);
+		
+		assertEquals("name should be adecimal","adate",names[0]);
+		assertEquals("type should be string",String.class,types[0]);
+	}
+	
+	public void testComplex() {
+		TypeDescriptor complex=new ComplexTypeDescriptor();
+		complex.setName("acomplex");
+		complex.setType("complextype");
+		
+		List params=new ArrayList();
+		String [] names=new String[1];
+		Class [] types=new Class[1];
+		params.add(complex);
+		TypeDescriptor.retrieveSignature(params, names, types);
+		
+		assertEquals("should only be 1 type",1,types.length);
+		assertEquals("should only be 1 name",1,names.length);
+		
+		assertEquals("name should be adecimal","acomplex",names[0]);
+		assertEquals("type should be string",org.w3c.dom.Element.class,types[0]);
 	}
 
 }
