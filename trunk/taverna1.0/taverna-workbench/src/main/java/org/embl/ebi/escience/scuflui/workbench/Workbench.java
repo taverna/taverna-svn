@@ -527,6 +527,9 @@ public class Workbench extends JFrame {
 		}
 		// Make sure it is visible first so the user knows what he could save
 		modelmap.setModel(ModelMap.CURRENT_WORKFLOW, model);
+		// Avoid doing a "Do you want to save" in the Run perspective, as we 
+		// would be saving the workflow, not the data
+		perspectives.setWorkflowPerspective();
 
 		String msg = "Do you want to save changes before closing workflow "
 				+ model.getDescription().getTitle() + "?";
