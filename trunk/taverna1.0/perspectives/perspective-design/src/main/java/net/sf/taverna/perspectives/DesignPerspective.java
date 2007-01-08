@@ -25,10 +25,10 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: DesignPerspective.java,v $
- * Revision           $Revision: 1.5 $
+ * Revision           $Revision: 1.6 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-11-27 10:35:43 $
- *               by   $Author: sowen70 $
+ * Last modified on   $Date: 2007-01-08 11:09:32 $
+ *               by   $Author: stain $
  * Created on 8 Nov 2006
  *****************************************************************/
 package net.sf.taverna.perspectives;
@@ -39,7 +39,7 @@ import javax.swing.ImageIcon;
 
 import org.embl.ebi.escience.scuflui.TavernaIcons;
 
-public class DesignPerspective extends AbstractPerspective {	
+public class DesignPerspective extends AbstractPerspective implements WorkflowPerspective {	
 
 	public ImageIcon getButtonIcon() {
 		return TavernaIcons.editIcon;
