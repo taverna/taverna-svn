@@ -40,6 +40,8 @@ import javax.swing.JToolBar;
 import javax.swing.UIManager;
 import javax.swing.WindowConstants;
 
+import net.sf.taverna.osx.OSXAdapter;
+import net.sf.taverna.osx.OSXApplication;
 import net.sf.taverna.perspectives.CustomPerspective;
 import net.sf.taverna.perspectives.PerspectiveSPI;
 import net.sf.taverna.raven.repository.Artifact;
@@ -285,6 +287,17 @@ public class Workbench extends JFrame {
 		// Handle closing ourself
 		addWindowListener(getWindowClosingAdaptor());
 		setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
+		// Our very own OSXApplication is the galvanic layer that makes
+		// the below compile even on non-OS X platforms, where the listener
+		// will never be called.
+		OSXApplication.setListener(new OSXAdapter() {
+			public boolean handleQuit() {
+				exit();
+				// exit() do System.exit(0) if OK to quit, otherwise return
+				// here, so we will say false, we don't want to quit
+				return false; 
+			}
+		});
 
 		updateRepository();
 

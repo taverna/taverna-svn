@@ -58,6 +58,11 @@
       <artifactId>perspective-core</artifactId>
     </dependency>
     <dependency>
+      <groupId>uk.org.mygrid.taverna</groupId>
+      <artifactId>osxapplication</artifactId>
+      <version>1.5.0</version>
+    </dependency>
+    <dependency>
       <groupId>jdom</groupId>
       <artifactId>jdom</artifactId>
       <version>1.0</version>
