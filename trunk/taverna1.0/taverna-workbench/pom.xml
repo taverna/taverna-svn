@@ -58,10 +58,6 @@
       <artifactId>perspective-core</artifactId>
     </dependency>
     <dependency>
-      <groupId>uk.org.mygrid.taverna.perspectives</groupId>
-      <artifactId>perspective-design</artifactId>
-    </dependency>
-    <dependency>
       <groupId>jdom</groupId>
       <artifactId>jdom</artifactId>
       <version>1.0</version>

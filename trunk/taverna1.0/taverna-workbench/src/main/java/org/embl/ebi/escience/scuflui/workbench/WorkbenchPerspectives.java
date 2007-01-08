@@ -25,10 +25,10 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: WorkbenchPerspectives.java,v $
- * Revision           $Revision: 1.13 $
+ * Revision           $Revision: 1.14 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-12-05 11:46:23 $
- *               by   $Author: davidwithers $
+ * Last modified on   $Date: 2007-01-08 11:13:40 $
+ *               by   $Author: stain $
  * Created on 10 Nov 2006
  *****************************************************************/
 package org.embl.ebi.escience.scuflui.workbench;
@@ -65,6 +65,7 @@ import net.sf.taverna.perspectives.CustomPerspective;
 import net.sf.taverna.perspectives.CustomPerspectiveFactory;
 import net.sf.taverna.perspectives.PerspectiveRegistry;
 import net.sf.taverna.perspectives.PerspectiveSPI;
+import net.sf.taverna.perspectives.WorkflowPerspective;
 import net.sf.taverna.raven.spi.RegistryListener;
 import net.sf.taverna.raven.spi.SpiRegistry;
 import net.sf.taverna.utils.MyGridConfiguration;
@@ -84,9 +85,11 @@ import org.jdom.output.XMLOutputter;
 
 @SuppressWarnings("serial")
 public class WorkbenchPerspectives {
-
+	
 	private static Logger logger = Logger
 			.getLogger(WorkbenchPerspectives.class);
+
+	private static ModelMap modelMap = ModelMap.getInstance();
 
 	private ButtonGroup perspectiveButtons = new ButtonGroup();
 
@@ -158,7 +161,7 @@ public class WorkbenchPerspectives {
 
 	public void saveAll() throws FileNotFoundException, IOException {
 		// update current perspective
-		PerspectiveSPI current = (PerspectiveSPI) ModelMap.getInstance()
+		PerspectiveSPI current = (PerspectiveSPI) modelMap
 				.getNamedModel(ModelMap.CURRENT_PERSPECTIVE);
 		if (current != null) {
 			current.update(basePane.getElement());
@@ -315,7 +318,7 @@ public class WorkbenchPerspectives {
 					if (lastPerspectiveButton != null)
 						lastPerspectiveButton.setSelected(true);
 				} else {
-					ModelMap.getInstance().setModel(
+					modelMap.setModel(
 							ModelMap.CURRENT_PERSPECTIVE, perspective);
 					lastPerspectiveButton = toolbarButton;
 				}
@@ -434,7 +437,7 @@ public class WorkbenchPerspectives {
 								.getInstance().getNamedModel(
 										ModelMap.CURRENT_PERSPECTIVE);
 						if (p != null) {
-							ModelMap.getInstance().setModel(
+							modelMap.setModel(
 									ModelMap.CURRENT_PERSPECTIVE, null);
 							basePane.setEditable(false); // cancel edit mode
 															// so perspective
@@ -521,6 +524,42 @@ public class WorkbenchPerspectives {
 		}
 		openLayout(perspective.getLayoutInputStream());
 	}
+	
+	
+	/**
+	 * Ensures that the current perspective is an instance of
+	 * WorkflowPerspective. If the current perspective is not a
+	 * WorkflowPerspective, the first such instance from the PerspectiveSPI
+	 * registry will be selected, normally the Design perspective.
+	 * <p>
+	 * This method can be used by UI operations that change or modify the
+	 * current workflow, so that the user is shown the new or modified workflow,
+	 * and not stuck in say the Result perspective.
+	 */
+	public void setWorkflowPerspective() {
+		PerspectiveSPI currentPerspective =
+			(PerspectiveSPI) modelMap.getNamedModel(ModelMap.CURRENT_PERSPECTIVE);
+		if (currentPerspective instanceof WorkflowPerspective) {
+			return; // OK
+		}
+		PerspectiveSPI foundPerspective = null;
+		for (PerspectiveSPI perspective : perspectives.keySet()) {
+			if (!(perspective instanceof WorkflowPerspective)) {
+				continue;
+			}
+			if (foundPerspective == null ||
+				perspective.positionHint() < foundPerspective.positionHint()) {
+				// select the first perspective with the lowest positionHint
+				foundPerspective = perspective;
+			}
+		}
+		if (foundPerspective == null) {
+			logger.warn("No WorkflowPerspective found");
+			return;
+		}
+		modelMap.setModel(ModelMap.CURRENT_PERSPECTIVE, foundPerspective);
+	}
+	
 
 	/**
 	 * Change perspective when ModelMap.CURRENT_PERSPECTIVE has been modified.

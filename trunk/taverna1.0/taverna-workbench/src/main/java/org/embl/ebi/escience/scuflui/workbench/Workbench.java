@@ -41,7 +41,6 @@ import javax.swing.UIManager;
 import javax.swing.WindowConstants;
 
 import net.sf.taverna.perspectives.CustomPerspective;
-import net.sf.taverna.perspectives.DesignPerspective;
 import net.sf.taverna.perspectives.PerspectiveSPI;
 import net.sf.taverna.raven.repository.Artifact;
 import net.sf.taverna.raven.repository.Repository;
@@ -569,6 +568,7 @@ public class Workbench extends JFrame {
 		return a;
 	}
 
+
 	public synchronized void addArtifact(Artifact a) {
 		repository.addArtifact(a);
 		updateRepository();
@@ -714,11 +714,10 @@ public class Workbench extends JFrame {
 				Action selectModel = new AbstractAction() {
 					public void actionPerformed(ActionEvent e) {
 						modelmap.setModel(ModelMap.CURRENT_WORKFLOW, model);
-						// It doesn't make sense with any other perspectives (now)
-						// FIXME: Add to the PerspectiveSPI a way to say if it
-						// is OK with model changes
-						modelmap.setModel(ModelMap.CURRENT_PERSPECTIVE, 
-								new DesignPerspective());
+						// Normally the above would change perspective if needed, 
+						// unless the user selected the current workflow (no-op), 
+						// so we'll also ensure the perspective here
+						perspectives.setWorkflowPerspective();
 					}
 				};
 				String title = model.getDescription().getTitle();
@@ -808,7 +807,7 @@ public class Workbench extends JFrame {
 			}
 			return true;
 		}
-
+		
 		void setWorkflow(ScuflModel workflow) {
 			for (WorkflowModelViewSPI view : getWorkflowViews()) {
 				view.detachFromModel();
@@ -816,6 +815,8 @@ public class Workbench extends JFrame {
 					view.attachToModel(workflow);
 				}
 			}
+			// Change perspective if needed
+			perspectives.setWorkflowPerspective();	
 			menuBar.refreshWorkflowsMenu();
 		}
 
