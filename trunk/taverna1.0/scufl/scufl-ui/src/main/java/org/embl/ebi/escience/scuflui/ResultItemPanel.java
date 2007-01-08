@@ -401,13 +401,11 @@ public class ResultItemPanel extends JPanel {
 					// show the entire tree
 					pane.setDividerLocation(-1);
 				} catch (RendererException re) {
-					// we should print up some message about the
-					// problem and then log this
+					JOptionPane.showMessageDialog(ResultItemPanel.this,
+						"Could not render data correctly, try selecting another viewer.\n"
+							+ re.getMessage(), "Data rendering error",
+						JOptionPane.ERROR_MESSAGE);
 					logger.error("Problem loading renderer", re);
-				} catch (Throwable otherError) {
-					logger.error(
-						"Unexpected error occured during panel construction",
-						otherError);
 				}
 			}
 		}
