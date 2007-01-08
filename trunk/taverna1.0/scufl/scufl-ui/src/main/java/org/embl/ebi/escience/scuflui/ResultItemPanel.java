@@ -178,12 +178,12 @@ public class ResultItemPanel extends JPanel {
 
 	private class StructureMouseListener extends MouseAdapter {
 
-		private final class ViewerAction extends AbstractAction {
+		private class SelectRenderer extends AbstractAction {
 			private final DataThing thing;
 
 			private final RendererSPI renderer;
 
-			private ViewerAction(RendererSPI renderer, DataThing thing) {
+			private SelectRenderer(RendererSPI renderer, DataThing thing) {
 				super("View as " + renderer.getName(), renderer.getIcon(
 					ResultItemPanel.this.renderers, thing));
 				this.renderer = renderer;
@@ -287,7 +287,7 @@ public class ResultItemPanel extends JPanel {
 				return items;
 			}
 			for (RendererSPI renderer : renderers.getRenderers(nodeThing)) {
-				items.add(new JMenuItem(new ViewerAction(renderer, nodeThing)));
+				items.add(new JMenuItem(new SelectRenderer(renderer, nodeThing)));
 			}
 			return items;
 		}
