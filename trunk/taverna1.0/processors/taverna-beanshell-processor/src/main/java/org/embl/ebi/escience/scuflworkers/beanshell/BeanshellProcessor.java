@@ -67,8 +67,17 @@ public class BeanshellProcessor extends Processor implements java.io.Serializabl
 	    throw new ProcessorCreationException("An error occured whilst generating ports for the beanshell processor "+pce.getMessage());
 	}
     }
+    
+    
 
-    /**
+    @Override
+	public int getMaximumWorkers() {
+		return 100;
+	}
+
+
+
+	/**
      * Set the script
      */
     public void setScript(String theScript) {

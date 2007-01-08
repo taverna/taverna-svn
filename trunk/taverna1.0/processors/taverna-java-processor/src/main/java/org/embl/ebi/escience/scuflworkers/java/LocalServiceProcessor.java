@@ -43,7 +43,7 @@ public class LocalServiceProcessor extends Processor {
 	}
 
 	public int getMaximumWorkers() {
-		return 5;
+		return 100;
 	}
 
 	public LocalServiceProcessor(ScuflModel model, String name, LocalWorker worker) throws ProcessorCreationException,

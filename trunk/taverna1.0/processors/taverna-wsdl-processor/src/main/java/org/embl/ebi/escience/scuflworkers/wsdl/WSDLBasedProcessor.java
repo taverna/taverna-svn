@@ -59,7 +59,7 @@ public class WSDLBasedProcessor extends Processor implements Serializable,
 	private static final long serialVersionUID = 6669263809722072508L;
 
 	public int getMaximumWorkers() {
-		return 10;
+		return 100;
 	}
 
 	private static Logger logger = Logger.getLogger(WSDLBasedProcessor.class);
