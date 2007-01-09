@@ -25,10 +25,10 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: BiomartScavenger.java,v $
- * Revision           $Revision: 1.4 $
+ * Revision           $Revision: 1.5 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-12-14 14:10:36 $
- *               by   $Author: davidwithers $
+ * Last modified on   $Date: 2007-01-09 18:57:59 $
+ *               by   $Author: sowen70 $
  * Created on 17-Mar-2006
  *****************************************************************/
 package org.embl.ebi.escience.scuflworkers.biomart;
@@ -47,15 +47,26 @@ import org.biomart.martservice.MartService;
 import org.biomart.martservice.MartURLLocation;
 import org.embl.ebi.escience.scuflui.workbench.Scavenger;
 import org.embl.ebi.escience.scuflui.workbench.ScavengerCreationException;
+import org.embl.ebi.escience.scuflui.workbench.URLBasedScavenger;
 
 /**
  * 
  * @author David Withers
  */
-public class BiomartScavenger extends Scavenger {
+@SuppressWarnings("serial")
+public class BiomartScavenger extends URLBasedScavenger {
 
 	private static Logger logger = Logger.getLogger(BiomartScavenger.class);
 
+	public BiomartScavenger() {
+		super("Blank");
+	}	
+	
+	@Override
+	public Scavenger fromURL(URL theURL) throws ScavengerCreationException {
+		return new BiomartScavenger(theURL.toExternalForm());
+	}
+	
 	public BiomartScavenger(String registryURL)
 			throws ScavengerCreationException {
 		super("Biomart service @ " + registryURL);

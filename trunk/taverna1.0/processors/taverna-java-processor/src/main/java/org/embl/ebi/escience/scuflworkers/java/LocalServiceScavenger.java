@@ -63,7 +63,7 @@ public class LocalServiceScavenger extends Scavenger {
 					logger
 							.warn("No description in localworkers.properties file found for: "
 									+ worker.getClass().getName());
-				} else {
+				} else {					
 					String[] split = description.split(":");
 					String shortDescription = description;
 					String category="";

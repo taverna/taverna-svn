@@ -292,9 +292,11 @@ public class DefaultScavengerTree extends ExtendedJTree implements WorkflowModel
 					DefaultMutableTreeNode t = new DefaultMutableTreeNode("Local Services");
 					this.treeModel.insertNodeInto(t, (MutableTreeNode) this.treeModel.getRoot(), this.treeModel
 							.getChildCount(this.treeModel.getRoot()));
-					for (Scavenger scavenger : simpleScavengers) {						
-						treeModel.insertNodeInto(scavenger, t, treeModel.getChildCount(t));
-						treeModel.nodeStructureChanged(t);
+					for (Scavenger scavenger : simpleScavengers) {
+						if (!(scavenger instanceof URLBasedScavenger)) {
+							treeModel.insertNodeInto(scavenger, t, treeModel.getChildCount(t));
+							treeModel.nodeStructureChanged(t);
+						}
 					}
 				}
 				// Add the default soaplab installation if this is defined
