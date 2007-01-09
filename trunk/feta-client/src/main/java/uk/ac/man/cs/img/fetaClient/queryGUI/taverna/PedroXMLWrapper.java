@@ -6,9 +6,14 @@
 
 package uk.ac.man.cs.img.fetaClient.queryGUI.taverna;
 
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.Map;
+
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
+import org.apache.log4j.Logger;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -18,10 +23,11 @@ import uk.ac.man.cs.img.fetaEngine.commons.FetaModelXSD;
 import uk.ac.man.cs.img.fetaEngine.commons.ServiceType;
 
 /**
- * 
  * @author alperp
  */
 public class PedroXMLWrapper implements IServiceModelFiller {
+
+	private static Logger logger = Logger.getLogger(PedroXMLWrapper.class);
 
 	private String operationName;
 
@@ -37,7 +43,8 @@ public class PedroXMLWrapper implements IServiceModelFiller {
 
 	private String locationURL;
 
-	private String[] parameters;
+	private Map<String, String> parameters =
+		new LinkedHashMap<String, String>();
 
 	private ServiceType serviceType;
 
@@ -57,7 +64,7 @@ public class PedroXMLWrapper implements IServiceModelFiller {
 
 	/** Creates a new instance of PedroXMLWrapper */
 	public PedroXMLWrapper(String operID) throws Exception {
-
+		logger.debug("Finding pedro service description " + operID);
 		// tokenize location, service name and operation name
 		String[] tokens = operID.split("\\$");
 		if (tokens.length != 3) {
@@ -72,72 +79,75 @@ public class PedroXMLWrapper implements IServiceModelFiller {
 		try {
 
 			Document document;
-			DocumentBuilderFactory factory = DocumentBuilderFactory
-					.newInstance();
+			DocumentBuilderFactory factory =
+				DocumentBuilderFactory.newInstance();
 			DocumentBuilder builder = factory.newDocumentBuilder();
 			document = builder.parse(descriptionLocation);
 
-			NodeList serviceNameList = document
-					.getElementsByTagName(FetaModelXSD.SERVICE_NAME);
+			NodeList serviceNameList =
+				document.getElementsByTagName(FetaModelXSD.SERVICE_NAME);
 
 			boolean found = false;
 			for (int j = 0; j < serviceNameList.getLength(); j++) {
 
-				if (serviceName
-						.equalsIgnoreCase(getElementValue((Element) serviceNameList
-								.item(j)))) {
+				if (serviceName.equalsIgnoreCase(getElementValue((Element) serviceNameList.item(j)))) {
 
-					Element serviceElement = (Element) serviceNameList.item(j)
-							.getParentNode();
+					Element serviceElement =
+						(Element) serviceNameList.item(j).getParentNode();
 
-					NodeList operationNameList = serviceElement
-							.getElementsByTagName(FetaModelXSD.OPERATION_NAME);
+					NodeList operationNameList =
+						serviceElement.getElementsByTagName(FetaModelXSD.OPERATION_NAME);
 
 					for (int k = 0; k < operationNameList.getLength(); k++) {
 
-						if (operationName
-								.equalsIgnoreCase(getElementValue((Element) operationNameList
-										.item(k)))) {
+						if (operationName.equalsIgnoreCase(getElementValue((Element) operationNameList.item(k)))) {
 							found = true;
-							Element operationElement = (Element) operationNameList
-									.item(k).getParentNode();
-							this.operationDescriptionText = getFirstSubElementValue(
-									operationElement,
+							Element operationElement =
+								(Element) operationNameList.item(k).getParentNode();
+							this.operationDescriptionText =
+								getFirstSubElementValue(operationElement,
 									FetaModelXSD.OPER_DESC_TEXT);
-							this.serviceDescriptionText = getFirstSubElementValue(
-									serviceElement, FetaModelXSD.SERV_DESC_TEXT);
-							this.organisationName = getFirstSubElementValue(
-									serviceElement,
+							this.serviceDescriptionText =
+								getFirstSubElementValue(serviceElement,
+									FetaModelXSD.SERV_DESC_TEXT);
+							this.organisationName =
+								getFirstSubElementValue(serviceElement,
 									FetaModelXSD.ORGANISATION_NAME);
-							this.locationURL = getFirstSubElementValue(
-									serviceElement, FetaModelXSD.LOCATION_URL);
-							this.serviceInterfaceLocation = getFirstSubElementValue(
-									serviceElement, FetaModelXSD.INTERFACE_WSDL);
-							String serviceTypeStr = getFirstSubElementValue(
-									serviceElement, FetaModelXSD.SERVICE_TYPE);
+							this.locationURL =
+								getFirstSubElementValue(serviceElement,
+									FetaModelXSD.LOCATION_URL);
+							this.serviceInterfaceLocation =
+								getFirstSubElementValue(serviceElement,
+									FetaModelXSD.INTERFACE_WSDL);
+							String serviceTypeStr =
+								getFirstSubElementValue(serviceElement,
+									FetaModelXSD.SERVICE_TYPE);
 
 							// not really we should not do this
 							if (serviceTypeStr == null) {
 								this.serviceType = ServiceType.WSDL;
 							} else {
-								this.serviceType = ServiceType
-										.getTypeForString(serviceTypeStr);
+								this.serviceType =
+									ServiceType.getTypeForString(serviceTypeStr);
 							}
 
-							this.operationApplication = getFirstSubElementValue(
-									operationElement, FetaModelXSD.OPER_APP);
-							this.operationMethod = getFirstSubElementValue(
-									operationElement, FetaModelXSD.OPER_METHOD);
-							this.operationTask = getFirstSubElementValue(
-									operationElement, FetaModelXSD.OPER_TASK);
-							this.operationResource = getFirstSubElementValue(
-									operationElement,
+							this.operationApplication =
+								getFirstSubElementValue(operationElement,
+									FetaModelXSD.OPER_APP);
+							this.operationMethod =
+								getFirstSubElementValue(operationElement,
+									FetaModelXSD.OPER_METHOD);
+							this.operationTask =
+								getFirstSubElementValue(operationElement,
+									FetaModelXSD.OPER_TASK);
+							this.operationResource =
+								getFirstSubElementValue(operationElement,
 									FetaModelXSD.OPER_RESOURCE);
-							this.operationResourceContent = getFirstSubElementValue(
-									operationElement,
+							this.operationResourceContent =
+								getFirstSubElementValue(operationElement,
 									FetaModelXSD.OPER_RESOURCE_CONTENT);
-							this.operationSpec = getFirstSubElementValue(
-									operationElement,
+							this.operationSpec =
+								getFirstSubElementValue(operationElement,
 									FetaModelXSD.OPERATION_SPEC);
 
 						}
@@ -163,7 +173,7 @@ public class PedroXMLWrapper implements IServiceModelFiller {
 	}
 
 	private String getFirstSubElementValue(Element element,
-			String childElementName) {
+		String childElementName) {
 		String value;
 		NodeList childList = element.getElementsByTagName(childElementName);
 		if (childList.getLength() > 0) {
