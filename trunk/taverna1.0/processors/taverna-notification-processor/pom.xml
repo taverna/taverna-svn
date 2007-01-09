@@ -14,27 +14,15 @@
     <dependency>
       <groupId>uk.org.mygrid.taverna</groupId>
       <artifactId>taverna-scavenger</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>uk.org.mygrid.taverna.baclava</groupId>
-      <artifactId>baclava-core</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>uk.org.mygrid.taverna</groupId>
-      <artifactId>taverna-core</artifactId>
-    </dependency>
+    </dependency>    
     <dependency>
       <groupId>uk.org.mygrid.taverna.scufl</groupId>
       <artifactId>scufl-model</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>uk.org.mygrid.taverna.scufl</groupId>
-      <artifactId>scufl-ui-api</artifactId>
-    </dependency>
+    </dependency>    
     <dependency>
       <groupId>uk.org.mygrid.resources</groupId>
       <artifactId>notification-processor</artifactId>
-      <version>NO-VERSION</version>
+      <version>1.5.1</version>
     </dependency>
     <dependency>
       <groupId>jdom</groupId>
