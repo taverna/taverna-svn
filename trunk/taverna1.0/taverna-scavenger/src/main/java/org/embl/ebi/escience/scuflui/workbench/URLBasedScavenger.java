@@ -8,8 +8,6 @@ public abstract class URLBasedScavenger extends Scavenger {
 		super(userObject);
 	}
 	
-	public Scavenger fromURL(URL theURL) throws ScavengerCreationException {
-		return null;
-	}
+	public abstract Scavenger fromURL(URL theURL) throws ScavengerCreationException;		
 
 }
